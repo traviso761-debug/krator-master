@@ -200,6 +200,11 @@ singly (PROPOSAL-XANADU 3e). A region page may draw a seeded sample near the cam
 
 ## 3. The order: waves and sessions
 
+**Superseded 2026-11-22 by `BUILD-PLAN.md`** (the owner's order of that day: Xanadu close to complete, then the vertical
+stack extended with Xanadu, then the all-builds rebuild). Waves 0.1 and 0.2 are done (`kits/xanadu/extra/88g-xa-works.js`,
+`core/hamlet/xanadu/23-hamlet-xanadu-row.js`) and 0.3 too (the tune's rings, villages and the Flashing Eye); wave 1's
+merges mostly landed. The table below is kept as it was written.
+
 Each wave is a few sessions; each session a task with a brief. A session starts a new build from `tools/new_build/`, lists
 it in `tools/checks_optin.json`, writes its `Core adoption` section first and runs `tools/check_core_use.py` before calling it
 done (CLAUDE.md). No session copies camera, PRNG, noise, terrainH, sky or harness into a build. Every new page reads
@@ -309,6 +314,17 @@ cut region and give economy Sim records."
   one region each.
 - **Question 5:** the tune gets the records it lacked: Thalaba's 4 and Lāiṭwāl's 4 ring hamlets, Grēṭ-Āil's villages, and the
   Flashing Eye.
+
+**The owner's answers (2026-11-22)** (`BUILD-PLAN.md` section 0):
+- **Question 2:** one shared lake page and the regions ("Shared target + regions": `settlements/xanadu-lake`).
+- **The six province regions not yet cut wait for the vertical stack.** The stack's Xanadu slice is the Lake Shore with
+  Erehwon.
+- **Question 4:** the gold mines are **Kōlḍ-Lōḍ**; Opal Valley Mines keeps its name. The turquoise Order: still open.
+- **Question 6:** Theodiga's ring is four villages in scrap Xanadu's poor tier.
+- **Question 7:** one plan for the Marches' two forts (`settlements/marches/PLAN.md`).
+- **Question 10:** the countryside is sampled near the camera in every province region.
+- **Question 8:** settled by wave 0.1 (the pieces were built). **Questions 9, 11, 12:** taken as the defaults in
+  `BUILD-PLAN.md` section 6 (neighbours left to their plans; the pins through the queue; one caravanserai for the lake towns).
 
 1. **The lake towns over 500 people.** Each a small `core/city` town from one shared lake-town target (*proposed*), or
    core/hamlet laying the first 500 as Kirstabal's lake villages are? Where is the line (1,500 is *proposed*)?

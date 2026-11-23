@@ -1489,8 +1489,8 @@
    "sha256": "4ea0b40fc570efc9216532f07bc62aed0bed24a8bf10581bef14eb254732c3b2"
   },
   "kits/tungang/dist/tungang.html": {
-   "bytes": 1414636,
-   "sha256": "a2536e7a8d3cc1725b2d273b88d84832305019b1601ed5f94677c24c91a61a1f"
+   "bytes": 1346055,
+   "sha256": "1bfd8796f0eee236883b6e51e669602b10d6cb0bfe358ae35c8bc3b57b5035df"
   },
   "kits/xanadu/dist/xanadu.html": {
    "bytes": 1248203,
@@ -1573,8 +1573,8 @@
    "sha256": "e6efa558623b2fcf0bf9703025bc8547cc4d732ef30f81d54f4e3422aaef157c"
   },
   "openworld/iziz-cluster/dist/iziz-cluster.html": {
-   "bytes": 5910608,
-   "sha256": "62ccb46a72321141b42e26217d71228c7fe5e0d562e52c397a0c124e04fde191"
+   "bytes": 5896574,
+   "sha256": "495182793bccaae25004a1f8cfce98ef1d362e91408af880b1b6177dcfd37c20"
   },
   "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": {
    "bytes": 4373474,
@@ -1613,8 +1613,8 @@
    "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
   },
   "openworld/oidong-highrift/dist/oidong-highrift.html": {
-   "bytes": 10564062,
-   "sha256": "f01a45cd134dfb4c7c12d2dba0f310098692e6aa03253b784c62c67409123334"
+   "bytes": 10436363,
+   "sha256": "d2c1c460b6895a1d607975876bd07003300265c8d17cba9121dfa14e98f23736"
   },
   "openworld/oidong-highrift/dist/oidong-highrift.tex.highrift.js": {
    "bytes": 643034,
@@ -1629,8 +1629,8 @@
    "sha256": "735252f2a934d5a6a0f3c9be75c27750935fa59e8a7240a329512fb8e01c27c3"
   },
   "openworld/pinnacle/dist/pinnacle.html": {
-   "bytes": 5872820,
-   "sha256": "7b560e1c7366301eec5ce340cdbbbe07c5c9871ad73204642c49a019f95b5a8d"
+   "bytes": 5856549,
+   "sha256": "375a497b5bc7a48de3b59cd710da364159cb9d981ab456ca2c34bcff5aa0928f"
   },
   "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": {
    "bytes": 4373470,
@@ -1653,16 +1653,16 @@
    "sha256": "75223875a57f714df4f068e09e66292721bf3f11c05ee54ab9414a9e4daaa346"
   },
   "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": {
-   "bytes": 2589045,
-   "sha256": "71633454d636d19dcc571956b2a15613295064155c0b63010604c4cabf476a0c"
+   "bytes": 2577919,
+   "sha256": "0237a73849bffeccdc08852816e28606c6c35cf7231706efab755e956f267133"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 4830302,
-   "sha256": "77fdf0bb6d0a90c0062718a16ccfbd4022a9c52d1cd3160276fe816a0da63065"
+   "bytes": 4734822,
+   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 11620189,
-   "sha256": "66f5bc163b34918502289ecf1160373df2d96ccebb497c34db0bc6cd40f65071"
+   "bytes": 8874743,
+   "sha256": "5dd6344646a54395c88d779a34a56cf636886b104ddca80bc36197e560c91967"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": {
    "bytes": 2002652,
@@ -1773,8 +1773,8 @@
    "sha256": "1a45afd49bb2557620335ca788af7f410cf918d3f5d6b3692a92a6d8a163eade"
   },
   "settlements/lightwall/dist/lightwall.html": {
-   "bytes": 3850325,
-   "sha256": "2239aad10e2fe1120e8f1b34d874af5e1b60cd8bf81936a4c0d2c85b5ab05101"
+   "bytes": 3849615,
+   "sha256": "919343fb05ff33e6ce7645ca62bc2cf8914eb28653e579be71ca92ca3557af64"
   },
   "settlements/locus/abyss-kit.html": {
    "bytes": 10012939,
@@ -1800,6 +1800,10 @@
    "bytes": 6064484,
    "sha256": "4ece2e66c1abfb6c335374e50227f76d6b02f7f11ec2aa958ee319b2ede03567"
   },
+  "settlements/marches/dist/marches.html": {
+   "bytes": 8751679,
+   "sha256": "5bc1832e823c09160ed5950dd5632fc08aab10b5e1d30312e806156b514394d9"
+  },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9233473,
    "sha256": "64ebc078c34aad033e32729e68e925fa3a1726bd4f02207c4cfdfc4c04bbb15f"
@@ -1817,8 +1821,8 @@
    "sha256": "9257ada7ff9fcc427412c29e180fbd1040236f21f320aa3e9b7b61c7c72f644a"
   },
   "settlements/pher/dist/pher.html": {
-   "bytes": 9056042,
-   "sha256": "6744b76e3dd2b2e7876fcb5f2ad5aa74ac2260ac441774a482b6d0af8ac7d921"
+   "bytes": 8924162,
+   "sha256": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
    "bytes": 4923560,
