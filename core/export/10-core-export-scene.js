@@ -17,7 +17,10 @@
 //      null (default: the KMAT pack entry whose lib the material bound, the home pack first), kmat(key) -> a KMAT id or null,
 //      hooks(m, src) -> more hook names (glass), itemKit(kit) -> an item's `kit`, itemMat(kit) -> the material an item's
 //      key comes from, itemSet(kit) -> its core/tags item set, tags (a core/tags registry), owner(x, y, z) -> a record id,
-//      ownerOf(mesh, i, x, y, z) -> a record id (before owner), skipInstanced(mesh) / skipMesh(mesh) -> a reason or null
+//      ownerOf(mesh, i, x, y, z) -> a record id (before owner), skipInstanced(mesh) / skipMesh(mesh) -> a reason or null,
+//      origin [x, y, z]: the case's own origin (a floating origin, core/world 94): the instance translations and the buckets'
+//      vertices are written less it, taken off in double precision before the float32 pack (600 km out a float32 keeps
+//      6 cm, 1 km out 0.06 mm); the box, the owners and every record stay in the page's frame. Unset: the page's frame
 (function(root){
 'use strict';
 const E = root.EXPORT;
@@ -99,6 +102,7 @@ E.sceneReader = function(o){
  function assemble(ctx, more){
   const C = collect(), own = o.owner || (() => null), T = o.tags, out = { items: [], buckets: [] };
   const box = ctx.box, inBox = ctx.inBox, M = new THREE.Matrix4(), W = new THREE.Matrix4(), v = new THREE.Vector3();
+  const O = o.origin == null ? null : o.origin, ox = O ? O[0] : 0, oy = O && O[1] != null ? O[1] : 0, oz = O ? O[2] : 0;
   const meshes = []; sceneOf().traverse(m => { if (m.isMesh && m.geometry && m.geometry.attributes.position) meshes.push(m); });
   let k = 0;
   for (const m of meshes) {
@@ -116,8 +120,8 @@ E.sceneReader = function(o){
    }
    if (!keep.length) continue;
    const n = keep.length, mats = new Float32Array(n * 16), col = m.instanceColor ? new Float32Array(n * 3) : null;
-   keep.forEach((i, j) => { if (ident) for (let q = 0; q < 16; q++) mats[j * 16 + q] = A[i * 16 + q];
-    else { m.getMatrixAt(i, M); W.multiplyMatrices(m.matrixWorld, M); for (let q = 0; q < 16; q++) mats[j * 16 + q] = W.elements[q]; }
+   keep.forEach((i, j) => { if (ident) for (let q = 0; q < 16; q++) mats[j * 16 + q] = A[i * 16 + q] - (q === 12 ? ox : q === 13 ? oy : q === 14 ? oz : 0);
+    else { m.getMatrixAt(i, M); W.multiplyMatrices(m.matrixWorld, M); for (let q = 0; q < 16; q++) mats[j * 16 + q] = W.elements[q] - (q === 12 ? ox : q === 13 ? oy : q === 14 ? oz : 0); }
     if (col) for (let q = 0; q < 3; q++) col[j * 3 + q] = m.instanceColor.array[i * 3 + q]; });
    const name = kit || (m.name || 'instanced') + '~' + k;
    const it = { id: NAME + '/' + name, name, kit: o.itemKit ? o.itemKit(kit) : kit ? NAME : null, label: kit || m.name || null,
@@ -127,7 +131,7 @@ E.sceneReader = function(o){
    if (sid && T && T.isSet(sid)) { const S = T.get(sid);
     it.record = sid; it.recordClass = S['class']; it.recordKey = S.key;
     it.records = keep.map(i => T.uidOf(S, i)); it.recordIndex = P(Uint32Array.from(keep)); }
-   it.owners = keep.map((i, j) => { const x = mats[j * 16 + 12], y = mats[j * 16 + 13], z = mats[j * 16 + 14];
+   it.owners = keep.map((i, j) => { const x = mats[j * 16 + 12] + ox, y = mats[j * 16 + 13] + oy, z = mats[j * 16 + 14] + oz;
     const id = o.ownerOf ? o.ownerOf(m, i, x, y, z) : null; return id != null ? id : own(x, y, z); });
    out.items.push(it); k++;
   }
@@ -157,7 +161,7 @@ E.sceneReader = function(o){
     const t = kept[q], id = own(kept[q + 1], kept[q + 2], kept[q + 3]);
     if (id) G.owners.set(id, (G.owners.get(id) || 0) + 1);
     for (let s = 0; s < 3; s++) { const iv = vi(t * 3 + s); let j = map.get(iv);
-     if (j === undefined) { j = G.pos.length / 3; map.set(iv, j); a.fromBufferAttribute(Pp, iv).applyMatrix4(W0); G.pos.push(a.x, a.y, a.z);
+     if (j === undefined) { j = G.pos.length / 3; map.set(iv, j); a.fromBufferAttribute(Pp, iv).applyMatrix4(W0); G.pos.push(a.x - ox, a.y - oy, a.z - oz);
       if (N) { nv.fromBufferAttribute(N, iv).applyMatrix3(nm).normalize(); G.nor.push(nv.x, nv.y, nv.z); } else G.nor.push(0, 1, 0);
       G.uv.push(U ? U.getX(iv) : 0, U ? U.getY(iv) : 0); G.col.push(Cc ? Cc.getX(iv) : 1, Cc ? Cc.getY(iv) : 1, Cc ? Cc.getZ(iv) : 1); }
      G.idx.push(j); } }

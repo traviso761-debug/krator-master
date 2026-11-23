@@ -263,6 +263,12 @@ COLONY_SIM_JS = r"""(neg)=>{const R=[],S=ISLE.SIM,X=S&&S.towns.nephtos,St=SIM.R.
  ok('its villages at work for it: its staples, its plantations\' clove, cacao, indigo, annatto and tobacco, fish, timber and copper ('+Object.keys(made).map(g=>g+' '+made[g]).join(', ')+')',V.length===6&&['taro','indigo','annatto','tobacco','fish','copper'].every(g=>made[g]>0),V.map(v=>v.id).join(','));
  const at=Object.assign({},S.shipsAt||{});if(neg==='unvisited')delete at['tethys|nephtos'];
  ok('the poleis\' fleets: Tethys\'s merchantmen call at its colony (Tethys '+(at['tethys|nephtos']||0)+', Ys '+(at['hykkousoi|nephtos']||0)+', Pontus '+(at['pontus|nephtos']||0)+' calls at Nephtos so far)',(at['tethys|nephtos']||0)>0,JSON.stringify((S.ships||{}).tethys||{}),neg==='unvisited'?'unvisited':null);
+ /* built and kept in shell, nacre and pearl, little timber (the owner, 2026-11-10; tune build.byKit), its pearl ships bringing
+    the oysters' nacre and the bed's shell up with the pearls (expeditions.kinds.pearl `by`) */
+ const U=((SIM.buildReport('nephtos').towns.nephtos||{}).upkeep||{day:{}}).day,f=g=>(U[g]||0).toFixed(1),u=Object.assign({},U);if(neg==='timber')u.timber=(u.shells||0);
+ ok('kept in shells, nacre and pearls, little timber (a day: shells '+f('shells')+', nacre '+f('nacre')+', pearls '+f('pearls')+', timber '+f('timber')+')',u.shells>0&&u.nacre>0&&u.pearls>0&&(u.timber||0)<u.shells/5&&!u.mats,JSON.stringify(U),neg==='timber'?'timber':null);
+ const EB=ISLE.expBooks().camps.filter(c=>c.town==='nephtos'),got={};EB.forEach(c=>['pearls','nacre','shells'].forEach(g=>{got[g]=(got[g]||0)+((c.made||{})[g]||0);}));
+ ok('its pearl ships bring up nacre and shell with the pearls ('+EB.length+' out; made '+Object.keys(got).map(g=>g+' '+Math.round(got[g])).join(', ')+')',EB.length>0&&got.pearls>0&&got.nacre>0&&got.shells>0,JSON.stringify(got));
  return R;}"""
 HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISLE.SIM.hamlets)return{checks:[{name:'the hamlets: in the sim',ok:false,detail:err||'not declared'}],negs:[]};
  const a=ISLE.simHamletBooks();ISLE.simRun(2*1440);const b=ISLE.simHamletBooks(),cp=x=>JSON.parse(JSON.stringify(x)),pick=(rs,re)=>rs.filter(c=>re.test(c.name))[0];
@@ -294,12 +300,26 @@ async def run(a):
         if a.list:
             print('\n'.join(await pg.evaluate('_api.views()'))); raise Abort(0)
         print('settle:', json.dumps(await pg.evaluate('_api.settle(240000)')))
+        for ev in (a.eval or []):
+            try:
+                print('eval:', json.dumps(await pg.evaluate(ev))[:6000])
+            except Exception as e:
+                print('eval failed:', str(e)[:600]); fails.append('eval')
         if a.assert_:
             has = await pg.evaluate(HAS)
             # the world's checks read the flora round the camera: the start view (little-demo's, west of a Shade this region
             # does not have) falls back to (-6000, 2500), deep sea, where no tile holds a record; so over Kautoa first, settled
             await pg.evaluate("(()=>{const K=WORLD_DATA.meta.settlements.find(s=>s.name==='Kautoa');CAM.setView(K.x+2500,K.z-2500,300,0,-.2);})()")
             await pg.evaluate('_api.settle(240000)')
+            # the world's flora checks read the tiles round the camera: with none built there (the camera out at sea, as
+            # an old copy of this verify had it: BUGS-2026-11-15 S9, "0 records"), say so once instead of four flora fails
+            where = await pg.evaluate("(()=>{const P=HOST.camera.position;return{x:Math.round(P.x),z:Math.round(P.z),"
+                                      "sea:WORLD.water(P.x,P.z)>WORLD.H(P.x,P.z),started:!!_api.ready(),records:FLORA.stats.records,tiles:FLORA.stats.tiles};})()")
+            if not (where['records'] > 0):
+                print('  FAIL  the flora round the camera is built : none (camera at %d,%d%s; world started %s; %d tiles): '
+                      'the flora checks below read nothing' % (where['x'], where['z'], ', over water' if where['sea'] else '',
+                                                               where['started'], where['tiles']))
+                fails.append('no flora round the camera')
             print('--- the world\'s checks (core/world/91-world-probe.js, over Kautoa) ---')
             for r in await pg.evaluate('_api.hostChecks()'):
                 need = APPLIES.get(r['name'])
@@ -424,4 +444,5 @@ if __name__ == '__main__':
     ap.add_argument('--assert', dest='assert_', action='store_true')
     ap.add_argument('--out', default='./shots')
     ap.add_argument('--size', default='1280x800')
+    ap.add_argument('--eval', action='append', help='JS source to evaluate after the first settle, printed (repeatable)')
     sys.exit(asyncio.run(run(ap.parse_args())))

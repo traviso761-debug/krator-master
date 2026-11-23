@@ -12,6 +12,7 @@
            plain repeat and no triplanar hook (KTRANSIT.skin). userData: { kind, state, variant, seed, tris, box, ruin, family }
      KTF.list()         every kind: { key, name, w, d, h, variants, states }
      KTF.dims(kind, v)  the declared box
+     KTF.dead = true    every piece built after it is dead: no lens glows, the metal and paint rusted as a ruined piece's (o.dead per build)
      KTF.STATES, KTF.KINDS, KTF.materials (the plain materials, by family)
 
    THE RUIN PASS is one pass over the merged vertices, the same for every kind (the kinds' numbers in KTRANSIT.KINDS.ruin,
@@ -55,6 +56,10 @@ const KTF_API = (function () {
     const state = o.state == null ? 'intact' : o.state;
     if (K.states.indexOf(state) < 0) throw new Error('KratorTransitFurniture: ' + kind + ' has no state ' + state);
     const seed = o.seed == null ? 1 : (o.seed >>> 0), v = Math.max(0, Math.min(A.variants - 1, o.variant | 0)), linear = o.linear !== false, R = KTRANSIT.ruinOf(seed, kind, state);
+    /* DEAD (o.dead, or API.dead for every build on the page; off by default): a city dead a thousand years, as the Ancient's Valley (the owner,
+       2026-11-09: "streetlights should be dead and rusted, not on at night"): no glow in any state, the lens dark glass, and the metal and paint
+       rusted as a ruined piece's even where the piece still stands */
+    const dead = o.dead == null ? !!API.dead : !!o.dead;
     const F = makeFrame(0, 0, 0, { seed: seed, variant: v, span: o.span == null ? 0 : o.span }); F.asset = A; F.ruin = R; F.state = state;
     const g = new THREE.Group(), prev = _target; _target = g;
     try { A.build(F); } finally { _target = prev; }
@@ -65,14 +70,15 @@ const KTF_API = (function () {
       if (!m.isMesh) return;
       let fam = famOf(m);
       if (fam === 'glass' && !R.glass) return;
-      if (fam === 'glow' && state !== 'intact') fam = 'glass';
-      const col = m.material.color, c = [col.r, col.g, col.b];
-      if (fam === 'metal' && state !== 'intact') fam = 'rust';
-      let k = state === 'intact' ? R.rust * 0.45 : 0.68;
+      const lens = fam === 'glow';
+      if (fam === 'glow' && (state !== 'intact' || dead)) fam = 'glass';
+      const col = m.material.color, c = lens && dead ? [0x22 / 255, 0x36 / 255, 0x4a / 255] : [col.r, col.g, col.b];   /* glassDark, sRGB (converted below) */
+      if (fam === 'metal' && (state !== 'intact' || dead)) fam = 'rust';
+      let k = state === 'intact' && !dead ? R.rust * 0.45 : 0.68;
       if (fam === 'rust' || fam === 'paint' || fam === 'metal' || fam === 'corrugated') for (let q = 0; q < 3; q++) c[q] = c[q] * (1 - k) + RUST[q] * k;
       else if (fam !== 'glass' && fam !== 'glow') for (let q = 0; q < 3; q++) c[q] = c[q] * (1 - k * 0.35) + RUST[q] * k * 0.35;   /* the grime on concrete and panel */
       if (fam !== 'glass') for (let q = 0; q < 3; q++) c[q] *= R.soot;
-      if (fam === 'glass' && state !== 'intact') for (let q = 0; q < 3; q++) c[q] *= 0.6;
+      if (fam === 'glass' && (state !== 'intact' || dead)) for (let q = 0; q < 3; q++) c[q] *= 0.6;
       const geo = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry, P = geo.attributes.position, N = geo.attributes.normal;
       const bucket = B[fam] || (B[fam] = { p: [], n: [], c: [] }), M = m.matrixWorld, NM = new THREE.Matrix3().getNormalMatrix(M), V = new THREE.Vector3();
       for (let i = 0; i < P.count; i++) {
@@ -118,10 +124,12 @@ const KTF_API = (function () {
     out.userData = { kind: kind, state: state, variant: v, seed: seed, tris: tris, box: box, ruin: R, w: A.w, d: A.d, h: A.h };
     return out;
   }
-  return {
+  const API = {
+    dead: false,   /* true: every piece built after it dead and rusted (the build's o.dead overrides) */
     build: build,
     list: () => KTRANSIT.KIND_KEYS.map(k => ({ key: k, name: KINDS[k].name, w: KINDS[k].w, d: KINDS[k].d, h: KINDS[k].h, variants: KINDS[k].variants, states: KINDS[k].states.slice(), where: KINDS[k].where })),
     dims: (k, v) => { const A = ASSET_BY_KEY[k]; return A ? entryDims(A, v) : null; },
     STATES: KTRANSIT.STATES, KINDS: KINDS, materials: matOf
   };
+  return API;
 })();

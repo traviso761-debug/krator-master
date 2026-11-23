@@ -104,7 +104,7 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
    if(LS.WELLS.some(W=>W.court===B.id))WELL_Y[B.id]=y+.12;else lsChorten(B.x,y,B.z,.35);   // a well (drawn below) or a chorten
    lsDoor(B.x+nx*(B.w/2+.05),y,B.z,nx,0,3,3.6,{curtain:LSP.saffron});}});
  // the Geomancers' lodge carries Yuni's colours on its door (the Order's friends)
- {const B=LS.building('geomancers');lsDecal(SIGNS.sign('The Geomancers\' Lodge','Guests of the Order, from Yuni. Knock; wait.'),B.x-B.w/2-.2,LS.baseY(B)+4.4,B.z+3.4,2.4,1.2,-1,0,{label:'The Geomancers\' lodge\'s sign'});}
+ {const B=LS.building('geomancers');lsDecal(SIGNS.sign('The Geomancers\' Lodge','Guests of the Order, from Yuni. Knock; wait.'),B.x-B.w/2-.06,LS.baseY(B)+2.2,B.z+2.8,1.1,.55,-1,0,{label:'The Geomancers\' lodge\'s sign'});}
  // the drill ground: beaten earth inside a low granite kerb; the raked court: a kerb and three standing stones
  {const D=LS.DRILL,y=LS.wardY(D.z);ARCH.box('ashlar',D.x,y-.3,D.z,D.w+1,.5,D.d+1,{col:LSP.granite2,sides:'nesw',top:false});ARCH.box('paving',D.x,y-.25,D.z,D.w,.46,D.d,{col:0xa89878,sides:''});
   REGISTER({name:D.name,cls:'feature',kind:'drill',key:'longsong_drill',x:D.x,z:D.z,y:y-1,r:Math.hypot(D.w,D.d)/2,h:8,tags:{culture:'order'}});}
@@ -207,8 +207,7 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
    // the gallery's floor and roof (to the ranges behind)
    const q0=[p0[2],p0[3]],q1=[p1[2],p1[3]];
    ARCH.quad('paving',[p1[0],y+st,p1[1]],[p0[0],y+st,p0[1]],[q0[0],y+st,q0[1]],[q1[0],y+st,q1[1]],LSP.granite);
-   ARCH.quad('paving',[q1[0],y+st-.3,q1[1]],[q0[0],y+st-.3,q0[1]],[p0[0],y+st-.3,p0[1]],[p1[0],y+st-.3,p1[1]],LSP.granite2);}}
- lsDecal(SIGNS.sign('The Debate Court','Seen, said, inferred: say which. The examination is held here at the change of the year.'),22,T+2.2,C.z1-1.4,4.4,2.2,0,-1,{label:'The Debate Court\'s board'});})();
+   ARCH.quad('paving',[q1[0],y+st-.3,q1[1]],[q0[0],y+st-.3,q0[1]],[p0[0],y+st-.3,p0[1]],[p1[0],y+st-.3,p1[1]],LSP.granite2);}}})();
 
 // ---------------------------------------------------------------- the drum halls: the Assembly, the Hall of Hours, the Observatory
 // the chapter house's round halls (ROOMS.md section 1): red fired brick on a granite plinth, the round relief-ringed
@@ -282,7 +281,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
  for(const s of [-1,1])lsDrum(B.x+s*(B.w/2-3.4),y,B.z,3.6,{yg:y-.5,floors:B.floors,storey:st,cone:4.4,seg:24,winFrom:1});
  lsDoor(B.x,y,B.z-B.d/2-.05,0,-1,3,4,{curtain:LSP.saffron});
  // the wardens' plaque: the Lower Gate is the first threshold
- lsDecal(SIGNS.sign('The Lower Gate','The first threshold. State your name and what you carry. The wardens record both.'),B.x+5.5,y+2.4,B.z-B.d/2-.15,3.2,1.6,0,-1,{label:'The Lower Gate\'s plaque'});})();
+ lsDecal(SIGNS.sign('The Lower Gate','The first threshold. State your name and what you carry. The wardens record both.'),B.x+3.2,y+2.2,B.z-B.d/2-.04,1.3,.65,0,-1,{label:'The Lower Gate\'s plaque'});})();
 
 // ---------------------------------------------------------------- the rock top's other houses: the Closed Ward, the specimen hall, the meditation cells, the rear shrine
 (function(){const T=LS.ROCK.top;
@@ -294,10 +293,10 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
   else lsBlock(B.x,B.z,B.w,B.d,T-.5,y,B.floors,B.storey,{rich:B.id==='rear-shrine',roundels:B.id==='rear-shrine'});
   if(B.contain){// the containment's marks: a seal strip on each side of the one door, the register's plaque, the blue sigil
    const nz=-1,zf=B.z-B.d/2-.06;lsDoor(B.x,y,zf+.05,0,nz,2,3,{col:0x2a2a3a});
-   lsDecal(SIGNS.SEAL,B.x-1.6,y+1.6,zf-.12,.45,1.8,0,-1,{label:'A seal strip of the Order'});lsDecal(SIGNS.SEAL,B.x+1.6,y+1.6,zf-.12,.45,1.8,0,-1,{label:'A seal strip of the Order'});
+   lsDecal(SIGNS.SEAL,B.x-1.6,y+1.6,zf-.04,.45,1.8,0,-1,{label:'A seal strip of the Order'});lsDecal(SIGNS.SEAL,B.x+1.6,y+1.6,zf-.04,.45,1.8,0,-1,{label:'A seal strip of the Order'});
    lsDecal(B.contain==='LS-P'?SIGNS.sign('The Closed Ward · '+B.contain,'One door, one warden. Those held here are guests of the Order and are treated so.'):SIGNS.sign('The specimen hall · '+B.contain,'What is kept here is catalogued in the register. Touch nothing unlisted.'),
-    B.x+4.4,y+2.6,zf-.12,3.4,1.7,0,-1,{label:B.name+' (its plaque)'});
-   lsDecal(SIGNS.SIGIL,B.x,y+B.floors*B.storey-1.6,zf-.12,2.2,2.2,0,-1,{label:'The Order\'s sigil: under containment'});}});
+    B.x+3.1,y+2.1,zf-.04,1.3,.65,0,-1,{label:B.name+' (its plaque)'});
+   lsDecal(SIGNS.SIGIL,B.x,y+B.floors*B.storey-1.6,zf-.04,1.8,1.8,0,-1,{label:'The Order\'s sigil: under containment'});}});
  // the wells (LS.WELLS: the catalog's courtyard well): on their court's paving, or on the ground at its lowest under the
  // well's foot; registered, then drawn through one catalog batch
  if(typeof KratorFurniture!=='undefined'){const bt=KratorFurniture.batch({indexed:true});
@@ -342,8 +341,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
    ARCH.quad('dark',[q[0],y+H+1.6,q[1]],[p[0],y+H+1.6,p[1]],[p[0],y+H+3.4,p[1]],[q[0],y+H+3.4,q[1]],0x2a3036);
    if(i%2===0)ARCH.box('brick',p[0],y+H+1.6,p[1],.35,1.8,.35,{col:0xf2ece6});}}
  lsWavyRoof(B.x,y+H+3.5,B.z,a*.5+1.6,b*.55+1.6,.7,5,{thick:.35,rise:.6});
- lsDoor(B.x+a+.3,y,B.z,1,0,2.6,3.4,{curtain:LSP.saffron});
- lsDecal(SIGNS.sign('The Printing House','The Order\'s press. Copies for the chapterhouses: Yuni, Iziz, Dalab, Ys, Verge, Keepwell.'),B.x+a+.9,y+4.4,B.z+3,2.6,1.3,1,0,{label:'The Printing House\'s board'});})();
+ lsDoor(B.x+a+.3,y,B.z,1,0,2.6,3.4,{curtain:LSP.saffron});})();
 // THE SCHOOL (ROOMS.md section 1, the Hall of Forms): undulating brick walls on a whitewashed dado, parabolic heads on
 // the openings, a warped conoid roof of terracotta tile on a straight ridge (the Sagrada Familia's schools)
 (function(){const B=LS.building('hall-of-forms'),y=LS.baseY(B),H=B.storey,hw=B.w/2,hd=B.d/2,yg=minG(B.x,B.z,B.w,B.d),amp=.55,wl=5.6;
@@ -373,8 +371,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
   }
  // the gables: the brick triangle under the roof's ends (both faces)
  for(const sx of [-1,1]){const xe=B.x+sx*(hw+.3),a=[xe,y+H,B.z-hd-.9],b=[xe,y+H,B.z+hd+.9],c=[xe,yR,B.z],K=ARCH.col(0xf2ece6);ARCH.tri('brick',a,b,c,K);ARCH.tri('brick',b,a,c,K);}
- ARCH.box('brick',B.x,yR-.1,B.z,B.w+1.4,.35,.5,{col:0xe0d4cc});
- lsDecal(SIGNS.sign('The Hall of Forms','The operatives\' hall. Enter barefoot. What is slowed here stays slowed.'),B.x-hw-.9,y+3.6,B.z+3.2,2.6,1.3,-1,0,{label:'The Hall of Forms\' board'});})();
+ ARCH.box('brick',B.x,yR-.1,B.z,B.w+1.4,.35,.5,{col:0xe0d4cc});})();
 
 // ---------------------------------------------------------------- the Chapterhouse Court (the pilgrims' square inside the gate)
 // the chapter house's circular forecourt: the curved wall of carved glyph panels on its two arcs (the avenue's axis
@@ -385,7 +382,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
    const P=(t,r,yy)=>[C.x+Math.cos(t)*r,yy,C.z+Math.sin(t)*r],L=(t1-t0)*R/4.4,u0=(t0-a0)*R/4.4;
    // the inner face (to the court) and the outer, both carved; the coping; the mosaic over the inner face
    ARCH.quadUV('glyph',P(t0,R,y),P(t1,R,y),P(t1,R,y+C.wallH),P(t0,R,y+C.wallH),[u0,.5],[u0+L,.5],[u0+L,.5+C.wallH/4.36],[u0,.5+C.wallH/4.36],0xffffff);
-   ARCH.quadUV('glyph',P(t1,R+.8,y),P(t0,R+.8,y),P(t0,R+.8,y+C.wallH),P(t1,R+.8,y+C.wallH),[u0+L,.5],[u0,.5],[u0,.5+C.wallH/4.36],[u0+L,.5+C.wallH/4.36],0xffffff);
+   ARCH.quadUV('glyph',P(t1,R+.8,y),P(t0,R+.8,y),P(t0,R+.8,y+C.wallH),P(t1,R+.8,y+C.wallH),[u0+L,.5],[u0,.5],[u0,.5+C.wallH/4.36],[u0,.5+C.wallH/4.36],0xffffff);
    ARCH.quad('ashlar',P(t0,R-.15,y+C.wallH),P(t1,R-.15,y+C.wallH),P(t1,R+.95,y+C.wallH+.25),P(t0,R+.95,y+C.wallH+.25),LSP.granite);
    ARCH.quadUV('mosaic',P(t0,R-.02,y+C.wallH-.62),P(t1,R-.02,y+C.wallH-.62),P(t1,R-.02,y+C.wallH),P(t0,R-.02,y+C.wallH),[i*(t1-t0)*R/1.08,0],[(i+1)*(t1-t0)*R/1.08,0],[(i+1)*(t1-t0)*R/1.08,1],[i*(t1-t0)*R/1.08,1],0xffffff);}
   // the wall's ends: granite piers
@@ -403,7 +400,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
  // the stele of the vow
  {const S=C.stele;ARCH.box('ashlar',S.x,y-.2,S.z,2.4,.6,1.4,{col:LSP.granite2});ARCH.box('glyph',S.x,y+.4,S.z,1.5,3.4,.5,{col:0xffffff,batter:.15});
   ARCH.box('terra',S.x,y+3.8,S.z,1.9,.4,.9,{col:0xffffff});
-  lsDecal(SIGNS.sign('The vow of the Order','Seen, said, inferred. What is held is held, not hidden.'),S.x,y+2.2,S.z-.28,1.3,.9,0,-1,{label:S.name});
+  lsDecal(SIGNS.sign('The vow of the Order','Seen, said, inferred. What is held is held, not hidden.'),S.x,y+2.2,S.z-.22,.95,.6,0,-1,{label:S.name});
   REGISTER({name:S.name,cls:'landmark',kind:'stele',key:'longsong_stele',x:S.x,z:S.z,y:y-.5,r:1.6,h:5,tags:{culture:'order',types:['religious']}});}
  REGISTER({name:'The Chapterhouse Court (the glyph wall, the reflecting pools)',cls:'feature',kind:'court',key:'longsong_chapter_court',x:C.x,z:C.z,y:y-1,r:R+1.5,h:C.wallH+2,tags:{culture:'order',types:['religious','park']}});})();
 

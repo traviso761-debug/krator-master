@@ -61,14 +61,18 @@ var mCut = PLATS.map(function(P, i){ return [P, i]; }).filter(function(q){ retur
   return { id:'plat-'+q[1], name:P.name, x:P.x, z:P.z, r:P.R*Math.max(P.sx||1, P.sz||1)+2,
     levels:P.levels.slice().sort(function(a, b){ return a.y - b.y; }).map(function(L){ return { y:L.y, h:L.H, name:L.kind }; }) }; });
 var mLast = performance.now(), mTmp = new THREE.Vector3();
+window._mrwalkApi = typeof MRWALK !== 'undefined' ? MRWALK : null;   /* the probe's handle on core/walk (83-mr-walk.js): verify.py's walk-and-reach reads it */
 goHost();   /* each door leaf handed to core/door's host, which eases the moving ones on the frame (54-openings.js) */
 var mDoorTip = KDOORHOST.tip(function(){ return camera.position; }, goWalking), mDoorLast = performance.now();   /* "E: open the door" at the foot of the page */
 window._doors = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(D){ return D.locked; }).length, open:KDOOR.list.filter(function(D){ return D.open>0; }).length,
   leaves:KDOOR.list.filter(function(D){ return !!D.fam; }).length, panes:NL_WINDOWS.length, cut:NL_WINDOWS.filter(function(W){ return W[11]; }).length,
   cards:(window._panes ? window._panes.cards : 0) + (GOPEN.cards||0), voids:0 };
-var MHOST = KHOST.take({
+/* core/walk is filled on the first walk (83-mr-walk.js MRWALK.ensure): the walker meets the units' walls and the shut doors */
+if(typeof MRWALK !== 'undefined' && MRWALK.on){ var mrOnWalk0 = KHOST.onWalk; KHOST.onWalk = function(on){ if(on) MRWALK.ensure(); if(mrOnWalk0) mrOnWalk0(on); }; }
+var MHOST = KHOST.take(KHOST.standard({
   build:'mavs-refuge', title:"Mav's Refuge", hint:'a Beast Rider refuge in the canopy of the hyperjungle',
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, clear:1.6, minR:4, maxR:5000,
+  walk:(typeof MRWALK !== 'undefined' && MRWALK.on) ? KWALK : null,   /* core/walk: the units' walls and the shut doors block the walker (83-mr-walk.js) */
   views:mViews, start:VIEWS[0][0],
   clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the sky's own (21-sky.js, the slider): no host hour */
   inspect:function(hit, hits, rec){ return inspectDescribe(hit, rec); },
@@ -82,13 +86,13 @@ var MHOST = KHOST.take({
   exporters:{ tags:function(){ return KTAGS.page.export(); } },
   budget:BUDGET, api:window._api,
   /* E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 54-openings.js); flying, E still climbs as well */
-  keys:{ e:function(){ goToggleNear(); } },
+  std:{ door:function(){ goToggleNear(); } }   /* Door (E): the one key map (core/host/92k-host-keys.js) */,
   draw:function(sc, cam){   /* the sky's pass, then the world over it: as 80-camera.js's frame drew */
     renderer.info.autoReset = false; renderer.info.reset();
     renderer.autoClear = true; skyRender();
     if(typeof SKY_STUB === 'undefined'){ renderer.autoClear = false; renderer.clearDepth(); }
     renderer.render(sc, cam); renderer.autoClear = true; }
-});
+}));
 /* the orbit target stays over the map (80-camera.js's pan clamp) */
 KHOST.on(function mavClamp(){ var t = MHOST.ctl.target; t.x = clamp(t.x, -HW+60, HW-60); t.z = clamp(t.z, -HW+60, HW-60); t.y = clamp(t.y, -10, 700); }, 'tick');
 /* Mav's own frame, after the host has placed the camera: the sky, the night, the ticks, the sun. The motion speeds and the

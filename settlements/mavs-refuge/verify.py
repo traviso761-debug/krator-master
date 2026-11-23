@@ -128,6 +128,12 @@ R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.
   else { const a=I.audit(12), ok=a.checked>0 && !a.noRooms.length && !a.dropped.length && a.homesOk===a.dwellings;
     R.push({name:'interiors-coherent', ok, detail: ok ? a.checked+' of '+I.units+' units checked ('+JSON.stringify(a.byKind)+'), '+a.homesOk+' homes each with a bed, food and a chest; rooms '+JSON.stringify(a.rooms)+'; '+a.windows+' windows, '+a.lights+' lights; bake '+I.bake+' ('+a.fromBake+' of the checked from it, '+I.stale+' units stale: rerun bake_interiors.py if not 0); '+a.ms+' ms'
       : JSON.stringify({noRooms:a.noRooms.slice(0,6), dropped:a.dropped, residenceFails:a.residenceFails, missing:a.missing})}); } }
+// core/walk under core/door (83-mr-walk.js): the units are in KWALK and the doors block; with the doors open a walker gets from the
+// step outside a unit's doors to every floor of it (KWALK.reach); the negative: with them shut, fewer floors are reached
+{ const M=window.MRWALK; if(!M||!M.on) R.push({name:'walk-and-reach', ok:false, detail:'no core/walk (MRWALK off)'});
+  else { const w=M.ensure(), a=M.reach(), n=M.reach({shut:true}), d=window._doors||{};
+    const ok=w.units>0 && w.doors>=d.doors && a.unreachedN===0 && !a.capped && n.reached<a.reached;
+    R.push({name:'walk-and-reach', ok, detail:w.units+' units in core/walk ('+w.floors+' floors, '+w.blocks+' wall blocks, '+w.strips+' stairs, '+w.ms+' ms), '+w.doors+' doors with walk blocks, '+w.cleared+' blocks cleared from doorways; reach: '+a.reached+' of '+(a.floors-a.noDoorFloors)+' floors from the doors of '+(a.units-a.noDoor)+' units ('+a.noDoor+' with no unlocked door, their '+a.noDoorFloors+' floors kept shut as built)'+(a.unreachedN?', UNREACHED '+a.unreachedN+' '+JSON.stringify(a.unreached.slice(0,8)):'')+(a.capped?', '+a.capped+' floods capped':'')+'; doors shut: '+n.reached+' reached'}); } }
 return R;}"""
 
 # The catalog furniture (53-furnish.js: the 'catalog-furniture' group, meshes tagged userData.furniture) has

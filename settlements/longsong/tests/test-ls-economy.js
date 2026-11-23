@@ -60,6 +60,19 @@ console.log('a year of the valley in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+
 // 9. no heavy industry: the Order's works are light crafts and relic work
 {const kinds=[...new Set(Y.V.settlements.filter(s=>s.faction==='order').flatMap(s=>s.works.map(w=>w.kind)))],heavy=kinds.filter(k=>LS_TUNE.heavy.indexOf(k)>=0);
  ok('the Order keeps light crafts and relic work and no heavy industry (the owner, 2026-11-11)',!heavy.length,['foundry'].some(k=>LS_TUNE.heavy.indexOf(k)<0),kinds.join(', '));}
+// 10. the long run (2026-11-12, the owner: "what happens to needs, stocks, happiness and resources over time"): three years,
+// the valley keeps itself fed. The food the valley eats (grain, dairy, salt, tea) goes short by under 1.5 % in the third
+// year and by no more than a quarter over the second's. The negative: the long roads without their `want` (the host's
+// one-week horizon, the tune before 2026-11-12) let the caravan bring a quarter of the salt and the houses in the rift
+// starve from the second year
+function years(n,edit){const H=load(),V=LS_TUNE.valley(PLAN,{});if(edit)edit(V);H.simValley(V);const yr=[];let p=H.valleyBooks();
+ for(let y=0;y<n;y++){H.valleyRun(1440*365,60);const B=H.valleyBooks();let us=0,sh=0;
+  for(const s in B.towns)for(const g of ['grain','dairy','salt','tea']){us+=(B.towns[s].used[g]||0)-((p.towns[s].used||{})[g]||0);sh+=(B.towns[s].short[g]||0)-((p.towns[s].short||{})[g]||0);}
+  yr.push({used:us,short:sh,share:us>0?sh/us:1});p=B;}
+ return yr;}
+{const Y3=years(3),N3=years(3,V=>V.roads.forEach(R=>{delete R.want;})),pass=y=>y[2].share<.015&&y[2].short<=y[1].short*1.25+1000;
+ ok('three years: the valley stays fed (the third year\'s food under 1.5 % short, not growing)',pass(Y3),pass(N3),
+  Y3.map((y,i)=>'year '+(i+1)+' '+(100*y.share).toFixed(2)+' % short').join(', ')+'; without the long roads\' want: '+N3.map(y=>(100*y.share).toFixed(2)+' %').join(', '));}
 // the year's books, for the reader
 console.log('\nLongsong: made '+Object.entries(Ls.made).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  imported '+Object.entries(Ls.imported).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  exported '+Object.entries(Ls.exported).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  ate '+Object.entries(Ls.eaten).map(([g,n])=>g+' '+Math.round(n)).join(', '));
 console.log(bad?'\n'+bad+' FAILED':'\nOK');process.exit(bad?1:0);

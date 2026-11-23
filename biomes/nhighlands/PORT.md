@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 3 (1%) | 0 (0%) | 16 (6%) | 46 (17%) | 204 (76%) |
+| KB | 3 (1%) | 0 (0%) | 15 (6%) | 46 (17%) | 205 (76%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -20,7 +20,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/65-biome-nhighlands-dress.js` | 6.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-nhighlands.js` | 1.9 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/82-host-sky.js` | 11.0 | [G native] | 8 | 1 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset |
-| `src/84-host-ground.js` | 20.7 | [draw] | 19 | 5 | 0 | 0 | 2 | 3 | 4 | 0 | 0 | 0 | 0 | builds the ground and water meshes from terrainH and the fields: the Godot terrain bake replaces it |
+| `src/84-host-ground.js` | 21.4 | [draw] | 19 | 5 | 0 | 0 | 2 | 3 | 4 | 0 | 0 | 0 | 0 | builds the ground and water meshes from terrainH and the fields: the Godot terrain bake replaces it |
 | `src/85-host-tower.js` | 5.4 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/86-host-pillars.js` | 6.0 | [draw] | 6 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/87-host-cut.js` | 4.0 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
@@ -28,7 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89-host-sky.js` | 2.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89a-host-atmos.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89w-host-water.js` | 3.0 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89zz-host-shadow.js` | 3.1 | [G native] | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | shader hook inside |
+| `src/89zz-host-shadow.js` | 2.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/99-host-take.js` | 22.0 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

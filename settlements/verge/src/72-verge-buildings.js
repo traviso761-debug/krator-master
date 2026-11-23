@@ -15,6 +15,9 @@ function VERGE_STRUCTURES(){
  // ---- the Iziz Vernacular (and the Ancients' funicular), into the IZV kit, baked once
  if(typeof IZV!=='undefined'){
   const r0=IZV.REG.length;
+  // with the interiors on, a Vernacular def whose key has an interior item is built HOLLOW (69e-vern-hollow.js: its walls with
+  // the rooms behind them, its doors cut and unlocked), as Iziz's city builds it; VFURN furnishes the same item's rooms (71)
+  IZV.VERN.interiors=VFURN.interiorsOn;
   for(const R of P.buildings){if(R.kit!=='izv')continue;
    try{IZV.VERN.place(scene,R.key,R.x,R.z,R.ry,{v:R.v,y:R.y,w:wealthIdx(R.wealth)});VDRAW.izv++;}catch(e){VDRAW.errors++;reportErr('izv '+R.key+': '+(e&&e.stack||e));}}
   if(IZV.FUNICULAR&&VG.FUNI.rec){try{const g=IZV.FUNICULAR.draw(VG.FUNI.rec,scene);VDRAW.funicular=VG.FUNI.rec;
@@ -38,7 +41,7 @@ function VERGE_STRUCTURES(){
  // ---- every building: obstacle, walk block, interior
  for(const R of P.buildings){
   const r=Math.hypot(R.w,R.d)/2;OBSTACLES.push({x:R.x,z:R.z,r:r+1.5,y0:R.y-2,y1:R.y+R.h+4});
-  const c=P.obb(R.x,R.z,R.w/2,R.d/2,R.ry);WALK.block([Math.min(...c.map(p=>p[0])),Math.max(...c.map(p=>p[0])),Math.min(...c.map(p=>p[1])),Math.max(...c.map(p=>p[1])),R.y,R.y+R.h],'building:'+R.id);
+  const c=P.obb(R.x,R.z,R.w/2,R.d/2,R.ry);R.walkBlock=WALK.block([Math.min(...c.map(p=>p[0])),Math.max(...c.map(p=>p[0])),Math.min(...c.map(p=>p[1])),Math.max(...c.map(p=>p[1])),R.y,R.y+R.h],'building:'+R.id);
   const it=VFURN.item(R.key,R.v);
   if(it){R.interiorItem=it.key;VDRAW.interiors.item++;VFURN.queue.push({id:R.id,rec:R,item:it,x:R.x,z:R.z,ry:R.ry,y:R.y});}
   else{const w=VFURN.why(R.key,R.v);VDRAW.interiors[w]++;R.interiorItem=null;R.interiorWhy=w;}}

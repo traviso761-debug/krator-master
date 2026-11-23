@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cut one region of the Krator Scale Model out as the data an open-world build reads (Option C Super-Resolution).
 
-    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>] [--upsample <N|auto>] [--no-synth] [--legacy-px]
+    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>] [--upsample <N|auto>] [--no-synth] [--legacy-px] [--smooth] [--relief] [--origin <px>,<py>]
 
 <page.html>        the model's data: tools/scale-model/model/data (the build's source), or a saved page (Artifact read,
                    or model/dist/scale-model.html), whose DATA object holds the rasters
@@ -17,6 +17,18 @@
                    1 = 2,000 m/cell, 2 = 1,000 m/cell, 4 = 500 m/cell, 8 = 250 m/cell, or 'auto' (default: 4 for
                    regional/biome/settlement cuts <= 180k map px, 2 for sub-continental cuts > 180k map px).
 --no-synth         (optional) disable Option C sub-cell geomorphological and fluvial synthesis on the upsampled grid.
+--relief           (optional; openworld/SITES.json "relief": 1) core/world's relief (core/world/PLAN-RELIEF.md, P1): the
+                   synthesis leaves out its ledges cut on the absolute height (the contour-line rings); region.json gains
+                   `relief`, and the page lays caprock benches and gives every overlay a land style of its own. P6: it also
+                   leaves out the sub-cell families the page now draws (gullies, aretes, crags, karst spires, the humid
+                   roughness) and keeps those it does not (ring folds, yardangs, tepui scarps, kolks, palaeolake benches).
+--smooth           (optional; openworld/SITES.json "smooth": true) take out the model's linear artifacts (core/world/README.md,
+                   "Smoothing"): the heights upsampled by the cubic B-spline (no overshoot, so no box clamp and none of
+                   its axis streaks) and smoothed along their contours (core/world 40-world-smooth.js WSMOOTH.heights,
+                   run in node by core/world/smooth.py) before the synthesis, so its ledges follow clean contours; the
+                   scarps' levels by the B-spline too; the rivers carved along WSMOOTH.river's curve through every drawn
+                   vertex (each river record keeps them all, two past the box at each end, so the page's curve is the
+                   same) rather than in cell-rounded straight runs; region.json gains `smooth` (the runtime reads it).
 
 Map pixels are the scale model's full grid (fullW x fullH, 2 km a pixel); its heights sit on a grid sampled at
 u = px*su - i0, v = py*sv - j0 (where su, sv are cells per map pixel). World coordinates: metres,
@@ -56,6 +68,8 @@ from scipy import ndimage
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import smodel.page   # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'core', 'world'))
+import smooth as WSM   # noqa: E402  (core/world/smooth.py: WSMOOTH in node)
 
 MARGIN = 10          # map pixels of context round the polygon's box
 RIVER_W, RIVER_D = 60.0, 6.0   # a named river's width and water depth at 1:1 (m)
@@ -123,6 +137,7 @@ KITS = {
     'xanadu': 'xanadu',
     'the catch': 'catch',
     'region 99': 'loom-chasms',
+    'loom chasms': 'loom-chasms',     # region 99's name since 5.1 edit 3 (2026-11-11)
     'siphon pits': 'siphon-pits',
     'n outlands': 'outlands',
     's outlands': 'outlands',
@@ -132,6 +147,7 @@ KITS = {
     'outland gate': 'outlandgate',
     'ne outer wall': 'neouterwall',
     'mid basin': 'outlands',
+    'the slabfields': 'outlands',      # Mid Basin renamed (5.1 edit 3); its own kit, biomes/slabfields, is planned
     'steaming seamounts': 'geyser',
 }
 WATER_OVERLAYS = ('ring sea', 'nwern ocean', 'bay of voth', 'lake of shim')
@@ -146,6 +162,7 @@ PALAEO_PAD = 2       # 4-km height cells round an old lake's bed in palaeo.png
 DAM_R = 5            # 4-km height cells: a dam's body, for the lake held behind it (as edit_dams.py stands it)
 DIST_PAD = 128       # map pixels (256 km) past the box that dist.png's polygons are drawn in: every reach is shorter
 EXPAND_DX, EXPAND_DY = smodel.page.LEGACY_SHIFT  # 5.0/5.1 N/W canvas expansion shift (1549x1393 -> 1821x1723)
+SMOOTH_RIVER_STEP = 100.0   # m: a river's curve (WSMOOTH.river) is sampled this often, here and on the page
 AUTO_UPSAMPLE_MAX_PX = 180000     # map px threshold: <= 180k px uses 4x (500 m/cell), > 180k px uses 2x (1,000 m/cell)
 
 
@@ -387,8 +404,11 @@ def _smoothstep(a, b, x):
     return t * t * (3.0 - 2.0 * t)
 
 
-def upsample_heights_and_water(D, x0, y0, x1, y1, U):
-    """Super-sample the scale model's height and water rasters around box (x0, y0, x1, y1) to su = sv = U cells per map px."""
+def upsample_heights_and_water(D, x0, y0, x1, y1, U, smooth=False):
+    """Super-sample the scale model's height and water rasters around box (x0, y0, x1, y1) to su = sv = U cells per map px.
+    smooth (--smooth): the cubic B-spline (no overshoot, so no clamp to the box envelopes, whose squares and bilinear
+    seams read as streaks along the rows and columns), then WSMOOTH.heights along the contours (the stairs of a diagonal
+    scarp's pixels filled, its profile kept)."""
     lo, hi, OW, OH, VW, VH = D['lo'], D['hi'], D['fullW'], D['fullH'], D['w'], D['hh']
     su0, sv0 = (VW - 1) / (OW - 1), (VH - 1) / (OH - 1)
     if abs(U - 1.0) < 1e-6 and VW == OW and VH == OH:
@@ -438,13 +458,17 @@ def upsample_heights_and_water(D, x0, y0, x1, y1, U):
     else:
         vv, uu = np.meshgrid(vh - uj0, uh - ui0, indexing='ij')
         coords = np.array([vv, uu])
-        # Monotone-clamped cubic spline for elevation (prevents ringing at cliffs/shores)
-        elev_cub = ndimage.map_coordinates(elev0, coords, order=3, mode='nearest')
-        elev_min = ndimage.minimum_filter(elev0, size=3)
-        elev_max = ndimage.maximum_filter(elev0, size=3)
-        lo_env = ndimage.map_coordinates(elev_min, coords, order=1, mode='nearest')
-        hi_env = ndimage.map_coordinates(elev_max, coords, order=1, mode='nearest')
-        elev = np.clip(elev_cub, lo_env, hi_env)
+        if smooth:
+            elev = ndimage.map_coordinates(elev0, coords, order=3, mode='nearest', prefilter=False)
+            elev = WSM.heights(elev, px=su / su0, cell=2000.0 / su)
+        else:
+            # Monotone-clamped cubic spline for elevation (prevents ringing at cliffs/shores)
+            elev_cub = ndimage.map_coordinates(elev0, coords, order=3, mode='nearest')
+            elev_min = ndimage.minimum_filter(elev0, size=3)
+            elev_max = ndimage.maximum_filter(elev0, size=3)
+            lo_env = ndimage.map_coordinates(elev_min, coords, order=1, mode='nearest')
+            hi_env = ndimage.map_coordinates(elev_max, coords, order=1, mode='nearest')
+            elev = np.clip(elev_cub, lo_env, hi_env)
 
         # Nearest-cell indices for water masks & basin levels
         nn_j = np.clip(np.round(vh - uj0).astype(np.int32), 0, elev0.shape[0] - 1)
@@ -491,11 +515,20 @@ def upsample_heights_and_water(D, x0, y0, x1, y1, U):
 
 
 def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlays, palaeo_masks, palaeo_lakes,
-                               x0, y0, cx, cy, i0, j0, su, sv, S):
+                               x0, y0, cx, cy, i0, j0, su, sv, S, relief=False):
     """Option C sub-cell geomorphological synthesis on the super-sampled regional height grid (su >= 2.0).
     Bakes sub-kilometre (250 m - 3,000 m) biome-specific landforms that lie below the 2 km/px Nyquist limit of the
     global scale model, guarded around settlements and shorelines."""
     ny, nx = elev.shape
+    # --relief (core/world/PLAN-RELIEF.md, P1): the ledges cut on the absolute height (frac = elev / step) ring every hill like
+    # a contour map; the page's caprock benches (core/world 43-world-relief.js) take their place, so they are left out here
+    L = 0.0 if relief else 1.0
+    # --relief, P6 (R8: one owner of the detail below 2 km): what the page now draws is left out here, so nothing is drawn
+    # twice: the gullies and their fine noise (43's erosion filter, P2), the aretes and crags (its peaks, P5), the karst
+    # spires (43b's towers, P4) and the humid roughness (41's). Kept, as the page has nothing for them yet: the ring-fold fins
+    # and joint towers (S2), the yardang flutes (S13), the tepui scarps (S2), the flood coulees' kolks (S14) and the
+    # palaeolake benches (which must be baked)
+    P6 = 0.0 if relief else 1.0
     gx = (np.arange(nx, dtype=np.float64) + i0) / su
     gy = (np.arange(ny, dtype=np.float64) + j0) / sv
     GY, GX = np.meshgrid(gy, gx, indexing='ij')
@@ -558,7 +591,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
             fam_ids['karst'].append(bid)
         elif nm in ('n semiarid', 'ria valley'):
             fam_ids['scabland'].append(bid)
-        elif nm in ('siphon pits', 'region 99'):
+        elif nm in ('siphon pits', 'region 99', 'loom chasms'):
             fam_ids['maar_chasm'].append(bid)
         elif nm == 'sw highlands':
             fam_ids['ringfold'].append(bid)
@@ -573,7 +606,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
             fam_ids['volcanic'].append(bid)
         elif nm in ('n highlands', 's highlands', 'e inner wall', 'e highlands', 'nw outer wall', 'copper glacier',
                     'tharn uplands', 'rift rim n', 'rift rim s', 'w rift highland', 'stalker range', 'stalker gate',
-                    'mid basin', 'n outlands', 's outlands'):
+                    'mid basin', 'the slabfields', 'n outlands', 's outlands'):
             fam_ids['alpine'].append(bid)
         elif nm in ('korona / ne', 'arachnoid canyons', 'rift', 'high rift', 'xanadu'):
             fam_ids['tepui_rift'].append(bid)
@@ -597,7 +630,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         polje_keep = _smoothstep(18.0, 65.0, slope_m_km) * _smoothstep(-1480.0, -1120.0, elev)
         spires = np.power(np.clip(r_fine, 0.0, 1.0), 2.2) * 72.0 + np.clip(n_fine, 0.0, 1.0) * 24.0
         dolines = -22.0 * np.power(np.clip(-n_meso, 0.0, 1.0), 2.5) * _smoothstep(-950.0, -650.0, elev)
-        dh += w_karst * (polje_keep * spires + dolines)
+        dh += P6 * w_karst * (polje_keep * spires + dolines)
 
     # 2. Ring-Fold Hogback & Joint-Pillar Tableland Synthesis (sw highlands)
     w_ring = fam_weight(fam_ids['ringfold'])
@@ -614,7 +647,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 48.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         ledge = (_smoothstep(0.78, 0.96, frac) - frac) * step_m * 0.32 * _smoothstep(35.0, 160.0, rel_local)
-        dh += w_bad * (gully_incision + ledge + 14.0 * n_fine)
+        dh += w_bad * (P6 * gully_incision + L * ledge + P6 * 14.0 * n_fine)
 
     # 4. Stepped Tableland, Mesa Caprock & Loess Yuan Synthesis (sedesert, w outer wall, tiers, the cut, crater drylands)
     w_tab = fam_weight(fam_ids['tableland'])
@@ -623,7 +656,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         frac = (elev / step_m) - np.floor(elev / step_m)
         ledge = (_smoothstep(0.80, 0.96, frac) - frac) * step_m * 0.35 * _smoothstep(45.0, 220.0, rel_local)
         yuan_gully = -24.0 * np.power(np.clip(1.0 - r_meso, 0.0, 1.0), 3.2) * _smoothstep(25.0, 95.0, slope_m_km)
-        dh += w_tab * (ledge + yuan_gully + 10.0 * n_fine)
+        dh += w_tab * (L * ledge + P6 * yuan_gully + P6 * 10.0 * n_fine)
 
     # 5. Kalut Megayardang Flutes & Deflated Erg Dunes (the bowl, the catch, e abysss)
     w_yard = fam_weight(fam_ids['yardang'])
@@ -642,7 +675,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 55.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         chasm_ledge = (_smoothstep(0.82, 0.97, frac) - frac) * step_m * 0.38 * _smoothstep(80.0, 350.0, rel_local)
-        dh += w_maar * (arete_crisp + chasm_ledge)
+        dh += w_maar * (P6 * arete_crisp + L * chasm_ledge)
 
     # 7. Volcanic Barranco Chutes & Flood-Basalt Lava Steps (throne/volcano, godthrone, godstep valley)
     w_volc = fam_weight(fam_ids['volcanic'])
@@ -651,7 +684,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         step_m = 36.0
         frac = (elev / step_m) - np.floor(elev / step_m)
         lava_step = (_smoothstep(0.76, 0.95, frac) - frac) * step_m * 0.30 * _smoothstep(120.0, 35.0, slope_m_km)
-        dh += w_volc * (barranco + lava_step + 12.0 * n_fine)
+        dh += w_volc * (P6 * barranco + L * lava_step + P6 * 12.0 * n_fine)
 
     # 8. Alpine Arête, Cirque & Permafrost Alas Synthesis (highlands, outer walls, rift rims, outlands)
     w_alp = fam_weight(fam_ids['alpine'])
@@ -659,7 +692,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
         high_w = _smoothstep(2400.0, 4200.0, elev)
         arete = (r_meso * 0.65 + r_fine * 0.35 - 0.42) * 52.0 * high_w * _smoothstep(25.0, 110.0, slope_m_km)
         low_rough = 14.0 * n_meso * (1.0 - 0.5 * high_w)
-        dh += w_alp * (arete + low_rough)
+        dh += P6 * w_alp * (arete + low_rough)
 
     # 9. Tepui Escarpment, Arachnoid Fracture & Sky-Island Horst Synthesis (korona, arachnoids, rift, xanadu)
     w_tep = fam_weight(fam_ids['tepui_rift'])
@@ -672,12 +705,12 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
     w_oid = fam_weight(fam_ids['oidong'])
     if w_oid is not None:
         wall_crag = (r_fine - 0.35) * 32.0 * _smoothstep(40.0, 130.0, slope_m_km)
-        dh += w_oid * wall_crag
+        dh += P6 * w_oid * wall_crag
 
     # 11. Humid Lowlands, Hyperjungle Micro-Tepuis & Scabland Basalt Benches
     w_hum = fam_weight(fam_ids['humid'] + fam_ids['scabland'])
     if w_hum is not None:
-        dh += w_hum * (12.0 * n_meso + 6.0 * n_fine) * _smoothstep(12.0, 65.0, slope_m_km)
+        dh += P6 * w_hum * (12.0 * n_meso + 6.0 * n_fine) * _smoothstep(12.0, 65.0, slope_m_km)
 
     # 12. Scabland Overlay (floodzone) & Breached Dam Courses (DATA.floods): sub-cell basalt coulee steps & dry falls
     floods0 = D.get('floods') or []
@@ -706,7 +739,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
             fb = (elev / step_b) - np.floor(elev / step_b)
             basalt_ledge = (_smoothstep(0.72, 0.94, fb) - fb) * step_b * 0.42
             kolk_cut = -18.0 * np.power(np.clip(-n_fine, 0.0, 1.0), 2.6)
-            dh += in_coulee * (basalt_ledge + kolk_cut)
+            dh += in_coulee * (L * basalt_ledge + kolk_cut)
 
     # 13. Palaeolake Full-Pool Wave-Cut Shoreline Benches (+900 m, +1,050 m, +834 m)
     if palaeo_masks and palaeo_lakes:
@@ -805,6 +838,105 @@ def carve_subcell_rivers(D, elev, whas, wflag, wlev, i0, j0, su, sv):
                     target_h = out[jj, ii] * (1.0 - w_prof) + bed_h * w_prof
                     if target_h < out[jj, ii]:
                         out[jj, ii] = target_h
+    return out
+
+
+def river_vertices(Rv, su, sv, i0, j0, nx, ny, cx, cy, smooth):
+    """a river's drawn vertices as its record keeps them: [(index into its drawn line, x m, z m)]. Without --smooth every
+    fourth one inside the height grid (as before); with it every one inside, and two past each end of an inside run, so the
+    page's curve through them (WSMOOTH.river) is the cut's over the whole grid"""
+    drawn = Rv.get('drawn_px') or ('q_m3s' not in Rv and Rv.get('px'))
+    src = drawn or Rv.get('px') or []
+    if not src:
+        return []
+    inside = [0 <= a * su - i0 < nx - 1 and 0 <= b * sv - j0 < ny - 1 for a, b in src]
+    if smooth:
+        idx = [n for n in range(len(src)) if any(inside[max(0, n - 2):n + 3])]
+    else:
+        step = 4 if drawn else 1
+        idx = [n for n in list(range(0, len(src), step)) + ([len(src) - 1] if (len(src) - 1) % step else []) if inside[n]]
+    return [(n, round((src[n][0] - cx) * 2000.0, 1), round((src[n][1] - cy) * 2000.0, 1)) for n in idx]
+
+
+def river_job(Rv, V, cx, cy):
+    """the options WSMOOTH.river takes for a river (the page passes the same, 41-world-fields.js buildChannels)"""
+    return {'pts': [[x, z] for _, x, z in V], 'width': Rv.get('width_m', RIVER_W), 'name': Rv.get('id') or Rv['name'],
+            'ox': cx * 2000.0, 'oz': cy * 2000.0, 'step': SMOOTH_RIVER_STEP, 'meander': Rv.get('kind') != 'wadi',
+            'relax': river_relax(Rv)}
+
+
+def river_relax(Rv):
+    """1 for a traced river (the model's path on its pixel grid: DATA.rivers px with q_m3s, in axis and diagonal moves),
+    0 for one the owner drew (drawn_px, or px without q_m3s), whose vertices are kept exactly"""
+    return 0 if (Rv.get('drawn_px') or 'q_m3s' not in Rv) else 1
+
+
+def river_curves(D, su, sv, i0, j0, nx, ny, cx, cy):
+    """--smooth: each river's curve in metres (WSMOOTH.river through river_vertices, in node), keyed by its index in
+    D['rivers']; a wadi's has no meander"""
+    jobs, keys = [], []
+    for k, Rv in enumerate(D.get('rivers') or []):
+        V = river_vertices(Rv, su, sv, i0, j0, nx, ny, cx, cy, True)
+        if len(V) >= 2:
+            jobs.append(river_job(Rv, V, cx, cy))
+            keys.append(k)
+    return dict(zip(keys, WSM.rivers(jobs))) if jobs else {}
+
+
+def carve_smooth_rivers(D, elev, whas, wflag, wlev, i0, j0, su, sv, cx, cy, curves):
+    """--smooth: carve_subcell_rivers along each river's curve (river_curves), the walls' profile by each cell centre's true
+    distance to the curve's samples (every SMOOTH_RIVER_STEP m, under a third of a cell), the thalweg from the heights
+    sampled bilinearly, so the cut has neither straight runs nor cell-rounded steps"""
+    ny, nx = elev.shape
+    wet = whas | wflag
+    cell_m = 2000.0 / su
+    out = elev.copy()
+
+    def bilin(A, u, v):
+        u = min(max(0.0, u), nx - 1.0001)
+        v = min(max(0.0, v), ny - 1.0001)
+        i, j = int(u), int(v)
+        fu, fv = u - i, v - j
+        return (A[j, i] * (1 - fu) + A[j, i + 1] * fu) * (1 - fv) + (A[j + 1, i] * (1 - fu) + A[j + 1, i + 1] * fu) * fv
+
+    for k, C in curves.items():
+        Rv = D['rivers'][k]
+        w_m = float(Rv.get('width_m', RIVER_W))
+        q_m3s = float(Rv.get('q_mouth_m3s') or 25.0)
+        base_cut = float(np.clip(6.0 + 5.5 * math.log10(max(1.0, q_m3s)) + 0.04 * w_m, 7.0, 46.0))
+        if Rv.get('kind') == 'wadi':
+            base_cut *= 0.65
+        samples = []
+        for p in C:
+            u, v = (p[0] / 2000.0 + cx) * su - i0, (p[1] / 2000.0 + cy) * sv - j0
+            ui, vi = int(round(u)), int(round(v))
+            if 0 <= ui < nx and 0 <= vi < ny:
+                samples.append((u, v, bilin(out, u, v), bool(wet[vi, ui])))
+        if len(samples) < 2:
+            continue
+        thalweg = [s[2] - base_cut * (0.0 if s[3] else 1.0) for s in samples]
+        for q in range(1, len(thalweg)):
+            if thalweg[q] > thalweg[q - 1]:
+                thalweg[q] = thalweg[q - 1]
+        reach_cells = max(1, min(4, int(round((w_m * 1.5 + 450.0) / cell_m))))
+        R = reach_cells + 0.35
+        for q, (u, v, h0, is_wet_s) in enumerate(samples):
+            if is_wet_s:
+                continue
+            bed_h = thalweg[q]
+            ui, vi = int(round(u)), int(round(v))
+            j_lo, j_hi = max(0, vi - reach_cells - 1), min(ny - 1, vi + reach_cells + 1)
+            i_lo, i_hi = max(0, ui - reach_cells - 1), min(nx - 1, ui + reach_cells + 1)
+            wblk = wet[j_lo:j_hi + 1, i_lo:i_hi + 1]
+            if wblk.any():
+                bed_h = max(bed_h, float(wlev[j_lo:j_hi + 1, i_lo:i_hi + 1][wblk].max()) + 0.8)
+            jj, ii = np.mgrid[j_lo:j_hi + 1, i_lo:i_hi + 1]
+            r = np.hypot(jj - v, ii - u) / R
+            w_prof = np.where(r < 1.0, (1.0 - r * r) ** 2, 0.0)
+            blk = out[j_lo:j_hi + 1, i_lo:i_hi + 1]
+            tgt = blk * (1.0 - w_prof) + bed_h * w_prof
+            m = (tgt < blk) & ~wblk
+            blk[m] = tgt[m]
     return out
 
 
@@ -994,7 +1126,11 @@ def main():
     upsample_arg = 'auto'
     do_synth = True
     legacy_px_flag = False
-    while '--add' in argv or '--upsample' in argv or '--no-synth' in argv or '--legacy-px' in argv:
+    do_smooth = '--smooth' in argv
+    do_relief = '--relief' in argv
+    argv = [a for a in argv if a not in ('--smooth', '--relief')]
+    origin_arg = None
+    while '--add' in argv or '--upsample' in argv or '--no-synth' in argv or '--legacy-px' in argv or '--origin' in argv:
         if '--add' in argv:
             k = argv.index('--add')
             added = json.load(open(argv[k + 1], encoding='utf-8'))
@@ -1011,6 +1147,10 @@ def main():
             k = argv.index('--legacy-px')
             legacy_px_flag = True
             argv = argv[:k] + argv[k + 1:]
+        elif '--origin' in argv:   # the frame's origin pixel, pinned (a region that grows keeps its frame: cut_site.py origin_px)
+            k = argv.index('--origin')
+            origin_arg = [int(v) for v in argv[k + 1].split(',')]
+            argv = argv[:k] + argv[k + 2:]
     if len(argv) != 5:
         sys.exit(__doc__)
     page, rdir, sdir, name, out = argv
@@ -1035,6 +1175,8 @@ def main():
     x0, y0, x1, y1 = max(0, x0), max(0, y0), min(OW - 1, x1), min(OH - 1, y1)
     W, H = x1 - x0 + 1, y1 - y0 + 1
     cx, cy = int((min(xs) + max(xs)) // 2), int((min(ys) + max(ys)) // 2)
+    if origin_arg:
+        cx, cy = origin_arg
     os.makedirs(out, exist_ok=True)
 
     # Determine Option C super-sampling factor U (cells per 2 km map pixel)
@@ -1110,12 +1252,17 @@ def main():
         save8(os.path.join(out, 'overlay.png'), omap)
 
     # ---- Option C heights and water, super-sampled to (su, sv) with sub-cell geomorphological & fluvial synthesis
-    elev, wflag, whas, wlev, i0, j0, nx, ny, su, sv, spilled = upsample_heights_and_water(D, x0, y0, x1, y1, U)
+    do_smooth = do_smooth and U >= 1.5   # the model's own grid or coarser (isle-demo, north-basin) has no stairs to take out
+    elev, wflag, whas, wlev, i0, j0, nx, ny, su, sv, spilled = upsample_heights_and_water(D, x0, y0, x1, y1, U, smooth=do_smooth)
+    curves = river_curves(D, su, sv, i0, j0, nx, ny, cx, cy) if do_smooth else {}
     palaeo, palaeo_masks, palaeo_lakes = palaeo_waters(D, (x0, y0, x1, y1), (i0, j0, nx, ny), su, sv, cx, cy, out)
     if do_synth and su >= 1.5:
         elev = synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlays,
-                                          palaeo_masks, palaeo_lakes, x0, y0, cx, cy, i0, j0, su, sv, S)
-        elev = carve_subcell_rivers(D, elev, whas, wflag, wlev, i0, j0, su, sv)
+                                          palaeo_masks, palaeo_lakes, x0, y0, cx, cy, i0, j0, su, sv, S, relief=do_relief)
+        if do_smooth:
+            elev = carve_smooth_rivers(D, elev, whas, wflag, wlev, i0, j0, su, sv, cx, cy, curves)
+        else:
+            elev = carve_subcell_rivers(D, elev, whas, wflag, wlev, i0, j0, su, sv)
         # Re-verify wet cells remain below water surface after synthesis
         elev = np.where(whas, np.minimum(elev, wlev - 1.0), elev)
 
@@ -1141,8 +1288,9 @@ def main():
         vj = np.clip(np.arange(ny, dtype=np.float64) / step_sc, 0, Lr_sub.shape[0] - 1)
         ui = np.clip(np.arange(nx, dtype=np.float64) / step_sc, 0, Lr_sub.shape[1] - 1)
         vv_s, uu_s = np.meshgrid(vj, ui, indexing='ij')
-        Lr = ndimage.map_coordinates(Lr_sub, [vv_s, uu_s], order=1, mode='nearest')
-        Ur = ndimage.map_coordinates(Ur_sub, [vv_s, uu_s], order=1, mode='nearest')
+        o_sc = 3 if do_smooth else 1   # --smooth: the B-spline, so no 4-km seams show in the cliffs' levels
+        Lr = ndimage.map_coordinates(Lr_sub, [vv_s, uu_s], order=o_sc, mode='nearest', prefilter=False)
+        Ur = ndimage.map_coordinates(Ur_sub, [vv_s, uu_s], order=o_sc, mode='nearest', prefilter=False)
     if abyss_b:
         apoly = np.zeros(elev.shape, bool)
         for ab in abyss_b:
@@ -1238,23 +1386,23 @@ def main():
         src = drawn or Rv.get('px') or []
         if not src:
             continue
-        step = 4 if drawn else 1
-        idx = list(range(0, len(src), step)) + ([len(src) - 1] if (len(src) - 1) % step else [])
         qs = Rv.get('q_m3s')
         line = []
-        for n in idx:
+        for n, X, Z in river_vertices(Rv, su, sv, i0, j0, nx, ny, cx, cy, do_smooth):
             a, b = src[n]
-            if not (0 <= a * su - i0 < nx - 1 and 0 <= b * sv - j0 < ny - 1):
-                continue
-            v = [round((a - cx) * 2000.0, 1), round((b - cy) * 2000.0, 1), round(float(bil(elev, a * su - i0, b * sv - j0)), 1)]
+            v = [X, Z, round(float(bil(elev, a * su - i0, b * sv - j0)), 1)]
             if qs:
                 v.append(qs[min(len(qs) - 1, round(n / max(1, len(src) - 1) * (len(qs) - 1)))])
             line.append(v)
         if len(line) < 2:
             continue
+        if do_smooth:
+            line_relax = river_relax(Rv)
         rec_r = {'name': Rv['name'], 'id': Rv.get('id'), 'to': Rv.get('to'), 'line': line,
                  'width_m': Rv.get('width_m', RIVER_W), 'depth_m': Rv.get('depth_m', RIVER_D),
                  'q_mouth_m3s': Rv.get('q_mouth_m3s'), 'order': Rv.get('order'), 'catchment_km2': Rv.get('catchment_km2')}
+        if do_smooth:   # how the page's WSMOOTH.river treats its vertices (river_job): relaxed (traced) or kept (drawn)
+            rec_r['relax'] = line_relax
         (valleys if Rv.get('kind') == 'wadi' else rivers).append(rec_r)
 
     # ---- subterranean lava tubes & caverns (DATA.tubes) inside the box
@@ -1280,6 +1428,22 @@ def main():
                     if 'px' in item:
                         item['m'] = [round((item['px'][0] - cx) * 2000.0, 1), round((item['px'][1] - cy) * 2000.0, 1)]
         tubes.append(tb_rec)
+
+    # ---- the landform records under a cell (DATA.landforms: edit_512's islets, edit_513's) whose reach meets the box, in
+    # the region's frame, for core/world/41l-world-landforms.js to stamp at 1:1 (openworld/PLAN-VOTH.md section 3, item 4)
+    landforms = []
+    for lf in (D.get('landforms') or {}).get('landforms', []):
+        # its points: the centre, a channel's path, a page water's parts; its reach: twice its radius or half-width, or 1 km
+        pts = [(lf['px'], lf['py'])] + [tuple(p) for p in lf.get('path_px', [])]
+        for part in lf.get('parts', []):
+            pts += [tuple(part['px'])] + ([tuple(part['px_to'])] if part.get('px_to') else [])
+        w = lf.get('width_m')
+        r_px = 2.0 * float(lf.get('r_m') or (max(w) if isinstance(w, list) else w) or 500) / 2000.0
+        if not any(x0 - r_px <= a <= x1 + r_px and y0 - r_px <= b <= y1 + r_px for a, b in pts):
+            continue
+        rec_l = copy.deepcopy(lf)
+        rec_l['x'], rec_l['z'] = round((lf['px'] - cx) * 2000.0, 1), round((lf['py'] - cy) * 2000.0, 1)
+        landforms.append(rec_l)
 
     # ---- settlements inside the polygon
     def inside_px(px, py):
@@ -1359,6 +1523,17 @@ def main():
         meta['overlays'] = overlays
     if palaeo:
         meta['palaeo'] = palaeo
+    if landforms:
+        meta['landforms'] = landforms
+    if do_smooth:   # the page reads it (41-world-fields.js): each river carved along WSMOOTH.river, the drainage WSMOOTH.line
+        meta['smooth'] = {'version': 1, 'by': 'core/world/40-world-smooth.js', 'heights': 'WSMOOTH.heights (default options)',
+                          'upsample': 'cubic B-spline', 'river_step': SMOOTH_RIVER_STEP,
+                          'note': 'core/world/README.md, "Smoothing": each river record keeps every drawn vertex; the page carves '
+                                  'WSMOOTH.river through them unwarped, as the cut carved its trench'}
+    if do_relief:   # the page reads it (41-world-fields.js, 43-world-relief.js): styles for every overlay, caprock benches
+        meta['relief'] = {'version': 1, 'phase': 6, 'by': 'core/world/43-world-relief.js', 'seed': 5391948,
+                          'note': 'core/world/PLAN-RELIEF.md: the cut leaves out its ledges on the absolute height (P1) and the '
+                                  'sub-cell families the page draws (P6: gullies, aretes, crags, karst spires, humid roughness)'}
     json.dump(meta, open(os.path.join(out, 'region.json'), 'w', encoding='utf-8', newline='\n'), separators=(',', ':'))
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells (%.0f m/cell, su=%.2f, synth=%s); %d channels, %d vertices; %d water cells lowered to their spill height' % (
@@ -1368,6 +1543,9 @@ def main():
     print('  %d dry valleys' % len(valleys))
     if tubes:
         print('  %d lava tubes/caverns' % len(tubes))
+    for lf in landforms:
+        print('  landform %s (%s%s)%s' % (lf['id'], lf['kind'], '/' + lf['form'] if lf.get('form') else '',
+              ': r %g m, crest %g m over water %g m' % (lf['r_m'], lf['crest_m'], lf['water_m']) if 'r_m' in lf and 'crest_m' in lf else ''))
     for b in biomes:
         print('  biome %2d %-18s kit %-16s %7d px (%d in region)' % (b['id'], b['name'], b['kit'], b['px'], b['px_in_region']))
     print('  %d px took the nearest overlay' % filled)

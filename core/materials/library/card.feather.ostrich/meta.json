@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2048,
+   2048
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.feather.ostrich",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.feather.ostrich.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20706-f4ec-7810-9244-4c1c87efb38b; the finished copy Codex saved after its seam pass, ostrich-plumes-2048.png)",
+  "licence": "generated for this project by its owner",
+  "note": "a sheet: hosts show one cell",
+  "original_title": "ostrich-plumes-2048.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Coyote kit (`kits/coyote`, planned 2026-11-16)' on claude/integration-4 (id card.feather.ostrich)",
+  "sha1": "e7a4f79439a21844626e169701502b563bc95b28"
+ }
+}

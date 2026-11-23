@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/ebadlands-canyons.h
 Build: `cd biomes/ebadlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `38-core-relief.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
+From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `38-core-relief.js`, `38r-core-rills.js`, `43-core-ground.js`, `43n-core-ground-near.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
@@ -29,8 +29,8 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44v-host-landlib.js` | 9 |  |
-| `44w-host-land.js` | 21 | the climate fields (cached by 45; these are the  (111); the LOD spine: the transect's showplaces (139); the bodies (KSTACKS): slickrock domes on the pla (143); the page's words, views and test points (153) |
-| `45-host-stage.js` | 27 | the climate fields, cached (the land's fieldsAt: (32); the host binding (52); the ground (63); the rock bodies (KSTACKS, 44w: the plateau's sli (210); the water (232) |
+| `44w-host-land.js` | 23 | the climate fields (cached by 45; these are the  (117); the LOD spine: the transect's showplaces (145); the bodies (KSTACKS): slickrock domes on the pla (149); the page's words, views and test points (159) |
+| `45-host-stage.js` | 29 | the climate fields, cached (the land's fieldsAt: (32); the host binding (52); the ground (63); the rock bodies (KSTACKS, 44w: the plateau's sli (224); the water (246) |
 | `50-biome-ebadlands-species.js` | 55 **big** | palettes (22); the tree species (60); harvest (biomes/FRUIT.md) (105); the small plants (the floor and the dressing), t (130); leaf textures (158); bark, rock, wood textures (265); geometries local to this biome (307); the library cards (core/materials/PLAN.md, Easte (439); materials (458); instanced items (511) |
 | `55-biome-ebadlands-trees.js` | 45 **big** | zones from the fields (14); colour (the maths is the core's, BIO.col) (55); polyline helpers (Girder's) (70); keep-clear between trees (85); foliage helpers (92); the builders (123); impostors (the far canopy) (343); the pass (379); the passes (data: species, cell, acceptance from (413); one tree alone (biomes/WORLD.md: trees as varian (446) |
 | `60-biome-ebadlands-floor.js` | 24 | fields local to the floor (31); small plants (36); the zone planters (116); the pass (202); the sulphur life (the Throne's, at the sulphur p (233) |
@@ -44,5 +44,16 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89a-host-atmos.js` | 5 |  |
 | `89w-host-water.js` | 3 |  |
 | `89z-host-build.js` | 7 |  |
-| `99-host-take.js` | 19 | the inspector's words (28); the probe's budgets and the kit's own checks (ve (44); the page, handed to the host (138) |
+| `99-host-take.js` | 21 | the inspector's words (28); the probe's budgets and the kit's own checks (ve (44); the page, handed to the host (156) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| canyons | 44w-host-land.js | 7 |
+| montane | 44w-host-land.js | 7 |
+| tundra | 44w-host-land.js | 8 |
+| waste | 44w-host-land.js | 11 |

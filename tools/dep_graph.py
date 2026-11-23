@@ -112,7 +112,8 @@ def list_files(f):
     """([(repo file, vendored only?)] from `build.py --list-sources`, error or None)."""
     try:
         r = subprocess.run([sys.executable, f, '--list-sources'], cwd=os.path.dirname(f), capture_output=True,
-                           text=True, encoding='utf-8', errors='replace', timeout=300)
+                           text=True, encoding='utf-8', errors='replace', timeout=300,
+                           env=dict(os.environ, KRATOR_ALLOW_PLAIN_BUILD='1'))   # a listing writes nothing (item 25)
     except (OSError, subprocess.TimeoutExpired) as e:
         return [], str(e)
     if r.returncode:

@@ -18,9 +18,9 @@ defBuilding({key:'lz-barracks',name:'Barracks',seed:7401,caste:'all',cut:true,w:
  tags:{types:['military','dwelling-multi'],wealth:'middle',role:'barracks'},
  note:'a long battered hall of polygonal basalt under hide and eleven bone ribs: armour stands in six sizes along the wall (an empty suit per caste, a 1.25 step down), racks of bronze ge, ji and spears, basking slabs; nested portals',
  build(o){const L=16,Wd=9,wh=3.2,rh=5;lzCutFloor(0);box('stoneP',0,0,0,L+1.4,.2,Wd+1.4,P('basaltD'));
-  const dh=lzDoorH(6),dw=dh*.62;
+  const dh=lzDoorH(6),dw=dh*LZ_DW;
   lzBatterRoom(L,Wd,.2,wh,'cyclo',P('basalt'),{lean:{front:.09,back:-.05,left:.04,right:-.08},front:[{s:L/2,w:dw,h:dh,door:true},lzVent(4,2,wh*.6),lzVent(4,L-2,wh*.6)],back:[lzVent(4,L*.25,wh*.6),lzVent(4,L*.5,wh*.6),lzVent(4,L*.75,wh*.6)]});
-  lzNoCut(()=>{lzPortal(0,.2,Wd/2+.06,0,dh,{mk:'bronze'});for(const s of [-1,1])lzEye(s*5.2,.2+wh*.7,Wd/2-.09*wh*.7+.04,0,.36,{mk:'bronze'});});lzThreshold(0,Wd/2+.2,0,dw);
+  lzNoCut(()=>{lzPortal(0,.2,Wd/2+.06,0,dh,{mk:'bronze',shared:true});for(const s of [-1,1])lzEye(s*5.2,.2+wh*.7,Wd/2-.09*wh*.7+.04,0,.36,{mk:'bronze'});});lzThreshold(0,Wd/2+.2,0,dw);
   lzRibRoof(L,Wd,wh+.25,wh+rh,11,{mk:'hide',col:P('hideD'),over:.7,ribR:.16,past:.22,bend:.95,ext:.6,endMk:'reed',endCol:P('reedD'),leanEnds:{left:.04,right:-.08},y0:.2});
   /* the six suits, the biggest nearest the door */
   for(let c=6;c>=1;c--)lmArmour(-L/2+1.2+(6-c)*2.3,-Wd/2+1.1,0,LZ_CASTE[c].h);
@@ -50,7 +50,7 @@ defBuilding({key:'lz-lookout',name:'Lookout',seed:7403,caste:4,cut:true,w:9,d:9,
    /* the ladder: two bones and bone rungs, up the front */
    W(0,0,r0*.55,0,()=>{for(const s of [-1,1])beam('bones',[s*.3,0,2.2],[s*.3,H+.3,0],.06,P('boneO'),true,6);for(let i=1;i<26;i++){const t=i/26;beam('bones',[-.3,t*(H+.3),2.2*(1-t)],[.3,t*(H+.3),2.2*(1-t)],.03,P('boneO'),true,5);}});});
   box('cane',0,H+.2,0,3.6,.14,3.6,P('cane'));
-  const dh=lzDoorH(4),dw=dh*.62;
-  lzBatterRoom(3.2,3.2,H+.34,1.9,'cane',P('cane'),{lean:{front:.05,back:-.06,left:.08,right:-.04},front:[{s:1.6,w:Math.min(dw,1.5),h:Math.min(dh,2.1),door:true}],left:[lzVent(4,1.6,.9)],right:[lzVent(4,1.6,.9)],back:[lzVent(4,1.6,.9)]});
+  const dh=lzDoorH(4),dw=dh*LZ_DW;
+  lzBatterRoom(3.2,3.2,H+.34,1.9,'cane',P('cane'),{lean:{front:.05,back:-.06,left:.08,right:-.04},front:[{s:1.6,w:Math.min(dw,1.55),h:Math.min(dh,2.15),door:true}],left:[lzVent(4,1.6,.9)],right:[lzVent(4,1.6,.9)],back:[lzVent(4,1.6,.9)]});
   lzRibRoof(3.2,3.2,H+2.2,H+4.6,5,{mk:'hide',col:P('hide'),over:.5,ribR:.1,past:.5,bend:1,ext:.3,endMk:'mat',leanEnds:{left:.08,right:-.04},y0:H+.34});
   FURNISH('lizardmen_common_stool',-.6,H+.34,-.2,0);FURNISH('lizardmen_common_rack',.9,H+.34,-.9,0);FURNISH('generic_water',-.9,H+.34,.8,0);FURNISH('lizardmen_common_rug',0,H+.34,.1,0);}});

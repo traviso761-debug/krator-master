@@ -28,6 +28,12 @@ function FURNISH(key,lx,ly,lz,lry,o){o=o||{};if(!CURREC){reportErr('FURNISH '+ke
  return SVF.place(key,w.x,w.y,w.z,wry,Object.assign({setting:'indoor'},o),[lx,ly||0,lz,lry],{building:c.tid,list:c.furniture,seed:seed,wealth:svfWealth(c)});}
 function FURNISH_HANG(key,lx,topY,lz,lry,o){const A=KratorFurniture.FURN_BY_KEY[key];if(!A){if(!PLACE_DRY)SVF.missing[key]=(SVF.missing[key]||0)+1;return null;}
  const dm=KratorFurniture.entryDims(A,(o&&o.v)|0);return FURNISH(key,lx,topY-dm.h,lz,lry,o);}
+/* a piece placed by hand in a room with floor floorY and ceiling ceilY, at the height the catalog's own rule gives it
+   (KratorFurniture.furnAnchorY): a hung cloth, banner or wall art with its hem FURN_HEM (1.1 m) up where the room allows (the owner,
+   2026-11-16: "make sure wall hangings dont wind up near ground"), anything else on the floor. A kit hanging a cloth by hand calls
+   this, never FURNISH at a height of its own */
+function FURNISH_WALL(key,lx,floorY,lz,lry,ceilY,o){const A=KratorFurniture.FURN_BY_KEY[key];
+ return FURNISH(key,lx,A?KratorFurniture.furnAnchorY(A,(o&&o.v)|0,{floorY:floorY,ceilingY:ceilY}):floorY,lz,lry,o);}
 /* the height of a catalog piece (a table top for a tea set): its declared h, or the fallback */
 function svfH(key,v,dflt){const A=KratorFurniture.FURN_BY_KEY[key];return A?KratorFurniture.entryDims(A,v|0).h:dflt;}
 /* ---- DETAIL MAPS on the furniture (after settlements/girder/src/48-detail.js). The catalog's merged meshes are vertex-coloured and

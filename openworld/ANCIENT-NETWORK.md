@@ -45,7 +45,8 @@ own piece in its own record shape. This file is the join; the pieces keep their 
 - **Hub 01 to Yuni.** No human has reached Hub 01 since the Cataclysm and come back.
 - **Pluton** (743,1328, 9,650 m) is the key to the Ancients' own tunnels up the Godthrone. They are not public and are
   uninhabitable now.
-- **Xanadu's short line ends at Strongbow**, and the network there was never extensive.
+- **Xanadu's short line ends at Strongbow**, and the network there was never extensive. (Since 2026-11-11 that leg is abandoned:
+  section 8.16.)
 - **Trickster's House** joins the network by one route only, to Verge, through a rim tunnel. The god's road through the Gate
   is a separate thing.
 - **Span** (554,1010) has two Ancient tunnels (`settlements/span/PLAN.md`):
@@ -892,23 +893,42 @@ The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no
 
 ### 8.16 Strongbow moves to Oidong (the owner, 2026-11-11)
 
-**Where it is now.** Strongbow is a cliff arcology at the Oidong Valley's east end, at 5.1 px 1298,1647. It was at 1026,1594.
-It stands on the valley floor at the foot of the High Rift's escarpment, over Oidong's lake.
-- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8` (`bd01a61f5`).
-- **The router:** `route51.py` takes the new place before `setts.json`'s snapshot catches up.
+**Where it is now.** Strongbow is a cliff arcology on the **Xanadu–Oidong scarp**, at 5.1 px 1001,1596, 3 km north of the
+cataract. The owner: "right on the xanadu-oidong border - the same cliff the cataract is on - so that it offers a real advantage
+to anyone using its elevator".
+- **Its two ends:** its top is on the Oidong lip, at about 1,400 m. Its foot is on the Xanadu floor, about 3,100 m below, to the
+  west (around 991,1596).
+- **History:** it was at 1026,1594. The same day it went to the valley's east end (1298,1647), then to its west end (1013,1585),
+  then to the scarp.
+- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8`. `setts.json` is
+  taken from that branch at `7cff97d0c`, which also moves Qiblai to 922,1595 and Erehwon to 805,1516.
 
-Re-routed (the owner's corrections the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a
-line stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow"):
-- **The Rift line, Theodiga (10) to Strongbow (11): 1,124 km**, 197 km of it in tunnel (it was 296 km to the old site).
-  - It stays out of the Oidong Valley: the router traces it with the valley's polygon at 1,000x the cost, except within 10 km
-    of Strongbow.
-  - Its route runs south from Theodiga past Strongwall, east along the uplands south of the valley, then north into Strongbow.
-  - It stops at neither Qiblai (a much later city) nor Longsong.
-- **The valley has a road and no line.** With the line out of the valley, the Xanadu roads come back: Strongbow to Longsong on
-  the valley floor (162 km), Qiblai to Longsong (583 km) and Qiblai to Strongbow (745 km). The Oidong session's surface road
-  (Longsong to Strongbow, then the Order's road up the beck) is the same road.
+**Routes from Xanadu's side end at the foot; the valley road ends at the top** (`route51.py` `STRONGBOW_FOOT`). Each route that
+ends at the foot carries a note: the arcology's elevator climbs the 3,100 m to the lip.
+
+The owner's other answers the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a line
+stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow".
+- **The Rift line, Theodiga (10) to Strongbow's foot (11): 253 km**, 48 km of it in tunnel.
+  - **It is abandoned** (the owner, 2026-11-11, in the Strongbow session; `settlements/strongbow/PLAN.md` on
+    `claude/keen-swanson-68a311`, `38ebac2ba`).
+    - The way is broken near Strongbow.
+    - The terminus hall at the foot, station 11, is a ruin the town builds over.
+    - The leg's upkeep is `decayed` all along, with the note on the route (`route51.py` `SB_ABANDONED`).
+  - It stays out of the Oidong Valley (the 'Oidong Valley' polygon is traced at 1,000x the cost).
+  - It stops at neither Qiblai nor Longsong. A 40 km Xanadu spur joins Qiblai to it.
+- **The Xanadu roads:**
+  - Qiblai to Strongbow's foot, 160 km;
+  - Strongbow's foot to Strongwall, 187 km;
+  - Qiblai to Strongwall, 83 km;
+  - Erehwon to Qiblai and to Theodiga.
+  - Qiblai to Theodiga is dropped as redundant, since 61 % of it runs beside the Rift line. Theodiga to Strongwall is no longer a
+    neighbour pair.
+- **The valley road**, from Strongbow's top down the Oidong Valley floor to Longsong, is 469 km. It is laid on the Oidong
+  session's least-climb guide (`GUIDES`), so the network map and the open world share one alignment.
+- **Qiblai to Longsong is dropped** (the owner: "Drop it"). It ran beside the valley road; Qiblai reaches Longsong by Strongbow
+  (`DROPPED`).
 - **Possible: the dead bore from Theodiga (10) to Stair (12)**, 438 km, 385 km of it bored. The owner: "theodiga could go to
-  stair". It replaces the possible leg from Strongbow, which from the new site would have been a 562 km bore.
+  stair". It replaces the possible leg from Strongbow.
   - It is a third way across, but a hard one: dark, with little food or water.
   - **The trains do not run in it.**
   - From Stair, the possible leg on to Parabola (13) by the Godsgate is unchanged.

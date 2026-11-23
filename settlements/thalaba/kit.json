@@ -1,0 +1,88 @@
+{
+ "targets": {
+  "town": "thalaba.html",
+  "pieces": "thalaba-pieces.html"
+ },
+ "external": [
+  "settlements/thalaba/gen/69t-kcity-bundle.js",
+  "settlements/thalaba/gen/69u-tb-ground.js",
+  "settlements/thalaba/gen/69v-dalab-pack.js",
+  "settlements/dalab/src/69d-dalab-mat.js",
+  "settlements/dalab/src/69e-dalab-helpers.js",
+  "settlements/dalab/src/70-dalab-dwellings.js",
+  "settlements/dalab/src/71-dalab-trade.js",
+  "settlements/dalab/src/73-dalab-sacred.js"
+ ],
+ "scoped": [
+  "69t-kcity-bundle.js"
+ ],
+ "files": {
+  "town": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ],
+   [
+    "core/simulation",
+    [
+     "77-sim-0-core.js",
+     "77-sim-1-world.js",
+     "77-sim-2-places.js",
+     "77-sim-3-actors.js",
+     "77-sim-4-nav.js",
+     "77-sim-5-motion.js",
+     "77-sim-5r-routes.js",
+     "77-sim-6-season.js"
+    ]
+   ]
+  ]
+ },
+ "pack": "thalaba",
+ "deterministic": [
+  "69t-kcity-bundle.js",
+  "69u-tb-ground.js",
+  "89t0-tb-matlib.js",
+  "89t2-tb-interiors.js",
+  "89zt-tb-site.js",
+  "90q-tb-world.js",
+  "90r-tb-build.js",
+  "90w-tb-water.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "69d-dalab-mat.js",
+  "69e-dalab-helpers.js",
+  "69v-dalab-pack.js",
+  "77-sim-0-core.js",
+  "77-sim-1-world.js",
+  "77-sim-2-places.js",
+  "77-sim-3-actors.js",
+  "77-sim-4-nav.js",
+  "77-sim-5-motion.js",
+  "77-sim-5r-routes.js",
+  "89zu-tb-people.js",
+  "90t-tb-life.js",
+  "77-sim-6-season.js"
+ ]
+}

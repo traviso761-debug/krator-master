@@ -16,15 +16,35 @@ function load(file, pick) {
     for (let i = 0; i < uq.length; i++) uv[i] = uq[i] / 65535;
     parts[n] = { name: n, pos, nrm, uv, idx: m.wide ? b64(m.idx, Uint32Array) : b64(m.idx, Uint16Array), node: byName[n] };
   }
+  let skin = null;      /* a skinned model (M.skin, rig/pack_skinned.py): one mesh, seen as two parts on a node of its own past the last (W[nodes.length], the identity): 'torso', the faces
+                          wholly on the spine (skinLine: the gate watches them, as a rigid model's trunk), and 'skinLimbs', the rest (wings, legs, head, tail: a rigid model's other parts).
+                          Both share one vertex array, which pose() skins from rest. dom is each vertex's heaviest bone, for what attaches to a bone (an anchor) */
+  if (M.skin) { const m = M.skin.mesh, q = b64(m.pos, Uint16Array), rest = new Float64Array(q.length), n8 = b64(m.nrm, Int8Array), nrm = new Float64Array(n8.length), uq = b64(m.uv, Uint16Array), uv = new Float64Array(uq.length), j = b64(m.j, Uint8Array), w8 = b64(m.w, Uint8Array), dom = new Int32Array(q.length / 3);
+    for (let i = 0; i < q.length; i++) rest[i] = m.min[i % 3] + q[i] / 65535 * m.size[i % 3];
+    for (let i = 0; i < n8.length; i++) nrm[i] = n8[i] / 127;
+    for (let i = 0; i < uq.length; i++) uv[i] = uq[i] / 65535;
+    for (let i = 0; i < dom.length; i++) { let b = 0; for (let c = 1; c < 4; c++) if (w8[i * 4 + c] > w8[i * 4 + b]) b = c; dom[i] = j[i * 4 + b]; }
+    const pos = Float64Array.from(rest), idx = m.wide ? b64(m.idx, Uint32Array) : b64(m.idx, Uint16Array), line = skinLine(M, byName), a = [], b = [];
+    for (let t = 0; t < idx.length; t += 3) (line.has(dom[idx[t]]) && line.has(dom[idx[t + 1]]) && line.has(dom[idx[t + 2]]) ? a : b).push(idx[t], idx[t + 1], idx[t + 2]);
+    skin = { pos, rest, j, w: Float64Array.from(w8, x => x / 255), dom, line };
+    parts.torso = { name: 'torso', pos, nrm, uv, idx: Uint32Array.from(a), node: M.nodes.length, dom, skinned: true };
+    parts.skinLimbs = { name: 'skinLimbs', pos, nrm, uv, idx: Uint32Array.from(b), node: M.nodes.length, dom, skinned: true }; }
   const clips = {};
   for (const cn in M.anims) {
     const A = M.anims[cn], tr = {};
     for (const k of A.tracks) (tr[k.node] || (tr[k.node] = {}))[k.path] = { t: b64(k.t, Float32Array), v: b64(k.v, Float32Array) };
     clips[cn] = { dur: A.dur, tracks: tr, extras: A.extras };
   }
-  return { M, key: M.key, parts, clips, byName };
+  return { M, key: M.key, parts, clips, byName, skin };
 }
 
+/* a skinned model's spine: the body bone's own line, its ancestors and what hangs from it but its wings, legs, head and tail (M.skin.parts), as node indices */
+function skinLine(M, byName) {
+  const q = M.skin.parts, roots = ['wingL', 'wingR', 'wing2L', 'wing2R', 'head', 'tail'].map(k => q[k]).concat(q.legs || []).filter(Boolean).map(n => byName[n]), body = byName[q.body], line = new Set();
+  for (let k = body; k >= 0; k = M.nodes[k].parent) line.add(k);
+  M.nodes.forEach((_, i) => { let k = i; for (; k >= 0 && k !== body; k = M.nodes[k].parent) if (roots.indexOf(k) >= 0) { k = -1; break; } if (k === body) line.add(i); });
+  return line;
+}
 const mul = (a, b) => { const r = new Float64Array(16); for (let c = 0; c < 4; c++) for (let w = 0; w < 4; w++) r[c * 4 + w] = a[w] * b[c * 4] + a[4 + w] * b[c * 4 + 1] + a[8 + w] * b[c * 4 + 2] + a[12 + w] * b[c * 4 + 3]; return r; };
 function compose(t, q, s) {
   const x = q[0], y = q[1], z = q[2], w = q[3];
@@ -44,9 +64,20 @@ function sample(tr, t, n, d) {
 function pose(mdl, clip, t) {
   const nodes = mdl.M.nodes, W = new Array(nodes.length), tracks = clip ? clip.tracks : {};
   const go = i => { if (W[i]) return W[i]; const n = nodes[i], tr = tracks[n.name] || {};
-    const L = compose(sample(tr.position, t, 3, n.t), sample(tr.quaternion, t, 4, [0, 0, 0, 1]), sample(tr.scale, t, 3, [1, 1, 1]));
+    const L = compose(sample(tr.position, t, 3, n.t), sample(tr.quaternion, t, 4, n.r || [0, 0, 0, 1]), sample(tr.scale, t, 3, n.s || [1, 1, 1]));
     return (W[i] = n.parent < 0 ? L : mul(go(n.parent), L)); };
-  nodes.forEach((_, i) => go(i)); return W;
+  nodes.forEach((_, i) => go(i));
+  if (mdl.skin) { const S = mdl.skin, I = mdl._inv || (mdl._inv = pose(Object.assign({}, mdl, { skin: null }), null, 0).map(inv4)), K = W.map((w, i) => mul(w, I[i])), p = S.pos, r = S.rest, v = [0, 0, 0];
+    for (let i = 0; i < r.length / 3; i++) { let x = 0, y = 0, z = 0; for (let c = 0; c < 4; c++) { const wt = S.w[i * 4 + c]; if (!wt) continue; apply(K[S.j[i * 4 + c]], r, i * 3, v); x += wt * v[0]; y += wt * v[1]; z += wt * v[2]; }
+      p[i * 3] = x; p[i * 3 + 1] = y; p[i * 3 + 2] = z; }
+    W[nodes.length] = Float64Array.of(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); }
+  return W;
+}
+/* the inverse of an affine column-major 4x4 */
+function inv4(m) {
+  const a = m[0], b = m[1], c = m[2], d = m[4], e = m[5], f = m[6], g = m[8], h = m[9], k = m[10], A = e * k - f * h, B = f * g - d * k, C = d * h - e * g, det = a * A + b * B + c * C, r = new Float64Array(16);
+  r[0] = A / det; r[1] = (c * h - b * k) / det; r[2] = (b * f - c * e) / det; r[4] = B / det; r[5] = (a * k - c * g) / det; r[6] = (c * d - a * f) / det; r[8] = C / det; r[9] = (b * g - a * h) / det; r[10] = (a * e - b * d) / det; r[15] = 1;
+  for (let i = 0; i < 3; i++) r[12 + i] = -(r[i] * m[12] + r[4 + i] * m[13] + r[8 + i] * m[14]); return r;
 }
 const apply = (m, p, o, r) => { const x = p[o], y = p[o + 1], z = p[o + 2]; r[0] = m[0] * x + m[4] * y + m[8] * z + m[12]; r[1] = m[1] * x + m[5] * y + m[9] * z + m[13]; r[2] = m[2] * x + m[6] * y + m[10] * z + m[14]; };
 
@@ -131,4 +162,4 @@ function modelled(KF) {
   return out;
 }
 
-module.exports = { load, pose, apply, bounds, raster, blob, png, dirs, TRUNK, registry, modelled };
+module.exports = { load, skinLine, pose, apply, bounds, raster, blob, png, dirs, TRUNK, registry, modelled };

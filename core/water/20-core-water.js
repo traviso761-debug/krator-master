@@ -199,6 +199,13 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
    const j=Math.min(ix[i],v.length-1),j1=Math.min(j+1,v.length-1);return v[j]+(v[j1]-v[j])*uu[i];};
   for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[Math.min(i+1,pts.length-1)],c=pts[Math.max(i-1,0)],L=Math.hypot(b.x-a.x,b.z-a.z);
    a.slope=L>0?(a.y-b.y)/L:(i?pts[i-1].slope:0);a.w=per(o.width,i,6);a.v=per(o.speed,i,1);void c;}
+  /* the slope the ribbon shades by (slopeV: its white water and its ripples' gain): the fall over a window of slopeWin m (PRESETS.flow.slopeWin, 24;
+     o.slopeWin), centred on the point. The point's own slope (to the next point: fallsOf and spray read it) jumps with every bump of a line sampled
+     finely off a rough bed, and the shader's thresholds on it, read per vertex, flipped the foam on and off row by row in hard-edged bands and
+     triangles (2026-11-16, the small streams). 0: slopeV is the point's slope, as before */
+  {const PF=W.PRESETS&&W.PRESETS.flow,win=o.slopeWin!=null?o.slopeWin:PF&&PF.slopeWin!=null?PF.slopeWin:24,end=arc[arc.length-1];
+   const yAt=s=>{let lo=0,hi=arc.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(arc[m]<=s)lo=m;else hi=m;}const d=arc[hi]-arc[lo];return d>0?pts[lo].y+(pts[hi].y-pts[lo].y)*(s-arc[lo])/d:pts[lo].y;};
+   for(let i=0;i<pts.length;i++){const a=Math.max(0,arc[i]-win/2),b=Math.min(end,arc[i]+win/2);pts[i].slopeV=win>0&&b-a>1e-6?(yAt(a)-yAt(b))/(b-a):pts[i].slope;}}
   const S={kind:'flow',name:o.name,pts,rapids:o.rapids?[o.rapids[0],o.rapids[1]]:null};
   S.nearest=(x,z)=>{let best=null;for(let i=0;i+1<pts.length;i++){const a=pts[i],b=pts[i+1],ex=b.x-a.x,ez=b.z-a.z,L2=ex*ex+ez*ez||1,u=cl(((x-a.x)*ex+(z-a.z)*ez)/L2,0,1),
      px=a.x+ex*u,pz=a.z+ez*u,d=Math.hypot(x-px,z-pz);if(!best||d<best.d)best={i,u,d,ex,ez,L:Math.sqrt(L2),a,b};}return best;};

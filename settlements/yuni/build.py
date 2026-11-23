@@ -82,6 +82,7 @@ CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(o
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
 import host as khost                         # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                       # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 TEX_DIR = os.path.join(HERE, 'tex')          # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '46-matlib-pack.js'          # GENERATED from tex/ (never written to src/)
 # The eastern badlands biome (biomes/ebadlands, BIOME-API.md: "the valley of Yuni" is its humid south): core/biome and
@@ -301,7 +302,7 @@ def main():
         sys.path.insert(0, os.path.join(_ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
         html = _mp.write_sidecar(SIDE, html, HERE, 'yuni.tex.js', prune=False)
-    with open(OUT, 'w', encoding='utf-8') as fh:
+    with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):
         t = html.replace('<title>Yuni</title>', '<title>%s</title>' % title, 1)
@@ -310,9 +311,9 @@ def main():
 
     sheet = flavour('sheet', 'Yuni Building Kit', 'Yuni — building kit', 'Laying out the kit…')
     flora = flavour('flora', 'Yuni Plants',       'Yuni — plants',       'Laying out the plants…')
-    with open(OUT_SHEET, 'w', encoding='utf-8') as fh:
+    with open(OUT_SHEET, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(sheet)
-    with open(OUT_FLORA, 'w', encoding='utf-8') as fh:
+    with open(OUT_FLORA, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(flora)
     # artifact flavour: the publish skeleton supplies doctype/html/head/body, so strip ours
     import re as _re
@@ -321,7 +322,7 @@ def main():
         a_ = src_html
         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
             a_ = a_.replace(tag,'')
-        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8') as fh: fh.write(a_.lstrip())
+        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8', newline='\n') as fh: fh.write(a_.lstrip())
     with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)

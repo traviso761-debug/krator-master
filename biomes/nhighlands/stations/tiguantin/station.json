@@ -1,0 +1,34 @@
+{
+ "note": "Station 6, the Tiguantin cloud-terraces and the entombed First Monastery tube (PLAN-STATIONS.md, Showcase Station #6; scale model 5.1 px 1138,858, +2,480 m): station 2's land with its own SITE and shaping (44z), a near patch of the gully drawn at 1.67 m with KSTRATA's column on its walls, tube_lesser_06 and cav_monks_archive on core/terrain's KCAVERN, the terraces and the First Monastery's cells watched by core/ruins, the Lesser Throne's fog belt; the Throne's elfin trees, tree ferns and veil trees read in place (kin).",
+ "base": "montane",
+ "core": {
+  "20-core-ruins.js": "core/ruins/20-core-ruins.js",
+  "21-core-ruins-host.js": "core/ruins/21-core-ruins-host.js",
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js",
+  "39e-core-cavern-draw.js": "core/terrain/host/39e-core-cavern-draw.js"
+ },
+ "families": [
+  "ground.lush"
+ ],
+ "kin": {
+  "throne": [
+   [
+    "src/46-biome-throne-flows.js",
+    "src/50-biome-throne-species.js",
+    "src/55-biome-throne-trees.js"
+   ],
+   "THRONE",
+   [
+    "bark.elfin",
+    "bark.silver",
+    "card.mosshang",
+    "card.mossclump",
+    "card.bromeliad",
+    "card.treefern",
+    "card.weeper",
+    "leaf.fern",
+    "leaf.needle"
+   ]
+  ]
+ }
+}

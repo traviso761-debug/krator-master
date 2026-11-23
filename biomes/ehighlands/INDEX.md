@@ -31,19 +31,31 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `45-host-stage.js` | 3 |  |
 | `45f-host-wallface.js` | 5 |  |
 | `46-host-land.js` | 15 | the land (39); the climate fields (the definitions; 47-host-fie (131); the LOD spine and the kit's windows (149) |
-| `47-host-fields.js` | 2 | the host binding (21) |
-| `50-biome-ehigh-species.js` | 49 **big** | the giant (30); palettes (39); the tree species (69); harvest (biomes/FRUIT.md) (107); the small plants (the floor), tagged (126); leaf and surface textures (149); bark textures (199); geometries local to this biome (230); materials (331); the library (core/materials/PLAN.md, Eastern hig (362) |
-| `55-biome-ehigh-trees.js` | 42 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (49); the lean toward the giant (61); polyline helpers (Girder's) (68); keep-clear between plants (77); helpers (84); the builders (95); the Mother Cushion (310); impostors (the far plants) (335); the pass (364) |
-| `60-biome-ehigh-floor.js` | 15 | small plants (27); the zone planters (53); the pass (129) |
+| `47-host-fields.js` | 3 | the host binding (23) |
+| `50-biome-ehigh-species.js` | 51 **big** | the giant (30); palettes (39); the tree species (69); harvest (biomes/FRUIT.md) (107); the small plants (the floor), tagged (126); leaf and surface textures (149); bark textures (199); geometries local to this biome (230); materials (331); the library (core/materials/PLAN.md, Eastern hig (362) |
+| `55-biome-ehigh-trees.js` | 44 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (49); the lean toward the giant (61); polyline helpers (Girder's) (68); keep-clear between plants (77); helpers (84); the builders (99); the Mother Cushion (320); impostors (the far plants) (345); the pass (374) |
+| `60-biome-ehigh-floor.js` | 21 | small plants (27); the zone planters (53); the pass (129) |
 | `70-biome-ehigh.js` | <1 |  |
-| `84-host-ground.js` | 21 | the ground (22); the water (162) |
+| `84-host-ground.js` | 22 | the ground (25); the water (171) |
 | `85-host-far.js` | 3 |  |
-| `86-host-geysers.js` | 5 |  |
+| `86-host-geysers.js` | 6 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89w-host-water.js` | 5 |  |
 | `89z-host-build.js` | 4 |  |
 | `95v-host-viewkit.js` | 1 |  |
 | `96-host-views.js` | 4 |  |
-| `99-host-take.js` | 13 | the inspector's words (6); the probe's budgets and the kit's own checks (ve (24); the page, handed to the host (103) |
+| `99-host-take.js` | 13 | the inspector's words (6); the probe's budgets and the kit's own checks (ve (24); the page, handed to the host (105) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| face | 46-host-land.js, 96-host-views.js | 10 |
+| lesser | 46-host-land.js, 96-host-views.js | 14 |
+| mixed | 46-host-land.js, 96-host-views.js | 6 |
+| montane | 46-host-land.js, 96-host-views.js | 6 |
+| treeline | 46-host-land.js, 96-host-views.js | 6 |

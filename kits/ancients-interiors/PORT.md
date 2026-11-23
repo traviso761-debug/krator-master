@@ -23,7 +23,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/38-ai-reception.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/40-ai-audit.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-ai-demo.js` | 9.1 | [web] | 3 | 3 | 4 | 2 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/75-ai-doors.js` | 4.0 | [web] | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sheet's doors on core/door (KDOOR records from the shells' leaves; KGLASS panes), the tick, E, the tip |
+| `src/75-ai-doors.js` | 4.1 | [web] | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sheet's doors on core/door (KDOOR records from the shells' leaves; KGLASS panes), the tick, E, the tip |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

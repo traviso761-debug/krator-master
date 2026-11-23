@@ -1,0 +1,11 @@
+{
+ "build": "shelf",
+ "note": "Shelf's own adapter onto the material library (core/materials/PLAN.md), for the page's own ground (src/45-host-stage.js through KCLIFF.rock); the shell's panels are kits/ancients' pack, the Dalab set's its own. Grey detail maps (keep 0): the colour is core/terrain KSTRATA's secondary-ejecta recipe (impact breccia) on the faces and the vertex colour on the flats, the map the grain. cliffWall: the natural breccia cliff and the lower escarpment's rock; faceDressed: the Ancients' cut face, the plateau's cut and the shelf's apron (drill-marked); turf: the plateau's and the shelf's steppe (Dsb, 3 deg C, 533 mm); shore: the screes and the plain's gravel. Run python3 tools/textures/pack.py settlements/shelf after any change, then python3 tools/build.py settlements/shelf.",
+ "size": 1024,
+ "families": {
+  "cliffWall": {"lib": "rock.megabreccia", "scale": [14, 14], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3},
+  "faceDressed": {"lib": "rock.hewn.drillmarked", "scale": [8, 8], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3},
+  "turf": {"lib": "ground.steppe", "scale": [6, 6], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3},
+  "shore": {"lib": "ground.gravel019", "scale": [5, 5], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3}
+ }
+}

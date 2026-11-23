@@ -28,13 +28,31 @@ DIMS_SOURCES = ([os.path.join(ROOT, 'kits', 'beast-riders', 'src', f) for f in
                 # the Iziz Vernacular's (core/hamlet's `iziz` row, 21-hamlet-iziz.js), as IZV.dims() gives them: its VERN.def records
                 + sorted(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in os.listdir(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')) if f.endswith('.js')))
 JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.js'), None,
-      ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'), ('core', 'world', '42b-world-bridges.js'), ('core', 'space', '20-core-space.js'),
+      ('core', 'mask', '25-core-mask.js'), ('core', 'mask', '27-core-mask-distance.js'), ('core', 'coast', '30-core-coast.js'),
+      ('core', 'world', '40-world-smooth.js'), ('core', 'world', '43-world-relief.js'), ('core', 'world', '43m-world-micro.js'),
+      ('core', 'world', '44-world-streams.js'), ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'),
+      ('core', 'world', '42b-world-bridges.js'),
+      ('core', 'world', '44c-world-coast.js'),   # the coasts, as the page has them (opt-in)
+      ('core', 'space', '20-core-space.js'),
       ('core', 'camp', '10-camp-cultures.js'), ('core', 'camp', '20-camp-census.js'), ('core', 'camp', '30-camp-pitch.js'),
       ('kits', 'beast-riders', 'src', '79-br-camp.js'),
       ('core', 'city', '33-city-strategies.js'), ('core', 'hamlet', '10-hamlet-wood.js'), ('core', 'hamlet', '12-hamlet-gather.js'),
       ('core', 'hamlet', '14-hamlet-farmland.js'), ('core', 'hamlet', '16-hamlet-names.js'), ('core', 'hamlet', '18-hamlet-names.js'),
       ('core', 'hamlet', '20-hamlet-cultures.js'), ('core', 'hamlet', '21-hamlet-iziz.js'), ('core', 'hamlet', '30-hamlet-village.js'),
+      # the Xanadu row by name (opt-in: it registers nothing, a region's spec passes KHAMLET.xanaduRow() as a row)
+      ('core', 'hamlet', 'xanadu', '23-hamlet-xanadu-row.js'),
       ('core', 'world', '48s-world-sites.js')]
+
+LANDFORMS_JS = '41l-world-landforms.js'   # opt-in: a region whose build.py lists it (script())
+# the coasts (core/world 44c on core/coast) are opt-in too: a region whose page does not take them (openworld/oidong-highrift)
+# is planned without them, or the plan is made on land the page never draws (2026-11-16: the coast's shaping lowered points
+# 838 m that the page leaves as they are, so the browser's plan and the bake differed)
+COAST_JS = '44c-world-coast.js'
+
+
+def takes(region, frag):
+    """the region's page lists `frag` (its build.py names it)"""
+    return frag in open(os.path.join(ROOT, 'openworld', region, 'build.py'), encoding='utf-8').read()
 
 
 def node():
@@ -67,6 +85,19 @@ def kit_dims(files=DIMS_SOURCES):
     return out
 
 
+def region_towns(region):
+    """the towns a region carries (openworld/SITES.json's region row "towns": bake_towns.py's keys), [] for most"""
+    S = json.load(open(os.path.join(ROOT, 'openworld', 'SITES.json'), encoding='utf-8'))
+    return S['regions'].get(region, {}).get('towns', [])
+
+
+def towns_data(region):
+    """WORLD_DATA.towns for a region: bake_towns.record for each of its towns, on the region's meta"""
+    import bake_towns as BT
+    meta = json.load(open(os.path.join(ROOT, 'openworld', region, 'data', 'region.json'), encoding='utf-8'))
+    return {'format': 'krator-openworld-towns', 'version': 1, 'towns': [BT.record(k, meta) for k in region_towns(region)]}
+
+
 def script(region):
     base = os.path.join(ROOT, 'openworld', region)
     parts = ['"use strict";var window=globalThis;\n']
@@ -75,9 +106,30 @@ def script(region):
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             continue
+        if j[-1] == COAST_JS and not takes(region, COAST_JS):
+            continue
+        if j[-1] == '41-world-fields.js':   # the landform records first (core/world/world_data.py land_js)
+            for k in WD.land_js(region):
+                parts.append('\n// ---- %s\n' % '/'.join(k) + open(os.path.join(ROOT, *k), encoding='utf-8').read())
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
+        # the sub-cell landforms (core/world/41l-world-landforms.js), only for a region whose page takes them (its build.py
+        # lists the fragment): the plan is made on the same land the page stamps
+        if j[-1] == '41-world-fields.js' and LANDFORMS_JS in open(os.path.join(base, 'build.py'), encoding='utf-8').read():
+            parts.append('\n// ---- core/world/%s\n' % LANDFORMS_JS + open(os.path.join(HERE, LANDFORMS_JS), encoding='utf-8').read())
+        # the towns' own ground (core/world/bake_towns.py: openworld/SITES.json's region row "towns", opt-in): the records
+        # the page carries in WORLD_DATA.towns and 41t, so the plan is made on the town's ground as the page draws it
+        if j[-1] == '41-world-fields.js' and region_towns(region):
+            parts.append('\nWORLD_DATA.towns=' + json.dumps(towns_data(region), separators=(',', ':'), ensure_ascii=False) + ';\n')
+            parts.append('\n// ---- core/world/41t-world-town-water.js\n' + open(os.path.join(HERE, '41t-world-town-water.js'), encoding='utf-8').read())
     parts.append(WD.net_fragment(os.path.join(base, 'src', '48-world-site.js')))   # the network routes the region's links follow
+    # the region's site data (src/NN-site-*.js, before its spec: a village its own page laid, 48s laidVillage; Gihon's Landing)
+    for f in sorted(f for f in os.listdir(os.path.join(base, 'src')) if re.match(r'^\d\d[a-z]?-site-.+\.js$', f)):
+        parts.append('\n// ---- openworld/%s/src/%s\n' % (region, f) + open(os.path.join(base, 'src', f), encoding='utf-8').read())
     parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + open(os.path.join(base, 'src', '48-world-site.js'), encoding='utf-8').read())
+    # the geology the coast's classes read (44c: rock hardness from the provinces), as the page loads it
+    parts.append(WD.geology_fragment(os.path.join(base, 'data')))
+    for where, f in WD.RES_FRAGS:
+        parts.append('\n// ---- %s/%s\n' % (where, f) + open(os.path.join(ROOT, where, f), encoding='utf-8').read())
     parts.append('\nvar KIT_DIMS=' + json.dumps(kit_dims(), separators=(',', ':')) + ';\n' + r'''
 WORLD.init(WORLD_R);
 const dims=(k,v)=>{const A=KIT_DIMS[k];if(!A)return null;const q=A.variants&&A.variants[v];return q?{w:q.w,d:q.d,h:q.h}:{w:A.w,d:A.d,h:A.h};};
@@ -94,11 +146,16 @@ def resources_script(region):
     and WRES.markers(), as the page makes them"""
     base = os.path.join(ROOT, 'openworld', region)
     parts = ['"use strict";var window=globalThis;\n']
-    for j in JS[:5]:
+    for j in JS[:JS.index(('core', 'world', '44c-world-coast.js')) + 1]:   # the land, with its coasts where taken
         if j is None:
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             continue
+        if j[-1] == COAST_JS and not takes(region, COAST_JS):
+            continue
+        if j[-1] == '41-world-fields.js':   # the landform records first (core/world/world_data.py land_js)
+            for k in WD.land_js(region):
+                parts.append('\n// ---- %s\n' % '/'.join(k) + open(os.path.join(ROOT, *k), encoding='utf-8').read())
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))
     for where, f in WD.RES_FRAGS + [('core/world', '49r-world-resources.js')]:

@@ -1,0 +1,69 @@
+{
+ "targets": {
+  "town": "gihon.html"
+ },
+ "external": [
+  "settlements/gihon/gen/69g-kcity-bundle.js",
+  "settlements/gihon/gen/69g2-gh-flora-bundle.js",
+  "kits/xanadu/src/80f-xa-fort-data.js",
+  "kits/xanadu/src/80g-xa-fort.js",
+  "kits/xanadu/src/87k-xa-lake-trades.js",
+  "kits/xanadu/src/87k2-xa-slate-wall.js",
+  "kits/xanadu/extra/88d-xa-lakecraft.js",
+  "kits/xanadu/extra/88f-xa-harbour.js",
+  "kits/xanadu/extra/88g-xa-works.js",
+  "kits/xanadu/extra/88h-xa-gihon.js",
+  "kits/construction/src/10-cons-site.js",
+  "settlements/kirstabal/src/89k0-ks-matlib.js"
+ ],
+ "scoped": [
+  "69g-kcity-bundle.js",
+  "69g2-gh-flora-bundle.js"
+ ],
+ "pack": "kirstabal",
+ "packFrom": "settlements/kirstabal",
+ "files": {
+  "town": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]],
+   ["core/water/ext", ["56-core-water-breakup.js"]],
+   ["core/drawn", ["10-core-drawn.js"]]
+  ]
+ },
+ "deterministic": [
+  "39g-gh-model.js",
+  "40-gh-ground.js",
+  "41-gh-town.js",
+  "42-gh-ring.js",
+  "43-gh-landing.js",
+  "80f-xa-fort-data.js",
+  "87k2-xa-slate-wall.js",
+  "88d-xa-lakecraft.js",
+  "88f-xa-harbour.js",
+  "88g-xa-works.js",
+  "88h-xa-gihon.js",
+  "10-cons-site.js",
+  "69g-kcity-bundle.js",
+  "69g2-gh-flora-bundle.js",
+  "89k0-ks-matlib.js",
+  "89zg-gh-site.js",
+  "90g-gh-world.js",
+  "90h-gh-build.js",
+  "90i-gh-flora.js",
+  "91z-views.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "56-core-water-breakup.js",
+  "10-core-drawn.js"
+ ],
+ "interiors": [],
+ "furniture": [],
+ "interiorSets": []
+}

@@ -1168,3 +1168,118 @@ is the showcase's, the canyon is the biome kit's. Seeds 12300-12379.
 
 Found on the way: in a fresh worktree `tex/` holds LFS pointers and the library-bound white renders BLACK with a clean
 error panel (rust is procedural, so the ruins looked right): `git lfs pull --include="kits/ancients/tex/*"` first.
+
+## Theodiga: the Dome on the Water (2026-11-11)
+
+The owner settled Xanadu's faith as the Decree and the Broken Wheel (LORE 6.13, `kits/qiblai/PLAN.md` section 2a): the
+Station is "the dome in air", and Theodiga, the arcology the Xanadui descend from, is to be "the dome on earth", the
+stately pleasure-dome of the Song. Of three massings (one great dome over the crest; a chain of nine domes along it;
+domed towers on the upper fins) the owner chose the first.
+
+`targets/theodiga/77a-theodiga-dome-plan.js` (`THEODOME.plan`, [G data], KRAND records with stable ids) and
+`77b-theodiga-dome-draw.js` (`THEODOME.draw`). `buildDam` calls the drawing last, after its own decay and figures, when
+`THEODOME` is on the page; it draws no `rng()`, so the dam's own fins, tunnels and decay are the draws they were. Without
+the target's fragments (every other page) the crest keeps its old low public dome. The theodiga target joins
+`TAGS_TARGETS` (core/rand, core/tags): 104 records (the dome, its deck, drum, shell, lantern, hall, 27 piers, 2 beams,
+the ruin's rubble), audit clean.
+
+- The dome: 240 m across, 112 m from the drum to an open oculus, the crown at 553 m (over the canyon rim at 440), 24
+  white ribs and six tiers of panes (the lowest solid) glazed by a blue glass shell, copper bands at every tier line, a
+  16 m arcaded drum with the cyan strips at its head, a short lantern round the oculus.
+- The deck stands 65 m upstream of the crest: the crest carries its downstream chord, an outer ring of 16 piers (8 of
+  24 fall on the dam), an inner ring of 10 and a core carry the rest from the reservoir bed, trumpet-flared under the
+  deck, tied by two ring beams under the water. The reservoir is unchanged (378 m), so the dome stands on the water.
+- The hall: the crest's old fluted public dome, moved onto the deck inside the great one.
+- The ruin (every d > 0): reservoir at 250 m, piers bare 166 m over the mud; the glass gone (the dark void behind the
+  frames, as the old dome's), the bands verdigris; one
+  sector (upstream, west: the notch's side) failed, its outer piers broken (4) and one inner, the deck over them fallen,
+  the shell torn open nearly to the drum with some ribs standing; slabs, ribs and plates lie on the mud under the gap.
+
+Found on the way: the canyon's plateau (the rock's top surface) ran from 150 m inside the cliff face and hung over the
+reservoir as a lid at the rim's height, unseen from downstream, a ceiling over the dome from upstream. It now starts at
+the face's top edge, column for column. New views: Dome on the water, Dome ruin, Dome ruin piers.
+
+## Theodiga: the river passes the ruin (2026-11-15)
+
+The owner, reviewing the floorplan of Theodiga today (`settlements/theodiga/BLUEPRINT.md`): "there should still be a
+river/cascade passing through the broken dam". In the ruin (`buildDam`, every d > 0):
+- the lake stands at the Notch's sill (`NB + 1`, 273 m; it was 250, below the sill, so nothing could pass), and the silt
+  keeps a way open to the Notch;
+- the cascade: water through the Notch over its floor, then a sheet of `MAT.spray` down the battered face, standing off the
+  lip and widening to the canyon floor, with a spray dome at its foot;
+- the river: a ribbon of water at 1 m in a channel cut into the canyon floor's mud (the mud's grid is finer in the ruin), from
+  the plunge pool to the page's edge. A park tree that would stand in it moves to the bank; its draws are unchanged;
+- the light tunnels under the cascade are skipped after their draws, so nothing else moves.
+The Dome's plan follows (`THEODOME.DIM.WL.ruin` 273: the broken piers stand over the water). A new view, 'Cascade'. The
+intact dam is unchanged.
+
+## Theodiga on core/water, core/atmos and core/ruins (2026-11-15)
+
+The owner: "make sure this build is on core/water and all other relevant core modules".
+- **core/water.** `targets/theodiga/77c-theodiga-water.js` ([G data]) makes each site's water as core/water's records in world
+  coordinates (`THEOWATER.dam`, called at the end of `buildDam` with the dam's numbers): intact, the lake at 378 m (still) and
+  the two outlets' falls; ruined, the lake at the Notch's sill (still), the overflow across the sill (a flow), the cascade
+  (a fall that follows the battered face to its foot: `WATER.fall`'s `face`), its plunge pool (still) and the river (a flow
+  along the channel). `buildDam` draws none of its own water on this page (`WTR`); other pages are unchanged.
+- **core/atmos**, the four files the water needs (core, presets, waves, skylight), bound in `90w-theodiga-water.js` as the
+  Ancient Port kit binds them: the frame loop is the kit's `TICKS`, and the skylight (the page's dome and giant) is given to
+  the water only. The kit's sky and lights are unchanged.
+- **core/ruins** watches the ruined site (`KRUINS.watch`, ground from `THEOWATER.ground`: the lake bed, the canyon floor's
+  mud, else 0; the rock, mud and water skipped). It found the Notch's spill buried in the new river banks (lowest point 8.5 m
+  under the ground): the spill is now seated on its lowest points on the floor, its draws unchanged. The crest slots of light
+  tunnels that hung over the Notch (the owner's "floating brown rectangles") are gone. It now passes: 0 floating, 0 lying wrong.
+- The Dome's fallen sector: flat slabs on the lake read as floating boards, so what fell into the lake is long ribs standing
+  tilted out of the water; slabs and panels lie only on the deck.
+- Read in place through `TARGET_READS['theodiga']`; listed in `DETERMINISTIC`.
+
+## buildDam moves into Theodiga's target (2026-11-15)
+
+The owner asked why every Theodiga change rebuilt every Ancients page. Every `src/` fragment goes into every target's page,
+so `src/77-dam.js` shipped in all 49 though only `theodiga.html` places the dam, and each edit re-hashed the other 48. It is
+now `targets/theodiga/77-dam.js` (same name, same place in the order), and `90-scene.js` adds `dam: buildDam` to `BUILDERS`
+only when the page carries it (`typeof buildDam`). This round rebuilt every page once more (the scene's builder table
+changed); from here a dam edit changes only `theodiga.html`: a full rebuild leaves the other 48 pages byte-identical (no
+baseline entries, no new LFS objects). `reach.py` still lists every page, because it works per build command and the one
+`build.py` run writes them all; only the per-target retry runs of this round were dropped from `build-inputs.json`.
+Veladiga's builder moved the same way in the same round (`targets/veladiga/65-veladiga.js`): only its own target placed it
+(through `EXTRA_BUILDERS`), so nothing else changed. Screamers keeps its own vendored copy.
+
+## Each page carries only its own builders (2026-11-15)
+
+The owner: "it would be great if we could split off all these ancient assets apart from each other as much as possible".
+Every `src/` fragment used to go into every target's page, so a change to any builder re-hashed all 49. `build.py` now
+prunes each target's list (PRUNE, `prune()`):
+- **Prunable** are the builder fragments (a top-level `function build*`), their parts (`CONTINUES`), the pure libraries
+  (`PRUNE_LIBS`: the factory and office extras, the Iziz style, the alt and host libraries, the funicular), the biome cores'
+  closures (`75-biome-*`, `76-*-biome-hyperjungle*`, one group each) and the interiors' fragments (`ONLY_FOR`: only the
+  interiors target). Everything else is the kit's core and goes in every page.
+- **Reached** from the core, the target's own fragments and the builders of its rows (every word of `89z-rows.js` that is
+  a key of `ANC_BUILDER_NAMES`): by a top-level name (`top_level_names`, a scanner of brace and paren depth 0 that skips
+  strings, templates, comments and regex literals; a part is read joined to its parent, since it opens inside the parent's
+  builder), by a kit piece's name in a string (`kdef('x')` in one, `'x'` in the other), by a `MAT.`/`TEX.` key, and, in a
+  target's own fragments, by a builder named as a string (the alt targets' `window[fn]`). Generous by design.
+- `90-scene.js` names its builders as strings (`ANC_BUILDER_NAMES`) and takes the ones the page has; its table is not
+  counted as a use of them.
+- The core now: head, core, stats, kit, surfaces, kitdefs, decor, helpers, registry, concrete, salvage, worn, matlib,
+  openings, scene, probe, camera, tail, plus the builder files whose helpers the core calls (`42-offices` for `civ*`,
+  `52-sky-abc` for `toppledUpper`, `62-robotics`, `66-office-c`). A per-site page (Theodiga, Veladiga, the Podium, the
+  Sanctum, Span) is the core and its own target: 22 shared fragments of 140; the showcase keeps 87.
+- `--no-prune` builds the old all-in pages. A row whose builder is not on its page is a build error.
+- What a target reads in place from outside `core/` (`TARGET_READS`: another target's fragments, a settlement's, another
+  kit's) is read before the prune since 2026-11-16, so it is a root like the target's own fragments; it used to be added
+  after, and a kit name only it used was pruned away. The core modules it reads (core/tags, core/ruins, core/atmos, core/water)
+  are still added after: they never use a kit's names, and the generous scan took core/ruins' self-test box 'wreck' for the
+  Iziz style's `function wreck` (56 KB more on the engines page for nothing).
+
+## Theodiga today (`--target theodiga-today`, 2026-11-16)
+
+The town of `settlements/theodiga` beside the ruin (the owner: "start working on the surface city", with the scrap Xanadu set
+and "some qiblai-style buildings"). The target is two files (rows: the ruin only, `DECAYS [1]`; views); everything else is
+read: the theodiga target's dam, Dome and water fragments (`targets/theodiga`), the town's drawer (`settlements/theodiga/src/
+8ay1-th-town.js`) and the isle demo's flattener (`58-isle-protos.js`), through `TARGET_READS['theodiga-today']`. Generated:
+`THCITY` (core/space, core/city, kits/crops and the town's plan `40-th-town.js`, sealed) and `XAK` (the Xanadu kit with the
+scrap set and the Qiblai kit's buildings, sealed), both kept out of the build rules' scans (`SEALED`), and the Xanadu and
+Qiblai packs as sidecars (`dist/ancients.tex.xanadu*.js`, `ancients.tex.qiblai.js`). `buildDam` calls `thTownDraw` for the
+ruin when the page has it, and draws the ruin's east plateau on the town's ground (`THCITY.town.ground`) out to x 1260;
+core/ruins skips the town's meshes (`theodiga:town ...`). On `--target theodiga` none of it is present and nothing changes but
+the text of those two fragments.

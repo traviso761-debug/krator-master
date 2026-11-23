@@ -20,12 +20,13 @@ const YT_STYLES={state:'state',rich:'rich',common:'common',poor:'poor'};
 /* the library families (materials.json; ?mat=proc draws every key in its vertex colour) */
 const SV_LIB={pycrete:'pycrete',pycreteOld:'pycreteOld',course:'course',slab:'slab',soap:'soap',muskox:'muskox',caribou:'caribou',
  gut:'gut',hide:'hide',serge:'serge',amur:'amur',ob:'ob',bead:'bead',mosaic:'mosaic',applique:'applique',antler:'antler',
- turf:'turf',turfCap:'turfCap',snowCap:'snowCap',hideCap:'hideCap',flag:'flag',larch:'larch',carved:'carved',ice:'ice',snow:'snow',felt:'felt',horn:'horn',earth:'earth'};
+ turf:'turf',turfCap:'turfCap',snowCap:'snowCap',hideCap:'hideCap',flag:'flag',larch:'larch',carved:'carved',ice:'ice',snow:'snow',felt:'felt',horn:'horn',earth:'earth',
+ birch:'birch',hay:'hay'};   /* birch bark (the urasa's panels) and hay (the khoton's stack): Y6, the forest-steppe set */
 const SV_TILE0={pycrete:1,pycreteOld:1,course:2,slab:2,soap:.5,muskox:1,caribou:1,gut:1,hide:2,serge:1,amur:1,ob:1,bead:.6,mosaic:1.5,
- applique:2,antler:1,turf:2,turfCap:1,snowCap:1,hideCap:1,flag:2,larch:1.6,carved:1,ice:4,snow:3,felt:.5,horn:1.2,earth:3};
+ applique:2,antler:1,turf:2,turfCap:1,snowCap:1,hideCap:1,flag:2,larch:1.6,carved:1,ice:4,snow:3,felt:.5,horn:1.2,earth:3,birch:1.4,hay:1.6};
 const SV_CLOTH={};
 const SV_CUT={pycrete:1,pycreteOld:1,course:1,slab:1,soap:1,muskox:1,caribou:1,gut:1,hide:1,serge:1,amur:1,ob:1,bead:1,mosaic:1,
- applique:1,antler:1,turf:1,turfCap:1,snowCap:1,hideCap:1,flag:1,larch:1,carved:1,ice:1,snow:1,felt:1,horn:1,earth:1,plain:1,brass:1,bone:1,glass:1};
+ applique:1,antler:1,turf:1,turfCap:1,snowCap:1,hideCap:1,flag:1,larch:1,carved:1,ice:1,snow:1,felt:1,horn:1,earth:1,plain:1,brass:1,bone:1,glass:1,birch:1,hay:1};
 /* the circular cap sheets (one unrolled dome each, mapped from the crown: ytShell); until one is packed it draws as the
    tiled set it replaces */
 const YT_CAPS={turfCap:1,snowCap:1,hideCap:1};
@@ -43,6 +44,8 @@ const SVPAL={
  // the lamp and its fire
  flame:[0xffb04a],ember:[0xff7a2a],glassLit:[0xf0c888],soot:[0x2a2622],
  // antler and horn, fat
- bone:[0xe0d4bc,0xd8ccb2],fat:[0xe8dcb8]
+ bone:[0xe0d4bc,0xd8ccb2],fat:[0xe8dcb8],
+ // the forest-steppe (Y6): birch bark (its own colour under white), hay
+ birch:[0xffffff,0xf6f2ea],hay:[0xc8b070,0xbca664,0xd0b878]
 };
 function P(k){return jc(pick(SVPAL[k]),.05);}

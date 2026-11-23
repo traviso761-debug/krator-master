@@ -74,7 +74,7 @@ const SPECS=[
  {id:'hamlet-plant-n',name:'Nephtos plantations',focus:'farming',parent:'Nephtos',crops:'cash',plantation:true,hands:90,maxRise:250},   /* cannot climb to (2026-11-09) */
  {id:'hamlet-fish-n',name:'Nephtos fishing village',focus:'fishing',parent:'Nephtos',rel:[0,0],look:9000},
  {id:'hamlet-lumber-n',name:'Nephtos lumber village',focus:'lumber',parent:'Nephtos',rel:[9000,9000],look:12000,apart:2500},
- {id:'hamlet-copper-n',name:'Nephtos copper mine',focus:'mine',parent:'Nephtos',rel:[14000,8000],look:6000,metal:'copper',grade:'medium',apart:2500}];
+ {id:'hamlet-copper-n',name:'Nephtos copper mine',focus:'mine',parent:'Nephtos',rel:[4000,6000],look:6000,metal:'copper',grade:'medium',apart:2500,maxRise:450}];   /* on the foothills under the plateau's escarpment: a hill its road can come down from (above) */
 const FARM={cell:500,rMin:2000,rMax:14000,apart:3000,subStep:150,minFit:.7,off:350};
 const SHORE_R=1000,SHORE_STEP=10,FOREST_MIN=.4,FOREST_R=1500;   /* a lumber village's stand: forest over two fifths of the crew's near range (the tune's range is 3 km) */
 const DEFAULT_PEOPLE={Kautoa:6040,Valapo:2095};   /* the plan's census (PLAN.md section 11) when the page hands none in */
@@ -191,7 +191,10 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
    res={id:sp.id+':grounds',kind:'fishery',grade:'medium',x:Math.round(sh.x+sh.ux*FISH_OUT),z:Math.round(sh.z+sh.uz*FISH_OUT),key:null,node:true};start=[sh.x-sh.ux*150,sh.z-sh.uz*150];shoreSite=true;}
   else if(sp.focus==='mine'||sp.focus==='quarry'){
    const far=(x,z)=>!sp.apart||out.resources.every(r=>Math.hypot(r.x-x,r.z-z)>=sp.apart);   /* a quarry apart from the mine's hill */
-   const L=cells(sp,(x,z)=>wet(x,z)||WORLD.townW(x,z)||!far(x,z)?0:H(x,z)+1e4);if(!L.length){out.errors.push(sp.id+': no land in the patch');continue;}
+   /* `maxRise` (2026-11-10, Nephtos's copper: on the island's plateau, 1,000 m up behind an escarpment 5 km from the town, its
+      road dropped 1,178 m in 15.8 km and ran 100 m under the slope, a straight descent being all the router makes): the
+      highest ground no more than that above the town. Off the colony's ground too */
+   const L=cells(sp,(x,z)=>wet(x,z)||WORLD.townW(x,z)||colonyAt(x,z)||!far(x,z)||(sp.maxRise!=null&&H(x,z)-H(P[0],P[1])>sp.maxRise)?0:H(x,z)+1e4);if(!L.length){out.errors.push(sp.id+': no land in the patch'+(sp.maxRise!=null?' under '+sp.maxRise+' m above '+sp.parent:''));continue;}
    let top=L[0];for(const c of L)if(c.v>top.v)top=c;
    res=sp.focus==='quarry'?{id:sp.id+':face',kind:'stone',grade:sp.grade,x:top.x,z:top.z,key:null,node:true}:{id:sp.id+':node',kind:sp.metal,grade:sp.grade,x:top.x,z:top.z,key:resNodeKey(sp.metal,sp.grade),node:true};start=[top.x,top.z];}
   else if(sp.focus==='farming'){

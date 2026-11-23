@@ -1,0 +1,137 @@
+{
+ "edit": "5.1 edit 26 (continental-scope edit_523 step 2, re-run)",
+ "canals": [
+  {
+   "id": "cn_et_lingkou",
+   "km": 119.1,
+   "summit_m": 699.0,
+   "points": 52
+  },
+  {
+   "id": "cn_et_lingma_lateral",
+   "km": 390.9,
+   "summit_m": 1760.8,
+   "points": 174
+  },
+  {
+   "id": "cn_et_farside",
+   "km": 72.8,
+   "summit_m": 213.0,
+   "points": 33
+  },
+  {
+   "id": "cn_et_shuangzha",
+   "km": 27.4,
+   "summit_m": 193.1,
+   "points": 14
+  },
+  {
+   "id": "cn_et_wuxi",
+   "km": 190.4,
+   "summit_m": 236.0,
+   "points": 85
+  },
+  {
+   "id": "cn_et_lux_east",
+   "km": 139.4,
+   "summit_m": 220.2,
+   "points": 62
+  },
+  {
+   "id": "cn_et_hongma",
+   "km": 45.3,
+   "summit_m": 436.6,
+   "points": 22
+  },
+  {
+   "id": "cn_et_palewharf",
+   "km": 18.4,
+   "summit_m": 652.9,
+   "points": 10
+  },
+  {
+   "id": "cn_ria_iron_gates",
+   "km": 117.0,
+   "summit_m": 84.3,
+   "points": 58
+  },
+  {
+   "id": "cn_ria_tongqu",
+   "km": 237.6,
+   "summit_m": 199.0,
+   "points": 110
+  },
+  {
+   "id": "cn_ria_kuluna",
+   "km": 244.4,
+   "summit_m": 262.2,
+   "points": 119
+  },
+  {
+   "id": "cn_ria_harta",
+   "km": 219.0,
+   "summit_m": 268.1,
+   "points": 107
+  },
+  {
+   "id": "cn_ria_liwa_kompa",
+   "km": 170.2,
+   "summit_m": 711.2,
+   "points": 73
+  },
+  {
+   "id": "cn_ria_sikwingi",
+   "km": 198.9,
+   "summit_m": 1353.4,
+   "points": 87
+  },
+  {
+   "id": "cn_ria_akwala",
+   "km": 250.9,
+   "summit_m": 1343.1,
+   "points": 120
+  },
+  {
+   "id": "cn_iz_fossa_iziz",
+   "km": 93.8,
+   "summit_m": -1428.4,
+   "points": 42
+  },
+  {
+   "id": "cn_iz_canal_atton",
+   "km": 146.2,
+   "summit_m": -1311.8,
+   "points": 62
+  },
+  {
+   "id": "cn_hyk_dioryx_ys",
+   "km": 67.7,
+   "summit_m": -1415.7,
+   "points": 31
+  },
+  {
+   "id": "cn_hyk_sideros",
+   "km": 61.5,
+   "summit_m": -1266.2,
+   "points": 28
+  },
+  {
+   "id": "cn_vo_grut_gracht",
+   "km": 106.9,
+   "summit_m": -891.3,
+   "points": 52
+  },
+  {
+   "id": "cn_vo_shim_chinampa",
+   "km": 195.3,
+   "summit_m": 264.0,
+   "points": 92
+  },
+  {
+   "id": "cn_vo_almua_canton",
+   "km": 58.5,
+   "summit_m": -1391.3,
+   "points": 25
+  }
+ ]
+}

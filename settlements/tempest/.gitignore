@@ -1,0 +1,4 @@
+# generated at every build by build.py (the ground)
+gen/
+.syntax-*.js
+shots/

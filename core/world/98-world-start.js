@@ -25,25 +25,33 @@ async function decodeAll(){
 async function start(){
  const R=typeof WORLD_R!=='undefined'&&WORLD_R?WORLD_R:await decodeAll();
  // the towns' tiles are files beside the page: where the page cannot fetch them (the gallery's frame blocks fetch) the
- // towns are dropped before the land is laid out, so it keeps its own ground instead of empty town footprints
- const T=WORLD_DATA.towns&&WORLD_DATA.towns.towns;
- if(T&&T.length){msg('looking for the towns');const u=T[0].tile;
+ // tiled towns are dropped before the land is laid out, so it keeps its own ground instead of empty town footprints. A
+ // town with no tile (drawn: false, core/world/bake_towns.py: the world draws its ground itself) needs no fetch and stays
+ const T=WORLD_DATA.towns&&WORLD_DATA.towns.towns,TT=T?T.filter(t=>t.tile):[];
+ if(TT.length){msg('looking for the towns');const u=TT[0].tile;
   const ok=await fetch(u,{method:'HEAD'}).then(r=>r.ok).catch(()=>false)||await fetch(u+'.0.txt',{method:'HEAD'}).then(r=>r.ok).catch(()=>false);
-  if(!ok){WORLD_DATA.towns=null;console.warn('town tiles cannot be fetched here: the world runs without its towns');}}
+  if(!ok){const keep=T.filter(t=>!t.tile);if(keep.length)WORLD_DATA.towns.towns=keep;else WORLD_DATA.towns=null;
+   console.warn('town tiles cannot be fetched here: the world runs without its tiled towns');}}
+ if(typeof window.KRATOR_MICRO==='undefined'&&typeof location!=='undefined'&&location.search){
+  const qm=new URLSearchParams(location.search).get('micro');
+  if(qm!=null)window.KRATOR_MICRO=qm==='0'||qm==='false'?false:qm==='2'?2:1;}
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);
- // the first view: the region's own (WORLD_CONFIG.start: {view: [x, z, height above ground, yaw, pitch], look?: [x, z,
- // height above ground]}), else little-demo's: the sedesert plateau west of Shade, looking east toward the abyss's rim
+ // the first view: the region's own WORLD_CONFIG.start, either {view: [x, z, height above ground, yaw, pitch], look?: [x, z, height above
+ // ground]} or the name of a place (framed as "Go to" frames it; the probe's flora checks run round it: the isle demo), else little-demo's:
+ // the sedesert plateau west of Shade, looking east toward the abyss's rim
  const S0=typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG.start;
- if(S0){CAM.setView.apply(CAM,S0.view);if(S0.look)CAM.lookAt(S0.look[0],WORLD.H(S0.look[0],S0.look[1])+S0.look[2],S0.look[1]);}
+ const st=typeof S0==='string'&&typeof PLACES!=='undefined'?PLACES.list.find(p=>p.name===S0):null;
+ if(st){CAM.setView(st.x+900,st.z+1400,320,0,-.18);CAM.lookAt(st.x,WORLD.H(st.x,st.z)+40,st.z);}
+ else if(S0&&S0.view){CAM.setView.apply(CAM,S0.view);if(S0.look)CAM.lookAt(S0.look[0],WORLD.H(S0.look[0],S0.look[1])+S0.look[2],S0.look[1]);}
  else{const sh=PLACES.list.find(p=>p.name==='Shade')||{x:0,z:0};
   CAM.setView(sh.x-6000,sh.z+2500,140,0,-.12);CAM.lookAt(sh.x,WORLD.H(sh.x,sh.z)+60,sh.z);}
  requestAnimationFrame(frame);}
 let last=performance.now(),fpsN=0,fpsT=performance.now(),fps=0,lastDraw=null;
 const camera=HOST.camera,renderer=HOST.renderer,scene=HOST.scene;
 // one step of the streaming; big=true while the curtain is down
-function pump(big){TERRAIN.update(big?60:5);FLORA.residency(camera.position,big?40:3);NURSERY.update(big?120:7);FLOOR.update(big?40:2);SEAS.update(big?60:3);}
+function pump(big){TERRAIN.update(big?60:5);FLORA.residency(camera.position,big?40:3);NURSERY.update(big?120:7);FLOOR.update(big?40:2);SEAS.update(big?60:3);if(typeof STREAMW!=='undefined'&&STREAMW)STREAMW.update(big?60:3);}   /* the small streams' water (83s), where a build draws it */
 START.pump=pump;
 function frame(){requestAnimationFrame(frame);
  const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;START.frames++;

@@ -40,5 +40,14 @@ ISLE.simRun(days * 1440);
 ISLE.simChecks(R).filter(c => /has a home|has a job/.test(c.name)).forEach(c => ok(c.name, c.ok, c.detail));
 const B = ISLE.simBooks('nephtos');
 ok('fed after ' + days + ' days (' + (B.meals.meal + B.meals.single) + ' meals at home, ' + B.meals.none + ' without; with no countryside here it eats one food at a time)', B.meals.meal + B.meals.single > 0 && !B.meals.none, JSON.stringify(B.meals));
+/* the Hykkousoi build and keep in shell, nacre and pearl (the owner, 2026-11-10), with little timber: every building of the
+   town kept as a Hykkousoi kind (15 build.byKit), its empty lots too, the upkeep a day mostly shells */
+{ const kinds = {}, wrong = []; SIM.all('place').forEach(P => { if (P.settlement !== 'nephtos') return; const k = ISLE.buildKind(P); if (!k) return; kinds[k] = (kinds[k] || 0) + 1; if (!/^hyk-/.test(k)) wrong.push(P.id + ' ' + k); });
+  const lots = ((SIM.BUILD && SIM.BUILD.towns.nephtos || {}).lots || []).map(l => (l.kind || (SIM.BUILD.lots && SIM.BUILD.lots[l] && SIM.BUILD.lots[l].kind) || '?'));
+  ok('kept as the Hykkousoi\'s (' + JSON.stringify(kinds) + '; empty lots ' + lots.length + ')', !wrong.length && Object.keys(kinds).length >= 2, wrong.slice(0, 4).join(', '));
+  ok('negative: an Islander house is kept as one', ISLE.buildKind({ kind: 'home', tags: { key: 'ie-house-uma' } }) === 'house' && ISLE.kitKind('hyk_house_poor_1', 'house') === 'hyk-house');
+  const U = (SIM.buildReport('nephtos').towns.nephtos || {}).upkeep || { day: {} }, D = U.day, f = g => (D[g] || 0).toFixed(2);
+  ok('its upkeep a day in shells, nacre and pearls, little timber (shells ' + f('shells') + ', nacre ' + f('nacre') + ', pearls ' + f('pearls') + ', timber ' + f('timber') + ', stone ' + f('stone') + ', mats ' + f('mats') + ')',
+    D.shells > 0 && D.nacre > 0 && D.pearls > 0 && (D.timber || 0) < D.shells / 5 && !D.mats && !D.stone, JSON.stringify(D)); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

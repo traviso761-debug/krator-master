@@ -11,7 +11,8 @@
 #              when the world has one
 # Every material's hook is resolved against the shader library (krator/khooks.gd); a hook nothing answers is a gap.
 # Root meta: report (counts, ids, the sections' status, the export's own errors, the gaps), tags ({id: record}), stage,
-# ground (the terrain node), world (the JSON minus items and buckets).
+# ground (the terrain node), world (the JSON minus items and buckets), origin ([x, y, z] in doubles: the case's floating
+# origin, [0, 0, 0] without one; the node's children stand about it, so a caller puts the node at origin less its own).
 class_name KratorWorld
 extends RefCounted
 
@@ -29,6 +30,21 @@ static func build(path: String) -> Node3D:
 		report["gaps"]["format"] = "not a krator-world file"
 		return root
 	var dir := path.get_base_dir()
+	# a floating origin (core/export README, "origin"): the meshes are written about the case's origin, everything else in
+	# the page's frame. The ground is built about it too; the pieces built from page-frame numbers (the water, hazards,
+	# records, a field's mesh) go under PageFrame, at -origin (placed right, at float32's precision out there)
+	var org := [0.0, 0.0, 0.0]
+	if d.get("origin") is Array and (d["origin"] as Array).size() == 3:
+		org = [float(d["origin"][0]), float(d["origin"][1]), float(d["origin"][2])]
+	var has_org: bool = org[0] != 0.0 or org[1] != 0.0 or org[2] != 0.0
+	root.set_meta("origin", org)
+	var frame: Node3D = root
+	if has_org:
+		frame = Node3D.new()
+		frame.name = "PageFrame"
+		frame.position = Vector3(-org[0], -org[1], -org[2])
+		root.add_child(frame)
+	report["origin"] = org
 	report["sections"] = {}
 	for s in d["sections"]:
 		report["sections"][s] = d["sections"][s]["status"]
@@ -78,7 +94,12 @@ static func build(path: String) -> Node3D:
 	# the meshes: world.glb through GLTFDocument with the instancing extension (krator/gltf_instancing.gd)
 	var scene: Node = null
 	var gp := dir + "/" + str(d.get("glb", {}).get("file", "world.glb"))
-	if FileAccess.file_exists(gp):
+	# a case with no meshes (a streamed chunk: its ground and its records, openworld/<region>/tools/godot_case.py) writes
+	# a world.glb with no buffer data, which GLTFDocument refuses: there is nothing in it to read
+	var meshes: bool = (d.get("items") is Array and (d["items"] as Array).size() > 0) or (d.get("buckets") is Array and (d["buckets"] as Array).size() > 0)
+	if not meshes:
+		report["counts"]["glb"] = "none: the case has no items and no buckets"
+	elif FileAccess.file_exists(gp):
 		KratorGltf._register_instancing()
 		var doc := GLTFDocument.new()
 		var state := GLTFState.new()
@@ -109,7 +130,8 @@ static func build(path: String) -> Node3D:
 		node.name = "item_%d" % k
 		items.add_child(node)
 		var n: int = node.multimesh.instance_count
-		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report, true)
+		var has_vcol: bool = node.multimesh.mesh != null and node.multimesh.mesh.get_surface_count() > 0 and (int(node.multimesh.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_COLOR) != 0
+		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report, true, has_vcol)
 		node.visible = bool(it.get("visible", true))
 		if it.get("owners") is Array and (it["owners"] as Array).size() == n:   # a city's: per instance the record it stands in
 			node.set_meta("krator_owners", it["owners"])
@@ -157,7 +179,8 @@ static func build(path: String) -> Node3D:
 		node.owner = null
 		node.name = "bucket_%d" % k
 		buckets.add_child(node)
-		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false)
+		var has_vcol: bool = node.mesh != null and node.mesh.get_surface_count() > 0 and (int(node.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_COLOR) != 0
+		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false, has_vcol)
 		_lod(node, b, report)
 		if b.get("lod") is Dictionary and _lod_shader(node):
 			node.set_meta("krator_rows", [{"item": k, "id": b["id"], "from": 0, "count": 1, "range": float(b["lod"]["range"])}])
@@ -176,7 +199,8 @@ static func build(path: String) -> Node3D:
 				if by_id.has(b["recordIds"][i]) and by_id[b["recordIds"][i]]["uid"] == b["records"][i]:
 					ids["bucket_records_resolved"] += 1
 		tris += int(b["triangles"])
-	scene.free()
+	if scene:
+		scene.free()
 	if ids["buckets"] > ids["buckets_with_records"]:
 		report["gaps"]["bucket records"] = "%d of %d buckets name no record (pieces in no registered volume)" % [ids["buckets"] - ids["buckets_with_records"], ids["buckets"]]
 
@@ -193,6 +217,8 @@ static func build(path: String) -> Node3D:
 			else:
 				g = KratorField.build(f, look, grid)
 				report["field"] = g.get_meta("krator")
+				if has_org:
+					report["gaps"]["field origin"] = "the field's mesh is built in the page's frame (under PageFrame): KratorField takes no origin yet"
 				if t.get("probes") is Dictionary:   # the page's own h at points off the lattice, against KField.h here
 					var mx := 0.0
 					var pts: Array = t["probes"]["points"]
@@ -200,7 +226,13 @@ static func build(path: String) -> Node3D:
 						mx = max(mx, abs(f.h(float(p[0]), float(p[1])) - float(p[2])))
 					report["terrain_probes"] = {"points": pts.size(), "max_abs_m": mx}
 		elif not grid.is_empty():
-			g = KData.ground(grid, look)
+			var gg := grid.duplicate()
+			gg["_origin"] = org
+			if has_org:   # the grid about the origin: x0 and z0 less it in double precision, so the vertices stay small
+				gg["x0"] = float(grid["x0"]) - org[0]
+				gg["z0"] = float(grid["z0"]) - org[2]
+			g = KData.ground(gg, look)
+			g.position.y = -org[1]
 			report["gaps"]["field"] = "the terrain is the page's h sampled on a grid: the build bakes no core/terrain field"
 		if g != null:
 			var has_water: bool = d.get("water") is Dictionary and (d["water"].get("surfaces", []) as Array).size() > 0
@@ -212,7 +244,7 @@ static func build(path: String) -> Node3D:
 				report["ground_layers"] = ground_layers(g, ground_rec, tex, texrec)
 				if report["ground_layers"].has("gap"):
 					report["gaps"]["ground layers"] = report["ground_layers"]["gap"]
-			root.add_child(g)
+			(frame if t.get("field") is Dictionary else root).add_child(g)
 			root.set_meta("ground", g)
 	else:
 		report["gaps"]["terrain"] = "no terrain section"
@@ -221,8 +253,13 @@ static func build(path: String) -> Node3D:
 	# and the page's own heights at the probes against KWater here
 	if d.get("water") is Dictionary:
 		var atm = Engine.get_main_loop().root.get_node_or_null("Atmos") if Engine.get_main_loop() is SceneTree else null
-		var wn := KratorWater.build(d["water"], d.get("box"), atm)
-		root.add_child(wn)
+		var w_opts := {}
+		var w_parent: Node3D = frame
+		if has_org and d.get("box") is Array and (d["box"] as Array).size() == 4:
+			w_opts = {"clip_box": d["box"], "local_origin": org}
+			w_parent = root
+		var wn := KratorWater.build(d["water"], d.get("box"), atm, 2.0, w_opts)
+		w_parent.add_child(wn)
 		var wr: Dictionary = wn.get_meta("report")
 		wr["probes"] = KratorWater.check_probes(d["water"], wn.get_meta("surfaces", {}))
 		report["water"] = wr
@@ -238,7 +275,7 @@ static func build(path: String) -> Node3D:
 		report["atmos"] = a.get_meta("report")
 	if d.get("hazards") is Dictionary and d["hazards"].get("format") == "krator-hazard":
 		var hz := hazards(d["hazards"], by_id)
-		root.add_child(hz)
+		frame.add_child(hz)
 		report["hazards"] = hz.get_meta("report")
 		if int(report["hazards"]["unresolved"]) > 0:
 			report["gaps"]["hazard records"] = "%d hazards name no registry record" % report["hazards"]["unresolved"]
@@ -247,14 +284,14 @@ static func build(path: String) -> Node3D:
 		root.set_meta("stage", d["stage"])
 	# a city's buildings, fixtures and furniture slots as nodes (the KRATOR_EXPORT shape)
 	if d.get("fixtures") is Dictionary or d.get("furniture") is Dictionary or d.get("interiors") is Dictionary:
-		report["records"] = records(root, d, by_id)
+		report["records"] = records(frame, d, by_id)
 	var meta := {}
 	for k in d:
 		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water", "hazards"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
 	KratorBiome.cell = KratorBiome.policy_cell(d["convention"])   # the export contract's LOD cell (convention.lod)
-	root.set_meta("krator", {"box": d["box"], "build": d["build"], "convention": d["convention"]})
+	root.set_meta("krator", {"box": d["box"], "build": d["build"], "convention": d["convention"], "origin": org})
 	report["counts"] = {"items": d["items"].size(), "instances": ids["instances"], "buckets": d["buckets"].size(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": tc, "records": by_id.size(), "load_ms": Time.get_ticks_msec() - t0}
 	report["ids"] = ids
@@ -347,8 +384,8 @@ static func ground_layers(g: Node3D, rec: Dictionary, tex: Dictionary, texrec: D
 # a material by id, built once (KratorBiome._material: the foliage and bark shaders, the kits' kinds; a city's three.js
 # material records, kind 'standard' or 'basic', on the library shader: _standard). instanced: the mesh is a MultiMesh
 # (a world-uv record tiles an instance by its scale, a plain mesh keeps its uv)
-static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Dictionary, cache: Dictionary, ids: Dictionary, report: Dictionary, instanced := true) -> Material:
-	var key := "%s|%s" % [id, instanced]
+static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Dictionary, cache: Dictionary, ids: Dictionary, report: Dictionary, instanced := true, has_vcol := false) -> Material:
+	var key := "%s|%s|%s" % [id, instanced, has_vcol]
 	if cache.has(key):
 		ids["materials_resolved"] += 1
 		return cache[key]
@@ -358,11 +395,26 @@ static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Diction
 		return null
 	ids["materials_resolved"] += 1
 	var rec: Dictionary = mats[id]
-	var m: Material
-	if rec.get("kind") in ["standard", "basic", "shader"]:
+	var m: Material = KDoor.material_for_name(String(rec.get("name", "")))   # core/door's glass ('kglass:<kind>'): KGLASS.SPEC's kind (krator/kdoor.gd)
+	if m != null:
+		pass
+	elif rec.get("kind") in ["standard", "basic", "shader"]:
 		m = _standard(rec, tex, texrec, instanced, report)
 	else:
-		m = KratorBiome._material(rec, tex, texrec, true, report)
+		var bm := KratorBiome._material(rec, tex, texrec, instanced, report)
+		if bm != null:
+			if has_vcol and (bm.shader == KratorBiome.FOLIAGE or bm.shader == KratorBiome.BARK):
+				bm.set_shader_parameter("srgb_vcol", true)
+			if not instanced:
+				# Buckets bake world/case positions into VERTEX (e.g. y = -1320 m or +3400 m), so height-proportional swayW must not multiply VERTEX.y
+				if bm.shader == KratorBiome.FOLIAGE:
+					bm.set_shader_parameter("sway_w", Vector3.ZERO)
+					bm.set_shader_parameter("sway_c", 0.55)
+				elif bm.shader == KratorBiome.BARK:
+					var m_mode = bm.get_shader_parameter("mode")
+					if (m_mode is int or m_mode is float) and int(m_mode) == 5:
+						bm.set_shader_parameter("hang_a", 0.0)
+		m = bm
 	cache[key] = m
 	return m
 
@@ -379,6 +431,44 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 	var img: Texture2D = tex.get(map_id) if map_id != null else null
 	if rec.get("kind") == "shader":
 		_gap_once(report, "shader materials", "a ShaderMaterial a city's mesh uses (the vendored biome's own) is drawn plain from its colour")
+	if str(rec.get("blending", "")) == "additive":
+		var sadd := StandardMaterial3D.new()
+		sadd.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		sadd.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+		sadd.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		sadd.cull_mode = BaseMaterial3D.CULL_DISABLED
+		sadd.albedo_color = Color(col.r, col.g, col.b, float(rec.get("opacity", 1.0)))
+		sadd.roughness = float(rec.get("roughness", 1.0))
+		sadd.metallic = float(rec.get("metal", 0.0))
+		if bool(rec.get("unlit", false)):
+			sadd.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		if img:
+			sadd.albedo_texture = img
+			if texrec.has(map_id):
+				var r_add: Array = texrec[map_id].get("repeat", [1, 1])
+				sadd.uv1_scale = Vector3(float(r_add[0]), float(r_add[1]), 1.0)
+		sadd.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "StandardMaterial3D (add)"})
+		return sadd
+	var is_mul_decal := str(rec.get("blending", "")) == "multiply"
+	if not is_mul_decal and bool(rec.get("transparent", false)) and float(rec.get("opacity", 1.0)) >= 0.999 and float(rec.get("alphaTest", 0.0)) <= 0.0 and img != null:
+		var m_img := img.get_image()
+		if m_img != null and m_img.detect_alpha() == Image.ALPHA_NONE:
+			is_mul_decal = true
+	if is_mul_decal:
+		var smul := StandardMaterial3D.new()
+		smul.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		smul.blend_mode = BaseMaterial3D.BLEND_MODE_MUL
+		smul.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		smul.cull_mode = BaseMaterial3D.CULL_DISABLED
+		smul.albedo_color = Color(col.r, col.g, col.b, float(rec.get("opacity", 1.0)))
+		smul.roughness = float(rec.get("roughness", 1.0))
+		smul.metallic = float(rec.get("metal", 0.0))
+		if bool(rec.get("unlit", false)):
+			smul.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		if img:
+			smul.albedo_texture = img
+		smul.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "StandardMaterial3D (mul)"})
+		return smul
 	if bool(rec.get("transparent", false)) and float(rec.get("opacity", 1.0)) < 0.999:
 		var s := StandardMaterial3D.new()
 		s.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -411,6 +501,8 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 	sm.set_shader_parameter("specular_k", clampf(float(rec.get("specular", 0.5)), 0.0, 1.0))
 	sm.set_shader_parameter("tint", bool(rec.get("tint", true)))
 	sm.set_shader_parameter("unlit", bool(rec.get("unlit", false)))
+	var at_val = rec.get("alphaTest")
+	sm.set_shader_parameter("alpha_test", clampf(float(at_val) if (at_val is int or at_val is float) else 0.0, 0.0, 1.0))
 	if rec.get("emissive") != null:
 		var e := KData.colour(rec["emissive"], false) * float(rec.get("emissiveIntensity", 1.0))
 		sm.set_shader_parameter("emission", Vector3(e.r, e.g, e.b))
@@ -498,6 +590,7 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 	# the yard, a NavigationLink3D per door, stair and ladder link), plus a Marker3D per link (Links/Link_<id>, meta
 	# krator the link, krator_kind its kind) at the threshold
 	var I = d.get("interiors")
+	var room_defs := []
 	if I is Dictionary and I.get("buildings") is Array:
 		out["interiors"] = 0
 		out["rooms"] = 0
@@ -510,14 +603,43 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 			if p == null:
 				out["interiors_unparented"] += 1
 				continue
+			var b_xf: Transform3D = (p as Node3D).transform
+			var b_inv: Transform3D = b_xf.affine_inverse()
+			var bid := str(B.get("id", ""))
 			var it := {"frame": "building-local", "rooms": [], "walls": B.get("walls", []), "nav": {"nodes": [], "edges": []}}
 			if B.get("yard") is Dictionary:
 				it["yard"] = B["yard"]
+			var local_rooms := []
 			for S in B.get("storeys", []):
+				var sh := float(S.get("h", 3.0))
 				for r in S.get("rooms", []):
 					var rr: Dictionary = (r as Dictionary).duplicate()
 					rr["lvl"] = int(S.get("k", 0))
 					it["rooms"].append(rr)
+					var y0 := float(r.get("y", 0.0))
+					var rh := float(r.get("h", sh))
+					var rpoly: Array = r.get("poly", [])
+					var cx := 0.0
+					var cz := 0.0
+					if not rpoly.is_empty():
+						for pt in rpoly:
+							cx += float(pt[0])
+							cz += float(pt[1])
+						cx /= float(rpoly.size())
+						cz /= float(rpoly.size())
+					var rdef := {
+						"id": "%s:%s" % [bid, str(r.get("id", ""))],
+						"building": bid,
+						"poly": rpoly,
+						"y0": y0 - 0.15,
+						"y1": y0 + rh + 0.15,
+						"inv_xf": b_inv,
+						"center": b_xf * Vector3(cx, y0 + rh * 0.5, cz),
+						"portals": [],
+						"doors": []
+					}
+					local_rooms.append(rdef)
+					room_defs.append(rdef)
 			var L := Node3D.new()
 			L.name = "Links"
 			for l in B.get("links", []):
@@ -531,6 +653,22 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 				L.add_child(m)
 				var fa: Array = l.get("from", at)
 				var ta: Array = l.get("to", at)
+				var wf := b_xf * Vector3(float(fa[0]), float(fa[1]) + 0.5, float(fa[2]))
+				var wt := b_xf * Vector3(float(ta[0]), float(ta[1]) + 0.5, float(ta[2]))
+				var wa := b_xf * Vector3(float(at[0]), float(at[1]) + 0.5, float(at[2]))
+				var ra := KratorLampPool.room_at(local_rooms, wf)
+				var rb := KratorLampPool.room_at(local_rooms, wt)
+				if ra != "" and rb != "" and ra != rb:
+					for rd in local_rooms:
+						if rd["id"] == ra and not (rb in rd["portals"]):
+							(rd["portals"] as Array).append(rb)
+						elif rd["id"] == rb and not (ra in rd["portals"]):
+							(rd["portals"] as Array).append(ra)
+				elif ra != "" or rb != "":
+					var rin := ra if ra != "" else rb
+					for rd in local_rooms:
+						if rd["id"] == rin:
+							(rd["doors"] as Array).append(wa)
 				if Vector3(fa[0], fa[1], fa[2]).distance_to(Vector3(ta[0], ta[1], ta[2])) < 0.05:
 					continue   # an interior door between two rooms whose floors meet: the regions join by their edges
 				it["nav"]["nodes"].append({"id": lid + ".a", "x": fa[0], "y": fa[1], "z": fa[2]})
@@ -546,6 +684,35 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 		for k in irep["gaps"]:
 			if k != "wall openings":   # solid boxes: every build's walls, known (records_import.gd)
 				out["interiors_gap_" + str(k)] = irep["gaps"][k]
+	if not room_defs.is_empty():
+		R.set_meta("rooms", room_defs)
+		root.set_meta("rooms", room_defs)
+		var indoor_lamps := []
+		if F is Dictionary:
+			for r in F.get("records", []):
+				var kd := str(r.get("kind", ""))
+				if kd in ["light", "lamp", "bulb", "hearth", "lantern"]:
+					var a: Array = r.get("at", [0, 0, 0])
+					var wp := Vector3(float(a[0]), float(a[1]), float(a[2]))
+					var rid := KratorLampPool.room_at(room_defs, wp)
+					indoor_lamps.append({
+						"id": str(r.get("id", "")),
+						"kind": "bulb" if rid != "" else "lamp",
+						"room": rid,
+						"at": [wp.x, wp.y, wp.z],
+						"color": str(r.get("color", "#ffd49a")),
+						"radius": float(r.get("radius", 9.0 if rid != "" else 20.0)),
+						"amp": float(r.get("amp", 1.0)),
+						"hours": r.get("hours", [0.0, 24.0] if rid != "" else [17.2, 30.8])
+					})
+		if not indoor_lamps.is_empty():
+			var pool := KratorLampPool.new()
+			pool.name = "InteriorLampPool"
+			pool.lamps = indoor_lamps
+			pool.rooms = room_defs
+			pool.hero_shadows = 1
+			R.add_child(pool)
+			out["interior_lamps"] = indoor_lamps.size()
 	var U = d.get("furniture")
 	if U is Dictionary:
 		var pieces := {}
@@ -864,10 +1031,14 @@ static func _lod_uniforms(gi: GeometryInstance3D, lod: Dictionary) -> bool:
 	if float(lod["minRange"]) > 0.0:
 		return false
 	var C := _chunk_size(lod)
+	var rows: Array = gi.get_meta("krator_rows")
+	if RenderingServer.get_current_rendering_method() == "gl_compatibility":
+		gi.visibility_range_end = float(rows[0]["range"]) + C * 0.7071
+		gi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_DISABLED
+		return false
 	var c: PackedStringArray = str(lod["chunk"]).split(",")
 	var x0 := float(c[0]) * C
 	var z0 := float(c[1]) * C
-	var rows: Array = gi.get_meta("krator_rows")
 	var y0 := INF
 	var y1 := -INF
 	if gi is MultiMeshInstance3D:

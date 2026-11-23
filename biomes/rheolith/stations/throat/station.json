@@ -1,0 +1,20 @@
+{
+ "canvas": "5.1 (1821x1723)",
+ "name": "The Breached Throat (station 1): collapsed fumarole skylight in a SE Throne rift graben (1,380 m, 1.18 atm, +26 degC), peering into live 340-540 degC chokecoral, wirevein, foamreef and fluxcreeper, surrounded by all eight surface byproducts, wild vs stunted Ranj trees, and live [Gag / Salt / Dross] controls",
+ "out": "rheolith.html",
+ "kin": {
+  "throne": [
+   [
+    "src/46-biome-throne-flows.js",
+    "src/50-biome-throne-species.js",
+    "src/55-biome-throne-trees.js"
+   ],
+   "THRONE",
+   [
+    "bark.honeycomb",
+    "flesh.porous",
+    "cap.bell"
+   ]
+  ]
+ }
+}

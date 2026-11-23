@@ -911,7 +911,7 @@ FURN({
 });
 FURN({
   key: 'nomad_sadu_hanging', name: 'Sadu wall hanging', culture: 'nomad', tier: 'common', type: 'banner', setting: 'indoor',
-  rooms: ['hall', 'bedroom', 'antechamber', 'court', 'shrine'], anchor: 'wall', clearance: {},
+  rooms: ['hall', 'bedroom', 'antechamber', 'court', 'shrine'], anchor: 'wall', hung: 'top', clearance: {},
   materials: ['cloth', 'timber', 'bronze'],
   w: 1.5, d: 0.06, h: 1.7, variants: 2, variantNames: ['rust and black', 'black and cream with indigo'],
   build: function (F) {

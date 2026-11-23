@@ -79,7 +79,11 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  const CW=512,cv=document.createElement('canvas');cv.width=CW*4;cv.height=CW*4;const g2=cv.getContext('2d');
  const atlas=new THREE.CanvasTexture(cv);atlas.encoding=THREE.sRGBEncoding;atlas.anisotropy=4;
  CELLS.forEach((f,i)=>{const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib')?KMAT.packed('longsong',f):null;if(!L)return;
-  KMAT.image(L,img=>{g2.drawImage(img,(i%4)*CW,Math.floor(i/4)*CW,CW,CW);atlas.needsUpdate=true;});});
+  KMAT.image(L,img=>{const c=L.cell,dx=(i%4)*CW,dy=Math.floor(i/4)*CW;
+   if(c&&c.length===4){const iw=img.naturalWidth||img.width||CW,ih=img.naturalHeight||img.height||CW;
+    g2.drawImage(img,c[0]*iw,c[1]*ih,(c[2]-c[0])*iw,(c[3]-c[1])*ih,dx,dy,CW,CW);}
+   else g2.drawImage(img,dx,dy,CW,CW);
+   atlas.needsUpdate=true;});});
  const cellUV=i=>{const cx=i%4,cy=Math.floor(i/4),e=3/(CW*4);return [cx/4+e,1-(cy+1)/4+e,(cx+1)/4-e,1-cy/4-e];};
  const quadC=(P,n,cell,k)=>{const U=cellUV(cell),T=[[U[0],U[1]],[U[2],U[1]],[U[2],U[3]],[U[0],U[3]]];
   for(const j of [0,1,2,0,2,3]){cards.pos.push(P[j][0],P[j][1],P[j][2]);cards.nor.push(n[0],n[1],n[2]);cards.uv.push(T[j][0],T[j][1]);cards.col.push(k,k,k);cards.cal.push(CURC,P[0][1]);}};
@@ -94,26 +98,44 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
     const y=BL?BL.y:o.kind==='pools'?poolLevel(s)-.05:terrainH(x,z)+base;
     cross(x,y-.05,z,h*1.2*(.85+.3*u(gi,s.i,k,3)),h*(.85+.3*u(gi,s.i,k,4)),u(gi,s.i,k,5)*Math.PI,cell,.82+.18*u(gi,s.i,k,6));}});});
  CURC=0;
- // the trees: orchards and groves (bamboo is drawn as canes below)
+ // the trees: orchards and groves (branching trunks & boughs with layered foliage clusters; bamboo drawn as multi-tiered canes below)
  const TREES=[];
+ const limbBox=(x0,y0,z0,x1,y1,z1,r,col)=>{const dx=x1-x0,dy=y1-y0,dz=z1-z0,hz=Math.hypot(dx,dz)||1e-4,L=Math.hypot(hz,dy);if(L<.05)return;
+  const n=Math.max(2,Math.ceil(L/.85));for(let s=0;s<n;s++){const t=(s+.5)/n,rt=r*(1-.45*t);
+   ARCH.cyl('wood',x0+dx*t,y0+dy*(s/n),z0+dz*t,rt,rt*.82,Math.max(.22,Math.abs(dy)/n+.28),{seg:5,col});}};
  F.GROUPS.forEach(o=>{if(o.kind!=='orchard'&&o.kind!=='grove')return;F.trees(o).forEach((t,k)=>{if(t.crop==='bamboo'){TREES.push(t);return;}const cell=cellOf(t.crop);if(cell<0)return;
-  const y=terrainH(t.x,t.z),big=t.crop==='willow'?1.2:1,H=4.6*t.s*big,W=4.4*t.s*big;
-  ARCH.cyl('wood',t.x,y-.2,t.z,.16*t.s,.1*t.s,H*.45,{seg:5,col:0x4e3a2c});
-  cross(t.x,y+H*.18,t.z,W,H*.82,u(9,t.x|0,t.z|0)*Math.PI,cell,.85+.15*u(10,t.x|0,t.z|0),3);});});
+  const y=terrainH(t.x,t.z),weep=t.crop==='willow',big=weep?1.35:1.05,H=4.8*t.s*big,W=4.2*t.s*big,wc=weep?0x584434:0x4e3a2c;
+  const hTrunk=H*(weep?.42:.38),r0=.2*t.s*big;
+  ARCH.cyl('wood',t.x,y-.25,t.z,r0*1.25,r0*.72,hTrunk+.25,{seg:7,col:wc});
+  const nb=weep?6:5,a0=u(9,t.x|0,t.z|0)*Math.PI*2,kk=.84+.16*u(10,t.x|0,t.z|0);
+  for(let b=0;b<nb;b++){const a=a0+b/nb*Math.PI*2+(u(11,k,b,1)-.5)*.45,reach=W*(.32+.18*u(11,k,b,2)),topY=y+hTrunk+H*(weep?.26:.22)+H*.12*u(11,k,b,3);
+   const bx=t.x+Math.cos(a)*reach,bz=t.z+Math.sin(a)*reach;
+   limbBox(t.x,y+hTrunk*.88,t.z,bx,topY,bz,r0*.45,wc);
+   if(weep){const hangH=H*(.46+.16*u(11,k,b,4));
+    cross(bx,topY-hangH*.88,bz,W*.34,hangH,a+.3,cell,kk*(.92+.1*u(11,k,b,5)),2);
+    cross(t.x+Math.cos(a)*reach*.55,topY-hangH*.62,t.z+Math.sin(a)*reach*.55,W*.3,hangH*.78,a+1.1,cell,kk,2);}
+   else{cross(bx,topY-H*.16,bz,W*.46,H*.42,a+.4,cell,kk*(.9+.12*u(11,k,b,5)),3);}}
+  cross(t.x,y+hTrunk+(weep?H*.02:H*.1),t.z,W*(weep?.42:.54),H*(weep?.52:.48),a0+.7,cell,kk*1.04,3);});});
  // the chorten garden's junipers and incense cedars, between the rows of chortens
- {const G=LS.CHORTEN_GARDEN,cell=cellOf('juniper');if(cell>=0)for(let k=0;k<26;k++){const x=lerp(G.x0+4,G.x1-4,u(31,k,1)),z=lerp(G.z0+4,G.z1-4,u(31,k,2));
+ {const G=LS.CHORTEN_GARDEN,cell=cellOf('juniper');if(cell>=0)for(let k=0;k<28;k++){const x=lerp(G.x0+4,G.x1-4,u(31,k,1)),z=lerp(G.z0+4,G.z1-4,u(31,k,2));
    const rowZ=r=>G.z0+10+r*(G.z1-G.z0-20)/(G.rows-1);let near=false;for(let r=0;r<G.rows;r++)if(Math.abs(z-rowZ(r))<3.2)near=true;if(near)continue;
-   const y=terrainH(x,z),s=.8+.6*u(31,k,3);cross(x,y-.1,z,2.6*s,4.2*s,u(31,k,4)*Math.PI,cell,1.5,3);}}
+   const y=terrainH(x,z),s=.85+.65*u(31,k,3),a0=u(31,k,4)*Math.PI;
+   ARCH.cyl('wood',x,y-.2,z,.14*s,.05*s,3.4*s,{seg:6,col:0x4a3628});
+   for(let tier=0;tier<3;tier++){const f=tier/2,tw=(2.4-1.0*f)*s,th=(2.1-.45*f)*s;cross(x,y+(.25+1.15*tier)*s,z,tw,th,a0+tier*.9,cell,1.35+.12*tier,3);}}}
  // the held cherry's crown (64's Garden of Held Water)
- {const Hc=LS.HELD.cherry,cell=cellOf('cherry');if(cell>=0)cross(Hc.x,LS.ROCK.top+1.6,Hc.z,6,5,.3,cell,1,3);}
+ {const Hc=LS.HELD.cherry,cell=cellOf('cherry');if(cell>=0){const a0=.3;
+  for(let b=0;b<5;b++){const a=a0+b/5*Math.PI*2;cross(Hc.x+Math.cos(a)*1.6,LS.ROCK.top+1.9,Hc.z+Math.sin(a)*1.6,3.2,2.8,a,cell,1.02,3);}
+  cross(Hc.x,LS.ROCK.top+2.6,Hc.z,3.8,3.2,.8,cell,1.06,3);}}
  // the field shrines' juniper sprigs
- F.SHRINES.forEach((S,k)=>{const cell=cellOf('juniper');if(cell>=0)cross(S.x,terrainH(S.x,S.z)+2.3,S.z,1.4,1.6,k,cell,1.5,2);});
- // the bamboo: canes in clumps (instanced), their leaves on the willow card
+ F.SHRINES.forEach((S,k)=>{const cell=cellOf('juniper');if(cell>=0)cross(S.x,terrainH(S.x,S.z)+2.3,S.z,1.3,1.5,k,cell,1.4,3);});
+ // the bamboo: dense canes in clumps (instanced), with multi-tiered foliage sprays from mid-culm to tip
  let canes=null;
- if(TREES.length){const P=[];TREES.forEach((t,k)=>{const y=terrainH(t.x,t.z);for(let q=0;q<6;q++){const a=u(41,k,q,1)*6.28,r=u(41,k,q,2)*.9,H=(8+5*u(41,k,q,3))*t.s;
-   P.push([t.x+Math.cos(a)*r,y-.2,t.z+Math.sin(a)*r,H,(u(41,k,q,4)-.5)*.12]);}
-  const cell=cellOf('willow');if(cell>=0)cross(t.x,y+5*t.s,t.z,3.4*t.s,6*t.s,u(41,k,9)*Math.PI,cell,.75,3);});
-  const cg=new THREE.CylinderGeometry(.035,.05,1,5,1);cg.translate(0,.5,0);const cm=new THREE.MeshLambertMaterial({color:0x8ab07a});
+ if(TREES.length){const P=[],cell=cellOf('willow');TREES.forEach((t,k)=>{const y=terrainH(t.x,t.z);for(let q=0;q<9;q++){const a=u(41,k,q,1)*6.28,r=u(41,k,q,2)*1.05,H=(8.5+5.5*u(41,k,q,3))*t.s;
+   const cx=t.x+Math.cos(a)*r,cz=t.z+Math.sin(a)*r,lean=(u(41,k,q,4)-.5)*.14;
+   P.push([cx,y-.2,cz,H,lean]);
+   if(cell>=0&&q%2===0){for(let tr=0;tr<3;tr++){const yf=y+H*(.46+.2*tr);cross(cx+lean*H*(.5+.2*tr),yf-1.1*t.s,cz+lean*.7*H*(.5+.2*tr),1.9*t.s,2.3*t.s,a+tr*1.1,cell,.82+.08*tr,2);}}}
+  if(cell>=0)cross(t.x,y+5.2*t.s,t.z,2.8*t.s,3.6*t.s,u(41,k,9)*Math.PI,cell,.88,3);});
+  const cg=new THREE.CylinderGeometry(.032,.055,1,6,1);cg.translate(0,.5,0);const cm=new THREE.MeshLambertMaterial({color:0x8ab07a});
   canes=new THREE.InstancedMesh(cg,cm,P.length);const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler(),S=new THREE.Vector3(),V=new THREE.Vector3();
   P.forEach((p,i)=>{E.set(p[4],0,p[4]*.7);Q.setFromEuler(E);S.set(1,p[3],1);V.set(p[0],p[1],p[2]);M.compose(V,Q,S);canes.setMatrixAt(i,M);});
   canes.userData.host=true;canes.userData.arch=true;canes.userData.cls='flora';canes.userData.inspectLabel='The bamboo grove (the paper mill\'s canes)';scene.add(canes);}
@@ -289,13 +311,14 @@ const FCHK={
  /* 2026-11-11: the house counts its 1,344 (it was 550), so its own grain is ~10 %; the ring's tithe (LS.RING) must cover
     the rest of its grain, the dairy a fifth of its food */
  /* the ring (LS.RING, openworld/oidong-highrift's plan): its make-up by focus, and the page's own three villages (40h)
-    standing in the plan within 150 m of where the page lays them (its spots are offsets from the house, as the plan's) */
+    standing in the plan within 150 m of where the page lays them (its spots are offsets from the house, as the plan's, the plan's on
+    the compass and the page's in its turned frame: LS.dirToPage) */
  ring(R,specs){if(!R||!R.villages)return{ok:false,detail:'no LS.RING (build.py: openworld/oidong-highrift/plan/sites.json)'};
   const n=f=>R.villages.filter(v=>v.focus===f).length,bad=[];
   if(n('farming')!==12||n('ranch')!==2||n('silk')!==1)bad.push(n('farming')+' farming, '+n('ranch')+' herding, '+n('silk')+' silk');
   const near={'longsong-east':'east','longsong-west':'west','longsong-herders':'herders'};
   (specs||[]).forEach(S=>{const V=R.villages.find(v=>v.id.endsWith('/'+near[S.id]));if(!V){bad.push(S.id+' not in the plan');return;}
-   const a=V.bearing*Math.PI/180,x=Math.sin(a)*V.km*1000,z=-Math.cos(a)*V.km*1000;if(Math.hypot(x-S.site.x,z-S.site.z)>150)bad.push(S.id+' '+Math.round(Math.hypot(x-S.site.x,z-S.site.z))+' m off');});
+   const a=V.bearing*Math.PI/180,q=LS.dirToPage(Math.sin(a)*V.km*1000,-Math.cos(a)*V.km*1000),x=q[0],z=q[1];if(Math.hypot(x-S.site.x,z-S.site.z)>150)bad.push(S.id+' '+Math.round(Math.hypot(x-S.site.x,z-S.site.z))+' m off');});
   return{ok:!bad.length,detail:(bad.length?bad.join('; ')+'; ':'')+R.villages.length+' villages, '+R.pop+' people (plan '+R.hash+'); the Order\'s houses: '+(R.houses||[]).map(h=>h.name+' '+h.parts.reduce((a,p)=>a+p.pop,0)).join(', ')};},
  provision(P){const ring=P.suppliedT!=null&&P.grainNeedT!=null;
   return{ok:P.share>.05&&P.share<.8&&!!P.tithe&&(!ring||P.suppliedT>=P.grainNeedT),detail:'own grain '+P.ownT.toFixed(1)+' t of '+P.needT.toFixed(0)+' t needed ('+(P.share*100).toFixed(0)+' %)'
@@ -309,7 +332,7 @@ function farmChecks(add){const F=LS.FARMS;add('the farms sow only what the Oidon
  const hOf=d=>{D.setYear(d);return D.uniforms.uH.value.slice(1,D.CAL.length);};const a=hOf(0),b=hOf(20);D.setYear(k0==null?0:k0);
  add('the fields go through the year (ploughed, sown, grown, ripe, cut)',FCHK.year(F.stage,D.CAL.slice(1),{ok:a.some((v,i)=>Math.abs(v-b[i])>.3),detail:'high summer\'s crops '+a.map(v=>v.toFixed(1)).slice(0,4).join('/')+', autumn\'s '+b.map(v=>v.toFixed(1)).slice(0,4).join('/')}));}
 function farmNegatives(add){add('a field of cotton (not the valley\'s)',FCHK.crops(Object.assign({cotton:['x']},LS.FARMS.sown())));
- add('a field laid across the stream',FCHK.clear([{id:'wet',kind:'strips',x0:-40,x1:40,z0:-300,z1:-280,run:'ns',w:14,off:0,rot:['frostoat'],wallEvery:4}]));
+ add('a field laid across the stream',FCHK.clear([{id:'wet',kind:'strips',x0:-40,x1:40,z0:-380,z1:-350,run:'ns',w:14,off:0,rot:['frostoat'],wallEvery:4}]));
  add('fields that stand the same all year',FCHK.year(()=>({h:1,ripe:0,soil:0,name:'standing'}),LS.FARMS?FARMDRAW.CAL.slice(1):[],null));
  add('a house that grows all its grain and names no other source',FCHK.provision({share:1,ownT:100,needT:100,tithe:''}));
  add('a ring of three villages (the old plan)',FCHK.ring(LS.RING&&Object.assign({},LS.RING,{villages:LS.RING.villages.slice(0,3)}),LS.HAMLETS.SPECS));

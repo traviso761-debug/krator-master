@@ -2,7 +2,9 @@
 
 `PLAN.md` holds the plan (H0-H6) and the owner's answers. Everything here is `[G data]`: no three.js, no DOM; Godot runs
 the same rules. Test: `node core/hamlet/test-hamlet.js` (each check has a negative; `--list` prints any wood phrase no
-rule takes).
+rule takes); `test-hamlet-coyote.js`, `test-hamlet-platform.js`, `test-hamlet-terrace.js` and `test-hamlet-trade.js` hold
+22, 32, 36 and 34, and prove that loading them moves no existing village; `test-hamlet-xanadu-row.js` holds the Xanadu row
+passed by name (below).
 
 | Fragment | What |
 |---|---|
@@ -13,13 +15,62 @@ rule takes).
 | `18-hamlet-names.js` | `KHAMLET.hamletName(culture, world, id, used)`, `dealNames(culture, world, ids)`: a name by a hash of the world and the hamlet's id, no two alike in a world; a hamlet founded later draws its own |
 | `20-hamlet-cultures.js` | `KHAMLET.CULTURES`: a row per building kit (the religious, civic, store and warehouse keys, houses by class, works by focus, the boxes of buildings the kit lacks). `islander_east` first; `xanadu` (settlements/xanadu's kit: Longsong's three valley villages, farming and ranch, its pens, corral and dairy pending) |
 | `21-hamlet-iziz.js` | `KHAMLET.CULTURES.iziz`: the Iziz Vernacular's row (kits/iziz-vernacular: its houses, farmhouse, silos, byre, pens, watch house, shops and provisioner; a shrine pending), its own fragment so the pages that list 20 do not change. First used by `openworld/iziz-cluster` (Talia's villages); a host lists it after 20 |
+| `22-hamlet-coyote.js` | **Opt-in** (2026-11-16, `kits/coyote` C7). `KHAMLET.CULTURES.coyote` (the Valley: Catalhoyuk tell `platform`, lone houses, `tradePost` with `cy_stage_house` and `cy_granary`; farming, ranch, salt), `coyote_peak` (the Peak: cliff-house alcove `platform` and stone huts; mine on `kits/resources` emerald/turquoise/copper nodes, quarry, ranch) and `coyote_tier` (the Tierhounds: Masuleh `terrace`, lake towns, Howl's `trade` row), all with `kit: 'coyote'` and fallback footprints in `pending` for hosts without `KratorCoyote`. Test: `test-hamlet-coyote.js` |
 | `30-hamlet-village.js` | `KHAMLET.village(spec)` -> `{census, records, lanes, green, site, landing?, vacant?, error?}`; its parts `census`, `program`, `siteFor` kept apart for other layouts. `spec.worksOut` keeps a works kind out of the layout (the farmsteads on their holdings, 14); `spec.landing {x, z, ux, uz}` (a shore point and its seaward direction, found by the host) puts the culture's `landing` building (the Islanders' quay and cargo shed) at the water's edge with a lane to it, tried along the shore until it fits (`out.landing`, or `{error}` without failing the village); `spec.vacant` (a share of the households) lays empty house plots after the houses (`rec.vacant`), the lots a village grows by (settlements/isle-demo 47h) |
+| `32-hamlet-platform.js` | **Opt-in** (2026-11-09; no build lists it yet). `KHAMLET.platform(spec)`: a defended village on a plinth or mesa bench (`plinth {pts, top, foot}`) or under an overhang (`alcove {line, depth, floor, height, foot}`): stepped roomblocks round a plaza, no door at the ground, ladders (`{foot, top, from, to}` node ids), kivas, and the court, pen and works below. `KHAMLET.pendingRow(name)`: the row an unknown culture gets, every key pending; `KHAMLET.platformRow(row)` fills a village row's platform and trade keys. Test: `test-hamlet-platform.js` |
+| `camp/26-hamlet-camp.js` | **Opt-in** (2026-11-23, `settlements/xanadu/WORKS-PLAN.md` W1; TODO.md "a work camp"). Wraps `KHAMLET.census` and `KHAMLET.village`: `spec.camp` (true: the row's `camp` overrides, else `KHAMLET.CAMP`; an object: overrides over them) lays a work camp, its people nearly all at work in bunkhouses; `spec.share {pop, parts, i}` lays part `i` of one record of `pop` people dealt over several camps by the largest remainder (`KHAMLET.shareParts`, `sharePart`), the camp's people its part and every worker the services leave on the focus. A spec with neither goes to the old functions bit for bit (`census.base`, `village.base`). List it after 30. Test: `test-hamlet-camp.js` (run by `test-hamlet.js`). First taker: `settlements/xanadu-works` |
+| `34-hamlet-trade.js` | **Opt-in** (2026-11-09). `KHAMLET.tradePost(spec)`: a post shared by two culture rows (`cultures [a, b]`, `links`, `line?`, `caravans`): a serai straddling the line with a stall per beast and a gate on each road, the market court on the line with its boundary stones, each half's census, houses, stores and cisterns in its own keys on its own side. The `trade` focus is its own (`KHAMLET.TRADE_FOCUS`), not in `KHAMLET.FOCI`. Needs 32. Test: `test-hamlet-trade.js` |
+| `ext/21-hamlet-yuni.js` | opt-in (2026-11-11): `KHAMLET.CULTURES.yuni`, the Yuni's row (the Loom-Chasms' Weavers' Cradle; the Great Chasm's trade post wants it): kits/yuni's ASSET keys, every one a declared box (the Yuni engine is not on other pages). Listed after 20 by the pages that want it, so the pages that pool this folder's own fragments do not change; `node core/hamlet/ext/test-hamlet-yuni.js` |
+| `36-hamlet-terrace.js` | **Opt-in** (2026-11-16, for the Coyote kit's Tierhounds; `kits/coyote/PLAN.md` section 8, amendment 2). `KHAMLET.terrace(spec)`: Masuleh's rule down a slope (`slope {origin, up, width, foot?, length?}`): houses in rows along the contours, each row one storey up, so a row's roofs are the lane of the row above; every row filled across the width (a gap is a terrace garden, `terrace.wall`); stair columns (`terrace.stair`) from lane to lane; the headman at the top, the services low, the works and anything taller than a storey below the foot street. Records, `stairs` (`from`, `to`: lane ids) and `lanes` (`level`, `y`, the frame's `t0`, `t1`, `cuts`). A row names `terrace {step, depth, stairW, landing, every, street, stair, wall}` (`KHAMLET.terraceRow` fills the rest, pending). Needs 32. Test: `test-hamlet-terrace.js`. Coyote Canyon will want the same rule at a city's size on `core/city` |
 
 **What a host does:** pass `dims(key)` (the kit's boxes, as `core/city`'s `kit.dims`) and `ground.ok(x, z)` (dry, not a
 cliff, not too steep). Register the records in `core/tags` before drawing them. A record marked `pending` is a building
 the kit does not have yet: draw a stand-in at its box. A mine whose spec has no `resource` takes the nearest node of
 `kits/resources`' field in its reach (`KHAMLET.resourceFor`: `spec.kres`, a loaded `RES_GEO.load(data)`, or the page's
 `KRES`; `spec.ore` names the kind); `out.resource` says which node.
+
+**Adopting the platform village** (the Labyrinth's Kimr pueblos; the Painted Men's cliff dwellings; Pinnacle Rock
+may share it): list `32-hamlet-platform.js` after `30`, pass the plinth's outline and heights (or the alcove's back wall,
+depth and clearance) with the village's spec, register `records` and `ladders` in core/tags, and draw stand-ins for
+`pendingKeys` until the kit lands. A Kimr or Painted Men row names `platform {room, store, kiva, greatKiva, court, pen,
+ladder, roomsPer, storeys, kivas}` beside the village fields; `cells` gives each roof's level for drawing the terraces.
+
+**Adopting the trade post** (the Great Chasm's post on the sill; any border post): list `32` and `34` after `30`, pass
+the two cultures, the two roads' links and the caravan's beasts. A culture with no row comes back `pending` (its keys
+`<name>-...`); a row adds `trade {serai, stall, market, cistern, store}` to name its own. `line.stones` are the boundary
+stones' points; `roads` the two roads out of the serai's gates.
+
+**The Xanadu row, passed by name** (opt-in, 2026-11-17; `xanadu/23-hamlet-xanadu-row.js`, `settlements/xanadu/BUILD-OUT.md`
+4b). `KHAMLET.xanaduRow(opts)` returns the shared `xanadu` row with fishing and the new foci; it registers no row and no
+focus, so a host that wants it lists the file after `20` and passes the row as `spec.culture` (no other page moves). It folds
+into `20-hamlet-cultures.js` at the next all-builds rebuild. `KHAMLET.XANADU_FOCI` lists its foci, `XANADU_FOCUS_INFO` their
+resource and keys:
+
+| Focus | Works (kit keys) |
+|---|---|
+| fishing | `xa_boatshed`, `xa_fish_racks`; the landing `xa_quay` (spec.landing); `shallows` adds `xa_fishponds`, `xa_mat_shed` |
+| orchard | `xa_farmhouse`, `xa_fermentary`, `xa_apiary` (the trees are land, as farming's fields: 14) |
+| tea | `xa_farmhouse`, `xa_tea_factory` |
+| saffron | `xa_farmhouse`, `xa_saffron_house` |
+| estate | `xa_farmhouse`, `xa_granary` (the tithe granary), `xa_apiary` |
+| placer | `xa_placer_sluice`, `xa_workshop` (the gold room), `xa_smithy` |
+| pottery (*proposed*) | `xa_kiln_yard`, `xa_workshop` |
+| quarry (*proposed*) | `xa_quarry_yard`, `xa_smithy` |
+| silk | `xa_farmhouse`, `xa_reeling_house`, `xa_watermill` (the paper mill), `xa_loom_house`, `xa_dye_works` |
+| mine | `xa_adit`, `xa_mine_head` (`mineHead`), `xa_workshop`, `xa_smithy` |
+| mill (*proposed*, 2026-11-23) | `xa_stamp_mill`, `xa_smithy`, `xa_workshop`, `xa_corral`, `xa_placer_sluice`, `xa_fort_post` (share 0: the Golden Tears' watch) |
+| diggings (*proposed*) | `xa_mine_head`, `xa_adit`, `xa_sorting_shed`, `xa_workshop` |
+| landing (*proposed*) | `xa_warehouse`, `xa_watch`, `xa_workshop` (the assay room), `xa_boatshed`; the landing `xa_quay` (spec.landing) |
+| farming, ranch | the shared row's |
+| every focus | one `xa_wayside_shrine` among the works (`shrine`; share 0: one building, no focus jobs) |
+
+Options (each `x == null ? default : x`): `shrine` (true), `mineHead` (true), `shallows` (false), `camp` (false: a work camp,
+workShare .9, households of 4 in bunkhouses, the shrine its religious building). The keys the kit's src lacks (the twelve
+pieces of `kits/xanadu/extra/88g-xa-works.js`, and the adit) are `pending` with boxes, so a page without them draws
+stand-ins. **The switch:** `xanaduRow({shrine: false, mineHead: false})` lays the villages the shared row lays (farming,
+ranch, mine) and the ones Kirstabal's `fishingRow` lays; with `camp: true` it is `openworld/oidong-highrift`'s
+`xanadu-camp` row; the test proves the digests equal. Every row also carries `camp` (the overrides) for a later
+`KHAMLET.census` camp option.
 
 **Read in place, never copied:** `core/rand` (`KRAND`), `core/space` (`KSPACE`), `core/city/33-city-strategies.js`
 (`KCITY.prim`: `frontageRun`, `huntNear`). The resource rules are `kits/resources` (`42r-res-ore.js` for nodes,

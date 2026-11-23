@@ -1,0 +1,17 @@
+{
+ "id": "rampart",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Spider Lake — North Ejecta Boulder-Collar & Ria Hydrological Divide",
+ "out": "spiderlake-rampart.html",
+ "px": [1278, 166],
+ "sky": [1006, -164],
+ "lakeDatumM": 1460.0,
+ "crestElevM": 2040.0,
+ "pAtm": 1.24,
+ "pO2Atm": 0.26,
+ "rhoKgM3": 1.46,
+ "outflowM3s": 0.0,
+ "strataStack": "secondary-ejecta",
+ "reserves": [],
+ "modes": ["Dawn Fog", "Dusk Lake-Smoke", "Smudge Harvest"]
+}

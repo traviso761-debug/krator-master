@@ -189,7 +189,7 @@
     "normalMap": "brick.normal.webp",
     "roughnessMap": "brick.rough.webp"
    },
-   "lib": "brick",
+   "lib": "brick.buff",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.0,
@@ -199,16 +199,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "1b832e93b2cabd2b02d090e2f1a30342f06044e8",
-    "normal": "3afaed755f00b5d9e300899bff527a021ed3197d",
-    "roughness": "f7dbd270b38734bd15a359a0aa7cae6d42b482a1"
+    "albedo": "aba93cb74be439abe0d91604b502b523d55d1630",
+    "normal": "a4589aeaa19e89c98c007bdcd8b25d24070bab44",
+    "roughness": "b8a95bb484e501de0f3b11e83af1524831db8e72"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.8,
-    "sourceMean": 0.6084
+    "sourceMean": 0.7675
    }
   },
   "bronze": {

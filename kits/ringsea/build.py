@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Concatenate src/* (+ core/materials/*, core/atmos, core/water) into dist/ringsea.html: the Ring Sea watercraft kit.
+"""Concatenate src/* (+ core/materials/*, core/atmos, core/water) into dist/ringsea.html: the Boats, Ships, and Vessels Kit.
 
 Rules it enforces (the same ones the Ancients-lineage builds use):
 
@@ -139,6 +139,7 @@ def main():
     paths.update({f: os.path.join(SHADER_DIR, f) for f in CORE_SHADER})
     paths.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS})
     paths.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER})
+    paths['56-core-water-breakup.js'] = os.path.join(WATER_DIR, 'ext', '56-core-water-breakup.js')   # the breakup (core/water ext/56), on by default since 2026-11-09
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
@@ -156,7 +157,9 @@ def main():
             for e in errs:
                 print('  -', e)
             sys.exit(1)
-    html = ''.join(bodies[f] for f in order)
+    html = ''.join(bodies[f] for f in order).replace(
+        '<title>Ring Sea Watercraft</title>', '<title>Boats, Ships, and Vessels Kit</title>').replace(
+        '<div id="cap">Ring Sea Watercraft</div>', '<div id="cap">Boats, Ships, and Vessels Kit</div>')
     BSRC.report(vendored=[os.path.join(ANCIENTS, r) for r in VENDORED] + [SOCKETS, SYMBOLS])   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, OUT + '.html')

@@ -11,11 +11,15 @@ Built output (never open it; edit `src/` and rebuild): `dist/post-apoc.html`
 Build: `cd kits/post-apoc && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `92k-host-keys.js`, `94-host-polytool.js`, `99-host-cutaway.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `10-core.js` | 2 | error panel (1); rng + noise (7) |
 | `20-tex.js` | 11 | procedural textures (1) |
 | `22-mat.js` | 8 | materials (1); the palette (culture-neutral) (43); animated materials (shader-side only: geometry a (59) |
@@ -38,9 +42,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `58-dock.js` | 18 | DOCK (infrastructure). Land at the back (-z), ha (2) |
 | `89-rows.js` | 1 | the showcase table: rows of the kit, by family.  (1) |
 | `90-scene.js` | 9 | scene: renderer, sky, ground, lights, the showca (1); layout: rows by family, front (+z) toward the ca (33); (re)build the world for a culture (48) |
-| `91-probe.js` | 4 | probe (window._api): everything a headless check (1) |
+| `91-pa-api.js` | 4 | the set's probe fields: what a headless check ne (1) |
 | `91f-furnish.js` | 7 | furniture: PLACED from the catalog, not drawn (1) |
 | `91n-night.js` | 10 | NIGHT and dusk, and the invisible front-door mar (1) |
-| `92-camera.js` | 12 | camera, inspector, polygon tool, walk mode (1) |
 | `93-anim.js` | 9 | ANIMATION: the clock, smoke, light volumes (1) |
+| `99-host-take.js` | 6 | the inspector's words: name, classification and  (26); the cut-away: a building with an interior set, s (33); the frame, around the host's: the sky and the su (37); the page, handed to the host (42) |
 | `99-tail.html` | <1 |  |

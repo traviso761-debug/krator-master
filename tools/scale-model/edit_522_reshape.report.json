@@ -1,0 +1,111 @@
+{
+  "edit": "5.1 edit 8",
+  "date": "2026-11-13",
+  "pass1_spider_lake": {
+    "lake_cells": 1373,
+    "lake_km2": 5492,
+    "lake_wl_m": 1460.0,
+    "floor_min_m": 1396.0,
+    "nw_rampart_min_m": 1940.0,
+    "nw_saddle_1252_175_m": 1940.0,
+    "sw_spillway_1246_232_m": 1344.0,
+    "r9102_vertices_was_now": [
+      162,
+      147
+    ],
+    "r9109_start_px": [
+      1208.8,
+      174.6
+    ]
+  },
+  "pass2_se_tharn_crater": {
+    "center_px": [
+      1375.0,
+      1525.0
+    ],
+    "radius_px": 27.0,
+    "tarn_cells": 113,
+    "tarn_km2": 452,
+    "tarn_wl_m": 6910.0,
+    "tarn_bed_min_m": 6854.0,
+    "floor_bench_med_m": 6992.8,
+    "rim_p25_p75_m": [
+      11342.4,
+      13318.7
+    ],
+    "stalker_peak_1397_1505_m": 14870.0
+  },
+  "pass3_arch_horsts_and_copper_tarn": {
+    "crookshore_horst_cells": 4345,
+    "crookshore_max_lift_m": 414.8,
+    "double_delta_horst_cells": 6724,
+    "double_delta_max_lift_m": 420.2,
+    "twin_bays_new_wet_cells": 160,
+    "copper_tarn_collar_cells": 738,
+    "copper_tarn_collar_max_lift_m": 411.2
+  },
+  "pass4_nsemiarid_strandlines": {
+    "west_lake_cells": 1024,
+    "west_lake_wl_m": -80.6,
+    "east_lake_cells": 3676,
+    "east_lake_wl_m": -59.8,
+    "benched_shore_cells": 1586,
+    "evaporite_painted_cells": 2333
+  },
+  "pass5_ringisles_and_port_goto": {
+    "ring_sea_wl_m": -1500.19,
+    "onshore_terrace_cells": 1408,
+    "shoal_bathy_cells": 3485,
+    "shoal_turquoise_cells": 2901,
+    "port_goto_920_703_dry_m": -1488.2,
+    "port_goto_920_704_wet_depth_m": 10.5,
+    "port_goto_1px_water_adjacent": true
+  },
+  "pass6_firebliss_and_riftrim": {
+    "firebliss_pancake_domes": 3,
+    "firebliss_dome_cells": 235,
+    "riftrim_faceted_cells": 722,
+    "neouterwall_shore_aprons_m": {
+      "garnet_1185_346": 2825.0,
+      "vitreous_1261_328": 2965.0
+    }
+  },
+  "reclimate": {
+    "cells": 25431,
+    "class_changed": 3322,
+    "rain_mean_before_mm": 1458.0,
+    "rain_mean_after_mm": 1401.0,
+    "classes_now": {
+      "Af": 70,
+      "Am": 2634,
+      "Aw": 213,
+      "BWh": 6,
+      "BSh": 18,
+      "Csa": 171,
+      "Csb": 104,
+      "Cfa": 16589,
+      "Cfb": 305,
+      "Dsb": 176,
+      "Dsc": 92,
+      "Dwb": 2,
+      "Dfb": 1384,
+      "Dfc": 1539,
+      "ET": 763,
+      "EF": 332,
+      "XA": 582,
+      "XV": 22,
+      "XS": 1,
+      "HT": 7,
+      "HF": 400,
+      "WS": 19,
+      "WH": 2
+    }
+  },
+  "summary": {
+    "h_cells_moved": 37442,
+    "wet_cells_changed": 1372,
+    "landforms_total": 13,
+    "max_dry_river_climb_m": 26.2,
+    "worst_river_id": "r_lab_chaos_n"
+  }
+}

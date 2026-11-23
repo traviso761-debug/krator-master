@@ -1,5 +1,7 @@
 # Medicinal and fuel plants by biome (survey, 2026-10-18)
 
+> **Master Survey & Comprehensive Catalogs (2026-11):** The complete repository-wide botanical surveys covering all biomes, 1,010+ species, cultivated food crops, wild edibles, 3D fruits, reagents, fuels, and 11 miscellaneous utilitarian craft domains are maintained in `biomes/BOTANY-SURVEY.md` and its companion catalogs (`biomes/BOTANY-MEDICINAL-REAGENT-FUEL.md`, `biomes/BOTANY-FOOD-CROPS.md`, `biomes/BOTANY-MISCELLANEOUS-PLANTS.md`, `biomes/botany_census.json`, verified by `tools/check_botany.py`).
+
 Read from the biome kits' `harvest` tags (`HV(wood, edible[], medicinal, note)` in each `src/50-biome-*-species.js`): a plant is
 **medicinal** when its third argument is `true`, and a **fuel plant** when its wood or note names fuel, firewood, charcoal or
 resin. Trees, shrubs and floor plants all count. The count is from a regex over the tags, so a plant whose tag is written in

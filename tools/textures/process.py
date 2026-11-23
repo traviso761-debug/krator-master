@@ -232,7 +232,7 @@ def run_one(src, out_dir, rec, opt):
         'processing': {'script': 'tools/textures/process.py', 'version': VERSION, 'options': o, 'log': log},
     }
     meta['source'].update(rec.pop('_source', {}))
-    with open(os.path.join(out_dir, 'meta.json'), 'w') as fh:
+    with open(os.path.join(out_dir, 'meta.json'), 'w', encoding='utf-8', newline='\n') as fh:   # LF on Windows too (T17)
         json.dump(meta, fh, indent=1, sort_keys=True)
     print('%-34s seams %.2f/%.2f -> %.2f/%.2f%s' % (
         rec['id'], log['seam_before'][0], log['seam_before'][1], log['seam_after'][0], log['seam_after'][1],

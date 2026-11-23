@@ -1,0 +1,59 @@
+{
+ "build": "settlements/basilisk",
+ "note": "Basilisk's ground pack (PLAN.md section 1): four library ground layers under KGROUND (white-tan sabkha salt crust, anaerobic brown bay mud, beaten dirt and brick-gravel streets/haul tracks, and tilled southern paddy soils). mapOnly with tint.keep 0.8.",
+ "size": 512,
+ "families": {
+  "gSalt": {
+   "lib": "ground.salt",
+   "scale": [
+    6,
+    6
+   ],
+   "use": "the coastal sabkha flat (-2,600 m) and salt-pan margins",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.68
+   },
+   "mapOnly": true
+  },
+  "gMud": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the eastern terminal sea and Tlahn Gill bay mud strand and leat banks",
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.34
+   },
+   "mapOnly": true
+  },
+  "gYard": {
+   "lib": "ground.dirt",
+   "scale": [
+    4,
+    4
+   ],
+   "use": "the district platforms, spiral streets, Great Coil approaches and dock haul roads",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.5
+   },
+   "mapOnly": true
+  },
+  "gTill": {
+   "lib": "ground.tilled",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the bunded southern and south-western bamboo-rice, taro and shade-manioc fields",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.46
+   },
+   "mapOnly": true
+  }
+ }
+}

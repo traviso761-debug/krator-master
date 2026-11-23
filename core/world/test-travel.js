@@ -28,7 +28,8 @@ const L = 'sq80bzd7ep', GJ = 'ssinggjar01', MAV = 'skukf2qmmq', GIR = 'seed07', 
     E.id + ': ' + km(E.length_m) + ', up ' + Math.round(E.up_m) + ' m, down ' + Math.round(E.down_m) + ' m; ' + Math.round(up) + ' min up, ' + Math.round(down) + ' down, ' + Math.round(flat) + ' flat'); }
 // 3. multi-hop: Longsong to the Singing Gjar has no link of its own: by the Caldron House and the Mirror Grange
 { const P = KTRAVEL.path(G, L, GJ, PACK), links = [...new Set(P.legs.map(l => l.link))], N = KTRAVEL.path(G, L, GJ, PACK, { avoid: ['smirrorgrange01'] });
-  ok('Longsong to the Singing Gjar: three links, by the Caldron House and the Mirror Grange', links.length === 3 && P.legs[0].a === L && P.legs[P.legs.length - 1].b === GJ && Math.abs(P.length_m - (306259 + 136953 + 284126)) < 5,
+  const want = ['scaldronhouse01', 'smirrorgrange01', 'ssinggjar01'].map(b => (OH.links.find(l => l.id.endsWith('/link/' + b)) || { length_m: NaN }).length_m).reduce((a, n) => a + n, 0);   /* the three links' baked lengths: a re-bake of the roads moves them */
+  ok('Longsong to the Singing Gjar: three links, by the Caldron House and the Mirror Grange', links.length === 3 && P.legs[0].a === L && P.legs[P.legs.length - 1].b === GJ && Math.abs(P.length_m - want) < 5,
     N === null, links.join(' > ') + '; ' + km(P.length_m) + ', up ' + Math.round(P.up_m) + ' m'); }
 // 4. inns as stops: the pack train sleeps at a caravanserai or a rest stop on most nights of the road, the riders likewise
 { const P = KTRAVEL.path(G, L, GJ, PACK), atStop = P.nights.filter(n => n.kind === 'inn' || n.kind === 'rest').length, camps = P.nights.filter(n => n.kind === 'camp').length;

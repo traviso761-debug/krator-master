@@ -86,6 +86,7 @@ saying what fixed it.
       `../ancients/src/64-dalab.js`: a wall gap where the oak avenue enters
       (`LAB_WALL_GAP`) and a narrower, higher bite in the great dome (w .11,
       y0 .10). Both lines are marked DALAB; `--vendor-check` says so.
+- [ ] (ADAPTED, 2026-11-19) `src/70-hl-tex.js` is kept at Dalab's pre-Slavic-refactor copy alongside `71-hl-mat.js`, `71b-hl-motif.js`, `73-hl-carve.js` and `74-rep-dwell.js` until Dalab's Republican embassy re-vendors `kits/highlands`.
 - [ ] The oak corridor rule keeps plots 22.5 m off every oak road's line, so
       a town the highway passes through loses its highway frontage; the second
       ring street and the extra radials make up the count.
@@ -165,3 +166,12 @@ The `na` rows (sea trades on a landlocked build, trades the lore does not hold) 
   call `vnStoop` (its 69e5, which Dalab does not take) for the doors' stoops, and turn the embassy's flank stair. One fix
   is worth porting by hand: Iziz's `vpArchGeo` draws the porch arches' opening as a notch in the outline. Dalab's still
   draws it as a hole on the outline's foot, which the triangulator fills with a bar across the doorway.
+## The ride-along rebuild (2026-11-10)
+- [ ] **`dalab.html` fails the universal `instance-cap`**: `swlowlands/glossy` places 282,687 instances, over the 250,000 default,
+  with no `capWhy` (`BIO.capReport`). The rule came with f4fe755f (2026-11-09), which also rebuilt this page; the page has not
+  changed since but for core/host's probe flag (2026-11-10), so this is the city's dense oak and fig crowns meeting a new check,
+  not a regression. Either Dalab declares a cap with its reason for the lowlands' glossy crowns, or the crowns thin. Everything
+  else passes (`verify.py dist/dalab.html --assert`, SwiftShader: 18 pass; `dalab-set.html`: OK, 19 pass). The vendor check
+  also still reports drift against the Vernacular (`69b`, `69c`), Iziz (`91-probe`, `93-labels`, `75`, `76`) and the Highlands
+  kit (`71`, `71b`, `73`, `74`), none of it the biome's: the deliberate ones are recorded above; the rest is a re-vendor to read
+  diff by diff.

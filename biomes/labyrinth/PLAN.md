@@ -115,12 +115,13 @@ below are the kit's targets: Earth's figure, then the Labyrinth's.
 to grip and throw. It is uncannily intelligent. Two-Snouts have been known to drop rocks from the graben rims on human
 hunters, and to set up feints: one shows itself while the rest of the family circles behind.
 
-**The History Monk's account.** A History Monk posted from Longsong to this remote and savage region wrote that the Two-Snouts:
+**The History Monk's account.** A History Monk (**Lu-Tze**: the owner, 2026-11-11) posted from Longsong to this remote and savage region wrote that the Two-Snouts:
 - keep their own funeral customs;
 - paint one another, with ochre and mud;
 - set fermented melons aside for later occasions.
 
-Many at Longsong think he may have had a few too many fermented melons himself. The kit may show all of it, as things a
+Many at Longsong think he may have had a few too many fermented melons himself. **The Two-Snouts are sapient, or very nearly so**
+(the owner, 2026-11-11): the kit shows it, never explains it. The kit may show all of it, as things a
 patient player might glimpse, never as anything explained:
 - a Two-Snout family standing round a bone heap;
 - smeared ochre on a flank;
@@ -154,8 +155,17 @@ pueblos.
 - **Their villages in the biome kit:** the biome kit places the village sites, plinths and keep-clears, as Crystal Cavern
   massed its caverns for the Hearth hold. The pueblos themselves are a **settlement kit** of their own: a culture in
   `kits/catalog` and a building kit, placed with `core/hamlet`.
+- **Their culture, tongue and look** (a first draft, 2026-11-11, awaiting the owner): the culture in `LORE.md` section 6.24 (virtue-taking,
+  the masked heroes, the Hall as necropolis, the Aurochs-horn kingship, the Fellgangs and the Monk); the tongue, Kimr tog, with its
+  names for the Labyrinth's places, in `lore/kimr-tongue.md`; the art and material rules for the kits in `KIMR.md`.
 
-## 6. The arcology at the gate (name TBD)
+## 6. The arcology at the gate: the Hall of Heroes
+
+**Settled 2026-11-11 (`PLAN-GATE.md`):** the owner named it the **Hall of Heroes**, a ruin where the Kimr bury their dead. Its form
+is Soleri's Arcvillage II with five carved stacks bridged to it (`kits/ancients` targets/gatearc), at the neck of the eastern
+opening, px 376.5,1473.5 (not the gate lake), and station 1 is built there. The text below is the seed's.
+
+### The seed (2026-11-09)
 
 At the eastern entrance, the breach to the Rift, stands an Ancient arcology (**TBD**). The natives' ancestors came out of it.
 - **Its site:** the gate lake (1,419 m, px 328,1476) and the lowest ground at px 367,1486, between the chaos mesas.
@@ -219,6 +229,29 @@ World km = 5.1 px x 2; a page's site is the old canvas px (5.1 px less 272, 330)
 Each page is the usual 5.2 km square round its site. Station 1 comes first: it holds the people, the ruin and the animals all
 at once.
 
+**Built 2026-11-11** (`stations/<name>/44z-host-site.js`; one stage, `src/45-host-stage.js`, makes every station's land from its site's
+numbers: lakes, rivers, `KRELIEF.scarp` walls and `KRELIEF.stepcut` pits read off the model's cells, `KSTACKS` knobs, the model's own
+heights past the square). Each site was surveyed again on the model and moved where the plan's point did not suit a page:
+
+| Station | Built at (5.1 px) | Ground | What is drawn |
+|---|---|---|---|
+| 1 The Gate | 376.5,1473.5 (the neck, east of the gate lake: PLAN-GATE.md) | floor 1,131 m, Cfb | the Hall of Heroes in its pond, its five stacks and bridges, the Gowd Warra, six knobs |
+| 2 The Paddocks | 245.5,1479.5 (the graben lake's north-east shore) | lake 1,820 m, Cfb 9 degC, 894 mm | the lake filling the south-west half, the bastion's benched face rising 3.2 km to the north-east, a beck from its ravine |
+| 3 The Mesas | 257.5,1590 (the canyon floor at the east mesa's foot; the plan's point is the mesa's EF top) | floor 1,960 m, BSk 8 degC, 298 mm | the east mesa's face (4 km), the west mesa's prow (3.4 km), seven knobs and pyramids on the floor |
+| 4 The Pit Chain | 148,1466 (the NW pit tarn's north shore) | tarn 2,920 m, Dfc 1 degC, 830 mm | the tarn, the dome's wall 2.5 km to the north, three stepped pits, one holding its own small tarn |
+
+```
+python3 build.py --station paddocks | mesas | pits     # dist/labyrinth-<name>.html
+```
+
+**The Mesas' pueblo (2026-11-12):** a clan's pueblo (`kits/kimr`'s `km-house`, the 14 m yard) on knob 7, a low flat-topped mesa
+8.5 m over the floor at -700,250, its front to the east. The knob is the rock (the kit's `kmSite` takes the world's rock: its edges
+read off the drawn knob, no plinth drawn); the long ladders, the round room under the glyptodont's shell, the bone pen and the dung
+walls stand on the floor in front of it. The kit comes in sealed (`kits/kimr/kit_bundle.py`, `KMK`) because its engine's globals
+clash with the Ancients runtime this page reads; a station asks for it in `station.json` (`"kits": ["kimr"]`), so the Gate never
+takes it. `src/86p-host-pueblo.js` fits, registers and draws it; the host check "the Kimr pueblo stands on its knob" has two
+negatives (the house lifted 3 m, a plant in its yard).
+
 ## 9. For the owner
 
 - **Names:** the arcology, the wild melon, and the Two-Snout's own name in the natives' tongue. The rivers are
@@ -228,7 +261,7 @@ at once.
   villages, and how many people? The floors could feed a few tens of thousands.
 - **The arcology's form** (section 6).
 - **Scale:** are the sizes in section 4 right? The Aurochs as a small bus is the owner's figure; the rest follow it.
-- **The Monk:** does he get a name and an entry in Longsong's records?
+- **The Monk:** Lu-Tze (the owner, 2026-11-11); his report is in `LORE.md` sections 6.15 and 6.24.
 - **Order:** this kit waits behind the integration pass and the queued new-region kits (`biomes/STATIONS-MAP-5.1.md`). The four
   core amendments (section 7) can be done first, since the open world and other kits want them too.
 
@@ -240,3 +273,21 @@ at once.
 - the model's data at 260b90d44 (`gemini/scale-model-5.1-r3`), read with `smodel.page`;
 - `tools/scale-model/river-names-5.1.md` (`r_lab_cat_nw`, `r_lab_cat_sw`);
 - `biomes/copperglacier/PLAN.md`, the neighbour to the north, the form this plan follows.
+
+---
+
+## 10. Scale-Model 5.1 Three-Tier Chaos Stratigraphy & Showcase Station #13 (`2026-11-13`)
+
+### 10.1 How the Labyrinth Formed (`tibasalt-ponded` Caprock + `megabreccia` Walls + `loess` Paddocks)
+- **Cryo-Magmatic Jökulhlaup Genesis (Martian *Noctis Labyrinthi* + Channeled Scablands Analogue):** Radial dike swarms propagating west-southwest from the **Rift / Firebliss** triple-junction intruded ice-rich outer-flank **`megabreccia`** beneath a thick **`tibasalt-ponded`** flood-basalt caprock plateau (`+5,200–6,200 m`). Subsurface cryosphere melting triggered catastrophic **jökulhlaup outburst floods** and magma-withdrawal collapse, shattering the plateau into intersecting `2–4 km` deep diamond grabens while windblown periglacial rock-flour settled across the sheltered graben floors (`+1,400–2,300 m`) as `15–60 m` of fertile calcareous **`loess`** mammoth-steppe soil.
+- **Three-Tier `KSTRATA` Binding (`core/terrain/35-core-strata.js`):**
+  1. **Upper Tilted Mesa Caps (`+4,500–6,100 m`):** **`tibasalt-ponded`** (`4–12 m` massive ponded flood-trap colonnades and hackly entablatures tilted `4–12°` on rotational slump blocks).
+  2. **Middle Chasm Bastions (`+1,800–4,500 m`):** **`megabreccia`** (`5–15 m` angular polymictic chaos blocks, dike-baked red breccia ribs, and drystone pueblo cliff-ledges).
+  3. **Graben Floor Terraces (`+1,400–1,950 m`):** **`loess`** (`2–6 m` vertical-cleaving buff silt bluffs, paleosol stripes, and braided jökulhlaup gravel bars supporting tall `Cfb`/`Dfb` mammoth-steppe grass and gallery woods).
+
+### 10.2 Showcase Station #13 — `Hall of Heroes Mammoth-Steppe Arcology`
+- **Canonical `5.1` Coordinates:** **`(328, 1476)` to `(367, 1486)`** (eastern Labyrinth **Gate Lake** graben threshold centered on `(348, 1481)` where the eastern Rift-rim pass opens onto the `+1,419 m` Gate Lake floor).
+- **Elevation & Atmosphere:** **`+1,419 m`** Gate Lake water level & `+1,430–1,580 m` loess steppe floor (**`1.34 atm`**, `Cfb` / `Dfb` sheltered mammoth-steppe microclimate, `+11 °C` annual mean) enclosed between **`+5,400 m`** tilted basalt-capped chaos bastions.
+- **`KSTRATA` Binding:** **`tibasalt-ponded`** (dark columnar flood-trap caprock crowning the tilted skyline mesas) + **`megabreccia`** (sheer `2.5 km` chaos-block canyon walls with natural rock-shelter ledges) + **`loess`** (buff vertical stream-cut silt terraces framing Gate Lake's braided inlet).
+- **Camera Framing (`5.2 × 5.2 km` graben-gate vista):** Sweeping bench-brow camera at `+32 m` on a golden `loess` steppe terrace looking WNW across **Gate Lake** (`+1,419 m`) toward the half-collapsed Ancient **Hall of Heroes** cliff-arcology (`Ancients` / Girder megastructure slotted into a `megabreccia` fault-recess beneath a overhanging `tibasalt-ponded` colonnade cap): **Kimr** mud-and-stone ladder-pueblos (`KCITY` / pueblo tiers with Aurochs-skull totems and retractable timber ladders) clinging to `80 m` cliff ledges safe above the browse/trample line, a dust-raising herd of bus-sized **Great Aurochs**, woolly mammoths, and ground sloths (`kits/fauna`) crossing the gallery-wooded delta below, and `4 km` chaos bastions catching warm afternoon light through canyon dust shafts.
+- **Hydrology & Trade Tie-In:** Fed by Firebliss's **Weyt** and **Tlahn Warra** meltwaters and spring seepage out of the `loess` and `megabreccia` aquifers into Gate Lake (`+1,419 m`); the **Kimr** hold the Hall of Heroes as their sacred clan moot and trade mammoth ivory, cured Aurochs hides, Firebliss obsidian (`175, 1335`), and scavenged Ancient alloys with **Fellgang** intermediaries from **Wildcat** (`427, 1453`) and a lone resident **History Monk** chronicler from **Longsong**.

@@ -13,6 +13,15 @@ MP.idHash = function (s) { return KRAND.child(MP.SEED, s) >>> 0; };
 // The ruin states every record answers (the brief's seven). keep: the top of what stands, a share of the roof height;
 // bare: the share of the height above the stump that is steel; glass: what is left of it; the rest are per-building notes
 MP.RUINS = ['intact', 'gutted', 'crown', 'broken', 'stump', 'skeleton', 'fallen'];
+// A look is a state, or a state with a variant: 'crown.wild' is the crown state overgrown (44b, 59e). MP.look splits a look into its
+// base state and its variant, so every reader of a state (MP.ruin, the debris plan, the shell record, the heroes) takes a look too
+MP.WILD = 'wild';
+MP.look = function (s) {
+  var i = s == null ? -1 : String(s).indexOf('.');
+  if (i < 0) return { state: s, variant: null, wild: false };
+  var v = String(s).slice(i + 1);
+  return { state: String(s).slice(0, i), variant: v, wild: v === MP.WILD };
+};
 
 // ---- the zones: a run of storeys with one use. use names a plan (41) and a facade rule (42).
 function mpLevels(zones) {
@@ -131,6 +140,7 @@ MP.arcadePiers = function (F) { var hw = F.footprint.w / 2, n = Math.max(1, Math
 // storeys, deeper here and there); skin: the top of the whole skin (a storey under it can open); frame: [y0, y1] of a skeleton's bare steel, patchy below it from
 // the plant floor; top: the highest thing that stands (the shell's frame); core, fins, ends: what stands above the cut (a stump's core and fins, a fallen slab's end walls)
 MP.ruin = function (F, state) {
+  state = MP.look(state).state;
   var S = F.ruins[state], roof = F.height.roof, plant = F.levels.filter(function (L) { return L.use === 'plant'; })[0], plantTop = plant ? plant.y + plant.h : 0, round = F.core.kind === 'round';
   if (!S || state === 'intact') return { state: 'intact', cut: Infinity, torn: 0, skin: F.height.tip, top: F.height.tip, frame: null, patchy: null, core: 0, fins: F.fins ? F.fins.y1 : 0, ends: 0, span: null };
   var cut = S.keep * roof, torn = ({ gutted: 0, crown: 1.5, broken: 3, stump: 1, skeleton: 2, fallen: 1.5 })[state] * MP.STOREY, skin = cut - torn, frame = null, patchy = null;
@@ -159,6 +169,7 @@ MP.tearAtXZ = function (F, R, x, z) {
 // what lies at a ruin's foot, as records (the tower's own frame; the stage turns it with the tower). mounds: KRUBBLE heaps (centre, half-lengths, strike, crest, a seed); pieces:
 // a shaft's section lying (r, len, along the yaw ry, tipped by tilt), the lamp's disc on its side, a slab tipped up. A Spindle falls along a fin, the Ledger in on itself
 MP.debrisPlan = function (F, state) {
+  state = MP.look(state).state;
   var R = MP.ruin(F, state); if (R.state === 'intact' || state === 'gutted') return null;
   var seed = function (i) { return MP.idHash(F.id + '.' + state + '.' + i) >>> 0; }, M = [], P = [];
   /* a heap's crest from the old tiers' rise (hs: the plan's numbers), its loose blocks by its area */
@@ -182,7 +193,16 @@ MP.debrisPlan = function (F, state) {
       if (state === 'fallen') { mnd(0, 0, R0 * 1.05, R0 * 1.05, [6, 5, 4], 0); mnd(R0 + 10, 0, R0 * 0.4, R0 * 0.2, [3, 2], 1); }
     } else {
       if (state === 'crown') { mnd(R0 + 0.06 * s2, 0, 0.1 * s2, 0.06 * s2, [3, 2.5, 2], 0); sec(R0 + 0.03 * s2, -0.04 * s2, H * 0.9, 0.06 * s2, 0.4, 0.1); if (F.discs) dsc(R0 + 0.12 * s2, 0.02 * s2, F.discs[F.discs.length - 1], 0.4); }
-      if (state === 'broken') { mnd(R0 + 0.25 * s2, 0, 0.28 * s2, 0.1 * s2, [5, 4, 3], 0); sec(R0 + 0.12 * s2, 2, H * 0.65, 0.12 * s2, 0.08, 0.06); sec(R0 + 0.36 * s2, -4, H * 0.8, 0.1 * s2, -0.15, -0.05); if (F.discs) dsc(R0 + 0.5 * s2, 0, F.discs[F.discs.length - 1], 0.5); }
+      /* broken: a single tower's top lies along the fall line as itself (the owner, 2026-11-11: a heap and two slabs did not read as a tower's
+         top): its storeys from the tear's mean to the tip, in two lengths broken at a little over half (a kink of a few degrees and a 3 m gap),
+         the foot 3 m off the stump, a heap where it struck. A tower of several (F.towers) keeps its heap and sections */
+      if (state === 'broken' && !F.towers) {
+        var y0 = R.cut - (R.torn == null ? 0 : R.torn) * 0.5, top = Math.max(H, F.height.tip == null ? 0 : F.height.tip), L1 = (top - y0) * 0.55, s0 = R0 + 3, f0 = at2(s0, 0), f1 = at2(s0 + L1 + 3, 1.5);
+        mnd(R0 + 0.08 * s2, 0, 0.12 * s2, 0.07 * s2, [4, 3, 2.5], 0);
+        P.push({ kind: 'top', x: f0[0], z: f0[1], y0: y0, y1: y0 + L1, ry: ph2 + 0.03, tilt: 0.02 });
+        P.push({ kind: 'top', x: f1[0], z: f1[1], y0: y0 + L1, y1: top + 50, ry: ph2 - 0.07, tilt: -0.015 });
+        if (F.discs) dsc(R0 + 0.5 * s2, 6, F.discs[F.discs.length - 1], 0.5);
+      } else if (state === 'broken') { mnd(R0 + 0.25 * s2, 0, 0.28 * s2, 0.1 * s2, [5, 4, 3], 0); sec(R0 + 0.12 * s2, 2, H * 0.65, 0.12 * s2, 0.08, 0.06); sec(R0 + 0.36 * s2, -4, H * 0.8, 0.1 * s2, -0.15, -0.05); if (F.discs) dsc(R0 + 0.5 * s2, 0, F.discs[F.discs.length - 1], 0.5); }
       if (state === 'stump') { mnd(R0 * 0.5, 0, R0 * 1.1, R0 * 0.9, [6, 5, 4], 0); mnd(R0 + 0.15 * s2, 0.1 * s2, 0.12 * s2, 0.07 * s2, [3, 2], 1); sec(R0 + 0.06 * s2, -0.08 * s2, H * 0.4, 0.1 * s2, 0.4, 0.05); }
       if (state === 'skeleton') { mnd(R0 + 4, 0, 0.08 * s2, 0.05 * s2, [3, 2], 0); mnd(R0 + 2, -0.12 * s2, 0.06 * s2, 0.04 * s2, [2.5, 2], 1); }
       if (state === 'fallen') { mnd(R0 + 0.35 * s2, 0, 0.4 * s2, Math.max(R0 * 0.7, 0.08 * s2), [7, 5, 4], 0); mnd(R0 * 0.3, 0, R0 * 0.9, R0 * 0.8, [5, 4], 1);

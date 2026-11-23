@@ -223,5 +223,10 @@ python3 tools/scale-model/extract_region.py <page.html> openworld/isle-demo/sour
 - **The highway check is n/a:** the region has no roads.
 - **The isle's four checks pass**, and each negative is caught.
 - **Geyser site 1 builds without an error.**
+- **`verify.py --assert` runs them at Kautoa too (2026-11-03).** The world's start view had been little-demo's (6 km west of
+  Shade, which this region lacks, so at 0,0 over 158 m of sea), so the probe's tile held no flora and four checks failed. The
+  start is now `WORLD_CONFIG.start` (`src/46-world-config.js`: Kautoa, framed as "Go to" frames it). The same pass listed
+  `core/biome` 31b (leaf sets) and 34 (impostors), which the lenders' trees call, and fixed the geyser plume's shader
+  for vents below zero (`core/water/geyser/52b`: it wrote `p.y--1278.37`, a syntax error, and every plume failed to compile).
 
 See `KNOWN_ISSUES.md`.

@@ -1,0 +1,30 @@
+{
+ "canvas": "5.1 (1821x1723)",
+ "note": "Station 5, the White Loom (PLAN.md section 7: new, split from v2's caelum; built 2026-11-12 at the plan's site, 1697,1176). Lake Nim (the model: 124 cells, about 500 km2, level 240 m, bed 218 m, class WX) fills the page's west edge; the playa rises east from its shore at 240 m to 250 m at the page's east edge, under the scarp that climbs to 340-460 m 8 km east. kin: the Great Chasm's kit for the playa's salt tufts and the desert set on the rising ground; fauna: kits/fauna's loom group (the halite sifter). The site record below is the plan's data; build.py reads only kin, core, fauna and base.",
+ "name": "The White Loom (station 5): Lake Nim's shore and its halite playa, the salt crust over brine, the brine pools and their mats, the halite sifters at a pool, a salt-cutters' camp",
+ "out": "loom-chasms-whiteloom.html",
+ "site": {
+  "name": "whiteloom",
+  "title": "The White Loom",
+  "px": 1697,
+  "py": 1176,
+  "base": 243.0,
+  "lake_level": 240.0,
+  "atm": 1.55,
+  "mean": 24.0,
+  "rain": 47,
+  "cls": "XS"
+ },
+ "water": [
+  {"kind": "lake", "name": "Lake Nim", "level_m": 240.0, "bed_m": 218.0, "area_km2": 500, "hypersaline": true},
+  {"kind": "brine", "name": "The brine pools", "note": "on the playa, under the crust"}
+ ],
+ "fauna": ["hyperjungle", "wild", "loom"],
+ "kin": {
+  "greatchasm": [
+   ["src/50-biome-greatchasm-species.js", "src/60-biome-greatchasm-floor.js", "src/70-biome-greatchasm.js"],
+   "GCH",
+   "*"
+  ]
+ }
+}

@@ -237,18 +237,30 @@ sprig's mass, a tie going to the lower end); `core/materials/library/card-bases.
 
 - **The card guard.** `BIO.def` (and `BIO.libSwap`, for items defined before it) reports through `BIO.err` a library card it
   cannot draw right: a sheet drawn whole (no cell, stems, `BIO.geo.cells`, `"sheet": "geometry"` or a uv cut by the kit's own
-  code), a library plant on a frond, ribbon or hang with no `base`, a crown on the clump with no `stems` or `base`.
+  code), a library plant on a frond, ribbon or hang with no `base`, a crown on the clump with no `stems` or `base`, and (2026-11-15,
+  ehighlands' beech) ONE plant (`plants 1`) cut into a sheet's cells by `BIO.geo.cells` or `"sheet": "geometry"`.
   `BIO.cardFaults` lists them. It reads `plants` and `anchor` from the pack entry (`tools/textures/pack.py`): a pack written
-  before them is never refused.
+  before them is never refused, but since 2026-11-15 it is reported: `BIO.cardMute` lists the slots whose pack says nothing of
+  the image, and `guardChecks` fails them ("library cards described by the page's pack"). It found the guard silent on fifteen
+  biome packs written before `plants`, and on ehighlands, whose own pack writer dropped `cell`, `base` and `stems` as well: rerun
+  `tools/textures/pack.py <build>`, and write a page's pack with `tools/textures/matlib_pack.py`.
+- **Inside out.** `BIO.insideOut({ground})` (2026-11-15, ehighlands' fumarole: a lathe written lip to foot) lists the opaque,
+  front-sided, non-instanced meshes whose area is mostly faces turned down that stand above the ground: from above such a mesh
+  shows its unlit underside through a culled near side, a flat black shape. A cave's roof or a carved overhang lies under the
+  heightfield and is not counted.
 - **One box a chunk.** At bake every chunk mesh takes the height range (so the distance and the cull sphere) of every mesh
   sharing its square and minRange: a tree's bark, rods and cards switch at one distance. `BIO.LOD.ownBox = true`: as before.
 - **The attachment audit.** `BIO.attachAudit({ground})` reads the baked scene: each leaf or hang card above the ground
-  (sampled, 20,000 at most) against the nearest structure (instanced non-card items along their long axes; every other mesh's
-  triangle edges, on KSPACE near the samples): floating, in another chunk, or reaching past its structure's range. An item
-  defined with `{free: true}` is skipped.
+  (sampled, 20,000 at most) against the nearest structure (instanced non-card items as segments along their long axes, point to
+  segment since 2026-11-15 (it sampled them every 2 m); every other mesh's triangles, on KSPACE near the samples): floating, in
+  another chunk, or reaching past its structure's range. An item defined with `{free: true}` is skipped. A crown held by its
+  stems (a clump whose slot gives `stems`: its sprigs' stem ends are its origin) must have that origin within `o.stemTol` (.15 m)
+  of a structure, not a share of its size (2026-11-15, ehighlands' fir: `.25 x size + .5` passed a sprig 60 cm off its twig);
+  `stemmed` and `stemFloat` count them.
 - **The checks.** `BIO.guardChecks(o)` and `BIO.guardNegatives(o)` (each with controls that must fail: a made-up fern with no
-  base, every card lifted 6 m, every card reaching four times its range) are appended by the host probe to every build's
-  `hostChecks` and `hostNegatives`; `KHOST.take({guards: false | {maxShare, minUp, k, kStem, pad, max}})` turns them off or
+  base, a made-up one-plant card in cells, a made-up disc wound toward the ground, every card lifted 6 m, every stem-held clump
+  lifted 0.4 m, every card reaching four times its range) are appended by the host probe to every build's
+  `hostChecks` and `hostNegatives`; `KHOST.take({guards: false | {maxShare, minUp, k, kStem, stemTol, pad, max}})` turns them off or
   tunes them (maxShare .01 by default). `HANDOFF-REBUILD.md`, "the foliage guards", has the rule for a build that fails.
   Test: `test-guards.js`.
 
@@ -694,3 +706,42 @@ this table names: `BIO.envInto` copies only the 0..1 fields into a host's table,
 2. `const E = BIO.env({ground: terrainH, water: WATER.fieldFns(F), therm: H, wet: kitWet, rock: (x, z) => KRELIEF.scarpRock(W, x, z), bands: {upland: [800, 1600]}})`.
 3. `BIO.envInto(host.fields, E, {wet: 'marsh'})` for the kit's own name; read the rest from `E`.
 4. In the kit's checks: `BIO.envCheck(E, points)` must be empty, and `WATER.edgeAudit` gets `wet: E.wet`.
+
+## Animal sign on the ground (`46-core-sign.js`, `KSIGN`, opt-in, 2026-11-09; `test-sign.js`)
+
+The Labyrinth's amendment 1 (`biomes/labyrinth/PLAN.md` section 7): the sign herds leave, drawn from the herd records, so a herd's
+range becomes `KGROUND` masks and decals and its trails follow the graben corridors. The open world wants it wherever herds live.
+Plain data (`[G data]`), on core/rand; no THREE, no DOM, no canvas.
+
+`KSIGN.make({herds, ground, cost, box, cell, world, water})` takes kits/fauna's herd records as they are (`FAUNALANDS.register`'s
+`{id, key, at, r, n}`, or `plan`'s groups by `gid`), or plain `{id, species, x, z, r, n, mass, water, browse, bed, pasture,
+predators}`, and returns:
+- **trails**: least-cost paths on a lattice (`cell`, 25 m; 8 neighbours, no corner cut past a cliff) from each herd's bedding ground
+  to its water and its pastures. The cost is the run, the slope (over `slopeMax` is a cliff) and the page's `cost(x, z)`: Infinity
+  impassable, negative cheaper (a graben's floor, `KRELIEF.grabenNet`'s corridors). Herds go in id order and prefer ground already
+  worn, so they share trails; a shared trail is wider (`w`) and worn deeper (`d`), `use` the herds that share it.
+- **wallows** by the water of the heavy herds (mass 200 kg and over), on flat cells no higher than their neighbours;
+- **dung** along the trails (by wear) and on the bedding ground, its `kind` by the beast (`heap`, `pat`, `pellet`);
+- **browse**: the browse line per herd (`y`, .4 x mass^.25 unless given), for the flora to cut its trees to;
+- **trample**: the box's cells, from the bedding ground's load (head x mass over the range) and the trails' wear;
+- **boneyards** at the water and at kill sites on a hunted herd's trails (`predators`).
+
+Every draw is `KRAND.hash(world, cell i, cell j, salt)` on one global lattice, and each herd's paths are searched in its own window
+(its points plus `margin`), never the box's: the box only chooses what is returned (everything that reaches it), so a tile made alone
+with the same herds returns the whole box's sign there, and `maskAt` agrees to the bit across a tile's edge.
+
+`KSIGN.maskAt(S, x, z)` -> `{trail, trample, wallow, dung, bone}`, each 0..1, for the ground's layer weights; `KSIGN.export(S)` and
+`KSIGN.load(J)` round-trip it as plain JSON.
+
+### Adopting it
+
+1. `CORE_BIOME`: add `'46-core-sign.js'` (anywhere after core/rand).
+2. After the herds are registered (`FAUNALANDS.register(T, plan)`): `const S = KSIGN.make({herds: plan.groups, ground: terrainH,
+   cost: (x, z) => cliff(x, z) ? Infinity : onCorridor(x, z) ? -.5 : 0, water: lakes.map(l => [l.x, l.z]), box, world})`.
+3. Per ground vertex, bake `KSIGN.maskAt(S, x, z)` into the attributes the page's `KGROUND` layers read their weights from (`trail` a
+   trodden-earth layer, `trample` cropped grass, `wallow` mud); place dung and bone decals from `S.dung` and `S.boneyards`, and cut the
+   trees under `S.browse[i].y` within its range.
+4. A streamed world exports `S` once per region (`KSIGN.export`) and loads it per tile.
+
+**Not done.** No decal or mesh drawing (the page's host); no Godot twin (the lattice, the hash and the search are plain arithmetic, so a
+port is direct). Trails run on the lattice's eight directions: a page that wants a smoother line rounds `pts` itself.

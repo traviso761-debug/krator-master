@@ -39,18 +39,18 @@ ytRoomDef({key:'yt_tannery',name:'Tannery',seed:9507,dims:{Rr:3.0,Ho:3.6,pass:2.
 ytRoomDef({key:'yt_weaving_house',name:'Qiviut weaving house',seed:9509,dims:{Rr:3.2,Ho:3.7,pass:2.4},budget:100000,
  tags:{types:['industry'],wealth:'middle',style:'common',role:'weaving',job:'weaving'},
  note:"the musk-ox underwool's combers and weavers in a lined dome: two upright looms, the combed qiviut in baskets, lengths of felt and cloth",
- inside(D){ytLoom(-1.2,D.yFl,-1.6,.45);ytLoom(1.2,D.yFl,-1.6,-.45);FURNISH('generic_basket',0,D.yFl,-.2,0);FURNISH('generic_floor_basket',-1.4,D.yFl,.6,0);FURNISH('generic_sewing',1.2,D.yFl,.4,0);FURNISH('generic_chest',1.8,D.yFl,-.6,-PI/2);
+ inside(D){ytLoom(-1.2,D.yFl,-1.6,.45);ytLoom(1.2,D.yFl,-1.6,-.45);FURNISH('khaayken_common_comb_stand',0,D.yFl,-.3,0);FURNISH('generic_floor_basket',-1.4,D.yFl,.6,0);FURNISH('generic_sewing',1.2,D.yFl,.4,0);FURNISH('khaayken_common_chest',1.85,D.yFl,-.55,-PI/2);
   ytRug('felt',0,D.yFl,.9,1.6,1.0,0);ytLamp(0,D.yFl,1.2,0);wkPad(0,0,D.Rr*1.2,D.Rr*1.2,D.yFl);return {stove:null,lamps:1,fuel:'fat'};}});
 ytRoomDef({key:'yt_carvers_house',name:"Carvers' house",seed:9511,dims:{Rr:3.0,Ho:3.6,pass:2.4},budget:100000,
  tags:{types:['shop'],wealth:'middle',style:'common',role:'carvers',job:'masonry'},
  note:'a lined dome where soapstone, antler and horn are carved: blocks on the floor, figures on the benches, the engraved panels',
- inside(D){ytBenchRing(D.Rr-.5,PI*1.1,PI*1.9,D.yFl);for(let i=0;i<5;i++){const a=PI*(1.18+i*.16);sph('soap',Math.cos(a)*(D.Rr-.5),D.yFl+.6,Math.sin(a)*(D.Rr-.5),.12,P('ice'),1.4,8);}
+ inside(D){ytBenchRing(D.Rr-.5,PI*1.1,PI*1.9,D.yFl);for(let i=0;i<5;i++){const a=PI*(1.18+i*.16);ytFigure(Math.cos(a)*(D.Rr-.5),D.yFl+.49,Math.sin(a)*(D.Rr-.5),-a-PI/2,.34,{});}   /* the generator's figures, finished and in hand */
   box('soap',-.8,D.yFl,.2,.6,.4,.5,P('ice'));box('soap',.7,D.yFl,.5,.5,.5,.4,P('ice'));box('antler',0,D.yFl+.5,-D.Rr+.3,1.6,.6,.03,P('ice'));
-  ytLamp(0,D.yFl,.9,0);FURNISH('generic_crate',1.6,D.yFl,-.2,0);FURNISH('generic_basket',-1.5,D.yFl,.7,0);FURNISH('generic_tea_set',.9,D.yFl,1.3,0);FURNISH('generic_chest',-1.7,D.yFl,-.5,PI/2);wkPad(0,0,D.Rr*1.2,D.Rr*1.2,D.yFl);return {stove:null,lamps:1,fuel:'fat'};}});
+  ytLamp(0,D.yFl,.9,0);FURNISH('generic_crate',1.6,D.yFl,-.2,0);FURNISH('generic_basket',-1.5,D.yFl,.7,0);FURNISH('generic_tea_set',.9,D.yFl,1.3,0);FURNISH('khaayken_common_chest',-1.75,D.yFl,-.5,PI/2);wkPad(0,0,D.Rr*1.2,D.Rr*1.2,D.yFl);return {stove:null,lamps:1,fuel:'fat'};}});
 ytRoomDef({key:'yt_tea_house',name:'Tea house (Ivan-chai)',seed:9513,dims:{Rr:3.2,Ho:3.7,pass:2.4},budget:100000,
  tags:{types:['tavern'],wealth:'middle',style:'common',role:'tea house'},
  note:'the travellers\' warm room: fireweed tea brewed over lamps and drunk on the benches; robes, a fur-mosaic rug',
- inside(D){ytBenchRing(D.Rr-.55,PI*.7,PI*2.3,D.yFl);ytRug('mosaic',0,D.yFl,0,2.0,2.0,0);for(const x of [-.6,.6])FURNISH('generic_tea_set',x,D.yFl+.02,0,0);
+ inside(D){ytBenchRing(D.Rr-.55,PI*.7,PI*2.3,D.yFl);ytRug('mosaic',0,D.yFl,0,2.0,2.0,0);for(const x of [-.6,.6]){FURNISH('khaayken_common_tea_board',x,D.yFl+.02,0,0);FURNISH('generic_tea_set',x,D.yFl+.02+(typeof svfH==='function'?svfH('khaayken_common_tea_board',0,.42):.42),0,0);}
   FURNISH('generic_snack_bowl',0,D.yFl+.02,.7,0);FURNISH('generic_water',1.7,D.yFl,1.2,0);ytLamp(0,D.yFl,-D.Rr+.8,0);ytLamp(-1.6,D.yFl,1.2,0);wkPad(0,0,D.Rr*1.2,D.Rr*1.2,D.yFl);return {stove:null,lamps:2,fuel:'fat'};}});
 /* the goldroot house: drying racks under a turf lean-to on larch posts, open to the dry wind on the lee side */
 defBuilding({key:'yt_goldroot_house',name:'Goldroot drying house',seed:9515,w:8,d:6,h:3.2,budget:40000,

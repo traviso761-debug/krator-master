@@ -161,13 +161,13 @@
     "chevron_m": 38.0,
     "max_runup_ceiling_m": 100.0,
     "farport_px": [
-     294,
-     588
+     248,
+     585
     ],
     "farport_elev_m": 212.0,
     "harbour_px": [
-     290,
-     588
+     243,
+     586
     ],
     "harbour_wlev_m": 0.0
    }
@@ -175,6 +175,18 @@
   {
    "key": "landforms",
    "file": "landforms.json"
+  },
+  {
+   "key": "springs",
+   "file": "springs.json"
+  },
+  {
+   "key": "domes",
+   "file": "domes.json"
+  },
+  {
+   "key": "canals",
+   "file": "canals.json"
   }
  ]
 }

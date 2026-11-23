@@ -47,6 +47,15 @@ if(SKEY==='cataract'){const P=SITE.pool,C=L.C,T=SITE.cataract.tiers,fr=[[0,.28],
  const OT=WATER.terraces({name:'The Opaline Sinter Staircase',line:[L.O.A,L.O.B],levels:SITE.outlet.levels,riser:3,width:40,speed:1.2,spread:3});
  const OT_DRAW=WATER.drawTerraces(OT,{pool:{color:0xffffff,roughness:.06,metalness:.05,envMapIntensity:.55,renderOrder:1,gradient:{centre:lin(0x58b8c0).getHex(),rim:lin(0xe0ece6).getHex(),power:1.4}},
   fall:{color:lin(0xeaf2f0),opacity:.85,rowStep:1,cols:8,spray:false,plungeR:6,renderOrder:3}});
+ // THE OUTFALL: the pool spills over its south-west rim and falls to the staircase's first tread (the owner, 2026-11-15: "fall where the stream
+ // leaves the pool"), down the head wall of the valley the stage cut below the lip (45-host-stage.js: L.outLip)
+ const OF={s:L.outLip,y0:P.level,y1:SITE.outlet.levels[0]},Ou=[L.O.ux,L.O.uz],Ox=L.O.A[0]+Ou[0]*OF.s,Oz=L.O.A[1]+Ou[1]*OF.s,Of=Math.max(10,-OF.s+2);   /* the foot in the first tread (it begins at the outlet's s 0) */
+ /* a free curtain arcing from the lip to the foot, not draped on the face: the ground mesh draws the sheer head wall as a slope a cell wide, which
+    poked through a draped curtain as a mound in front of it (the GPU shot, 2026-11-15) */
+ const OUTFALL=WATER.fall({name:'The Caldron\'s outfall',lip:[[Ox+Ou[1]*11,Oz-Ou[0]*11,OF.y0+.15],[Ox-Ou[1]*11,Oz+Ou[0]*11,OF.y0+.15]],dir:Ou,drop:OF.y0-OF.y1,
+  foot:[Ox+Ou[0]*Of,Oz+Ou[1]*Of,OF.y1],fit:true,spread:4});
+ const OUTFALL_DRAW=WATER.drawFall(OUTFALL,{color:lin(0xeaf2f0),opacity:.9,rowStep:2,cols:10,spray:'drop',plungeR:16,footK:.8,envMapIntensity:.25,renderOrder:3,pick:true});
+ OUTFALL_DRAW.mesh.userData.inspectLabel='The Caldron\'s outfall (the outlet leaving the pool)';
  // BRANT-FELL GILL: glacial water, milky grey-green, from the south-east into the pool
  const gp=[];for(let s=0;s<=L.G.L+.1;s+=20){const a=-14*Math.sin(s*.006),x=L.G.A[0]+L.G.ux*s+L.G.uz*a,z=L.G.A[1]+L.G.uz*s-L.G.ux*a;gp.push([x,z,L.gillBed(s)-1.0]);}
  const GILL=WATER.flow({name:'Brant-Fell Gill',pts:gp,width:13,speed:1.8,rapids:[.02,.08]});
@@ -55,7 +64,8 @@ if(SKEY==='cataract'){const P=SITE.pool,C=L.C,T=SITE.cataract.tiers,fr=[[0,.28],
  // the small vents' hot pools and the geyser on the staircase
  SITE.vents.slice(2).forEach((v,i)=>spring('cpool'+i,'A hot spring by the Caldron',v.x,v.z,9,terrainH(v.x,v.z)+.1,.85,'sinter'));
  W_OUT.geyser=geyser(SITE.geyser,'A geyser on the staircase');
- Object.assign(W_OUT,{treads:TR.pools.length,tierFalls:TR.falls.length+1,terraces:OT.pools.length,cataractDrop:T[0]-P.level});}
+ Object.assign(W_OUT,{treads:TR.pools.length,tierFalls:TR.falls.length+1,terraces:OT.pools.length,cataractDrop:T[0]-P.level,
+  outfall:{lip:[+Ox.toFixed(1),+Oz.toFixed(1)],s:OF.s,drop:OF.y0-OF.y1}});}
 if(SKEY==='mirror'){const K=SITE.lake,BOX=[-TERR.R*1.1,-200,TERR.R*1.1,TERR.R*1.1];
  // LAKE VERDIGRIS: turquoise-green acid water (copper sulfate), milky over the boiling patch
  BIGW=WATER.open({name:'Lake Verdigris',level:K.level,swell:SWELL,field:0,bounds:BOX,bed:terrainH,bedCell:8,mask:maskOf(BOX,8,(x,z)=>z>L.shoreZ(x)-6)});

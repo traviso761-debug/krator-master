@@ -29,8 +29,33 @@
   'use strict';
   var SIM = root.SIM;
   SIM.LEDGER_VERSION = 1;
+  /* Canonical 10 settlement pin stages (scale model 5.1): `town`, `inhabited ruin` and `fort` are active living settlements;
+     only `ruin` and `ruined arcology` are uninhabited and skipped when enumerating active settlement economies. */
+  SIM.SETT_STAGES = {
+    city:             { living:true,  pop:10000, reachKm:25, glyph:'city' },
+    town:             { living:true,  pop:2800,  reachKm:20, glyph:'town' },
+    village:          { living:true,  pop:750,   reachKm:15, glyph:'village' },
+    fort:             { living:true,  pop:800,   reachKm:15, glyph:'fort' },
+    outpost:          { living:true,  pop:300,   reachKm:12, glyph:'outpost' },
+    cavern:           { living:true,  pop:1200,  reachKm:15, glyph:'cavern' },
+    arcology:         { living:true,  pop:8000,  reachKm:22, glyph:'arcology' },
+    'inhabited ruin': { living:true,  pop:1200,  reachKm:15, glyph:'inhabited ruin' },
+    ruin:             { living:false, pop:0,     reachKm:0,  glyph:'ruin' },
+    'ruined arcology':{ living:false, pop:0,     reachKm:0,  glyph:'ruined arcology' }
+  };
+  SIM.settStage = function(type){
+    var k = typeof type === 'string' ? type.trim().toLowerCase() : '';
+    return SIM.SETT_STAGES[k] || SIM.SETT_STAGES.village;
+  };
+  SIM.isLivingStage = function(type){
+    var k = typeof type === 'string' ? type.trim().toLowerCase() : '';
+    return SIM.SETT_STAGES[k] ? SIM.SETT_STAGES[k].living : true;
+  };
   var FLOWS = ['made', 'imported', 'exported', 'used', 'short'];
-  function keys(){ return SIM.ECONS ? SIM.ECON_ORDER.slice() : (SIM.ECON ? ['_'] : []); }
+  function keys(){
+    var ks = SIM.ECONS ? SIM.ECON_ORDER.slice() : (SIM.ECON ? ['_'] : []);
+    return ks.filter(function(k){ var E = k==='_' ? SIM.ECON : SIM.econ(k); return !(E && E.stage && !SIM.isLivingStage(E.stage)); });
+  }
   function econOf(k){ return k==='_' ? SIM.ECON : SIM.econ(k); }
   function snapTown(k){
     var E=econOf(k), I=SIM.ITEMS, keyed=k!=='_', St=keyed ? SIM.stocks(k) : SIM.stocks(), B=I ? (keyed ? ((I.statsBy||{})[k]||{}) : I.stats) : {}, out={};
@@ -47,7 +72,9 @@
         Object.keys(E.recipes||{}).forEach(function(pid){ var Rc=E.recipes[pid], Pp=SIM.R.place[pid], Ws=Rc.site!=null && out.sites && out.sites[Rc.site];   /* a batch in hand: its take booked, its out not yet made */
           if(Ws && Rc.batch && Pp && Pp.order) Object.keys(Rc.batch.out).forEach(function(g){ Ws.wip+=Rc.batch.out[g]; }); }); });
     if(T) T.order.forEach(function(id){ var R=T.routes[id], sea=out.sea[id]={};
-      R.carriers.forEach(function(C){ if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
+      R.carriers.forEach(function(C){ if(C.orig!=null && C.cargo.length){   /* a road with halts (77-sim-6-trade.js): each load's leg is from where it was loaded to the stop it is for */
+          C.cargo.forEach(function(c){ var k2=R.stops[C.orig].settlement+'>'+R.stops[c.at!=null ? c.at : C.dest].settlement, o2=sea[k2]||(sea[k2]={}); o2[c.good]=(o2[c.good]||0)+c.n; }); return; }
+        if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
         C.cargo.forEach(function(c){ o[c.good]=(o[c.good]||0)+c.n; }); });
       out.routes[id]={ shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)) }; });
     if(SIM.MONEY && SIM.moneySnap) out.money=SIM.moneySnap();   /* money's accounts and books (77-sim-6-money.js), when a world keeps money */

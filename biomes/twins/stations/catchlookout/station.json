@@ -1,0 +1,30 @@
+{
+ "name": "Catch-Lookout Spring (station 6, Oasis 5 of Route B; PLAN.md section 6): Manzar al-Masid on a faulted titanium-basalt ledge at 3,690 m (1.01 atm), Route B's last oasis before the descent to Stair: a 70 C alkaline-chloride spring feeding stepped travertine soaking basins down the bench toward the scarp's lip, wind-flagged dwarf agate-pine krummholz on the warm margins, sedge and cushions, the lookout cairn on the lip with the Catch's pale floor spread below, and Route B going down the scarp's breach",
+ "out": "twins-catchlookout.html",
+ "region": "region.json",
+ "reads": {
+  "45a-core-therm.js": "core/terrain/47-core-therm.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "22-core-hazard-env.js": "core/hazard/22-core-hazard-env.js"
+ },
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "geyser/52-core-water-geyser.js",
+  "geyser/52b-core-water-geyser-draw.js",
+  "ext/53-core-water-terraces.js",
+  "ext/53b-core-water-terraces-draw.js",
+  "geyser/52c-core-water-thermal.js",
+  "geyser/52d-core-water-thermal-draw.js"
+ ],
+ "tex": [
+  "scree",
+  "travertine",
+  "sedge",
+  "fern",
+  "lichenCrust"
+ ]
+}

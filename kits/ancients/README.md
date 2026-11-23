@@ -47,6 +47,9 @@ budget counter cannot see where a thing is. **Read the shots. Every round.**
 socket for any culture's furniture. Open a building with the "Interior" select; `[` `]` change the storey. API.md
 "Interiors".
 
+**Pieces** (`pieces/`, 2026-11-23): self-contained Ancient pieces other worlds read in place (three.js only, not in `src/`,
+so none of this kit's pages changes): `89p-anc-beacon-lamp.js`, the Beacon's lamp head (`ANC_BEACON_LAMP`). `pieces/README.md`.
+
 **Ancient hosts** (`src/8ap-host-*`, `--target hosts`): five types drawn as Hykkousoi hosts for Ys: Skyscrapers L
 (the Facet) and M (the Bastion), the Arcades, the Capsule Stalks and the Bell Hall. Each has a pure-data `HOSTSPEC_*`
 beside its builder, in the shape of Ys's `YS_HOST_TYPES`. Read the header of `src/8ap-host-0-lib.js`.

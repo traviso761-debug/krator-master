@@ -11,11 +11,13 @@ Write code with an eye to an eventual port to Godot.
   | randomness, a seed, a hash of (world, cell, index, salt) | `core/rand` (`KRAND`): never `Math.random`, a hand-rolled PRNG or `fract(sin())` |
   | height, relief, strata, noise, rivers on the ground | `core/terrain` (and the scale model's fields), not your own `fbm` or `terrainH` |
   | the scale model's land at 1:1, an open-world region, a settlement on the map's ground | `core/world` (`WORLD.H`, `ROADS`, the streamed flora; `openworld/PLAN-SITES.md`), never a copy of it or a ground of your own |
+  | the ground as drawn, for an audit or a camera (not `terrainH`) | `core/drawn` (`KDRAWN.h`: the strip cells, else the mesh's triangles) |
   | what is where, overlap tests, occupancy | `core/space` (`KSPACE`), `core/mask` (`KMASK.canvas`); never `getImageData` for placement |
   | sky, sun, fog, light, weather, cloud deck, the wave field | `core/atmos` (`ATMOS.bindHost` from `core/atmos/host`), the standard skybox plus local detail |
   | a sky for a kit's viewer page (its pieces are lit by their site's sky in the world) | the placeholder sky, `core/atmos/placeholder` (`KratorSky`), read by path through its `placeholder.py`: never a copy in `src/` |
   | the sea, a lake, a river, a fall, a pool, a hot spring, a geyser | `core/water` (open, shore, flow, fall, still, spring, geyser, terraces): no `MAT_WATER`, no ripple shader of your own |
   | camera, viewer, inspector, polygon tool, walk keys, probe, cut-away | `core/host` (`KHOST`), `core/walk`: do not write a camera or a probe |
+  | underground: a follow camera that keeps out of the rock, a deck cut with caps, a band or section cut, a deck map and line map, a dither fade, an x-ray, the rock opened over each void's floor | `khost.UNDERGROUND` (`core/host/UNDERGROUND.md`: `91b` follow, `99-host-section` section, `97b` + `core/minimap/decks` map, `core/shader/aids` `KFADE`) and `core/terrain/host/39h-core-cavern-cut.js` (`KCAVERN.cutLayer`) on `KCAVERN`: never a cut shader or spring arm of your own |
   | records, tags, names, vocabulary | `core/tags` (`KTAGS`); everything placed is registered before it is drawn |
   | a building kit's engine (merged geometry by material, `defBuilding` and its records, the sheet's scene, the host hand-over) | `core/engine` (`engine.py`), read by path: a new kit starts from it, never from a copy of another kit's `src/` |
   | furniture and interiors | `kits/catalog` (its engine `core/catalog`, names resolved by `core/catalog/catalog.py`) through `core/furnish`, with `kits/interiors` for rooms |
@@ -23,9 +25,11 @@ Write code with an eye to an eventual port to Godot.
   | flora, fauna, biome zones | `core/biome` and the biome kits (`kits/fauna`, `kits/crops`); new species go into the kit, not the page |
   | surfaces and textures | `core/materials` (the library through `materials.json` and `tools/textures/pack.py`) |
   | export, LOD, minimap | `core/export`, `core/lod`, `core/minimap` |
+  | a ruined structure (a ruin, a wrecked machine, an engine, anything with fallen pieces) | `core/ruins` (`KRUINS.watch` it once drawn): the verify harness then asserts nothing floats and every wreck lies on the ground. The default for every ruined structure (the owner, 2026-11-10) |
 
 - **If core lacks it, stop and say so.** Add the piece to core (an opt-in subfolder if builds that pool the folder would change: `core/water/geyser`, `core/atmos/host`) or ask; do not write a bespoke one in the build, and never leave a vendored copy of a core fragment.
 - **A check enforces it.** `python3 tools/check_core_use.py` (a step of `tools/test_all.py`) fails on a build that does not list the core modules its kind needs, or whose own fragments write a PRNG, a `fract(sin())` hash, a value noise, `getImageData`, `MAT_WATER =`, a sky dome or a copy of the placeholder sky (`KratorSky`). It compares with `tools/core_use_baseline.json` (today's findings), so old code passes and new code cannot add to the pile. A deliberate exception is a line in the script with its reason: `NOT_APPLICABLE` (a module a build cannot use), `PLACED` (settlements already placed on the world map with their biome data: Pinnacle Rock, the isle demo, Hook, Longsong; the sky and water rules apply to them and they are rebuilt when the biome files change; every other settlement is left alone until it is placed), and `SINGLE_COMPLEX` / `CAVERN` (Longsong, Dhelv: exempt from "takes `core/simulation` therefore takes `core/city`" until `core/city` has a single-complex mode and a cavern setting). Run it before you say a build is done.
+- **A new build takes the survey's checks from its first commit** (CORE-IMPROVEMENTS.md items 22-31, the survey of 2026-11-11): list it under every check in `tools/checks_optin.json`, start `build.py` and `verify.py` from `tools/new_build/` (`buildlib.through_tools_build`, `buildlib.CORE_BIOME_MIN`, `verify_page(..., checks=harness.SURVEY)`), write node tests on `tools/ktest.js`, run `python3 tools/lfs_needs.py <build> --pull` in a fresh worktree and commit with `python3 tools/commit.py -F msg.txt`. `tools/new_build/README.md` has the list. Old builds take them at the next all-builds rebuild (TODO.md, "switch on checks 22-31 everywhere").
 
 We want new builds to reference core modules as much as possible rather than building bespoke systems for each build.
 
@@ -111,6 +115,26 @@ fingerprint, `verify.py --assert` on the critical-path builds and the Godot test
 push (`.github/workflows/checks.yml`, which also fails if a committed page is not what its sources build) and the second
 nightly (`nightly.yml`). A verify.py takes its harness from `tools/harness.py`; `python3 tools/harness.py smoke <pages>`
 loads any pages headless and reports their error panels.
+
+**Verifying every page: `tools/verify_all.py`** (Stage 8's driver, STAGE-8/PLAN.md D5 and step 29). It lists every built
+page (`port_baseline.py`'s pages plus the targets `tools/build.py --all` skips) with its `verify.py --assert` command
+(biome and station pages `--all-views`; an override in `tools/verify_all.json`; else the gate its README or verify.py
+documents; else `--assert`) and runs them, longest first, through the harness's lanes (arc, rtx, and the cloud lanes when
+`harness.py cloud status` says a machine is on), with the lock, the queue, the watchdog and the verify cache, KRATOR_GL=gpu.
+```powershell
+python tools/verify_all.py --dry-run                 # the pages that differ from PORT-BASELINE.json, each command and where it came from
+python tools/verify_all.py --all --workers 1 biomes/rift kits/crops   # run some (one headless Chrome at a time)
+python tools/verify_all.py --detach                  # the whole run, detached; --resume carries it on after a crash
+python tools/verify_all.py --resume --retry-failed   # rerun what failed, stalled or crashed
+```
+Tiering (`--tier auto`, the default): a page whose only moved inputs (its build manifest at `--since` and now) are proven
+no-look core items (`tools/verify_all.json` "no_look", each with its proof) runs its main view only; every other page runs
+its full command. A run lives in `%LOCALAPPDATA%/krator-verify-all/runs/<name>/`: `report.md` (pass, cached, known, fail,
+and the owner's D30 list row by row), `report.json`, `results.tsv`, a log per job. A known failure is one whose every
+failed item matches `verify_all.json` "known" (D30, STAGE-8/PLAN.md section 5; the HANDOFF-REBUILD carried list shown apart);
+`STALE PASS` and a GPU pass with no renderer line do not count. The driver never starts, stops or prewarms a cloud
+machine (the owner's priced yes); when a cloud lane ran a job its report says to tell the owner the queue is empty.
+`tools/tests/test_verify_all.py` tests the page list, the arguments, the log reading and a resume.
 
 **Built pages and texture packs are in Git LFS** (2026-10-08, like the texture library): every `dist/*.html` and
 `dist/*.js`, the pages the Voth lineage writes beside `build.py`, and every packed `tex/*.webp`. A clone needs `git lfs`

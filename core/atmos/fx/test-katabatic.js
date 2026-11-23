@@ -1,0 +1,24 @@
+// node core/atmos/fx/test-katabatic.js — the night's katabatic wind and the day's breeze (89-atmos-fx-katabatic.js): each check with a negative.
+'use strict';
+const fs=require('fs'),path=require('path'),vm=require('vm');
+let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
+const hooks=[],base={x:0,y:0,set(a,b){this.x=a;this.y=b;}};
+const ctx={console,Math,ATMOS:{hook:f=>hooks.push(f),windBase:base,W:{cloud:0}}};ctx.globalThis=ctx;vm.createContext(ctx);
+vm.runInContext(fs.readFileSync(path.join(__dirname,'89-atmos-fx-katabatic.js'),'utf8'),ctx);
+const A=ctx.ATMOS,K=A.katabaticK,W=A.katabaticWind;
+ok('a clear night drains fully before dawn, not at all in the afternoon',K(4,0).night>.99&&K(15,0).night<.01,K(15,0).night>.5);
+ok('the drainage builds through the evening and dies by mid-morning',K(20,0).night<K(22,0).night&&K(7,0).night>K(9,0).night&&K(10,0).night<.01,K(20,0).night>=K(22,0).night);
+ok('an overcast night barely drains (cloud .9)',K(3,.9).night<.05,K(3,.9).night>.5);
+ok('the day\'s breeze blows in the early afternoon, none at night',K(14,0).day>.95&&K(2,0).day<.01,K(2,0).day>.5);
+const n=W(4,0,{down:[-1,0]}),d=W(14,0,{down:[-1,0]});
+ok('the night wind runs downslope ('+n.map(v=>v.toFixed(2))+'), the day breeze back up ('+d.map(v=>v.toFixed(2))+')',n[0]<-1.5&&d[0]>.6,n[0]>0);
+ok('the wind is the calm one between them (19:00 overcast is mostly calm)',(()=>{const c=W(19,1,{down:[0,1],calm:[.3,.15]});return Math.abs(c[0]-.3)<.05&&Math.abs(c[1]-.15)<.06;})(),false);
+ok('hours wrap (28 is 4, -2 is 22) and a NaN hour is noon',Math.abs(K(28,0).night-K(4,0).night)<1e-9&&Math.abs(K(-2,0).night-K(22,0).night)<1e-9&&K(NaN,0).night<.01,K(28,0).night!==K(4,0).night);
+ok('its options are taken (speed 0: no night wind; 0 is a value)',W(4,0,{down:[-1,0],speed:0,calm:[0,0]})[0]===0,W(4,0,{down:[-1,0],speed:0,calm:[0,0]})[0]<-1);
+let hr=3;const B=A.katabatic({hour:()=>hr,down:[-1,0]});
+ok('the binding sets the wind base now ('+base.x.toFixed(2)+')',base.x<-1.5&&Math.abs(B.night-K(3,0).night)<1e-9,base.x===0);
+hr=14;hooks.forEach(f=>f());
+ok('a frame later at 14:00 the base follows the day\'s breeze ('+base.x.toFixed(2)+')',base.x>.6,base.x<0);
+ctx.ATMOS.W.cloud=1;hr=3;hooks.forEach(f=>f());
+ok('the weather\'s cloud (default) holds the night\'s drainage back',B.night<.01,B.night>.5);
+console.log(bad?bad+' failed':'all passed');process.exit(bad?1:0);

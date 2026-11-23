@@ -44,6 +44,11 @@ for(let c=0;c<30;c++){const {REG,objs}=make(50+Math.floor(rnd()*800),20+Math.flo
 // the probePoints of a group are sampled (one volume round a single point)
 {const REG=[{name:'one',x:500,y:0,z:500,r:1,h:2}];const objs=[{userData:{probePoints:[500,1,500]},matrixWorld:{t:[0,0,0]},updateMatrixWorld(){}}];
  cases++;if(run(REG,objs,{})[0]!==1){fails++;console.log('probePoints not sampled');}}
+// a volume flagged ground or far is occupied with no sample; an unflagged one beside it stays empty
+{const REG=[{name:'g',x:0,y:0,z:0,r:5,h:1,ground:true},{name:'f',x:900,y:0,z:900,r:50,h:9,far:true},{name:'e',x:-900,y:0,z:-900,r:5,h:1},{name:'k',kind:'landform',x:0,y:0,z:0,r:5,h:1,ground:true}];
+ for(const KS of [G.KSPACE,undefined]){const keep=G.KSPACE;G.KSPACE=KS;const n=run(REG,[],{});G.KSPACE=keep;
+  cases++;if(n.join()!=='1,1,0,1'){fails++;console.log('ground/far flags: '+n.join());}}
+ cases++;K.probeTake({o:{THREE:G.THREE},scene:scene([]),registry:REG,views:{},clock:{state:()=>0}});if(G._api.regOccupancy()[3].type!=='landform'){fails++;console.log('type falls back to kind');}}
 // the empty registry
 cases++;if(run([],[],{}).length!==0){fails++;console.log('empty registry');}
 console.log(fails?'FAIL':'ok','- '+cases+' cases, '+total+' samples counted, broad phase == full loop'+(fails?' except '+fails:''));

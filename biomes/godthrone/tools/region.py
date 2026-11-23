@@ -2,7 +2,10 @@
 """Bake a station's far country from scale model 5.1 (tools/scale-model/model/data/h.png): the heights on a lattice round the
 station's site, written to stations/<name>/region.json, which build.py inlines as REGION_DATA (station.json "region").
 
-    python3 biomes/godthrone/tools/region.py <station> <px> <py> [--n 81] [--cell 2000] [--up 0]
+    python3 biomes/godthrone/tools/region.py <station> <px> <py> [--n 81] [--cell 2000] [--up 0] [--kit biomes/twins]
+
+--kit: another kit's folder (from the repo root) whose stations/<station>/region.json is written (the tool is read in place by the
+kits round the Godthrone: biomes/twins), default this one.
 
 px, py: the site on the 5.1 canvas (2 km a px). The lattice is n x n cells of `cell` metres centred on the site, x east, z south (the
 pages' frame), each the raster's height there (bilinear), as metres relative to the site's own cell. Deterministic; re-run only when
@@ -32,7 +35,8 @@ for j in range(n):
         H.append(round(bil(px + (i - half) * cell / 2000.0, py + (j - half) * cell / 2000.0) - y0, 1))
 out = {'px': px, 'py': py, 'n': n, 'cell': cell, 'y0': round(y0, 1), 'x0': -half * cell, 'z0': -half * cell, 'dh': H,
        'note': 'scale model 5.1 heights round the site, metres relative to its cell (biomes/godthrone/tools/region.py)'}
-p = os.path.join(HERE, '..', 'stations', name, 'region.json')
+kit = a[a.index('--kit') + 1] if '--kit' in a else None
+p = os.path.join(os.path.join(ROOT, *kit.split('/')) if kit else os.path.join(HERE, '..'), 'stations', name, 'region.json')
 with open(p, 'w', encoding='utf-8', newline='\n') as f:
     json.dump(out, f, separators=(',', ':'))
 print('wrote', os.path.relpath(p, ROOT).replace(os.sep, '/'), n, 'x', n, 'cells of', cell, 'm; site', round(y0), 'm')

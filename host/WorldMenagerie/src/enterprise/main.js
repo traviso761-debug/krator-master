@@ -3,6 +3,8 @@
 // is this project's own geometry. The page does not run on the shared engine: there is no ground here.
 import {starshipPage} from '../starship/page.js';
 import {model} from './ship.js';
+import {lcars} from './lcars.js';
+lcars();
 starshipPage({
   city:'enterprise',
   model,
@@ -30,5 +32,9 @@ starshipPage({
     'Shields wear down under fire and come back slowly; with them down, it is the hull that takes it.',
     'The black hole\'s disc is brighter on the side coming towards you, and its far side is bent up over the top.',
     'The main shuttlebay is in the flat stern of the engineering hull; two more open out of the back of the neck.',
+    'Every planet with a world worth a port has a starbase over it; P shows them all, and K flies you in to dock.',
+    'The other ships are going about their own business: patrols, stores, surveys, and somewhere else to be.',
+    'Every visit, Starfleet deals a different run of orders. Z raises the shields.',
+    'The Ossari grow their ships. Nobody had met them until now: hold your fire and keep talking.',
   ],
 });

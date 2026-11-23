@@ -8,7 +8,7 @@
 //   KTRANSIT.draw.highway(H, o) -> Group     o.furn: the furniture bundle (KratorTransitFurniture) for the lamps (none drawn without it), o.vehicles
 //                                            (KratorVehicles) for the blockades' wrecks (burnt hulks without it),
 //                                            o.shadow: a KSHADOW handle to cast; userData: {tris, spans, piers, lamps, rubble}
-//   KTRANSIT.draw.line(B, L, o)              the spans, piers and lamps of one deck (a highway or a ramp) into a builder
+//   KTRANSIT.draw.deck(B, L, o)              the spans, piers and lamps of one deck (a highway or a ramp) into a builder
 //   KTRANSIT.draw.road(B, road, ground, o)   a road surface at grade along pts ([{x, z, y}] or [[x, z]]): asphalt in bands every 3 m, lines, o.pavement m of pave
 //                                            each side; a KTRANSIT.road record (yAt, levelAt) is drawn at its graded level with embankment sides; road.shift
 //                                            or o.shift carries its points (an earthquake's slip)
@@ -69,7 +69,7 @@
     B.box('concrete', m.clone().multiply(T.frame(0, p.yTop - capH - (p.yG - 0.5), 0, 0, 0, 0)), w * 0.86, capH, Math.min(3.2, w * 0.18), col.concrete);
     void deck;
   }
-  T.draw.line = function (B, L, o) {
+  T.draw.deck = function (B, L, o) {
     o = o || {}; const col = C(), deck = L.deck == null ? 1.4 : L.deck, down = S => !S || S.state === 'collapsed' || S.state === 'gone', furn = o.furn, M = L.piers ? null : null; void M;
     let lamps = 0;
     L.spans.forEach((S, i) => {
@@ -206,8 +206,8 @@
     return im;
   };
   T.draw.highway = function (H, o) {
-    o = o || {}; const B = T.builder(); let lamps = T.draw.line(B, H, o);
-    H.ramps.forEach(R => { lamps += T.draw.line(B, R, o); T.draw.road(B, R.road, H.path.ground, { pavement: 0 }); });
+    o = o || {}; const B = T.builder(); let lamps = T.draw.deck(B, H, o);
+    H.ramps.forEach(R => { lamps += T.draw.deck(B, R, o); T.draw.road(B, R.road, H.path.ground, { pavement: 0 }); });
     const vk = T.draw.vehicles(B, [].concat(...(H.blockades || []).map(bk => bk.vehicles)), o);
     const G = B.finish('highway ' + H.id), rub = [].concat(H.rubble, ...H.ramps.map(R => R.rubble)), im = T.draw.rubble(rub, { seed: H.seed, name: 'highway ' + H.id + '.rubble' });
     G.userData.vehicles = vk.real; G.userData.hulks = vk.hulks; G.userData.blockades = (H.blockades || []).length;

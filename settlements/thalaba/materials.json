@@ -1,0 +1,11 @@
+{
+ "build": "thalaba",
+ "note": "Thalaba's ground (settlements/thalaba/targets/town/90q-tb-world.js blends them by a zone mask painted from the plan's records): tGrass (ground.grass_ground, the bench's Cfb meadow at 1,500 m), tDirt (ground.dirt, the yards and the made ground), tCobble (paving.cobblestone_01, the streets and the market square), tField (ground.terrace.field, the terraces and the fields). keep 1: the sets' own colours, under the page's tint. Reused sets; nothing new generated.",
+ "size": 512,
+ "families": {
+  "tGrass": {"lib": "ground.grass_ground", "class": "relief", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "tDirt": {"lib": "ground.dirt", "class": "relief", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "tCobble": {"lib": "paving.cobblestone_01", "class": "relief", "scale": [2.5, 2.5], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "tField": {"lib": "ground.terrace.field", "class": "relief", "scale": [6, 6], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1}
+ }
+}

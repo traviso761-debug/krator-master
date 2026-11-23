@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "patterns/xanadu/jali",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns_xanadu_jali.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-9c39-7020-a861-275fce9038fc)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-8922daee-21a1-4611-9e9c-415c92a23b1e.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. Erewhon's citadel: the Pleasure Domes and the Moorish and Mughal palaces (`kits/xanadu`, `settlements/xanadu/citadel`, 2026-11-09)' on origin/main (id patterns/xanadu/jali)",
+  "sha1": "dbce0426f6f621368b980c058cb1e2225613c4cb"
+ }
+}

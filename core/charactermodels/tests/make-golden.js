@@ -27,7 +27,7 @@ var golden = { bodies:{} };
     [1, 7919].forEach(function(seed){ g.strangers.push({ people:P.id, seed:seed + k, record:KCHAR.stranger(seed + k, kit, P) }); });
   });
   g.strangers.push({ people:null, seed:42, record:KCHAR.stranger(42, kit, null) });
-  g.strangers.slice(0, 6).forEach(function(s){
+  g.strangers.slice(0, 6).concat(g.strangers.filter(function(s){ return s.people === 'coyote_men'; }).slice(0, 1)).forEach(function(s){
     var hid = KCHAR.hidden(s.record, kit).base, n = 0;
     for(var i=0;i<hid.length;i++) n += hid[i];
     g.parts.push({ record:s.record, parts:KCHAR.parts(s.record, kit).map(function(p){ return p.key + ':' + p.role + ':' + p.slot; }), hidden:n,

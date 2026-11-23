@@ -142,6 +142,12 @@ def main():
     js = [f for f in frags if f.endswith('.js')]
     out_name = OUT
     parts = [(f, read(kcat.path(f))) for f in sources()] + [(f, read(src_path(f))) for f in js]
+    # the delivered decal pictures (materials.json "decals", packed into tex/ by tools/textures/pack.py kits/catalog): the sheet
+    # shows each painted panel whose key is one as its image (core/catalog mkDecal reads KF_DECALS); none packed, no part
+    import furniture_bundle
+    _dt = furniture_bundle.decal_table()
+    if _dt:
+        parts.insert(len(sources()), ('KF_DECALS (GENERATED)', 'var KF_DECALS = %s;\n' % json.dumps(_dt, sort_keys=True)))
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:

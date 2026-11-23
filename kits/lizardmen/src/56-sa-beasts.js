@@ -17,7 +17,7 @@ function saLife(key,o){const L=KratorFauna.lifeOf(key);return svLife(CURREC,{job
 /* a herd animal: one def per species */
 function saHerd(key,name,seed,fauna,o){const E=KratorFauna.entry(fauna),D=(o.v!==undefined&&E.variantDims)?E.variantDims[o.v]:E;
  return defBuilding({key,name,seed,cls:'life',kind:fauna,w:D.w+.3,d:D.d+.3,h:D.h+.3,budget:30000,front:{x:0,z:D.d/2,yaw:0},tags:{role:o.role||'livestock'},note:o.note,frag:'kits/fauna',
-  build(p){saFauna(fauna,{variant:o.v!==undefined?o.v:(p.v|0),seed:seed+(p.seed|0)},p.mode||o.mode||'graze');
+  build(p){saFauna(fauna,{variant:o.v!==undefined?o.v:((p.v|0)%3),seed:seed+(p.seed|0)},p.mode||o.mode||'graze');
    saLife(fauna,{job:o.job||'livestock',activity:p.activity||o.activity||'GRAZE',band:KIT.band});}});}
 saHerd('frilled','Frilled lizard',7601,'frilled-lizard',{mode:'idle',activity:'REST',v:1,note:'the Lizardmen\'s livestock: kept in pens by the farms, eaten whole'});
 saHerd('burden','Burden beast',7602,'burden-beast',{role:'draught',job:'draught',note:'the draught hexapod of the Drovers: it hauls the sledges and the plough'});

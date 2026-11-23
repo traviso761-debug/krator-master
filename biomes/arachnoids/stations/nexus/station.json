@@ -1,0 +1,21 @@
+{
+ "id": "nexus",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arachnoid Canyons — Ham-Tsek Radial Dike Nexus and Bridge-Web Shut-In",
+ "name": "Ham-Tsek Radial Dike Nexus and Bridge-Web Shut-In (default station, 998,290, +660.6 m, 1.47 atm): 3-spoke arch-rift-basalt star-junction, 35-85 m catenary Tsek-Ma communal bridge-webs, KSPELEO saltpeter overhangs, and Ham-Tsek river gorge",
+ "out": "arachnoids.html",
+ "px": [998, 290],
+ "ownVerified": true,
+ "elevM": 660.6,
+ "pAtm": 1.47,
+ "koppen": "Cfa",
+ "rainMmYr": 1082,
+ "riverId": 9102,
+ "dischargeM3s": 1295.0,
+ "strataStack": "arch-rift-basalt",
+ "kin": ["nwlowlands", "swlowlands", "korona"],
+ "reserves": [
+  {"id": "site:hum-webgate", "x": -95, "z": 60, "r": 160}
+ ],
+ "modes": ["Clear", "Slot-Mist", "Rim-Gale"]
+}

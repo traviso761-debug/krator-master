@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1 (0%) | 6 (2%) | 0 (0%) | 48 (17%) | 227 (80%) |
+| KB | 1 (0%) | 6 (1%) | 0 (0%) | 48 (11%) | 397 (88%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -21,7 +21,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/42-rs-hull.js` | 5.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/43-rs-rig.js` | 11.3 | [draw] | 16 | 0 | 0 | 0 | 0 | 6 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/44-rs-parts.js` | 4.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/45y-rs-matlib.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/45y-rs-matlib.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/60-rs-hyk-trireme.js` | 6.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61-rs-iziz-turtle.js` | 5.7 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-rs-xanadu-swan.js` | 4.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -53,6 +53,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88-rs-islander-drua.js` | 9.6 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-rs-islander-korakora.js` | 8.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89b-rs-islander-lanong.js` | 11.5 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89c-rs-ark-catamaran.js` | 18.5 | [draw] | 11 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89d-rs-ark-smelter.js` | 17.0 | [draw] | 15 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89e-rs-ark-tender.js` | 15.0 | [draw] | 11 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89f-rs-ark-trimaran.js` | 12.5 | [draw] | 9 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89g-rs-ark-ward.js` | 18.1 | [draw] | 13 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89h-rs-hk-whaler.js` | 18.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89i-rs-ria-west-palace.js` | 19.3 | [draw] | 12 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89j-rs-ria-east-palace.js` | 18.3 | [draw] | 12 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89k-rs-ria-patrician-villa.js` | 18.5 | [draw] | 16 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89l-rs-ria-noble-salon.js` | 13.7 | [draw] | 11 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-rs-scene.js` | 8.1 | [web] | 21 | 1 | 1 | 0 | 0 | 5 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/91-rs-probe.js` | 13.2 | [web] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 9.8 | [web] | 12 | 0 | 20 | 14 | 4 | 2 | 0 | 1 | 3 | 0 | 0 |  |

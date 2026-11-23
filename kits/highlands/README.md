@@ -1,24 +1,28 @@
 # kits/highlands: the Highlands kit
 
-The wooden architecture of the highland, temperate regions of the Inner Wall, in three related sets: **Republican** (the
-Iron Republic: Russian and Transylvanian Saxon, Peles for the grand), **Rustic** (the villages to the south: Norse and
-Alpine) and **Tribal** (the Painted Men: bamboo, raw logs, totems, cliff settlements), carved and painted in a NW-coast
-formline palette. Moved unchanged from `settlements/highlands/src` on 2026-11-03 (MODULARITY-PLAN.md step 4): it is the
-cultures' building kit, not a settlement's layout, and the open-world rebuild places each culture where it lives.
-`settlements/highlands/README.md` describes the buildings, the rounds of work and the sheet.
+The wooden and stone-plinth architecture of the highland, temperate regions of the Inner Wall, in two related sets: **Republican** (the
+Iron Republic: Novgorodian Rus', Carpathian and Transylvanian Saxon, Peles for the grand, plus alpine hydropower mills) and **Rustic**
+(the highland villages: Norse and Carpathian log/timber), carved and painted in a **Slavic / Rus' / Carpathian** vocabulary (*rozetka*
+and *kolovrat* solar rosettes, pierced *nalichniki* window casings, *prichelina* and *polotentse* eaves fretwork, crossed *okhlupen'*
+horse-head and firebird finials, braided *pletenka* friezes, turned *kubyshka* porch columns, hooded *kapliczka*/*stolbtsy* wayside
+shrine posts, and warm ochre/vermilion/birch-white/pine-green *rospis'* floral scrollwork). The former Tribal (**Painted Men**) Tlingit
+formline set moved to its own standalone kit (`kits/painted-men/`, 2026-11-19). Moved from `settlements/highlands/src` on 2026-11-03
+(MODULARITY-PLAN.md step 4). `settlements/highlands/README.md` describes the original rounds of work.
 
 | Files | What |
 |---|---|
-| `src/70-hl-tex.js`, `71-hl-mat.js`, `71b-hl-motif.js` | the foundation: textures, materials and kit items, the motifs and shop signs |
+| `src/70-hl-tex.js`, `71-hl-mat.js`, `71b-hl-motif.js` | the foundation: Slavic carved/painted textures, materials and kit items, solar *rozetka*/*kolovrat*/*rospis'* motifs and shop signs |
 | `src/71c-hl-openings.js` | the real doors and glass: `hnDoorway`, `hnPane`, `hnRoom`, `hnPlate` (below, "Doors and glass") |
-| `src/72-hl-helpers.js`, `73-hl-carve.js`, `73b-hl-frame.js` | walls and roofs, the carving (totems, posts, dougong), the timber frame |
-| `src/88-hl-dress.js`, `89-hl-trades.js`, `89y-hl-furnish.js`, `94-hl-anim.js` | the dress (reclaimed variants, clocks, glazed tiles), the trades table (`HL_TRADES`), the catalog furniture glue (`FURNISH`), the clocks' and orreries' animation |
-| `src/74-rep-dwell.js` ... `79f-rep-shipbreak.js` | the Republican set: dwellings, trade, civic, the capital, guilds, the grand, the land, salvage and scrap |
-| `src/80-rus-dwell.js`, `81-rus-village.js`, `81b-rus-salvage.js` | the Rustic set |
-| `src/84-tri-dwell.js`, `85-tri-village.js`, `85b-tri-salvage.js` | the Tribal set |
+| `src/72-hl-helpers.js`, `72c-hl-plan.js`, `73-hl-carve.js`, `73b-hl-frame.js` | walls and roofs, Slavic carving (*nalichniki*, *prichelina*, *kapliczka* shrine posts, *kubyshka* columns, *dougong*), the timber frame |
+| `src/77c-rep-hydro.js` | the **Hydropower** industrial set: `hl_rep_hydro_forge`, `hl_rep_hydro_sawmill`, `hl_rep_hydro_stampmill`, `hl_rep_hydro_gristmill`, and stream works (`hl_hydro_weir`, `hl_hydro_flume`, `hl_hydro_sluice_gate`) with world-space hydraulic anchors (`userData.hydro`) and `HLANIM` mechanisms |
+| `src/88-hl-dress.js`, `89-hl-trades.js`, `89y-hl-furnish.js`, `94-hl-anim.js` | the dress (reclaimed variants, clocks, glazed tiles), the trades table (`HL_TRADES`), the catalog furniture glue (`FURNISH`), the clocks', orreries', waterwheels' and mill mechanisms' animation |
+| `src/74-rep-dwell.js` ... `79f-rep-shipbreak.js` | the Republican set: dwellings, trade, civic, the capital, guilds, hydropower, the grand, the land, salvage and scrap |
+| `src/80-rus-dwell.js`, `81-rus-village.js`, `81b-rus-salvage.js` | the Rustic set: dwellings, village hall & stave church, trade & farm plots, reclaimed salvage farms |
+| `src/81c-rus-trades.js` | the Slavic / Carpathian / Novgorodian Rustic trades, civic, sacred, defence & land works: `hl_rus_bakehouse`, `hl_rus_butcher`, `hl_rus_distillery`, `hl_rus_inn` (*postoyaly dvor*), `hl_rus_market` (*torg*), `hl_rus_weaver`, `hl_rus_tannery`, `hl_rus_woodcarver`, `hl_rus_warehouse` (*ambar*), `hl_rus_charcoal_works`, `hl_rus_mine`, `hl_rus_quarry`, `hl_rus_generator`, `hl_rus_shrine` (*chasovnya*), `hl_rus_pogost`, `hl_rus_skete` (*skit*), `hl_rus_school` (*gramota*), `hl_rus_healer` (*znakhar'* & *banya*), `hl_rus_guild_lodge` (*artel'*), `hl_rus_envoy_lodge` (*posol'sky dvor*), `hl_rus_watchtower` & `hl_rus_gate` (*ostrog*), `hl_rus_barracks` (*druzhina*), `hl_rus_tollhouse` (*zastava*), `hl_rus_orchard` (*paseka*), `hl_rus_dairy` (*koliba*), `hl_rus_mushroom_cellar` (*pogreb*) |
+| `src/81d-rus-water.js` | the Rustic highland lake, fjord & riverfront set (Reed Lake, Klippeport, Slussport): `hl_rus_boatyard` (*lodya* slipway), `hl_rus_patrol_boathouse`, `hl_rus_beacon` (*mayak*), `hl_rus_quay` (*ryazh* cribwork), `hl_rus_fishdock`, `hl_rus_ferry` (*parom*) |
 
-`highlands.py` names the files (`FOUNDATION`, `SETS` by culture, `FILES`) and their paths; `culture_files('republican')`
-gives the foundation and one culture's set, in filename order. `PORT.md` has their port tags (moved with them).
+`highlands.py` names the files (`FOUNDATION`, `SETS` by culture: `'republican'` and `'rustic'`, `FILES`) and their paths; `culture_files('republican')`
+gives the foundation and one culture's set, in filename order. `PORT.md` has their port tags.
 
 **What it draws through.** The Ancients core (`kits/ancients/src`, `core/materials`) and the Iziz Vernacular's materials and
 helpers (`69b-vern-mat.js`, `69c-vern-helpers.js`, `kits/iziz-vernacular`), which a build takes as before. Its library bind,
@@ -34,10 +38,24 @@ window clear glass, a lit pane or a stained fanlight (the grand halls' keel head
 (`hnRoom`), the keel recesses and the eyelid dormers' and the totem's voids that dim back too. Every body of the kit is solid
 (no 69e hollow walls), so every door is LOCKED: a real leaf, shut, with an id from its def, its placement and its number
 (`hl_rep_house_rich@12,-40.0`), that an NPC or a quest can name. A door keeps the kit's old threshold step (69c's), not 69e5's
-landing and flight, as the builders draw their own steps. Left dark on purpose, as they are not openings: flues, fireboxes and
+landing and flight, as the builders draw their own steps (with the interiors on, the furnished defs' bodies are hollow: "Hollow walls" below). Left dark on purpose, as they are not openings: flues, fireboxes and
 furnace mouths behind their embers, the mine shaft, the flame trench, scorch marks (`vDarkB`). A page that takes the kit takes
 `OPENINGS` and finishes the doors once the world is built (`settlements/highlands/src/95-hl-doors.js`: `IZDOOR.finish`,
 `KDOOR.clearDoorways`, the leaves to `KDOORHOST`) and gives the E key (`99-start.js`).
+
+**Hollow walls** (2026-11-09; TODO.md "Doors and glass: what is left"). With the interiors on (`?interiors=1`, Highlands and
+Roketstad), a page takes the Vernacular's hollow bodies and auto bodies (`kits/iziz-vernacular/src/69e-vern-hollow.js`,
+`69e6-vern-autobody.js`; `highlands.py` `HOLLOW`): while a def with an item in the interiors kit's set
+(`kits/interiors/sets/highlands.js`) is built, any block a builder draws (hnStucco, hnLogBox, hnFachBox, a plain vB) whose
+footprint matches a storey of the item's bodies, or one of its `shells`, is drawn as four walls of the plan's thickness, cut
+where the kit's doors and windows stand (`71c` wraps `hnDoorway hnPane hnRoom hnPlate`; the Vernacular's `vnDoor vnWin`
+cut it already), floored at the plan's floor; 69e draws the planned upper floors, partitions and stairs inside. A door on a
+hollow face is a leaf in the wall's middle, UNLOCKED, opening into the planned room; a planned door no builder drew is cut
+and hung (69e6 `vaPlanDoors`). Nothing changes with the interiors off. **The Hall of the Republic and the Fortress** are
+planned room by room on their blueprints (`hall/BLUEPRINT.md`, `fortress/BLUEPRINT.md`): explicit rooms, shells and
+stairs in their items, drawn by `src/72c-hl-plan.js` `hnPlan` (floors, shared partitions, balustrades, inner doors,
+stairs into core/walk); the Hall's chamber (the horseshoe's tiers, the dais, the members' benches) and the Fortress's bridge
+are their builders' (`78-rep-grand.js`). The cut-away (X) opens every furnished building storey by storey.
 
 **Who takes it.**
 - Read in place: `settlements/highlands` (its `highlands` target is the kit's sheet, `dist/highlands.html`; its `roketstad`
@@ -46,5 +64,18 @@ furnace mouths behind their embers, the mine shaft, the flame trench, scorch mar
   before the catalog-furniture conversion), Dalab and Ys (the foundation's five and `74-rep-dwell.js`, for their embassies'
   Republican dwellings).
 
-**Its own sheet.** Not yet: the sheet is Highlands' `highlands` target, on Highlands' page shell (scene, probe, labels,
-`99-start.js`), and `verify.py dist/highlands.html --assert` in `settlements/highlands` is its check.
+**Its own sheet** (done 2026-11-09): `python3 tools/build.py kits/highlands` writes `dist/highlands.html` (the library maps beside
+it, `dist/highlands.tex.highlands.js` and `-2.js`); `python3 verify.py dist/highlands.html --assert` checks it (as the Iziz
+Vernacular's sheet does, plus `HL_TRADES` against the Voth census through `tools/check_trades.py`). The Republican, Rustic and
+Tribal sets, a row per family (`targets/sheet/89z-rows.js`): 172 sites, 237 registered volumes, 325 doors. The page is the kit sheet shared by the kits on the Vernacular's contract (`kits/iziz-vernacular/sheet.py`, `sheet_verify.py`):
+the shell (`kits/iziz-vernacular/src/*-vsheet-*`: scene, rows, doors, the take on core/host), the Ancients core read in place from
+`kits/ancients/src`, and core's modules: `core/rand`, `core/tags`, `core/walk`, `core/door` (KDOOR and its host: the E key and its
+tip), `core/host`, `core/atmos/placeholder`, `core/materials` (records, and the kit's own pack, `materials.json` -> `tex/`, in a
+sidecar beside the page). No settlement file is read.
+Beside it the kit draws through the Vernacular's `69b`, `69c` and `69e5` (read in place from `kits/iziz-vernacular/src`) and
+places catalog furniture through `core/furnish` (the GENERATED `69d-furniture-bundle.js`: the catalog cultures and the
+interiors core, as Highlands' page bundles them). Highlands' `highlands` target stays Highlands' sheet.
+**Interiors:** the sheet builds the bodies solid, every door locked. A `?interiors=1` mode (Highlands' page has one) goes in
+`targets/sheet/` once the kit's interiors and hollow walls land (`kits/interiors/sets/highlands.js`; another session's work):
+it already has core/walk, core/door's host and `KDOOR.clearDoorways`. The `doors` assert expects every door locked and must be
+relaxed for that mode.

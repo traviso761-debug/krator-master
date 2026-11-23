@@ -103,6 +103,8 @@ function buildTalCaravanserai(G,o){reseed(9521+(o.v|0));const W=36,D=30,R=5,H1=3
  vnBody('vPlaster',0,Y0,-D/2+R/2,W,TOP,R,0,wh,{t:.3});tanString(0,Y0+H1,-D/2+R/2,W,R,0,or,.12,.14);
  for(const s of[-1,1]){vnBody('vPlaster',s*(W/2-R/2),Y0,0,R,TOP,D-2*R,0,wh,{t:.3});tanString(s*(W/2-R/2),Y0+H1,0,R,D-2*R-.3,0,or,.12,.14);
   vnBody('vPlaster',s*10.5,Y0,GZ,15,TOP,R,0,wh,{t:.3});tanString(s*10.5,Y0+H1,GZ,15-.3,R,0,or,.12,.14);}
+ // with interiors (the set's item, 2026-11-09) the corner towers stand in the back and front ranges' ends: a wall shuts them off
+ if(VERN.cur&&VERN.cur.hollow)for(const s of[-1,1])for(const zc of[-D/2+R/2,GZ])vB('vPlaster',s*14.5,Y0,zc,.3,TOP,R-.6,0,wh);
  // the parapet: the outer ring and the court ring, each wall .24 thick with an orange coping
  const par=(x,z,L,a)=>{vB('vPlaster',x,Y0+TOP,z,L,.6,.24,a,wh);vB('vPlaster',x,Y0+TOP+.6,z,L+.06,.08,.32,a,or);};
  par(0,D/2-.12,W,0);par(0,-D/2+.12,W,0);par(W/2-.12,0,D-.5,Math.PI/2);par(-W/2+.12,0,D-.5,Math.PI/2);
@@ -152,6 +154,8 @@ function buildTalAgoraStoa(G,o){reseed(9531+(o.v|0));const L=o.len==null?30:o.le
  vB('vPlaster',0,Y0+H1,Z0+BD/2+WK/2,L,.3,WK+.2,0,wh);vB('vPlaster',0,Y0+H1+.3,zc+.05,L-.4,.1,.26,0,or);
  // the upper storey: the block's arched windows, the Ionic colonnade above the lower on a plain balustrade, its beam
  vnBody('vPlaster',0,Y0+H1+.3,Z0,L,H2,BD,0,wh,{t:.3});
+ // with interiors (2026-11-09) the two hollow storeys leave the floor's .3 m between them open on the back and the ends: a band
+ if(VERN.cur&&VERN.cur.hollow){vB('vPlaster',0,Y0+H1,Z0-BD/2+.15,L,.3,.3,0,wh);for(const s of[-1,1])vB('vPlaster',s*(L/2-.25),Y0+H1,Z0+WK/2,.5,.3,BD+WK,0,wh);}
  for(let k=0;k<N;k++)tanArch(-L/2+(k+.5)*b,Y0+H1+1.0,zs,0,1.1,1.8,{fill:'G',band:or,bw:.12,sill:wh,rail:k%3===1?ir:null});
  for(let k=1;k<N;k+=2)tanArch(-L/2+(k+.5)*b,Y0+H1+1.2,Z0-BD/2,Math.PI,.8,1.4,{fill:'G',band:or,bw:.1});
  for(const s of[-1,1]){vB('vPlaster',s*(L/2-.25),Y0+H1+.3,Z0+WK/2,.5,H2,BD+WK,0,wh);tanArch(s*L/2,Y0+H1+1.2,Z0,s*Math.PI/2,.9,1.6,{fill:'G',band:or,bw:.12,sill:wh});}

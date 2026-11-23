@@ -356,6 +356,8 @@ func _init() -> void:
 		fig._process(0.4)
 		ok(not q0.is_equal_approx(fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))), "walk moves the thigh")
 		_lizard(fig, rec)
+		_coyote(fig, rec)
+		_frog(fig, rec)
 
 	# a Giant of Dalab (core/charactermodels/tools/giant.py): the man's body made big, a second pair of arms that no clip
 	# moves but the figure drives from the upper pair; two arms leaves them out
@@ -449,8 +451,15 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 			tl = it["tail"]
 	if tl.is_empty():
 		return
+	var has_lz_legs := false
+	for it in fig.kit["items"]:
+		if it["id"] == "mod_legs_lizard":
+			has_lz_legs = FileAccess.file_exists(DIR + "/pieces/mpfb_male/mod_legs_lizard.glb")
 	var r2 := rec.duplicate(true)
-	r2["mods"] = ["mod_tail", "mod_head_lizard"]
+	r2["mods"] = ["mod_tail", "mod_head_lizard", "mod_legs_lizard"] if has_lz_legs else ["mod_tail", "mod_head_lizard"]
+	if has_lz_legs:
+		r2["armour"]["legs"] = "voth_m_peasant_maxtlatl"
+		r2["armour"]["feet"] = "culturalibre_hero_boots_1"
 	if r2.get("hair") == null:
 		r2["hair"] = "short02"
 	fig.play("")
@@ -463,7 +472,13 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 	for p in KChar.parts(r2, fig.kit):
 		want[p["key"]] = true
 	ok(shown.keys().size() == want.keys().size() and shown.has("mpfb_male/mod_tail") and shown.has("mpfb_male/mod_head_lizard")
-		and not shown.has("mpfb_male/short02"), "lizard: tail and head drawn, the hair not (%s)" % [shown.keys()])
+		and (not has_lz_legs or (shown.has("mpfb_male/mod_legs_lizard") and not shown.has("mpfb_male/culturalibre_hero_boots_1")))
+		and not shown.has("mpfb_male/short02"), "lizard: tail, head and digitigrade legs drawn, hair and human boots not (%s)" % [shown.keys()])
+	var fake_dg_boot := {"id": "test_dg_boot", "slot": "feet", "digitigrade": true}
+	var fake_pl_boot := {"id": "test_pl_boot", "slot": "feet"}
+	ok(not KChar.fits(fake_dg_boot, rec, fig.kit) and KChar.fits(fake_pl_boot, rec, fig.kit)
+		and (not has_lz_legs or (KChar.fits(fake_dg_boot, r2, fig.kit) and not KChar.fits(fake_pl_boot, r2, fig.kit))),
+		"footwear: digitigrade and non-digitigrade characters reject each others' boots")
 	var nothing := 0
 	for mi in fig.skeleton.get_children():
 		if mi is MeshInstance3D and mi.visible and mi.get_meta("part")["role"] == "base":
@@ -478,7 +493,7 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 			for k in mi.skin.get_bind_count():
 				var m: Transform3D = glob(fig.skeleton, mi.skin.get_bind_bone(k)) * mi.skin.get_bind_pose(k)
 				worst = maxf(worst, m.origin.length() + (m.basis.x - Vector3.RIGHT).length() + (m.basis.y - Vector3.UP).length())
-	ok(worst < 1e-3, "lizard: at rest the tail's and head's bones are at their binds (worst %f)" % worst)
+	ok(worst < 1e-3, "lizard: at rest the tail's, head's and digitigrade legs' bones are at their binds (worst %f)" % worst)
 	var legs := []
 	for cp in fig._caps:
 		var nm := fig.skeleton.get_bone_name(cp["a"])
@@ -495,6 +510,16 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 			fig._process(1.0 / 30.0)
 			var st := fig.tail_state()
 			var floor_y := -fig.skeleton.position.y / fig.size
+			var segs := []
+			if not fig.digi_state().is_empty():
+				for di in 6:
+					var ds := fig._digi_seg(di)
+					if not ds.is_empty():
+						segs.append(ds)
+			else:
+				for cp in legs:
+					var e := fig._cap_ends(cp)
+					segs.append({"a": e[0], "b": e[1], "ra": cp["ra"], "rb": cp["rb"]})
 			for i in st["x"].size():
 				var x: Vector3 = st["x"][i]
 				if not x.is_finite():
@@ -505,12 +530,11 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 				lag = maxf(lag, (x - st["tw"][i]).length())
 				if x.y < floor_y - 0.001:
 					low += 1
-				for cp in legs:
-					var e := fig._cap_ends(cp)
-					var ab: Vector3 = e[1] - e[0]
-					var t := clampf((x - e[0]).dot(ab) / ab.length_squared(), 0.0, 1.0)
+				for cp in segs:
+					var ab: Vector3 = (cp["b"] as Vector3) - (cp["a"] as Vector3)
+					var t := clampf((x - (cp["a"] as Vector3)).dot(ab) / maxf(1e-12, ab.length_squared()), 0.0, 1.0)
 					var rr := float(cp["ra"]) + (float(cp["rb"]) - float(cp["ra"])) * t + float(rad[mini(i, rad.size() - 1)])
-					deep = maxf(deep, rr - x.distance_to(e[0] + ab * t))
+					deep = maxf(deep, rr - x.distance_to((cp["a"] as Vector3) + ab * t))
 		ok(bad == 0 and low == 0, "lizard %s: tail points finite and above the floor (%d, %d)" % [c, bad, low])
 		ok(deep < 0.005, "lizard %s: the tail keeps out of the legs (%.3f m in)" % [c, deep])
 		if c == "walk":
@@ -522,5 +546,127 @@ func _lizard(fig: KCharFigure, rec: Dictionary) -> void:
 		open = maxf(open, fig.skeleton.get_bone_pose_rotation(jb).angle_to(KChar._q(fig.skel["joints"][jb]["r"])))
 	ok(open > 0.05, "lizard: the jaw opens (%.3f rad)" % open)
 	print("kchar_test: the lizard checked (tail in idle, walk and crouch; jaw open %.2f rad)" % open)
+	fig.play("")
+	fig.apply(rec)
+
+
+# Coyote Men digitigrade legs, tail & head (core/charactermodels/tools/digitigrade.py; twin of verify.py's coyote check)
+func _coyote(fig: KCharFigure, rec: Dictionary) -> void:
+	var has_dg := false
+	for it in fig.kit["items"]:
+		if it["id"] == "mod_legs_coyote":
+			has_dg = true
+	if not has_dg or not FileAccess.file_exists(DIR + "/pieces/mpfb_male/mod_legs_coyote.glb"):
+		return
+	var r2 := rec.duplicate(true)
+	r2["coat"] = "coyote"
+	r2["hair_color"] = "#9a7a52"
+	r2["mods"] = ["mod_head_coyote", "mod_tail_coyote", "mod_legs_coyote"]
+	r2["armour"] = {"torso": "toigo_fisherman_sweater", "legs": "dalab_m_peasant_kilt", "feet": "culturalibre_hero_boots_1"}
+	fig.play("")
+	fig.apply(r2)
+	var shown := {}
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible:
+			shown[mi.get_meta("part")["key"]] = true
+	ok(shown.has("mpfb_male/mod_legs_coyote") and shown.has("mpfb_male/dalab_m_peasant_kilt")
+		and not shown.has("mpfb_male/culturalibre_hero_boots_1"), "coyote: digitigrade legs and kilt drawn, human boots rejected (%s)" % [shown.keys()])
+	var toenails_hidden := false
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible and mi.get_meta("part")["role"] == "base":
+			for s in mi.mesh.get_surface_count():
+				if mi.mesh.surface_get_name(s) == "Human.toenails" and mi.get_surface_override_material(s) == KCharFigure._nothing():
+					toenails_hidden = true
+	ok(toenails_hidden, "coyote: Human.toenails surface is hidden")
+	fig.rest_pose()
+	var worst := 0.0
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible and mi.skin:
+			for k in mi.skin.get_bind_count():
+				var m: Transform3D = glob(fig.skeleton, mi.skin.get_bind_bone(k)) * mi.skin.get_bind_pose(k)
+				worst = maxf(worst, m.origin.length() + (m.basis.x - Vector3.RIGHT).length() + (m.basis.y - Vector3.UP).length())
+	ok(worst < 1e-3, "coyote: at rest all Digi* and body bones match their binds (worst %f)" % worst)
+	var idle_hock := 0.0
+	for c in ["idle", "walk", "run", "ual_crouch"]:
+		if not fig.player.has_animation(c):
+			continue
+		fig.play(c)
+		var h_min := 1e9
+		var h_max := -1e9
+		var ang_min := 1e9
+		var ang_max := -1e9
+		var paw_bad := 0
+		var snap_bad := 0
+		var prev_hz := [null, null]
+		for f in 75:
+			fig._process(1.0 / 30.0)
+			if f < 15:
+				continue
+			var ds := fig.digi_state()
+			if ds.is_empty():
+				paw_bad += 1
+				continue
+			for si in 2:
+				var st: Dictionary = ds["state"][si]
+				var sd: Dictionary = ds["sides"][si]
+				h_min = minf(h_min, float(st["hock_y"]))
+				h_max = maxf(h_max, float(st["hock_y"]))
+				ang_min = minf(ang_min, float(st["hock_ang"]))
+				ang_max = maxf(ang_max, float(st["hock_ang"]))
+				if float(st["paw_y"]) < 0.008 or (float(st["stance"]) > 0.96 and absf(float(st["paw_y"]) - float(sd["paw_h"])) > 0.025):
+					paw_bad += 1
+				var hz := float(st["hock_fwd"])
+				if hz > -0.04 or (c == "walk" and prev_hz[si] != null and absf(hz - float(prev_hz[si])) > 0.045):
+					snap_bad += 1
+				prev_hz[si] = hz
+		if c == "idle":
+			idle_hock = 0.5 * (h_min + h_max)
+		if c != "ual_crouch":
+			ok(h_min >= 0.13, "coyote %s: hock stays elevated (min %.3f m)" % [c, h_min])
+		if c == "walk" or c == "run":
+			ok(ang_max - ang_min >= 0.16, "coyote %s: hock flexes and extends dynamically (range %.3f rad)" % [c, ang_max - ang_min])
+		if c == "ual_crouch" and idle_hock > 0.0:
+			ok(h_min <= idle_hock - 0.02, "coyote crouch: hock coils lower (%.3f vs %.3f m)" % [h_min, idle_hock])
+		ok(paw_bad == 0 and snap_bad == 0, "coyote %s: paws planted and hock smooth (%d paw, %d snap)" % [c, paw_bad, snap_bad])
+	print("kchar_test: coyote digitigrade checked (idle hock %.2f m)" % idle_hock)
+	fig.play("")
+	fig.apply(rec)
+
+
+func _frog(fig: KCharFigure, rec: Dictionary) -> void:
+	var has_fg := false
+	for it in fig.kit["items"]:
+		if it["id"] == "mod_legs_frog":
+			has_fg = FileAccess.file_exists(DIR + "/pieces/mpfb_male/mod_legs_frog.glb")
+	if not has_fg:
+		return
+	var r2 := rec.duplicate(true)
+	r2["skin"] = "#5f8a36"
+	r2["eye_color"] = "#d6a22a"
+	r2["hair"] = null
+	r2["beard"] = null
+	r2["mods"] = ["mod_head_frog", "mod_legs_frog"]
+	r2["armour"] = {"torso": null, "legs": "voth_m_peasant_maxtlatl", "feet": "culturalibre_hero_boots_1"}
+	fig.play("")
+	fig.apply(r2)
+	var shown := {}
+	var has_pat_mat := false
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible:
+			shown[mi.get_meta("part")["key"]] = true
+			if mi.get_meta("part")["key"] == "mpfb_male/mod_legs_frog" and mi.get_surface_override_material(0) is ShaderMaterial:
+				has_pat_mat = true
+	ok(shown.has("mpfb_male/mod_head_frog") and shown.has("mpfb_male/mod_legs_frog") and has_pat_mat
+		and not shown.has("mpfb_male/culturalibre_hero_boots_1"),
+		"frog: head and patterned digitigrade webbed legs drawn, human boots rejected (%s)" % [shown.keys()])
+	fig.rest_pose()
+	var worst := 0.0
+	for mi in fig.skeleton.get_children():
+		if mi is MeshInstance3D and mi.visible and mi.skin:
+			for k in mi.skin.get_bind_count():
+				var m: Transform3D = glob(fig.skeleton, mi.skin.get_bind_bone(k)) * mi.skin.get_bind_pose(k)
+				worst = maxf(worst, m.origin.length() + (m.basis.x - Vector3.RIGHT).length() + (m.basis.y - Vector3.UP).length())
+	ok(worst < 1e-3, "frog: at rest all Digi* and body bones match their binds (worst %f)" % worst)
+	print("kchar_test: frog digitigrade checked")
 	fig.play("")
 	fig.apply(rec)

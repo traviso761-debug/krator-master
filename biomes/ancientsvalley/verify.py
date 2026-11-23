@@ -122,6 +122,14 @@ async def run(a):
         if not V.ready:
             print("timed out waiting for the kit to build")
             fails.append("build timeout")
+        # what the page finishes on its frames after it is ready: the texture packs, the transit's drawing (AVTR) and the Yards' pieces (AV_YARDS),
+        # each waiting on the one before (2026-11-12: on a loaded machine the Yards' textures were still 24 short at 91 s and its checks ran first,
+        # "not drawn"); up to five minutes, then the checks say what is missing
+        try:
+            await pg.wait_for_function("""()=>!(window._texPending>0)&&(typeof AVTR==='undefined'||AVTR.ready)&&(typeof AV_YARDS==='undefined'||!AV_YARDS||AV_YARDS.ready)""",
+                                       timeout=300000, polling=1000)
+        except Exception:
+            print("the page's later parts were not all in after 5 min (textures, transit, the Yards' pieces)")
         try:
             st = await pg.evaluate(STATS_JS)
         except Exception as e:

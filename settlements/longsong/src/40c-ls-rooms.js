@@ -143,7 +143,7 @@ P.SHELLS={front:FR,outerW:OW,outerE:OE,innerW:IW,innerE:IE,gate:GT,base:BS,rpIn,
  // the Great Assembly Hall: the brick drum, two storeys high under its lantern, at the court's head (sheet L3)
  const A=P.building('assembly');
  add(Object.assign({id:'wp.court',name:'The Debate Court (the examiner\'s seat, the clapping ground)',use:'debate court',ix:'ls-court',tier:4,outdoor:true,
-  x0:WP.court.x0+3.8,x1:WP.court.x1-3.8,z0:WP.court.z0+3.8,z1:Math.min(WP.court.z1-4.2,A.z-A.r-5.5),h:30,layout:'debate'},o));
+  x0:WP.court.x0+6.8,x1:WP.court.x1-6.8,z0:WP.court.z0+6.8,z1:Math.min(WP.court.z1-6.5,A.z-A.r-6.5),h:30,layout:'debate'},o));
  const ah=add({id:'wp.assembly',name:'The Great Assembly Hall (the skylight columns, the cushions and low tables for 300, the abbot\'s throne)',sheet:'L3',building:'assembly',storey:0,
   use:'assembly hall',ix:'ls-assembly',tier:4,circle:{x:A.x,z:A.z,r:A.r-.8,n:32},h:H2,layout:'assembly'});
  ah.doors.push({id:'wp.assembly>porch',x:A.x,z:R2(A.z-A.r+.8),w:3.2,to:'the Assembly\'s porch (the Debate Court)',out:true});

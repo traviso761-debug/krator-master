@@ -1,0 +1,59 @@
+{
+ "build": "settlements/gila",
+ "note": "Gila's own pack (PLAN.md sections 1 and 6): the ground's four layers under KGROUND. The buildings take the Lizardmen kit's pack (kits/lizardmen/materials.json). KGROUND reads the colour map only (core/terrain/GROUND.md), so the families are mapOnly; tint.keep 0.8 keeps the sets' own hue under the ground's vertex tint.",
+ "size": 512,
+ "families": {
+  "gSav": {
+   "lib": "ground.savanna.litter",
+   "scale": [
+    6,
+    6
+   ],
+   "use": "the spit's dry savanna floor, between the wet seasons",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gSalt": {
+   "lib": "ground.salt",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the salt flats on the shore, the pans' floors",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gTill": {
+   "lib": "ground.tilled",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the fields up the spit",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gYard": {
+   "lib": "ground.dirt",
+   "scale": [
+    4,
+    4
+   ],
+   "use": "the street, the yards and the mustering ground, beaten bare",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  }
+ }
+}

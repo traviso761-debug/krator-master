@@ -92,6 +92,7 @@ var SVF = { WEALTH: {}, missing: {}, placed: [] };
 function svfNewBatch() {}
 function FURNISH() { return null; }
 function FURNISH_HANG() { return null; }
+function FURNISH_WALL() { return null; }
 function svfH(key, v, dflt) { return dflt; }
 /* ...and no catalog: the dresser (42-is-dress.js isDim) asks a piece's size only to place it */
 var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, entryDims: function () { return { w: 1, d: 1, h: 1 }; }, setDetail: function () {} };
@@ -175,13 +176,32 @@ reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof co
    items are emptied before and after (30-kit.js kbake bakes every item put so far and keeps them: without this each piece
    carried every piece built before it, so a piece depended on the order the page built them in; fixed 2026-10-20) */
 function izvKitClear() { KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }
-function izvProto(key, v, w) {
+/* o.doors (the city page, settlements/isle-demo/src/63-isle-doors.js): the piece's doors handed out, not baked. 69e5's
+   IZDOOR.leaf registers each door it draws in the page's KDOOR at the origin, where it means nothing: those records are
+   taken back out of KDOOR as plain templates in the piece's frame (G.userData.doors: at, hinge, p0, yaw, size, kind, style,
+   locked, the leaf's colour), and the leaf items (vDoorLeaf*, vDoorGlass*, vDoorHw*) are emptied before the bake, so the
+   page draws the leaves itself and core/door poses them as they open. Without o.doors (the open world's hamlets) the
+   leaves bake shut into the piece as before; the origin records are still taken out of KDOOR (2026-11-09) */
+function izvDoorsOut(n0, keep) {
+  if (typeof KDOOR === 'undefined') return [];
+  var L = KDOOR.list.slice(n0), out = L.map(function (D) {
+    var c = D.parts && D.parts[0] && D.parts[0][0] && D.parts[0][0].ref ? D.parts[0][0].ref.c : null;
+    return { at: D.at.slice(), hinge: D.hinge.slice(), p0: D.p0.slice(), yaw: D.yaw, sign: D.sign, w: D.w, h: D.h, t: D.t, locked: !!D.locked,
+      kind: D.kind, pair: D.pair === true, both: D.both, spring: D.spring, swing: D.swing, roll: D.roll, walk: D.walk, style: D.style,
+      drop: D.drop, rise: D.rise, rate: D.rate, col: c && c.getHex ? c.getHex() : null };
+  });
+  if (L.length) { var S = new Set(L); KDOOR.prune(function (D) { return !S.has(D); }); }
+  if (keep) KIT.order.forEach(function (n) { if (/^vDoor(Leaf|Glass|Hw)/.test(n)) KIT.items[n].length = 0; });
+  return out;
+}
+function izvProto(key, v, w, o) {
   var D = VERN.defs[key]; if (!D) return null;
-  var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length;
+  var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length, n0 = typeof KDOOR !== 'undefined' ? KDOOR.list.length : 0, doors = null;
   izvKitClear();
-  withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, w: w == null ? 1 : w }); });
+  try { withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, w: w == null ? 1 : w }); }); }
+  finally { doors = izvDoorsOut(n0, !!(o && o.doors)); }
   kbake(G); izvKitClear(); REG.length = r0;
-  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h };
+  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h, doors: o && o.doors ? doors : null };
   return G;
 }
 function izvDims() { var out = {}; VERN.order.forEach(function (k) { var D = VERN.defs[k]; out[k] = { w: D.w, d: D.d, h: D.h || 8, name: D.name, family: D.family, types: [].concat(D.tags.type || []), wealth: D.tags.wealth, variants: D.variants || 2 }; }); return out; }
@@ -217,8 +237,11 @@ HYK_PACK_SKIP = ('kelp', 'pk', 'rubble', 'concrete', 'corrugate', 'pipeRust', 'r
 
 
 def hyk_files():
-    def ys(f):   # Ys's own copy wins over core/materials (its build's srcpath rule)
-        for d in (os.path.join(YS, 'src'), MATS, os.path.join(MATS, 'opt')):
+    def ys(f):   # Ys's own copy wins over core/materials (its build's srcpath rule); then the kits Ys reads in place
+        # since 6c04e275 (settlements/ys/build.py VENDORED: kits/ancients/src first)
+        for d in (os.path.join(YS, 'src'), MATS, os.path.join(MATS, 'opt'), os.path.join(ROOT, 'kits', 'ancients', 'src'),
+                  os.path.join(ROOT, 'kits', 'port', 'src'), os.path.join(ROOT, 'settlements', 'iziz', 'src'),
+                  os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')):
             p = os.path.join(d, f)
             if os.path.exists(p):
                 return p

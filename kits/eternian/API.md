@@ -11,7 +11,7 @@ Units are metres; x east, y up, z south. A def's local frame: origin on the grou
 | Fragment | Prefix | What |
 |---|---|---|
 | `26k-kit.js` | | `KIT`, `ET_STYLES`, `SV_LIB` (the library families P1 maps), `SV_TILE0`, `SV_CLOTH`, `SV_CUT`, `KIT_HAS(k)`, `SVPAL`, `P(k)` |
-| `37-wk-rec.js` | wk | walk records: every box a building draws is a core/walk floor or block (from `kits/islanders`) |
+| `37-wk-rec.js` | wk | walk records: every box a building draws is a core/walk floor or block (core/engine, read in place since 2026-11-09) |
 | `28-et-mat.js` | | what the vendored `27-mat.js` does not know: the screens alpha-tested and two-sided, the onyx and alabaster glowing (their map as their emissive map) |
 | `38-et-alt.js` | | **alternates**: `ET_ALTS` (`screen`: screen, screenB; `maze`: maze, mazeB, mazeC), the take per placed instance (a KRAND hash of the def's seed, variant and place; it wraps `place` and `emit`, the engine untouched); `etAltOf(key, mk, x, z, v)` |
 | `40-et-kit.js` | et | the toolkit: `etWall(L, y0, h, mk, col, opens, o)`, `etWalls(w, d, y0, h, mk, col, {front, back, left, right})`, `etOculus`, `etStepHead`, `etFlutes`, `etParapet`, `etBlockScreen`, `etStair`, `etNoCut`, `etCutFloor`, `etFace`, `ET_T`, `ET_WATER` |
@@ -27,16 +27,17 @@ Units are metres; x east, y up, z south. A def's local frame: origin on the grou
 | `52-et-dwell-rich.js` | et | the rich: `et_merchant_house`, `et_official_villa` (household service) |
 | `53-et-court.js` | et | the court over water: `et_heir_pavilion` (v: 0 gilt, 1 bronze, 2 gunmetal roof), `et_heir_gallery`; `etOct(R)`, `ET_ROOF_TAKES` |
 | `70-et-canal.js` | et | the canal street: `et_canal`, `et_bridge`, `et_canal_street` (`ET_STREET`: its two rows of dwellings, placed as nested records at `ET_QUAY`); `ET_CANAL_W` |
-| `68-et-trades.js` | et | `ET_TRADES` (the 44 Voth census trades in the repo's shape, `tools/check_trades.py`: `keys`, `gap` (here 'to build in Pn: et_key'), `na`; `voth` the Voth building), `etDims(DEFS, FAMILIES)` (a city layout's `kit.dims`). [G data] |
+| `68-et-trades.js` | et | `ET_TRADES` (the 44 Voth census trades in the repo's shape, `tools/check_trades.py`: `keys`, `gap` (here 'to build in Pn: et_key'; none open since 2026-11-09), `na`; `voth` the Voth building), `etDims(DEFS, FAMILIES)` (a city layout's `kit.dims`). [G data] |
 | `64-et-trade-kit.js` | et | **the trade generator**: `etTrade({plan: 'rect' (w, d) / 'hex' (R), storeys, sh, G, mk, upMk, shop, mask, roof: 'gable' / 'hip' / 'pent' / 'flat' / 'pyramid' / 'ogee', roofMk, roofH, chimney: [x, z], sign: [x, z], steel, poor, furn, extra(F)})` -> `F {G, H, top, w, d, R, ap, sh}`; rect furniture `[key, x, z, ry, storey]`, hex `[key, face, inset, storey]` (face 1 the door's); `etBottleKiln(x, z, r, h)`, `etDryRack(x, z, L, mk, col)`, `ET_SH` |
 | `65-et-works.js` | et | the works: `et_kiln` and `et_tile_works` (hexagonal), `et_porcelain`, `et_paper_mill`, `et_printer` |
 | `66-et-trades.js` | et | the census trades: `et_bakehouse`, `et_weaver`, `et_brewhouse`, `et_smithy`, `et_shophouse`, `et_inn` (v 1 hexagonal: `etHexV`), `et_butcher`, `et_tannery`, and the hexagonal `et_tea_house`, `et_healer`, `et_market_hall`, `et_granary`, `et_warehouse`; `et_mushroom_cellar` |
 | `67-et-land.js` | et | the land: `et_farmstead` (hexagonal), `et_paddy`, `et_tea_garden`, `et_mine`, `et_quarry`, `et_stock_pens`; `etField` |
+| `69-et-coast.js` | et | the coast's works (Farside's backport): `et_kelp_kiln`, `et_lime_kiln`, `et_wrack_heap`, `et_wrack_cart`, `et_terraces`, `et_goat_fold`, `et_kelp_rack`; `etWrackHeap(x, z, rx, rz, h)` |
 | `71-et-harbour.js` | et | hydraulics and harbour: `et_lock`, `et_reservoir_wall`, `et_spillway` (record `spill: {lip, foot, width}`), `et_canal_landing`, `et_ferry_landing`, `et_fish_landing`, `et_quay`, `et_dock`, `et_lighthouse` (hexagonal), `et_factory_quarter` |
 | `93e-et-export.js` | | the kit's part of a krator-world (core/export): `terrain` (sampled), `buckets` (the merged meshes, cropped and compacted), `materials` (a `standard` record per mesh, `kmat` and `lib` linked); queued when the page has no exporter |
 | `91d-et-water.js` | | the host side of the spillway: the falling sheet from each `spill` record, its streaks running; browser only |
 | `60-et-state.js` | et | the State: `et_ministry`, `et_registry`, `et_examination_hall` (hexagonal), `et_customs_house` |
-| `61-et-defence.js` | et | the wall: `et_gate`, `et_wall`, `et_wall_tower` (v 1: the frontier's, blind), `et_barracks` |
+| `61-et-defence.js` | et | the wall: `et_gate`, `et_wall`, `et_wall_tower` (v 1: the frontier's, blind), `et_barracks`, `et_fort` (the frontier fort: a hexagon of curtain walls, corner towers, the gate, ranges, the keep) |
 | `62-et-machine.js` | et | the machine layer: `et_clock` (record `clock`: `{dial, normal, radius, track, figureH, period, figures: [{metal, seed}]}` in world coordinates), `et_tube_station` (hexagonal; `etHexPut`), `et_tube_pipe`, `et_talking_head` (record `voice: {face, deranged}`), `et_relic_hall` |
 | `63-et-faith.js` | et | the ancestors: `et_ancestor_gallery`, `et_shrine_niche`, `et_withdrawal_house`, `et_mask_house`, `et_historians_house` |
 | `91c-et-clock.js` | | the host side of the Clock: draws each `clock` record's figures and hands and runs them (`ET_CLOCKS`); browser only |

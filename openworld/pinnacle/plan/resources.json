@@ -90,7 +90,7 @@
    },
    "coal": {
     "mean": 117.2,
-    "good_km2": 2944,
+    "good_km2": 2960,
     "rich_km2": 96,
     "peak": {
      "byte": 182,
@@ -100,8 +100,8 @@
     "nodes": 196
    },
    "oil": {
-    "mean": 89.3,
-    "good_km2": 2144,
+    "mean": 89.2,
+    "good_km2": 2128,
     "rich_km2": 0,
     "peak": {
      "byte": 128,
@@ -299,9 +299,9 @@
    }
   },
   "farm": {
-   "mean": 0.271,
-   "good_km2": 800,
-   "best_km2": 160,
+   "mean": 0.274,
+   "good_km2": 816,
+   "best_km2": 176,
    "peak": {
     "score": 0.773,
     "x": 4000,

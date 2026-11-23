@@ -215,12 +215,17 @@ ok(exs.records[0].count === 3 && exs.records[0].table === undefined && exi.recor
   exi.records[1].table === undefined && exs.records[0] === fern && exi.records[0] !== fern,
   'export: a set carries its count; with {instances: true} its table as plain arrays, on a copy');
 
+// a vessel and a vehicle (2026-11-17): their classes, their order ids, the Ring Sea's and the Motor Vehicles kit's tags clean
+{const V2=KTAGS.create({build:'vessels'}),bo=V2.add({'class':'vessel',key:'xa_lake_boat',at:[0,0,0],tags:{culture:'xanadu',type:['fishing'],propulsion:['sail','oar'],hull:'monohull',wealth:'poor',crew:2,role:'fishes the lake'}}),
+  ca=V2.add({'class':'vehicle',key:'geo_buggy',at:[4,0,0],tags:{type:['vehicle','transport'],drive:'wheeled',seats:2,fuel:'refined oil'}});
+ ok(bo.id==='ves_00000'&&ca.id==='veh_00000'&&!KTAGS.norm(bo.tags).problems.length&&!KTAGS.norm(ca.tags).problems.length,'a vessel and a vehicle: their classes, ids and tags');
+ ok(KTAGS.norm({propulsion:['jet']}).problems.length===1&&KTAGS.norm({drive:'flying'}).problems.length===1,'a vessel\'s propulsion and a vehicle\'s drive outside their lists are problems');}
 // the export, and its digest
 const ex = T.export();
 ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 30, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = 'f4072dea';   // 2026-11-03: the modularity merge (the shared culture rebuild on the final biome rebuild's mine kind and emp); before it 93dde0de: the shared culture rebuild (30 cultures; noCatalog empty); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
+const DIGEST = '8547739e';   // 2026-11-17: the vessel and vehicle classes and their keys (propulsion, hull, crew; drive, seats, fuel); before it f4072dea, 2026-11-03: the modularity merge (the shared culture rebuild on the final biome rebuild's mine kind and emp); before it 93dde0de: the shared culture rebuild (30 cultures; noCatalog empty); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);

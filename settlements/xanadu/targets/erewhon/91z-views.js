@@ -23,6 +23,32 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
  {const inAv=[];for(const P of ER_LINES.avenue){let run=[];for(const p of P){if(ER_INCITY(p[0],p[1]))run.push(p);else{if(run.length>1)inAv.push(run);run=[];}}if(run.length>1)inAv.push(run);}
   const B={};let best=null;for(const p of PLAN){if(p.wealth!=='rich'||!p.front)continue;const q=nearestOnLines(inAv,p.front[0],p.front[1]);if(!q||q.d>8)continue;const k=Math.round(q.x/60)+','+Math.round(q.z/60);const c=B[k]||(B[k]={n:0,q});c.n++;if(!best||c.n>best.n)best=c;}
   const n=best?best.q:nearestOnLines(ER_LINES.avenue,wh.x,wh.z);if(n){const dx=n.b[0]-n.a[0],dz=n.b[1]-n.a[1],l=Math.hypot(dx,dz)||1;V['Wealthy homes — the avenue']=_eye(n.x-dx/l*30,n.z-dz/l*30,n.x+dx/l*70,n.z+dz/l*70,1);}else V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);}
+ // inside the Pleasure Dome (kits/xanadu 78c-78d; the def's local frame: +x east, +z the garden gate's side), from where its block stands
+// (the precinct's frame stands XPDOME.OZ south of the block's centre: 78c, 2026-11-10)
+ {const B=CIT_G.blocks.find(b=>b.key==='xa_pleasure_dome');if(B){const oz=XPDOME.OZ==null?0:XPDOME.OZ,L=(n,x,y,z,tx,ty,tz)=>{V['Pleasure Dome — '+n]=[B.x+x,B.y+y,B.z+oz+z,B.x+tx,B.y+ty,B.z+oz+tz];};
+  L('the Hall of Feasts',0,2.3,-2.5,0,8,-36);L('the checkered door',0,2.1,-27,0,4.2,-46);L('the hall from its gallery',0,10.3,-1.6,0,10,-36);
+  L("the Valide's court",-38,2.2,-1.2,-38,5.5,-27);L('the baths',21.5,2.6,48.6,42,5.5,35);
+  L('the stair hall',-44.6,2.1,30.6,-45.2,9.5,21);L('the sweeping stair',22,2.2,9,44,7,9);L('from the garden',0,9,52,0,14,-20);}}
+ {const U=XA_CUT.find(u=>u.key==='xa_pleasure_dome_bay');if(U)for(const n in U.views)V['Pleasure Dome of the Bay — '+n]=U.views[n];}
  const g=GATES.find(g=>g.kind==='west');if(g)V['West gate — from the highway']=_eye(g.x-70,g.z+10,g.x+20,g.z,3);
  const ge=GATES.find(g=>g.kind==='east');if(ge)V['East gate — from the highway']=_eye(ge.x+70,ge.z-10,ge.x-20,ge.z,3);
+ // inside the citadel (2026-11-09; kits/xanadu/src/78n-xa-citadel.js): the Sultan's Hall of Audience toward the dais under its
+ // star ceiling, the Divan in the Vizier's palace, the Treasurer's court with its fountain, the palace's gate iwan from the Golden
+ // Way's gate court before it (2026-11-10, the Golden Way built: from 4 m before the iwan's face, under the North Door's balcony, the
+// hood framed again), and the Golden Way itself down its lower flights from the turn (kits/xanadu 78o: the Way's frame is the
+// palace's moved XGW.IW south). Each from its building's block (CIT_G; the citadel's buildings stand unturned), local + the block's level
+ {const cb=k=>CIT_G.blocks.find(B=>B.key===k),at=(B,c,t)=>[B.x+c[0],B.y+c[1],B.z+c[2],B.x+t[0],B.y+t[1],B.z+t[2]];
+  const P=cb('xa_cit_palace'),Vz=cb('xa_cit_vizier'),T=cb('xa_cit_treasurer');
+  if(P){V['Citadel — the Hall of Audience']=at(P,[0,2.1,0.6],[0,4.6,-21]);V['Citadel — the gate iwan']=at(P,[0,2.15,XGW.IW+4],[0,10.6,XGW.IW-3.4]);
+   if(typeof GOLDEN_WAY!=='undefined'&&GOLDEN_WAY){const m=xgwPlan(GOLDEN_WAY.top).mid,zl=XGW.IW+(XGW.Z.foot+XGW.Z.low)/2;V['Citadel — the Golden Way']=at(P,[XGW.X.turn0+1.6,m+1.75,zl],[XGW.X.bridge+2,2.4,zl]);}}
+  if(Vz)V['Citadel — the Divan']=at(Vz,[3.5,2.1,-15.2],[-19,3.9,-38]);
+  if(T)V['Citadel — the court of the Treasurer']=at(T,[-2.5,1.9,8.2],[2.5,2.8,-7]);
+  /* the rooms given their own light (2026-11-23: lamps and windows set by hand, kits/interiors/sets/xanadu-citadel.js): the
+     Ramp from its first corner up its east run to the slits and lanterns of its back wall; the service stair from its head end
+     toward its back wall's lights; its head toward the light over the east range's roof; the Court Temple's prayer hall from
+     beside the porch door up to the clerestory and the polycandelons */
+  const Tm=cb('xa_cit_temple');
+  if(P){V['Citadel — the Ramp of the Sultan']=at(P,[-16.6,3.0,-24.2],[-21,6,-37.6]);V['Citadel — the service stair']=at(P,[27.5,2.1,-24],[28,3.6,-38]);
+   V['Citadel — the service stair head']=at(P,[26,9.6,-23],[30.5,11,-26.5]);}
+  if(Tm)V['Citadel — the Court Temple prayer hall']=at(Tm,[-14,2.3,12],[10,8,-14]);}
  return V;})();

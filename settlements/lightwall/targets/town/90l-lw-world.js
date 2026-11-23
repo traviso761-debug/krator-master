@@ -1,0 +1,123 @@
+// ================================================================= LĀIṬWĀL — the world: the Krator sky, the painted bench, the north wall, the lake
+// Runs after 90-scene (renderer, scene, camera and lights exist; the sheet's showcase was skipped: window.CITY), as Qiblai's
+// 90q. The bench's ground mesh (6 m cells) wears a canvas painted from the plan's records: the bench's grass, the built
+// blocks' made ground, the fields in strips, every street at its width (the bazaar avenue and the Stair Foot in flagstones,
+// the rest cobbles), the shingle shore. Nothing reads the canvas back (placement is the plan's, never the paint's). The
+// north wall behind the Glaziers' bands is a coarser mesh in the rock's colour, rising to the far field; the lake is still
+// water at -30 over its bed. The ground sets are the Qiblai kit's (kit.json packFrom: the Sultanate's country). [web]
+reseed(LW.SEED+1);const LW_T0=performance.now();
+for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
+// ---------------------------------------------------------------- the sky and its light (KratorSky, as Qiblai's and Erewhon's)
+const LW_SKY={hour:16.4,day:150,dens:1.1};
+const LW_SKYG=KratorSky.attach(scene,9000);scene.fog.density=.00016;
+const lwHemi=scene.children.find(o=>o.isHemisphereLight);
+function lwSkyTick(){KratorSky.update(camera.position,LW_SKY.hour,LW_SKY.day,LW_SKY.dens);const L=KratorSky.lighting();
+ sun.position.copy(L.sunDir).multiplyScalar(1500).add(camera.position);sun.target.position.copy(camera.position);sun.target.updateMatrixWorld();sun.intensity=L.sunIntensity;sun.color.copy(L.sunColor);
+ fill.intensity=.22*L.dayF+.05;if(lwHemi)lwHemi.intensity=L.ambient;scene.fog.color.copy(L.fog);renderer.setClearColor(L.fog);}
+FRAME_HOOKS.push(lwSkyTick);lwSkyTick();
+// ---------------------------------------------------------------- the scarp's rock: its strata and its texture
+/* the north fault's rock in beds (biomes/opalvalley: the banded rhyolite-ignimbrite column, dark basalt dikes at the contact):
+   a tint by height, the beds warped by core/rand's value noise, written into out[0..2] as a multiplier of the library's
+   hewn basalt (over 1 lifts it toward the rhyolite's rose and the tuff's pale) */
+const LW_BEDS=[[.78,.78,.84],[1.22,1.02,.96],[1.02,.94,.92],[1.34,1.24,1.12],[.86,.84,.88],[1.16,.98,.94]];
+/* the beds thicken up the north wall (7.5 m on the bands, about 60 m half a kilometre over their top): seen from the bench or the
+   lake a thin bed's repeat read as fine horizontal banding; a thick one reads as the fault's column */
+function lwStrata(x,y,out){const up=Math.max(0,y-LW_TOP),w=y+6*KRAND.vnoise(x*.012,y*.02,0,LW.SEED+31)+2*KRAND.vnoise(x*.06,y*.1,0,LW.SEED+32)+up*.25*(KRAND.vnoise(x*.003,0,0,LW.SEED+37)-.5),
+  t=w<=LW_TOP?w/7.5:LW_TOP/7.5+10*Math.log(1+(w-LW_TOP)*.1/7.5),i=Math.floor(t),f=t-i,   /* a bed 7.5+0.1(w-top) m thick: its count integrated */
+  a=LW_BEDS[((i%LW_BEDS.length)+LW_BEDS.length)%LW_BEDS.length],b=LW_BEDS[(((i+1)%LW_BEDS.length)+LW_BEDS.length)%LW_BEDS.length],s=f<.8?0:(f-.8)/.2,g=.92+.16*KRAND.vnoise(x*.3,y*.3,0,LW.SEED+33);
+ for(let k=0;k<3;k++)out[k]=(a[k]*(1-s)+b[k]*s)*g;return out;}
+/* the scarp's rock face: the library's rock.rock_face (a scanned cliff, Xanadu's own xRock: no new pack), at twice its tile,
+   through core/terrain's ground shader (KGROUND.hook: hex tiling, the distance scale, triplanar on the steep); the beds' tint
+   (lwStrata, the vertex colours) multiplies it */
+function lwRockLayer(mat){const T=MAT.xRock&&MAT.xRock.map;if(!T||typeof KGROUND==='undefined')return mat;T.wrapS=T.wrapT=THREE.RepeatWrapping;
+ const L=KMAT.packed&&KMAT.packed('xanadu','xRock'),sc=L&&L.scale?L.scale[0]:4;
+ return KGROUND.hook(mat,{layers:[{map:T,k:1/(sc*2.2),w:'1.0',lin:true,name:'the scarp: rock face'}],tri:{from:.3,to:.65,far:900},far:{d:90,levels:6},key:'lightwall-rock'});}
+// ---------------------------------------------------------------- the bench's canvas: the zone mask and the tint
+const LWG={x0:-1300,x1:1300,z0:-300,z1:620};LWG.W=LWG.x1-LWG.x0;LWG.H=LWG.z1-LWG.z0;
+const LWG_PX=4096/Math.max(LWG.W,LWG.H),lgx=x=>(x-LWG.x0)*LWG_PX,lgz=z=>(z-LWG.z0)*LWG_PX;
+const lwCanvas=()=>{const c=document.createElement('canvas');c.width=Math.ceil(LWG.W*LWG_PX);c.height=Math.ceil(LWG.H*LWG_PX);return c;};
+const lwCv=lwCanvas(),lwMask=lwCanvas();
+(function lwPaint(){const g=lwCv.getContext('2d'),m=lwMask.getContext('2d');
+ const poly=(c,P)=>{c.beginPath();P.forEach((p,i)=>i?c.lineTo(lgx(p[0]),lgz(p[1])):c.moveTo(lgx(p[0]),lgz(p[1])));c.closePath();};
+ const line=(c,P,w)=>{c.lineWidth=w*LWG_PX;c.beginPath();P.forEach((p,i)=>i?c.lineTo(lgx(p[0]),lgz(p[1])):c.moveTo(lgx(p[0]),lgz(p[1])));c.stroke();};
+ const DIRT='rgb(0,0,255)',FLAG='rgb(0,255,0)',COB='rgb(255,0,0)';
+ /* the bench's grass (the middle terrace's Cfb country), the shingle shore below the shore road, the scree at the wall's foot */
+ g.fillStyle='#646a58';g.fillRect(0,0,lwCv.width,lwCv.height);m.fillStyle='#000';m.fillRect(0,0,lwMask.width,lwMask.height);
+ g.fillStyle='#8c8a82';g.fillRect(0,lgz(LW_ROWS[0]+6),lwCv.width,lwCv.height);m.fillStyle=DIRT;m.fillRect(0,lgz(LW_ROWS[0]+6),lwMask.width,lwMask.height);
+ const scree=g.createLinearGradient(0,lgz(LW.WALL-30),0,lgz(LW.FOOT+18));scree.addColorStop(0,'#77706c');scree.addColorStop(1,'rgba(118,112,104,0)');
+ g.fillStyle=scree;g.fillRect(0,0,lwCv.width,lgz(LW.FOOT+18));m.fillStyle=DIRT;m.fillRect(0,0,lwMask.width,lgz(LW.FOOT+4));
+ /* the built blocks' made ground; the fields in strips along the contour, tilled, in crop or fallow by a hash of the strip */
+ for(const b of LW_BLOCKS){if(b.kind==='field'){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]),X0=Math.min(...xs),X1=Math.max(...xs),Z0=Math.min(...zs),Z1=Math.max(...zs);
+   for(let z=Z0,k=0;z<Z1;z+=14,k++){const h=lwHash(b.id+':'+k)%100,v=(h%13)-6,c=h<35?[112+v,98+v,84+v]:h<75?[150+v,142+v,90]:[122+v,126+v,106+v];
+    g.fillStyle='rgb('+c.join(',')+')';g.fillRect(lgx(X0),lgz(z),(X1-X0)*LWG_PX,Math.min(13,Z1-z)*LWG_PX);if(h<35){m.fillStyle=DIRT;m.fillRect(lgx(X0),lgz(z),(X1-X0)*LWG_PX,Math.min(13,Z1-z)*LWG_PX);}}}
+  else{/* a built block: its plots (89zl lwPlot), sampled every 3 m: kitchen gardens in beds, orchards and yards in grass, the
+      dooryards made ground */
+   const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]),X0=Math.min(...xs),X1=Math.max(...xs),Z0=Math.min(...zs),Z1=Math.max(...zs),st=3;
+   for(let x=X0;x<X1;x+=st)for(let z=Z0;z<Z1;z+=st){const pl=lwPlot(x+st/2,z+st/2),X=lgx(x),Z=lgz(z),Wd=st*LWG_PX+.5;
+    if(pl==='garden'){const row=Math.floor(z/1.5)%2,h=lwHash('g'+Math.floor(x/LW_PLOT)+','+Math.floor(z/LW_PLOT))%3;
+     g.fillStyle=row?(['#6f7a4a','#7f8a4e','#5f6e44'][h]):'#7a6a56';g.fillRect(X,Z,Wd,Wd);if(!row){m.fillStyle=DIRT;m.fillRect(X,Z,Wd,Wd);}}
+    else if(pl==='orchard'){g.fillStyle='#5e6a4e';g.fillRect(X,Z,Wd,Wd);}
+    else if(pl==='yard'){g.fillStyle='#6a6e58';g.fillRect(X,Z,Wd,Wd);}
+    else{g.fillStyle='#8a8680';g.fillRect(X,Z,Wd,Wd);m.fillStyle=DIRT;m.fillRect(X,Z,Wd,Wd);}}}}
+ /* the Stair Foot (flagstones) and the streets at their widths */
+ for(const c of [g,m]){c.lineCap='square';c.lineJoin='miter';}
+ g.fillStyle='#93897c';m.fillStyle=FLAG;for(const c of [g,m]){c.fillRect(lgx(LW_PLAZA.x0),lgz(LW_PLAZA.z0-14),(LW_PLAZA.x1-LW_PLAZA.x0)*LWG_PX,(LW_PLAZA.z1-LW_PLAZA.z0+14)*LWG_PX);}
+ for(const w of LW_STREETS){const flag=w.cls==='avenue';g.strokeStyle=flag?'#93897c':'#8c8984';m.strokeStyle=flag?FLAG:COB;line(g,w.pts,LW_W[w.cls]);line(m,w.pts,LW_W[w.cls]);}
+ /* the road west down the valley from the caravanserai, and east to the monastery's spur */
+ m.strokeStyle=COB;g.strokeStyle='#8c8984';for(const c of [g,m]){line(c,[[-940,LW_ROWS[0]],[-1300,LW_ROWS[0]+60]],8);line(c,[[940,LW_ROWS[1]],[1000,150]],6);}})();
+function lwGroundMat(){const tex=new THREE.CanvasTexture(lwCv);tex.encoding=THREE.sRGBEncoding;tex.anisotropy=8;
+ const mk=new THREE.CanvasTexture(lwMask);mk.encoding=THREE.LinearEncoding;
+ const lib=k=>{const t=MAT[k]&&MAT[k].map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.needsUpdate=true;}return t;};
+ const scale=k=>{const L=KMAT.packed&&KMAT.packed('qiblai',k);return L&&L.scale?L.scale[0]:3;};
+ const U={tGrass:{value:lib('qGrass')},tDirt:{value:lib('qDirt')},tCobble:{value:lib('qCobble')},tFlag:{value:lib('qFlag')},tMask:{value:mk},
+  kTile:{value:new THREE.Vector4(1/scale('qGrass'),1/scale('qDirt'),1/scale('qCobble'),1/scale('qFlag'))}};
+ const mat=new THREE.MeshStandardMaterial({map:tex,roughness:.95,metalness:0});
+ mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vLwW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvLwW=(modelMatrix*vec4(transformed,1.0)).xyz;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vLwW;uniform sampler2D tGrass,tDirt,tCobble,tFlag,tMask;uniform vec4 kTile;')
+   .replace('#include <map_fragment>',['#ifdef USE_MAP','vec4 lwT=mapTexelToLinear(texture2D(map,vUv));vec4 lwM=texture2D(tMask,vUv);vec2 lw=vLwW.xz;',
+    'vec3 lc=sRGBToLinear(texture2D(tGrass,lw*kTile.x)).rgb;lc=mix(lc,sRGBToLinear(texture2D(tDirt,lw*kTile.y)).rgb,lwM.b);',
+    'lc=mix(lc,sRGBToLinear(texture2D(tCobble,lw*kTile.z)).rgb,lwM.r);lc=mix(lc,sRGBToLinear(texture2D(tFlag,lw*kTile.w)).rgb,lwM.g);',
+    'diffuseColor.rgb*=lc*lwT.rgb*4.6;','#endif'].join('\n'));};
+ mat.customProgramCacheKey=()=>'lightwall-ground';return mat;}
+// ---------------------------------------------------------------- the bench's mesh (6 m cells), the north wall, the lake
+(function lwTerrain(){const cell=6,NX=Math.round(LWG.W/cell),NZ=Math.round(LWG.H/cell),geo=new THREE.PlaneGeometry(LWG.W,LWG.H,NX,NZ);
+ const p=geo.attributes.position,uv=geo.attributes.uv,cx=(LWG.x0+LWG.x1)/2,cz=(LWG.z0+LWG.z1)/2;
+ for(let i=0;i<p.count;i++){const x=p.getX(i)+cx,z=-p.getY(i)+cz;p.setZ(i,terrainH(x,z));uv.setXY(i,lgx(x)/lwCv.width,1-lgz(z)/lwCv.height);}
+ geo.computeVertexNormals();
+ groundM=new THREE.Mesh(geo,lwGroundMat());groundM.rotation.x=-Math.PI/2;groundM.position.set(cx,0,cz);
+ groundM.userData.isGround=true;groundM.userData.probeSkip=true;groundM.name='the bench';groundM.receiveShadow=true;scene.add(groundM);
+ /* the far ground round the bench (89zl terrainH: the open world's, with the model edit owed): the north wall behind the bands,
+    the bench's shore east and west, the lake's bed, out to the world's range 9 km north and its lake 9 km south; 12 m cells by
+    the bands and 6 m rows under them, 60 m within 4 km, 150 m beyond. The bench's own mesh is cut out of it (its quads inside
+    the bench's rectangle are left out; its edge's rows and columns are on the far grid, so the two meet). The colour: the
+    fault's beds on the steep (lwStrata), the middle terrace's grass on the gentle, the shingle at the water's edge, the bed
+    under the water; snow over 2,300 m (local; 3,645 m in the world) */
+ const W={x0:-8000,x1:8000,z0:-9000,z1:9000},rows=[];
+ for(let z=W.z0;z<W.z1;){rows.push(z);z+=z<-4000?150:z<-900?60:z<-420?20:z<LWG.z0+2?6:z<LWG.z1?20:z<1200?20:z<3000?60:150;}rows.push(W.z1);
+ for(const z of [LWG.z0+2,LWG.z1])if(rows.indexOf(z)<0)rows.push(z);rows.sort((a,b)=>a-b);
+ const cols=[];for(let x=W.x0;x<W.x1;){cols.push(x);const a=Math.abs(x);x+=a<1400?12:a<4000?60:150;}cols.push(W.x1);
+ for(const x of [LWG.x0,LWG.x1])if(cols.indexOf(x)<0)cols.push(x);cols.sort((a,b)=>a-b);
+ const inB=(x,z)=>x>=LWG.x0&&x<=LWG.x1&&z>=LWG.z0+2&&z<=LWG.z1;
+ const NC=cols.length,NR=rows.length,Y=new Float32Array(NC*NR);
+ for(let j=0;j<NR;j++)for(let i=0;i<NC;i++)Y[j*NC+i]=terrainH(cols[i],rows[j]);
+ const pos=[],col=[],idx=[],cs=[0,0,0],GR=[.62,.66,.5],SH=[.92,.9,.86],BED=[.5,.56,.52];
+ for(let j=0;j<NR;j++)for(let i=0;i<NC;i++){const x=cols[i],z=rows[j],y=Y[j*NC+i],
+  i0=Math.max(0,i-1),i1=Math.min(NC-1,i+1),j0=Math.max(0,j-1),j1=Math.min(NR-1,j+1),
+  sl=Math.hypot((Y[j*NC+i1]-Y[j*NC+i0])/(cols[i1]-cols[i0]),(Y[j1*NC+i]-Y[j0*NC+i])/(rows[j1]-rows[j0])),
+  st=lwSm((sl-.35)/.35),wet=lwSm((LW.LAKE+2-y)/2),dry=1-wet;
+  pos.push(x,y,z);lwStrata(x,y,cs);
+  const sn=y>2300?Math.min(1,(y-2300)/400)*(.6+.4*KRAND.vnoise(x*.004,z*.004,0,LW.SEED+34)):0,sh=dry*lwSm((LW.LAKE+6-y)/4);
+  for(let k=0;k<3;k++){let c=GR[k]+(cs[k]-GR[k])*st;c=c+(SH[k]-c)*sh;c=c+(BED[k]-c)*wet;col.push(c*(1-sn)+[2.4,2.45,2.55][k]*sn);}}
+ for(let j=0;j<NR-1;j++)for(let i=0;i<NC-1;i++){
+  if(inB(cols[i],rows[j])&&inB(cols[i+1],rows[j])&&inB(cols[i],rows[j+1])&&inB(cols[i+1],rows[j+1]))continue;   /* the bench's own mesh */
+  const a=j*NC+i,b=a+1,c=a+NC,d=c+1;idx.push(a,c,b,b,c,d);}
+ const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));wg.setAttribute('color',new THREE.Float32BufferAttribute(col,3));wg.setIndex(idx);wg.computeVertexNormals();
+ const wall=new THREE.Mesh(wg,lwRockLayer(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95,metalness:0,color:0x9a928c})));wall.name='the far ground';wall.userData.isGround=true;wall.userData.probeSkip=true;wall.receiveShadow=true;scene.add(wall);
+ window._lightwallFar={verts:NC*NR,tris:idx.length/3,box:[W.x0,W.z0,W.x1,W.z1]};
+ /* the lake: still water at -30, milky turquoise (silica in suspension: biomes/opalvalley), out to the far shore */
+ /* the plane stays only where core/water is missing (90lw draws the lake on core/water: its shore, its waves) */
+ if(typeof WATER==='undefined'||typeof ATMOS==='undefined'){const lake=new THREE.Mesh(new THREE.PlaneGeometry(16000,9000),new THREE.MeshStandardMaterial({color:0x78bcbc,roughness:.14,metalness:.08,transparent:true,opacity:.9}));
+ lake.rotation.x=-Math.PI/2;lake.position.set(0,LW.LAKE,LW.SHORE+4500);lake.userData.probeSkip=true;lake.name='the great lake';lake.receiveShadow=true;scene.add(lake);}
+ /* the lake's bed is the far ground's (the world's lake and the bay the model edit owes), no longer a plane 16.5 m down */})();
+window._worldMs=Math.round(performance.now()-LW_T0);

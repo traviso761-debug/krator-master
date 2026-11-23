@@ -235,14 +235,15 @@ B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,dir=leanDir(T,S.lean,.2
   /* the gardens on the limb's upper side, toward the giant; the beards under it (more where it is wetter) */
   if(lv===2){const m=gs?ri(1,3):ri(0,1);for(let e=0;e<m;e++){const q=along(lp,rr(.25,.85)),sz=rr(.6,1.2);
     BIO.put(e%2?'brom':'epi',[q.x+ux*q.r*.3,q.y+q.r*.7,q.z+uz*q.r*.3],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),e%2?[sz*.55,1,sz*.55]:[sz,sz*.6,sz],
-     e%2?leafCol(PAL.brom,1.15,.02,.06,.05):(EHIGH.LIB.epi?bright(C(0xffffff),rr(.82,1)):leafCol(PAL.epi,1.2,.02,.06,.05)),e%2?undefined:{n:[ux*.4,1,uz*.4]});st.clumps++;}
+     e%2?leafCol(PAL.brom,1.15,.02,.06,.05):(EHIGH.LIB.epi?bright(C(pick(PAL.epi)),1.1):leafCol(PAL.epi,1.2,.02,.06,.05)),e%2?undefined:{n:[ux*.4,1,uz*.4]});st.clumps++;}
    for(let b=0,mb=Math.round(rr(0,2.4)*smooth(.4,.9,wet));b<mb;b++){const q=along(lp,rr(.3,.9)),Lb=rr(.8,2.2);
     BIO.put('beard',[q.x,q.y-q.r*.4,q.z],qEuler(0,rr(0,TAU),0),[rr(.4,.8),Lb,.6],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.2));}}}
  /* the gardens on the bole's giant face */
  if(lv===2)for(let e=0,m=ri(2,4);e<m;e++){const q=along(pts,rr(.25,.9)),sz=rr(.7,1.3);
-  BIO.put('epi',[q.x+ux*q.r*.85,q.y,q.z+uz*q.r*.85],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[sz,sz*.6,sz],EHIGH.LIB.epi?bright(C(0xffffff),rr(.82,1)):leafCol(PAL.epi,1.2,.02,.06,.05),{n:[ux,.5,uz]});st.clumps++;}
+  BIO.put('epi',[q.x+ux*q.r*.85,q.y,q.z+uz*q.r*.85],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[sz,sz*.6,sz],EHIGH.LIB.epi?bright(C(pick(PAL.epi)),1.1):leafCol(PAL.epi,1.2,.02,.06,.05),{n:[ux,.5,uz]});st.clumps++;}
  /* the crown: clumps round each limb end, held to it */
- const hc=EHIGH.LIB.laurel?bright(C(0xffffff),rr(.78,.95)):C(pick(S.leaf)),cx=T.x+ux*R*.35,cz=T.z+uz*R*.35,cy=T.y0+H*.78,sz0=R*.42*(lv===2?1:1.45);
+ /* keep 0 slots (laurel, epi, bigfrond, as the beech and the fir; 2026-11-15): the leaf colour under the grey map, not white */
+ const hc=EHIGH.LIB.laurel?bright(C(pick(S.leaf)),1.08):C(pick(S.leaf)),cx=T.x+ux*R*.35,cz=T.z+uz*R*.35,cy=T.y0+H*.78,sz0=R*.42*(lv===2?1:1.45);
  for(const sp of spots){const nn=lv===2?(sp.tip?4:2):(sp.tip?2:0);   /* mid tier: the limb is a straight rod, so only its end holds a clump */
   for(let c=0;c<nn;c++){const a=rr(0,TAU),d=sp.s*.5*Math.sqrt(rng()),x=sp.p.x+Math.cos(a)*d,z=sp.p.z+Math.sin(a)*d,y=sp.p.y+rr(-.1,.4)*sp.s,sz=sz0*rr(.8,1.2);
    const h=BIO.holdTo?BIO.holdTo([sp.p.x,sp.p.y,sp.p.z],[x,y,z],sz*.55):[x,y,z];clumpAt('laurel',h[0],h[1],h[2],sz,.6,hc,cx,cy,cz,R,H*.3);st.clumps++;}}
@@ -255,7 +256,7 @@ B[8]=function(T,st,lv){const S=SP[T.sp],H=T.H,dir=leanDir(T,S.lean*rr(.7,1.2),.2
  const n=lv===2?6:3,pts=[];
  for(let k=0;k<=n;k++){const t=k/n,b=Math.tan(S.lean)*H*t*t*.5;pts.push({x:T.x+ux*b,y:T.y0-.2+(H+.2)*t,z:T.z+uz*b,r:T.rb*(1.25-.35*t)*(t<.1?1.4:1),col:barkCol(S,k)});}
  st.trunk+=BIO.tube('bark4',pts,pts[0].col,{seg:lv===2?7:5,cap:true});
- const top=pts[n],nF=lv===2?ri(10,15):ri(5,7),a0=rr(0,TAU),hc=EHIGH.LIB.bigfrond?bright(C(0xffffff),rr(.82,1)):C(pick(S.leaf));
+ const top=pts[n],nF=lv===2?ri(10,15):ri(5,7),a0=rr(0,TAU),hc=EHIGH.LIB.bigfrond?bright(C(pick(S.leaf)),1.05):C(pick(S.leaf));
  for(let k=0;k<nF;k++){const a=a0+k/nF*TAU+rr(-.2,.2),gc=Math.cos(a-gaz),L=T.crownR*rr(.85,1.1)*(1+.3*gc),pitch=mix(.55,.12,.5+.5*gc)+rr(-.08,.08);
   BIO.put('bigfrond',[top.x,top.y-.05,top.z],qEuler(rr(-.1,.1),-a,pitch),[L,L*rr(.85,1.05),L*rr(1.1,1.4)],bright(hc,rr(.88,1.1)));st.clumps++;}
  /* a few young croziers curled at the top, and the dead fronds' skirt under the crown */
@@ -268,7 +269,10 @@ B[8]=function(T,st,lv){const S=SP[T.sp],H=T.H,dir=leanDir(T,S.lean*rr(.7,1.2),.2
 // branches (rods from the trunk, lv 2) or on the trunk itself (lv 1): held by construction.
 B[9]=function(T,st,lv){const S=SP[T.sp],tl=smooth(.5,.78,BIO.field('cold',T.x,T.z)),form=tl<.35?0:tl<.75?1:2;T.form=form;
  const dir=leanDir(T,S.lean*(1+1.5*tl),.15),gl=Math.hypot(dir[0],dir[2])||1,ux=dir[0]/gl,uz=dir[2]/gl,gaz=Math.atan2(uz,ux);
- const lc=C(pick(S.leaf)),hc=EHIGH.LIB.needle?bright(C(0xffffff),rr(.6,.78)):lc;
+ /* the needles take the species' colour under the library's grey map (keep 0), as the beech's do (2026-11-15); pick for the rr it replaces.
+    With the library's stems (materials.json "needle") a clump's origin is its sprigs' stem end: every clump below sits on its branch rod
+    (lv 2), the trunk's bark (lv 1, which draws no rods) or the krummholz mat */
+ const lc=C(pick(S.leaf)),SPRIG=!!EHIGH.LIB.needle,hc=SPRIG?C(pick(S.leaf)):lc;
  if(form===2){const R=T.crownR*rr(.55,.85),h=rr(.5,1.2);
   BIO.put('lobe',[T.x+ux*R*.3,T.y0-.1,T.z+uz*R*.3],qEuler(0,EHIGH.GIANT_YAW+rr(-.2,.2),0),[R*1.6,h,R*.8],shade(lc,-.35));
   for(let k=0,n=lv===2?8:3;k<n;k++){const u=rr(-.7,.9),v=rr(-.6,.6),x=T.x+ux*R*(.3+u*1.2)-uz*v*R*.6,z=T.z+uz*R*(.3+u*1.2)+ux*v*R*.6,d=Math.hypot(u,v)*.85;
@@ -284,7 +288,7 @@ B[9]=function(T,st,lv){const S=SP[T.sp],tl=smooth(.5,.78,BIO.field('cold',T.x,T.
    if(lv===2){const e=[c.x+Math.cos(a)*L,c.y-L*.18,c.z+Math.sin(a)*L];BIO.beam('rod',[c.x,c.y,c.z],e,Math.max(.03,c.r*.35),.02,rodCol(S.bark[0]));
     clumpAt('needle',c.x+Math.cos(a)*L*.85,c.y-L*.15,c.z+Math.sin(a)*L*.85,sz,.42,hc,c.x,c.y,c.z,Rw+.5,H*.3);
     if(L>1.2)clumpAt('needle',c.x+Math.cos(a)*L*.45,c.y-L*.08,c.z+Math.sin(a)*L*.45,sz*.8,.42,hc,c.x,c.y,c.z,Rw+.5,H*.3);st.clumps+=2;}
-   else{clumpAt('needle',c.x+Math.cos(a)*L*.4,c.y-L*.1,c.z+Math.sin(a)*L*.4,L*1.2,.45,hc,c.x,c.y,c.z,Rw+.5,H*.3);st.clumps++;}}}
+   else{const o=SPRIG?c.r*.85:L*.4;clumpAt('needle',c.x+Math.cos(a)*o,c.y-(SPRIG?0:L*.1),c.z+Math.sin(a)*o,L*1.2,.45,hc,c.x,c.y,c.z,Rw+.5,H*.3);st.clumps++;}}}
  /* the leader */
  const tp=pts[n];clumpAt('needle',tp.x,tp.y-.2,tp.z,Math.max(.6,Rb*.3),.9,hc,tp.x,tp.y,tp.z,1,1);
  regTree(T,S,Rb*1.5+.5,H+.5);};
@@ -305,7 +309,9 @@ B[10]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,dir=leanDir(T,S.lean,.
   if(lv===2)for(let b=0,mb=Math.round(rr(0,2)*smooth(.5,.9,wet));b<mb;b++){const q=along(lp,rr(.3,.9));
    BIO.put('beard',[q.x,q.y-q.r*.4,q.z],qEuler(0,rr(0,TAU),0),[rr(.4,.8),rr(.6,1.8),.6],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.2));}}
  /* the tiers: flat clumps round each spot on the limb, held to it */
- const hc=EHIGH.LIB.beech?bright(C(0xffffff),rr(.75,.92)):C(pick(S.leaf)),cx=T.x+ux*R*.3,cz=T.z+uz*R*.3,cy=T.y0+H*.75,sz0=R*.4*(lv===2?1:1.45);
+ /* the leaf colour, library or not (2026-11-15): the slot keeps none of the card's own (tint keep 0, a grey map), so a white instance
+    colour drew the crowns grey-white; pick draws one number, as the rr it replaces did */
+ const hc=EHIGH.LIB.beech?bright(C(pick(S.leaf)),1.08):C(pick(S.leaf)),cx=T.x+ux*R*.3,cz=T.z+uz*R*.3,cy=T.y0+H*.75,sz0=R*.4*(lv===2?1:1.45);
  for(const sp of spots){const nn=lv===2?(sp.tip?3:2):(sp.tip?2:0);
   for(let c=0;c<nn;c++){const a=rr(0,TAU),d=sp.s*.5*Math.sqrt(rng()),x=sp.p.x+Math.cos(a)*d,z=sp.p.z+Math.sin(a)*d,y=sp.p.y+rr(-.05,.2)*sp.s,sz=sz0*rr(.8,1.2);
    const h=BIO.holdTo?BIO.holdTo([sp.p.x,sp.p.y,sp.p.z],[x,y,z],sz*.55):[x,y,z];clumpAt('beech',h[0],h[1],h[2],sz,.35,hc,cx,cy,cz,R,H*.3);st.clumps++;}}

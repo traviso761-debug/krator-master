@@ -44,6 +44,14 @@ ROUTES = (('**/three.min.js', lambda r: r.fulfill(path=THREE, content_type='text
           ('**/GLTFLoader.js', lambda r: r.fulfill(path=LOADER, content_type='text/javascript')),
           ('**/fonts.g*/**', lambda r: r.abort()))
 
+# every tab's section titles (the h3 of each .slot, without its <small>), by tab id: the UI inventory
+UI_INV = r'''async () => { const out = {};
+  for (const t of document.querySelectorAll('[role=tab]')) { t.click(); await new Promise(r => setTimeout(r, 60));
+    const page = document.getElementById(t.getAttribute('aria-controls')); if (!page) continue;
+    out[t.id] = Array.from(page.querySelectorAll('.slot > h3')).map(h => (h.firstChild && h.firstChild.nodeType === 3 ? h.firstChild.textContent : h.textContent).trim()); }
+  const g = document.getElementById('tab-gear'); if (g) g.click();
+  return out; }'''
+
 CHECKS = r'''async () => {
   const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [], fold: {}, nonhuman: [] };
   const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
@@ -126,7 +134,7 @@ CHECKS = r'''async () => {
       const r0 = JSON.parse(JSON.stringify(window._kchar.record()));
       const r2 = JSON.parse(JSON.stringify(r0)); r2.armour.legs = sk.id;
       await window._kchar.set(r2); await fig.play('walk');
-      let moved = 0, bad = 0, deep = 0;
+      let moved = 0, bad = 0, deep = 0, deepest = 0;
       for (let k = 0; k < 60; k++) {
         fig.update(1 / 30);
         const st = fig.clothState(), c = Object.values(st.items).find(c => c.on);
@@ -138,11 +146,17 @@ CHECKS = r'''async () => {
         if (k > 0) c.chains.forEach(ch => ch.x.forEach((x, i) => i > 0 && thighs.forEach(cp => {     // the top point rides the hips
           const a = fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b = fig.bones[cp.b].getWorldPosition(new THREE.Vector3());
           const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, x.clone().sub(a).dot(ab) / ab.lengthSq()));
-          if (x.distanceTo(a.clone().addScaledVector(ab, t)) < cp.r - 0.005) deep++;
+          // the limb as the chains and the push see it: its radius per end (colliders ra, rb), not the median r (the
+          // median held the court skirt's points 2 cm off the knee's true radius, and collide() keeps them at ra..rb + 1.5 cm)
+          // (a point within a centimetre of that surface is the chain settling inside the 1.5 cm margin collide() keeps
+          // and the push covers the cloth between chains: the court skirt's deepest is 3 mm, at the stride's two ends)
+          const rt = cp.ra != null ? cp.ra + ((cp.rb != null ? cp.rb : cp.ra) - cp.ra) * t : cp.r, dd = rt - x.distanceTo(a.clone().addScaledVector(ab, t));
+          if (dd > 0.01) deep++;
+          if (dd > deepest) deepest = dd;
         })));
       }
       if (bad || moved < 0.01) out.props.push(body + ' cloth: ' + bad + ' non-finite points, largest swing ' + moved.toFixed(3) + ' m');
-      if (deep) out.props.push(body + ' cloth: ' + deep + ' chain points inside a thigh');
+      if (deep) out.props.push(body + ' cloth: ' + deep + ' chain points inside a thigh (the deepest ' + (deepest * 1000).toFixed(0) + ' mm)');
       await window._kchar.set(r0);
     }
     // the non-human parts (tools/nonhuman.py, a spike): with the Lizardman's tail and head on, the head leaves out the
@@ -151,11 +165,16 @@ CHECKS = r'''async () => {
     // tail's points stay finite, out of the thighs and shins (their radius less 5 mm) and above the floor, and lag behind
     // the hips; the jaw opens now and then
     if (kit.items.some(it => it.id === 'mod_tail')) {
-      const lz = Object.assign(JSON.parse(JSON.stringify(dressed)), { mods: ['mod_tail', 'mod_head_lizard'] });
+      const hasLzLegs = kit.items.some(it => it.id === 'mod_legs_lizard');
+      const lzMods = hasLzLegs ? ['mod_tail', 'mod_head_lizard', 'mod_legs_lizard'] : ['mod_tail', 'mod_head_lizard'];
+      const lz = Object.assign(JSON.parse(JSON.stringify(dressed)), { mods: lzMods });
+      const lzKilt = kit.items.find(it => it.slot === 'legs' && (it.id === 'voth_m_peasant_maxtlatl' || (it.loose && it.cloth)));
+      if (hasLzLegs && lzKilt) lz.armour.legs = lzKilt.id;
       const NH = out.nonhuman, tl = kit.items.find(it => it.id === 'mod_tail').tail;
       await k2.set(lz); fig.play(null); await new Promise(r => setTimeout(r, 50));
       if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(lz))) NH.push(body + ' lizard shows ' + shownKeys());
       if (shownKeys().some(k => k === KCHAR.key(kit.items.find(i => i.id === dressed.hair).glb))) NH.push(body + ' lizard: the hair is drawn');
+      if (hasLzLegs && dressed.armour && dressed.armour.feet && shownKeys().some(k => k.endsWith('/' + dressed.armour.feet))) NH.push(body + ' lizard: human boots drawn over saurian feet');
       if (!(skin().geometry.index.count < out.hide.find(h => h[0] === body)[1])) NH.push(body + ' lizard: the head skin is not left out');
       for (const [tag, mo] of [['lizard', {}], ['lizard heavy', heavy]]) {
         await k2.set(Object.assign({}, lz, { morph: mo })); rest(tag);
@@ -182,16 +201,23 @@ CHECKS = r'''async () => {
         for (let k = 0; k < 90; k++) {
           fig.update(1 / 30);
           const T = fig.tailState(), sc = fig.inner.getWorldScale(new THREE.Vector3()).x, floor = fig.group.getWorldPosition(new THREE.Vector3()).y;
+          const dsNow = fig.digiState();
+          const segs = dsNow ? dsNow.sides.flatMap(sd => {
+            const rad = dsNow.spec.radii || {}, gk = dsNow.girthK == null ? 1 : dsNow.girthK;
+            return [[sd.dt, sd.ds, rad.thigh || [0.08, 0.055]], [sd.ds, sd.dh, rad.shin || [0.052, 0.03]], [sd.dh, sd.dp, rad.meta || [0.03, 0.038]]].map(p => ({
+              a: fig.bones[p[0]].getWorldPosition(new THREE.Vector3()), b: fig.bones[p[1]].getWorldPosition(new THREE.Vector3()),
+              ra: p[2][0] * gk, rb: p[2][1] * gk
+            }));
+          }) : legs.map(cp => ({ a: fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b: fig.bones[cp.b].getWorldPosition(new THREE.Vector3()), ra: cp.ra || cp.r, rb: cp.rb || cp.r }));
           T.x.forEach((x, i) => {
             if (!isFinite(x.x + x.y + x.z)) { bad++; return; }
             if (i === 0) return;
             lag = Math.max(lag, x.distanceTo(T.tw[i]));
             if (x.y < floor - 0.001) low++;
-            legs.forEach(cp => {
-              const a = fig.bones[cp.a].getWorldPosition(new THREE.Vector3()), b = fig.bones[cp.b].getWorldPosition(new THREE.Vector3());
-              const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, x.clone().sub(a).dot(ab) / ab.lengthSq()));
-              const r = ((cp.ra || cp.r) + ((cp.rb || cp.r) - (cp.ra || cp.r)) * t + tl.radius[Math.min(i, tl.radius.length - 1)]) * sc;
-              deep = Math.max(deep, r - x.distanceTo(a.clone().addScaledVector(ab, t)));
+            segs.forEach(cp => {
+              const ab = cp.b.clone().sub(cp.a), t = Math.max(0, Math.min(1, x.clone().sub(cp.a).dot(ab) / Math.max(1e-12, ab.lengthSq())));
+              const r = (cp.ra + (cp.rb - cp.ra) * t + tl.radius[Math.min(i, tl.radius.length - 1)]) * sc;
+              deep = Math.max(deep, r - x.distanceTo(cp.a.clone().addScaledVector(ab, t)));
             });
           });
         }
@@ -203,6 +229,95 @@ CHECKS = r'''async () => {
       let open = 0;
       for (let k = 0; k < 180; k++) { fig.update(1 / 30); open = Math.max(open, 2 * Math.acos(Math.min(1, Math.abs(jb.quaternion.dot(q0))))); }
       if (open < 0.05) NH.push(body + ': the jaw does not open (' + open.toFixed(3) + ' rad)');
+      await fig.play('idle'); await k2.set(dressed);
+    }
+    // Coyote Men digitigrade legs, tail & head (tools/digitigrade.py): rest-pose skinning identity & ground contact under
+    // neutral and heavy morphs, boots & toenails left off while kilt fits, elevated hock flexes/extends in walk & run,
+    // coils in crouch, and tail stays clear of the digitigrade leg segments
+    if (kit.items.some(it => it.id === 'mod_legs_coyote')) {
+      const NH = out.nonhuman;
+      const kilt = kit.items.find(it => it.slot === 'legs' && it.loose && it.cloth);
+      const boot = kit.items.find(it => it.slot === 'feet');
+      const cy = Object.assign(JSON.parse(JSON.stringify(dressed)), {
+        coat: 'coyote', hair_color: '#9a7a52', skin: '#6e5a4c', eye_color: '#c08a2a',
+        mods: ['mod_head_coyote', 'mod_tail_coyote', 'mod_legs_coyote']
+      });
+      if (kilt) cy.armour.legs = kilt.id;
+      if (boot) cy.armour.feet = boot.id;
+      await k2.set(cy); fig.play(null); await new Promise(r => setTimeout(r, 50));
+      if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(cy))) NH.push(body + ' coyote shows ' + shownKeys());
+      if (boot && shownKeys().some(k => k === KCHAR.key(boot.glb))) NH.push(body + ' coyote: human boots drawn over paws');
+      if (shown().some(m => m.userData.srcMaterial === 'Human.toenails')) NH.push(body + ' coyote: human toenails drawn');
+      for (const [tag, mo] of [['coyote', {}], ['coyote heavy', heavy]]) {
+        await k2.set(Object.assign({}, cy, { morph: mo })); rest(tag);
+        const lm = shown().find(m => m.userData.srcMaterial === 'Mod.coyote_legs');
+        if (!lm) { NH.push(body + ' ' + tag + ': Mod.coyote_legs not shown'); continue; }
+        const P = lm.geometry.attributes.position.array, v = new THREE.Vector3();
+        let lowY = 1e9;
+        for (let i = 0; i < P.length; i += 3) { v.set(P[i], P[i + 1], P[i + 2]).applyMatrix4(lm.matrixWorld); if (v.y < lowY) lowY = v.y; }
+        const gnd = fig.group.getWorldPosition(new THREE.Vector3()).y;
+        if (Math.abs(lowY - gnd) > 0.008) NH.push(body + ' ' + tag + ': paw sole off ground by ' + ((lowY - gnd) * 1000).toFixed(1) + ' mm');
+      }
+      await k2.set(cy);
+      let idleHock = 0;
+      for (const c of ['idle', 'walk', 'run', 'ual_crouch']) {
+        if (!fig.clips[c]) continue;
+        await fig.play(c);
+        let hMin = 1e9, hMax = -1e9, angMin = 1e9, angMax = -1e9, pawBad = 0, tailBad = 0, snapBad = 0;
+        const prevHz = [null, null];
+        for (let k = 0; k < 75; k++) {
+          fig.update(1 / 30);
+          if (k < 15) continue;
+          const ds = fig.digiState();
+          if (!ds) { pawBad++; continue; }
+          ds.state.forEach((st, si) => {
+            hMin = Math.min(hMin, st.hockY); hMax = Math.max(hMax, st.hockY);
+            angMin = Math.min(angMin, st.hockAng); angMax = Math.max(angMax, st.hockAng);
+            if (st.pawY < 0.008 || (st.stance > 0.96 && Math.abs(st.pawY - ds.sides[si].pawH) > 0.025)) pawBad++;
+            const hz = st.hockFwd;
+            if (hz > -0.04 || (c === 'walk' && prevHz[si] !== null && Math.abs(hz - prevHz[si]) > 0.045)) snapBad++;
+            prevHz[si] = hz;
+          });
+          const T = fig.tailState();
+          if (T && T.x.some(x => !isFinite(x.x + x.y + x.z))) tailBad++;
+        }
+        if (c === 'idle') idleHock = 0.5 * (hMin + hMax);
+        if (c !== 'ual_crouch' && hMin < 0.13) NH.push(body + ' coyote ' + c + ': hock dropped too low (' + hMin.toFixed(3) + ' m)');
+        if ((c === 'walk' || c === 'run') && (angMax - angMin) < 0.16) NH.push(body + ' coyote ' + c + ': hock angle barely flexes (' + (angMax - angMin).toFixed(3) + ' rad)');
+        if (c === 'ual_crouch' && idleHock > 0 && hMin > idleHock - 0.02) NH.push(body + ' coyote crouch: hock did not coil (' + hMin.toFixed(3) + ' vs ' + idleHock.toFixed(3) + ')');
+        if (pawBad || tailBad || snapBad) NH.push(body + ' coyote ' + c + ': ' + pawBad + ' bad paw, ' + tailBad + ' bad tail, ' + snapBad + ' hock snap frames');
+      }
+      await fig.play('idle'); await k2.set(dressed);
+    }
+    // Frogmen digitigrade webbed legs & head (tools/amphibian.py, tools/digitigrade.py): pattern shader active on Mod.frog_legs,
+    // rest-pose skinning identity & ground contact, human boots & toenails omitted, and smooth digitigrade gait
+    if (kit.items.some(it => it.id === 'mod_legs_frog')) {
+      const NH = out.nonhuman;
+      const kilt = kit.items.find(it => it.slot === 'legs' && (it.id === 'voth_m_peasant_maxtlatl' || (it.loose && it.cloth)));
+      const boot = kit.items.find(it => it.slot === 'feet');
+      const fg = Object.assign(JSON.parse(JSON.stringify(dressed)), {
+        skin: '#5f8a36', eye_color: '#d6a22a', hair: null, beard: null,
+        mods: ['mod_head_frog', 'mod_legs_frog']
+      });
+      fg.armour.torso = null;
+      if (kilt) fg.armour.legs = kilt.id;
+      if (boot) fg.armour.feet = boot.id;
+      await k2.set(fg); fig.play(null); await new Promise(r => setTimeout(r, 50));
+      if (JSON.stringify(shownKeys()) !== JSON.stringify(keys(fg))) NH.push(body + ' frog shows ' + shownKeys());
+      if (boot && shownKeys().some(k => k === KCHAR.key(boot.glb))) NH.push(body + ' frog: human boots drawn over webbed feet');
+      if (shown().some(m => m.userData.srcMaterial === 'Human.toenails')) NH.push(body + ' frog: human toenails drawn');
+      const flm = shown().find(m => m.userData.srcMaterial === 'Mod.frog_legs');
+      if (!flm || !(flm.material.userData.kp && flm.material.userData.kp.kpOn.value > 0.5)) NH.push(body + ' frog: Mod.frog_legs missing or pattern shader off');
+      for (const [tag, mo] of [['frog', {}], ['frog heavy', heavy]]) {
+        await k2.set(Object.assign({}, fg, { morph: mo })); rest(tag);
+        const lm = shown().find(m => m.userData.srcMaterial === 'Mod.frog_legs');
+        if (!lm) continue;
+        const P = lm.geometry.attributes.position.array, v = new THREE.Vector3();
+        let lowY = 1e9;
+        for (let i = 0; i < P.length; i += 3) { v.set(P[i], P[i + 1], P[i + 2]).applyMatrix4(lm.matrixWorld); if (v.y < lowY) lowY = v.y; }
+        const gnd = fig.group.getWorldPosition(new THREE.Vector3()).y, sc = fig.inner.getWorldScale(new THREE.Vector3()).x;
+        if (Math.abs(lowY - gnd) > 0.008 * sc) NH.push(body + ' ' + tag + ': frog webbed sole off ground by ' + ((lowY - gnd) * 1000).toFixed(1) + ' mm');
+      }
       await fig.play('idle'); await k2.set(dressed);
     }
     // the fold: a court robe and skirt in a walk, every chain segment within 1.5 rad of its rest (the Verlet threw chain
@@ -353,6 +468,23 @@ async def run(page_path, do_assert, out_dir):
             os.makedirs(out_dir, exist_ok=True)
             await pg.wait_for_timeout(1500)
             await pg.screenshot(path=os.path.join(out_dir, 'cosmetic-lab.png'))
+        if do_assert or '--ui-baseline' in sys.argv:
+            # the lab's sections (every tab's h3 titles) against tests/ui-inventory.json: a section that vanishes
+            # fails the run (the Backpacks row and the Izani tiers went missing from the lab more than once:
+            # REVIEW-GARMENTS-2026-11-06.md). --ui-baseline rewrites the golden from the page as it stands
+            import re
+            inv = await pg.evaluate(UI_INV)
+            inv = {k: sorted(set(re.sub(r'\s*\(\d+\)\s*$', '', t) for t in v)) for k, v in inv.items()}
+            gp = os.path.join(HERE, 'tests', 'ui-inventory.json')
+            if '--ui-baseline' in sys.argv:
+                with open(gp, 'w', encoding='utf-8', newline='\n') as f:
+                    json.dump(inv, f, indent=1)
+                print('ui: baseline written, %d sections over %d tabs' % (sum(len(v) for v in inv.values()), len(inv)))
+            elif os.path.exists(gp):
+                for tab, titles in json.load(open(gp, encoding='utf-8')).items():
+                    lost = [t for t in titles if t not in inv.get(tab, [])]
+                    if lost:
+                        fails.append('ui: %s lost %s' % (tab, '; '.join(lost)))
         if do_assert:
             r = await pg.evaluate(CHECKS)
             print(json.dumps(r))

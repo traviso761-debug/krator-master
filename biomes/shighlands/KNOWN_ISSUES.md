@@ -171,8 +171,10 @@ sorted-spiral cells.
       sky site, or rebuild its stage as a band of the 3 km face with the paramo moved up to the rim (PLAN-STATIONS.md).
 - [ ] **The icefall is the host's own mesh** (`stations/fellfield/86-host-ice.js`): no core ice kind is approved. It is not core/water and not
       exported as water; its crevasses are cut into a 1.5 m grid, so they read best from tens of metres, not at the lip.
-- [ ] **The sorted spirals' fines are the lichen crust**, the snail rosettes wear the groundsel sheet's silver leaf, and the dwarf heath is the
-      kit's plain lobe: three prompts owed (`core/materials/PROMPTS-NEEDED.md`, section 37).
+- [ ] **The sorted spirals' fines are the lichen crust** and the snail rosettes wear the groundsel sheet's silver leaf, though both sets are in the
+      library since 2026-11-10 (`ground.fellfield.fines`: a family under `STATION_GL`'s x weight where `sorted` is high; `card.rosette.snail`: a
+      leaf a cell on the `snail` whorl, `"cell"` or `"sheet": "geometry"`); the dwarf heath is the kit's plain lobe: one prompt owed
+      (`core/materials/PROMPTS-NEEDED.md`, section 37).
 - [ ] **No streams on either station** (the meltwater runs under the scree and the needles; a stream off the snout and the snowbeds is a later pass).
 - [ ] **No snow lies on the stage by itself**: the snowbeds are painted and on KGROUND's snow layer; the weather's snow cover (fx snowcover) only
       adds snow while it snows (`snowBase` .25 / .45 for the season's old snow on lit materials).
@@ -198,3 +200,30 @@ every negative fails, 25,447 trees, 18.65 M triangles (19.5 M budget).
 - [ ] **For the GPU verify:** the face's look (the benches' rock bands, the forest shelves, the ravines' streams down a 2 km drop: rapids,
       no falls drawn), the deck from the rim ('Above the cloud sea'), the fog belt's band (to 1.3 km above the deck), the far field north of the
       deck's edge, the impostors on the face, and that every pool and the tarn read as water.
+
+## Stations 4 and 5: Shumar and the Ordeal ramp (built 2026-11-17; PLAN-STATIONS.md)
+
+`python3 tools/build.py biomes/shighlands --station shumar` (`dist/shighlands-shumar.html`) and `--station ordeal` (`dist/shighlands-ordeal.html`).
+Both mount on `stations/common/` and `src/` with zero edits to `src/`, `stations/common/`, `stations/conifers/`, or `stations/fellfield/` (Stations
+1-3 stay byte-identical against `PORT-BASELINE.json`; the 10 library families added to `materials.json` all carry `"own": true`).
+
+- **Station 4 (`stations/shumar/`):** Map 5.1 px `737, 1201` (old `465, 871`), 3,308 m, `Dsb`, 424 mm/yr, 1.06 atm, on `r287 Qappu-Nārun` above
+  its confluence with `r007 Bētun-Nārun`. Dry ochre-olive loess-and-limestone bench split by a ~235 m four-tier *ablaq* canyon alternating dark
+  polygonal basalt and pale iron-stained limestone (`STATION_GROUND_GLSL`, `rock.basalt`, `rock.limestone`), with `Qappu-Nārun` wired onto
+  `core/water` (`WATER.flow`, `SHIGH.SHORE`) in `89zw-host-water.js`. Adds `helixpoplar` (`twist`, riparian gallery), `whorlapricot` (`twist`,
+  shelves/rim, `harvest.edible`), and `spiralsage` (`whorl`, `card.sage` steppe subshrub), alongside `ropepine`, `coiljuniper`, `aloe`, `cereus`,
+  `albuca`, `fern`, and `card.ichu`. SwiftShader `verify.py --assert`: clean, 41 draw calls, 3.33 M scene triangles (3.90 M rendered), 112,281
+  instances, 7,001 trees (`helixpoplar` 1,967 with 98.5% in the gorge; 34 mirror-handed = 0.49%), 6,702 whorl-wormwood clumps, 7,641 bunchgrass
+  tufts, attach audit 0.00%, export profile 8/8 met.
+- **Station 5 (`stations/ordeal/`):** Map 5.1 px `782, 1194` (old `510, 864`), 4,426 m, `ET` / `Dsc`, 235-329 mm/yr, 0.92 atm, climbing SE toward
+  Godthrone's 9.5 km dark flank. Tilted basalt-and-impactite freeze-thaw pavement (`ground.fines`, `ground.scree`, `ground.snow`), dry seasonal
+  boulder gulch, NW lee snowbeds (`snowcover` fx, `snowBase: .05`), frost-sorted stone spirals (4,136 basalt stones across 250 cells), and 5 empty
+  `core/tags` site records (`role: 'ordeal-way'`) along the *Urudīru* Ordeal trail (`86-host-ordeal.js`). Adds `thornwhorl` (`whorl`, spiny
+  tragacanth cushion with Fibonacci straw-ivory thorns and crimson-violet calyxes), alongside wind-combed `coiljuniper` krummholz (5,375 shrubs,
+  92.2% in rock lees, 9 mirror-handed = 0.17%), spiral cushion domes (1,950), snail rosettes wired onto `card.rosette.snail` (`leaf.snail`, 3,783),
+  coiled lichens, and sparse `card.ichu` tufts (3,208). SwiftShader `verify.py --assert`: clean, 23 draw calls, 3.16 M scene triangles (3.72 M
+  rendered), 56,232 instances, attach audit 0.00%, export profile 8/8 met (including `buckets: 1`).
+
+- [ ] **For the GPU verify:** `--all-views` on both stations on hardware GL, the *ablaq* basalt/limestone banding and `Qappu-Nārun`'s specular
+      river ribbon in `shumar`, and Godthrone's 9.5 km dark silhouette and the `thornwhorl` Fibonacci spines on `ordeal`.
+

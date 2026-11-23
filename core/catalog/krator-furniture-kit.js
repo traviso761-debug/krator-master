@@ -1241,6 +1241,8 @@ const FK = (function () {
   };
 
   /* a painted hide or cloth stretched on a frame of poles: the emblem large, a procession or a hunt under it */
+  /* a painted hide laced in a frame of two poles and two bars, drawn from y 0; the frame HANGS on the wall (FURN_WALL_HUNG
+     painted_hanging: furnAnchorY lifts it so its foot is 1.1 m up where the room allows; the owner, 2026-11-17) */
   B.paintedHanging = function (F, S, o) {
     const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
     const zb = -D / 2, sym = K.symbolOf(S, o.culture), E = K.emblemCols(F, S);

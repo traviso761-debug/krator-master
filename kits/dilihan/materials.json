@@ -1,0 +1,467 @@
+{
+ "build": "dilihan",
+ "note": "The Dilihan vassal-city kit's adapter onto the material library (core/materials/PLAN.md), combining Jimjam-kin kiln-fired red, oxblood, ochre and banded brick, terracotta roof scales and cream ashlar/mortar (read in place from settlements/jimjam/tex/) with the shared Iziz Vernacular timber, stone, plaster, canvas and verdigris copper sets (read in place from kits/iziz-vernacular/tex/). Zero duplicate .webp files are stored: kits/dilihan/build.py packs them from those two committed tex/ folders, and settlements/dilihan binds the dl* materials directly onto its already-loaded jimjam pack.",
+ "size": 512,
+ "families": {
+  "dlBrick": {
+   "lib": "brick.red",
+   "srcTex": "settlements/jimjam/tex:brick",
+   "scale": [
+    2.0,
+    2.02
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "dlBrickDeep": {
+   "lib": "brick.oxblood",
+   "srcTex": "settlements/jimjam/tex:brickDeep",
+   "scale": [
+    1.3,
+    1.09
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "dlBrickBand": {
+   "lib": "brick.red.band",
+   "srcTex": "settlements/jimjam/tex:bandBrick",
+   "scale": [
+    2.1,
+    1.71
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "dlBrickOchre": {
+   "lib": "brick.ochre",
+   "srcTex": "settlements/jimjam/tex:brickYellow",
+   "scale": [
+    2.1,
+    2.07
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "dlLaterite": {
+   "lib": "brick.dark",
+   "srcTex": "settlements/jimjam/tex:brickDark",
+   "scale": [
+    1.7,
+    1.7
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "dlMortar": {
+   "lib": "stone.marble.ashlar",
+   "srcTex": "settlements/jimjam/tex:marble",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.6
+  },
+  "dlTile": {
+   "lib": "roof.scale.terracotta",
+   "srcTex": "settlements/jimjam/tex:domeTerracotta",
+   "scale": [
+    1.5,
+    1.62
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "wood": {
+   "lib": "wood.siding",
+   "srcTex": "kits/iziz-vernacular/tex:wood",
+   "scale": [
+    2.0,
+    1.7
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "woodV": {
+   "lib": "wood.lamppost",
+   "srcTex": "kits/iziz-vernacular/tex:woodV",
+   "scale": [
+    0.8,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "stone": {
+   "lib": "stone.cut",
+   "srcTex": "kits/iziz-vernacular/tex:stone",
+   "scale": [
+    2.0,
+    1.92
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "plaster": {
+   "lib": "plaster",
+   "srcTex": "kits/iziz-vernacular/tex:plaster",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "thatch": {
+   "lib": "roof.thatch.neutral",
+   "srcTex": "kits/iziz-vernacular/tex:thatch",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.57
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "shingle": {
+   "lib": "roof.shingle.neutral",
+   "srcTex": "kits/iziz-vernacular/tex:shingle",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "cloth": {
+   "lib": "cloth.canvas.striped",
+   "srcTex": "kits/iziz-vernacular/tex:cloth",
+   "scale": [
+    1.2,
+    1.18
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.73,
+    "contrast": 2.2
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "clothR": {
+   "lib": "patterns/canvas/stripe-red",
+   "srcTex": "kits/iziz-vernacular/tex:clothR",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.15
+  },
+  "white": {
+   "lib": "metal.ancient.white",
+   "srcTex": "kits/iziz-vernacular/tex:white",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.875
+   },
+   "metal": 0.35,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "verdigris": {
+   "lib": "metal.bronze.verdigris",
+   "srcTex": "kits/iziz-vernacular/tex:verdigris",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.453
+   },
+   "metal": 0.25,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concrete": {
+   "lib": "concrete.ancient",
+   "srcTex": "kits/iziz-vernacular/tex:concrete",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concreteR": {
+   "lib": "concrete.ancient",
+   "srcTex": "kits/iziz-vernacular/tex:concreteR",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "paving": {
+   "lib": "concrete.ancient.b",
+   "srcTex": "kits/iziz-vernacular/tex:paving",
+   "scale": [
+    3.25,
+    3.07
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "brick": {
+   "lib": "brick.red",
+   "srcTex": "kits/iziz-vernacular/tex:brick",
+   "scale": [
+    1.2,
+    1.21
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.455
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "corrugate": {
+   "lib": "metal.corrugated_iron_02",
+   "srcTex": "kits/iziz-vernacular/tex:corrugate",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.527
+   },
+   "metal": 0.3,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "timber": {
+   "lib": "wood.weathered_brown_planks",
+   "srcTex": "kits/iziz-vernacular/tex:timber",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.428
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "tarp": {
+   "lib": "cloth.tarp",
+   "srcTex": "kits/iziz-vernacular/tex:tarp",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.524
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rubbleK": {
+   "lib": "rock.rocks013",
+   "srcTex": "kits/iziz-vernacular/tex:rubbleK",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.642
+   },
+   "metal": 0,
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "whiteWorn": {
+   "lib": "metal.worn",
+   "srcTex": "kits/iziz-vernacular/tex:whiteWorn",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.8
+   },
+   "metal": 0.3,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  }
+ }
+}

@@ -38,13 +38,39 @@ verify can pass a broken page:
     return V.exit()                                      # prints the universal results, returns the exit code
 
 The universal asserts: the page is not an LFS pointer; it got ready; the error panel and page errors are clean; no
-shader compile or WebGL errors in the console (r128 sends them to console.error only); every texture decoded; the real
+shader compile or WebGL errors in the console (r128 sends them to console.error only; the failing program is named, and
+a `gl-context` line counts the context losses: "What a shader failure was", below); every texture decoded; the real
 GPU when KRATOR_GL=gpu; no NaN geometry and no empty registered volume (when the page has the probe, `_api`); no
 instanced item past the instance cap (3c); the eye of every view is not inside geometry (10a); the budget in the
 build's BUDGETS.json; BIO.capReport and _api.seatSweeps when the page has them; a winding report (item 15, never a
 failure). `await V.sheet(out)` or `harness.py sheet <page>` draws every BIO item alone on a grid. A page that fails one today is listed in tools/verify_ratchet.json and only warns; anything not
 listed fails. `python3 tools/harness.py ratchet <pages>` reruns the universal asserts and lists a page's failures
 (--write records them; a page is taken out of the ratchet at its own rebuild turn).
+
+What a shader failure was (2026-11-11). r128's "THREE.WebGLProgram: shader error" names no material, and a burst of link
+failures with empty logs is also what a lost WebGL context or a driver under load gives a page with nothing wrong in it.
+Two records tell them apart (tools/tests/test_gl_diagnosis.py has a case each):
+  1. The context. From before the page loads (GL_HOOK_JS, window.__kgl), every canvas that takes a WebGL context is
+     watched: each `webglcontextlost` and `webglcontextrestored` event is kept with its time and canvas, and each program
+     as it fails to link with its time, canvas, three's SHADER_NAME and whether its log was empty. The line `gl-context`
+     gives the count: "no WebGL context lost (1 canvas watched)", or "the WebGL context was
+     lost 1 time and restored 1 time: canvas 1 (1280x800) lost at 41.2 s, canvas 1 restored at 42.2 s". Headless
+     Chromium on software GL often loses the first context by itself as its GPU process starts; that is counted too.
+     The line is where a real loss shows (Chromium's "loseContext: context lost" console line is left out of
+     shader-errors, real loss or not: BUGS-2026-11-15.md T1): a loss the page did not ask for (WEBGL_lose_context,
+     forceContextLoss) and that is not that start-up loss (in the first 3 s, back within 2 s) makes it a WARN, and a
+     renderer still lost at the end of the run after one makes it a FAIL.
+  The `shader-programs` line: KHOOK.checkPrograms on the page's own renderers and scene (it read only the renderers a
+     KHOOK layer compiled on, so a page with no layer passed with programs that never linked: T2); on a page with no
+     KHOOK, the programs drawn now whose LINK_STATUS is false.
+  2. The program. A failing `shader-errors` line ends, after " || ", with "programs that do not link now (N): ..." (each
+     renderer.info.programs entry whose LINK_STATUS is false at the end of the run: its shader type, the start of its
+     cache key, the materials and meshes that draw with it, found as KHOOK.checkPrograms finds them, and its log), or
+     with "link errors were logged but every program is valid now", and with "as they failed: N links (...)". When
+     every program drawn at the end links and the link failures came on a canvas whose context was lost within
+     LOSS_LEAD_S after them (or before it was whole again), the line opens with "the WebGL context was lost N times
+     during the run: the link errors below follow from it; rerun with --no-cache": do not go looking for a bad material.
+     A material that is broken stays broken after a restore, and is named instead. V.gl holds the record.
 
 The GPU lanes (item 16; 2026-11-03): with KRATOR_GL=gpu, verify_page takes a GPU lane's lock, a directory with an
 `owner` file. Two lanes: `arc`, the Intel Arc 140T (KRATOR_GPU_LOCK, default <temp>/claude/krator-verify-gpu.lock, the
@@ -58,6 +84,13 @@ from a harness that is no longer running. Do not take a lock in bash around a ve
     python3 tools/harness.py lock [--lane arc|rtx|auto] [--timeout S] [--stall MIN] -- python3 biomes/godthrone/perf.py ...
     python3 tools/harness.py lock --lane rtx -- godot --path godot ...                # Godot GPU runs (not --headless)
     python3 tools/harness.py lanes                                                    # who holds each lane, who waits
+
+The cloud lanes (2026-11-10; tools/CLOUD-LANE.md, tools/cloud_lane.py): vast0, vast1, one per GPU of a rented machine,
+on when %LOCALAPPDATA%/krator-cloud.json says so (`harness.py cloud on|off|status|setup`). Then a verify.py run on the GPU
+queues for arc, rtx and the cloud lanes that answer (auto), or for one by name (KRATOR_GPU_LANE=vast0, or cloud for
+either); its wrapper takes the lane and, on a cloud lane, sends a snapshot of the working tree and the LFS files it needs
+over SSH, streams the run, and brings back what it wrote and a verify cache entry. Timing runs and `lock` stay local. With
+no config the harness behaves exactly as before.
 
 The stall watchdog: `lock` runs its command, and a verify.py that imports this harness at its top re-runs itself as a
 child (verify_wrap), under run_watched: no output and no file written in its --out folder for KRATOR_GPU_STALL_MIN
@@ -88,8 +121,10 @@ LOAD_MS = 900000
 # they were merged; they still work.
 CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
 # ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`, Voth's city plan and site
-# editor as `_vc.ready` and `_site.ready`), or the error panel has filled
-READY_JS = ("window._ready===true || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
+# editor as `_vc.ready` and `_site.ready`), or the error panel has filled. A page that builds on after its first frame
+# (core/host 91: `window._hostPending`, a count it raises while that work is queued and lowers when it is done) is ready
+# when the count is back to 0; a page that never sets it is ready as before
+READY_JS = ("(window._ready===true&&!(window._hostPending>0)) || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
             "(window._site&&window._site.ready) || (document.getElementById('errs')&&"
             "document.getElementById('errs').textContent.length>0)")
 STATS_JS = """()=>{const w={};for(const k of Object.keys(window)){if(!k.startsWith('_')||k==='__THREE__')continue;
@@ -117,6 +152,37 @@ GPU_LOCK_RTX = os.environ.get("KRATOR_GPU_LOCK_RTX") or os.path.join(TMP, "krato
 LANES = {"arc": GPU_LOCK, "rtx": GPU_LOCK_RTX}
 LANE_ARGS = {"arc": [], "rtx": ["--force_high_performance_gpu"]}
 LANE_VENDOR = {"arc": "intel", "rtx": "nvidia"}
+# The cloud lanes (tools/CLOUD-LANE.md, tools/cloud_lane.py; 2026-11-10): vast0, vast1, ... one per GPU of a rented machine,
+# switched on by a config outside the repo. Their locks sit beside arc's and rtx's; only verify.py runs take them.
+CLOUD_LANE_NAMES = tuple("vast%d" % i for i in range(16))   # the locks all_locks() looks after, whichever machines serve them
+# ANGLE on the NVIDIA driver's EGL: passes real pages on the RTX PRO 5000. ANGLE on Vulkan reports the GPU on a blank page
+# but loses the context on a real one (2026-11-10); the Linux default above (--use-angle=gl) falls back to SwiftShader.
+CLOUD_LANE_ARGS = ["--use-gl=angle", "--use-angle=gl-egl"]
+
+
+def is_cloud_lane(lane):
+    return bool(lane) and re.match(r"^vast\d+$", lane) is not None
+
+
+def lock_path(lane):
+    return LANES.get(lane) or os.path.join(os.environ.get("KRATOR_CLOUD_STATE") or TMP, "krator-verify-gpu-%s.lock" % lane)
+
+
+def all_locks():
+    """Every lane's lock: the local lanes', then the cloud lanes' (a lock nobody holds is skipped by its readers)."""
+    return list(LANES.values()) + [lock_path(ln) for ln in CLOUD_LANE_NAMES]
+
+
+def lane_vendor(lane):
+    return LANE_VENDOR.get(lane) or ("nvidia" if is_cloud_lane(lane) else "")
+
+
+def _cloud():
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import cloud_lane
+    return cloud_lane
 # timing runs stay on arc unless KRATOR_GPU_LANE says otherwise, so their numbers stay comparable
 TIMING_SCRIPTS = ("perf_views.py", "ground_shots.py")
 STALL_MIN = float(os.environ.get("KRATOR_GPU_STALL_MIN") or 25)
@@ -173,9 +239,14 @@ def pid_alive(pid):
         return code.value == 259                                            # STILL_ACTIVE
     try:
         os.kill(int(pid), 0)
-        return True
     except OSError:
         return False
+    # a zombie answers kill(0) but is dead: under a PID 1 that does not reap orphans (a container) a killed job stays one
+    try:
+        with open('/proc/%d/stat' % int(pid), encoding='utf-8') as f:
+            return f.read().rsplit(')', 1)[1].split()[0] != 'Z'
+    except (OSError, IndexError):
+        return True
 
 
 def _proc_start(pid):
@@ -341,7 +412,7 @@ def pick_lane(lane=None):
     """The lane asked for (`lane`, else KRATOR_GPU_LANE): arc, rtx or auto (whichever frees first). Unset: arc for a
     timing run (--timing, perf_views.py, ground_shots.py), auto for everything else."""
     lane = (lane or os.environ.get("KRATOR_GPU_LANE") or "").lower()
-    if lane in LANES or lane == "auto":
+    if lane in LANES or lane in ("auto", "cloud") or is_cloud_lane(lane):
         return lane
     return "arc" if timing_run() else "auto"
 
@@ -362,7 +433,7 @@ def _ticket_live(path):
 
 def lane_queue(lane):
     """The lane's live tickets, first come first: <lock>.queue/<time_ns>-<pid>.ticket. Dead waiters' tickets are removed."""
-    q = LANES[lane] + ".queue"
+    q = lock_path(lane) + ".queue"
     out = []
     for n in sorted(os.listdir(q)) if os.path.isdir(q) else []:
         if not n.endswith(".ticket"):
@@ -387,8 +458,37 @@ def _owner_note(lock):
     return " (taken %.0f min ago; no watchdog or heartbeat: check it by hand, CLAUDE.md)" % age
 
 
+def _lanes_for(lane, cloud):
+    """The lanes a waiter queues for. `cloud` (a verify.py run, verify_wrap): auto adds the cloud lanes that answer, and
+    cloud or vastN asks for them; anything else never takes a cloud lane (a note, then auto)."""
+    if not cloud:
+        if lane == "cloud" or is_cloud_lane(lane):
+            print("harness: only verify.py runs take the cloud lanes (tools/CLOUD-LANE.md); this one takes a local lane", flush=True)
+            lane = "auto"
+        return lane, (list(LANES) if lane == "auto" else [lane])
+    up = _cloud().lanes_up()
+    if lane == "auto":
+        return lane, list(LANES) + up
+    if lane == "cloud" or is_cloud_lane(lane):
+        want = [ln for ln in up if lane == "cloud" or ln == lane]
+        if not want:
+            cl = _cloud()
+            m = cl.machine_of(lane) if lane != "cloud" else None
+            if not cl.load_config():
+                why = "the cloud lanes are off (harness.py cloud on)"
+            elif lane == "cloud":
+                why = "no cloud machine answers"
+            elif not m:
+                why = "no machine that is on serves it (%s)" % ", ".join(cl.configured_lanes())
+            else:
+                why = "machine %s does not answer: %s" % (m["id"], cl.reachable(m)[1] or "stopped?")
+            raise cl.CloudDown("cloud lane %s: %s" % (lane, why))
+        return lane, want
+    return lane, [lane]
+
+
 @contextlib.contextmanager
-def gpu_lock(timeout=None, what="", lane=None):
+def gpu_lock(timeout=None, what="", lane=None, cloud=False):
     """The GPU locks (HANDOFF-REBUILD.md, "Practical rules"; one per lane, LANES): a directory made with mkdir, an `owner`
     file inside. Waiters queue first come first served (a ticket per waiter in <lock>.queue; a dead waiter's is dropped);
     the head of a lane's queue takes the lock when it is free. An older harness copy that takes the arc lock directly is
@@ -400,11 +500,10 @@ def gpu_lock(timeout=None, what="", lane=None):
         yield os.environ.get("KRATOR_GPU_LANE_HELD") or "arc"
         return
     timeout = float(os.environ.get("KRATOR_GPU_LOCK_TIMEOUT") or 28800) if timeout is None else timeout
-    lane = pick_lane(lane)
-    lanes = list(LANES) if lane == "auto" else [lane]
+    lane, lanes = _lanes_for(pick_lane(lane), cloud)
     me = {"pid": os.getpid(), "start": _proc_start(os.getpid()), "what": what[:200], "lanes": lanes}
     name = "%020d-%d.ticket" % (time.time_ns(), os.getpid())
-    tickets = [os.path.join(LANES[ln] + ".queue", name) for ln in lanes]
+    tickets = [os.path.join(lock_path(ln) + ".queue", name) for ln in lanes]
 
     def write_tickets():
         for t in tickets:
@@ -424,7 +523,7 @@ def gpu_lock(timeout=None, what="", lane=None):
                 places[ln] = q.index(name) if name in q else 0
                 if places[ln]:
                     continue
-                lk = LANES[ln]
+                lk = lock_path(ln)
                 try:
                     os.mkdir(lk)
                     got = ln
@@ -452,11 +551,11 @@ def gpu_lock(timeout=None, what="", lane=None):
             if waited >= timeout:
                 raise GpuLockTimeout("GPU lock (%s) still not free after %.0f s: %s. If a holder is dead (no process of it "
                                      "running), remove its directory; if it is your own shell, stop taking the lock in bash."
-                                     % (lane, waited, "; ".join("%s held by %s, place %d" % (ln, _lock_owner(LANES[ln]) or "(no owner file)",
+                                     % (lane, waited, "; ".join("%s held by %s, place %d" % (ln, _lock_owner(lock_path(ln)) or "(no owner file)",
                                                                                               places.get(ln, 0)) for ln in lanes)))
             if waited >= said:
                 print("harness: waiting for the GPU (%s) %.0f s: %s" % (lane, waited, "; ".join(
-                    "%s: %d ahead, held by %s%s" % (ln, places.get(ln, 0), _lock_owner(LANES[ln]) or "(nobody)", _owner_note(LANES[ln]))
+                    "%s: %d ahead, held by %s%s" % (ln, places.get(ln, 0), _lock_owner(lock_path(ln)) or "(nobody)", _owner_note(lock_path(ln)))
                     for ln in lanes)), flush=True)
                 said = waited + 120
             time.sleep(min(LOCK_POLL, 0.5) if 0 in places.values() else LOCK_POLL)   # the head of a queue races older copies, which poll every 5 s
@@ -464,7 +563,7 @@ def gpu_lock(timeout=None, what="", lane=None):
         for t in tickets:
             with contextlib.suppress(OSError):
                 os.remove(t)
-    lk = LANES[got]
+    lk = lock_path(got)
     with open(os.path.join(lk, "owner"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write("harness pid=%d %s lane=%s %s\n" % (os.getpid(), time.strftime("%Y-%m-%dT%H:%M:%S"), got, what))
     os.environ["KRATOR_GPU_LOCK_HELD"] = "harness pid=%d" % os.getpid()
@@ -527,13 +626,19 @@ def _newest(dirs, cap=20000):
     return best
 
 
-def run_watched(argv, stall_min=None, watch=(), env=None, cwd=None):
+def run_watched(argv, stall_min=None, watch=(), env=None, cwd=None, feed=None):
     """Run `argv`, relaying its output, under the stall watchdog: when it writes nothing to stdout or stderr and no file
     in `watch` for `stall_min` minutes (KRATOR_GPU_STALL_MIN, default 25), kill its whole process tree (kill_tree),
     release any GPU lock it holds and return 124. While it progresses, touch the owner file of a lock it or this process
-    holds once a minute: the 30-minute heartbeat (CLAUDE.md)."""
+    holds once a minute: the 30-minute heartbeat (CLAUDE.md). `feed`: bytes written to its stdin, which then stays open
+    until it ends (a cloud lane's SSH job stops when its stdin closes)."""
     stall = (STALL_MIN if stall_min is None else stall_min) * 60
-    p = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, cwd=cwd)
+    p = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, cwd=cwd,
+                         **({} if feed is None else {"stdin": subprocess.PIPE}))
+    if feed is not None:
+        with contextlib.suppress(OSError):
+            p.stdin.write(feed)
+            p.stdin.flush()
     last = [time.time()]
 
     def relay(src, dst):
@@ -565,19 +670,22 @@ def run_watched(argv, stall_min=None, watch=(), env=None, cwd=None):
             pids = kill_tree(p.pid)
             with contextlib.suppress(subprocess.TimeoutExpired):
                 p.wait(timeout=10)
-            for lk in LANES.values():
+            for lk in all_locks():
                 _release(lk, p.pid)
             print("\nharness: STALLED: no output and no file written for %.0f min; killed the job's process tree (%s) and released "
                   "its GPU lock. Rerun it (a stall is the GPU hanging, not a failed check)." % (stall / 60, pids), flush=True)
             return 124
         if now - beat >= 60:
             beat = now
-            for lk in LANES.values():
+            for lk in all_locks():
                 if re.match(r"harness pid=(%d|%d)\b" % (os.getpid(), p.pid), _lock_owner(lk)):
                     with contextlib.suppress(OSError):
                         os.utime(os.path.join(lk, "owner"))
     for t in th:
         t.join(5)
+    if feed is not None:
+        with contextlib.suppress(OSError):
+            p.stdin.close()
     return p.returncode
 
 
@@ -604,7 +712,7 @@ def lock_main(argv):
         return 2
     try:
         with gpu_lock(timeout, what=" ".join(argv)[:120], lane=lane or os.environ.get("KRATOR_GPU_LANE") or "arc") as got:
-            print("harness: lane %s (%s)" % (got, LANES[got]), flush=True)
+            print("harness: lane %s (%s)" % (got, lock_path(got)), flush=True)
             if stall == 0:
                 return subprocess.call(argv)
             return run_watched(argv, stall, watch + out_dirs(argv))
@@ -614,14 +722,24 @@ def lock_main(argv):
 
 
 def lanes_main(argv):
-    """python3 tools/harness.py lanes: each lane's holder, its heartbeat and its queue."""
-    for ln, lk in LANES.items():
+    """python3 tools/harness.py lanes: each lane's holder, its heartbeat and its queue; the cloud lanes when they are on."""
+    cl = _cloud()
+    cfg = cl.load_config()
+    cloud = list(cfg["lanes"]) if cfg else []
+    for ln in list(LANES) + cloud:
+        lk = lock_path(ln)
         print("%s  %s\n  held by: %s%s" % (ln, lk, _lock_owner(lk) or ("(free)" if not os.path.isdir(lk) else "(no owner file)"), _owner_note(lk)))
         for n in lane_queue(ln):
             with contextlib.suppress(OSError, ValueError):
                 with open(os.path.join(lk + ".queue", n), encoding="utf-8") as fh:
                     t = json.load(fh)
                 print("  waiting: pid %s %s" % (t["pid"], t.get("what", "")))
+    if not cfg:
+        print("cloud lanes: off (tools/CLOUD-LANE.md)")
+    for m in cl.machines() if cfg else []:
+        ok, why = cl.reachable(m, fresh=True)
+        print("cloud lanes %s: machine %s %s" % (", ".join(m["lanes"]), m["id"],
+                                                 "answers" if ok else "DOES NOT ANSWER (%s): its lanes take no verifies" % why))
     return 0
 
 
@@ -640,8 +758,12 @@ async def launch_chromium(p, args=GL_ARGS):
 
 
 def lane_args(args):
-    """`args` plus the held lane's adapter switch (LANE_ARGS) when they launch on the real GPU (ANGLE)."""
-    extra = LANE_ARGS.get(os.environ.get("KRATOR_GPU_LANE_HELD") or "arc", [])
+    """`args` plus the held lane's adapter switch (LANE_ARGS) when they launch on the real GPU (ANGLE). On a cloud lane
+    (Linux, NVIDIA) the ANGLE backend is replaced by the one that renders there (CLOUD_LANE_ARGS: GL on EGL)."""
+    held = os.environ.get("KRATOR_GPU_LANE_HELD") or "arc"
+    if is_cloud_lane(held) and any(a.startswith("--use-angle") for a in args):
+        return [a for a in args if not a.startswith(("--use-angle", "--use-gl"))] + CLOUD_LANE_ARGS
+    extra = LANE_ARGS.get(held, [])
     if any(a.startswith("--use-angle") for a in args):
         return list(args) + [a for a in extra if a not in args]
     return list(args)
@@ -748,6 +870,31 @@ IMG_HOOK_JS = """(()=>{ window.__kimgErr=[]; const d=Object.getOwnPropertyDescri
  set(v){ if(!this.__kw){ this.__kw=1; this.addEventListener('error',()=>{ const s=String(this.src||'');
    window.__kimgErr.push(s.startsWith('data:')?s.slice(0,40)+'... ('+s.length+' chars)':s.slice(-120)); }); }
    return d.set.call(this,v); }}); })();"""
+# What a shader failure was (2026-11-11: 22 "shader error: 0 35715 false" lines with empty logs, on a page that passed an hour
+# later). From before the page loads, on window.__kgl: every canvas that takes a WebGL context is watched, and each
+# webglcontextlost and webglcontextrestored event is kept in `ev` with its time (ms since the page's start), its canvas and
+# whether the page asked for the loss itself (WEBGL_lose_context.loseContext, a renderer disposed with forceContextLoss);
+# and each program as it fails to link is kept in `links` (getProgramParameter LINK_STATUS false, which r128 reads once after
+# every link) with its time, its canvas, three's SHADER_NAME and whether its log was empty (no GLSL error: the driver or the
+# context). The listeners prevent nothing and every call returns what it returned before.
+GL_HOOK_JS = """(()=>{ const L=window.__kgl={ev:[],links:[],linkN:0,canvases:0,done:false}; const now=()=>Math.round(performance.now());
+ const watch=(cv)=>{ if(!cv||cv.__kglId) return; try{ cv.__kglId=++L.canvases; }catch(e){ return; }
+  cv.addEventListener('webglcontextlost',()=>{ L.ev.push({e:'lost',t:now(),canvas:cv.__kglId,size:cv.width+'x'+cv.height,asked:!!cv.__kglAsked}); cv.__kglAsked=0; });
+  cv.addEventListener('webglcontextrestored',()=>{ L.ev.push({e:'restored',t:now(),canvas:cv.__kglId}); }); };
+ for(const C of [window.HTMLCanvasElement,window.OffscreenCanvas]){ if(!C||!C.prototype||!C.prototype.getContext) continue; const g=C.prototype.getContext;
+  C.prototype.getContext=function(type){ const c=g.apply(this,arguments); try{ if(c&&/webgl/i.test(String(type))) watch(this); }catch(e){} return c; }; }
+ for(const G of [window.WebGLRenderingContext,window.WebGL2RenderingContext]){ if(!G||!G.prototype) continue;
+  const P=G.prototype, gp=P.getProgramParameter, ge=P.getExtension, seen=new WeakSet();
+  P.getProgramParameter=function(p,n){ const r=gp.call(this,p,n);
+   if(n===35714&&r===false&&!L.done&&p&&!seen.has(p)){ try{ seen.add(p); L.linkN++; if(L.links.length<64){ let name='?', lost=false, empty=false;
+     for(const s of (this.getAttachedShaders(p)||[])){ const m=/#define SHADER_NAME (\\S+)/.exec(this.getShaderSource(s)||''); if(m){ name=m[1]; break; } }
+     try{ lost=this.isContextLost(); empty=!String(this.getProgramInfoLog(p)||'').replace(/[\\s\\0]+/g,''); }catch(e){}
+     L.links.push({t:now(),canvas:(this.canvas&&this.canvas.__kglId)||0,name,lost,empty}); } }catch(e){} }
+   return r; };
+  P.getExtension=function(name){ const x=ge.call(this,name);
+   try{ if(x&&/lose_context/i.test(String(name))&&!x.__kgl&&typeof x.loseContext==='function'){ const cv=this.canvas, lc=x.loseContext;
+     x.__kgl=1; x.loseContext=function(){ if(cv) cv.__kglAsked=1; return lc.apply(x,arguments); }; } }catch(e){}
+   return x; }; } })();"""
 
 
 def watch_console(pg):
@@ -775,6 +922,7 @@ async def open_page(browser, html, port, size="1280x800", here=None, query="", r
     pg.on("pageerror", lambda e: errs.append(str(e)))
     watch_console(pg)
     await pg.add_init_script(IMG_HOOK_JS)
+    await pg.add_init_script(GL_HOOK_JS)
     for f in init:
         with open(f, encoding='utf-8') as fh:
             await pg.add_init_script(fh.read())
@@ -826,6 +974,13 @@ async def smoke(pages, settle_ms=2500):
 # --------------------------------------------------------------------------
 # verify_page: the universal asserts every verify.py runs (CORE-IMPROVEMENTS.md items 2c, 2d, 3c, 6, 10a, 16)
 RATCHET = os.path.join(ROOT, "tools", "verify_ratchet.json")
+# The opt-in checks of the 2026-11-11 survey (tools/checks_optin.json; tools/buildlib.py opted_in): a verify.py passes
+# verify_page(..., checks=SURVEY) (a new build's template does), the build is listed in tools/checks_optin.json, or
+# KRATOR_CHECKS=all. Off, `samplers` is a report and the eye check uses its rays only.
+SURVEY = ("samplers", "drawn-ground")
+HARD = ("gpu-renderer",)   # never ratcheted: a lane without the GPU is a mistake, not a page's fault (item 22)
+SAMPLER_FAIL, SAMPLER_WARN = 16, 15   # item 27: ANGLE on the Arc fails a program AT 16 fragment samplers (ebadlands)
+DRAWN_JS_FILE = os.path.join(ROOT, "core", "drawn", "10-core-drawn.js")
 INSTANCE_CAP = 250000      # item 3c: one instanced item past this many is a runaway pass (918,541 cobra lilies)
 EYE_NEAR = 1.0             # item 10a: a view nearer than this to a solid surface it faces
 # The scene and camera of a page: its top-level `scene` and `camera` (a classic script's top-level const is visible to
@@ -833,37 +988,196 @@ EYE_NEAR = 1.0             # item 10a: a view nearer than this to a solid surfac
 FIND_JS = """const __kfind=()=>{ let sc=null,cam=null;
  try{ if(typeof scene!=='undefined'&&scene&&scene.isScene) sc=scene; }catch(e){}
  try{ if(typeof camera!=='undefined'&&camera&&camera.isCamera) cam=camera; }catch(e){}
- const A=window._api||{}; sc=sc||(window.scene&&window.scene.isScene?window.scene:null)||(A.scene&&A.scene.isScene?A.scene:null);
- cam=cam||(window.camera&&window.camera.isCamera?window.camera:null)||(A.camera&&A.camera.isCamera?A.camera:null);
+ const A=window._api||{}, H=(typeof HOST!=='undefined'&&HOST)||window.HOST||{};
+ sc=sc||(window.scene&&window.scene.isScene?window.scene:null)||(A.scene&&A.scene.isScene?A.scene:null)||(H.scene&&H.scene.isScene?H.scene:null);
+ cam=cam||(window.camera&&window.camera.isCamera?window.camera:null)||(A.camera&&A.camera.isCamera?A.camera:null)||(H.camera&&H.camera.isCamera?H.camera:null);
  if(!sc||!cam){ for(const k of Object.keys(window)){ let v; try{ v=window[k]; }catch(e){ continue; }
    if(!v||typeof v!=='object') continue; if(!sc&&v.isScene) sc=v; if(!cam&&v.isPerspectiveCamera) cam=v; } }
  return {sc,cam}; };"""
-SAMPLE_JS = "()=>{ try{ return {calls:renderer.info.render.calls, tris:renderer.info.render.triangles}; }catch(e){ return null; } }"
+# Item 27: the samplers each LINKED program really has (getActiveUniform: what the GPU kept after #ifdef pruning and dead-code
+# removal), not a count of declared maps; the worst first. `samplersOf` in biomes/throne guessed from the shader text and
+# overcounted (ringisles).
+SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer)||((typeof HOST!=='undefined'&&HOST)&&HOST.renderer)||(window.HOST&&window.HOST.renderer); }catch(e){}
+ if(!R||!R.info||!R.info.programs||!R.getContext) return null; const gl=R.getContext();
+ const S=new Set([0x8B5E,0x8B60,0x8B5F,0x8DC1,0x8B62,0x8DC4,0x8DC5,0x8DCA,0x8DCB,0x8DCC,0x8DCF,0x8DD2,0x8DD3,0x8DD4,0x8DD7]);
+ const out=[]; for(const p of R.info.programs){ const g=p.program; if(!g||!gl.getProgramParameter(g,gl.LINK_STATUS)) continue;
+  const n=gl.getProgramParameter(g,gl.ACTIVE_UNIFORMS); let k=0; const names=[];
+  for(let i=0;i<n;i++){ const u=gl.getActiveUniform(g,i); if(u&&S.has(u.type)){ k+=u.size; names.push(u.name.replace(/\\[0\\]$/,'')); } }
+  out.push({name:p.name||'program '+p.id, n:k, names:names.slice(0,20)}); }
+ out.sort((a,b)=>b.n-a.n); return {programs:out.length, max:out.length?out[0].n:0, top:out.slice(0,5), units:gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)}; }"""
+WATER_MOUTHS_JS = """()=>{
+ let W=null; try{ W=(typeof WATER!=='undefined'&&WATER)||window.WATER; }catch(e){}
+ if(!W||!Array.isArray(W.surfaces)) return null;
+ const opens=W.surfaces.filter(s=>s&&s.kind==='open'&&typeof s.contains==='function');
+ const flows=W.surfaces.filter(s=>s&&s.kind==='flow'&&Array.isArray(s.pts)&&s.pts.length>=2);
+ if(!opens.length||!flows.length) return {opens:opens.length, flows:flows.length, bad:[]};
+ let G=null;
+ try{ if(typeof terrainH==='function') G=terrainH; }catch(e){}
+ if(!G){ try{ if(typeof landH==='function') G=landH; }catch(e){} }
+ if(!G){ try{ if(typeof DRAWN_H==='function') G=DRAWN_H; }catch(e){} }
+ if(!G&&window._api&&typeof window._api.ground==='function') G=window._api.ground;
+ const lvlOf=O=>typeof O.levelAt==='function'?O.levelAt(0):(O.level||0);
+ const inBounds=(O,x,z)=>{ const b=O.bounds; return !b||(x>=b[0]&&z>=b[1]&&x<=b[2]&&z<=b[3]); };
+ const drawnList=Array.isArray(W.drawn)?W.drawn:[];
+ const keepFnOf=F=>{
+  if(typeof F.keepAt==='function') return F.keepAt;
+  const D=drawnList.find(d=>d&&d.S===F);
+  const ka=D&&D.mesh&&D.mesh.geometry&&D.mesh.geometry.attributes&&D.mesh.geometry.attributes.wtrKeep;
+  const pos=D&&D.ribbon&&D.ribbon.pos;
+  if(ka&&pos&&ka.array){
+   const K=ka.array, n=K.length, ox=(D.mesh.position&&D.mesh.position.x)||0, oz=(D.mesh.position&&D.mesh.position.z)||0;
+   return (x,z)=>{
+    let best=1e18, kv=1;
+    for(let i=0;i<n;i++){
+     const dx=(pos[i*3]+ox)-x, dz=(pos[i*3+2]+oz)-z, d2=dx*dx+dz*dz;
+     if(d2<best){ best=d2; kv=K[i]; }
+    }
+    return kv;
+   };
+  }
+  return null;
+ };
+ const bad=[], step=4;
+ for(const F of flows){
+  const P=F.pts.map(p=>Array.isArray(p)?{x:p[0],z:p[1],y:p[2]||0,w:F.width||10}:{x:p.x,z:p.z,y:p.y||0,w:p.w||F.width||10});
+  const kf=keepFnOf(F);
+  let overM=0, maxOver=0, ox=0, oz=0, oName='';
+  let subM=0, maxSub=0, sx=0, sz=0, sName='';
+  for(let i=0;i+1<P.length;i++){
+   const a=P[i], b=P[i+1], L=Math.hypot(b.x-a.x,b.z-a.z);
+   if(L<1e-6) continue;
+   const n=Math.max(1,Math.ceil(L/step)), ds=L/n, tx=(b.x-a.x)/L, tz=(b.z-a.z)/L, nx=-tz, nz=tx;
+   for(let k=0;k<(i+2===P.length?n+1:n);k++){
+    const u=k/n, x=a.x+(b.x-a.x)*u, z=a.z+(b.z-a.z)*u, w=(a.w+(b.w-a.w)*u)||10;
+    if(kf&&kf(x,z)<0.25){ overM=0; subM=0; continue; }
+    const g=G?G(x,z):null;
+    let hitOpen=null;
+    for(const O of opens){
+     const lv=lvlOf(O);
+     if(inBounds(O,x,z)&&O.contains(x,z)&&(g===null||g<lv-0.02)){ hitOpen=O; break; }
+    }
+    if(hitOpen){ overM+=ds; if(overM>maxOver){ maxOver=overM; ox=x; oz=z; oName=hitOpen.name||'open water'; } }
+    else overM=0;
+    let hitSub=null;
+    if(G){
+     const dOut=w*0.5+Math.max(8,w*0.35);
+     const xl=x+nx*dOut, zl=z+nz*dOut, xr=x-nx*dOut, zr=z-nz*dOut;
+     const gL=G(xl,zl), gR=G(xr,zr);
+     for(const O of opens){
+      const lv=lvlOf(O);
+      if(inBounds(O,x,z)&&O.contains(xl,zl)&&O.contains(xr,zr)&&g<lv+0.15&&gL<lv-0.20&&gR<lv-0.20){ hitSub=O; break; }
+     }
+    }
+    if(hitSub){ subM+=ds; if(subM>maxSub){ maxSub=subM; sx=x; sz=z; sName=hitSub.name||'open water'; } }
+    else subM=0;
+   }
+  }
+  if(maxOver>24) bad.push((F.name||'flow')+' runs '+maxOver.toFixed(0)+' m unfaded inside '+oName+' near ('+ox.toFixed(0)+','+oz.toFixed(0)+')');
+  else if(maxSub>28) bad.push((F.name||'flow')+' runs '+maxSub.toFixed(0)+' m unbanked through submerged bed of '+sName+' near ('+sx.toFixed(0)+','+sz.toFixed(0)+')');
+ }
+ return {opens:opens.length, flows:flows.length, bad};
+}"""
+# Item 33: foliage card sheet cuts and stem-origin attachment: refuses any single-plant library card cut as a multi-cell
+# sheet ("sheet": "geometry" or BIO.geo.cells), and runs BIO.attachAudit with tight stem tolerances (kStem 0.16, pad 0.30 m).
+LEAF_STEMS_JS = """()=>{
+ if(typeof BIO==='undefined'||!BIO||!BIO.kits) return {defs:0, audited:0, floating:0, bad:[]};
+ const bad=[]; let defs=0;
+ for(const K of Object.values(BIO.kits)){
+  for(const [nm,df] of Object.entries((K&&K.defs)||{})){
+   const lc=df&&df.mat&&df.mat.userData&&df.mat.userData.libCard, raw=df&&df.raw;
+   if(!lc||!lc.lib) continue;
+   defs++;
+   const cut=!!(raw&&raw.userData&&raw.userData.cells)||lc.sheet==='geometry';
+   if(lc.plants===1&&cut){
+    bad.push('item '+nm+' ('+(lc.slot||lc.lib)+') cuts single-plant '+lc.lib+' as a multi-cell sheet');
+   }
+  }
+ }
+ let audited=0, floating=0;
+ const G=(BIO.host&&BIO.host.terrainH)||(typeof terrainH==='function'?terrainH:null)||(window._api&&typeof window._api.terrainH==='function'?window._api.terrainH:null);
+ if(typeof BIO.attachAudit==='function'&&G){
+  const a=BIO.attachAudit({ground:G, kStem:0.16, pad:0.30, max:6000});
+  if(!a.note){
+   audited=a.audited||0; floating=a.floating||0;
+   if(audited>0&&a.share>0.015){
+    bad.push(floating+' of '+audited+' foliage cards float under tight stem audit ('+(100*a.share).toFixed(2)+'% > 1.50%)');
+   }
+  }
+ }
+ return {defs, audited, floating, bad};
+}"""
+# Item 28: the eye against the ground as drawn (core/drawn, KDRAWN.h): the page's own KDRAWN sources when it registers them,
+# else its ground meshes (userData.ground, or named ground / terrain), read triangle by triangle. The ray rule misses an eye
+# under the ground when something solid lies below it (a seabed, a cave floor); this does not.
+DRAWN_EYE_JS = "(src)=>{" + FIND_JS + """
+ const {sc,cam}=__kfind(); if(!sc||!cam) return {skipped:'no scene or camera'};
+ if(typeof KDRAWN==='undefined'){ (0,eval)(src); }
+ const K=window.KDRAWN||KDRAWN; let srcs=K.sources, from='KDRAWN sources registered by the page';
+ if(!srcs.length){ if(!window.__kdrawnAuto){ const a=[]; sc.updateMatrixWorld(true); sc.traverse(o=>{ if(o.isMesh&&!o.isInstancedMesh&&o.visible!==false&&((o.userData&&o.userData.ground)||/^(ground|terrain)/i.test(o.name||''))){ const s=K.fromObject(o); if(s){ s.name=o.name||'ground'; a.push(s); } } }); window.__kdrawnAuto=a; }
+  srcs=window.__kdrawnAuto; from='ground meshes ('+srcs.map(s=>s.name).slice(0,4).join(', ')+')'; }
+ if(!srcs.length) return {skipped:'no ground source: register KDRAWN.add(KDRAWN.grid(...)) or name the ground mesh ground'};
+ cam.updateMatrixWorld(); const e=cam.matrixWorld.elements, x=e[12], y=e[13], z=e[14]; let h=null;
+ for(const s of srcs){ const v=s.h(x,z); if(v!==null&&(h===null||v>h)) h=v; }
+ return {from, h, eye:[+x.toFixed(2),+y.toFixed(2),+z.toFixed(2)], under:h!==null&&y<h}; }"""
+SAMPLE_JS = "()=>{ try{ const R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer)||((typeof HOST!=='undefined'&&HOST)&&HOST.renderer); return R?{calls:R.info.render.calls, tris:R.info.render.triangles}:null; }catch(e){ return null; } }"
+VRAM_JS = "()=>{" + FIND_JS + """
+ const {sc}=__kfind(); if(!sc) return null;
+ const seenT=new Set(), seenG=new Set(), seenB=new Set(); let texB=0, geomB=0;
+ const bppOf=(t)=>{ if(t.type===1015||t.type===1016) return t.type===1015?16:8; return 4; };
+ const addTex=(t)=>{ if(!t||!t.isTexture||seenT.has(t)) return; seenT.add(t);
+  const mips=t.generateMipmaps!==false&&t.minFilter!==1003&&t.minFilter!==1006?1.3333333:1;
+  if(t.isCompressedTexture&&Array.isArray(t.mipmaps)){ for(const m of t.mipmaps) if(m&&m.data) texB+=m.data.byteLength||0; return; }
+  if((t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D)&&t.image){
+   const d=t.image.data; texB+=Math.round((d&&d.byteLength?d.byteLength:(t.image.width||0)*(t.image.height||0)*(t.image.depth||1)*bppOf(t))*mips); return; }
+  const ims=t.isCubeTexture?(t.image||[]):[t.image];
+  for(const im of ims){ if(!im) continue; const w=im.naturalWidth||im.width||0, h=im.naturalHeight||im.height||0, dp=im.depth||1;
+   texB+=Math.round(w*h*dp*bppOf(t)*mips); } };
+ const scanM=(m)=>{ for(const k in m){ let v; try{ v=m[k]; }catch(e){ continue; } if(v&&v.isTexture) addTex(v); }
+  if(m.uniforms) for(const k in m.uniforms){ const v=m.uniforms[k]&&m.uniforms[k].value;
+   if(v&&v.isTexture) addTex(v); else if(Array.isArray(v)) v.forEach(x=>{ if(x&&x.isTexture) addTex(x); }); } };
+ const addArr=(a)=>{ if(!a) return; const buf=a.data&&a.data.array?a.data.array:a.array; if(buf&&buf.byteLength&&!seenB.has(buf)){ seenB.add(buf); geomB+=buf.byteLength; } };
+ sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scanM(m);
+  if(o.geometry&&!seenG.has(o.geometry)){ seenG.add(o.geometry); const at=o.geometry.attributes||{}; for(const k in at) addArr(at[k]); if(o.geometry.index) addArr(o.geometry.index); }
+  if(o.isInstancedMesh){ addArr(o.instanceMatrix); addArr(o.instanceColor); } });
+ if(sc.background&&sc.background.isTexture) addTex(sc.background);
+ if(sc.environment&&sc.environment.isTexture) addTex(sc.environment);
+ return {totalMB:+((texB+geomB)/1048576).toFixed(2), texMB:+(texB/1048576).toFixed(2), geomMB:+(geomB/1048576).toFixed(2), texN:seenT.size, geomN:seenG.size}; }"""
 UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
  const {sc}=__kfind(); const A=window._api||null; const R={scene:!!sc};
  R.panel=document.getElementById('errs')?document.getElementById('errs').textContent:null;
  R.imgErr=(window.__kimgErr||[]).slice(0,8); R.imgErrN=(window.__kimgErr||[]).length;
- const bad=[]; let n=0;
+ const bad=[]; let n=0, texB=0, geomB=0; const seenG=new Set(), seenB=new Set();
+ const addArr=(a)=>{ if(!a) return; const buf=a.data&&a.data.array?a.data.array:a.array; if(buf&&buf.byteLength&&!seenB.has(buf)){ seenB.add(buf); geomB+=buf.byteLength; } };
  if(sc){ const seen=new Set();
+  const bppOf=(t)=>(t.type===1015?16:t.type===1016?8:4);
   const chk=(t,where)=>{ if(!t||!t.isTexture||seen.has(t)) return; seen.add(t); n++;
-   if(t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D||t.isDepthTexture||t.isCompressedTexture||t.isVideoTexture) return;
+   const mips=t.generateMipmaps!==false&&t.minFilter!==1003&&t.minFilter!==1006?1.3333333:1;
+   if(t.isCompressedTexture&&Array.isArray(t.mipmaps)){ for(const m of t.mipmaps) if(m&&m.data) texB+=m.data.byteLength||0; return; }
+   if(t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D||t.isDepthTexture||t.isCompressedTexture||t.isVideoTexture){
+    if(t.image){ const d=t.image.data; texB+=Math.round((d&&d.byteLength?d.byteLength:(t.image.width||0)*(t.image.height||0)*(t.image.depth||1)*bppOf(t))*mips); }
+    return; }
    const ims=t.isCubeTexture?(t.image||[]):[t.image];
    if(t.isCubeTexture&&!ims.length){ bad.push(where+' (cube, no faces)'); return; }
    for(const im of ims){ if(!im){ bad.push(where+' (no image)'); return; }
     let w=im.width,h=im.height;
     if(typeof HTMLImageElement!=='undefined'&&im instanceof HTMLImageElement){ if(!im.complete){ bad.push(where+' (still loading)'); return; } w=im.naturalWidth; h=im.naturalHeight; }
-    if(!(w>=2&&h>=2)){ bad.push(where+' '+w+'x'+h); return; } } };
+    if(!(w>=2&&h>=2)){ bad.push(where+' '+w+'x'+h); return; }
+    texB+=Math.round(w*h*(im.depth||1)*bppOf(t)*mips); } };
   const scan=(m)=>{ for(const k in m){ let v; try{ v=m[k]; }catch(e){ continue; } if(v&&v.isTexture) chk(v,(m.name||m.type)+'.'+k); }
    if(m.uniforms) for(const k in m.uniforms){ const v=m.uniforms[k]&&m.uniforms[k].value;
     if(v&&v.isTexture) chk(v,(m.name||m.type)+'.uniforms.'+k); else if(Array.isArray(v)) v.forEach((x,i)=>{ if(x&&x.isTexture) chk(x,(m.name||m.type)+'.uniforms.'+k+'['+i+']'); }); } };
-  sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scan(m); });
+  sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scan(m);
+   if(o.geometry&&!seenG.has(o.geometry)){ seenG.add(o.geometry); const at=o.geometry.attributes||{}; for(const k in at) addArr(at[k]); if(o.geometry.index) addArr(o.geometry.index); }
+   if(o.isInstancedMesh){ addArr(o.instanceMatrix); addArr(o.instanceColor); } });
   if(sc.background&&sc.background.isTexture) chk(sc.background,'scene.background');
   if(sc.environment&&sc.environment.isTexture) chk(sc.environment,'scene.environment'); }
  R.tex={n, bad:bad.slice(0,8), badN:bad.length};
+ R.vram=sc?{totalMB:+((texB+geomB)/1048576).toFixed(2), texMB:+(texB/1048576).toFixed(2), geomMB:+(geomB/1048576).toFixed(2), texN:n, geomN:seenG.size}:null;
  R.nan=(A&&typeof A.nanSweep==='function')?(()=>{ try{ const s=A.nanSweep(); return {meshes:s.meshes, instances:s.instances,
    first:JSON.stringify((s.firstInstances||[]).concat(s.first||[])).slice(0,300)}; }catch(e){ return {error:String(e)}; } })():null;
  R.occ=(A&&typeof A.regOccupancy==='function')?(()=>{ try{ const o=A.regOccupancy(); const e=o.filter(x=>x.n===0);
    return {n:o.length, empty:e.length, names:e.slice(0,6).map(x=>x.name)}; }catch(e){ return {error:String(e)}; } })():null;
+ R.ruins=(typeof KRUINS!=='undefined'&&typeof KRUINS.report==='function'&&KRUINS.watched&&KRUINS.watched.length)?(()=>{ try{ return {rep:KRUINS.report(), neg:KRUINS.selfTest()}; }catch(e){ return {error:String(e)}; } })():null;
  const over=[]; let src=null; const B=(typeof BIO!=='undefined')?BIO:(window.BIO||null);
  if(B&&typeof B.capReport==='function'){ src='BIO.capReport'; try{ for(const r of (B.capReport()||[])) over.push((r.kit?r.kit+'/':'')+(r.item||'?')+' '+r.count+' > '+r.cap+(r.why?' ('+r.why+')':' (no capWhy)')); }catch(e){ over.push('capReport threw: '+e); } }
  else if(sc){ src='scene scan, cap '+cap; sc.traverse(o=>{ if(o.isInstancedMesh&&o.count>cap&&!(o.userData&&o.userData.capOk))
@@ -873,6 +1187,165 @@ UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
    o[k]={n:x.n, nFails:x.nFails||0, first:JSON.stringify((x.fails||[]).slice(0,2)).slice(0,160)}; } o.neg=!S.contact||S.contact.neg===true; return o; }catch(e){ return {error:String(e)}; } })():null;
  try{ R.sceneTris=(A&&A.totals&&A.totals.tris!=null)?A.totals.tris:null; }catch(e){ R.sceneTris=null; }
  return R; }"""
+# The programs that do not link at the end of the run, named: r128's "THREE.WebGLProgram: shader error" carries no material.
+# The renderers are the page's `renderer` (top level, window or _api) and every one KHOOK compiled a layer on; a program is
+# an entry of renderer.info.programs whose LINK_STATUS reads false (null, a lost context, is not a failure); the materials
+# and meshes that draw with it are found as KHOOK.checkPrograms finds them, through renderer.properties over the scene
+# (r128 keeps every program a material ever had: `held` is a failed one its material no longer draws with). It also hands
+# back what GL_HOOK_JS kept, and closes its list of link failures (this read is not one).
+PROGRAMS_JS = "()=>{" + FIND_JS + """
+ const L=window.__kgl||null; if(L) L.done=true; const {sc}=__kfind(); const rs=[];
+ const add=(r)=>{ try{ if(r&&r.info&&Array.isArray(r.info.programs)&&typeof r.getContext==='function'&&rs.indexOf(r)<0) rs.push(r); }catch(e){} };
+ try{ if(typeof renderer!=='undefined') add(renderer); }catch(e){}
+ add(window.renderer); add((window._api||{}).renderer);
+ try{ if(typeof KHOOK!=='undefined') (KHOOK.renderers||[]).forEach(add); }catch(e){}
+ const out={hooked:!!L, ev:L?L.ev.slice(0,40):[], evN:L?L.ev.length:0, canvases:L?L.canvases:0, links:L?L.links:[], linkN:L?L.linkN:0,
+  renderers:rs.length, programs:0, lostNow:0, scene:!!sc, bad:[], badN:0, heldN:0};
+ const nm=(o)=>String(o.name||(o.userData&&(o.userData.item||o.userData.tag))||o.type||'?').slice(0,60);
+ const put=(a,s,cap)=>{ if(a.indexOf(s)<0&&a.length<cap) a.push(s); };
+ for(const R of rs){ let gl=null; try{ gl=R.getContext(); }catch(e){} if(!gl) continue; if(gl.isContextLost()){ out.lostNow++; continue; }
+  const by=new Map();
+  for(const p of R.info.programs){ out.programs++; let st=null; try{ st=gl.getProgramParameter(p.program,gl.LINK_STATUS); }catch(e){}
+   if(st!==false) continue; let log=''; try{ log=(gl.getProgramInfoLog(p.program)||'').replace(/[\\s\\0]+/g,' ').trim(); }catch(e){}
+   by.set(p,{name:p.name||'?', key:String(p.cacheKey||'').replace(/\\s+/g,' ').slice(0,72), log:log.slice(0,120), materials:[], meshes:[], meshN:0, held:[]}); }
+  if(by.size&&sc&&R.properties) sc.traverse((o)=>{ const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];
+   for(const m of ms){ let pr=null; try{ pr=R.properties.get(m); }catch(e){} if(!pr) continue;
+    const mn=m.type+(m.name?' "'+String(m.name).slice(0,60)+'"':''), rec=by.get(pr.currentProgram||pr.program);
+    if(rec){ put(rec.materials,mn,4); rec.meshN++; put(rec.meshes,nm(o),6); }
+    if(pr.programs&&typeof pr.programs.forEach==='function') pr.programs.forEach((x)=>{ const h=by.get(x); if(h&&h!==rec) put(h.held,mn,4); }); } });
+  by.forEach((rec)=>{ if(!rec.meshN&&rec.held.length){ out.heldN++; if(out.bad.length<8) out.bad.push(rec); return; } out.badN++; if(out.bad.length<8) out.bad.push(rec); }); }
+ return out; }"""
+# KHOOK.checkPrograms on the page's own renderers and scene (T2, BUGS-2026-11-15.md): with no renderer it reads only
+# KHOOK.renderers, the ones a layer was compiled on, so a page whose materials carry no KHOOK layer passed with programs
+# that never linked. The renderers are found as PROGRAMS_JS finds them; each record once, however many renderers name it.
+# null when the page has no KHOOK (shader-programs then reads PROGRAMS_JS's LINK_STATUS sweep).
+KHOOK_PROGRAMS_JS = "()=>{" + FIND_JS + """
+ if(typeof KHOOK==='undefined'||!KHOOK||typeof KHOOK.checkPrograms!=='function') return null;
+ const {sc}=__kfind(); const rs=[];
+ const add=(r)=>{ try{ if(r&&r.info&&Array.isArray(r.info.programs)&&rs.indexOf(r)<0) rs.push(r); }catch(e){} };
+ try{ if(typeof renderer!=='undefined') add(renderer); }catch(e){}
+ add(window.renderer); add((window._api||{}).renderer);
+ try{ (KHOOK.renderers||[]).forEach(add); }catch(e){}
+ const seen=new Set(), out=[];
+ const take=(list)=>{ for(const r of (list||[])){ const k=r.kind==='anchor'?'a|'+r.layer+'|'+r.anchor:'p|'+r.name+'|'+r.key; if(seen.has(k)) continue; seen.add(k);
+   out.push(r.kind==='anchor'?r.layer+': '+r.anchor:'program '+r.name+': '+String(r.programLog||r.fragmentLog||r.vertexLog||'').replace(/\\s+/g,' ').slice(0,120)); } };
+ if(rs.length) for(const R of rs) take(KHOOK.checkPrograms(R,sc||null)); else take(KHOOK.checkPrograms());
+ return {bad:out, renderers:rs.length}; }"""
+LINK_ERR = re.compile(r"THREE\.WebGLProgram: shader error", re.I)
+# A context loss the page did not ask for in its first START_LOSS_MS, back within START_BACK_MS, is headless software GL
+# losing its first context by itself as its GPU process starts (T3): reported, not warned.
+START_LOSS_MS, START_BACK_MS = 3000, 2000
+
+
+def gl_context_verdict(P):
+    """(ok, prefix) for the `gl-context` line (T1). SHADER_IGNORE keeps Chromium's "loseContext: context lost" console line
+    out of shader-errors, for a real loss too, so this line is where a real loss shows: a loss the page did not ask for
+    (WEBGL_lose_context, forceContextLoss) warns, and fails when a renderer is still lost at the end (nothing draws)."""
+    if not P or not P.get("hooked"):
+        return True, ""
+    ev = P.get("ev") or []
+    real = []
+    for i, e in enumerate(ev):
+        if e["e"] != "lost" or e.get("asked"):
+            continue
+        back = next((x["t"] for x in ev[i + 1:] if x["e"] == "restored" and x["canvas"] == e["canvas"]), None)
+        if e["t"] < START_LOSS_MS and back is not None and back - e["t"] <= START_BACK_MS:
+            continue   # software GL's start-up loss
+        real.append(e)
+    if not real:
+        return True, ""
+    if P.get("lostNow"):
+        return False, "%s the page did not ask for, and a renderer still lost at the end: nothing draws. " % (
+            "a context loss" if len(real) == 1 else "%d context losses" % len(real))
+    return True, "WARN: %s the page did not ask for (a GPU reset or a driver fault; rerun with --no-cache). " % (
+        "a context loss" if len(real) == 1 else "%d context losses" % len(real))
+# A context loss explains a link failure on its canvas from LOSS_LEAD_S before the lost event (the GPU side is gone before
+# the page is told: links fail with empty logs) until LOSS_LAG_S after the context is restored.
+LOSS_LEAD_S, LOSS_LAG_S = 10.0, 1.0
+
+
+def _times(n):
+    return "%d time%s" % (n, "" if n == 1 else "s")
+
+
+def gl_diagnosis(P, sh):
+    """What the run's WebGL record says about its shader failures: (the `gl-context` line, what `shader-errors` says before
+    its console lines, what it says after them). P: PROGRAMS_JS's result (None when the page could not be read); sh: the
+    console's shader and WebGL failures (gl_errors). Nothing is said before or after when sh is empty.
+    Link failures are put down to a context loss only when every program drawn at the end links and they came inside
+    the loss's window on their own canvas (LOSS_LEAD_S before it, to LOSS_LAG_S after its restore): a material that is
+    broken stays broken after a restore and is named instead, whatever the context did."""
+    if not P or not P.get("hooked"):
+        return "not watched: the page could not be read at the end of the run", "", ""
+    ev, links = P.get("ev") or [], P.get("links") or []
+    bad = [b for b in P.get("bad") or [] if b["meshN"] or not b["held"]]    # drawn now, or on no material the scene shows
+    held = [b for b in P.get("bad") or [] if not b["meshN"] and b["held"]]  # failed, kept by a material that draws with another
+    lost = [e for e in ev if e["e"] == "lost"]
+    if lost:
+        asked = sum(1 for e in lost if e.get("asked"))
+        ctx = "the WebGL context was lost %s and restored %s: %s%s%s%s" % (
+            _times(len(lost)), _times(sum(1 for e in ev if e["e"] == "restored")),
+            ", ".join("canvas %s%s %s at %.1f s" % (e["canvas"], " (%s)" % e["size"] if e.get("size") else "", e["e"], e["t"] / 1000.0) for e in ev[:8]),
+            ", and %d more events" % (P.get("evN", len(ev)) - 8) if P.get("evN", len(ev)) > 8 else "",
+            "; %d asked for by the page (WEBGL_lose_context.loseContext)" % asked if asked else "",
+            "; still lost at the end on %d renderer%s" % (P["lostNow"], "" if P["lostNow"] == 1 else "s") if P.get("lostNow") else "")
+    else:
+        n = P.get("canvases", 0)
+        ctx = "no WebGL context lost (%d canvas%s watched)" % (n, "" if n == 1 else "es")
+    if not sh:
+        return ctx, "", ""
+    # each loss's window on its canvas, and the link failures inside one
+    wins = []
+    for i, e in enumerate(ev):
+        if e["e"] == "lost":
+            back = next((x["t"] for x in ev[i + 1:] if x["e"] == "restored" and x["canvas"] == e["canvas"]), None)
+            wins.append((e["canvas"], e["t"] - LOSS_LEAD_S * 1000, float("inf") if back is None else back + LOSS_LAG_S * 1000))
+    hit = [w for w in wins if any(l["canvas"] == w[0] and w[1] <= l["t"] <= w[2] for l in links)]
+    inside = [l for l in links if any(l["canvas"] == w[0] and w[1] <= l["t"] <= w[2] for w in wins)]
+    logged = links or any(LINK_ERR.search(t) for t in sh)
+    pre, post = "", []
+    if inside and not bad:
+        pre = "the WebGL context was lost %s during the run: %s below follow from it; rerun with --no-cache. " % (
+            _times(len(hit)), "the link errors" if len(inside) == len(links) else "%d of the %d link errors" % (len(inside), len(links)))
+    if bad:
+        def prog(b):
+            more = b["meshN"] - len(b["meshes"])
+            return "%s (key '%s'%s; %s; %s)" % (
+                b["name"], b["key"], "; material " + ", ".join(b["materials"]) if b["materials"] else "",
+                ("on " + ", ".join("'%s'" % m for m in b["meshes"]) + (" and %d more" % more if more > 0 else "")) if b["meshes"]
+                else ("on no mesh of the scene" if P.get("scene") else "no scene reachable to name its meshes"),
+                "log: " + b["log"] if b["log"] else "an empty log: no GLSL error, so the driver or the context")
+        n = P.get("badN", len(bad))
+        post.append("programs that do not link now (%d): %s%s" % (n, "; ".join(prog(b) for b in bad[:3]), "; and %d more" % (n - 3) if n > 3 else ""))
+    elif logged:
+        if P.get("lostNow"):
+            post.append("the context is still lost at the end of the run, so no program could be read")
+        elif not P.get("renderers"):
+            post.append("no renderer was reachable to name the program (no `renderer` at the top level, on window or on _api, none from KHOOK)")
+        else:
+            post.append("link errors were logged but every program %s (%d program%s on %d renderer%s%s)%s" % (
+                "drawn now is valid" if held else "is valid now", P["programs"], "" if P["programs"] == 1 else "s",
+                P["renderers"], "" if P["renderers"] == 1 else "s",
+                "; %d that failed %s kept by a material that draws with another: %s" % (
+                    P.get("heldN", len(held)), "is" if P.get("heldN", len(held)) == 1 else "are",
+                    ", ".join("%s of %s" % (b["name"], ", ".join(b["held"])) for b in held[:3])) if held else "",
+                ": they were built again after the context came back" if inside and len(inside) == len(links)
+                else ": a context loss or a transient driver failure; rerun with --no-cache" if inside
+                else ", and no context loss explains them: a transient driver failure; rerun with --no-cache"))
+    if links:
+        n, cnt = P.get("linkN", len(links)), {}
+        for l in links:
+            cnt[l["name"]] = cnt.get(l["name"], 0) + 1
+        names = ", ".join(k if len(links) == 1 else "%s x%d" % (k, v) for k, v in sorted(cnt.items(), key=lambda kv: (-kv[1], kv[0])))
+        t0, t1 = links[0]["t"] / 1000.0, links[-1]["t"] / 1000.0
+        empty = sum(1 for l in links if l.get("empty"))
+        post.append("as they failed: %d link%s (%s%s) at %s after the page's start, on canvas %s%s%s" % (
+            n, "" if n == 1 else "s", names, ", the first %d named" % len(links) if n > len(links) else "",
+            "%.1f s" % t0 if round(t1 - t0, 1) == 0 else "%.1f to %.1f s" % (t0, t1),
+            ", ".join(str(c) for c in sorted({l["canvas"] for l in links})),
+            ", %s with an empty log" % ("all" if empty == len(links) else "%d" % empty) if empty else "",
+            ", the context already reading as lost" if any(l.get("lost") for l in links) else ""))
+    return ctx, pre, " || " + "; ".join(post) if post else ""
 # Item 10a: from the eye, rays up, down and four ways level, against the solid meshes drawn (instances prefiltered by
 # their bounds; materials made two-sided only for the duration of the call, so a ray sees the inside of a closed mesh).
 # Fails when the eye is inside a closed mesh (four of six rays meet a back face first), under the drawn ground (the ray
@@ -1014,6 +1487,58 @@ def load_budget(here, html):
     return None, "BUDGETS.json has no entry for %s" % base
 
 
+def survey_checks(here, checks=None):
+    """The survey's opt-in checks (SURVEY + OPTIN_CHECKS) this verify runs: `checks` (SURVEY, a name, or names), plus those
+    the build is listed for in tools/checks_optin.json, plus KRATOR_CHECKS."""
+    optin_all = SURVEY + ("water-mouths", "leaf-stems")
+    want = set()
+    if checks:
+        want.update([checks] if isinstance(checks, str) else checks)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import buildlib
+        b = os.path.relpath(os.path.abspath(here or "."), ROOT).replace(os.sep, "/")
+        want.update(c for c in optin_all if buildlib.opted_in(c, None if b.startswith("..") else b))
+    except Exception:
+        pass
+    return {c for c in want if c in optin_all}
+
+
+def page_sources(html):
+    """Item 31: (state, reasons, rebuild command, source hash) for a built page, from its build's build-inputs.json:
+    'current' when every input of the run that wrote it is unchanged, 'stale' when one moved (tools/check_stale.py's
+    reading; docs and import-path listings do not count), 'unrecorded' when the page differs from what that run wrote.
+    None when no manifest records the page."""
+    import hashlib
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import buildlib, check_stale
+    except Exception:
+        return None
+    page = buildlib.rel(html)
+    if not page:
+        return None
+    d = os.path.dirname(page)
+    while d and not os.path.isfile(os.path.join(ROOT, d, buildlib.MANIFEST)):
+        d = os.path.dirname(d)
+    if not d:
+        return None
+    m = buildlib.load_manifest(d) or {}
+    cmd = next((c for c, r in m.get("runs", {}).items() if page in r.get("outputs", {})), None)
+    if cmd is None:
+        return None
+    run = m["runs"][cmd]
+    src = hashlib.sha256(json.dumps(sorted((p, check_stale.h(p)) for p in run.get("inputs", {}))).encode("utf-8")).hexdigest()
+    check_stale._hash.clear()
+    for key, why, line in check_stale.check(d):
+        if key.endswith(" " + cmd) or key.endswith(": STALE " + cmd) or key.endswith(": UNRECORDED " + cmd):
+            if ": STALE " in key:
+                return ("stale", [w.strip() for w in why], line, src)
+            if ": UNRECORDED " in key and page in " ".join(why):
+                return ("unrecorded", why, line, src)
+    return ("current", [], None, src)
+
+
 class Abort(Exception):
     """Raised inside `async with verify_page(...)` to stop the build's own checks early with an exit code (the page did
     not initialise): the universal asserts still run, and V.exit() returns the code."""
@@ -1026,12 +1551,14 @@ class Abort(Exception):
 class VerifyPage:
     """What verify_page yields: the page, its page errors and the build's own fails list, and the views it visits."""
 
-    def __init__(self, html, here):
+    def __init__(self, html, here, checks=None):
         self.html, self.here, self.key = os.path.abspath(html), here, _page_key(html)
+        self.checks = survey_checks(here, checks)
+        self.renderer = None
         self.page = self.browser = self.port = self.code = None
         self.errs, self.fails, self.ready = [], [], False
         self.samples, self.eyes, self.universal = [], [], []   # (view, calls, tris); (view, result); (name, ok, detail)
-        self.winding = None
+        self.winding = self.gl = None   # the winding sweep; the WebGL record (PROGRAMS_JS: context events, link failures, programs)
 
     async def sample(self, view):
         s = await self.page.evaluate(SAMPLE_JS)
@@ -1040,11 +1567,21 @@ class VerifyPage:
         return s
 
     async def eye(self, view):
-        """The eye check (item 10a) at the camera as it is now, under the view's name."""
+        """The eye check (item 10a) at the camera as it is now, under the view's name; with the drawn-ground check
+        (item 28) the eye is also measured against the ground as drawn (core/drawn)."""
         try:
             r = await self.page.evaluate(EYE_JS, {"near": EYE_NEAR, "far": 50})
         except Exception as e:
             r = {"skipped": "eye check threw: " + str(e).splitlines()[0][:200]}
+        if "drawn-ground" in self.checks and not r.get("skipped"):
+            try:
+                with open(DRAWN_JS_FILE, encoding="utf-8") as fh:
+                    d = await self.page.evaluate(DRAWN_EYE_JS, fh.read())
+            except Exception as e:
+                d = {"skipped": "drawn-ground threw: " + str(e).splitlines()[0][:200]}
+            if d.get("under"):
+                r["drawn"] = "under the drawn ground: eye y %.2f, ground %.2f (%s)" % (d["eye"][1], d["h"], d["from"])
+            r["drawnNote"] = d.get("skipped") or ("drawn ground %.2f m below the eye (%s)" % (d["eye"][1] - d["h"], d["from"]) if d.get("h") is not None else "off the drawn ground")
         self.eyes.append((view, r))
         return r
 
@@ -1086,15 +1623,30 @@ class VerifyPage:
             U.append(("page-alive", False, "the page could not be read: " + str(e).splitlines()[0][:200]))
             R = None
         cons = getattr(pg, "krator_console", [])
-        sh = gl_errors(cons)
-        U.append(("shader-errors", not sh, "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3]))
-                  if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % len(cons)))
-        try:
-            bad = await pg.evaluate("() => typeof KHOOK === 'undefined' ? null : KHOOK.checkPrograms().map(r => r.kind === 'anchor' ? r.layer + ': ' + r.anchor : 'program ' + r.name + ': ' + (r.programLog || r.fragmentLog || r.vertexLog).slice(0, 120))")
+        sh, ncons = gl_errors(cons), len(cons)
+        try:   # after the console is read: what this evaluate itself logs is not the page's
+            P = await pg.evaluate(PROGRAMS_JS)
         except Exception:
-            bad = None
-        if bad is not None:
-            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else "every program linked, no anchor missed (KHOOK.checkPrograms)"))
+            P = None
+        self.gl = P
+        ctx, pre, post = gl_diagnosis(P, sh)
+        cok, cpre = gl_context_verdict(P)
+        U.append(("gl-context", cok, cpre + ctx))   # says why shader-errors may have; a loss the page did not ask for warns (T1)
+        U.append(("shader-errors", not sh, pre + "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3])) + post
+                  if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % ncons))
+        try:
+            K = await pg.evaluate(KHOOK_PROGRAMS_JS)
+        except Exception:
+            K = None
+        if K is not None:
+            bad = K["bad"]
+            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else
+                      "every program linked, no anchor missed (KHOOK.checkPrograms on %d renderer%s and the scene)" % (K["renderers"], "" if K["renderers"] == 1 else "s")))
+        elif P and P.get("hooked") and P.get("renderers"):   # no KHOOK: the LINK_STATUS sweep of every program drawn now
+            n = P.get("badN", 0)
+            U.append(("shader-programs", not n, ("%d program%s drawn now did not link: %s" % (n, "" if n == 1 else "s", "; ".join(
+                      "%s on %s" % (b["name"], ", ".join(b["meshes"][:3]) or "no mesh named") for b in (P.get("bad") or []) if b["meshN"] or not b["held"])[:240]))
+                      if n else "every program drawn now linked (%d programs, renderer.info.programs; the page has no KHOOK)" % P.get("programs", 0)))
         U.append(("page-errors", not self.errs, "; ".join(self.errs[:3])[:300] if self.errs else "none"))
         if R:
             panel = R["panel"]
@@ -1114,6 +1666,14 @@ class VerifyPage:
                 U.append(("registered-volumes-non-empty", not o.get("error") and not o.get("empty"),
                           o.get("error") or ("%d empty of %d: %s" % (o["empty"], o["n"], " | ".join(o["names"])) if o["empty"]
                                              else "%d volumes, none empty" % o["n"])))
+            if R.get("ruins") is not None:   # core/ruins: every ruined structure the page watches (KRUINS.watch): nothing floats, every wreck lies on the ground
+                ru = R["ruins"]
+                if ru.get("error"):
+                    U.append(("ruins", False, "the ruins check threw: " + ru["error"][:200]))
+                else:
+                    for r in ru["rep"]:
+                        U.append(("ruins: " + r["name"], r["ok"], r["detail"][:400]))
+                    U.append(("ruins: negative (core/ruins selfTest)", ru["neg"]["ok"], ru["neg"]["detail"]))
             if R["seat"] is not None:   # core-seat's sweeps (core/host/95b-host-seat.js, core/terrain/SEAT.md), when the page takes them
                 st = R["seat"]
                 bad = [k for k in ("contact", "clear", "doors", "stairs") if not st.get("error") and st[k]["nFails"]]
@@ -1134,22 +1694,112 @@ class VerifyPage:
             U.append(("winding", True, w.get("error") or ("%d of %d geometries look inside-out (a report): %s" % (w["suspectN"], w["n"], ", ".join(
                 "%s out %.2f up %.2f, %d tris" % (x["name"], x["out"], x["up"], x["tris"]) for x in w["suspects"][:6]))
                 if w["suspectN"] else "%d geometries, none inside-out" % w["n"])))
-        if is_gpu():
-            try:
-                rn = await pg.evaluate(RENDERER_JS)
-            except Exception as e:
-                rn = "unknown: " + str(e)[:80]
+        try:   # the one key map and the one walk mode (core/host/92k-host-keys.js), on a page that takes them
+            kw = await pg.evaluate("() => (typeof KHOST === 'undefined' || !KHOST.keysCheck) ? null : "
+                                   "{keys: KHOST.keysCheck(), walk: KHOST.walkCheck ? KHOST.walkCheck() : null}")
+        except Exception as e:
+            kw = {"error": str(e).splitlines()[0][:200]}
+        if kw is not None:
+            if kw.get("error"):
+                U.append(("one-key-map", False, kw["error"]))
+            else:
+                k = kw["keys"]
+                bad = k["words"] + k["clashes"]
+                U.append(("one-key-map", not bad, "; ".join(bad)[:300] if bad else "standard controls %s in the key map's words, no clash"
+                          % (", ".join(k["std"]) or "(none)")))
+                w = kw.get("walk")
+                if w is not None:
+                    if not w.get("walk"):
+                        U.append(("walk", True, "the ground only (the page hands the camera no KWALK)"))
+                    else:
+                        fl, bl = w.get("floor"), w.get("block")
+                        ok = (fl is None or fl["ok"]) and (bl is None or bl["ok"])
+                        U.append(("walk", ok, "KWALK %d floors, %d blocks; %s; %s" % (
+                            w["floors"], w["blocks"],
+                            ("stood on the floor at %s (feet %s)" % (fl["at"], fl["feet"])) if fl and fl["ok"] else
+                            ("did NOT stand on the floor at %s (feet %s)" % (fl["at"], fl["feet"]) if fl else "no raised floor to stand on"),
+                            ("a wall stopped the walker %s m on, %s m from its face" % (bl["moved"], bl["gap"])) if bl and bl["ok"] else
+                            ("the walker was NOT stopped by %s: from %s to %s" % (bl["box"], bl["from"], bl["end"]) if bl else "no wall with clear ground before it"))))
+        held = os.environ.get("KRATOR_GPU_LOCK_HELD")
+        if is_gpu() or held:
+            rn = self.renderer
+            if not rn:
+                try:
+                    rn = await pg.evaluate(RENDERER_JS)
+                except Exception as e:
+                    rn = "unknown: " + str(e)[:80]
             ln = os.environ.get("KRATOR_GPU_LANE_HELD") or ""   # the vendor is checked only where a lane was taken
-            U.append(("gpu-renderer", "swiftshader" not in rn.lower() and LANE_VENDOR.get(ln, "") in rn.lower(), "lane %s: %s" % (ln or "-", rn)))
+            if not is_gpu():   # item 22: seven sessions ran a "GPU verify" in SwiftShader under a lane lock
+                U.append(("gpu-renderer", False, "a GPU lane lock is held (lane %s) but KRATOR_GL is not gpu, so this ran in %s: "
+                          "rerun as KRATOR_GL=gpu python3 tools/harness.py lock --lane %s -- python3 verify.py ..." % (ln or "?", rn, ln or "auto")))
+            else:
+                U.append(("gpu-renderer", "swiftshader" not in rn.lower() and lane_vendor(ln) in rn.lower(), "lane %s: %s" % (ln or "-", rn)))
             _touched({"lane": ln, "renderer": rn})
+        try:   # item 27
+            sm = await pg.evaluate(SAMPLERS_JS)
+        except Exception as e:
+            sm = {"error": str(e).splitlines()[0][:200]}
+        if sm is not None:
+            on = "samplers" in self.checks
+            if sm.get("error"):
+                U.append(("samplers", not on, ("" if on else "report: ") + "could not read the programs: " + sm["error"]))
+            else:
+                top = "; ".join("%s %d (%s)" % (t["name"], t["n"], ", ".join(t["names"][:8])) for t in sm["top"][:3] if t["n"] >= SAMPLER_WARN) or (
+                    "worst %s %d" % (sm["top"][0]["name"], sm["top"][0]["n"]) if sm["top"] else "no programs")
+                msg = "%d linked programs, the most samplers %d (fail at %d, warn at %d; this GL allows %s): %s" % (
+                    sm["programs"], sm["max"], SAMPLER_FAIL, SAMPLER_WARN, sm["units"], top)
+                if not on:
+                    U.append(("samplers", True, "report: " + msg + ' (opt in: tools/checks_optin.json "samplers")'))
+                elif sm["max"] >= SAMPLER_FAIL:
+                    U.append(("samplers", False, msg))
+                else:
+                    U.append(("samplers", True, ("WARN: " if sm["max"] >= SAMPLER_WARN else "") + msg))
+        try:
+            wm = await pg.evaluate(WATER_MOUTHS_JS)
+        except Exception as e:
+            wm = {"error": str(e).splitlines()[0][:200]}
+        if wm is not None:
+            on = "water-mouths" in self.checks
+            if wm.get("error"):
+                U.append(("water-mouths", not on, ("" if on else "report: ") + "could not inspect WATER surfaces: " + wm["error"]))
+            else:
+                bad = wm.get("bad") or []
+                msg = ("; ".join(bad[:3])[:320] if bad else
+                       "%d flow(s), %d open water surface(s): all mouths terminate or cross-fade cleanly" % (wm["flows"], wm["opens"]))
+                if not on:
+                    U.append(("water-mouths", True, "report: " + msg + ' (opt in: tools/checks_optin.json "water-mouths")'))
+                else:
+                    U.append(("water-mouths", not bad, msg))
+        try:
+            ls = await pg.evaluate(LEAF_STEMS_JS)
+        except Exception as e:
+            ls = {"error": str(e).splitlines()[0][:200]}
+        if ls is not None:
+            on = "leaf-stems" in self.checks
+            if ls.get("error"):
+                U.append(("leaf-stems", not on, ("" if on else "report: ") + "could not inspect BIO foliage cards: " + ls["error"]))
+            else:
+                bad = ls.get("bad") or []
+                msg = ("; ".join(bad[:3])[:320] if bad else
+                       "%d card def(s), %d/%d floating under tight stem audit: all cards cleanly cut and stem-anchored"
+                       % (ls["defs"], ls["floating"], ls["audited"]))
+                if not on:
+                    U.append(("leaf-stems", True, "report: " + msg + ' (opt in: tools/checks_optin.json "leaf-stems")'))
+                else:
+                    U.append(("leaf-stems", not bad, msg))
+        if R and R.get("vram"):
+            vr = R["vram"]
+            U.append(("vram", True, "report: %.1f MB estimated VRAM (%.1f MB in %d textures, %.1f MB in %d geometries)"
+                      % (vr["totalMB"], vr["texMB"], vr["texN"], vr["geomMB"], vr["geomN"])))
         if not self.eyes:
             await self.eye("as loaded")
         for v, r in self.eyes:
             if r.get("skipped"):
                 U.append(("eye:" + v, True, "skipped: " + r["skipped"]))
                 continue
-            bad = [k + " " + r[k] for k in ("inside", "under", "foliage", "near") if r.get(k)]
-            U.append(("eye:" + v, not bad, ("eye %s: %s" % (r["eye"], "; ".join(bad))) if bad else "clear at %s" % r["eye"]))
+            bad = [k + " " + r[k] for k in ("inside", "under", "foliage", "near", "drawn") if r.get(k)]
+            U.append(("eye:" + v, not bad, ("eye %s: %s" % (r["eye"], "; ".join(bad))) if bad else "clear at %s%s" % (
+                r["eye"], "; " + r["drawnNote"] if r.get("drawnNote") else "")))
         b, src = load_budget(self.here, self.html)
         if b is None:
             U.append(("budget", True, src))
@@ -1158,8 +1808,10 @@ class VerifyPage:
             wc = max(self.samples, key=lambda s: s[1] or 0) if self.samples else None
             wt = max(self.samples, key=lambda s: s[2] or 0) if self.samples else None
             vals = {"calls": (wc[1], wc[0]) if wc else None, "tris": (wt[2], wt[0]) if wt else None,
-                    "bytes": (os.path.getsize(self.html), "page"), "scene_tris": (R.get("sceneTris"), "probe") if R else None}
-            for k in ("tris", "calls", "bytes", "scene_tris"):
+                    "bytes": (os.path.getsize(self.html), "page"), "scene_tris": (R.get("sceneTris"), "probe") if R else None,
+                    "samplers": (sm["max"], "programs") if sm and not sm.get("error") else None,
+                    "vram_mb": (R["vram"]["totalMB"], "scene") if R and R.get("vram") else None}
+            for k in ("tris", "calls", "bytes", "scene_tris", "samplers", "vram_mb"):
                 lim = b.get(k)
                 if lim is None or not vals.get(k) or vals[k][0] is None:
                     continue
@@ -1174,8 +1826,9 @@ class VerifyPage:
         rat = load_ratchet().get("pages", {}).get(self.key, {})
         print("\n--- universal asserts (tools/harness.py verify_page) ---")
         for name, ok, detail in self.universal:
-            known = name in rat or (name.startswith("eye:") and "eye:*" in rat)
-            tag = "  PASS  " if ok else ("  KNOWN " if known else "  FAIL  ")
+            known = name not in HARD and (name in rat or (name.startswith("eye:") and "eye:*" in rat))
+            tag = ("  REPORT" if detail.startswith("report: ") else "  WARN  " if detail.startswith("WARN: ") else "  PASS  ") if ok else (
+                "  KNOWN " if known else "  FAIL  ")
             print(tag + name + " : " + detail)
             if not ok and not known:
                 self.fails.append("universal " + name)
@@ -1186,22 +1839,27 @@ class VerifyPage:
         if self.fails:
             print("\nFAILED: " + "; ".join(self.fails))
             return code or 1
-        print("\nOK")
+        st = page_sources(self.html)
+        if st and st[0] == "stale":   # item 31: a pass on a page its sources have moved past proves nothing about src/
+            print("\nOK, but a STALE PASS: %s was built before its sources moved (%s); rebuild: %s" % (self.key, "; ".join(st[1][:4]), st[2]))
+        else:
+            print("\nOK")
         return code or 0
 
 
 @contextlib.asynccontextmanager
 async def verify_page(html, here=None, size="1280x800", query="", root=None, init=(), settle_ms=2500, lock=True, args=None,
-                      ready_js=None, routes=()):
+                      ready_js=None, routes=(), checks=None):
     """Open `html` for a verify and run the universal asserts after the build's own (see the module docstring).
     here: the build's folder (its BUDGETS.json, its three.min.js); root: the folder to serve (default the page's);
     ready_js: the page's own ready test when it is not one READY_JS knows (the error panel filling still counts);
-    routes: what the page loads from elsewhere (open_page)."""
+    routes: what the page loads from elsewhere (open_page); checks: the survey's opt-in checks for this run (SURVEY, or
+    names from it; tools/checks_optin.json adds the build's own)."""
     html = os.path.abspath(html)
     folder = os.path.dirname(html)
     if here is None:
         here = os.path.dirname(folder) if os.path.basename(folder) == "dist" else folder
-    V = VerifyPage(html, here)
+    V = VerifyPage(html, here, checks)
     for f in (html, os.path.join(here, "BUDGETS.json"), RATCHET):
         if os.path.isfile(f):
             _touched(f)
@@ -1211,14 +1869,22 @@ async def verify_page(html, here=None, size="1280x800", query="", root=None, ini
     from playwright.async_api import async_playwright
     lk = gpu_lock(what=V.key) if (lock and is_gpu()) else contextlib.nullcontext()
     try:
-        if lk.__enter__():
-            print("harness: on the %s lane" % os.environ.get("KRATOR_GPU_LANE_HELD", "arc"), flush=True)
+        lk.__enter__()
     except GpuLockTimeout as e:
         print("FAILED: " + str(e))
         raise SystemExit(3)
     try:
         async with async_playwright() as p:
             V.browser = await launch_chromium(p, args or GL_ARGS)
+            try:   # item 22: the renderer first, so a log says at its head where the page ran
+                p0 = await V.browser.new_page()
+                V.renderer = await p0.evaluate(RENDERER_JS)
+                await p0.close()
+            except Exception as e:
+                V.renderer = "unknown: " + str(e).splitlines()[0][:80]
+            print("harness: renderer %s; lane %s; KRATOR_GL=%s%s" % (
+                V.renderer, os.environ.get("KRATOR_GPU_LANE_HELD") or "none", "gpu" if is_gpu() else "swiftshader (software)",
+                "; survey checks: " + ", ".join(sorted(V.checks)) if V.checks else ""), flush=True)
             try:
                 with serve(root or folder) as port:
                     V.port = port
@@ -1426,13 +2092,17 @@ async def walk_main(argv):
 EXPORT_FILES = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js')]
 STAGE_HOOK = os.path.join(ROOT, 'godot', 'tools', 'stage_hook.js')
 STAGE_JS = os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')
-EXPORT_JS = """([opt, split]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile: opt.profile || null });
+# the uid the check recomputes from an item's matrix: a case written about its own origin (core/export README, "origin")
+# has its translations less it, so the check adds it back
+KUID_JS = """const KUID = w => (typeof KTAGS === 'undefined' || !KTAGS) ? null : !w.origin ? KTAGS.uid
+  : (c, k, at) => KTAGS.uid(c, k, [at[0] + w.origin[0], at[1] + w.origin[1], at[2] + w.origin[2]]);"""
+EXPORT_JS = """([opt, split]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile: opt.profile || null });
   if (!split) return { world: w, check: chk };
   const g = EXPORT.glb(w);
   return { world: g.json, glb: EXPORT.pack(g.glb).b64, glbStats: g.stats, check: chk }; }"""
-PROFILE_JS = """([opt, profile]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile });
+PROFILE_JS = """([opt, profile]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile });
   const sections = {}; for (const k in w.sections) sections[k] = w.sections[k].status;
   return { sections, errors: w.errors, stats: w.stats, check: chk }; }"""
 
@@ -1498,24 +2168,30 @@ async def check_profile(pg, box, profile, opt=None, inject=False):
     return ok, lines
 
 
-def _pack_dir(name, page):
-    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first)."""
+def _pack_dir(name, page, families=None):
+    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first). Two packs can share a
+    name (2026-11-16: biomes/xanadu's flora pack and kits/xanadu's building pack are both 'xanadu', and an open-world
+    region carries both): with `families` (the ones the export's textures name), the pack that holds them all wins."""
     d = os.path.dirname(os.path.abspath(page))
     if os.path.basename(d) == 'dist':
         d = os.path.dirname(d)
     cands = [d] + sorted(os.path.dirname(os.path.dirname(p)) for p in glob.glob(os.path.join(ROOT, '*', '*', 'tex', 'pack.json')))
+    first = None
     for c in cands:
         pj = os.path.join(c, 'tex', 'pack.json')
         if os.path.isfile(pj):
             with open(pj, encoding='utf-8') as f:
-                if json.load(f).get('build') == name:
+                j = json.load(f)
+            if j.get('build') == name:
+                if not families or set(families) <= set(j.get('families', {})):
                     return os.path.join(c, 'tex')
-    return None
+                first = first or os.path.join(c, 'tex')
+    return first
 
 
 async def export_main(argv):
     """python3 tools/harness.py export <page> --out godot/data/<case>/ [--box x0,z0,x1,z1] [--sections a,b] [--sky 1024]
-                                             [--json] [--query ?..]
+                                             [--json] [--query ?..] [--before <js>]
     The krator-world container (core/export/README.md) written headless: load the page, wait for it and its library
     textures, call EXPORT.world({box, sections}) and EXPORT.check, and write <out>/world.json (everything but the meshes)
     and <out>/world.glb (the meshes: EXT_mesh_gpu_instancing), or one world.json with the meshes inline (--json); the
@@ -1528,6 +2204,12 @@ async def export_main(argv):
     ap.add_argument('html'); ap.add_argument('--out', required=True); ap.add_argument('--box'); ap.add_argument('--sections')
     ap.add_argument('--sky', type=int); ap.add_argument('--json', action='store_true'); ap.add_argument('--query', default='')
     ap.add_argument('--profile', help='the sections the case must fill (core/export/README.md, "Profiles"): a,b,c=field,d?')
+    ap.add_argument('--before', help='a JS expression the page awaits before the export: a case\'s own preparation, '
+                    'e.g. placing an open world\'s camera at the box and settling its flora (openworld/<region>/tools/godot_case.py)')
+    ap.add_argument('--root', help='the folder served (default the repo): a page built in another worktree is served from its own '
+                    '(openworld/oidong-highrift/tools/godot_case.py exports Strongbow\'s page from its branch\'s worktree)')
+    ap.add_argument('--inject', action='append', default=[], help='a script added to the page after core/export, before --before: '
+                    'a case\'s own contributor (repeatable; core/export 10 where the page lacks the scene reader)')
     a = ap.parse_args(argv)
     opt = {}
     if a.box:
@@ -1540,11 +2222,12 @@ async def export_main(argv):
         opt['sky'] = a.sky
     out = os.path.abspath(a.out)
     os.makedirs(out, exist_ok=True)
+    root = os.path.abspath(a.root) if a.root else ROOT
     fails, t0 = [], time.time()
     async with async_playwright() as p:
         b = await launch_chromium(p)
-        with serve(ROOT) as port:
-            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=ROOT, query=a.query, init=[STAGE_HOOK])
+        with serve(root) as port:
+            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=root, query=a.query, init=[STAGE_HOOK])
             if not ready:
                 fails.append('page never ready')
             print('%s: built in %.0f s (%d page errors)' % (a.html, time.time() - t0, len(errs)), flush=True)
@@ -1553,6 +2236,11 @@ async def export_main(argv):
             except Exception:
                 fails.append('library textures still decoding after 180 s')
             injected = await inject_export(pg)
+            for f in a.inject:
+                await pg.add_script_tag(path=os.path.abspath(f))
+                injected.append(os.path.relpath(os.path.abspath(f), ROOT).replace(os.sep, '/'))
+            if a.before:
+                print('before: %s' % json.dumps(await pg.evaluate(a.before))[:300], flush=True)
             await pg.wait_for_timeout(1500)   # a few frames, so the stage hook has seen what the page renders
             t1 = time.time()
             res = await evaluate_big(pg, EXPORT_JS, [opt, not a.json])
@@ -1579,7 +2267,7 @@ async def export_main(argv):
         os.makedirs(dst)
         copied = {}
         for name in packs:
-            src = _pack_dir(name, a.html)
+            src = _pack_dir(name, a.html, {t['family'] for t in w['textures'] if t.get('pack') == name})
             if not src:
                 fails.append('no tex/pack.json for library pack %s' % name)
                 continue
@@ -1645,12 +2333,70 @@ async def renderer_main():
 # run_watched (the stall watchdog), and skips a run that already passed on the same bytes (the verify cache).
 #
 # The cache key: every file the run read (the pages it opened, every file the page server handed out, three.js, the
-# build's BUDGETS.json, the ratchet), the verify.py and the .py and .json files beside it, this harness, the arguments
-# and KRATOR_GL. A pass is recorded per page and argument list in CACHE_DIR (%LOCALAPPDATA%/krator-verify-cache), with
+# build's BUDGETS.json, the ratchet), the verify.py and the .py and .json files beside it, the arguments, KRATOR_GL, and
+# the part of this harness that can change a verify's result (result_fingerprint: the page server, the launcher and its
+# flags, the checks, VERIFY_CACHE_VERSION; not the queue, locks, watchdog, cloud transport, lanes listing or this cache,
+# owner 2026-11-11). It is taken from the parsed code, so comments and docstrings never move it; a top-level name not in
+# NOT_IN_KEY counts, so new code is in the key unless someone says otherwise (tools/tests/test_cache_key.py). Bump
+# VERIFY_CACHE_VERSION for a change outside this file that can change results (the pinned Chromium, for one).
+# A pass is recorded per page and argument list in CACHE_DIR (%LOCALAPPDATA%/krator-verify-cache), with
 # the lane and the GPU that produced it; a failure is never recorded. Only --assert runs are cached (a run without it
 # is for looking), never a timing run; --no-cache (or KRATOR_VERIFY_CACHE=0) reruns; KRATOR_VERIFY_WRAP=0 runs the
 # verify in place, with neither the watchdog nor the cache. A file the verify reads itself without the harness (a
 # route handler's file) is outside the key: its verify.py beside it is in it.
+
+VERIFY_CACHE_VERSION = 1
+# Top-level names that cannot change what a verify finds: processes, the lanes' locks and queue, the watchdog, the cloud
+# transport, the lanes listing and this cache and wrapper. Everything else in this file is in the key.
+NOT_IN_KEY = frozenset((
+    "TMP", "GPU_LOCK", "GPU_LOCK_RTX", "LANES", "CLOUD_LANE_NAMES", "TIMING_SCRIPTS", "STALL_MIN", "LOCK_POLL", "CACHE_DIR",
+    "BROWSERS_DIR", "CHROME_NAMES", "_MY_BROWSERS",
+    "lock_path", "all_locks", "_cloud", "_proc_table", "pid_alive", "_proc_start", "_kill_pids", "reap_orphans", "_descendants",
+    "_record_browsers", "_forget_browsers", "GpuLockTimeout", "_lock_owner", "_release", "timing_run", "pick_lane", "_ticket_live",
+    "lane_queue", "_owner_note", "_lanes_for", "gpu_lock", "_tree", "kill_tree", "out_dirs", "_newest", "run_watched", "lock_main",
+    "lanes_main", "NOT_IN_KEY", "result_fingerprint", "_touched", "_sha_file", "_rel", "cache_args", "cache_entry_path", "cache_hash",
+    "cache_lookup", "cache_record", "verify_wrap", "_verify_routed", "_cache_cloud_pass", "_run_child", "_imported_at_top_of_main",
+    "_maybe_wrap_verify", "_watch_parent"))
+_FINGERPRINT = {}
+
+
+def result_fingerprint(src=None):
+    """A hash of the result-relevant code of this harness (see the comment above): the module parsed, its docstrings,
+    the `if __name__` block and every top-level definition or assignment named in NOT_IN_KEY dropped, the rest dumped
+    without positions. `src`: another copy's text (the tests)."""
+    import ast, hashlib
+    if src is None and "self" in _FINGERPRINT:
+        return _FINGERPRINT["self"]
+    text = src
+    if text is None:
+        with open(os.path.abspath(__file__), encoding="utf-8") as fh:
+            text = fh.read()
+    keep = []
+    for n in ast.parse(text).body:
+        if isinstance(n, ast.Expr) and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str):
+            continue
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and n.name in NOT_IN_KEY:
+            continue
+        if isinstance(n, (ast.Assign, ast.AnnAssign)):
+            names = [t.id for t in (n.targets if isinstance(n, ast.Assign) else [n.target]) if isinstance(t, ast.Name)]
+            if names and all(x in NOT_IN_KEY for x in names):
+                continue
+        if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and getattr(n.value.func, "id", "") in NOT_IN_KEY:
+            continue
+        if isinstance(n, ast.If) and "__name__" in ast.dump(n.test):
+            continue
+        keep.append(n)
+    for n in keep:
+        for d in ast.walk(n):
+            body = getattr(d, "body", None)
+            if isinstance(d, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and body and isinstance(body[0], ast.Expr) \
+                    and isinstance(body[0].value, ast.Constant) and isinstance(body[0].value.value, str):
+                d.body = body[1:] or [ast.Pass()]
+    fp = hashlib.sha256(ast.dump(ast.Module(body=keep, type_ignores=[])).encode("utf-8")).hexdigest()
+    if src is None:
+        _FINGERPRINT["self"] = fp
+    return fp
+
 
 def _touched(rec):
     """In a wrapped verify, note a file the run read (a path) or the lane and renderer (a dict) for the parent."""
@@ -1694,7 +2440,8 @@ def cache_entry_path(script_rel, args_n):
 
 
 def cache_hash(root, files, args_n):
-    """The key over the files' current bytes, this harness, the arguments and KRATOR_GL; None if a file is gone."""
+    """The key over the files' current bytes, this harness's result fingerprint, the arguments and KRATOR_GL; None if a
+    file is gone."""
     import hashlib
     h = hashlib.sha256()
     for rel in sorted(set(files)):
@@ -1702,7 +2449,7 @@ def cache_hash(root, files, args_n):
         if not os.path.isfile(p):
             return None
         h.update(("%s\0%s\n" % (rel, _sha_file(p))).encode("utf-8"))
-    h.update(_sha_file(os.path.abspath(__file__)).encode("utf-8"))
+    h.update(("harness:" + result_fingerprint()).encode("utf-8"))
     h.update(json.dumps([args_n, os.environ.get("KRATOR_GL", "").lower()]).encode("utf-8"))
     return h.hexdigest()
 
@@ -1741,6 +2488,10 @@ def cache_record(script, args, touched_lines, cwd=None):
         return None
     e = {"script": _rel(script, root), "args": args_n, "hash": h, "files": sorted(files), "passed": time.strftime("%Y-%m-%dT%H:%M:%S"),
          "lane": info.get("lane") or ("gpu (no lane)" if is_gpu() else "swiftshader"), "renderer": info.get("renderer", "")}
+    page = next((a for a in args_n if a.endswith(".html")), None)   # item 31: the page's sources when it passed
+    st = page_sources(os.path.join(root, page)) if page else None
+    if st:
+        e["sources"], e["sources_hash"] = st[0], st[3]
     path = cache_entry_path(e["script"], args_n)
     os.makedirs(CACHE_DIR, exist_ok=True)
     tmp = path + ".%d.tmp" % os.getpid()
@@ -1757,10 +2508,72 @@ def verify_wrap(script, args, no_cache=False):
     if cacheable:
         e = cache_lookup(script, args)
         if e:
-            print("harness: cached pass: %s %s passed %s on the same bytes (lane %s%s); nothing rerun, no shots written. "
-                  "--no-cache to rerun." % (e["script"], " ".join(e["args"]), e["passed"], e["lane"],
+            page = next((a for a in e["args"] if a.endswith(".html")), None)
+            st = page_sources(os.path.join(_repo_root(script), page)) if page else None
+            stale = st and st[0] == "stale"   # item 31: the page's sources moved since it was built
+            print("harness: cached %spass: %s %s passed %s on the same bytes (lane %s%s); nothing rerun, no shots written. "
+                  "--no-cache to rerun." % ("STALE " if stale else "", e["script"], " ".join(e["args"]), e["passed"], e["lane"],
                                              ", " + e["renderer"] if e.get("renderer") else ""), flush=True)
+            if stale:
+                print("harness: STALE PASS: the page was built before its sources moved (%s); rebuild: %s" % ("; ".join(st[1][:4]), st[2]), flush=True)
             return 0
+    if is_gpu() and not timing_run([script] + args) and _cloud().load_config():
+        return _verify_routed(script, args, cacheable)
+    return _run_child(script, args, cacheable)
+
+
+def _verify_routed(script, args, cacheable):
+    """The cloud lanes are on: this wrapper takes the lane (auto: the first of arc, rtx and the cloud lanes to free), then
+    runs the verify here (the child finds the lock held) or on the machine (cloud_lane.run_job). A machine that does not
+    answer drops out of auto; asked for by name it fails with exit 3."""
+    cl = _cloud()
+    page = next((a for a in args if a.endswith(".html")), "")
+    what = _rel(os.path.join(os.getcwd(), page), _repo_root(script)) if page else _rel(script, _repo_root(script))
+    for attempt in (0, 1):
+        try:
+            with gpu_lock(what=what, cloud=True) as got:
+                if not is_cloud_lane(got):
+                    return _run_child(script, args, cacheable)
+                print("harness: on the %s lane (the cloud machine)" % got, flush=True)
+                code, info = cl.run_job(got, script, args, cwd=os.getcwd(), run_watched=run_watched)
+        except GpuLockTimeout as e:
+            print("FAILED: " + str(e), flush=True)
+            return 3
+        except cl.CloudDown as e:
+            if pick_lane() == "auto" and not attempt and cl.load_config():
+                print("harness: %s; taking a local lane" % e, flush=True)
+                continue
+            print("FAILED: %s (tools/CLOUD-LANE.md)" % e, flush=True)
+            return 3
+        if code == 0 and cacheable and info:
+            _cache_cloud_pass(script, args, info)
+        return code
+    return 3
+
+
+def _cache_cloud_pass(script, args, info):
+    """Record a cloud pass in the local verify cache, when every file the machine read has the same content here (git's
+    object ids, so a CRLF checkout here matches the machine's LF one)."""
+    root, hashes = info["root"], info.get("hashes", {})
+    if not hashes:
+        print("harness: not cached: the machine sent no hashes", flush=True)
+        return
+    if info.get("harness_key") != result_fingerprint():   # the machine ran a harness whose checks differ from this one's
+        print("harness: not cached: the harness on the machine checks differently from this one (result fingerprint %s, here %s)"
+              % ((info.get("harness_key") or "none")[:12], result_fingerprint()[:12]), flush=True)
+        return
+    here = _cloud().object_ids(root, [rel for rel in hashes if os.path.isfile(os.path.join(root, rel))])
+    changed = [rel for rel, h in hashes.items() if here.get(rel) != h]
+    if changed:
+        print("harness: not cached: %d file(s) changed here during the cloud run (%s)" % (len(changed), ", ".join(changed[:3])), flush=True)
+        return
+    lines = [json.dumps({"f": os.path.join(root, rel)}) for rel in info.get("touched", [])]
+    lines.append(json.dumps({"lane": info.get("lane"), "renderer": info.get("renderer", "")}))
+    with contextlib.suppress(Exception):
+        cache_record(script, args, lines)
+
+
+def _run_child(script, args, cacheable):
     os.makedirs(BROWSERS_DIR, exist_ok=True)
     touched = os.path.join(BROWSERS_DIR, "touched-%d.jsonl" % os.getpid())
     with contextlib.suppress(OSError):
@@ -1829,7 +2642,7 @@ def _watch_parent(spec):
             print("harness: the verify wrapper (pid %s) is gone: stopping this run" % pid, flush=True)
         with contextlib.suppress(Exception):
             _forget_browsers(kill=True)
-        for lk in LANES.values():
+        for lk in all_locks():
             _release(lk)
         os._exit(130)
     with contextlib.suppress(ValueError):
@@ -1857,4 +2670,6 @@ if __name__ == "__main__":
         sys.exit(lock_main(sys.argv[2:]))
     if len(sys.argv) > 1 and sys.argv[1] == "lanes":
         sys.exit(lanes_main(sys.argv[2:]))
+    if len(sys.argv) > 1 and sys.argv[1] == "cloud":
+        sys.exit(_cloud().cli(sys.argv[2:]))
     print(__doc__)

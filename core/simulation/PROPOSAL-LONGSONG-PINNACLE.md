@@ -298,6 +298,23 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
 
   The page's people are not yet declared through the host. Longsong's page declares its walkers on core/simulation
   itself (`40d-ls-sim.js`); its economy is the valley test's.
+- **The long run (2026-11-12; the owner: "what happens to needs, stocks, happiness and resources over time").** A
+  three-year run showed the first year's balance did not hold: the caravan brought a quarter of the valley's salt and
+  little tea or iron, Longsong's grain piled up while the Order's houses in the rift went short from the second year,
+  the dairy herds fell short of the house's diet. Fixed in `settlements/longsong/src/15-ls-tune.js`:
+  - the long roads take a `want` (the days of use a load fills the far end to; the host's default, twice its 3 import
+    days, starved a far end between carriers three weeks apart), passed through by `core/region/50-region-valley.js`;
+  - the caravan buys to the valley's use (salt 130 kg a day, tea 34, iron 9) with a 4.5 t load; the smithy has 16 hands;
+  - Longsong's grain goes up the beck road to the Caldron House and on to the Mirror Grange (a new road), the relay
+    houses asking for their dependants too (`expect`); grain runs both ways between the grange and the gjar;
+  - the herds are sized to the diets (380 head a ring village, 400 yaks at the Beck Fields), the Beck Fields' tithe is
+    its surplus as the ring's is.
+
+  The food the valley eats goes short by 0.56, 0.85 and 0.89 % in its first three years (2.45 to 4.78 % before); the
+  test checks the third year (`test-ls-economy.js` check 10). **Not modelled at the valley level yet:** people's needs,
+  happiness and unrest (core/simulation has them; the valley host books eating and shortfalls only), and finite
+  resources (no work draws on a site with an amount, so mines and fields never run down). Longsong's grain store still
+  grows ~7 t a year, and its books and paper pile up (the library).
 
 **Done (2026-11-12): S4 to S7, Pinnacle Rock on the sim** (branch `claude/sim-s4-s7-fdaeba`, not pushed).
 - **S4:** `core/camp/50-camp-beasts.js` (`KCAMP.appetite`, `beastNeeds`, `packCap`, `pace`, `bandBeasts`, `meatPlan`) and the
@@ -398,6 +415,34 @@ of isle demo including needs and happiness and see what happens").
 
 **The bands:** Mammoth (33) and Dragonfly (34) bake below the 40-person band floor, and the census test checks only the
 Raptor programme.
+
+## 7. Scrap to iron (accepted by the owner, 2026-11-12; not built)
+
+The owner: "there may also be a mechanic to melt scrap to iron". Several cities lack decent ore (Iziz, the Eternian
+capital before it moved to Fulcrum), so Ancient salvage is a second source of iron.
+
+**What exists:**
+- **In the sim:** no `scrap` or `salvage` good and no recipe. The isle demo's iron chain is a smithy: ore 2 + charcoal 1 →
+  iron 1 in 2 h.
+- **In the kits:** the buildings: `pyl_breakers_floor`, `pyl_smelter`, `pyl_scrap_yard`, `pyl_salvagers_guild` (Pylon),
+  `hl_rep_smelter`, `hl_rep_salvage_forge` (the Republic), `vern_salvage_yard` (the Iziz Vernacular).
+- **Planned, not built:** core/camp C8's Salvagers' expeditions; a salvage node family on ruin ground (kits/resources
+  `PLACEMENT-RESEARCH.md` §10).
+
+**The design:**
+- **A salvage site kind:** a `SIM.site` on Ancient ruin ground. Its yield falls as the ruin is stripped, and it does not
+  regrow.
+- **A breakers' floor:** salvage → `scrap`.
+- **A smelter:** scrap 1 + charcoal or coal 1 → iron 1 in 2 h. It beats ore 2 + charcoal 1, because Ancient steel is
+  already refined.
+- **The ruin bit should mark lived-in Ancient cities too** (Pylon, Iziz). Today it marks only ruin pins, so neither counts,
+  and none of the iron-short cities has recorded ruin ground within 60 km.
+- **Fuel within reach** (coal max): Iziz 222, Voth 174, Lux 135, Pylon 108.
+
+**Where it lands:**
+- a goods row and the recipe in the culture tables (phase S2);
+- the site kind in core/simulation;
+- the ruin bit for lived-in Ancient cities in kits/resources' geology.
 
 ## 6. The owner's answers (2026-11-11)
 

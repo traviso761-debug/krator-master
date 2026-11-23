@@ -962,7 +962,7 @@ FURN({
 /* ====================================================================== Felts and rugs */
 FURN({
   key: 'scyvoi_wall_felt', name: 'Shyrdak felt hanging', culture: 'scyvoi', tier: 'common', type: 'banner', setting: 'indoor',
-  rooms: ['hall', 'bedroom', 'antechamber', 'court', 'shrine'], anchor: 'wall', clearance: {},
+  rooms: ['hall', 'bedroom', 'antechamber', 'court', 'shrine'], anchor: 'wall', hung: 'top', clearance: {},
   materials: ['cloth', 'lacquer', 'bronze'],
   w: 1.6, d: 0.06, h: 1.4, variants: 2, variantNames: ['madder field, teal horns', 'teal field, madder horns'],
   build: function (F) {

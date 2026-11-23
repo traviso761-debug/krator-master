@@ -12,8 +12,11 @@ ATMOS.skylight({renderer,sky:SEA_ENV,scene:SEA_HOLD,ground:()=>new THREE.Color(0
 // the sea lies west of u = -1400: x under 300 whatever z (u = .899 x - .438 z, |z| < 3380), so the box stops there
 const SEA_BOX=[-3380,-3380,300,3380];
 _mark('sea0');
-const SEA_WATER=WATER.open({name:'The Ring Sea',level:SEA,field:1,bounds:SEA_BOX,bed:terrainH,bedBox:SEA_BOX,
- shore:{cell:8,band:100,seeds:[xzOf(BAY.u,BAY.p),xzOf(-3000,0)]}});
+// the lahar valleys' grey silt off each stream's mouth (its flow's lowest point, at the sea), carried out and swirled (THRONE.plumeOf, 70; ?plume=0 none)
+const SEA_PLUME=THRONE.plumeOf(STREAM_FLOWS.map(F=>F.pts.reduce((a,p)=>p.y<a.y?p:a)).filter(p=>p.y<SEA+6).map(p=>[p.x,p.z]),   /* a flow's points are {x, z, y, ...} */
+ {box:SEA_BOX,c:new THREE.Color(0x8a8274).convertSRGBToLinear(),reach:420,a:.5});
+const SEA_WATER=WATER.open(Object.assign({name:'The Ring Sea',level:SEA,field:1,bounds:SEA_BOX,bed:terrainH,bedBox:SEA_BOX,
+ shore:{cell:8,band:100,seeds:[xzOf(BAY.u,BAY.p),xzOf(-3000,0)]}},SEA_PLUME));
 const SEA_DRAW=WATER.draw(SEA_WATER,{transparent:true,renderOrder:1,roughness:.2,metalness:.05,envMapIntensity:.35,pick:true,
  shallow:new THREE.Color(0x4a8a80).convertSRGBToLinear(),deep:new THREE.Color(0x1a3a46).convertSRGBToLinear()});
 SEA_DRAW.mesh.userData.inspectLabel='The Ring Sea';

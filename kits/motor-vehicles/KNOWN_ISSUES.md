@@ -4,6 +4,15 @@
 
 ## Open
 
+- [ ] **The Line's towed wagons carry a nominal fuel** (2026-11-11). `tg_flat` and `tg_icewagon` have no motor (`data.towed`), but
+  the kit's fuel vocabulary (`VEHICLE_FUELS`, `vehicles-core.js`) has no "none", so their `tags.fuel` is 'battery'. Adding "none"
+  edits `vehicles-core.js`, which reaches `kits/mechs` and the Catch's three stations: do it with the next change that rebuilds them.
+- [ ] **The Line cars' `kept` is a variant, not a build option** (2026-11-11, `krator-vehicles-line.js`). Variant 1 of each
+  `anc_line_*` car, "Kept (Tungang)", is the Tungangs' upkeep drawn over the built car (agreed with the vehicles session as a build
+  option, `build(key, {kept: 'tungang'})`); made a variant so the runtime, which reaches Locus and Mungo, was not edited. Lift it
+  into `API.build` beside `state` when one culture's upkeep must dress another's vehicle generally.
+- [ ] **The Line cars need the Ancients' file in their bundle.** `krator-vehicles-line.js` reuses `krator-vehicles-ancient.js`'s
+  helpers and culture: a host bundles `['ancient', 'line']` (a bundle of 'line' alone logs an error and draws nothing).
 - [ ] **The detail maps are 256 px a family.** A tile is 0.8 to 2 m, so close up (under a metre) the grain softens. They
   are kept small because every world that takes the bundle carries them (`bundle(['geomancer'])` adds about 250 KB to
   Locus and Mungo). `size` in `materials.json` raises them for every vehicle.
@@ -29,11 +38,10 @@
   and idlers are round discs in the static body, so it does not show from outside.
 - [ ] **No exporter yet** (`core/export`, GODOT-PLAN.md rule 10). The data is exportable as is (`KratorVehicles.list()`);
   the meshes need the shared exporter when it exists (`PORT.md` says what crosses: the slot per vertex, the belt loops).
-- [ ] **No scorched-metal set** (2026-11-08). The ruin pass paints charred surfaces (burnt bodies, exploded wrecks)
+- [x] **No scorched-metal set** (2026-11-08; closed 2026-11-10). The ruin pass paints charred surfaces (burnt bodies, exploded wrecks)
   with `char`, the library's charred bark (`bark.char`) as a low-contrast grey detail, because the library has no
-  burnt paint or heat-blued steel; `scorched` (`metal.scorched`) is wired in `materials.json` as optional and its
-  prompt is in `core/materials/PROMPTS-NEEDED.md` (section 36). When it lands: pack, and the pass takes it by itself
-  (`krator-vehicles-runtime.js` `ruinColour`: `charS`).
+  burnt paint or heat-blued steel; `scorched` (`metal.scorched`, delivered 2026-11-10) is packed since the second integration pass,
+  and the pass takes it by itself (`krator-vehicles-runtime.js` `ruinColour`: `charS`): the burnt bodies' look wants the owner's eye.
 - [ ] **The Ancients' cabins are hollow but their hulls are single-sided.** A liner (`F.tub` `inside`) gives the
   interior its walls; the canopy glass is single-sided too, so through the near pane the far pane is not drawn (it
   reads as clear glass). The running gear is a beam axle, a knuckle, an upright and a trailing link per wheel, not a

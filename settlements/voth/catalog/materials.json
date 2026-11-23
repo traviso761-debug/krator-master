@@ -1,0 +1,18 @@
+{
+ "build": "settlements/voth/catalog",
+ "note": "The Voth building catalog page's detail maps, so far for scrap Voth (registry/voth-scrap.js, PLAN-SCRAP.md; the owner, 2026-11-12: 'these look very lightly textured, can we wire in textures?'). Keys are the registry's texture families (mat(): 'tex/render', userData.texFamily); grey detail maps (tint keep 0) under the buildings' own colours, the pack's tint.mean divided back out by core/catalog/krator-furniture-detail.js (KF_API.detailize, triplanar). Pack: python3 tools/textures/pack.py settlements/voth/catalog, then python3 settlements/voth/catalog/kftex.py (writes tex/kf-tex.js, the KF_TEX the page loads). The city build (build.py) does not read this: voth-city.html is unchanged.",
+ "size": 256,
+ "families": {
+  "vsStone": {"lib": "stone.cut", "scale": [3.0, 3.0], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.25}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsBasalt": {"lib": "rock.basalt.vesicular", "scale": [2.0, 2.0], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.3}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsMud": {"lib": "earth.adobe", "scale": [2.5, 2.5], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.3}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsPanel": {"lib": "metal.enamel.scoured", "scale": [1.6, 1.6], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsVerd": {"lib": "metal.bronze.verdigris", "scale": [2.0, 2.0], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.3}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsSteel": {"lib": "metal.iron.pitted", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsBronze": {"lib": "metal.bronze.cast", "scale": [0.8, 0.8], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsWood": {"lib": "wood.weathered_brown_planks", "scale": [1.6, 1.6], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsCloth": {"lib": "cloth.canvas", "scale": [1.5, 1.5], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.2}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsCont": {"lib": "metal.container", "scale": [2.4, 2.4], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.25}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "vsSand": {"lib": "ground.park_sand", "scale": [3.0, 3.0], "tint": {"keep": 0.0, "mean": 0.55, "contrast": 1.3}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true}
+ }
+}

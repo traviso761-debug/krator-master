@@ -49,6 +49,10 @@ area you are about to change.
 
 ## 3. Clothing fit and clipping
 
+- **Check the measuring tool before tuning against it** → `shots.py` and `garment_audit.py` stepped the cloth 2 s from `max(0, t - 2)` and then snapped the skeleton to `t`, so for any `t` under 2 the cloth was from another moment of the stride. Rounds of tuning and every shot the owner judged held that error. A clip wraps: start `t - 2` back round the loop. When a fix moves nothing at all, suspect the picture first.
+- **A leg through the back of a robe in a run** → the shin kicked straight back pierces the sheet, and a push out of a capsule only opens a collar round it. No padding helps. Take the cloth over the limb: points on the leg set how far out from the body's axis the cloth must reach at their bearing, the rows below hanging from them, the rows above running to the waist (`pushOut`, the hull). Along the axis's radius, so a front seam stays shut.
+- **Two tiers of one garment in stripes** → they were clamped to one radius, and more padding moves both. Use a smooth maximum and feed it the rest radius, not where the chains swung.
+- **A piece with no chains parting or lifting with the legs** → it is skinned to them: hang it from the hips (`skirt_weights(rigid=True)`) and stand it up against the pelvis's tilt, measured from the hips' joint, not the spine, or posture reads as a tilt. `mpfb_build --only` cannot re-export a library piece.
 - **Skin through a garment that has no delete group** → cast rays out and in from the skin (`covered()`) to derive
   one; for tops with a partial group, union the ray result in (shoulders and chest came through T-shirts).
 - **Knees and the crotch seam through loose library trousers** (cargo trousers in a crouch, a lunge, a roll) → tint the
@@ -77,7 +81,18 @@ area you are about to change.
 - **Knees through skirts when sitting** → keep the knees inside; layered tiers for long outer sheets.
 - **Hair through hats** → hats that cover hair carry a COVERS_HAIR flag and hide the hair; tall hats clear the crown
   (height at least the highest hit on the scalp plus 1.5 cm).
-- **Hood open over the crown** → narrow the face opening above the brow.
+- **Hood open over the crown** (a slit of scalp from the brow to the crown; it kept coming back) → the hood is an
+  open grid whose two edges meet at the front above the face opening; a smoothing pass run as "open" gives each edge
+  one lateral neighbour and draws it back to its own side. Weld the two edge columns on every row where the opening
+  is shut (`tools/garments/types/headgear.py` `hood`, 2026-11-15). Narrowing the opening does not fix it. Check a
+  hood from above (`shots.py` pitch 0.45 and 0.9), not only from the front at eye level, where the slit hides.
+  **Checked at build time since 2026-11-16:** `assemble_garment` runs `check_open_seams` (`tools/garments/core.py`,
+  Check #10) on every head piece and fails one whose open part has two or more rows ending a little short of closing
+  (over 1 mm, under a tenth of the row's length) with no closed row above them: an opening that never shuts before
+  the crown. A slot that tapers shut under a closed crown passes. A new hood, cowl, coif or veil either welds its edges where the
+  opening is shut, is built as a closed grid, or sets `slit_ok = True` on a slit cut on purpose. The check sees a
+  part's own grid: a gap between two separate parts (a cap that does not reach its cowl) still needs the shot from
+  above.
 - **Toes through boots, a disc at the heel** → a shaft plus a capped foot tube, the heel found by ray.
 - **Sleeves ballooning** (a straight shoulder-to-hand line leaves a bent arm) → loft along an elbow path; test against
   a torso-only collision set so the A-posed arms don't catch.
@@ -149,6 +164,30 @@ area you are about to change.
   (0.60, 0.12, 0.005), its maroon (0.18, 0.025, 0.03). Deepening by eye in the palette's numbers barely moves it.
 - **A people's strangers in another people's hair** → `styles` are only preferred (three in four); `style_share: 1` in
   peoples.json keeps them to their styles (the Order: cropped men, women to a bob).
+- **Trousers in lozenges through a coat, a calf through a court skirt, even at the A-pose** → switch the push off first: here
+  every fault went to zero, so the fit was clean and the push made the gap. A push outward cannot bare what lies under a
+  closed surface, so look for a fold or a parted seam. Two causes, each found by switching one rule off at a time over
+  all 66 outfits: "deep" was measured from the padded radius, so after `PAD_OVER` (5.5 cm out) ordinary cloth round a leg
+  counted as deep and the mirror folded the tube's inner half onto its outer; and a full pad standing still held an open
+  robe's panels off the thigh, so they parted at the seam. Deep is now measured from the bare limb on a hanging leg, and
+  the pad comes in with the stride. Wider padding would have made both worse.
+- **Tune a rule across the whole wardrobe, not on the outfit in the shot** → each of six tries here looked right on the
+  case it was made for. Mirroring by the cloth's own normal cleaned the A-pose and nearly tripled skin in a walk; a pad
+  per limb doubled trousers through tops in a run (the leg a runner stands on took none); and the bare-limb test bared the
+  Yuni boubou at rest, which the old bug had been hiding. `tools/garment_audit.py` counts them in ten minutes: run it
+  before believing a fix, and shoot the regressions it names, some of which are only the same patch a little larger.
+- **Cloth that ignores every change to its chains: a staircase down a skirt, worst on the body with the most posture** → measure each chain bone's world position against its particle before tuning anything. Here bones stood up to 30 cm off at an idle: the offset
+  came from the postured rest, the rotation from a frame built on the A-pose's. Set each joint on its particle. Every rule tuned before that was tuned against the wrong surface: the slits, the padding and more were re-judged after it, and the slits came out.
+- **A slit that gapes, tears and flies out like wings, with fine numbers** → pixel counts fell 84% while the shots got worse: shoot it. Switch stages off first: the lips' ties made no
+  difference, and with the push off the slit was clean. The leg is meant to leave through a slit, so do not push the cloth below its top off the legs (as a garment of flaps), and start it high
+  enough that the thigh does not tear through just above it (24 cm above the knee here; 10 cm tore).
+- **A rest-relative push reads well and fails** → a vertex keeping its rest clearance from each capsule leaves the fit alone, but over the wardrobe skin in a walk and trousers in a crouch doubled: rest clearance is too little
+  over trousers in motion.
+- **A rebuild in a fresh worktree loses the weave with no error** → the library's albedos are LFS pointers, and the textures came out a quarter smaller. Compare an untouched garment's GLB with its piece first (geometry
+  and weights exact, image size close); `make_garments.py` now stops on a pointer. On Windows `make_mpfb.py` writes kit.json with CRLF.
+- **Skin that is bare by design is not a fault** → a flat-colour count flagged the Dalab peasant's midriff and arms in front
+  of skirts. Colour the skin by where it is at rest, take what the A-pose shows bare as the cut, and leave out the arms,
+  the hands, the head and the feet.
 
 ## 4. Materials, alpha and textures
 

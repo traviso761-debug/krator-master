@@ -1,0 +1,42 @@
+{
+ "format": "krator-ground-layer-set",
+ "version": 1,
+ "what": "Xanadu's own S4 ground-layer set (settlements/xanadu/STACK-PLAN.md section 6; the owner, 2026-11-22: \"Xanadu's own layer set\"). Godot data only: the web keeps KGROUND as it is. godot/tools/pack_ground_layers.py packs it at Stage 8 (or XP1) beside its built-in global set, into `out`; godot/krator/kground_layers.gd picks the set by the region's style. Six layers in the six roles godot/shaders/terrain.gdshader gives the layer indices (base, wet, high, gravel, rock, pave), so the set drops into the shader's selectors as data and the sampler count does not move. Nothing is packed before Stage 8 (the owner: data now, looks after). Checked by settlements/xanadu/tests/test-xs1-stack.js.",
+ "set": "xanadu",
+ "style": {
+  "overlay": "xanadu",
+  "worldStyle": "vale",
+  "palette": "xanadu",
+  "where": "core/world/41-world-fields.js BIOME_GROUND['xanadu'] = ['vale', 'xanadu'] (on claude/vertical-stack, merged at Stage 8); the overlay of that name is in every Xanadu region's data/region.json"
+ },
+ "regions": ["openworld/xanadu-lake-shore", "openworld/xanadu-north-shore", "openworld/xanadu-oidong-highrift"],
+ "out": "godot/data/ground_layers/xanadu/",
+ "size": 512,
+ "layers": [
+  {"index": 0, "role": "base", "name": "valley_floor", "library": "ground.grass.lush", "tile_m": 1.65,
+   "ground": "the Vale's meadows, the orchards' floors, the rim plain", "palette": ["a", "b", "scrub"],
+   "note": "the global set's layer 0, the same set and tile: a region on two styles meets without a seam"},
+  {"index": 1, "role": "wet", "name": "lake_shore", "library": "ground.shingle", "tile_m": 1.5,
+   "ground": "the lake shore's pebble beaches and wet margins: the shader's wet-and-hollow selector puts it where the world's wet field is high, the lake's edge first", "palette": ["sand", "sand2", "damp"],
+   "note": "ground.shingle was made for Xanadu's shores (core/materials/PLAN.md); stone.ghat.wet (owed, section 59) is the landings' and quays' material, which the town tiles carry, not a ground layer"},
+  {"index": 2, "role": "high", "name": "alpine", "library": "ground.tundra", "tile_m": 2.2,
+   "ground": "the caldera rim's high pastures and the Sultanate's ground above the treeline", "palette": ["mtn"],
+   "note": "the shader's high selector is Oidong's (2850-3350 m and the High Rift's east): XP1 sets Xanadu's band, a look"},
+  {"index": 3, "role": "gravel", "name": "terrace", "library": "ground.terrace.field", "tile_m": 4.0,
+   "ground": "the lake towns' terraces, the tea gardens, the Vale's fields: painted per place in the pave zone's green channel, as Longsong paints its ward terraces in this slot", "palette": ["silt", "pale"],
+   "note": "the slot's other selector is talus (a little rock): XP1 splits talus from the painted terraces, a look"},
+  {"index": 4, "role": "rock", "name": "caldera_rock", "library": "rock.tuff", "tile_m": 3.0,
+   "ground": "the caldera wall, the cones, the Spillway gorge", "palette": ["rock"],
+   "note": "rock.basalt.vesicular (1.3 m) is the cones' flanks' alternate, held"},
+  {"index": 5, "role": "pave", "name": "court_paving", "library": "paving.tiles144", "tile_m": 2.0,
+   "ground": "Erehwon's and the towns' courtyards and the Golden Way where Godot's pave zone paints them", "palette": ["pale"],
+   "note": "the set the Xanadu kit's court tiles take (xTiles, xTilesB), so the ground and the tile pieces read as one"}
+ ],
+ "held": [
+  {"name": "paddy", "library": "ground.paddy.wet", "standIn": "ground.brown_mud_02", "owed": "core/materials/PROMPTS-NEEDED.md section 60",
+   "why": "the Vale's rice paddies and the lake's flooded margins: owed; when delivered, a region with paddies and no lake shore (the Vale's cuts, XP5) takes it in the wet slot"},
+  {"name": "red_soil", "library": "ground.redsoil", "why": "the Vale's bare earth and lanes, the Cataracts' slopes: no slot of its own in six; a region drier than the lake's takes it in the base or terrace slot (XP5)"},
+  {"name": "cone_rock", "library": "rock.basalt.vesicular", "why": "the volcanoes' flanks: the rock slot's alternate for the cones' regions"}
+ ],
+ "plumeCard": {"library": "card.grass.thatch", "note": "STACK-PLAN.md section 11's default until biomes/xanadu's grasses are packed as cards"}
+}

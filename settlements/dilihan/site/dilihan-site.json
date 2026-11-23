@@ -1,0 +1,104 @@
+{
+  "format": "krator-settlement-site",
+  "version": 1,
+  "id": "solqo7hz7s",
+  "name": "Dilihan",
+  "jamtokkuName": "Dellu-Handu",
+  "scaleModel": {
+    "version": "5.1",
+    "px": 744,
+    "py": 663,
+    "legacyPx": [472, 333],
+    "datumAslM": -888.6,
+    "latitudeDeg": -31.50,
+    "subGiantLonDeg": 56.27,
+    "pressureAtm": 1.788,
+    "koppen": "Am",
+    "cutBowlOffsetM": [24000, 62000],
+    "cutLakeSumpAslM": -1608.0
+  },
+  "census": {
+    "urban": 12000,
+    "handuAllotments": 4000,
+    "metropolitanTotal": 16000,
+    "provincialTotal": 32000
+  },
+  "areaBudgetKm2": {
+    "coloniaTarget": 0.25,
+    "vernacularDistrictsTarget": 1.00,
+    "targetRatio": 4.0,
+    "allowedRatioBand": [3.2, 4.8]
+  },
+  "zones": [
+    {
+      "id": "zone1.colonia",
+      "name": "The Old Quarter (Colonia)",
+      "role": "colonia",
+      "strategy": "frontage-courts",
+      "elevAslM": [-894, -886],
+      "areaKm2": 0.25,
+      "cultureMix": { "jimjam": 1.0 },
+      "poly": [[-250, -310], [250, -310], [250, 190], [-250, 190]]
+    },
+    {
+      "id": "zone2.palace",
+      "name": "The Governor Precinct & Izani Quarter",
+      "role": "civic",
+      "strategy": "precinct",
+      "elevAslM": [-880, -874],
+      "groundsM": [70, 56],
+      "areaKm2": 0.04,
+      "cultureMix": { "iziz-vernacular": 1.0 },
+      "poly": [[165, 192], [355, 192], [355, 392], [165, 392]]
+    },
+    {
+      "id": "zone3.vernacular.east",
+      "name": "East Terrace & Muster District",
+      "role": "vernacular-district",
+      "strategy": "alleys",
+      "elevAslM": [-886, -856],
+      "areaKm2": 0.40,
+      "cultureMix": { "iziz-vernacular": 0.92, "jimjam": 0.08 },
+      "poly": [[262, -310], [762, -310], [762, 490], [262, 490]]
+    },
+    {
+      "id": "zone3.vernacular.south",
+      "name": "South Terrace & Foundry District",
+      "role": "vernacular-district",
+      "strategy": "alleys",
+      "elevAslM": [-882, -848],
+      "areaKm2": 0.36,
+      "cultureMix": { "iziz-vernacular": 0.92, "jimjam": 0.08 },
+      "poly": [[-250, 202], [250, 202], [250, 652], [-250, 652]]
+    },
+    {
+      "id": "zone3.vernacular.north",
+      "name": "North Gate & Jimjam Caravanserai Quarter",
+      "role": "vernacular-district",
+      "strategy": "alleys",
+      "elevAslM": [-898, -888],
+      "areaKm2": 0.24,
+      "cultureMix": { "iziz-vernacular": 0.84, "jimjam": 0.16 },
+      "poly": [[-220, -550], [380, -550], [380, -350], [-220, -350]]
+    },
+    {
+      "id": "zone4.lowertown",
+      "name": "The Lower Town & Pass-Road Fork",
+      "role": "lowertown",
+      "strategy": "frontage-courts",
+      "elevAslM": [-926, -916],
+      "areaKm2": 0.18,
+      "cultureMix": { "iziz-vernacular": 0.75, "jimjam": 0.15, "hykkousoi": 0.10 },
+      "poly": [[-560, -280], [-290, -280], [-290, 380], [-560, 380]]
+    },
+    {
+      "id": "zone5.handu",
+      "name": "The Country (Dellu-Handu Allotments, Skarn Adits & Salt Pans)",
+      "role": "hinterland",
+      "strategy": "hamlet-grid",
+      "elevAslM": [-1608, -845],
+      "hamlets": 8,
+      "cultureMix": { "iziz-vernacular": 0.60, "jimjam": 0.40 }
+    }
+  ]
+}

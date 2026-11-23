@@ -1,0 +1,4 @@
+# generated at every build by build.py (the KCITY, flora and Dalab texture bundles), and verify shots
+gen/
+shots/
+.syntax-*.js

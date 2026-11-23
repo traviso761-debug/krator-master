@@ -93,6 +93,21 @@
    "mapOnly": true,
    "size": 256
   },
+  "tile": {
+   "lib": "ceramic.glaze",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
   "clay": {
    "lib": "ceramic.terracotta",
    "scale": [
@@ -932,6 +947,230 @@
    "specular": 0.2,
    "mapOnly": true,
    "size": 256
+  },
+  "tgConcrete": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgCrystal": {
+   "lib": "mineral.selenite",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgEnamel": {
+   "lib": "metal.enamel.scoured",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgFelt": {
+   "lib": "cloth.felt",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgIce": {
+   "lib": "glass.frosted",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.75
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgLeather": {
+   "lib": "hide.leather009",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgPainted": {
+   "lib": "metal.painted.chipped",
+   "scale": [
+    0.45,
+    0.45
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgPlaster": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.75
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgPlate": {
+   "lib": "metal.ancient",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55,
+    "contrast": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgRust": {
+   "lib": "metal.rust.plate",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.45
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgTimber": {
+   "lib": "wood.reclaimed",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgWool": {
+   "lib": "cloth.wool",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgOre": {
+   "lib": "rock.malachite",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tgCanvas": {
+   "lib": "cloth.canvas",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6,
+    "contrast": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
   }
+ },
+ "decals": {
+  "patterns/common/suzani-roundels": {"culture": "xanadu", "size": 1024},
+  "patterns/common/suzani-roundels.b": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/hanging-caves-of-ice": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/hanging-damsel-dulcimer": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/hanging-pleasure-dome": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/hanging-sinuous-rills": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/tapestry-caves-of-ice": {"culture": "xanadu", "size": 1536},
+  "patterns/xanadu/tapestry-damsel-dulcimer": {"culture": "xanadu", "size": 1536},
+  "patterns/xanadu/tapestry-pleasure-dome": {"culture": "xanadu", "size": 1536},
+  "patterns/xanadu/tapestry-sinuous-rills": {"culture": "xanadu", "size": 1536}
  }
 }

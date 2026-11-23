@@ -69,8 +69,9 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
 # 2026-11-02, the final rebuild (BACKPORT.md section 1, every station): KGROUND (43: the ground's layers through THRONE.layGLSL), KHORIZON (45: its shadows),
-# KTHERM (47: the ground's heat between the vents, src/89x-host-fields.js). KFAR is not taken: KNOWN_ISSUES.md, 'The far field'
-CORE_TERRAIN=['43-core-ground.js','45-core-horizon.js','47-core-therm.js']
+# KTHERM (47: the ground's heat between the vents, src/89x-host-fields.js). KFAR (44: the far country, src/85-host-far.js; 2026-11-23) on a page
+# that has a region (below)
+CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js','47-core-therm.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
@@ -84,6 +85,7 @@ PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
+PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
 # core/shadow (KSHADOW, the owner, 2026-11-03): the sun's shadows in one view-following box; the data half and its host, attached in src/89zz-host-core.js
 PATH.setdefault('10-core-shadow.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','10-core-shadow.js')))
 PATH.setdefault('12-core-shadow-host.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','host','12-core-shadow-host.js')))
@@ -122,7 +124,7 @@ else:
 # THE FINAL REBUILD (2026-11-02), every page with core/water: the audit (57), the reflections switch (58, off at page load; src/89y-host-core.js
 # installs it on a station's largest still), the shore's fields (60: WATER.fieldAt for the wet ground and the flora); tools/fragment_needs.json has their order
 if '20-core-water.js' in PATH:
-    for f in ['57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
+    for f in ['56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
         PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
 # the air (core/atmos/README.md, "Adopting the final rebuild's atmos items"): height fog, the rain's occlusion map and the branched lightning on every page that
 # binds the weather (every page but the tube, underground); src/89y-host-core.js calls them with each station's numbers (ATMOS_AIR in its 45)
@@ -204,6 +206,13 @@ VIRTUAL={'44-host-matlib-pack.js':matlib_pack()}
 if STATION:
     for _pn,_pd in STN.get('packs',{}).items():
         VIRTUAL['44b-host-matlib-pack-%s.js'%_pn]=matlib_pack(_pn,os.path.join(os.path.normpath(os.path.join(HERE,_pd)),'tex'))
+# THE PAGE'S REGION (2026-11-23): the scale model's heights round the station's site (tools/sites51.py --bake: stations/<name>/region.json, station 1's
+# region.json beside this file), inlined as REGION_DATA and read by the Godthrone's REGION (its src/45a5, read in place) for the far country (85)
+_rj=os.path.join(STN_DIR if STATION else HERE,'region.json')
+if os.path.isfile(_rj):
+    VIRTUAL['45a3-host-region-data.js']='/* GENERATED from %s (tools/sites51.py; do not edit) */\nconst REGION_DATA=%s;\n'%(
+        os.path.relpath(_rj,HERE).replace(os.sep,'/'),open(_rj,encoding='utf-8').read().strip())
+    PATH['45a5-host-region.js']=os.path.normpath(os.path.join(HERE,'..','godthrone','src','45a5-host-region.js'))
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]

@@ -49,7 +49,23 @@ def find_node():
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
-OUT=sys.argv[1] if len(sys.argv)>1 else "swbay.html"
+# a STATION (PLAN.md, "Showcase Station: Almua Skarn-Marble Harbour Cliffs"; python3 build.py --station <name> -> dist/swbay-<name>.html):
+# stations/<name>/'s numbered fragments are added to src/'s (a name in both is the station's), and its station.json may name more core
+# ("core": {"<fragment name>": "<path from the repo root>"}), src/ fragments to leave out ("drop": [names]), the neighbours' cousins off
+# ("neigh": false) and the scale model's relief round the site ("region": "region.json", written by biomes/godthrone/tools/region.py
+# --kit biomes/swbay, inlined as REGION_DATA). The pattern is nwbay's (biomes/nwbay/build.py); no flag: the bay's page, as before
+_args=[a for a in sys.argv[1:] if not a.startswith('--') or a=='--station']
+STATION=_args[_args.index('--station')+1] if '--station' in _args else None
+if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
+OUT=_args[0] if _args else ('swbay-%s.html'%STATION if STATION else 'swbay.html')
+SJ={}
+if STATION:
+    import json as _sjson
+    _sd=os.path.join(HERE,'stations',STATION)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
+    _sj=os.path.join(_sd,'station.json')
+    if os.path.isfile(_sj):
+        with open(_sj,encoding='utf-8') as _fh: SJ=_sjson.load(_fh)
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
@@ -63,6 +79,11 @@ CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+if STATION:
+    for f in SJ.get('drop',[]): PATH.pop(f,None)
+    for f in os.listdir(_sd):
+        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
+    for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..',pth)))
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 # their three.js halves (core/terrain/host), as biomes/nwbay lists them
@@ -106,6 +127,10 @@ import json as _json
 NEIGH={'nwbay':(['50-biome-nwbay-species.js','55-biome-nwbay-trees.js','56-biome-nwbay-variants.js'],'NWBAY',['bark3','bark7','fernleaf','cneedle','bloom','moss']),
        'swhighlands':(['50-biome-swhighlands-species.js','55-biome-swhighlands-trees.js','57-biome-swhighlands-pillars.js','58-biome-swhighlands-rainwall.js',
                        '59-biome-swhighlands-tableland.js','59c-biome-swhighlands-coast.js'],'SWHI',['coneCap','coneStalk','eggs','heath','crust','moss','coral'])}
+if STATION and SJ.get('neigh',True) is False: NEIGH={}   # a station whose host grows no cousins (no 87-host-kin.js) reads no neighbour
+if STATION and SJ.get('region'):
+    with open(os.path.join(_sd,SJ['region']),encoding='utf-8') as _fh:
+        VIRTUAL['44z-host-region-data.js']='/* GENERATED from stations/%s/%s (biomes/godthrone/tools/region.py --kit biomes/swbay; do not edit) */\nconst REGION_DATA=%s;\n'%(STATION,SJ['region'],_fh.read().strip())
 for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
     _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
     for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
@@ -131,6 +156,7 @@ PATH['22b-core-water-kinds-ext.js']=os.path.normpath(os.path.join(HERE,'..','..'
 PATH['51b-core-water-kinds-ext-draw.js']=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','54b-core-water-kinds-ext-draw.js'))
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+PATH.setdefault('56-core-water-breakup.js',os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','56-core-water-breakup.js')))   # the breakup (core/water ext/56), on by default since 2026-11-09
 # the falls in two draw calls in all (WATER.drawFalls: ext/53 + 53b; 2026-10-25), explicit paths as biomes/nwbay does
 for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
@@ -164,7 +190,7 @@ for f in frags:
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
 BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8', newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

@@ -32,6 +32,7 @@ What it does (cut down from kits/catalog/verify.py):
                          body's surfaces (sampled into 2 cm cells)
        deterministic     two builds with the same seed are identical, vertex for vertex
        ruin              every vehicle, every variant, in each ruin state (weathered, burnt, wreck; seeds 1..--seeds):
+                         (a long vehicle also gets its length's swing: 0.65 d sin 0.125 + w/2 across, d/2 x 0.1 up)
                          builds with no NaN, its lowest point on y = 0, within the declared box widened for the
                          settle (0.6 m + 0.13 h across, 0.8 m along, 0.3 m over the larger of h + 0.25 w and
                          w + 0.2 h up: an overturned body lies on its roof, one on its side on its flank, askew by
@@ -253,7 +254,11 @@ for(const E of KV.list()){
          (rolled by pi +- 0.25 rad) a share of its height across and of its width up */
       const R0=g.userData.ruin||{}, skid=R0.form==='skidded'||R0.form==='piled';
       /* a skidded airframe's furrow and trail run a vehicle's length behind it */
-      const hx=E.w/2+0.6+0.13*E.h, hz=E.d/2+0.8+(skid?E.d:0), hy=Math.max(E.h+0.25*E.w, E.w+0.2*E.h)+0.3;
+      /* and for a LONG vehicle (the Line's 24 m cars, 2026-11-11) the length's own swing: a torn half yaws up to 0.125 rad about
+         the cut, which lies 0.35 to 0.65 of the length along, so its far corner swings out 0.65 d sin(0.125) + w/2; an overturned or
+         onside body pitches up to 0.1 rad (krator-vehicles-runtime.js ruinRigid), lifting an end d/2 x 0.1 over its height or width */
+      const hx=Math.max(E.w/2+0.6+0.13*E.h, 0.65*E.d*Math.sin(0.125)+E.w/2+0.3), hz=E.d/2+0.8+(skid?E.d:0),
+        hy=Math.max(Math.max(E.h+0.25*E.w, E.w+0.2*E.h)+0.3, Math.max(E.h, E.w)+E.d/2*0.1+0.3);
       if(box.min.x<-hx-t||box.max.x>hx+t||box.min.z<-hz-t||box.max.z>hz+t||box.max.y>hy+t)
         r.fail.push('ruin: outside the settled box ('+f2(2*hx)+' x '+f2(2*hz)+' x '+f2(hy)+'): x '+f2(box.min.x)+'..'+f2(box.max.x)+' y '+f2(box.min.y)+'..'+f2(box.max.y)+' z '+f2(box.min.z)+'..'+f2(box.max.z));
       const BG=E.budget||{meshes:cfg.maxMeshes,tris:cfg.maxTris};

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Krator Effects Demo</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#000;font:12px/1.35 system-ui,sans-serif;color:#e6e9ee}
+canvas{display:block}
+#ui{position:absolute;left:10px;top:10px;width:290px;max-height:calc(100% - 20px);overflow:auto;background:rgba(14,18,26,.82);border:1px solid #2c3546;border-radius:8px;padding:10px 12px;box-sizing:border-box}
+#ui h1{font-size:14px;margin:0 0 6px}
+#ui .row{display:flex;align-items:center;gap:6px;margin:5px 0}
+#ui label{width:64px;color:#9aa6b8;flex:none}
+#ui select{flex:1;background:#1c2330;color:#e6e9ee;border:1px solid #2c3546;border-radius:4px;padding:2px}
+#ui button{background:#243048;color:#e6e9ee;border:1px solid #39465f;border-radius:4px;padding:3px 7px;margin:2px 2px 2px 0;cursor:pointer;font:inherit}
+#ui button:hover{background:#2e3d5c}
+#ui .sec{margin-top:9px;padding-top:7px;border-top:1px solid #2c3546;color:#9aa6b8}
+#about{color:#c7cfdb;margin:4px 0}
+#info{color:#9aa6b8;white-space:pre-line;font-variant-numeric:tabular-nums}
+#errs{position:absolute;right:10px;bottom:10px;max-width:50%;color:#ff8a80;white-space:pre-wrap;font:11px monospace}
+#hint{position:absolute;right:10px;top:10px;color:#9aa6b8;background:rgba(14,18,26,.6);padding:4px 8px;border-radius:6px}
+</style></head><body>
+<div id="ui"><h1>Krator's effects</h1>
+<div class="row"><label>Scene</label><select id="scene"></select></div>
+<div id="about"></div>
+<div class="sec">Views</div><div id="views"></div>
+<div class="sec">Here</div><div id="info"></div>
+</div>
+<div id="hint">drag to look, right-drag to pan, wheel to zoom, WASD to move, F to walk</div>
+<div id="errs"></div>
+<script>/*THREE*/</script>
+<script>
+window.onerror=function(m,s,l,c,e){document.getElementById('errs').textContent+=(e&&e.stack||m)+'\n';};
+/*JS*/
+</script></body></html>

@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.606,
+    0.567
+   ],
+   "seam_before": [
+    1.026,
+    0.807
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "patterns/kimr/labyrinth",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns_kimr_labyrinth.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-54eb-75b1-8bd9-48d62f8379e3)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-767a0110-ba26-4900-85e3-575d88cc50c2.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id patterns/kimr/labyrinth)",
+  "sha1": "8d7533e2a65b05d26bd5e08209ddd2f836181684"
+ }
+}

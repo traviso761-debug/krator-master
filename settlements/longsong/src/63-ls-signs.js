@@ -27,18 +27,25 @@ const SIGNS=(function(){
   g.beginPath();g.moveTo(-R*.18,R*.36);g.lineTo(R*.18,R*.36);g.lineTo(0,R*.12);g.closePath();g.fill();g.restore();}
  const wrap=(g,text,x,y,w,lh)=>{const words=text.split(' ');let line='';for(const wd of words){const t=line?line+' '+wd:wd;if(g.measureText(t).width>w&&line){g.fillText(line,x,y);y+=lh;line=wd;}else line=t;}if(line)g.fillText(line,x,y);return y+lh;};
  const SIGIL=tex(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);sigil(g,128,128,124,'#f4efe2',BLUE);});
- // a register plaque: the designation, the class, the name, the procedure
+ // a register plaque: lacquered bronze-slate tablet with the Order's sigil, class band, and carved seal-script glyphs
  const CLASSCOL={STILL:'#4a7a5a',SLOWED:'#c08a28',HELD:'#9a2a20',UNWRITTEN:'#1c1a18'};
- function plaque(E){return tex(512,384,(g,w,h)=>{g.fillStyle=PAPER;g.fillRect(0,0,w,h);g.strokeStyle=BLUE;g.lineWidth=10;g.strokeRect(10,10,w-20,h-20);
-  sigil(g,70,72,46,'#f4efe2',BLUE);
-  g.fillStyle=INK;font(g,46);g.fillText(E.id,132,70);g.fillStyle=CLASSCOL[E.cls]||INK;g.fillRect(132,84,200,36);g.fillStyle='#f4efe2';font(g,26);g.fillText('class: '+E.cls,142,110);
-  g.fillStyle=INK;font(g,34);g.fillText(E.name,40,166);
-  g.fillStyle='#3a332a';font(g,20);let y=wrap(g,E.proc,40,206,w-80,26);
-  g.fillStyle='#7a6a50';font(g,16);wrap(g,'seen · said · inferred: the keepers\' marks',40,h-34,w-80,20);
-  for(let i=0;i<5;i++)glyph(g,w-60-i*44,h-70,34,KRAND.hash(91,E.id.charCodeAt(5)||0,i),BLUE,3);});}
- // a plain door plaque (a ward, a hall): its name and a line
- function sign(title,line,bg){return tex(512,256,(g,w,h)=>{g.fillStyle=bg||PAPER;g.fillRect(0,0,w,h);g.strokeStyle=BLUE;g.lineWidth=8;g.strokeRect(8,8,w-16,h-16);
-  sigil(g,64,h/2,44,'#f4efe2',BLUE);g.fillStyle=INK;font(g,36);g.fillText(title,128,h/2-14);g.fillStyle='#3a332a';font(g,20);wrap(g,line,128,h/2+22,w-150,24);});}
+ function strSeed(s){let h=2166136261>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;}
+ function plaque(E){const sd=strSeed(String(E.id||'LS'));return tex(512,384,(g,w,h)=>{
+  g.fillStyle='#232126';g.fillRect(0,0,w,h);g.strokeStyle=GOLD;g.lineWidth=10;g.strokeRect(10,10,w-20,h-20);
+  g.strokeStyle=BLUE;g.lineWidth=4;g.strokeRect(22,22,w-44,h-44);
+  sigil(g,78,82,46,GOLD,BLUE);
+  g.fillStyle=CLASSCOL[E.cls]||RED;g.fillRect(144,48,w-180,28);
+  for(let i=0;i<6;i++)glyph(g,168+i*50,108,34,KRAND.hash(sd,1,i),GOLD,3.2);
+  for(let r=0;r<3;r++)for(let i=0;i<8;i++)glyph(g,58+i*56,178+r*56,36,KRAND.hash(sd,10+r,i),'#dfd4b4',2.6);
+  for(const [rx,ry] of [[28,28],[w-28,28],[28,h-28],[w-28,h-28]]){g.fillStyle=GOLD;g.beginPath();g.arc(rx,ry,5,0,Math.PI*2);g.fill();}});}
+ // a carved lacquered door tablet (a ward, a hall): dark indigo-crimson ground, gilt border, sigil, and seal-script glyphs
+ function sign(title,line,bg){const sd=strSeed(String(title||'order')+String(line||''));return tex(512,256,(g,w,h)=>{
+  g.fillStyle=bg||'#261c1d';g.fillRect(0,0,w,h);g.strokeStyle=GOLD;g.lineWidth=9;g.strokeRect(9,9,w-18,h-18);
+  g.strokeStyle=RED;g.lineWidth=4;g.strokeRect(20,20,w-40,h-40);
+  sigil(g,78,h/2,46,GOLD,BLUE);
+  for(let i=0;i<6;i++)glyph(g,166+i*54,h/2-34,38,KRAND.hash(sd,2,i),GOLD,3.4);
+  for(let i=0;i<7;i++)glyph(g,162+i*46,h/2+38,30,KRAND.hash(sd,3,i),'#dfd4b4',2.4);
+  for(const [rx,ry] of [[26,26],[w-26,26],[26,h-26],[w-26,h-26]]){g.fillStyle=GOLD;g.beginPath();g.arc(rx,ry,5,0,Math.PI*2);g.fill();}});}
  // the great containment thangka: the wheel at the centre, the eight seals round it, the keepers in the corners
  const THANGKA=tex(768,1152,(g,w,h)=>{g.fillStyle='#1f3f78';g.fillRect(0,0,w,h);g.fillStyle='#6a2018';g.fillRect(24,24,w-48,h-48);g.fillStyle='#efe2c0';g.fillRect(56,56,w-112,h-112);
   const cx=w/2,cy=h*.46,R=w*.36;
@@ -74,8 +81,8 @@ const DECALS=[];
 var LS_THANGKA=null;   // the great thangka of the register (64 hangs it; 89y shows it on the festival day)
 function lsDecal(map,x,y,z,w,h,nx,nz,o){o=o||{};const g=new THREE.PlaneGeometry(w,h);
  // o.basic: lit by nothing (a sign in the Vault, which the sun never reaches): its own dim tone
- const mat=o.basic?new THREE.MeshBasicMaterial({map,color:o.tone||0x8a8478,transparent:!!o.transparent,side:THREE.DoubleSide})
-  :new THREE.MeshLambertMaterial({map,transparent:!!o.transparent,side:o.double?THREE.DoubleSide:THREE.FrontSide,emissive:o.glow?0xffffff:0,emissiveMap:o.glow?map:null,emissiveIntensity:o.glow||0});
+ const mat=o.basic?new THREE.MeshBasicMaterial({map,color:o.tone||0x8a8478,transparent:!!o.transparent,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2})
+  :new THREE.MeshLambertMaterial({map,transparent:!!o.transparent,side:o.double?THREE.DoubleSide:THREE.FrontSide,emissive:o.glow?0xffffff:0,emissiveMap:o.glow?map:null,emissiveIntensity:o.glow||0,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
  const m=new THREE.Mesh(g,mat);if(o.basic)m.userData.vault=true;
  m.position.set(x,y,z);m.rotation.y=Math.atan2(nx,nz);if(!o.basic)m.userData.arch=true;m.userData.host=true;m.userData.inspectLabel=o.label||'a sign of the Order';m.userData.cls='fixture';
  scene.add(m);DECALS.push(m);return m;}

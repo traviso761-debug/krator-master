@@ -37,7 +37,7 @@
 // At both rims the section runs on into the cliff as INDUSTRIES — the beam is
 // built 80 m past the rock face on purpose, so the ruin's rockfall can expose it.
 //
-// The gorge itself is the dam's canyon (src/77-dam.js) at this scale: bedding
+// The gorge itself is the dam's canyon (targets/theodiga/77-dam.js) at this scale: bedding
 // planes, vertical gullies, a coarse base noise and a talus of fallen blocks,
 // plus a plateau that grades down to the plain instead of ending as a mesa.
 // MAT.water is transparent with roughness .08, which under this sky turns a

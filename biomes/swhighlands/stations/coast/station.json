@@ -1,0 +1,12 @@
+{
+ "note": "Station 5, the fan coast: the dry east scarp, its wadis' fan deltas into the Ring Sea, sea arches on a sand beach, flysch platforms. The crater drylands' chaparral yucca and sword spire (EXCHANGES.md, crater drylands N <-> swhighlands) read in place and grown by their own builders; the beach's sand is this kit's own family.",
+ "kin": {
+  "crater-drylands": [
+   ["src/50-biome-craterdry-species.js", "src/52-biome-craterdry-fire.js", "src/55-biome-craterdry-trees.js"],
+   "CRATERDRY",
+   [],
+   "craterdry"
+  ]
+ },
+ "own": ["ground.sand"]
+}

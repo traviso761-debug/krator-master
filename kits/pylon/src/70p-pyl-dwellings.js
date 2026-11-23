@@ -14,7 +14,7 @@ function buildPylFolkHouse(G,o){reseed(9001+(o.v|0));const W=9.6,D=10.4,H1=3.4,H
  // plinth, ground storey, the floor band, the upper storey set back, the roof band and parapet
  vB('vStone',0,-.1,Z0,W+.5,Y0+.1,D+.5,0,st);
  vnBody('vPlaster',0,Y0,Z0,W,H1,D,0,wh,{t:.3});
- pynBand(0,Y0+H1,Z0,W,D,.35,.25,0,or);
+ pynBand(0,Y0+H1,Z0,W,D,.35,.25,0,or,[-W/2+.3,W/2-.3,Z0-D/2+.3,Z0+D/2-BK-.3]);   // open over the upper storey's room (its stair well)
  vnBody('vPlaster',0,Y1,Z0-BK/2,W,H2,D-BK,0,wh,{t:.3});
  pynBand(0,Y2,Z0-BK/2,W,D-BK,.4,.3,0,or);
  vB('vPlaster',0,Y2+.4,Z0-BK/2,W,.8,D-BK,0,wh);vB('vPlaster',0,Y2+1.2,Z0-BK/2,W+.2,.12,D-BK+.2,0,or);
@@ -58,7 +58,7 @@ function buildPylFolkVilla(G,o){reseed(9011+(o.v|0));const W=10.4,D=10.6,H=3.2,Y
  pynStepArch(-3.3,Y0+H-1.2,zf-.25,0,2.6,2,.9,.16,.1,or);pynStepArch(0,Y0+H-1.2,zf-.25,0,2.9,2,1.0,.16,.1,or);pynStepArch(3.3,Y0+H-1.2,zf-.25,0,2.6,2,.9,.16,.1,or);
  vnDoor(0,Y0,zf-PD,0,1.2,2.4,'vPlaster',or,wal,false);vnWin(-3,Y0+.9,zf-PD,0,1.6,1.4,'glass','vPlaster',or);vnWin(3,Y0+.9,zf-PD,0,1.6,1.4,'glass','vPlaster',or);
  vnStairs(0,0,zf+.6,0,2.4,Y0,2,'vStone',st);
- pynBand(0,Y0+H,Z0,W,D,.3,.25,0,or);
+ pynBand(0,Y0+H,Z0,W,D,.3,.25,0,or,[-W/2+.3,W/2-.3,Z0-D/2+.3,Z0+D/2-PD-.3]);   // open over the second storey's room (its stair well)
  // second storey: full depth, a scalloped terrace rail over the porch, glazed doors
  vnBody('vPlaster',0,Y1,Z0-PD/2,W,H,D-PD,0,wh,{t:.3});
  pynScallop(0,Y1,zf-.1,0,W-.4,.95,-.3,15,wh,or);
@@ -75,8 +75,12 @@ function buildPylFolkVilla(G,o){reseed(9011+(o.v|0));const W=10.4,D=10.6,H=3.2,Y
  vnWin(0,Y1+.9,Z0-D/2,Math.PI,1.6,1.3,'glass','vPlaster',or);}
 
 // Vault house (refs/pylon (4).jpg, pylon (7).jpg): three barrel-vaulted wings of graded height side by side on a raised
-// plinth, each ending in a glazed tombstone arch framed in orange; portholes down the sides, the door between wings.
-function buildPylVaultHouse(G,o){reseed(9021+(o.v|0));const Y0=.7,WALL=2.1;
+// plinth, each ending in a glazed tombstone arch framed in orange; portholes down the sides. The door is in the middle
+// wing's end (2026-11-09, for the interiors: it stood in the link between two wings, a 0.4 m slot behind it), a glazed
+// lunette over it; the side wings open off the middle one through doorways in the walls they share. The walls are 2.6 m
+// (were 2.1: the rooms under the springing). The links are the flat strips between the vaults over the gaps between the
+// wings, the gaps filled below them but for those doorways.
+function buildPylVaultHouse(G,o){reseed(9021+(o.v|0));const Y0=.7,WALL=2.6;
  const wh=vC(vPick(PYPAL.white)),cr=vC(vPick(PYPAL.cream)),or=vC(vPick(PYPAL.orange)),st=vC(vPick(PYPAL.stoneGrey)),wal=vC(vPick(PYPAL.walnut));
  // [centre x, span, rise, length, front z]
  const WG=[[-4.4,4.0,1.9,7.6,2.4],[0,4.6,2.5,9.0,3.0],[4.4,3.8,1.6,6.6,1.8]];
@@ -85,11 +89,16 @@ function buildPylVaultHouse(G,o){reseed(9021+(o.v|0));const Y0=.7,WALL=2.1;
  WG.forEach(([x,w,r,L,zf],i)=>{const zc=zf-L/2,c=i===1?wh:cr;
   vnBody('vPlaster',x,Y0,zc,w,WALL,L,0,c,{t:.25});
   pynVault(x,Y0+WALL,zc,w+.2,L,r,0,'pyHalf',c);
-  pynFrame('tomb',x,Y0+.25,zf,0,w-1.1,WALL+r-.6,{rim:.18,n:1,c:or,fill:'G',out:.05});
+  if(i===1){pynDoorway('tomb',x,Y0,zf,0,1.5,WALL+.6,{rim:.18,n:1,c:or,fc:wal,out:.05});
+   pynFrame('tomb',x,Y0+3.45,zf,0,2.8,1.45,{rim:.18,n:1,c:or,fill:'G',out:.05});}
+  else pynFrame('tomb',x,Y0+.25,zf,0,w-1.1,WALL+r-.6,{rim:.18,n:1,c:or,fill:'G',out:.05});
   if(i!==1)for(let k=0;k<2;k++){const s=i===0?-1:1;pynPorthole(x+s*w/2,Y0+1.3,zc+(k-.5)*L*.45,s*Math.PI/2,.35,or,'G',0);}});
- // the links between the wings: low flat-roofed blocks, the door in the west one
- for(const s of[-1,1])vnBody('vPlaster',s*2.2,Y0,-1.6,.8,WALL+.4,5.4,0,cr,{t:.2});
- vnDoor(-2.2,Y0,1.1,0,.8,2.1,'vPlaster',or,wal,false);
+ // the links: [side, the gap's faces g0..g1, the doorway's middle z]; the middle wing's face is s*2.3, the side wing's the other
+ for(const [s,g0,g1,zd] of[[-1,-2.4,-2.3,-2.6],[1,2.3,2.5,-2.0]]){const gx=(g0+g1)/2,gw=g1-g0+.04,z0=-4.3,z1=1.1,dw=.95,dh=2.1;
+  vB('vPlaster',s*2.2,Y0+WALL,-1.6,.8,.4,5.4,0,cr);
+  const cut=typeof vnHole==='function'&&vnHole(s*2.3,Y0,zd,s*Math.PI/2,dw,dh,true);if(cut)vnHole(s<0?g0:g1,Y0,zd,-s*Math.PI/2,dw,dh,true);
+  if(cut){vB('vPlaster',gx,Y0,(z0+zd-dw/2)/2,gw,WALL,zd-dw/2-z0,0,cr);vB('vPlaster',gx,Y0,(zd+dw/2+z1)/2,gw,WALL,z1-zd-dw/2,0,cr);vB('vPlaster',gx,Y0+dh,zd,gw,WALL-dh,dw,0,cr);}
+  else vB('vPlaster',gx,Y0,-1.6,gw,WALL,5.4,0,cr);}
  vnPlanter(3.0,0,4.3,1.6,.6,0,cr);kput('vClayPot',[-3.4,0,4.4],null,[.3,.6,.3],null);}
 
 // Terrace (refs/pylon (3).jpg, pylon (2).jpg): three storeys of stacked boxes stepping back, each storey's front a row
@@ -101,10 +110,16 @@ function buildPylTerrace(G,o){reseed(9031+(o.v|0));const Y0=.4,H=3.2;
  const L=[[0,12,4.6,10.4,Y0,wh],[-.8,10.4,1.4,7.2,Y0+H+.3,cr],[-2.2,7.6,-1.6,4.2,Y0+2*(H+.3),wh]];
  vnReg('Terrace (middle, shared)',-.8,-.6,7.8,Y0+3*(H+.3)+1,{style:'neo',type:['multi-family dwelling']});
  vB('vStone',0,-.1,-.6,12.4,Y0+.1,10.8,0,st);
- L.forEach(([x,w,zf,d,y,c],i)=>{const zc=zf-d/2;vnBody('vPlaster',x,y,zc,w,H,d,0,c,{t:.3});
-  vB('vPlaster',x,y+H,zc,w+.1,.3,d+.1,0,c);
+ // (2026-11-09, the interiors: two households, the ground storey's flat and the upper duplex, whose door is the second
+ // storey's east bay on the terrace the outside stair climbs to; over a hollow body the second storey's roof slab is open
+ // where the third storey's planned floor and stair well are, the doorways 2.2 m, were 1.8)
+ L.forEach(([x,w,zf,d,y,c],i)=>{const zc=zf-d/2,B=vnBody('vPlaster',x,y,zc,w,H,d,0,c,{t:.3});
+  if(B&&i===1){const [x2,w2,zf2,d2]=L[2],X0=x-w/2-.05,X1=x+w/2+.05,Z0=zc-d/2-.05,Z1=zc+d/2+.05;
+   vnRectFill([[X0,Z0],[X1,Z0],[X1,Z1],[X0,Z1]],[[[x2-w2/2+.3,zf2-d2+.3],[x2+w2/2-.3,zf2-d2+.3],[x2+w2/2-.3,zf2-.3],[x2-w2/2+.3,zf2-.3]]],
+    (a,b,e,f)=>vB('vPlaster',(a+b)/2,y+H,(e+f)/2,b-a,.3,f-e,0,c));}
+  else vB('vPlaster',x,y+H,zc,w+.1,.3,d+.1,0,c);
   const n=i===2?2:3;for(let k=0;k<n;k++){const u=x+(k-(n-1)/2)*(w/n);
-   if(i===0&&k===1)pynDoorway('tomb',u,y,zf,0,1.6,2.6,{rim:.2,c:or,out:.05});
+   if((i===0&&k===1)||(i===1&&k===2))pynDoorway('tomb',u,y,zf,0,1.6,3.0,{rim:.2,c:or,out:.05});
    else{pynFrame('tomb',u,y+.5,zf,0,2.0,2.3,{rim:.2,c:or,fill:'G',out:.05});const p=loc(u,zf,0,.2,0);vB('vIron',p[0],y+.5+1.15,p[1],2.0,.05,.05,0,gun);vB('vIron',p[0],y+.5,p[1],.05,2.3,.05,0,gun);}}
   // the terrace in front of the next storey up: a parapet and planters on this storey's roof
   if(i<2){vB('vPlaster',x,y+H+.3,zf-.1,w,.8,.2,0,c);vB('vPlaster',x,y+H+1.1,zf-.1,w+.1,.08,.3,0,or);

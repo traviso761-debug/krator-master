@@ -12160,20 +12160,20 @@
 "kind": "tool",
 "points": [
 [
-1218.5,
-1618.5
+1221.38,
+1613.73
 ],
 [
-1233.5,
-1618.5
+1236.38,
+1613.73
 ],
 [
-1233.5,
-1633.5
+1236.38,
+1628.73
 ],
 [
-1218.5,
-1633.5
+1221.38,
+1628.73
 ]
 ],
 "notes": "openworld/SITES.json oidong-highrift: site Longsong (sq80bzd7ep) (tools/scale-model/cut_site.py)"

@@ -24,7 +24,7 @@ settlements/locus/yuni-*.html
 gallery/site/
 gallery/throne-site/
 gallery/ancients-site/
-settlements/girder/hero/dist/
+archive/girder-hero/hero/dist/
 
 # verify.py variant-shot folders (shots-var etc.)
 shots-*/
@@ -74,3 +74,6 @@ godot/data/world-nhighlands-wide/
 godot/data/world-rift-jungle/
 # scale-model built HTML snapshots (only model/dist/scale-model.html is built locally)
 tools/scale-model/scale-model-*.html
+# per-kit Godot prototype libraries (generated headlessly by python3 tools/kit_pack.py --export-glb)
+godot/data/kits/*.glb
+godot/data/kits/*.glb.json

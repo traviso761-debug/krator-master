@@ -71,18 +71,24 @@ RES_FRAGS = _WD.RES_FRAGS
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
-     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js')]
+     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
+     ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js')]
     + [('core/biome', f) for f in CORE_BIOME]
     + [('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'), ('core/biome', '41-core-env.js'),
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
        ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
        ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
        ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
-       ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
+       ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
        ('core/materials/record', '26-matlib-bind.js'),
-       ('biomes/sedesert/src', '35-core-strata.js')]
-    + LDF('41-world-fields.js', '42-world-roads.js')
+       ('biomes/sedesert/src', '35-core-strata.js'),
+       ('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js')]
+    + [('core/mask', '25-core-mask.js'), ('core/mask', '27-core-mask-distance.js'), ('core/coast', '30-core-coast.js')]   # core/coast (KCOAST): the natural coasts; core/mask's distance under it
+    + LDF('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js')
+    + [('settlements/pinnacle-rock/src', '40-pr-layout.js'), ('src', '43p-world-rock.js')]   # the rock, pinned (core/world/world_data.py PINS)
+    + LDF('41-world-fields.js', '42-world-roads.js', '44c-world-coast.js')   # 40: the region is smoothed (SITES.json "smooth"); 43, 44, 43b: its relief, streams and landforms
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('pack', k) for k in PACK_KITS]
@@ -99,10 +105,12 @@ ORDER = (
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
        ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'),
        ('src', '49-world-absav.js')]   # the savannah kit as the world reads it (its own trees and the eastern abyss's)
-    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
+    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '83s-world-streams.js', '84-world-nursery.js',
+          '84i-world-impostors.js',   # the hyperjungle's far level as octahedral impostors (47-world-kits.js: impostor)
+          '85-world-flora.js', '85p-world-pregrow.js',   # every prototype grown at load: no first-use stalls in flight
+          '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88l-world-landforms.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
-    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
+    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '94-world-export.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site; 94: the export
 )
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator: Pinnacle Rock</title>'),
         ("<b>Little Demo</b> · the scale model's eastern desert at 1:1", "<b>Pinnacle Rock</b> · the hyperjungle's edge round the rock at 1:1")]

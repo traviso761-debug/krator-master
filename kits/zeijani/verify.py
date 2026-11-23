@@ -7,7 +7,7 @@
 Serves dist/ over HTTP, routes three.min.js to a local r128 (offline), loads in headless Chromium (SwiftShader), waits for
 window._ready and for the inlined library textures to decode (window._texPending), prints the error panel and the build
 counters, runs the invariants with --assert, and screenshots each view. --only builds just those def keys (?only=);
---cut opens the tents (the cut-away) and --night lights the lamps before the shots. The clock is pinned (?t=4).
+--cut opens the buildings (the cut-away) and --night lights the lamps before the shots. The clock is pinned (?t=4).
 SwiftShader flakes ~1 run in 7 with a null shader-info-log TypeError: re-run before believing it.
 """
 import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, threading
@@ -22,8 +22,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
 ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
- // footprint: the measured box against the declared w x d x h (guy ropes and stakes are counted in the declaration; 1.6 m slack)
- const over=F.filter(f=>f.ex>1.6||f.ez>1.6);R.push({name:'inside-declared-footprint',ok:!over.length,detail:over.length?over.map(f=>`${f.key} ${f.bw}x${f.bd} vs ${f.w}x${f.d}`).join(' | '):F.length+' sites within their footprint + 0.8 m'});
+ // footprint: the measured box against the declared w x d x h (1.6 m slack: a carved front's relief and steps, a wall's foot)
+ const over=F.filter(f=>f.ex>1.6||f.ez>1.6);R.push({name:'inside-declared-footprint',ok:!over.length,detail:over.length?over.map(f=>`${f.key} ${f.bw}x${f.bd} vs ${f.w}x${f.d}`).join(' | '):F.length+' sites within their footprint + 1.6 m'});
  const hh=F.filter(f=>f.eh>1.5);R.push({name:'inside-declared-height',ok:!hh.length,detail:hh.length?hh.map(f=>`${f.key} h ${f.bh} vs ${f.h}`).join(' | '):'ok'});
  R.push({name:'no-nan',ok:A.nanSweep()===0,detail:'nan meshes: '+A.nanSweep()});
  const bad=Object.keys(A.DEFS).filter(k=>A.DEFS[k].cls==='building'&&!(A.DEFS[k].tags.types||[]).length);R.push({name:'buildings-typed',ok:!bad.length,detail:bad.length?bad.join(', '):'every building has a culture and types'});

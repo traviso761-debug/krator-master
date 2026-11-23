@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.373,
+    1.421
+   ],
+   "seam_before": [
+    1.546,
+    1.994
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.comb.throat",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "organic.comb.throat.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-14cc-76c3-b347-5a88eb0500f3)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-5f274362-d897-4e35-8c26-ff4405e46f36.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Cliff Lungs (`biomes/clivobredos`, 2026-11-11)' on origin/claude/clifflung-biome (id organic.comb.throat)",
+  "sha1": "1d293a807b4d1e4d3fddc3bec3a716148cbc86f1"
+ }
+}

@@ -61,7 +61,7 @@ func _init() -> void:
 		and _sha_u32(h3a) == gold.hash.three.sha256)
 	# noise
 	g = KRand.Stream.new(2024)
-	var n := {"h3": [], "vnoise": [], "fbm3": [], "fbm5": []}
+	var n := {"h3": [], "vnoise": [], "fbm3": [], "fbm5": [], "gnoise": [], "gfbm": []}
 	for i in 1000:
 		var x: float = g.range_f(-500, 500)
 		var y: float = g.range_f(-50, 50)
@@ -71,6 +71,8 @@ func _init() -> void:
 		n.vnoise.append(KRand.vnoise(x, y, z, s))
 		n.fbm3.append(KRand.fbm(x, y, z, 3, s))
 		n.fbm5.append(KRand.fbm(x * .01, y * .01, z * .01, 5, s))
+		n.gnoise.append(KRand.gnoise(x * .1, z * .1, s))
+		n.gfbm.append(KRand.gfbm(x * .01, z * .01, 4, s))
 	ok = true
 	for k in n:
 		ok = ok and _sha_f64(n[k]) == gold.noise[k].sha256

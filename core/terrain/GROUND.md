@@ -122,6 +122,10 @@ died twice with the app. **Each build times it at its adoption turn, on its own 
   nothing to add until two pages want the same rule.
 - **Near-camera debris and a finer mesh near the camera**: ebadlands' turn is doing page-level relief and debris on the same slopes; a
   core scatter waits on what it learns.
+  2026-11-22: **the finer mesh is done** (`43n-core-ground-near.js`, `KGROUND.nearMesh`, opt-in): a 96 m box round the camera at 0.5 m
+  from the page's height function; with `KRELIEF.rills` (`38r`) cut into ebadlands' flanks it carries what the 13 m cells could not. The
+  bump's runaway on those steep near faces (black pixels) is capped by `KGROUND.clampBump`; ebadlands fades its bed bump out inside the
+  patch (the bed bump's height steps at each contact and drew a dashed line along it). `biomes/ebadlands/KNOWN_ISSUES.md` has the numbers.
 
 ## Godot
 

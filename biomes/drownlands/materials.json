@@ -1,0 +1,680 @@
+{
+ "build": "drownlands",
+ "note": "The Drownlands kit adapter onto core/materials/library (biomes/drownlands/PLAN.md section 6.3). Every KGROUND layer (<= 5 per station), flora/bioherm surface, drowned snag, boulder-bar clast, Arch kin solid, and ?works=0 mooring/phytomining prop draws a packed library map (0 untextured lit meshes). Run python3 tools/textures/pack.py biomes/drownlands after any change, then rebuild all 4 stations.",
+ "size": 512,
+ "families": {
+  "ground.sand": {
+   "lib": "ground.damp_beach_sand",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.brucite": {
+   "lib": "mineral.crust.brucite",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.28,
+   "mapOnly": true
+  },
+  "ground.laterite": {
+   "lib": "rock.laterite",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.72
+   },
+   "roughLift": 0.3,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "ground.sponge": {
+   "lib": "organic.sponge",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.28,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.shells": {
+   "lib": "ground.lakebed.shells",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.24,
+   "mapOnly": true
+  },
+  "ground.shingle": {
+   "lib": "ground.gravel042",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.68
+   },
+   "roughLift": 0.28,
+   "specular": 0.28,
+   "mapOnly": true
+  },
+  "ground.gossan": {
+   "lib": "rock.gossan",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.mud": {
+   "lib": "ground.lagoon.seagrass",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": 0.66
+   },
+   "roughLift": 0.25,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.peat": {
+   "lib": "ground.peat.black",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.32,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.coal": {
+   "lib": "rock.coal",
+   "scale": [
+    2.8,
+    2.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.22,
+   "specular": 0.32,
+   "mapOnly": true
+  },
+  "ground.serp": {
+   "lib": "rock.schist.emerald",
+   "scale": [
+    3.4,
+    3.4
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": 0.62
+   },
+   "roughLift": 0.22,
+   "specular": 0.34,
+   "mapOnly": true
+  },
+  "bark": {
+   "lib": "bark.mangrove",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.55,
+    "mean": 0.68
+   },
+   "roughLift": 0.28,
+   "specular": 0.22
+  },
+  "tealsap": {
+   "lib": "bark.prismgum",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.74,
+    "colour": "#24b8b0"
+   },
+   "roughLift": 0.16,
+   "specular": 0.36
+  },
+  "brucite": {
+   "lib": "mineral.crust.brucite",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.84
+   },
+   "roughLift": 0.24,
+   "specular": 0.28
+  },
+  "snag": {
+   "lib": "wood.gnarled",
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "oyster": {
+   "lib": "organic.barnacle",
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.55,
+    "mean": 0.78
+   },
+   "roughLift": 0.26,
+   "specular": 0.26
+  },
+  "sponge": {
+   "lib": "organic.sponge",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.76
+   },
+   "roughLift": 0.26,
+   "specular": 0.24
+  },
+  "coral": {
+   "lib": "organic.coral.brain",
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.78
+   },
+   "roughLift": 0.26,
+   "specular": 0.25
+  },
+  "serpRock": {
+   "lib": "rock.schist.emerald",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.58
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "own": true
+  },
+  "jadeRock": {
+   "lib": "stone.amazonite",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.75,
+    "mean": 0.68
+   },
+   "roughLift": 0.14,
+   "specular": 0.42,
+   "own": true
+  },
+  "basaltRock": {
+   "lib": "rock.columnar",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.52
+   },
+   "roughLift": 0.26,
+   "specular": 0.28,
+   "own": true
+  },
+  "coalRock": {
+   "lib": "rock.coal",
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.18,
+   "specular": 0.36,
+   "own": true
+  },
+  "bronze": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.4,
+   "own": true
+  },
+  "brick": {
+   "lib": "paving.red_brick",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.22,
+   "own": true
+  },
+  "rope": {
+   "lib": "fibre.rope.twist",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.32,
+   "specular": 0.18,
+   "own": true
+  },
+  "archBark": {
+   "lib": "bark.araucaria",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.65,
+    "mean": 0.68
+   },
+   "roughLift": 0.28,
+   "specular": 0.22,
+   "own": true
+  },
+  "archScale": {
+   "lib": "leaf.araucaria",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.66
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "own": true
+  },
+  "mangroveLeaf": {
+   "lib": "card.croptree.glossy",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.018,
+      0.335,
+      0.333
+     ],
+     "stem": [
+      0.165,
+      0.33
+     ],
+     "tip": [
+      0.165,
+      0.0225
+     ],
+     "w": [
+      -0.1191,
+      0.1465
+     ]
+    },
+    {
+     "cell": [
+      0.339,
+      0.339,
+      0.655,
+      0.671
+     ],
+     "stem": [
+      0.5,
+      0.665
+     ],
+     "tip": [
+      0.5,
+      0.3447
+     ],
+     "w": [
+      -0.1338,
+      0.1299
+     ]
+    },
+    {
+     "cell": [
+      0.663,
+      0.661,
+      0.982,
+      0.982
+     ],
+     "stem": [
+      0.835,
+      0.995
+     ],
+     "tip": [
+      0.835,
+      0.665
+     ],
+     "w": [
+      -0.1387,
+      0.1171
+     ]
+    }
+   ]
+  },
+  "coppiceLeaf": {
+   "lib": "card.seagrape",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "stems": [
+    {
+     "cell": [
+      0.016,
+      0.024,
+      0.316,
+      0.333
+     ],
+     "stem": [
+      0.1846,
+      0.3271
+     ],
+     "tip": [
+      0.1553,
+      0.0248
+     ],
+     "w": [
+      -0.1322,
+      0.1258
+     ]
+    },
+    {
+     "cell": [
+      0.347,
+      0.349,
+      0.646,
+      0.659
+     ],
+     "stem": [
+      0.4775,
+      0.6533
+     ],
+     "tip": [
+      0.5291,
+      0.3574
+     ],
+     "w": [
+      -0.1296,
+      0.1227
+     ]
+    },
+    {
+     "cell": [
+      0.675,
+      0.675,
+      0.987,
+      0.982
+     ],
+     "stem": [
+      0.8076,
+      0.9756
+     ],
+     "tip": [
+      0.8669,
+      0.6889
+     ],
+     "w": [
+      -0.1402,
+      0.1304
+     ]
+    }
+   ]
+  },
+  "kelpBlade": {
+   "lib": "card.kelp.0",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.65,
+    "mean": 0.72
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.165,
+    0.003,
+    0.835,
+    0.958
+   ],
+   "base": "top"
+  },
+  "seagrassBlade": {
+   "lib": "card.strap.pandan",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.069,
+    0.015,
+    0.237,
+    0.333
+   ],
+   "base": "bottom"
+  },
+  "fanCard": {
+   "lib": "card.reef",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.78
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.339,
+    0.026,
+    0.661,
+    0.337
+   ],
+   "base": "bottom"
+  },
+  "wrackCard": {
+   "lib": "card.seaweed",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.016,
+      0.02,
+      0.339,
+      0.339
+     ],
+     "stem": [
+      0.0928,
+      0.3389
+     ],
+     "tip": [
+      0.2641,
+      0.0335
+     ],
+     "w": [
+      -0.1405,
+      0.1431
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.329,
+      0.663,
+      0.671
+     ],
+     "stem": [
+      0.3291,
+      0.6338
+     ],
+     "tip": [
+      0.6734,
+      0.3761
+     ],
+     "w": [
+      -0.1467,
+      0.1716
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.98,
+      0.984
+     ],
+     "stem": [
+      0.9229,
+      0.9639
+     ],
+     "tip": [
+      0.744,
+      0.6817
+     ],
+     "w": [
+      -0.1402,
+      0.1372
+     ]
+    }
+   ]
+  }
+ }
+}

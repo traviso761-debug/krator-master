@@ -40,7 +40,7 @@
 - [ ] **The eastern badlands kit wants two more fields**: `geo` (geothermal ground: its sulphur vents) and `barren`
       (EF, O, HF: the ice cap and the airless rim, where nothing grows). Both read 0 today, so the kit grows no vents and
       its tundra flora reaches the ice. They belong in `WORLD.at` for every kit (`biomes/ebadlands/KNOWN_ISSUES.md`).
-- [x] **Lakes floating over the abyss.** Fixed in the scale model itself (4.15, `tools/scale-model/edit_heights.py`);
+- [x] **Lakes floating over the abyss.** Fixed in the scale model itself (4.15, `tools/scale-model/history/edit_heights.py`);
       the extractor keeps the same rule as a guard and now lowers nothing.
 - [x] **The water takes the shared wave field** (`core/atmos`, as Voth's bay), and since 2026-10-13 the sea and the
       lakes the sky's reflection (`b-skylight`, on core/water's material).

@@ -7,6 +7,20 @@ pieces a seed, 16 walkers; seeds 0–2, and seeds 0–7 with `--seeds 8`) with n
 What follows is what the checks do not cover, or what the kit does not do yet.
 
 ## Open
+- [ ] **42 build commands are stale until the joint all-builds rebuild** (2026-11-11, branch `claude/tungang-furniture-4a00dd`).
+  The Tungang holds' pieces (`krator-master-furniture-tungang.js`), the culture-scoped `FAMILY_SPLITS` in
+  `core/catalog/krator-furniture-core.js`, the `tg*` texture rows in `materials.json` and the new set `kits/interiors/sets/tungang.js`
+  reach 44 build commands (`tools/reach.py`). Only kits/catalog and kits/interiors were rebuilt, verified on the GPU and given
+  PORT-BASELINE rows. The coordinating session's ruling: the other builds, and their baseline rows, are rebuilt ONCE, after this branch
+  and the Fellgang branch (`claude/tungang-fellgang-kits-a56ece`) merge, which is after Integration 2. Until then these pages are behind
+  their sources (check_stale lists them):
+  - settlements: dhelv, girder (build.py and build_hero.py), highlands (with roketstad), isle-demo (build.py and --accept), iziz, locus,
+    longsong, mavs-refuge, mungo, noahs-regret, pinnacle-rock, screamers, span, verge, voth;
+  - kits: ancients, ancients-interiors, ash-nomads, beast-riders, desert-nomads, eternian, islanders, lizardmen, mechs, metropolis,
+    motor-vehicles, post-apoc, pylon, resources, scyvoi, talia, tungang (it also lists `core/furnish/`), yeti, zeijani;
+  - biomes: ancientsvalley, catch (and its stations fan, lake, oasis); openworld/isle-demo.
+  Nothing else changes for a culture other than `tungang`: the new splits name their culture, and no page but the interiors sets sheet
+  lists `core/furnish/scale/54-core-furnish-scale.js`.
 - [x] **`verify.py dist/interiors-sets.html --assert` and `dist/interiors-walk.html --assert` threw in the snapshot (2026-11-09).**
   Both ran the demo's checks: the demo's snapshot reads `window._interiors.walkers`, which neither page has (the sets sheet needs
   `--sets`; the walk mockup had no verify, only `tools/walkshots.py`). `verify.py` now takes the mode from the page's name
@@ -18,7 +32,9 @@ What follows is what the checks do not cover, or what the kit does not do yet.
   store) on its low table as the `food` need, and `IX.sets.auditResidence` skips surface pieces. The fix is `anchors: ['floor', 'wall']`
   on the food require of `cottage`, `living` and `kitchen` in `src/30-programs.js` (as sets/zeijani.js's `cell` has it), but that
   fragment reaches Dhelv, Girder (both pages), Highlands, Roketstad and the isle demo (`tools/reach.py`): it waits for a pass that
-  rebuilds them.
+  rebuilds them. **Source done 2026-11-09** (`src/30-programs.js`); checked 2026-11-10 on a spot rebuild (not committed): seed 2
+  passes the dwelling, the residence failures left at the three seeds are `kits/tents`' (a separate WIP set). The pages wait for
+  the all-builds rebuild (TODO.md).
 - [x] **Ladders and low plinths the walk could not climb (the stairs pass, 2026-11-03).** `IX.walk.register` wrote a ladder as one strip
   (about 2.7 m of rise a metre): core/walk's reach (0.45 m steps on 0.4 m cells, the reachability audit's) never got up one, so every
   storey a planner served with a ladder was unreached; it is rung floors 0.4 m apart now (`rungs()`, a flight steeper than 1.1 too).
@@ -146,3 +162,8 @@ What follows is what the checks do not cover, or what the kit does not do yet.
       open sides (`open: [[x, z], ...]`, a point on each): no piece stands or hangs on them.
 - [x] **A cord of pennants was a 2.4 m fragment on a long wall.** A catalog piece marked `stretch` runs the free length of its
       wall (between its ends and its doors, up to 8 m, centred where the placer put it): the placement's `span`, which the builder draws to (`F.span`).
+- [x] (2026-11-09) **The shell's leaves and glass were nobody's records.** `src/50-shell.js` registers each leaf it hangs in core/door
+      where the page carries it (KDOOR '<room id>.d<n>', kind swing, style flat, standing open 75 degrees as hung; posed through
+      `KDOORHOST.posed`), its panes KGLASS 'clear', and `IX.walk.room` (in the same fragment, plain records) puts a shell's floor
+      and walls in core/walk gapped at its doors, so a sheet can run `KWALK.reach` (kits/ancients-interiors does;
+      `tests/test-walk.js` checks two shells and a door between them, shut and open). A page with no core/door draws as before.

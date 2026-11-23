@@ -8,7 +8,7 @@
 //   SEARED         trees still standing, dead: bare trunks with a few stubs of limb, the bark scorched on the side facing the scar
 //   DIRECT         nothing standing: bare ash and pumice blocks
 // The living forest past the seared edge is the kit's own (the cold belt's conifers and gill-corals, cbelt: 89z).
-const DEAD={logs:0,stumps:0,snags:0,blocks:0,scrub:0};
+const DEAD={logs:0,stumps:0,snags:0,blocks:0,scrub:0,pioneers:0};
 (function(){reseed(13801);const C3=c=>new THREE.Color(c),prev=BIO.kit('throne'),cur=BIO.cur;BIO.cur='throne/trees';
  const greys=[0x4a4440,0x3c3734,0x58524c,0x6a625a],silver=[0x8a8680,0x9a958c,0x7a766e];
  // the blowdown: logs every ~9 m where the field says so, laid along the blast
@@ -35,4 +35,9 @@ const DEAD={logs:0,stumps:0,snags:0,blocks:0,scrub:0};
    BIO.put(pick(L),[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[h,h,h],null);DEAD.scrub++;},{patch:.5,patchScale:.015,pad:.8});
  BIO.grid(16,0,TERR.R-150,(x,z)=>FIELD.direct(x,z)*.35+FIELD.floor(x,z)*.25,(x,y,z)=>{const s=rr(.4,2.6);
    BIO.put('boulder',[x,y+s*.2,z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[s,s*rr(.5,.85),s],C3(pick([0xb8b0a4,0xa8a094,0x8a847a])));DEAD.blocks++;},{patch:.5,patchScale:.02,pad:.5});
+ // THE PIONEERS (2026-11-23, owed since station 13 was built): the first colonisers a few years on, the fire flowers (the kit's card.flowerspike, a
+ // fireweed's cousin) in drifts where the blast laid the forest down and on the plain's edge, never in the direct zone or under the standing dead
+ BIO.grid(7,0,TERR.R-150,(x,z)=>(FIELD.removal(x,z)*.5+FIELD.blowdown(x,z)*.35+FIELD.floor(x,z)*.2)*(1-FIELD.direct(x,z))*(1-FIELD.seared(x,z)*.8),(x,y,z)=>{
+   const L=THRONE.LIB.cardsOf('flowerspike');if(!L.length)return;const h=rr(.5,1.1);
+   BIO.put(pick(L),[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[h,h,h],null);DEAD.pioneers++;},{patch:.6,patchScale:.012,pad:.6});
  BIO.cur=cur;BIO.kit(prev);_mark('layout');})();
