@@ -18,3 +18,7 @@ and calls `KHAMLET.village({..., culture: KHAMLET.xanaduRow(), focus: 'tea', ...
 
 **Test:** `node core/hamlet/test-hamlet-xanadu-row.js`. Plain data, `[G data]`: no three.js, no DOM. The API, the keys and
 the switch for Kirstabal and the Vein Camp are in `core/hamlet/README.md`, "The Xanadu row, passed by name".
+
+**The mines' foci and the camp census** (2026-11-23, `settlements/xanadu/WORKS-PLAN.md` W1): `mill`, `diggings` and `landing`
+join the foci (the pending boxes of `xa_stamp_mill`, `xa_sorting_shed` and `xa_fort_post` with them); the camp census that takes
+`row.camp` when `spec.camp` is `core/hamlet/camp/26-hamlet-camp.js` (opt-in, `core/hamlet/README.md`).

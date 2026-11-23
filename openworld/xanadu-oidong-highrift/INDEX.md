@@ -20,6 +20,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `46-world-config.js` | 2 |  |
 | `47-world-kits.js` | 1 |  |
 | `47g-site-gihon-landing.js` | 219 **big** |  |
-| `48-world-site.js` | 19 |  |
+| `48-world-site.js` | 21 |  |
 | `48k-world-tubes.js` | 4 |  |
+| `48t-world-camps.js` | 10 |  |
 | `49-world-xanadu.js` | 4 |  |
+| `88t-world-camps.js` | 13 |  |

@@ -15,4 +15,4 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `46-world-config.js` | 2 |  |
 | `47-world-kits.js` | <1 |  |
-| `48-world-site.js` | 3 |  |
+| `48-world-site.js` | 4 |  |

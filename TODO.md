@@ -111,7 +111,8 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   is delivered, `python3 tools/textures/pack.py kits/catalog` packs it and Erewhon (`furniture_bundle.bundle(..., decals=True)`) and
   the catalog's sheet show it (about 150 KB each inline).
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
-  `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour) into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
+  `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour), `extra/88h-xa-mine-works.js`
+  (2026-11-23, the stamp mill and the sorting shed: `settlements/xanadu-works` takes it) into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
 - **Register the `coyote` culture** (the owner, 2026-11-16, `kits/coyote/PLAN.md` sections 7 and 12): `'coyote': 'Coyote Men'` in
   `core/tags/52-core-tags-vocab.js` `CULTURE_NAMES` (and `test-tags.js`'s digest), with the catalog's `coyote` culture file in
@@ -224,7 +225,19 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   services). Give `KHAMLET.census` a `camp` option (or a row's `camp` overrides, taken when `spec.camp`) and pass it through
   `core/world/48s-world-sites.js` from a hamlet's spec, then drop that row. core/hamlet reaches 56 pages (`tools/reach.py`).
   The overrides exist since 2026-11-17 as `KHAMLET.xanaduRow().camp`, and `xanaduRow({camp: true})` is the row a region can pass
-  today (`core/hamlet/xanadu/`; with `shrine` and `mineHead` false it lays the Vein Camp unchanged).
+  today (`core/hamlet/xanadu/`; with `shrine` and `mineHead` false it lays the Vein Camp unchanged). **The census side is built,
+  opt-in** (2026-11-23, `settlements/xanadu/WORKS-PLAN.md` W1): `core/hamlet/camp/26-hamlet-camp.js` wraps `KHAMLET.census` and
+  `KHAMLET.village` (`spec.camp`: the row's overrides; `spec.share`: one record over several camps; a spec with neither goes to the
+  old functions bit for bit), tested by `core/hamlet/test-hamlet-camp.js` (run by `test-hamlet.js`); `settlements/xanadu-works`
+  takes it. At the next all-builds rebuild fold it into `30-hamlet-village.js`, pass `camp` through 48s, drop `xanadu-camp`.
+- **core/world: a generic tent camp in the site planner** (2026-11-23, WORKS-PLAN.md W2): `KSITES.plan` (48s) pitches only the
+  Beast Riders' camps (`kit.programs(tribe)`, culture `beast-rider`), so the Golden Tears' camp (`stearscamp01`) and the Great
+  Caravan's halt at Erehwon are planned region-locally at load (`openworld/xanadu-oidong-highrift/src/48t-world-camps.js`, drawn by
+  88t; the Lake Shore reads both in place) and are not in `plan/sites.json`. Fold `KWCAMPS` into 48s/88s (a SITE_SPEC `camps` entry
+  with `kind: 'ring' | 'halt'`), bake them, and draw them with the Tents kit once it is sealed for another world (next item).
+- **The Tents kit for another world** (2026-11-23): no `tents_bundle.py` yet, so the regions draw the tents as their forms' massing
+  in their dress's colours (88t). Seal it as `XAK` is (`kits/xanadu/kit_bundle.py`) and let 88t draw the kit's own pieces near.
+  The kit has no Dalab dress: the Great Caravan's tents fall back to `generic` (the record says so).
 
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?

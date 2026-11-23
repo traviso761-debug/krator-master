@@ -172,3 +172,19 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
     Kirstabal along the lake to Qiblai (the owner, 2026-11-16: "road follows lake and gorge"; the barges carry the bulk) */
  links:[['s57bkv9741','skm4jjo2vl',{hw:4,r:2000}],['skm4jjo2vl','sq80bzd7ep',{hw:4,r:1500}],
   ['sl758m2396','sstrongbowft',{hw:3.5,r:1200}],['sl758m2396','skm4jjo2vl',{hw:3,r:1500}]]};
+// THE PITCHED CAMPS (48t-world-camps.js plans them at load, 88t draws them; settlements/xanadu/WORKS-PLAN.md section 3, step W2):
+// the Golden Tears' armed prospecting camp on the Rift floor (XAN_TUNE.tears.camp, exp.rift-gold: 120 people, worked in the
+// rift season, year days 300-60). PROPOSED in the plan, the owner's word "a bit more militaristic" (2026-11-16): a fortified
+// ring of the Xanadu silk's bell tents inside a thorn zariba and its ditch, one gate on the track up to the Gold March (toward
+// Strongwall, px 912,1640), the captain's pavilion, the gold room (the supply tent nearest it, under guard), the smith's forge
+// tent, the cook fires, the mule lines; the placer sluices down the wadi's bed (the strongest flow within 2.5 km: the Tyan Gill
+// of the model, r773, is not one of the cut's named rivers), the prospect pits and the tailings. Struck out of season: the
+// zariba's low ring and the pits stay. NOT ON THE GROUND YET: the camp's point (px 850,1628) is 60 km outside this region's cut
+// (the High Rift polygon does not reach the Rift floor there), so openworld/SITES.json lists the site (stearscamp01) and the
+// region's next recut (tools/scale-model/cut_site.py, the one that takes the Spillway's and the Devisers' squares and the gorge
+// corridor already listed) gives it its square; until then 48t reports it as awaiting the recut. Its ring is proven on synthetic
+// ground by tests/test-world-camps.js.
+var WORLD_CAMPS={world:1191569,camps:[
+ {id:'stearscamp01/camp/tears',kind:'ring',name:'The Golden Tears\' armed prospecting camp',site:'stearscamp01',near:[0,0],look:3000,way:[62,12],
+  culture:'xanadu',tears:true,program:{trades:['smith'],supply:2,guard:4,mess:2,stable:2,latrine:1},hedge:{key:'zariba',v:0},
+  works:{sluices:4,pits:6,heaps:3,look:2500},season:{window:'rift-season'},struck:{hedge:true,works:['pit']}}]};
