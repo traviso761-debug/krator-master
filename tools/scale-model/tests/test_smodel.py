@@ -833,21 +833,17 @@ check('the Lake of the Vale is longer and thinner (%d x %d km, was 142 x 62) and
 #          lakes, Ring Isles shoals & Port Goto, Firebliss domes (Gemini's checks, landforms read from their file)
 lfl20 = D['landforms']['landforms']
 lfs20 = {lf['id']: lf for lf in lfl20}
-check('edit_522_reshape records its five landforms (Spider crater, SE Tharn crater, the twin bays, the Copper Tarn collar); '
+check('edit_522_reshape keeps its SE Tharn crater and Copper Tarn collar (Spider and the bays gave way, 2026-11-23); '
       'the Firebliss domes are main\'s edit 8 (DATA.domes), not Gemini\'s three',
-      {'lf_spider_crater', 'lf_se_tharn_crater', 'lf_crookshore_north_bay', 'lf_crookshore_south_bay',
-       'lf_copper_tarn_collar'} <= set(lfs20) and not any(i.startswith('lf_fb_dome_') for i in lfs20))
+      {'lf_se_tharn_crater', 'lf_copper_tarn_collar'} <= set(lfs20) and not any(i.startswith('lf_fb_dome_') for i in lfs20))
 r9102_20 = next(r for r in D['rivers'] if str(r['id']) == '9102')
 r9101_20 = next(r for r in D['rivers'] if str(r['id']) == '9101')
-check('Spider NW divide sealed (>= 1,850 m at 1252,175); 9102 exits SW through (1246,232) with strictly monotonic bed_m',
-      float(E[175, 1252]) >= 1850.0 and any(abs(p[0] - 1246.0) < 1.5 and abs(p[1] - 232.0) < 1.5 for p in r9102_20['px'])
-      and all(b2 < b1 for b1, b2 in zip(r9102_20['bed_m'], r9102_20['bed_m'][1:]))
-      and all(b2 <= b1 for b1, b2 in zip(r9101_20['bed_m'], r9101_20['bed_m'][1:])))
+# the reshape's Spider Lake crater and SW spillway gave way to continental-scope's Ria hydrology (its 9101 needs that
+# ground: the owner's order, 2026-11-23); its check is dropped, lf_spider_crater with it
 check('SE Tharn 108 km crater (1375,1525) holds its 6,910 m cryo-fumarole tarn and fumarole vent',
       bool(whas[1525, 1375]) and abs(float(wlev[1525, 1375]) - 6910.0) <= 2.0
       and any(v.get('name') == 'Tharn Cryo-Fumarole Cauldron' and v.get('kind') == 'fumarole' for v in D['vents']))
-check('Crookshore twin secondary-ejecta bays (115,616 & 176,643) hold sea water at 0 m',
-      bool(whas[616, 114]) and bool(whas[645, 176]) and abs(float(wlev[616, 114])) <= 1.0)
+# the reshape's Crookshore twin bays gave way to Crook/Ria's Crook (the owner's order, 2026-11-23): their check dropped
 check('n semiarid closed dam-relic salt lakes are recorded as salt lake basins',
       sum(1 for b in D['basins'] if b.get('kind') == 'salt lake' and 'Dam Relic' in b.get('name', '')) == 2)
 check('Port Goto (920,703) stands dry directly adjacent to Ring Sea harbor water at (920,704)',
@@ -910,7 +906,7 @@ check('Dhelv and Šurpu-Dhelv (Zeijani caverns) stand on dry inland Throne land,
       and not bool(whas[by_nm_21['Šurpu-Dhelv']['py'], by_nm_21['Šurpu-Dhelv']['px']]))
 rr_21 = {r['id']: r for r in R}
 check('Ria Valley & Crook 20-region breakdown (%d regions, the six coarse ones gone) and notes on the dome, compass hills, weeping valley' % len(R),
-      len(R) == 149
+      len(R) >= 149   # 149 after 5.1e14; continental-scope's political regions since (5.1e24)
       and not any(i in rr_21 for i in ('rmvriavalley', 'rmvdoubledelta', 'rmvthearch', 'rmvthecrook', 'rmvcopperglacier', 'rmvtharnuplands'))
       and all(rid in rr_21 and rr_21[rid].get('notes') for rid in ('rmweubdnyts8y', 'rmweu4kpowzji', 'rmwetzg8idewz')))
 # ---- 22. 5.1 edit 9 (edit_521_strongwall.py, 2026-11-23): Strongwall's slot kept, its pit filled, the watch posts and
@@ -933,4 +929,100 @@ check('the Marches\' west (818,1531) and south (843,1546) watch forts are pinned
           for i in ('smarchw0001', 'smarchs0001'))
       and (by_id_21['smarchw0001']['px'], by_id_21['smarchw0001']['py']) == (818, 1531)
       and (by_id_21['smarchs0001']['px'], by_id_21['smarchs0001']['py']) == (843, 1546))
+# ==== 23-25: continental-scope's own checks (freeze/continental-scope-1123, 045bd9308), taken in the 2026-11-23 re-run;
+#      the owner's order: Crook/Ria on the Crook and Farside, the Beacon's knoll this line's
+# ---- 23. continental-scope, its edit 21 (edit_521_wave0_hygiene.py, 2026-11-22): Wave 0 Pre-Build Hygiene Batch
+check('East Abyss floor lift: Reed ~-1,750 m (wet), Sfenops ~-1,370 m, Liikofi ~-1,358 m, Middle Tabisti ~-1,398 m, Mungo ~-1,433 m',
+      bool(whas[678, 1280]) and abs(float(E[678, 1280]) - (-1750.0)) <= 5.0 and abs(float(wlev[678, 1280]) - (-1748.6)) <= 3.0
+      and abs(float(E[663, 1282]) - (-1370.0)) <= 5.0 and abs(float(E[797, 1316]) - (-1358.0)) <= 5.0
+      and abs(float(E[761, 1311]) - (-1398.0)) <= 5.0 and abs(float(E[828, 1322]) - (-1433.0)) <= 5.0)
+check('Southern East Abyss untouched: Lower Verge (-1,685 m), Yuni North (-1,887 m), Locus (-2,403 m)',
+      abs(float(E[949, 1268]) - (-1684.9)) <= 1.0 and abs(float(E[994, 1268]) - (-1886.8)) <= 1.0
+      and abs(float(E[1043, 1267]) - (-2402.6)) <= 1.0)
+w_lbl4_t, _ = nd.label(whas, structure=np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], dtype=int))
+r045_t = next(r for r in D['rivers'] if r['id'] == 'r045')
+check('Soda Lake (lbl=54) 4-connected -60 m tongue reaches (912,531) off dry Port Koron (912,532) with r045 mouth',
+      bool(whas[531, 912]) and not bool(whas[532, 912]) and w_lbl4_t[425, 932] == w_lbl4_t[531, 912]
+      and abs(float(wlev[531, 912]) - (-59.8)) <= 1.5 and -52.0 <= float(E[532, 912]) <= -30.0
+      and r045_t['to'].get('lake_m') == -60 and abs(r045_t['to']['at_px'][1] - 531.0) <= 1.0
+      and any(b.get('id') == 'B_korona_sodalake' for b in D['basins']))
+setts_w0 = {s['id']: s for s in P.settlements()}
+check('Wave 0 deduplicated skwl1d2hdu removed, Dorado marked drowned, Tungang bore marked subterranean, Thera stage ruin',
+      'skwl1d2hdu' not in setts_w0 and setts_w0['sbxpx1u95q'].get('drowned') is True
+      and setts_w0['s4i2tk5zvf'].get('layer') == 'subterranean' and setts_w0['sthera0001'].get('stage') == 'ruin')
+for w0_sid, w0_xy in (
+    ('s0w2mwd7xq', (701, 838)), ('s4t3y092qc', (994, 827)), ('syen8wxax5', (780, 787)), ('ski7uk8fjc', (920, 703)),
+    ('sxvb4k4024', (705, 1129)), ('skzuw4a73a', (1057, 621)), ('s06eu913kl', (956, 944)), ('s1ugpi6uas', (498, 644)),
+    ('sfuf85wred', (555, 957)), ('slm5ul15lp', (934, 424)), ('sttkxo9ndy', (1015, 1430)), ('sk9e4psl4b', (1687, 1555)),
+    ('ssideros01', (744, 784)), ('stauranga1', (848, 897)), ('swheel0001', (405, 886)), ('sthera0001', (526, 955)),
+    ('ssaltwhit1', (486, 837)), ('syuninrth1', (1268, 994)), ('smidtabis1', (1311, 761)), ('sportkoron', (912, 532)),
+    ('swahatsham', (1165, 652)),
+):
+    s_w0 = setts_w0.get(w0_sid)
+    check('Wave 0 pin %s (%s) stands on dry ground at %s' % (w0_sid, s_w0 and s_w0['name'], w0_xy),
+          s_w0 is not None and (int(s_w0['px']), int(s_w0['py'])) == w0_xy and not bool(whas[w0_xy[1], w0_xy[0]]))
+regs_w0 = {r['id']: G.poly(r['points'], 1.0, 1.0, E.shape) > 0.5 for r in P.regions()
+           if r.get('kind') == 'political' or r['id'] == 'rmuwd2cwvipmq'}
+check('Wave 0 polygons: Zeijani, Yusar enclaves, Eternal State Farside/Bastion, Jimjam Skywatch/Ardent, Yeti Leng, Nomad Country East Abyss',
+      bool(regs_w0['rmvlqffsaj2v0'][703, 920]) and not bool(regs_w0['rmvlp5pd3ug40'][703, 920])
+      and bool(regs_w0['rzeijani0001'][776, 840]) and not bool(regs_w0['rmuooc7krl9f8'][776, 840])
+      and not bool(regs_w0['rmuca1tm8hito'][712, 800]) and not bool(regs_w0['rmuhd0r5n1coe'][923, 809])
+      and not bool(regs_w0['rmuhd0r5n1coe'][1058, 1016]) and not bool(regs_w0['rmw5rzefnfapk'][897, 848])
+      and bool(regs_w0['ryusarcarco1'][812, 395]) and not bool(regs_w0['rmvg89rejmqat'][812, 395])
+      and bool(regs_w0['ryusarhenge1'][735, 457]) and not bool(regs_w0['rmvg89rejmqat'][735, 457])
+      and bool(regs_w0['rmvg89rejmqat'][627, 536]) and bool(regs_w0['rmvg89rejmqat'][516, 315])
+      and not bool(regs_w0['rmvg89rejmqat'][418, 346])
+      and bool(regs_w0['rmv9g32xg2gqt'][470, 776]) and bool(regs_w0['rmv9g32xg2gqt'][478, 826])
+      and not bool(regs_w0['rmv9g32xg2gqt'][553, 830]) and not bool(regs_w0['rmuwd2cwvipmq'][553, 830])
+      and bool(regs_w0['rmvkkra7o3ep4'][554, 490])
+      and bool(regs_w0['rmucc476rj9ie'][652, 1165]) and bool(regs_w0['rmucc476rj9ie'][639, 1276])
+      and not bool(regs_w0['rmucc476rj9ie'][678, 1280]) and not bool(regs_w0['rmucc476rj9ie'][828, 1322]))
+
+# ---- 24. continental-scope, 5.1e22 + 5.1e23: 39 Ria rivers, 22 Continental Canals (`DATA.canals`), and `[B]`/`[D]` pins
+canals_523 = D.get('canals') or []
+check('5.1e23 DATA.canals holds all 22 engineered canals across Eternia (8), Ria (7), Iziz (2), Hykkousoi (2) & Voth (3)',
+      len(canals_523) == 22
+      and sum(1 for c in canals_523 if c['culture'] == 'eternian') == 8
+      and sum(1 for c in canals_523 if c['culture'] == 'ria') == 7
+      and sum(1 for c in canals_523 if c['culture'] == 'iziz') == 2
+      and sum(1 for c in canals_523 if c['culture'] == 'ys') == 2
+      and sum(1 for c in canals_523 if c['culture'] in ('voth', 'shim')) == 3)
+ria_rivs_522 = [r for r in D.get('rivers', []) if isinstance(r.get('id'), int) and (r['id'] in (9101, 9102, 9103, 9104, 9106, 9107, 9108, 9109) or 9201 <= r['id'] <= 9232)]
+check('5.1e22 Ria & Shroudhills holds >= 39 sinuous dendritic rivers (%d)' % len(ria_rivs_522), len(ria_rivs_522) >= 39)
+for e23_sid, e23_xy in (
+    ('sshimrest01', (655, 1111)), ('s5x27pj6hn', (792, 860)), ('sn6y4sx8tr', (819, 552)),
+    ('sirb5um6cr', (671, 930)), ('sy42jwlyk4', (777, 1003)), ('sjau3958qz', (723, 885)),
+    ('sshuangzha1', (450, 782)), ('slingkou001', (445, 645)), ('swuxicoll01', (416, 782)),
+    ('smakouiron1', (702, 182)), ('sbeacon00001', (853, 1540)), ('sgihon00001', (955, 1608)),   # the Beacon: this line's pin (C's sbeacon0001 a duplicate)
+):
+    s_23 = setts_w0.get(e23_sid)
+    check('5.1e23 pin %s (%s) stands on dry ground at %s' % (e23_sid, s_23 and s_23['name'], e23_xy),
+          s_23 is not None and (int(round(s_23['px'])), int(round(s_23['py']))) == e23_xy and not bool(whas[e23_xy[1], e23_xy[0]]))
+
+# ---- 25. continental-scope, 5.1e20 v2: Iron Republic Mega-Switzerland (8 flooded glacial lakes, > 7,000 m cordilleras, 8 outlets & 9 dry pins)
+ir_basins = {b['id']: b for b in (D.get('basins') or []) if b.get('region') == 'rmufxti8qwcxy'}
+check('5.1e20 v2 Iron Republic holds all 8 stepped Swiss glacial lakes (>= 8,500 km2)',
+      set(ir_basins.keys()) == {'L1_roketsjo', 'L2_korsvatn', 'L3_glasklar', 'L4_kaskejtsjo', 'L5_nordsjo', 'L6_stalsjo', 'L7_malmtjarn', 'L8_jurasjo'}
+      and sum(b['km2'] for b in ir_basins.values()) >= 8500
+      and all(180 <= b['depth_m'] <= 750 for b in ir_basins.values()))
+ir_mask_t = regs_w0['rmufxti8qwcxy']
+check('5.1e20 v2 Iron Republic High Alps culminate > 7,000 m with > 5,000 high-alpine snow cells',
+      float(E[ir_mask_t].max()) > 7000.0 and int(((E > 5400.0) & ir_mask_t).sum()) >= 5000)
+ir_out_names = {o.get('from') for o in (D.get('outlets') or []) if isinstance(o.get('from'), str)}
+check('5.1e20 v2 DATA.outlets holds all 8 Iron Republic lake spillways',
+      {'Roketsjö', 'Korsvatn', 'Glasklar-Sjö', 'Kaskejt-Sjö', 'Nordsjö', 'Stålsjö', 'Malmtjärn', 'Jurasjö'}.issubset(ir_out_names))
+for ir_sname, ir_xy in (
+    ('Roketstad', (632, 716)), ('Glaive', (599, 721)), ('Footfall', (560, 767)),
+    ('Urverkstad', (591, 801)), ('Cascade', (568, 841)), ('Slussport', (576, 693)),
+    ('Korshamn', (627, 740)), ('Stahlborn', (618, 859)), ('Lipp', (691, 619)),
+):
+    check('5.1e20 v2 Iron Republic pin %s stands on dry bench at %s' % (ir_sname, ir_xy),
+          not bool(whas[ir_xy[1], ir_xy[0]]) and float(E[ir_xy[1], ir_xy[0]]) >= 2200.0)
+# ---- 26. 5.1 edit 27 (edit_527_lightwall.py, 2026-11-23): Lāiṭwāl's bay and wall (settlements/lightwall/PLAN.md
+#          section 10; the owner, "change the world"): the lake a cell south of the pin, the fault's face a cell north
+check('Lāiṭwāl (1028,1653) on its bench (%.0f m, dry): the lake on 1028,1654 and its wall 1,000 m higher on 1028,1652 (%.0f m)'
+      % (float(E[1653, 1028]), float(E[1652, 1028])),
+      not bool(whas[1653, 1028]) and bool(whas[1654, 1028]) and abs(float(wlev[1654, 1028]) - 1315.05) <= 1.0
+      and float(E[1652, 1028]) - float(E[1653, 1028]) >= 1000.0
+      and all(float(E[1652, x_]) >= 2600.0 for x_ in range(1026, 1031)))
 print('%d checks passed' % ok)

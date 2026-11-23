@@ -444,22 +444,6 @@
    "note": "An islet in Voth's water (light), 17 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
   },
   {
-   "id": "lf_spider_crater",
-   "kind": "secondary_crater",
-   "name": "Spider Lake Secondary Ejecta Crater",
-   "px": 1289.0,
-   "rx_px": 29.5,
-   "ry_px": 21.5,
-   "angle_deg": -20.0,
-   "floor_m": 1396,
-   "lake_m": 1460.0,
-   "spillway_px": [
-    1246.0,
-    232.0
-   ],
-   "py": 213.5
-  },
-  {
    "id": "lf_se_tharn_crater",
    "kind": "secondary_crater",
    "name": "SE Tharn Secondary Ejecta Crater",
@@ -470,24 +454,6 @@
    "tarn_wl_m": 6910.0,
    "tarn_radius_px": 6.0,
    "py": 1525.0
-  },
-  {
-   "id": "lf_crookshore_north_bay",
-   "kind": "secondary_crater_bay",
-   "name": "Crookshore North Ejecta Bay",
-   "px": 115.5,
-   "radius_px": 5.4,
-   "diameter_km": 21.6,
-   "py": 616.0
-  },
-  {
-   "id": "lf_crookshore_south_bay",
-   "kind": "secondary_crater_bay",
-   "name": "Crookshore South Ejecta Bay",
-   "px": 176.0,
-   "radius_px": 5.8,
-   "diameter_km": 23.2,
-   "py": 643.0
   },
   {
    "id": "lf_copper_tarn_collar",
@@ -510,6 +476,67 @@
    "batter_deg": 33.7,
    "skirt_m": 30,
    "note": "Misṭ-Gārḍan's bench: cut into the scarp's hillside on the uphill (east) side, filled with batter slopes on the downhill (west) side, like a dzong's terrace. settlements/viridian/PLAN.md V1; core/world 41l's bench kind (d9c56527a)."
+  },
+  {
+   "id": "lf_crook_eye",
+   "kind": "drowned_ejecta_caldera",
+   "px": 104.0,
+   "py": 562.0,
+   "r_m": 4800,
+   "rim_m": 142.0,
+   "floor_m": -65.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Northernmost drowned secondary-ejecta sentry caldera (~9.6 km water bowl, -65 m floor, +142 m basalt collar) breached WNW toward Steaming Seamounts."
+  },
+  {
+   "id": "lf_crook_kopa_north",
+   "kind": "drowned_ejecta_caldera",
+   "px": 89.0,
+   "py": 604.0,
+   "r_m": 6200,
+   "rim_m": 158.0,
+   "floor_m": -95.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Northern whale-slipway drowned ejecta caldera (~12.4 km bowl, -95 m floor, +158 m rim), guarded across its seaward throat by a cyclopean basalt wave-splitter."
+  },
+  {
+   "id": "lf_crook_kopa_south",
+   "kind": "drowned_ejecta_caldera",
+   "px": 81.0,
+   "py": 677.0,
+   "r_m": 7200,
+   "rim_m": 168.0,
+   "floor_m": -110.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Enclosed deep calving and Hueru-Kuran Nuraghe haven (~14.4 km bowl, -110 m floor, +168 m basalt/tuff collar), breached north via the Kopa Strait into Kopa-North."
+  },
+  {
+   "id": "lf_crook_cascade_caldera",
+   "kind": "drowned_ejecta_caldera",
+   "px": 123.0,
+   "py": 659.0,
+   "r_m": 5400,
+   "rim_m": 148.0,
+   "floor_m": -80.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Drowned ejecta caldera at the mouth of Kopa-Tarn Warra (~10.8 km bowl, -80 m floor, +148 m rim); hub of Hueru-Kuran water-powered nephrite pendulum wire-saws."
+  },
+  {
+   "id": "lf_crook_kopa_splitter",
+   "kind": "wave_splitter_islet",
+   "px": 90.0,
+   "py": 599.8,
+   "r_m": 180.0,
+   "rx_m": 240.0,
+   "rz_m": 95.0,
+   "crest_m": 22.0,
+   "water_m": 0.0,
+   "region": "rmw4wknusgc7h",
+   "note": "Cyclopean prow-shaped columnar basalt wave-splitter across Kopa-North's 200 m seaward breach (CROOK-RIA-DECISIONS.md 1.1.3)."
   }
  ],
  "vale_ring": {

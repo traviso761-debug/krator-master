@@ -73,7 +73,7 @@ const RES_LEDGER=(function(){
    if(o.fields)for(const f of o.fields){const c=f.poly.reduce((a,p)=>[a[0]+p[0]/f.poly.length,a[1]+p[1]/f.poly.length],[0,0]);
     if(inPoly(P.points,c[0],c[1])){R.fields=R.fields||{};R.fields[f.kind]=(R.fields[f.kind]||0)+(f.cap||0);}}
    landCells+=cells;out.polities[P.name]=R;}
-  for(const S of D.settlements){if(!L.isLiving(S.type))continue;
+  for(const S of D.settlements){if(!L.isLiving(S.type)||S.stage==='ruin')continue;
    const st=L.stageOf(S.type);let pol=null;for(const P of polList)if(inPoly(P.points,S.px,S.py)){pol=P.name;break;}
    const r=dayKm*1000,gx=S.px*pm,gz=S.py*pm;
    const nodes=RES_GEO.nodesIn({x0:gx-r,z0:gz-r,x1:gx+r,z1:gz+r},{families:kinds}).filter(n=>Math.hypot(n.gx-gx,n.gz-gz)<=r);
