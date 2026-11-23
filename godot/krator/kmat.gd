@@ -7,6 +7,19 @@ class_name KratorKmat
 extends RefCounted
 
 const LIB := preload("res://shaders/library.gdshader")
+# K5 (GRAPHICS-TERRAIN-PROPOSAL.md 12d): library.gdshader is opaque (it never writes ALPHA, so Godot keeps the depth
+# prepass and early-Z); a surface with alpha_test > 0 draws on library_cutout.gdshader, the same body scissored.
+const LIB_CUTOUT := preload("res://shaders/library_cutout.gdshader")
+
+
+# the library shader for a record's alpha test: the cut-out twin above 0, else the opaque one
+static func shader_for(alpha_test: float) -> Shader:
+	return LIB_CUTOUT if alpha_test > 0.0 else LIB
+
+
+# either library shader (a material on the library, opaque or cut out)
+static func is_library(sh: Shader) -> bool:
+	return sh == LIB or sh == LIB_CUTOUT
 
 
 static func apply(scene: Node, state: GLTFState, tex_dir: String) -> Dictionary:

@@ -70,9 +70,20 @@ const KF_API = (function () {
     return (lightCache[k] = L);
   };
 
+  /* FOOT GROUNDING (K3/M4, GRAPHICS-TERRAIN-PROPOSAL.md 12d): an indexed batch darkens each piece toward where it stands,
+     FOOT_AO.lo at its floor (the y it was placed at) to 1 at FOOT_AO.band metres up, in the vertex colour, so a table, shelf,
+     chest or vessel sits on its floor in both engines at no runtime cost. Only the parts that touch that floor (within
+     2 cm) take it: a leg, a plinth, a chest's body, not a table top. A part taller than 1.5 bands is cut at the band (its
+     triangles clipped there, the lower ones ramped), so the darkening ends at the band and does not run up a cupboard.
+     Wall- and ceiling-hung pieces, glow and glass are left as they were. KF.batch({indexed: true, footAO: false}) turns it
+     off; the soup batch (no index) never takes it, so no older caller's arrays change. */
+  const FOOT_AO = { lo: 0.76, band: 0.18 };
+  API.FOOT_AO = FOOT_AO;
+  const footF = function (h) { const t = h / FOOT_AO.band; return t >= 1 ? 1 : FOOT_AO.lo + (1 - FOOT_AO.lo) * (t > 0 ? t : 0); };
   function Batch(opt) {
     this.opt = opt || {};
     this.indexed = !!this.opt.indexed;   /* INDEXED above; off by default: the soup every older caller reads */
+    this.footAO = this.indexed && this.opt.footAO !== false;
     this.buckets = {};
     this.placements = [];
     this.textured = [];      /* painted panels (F.decal): their canvas map shared; flush merges those sharing a material */
@@ -101,8 +112,37 @@ const KF_API = (function () {
     if (this.indexed) b.idx = new Buf(Uint32Array);
     return b;
   };
-  Batch.prototype.absorb = function (g) {
-    const self = this;
+  /* one part's triangles, world space, clipped at y = cut: below it ramped by footF, above it as they were; pushed as
+     their own vertices (a clipped part shares none) into an indexed bucket */
+  function pushClipped(b, P, N, I, n, floor, cut, cr, cg, cb) {
+    const out = [];
+    const vert = function (k) { return { x: P[k * 3], y: P[k * 3 + 1], z: P[k * 3 + 2], nx: N[k * 3], ny: N[k * 3 + 1], nz: N[k * 3 + 2] }; };
+    const lerpV = function (a, c, t) { const nx = a.nx + (c.nx - a.nx) * t, ny = a.ny + (c.ny - a.ny) * t, nz = a.nz + (c.nz - a.nz) * t, l = Math.hypot(nx, ny, nz) || 1;
+      return { x: a.x + (c.x - a.x) * t, y: cut, z: a.z + (c.z - a.z) * t, nx: nx / l, ny: ny / l, nz: nz / l }; };
+    for (let t = 0; t < n; t += 3) {
+      const V = [vert(I(t)), vert(I(t + 1)), vert(I(t + 2))];
+      /* Sutherland-Hodgman against the plane, each side: the corners kept in order, so the winding stays */
+      for (const below of [true, false]) {
+        const poly = [];
+        for (let i = 0; i < 3; i++) {
+          const a = V[i], c = V[(i + 1) % 3], ia = below ? a.y <= cut : a.y >= cut, ic = below ? c.y <= cut : c.y >= cut;
+          if (ia) poly.push(a);
+          if (ia !== ic) poly.push(lerpV(a, c, (cut - a.y) / (c.y - a.y)));
+        }
+        for (let i = 1; i + 1 < poly.length; i++) out.push(poly[0], poly[i], poly[i + 1]);
+      }
+    }
+    const base = b.pos.n / 3;
+    out.forEach(function (q, i) {
+      const f = q.y < cut ? footF(q.y - floor) : 1;
+      b.pos.push3(q.x, q.y, q.z); b.nor.push3(q.nx, q.ny, q.nz);
+      b.col.push3(Math.round(cr * f), Math.round(cg * f), Math.round(cb * f));
+      b.idx.push1(base + i);
+    });
+    return out.length / 3;
+  }
+  Batch.prototype.absorb = function (g, floor) {
+    const self = this, foot = this.footAO && floor != null;
     g.updateMatrixWorld(true);
     g.traverse(function (o) {
       if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
@@ -122,6 +162,32 @@ const KF_API = (function () {
         /* each vertex once (world space, the part's colour), then the triangles as indices offset by the bucket's
            vertices so far: the soup's corners in the soup's order, shared instead of copied */
         const base = b.pos.n / 3, nv = pos.count, cr = Math.round(c.r * 255), cg = Math.round(c.g * 255), cb = Math.round(c.b * 255);
+        const fam = mt.userData.family;
+        if (foot && fam !== 'glow' && fam !== 'glass') {
+          /* the part in world space first: does it stand on the floor, and how tall is it? */
+          const P = new Float32Array(nv * 3), N = new Float32Array(nv * 3);
+          let y0 = Infinity, y1 = -Infinity;
+          for (let j = 0; j < nv; j++) {
+            _v.fromBufferAttribute(pos, j).applyMatrix4(_m); P[j * 3] = _v.x; P[j * 3 + 1] = _v.y; P[j * 3 + 2] = _v.z;
+            if (_v.y < y0) y0 = _v.y; if (_v.y > y1) y1 = _v.y;
+            if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); N[j * 3] = _w.x; N[j * 3 + 1] = _w.y; N[j * 3 + 2] = _w.z; } else N[j * 3 + 1] = 1;
+          }
+          if (Math.abs(y0 - floor) < 0.02) {
+            if (y1 - floor > FOOT_AO.band * 1.5) {
+              self.tris += pushClipped(b, P, N, idx ? function (i) { return idx.getX(i); } : function (i) { return i; }, n, floor, floor + FOOT_AO.band, cr, cg, cb);
+              return;
+            }
+            for (let j = 0; j < nv; j++) {
+              const f = footF(P[j * 3 + 1] - floor);
+              b.pos.push3(P[j * 3], P[j * 3 + 1], P[j * 3 + 2]); b.nor.push3(N[j * 3], N[j * 3 + 1], N[j * 3 + 2]);
+              b.col.push3(Math.round(cr * f), Math.round(cg * f), Math.round(cb * f));
+            }
+            if (idx) for (let i = 0; i < n; i++) b.idx.push1(base + idx.getX(i));
+            else for (let i = 0; i < n; i++) b.idx.push1(base + i);
+            self.tris += n / 3;
+            return;
+          }
+        }
         for (let j = 0; j < nv; j++) {
           _v.fromBufferAttribute(pos, j).applyMatrix4(_m);
           b.pos.push3(_v.x, _v.y, _v.z);
@@ -148,7 +214,9 @@ const KF_API = (function () {
     const r = buildGroup(key, x, y, z, ry, o);
     const rec = { key: key, variant: o.variant || 0, seed: o.seed || 1, x: x, y: y || 0, z: z, ry: ry || 0,
       building: o.building || null, room: o.room || null, setting: o.setting || null, lights: [], error: r.error || null };
-    if (r.g) { rec.lights = lightsIn(r.g); this.absorb(r.g); disposeGroup(r.g); }
+    /* the floor it stands on, for the foot grounding: none for a piece hung on a wall or a ceiling */
+    const A = FURN_BY_KEY[key], hung = A && (A.anchor === 'wall' || A.anchor === 'ceiling');
+    if (r.g) { rec.lights = lightsIn(r.g); this.absorb(r.g, hung ? null : (y || 0)); disposeGroup(r.g); }
     this.placements.push(rec);
     return rec;
   };

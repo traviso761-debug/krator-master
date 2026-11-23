@@ -64,6 +64,7 @@
    "size": 256
   },
   "bronze": {
+   "normalBits": 8,
    "lib": "metal.metal008",
    "scale": [
     0.6,
@@ -79,6 +80,7 @@
    "size": 256
   },
   "ceramic": {
+   "normalBits": 8,
    "lib": "ceramic.terracotta",
    "scale": [
     0.4,
@@ -94,6 +96,7 @@
    "size": 256
   },
   "tile": {
+   "normalBits": 8,
    "lib": "ceramic.glaze",
    "scale": [
     0.4,
@@ -334,6 +337,7 @@
    "size": 256
   },
   "gold": {
+   "normalBits": 8,
    "lib": "metal.gold",
    "scale": [
     0.3,
@@ -379,6 +383,7 @@
    "size": 256
   },
   "lacquer": {
+   "normalBits": 8,
    "lib": "wood.lacquer",
    "scale": [
     0.8,
@@ -424,6 +429,7 @@
    "size": 256
   },
   "metal": {
+   "normalBits": 8,
    "lib": "metal.iron.pitted",
    "scale": [
     0.5,
@@ -439,6 +445,7 @@
    "size": 256
   },
   "nacre": {
+   "normalBits": 8,
    "lib": "shell.nacre",
    "scale": [
     0.3,
@@ -454,6 +461,7 @@
    "size": 256
   },
   "obsidian": {
+   "normalBits": 8,
    "lib": "stone.obsidian",
    "scale": [
     0.5,

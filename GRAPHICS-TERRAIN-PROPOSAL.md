@@ -635,6 +635,9 @@ Because `core/biome` (`231` builds / `540` pages), `core/materials/record` (`279
 
 ### B. All-Kit Core Steps (`core/materials/*`, `core/engine/*`, `core/catalog/*`, `core/furnish/*`, `kits/interiors/*`, `godot/shaders/` — up to `758` pages; individualized 36-kit checklist in `KIT-REBUILD-SURVEY.md`)
 
+*Written 2026-11-23, before Stage 8 (the owner's D1), on `claude/kit-graphics-k1k5`: KIT-GRAPHICS-K1-K5.md says what each one is, what was left out (K1's sine-free hash and pack.py's mipVariance/cavity split), its tests and which pages move.*
+
+
 1. **`K1` (`M1` + `M2` + `M4`) `[G data]` / `[G shader]` Material-library uniform dedup, sine-free breakup & `mipVariance` AA (`core/materials/record/25-matlib-host.js`, `opt/69a-world-uv.js`, `tools/textures/pack.py`):**
    - Replace literal GLSL floats in `KMAT.specularHook`, `KMAT.breakupHook`, and `69a-world-uv.js` with per-material uniforms (`uKmSpec`, `uKmBreak`, `uWuvScale`), collapsing `30–45` duplicate `MeshStandardMaterial` programs per kit/settlement down to `1–2` programs; replace `sin()` in `kmH` with a sine-free hash matching `godot/shaders/lib/breakup.gdshaderinc`.
    - Have `pack.py` emit pre-quantisation normal `mipVariance` (`8` floats) into every kit's `pack.json` (`M2` specular AA) and separate concave pore/mortar `cavity` from convex edge `wear` (`M4`).

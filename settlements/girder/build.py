@@ -102,6 +102,8 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '90-atmos-host.js',   # binds core/atmos
                  '98-start.js'}        # the take (KHOST.take)
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
+DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('27-matlib-m1.js')   # core/materials/record's M1 packing (Stage 5; plain functions, no rnd())
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 DETERMINISTIC |= set(CORE_WATER) | {'90w-brook-water.js'}   # core/water: IIFE-scoped, its own PRNG, nothing placed
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
@@ -256,6 +258,8 @@ def main():
                 paths[f] = os.path.join(d, f)
     paths.setdefault('56-core-water-breakup.js', os.path.join(WATER_DIR, 'ext', '56-core-water-breakup.js'))   # the breakup (core/water ext/56)
     khost.resolve(paths, CORE_HOST)        # a src/ copy with a shell file's name would override it (none today)
+    # the night light volume, one shared copy (core/interiors/20-core-roomlight-host.js KNLV, K4 of GRAPHICS-TERRAIN-PROPOSAL.md 12d)
+    paths.setdefault('20-core-roomlight-host.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '20-core-roomlight-host.js'))
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:

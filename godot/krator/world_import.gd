@@ -481,7 +481,9 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 		s.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "StandardMaterial3D (alpha)"})
 		return s
 	var sm := ShaderMaterial.new()
-	sm.shader = KratorKmat.LIB
+	var at_val = rec.get("alphaTest")
+	var at_f := clampf(float(at_val) if (at_val is int or at_val is float) else 0.0, 0.0, 1.0)
+	sm.shader = KratorKmat.shader_for(at_f)   # K5: opaque on library.gdshader, alpha_test > 0 on library_cutout.gdshader
 	sm.set_shader_parameter("colour", Vector3(col.r, col.g, col.b))
 	sm.set_shader_parameter("has_albedo", img != null)
 	if img:
@@ -501,8 +503,7 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 	sm.set_shader_parameter("specular_k", clampf(float(rec.get("specular", 0.5)), 0.0, 1.0))
 	sm.set_shader_parameter("tint", bool(rec.get("tint", true)))
 	sm.set_shader_parameter("unlit", bool(rec.get("unlit", false)))
-	var at_val = rec.get("alphaTest")
-	sm.set_shader_parameter("alpha_test", clampf(float(at_val) if (at_val is int or at_val is float) else 0.0, 0.0, 1.0))
+	sm.set_shader_parameter("alpha_test", at_f)
 	if rec.get("emissive") != null:
 		var e := KData.colour(rec["emissive"], false) * float(rec.get("emissiveIntensity", 1.0))
 		sm.set_shader_parameter("emission", Vector3(e.r, e.g, e.b))
