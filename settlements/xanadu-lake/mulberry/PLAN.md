@@ -53,7 +53,10 @@ The silk town at the Qol Siṭrīm's mouth. Malbari makes 16 t of silk a year (`
 **The landmarks** (the spec's `landmarks`):
 
 - the reeling houses: `xa_reeling_house` (stream)
-- the Qol bridge: `xa_river_span` (stream)
+- the Qol bridge: `xa_river_span` (stream). **The owner, 2026-11-23: "place bridge on map at open world step"**: the bridge is a
+  map feature where the road crosses the Qol (`r272`, near its mouth at 824,1489), added by the scale-model re-run and drawn by
+  `xanadu-north-shore` at the shared target's step L6 (`../PLAN.md` sections 9 and 10), seated on the region's banks with a check
+  that the road meets the deck on both banks. Malbari's page stays as it is (the river is outside its footprint)
 - the han: `xa_caravanserai` (stream)
 - the temple of the Decree: `xa_temple` (slope)
 

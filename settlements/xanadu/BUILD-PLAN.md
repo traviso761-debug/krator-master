@@ -79,18 +79,18 @@ cut site or a pin only), **3 sited**, **32 with a tune record or nothing**. Now:
 | # | Session | Brief | Waits on | Est. |
 |---|---|---|---|---|
 | **A0** | (the owner's merges) | Land what is in flight (branches ahead of this line on 2026-11-22): Strongbow `claude/keen-swanson-68a311` 37, Ledge `claude/ledge-70af2f` 5, Viridian 3, Phēr `claude/pher-plan-55d3f2` 3, scrap Xanadu `claude/scrap-xanadu` 3, the Azure Dream 1, Thalaba 1, Strongwall 1, Gihon as it lands; every owned session carries on with its next step (1a) | the owner | |
-| **A1** | Lake towns L0 | The shared target `settlements/xanadu-lake` (fragments, `tools/fit_lake_town.py`, the tests, the `bake_towns.py` generator, `?town=`) and **Māuṭh** in full, on the north shore's region; `xa_ghat` and `xa_governor` in `kits/xanadu/extra/` | nothing | 1-2 |
-| **A2** | Lake towns L1 | Ōlḍ-Thalaba (with `core/ruins` on its old town) and Ḍāiyar | A1 | 1 |
-| **A3** | Lake towns L2 | The north-west round: Qōqō, Nēṭ, Malbari, Hāibh; their four sites and corridors in `openworld/SITES.json`, `xanadu-north-shore` re-cut and re-baked; `xa_net_loft` and the orchard plot | A1 | 1 |
-| **A4** | Lake towns L3 | Erehwon's south-east round: Boṭ-Yārḍ, Wībhar, Saphran, Pāṭari, Ṭī-Ṭeras, Hoṭ-Bāṭh, Ālph-Hēḍ; `xa_timber_yard`, `xa_clay_pit`; the region's `towns` | A1 | 2 |
+| **A1** (**built** 2026-11-23, cloud, `claude/festive-johnson-lp780f`; GPU verify owed) | Lake towns L0 | The shared target `settlements/xanadu-lake` (fragments, `tools/fit_lake_town.py`, the tests, the `bake_towns.py` generator, `?town=`) and **Māuṭh** in full, on the north shore's region; `xa_ghat` and `xa_governor` in `kits/xanadu/extra/` | nothing | 1-2 |
+| **A2** (**built** 2026-11-23, the same branch; GPU verify owed) | Lake towns L1 | Ōlḍ-Thalaba (with `core/ruins` on its old town) and Ḍāiyar | A1 | 1 |
+| **A3** (**built** 2026-11-23, the same branch; GPU verify owed) | Lake towns L2 | The north-west round: Qōqō, Nēṭ, Malbari, Hāibh; their four sites and corridors in `openworld/SITES.json`, `xanadu-north-shore` re-cut and re-baked; `xa_net_loft` and the orchard plot | A1 | 1 |
+| **A4** (**in progress** 2026-11-23, locally on this branch: the seven specs, `xa_timber_yard` in `kits/xanadu/extra/88i`) | Lake towns L3 | Erehwon's south-east round: Boṭ-Yārḍ, Wībhar, Saphran, Pāṭari, Ṭī-Ṭeras, Hoṭ-Bāṭh, Ālph-Hēḍ; `xa_timber_yard`, `xa_clay_pit`; the region's `towns` | A1 | 2 |
 | **A5** | Lake towns L4 and the isles | Erehwon's west round: Gārḍan, Qorī, Ōrcharḍ, Lōṭas, Phish-Mārkiṭ, Siṭāq (Siṭāq's stack a landform); the three isles (H1) | A1 | 2 |
 | **A6** | Lake towns L5 | Life and interiors: the crowds by the census, the fair and market days, the trades' rooms | A2-A5 | 1 |
-| **A7** | Works W1-W3, W5 | The camp census option in core/hamlet (opt-in, negatives); `xa_stamp_mill`, `xa_sorting_shed`; both mines' camps on a sheet; the Tears' camp as a `xanadu-oidong-highrift` site; Erehwon's caravan halt; the Kōlḍ-Lōḍ rename in the tune and pin | nothing | 1-2 |
+| **A7** (**built** 2026-11-23, cloud, `claude/xanadu-works-a7`; W2 in part; GPU verify owed) | Works W1-W3, W5 | The camp census option in core/hamlet (opt-in, negatives); `xa_stamp_mill`, `xa_sorting_shed`; both mines' camps on a sheet; the Tears' camp as a `xanadu-oidong-highrift` site; Erehwon's caravan halt; the Kōlḍ-Lōḍ rename in the tune and pin | nothing | 1-2 |
 | **A8** (**built** 2026-11-23: `settlements/marches`, its verify passed on SwiftShader, the GPU run owed) | Marches M1, M3 | Both watch forts on a sheet (a build of its own, `settlements/marches`, on Xanadu's page), the three states; the pins listed | nothing | 1 |
 | **A9** | Countryside H2 | The sample module (`core/world/48v`, `88v`), opt-in, on `xanadu-lake-shore` and `xanadu-north-shore` | A5 (the regions settled) | 1 |
 | **A10** | (the scale-model queue) | The records-only batch of section 4 | its turn in the queue | |
 
-About **11-13 sessions** (est.). A1 first; then A2-A5 one at a time (they share the target's fragments: two writers never
+About **11-13 sessions** (est.). **Merged on this branch 2026-11-23** (local, 2e0516bf3): A1-A3, A7, A8 and STACK-PLAN XS0 (partial), XS1, XS2, from their cloud branches. A1 first; then A2-A5 one at a time (they share the target's fragments: two writers never
 touch the same files), A7 and A8 beside them (their own files), A9 after A5. **Phase A is done** when every lake town and
 isle passes its verify and stands in its region, the works and forts pass on their sheets, and the owned sessions have
 landed what they can without the stack (Erehwon's re-seat, Gihon G0-G3, Strongbow, the Tempest's and the Beacon's pages
