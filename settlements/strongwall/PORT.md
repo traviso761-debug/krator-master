@@ -12,6 +12,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `targets/fort/89xs-sw-interiors.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the page's switch: the interiors on unless ?interiors=0 (KFURN.flags reads the query) |
 | `targets/fort/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/fort/89zs-sw-site.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/fort/90q-sw-world.js` | 5.5 | [web] | 12 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |

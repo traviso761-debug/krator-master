@@ -32,8 +32,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `78o-xa-golden-way.js` | 24 | the Pleasure Dome where the Way is built (85); the builder (102) |
 | `79-xa-guild.js` | 17 | Farmers' Guild (22); Miners' Guild (36); Goldsmiths' Guild (55); Alchemists' Guild (71); Masons' Guild (89); the generator (109) |
 | `80-xa-military.js` | 16 | the barracks (12); a length of the city wall (34); the gate (44); the fortress (dzong) (61); the city watch (86); the mustering ground (105) |
-| `80f-xa-fort-data.js` | 20 |  |
-| `80g-xa-fort.js` | 26 | a stretch of curtain (u0..u1 of c), h high; o.me (28); a tower: keep the fraction of its height; fallen (51); a gate: the gatehouse over the curtain, its iwan (65); the keep: white storeys, the red chapel with the (84); a range (barracks, quarters, the Tears' house):  (103); the small buildings (122); a gun: a bronze piece on its carriage, laid out  (146); the whole fort, from its plan, in its state (150); the watch post: a square tower, its fire basket, (196) |
+| `80f-xa-fort-data.js` | 31 **big** |  |
+| `80g-xa-fort.js` | 36 **big** | a stretch of curtain (u0..u1 of c), h high; o.me (28); a tower: keep the fraction of its height; fallen (71); a gate: the gatehouse over the curtain, its iwan (86); the keep: white storeys, the red chapel with the (109); a range (barracks, quarters, the Tears' house):  (128); the small buildings (147); a gun: a bronze piece on its carriage, laid out  (174); the whole fort, from its plan, in its state (178); the watch post: a square tower, its fire basket, (230) |
 | `81-xa-public.js` | 11 | the arena (11); the amphitheatre (36); the public baths (55); the public garden (76) |
 | `82-xa-hill.js` | 3 |  |
 | `83-xa-turk.js` | 24 | shared bits of the Turkish houses (prefix xnXT) (7); the temple after Ortaköy (43); Turkish houses (81); Turkish shops (128); the street lights (between buildings) (172) |

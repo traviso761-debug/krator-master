@@ -1489,8 +1489,8 @@
    "sha256": "a2536e7a8d3cc1725b2d273b88d84832305019b1601ed5f94677c24c91a61a1f"
   },
   "kits/xanadu/dist/xanadu.html": {
-   "bytes": 1150656,
-   "sha256": "9c300339234e13ca2354feae41ea5e6f4aefd0ce11c30e65410e7ff809b7cad8"
+   "bytes": 1245450,
+   "sha256": "92ee8c9d804e247d37457679f6312e1fa6f22fadfbb4d33e26906f71bb75ab6d"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
@@ -1975,6 +1975,10 @@
   "settlements/span/dist/span.html": {
    "bytes": 2150014,
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"
+  },
+  "settlements/strongwall/dist/strongwall.html": {
+   "bytes": 8823620,
+   "sha256": "dd91fdda22564a0eb6206187e37dfcfbafd256b7b094d49843fd0787b5f6397b"
   },
   "settlements/thalaba/dist/thalaba-pieces.html": {
    "bytes": 13918208,
