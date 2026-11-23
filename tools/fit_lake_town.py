@@ -56,7 +56,12 @@ def specs():
     """XL.SPECS and the tune's lake rows, run in node (the fragments read in place)"""
     js = ('var window=globalThis;var XAN_TUNE=require(%s);\n' % json.dumps(TUNE) + open(SPECS, encoding='utf-8').read() +
           '\nprocess.stdout.write(JSON.stringify({specs:XL.SPECS,lake:XAN_TUNE.lake}));\n')
-    r = subprocess.run([BS.node(), '-e', js], capture_output=True, text=True, encoding='utf-8')
+    # from a file, not `node -e`: the specs outgrew Windows' command line (WinError 206) at the west round (step L4)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, 'specs.js')
+        with open(path, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(js)
+        r = subprocess.run([BS.node(), path], capture_output=True, text=True, encoding='utf-8')
     if r.returncode:
         sys.exit('fit_lake_town: the specs did not load:\n' + r.stderr[-3000:])
     return json.loads(r.stdout)

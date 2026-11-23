@@ -40,6 +40,11 @@ households) is the shared row's: an isle of 400 is laid as **two villages** at i
 an isle of 300 as one village at `popMax: 300`, Lāiṭ-Hāus at `popMax: 200`. `test-hamlet.js`'s census check holds each to
 the tune's people.
 
+**Built and held (2026-11-23, step H1).** Wesṭ-Āil's two villages stand in `xanadu-lake-shore`'s spec on the region's fishers'
+row. **Lāiṭ-Hāus and Bē-Āil are held**: at 1:1 each isle is too small for core/hamlet's village at its people (the bake could
+not place 18 and 23 of their houses). Owed: a denser isle layout (core/hamlet's lanes packed to the shore, or the isle laid on
+core/city as the lake towns are), then their villages; the light, the customs house and the fishponds with them.
+
 **Pins and landforms** (the queue, listed only): three records-only village pins (`sxanlkwestisle01`, `sxanlkbayisle01`,
 `sxanlkeastisle01`, their SITES.json ids), type `village`. **Lāiṭ-Hāus's reef**: *proposed* an `islet` landform record on the
 region (`core/world/41l-world-landforms.js`), the light's rock 600 m north of the isle; a region record, not a model edit.
@@ -103,6 +108,57 @@ The provinces' countryside (`prov.p1`..`prov.p8`, about 290,000 people in bulk) 
 culture: 'xanadu'}`. A core/world change reaches every open-world page: it lands with the all-builds rebuild (opt-in until
 then, `TODO.md` "Ride along"), first on the two regions that exist (`xanadu-lake-shore` P1, `xanadu-north-shore` P7).
 
+## 3b. The new villages NE of Theodiga (the owner, 2026-11-23; placed when Bhēl is cut after the stack)
+
+The owner, 2026-11-23: *"we could also stand to put a settlement or two NE of theodiga (in the empty region near the viridian
+monastery)"*; asked the same day, the owner chose **"Tea + poppy villages"**, their economy records added **with their build**.
+The country between Theodiga (908,1535, the Vale floor at -500 m) and Viridian's estate (962,1562, 813 m) climbs east into
+the scarp and a high plateau (2,200-4,000 m) with almost no perennial water off the Ālph: rain-fed, as Viridian's tea is.
+
+| Id (*proposed*) | Village (*proposed* name) | px | Ground (the model) | Focus | People | Tithes to |
+|---|---|---|---|---|---|---|
+| `s4zvgepuru/hamlet/tea-bench` | **Klāuḍ-Ṭī** (Cloud Tea): a tea-terrace village on the bench | 935,1546 | 1,658 m, 3 % over its cell, a level bench; 26 km east of Theodiga, 40 km from Viridian; mist and rain like Viridian's (no river within 12 km: cisterns and the springs at the bench's foot) | `tea` (`KHAMLET.xanaduRow`: farmsteads and the tea factory) | ~500 (two villages' census, or one at `popMax` 500) | Theodiga (P2, Bhēl); its tea down to Theodiga's market and on to the lake by Ṭī-Ṭeras's road |
+| `s4zvgepuru/hamlet/sky-poppy` | **Skāi-Pāpi** (Sky Poppy): a poppy-growers' and herders' village on the plateau | 967,1526 | 3,583 m, 3 %; a wadi (the Kilīā Ḍrāi, `r770`) 1 km off | `farming`, its fields sown with the sky poppy (`T.goods.opium.crop`, `sky-poppy`), and a latex shed (`xa_workshop` stands in); *proposed*: a `poppy` focus on the Xanadu row at the rebuild | ~400 | Theodiga; its latex down to the Vale's opium (P2's `extra.opium`), lanced in the dry season's end (`T.calendar` `lancing`) |
+
+**Why these two:** P2's land already makes tea (60 t) and opium (150 t) in bulk (`T.provinces` p2 `extra`); these are the
+named villages of that make on the ground the region shows empty. **Their records** (with their build): two rows of a
+Theodiga ring entry (`T.ringSites['s4zvgepuru']`, section 2's), their people out of P2's bulk district; the sky-poppy
+village's latex a road share to Theodiga. `test-xan-economy.js` passes before and after.
+
+**Pins** (the queue, records-only): two village pins, "Klāuḍ-Ṭī" 935,1546 and "Skāi-Pāpi" 967,1526 (*proposed* ids
+`steabench01`, `sskypoppy01`). **Textures**: nothing new (the tea gardens are `kits/crops` `tea` rows; the poppy fields
+`kits/crops` `sky-poppy` if it is a record, else the field pass's own).
+
+## 3c. The uplands S/SE of Theodiga (the owner, 2026-11-23; placed when Bhēl is cut after the stack)
+
+The owner, 2026-11-23: *"we should also scope settlements S/SE of theodiga"*; asked, the owner chose **"Bench village + mesa
+herders"**. The Ālph's gorge falls south of Theodiga from -500 to -1,500 m toward Qiblai's lake; its floor down to the Landing
+is the Gihon session's (its hamlets on the portage road, `settlements/gihon/PLAN.md` G3), so these two stand on the uplands
+west of the gorge. Records with their build, as section 3b's.
+
+| Id (*proposed*) | Village (*proposed* name) | px | Ground (the model) | Focus | People | Tithes to |
+|---|---|---|---|---|---|---|
+| `s4zvgepuru/hamlet/terrace-bench` | **Ṭeras-Hil** (Terrace Hill): a terraced farm village | 902,1556 | 1,011 m, 1 % over its cell, a level bench west of the gorge, 23 km south of Theodiga; relief 150 m round it; no river within 12 km (the gorge's springs, cisterns) | `saffron` (`KHAMLET.xanaduRow`: farmsteads and the saffron house: the Vale's 2.2 t of saffron, `T.provinces` p2) and grain terraces | ~400 | Theodiga (P2) |
+| `s4zvgepuru/hamlet/goat-mesa` | **Gōṭ-Mesā** (Goat Mesa): a herders' hamlet | 900,1544 | 1,914 m, 2 %, the mesa's top; relief 318 m | `ranch` (the shared row's: pens, corral, dairy) | ~150 | Theodiga |
+
+## 3d. West of Phīsh-Mārkiṭ (the owner, 2026-11-23; on the Lake Shore region now)
+
+The owner, 2026-11-23: *"... and west of phish-markit in the hills"*; asked, the owner chose **"Both"**: a hill village where the
+west road climbs out of the caldera and a farm village on the rim plain below it. Beyond the caldera's west lip a rim plain of
+100-300 m runs out about 40 km to foothills at 1,100-1,600 m and the western highlands (3,000-5,800 m) behind them. Both are
+P1 (Lēk-Shor), tithing to Erehwon through Phīsh-Mārkiṭ's market, and both can stand on `openworld/xanadu-lake-shore` now: two
+new sites (`model: false` rows in `openworld/SITES.json`) with corridors from Phīsh-Mārkiṭ, and the region's cut widened west
+(its frame's origin pinned, as the north shore's was for Hāibh, so the land already baked does not move). Records with their
+build.
+
+| Site (*proposed*) | Village (*proposed* name) | px | Ground (the model) | Focus | People |
+|---|---|---|---|---|---|
+| `sxanwestroad01` | **Wesṭ-Rōḍ** (West Road): the road's hill village and halt | 778,1479 | 1,593 m, 0.5 %, a level bench in the foothills; the Girīn Ḍrāi (a wadi, 7.2 m³/s) 9 km off | `orchard` (the hill orchards) with a han's halt on the road (the road's stop, `KCAMP.halt` or a `xa_caravanserai` in its works) | ~400 |
+| `sxanrimfarm01` | **Rim-Phārm** (Rim Farm): the plain's farm village | 795,1482 | 105 m, flat; the Barāiṭ Ḍrāi (a wadi, 4.9 m³/s) 1 km off | `farming` (grain on the rim plain, watered from the wadi in the wet season) | ~400 |
+
+**Pins** (the queue, records-only): four village pins, Ṭeras-Hil 902,1556, Gōṭ-Mesā 900,1544, Wesṭ-Rōḍ 778,1479, Rim-Phārm
+795,1482 (*proposed* ids `sterrhill01`, `sgoatmesa01`, `sxanwestroad01`, `sxanrimfarm01`).
+
 ## 4. Core adoption
 
 | Need | Module | How |
@@ -121,6 +177,8 @@ then, `TODO.md` "Ride along"), first on the two regions that exist (`xanadu-lake
 | **H2** | The countryside sample's module, opt-in; on `xanadu-lake-shore` and `xanadu-north-shore` | after L4; before the stack's Xanadu slice, so the slice's numbers include it |
 | **H3** | Theodiga's ring in the Bhēl region's spec; the tune's `T.ringSites` row | after the stack cuts Bhēl (BUILD-PLAN.md phase B) |
 | **H4** | The samples on the six province regions | with H3 |
+| **H5** | Klāuḍ-Ṭī and Skāi-Pāpi (section 3b), Ṭeras-Hil and Gōṭ-Mesā (3c) in the Bhēl region's spec, with Theodiga's ring; their tune rows | with H3 |
+| **H6** | Wesṭ-Rōḍ and Rim-Phārm (3d): their two sites in `openworld/SITES.json`, the Lake Shore region's cut widened west (origin pinned), their hamlets in its spec, re-baked; their tune rows | now (after A5) |
 
 ## 6. Open points (each with its default)
 

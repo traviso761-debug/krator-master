@@ -6,7 +6,7 @@ each town's records from its tune row (`XAN_TUNE.lake`, read in place) and its d
 same ground (`core/world/bake_towns.py`). Built so far: **Māuṭh** (`mouth`, step L0: `mouth/PLAN.md`); **Ōlḍ-Thalaba**
 (`old-thalaba`, step L1: the village and its empty old town, `old-thalaba/PLAN.md`) and **Ḍāiyar** (`dyer`, step L1: the dyers'
 town, `dyer/PLAN.md`); Phēr's north-west round, step L2: **Qōqō** (`cocoa`), **Nēṭ** (`net`), **Malbari** (`mulberry`) and
-**Hāibh** (`hive`), their sites added to `openworld/SITES.json` and the region re-cut. Erehwon's south-east round, step L3, on `openworld/xanadu-lake-shore`: **Boṭ-Yārḍ** (`boatyard`), **Wībhar** (`weaver`), **Saphran** (`saffron`), **Pāṭari** (`pottery`), **Ṭī-Ṭeras** (`tea-terraces`) and **Ālph-Hēḍ** (`alph-head`); **Hoṭ-Bāṭh** (`hot-bath`) has its spec but is held (`KNOWN_ISSUES.md`).
+**Hāibh** (`hive`), their sites added to `openworld/SITES.json` and the region re-cut. Erehwon's south-east round, step L3, on `openworld/xanadu-lake-shore`: **Boṭ-Yārḍ** (`boatyard`), **Wībhar** (`weaver`), **Saphran** (`saffron`), **Pāṭari** (`pottery`), **Ṭī-Ṭeras** (`tea-terraces`) and **Ālph-Hēḍ** (`alph-head`); **Hoṭ-Bāṭh** (`hot-bath`) has its spec but is held (`KNOWN_ISSUES.md`). Erehwon's west round, step L4: **Gārḍan** (`garden`), **Qorī** (`quarry`), **Ōrcharḍ** (`orchard`), **Lōṭas** (`lotus`), **Phīsh-Mārkiṭ** (`fish-market`) and **Siṭāq** (`stack`); the three small isles are villages of the region's spec (`settlements/xanadu/HAMLETS-PLAN.md` H1).
 
 ## Core adoption
 

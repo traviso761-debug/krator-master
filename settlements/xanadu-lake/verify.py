@@ -34,7 +34,8 @@ _spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing r
 
 CITY_JS = r"""
 {const Q=window._xl||{},S=(typeof XL!=='undefined'&&XL.SPECS)?XL.SPECS[Q.key]:null,T=typeof XL_TOWN!=='undefined'?XL_TOWN:null,P=T?T.place:[],key=Q.key,h=(x,z)=>xlH(key,x,z);
- R.push({name:'xl-laid',ok:!Q.err&&!!T&&Q.placed>250&&Q.failed===0,
+ /* more than 100 placed, as tests/test-xl-towns.js asks: Siṭāq (900 people, 164 houses) lays 178 (it was 250, Māuṭh's size) */
+ R.push({name:'xl-laid',ok:!Q.err&&!!T&&Q.placed>100&&Q.failed===0,
   detail:Q.err?('the plan did not lay: '+Q.err):((Q.name||key)+': '+Q.placed+' placed '+JSON.stringify(Q.byKind||{})+', '+Q.chunks+' chunks, '+Q.failed+' not drawn'+(Q.failed?': '+Q.fails.join(' | '):''))});
  if(S&&T){
   const miss=S.works.filter(w=>P.filter(p=>p.key===w.key).length<w.n).map(w=>w.key).concat(S.landmarks.filter(l=>!P.some(p=>p.key===l.key)).map(l=>l.key));

@@ -69,4 +69,13 @@
   keep the plans' word, the ground is the region's.
 - **Boṭ-Yārḍ's timber yard is a new opt-in piece** (`kits/xanadu/extra/88i-xa-timber-yard.js`, `xa_timber_yard`); Pāṭari needs
   no clay pit of its own (88g's kiln yard has its pit and sherd heap).
+- **The west round's owed pieces** (step L4, 2026-11-23): Siṭāq's stack (a landform record, from the scale-model queue) and
+  Qorī's cut quarry face (a `core/terrain` carve) are not drawn; Lōṭas's reed beds (a `core/mask` bed in the shallows) and its
+  walled lotus ponds (`xa_fishponds`, whose seat on the water the plan has not set) are not either: its mat sheds stand up the
+  slope, not at the shallows' edge. Phīsh-Mārkiṭ's temple and caravanserai stand by the landing (too deep for its contour
+  blocks where the shore bends), its harbour warehouses are the kit's ordinary warehouse.
+- **The orchards' crops are named trees**: Gārḍan's `citron` (its plan's citrus gardens), Ōrcharḍ's `pomegranate` (kits/crops'
+  fruit trees the Vale grows by rain), on the kit's orchard plot (fruit).
+- **The west shore faces north-east**: Ōrcharḍ's, Lōṭas's, Phīsh-Mārkiṭ's and Siṭāq's bearings are 45 degrees (the fits read
+  47-60); Lōṭas's pin is 1.7 km and Siṭāq's 1.3 km above their landings (R 2600, 2200).
 - **GPU.** The page was first verified on SwiftShader in a cloud session with no GPU lane; the `KRATOR_GL=gpu` run is owed (the north shore's seven by the master session; the south-east round's six from step L3).
