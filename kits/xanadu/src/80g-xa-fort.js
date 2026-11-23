@@ -157,7 +157,7 @@ function xfKeepWays(b,C,S){const x=b.at[0],z=b.at[1],w=b.w,d=b.d,y0=1.2,top=S?S.
    rule, the chapel), and on its roof at 18 m the lamp's slewing ring and yoke; the lamp's centre at 22 m. The keep's fire basket
    goes. The lamp head is the page's (kits/ancients' anc_beacon_lamp, B5): window._xaBeacons has each lamp's centre in the world.
    The figures are the Beacon's layout's (settlements/beacon/src/30-bc-layout.js draw.plinth, draw.mount, lamp.h) */
-const XF_PLINTH={footing:1.2,storeys:[4.5,4.5,4.5],chapel:4.5,finial:2.2,ring:2.6,ringH:1.2,yoke:2.8,lamp:22,yellow:0xdcb048};
+const XF_PLINTH={footing:1.2,storeys:[4.5,4.5,4.5],chapel:4.5,finial:2.2,ring:2.6,ringH:1.2,yoke:2.8,lamp:22,yellow:0xd4b040};   /* the gold spoke's wall (kits/qiblai QSPOKE[2].wall), as the order's own buildings wear it: the owner, 2026-11-23, "match the gold" */
 function xfPlinth(b,C,o){const P=XF_PLINTH,x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=xLit()?'lit':'glass',trim=xC(xPick(XPAL.trim)),gilt=xC(xPick(XPAL.gold)),yel=xC(P.yellow);
  xnWall(x,0,z,w+1.2,P.footing,d+1.2,0,C.stone,'dressed');
  const hs=[P.storeys[0]-P.footing].concat(P.storeys.slice(1)),S=xnStack(x,P.footing,z,w,d,0,hs,C.wash,'wash');
