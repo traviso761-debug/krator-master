@@ -615,7 +615,7 @@ Once the collected sessions are merged and Stage 8 lands, the next graphics expa
 
 Because `core/biome` (`231` builds / `540` pages), `core/materials/record` (`279` builds / `758` pages), `core/catalog` (`53` builds / `263` pages), and `core/engine` (`16` builds / `74` pages) reach nearly every LFS HTML page in the repo, the following shared-core upgrades are designed to land **once, inside the all-builds rebuild**, lifting every biome and kit simultaneously without extra intermediate rebuild passes:
 
-### A. All-Biome Core Steps (`core/biome/*`, `core/terrain/*`, `godot/shaders/foliage.gdshader` & `bark.gdshader` — `540` pages)
+### A. All-Biome Core Steps (`core/biome/*`, `core/terrain/*`, `godot/shaders/foliage.gdshader` & `bark.gdshader` — `540` pages; individualized 64-biome checklist in `BIOME-REBUILD-SURVEY.md`)
 
 1. **`B1` (`M5`) `[G shader]` Normal-aware leaf transmittance (`core/biome/30-core-foliage.js:361-365`, `godot/shaders/lib/foliage.gdshaderinc`):**
    - Today `foliageHook` computes `_bk = pow(max(dot(_bV, uSunDir), 0.0), 6.0)` with no leaf normal, illuminating leaves whose sunlit side is occluded.
@@ -632,7 +632,7 @@ Because `core/biome` (`231` builds / `540` pages), `core/materials/record` (`279
    - Point `BIO.attachAudit`, `cliffOld`, and `57-core-water-audit.js` at `KDRAWN.h` whenever `core/drawn` is loaded so coarse-triangle plant float is caught automatically.
    - Upgrade vertex crease/lift ground tinting (`S6`) from achromatic `±6%` to chromatic hollow/nose & aspect-moisture tinting across shared terrain builders.
 
-### B. All-Kit Core Steps (`core/materials/*`, `core/engine/*`, `core/catalog/*`, `core/furnish/*`, `kits/interiors/*`, `godot/shaders/` — up to `758` pages)
+### B. All-Kit Core Steps (`core/materials/*`, `core/engine/*`, `core/catalog/*`, `core/furnish/*`, `kits/interiors/*`, `godot/shaders/` — up to `758` pages; individualized 36-kit checklist in `KIT-REBUILD-SURVEY.md`)
 
 1. **`K1` (`M1` + `M2` + `M4`) `[G data]` / `[G shader]` Material-library uniform dedup, sine-free breakup & `mipVariance` AA (`core/materials/record/25-matlib-host.js`, `opt/69a-world-uv.js`, `tools/textures/pack.py`):**
    - Replace literal GLSL floats in `KMAT.specularHook`, `KMAT.breakupHook`, and `69a-world-uv.js` with per-material uniforms (`uKmSpec`, `uKmBreak`, `uWuvScale`), collapsing `30–45` duplicate `MeshStandardMaterial` programs per kit/settlement down to `1–2` programs; replace `sin()` in `kmH` with a sine-free hash matching `godot/shaders/lib/breakup.gdshaderinc`.
