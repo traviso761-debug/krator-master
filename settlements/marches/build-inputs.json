@@ -215,8 +215,8 @@
     "settlements/marches/kit.json": "eeb5870c4c1aec7fc52bbb2fc92537390600b0b76dae785c1d561aff83209118",
     "settlements/marches/src/80m-mr-works.js": "051124c67d8230644d272fbdedd072d2bf8af5fedf5b34944aac0b2bcabba998",
     "settlements/marches/src/80n-mr-forts.js": "bf4d87ef65fc4845bd491b3c98441ea05ea42b8774a80adb9636ba467bee6a59",
-    "settlements/marches/targets/forts/89z-rows.js": "f6f24b030fb8a0a65283e954f7c7eaf420cdc4095cb1b8fb08d01145bbfa3989",
-    "settlements/marches/targets/forts/91u-mr-ruins.js": "4dcb6c4262dbf61f107f48c998aee4c41ef171de45bc59aeee8983203e7440c5",
+    "settlements/marches/targets/forts/89z-rows.js": "87402a313aeb0f1c96a007182a88f2654a0f1282814a503dd1fb7a8c1a74a172",
+    "settlements/marches/targets/forts/91u-mr-ruins.js": "3813db3905ac0a2c6339e06e654b9d1affa1ffd134c7171d64f19668c6c11536",
     "settlements/marches/targets/forts/91v-mr-drawn.js": "9f2ec7a3636120a88ce7177f36a537ef632f48c770c9623229ed62ec40852db1",
     "settlements/marches/targets/forts/91z-views.js": "a9597a6349d21897cf4941d2051ddfa9624ea1e87b398b71b97a806908a351c4",
     "settlements/xanadu/PORT.md": "6451aaac798d97eca5394d312cf25c25c7b066e3ef439960827a075ba186ab99",
@@ -429,14 +429,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/marches/build-manifest-forts.json": "c8f5f36f6b83c4e8c4036b4822411e199eb2ec7d422edd33c77053fe19823b2c",
-    "settlements/marches/dist/marches.html": "9452feff7846528b8ca6c5c66f3e08e90b18bc4fb17f478fa083237c1965b6d5",
+    "settlements/marches/build-manifest-forts.json": "47e61c9c9c185c3870a541c1d139eead6af5aa0d7c64c981ca9b3c556543f965",
+    "settlements/marches/dist/marches.html": "5bc1832e823c09160ed5950dd5632fc08aab10b5e1d30312e806156b514394d9",
     "settlements/marches/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/marches/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/marches/build-manifest-forts.json": "c8f5f36f6b83c4e8c4036b4822411e199eb2ec7d422edd33c77053fe19823b2c",
-    "settlements/marches/dist/marches.html": "9452feff7846528b8ca6c5c66f3e08e90b18bc4fb17f478fa083237c1965b6d5",
+    "settlements/marches/build-manifest-forts.json": "47e61c9c9c185c3870a541c1d139eead6af5aa0d7c64c981ca9b3c556543f965",
+    "settlements/marches/dist/marches.html": "5bc1832e823c09160ed5950dd5632fc08aab10b5e1d30312e806156b514394d9",
     "settlements/marches/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/marches/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

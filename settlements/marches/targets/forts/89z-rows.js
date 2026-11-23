@@ -28,4 +28,3 @@ const SITES=[];
 MR.forts.forEach(F=>MR.states.forEach((st,v)=>{const cx=(v-1)*MR.pitch.x,cz=-F.row*MR.pitch.z;
  SITES.push({key:'xa_fort_watch',x:cx,z:cz,ry:0,o:{v,seed:F.seed},fort:F.id,state:st,label:F.name+' — '+st});
  MR_WORKS.forEach(W=>{if(W.with.indexOf(v)<0)return;SITES.push({key:W.key,x:cx+W.x,z:cz+W.z,ry:W.ry,o:Object.assign({},W.o||{},W.state?{v}:{}),fort:F.id,state:st,work:true});});}));
-window._marches={forts:MR.forts,faults:MR.faults,sites:SITES.length};

@@ -9,8 +9,8 @@ if(typeof KRUINS!=='undefined')for(const SG of SITE_GROUPS){const S=SG.S,D=VERN.
  KRUINS.watch(scene,{name,inside:(x,z)=>Math.abs(x-S.x)<hw&&Math.abs(z-S.z)<hd,ground:()=>0});}
 /* each site's lot (its def's w x d about its centre, turned by ry: every site here has ry 0), for the works' clearance check, and
    the registered volumes (core/tags' records, REG) its builder left in it: the proof it drew (its instances are baked into the scene) */
-window._marches=Object.assign(window._marches||{},{watched:MR_WATCHED,
+window._marches={forts:MR.forts,faults:MR.faults,sites:SITES.length,watched:MR_WATCHED,
  placed:SITE_GROUPS.map(({S,G})=>{const D=VERN.defs[S.key];return{key:S.key,fort:S.fort,state:S.state,v:(S.o&&S.o.v)|0,x:S.x,z:S.z,w:D.w,d:D.d,
   fw:D.fw==null?D.w:D.fw,fd:D.fd==null?D.d:D.fd,work:!!S.work,
   regs:REG.filter(r=>r.key===S.key&&Math.abs(r.x-S.x)<=D.w/2+.5&&Math.abs(r.z-S.z)<=D.d/2+.5).length};}),
- forts:(window._xaForts||[]).length});
+ fortsWithWalks:(window._xaForts||[]).length};
