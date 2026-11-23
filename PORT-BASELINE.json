@@ -1193,8 +1193,8 @@
    "sha256": "0237a73849bffeccdc08852816e28606c6c35cf7231706efab755e956f267133"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 4734822,
-   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
+   "bytes": 4811556,
+   "sha256": "8ec495098c4bad58ff96b3fc8d7cac36f6f218345689441317bba68b6c1158d9"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
    "bytes": 8874743,
@@ -1325,8 +1325,8 @@
    "sha256": "9257ada7ff9fcc427412c29e180fbd1040236f21f320aa3e9b7b61c7c72f644a"
   },
   "settlements/pher/dist/pher.html": {
-   "bytes": 8924162,
-   "sha256": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333"
+   "bytes": 9056042,
+   "sha256": "6744b76e3dd2b2e7876fcb5f2ad5aa74ac2260ac441774a482b6d0af8ac7d921"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
    "bytes": 4342913,

@@ -25,6 +25,8 @@ var SITE_SPEC={region:'xanadu-north-shore',world:8431491,bridges:{culture:'xanad
    {id:'farm-5',focus:'farming',bearing:345,km:14.5,pop:240},{id:'farm-6',focus:'farming',bearing:70,km:12,pop:240}]},
   /* Thalaba at the mouth of Godshearth: the road's end; its countryside is its own plan's (settlements/thalaba/PLAN.md) */
   shvo49k0y2:{culture:'xanadu'}},
- links:[['spher0north1','shvo49k0y2',{hw:3,r:1500,keep:true,stops:XNS_STOPS,culture:'xanadu',guide:[[843,1489],[838,1487.2],
+ /* the link's first guide point is the top of Phēr's own road (settlements/pher 89zp PH.THALABA_GUIDE: its hairpins up the
+    town's spur, east of the Swīṭ Siṭrīm's gorge; P8, the owner: "the switchback road does need to connect in back") */
+ links:[['spher0north1','shvo49k0y2',{hw:3,r:1500,keep:true,stops:XNS_STOPS,culture:'xanadu',guide:[[843.60,1489.29],[838,1487.2],
    [833,1485.6],[828,1483.6],[824.3,1481.2],[823,1479.6],[822.7,1477.6],[823.2,1475.6],[822.9,1473.6],[822.9,1471.6],
    [823.4,1469.6],[824.7,1467.6],[826.2,1465.6],[827,1463.8],[830,1463.6],[833.5,1463.6],[837,1463.3],[840,1463]]}]]};
