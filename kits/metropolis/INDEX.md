@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-mp-records.js` | 21 |  |
+| `40-mp-records.js` | 22 |  |
 | `41-mp-plans.js` | 36 **big** |  |
 | `42-mp-facade.js` | 5 |  |
 | `43-mp-shell.js` | 6 |  |
@@ -38,8 +38,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `54f-mp-hero-farm.js` | 28 |  |
 | `55-mp-hero-ancients.js` | 24 |  |
 | `56-mp-interiors.js` | 22 |  |
-| `57-mp-debris.js` | 6 |  |
-| `57y-mp-yards-draw.js` | 13 |  |
+| `57-mp-debris.js` | 10 |  |
+| `57y-mp-yards-draw.js` | 14 |  |
 | `58-mp-cutaway.js` | 4 |  |
 | `59-mp-floors.js` | 18 |  |
 | `59b-mp-ruin-design.js` | 13 |  |

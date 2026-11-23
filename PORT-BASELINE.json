@@ -32,17 +32,21 @@
    "bytes": 11233731,
    "sha256": "4a3b7ba473e13a13f8949d6971b533008de2ed920dcbcb0e4fa55e63fe7125f6"
   },
+  "biomes/ancientsvalley/dist/ancientsvalley-stilled.html": {
+   "bytes": 5046654,
+   "sha256": "e05415eca47ee9e282f6294e0ac7d55eaba65e9e86f6957b68853a1174308b0a"
+  },
   "biomes/ancientsvalley/dist/ancientsvalley-terraces.html": {
-   "bytes": 5167333,
-   "sha256": "bb5a9a8fed14cb775725736dbf7384ac3cb0c019fe9494e2cf019e1c4485c5d9"
+   "bytes": 5165970,
+   "sha256": "9b600ef54a1786acfd14f4c48af1b95ca70de1448b0027e25dbbe93ca2c6295e"
   },
   "biomes/ancientsvalley/dist/ancientsvalley-yards.html": {
-   "bytes": 5284028,
-   "sha256": "6ad83af75087d6701f2b46e09dabe33ac55730b1ad71b9d25fd0a203091e3863"
+   "bytes": 5291534,
+   "sha256": "f093b5dddf6e44c5a6712701c79489316f852c57d3dba0cd30ffb86fcc1de721"
   },
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
-   "bytes": 2166012,
-   "sha256": "8f59e18a3b2d8095e4df83b4ab3e30c5e0146858c33365dbf45fe9fb40d4ab70"
+   "bytes": 5058607,
+   "sha256": "0c257aaca1bffa16a06ae2e1b37ef6f20daf22d304f58ebf155da0a4d2bb46d8"
   },
   "biomes/arch/dist/arch-barrens.html": {
    "bytes": 2895290,
@@ -1333,8 +1337,8 @@
    "sha256": "ba00e9294660255830ed63a1e1c8784c4d253676b63fcd0178268d868243cbc6"
   },
   "kits/metropolis/dist/metropolis.html": {
-   "bytes": 4120583,
-   "sha256": "49864e7da42437b705368786a6c313fb199ca012b5d144ec47379f9522f62a87"
+   "bytes": 4309889,
+   "sha256": "16b934b8d1c069fa0dc35f3d5a6c552066969751baa4cfbbc2916a45d4e48188"
   },
   "kits/motor-vehicles/dist/motor-vehicles.html": {
    "bytes": 1584221,

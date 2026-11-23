@@ -15,7 +15,13 @@ MP.yardsDraw = function (recs, o) {
   const GEO = {};
   const cone = (r, h) => GEO['c' + r + ',' + h] || (GEO['c' + r + ',' + h] = new THREE.ConeGeometry(r, h, 18, 1, true).translate(0, h / 2, 0));
   const frust = (r0, r1, h, seg) => new THREE.CylinderGeometry(r1, r0, h, seg || 18, 1, true).translate(0, h / 2, 0);
-  const dish = r => GEO['d' + r] || (GEO['d' + r] = (() => { const P = []; for (let i = 0; i <= 6; i++) { const t = i / 6, rr = r * t; P.push(new THREE.Vector2(Math.max(.01, rr), rr * rr / (4 * r * .45))); } const g = new THREE.LatheGeometry(P, 20); return g; })());
+  /* a dish is a thin bowl in a one-sided family (white): drawn both ways, its triangles and each again reversed with its normal turned, so it
+     shows from behind and from inside its bowl (the owner, 2026-11-11: the dishes "disappear at this angle", 1334,134,-576 toward the array) */
+  const twoSided = g0 => { const g = g0.index ? g0.toNonIndexed() : g0, P = g.attributes.position.array, N = g.attributes.normal.array, U = g.attributes.uv ? g.attributes.uv.array : null, nv = P.length / 3;
+    const p = new Float32Array(P.length * 2), n = new Float32Array(N.length * 2), u = U ? new Float32Array(U.length * 2) : null; p.set(P); n.set(N); if (u) u.set(U);
+    for (let t = 0; t < nv / 3; t++) for (let v = 0; v < 3; v++) { const s = t * 3 + (2 - v), d = nv + t * 3 + v; for (let q = 0; q < 3; q++) { p[d * 3 + q] = P[s * 3 + q]; n[d * 3 + q] = -N[s * 3 + q]; } if (u) { u[d * 2] = U[s * 2]; u[d * 2 + 1] = U[s * 2 + 1]; } }
+    const o = new THREE.BufferGeometry(); o.setAttribute('position', new THREE.BufferAttribute(p, 3)); o.setAttribute('normal', new THREE.BufferAttribute(n, 3)); if (u) o.setAttribute('uv', new THREE.BufferAttribute(u, 2)); return o; };
+  const dish = r => GEO['d' + r] || (GEO['d' + r] = (() => { const P = []; for (let i = 0; i <= 6; i++) { const t = i / 6, rr = r * t; P.push(new THREE.Vector2(Math.max(.01, rr), rr * rr / (4 * r * .45))); } return twoSided(new THREE.LatheGeometry(P, 20)); })());
   const disc = (fam, x, y, z, rx, rz, yaw, col, n) => { const N = n || 18, c = Math.cos(yaw), s = Math.sin(yaw), P = []; for (let i = 0; i < N; i++) { const a = i / N * Math.PI * 2, u = Math.cos(a) * rx, v = Math.sin(a) * rz; P.push([x + u * c - v * s, y, z + u * s + v * c]); }
     for (let i = 0; i < N; i++) B.tri(fam, [x, y, z], P[i], P[(i + 1) % N], col, { face: [0, 1, 0] }); };
   const n = { tanks: 0, bents: 0, dishes: 0, chimneys: 0, conveyors: 0, turntables: 0, gantries: 0, pools: 0 };

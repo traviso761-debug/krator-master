@@ -55,7 +55,10 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const CRATERS=AV.craters({R:R+200,n:12,seed:SEED+13,rMin:35,rMax:120,ok:(x,z,r)=>!inIZ(x,z,r+60)&&Math.hypot(x,z)<R-r});
  const scorch=(x,z)=>AV.scorch(CRATERS,x,z,SEED);
  /* a pool sinks 0.4 m into its spill; a heap stands on the bench */
- const poolH=(x,z)=>{let h=0;for(const q of POOLS){const c=Math.cos(q.yaw),s=Math.sin(q.yaw),dx=x-q.x,dz=z-q.z,u=(dx*c+dz*s)/q.rx,v=(-dx*s+dz*c)/q.rz,r=u*u+v*v;if(r<1.3)h=Math.min(h,-.6*smooth(1.3,.8,r));}return h;};
+ /* the pools a point can be in, by cell (41, AV.bucket; 2026-11-11: every ground sample walked every pool, 13.5 s of a Yards build): a pool reaches
+    r < 1.3 in its own radii, under 1.15 of its larger one, so the skipped ones add nothing and the heights are the same */
+ const POOLB=AV.bucket(POOLS,q=>Math.max(q.rx,q.rz)*1.2,128);
+ const poolH=(x,z)=>{let h=0;const I=POOLB(x,z);for(let k=0;k<I.length;k++){const q=POOLS[I[k]];const c=Math.cos(q.yaw),s=Math.sin(q.yaw),dx=x-q.x,dz=z-q.z,u=(dx*c+dz*s)/q.rx,v=(-dx*s+dz*c)/q.rz,r=u*u+v*v;if(r<1.3)h=Math.min(h,-.6*smooth(1.3,.8,r));}return h;};
  function rawGround(x,z){return landGround(x,z)+AV.craterH(CRATERS,x,z)+MP.yards.slagH(SLAG,x,z)+poolH(x,z);}
  const cities=RG.cities.map(c=>({n:c.n,x:c.x,z:c.z,h:c.h,theme:c.theme})),basins=RG.basins.map(b=>({n:b.n,x:b.x,z:b.z,r:b.r,kind:b.kind}));
  const scars=SPILL.map(s=>({x:s.x,z:s.z,rx:s.rx,rz:s.rz,yaw:s.yaw,k:s.kind==='pool'?1:.9})).concat(CRATERS.map(c=>({x:c.x,z:c.z,rx:c.r*1.25,rz:c.r*1.25,yaw:0,k:.85})));

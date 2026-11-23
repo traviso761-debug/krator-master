@@ -407,6 +407,24 @@ remnants, and the crown water tower's gallery hung in the air with palms on it).
 page draws the plan's since the lobbies' finding (the yaw's sign): every farm building and aqueduct module drew mirrored, the aqueduct's modules
 skewed off their line ("aqueduct does not align segments properly"); `41d` stores the plan's yaw now.
 
+## Station 1: the Stilled Ground (S0-S1, 2026-11-15; `stations/stilled/`, `dist/ancientsvalley-stilled.html`)
+
+`python3 tools/build.py biomes/ancientsvalley --station stilled`. PLAN.md section 17 (the owner, 2026-11-15: the first anomaly station, its core a
+frozen moment inside rings of decay, the page on the basin's inner slope looking in). The time weapon's basin at px 398,966 (5.5 km, a dry glass
+floor at -26 m, Csa); the page's centre a pixel north of the basin's, so the basin's centre is at page (0, 2000) and the view looks south.
+
+- **The hold** (`46z`, `53z`): one `core/anomaly` time record over the basin's centre (r 3.6 km, ramped over 3.3 km, a held core of 300 m),
+  registered in core/tags with its `time` hazard before the kits draw. `elapsed(x, z)` = 1 minus its strength: the share of the war's age passed.
+- **The rings of decay, by elapsed:** each tower's ruin draw scaled toward intact (`AV.plan`'s `age`); the basin floor's glass, the foul half's
+  ash, the taint, the overgrowth and the forest all by the years they have had; the held core keeps the Ancients' pavement. Measured: the towers'
+  mean ruin severity by band, from the core out, 0.00, 0.00, 0.11, 0.91, 1.65, 2.77, 3.00, 3.74 (AV.RUINS' index; 1,056 towers).
+- **No lake** on this page: the valley lake's level stands 43 m over the dry floor, so the stage sets it far under. No extraplanars, House, cosmetic
+  distortions or oily rain here (the stations' stubs).
+- **Checks** (`98s`): the hold registered, zero outside, held at its core; the rings age outward band by band and the core is whole; no ash,
+  glass or growth in the core, glass on the outer floor; nothing whole on the glass; each with a negative. **Verified** 2026-11-15 on the cloud lane
+  (RTX A4000): 58 asserts, no failures; the worst view "The core looking out" at 1,116 calls, 5.45 M triangles.
+- **Next (PLAN.md 17):** the owner's eye on the gradient (S1's stop), then S2 the held moment, S3 the effects, the walk and the time owed.
+
 ## Read next
 
 `PLAN.md` (the brief and the decisions), `PLAN-ANOMALIES.md`, `INDEX.md`, `KNOWN_ISSUES.md`, `PORT.md`; `kits/metropolis/README.md` for the towers.

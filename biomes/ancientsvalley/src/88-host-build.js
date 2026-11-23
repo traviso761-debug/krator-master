@@ -9,10 +9,20 @@ window._swlow=null;window._nwlow=null;
    the same calls in the same order (each kit's build() is its trees then its floor, under its own BIO.cur), so the page is the same. What follows
    this fragment on the page waits for it: the build splits the page there (build.py: the fragments after 88 are a text block, run when this
    finishes, AV_AFTER), so the towers, the atmosphere and the host's take start on the finished forest as before */
-const avLoadNote=(()=>{let el=null;return t=>{if(!el){el=document.createElement('div');el.id='av-loading';el.style.cssText='position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);z-index:50;background:rgba(24,21,15,.88);color:#f3ecd8;font:13px Georgia,serif;padding:10px 16px;border-radius:8px;pointer-events:none';document.body.appendChild(el);}
+const avLoadNote=(()=>{let el=null;return t=>{if(!el)el=document.getElementById('av-loading');if(!el){el=document.createElement('div');el.id='av-loading';el.style.cssText='position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);z-index:50;background:rgba(24,21,15,.88);color:#f3ecd8;font:13px Georgia,serif;padding:10px 16px;border-radius:8px;pointer-events:none';document.body.appendChild(el);}
   if(t==null){el.remove();el=null;return;}el.textContent='Building the valley: '+t+'…';};})();
-const avYield=t=>{avLoadNote(t);return new Promise(r=>setTimeout(r,0));};
-const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after');if(!el)return;const s=document.createElement('script');s.textContent=el.textContent;el.remove();document.body.appendChild(s);};
+/* the note says which stage of how many and the seconds so far (the owner, 2026-11-11: the pages "still seem to get stuck on 'building the valley'":
+   a stage of 20 to 40 s on a slow machine showed one unchanging line); the page cannot repaint inside a stage, so it says that too */
+const AV_STAGES={n:0,of:(typeof SWLOW!=='undefined'&&STAGE.swQ?2:0)+(typeof NWLOW!=='undefined'&&STAGE.nwQ?2:0)+1,t0:typeof AV_PARTS!=='undefined'?AV_PARTS.t0:0};   /* the seconds since the page's first script (46y) */
+const avYield=t=>{AV_STAGES.n++;avLoadNote(t+' (stage '+AV_STAGES.n+' of '+AV_STAGES.of+', '+Math.round((performance.now()-AV_STAGES.t0)/1000)+' s so far; the page is busy until each stage ends)');return avTurn();};
+/* a turn for the browser that includes a paint: a frame, then a task after it (a bare zero timeout can run before the note is painted); a hidden tab
+   draws no frames, so a 150 ms timer goes on without one */
+function avTurn(){if(document.hidden)return Promise.resolve();return new Promise(r=>{   /* hidden: no turn (46y, AV_PARTS.turn) */
+ let done=false;const go=()=>{if(!done){done=true;r();}};requestAnimationFrame(()=>setTimeout(go,0));setTimeout(go,150);});}
+/* the rest of the page (the towers, the transit, the sky, the first frame: one task of 15 s or more on a slow machine) runs under a note of its own,
+   painted first; the note goes once that task ends, the first frame drawn */
+const AV_AFTER=()=>{const el=document.getElementById('av-after');if(!el){avLoadNote(null);return;}avLoadNote('the towers, the streets and the sky (the last stage)');
+ avTurn().then(()=>{const s=document.createElement('script');s.textContent=el.textContent;el.remove();document.body.appendChild(s);avLoadNote(null);});};
 (async function(){const t0=performance.now();const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  const adjust=(T,w)=>{for(let i=REG.length-1;i>=0&&i>=REG.length-400;i--){const r=REG[i];if(r.kind==='tree'&&r.x===T.x&&r.z===T.z){if(!w){REG.splice(i,1);break;}r.y=w.y==null?kitH(T.x,T.z):w.y;r.h=w.h;r.r=r.r*w.kx;if(w.substrate&&r.tags)r.tags.substrate=w.substrate;break;}}};
  const stands=AV.stands?AV.stands({ground:kitH,lakeY:STAGE.lakeY,F:STAGE.F,street:STAGE.street,built:STAGE.built,scorch:STAGE.scorch,seed:STAGE.seed}):null;
@@ -35,7 +45,8 @@ const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after'
     for each planted look and kept for the boot (AVC.hero) */
  const ROOF={};const roofOf=t=>{const k=t.key;if(ROOF[k]!=null)return ROOF[k];let y=null;try{const H=AVC.hero[k]||(AVC.hero[k]=heroOf(k));H.updateMatrixWorld(true);const F=MP.FAMILY[t.family]||MP.DESIGNS[t.family],fp=F&&F.footprint||{},fw=fp.r!=null?fp.r*2:Math.max(fp.w==null?40:fp.w,fp.d==null?40:fp.d);let best=-1e9;
    H.traverse(m=>{if(!m.isMesh||m.isInstancedMesh||/debris|rubble/.test(m.name||''))return;const g=m.geometry;if(!g.boundingBox)g.computeBoundingBox();const b=g.boundingBox.clone().applyMatrix4(m.matrixWorld);const ext=Math.max(b.max.x-b.min.x,b.max.z-b.min.z);if(ext>=fw*.5&&b.max.y>best)best=b.max.y;});if(best>-1e8)y=best;}catch(e){}ROOF[k]=y;return y;};
- const TOPS=[];STAGE.plan.towers.forEach(t=>{if(!(t.state==='stump'||t.state==='broken'||t.state==='crown')||(t.lean||0)>2.5||STAGE.F.wild(t.x,t.z)<.5)return;const F=MP.FAMILY[t.family]||MP.DESIGNS[t.family];if(!F)return;
+ const TOPS=[];STAGE.plan.towers.forEach(t=>{if(!(t.state==='stump'||t.state==='broken'||t.state==='crown')||(t.lean||0)>2.5||STAGE.F.wild(t.x,t.z)<.5)return;
+  const F=MP.FAMILY[t.family]||MP.DESIGNS[t.family];if(!F)return;
   let cut;try{cut=MP.ruin(F,t.state).top;}catch(e){return;}if(!(cut>6))return;   /* the record's top: the hero is cut there (70, avClipHero) */
   const roof=roofOf(t);if(roof!=null&&roof>6&&roof<cut+1)cut=roof;
   /* the top's extent is the drawn ruin's, not the footprint's (70, avProfile; the owner, 2026-11-09: trees 40 m off a spindle's 15 m break): the band
@@ -57,7 +68,9 @@ const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after'
     let yr=P.cut;if(P.sf){yr=P.sf.footing(lx,lz,P.cut+3,P.cut-6);if(yr==null){AV.FERAL.perchMiss=(AV.FERAL.perchMiss||0)+1;continue;}}
     const W=new THREE.Vector3(lx,yr+.1,lz).applyQuaternion(P.q);   /* the roof in the tower's frame, turned by its yaw and lean */
     (P.feet||(P.feet=[])).push([lx,yr,lz]);
-    if(!P.got)REGISTER({name:"trees on a ruin's top",kind:'rooftree',x:P.t.x,z:P.t.z,y:P.t.y+P.cut,r:P.r+3,h:28,tags:{kind:'rooftree',family:P.t.family,state:P.t.state}});   /* one volume a top: the probe samples instanced cards sparsely, so a tree's own would read empty */
+    /* the volume from 8 m under the cut: a tree's footing is found by a ray up to 6 m under it (avSurface.footing), and its probe point, 2 m over the
+       foot, fell under a volume that began at the cut (the Stilled Ground's empty volume, 2026-11-15) */
+    if(!P.got)REGISTER({name:"trees on a ruin's top",kind:'rooftree',x:P.t.x,z:P.t.z,y:P.t.y+P.cut-8,r:P.r+3,h:36,tags:{kind:'rooftree',family:P.t.family,state:P.t.state}});   /* one volume a top: the probe samples instanced cards sparsely, so a tree's own would read empty */
     AV_ROOF_PTS.userData.probePoints.push(P.t.x+W.x,P.t.y+W.y+2,P.t.z+W.z);   /* the probe's point for the top's volume (it samples instanced cards sparsely: a top with one copy read empty on the Yards) */
     out.push({x:P.t.x+W.x,y:P.t.y+W.y,z:P.t.z+W.z,yaw:KRAND.unit(KRAND.hash(h1,2,0,0))*TAU,k:Math.min(.35+.2*KRAND.unit(KRAND.hash(h1,3,0,0)),h>0?25/h:1)});P.got++;}   /* a roof tree a third to a half of its source, under 25 m */
    if(out.length>=2)break;}return out;}:null;

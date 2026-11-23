@@ -84,7 +84,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/locus`](kits/locus/INDEX.md) | 8 | 112 | 22 |  |
 | [`kits/marr`](kits/marr/INDEX.md) | 12 | 181 | 48 |  |
 | [`kits/mechs`](kits/mechs/INDEX.md) | 42 | 413 | 42 | Mechs: animated walking machines any world takes as one bundle (KratorMechs: a skinned rig, leg IK with planted feet, idle, walk and attack clips with fire and impact events, swinging banners and feathers) on the catalog core; seventeen Iziz walkers, from a hound-sized drone to a walking siege tower (the Castra in two variants); a verified kit sheet with a z-fighting audit. |
-| [`kits/metropolis`](kits/metropolis/INDEX.md) | 36 | 586 | 68 | The metropolis test bed: sixteen Ancient towers designed for the range tiers (hero, KSHELL baked shell, impostor, district); two built, with audited interiors. Read PLAN.md. |
+| [`kits/metropolis`](kits/metropolis/INDEX.md) | 36 | 593 | 68 | The metropolis test bed: sixteen Ancient towers designed for the range tiers (hero, KSHELL baked shell, impostor, district); two built, with audited interiors. Read PLAN.md. |
 | [`kits/motor-vehicles`](kits/motor-vehicles/INDEX.md) | 16 | 289 | 68 | Motor Vehicles: procedural motor vehicles any world takes as one bundle (KratorVehicles: wheels to spin and steer, switchable lamps, simulation data) on the catalog core; fifteen vehicles in six culture files (the Ancients' ten for the Ancient's Valley's streets: pod car, saloon, watch car, van, six-wheeled utility, flatbed hauler with four loads, guideway tram-car, lance tank, helicopter, passenger jet; the Geomancer dune buggy, the Republic salvage crawler, the Izani six-wheeler, the Abyssal caravan truck, the Post-Apoc tracked hab); four ruin states for every vehicle (intact, weathered, burnt, wreck in seven forms: build(key, { state })); a verified kit sheet. |
 | [`kits/painted-men`](kits/painted-men/INDEX.md) | 4 | 89 | 33 |  |
 | [`kits/port`](kits/port/INDEX.md) | 52 | 732 | 39 | The Ancient Port kit: modular Ancient port segments and vessels tiling along a coast, a sibling of kits/ancients built the same way. It will build Hook (the ancient port city recently retaken from Voth, LORE.md) and may serve other coasts after. Read CONTRACT.md, then API.md. |
@@ -108,7 +108,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/yuni`](kits/yuni/INDEX.md) | 8 | 229 | 64 |  |
 | [`kits/zeijani`](kits/zeijani/INDEX.md) | 31 | 257 | 27 | The Zeijani building kit (finished, P0 to P8): carved and built dwellings, galleries, estates, shops, the temple, council, kiva, cistern, portal, works and the outpost, each carved by the cavern module (core/terrain/39-core-cavern.js) from the void plans in kits/interiors/sets/zeijani.js. |
 | [`biomes/abyssal-savannah`](biomes/abyssal-savannah/INDEX.md) | 14 | 101 | 23 | Biome kit: see `biomes/README.md`. |
-| [`biomes/ancientsvalley`](biomes/ancientsvalley/INDEX.md) | 31 | 385 | 61 | Biome kit: see `biomes/README.md`. |
+| [`biomes/ancientsvalley`](biomes/ancientsvalley/INDEX.md) | 32 | 391 | 62 | Biome kit: see `biomes/README.md`. |
 | [`biomes/arachnoids`](biomes/arachnoids/INDEX.md) | 17 | 169 | 36 | Biome kit: see `biomes/README.md`. |
 | [`biomes/arch`](biomes/arch/INDEX.md) | 19 | 140 | 24 | Biome kit: see `biomes/README.md`. |
 | [`biomes/catch`](biomes/catch/INDEX.md) | 21 | 102 | 15 | Biome kit: see `biomes/README.md`. |

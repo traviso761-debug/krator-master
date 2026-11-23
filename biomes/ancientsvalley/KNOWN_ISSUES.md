@@ -202,7 +202,15 @@
   south-western trees' drawing is about 13 s of what is left, the rest is placement (one rng stream through the floor, and the north-western
   kit's trees draw without reseeding), so a deferred far draw would save about 5 s for a second bake. Left: the first frame's shader compiles
   (20 s on software GL), the transit's drawing (11 s), the take (11 s). The core/biome change reaches 72 builds: the all-builds integration
-  rebuilds them.
+  rebuilds them. Then (2026-11-11, the owner: station 0 and the Yards "still seem to get stuck on 'building the valley'"): the page showed
+  nothing at all while 47 (the land) filled the ground's lattice, 12 s on software GL and nearly 40 s in a slow browser, and nothing between the
+  bake and the first frame. The page now loads in parts (46y, `AV_PARTS`; build.py splits it before 47): the lattice is filled in quarter-second
+  slices with the share done on the note, every build stage says which of five and the seconds so far, and the last stage (the towers, the
+  streets, the sky) has a note of its own; each yield waits for a painted frame. The Yards' pools are read by cell (`AV.bucket`: 13.5 s of a
+  build, the same heights). A load still takes minutes in a hidden or throttled tab, or on a machine busy with other jobs. A hidden tab takes no turns (the browser holds
+  its timers to a second each, so the slices crawled there). The oily rain (the owner, 2026-11-11: "may be lagging the page") measured no
+  dearer than clear on either lane, in the render or the whole frame, inside the field and looking across it (Arc, 2880 x 1620: 48-90 ms both);
+  the page is that heavy at that size on the Arc whatever the weather, with stalls of 200-470 ms a frame now and then in every mode.
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A
   decode darkens the ground a fifth; do it with the lowlands together and retune the gain, not here alone.

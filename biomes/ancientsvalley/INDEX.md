@@ -4,7 +4,7 @@
 
 Docs: `HANDOFF.md`, `KNOWN_ISSUES.md`, `LOD-WRITEUP.md`, `PLAN-ANOMALIES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ancientsvalley-terraces.html`, `dist/ancientsvalley-yards.html`, `dist/ancientsvalley.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ancientsvalley-stilled.html`, `dist/ancientsvalley-terraces.html`, `dist/ancientsvalley-yards.html`, `dist/ancientsvalley.html`
 
 Build: `cd biomes/ancientsvalley && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -22,15 +22,16 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `41-av-field.js` | 28 |  |
+| `41-av-field.js` | 29 |  |
 | `41b-av-wrecks.js` | 9 |  |
 | `41c-av-house.js` | 6 |  |
 | `41c-av-lobbies.js` | 32 **big** |  |
 | `41e-av-cardrects.js` | 7 |  |
 | `46-av-feral.js` | 13 |  |
+| `46y-host-parts.js` | 3 |  |
 | `46z-host-stage.js` | 35 **big** |  |
 | `47-host-land.js` | 13 | the ground (A0.2: refined along carvings in 8 x  (30); the far ground (the model's country out to 24 km (102) |
-| `70-host-city.js` | 61 **big** | the rust (the owner, 2026-11-04: more rust) (72); the engines (kits/ancients 8ah, 8ai, read in pla (352); the lines: the viaduct (AV.viaduct's records dra (367) |
+| `70-host-city.js` | 62 **big** | the rust (the owner, 2026-11-04: more rust) (72); the engines (kits/ancients 8ah, 8ai, read in pla (356); the lines: the viaduct (AV.viaduct's records dra (371) |
 | `71-host-creepers.js` | 9 |  |
 | `72-host-keepers.js` | 10 |  |
 | `73-host-wrecks.js` | 7 |  |
@@ -38,7 +39,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `75-host-extraplanar.js` | 15 |  |
 | `75-host-house.js` | 11 |  |
 | `76-host-lobbies.js` | 24 | the geometry: flat-shaded prisms in the kit's co (50); the checks (verify.py --assert; 99 calls them),  (119) |
-| `88-host-build.js` | 15 |  |
+| `88-host-build.js` | 17 |  |
 | `89a-host-atmos.js` | <1 |  |
 | `89s-host-sky.js` | 3 |  |
 | `89t-host-weather.js` | <1 |  |
@@ -59,5 +60,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
+| stilled | 46z-host-stage.js, 53z-host-hold.js, 75-host-extraplanar.js, 75-host-house.js, 89x-host-oilrain.js, 89y-host-anomaly.js, 98s-host-stilled-checks.js | 46 |
 | terraces | 41d-av-farm.js, 46z-host-stage.js, 70t-host-farm.js, 72-host-keepers.js, 73-host-wrecks.js, 75-host-extraplanar.js, 75-host-house.js, 87t-host-thicket.js, 89y-host-anomaly.js | 83 |
-| yards | 46z-host-stage.js, 70y-host-yards.js, 75-host-extraplanar.js, 75-host-house.js, 89y-host-anomaly.js, 98y-host-yards-checks.js | 57 |
+| yards | 46z-host-stage.js, 70y-host-yards.js, 75-host-extraplanar.js, 75-host-house.js, 89y-host-anomaly.js, 98y-host-yards-checks.js | 58 |
