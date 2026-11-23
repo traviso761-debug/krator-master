@@ -6,7 +6,7 @@ memory from the library source. Nothing in the repo is written.
 
 Usage: python3 xs0_families.py <out.json> [--xy8]
 """
-import io, json, os, sys
+import io, json, os, subprocess, sys
 import numpy as np
 from PIL import Image
 
@@ -27,7 +27,24 @@ PACKS = {
     'flashing-eye': 'settlements/flashing-eye',
     'kirstabal': 'settlements/kirstabal',
     'thalaba': 'settlements/thalaba',
+    'nulab': 'settlements/nulab',
+    'blakhed': 'settlements/blakhed',
+    'dalab': 'settlements/dalab',
+    'ancient-transit': 'kits/ancient-transit',
 }
+
+# XS1's classes (claude/xs1-classes, XS1-CLASSES.md): the "class" field of each materials.json there; XS0_XS1_REF names
+# the commit (default 366667904, the branch tip on 2026-11-23). A pack XS1 did not class reads None.
+XS1_REF = os.environ.get('XS0_XS1_REF', '366667904')
+
+
+def xs1_classes(d):
+    try:
+        s = subprocess.run(['git', 'show', '%s:%s/materials.json' % (XS1_REF, d)], cwd=ROOT, capture_output=True,
+                           check=True, env=dict(os.environ, GIT_LFS_SKIP_SMUDGE='1')).stdout.decode('utf-8')
+        return {f: c.get('class') for f, c in json.loads(s).get('families', {}).items()}
+    except Exception:
+        return {}
 
 # STACK-PLAN.md section 5, by family key or library id
 GLAZED = {'xMosC', 'xMosD', 'xZel', 'xHaft', 'xMuqT', 'xBTile', 'xBandC', 'xBandR', 'xGiltC', 'xPietra', 'xMarW', 'xMarK',
@@ -82,6 +99,7 @@ def main(out, do8):
         cfg = json.load(open(mj, encoding='utf-8'))
         size = int(cfg.get('size', 512))
         tex = os.path.join(ROOT, d, 'tex')
+        x1 = xs1_classes(d)
         rows = {}
         for fam, c in cfg.get('families', {}).items():
             lib = c['lib']
@@ -104,7 +122,8 @@ def main(out, do8):
             e['recordRoughness'] = rec_rough
             e['rule'] = (e['specular'] is not None and e['specular'] >= 0.45 and e['roughMean'] is not None and e['roughMean'] < 0.35)
             e['class'] = plan_class(fam, e)
-            if do8 and 'normalMap' in by and (e['class'] == 'glazed' or e['rule']):
+            e['xs1Class'] = x1.get(fam)
+            if do8 and 'normalMap' in by and (e['class'] == 'glazed' or e['rule'] or e['xs1Class'] == 'glazed'):
                 sz = e['size']
                 sz = [int(v) for v in sz] if isinstance(sz, list) else int(sz)
                 r, why = xy8(lib, sz)
