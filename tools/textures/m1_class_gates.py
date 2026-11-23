@@ -4,8 +4,9 @@
 For every family of the named builds' materials.json, the stack's own packer (tools/textures/pack.py's `process` with
 packFormat 2; before Stage 8 merges the stack, read from --ref) packs it IN MEMORY under its class, writing nothing:
   - Gate 1: pack.py's assert_pack_physics, with the class's `flat` (core/materials/classes/m1-classes.json through
-    mclass.py), on the web encoding (xy8 for glazed, xy6 for the rest) and on Godot's (oct8): a card never gets a height in
-    its alpha, no NaN, roughness in 0..1, normal error under 3.5 degrees, a height range unless flat;
+    mclass.py), on the web encoding (xy8 for glazed, xy6 for the rest) and on Godot's (oct8): a card or a cut-out (any class
+    whose height is "never") never gets a height in its alpha (the stack's process() writes one into every lit family's
+    alpha, so xSun and xValance fail here until Stage 8 packs the cutout class with alphaMode none), no NaN, roughness in 0..1, normal error under 3.5 degrees, a height range unless flat;
   - Gate 3 (handedness): a synthetic dome through each encoding (xy6, xy8, oct8) leans outward and its Poisson height
     peaks (the DirectX green, the negative, must fail); and per family, the height pack.py rebuilds from the class-encoded
     normal correlates with the one rebuilt from the unquantised normal (none of these sets has a height map of its own,
@@ -104,8 +105,8 @@ def run(builds, ref, size=None):
                     e, _ = P.process(fam, fc, sz, pack_format=2, normal_enc=enc)
                     err = e.get('normalError', {}).get('meanDeg')
                     out.append('%s %s %s%s' % (eng, enc, e.get('alphaMode'), '' if err is None else ' %.2f deg' % err))
-                    if S['cls'] == 'card' and e.get('alphaMode') == 'height':
-                        raise ValueError('a card packed with a height in its alpha')
+                    if S['height'] == 'never' and e.get('alphaMode') == 'height':   # card and cutout: alphaTest reads that alpha
+                        raise ValueError('a %s packed with a height in its alpha (Stage 8: pack the class with alphaMode none)' % S['cls'])
                 except Exception as x:   # Gate 1 refuses by raising ValueError
                     fails += 1
                     out.append('%s %s GATE 1 FAIL: %s' % (eng, enc, x))

@@ -81,14 +81,14 @@ Godot place (as Longsong's monastery is) after Stage 8.
 
 | Page | Built? | Re-bake | Glazed | Interiors | Export | When |
 |---|---|---|---|---|---|---|
-| **Erewhon** (`settlements/xanadu`, `erewhon` target, 6.2 MB) with the citadel and the Dome | yes; the re-seat to 841,1517 owed (its session) | **yes**, once re-seated on the lake-shore region | **heaviest**: `xMosC`, `xMosD`, `xZel`, `xHaft`, `xMuqT`, `xBTile`, `xGiltC`, `xBandC`, `xBandR`, `xPietra`, the marbles, `roof.tile.celadon` | **first** (XP2): the citadel | XP1 (the place), XP2 (its `interiors.json`) | the re-seat before Stage 8 (a layout), its look after |
+| **Erewhon** (`settlements/xanadu`, `erewhon` target, 6.2 MB) with the citadel and the Dome | yes; the re-seat to 841,1517 owed (its session) | **yes**, once re-seated on the lake-shore region | **heaviest**: `xZel`, `xHaft`, `xMuqT`, `xBTile`, `xPietra`, the marbles, `xTiles` (and the pattern sheets `xMosC`, `xMosD`, `xGiltC`, `xBandC`, `xBandR`, flat since XS0) | **first** (XP2): the citadel | XP1 (the place), XP2 (its `interiors.json`) | the re-seat before Stage 8 (a layout), its look after |
 | The kit's sheet (`settlements/xanadu`, `xanadu` and `scrap` targets, 6.0 MB) | yes | no | all families | — | — | the swatch gallery's source (Gate 7) in XP3 |
 | **The lake towns** (`settlements/xanadu-lake`, one page, `?town=`) | Māuṭh in progress (A1, cloud) | **yes** (each town's entry re-fitted) | few: the temples' tile bands | XP6 (the lake rooms, `87k1`) | XP1 and XP4 as places | layouts now (phase A); looks after |
 | **Phēr** (8.5 MB) | yes | **yes** (12c lists it; `bake_towns.py` `pher`) | the Azure Dream's house, the fair's tiles | XP6 | XP4 | after |
 | **Kirstabal** | yes | **yes** (12c) | few; the slate wall (`wall.slate.coursed` owed) | XP6 | XP5 (Siqārp) | after |
 | **Gihon** (its session, now) | in progress | yes, when Siqārp is cut | the Mint's and the temple's gold and opal | XP6 | XP5 | layout now; on the ground in XP5 |
 | **Thalaba** | yes | yes (the north shore's road; its square is in two regions) | few | XP6 | XP4 | after |
-| **Lāiṭwāl** (3.7 MB) | yes | yes, when Ōpal-Bhālī is cut | the Glaziers' moonglass (smooth: a promotion candidate) | XP6 | XP5 | after |
+| **Lāiṭwāl** (3.7 MB) | yes | yes, when Ōpal-Bhālī is cut | Tungang's `celadon` and `gilt` (the Glaziers' moonglass is procedural: no family to promote) | XP6 | XP5 | after |
 | **Qiblai** (`settlements/qiblai`; a Godot export `godot/data/qiblai` exists from the spike) | yes | yes, when Qāṭarāq is cut | **heavy** (the Qiblai kit's gilt crowns and tiles) | XP6: the eight monasteries' halls (butter lamps: Longsong's case) | XP5 (re-export on `packFormat: 2`) | after |
 | **Strongwall** (and the Marches' forts, the Tempest) | fort sheet yes; on the world no | yes, when Gōlḍ-Mārch / Mārchiz are cut | no; **M3 POM** on the rubble and ashlar | the keep's halls, later | XP5 | layouts now; on the ground XP5 |
 | **The Beacon** | no page | when Mārchiz is cut | the gold monastery's gilt | later | XP5 | its page's layout now (its session); on the ground XP5 |
@@ -99,14 +99,20 @@ Godot place (as Longsong's monastery is) after Stage 8.
 ## 5. M1 for Xanadu: what is packed how
 
 **The classes** (XS1 writes them; Stage 8's `pack.py` reads them):
-- **glazed** (to `xy8` normals on the web, `hemi-oct8` + `mipVariance` in Godot): `xMosC`, `xMosD`, `xZel`, `xHaft`, `xMuqT`,
-  `xBTile`, `xBandC`, `xBandR`, `xGiltC` (gilt), `xPietra`, the polished marbles (`xMarW`, `xMarK`, `xMarbleB`, `xMarbleW`),
-  `roof.tile.celadon`, `tile.hex.ceramic`, `wood.lacquer`, `wood.lacquer.crimson`, the Glaziers' moonglass. The stack's
-  rule is `specular >= 0.45` and `roughness < 0.35`: a family listed here that the rule would miss is flagged by name, not by
-  changing its look;
-- **flat** (Gate 1: no height range demanded): every `patterns/` sheet, `plaster`, `xWash`, the limewash, the metals;
+- **glazed** (to `xy8` normals on the web, `hemi-oct8` + `mipVariance` in Godot): `xZel`, `xHaft`, `xMuqT`, `xBTile`,
+  `xPietra`, the polished marbles (`xMarW`, `xMarK`; `xMarbleB`, `xMarbleW` are `mapOnly`, so flat), `wood.lacquer`
+  (`qLacq`), and `xTiles` (the owner's exception). The stack's rule is `specular >= 0.45` and `roughness < 0.35`, judged
+  since XS0 on the packed roughness map (`XS1-CLASSES.md`, "Fixes after XS0"): `xMosC`, `xMosD`, `xBandC`, `xBandR`,
+  `xGiltC` fail it and are classed flat until Stage 8 glazes them (the owner, 2026-11-23: "Glaze at Stage 8"); `qGilt` fails it too but stays glazed
+  (XS1's call on the gilts, kept). Dropped from this list as no
+  Xanadu pack carries them: `roof.tile.celadon` (the Eternian kit's), `tile.hex.ceramic` (Pylon's), `wood.lacquer.crimson`
+  (the nomads', Islanders', Scyvoi's, tents', Lizardmen's and Longsong's) and the Glaziers' moonglass (drawn procedurally on
+  Lāiṭwāl; no library family). Each takes the rule's class when a Xanadu family wires it;
+- **flat** (Gate 1: no height range demanded): every `patterns/` sheet the rule does not take, `plaster`, `xWash`, the
+  limewash, the metals, and the two ice families (`icewall`, Tungang's `ice`: rule hits, flat by the owner's choice);
 - **relief** (M3 planar POM where hero, M4 cavity): `stone`, `brick`, `xSandR`, `xRubble`, `stone.sandstone.ashlar`,
-  `stone.marble.ashlar`, `wall.rubble.limewash` (owed), the fort's ashlar.
+  `stone.marble.ashlar`, `wall.rubble.limewash` (owed), the fort's ashlar;
+- **cutout** (added after XS0): `xSun`, `xValance`, drawn with `alphaTest`: lit like flat, never a height in their alpha (Gate 1).
 
 **Where the classes live** (XS1, done 2026-11-23: `XS1-CLASSES.md`): a `"class"` field on each family in the builds'
 `materials.json` (`kits/xanadu`, `settlements/xanadu`, `kirstabal`, `thalaba`, `flashing-eye`, `kits/qiblai`, and
