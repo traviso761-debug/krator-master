@@ -1,11 +1,31 @@
 {
  "what": "The M1 material classes (settlements/xanadu/STACK-PLAN.md section 5; GRAPHICS-TERRAIN-PROPOSAL.md M1; STAGE-5-REPORT.md section 4). A build's materials.json names one per family (\"class\"); Stage 8's tools/textures/pack.py reads this table through tools/textures/mclass.py to pack each family; core/materials/classes/10-mat-class.js checks the names (test-class.js). Today's pack.py ignores the field: nothing is re-packed before Stage 8 (the owner, 2026-11-22: data now, looks after).",
- "version": 1,
+ "version": 2,
  "rule": {
-  "what": "the stack's glazed rule (STAGE-5-REPORT.md section 4): a lit family whose specular is at least specularMin and whose roughness (the library record's, lifted by the family's roughLift as pack.py lifts the map) is under roughnessMax. A family classed glazed that the rule misses is glazed by name; a family the rule takes that is not classed glazed is listed too. Neither changes a look: each is a decision recorded, not a fault.",
+  "what": "the stack's glazed rule (STAGE-5-REPORT.md section 4): a lit family whose specular is at least specularMin and whose roughness is under roughnessMax. The roughness is the mean of the family's packed roughness map (what the pages draw: m1-measured.json, written by tools/textures/mclass.py --measure from the committed tex/), or, for a family with no packed map, the library record's lifted by the family's roughLift as pack.py lifts the map. Since XS0 (settlements/xanadu/XS1-CLASSES.md, 'Fixes after XS0') every family's class is DERIVED from these values and its cut-out flag (10-mat-class.js derive(): a library card is card; a materials.json \"cutout\" is cutout; the rule's hits are glazed; the rest relief or flat, a patterns/ sheet flat), and test-class.js fails on any disagreement not listed under exceptions.",
   "specularMin": 0.45,
   "roughnessMax": 0.35,
   "specularDefault": 0.5
+ },
+ "exceptions": {
+  "what": "families whose class is a decision, not the rule's: each names the class it keeps, who decided and why. The drift test passes these, and fails on one the rule has come to agree with (stale) or one whose materials.json class differs from it.",
+  "kits/xanadu": {
+   "xTiles": {"class": "glazed", "by": "the owner, 2026-11-23 (XS1's choice 1, kept)", "why": "the tile of Erewhon's domes, bulbs and drums (kits/xanadu/src/71-xa-mat.js xDomeT, xBulbT, xDrumT): the curved glazed case M1 exists for, though its packed roughness map measures 0.876 (XS1 read the record's 0.375)"},
+   "icewall": {"class": "flat", "by": "the owner, 2026-11-23 (XS1's choice 2, kept)", "why": "the rule takes ice.clear (packed roughness 0.272): not promoted. Drawn on Erewhon, the kit sheet and Blakhed (XS0's GPU run, 2026-11-23), not only the scrap target"}
+  },
+  "settlements/xanadu": {
+   "xTiles": {"class": "glazed", "by": "the owner, 2026-11-23 (XS1's choice 1, kept)", "why": "as kits/xanadu"},
+   "icewall": {"class": "flat", "by": "the owner, 2026-11-23 (XS1's choice 2, kept)", "why": "as kits/xanadu"}
+  },
+  "kits/tungang": {
+   "ice": {"class": "flat", "by": "the owner, 2026-11-23 (XS1's choice 2, kept)", "why": "the rule takes ice.clear (packed roughness 0.192, specular 0.6): not promoted. Drawn on Blakhed (XS0's GPU run) and in the Fellgang set"}
+  },
+  "kits/qiblai": {
+   "qGilt": {"class": "glazed", "by": "XS1's call, kept (the coordinator, 2026-11-23)", "why": "metal.gold with roughLift 0.1: its packed roughness 0.411 fails the rule, but the gilts stay glazed (STACK-PLAN.md section 5 had the metals flat; XS1 classed them glazed, and that call stands). Tungang's gilt (the same set, no lift, 0.345) is glazed by the rule"}
+  },
+  "settlements/flashing-eye": {
+   "qGilt": {"class": "glazed", "by": "XS1's call, kept (the coordinator, 2026-11-23)", "why": "as kits/qiblai"}
+  }
  },
  "classes": {
   "glazed": {
@@ -32,6 +52,15 @@
    "godot": {"normal": "oct8", "mipVariance": true},
    "flat": true,
    "height": "optional",
+   "pom": false,
+   "cavity": false
+  },
+  "cutout": {
+   "what": "a lit sheet the page draws as an alpha cut-out (alphaTest; materials.json \"cutout\": true, which test-class.js checks against the kits' MAT definitions): normal and roughness as flat's, but NEVER a height in its colour map's alpha (Gate 1), which alphaTest reads. The stack's packFormat 2 writes a Poisson height into every lit family's alpha: Stage 8 must pack this class with alphaMode none (settlements/xanadu/XS1-CLASSES.md section 4)",
+   "web": {"normal": "xy6"},
+   "godot": {"normal": "oct8", "mipVariance": true},
+   "flat": true,
+   "height": "never",
    "pom": false,
    "cavity": false
   },

@@ -5,6 +5,7 @@
  "families": {
   "wood": {
    "lib": "wood.siding",
+   "class": "relief",
    "scale": [
     2.0,
     1.7
@@ -23,6 +24,7 @@
   },
   "woodV": {
    "lib": "wood.lamppost",
+   "class": "flat",
    "scale": [
     0.8,
     1.0
@@ -41,6 +43,7 @@
   },
   "stone": {
    "lib": "stone.cut",
+   "class": "relief",
    "scale": [
     2.0,
     1.92
@@ -59,6 +62,7 @@
   },
   "plaster": {
    "lib": "plaster",
+   "class": "flat",
    "scale": [
     2.0,
     2.0
@@ -77,6 +81,7 @@
   },
   "thatch": {
    "lib": "roof.thatch.neutral",
+   "class": "relief",
    "scale": [
     2.5,
     2.5
@@ -95,6 +100,7 @@
   },
   "shingle": {
    "lib": "roof.shingle.neutral",
+   "class": "relief",
    "scale": [
     2.0,
     2.0
@@ -113,6 +119,7 @@
   },
   "cloth": {
    "lib": "cloth.canvas.striped",
+   "class": "flat",
    "scale": [
     1.2,
     1.18
@@ -132,6 +139,7 @@
   },
   "dMosaic": {
    "lib": "patterns/dalab/mosaic",
+   "class": "flat",
    "scale": [
     1,
     1.02
@@ -145,6 +153,7 @@
   },
   "white": {
    "lib": "metal.ancient.white",
+   "class": "flat",
    "scale": [
     4.0,
     4.0
@@ -164,6 +173,7 @@
   },
   "verdigris": {
    "lib": "metal.bronze.verdigris",
+   "class": "flat",
    "scale": [
     2,
     2
@@ -183,6 +193,7 @@
   },
   "concrete": {
    "lib": "concrete.ancient",
+   "class": "flat",
    "scale": [
     1.95,
     1.8
@@ -202,6 +213,7 @@
   },
   "concreteR": {
    "lib": "concrete.ancient",
+   "class": "flat",
    "scale": [
     1.95,
     1.8
@@ -221,6 +233,7 @@
   },
   "paving": {
    "lib": "concrete.ancient.b",
+   "class": "relief",
    "scale": [
     3.25,
     3.07
@@ -240,6 +253,7 @@
   },
   "brick": {
    "lib": "brick.red",
+   "class": "relief",
    "scale": [
     1.2,
     1.21
@@ -259,6 +273,7 @@
   },
   "corrugate": {
    "lib": "metal.corrugated_iron_02",
+   "class": "flat",
    "scale": [
     1.2,
     1.2
@@ -278,6 +293,7 @@
   },
   "timber": {
    "lib": "wood.weathered_brown_planks",
+   "class": "relief",
    "scale": [
     2,
     2
@@ -297,6 +313,7 @@
   },
   "tarp": {
    "lib": "cloth.tarp",
+   "class": "flat",
    "scale": [
     2,
     2
@@ -316,6 +333,7 @@
   },
   "rubbleK": {
    "lib": "rock.rocks013",
+   "class": "relief",
    "scale": [
     2,
     2
@@ -335,6 +353,7 @@
   },
   "whiteWorn": {
    "lib": "metal.worn",
+   "class": "flat",
    "scale": [
     2.4,
     2.4
@@ -354,6 +373,7 @@
   },
   "logs": {
    "lib": "wood.log.carved",
+   "class": "relief",
    "scale": [
     2.0,
     1.77
@@ -373,6 +393,7 @@
   },
   "scale": {
    "lib": "roof.scale.slate",
+   "class": "relief",
    "scale": [
     1.5,
     1.61
@@ -391,6 +412,7 @@
   },
   "rubbleW": {
    "lib": "rock.old_stone_wall",
+   "class": "relief",
    "scale": [
     3.5,
     3.5
@@ -409,6 +431,7 @@
   },
   "bamboo": {
    "lib": "wood.bamboo_wall",
+   "class": "relief",
    "scale": [
     1.2,
     1.2
@@ -428,6 +451,7 @@
   },
   "bmat": {
    "lib": "fibre.reedmat",
+   "class": "flat",
    "scale": [
     1.5,
     1.5
@@ -447,6 +471,7 @@
   },
   "dRelief": {
    "lib": "patterns/dalab/relief-squares",
+   "class": "flat",
    "scale": [
     3,
     3
@@ -466,6 +491,7 @@
   },
   "dReliefTq": {
    "lib": "patterns/dalab/relief-tile-teal",
+   "class": "flat",
    "scale": [
     4,
     4
@@ -479,6 +505,7 @@
   },
   "dChecker": {
    "lib": "patterns/dalab/checker-harlequin",
+   "class": "flat",
    "scale": [
     2.5,
     2.5
@@ -492,6 +519,7 @@
   },
   "dDecoPanel": {
    "lib": "patterns/dalab/god-panel-a",
+   "class": "flat",
    "scale": [
     0.8,
     2
@@ -505,6 +533,7 @@
   },
   "dBanner": {
    "lib": "patterns/dalab/banner",
+   "class": "card",
    "scale": [
     1,
     1.5
@@ -523,6 +552,7 @@
   },
   "dMural": {
    "lib": "patterns/dalab/mural-god-hero",
+   "class": "flat",
    "scale": [
     4,
     2
@@ -536,6 +566,7 @@
   },
   "dMural1": {
    "lib": "patterns/dalab/mural-soldiers",
+   "class": "flat",
    "scale": [
     4,
     2
@@ -549,6 +580,7 @@
   },
   "dMural2": {
    "lib": "patterns/dalab/mural-eye-god",
+   "class": "flat",
    "scale": [
     4,
     2
@@ -562,6 +594,7 @@
   },
   "dMural3": {
    "lib": "patterns/dalab/mural-lizards",
+   "class": "flat",
    "scale": [
     2.13,
     2
@@ -575,6 +608,7 @@
   },
   "vpTile": {
    "lib": "roof.tile",
+   "class": "relief",
    "scale": [
     1.4,
     1.4
@@ -594,6 +628,7 @@
   },
   "vpBanco": {
    "lib": "earth.banco",
+   "class": "relief",
    "scale": [
     2,
     2
@@ -613,6 +648,7 @@
   },
   "dRammed": {
    "lib": "earth.rammed",
+   "class": "relief",
    "scale": [
     3,
     3
@@ -632,6 +668,7 @@
   },
   "dTurf": {
    "lib": "roof.turf",
+   "class": "relief",
    "scale": [
     4,
     4
@@ -651,6 +688,7 @@
   },
   "turf": {
    "lib": "roof.turf",
+   "class": "relief",
    "scale": [
     2,
     2
@@ -670,6 +708,7 @@
   },
   "dRender": {
    "lib": "stone.rendered",
+   "class": "flat",
    "scale": [
     2.0,
     2.0
@@ -688,6 +727,7 @@
   },
   "dRenderR": {
    "lib": "stone.rendered.ruined",
+   "class": "flat",
    "scale": [
     2.0,
     2.0
@@ -706,6 +746,7 @@
   },
   "dBancoE": {
    "lib": "earth.banco.eroded.b",
+   "class": "relief",
    "scale": [
     2.0,
     2.0
@@ -726,6 +767,7 @@
   },
   "dBlock": {
    "lib": "rock.sandstone_blocks_04",
+   "class": "relief",
    "scale": [
     2.0,
     2.0
@@ -744,6 +786,7 @@
   },
   "dMural4": {
    "lib": "patterns/dalab/mural-giants",
+   "class": "flat",
    "scale": [
     4,
     2
@@ -757,6 +800,7 @@
   },
   "dMural5": {
    "lib": "patterns/dalab/mural-harvest",
+   "class": "flat",
    "scale": [
     4,
     2
@@ -770,6 +814,7 @@
   },
   "dMural6": {
    "lib": "patterns/dalab/mural-priests",
+   "class": "flat",
    "scale": [
     4,
     2
@@ -783,6 +828,7 @@
   },
   "dMural7": {
    "lib": "patterns/dalab/mural-eye-god-b",
+   "class": "flat",
    "scale": [
     4,
     2
@@ -796,6 +842,7 @@
   },
   "dDecoPanelB": {
    "lib": "patterns/dalab/god-panel-b",
+   "class": "flat",
    "scale": [
     0.8,
     2
@@ -809,6 +856,7 @@
   },
   "dReliefRd": {
    "lib": "patterns/dalab/relief-tile-red",
+   "class": "flat",
    "scale": [
     4,
     4
@@ -822,6 +870,7 @@
   },
   "dReliefCh": {
    "lib": "patterns/dalab/relief-chevron",
+   "class": "flat",
    "scale": [
     3,
     3

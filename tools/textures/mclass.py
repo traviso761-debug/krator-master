@@ -17,6 +17,8 @@ core/materials/classes/test-class.js).
     python3 tools/textures/mclass.py --prove                 # today's pack.py reads no "class": the field is byte-neutral
     python3 tools/textures/mclass.py --prove --ref origin/claude/vertical-stack   # and the stack's pack.py, at that ref
     python3 tools/textures/mclass.py kits/xanadu             # one build's families with their class and Stage 8 settings
+    python3 tools/textures/mclass.py --measure               # core/materials/classes/m1-measured.json from the committed tex/
+                                                             # (the packed roughness the classes are derived from; rerun after a re-pack)
 
 The proof reads pack.py's syntax tree: every key it takes from a family's entry or the build's config (`cfg`, `fc`) must be
 a string it names (or a loop over named strings); any other use of the dict (iterated, dumped, passed on whole except to a
@@ -117,7 +119,56 @@ def _src(ref):
                           encoding='utf-8', check=True).stdout
 
 
+MEASURED = os.path.join(ROOT, 'core', 'materials', 'classes', 'm1-measured.json')
+CLASSED = ['kits/xanadu', 'settlements/xanadu', 'kits/qiblai', 'settlements/flashing-eye', 'settlements/kirstabal',
+           'settlements/thalaba', 'kits/tungang',   # every materials.json with classes (XS1-CLASSES.md section 1)
+           'settlements/dalab', 'kits/ancient-transit', 'kits/catalog', 'biomes/oidong',   # drawn on Xanadu pages (XS0's GPU run)
+           'settlements/nulab', 'settlements/blakhed']   # the same, on the integration line: measured where present
+CLASSED_HERE = [b for b in CLASSED if os.path.isfile(os.path.join(ROOT, b, 'materials.json'))]
+
+
+def measure(builds):
+    """The values the classes are derived from that only the packed maps hold: each family's packed roughness map mean
+    (what the page draws; the rule's roughness), keyed to the pack entry it came from (its roughness source's sha1 and
+    roughLift, from the committed tex/pack.json), so test-class.js can tell when a re-pack has made it stale."""
+    import numpy as np
+    from PIL import Image
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import buildlib
+    out = {}
+    for b in builds:
+        tex = os.path.join(ROOT, b, 'tex')
+        with io.open(os.path.join(tex, 'pack.json'), encoding='utf-8') as fh:
+            fams = json.load(fh)['families']
+        rows = {}
+        for fam in sorted(fams):
+            e = fams[fam]
+            name = e['files'].get('roughnessMap')
+            if not name:
+                continue
+            p = os.path.join(tex, name)
+            if buildlib.is_pointer(p):
+                sys.exit('mclass --measure: %s is an LFS pointer: git lfs pull --include="%s/tex/**"' % (p, b))
+            r = np.asarray(Image.open(p).convert('L')).astype(np.float64) / 255.0
+            rows[fam] = {'roughMean': round(float(r.mean()), 4), 'source': e['source'].get('roughness'),
+                         'roughLift': e.get('roughLift', 0.0)}
+        out[b] = rows
+    return out
+
+
 def main(argv):
+    if '--measure' in argv:
+        builds = [a for a in argv if not a.startswith('--')] or CLASSED_HERE
+        doc = {'what': 'the packed roughness map mean of every classed family (tools/textures/mclass.py --measure, from the '
+                       'committed tex/): the roughness the stack\'s glazed rule is judged on (m1-classes.json "rule"). Each '
+                       'row keeps the pack entry it was measured on (its roughness source sha1 and roughLift); '
+                       'core/materials/classes/test-class.js fails when tex/pack.json has moved past it. Rerun after a re-pack.',
+               'builds': measure(builds)}
+        with io.open(MEASURED, 'w', encoding='utf-8', newline='\n') as fh:
+            fh.write(json.dumps(doc, indent=1, sort_keys=True) + '\n')
+        print('wrote %s: %d builds, %d families' % (os.path.relpath(MEASURED, ROOT).replace(os.sep, '/'), len(doc['builds']),
+                                                     sum(len(v) for v in doc['builds'].values())))
+        return 0
     if '--prove' in argv:
         ref = argv[argv.index('--ref') + 1] if '--ref' in argv else None
         r = prove(_src(ref))

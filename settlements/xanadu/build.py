@@ -379,10 +379,20 @@ def build_one(target, do_checks):
             bodies[f] = fh.read()
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
+    # --page-packs (OPT-IN until Stage 8 makes it the default: TODO.md's ride-along; XS1-CLASSES.md "Fixes after XS0"): each
+    # page carries only the families its row in settlements/xanadu/page-packs.json keeps, checked against what a run of the
+    # page used and what its own fragments name (tools/textures/page_pack.py), in sidecars named after the page. Off, nothing
+    # below reads page-packs.json or page_pack.py, and every call is the one it was
+    _pp = None
+    if '--page-packs' in sys.argv:
+        import page_pack
+        own = [p for p in paths.values() if os.path.abspath(p).startswith(os.path.abspath(KIT['dir'] if KIT else tdir) + os.sep)]
+        _pp = page_pack.Page(os.path.join(DIST, TARGET_OUT[target]), own)
+    _ex = (lambda key, d: _pp.exclude(key, d)) if _pp else (lambda key, d: ())
     # the pack beside the pages (xanadu.tex.xanadu.js), one file every page of the build shares; --inline-packs puts it back in
     # each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
     side = None if '--inline-packs' in sys.argv else {}
-    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'xanadu', side=side)
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'xanadu', side=side, exclude=_ex('xanadu', HERE))
     order = sorted(order + [MATLIB_PACK])
     # a kit with library families of its own (kit.json "pack": its name; its materials.json packed into its tex/ by
     # tools/textures/pack.py): KMAT.pack('<name>') inlined here, bound by the kit's own fragment (KMAT.bindMat), as Iziz's --kit
@@ -393,7 +403,8 @@ def build_one(target, do_checks):
     if KIT and KIT.get('pack') and os.path.isfile(os.path.join(_pd, 'tex', 'pack.json')):
         # kit.json "packSide": true writes the kit's pack beside the page too (<page>.tex.<pack>.js, as Xanadu's own), so a
         # page near its size cap keeps its code inline and its images apart (the city of Qiblai, 2026-11-16: 7.5 MB of 15)
-        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(_pd, KIT['pack'], side=side if KIT.get('packSide') else _sp)
+        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(_pd, KIT['pack'], side=side if KIT.get('packSide') else _sp,
+                                                       exclude=_ex(KIT['pack'], _pd))
         order = sorted(order + [KIT_MATLIB_PACK])
     if KIT and target in KIT.get('interiors', []):   # a kit target with interiors: the furniture bundle and the interiors core
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
@@ -406,7 +417,8 @@ def build_one(target, do_checks):
     if any(f.startswith('86-bio-') for f in order):   # the vendored xanadu biome: its library pack, before the biome code
         # under its own key (2026-11-12): as 'xanadu' the building kit's pack (88x, after it) replaced it whole (KMAT.pack
         # sets, it does not merge), so its ground sets never reached the page. Erewhon's ground reads it (85-er-paint, 90a)
-        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu-bio', side=_sp if KIT else None)
+        _bd = os.path.join(ROOT, 'biomes', 'xanadu')
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(_bd, 'xanadu-bio', side=_sp if KIT else None, exclude=_ex('xanadu-bio', _bd))
         order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:
@@ -430,7 +442,9 @@ def build_one(target, do_checks):
         return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
-        html = matlib_pack.write_sidecar(side, html, DIST, 'xanadu.tex.js', prune=False)
+        html = matlib_pack.write_sidecar(side, html, DIST, _pp.sidecar_name() if _pp else 'xanadu.tex.js', prune=False)
+    if _pp:
+        print('page packs %s: %s' % (TARGET_OUT[target], ', '.join('%s %d of %d' % (k, a, b) for k, (a, b) in sorted(_pp.kept.items())) or 'no lists: whole packs'))
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(KIT['dir'] if KIT else HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:

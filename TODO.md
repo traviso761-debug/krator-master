@@ -77,6 +77,7 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `kgTri`'s and the hex sampler's locals `v1 v2 v3` and `r1 r2 r3`, which three r128's `cube_uv_reflection_fragment` `#define`s as
   numbers whenever the scene or the material has an environment map (a skylight): the fragment fails ("'0.276' : syntax error").
   Rename them (`kgV1`..., `kgR1`...) and drop the `#undef` guard in `core/terrain/host/39i-core-cavern-rock.js`; 199 builds read it.
+- **Stage 8: switch the per-page packs on** (2026-11-23, `settlements/xanadu/XS1-CLASSES.md` "Fixes after XS0"): after the re-pack, re-record each Xanadu page's lists (`python3 tools/textures/page_pack.py record <page> --queries ?interiors=1` on a GPU lane, into `settlements/xanadu/page-packs.json`), then make `--page-packs` the default in `settlements/xanadu/build.py` (its `'--page-packs' in sys.argv` test) and rebuild every page built on Xanadu's page; publish each page's renamed sidecars (`<page>.tex.<key>.js`) with it.
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
   `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour) into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
