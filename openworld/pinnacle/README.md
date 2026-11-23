@@ -27,7 +27,8 @@ The first site cut off the scale model into the open world, with a settlement pl
     mesa (`KNOWN_ISSUES.md`).
 - **The flora:**
   - the hyperjungle grows on the savage hyperjungle, in its stands with saplings under them (its pass table as the
-    retired little-demo gave it);
+    retired little-demo gave it). Its far level is an octahedral impostor baked at load from its mid tree
+    (`core/world/84i-world-impostors.js`), so the mid hands over at 600 m;
   - the abyssal savannah's own trees, and the eastern abyss's it borrows, grow over the NE rim. `src/49-world-absav.js`
     presents that kit to the world as two registries.
 - **Built output:** `dist/pinnacle.html`, with its texture sidecars.
@@ -37,7 +38,16 @@ python3 tools/scale-model/cut_site.py pinnacle     # the cut (data/, source/)
 python3 core/world/bake_sites.py pinnacle          # the plan (plan/sites.json); --check fails on a stale bake
 python3 build.py                                   # dist/pinnacle.html
 python3 verify.py dist/pinnacle.html --assert --views 1,2,6
+python3 ../../tools/harness.py lock --lane arc -- python3 tools/perf.py dist/pinnacle.html --detail --fly 150 [--ablate]
 ```
+
+`tools/perf.py` is the frame's cost from fixed views (fps, the world pass's GPU time, draw calls, triangles, the flora by
+level). `--detail` breaks it down by flora prototype and camp piece, `--fly` times a flight (with each streaming step's CPU
+time, its worst frame, the long tasks and the prototypes grown; `--profile` adds a CPU profile's hottest functions by
+fragment), and `--ablate` times the GPU with each kind of mesh hidden. `tools/grow_times.py` times every flora prototype
+the kits can ask for (every one is grown at load: `core/world/85p-world-pregrow.js`). Compare a before and an after
+inside one lock: other work on the machine swings the numbers by up to 2x. The numbers of 2026-11-16 are in
+`KNOWN_ISSUES.md`.
 
 On the GPU: `KRATOR_GL=gpu` and `python3 ../../tools/harness.py lock --lane auto -- python3 verify.py ...`.
 

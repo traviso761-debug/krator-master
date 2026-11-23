@@ -278,7 +278,15 @@ written when the owner agrees the list. **Agreed and written 2026-10-26:** `core
 | P4 | the State: ministries, registry, examination hall, gate, wall, the Clock, the tube station and pipe, the relic hall, the ancestor gallery, the talking head | the civic row reads; the Clock animates. **Done 2026-10-20**: `et_ministry`, `et_registry`, `et_examination_hall` (hexagonal: the owner), `et_customs_house`; `et_gate`, `et_wall`, `et_wall_tower` (frontier variant), `et_barracks`; `et_clock` (its parade as data on its record, run by `91c-et-clock.js`), `et_tube_station` (hexagonal), `et_tube_pipe`, `et_talking_head`, `et_relic_hall`; `et_ancestor_gallery`, `et_shrine_niche`, `et_withdrawal_house`, `et_mask_house`, `et_historians_house`; ten more census trades carried; six catalog pieces |
 | P5 | the hosts: the `kept` state and the tracery infill moved here from the Sanctum (built first, 2026-10-20: `palace/BLUEPRINT.md`) and put on two memorial bodies; the court pavilion and gallery over water | the host row reads at night with the cyan alive. **Done 2026-10-20**: `kits/ancients/targets/kept` (`dist/kept.html`): Plymouth and Arcoindian I (the owner's choice) intact and kept by a material pass (`8aq5-kept-pass.js`: alabaster in a bronze tracery grid for the glazing, the shell cleaned, cyan strips alive on a fifth of the runs, nothing patched); a quality pass on both bodies' builders (Plymouth's liner and light court, both buildings' stairs with landings, Arcoindian's towers under the vault); the court pavilion and gallery came in P3 |
 | P6 | trade, hydraulics, harbour: the census trades, the kiln and tile works, canal, lock, bridge, spillway face, Farport's quays and factory quarter | `IS_TRADES` complete; the spillway face runs water. **Done 2026-10-20**: every census trade carried but the palace staffs (the Sanctum's): the works (the hexagonal kiln and tile works, porcelain, paper mill, printer), the shop trades in two plans (the street's and the hexagon, v 1), the hexagonal market hall, granary, warehouse, healer and tea house, the inn, the land (a hexagonal farmstead, paddies, tea garden, mine, quarry, stock pens), the lock, the reservoir wall, the spillway face whose water runs (`91d-et-water.js`), the landings, Farport's quay, dockyard, hexagonal lighthouse and factory quarter; hexagonal houses at every tier (the owner); `etTrade` (`64-et-trade-kit.js`) |
-| P7 | the catalog culture file, the interiors set, the furnished cut-away; the Godot export check on the sheet (`core/export`); the gallery | the sheet exports and passes its Godot case; Krator Worlds carries the page. **Done 2026-10-20** but for the gallery: the catalog culture file (common, poor, court and the State's pieces), the interiors set (`kits/interiors/sets/eternian.js`: 75 items, 127 rooms, the residence rule met), the furnished cut-aways, the export through core/export (`93e-et-export.js`; case `godot/data/world-eternian`, profile registry, materials, terrain) and its Godot case (`godot/tests/export/eternian_test.gd`, in the nightly list); Krator Worlds is the owner's call once the branch is on `main` |
+| P7 | the catalog culture file, the interiors set, the furnished cut-away; the Godot export check on the sheet (`core/export`); the gallery | the sheet exports and passes its Godot case; Krator Worlds carries the page. **Done 2026-10-20** but for the gallery: the catalog culture file (common, poor, court and the State's pieces), the interiors set (`kits/interiors/sets/eternian.js`: 75 items, 127 rooms, the residence rule met), the furnished cut-aways, the export through core/export (`93e-et-export.js`; case `godot/data/world-eternian`, profile registry, materials, terrain) and its Godot case (`godot/tests/export/eternian_test.gd`, in the nightly list); Krator Worlds is the owner's call once the branch is on `main`. *(The gallery: in since 2026-10-20, its own artifact linked from a card in the parts, `gallery/build_gallery.py` `LINKED`; KNOWN_ISSUES.md.)* |
+
+**The close-out (2026-11-09).** P0 to P7 are done. What was left within the kit's reach is closed: the census's last gap
+(the palace and canton staffs: the court over water and the ministries, the palace itself the Sanctum's; 41 of 44 carried,
+no gap), Farside's works backported as the kit's own defs (`src/69-et-coast.js`), the owner's buff brick wired, and the
+statue rule held in `verify.py --assert` (`statue-poses`). What stays open is the owner's or a core change's
+(KNOWN_ISSUES.md): the core/sockets culture pack and the catalog's onyx split (each a rebuild of every build that takes
+the module), the relic hall reading the Ancient Port kit's parts in place, the tracery card, the fort's towers, and the
+walk audit's roofs.
 
 After P7: the capital's page (section 8) as its own plan, and the Yeti, cybernetics-tribe and bandit-camp pieces as
 theirs.
@@ -294,16 +302,23 @@ the port and Ring Sea kits' grounded hulls), not a culture.
 
 ## 12. Open questions for the owner
 
-1. **The engine: settled** (the owner, 2026-10-20): the Islanders route, the Scyvoi engine vendored (P0 built on it),
+1. **The engine: settled** (the owner, 2026-10-20; the engine is `core/engine` read in place since 2026-11-02): the Islanders route, the Scyvoi engine vendored (P0 built on it),
    because it ensures a complete set of trade buildings: `ET_TRADES` (P1) lists every Voth census trade in the repo's
    shape (`tools/check_trades.py`), each carried, a gap naming the def and phase that will carry it, or na; the
    buildings fill the gaps through P3 to P6, and KNOWN_ISSUES.md lists those still open.
 2. **The capital's site and name:** Centrum or Fulcrum; the city's own name; what the Eternians call the Sanctum.
 3. **`kept` as a new Ancients state** implemented in this kit as a pass over a body's record, or added to the Ancients
-   kit itself for every build to use?
+   kit itself for every build to use? *Settled by the code (P5): a material pass in the Ancients kit itself
+   (`kits/ancients/targets/kept`, `8aq5-kept-pass.js`), so the Ancients' builders are not forked and any build can take it.*
 4. **The closed-eye rule** (open-eyed heads under a tenth) and the ban on striding and armed statues: hold them as kit
-   invariants in `verify.py`?
+   invariants in `verify.py`? *Settled: held. `verify.py --assert` `closed-eyes` (P2) and `statue-poses` (2026-11-09: every
+   figure stands, sits, folds its hands or carries a lintel); the generator has no striding pose and no weapon.*
 5. **Red:** the draft keeps red out of the kit entirely (the Republic's and Jimjam's); the owner's red-maze costume
    reference (`costume-41`) would then be a foreign dress or dropped.
-6. **The refs:** kept in plain Git under `refs/` as Pylon's and Zeijani's are (9.8 MB, 48 files), or trimmed?
-7. **Textures:** agree the gap list of section 10 before the prompts go to `PROMPTS-NEEDED.md`.
+   *Open (the costume is the owner's call). As the code stands the palette (`26k-kit.js` `SVPAL`) has no red; the one red
+   on the sheet is a natural one, the wine weed drying on the kelp rack (Farside's backport).*
+6. **The refs:** kept in plain Git under `refs/` as Pylon's and Zeijani's are (9.8 MB, 48 files), or trimmed? *As the
+   code stands: kept, in plain Git (not LFS; `.gitattributes` does not name them), all 48. Trimming is the owner's call.*
+7. **Textures:** agree the gap list of section 10 before the prompts go to `PROMPTS-NEEDED.md`. *Settled: agreed
+   2026-10-26 (`PROMPTS-NEEDED.md` section 18); both gaps delivered the same day, `brick.buff` wired (2026-11-09),
+   `card.tracery.bronze` not yet (KNOWN_ISSUES.md).*

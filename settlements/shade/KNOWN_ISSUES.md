@@ -101,6 +101,10 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The sheer faces are 1.25 m mesh cells: vertical enough to carve against. Where a
       patch meets them the heightfield's recess runs 2 m behind the void's wall, inside the
       patch's rock, so no ground triangle spikes into the void.
+- [x] (2026-11-09) **The page rebuilt from the biome in place** (it was behind its sources: sedesert's later passes, the succulent
+      columns' quality pass among them, and core/biome's). Rebuilt again on 2026-11-10 with core/host's probe flag (the
+      ride-alongs): `verify.py --assert` on SwiftShader OK, 97 pass, 606 registered volumes (as before), 111.6k baked instances,
+      59 draw calls and 3.51 M triangles at the showcase camera (2.88 M on 2026-11-03). The market view looks the same.
 - [x] (2026-11-03) **The biome is read in place**: `core/biome` (the placement core: 10, 20, 30, 40), `core/space`, and
       `biomes/sedesert/src` (strata, flora, fauna, sky, tail); src/ keeps no copy and VENDOR.json is gone. The copies had fallen
       behind the core's move and the kits' `BIO.kit` hooks and the biome's later passes. `verify.py --assert` before and

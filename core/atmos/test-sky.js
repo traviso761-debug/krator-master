@@ -155,4 +155,107 @@ ok('the bright stars are fixed: 64, the brightest in the cluster',S.stars.length
  ok('no site is the bound sky\'s, else Voth',(()=>{const a=A.sunHidden(90.5);A.skySite=site;const b=A.sunHidden(90.5);delete A.skySite;return a===A.sunHidden(90.5,voth)&&b===A.sunHidden(90.5,site);})(),false);
  ok('sunHidden is 0 out of eclipse season',A.sunHidden(150.5,site)===0,false);
  ok('these are data: plain numbers',typeof L.phase==='number'&&typeof A.sunHidden(1,site)==='number'&&JSON.stringify(L).length>10,false);}
+// ---- the clouds' mood (sky/89-atmos-k-cloudmood.js, 2026-11-09): the twin of layer 7 with dark, tint, turbulence and glow
+{const P=A.skyPreset('standard',{clouds:{cover:.55}}),noon=at(voth,259,12),Ln=A.skyLook(P,noon,{}),mid=at(voth,259,0),Lm=A.skyLook(P,mid,{});
+ const base={cam:[0,1.7,0],wind:[1,.3],time:900,air:[.6,.7,.85]},U0=A.skyCloudUniforms(P,Ln,noon,base),lum=c=>.3*c[0]+.55*c[1]+.15*c[2];
+ const with_=(U,o)=>Object.assign({},U,o);
+ // directions with thick cloud: scan a fan at 20 degrees up
+ const dirs=[];for(let az=0;az<360&&dirs.length<6;az+=7){const d=V.fromAltAz(20,az),c=A.skyCloudAt(d,U0);if(c.a>.4)dirs.push(d);}
+ ok('the twin draws cloud at noon over Voth (6 thick directions found in a fan)',dirs.length===6&&dirs.every(d=>A.skyCloudAt(d,U0).a>.4),dirs.length<6);
+ const mean=(U,f)=>dirs.reduce((s,d)=>s+f(A.skyCloudAt(d,U)),0)/dirs.length;
+ const l0=mean(U0,c=>lum(c.rgb)),ld=mean(with_(U0,{dark:.8}),c=>lum(c.rgb)),lz=mean(with_(U0,{dark:0}),c=>lum(c.rgb));
+ ok('a dark cloud is darker than the default at the same hour ('+ld.toFixed(3)+' against '+l0.toFixed(3)+'), dark 0 the default itself',ld<.75*l0&&lz===l0,ld>=l0);
+ const chroma=c=>{const s=c[0]+c[1]+c[2]||1;return[c[0]/s,c[1]/s,c[2]/s];},tint=[.42,.33,.30],dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+ const ct=mean(with_(U0,{tint,tintK:1}),c=>dist(chroma(c.rgb),chroma(tint))),c0=mean(U0,c=>dist(chroma(c.rgb),chroma(tint))),lt=mean(with_(U0,{tint,tintK:1}),c=>lum(c.rgb));
+ ok('a tinted cloud is nearer its tint in hue ('+ct.toFixed(3)+' from it against '+c0.toFixed(3)+') and keeps its luminance; tintK 0 is the default',ct<.3*c0&&Math.abs(lt-l0)<.03*l0&&mean(with_(U0,{tint,tintK:0}),c=>lum(c.rgb))===l0,ct>=c0);
+ // turbulence: the field between two nearby points differs more when torn
+ const pairs=[];for(let i=0;i<40;i++){const x=(i*1731)%9000-4500,z=(i*2917)%9000-4500;pairs.push([[x,z],[x+230,z+100]]);}
+ const rough=U=>pairs.reduce((s,p)=>s+Math.abs(A.skyCloudField(p[0],5,U)-A.skyCloudField(p[1],5,U)),0)/pairs.length;
+ const r0=rough(U0),rv=rough(with_(U0,{turbulence:.9,turbKind:'violent'}));
+ ok('a violently turbulent field differs between two nearby points more than the default ('+rv.toFixed(4)+' against '+r0.toFixed(4)+'); turbulence 0 is the default field',rv>1.4*r0&&pairs.every(p=>A.skyCloudField(p[0],5,with_(U0,{turbulence:0,turbKind:'violent'}))===A.skyCloudField(p[0],5,U0)),rv<=r0);
+ const per=U=>pairs.reduce((s,p)=>s+Math.abs(A.skyCloudField(p[0],5,U)-A.skyCloudField([p[0][0]+U.scale,p[0][1]],5,U)),0)/pairs.length;
+ const p0=per(U0),po=per(with_(U0,{turbulence:1,turbKind:'ordered'}));
+ ok('an ordered field repeats every lattice cell: a point and the next cell\'s differ by '+po.toFixed(4)+' against '+p0.toFixed(4)+' in the default',po<.35*p0,po>=p0);
+ const Ug=with_(U0,{turbulence:1,turbKind:'glitched'}),dt=400,shift=[U0.wind[0]*dt*U0.drift*U0.scale,U0.wind[1]*dt*U0.drift*U0.scale];
+ const carried=(U,p)=>Math.abs(A.skyCloudField(p,5,with_(U,{time:U.time+dt}))-A.skyCloudField([p[0]+shift[0],p[1]+shift[1]],5,U));
+ const plainC=pairs.reduce((s,p)=>s+carried(U0,p[0]),0)/pairs.length,glC=pairs.reduce((s,p)=>s+carried(Ug,p[0]),0)/pairs.length;
+ ok('a glitched field is a union of sheets (never under the first by more than .05) that the page\'s wind alone does not carry: the plain field rides with it ('+plainC.toExponential(1)+'), the glitched one changes under it ('+glC.toFixed(3)+')',
+  pairs.every(p=>A.skyCloudField(p[0],5,Ug)>=A.skyCloudField(p[0],5,U0)-.05-1e-9)&&plainC<1e-6&&glC>.01&&A.MOOD_SHEETS.length===2,glC<=plainC);
+ // the walk: continuous, piecewise straight, turning abruptly, repeating its shape every 72 s
+ {const wk=A.skyMoodWalk,legs=A.skyMoodWalkLegs(1),L0=legs[0][1],T=legs.reduce((a,l)=>a+l[1],0),v=(t)=>{const a=wk(t,1),b=wk(t+.01,1);return Math.atan2(b[1]-a[1],b[0]-a[0]);},turn=Math.abs(v(L0+1)-v(L0-1)),same=Math.abs(v(2)-v(L0-2));
+  const jmp=Math.max(...[...Array(600).keys()].map(i=>{const a=wk(i*.7,1),b=wk(i*.7+.001,1);return Math.hypot(b[0]-a[0],b[1]-a[1]);})),rep=wk(T+28,1),rep0=wk(28,1),cyc=wk(T,1);
+  ok('the sheets\' walk holds each heading 30-90 s ('+legs.map(l=>l[1].toFixed(0)).join(', ')+' s) and turns abruptly at a leg\'s end ('+(turn*180/Math.PI).toFixed(0)+' degrees), straight within one, never jumping, its shape repeating each cycle',legs.every(l=>l[1]>=30&&l[1]<=90)&&turn>.2&&same<1e-9&&jmp<.002&&near(rep[0]-cyc[0],rep0[0],1e-6)&&near(rep[1]-cyc[1],rep0[1],1e-6)&&Math.abs(v(5)-A.skyU3(0,2,3,150)*2*Math.PI)>1e-9,same>1e-9);}
+ // pace: the mood's motions run faster, the page's own cloud untouched
+ {const dt=3,chg=(U)=>pairs.reduce((s,p)=>s+Math.abs(A.skyCloudField(p[0],5,with_(U,{time:U.time+dt}))-A.skyCloudField(p[0],5,U)),0)/pairs.length;
+  const Uv1=with_(U0,{turbulence:.8,turbKind:'violent',pace:1}),Uv4=with_(Uv1,{pace:4}),Ug4=with_(Ug,{pace:4}),Ug1=with_(Ug,{pace:1});
+  ok('pace 4 moves a violent field more in 3 s than pace 1 ('+chg(Uv4).toFixed(3)+' against '+chg(Uv1).toFixed(3)+'), a glitched one too; a plain field ignores it',chg(Uv4)>1.5*chg(Uv1)&&chg(Ug4)>1.3*chg(Ug1)&&chg(with_(U0,{pace:4}))===chg(U0),chg(Uv4)<=chg(Uv1));}
+ const Ur=with_(U0,{turbulence:1,turbKind:'ripple',turbAt:[0,0]}),nearE=pairs.filter(p=>Math.hypot(p[0][0],p[0][1])<3000),farR=[[60000,0],[0,70000],[-65000,5000]];
+ ok('a rippling field differs from the plain one within a few km of its epicentre and is the plain one again 60 km out (the rings die over 8 km)',nearE.length>3&&nearE.every(p=>Math.abs(A.skyCloudField(p[0],5,Ur)-A.skyCloudField(p[0],5,U0))>1e-4)&&farR.every(p=>near(A.skyCloudField(p,5,Ur),A.skyCloudField(p,5,U0),1e-3)),nearE.every(p=>near(A.skyCloudField(p[0],5,Ur),A.skyCloudField(p[0],5,U0),1e-4)));
+ {const r1=A.skyCloudField([2000,0],5,Ur),r2=A.skyCloudField([2000,0],5,with_(Ur,{time:U0.time+15})),r0=A.skyCloudField([2000,0],5,with_(U0,{time:U0.time+15}));
+  ok('...and the rings move: 15 s on, the field at a fixed point has changed by more than the wind alone moved it',Math.abs(r2-r1)>1.5*Math.abs(r0-A.skyCloudField([2000,0],5,U0)),false);}
+ // the glow: nothing by day, the base lit at night, only near the locus unless spread
+ const Um=A.skyCloudUniforms(P,Lm,mid,base),ndirs=[];for(let az=0;az<360&&ndirs.length<6;az+=7){const d=V.fromAltAz(20,az);if(A.skyCloudAt(d,Um).a>.4)ndirs.push(d);}
+ const nmean=(U,f)=>ndirs.reduce((s,d)=>s+f(A.skyCloudAt(d,U)),0)/ndirs.length,gcol=[1,.55,.2];
+ const gDay=mean(with_(U0,{glow:1,glowColour:gcol}),c=>lum(c.rgb)),gN=nmean(with_(Um,{glow:1,glowColour:gcol}),c=>lum(c.rgb)),g0=nmean(Um,c=>lum(c.rgb));
+ ok('the glow is zero by day (noon: the default cloud) and lights the cloud base at midnight ('+gN.toFixed(3)+' against '+g0.toFixed(3)+')',gDay===l0&&Ln.night===0&&gN>g0+.1&&ndirs.length===6,gN<=g0);
+ const far=with_(Um,{glow:1,glowColour:gcol,glowLocus:[40000,40000,2000,0]}),nearL=with_(Um,{glow:1,glowColour:gcol,glowLocus:[0,0,20000,0]});
+ ok('...under one patch when its locus is given with no spread: a locus 40 km off lights nothing, one overhead lights it',near(nmean(far,c=>lum(c.rgb)),g0,1e-6)&&nmean(nearL,c=>lum(c.rgb))>g0+.1,nmean(far,c=>lum(c.rgb))>g0+.01);
+ ok('the glow\'s colour is the page\'s: an orange glow reddens the base more than it blues it',nmean(with_(Um,{glow:1,glowColour:gcol}),c=>c.rgb[0]-c.rgb[2])>nmean(Um,c=>c.rgb[0]-c.rgb[2])+.05,false);
+ // the chunk: the same text as before on every page without a mood; with one, the mood's lines in the sky and the shade
+ const was=A.skyMoodOn;A.skyMoodOn=false;const s0=A.skyGLSL(),c0_=A.cloudShadeGLSL();A.skyMoodOn=true;const s1=A.skyGLSL(),c1=A.cloudShadeGLSL();A.skyMoodOn=was;
+ ok('the sky chunk without a mood is the chunk it was (no uCloudX, no atmCloudMood); with one, the mood on both cloud layers and the turbulence in the shared field, in the shade\'s chunk too',
+  !/uCloudX|atmCloudMood/.test(s0)&&!/uCloudX/.test(c0_)&&/vec3 atmCloudMood\(/.test(s1)&&/c=atmCloudMood\(c,sh,cov,xz,sw\);/.test(s1)&&/c=atmCloudMood\(c,1\.0,0\.0,p\*uCloudH\.z,vec2\(0\.0\)\);/.test(s1)&&/vec2 atmMoodWalk\(/.test(s1)&&/uCloudY\.x/.test(c1)&&/uniform vec4 uCloudX/.test(c1)&&!/atmCloudMood/.test(c1),/uCloudX/.test(s0));
+ ok('a preset asks for the mood by any of the four, or clouds.mood',!A.skyMoodWanted(A.skyPreset('standard'))&&A.skyMoodWanted(A.skyPreset('standard',{clouds:{dark:.5}}))&&A.skyMoodWanted(A.skyPreset('standard',{clouds:{tint:[.4,.3,.3]}}))&&A.skyMoodWanted(A.skyPreset('standard',{clouds:{mood:true}}))&&!A.skyMoodWanted(A.skyPreset('standard',{clouds:{dark:0,glow:0}})),A.skyMoodWanted(A.skyPreset('standard')));
+ // the episodes: the three effects together or apart, the palette, the dark with them, deterministic by seed
+ const eps=[];for(let k=0;k<80;k++)eps.push(A.moodAt(k*300+60,{seed:3}));   /* inside the hold (the first 40% of a period) */
+ const on=m=>(m.tintK>0?1:0)+(m.glow>0?1:0)+(m.turbulence>0?1:0),alone=eps.filter(m=>on(m)===1).length,together=eps.filter(m=>on(m)>=2).length,quiet=eps.filter(m=>on(m)===0).length;
+ ok('over 80 episodes the effects come alone ('+alone+'), together ('+together+') and not at all ('+quiet+')',alone>10&&together>10&&quiet>2&&alone+together+quiet===80,alone===0||together===0);
+ const inPal=eps.every(m=>m.tintK===0||A.MOOD_PALETTE.some(c=>c.every((v,i)=>near(v,m.tint[i],1e-9))));
+ ok('every tint is from the palette, the dark rides with any effect (0.35..0.9) and rests at 0 in a quiet spell, every kind named, a ripple epicentre within 2.5 km',inPal&&eps.every(m=>on(m)?m.dark>=.35&&m.dark<=.9:m.dark===0)&&eps.every(m=>A.MOOD_DEFAULTS.turbKinds.includes(m.turbKind)&&A.MOOD_DEFAULTS.glowKinds.includes(m.glowKind)&&Math.abs(m.turbOffset[0])<=2500&&Math.abs(m.turbOffset[1])<=2500),!inPal);
+ ok('the palette holds six: brown, dull red, sickly green, ash, ghostly purple, jaundice yellow; four patterns, three glows',A.MOOD_PALETTE.length===6&&A.MOOD_DEFAULTS.turbKinds.length===4&&A.MOOD_DEFAULTS.glowKinds.length===3&&A.MOOD_TURB.ripple===3&&eps.some(m=>m.turbKind==='ripple')&&eps.some(m=>m.glowKind==='orbs')&&eps.some(m=>m.sheetTint===1)&&eps.some(m=>m.sheetTint===0),false);
+ ok('the same seed gives the same episodes, another seed others',JSON.stringify(A.moodAt(1234,{seed:3}))===JSON.stringify(A.moodAt(1234,{seed:3}))&&JSON.stringify(A.moodAt(1234,{seed:3}))!==JSON.stringify(A.moodAt(1234,{seed:4})),JSON.stringify(A.moodAt(1234,{seed:3}))===JSON.stringify(A.moodAt(1234,{seed:4})));
+ const e0=A.moodAt(300*5+10,{seed:3}),e1=A.moodAt(300*5+110,{seed:3}),e2=A.moodAt(300*5+299.9,{seed:3}),nx=A.moodAt(300*6+10,{seed:3});
+ ok('an episode holds for 40% of its period and cross-fades into the next over the last 60% (gradual: the owner, 2026-11-09)',JSON.stringify(e0)===JSON.stringify(e1)&&e2.blend>.99&&near(e2.dark,nx.dark,.01)&&near(e2.turbulence,nx.turbulence,.01),e0.blend>0);
+ const red=[.6,.2,.2],area=A.moodAt(450,{seed:3,tintAt:(x,z)=>x>0?red:null,eye:[100,0]}),noArea=A.moodAt(450,{seed:3,tintAt:(x,z)=>x>0?red:null,eye:[-100,0]});
+ ok('an area tint (o.tintAt at the eye) decides the hue where it speaks, the episode how far; elsewhere the palette',(area.tintK===0||area.tint.every((v,i)=>near(v,red[i],1e-9)))&&(noArea.tintK===0||!noArea.tint.every((v,i)=>near(v,red[i],1e-9)))&&area.tintK===noArea.tintK,area.tintK>0&&!area.tint.every((v,i)=>near(v,red[i],1e-9)));
+ ok('the glow\'s colour: the page\'s for every kind, or by kind, else the module\'s',A.moodAt(450,{glowColour:[1,.5,.2]}).glowColour[0]===1&&A.moodAt(450,{glowColours:{ethereal:[0,1,0],lightning:[0,0,1]}}).glowColour.length===3&&A.MOOD_GLOW[A.moodAt(450,{}).glowKind][0]===A.moodAt(450,{}).glowColour[0],false);
+ // the glow's motion: lightning flashes within a second, the ethereal breathe never jumps
+ let flashes=0,jumpE=0,minE=1,maxE=0,maxL=0;for(let t=0;t<120;t+=.05){const a=A.moodGlow(t,'lightning',1,[0,0]).k,b=A.moodGlow(t+.05,'lightning',1,[0,0]).k;if(b>a+.3)flashes++;maxL=Math.max(maxL,a);
+  const e=A.moodGlow(t,'ethereal',1,[0,0]).k,e2=A.moodGlow(t+.05,'ethereal',1,[0,0]).k;jumpE=Math.max(jumpE,Math.abs(e2-e));minE=Math.min(minE,e);maxE=Math.max(maxE,e);}
+ ok('lightning: '+flashes+' flashes in two minutes, each a jump within a twentieth of a second, up to '+maxL.toFixed(2),flashes>40&&flashes<200&&maxL>.8,flashes===0);
+ {let ids=new Set(),withF=0,none=0;for(let t=0;t<60;t+=.05){const f=A.moodGlow(t,'lightning',1,[0,0]).flash;if(f){withF++;ids.add(f.id);if(Math.abs(f.x)>6000||f.t0>t)none++;}else none+=0;}
+  ok('each flash is a record (id, its start, its place within 6 km) the host strikes a bolt from once: '+ids.size+' strikes in a minute, none placed wrong',ids.size>15&&ids.size<70&&withF>100&&none===0&&A.moodGlow(3.3,'ethereal',1,[0,0]).flash==null,ids.size===0);}
+ ok('ethereal: a slow breathe between .55 and 1 (seen '+minE.toFixed(2)+'..'+maxE.toFixed(2)+'), never jumping more than .02 a twentieth of a second',jumpE<.02&&minE>=.55&&maxE<=1&&maxE-minE>.2,jumpE>=.3);
+ const lf=A.moodGlow(3.3,'lightning',1,[500,-200]).locus,le=A.moodGlow(3.3,'ethereal',1,[500,-200]).locus;
+ ok('a flash lights one patch (a locus within 6 km of the eye, 2-4.5 km across, spread .12); the breathe the whole sky (spread 1)',Math.abs(lf[0]-500)<=6000&&Math.abs(lf[1]+200)<=6000&&lf[2]>=2000&&lf[2]<=4500&&lf[3]===.12&&le[3]===1,lf[3]===1);
+ {const o1=A.moodGlow(10,'orbs',1,[500,-200]),o2=A.moodGlow(15,'orbs',1,[500,-200]),d=Math.hypot(o1.locus[0]-o2.locus[0],o1.locus[1]-o2.locus[1]);
+  ok('orbs: two small bright lights (300-600 m, k above 1.6, the second on) within 3 km of the eye, wandering ('+d.toFixed(0)+' m in 5 s)',o1.locus[2]>=300&&o1.locus[2]<=600&&o1.locus[3]===0&&o1.locus2[3]===1&&o1.k>=1.6&&Math.abs(o1.locus[0]-500)<=3000&&Math.abs(o1.locus2[1]+200)<=3000&&d>20&&le.length===4&&A.moodGlow(3.3,'ethereal',1,[0,0]).locus2[3]===0,d===0);
+  const d0=ndirs[0],hx=Um.cam[0]+d0[0]/d0[1]*(Um.height-Um.cam[1]),hz=Um.cam[2]+d0[2]/d0[1]*(Um.height-Um.cam[1]);   /* where that view ray meets the cloud plane */
+  const Uo=with_(Um,{glow:1,glowColour:gcol,glowLocus:[0,0,500,0],glowLocus2:[40000,0,500,1]}),Uo2=with_(Uo,{glowLocus2:[hx,hz,600,1]});
+  // the sheets' colours: where a sheet shows through, the tint's complement (or its hue-rotated twin) instead of the tint
+  {const Us=with_(U0,{turbulence:1,turbKind:'glitched',tint,tintK:1,sheetTint:1,cirrus:0}),comp=tint.map(v=>1-v);let dA=null,dB=null;
+   for(let az=0;az<360&&!(dA&&dB);az+=3)for(let el=12;el<40&&!(dA&&dB);el+=4){const d=V.fromAltAz(el,az),k=(Us.height-Us.cam[1])/d[1],xz=[Us.cam[0]+d[0]*k,Us.cam[2]+d[2]*k];A.skyCloudField(xz,5,Us);const w=A.skySheetW;if(w[0]>.9&&!dA)dA=d;if(w[1]>.9&&!dB)dB=d;}
+   const chA=dA?chroma(A.skyCloudAt(dA,Us).rgb):null,chA0=dA?chroma(A.skyCloudAt(dA,with_(Us,{sheetTint:0})).rgb):null;
+   ok('with sheetTint a sheet showing through takes the tint\'s complement (nearer it than the tint there), and the base cloud keeps the tint; sheetTint 0 is the tint everywhere',!!dA&&!!dB&&dist(chA,chroma(comp))<dist(chA,chroma(tint))&&dist(chA0,chroma(tint))<dist(chA0,chroma(comp)),!!dA&&dist(chA,chroma(comp))>=dist(chA,chroma(tint)));}
+  ok('...the second light lights the base too: moved from 40 km off to under a view ray it lights that cloud',lum(A.skyCloudAt(d0,Uo2).rgb)>lum(A.skyCloudAt(d0,Uo).rgb)+.05,lum(A.skyCloudAt(d0,with_(Uo2,{glowLocus2:[hx,hz,600,0]})).rgb)>lum(A.skyCloudAt(d0,Uo).rgb)+.05);}
+ // the sky events: a pillar and an ascent, placed 3-8 km off, drawn where they stand and nowhere else
+ {let kinds=new Set(),ids=new Set(),bad=0,pill=null,asc=null;for(let t=0;t<1200;t+=.1){const e=A.moodEvent(t,1,{chance:1});if(!e)continue;ids.add(e.id);kinds.add(e.kind);const dist=Math.hypot(e.dx,e.dz);if(dist<3000||dist>8000||e.k<0||e.k>1.01)bad++;
+   if(e.kind==='pillar'&&e.k>.5)pill=pill||Object.assign({},e);if(e.kind==='ascent'&&e.k>.7&&e.h>500&&e.h<e.top-500)asc=asc||Object.assign({},e);}
+  ok('moodEvent: an event a minute at chance 1 ('+ids.size+' in 20 min, both kinds), each 3-8 km off, a pillar brief and an ascent climbing for 14 s',ids.size>=18&&ids.size<=20&&kinds.size===2&&bad===0&&!!pill&&!!asc&&A.moodEvent(500,1,{chance:0})===null,ids.size===0);
+  const UB=with_(Um,{glowColour:[1,1,1],pixAng:.001}),place=e=>Object.assign({},e,{x:UB.cam[0]+e.dx,z:UB.cam[2]+e.dz,ground:0,top:e.top,h:e.h});
+  const P=place(pill),toP=Math.atan2(P.x-UB.cam[0],-(P.z-UB.cam[2]))*180/Math.PI,Dp=Math.hypot(P.dx,P.dz),on=V.fromAltAz(Math.atan(P.top*.3/Dp)*180/Math.PI,toP),off=V.fromAltAz(Math.atan(P.top*.3/Dp)*180/Math.PI,toP+30),above=V.fromAltAz(Math.atan(P.top*1.5/Dp)*180/Math.PI,toP);
+  const lb=(d,ev)=>lum(A.skyBeamAt(d,with_(UB,{event:ev})));
+  ok('a pillar lights the sky toward it between its foot and its top, nothing 30 degrees aside or above its top, nothing without an event',lb(on,P)>.05&&lb(off,P)===0&&lb(above,P)<1e-6&&lb(on,null)===0,lb(off,P)>0);
+  const Aa=place(asc),toA=Math.atan2(Aa.x-UB.cam[0],-(Aa.z-UB.cam[2]))*180/Math.PI,Da=Math.hypot(Aa.dx,Aa.dz),atH=h=>V.fromAltAz(Math.atan(h/Da)*180/Math.PI,toA);
+  ok('an ascending light is brightest at its height now ('+Aa.h.toFixed(0)+' m), fainter below (the trail) and dark above',lb(atH(Aa.h),Aa)>3*lb(atH(Aa.h*.5),Aa)&&lb(atH(Aa.h*.5),Aa)>0&&lb(atH(Aa.h+600),Aa)<.1*lb(atH(Aa.h),Aa),lb(atH(Aa.h*.5),Aa)>=lb(atH(Aa.h),Aa));
+  const was2=A.skyMoodOn;A.skyMoodOn=true;const s2=A.skyGLSL();A.skyMoodOn=was2;ok('the chunk draws the event under the clouds when the mood is on',/vec3 atmSkyBeam\(/.test(s2)&&s2.indexOf(' col+=atmSkyBeam(d);')<s2.indexOf('vec4 cl=atmSkyClouds(d,air)')&&s2.indexOf(' col+=atmSkyBeam(d);')>0,false);}
+ // what the sky did, as events for a listener
+ {const f1={id:4,x:100,z:200,e:.8},e1={id:9,kind:'pillar',x:4000,z:0,dur:1};
+  const r1=A.skyDiff(null,{flash:f1,event:e1,episode:2,glowKind:'lightning',turbKind:'violent',glow:.5,night:1,t:10}),r2=A.skyDiff(r1.prev,{flash:f1,event:e1,episode:2,glowKind:'lightning',turbKind:'violent',glow:.5,night:1,t:11});
+  const r3=A.skyDiff(r2.prev,{flash:{id:5,x:1,z:2,e:1},event:null,episode:3,glowKind:'orbs',turbKind:'ripple',glow:.6,night:1,t:12});
+  ok('skyDiff: a first frame reports the flash, the event and the episode; the same frame again reports nothing; a new flash and episode report themselves (the event ended quietly)',
+   r1.events.map(e=>e.kind).join()==='flash,event,episode'&&r1.events[0].e===.8&&r1.events[1].event==='pillar'&&r1.events[1].dur===1&&r2.events.length===0&&r3.events.map(e=>e.kind).join()==='flash,episode'&&r3.events[1].glowKind==='orbs'&&r3.prev.event===9,r2.events.length>0);
+  const Lo=A.skyLevels({glowKind:'orbs',glow:.5,night:1}),Lb=A.skyLevels({glowKind:'ethereal',glow:.5,night:.5}),Ld=A.skyLevels({glowKind:'orbs',glow:.5,night:0});
+  ok('skyLevels: the orbs\' hum follows an orbs glow, the breathe an ethereal one, both silent by day',Lo.orbs===.5&&Lo.breathe===0&&Lb.breathe===.25&&Lb.orbs===0&&Ld.orbs===0,Lo.breathe>0);}
+ ok('the noise twin reads the shader\'s volume: in -1..1, the same for the same point, smooth',(()=>{let okk=true,p=0;for(let i=0;i<200;i++){const x=[i*.37,i*.11,i*.05],n=A.skyNoiseAt(x,100);if(!(n>=-1&&n<=1)||n!==A.skyNoiseAt(x,100)||Math.abs(n-p)>.6)okk=false;p=n;}return okk;})(),false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

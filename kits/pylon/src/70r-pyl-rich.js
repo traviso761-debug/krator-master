@@ -28,6 +28,8 @@ function buildPylNeoVilla(G,o){reseed(9091+(o.v|0));const CW=25,CD=23,WH=2.4,ZH=
  // the annexe on the east: a single storey of concrete, porthole-pierced
  vnBody('pyConc',GW/2+2.2,0,ZH-1,4.4,3.2,6.4,0,conc,{t:.25});vB('vPlaster',GW/2+2.2,3.2,ZH-1,4.5,.15,6.5,0,or);vB('pyConc',GW/2+2.2,3.35,ZH-1,4.2,.1,6.2,0,conc);
  pynPortCluster(GW/2+2.2,.6,ZH+2.2,0,3.6,2.4,4,.55,or,'G');
+ // (2026-11-09, the interiors) the annexe opens off the house's ground storey: a doorway through the two walls they share
+ if(typeof vnHole==='function')vnHole(GW/2,0,ZH-1,-Math.PI/2,.95,2.2,true);
  vnPaving(0,0,7.2,4,6.8,0,st,1);}
 
 // Hex villa (refs/pylon (5).jpg, ancient massing.jpg): a court behind a porthole wall pierced with hex-grilled

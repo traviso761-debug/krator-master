@@ -78,7 +78,12 @@ static func build(path: String) -> Node3D:
 	# the meshes: world.glb through GLTFDocument with the instancing extension (krator/gltf_instancing.gd)
 	var scene: Node = null
 	var gp := dir + "/" + str(d.get("glb", {}).get("file", "world.glb"))
-	if FileAccess.file_exists(gp):
+	# a case with no meshes (a streamed chunk: its ground and its records, openworld/<region>/tools/godot_case.py) writes
+	# a world.glb with no buffer data, which GLTFDocument refuses: there is nothing in it to read
+	var meshes: bool = (d.get("items") is Array and (d["items"] as Array).size() > 0) or (d.get("buckets") is Array and (d["buckets"] as Array).size() > 0)
+	if not meshes:
+		report["counts"]["glb"] = "none: the case has no items and no buckets"
+	elif FileAccess.file_exists(gp):
 		KratorGltf._register_instancing()
 		var doc := GLTFDocument.new()
 		var state := GLTFState.new()
@@ -176,7 +181,8 @@ static func build(path: String) -> Node3D:
 				if by_id.has(b["recordIds"][i]) and by_id[b["recordIds"][i]]["uid"] == b["records"][i]:
 					ids["bucket_records_resolved"] += 1
 		tris += int(b["triangles"])
-	scene.free()
+	if scene:
+		scene.free()
 	if ids["buckets"] > ids["buckets_with_records"]:
 		report["gaps"]["bucket records"] = "%d of %d buckets name no record (pieces in no registered volume)" % [ids["buckets"] - ids["buckets_with_records"], ids["buckets"]]
 
@@ -358,8 +364,10 @@ static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Diction
 		return null
 	ids["materials_resolved"] += 1
 	var rec: Dictionary = mats[id]
-	var m: Material
-	if rec.get("kind") in ["standard", "basic", "shader"]:
+	var m: Material = KDoor.material_for_name(String(rec.get("name", "")))   # core/door's glass ('kglass:<kind>'): KGLASS.SPEC's kind (krator/kdoor.gd)
+	if m != null:
+		pass
+	elif rec.get("kind") in ["standard", "basic", "shader"]:
 		m = _standard(rec, tex, texrec, instanced, report)
 	else:
 		m = KratorBiome._material(rec, tex, texrec, true, report)

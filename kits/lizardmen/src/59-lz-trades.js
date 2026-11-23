@@ -26,7 +26,7 @@ const LZ_TRADES = [
   { trade: 'industrial workers', keys: ['lz-hall-bronze'], note: 'casting and stonecutting are the largest works they have' },
   { trade: 'power-house stokers and engineers', na: 'no electricity: bronze-age craft, wind and hand power' },
   { trade: 'household service', na: 'no servants: a reborn caste order, dwellings are communal' },
-  { trade: 'soldiers', keys: ['lz-barracks', 'lz-muster', 'lz-lodge', 'lk-greathall'], note: 'barracks, mustering ground, the warriors\' lodge, the warlord\'s hall' },
+  { trade: 'soldiers', keys: ['lz-barracks', 'lz-muster', 'lz-lodge', 'lk-greathall'], note: 'barracks, mustering ground, the warriors\' lodge, the Hall of Intention' },
   { trade: 'teachers and scholars', keys: ['lk-college', 'lz-seer'], note: 'the Interpreters\' college and seer\'s hall; the Tenders also scribe' },
   { trade: 'guild officers and clerks', na: 'no guilds or coin; the castes allot work' },
   { trade: 'customs officers and clerks', na: 'they never trade, so there is nothing to tax' },
@@ -51,6 +51,6 @@ const LZ_TRADES = [
   { trade: 'ferrymen', na: 'landlocked and no waterways crossed by trade' },
   { trade: 'elephant bug handlers and station hands', na: 'no elephant bugs; their draught animals are the burden beast and hexapods' },
   { trade: 'monks and lay brothers', keys: ['lk-college', 'lz-tower'], note: 'the Interpreters\' college and house: the nearest thing to a cloistered order' },
-  { trade: 'palace and canton staffs', keys: ['lk-greathall'], note: 'the warlord\'s great hall' }
+  { trade: 'palace and canton staffs', keys: ['lk-greathall'], note: 'the Hall of Intention (the Interpreters in concert)' }
 ];
 globalThis.LZ_TRADES = LZ_TRADES;

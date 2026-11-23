@@ -37,7 +37,16 @@ SKIP = ('81-sky.js', '88y-xanadu-matlib.js')
 SKIP_FROM = '90'
 
 
-def files(scrap=False):
+# The Qiblai kit (kits/qiblai: QB.def is XA.def with culture 'qiblai', its keys qb_*), opt-in: its registry and helpers, the
+# Xanadui script and its canvases, its MAT keys, every building family and the cut-away rooms' vocabulary (89q5: the wheel
+# house draws its inside with qnLampTable). Not the walk-in rooms' furnishing and shells (89q5f, 89q5s: they take the furniture
+# bundle and core/walk) nor the mixed street sheet (89q9). Theodiga's town first (settlements/theodiga).
+QIBLAI_DIR = os.path.join(ROOT, 'kits', 'qiblai', 'src')
+QIBLAI = ['89q0-qb-helpers.js', '89q0x-qb-xanadui.js', '89q0y-qb-script.js', '89q0z-qb-matlib.js', '89q1-qb-houses.js',
+          '89q2-qb-trades.js', '89q3-qb-sacred.js', '89q3m-qb-meditation.js', '89q4-qb-temple.js', '89q5-qb-interiors.js']
+
+
+def files(scrap=False, qiblai=False):
     """The kit's fragments and what they draw through, in filename order: the Ancients core from kits/ancients/src, the
     Vernacular's materials and helpers from kits/iziz-vernacular, core/materials (until 2026-11-03 the first two were
     Xanadu's byte-identical copies in settlements/xanadu/src)."""
@@ -46,6 +55,8 @@ def files(scrap=False):
     if scrap:   # Scrap Xanadu (PLAN-SCRAP.md), opt-in, and core/rand, whose hash varies its panels
         names.update(kxa.paths(kxa.SCRAP))
         names['08-core-rand.js'] = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
+    if qiblai:   # the Qiblai kit's buildings (QIBLAI above), read in place
+        names.update({f: os.path.join(QIBLAI_DIR, f) for f in QIBLAI})
     names.update({f: os.path.join(ROOT, 'kits', 'ancients', 'src', f) for f in kxa.ANCIENTS_CORE})
     names.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.VERNACULAR + kxa.OPENINGS_VERN})
     names.update({f: os.path.join(ROOT, 'core', 'door', f) for f in kxa.DOOR})   # core/door's records and glass, as the Vernacular bundle carries them
@@ -133,10 +144,19 @@ SCRAP_TAIL_HEAD = ('/* the defs whose doors open onto an interior (kits/interior
                    'var XAK_OPEN = ' + repr(SCRAP_OPEN).replace("'", '"') + ';' + NL)
 
 
-def bundle(key='XAK', scrap=False):
+QIBLAI_DIMS_OLD = "if (!/^xa_/.test(k)) return;"
+QIBLAI_DIMS_NEW = "if (!/^(xa|qb)_/.test(k)) return;"
+QIBLAI_BIND_OLD = "return K.bindMat('xanadu', MAT, { tile: K.ANCIENT_TILES }); }"
+QIBLAI_BIND_NEW = ("var b = K.bindMat('xanadu', MAT, { tile: K.ANCIENT_TILES }); "
+                   "if (K.packed('qiblai', 'qAshlar')) K.bindMat('qiblai', MAT, { tile: K.ANCIENT_TILES }); return b; }")
+
+
+def bundle(key='XAK', scrap=False, qiblai=False):
     """scrap=True adds Scrap Xanadu (kits/xanadu/PLAN-SCRAP.md: the xa_scrap_* defs) and core/rand (its KRAND lands on the
-    kit's shadow window and is bound as the kit's own, as core/door's are). Without it the bundle is what it always was."""
-    fs = files(scrap)
+    kit's shadow window and is bound as the kit's own, as core/door's are). qiblai=True adds the Qiblai kit's buildings
+    (QIBLAI above): XAK.dims lists the qb_* defs too, and XAK.bind binds the page's 'qiblai' pack where it registered one.
+    Without either the bundle is what it always was."""
+    fs = files(scrap, qiblai)
     body = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) + (DOOR_BIND if f.endswith('20-core-glass.js') else '')
                    + (RAND_BIND if f.endswith('08-core-rand.js') else '') for f in fs)
     tail = TAIL
@@ -144,6 +164,9 @@ def bundle(key='XAK', scrap=False):
         body = 'var KRAND;' + NL + body
         assert SCRAP_LOCK_OLD in tail, 'kit_bundle: the proto door line moved; update SCRAP_LOCK_OLD'
         tail = SCRAP_TAIL_HEAD + tail.replace(SCRAP_LOCK_OLD, SCRAP_LOCK_NEW)
+    if qiblai:
+        assert QIBLAI_DIMS_OLD in tail and QIBLAI_BIND_OLD in tail, 'kit_bundle: xakDims or xakBind moved; update QIBLAI_*_OLD'
+        tail = tail.replace(QIBLAI_DIMS_OLD, QIBLAI_DIMS_NEW).replace(QIBLAI_BIND_OLD, QIBLAI_BIND_NEW)
     js = ('/* %s: the Xanadu building kit and its Ancients core in one closure (kits/xanadu/kit_bundle.py). GENERATED: '
           'edit kits/xanadu/src, kits/ancients/src, kits/iziz-vernacular/src or core/materials. */' % key + NL + 'var %s = (function(){' % key + NL + HEAD + body + tail +
           '})();' + NL)
@@ -152,7 +175,7 @@ def bundle(key='XAK', scrap=False):
 
 if __name__ == '__main__':
     import sys as _sys
-    js, fs = bundle(scrap='--scrap' in _sys.argv)
+    js, fs = bundle(scrap='--scrap' in _sys.argv, qiblai='--qiblai' in _sys.argv)
     print('%d files, %d KB' % (len(fs), len(js) // 1024))
     for f in fs:
         print('  ' + f)

@@ -15,8 +15,10 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `43-world-xoh.js` | 1 |  |
-| `46-world-config.js` | 1 |  |
+| `43-world-xoh.js` | 3 |  |
+| `44-world-landforms.js` | 3 |  |
+| `46-world-config.js` | 2 |  |
 | `47-world-kits.js` | 1 |  |
 | `48-world-site.js` | 3 |  |
+| `48k-world-tubes.js` | 3 |  |
 | `49-world-xanadu.js` | 4 |  |

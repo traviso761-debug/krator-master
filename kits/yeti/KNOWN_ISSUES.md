@@ -7,7 +7,7 @@
   `PORT-BASELINE.json` rewritten, with the items in `TODO.md`, "Ride along with the next all-builds rebuild". **Deferred to Y5**
   (the owner, 2026-10-25): it is registered together with the khaayken catalog culture file (`CATALOG_CULTURES` and
   `CULTURE_NAMES` in one change), so one all-builds rebuild covers both. Until then this one check fails by design.
-- [ ] **No clean drift-snow texture.** The library's two snow sets are trodden (`ground.snow011`, bootprints and grit)
+- [x] (2026-11-09: the page rebuilt with the pack's `ground.snow.drift` for the ground and the snow; Y5) **No clean drift-snow texture.** The library's two snow sets are trodden (`ground.snow011`, bootprints and grit)
   and patchy (`ground.snow015`, grass through it). The ground and the winter banks use `ground.snow011` as a grey detail
   map at low contrast (`materials.json`, `tint.contrast` 0.35 to 0.4) under a white tint; the bootprints still show
   faintly. Delivered 2026-10-26: `ground.snow.drift` (the `snow` and `ground` families in `materials.json` now point at it; pre-wired, awaiting the all-builds rebuild to show).
@@ -15,8 +15,37 @@
   y = 0, and this kit's floors and entries are dug below it, so the plane is rebuilt with a hole for each def that
   declares `holes(o)`. The world pages (the capital, Leng) cut their ground on `core/terrain` instead; the def's holes are
   the outlines they will carve.
-- [ ] **The furniture is generic** until the khaayken catalog culture file (Y5): chests, a tea set, a stew pot, baskets,
-  fuel. The robes, the lamp and the platform are the kit's own drawing.
+- [x] (2026-11-09, Y5) **The furniture is generic** until the khaayken catalog culture file (Y5): chests, a tea set, a stew pot, baskets,
+  fuel. The robes, the lamp and the platform are the kit's own drawing. *Closed*: every room takes the khaayken file's pieces
+  (`ytGoods` by tier, the halls', the works', the balagan's, the urasa's); the generic goods beside them are drawn at 1.15x.
+- [ ] **The interiors set's rooms are flat-ceilinged** (`kits/interiors/sets/khaayken.js`): the planner's rooms have one height, a
+  dome's curves in. Each room is taken at the dome's height four fifths of the way out, so a tall piece the planner sets against
+  the wall can meet the curve (the drying rack, the loom). The set's rooms are a reading for a world that instances them; the
+  kit's own page places its pieces by hand (`ytWallAt` keeps a piece inside the curve).
+- [ ] **The war loot is placed by hand**, per building: each builder offers its places (`ytLoot(slots, tier)`) and the rule takes
+  the first `YT_LOOT_N[tier]` of them. A rich house or hall that offers fewer places than its share shows fewer (`verify.py`'s
+  `loot-rule` checks the rich ones show six or more). The loot's own size is kept (an Eternian chest is a human's chest).
+- [ ] **The figure generator's forms are few**: six (the bear, mother and child, the drum dancer, the transformation figure, the
+  owl, the seal) in three materials; a building's figures are seeded by where they stand, so two in one room can share a form.
+- [ ] **Leng's hall is a stand-in** (`yt_leng_hall`): a bay drawn here in cast stone, not the Ancients kit's. Leng's own page
+  (its plan) reads the Ancients' ruin and sets these pieces in it; the bay house and the plug are the pieces it takes.
+- [ ] **The forest-steppe row's flora draws in its procedural colours**: the nwouterwall kit's library pack is not taken (it
+  would add its maps beside the page), so the larch, the grass and the shrubs are the kit's vertex colours, in autumn (the
+  kit's default season off its own page). It is built once at load in the row's box (`?flora=0` skips it), its LOD ticked
+  each frame; it is not part of the buildings' world, so a reseed or `?only=` without the row leaves it out.
+- [x] (2026-11-09) **The khoton's door lintel was a walk floor** (`66-yt-steppe.js`): its box registered a floor at 2.09 m over the
+  threshold, so the walker found no ground there and `walk-reach` failed (`yt_khoton(v1): outside`). It is drawn walk-off now
+  (`WKOFF`, as the stall rail is); `verify.py --assert` ends `OK` on SwiftShader, every check passing.
+- [ ] **The forest-steppe row stands on the sheet's snow** (2026-11-09, seen in the row's shot): the sheet has one ground, the
+  winter one, so the summer urasa and the byre's hay stand in drift snow, and the nwouterwall larches read bare (its autumn).
+  A ground of its own under the row (turf, the kit's `ground` family in summer) is the fix; awaiting the owner's eye-level review.
+- [ ] **`src/37-wk-rec.js` is an adapted copy** of `core/engine/37-wk-rec.js` (the walk records, moved into core/engine on
+  2026-11-09): this kit's copy records a `feature`'s boxes as well as a building's, because the winter street's and the
+  networks' tunnels are walked. `build.py`'s `ADAPTED` names it, so `--vendor-check` reports it as deliberate. Upstreaming it as
+  an opt-in (the record classes as a setting) would let the kit drop the copy; that changes core/engine and every kit on it.
+- [x] (2026-11-09) **The flora band lacked two core/biome files** the nwouterwall fragments call (`tools/check_assembly.py`
+  MISSING `BIO.leafOn`, `BIO.leafQ`, `BIO.impostor*`): `31b-core-leafset.js` and `34-core-impostor.js` are read in place in the
+  93b-bio- band now. The impostors stay off here (`NWOW.IMPOSTORS=false`), so nothing drawn changes.
 - [ ] **Joints where a run turns** are covered by a junction-sized dome at every corner of an L and at each door's lead;
   the runs overlap under it rather than mitre. A house's passage meets its tunnel through a portal face (`ytPortal`)
   whose two sections differ, so the passage's outer vault shows a little inside the tunnel's end.
@@ -51,8 +80,8 @@
 - **`src/10-core.js` on core/rand.** The Scyvoi engine's `10-core.js` writes its own mulberry32 stream, a `Math.sin`
   hash and a value noise, which `tools/check_core_use.py` counts against a new build. This kit's copy keeps the engine's
   API (`reseed`, `rng`, `rr`, `pick`, `h3`, `vnoise`, `fbm`) and draws it from `KRAND`: the stream is the same mulberry32
-  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is the one engine file this kit keeps in `src/`
-  (it shadows `core/engine/10-core.js`). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
+  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is one of the two engine files this kit keeps in
+  `src/` (it shadows `core/engine/10-core.js`; the other is `37-wk-rec.js`, above). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
   Scyvoi, Islanders, Lizardmen, Eternian, the nomads, Resources), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).
 
 ## Doors, glass and the reachability audit (core/door, 2026-11-03)

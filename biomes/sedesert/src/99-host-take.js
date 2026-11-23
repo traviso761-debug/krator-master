@@ -57,8 +57,18 @@ const VIEWS={
 };
 // the walkers move, so these two presets are getters: each frames the animal where it stands when chosen
 // (one deer of that herd, the nearest coyote loop's leader), from the side at its own height
-const animalView=(mesh,i,d,fb)=>{const m=scene.getObjectByName(mesh);if(!m||i<0)return fb;const M=new THREE.Matrix4();m.getMatrixAt(i,M);const e=M.elements;
- return[e[12]-d*.8,e[13]+d*.28,e[14]+d*.6,e[12],e[13]+d*.1,e[14]];};
+/* the animal views follow a moving animal, so the eye lands somewhere new each run: of eight headings at two heights round
+   it, take the first with 1.5 m of room (else the roomiest), the room measured to the static instances' bounding spheres
+   within 40 m and to the ground (2026-11-11: the Mule deer eye stood 0.43 m from a boulder on one GPU run) */
+const eyeRoom=(ex,ey,ez)=>{let c=ey-terrainH(ex,ez);scene.traverse(o=>{if(!o.isInstancedMesh||!o.visible||!o.count||o.instanceMatrix.usage===THREE.DynamicDrawUsage)return;
+ const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const R=g.boundingSphere.radius,q=g.boundingSphere.center,a=o.instanceMatrix.array;
+ for(let j=0,n=o.count*16;j<n;j+=16){const cx=a[j]*q.x+a[j+4]*q.y+a[j+8]*q.z+a[j+12]-ex,cz=a[j+2]*q.x+a[j+6]*q.y+a[j+10]*q.z+a[j+14]-ez;if(cx>40||cx<-40||cz>40||cz<-40)continue;
+  const cy=a[j+1]*q.x+a[j+5]*q.y+a[j+9]*q.z+a[j+13]-ey,r=R*Math.max(Math.hypot(a[j],a[j+1],a[j+2]),Math.hypot(a[j+4],a[j+5],a[j+6]),Math.hypot(a[j+8],a[j+9],a[j+10]));
+  const k=Math.hypot(cx,cy,cz)-r;if(k<c)c=k;}});return c;};
+const animalView=(mesh,i,d,fb)=>{const m=scene.getObjectByName(mesh);if(!m||i<0)return fb;const M=new THREE.Matrix4();m.getMatrixAt(i,M);const e=M.elements,x=e[12],y=e[13],z=e[14];
+ let best=null,bc=-1e9;for(const h of [.28,.5])for(let s=0;s<8;s++){const t=s*Math.PI/4,ox=-.8*Math.cos(t)-.6*Math.sin(t),oz=.6*Math.cos(t)-.8*Math.sin(t);
+  const v=[x+d*ox,y+d*h,z+d*oz,x,y+d*.1,z],c=eyeRoom(v[0],v[1],v[2]);if(c>=1.5)return v;if(c>bc){bc=c;best=v;}}
+ return best;};
 Object.defineProperty(VIEWS,'Mule deer',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{};
  return animalView('biome:deer',(L.deer||[]).indexOf(HD.deer&&HD.deer[0]),8,look(HD.x-24,HD.z+12,3,HD.x,HD.z,.9));}});
 Object.defineProperty(VIEWS,'Coyotes',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{},C=L.coyotes||[];let b=-1,bd=1e9;

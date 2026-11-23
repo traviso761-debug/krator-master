@@ -9,6 +9,8 @@
 //   ATMOS.thunder       the pending events [{at (module clock s), dist, power}]; ATMOS.onThunder(fn(ev)): fn is called when
 //                       one is due (the host plays its sound: power 1 near, falling with distance; a far one rumbles)
 //   PRESETS.lightning   {depth, rough, fork, width (m at the base of the main channel), colour, ashColour, cloud}
+//   ATMOS.boltFx(s)     a strike drawn now: s = {x, z, top, base, dist, t, ash}; its brightness is the weather's flash (ATMOS.W.flash)
+//                       or ATMOS.boltGlow (the clouds' mood's lightning, host/89-atmos-h-skyhost.js cloudMood), whichever is higher
 // The bolt is drawn as camera-facing ribbons (one mesh, rebuilt at each strike: under 1k triangles), additive, at the
 // weather's flash. Recorded as {type:'lightning'} for the export. Godot: an ImmediateMesh from the same segments and an
 // OmniLight3D pulse at the cloud; the thunder an AudioStreamPlayer3D started at the event (GODOT.md, "Lightning").
@@ -30,14 +32,17 @@
   const geo=new T.BufferGeometry(),mat=new T.MeshBasicMaterial({color:P.colour,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false,side:T.DoubleSide});
   const mesh=new T.Mesh(geo,mat);mesh.frustumCulled=false;mesh.visible=false;mesh.name='atmos:lightning';A.add(mesh);A.noRay(mesh);
   // the cloud lit from inside: a soft additive glow over the strike
-  const cm=new T.SpriteMaterial({color:P.colour,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false});const cloud=new T.Sprite(cm);cloud.visible=false;cloud.name='atmos:lightning-cloud';A.add(cloud);A.noRay(cloud);
+  // its map: a soft disc (a bare sprite is a square: the owner saw one hugging each bolt, 2026-11-09), bytes, no canvas
+  let glowMap=null;if(T.DataTexture){const n=64,d=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.hypot((x+.5)/n-.5,(y+.5)/n-.5)*2,a=Math.max(0,1-r);const i=(y*n+x)*4;d[i]=d[i+1]=d[i+2]=255;d[i+3]=Math.round(255*a*a*(3-2*a));}
+   glowMap=new T.DataTexture(d,n,n,T.RGBAFormat);glowMap.minFilter=glowMap.magFilter=T.LinearFilter;glowMap.needsUpdate=true;}
+  const cm=new T.SpriteMaterial({color:P.colour,map:glowMap,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false});const cloud=new T.Sprite(cm);cloud.visible=false;cloud.name='atmos:lightning-cloud';A.add(cloud);A.noRay(cloud);
   A.boltFx=s=>{n++;const cam=A.h.camera.position,segs=A.boltPath((A.h.seed||1)*7919+n*104729,[s.x,s.top,s.z],[s.x,s.base,s.z]);
    const pos=new Float32Array(segs.length*12),idx=[];segs.forEach((g,i)=>{const mx=(g.a[0]+g.b[0])/2-cam.x,mz=(g.a[2]+g.b[2])/2-cam.z,ml=Math.hypot(mx,mz)||1,sx=-mz/ml*g.w,sz=mx/ml*g.w;
     pos.set([g.a[0]-sx,g.a[1],g.a[2]-sz,g.a[0]+sx,g.a[1],g.a[2]+sz,g.b[0]-sx,g.b[1],g.b[2]-sz,g.b[0]+sx,g.b[1],g.b[2]+sz],i*12);const q=i*4;idx.push(q,q+1,q+2,q+1,q+3,q+2);});
    geo.setAttribute('position',new T.BufferAttribute(pos,3));geo.setIndex(idx);geo.computeBoundingSphere();
    mat.color.setHex(s.ash?P.ashColour:P.colour);cm.color.setHex(s.ash?P.ashColour:P.colour);cloud.position.set(s.x,s.top+20,s.z);cloud.scale.setScalar(s.dist*.5);
    A.thunder.push({at:s.t+A.thunderDelay(s.dist),dist:s.dist,power:Math.min(1,600/Math.max(1,s.dist))});A.stats.lightning=segs.length;};
-  A.hook(t=>{const W=A.W,fl=W?W.flash||0:0;mesh.visible=fl>.01;mat.opacity=Math.min(1,fl*1.5);cloud.visible=fl>.01;cm.opacity=Math.min(1,fl*P.cloud);
+  A.hook(t=>{const W=A.W,fl=Math.max(W?W.flash||0:0,A.boltGlow||0);mesh.visible=fl>.01;   /* A.boltGlow: the clouds' mood lightning (ATMOS.cloudMood), when it strikes */mat.opacity=Math.min(1,fl*1.5);cloud.visible=fl>.01;cm.opacity=Math.min(1,fl*P.cloud);
    for(let i=A.thunder.length-1;i>=0;i--){const e=A.thunder[i];if(t>=e.at){A.thunder.splice(i,1);for(const fn of TL){try{fn(e);}catch(x){A.err('thunder: '+x.message);}}}}});
   A.rec('lightning',{preset:'lightning',note:'each strike: boltPath(seed, cloud, ground) segments (midpoint displacement with forks); thunder at strike + dist/343 s'});});
 })();

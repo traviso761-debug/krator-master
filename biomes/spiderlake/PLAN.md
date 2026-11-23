@@ -14,16 +14,20 @@ This document specifies `biomes/spiderlake/` — the highland-lacustrine, eusoci
 - **`SPIDERLAKE.id`**: `'spiderlake'`
 - **`SPIDERLAKE.regionId`**: `'rmvyj4v2ozgb1'` (`spider lake`)
 - **`SPIDERLAKE.world`**:
-  - `g`: `9.8 m/s²`
-  - `surfacePressureAtm`: `1.20` (at the `+1,460.0 m` lake surface; `1.35 atm` at sea level, `H ≈ 12.6 km`)
-  - `partialPressureO2Atm`: `0.26` (`~21.5% O₂` at `1.20 atm` — **+24% above Earth sea-level oxygen partial pressure**)
-  - `airDensityKgM3`: `1.47` (dense, buoyant air that effortlessly lofts ballooning spiderlings, gossamer suspension cables, and dense emergent aquatic insect clouds)
+  - `g`: `7.4 m/s²` (`0.75 g`, `biomes/WORLD.md` planetary canon)
+  - `surfacePressureAtm`: `1.33` (at the `+1,460.0 m` lake surface from `P(h) = 1.6 · exp(-h / 8000 m)`; `1.60 atm` at `0 m` datum, scale height `H ≈ 8.0 km`)
+  - `partialPressureO2Atm`: `0.28` (`~21.0% O₂` at `1.33 atm` — **+33% above Earth sea-level oxygen partial pressure**)
+  - `airDensityKgM3`: `1.56` (dense, low-gravity `0.75 g` air that effortlessly lofts ballooning spiderlings, `180–250 m` gossamer suspension cables, and dense emergent aquatic insect clouds)
+- **`KSTRATA` Lithology Bindings (`core/terrain/35-core-strata.js`)**:
+  - **`secondary-ejecta`** (`3–9 m` chaotic polymictic boulder breccia, impact-melt suevite lenses, and hummocky radial ejecta cap): collars the `176 × 124 km` elliptical radial secondary impact crater (`center 1295, 212`), forming the NW/N/NNE ballistic boulder rampart and the breached SW spillway gorge walls.
+  - **`carbonate-shelf`** (`2–5 m` warm cream/buff cherty dolomite & platform limestone with recessed marl/visor seams): pre-impact basement exposed beneath the ejecta collar along the western Neo-Ozark shore stacks and sublacustrine warm-seep ledges.
 - **Stations (`SPIDERLAKE.stations`)**:
-  1. `Golden Narrows Bridge-Curtain` (*drowned basalt/dolomite stacks spanned by 180-meter golden dragline suspension sheets over the lake narrows*)
+  1. `Golden Narrows Bridge-Curtain` (*drowned impact-melt & dolomite stacks spanned by 180-meter golden dragline suspension sheets over the lake narrows*)
   2. `High Canopy Pavilion Grove` (*lakeside spindle-willow and amber-mulberry forest draped in 4-meter communal silk brood-domes*)
   3. `Fumarole Midge-Fen` (*steaming sublacustrine hydrothermal littoral marsh where "lake-smoke" chironomid clouds boil off the water at dusk*)
-  4. `Ria Headwater Silk-Weirs` (*terraced timber-and-porphyry reeling frames and degumming vats along the western outflow gorge*)
-  5. `Dolomite Rim Overlook` (*northwestern bluff transition where Neo-Ozarks cherty dolomite and red porphyry dikes plunge into the lake*)
+  4. **`Spider Lake Arachnoid Spillway & Silk Weirs` (`5.1 px 1272, 193`, Showcase Station)** (*single SW crater-rim breach plunging into river `9102` `Hām-Tsēk` / Arachnoid River through `secondary-ejecta` boulder walls lined with silk-weir reeling frames*)
+  5. `Dolomite Rim Overlook` (*northwestern bluff transition where Neo-Ozarks `carbonate-shelf` cherty dolomite and red porphyry dikes meet the lake*)
+  6. `North Rampart Boulder-Collar & Ria Divide` (`5.1 px 1278, 166`, `+1,880 m`) (*continuous ballistic `secondary-ejecta` megablock rampart sealing Spider Lake off from the headwaters of `9101` `Ria River` and `9109` `Chīng-Mā`*)
 
 ---
 
@@ -38,8 +42,9 @@ This document specifies `biomes/spiderlake/` — the highland-lacustrine, eusoci
 | **Köppen Climate** | **89.0% `Cfa` / `Cfb`** (humid warm-to-cool temperate lacustrine basin, buffered by thermal mass and hydrothermal seeps) with `Dfb`/`Dfc` on the upper eastern ridges |
 | **Thermal Regime (Lake Shore)** | Warmest month `tw ≈ +21.5 °C`, coldest month `tc ≈ +4.5 °C` (`ΔT ≈ 17 °C`); the lake never freezes over |
 | **Precipitation & Humidity** | `1,150 – 1,650 mm/yr` rainfall + persistent morning radiation fog (`RH 80–95%` at dawn) off the warm lake waters |
-| **Hydrological Connections** | **Inflow:** Fed from the east by the *Outland Gate River* (`id: 9106`) descending from the Outland pass (`+1,480 m`). **Bifurcated Outflow:** Drains west via the *Ria Trunk River* (`id: 9101`) into the Ria estuary, and southwest via the *Web-Cleaver Gorge River* (`id: 9102`) through the Arachnoids (`rmuqm9fa9dfa7`) to the Double Delta |
-| **Neighboring Biomes** | **NW:** `neo-ozarks` (`rmvyiyw8ucd1y`, dissected dolomite/limestone plateau & porphyry veins); **SW:** `Arachnoids` (`rmuqm9fa9dfa7`, concentric volcanic-tectonic ring-fault hills); **E:** `Outland` (`rmuqmb59f1f14`) via the Outland Gate |
+| **Geological Basin Origin** | **Radial Secondary Impact Crater (`center 1295, 212`, `176 × 124 km`):** Excavated by an oblique secondary megablock cluster hurled NNE from the primary central crater into `carbonate-shelf` dolomite basement, rimmed by a continuous `secondary-ejecta` boulder collar (`+1,720–2,150 m`) along the NW, N, and NNE |
+| **Hydrological Connections** | **Inflow:** Fed from the east by the *Outland Gate River* (`id: 9106`) descending from the Outland pass (`+1,480 m`). **Single Unbifurcated Outflow:** Breaches the SW ejecta collar at **`5.1 px (1272, 193)`** into the **`Hām-Tsēk` / Arachnoid Web-Cleaver River (`id: 9102`, `890 km`)**, which carves through `arachnoid canyons` (`rmvarachnoids`) before joining the lower Ria. The NW/N/NNE ballistic boulder rampart (`1278, 166`) hydrologically seals Spider Lake off from `9101` (*Ria River*) and `9109` (*Chīng-Mā*), eliminating artificial lake bifurcation |
+| **Neighboring Biomes** | **NW:** `neo-ozarks` (`rmvyiyw8ucd1y`, dissected dolomite/limestone plateau & porphyry veins) & `ria valley` (`rmvriavalley`); **SW:** `arachnoid canyons` (`rmvarachnoids`, concentric volcanic-tectonic ring-fault & radial dike canyons); **E:** `Outland` (`rmuqmb59f1f14`) via the Outland Gate |
 
 ---
 
@@ -137,3 +142,13 @@ When the interactive 3D/2.5D biome viewer kit is instantiated in `biomes/spiderl
 ## Crystal caves (planned, 2026-11-03)
 
 The Neo-Ozarks' dolomite, fed by the lake's warm seeps, grows Mississippi Valley crystal caverns (calcite druse and blocks, celestine beams, galena and sphalerite). `tube_ozarks_15`'s Cathedral of the Red Porphyry Vein and Onyx labyrinth are the sites; `KSPELEO.CALCITE` dresses them. See `biomes/CRYSTAL-CAVES-5.1.md`, site 2.
+
+---
+
+## 6. Geological Showcase Station Spec (`Scale Model 5.1`)
+
+### Showcase Station: `Spider Lake Arachnoid Spillway & Silk Weirs` (Station 4)
+- **Coordinates & Elevation (`5.1` `1821 × 1723`, `2 km/px`):** **`px (1272, 193)`**, lake lip **`+1,460 m`** plunging over stepped `secondary-ejecta` boulder cataracts to **`+1,390 m`** in the upper throat of `Hām-Tsēk` (`1.33 atm`, `0.75 g`, `Cfb`).
+- **`KSTRATA` Stack:** Upper formation `secondary-ejecta` (`+1,415 to +1,760 m`, `3–9 m` chaotic polymictic boulder breccia, dark impact-melt suevite sheets, and hummocky radial ejecta cap) unconformably overlying basal `carbonate-shelf` (`+1,340 to +1,415 m`, `2–5 m` cherty cream dolomite beds undercut at the plunge pool).
+- **Camera Framing:** Positioned on a cedar-and-porphyry silk-wright reeling terrace `28 m` above the SW breach throat looking ENE (`az 68°`, pitch `-7°`): foreground water-powered reeling bobbins and alkaline warm-spring degumming vats; mid-ground whitewater spillway slicing through `secondary-ejecta` megablocks under `180 m` golden dragline **Bridge-Curtains** glimmering in dawn mist; background open sapphire expanse of Spider Lake and the `25°` NE gas giant.
+- **Hydrology & Trade Tie-In:** Sole surface outlet of Spider Lake (`8,716 km²`), funneling warm midge-rich epilimnion water into river `9102` (`Hām-Tsēk`, `890 km`) through `arachnoid canyons` (`biomes/arachnoids/PLAN.md`) while the unbreached northern `secondary-ejecta` boulder rampart (`px 1278, 166`, `+1,880 m`) divides the lake cleanly from `9101` (`Ria River`). Serves as the primary portage and **Golden Cable / Lake-Sheen Gossamer** baling depot where Hum-speaking canyon guides and Ria valley mule-packers exchange silk bales for salt, ironware, and orchard cider.

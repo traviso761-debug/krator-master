@@ -77,8 +77,8 @@ CORE_TERRAIN=['35-core-strata.js','36-core-carve.js','38-core-relief.js','43-cor
 CORE_TERRAIN_HOST={'35z-core-strata-shade.js':'35-core-strata-shade.js','44-core-farfield-draw.js':'44-core-farfield-draw.js','45-core-horizon-shade.js':'45-core-horizon-shade.js'}
 # the biome core from core/biome (core/README.md): one copy for every kit. Pair 10 adds what the read-in kits' rebuilt species call for: 31b the
 # leaf sets, 31j a limb's joint to its parent (BIO.flareJoin: the read-in kits flare their limbs where a page lists it), 33 the fungoid parts,
-# 33b the bamboo (BIO.bamboo), 34 the octahedral impostors (the read-in kits' far trees), 41 the environmental fields (BIO.env), 44 the stage
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','33b-core-bamboo.js',
+# 33b the bamboo (BIO.bamboo), 31 the hex-cell dither (BIO.DITHER: the polished face's grain, the owner 2026-11-10), 34 the octahedral impostors (the read-in kits' far trees), 41 the environmental fields (BIO.env), 44 the stage
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','33b-core-bamboo.js',
  '34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_SPACE=['20-core-space.js']
 # OTHER KITS read in place (biomes/WORLD.md: several kits on one page): nwlowlands on every station (PLAN.md section 4: the

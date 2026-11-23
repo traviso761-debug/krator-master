@@ -1,5 +1,17 @@
 # core/charactermodels: known issues
 
+- **The giant chief's four-armed coat (`giant_free_m_chief4`) has seven dead cloth chains.** Its lower sleeves are split
+  off into `.sleeves2.glb` after the chains are bound (`make_mpfb.py main`: `split_lower` runs after `turn_glb`), so
+  seven chains' anchor indices run past the coat's mesh and the page cannot drive them; `tests/check_kit.py` allows the
+  entry by name (`tests/kit-known-bad.json`). A Blender rebuild that binds the chains after the split clears it; until
+  then the lower sleeves hang rigid.
+- **Ten legacy garments' chain bones were rebound on 2026-11-06** (`make_mpfb.py anchors`): the settle pass had moved their
+  vertices 8 to 140 mm after the chains were bound (the Izani trade coats, the Beast Rider deels, the Republic jackets,
+  peasant dress and sarafan). The pieces are gitignored, so the fix lives in this checkout's `pieces/` and the built
+  `dist/pieces/`; the published labs carry the old binds until their pieces are republished.
+- **The UI inventory covers the Gear and Head tabs only** (`verify.py`, `tests/ui-inventory.json`): the Body, Face and
+  Record tabs draw no `.slot` sections, so a loss there is not caught yet.
+
 - **The Cosmetic Lab is full.** A published version holds at most 256 MiB and the lab is at about 245; the Order of
   Historians' and Xanadu's clothes (`order_`, `xan_`, 2026-10-19) went into a lab of their own (README, Publishing the
   labs); since 2026-10-20 the main lab carries them too (its stale `.morph.txt` files removed), and the Order's own lab
@@ -114,12 +126,10 @@
   a shoulder (no capsule) can show through a mantle in a full overhead reach. A chain point inside a limb leaves on
   the side of the point above it, so a seated lap or a raised arm is draped, but only points collide: a 20 cm segment
   whose two ends are clear can still cut through a knee's corner. In a deep crouch or on a seat, a long robe's layers
-  can still show one through another for a frame or two where the chains swing. In a run, a long robe (the Order's,
-  the court robes, the kimono) has its back pierced by the shin as the trailing leg kicks up, and for a frame a patch at
-  the back of that hip can show: the push skips the back of a thigh's top third (the seat covers it at rest), and the
-  seat capsules do not swing with the thigh. A narrow ankle-length skirt (the Order novice's wrap) cannot cover a thigh
-  raised as high as a run's: at the top of the stride the leading thigh comes out of its side, cloth or no cloth (its
-  fitted shape is a tube; the chains and the push move it, they do not make more of it).
+  can still show one through another for a frame or two where the chains swing.
+- **In a stride a garment stands wider than it hangs.** The hull (`pushOut`, HANDOFF-GARMENT-DEFECTS.md round 4) keeps the legs inside by taking the cloth over them, so a long robe bells out in a walk and a run. Two tiers of one garment
+  can show flecks of the lower through the upper where they meet; the Izani court cape shows more of the robe through it.
+- **No garment has a slit.** `torso_tube(slit=)` and the runtime's handling of it work and are unused: the four skirts cut with one looked worse than uncut once the bones were right.
 - **Tall bodies tear long robes in a run.** The monk's robe (and the skirts now cut as it) holds in a run up to about
   +0.7 height (the owner, 2026-10-20); taller, the thigh is up to 29% longer (44 to 57 cm) and its raised knee goes out
   through the robe's side, and at +1 the walk and idle open small tears at the back of the thigh too. The push's capsules

@@ -1,14 +1,15 @@
 # World Menagerie site configuration. See README.md.
 #
 # Check:  python3 server.py --check
-# Apply:  systemctl --user reload menagerie   (host/port changes need: systemctl --user restart menagerie)
+# Served by Krator's site on port 8001 (krator-master/host): ../sitectl sync && ../sitectl reload. The [server]
+# block below is read only by checks and tools/probe.py (which serves on a free temporary port).
 #
 # Only the paths listed here are served. Everything else returns 404.
 # Relative file and dir paths are resolved from this file's folder.
 
 [server]
 host = "0.0.0.0"        # "127.0.0.1" = this machine only
-port = 8000
+port = 8001
 log_requests = true     # one journal line per request
 health = "/healthz"     # returns "ok"; delete the line to disable
 name = "World Menagerie"

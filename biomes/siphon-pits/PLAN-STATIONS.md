@@ -138,3 +138,8 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
 4. **Performance Targets (`GRAPHIC-LOAD.md`):**
    * Geometry welding (`BIO.INDEX_ITEMS = true`) on all siphon chimneys and fleece meshes.
    * Tight MultiMesh culling: Station 3 floor capped at 250 active trees per chunk; zero tree instances on Station 2 and 4.
+
+---
+
+## 5. Scale-Model 5.1 Settlement Pin & Showcase Station #14 Sync (`2026-11-13`)
+- **Station 1 Anchor Synced to `Ostrukh-on-Water` (`5.1 px 1516, 1471`, `+2,090–2,115 m`, `1.31 atm`):** Aligns Station 1 (`1519, 1453` piedmont terraces) directly with the canonical village pin **`Ostrukh-on-Water` (`1516, 1471`)** on the geothermal shoreline polynya of fresh **Lake Ostrukh** (`+2,090 m`), locking the **`2,620 m` `KSTRATA` split** (`loess` graben terraces `<= +2,620 m` vs. `tibasalt-ponded` maar plateau `> +2,620 m`) and the calibrated **`15–25 m³/s`** perennial `Ostrukh Riba` outflow (see `biomes/siphon-pits/PLAN.md` §6, **Showcase Station #14**).

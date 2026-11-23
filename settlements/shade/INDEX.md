@@ -21,8 +21,6 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 
 From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`
-
 ## src/
 
 | Fragment | KB | Sections (line) |
@@ -41,6 +39,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `86-host-overlay.js` | 3 |  |
 | `87-host-views.js` | 3 |  |
 | `88-host-build.js` | <1 |  |
+| `89-host-sky.js` | 1 |  |
 | `89s-shade-trades.js` | 6 | THE VOTH CENSUS OF TRADES [G data] (1) |
 | `89t-shade-tags.js` | 3 |  |
 | `91-shade-probe.js` | 28 | the Shade checks (37) |

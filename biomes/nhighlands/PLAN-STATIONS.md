@@ -148,3 +148,16 @@ PLAN-STATIONS.md), `whitebark`, `foxtail` (station 4). All on the kit's existing
 **Decisions for the owner:** the plan's granite domes are **sandstone** on the 5.1 geology (station 2 is sedimentary); station 3's oaks are swlowlands' own
 species, grown in place, not cousins; no `KFIRE` (the plan's fire mosaic: the burns are a field of snags and fireweed, not a fire model); station 4's
 bristlecone role is the kit's own foxtail pine, not ebadlands' bristlecone read in place.
+
+---
+
+## Scale-Model 5.1 Inner-Rim Archive & Showcase Station #6 (`2026-11-13`)
+
+### Showcase Station #6 — `Tiguantin Cloud-Terraces & Entombed First Monastery Tube`
+- **Canonical `5.1` Coordinates:** **`(1138, 858)`** (`2,276 km E, 1,716 km S` on the `1821 × 1723` `2 km/px` canvas — exact locus of **`tube_lesser_06`** *"Lesser Throne Buried Archive Tube"* and **`cav_monks_archive`** *"Entombed First Monastery Lava-Tube Vaults"* (`140 × 90 × 22 m`, `LORE.md §6.15`) on the eastern Inner Rim / **Lesser Throne** (`rmucd8b2jn3d6`, `X = 1107..1156, Y = 819..879`) cloud-belt shoulder).
+- **Elevation & Atmosphere:** **`+2,480 m`** (`+2,320 to +2,680 m` bench window; **`1.17 atm`**, `Cfb` / `Cwb` Inner-Rim cloud-forest and montane mist belt, persistent `ATMOS.fogBelt` stratus deck rising off the Ring Sea / Savage Hyperjungle cauldron below).
+- **Geological Stratigraphy & `KSTRATA` Binding:**
+  - **Pre-Eruption Substrate (`Tiguantin` Terraces):** Slumped Inner-Wall **`megabreccia`** fault blocks and raised intracrater **`carbonate-shelf`** marl/travertine spring benches graded into Ancient-era drystone cloud-terraces (`Tiguantin`).
+  - **Cataclysmic Burial Caprock:** Overrun and sealed by a `15–40 m` sheet of Lesser Throne **`outland-tuff`** welded ignimbrite (`fiamme` vitric lenses + baked brick-red paleosol at the terrace contact) and **`tibasalt`** tube-forming pahoehoe flows that roofed over `tube_lesser_06` without collapsing its `22 m` basalt-arch vault (`cav_monks_archive`).
+- **Camera Framing (`4.8 × 4.8 km` Inner-Rim shoulder cut):** Mid-slope camera at `+28 m` on a moss-draped `megabreccia` spur looking SSW across a stream-breached gully in the `outland-tuff` ignimbrite sheet: half-exhumed `Tiguantin` stone cloud-terraces (`carbonate-shelf` ashlar walls emerging beneath a baked red paleosol line), a `16 m` wide skylight collapse (`KCARVE` / `KCAVERN`) into the columnar `tibasalt` roof of `tube_lesser_06` with History Monk rope-winches and brass survey lanterns descending into the dry archive vault, cloud-veil conifers and tree-ferns (`NHL` + Throne elfin kin) dripping in the `1.17 atm` mist, and Lesser Throne's parasitic cone looming in the upper haze.
+- **Hydrology & Trade Tie-In:** Orographic fog-drip and perched contact springs emerging along the impermeable `tibasalt` / baked-paleosol horizon feed stepped terrace cisterns before plunging down-gully toward the eastern Ring Sea trough; **History Monks** from **Longsong** (`LORE.md §6.15`) mount covert salvage expeditions here to recover pre-Cataclysm *First Monastery* brass-leaf chronicles and vellum rolls sealed inside `cav_monks_archive`, trading safe-conduct tolls with Beast-Rider and Painted-Men border guides.

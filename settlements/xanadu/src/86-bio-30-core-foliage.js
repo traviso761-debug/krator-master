@@ -165,7 +165,11 @@ BIO.foliageHook=function(o){o=o||{};
 // different cache keys or three silently shares one).
 BIO.leafMat=function(tex,key,o){const T=BIO.host.THREE;o=o||{};
  const m=new T.MeshLambertMaterial({color:0xffffff,map:tex||null,alphaTest:o.alphaTest==null?.42:o.alphaTest,side:T.DoubleSide,vertexColors:!!o.vertexColors});
- m.onBeforeCompile=BIO.foliageHook(o);m.customProgramCacheKey=function(){return'biofol|'+key;};
+ /* the key is the hook's source options, not the species (a deliberate drift from core/biome, settlements/xanadu
+    KNOWN_ISSUES.md, the load-time pass 2026-11-11): foliageHook's text varies only with aN, irid, axis, swayW and swayA,
+    so species with the same options compile one program, byte for byte the same, instead of one each */
+ const fk='biofol|'+[o.aN?1:0,o.irid?1:0,o.axis||0,o.swayW||'1.0',(o.swayA==null?.06:o.swayA).toFixed(3)].join('|');
+ m.onBeforeCompile=BIO.foliageHook(o);m.customProgramCacheKey=function(){return fk;};
  BIO._tickWind();return m;};
 // a BARK / WOOD material for merged buckets: Lambert, vertex-coloured, textured
 BIO.barkMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});};

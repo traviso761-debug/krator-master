@@ -8,7 +8,7 @@ const STATION_PAGE={name:'jungle',title:'Krator biome — the Rift: the jungle (
  // the held budget (the owner, 2026-10-27: trim it to 40 M): full heroes only within .4 of the kit's hero radii of the lattice's origins,
  // the mid-detail builders past that (the far impostors past the mid radius, as before); the floor's mid and far bands at .65
  heroK:.4,floorK:.65,held:40000000,passMax:30000000,   /* measured: .55 alone held 49.8 M (trees 35.5, floor 12.9) */
- farPal:{sav:[46,84,44],sav2:[38,72,40],aw:[60,96,52],csa:[86,108,60],cloud:[58,92,58]},
+ farPal:{sav:[38,70,38],sav2:[20,42,24],aw:[48,80,44],csa:[70,96,54],cloud:[50,84,52]}   /* the canopy from above, darker and mottled (the quality pass, 2026-11-09: sav2 the shade between crowns; it read as a lit lawn) */,
  // the tower: on the plain, 2.6 km from the shore, west of the river
  get tower(){const d=2600,t=RIVER.t(d)-700,i=d+shoreD(t);return[(i+t)*S2,(i-t)*S2];},
  get views(){

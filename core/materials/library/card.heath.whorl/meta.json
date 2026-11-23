@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.heath.whorl",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.heath.whorl.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d135-aa89-7f72-a8bd-f8267367a34a)",
+  "licence": "generated for this project by its owner",
+  "note": "a sheet: hosts show one cell",
+  "original_title": "exec-4a4d2f4a-b608-4155-8ff5-6060b58575a9.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '37. The southern highlands' upper stations (`biomes/shighlands --station conifers` and `--station fellfield`, 2026-11-09)' on origin/main (id card.heath.whorl)",
+  "sha1": "d7dd2d52e979d5de54335a22633a58d33d0a1d85"
+ }
+}

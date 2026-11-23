@@ -1,0 +1,1486 @@
+[
+ {
+  "src": "organic.comb.bee.png",
+  "out": "core/materials/library/organic.comb.bee",
+  "record": {
+   "id": "organic.comb.bee",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d135-922a-7d82-8bba-b27cccc9926c)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id organic.comb.bee)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-93f19757-28f6-4379-93a1-ff989fe2ff97.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.45,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "bark.watcher.png",
+  "out": "core/materials/library/bark.watcher",
+  "record": {
+   "id": "bark.watcher",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d135-df87-73d1-9863-b341baf81677)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id bark.watcher)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-32761d8d-7185-495b-9465-b66f3dc9b3f3.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "bark.bloodwood.png",
+  "out": "core/materials/library/bark.bloodwood",
+  "record": {
+   "id": "bark.bloodwood",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d135-f4af-7261-9cbd-9a69627dda49)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id bark.bloodwood)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-3ef8bdc9-621d-47bc-846d-c09471065c27.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "bark.bamboo.bored.png",
+  "out": "core/materials/library/bark.bamboo.bored",
+  "record": {
+   "id": "bark.bamboo.bored",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-14b8-7912-9e74-101b5fcaedcf)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id bark.bamboo.bored)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-065fda04-9462-4e90-8ac9-008487d3e1f6.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "rock.gypsum.bedded.png",
+  "out": "core/materials/library/rock.gypsum.bedded",
+  "record": {
+   "id": "rock.gypsum.bedded",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-bcd9-7752-b3b0-9cae14d206f6)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The gypsum maze under Cube's plateau (`biomes/rift --station maze`, 2026-11-09)' on origin/main (id rock.gypsum.bedded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-c9c54601-43f4-4683-b46c-855a310a8b94.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "ground.warmsoil.png",
+  "out": "core/materials/library/ground.warmsoil",
+  "record": {
+   "id": "ground.warmsoil",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-d456-7d31-bb61-66e751b38a14)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Hearth field's warm ground (`biomes/riftrim --station hearths`, 2026-11-09)' on origin/main (id ground.warmsoil)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-f2eb6dc3-2527-4c2c-9d7a-dcd49f2d7075.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "earth.clay.raw.png",
+  "out": "core/materials/library/earth.clay.raw",
+  "record": {
+   "id": "earth.clay.raw",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-ef67-7422-8e99-82364e0a406b)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '45. Raw clay (`kits/islanders`, the clay pit, 2026-11-09)' on origin/main (id earth.clay.raw)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-4ed6292d-e17a-471f-8ffd-2081b9d4ac98.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "rock.skarn.banded.png",
+  "out": "core/materials/library/rock.skarn.banded",
+  "record": {
+   "id": "rock.skarn.banded",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d137-47d4-7f81-b6a8-c5aaa8a770b2)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '48. The NE outer wall (`biomes/neouterwall`, station 1 Vitreous Hollow, 2026-11-10)' on origin/main (id rock.skarn.banded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-ece40740-3261-4ccf-96dd-061680456456.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "rock.pseudotachylite.mirror.png",
+  "out": "core/materials/library/rock.pseudotachylite.mirror",
+  "record": {
+   "id": "rock.pseudotachylite.mirror",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d137-68aa-73a1-9fb5-319fc234e14e)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '48. The NE outer wall (`biomes/neouterwall`, station 1 Vitreous Hollow, 2026-11-10)' on origin/main (id rock.pseudotachylite.mirror)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-5f36a1c0-49bc-4d0b-8f03-5ed4ade9e464.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.3,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "ground.komatiite.pavement.png",
+  "out": "core/materials/library/ground.komatiite.pavement",
+  "record": {
+   "id": "ground.komatiite.pavement",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d137-ba28-7c10-8575-9e09ad6c1276)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '49. The Great Chasm (`biomes/greatchasm`, 2026-11-11)' on origin/main (id ground.komatiite.pavement)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-49b419e3-075f-429e-baf5-63a51b57a1c3.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "bark.tiered.png",
+  "out": "core/materials/library/bark.tiered",
+  "record": {
+   "id": "bark.tiered",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d137-f17e-7561-a1ba-4f025806167e)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '50. The Tiers (`biomes/tiers`, planned 2026-11-10)' on origin/main (id bark.tiered)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-3648fc67-8bdf-4cde-898a-b83c2ba48c38.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "rock.lichen.ledges.png",
+  "out": "core/materials/library/rock.lichen.ledges",
+  "record": {
+   "id": "rock.lichen.ledges",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d138-0f26-7270-adfe-0eabb4bf3c4e)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '50. The Tiers (`biomes/tiers`, planned 2026-11-10)' on origin/main (id rock.lichen.ledges)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-fb771804-7584-4c61-9557-042b2e13277b.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "ground.sulfide.oxidised.png",
+  "out": "core/materials/library/ground.sulfide.oxidised",
+  "record": {
+   "id": "ground.sulfide.oxidised",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d138-4009-74b2-8b87-3d616191b487)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '51. The Rift battery (`biomes/galvanic`, 2026-11-11)' on origin/main (id ground.sulfide.oxidised)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-ddb97338-2908-4555-9955-5e13095c0bad.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "rock.sphalerite.png",
+  "out": "core/materials/library/rock.sphalerite",
+  "record": {
+   "id": "rock.sphalerite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d138-6ca7-7813-902c-2d589414766f)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '51. The Rift battery (`biomes/galvanic`, 2026-11-11)' on origin/main (id rock.sphalerite)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-da7fe94d-2688-4aba-ae32-25b509908fd8.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "rock.serpentinite.png",
+  "out": "core/materials/library/rock.serpentinite",
+  "record": {
+   "id": "rock.serpentinite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d138-b83a-78d0-af0c-cebff7b18e28)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '52. The Arch (`biomes/arch`, 2026-11-11)' on origin/main (id rock.serpentinite)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-ddcd255d-987e-41d1-a730-59ad46a8c16b.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "rock.peridotite.rind.png",
+  "out": "core/materials/library/rock.peridotite.rind",
+  "record": {
+   "id": "rock.peridotite.rind",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d138-da66-7341-95a4-2a589bfe3b33)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '52. The Arch (`biomes/arch`, 2026-11-11)' on origin/main (id rock.peridotite.rind)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-d70b965b-64eb-41db-b2f6-974d76a29475.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "mineral.travertine.brucite.png",
+  "out": "core/materials/library/mineral.travertine.brucite",
+  "record": {
+   "id": "mineral.travertine.brucite",
+   "family": "mineral",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d138-f9db-73a2-afb7-95c9955b835d)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '52. The Arch (`biomes/arch`, 2026-11-11)' on origin/main (id mineral.travertine.brucite)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-d7a55af1-1ca5-46ed-830f-6ef2ef2e751e.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.6,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "rock.basalt.pillow.png",
+  "out": "core/materials/library/rock.basalt.pillow",
+  "record": {
+   "id": "rock.basalt.pillow",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d139-c828-7d12-8e1b-7a67b900926c)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '52. The Arch (`biomes/arch`, 2026-11-11)' on origin/main (id rock.basalt.pillow)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-6588d222-8ceb-4506-a368-61765bd5bdcf.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "mineral.curtain.png",
+  "out": "core/materials/library/mineral.curtain",
+  "record": {
+   "id": "mineral.curtain",
+   "family": "mineral",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13a-6f60-74a3-a38f-a8dff2953958)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '52. The Arch (`biomes/arch`, 2026-11-11)' on origin/main (id mineral.curtain)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-a891156c-9880-4109-90e2-82a06fec9aa6.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.25,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "concrete.lining.segment.png",
+  "out": "core/materials/library/concrete.lining.segment",
+  "record": {
+   "id": "concrete.lining.segment",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13a-b9bb-7d83-8336-8e1cf36cef69)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)' on claude/awesome-varahamihira-66a852 (id concrete.lining.segment)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-c7d26b67-d4b9-42cb-8fe7-4e892336d38b.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "concrete.guideway.png",
+  "out": "core/materials/library/concrete.guideway",
+  "record": {
+   "id": "concrete.guideway",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13a-d5b7-7c80-ba44-4406495f333e)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)' on claude/awesome-varahamihira-66a852 (id concrete.guideway)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-e6a1b16e-b7fa-4770-aa6f-c63699d0c0b7.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "metal.plate.riveted.painted.png",
+  "out": "core/materials/library/metal.plate.riveted.painted",
+  "record": {
+   "id": "metal.plate.riveted.painted",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.65,
+   "metal": 0.3,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13a-f5e6-74e3-8cbc-12854e404dc4)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)' on claude/awesome-varahamihira-66a852 (id metal.plate.riveted.painted)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-73ed0e38-bfdf-4a9b-85c6-f59b02bee15a.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.65,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "concrete.lining.spalled.png",
+  "out": "core/materials/library/concrete.lining.spalled",
+  "record": {
+   "id": "concrete.lining.spalled",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-18e0-7cc1-8ee1-808adde9e8b4)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)' on claude/awesome-varahamihira-66a852 (id concrete.lining.spalled)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-9e178d88-63a5-4ef9-a578-113d88954660.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "metal.door.blast.png",
+  "out": "core/materials/library/metal.door.blast",
+  "record": {
+   "id": "metal.door.blast",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0.7,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-33de-7010-98c6-fb4ed54f969e)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)' on claude/awesome-varahamihira-66a852 (id metal.door.blast)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-b1b7b7d9-da3b-4cd7-bc17-291eb8517d60.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.55,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "mineral.quartz.smoky.png",
+  "out": "core/materials/library/mineral.quartz.smoky",
+  "record": {
+   "id": "mineral.quartz.smoky",
+   "family": "mineral",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-4ffa-74c3-ad9e-02c22ad191f2)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)' on claude/awesome-varahamihira-66a852 (id mineral.quartz.smoky)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-b81868a4-9ca1-44c3-8404-ab714f04e0d8.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.3,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "hide.pachyderm.png",
+  "out": "core/materials/library/hide.pachyderm",
+  "record": {
+   "id": "hide.pachyderm",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-7787-7052-9191-12547b4f6d3d)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id hide.pachyderm)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-3daf245f-cca8-4173-9fb3-eb3ab0d5cba8.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "shell.glyptodont.png",
+  "out": "core/materials/library/shell.glyptodont",
+  "record": {
+   "id": "shell.glyptodont",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-90e4-77e3-bdac-ff14ec7f9c8f)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id shell.glyptodont)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-bf71a23a-9b7a-41c3-bdef-aa2df7647730.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "earth.dung.stack.png",
+  "out": "core/materials/library/earth.dung.stack",
+  "record": {
+   "id": "earth.dung.stack",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-a8d2-7f83-beb8-1396874da49e)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id earth.dung.stack)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-fc4367de-c22c-4f1d-b760-40beeeb0ee03.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "patterns_kimr_handprints.png",
+  "out": "core/materials/patterns/kimr/handprints",
+  "record": {
+   "id": "patterns/kimr/handprints",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-c40a-7d01-bc59-06230ccbd767)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id patterns/kimr/handprints)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-c5d4a997-f0cb-4a4e-b50f-6d94062121e1.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "patterns_kimr_bowl-band.png",
+  "out": "core/materials/patterns/kimr/bowl-band",
+  "record": {
+   "id": "patterns/kimr/bowl-band",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-e3f4-78b2-98a9-5516b5a73fea)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id patterns/kimr/bowl-band)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-91beb0e6-177e-4cfd-931e-7c94f250bb4c.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "patterns_kimr_kilt-band.png",
+  "out": "core/materials/patterns/kimr/kilt-band",
+  "record": {
+   "id": "patterns/kimr/kilt-band",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-062f-7681-b3c9-3af908f56bb2)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id patterns/kimr/kilt-band)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-52ee3b10-bfe5-4bca-ae4a-cce99356a99a.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "patterns_kimr_shield.png",
+  "out": "core/materials/patterns/kimr/shield",
+  "record": {
+   "id": "patterns/kimr/shield",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-2980-7e30-8106-28c6bbfc0da8)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id patterns/kimr/shield)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-840dd65d-946c-4b9d-8bc4-454252e7de5e.png"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns_kimr_mural.png",
+  "out": "core/materials/patterns/kimr/mural",
+  "record": {
+   "id": "patterns/kimr/mural",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-47c8-70c3-9eab-14e8c78467ff)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id patterns/kimr/mural)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-b0f4cf55-bd15-47bc-b469-ffa372d2ea9c.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "patterns_kimr_labyrinth.png",
+  "out": "core/materials/patterns/kimr/labyrinth",
+  "record": {
+   "id": "patterns/kimr/labyrinth",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-54eb-75b1-8bd9-48d62f8379e3)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id patterns/kimr/labyrinth)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-767a0110-ba26-4900-85e3-575d88cc50c2.png"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "metal.gold.sheet.beaten.png",
+  "out": "core/materials/library/metal.gold.sheet.beaten",
+  "record": {
+   "id": "metal.gold.sheet.beaten",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 1,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-8f91-7021-941e-2a5610d667bd)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Qiblai kit (`kits/qiblai`, 2026-11-11)' on claude/zealous-allen-0cd44d (id metal.gold.sheet.beaten)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-cec75ce4-7b96-404a-a771-e0ac916ba54b.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.35,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "metal.copper.mantra.png",
+  "out": "core/materials/library/metal.copper.mantra",
+  "record": {
+   "id": "metal.copper.mantra",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 1,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-d228-7eb0-a4b2-d792f1ad3725)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Qiblai kit (`kits/qiblai`, 2026-11-11)' on claude/zealous-allen-0cd44d (id metal.copper.mantra)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-8fe67d21-2736-4942-ac93-88da1dcded2f.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.45,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "rock.hewn.drillmarked.png",
+  "out": "core/materials/library/rock.hewn.drillmarked",
+  "record": {
+   "id": "rock.hewn.drillmarked",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-f2e7-7041-9107-2dc6d2533689)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (`kits/tungang`, 2026-11-11)' on claude/kind-cori-9c4452 (id rock.hewn.drillmarked)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-297b25bf-f19d-4d66-af56-2f7156f77948.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "concrete.lining.segment.bolted.png",
+  "out": "core/materials/library/concrete.lining.segment.bolted",
+  "record": {
+   "id": "concrete.lining.segment.bolted",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13d-1244-7830-a1c4-2e93e9118de3)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (`kits/tungang`)' on claude/kind-cori-9c4452 (id concrete.lining.segment); delivered under this id because the Rift line's section asks for concrete.lining.segment with another prompt",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-5e8a3c1c-61c3-4de4-955f-5d1f84e95cff.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "organic.fungus.leather.png",
+  "out": "core/materials/library/organic.fungus.leather",
+  "record": {
+   "id": "organic.fungus.leather",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13d-2b29-7e63-badc-9704eecc1e08)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (`kits/tungang`, 2026-11-11)' on claude/kind-cori-9c4452 (id organic.fungus.leather)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-102a4322-7a76-492f-804c-e6551498ba04.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "patterns_fellgang_daub.png",
+  "out": "core/materials/patterns/fellgang/daub",
+  "record": {
+   "id": "patterns/fellgang/daub",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13d-d029-7b12-9f7d-82d4d6f1a1a9)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (`kits/tungang`, 2026-11-11)' on claude/kind-cori-9c4452 (id patterns/fellgang/daub)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-82dcff46-6206-45b1-bde3-0cd80ef7f496.png"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns_glazier_cholet-front.png",
+  "out": "core/materials/patterns/glazier/cholet-front",
+  "record": {
+   "id": "patterns/glazier/cholet-front",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13d-eb46-7580-9927-799af91e375b)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (`kits/tungang`, 2026-11-11)' on claude/kind-cori-9c4452 (id patterns/glazier/cholet-front)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-6714dad5-500e-485a-bee4-18f84a20833d.png"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3,
+   "seam_axes": "x"
+  }
+ },
+ {
+  "src": "surface.melon.rind.png",
+  "out": "core/materials/library/surface.melon.rind",
+  "record": {
+   "id": "surface.melon.rind",
+   "family": "surface",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-27f7-7c81-b456-af3d68b3c280)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Labyrinth's flora (`biomes/labyrinth` src/50-70, 2026-11-12)' on claude/relaxed-ritchie-611932 (id surface.melon.rind)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-8a116c03-d044-4003-adf8-8da7d1a97544.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "ground.sinter.opaline.png",
+  "out": "core/materials/library/ground.sinter.opaline",
+  "record": {
+   "id": "ground.sinter.opaline",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-4e88-7a62-8997-4971d57eb57a)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. Opal Valley (`biomes/opalvalley`, 2026-11-11)' on claude/zealous-allen-0cd44d (id ground.sinter.opaline)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-91fe7a1b-3b6b-4f4b-b63f-3252563d19e7.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "rock.opal.matrix.png",
+  "out": "core/materials/library/rock.opal.matrix",
+  "record": {
+   "id": "rock.opal.matrix",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-6b01-7e52-a534-62fe94d6c376)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. Opal Valley (`biomes/opalvalley`, 2026-11-11)' on claude/zealous-allen-0cd44d (id rock.opal.matrix)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-744fe4e6-1299-47f3-bea0-b0d860a8aeff.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "organic.lung.ring.png",
+  "out": "core/materials/library/organic.lung.ring",
+  "record": {
+   "id": "organic.lung.ring",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-fae4-7e33-859d-96e1b3fb85fe)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Cliff Lungs (`biomes/clivobredos`, 2026-11-11)' on origin/claude/clifflung-biome (id organic.lung.ring)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-75b5e9df-6ffa-445f-8658-982b19aa89c6.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "organic.comb.throat.png",
+  "out": "core/materials/library/organic.comb.throat",
+  "record": {
+   "id": "organic.comb.throat",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-14cc-76c3-b347-5a88eb0500f3)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Cliff Lungs (`biomes/clivobredos`, 2026-11-11)' on origin/claude/clifflung-biome (id organic.comb.throat)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-5f274362-d897-4e35-8c26-ff4405e46f36.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.3,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "organic.husk.dry.png",
+  "out": "core/materials/library/organic.husk.dry",
+  "record": {
+   "id": "organic.husk.dry",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-309d-7c83-8b30-dc14b249bc08)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Cliff Lungs (`biomes/clivobredos`, 2026-11-11)' on origin/claude/clifflung-biome (id organic.husk.dry)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-f92f9886-a7b8-40a3-abe3-be96a24e1890.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "organic.cable.ironsilica.png",
+  "out": "core/materials/library/organic.cable.ironsilica",
+  "record": {
+   "id": "organic.cable.ironsilica",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-66cf-7970-8f5c-fa3c854e53ee)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Loom-Chasms (`biomes/loom-chasms`, 2026-11-11)' on origin/claude/fervent-sagan-nnid69 (id organic.cable.ironsilica)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-6bc74ee8-bb01-4b87-983d-19be6cc58a21.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.6,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "rock.rhyolite.flowbanded.png",
+  "out": "core/materials/library/rock.rhyolite.flowbanded",
+  "record": {
+   "id": "rock.rhyolite.flowbanded",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-87de-7bb0-b4af-738f72013e3b)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Firebliss Patera's domes and Korona's (`biomes/firebliss`, `biomes/korona`, 2026-11-12)' on origin/claude/firebliss-patera-domes (id rock.rhyolite.flowbanded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-b6f86843-bcb4-44c8-99ae-b625c0c0978b.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "organic.tube.waxy.png",
+  "out": "core/materials/library/organic.tube.waxy",
+  "record": {
+   "id": "organic.tube.waxy",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-cc47-74c3-a423-023f283525bb)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '26. The Outlands (`biomes/outlands`, stations 1-8, 2026-11-11)' on origin/claude/nice-volta-a09dni (id organic.tube.waxy)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-135779d4-0633-40da-866b-dc157d1a16d3.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "surface.fleece.machinewax.png",
+  "out": "core/materials/library/surface.fleece.machinewax",
+  "record": {
+   "id": "surface.fleece.machinewax",
+   "family": "surface",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-ea8d-7532-a063-1c6b82e650ca)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. The Siphon Pits (`biomes/siphon-pits`, 2026-11-11)' on origin/claude/siphon-pits-biome (id surface.fleece.machinewax)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-3ea10361-ab33-4ad7-b489-f5701a5d8e80.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "ground.feltturf.siphon.png",
+  "out": "core/materials/library/ground.feltturf.siphon",
+  "record": {
+   "id": "ground.feltturf.siphon",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d140-6f02-7791-abb0-b8dce6316c6b)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. The Siphon Pits (`biomes/siphon-pits`, 2026-11-11)' on origin/claude/siphon-pits-biome (id ground.feltturf.siphon)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-869b76c7-2248-4ace-965c-1b9435c31553.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "wax.machine.png",
+  "out": "core/materials/library/wax.machine",
+  "record": {
+   "id": "wax.machine",
+   "family": "wax",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d140-93fe-73c3-8606-d89d6539dee7)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. The Siphon Pits (`biomes/siphon-pits`, 2026-11-11)' on origin/claude/siphon-pits-biome (id wax.machine)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-bdc029c4-ccc1-44c0-96fd-2fb38c58161e.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.35,
+   "rough_var": 0.2
+  }
+ }
+]

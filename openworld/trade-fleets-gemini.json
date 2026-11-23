@@ -1,0 +1,6299 @@
+{
+  "format": "krator-trade-fleets-gemini",
+  "version": 1,
+  "date": "2026-11-14",
+  "branch": "gemini-trade",
+  "carrier_specs": {
+    "ring_sea_standard_coaster": {
+      "rated_cargo_t": 12.0,
+      "avg_dominant_load_t": 9.0,
+      "speed_km_day": 60.0,
+      "port_turnaround_rt_days": 12.0,
+      "active_days_yr": 250,
+      "reserve_factor": 1.15,
+      "examples": "Izani dhoni, Hykkousoi amphora corbita, Voth dhow, Kautoan drua, Hookfleet salvage tug"
+    },
+    "nw_ocean_pelagic_trader": {
+      "rated_cargo_t": 24.0,
+      "avg_dominant_load_t": 18.0,
+      "trips_per_year": 1.0,
+      "examples": "Ria Valley & The Crook trans-oceanic carracks calling at Farport Factory Quarter"
+    },
+    "inland_river_canal_lake_barge": {
+      "rated_cargo_t": 25.0,
+      "avg_dominant_load_t": 18.5,
+      "speed_km_day_river": 48.0,
+      "speed_km_day_lake": 58.0,
+      "turnaround_rt_days": 6.0,
+      "active_days_yr": 285,
+      "examples": "50 m Shim river barge, Eternian canal lighter, Jimjam lake barge, Xanadu swan/bullion barge"
+    },
+    "highway_wagon_convoy": {
+      "wagons": 10,
+      "beasts": 20,
+      "teamsters_and_guards": 14,
+      "rated_cargo_t": 15.0,
+      "avg_dominant_load_t": 11.5,
+      "speed_km_day": 34.0,
+      "turnaround_rt_days": 5.0,
+      "active_days_yr": 290
+    },
+    "pack_caravan": {
+      "pack_beasts": 35,
+      "drovers_and_stalker_guards": 12,
+      "rated_cargo_t": 6.0,
+      "avg_dominant_load_t": 4.5,
+      "speed_km_day": 24.0,
+      "turnaround_rt_days": 6.0,
+      "active_days_yr": 260
+    },
+    "annual_great_caravan": {
+      "route": "Nulab <-> Erehwon (831 km North Rift Bench)",
+      "trips_per_year": 1.0,
+      "expedition_days_rt": 90.0,
+      "note": "Single heavily-guarded annual mega-expedition carrying 100% of North Rift Bench freight in one muster"
+    }
+  },
+  "world_totals": {
+    "open_sea_sailing_ships_physical": 627,
+    "open_sea_sailing_ships_std_equiv": 695.0,
+    "inland_barges_active": 249,
+    "highway_wagon_convoys_active": 1258,
+    "pack_caravans_active": 413,
+    "live_mount_droves_active": 86,
+    "total_draught_and_pack_beasts": 41765,
+    "total_logistics_workforce": 36362
+  },
+  "annual_great_caravan_expedition": {
+    "route": "Nulab <-> Erehwon (North Rift Bench, 831 km)",
+    "erehwon_to_nulab_tons": 414.4,
+    "nulab_to_erehwon_tons": 193.8,
+    "dominant_direction_tons": 414.4,
+    "expedition_days_round_trip": 90,
+    "pack_caravan_units_mustered": 105.9,
+    "pack_beasts_mustered": 3706,
+    "drovers_and_stalker_guards": 1271,
+    "top_goods": [
+      "cacao (129.0 t)",
+      "spice-highland (65.3 t)",
+      "opium (49.5 t)",
+      "tea (32.0 t)",
+      "alkali (31.8 t)",
+      "hashish (30.6 t)",
+      "tequila (27.7 t)",
+      "dried-fruit (26.6 t)"
+    ]
+  },
+  "sea_lanes": [
+    {
+      "u": "Marr",
+      "v": "Tethis",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 737.1,
+      "u_to_v_tons": 4432.6,
+      "v_to_u_tons": 1880.3,
+      "intl_dominant_tons": 4432.6,
+      "total_dominant_tons": 4432.6,
+      "round_trip_days": 36.6,
+      "trips_per_year": 6.84,
+      "carriers_intl": 82.85,
+      "carriers_total": 82.85,
+      "departure_every_days": 0.4,
+      "flag_shares_pct": {
+        "Empire of Iziz": 47.1,
+        "League: Tethys": 25.2,
+        "League: Ys": 15.5,
+        "League: Trigon": 4.9
+      },
+      "top_goods": [
+        "coal (2716.0 t)",
+        "alkali (680.7 t)",
+        "marble (312.1 t)",
+        "scrap (285.8 t)",
+        "wine (227.6 t)"
+      ]
+    },
+    {
+      "u": "Farport",
+      "v": "Ria Valley (Sea Trade)",
+      "u_polity": "Eternal State",
+      "v_polity": "Ria Valley",
+      "sub_class": "nw_ocean",
+      "km": 1016.7,
+      "u_to_v_tons": 421.1,
+      "v_to_u_tons": 42.4,
+      "intl_dominant_tons": 421.1,
+      "total_dominant_tons": 421.1,
+      "round_trip_days": 260.0,
+      "trips_per_year": 1.0,
+      "carriers_intl": 26.91,
+      "carriers_total": 26.91,
+      "departure_every_days": 9.7,
+      "flag_shares_pct": {
+        "Ria Valley": 100.0
+      },
+      "top_goods": [
+        "wine (34.8 t)",
+        "cloth (28.6 t)",
+        "cheese (25.4 t)",
+        "dried-fruit (24.3 t)",
+        "cacao (24.2 t)"
+      ]
+    },
+    {
+      "u": "Nephtos",
+      "v": "Tethis",
+      "u_polity": "League: Tethys",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 379.9,
+      "u_to_v_tons": 1780.3,
+      "v_to_u_tons": 312.7,
+      "intl_dominant_tons": 483.8,
+      "total_dominant_tons": 1780.3,
+      "round_trip_days": 24.7,
+      "trips_per_year": 10.14,
+      "carriers_intl": 6.1,
+      "carriers_total": 22.44,
+      "departure_every_days": 1.1,
+      "flag_shares_pct": {
+        "League: Tethys": 83.5,
+        "League: Ys": 9.4,
+        "League: Trigon": 3.0,
+        "League: Pontus": 2.5
+      },
+      "top_goods": [
+        "ship-timber (1236.9 t)",
+        "sugar (135.7 t)",
+        "cotton (105.1 t)",
+        "cloth (71.7 t)",
+        "sulfur (65.4 t)"
+      ]
+    },
+    {
+      "u": "Farport",
+      "v": "The Crook (Sea Trade)",
+      "u_polity": "Eternal State",
+      "v_polity": "The Crook",
+      "sub_class": "nw_ocean",
+      "km": 350.5,
+      "u_to_v_tons": 347.7,
+      "v_to_u_tons": 20.8,
+      "intl_dominant_tons": 347.7,
+      "total_dominant_tons": 347.7,
+      "round_trip_days": 260.0,
+      "trips_per_year": 1.0,
+      "carriers_intl": 22.21,
+      "carriers_total": 22.21,
+      "departure_every_days": 11.7,
+      "flag_shares_pct": {
+        "The Crook": 100.0
+      },
+      "top_goods": [
+        "wine (28.9 t)",
+        "cloth (23.7 t)",
+        "cheese (21.0 t)",
+        "frost-coral (20.8 t)",
+        "dried-fruit (20.0 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Pontus",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "League: Pontus",
+      "sub_class": "ring_sea",
+      "km": 641.0,
+      "u_to_v_tons": 1151.7,
+      "v_to_u_tons": 655.6,
+      "intl_dominant_tons": 1151.7,
+      "total_dominant_tons": 1151.7,
+      "round_trip_days": 33.4,
+      "trips_per_year": 7.49,
+      "carriers_intl": 19.64,
+      "carriers_total": 19.64,
+      "departure_every_days": 1.7,
+      "flag_shares_pct": {
+        "Empire of Iziz": 51.8,
+        "League: Pontus": 48.2
+      },
+      "top_goods": [
+        "coal (1050.5 t)",
+        "saltpeter (125.9 t)",
+        "gunpowder (110.5 t)",
+        "hashish (80.5 t)",
+        "reagent (63.7 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Port Visas",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Dilihan Province",
+      "sub_class": "ring_sea",
+      "km": 738.8,
+      "u_to_v_tons": 1032.7,
+      "v_to_u_tons": 307.9,
+      "intl_dominant_tons": 1032.7,
+      "total_dominant_tons": 1032.7,
+      "round_trip_days": 36.6,
+      "trips_per_year": 6.83,
+      "carriers_intl": 19.33,
+      "carriers_total": 19.33,
+      "departure_every_days": 1.9,
+      "flag_shares_pct": {
+        "Empire of Iziz": 100.0
+      },
+      "top_goods": [
+        "coal (1023.3 t)",
+        "marble (113.2 t)",
+        "scrap (88.3 t)",
+        "potash (25.2 t)",
+        "saltpeter (22.9 t)"
+      ]
+    },
+    {
+      "u": "Port Tobin",
+      "v": "Tethis",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 690.3,
+      "u_to_v_tons": 1028.3,
+      "v_to_u_tons": 463.5,
+      "intl_dominant_tons": 1028.3,
+      "total_dominant_tons": 1028.3,
+      "round_trip_days": 35.0,
+      "trips_per_year": 7.14,
+      "carriers_intl": 18.4,
+      "carriers_total": 18.4,
+      "departure_every_days": 1.9,
+      "flag_shares_pct": {
+        "Empire of Iziz": 45.6,
+        "League: Tethys": 26.0,
+        "League: Ys": 15.9,
+        "League: Trigon": 5.0
+      },
+      "top_goods": [
+        "coal (197.3 t)",
+        "rubber (171.8 t)",
+        "machine-wax (82.6 t)",
+        "wine (81.7 t)",
+        "cushion-wool (81.3 t)"
+      ]
+    },
+    {
+      "u": "Kautoa",
+      "v": "Tethis",
+      "u_polity": "Kautoa",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 496.7,
+      "u_to_v_tons": 1102.6,
+      "v_to_u_tons": 201.4,
+      "intl_dominant_tons": 1102.6,
+      "total_dominant_tons": 1102.6,
+      "round_trip_days": 28.6,
+      "trips_per_year": 8.75,
+      "carriers_intl": 16.09,
+      "carriers_total": 16.09,
+      "departure_every_days": 1.8,
+      "flag_shares_pct": {
+        "Kautoa": 39.0,
+        "League: Tethys": 25.6,
+        "League: Ys": 19.8,
+        "Hookfleet": 6.6
+      },
+      "top_goods": [
+        "sulfur (197.7 t)",
+        "rubber (140.2 t)",
+        "cordage (120.1 t)",
+        "sugar (114.8 t)",
+        "pitch-tar (96.4 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Port Mira",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Hookfleet",
+      "sub_class": "ring_sea",
+      "km": 284.0,
+      "u_to_v_tons": 100.8,
+      "v_to_u_tons": 1441.6,
+      "intl_dominant_tons": 1441.6,
+      "total_dominant_tons": 1441.6,
+      "round_trip_days": 21.5,
+      "trips_per_year": 11.65,
+      "carriers_intl": 15.82,
+      "carriers_total": 15.82,
+      "departure_every_days": 1.4,
+      "flag_shares_pct": {
+        "Hookfleet": 66.4,
+        "Empire of Iziz": 33.6
+      },
+      "top_goods": [
+        "sulfur (506.1 t)",
+        "sugar (212.5 t)",
+        "ship-timber (85.8 t)",
+        "coal (78.7 t)",
+        "zinc (74.1 t)"
+      ]
+    },
+    {
+      "u": "Shim",
+      "v": "Tethis",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 563.2,
+      "u_to_v_tons": 993.5,
+      "v_to_u_tons": 601.1,
+      "intl_dominant_tons": 993.5,
+      "total_dominant_tons": 993.5,
+      "round_trip_days": 30.8,
+      "trips_per_year": 8.12,
+      "carriers_intl": 15.63,
+      "carriers_total": 15.63,
+      "departure_every_days": 2.0,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 45.1,
+        "League: Tethys": 26.2,
+        "League: Ys": 16.1,
+        "League: Trigon": 5.1
+      },
+      "top_goods": [
+        "coal (248.7 t)",
+        "reagent (207.8 t)",
+        "saltpeter (206.0 t)",
+        "tequila (85.3 t)",
+        "sugar (78.8 t)"
+      ]
+    },
+    {
+      "u": "Kautoa",
+      "v": "Shim",
+      "u_polity": "Kautoa",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 899.7,
+      "u_to_v_tons": 592.9,
+      "v_to_u_tons": 183.3,
+      "intl_dominant_tons": 592.9,
+      "total_dominant_tons": 592.9,
+      "round_trip_days": 42.0,
+      "trips_per_year": 5.95,
+      "carriers_intl": 12.72,
+      "carriers_total": 12.72,
+      "departure_every_days": 3.3,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 49.4,
+        "Kautoa": 42.5,
+        "League: Ys": 4.5,
+        "Hookfleet": 3.6
+      },
+      "top_goods": [
+        "ship-timber (191.3 t)",
+        "cordage (58.0 t)",
+        "rubber (41.6 t)",
+        "salt (40.7 t)",
+        "sugar (35.6 t)"
+      ]
+    },
+    {
+      "u": "Hook",
+      "v": "Marr",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "ring_sea",
+      "km": 355.4,
+      "u_to_v_tons": 967.2,
+      "v_to_u_tons": 226.6,
+      "intl_dominant_tons": 56.8,
+      "total_dominant_tons": 967.2,
+      "round_trip_days": 23.8,
+      "trips_per_year": 10.48,
+      "carriers_intl": 0.69,
+      "carriers_total": 11.79,
+      "departure_every_days": 2.0,
+      "flag_shares_pct": {
+        "Empire of Iziz": 100.0
+      },
+      "top_goods": [
+        "iron (462.1 t)",
+        "cotton (285.2 t)",
+        "scrap (84.3 t)",
+        "fruit (35.9 t)",
+        "copper (33.2 t)"
+      ]
+    },
+    {
+      "u": "Shim",
+      "v": "Torus",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 249.7,
+      "u_to_v_tons": 370.3,
+      "v_to_u_tons": 988.5,
+      "intl_dominant_tons": 951.6,
+      "total_dominant_tons": 988.5,
+      "round_trip_days": 20.3,
+      "trips_per_year": 12.3,
+      "carriers_intl": 9.89,
+      "carriers_total": 10.27,
+      "departure_every_days": 2.0,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 100.0
+      },
+      "top_goods": [
+        "ship-timber (708.6 t)",
+        "reagent (184.2 t)",
+        "milk (43.3 t)",
+        "scrap (41.2 t)",
+        "sugar (39.5 t)"
+      ]
+    },
+    {
+      "u": "Kyra Isle",
+      "v": "Marr",
+      "u_polity": "League: Pontus",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "ring_sea",
+      "km": 659.0,
+      "u_to_v_tons": 552.6,
+      "v_to_u_tons": 3.7,
+      "intl_dominant_tons": 552.6,
+      "total_dominant_tons": 552.6,
+      "round_trip_days": 34.0,
+      "trips_per_year": 7.36,
+      "carriers_intl": 9.59,
+      "carriers_total": 9.59,
+      "departure_every_days": 3.5,
+      "flag_shares_pct": {
+        "League: Pontus": 52.3,
+        "Empire of Iziz": 47.7
+      },
+      "top_goods": [
+        "sulfur (486.2 t)",
+        "sugar (27.7 t)",
+        "pitch-tar (15.7 t)",
+        "zinc (13.4 t)",
+        "coffee (3.6 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Skopelos Isle",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "League: Pontus",
+      "sub_class": "ring_sea",
+      "km": 595.7,
+      "u_to_v_tons": 4.1,
+      "v_to_u_tons": 577.0,
+      "intl_dominant_tons": 577.0,
+      "total_dominant_tons": 577.0,
+      "round_trip_days": 31.9,
+      "trips_per_year": 7.85,
+      "carriers_intl": 9.39,
+      "carriers_total": 9.39,
+      "departure_every_days": 3.4,
+      "flag_shares_pct": {
+        "League: Pontus": 52.3,
+        "Empire of Iziz": 47.7
+      },
+      "top_goods": [
+        "sulfur (513.9 t)",
+        "sugar (25.9 t)",
+        "pitch-tar (14.8 t)",
+        "zinc (14.7 t)",
+        "coffee (3.5 t)"
+      ]
+    },
+    {
+      "u": "Nephtos",
+      "v": "Port Tobin",
+      "u_polity": "League: Tethys",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "ring_sea",
+      "km": 402.1,
+      "u_to_v_tons": 671.9,
+      "v_to_u_tons": 65.5,
+      "intl_dominant_tons": 671.9,
+      "total_dominant_tons": 671.9,
+      "round_trip_days": 25.4,
+      "trips_per_year": 9.84,
+      "carriers_intl": 8.72,
+      "carriers_total": 8.72,
+      "departure_every_days": 2.9,
+      "flag_shares_pct": {
+        "League: Tethys": 54.9,
+        "Empire of Iziz": 45.1
+      },
+      "top_goods": [
+        "sulfur (293.4 t)",
+        "ship-timber (143.0 t)",
+        "sugar (101.6 t)",
+        "cloth (26.7 t)",
+        "coffee (25.3 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Nephtos",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 520.6,
+      "u_to_v_tons": 23.1,
+      "v_to_u_tons": 508.9,
+      "intl_dominant_tons": 508.9,
+      "total_dominant_tons": 508.9,
+      "round_trip_days": 29.4,
+      "trips_per_year": 8.52,
+      "carriers_intl": 7.63,
+      "carriers_total": 7.63,
+      "departure_every_days": 3.8,
+      "flag_shares_pct": {
+        "League: Tethys": 54.8,
+        "Empire of Iziz": 45.2
+      },
+      "top_goods": [
+        "ship-timber (403.6 t)",
+        "sulfur (33.0 t)",
+        "cigars (16.2 t)",
+        "cotton (10.7 t)",
+        "sugar (10.1 t)"
+      ]
+    },
+    {
+      "u": "Kautoa",
+      "v": "Voth",
+      "u_polity": "Kautoa",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 861.9,
+      "u_to_v_tons": 365.7,
+      "v_to_u_tons": 38.2,
+      "intl_dominant_tons": 365.7,
+      "total_dominant_tons": 365.7,
+      "round_trip_days": 40.7,
+      "trips_per_year": 6.14,
+      "carriers_intl": 7.61,
+      "carriers_total": 7.61,
+      "departure_every_days": 5.4,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 53.7,
+        "Kautoa": 38.6,
+        "League: Ys": 4.3,
+        "Hookfleet": 3.4
+      },
+      "top_goods": [
+        "scrap (80.5 t)",
+        "ship-timber (56.9 t)",
+        "incense (38.8 t)",
+        "rubber (35.7 t)",
+        "cotton (25.6 t)"
+      ]
+    },
+    {
+      "u": "Almua",
+      "v": "Tethis",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 240.9,
+      "u_to_v_tons": 739.4,
+      "v_to_u_tons": 76.2,
+      "intl_dominant_tons": 739.4,
+      "total_dominant_tons": 739.4,
+      "round_trip_days": 20.0,
+      "trips_per_year": 12.48,
+      "carriers_intl": 7.57,
+      "carriers_total": 7.57,
+      "departure_every_days": 2.6,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 49.1,
+        "League: Tethys": 24.3,
+        "League: Ys": 14.9,
+        "League: Trigon": 4.7
+      },
+      "top_goods": [
+        "sulfur (389.1 t)",
+        "coal (271.0 t)",
+        "scrap (23.3 t)",
+        "sugar (22.2 t)",
+        "marble (12.9 t)"
+      ]
+    },
+    {
+      "u": "Almua",
+      "v": "Voth",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 331.8,
+      "u_to_v_tons": 601.8,
+      "v_to_u_tons": 424.6,
+      "intl_dominant_tons": 37.9,
+      "total_dominant_tons": 601.8,
+      "round_trip_days": 23.1,
+      "trips_per_year": 10.84,
+      "carriers_intl": 0.45,
+      "carriers_total": 7.09,
+      "departure_every_days": 3.3,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 100.0
+      },
+      "top_goods": [
+        "iron (338.1 t)",
+        "marble (226.5 t)",
+        "silica-sand (100.5 t)",
+        "milk (95.3 t)",
+        "sulfur (79.2 t)"
+      ]
+    },
+    {
+      "u": "Port Mira",
+      "v": "Tethis",
+      "u_polity": "Hookfleet",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 479.8,
+      "u_to_v_tons": 493.1,
+      "v_to_u_tons": 66.0,
+      "intl_dominant_tons": 493.1,
+      "total_dominant_tons": 493.1,
+      "round_trip_days": 28.0,
+      "trips_per_year": 8.93,
+      "carriers_intl": 7.05,
+      "carriers_total": 7.05,
+      "departure_every_days": 4.0,
+      "flag_shares_pct": {
+        "Hookfleet": 60.1,
+        "League: Tethys": 22.7,
+        "League: Ys": 10.9,
+        "League: Trigon": 3.4
+      },
+      "top_goods": [
+        "sugar (92.1 t)",
+        "zinc (45.8 t)",
+        "ranjrum (45.7 t)",
+        "copper (42.7 t)",
+        "coal (40.0 t)"
+      ]
+    },
+    {
+      "u": "Bipo",
+      "v": "Shim",
+      "u_polity": "Kautoa",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 803.5,
+      "u_to_v_tons": 340.0,
+      "v_to_u_tons": 34.6,
+      "intl_dominant_tons": 340.0,
+      "total_dominant_tons": 340.0,
+      "round_trip_days": 38.8,
+      "trips_per_year": 6.45,
+      "carriers_intl": 6.74,
+      "carriers_total": 6.74,
+      "departure_every_days": 5.8,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 50.3,
+        "Kautoa": 41.5,
+        "League: Ys": 4.6,
+        "Hookfleet": 3.7
+      },
+      "top_goods": [
+        "coal (110.8 t)",
+        "ship-timber (104.8 t)",
+        "scrap (59.3 t)",
+        "salt (21.3 t)",
+        "sugar (13.4 t)"
+      ]
+    },
+    {
+      "u": "Port Tobin",
+      "v": "Port Visas",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Dilihan Province",
+      "sub_class": "ring_sea",
+      "km": 620.4,
+      "u_to_v_tons": 125.5,
+      "v_to_u_tons": 403.7,
+      "intl_dominant_tons": 403.7,
+      "total_dominant_tons": 403.7,
+      "round_trip_days": 32.7,
+      "trips_per_year": 7.65,
+      "carriers_intl": 6.74,
+      "carriers_total": 6.74,
+      "departure_every_days": 4.8,
+      "flag_shares_pct": {
+        "Empire of Iziz": 100.0
+      },
+      "top_goods": [
+        "saltpeter (174.1 t)",
+        "coal (103.2 t)",
+        "alabaster (63.4 t)",
+        "dried-fruit (29.8 t)",
+        "wine (25.4 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Taikoro",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "West Ring Islanders",
+      "sub_class": "ring_sea",
+      "km": 742.7,
+      "u_to_v_tons": 11.7,
+      "v_to_u_tons": 353.8,
+      "intl_dominant_tons": 353.8,
+      "total_dominant_tons": 353.8,
+      "round_trip_days": 36.8,
+      "trips_per_year": 6.8,
+      "carriers_intl": 6.65,
+      "carriers_total": 6.65,
+      "departure_every_days": 5.5,
+      "flag_shares_pct": {
+        "Empire of Iziz": 54.6,
+        "West Ring Islanders": 28.8,
+        "League: Ys": 7.0,
+        "League: Tethys": 6.1
+      },
+      "top_goods": [
+        "sulfur (208.7 t)",
+        "sugar (70.9 t)",
+        "marble (22.7 t)",
+        "rum (14.6 t)",
+        "coal (7.7 t)"
+      ]
+    },
+    {
+      "u": "Almua",
+      "v": "Torus",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 305.4,
+      "u_to_v_tons": 224.8,
+      "v_to_u_tons": 551.2,
+      "intl_dominant_tons": 340.9,
+      "total_dominant_tons": 551.2,
+      "round_trip_days": 22.2,
+      "trips_per_year": 11.27,
+      "carriers_intl": 3.86,
+      "carriers_total": 6.25,
+      "departure_every_days": 3.5,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 100.0
+      },
+      "top_goods": [
+        "ship-timber (283.0 t)",
+        "iron (173.5 t)",
+        "marble (45.5 t)",
+        "milk (41.4 t)",
+        "sugar (19.9 t)"
+      ]
+    },
+    {
+      "u": "Port Tobin",
+      "v": "Ybera",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "League: Ys",
+      "sub_class": "ring_sea",
+      "km": 373.7,
+      "u_to_v_tons": 33.0,
+      "v_to_u_tons": 493.9,
+      "intl_dominant_tons": 493.9,
+      "total_dominant_tons": 493.9,
+      "round_trip_days": 24.5,
+      "trips_per_year": 10.22,
+      "carriers_intl": 6.17,
+      "carriers_total": 6.17,
+      "departure_every_days": 4.0,
+      "flag_shares_pct": {
+        "League: Ys": 55.3,
+        "Empire of Iziz": 44.7
+      },
+      "top_goods": [
+        "sulfur (301.1 t)",
+        "sugar (76.3 t)",
+        "zinc (34.8 t)",
+        "coffee (22.8 t)",
+        "ranjrum (20.2 t)"
+      ]
+    },
+    {
+      "u": "Almua",
+      "v": "Shim",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 362.6,
+      "u_to_v_tons": 391.5,
+      "v_to_u_tons": 495.7,
+      "intl_dominant_tons": 179.5,
+      "total_dominant_tons": 495.7,
+      "round_trip_days": 24.1,
+      "trips_per_year": 10.38,
+      "carriers_intl": 2.21,
+      "carriers_total": 6.1,
+      "departure_every_days": 3.9,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 100.0
+      },
+      "top_goods": [
+        "ship-timber (321.3 t)",
+        "marble (196.2 t)",
+        "salt (94.7 t)",
+        "cloth (52.4 t)",
+        "sugar (23.2 t)"
+      ]
+    },
+    {
+      "u": "Kautoa",
+      "v": "Port Tobin",
+      "u_polity": "Kautoa",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "ring_sea",
+      "km": 451.9,
+      "u_to_v_tons": 436.6,
+      "v_to_u_tons": 24.6,
+      "intl_dominant_tons": 436.6,
+      "total_dominant_tons": 436.6,
+      "round_trip_days": 27.1,
+      "trips_per_year": 9.24,
+      "carriers_intl": 6.04,
+      "carriers_total": 6.04,
+      "departure_every_days": 4.5,
+      "flag_shares_pct": {
+        "Empire of Iziz": 50.5,
+        "Kautoa": 42.0,
+        "League: Ys": 4.1,
+        "Hookfleet": 3.3
+      },
+      "top_goods": [
+        "sulfur (232.5 t)",
+        "pitch-tar (48.7 t)",
+        "ship-timber (34.9 t)",
+        "cordage (29.0 t)",
+        "sugar (20.3 t)"
+      ]
+    },
+    {
+      "u": "Bipo",
+      "v": "Mav's Refuge",
+      "u_polity": "Kautoa",
+      "v_polity": "Beast Riders",
+      "sub_class": "ring_sea",
+      "km": 108.0,
+      "u_to_v_tons": 279.5,
+      "v_to_u_tons": 1211.7,
+      "intl_dominant_tons": 1202.6,
+      "total_dominant_tons": 1211.7,
+      "round_trip_days": 9.6,
+      "trips_per_year": 26.04,
+      "carriers_intl": 5.9,
+      "carriers_total": 5.95,
+      "departure_every_days": 1.6,
+      "flag_shares_pct": {
+        "Kautoa": 100.0
+      },
+      "top_goods": [
+        "ship-timber (464.1 t)",
+        "scrap (322.7 t)",
+        "coal (176.7 t)",
+        "mounts (147.4 t)",
+        "sugar (63.2 t)"
+      ]
+    },
+    {
+      "u": "Tethis",
+      "v": "Ybera",
+      "u_polity": "League: Tethys",
+      "v_polity": "League: Ys",
+      "sub_class": "ring_sea",
+      "km": 351.5,
+      "u_to_v_tons": 94.5,
+      "v_to_u_tons": 481.0,
+      "intl_dominant_tons": 481.0,
+      "total_dominant_tons": 481.0,
+      "round_trip_days": 23.7,
+      "trips_per_year": 10.54,
+      "carriers_intl": 5.83,
+      "carriers_total": 5.83,
+      "departure_every_days": 4.1,
+      "flag_shares_pct": {
+        "League: Ys": 66.9,
+        "League: Tethys": 22.3,
+        "League: Trigon": 4.3,
+        "League: Pontus": 3.6
+      },
+      "top_goods": [
+        "sulfur (111.7 t)",
+        "sugar (102.5 t)",
+        "zinc (83.4 t)",
+        "copper (64.1 t)",
+        "ranjrum (36.2 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Port Goto",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Shell Province",
+      "sub_class": "ring_sea",
+      "km": 634.2,
+      "u_to_v_tons": 48.7,
+      "v_to_u_tons": 342.1,
+      "intl_dominant_tons": 342.1,
+      "total_dominant_tons": 342.1,
+      "round_trip_days": 33.1,
+      "trips_per_year": 7.54,
+      "carriers_intl": 5.79,
+      "carriers_total": 5.79,
+      "departure_every_days": 5.7,
+      "flag_shares_pct": {
+        "Empire of Iziz": 53.2,
+        "Shell Province": 46.8
+      },
+      "top_goods": [
+        "ship-timber (279.8 t)",
+        "potash (26.8 t)",
+        "sugar (10.2 t)",
+        "cacao (9.7 t)",
+        "opium (6.6 t)"
+      ]
+    },
+    {
+      "u": "Kautono",
+      "v": "Marr",
+      "u_polity": "West Ring Islanders",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "ring_sea",
+      "km": 493.6,
+      "u_to_v_tons": 396.6,
+      "v_to_u_tons": 5.2,
+      "intl_dominant_tons": 396.6,
+      "total_dominant_tons": 396.6,
+      "round_trip_days": 28.5,
+      "trips_per_year": 8.79,
+      "carriers_intl": 5.77,
+      "carriers_total": 5.77,
+      "departure_every_days": 4.9,
+      "flag_shares_pct": {
+        "Empire of Iziz": 54.7,
+        "West Ring Islanders": 28.8,
+        "League: Ys": 7.0,
+        "League: Tethys": 6.1
+      },
+      "top_goods": [
+        "sulfur (240.6 t)",
+        "sugar (91.3 t)",
+        "rum (15.5 t)",
+        "marble (13.6 t)",
+        "zinc (9.3 t)"
+      ]
+    },
+    {
+      "u": "Kautoa",
+      "v": "Talon",
+      "u_polity": "Kautoa",
+      "v_polity": "Beast Riders",
+      "sub_class": "ring_sea",
+      "km": 142.0,
+      "u_to_v_tons": 418.1,
+      "v_to_u_tons": 1018.1,
+      "intl_dominant_tons": 1017.8,
+      "total_dominant_tons": 1018.1,
+      "round_trip_days": 10.7,
+      "trips_per_year": 23.29,
+      "carriers_intl": 5.58,
+      "carriers_total": 5.58,
+      "departure_every_days": 1.9,
+      "flag_shares_pct": {
+        "Kautoa": 100.0
+      },
+      "top_goods": [
+        "rubber (267.3 t)",
+        "incense (130.6 t)",
+        "mounts (112.4 t)",
+        "abyss-lac (98.9 t)",
+        "saltpeter (75.6 t)"
+      ]
+    },
+    {
+      "u": "Tethis",
+      "v": "Torus",
+      "u_polity": "League: Tethys",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 506.1,
+      "u_to_v_tons": 67.1,
+      "v_to_u_tons": 347.6,
+      "intl_dominant_tons": 347.6,
+      "total_dominant_tons": 347.6,
+      "round_trip_days": 28.9,
+      "trips_per_year": 8.66,
+      "carriers_intl": 5.13,
+      "carriers_total": 5.13,
+      "departure_every_days": 5.6,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 45.4,
+        "League: Tethys": 26.1,
+        "League: Ys": 16.0,
+        "League: Trigon": 5.0
+      },
+      "top_goods": [
+        "ship-timber (123.1 t)",
+        "cordage (51.1 t)",
+        "coal (50.9 t)",
+        "wool (34.3 t)",
+        "peat (16.8 t)"
+      ]
+    },
+    {
+      "u": "Shim",
+      "v": "Zey'danin",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 400.9,
+      "u_to_v_tons": 395.5,
+      "v_to_u_tons": 202.0,
+      "intl_dominant_tons": 148.2,
+      "total_dominant_tons": 395.5,
+      "round_trip_days": 25.4,
+      "trips_per_year": 9.86,
+      "carriers_intl": 1.92,
+      "carriers_total": 5.13,
+      "departure_every_days": 4.9,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 100.0
+      },
+      "top_goods": [
+        "ship-timber (96.4 t)",
+        "salt (82.3 t)",
+        "mounts (32.6 t)",
+        "coal (27.7 t)",
+        "copper (26.6 t)"
+      ]
+    },
+    {
+      "u": "Port Goto",
+      "v": "Tethis",
+      "u_polity": "Shell Province",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 423.6,
+      "u_to_v_tons": 359.9,
+      "v_to_u_tons": 129.0,
+      "intl_dominant_tons": 359.9,
+      "total_dominant_tons": 359.9,
+      "round_trip_days": 26.1,
+      "trips_per_year": 9.57,
+      "carriers_intl": 4.8,
+      "carriers_total": 4.8,
+      "departure_every_days": 5.4,
+      "flag_shares_pct": {
+        "Shell Province": 45.1,
+        "League: Tethys": 26.2,
+        "League: Ys": 16.1,
+        "League: Trigon": 5.1
+      },
+      "top_goods": [
+        "sugar (119.9 t)",
+        "coal (72.4 t)",
+        "ship-timber (69.7 t)",
+        "potash (39.6 t)",
+        "cotton (28.7 t)"
+      ]
+    },
+    {
+      "u": "Bipo",
+      "v": "Voth",
+      "u_polity": "Kautoa",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 765.6,
+      "u_to_v_tons": 237.3,
+      "v_to_u_tons": 16.6,
+      "intl_dominant_tons": 237.3,
+      "total_dominant_tons": 237.3,
+      "round_trip_days": 37.5,
+      "trips_per_year": 6.66,
+      "carriers_intl": 4.55,
+      "carriers_total": 4.55,
+      "departure_every_days": 8.2,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 54.5,
+        "Kautoa": 37.7,
+        "League: Ys": 4.3,
+        "Hookfleet": 3.5
+      },
+      "top_goods": [
+        "scrap (149.3 t)",
+        "ship-timber (67.8 t)",
+        "cotton (12.9 t)",
+        "ancient-alloys (5.8 t)",
+        "pitch-tar (5.7 t)"
+      ]
+    },
+    {
+      "u": "Noa's Regret",
+      "v": "Port Tobin",
+      "u_polity": "Ring Sea Pirates",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "ring_sea",
+      "km": 200.0,
+      "u_to_v_tons": 462.4,
+      "v_to_u_tons": 5.0,
+      "intl_dominant_tons": 462.4,
+      "total_dominant_tons": 462.4,
+      "round_trip_days": 18.7,
+      "trips_per_year": 13.39,
+      "carriers_intl": 4.41,
+      "carriers_total": 4.41,
+      "departure_every_days": 4.2,
+      "flag_shares_pct": {
+        "Ring Sea Pirates": 84.9,
+        "Empire of Iziz": 15.1
+      },
+      "top_goods": [
+        "sulfur (180.4 t)",
+        "sugar (60.9 t)",
+        "mounts (42.3 t)",
+        "saltpeter (23.5 t)",
+        "zinc (19.2 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Shim",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "ring_sea",
+      "km": 704.3,
+      "u_to_v_tons": 242.5,
+      "v_to_u_tons": 116.3,
+      "intl_dominant_tons": 242.5,
+      "total_dominant_tons": 242.5,
+      "round_trip_days": 35.5,
+      "trips_per_year": 7.05,
+      "carriers_intl": 4.4,
+      "carriers_total": 4.4,
+      "departure_every_days": 8.1,
+      "flag_shares_pct": {
+        "League: Ys": 50.0,
+        "League: Tethys": 50.0
+      },
+      "top_goods": [
+        "alkali (57.2 t)",
+        "cacao (30.5 t)",
+        "tequila (30.0 t)",
+        "mezcal (24.9 t)",
+        "opium (24.8 t)"
+      ]
+    },
+    {
+      "u": "Port Goto",
+      "v": "Port Tobin",
+      "u_polity": "Shell Province",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "ring_sea",
+      "km": 515.8,
+      "u_to_v_tons": 279.1,
+      "v_to_u_tons": 67.9,
+      "intl_dominant_tons": 279.1,
+      "total_dominant_tons": 279.1,
+      "round_trip_days": 29.2,
+      "trips_per_year": 8.56,
+      "carriers_intl": 4.16,
+      "carriers_total": 4.16,
+      "departure_every_days": 7.0,
+      "flag_shares_pct": {
+        "Empire of Iziz": 52.9,
+        "Shell Province": 47.1
+      },
+      "top_goods": [
+        "ship-timber (115.5 t)",
+        "sugar (95.8 t)",
+        "beer (19.9 t)",
+        "coffee (15.7 t)",
+        "rum (14.6 t)"
+      ]
+    },
+    {
+      "u": "Port Visas",
+      "v": "Tethis",
+      "u_polity": "Dilihan Province",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 211.5,
+      "u_to_v_tons": 425.7,
+      "v_to_u_tons": 23.1,
+      "intl_dominant_tons": 7.8,
+      "total_dominant_tons": 425.7,
+      "round_trip_days": 19.0,
+      "trips_per_year": 13.12,
+      "carriers_intl": 0.08,
+      "carriers_total": 4.15,
+      "departure_every_days": 4.6,
+      "flag_shares_pct": {
+        "League: Tethys": 47.7,
+        "League: Ys": 29.2,
+        "League: Trigon": 9.2,
+        "League: Pontus": 7.7
+      },
+      "top_goods": [
+        "scrap (402.7 t)",
+        "ancient-alloys (10.3 t)",
+        "scrapgoods (8.7 t)",
+        "iron (4.7 t)",
+        "dried-fruit (2.8 t)"
+      ]
+    },
+    {
+      "u": "Kautoa",
+      "v": "Marr",
+      "u_polity": "Kautoa",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "ring_sea",
+      "km": 613.4,
+      "u_to_v_tons": 229.3,
+      "v_to_u_tons": 22.4,
+      "intl_dominant_tons": 229.3,
+      "total_dominant_tons": 229.3,
+      "round_trip_days": 32.4,
+      "trips_per_year": 7.7,
+      "carriers_intl": 3.8,
+      "carriers_total": 3.8,
+      "departure_every_days": 8.5,
+      "flag_shares_pct": {
+        "Empire of Iziz": 49.5,
+        "Kautoa": 42.7,
+        "League: Ys": 4.3,
+        "Hookfleet": 3.4
+      },
+      "top_goods": [
+        "ship-timber (79.9 t)",
+        "cordage (48.9 t)",
+        "pitch-tar (32.8 t)",
+        "sulfur (26.1 t)",
+        "glass (9.8 t)"
+      ]
+    },
+    {
+      "u": "Port Goto",
+      "v": "Port Visas",
+      "u_polity": "Shell Province",
+      "v_polity": "Dilihan Province",
+      "sub_class": "ring_sea",
+      "km": 289.0,
+      "u_to_v_tons": 328.4,
+      "v_to_u_tons": 72.6,
+      "intl_dominant_tons": 328.4,
+      "total_dominant_tons": 328.4,
+      "round_trip_days": 21.6,
+      "trips_per_year": 11.56,
+      "carriers_intl": 3.63,
+      "carriers_total": 3.63,
+      "departure_every_days": 6.0,
+      "flag_shares_pct": {
+        "Shell Province": 100.0
+      },
+      "top_goods": [
+        "ship-timber (210.7 t)",
+        "sugar (57.1 t)",
+        "coal (30.7 t)",
+        "cloth (18.5 t)",
+        "cotton (16.6 t)"
+      ]
+    },
+    {
+      "u": "Marr",
+      "v": "Ys",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "League: Ys",
+      "sub_class": "ring_sea",
+      "km": 745.3,
+      "u_to_v_tons": 189.2,
+      "v_to_u_tons": 182.8,
+      "intl_dominant_tons": 189.2,
+      "total_dominant_tons": 189.2,
+      "round_trip_days": 36.8,
+      "trips_per_year": 6.79,
+      "carriers_intl": 3.56,
+      "carriers_total": 3.56,
+      "departure_every_days": 10.3,
+      "flag_shares_pct": {
+        "League: Ys": 58.2,
+        "Empire of Iziz": 41.8
+      },
+      "top_goods": [
+        "marble (147.2 t)",
+        "alkali (41.3 t)",
+        "milk (24.9 t)",
+        "cacao (23.2 t)",
+        "opium (15.8 t)"
+      ]
+    },
+    {
+      "u": "Bipo",
+      "v": "Tethis",
+      "u_polity": "Kautoa",
+      "v_polity": "League: Tethys",
+      "sub_class": "ring_sea",
+      "km": 583.6,
+      "u_to_v_tons": 216.7,
+      "v_to_u_tons": 18.2,
+      "intl_dominant_tons": 216.7,
+      "total_dominant_tons": 216.7,
+      "round_trip_days": 31.5,
+      "trips_per_year": 7.95,
+      "carriers_intl": 3.48,
+      "carriers_total": 3.48,
+      "departure_every_days": 9.0,
+      "flag_shares_pct": {
+        "Kautoa": 38.3,
+        "League: Tethys": 25.9,
+        "League: Ys": 20.0,
+        "Hookfleet": 6.6
+      },
+      "top_goods": [
+        "ship-timber (85.9 t)",
+        "coal (42.6 t)",
+        "sugar (38.1 t)",
+        "pitch-tar (14.1 t)",
+        "cordage (10.8 t)"
+      ]
+    }
+  ],
+  "inland_barge_waterways": [
+    {
+      "u": "Fulcrum",
+      "v": "Lux",
+      "u_polity": "Eternal State",
+      "v_polity": "Eternal State",
+      "sub_class": "lake",
+      "km": 116.6,
+      "u_to_v_tons": 3215.7,
+      "v_to_u_tons": 27230.4,
+      "intl_dominant_tons": 11611.2,
+      "total_dominant_tons": 27230.4,
+      "round_trip_days": 10.0,
+      "trips_per_year": 28.44,
+      "carriers_intl": 25.38,
+      "carriers_total": 59.51,
+      "departure_every_days": 0.2,
+      "flag_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "coal (11627.8 t)",
+        "scrap (6103.2 t)",
+        "sugar (1376.9 t)",
+        "timber (958.8 t)",
+        "salt (878.0 t)"
+      ]
+    },
+    {
+      "u": "Fulcrum",
+      "v": "Lux",
+      "u_polity": "Eternal State",
+      "v_polity": "Eternal State",
+      "sub_class": "canal",
+      "km": 90.3,
+      "u_to_v_tons": 27920.1,
+      "v_to_u_tons": 0.0,
+      "intl_dominant_tons": 11677.7,
+      "total_dominant_tons": 27920.1,
+      "round_trip_days": 9.8,
+      "trips_per_year": 29.19,
+      "carriers_intl": 24.87,
+      "carriers_total": 59.45,
+      "departure_every_days": 0.2,
+      "flag_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "coal (10978.2 t)",
+        "scrap (5641.6 t)",
+        "sugar (1324.2 t)",
+        "timber (958.8 t)",
+        "salt (820.0 t)"
+      ]
+    },
+    {
+      "u": "Shim",
+      "v": "Voth",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "river",
+      "km": 245.3,
+      "u_to_v_tons": 7963.1,
+      "v_to_u_tons": 0.0,
+      "intl_dominant_tons": 6315.0,
+      "total_dominant_tons": 7963.1,
+      "round_trip_days": 16.2,
+      "trips_per_year": 17.57,
+      "carriers_intl": 22.34,
+      "carriers_total": 28.17,
+      "departure_every_days": 0.6,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 100.0
+      },
+      "top_goods": [
+        "ship-timber (1714.2 t)",
+        "coal (608.2 t)",
+        "salt (509.9 t)",
+        "sugar (481.2 t)",
+        "reagent (421.9 t)"
+      ]
+    },
+    {
+      "u": "Farport",
+      "v": "Fulcrum",
+      "u_polity": "Eternal State",
+      "v_polity": "Eternal State",
+      "sub_class": "canal",
+      "km": 364.3,
+      "u_to_v_tons": 676.2,
+      "v_to_u_tons": 3344.3,
+      "intl_dominant_tons": 1899.3,
+      "total_dominant_tons": 3344.3,
+      "round_trip_days": 21.2,
+      "trips_per_year": 13.46,
+      "carriers_intl": 8.77,
+      "carriers_total": 15.45,
+      "departure_every_days": 1.4,
+      "flag_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "ship-timber (934.4 t)",
+        "coal (649.7 t)",
+        "salt (499.2 t)",
+        "scrap (461.6 t)",
+        "silica-sand (197.0 t)"
+      ]
+    },
+    {
+      "u": "Dapor",
+      "v": "Shim",
+      "u_polity": "Realm of Dalab",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "lake",
+      "km": 353.5,
+      "u_to_v_tons": 3198.2,
+      "v_to_u_tons": 3708.7,
+      "intl_dominant_tons": 3708.7,
+      "total_dominant_tons": 3708.7,
+      "round_trip_days": 18.2,
+      "trips_per_year": 15.67,
+      "carriers_intl": 14.72,
+      "carriers_total": 14.72,
+      "departure_every_days": 1.2,
+      "flag_shares_pct": {
+        "Realm of Dalab": 55.0,
+        "Vothic Kingdom": 45.0
+      },
+      "top_goods": [
+        "ship-timber (973.3 t)",
+        "reagent (615.3 t)",
+        "scrap (602.3 t)",
+        "sugar (450.4 t)",
+        "coal (346.7 t)"
+      ]
+    },
+    {
+      "u": "Fridon",
+      "v": "Iziz",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "lake",
+      "km": 141.0,
+      "u_to_v_tons": 6103.7,
+      "v_to_u_tons": 296.9,
+      "intl_dominant_tons": 4271.5,
+      "total_dominant_tons": 6103.7,
+      "round_trip_days": 10.9,
+      "trips_per_year": 26.24,
+      "carriers_intl": 10.12,
+      "carriers_total": 14.46,
+      "departure_every_days": 0.8,
+      "flag_shares_pct": {
+        "Empire of Iziz": 100.0
+      },
+      "top_goods": [
+        "oil (1967.9 t)",
+        "scrap (1529.7 t)",
+        "iron (980.1 t)",
+        "cotton (348.0 t)",
+        "saltpeter (166.5 t)"
+      ]
+    },
+    {
+      "u": "Jimjam",
+      "v": "Palewharf",
+      "u_polity": "Jimjam",
+      "v_polity": "Eternal State",
+      "sub_class": "lake",
+      "km": 425.3,
+      "u_to_v_tons": 2146.4,
+      "v_to_u_tons": 2298.4,
+      "intl_dominant_tons": 2298.4,
+      "total_dominant_tons": 2298.4,
+      "round_trip_days": 20.7,
+      "trips_per_year": 13.79,
+      "carriers_intl": 10.36,
+      "carriers_total": 10.36,
+      "departure_every_days": 2.0,
+      "flag_shares_pct": {
+        "Jimjam": 58.0,
+        "Eternal State": 42.0
+      },
+      "top_goods": [
+        "coal (1433.6 t)",
+        "scrap (603.7 t)",
+        "alabaster (394.2 t)",
+        "marble (332.7 t)",
+        "potash (331.2 t)"
+      ]
+    },
+    {
+      "u": "Shim",
+      "v": "Voth iron mine (to be named)",
+      "u_polity": "Vothic Kingdom",
+      "v_polity": "Vothic Kingdom",
+      "sub_class": "river",
+      "km": 214.4,
+      "u_to_v_tons": 3029.2,
+      "v_to_u_tons": 586.5,
+      "intl_dominant_tons": 2040.1,
+      "total_dominant_tons": 3029.2,
+      "round_trip_days": 14.9,
+      "trips_per_year": 19.09,
+      "carriers_intl": 6.64,
+      "carriers_total": 9.87,
+      "departure_every_days": 1.5,
+      "flag_shares_pct": {
+        "Vothic Kingdom": 100.0
+      },
+      "top_goods": [
+        "ship-timber (371.5 t)",
+        "sugar (297.5 t)",
+        "scrap (258.1 t)",
+        "wool (208.6 t)",
+        "coal (191.3 t)"
+      ]
+    },
+    {
+      "u": "Atton",
+      "v": "Fridon",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "river",
+      "km": 17.7,
+      "u_to_v_tons": 6103.7,
+      "v_to_u_tons": 296.9,
+      "intl_dominant_tons": 4271.5,
+      "total_dominant_tons": 6103.7,
+      "round_trip_days": 6.7,
+      "trips_per_year": 42.31,
+      "carriers_intl": 6.28,
+      "carriers_total": 8.97,
+      "departure_every_days": 0.8,
+      "flag_shares_pct": {
+        "Empire of Iziz": 100.0
+      },
+      "top_goods": [
+        "oil (1967.9 t)",
+        "scrap (1529.7 t)",
+        "iron (980.1 t)",
+        "cotton (348.0 t)",
+        "saltpeter (166.5 t)"
+      ]
+    },
+    {
+      "u": "Kirstabal",
+      "v": "Qiblai",
+      "u_polity": "Xanadu Sultanate",
+      "v_polity": "Xanadu Sultanate",
+      "sub_class": "lake",
+      "km": 108.0,
+      "u_to_v_tons": 3685.9,
+      "v_to_u_tons": 1287.8,
+      "intl_dominant_tons": 2676.3,
+      "total_dominant_tons": 3685.9,
+      "round_trip_days": 9.7,
+      "trips_per_year": 29.31,
+      "carriers_intl": 5.68,
+      "carriers_total": 7.82,
+      "departure_every_days": 1.2,
+      "flag_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "salt (1398.8 t)",
+        "cacao (403.5 t)",
+        "sugar (325.3 t)",
+        "opium (237.2 t)",
+        "scrap (198.0 t)"
+      ]
+    },
+    {
+      "u": "Serai",
+      "v": "Silkhead",
+      "u_polity": "Jimjam",
+      "v_polity": "Silkhead (Korona Gateway)",
+      "sub_class": "lake",
+      "km": 262.1,
+      "u_to_v_tons": 2061.6,
+      "v_to_u_tons": 704.1,
+      "intl_dominant_tons": 2061.6,
+      "total_dominant_tons": 2061.6,
+      "round_trip_days": 15.0,
+      "trips_per_year": 18.95,
+      "carriers_intl": 6.76,
+      "carriers_total": 6.76,
+      "departure_every_days": 2.2,
+      "flag_shares_pct": {
+        "Jimjam": 60.0,
+        "Silkhead (Korona Gateway)": 40.0
+      },
+      "top_goods": [
+        "food (1476.8 t)",
+        "potash (197.8 t)",
+        "cordage (186.1 t)",
+        "magnets (181.2 t)",
+        "ship-timber (98.7 t)"
+      ]
+    },
+    {
+      "u": "Atton",
+      "v": "Iziz",
+      "u_polity": "Empire of Iziz",
+      "v_polity": "Empire of Iziz",
+      "sub_class": "lake",
+      "km": 105.8,
+      "u_to_v_tons": 797.8,
+      "v_to_u_tons": 2495.1,
+      "intl_dominant_tons": 97.2,
+      "total_dominant_tons": 2495.1,
+      "round_trip_days": 9.6,
+      "trips_per_year": 29.54,
+      "carriers_intl": 0.2,
+      "carriers_total": 5.25,
+      "departure_every_days": 1.8,
+      "flag_shares_pct": {
+        "Empire of Iziz": 100.0
+      },
+      "top_goods": [
+        "timber (2430.8 t)",
+        "milk (230.7 t)",
+        "beer (149.6 t)",
+        "eggs (130.7 t)",
+        "cheese (86.2 t)"
+      ]
+    },
+    {
+      "u": "Qiblai",
+      "v": "Theodiga",
+      "u_polity": "Xanadu Sultanate",
+      "v_polity": "Xanadu Sultanate",
+      "sub_class": "river",
+      "km": 154.7,
+      "u_to_v_tons": 1095.9,
+      "v_to_u_tons": 308.6,
+      "intl_dominant_tons": 697.4,
+      "total_dominant_tons": 1095.9,
+      "round_trip_days": 12.4,
+      "trips_per_year": 22.9,
+      "carriers_intl": 1.89,
+      "carriers_total": 2.97,
+      "departure_every_days": 4.2,
+      "flag_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "salt (374.7 t)",
+        "cacao (93.0 t)",
+        "scrap (90.0 t)",
+        "sugar (75.2 t)",
+        "milk (74.7 t)"
+      ]
+    },
+    {
+      "u": "Ledge",
+      "v": "Nulab",
+      "u_polity": "Tungang Union",
+      "v_polity": "Realm of Dalab",
+      "sub_class": "lake",
+      "km": 58.6,
+      "u_to_v_tons": 832.8,
+      "v_to_u_tons": 899.4,
+      "intl_dominant_tons": 298.9,
+      "total_dominant_tons": 899.4,
+      "round_trip_days": 8.0,
+      "trips_per_year": 35.53,
+      "carriers_intl": 0.52,
+      "carriers_total": 1.57,
+      "departure_every_days": 5.1,
+      "flag_shares_pct": {
+        "Realm of Dalab": 55.0,
+        "Tungang Union": 45.0
+      },
+      "top_goods": [
+        "scrap (890.9 t)",
+        "salt (421.3 t)",
+        "ship-timber (241.0 t)",
+        "coal (108.2 t)",
+        "marble (16.1 t)"
+      ]
+    },
+    {
+      "u": "Erehwon",
+      "v": "Thalaba",
+      "u_polity": "Xanadu Sultanate",
+      "v_polity": "Xanadu Sultanate",
+      "sub_class": "lake",
+      "km": 68.6,
+      "u_to_v_tons": 18.0,
+      "v_to_u_tons": 378.3,
+      "intl_dominant_tons": 16.4,
+      "total_dominant_tons": 378.3,
+      "round_trip_days": 8.4,
+      "trips_per_year": 34.07,
+      "carriers_intl": 0.03,
+      "carriers_total": 0.69,
+      "departure_every_days": 12.1,
+      "flag_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "coal (221.2 t)",
+        "salt (117.7 t)",
+        "machine-wax (20.2 t)",
+        "sulfur (12.7 t)",
+        "dried-fruit (4.6 t)"
+      ]
+    },
+    {
+      "u": "Gate Tarn Mires",
+      "v": "Spider Lake Weirs",
+      "u_polity": "Coyote Kingdom",
+      "v_polity": "Spider Lake Guilds",
+      "sub_class": "river",
+      "km": 849.1,
+      "u_to_v_tons": 29.5,
+      "v_to_u_tons": 19.2,
+      "intl_dominant_tons": 29.5,
+      "total_dominant_tons": 29.5,
+      "round_trip_days": 41.4,
+      "trips_per_year": 6.89,
+      "carriers_intl": 0.27,
+      "carriers_total": 0.27,
+      "departure_every_days": 155.2,
+      "flag_shares_pct": {
+        "Spider Lake Guilds": 100.0
+      },
+      "top_goods": [
+        "mounts (13.2 t)",
+        "incense (12.0 t)",
+        "wool (4.1 t)",
+        "sugar (3.3 t)",
+        "cordage (2.7 t)"
+      ]
+    },
+    {
+      "u": "Farport",
+      "v": "Farport Waterway",
+      "u_polity": "Eternal State",
+      "v_polity": "",
+      "sub_class": "canal",
+      "km": 128.3,
+      "u_to_v_tons": 99.2,
+      "v_to_u_tons": 0.0,
+      "intl_dominant_tons": 99.2,
+      "total_dominant_tons": 99.2,
+      "round_trip_days": 11.3,
+      "trips_per_year": 25.12,
+      "carriers_intl": 0.25,
+      "carriers_total": 0.25,
+      "departure_every_days": 46.2,
+      "flag_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "wine (28.1 t)",
+        "champagne (18.2 t)",
+        "porcelain (18.0 t)",
+        "paper (12.5 t)",
+        "cheese (7.9 t)"
+      ]
+    },
+    {
+      "u": "Thalaba",
+      "v": "Thalaba Waterway",
+      "u_polity": "Xanadu Sultanate",
+      "v_polity": "",
+      "sub_class": "lake",
+      "km": 37.9,
+      "u_to_v_tons": 137.2,
+      "v_to_u_tons": 0.0,
+      "intl_dominant_tons": 0.2,
+      "total_dominant_tons": 137.2,
+      "round_trip_days": 7.3,
+      "trips_per_year": 39.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.22,
+      "departure_every_days": 33.4,
+      "flag_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "coal (66.3 t)",
+        "salt (35.3 t)",
+        "iron (18.9 t)",
+        "eggs (15.7 t)",
+        "potash (1.0 t)"
+      ]
+    },
+    {
+      "u": "Spider Lake Weirs",
+      "v": "Spider Lake Weirs Waterway",
+      "u_polity": "Spider Lake Guilds",
+      "v_polity": "",
+      "sub_class": "lake",
+      "km": 88.3,
+      "u_to_v_tons": 74.5,
+      "v_to_u_tons": 0.0,
+      "intl_dominant_tons": 74.5,
+      "total_dominant_tons": 74.5,
+      "round_trip_days": 9.0,
+      "trips_per_year": 31.51,
+      "carriers_intl": 0.15,
+      "carriers_total": 0.15,
+      "departure_every_days": 61.6,
+      "flag_shares_pct": {
+        "Spider Lake Guilds": 100.0
+      },
+      "top_goods": [
+        "mounts (14.5 t)",
+        "scrap (14.4 t)",
+        "incense (12.0 t)",
+        "sugar (5.6 t)",
+        "wool (4.1 t)"
+      ]
+    },
+    {
+      "u": "Spider Lake Weirs",
+      "v": "The Gate",
+      "u_polity": "Spider Lake Guilds",
+      "v_polity": "Coyote Kingdom",
+      "sub_class": "river",
+      "km": 382.2,
+      "u_to_v_tons": 24.2,
+      "v_to_u_tons": 1.5,
+      "intl_dominant_tons": 24.2,
+      "total_dominant_tons": 24.2,
+      "round_trip_days": 21.9,
+      "trips_per_year": 13.0,
+      "carriers_intl": 0.12,
+      "carriers_total": 0.12,
+      "departure_every_days": 189.3,
+      "flag_shares_pct": {
+        "Spider Lake Guilds": 100.0
+      },
+      "top_goods": [
+        "scrap (14.4 t)",
+        "sugar (2.2 t)",
+        "mounts (1.3 t)",
+        "cheese (0.9 t)",
+        "dried-fruit (0.7 t)"
+      ]
+    },
+    {
+      "u": "Nulab",
+      "v": "Nulab Waterway",
+      "u_polity": "Realm of Dalab",
+      "v_polity": "",
+      "sub_class": "river",
+      "km": 72.0,
+      "u_to_v_tons": 39.7,
+      "v_to_u_tons": 0.0,
+      "intl_dominant_tons": 39.7,
+      "total_dominant_tons": 39.7,
+      "round_trip_days": 9.0,
+      "trips_per_year": 31.67,
+      "carriers_intl": 0.08,
+      "carriers_total": 0.08,
+      "departure_every_days": 115.4,
+      "flag_shares_pct": {
+        "Realm of Dalab": 55.0,
+        "Tungang Union": 45.0
+      },
+      "top_goods": [
+        "sugar (7.4 t)",
+        "cotton (4.1 t)",
+        "magnets (2.5 t)",
+        "dried-fruit (1.8 t)",
+        "gunpowder (1.8 t)"
+      ]
+    },
+    {
+      "u": "Gate Tarn Mires",
+      "v": "The Gate",
+      "u_polity": "Coyote Kingdom",
+      "v_polity": "Coyote Kingdom",
+      "sub_class": "river",
+      "km": 466.9,
+      "u_to_v_tons": 0.0,
+      "v_to_u_tons": 0.0,
+      "intl_dominant_tons": 0.0,
+      "total_dominant_tons": 0.0,
+      "round_trip_days": 25.5,
+      "trips_per_year": 11.2,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.0,
+      "departure_every_days": null,
+      "flag_shares_pct": {
+        "Coyote Kingdom": 100.0
+      },
+      "top_goods": [
+        "clothes (0.0 t)",
+        "cloth (0.0 t)",
+        "cordage (0.0 t)"
+      ]
+    }
+  ],
+  "overland_corridors": [
+    {
+      "corridor": "Izani Heartland Port-to-Capital Highways (Marr/Port Tobin/Hook <-> Iziz)",
+      "avg_leg_km": 318.6,
+      "gross_tons_moved": 34205.4,
+      "highway_wagon_convoys": 196.8,
+      "pack_caravans": 40.2,
+      "carriers_intl": 175.5,
+      "carriers_total": 237.0,
+      "operator_shares_pct": {
+        "Empire of Iziz": 90.9,
+        "Yuni Emirate": 2.5,
+        "Xanadu Sultanate": 1.7,
+        "Talovolci Chiefs": 1.4
+      },
+      "top_goods": [
+        "coal (6616.8 t)",
+        "sulfur (3927.8 t)",
+        "food (3268.1 t)",
+        "sugar (2004.0 t)",
+        "iron (1941.8 t)"
+      ]
+    },
+    {
+      "corridor": "Dasri & East Abyss Trunk Network (Talia/Jabal <-> Verge <-> Yuni <-> Abyss)",
+      "avg_leg_km": 382.4,
+      "gross_tons_moved": 18364.0,
+      "highway_wagon_convoys": 140.0,
+      "pack_caravans": 24.5,
+      "carriers_intl": 118.2,
+      "carriers_total": 164.6,
+      "operator_shares_pct": {
+        "Yuni Emirate": 37.7,
+        "Empire of Iziz": 23.5,
+        "Jabal Shiekdom": 20.7,
+        "Tabisti: Sfenops": 4.7
+      },
+      "top_goods": [
+        "oil (2963.4 t)",
+        "food (2588.1 t)",
+        "timber (2558.3 t)",
+        "iron (1753.3 t)",
+        "scrap (1172.8 t)"
+      ]
+    },
+    {
+      "corridor": "SW Bay, Shumar & Highland Foothill Roads (Voth/Shim <-> Driyan/Torus/Amaro)",
+      "avg_leg_km": 176.0,
+      "gross_tons_moved": 23176.2,
+      "highway_wagon_convoys": 109.6,
+      "pack_caravans": 0.8,
+      "carriers_intl": 38.0,
+      "carriers_total": 110.4,
+      "operator_shares_pct": {
+        "Vothic Kingdom": 85.2,
+        "Talovolci Chiefs": 6.5,
+        "Shumari": 3.9,
+        "Free Giants (Vrivolci)": 2.6
+      },
+      "top_goods": [
+        "food (12301.4 t)",
+        "ship-timber (2801.8 t)",
+        "coal (1044.6 t)",
+        "salt (963.0 t)",
+        "scrap (544.9 t)"
+      ]
+    },
+    {
+      "corridor": "Annual Great Caravan (Nulab <-> Erehwon North Rift Bench)",
+      "avg_leg_km": 831.0,
+      "gross_tons_moved": 608.2,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 105.9,
+      "carriers_intl": 105.9,
+      "carriers_total": 105.9,
+      "operator_shares_pct": {
+        "Realm of Dalab": 45.9,
+        "Xanadu Sultanate": 39.6,
+        "Tungang Union": 10.4,
+        "Fellgangs": 1.3
+      },
+      "top_goods": [
+        "cacao (129.0 t)",
+        "spice-highland (65.3 t)",
+        "opium (49.5 t)",
+        "tea (32.0 t)",
+        "alkali (31.8 t)"
+      ]
+    },
+    {
+      "corridor": "Catch & Twins Trans-Rift Caravan Chain (Marr/Parabola <-> Catch <-> Twins <-> Strongbow)",
+      "avg_leg_km": 741.1,
+      "gross_tons_moved": 5913.7,
+      "highway_wagon_convoys": 94.8,
+      "pack_caravans": 0.2,
+      "carriers_intl": 83.9,
+      "carriers_total": 95.0,
+      "operator_shares_pct": {
+        "Empire of Iziz": 30.0,
+        "Catch Oasis Stations": 26.5,
+        "Xanadu Sultanate": 23.6,
+        "Stair Divers (Catch)": 7.5
+      },
+      "top_goods": [
+        "salt (1570.5 t)",
+        "alkali (1469.1 t)",
+        "scrap (927.1 t)",
+        "saltpeter (505.1 t)",
+        "food (216.0 t)"
+      ]
+    },
+    {
+      "corridor": "Valley of the Ancients Rim Trail (Carcosa/Henge <-> Palewharf/Fulcrum)",
+      "avg_leg_km": 479.4,
+      "gross_tons_moved": 8330.1,
+      "highway_wagon_convoys": 88.5,
+      "pack_caravans": 2.1,
+      "carriers_intl": 90.1,
+      "carriers_total": 90.5,
+      "operator_shares_pct": {
+        "Yusar (Cybernetics)": 47.7,
+        "Eternal State": 42.4,
+        "Iron Republic": 7.3,
+        "League: Tethys": 2.2
+      },
+      "top_goods": [
+        "scrap (5540.9 t)",
+        "coal (1542.4 t)",
+        "silica-sand (237.6 t)",
+        "ancient-alloys (147.9 t)",
+        "alkali (119.5 t)"
+      ]
+    },
+    {
+      "corridor": "Span Basin Tunnel Corridor (Dalab <-> Span <-> SW Highlands)",
+      "avg_leg_km": 406.8,
+      "gross_tons_moved": 2583.8,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 85.9,
+      "carriers_intl": 36.9,
+      "carriers_total": 85.9,
+      "operator_shares_pct": {
+        "Realm of Dalab": 93.0,
+        "Free Giants (Vrivolci)": 2.5,
+        "Frogmen": 2.1,
+        "Iron Republic": 2.1
+      },
+      "top_goods": [
+        "food (1548.0 t)",
+        "scrap (277.4 t)",
+        "saltpeter (164.2 t)",
+        "hashish (80.0 t)",
+        "salt (78.4 t)"
+      ]
+    },
+    {
+      "corridor": "Inner Wall Karst Tunnel (Cascade <-> Drum)",
+      "avg_leg_km": 390.0,
+      "gross_tons_moved": 3592.0,
+      "highway_wagon_convoys": 40.4,
+      "pack_caravans": 44.5,
+      "carriers_intl": 84.9,
+      "carriers_total": 84.9,
+      "operator_shares_pct": {
+        "Vothic Kingdom": 47.4,
+        "Iron Republic": 26.2,
+        "Eternal State": 20.4,
+        "Frogmen": 3.1
+      },
+      "top_goods": [
+        "coal (429.3 t)",
+        "sulfur (376.9 t)",
+        "sugar (310.5 t)",
+        "reagent (183.8 t)",
+        "wine (174.2 t)"
+      ]
+    },
+    {
+      "corridor": "Iron Republic–Ring Sea Trunk Highway (Roketstad/Cascade <-> Tethis/Almua)",
+      "avg_leg_km": 334.3,
+      "gross_tons_moved": 9092.3,
+      "highway_wagon_convoys": 70.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 70.5,
+      "carriers_total": 70.5,
+      "operator_shares_pct": {
+        "Iron Republic": 68.1,
+        "League: Tethys": 24.6,
+        "League: Trigon": 6.4,
+        "Vothic Kingdom": 1.0
+      },
+      "top_goods": [
+        "coal (4587.1 t)",
+        "sulfur (1837.0 t)",
+        "saltpeter (459.8 t)",
+        "gunpowder (327.5 t)",
+        "sugar (212.9 t)"
+      ]
+    },
+    {
+      "corridor": "The Cut & NW Wall Trunk Highway (Eternia/Jimjam <-> Tethis/Ring Sea)",
+      "avg_leg_km": 639.2,
+      "gross_tons_moved": 5991.8,
+      "highway_wagon_convoys": 63.3,
+      "pack_caravans": 0.0,
+      "carriers_intl": 63.3,
+      "carriers_total": 63.3,
+      "operator_shares_pct": {
+        "Eternal State": 49.7,
+        "League: Tethys": 28.0,
+        "Iron Republic": 17.4,
+        "League: Trigon": 4.8
+      },
+      "top_goods": [
+        "sugar (1246.9 t)",
+        "cotton (443.1 t)",
+        "wine (325.0 t)",
+        "alkali (301.6 t)",
+        "marble (253.4 t)"
+      ]
+    },
+    {
+      "corridor": "Tungang Rift-Line Bore & Cliff Lifts (Dalab <-> Shelf <-> Ledge <-> Nulab)",
+      "avg_leg_km": 470.4,
+      "gross_tons_moved": 6013.8,
+      "highway_wagon_convoys": 48.5,
+      "pack_caravans": 0.1,
+      "carriers_intl": 25.2,
+      "carriers_total": 48.6,
+      "operator_shares_pct": {
+        "Realm of Dalab": 65.6,
+        "Tungang Union": 32.2,
+        "Fellgangs": 0.9,
+        "Kimr": 0.6
+      },
+      "top_goods": [
+        "scrap (1898.3 t)",
+        "food (1003.7 t)",
+        "salt (514.3 t)",
+        "coal (275.9 t)",
+        "ship-timber (241.0 t)"
+      ]
+    },
+    {
+      "corridor": "Cascade <-> Stahlborn",
+      "avg_leg_km": 143.2,
+      "gross_tons_moved": 7929.3,
+      "highway_wagon_convoys": 36.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 36.5,
+      "operator_shares_pct": {
+        "Iron Republic": 100.0
+      },
+      "top_goods": [
+        "timber (4739.9 t)",
+        "food (3056.0 t)",
+        "salt (60.6 t)",
+        "coal (40.7 t)",
+        "beer (11.8 t)"
+      ]
+    },
+    {
+      "corridor": "Iziz-Guarded Visas Corridor (Dilihan <-> Port Visas)",
+      "avg_leg_km": 169.0,
+      "gross_tons_moved": 5195.9,
+      "highway_wagon_convoys": 15.6,
+      "pack_caravans": 18.6,
+      "carriers_intl": 26.0,
+      "carriers_total": 34.2,
+      "operator_shares_pct": {
+        "Dilihan Province": 59.4,
+        "League: Trigon": 18.4,
+        "League: Tethys": 15.4,
+        "Jimjam": 6.0
+      },
+      "top_goods": [
+        "coal (1417.4 t)",
+        "ship-timber (830.8 t)",
+        "scrap (821.5 t)",
+        "saltpeter (214.2 t)",
+        "marble (200.3 t)"
+      ]
+    },
+    {
+      "corridor": "Yuni SE Scarp & Siphon Basalt Bridges (Yuni <-> Ostrukh <-> Siphon)",
+      "avg_leg_km": 410.0,
+      "gross_tons_moved": 479.5,
+      "highway_wagon_convoys": 22.4,
+      "pack_caravans": 2.1,
+      "carriers_intl": 22.1,
+      "carriers_total": 24.6,
+      "operator_shares_pct": {
+        "Yuni Emirate": 74.3,
+        "Empire of Iziz": 18.9,
+        "Order of Historians": 2.3,
+        "Xanadu Sultanate": 2.3
+      },
+      "top_goods": [
+        "machine-wax (199.8 t)",
+        "sulfur (98.0 t)",
+        "saltpeter (97.9 t)",
+        "copper (22.2 t)",
+        "cordage (20.4 t)"
+      ]
+    },
+    {
+      "corridor": "Korona Guided Silk & Tepui Trail (Silkhead <-> Korona <-> Spider Lake)",
+      "avg_leg_km": 520.0,
+      "gross_tons_moved": 447.2,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 22.4,
+      "carriers_intl": 20.8,
+      "carriers_total": 22.4,
+      "operator_shares_pct": {
+        "Spider Lake Guilds": 58.4,
+        "Silkhead (Korona Gateway)": 20.8,
+        "Korona Tribes": 20.7
+      },
+      "top_goods": [
+        "magnets (151.6 t)",
+        "cordage (134.5 t)",
+        "scrap (42.8 t)",
+        "iron (14.7 t)",
+        "silk (12.2 t)"
+      ]
+    },
+    {
+      "corridor": "Dalab <-> Shelf",
+      "avg_leg_km": 114.1,
+      "gross_tons_moved": 5595.8,
+      "highway_wagon_convoys": 21.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 21.9,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "coal (5104.7 t)",
+        "salt (124.5 t)",
+        "reagent (84.9 t)",
+        "saltpeter (55.9 t)",
+        "paper (25.4 t)"
+      ]
+    },
+    {
+      "corridor": "Lux <-> Veil",
+      "avg_leg_km": 650.4,
+      "gross_tons_moved": 1441.4,
+      "highway_wagon_convoys": 18.3,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 18.3,
+      "operator_shares_pct": {
+        "Eternal State": 100.0,
+        "Yusar (Cybernetics)": 0.0
+      },
+      "top_goods": [
+        "scrap (1069.4 t)",
+        "coal (209.0 t)",
+        "silica-sand (78.3 t)",
+        "ancient-alloys (47.5 t)",
+        "scrapgoods (17.2 t)"
+      ]
+    },
+    {
+      "corridor": "Atton <-> Sista Riba Village",
+      "avg_leg_km": 718.6,
+      "gross_tons_moved": 1115.9,
+      "highway_wagon_convoys": 18.2,
+      "pack_caravans": 0.0,
+      "carriers_intl": 18.2,
+      "carriers_total": 18.2,
+      "operator_shares_pct": {
+        "Yuni Emirate": 58.9,
+        "Empire of Iziz": 32.6,
+        "Tiguantin": 8.6
+      },
+      "top_goods": [
+        "scrap (1082.6 t)",
+        "dried-fruit (20.9 t)",
+        "scrapgoods (5.1 t)",
+        "ancient-alloys (2.6 t)",
+        "mezcal (1.7 t)"
+      ]
+    },
+    {
+      "corridor": "Port Goto <-> Shell",
+      "avg_leg_km": 102.2,
+      "gross_tons_moved": 1573.3,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 15.2,
+      "carriers_intl": 14.6,
+      "carriers_total": 15.2,
+      "operator_shares_pct": {
+        "Shell Province": 100.0
+      },
+      "top_goods": [
+        "ship-timber (464.2 t)",
+        "sugar (173.0 t)",
+        "coal (125.0 t)",
+        "potash (94.7 t)",
+        "cotton (65.5 t)"
+      ]
+    },
+    {
+      "corridor": "Fulcrum <-> Sheritu",
+      "avg_leg_km": 158.6,
+      "gross_tons_moved": 4324.7,
+      "highway_wagon_convoys": 14.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.0,
+      "carriers_total": 14.5,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "timber (1810.7 t)",
+        "food (1006.6 t)",
+        "ship-timber (884.8 t)",
+        "cheese (108.8 t)",
+        "wool (99.6 t)"
+      ]
+    },
+    {
+      "corridor": "God's Road North (Pinnacle Rock <-> Spider Lake)",
+      "avg_leg_km": 640.0,
+      "gross_tons_moved": 162.2,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 13.8,
+      "carriers_intl": 13.8,
+      "carriers_total": 13.8,
+      "operator_shares_pct": {
+        "Spider Lake Guilds": 55.6,
+        "Korona Tribes": 30.2,
+        "Beast Riders": 13.0,
+        "Tabisti: Sfenops": 0.7
+      },
+      "top_goods": [
+        "cordage (87.0 t)",
+        "silk (10.2 t)",
+        "magnets (9.7 t)",
+        "sugar (8.9 t)",
+        "qiviut (7.5 t)"
+      ]
+    },
+    {
+      "corridor": "Erehwon <-> Qiblai",
+      "avg_leg_km": 332.6,
+      "gross_tons_moved": 2006.7,
+      "highway_wagon_convoys": 12.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 9.9,
+      "carriers_total": 12.9,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "salt (718.4 t)",
+        "sugar (153.8 t)",
+        "cacao (153.5 t)",
+        "opium (96.8 t)",
+        "cordage (63.7 t)"
+      ]
+    },
+    {
+      "corridor": "Oidong High-Rift Monastery Trail (Strongbow <-> Longsong <-> Singing Gjar)",
+      "avg_leg_km": 480.0,
+      "gross_tons_moved": 289.6,
+      "highway_wagon_convoys": 10.9,
+      "pack_caravans": 0.4,
+      "carriers_intl": 11.0,
+      "carriers_total": 11.4,
+      "operator_shares_pct": {
+        "Order of Historians": 44.5,
+        "Empire of Iziz": 25.3,
+        "Xanadu Sultanate": 14.1,
+        "Catch Oasis Stations": 9.2
+      },
+      "top_goods": [
+        "sulfur (60.3 t)",
+        "saltpeter (55.9 t)",
+        "spice-highland (29.9 t)",
+        "salt (28.9 t)",
+        "paper (22.3 t)"
+      ]
+    },
+    {
+      "corridor": "Lux <-> Palewharf",
+      "avg_leg_km": 165.1,
+      "gross_tons_moved": 4406.3,
+      "highway_wagon_convoys": 11.2,
+      "pack_caravans": 0.0,
+      "carriers_intl": 9.3,
+      "carriers_total": 11.2,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "timber (1179.7 t)",
+        "scrap (724.1 t)",
+        "coal (418.8 t)",
+        "marble (326.7 t)",
+        "potash (310.2 t)"
+      ]
+    },
+    {
+      "corridor": "Qiblai <-> Xanadu Goldfields",
+      "avg_leg_km": 187.5,
+      "gross_tons_moved": 1752.2,
+      "highway_wagon_convoys": 9.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 9.6,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "food (1090.3 t)",
+        "timber (632.8 t)",
+        "iron (12.5 t)",
+        "cotton (3.0 t)",
+        "fruit (1.7 t)"
+      ]
+    },
+    {
+      "corridor": "Jimjam <-> Tethis",
+      "avg_leg_km": 499.8,
+      "gross_tons_moved": 1185.1,
+      "highway_wagon_convoys": 9.4,
+      "pack_caravans": 0.0,
+      "carriers_intl": 9.4,
+      "carriers_total": 9.4,
+      "operator_shares_pct": {
+        "Jimjam": 44.9,
+        "League: Tethys": 25.9,
+        "Dilihan Province": 14.2,
+        "League: Trigon": 12.0
+      },
+      "top_goods": [
+        "sugar (213.4 t)",
+        "alabaster (180.6 t)",
+        "alkali (119.7 t)",
+        "cloth (56.9 t)",
+        "cotton (50.0 t)"
+      ]
+    },
+    {
+      "corridor": "Ardent <-> Jimjam",
+      "avg_leg_km": 230.1,
+      "gross_tons_moved": 1609.2,
+      "highway_wagon_convoys": 9.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 9.1,
+      "carriers_total": 9.1,
+      "operator_shares_pct": {
+        "Jimjam": 50.8,
+        "Free Clans": 49.2
+      },
+      "top_goods": [
+        "coal (1320.4 t)",
+        "peat (83.3 t)",
+        "scrap (37.8 t)",
+        "copper (26.9 t)",
+        "wool (23.9 t)"
+      ]
+    },
+    {
+      "corridor": "Dhelv <-> Ybera",
+      "avg_leg_km": 132.0,
+      "gross_tons_moved": 798.6,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 8.7,
+      "carriers_intl": 8.7,
+      "carriers_total": 8.7,
+      "operator_shares_pct": {
+        "Zeijani": 100.0
+      },
+      "top_goods": [
+        "sulfur (170.6 t)",
+        "salt (164.4 t)",
+        "coal (138.4 t)",
+        "zinc (52.7 t)",
+        "sugar (31.8 t)"
+      ]
+    },
+    {
+      "corridor": "Fulcrum <-> Mirabilis",
+      "avg_leg_km": 295.1,
+      "gross_tons_moved": 1809.3,
+      "highway_wagon_convoys": 8.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 3.6,
+      "carriers_total": 8.1,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "coal (574.5 t)",
+        "ship-timber (367.4 t)",
+        "paper (98.2 t)",
+        "wine (96.3 t)",
+        "tea (68.8 t)"
+      ]
+    },
+    {
+      "corridor": "Kirstabal <-> Opal Valley Mines",
+      "avg_leg_km": 284.0,
+      "gross_tons_moved": 1061.2,
+      "highway_wagon_convoys": 7.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 7.9,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "food (1023.9 t)",
+        "iron (14.6 t)",
+        "sugar (6.0 t)",
+        "coal (4.8 t)",
+        "salt (3.6 t)"
+      ]
+    },
+    {
+      "corridor": "Lipp <-> Tethis",
+      "avg_leg_km": 511.2,
+      "gross_tons_moved": 684.3,
+      "highway_wagon_convoys": 7.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 7.5,
+      "carriers_total": 7.5,
+      "operator_shares_pct": {
+        "Iron Republic": 65.3,
+        "League: Tethys": 29.3,
+        "League: Trigon": 5.4
+      },
+      "top_goods": [
+        "coal (603.6 t)",
+        "scotch (41.7 t)",
+        "cheese (14.5 t)",
+        "sulfur (7.2 t)",
+        "reagent (3.9 t)"
+      ]
+    },
+    {
+      "corridor": "Dalab <-> Rokwal",
+      "avg_leg_km": 246.8,
+      "gross_tons_moved": 1073.6,
+      "highway_wagon_convoys": 7.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 7.1,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "food (974.2 t)",
+        "coal (50.6 t)",
+        "salt (20.1 t)",
+        "wool (11.4 t)",
+        "milk (6.7 t)"
+      ]
+    },
+    {
+      "corridor": "Dilihan <-> Jimjam",
+      "avg_leg_km": 255.3,
+      "gross_tons_moved": 1118.3,
+      "highway_wagon_convoys": 6.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 6.5,
+      "carriers_total": 6.5,
+      "operator_shares_pct": {
+        "Jimjam": 50.2,
+        "Dilihan Province": 44.0,
+        "Iron Republic": 5.7
+      },
+      "top_goods": [
+        "marble (678.0 t)",
+        "potash (171.1 t)",
+        "beer (47.2 t)",
+        "salt (21.5 t)",
+        "tobacco (21.0 t)"
+      ]
+    },
+    {
+      "corridor": "Northern Yeti Frontier Dirt Road (Qoold Lheek <-> Leng <-> Jimjam)",
+      "avg_leg_km": 1309.8,
+      "gross_tons_moved": 292.5,
+      "highway_wagon_convoys": 6.3,
+      "pack_caravans": 0.0,
+      "carriers_intl": 6.3,
+      "carriers_total": 6.3,
+      "operator_shares_pct": {
+        "Yeti Kingdom": 41.5,
+        "Jimjam": 21.6,
+        "League: Tethys": 18.5,
+        "Dilihan Province": 5.4
+      },
+      "top_goods": [
+        "pitch-tar (99.9 t)",
+        "qiviut (40.8 t)",
+        "lung-salt (27.6 t)",
+        "cotton (16.1 t)",
+        "tea (15.3 t)"
+      ]
+    },
+    {
+      "corridor": "Mirabilis <-> Tone",
+      "avg_leg_km": 154.9,
+      "gross_tons_moved": 1257.1,
+      "highway_wagon_convoys": 6.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 6.1,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "food (1208.5 t)",
+        "glass (33.9 t)",
+        "salt (9.5 t)",
+        "paper (1.6 t)",
+        "iron (1.3 t)"
+      ]
+    },
+    {
+      "corridor": "Farport <-> Yith",
+      "avg_leg_km": 384.7,
+      "gross_tons_moved": 573.5,
+      "highway_wagon_convoys": 5.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 5.5,
+      "carriers_total": 5.5,
+      "operator_shares_pct": {
+        "Unaligned settlements": 52.9,
+        "Eternal State": 47.1
+      },
+      "top_goods": [
+        "coal (536.9 t)",
+        "salt (22.2 t)",
+        "scrap (4.0 t)",
+        "sugar (2.4 t)",
+        "dried-fruit (0.7 t)"
+      ]
+    },
+    {
+      "corridor": "Outlands & East Rim Trail (Spider Lake <-> Gate <-> Sill <-> Spindle Fan)",
+      "avg_leg_km": 2061.7,
+      "gross_tons_moved": 114.9,
+      "highway_wagon_convoys": 4.3,
+      "pack_caravans": 1.2,
+      "carriers_intl": 5.4,
+      "carriers_total": 5.4,
+      "operator_shares_pct": {
+        "Coyote Kingdom": 36.9,
+        "Yuni Emirate": 29.4,
+        "Empire of Iziz": 28.1,
+        "Jabal Shiekdom": 1.9
+      },
+      "top_goods": [
+        "saltpeter (76.6 t)",
+        "incense (5.7 t)",
+        "sugar (4.9 t)",
+        "cordage (2.9 t)",
+        "cheese (1.9 t)"
+      ]
+    },
+    {
+      "corridor": "Jimjam <-> Lipp",
+      "avg_leg_km": 246.5,
+      "gross_tons_moved": 198.6,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 5.1,
+      "carriers_intl": 5.1,
+      "carriers_total": 5.1,
+      "operator_shares_pct": {
+        "Jimjam": 54.8,
+        "Iron Republic": 45.2
+      },
+      "top_goods": [
+        "peat (190.5 t)",
+        "scotch (4.6 t)",
+        "glass (2.8 t)",
+        "alabaster (0.3 t)",
+        "whiskey (0.2 t)"
+      ]
+    },
+    {
+      "corridor": "Jimjam <-> Skywatch",
+      "avg_leg_km": 254.8,
+      "gross_tons_moved": 862.8,
+      "highway_wagon_convoys": 5.0,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.3,
+      "carriers_total": 5.0,
+      "operator_shares_pct": {
+        "Jimjam": 100.0
+      },
+      "top_goods": [
+        "scrap (603.3 t)",
+        "salt (56.7 t)",
+        "copper (53.2 t)",
+        "ancient-alloys (24.5 t)",
+        "wool (23.7 t)"
+      ]
+    },
+    {
+      "corridor": "Boatmurder <-> Jimjam",
+      "avg_leg_km": 351.9,
+      "gross_tons_moved": 599.2,
+      "highway_wagon_convoys": 4.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 4.9,
+      "carriers_total": 4.9,
+      "operator_shares_pct": {
+        "Jimjam": 65.3,
+        "Dam Basin Salvagers": 34.7
+      },
+      "top_goods": [
+        "scrap (513.1 t)",
+        "coal (39.3 t)",
+        "ship-timber (31.9 t)",
+        "ancient-alloys (4.2 t)",
+        "scrapgoods (2.9 t)"
+      ]
+    },
+    {
+      "corridor": "Serai <-> Tethis",
+      "avg_leg_km": 736.5,
+      "gross_tons_moved": 399.8,
+      "highway_wagon_convoys": 4.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 4.5,
+      "carriers_total": 4.5,
+      "operator_shares_pct": {
+        "Jimjam": 55.0,
+        "League: Tethys": 24.6,
+        "Dilihan Province": 9.9,
+        "League: Trigon": 8.4
+      },
+      "top_goods": [
+        "magnets (68.1 t)",
+        "cordage (58.6 t)",
+        "alabaster (41.3 t)",
+        "glass (25.1 t)",
+        "sugar (24.5 t)"
+      ]
+    },
+    {
+      "corridor": "Dapor <-> Shelf",
+      "avg_leg_km": 162.4,
+      "gross_tons_moved": 925.4,
+      "highway_wagon_convoys": 4.4,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.5,
+      "carriers_total": 4.4,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "coal (368.5 t)",
+        "salt (95.2 t)",
+        "sugar (77.3 t)",
+        "milk (46.0 t)",
+        "marble (37.1 t)"
+      ]
+    },
+    {
+      "corridor": "Corpus <-> Lux",
+      "avg_leg_km": 117.5,
+      "gross_tons_moved": 1453.2,
+      "highway_wagon_convoys": 4.4,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.1,
+      "carriers_total": 4.4,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "scrap (506.3 t)",
+        "coal (376.0 t)",
+        "salt (151.5 t)",
+        "cotton (89.0 t)",
+        "cloth (86.3 t)"
+      ]
+    },
+    {
+      "corridor": "Jimjam <-> Serai",
+      "avg_leg_km": 239.1,
+      "gross_tons_moved": 874.8,
+      "highway_wagon_convoys": 4.4,
+      "pack_caravans": 0.0,
+      "carriers_intl": 3.7,
+      "carriers_total": 4.4,
+      "operator_shares_pct": {
+        "Jimjam": 100.0
+      },
+      "top_goods": [
+        "potash (282.8 t)",
+        "cordage (108.6 t)",
+        "silica-sand (74.7 t)",
+        "magnets (66.3 t)",
+        "iron (62.7 t)"
+      ]
+    },
+    {
+      "corridor": "Dalab <-> Dapor",
+      "avg_leg_km": 61.9,
+      "gross_tons_moved": 2329.6,
+      "highway_wagon_convoys": 4.3,
+      "pack_caravans": 0.0,
+      "carriers_intl": 4.2,
+      "carriers_total": 4.3,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "reagent (579.0 t)",
+        "sugar (260.0 t)",
+        "coal (196.1 t)",
+        "cotton (153.4 t)",
+        "hashish (106.1 t)"
+      ]
+    },
+    {
+      "corridor": "Kautoa <-> Pinnacle Rock",
+      "avg_leg_km": 165.5,
+      "gross_tons_moved": 275.0,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 4.0,
+      "carriers_intl": 4.0,
+      "carriers_total": 4.0,
+      "operator_shares_pct": {
+        "Beast Riders": 100.0
+      },
+      "top_goods": [
+        "scrap (153.8 t)",
+        "sugar (15.4 t)",
+        "silk (13.9 t)",
+        "salt (13.1 t)",
+        "ancient-alloys (10.0 t)"
+      ]
+    },
+    {
+      "corridor": "Fulcrum <-> Tone",
+      "avg_leg_km": 370.6,
+      "gross_tons_moved": 509.1,
+      "highway_wagon_convoys": 3.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.1,
+      "carriers_total": 3.5,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "wool (81.9 t)",
+        "cheese (62.2 t)",
+        "dried-fruit (58.3 t)",
+        "wine (49.8 t)",
+        "salt (32.3 t)"
+      ]
+    },
+    {
+      "corridor": "Dapor <-> Daranch",
+      "avg_leg_km": 141.5,
+      "gross_tons_moved": 209.5,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 3.3,
+      "carriers_intl": 3.1,
+      "carriers_total": 3.3,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "tequila (63.1 t)",
+        "wool (47.7 t)",
+        "whiskey (39.8 t)",
+        "hashish (21.7 t)",
+        "cheese (11.4 t)"
+      ]
+    },
+    {
+      "corridor": "Qiblai <-> Qiblai Hinterland",
+      "avg_leg_km": 35.3,
+      "gross_tons_moved": 1371.6,
+      "highway_wagon_convoys": 3.3,
+      "pack_caravans": 0.0,
+      "carriers_intl": 2.3,
+      "carriers_total": 3.3,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "salt (374.0 t)",
+        "cacao (92.9 t)",
+        "scrap (90.0 t)",
+        "sugar (75.2 t)",
+        "milk (74.7 t)"
+      ]
+    },
+    {
+      "corridor": "Cascade <-> Glaive",
+      "avg_leg_km": 257.8,
+      "gross_tons_moved": 501.5,
+      "highway_wagon_convoys": 3.2,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 3.2,
+      "operator_shares_pct": {
+        "Iron Republic": 100.0
+      },
+      "top_goods": [
+        "scrap (424.9 t)",
+        "silica-sand (35.6 t)",
+        "glass (19.5 t)",
+        "ancient-alloys (9.0 t)",
+        "scrapgoods (7.2 t)"
+      ]
+    },
+    {
+      "corridor": "Almua <-> Drum",
+      "avg_leg_km": 134.1,
+      "gross_tons_moved": 1271.2,
+      "highway_wagon_convoys": 3.2,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.3,
+      "carriers_total": 3.2,
+      "operator_shares_pct": {
+        "Vothic Kingdom": 100.0
+      },
+      "top_goods": [
+        "iron (296.6 t)",
+        "coal (289.3 t)",
+        "beer (99.1 t)",
+        "milk (82.1 t)",
+        "cotton (81.1 t)"
+      ]
+    },
+    {
+      "corridor": "Corpus <-> Palewharf",
+      "avg_leg_km": 282.7,
+      "gross_tons_moved": 456.9,
+      "highway_wagon_convoys": 3.0,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.6,
+      "carriers_total": 3.0,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "timber (333.0 t)",
+        "coal (41.0 t)",
+        "alabaster (25.6 t)",
+        "paper (10.3 t)",
+        "wine (8.0 t)"
+      ]
+    },
+    {
+      "corridor": "Ardent <-> Tethis",
+      "avg_leg_km": 703.4,
+      "gross_tons_moved": 269.3,
+      "highway_wagon_convoys": 2.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 2.9,
+      "carriers_total": 2.9,
+      "operator_shares_pct": {
+        "Free Clans": 35.6,
+        "League: Tethys": 26.1,
+        "Jimjam": 16.1,
+        "Dilihan Province": 10.8
+      },
+      "top_goods": [
+        "sugar (65.4 t)",
+        "reagent (46.8 t)",
+        "rum (12.8 t)",
+        "coffee (11.8 t)",
+        "cloth (10.7 t)"
+      ]
+    },
+    {
+      "corridor": "Dapor <-> Rokwal",
+      "avg_leg_km": 284.7,
+      "gross_tons_moved": 433.1,
+      "highway_wagon_convoys": 2.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 2.5,
+      "carriers_total": 2.6,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "dried-fruit (85.3 t)",
+        "tequila (82.5 t)",
+        "wine (71.2 t)",
+        "wool (64.5 t)",
+        "salt (30.9 t)"
+      ]
+    },
+    {
+      "corridor": "Dapor <-> Dayshun",
+      "avg_leg_km": 321.4,
+      "gross_tons_moved": 323.7,
+      "highway_wagon_convoys": 2.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 2.2,
+      "carriers_total": 2.6,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "ship-timber (241.0 t)",
+        "marble (26.9 t)",
+        "beer (15.0 t)",
+        "clothes (14.7 t)",
+        "paper (14.5 t)"
+      ]
+    },
+    {
+      "corridor": "Cascade <-> Roketstad",
+      "avg_leg_km": 465.7,
+      "gross_tons_moved": 256.9,
+      "highway_wagon_convoys": 2.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 2.6,
+      "operator_shares_pct": {
+        "Iron Republic": 100.0
+      },
+      "top_goods": [
+        "cotton (161.2 t)",
+        "silica-sand (50.8 t)",
+        "cloth (26.0 t)",
+        "cheese (10.7 t)",
+        "peat (5.6 t)"
+      ]
+    },
+    {
+      "corridor": "Lipp <-> Roketstad",
+      "avg_leg_km": 238.0,
+      "gross_tons_moved": 360.6,
+      "highway_wagon_convoys": 2.4,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 2.4,
+      "operator_shares_pct": {
+        "Iron Republic": 100.0
+      },
+      "top_goods": [
+        "silica-sand (233.0 t)",
+        "milk (44.6 t)",
+        "peat (34.5 t)",
+        "eggs (24.8 t)",
+        "cheese (20.3 t)"
+      ]
+    },
+    {
+      "corridor": "Glaive <-> Roketstad",
+      "avg_leg_km": 111.3,
+      "gross_tons_moved": 568.6,
+      "highway_wagon_convoys": 2.3,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 2.3,
+      "operator_shares_pct": {
+        "Iron Republic": 100.0
+      },
+      "top_goods": [
+        "scrap (424.9 t)",
+        "peat (53.3 t)",
+        "glass (35.7 t)",
+        "ancient-alloys (23.7 t)",
+        "gunpowder (15.1 t)"
+      ]
+    },
+    {
+      "corridor": "Corpus <-> Tethis",
+      "avg_leg_km": 521.0,
+      "gross_tons_moved": 309.9,
+      "highway_wagon_convoys": 2.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 2.1,
+      "carriers_total": 2.1,
+      "operator_shares_pct": {
+        "Eternal State": 42.2,
+        "League: Tethys": 30.5,
+        "Iron Republic": 22.3,
+        "League: Trigon": 5.1
+      },
+      "top_goods": [
+        "wine (54.3 t)",
+        "sugar (37.2 t)",
+        "copper (29.5 t)",
+        "tea (20.9 t)",
+        "paper (18.5 t)"
+      ]
+    },
+    {
+      "corridor": "Rokwal <-> Shelf",
+      "avg_leg_km": 359.6,
+      "gross_tons_moved": 271.4,
+      "highway_wagon_convoys": 2.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 2.1,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "food (233.2 t)",
+        "wine (12.0 t)",
+        "fruit (6.0 t)",
+        "dried-fruit (5.7 t)",
+        "cheese (5.5 t)"
+      ]
+    },
+    {
+      "corridor": "Lipp <-> Lux",
+      "avg_leg_km": 538.2,
+      "gross_tons_moved": 155.7,
+      "highway_wagon_convoys": 1.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.9,
+      "carriers_total": 1.9,
+      "operator_shares_pct": {
+        "Iron Republic": 56.5,
+        "Eternal State": 43.5
+      },
+      "top_goods": [
+        "peat (133.3 t)",
+        "scotch (14.4 t)",
+        "cheese (2.6 t)",
+        "coal (2.4 t)",
+        "glass (0.7 t)"
+      ]
+    },
+    {
+      "corridor": "Farport <-> Fulcrum",
+      "avg_leg_km": 234.5,
+      "gross_tons_moved": 333.6,
+      "highway_wagon_convoys": 1.8,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.2,
+      "carriers_total": 1.8,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "paper (53.8 t)",
+        "glass (44.7 t)",
+        "clothes (36.2 t)",
+        "reagent (30.2 t)",
+        "ria-amber (22.7 t)"
+      ]
+    },
+    {
+      "corridor": "Cascade <-> Lux",
+      "avg_leg_km": 456.6,
+      "gross_tons_moved": 249.1,
+      "highway_wagon_convoys": 1.7,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.7,
+      "carriers_total": 1.7,
+      "operator_shares_pct": {
+        "Eternal State": 52.0,
+        "Iron Republic": 48.0
+      },
+      "top_goods": [
+        "peat (105.6 t)",
+        "scotch (20.8 t)",
+        "wine (18.7 t)",
+        "gunpowder (15.6 t)",
+        "paper (14.1 t)"
+      ]
+    },
+    {
+      "corridor": "Boatmurder <-> Serai",
+      "avg_leg_km": 426.2,
+      "gross_tons_moved": 154.1,
+      "highway_wagon_convoys": 1.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.6,
+      "carriers_total": 1.6,
+      "operator_shares_pct": {
+        "Jimjam": 66.9,
+        "Dam Basin Salvagers": 33.1
+      },
+      "top_goods": [
+        "ship-timber (104.8 t)",
+        "scrap (48.0 t)",
+        "magnets (0.4 t)",
+        "scrapgoods (0.3 t)",
+        "silica-sand (0.1 t)"
+      ]
+    },
+    {
+      "corridor": "Atton <-> Guari",
+      "avg_leg_km": 266.8,
+      "gross_tons_moved": 369.2,
+      "highway_wagon_convoys": 1.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.6,
+      "carriers_total": 1.6,
+      "operator_shares_pct": {
+        "Empire of Iziz": 57.1,
+        "Tiguantin": 42.9
+      },
+      "top_goods": [
+        "salt (101.4 t)",
+        "sulfur (86.2 t)",
+        "cushion-wool (53.7 t)",
+        "coal (33.4 t)",
+        "dried-fruit (21.1 t)"
+      ]
+    },
+    {
+      "corridor": "Drum <-> Voth iron mine (to be named)",
+      "avg_leg_km": 224.5,
+      "gross_tons_moved": 321.2,
+      "highway_wagon_convoys": 1.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.7,
+      "carriers_total": 1.5,
+      "operator_shares_pct": {
+        "Vothic Kingdom": 90.7,
+        "Frogmen": 9.3
+      },
+      "top_goods": [
+        "coal (40.9 t)",
+        "sugar (33.5 t)",
+        "scrap (31.6 t)",
+        "wool (26.5 t)",
+        "cloth (16.3 t)"
+      ]
+    },
+    {
+      "corridor": "Ardent <-> Boatmurder",
+      "avg_leg_km": 456.5,
+      "gross_tons_moved": 132.8,
+      "highway_wagon_convoys": 1.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.5,
+      "carriers_total": 1.5,
+      "operator_shares_pct": {
+        "Free Clans": 36.1,
+        "Dam Basin Salvagers": 33.2,
+        "Jimjam": 30.7
+      },
+      "top_goods": [
+        "scrap (131.7 t)",
+        "scrapgoods (0.5 t)",
+        "ancient-alloys (0.4 t)",
+        "wool (0.1 t)",
+        "cloth (0.0 t)"
+      ]
+    },
+    {
+      "corridor": "Glaive <-> Lux",
+      "avg_leg_km": 387.5,
+      "gross_tons_moved": 141.6,
+      "highway_wagon_convoys": 1.3,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.3,
+      "carriers_total": 1.3,
+      "operator_shares_pct": {
+        "Eternal State": 51.2,
+        "Iron Republic": 48.8
+      },
+      "top_goods": [
+        "peat (102.2 t)",
+        "gunpowder (21.6 t)",
+        "scotch (9.7 t)",
+        "coal (2.7 t)",
+        "salt (1.4 t)"
+      ]
+    },
+    {
+      "corridor": "Bastion <-> Lux",
+      "avg_leg_km": 95.9,
+      "gross_tons_moved": 495.9,
+      "highway_wagon_convoys": 1.2,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 1.2,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "coal (329.4 t)",
+        "salt (74.5 t)",
+        "milk (43.8 t)",
+        "gunpowder (26.4 t)",
+        "armor (5.4 t)"
+      ]
+    },
+    {
+      "corridor": "Pontus <-> Rokwal",
+      "avg_leg_km": 960.5,
+      "gross_tons_moved": 58.9,
+      "highway_wagon_convoys": 1.2,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.2,
+      "carriers_total": 1.2,
+      "operator_shares_pct": {
+        "Realm of Dalab": 75.5,
+        "Iron Republic": 13.5,
+        "Frogmen": 11.0
+      },
+      "top_goods": [
+        "dried-fruit (18.2 t)",
+        "tequila (13.4 t)",
+        "hashish (11.5 t)",
+        "wine (11.2 t)",
+        "cheese (3.5 t)"
+      ]
+    },
+    {
+      "corridor": "Cascade <-> Palewharf",
+      "avg_leg_km": 621.8,
+      "gross_tons_moved": 105.2,
+      "highway_wagon_convoys": 1.2,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.2,
+      "carriers_total": 1.2,
+      "operator_shares_pct": {
+        "Eternal State": 54.8,
+        "Iron Republic": 45.2
+      },
+      "top_goods": [
+        "magnets (18.3 t)",
+        "saltpeter (17.4 t)",
+        "gunpowder (10.9 t)",
+        "alabaster (9.8 t)",
+        "glass (8.7 t)"
+      ]
+    },
+    {
+      "corridor": "Dapor <-> Nufelds",
+      "avg_leg_km": 184.2,
+      "gross_tons_moved": 289.6,
+      "highway_wagon_convoys": 1.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.0,
+      "carriers_total": 1.1,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "whiskey (80.4 t)",
+        "wool (62.4 t)",
+        "salt (36.0 t)",
+        "hashish (34.6 t)",
+        "cheese (19.8 t)"
+      ]
+    },
+    {
+      "corridor": "Farport <-> Mirabilis",
+      "avg_leg_km": 534.9,
+      "gross_tons_moved": 92.1,
+      "highway_wagon_convoys": 1.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.4,
+      "carriers_total": 1.1,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "cloth (40.8 t)",
+        "wine (11.0 t)",
+        "champagne (8.1 t)",
+        "cheese (5.6 t)",
+        "dried-fruit (4.6 t)"
+      ]
+    },
+    {
+      "corridor": "Roketstad <-> Stahlborn",
+      "avg_leg_km": 608.9,
+      "gross_tons_moved": 111.1,
+      "highway_wagon_convoys": 1.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 1.1,
+      "operator_shares_pct": {
+        "Iron Republic": 100.0
+      },
+      "top_goods": [
+        "coal (68.6 t)",
+        "salt (26.0 t)",
+        "peat (5.8 t)",
+        "gunpowder (4.6 t)",
+        "cloth (3.1 t)"
+      ]
+    },
+    {
+      "corridor": "Roketstad <-> Serai",
+      "avg_leg_km": 706.6,
+      "gross_tons_moved": 70.2,
+      "highway_wagon_convoys": 1.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.1,
+      "carriers_total": 1.1,
+      "operator_shares_pct": {
+        "Jimjam": 52.6,
+        "Iron Republic": 47.4
+      },
+      "top_goods": [
+        "magnets (42.7 t)",
+        "saltpeter (13.4 t)",
+        "glass (4.1 t)",
+        "wool (3.6 t)",
+        "alabaster (1.3 t)"
+      ]
+    },
+    {
+      "corridor": "Lux <-> Roketstad",
+      "avg_leg_km": 300.2,
+      "gross_tons_moved": 198.0,
+      "highway_wagon_convoys": 1.1,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.1,
+      "carriers_total": 1.1,
+      "operator_shares_pct": {
+        "Eternal State": 59.3,
+        "Iron Republic": 40.7
+      },
+      "top_goods": [
+        "coal (22.3 t)",
+        "scotch (22.0 t)",
+        "wine (20.7 t)",
+        "fruit (18.4 t)",
+        "paper (17.7 t)"
+      ]
+    },
+    {
+      "corridor": "Nūru-Šaplu <-> Ybera",
+      "avg_leg_km": 62.2,
+      "gross_tons_moved": 159.1,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 1.1,
+      "carriers_intl": 1.1,
+      "carriers_total": 1.1,
+      "operator_shares_pct": {
+        "Zeijani": 100.0
+      },
+      "top_goods": [
+        "coal (55.6 t)",
+        "zinc (30.5 t)",
+        "salt (22.2 t)",
+        "sulfur (13.5 t)",
+        "copper (12.2 t)"
+      ]
+    },
+    {
+      "corridor": "Glaive <-> Stahlborn",
+      "avg_leg_km": 401.0,
+      "gross_tons_moved": 117.4,
+      "highway_wagon_convoys": 1.0,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 1.0,
+      "operator_shares_pct": {
+        "Iron Republic": 100.0
+      },
+      "top_goods": [
+        "scrap (76.5 t)",
+        "coal (10.9 t)",
+        "ancient-alloys (9.6 t)",
+        "glass (9.2 t)",
+        "salt (7.0 t)"
+      ]
+    },
+    {
+      "corridor": "Girder <-> Mav's Refuge",
+      "avg_leg_km": 62.6,
+      "gross_tons_moved": 353.3,
+      "highway_wagon_convoys": 1.0,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.0,
+      "carriers_total": 1.0,
+      "operator_shares_pct": {
+        "Beast Riders": 100.0
+      },
+      "top_goods": [
+        "scrap (320.2 t)",
+        "coal (8.3 t)",
+        "ancient-alloys (7.6 t)",
+        "scrapgoods (5.4 t)",
+        "salt (3.5 t)"
+      ]
+    },
+    {
+      "corridor": "Fridon <-> Kirstabal",
+      "avg_leg_km": 1804.6,
+      "gross_tons_moved": 27.1,
+      "highway_wagon_convoys": 1.0,
+      "pack_caravans": 0.0,
+      "carriers_intl": 1.0,
+      "carriers_total": 1.0,
+      "operator_shares_pct": {
+        "Empire of Iziz": 47.7,
+        "Xanadu Sultanate": 27.7,
+        "Catch Oasis Stations": 16.1,
+        "Stair Divers (Catch)": 3.2
+      },
+      "top_goods": [
+        "cacao (9.2 t)",
+        "opium (5.3 t)",
+        "spice-highland (2.6 t)",
+        "tea (1.9 t)",
+        "dried-fruit (1.8 t)"
+      ]
+    },
+    {
+      "corridor": "Krrmt <-> Pontus",
+      "avg_leg_km": 858.3,
+      "gross_tons_moved": 13.7,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 1.0,
+      "carriers_intl": 1.0,
+      "carriers_total": 1.0,
+      "operator_shares_pct": {
+        "Frogmen": 66.7,
+        "Iron Republic": 17.5,
+        "Realm of Dalab": 15.8
+      },
+      "top_goods": [
+        "silk (7.2 t)",
+        "incense (5.6 t)",
+        "sugar (0.2 t)",
+        "cushion-wool (0.1 t)",
+        "tobacco (0.1 t)"
+      ]
+    },
+    {
+      "corridor": "Qiblai <-> Thalaba",
+      "avg_leg_km": 327.8,
+      "gross_tons_moved": 135.2,
+      "highway_wagon_convoys": 0.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.6,
+      "carriers_total": 0.9,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "sulfur (38.4 t)",
+        "machine-wax (35.8 t)",
+        "dried-fruit (19.6 t)",
+        "coal (11.4 t)",
+        "sugar (5.3 t)"
+      ]
+    },
+    {
+      "corridor": "Hall of Heroes <-> Nulab",
+      "avg_leg_km": 340.9,
+      "gross_tons_moved": 27.5,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 0.9,
+      "carriers_intl": 0.9,
+      "carriers_total": 0.9,
+      "operator_shares_pct": {
+        "Realm of Dalab": 39.5,
+        "Kimr": 36.2,
+        "Fellgangs": 24.3
+      },
+      "top_goods": [
+        "sugar (5.0 t)",
+        "cotton (3.9 t)",
+        "dried-fruit (1.2 t)",
+        "gunpowder (1.2 t)",
+        "whiskey (1.0 t)"
+      ]
+    },
+    {
+      "corridor": "Kirstabal <-> Mantis",
+      "avg_leg_km": 1249.9,
+      "gross_tons_moved": 52.6,
+      "highway_wagon_convoys": 0.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.9,
+      "carriers_total": 0.9,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 30.9,
+        "Empire of Iziz": 29.2,
+        "Catch Oasis Stations": 26.9,
+        "Stair Divers (Catch)": 4.9
+      },
+      "top_goods": [
+        "mezcal (12.1 t)",
+        "cacao (8.4 t)",
+        "incense (8.2 t)",
+        "tea (5.6 t)",
+        "opium (5.0 t)"
+      ]
+    },
+    {
+      "corridor": "Dhelv <-> Zey'danin",
+      "avg_leg_km": 215.0,
+      "gross_tons_moved": 171.8,
+      "highway_wagon_convoys": 0.9,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.9,
+      "carriers_total": 0.9,
+      "operator_shares_pct": {
+        "Zeijani": 66.7,
+        "Vothic Kingdom": 33.3
+      },
+      "top_goods": [
+        "salt (60.9 t)",
+        "sulfur (17.2 t)",
+        "fungal (9.0 t)",
+        "cheese (8.3 t)",
+        "coal (8.1 t)"
+      ]
+    },
+    {
+      "corridor": "Fridon <-> Sista Riba Village",
+      "avg_leg_km": 711.0,
+      "gross_tons_moved": 52.6,
+      "highway_wagon_convoys": 0.8,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.8,
+      "carriers_total": 0.8,
+      "operator_shares_pct": {
+        "Yuni Emirate": 59.2,
+        "Empire of Iziz": 32.2,
+        "Tiguantin": 8.6
+      },
+      "top_goods": [
+        "scrap (50.0 t)",
+        "dried-fruit (1.4 t)",
+        "ancient-alloys (0.4 t)",
+        "servomotors (0.3 t)",
+        "power-relays (0.2 t)"
+      ]
+    },
+    {
+      "corridor": "Lux <-> Stahlborn",
+      "avg_leg_km": 599.8,
+      "gross_tons_moved": 71.6,
+      "highway_wagon_convoys": 0.8,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.8,
+      "carriers_total": 0.8,
+      "operator_shares_pct": {
+        "Iron Republic": 55.1,
+        "Eternal State": 44.9
+      },
+      "top_goods": [
+        "gunpowder (36.0 t)",
+        "scotch (20.7 t)",
+        "firearms (2.7 t)",
+        "paper (2.5 t)",
+        "wine (1.7 t)"
+      ]
+    },
+    {
+      "corridor": "Frost-Jaw Camp <-> Tethis",
+      "avg_leg_km": 1027.7,
+      "gross_tons_moved": 39.7,
+      "highway_wagon_convoys": 0.8,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.8,
+      "carriers_total": 0.8,
+      "operator_shares_pct": {
+        "Sasquatch Tribes": 36.5,
+        "League: Tethys": 24.3,
+        "Jimjam": 21.1,
+        "Dilihan Province": 7.3
+      },
+      "top_goods": [
+        "pitch-tar (19.5 t)",
+        "qiviut (5.8 t)",
+        "lung-salt (4.4 t)",
+        "tea (3.2 t)",
+        "sugar (1.4 t)"
+      ]
+    },
+    {
+      "corridor": "Dalab <-> Dayshun",
+      "avg_leg_km": 354.7,
+      "gross_tons_moved": 83.0,
+      "highway_wagon_convoys": 0.7,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.7,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "beer (20.2 t)",
+        "clothes (16.8 t)",
+        "paper (16.0 t)",
+        "whiskey (5.4 t)",
+        "furniture (4.6 t)"
+      ]
+    },
+    {
+      "corridor": "Skywatch <-> Tethis",
+      "avg_leg_km": 754.6,
+      "gross_tons_moved": 49.8,
+      "highway_wagon_convoys": 0.7,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.7,
+      "carriers_total": 0.7,
+      "operator_shares_pct": {
+        "Jimjam": 58.8,
+        "League: Tethys": 22.9,
+        "Dilihan Province": 8.9,
+        "League: Trigon": 7.5
+      },
+      "top_goods": [
+        "sugar (8.9 t)",
+        "zinc (8.8 t)",
+        "paper (5.6 t)",
+        "wool (5.0 t)",
+        "ancient-alloys (1.8 t)"
+      ]
+    },
+    {
+      "corridor": "Atton <-> Painted Canyon Cliff-Hold",
+      "avg_leg_km": 842.2,
+      "gross_tons_moved": 36.3,
+      "highway_wagon_convoys": 0.7,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.7,
+      "carriers_total": 0.7,
+      "operator_shares_pct": {
+        "Empire of Iziz": 40.3,
+        "Painted Men": 35.1,
+        "Beast Riders": 24.6
+      },
+      "top_goods": [
+        "saltpeter (25.8 t)",
+        "sulfur (10.5 t)",
+        "whiskey (0.0 t)",
+        "zinc (0.0 t)",
+        "wool (0.0 t)"
+      ]
+    },
+    {
+      "corridor": "Palewharf <-> Stahlborn",
+      "avg_leg_km": 765.0,
+      "gross_tons_moved": 50.8,
+      "highway_wagon_convoys": 0.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.6,
+      "carriers_total": 0.6,
+      "operator_shares_pct": {
+        "Iron Republic": 52.4,
+        "Eternal State": 47.6
+      },
+      "top_goods": [
+        "gunpowder (28.3 t)",
+        "scotch (3.9 t)",
+        "saltpeter (3.8 t)",
+        "glass (3.4 t)",
+        "alabaster (1.8 t)"
+      ]
+    },
+    {
+      "corridor": "Jrrmiah <-> Pontus",
+      "avg_leg_km": 500.1,
+      "gross_tons_moved": 15.5,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 0.6,
+      "carriers_intl": 0.6,
+      "carriers_total": 0.6,
+      "operator_shares_pct": {
+        "Frogmen": 65.6,
+        "Iron Republic": 34.4
+      },
+      "top_goods": [
+        "silk (7.5 t)",
+        "incense (5.5 t)",
+        "salt (1.2 t)",
+        "sugar (0.4 t)",
+        "tobacco (0.2 t)"
+      ]
+    },
+    {
+      "corridor": "Ybera <-> Šadū-Qarnu",
+      "avg_leg_km": 73.7,
+      "gross_tons_moved": 75.9,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 0.6,
+      "carriers_intl": 0.6,
+      "carriers_total": 0.6,
+      "operator_shares_pct": {
+        "Andaru": 100.0
+      },
+      "top_goods": [
+        "wool (15.5 t)",
+        "sulfur (12.6 t)",
+        "zinc (10.8 t)",
+        "salt (9.7 t)",
+        "copper (8.8 t)"
+      ]
+    },
+    {
+      "corridor": "Jimjam <-> Ys",
+      "avg_leg_km": 475.5,
+      "gross_tons_moved": 74.5,
+      "highway_wagon_convoys": 0.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.6,
+      "carriers_total": 0.6,
+      "operator_shares_pct": {
+        "Jimjam": 62.2,
+        "Dilihan Province": 20.2,
+        "League: Trigon": 13.1,
+        "Iron Republic": 4.4
+      },
+      "top_goods": [
+        "cotton (27.4 t)",
+        "alabaster (12.8 t)",
+        "sugar (8.8 t)",
+        "clothes (4.6 t)",
+        "whiskey (3.9 t)"
+      ]
+    },
+    {
+      "corridor": "Guari <-> Kirstabal",
+      "avg_leg_km": 1962.4,
+      "gross_tons_moved": 16.7,
+      "highway_wagon_convoys": 0.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.6,
+      "carriers_total": 0.6,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 28.5,
+        "Tiguantin": 28.3,
+        "Empire of Iziz": 19.8,
+        "Catch Oasis Stations": 15.4
+      },
+      "top_goods": [
+        "silk (3.9 t)",
+        "cotton (3.7 t)",
+        "cacao (3.4 t)",
+        "qiviut (1.4 t)",
+        "opium (1.2 t)"
+      ]
+    },
+    {
+      "corridor": "Farport <-> Tone",
+      "avg_leg_km": 606.9,
+      "gross_tons_moved": 48.9,
+      "highway_wagon_convoys": 0.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.2,
+      "carriers_total": 0.6,
+      "operator_shares_pct": {
+        "Eternal State": 100.0
+      },
+      "top_goods": [
+        "wine (8.4 t)",
+        "glass (8.1 t)",
+        "beer (7.6 t)",
+        "cheese (6.8 t)",
+        "champagne (5.9 t)"
+      ]
+    },
+    {
+      "corridor": "Stahlborn <-> Voth iron mine (to be named)",
+      "avg_leg_km": 484.3,
+      "gross_tons_moved": 75.0,
+      "highway_wagon_convoys": 0.6,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.6,
+      "carriers_total": 0.6,
+      "operator_shares_pct": {
+        "Vothic Kingdom": 47.8,
+        "Iron Republic": 43.3,
+        "Frogmen": 8.9
+      },
+      "top_goods": [
+        "saltpeter (27.3 t)",
+        "gunpowder (13.3 t)",
+        "scotch (10.7 t)",
+        "firearms (2.7 t)",
+        "ancient-alloys (2.7 t)"
+      ]
+    },
+    {
+      "corridor": "Daranch <-> Shelf",
+      "avg_leg_km": 148.3,
+      "gross_tons_moved": 30.0,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 0.5,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "coal (10.9 t)",
+        "cheese (5.3 t)",
+        "wool (4.6 t)",
+        "salt (3.5 t)",
+        "whiskey (3.0 t)"
+      ]
+    },
+    {
+      "corridor": "Thalaba <-> Theodiga",
+      "avg_leg_km": 179.3,
+      "gross_tons_moved": 102.3,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "coal (31.6 t)",
+        "salt (30.6 t)",
+        "iron (17.6 t)",
+        "eggs (15.7 t)",
+        "machine-wax (3.4 t)"
+      ]
+    },
+    {
+      "corridor": "Nufelds <-> Shelf",
+      "avg_leg_km": 256.7,
+      "gross_tons_moved": 102.9,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "milk (38.7 t)",
+        "iron (25.3 t)",
+        "eggs (9.4 t)",
+        "cheese (8.7 t)",
+        "beer (7.5 t)"
+      ]
+    },
+    {
+      "corridor": "Lipp <-> Trigon",
+      "avg_leg_km": 449.8,
+      "gross_tons_moved": 49.0,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.5,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Iron Republic": 67.7,
+        "League: Trigon": 32.3
+      },
+      "top_goods": [
+        "peat (44.4 t)",
+        "cheese (2.6 t)",
+        "scotch (1.3 t)",
+        "iron (0.3 t)",
+        "fruit (0.3 t)"
+      ]
+    },
+    {
+      "corridor": "Noa's Regret <-> Šadū-Qarnu",
+      "avg_leg_km": 93.9,
+      "gross_tons_moved": 70.0,
+      "highway_wagon_convoys": 0.0,
+      "pack_caravans": 0.5,
+      "carriers_intl": 0.5,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Andaru": 100.0
+      },
+      "top_goods": [
+        "sulfur (24.2 t)",
+        "salt (10.1 t)",
+        "iron (8.1 t)",
+        "coal (5.4 t)",
+        "zinc (5.0 t)"
+      ]
+    },
+    {
+      "corridor": "Hoar-Wind Camp <-> Tethis",
+      "avg_leg_km": 1017.2,
+      "gross_tons_moved": 27.5,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.5,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Sasquatch Tribes": 30.8,
+        "League: Tethys": 24.6,
+        "Jimjam": 21.6,
+        "Dam Basin Salvagers": 7.6
+      },
+      "top_goods": [
+        "pitch-tar (12.7 t)",
+        "qiviut (4.0 t)",
+        "lung-salt (3.0 t)",
+        "tea (2.1 t)",
+        "sugar (1.2 t)"
+      ]
+    },
+    {
+      "corridor": "Kirstabal <-> Strongwall",
+      "avg_leg_km": 185.1,
+      "gross_tons_moved": 93.5,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "coal (90.7 t)",
+        "sugar (1.0 t)",
+        "salt (0.6 t)",
+        "wool (0.3 t)",
+        "coffee (0.2 t)"
+      ]
+    },
+    {
+      "corridor": "Atton <-> Coyote Canyon",
+      "avg_leg_km": 1244.3,
+      "gross_tons_moved": 18.4,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.5,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Coyote Kingdom": 42.7,
+        "Empire of Iziz": 35.8,
+        "Beast Riders": 16.2,
+        "Korona Tribes": 5.4
+      },
+      "top_goods": [
+        "saltpeter (16.1 t)",
+        "sulfur (2.4 t)",
+        "whiskey (0.0 t)"
+      ]
+    },
+    {
+      "corridor": "Erehwon <-> Theodiga",
+      "avg_leg_km": 224.6,
+      "gross_tons_moved": 141.1,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Xanadu Sultanate": 100.0
+      },
+      "top_goods": [
+        "wool (35.1 t)",
+        "cheese (23.3 t)",
+        "clothes (21.6 t)",
+        "beer (20.6 t)",
+        "cloth (19.5 t)"
+      ]
+    },
+    {
+      "corridor": "Dayshun <-> Shelf",
+      "avg_leg_km": 328.2,
+      "gross_tons_moved": 64.6,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Realm of Dalab": 100.0
+      },
+      "top_goods": [
+        "coal (30.8 t)",
+        "wine (6.4 t)",
+        "salt (4.1 t)",
+        "cloth (4.0 t)",
+        "cheese (3.5 t)"
+      ]
+    },
+    {
+      "corridor": "Glaive <-> Lipp",
+      "avg_leg_km": 349.3,
+      "gross_tons_moved": 72.2,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.0,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Iron Republic": 100.0
+      },
+      "top_goods": [
+        "silica-sand (52.0 t)",
+        "scrap (12.7 t)",
+        "glass (5.0 t)",
+        "gunpowder (2.0 t)",
+        "cheese (0.2 t)"
+      ]
+    },
+    {
+      "corridor": "Jimjam <-> Roketstad",
+      "avg_leg_km": 467.5,
+      "gross_tons_moved": 49.8,
+      "highway_wagon_convoys": 0.5,
+      "pack_caravans": 0.0,
+      "carriers_intl": 0.5,
+      "carriers_total": 0.5,
+      "operator_shares_pct": {
+        "Iron Republic": 56.8,
+        "Jimjam": 43.2
+      },
+      "top_goods": [
+        "saltpeter (13.0 t)",
+        "glass (11.7 t)",
+        "alabaster (8.5 t)",
+        "whiskey (3.6 t)",
+        "scotch (3.6 t)"
+      ]
+    }
+  ],
+  "polities": [
+    {
+      "polity": "Empire of Iziz",
+      "population": 1731091,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 147.72,
+        "domestic": 12.02,
+        "total": 159.74
+      },
+      "sea_ships_physical_hulls": 128,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Izani Dhoni Coaster (12 t)",
+          "count": 83
+        },
+        {
+          "vessel_class": "Refloated Salvage Lighter (18 t)",
+          "count": 30
+        },
+        {
+          "vessel_class": "Izani Wheel Galley / Heavy Transport (28 t)",
+          "count": 15
+        }
+      ],
+      "naval_escort_note": "+ 4–6 Imperial Armoured Turtle Ships on naval blockade & convoy escort",
+      "inland_barges": {
+        "intl": 16.6,
+        "domestic": 12.1,
+        "active_hulls": 29
+      },
+      "highway_wagon_convoys": {
+        "intl": 145.7,
+        "domestic": 77.1,
+        "active_convoys": 223
+      },
+      "pack_caravans": {
+        "intl": 43.3,
+        "domestic": 4.8,
+        "active_caravans": 48,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 4,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 6240,
+      "est_sailors_teamsters_guards": 6258
+    },
+    {
+      "polity": "Vothic Kingdom",
+      "population": 1324340,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 77.66,
+        "domestic": 29.24,
+        "total": 106.9
+      },
+      "sea_ships_physical_hulls": 82,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Vothic Cargo Hulk / Merchant Junk (26 t)",
+          "count": 22
+        },
+        {
+          "vessel_class": "Vothic Coastal Dhow (12 t)",
+          "count": 60
+        }
+      ],
+      "naval_escort_note": "+ 5–7 Chitin Biremes on wartime commerce raiding & Tzinguard patrol",
+      "inland_barges": {
+        "intl": 35.6,
+        "domestic": 9.1,
+        "active_hulls": 45
+      },
+      "highway_wagon_convoys": {
+        "intl": 40.7,
+        "domestic": 74.5,
+        "active_convoys": 115
+      },
+      "pack_caravans": {
+        "intl": 29.6,
+        "domestic": 0.1,
+        "active_caravans": 30,
+        "annual_great_caravan_units": 1.08
+      },
+      "live_mount_droves": 21,
+      "shipyard_exported_hulls_per_yr": 25.6,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 3875,
+      "est_sailors_teamsters_guards": 3932
+    },
+    {
+      "polity": "Eternal State",
+      "population": 1146155,
+      "maritime_status": "Inland Barge Only (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 63.6,
+        "domestic": 75.4,
+        "active_hulls": 139
+      },
+      "highway_wagon_convoys": {
+        "intl": 106.0,
+        "domestic": 58.5,
+        "active_convoys": 165
+      },
+      "pack_caravans": {
+        "intl": 3.5,
+        "domestic": 0.0,
+        "active_caravans": 4,
+        "annual_great_caravan_units": 0.37
+      },
+      "live_mount_droves": 2,
+      "shipyard_exported_hulls_per_yr": 17.7,
+      "foreign_sea_carriers_used": [
+        "League: Tethys (24%)",
+        "League: Ys (23%)",
+        "Empire of Iziz (15%)"
+      ],
+      "est_draught_and_pack_beasts": 3490,
+      "est_sailors_teamsters_guards": 3482
+    },
+    {
+      "polity": "Realm of Dalab",
+      "population": 563601,
+      "maritime_status": "Inland Barge Only (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 8.4,
+        "domestic": 0.6,
+        "active_hulls": 9
+      },
+      "highway_wagon_convoys": {
+        "intl": 27.7,
+        "domestic": 57.0,
+        "active_convoys": 85
+      },
+      "pack_caravans": {
+        "intl": 74.0,
+        "domestic": 49.9,
+        "active_caravans": 124,
+        "annual_great_caravan_units": 48.6
+      },
+      "live_mount_droves": 11,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Vothic Kingdom (50%)",
+        "League: Tethys (12%)",
+        "League: Ys (11%)"
+      ],
+      "est_draught_and_pack_beasts": 6315,
+      "est_sailors_teamsters_guards": 2816
+    },
+    {
+      "polity": "Xanadu Sultanate",
+      "population": 465300,
+      "maritime_status": "Inland Barge Only (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 7.6,
+        "domestic": 4.1,
+        "active_hulls": 12
+      },
+      "highway_wagon_convoys": {
+        "intl": 43.4,
+        "domestic": 25.8,
+        "active_convoys": 69
+      },
+      "pack_caravans": {
+        "intl": 42.7,
+        "domestic": 0.0,
+        "active_caravans": 43,
+        "annual_great_caravan_units": 41.91
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (36%)",
+        "League: Tethys (21%)",
+        "League: Ys (19%)"
+      ],
+      "est_draught_and_pack_beasts": 2910,
+      "est_sailors_teamsters_guards": 1584
+    },
+    {
+      "polity": "Ria Valley",
+      "population": 357500,
+      "maritime_status": "Exterior Pelagic Visitor (NW Ocean)",
+      "sea_ships_std_equiv": {
+        "intl": 26.91,
+        "domestic": 0.0,
+        "total": 26.91
+      },
+      "sea_ships_physical_hulls": 27,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Ria Pelagic Trade Carrack (18 t luxury/bullion hold)",
+          "count": 27
+        }
+      ],
+      "naval_escort_note": "Annual trans-oceanic visit; confined to Farport Factory Quarter (LORE.md:648)",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 486
+    },
+    {
+      "polity": "Iron Republic",
+      "population": 302800,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 88.6,
+        "domestic": 49.9,
+        "active_convoys": 139
+      },
+      "pack_caravans": {
+        "intl": 18.7,
+        "domestic": 0.0,
+        "active_caravans": 19,
+        "annual_great_caravan_units": 0.05
+      },
+      "live_mount_droves": 4,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (25%)",
+        "League: Tethys (20%)",
+        "League: Pontus (17%)"
+      ],
+      "est_draught_and_pack_beasts": 3545,
+      "est_sailors_teamsters_guards": 2198
+    },
+    {
+      "polity": "Jimjam",
+      "population": 246263,
+      "maritime_status": "Inland Barge Only (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 10.1,
+        "domestic": 0.0,
+        "active_hulls": 10
+      },
+      "highway_wagon_convoys": {
+        "intl": 31.0,
+        "domestic": 5.6,
+        "active_convoys": 37
+      },
+      "pack_caravans": {
+        "intl": 2.8,
+        "domestic": 0.0,
+        "active_caravans": 3,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 4,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (27%)",
+        "League: Tethys (17%)",
+        "League: Ys (13%)"
+      ],
+      "est_draught_and_pack_beasts": 945,
+      "est_sailors_teamsters_guards": 658
+    },
+    {
+      "polity": "The Crook",
+      "population": 240000,
+      "maritime_status": "Exterior Pelagic Visitor (NW Ocean)",
+      "sea_ships_std_equiv": {
+        "intl": 22.21,
+        "domestic": 0.0,
+        "total": 22.21
+      },
+      "sea_ships_physical_hulls": 22,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Ice-Sheathed Crook Pelagic Hulk (18 t luxury/bullion hold)",
+          "count": 22
+        }
+      ],
+      "naval_escort_note": "Annual trans-oceanic visit; confined to Farport Factory Quarter (LORE.md:648)",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 396
+    },
+    {
+      "polity": "Lizardmen",
+      "population": 232560,
+      "maritime_status": "Hostile / Closed (0 Trade)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "None (closed)"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 0
+    },
+    {
+      "polity": "League: Ys",
+      "population": 180193,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 70.51,
+        "domestic": 4.69,
+        "total": 75.2
+      },
+      "sea_ships_physical_hulls": 59,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "58 m Hykkousoi Sea Galleon (30 t)",
+          "count": 11
+        },
+        {
+          "vessel_class": "Amphora Corbita (14 t)",
+          "count": 30
+        },
+        {
+          "vessel_class": "Hykkousoi Pearl Baghlah (9 t)",
+          "count": 18
+        }
+      ],
+      "naval_escort_note": "+ 4 Ysian squadron war-galleys",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 1062
+    },
+    {
+      "polity": "Yuni Emirate",
+      "population": 176592,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 82.3,
+        "domestic": 32.1,
+        "active_convoys": 114
+      },
+      "pack_caravans": {
+        "intl": 4.5,
+        "domestic": 0.1,
+        "active_caravans": 5,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 10,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (32%)",
+        "League: Tethys (21%)",
+        "League: Ys (20%)"
+      ],
+      "est_draught_and_pack_beasts": 2705,
+      "est_sailors_teamsters_guards": 1716
+    },
+    {
+      "polity": "League: Tethys",
+      "population": 135985,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 76.67,
+        "domestic": 21.49,
+        "total": 98.16
+      },
+      "sea_ships_physical_hulls": 91,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Amphora Corbita (14 t)",
+          "count": 43
+        },
+        {
+          "vessel_class": "Scroll-Sail Galley (16 t)",
+          "count": 20
+        },
+        {
+          "vessel_class": "Nephtos Fast Smuggler Brig (10 t)",
+          "count": 28
+        }
+      ],
+      "naval_escort_note": "+ 3 Tethyan bronze-ram patrol galleys",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 49.5,
+        "domestic": 0.0,
+        "active_convoys": 50
+      },
+      "pack_caravans": {
+        "intl": 3.0,
+        "domestic": 0.0,
+        "active_caravans": 3,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 64.7,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 1130,
+      "est_sailors_teamsters_guards": 2380
+    },
+    {
+      "polity": "Dilihan Province",
+      "population": 130830,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 13.9,
+        "domestic": 1.3,
+        "active_convoys": 15
+      },
+      "pack_caravans": {
+        "intl": 5.1,
+        "domestic": 6.8,
+        "active_caravans": 12,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (54%)",
+        "League: Trigon (10%)",
+        "Vothic Kingdom (8%)"
+      ],
+      "est_draught_and_pack_beasts": 745,
+      "est_sailors_teamsters_guards": 360
+    },
+    {
+      "polity": "Shumari",
+      "population": 105050,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 6.0,
+        "domestic": 0.0,
+        "active_convoys": 6
+      },
+      "pack_caravans": {
+        "intl": 0.7,
+        "domestic": 0.0,
+        "active_caravans": 1,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 6,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Vothic Kingdom (34%)",
+        "Kautoa (27%)",
+        "League: Ys (12%)"
+      ],
+      "est_draught_and_pack_beasts": 305,
+      "est_sailors_teamsters_guards": 132
+    },
+    {
+      "polity": "Tabisti: Liikofi",
+      "population": 88000,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 10.0,
+        "domestic": 0.0,
+        "active_convoys": 10
+      },
+      "pack_caravans": {
+        "intl": 2.1,
+        "domestic": 0.0,
+        "active_caravans": 2,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 4,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (26%)",
+        "League: Tethys (20%)",
+        "Kautoa (18%)"
+      ],
+      "est_draught_and_pack_beasts": 370,
+      "est_sailors_teamsters_guards": 188
+    },
+    {
+      "polity": "Tabisti: Sfenops",
+      "population": 88000,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 9.6,
+        "domestic": 0.0,
+        "active_convoys": 10
+      },
+      "pack_caravans": {
+        "intl": 0.2,
+        "domestic": 0.0,
+        "active_caravans": 1,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Kautoa (68%)",
+        "Vothic Kingdom (9%)",
+        "League: Ys (7%)"
+      ],
+      "est_draught_and_pack_beasts": 260,
+      "est_sailors_teamsters_guards": 158
+    },
+    {
+      "polity": "League: Trigon",
+      "population": 85500,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 11.4,
+        "domestic": 2.08,
+        "total": 13.48
+      },
+      "sea_ships_physical_hulls": 13,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Amphora Corbita (12 t)",
+          "count": 9
+        },
+        {
+          "vessel_class": "Scroll-Sail Galley (15 t)",
+          "count": 4
+        }
+      ],
+      "naval_escort_note": "+ 1 harbour guard galley",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 13.6,
+        "domestic": 0.0,
+        "active_convoys": 14
+      },
+      "pack_caravans": {
+        "intl": 3.7,
+        "domestic": 0.0,
+        "active_caravans": 4,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 445,
+      "est_sailors_teamsters_guards": 484
+    },
+    {
+      "polity": "Nomad Country",
+      "population": 84910,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 3.7,
+        "domestic": 0.0,
+        "active_convoys": 4
+      },
+      "pack_caravans": {
+        "intl": 2.3,
+        "domestic": 0.0,
+        "active_caravans": 2,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 6,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "None (purely overland trade)"
+      ],
+      "est_draught_and_pack_beasts": 300,
+      "est_sailors_teamsters_guards": 116
+    },
+    {
+      "polity": "Shell Province",
+      "population": 81970,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 13.79,
+        "domestic": 0.0,
+        "total": 13.79
+      },
+      "sea_ships_physical_hulls": 14,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Izani Dhoni Coaster (12 t)",
+          "count": 14
+        }
+      ],
+      "naval_escort_note": "Operates under Izani convoy protection",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.2,
+        "domestic": 0.0,
+        "active_convoys": 1
+      },
+      "pack_caravans": {
+        "intl": 14.7,
+        "domestic": 0.6,
+        "active_caravans": 15,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 14.8,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 570,
+      "est_sailors_teamsters_guards": 452
+    },
+    {
+      "polity": "Beast Riders",
+      "population": 71435,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 8.7,
+        "domestic": 0.0,
+        "active_convoys": 9
+      },
+      "pack_caravans": {
+        "intl": 5.8,
+        "domestic": 0.0,
+        "active_caravans": 6,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Kautoa (65%)",
+        "Vothic Kingdom (14%)",
+        "League: Ys (8%)"
+      ],
+      "est_draught_and_pack_beasts": 415,
+      "est_sailors_teamsters_guards": 204
+    },
+    {
+      "polity": "Free Clans",
+      "population": 63000,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 6.6,
+        "domestic": 0.0,
+        "active_convoys": 7
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 4,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "League: Tethys (22%)",
+        "Vothic Kingdom (17%)",
+        "League: Ys (16%)"
+      ],
+      "est_draught_and_pack_beasts": 240,
+      "est_sailors_teamsters_guards": 122
+    },
+    {
+      "polity": "Zeijani",
+      "population": 61880,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 1.2,
+        "domestic": 0.0,
+        "active_convoys": 1
+      },
+      "pack_caravans": {
+        "intl": 10.1,
+        "domestic": 0.5,
+        "active_caravans": 11,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "League: Ys (32%)",
+        "Hookfleet (14%)",
+        "Vothic Kingdom (13%)"
+      ],
+      "est_draught_and_pack_beasts": 430,
+      "est_sailors_teamsters_guards": 152
+    },
+    {
+      "polity": "Jabal Shiekdom",
+      "population": 46000,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 4.2,
+        "domestic": 8.8,
+        "active_convoys": 13
+      },
+      "pack_caravans": {
+        "intl": 8.5,
+        "domestic": 0.0,
+        "active_caravans": 9,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (28%)",
+        "League: Tethys (19%)",
+        "League: Ys (18%)"
+      ],
+      "est_draught_and_pack_beasts": 575,
+      "est_sailors_teamsters_guards": 290
+    },
+    {
+      "polity": "Tiguantin",
+      "population": 45375,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 11.8,
+        "domestic": 0.0,
+        "active_convoys": 12
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (43%)",
+        "Hookfleet (14%)",
+        "League: Tethys (11%)"
+      ],
+      "est_draught_and_pack_beasts": 240,
+      "est_sailors_teamsters_guards": 168
+    },
+    {
+      "polity": "Yusar (Cybernetics)",
+      "population": 37250,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 43.4,
+        "domestic": 0.5,
+        "active_convoys": 44
+      },
+      "pack_caravans": {
+        "intl": 3.5,
+        "domestic": 0.0,
+        "active_caravans": 4,
+        "annual_great_caravan_units": 0.49
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (23%)",
+        "League: Tethys (23%)",
+        "League: Ys (19%)"
+      ],
+      "est_draught_and_pack_beasts": 1020,
+      "est_sailors_teamsters_guards": 664
+    },
+    {
+      "polity": "Kautoa",
+      "population": 34791,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 53.95,
+        "domestic": 1.63,
+        "total": 55.58
+      },
+      "sea_ships_physical_hulls": 67,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "31 m Kautoan Great Drua (14 t)",
+          "count": 24
+        },
+        {
+          "vessel_class": "Four-Hull Lakatoi Trading Raft (10 t)",
+          "count": 24
+        },
+        {
+          "vessel_class": "Fast Oruwa Spice Outrigger (4 t)",
+          "count": 19
+        }
+      ],
+      "naval_escort_note": "+ 3 Karakoa war outriggers guarding Kautoa & Beast Rider landings",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 23.0,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 1206
+    },
+    {
+      "polity": "Talovolci Chiefs",
+      "population": 30000,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 8.7,
+        "domestic": 0.0,
+        "active_convoys": 9
+      },
+      "pack_caravans": {
+        "intl": 0.2,
+        "domestic": 0.0,
+        "active_caravans": 1,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Vothic Kingdom (72%)",
+        "Empire of Iziz (6%)",
+        "Hookfleet (5%)"
+      ],
+      "est_draught_and_pack_beasts": 215,
+      "est_sailors_teamsters_guards": 138
+    },
+    {
+      "polity": "Coyote Kingdom",
+      "population": 29850,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 2.1,
+        "domestic": 0.0,
+        "active_convoys": 2
+      },
+      "pack_caravans": {
+        "intl": 0.7,
+        "domestic": 0.0,
+        "active_caravans": 1,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Kautoa (40%)",
+        "Empire of Iziz (16%)",
+        "League: Tethys (13%)"
+      ],
+      "est_draught_and_pack_beasts": 75,
+      "est_sailors_teamsters_guards": 40
+    },
+    {
+      "polity": "League: Pontus",
+      "population": 29400,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 44.05,
+        "domestic": 0.54,
+        "total": 44.59
+      },
+      "sea_ships_physical_hulls": 40,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Pontic Scroll-Sail Galley (15 t)",
+          "count": 20
+        },
+        {
+          "vessel_class": "Amphora Corbita (12 t)",
+          "count": 20
+        }
+      ],
+      "naval_escort_note": "+ 1–2 archipelago patrol galleys",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 720
+    },
+    {
+      "polity": "Screamer Country",
+      "population": 28750,
+      "maritime_status": "Hostile / Closed (0 Trade)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "None (closed)"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 0
+    },
+    {
+      "polity": "Hookfleet",
+      "population": 23400,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 42.31,
+        "domestic": 0.26,
+        "total": 42.57
+      },
+      "sea_ships_physical_hulls": 42,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Gaff-Rigged Ancient Steel Salvage Tug (18 t)",
+          "count": 16
+        },
+        {
+          "vessel_class": "Contraband & Prize Sloop (9 t)",
+          "count": 26
+        }
+      ],
+      "naval_escort_note": "Enforces Port Mira's 50-km No-Shipjacking Truce Zone",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 40.8,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 756
+    },
+    {
+      "polity": "Tungang Union",
+      "population": 18760,
+      "maritime_status": "Inland Barge Only (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.3,
+        "domestic": 0.5,
+        "active_hulls": 1
+      },
+      "highway_wagon_convoys": {
+        "intl": 8.8,
+        "domestic": 3.7,
+        "active_convoys": 13
+      },
+      "pack_caravans": {
+        "intl": 11.0,
+        "domestic": 0.0,
+        "active_caravans": 11,
+        "annual_great_caravan_units": 10.97
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Vothic Kingdom (56%)",
+        "League: Ys (10%)",
+        "League: Tethys (9%)"
+      ],
+      "est_draught_and_pack_beasts": 645,
+      "est_sailors_teamsters_guards": 322
+    },
+    {
+      "polity": "Silkhead (Korona Gateway)",
+      "population": 17640,
+      "maritime_status": "Inland Barge Only (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 2.7,
+        "domestic": 0.0,
+        "active_hulls": 3
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.1,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 4.7,
+        "domestic": 0.0,
+        "active_caravans": 5,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "League: Tethys (25%)",
+        "League: Ys (17%)",
+        "Empire of Iziz (17%)"
+      ],
+      "est_draught_and_pack_beasts": 175,
+      "est_sailors_teamsters_guards": 84
+    },
+    {
+      "polity": "Frogmen",
+      "population": 14625,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 2.9,
+        "domestic": 0.0,
+        "active_convoys": 3
+      },
+      "pack_caravans": {
+        "intl": 6.0,
+        "domestic": 0.0,
+        "active_caravans": 6,
+        "annual_great_caravan_units": 0.16
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Vothic Kingdom (33%)",
+        "League: Ys (13%)",
+        "League: Pontus (13%)"
+      ],
+      "est_draught_and_pack_beasts": 295,
+      "est_sailors_teamsters_guards": 120
+    },
+    {
+      "polity": "Scyvoi",
+      "population": 13200,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "League: Pontus (29%)",
+        "League: Ys (26%)",
+        "League: Tethys (11%)"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 0
+    },
+    {
+      "polity": "Free Giants (Vrivolci)",
+      "population": 12250,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 4.0,
+        "domestic": 0.5,
+        "active_convoys": 5
+      },
+      "pack_caravans": {
+        "intl": 8.0,
+        "domestic": 0.0,
+        "active_caravans": 8,
+        "annual_great_caravan_units": 0.16
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Vothic Kingdom (28%)",
+        "League: Pontus (19%)",
+        "Empire of Iziz (18%)"
+      ],
+      "est_draught_and_pack_beasts": 380,
+      "est_sailors_teamsters_guards": 166
+    },
+    {
+      "polity": "Yeti Kingdom",
+      "population": 12040,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 2.6,
+        "domestic": 0.0,
+        "active_convoys": 3
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "League: Tethys (25%)",
+        "Empire of Iziz (20%)",
+        "Vothic Kingdom (17%)"
+      ],
+      "est_draught_and_pack_beasts": 60,
+      "est_sailors_teamsters_guards": 42
+    },
+    {
+      "polity": "Korona Tribes",
+      "population": 12000,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 2.2,
+        "domestic": 0.0,
+        "active_convoys": 2
+      },
+      "pack_caravans": {
+        "intl": 8.0,
+        "domestic": 0.0,
+        "active_caravans": 8,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Kautoa (43%)",
+        "League: Tethys (14%)",
+        "Vothic Kingdom (12%)"
+      ],
+      "est_draught_and_pack_beasts": 320,
+      "est_sailors_teamsters_guards": 124
+    },
+    {
+      "polity": "Kimr",
+      "population": 10080,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.9,
+        "domestic": 0.0,
+        "active_convoys": 1
+      },
+      "pack_caravans": {
+        "intl": 1.1,
+        "domestic": 0.0,
+        "active_caravans": 1,
+        "annual_great_caravan_units": 0.77
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Vothic Kingdom (25%)",
+        "League: Pontus (17%)",
+        "Empire of Iziz (16%)"
+      ],
+      "est_draught_and_pack_beasts": 55,
+      "est_sailors_teamsters_guards": 26
+    },
+    {
+      "polity": "Andaru",
+      "population": 9900,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.4,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 1.1,
+        "domestic": 0.0,
+        "active_caravans": 1,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Ring Sea Pirates (37%)",
+        "Empire of Iziz (18%)",
+        "League: Ys (13%)"
+      ],
+      "est_draught_and_pack_beasts": 35,
+      "est_sailors_teamsters_guards": 12
+    },
+    {
+      "polity": "Fellgangs",
+      "population": 9000,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 1.2,
+        "domestic": 0.0,
+        "active_convoys": 1
+      },
+      "pack_caravans": {
+        "intl": 1.7,
+        "domestic": 0.0,
+        "active_caravans": 2,
+        "annual_great_caravan_units": 1.33
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "League: Pontus (24%)",
+        "Empire of Iziz (24%)",
+        "Vothic Kingdom (21%)"
+      ],
+      "est_draught_and_pack_beasts": 90,
+      "est_sailors_teamsters_guards": 38
+    },
+    {
+      "polity": "West Ring Islanders",
+      "population": 8800,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 7.25,
+        "domestic": 0.0,
+        "total": 7.25
+      },
+      "sea_ships_physical_hulls": 11,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Western Lakatoi Trading Raft (10 t)",
+          "count": 5
+        },
+        {
+          "vessel_class": "Hikau Oruwa / Kora-Kora Trader (5 t)",
+          "count": 6
+        }
+      ],
+      "naval_escort_note": "Supplemented by visiting League, Iziz, Voth & Hookfleet spice buyers",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 198
+    },
+    {
+      "polity": "Unaligned settlements",
+      "population": 6250,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 2.9,
+        "domestic": 0.0,
+        "active_convoys": 3
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "League: Ys (32%)",
+        "League: Tethys (21%)",
+        "League: Trigon (19%)"
+      ],
+      "est_draught_and_pack_beasts": 60,
+      "est_sailors_teamsters_guards": 42
+    },
+    {
+      "polity": "Sasquatch Tribes",
+      "population": 4275,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.9,
+        "domestic": 0.0,
+        "active_convoys": 1
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "League: Tethys (24%)",
+        "Empire of Iziz (21%)",
+        "League: Ys (16%)"
+      ],
+      "est_draught_and_pack_beasts": 20,
+      "est_sailors_teamsters_guards": 14
+    },
+    {
+      "polity": "Spider Lake Guilds",
+      "population": 3938,
+      "maritime_status": "Inland Barge Only (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.5,
+        "domestic": 0.0,
+        "active_hulls": 1
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.1,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 19.9,
+        "domestic": 1.6,
+        "active_caravans": 22,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (21%)",
+        "Kautoa (20%)",
+        "League: Tethys (19%)"
+      ],
+      "est_draught_and_pack_beasts": 770,
+      "est_sailors_teamsters_guards": 272
+    },
+    {
+      "polity": "Ring Sea Pirates",
+      "population": 3344,
+      "maritime_status": "Seagoing (Ring Sea)",
+      "sea_ships_std_equiv": {
+        "intl": 28.64,
+        "domestic": 0.0,
+        "total": 28.64
+      },
+      "sea_ships_physical_hulls": 31,
+      "sea_hull_breakdown": [
+        {
+          "vessel_class": "Pirate Lanong Sweep-Raider (10 t)",
+          "count": 20
+        },
+        {
+          "vessel_class": "Captured Prize Coaster (12 t)",
+          "count": 11
+        }
+      ],
+      "naval_escort_note": "Preys on Ring Sea lanes outside Port Mira's 50-km truce waters",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 8.8,
+      "foreign_sea_carriers_used": [
+        "Own merchant fleet"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 558
+    },
+    {
+      "polity": "Painted Men",
+      "population": 3250,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 0.4,
+        "domestic": 0.0,
+        "active_convoys": 0
+      },
+      "pack_caravans": {
+        "intl": 0.1,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Kautoa (69%)",
+        "League: Ys (7%)",
+        "League: Tethys (7%)"
+      ],
+      "est_draught_and_pack_beasts": 0,
+      "est_sailors_teamsters_guards": 0
+    },
+    {
+      "polity": "Catch Oasis Stations",
+      "population": 2400,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 42.8,
+        "domestic": 0.0,
+        "active_convoys": 43
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 1,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (38%)",
+        "League: Tethys (27%)",
+        "League: Ys (22%)"
+      ],
+      "est_draught_and_pack_beasts": 885,
+      "est_sailors_teamsters_guards": 608
+    },
+    {
+      "polity": "Order of Historians",
+      "population": 2366,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 9.7,
+        "domestic": 0.1,
+        "active_convoys": 10
+      },
+      "pack_caravans": {
+        "intl": 0.7,
+        "domestic": 0.4,
+        "active_caravans": 1,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (34%)",
+        "League: Tethys (27%)",
+        "League: Ys (23%)"
+      ],
+      "est_draught_and_pack_beasts": 235,
+      "est_sailors_teamsters_guards": 152
+    },
+    {
+      "polity": "Dam Basin Salvagers",
+      "population": 1260,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 3.0,
+        "domestic": 0.0,
+        "active_convoys": 3
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (52%)",
+        "League: Tethys (13%)",
+        "Vothic Kingdom (10%)"
+      ],
+      "est_draught_and_pack_beasts": 60,
+      "est_sailors_teamsters_guards": 42
+    },
+    {
+      "polity": "Twins Pass Wardenry",
+      "population": 504,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 6.3,
+        "domestic": 0.0,
+        "active_convoys": 6
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (37%)",
+        "League: Tethys (28%)",
+        "League: Ys (22%)"
+      ],
+      "est_draught_and_pack_beasts": 120,
+      "est_sailors_teamsters_guards": 84
+    },
+    {
+      "polity": "Stair Divers (Catch)",
+      "population": 275,
+      "maritime_status": "Landlocked / Non-Seafaring (0 Sea Ships)",
+      "sea_ships_std_equiv": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "total": 0.0
+      },
+      "sea_ships_physical_hulls": 0,
+      "sea_hull_breakdown": [],
+      "naval_escort_note": "",
+      "inland_barges": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_hulls": 0
+      },
+      "highway_wagon_convoys": {
+        "intl": 9.5,
+        "domestic": 0.0,
+        "active_convoys": 10
+      },
+      "pack_caravans": {
+        "intl": 0.0,
+        "domestic": 0.0,
+        "active_caravans": 0,
+        "annual_great_caravan_units": 0.0
+      },
+      "live_mount_droves": 0,
+      "shipyard_exported_hulls_per_yr": 0.0,
+      "foreign_sea_carriers_used": [
+        "Empire of Iziz (38%)",
+        "League: Tethys (28%)",
+        "League: Ys (23%)"
+      ],
+      "est_draught_and_pack_beasts": 200,
+      "est_sailors_teamsters_guards": 140
+    }
+  ]
+}

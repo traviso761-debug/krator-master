@@ -14,7 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/40-pr-layout.js` | 18.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the settled plan as records and pure queries (PR) |
-| `src/42-pr-world.js` | 0.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/42-pr-world.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/43-pr-roosts.js` | 44.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the roosts as records (PRR.plan on KSTACKS bodies): decks, Girder-shaped stalls and bridges, climbs, lifts, the Stair |
 | `src/45-host-stage.js` | 9.6 | [web] | 7 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/47b-host-roosts-plan.js` | 3.7 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | runs PRR's plan (43) before the kits build, adds its ways to PR, cuts the lift road's bench into LAND.talus and re-seats the floor mesh there |
@@ -40,7 +40,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89h-host-walk.js` | 1.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the walk registry (core/walk): the decks' rings, the climbs' and ascents' treads, the bridges, the Stair, the lift road |
 | `src/89w-host-water.js` | 4.1 | [draw] | 8 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | core/water's still water on core/atmos (the paddies, the spring, the seep pond, the Deep Root's pool, the rain pools on the slickrock); core/atmos bound on the host's hour |
 | `src/89y-host-night.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the night's fires and lamps placed from the records with core/atmos (braziers, beacons, the glow layer, one hall light); core/atmos's export carries them (its lamps and glows) |
-| `src/99-host-take.js` | 73.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 14 | 0 | 2 | 8 | 0 | 0 |  |
+| `src/99-host-take.js` | 73.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 14 | 0 | 2 | 8 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

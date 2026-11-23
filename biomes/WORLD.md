@@ -39,7 +39,7 @@ scale Krator map for rough placement, not in this repo.
 | *planned* the Catch (the closed basin SE of the Godthrone) | `catch` | sealed by walls of 10-17 km: no ecotone below 6.2 km. Plan: `catch/PLAN.md` (a sand sea, a few oases only just enough, a salt lake among wind-carved lake beds, the fans; Stair a campground; the model's rain is ~10x too generous, a 4.22 item) |
 | *planned* Farside (the ocean coast, Farport) | `farside` | nwlowlands (the front, where the sea's flora meets the land forest), nwouterwall. Plan: `farside/PLAN.md` (the sea's plants invading the land) |
 | *planned* the Godthrone and the airless rim (the titanium shield volcano; the class O band on every wall) | `godthrone` | godstep valley, shighlands, the Catch, riftrim; above every wall kit's top band. Plan: `godthrone/PLAN.md` (the summit vent and glass halo after the model's 4.23, the orange belt, the megabreccia crest) |
-| *planned* the W outer wall (the slumping wall, the loess, the Hayrant) | `wouterwall` | nwouterwall, the NW and SW lowlands, the Ancient's Valley, godthrone (the airless crest). Plan: `wouterwall/PLAN.md` (loess tablelands, slump terraces, sturzstroms, box canyons) |
+| the W outer wall (the slumping wall, the loess, the Hayrant; W1: station 1, the loess tablelands) | `wouterwall` | nwouterwall, the NW and SW lowlands, the Ancient's Valley, godthrone (the airless crest). Plan: `wouterwall/PLAN.md` (loess tablelands, slump terraces, sturzstroms, box canyons) |
 | *planned* the SW highlands (the Inner Wall's south-west sector; native fungoid life) | `swhighlands` | swbay (its kin; backfill `swbay/PLAN-FLORA.md`), swlowlands, the Ancient's Valley, nhighlands, the Ring Sea coast (steep). Plan: `swhighlands/PLAN.md` (ring folds, the rain wall and its landslide lake, Span's tableland and pillar rim, the fan coast) |
 | *planned* Godstep valley (the god's stair: titanium lava steps) | `godstep` | godthrone, shighlands, the Bowl, ehighlands, the savannah rim, the hyperjungle; inside `openworld/little-demo` for 24,584 km². Plan: `godstep/PLAN.md` (flow fronts, sinuous rilles, colonnades, black sand, laterite) |
 | *no kit yet* (the owner's polygons, 2026-10-23) | | the e and se savannah rims are transitions (rainforest to savannah; Talia, Pylon, Fridon) |
@@ -71,7 +71,7 @@ because their conditions are rare, and Krator has the conditions.
   flood lake needs a wetter past: a breach in the Ancients' time is a story. The east lobe also closes (at 369 m)
   and spills into Korona's trenches.
 
-  **Decided (Travis, Oct 2026; scale model 4.20, `tools/scale-model/edit_dams.py`):** the lakes were the Ancients'
+  **Decided (Travis, Oct 2026; scale model 4.20, `tools/scale-model/history/edit_dams.py`):** the lakes were the Ancients'
   own, held behind two dam arcologies, and they broke in a cascade in the war that ended them. The east lobe (region
   'dam 2') held a lake at 1,050 m (~63,000 km^2) behind the east dam in the pass between the lobes (507,110); the west
   lobe (region 'dam') a lake at 900 m (~48,000 km^2) behind the west dam in its southern saddle (409,144). The east
@@ -110,7 +110,7 @@ geysers on the western crater floor; 4.15 made the eastern abyss's rim an escarp
 raised the ranges of the valley of Yuni (4.16 filled its south-eastern head), lowered five lakes that stood above their shores, and (4.17) kept the east rim gentle, raised a saddle across the abyss's floor and cut a
 salt basin east of Verge; 4.18 levelled 'passage' and recomputed rain and climate where the heights changed; 4.19
 set each recomputed cell's class from its own climate, ran the Yuni river from the valley's head into the lake at
-Locus (`DATA.rivers`) and fixed the region tool's point dragging (`tools/scale-model/edit_heights.py`). Textures are re-shaded
+Locus (`DATA.rivers`) and fixed the region tool's point dragging (`tools/scale-model/history/edit_heights.py`). Textures are re-shaded
 and temperatures lapse-corrected to match: the scripts are in `tools/scale-model/`. The regions
 collection now carries a `kind` (political, geographic or biome), one map layer each. What the artifact holds, as PNG rasters on one grid
 (`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):

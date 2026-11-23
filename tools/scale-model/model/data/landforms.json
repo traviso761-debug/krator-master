@@ -5,22 +5,54 @@
   {
    "id": "lf_pleasure_dome_isle",
    "kind": "island",
-   "px": 806.6,
-   "py": 1513.3,
-   "r_m": 300.0,
-   "crest_m": -498.0,
+   "px": 840.886,
+   "py": 1516.799,
+   "r_m": 80.0,
+   "rx_m": 110.0,
+   "rz_m": 55.0,
+   "crest_m": -506.0,
    "water_m": -520.0,
-   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay, about 5 km off the town's quays (22 m over the lake; the Erewhon page's island with its lagoon, dome and barge dock). Sub-cell: its cell's bed is held as a shoal (40 m) for the stamp. edit_512, 2026-11-11."
+   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay: the Erewhon page's island (settlements/xanadu, target erewhon, ISLAND_C at 70,-613 m from the page's centre, which stands on Erehwon's pin 805,1516 unturned), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore (the owner, 2026-11-11: keep the page, move the record; it stays off the quays, about 0.6 km). No shoal: its rounded cell is the shore bench. Stamped at 1:1 by openworld/xanadu-oidong-highrift/src/44-world-landforms.js. edit_517 (first run as edit_512 on claude/openworld-sites, 2026-11-11)."
   },
   {
    "id": "lf_west_stack",
    "kind": "island",
-   "px": 784.4,
-   "py": 1491.6,
+   "px": 816.757,
+   "py": 1495.619,
    "r_m": 160.0,
    "crest_m": -478.0,
    "water_m": -520.0,
-   "note": "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. edit_512, 2026-11-11."
+   "note": "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. edit_517, 2026-11-11."
+  },
+  {
+   "id": "lf_pher_headland",
+   "kind": "island",
+   "px": 840.65,
+   "py": 1491.2,
+   "r_m": 520.0,
+   "crest_m": -440.0,
+   "water_m": -520.0,
+   "note": "Phēr's headland (the owner, 2026-11-16: \"give it a headland and cove\"): the arm from the shore's bend west of the town, its rise joining the bench; the cove lies east of it. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
+  },
+  {
+   "id": "lf_pher_headland_tip",
+   "kind": "island",
+   "px": 841.05,
+   "py": 1491.65,
+   "r_m": 320.0,
+   "crest_m": -470.0,
+   "water_m": -520.0,
+   "note": "Phēr's headland (the owner, 2026-11-16: \"give it a headland and cove\"): the arm from the shore's bend west of the town, its rise joining the bench; the cove lies east of it. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
+  },
+  {
+   "id": "lf_pher_east_point",
+   "kind": "islet",
+   "px": 842.75,
+   "py": 1492.15,
+   "r_m": 240.0,
+   "crest_m": -495.0,
+   "water_m": -520.0,
+   "note": "The low point east of Phēr's cove, closing it to about 1 km across. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
   }
  ]
 }

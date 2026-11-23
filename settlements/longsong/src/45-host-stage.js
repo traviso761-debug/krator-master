@@ -74,7 +74,7 @@ function pondCut(x,z,h){const P=LS.POND,d=Math.hypot(x-P.x,z-P.z);if(d>P.r+18)re
 // downstream (west: LS.STREAM_FLOW; PLAN.md section 1): the running minimum of the model's level from the upstream end, falling at least
 // 0.3 m/km, smoothed (a mean over a falling run keeps it falling). The bed is cut under it (streamCut); where the model's
 // land climbs above it to the west the cut is a ravine (KNOWN_ISSUES.md). core/water draws it (89w-ls-water.js).
-const STREAM=(function(){const L=WORLD.riverLines(16).map(R=>({name:R.name,width:R.width,pts:R.pts.map(p=>[p[0]-WX,p[1]-WZ,p[2]-WORLD_H0]).filter(p=>Math.abs(p[0])<TERR.R*1.6&&Math.abs(p[1])<TERR.R*1.6)})).filter(R=>R.pts.length>1);
+const STREAM=(function(){const L=WORLD.riverLines(16).map(R=>({name:R.name,width:R.width,pts:R.pts.map(p=>{const q=LS.toPage(p[0],p[1]);return [q[0],q[1],p[2]-WORLD_H0];}).filter(p=>Math.abs(p[0])<TERR.R*1.6&&Math.abs(p[1])<TERR.R*1.6)})).filter(R=>R.pts.length>1);
  L.forEach(R=>{const P=R.pts,n=P.length,F=LS.STREAM_FLOW;
   if((P[n-1][0]-P[0][0])*F[0]+(P[n-1][1]-P[0][1])*F[1]<0)P.reverse();R.model=P.map(p=>p[2]);   // upstream first (LS.STREAM_FLOW says which way)
   let lev=P[0][2];const raw=[lev];for(let i=1;i<n;i++){const s=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);lev=Math.min(lev-.0003*s,P[i][2]);raw.push(lev);}
@@ -94,14 +94,15 @@ function streamCut(x,z,h){const n=streamNear(x,z);if(!n||n.d>n.hw+90)return h;co
  if(n.d<hw){const q=n.d/hw;return Math.min(h,y-.25-1.15*(1-q*q));}
  const top=y+.2,run=Math.min(75,Math.max(4,(h-top)*6)),k=smooth(hw,hw+run,n.d);
  return h>top?lerp(top,h,k):lerp(top,h,smooth(hw+3,hw+12,n.d));}   // (a levee where the land lies lower)
-// the canal (the leat to the mills, the tail race to the Mirror): its level falls from the intake (just under the stream's
-// there) to the paper mill's wheel and on to the pond; its bed is cut 0.55 m under it, the cut's sides at 1 in 1.5. Inside
+// the canal (the leat to the mills, the tail race to the Mirror): its level falls from the intake (just under the beck's
+// there: LS.FARMS.BECK, on the apron south of the ward; the stream's when a plan has no beck) to the paper mill's wheel
+// and on to the pond; its bed is cut 0.55 m under it, the cut's sides at 1 in 1.5. Inside
 // the ward and wherever the land lies lower, it runs in a raised stone race (85-ls-farms.js draws it)
 const CANAL=(function(){const F=LS.FARMS,line=pts=>{let s=0;return pts.map((p,i)=>{if(i)s+=Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1]);return [p[0],p[1],s];});};
  const leat=line(F.LEAT.pts),tail=line(F.TAIL.pts),Ll=leat[leat.length-1][2],Lt=tail[tail.length-1][2];
- const intake=streamNear(leat[0][0],leat[0][1]),y0=(intake?intake.y:-6)-.1,yW=Math.min(y0-.3,LS.wardY(-190)+.8),yP=LS.POND.y;
+ const intake=F.BECK?{y:landH(F.BECK.x,F.BECK.z)-.4}:streamNear(leat[0][0],leat[0][1]),y0=(intake?intake.y:-6)-.1,yW=Math.min(y0-.3,LS.wardY(-190)+.8),yP=LS.POND.y;
  leat.forEach(p=>p.push(lerp(y0,yW,p[2]/Ll)));tail.forEach(p=>p.push(lerp(yW-.15,yP,p[2]/Lt)));
- return {leat,tail,w:F.LEAT.w,wt:F.TAIL.w,y0,yW,yP};})();
+ return {leat,tail,w:F.LEAT.w,wt:F.TAIL.w,y0,yW,yP,intakeY:intake?intake.y:-6,from:F.BECK?'the beck':'the stream'};})();
 function canalNear(x,z){let best=null;for(const [P,w] of [[CANAL.leat,CANAL.w],[CANAL.tail,CANAL.wt]])for(let i=1;i<P.length;i++){const a=P[i-1],c=P[i];
   const dx=c[0]-a[0],dz=c[1]-a[1],l=dx*dx+dz*dz||1,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l,0,1),d=Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);
   if(!best||d<best.d)best={d,y:lerp(a[3],c[3],t),hw:w/2};}return best;}
@@ -156,7 +157,7 @@ function waterH(x,z){const P=LS.POND;if(Math.abs(x-P.x)<P.r+4&&Math.abs(z-P.z)<P
 
 // where the stream crosses the avenue's line (x 0): the bridge stands there, its deck over the higher bank
 const BRIDGE=(function(){let best=null;for(const R of STREAM){const P=R.pts;for(let i=1;i<P.length;i++){const a=P[i-1],c=P[i];if((a[0]-0)*(c[0]-0)<=0&&a[0]!==c[0]){const t=(0-a[0])/(c[0]-a[0]);
-  const z=lerp(a[1],c[1],t),w=lerp(a[2],c[2],t);if(!best||Math.abs(z+260)<Math.abs(best.z+260))best={x:0,z,water:w,width:R.width};}}}
+  const z=lerp(a[1],c[1],t),w=lerp(a[2],c[2],t);if(!best||Math.abs(z-LS.BRIDGE.z)<Math.abs(best.z-LS.BRIDGE.z))best={x:0,z,water:w,width:R.width};}}}
  if(!best)best={x:0,z:LS.BRIDGE.z,water:-12,width:30};
  const n=terrainH(0,best.z-best.width/2-14),s=terrainH(0,best.z+best.width/2+14);best.deck=Math.max(n,s,best.water+3)+.6;best.L=best.width+30;return best;})();
 

@@ -1,224 +1,403 @@
 {
-    "version": "0.0.1",
-    "configurations": [
-        {
-            "name": "edit-queue",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "tools/edits/serve.py",
-                "--port",
-                "8765"
-            ],
-            "port": 8765
-        },
-        {
-            "name": "mungo",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8791",
-                "--directory",
-                "settlements/mungo"
-            ],
-            "port": 8791
-        },
-        {
-            "name": "xanadu",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8807",
-                "--directory",
-                "settlements/xanadu"
-            ],
-            "port": 8807
-        },
-        {
-            "name": "hook",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8811",
-                "--directory",
-                "settlements/hook/dist"
-            ],
-            "port": 8811
-        },
-        {
-            "name": "isle-demo",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8829",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "settlements/isle-demo"
-            ],
-            "port": 8829,
-            "autoPort": false
-        },
-        {
-            "name": "beast-riders",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8831",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "kits/beast-riders"
-            ],
-            "port": 8831,
-            "autoPort": false
-        },
-        {
-            "name": "korona",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8813",
-                "--directory",
-                "biomes/korona/dist"
-            ],
-            "port": 8813
-        },
-        {
-            "name": "sky-demo",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8841",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "core/atmos/demo/dist"
-            ],
-            "port": 8841,
-            "autoPort": false
-        },
-        {
-            "name": "rift",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8861",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "biomes/rift/dist"
-            ],
-            "port": 8861,
-            "autoPort": false
-        },
-        {
-            "name": "swbay",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8843",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "biomes/swbay"
-            ],
-            "port": 8843,
-            "autoPort": false
-        },
-        {
-            "name": "metropolis",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8796",
-                "--directory",
-                "kits/metropolis/dist"
-            ],
-            "port": 8796
-        },
-        {
-            "name": "ancientsvalley",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8831",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "biomes/ancientsvalley/dist"
-            ],
-            "port": 8831
-        },
-        {
-            "name": "pinnacle-world",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8871",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "openworld/pinnacle/dist"
-            ],
-            "port": 8871,
-            "autoPort": false
-        },
-        {
-            "name": "longsong-dist",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8873",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "settlements/longsong/dist"
-            ],
-            "port": 8873,
-            "autoPort": false
-        },
-        {
-            "name": "xoh-world",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8875",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "openworld/xanadu-oidong-highrift/dist"
-            ],
-            "port": 8875,
-            "autoPort": false
-        },
-        {
-            "name": "iziz-world",
-            "runtimeExecutable": "python",
-            "runtimeArgs": [
-                "-m",
-                "http.server",
-                "8877",
-                "--bind",
-                "127.0.0.1",
-                "--directory",
-                "openworld/iziz-cluster/dist"
-            ],
-            "port": 8877,
-            "autoPort": false
-        }
-    ]
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "edit-queue",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "tools/edits/serve.py",
+        "--port",
+        "8765"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "mungo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8791",
+        "--directory",
+        "settlements/mungo"
+      ],
+      "port": 8791
+    },
+    {
+      "name": "xanadu",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8807",
+        "--directory",
+        "settlements/xanadu"
+      ],
+      "port": 8807
+    },
+    {
+      "name": "hook",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8811",
+        "--directory",
+        "settlements/hook/dist"
+      ],
+      "port": 8811
+    },
+    {
+      "name": "isle-demo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8829",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "settlements/isle-demo"
+      ],
+      "port": 8829,
+      "autoPort": false
+    },
+    {
+      "name": "beast-riders",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8831",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/beast-riders"
+      ],
+      "port": 8831,
+      "autoPort": false
+    },
+    {
+      "name": "korona",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8813",
+        "--directory",
+        "biomes/korona/dist"
+      ],
+      "port": 8813
+    },
+    {
+      "name": "sky-demo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8841",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "core/atmos/demo/dist"
+      ],
+      "port": 8841,
+      "autoPort": false
+    },
+    {
+      "name": "rift",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8861",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "biomes/rift/dist"
+      ],
+      "port": 8861,
+      "autoPort": false
+    },
+    {
+      "name": "swbay",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8843",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "biomes/swbay"
+      ],
+      "port": 8843,
+      "autoPort": false
+    },
+    {
+      "name": "metropolis",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8796",
+        "--directory",
+        "kits/metropolis/dist"
+      ],
+      "port": 8796
+    },
+    {
+      "name": "ancientsvalley",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8831",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "biomes/ancientsvalley/dist"
+      ],
+      "port": 8831
+    },
+    {
+      "name": "motor-vehicles",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8797",
+        "--directory",
+        "kits/motor-vehicles"
+      ],
+      "port": 8797
+    },
+    {
+      "name": "pinnacle-world",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8871",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "openworld/pinnacle/dist"
+      ],
+      "port": 8871,
+      "autoPort": false
+    },
+    {
+      "name": "longsong-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8873",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "settlements/longsong/dist"
+      ],
+      "port": 8873,
+      "autoPort": false
+    },
+    {
+      "name": "xoh-world",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8875",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "openworld/xanadu-oidong-highrift/dist"
+      ],
+      "port": 8875,
+      "autoPort": false
+    },
+    {
+      "name": "iziz-world",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8877",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "openworld/iziz-cluster/dist"
+      ],
+      "port": 8877,
+      "autoPort": false
+    },
+    {
+      "name": "cosmetic-lab",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8799",
+        "--directory",
+        "core/charactermodels/dist"
+      ],
+      "port": 8799
+    },
+    {
+      "name": "mechs",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8847",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/mechs/dist"
+      ],
+      "port": 8847
+    },
+    {
+      "name": "extraplanar",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8797",
+        "--directory",
+        "kits/extraplanar"
+      ],
+      "port": 8797
+    },
+    {
+      "name": "audio-lab",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8842",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "C:/Users/travi/Documents/krator-audio/lab"
+      ],
+      "port": 8842,
+      "autoPort": false
+    },
+    {
+      "name": "fxdemo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8859",
+        "--directory",
+        "core/atmos/fxdemo/dist"
+      ],
+      "port": 8859
+    },
+    {
+      "name": "tungang",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8826",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/tungang/dist"
+      ],
+      "port": 8826,
+      "autoPort": false
+    },
+    {
+      "name": "kirstabal",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8885",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "settlements/kirstabal/dist"
+      ],
+      "port": 8885,
+      "autoPort": false
+    },
+    {
+      "name": "census-atlas",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8881",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "C:/Users/travi/AppData/Local/Temp/claude/fb90a45e00650bd0/3c8541e4-a2b4-461b-b662-31b858516b6a/scratchpad/census_art"
+      ],
+      "port": 8881,
+      "autoPort": false
+    },
+    {
+      "name": "lightwall",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8823",
+        "--directory",
+        "settlements/lightwall/dist"
+      ],
+      "port": 8823
+    },
+    {
+      "name": "ancients-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8881",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/ancients/dist"
+      ],
+      "port": 8881,
+      "autoPort": false
+    },
+    {
+      "name": "qiblai-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8883",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/qiblai/dist"
+      ],
+      "port": 8883,
+      "autoPort": false
+    },
+    {
+      "name": "viridian",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8893",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "settlements/viridian/dist"
+      ],
+      "port": 8893,
+      "autoPort": false
+    }
+  ]
 }

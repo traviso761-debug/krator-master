@@ -1,0 +1,2485 @@
+{
+ "regions_new": [
+  {
+   "id": "rmwek559wleuj",
+   "name": "Hookfleet",
+   "color": "#7c8a5e",
+   "points": [
+    [
+     849,
+     902
+    ],
+    [
+     848,
+     923
+    ],
+    [
+     882,
+     929
+    ],
+    [
+     888,
+     892
+    ],
+    [
+     880,
+     883
+    ],
+    [
+     855,
+     891
+    ]
+   ],
+   "notes": "",
+   "kind": "political",
+   "createdAt": "2026-11-13T05:50:03.764Z"
+  },
+  {
+   "id": "rmwek6u4ztszp",
+   "name": "Frogmen",
+   "color": "#5da05c",
+   "points": [
+    [
+     554,
+     990
+    ],
+    [
+     581,
+     1025
+    ],
+    [
+     625,
+     1044
+    ],
+    [
+     644,
+     1074
+    ],
+    [
+     659,
+     1074
+    ],
+    [
+     678,
+     1049
+    ],
+    [
+     671,
+     1022
+    ],
+    [
+     653,
+     1010
+    ],
+    [
+     656,
+     977
+    ],
+    [
+     637,
+     985
+    ],
+    [
+     629,
+     1001
+    ],
+    [
+     615,
+     1003
+    ],
+    [
+     599,
+     992
+    ],
+    [
+     584,
+     973
+    ],
+    [
+     583,
+     942
+    ],
+    [
+     580,
+     898
+    ],
+    [
+     556,
+     888
+    ],
+    [
+     546,
+     908
+    ],
+    [
+     550,
+     979
+    ]
+   ],
+   "notes": "",
+   "kind": "political",
+   "createdAt": "2026-11-13T05:51:22.643Z"
+  },
+  {
+   "id": "rmwelk4p0dng5",
+   "name": "Tiguantin",
+   "color": "#d9c14a",
+   "points": [
+    [
+     1087,
+     918
+    ],
+    [
+     1119,
+     936
+    ],
+    [
+     1124,
+     902
+    ],
+    [
+     1143,
+     885
+    ],
+    [
+     1193,
+     881
+    ],
+    [
+     1157,
+     856
+    ],
+    [
+     1142,
+     817
+    ],
+    [
+     1119,
+     810
+    ],
+    [
+     1099,
+     802
+    ],
+    [
+     1089,
+     837
+    ],
+    [
+     1089,
+     862
+    ],
+    [
+     1096,
+     891
+    ],
+    [
+     1086,
+     914
+    ]
+   ],
+   "notes": "",
+   "kind": "political",
+   "createdAt": "2026-11-13T06:29:42.468Z"
+  },
+  {
+   "id": "rmwelppnigssz",
+   "name": "Jabal Shiekdom",
+   "color": "#5da05c",
+   "points": [
+    [
+     1164,
+     1111
+    ],
+    [
+     1211,
+     1105
+    ],
+    [
+     1284,
+     1145
+    ],
+    [
+     1278,
+     1167
+    ],
+    [
+     1235,
+     1188
+    ],
+    [
+     1182,
+     1193
+    ],
+    [
+     1168,
+     1184
+    ],
+    [
+     1141,
+     1143
+    ]
+   ],
+   "notes": "",
+   "kind": "political",
+   "createdAt": "2026-11-13T06:34:02.910Z"
+  },
+  {
+   "id": "rmwelrhij6khp",
+   "name": "Kimr",
+   "color": "#c95a6a",
+   "points": [
+    [
+     374,
+     1449
+    ],
+    [
+     398,
+     1487
+    ],
+    [
+     387,
+     1565
+    ],
+    [
+     307,
+     1619
+    ],
+    [
+     255,
+     1588
+    ],
+    [
+     220,
+     1539
+    ],
+    [
+     188,
+     1484
+    ],
+    [
+     191,
+     1435
+    ],
+    [
+     208,
+     1382
+    ],
+    [
+     284,
+     1348
+    ],
+    [
+     349,
+     1379
+    ],
+    [
+     394,
+     1448
+    ]
+   ],
+   "notes": "",
+   "kind": "political",
+   "createdAt": "2026-11-13T06:35:25.675Z"
+  },
+  {
+   "id": "rmwet8ethscuf",
+   "name": "crookwash",
+   "color": "#8a6fc9",
+   "points": [
+    [
+     184,
+     740
+    ],
+    [
+     197,
+     823
+    ],
+    [
+     180,
+     829
+    ],
+    [
+     165,
+     835
+    ],
+    [
+     163,
+     861
+    ],
+    [
+     157,
+     938
+    ],
+    [
+     135,
+     986
+    ],
+    [
+     121,
+     995
+    ],
+    [
+     62,
+     984
+    ],
+    [
+     45,
+     953
+    ],
+    [
+     35,
+     887
+    ],
+    [
+     43,
+     828
+    ],
+    [
+     33,
+     743
+    ],
+    [
+     49,
+     731
+    ],
+    [
+     62,
+     747
+    ],
+    [
+     128,
+     761
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:04:32.645Z"
+  },
+  {
+   "id": "rmwetaguz7zhe",
+   "name": "copper glacier",
+   "color": "#8a6fc9",
+   "points": [
+    [
+     334,
+     1215
+    ],
+    [
+     305,
+     1261
+    ],
+    [
+     242,
+     1235
+    ],
+    [
+     206,
+     1258
+    ],
+    [
+     153,
+     1266
+    ],
+    [
+     97,
+     1237
+    ],
+    [
+     43,
+     1209
+    ],
+    [
+     112,
+     1172
+    ],
+    [
+     130,
+     1133
+    ],
+    [
+     189,
+     1121
+    ],
+    [
+     239,
+     1177
+    ],
+    [
+     290,
+     1206
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:06:08.603Z"
+  },
+  {
+   "id": "rmwetb495tgzt",
+   "name": "crookhead",
+   "color": "#c95a6a",
+   "points": [
+    [
+     77,
+     1191
+    ],
+    [
+     36,
+     1088
+    ],
+    [
+     45,
+     992
+    ],
+    [
+     146,
+     1001
+    ],
+    [
+     179,
+     1096
+    ],
+    [
+     178,
+     1122
+    ],
+    [
+     129,
+     1129
+    ],
+    [
+     113,
+     1174
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:06:38.921Z"
+  },
+  {
+   "id": "rmwete7oza9d9",
+   "name": "drownlands",
+   "color": "#3f8fb5",
+   "points": [
+    [
+     77,
+     631
+    ],
+    [
+     107,
+     638
+    ],
+    [
+     167,
+     607
+    ],
+    [
+     215,
+     469
+    ],
+    [
+     199,
+     373
+    ],
+    [
+     141,
+     368
+    ],
+    [
+     128,
+     332
+    ],
+    [
+     72,
+     353
+    ],
+    [
+     22,
+     457
+    ],
+    [
+     37,
+     549
+    ],
+    [
+     70,
+     567
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:09:03.347Z"
+  },
+  {
+   "id": "rmwetfxp9qgeu",
+   "name": "the arch",
+   "color": "#8a6fc9",
+   "points": [
+    [
+     201,
+     276
+    ],
+    [
+     130,
+     280
+    ],
+    [
+     104,
+     258
+    ],
+    [
+     150,
+     139
+    ],
+    [
+     262,
+     157
+    ],
+    [
+     430,
+     87
+    ],
+    [
+     475,
+     78
+    ],
+    [
+     493,
+     116
+    ],
+    [
+     508,
+     161
+    ],
+    [
+     507,
+     197
+    ],
+    [
+     396,
+     231
+    ],
+    [
+     269,
+     318
+    ],
+    [
+     222,
+     314
+    ],
+    [
+     212,
+     289
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:10:23.709Z"
+  },
+  {
+   "id": "rmwetgzft4x9d",
+   "name": "battered isle",
+   "color": "#c95a6a",
+   "points": [
+    [
+     429,
+     253
+    ],
+    [
+     448,
+     231
+    ],
+    [
+     502,
+     222
+    ],
+    [
+     504,
+     251
+    ],
+    [
+     481,
+     285
+    ],
+    [
+     434,
+     272
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:11:12.617Z"
+  },
+  {
+   "id": "rmwetizlzivnz",
+   "name": "Scoured hills",
+   "color": "#c9b08a",
+   "points": [
+    [
+     470,
+     331
+    ],
+    [
+     510,
+     337
+    ],
+    [
+     560,
+     300
+    ],
+    [
+     652,
+     283
+    ],
+    [
+     666,
+     252
+    ],
+    [
+     600,
+     215
+    ],
+    [
+     542,
+     204
+    ],
+    [
+     516,
+     203
+    ],
+    [
+     492,
+     272
+    ],
+    [
+     469,
+     311
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:12:46.151Z"
+  },
+  {
+   "id": "rmwetlrvemher",
+   "name": "ria valley",
+   "color": "#6fb5a8",
+   "points": [
+    [
+     525,
+     204
+    ],
+    [
+     498,
+     162
+    ],
+    [
+     543,
+     128
+    ],
+    [
+     591,
+     137
+    ],
+    [
+     643,
+     174
+    ],
+    [
+     726,
+     146
+    ],
+    [
+     833,
+     135
+    ],
+    [
+     965,
+     122
+    ],
+    [
+     1052,
+     88
+    ],
+    [
+     1158,
+     54
+    ],
+    [
+     1275,
+     39
+    ],
+    [
+     1369,
+     49
+    ],
+    [
+     1428,
+     114
+    ],
+    [
+     1351,
+     168
+    ],
+    [
+     1289,
+     149
+    ],
+    [
+     1228,
+     188
+    ],
+    [
+     1086,
+     189
+    ],
+    [
+     994,
+     212
+    ],
+    [
+     917,
+     181
+    ],
+    [
+     889,
+     193
+    ],
+    [
+     880,
+     259
+    ],
+    [
+     833,
+     271
+    ],
+    [
+     748,
+     259
+    ],
+    [
+     667,
+     288
+    ],
+    [
+     574,
+     258
+    ]
+   ],
+   "notes": "",
+   "kind": "geographic",
+   "createdAt": "2026-11-13T10:14:56.091Z"
+  },
+  {
+   "id": "rmwetn7jqgm9g",
+   "name": "Arcflow",
+   "color": "#e0e0e0",
+   "points": [
+    [
+     503,
+     139
+    ],
+    [
+     485,
+     89
+    ],
+    [
+     411,
+     3
+    ],
+    [
+     582,
+     1
+    ],
+    [
+     619,
+     32
+    ],
+    [
+     683,
+     60
+    ],
+    [
+     773,
+     46
+    ],
+    [
+     852,
+     71
+    ],
+    [
+     907,
+     107
+    ],
+    [
+     887,
+     132
+    ],
+    [
+     729,
+     146
+    ],
+    [
+     644,
+     169
+    ],
+    [
+     604,
+     168
+    ],
+    [
+     576,
+     199
+    ],
+    [
+     537,
+     208
+    ],
+    [
+     495,
+     157
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:16:03.062Z"
+  },
+  {
+   "id": "rmwetrk5macdn",
+   "name": "heartland",
+   "color": "#7c8a5e",
+   "points": [
+    [
+     578,
+     207
+    ],
+    [
+     605,
+     171
+    ],
+    [
+     655,
+     167
+    ],
+    [
+     715,
+     150
+    ],
+    [
+     796,
+     140
+    ],
+    [
+     879,
+     135
+    ],
+    [
+     915,
+     161
+    ],
+    [
+     928,
+     182
+    ],
+    [
+     912,
+     199
+    ],
+    [
+     886,
+     200
+    ],
+    [
+     871,
+     287
+    ],
+    [
+     758,
+     258
+    ],
+    [
+     684,
+     279
+    ],
+    [
+     655,
+     282
+    ],
+    [
+     664,
+     251
+    ],
+    [
+     586,
+     211
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:19:26.027Z"
+  },
+  {
+   "id": "rmwetvx15q1m4",
+   "name": "moleshelf",
+   "color": "#c9803c",
+   "points": [
+    [
+     797,
+     53
+    ],
+    [
+     805,
+     27
+    ],
+    [
+     850,
+     17
+    ],
+    [
+     895,
+     40
+    ],
+    [
+     961,
+     44
+    ],
+    [
+     1023,
+     12
+    ],
+    [
+     1082,
+     19
+    ],
+    [
+     1126,
+     61
+    ],
+    [
+     1068,
+     100
+    ],
+    [
+     963,
+     128
+    ],
+    [
+     898,
+     123
+    ],
+    [
+     909,
+     110
+    ],
+    [
+     849,
+     65
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:22:49.337Z"
+  },
+  {
+   "id": "rmwetzg8idewz",
+   "name": "weeping valley",
+   "color": "#d9c14a",
+   "points": [
+    [
+     925,
+     186
+    ],
+    [
+     996,
+     208
+    ],
+    [
+     1109,
+     188
+    ],
+    [
+     1121,
+     152
+    ],
+    [
+     1107,
+     143
+    ],
+    [
+     1099,
+     112
+    ],
+    [
+     1080,
+     95
+    ],
+    [
+     1051,
+     106
+    ],
+    [
+     976,
+     126
+    ],
+    [
+     886,
+     133
+    ],
+    [
+     888,
+     141
+    ],
+    [
+     915,
+     161
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:25:34.194Z"
+  },
+  {
+   "id": "rmweu2qb4nyia",
+   "name": "red river",
+   "color": "#5da05c",
+   "points": [
+    [
+     1118,
+     149
+    ],
+    [
+     1086,
+     99
+    ],
+    [
+     1127,
+     61
+    ],
+    [
+     1195,
+     41
+    ],
+    [
+     1307,
+     28
+    ],
+    [
+     1346,
+     54
+    ],
+    [
+     1342,
+     107
+    ],
+    [
+     1312,
+     116
+    ],
+    [
+     1260,
+     134
+    ],
+    [
+     1200,
+     121
+    ],
+    [
+     1136,
+     155
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:28:07.216Z"
+  },
+  {
+   "id": "rmweu4kpowzji",
+   "name": "compass hills",
+   "color": "#3f8fb5",
+   "points": [
+    [
+     1102,
+     185
+    ],
+    [
+     1018,
+     192
+    ],
+    [
+     977,
+     212
+    ],
+    [
+     991,
+     246
+    ],
+    [
+     1054,
+     290
+    ],
+    [
+     1116,
+     271
+    ],
+    [
+     1139,
+     230
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:29:33.276Z"
+  },
+  {
+   "id": "rmweu6x20bj70",
+   "name": "Carnelian Pass",
+   "color": "#8a6fc9",
+   "points": [
+    [
+     1082,
+     18
+    ],
+    [
+     1115,
+     2
+    ],
+    [
+     1315,
+     2
+    ],
+    [
+     1361,
+     2
+    ],
+    [
+     1360,
+     42
+    ],
+    [
+     1290,
+     38
+    ],
+    [
+     1251,
+     37
+    ],
+    [
+     1129,
+     61
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:31:22.584Z"
+  },
+  {
+   "id": "rmweubdnyts8y",
+   "name": "the dome",
+   "color": "#c95a6a",
+   "points": [
+    [
+     1312,
+     115
+    ],
+    [
+     1298,
+     136
+    ],
+    [
+     1301,
+     156
+    ],
+    [
+     1312,
+     176
+    ],
+    [
+     1349,
+     194
+    ],
+    [
+     1380,
+     183
+    ],
+    [
+     1403,
+     155
+    ],
+    [
+     1400,
+     125
+    ],
+    [
+     1382,
+     109
+    ],
+    [
+     1356,
+     100
+    ],
+    [
+     1330,
+     107
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:34:50.734Z"
+  },
+  {
+   "id": "rmweud6jurkfl",
+   "name": "tharn hills",
+   "color": "#c9b08a",
+   "points": [
+    [
+     1382,
+     188
+    ],
+    [
+     1422,
+     234
+    ],
+    [
+     1464,
+     192
+    ],
+    [
+     1508,
+     187
+    ],
+    [
+     1542,
+     105
+    ],
+    [
+     1544,
+     50
+    ],
+    [
+     1496,
+     6
+    ],
+    [
+     1430,
+     3
+    ],
+    [
+     1365,
+     5
+    ],
+    [
+     1351,
+     52
+    ],
+    [
+     1343,
+     95
+    ],
+    [
+     1386,
+     109
+    ],
+    [
+     1404,
+     132
+    ],
+    [
+     1404,
+     153
+    ],
+    [
+     1384,
+     180
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-13T10:36:14.826Z"
+  },
+  {
+   "id": "rmwgux56yzw8l",
+   "name": "Delta",
+   "color": "#c9b08a",
+   "points": [
+    [
+     493,
+     166
+    ],
+    [
+     507,
+     198
+    ],
+    [
+     569,
+     215
+    ],
+    [
+     606,
+     175
+    ],
+    [
+     621,
+     154
+    ],
+    [
+     628,
+     136
+    ],
+    [
+     620,
+     130
+    ],
+    [
+     600,
+     115
+    ],
+    [
+     566,
+     107
+    ],
+    [
+     548,
+     119
+    ],
+    [
+     512,
+     126
+    ],
+    [
+     497,
+     151
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-14T20:27:18.538Z"
+  },
+  {
+   "id": "rmwgv03cawwvm",
+   "name": "Tharn Uplands",
+   "color": "#c9b08a",
+   "points": [
+    [
+     1437,
+     240
+    ],
+    [
+     1465,
+     197
+    ],
+    [
+     1512,
+     186
+    ],
+    [
+     1533,
+     128
+    ],
+    [
+     1544,
+     57
+    ],
+    [
+     1496,
+     5
+    ],
+    [
+     1814,
+     2
+    ],
+    [
+     1820,
+     565
+    ],
+    [
+     1803,
+     569
+    ],
+    [
+     1568,
+     388
+    ],
+    [
+     1431,
+     244
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-14T20:29:36.106Z"
+  },
+  {
+   "id": "rmwgv3ot4jv87",
+   "name": "NW outer wall",
+   "color": "#c9b08a",
+   "points": [
+    [
+     525,
+     329
+    ],
+    [
+     521,
+     319
+    ],
+    [
+     530,
+     293
+    ],
+    [
+     604,
+     271
+    ],
+    [
+     676,
+     263
+    ],
+    [
+     736,
+     241
+    ],
+    [
+     817,
+     261
+    ],
+    [
+     878,
+     259
+    ],
+    [
+     863,
+     335
+    ],
+    [
+     520,
+     332
+    ]
+   ],
+   "notes": "",
+   "kind": "biome",
+   "createdAt": "2026-11-14T20:32:23.896Z"
+  },
+  {
+   "id": "r_gem_andaru",
+   "name": "Andaru",
+   "color": "#d4845a",
+   "points": [
+    [
+     876,
+     812
+    ],
+    [
+     908,
+     812
+    ],
+    [
+     912,
+     864
+    ],
+    [
+     880,
+     866
+    ],
+    [
+     872,
+     838
+    ]
+   ],
+   "notes": "Throne vent-shoulder & ash-nomad kin of Zeijani (Ṣunu-Ašru & Šadū-Qarnu); raid colonizers, export fungal goods & Ranj. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "kind": "political",
+   "createdAt": "2026-11-13T08:00:00.000Z"
+  }
+ ],
+ "regions_reshaped": [
+  "rmuqm20f95x4v",
+  "rmuqm8dxeuvhi",
+  "rmvk9dowcuhbl",
+  "rmvarachnoids"
+ ],
+ "settlements_added": [
+  {
+   "id": "s06eu913kl",
+   "name": "Port Tobin",
+   "type": "village",
+   "px": 956,
+   "py": 943,
+   "notes": "",
+   "createdAt": "2026-11-13T05:39:31.252Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "s3zzt8dujb",
+   "name": "Hall of Heroes",
+   "type": "ruined arcology",
+   "px": 365,
+   "py": 1474,
+   "notes": "",
+   "createdAt": "2026-11-13T05:31:33.902Z",
+   "polity": "Kimr"
+  },
+  {
+   "id": "s5qv4dxo1j",
+   "name": "Sheritu",
+   "type": "village",
+   "px": 384,
+   "py": 666,
+   "notes": "",
+   "createdAt": "2026-11-13T05:06:16.548Z",
+   "polity": "Eternal State"
+  },
+  {
+   "id": "s5xupuwq1h",
+   "name": "Dayshun",
+   "type": "city",
+   "px": 608,
+   "py": 1168,
+   "notes": "",
+   "createdAt": "2026-11-13T05:18:31.904Z",
+   "polity": "Realm of Dalab"
+  },
+  {
+   "id": "s5zcvs194o",
+   "name": "Azoth",
+   "type": "city",
+   "px": 651,
+   "py": 1160,
+   "notes": "",
+   "createdAt": "2026-11-13T05:03:36.551Z",
+   "polity": "Vothic Kingdom"
+  },
+  {
+   "id": "s8921htcjy",
+   "name": "Skywatch",
+   "type": "village",
+   "px": 776,
+   "py": 470,
+   "notes": "",
+   "createdAt": "2026-11-13T06:04:44.673Z",
+   "polity": "Jimjam"
+  },
+  {
+   "id": "sa5o6dvjdv",
+   "name": "Jabal",
+   "type": "city",
+   "px": 1225,
+   "py": 1149,
+   "notes": "",
+   "createdAt": "2026-11-13T05:10:37.725Z",
+   "polity": "Jabal Shiekdom"
+  },
+  {
+   "id": "scrnfzyanu",
+   "name": "Ybera",
+   "type": "village",
+   "px": 898,
+   "py": 787,
+   "notes": "",
+   "createdAt": "2026-11-13T05:42:18.226Z",
+   "polity": "League: Ys"
+  },
+  {
+   "id": "sdfnky6vm8",
+   "name": "Nufelds",
+   "type": "village",
+   "px": 442,
+   "py": 1053,
+   "notes": "",
+   "createdAt": "2026-11-13T05:19:58.370Z",
+   "polity": "Realm of Dalab"
+  },
+  {
+   "id": "sdi0nzz51a",
+   "name": "Liikofi",
+   "type": "city",
+   "px": 1316,
+   "py": 797,
+   "notes": "",
+   "createdAt": "2026-11-13T05:14:23.594Z",
+   "polity": "Tabisti: Liikofi"
+  },
+  {
+   "id": "sfuf85wred",
+   "name": "Jrrmiah",
+   "type": "village",
+   "px": 557,
+   "py": 959,
+   "notes": "",
+   "createdAt": "2026-11-13T05:35:58.992Z",
+   "polity": "Frogmen"
+  },
+  {
+   "id": "sgnwyt5n59",
+   "name": "Rokwal",
+   "type": "village",
+   "px": 413,
+   "py": 1088,
+   "notes": "",
+   "createdAt": "2026-11-13T05:36:54.152Z",
+   "polity": "Realm of Dalab"
+  },
+  {
+   "id": "sgre336q61",
+   "name": "Port Mira",
+   "type": "village",
+   "px": 865,
+   "py": 895,
+   "notes": "",
+   "createdAt": "2026-11-13T05:47:27.325Z",
+   "polity": "Hookfleet"
+  },
+  {
+   "id": "sgxc1s0gyh",
+   "name": "Stahlborn",
+   "type": "village",
+   "px": 627,
+   "py": 868,
+   "notes": "",
+   "createdAt": "2026-11-13T05:16:34.997Z",
+   "polity": "Iron Republic"
+  },
+  {
+   "id": "sgzl17vqfx",
+   "name": "Tone",
+   "type": "village",
+   "px": 368,
+   "py": 776,
+   "notes": "",
+   "createdAt": "2026-11-13T05:07:41.193Z",
+   "polity": "Eternal State"
+  },
+  {
+   "id": "shvo49k0y2",
+   "name": "Thalaba",
+   "type": "village",
+   "px": 825,
+   "py": 1481,
+   "notes": "",
+   "createdAt": "2026-11-13T05:25:53.287Z",
+   "polity": "Xanadu Sultanate"
+  },
+  {
+   "id": "si23cxlc1r",
+   "name": "Atton",
+   "type": "village",
+   "px": 1008,
+   "py": 972,
+   "notes": "",
+   "createdAt": "2026-11-13T05:37:28.185Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "skjtxiqwjk",
+   "name": "Shanty",
+   "type": "outpost",
+   "px": 975,
+   "py": 846,
+   "notes": "",
+   "createdAt": "2026-11-13T05:45:03.387Z",
+   "polity": "Ring Sea Pirates"
+  },
+  {
+   "id": "sks1pzfrfg",
+   "name": "Krrmt",
+   "type": "village",
+   "px": 643,
+   "py": 1023,
+   "notes": "",
+   "createdAt": "2026-11-13T05:34:46.208Z",
+   "polity": "Frogmen"
+  },
+  {
+   "id": "skwjynoxko",
+   "name": "Sethas",
+   "type": "village",
+   "px": 688,
+   "py": 1141,
+   "notes": "",
+   "createdAt": "2026-11-13T05:04:02.949Z",
+   "polity": "Vothic Kingdom"
+  },
+  {
+   "id": "sl758m2396",
+   "name": "Kirstabal",
+   "type": "village",
+   "px": 989,
+   "py": 1600,
+   "notes": "",
+   "createdAt": "2026-11-13T05:24:06.231Z",
+   "polity": "Xanadu Sultanate"
+  },
+  {
+   "id": "slm5ul15lp",
+   "name": "Silkhead",
+   "type": "city",
+   "px": 932,
+   "py": 425,
+   "notes": "",
+   "createdAt": "2026-11-13T05:23:13.236Z",
+   "polity": "Silkhead (Korona Gateway)"
+  },
+  {
+   "id": "slvxyhg4o4",
+   "name": "Gioli",
+   "type": "village",
+   "px": 983,
+   "py": 1023,
+   "notes": "",
+   "createdAt": "2026-11-13T05:38:07.835Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "sn98ob5duu",
+   "name": "Sfenops",
+   "type": "city",
+   "px": 1282,
+   "py": 663,
+   "notes": "",
+   "createdAt": "2026-11-13T05:12:28.305Z",
+   "polity": "Tabisti: Sfenops"
+  },
+  {
+   "id": "sory54g10c",
+   "name": "Daridel",
+   "type": "village",
+   "px": 937,
+   "py": 1068,
+   "notes": "",
+   "createdAt": "2026-11-13T05:08:35.506Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "sr4lzat7j3",
+   "name": "Seto",
+   "type": "village",
+   "px": 930,
+   "py": 922,
+   "notes": "",
+   "createdAt": "2026-11-13T05:09:43.770Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "sr666p3u3p",
+   "name": "Cline",
+   "type": "village",
+   "px": 1225,
+   "py": 646,
+   "notes": "",
+   "createdAt": "2026-11-13T05:15:14.531Z",
+   "polity": "Nomad Country"
+  },
+  {
+   "id": "srbp1bvh1r",
+   "name": "Urundashi",
+   "type": "village",
+   "px": 779,
+   "py": 1153,
+   "notes": "",
+   "createdAt": "2026-11-13T05:04:45.194Z",
+   "polity": "Shumari"
+  },
+  {
+   "id": "ssgsv5zbd2",
+   "name": "Amaro",
+   "type": "city",
+   "px": 731,
+   "py": 1184,
+   "notes": "",
+   "createdAt": "2026-11-13T05:02:47.997Z",
+   "polity": "Shumari"
+  },
+  {
+   "id": "sskj0rbfy4",
+   "name": "Boiling Bay",
+   "type": "outpost",
+   "px": 866,
+   "py": 723,
+   "notes": "",
+   "createdAt": "2026-11-13T05:46:04.477Z",
+   "polity": "Ring Sea Pirates"
+  },
+  {
+   "id": "svvu4ssvzc",
+   "name": "Dapor",
+   "type": "outpost",
+   "px": 485,
+   "py": 1105,
+   "notes": "",
+   "createdAt": "2026-11-13T05:05:34.290Z",
+   "polity": "Realm of Dalab"
+  },
+  {
+   "id": "sxmeztkqg7",
+   "name": "Marr",
+   "type": "city",
+   "px": 926,
+   "py": 1017,
+   "notes": "",
+   "createdAt": "2026-11-13T05:40:03.839Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "sxvb4k4024",
+   "name": "Driyan",
+   "type": "city",
+   "px": 725,
+   "py": 1141,
+   "notes": "",
+   "createdAt": "2026-11-13T05:03:20.015Z",
+   "polity": "Vothic Kingdom"
+  },
+  {
+   "id": "sziebkh7y3",
+   "name": "Tzinguard",
+   "type": "outpost",
+   "px": 773,
+   "py": 922,
+   "notes": "",
+   "createdAt": "2026-11-13T05:41:12.079Z",
+   "polity": "Vothic Kingdom"
+  },
+  {
+   "id": "s5p5j083tj",
+   "name": "Eastern highlands harvesters (to be named)",
+   "type": "village",
+   "px": 1095,
+   "py": 911,
+   "notes": "The cushion plateau's harvesters (cushion wool, thorn gum, wormwick, tower honey; biomes/ehighlands/NOTES.md): a flat high basin at 3,502 m, Dsb, ~860 mm, +7 C, ~1.03 atm, on the wet face under the plateau's edge in 'e inner wall'; 223 km2-eq of farmland within 10 km, 380 km2 of cushion ground within 20 km. Culture and lore to come (the owner, 2026-11-12; openworld/TRADE-SCOPE.md 2.5d). Gemini's trade model calls it Guari, a Tiguantin town.",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sk9e4psl4b",
+   "name": "Pit-Head 04",
+   "type": "outpost",
+   "px": 1687,
+   "py": 1555,
+   "notes": "The Siphon-Ropers' base camp on the Siphon Pits' maar floor (station 3; +2,277 m, ~2 km under a +4,269 m rim): the woolly siphon's machine-wax rendered into ingots, Yuni's machine-wax works (biomes/siphon-pits/PLAN.md 3). Ostrukh-on-Water ~380 km. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 2.5c).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Yuni Emirate"
+  },
+  {
+   "id": "s7ci2atl8h",
+   "name": "Coyote village (to be named)",
+   "type": "village",
+   "px": 1220,
+   "py": 564,
+   "notes": "On the south shore of the big fresh lake north of the abyss (~1227,546, 3,428 km2): a knoll by the water. Aw, ~1,270 mm, +26 C, ~148 km2-eq farmland within 10 km. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 10).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Coyote Kingdom"
+  },
+  {
+   "id": "so1jl0hoo4",
+   "name": "Baelu (to be named)",
+   "type": "fort",
+   "px": 651,
+   "py": 857,
+   "notes": "B1: a Baelu, the Scyvoi's fire-season stone redoubt on an outcrop (kits/scyvoi/README.md). The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 11). B6 and B7 wait on the queue's outcrop terrain edit.",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Scyvoi"
+  },
+  {
+   "id": "sq11baelub2",
+   "name": "Baelu (to be named)",
+   "type": "fort",
+   "px": 669,
+   "py": 831,
+   "notes": "B2: a Baelu, the Scyvoi's fire-season stone redoubt on an outcrop (kits/scyvoi/README.md). The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 11). B6 and B7 wait on the queue's outcrop terrain edit.",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Scyvoi"
+  },
+  {
+   "id": "shijs5pm39",
+   "name": "Baelu (to be named)",
+   "type": "fort",
+   "px": 683,
+   "py": 802,
+   "notes": "B3: a Baelu, the Scyvoi's fire-season stone redoubt on an outcrop (kits/scyvoi/README.md). The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 11). B6 and B7 wait on the queue's outcrop terrain edit.",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Scyvoi"
+  },
+  {
+   "id": "sqdxhk5fyd",
+   "name": "Baelu (to be named)",
+   "type": "fort",
+   "px": 703,
+   "py": 733,
+   "notes": "B4: a Baelu, the Scyvoi's fire-season stone redoubt on an outcrop (kits/scyvoi/README.md). The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 11). B6 and B7 wait on the queue's outcrop terrain edit.",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Scyvoi"
+  },
+  {
+   "id": "sq11baelub5",
+   "name": "Baelu (to be named)",
+   "type": "fort",
+   "px": 725,
+   "py": 706,
+   "notes": "B5: a Baelu, the Scyvoi's fire-season stone redoubt on an outcrop (kits/scyvoi/README.md). The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 11). B6 and B7 wait on the queue's outcrop terrain edit.",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Scyvoi"
+  },
+  {
+   "id": "sq11kork1",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 952,
+   "py": 423,
+   "notes": "K1: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sekz9n78zt",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 909,
+   "py": 499,
+   "notes": "K2: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kork3",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 942,
+   "py": 521,
+   "notes": "K3: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kork4",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 978,
+   "py": 540,
+   "notes": "K4: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kork5",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 964,
+   "py": 462,
+   "notes": "K5: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kork6",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1006,
+   "py": 340,
+   "notes": "K6: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sco5u3fit1",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1033,
+   "py": 354,
+   "notes": "K7: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kork8",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1040,
+   "py": 564,
+   "notes": "K8: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kork9",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 907,
+   "py": 586,
+   "notes": "K9: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kork10",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 912,
+   "py": 556,
+   "notes": "K10: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sgbcdqfnim",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1143,
+   "py": 596,
+   "notes": "E1: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kore2",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1096,
+   "py": 572,
+   "notes": "E2: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kore3",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1146,
+   "py": 546,
+   "notes": "E3: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11kore4",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1094,
+   "py": 501,
+   "notes": "E4: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11korn1",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1063,
+   "py": 468,
+   "notes": "N1: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11korn2",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1117,
+   "py": 421,
+   "notes": "N2: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11korn3",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1063,
+   "py": 345,
+   "notes": "N3: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11korn4",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1026,
+   "py": 456,
+   "notes": "N4: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11korn5",
+   "name": "Korona village (to be named)",
+   "type": "village",
+   "px": 1158,
+   "py": 472,
+   "notes": "N5: a Korona village, at most 1,000 people, most of Korona's people in hamlets and bands round it; names in the Hum to come. The owner, 2026-11-12 (openworld/TRADE-SCOPE.md 12).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sq11desertw1",
+   "name": "Dasri village (to be named)",
+   "type": "village",
+   "px": 1270,
+   "py": 745,
+   "notes": "W1: the abyss's west rim, on wadis. The owner, 2026-11-15 (openworld/TRADE-SCOPE.md 13).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Nomad Country"
+  },
+  {
+   "id": "sq11desertw2",
+   "name": "Dasri village (to be named)",
+   "type": "village",
+   "px": 1190,
+   "py": 671,
+   "notes": "W2: a spring-line oasis. The owner, 2026-11-15 (openworld/TRADE-SCOPE.md 13).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Nomad Country"
+  },
+  {
+   "id": "sq11desertw3",
+   "name": "Dasri village (to be named)",
+   "type": "village",
+   "px": 1243,
+   "py": 844,
+   "notes": "W3: mid-desert, on wadis. The owner, 2026-11-15 (openworld/TRADE-SCOPE.md 13).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Nomad Country"
+  },
+  {
+   "id": "sq11desertw4",
+   "name": "Izani-Dasri village (to be named)",
+   "type": "village",
+   "px": 1184,
+   "py": 935,
+   "notes": "W4: an oasis on the Rrivar Blaca. The owner, 2026-11-15 (openworld/TRADE-SCOPE.md 13).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "sq11desertw5",
+   "name": "Dasri village (to be named)",
+   "type": "village",
+   "px": 1172,
+   "py": 1042,
+   "notes": "W5: an oasis on the Winda Riba. The owner, 2026-11-15 (openworld/TRADE-SCOPE.md 13).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "sq11desertw6",
+   "name": "Izani-Dasri village (to be named)",
+   "type": "village",
+   "px": 1240,
+   "py": 960,
+   "notes": "W6: on the Bruk Lona, 54 km from Verge. The owner, 2026-11-15 (openworld/TRADE-SCOPE.md 13).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "sq11desertw7",
+   "name": "Izani-Dasri village (to be named)",
+   "type": "village",
+   "px": 1042,
+   "py": 1083,
+   "notes": "W7: on the Bruk cedra, 72 km from Arcbeam. The owner, 2026-11-15 (openworld/TRADE-SCOPE.md 13).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "sq11desertw8",
+   "name": "Izani-Dasri village (to be named)",
+   "type": "village",
+   "px": 1172,
+   "py": 974,
+   "notes": "W8: wet Cfa farmland at 1,044 m. The owner, 2026-11-15 (openworld/TRADE-SCOPE.md 13).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "smjbumc1tr",
+   "name": "Ṣunu-Ašru",
+   "type": "town",
+   "px": 892,
+   "py": 852,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Andaru"
+  },
+  {
+   "id": "syhyn9me05",
+   "name": "Šadū-Qarnu",
+   "type": "village",
+   "px": 895,
+   "py": 825,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Andaru"
+  },
+  {
+   "id": "sezlil6yjd",
+   "name": "Nephtos",
+   "type": "town",
+   "px": 919,
+   "py": 762,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "League: Tethys"
+  },
+  {
+   "id": "sti7vwepda",
+   "name": "Limnaia",
+   "type": "village",
+   "px": 736,
+   "py": 712,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "League: Trigon"
+  },
+  {
+   "id": "spu8avuuin",
+   "name": "Kyra Isle",
+   "type": "village",
+   "px": 726,
+   "py": 820,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "League: Pontus"
+  },
+  {
+   "id": "sz4ta81ln9",
+   "name": "Skopelos Isle",
+   "type": "village",
+   "px": 724,
+   "py": 847,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "League: Pontus"
+  },
+  {
+   "id": "s427qb1kma",
+   "name": "Qoold Lheek",
+   "type": "town",
+   "px": 410,
+   "py": 506,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Yeti Kingdom"
+  },
+  {
+   "id": "syen8wxax5",
+   "name": "Taikoro",
+   "type": "village",
+   "px": 752,
+   "py": 781,
+   "notes": "West Islander (Hikau) spice & pearl fishing village on northern West Ring Isle From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "West Ring Islanders"
+  },
+  {
+   "id": "szru86us3f",
+   "name": "Kautono",
+   "type": "village",
+   "px": 749,
+   "py": 894,
+   "notes": "West Islander (Hikau) spice & outrigger village on southern West Ring Isle off Almua From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "West Ring Islanders"
+  },
+  {
+   "id": "sekx18xkrz",
+   "name": "Gate Tarn Mires",
+   "type": "village",
+   "px": 1544,
+   "py": 470,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Coyote Kingdom"
+  },
+  {
+   "id": "sfq3p8chah",
+   "name": "The Sill (Sam-Lok)",
+   "type": "fort",
+   "px": 1697,
+   "py": 1028,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Coyote Kingdom"
+  },
+  {
+   "id": "sljo3qlbvn",
+   "name": "Peak Coyote Plume-Camp",
+   "type": "town",
+   "px": 1656,
+   "py": 700,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Coyote Kingdom"
+  },
+  {
+   "id": "s30h7qm96s",
+   "name": "Spider Lake Weirs",
+   "type": "town",
+   "px": 1288,
+   "py": 220,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Spider Lake Guilds"
+  },
+  {
+   "id": "s31qikhp39",
+   "name": "Ham-Tsek Silk Post",
+   "type": "outpost",
+   "px": 1055,
+   "py": 219,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Spider Lake Guilds"
+  },
+  {
+   "id": "s729bdsrtd",
+   "name": "Rifar al-Dhahab",
+   "type": "village",
+   "px": 1333,
+   "py": 886,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Nomad Country"
+  },
+  {
+   "id": "sr72acbono",
+   "name": "Sista Riba Village",
+   "type": "village",
+   "px": 1311,
+   "py": 982,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Yuni Emirate"
+  },
+  {
+   "id": "sjuarjbku0",
+   "name": "Opal Valley Mines",
+   "type": "village",
+   "px": 1038,
+   "py": 1662,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Xanadu Sultanate"
+  },
+  {
+   "id": "sttkxo9ndy",
+   "name": "White Gills Hermitage",
+   "type": "outpost",
+   "px": 1035,
+   "py": 1535,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Order of Historians"
+  },
+  {
+   "id": "s57rejd9iv",
+   "name": "Singing Gjar Quartz",
+   "type": "outpost",
+   "px": 1572,
+   "py": 1643,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Order of Historians"
+  },
+  {
+   "id": "skzuw4a73a",
+   "name": "Painted Canyon Cliff-Hold",
+   "type": "village",
+   "px": 1055,
+   "py": 622,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Painted Men"
+  },
+  {
+   "id": "scyeauyek7",
+   "name": "Parabola",
+   "type": "inhabited ruin",
+   "px": 970,
+   "py": 1186,
+   "notes": "From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Empire of Iziz"
+  },
+  {
+   "id": "gem_palewharf",
+   "name": "Palewharf",
+   "type": "village",
+   "px": 565,
+   "py": 604,
+   "notes": "Eternian western lakeshore barge wharf on Jimjam's Lake receiving Jimjam alabaster. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Eternal State"
+  },
+  {
+   "id": "gem_godsgate",
+   "name": "Bab al-Hawa (Godsgate)",
+   "type": "outpost",
+   "px": 1028,
+   "py": 1246,
+   "notes": "North Catch wind-gap caravanserai south of Parabola. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Catch Oasis Stations"
+  },
+  {
+   "id": "gem_twins_pass",
+   "name": "The Twins",
+   "type": "fort",
+   "px": 1042,
+   "py": 1525,
+   "notes": "Geothermal steam-vent pass fort between Stair and Strongbow. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Twins Pass Wardenry"
+  },
+  {
+   "id": "sc3dsw9tjl",
+   "name": "Darling",
+   "type": "village",
+   "px": 1582,
+   "py": 1341,
+   "notes": "Yuni Mid-Basin caravan village (3164 km, 2682 km) linking Stalker Gate passes to Ostrukh-on-Water & Spindle Fan. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Yuni Emirate"
+  },
+  {
+   "id": "sz85a8i5js",
+   "name": "Ranger HQ",
+   "type": "outpost",
+   "px": 1420,
+   "py": 1242,
+   "notes": "Fortified Yuni Stalker-watch outpost (2840 km, 2484 km) supporting caravans through the Stalker Gate. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Yuni Emirate"
+  },
+  {
+   "id": "sbberbi1ny",
+   "name": "Quintagon",
+   "type": "ruined arcology",
+   "px": 1358,
+   "py": 945,
+   "notes": "Uninhabited ruined arcology (2716 km, 1890 km) above Sista Riba & Verge; Yuni Emirate's primary source of salvaged scrap metal, relics & high-tech parts. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z"
+  },
+  {
+   "id": "sl9let4tz0",
+   "name": "Frost-Jaw Camp",
+   "type": "village",
+   "px": 624,
+   "py": 361,
+   "notes": "Western semi-nomadic Sasquatch winter camp in Frost-Jaw Vale. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Sasquatch Tribes"
+  },
+  {
+   "id": "sse7u0rvoj",
+   "name": "Hoar-Wind Camp",
+   "type": "village",
+   "px": 788,
+   "py": 332,
+   "notes": "Eastern semi-nomadic Sasquatch camp in Hoar-Wind Glen trading south toward Skywatch & Serai. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
+   "createdAt": "2026-11-15T00:00:00.000Z",
+   "polity": "Sasquatch Tribes"
+  }
+ ],
+ "settlements_fort": [
+  "sjqk469u0k",
+  "se4hiep1n7",
+  "sxan7r1sln",
+  "smqy5z5eek",
+  "sthegate",
+  "soctr12hfz",
+  "s10ioj4r5u"
+ ],
+ "dropped": [
+  "Singing Gjar outpost (= Singing Gjar Quartz)",
+  "Guari (= the eastern highlands harvesters)",
+  "Coyote Lake Village (= the queue's Coyote village)",
+  "Baelu North (B4) (= Baelu B4)",
+  "Baelu Mid (B3) (= Baelu B3)",
+  "Baelu South (B1) (= Baelu B1)",
+  "Hoar-Table Village (K7) (= Korona K7)",
+  "Sing-Ham Crest (K2) (= Korona K2)",
+  "East Korona Lake (E1) (= Korona E1)",
+  "Catch Salt Works (= the held 5.1e10 Dasri salt works)",
+  "Bowl Salt Works (= the held 5.1e10 Bowl salt works)",
+  "Siphon Maar Works (= Pit-Head 04)",
+  "Kolli Oasis (= Kolli)",
+  "Arfwai Oasis (= Arfwai)",
+  "Xanadu Goldfields (= Xanadu gold mines (to be named))"
+ ]
+}

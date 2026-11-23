@@ -150,3 +150,6 @@ the biome's own (added to the host's scene, ticked through BIO.host.ticks), not 
 ## Next
 More fauna (fish under the surface, something that climbs the boles); a road up the volcano's flank; the canon
 temple height; Yuni Valley, highlands, arctic.
+
+## Geology & `KSTRATA` Notes (`5.1`, 2026-11-13)
+- **Bedrock split:** Outer/southern bay shores expose bedded warm-water **`carbonate-shelf`** (`2–5 m` cream coquina/oolite & recessed marl with diurnal libration-tide solution visors; non-tower coastal karst, `KARST-SITES-5.1.md` #9), while the steep Almua–Voth inner-wall coast (`5.1 px 718, 883` to `734, 998`) exposes **`contact-marble`** (`4–8 m` white/blue-veined marble with epidote-garnet-magnetite skarn selvages; see `PLAN.md`, *"Almua Skarn-Marble Harbour Cliffs"*).

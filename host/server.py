@@ -77,7 +77,7 @@ class Site:
 
         server = raw.get("server", {})
         self.host = str(server.get("host", "0.0.0.0"))
-        self.port = int(server.get("port", 8000))
+        self.port = int(server.get("port", 8001))
         self.log_requests = bool(server.get("log_requests", True))
         self.health = server.get("health")
         # The menagerie index: the list of scenes, as JSON, for the front page and for the menu each scene

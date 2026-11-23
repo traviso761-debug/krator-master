@@ -182,3 +182,6 @@ Fauna against this contract. The Inner Wall's foot and the lowlands' SE continua
 A richer shore (dunes, a salt marsh on the delta's fringe). The hills rising into whatever
 lies under the Outer Wall. Drop an Ancients kit megastructure into the oak plain through
 `dress()`.
+
+## Geology & `KSTRATA` Notes (`5.1`, 2026-11-13)
+- **Lower `klir Rivrh` Carbonate Bluffs (`KARST-SITES-5.1.md` Site #5):** Where the incised lower valley of `klir Rivrh` cuts through the coastal plain and Mediterranean foothills, rocky box-canyon bluffs and spring-fed tufa alcoves expose **`carbonate-shelf`** (`core/terrain/35-core-strata.js`: `2–5 m` warm cream/buff bioclastic & oolitic limestone beds over recessed pale marl partings and `terrarossa` seams), feeding gin-clear cypress/sprawl-oak spring runs without tower karst.

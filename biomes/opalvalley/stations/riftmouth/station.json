@@ -1,0 +1,4 @@
+{
+ "note": "Station 5, the Opal Cataract and the Xanadu threshold (PLAN.md section 6). kin: the Rift's trumpet tree and bell palm read in place on the fan (OPAL.EDGE.riftmouth; PLAN.md section 9, item 7), with the pack families their builders draw with.",
+ "kin": {"rift": [["src/50-biome-rift-species.js", "src/55-biome-rift-trees.js"], "RIFT", ["bark2", "bark4", "fan", "broad"]]}
+}

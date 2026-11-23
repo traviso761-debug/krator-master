@@ -1,10 +1,19 @@
 # The Twins (`twins`) — Active Twin-Volcano Divide, Pyroduct & Geothermal Oasis Caravan Crossings, and Guide Traps (`PLAN.md`)
 
-> **Status: Proposed Biome Kit & Scale-Model `5.1` Sculpting Blueprint (`2026-11-06`).**
+> **Status: Built in software GL (`2026-11-09`): station 1, the pyroduct (`dist/twins.html`, GPU-verified); stations 2-6 built in a cloud session (`dist/twins-brazier.html`, `twins-lavasump.html`, `twins-shroudvale.html`, `twins-erebustwin.html`, `twins-catchlookout.html`; `NOTES.md` has each), their GPU verify owed (`KNOWN_ISSUES.md`). Section 0.1 is the core adoption; the scale model already carries Option A (`tools/scale-model/build_425_master.py` section 4, `D['vents']`).** First written as a Proposed Biome Kit & Scale-Model `5.1` Sculpting Blueprint (`2026-11-06`).
+>
+> **Updated 2026-11-16 (`core/simulation/PROPOSAL-CATCH.md`, its survey `CATCH-SURVEY.md`).** Strongbow stands at **(1001, 1596)** since
+> scale-model key 5.1e5 (2026-11-11); the old (1026, 1594) is corrected below. **The distances in sections 3.1 and 3.2 are about half what
+> this plan's own 5.1 points measure** (2 km a pixel): Route A from its A1 entry to the A4 exit is **~228 km** on its waypoints, not ~93;
+> the A4 exit is **~137 km** from Stair, not ~65; Route B from Oasis 5 to Oasis 1 is **~152 km**, then ~184 km to Strongbow, so Stair to
+> Strongbow is **~410-450 km** either way. Route A's entry (938, 1496) stands at **~5,150 m** on 5.1, not +2,950. On 5.1 the oases
+> sample Csb at ~400 mm, not the Catch-side BSk/BWk of section 7.2. The owner's answers of 2026-11-16 for the sim: the Twins' col
+> **closes in winter** (Route A's tubes stay open for packs, *proposed*); Gemini's "Twins fort" pin (1042, 1525) is **dropped**; the
+> Brotherhood keeps the five oases as its waystations.
 >
 > **Polygon:** `twins` (`id: "rmw536m06wlyf"`, `kind: "biome"`, `7` vertices: `[[935, 1476], [978, 1419], [1059, 1472], [1095, 1521], [1092, 1556], [1043, 1570], [987, 1515]]`).
 > - **Bounding Box & Area:** `X = 935..1095` (`~320 km` NW–SE), `Y = 1419..1570` (`~302 km` NE–SW); **`12,159 px` = `48,636 km²`** on the `1821 × 1723` (`2 km/px`) Scale Model `5.1` master grid (subtract `DX = 272, DY = 330` for legacy `4.23` coordinates).
-> - **Adjacencies (`5.1`):** Divides the **Vale of Xanadu** (`rmuf30815vwms`, SW at `X = 769..950, Y = 1455..1547`), **Xanadu** (`rmvkkmitffbjk`) / **Xanadu Sultanate** (`rmufcgvtxatfx`), and the caravan gate-town of **Strongbow** (`(1026, 1594)`) from the hyperarid endorheic basin of **The Catch** (`rmuf346nvpktx` / `rmvka7icdn1dq`, NE at `X = 958..1274, Y = 1288..1520`) and the Hill-arcology camp of **Stair** (`(1106, 1442)` on `5.1`, old `(834, 1112)`). Flanked to the NW by the **Godthrone** (`rmvkkebdukgx7`) and **Godshearth** (`rmw4wou2y1hhc`, `X = 808..880, Y = 1370..1451`), and to the SE by **Oidong Valley** (`rmuklrcae6jb5`, `X = 997..1307, Y = 1564..1680`).
+> - **Adjacencies (`5.1`):** Divides the **Vale of Xanadu** (`rmuf30815vwms`, SW at `X = 769..950, Y = 1455..1547`), **Xanadu** (`rmvkkmitffbjk`) / **Xanadu Sultanate** (`rmufcgvtxatfx`), and the caravan gate-town of **Strongbow** (`(1001, 1596)`) from the hyperarid endorheic basin of **The Catch** (`rmuf346nvpktx` / `rmvka7icdn1dq`, NE at `X = 958..1274, Y = 1288..1520`) and the Hill-arcology camp of **Stair** (`(1106, 1442)` on `5.1`, old `(834, 1112)`). Flanked to the NW by the **Godthrone** (`rmvkkebdukgx7`) and **Godshearth** (`rmw4wou2y1hhc`, `X = 808..880, Y = 1370..1451`), and to the SE by **Oidong Valley** (`rmuklrcae6jb5`, `X = 997..1307, Y = 1564..1680`).
 
 ---
 
@@ -21,6 +30,40 @@
 | **Kit Folder & Object** | `biomes/twins/` (`window.TWINS`, `BIO.init({tags:'twins'})`) |
 | **Core Modules Adopted** | `core/biome`, `core/rand` (`KRAND`), `core/tags`, `core/space` (`KSPACE`), `core/host` (`KHOST.FULL`), `core/atmos` (thin-air mountain sky, SO₂/steam volcanic plumes, nocturnal katabatic frost-winds, height-fog in box vales), `core/water` (`WATER.geyser` low fumarolic seeps, `WATER.terrace` compact travertine/sinter aprons, `WATER.still` warm tarn pools & molten lava ponds, `WATER.ice` Erebus fumarolic ice towers & glaciers), `core/terrain` (`KFIELD`, `KSTRATA` with `tibasalt` + `obsidian` + `scoria` recipes, `KRELIEF.talus`, `KRELIEF.tube` lava-tube skylights & portals, `KFROST` periglacial scree), `core/hazard` (`KHAZ` sub-zero wind-chill, thin lava crusts, `1,150 °C` degassing lava sumps, CO₂/SO₂ dead-air pockets) |
 | **Cross-Kit Interfaces (Read in Place)** | • **`biomes/xanadu` (`--station ranges`, `PLAN-STATIONS.md` ll. 42–53):** Supplies the SW subalpine approach flora (agate-barked Xanadu pine krummholz, high-range cushion plants) and links `tube_xanadu_nw_09` directly to the sacred River Alph's chasm headwaters.<br>• **`biomes/geyser` (`--station puna` & `--station ice`, `PLAN-STATIONS.md` ll. 31–57, 85–97):** Supplies the Mount Erebus fumarolic ice chimneys and subglacial melt caves on the upper flanks of the SE Twin `(1042, 1498)` (`--station ice`) and the compact, El Tatio / Puna-style steaming sinter aprons, orange/black cyanobacterial mats, and borate crusts of the Five Steaming Stones (`--station puna`).<br>• **`biomes/catch` (`PLAN.md` ll. 146–196):** Supplies the NE desert-fan transition toward **Stair** `(1106, 1442)`, the alkali-dust haze carried up by afternoon anabatic gusts, and the multi-ethnic caravan traffic (**Xanadui, Yuni, Izani, Dasrī**).<br>• **`biomes/godthrone` (`tubes`) & `biomes/hearths` / `biomes/godshearth`:** Supplies the drained master pyroduct geometry (`tube_xanadu_nw_09`, `tube_xanadu_se_10`, intact levee benches, glazed ceiling drip-stalactites) and stunted, knee-high *pocket-hearth* shrubs & *bobby-sock* sedges colonizing the five geothermal oases. |
+
+### 0.1 Core adoption (the build as started, 2026-11-09)
+
+Written before the first fragment (README.md, "CORE MODULES ARE NOT OPTIONAL"). The kit is started from **`biomes/godthrone`**, the nearest finished
+station set on the same rock (the titanium basalt) and the Twins' NW neighbour: its `build.py`, its stage, field, ground and far-field fragments,
+its region tool (`biomes/godthrone/tools/region.py --kit biomes/twins`, read in place), its verify on `tools/harness.py`. **Every page is a station**
+(`stations/<name>/`); `src/` holds what they share. `python3 tools/check_core_use.py biomes/twins` passes (0 findings).
+
+| Module | Taken? | What for, or why not |
+|---|---|---|
+| `core/biome` | taken | the items (blocks, obsidian, stones, cairns, ferns, cushions), their bake and LOD; `37-core-traps` (core/hazard's one clock) |
+| `core/rand` (`KRAND`) | taken | every draw: a cell's hash of (world, i, j, salt) and its index; the ground's noise (`KRAND.fbm`, `vnoise`) |
+| `core/tags` | taken | every item, volume and structure a record before it is drawn (`BIO.init({tags:'twins'})`, `REGISTER`) |
+| `core/space` (`KSPACE`) | taken | the core's keep-clear and scatter read it |
+| `core/host` (`KHOST.FULL`) | taken | the camera, the loop, the panel, the probe, the inspector, the polygon and path tools, the minimap, the edits |
+| `core/atmos` | taken | the shared sky with its thin-air law at the station's 5.1 pixel, the weather (`climate.cold`: snowfall, the blizzard, `fx/snowcover`), particles (the Twins' plumes), the glow layer (the NW Twin's crater), the wind |
+| `core/terrain` | taken | `KFIELD` (the ground baked once, insets at 2 m), `KSTRATA` (`tibasalt`: the faces' beds; its beads altered to palagonite below the recipe's 8,500 m line), `KRELIEF`, `KFROST` (solifluction lobes on the scree), `KGROUND` (the scree, obsidian and snow layers), `KFAR` (the range, the Catch and Xanadu past the map), `KHORIZON`; **`KCAVERN`** (station 1's tubes, skylight, portal: `station.json` "reads") |
+| `core/hazard` (`KHAZ`) | taken | the ambient bridge: the air by height, the temperature (−4 °C on the scree at 4,240 m, a 6.5 °C/km lapse, +13 °C inside the tubes: `STATION_TEMP`), so the cold and the thin air dose; the traps' records (lava sumps, CO₂/SO₂ pockets, the frozen vales' cold sink) at stations 3 and 4; on stations 2-5 also `22-core-hazard-env.js` (the crusts that break underfoot `KHAZ.ENV.crust`, the gas and cold that pool at night `KHAZ.ENV.nightGas`, `coldPool`, on the host clock and the wind) |
+| `core/water` | **stations 2-6** (not station 1: a frozen scree) | by path (`station.json` "water"): the oases' hot pools `WATER.spring` (core/water/geyser), their mud pots `WATER.mudpot` and fumaroles' steam `WATER.fumarole` (geyser 52c, 52d), their geysers `WATER.geyser`, Catch-Lookout's soaking basins `WATER.terraces` (ext 53); the Shroud's iron seep and the Rime Twin's slush cauldrons `WATER.spring` |
+| `core/materials` | taken | `materials.json` → `tex/` (`tools/textures/pack.py`): the basalt's grain, cinder detail, obsidian, snow, scoria scree, lichen crust, the fern card |
+| `core/shadow` | taken | toggleable, off at page load (`?shadow=1`) |
+| `core/export` | taken | the krator-world container (`BIO.export`), the export profile under `verify.py --assert` |
+| `core/mask` | not needed yet | nothing reads a canvas for placement: every pass reads the model's fields (the oases' passes read KTHERM's heat) |
+| `core/terrain` KTHERM | **stations 2-6** | the ground's temperature between the vents (`47-core-therm.js`, a station's "reads"): the oases' zones, the snow's edge, the hearths' and the pines' ground (`45a7-host-oasis.js`) |
+| `core/lod`, `core/minimap` | through `core/biome` and `core/host` | the items' LOD and the host's minimap |
+| `core/walk` | **owed** | the tubes' floors are KCAVERN's plan (`C.build` writes them to a `KWALK` when given one); the page has no walk layer yet, so the camera guard reads `STATION_FLOOR` |
+| `core/camp`, `core/simulation`, `kits/catalog`, `kits/fauna` | **owed** | the resting caravan in tube A1, the guides, the pack-yaks and basalt-mules (section 5.3), the camps at the Hall of the Tally-Marks and the oases: owed to the life layer (`KNOWN_ISSUES.md`), not stood in for |
+| `biomes/hearths` (read in place) | **the Brazier** | `HEARTH.layout` on the oasis's KTHERM bake, the cold dress (1.2-3.2 m: the dwarf pocket-hearths), `station.json` "kin" |
+| `biomes/xanadu`, `biomes/geyser`, `biomes/catch` (read in place) | **owed** (endemic variants drawn instead: `KNOWN_ISSUES.md`) | the dwarf agate-pine (the kit's krummholz in Xanadu's agate palette), the bobby-sock sedge and the mats (the library's sedge card, ground classes and core/water's spring ramps for the puna's), the Erebus ice (core/terrain's KGLACIER, not the geyser kit's ice station); the fumarole-fern and cinder-cushion are the kit's own |
+
+**Gaps in core, said rather than worked round.** Section 0 names `KSTRATA` recipes `obsidian` and `scoria` and `KRELIEF.tube`: core has none of them
+(`KSTRATA.RECIPES`: `tibasalt` is the nearest; the tubes are `KCAVERN`'s). Station 1 draws its faces as `tibasalt` and its obsidian as items and a
+ground class; the two recipes are owed to `core/terrain` (`KNOWN_ISSUES.md`) and wait for an all-builds rebuild, since adding a recipe changes every
+page that inlines `35-core-strata.js`.
 
 ---
 
@@ -87,7 +130,7 @@ Rising along a `78 km`-long NW–SE extensional transfer fissure that splays off
 
 ## 3. The Two Savvy Caravan Crossings Between Xanadu & The Catch
 
-Merchants hauling **Xanadui silk, cloud-timber, tea, and lacquerware** northeast from **Strongbow** (`(1026, 1594)`) or **Vale of Xanadu** (`(938, 1496)`) to **Stair** (`(1106, 1442)`), and returning with **Catch potash, alkali salts, and salvaged Ancient energy cells** (`biomes/catch/PLAN.md` §6a), never attempt the open ridge crest (`-20 to -35 °C`, `90–120 km/h` katabatic gales). Instead, savvy travellers rely on one of two specialized routes across the `~130 km` mountain core:
+Merchants hauling **Xanadui silk, cloud-timber, tea, and lacquerware** northeast from **Strongbow** (`(1001, 1596)`) or **Vale of Xanadu** (`(938, 1496)`) to **Stair** (`(1106, 1442)`), and returning with **Catch potash, alkali salts, and salvaged Ancient energy cells** (`biomes/catch/PLAN.md` §6a), never attempt the open ridge crest (`-20 to -35 °C`, `90–120 km/h` katabatic gales). Instead, savvy travellers rely on one of two specialized routes across the `~130 km` mountain core:
 
 ```
          SCHEMATIC MAP OF THE TWO CARAVAN CROSSINGS & GUIDE TRAPS (5.1 CANVAS)
@@ -111,7 +154,7 @@ Merchants hauling **Xanadui silk, cloud-timber, tea, and lacquerware** northeast
                                        (1010,1517)  Tube 10 (SE)      [Erebus Ice Volcano]
                                            ▲                            \
                                            │                             \ Trap F2 (1068, 1528)
-                                 From STRONGBOW (1026, 1594)              [Frozen Box Vale]
+                                 From STRONGBOW (1001, 1596)              [Frozen Box Vale]
 ```
 
 ---
@@ -159,7 +202,7 @@ Merchants hauling **Xanadui silk, cloud-timber, tea, and lacquerware** northeast
 ## 4. The Xanadui Guides (*Dalīl al-Qaranayn*) & The Traps for the Unpaying
 
 ### 4.1 Guild Customs, the Split-Coin Contract, & How Betrayals Happen
-- **The Brotherhood of the Two Horns (*Ṭā'ifat Dalīl al-Qaranayn*):** Based in **Strongbow** (`(1026, 1594)`) and **Stair** (`(1106, 1442)`), the Xanadui mountain guides guard the shifting topology of the Twins as a hereditary trade secret. Because roof falls periodically seal lava-tube skylights on Route A and phreatic quakes shift which springs are boiling vs. dormant on Route B, an unguided caravan has less than a one-in-three chance of crossing without losing its pack train.
+- **The Brotherhood of the Two Horns (*Ṭā'ifat Dalīl al-Qaranayn*):** Based in **Strongbow** (`(1001, 1596)`) and **Stair** (`(1106, 1442)`), the Xanadui mountain guides guard the shifting topology of the Twins as a hereditary trade secret. Because roof falls periodically seal lava-tube skylights on Route A and phreatic quakes shift which springs are boiling vs. dormant on Route B, an unguided caravan has less than a one-in-three chance of crossing without losing its pack train.
 - **The Custom of the Split Tally:** By ancient law, a guide is paid **half the silver and rations at the gate** (Strongbow or Stair) and **the second half at the Mid-Col Shrine** (**Hall of the Tally-Marks** at `(1014, 1464)` on Route A, or **The Brazier / Oasis 3** at `(1016, 1479)` on Route B), plus a sworn share of tea, furs, and warm tent-space.
 - **The Retribution of the Stiffed Guide:** Arrogant outlander factors, greedy merchant-captains, or harsh caravan masters who **withhold the mid-col payment, cheat the tally weight, beat a guide, or force them to march outside the warm perimeter** rarely survive to boast of it. The guide smiles, bows in the courtly Xanadui fashion, and claims to know a *"sheltered shortcut tube"* or a *"sixth hidden hot-spring vale just around the spur"*—leading the caravan straight into one of two classic death-traps before vanishing through a hidden crack-chimney in the night.
 

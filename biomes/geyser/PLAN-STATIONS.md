@@ -212,3 +212,21 @@ supplied the high desert and the mountain forest. Surveyed with `tools/scale-mod
 **Not built:** the frost and the ice round puna's pools in the morning (core/water's ice), the snow kept off the hot ground by KTHERM's mask (basin's
 winter is a paint switch), the hearths stations' sites (the Hearths' hosts'), the fauna, corona's link to Korona's own pages, the Godot export's check
 of the new records.
+
+---
+
+## Scale-Model 5.1 Geological Reconciliation & Showcase Station #4 (`2026-11-13`)
+
+### 1. Steampits Bimodal Sinter Chemistry (`SiO₂` Geyserite + `CaCO₃` Travertine) & `carbonate-shelf` Basement
+- **Tectonic & Hydrothermal Setting (`rmucgu3s7bzwh`, `X = 826..902, Y = 685..740`):** The Steampits phreato-magmatic littoral apron sits on the northern Ring Sea shore (`-1,500 m` sea datum, **`1.93 atm`** barometric pressure), where radial and concentric ring-fault dikes off the Inner Rim / Throne plumbing inject superheated fluids through buried Ring Sea **`carbonate-shelf`** bioclastic/oolitic limestone and **`tibasalt`** sill-basement.
+- **High-Pressure Boiling Curve:** Under `1.93 atm` abyssal air, pure water remains liquid up to **`~119 °C`** at sea level (`~106–112 °C` in shallow littoral mixing coves), allowing true superheated boiling bays, spouting littoral horns, and dense white steam walls without premature sub-boiling flash.
+- **Dual Sinter Mineralogy (`KSTRATA`):**
+  - **Neutral-Chloride / Alkaline Vents:** Precipitate hard opaline **`SiO₂` geyserite** (`stone.geyserite`) cones and aprons directly over fractured `tibasalt` sills.
+  - **Carbonate-Equilibrated Vents:** Hydrothermal fluids ascending through the underlying Ring Sea **`carbonate-shelf`** platform (`core/terrain/35-core-strata.js`) exsolve `CO₂` at the surface to build stepped cream-and-ochre **`CaCO₃` travertine** flights (`lamina` + `carbonate-shelf` tidal foot benches), while acid-sulfate oxidation zones bleach adjacent marl bluffs into kaolinite-sulfur mud pots.
+
+### 2. Showcase Station #4 — `Steampits Boiling Bay Phreatic Cove`
+- **Canonical `5.1` Coordinates:** **`(884, 716)`** (`3,536 km E, 1,432 km S` on the `1821 × 1723` `2 km/px` canvas; northern Ring Sea littoral edge of `Steampits` just west of **Port Goto** `(918, 698)` and **Crescent** `(994, 694)`).
+- **Elevation & Atmosphere:** **`-1,486 m`** cove bench (`-1,500 m` Ring Sea shore; **`1.93 atm`**, `XA` / `XV` hypertropic thermal littoral, water boiling point `~119 °C`, cove surface mixing `65–106 °C`).
+- **`KSTRATA` Binding:** **`carbonate-shelf`** (wave-notched `2–5 m` cream limestone & marl tidal visors along the outer headland, hydrothermally bleached and veined at the fault trace) + **`tibasalt`** (black phreatic dike ribs and explosion-breccia blocks) + `lamina` travertine terrace flights descending straight into the surf.
+- **Camera Framing (`5.2 × 5.2 km` showcase cut):** Low oblique skiff-level camera `35 m` offshore at `+14 m` ASL-local (`-1,486 m` datum) looking NNW into a crescent phreatic explosion cove: turquoise-white silica plumes (`WATER.plume`) billowing into the Ring Sea surf, stepped cream travertine and opaline geyserite aprons (`GEYSER.lay`) steaming at the tide line, yellow native sulfur chimneys crusting a `tibasalt` dike rib, and heat-tolerant pandans/kanuka framing the hyperjungle bluff top behind the scald line.
+- **Hydrology & Trade Tie-In:** Phreatic springs discharge silica- and carbonate-saturated brine directly into the `24 h` libration-tidally flushed Ring Sea littoral; Islander and Beast-Rider sulfur, alum, and medicinal-salt skiffs operating out of **Port Goto** (`918, 698`) anchor outside the boiling plume line to harvest native sulfur crusts and salt-cured timber.

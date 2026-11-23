@@ -1,0 +1,27 @@
+{
+ "note": "Station 4, the Hollow Way (PLAN.md section 6; 5.1 px 636,1274, Cfb, ~1,680 mm): the Western Rille's lava tube under Terrace III (KRELIEF.tube), its open trench where the roof fell (KRELIEF.tubeRille) and the roofed gallery with the great 90 m skylight (KCAVERN), the rille-forges' site (the settlement build's). reads: KCAVERN and KRELIEF's lava forms (tubeRille), by path. kin: the S highlands' spiral flora and tree ferns, the SW lowlands' red bay and willow, read in place (BIO.kin; 87-host-kin.js)",
+ "reads": {
+  "38b-core-relief-lava.js": "core/terrain/38b-core-relief-lava.js",
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js"
+ },
+ "kin": {
+  "swlowlands": [
+   [
+    "src/50-biome-swlowlands-species.js",
+    "src/52-biome-swlowlands-library.js",
+    "src/55-biome-swlowlands-trees.js"
+   ],
+   "SWLOW",
+   "*"
+  ],
+  "shighlands": [
+   [
+    "src/50-biome-shigh-species.js",
+    "src/55-biome-shigh-trees.js"
+   ],
+   "SHIGH",
+   "*",
+   "shigh"
+  ]
+ }
+}

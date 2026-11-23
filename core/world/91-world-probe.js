@@ -50,12 +50,16 @@ function highways(eF){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],G=(
  const nearOther=(ri,x,z)=>{const L=B.get(Math.floor(x/C)*100003+Math.floor(z/C));if(!L)return false;
   for(const [rj,a,b] of L){if(rj===ri)continue;const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;let t=((x-a[0])*dx+(z-a[1])*dz)/l2;t=t<0?0:t>1?1:t;
    if(Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z)<12)return true;}return false;};
- let n=0,off=0,steep=0,worst=0,at=null,mg=0,junc=0;
+ let n=0,off=0,steep=0,worst=0,at=null,mg=0,junc=0,deck=0;
+ /* a station on a bridge's deck (a road's `spans`, 42b-world-bridges.js) stands over the water, not on the ground: its
+    grade is judged, its height over the ground is the bridge's own check (88b) */
+ const onDeck=(r,i)=>(r.spans||[]).some(S=>i>=S[0]&&i<=S[1]);
  for(let ri=0;ri<R.length;ri++){const r=R[ri];for(let i=0;i<r.pts.length;i+=5){const p=r.pts[i];
   if(nearOther(ri,p[0],p[1])){junc++;continue;}
+  if(onDeck(r,i)){deck++;if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>G+.005)steep++;}continue;}
   const h=WORLD.H(p[0],p[1]),d=Math.abs(h-eF(p));n++;if(d>worst){worst=d;at=[Math.round(p[0]),Math.round(p[1])];}if(d>.3)off++;
   if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>G+.005)steep++;}}}
- return{ok:R.length>0&&off===0&&steep===0,detail:R.length+' roads, '+n+' stations (+'+junc+' at junctions); '+off+' off the ground by over 0.3 m (worst '+worst.toFixed(2)+' m at '+JSON.stringify(at)+'), '+steep+' steeper than '+(G*100)+' % (steepest '+(mg*100).toFixed(1)+' %)'};}
+ return{ok:R.length>0&&off===0&&steep===0,detail:R.length+' roads, '+n+' stations (+'+junc+' at junctions'+(deck?', '+deck+' on bridges':'')+'); '+off+' off the ground by over 0.3 m (worst '+worst.toFixed(2)+' m at '+JSON.stringify(at)+'), '+steep+' steeper than '+(G*100)+' % (steepest '+(mg*100).toFixed(1)+' %)'};}
 // nothing grows on a carriageway or on a town's ground
 function clearOf(recs){let road=0,town=0,first=null;
  for(const r of recs){if(WORLD.roadD(r.x,r.z)<.5){road++;first=first||r;}if(WORLD.townW(r.x,r.z)>0){town++;first=first||r;}}
@@ -78,6 +82,7 @@ function hostChecks(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z
  out.push(Object.assign({name:'the highways lie on the land and keep their grade'},highways()));
  out.push(Object.assign({name:'nothing grows on a highway or in a town'},clearOf(allRecs())));
  out.push({name:'no NaN in the drawn terrain',ok:nan===0&&TERRAIN.meshes().length>0,detail:TERRAIN.meshes().length+' chunks drawn, '+nan+' with NaN'});
+ if(WORLD.coast&&WORLD.coast.list.length)out.push(WORLD.coast.check(300));   /* core/coast (44c): ground, water and mask agree on the shore */
  return out;}
 function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z);
  const rnd=(a,b)=>FLORA.buildTile(a,b).map(r=>Object.assign({},r,{x:r.x+Math.random()*1e-3}));
@@ -96,6 +101,7 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
   out.push(Object.assign({name:'negative: a tree put on a highway and one in a town'},clearOf(F)));}
  const L0=lines()[0],xs=(L0[0]+L0[2])/2;   // the step crosses the first test line at its middle
  out.push(Object.assign({name:'negative: a 3 m step put in the land'},continuity(lines(),(x,z)=>WORLD.H(x,z)+(x>xs?3:0))));
+ if(WORLD.coast&&WORLD.coast.list.length){const r=WORLD.coast.check(300,'mask');out.push(Object.assign(r,{name:'negative: the coast against the bodies\' old masks'}));}
  return out;}
 return{ready:()=>START.ready,hostChecks,hostNegatives,
  stats:()=>({terrain:TERRAIN.stats,flora:FLORA.stats,floor:FLOOR.stats,nursery:Object.assign({},NURSERY.stats,{queued:NURSERY.queued()}),seas:SEAS.stats(),rivers:RIVERS.stats(),

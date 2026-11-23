@@ -161,3 +161,6 @@ southern edge (Godstep's first, 30 m) with its face in KSTRATA's **tibasalt** be
 **scrub oak** on the step's top (nhighlands' gnarled oak as a 3-6 m kin). `?black=0`, `?serim=0`, `?gallery=0`, `?oak=0`, `?step=0`,
 `?season=0`. Not taken (KNOWN_ISSUES.md, "Owed on south"): Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan), S's fields
 from the scale model's polygon.
+
+### Scale-Model 5.1 Strata Note (`2026-11-13`)
+- **Lower Bench `carbonate-shelf` Binding:** Along the Ring Sea lee-shore transition (`Talon` `1026, 760` / `1026, 772`, `-1,500 to -1,150 m`) and the western `edge` / `salt` margin toward SW Bay, coastal and lower-wadi benches expose **`carbonate-shelf`** (`2–5 m` cream bioclastic limestone & marl beds), while interior kopjes represent differentiated impact-melt granophyre tors and southern steps expose **`tibasalt`**.

@@ -299,8 +299,8 @@
    }
   },
   "farm": {
-   "mean": 0.271,
-   "good_km2": 800,
+   "mean": 0.273,
+   "good_km2": 816,
    "best_km2": 160,
    "peak": {
     "score": 0.773,

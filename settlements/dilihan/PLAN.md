@@ -38,7 +38,7 @@ Dilihan is a settlement and goes in the gallery when it first reaches `main` (`g
 The scale model has Dilihan at px 472,333 (`solqo7hz7s`, a city point) at the southern end of the Cut's polygon
 (px 427-502 by 264-340; the biome polygon "the cut" matches it), 226 km south of Jimjam (px 474,220) and 780 km from
 Iziz. Neighbours: Lipp, a village, 138 km; Trigon, the Hykkousoi arcology, 160 km south; the Hexahedron 166 km east;
-Ys 175 km; Roketstad 273 km west. No river is named through the Cut yet (`tools/scale-model/river-names-4.21.md`); the
+Ys 175 km; Roketstad 273 km west. No river is named through the Cut yet (`tools/scale-model/history/river-names-4.21.md`); the
 plan assumes a stream down the trench to the League's coast and a road beside it, the **pass road** the colony was
 planted to hold.
 

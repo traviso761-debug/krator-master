@@ -135,6 +135,14 @@ def main(argv):
                        or (top == 'kits' and os.path.isdir(os.path.join(d, n, 'src')) and os.path.isfile(os.path.join(d, n, 'PORT.md')))]
     nf = nw = nd = 0
     quiet = '--quiet' in argv
+    if quiet and len(builds) == 1:
+        # a build.py runs this first (`--quiet <its folder>`): an opted-in build refuses a plain run (items 23, 25)
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import buildlib
+        why = buildlib.plain_build_refusal(builds[0].replace(os.sep, '/'))
+        if why:
+            print('build refused: ' + why)
+            return 3
     for b in builds:
         fails, warns, falsy = check(b)
         for w in warns:

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 101 (10%) | 5 (1%) | 16 (2%) | 165 (17%) | 685 (70%) |
+| KB | 0 (0%) | 0 (0%) | 0 (0%) | 0 (0%) | 112 (100%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -17,8 +17,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/64-locus-dwellings.js` | 19.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 56 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/64-locus-farm.js` | 10.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/64-locus-infra.js` | 8.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-locus-petroleum.js` | 22.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 86 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/64-locus-petroleum.js` | 22.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 86 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/64-locus-plants.js` | 3.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/64-locus-power.js` | 17.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 95 | 0 | 0 | 0 | 0 | 0 |  |
 
-Moved with the files from `settlements/locus/PORT.md` on 2026-11-03 (MODULARITY-PLAN.md step 4); the tags and notes are Locus's.
+## Notes
+
+(none yet: the split lists and the overrides go here)

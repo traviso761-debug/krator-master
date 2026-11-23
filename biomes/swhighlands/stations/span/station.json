@@ -1,0 +1,10 @@
+{
+ "note": "Station 3, Span's tableland: on station 4's ground (INHERIT). The south-western lowlands' tier cedar and flayed madrone (PLAN.md section 3) read in place and grown by their own builders.",
+ "kin": {
+  "swlowlands": [
+   ["src/50-biome-swlowlands-species.js", "src/55-biome-swlowlands-trees.js"],
+   "SWLOW",
+   ["bk.flay", "bk.furrow", "needle", "feather", "glossy", "broad", "wood", "moss"]
+  ]
+ }
+}

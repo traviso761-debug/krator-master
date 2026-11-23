@@ -5,8 +5,15 @@
   "core/atmos -> kits/ringsea",
   "kits/beast-riders -> settlements/girder",
   "kits/beast-riders -> settlements/mavs-refuge",
+  "kits/construction -> settlements/isle-demo",
+  "kits/construction -> settlements/iziz",
+  "kits/construction -> settlements/xanadu",
+  "kits/eastern-abyssal -> settlements/locus",
+  "kits/locus -> settlements/locus",
   "kits/pylon -> settlements/iziz",
-  "kits/talia -> settlements/iziz"
+  "kits/qiblai -> settlements/xanadu",
+  "kits/talia -> settlements/iziz",
+  "kits/yuni -> settlements/yuni"
  ],
  "lateral": [
   "openworld/isle-demo -> settlements/girder",
@@ -19,6 +26,8 @@
   "openworld/iziz-cluster -> settlements/isle-demo",
   "openworld/iziz-cluster -> settlements/iziz",
   "openworld/iziz-cluster -> settlements/mavs-refuge",
+  "openworld/oidong-highrift -> settlements/isle-demo",
+  "openworld/oidong-highrift -> settlements/xanadu",
   "openworld/pinnacle -> settlements/girder",
   "openworld/pinnacle -> settlements/isle-demo",
   "openworld/pinnacle -> settlements/mavs-refuge",
@@ -32,14 +41,18 @@
   "settlements/isle-demo -> settlements/mavs-refuge",
   "settlements/isle-demo -> settlements/voth",
   "settlements/isle-demo -> settlements/ys",
+  "settlements/longsong -> openworld/isle-demo",
+  "settlements/longsong -> openworld/oidong-highrift",
   "settlements/longsong -> settlements/isle-demo",
   "settlements/longsong -> settlements/pinnacle-rock",
   "settlements/longsong -> settlements/xanadu",
   "settlements/mungo -> settlements/locus",
   "settlements/mungo -> settlements/reedlake",
+  "settlements/pinnacle-rock -> openworld/isle-demo",
   "settlements/pinnacle-rock -> settlements/girder",
   "settlements/pinnacle-rock -> settlements/isle-demo",
   "settlements/pinnacle-rock -> settlements/mavs-refuge",
+  "settlements/qiblai -> settlements/xanadu",
   "settlements/reedlake -> settlements/highlands",
   "settlements/span -> settlements/dalab",
   "settlements/verge -> settlements/iziz",
@@ -81,7 +94,7 @@
   "settlements/ys -> kits/ancients",
   "settlements/ys -> kits/highlands",
   "settlements/ys -> kits/iziz-vernacular",
-  "settlements/ys -> settlements/iziz",
-  "settlements/ys -> kits/port"
+  "settlements/ys -> kits/port",
+  "settlements/ys -> settlements/iziz"
  ]
 }

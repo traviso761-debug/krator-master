@@ -22,7 +22,7 @@ DHN.areas=function(){const H=DH.HALL,K=DH.APRON,yAt=(x,z,y)=>{const q=DH.hillAt(
  for(const P of DH.PITS)A.push({id:'pit:'+P.id,zone:'inner',cell:3,y:P.floor,yAt,x0:P.c[0]-P.r,x1:P.c[0]+P.r,z0:P.c[1]-P.r,z1:P.c[1]+P.r,floor:new RegExp('^dh\\.'+P.id+'\\.pit|^dh\\.hill\\.'+P.id+'$')});
  A.push({id:'apron',zone:'outer',cell:5,y:null,x0:K.c[0]-K.r,x1:Math.min(K.c[0]+K.r,DH.PLAT.cliffX),z0:K.c[1]-K.r/1.3,z1:K.c[1]+K.r/1.3,floor:/apron's floor/});
  return A;};
-DHN.build=function(){const t0=Date.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;N.push(n);return n;},link=(a,b,kind,zone,w)=>{E.push({id:E.length,a:a.id,b:b.id,kind,zone,w:w||2,len:Math.hypot(b.x-a.x,b.z-a.z)});};
+DHN.build=function(){const t0=Date.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;N.push(n);return n;},link=(a,b,kind,zone,w)=>{E.push({id:E.length,a:a.id,b:b.id,kind,zone,w:w==null?2:w,len:Math.hypot(b.x-a.x,b.z-a.z)});};
  /* the layout's ways (each node set on the floor built under it: a building's plinth stands a hand over the layout's height) */
  for(const n of DH.NODES){const f=KWALK.floorBelow(n.x,n.z,n.y+.6,1.2);add({id:n.id,x:n.x,y:f&&Math.abs(f[0]-n.y)<.6?f[0]:n.y,z:n.z,tag:'way',area:null});}
  /* a way the scene built to its own shape (DH_REAL: the cliff's switchbacks) is its points, each a node */
@@ -47,7 +47,7 @@ DHN.build=function(){const t0=Date.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;
  const onFloor=id=>onGrid.has(id)||N.some(q=>q.tag==='floor'&&Math.abs(q.y-byId[id].y)<1.2&&Math.hypot(q.x-byId[id].x,q.z-byId[id].z)<12);
  const way=(a,b,kind,zone,w,len)=>{if((kind==='street'||kind==='square')&&onFloor(a)&&onFloor(b)){realized++;return;}
   E.push({id:E.length,a,b,kind,zone,w,len:len!=null?len:Math.hypot(byId[b].x-byId[a].x,byId[b].z-byId[a].z),layout:true});};
- for(const e of DH.EDGES){const k=e.a+'-'+e.b,R=REAL[k],zone=e.zone||'inner',w=e.w||2;
+ for(const e of DH.EDGES){const k=e.a+'-'+e.b,R=REAL[k],zone=e.zone||'inner',w=e.w==null?2:e.w;
   if(R){const ids=[e.a].concat(R.pts.map((p,i)=>k+':'+i)).concat(R.end===false?[]:[e.b]);for(let i=1;i<ids.length;i++)way(ids[i-1],ids[i],R.kinds[i-1]||e.kind,zone,w);continue;}
   way(e.a,e.b,e.kind,zone,w,DH.len?DH.len(e):null);}
  /* the doors: a node a metre out from each front (or 1.5, 2: out of the door's own frame), linked to the two nearest
@@ -69,7 +69,7 @@ DHN.get=function(){return DHN.built||DHN.build();};
    reach from it in a straight line (else the nearest on the level) */
 DHN.nearest=function(x,y,z,o){const B=DHN.get(),f=KWALK.floorBelow(x,z,y+.5,1.2),fy=f?f[0]:y,P={x,y:fy,z};
  /* on a carved way (a long tube has nodes only at its ends): the way passing under the point at its floor's height */
- let best=null,bd=1e9;for(const e of B.edges){if(!e.layout)continue;const a=B.byId[e.a],b=B.byId[e.b],dx=b.x-a.x,dz=b.z-a.z,L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/L2));
+ let best=null,bd=1e9;for(const e of B.edges){if(!e.layout)continue;const a=B.byId[e.a],b=B.byId[e.b],dx=b.x-a.x,dz=b.z-a.z,L2=Math.max(1e-12,dx*dx+dz*dz),t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/L2));
   const d=Math.hypot(a.x+dx*t-x,a.z+dz*t-z),ey=a.y+(b.y-a.y)*t;if(d<Math.max(1.5,e.w/2+.5)&&Math.abs(ey-fy)<1&&d<bd){bd=d;best=t<.5?a:b;}}
  if(best)return best;
  const C=B.nodes.filter(n=>Math.abs(n.y-fy)<1.5&&Math.abs(n.x-x)<60&&Math.abs(n.z-z)<60).sort((u,v)=>Math.hypot(u.x-x,u.z-z)-Math.hypot(v.x-x,v.z-z));

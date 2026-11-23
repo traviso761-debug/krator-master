@@ -1,0 +1,16 @@
+{
+ "name": "The Red Cistern (station 3, Trap L1; PLAN.md sections 4.3 and 6): Al-Jubb al-Ahmar on the NW Twin's south apron at 4,890 m (0.87 atm), the guides' active lava-pool trap: a decoy lava tube behind a wide basalt arch carved with counterfeit tally-marks, warm air wafting out, running 600 m down at 6 degrees past a fork and the guide's raised bench into a blind collapse amphitheatre open to the sky, its floor a churning 1,150 C lava pond 90 m across roofed at its margins by a paper-thin ash-dusted blister crust; CO2 and SO2 pooling in the low, abandoned strongboxes on the rim; the NW Twin 16 km off",
+ "out": "twins-lavasump.html",
+ "region": "region.json",
+ "reads": {
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "89-atmos-fx-lava.js": "core/atmos/fx/89-atmos-fx-lava.js",
+  "22-core-hazard-env.js": "core/hazard/22-core-hazard-env.js"
+ },
+ "tex": [
+  "scree",
+  "lavaCrust",
+  "lichenCrust"
+ ]
+}

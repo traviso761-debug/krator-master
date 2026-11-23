@@ -10,7 +10,7 @@ The checks, each with a negative:
     continuous, nothing in water or outside the region, spacing across tiles, the rivers that carry water (a dry course
     and a river's stations outside the polygon are not judged), the roads (the camps' tracks, the villages' roads and the
     links between the towns) on the land at their grade, nothing growing on a road or a village, no NaN;
-  - the region: each site where the cut put it (Mav's Refuge px 1024,807 and Girder 1039,869 in the savage hyperjungle,
+  - the region: each site where the cut put it (Mav's Refuge px 1049,841 (on the Beesh Baatar since 2026-11-11) and Girder 1039,869 in the savage hyperjungle,
     the hyperjungle growing; Talia 1073,939 on the SE savannah rim, the savannah kit growing), on dry land (the negative
     reads Talia at Girder's spot, in the jungle, where the savannah kit does not grow);
   - the sites (core/world/88s-world-sites.js _sites.checks): the baked plan is the plan made again in the browser (the
@@ -35,7 +35,7 @@ APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing ro
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
 HAS = "({kits:WORLD_KITS.length>0,rivers:(WORLD_DATA.meta.rivers||[]).length>0,roads:!!WORLD_DATA.roads,towns:!!WORLD_DATA.towns})"
 REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
- const want={skukf2qmmq:{px:[1024,807],biome:'savage hyperjungle',kit:'hyperjungle'},seed07:{px:[1039,869],biome:'savage hyperjungle',kit:'hyperjungle'},sor1zqih8x:{px:[1073,939],biome:'se savannah rim',kit:'abyssal-savannah'}};
+ const want={skukf2qmmq:{px:[1049,841],biome:'savage hyperjungle',kit:'hyperjungle'},seed07:{px:[1039,869],biome:'savage hyperjungle',kit:'hyperjungle'},sor1zqih8x:{px:[1073,939],biome:'se savannah rim',kit:'abyssal-savannah'}};
  for(const id in want){const S=(M.sites||[]).find(s=>s.id===id),W=want[id];if(!S){bad.push('no site '+id);continue;}
   const L=(M.sites||[]).find(s=>s.id==='seed07'),moved=neg==='site'&&id==='sor1zqih8x'&&L;   /* the negative: Talia read at Girder's spot, in the jungle */
   const x=moved?L.x:S.x,z=moved?L.z:S.z,k=WORLD_KITS.findIndex(q=>q.name===W.kit);

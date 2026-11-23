@@ -71,6 +71,7 @@ if(window.FIX && (A.TARGET==='world'||A.TARGET==='sheet')){ const F=window.FIX; 
   F.buildings.forEach(b=>{ if(!b.culture||!b.types||!b.types.length) bad.push(b.id+':untagged'); const P=window._interiors.plan(b.id); if(P){ plans++; rooms+=P.rooms.length; } });
   F.doors.forEach(d=>{ if(!d.id||!d.style) bad.push(d.id+':no style'); else if(d.style!=='open'&&d.style!=='gate'&&!(d._leaves&&d._leaves.length)) bad.push(d.id+':no leaf'); });
   R.push({name:'fixtures-tagged-and-working', ok:!bad.length && plans>0, detail: bad.length ? JSON.stringify(bad.slice(0,8)) : F.buildings.length+' buildings tagged · '+F.doors.length+' doors · '+F.windows.length+' windows · '+F.lights.length+' lights · '+plans+' interiors planned ('+rooms+' rooms)'}); }
+  if(window._doors && window._doors.intDoors){ const t=window._doors.intDoors(); R.push({name:'streamed-interior-doors-on-kdoor', ok:!!t.ok, detail:JSON.stringify(t)}); }
 if(A.TARGET!=='world'){ const kind = A.TARGET==='furn'?'furniture' : A.TARGET==='flora'?'plant' : 'asset';
   const n=A.SITES.filter(s=>s.kind===kind).length; R.push({name:'sheet-assets-registered', ok:n>=1, detail:n+' named '+kind+' items on the sheet'});
   const names={}; let dup=[]; A.SITES.forEach(s=>{ if(s.kind===kind){ if(names[s.name]) dup.push(s.name); names[s.name]=1; } }); R.push({name:'asset-names-unique', ok:!dup.length, detail:dup.length?JSON.stringify(dup.slice(0,8)):Object.keys(names).length+' unique '+kind+' names'});
