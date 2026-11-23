@@ -1180,6 +1180,10 @@
    "bytes": 2742027,
    "sha256": "57564cfcabc27326fd139c9bc5dd4b63440f85e336dad288a8b168e1167dfc93"
   },
+  "kits/ancients/dist/shelf.html": {
+   "bytes": 355851,
+   "sha256": "d826d5ac50f80a49546e2a7a1739f57161f16ecfc911d2dea3067b53b0430dc5"
+  },
   "kits/ancients/dist/skyi.html": {
    "bytes": 2625108,
    "sha256": "8d76d56c27bd5eb55a345e7528ff197fd041771222802266bdd15fb612a4a189"

@@ -9,6 +9,7 @@ python3 tools/build.py settlements/ledge (a plain python3 build.py comes through
                         (the panel, the windows, the slabs the shell is drawn in; the core the Dalab set runs on)
   20-core-ruins         core/ruins (KRUINS): the shell and its wreckage watched (nothing floats, every wreck lies on the ground)
   20..51                core/water (the great lake), core/space (KSPACE: the layout's checks)
+  29k, 8kz              the Ancients' cliff city (kits/ancients/cliff, KCLIFF): the stack's records and its builder, read in place
   30-ledge-layout       THE LAYOUT as data ([G data]): every deck, part, lift and way by id (the one source)
   31-ledge-rules        its rules ([G data]): the ground, the checks, the area, the census, the strike
   35-core-strata        core/terrain KSTRATA (the rift fill's beds on the cliff) and 37c KRUBBLE (the wreck heaps)
@@ -79,6 +80,14 @@ DALAB_SET = ['69b-vern-mat.js', '69c-vern-helpers.js', '69d-dalab-mat.js', '69e-
 for f in DALAB_SET:
     PATH[f] = os.path.join(DALAB, 'src', f)
 SUBST = {'88y-dalab-matlib.js': [(r'\bMATLIB_BOUND\b', 'MATLIB_BOUND_DALAB')]}
+
+# THE ANCIENTS' CLIFF CITY (kits/ancients/cliff, KCLIFF), read in place: the stack's records before the layout (29k), its builder after
+# the materials and before the shell is drawn (8kz)
+PATH['29k-cliff-stack.js'] = os.path.join(ANC, 'cliff', '10-cliff-stack.js')
+PATH['8kz-cliff-stack-draw.js'] = os.path.join(ANC, 'cliff', '20-cliff-stack-draw.js')
+PATH['44k-cliff-ground.js'] = os.path.join(ANC, 'cliff', '30-cliff-ground.js')     # before the stage (45) draws the ground
+PATH['8kz1-cliff-town.js'] = os.path.join(ANC, 'cliff', '40-cliff-town.js')
+PATH['8kz2-cliff-wreck.js'] = os.path.join(ANC, 'cliff', '50-cliff-wreck.js')
 
 # core/rand, core/drawn, core/tags, core/ruins, core/space (core/space also comes with the host's FULL list)
 for f, p in (('08-core-rand.js', core('rand', '08-core-rand.js')), ('10-core-drawn.js', core('drawn', '10-core-drawn.js')),

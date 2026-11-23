@@ -17,6 +17,7 @@ const VIEWS={
  'Under the overhang':[-330,318,175,0,640,20],
  'The viaduct stumps toward Nulab':[760,312,1300,420,300,650],
  'Down the face from the head':[-60,1600,-30,0,600,300],
+ 'The road down the escarpment':[-1100,1780,-1000,-1700,1760,-1650],
 };
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89z-host-sky.js) */
 // the page's checks for verify.py --assert: the layout's rules, every part placed by its kit, every Dalab building a def at its

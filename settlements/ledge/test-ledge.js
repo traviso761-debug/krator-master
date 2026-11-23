@@ -10,6 +10,7 @@ const load = f => vm.runInThisContext(fs.readFileSync(path.join(ROOT, f), 'utf8'
 global.window = global;
 load('core/rand/08-core-rand.js');
 load('core/space/20-core-space.js');
+load('kits/ancients/cliff/10-cliff-stack.js');
 load('core/tags/50-core-tags.js'); load('core/tags/52-core-tags-vocab.js'); load('core/tags/53-core-tags-host.js');
 load('settlements/ledge/src/30-ledge-layout.js');
 load('settlements/ledge/src/31-ledge-rules.js');
@@ -50,6 +51,8 @@ T.neg('a stair through the dead decks breaks the strike\'s seal', check('a strik
 T.neg('a Line rising to its station is caught', check('the Line slopes down'), broke(M => { M.line.approach[2][2] = 990; }), L);
 T.neg('a Line steeper than the ruling grade is caught', check('the Line slopes down'), broke(M => { M.line.helix.grade = .06; }), L);
 T.neg('a wreck heap behind the face is caught', check('every wreck heap lies before the face'), broke(M => { M.heaps[0].z = -50; }), L);
+T.neg('a road cut to a steeper grade than Dalab\'s is caught', check('Dalab\'s road holds its 9 %'), broke(M => { M.road.grade = .3; }), L);
+T.neg('a road with no cut under it is caught', check('Dalab\'s road holds its 9 %'), broke(M => { delete M.road; }), L);
 
 // ---- the ground at the plan's marks (PLAN.md 9.2)
 const G = L.ground;

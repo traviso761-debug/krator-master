@@ -56,7 +56,7 @@
 | `kits/ancients/dist/iziz-style.html` | 819 | 1.61 M | 1566 / 3.08 M | 819 / 761 k | 3.08 M |  | 1570 | 56 | 38 k | 437 |
 | `kits/ancients/dist/iziz-variants.html` | 443 | 1.51 M | 457 / 3.25 M | 443 / 1.07 M | 3.29 M |  | 541 | 51 | 69 k | 142 |
 | `kits/ancients/dist/launch.html` | 62 | 918 k | 66 / 1.08 M | 62 / 915 k | 1.08 M |  | 65 | 33 | 45 k | 48 |
-| `kits/ancients/dist/ledge.html` | 29 | 524 k | 32 / 929 k | 28 / 514 k | 1.07 M |  | 47 | 16 | 56 k | 31 |
+| `kits/ancients/dist/shelf.html` | 29 | 524 k | 32 / 929 k | 28 / 514 k | 1.07 M |  | 47 | 16 | 56 k | 31 |
 | `kits/ancients/dist/lighthouse.html` | 96 | 364 k | 99 / 422 k | 96 / 276 k | 422 k |  | 103 | 23 | 5556 | 45 |
 | `kits/ancients/dist/monolith.html` | 23 | 525 k | 26 / 759 k | 23 / 525 k | 767 k |  | 30 | 19 | 64 k | 30 |
 | `kits/ancients/dist/plymouth.html` | 32 | 632 k | 39 / 786 k | 32 / 632 k | 872 k |  | 44 | 33 | 108 k | 44 |

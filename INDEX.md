@@ -23,7 +23,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 35 | 424 | 56 |  |
 | [`settlements/kirstabal`](settlements/kirstabal/INDEX.md) | 7 | 88 | 37 |  |
 | [`settlements/komodo`](settlements/komodo/INDEX.md) | 5 | 17 | 8 |  |
-| [`settlements/ledge`](settlements/ledge/INDEX.md) | 15 | 97 | 29 |  |
+| [`settlements/ledge`](settlements/ledge/INDEX.md) | 16 | 76 | 27 |  |
 | [`settlements/locus`](settlements/locus/INDEX.md) | 42 | 11903 | 11431 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
 | [`settlements/loj-twenny`](settlements/loj-twenny/INDEX.md) | 13 | 84 | 29 |  |
 | [`settlements/longsong`](settlements/longsong/INDEX.md) | 31 | 552 | 67 | Longsong: the History Monks' monastery in the Oidong Valley, built in situ on the scale model (px 954,1296: the region cut in region/, the open world's fields read in place) on its own granite rock over the Longsong stream (PLAN.md): the plan as data (src/40-ls-plan.js: the rock, the ward, 30 buildings, the Vault, the sealed things, 162 people and their schedules), the Order's architecture in stone, lime and fired brick (Tibetan massing in the chapterhouses' neo-African forms: brick drums under terracotta cones, parabolic arcades, glyph panels, the mosaic course, the Archive's wavy roofs and louvre tower; no earth), the farms and gardens on the Crops kit (src/40b-ls-farms.js), the SCP-like register's dress, the forbidden depths with the Procrastinator, the Oidong kit read in place, the far land to 60 km. Verified: build.py, verify.py --assert. Read README.md |
@@ -35,6 +35,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 39 | 363 | 34 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 77 | 576 | 63 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/shade`](settlements/shade/INDEX.md) | 19 | 164 | 28 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid. |
+| [`settlements/shelf`](settlements/shelf/INDEX.md) | 14 | 62 | 22 |  |
 | [`settlements/skink`](settlements/skink/INDEX.md) | 5 | 16 | 6 |  |
 | [`settlements/span`](settlements/span/INDEX.md) | 11 | 116 | 49 |  |
 | [`settlements/thalaba`](settlements/thalaba/INDEX.md) | 3 | 14 | 8 |  |

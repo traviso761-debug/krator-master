@@ -61,6 +61,70 @@ north portal, 458,1159, 3,845 m); **the city hung down the cliff**; **the shelf 
 ## 4. Questions for the owner
 
 1. ~~**The spot**~~: **settled** (2026-11-17): the face at 461.43,1160.39, facing 35 degrees, the station on the plateau and the town on the shelf below.
-2. **Use the target as it is** (its builder re-aimed and re-grounded, on its own page) **or redraw it from records** as Ledge was?
-3. **Rename the target** `kits/ancients/targets/ledge` to `shelf` (the kit's sheet and its view names), or leave the folder as is
+2. ~~**Use the target as it is or redraw it**~~: **settled** (the owner, 2026-11-22: "Rebuild from records"): section 5.
+3. ~~**Rename the target**~~: **settled** (the owner, 2026-11-22, "Rename it"): `kits/ancients/targets/shelf` (its page `dist/shelf.html`, title and hero view "Shelf", the gallery's `arc-shelf`); its builder file `src/89i-ledge.js` keeps its name, because every kit page carries it. Was: rename the folder, or leave the folder as is
    with this designation noted?
+
+## 5. The build: Shelf from records (the owner, 2026-11-22: "Rebuild from records")
+
+Everything here is *proposed* unless section 2 or the owner's answers fix it. The layout (`src/30-shelf-layout.js`) is the one source;
+`AREAS.md` and `floors/` are drawn from it; `test-shelf.js` checks it.
+
+### 5.1 The records are the kit's, not Shelf's own
+
+Ledge's stack records and builder were lifted into `kits/ancients/cliff/` (`KCLIFF`: `10-cliff-stack.js` the records, `20-cliff-stack-draw.js`
+the builder), and Ledge moved onto them unchanged (its layout, area and census identical; its shell's geometry identical, hashed on the page).
+Shelf takes the same module: the target's form drawn from Shelf's own deck records.
+
+### 5.2 The frame and the ground
+
+- **Frame**: x along the face (toward azimuth 125, the south-east end), z out of it (toward 35, Dalab's plain), y above sea level; origin on
+  the face line at 5.1 px 461.43,1160.39.
+- **The plateau** (`SHELF.groundAt`): flat at **3,680 m** for 300 m behind the edge (the Ancients' cut, the station's yard), then rising
+  as the Wall does (3,759 m at the pin 1.5 km back, toward ~4,200 m 6 km back).
+- **The face**: dressed sheer for 2,200 m (|x| < 1,100); beyond, the natural breccia cliff.
+- **The shelf**: flat at **2,830 m** for 300 m out (the Ancients' apron), falling gently to 2,780 m at its edge 2 km out.
+- **The lower escarpment** from the shelf's edge down to Dalab's plain at ~1,450 m, 8.5 km out, and the plain on to 1,200 m.
+- The rock is KSTRATA's `secondary-ejecta` (impact breccia); the library's megabreccia on the natural faces, the drill-marked cut on the
+  dressed ones, steppe on the flats (Dsb: 3 deg C, 533 mm), gravel on the screes.
+
+### 5.3 The shell (the target's numbers at Shelf)
+
+34 layers, floors at 2,980 + 21.2 k (the lowest 150 m over the shelf, the top flush with the plateau at 3,680 m); a layer a 4 m slab, three
+4.5 m storeys and a 3.7 m plenum; 600 m along the face at the bottom to 1,500 m at the top; 40 m out at the bottom to 330 m at the top, the
+prow (the centre wing from layer 20) to 460 m; seven wings (W3-W1, C, E1-E3). `AREAS.md` says the floor.
+
+### 5.4 The levels, the people and the ruin
+
+| Zone | Layers | What | People |
+|---|---|---|---|
+| **Z0 The plateau** | on the cut at 3,680 m | **the station** (the Line's north mouth: its platforms in the rock behind the top deck, the spirals below them), the caravan terminus (Dalab's road and the Great Caravan: salt, iron, wine and pearls), the fort, customs, the warehouses, Dalab's town and mound; the station's Tungangs (its loj, name open) | 2,500 (Dalab 2,200, Tungangs 300) |
+| **Z1 The upper decks** | 27-33 | the governor's house, the genepriests, the rich, either side of the gash | 1,500 |
+| **Z2 The middle decks** | 14-26 | the town on the decks: trades, homes, inns; the pancaked wing (W3, 20-26 onto 19) | 3,000 |
+| **Z3 The lower decks** | 0-13 | the sheared layers at the south-east end (E3 and E2, 12-18 reaching into Z2), the rest dead or sealed but the lowest, the poor's | 800 |
+| **Z4 The shelf** | on the bench at 2,830 m | the shelf town: carters, the caravans' yards, the salt and iron trades, barley and sheep; a Travellers' halting place; the prow's wreck across its middle; a rockfall at the south-east end | 2,200 (Dalab 1,900, Fellgang Travellers 300) |
+
+**10,000** in all (the West Rift scope's "Shelf 10,000 by type"). **The ruin** is the target's decay 1: the prow (C, 20-33) fell across the
+shelf town and tore the gash (C 14-19 sheared; W1 and E1 26-33 damaged); seven layers at the south-east end sheared at the rock line; a wing
+at the north-west end pancaked; a rockfall south-east of the city. The rule: the broken decks 30-50 % of the floor (Shelf is held and
+mended, less ruined than Ledge).
+
+**The lifts**: two great lifts in the rock (plateau to shelf, 850 m; vehicle cars as at Ledge), both running; four face cores, two running.
+**The Line** comes up the spirals (a helix of 4 % inside the Wall, from its low portal on Dalab's plain) to the station at 3,680 m.
+**Dalab's road** climbs the lower escarpment to the shelf and, at its north-west end, the Ancients' road tunnel up the Wall to the plateau (2026-11-22: the cut ramp it replaced was 850 m of cliff in 260 m).
+
+### 5.5 Core adoption (written before the first fragment, 2026-11-22)
+
+As Ledge's (`settlements/ledge/PLAN.md`, "Core adoption"), started from Ledge: `core/rand`, `core/tags`, `core/space`, `core/terrain`
+(KSTRATA `secondary-ejecta`, KRUBBLE for the prow's and the rockfall's heaps), `core/ruins` (the shell, the wreck), `core/atmos` (the
+shared sky at Shelf's place, 1.00 atm), `core/host` FULL, `core/drawn`, `core/materials` (`materials.json`), the Dalab set read in
+place, the Fellgang set (`TG`) for the Travellers; `kits/ancients/cliff` (KCLIFF) for the shell. Not taken: `core/water` (no water on
+the page: the shelf is dry), `core/city` and `core/simulation` (as Ledge), `core/walk`, `core/biome` (the steppe's flora: owed),
+`core/lod`, `KCARVE` / `KCAVERN` (the station, the spirals and the shafts are inside the rock: owed with interiors), the `tg` set.
+
+### 5.6 Built (2026-11-22)
+
+The layout (238 decks, 360 parts), its 23 checks and their negatives (`test-shelf.js`: 57 pass), the sheets and `AREAS.md` (**7.7 million
+m2** at the Ancients' peak, ~110,000 people then; **32.9 %** broken; 10,000 today), and `dist/shelf.html`, GPU-verified (`KRATOR_GL=gpu`,
+the rtx lane): every page check and negative, the ruin watches (the shell, the wreck), samplers and the eye on the drawn ground in 12 views.
+Owed: `KNOWN_ISSUES.md`. Question 3 settled 2026-11-22 (the target renamed `shelf`).

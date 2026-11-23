@@ -28,6 +28,8 @@ var L = {
   world: 4370,
   // THE GROUND (LEDGE.groundAt): the head's bench, the dressed face, the apron and the lake (PLAN.md 9.2)
   ground: { head: 1562, top: 3480, apron: 312, lake: 297, quay: 180, dressed: 750, bench: 700, escarp: .26, run: 380, shore: 40, page: 3000, far: 12000 },
+  // DALAB'S ROAD as cut into the ground (KCLIFF.roadCut): 6 m wide, held to 9 %, the cut eased back over 14 m each side
+  road: { w: 6, shoulder: 14, grade: .09 },
   // THE SHELL (PLAN.md 9.3): layers at y0 + pitch k; a layer's width along the face and its reach out of the rock grow with k
   stack: { n: 42, y0: 332, pitch: 30, slab: 5, storey: 4.5, storeys: 4, plenum: 7, w0: 320, w1: 700, r0: 24, r1: 196, rExp: 1.5,
     root: 20, gallery: 6, cover: .7, prow: { wing: 'c', k0: 26, add: 120 },
@@ -85,25 +87,14 @@ var RUIN = [
 // the people on the inhabited decks, by zone and holder (the rest of each zone's census is in its parts)
 var DECKFOLK = { 'Z5:dalab': 600, 'Z5:fellgang': 600, 'Z4:fellgang': 300, 'Z3:lojfower': 1500, 'Z1:dalab': 900 };
 function zoneOf(k){ for (var i = 1; i < L.zones.length; i++){ var z = L.zones[i]; if (k >= z.k[0] && k <= z.k[1]) return z.id; } return null; }
-for (var k = 0; k < S.n; k++) S.wings.forEach(function(w){
-  var d = { id: 'd.' + k + '.' + w.id, k: k, wing: w.id, zone: zoneOf(k), state: null, by: 'none', use: '', people: 0 };
-  RUIN.forEach(function(r){ if (k >= r[1] && k <= r[2] && r[0].split(' ').indexOf(w.id) >= 0){ d.state = r[3]; d.by = r[4]; d.use = r[5]; } });
-  L.decks.push(d);
-});
-// each inhabited deck's people: its zone's share by its floor (largest remainders, so each group's sum is exact). The floor is
-// the stack's: width x reach x cover x storeys (the same formula as LEDGE.deckFloor, which test-ledge.js holds equal)
-function wingReach(k, w){ var t = k / (S.n - 1), r = (S.r0 + S.r1 * Math.pow(t, S.rExp)) * w.r;
-  if (w.id === S.prow.wing && k >= S.prow.k0) r += S.prow.add * (k - S.prow.k0 + 1) / (S.n - S.prow.k0); return r; }
-function wingWidth(k, w){ var t = k / (S.n - 1); return (S.w0 + (S.w1 - S.w0) * t) * (w.f1 - w.f0); }
-function floorOf(d){ var w = S.wings.filter(function(x){ return x.id === d.wing; })[0]; return wingWidth(d.k, w) * wingReach(d.k, w) * S.cover * S.storeys; }
+// the decks and their people: the Ancients' cliff-city records (kits/ancients/cliff/10-cliff-stack.js, KCLIFF): a deck a wing a layer,
+// each taking the ruin table's last row over it; each inhabited deck's share of its zone's people by its floor (largest remainders,
+// so each group's sum is exact)
+L.decks = KCLIFF.decks(S, RUIN, zoneOf);
 Object.keys(DECKFOLK).forEach(function(key){
-  var zb = key.split(':'), list = L.decks.filter(function(d){ return d.zone === zb[0] && d.by === zb[1] && ['reclaimed', 'kept', 'squatted'].indexOf(d.state) >= 0; });
-  var tot = list.reduce(function(a, d){ return a + floorOf(d); }, 0), n = DECKFOLK[key], given = 0;
-  var share = list.map(function(d){ var q = n * floorOf(d) / tot; return { d: d, q: q, f: Math.floor(q) }; });
-  share.forEach(function(s){ s.d.people = s.f; given += s.f; });
-  share.slice().sort(function(a, b){ return (b.q - b.f) - (a.q - a.f) || (a.d.id < b.d.id ? -1 : 1); }).slice(0, n - given).forEach(function(s){ s.d.people++; });
+  var zb = key.split(':'), list = L.decks.filter(function(d){ return d.zone === zb[0] && d.by === zb[1] && KCLIFF.LIVED.indexOf(d.state) >= 0; });
+  KCLIFF.share(list, DECKFOLK[key], function(d){ return KCLIFF.deckFloor(S, d); });
 });
-
 // ---------------------------------------------------------------- the parts
 function P(id, name, kind, shape, o){
   var p = { id: id, name: name, kind: kind, shape: shape }, k2;
@@ -236,12 +227,8 @@ L.parts.forEach(function(p){ if (p.by === 'fellgang' && FGP[p.key] && !p.people)
 var PARTFOLK = { 'Z0:dalab': 2700, 'Z0:fellgang': 1000, 'Z3:dalab': 100, 'Z5:dalab': 1400, 'Z5:fellgang': 900 };
 Object.keys(PARTFOLK).forEach(function(key){
   var zb = key.split(':'), list = L.parts.filter(function(p){ return p.zone === zb[0] && p.by === zb[1] && p.people > 0; });
-  var tot = list.reduce(function(a, p){ return a + p.people; }, 0), n = PARTFOLK[key], given = 0;
-  var share = list.map(function(p){ var q = n * p.people / tot; return { p: p, q: q, f: Math.floor(q) }; });
-  share.forEach(function(s){ s.p.people = s.f; given += s.f; });
-  share.slice().sort(function(a, b){ return (b.q - b.f) - (a.q - a.f) || (a.p.id < b.p.id ? -1 : 1); }).slice(0, n - given).forEach(function(s){ s.p.people++; });
+  KCLIFF.share(list, PARTFOLK[key], function(p){ return p.people; });
 });
-
 // ---------------------------------------------------------------- the lifts (PLAN.md 9.5)
 var CAR = { w: 10, d: 16, h: 7, beasts: 6, t: 40, note: 'a wagon and its team, or six pack beasts and their loads' };
 [['lift.g1', 'the east great lift', 120], ['lift.g2', 'the west great lift', -120]].forEach(function(g){
