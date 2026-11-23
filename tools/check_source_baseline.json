@@ -218,7 +218,7 @@
  "core/interiors/20-core-roomlight-host.js: RAWTEX": 3,
  "core/lod/09-lod.js: ORNUM": 2,
  "core/materials/record/25-matlib-host.js: ORNUM": 1,
- "core/materials/record/25-matlib-host.js: RAWTEX": 5,
+ "core/materials/record/25-matlib-host.js: RAWTEX": 6,
  "core/materials/record/26-matlib-bind.js: ORNUM": 3,
  "core/minimap/88-core-minimap.js: ORNUM": 1,
  "core/minimap/88a-core-minimap-host.js: ORNUM": 1,

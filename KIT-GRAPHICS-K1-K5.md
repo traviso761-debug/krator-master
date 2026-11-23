@@ -83,3 +83,46 @@ Found on the way, not fixed (not K1-K5): `tools/check_insulation.py` fails on th
 Phase 0 item); `tools/check_vendor.py` reports Tungang's own `src/37-wk-rec.js` shadowing `core/engine`; `check_source` has 41
 keys over its baseline on the freeze, none of them in these files; `godot/tests/export/pinnacle_world_test.gd` hangs on Windows
 (its synthetic stream goes to `/tmp/...`, so `places` is empty and line 160 errors before `quit`).
+
+## Wired in and the other kit-side items (the owner: "wire them in and implement other proposed improvements", 2026-11-23)
+
+| Item | Files | What it does | Test |
+|---|---|---|---|
+| Bevels on hero masonry (M4) | `core/engine/30-geo.js` (`BEVEL_KEYS`, `BEVEL_BUDGET` 60,000, `BEVEL_STAT`, `clipY`, `bevelBox`); `kits/lizardmen/src/31-alt-takes.js` (`stoneP` .05, `brick` .02); `kits/eternian/src/38-et-alt.js` (`block` .03, `brick` .015, `stone` .03, `paving` .02) | `box()` draws a kit's named masonry keys chamfered (boxes at least 2.5 chamfers thick) until the page has spent 60,000 extra triangles; a grounded one keeps its ramp, cut at the band | `node core/engine/test-k2-geo.js` (33) |
+| Joint darkening per vertex (M4) | `core/engine/30-geo.js` (`SLABS`, `aoSlab`, `AO_BASE`), `36-def.js` | the base ramp's foot is whatever the piece stands on: its plot or a slab its building drew (a floor, a deck, a platform) | same |
+| Room lighting from the table (I1-I3) | `core/interiors/20-core-roomlight-host.js` (`KRLHOST.hook` attribute mode, `tagRooms`, `lightPool`); `core/engine/91i-interiors.js`, `engine.py` (the host in the interiors fragment); `kits/interiors/src/50-shell.js` (`opt.roomLight`), `70-demo.js`, `build.py` | engine pages with `?interiors=1`: every vertex inside a planned room takes its column of the table, its walls and furniture lit by portal daylight and lamp ambience (the sun's share off at night), a pool of 4 point lights at the eye's room's lamps and windows; Eternian: 423,124 of 1,684,949 vertices indoor in 172 rooms. The interiors demo's shells (`?roomlight=0` to compare) | `node core/interiors/test-roomlight-host.js` (36), `node kits/interiors/tests/test-roomlight.js` (20) |
+| Sine-free break-up hash (K1) | `core/materials/record/25-matlib-host.js` `kmH`, `godot/shaders/lib/breakup.gdshaderinc` `km_h` | Hoskins' hash13, the same expression in both engines (fract(sin(large)) differed between GPUs). Moves every library page's break-up pattern | `node core/materials/record/test-m234.js` (17) |
+| Specular AA from mip variance (M2) | `tools/textures/pack.py` (`"specAA"`: `mipVariance` on a packFormat 1 entry), `matlib_pack.py`, `25-matlib-host.js` `specAAHook` | the variance of the sampled mip widens the roughness (WebGL 2); on Lizardmen's bronze, cast bronze, jade and Eternian's celadon, tile, bronze, gold | same |
+| Cavity and wear, two masks (M4) | `pack.py` (`"m4"`: `<fam>.cw.webp`, R cavity, G wear; `compute_wear_from_normal`), `25-matlib-host.js` `cavityHook` | joints darker, worn arrises paler and smoother; on the survey's masonry (Lizardmen `stoneP`, `brick`; Eternian `block`, `brick`, `stone`, `paving`) | same |
+| Planar parallax on masonry (M3) | `pack.py` (`"pom"`: the height in the colour map's alpha, the set's height map or integrated from its normals; `pomDepth` metres), `25-matlib-host.js` `pomHook` | 8 linear steps and one refinement, the frame from screen derivatives (no tangents), explicit gradients; on the same masonry families | same |
+| Wet margins (M4) | `25-matlib-host.js` `KMAT.wetTag` (per vertex, from the LOCAL water body: `WORLD.water(x, z)`), `KMAT.wetHook` | written and tested; **not wired**: no page has library materials standing in `WORLD.water` today (the quays of `kits/port`/Hook and the isle demo's harbour are where it goes) | same |
+
+The two kits' textures were repacked (`python3 tools/textures/pack.py kits/lizardmen`, `kits/eternian`): only the flagged masonry
+families' albedos changed (RGBA now, the height in alpha) and their `.cw.webp` maps are new; every other file is byte-identical.
+
+**Not done, and why:** room lighting in girder, locus, yuni and mavs-refuge (each furnishes rooms its own way: girder lazily as
+the camera nears, locus during its build, yuni and mavs on their own room systems; each needs an adapter onto `KRLHOST.tagRooms`
+after its rooms exist); a lit room in Godot as a shot (Godot already reads interiors.json v2; a windowed capture was not set
+up); the wet margins' wiring (above). Nothing here needed the owner's texture work: the height, cavity and wear come from the
+library sets' own normals (a set's `height.png` where it has one).
+
+**Fingerprints** (rebuilt pages against the line's, bfa74b80c): core/engine: eternian +59,980 triangles (the bevels on `block` and
+its variants, `brick`, `stone`, `paving`; registry moves), lizardmen +6,976 (`stoneP` +5,472, `brick` +1,504), islanders +3,240
+(`stone`: the slab joints split more walls), resources +708, scyvoi and noahs-regret colour only, ash-nomads, desert-nomads
+and yeti `same`; records and objects the same everywhere. core/furnish: every interiors-off row `same`; the five interiors-on
+rows that differ from the line's committed pages have the line's own hashes (built from bfa74b80c's sources): furniture untouched.
+
+**GPU shots** (arc lane, KRATOR_GL=gpu, each page as the line built it, then rebuilt; `shots/k-wired/` in this worktree, not
+committed): draw calls the same in every view; triangles and programs:
+
+| View | before | after |
+|---|---|---|
+| Lizardmen, bronze and stone hall (near) | 1,340,969 tris, 48 programs | 1,347,945, 41 |
+| Lizardmen, the nest hall (mid) | 1,367,905, 48 | 1,374,881, 41 |
+| Eternian, block hut (near) | 613,074, 36 | 673,054, 38 |
+| Eternian, court house (mid) | 613,074, 36 | 673,054, 38 |
+| Eternian `?interiors=1`, night, court house cut away (near) | 704,941, 64 | 764,921, 68 |
+| Eternian `?interiors=1`, night, canal row cut away (mid) | 699,753, 60 | 759,733, 64 |
+| kits/interiors sheet | 68,658, 7 | 78,898, 9 |
+
+fps 58-61 in every view before and after: the page is held at the display's 60 Hz, so the numbers show no drop, not the cost.

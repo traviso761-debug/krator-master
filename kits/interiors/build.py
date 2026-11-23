@@ -83,6 +83,8 @@ SKY = psky.paths(psky.SKY_H3)
 # KROOMLIGHT (core/interiors/10-core-roomlight.js), read in place ahead of the core (K2, GRAPHICS-TERRAIN-PROPOSAL.md 12d):
 # 49-exports.js builds the room table, the light pool and the v2 export on it, 50-shell.js bakes its corner AO
 SKY['05-roomlight.js'] = os.path.join(ROOT, 'core', 'interiors', '10-core-roomlight.js')
+# KRLHOST, the room table on the web (the demo lights its shells from it), with the views: read in place from core/interiors
+SKY['50a-roomlight-host.js'] = os.path.join(ROOT, 'core', 'interiors', '20-core-roomlight-host.js')
 
 
 def src_path(f):

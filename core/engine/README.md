@@ -47,6 +47,10 @@ triangles; for near-tier plinths, piers and lintels). `node core/engine/test-k2-
 fingerprint (the colours, and the triangle counts of the records with grounded pieces): rewrite `fingerprint.json` once,
 after the owner has seen the shots.
 
+**Hero bevels and joints** (M4, 2026-11-23). A kit names its masonry keys in `BEVEL_KEYS` (its `31-alt-takes.js`: `BEVEL_KEYS.stoneP=.05`) and `box()` draws those boxes with `boxBevel()` (axis-aligned, at least 2.5 chamfers thick) until the page has spent `BEVEL_BUDGET` (60,000) extra triangles; `BEVEL_STAT` counts boxes, extra triangles and the ones left plain. A grounded bevelled box keeps its base ramp (its triangles cut at the band). The base ramp's foot is whatever the piece stands on: its plot, or a slab the same building drew before it (`SLABS`: a floor, a deck, a platform), so walls on upper floors and posts on decks darken at their joints. Lizardmen (`stoneP`, `brick`) and Eternian (`block`, `brick`, `stone`, `paving`) take bevels.
+
+**Room light, lit** (I1-I3): the interiors fragment (`engine.interiors()`) carries `core/interiors/20-core-roomlight-host.js`; with `?interiors=1` every vertex of the world inside a planned room takes that room's column of the table (`KRLHOST.tagRooms`: `SVIX.rlTag`), the materials read it (`matHook 'rl'`: the room's portal daylight and lamp ambience replace the sky's ambient indoors, the sun's share off at night) and four pool lights follow the eye's room's lamps and windows.
+
 **Room light** (K2): with `?interiors=1` the planned rooms' `KROOMLIGHT` table is `SVIX.lightTable` (`_api.interiors().light`
 counts the lit, reached and dark rooms), `svixLightPool(eye)` the eye's room's light pool and `svixExport()` interiors.json v2
 (kits/interiors API.md, "Room light").

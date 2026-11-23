@@ -65,6 +65,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "brick.cw.webp",
     "map": "brick.albedo.webp",
     "normalMap": "brick.normal.webp",
     "roughnessMap": "brick.rough.webp"
@@ -72,6 +73,7 @@
    "lib": "brick.ochre",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.015,
    "roughLift": 0.4,
    "scale": [
     1.4,
@@ -101,6 +103,18 @@
    },
    "lib": "metal.bronze.verdigris",
    "metal": 0.5,
+   "mipVariance": [
+    0.0,
+    0.01925,
+    0.02948,
+    0.03217,
+    0.03267,
+    0.03255,
+    0.03235,
+    0.0322,
+    0.0321,
+    0.03208
+   ],
    "normalScale": 1.0,
    "roughLift": 0.1,
    "scale": [
@@ -131,6 +145,18 @@
    },
    "lib": "metal.bronze.cast",
    "metal": 0.6,
+   "mipVariance": [
+    0.0,
+    0.0366,
+    0.05402,
+    0.05762,
+    0.05817,
+    0.05818,
+    0.05809,
+    0.05804,
+    0.05802,
+    0.05802
+   ],
    "normalScale": 1.0,
    "roughLift": 0.1,
    "scale": [
@@ -981,6 +1007,18 @@
    },
    "lib": "stone.amazonite",
    "metal": 0,
+   "mipVariance": [
+    0.0,
+    0.0281,
+    0.04734,
+    0.05309,
+    0.05435,
+    0.05443,
+    0.0542,
+    0.05403,
+    0.05398,
+    0.05397
+   ],
    "normalScale": 1.0,
    "roughLift": 0.0,
    "scale": [
@@ -1515,6 +1553,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "stoneP.cw.webp",
     "map": "stoneP.albedo.webp",
     "normalMap": "stoneP.normal.webp",
     "roughnessMap": "stoneP.rough.webp"
@@ -1522,6 +1561,7 @@
    "lib": "stone.basalt.polished",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.025,
    "roughLift": 0.55,
    "scale": [
     1.8,

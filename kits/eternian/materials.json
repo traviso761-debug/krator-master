@@ -16,6 +16,8 @@
    "metal": 0
   },
   "block": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "concrete.block.relief",
    "scale": [
     1.6,
@@ -28,6 +30,8 @@
    "metal": 0
   },
   "brick": {
+   "m4": true,
+   "pom": 0.015,
    "lib": "brick.buff",
    "scale": [
     1.2,
@@ -40,6 +44,8 @@
    "metal": 0
   },
   "stone": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "stone.cut.b",
    "scale": [
     2.6,
@@ -52,6 +58,7 @@
    "metal": 0
   },
   "tile": {
+   "specAA": true,
    "lib": "roof.tile",
    "scale": [
     1.2,
@@ -64,6 +71,7 @@
    "metal": 0
   },
   "celadon": {
+   "specAA": true,
    "lib": "roof.tile.celadon",
    "scale": [
     2.4,
@@ -113,6 +121,8 @@
    "metal": 0
   },
   "paving": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "paving.flagstone",
    "scale": [
     2,
@@ -173,6 +183,7 @@
    "metal": 0.4
   },
   "bronze": {
+   "specAA": true,
    "lib": "metal.bronze.cast",
    "scale": [
     0.8,
@@ -197,6 +208,7 @@
    "metal": 0.25
   },
   "gold": {
+   "specAA": true,
    "lib": "metal.gold",
    "scale": [
     0.8,
