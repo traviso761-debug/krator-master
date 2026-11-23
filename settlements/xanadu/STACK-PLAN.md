@@ -108,10 +108,13 @@ Godot place (as Longsong's monastery is) after Stage 8.
 - **relief** (M3 planar POM where hero, M4 cavity): `stone`, `brick`, `xSandR`, `xRubble`, `stone.sandstone.ashlar`,
   `stone.marble.ashlar`, `wall.rubble.limewash` (owed), the fort's ashlar.
 
-**Where the classes live.** *Proposed*: a `class` field on each family in the builds' `materials.json` (`kits/xanadu`,
-`settlements/xanadu`, `kirstabal`, `thalaba`, `flashing-eye`, `kits/qiblai`), but only if `pack.py` today packs the same
-bytes with the field present (XS1 proves it with `tools/port_baseline.py`); otherwise a sidecar `materials.classes.json`
-the stack's `pack.py` reads. Nothing is re-packed before Stage 8.
+**Where the classes live** (XS1, done 2026-11-23: `XS1-CLASSES.md`): a `"class"` field on each family in the builds'
+`materials.json` (`kits/xanadu`, `settlements/xanadu`, `kirstabal`, `thalaba`, `flashing-eye`, `kits/qiblai`, and
+`kits/tungang`, whose Glazier set Lightwall draws), read through `tools/textures/mclass.py` from the table
+`core/materials/classes/m1-classes.json`. Byte-neutral, proven three ways: today's `pack.py` reads no `class` (nor does the
+stack's), each file packs to identical `tex/` with and without it, and all 55 pages and sidecars rebuild identical.
+Nothing is re-packed before Stage 8. XS1 added `xTiles` to the glazed list (the domes', bulbs' and drums' tile) and kept
+the three `mapOnly` marbles flat (no normal to promote); `XS1-CLASSES.md` section 1.
 
 **The caps.** Promoting a family to lossless `xy8` adds about 340-510 KB of WebP (the stack's measure). The heaviest Xanadu
 carriers: `xanadu-oidong-highrift.tex.xanadu.js` (8.5 MB sidecar: every XAK family), `pher.html` (8.5 MB), `erewhon.html`
@@ -125,6 +128,10 @@ page within 3 of 16 takes the `v3_arrays_three_maps` runtime assembly (the `ISLE
 
 ## 6. S4: Xanadu's own ground layers
 
+**XS1 wrote the set** (`godot/tools/ground_layer_sets/xanadu.json`; `XS1-CLASSES.md` section 6). It orders the layers by
+the six roles `terrain.gdshader` gives the indices (base, wet, high, gravel, rock, pave), so this table's order and two of
+its layers changed: valley floor, lake shore, alpine, terraces, caldera rock, courtyard paving (`paving.tiles144`, since
+Godot's pave zone selects slot 5); the paddy and the red soil are held. The table below is the plan as first proposed.
 `godot/tools/pack_ground_layers.py` packs one six-layer set today. *Proposed*: a set keyed by world style
 (`LAYER_SETS = {'default': [...], 'xanadu': [...]}`, written to `godot/data/ground_layers/xanadu/`; `kground_layers.gd` picks
 the set from the region's style), six layers so the sampler count does not move:
@@ -162,7 +169,8 @@ Courtyard paving stays a building's material (`xTiles`), not a ground layer: the
 ## 8. Routes and gates
 
 **The `xanadu` route** (`tools/route_harness.py` track, `route_harness.gd`), four stops at 12:00, 16:20, 22:00 (the stack's
-hours):
+hours); XS1 wrote them as data, keyed to site ids, the pages' named views and the kit's blocks
+(`tools/route_tracks/xanadu.json`; `XS1-CLASSES.md` section 7):
 - `city_block`: Erewhon's citadel, the Golden Way;
 - `water_ground`: Phish-Mārkiṭ's quay (or Māuṭh's until the west round is built), across the lake to the caldera wall;
 - `forest_edge`: Gārḍan's walled orchards (or Phēr's rim plain until then);
@@ -182,7 +190,7 @@ gates 2, 8 per region.
 | # | Session | Brief | Waits on | Est. |
 |---|---|---|---|---|
 | **XS0** | Measure | On a test branch off `claude/vertical-stack` (not committed to pages): every Xanadu page's linked-program samplers, video memory and bytes with the stage 1 harness; which pages are within 3 samplers of 16; the glazed families each page draws | nothing | 1 (small) |
-| **XS1** | Material classes and the Xanadu S4 table | The classes of section 5 for every Xanadu `materials.json` (or the sidecar), proven byte-neutral; the `xanadu` layer set in `pack_ground_layers.py` (Godot data only); the route's stop definitions | XS0 | 1 |
+| **XS1** | Material classes and the Xanadu S4 table (**done 2026-11-23**, `XS1-CLASSES.md`; XS0's reconciliation open) | The classes of section 5 for every Xanadu `materials.json` (or the sidecar), proven byte-neutral; the `xanadu` layer set in `pack_ground_layers.py` (Godot data only); the route's stop definitions | XS0 | 1 |
 | **XS2** | The citadel's room graph | Erewhon's citadel rooms as `[G data]`: rooms, doors as portals, windows, the oculus as a skylight, the jali as reduced windows, the lamps, each with its room id; `KROOMLIGHT.buildTable` run on it in a node test with negatives (the oculus lights its room only, a vault-like store stays dark); no page change | nothing (the Erewhon session's re-seat does not move rooms) | 1 |
 | (phase A) | the settlements | `BUILD-PLAN.md` A1-A10 continue: layouts, records, sheets | | |
 

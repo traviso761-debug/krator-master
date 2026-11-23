@@ -1,0 +1,48 @@
+{
+ "what": "The M1 material classes (settlements/xanadu/STACK-PLAN.md section 5; GRAPHICS-TERRAIN-PROPOSAL.md M1; STAGE-5-REPORT.md section 4). A build's materials.json names one per family (\"class\"); Stage 8's tools/textures/pack.py reads this table through tools/textures/mclass.py to pack each family; core/materials/classes/10-mat-class.js checks the names (test-class.js). Today's pack.py ignores the field: nothing is re-packed before Stage 8 (the owner, 2026-11-22: data now, looks after).",
+ "version": 1,
+ "rule": {
+  "what": "the stack's glazed rule (STAGE-5-REPORT.md section 4): a lit family whose specular is at least specularMin and whose roughness (the library record's, lifted by the family's roughLift as pack.py lifts the map) is under roughnessMax. A family classed glazed that the rule misses is glazed by name; a family the rule takes that is not classed glazed is listed too. Neither changes a look: each is a decision recorded, not a fault.",
+  "specularMin": 0.45,
+  "roughnessMax": 0.35,
+  "specularDefault": 0.5
+ },
+ "classes": {
+  "glazed": {
+   "what": "smooth, specular, often curved: glazed tile, mosaic, polished marble, gilt, lacquer. The one class whose normals the web packs at 8 bits (the owner, 2026-11-22: glazed families only), so curved highlights do not band",
+   "web": {"normal": "xy8"},
+   "godot": {"normal": "oct8", "mipVariance": true},
+   "flat": false,
+   "height": "yes",
+   "pom": false,
+   "cavity": true
+  },
+  "relief": {
+   "what": "masonry, rubble, paving, timber, thatch and the ground sets: the height carries the look. M3 planar POM where hero, M4 concave cavity",
+   "web": {"normal": "xy6"},
+   "godot": {"normal": "oct8", "mipVariance": true},
+   "flat": false,
+   "height": "yes",
+   "pom": "hero",
+   "cavity": true
+  },
+  "flat": {
+   "what": "no relief worth a height channel: plaster and washes, cloth, metals, painted pattern sheets, detail maps, mapOnly sheets. Gate 1 demands no height range (pack.py's \"flat\": true)",
+   "web": {"normal": "xy6"},
+   "godot": {"normal": "oct8", "mipVariance": true},
+   "flat": true,
+   "height": "optional",
+   "pom": false,
+   "cavity": false
+  },
+  "card": {
+   "what": "an alpha cut-out (a jali, a leaf card): RGBA colour and alpha, no normal or roughness map, and never a height in the alpha (Gate 1)",
+   "web": {"normal": null},
+   "godot": {"normal": null},
+   "flat": true,
+   "height": "never",
+   "pom": false,
+   "cavity": false
+  }
+ }
+}
