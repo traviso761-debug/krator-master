@@ -90,6 +90,10 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
+- **The Qiblai kit's cell range and college range** (2026-11-23, `settlements/opal-ford/src/89q8-of-order-pieces.js`): `of_cell_range`
+  and `of_college_range` (`_m`, `_s`) are written on the kit's contract for Ōpal-Phōrḍ's Iridescent house only; move them into
+  `kits/qiblai/src/89q3-qb-sacred.js` (as `qb_cell_range`, `qb_college_range`, the keys renamed in opal-ford's `89zp` and its test)
+  and rebuild every page that takes the kit (Qiblai's, Lightwall's, Ōpal-Phōrḍ's).
 - **core/hamlet: a village whose link is on its own green** (2026-11-23, `openworld/xanadu-lake-shore`, HAMLETS-PLAN.md 3d):
   `KHAMLET.village` takes its frame from `spec.link - spec.site`; KSITES passes the site as the link, so a village laid at its site's
   own point (`near: [0, 0]`) gets a zero frame (`ux = uz = 0`), every lane collapses onto the green and its houses fail as "could not

@@ -25,7 +25,7 @@ KCITY.lib = { SL, plan: () => PLAN, KSPACE, Raster, OCC, obb, obbCorners };
 load('core/region/data/xan-tune.js');
 // the kit's boxes from its defs (src and the opt-in extra/ pieces the page takes: kit.json)
 global.OF_KIT_DIMS = {};
-const XS = [path.join(ROOT, 'kits', 'xanadu', 'src'), path.join(ROOT, 'kits', 'xanadu', 'extra'), path.join(ROOT, 'kits', 'qiblai', 'src')];   /* qiblai: the Iridescent Order's house */
+const XS = [path.join(ROOT, 'kits', 'xanadu', 'src'), path.join(ROOT, 'kits', 'xanadu', 'extra'), path.join(ROOT, 'kits', 'qiblai', 'src'), path.join(ROOT, 'settlements', 'opal-ford', 'src')];   /* qiblai and the page's own pieces: the Iridescent Order's house */
 for (const f of [].concat(...XS.map(d => fs.readdirSync(d).filter(f => f.endsWith('.js')).map(f => path.join(d, f))))) {
   const s = fs.readFileSync(f, 'utf8'), re = /(?:XA|QB)\.def\(\{/g; let m;
   while ((m = re.exec(s))) { const head = s.slice(m.index, m.index + 1500), k = /key:\s*'([^']+)'/.exec(head), b = /\bw:\s*([\d.]+),\s*d:\s*([\d.]+)(?:,\s*h:\s*([\d.]+))?/.exec(head);
@@ -46,9 +46,10 @@ function onStreets(list, ways) { let n = 0, first = null;
     const hit = ways.some(w => { for (let i = 1; i < w.pts.length; i++) for (const q of C) if (segD(q, w.pts[i - 1], w.pts[i]) < w.w / 2 - 0.05) return true; return false; });
     if (hit) { n++; first = first || p.id; } }
   return { n, first }; }
-const WET_OK = { xa_river_span: 1, xa_dugout: 1 };
+const WET_OK = { xa_river_span: 1, xa_dugout: 1, xa_ford: 1, xa_ferry_raft: 1 };
 const inRiver = list => list.filter(p => !WET_OK[p.key] && corners(p.bo).concat([p.bo.c]).some(q => ofH(q[0], q[1]) < ofW(q[1]) + 0.3));
-const boatsBad = list => list.filter(p => p.key === 'xa_dugout').filter(p => { const h = ofH(p.x, p.z) - ofW(p.z); return h < -1.2 || h > 1.6; });
+const boatsBad = list => list.filter(p => p.key === 'xa_dugout').filter(p => { const h = ofH(p.x, p.z) - ofW(p.z); return h < -1.2 || h > 1.6; })
+  .concat(list.filter(p => p.key === 'xa_ferry_raft').filter(p => corners(p.bo).concat([p.bo.c]).some(q => ofH(q[0], q[1]) > ofW(q[1]) - 0.4)));   /* the ferry raft afloat: every corner over 0.4 m of water */
 const onPaddy = list => list.filter(p => corners(p.bo).concat([p.bo.c]).some(q => OF_WORKS.paddies.some(P => ofInPoly(q, P.poly))));
 const inPrecinct = list => { const R = OF.PRECINCT; return list.filter(p => p.kind !== 'order' && p.kind !== 'bridge').filter(p => corners(p.bo).concat([p.bo.c]).some(q => q[0] > R.x[0] && q[0] < R.x[1] && q[1] > R.z[0] && q[1] < R.z[1])); };
 
@@ -91,20 +92,23 @@ T.ok('nothing stands on a paddy; nothing of the town\'s in the Iridescent Order\
 function houseBad(H, bowY) { const bad = [], Hh = OF.HOUSE;
   if (H.errs.length) bad.push('no def: ' + H.errs.join(', '));
   const m = H.place.find(p => p.key === 'qb_monastery'); if (!m || m.v !== 4) bad.push('the great monastery missing or not Turquoise');
-  H.place.filter(p => p.key === 'qb_kora_arcade').forEach(p => { const k = Hh.terr.findIndex(vt => Math.abs(p.x - Hh.x0 - (vt - 4)) < 1), lv = bowY - Hh.cut * (k + 1);
+  H.place.filter(p => p.key === 'of_cell_range').forEach(p => { const k = Hh.terr.findIndex(vt => Math.abs(p.x - Hh.x0 - (vt - 5)) < 1), lv = bowY - Hh.cut * (k + 1);
     if (k < 0 || Math.abs(ofH(p.x, p.z) - lv) > .3) bad.push(p.id + ' off its terrace (' + ofH(p.x, p.z).toFixed(2) + ' / ' + lv.toFixed(2) + ')'); });
+  if (H.place.filter(p => p.key === 'of_cell_range').length !== Hh.terr.length) bad.push('a terrace without its cells');
+  /* the Spray Stair: each flight's top and foot on the ground of the platforms it joins (within 0.4 m) */
+  for (const S of H.stairs) { const t = ofH(S.xTop + 1.5, S.z) - S.yTop, b = ofH(S.xBot - 1.5, S.z) - S.yBot; if (Math.abs(t) > .4 || Math.abs(b) > .4) bad.push('stair ' + S.id + ' off its platforms (' + t.toFixed(2) + ', ' + b.toFixed(2) + ')'); }
   for (const u of [Hh.bow.u[0] + 6, (Hh.bow.u[0] + Hh.bow.u[1]) / 2, Hh.bow.u[1] - 6]) { const h = ofH(Hh.x0 - 42, Hh.z0 + u); if (Math.abs(h - bowY) > .05) bad.push('the Bow Terrace not level at u ' + u + ' (' + h.toFixed(2) + ')'); }
   for (const u of Hh.ledge.u) { const z = Hh.z0 + u, x = Hh.x0 + (Hh.ledge.v[0] + Hh.ledge.v[1]) / 2; if (ofH(x, z) - ofW(z) < 1.5) bad.push('the pool\'s ledge ' + (ofH(x, z) - ofW(z)).toFixed(2) + ' m over the water at u ' + u); }
   return bad; }
 { const H = OF_HOUSE, bad = houseBad(H, ofBowY);
-  T.ok('the Iridescent Order\'s house: ' + H.place.length + ' pieces, the monastery Turquoise, the cells on their terraces, the Bow Terrace level, the ledge over the water',
+  T.ok('the Iridescent Order\'s house: ' + H.place.length + ' pieces, the monastery Turquoise, the cells on their terraces, the Spray Stair on its platforms, the Bow Terrace level, the ledge over the water',
     !bad.length && H.place.length >= 40, bad.slice(0, 4).join('; ') || ('the Bow Terrace at ' + ofBowY.toFixed(2) + ' m over the ford\'s water'));
   T.neg('...its negative: the cells checked against the wrong level are caught', b => houseBad(H, b).length === 0, ofBowY + 1, ofBowY); }
 
 // ---------------------------------------------------------------- 6. the people and the hosts
 const ppl = OF.people.total, tune = OF.people.tune;
 T.ok('the people the tune\'s ' + tune + ' (XAN_TUNE.opalford) within 25 %', ppl > tune * .75 && ppl < tune * 1.25, ppl + ' in ' + houses.length + ' houses');
-const want = ['xa_caravanserai', 'xa_customs_house', 'xa_watch', 'xa_temple', 'xa_guild_farm', 'xa_granary', 'xa_watermill', 'xa_river_span', 'xa_dugout', 'xa_farm', 'xa_farmhouse'];
+const want = ['xa_ford', 'xa_ferry_raft', 'xa_caravanserai', 'xa_customs_house', 'xa_watch', 'xa_temple', 'xa_guild_farm', 'xa_granary', 'xa_watermill', 'xa_river_span', 'xa_dugout', 'xa_farm', 'xa_farmhouse'];
 const have = new Set(P.filter(p => p.kind !== 'house').map(p => p.key)), miss = want.filter(k => !have.has(k));
 T.ok('the han, the toll house, the Tears\' post, the temple, the grain office, the granaries, the mill, the footbridge, the dugouts and the terraces placed', !miss.length,
   miss.length ? 'missing ' + miss.join(', ') : (P.length - houses.length) + ' hosts');

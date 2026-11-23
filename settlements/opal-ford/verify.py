@@ -9,7 +9,9 @@ checks: tools/checks_optin.json), with the town's own:
   of-people    the households the tune's 1,500 (XAN_TUNE.opalford) within 25 % (reported as a budget)
   of-ground    every building's floor on its ground: no lower than the ground at its middle less its footing, no higher than
                the ground's highest corner plus a metre (the spans and the boats stand at the water)
-  of-works     the ford's causeway and stones, the mill's weir and the fish weirs drawn; the precinct kept clear
+  of-works     the mill's weir, the fish weirs and the Spray Stair's flights drawn; none of the town's buildings in the precinct
+  of-ferry     the ferry raft registered with core/tags as a vessel (a ferry, pole-pushed, a raft hull); the ford as infrastructure
+  of-house     the Iridescent Order's house: every piece with its def and drawn, the great monastery in the Turquoise dress
 
 The plan's own checks (no overlap, nothing on a way, in the river, on a paddy or in the precinct, the same twice) are the node
 test's: node settlements/opal-ford/tests/test-of-site.js.
@@ -28,7 +30,7 @@ CITY_JS = r"""
 {const Q=window._opalford||{},P=typeof OF_PLACE!=='undefined'?OF_PLACE:[];
  R.push({name:'of-laid',ok:!Q.err&&Q.placed>250&&Q.failed===0,
   detail:Q.err?('the plan did not lay: '+Q.err):(Q.placed+' placed '+JSON.stringify(Q.byKind||{})+', '+Q.chunks+' chunks, '+Q.failed+' not drawn'+(Q.failed?': '+Q.fails.join(' | '):''))});
- const want=['xa_caravanserai','xa_customs_house','xa_watch','xa_temple','xa_guild_farm','xa_granary','xa_watermill','xa_river_span','xa_dugout','xa_farm'];
+ const want=['xa_ford','xa_ferry_raft','xa_caravanserai','xa_customs_house','xa_watch','xa_temple','xa_guild_farm','xa_granary','xa_watermill','xa_river_span','xa_dugout','xa_farm'];
  const have=new Set(P.filter(p=>p.kind!=='house').map(p=>p.key)),miss=want.filter(k=>!have.has(k));
  R.push({name:'of-hosts',ok:!miss.length,detail:miss.length?'missing '+miss.join(', '):have.size+' kinds of host, the han and the toll house among them'});
  const N=Q.people||{};R.push({name:'of-people',ok:N.total>N.tune*.75&&N.total<N.tune*1.25,budget:true,detail:(N.total||0)+' / the tune\'s '+(N.tune||'?')});
@@ -37,7 +39,11 @@ CITY_JS = r"""
   const lo=ofH(p.x,p.z)-(p.drop||0)-.8,hi=Math.max.apply(null,hs)+1;if(!(p.o.y>=lo&&p.o.y<=hi)){bad++;first=first||(p.id+' '+p.key+' floor '+p.o.y.toFixed(1)+' ground '+hs[0].toFixed(1));}}
  R.push({name:'of-ground',ok:bad===0,detail:bad?bad+' off their ground, first '+first:'every floor on its ground (its footing under it)'});
  const Wk=Q.works||{},PR=typeof OF!=='undefined'?OF.PRECINCT:null,inPr=PR?P.filter(p=>p.kind!=='order'&&p.kind!=='bridge'&&p.x>PR.x[0]&&p.x<PR.x[1]&&p.z>PR.z[0]&&p.z<PR.z[1]).length:-1;
- R.push({name:'of-works',ok:Wk.stone>40&&Wk.stakes>100&&inPr===0,detail:(Wk.stone||0)+' stones of the ford and the weir, '+(Wk.stakes||0)+' stakes, '+inPr+' of the town\'s buildings in the precinct'});
+ R.push({name:'of-works',ok:Wk.stone>40&&Wk.stakes>100&&inPr===0,detail:(Wk.stone||0)+' stones of the weir and the Spray Stair, '+(Wk.stakes||0)+' stakes, '+inPr+' of the town\'s buildings in the precinct'});
+ /* the ferry raft (kits/xanadu/extra/88j) registered with core/tags as a vessel: a pole-pushed raft, a ferry; the ford as infrastructure */
+ {const KT=typeof KTAGS!=='undefined'&&KTAGS.page,V=KT?KT.query({key:'xa_ferry_raft'}):[],F=KT?KT.query({key:'xa_ford'}):[],r=V[0],t=r&&r.tags||{};
+  const ok=!!r&&r['class']==='vessel'&&[].concat(t.propulsion||[]).indexOf('pole')>=0&&t.hull==='raft'&&[].concat(t.types||[]).indexOf('ferry')>=0&&!!F[0]&&F[0]['class']==='infrastructure';
+  R.push({name:'of-ferry',ok,detail:r?(r.id+' class '+r['class']+', '+JSON.stringify({types:t.types,propulsion:t.propulsion,hull:t.hull,crew:t.crew})+'; the ford '+(F[0]?F[0].id+' class '+F[0]['class']:'missing')):'the ferry raft is not in the page\'s registry'});}
  const Ho=Q.house||{},mon=P.find(p=>p.key==='qb_monastery'),hd=P.filter(p=>p.kind==='order'||p.kind==='bridge');
  R.push({name:'of-house',ok:Ho.placed>=40&&!(Ho.errs||[]).length&&!!mon&&mon.v===4&&!!mon.G,detail:(Ho.placed||0)+' pieces of the Iridescent Order\'s house, '+hd.filter(p=>p.G).length+' drawn'+((Ho.errs||[]).length?', no def: '+Ho.errs.join(', '):'')+(mon?', the great monastery in dress '+mon.v:', no great monastery')});}
 return R;}"""

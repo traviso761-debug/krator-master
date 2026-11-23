@@ -12,6 +12,7 @@
   "kits/xanadu/extra/88e-xa-stall.js",
   "kits/xanadu/extra/88f-xa-harbour.js",
   "kits/xanadu/extra/88g-xa-works.js",
+  "kits/xanadu/extra/88j-xa-crossing.js",
   "core/drawn/10-core-drawn.js"
  ],
  "scoped": [
@@ -30,7 +31,9 @@
   "89q0y-qb-script.js",
   "89q0z-qb-matlib.js",
   "89q5f-qb-furnish.js",
-  "89q5s-qb-shells.js"
+  "89q5s-qb-shells.js",
+  "88j-xa-crossing.js",
+  "89q8-of-order-pieces.js"
  ],
  "interiors": [
   "town"

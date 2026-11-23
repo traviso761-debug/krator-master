@@ -19,7 +19,9 @@ its own ground until the Siqārp region is cut (step OF2).
   section 2b, step OF1b; `iridescent/BLUEPRINT.md`): the Qiblai kit's great monastery in the Turquoise dress, the house of studies,
   the cells on four terraces graded down toward the gorge, the guest house, the infirmary, the service court, the Prismarch's
   Lodge, eight chortens down the Way of the Colours, the Bridge of the Spray; the Bow Terrace levelled before the hall, the
-  pool's ledge over the water (50 pieces; the Qiblai kit is taken in place, `kit.json` externalDirs, as Lightwall's page takes it). The people come from the tune (`XAN_TUNE.opalford`, read in place).
+  pool's ledge over the water, the Spray Stair down the risers (46 pieces; the Qiblai kit is taken in place, `kit.json`
+  externalDirs, as Lightwall's page takes it; the cell range and the college ranges are this page's own, `src/89q8`). The paved
+  ford and the ferry raft are `kits/xanadu/extra/88j-xa-crossing.js`'s (the raft a vessel in the page's registry). The people come from the tune (`XAN_TUNE.opalford`, read in place).
 - `targets/town/90q-of-world.js` (`[web]`): the sky, the painted ground with the library's sets over it, the far ground, the river
   (a ribbon at its water's height, white water over the fall); the near ground registered with core/drawn.
 - `targets/town/90r-of-build.js` (`[web]`): every record drawn with `VERN.place`, chunk by chunk, with the runtime LOD; the ford,

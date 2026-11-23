@@ -31,7 +31,7 @@ var OF={SEED:96413,PIN:[969,1634],Y0:-13,DOWN:[-11,-8.5],
  PRECINCT:{x:[90,560],z:[2580,3045]},
  /* the Iridescent Order's house (settlements/opal-ford/iridescent/BLUEPRINT.md): its site frame is u = z - 2860, v = x - 300;
     the Bow Terrace levelled, the four cell terraces graded 2.2 m apart below it and the pool's ledge below them */
- HOUSE:{z0:2860,x0:300,bow:{u:[20,140],v:[-62,-22]},terr:[-70,-105,-140,-175],cut:2.2,tu:[88,174],ledge:{u:[143,180],v:[-214,-203],below:10},blend:5}};
+ HOUSE:{z0:2860,x0:300,bow:{u:[20,172],v:[-62,-22]},   /* the Bow Terrace to u 172: the Spray Stair's landing at its fall end (sheet C) */terr:[-70,-105,-140,-175],cut:2.2,tu:[88,174],ledge:{u:[143,180],v:[-214,-203],below:10},blend:5}};
 const ofSm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
 const ofD=(v,d)=>v==null?d:v;
 // the river: its line (x of the channel's middle at z), its half-width and depth (the ford widens and shoals it)
@@ -120,6 +120,10 @@ const OF_HOSTS=(function(){const H=[],P2=Math.PI/2,c=ofRiverX(OF_SPAN_Z);
  for(let i=0;i<4;i++)H.push(['xa_granary',900+(i%2)*26,-420+Math.floor(i/2)*26,0,'a granary (the paddies\' rice)',0,'civic']);
  H.push(['xa_watermill',262,780,-P2,'the watermill on its race from the weir',0,'civic']);
  /* the footbridge for the wet months: three spans over the channel a little below the ford, on the water (its deck over the flood) */
+ /* the paved ford across the shoal (kits/xanadu/extra/88j: its top a hand under the slack water, the stepping stones upstream),
+    and the ferry raft moored below it for the high water */
+ {const cf=ofRiverX(0);H.push(['xa_ford',cf,0,0,'the paved ford: the opal road crosses the Sitār Ḍrāi',0,'bridge',0]);
+  const zr=-70;H.push(['xa_ferry_raft',ofRiverX(zr)+ofHW(zr)-12,zr,0,'the ferry raft, for the high water when the ford is shut',0,'boat',0]);}
  for(let i=-1;i<=1;i++)H.push(['xa_river_span',c+i*26,OF_SPAN_Z,P2,'the footbridge beside the ford (the wet months)',0,'bridge',2.2]);
  /* the dugouts drawn up on the north-east bank above the ford, bows to the water */
  for(let i=0;i<8;i++){const z=60+i*16;H.push(['xa_dugout',OF_DUG_X(z),z,P2+(i%3-1)*.12,'a dugout drawn up by the ford',2,'boat',.25]);}
@@ -193,9 +197,9 @@ function ofWorks(){const c0=ofRiverX(0),hw0=ofHW(0),W={};
 // ---------------------------------------------------------------- THE IRIDESCENT ORDER'S HOUSE (iridescent/BLUEPRINT.md; PLAN.md step OF1b)
 // The blueprint's buildings as records in its site frame (u up the river, v north-east: page x = v + 300, z = u + 2860), each
 // the kit piece that stands for it: the Qiblai kit's great monastery in the Turquoise dress (o.v 4) for sheets M1-MR, its gate
-// north-east and the Hall of the Bow toward the spray; the house of studies as the kit's college, a gate temple and four lodges
-// round the debate court (H1, H2: the kit has no 12 m range, the lodges stand for the dormitories); the cells as the kit's kora
-// arcades on the four graded terraces (C: no cell-range piece yet), a chorten at each terrace's fall end; the guest house as the
+// north-east and the Hall of the Bow toward the spray; the house of studies as four college ranges round the debate court and
+// the kit's gate temple between the two south-west ones (H1, H2); a range of twelve cells on each of the four graded terraces
+// (C; both pieces are this page's own, src/89q8, on the kit's contract), a chorten at each terrace's fall end; the guest house as the
 // kit's caravanserai, the infirmary and the Prismarch's Lodge as its lodges, the service court in the Xanadu kit's pieces (G);
 // eight chortens down the Way of the Colours; the Bridge of the Spray (two spans) below the pool and the chorten on the far lip.
 // [key, u, v, facing ('+u' up the river, '-u' down it, '+v' away from the river, '-v' toward it), why, o.v, fy (a fixed floor
@@ -206,11 +210,16 @@ const OF_HOUSE_SPEC=(function(){
  S.push(['qb_monastery',50,20,'+v','the great monastery: the Hall of the Bow under the gilt crown, the Gallery of the Bow in moonglass facing the spray (sheets M1, M2, MR)',4]);
  S.push(['qb_wheel_house',36,80,'+u','the forecourt\'s wheel house',0],['qb_wheel_house',64,80,'-u','the forecourt\'s wheel house',0],['qb_chorten',50,86,'-v','the eighth chorten, before the Gate of the White Light',0]);
  S.push(['qb_guild_lodge',107,43,'-u','the Prismarch\'s Lodge: kept for the Prismarch of the Turquoise spoke on his way to Qiblai',0]);
- TR.forEach((vt,k)=>{S.push(['qb_kora_arcade',107.2,vt-4,'-v','terrace '+(k+1)+': the cells (the kit\'s kora arcade stands for the cell range)',0],
-  ['qb_kora_arcade',131.6,vt-4,'-v','terrace '+(k+1)+': the cells',0],['qb_chorten',157,vt-5,'-v','terrace '+(k+1)+'\'s shrine, in '+['red','orange and yellow','green and turquoise','blue and violet'][k],0]);});
- S.push(['qb_gate_temple',-110,150,'-v','the Gate of the Novices (the house of studies, sheet H1)',0],['qb_college',-110,201,'-v','the school of the divided light: lecture halls, the library, the scriptorium',0],
-  ['qb_guild_lodge',-140,160,'+u','a novices\' lodge (the dormitories, sheet H2)',0],['qb_guild_lodge',-140,200,'+u','a novices\' lodge',0],
-  ['qb_guild_lodge',-80,160,'-u','a novices\' lodge',0],['qb_guild_lodge',-80,200,'-u','the masters\' lodge',0],['qb_chorten',-110,171.5,'-v','the prism pillar of the debate court',0]);
+ TR.forEach((vt,k)=>{S.push(['of_cell_range',119.4,vt-5,'-v','terrace '+(k+1)+': twelve cells, a window on the spray in each (src/89q8)',4],
+  ['qb_chorten',157,vt-5,'-v','terrace '+(k+1)+'\'s shrine, in '+['red','orange and yellow','green and turquoise','blue and violet'][k],0]);});
+ /* the house of studies (sheets H1, H2): four ranges round the debate court, the gate in the south-west one */
+ S.push(['qb_gate_temple',-110,147,'-v','the Gate of the Novices (the house of studies, sheet H1)',0],
+  ['of_college_range_s',-134.5,147.25,'+v','the south-west range: the Novice-master, the reading room; the novices\' dormitory over them',4],
+  ['of_college_range_s',-85.5,147.25,'+v','the south-west range: the reading room',4],
+  ['of_college_range',-110,214.25,'-v','the north-east range: the lecture halls of the divided light and the Decree, the dormitory over them',4],
+  ['of_college_range_m',-142.5,180,'+u','the north-west range: the novices\' refectory and kitchen, the dormitory over them',4],
+  ['of_college_range_m',-77.5,180,'-u','the south-east range: the college\'s colour library and scriptorium, the masters\' cells over them',4],
+  ['qb_chorten',-110,180,'-v','the prism pillar of the debate court',0]);
  S.push(['qb_gate_temple',-273,111,'-u','the Gate of the Road, on the river road from the town',0],['qb_caravanserai',-229,168,'-v','the guest house: the pilgrims and the opal road\'s travellers, its stable court',0],
   ['qb_guild_lodge',-173,170,'-u','the infirmary',0],['qb_guild_lodge',-173,196,'-u','the apothecary',0],
   ['xa_guild_farm',-46,142,'-v','the monks\' refectory (the Song read at meals)',0],['qb_bakery',-16,142,'-v','the great kitchen',0],
@@ -236,7 +245,14 @@ function ofHouse(){const K=KCITY.lib,Hh=OF.HOUSE,out=[],errs=[];
  const ways=[{cls:'path',w:6,tag:'the Way of the Colours',pts:[P(-268,110),P(-60,110),P(20,96),P(50,62)]},
   {cls:'path',w:3,tag:'the Kora of the Falls: down the Spray Stair',pts:[P(140,-42),P(166,-48),P(166,-208),P(160,-210)]},
   {cls:'path',w:3,tag:'the kora up the far bank',pts:[[cb-hwb-2,zb],[cb-hwb-30,zb]]}];
- return{place:out,errs,pavings:pav,ways,tank:rect([-60,-20],[72,98]),bridge:{z:zb}};}
+ /* the Spray Stair: a flight down each riser between the platforms at u 166, from the Bow Terrace to the pool's ledge (90r draws
+    the steps); in page metres, each from its top (xTop, yTop) down toward the river to its foot (xBot, yBot) */
+ const lv=k=>ofBowY-(k<0?0:Hh.cut*(k+1)),stairs=[],zs=Hh.z0+166,TR=Hh.terr;
+ const st=(id,vTop,vBot,yTop,yBot)=>stairs.push({id,z:zs,w:2.4,xTop:vTop+Hh.x0,xBot:vBot+Hh.x0,yTop,yBot});
+ st('bow-1',Hh.bow.v[0]+1,TR[0]+2-1,lv(-1),lv(0));
+ for(let k=0;k<3;k++)st((k+1)+'-'+(k+2),TR[k]-17+3,TR[k]-17-3,lv(k),lv(k+1));
+ st('4-ledge',TR[3]-17+1,Hh.ledge.v[1]-1,lv(3),ofBowY-Hh.ledge.below);
+ return{place:out,errs,pavings:pav,ways,tank:rect([-60,-20],[72,98]),bridge:{z:zb},stairs};}
 
 // ---------------------------------------------------------------- run the plan
 var OF_TOWN={},OF_PLACE=[],OF_WORKS=null,OF_HOUSE=null,OF_ERR=null;

@@ -24,10 +24,13 @@ FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();ofPm.multiplyMatrices(camera.pr
  for(const e of OF_GROUPS){const d=P.distanceTo(e.sphere.center)-e.sphere.radius;const v=d<e.range&&ofFr.intersectsSphere(e.sphere);e.G.visible=v;if(v)shown++;}window._chunksShown=shown;});
 // ---------------------------------------------------------------- the works the kit lacks: boxes from the plan's records
 (function ofWorksDraw(){const T3=THREE,W=OF_WORKS,stone=[],wood=[],K=KRAND.stream(KRAND.child(OF.SEED,'works'));
- // the ford: the causeway's paving just under the water, its kerbs, and the stepping stones on its upstream side
- const F=W.ford,fl=F.x1-F.x0,fw=ofW(F.z);stone.push([(F.x0+F.x1)/2,fw+F.top-.3,F.z,fl,.6,F.w,0]);
- for(const s of[-1,1])stone.push([(F.x0+F.x1)/2,fw+F.top-.15,F.z+s*(F.w/2+.2),fl,.5,.4,0]);
- for(let x=F.x0+1;x<F.x1-1;x+=F.stones.step){const j=(K.next()-.5)*.25;stone.push([x+j,fw+F.stones.top-.35,F.z+F.w/2+1.1,.9+K.next()*.25,.7,.9+K.next()*.2,K.next()*.6]);}
+ // (the ford is the kit's piece now: kits/xanadu/extra/88j xa_ford, placed by 89zp)
+ // the Spray Stair (the Iridescent Order's house, 89zp OF_HOUSE.stairs): flights of 0.17 m risers down each riser between the
+ // graded platforms, from the Bow Terrace to the pool's ledge; each a rising strip in core/walk so the walker goes down it
+ let nStair=0;for(const S of(OF_HOUSE?OF_HOUSE.stairs:[])){const rise=S.yTop-S.yBot,n=Math.max(2,Math.round(rise/.17)),run=(S.xTop-S.xBot)/n;
+  for(let k=0;k<n;k++){const top=S.yTop-rise*(k+1)/n+rise/n,x=S.xTop-(k+.5)*run;stone.push([x,(top+S.yBot-.3)/2,S.z,Math.abs(run)+.02,top-S.yBot+.3,S.w,0]);nStair++;}
+  if(typeof KWALK!=='undefined')KWALK.strip({a:[S.xBot,S.z,S.yBot],b:[S.xTop,S.z,S.yTop],w:S.w,name:'stair:'+S.id,tag:'opalford.stair'});}
+ window._opalford.stairSteps=nStair;
  // the mill's weir: a low wall of dressed stone across the river, its top half a metre over the water above it
  const Wr=W.weir,ww=ofW(Wr.z);stone.push([(Wr.x0+Wr.x1)/2,ww+Wr.top-1.6,Wr.z,Wr.x1-Wr.x0,3.2,Wr.w,0]);
  // the fish weirs: stake fences in a V down the current, a stake every 0.8 m, standing a metre over the water
@@ -43,6 +46,31 @@ if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.
  try{window._biome=XANADU.build({R:1900,quality:.8,lakeHue:typeof XANADU_LAKE!=='undefined'?XANADU_LAKE.hue:undefined});}catch(e){reportErr('biome: '+(e&&e.stack||e));}
  try{window._bioBake=BIO.bake();}catch(e){reportErr('biome bake: '+e.message);}
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
+// ---------------------------------------------------------------- the entry flights: a door above its ground gets its steps
+// As Phēr's (settlements/pher 90r): core/city's 'high' stance sets a floor at its plot's highest corner, so on the riser (the toll
+// house, the Tears' post) and on the platforms' edges a door can stand over the ground in front of it, which a walker cannot step
+// up (the interiors' audit steps 0.45 m). Every door (KDOOR.list) whose sill is more than OF_FLIGHT_MIN over the ground 0.3 m out
+// gets a stone flight straight out from it, 0.17 m risers on 0.3 m treads; one merged mesh, each flight a strip in core/walk.
+const OF_FLIGHT_MIN=.3;
+/* only an outside door gets a flight: KDOOR.list holds every door, the rooms' own and the upper storeys' too, so a door whose
+   ground 0.3 m out or whose flight's foot falls within a building's footprint (an inner door) is left, and so is one more than
+   OF_FLIGHT_MAX over its ground (an upper storey's) */
+const OF_FLIGHT_MAX=2;
+(function ofFlights(){if(typeof KDOOR==='undefined'||!KDOOR.list)return;const boxes=[],T3=THREE;let n=0,tall=0;
+ const SP=KCITY.lib.KSPACE.create({cell:40});for(const p of OF_PLACE)SP.insert(p,p.x,p.z,Math.hypot(p.bo.hw,p.bo.hd)+1);
+ const inside=(x,z)=>SP.query(x,z,.5).some(p=>Math.abs((x-p.x)*p.bo.u[0]+(z-p.z)*p.bo.u[1])<p.bo.hw+.2&&Math.abs(-(x-p.x)*p.bo.u[1]+(z-p.z)*p.bo.u[0])<p.bo.hd+.2);
+ for(const D of KDOOR.list){const ox=Math.sin(D.yaw),oz=Math.cos(D.yaw),sx=D.at[0]+ox*.3,sz=D.at[2]+oz*.3;
+  let gy=ofH(sx,sz),rise=D.at[1]-gy;if(!(rise>OF_FLIGHT_MIN)||rise>OF_FLIGHT_MAX)continue;
+  let run=rise/.17*.3;gy=ofH(sx+ox*run,sz+oz*run);rise=D.at[1]-gy;if(!(rise>OF_FLIGHT_MIN)||rise>OF_FLIGHT_MAX)continue;run=rise/.17*.3;   /* the foot's own ground */
+  if(inside(sx+ox*run,sz+oz*run))continue;   /* an inner door: its flight would stand in a room */
+  const steps=Math.max(2,Math.round(rise/.17)),w=Math.max(1.2,(D.w==null?1:D.w)+.6);
+  for(let k=0;k<steps;k++){const d=.3+(k+.5)*run/steps,h=rise*(steps-k)/steps;boxes.push([sx-ox*.3+ox*d,gy+h/2-.15,sz-oz*.3+oz*d,w,h+.3,run/steps+.02,D.yaw]);}
+  if(typeof KWALK!=='undefined')KWALK.strip({a:[sx+ox*run,sz+oz*run,gy],b:[sx,sz,D.at[1]],w,name:'flight:'+D.id,tag:'opalford.flight'});
+  n++;if(rise>1.2)tall++;}
+ if(boxes.length){const M=new T3.InstancedMesh(new T3.BoxGeometry(1,1,1),new T3.MeshStandardMaterial({color:0x9a8f80,roughness:.9}),boxes.length),m4=new T3.Matrix4(),q=new T3.Quaternion(),e=new T3.Euler();
+  boxes.forEach((b,i)=>{q.setFromEuler(e.set(0,b[6],0));m4.compose(new T3.Vector3(b[0],b[1],b[2]),q,new T3.Vector3(b[3],b[4],b[5]));M.setMatrixAt(i,m4);});
+  M.instanceMatrix.needsUpdate=true;M.name='entry flights';M.userData.probeSkip=true;scene.add(M);}
+ window._opalford.flights={n,tall,steps:boxes.length};})();
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._chunks=OF_GROUPS.length;window._buildMs=Math.round(performance.now()-OF_B0);
 Object.assign(window._opalford,{day:OF_DAY,chunks:OF_GROUPS.length,fails:OF_FAILS.slice(0,20),failed:OF_FAILS.length,
