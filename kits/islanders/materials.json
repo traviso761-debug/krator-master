@@ -267,6 +267,8 @@
    }
   },
   "coral": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "rock.coral_stone_wall",
    "scale": [
     2.4,
@@ -882,6 +884,8 @@
    "specular": 0.15
   },
   "clayBlock": {
+   "m4": true,
+   "pom": 0.015,
    "lib": "plaster.clay_block_wall",
    "scale": [
     2.4,

@@ -198,3 +198,6 @@ function ytFrost(L,o){o=o||{};const tOut=o.tOut===undefined?-19:o.tOut,tIn=o.tIn
  const zone=(where,t)=>{const rin=FILM_IN+ytR(L.slice(0,i)),rsh=ytR([L[i]]),rout=FILM_OUT+ytR(L.slice(i+1).filter(l=>!l.where||l.where===where));
   const tf=tOut+(t-tOut)*(rsh+rout)/(rin+rsh+rout);return {t:+tf.toFixed(1),ok:tf<0};};
  const crown=zone('crown',tIn),base=zone('base',tBase);return {crown,base,ok:crown.ok&&base.ok};}
+
+/* the hero masonry's chamfers (core/engine 30-geo.js BEVEL_KEYS, M4): the corbel slabs and the flagstones */
+BEVEL_KEYS.slab=.03;BEVEL_KEYS.flag=.02;

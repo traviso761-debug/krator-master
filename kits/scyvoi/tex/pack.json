@@ -1591,6 +1591,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "paving.cw.webp",
     "map": "paving.albedo.webp",
     "normalMap": "paving.normal.webp",
     "roughnessMap": "paving.rough.webp"
@@ -1598,6 +1599,7 @@
    "lib": "paving.flagstone",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.35,
    "scale": [
     3.0,
@@ -1749,6 +1751,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "stone.cw.webp",
     "map": "stone.albedo.webp",
     "normalMap": "stone.normal.webp",
     "roughnessMap": "stone.rough.webp"
