@@ -1,4 +1,4 @@
-# The Rare Devisers' camp at Godshearth: a site plan (proposal, 2026-11-16)
+# Kāmp, the Rare Devisers' camp at Godshearth: a site plan (2026-11-16)
 
 The owner, 2026-11-16 (in the Thalaba session): *"can you make the expedition's semi-permanent main camp as its own
 settlement?"*
@@ -23,6 +23,18 @@ What is settled, from the owner, the lore and the sim:
 **The owner's answers to this plan's questions (2026-11-16):**
 - **The site: the hot lake's outlet, px 839,1398** ("Yes, the outlet"). The tune's camp moves there
   (`T.expedition.px` [839,1398], `km` 130), and Thalaba's expedition road in the open world now ends at the camp.
+- **The name: Kāmp** ("the camp", as the hired men call it).
+- **The winter: a few keepers (6-8)**, a storekeeper and guards over the stores and the strongroom; the stone core is lived in
+  all year.
+- **The rarities: from the lava tube.** The pyroduct's mouth 8 km east of the camp (`tube_god_ssw_14`): crystals, strange
+  castings and whatever the tube carried down. The camp works it as its third site, beside the fumaroles and the Grove.
+- **The calendar: turn the tune to the south.** Thalaba's page runs the expedition in the southern summer (302-57). The tune
+  itself is not turned yet: one clock runs Xanadu's, Longsong's and the Catch's economies, so the turn re-phases all three
+  (section 4).
+- **The Dalab party's camp at the Grove: a small settlement too**, with its own site record and plan
+  (`settlements/dalab-camp/PLAN.md`).
+- **The bathhouse: yes**, on the warm outlet water.
+- **The page: Xanadu's page, like Thalaba** (its own `--kit` target), with the Hearths kit's plants read in place.
 
 Everything below that is not one of those is ***proposed***.
 
@@ -94,7 +106,7 @@ The tune's 150 in the expedition season. *Proposed* shares, from Thalaba's plan 
 |---|---|---|
 | **The Devisers' own** | 30 | The master of the expedition, the clerks and the assayer of rarities, the guides and the guards. They hold the strongroom and the tally. |
 | **The hired men** | 120 | Mostly Thalaba's, a few from the north shore: diggers at the fumarole lines, wax-gatherers in the Grove at dawn, porters, muleteers, cooks. They are the people Thalaba's page sends up in summer. |
-| ***Proposed:* the winter keepers** | 6-8 | A storekeeper and a few guards over the stores and the strongroom through the winter. The owner's choice: the camp kept by a few, or left empty. |
+| **The winter keepers** (the owner) | 6-8 | A storekeeper and a few guards over the stores and the strongroom through the winter: the stone core is lived in all year. |
 
 The **Dalab party** (40) camps at the Grove, apart: section 3, and question 6.
 
@@ -138,20 +150,23 @@ Tents kit's tents round a seed store. Whether it is a settlement of its own is q
     the fumarole lines", `kits/resources`).
   - The wax is the hearth trees' tallow beads, gathered off the stalks at dawn in the Grove (`biomes/hearths` section 9,
     `kits/crops` zone `hearths`).
-  - **The rarities' source is not settled** (question 4): Godshearth holds no ruin. *Proposed:* the lava tube's mouth
-    (`tube_god_ssw_14`, the Godthrone SSW Shield's pyroduct, 8 km east) and the sinter aprons.
+  - **The rarities come from the lava tube** (the owner): the mouth of `tube_god_ssw_14`, the Godthrone SSW Shield's
+    pyroduct, 8 km east: crystals, strange castings and whatever the tube carried down.
 - **The food** (the tune): 28.5 t a season (190 kg a head), carried up by mule from Thalaba, bumped onto the town.
 - **The haul down:** by mule train to Thalaba's Devisers' house, where the Sultan's share is counted.
 - ***Proposed* changes to the tune** (step C0, through the tune):
   - `T.expedition.px` to [839,1398];
   - `km` to 130.
   - Neither moves the make; the shorter road makes the trains' cost smaller.
-- **The calendar** (question 5):
-  - The tune's `expedition` window is year days 120-240. On core/clock's year (`KCLOCK.YEAR`, southern, summer centred on year
-    day 350) that is the **winter**. The tune passes no latitude, so all its windows (the harvest at 150-200, the silk's
-    spring rearing at 60-120) read like a northern year on core/clock's southern one.
-  - Thalaba's page uses the plan's season instead: the muster in spring at year day 290, away from 297 to 45.
-  - One of them has to change, and it touches every window in `XAN_TUNE`, not only this camp.
+- **The calendar** (question 5, **turned to the south**, the owner, 2026-11-16):
+  - The tune's windows were written on a northern year: the `expedition` at 120-240 and the harvest at 150-200 fell in
+    core/clock's southern winter (`KCLOCK.YEAR`: summer centred on year day 350).
+  - Thalaba's page runs the expedition in the southern summer, **302-57** (the tune's window turned half a year), the muster
+    the week before, the count the week after.
+  - **The tune is not turned yet** (tried 2026-11-22 and set back): one clock runs Xanadu's economy joined with Longsong's
+    (`LS_TUNE`, already southern, opening on clock day 0) and the Catch's (`CATCH_TUNE`, its pans northern too). Opening
+    Xanadu's half a year on starved Longsong and fired the dated grants twice; opening it at day 0 broke the stores' sizing and
+    the Great Caravan's phase. The turn wants all three tunes re-phased together and the caravan's opening stop chosen.
 
 ## 5. Core adoption (to write in full before the first fragment)
 
@@ -187,20 +202,20 @@ Tents kit's tents round a seed store. Whether it is a settlement of its own is q
 ## 7. Questions for the owner
 
 1. ~~**The site**~~ **Answered (the owner, 2026-11-16): the lake's outlet, px 839,1398** ("Yes, the outlet").
-2. **The name:** Kāmp, Ḍēbhāizarz' Kāmp, or another?
-3. **The winter:** is the camp kept through the winter by a few keepers (proposed 6-8), or left empty and locked?
-4. **The rarities:** what are Godshearth's rarities, and where do they come from? The lava tube's mouth (proposed), the sinter,
-   or something the lore has not said yet?
-5. **The calendar:** the tune's expedition is year days 120-240, which on core/clock's year is the winter (and so are its
-   harvest and its other windows). Should the tune's year be turned to the southern seasons, or should core/clock read the
-   Sultanate as northern? Thalaba's page uses spring-to-autumn for now.
-6. **The Dalab party's camp at the Grove:** a settlement of its own as well, or a tent ring drawn on the Grove's station page?
-7. **The bathhouse on the warm outlet water:** yes or no?
-8. **The page:** a target on Xanadu's page (as Thalaba), or on Godshearth's (with the Xanadu kit bundled)?
+2. ~~**The name**~~ **Answered: Kāmp.**
+3. ~~**The winter**~~ **Answered: a few keepers (6-8).**
+4. ~~**The rarities**~~ **Answered: from the lava tube's mouth.**
+5. ~~**The calendar**~~ **Answered: turn the tune to the south** (Thalaba's page done; the tune's turn, which reaches Longsong's
+   and the Catch's economies, is section 4's open item).
+6. ~~**The Dalab party's camp**~~ **Answered: a small settlement too** (`settlements/dalab-camp/PLAN.md`).
+7. ~~**The bathhouse**~~ **Answered: yes.**
+8. ~~**The page**~~ **Answered: Xanadu's page, like Thalaba.**
+
+**Still open:** none from this plan. Next is step C1, the camp's own pieces.
 
 ## 8. Found on the way (for the sessions that own them; not changed here)
 
-- **`XAN_TUNE`'s calendar** reads as a northern year on core/clock's southern one (question 5). That is the region economy's
-  to fix, with the owner's answer.
+- **`XAN_TUNE`'s calendar** reads as a northern year on core/clock's southern one (question 5: the owner, turn it south). It
+  reaches `LS_TUNE` and `CATCH_TUNE` through the joined economies: the region economy's to do, all three together.
 - **The open-world corridor up the gorge** (the openworld-sites session, 2026-11-16) ends at the Spillway (845,1422). If the
   camp is placed at 839,1398, the corridor and Thalaba's `ways` road go on 24 km to it.

@@ -52,13 +52,20 @@
   actor on lazy routes over the plan's ways; they farm the terraces and the Bēnch, keep the market, the yard, the counting room,
   the temple, the springs; the diggers walk out to Salphar and the road's men down to Phēr, half at a time. **The expedition season** (2026-11-16):
   the Devisers' 150 (30 of their house, 120 hired townsmen) and the Dalab party's 40 (6 genepriests, 34 hired) muster at
-  Briḍj the week from year day 290 (spring), are away up the gorge from 297 to 45, and unload at the Devisers' yard and the
-  mission's stores for the Sultan's count the week from 45, their own roles the rest of the year (core/simulation's calendar,
-  77-sim-6-season.js, on core/clock's year; the windows are *proposed*). The page's clock holds day 0 (mid-spring, before the
+  Briḍj the week from year day 295 (late spring), are away up the gorge from 302 to 57 (the summer: the tune's `expedition`
+  window turned to the southern year, as the owner asked; the tune itself is not turned yet, below), and unload at the Devisers' yard and the mission's stores for the Sultan's count
+  the week from 57, their own roles the rest of the year (core/simulation's calendar, 77-sim-6-season.js, on core/clock's year). The page's clock holds day 0 (mid-spring, before the
   muster) unless it runs; the muster ground is a place, not drawn (no corrals or blessing shrine at the bridge yet), and the
   fields are farmed all year (no sowing or harvest windows). Still owed: the **bodies** (placeholder robes and heads, not core/charactermodels' people); the **court
   houses' doors** join their nearest street in a straight line (the courts have no lanes), so a walker may cross a yard or a
   roof; jobs are drawn over the whole town, not by household (a farmer's house may hold no farmer); the fields more than 600 m
   from a way are left to the ring's farmsteads. No needs, money or economy on the page: the town's books are the region's
   (`core/region`, `XAN_TUNE`).
+- [ ] **The economy's calendar is not turned yet.** The owner asked (2026-11-22) for `XAN_TUNE`'s windows to be turned to the
+  southern year: they were written on a northern one (the expedition 120-240 and the harvest 150-200 fall in core/clock's
+  winter). Turning Xanadu's alone breaks the joined economies: one clock runs Xanadu's, Longsong's (`LS_TUNE`, already
+  southern, opening on clock day 0) and the Catch's (`CATCH_TUNE`, whose pans also read northern). Opening Xanadu's economy
+  half a year on starved Longsong (30 % short) and fired the dated grants twice; opening it at day 0 broke the stores' sizing and
+  the Great Caravan's phase. The turn needs all three tunes re-phased together and the caravan's starting stop chosen: proposed
+  as its own piece of work. This page already runs the expedition in the southern summer (302-57).
 - [ ] **Not yet:** the Godot export, the gallery.
