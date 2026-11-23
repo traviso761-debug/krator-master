@@ -191,8 +191,41 @@ gates 2, 8 per region.
 |---|---|---|---|---|
 | **XS0** | Measure | On a test branch off `claude/vertical-stack` (not committed to pages): every Xanadu page's linked-program samplers, video memory and bytes with the stage 1 harness; which pages are within 3 samplers of 16; the glazed families each page draws | nothing | 1 (small) |
 | **XS1** | Material classes and the Xanadu S4 table (**done 2026-11-23**, `XS1-CLASSES.md`; XS0's reconciliation open) | The classes of section 5 for every Xanadu `materials.json` (or the sidecar), proven byte-neutral; the `xanadu` layer set in `pack_ground_layers.py` (Godot data only); the route's stop definitions | XS0 | 1 |
-| **XS2** | The citadel's room graph | Erewhon's citadel rooms as `[G data]`: rooms, doors as portals, windows, the oculus as a skylight, the jali as reduced windows, the lamps, each with its room id; `KROOMLIGHT.buildTable` run on it in a node test with negatives (the oculus lights its room only, a vault-like store stays dark); no page change | nothing (the Erewhon session's re-seat does not move rooms) | 1 |
+| **XS2** | The citadel's room graph | Erewhon's citadel rooms as `[G data]`: rooms, doors as portals, windows, the oculus as a skylight, the jali as reduced windows, the lamps, each with its room id; `KROOMLIGHT.buildTable` run on it in a node test with negatives (the oculus lights its room only, a vault-like store stays dark); no page change | nothing (the Erewhon session's re-seat does not move rooms) | 1: **built 2026-11-23** (below) |
 | (phase A) | the settlements | `BUILD-PLAN.md` A1-A10 continue: layouts, records, sheets | | |
+
+**XS2, built (2026-11-23, branch `claude/citadel-room-graph`).** `core/interiors/` from the stack: its module as fixed on
+`claude/roomlight-fixes` (below), its `test-roomlight.js` the stack's own (the fixed one needs that branch's Longsong). The graph:
+`settlements/xanadu/citadel/rooms/89yr-xa-citadel-rooms.js` (`XACITR`, `[G data]`), read only by its node test
+`settlements/xanadu/tests/test-citadel-rooms.js` (with `citadel-load.js`): `build.py` takes every digit-named file in `src/`,
+so the fragment stays out of it until XP2 wires it in beside 89y. Rebuilt with and without it, `erewhon.html` and `xanadu.html`
+are the same bytes. (Both already differ from the committed pages and `PORT-BASELINE.json` on this branch's base: the kit's
+sources, 78b, 78m, 78n, 84, 85b among them, moved after the pages of 2026-11-16. XS2 left them as committed.) Derived from the records the page builds: the ten buildings of `CIT_SITES` from the citadel's interior set
+(windows on `xcPlan`'s own rule, 78n), the Pleasure Dome from `xdomePlan()` with 78o's patch, and 78d's clerestory, drum,
+gored-dome eyes, stair-hall skylight and chandeliers; the test checks each against what 78d and 78n draw (run under a
+recording stub), so the data cannot drift from the page unseen.
+- **Counts:** 163 rooms (150 roofed, 13 open courts and terraces; the Dome 31, the Sultan's palace 46, the Vizier's 13, each
+  dar 13, the temple 5, the kitchens 3); 215 portals (164 with a leaf, 51 open: arches, voids, flight heads, rails, the open
+  balcony windows); 823 windows (256 jali, aperture 0.44 to 0.55 with the proposed jali open fraction 0.35); 6 skylights (the
+  oculus, the rotunda's and the pool's three gored eyes, the stair hall's); **26 lamps** (the Dome's 20 chandeliers; the
+  palace forecourt's 4 and the Vizier's garden's 2 lamp posts). The furniture's lamps come from `KFURN`'s `plan.lights` at
+  export (XP2): they are built by the catalog, which needs THREE.
+- **The table (leaves shut, core/door's default):** 141 roofed rooms lit by day, 9 dark, each named with its reason
+  (`XACITR.DARK`): the west range's upper store, the barracks' store, the ice house; the Ramp of the Sultan's tower and its
+  two landings; the palace's service stair and its head; **the Court Temple's prayer hall** (rooms on every side, its dome on
+  a solid slab: no opening in the page). The oculus alone lights the hall at 0.85 (by its open area) and only the nine rooms open portals join
+  to it. Every room is reachable on foot.
+- **The stack's module, fixed (2026-11-23, branch `claude/roomlight-fixes` off `claude/vertical-stack`; this branch carries
+  the same `10-core-roomlight.js`):** a window and a skylight take an `aperture` (the jali's 0.35, *proposed*), in the table
+  and in `pickPool`; a door takes `shut` (or `o.shut(room, door)`, core/door's live state), so a leaf is a wall to the light;
+  a room takes sized `skylights`, and `pickPool` reads a `sky: true` window as a column of light down from its opening (the
+  oculus 41 m up lights the hall's floor; the Godot twin `pick_pool` the same); Longsong's two skylit rooms are named in
+  its own `40g` (outside `40c`, whose text keys its interiors bake) instead of the module naming them; `STAGE-6-7-REPORT.md` 2.1 describes the code; `test-roomlight.js` is on
+  `tools/ktest.js`. Without the new fields every table is what it was: Longsong's, byte for byte. Still open there: the
+  Godot `pick_pool` was already apart from the JS before (a window's energy 1.25 against 1.35; the night factor), left as
+  it was: looks, after Stage 8.
+- **Owed to the owner, looks for after Stage 8:** the Ramp of the Sultan and the service stair dark by day (a window, a lamp,
+  or as built); the prayer hall's light (a lantern under its dome, or its doors open at prayer).
 
 **Stage 8** (the owner's all-builds rebuild): takes XS1's classes into the packing, turns `relief.micro: 2` on for the three
 Xanadu regions, re-bakes Phēr, Kirstabal, Viridian, the Azure Dream, the Flashing Eye and the lake towns' entries, and
