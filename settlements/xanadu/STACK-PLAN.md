@@ -103,7 +103,7 @@ Godot place (as Longsong's monastery is) after Stage 8.
   `xPietra`, the polished marbles (`xMarW`, `xMarK`; `xMarbleB`, `xMarbleW` are `mapOnly`, so flat), `wood.lacquer`
   (`qLacq`), and `xTiles` (the owner's exception). The stack's rule is `specular >= 0.45` and `roughness < 0.35`, judged
   since XS0 on the packed roughness map (`XS1-CLASSES.md`, "Fixes after XS0"): `xMosC`, `xMosD`, `xBandC`, `xBandR`,
-  `xGiltC` fail it and are classed flat, their looks unchanged (an owner question); `qGilt` fails it too but stays glazed
+  `xGiltC` fail it and are classed flat until Stage 8 glazes them (the owner, 2026-11-23: "Glaze at Stage 8"); `qGilt` fails it too but stays glazed
   (XS1's call on the gilts, kept). Dropped from this list as no
   Xanadu pack carries them: `roof.tile.celadon` (the Eternian kit's), `tile.hex.ceramic` (Pylon's), `wood.lacquer.crimson`
   (the nomads', Islanders', Scyvoi's, tents', Lizardmen's and Longsong's) and the Glaziers' moonglass (drawn procedurally on

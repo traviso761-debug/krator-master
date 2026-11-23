@@ -271,6 +271,14 @@ the painted ground in the same roughness map as the glaze, so the mean sits abov
 them (a negative `roughLift`, which `pack.py` does not use anywhere yet, or the sheets' roughness re-made) would make them glazed and add their
 8-bit normals (+119 to +198 KB each, XS0 section 5); keeping them saves that and leaves their looks as they are.
 
+**The owner's answer (2026-11-23): "Glaze at Stage 8".** The five stay classed flat now, so nothing changes before Stage 8.
+Stage 8 lowers their roughness below 0.35 (in their materials or their packed roughness maps), re-packs, reruns
+`mclass.py --measure`; they then derive as glazed, are classed glazed, and take the 8-bit normals (+119 to +198 KB each:
+`xMosC` +149, `xMosD` +159, `xBandC` +119, `xGiltC` +198, `xBandR` +160). Recorded as `pending` in `m1-classes.json`: the drift
+test prints each as a note while its class and values are unchanged, fails once the roughness is lowered but the class has not
+followed, and asks for the entry to be dropped once it has. The runbook line is in TODO.md, "Ride along with the next all-builds
+rebuild".
+
 ### Per-page packs (opt-in)
 
 Every page built on Xanadu's page shipped the whole Xanadu pack (47 families packed: `xanadu.tex.xanadu.js` 13.86 MiB +

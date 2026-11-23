@@ -27,6 +27,23 @@
    "qGilt": {"class": "glazed", "by": "XS1's call, kept (the coordinator, 2026-11-23)", "why": "as kits/qiblai"}
   }
  },
+ "pending": {
+  "what": "decided class changes that wait for Stage 8 (the owner: data now, looks after). Each family keeps its class today and must still derive it; once Stage 8 changes its values (and mclass.py --measure is rerun) it derives the pending class, the drift test fails until the materials.json takes it, and then asks for the entry to be dropped.",
+  "kits/xanadu": {
+   "xMosC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "Stage 8 lowers the roughness below 0.35 (the family's materials or its packed roughness map; now 0.381), reruns mclass.py --measure; it then derives glazed and takes 8-bit normals (+149 KB)"},
+   "xMosD": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as xMosC (now 0.354; +159 KB)"},
+   "xBandC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as xMosC (now 0.423; +119 KB)"},
+   "xGiltC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as xMosC (now 0.558; +198 KB)"},
+   "xBandR": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as xMosC (now 0.809; +160 KB)"}
+  },
+  "settlements/xanadu": {
+   "xMosC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"},
+   "xMosD": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"},
+   "xBandC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"},
+   "xGiltC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"},
+   "xBandR": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"}
+  }
+ },
  "classes": {
   "glazed": {
    "what": "smooth, specular, often curved: glazed tile, mosaic, polished marble, gilt, lacquer. The one class whose normals the web packs at 8 bits (the owner, 2026-11-22: glazed families only), so curved highlights do not band",

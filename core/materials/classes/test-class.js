@@ -101,6 +101,10 @@ for (const b of Object.keys(WANT).filter(b => WANT[b] !== null)) {
   T.ok(b + ': every exception is declared in m1-classes.json and still needed', d.stale.length === 0, d.stale.join('; '));
   const exp = Object.keys((TABLE.exceptions || {})[b] || {}).sort();
   T.ok(b + ': the exceptions are the owner\'s (' + (exp.join(', ') || 'none') + ')', JSON.stringify(d.excepted) === JSON.stringify(exp), JSON.stringify(d.excepted));
+  const pend = Object.keys((TABLE.pending || {})[b] || {}).sort();
+  for (const p of d.pending) console.log('note  ' + b + ': pending: ' + p);
+  T.ok(b + ': the pending changes (' + (pend.join(', ') || 'none') + ') keep today\'s class and values until Stage 8',
+    JSON.stringify(d.pending.map(p => p.split(':')[0]).sort()) === JSON.stringify(pend), d.pending.join('; '));
   const bad = cutoutErrors(cfg, alphaTested(srcOf(CUT_SRC[b])), L);
   T.ok(b + ': "cutout" on exactly the families its kits draw with alphaTest', bad.length === 0, bad.join(', '));
 }
@@ -184,6 +188,16 @@ T.neg('drift: an alphaTest family not classed cutout is caught', noDrift,
     one('ice', { lib: 'tile.muqarnas.turquoise', 'class': 'relief' }), one('ice', { lib: 'tile.muqarnas.turquoise', 'class': 'flat' }));
   T.neg('drift: an exception the rule has come to agree with is stale', ex,
     one('ice', { lib: 'tile.muqarnas.turquoise', 'class': 'flat', specular: 0.2 }), one('ice', { lib: 'tile.muqarnas.turquoise', 'class': 'flat' }));
+}
+{   /* "Glaze at Stage 8" (the owner, 2026-11-23): a pending change is a note while the values are unchanged, a failure once
+       Stage 8 has lowered the roughness but the class has not followed, and stale once it has */
+  const C3 = require('./10-mat-class.js').make(Object.assign({}, TABLE, { pending: { test: { m: { 'class': 'glazed', by: 'test' } } } }));
+  const pd = ([cls, rough]) => { const d = C3.drift('test', one('m', { lib: 'tile.muqarnas.turquoise', 'class': cls }), LIB, { m: { roughMean: rough } });
+    return d.wrong.length === 0 && d.stale.length === 0; };
+  T.ok('pending: flat now, its roughness unchanged (0.381): a note, no failure', pd(['flat', 0.381]) &&
+    C3.drift('test', one('m', { lib: 'tile.muqarnas.turquoise', 'class': 'flat' }), LIB, { m: { roughMean: 0.381 } }).pending.length === 1);
+  T.neg('pending: Stage 8 lowers the roughness (0.30) and the class must follow to glazed', pd, ['flat', 0.30], ['relief', 0.381]);
+  T.neg('pending: once glazed, the pending entry is stale (drop it)', pd, ['glazed', 0.30], ['flat', 0.381]);
 }
 T.neg('the cut-out scan reads an alphaTest definition', s => cutoutErrors({ families: { xSun: { lib: 'stone.cut', cutout: true } } }, alphaTested(s), LIB).length === 0,
   'MAT.xSun=xStd({map:TEX.xSun,roughness:.4});', 'MAT.xSun=xStd({map:TEX.xSun,alphaTest:.5,roughness:.4});');

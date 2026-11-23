@@ -20,7 +20,8 @@
                                   (the values do not separate the two: either is accepted)
      C.drift(build, cfg, libs, meas) -> {wrong: [...], excepted: [...], stale: [...]}: every family whose class disagrees
                                   with derive(), those the table's exceptions declare (by build), and exceptions that no
-                                  longer differ from the rule or name another class than the materials.json
+                                  longer differ from the rule or name another class than the materials.json; pending: the
+                                  table's decided changes that wait for Stage 8 (their class and values unchanged now)
 */
 var KMAT_CLASS = (function(){
   'use strict';
@@ -63,8 +64,9 @@ var KMAT_CLASS = (function(){
     function agrees(d, c){ return d === c || (d === 'relief|flat' && (c === 'relief' || c === 'flat')); }
 
     function drift(build, cfg, libs, meas){
-      var out = { wrong: [], excepted: [], stale: [] };
+      var out = { wrong: [], excepted: [], stale: [], pending: [] };
       var EX = (table.exceptions && table.exceptions[build]) || {};
+      var PD = (table.pending && table.pending[build]) || {};   /* decided, waiting for Stage 8: a note, never a pass */
       var fams = (cfg && cfg.families) || {};
       Object.keys(fams).sort().forEach(function(f){
         var fc = fams[f], rec = libs[fc.lib], d = derive(fc, rec, meas && meas[f]), ex = EX[f];
@@ -77,8 +79,14 @@ var KMAT_CLASS = (function(){
           return;
         }
         if(!ok) out.wrong.push(f + ': classed ' + fc['class'] + ', the values give ' + d);
+        var pd = PD[f];
+        if(pd){
+          if(fc['class'] === pd['class']) out.stale.push(f + ': pending ' + pd['class'] + ' is done (drop the pending entry)');
+          else if(ok) out.pending.push(f + ': ' + fc['class'] + ' now, ' + pd['class'] + ' at Stage 8 (' + pd.by + ')');
+        }
       });
       Object.keys(EX).forEach(function(f){ if(!fams[f]) out.stale.push(f + ': an exception for a family the materials.json lacks'); });
+      Object.keys(PD).forEach(function(f){ if(!fams[f]) out.stale.push(f + ': a pending entry for a family the materials.json lacks'); });
       return out;
     }
 
