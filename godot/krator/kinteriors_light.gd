@@ -10,6 +10,8 @@ extends RefCounted
 const INTERIOR_SHADER := preload("res://shaders/library_interior.gdshader")
 const CELL_M := 16.0
 const INDOOR_LAYER := 2
+# a skylight's pool light this far over the eye at most (KROOMLIGHT.pickPool's o.skyFill default)
+const SKY_FILL := 6.0
 
 
 static func _smooth(a: float, b: float, x: float) -> float:
@@ -669,7 +671,15 @@ static func pick_pool(
 				continue
 			var tier: int = int(allowed[wr])
 			var wp := Vector3(float(wl[0]), float(wl[1]), float(wl[2]))
+			# optional [4] aperture (the open share: a jali), [5] sky (1: a skylight, a column of light down from wp):
+			# as core/interiors/10-core-roomlight.js pickPool; a 4-element window is what it was
+			var ap := float(wl[4]) if (wl as Array).size() > 4 else 1.0
+			var sky := (wl as Array).size() > 5 and int(wl[5]) == 1
 			var d2 := wp.distance_squared_to(lp)
+			if sky:
+				var up := maxf(0.0, lp.y - wp.y)
+				d2 = (wp.x - lp.x) * (wp.x - lp.x) + up * up + (wp.z - lp.z) * (wp.z - lp.z)
+				wp.y = minf(wp.y, lp.y + SKY_FILL)
 			if d2 > 26.0 * 26.0:
 				continue
 			var pen := 1.0 if tier == 1 else 3.2
@@ -677,7 +687,7 @@ static func pick_pool(
 				"score": d2 * pen,
 				"reg_pos": m_orig + m_rot * wp,
 				"color": Color(0.88, 0.93, 1.0),
-				"energy": 1.25 * sun_up * (1.0 if tier == 1 else 0.55),
+				"energy": 1.25 * sun_up * (1.0 if tier == 1 else 0.55) * ap,
 				"range": 15.0,
 				"shadow": false,
 				"kind": "window",

@@ -52,7 +52,7 @@ const LSNIGHT=(function(){const T=THREE,C=c=>new T.Color(c);
    }
   });
   RTAB=KROOMLIGHT.buildTable({
-   rooms:list,
+   rooms:LS_ROOMLIGHT.rooms(list),   /* the skylit rooms flagged (40g) */
    windowsOf:r=>r.outdoor?[]:LSIXD.windowsOf(r),
    lampsOf:r=>(!r.outdoor&&typeof LSIX!=='undefined'&&LSIX.on&&LSIX.record(r.id))?LSIX.record(r.id).lights:[]
   });

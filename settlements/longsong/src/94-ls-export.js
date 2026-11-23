@@ -183,7 +183,7 @@ function exportMetadata(){
   if(typeof LSIXD!=='undefined'){LSIXD.windowsOf(r).forEach(w=>{const wx=w.x+w.nx*1.35,wz=w.z+w.nz*1.35,gk=r.id+':'+Math.round(wx/2.5)+','+Math.round(w.y/2)+','+Math.round(wz/2.5);
    if(!winSeen.has(gk)){winSeen.add(gk);wins.push([R2(wx),R2(w.y),R2(wz),r.id]);}});}});
  const room_table=typeof KROOMLIGHT!=='undefined'?KROOMLIGHT.buildTable({
-  rooms:tableRooms,
+  rooms:LS_ROOMLIGHT.rooms(tableRooms),   /* the skylit rooms flagged (40g) */
   windowsOf:r=>(!r.vault&&!r.outdoor&&typeof LSIXD!=='undefined')?LSIXD.windowsOf(r):[],
   lampsOf:r=>(!r.vault&&!r.outdoor&&typeof LSIX!=='undefined'&&LSIX.on&&LSIX.record(r.id))?LSIX.record(r.id).lights:[]
  }):null;
