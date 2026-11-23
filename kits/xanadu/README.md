@@ -153,6 +153,9 @@ round the Qiblai kit's violet monastery. It is planned before it is drawn:
   the keep's chapel (the owner, 2026-11-16). A ruin's rubble is a core/terrain `KRUBBLE` heap (decoration to core/ruins); fallen
   pieces are seated on their lowest points. A standing fort's wall walks, the flights onto its towers, their tops, its stairs
   and landings are on core/walk (the parapets open where a flight reaches them: `xfCrenel`).
+  A placement may give `o.outline` and `o.gateEdge` (a watch fort fitted to its ground: `XFORT.plan(o)` is drawn), `o.seed` (its
+  look) with `o.damageSeed` (its damage, so the look holds through the three states); a post `o.fort` and `o.rota`
+  (`window._xaPosts`). A damaged fort's lost guns lie wrecked inside (`xfGunWreck`). `KNOWN_ISSUES.md` has the limits.
 - The sheet (`build.py` names both fragments, with `core/terrain/37c-core-rubble.js` and `core/ruins`, here and not in
   `xanadu.py`: `XAK` and Xanadu's own pages do not take them): `targets/sheet/91u-xasheet-ruins.js` watches every damaged and
   ruined fort with `KRUINS`; `verify.py` adds `fort-plans` and `fort-walks` (every standing fort's walks reached from its

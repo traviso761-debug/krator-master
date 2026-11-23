@@ -176,8 +176,16 @@ function xfGun(x,y,z,ry,C){vB('vStone',x,y,z,3,.25,3,ry,C.stone);vB('vWood',x,y+
  for(const s of[-1,1]){const w=loc(x,z,s*.6,0,ry);kput('xDrumE',[w[0],y+.25+.45,w[1]],qEuler(0,ry,Math.PI/2),[.45,.12,.45],C.tim);}
  const m=loc(x,z,0,.3,ry);kput('xColG',[m[0],y+1,m[1]],qEuler(0,ry,0).multiply(qEuler(Math.PI/2,0,0)),[.2,2.4,.2],C.bronze);}
 // ---------------------------------------------------------------- the whole fort, from its plan, in its state
-function xfDraw(size,G,o){const P=XF_PLANS[size],V=xV(o),st=o.state||XF_STATES[V]||'kept',seed=o.seed==null?XF_SEED[size]+V:o.seed;reseed(seed);
- const C=xfCols(size==='watch'?'march':'royal'),Dm=XFORT.damage(P,st,seed),gated={};P.gates.forEach(g=>{gated[g.curtain]=(gated[g.curtain]||[]).concat([g]);});
+/* the plan a placement draws: the size's own (XF_PLANS), or, where the placement gives o.outline (a watch fort's convex ward) or
+   o.gateEdge, XFORT.plan of them (cached): settlements/marches fits each watch fort's ward to its knoll this way */
+const XF_PCACHE={};
+function xfPlanOf(size,o){if(!o||(o.outline==null&&o.gateEdge==null))return XF_PLANS[size];const k=size+'|'+JSON.stringify(o.outline||null)+'|'+(o.gateEdge==null?'':o.gateEdge);
+ return XF_PCACHE[k]||(XF_PCACHE[k]=XFORT.plan({size,outline:o.outline,gateEdge:o.gateEdge}));}
+/* o.seed is the fort's LOOK (its colours, merlons: reseeded at once); o.damageSeed, when given, is what its damage is hashed
+   from (breaches, fallen towers, ragged courses, low walls, wrecks), so one fort can keep its look through its three states
+   (the Marches, 2026-11-23); without it the damage takes the look's seed, as before */
+function xfDraw(size,G,o){const P=xfPlanOf(size,o),V=xV(o),st=o.state||XF_STATES[V]||'kept',seed=o.seed==null?XF_SEED[size]+V:o.seed,dseed=o.damageSeed==null?seed:o.damageSeed;reseed(seed);
+ const C=xfCols(size==='watch'?'march':'royal'),Dm=XFORT.damage(P,st,dseed),gated={};P.gates.forEach(g=>{gated[g.curtain]=(gated[g.curtain]||[]).concat([g]);});
  const nm=VERN.defs[o._key].name;   /* no volume over the whole fort: its wards are open ground (a camera or walker in them stands in no building); its curtains, towers, gates and buildings register their own */
  /* the curtains: whole, breached, or in stubs; a standing fort's walks, the flights onto its towers and its stairs on core/walk
     (XFORT.walks: a ruined one has none) */
@@ -188,7 +196,7 @@ function xfDraw(size,G,o){const P=XF_PLANS[size],V=xV(o),st=o.state||XF_STATES[V
   for(let i=0;i<cuts.length;i+=2)xfCurtain(c,cuts[i],cuts[i+1],c.h,C,{merlons:true,band:C.dress==='royal'});
   br.forEach(b=>{xfCurtain(c,b.u0,b.u1,1.2,C,{});   /* the breach's foot: the talus and a course of the body */
    /* its broken ends: the wall steps down into the gap in three or four ragged courses from each side (hashed per breach) */
-   const s=KRAND.stream(KRAND.child(seed,'breach.'+c.id+'.'+b.u0));
+   const s=KRAND.stream(KRAND.child(dseed,'breach.'+c.id+'.'+b.u0));
    for(const side of[-1,1]){const u=side<0?b.u0:b.u1;let hh=c.h,du=0;
     for(let k=0;k<4;k++){const w=s.range(.6,1.1)/L;hh*=s.range(.62,.82);if(hh<1.6||du+w>(b.u1-b.u0)*.3)break;   /* each side keeps to its third of the gap */const ua=side<0?u+du:u-du-w,ub=side<0?u+du+w:u-du;
      xfCurtain(c,Math.max(b.u0,Math.min(ua,ub)),Math.min(b.u1,Math.max(ua,ub)),hh,C,{});du+=w;}}});});
@@ -198,7 +206,7 @@ function xfDraw(size,G,o){const P=XF_PLANS[size],V=xV(o),st=o.state||XF_STATES[V
   (window._xaForts=window._xaForts||[]).push({key:o._key,v:V,state:st,tag,feet,walks,box:[Math.min(a[0],b[0]),Math.max(a[0],b[0]),Math.min(a[2],b[2]),Math.max(a[2],b[2])]});}
  Dm.heaps.forEach(H=>xfHeap(H,C.rubble));
  /* the towers */
- P.towers.forEach(t=>{const T=Dm.towers[t.id]||{};vnReg(nm+' — tower',t.ctr[0],t.ctr[1],XFORT.half(t)+.5,t.h*(T.keep==null?1:T.keep)+2,{part:'tower'});xfTower(t,C,Object.assign({seed},T,{gaps:Wk.gaps[t.id]}),t.id);});
+ P.towers.forEach(t=>{const T=Dm.towers[t.id]||{};vnReg(nm+' — tower',t.ctr[0],t.ctr[1],XFORT.half(t)+.5,t.h*(T.keep==null?1:T.keep)+2,{part:'tower'});xfTower(t,C,Object.assign({seed:dseed},T,{gaps:Wk.gaps[t.id]}),t.id);});
  /* the gates */
  P.gates.forEach(g=>{const c=P.curtains.find(q=>q.id===g.curtain)||P.curtains.find(q=>q.ward==='works');vnReg(nm+' — '+(g.kind==='water'?'water gate':'gate'),g.at[0],g.at[1],g.w/2+2,(c?c.h:7)+4,{part:'gate'});
   if(g.kind==='water')xfWaterGate(g,c,C,Dm.gates[g.id]==='gone');else xfGate(g,c,C,Dm.gates[g.id]||'kept',g.id===XF_MAIN[size]);});
@@ -211,24 +219,39 @@ function xfDraw(size,G,o){const P=XF_PLANS[size],V=xV(o),st=o.state||XF_STATES[V
  /* the buildings */
  P.buildings.forEach(b=>{if(b.kind!=='muster')vnReg(nm+' — '+b.kind.replace(/-/g,' '),b.at[0],b.at[1],Math.max(b.w,b.d)/2,(b.h==null?1:b.h)+(b.kind==='keep'?8:1),{part:b.kind});
   const ruined=st==='ruined',burnt=Dm.roofs[b.id]==='burnt';
-  if(b.kind==='keep')xfKeep(b,C,{storeys:Dm.keep&&Dm.keep.storeys,ruined,seed});
-  else if(b.kind==='barracks'||b.kind==='married-quarters'||b.kind==='merchant-house')xfRange(b,C,{ruined,burnt,seed});
-  else xfSmall(b,C,{ruined,seed});});
+  if(b.kind==='keep')xfKeep(b,C,{storeys:Dm.keep&&Dm.keep.storeys,ruined,seed:dseed});
+  else if(b.kind==='barracks'||b.kind==='married-quarters'||b.kind==='merchant-house')xfRange(b,C,{ruined,burnt,seed:dseed});
+  else xfSmall(b,C,{ruined,seed:dseed});});
  /* the Golden Tears' court: its own low wall on the two sides inside the ward, its gate, its tower */
  if(P.court){const K=P.court,p=K.poly,ruined=st==='ruined',wh=ruined?K.wallH*.4:K.wallH;   /* poly: front-left, front-right, back-right, back-left */
   const segs=[[p[3],p[2]],[p[3],[K.gateAt[0],K.gateAt[1]-2.2]],[[K.gateAt[0],K.gateAt[1]+2.2],p[0]]];
   segs.forEach(sg=>{const dx=sg[1][0]-sg[0][0],dz=sg[1][1]-sg[0][1],L=Math.hypot(dx,dz),m=[(sg[0][0]+sg[1][0])/2,(sg[0][1]+sg[1][1])/2];vB('xRubB',m[0],0,m[1],Math.abs(dx)>Math.abs(dz)?L:K.wallT,wh,Math.abs(dx)>Math.abs(dz)?K.wallT:L,0,C.rubble);
    if(!ruined)vB('xWashB',m[0],wh,m[1],(Math.abs(dx)>Math.abs(dz)?L:K.wallT)+.1,.25,(Math.abs(dx)>Math.abs(dz)?K.wallT:L)+.1,0,xC(xPick(XPAL.ochre)));});
-  const T={id:K.id+'.tower',form:'square',w:K.tower.w,h:K.tower.h,at:K.tower.at,ctr:K.tower.at};xfTower(T,xfCols('march'),Object.assign({seed},Dm.towers[T.id]||(ruined?{keep:.45,fallen:true}:{})),T.id);
+  const T={id:K.id+'.tower',form:'square',w:K.tower.w,h:K.tower.h,at:K.tower.at,ctr:K.tower.at};xfTower(T,xfCols('march'),Object.assign({seed:dseed},Dm.towers[T.id]||(ruined?{keep:.45,fallen:true}:{})),T.id);
   vnReg(nm+' — the Golden Tears\' court',(p[0][0]+p[1][0])/2,(p[0][1]+p[3][1])/2,Math.abs(p[1][0]-p[0][0])/2,K.tower.h,{part:'court'});
   if(!ruined)xnDoorway(K.gateAt[0]-K.wallT/2-.02,0,K.gateAt[1],-Math.PI/2,3,3.2,{c:C.tim});}
  /* the guns */
- if(st!=='ruined')P.guns.forEach(g=>{if(g.curtain){const c=P.curtains.find(q=>q.id===g.curtain);if(Dm.breaches.some(b=>b.curtain===c.id&&g.u>b.u0-.05&&g.u<b.u1+.05))return;
-   const p=[c.a[0]+(c.b[0]-c.a[0])*g.u-c.out[0]*.3,c.a[1]+(c.b[1]-c.a[1])*g.u-c.out[1]*.3];xfGun(p[0],c.h,p[1],Math.atan2(c.out[0],c.out[1]),C);}
-  else{const gt=P.gates.find(q=>q.id===g.gate),c=P.curtains.find(q=>q.id===gt.curtain);if(Dm.gates[gt.id]==='burnt')return;
+ /* the guns: a standing one where it is laid; a damaged fort's gun whose wall was breached or whose gate burnt lies wrecked at
+    the wall's foot inside (xfGunWreck); a ruined fort's were carried off */
+ if(st!=='ruined')P.guns.forEach((g,gi)=>{const wreck=(x,z,ry)=>{if(st==='damaged')xfGunWreck(x,z,ry,C,KRAND.stream(KRAND.child(dseed,'gun.'+gi)));};
+  if(g.curtain){const c=P.curtains.find(q=>q.id===g.curtain),p=[c.a[0]+(c.b[0]-c.a[0])*g.u,c.a[1]+(c.b[1]-c.a[1])*g.u],ry=Math.atan2(c.out[0],c.out[1]);
+   if(Dm.breaches.some(b=>b.curtain===c.id&&g.u>b.u0-.05&&g.u<b.u1+.05)){wreck(p[0]-c.out[0]*(c.t/2+3),p[1]-c.out[1]*(c.t/2+3),ry);return;}
+   xfGun(p[0]-c.out[0]*.3,c.h,p[1]-c.out[1]*.3,ry,C);}
+  else{const gt=P.gates.find(q=>q.id===g.gate),c=P.curtains.find(q=>q.id===gt.curtain);
+   if(Dm.gates[gt.id]==='burnt'){const q=loc(gt.at[0],gt.at[1],gt.w/2+2,-(XFORT.gateHouse(gt,c).d/2+3),gt.ry);wreck(q[0],q[1],gt.ry);return;}
    const gh=(c?c.h:7)+3+.3,p=loc(gt.at[0],gt.at[1],gt.w/2+.4,-.3,gt.ry);xfGun(p[0],gh,p[1],gt.ry,C);}});}
+/* a gun thrown down: its bronze barrel, its carriage on its side and a wheel, each seated on its lowest points (core/ruins' rule) */
+function xfGunWreck(x,z,ry,C,s){const a=ry+s.range(-.7,.7);
+ xfSeat('xColG',x,z,a,Math.PI/2,0,[.2,2.4,.2],C.bronze,.02);
+ const w=loc(x,z,s.range(.9,1.4),s.range(-.6,.6),a);xfSeat('vWood',w[0],w[1],a+s.range(-.4,.4),s.range(.05,.25),s.range(1.35,1.5),[1,.5,1.7],C.tim,.05);   /* on its side */
+ const h=loc(x,z,-s.range(.8,1.3),s.range(-.8,.8),a);xfSeat('xDrumE',h[0],h[1],0,0,0,[.45,.12,.45],C.tim,.02);}
 // ---------------------------------------------------------------- the watch post: a square tower, its fire basket, a fuel store, a hut
 function xfPost(G,o){const V=xV(o),st=XF_STATES[V]||'kept',seed=XF_SEED.post+V;reseed(seed);const W=XFORT.post(),C=xfCols('march'),T=W.tower;
+ /* the post's record (for the sim, S3): the fort it answers to (o.fort, a settlement or ensemble id; null when none is given)
+    and its rota (o.rota men on the line; XFORT.post's 4 by default), on the group and in window._xaPosts with its place (not on
+    its core/tags volume: the vocabulary has no such key, and a core/tags change waits for the all-builds rebuild) */
+ const c0=VERN.cur,rec={fort:o.fort==null?null:o.fort,rota:o.rota==null?W.rota:o.rota,state:st,x:c0?c0.x:0,z:c0?c0.z:0};if(G&&G.userData)G.userData.post=rec;
+ (window._xaPosts=window._xaPosts||[]).push(rec);
  vnReg('Watch post',0,0,W.w/2,T.h+3,{part:'tower'});
  const tw={id:'post',form:'square',w:T.w,h:T.h,at:[T.at[0],T.at[1]+T.w],ctr:T.at};
  const keep=st==='kept'?1:st==='damaged'?.65:.38;xfTower(tw,C,{keep,fallen:keep<1,seed},'post');
@@ -297,5 +320,5 @@ function xfIxItems(){const R3=v=>Math.round(v*1000)/1000;
 if(typeof KratorInteriors!=='undefined'&&KratorInteriors.sets&&!KratorInteriors.sets.byName['xanadu-fort']){
  const S=KratorInteriors.sets.add({set:'xanadu-fort',title:'Xanadu: the forts (F4)',culture:'xanadu',items:xfIxItems()});
  for(const it of S.items)if(!it.skip)Object.defineProperty(it,'skip',{configurable:true,enumerable:true,
-  get:()=>XF_IXSTATE.state&&XF_IXSTATE.state!=='kept'?'the fort is '+XF_IXSTATE.state+': its stacks have lost storeys or stand as low walls':undefined});
- const p0=VERN.place;VERN.place=function(sc,key,x,z,ry,o){if(!VERN.cur&&/^xa_fort_(watch|march|gate)$/.test(key))XF_IXSTATE.state=(o&&o.state)||XF_STATES[xV(o||{})]||'kept';return p0.apply(this,arguments);};}
+  get:()=>XF_IXSTATE.state==='custom'?'a fort of its own outline (o.outline, o.gateEdge): its buildings stand where this item does not plan them':XF_IXSTATE.state&&XF_IXSTATE.state!=='kept'?'the fort is '+XF_IXSTATE.state+': its stacks have lost storeys or stand as low walls':undefined});
+ const p0=VERN.place;VERN.place=function(sc,key,x,z,ry,o){if(!VERN.cur&&/^xa_fort_(watch|march|gate)$/.test(key))XF_IXSTATE.state=o&&(o.outline!=null||o.gateEdge!=null)?'custom':(o&&o.state)||XF_STATES[xV(o||{})]||'kept';return p0.apply(this,arguments);};}
