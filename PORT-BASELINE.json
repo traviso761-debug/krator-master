@@ -1189,16 +1189,16 @@
    "sha256": "75223875a57f714df4f068e09e66292721bf3f11c05ee54ab9414a9e4daaa346"
   },
   "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": {
-   "bytes": 2755910,
-   "sha256": "f7ff4956d22baabde34374ac179544bf448554a4eb6deffdfd5ee8fe5c328ee2"
+   "bytes": 2756032,
+   "sha256": "10ee3a4e0c8625c33badc613c833ac0dc75a23da8cf9f8a5ea5e931faa3787b4"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
    "bytes": 4734822,
    "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 11099428,
-   "sha256": "6e439a98c3e25f86aab3cd1818c999f99dd3910dff6500a0bfa8f20c0bda1814"
+   "bytes": 11099550,
+   "sha256": "697af257b3954307e28b154ce24b251a561d3f3f4302ca60e91df819158a26b0"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": {
    "bytes": 2002652,
@@ -1489,8 +1489,8 @@
    "sha256": "efedacdf87fae06ae85cc20164498bb7001bc23494ee5f60dc5044d91ca97771"
   },
   "settlements/xanadu-works/dist/xanadu-works.html": {
-   "bytes": 9203806,
-   "sha256": "514d590b6b41586912252a75f9bdfd18c88ab3d33e287b9c798206f9e289593e"
+   "bytes": 9203827,
+   "sha256": "3b41a65b7784114dd13d01a95173405ed9a698a51b149faa714099bd9ae18502"
   },
   "settlements/xanadu/dist/erewhon.html": {
    "bytes": 6479284,

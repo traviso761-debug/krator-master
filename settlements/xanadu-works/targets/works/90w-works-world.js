@@ -38,12 +38,12 @@ xwGround('terrain:far',-6000,-6000,6000,6000,0x9a9282,'beyond the sheet').positi
  if(typeof KDRAWN!=='undefined')KDRAWN.add(KDRAWN.grid({x0:0,z0:881,dx:2600,dz:3999,nx:1,nz:1,h:[XW.LAKE-3,XW.LAKE-3,XW.LAKE-3,XW.LAKE-3]}));}
 // ---------------------------------------------------------------- strips on the ground: the camps' lanes, the roads, the stream
 const xwStripMat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.95,metalness:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
-function xwStrip(pts,w,mat,y,name){const pos=[],idx=[];for(let i=0;i<pts.length;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1,nx=-dz/L*w/2,nz=dx/L*w/2;
+function xwStrip(pts,w,mat,y,name){const pos=[],idx=[];for(let i=0;i<pts.length;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.max(1e-6,Math.hypot(dx,dz)),nx=-dz/L*w/2,nz=dx/L*w/2;
   pos.push(pts[i][0]+nx,y,pts[i][1]+nz,pts[i][0]-nx,y,pts[i][1]-nz);if(i)idx.push(2*i-2,2*i-1,2*i,2*i-1,2*i+1,2*i);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
  const M=new THREE.Mesh(g,mat);M.name=name;M.userData.probeSkip=true;M.receiveShadow=true;scene.add(M);return M;}
 if(XW_PLAN){const lane=xwStripMat(0x7a6e5c),road=xwStripMat(0x6e6452),yard=xwStripMat(0x938672),water=new THREE.MeshStandardMaterial({color:0x4a7f8a,roughness:.1,metalness:.2});
- for(const C of XW_PLAN.camps){for(const l of C.lanes)xwStrip(l.pts,l.w||6,lane,.04,'lane '+l.id);
+ for(const C of XW_PLAN.camps){for(const l of C.lanes)xwStrip(l.pts,l.w==null?6:l.w,lane,.04,'lane '+l.id);
   if(C.green){const G=C.green,M=new THREE.Mesh(new THREE.PlaneGeometry(G.w,G.d),yard);M.rotation.set(-Math.PI/2,0,G.ry);M.position.set(G.x,.03,G.z);M.userData.probeSkip=true;M.name='the camp\'s yard '+C.id;scene.add(M);}}
  /* the ore road from the adit camp down to the mill camp (Kōlḍ-Lōḍ's road.sw-gold leaves the mill camp for Strongwall, 50 km
     south), the diggings' cart road to the landing; and the stream the mill's wheels take */

@@ -202,7 +202,7 @@
     "openworld/xanadu-oidong-highrift/src/43-world-xoh.js": "516868f08a23ec2515291f2d565a15d58c97fd034799b8c354f906821f1fe0d4",
     "openworld/xanadu-oidong-highrift/src/48t-world-camps.js": "68e6b3fa2324952fd09500fc4112e92b2eca845811bd4bdafb31fa89c2674761",
     "openworld/xanadu-oidong-highrift/src/49-world-xanadu.js": "4e2176fa79328240b3c57a7aba4c741e262441807972076c0ad7f089dfe1f903",
-    "openworld/xanadu-oidong-highrift/src/88t-world-camps.js": "0992793952a9a805def7d535a7f3a8da845e7ef66a24831707a67f3eb7cf1cc5",
+    "openworld/xanadu-oidong-highrift/src/88t-world-camps.js": "1fed7cb5b72a815d4ea43a527fa2fd75547cd17abb20c78688dbf151fd2d9d09",
     "settlements/isle-demo/src/58-isle-protos.js": "d36369e7f45d2423e857278cbc2505604f5cd611ddc6ba4043e57f01a6d3d0fc",
     "settlements/xanadu/tex/cloth.albedo.webp": "5f30b44e60a910aa92157f3a8f748f59b3159057cb0978662e36410cca9be4bb",
     "settlements/xanadu/tex/cloth.normal.webp": "7c171ef8f4f77e0951eb1423a5046ac42908f214235bce1447f9af909e2acfaa",
@@ -276,11 +276,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "f7ff4956d22baabde34374ac179544bf448554a4eb6deffdfd5ee8fe5c328ee2",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "10ee3a4e0c8625c33badc613c833ac0dc75a23da8cf9f8a5ea5e931faa3787b4",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    },
    "outputs_raw": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "f7ff4956d22baabde34374ac179544bf448554a4eb6deffdfd5ee8fe5c328ee2",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "10ee3a4e0c8625c33badc613c833ac0dc75a23da8cf9f8a5ea5e931faa3787b4",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    }
   }

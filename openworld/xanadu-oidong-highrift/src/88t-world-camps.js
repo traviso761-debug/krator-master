@@ -18,7 +18,7 @@ const S={camps:PLAN.camps.length,uncut:PLAN.uncut.map(u=>u.id+': '+u.why),record
 const TAGS=KTAGS.create({build:((WORLD_DATA.meta.cut||{}).region||'region')+':camps'});
 const CULT=c=>KTAGS.VOCAB.cultures.indexOf(c)>=0?c:'generic';
 /* ---------------------------------------------------------------- the records into core/tags, before anything is drawn */
-const tagCamp=(C,cult)=>{const base=TAGS.add({class:'landmark',kind:'camp',key:C.id,name:C.name,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],r:(C.R||60)+40,h:10,
+const tagCamp=(C,cult)=>{const base=TAGS.add({class:'landmark',kind:'camp',key:C.id,name:C.name,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],r:(C.R==null?60:C.R)+40,h:10,
   tags:{culture:CULT(cult),types:['civic'],role:'camp'},note:(C.people?C.people+' people, ':'')+C.records.length+' tents; pitched '+C.season.days.map(d=>d.join('-')).join(', ')+' (year days)'});
  for(const r of C.records){S.records++;TAGS.child(base.id,{class:'building',key:r.def||r.key,at:[r.x,H(r.x,r.z),r.z],ry:r.ry,size:[r.w,r.d,r.h],
    tags:{culture:CULT(cult),types:r.goldRoom?['industry']:['residential'],role:r.goldRoom?'the gold room':(r.role||undefined)}});}
@@ -28,7 +28,7 @@ const tagCamp=(C,cult)=>{const base=TAGS.add({class:'landmark',kind:'camp',key:C
 for(const C of PLAN.camps){const cult=C.kind==='halt'?(SPEC.camps.find(s=>s.id===C.id)||{}).culture:'xanadu';tagCamp(C,cult);
  if(C.escort)tagCamp(Object.assign({season:C.season,works:[],kind:'ring'},C.escort),'xanadu');}
 /* the camps' ground kept clear of the world's flora and floor (as 88s keeps its camps'): a disc of the camp's reach */
-const DISCS=[];for(const C of PLAN.camps){DISCS.push([C.site.x,C.site.z,(C.R||60)+30]);if(C.escort)DISCS.push([C.escort.site.x,C.escort.site.z,C.escort.R+25]);}
+const DISCS=[];for(const C of PLAN.camps){DISCS.push([C.site.x,C.site.z,(C.R==null?60:C.R)+30]);if(C.escort)DISCS.push([C.escort.site.x,C.escort.site.z,C.escort.R+25]);}
 const prevClear=WORLD.clearHook;
 /* clearOff: the ground rule as the plan read it (WORLD.townW counts what the clear hook keeps clear: 88s's note) */
 let clearOff=false;
@@ -42,7 +42,7 @@ const lin=h=>new T3.Color(h).convertSRGBToLinear();
    generic undyed canvas the Dalab caravan falls back to: the Tents kit has no Dalab dress yet) */
 const DRESS={xanadu:{wall:0xeee6d4,roof:0xd89a2a,trim:0x7a2430},generic:{wall:0xcbbfa5,roof:0xb0a184,trim:0x6a5a48}};
 const dress=r=>DRESS[r.dress]||DRESS.generic;
-function Batch(){const by={};return{add(g,c,x,y,z,sx,sy,sz,ry){const k=g+':'+c;(by[k]=by[k]||{g,c,m:[]}).m.push([x,y,z,sx,sy,sz,ry||0]);},
+function Batch(){const by={};return{add(g,c,x,y,z,sx,sy,sz,ry){const k=g+':'+c;(by[k]=by[k]||{g,c,m:[]}).m.push([x,y,z,sx,sy,sz,ry==null?0:ry]);},
  build(name){const G=new T3.Group();G.name=name;const m4=new T3.Matrix4(),q=new T3.Quaternion(),e=new T3.Euler(),v=new T3.Vector3(),s=new T3.Vector3();
   for(const k in by){const B=by[k],M=new T3.InstancedMesh(GEO[B.g],new T3.MeshStandardMaterial({color:lin(B.c),roughness:.9,metalness:0}),B.m.length);
    B.m.forEach((a,i)=>{q.setFromEuler(e.set(0,a[6],0));m4.compose(v.set(a[0],a[1],a[2]),q,s.set(a[3],a[4],a[5]));M.setMatrixAt(i,m4);});
@@ -50,9 +50,9 @@ function Batch(){const by={};return{add(g,c,x,y,z,sx,sy,sz,ry){const k=g+':'+c;(
    M.userData.probePoints=[].concat(...B.m.map(a=>[a[0],a[1],a[2]]));G.add(M);}
   return G;}};}
 const ROUND={bell:1,cone:1,yurt:1};
-function tent(B,r){const p=KCAMP.tentParse(r.key),f=(/^tn-([a-z]+)-/.exec(p.key||r.def||'')||[])[1]||'ridge',D=dress(r),y=H(r.x,r.z),h=r.h||3,c=Math.cos(r.ry),s=Math.sin(r.ry);
+function tent(B,r){const p=KCAMP.tentParse(r.key),f=(/^tn-([a-z]+)-/.exec(p.key||r.def||'')||[])[1]||'ridge',D=dress(r),y=H(r.x,r.z),h=r.h==null?3:r.h,c=Math.cos(r.ry),s=Math.sin(r.ry);
  /* the tent's own box (KCAMP.tentDims grew it by the role's yard): the mass stands in the box less its yard */
- const yd=KCAMP.TENTS.YARD[r.role]||0,w=Math.max(1.6,r.w-yd),d=Math.max(1.6,r.d-yd);
+ const yd=KCAMP.TENTS.YARD[r.role]==null?0:KCAMP.TENTS.YARD[r.role],w=Math.max(1.6,r.w-yd),d=Math.max(1.6,r.d-yd);
  if(ROUND[f]){const R=Math.min(w,d)/2*.92;B.add('drum',D.wall,r.x,y+h*.22,r.z,R,h*.44,R);B.add('cone',r.goldRoom?D.trim:D.roof,r.x,y+h*.44+h*.28,r.z,R*1.05,h*.56,R*1.05);}
  else if(f==='fly'||f==='awning'){B.add('box',D.roof,r.x,y+h*.85,r.z,w*.95,.08,d*.95,r.ry);for(const a of[-1,1])for(const b of[-1,1])B.add('box',0x5a4632,r.x+c*a*w*.42+s*b*d*.42,y+h*.42,r.z-s*a*w*.42+c*b*d*.42,.1,h*.85,.1);}
  else if(f==='screen'){B.add('box',D.wall,r.x,y+.9,r.z,w*.9,1.8,.08,r.ry);}
@@ -65,7 +65,7 @@ function hedge(B,L,site,gateD,low){if(!L)return 0;let n=0,acc=0;const P=L.pts,GA
     k=KRAND.unit(KRAND.hash(7123,Math.round(x*10),Math.round(z*10))),sc=(low?.5:1)*(1.1+.5*k);
    B.add('clump',low?0x6a5a40:0x4f4230,x,H(x,z)+sc*.45,z,sc*1.3,sc*.85,sc*1.3,k*6);n++;
    /* the ditch outside the hedge */
-   if(!low){const ox=x-site.x,oz=z-site.z,o=Math.hypot(ox,oz)||1;B.add('box',0x3e352a,x+ox/o*3.2,H(x+ox/o*3.2,z+oz/o*3.2)+.02,z+oz/o*3.2,2.2,.06,step+.2,Math.atan2(ox,oz)+Math.PI/2);}}
+   if(!low){const ox=x-site.x,oz=z-site.z,o=Math.max(1e-6,Math.hypot(ox,oz));B.add('box',0x3e352a,x+ox/o*3.2,H(x+ox/o*3.2,z+oz/o*3.2)+.02,z+oz/o*3.2,2.2,.06,step+.2,Math.atan2(ox,oz)+Math.PI/2);}}
   acc+=seg;}
  return n;}
 function works(B,C,only){for(const w of C.works){if(only&&only.indexOf(w.kind)<0)continue;const y=H(w.x,w.z);
@@ -99,7 +99,7 @@ function checks0(neg){const R=[],P=neg==='plan'?JSON.parse(JSON.stringify(PLAN))
     pop=C.census?C.census.pop:0,want=C.people;
    R.push({name:'the camp '+C.id+': a fortified ring (its zariba with one gate), the captain\'s pavilion and the gold room, the sluices in the wadi\'s bed, about its people',
     ok:gates===1&&gold===1&&C.records.some(r=>r.role==='chief')&&sl>=2&&Math.abs(pop-want)<=want*.25,
-    detail:'gates '+gates+', gold room '+gold+', sluices '+sl+(sl?' (the bed\'s flow '+(C.works.find(w=>w.kind==='sluice').flow||0).toFixed(2)+')':'')+', people '+pop+' / '+want+' (XAN_TUNE.tears.camp)'});}
+    detail:'gates '+gates+', gold room '+gold+', sluices '+sl+(sl?' (the bed\'s flow '+(C.works.find(w=>w.kind==='sluice').flow==null?0:C.works.find(w=>w.kind==='sluice').flow).toFixed(2)+')':'')+', people '+pop+' / '+want+' (XAN_TUNE.tears.camp)'});}
   else{const wag=C.records.filter(r=>/wagon/.test(r.def||r.key)).length;
    R.push({name:'the halt '+C.id+': a laager of '+C.wagons+' wagons round the house\'s pavilion, the gate on the road, the escort\'s ring beside it',
     ok:C.formation==='laager'&&wag===C.wagons&&C.records.some(r=>r.role==='chief')&&!!(C.escort&&C.escort.records.length>=4),
