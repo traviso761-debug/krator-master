@@ -810,4 +810,10 @@ check('Strongwall\'s six watch posts, the House of the Tempest and its lookout a
       and all(not bool(whas[by_id_21[i]['py'], by_id_21[i]['px']]) and by_id_21[i].get('polity') == 'Xanadu Sultanate'
               for i in sw_ids)
       and (by_id_21['sxan7r1sln']['px'], by_id_21['sxan7r1sln']['py']) == (912, 1640))
+# 5.1e17 (2026-11-23): the Marches' west and south watch forts (settlements/marches, records only)
+check('the Marches\' west (818,1531) and south (843,1546) watch forts are pinned, dry forts of the Xanadu Sultanate',
+      all(i in by_id_21 and by_id_21[i]['type'] == 'fort' and not bool(whas[by_id_21[i]['py'], by_id_21[i]['px']])
+          for i in ('smarchw0001', 'smarchs0001'))
+      and (by_id_21['smarchw0001']['px'], by_id_21['smarchw0001']['py']) == (818, 1531)
+      and (by_id_21['smarchs0001']['px'], by_id_21['smarchs0001']['py']) == (843, 1546))
 print('%d checks passed' % ok)

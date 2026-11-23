@@ -1027,6 +1027,12 @@ said yes to asking 2026-11-23). Numbered 521 because Shumar's branch holds 519 a
   R3 is marginal (-9 m; the plan's +3); G2 and G3 are behind the scarp. The lookout sees G1 (+17), not the monastery's
   crest (-127 m: the plan's relay).
 
+**5.1e17 (2026-11-23, records only)**: the Marches' two watch forts, from the Marches forts session
+(claude/vibrant-hopper-3x8lwi c6688875, `settlements/marches`, `MRF.pins()`), relayed by the build coordinator: the west
+watch fort (`smarchw0001`, 818,1531, 289 m on the slope above Erewhon's lake) and the south watch fort (`smarchs0001`,
+843,1546, -213 m on a spur over the Rift, 23 km south of the Beacon), forts of the Xanadu Sultanate. Their proposed names
+(Wesṭ-Wāch, Sāuth-Wāch) wait for the owner and are in their notes. Both dry; geology and the ledger re-baked.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

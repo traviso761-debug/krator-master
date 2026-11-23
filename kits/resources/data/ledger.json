@@ -658,7 +658,6 @@
    "exports": [
     "iron",
     "copper",
-    "tin",
     "silver",
     "coal",
     "sulfur",
@@ -2479,6 +2478,7 @@
     "Komodo",
     "Sauropolis",
     "The Tubes",
+    "The south watch fort",
     "Tuatara"
    ],
    "nodes": {
@@ -2601,6 +2601,9 @@
    ],
    "exports": [
     "copper",
+    "gold",
+    "tin",
+    "silver",
     "rare-earth",
     "oil",
     "alkali",
@@ -2628,6 +2631,12 @@
       ]
      },
      {
+      "settlement": "The south watch fort",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
       "settlement": "Tuatara",
       "lack": [
        "salt"
@@ -2636,16 +2645,16 @@
     ]
    },
    "reach": {
-    "iron": 309,
-    "copper": 339,
-    "gold": 163,
-    "tin": 150,
-    "silver": 128,
-    "rare-earth": 202,
+    "iron": 388,
+    "copper": 419,
+    "gold": 210,
+    "tin": 196,
+    "silver": 165,
+    "rare-earth": 266,
     "coal": 0,
     "sulfur": 186,
     "saltpeter": 2,
-    "oil": 140,
+    "oil": 185,
     "gypsum": 10,
     "halite": 6,
     "potash": 9,
@@ -10575,6 +10584,57 @@
    },
    "ok": false
   },
+  "The south watch fort": {
+   "polity": "Lizardmen",
+   "px": 843,
+   "py": 1546,
+   "type": "fort",
+   "pop": 800,
+   "reachKm": 15,
+   "catchment": {
+    "iron": 79,
+    "copper": 80,
+    "gold": 47,
+    "tin": 46,
+    "silver": 37,
+    "rare-earth": 64,
+    "oil": 45
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "The west watch fort": {
+   "polity": null,
+   "px": 818,
+   "py": 1531,
+   "type": "fort",
+   "pop": 800,
+   "reachKm": 15,
+   "catchment": {
+    "iron": 88,
+    "copper": 73,
+    "gold": 37,
+    "tin": 33,
+    "silver": 29,
+    "rare-earth": 61,
+    "sulfur": 8,
+    "saltpeter": 1,
+    "oil": 40,
+    "marble": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
   "Theodiga": {
    "polity": "Xanadu Sultanate",
    "px": 908,
@@ -11248,6 +11308,7 @@
    "Lizardmen: Komodo lacks salt within 30 km",
    "Lizardmen: Sauropolis lacks salt within 30 km",
    "Lizardmen: The Tubes lacks salt within 30 km",
+   "Lizardmen: The south watch fort lacks salt within 30 km",
    "Lizardmen: Tuatara lacks salt within 30 km",
    "Nomad Country: Dasri village (to be named) @1243,844 lacks wood within 30 km",
    "Painted Men: Painted Canyon Cliff-Hold lacks salt within 30 km",
