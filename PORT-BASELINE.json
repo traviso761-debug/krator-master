@@ -861,8 +861,8 @@
    "sha256": "f4141e152cb4d4b42efb5c0ada187f549110aaf91bbfb02ace6c3fea21b03ada"
   },
   "kits/lizardmen/dist/lizardmen.html": {
-   "bytes": 1731452,
-   "sha256": "fcaaf91f3781e306f1966b67c866f921714cc2638f03186a8dd7447987d0c2d2"
+   "bytes": 1827200,
+   "sha256": "efcb30cec9a13694b074f2e6cc12a704c80d601065fc81bc6587a973ce3e387a"
   },
   "kits/mechs/dist/mechs.html": {
    "bytes": 1715496,
@@ -1527,6 +1527,30 @@
   "settlements/yuni/yuni.html": {
    "bytes": 1616319,
    "sha256": "02b9ae6e59e5f9734a62f0b9d73713ba7ef3fe647a3282442fed0e7e53aaedd2"
+  },
+  "settlements/basilisk/dist/basilisk.html": {
+   "bytes": 3678323,
+   "sha256": "750c33a4b7d54313a0d31ec1252277f2b3722a63e49e37d173d77af465568908"
+  },
+  "settlements/gila/dist/gila.html": {
+   "bytes": 2893909,
+   "sha256": "0af5886000a4d7c011a8a8acfa8d3926c45cf9a23e415ed8e39ca2b023827997"
+  },
+  "settlements/iguana/dist/iguana.html": {
+   "bytes": 8317657,
+   "sha256": "20a6644833759ff3daf1815acd739b2d82ae1e48d7d032e1893b07521a41b1c3"
+  },
+  "settlements/komodo/dist/komodo.html": {
+   "bytes": 8334201,
+   "sha256": "1a45afd49bb2557620335ca788af7f410cf918d3f5d6b3692a92a6d8a163eade"
+  },
+  "settlements/skink/dist/skink.html": {
+   "bytes": 8214933,
+   "sha256": "091820a5bf0915a0a8ac452ce4d1e44b9fabebec5376a3d99b57be0ea8277ec9"
+  },
+  "settlements/tuatara/dist/tuatara.html": {
+   "bytes": 8466025,
+   "sha256": "662c92689663347e685830c7684b7b429c3161b4a2ca6a91b41e8e3b7f859d4d"
   }
  },
  "what": "SHA-256 of every built page; tools/port_baseline.py"

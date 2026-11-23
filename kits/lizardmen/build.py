@@ -71,6 +71,18 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 KIT_ID = 'lizardmen'
 OUT = os.path.join(DIST, KIT_ID + '.html')
+# --settlement <folder>: a Lizardmen settlement built on this kit's page, with no copy of it (settlements/gila, its PLAN.md
+# section 1), as settlements/xanadu/build.py --kit builds Thalaba. The folder's settlement.json names its page ("out"), the
+# core files it adds by repo path ("core"), the fragments that are closures of their own ("scoped": the shared-scope check
+# skips them) and its generated fragments ("gen", a folder its own build.py writes); its src/ joins the kit's in filename
+# order (a src/ file with a kit file's name wins), its tex/ pack is bound as KMAT.pack('<its key>'). The page, the manifest
+# and the open issues are the settlement's. Without --settlement nothing below changes: the kit's page comes out byte-identical.
+SETTLE = None
+if '--settlement' in sys.argv:
+    SETTLE = os.path.abspath(sys.argv[sys.argv.index('--settlement') + 1])
+    SET_CFG = json.load(open(os.path.join(SETTLE, 'settlement.json'), encoding='utf-8'))
+    SET_KEY = SET_CFG['key']
+    OUT = os.path.join(SETTLE, 'dist', SET_CFG['out'])
 TEX_DIR = os.path.join(HERE, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
@@ -128,8 +140,14 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'fauna'))
     import furniture_bundle, fauna_bundle
-    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES),
-            '39-fauna-bundle.js': fauna_bundle.bundle(FAUNA_GROUPS)}
+    out = {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES),
+           '39-fauna-bundle.js': fauna_bundle.bundle(FAUNA_GROUPS)}
+    if SETTLE:   # the settlement's own pack (its materials.json, tools/textures/pack.py), beside the kit's in the sidecar
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        out['26s-matlib-pack-%s.js' % SET_KEY] = _mp.fragment(SETTLE, SET_KEY, side=SIDE)
+        VIRTUAL.add('26s-matlib-pack-%s.js' % SET_KEY)
+    return out
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
@@ -146,13 +164,26 @@ def sources():
     paths.update({f: khost.path(f) for f in CORE_HOST})
     paths.update(psky.paths(psky.SKY))
     paths.update(kengine.paths())
+    if SETTLE:   # the core files the settlement adds ("path" or "path=name" to sort at name), by repo path
+        for entry in SET_CFG.get('core', []):
+            p, _, nm = entry.partition('=')
+            paths[nm or os.path.basename(p)] = os.path.join(ROOT, *p.split('/'))
     core = dict(paths)
+    gen_files = set()
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
-    return paths, core
+    if SETTLE:   # then the settlement's generated fragments and its src/ (a file with a kit file's name wins)
+        for sub in (SET_CFG.get('gen', 'gen'), 'src'):
+            d = os.path.join(SETTLE, sub)
+            if os.path.isdir(d):
+                found = {f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
+                if sub != 'src':
+                    gen_files.update(found)
+                paths.update(found)
+    return paths, core, gen_files
 
 
 def main():
-    paths, core = sources()
+    paths, core, gen_files = sources()
     vb = virtual_bodies()
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
@@ -164,6 +195,7 @@ def main():
         decl = {}
         for f in files:
             if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST: continue   # the host's files are IIFEs: each its own scope
+            if SETTLE and f in SET_CFG.get('scoped', []): continue   # a settlement's closure (its sealed core/city): its names stay inside
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for n in BUNDLE_GLOBALS:
             if n in decl: errs.append('top-level name `%s` in %s clashes with the generated furniture bundle' % (n, ', '.join(sorted(decl[n]))))
@@ -179,7 +211,7 @@ def main():
         for s, fs in seeds.items():
             if len(fs) > 1: errs.append('seed %d claimed twice: %s' % (s, ', '.join(fs)))
         for f in files:
-            if not (re.match(r'[4-7]\d[a-z]?-', f) and f.endswith('.js')) or is_core(f) or f in VIRTUAL: continue
+            if not (re.match(r'[4-7]\d[a-z]?-', f) and f.endswith('.js')) or is_core(f) or f in VIRTUAL or f in gen_files: continue
             m = re.match(r'// prefix: (\w+)', bodies[f])
             if not m: errs.append('%s: building fragments start with `// prefix: xx`' % f); continue
             for n in RE_DECL.findall(bodies[f]):
@@ -187,13 +219,13 @@ def main():
     if errs:
         print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     html = ''.join(bodies[f] for f in files)
-    os.makedirs(DIST, exist_ok=True)
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
     if SIDE:   # the pack beside the page, under the gallery's 16 MB a file
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
-        html = _mp.write_sidecar(SIDE, html, os.path.dirname(OUT), 'lizardmen.tex.js', prune=False)
+        html = _mp.write_sidecar(SIDE, html, os.path.dirname(OUT), (SET_CFG['out'][:-5] if SETTLE else KIT_ID) + '.tex.js', prune=False)
     open(OUT, 'w', encoding='utf-8', newline='').write(html)
-    json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n'), indent=1, sort_keys=True)
+    json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(SETTLE or HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n'), indent=1, sort_keys=True)
     body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
     node = find_node()
     if node:
@@ -204,8 +236,8 @@ def main():
         syn = '  syntax OK'
     else:
         syn = '  syntax NOT CHECKED (no node: verify.py is the check)'
-    print('built dist/' + KIT_ID + '.html (%d fragments, %.0f KB)%s' % (len(files), os.path.getsize(OUT) / 1024, syn))
-    ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
+    print('built ' + os.path.relpath(OUT, ROOT).replace(os.sep, '/') + ' (%d fragments, %.0f KB)%s' % (len(files), os.path.getsize(OUT) / 1024, syn))
+    ki = os.path.join(SETTLE or HERE, 'KNOWN_ISSUES.md')
     if os.path.exists(ki):
         op = [l.rstrip() for l in open(ki, encoding='utf-8') if l.startswith('- [ ]')]
         if op:
@@ -218,7 +250,7 @@ def vendor_check():
         same = open(up, 'rb').read() == open(os.path.join(SRC, f), 'rb').read()
         bad += not same
         print('  %s  src/%-12s %s (%s)' % ('=' if same else '!', f, 'identical' if same else 'DRIFTS', os.path.relpath(up, ROOT)))
-    paths, core = sources()
+    paths, core, _ = sources()
     for f in sorted(core):
         if paths[f] != core[f]:
             print('  !  src/%-12s shadows %s' % (f, os.path.relpath(core[f], ROOT))); bad += 1
