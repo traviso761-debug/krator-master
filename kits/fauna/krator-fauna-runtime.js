@@ -134,9 +134,20 @@ const KratorFaunaAPI = (function () {
         tr.push(k.path === 'quaternion' ? new THREE.QuaternionKeyframeTrack(k.node + '.quaternion', t, v) : new THREE.VectorKeyframeTrack(k.node + (k.path === 'scale' ? '.scale' : '.position'), t, v)); }
       clips[cn] = new THREE.AnimationClip(cn, A.dur, tr);
     }
+    let skin = null;      /* a skinned model (M.skin, rig/pack_skinned.py): one mesh, every vertex on up to four bones (j: node indices, w: weights out of 255), stored where the rest pose puts it */
+    if (M.skin) { const m = M.skin.mesh, p16 = new Uint16Array(buf64(m.pos)), pos = new Float32Array(p16.length), n8 = new Int8Array(buf64(m.nrm)), nrm = new Float32Array(n8.length), u16 = new Uint16Array(buf64(m.uv)), uv = new Float32Array(u16.length), j8 = new Uint8Array(buf64(m.j)), w8 = new Uint8Array(buf64(m.w)), sw = new Float32Array(w8.length);
+      for (let i = 0; i < p16.length; i++) pos[i] = m.min[i % 3] + p16[i] / 65535 * m.size[i % 3];
+      for (let i = 0; i < n8.length; i++) nrm[i] = n8[i] / 127;
+      for (let i = 0; i < u16.length; i++) uv[i] = u16[i] / 65535;
+      for (let i = 0; i < w8.length; i++) sw[i] = w8[i] / 255;
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      g.setAttribute('skinIndex', new THREE.BufferAttribute(new Uint16Array(j8), 4)); g.setAttribute('skinWeight', new THREE.BufferAttribute(sw, 4));
+      g.setIndex(new THREE.BufferAttribute(m.wide ? new Uint32Array(buf64(m.idx)) : new Uint16Array(buf64(m.idx)), 1)); g.computeBoundingSphere();
+      g.boundingSphere.radius = Math.max(g.boundingSphere.radius, Math.max(M.rest.extent.w, M.rest.extent.d, M.rest.extent.h) / M.scale);      /* bound for the widest pose, not the rest, or a spread wing is culled at the screen's edge */
+      const sm = mat.clone(); sm.skinning = true; skin = { geo: g, mat: sm }; }
     const partMat = M.family ? familyMats(M, geo) : {};      /* a part with a material of its own (M.mats: a wing card, see-through); the rest share the baked maps */
     for (const mn in (M.mats || {})) { const q = M.mats[mn], m2 = new THREE.MeshStandardMaterial({ map: modelTex(q.map, true), transparent: true, alphaTest: 0.02, depthWrite: false, metalness: 0, roughness: q.roughness == null ? 0.5 : q.roughness, side: THREE.DoubleSide }); for (const p of q.parts) partMat[p] = m2; }
-    return (MODELC[mkey] = { M: M, geo: geo, mat: mat, partMat: partMat, clips: clips });
+    return (MODELC[mkey] = { M: M, geo: geo, mat: mat, partMat: partMat, clips: clips, skin: skin });
   }
   /* a model of many parts as one draw call (M.merge, a millipede): every part a bone, every vertex wholly its part's. The file and the gate still see parts */
   function mergedGeo(mc) {
@@ -154,12 +165,19 @@ const KratorFaunaAPI = (function () {
   function buildModel(E, key, opt) {
     const v = opt.variant | 0, mc = modelOf(E.models[v]), M = mc.M, S = M.scale, root = new THREE.Group(); root.name = 'fauna:' + key;
     const top = new THREE.Group(); top.scale.setScalar(S); top.position.set(-M.rest.center[0] * S, -M.rest.ground * S, -M.rest.center[1] * S); root.add(top);
-    const gs = M.nodes.map(nd => { const g = M.merge ? new THREE.Bone() : new THREE.Group(); g.name = nd.name; g.position.set(nd.t[0], nd.t[1], nd.t[2]); g.userData.rest = { x: nd.t[0] * S, y: nd.t[1] * S, z: nd.t[2] * S };
+    const gs = M.nodes.map(nd => { const g = M.merge || M.skin ? new THREE.Bone() : new THREE.Group(); g.name = nd.name; g.position.set(nd.t[0], nd.t[1], nd.t[2]); g.userData.rest = { x: nd.t[0] * S, y: nd.t[1] * S, z: nd.t[2] * S };
+      if (nd.r) g.quaternion.set(nd.r[0], nd.r[1], nd.r[2], nd.r[3]); if (nd.s) g.scale.set(nd.s[0], nd.s[1], nd.s[2]);      /* a skinned model's bones rest turned */
       const geo = M.merge ? null : mc.geo[nd.name], pm = mc.partMat[nd.name]; if (geo) { const m = new THREE.Mesh(geo, pm || mc.mat); m.castShadow = !pm; m.receiveShadow = true; m.userData.family = 'model'; g.add(m); } return g; });
     M.nodes.forEach((nd, i) => (nd.parent < 0 ? top : gs[nd.parent]).add(gs[i]));
     if (M.merge) { const q = mergedGeo(mc), sk = new THREE.SkinnedMesh(q.geo, q.mat); sk.castShadow = sk.receiveShadow = true; sk.userData.family = 'model'; top.add(sk); sk.bind(new THREE.Skeleton(gs, q.inv), new THREE.Matrix4()); }
+    if (M.skin) {      /* the bones' inverses in top's frame, as the merged path's: the bind is then the same wherever the animal is first placed */
+      top.updateMatrixWorld(true); const ti = new THREE.Matrix4().copy(top.matrixWorld).invert(), inv = gs.map(b => new THREE.Matrix4().multiplyMatrices(ti, b.matrixWorld).invert());
+      const sk = new THREE.SkinnedMesh(mc.skin.geo, mc.skin.mat); sk.castShadow = sk.receiveShadow = true; sk.userData.family = 'model'; top.add(sk); sk.bind(new THREE.Skeleton(gs, inv), new THREE.Matrix4()); }
     const P = { legs: [] }, side = s => (s === 'R' ? 1 : 0);
-    M.nodes.forEach((nd, i) => { const g = gs[i], n = nd.name; let m;
+    if (M.skin) { const q = M.skin.parts, at = n => gs[M.nodes.findIndex(nd => nd.name === n)];      /* a skinned model names its parts: bones, not meshes */
+      for (const k of ['head', 'body', 'tail', 'wingL', 'wingR', 'wing2L', 'wing2R']) if (q[k]) P[k] = at(q[k]);
+      (q.legs || []).forEach((n, i) => { P.legs[i] = at(n); }); }
+    else M.nodes.forEach((nd, i) => { const g = gs[i], n = nd.name; let m;
       if ((m = /^leg(\d)([LR])$/.exec(n))) P.legs[2 * +m[1] + side(m[2])] = g;           /* hexapod: leg0L, leg0R, leg1L ... = the kit's order */
       else if ((m = /^leg([LR])$/.exec(n))) P.legs[side(m[1])] = g;                     /* biped */
       else if ((m = /^leg(\d+)$/.exec(n))) P.legs[+m[1]] = g;                           /* a chain: front to back, left then right */
