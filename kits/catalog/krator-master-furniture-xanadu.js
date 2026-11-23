@@ -25,7 +25,9 @@ FURN_CULTURE('xanadu', { name: 'Xanadu', pack: 'xanadu', influences: 'Mughal; Yu
     /* Erewhon's citadel (2026-11-16): the court of Kubla Khan's pieces and the painted stand-ins of its hangings */
     lapis: 0x26449a, peacock: 0x1a6e8a, peacockGreen: 0x2a7a4a, emerald: 0x1e7a52, ruby: 0xa01a2a, pearl: 0xf0ece4,
     ice: 0xd8eef4, iceDeep: 0x8cc4d8, nightBlue: 0x1a2444, silkRose: 0xc85a6a, silkCream: 0xf2e6c8, cypress: 0x2a4a2a,
-    marbleVein: 0xcfc8bc, brocade: 0xb88a2c, violet: 0x5a3a6a, umber: 0xa8724e
+    marbleVein: 0xcfc8bc, brocade: 0xb88a2c, violet: 0x5a3a6a, umber: 0xa8724e,
+    /* the Order of the Beacon's house (settlements/beacon FURNITURE.md, 2026-11-23): the Ancients' white metal, slate panels */
+    ancientWhite: 0xd9dde0, slatePanel: 0x3e4246
   } });
 /* END PALETTE */
 const XAN_COMMON = {
@@ -1443,3 +1445,207 @@ FURN({
   for (const k in MORE) XC[k] = (XC[k] || []).concat(MORE[k]);
   for (const k in XC) { const A = FURN_BY_KEY[k]; if (!A) { console.error('xanadu citadel rooms: no piece ' + k); continue; } for (const r of XC[k]) if (A.rooms.indexOf(r) < 0) A.rooms.push(r); }
 })();
+/* ------------------------------------------------------------------ the Order of the Beacon's pieces (settlements/beacon
+   FURNITURE.md "Pieces the catalog lacks", B8, 2026-11-23): the lamp's rooms (the switch room, the signal room, the generator
+   house, the workshop), the Hall of Lights, the chapels. The hour drum, the reader's seat and the signal mirror are shared with
+   the House of the Tempest's list. The lamp head itself is kits/ancients' (anc_beacon_lamp), not the catalog's */
+FURN({
+  key: 'xanadu_cable_drum', name: 'Drum of spare cable', culture: 'xanadu', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['workshop', 'store', 'signals'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['timber', 'metal', 'cloth'],
+  w: 1.25, d: 1.1, h: 1.15, variants: 1,
+  build: function (F) {
+    /* a timber reel stood on end on a low pallet: two flanges, the cable wound thick between them, its end tied off */
+    const wd = F.col('timberRose'), dk = F.col('timberRoseDark');
+    F.box(0, 0, 0, 1.1, 0.12, 1.1, 0, dk, 'wood');
+    F.cyl(0, 0.12, 0, 0.52, 0.06, 0, wd, 'wood');
+    F.cyl(0, 0.18, 0, 0.42, 0.86, 0, F.col('lacquerBlack'), 'cloth');
+    F.cyl(0, 1.04, 0, 0.52, 0.06, 0, wd, 'wood');
+    F.cyl(0, 1.1, 0, 0.12, 0.05, 0, F.col('iron'), 'metal');
+    F.rod(0.42, 0.9, 0, 0.6, 0.4, 0.2, 0.025, F.col('lacquerBlack'), 'cloth');
+  }
+});
+FURN({
+  key: 'xanadu_common_hour_drum', name: 'Drum of the hours', culture: 'xanadu', tier: 'common', type: 'statue', setting: 'indoor',
+  rooms: ['lobby', 'gallery', 'hall', 'chamber'], anchor: 'floor', clearance: { front: 1.0 },
+  materials: ['timber', 'cloth', 'metal'],
+  w: 1.4, d: 1.4, h: 1.9, variants: 1,
+  build: function (F) {
+    /* a big barrel drum on a red lacquer stand, its hide heads ringed with brass studs, the beater hung on the stand's post */
+    const lq = F.col('lacquerRed'), br = F.col('brass');
+    for (const [x, z] of [[-0.6, -0.6], [0.6, -0.6], [0.6, 0.6], [-0.6, 0.6]]) F.box(x, 0, z, 0.1, 0.75, 0.1, 0, lq, 'wood');
+    F.box(0, 0.7, 0, 1.3, 0.08, 1.3, 0, lq, 'wood');
+    F.cyl(0, 0.78, 0, 0.6, 0.95, 0, F.col('columnRed'), 'wood');
+    F.cyl(0, 1.73, 0, 0.62, 0.04, 0, F.col('clothIvory'), 'cloth');
+    for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8; F.ball(Math.cos(a) * 0.61, 1.72, Math.sin(a) * 0.61, 0.025, br, 'metal'); }
+    for (const y of [0.98, 1.52]) F.cyl(0, y, 0, 0.615, 0.05, 0, F.col('goldDark'), 'metal');
+    F.box(0.66, 0.78, 0.66, 0.08, 1.1, 0.08, 0, lq, 'wood');
+    F.rod(0.62, 1.8, 0.62, 0.3, 1.2, 0.62, 0.03, F.col('timberRoseLight'), 'wood');
+  }
+});
+FURN({
+  key: 'xanadu_common_reader_seat', name: 'Reader\'s raised seat and lectern', culture: 'xanadu', tier: 'common', type: 'seating', setting: 'indoor',
+  rooms: ['hall', 'audience'], anchor: 'floor', clearance: { front: 1.2 },
+  materials: ['timber', 'cloth'],
+  w: 1.2, d: 1.75, h: 1.9, variants: 1,
+  build: function (F) {
+    /* the refectory reader's seat: a stepped dais, a cushioned seat with a low back, the book's lectern before it at his knee */
+    const wd = F.col('timberRose'), dk = F.col('timberRoseDark');
+    F.box(0, 0, 0, 1.2, 0.45, 1.3, 0, dk, 'wood');
+    F.box(0, 0, 0.75, 0.8, 0.22, 0.2, 0, dk, 'wood');
+    F.box(0, 0.45, -0.2, 0.7, 0.4, 0.6, 0, wd, 'wood');
+    F.box(0, 0.85, -0.2, 0.68, 0.1, 0.58, 0, F.col('clothSaffron'), 'cloth');
+    F.box(0, 0.45, -0.52, 0.72, 1.4, 0.08, 0, wd, 'wood');
+    F.box(0, 0.45, 0.42, 0.12, 0.85, 0.12, 0, dk, 'wood');
+    F.box(0, 1.3, 0.42, 0.55, 0.05, 0.4, 0, wd, 'wood');
+    F.box(0, 1.35, 0.42, 0.4, 0.05, 0.28, 0, F.col('paper'), 'cloth');
+  }
+});
+FURN({
+  key: 'xanadu_common_signal_mirror', name: 'Signal mirror on its tripod', culture: 'xanadu', tier: 'common', type: 'board', setting: 'indoor',
+  rooms: ['signals', 'study'], anchor: 'floor', clearance: { front: 1.0 },
+  materials: ['timber', 'metal', 'glass'],
+  w: 0.9, d: 1.25, h: 1.75, variants: 1,
+  build: function (F) {
+    /* a heliograph: a round-cornered mirror in a brass frame on a timber tripod, a sighting vane on a rod before it, and a
+       shutter of brass slats that the signaller works with a lever */
+    const br = F.col('brass'), wd = F.col('timberRoseDark');
+    F.rod(0, 1.05, 0, -0.38, 0, -0.3, 0.025, wd, 'wood'); F.rod(0, 1.05, 0, 0.38, 0, -0.3, 0.025, wd, 'wood'); F.rod(0, 1.05, 0, 0, 0, 0.4, 0.025, wd, 'wood');
+    F.box(0, 1.05, 0, 0.62, 0.62, 0.05, 0, br, 'metal');
+    F.box(0, 1.09, 0.03, 0.54, 0.54, 0.01, 0, F.col('glassClear'), 'glass');
+    for (let i = 0; i < 4; i++) F.box(0, 1.1 + i * 0.13, 0.12, 0.56, 0.035, 0.012, 0, br, 'metal');
+    F.rod(0, 1.36, 0.06, 0, 1.36, 0.6, 0.012, br, 'metal');
+    F.box(0, 1.3, 0.6, 0.02, 0.14, 0.02, 0, br, 'metal');
+    F.rod(0.33, 1.2, 0.1, 0.45, 1.5, 0.1, 0.015, F.col('iron'), 'metal');
+  }
+});
+FURN({
+  key: 'xanadu_court_gold_banner', name: 'Banner of the Order of the Beacon', culture: 'xanadu', tier: 'court', type: 'banner', setting: 'indoor',
+  rooms: ['shrine', 'audience', 'chamber', 'lobby', 'hall'], anchor: 'wall', clearance: { front: 0.6 },
+  materials: ['timber', 'cloth', 'metal'],
+  w: 1.1, d: 0.5, h: 2.7, variants: 1,
+  build: function (F) {
+    /* gold silk on a lacquer stand: the eight-spoked wheel in darker gold with a ray rising from its hub, a maroon border,
+       the stand's foot weighted, a gilt finial on the pole */
+    /* against the wall: the silk hangs at the stand's back, the pole and crossbar just before it */
+    const lq = F.col('lacquerRed'), g = F.col('gold'), gd = F.col('goldDark');
+    F.box(0, 0, 0, 0.8, 0.12, 0.45, 0, F.col('lacquerBlack'), 'wood');
+    F.box(0, 0, -0.19, 1.08, 2.55, 0.1, 0, F.col('clothMaroon'), 'cloth');
+    F.box(0, 0, -0.12, 0.07, 2.6, 0.07, 0, lq, 'wood');
+    F.box(0, 2.45, -0.12, 1.05, 0.06, 0.06, 0, lq, 'wood');
+    F.ball(0, 2.62, -0.12, 0.07, g, 'metal');
+    F.box(0, 0.8, -0.135, 0.86, 1.58, 0.02, 0, F.col('clothGoldBand'), 'cloth');
+    F.box(0, 1.45, -0.12, 0.5, 0.06, 0.01, 0, gd, 'cloth'); F.box(0, 1.2, -0.12, 0.06, 0.5, 0.01, 0, gd, 'cloth');
+    F.box(0, 1.41, -0.115, 0.12, 0.14, 0.01, 0, F.col('clothSaffron'), 'cloth');
+    F.box(0, 1.55, -0.115, 0.04, 0.6, 0.01, 0, F.col('clothIvory'), 'cloth');
+  }
+});
+FURN({
+  key: 'xanadu_court_relic_lamp', name: 'The order\'s first lamp under its silk', culture: 'xanadu', tier: 'court', type: 'statue', setting: 'indoor',
+  rooms: ['shrine'], anchor: 'floor', clearance: { front: 0.8 },
+  materials: ['metal', 'cloth', 'glass'],
+  w: 0.8, d: 0.8, h: 1.45, variants: 1,
+  build: function (F) {
+    /* a small dead Ancient lamp (white metal, its glass long dark) on a gilt stand, half under a saffron silk cover */
+    const g = F.col('gold');
+    F.frustum(0, 0, 0, 0.34, 0.22, 0.85, 0, g, 'metal', 12);
+    F.box(0, 0.85, 0, 0.5, 0.05, 0.5, 0, F.col('goldDark'), 'metal');
+    F.box(0, 0.9, 0, 0.36, 0.36, 0.46, 0, F.col('ancientWhite'), 'metal');
+    F.box(0, 0.94, 0.235, 0.28, 0.28, 0.01, 0, F.col('slatePanel'), 'glass');
+    F.box(0, 0.9, -0.08, 0.44, 0.44, 0.34, 0, F.col('clothSaffron'), 'cloth');
+  }
+});
+FURN({
+  key: 'xanadu_generator_set', name: 'Engine and dynamo of the lamp', culture: 'xanadu', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['workshop'], anchor: 'floor', clearance: { front: 1.2 },
+  materials: ['timber', 'metal'],
+  w: 2.8, d: 1.4, h: 3.0, variants: 1,
+  build: function (F) {
+    /* the Geomancers' engine set on an Ancient dynamo: a timber bed, the cast block, the flywheel (a heavy rim on spokes), the
+       dynamo's white drum, the exhaust stack rising to the roof, the day tank on its frame */
+    const ir = F.col('iron'), wd = F.col('timberRoseDark');
+    F.box(0, 0, 0, 2.8, 0.25, 1.3, 0, wd, 'wood');
+    F.box(-0.55, 0.25, 0, 1.0, 0.9, 0.8, 0, ir, 'metal');
+    F.box(-0.55, 1.15, 0, 0.7, 0.25, 0.6, 0, F.shade(ir, 0.1), 'metal');
+    const rim = []; for (let i = 0; i <= 20; i++) { const a = i * Math.PI / 10; rim.push([0.25, 0.95 + Math.sin(a) * 0.6, Math.cos(a) * 0.6]); }
+    F.tube(rim, 0.07, ir, 'metal');
+    for (let i = 0; i < 4; i++) { const a = i * Math.PI / 4; F.rod(0.25, 0.95 - Math.sin(a) * 0.58, -Math.cos(a) * 0.58, 0.25, 0.95 + Math.sin(a) * 0.58, Math.cos(a) * 0.58, 0.03, ir, 'metal'); }
+    F.cyl(0.95, 0.25, 0, 0.42, 0.95, 0, F.col('ancientWhite'), 'metal');
+    F.rod(-0.55, 1.4, 0, -0.55, 3.0, 0, 0.09, F.col('soot'), 'metal');
+    F.box(1.1, 0.25, -0.45, 0.5, 1.1, 0.06, 0, wd, 'wood');
+    F.cyl(1.1, 1.35, -0.45, 0.26, 0.55, 0, F.col('brass'), 'metal');
+  }
+});
+FURN({
+  key: 'xanadu_lamp_switchboard', name: 'The Ancient switchboard, refitted', culture: 'xanadu', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['workshop', 'signals'], anchor: 'wall', clearance: { front: 1.0 },
+  materials: ['stone', 'metal', 'emissive'],
+  w: 1.6, d: 0.45, h: 2.1, variants: 1,
+  build: function (F) {
+    /* a slate panel on iron legs: brass levers in a row, three dials, the shutter key on its cord, and the small lamp that
+       burns while the engine runs */
+    const sl = F.col('slatePanel'), br = F.col('brass');
+    for (const x of [-0.7, 0.7]) F.box(x, 0, 0, 0.08, 0.6, 0.4, 0, F.col('iron'), 'metal');
+    F.box(0, 0.6, -0.1, 1.6, 1.5, 0.12, 0, sl, 'stone');
+    for (let i = 0; i < 6; i++) F.rod(-0.55 + i * 0.22, 1.0, -0.03, -0.55 + i * 0.22, 1.18, 0.12, 0.018, br, 'metal');
+    for (let i = 0; i < 3; i++) { F.box(-0.45 + i * 0.45, 1.55, -0.035, 0.26, 0.26, 0.02, 0, F.col('clothIvory'), 'metal'); F.box(-0.45 + i * 0.45, 1.66, -0.022, 0.015, 0.1, 0.01, 0, F.col('ink'), 'metal'); }
+    F.ball(0.62, 1.9, -0.02, 0.05, F.col('flame'), 'glow');
+    F.rod(-0.7, 1.3, -0.02, -0.7, 0.85, 0.05, 0.008, F.col('ink'), 'metal'); F.box(-0.7, 0.8, 0.05, 0.05, 0.08, 0.02, 0, br, 'metal');
+  }
+});
+FURN({
+  key: 'xanadu_lens_bench', name: 'Lens bench', culture: 'xanadu', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['workshop', 'school'], anchor: 'wall', clearance: { front: 1.0 },
+  materials: ['timber', 'cloth', 'glass', 'metal'],
+  w: 1.6, d: 0.75, h: 1.4, variants: 1,
+  build: function (F) {
+    /* a padded cradle on a bench, a lens in it, the chamois and the rouge box beside, a brass gauge and a hooded lamp */
+    const wd = F.col('timberRose');
+    for (const [x, z] of [[-0.72, -0.3], [0.72, -0.3], [0.72, 0.3], [-0.72, 0.3]]) F.box(x, 0, z, 0.07, 0.82, 0.07, 0, F.col('timberRoseDark'), 'wood');
+    F.box(0, 0.82, 0, 1.6, 0.06, 0.75, 0, wd, 'wood');
+    F.box(-0.2, 0.88, 0, 0.6, 0.14, 0.45, 0, F.col('clothMaroon'), 'cloth');
+    F.dome(-0.2, 0.98, 0, 0.2, 0.08, 0, F.col('glassClear'), 'glass');
+    F.box(0.35, 0.88, 0.15, 0.25, 0.02, 0.2, 0, F.col('clothIvory'), 'cloth');
+    F.box(0.4, 0.88, -0.15, 0.16, 0.08, 0.12, 0, F.col('wax'), 'wood');
+    F.rod(0.6, 0.88, 0.05, 0.6, 1.08, 0.05, 0.012, F.col('brass'), 'metal');
+    F.rod(-0.7, 0.88, -0.3, -0.7, 1.35, -0.3, 0.015, F.col('iron'), 'metal');
+    F.cone(-0.55, 1.2, -0.25, 0.12, 0.14, 0, F.col('iron'), 'metal');
+  }
+});
+FURN({
+  key: 'xanadu_register_of_lights', name: 'The Register of Lights', culture: 'xanadu', tier: 'court', type: 'altar', setting: 'indoor',
+  rooms: ['shrine'], anchor: 'wall', clearance: { front: 1.2 },
+  materials: ['timber', 'metal', 'cloth', 'emissive'],
+  w: 2.2, d: 0.9, h: 1.7, variants: 1,
+  build: function (F) {
+    /* a stepped shelf of small brass lamps, one for each light the order keeps, a name tablet under each: two burn (the
+       Beacon, Strongbow's gate: the owner, 2026-11-23) and the rest are empty cups kept for the lamps still to be found */
+    const lq = F.col('lacquerRed'), br = F.col('brass');
+    for (let s = 0; s < 3; s++) F.box(0, 0, -0.3 + s * 0.3, 2.2, 1.4 - s * 0.4, 0.3, 0, s === 0 ? F.col('lacquerBlack') : lq, 'wood');
+    let n = 0;
+    for (let s = 0; s < 3; s++) for (let i = 0; i < 5; i++) { if (s === 0 && (i === 0 || i === 4)) continue;
+      const x = -0.8 + i * 0.4, y = 1.4 - s * 0.4, z = -0.3 + s * 0.3;
+      F.frustum(x, y, z, 0.05, 0.08, 0.1, 0, br, 'metal', 10);
+      if (n < 2) F.ball(x, y + 0.14, z, 0.035, F.col('flame'), 'glow');
+      F.box(x, y - 0.17, z + 0.155, 0.22, 0.1, 0.01, 0, F.col('paper'), 'cloth');
+      n++; }
+  }
+});
+FURN({
+  key: 'xanadu_signal_lectern', name: 'The signal book on its lectern', culture: 'xanadu', tier: 'common', type: 'desk', setting: 'indoor',
+  rooms: ['signals', 'school'], anchor: 'wall', clearance: { front: 1.0 },
+  materials: ['timber', 'cloth', 'metal'],
+  w: 1.2, d: 0.6, h: 2.2, variants: 1,
+  build: function (F) {
+    /* the signal book open on a lectern beside the shutter key, and above it on the wall the sound grid of the syllabary
+       (a syllable is a row and a column of flashes: the owner's answer, 2026-11-23, the signal book is written in it) */
+    const wd = F.col('timberRose'), ink = F.col('ink');
+    F.box(-0.15, 0, 0, 0.14, 1.05, 0.14, 0, F.col('timberRoseDark'), 'wood');
+    F.box(-0.15, 1.05, 0.02, 0.6, 0.06, 0.42, 0, wd, 'wood');
+    F.box(-0.15, 1.11, 0.02, 0.5, 0.04, 0.34, 0, F.col('paper'), 'cloth');
+    F.box(0.4, 0, 0, 0.3, 0.9, 0.3, 0, F.col('timberRoseDark'), 'wood');
+    F.rod(0.4, 0.9, 0, 0.4, 1.1, 0.08, 0.02, F.col('brass'), 'metal');
+    F.box(0, 1.35, -0.27, 1.2, 0.8, 0.04, 0, F.col('clothIvory'), 'cloth');
+    for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) F.box(-0.44 + c * 0.22, 1.43 + r * 0.14, -0.245, 0.12, 0.05, 0.005, 0, (r + c) % 2 ? ink : F.col('clothMaroon'), 'cloth');
+  }
+});

@@ -132,6 +132,16 @@ const BEACON = (function () {
       const have = L.power.oilKgYr * L.power.kWhPerKg, need = L.lamp.kw * L.lamp.nightHours * 365;
       return need <= have ? [] : ['the lamp draws ' + Math.round(need) + ' kWh a year against ' + Math.round(have)];
     },
+    'the lamp stands on the plinth\'s roof, the plinth in the keep\'s place': L => {
+      const D = L.draw, P = D.plinth, out = [], pl = L.parts.find(p => p.id === 'plinth');
+      const sum = P.storeys.reduce((a, b) => a + b, 0) + P.chapel;
+      if (Math.abs(sum - P.h) > 0.01) out.push('the plinth\'s storeys and chapel make ' + sum + ' m, not its ' + P.h);
+      if (!pl || pl.h !== P.h || JSON.stringify(pl.box) !== JSON.stringify(P.box)) out.push('the plinth part and the draw record disagree');
+      const c = P.h + D.mount.h + D.mount.yoke;
+      if (Math.abs(c - L.lamp.h) > 0.25) out.push('the lamp\'s centre at ' + c + ' m, the sights taken at ' + L.lamp.h);
+      if (!(L.lamp.at[0] >= P.box[0] && L.lamp.at[0] <= P.box[1] && L.lamp.at[1] >= P.box[2] && L.lamp.at[1] <= P.box[3])) out.push('the lamp is off the plinth');
+      return out;
+    },
     'gold only on the gate pavilion, the chapel and the holy crown': L => L.parts.filter(p => p.gold && GOLD[p.gold] !== p.kind).map(p => p.id + ' is gilt (' + p.gold + ')'),
     'everyone has a bed: the census sleeps where the parts say': L => {
       const got = {}, out = [], n = k => got[k] == null ? 0 : got[k];
