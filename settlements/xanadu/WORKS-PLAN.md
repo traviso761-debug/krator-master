@@ -152,3 +152,20 @@ kit's.
 | **W3** | Kōlḍ-Lōḍ's two camps and Opal Valley Mines' two camps drawn on a sheet (a target on Xanadu's page, *proposed* `--kit settlements/xanadu` target `works`), verified (footprints, census, the works present) | now (no ground needed) |
 | **W4** | Both mines on their regions' ground; the ore road and the ferry; Theodiga's and Qiblai's caravan halts | after the stack cuts Gōlḍ-Mārch, Ōpal-Bhālī, Bhēl and Qāṭarāq |
 | **W5** | The rename in the tune and the pin (the queue) | with W3 |
+
+## 8. Done (2026-11-23, branch `claude/xanadu-works-a7`)
+
+- **W1**: `core/hamlet/camp/26-hamlet-camp.js` (opt-in: `spec.camp`, `spec.share`; `core/hamlet/test-hamlet-camp.js`, 15 checks
+  with negatives, run by `test-hamlet.js`); the Xanadu row's `mill`, `diggings` and `landing` foci (`core/hamlet/xanadu/23`);
+  `kits/xanadu/extra/88h-xa-mine-works.js` (`xa_stamp_mill`, `xa_sorting_shed`, inside their lots by `test-footprints.js`).
+- **W3**: `settlements/xanadu-works` (a target on Xanadu's page): the four camps from the tune's records, 950 = 500 + 450 and
+  850 = 500 + 350; a fifth of the diggings' houses the Glaziers' (`gz-front`, `gz-cell`); the heaps on `KRUBBLE`. Its verify:
+  `works-laid`, `census`, `works-present`, `footprints`.
+- **W5**: the tune's name for `smgxtultfq` is Kōlḍ-Lōḍ. **The pin's rename is the scale model's queue's** (not edited here).
+- **W2, in part**: the camps' planner and drawer are region-local (`openworld/xanadu-oidong-highrift/src/48t`, `88t`; core/world's
+  site planner takes only the Beast Riders' camps: TODO.md). **Erehwon's caravan halt is drawn** in `openworld/xanadu-lake-shore`
+  (a laager of 40 wagons, the Tears' escort's ring, its windows from year days 311 and 107). **The Golden Tears' camp is not on
+  the ground yet**: its point (px 850,1628) is 60 km outside the region's cut (section 3's "inside the High Rift polygon" did not
+  hold), so `stearscamp01` is a SITES.json row for the region's next recut (with the Spillway's and the Devisers' squares already
+  listed) and its ring is proven on synthetic ground (`openworld/xanadu-oidong-highrift/tests/test-world-camps.js`).
+- The tents are their forms' massing (the Tents kit is not sealed for another world yet; it has no Dalab dress): TODO.md.

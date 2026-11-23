@@ -62,3 +62,9 @@
       core/coast's `44c` (merged 2026-11-15), which also takes the islands into its coast field (`KCOAST.build({islands})`)
       for their beaches and cliffs; both read region.json's `landforms`. Lift the stamp into core/world or core/coast when a
       second region has landforms; the verify's island check catches a hook that does not chain.
+
+- **The pitched camps (2026-11-23, `src/48t-world-camps.js`, `88t`; settlements/xanadu/WORKS-PLAN.md W2).** The Golden Tears'
+  camp (`WORLD_CAMPS` in `src/48-world-site.js`, site `stearscamp01` in openworld/SITES.json) is outside this region's cut (60 km
+  from its nearest cut ground), so the page reports it awaiting the recut and draws nothing; `tests/test-world-camps.js` proves
+  its ring on synthetic ground. The camps are planned at load, not baked (core/world's 48s pitches only the Beast Riders' camps),
+  and their tents are massing in their dress's colours (no Tents kit bundle for another world yet): TODO.md.
