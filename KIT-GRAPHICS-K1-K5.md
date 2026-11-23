@@ -126,3 +126,26 @@ committed): draw calls the same in every view; triangles and programs:
 | kits/interiors sheet | 68,658, 7 | 78,898, 9 |
 
 fps 58-61 in every view before and after: the page is held at the display's 60 Hz, so the numbers show no drop, not the cost.
+
+## More kits (the owner: "I approve these for stage 8, they can go to more kits", 2026-11-23)
+
+| Commit | What |
+|---|---|
+| 158893cb7 (two commits) | core/engine masonry kits: Scyvoi (`stone` m4, `paving` m4 + pom), Islanders (`coral`, `clayBlock` m4 + pom; bevel `coral`), Yeti (`course`, `slab`, `flag` m4 + pom; bevels `slab`, `flag`), Tungang (`stone` m4 + pom, `wash` m4; bevel `stone`). Bevels spend 10,112 (Islanders), 32,864 (Yeti), 59,968 (Tungang, at the cap; 3,393 boxes left plain) triangles |
+| 8c35336b2 | Room lighting in girder, locus, yuni and mavs-refuge: `KRLHOST.wirePage` (tick each second, fixed-width table, re-tag near new rooms and new geometry) and one adapter fragment each (girder: `GIX.jobs`' rooms with portals through `IX.roomLight`; locus: the rooms `LOCF.interior` plans; yuni: `INTERIOR_CACHE`'s plans placed in world terms, `KROOMLIGHT` read in place as `19-core-roomlight.js`; mavs: `MIX.units`' shells). On the GPU: girder 585 rooms / 2.36M vertices indoor, locus 414 / 2.90M, mavs 1,764 / 377k, yuni 3,192 / 33k (its interiors stream near the camera; instanced walls are left alone) |
+| b900bc4bc, 6112d2001 | The Ancients-lineage masonry (through `KMAT.bindMat`, no code): kits/ancients and kits/port (concrete m4; paving, brick, pkPave m4 + pom), kits/iziz-vernacular and settlements/iziz, kits/xanadu and settlements/xanadu (stone, brick m4 + pom; plaster m4), kits/highlands and settlements/highlands (stone, brick m4 + pom), kits/talia (taMarble m4 + pom + specAA), kits/qiblai (qAshlar, qCobble, qFlag m4 + pom), kits/construction (block, brick m4). `core/materials/record/test-masonry-packs.js` checks every flagged family in all 17 builds has its outputs. `tools/textures/matlib_pack.py write_sidecar` overwrites in place and retries Errno 22 (kits/ancients failed to reopen its shared sidecar on this Windows box). The second commit puts back pack families the repack settled without being asked (drift between some committed tex/ and their materials.json): against the pre-repack commits only the flagged families differ |
+
+**Not applicable:** Highlands' `cobble` and `ashlarP` and Beast Riders' `stone`, `sandstone`, `navajo` are colour-only maps (`mapOnly`):
+no normals to derive cavity, wear or height from.
+
+**Fingerprints** (rebuilt against the line's pages): core/engine moves only by the bevels and joints (islanders +13,352 = 10,112
+bevels + 3,240 joints; yeti +32,864, its bevel spend exactly; eternian, lizardmen, resources as in the round before; scyvoi and
+noahs-regret colour only; ash- and desert-nomads `same`; no record or object moves). core/furnish as before: the room tagging
+adds attributes the furniture's hash does not read; furniture untouched.
+
+**GPU pairs** (arc lane, `shots/k-more/` in this worktree): Tungang near and mid (its committed page is behind the line: 123 records
+against 170 built from the line's sources, so its numbers mix that in; this branch's share is the 59,968 bevel triangles and the
+joints), Highlands dwellings and temple (programs 56 -> 35 and 59 -> 35, triangles the same; the views are mid-distance, where
+the masks and parallax barely show), girder's tower cross-section at 21:00 (programs 188 -> 259, 60 -> 53 fps: the room
+light's hook gives each hooked material a program of its own: the cost to weigh), Mav's apartment at 21:00 (programs 81 -> 115,
+43 -> 45 fps) and hold cross-section at 13:00 (78 -> 112, 46 -> 49 fps).
