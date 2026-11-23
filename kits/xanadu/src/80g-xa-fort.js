@@ -127,11 +127,14 @@ function xfSmall(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],w=b.w,d=b.d,h=b.h;if(o
   case 'granary':case 'strongroom':{xnWall(x,0,z,w,.8,d,0,C.stone,'dressed');const S=xnStack(x,.8,z,w*.96,d*.96,0,[h-.8],b.kind==='strongroom'?C.stone:C.wash,b.kind==='strongroom'?'dressed':'wash');
    xnFlatRoof(x,S.y,z,S.w,S.d,0,C.wash,{parapet:.5,band:b.kind==='strongroom'?C.maroon:null});
    if(b.kind==='granary')for(let i=0;i<3;i++)xnRoom(x-w*.3+w*.3*i,h*.6,z+front*(S.d/2+.02),.3,.6,.06,front>0?0:Math.PI);
-   else xnDoorway(x,.8,z+front*(S.d/2+.02),front>0?0:Math.PI,1.2,2.1,{c:C.iron});break;}
+   else xnDoorway(x,.8,z+front*(d*.48+.02),front>0?0:Math.PI,1.2,2.1,{c:C.iron});break;}   /* at the stack's foot (it was on the roof's footprint, inside the wall) */
   case 'assay-furnace':case 'assay-weigh':case 'smithy':case 'wheel-house':{const red=b.kind==='wheel-house',S=xnStack(x,0,z,w,d,0,[h],red?C.red:C.wash,'wash');
    xnFlatRoof(x,S.y,z,S.w,S.d,0,red?C.red:C.wash,{band:C.maroon,parapet:.5,eave:red,eaveC:C.tim});
-   xnDoorway(x,0,z+front*(S.d/2*1.02+.02),front>0?0:Math.PI,1.8,2.6,{c:C.tim});
-   for(const s of[-1,1])xnTibWin(x+s*w*.3,h*.45,z+front*(S.d/2*1.02),front>0?0:Math.PI,.8,1.1,xLit()?'lit':'glass',xC(XPAL.trim),{noVal:true});
+   /* the door at the battered face's foot and the windows on the face at their height (as xfKeep and xfRange: until 2026-11-22
+      both stood on the roof's footprint, half a metre inside the wall, so the door was buried and its room sealed) */
+   const fz=y0=>front*(d/2-(d/2-S.d/2)*y0/h+.02);
+   xnDoorway(x,0,z+fz(0),front>0?0:Math.PI,1.8,2.6,{c:C.tim});
+   for(const s of[-1,1])xnTibWin(x+s*w*.3,h*.45,z+fz(h*.45+.55),front>0?0:Math.PI,.8,1.1,xLit()?'lit':'glass',xC(XPAL.trim),{noVal:true});
    if(b.chimney||b.kind==='smithy'){const cx=x+w/2-1.4;vB('vStone',cx,S.y,z,1.5,b.chimney?7:3.5,1.5,0,C.stone);vB('vDarkB',cx,S.y+(b.chimney?7:3.5),z,1,.04,1,0);}
    break;}
   case 'stables':case 'ore-shed':{const alongZ=d>w,L=alongZ?d:w,D=alongZ?w:d,ry=alongZ?Math.PI/2:0,P=(u,v)=>loc(x,z,u,v,ry),sx=alongZ?(x>0?-1:1):(z>0?-1:1);
@@ -217,3 +220,51 @@ xfDef('xa_fort_watch','watch','Watch fort (the Marches\')',['civic']);
 xfDef('xa_fort_march','march','Strongwall (the march fort)',['civic']);
 xfDef('xa_fort_gate','gate','Gate works',['infrastructure']);
 XA.def({key:'xa_fort_post',name:'Watch post (the watch line\'s)',family:'Forts',tags:XTAG_FORT(['infrastructure']),xfort:'post',w:XFORT.post().w+6,d:XFORT.post().d+6,h:12,fw:XFORT.post().w,fd:XFORT.post().d,nv:3,build:xfPost});
+/* ---------------------------------------------------------------- F4: the forts' interiors (the interior set `xanadu-fort`)
+   One item per fort def, written from its plan (XF_PLANS) as kits/interiors/sets/xanadu.js writes the kit's other buildings: each
+   building the fort draws as a battered stack (the keep, the ranges, the strongroom, the magazine, the assay court, the smithy,
+   the wheel house) is an INSET body on the footprint its storeys share, its doors where the builder draws them. A page with the
+   Xanadu interiors (settlements/xanadu 89y: its 69d bundle and ?interiors=1, or a target that turns them on) then draws those
+   bodies hollow (kits/iziz-vernacular 69e6), unlocks their doors, plans, furnishes and floors the rooms in core/walk. Written
+   here, not in sets/xanadu.js, because the plans are XFORT's (80f), which loads after the interiors bundle. Only a KEPT fort is
+   furnished: a damaged one has lost storeys and roofs, a ruined one is low walls (XF_IXSTATE, set as each top-level fort is
+   placed, makes its item a skip). The towers, gatehouses and the keep's chapel stay solid (no stair is drawn into them); the
+   granary has no door, the stables and the ore shed are open sheds. */
+const XF_IXKEY={watch:'xa_fort_watch',march:'xa_fort_march',gate:'xa_fort_gate'},XF_IXSTATE={state:null};
+function xfIxItems(){const R3=v=>Math.round(v*1000)/1000;
+ /* sets/xanadu.js inset() and stack(), on the kit's own batter (xnBatterK): every storey on the footprint they all share, the doors
+    drawn on the blocks' outer faces moved in onto it */
+ const inset=(P,id,o)=>{const w=R3(P[1]-P[0]),d=R3(P[3]-P[2]),cx=R3((P[0]+P[1])/2),cz=R3((P[2]+P[3])/2);
+  const doors=(o.doors||[]).map(D=>{const x=D.at[0],z=D.at[1],ex=Math.min(Math.abs(x-P[0]),Math.abs(x-P[1])),ez=Math.min(Math.abs(z-P[2]),Math.abs(z-P[3]));
+   const outX=x<P[0]||x>P[1],outZ=z<P[2]||z>P[3],onX=outX&&!outZ?true:outZ&&!outX?false:ex<ez;
+   const at=onX?[x<cx?P[0]:P[1],Math.max(P[2]+.6,Math.min(P[3]-.6,z))]:[Math.max(P[0]+.6,Math.min(P[1]-.6,x)),z<cz?P[2]:P[3]];
+   return Object.assign({},D,{at:[R3(at[0]),R3(at[1])]});});
+  return Object.assign({id,poly:[[cx-w/2,cz-d/2],[cx+w/2,cz-d/2],[cx+w/2,cz+d/2],[cx-w/2,cz+d/2]].map(p=>[R3(p[0]),R3(p[1])]),y:o.y==null?0:o.y,
+   levels:o.hs.map(h=>({h})),wall:.45,roof:'flat',doors,program:o.program,inset:true},o.windows===false?{windows:false}:{});};
+ const stack=(cx,cz,w,d,hs,o)=>{let ww=w,dd=d;hs.forEach(h=>{const k=xnBatterK(ww,h,dd);ww*=k;dd*=k;});return inset([cx-ww/2,cx+ww/2,cz-dd/2,cz+dd/2],o.id,Object.assign({},o,{hs}));};
+ const RANGE={barracks:n=>n>3?[['barracks','hall','kitchen','barracks'],['barracks','barracks','store','barracks']]:[['barracks','hall','kitchen'],['barracks','barracks','store']],
+  'married-quarters':n=>n>3?[['living','kitchen','living','kitchen'],['bedroom','bedroom','bedroom','bedroom']]:[['living','kitchen','living'],['bedroom','bedroom','bedroom']],
+  'merchant-house':()=>[['shop','store','kitchen'],['living','bedroom','study']],'ore-store':()=>[['store','store'],['store','study']]};
+ const SMALL={'assay-furnace':'workshop','assay-weigh':'workshop',smithy:'smithy','wheel-house':'shrine'};
+ return Object.keys(XF_IXKEY).map(size=>{const P=XF_PLANS[size],key=XF_IXKEY[size],B=[];
+  for(const b of P.buildings){const x=b.at[0],z=b.at[1],w=b.w,d=b.d,h=b.h,front=z>0?-1:1;
+   if(b.kind==='keep'){const n=h>=25?5:3,hs=[];for(let i=0;i<n;i++)hs.push(i?4.3:4.8);   /* xfKeep: on its 1.2 m plinth, its door on the +z face */
+    B.push(stack(x,z,w,d,hs,{id:b.id,y:1.2,doors:[{at:[x,z+d/2],w:1.8}],program:n===5?[['hall','guard','store'],['war_room','armoury','study'],['audience','study'],['living','bedroom','kitchen'],['signals','store']]
+     :[['hall','guard','store'],['war_room','armoury'],['living','bedroom','kitchen']]}));}
+   else if(RANGE[b.kind]){const alongZ=d>w,L=alongZ?d:w,D=alongZ?w:d,ry=alongZ?Math.PI/2:0,face=alongZ?(x>0?-1:1):(z>0?-1:1),nd=Math.max(1,Math.round(L/9)),doors=[];   /* xfRange: two storeys on a 0.6 m plinth, a door a bay on the ward face */
+    for(let i=0;i<nd;i++){const q=loc(x,z,-L/2+L*(i+.5)/nd,face*(D/2),ry);doors.push({at:[R3(q[0]),R3(q[1])],w:1.2});}
+    B.push(stack(x,z,w,d,[3.3,3.1],{id:b.id,y:.6,doors,program:RANGE[b.kind](Math.round(L/8.5))}));}
+   else if(b.kind==='strongroom')B.push(stack(x,z,w*.96,d*.96,[h-.8],{id:b.id,y:.8,doors:[{at:[x,z+front*d*.48],w:1.2}],program:['store'],windows:false}));
+   else if(b.kind==='magazine')B.push(stack(x,z,w,d,[h],{id:b.id,y:0,doors:[{at:[x,z+front*d/2],w:1.1}],program:['magazine'],windows:false}));
+   else if(SMALL[b.kind])B.push(stack(x,z,w,d,[h],{id:b.id,y:0,doors:[{at:[x,z+front*d/2],w:1.8}],program:[SMALL[b.kind]]}));}
+  const name=VERN.defs[key]?VERN.defs[key].name:key;
+  return B.length?{key,name,culture:'xanadu',wealth:.65,types:['military','civic','multi-family dwelling'],lot:[P.w+12,P.d+12],bodies:B,
+   note:'the fort\'s stacks hollow (kits/xanadu 80g, F4): the keep, the ranges, the strongroom, the magazine and the court\'s small buildings; towers, gatehouses and the chapel solid'}
+   :{key,name,types:['military'],skip:'no building the fort draws has a door into a stack'};});}
+/* the set, on a page that has the interiors core (KratorInteriors: settlements/xanadu's 69d bundle); a skip while the fort being
+   placed is damaged or ruined. XF_IXSTATE is set before the placement (the 69e hollow wrap reads the item as the def is built) */
+if(typeof KratorInteriors!=='undefined'&&KratorInteriors.sets&&!KratorInteriors.sets.byName['xanadu-fort']){
+ const S=KratorInteriors.sets.add({set:'xanadu-fort',title:'Xanadu: the forts (F4)',culture:'xanadu',items:xfIxItems()});
+ for(const it of S.items)if(!it.skip)Object.defineProperty(it,'skip',{configurable:true,enumerable:true,
+  get:()=>XF_IXSTATE.state&&XF_IXSTATE.state!=='kept'?'the fort is '+XF_IXSTATE.state+': its stacks have lost storeys or stand as low walls':undefined});
+ const p0=VERN.place;VERN.place=function(sc,key,x,z,ry,o){if(!VERN.cur&&/^xa_fort_(watch|march|gate)$/.test(key))XF_IXSTATE.state=(o&&o.state)||XF_STATES[xV(o||{})]||'kept';return p0.apply(this,arguments);};}

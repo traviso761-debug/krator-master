@@ -155,6 +155,10 @@ sidecar beside the page). No settlement file is read.
 Beside it the kit draws through the Vernacular's `69b`, `69c` and openings (read in place). Not on the kit's sheet (Xanadu's page
 has them): the Vale's biome plants (`86b-xa-plants.js` falls back to the kit's shapes) and core/water's still water (the pools
 take `MAT.xWater`). Xanadu's `xanadu` target stays Xanadu's sheet; `kit_bundle.py` (`XAK`) is unchanged.
+**The forts' interiors** (F4, 2026-11-22): `src/80g-xa-fort.js` writes the interior set `xanadu-fort` from XFORT's plans (one item
+per fort def: the keep, the ranges, the strongroom, the magazine, the assay court, the smithy and the wheel house as INSET bodies, as
+`sets/xanadu.js` writes the kit's other stacks) and registers it on any page with the interiors core (KratorInteriors); a fort
+placed damaged or ruined gets no rooms. Strongwall's page (`settlements/strongwall`) turns them on.
 **Interiors:** the sheet builds the bodies solid, every door locked. A `?interiors=1` mode goes in `targets/sheet/` once the kit's
 interiors and hollow walls land (`kits/interiors/sets/xanadu.js`; another session's work): it already has core/walk, core/door's
 host and `KDOOR.clearDoorways`. The `doors` assert expects every door locked and must be relaxed for that mode.

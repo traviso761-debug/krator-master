@@ -96,7 +96,7 @@
     "kits/xanadu/src/79-xa-guild.js": "28c5a5aa3c61afa493614ea45771b8953e7544ff08e740a0b19efe02634aafaa",
     "kits/xanadu/src/80-xa-military.js": "8cad18b1d8e90dc80722ab681b3cbc76d7d202648d413274f0bb8115fe4f42d4",
     "kits/xanadu/src/80f-xa-fort-data.js": "8e28e53c8b915a818d93aac2be89fa55a8726f2d549f8cf8ff887871489a60ce",
-    "kits/xanadu/src/80g-xa-fort.js": "78354d4156717a3889984cdeca61271bac2e81a0b4ec48be714b77f487b04827",
+    "kits/xanadu/src/80g-xa-fort.js": "6c950ffcd58db1fa9b357729e49d6e3605333c810a5b8ed8404096ef5719f840",
     "kits/xanadu/src/81-xa-public.js": "4097666e9e26d85cb1dcf20a5e2762e59c1401d2351c6428e88759fe06a2ed9b",
     "kits/xanadu/src/82-xa-hill.js": "f9c22d7ecbf4f7be22691f7ebf6a54944c430ed0c3583a56bdc9101e918799f8",
     "kits/xanadu/src/83-xa-turk.js": "8f6d5bfa2ad54116b10b16d2d461003563e6e0813990396636ddf4d1315d8306",
@@ -273,14 +273,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/xanadu/build-manifest.json": "feb28e15ef545bde6f302bf030577188e6310f2bea668dcc2d68b50ae540538f",
-    "kits/xanadu/dist/xanadu.html": "735a8eecea5b2a6d5f3e4912a3f9f4de668c79c6224b06b02b00f863b34d2fa3",
+    "kits/xanadu/build-manifest.json": "8cf2665882ba8d8987f1789525618ff331585e82648f94283d7ca5dfe496fa9a",
+    "kits/xanadu/dist/xanadu.html": "2b9a71818112997f78b14b5cbcc437c53ca46e18d784a5ee83915b7ee097d7b6",
     "kits/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "kits/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "kits/xanadu/build-manifest.json": "feb28e15ef545bde6f302bf030577188e6310f2bea668dcc2d68b50ae540538f",
-    "kits/xanadu/dist/xanadu.html": "735a8eecea5b2a6d5f3e4912a3f9f4de668c79c6224b06b02b00f863b34d2fa3",
+    "kits/xanadu/build-manifest.json": "8cf2665882ba8d8987f1789525618ff331585e82648f94283d7ca5dfe496fa9a",
+    "kits/xanadu/dist/xanadu.html": "2b9a71818112997f78b14b5cbcc437c53ca46e18d784a5ee83915b7ee097d7b6",
     "kits/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "kits/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }
