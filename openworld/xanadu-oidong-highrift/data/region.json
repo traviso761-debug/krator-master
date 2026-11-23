@@ -42892,6 +42892,18 @@
    "z": 55680.0,
    "reach_km": 6,
    "page": null
+  },
+  {
+   "id": "sgihon000001",
+   "name": "Gihon",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 955.7,
+   "py": 1607.9,
+   "x": -470599.9999999999,
+   "z": 77800.00000000017,
+   "reach_km": 12,
+   "page": "settlements/gihon"
   }
  ],
  "cut": {
@@ -42949,6 +42961,11 @@
     "name": "site Strongbow's foot (sstrongbowft)",
     "kind": "site",
     "ref": "sstrongbowft"
+   },
+   {
+    "name": "site Gihon (sgihon000001)",
+    "kind": "site",
+    "ref": "sgihon000001"
    }
   ]
  }

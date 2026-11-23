@@ -19,6 +19,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `44-world-landforms.js` | 3 |  |
 | `46-world-config.js` | 2 |  |
 | `47-world-kits.js` | 1 |  |
-| `48-world-site.js` | 14 |  |
+| `47g-site-gihon-landing.js` | 219 **big** |  |
+| `48-world-site.js` | 19 |  |
 | `48k-world-tubes.js` | 4 |  |
 | `49-world-xanadu.js` | 4 |  |

@@ -101,7 +101,8 @@ ORDER = (
        ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
-       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '48k-world-tubes.js'), ('src', '49-world-xanadu.js')]
+       ('core/hamlet/xanadu', '23-hamlet-xanadu-row.js'),   # the Xanadu row by name: Gihon's ring and the Alph's hamlets
+       ('ld', '48s-world-sites.js'), ('src', '47g-site-gihon-landing.js'), ('src', '48-world-site.js'), ('src', '48k-world-tubes.js'), ('src', '49-world-xanadu.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js',
           '88k-world-caverns.js')
@@ -147,10 +148,22 @@ def data_fragment():
             + ',landforms:' + json.dumps(lf, separators=(',', ':'), ensure_ascii=False) + '};\n')
 
 
+# Gihon's villages (2026-11-22): the lake trades (src/87k: the Xanadu row by name's fermentary and tea factory, which the bake
+# sizes from every src file, and the Landing's serai), the lake craft and the harbour (extra/88d, 88f: the Landing's mole runs,
+# lights, barges and waterfront warehouses: laid records carry their own boxes). No row lays a key here that the bake does not
+# size too, so the baked plan and the page's agree; 88g is left out because its works pieces are keys the rows lay as pending
+# boxes (the page would size them, the bake not)
+XAK_EXTRA = (('src', '87k-xa-lake-trades.js'), ('extra', '88d-xa-lakecraft.js'), ('extra', '88f-xa-harbour.js'))
+
+
 def xak_bundle():
     spec = importlib.util.spec_from_file_location('xanadu_kit_bundle', os.path.join(ROOT, 'kits', 'xanadu', 'kit_bundle.py'))
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
+    # the kit's opt-in pieces Gihon's villages draw (XAK_EXTRA), read in place among the kit's files in their filename order,
+    # as files() orders them. Here, not in kit_bundle.py, so the kit's other 22 pages do not move
+    base = mod.files
+    mod.files = lambda *a: sorted(base(*a) + [os.path.join(ROOT, 'kits', 'xanadu', d, f) for d, f in XAK_EXTRA], key=os.path.basename)
     js, _ = mod.bundle('XAK')
     return js
 

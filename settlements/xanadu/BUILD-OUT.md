@@ -106,7 +106,7 @@ Grēṭ-Āil in 1b. The hub is Erehwon for P1 and Phēr for P7.
 
 ### 1d. Kirstabal's lake (the Lower Xanadu Lake)
 
-Nine villages, all P5, hub Kirstabal (`ll.<key>`, `T.lowerLake`). Their records and layouts exist in Kirstabal's
+Eight villages (Ōpal-Māuṭh became Gihon, 2026-11-22), all P5, hub Kirstabal (`ll.<key>`, `T.lowerLake`). Their records and layouts exist in Kirstabal's
 `src/42-ks-ring.js` (`KS_RING.lake`, held equal to the tune by its node test), but they are not drawn: they stand 25-115 km
 off the page (Kirstabal's K6). State: **planned** for all nine.
 
@@ -116,16 +116,20 @@ off the page (Kirstabal's K6). State: **planned** for all nine.
 | `ll.phishari` | Phisharī | 975,1587 | 1,400 | fish |
 | `ll.kako-bagh` | Kāko-Bāgh | 963,1586 | 1,200 | cacao 30 t, fruit 120 t |
 | `ll.rid` | Rīḍ | 948,1589 | 700 | mats 30 t |
-| `ll.landing` | The Landing (the barges' stop, the portage road's head) | 932,1600 | 600 | portage (no dugouts) |
+| `ll.landing` | The Landing (the barges' stop, the portage road's head, on its stone piers) | 932,1600 | 2,500 | portage (no dugouts) |
 | `ll.timbar` | Ṭimbar | 938,1606 | 700 | timber 600 t |
-| `ll.opal-mouth` | Ōpal-Māuṭh | 955,1607 | 1,200 | fish |
 | `ll.rais-teras` | Rāis-Ṭeras | 967,1606 | 1,000 | grain 300 t |
 | `ll.kattal` | Kaṭal | 979,1605 | 700 | dairy 60 t |
 
-**Designated 2026-11-17, not built yet** (`settlements/gihon/PLAN.md`): Ōpal-Māuṭh becomes **Gihon**, a town of 8,500, the
-Lower Lake's garrison town and the Golden Tears' home, with a walled forbidden city (the garrison fortress, the Sultan's Mint
-and the tax assessors); the Landing grows to 2,500 on stone piers either side of the Alph's mouth; hamlets go along the Alph
-towards Theodiga. The owner starts it next week.
+**Gihon (built 2026-11-22, `settlements/gihon`, PLAN.md G0-G3):** Ōpal-Māuṭh is now **Gihon** (`xan.gihon`, px 955.7,1607.9),
+8,500: the Lower Lake's garrison town, the Sultan's Mint and the assessors, the Golden Tears' head house, a walled forbidden city
+in its river corner; a target on Xanadu's page (`dist/gihon.html`). In the tune: the town (7,060), its forbidden city
+(`xan.gihon.fort`, 1,000, 60 hired musketeers), the Tears' head house (`tears.gihon`, 160; Strongwall keeps their court), the
+White's and the Violet's daughter houses (140 each), its ring (`gh.ring.*`: four farming villages and a ranch); **the Landing**
+grows to 2,500 on its stone piers at the outlet (records on core/city, `src/43-gh-landing.js`, for the region to draw); five
+**hamlets on the Alph** (`alph.*`: Wēyar, Mēḍō, Gōrj-Phuṭ in the Scarp tithing to the Landing; Hil-Ṭī and Phērī in the Vale
+tithing to Theodiga). State: Gihon **built** (its page); the Landing and the Alph's hamlets **planned** (records, not drawn in the
+region yet).
 
 ### 1e. The works, mines and camps
 

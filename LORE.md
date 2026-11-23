@@ -621,14 +621,25 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     old shore. Its road to Phēr goes up the Qol valley (about 105 km), with a mule path straight down the scarp. A small **Dalab
     mission** of about 30 genepriests keeps a house there and sends its own party to the Grove. The Sultan takes **a tenth of every
     Godshearth haul and a fifth of the rarities** (`settlements/thalaba/PLAN.md`).
-  - **Kirstabal**, the road town under Strongbow, has a smaller Atitlán of its own, the Lower Xanadu Lake and its nine villages,
+  - **Kirstabal**, the road town under Strongbow, has a smaller Atitlán of its own, the Lower Xanadu Lake and its eight villages (and Gihon),
     and the White Lily's latex house (`settlements/kirstabal/PLAN.md`).
   - **Lāiṭwāl**, the Light Wall, is the seat of Opal Valley and the Glaziers' main hold: 5,000, half Glaziers in the wall and half
     Xanadui on the bench. The Glaziers pay the Sultan's Fifth in opals, and the Sultan's mines across the lake are its works village
     (`settlements/lightwall/PLAN.md`).
-  - **Strongwall**, the Master of Mines' fort in the Gold March, keeps the Golden Tears' house inside its walls. It holds enough
+  - **Strongwall**, the Master of Mines' fort in the Gold March, keeps **the Golden Tears' court** inside its walls, their
+    forward post for the Lizard-country expeditions. It **assays and smelts** the March's ore to bullion. It holds enough
     powder for a few cannon, but **its musketeers are hired from the north** (Izani, Yuni and the Crater's free companies), paid by
     the Treasury (`settlements/strongwall/PLAN.md`).
+  - **Gihon**, at the Opal River's mouth on the Lower Xanadu Lake (where the fishing village of Ōpal-Māuṭh stood), is **the Lower
+    Lake's garrison town** (8,500) and **the seat of the Sultan's Mint**. Inside its slate-walled square stands a second walled
+    square, **the forbidden city**: the garrison fortress, the **Mint** that strikes the qud, the **assessors** who take the Sultan's
+    Fifth of the gold and the opals where they come down (the bullion from Strongwall, the opal down the gorge from Lāiṭwāl),
+    the treasury, and **the Golden Tears' head house** (the owner, 2026-11-17: "Move HQ, keep a court"; "Assay at Strongwall,
+    mint at Gihon"). Its temple of the Decree is dressed in gold and opal. The White and the Violet orders keep daughter houses
+    there. The capital's citadel keeps the Treasury and a small **court mint** for the court's own coin (the owner, 2026-11-22).
+    Down the lake at the outlet, **the Landing** (2,500) stands on monumental stone piers either side of the river's mouth, the
+    barges' stop and the portage road's head to Qiblai; hamlets line the Alph's valley up toward Theodiga
+    (`settlements/gihon/PLAN.md`).
   - **The three merchant houses** are the Brotherhood of the Two Horns (the Twins' guides), the Golden Tears (armed prospecting
     in Lizard country, caravan escorts) and the Rare Devisers (the Godshearth expeditions; the royal licence in scrap and rare
     artifacts, their main house at Theodiga).

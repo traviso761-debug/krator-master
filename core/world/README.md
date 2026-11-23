@@ -67,6 +67,13 @@ there and an entry in `VK`. The bake plans on the land the page draws: 41l and 4
 `build.py` lists them (2026-11-16: oidong-highrift takes no coast, and planning on coasts it never drew made the bake and
 the page's plan differ). A region's own shaping of its land that the plan must see (a `WORLD.landHook`) goes in its
 `src/48-world-site.js`, which the bake reads (oidong-highrift's OHR_CUT: Strongbow's face).
+there and an entry in `VK`. A hamlet's spot may be `px` (the 5.1 canvas) as well as `near` or a bearing. **A village its own
+page laid** (opt-in, 2026-11-22: Gihon's Landing on core/city, over core/hamlet's 500) is a hamlet with `laid` (its records and
+lanes in its own frame), `px`, `shift` and `turn`: `48s` `laidVillage` puts it on the world as it is, searches nothing, keeps each
+record where the world's ground takes it and lists the rest as `dropped`; a record `on: 'water'` (a pier's run, a light, a boat)
+stands on the water at the village's `level` (`88s`: its deck over it, a footing to the bed, a run stretched to its `len`). The
+bake loads a region's `src/NN-site-*.js` (such records, generated) before its spec, and the Xanadu row by name
+(core/hamlet/xanadu/23), which a spec registers as a row of its own.
 
 **A town's own ground** (`openworld/PLAN-VOTH.md` section 3, Layer 2; Voth the first case, 2026-11-11). A settlement whose
 layout is keyed to its page's ground (its shore, its river) hands that ground to the world instead of being rebuilt on it:

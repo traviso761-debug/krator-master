@@ -12,12 +12,14 @@ var KS_RING=(function(){
  const G=KS_GROUND;
  const ring=[['ks.ring.mil','Mil (the mill)',987.5,1601.8,'farming',240],['ks.ring.kanal','Kanāl (the canal)',986.5,1603,'farming',240],
   ['ks.ring.grenz','Grēnz (the grain)',988.8,1602.6,'farming',240],['ks.ring.baiyar','Bāiyar (the byre)',985.5,1604.5,'ranch',145]];
- /* THE LAKE'S VILLAGES FISH (the owner, 2026-11-16: "work on fishing villages"): eight fishing villages and the Landing (the
+ /* THE LAKE'S VILLAGES FISH (the owner, 2026-11-16: "work on fishing villages"): seven fishing villages and the Landing (the
     barges' stop, its own quay: no dugouts, as in the tune). core/hamlet lays at most 500 (KHAMLET.POP_MAX): a bigger village is
     laid as its first 500, its census by the row */
  const lake=[['ll.sekrid','Sekriḍ',986,1588,'fishing',800],['ll.phishari','Phisharī',975,1587,'fishing',1400],['ll.kako-bagh','Kāko-Bāgh',963,1586,'fishing',1200],
-  ['ll.rid','Rīḍ',948,1589,'fishing',700],['ll.landing','The Landing',932,1600,'farming',600],['ll.timbar','Ṭimbar',938,1606,'fishing',700],
-  ['ll.opal-mouth','Ōpal-Māuṭh',955,1607,'fishing',1200],['ll.rais-teras','Rāis-Ṭeras',967,1606,'fishing',1000],['ll.kattal','Kaṭal',979,1605,'fishing',700]];
+  ['ll.rid','Rīḍ',948,1589,'fishing',700],['ll.landing','The Landing',932,1600,'farming',2500],['ll.timbar','Ṭimbar',938,1606,'fishing',700],
+  ['ll.rais-teras','Rāis-Ṭeras',967,1606,'fishing',1000],['ll.kattal','Kaṭal',979,1605,'fishing',700]];
+ /* settlements/gihon (G1, 2026-11-22): Ōpal-Māuṭh is the town Gihon (its own page), so seven fishing villages and the Landing,
+    which grows to 2,500 (laid here as its first 500, as every big village is; Gihon's G3 lays it in full on its piers) */
  /* a lake hamlet on the town's own shore, 3 km down the south shore (one of the lake's ~25 hamlets of 150-240, which the tune holds
     in its bulk; PLAN.md section 2a): drawn on the page, so the lake's fishing villages can be seen at 1:1 */
  const shore=[['ll.hamlet.jal','Jāl (the net)',987.05,1600.45,'fishing',150]];

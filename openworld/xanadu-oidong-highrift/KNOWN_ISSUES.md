@@ -18,6 +18,20 @@
 - [ ] **The tubes are not in Godot yet.** The plan is data (42k) and the shape is KCAVERN's (its export and load); the
       drawing (88k) is the preview's. A Godot region would plan the same records and mesh the squares from KCAVERN's export.
 
+- [ ] **The Landing's river is dry ground** (Gihon's site, 2026-11-22; `settlements/gihon/KNOWN_ISSUES.md`). The world's Nahr
+      ash-Shalālāt starts at its first model point (px 932,1598), 2.8 km inland of the world's lake shore, so the Landing's two
+      banks face dry ground where its 180 m channel should run. The plan leaves out the 6 of its 430 laid records that want the
+      water (the ferry, the two river barges, the north pier's two root runs) or stand in the lake (one house): the scale-model
+      session's queue (carry the outlet's line to the lake), then a rebake.
+- [ ] **The Alph's upper three hamlets have no road** (Gōrj-Phuṭ, Hil-Ṭī, Phērī: `road: false`). The Alph's last 45 km on the
+      world are a trench: the river's bed lies flat at -2,051 m from px 916.5,1544.5 to the lake, 366 m under the lake's surface
+      (Mēḍō stands about 370 m under it, Wēyar 130 m: the carve floors `settlements/gihon/PLAN.md` section 1 queued for the
+      scale model). Their roads hairpinned out of it, the legs 30-60 m apart, one leg's cut and fill lifting the ground under
+      the next (26 stations up to 17 m off: the highways check). Their roads come back (drop `road: false`, rebake) with the fix.
+- [ ] **Gihon's customs house is a massing box**, and the ring's and the Alph's wayside shrines and apiaries pending boxes: the
+      page's kit bundle takes `kits/xanadu/extra` 88d and 88f, not 88g (its works pieces are keys the village rows lay: the page
+      would size them and the bake not). They draw when `extra/` folds into the kit's `src`.
+
 - [ ] **Most of the region grows nothing.** Only the Xanadu and Oidong overlays have kits here. The High Rift
       (21,261 px), the Godthrone's flank, the rift rim, the twins, Opal Valley and Godshearth are bare ground for now
       (`PLAN.md`, "What is left" 1).

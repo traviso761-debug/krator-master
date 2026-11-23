@@ -70,9 +70,13 @@ for(const E of PLAN.sites.flatMap(St=>(St.hamlets||[]).map(V=>({St,V}))).concat(
  const B=V.records.map(r=>{const K=VD[r.key],kit=!!K&&!r.pending,fw=kit&&K.fw?K.fw:r.w,fd=kit&&K.fd?K.fd:r.d,c=Math.cos(r.ry),s=Math.sin(r.ry);
   const hs=[[-1,-1],[1,-1],[1,1],[-1,1],[0,0]].map(([u,w])=>H(r.x+u*fw/2*c+w*fd/2*s,r.z-u*fw/2*s+w*fd/2*c)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
   const nv=kit?Math.max(1,Math.min(3,K.variants|0)):1;
-  TAGS.child(base.id,{class:'building',key:r.key,at:[r.x,low,r.z],ry:r.ry,size:[r.w,r.d,r.h+(top-low)],
+  /* a laid village's record on the water (48s laidVillage): its deck over the village's water level, a pier's run or light on a
+     footing down to the bed, a boat afloat; a run (the mole) stretched along its x from the kit's length to its own (len) */
+  const wet=r.on==='water'&&V.level!=null,y=wet?V.level+(r.deck||0):kit?top:low,lo=wet?Math.min(y,low):low;
+  TAGS.child(base.id,{class:'building',key:r.key,at:[r.x,lo,r.z],ry:r.ry,size:[r.w,r.d,r.h+(wet?y-lo:top-low)],
    tags:{culture:V.culture,types:kit&&K.types?K.types:[r.role==='house'?'dwelling-single':'farm']},note:kit?undefined:'the kit has no '+r.key+' yet: a massing box'});
-  return{r,kit,y:kit?top:low,low,drop:Math.max(1,Math.ceil(top-low+.4)),v:vhash(r.id)%nv};});
+  return{r,kit,y,low,base:wet?y-1:low,drop:wet?(r.kind==='boat'?0:Math.max(1,Math.ceil(y-low+.4))):Math.max(1,Math.ceil(top-low+.4)),
+   sx:kit&&r.len&&K.w?r.len/K.w:1,v:vhash(r.id)%nv};});
  S.records+=B.length;S.villages=(S.villages||0)+1;
  const bb=[1e18,1e18,-1e18,-1e18];V.records.forEach(r=>{const e=Math.hypot(r.w,r.d)/2+4;bb[0]=Math.min(bb[0],r.x-e);bb[1]=Math.min(bb[1],r.z-e);bb[2]=Math.max(bb[2],r.x+e);bb[3]=Math.max(bb[3],r.z+e);});
  V.lanes.forEach(l=>l.pts.forEach(p=>{bb[0]=Math.min(bb[0],p[0]-l.w);bb[1]=Math.min(bb[1],p[1]-l.w);bb[2]=Math.max(bb[2],p[0]+l.w);bb[3]=Math.max(bb[3],p[1]+l.w);}));
@@ -167,10 +171,10 @@ function vmerge(list,G){const byMat=new Map(),v3=new THREE.Vector3(),n3=new THRE
   geo.setIndex(new THREE.BufferAttribute(I,1));geo.computeBoundingSphere();
   const mesh=new THREE.Mesh(geo,Q.mat);mesh.matrixAutoUpdate=false;G.add(mesh);S.vtris=(S.vtris||0)+ni/3;}}
 function villageFull(W){const G=new THREE.Group(),copies=[],boxes=[],ox=W.V.site.x,oz=W.V.site.z;
- for(const b of W.B){const r=b.r,m=new THREE.Matrix4().compose(new THREE.Vector3(r.x-ox,b.y,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)).clone(),new THREE.Vector3(1,1,1));
+ for(const b of W.B){const r=b.r,m=new THREE.Matrix4().compose(new THREE.Vector3(r.x-ox,b.y,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)).clone(),new THREE.Vector3(b.sx,1,1));
   const parts=b.kit?vproto(vkit(W.V.culture),r.key,b.v,b.drop):null;if(parts)copies.push({parts,m});else boxes.push(b);}
  if(copies.length)vmerge(copies,G);
- if(boxes.length){const im=new THREE.InstancedMesh(boxG,wallM,boxes.length);boxes.forEach((b,i)=>{const r=b.r;im.setMatrixAt(i,m4.compose(v3.set(r.x-ox,b.low-.3,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)),new THREE.Vector3(r.w,r.h+.3,r.d)));});G.add(im);}
+ if(boxes.length){const im=new THREE.InstancedMesh(boxG,wallM,boxes.length);boxes.forEach((b,i)=>{const r=b.r;im.setMatrixAt(i,m4.compose(v3.set(r.x-ox,b.base-.3,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)),new THREE.Vector3(r.w,r.h+.3,r.d)));});G.add(im);}
  /* the lanes: packed earth, a quad a 4 m step, 0.1 m over the ground */
  const P=[];for(const l of W.V.lanes)for(let i=1;i<l.pts.length;i++){const a=l.pts[i-1],c=l.pts[i],len=Math.hypot(c[0]-a[0],c[1]-a[1]),n=Math.max(1,Math.ceil(len/4)),tx=(c[0]-a[0])/len,tz=(c[1]-a[1])/len,hw=l.w/2;
   for(let k=0;k<n;k++){const p0=[a[0]+tx*len*k/n,a[1]+tz*len*k/n],p1=[a[0]+tx*len*(k+1)/n,a[1]+tz*len*(k+1)/n];
@@ -180,7 +184,7 @@ function villageFull(W){const G=new THREE.Group(),copies=[],boxes=[],ox=W.V.site
   const lm=new THREE.Mesh(g,earthM);lm.material.side=THREE.DoubleSide;G.add(lm);}
  G.position.set(ox,0,oz);G.name='village '+W.V.id;scene.add(G);return G;}
 function villageMass(W){const im=new THREE.InstancedMesh(boxG,wallM,Math.max(1,W.B.length)),ox=W.V.site.x,oz=W.V.site.z;
- W.B.forEach((b,i)=>{const r=b.r;im.setMatrixAt(i,m4.compose(v3.set(r.x-ox,b.low,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)),new THREE.Vector3(r.w*.9,r.h,r.d*.9)));});
+ W.B.forEach((b,i)=>{const r=b.r;im.setMatrixAt(i,m4.compose(v3.set(r.x-ox,b.base,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)),new THREE.Vector3(r.w*.9,r.h,r.d*.9)));});
  im.count=W.B.length;const G=new THREE.Group();G.add(im);G.position.set(ox,0,oz);G.name='village massing '+W.V.id;scene.add(G);return G;}
 const FULL_V=4000;
 function update(){const P=camera.position;let nf=0;S.near=0;

@@ -35,6 +35,8 @@ JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.j
       ('core', 'city', '33-city-strategies.js'), ('core', 'hamlet', '10-hamlet-wood.js'), ('core', 'hamlet', '12-hamlet-gather.js'),
       ('core', 'hamlet', '14-hamlet-farmland.js'), ('core', 'hamlet', '16-hamlet-names.js'), ('core', 'hamlet', '18-hamlet-names.js'),
       ('core', 'hamlet', '20-hamlet-cultures.js'), ('core', 'hamlet', '21-hamlet-iziz.js'), ('core', 'hamlet', '30-hamlet-village.js'),
+      # the Xanadu row by name (opt-in: it registers nothing, a region's spec passes KHAMLET.xanaduRow() as a row)
+      ('core', 'hamlet', 'xanadu', '23-hamlet-xanadu-row.js'),
       ('core', 'world', '48s-world-sites.js')]
 
 LANDFORMS_JS = '41l-world-landforms.js'   # opt-in: a region whose build.py lists it (script())
@@ -113,6 +115,9 @@ def script(region):
             parts.append('\nWORLD_DATA.towns=' + json.dumps(towns_data(region), separators=(',', ':'), ensure_ascii=False) + ';\n')
             parts.append('\n// ---- core/world/41t-world-town-water.js\n' + open(os.path.join(HERE, '41t-world-town-water.js'), encoding='utf-8').read())
     parts.append(WD.net_fragment(os.path.join(base, 'src', '48-world-site.js')))   # the network routes the region's links follow
+    # the region's site data (src/NN-site-*.js, before its spec: a village its own page laid, 48s laidVillage; Gihon's Landing)
+    for f in sorted(f for f in os.listdir(os.path.join(base, 'src')) if re.match(r'^\d\d[a-z]?-site-.+\.js$', f)):
+        parts.append('\n// ---- openworld/%s/src/%s\n' % (region, f) + open(os.path.join(base, 'src', f), encoding='utf-8').read())
     parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + open(os.path.join(base, 'src', '48-world-site.js'), encoding='utf-8').read())
     # the geology the coast's classes read (44c: rock hardness from the provinces), as the page loads it
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))
