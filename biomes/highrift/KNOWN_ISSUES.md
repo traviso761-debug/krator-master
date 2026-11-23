@@ -8,6 +8,13 @@ Chromium on software GL (SwiftShader) only; the coordinator runs `verify.py --as
 - [ ] **GPU verify owed** on all five pages (`verify.py dist/highrift*.html --assert --all-views`), and the hash baseline entries after it.
 - [x] **The fault mirror's texture** (`rock.hematite.mirror`, delivered 2026-11-03, `core/materials/PLAN.md` "Delivered 2026-11-03"): wired
       at the merge as the `mirror` layer's family (roughness 0.22 kept); the procedural hematite tint draws only with `?kground=0`. Its look is the owner's.
+- [x] **A fall where the outlet leaves the Caldron Pool (the owner, 2026-11-15: "fall where the stream leaves the pool").** The outlet's
+  first rimstone tread was 3 m under the pool and 180 m long, so the water slid out. Now an 18 m outfall from the pool's south-west lip
+  (`SITE.outlet.fall`, the levels 2562 down to the same 2513; `from` moved 17.5 m back so the first tread begins under it) into a sinter
+  valley the stage cuts below the lip (45: `L.outLip`, a sharp head wall, the floor the terraces' ridge, sides 1 in 4 with a rounded rim),
+  drawn as a free `WATER.fall` (89w); view "The outfall"; checked by `HCHK.outfall` (its negative the old profile). Two things learnt on
+  the GPU shots: a head-wall ramp narrower than the channel's cut left a lone spike, and a curtain draped on the face (`face: terrainH`)
+  shows the ground mesh's cell-wide slope through it, so the curtain arcs free of the wall
 - [ ] **`KSCOUR` on the Gill's bed** (station `coulee`): the channel, its bars and its stream bed are the stage's own carve; KSCOUR's potholes,
       dry falls and current ripples are owed. Aufeis (the Gill's winter ice) is not drawn.
 - [ ] **The ground's texture units** (the GPU verify, 2026-11-04): the Mirror's ground passed SwiftShader's 32 units but not the 16 both GPU lanes allow.

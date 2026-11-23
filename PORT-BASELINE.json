@@ -237,24 +237,24 @@
    "sha256": "14f50a38c604518513c5b62264113895b049aa6a1cc44b32efb6da7e539468f5"
   },
   "biomes/highrift/dist/highrift-coulee.html": {
-   "bytes": 5130249,
-   "sha256": "7d5e807c9397dcc1fe90e5d05efea9ffa6b1dc547276f381f25dfc8e15a78148"
+   "bytes": 5134300,
+   "sha256": "cb219222140d8d1911c5f16f8c066fd36fd8e23f0ac5004b1d379c7efa9516b4"
   },
   "biomes/highrift/dist/highrift-gjar.html": {
-   "bytes": 5130243,
-   "sha256": "adcc0a8884fdfbdd2372448bf28b40fb2d2a7fefb6251535e8db3fd32bde7b8a"
+   "bytes": 5134294,
+   "sha256": "2b12cab0b8ac7cc8c107bd240cce480784705ea74fa28cf202193a137a47d9e5"
   },
   "biomes/highrift/dist/highrift-mirror.html": {
-   "bytes": 6188522,
-   "sha256": "8c174fba06af316f95772a4ebf23746c3814581d02940aedfe73014bd5933d8e"
+   "bytes": 6192573,
+   "sha256": "144fc3c32b06161b2e526c0b61caab8255e8fd670d81affe49a3b3cdcc0b97c7"
   },
   "biomes/highrift/dist/highrift-wedge.html": {
-   "bytes": 5130246,
-   "sha256": "adf23e625e8dfe0ed81bf0400979411a9bda698a9065a81ed3531ce6eb81fb77"
+   "bytes": 5134297,
+   "sha256": "7c35369b195c972123ef5e749a7c7fc23ab9fac07013c5575d66d236f40bd1f2"
   },
   "biomes/highrift/dist/highrift.html": {
-   "bytes": 5129998,
-   "sha256": "f3e729a8fa4bb10f4658dee07edb28eb850e52fcdbaeccb10fd4252790f797e2"
+   "bytes": 5134049,
+   "sha256": "4643466a70ee598fbe3881415aeba12f98e5d6672d7315aabbf441a8edc593a7"
   },
   "biomes/hyperjungle/dist/hyperjungle-lake.html": {
    "bytes": 5953906,

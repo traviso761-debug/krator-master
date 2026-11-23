@@ -6,7 +6,9 @@ const VIEWS=(function(){const S=SITE;
   return{'The Caldron and the cataract':look(P.x-520,P.z+380,30,C.B[0],C.B[1],40),'The cataract\'s tiers':[a[0]-C.uz*160,gh(a[0]-C.uz*160,a[1]+C.ux*160,4),a[1]+C.ux*160,b[0],gh(b[0],b[1],20),b[1]],
    'The pool\'s sinter shelf':look(P.x+P.r+40,P.z+60,1.7,P.x,P.z,0),'The rimstone terraces':look(om[0]+120,om[1]-140,4,om[0]-200,om[1]+120,0),
    'The geyser on the staircase':look(S.geyser.x+70,S.geyser.z-50,3,S.geyser.x,S.geyser.z,8),'Brant-Fell Gill\'s plume':look(L.G.B[0]+120,L.G.B[1]+180,12,P.x,P.z,0),
-   'From afar':look(-2300,-800,260,P.x,P.z,0)};}
+   'From afar':look(-2300,-800,260,P.x,P.z,0),
+   /* the outfall from the valley below it, looking back up at the pool's lip (2026-11-15) */
+   'The outfall':(()=>{const s=L.outLip,lx=o.A[0]+o.ux*s,lz=o.A[1]+o.uz*s,cx=o.A[0]+o.ux*(s+95)+o.uz*28,cz=o.A[1]+o.uz*(s+95)-o.ux*28;return[cx,gh(cx,cz,3),cz,lx,P.level-7,lz];})()};}
  if(SKEY==='mirror'){const fz=L.faultZ(0);return{'The fault mirror over the lake':look(-300,L.shoreZ(-300)-60,14,0,fz,100),'Under the mirror':look(200,fz+240,2,200,fz-60,120),
   'The acid springs':look(S.springs[0][0]+60,S.springs[0][1]-50,2,S.springs[0][0],S.springs[0][1],0),'The boiling patch':look(S.patch.x-400,L.shoreZ(S.patch.x-400)-40,12,S.patch.x,S.patch.z,0),
   'The fans under the fault':look(900,fz+700,2,700,fz+300,6),'The geyser on the shore':look(S.geyser.x+60,S.geyser.z-50,3,S.geyser.x,S.geyser.z,8),'From afar':look(2200,L.shoreZ(2200)-500,240,0,fz,60)};}
@@ -39,18 +41,26 @@ const HCHK={
  heat(P){const bad=P.filter(p=>(p[3]==='biome:hrbead'&&HEAT_AT(p[0],p[2])<18)||(p[3]==='biome:hrtuss'&&HEAT_AT(p[0],p[2])>22));return{ok:!bad.length,detail:bad.length?bad.length+' on the wrong ground (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':'bead caps on warm ground, tussock off it'};},
  dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6&&p[3]!=='biome:hrblade';});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};},
- water(){const w=window._water||{};const ok=SKEY==='wedge'?!!w.tarnDraw:SKEY==='cataract'?w.treads===4&&w.terraces===SITE.outlet.levels.length&&w.geyser:SKEY==='wedge'?!!w.tarnDraw:!!w.geyser;return{ok,detail:JSON.stringify(w).slice(0,200)};}};
+ water(){const w=window._water||{};const ok=SKEY==='wedge'?!!w.tarnDraw:SKEY==='cataract'?w.treads===4&&w.terraces===SITE.outlet.levels.length&&w.geyser:SKEY==='wedge'?!!w.tarnDraw:!!w.geyser;return{ok,detail:JSON.stringify(w).slice(0,200)};},
+ // the outfall (2026-11-15): the pool's rim holds at the lip (the drawn ground within a metre of the pool's level just inside it) and the ground
+ // falls at least 12 m within 12 m past it (a fall, not a slide), down the outlet's line; H the ground along it, lip the outlet's s at the lip
+ outfall(H,lip,level){const rim=H(lip-1.5),below=Math.min(H(lip+6),H(lip+9),H(lip+12)),drop=rim-below;
+  return{ok:rim>level-1&&rim<level+2.5&&drop>=12,detail:'the rim '+rim.toFixed(1)+' m at the lip (the pool '+level+'), the ground 12 m on '+below.toFixed(1)+': a '+drop.toFixed(1)+' m drop'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the rift\'s own life placed',HCHK.placed(window._station));
  add('heat-banded plants on their ground (KTHERM)',HCHK.heat(P));
  add('nothing rooted under the water',HCHK.dry(P));
  add('the station\'s water drawn',HCHK.water());
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ if(SKEY==='cataract')add('the outlet leaves the pool over a fall (the outfall)',HCHK.outfall(OUTLINE_H,L.outLip,SITE.pool.level));
  return R;}
+/* the drawn ground along the outlet's line at its s (the outfall's check) */
+const OUTLINE_H=s=>SKEY==='cataract'?terrainH(L.O.A[0]+L.O.ux*s,L.O.A[1]+L.O.uz*s):0;
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add(SKEY==='wedge'?'no tussock':'no bead caps',HCHK.placed(Object.assign({},window._station,SKEY==='wedge'?{tussock:0}:{beads:0})));
  if(SITE.vents.length)add('tussock on a vent',HCHK.heat([[SITE.vents[0].x,0,SITE.vents[0].z,'biome:hrtuss']]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
+ if(SKEY==='cataract')add('the outlet as it was (a tread 3 m under the pool: the water slid out)',HCHK.outfall(s=>s<L.outLip?SITE.pool.level+.5:SITE.pool.level-3.8,L.outLip,SITE.pool.level));
  return R;}
 KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
