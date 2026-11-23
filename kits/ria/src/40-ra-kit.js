@@ -304,50 +304,308 @@ function raWallRing(x0,z0,x1,z1,y0,h,o){
  }
 }
 
-/* Single Classical fluted, Egyptian lotus/papyrus, or Konbaung crimson-and-gold teak column from y0 to y0+h. */
+/* Single Classical fluted, Egyptian palm/lotus, Persepolitan protome, Minoan, or Solomonic spiral column from y0 to y0+h. */
 function raColumn(x,y0,z,h,o){
  o=o||{};
  const r=o.r==null?.26:o.r,upper=o.style==='upper-ria';
  const mk=o.mk||(upper?'dolomite':'travertine'),col=o.col==null?P(mk):o.col;
  const baseMk=o.baseMk||(upper?'porphyry':'cobalt'),baseCol=P(baseMk);
  const capMk=o.capMk||(upper?'silver':'gold'),capCol=P(capMk);
+ const capKind=o.capital||'lotus';
  svNoWalk(()=>{
   box(baseMk,x,y0+.012,z,r*2.5,.18,r*2.5,baseCol);
   cyl(mk,x,y0+.192,z,r*1.16,.1,col,12);
-  const shH=Math.max(.3,h-.62);
-  cyl(mk,x,y0+.292,z,r,shH,col,14,r*.88,true);
+  const capRes=capKind==='protome'?.76:(capKind==='palm'?.66:.62);
+  const shH=Math.max(.3,h-capRes);
+  const rBot=o.taper==='minoan'?r*.82:r,rTop=o.taper==='minoan'?r*1.06:r*.88;
+  cyl(mk,x,y0+.292,z,rBot,shH,col,14,rTop,true);
   if(o.bandMk){
-   cyl(o.bandMk,x,y0+.292+shH*.48,z,r+.022,.12,P(o.bandMk),14);
+   cyl(o.bandMk,x,y0+.292+shH*.48,z,Math.max(rBot,rTop)+.024,.12,P(o.bandMk),14);
   }
-  /* Lotus / papyrus bell capital + abacus */
+  if(o.spiral){
+   /* Cosmatesque / Solomonic helical mosaic-and-gold spiral bands ascending the shaft */
+   const spMk=o.spiralMk||(upper?'porphyry':'cobalt'),spCol=P(spMk);
+   const turns=10;
+   for(let i=0;i<turns;i++){
+    const f0=i/turns,f1=(i+1)/turns,a0=f0*TAU*1.5,a1=f1*TAU*1.5;
+    const rr0=lerp(rBot,rTop,f0)+.028,rr1=lerp(rBot,rTop,f1)+.028;
+    const ya=y0+.33+shH*.88*f0,yb=y0+.33+shH*.88*f1;
+    beam(i%2===0?'gold':spMk,[x+Math.cos(a0)*rr0,ya,z+Math.sin(a0)*rr0],[x+Math.cos(a1)*rr1,yb,z+Math.sin(a1)*rr1],.034,i%2===0?P('gold'):spCol,true,6);
+   }
+  }
   const yCap=y0+.292+shH;
-  cyl(capMk,x,yCap,z,r*.94,.06,capCol,12);
-  cyl(mk,x,yCap+.06,z,r*.92,.16,col,12,r*1.34);
-  box(capMk,x,yCap+.22,z,r*2.65,Math.max(.08,h-(yCap-y0+.22)),r*2.65,capCol);
+  if(capKind==='palm'){
+   /* Egyptian flaring green palm-frond bell capital + gold necking rings + stone abacus */
+   const pMk=o.palmMk||'emerald',pCol=P(pMk);
+   cyl('gold',x,yCap,z,rTop*1.04,.055,P('gold'),12);
+   cyl(pMk,x,yCap+.055,z,rTop*.98,.2,pCol,12,r*1.56);
+   for(let k=0;k<8;k++){
+    const a=k/8*TAU;
+    W(x+Math.cos(a)*(r*1.32),yCap+.14,z+Math.sin(a)*(r*1.32),-a+PI/2,()=>{
+     box('gold',0,0,0,.05,.12,.14,P('gold'));
+    });
+   }
+   box(capMk,x,yCap+.255,z,r*2.78,Math.max(.08,h-(yCap-y0+.255)),r*2.78,capCol);
+  }else if(capKind==='protome'){
+   /* Achaemenid Persepolitan turquoise-and-gold double-protome bracket capital */
+   cyl('cobalt',x,yCap,z,rTop*1.12,.12,P('cobalt'),12);
+   cyl('gold',x,yCap+.12,z,rTop*1.18,.07,P('gold'),12);
+   W(x,yCap+.19,z,o.protomeYaw||0,()=>{
+    box('cobalt',0,0,0,r*2.1,.14,r*3.5,P('cobalt'));
+    for(const sz of [-1,1]){
+     box('gold',0,.04,sz*r*1.45,r*1.55,.2,r*1.05,P('gold'));
+     cone('gold',0,.24,sz*r*1.72,r*.42,.18,P('gold'),6);
+    }
+    box(capMk,0,.2,0,r*2.55,Math.max(.08,h-(yCap-y0+.39)),r*3.85,capCol);
+   });
+  }else{
+   /* Classical / Egyptian lotus-bell capital + abacus */
+   cyl(capMk,x,yCap,z,rTop*1.04,.06,capCol,12);
+   cyl(mk,x,yCap+.06,z,rTop*1.02,.16,col,12,r*1.38);
+   box(capMk,x,yCap+.22,z,r*2.65,Math.max(.08,h-(yCap-y0+.22)),r*2.65,capCol);
+  }
  });
  if(o.block!==false&&h>=1.2)raWallBlock(x,y0,z,r*2.1,h,r*2.1,0);
 }
 
-/* Linear Classical/Egyptian colonnade from (x0,z0) to (x1,z1) with entablature & cavetto cornice. */
+/* Linear Classical/Egyptian/Persepolitan colonnade from (x0,z0) to (x1,z1) with 3-part entablature. */
 function raColonnade(x0,z0,x1,z1,y0,h,o){
  o=o||{};
  const L=Math.hypot(x1-x0,z1-z0),n=o.n==null?Math.max(2,Math.round(L/RA.BAY)+1):o.n;
- const r=o.r==null?.25:o.r,entH=o.entH==null?.46:o.entH,colH=h-entH,yaw=Math.atan2(z0-z1,x1-x0);
+ const r=o.r==null?.25:o.r,entH=o.entH==null?.48:o.entH,colH=h-entH,yaw=Math.atan2(z0-z1,x1-x0);
  const upper=o.style==='upper-ria';
  const entMk=o.entMk||(upper?'dolomite':'travertine'),entCol=P(entMk);
  const friezeMk=o.friezeMk||(upper?'porphyry':'cobalt'),friezeCol=P(friezeMk);
+ const dentMk=o.dentMk||(upper?'silver':'gold'),dentCol=P(dentMk);
  W((x0+x1)/2,0,(z0+z1)/2,yaw,()=>{
   for(let i=0;i<n;i++){
    const f=n===1?.5:i/(n-1),xx=(f-.5)*L;
    if(o.skipMid&&Math.abs(xx)<o.skipMid)continue;
    const cMk=o.altMk&&i%2===1?o.altMk:o.mk;
-   raColumn(xx,y0,0,colH,Object.assign({},o,{mk:cMk,r}));
+   raColumn(xx,y0,0,colH,Object.assign({},o,{mk:cMk,r,protomeYaw:PI/2}));
   }
   svNoWalk(()=>{
-   box(entMk,0,y0+colH,0,L+r*2.7,entH*.42,r*2.4,entCol);
-   box(friezeMk,0,y0+colH+entH*.42,0,L+r*2.8,entH*.28,r*2.52,friezeCol);
-   box(entMk,0,y0+colH+entH*.7,0,L+r*3.05,entH*.3,r*2.8,entCol);
+   box(entMk,0,y0+colH,0,L+r*2.7,entH*.38,r*2.45,entCol);
+   box(friezeMk,0,y0+colH+entH*.38,0,L+r*2.82,entH*.32,r*2.58,friezeCol);
+   box(dentMk,0,y0+colH+entH*.7,0,L+r*2.94,entH*.1,r*2.7,dentCol);
+   box(entMk,0,y0+colH+entH*.8,0,L+r*3.12,entH*.2,r*2.92,entCol);
   });
+ });
+}
+
+/* Stepped 3-stage Babylonian / Persepolitan crow-step merlon battlements from (x0,z0) to (x1,z1) at base y0. */
+function raMerlonParapet(x0,z0,x1,z1,y0,o){
+ o=o||{};
+ const L=Math.hypot(x1-x0,z1-z0);if(L<.35)return;
+ const yaw=Math.atan2(z0-z1,x1-x0),upper=o.style==='upper-ria';
+ const mk=o.mk||(upper?'porphyry':'cobalt'),col=P(mk);
+ const bandMk=o.bandMk||(upper?'dolomite':'saffron'),bandCol=P(bandMk);
+ const capMk=o.capMk||(upper?'silver':'gold'),capCol=P(capMk);
+ const t=o.t==null?.28:o.t,baseH=o.baseH==null?.32:o.baseH,mPitch=o.pitch==null?1.08:o.pitch;
+ const nM=Math.max(1,Math.floor((L-.12)/mPitch));
+ W((x0+x1)/2,0,(z0+z1)/2,yaw,()=>{
+  svNoWalk(()=>{
+   box(mk,0,y0+.008,0,L,baseH*.76,t,col);
+   box(bandMk,0,y0+.008+baseH*.76,0,L+.03,baseH*.24,t+.03,bandCol);
+   const yM=y0+.008+baseH;
+   for(let i=0;i<nM;i++){
+    const xx=nM===1?0:lerp(-L/2+.46,L/2-.46,i/(nM-1));
+    if(o.skipMid&&Math.abs(xx)<o.skipMid)continue;
+    box(mk,xx,yM,0,.76,.22,t-.02,col);
+    box(mk,xx,yM+.22,0,.5,.2,t-.04,col);
+    box(capMk,xx,yM+.42,0,.24,.18,t-.06,capCol);
+   }
+  });
+  if(o.block)raWallBlock(0,y0,0,L,.92,t,0);
+ });
+}
+
+/* Classical Greco-Roman turned-stone balustrade with pedestals and moulded coping from (x0,z0) to (x1,z1). */
+function raClassicalBalustrade(x0,z0,x1,z1,y0,o){
+ o=o||{};
+ const L=Math.hypot(x1-x0,z1-z0);if(L<.35)return;
+ const yaw=Math.atan2(z0-z1,x1-x0),upper=o.style==='upper-ria';
+ const mk=o.mk||(upper?'dolomite':'travertine'),col=P(mk);
+ const trimMk=o.trimMk||(upper?'porphyry':'gold'),trimCol=P(trimMk);
+ const h=o.h==null?.88:o.h,t=o.t==null?.24:o.t;
+ const nB=Math.max(2,Math.floor((L-.5)/.44));
+ W((x0+x1)/2,0,(z0+z1)/2,yaw,()=>{
+  svNoWalk(()=>{
+   box(mk,0,y0+.008,0,L,.14,t,col);
+   for(let i=0;i<nB;i++){
+    const xx=lerp(-L/2+.28,L/2-.28,i/(nB-1));
+    if(o.skipMid&&Math.abs(xx)<o.skipMid)continue;
+    cyl(mk,xx,y0+.148,0,.068,h-.29,col,8,.052);
+   }
+   box(mk,0,y0+h-.142,0,L+.03,.1,t+.03,col);
+   box(trimMk,0,y0+h-.042,0,L+.05,.042,t+.05,trimCol);
+   for(const sx of [-L/2+.14,L/2-.14]){
+    box(mk,sx,y0+.008,0,.32,h+.04,t+.08,col);
+   }
+  });
+  if(o.block)raWallBlock(0,y0,0,L,h,t,0);
+ });
+}
+
+/* Flat Near-Eastern Ziggurat / Minoan-Roman Stone Terrace Roof with indoor coffered ceiling underneath,
+   cavetto/dentil cornice, perimeter merlon battlements OR Classical balustrade, and optional Hanging-Garden beds. */
+function raFlatTerraceRoof(cx,y0,cz,w,d,o){
+ o=o||{};
+ const upper=o.style==='upper-ria',deckH=o.deckH==null?.36:o.deckH;
+ const mk=o.mk||(upper?'dolomite':'travertine'),col=P(mk);
+ const topMk=o.topMk||(upper?'paving':'mosaic'),topCol=P(topMk);
+ const soffitMk=o.soffitMk||(upper?'dolomite':'teak'),trimMk=o.trimMk||(upper?'silver':'gold');
+ if(o.ceiling!==false){
+  raCeilingSlab(cx,y0+.02,cz,Math.max(.4,w-.18),Math.max(.4,d-.18),{mk:soffitMk,trimMk});
+ }
+ const yTop=y0+.12+deckH;
+ svNoWalk(()=>{
+  box(mk,cx,y0+.12,cz,w+.08,deckH*.36,d+.08,col);
+  box(trimMk,cx,y0+.12+deckH*.36,cz,w+.18,deckH*.22,d+.18,P(trimMk));
+  box(mk,cx,y0+.12+deckH*.58,cz,w+.32,deckH*.42,d+.32,col);
+  if(!o.walk)box(topMk,cx,yTop,cz,w-.06,.05,d-.06,topCol);
+ });
+ if(o.walk)raFloorSlab(cx,yTop+.05,cz,w-.06,d-.06,{mk:topMk,th:.05});
+ const yPar=yTop+.05,skip=o.skip||'',par=o.parapet==null?(upper?'balustrade':'merlon'):o.parapet;
+ const hw=w/2-.16,hd=d/2-.16,pFn=par==='merlon'?raMerlonParapet:raClassicalBalustrade;
+ const pOpts=Object.assign({style:o.style,mk:o.parMk,bandMk:o.bandMk,capMk:o.capMk,block:!!o.walk},o.parOpts||{});
+ if(par!=='none'){
+  if(skip.indexOf('s')<0)pFn(cx-hw,cz+hd,cx+hw,cz+hd,yPar,Object.assign({},pOpts,{skipMid:o.gapS}));
+  if(skip.indexOf('n')<0)pFn(cx+hw,cz-hd,cx-hw,cz-hd,yPar,Object.assign({},pOpts,{skipMid:o.gapN}));
+  if(skip.indexOf('e')<0)pFn(cx+hw,cz+hd-.28,cx+hw,cz-hd+.28,yPar,Object.assign({},pOpts,{skipMid:o.gapE}));
+  if(skip.indexOf('w')<0)pFn(cx-hw,cz-hd+.28,cx-hw,cz+hd-.28,yPar,Object.assign({},pOpts,{skipMid:o.gapW}));
+ }
+ if(o.garden&&w>3.6&&d>3.6){
+  /* Babylonian Hanging-Garden terraced stone planter beds with lush foliage & blossoms */
+  svNoWalk(()=>{
+   const gw=Math.min(w-2.2,4.6),gd=Math.min(d-2.2,4.6);
+   box('emerald',cx,yPar+.008,cz,gw,.28,gd,P('emerald'));
+   box('travertine',cx,yPar+.288,cz,gw+.1,.07,gd+.1,P('travertine'));
+   for(const gx of [-gw*.28,gw*.28])for(const gz of [-gd*.28,gd*.28]){
+    ellip('lotus',cx+gx,yPar+.54,cz+gz,.68,.44,.68,P('lotusLeaf'),0,10);
+    cone('silk',cx+gx,yPar+.86,cz+gz,.18,.24,P('lotusGold'),7);
+   }
+  });
+ }
+ return yPar;
+}
+
+/* Monumental Babylonian Glazed-Brick Round-Arch Ishtar Portal with twin crenellated gate-buttresses. */
+function raIshtarPortal(cx,y0,cz,yaw,wOpen,hOpen,o){
+ o=o||{};
+ const bw=o.buttW==null?1.45:o.buttW,d=o.d==null?1.15:o.d,hTot=o.hTot==null?hOpen+2.35:o.hTot;
+ const mk=o.mk||'cobalt',bandMk=o.bandMk||'saffron',accMk=o.accMk||'emerald';
+ const archR=wOpen*.5,totW=wOpen+bw*2;
+ W(cx,y0,cz,yaw||0,()=>{
+  svNoWalk(()=>{
+   for(const s of [-1,1]){
+    const bx=s*(wOpen/2+bw/2);
+    box('travertine',bx,.01,0,bw+.08,.38,d+.08,P('travertine'));
+    box(mk,bx,.39,0,bw,hTot-.72,d,P(mk));
+    /* Glazed relief panels on front & rear faces of each Ishtar gate tower */
+    for(const sz of [-1,1]){
+     box(bandMk,bx,1.15,sz*(d/2+.03),bw*.58,1.55,.045,P(bandMk));
+     box(accMk,bx,3.05,sz*(d/2+.03),bw*.58,1.15,.045,P(accMk));
+    }
+    box('gold',bx,hTot-.33,0,bw+.08,.12,d+.08,P('gold'));
+    box(mk,bx,hTot-.21,0,bw+.04,.21,d+.04,P(mk));
+   }
+   /* Spandrel masonry above round arch + radial gold & emerald voussoir blocks */
+   const ySp0=hOpen+archR*.62;
+   box(mk,0,ySp0,0,wOpen+.04,hTot-.33-ySp0,d-.06,P(mk));
+   for(const s of [-1,1]){
+    box(mk,s*(archR*.68),hOpen,0,archR*.64,ySp0-hOpen,d-.08,P(mk));
+   }
+   const nV=7;
+   for(let i=0;i<nV;i++){
+    const a=lerp(.18,PI-.18,i/(nV-1)),vx=Math.cos(a)*(archR*.88),vy=hOpen+Math.sin(a)*(archR*.62);
+    box(i%2===0?'gold':accMk,vx,vy-.12,0,.22,.26,d+.05,P(i%2===0?'gold':accMk));
+   }
+   /* Polychrome rosette frieze + top Babylonian crow-step merlon crown across full Ishtar portal */
+   box(bandMk,0,hTot-.56,0,totW+.06,.22,d+.06,P(bandMk));
+  });
+  raMerlonParapet(-totW/2+.08,d/2-.16,totW/2-.08,d/2-.16,hTot,{mk,bandMk,capMk:'gold',pitch:.96});
+  raMerlonParapet(totW/2-.08,-d/2+.16,-totW/2+.08,-d/2+.16,hTot,{mk,bandMk,capMk:'gold',pitch:.96});
+  if(o.block!==false){
+   for(const s of [-1,1])raWallBlock(s*(wOpen/2+bw/2),0,0,bw,hTot,d,0);
+  }
+ });
+ return y0+hTot+.62;
+}
+
+/* Classical Greco-Roman Triangular Temple Pediment with dentil frieze, recessed relief tympanum, and hybrid acroteria. */
+function raClassicalPediment(cx,y0,cz,yaw,w,hPed,d,o){
+ o=o||{};
+ const upper=o.style==='upper-ria';
+ const mk=o.mk||(upper?'dolomite':'travertine'),col=P(mk);
+ const tymMk=o.tymMk||(upper?'porphyry':'cobalt'),tymCol=P(tymMk);
+ const trimMk=o.trimMk||(upper?'silver':'gold'),trimCol=P(trimMk);
+ const hw=w/2,hd=d/2,dentY=.22;
+ W(cx,y0,cz,yaw||0,()=>{
+  svNoWalk(()=>{
+   /* Horizontal Classical cornice + dentil row */
+   box(mk,0,0,0,w+.24,.14,d+.2,col);
+   const nD=Math.max(4,Math.floor(w/.42));
+   for(let i=0;i<nD;i++){
+    const dx=lerp(-hw+.16,hw-.16,i/(nD-1));
+    box(trimMk,dx,.14,hd+.08,.16,.08,.12,trimCol);
+    box(trimMk,dx,.14,-hd-.08,.16,.08,.12,trimCol);
+   }
+   box(mk,0,dentY,0,w+.38,.12,d+.32,col);
+   const yB=dentY+.12,yT=yB+hPed;
+   /* Pitched stone roof planes + recessed colored stone tympanums (inset behind raking cornices -> 0 z-fight!) */
+   const A=[-hw-.14,yB,-hd-.1],B=[hw+.14,yB,-hd-.1],C=[hw+.14,yB,hd+.1],D=[-hw-.14,yB,hd+.1];
+   const PN=[0,yT,-hd-.1],PS=[0,yT,hd+.1];
+   poly(o.roofMk||mk,[A,D,PS,PN],P(o.roofMk||mk));
+   poly(o.roofMk||mk,[C,B,PN,PS],P(o.roofMk||mk));
+   /* Recessed colored stone tympanum + central gilded medallion */
+   poly(tymMk,[[-hw-.08,yB+.01,hd-.02],[hw+.08,yB+.01,hd-.02],[0,yT-.04,hd-.02]],tymCol,true);
+   poly(tymMk,[[hw+.08,yB+.01,-hd+.02],[-hw-.08,yB+.01,-hd+.02],[0,yT-.04,-hd+.02]],tymCol,true);
+   cyl(trimMk,0,yB+hPed*.26,hd+.03,Math.min(.42,hPed*.26),.05,trimCol,12,Math.min(.42,hPed*.26),false);
+   /* Moulded raking cornices + apex & corner acroteria */
+   for(const sz of [-1,1]){
+    const zz=sz*(hd+.13);
+    beam(mk,[-hw-.18,yB,zz],[0,yT+.05,zz],.1,col,false);
+    beam(mk,[hw+.18,yB,zz],[0,yT+.05,zz],.1,col,false);
+   }
+   if(o.acroteria!=='none'){
+    raSwanFinial(0,yT+.06,hd+.1,0,.78,upper);
+    for(const sx of [-1,1])raSwanFinial(sx*(hw+.12),yB+.02,hd+.1,sx>0?PI/2:-PI/2,.48,upper);
+   }
+  });
+ });
+ return y0+dentY+.12+hPed;
+}
+
+/* Semicircular Classical Beaux-Arts / Roman Exedra Curved Peristyle Colonnade with curved entablature & attic balustrade. */
+function raCurvedColonnade(cx,cz,r,a0,a1,y0,h,nCols,o){
+ o=o||{};
+ const upper=o.style==='upper-ria',rCol=o.r==null?.24:o.r,entH=o.entH==null?.52:o.entH,colH=h-entH;
+ const mk=o.mk||(upper?'dolomite':'travertine'),col=P(mk);
+ const friezeMk=o.friezeMk||(upper?'porphyry':'cobalt'),friezeCol=P(friezeMk);
+ const trimMk=o.trimMk||(upper?'silver':'gold'),trimCol=P(trimMk);
+ const seg=Math.max(8,Math.ceil(Math.abs(a1-a0)/(PI/16)));
+ const aa=Math.min(a0,a1),ab=Math.max(a0,a1);
+ for(let i=0;i<nCols;i++){
+  const f=nCols===1?.5:i/(nCols-1),a=lerp(a0,a1,f);
+  raColumn(cx+Math.cos(a)*r,y0,cz+Math.sin(a)*r,colH,{
+   style:o.style,mk:o.altMk&&i%2===1?o.altMk:mk,capMk:trimMk,baseMk:friezeMk,r:rCol,capital:o.capital,block:o.block!==false
+  });
+ }
+ svNoWalk(()=>{
+  /* Curved 3-tier Classical entablature + attic balustrade */
+  sector(mk,cx,cz,r-.36,r+.36,aa,ab,y0+colH,y0+colH+entH*.38,col,seg);
+  sector(friezeMk,cx,cz,r-.39,r+.39,aa,ab,y0+colH+entH*.38,y0+colH+entH*.7,friezeCol,seg);
+  sector(trimMk,cx,cz,r-.42,r+.42,aa,ab,y0+colH+entH*.7,y0+colH+entH*.8,trimCol,seg);
+  sector(mk,cx,cz,r-.48,r+.48,aa,ab,y0+colH+entH*.8,y0+h,col,seg);
+  if(o.attic!==false){
+   sector(mk,cx,cz,r-.3,r+.3,aa,ab,y0+h+.008,y0+h+.2,col,seg);
+   for(let i=0;i<nCols*2-1;i++){
+    const a=lerp(aa+.04,ab-.04,i/Math.max(1,nCols*2-2));
+    cyl(mk,cx+Math.cos(a)*r,y0+h+.208,cz+Math.sin(a)*r,.075,.42,col,8);
+   }
+   sector(mk,cx,cz,r-.34,r+.34,aa,ab,y0+h+.628,y0+h+.76,col,seg);
+  }
  });
 }
 

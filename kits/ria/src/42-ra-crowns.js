@@ -458,6 +458,72 @@ function raLotusDome(cx,y0,cz,rBase,hDome,o){
  return y0+hDome;
 }
 
+/* Classical Roman Pantheon Stepped Saucer-Rotunda Dome + Coffered {inward: true} Stone Soffit + Gilded Lotus Oculus Lantern! */
+function raPantheonRotundaDome(cx,y0,cz,rBase,hDome,o){
+ o=o||{};
+ const seg=o.seg==null?28:o.seg,upper=o.style==='upper-ria';
+ const drumMk=o.drumMk||(upper?'dolomite':'travertine'),drumCol=P(drumMk);
+ const domeMk=o.mk||(upper?'porphyry':'giltroof'),domeCol=P(domeMk);
+ const ribMk=o.ribMk||(upper?'gold':'gold'),ribCol=P(ribMk);
+ const soffitMk=o.soffitMk||(upper?'alabaster':'travertine'),soffitCol=P(soffitMk);
+ const drumH=hDome*.26,stepH=hDome*.18,cupH=hDome*.34,lanH=hDome*.22;
+ svNoWalk(()=>{
+  /* Cylindrical Classical pilastered drum + dentil cornice */
+  cyl(drumMk,cx,y0,cz,rBase*1.06,drumH*.68,drumCol,seg);
+  cyl(upper?'porphyry':'cobalt',cx,y0+drumH*.68,cz,rBase*1.08,drumH*.16,P(upper?'porphyry':'cobalt'),seg);
+  cyl(drumMk,cx,y0+drumH*.84,cz,rBase*1.12,drumH*.16,drumCol,seg);
+  const nPil=o.pilasters==null?12:o.pilasters;
+  for(let k=0;k<nPil;k++){
+   const a=k/nPil*TAU;
+   W(cx+Math.cos(a)*(rBase*1.08),y0+.04,cz+Math.sin(a)*(rBase*1.08),-a+PI/2,()=>{
+    box(ribMk,0,0,0,.22,drumH*.62,.08,ribCol);
+   });
+  }
+  /* Five iconic Classical Roman Pantheon stepped saucer-ring courses at base of dome */
+  const yS0=y0+drumH;
+  for(let s=0;s<5;s++){
+   const fs0=s/5,fs1=(s+1)/5;
+   const rs=lerp(rBase*1.04,rBase*.82,fs0);
+   cyl(s%2===0?drumMk:domeMk,cx,yS0+stepH*fs0,cz,rs,stepH/5-.005,s%2===0?drumCol:domeCol,seg);
+  }
+  /* Saucer-hemisphere outer shell + {inward: true} coffered Classical stone interior vault closing to r = 0.01 */
+  const yC0=yS0+stepH,outerProf=[],innerProf=[];
+  const nR=7;
+  for(let i=0;i<=nR;i++){
+   const t=i/nR,ang=t*PI*.5;
+   const rO=Math.max(.28,rBase*.81*Math.cos(ang));
+   const yO=yC0+cupH*Math.sin(ang);
+   outerProf.push([rO,yO]);
+   innerProf.push([i===nR?.01:Math.max(.08,rO-.08),yO-.07]);
+  }
+  lathe(domeMk,cx,cz,outerProf,seg,domeCol,{uv:'cone'});
+  lathe(soffitMk,cx,cz,innerProf,seg,soffitCol,{inward:true});
+  /* Interior gold coffer rings stepped cleanly below innerProf */
+  for(const f of [.28,.56]){
+   const ang=f*PI*.5,rr=Math.max(.3,rBase*.81*Math.cos(ang)-.12),yy=yC0+cupH*Math.sin(ang)-.1;
+   ring(ribMk,cx,yy,cz,rr,.03,ribCol,0,0,0,16);
+  }
+  /* Exterior Classical-Bagan meridian ribs */
+  const nRibs=o.ribs==null?12:o.ribs;
+  for(let k=0;k<nRibs;k++){
+   const a=k/nRibs*TAU,ca=Math.cos(a),sa=Math.sin(a);
+   for(let j=0;j<3;j++){
+    const t0=j/3,t1=(j+1)/3,a0=t0*PI*.5,a1=t1*PI*.5;
+    const rA=rBase*.81*Math.cos(a0)+.04,yA=yC0+cupH*Math.sin(a0);
+    const rB=Math.max(.3,rBase*.81*Math.cos(a1)+.04),yB=yC0+cupH*Math.sin(a1);
+    beam(ribMk,[cx+ca*rA,yA,cz+sa*rA],[cx+ca*rB,yB,cz+sa*rB],.042,ribCol,true,6);
+   }
+  }
+  /* Gilded Thai/Burmese Lotus Oculus Lantern Cupola crowning the Pantheon dome */
+  const yLan=yC0+cupH;
+  cyl(drumMk,cx,yLan-.04,cz,.52,lanH*.36,drumCol,10);
+  cyl(ribMk,cx,yLan+lanH*.32,cz,.58,.08,ribCol,10);
+  cone(ribMk,cx,yLan+lanH*.4,cz,.48,lanH*.36,ribCol,10);
+  cone('gold',cx,yLan+lanH*.76,cz,.12,lanH*.32,P('gold'),8);
+ });
+ return y0+hDome;
+}
+
 /* Ceremonial Dynastic Standard Banner hooked to ATMOS wind via clothHang. */
 function raBanner(x,y0,z,yaw,h,col,upper){
  h=h==null?3.4:h;
