@@ -30,6 +30,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-fauna-hyperjungle.js` | 117 **big** |  |
 | `krator-fauna-livestock.js` | 10 |  |
 | `krator-fauna-mounts.js` | 8 |  |
+| `krator-fauna-outlands.js` | 15 |  |
 | `krator-fauna-pets.js` | 4 |  |
 | `krator-fauna-riders.js` | 42 **big** | the riding tiger (Tiger) (52); the riding raptor (Raptor) (121); the threehorn (Threehorn) (203); the hardshell (Hardshell) (267); the jungle mammoth (Mammoth) (333) |
 | `krator-fauna-ringsea.js` | 6 |  |

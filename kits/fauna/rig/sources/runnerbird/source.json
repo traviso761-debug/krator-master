@@ -1,0 +1,28 @@
+{
+ "generator": "Tripo (openapi.tripo3d.ai v3, rig/tripo_gen.py)",
+ "prompt": "A single large ground cuckoo bird standing on flat ground, in the roadrunner family but bigger and leaner, full body seen from the side in three-quarter view, alert and upright, long straight tail held raised at an angle, a tall shaggy crest raised on the head, long straight sharp beak, long bare grey-blue legs with zygodactyl feet (two toes forward, two back). Plumage dusty sand-brown streaked with dark brown and white, a glossy blue-violet sheen on the crest and the tail, a bare patch of orange and blue skin behind the eye, pale buff belly. Exactly two legs. Realistic wildlife photograph, even studio lighting, plain pure white background, the whole bird in frame with margin. --no cartoon, rider, extra legs, extra heads, shadow, ground texture, text, cropping, frame, border",
+ "reference": "ref.png; views front/left/back/right.png (image-to-multiview)",
+ "task_ids": [
+  {
+   "step": "image",
+   "task_id": "66f3d326-81f3-4b1b-80c3-8f739f6977a3",
+   "credits": 5.0
+  },
+  {
+   "step": "multiview",
+   "task_id": "fd8ee82d-dae5-41ee-8650-b65685387772",
+   "credits": 10.0
+  },
+  {
+   "step": "model",
+   "task_id": "19deb9bd-4549-4252-86fb-2a936276f43c",
+   "credits": 30.0
+  }
+ ],
+ "ai_model": "text-to-image seedream_v4; multiview-to-model v3.1-20260211, texture standard, pbr",
+ "credits": 45.0,
+ "raw": "raw-tripo.glb",
+ "rigged_by": "rig/qmodel.py runnerbird",
+ "note": "",
+ "date": "2026-11-16"
+}

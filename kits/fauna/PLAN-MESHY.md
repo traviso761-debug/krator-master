@@ -382,3 +382,34 @@ own socket, not at one height, so the rings keep their whole shells.
 
 **The mantis strike** swung its raised forelegs up and back (the owner saw it): the swing's sign was wrong. It now drops them down and forward past the face, the tibia flicked open and
 snapped shut.
+
+## 14. Tripo: the Outlands' birds (2026-11-16 to 11-22)
+
+The owner asked whether the Coyote Men's three birds (`ostrich`, `runnerbird`, `goldbird`; group `outlands`) could be built on Tripo.
+**Yes.** `rig/tripo_gen.py` drives it (README, "Tripo"); each source is in `rig/sources/<key>/` (`tripo.json`, `source.json`, the
+reference, the four views, `raw-tripo.glb`).
+
+| | Credits | Raw | Rig | Packed |
+|---|---|---|---|---|
+| ostrich | 70 (45 + Tripo's rig, 25, not used) | 1.44 M tris, 2.5 m (`auto_size`) | `qmodel.py`: head, tail, two legs of three; trot | 10,387 tris, 0.81 MB |
+| runner bird | 45 | 1.41 M tris | `qmodel.py`, `level`, `hipband`, `headband`, a one-way knee | 9,249 tris, 1.25 MB |
+| golden bird | 90 (45 for a first try that came out banked) | 1.49 M tris | `fbuild.py` + `frig.py`, turned on load (`rot_y`) | 16,401 tris, 1.39 MB |
+
+**What Tripo is good at.** Every reference view held the right number of legs and the same stance on the first try; the textured
+model comes with colour, normal and metal-roughness maps (2K) at real size. A model is 45 credits ($0.45), less than Meshy 7.1's
+30-credit model plus its image steps. One task at a time per account.
+
+**What it is not.** Its auto-rig (avian, 25 credits) gives 14 bones, a toe joint on one leg only, no wing bones, no clips, and it is
+skinned, which the kit does not take; the rigid-part scripts do better. A prompt for a soaring raptor came back banked in a dive
+(wings on a diagonal at different heights), which the flyer cut cannot level: generate a flyer standing, wings spread and symmetric.
+
+**What the test asked for**, each found with `node tests/test-models.js --candidate models/<key>.json <key> --png <dir>`:
+- The ostrich's tail pivot sat in the middle of a wide rump section (C6 pivot 0.078): the tail cut moved back to z -0.32.
+- The runner bird opened at the hip (C4) as its thigh swung: a wider torso-thigh band (`hipband` 0.06). One foot was drawn 2.6 cm
+  lower than the other (`level` plants both on the common ground), and its knee flipped from +1.56 to -0.80 between two walk keys
+  where it met the +1.6 limit, so the interpolated foot went 2.4 cm through the ground (C7 below): a one-way knee range, -0.4 to 2.4.
+- The golden bird: the wing rule took the body's flanks with the wings (closure 0.116): the flanks under the shoulder stay in the
+  torso. Its thighs took belly feathers hanging to one side (C3 sides 2.3): a narrower thigh window. A torso-thigh band both ways
+  put unequal torso faces in the two thighs (sides 1.7): the band goes one way (`'a>b'`, the thigh's faces kept in the torso).
+  The flap opened the shoulder top because the torso pitched under wings that hang from the rig: the whole rig pitches
+  (`pitch='whole'`). Perch and walk keep the wings raised (KNOWN_ISSUES.md). Maps 896 / 256 px to stay under 1.5 MB.
