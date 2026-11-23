@@ -8,6 +8,8 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   fort-on-its-pad    the ground under the fort's lot (its corners, its middle) level at the pad's height to 5 cm, the pad's cut
                      and fill under 12 m
   fort-walks         every wall walk and stair of the fort reached from its stairs' feet (core/walk, xfReach)
+  interiors-hollow-and-reach   (Xanadu's --interiors audit, on by default here; --no-interiors skips it) the fort's stacks hollow,
+                     its rooms furnished, and every floor of xa_fort_march reached from its unlocked doors
 
     KRATOR_GL=gpu python3 verify.py dist/strongwall.html --assert --views "Overview,The Qiblai Gate"
 """
@@ -34,6 +36,9 @@ return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + FORT_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
 xv._voth_trades = lambda: {'name': 'voth-trades', 'ok': True, 'detail': 'the Xanadu kit\'s table (kits/xanadu): checked on its own sheet'}
+# the interiors are on by default on this page (targets/fort/89xs): the audit runs unless --no-interiors, and every floor of the
+# fort's 57 rooms must be reached from its doors (interiors-hollow-and-reach)
+xv.INTERIORS_MUST = ['xa_fort_march']
 
 if __name__ == '__main__':
     import argparse, asyncio
@@ -51,6 +56,8 @@ if __name__ == '__main__':
     ap.add_argument("--eval", action="append")
     ap.add_argument("--size", default="1280x800")
     ap.add_argument("--no-cache", action="store_true")
-    ap.add_argument("--interiors", action="store_true")   # settlements/xanadu/verify.py reads it (the hollow-wall audit)
+    ap.add_argument("--interiors", action="store_true")   # settlements/xanadu/verify.py reads it (the hollow-wall audit): on by default here
+    ap.add_argument("--no-interiors", action="store_true")
     a = ap.parse_args([os.path.abspath(x) if x.endswith('.html') and os.path.exists(x) else x for x in sys.argv[1:]])
+    a.interiors = not a.no_interiors
     sys.exit(asyncio.run(xv.run(a)))

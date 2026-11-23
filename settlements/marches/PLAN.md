@@ -81,6 +81,18 @@ lists the guns: if its F-steps drew them, they are reused; otherwise named here 
 | Life | `core/charactermodels` | The garrison and the musketeers in their dresses |
 | The economy | `core/region` (`XAN_TUNE`) | The records as they stand |
 
+**M1, the sheet (2026-11-23), takes:** the page is Xanadu's (`settlements/xanadu/build.py --kit settlements/marches`, as
+Strongwall's), so its host, camera, probe, sky and labels are Xanadu's (`core/host`, the Ancients core); `kits/xanadu` `XFORT`
+(80f) and its drawing (80g) read in place (`kit.json` "external"), never copied; `core/rand` (`KRAND`: each fort's seed is
+`KRAND.child` of its id, so its breaches and fallen towers are its own); `core/tags` (every fort, work and post through `VERN.place`
+and `vnReg` before it is drawn); `core/ruins` (`KRUINS.watch` on every damaged and ruined fort and post); `core/terrain`
+`37c-core-rubble.js` (`KRUBBLE`: the breaches' and stubs' heaps, drawn by 80g); `core/walk` (the walks and stairs, `xfReach`);
+`core/door` (the kit's doors); `core/region` `data/xan-tune.js` (`XAN_TUNE.valley`, `T.muskets`: the forts' ids, names, px,
+people and state read on the page and in the node test, never copied); `core/drawn` (the flat ground registered as a
+`KDRAWN` source, for the drawn-ground eye check). Not taken yet, and why: `core/world` (no Mārchiz region until the stack, M2),
+`core/charactermodels` (the garrison is a record here; life is S3), `core/space` (the plan's own overlap rule in `XFORT.check`
+is the fort's; the outside works are laid by fixed offsets on the sheet, checked by the verify's `marches-works-clear`).
+
 ## 6. Textures
 
 The Xanadui fort's section 54 (`core/materials/PROMPTS-NEEDED.md`: `wall.rubble.limewash` and two more), owed; nothing new.
@@ -95,6 +107,6 @@ section 1). The relay posts are region site records, not pins.
 
 | Step | What | When |
 |---|---|---|
-| **M1** | Both forts planned and drawn on a sheet: **a build of its own, `settlements/marches`** (changed 2026-11-22 from a target on Strongwall's page, so it does not write Strongwall's files while the Strongwall session works on them), reading the fort asset (`kits/xanadu` `XFORT`, 80f/80g) in place, on top of the Strongwall session's latest fort work (`claude/strongwall-plan-c1ee33`); flat ground, `XFORT.check` clean, the three states; the verify asserts the fort's rules. Changes the fort asset needs go to the Strongwall session, not into 80f/80g here | now (no ground needed) |
+| **M1** (**built** 2026-11-23: `dist/marches.html`, `README.md`) | Both forts planned and drawn on a sheet: **a build of its own, `settlements/marches`** (changed 2026-11-22 from a target on Strongwall's page, so it does not write Strongwall's files while the Strongwall session works on them), reading the fort asset (`kits/xanadu` `XFORT`, 80f/80g) in place, on top of the Strongwall session's latest fort work (`claude/strongwall-plan-c1ee33`); flat ground, `XFORT.check` clean, the three states; the verify asserts the fort's rules. Changes the fort asset needs go to the Strongwall session, not into 80f/80g here | now (no ground needed) |
 | **M2** | On the Mārchiz region's ground: each ward fitted to its knoll, the roads, the relay posts by sight; the region's verify | after the stack cuts Mārchiz (BUILD-PLAN.md phase B) |
-| **M3** | The pins and (if the owner takes them) the names, in the tune and the queue | with M1 |
+| **M3** (**the pins listed** 2026-11-23, `README.md`; the names wait for the owner) | The pins and (if the owner takes them) the names, in the tune and the queue | with M1 |
