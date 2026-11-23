@@ -486,6 +486,7 @@ BIO.hangMat=function(m,key,o){o=o||{};const A=o.swayA==null?.05:+o.swayA,W=o.swa
  m.userData.bio={kind:'hang',key:BIO.kitKey(key),opts:Object.assign({swayA:A,swayW:W},o.night?{night:o.night}:{})};BIO._tickWind();return m;};
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});
+ m.userData.bioSolid=true;   /* B2/M4: a rock or rod's material (no export kind: the export draws it plain, as before) */
  if(BIO.FADE){m.onBeforeCompile=sh=>BIO._fadeInject(sh,'solid');m.customProgramCacheKey=()=>'biosolid'+BIO._fx();}   /* the cross-fade hook only */
  return m;};
 
@@ -511,6 +512,25 @@ BIO.col=(function(){const T=()=>BIO.host.THREE,C=h=>new (T().Color)(h);let WHITE
   c.setRGB(Math.min(1,c.r*k/Math.max(.02,m[0])),Math.min(1,c.g*k/Math.max(.02,m[1])),Math.min(1,c.b*k/Math.max(.02,m[2])));return c.convertLinearToSRGB();}
  return{shade,bright,vary,texMean,tint};})();
 
+// ---------------------------------------------------------------- M4: grounding on instances
+// M4 (GRAPHICS-TERRAIN-PROPOSAL section 6, 2026-11-23): "each instance carries its base height; the shader darkens and tints the
+// first 0.25 to 0.4 m above it; no terrain texture lookup". An instanced rock, rod or log rooted on the ground (BIO.bake finds the
+// items: 20-core-kit.js _groundItems) carries aGrY, the drawn ground's height under it (+10000: 0, the attribute's default on a mesh
+// without it, means none, so a material shared with a bucket or a host mesh stays as it was); its vertices darken by their world
+// height over it, BIO.GROUND_AO.lo (.72) at the ground to 1 at .h (.35 m), as B2 bakes into the merged buckets' colours.
+// BIO._groundHook(m) adds the term to a material once (after its own hook and the cross-fade's), keyed '|gr'.
+BIO.GROUND_AO={lo:.72,h:.35};BIO.GROUND_ITEMS=true;
+BIO._groundHook=function(m){if(!m||m.userData.grHook)return;m.userData.grHook=true;const prev=m.onBeforeCompile,pk=m.customProgramCacheKey,T0=BIO.host.THREE.Material;
+ const G=BIO.GROUND_AO,lo=(G.lo==null?.72:+G.lo).toFixed(3),hh=(G.h==null?.35:+G.h).toFixed(3);
+ m.onBeforeCompile=function(sh,r){if(prev&&prev!==T0.prototype.onBeforeCompile)prev.call(this,sh,r);
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aGrY;\nvarying float vGr;')
+   .replace('#include <begin_vertex>',['#include <begin_vertex>','{ vec4 _grW = vec4(transformed, 1.0);','#ifdef USE_INSTANCING','  _grW = instanceMatrix * _grW;','#endif',
+    '  _grW = modelMatrix * _grW; vGr = aGrY < 0.5 ? 1000.0 : _grW.y - (aGrY - 10000.0); }'].join('\n'));
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vGr;')
+   .replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb *= mix('+lo+', 1.0, smoothstep(0.0, '+hh+', vGr));');};
+ const own=typeof pk==='function'&&pk!==T0.prototype.customProgramCacheKey;   /* three's default key is the hook's source: key by the one it had */
+ m.customProgramCacheKey=function(){return (own?pk.call(this):prev?String(prev):'')+'|gr';};
+ m.needsUpdate=true;};
 // ---------------------------------------------------------------- THE SWARD (B6)
 // THE SWARD (B6, 2026-11-23; the owner on B1-B5's shots: "We should at least be implementing more realistic grass like oidong's
 // new grass"). The web port of vertical-stack's Godot sward (godot/krator/world_grass.gd KratorWorldGrass, shaders/grass_sward

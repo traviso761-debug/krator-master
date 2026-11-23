@@ -162,4 +162,22 @@ const drawnPage = (withGrid, h) => { const P = page({ drawn: true, host: { terra
   const P = drawnPage(true, step);
   T.ok('B5: placement still reads the ground as defined (the gate does not move a plant)', P.BIO.cliffW(-5, 0) === 1 && P.BIO.cliff(-5, 0) === 0 && P.BIO.cliff(-5, 0, true) > 0); }
 
+// ---------------------------------------------------------------- M4: grounding on instances (and B2 on solid buckets)
+const rockPage = (y, mat) => { const P = page({ host: { terrainH: () => 2 } }), B = P.BIO, m = mat ? mat(B) : B.solidMat(null);
+  B.def('rock', new THREE.BoxGeometry(1, 1, 1), m);   /* centred: its lowest point .5 under its origin */
+  for (let i = 0; i < 40; i++) B.put('rock', [i * 3, y, 0], null, 1, null);
+  B.bake(); return { B, m, mesh: meshOf(P.scene, 'biome:rock') }; };
+{ const on = rockPage(2.5), up = rockPage(7.5);
+  T.neg('M4: an instanced rock whose lowest point sits on the ground is grounded (its instances carry the ground under them)', r => !!r.mesh.geometry.attributes.aGrY && r.B.lastBake.grounded === 1, up, on);
+  const a = on.mesh.geometry.attributes.aGrY.array;
+  T.ok('M4: aGrY is 10000 + the drawn ground (0, the default, means none)', Array.from(a).every(v => v === 10002));
+  const L = THREE.ShaderLib.lambert, sh = { uniforms: {}, vertexShader: L.vertexShader, fragmentShader: L.fragmentShader }; on.m.onBeforeCompile.call(on.m, sh);
+  T.ok('M4: the material darkens by world height over it (.72 at the ground to 1 at .35 m), keyed apart', /vGr = aGrY < 0\.5 \? 1000\.0/.test(sh.vertexShader) &&
+    /mix\(0\.720, 1\.0, smoothstep\(0\.0, 0\.350, vGr\)\)/.test(sh.fragmentShader) && /\|gr$/.test(on.m.customProgramCacheKey()));
+  const leafy = rockPage(2.5, B => B.leafMat(null, 'l', {}));
+  T.ok('M4: a leaf card is not grounded this way (the floor cover has its ground tint)', !leafy.mesh.geometry.attributes.aGrY); }
+{ const P = page({ host: { terrainH: () => 0 } }), B = P.BIO; B.bucket('rock', B.solidMat(null)); B.tri('rock', [0, 0, 0], [1, 0, 0], [0, 3, 0], [1, 1, 1]); B.bake();
+  const g = meshOf(P.scene, 'biome:rock').geometry, c = g.attributes.color.array, p = g.attributes.position.array; let foot = 1;
+  for (let i = 0; i < p.length / 3; i++) if (p[i * 3 + 1] === 0) foot = Math.min(foot, c[i * 3]);
+  T.ok('B2: a solid (rock) bucket darkens at its foot too (solidMat carries the bioSolid flag)', Math.abs(foot - .72) < 1e-6, foot); }
 T.done();

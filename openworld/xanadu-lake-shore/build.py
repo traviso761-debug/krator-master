@@ -51,7 +51,7 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 def _fams(path):
     pj = os.path.join(path, 'tex', 'pack.json')
     return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
-_DROP = lambda k: k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
+_DROP = lambda k: k.startswith('tower') or k.startswith('jetty')   # the ground sets stay: the near ground's S4 layers (core/world/81-world-terrain.js)
 PACK_EXCL = {k: [f for f in _fams(os.path.join(ROOT, 'biomes', k)) if _DROP(f)] for k in PACK_KITS}
 # the Xanadu building kit's library pack (still settlements/xanadu's), only the families the village buildings draw
 # (settlements/longsong/build.py XA_FAMS, the same villages)
@@ -72,7 +72,7 @@ ORDER = (
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
      ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
      ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
-     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js')]
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js'), ('core/terrain', '43-core-ground.js')]
     + [('core/biome', f) for f in CORE_BIOME]
     + [('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'), ('core/biome', '41-core-env.js'),
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
