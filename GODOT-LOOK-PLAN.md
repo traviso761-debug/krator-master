@@ -40,8 +40,7 @@ measurement, until the route harness runs on the two GPU lanes.
    plot, occlusion, edge), and true-colour packs for Godot (section 13).
 6. **Godot 4.8 is weeks away and brings three things this plan would otherwise build**: screen-space contact shadows,
    multi-bounce ambient occlusion and mip-level texture streaming (beta 4 on 2026-11-18; the blog calls a release
-   candidate imminent).
-   Plan for it; do not build them on 4.7.2.
+   candidate imminent). Plan for it; do not build them on 4.7.2.
 
 ## 2. What this branch proposes, and how it holds up
 
@@ -122,7 +121,7 @@ silhouettes on a landmark, single-noise albedo, and a population of one colour.
 |---|---|---|
 | Primitives a frame, avenue view | 180.7 M in 3,372 draws; 181.1 M in 3,543 at the Hall of Forms | **measured**, `Performance.RENDER_TOTAL_*`, every pass counted |
 | The same view by shadow setting | no sun shadow: 46.3 M in 1,164 draws. Shadow to 400 m: 180.6 M in 3,323. Shadow to 2,400 m: 180.7 M in 3,372. **Shortening the shadow does not lower the count** | **measured** |
-| Why | 392 of the town's 420 instanced items have instances spread over more than 1,000 m (about 2.4 km: the whole place), and they hold 33.5 M triangles, all of the instanced total. `gltf_instancing.gd` makes one `MultiMesh` an item. (180.7 - 46.3) / 4 = 33.6 M a split: the instanced total | **measured**, the glb's instance translations; **read**, `gltf_instancing.gd` |
+| Why | 392 of the town's 420 instanced items have instances spread over more than 1,000 m (about 2.4 km: the whole place), and they hold 33.5 M triangles, all of the instanced total. `gltf_instancing.gd` makes one `MultiMesh` an item. (180.7 - 46.3) / 4 = 33.6 M a split, the size of the town's instanced total | **measured**, the glb's instance translations; **read**, `gltf_instancing.gd` |
 | The cure, tried | Every `MultiMesh` wider than 96 m cut into 64 m cells after the place opened (1,067 of them into 38,287 cells, 108,724 instances, half a second of GDScript), each cell keeping its item's visibility range. No sun shadow: **2.4 M in 259 draws**. Shadow to 400 m: **10.0 M in 697**. Shadow to 2,400 m: **10.3 M in 723**. The frame matched the one before to a mean difference of 1.4 in 255, the difference being the verge's sway and the clouds' drift | **measured**, appendix A |
 | The town place (`sq80bzd7ep/world.glb`) | 456 meshes, 1.31 M triangles, 3.21 M vertices (2.45 a triangle: hard edges and unindexed soup), **34.2 M triangles once instanced** (33.5 M of them in instanced items) | **measured**, the glb's JSON |
 | The monastery place | 911 meshes, 1.11 M triangles, 8.7 M instanced; 165 of 911 meshes have UVs | **measured** |
