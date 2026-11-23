@@ -22,18 +22,17 @@
 //   XACITR.build(src)        src {item(key): the set item, XPDOME, plan: xdomePlan()} -> G {version, sites, rooms, portals,
 //                            windows, skylights, lamps, dark}; G.rooms[i] {id, building, name, kind, style, box [x0,y0,z0,
 //                            x1,y1,z1], rects, outdoor, vault, skylight, doors [{to, out, w, open, leaf, walk, portal}]}
-//   XACITR.tableInput(G, o)  KROOMLIGHT.buildTable's input: {rooms, windowsOf, lampsOf}; o.leaves 'shut' (the default: a door
-//                            with a leaf is not a light portal, core/door's default state) | 'open' (every door a portal)
-//   XACITR.pool(G)           pickPool's {windows: [{room, x, y, z}], lamps: [{room, x, y, z, amp, r}]} (a skylight is a window
-//                            light under its opening: 1.35 m under it, or SKY_FILL over the floor where that is lower)
+//   XACITR.tableInput(G, o)  KROOMLIGHT.buildTable's input: {rooms, windowsOf, lampsOf, skylightsOf}; each window with its
+//                            aperture, each skylight sized; o.leaves 'shut' (the default: a door with a leaf is shut, core/door's
+//                            default state, so no light portal) | 'open' (every door a portal)
+//   XACITR.pool(G)           pickPool's {windows: [{room, x, y, z, aperture, sky}], lamps: [{room, x, y, z, amp, r}]}: a
+//                            skylight at its opening, sky: true (pickPool takes it as a column of light down to the eye)
 //   XACITR.JALI              a jali's open fraction (proposed: patterns/xanadu/jali is owed; tuned after Stage 8)
 var XACITR=(function(){'use strict';
  const R2=v=>Math.round(v*100)/100,R3=v=>Math.round(v*1000)/1000;
  const JALI=.35;           // proposed: the share of a jali's face that is open (a pierced screen of the Mughal kind)
  const INSET=1.35;         // a window's light point this far inside its room (Longsong's export, 94-ls-export.js)
  const SL=.35;             // the citadel's slab (78n xcPlan SL)
- const SKY_FILL=8;         // proposed: a skylight's pool light this far over its room's floor at most (the oculus's opening is 41 m up;
-                           // KROOMLIGHT.pickPool drops a window light more than 26 m from the eye, and lights it 15 m out)
  // the citadel's sites on Erewhon (87-er-layout CIT_SITES: key, at); id the building's short name in every room id
  const SITES=[
   {key:'xa_pleasure_dome',id:'dome',at:[-344,-152]},
@@ -181,11 +180,9 @@ var XACITR=(function(){'use strict';
   // the skylights: the oculus (open to the sky for the light: STACK-PLAN section 7's default; 78b sets a glass disc in it, so
   // it keeps the rain out), the gored vaults' eyes, the stair hall's
   for(const s of SKY){const at=F.pt(s.x,s.z),room=rid(s.room),id=room+'.'+s.what+(s.what==='eye'&&s.room==='pool'?'.'+s.x:'');
-   // its light for the pool (x, y, z): under the opening, no higher than SKY_FILL over the floor (pickPool takes a window light
-   // only within 26 m of the eye, and the oculus is 41 m over the hall's floor: see SKY_FILL)
-   const rec={id,room,kind:s.what,at:[at[0],R2(s.y),at[1]],x:at[0],y:R2(Math.min(s.y-INSET,recs[s.room].y+SKY_FILL)),z:at[1],open:true,glazed:true};
+   const rec={id,room,kind:s.what,at:[at[0],R2(s.y),at[1]],x:at[0],y:R2(s.y),z:at[1],open:true,glazed:true};
    if(s.r!=null)rec.r=R3(s.r);else{rec.w=s.w;rec.d=s.d;}
-   G.skylights.push(rec);recs[s.room].skylight=true;}
+   G.skylights.push(rec);recs[s.room].skylight=true;}   // skylight: a mark for readers; the table takes the sized skylights
   // the lamps: the chandeliers (the light at the crystal's body, 0.75 m under its drop)
   for(const c of DOME_CHANDELIERS(D)){const y=c[2]-c[5]-.75,lv=y>D.Y1?1:0,R=real(P.at(lv,c[1],c[3]));if(!R)throw new Error('XACITR: a chandelier in no room at '+c[1]+','+c[3]);
    const at=F.pt(c[1],c[3]);G.lamps.push({id:rid(R.id)+'.lamp.'+R2(c[1])+'.'+R2(c[3])+'.'+lv,room:rid(R.id),x:at[0],y:R2(y),z:at[1],hang:R2(c[2]),size:c[4],drop:c[5],
@@ -204,14 +201,15 @@ var XACITR=(function(){'use strict';
   return G;}
 
  // ---------------------------------------------------------------- KROOMLIGHT's input
- function tableInput(G,o){o=o||{};const shut=o.leaves!=='open',wins={},lamps={};
-  for(const w of G.windows)(wins[w.room]||(wins[w.room]=[])).push({w:R3(w.w*w.aperture),h:w.h});
+ function tableInput(G,o){o=o||{};const shut=o.leaves!=='open',wins={},lamps={},sky={};
+  for(const w of G.windows)(wins[w.room]||(wins[w.room]=[])).push({w:w.w,h:w.h,aperture:w.aperture});
+  for(const s of G.skylights)(sky[s.room]||(sky[s.room]=[])).push(s.r!=null?{r:s.r}:{w:s.w,d:s.d});
   for(const l of G.lamps)(lamps[l.room]||(lamps[l.room]=[])).push({amp:l.amp,r:l.r});
-  const rooms=G.rooms.map(r=>({id:r.id,box:r.box,outdoor:r.outdoor,vault:r.vault,skylight:r.skylight,
-   doors:r.doors.filter(d=>!(shut&&d.leaf)).map(d=>d.out?{out:true,w:d.w}:{to:d.to,w:d.w})}));
-  return{rooms,windowsOf:r=>wins[r.id]||[],lampsOf:r=>lamps[r.id]||[]};}
- function pool(G){const W=G.windows.map(w=>({room:w.room,x:w.x,y:w.y,z:w.z})).concat(G.skylights.map(s=>({room:s.room,x:s.x,y:s.y,z:s.z})));
+  const rooms=G.rooms.map(r=>({id:r.id,box:r.box,outdoor:r.outdoor,vault:r.vault,
+   doors:r.doors.map(d=>{const q=d.out?{out:true,w:d.w}:{to:d.to,w:d.w};if(shut&&d.leaf)q.shut=true;return q;})}));
+  return{rooms,windowsOf:r=>wins[r.id]||[],lampsOf:r=>lamps[r.id]||[],skylightsOf:r=>sky[r.id]||[]};}
+ function pool(G){const W=G.windows.map(w=>({room:w.room,x:w.x,y:w.y,z:w.z,aperture:w.aperture})).concat(G.skylights.map(s=>({room:s.room,x:s.x,y:s.y,z:s.z,sky:true})));
   return{windows:W,lamps:G.lamps.map(l=>({room:l.room,x:l.x,y:l.y,z:l.z,amp:l.amp,r:l.r}))};}
- return{SITES,DARK,JALI,INSET,SKY_FILL,build,tableInput,pool,xcOpenings};
+ return{SITES,DARK,JALI,INSET,build,tableInput,pool,xcOpenings};
 })();
 if(typeof module!=='undefined'&&module.exports)module.exports=XACITR;

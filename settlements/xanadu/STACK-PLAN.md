@@ -186,7 +186,8 @@ gates 2, 8 per region.
 | **XS2** | The citadel's room graph | Erewhon's citadel rooms as `[G data]`: rooms, doors as portals, windows, the oculus as a skylight, the jali as reduced windows, the lamps, each with its room id; `KROOMLIGHT.buildTable` run on it in a node test with negatives (the oculus lights its room only, a vault-like store stays dark); no page change | nothing (the Erewhon session's re-seat does not move rooms) | 1: **built 2026-11-23** (below) |
 | (phase A) | the settlements | `BUILD-PLAN.md` A1-A10 continue: layouts, records, sheets | | |
 
-**XS2, built (2026-11-23, branch `claude/citadel-room-graph`).** `core/interiors/` taken from the stack unchanged. The graph:
+**XS2, built (2026-11-23, branch `claude/citadel-room-graph`).** `core/interiors/` from the stack: its module as fixed on
+`claude/roomlight-fixes` (below), its `test-roomlight.js` the stack's own (the fixed one needs that branch's Longsong). The graph:
 `settlements/xanadu/citadel/rooms/89yr-xa-citadel-rooms.js` (`XACITR`, `[G data]`), read only by its node test
 `settlements/xanadu/tests/test-citadel-rooms.js` (with `citadel-load.js`): `build.py` takes every digit-named file in `src/`,
 so the fragment stays out of it until XP2 wires it in beside 89y. Rebuilt with and without it, `erewhon.html` and `xanadu.html`
@@ -204,15 +205,17 @@ recording stub), so the data cannot drift from the page unseen.
 - **The table (leaves shut, core/door's default):** 141 roofed rooms lit by day, 9 dark, each named with its reason
   (`XACITR.DARK`): the west range's upper store, the barracks' store, the ice house; the Ramp of the Sultan's tower and its
   two landings; the palace's service stair and its head; **the Court Temple's prayer hall** (rooms on every side, its dome on
-  a solid slab: no opening in the page). The oculus alone lights the hall at 0.66 and only the nine rooms open portals join to
-  it. Every room is reachable on foot.
-- **For the stack's module** (written down, not edited): a window has no aperture (the jali goes in as a narrower window;
-  `pickPool` lights it at full strength); a door has no state (a leaf is filtered out before `buildTable`, so opening one
-  means rebuilding the table); a skylight is a room flag at a fixed 0.66 whatever its size, and `pickPool` drops a window
-  light more than 26 m from the eye, so the oculus 41 m over the hall's floor needs its pool light under it
-  (`XACITR.SKY_FILL`, 8 m over the floor, *proposed*); `buildTable` names two Longsong rooms (`wp.assembly`,
-  `rp.k0.founders`); `STAGE-6-7-REPORT.md` 2.1 describes another `buildTable` (0.24 a window, decay 0.68, 5 hops) than the
-  code's (window area, 0.35 to 0.52 a portal, 32 passes); `test-roomlight.js` declares its own `ok`.
+  a solid slab: no opening in the page). The oculus alone lights the hall at 0.85 (by its open area) and only the nine rooms open portals join
+  to it. Every room is reachable on foot.
+- **The stack's module, fixed (2026-11-23, branch `claude/roomlight-fixes` off `claude/vertical-stack`; this branch carries
+  the same `10-core-roomlight.js`):** a window and a skylight take an `aperture` (the jali's 0.35, *proposed*), in the table
+  and in `pickPool`; a door takes `shut` (or `o.shut(room, door)`, core/door's live state), so a leaf is a wall to the light;
+  a room takes sized `skylights`, and `pickPool` reads a `sky: true` window as a column of light down from its opening (the
+  oculus 41 m up lights the hall's floor; the Godot twin `pick_pool` the same); Longsong's two rooms say `skylight: true` in
+  its own `40c` instead of the module naming them; `STAGE-6-7-REPORT.md` 2.1 describes the code; `test-roomlight.js` is on
+  `tools/ktest.js`. Without the new fields every table is what it was: Longsong's, byte for byte. Still open there: the
+  Godot `pick_pool` was already apart from the JS before (a window's energy 1.25 against 1.35; the night factor), left as
+  it was: looks, after Stage 8.
 - **Owed to the owner, looks for after Stage 8:** the Ramp of the Sultan and the service stair dark by day (a window, a lamp,
   or as built); the prayer hall's light (a lantern under its dome, or its doors open at prayer).
 

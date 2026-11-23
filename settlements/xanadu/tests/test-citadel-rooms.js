@@ -105,14 +105,14 @@ const T0=table();
    '; dark '+t.order.filter(id=>!C.has(id)).length);}
  /* the pool: in the hall the oculus is a near light; next door behind a shut leaf (the harem school, its door on the hall a
     leaf), at the point of the school nearest the oculus, it is not, though it is in range there (the oculus the only candidate:
-    the gate, not the ranking, is what is checked) */
+    the gate, not the ranking, is what is checked; the oculus is 41 m up, a column of light to KROOMLIGHT.pickPool) */
  const P=XACITR.pool(G),hall=byId['cit.dome.hall'];
  const eyeIn=r=>[Math.min(Math.max(oc.x,r.box[0]+.5),r.box[3]-.5),r.box[1]+1.6,Math.min(Math.max(oc.z,r.box[2]+.5),r.box[5]-.5)];
  const pickOc=(tb,eye)=>KROOMLIGHT.pickPool({eye:eyeIn(byId[eye]),eyeRoom:eye,table:tb,windows:P.windows.filter(w=>w.x===oc.x&&w.z===oc.z&&w.y===oc.y),lamps:[],sunUp:1,count:8,maxWindows:4})
-  .some(p=>p.kind==='window'&&near(p.at[0],oc.x)&&near(p.at[2],oc.z)&&near(p.at[1],oc.y));
- const sch=byId['cit.dome.school'],e=eyeIn(sch),d=Math.hypot(e[0]-oc.x,e[1]-oc.y,e[2]-oc.z);
+  .some(p=>p.kind==='window'&&near(p.at[0],oc.x)&&near(p.at[2],oc.z));
+ const sch=byId['cit.dome.school'],e=eyeIn(sch),d=Math.hypot(e[0]-oc.x,Math.max(0,e[1]-oc.at[1]),e[2]-oc.z);   /* a skylight's reach: across, the column down from it */
  const ocPool=tb=>d<26&&sch.doors.some(q=>q.to===hall.id&&q.leaf)&&pickOc(tb,hall.id)&&!pickOc(tb,sch.id)&&!pickOc(tb,'cit.dome.cage');
- T.neg('pickPool: the oculus is a light of the hall\'s pool by day, not of the school\'s behind its shut door ('+d.toFixed(1)+' m from the light)',
+ T.neg('pickPool: the oculus is a light of the hall\'s pool by day, not of the school\'s behind its shut door ('+d.toFixed(1)+' m from its column)',
   ocPool,(()=>{const t=clone(T0);t.byId[sch.id].portals.push(hall.id);return t;})(),T0);
 }
 
