@@ -91,13 +91,27 @@
    },
    "card": false,
    "files": {
+    "cwMap": "taMarble.cw.webp",
     "map": "taMarble.albedo.webp",
     "normalMap": "taMarble.normal.webp",
     "roughnessMap": "taMarble.rough.webp"
    },
    "lib": "stone.marble.ashlar",
    "metal": 0,
+   "mipVariance": [
+    0.0,
+    0.00751,
+    0.01309,
+    0.01378,
+    0.01401,
+    0.01396,
+    0.0139,
+    0.01387,
+    0.01386,
+    0.01386
+   ],
    "normalScale": 1.0,
+   "pomDepth": 0.015,
    "roughLift": 0.2,
    "scale": [
     2.4,

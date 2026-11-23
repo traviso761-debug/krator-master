@@ -130,4 +130,18 @@ T.ok('attribute mode: the room and the mask come per vertex (aRlU, aRlIn), its o
   /float _rlU = vRlU, _rlIn = vRlIn;/.test(ha.sh.fragmentShader) && ha.m.customProgramCacheKey() === '|rla');
 const pool = RL.lightPool({ add() {} }, 3); pool.set([{ at: [1, 2, 3], color: [1, .5, .2], amp: 2, range: 9 }], 0.5);
 T.ok('lightPool: a fixed count of lights, the picks set, the rest dark', pool.lights.length === 3 && pool.lights[0].intensity === 1 && pool.lights[0].distance === 9 && pool.lights[1].intensity === 0);
+/* wirePage: rooms that arrive later are tabled in a fixed column and the meshes near them tagged; new geometry tagged too */
+const WP = (() => { const T3 = H.THREE, scene = new T3.Scene(), rooms = [{ id: 'a', poly: [[0, 0], [4, 0], [4, 4], [0, 4]], y: 0, h: 3 }];
+  const fa = new T3.Mesh(new T3.PlaneGeometry(3, 3).rotateX(-Math.PI / 2), new T3.MeshStandardMaterial()); fa.position.set(2, 0.01, 2); scene.add(fa);
+  const fb = new T3.Mesh(new T3.PlaneGeometry(3, 3).rotateX(-Math.PI / 2), new T3.MeshLambertMaterial()); fb.position.set(12, 0.01, 2); scene.add(fb);
+  H.KROOMLIGHT = KR; vm.runInContext('var KROOMLIGHT = this.KROOMLIGHT;', H);
+  const st = RL.wirePage({ scene, rooms: () => rooms, sunUp: () => 0.25, every: 0 });
+  const uA = fa.geometry.attributes.aRlU.getX(0), inB0 = fb.geometry.attributes.aRlIn.getX(0);
+  rooms.push({ id: 'b', poly: [[10, 0], [14, 0], [14, 4], [10, 4]], y: 0, h: 3 }); st.tick();
+  const grown = new T3.Mesh(new T3.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), new T3.MeshStandardMaterial()); grown.position.set(2, 0.02, 2); scene.add(grown); st.tick();
+  return { st, uA, uA2: fa.geometry.attributes.aRlU.getX(0), inB0, inB1: fb.geometry.attributes.aRlIn.getX(0), grown: grown.geometry.attributes.aRlIn && grown.geometry.attributes.aRlIn.getX(0),
+    hooked: [fa, fb, grown].every(m => /\|rla$/.test(m.material.customProgramCacheKey())) }; })();
+T.ok('wirePage: a room\'s column stays put as rooms arrive (fixed-width table)', WP.uA > 0 && WP.uA === WP.uA2 && WP.st.rooms === 2);
+T.neg('wirePage: a room that arrives later tags the meshes in it (re-tag near new rooms)', r => r.inB1 === 1, Object.assign({}, WP, { inB1: WP.inB0 }), WP);
+T.ok('wirePage: new geometry is tagged and every lit material hooked once; the sun follows the page', WP.grown === 1 && WP.hooked && WP.st.U.uRlSun.value === 0.25);
 T.done();

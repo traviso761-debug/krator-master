@@ -64,6 +64,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `62-plants.js` | 5 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
 | `64-interiors.js` | 78 **big** | 15d. INTERIORS (1); THE PLANNER (225); THE MINIMUM KIT (559); GEOMETRY (708) |
+| `64r-roomlight.js` | 1 | ROOM LIGHT (core/interiors/20-core-roomlight-hos (1) |
 | `65-summit.js` | 2 | 17. THE SUMMIT (1) |
 | `66-canal.js` | 7 | 16b. THE CANAL WORKS (1) |
 | `67-yu-trades.js` | 6 | = (1) |

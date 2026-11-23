@@ -116,6 +116,8 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
 DETERMINISTIC.add('67-yu-trades.js')   # the Voth census table (plain data, no rnd())
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('64r-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
+DETERMINISTIC.add('19-core-roomlight.js')   # core/interiors KROOMLIGHT, under a prefix of its own (no rnd())
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 CORE_FRAGS = set()   # fragments taken from a core/ directory: each is a unit of its own, never grouped with a src/ prefix
 PALETTE_FILE = '05-palette.js'
@@ -281,6 +283,7 @@ def main():
             paths[f] = p
             CORE_FRAGS.add(f)
     # the night light volume, one shared copy (core/interiors/20-core-roomlight-host.js KNLV, K4 of GRAPHICS-TERRAIN-PROPOSAL.md 12d)
+    paths.setdefault('19-core-roomlight.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '10-core-roomlight.js'))   # KROOMLIGHT (Yuni has no interiors bundle)
     paths.setdefault('20-core-roomlight-host.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '20-core-roomlight-host.js'))
     order = sorted(paths)
     bodies = {}

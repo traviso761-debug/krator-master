@@ -4,6 +4,8 @@
  "size": 512,
  "families": {
   "qAshlar": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "stone.sandstone.ashlar",
    "class": "relief",
    "scale": [
@@ -46,6 +48,8 @@
    "roughLift": 0.1
   },
   "qCobble": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "paving.cobblestone_01",
    "class": "relief",
    "scale": [
@@ -60,6 +64,8 @@
    "roughLift": 0.1
   },
   "qFlag": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "paving.flagstone",
    "class": "relief",
    "scale": [
