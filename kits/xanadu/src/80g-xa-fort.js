@@ -84,7 +84,7 @@ function xfTower(t,C,o,id){o=o||{};const f=o.keep==null?1:o.keep,h=t.h*f,x=t.ctr
   for(let i=0;i<5;i++){const a=s.range(-.9,.9)+Math.atan2(out[0]/ol,out[1]/ol),d=R+1.5+s.range(0,4);
    xfSeat('vStone',x+Math.sin(a)*d,z+Math.cos(a)*d,s.range(0,TAU),s.range(-.5,.5),s.range(-.4,.4),[s.range(1,2.4),s.range(.5,1),s.range(.7,1.6)],C.body);}}}
 // ---------------------------------------------------------------- a gate: the gatehouse over the curtain, its iwan and leaves; burnt, gone
-function xfGate(g,c,C,state,main){const ry=g.ry,x=g.at[0],z=g.at[1],GH=XFORT.gateHouse(g,c),gw=GH.w,gd=GH.d,gh=GH.h;   /* the block XFORT.walks ends the walk at */
+function xfGate(g,c,C,state,main,go){go=go||{};const ry=g.ry,x=g.at[0],z=g.at[1],GH=XFORT.gateHouse(g,c),gw=GH.w,gd=GH.d,gh=GH.h;   /* the block XFORT.walks ends the walk at */
  if(state==='gone'){for(const s of[-1,1]){const p=loc(x,z,s*(g.w/2+.8),0,ry);xnWall(p[0],0,p[1],1.6,gh*.35,gd,ry,C.body,C.batKind);}return;}
  const col=state==='burnt'?C.scorch(C.wash):C.wash;xnWall(x,0,z,gw,gh,gd,ry,col,'wash');
  const P=(u,v)=>loc(x,z,u,v,ry),front=P(0,gd/2),back=P(0,-gd/2);
@@ -98,6 +98,9 @@ function xfGate(g,c,C,state,main){const ry=g.ry,x=g.at[0],z=g.at[1],GH=XFORT.gat
   for(let k=0;k<4;k++){const q=P(0,gd/2+.12);vB('vIron',q[0],.8+k*g.w*.3,q[1],g.w*.96,.08,.04,ry,C.iron);}}
  const top=xnFlatRoof(x,gh,z,gw,gd,ry,col,{band:C.dress==='royal'?C.maroon:null,parapet:false});xnCrenel(x,top,z,gw+.1,gd+.1,ry,1.2,col,{pointed:true});
  const rp=P(0,gd/2+.02);xnRoundel(rp[0],gh-1.1,rp[1],ry,1.3);
+ /* the Ancient lamp's cable (beacon:'ancient'): a stone channel cover in the passage's paving, along its west side, out to the
+    lamp ward the page draws outside the gate */
+ if(go.cable){const q=P(-(g.w/2-.45),0);vB('vStone',q[0],0,q[1],.5,.06,gd+.4,ry,C.stone);}
  if(main&&state!=='burnt')xnGiltRoof(x,top,z,Math.min(gw-2,6),Math.min(gd-2,4),ry,{frame:1.6,over:.8});}
 /* the water gate: arches through the curtain with iron grilles, cutwaters before them (Kruk Gill) */
 function xfWaterGate(g,c,C,gone){const ry=g.ry,x=g.at[0],z=g.at[1],P=(u,v)=>loc(x,z,u,v,ry),h=gone?c.h*.4:c.h;
@@ -107,7 +110,7 @@ function xfWaterGate(g,c,C,gone){const ry=g.ry,x=g.at[0],z=g.at[1],P=(u,v)=>loc(
    if(s>0)for(let k=-2;k<=2;k++){const b=P(u+k*.42,(c.t+1.2)/2+.14);vB('vIron',b[0],0,b[1],.07,4.4,.07,ry,C.iron);}}
   const cw=P(u,(c.t+1.2)/2+1.1);vB('vStone',cw[0],0,cw[1],.9,1.6,1.8,ry,C.stone);}}
 // ---------------------------------------------------------------- the keep: white storeys, the red chapel with the gilt roof, the beacon
-function xfKeep(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=xLit()?'lit':'glass',trim=xC(xPick(XPAL.trim));
+function xfKeep(b,C,o){o=o||{};if(o.ancient&&!o.ruined)return xfPlinth(b,C,o);const x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=xLit()?'lit':'glass',trim=xC(xPick(XPAL.trim));
  const n=b.h>=25?5:3,hs=[];for(let i=0;i<n;i++)hs.push(i===0?4.8:4.3);const keepN=o.storeys==null?n:Math.min(n,o.storeys);
  xnWall(x,0,z,w+1.2,1.2,d+1.2,0,C.stone,'dressed');
  const S=xnStack(x,1.2,z,w,d,0,hs.slice(0,keepN),C.wash,'wash');
@@ -115,6 +118,7 @@ function xfKeep(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=xLit()?
   for(let i=0;i<nx;i++)for(const s of[-1,1]){const u=-w*f/2+w*f*(i+.5)/nx;if(s>0&&k===0&&Math.abs(u)<1.8)continue;xnTibWin(x+u,yy+hs[k]*.38,z+s*(d*f/2-.06),s>0?0:Math.PI,.8,1.1,o.ruined?'open':lit,trim,{noVal:true});}
   for(let j=0;j<nz;j++)for(const s of[-1,1]){const v=-d*f/2+d*f*(j+.5)/nz;xnTibWin(x+s*(w*f/2-.06),yy+hs[k]*.38,z+v,s*Math.PI/2,.8,1.1,o.ruined?'open':lit,trim,{noVal:true});}
   yy+=hs[k];}
+ if(o.ruined&&o.ancient)xfLampWreck(x+w/2+2.6,z+1.5,C,KRAND.stream(KRAND.child((o.seed==null?1:o.seed),'lamp')));   /* the Ancient lamp thrown down off its plinth */
  if(o.ruined){xnRoom(x,1.2,z+d/2+.02,1.8,2.6,.06,0);for(let i=0;i<6;i++){const s=KRAND.stream(KRAND.child((o.seed==null?1:o.seed),'keep.top.'+i));vB('xRubB',x+s.range(-w*.35,w*.35),S.y,z+s.range(-d*.35,d*.35),s.range(1,2.4),s.range(.4,1.1),s.range(1,2.2),s.range(0,TAU),C.rubble);}return;}
  xnDoorway(x,1.2,z+d/2+.02,0,1.8,2.6,{c:C.tim});xnFlight(x,0,z+d/2+.6+Math.round(1.2/.17)*.34,0,2.4,1.2,'vStone',C.stone);
  const roof=xnFlatRoof(x,S.y,z,S.w,S.d,0,C.wash,{band:C.maroon,parapet:.6});
@@ -125,6 +129,33 @@ function xfKeep(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=xLit()?
  xnGiltRoof(x,rt-.4,z-S.d*.12,R.w*.62,R.d*.62,0,{frame:1.2,over:.8});
  /* the beacon: an iron fire basket on the roof's front corner */
  if(b.beacon){const bx=x+S.w/2-1.2,bz=z+S.d/2-1.2;vB('vIron',bx,roof,bz,.16,2.2,.16,0,C.iron);kput('xDrumE',[bx,roof+2.2,bz],null,[.55,.6,.55],C.iron);vB('xRubB',bx,roof+2.5,bz,.7,.3,.7,0,xC(0x3a2e24));}}
+/* ---------------------------------------------------------------- the Ancient lamp's plinth (o.beacon:'ancient', 2026-11-23; settlements/beacon
+   KNOWN_ISSUES.md, the Beacon's B6): in the keep's place, on its dressed footing, three white storeys (3.3 + 4.5 + 4.5 m over the
+   1.2 m footing), the Chapel of the Beacon on top (4.5 m, yellow, saffron windows, gilt corners and a gilt finial: the forts' gold
+   rule, the chapel), and on its roof at 18 m the lamp's slewing ring and yoke; the lamp's centre at 22 m. The keep's fire basket
+   goes. The lamp head is the page's (kits/ancients' anc_beacon_lamp, B5): window._xaBeacons has each lamp's centre in the world.
+   The figures are the Beacon's layout's (settlements/beacon/src/30-bc-layout.js draw.plinth, draw.mount, lamp.h) */
+const XF_PLINTH={footing:1.2,storeys:[4.5,4.5,4.5],chapel:4.5,finial:2.2,ring:2.6,ringH:1.2,yoke:2.8,lamp:22,yellow:0xdcb048};
+function xfPlinth(b,C,o){const P=XF_PLINTH,x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=xLit()?'lit':'glass',trim=xC(xPick(XPAL.trim)),gilt=xC(xPick(XPAL.gold)),yel=xC(P.yellow);
+ xnWall(x,0,z,w+1.2,P.footing,d+1.2,0,C.stone,'dressed');
+ const hs=[P.storeys[0]-P.footing].concat(P.storeys.slice(1)),S=xnStack(x,P.footing,z,w,d,0,hs,C.wash,'wash');
+ let yy=P.footing;for(let k=0;k<hs.length;k++){const f=Math.pow(.96,k),n=3;
+  for(let i=0;i<n;i++)for(const s of[-1,1]){const u=-w*f/2+w*f*(i+.5)/n;if(s>0&&k===0&&Math.abs(u)<1.8)continue;
+   xnTibWin(x+u,yy+hs[k]*.36,z+s*(d*f/2-.06),s>0?0:Math.PI,.8,1.1,lit,trim,{noVal:true});xnTibWin(x+s*(w*f/2-.06),yy+hs[k]*.36,z+u,s*Math.PI/2,.8,1.1,lit,trim,{noVal:true});}
+  yy+=hs[k];}
+ xnDoorway(x,P.footing,z+d/2+.02,0,1.8,2.6,{c:C.tim});xnFlight(x,0,z+d/2+.6+Math.round(P.footing/.17)*.34,0,2.4,P.footing,'vStone',C.stone);
+ vB('xBandB',x,S.y-.7,z,S.w+.1,.5,S.d+.1,0,C.maroon);   /* the maroon band under the chapel */
+ const Ch=xnStack(x,S.y,z,S.w,S.d,0,[P.chapel],yel,'wash');
+ for(const s of[-1,1])for(const u of[-2.2,2.2]){xnTibWin(x+u,S.y+1.3,z+s*(S.d/2-.06),s>0?0:Math.PI,.9,1.4,lit,xC(XPAL.saffron),{valC:xC(XPAL.saffron)});
+  xnTibWin(x+s*(S.w/2-.06),S.y+1.3,z+u,s*Math.PI/2,.9,1.4,lit,xC(XPAL.saffron),{valC:xC(XPAL.saffron)});}
+ xnFlatRoof(x,Ch.y,z,Ch.w,Ch.d,0,yel,{band:C.maroon,parapet:.9});
+ for(const sx of[-1,1])for(const sz of[-1,1])vBall('xGold',x+sx*(Ch.w/2-.3),Ch.y+.9,z+sz*(Ch.d/2-.3),.28,gilt);   /* the roof's gilt corners */
+ const fx=x+Ch.w/2-1,fz=z+Ch.d/2-1;vB('vIron',fx,Ch.y,fz,.14,P.finial,.14,0,gilt);vBall('xGold',fx,Ch.y+P.finial,fz,.3,gilt);   /* the gilt finial */
+ kput('xDrumE',[x,Ch.y,z],null,[P.ring,P.ringH,P.ring],C.iron);for(const s of[-1,1])vB('vIron',x+s*1.05,Ch.y+P.ringH,z,.18,P.yoke,.34,0,C.iron);   /* the slewing ring, the yoke */
+ const L=IZDOOR._w(x,Ch.y+P.ringH+P.yoke,z);(window._xaBeacons=window._xaBeacons||[]).push({key:o.lampAt||null,at:L,roof:Ch.y,lampH:Ch.y+P.ringH+P.yoke});}
+/* the lamp head thrown down in a ruin (the stand-in's size: a 1.6 m drum 2.2 m long, white metal), and its ring, seated on their lowest points */
+function xfLampWreck(x,z,C,s){const a=s.range(0,TAU);xfSeat('xDrumE',x,z,a,Math.PI/2,s.range(-.3,.3),[.8,2.2,.8],xC(0xc8ccd0),.05);
+ const r=loc(x,z,2.2,s.range(-1,1),a);xfSeat('xDrumE',r[0],r[1],0,0,0,[1.3,.6,1.3],C.iron,.03);}
 // ---------------------------------------------------------------- a range (barracks, quarters, the Tears' house): two storeys, a colonnade on its ward face
 function xfRange(b,C,o){o=o||{};const x=b.at[0],z=b.at[1],alongZ=b.d>b.w,L=alongZ?b.d:b.w,D=alongZ?b.w:b.d,ry=alongZ?Math.PI/2:0,lit=xLit()?'lit':'glass',trim=xC(XPAL.red);
  const face=alongZ?(x>0?-1:1):(z>0?-1:1),wash=b.kind==='merchant-house'?xC(xPick(XPAL.ochre)):C.wash;   /* the colonnade faces the ward's middle */
@@ -184,7 +215,7 @@ function xfPlanOf(size,o){if(!o||(o.outline==null&&o.gateEdge==null))return XF_P
 /* o.seed is the fort's LOOK (its colours, merlons: reseeded at once); o.damageSeed, when given, is what its damage is hashed
    from (breaches, fallen towers, ragged courses, low walls, wrecks), so one fort can keep its look through its three states
    (the Marches, 2026-11-23); without it the damage takes the look's seed, as before */
-function xfDraw(size,G,o){const P=xfPlanOf(size,o),V=xV(o),st=o.state||XF_STATES[V]||'kept',seed=o.seed==null?XF_SEED[size]+V:o.seed,dseed=o.damageSeed==null?seed:o.damageSeed;reseed(seed);
+function xfDraw(size,G,o){const P=xfPlanOf(size,o),V=xV(o),st=o.state||XF_STATES[V]||'kept',seed=o.seed==null?XF_SEED[size]+V:o.seed,dseed=o.damageSeed==null?seed:o.damageSeed,ancient=o.beacon==='ancient';reseed(seed);
  const C=xfCols(size==='watch'?'march':'royal'),Dm=XFORT.damage(P,st,dseed),gated={};P.gates.forEach(g=>{gated[g.curtain]=(gated[g.curtain]||[]).concat([g]);});
  const nm=VERN.defs[o._key].name;   /* no volume over the whole fort: its wards are open ground (a camera or walker in them stands in no building); its curtains, towers, gates and buildings register their own */
  /* the curtains: whole, breached, or in stubs; a standing fort's walks, the flights onto its towers and its stairs on core/walk
@@ -209,7 +240,7 @@ function xfDraw(size,G,o){const P=xfPlanOf(size,o),V=xV(o),st=o.state||XF_STATES
  P.towers.forEach(t=>{const T=Dm.towers[t.id]||{};vnReg(nm+' — tower',t.ctr[0],t.ctr[1],XFORT.half(t)+.5,t.h*(T.keep==null?1:T.keep)+2,{part:'tower'});xfTower(t,C,Object.assign({seed:dseed},T,{gaps:Wk.gaps[t.id]}),t.id);});
  /* the gates */
  P.gates.forEach(g=>{const c=P.curtains.find(q=>q.id===g.curtain)||P.curtains.find(q=>q.ward==='works');vnReg(nm+' — '+(g.kind==='water'?'water gate':'gate'),g.at[0],g.at[1],g.w/2+2,(c?c.h:7)+4,{part:'gate'});
-  if(g.kind==='water')xfWaterGate(g,c,C,Dm.gates[g.id]==='gone');else xfGate(g,c,C,Dm.gates[g.id]||'kept',g.id===XF_MAIN[size]);});
+  if(g.kind==='water')xfWaterGate(g,c,C,Dm.gates[g.id]==='gone');else xfGate(g,c,C,Dm.gates[g.id]||'kept',g.id===XF_MAIN[size],{cable:ancient&&g.id===XF_MAIN[size]});});
  /* the barbican before the Qiblai Gate (Strongwall): three low walls, the outer opening on its west side */
  if(P.barbican){const b=P.barbican,x0=b.at[0]-b.w/2,x1=b.at[0]+b.w/2,z0=b.at[1]-b.d/2,z1=b.at[1]+b.d/2,S={curtH:6,curtT:2,walk:1.4};
   const wall=(id,a,c2)=>({id,a,b:c2,h:S.curtH,t:S.curtT,out:[0,0]});
@@ -219,7 +250,7 @@ function xfDraw(size,G,o){const P=xfPlanOf(size,o),V=xV(o),st=o.state||XF_STATES
  /* the buildings */
  P.buildings.forEach(b=>{if(b.kind!=='muster')vnReg(nm+' — '+b.kind.replace(/-/g,' '),b.at[0],b.at[1],Math.max(b.w,b.d)/2,(b.h==null?1:b.h)+(b.kind==='keep'?8:1),{part:b.kind});
   const ruined=st==='ruined',burnt=Dm.roofs[b.id]==='burnt';
-  if(b.kind==='keep')xfKeep(b,C,{storeys:Dm.keep&&Dm.keep.storeys,ruined,seed:dseed});
+  if(b.kind==='keep')xfKeep(b,C,{storeys:Dm.keep&&Dm.keep.storeys,ruined,seed:dseed,ancient,lampAt:o._key});
   else if(b.kind==='barracks'||b.kind==='married-quarters'||b.kind==='merchant-house')xfRange(b,C,{ruined,burnt,seed:dseed});
   else xfSmall(b,C,{ruined,seed:dseed});});
  /* the Golden Tears' court: its own low wall on the two sides inside the ward, its gate, its tower */
@@ -271,6 +302,10 @@ const XTAG_FORT=(more)=>({type:['military'].concat(more||[]),wealth:'civic',lit:
 const xfDef=(key,size,name,more)=>{const P=XF_PLANS[size];XA.def({key,name,family:'Forts',tags:XTAG_FORT(more),xfort:size,w:P.w+12,d:P.d+12,h:size==='march'?40:size==='gate'?20:30,fw:P.w,fd:P.d,nv:3,
  build:(G,o)=>xfDraw(size,G,Object.assign({},o,{_key:key}))});};
 xfDef('xa_fort_watch','watch','Watch fort (the Marches\')',['civic']);
+/* the beacon fort (the Beacon's, settlements/beacon): the watch fort with the Ancient lamp's plinth in the keep's place; a page may
+   equally place xa_fort_watch with {beacon:'ancient'} */
+{const P=XF_PLANS.watch;XA.def({key:'xa_fort_beacon',name:'Beacon fort (the Ancient lamp\'s)',family:'Forts',tags:XTAG_FORT(['civic','religious']),xfort:'watch',w:P.w+12,d:P.d+12,h:30,fw:P.w,fd:P.d,nv:3,
+ build:(G,o)=>xfDraw('watch',G,Object.assign({},o,{_key:'xa_fort_beacon',beacon:'ancient'}))});}
 xfDef('xa_fort_march','march','Strongwall (the march fort)',['civic']);
 xfDef('xa_fort_gate','gate','Gate works',['infrastructure']);
 XA.def({key:'xa_fort_post',name:'Watch post (the watch line\'s)',family:'Forts',tags:XTAG_FORT(['infrastructure']),xfort:'post',w:XFORT.post().w+6,d:XFORT.post().d+6,h:12,fw:XFORT.post().w,fd:XFORT.post().d,nv:3,build:xfPost});
@@ -321,4 +356,4 @@ if(typeof KratorInteriors!=='undefined'&&KratorInteriors.sets&&!KratorInteriors.
  const S=KratorInteriors.sets.add({set:'xanadu-fort',title:'Xanadu: the forts (F4)',culture:'xanadu',items:xfIxItems()});
  for(const it of S.items)if(!it.skip)Object.defineProperty(it,'skip',{configurable:true,enumerable:true,
   get:()=>XF_IXSTATE.state==='custom'?'a fort of its own outline (o.outline, o.gateEdge): its buildings stand where this item does not plan them':XF_IXSTATE.state&&XF_IXSTATE.state!=='kept'?'the fort is '+XF_IXSTATE.state+': its stacks have lost storeys or stand as low walls':undefined});
- const p0=VERN.place;VERN.place=function(sc,key,x,z,ry,o){if(!VERN.cur&&/^xa_fort_(watch|march|gate)$/.test(key))XF_IXSTATE.state=o&&(o.outline!=null||o.gateEdge!=null)?'custom':(o&&o.state)||XF_STATES[xV(o||{})]||'kept';return p0.apply(this,arguments);};}
+ const p0=VERN.place;VERN.place=function(sc,key,x,z,ry,o){if(!VERN.cur&&/^xa_fort_(watch|march|gate)$/.test(key))XF_IXSTATE.state=o&&(o.outline!=null||o.gateEdge!=null||o.beacon)?'custom':(o&&o.state)||XF_STATES[xV(o||{})]||'kept';return p0.apply(this,arguments);};}
