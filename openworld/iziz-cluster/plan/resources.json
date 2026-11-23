@@ -91,7 +91,7 @@
     "nodes": 6
    },
    "coal": {
-    "mean": 118.1,
+    "mean": 117.9,
     "good_km2": 5776,
     "rich_km2": 2864,
     "peak": {
@@ -99,11 +99,11 @@
      "x": -56000,
      "z": -58000
     },
-    "nodes": 503
+    "nodes": 502
    },
    "oil": {
-    "mean": 92.8,
-    "good_km2": 4752,
+    "mean": 92.9,
+    "good_km2": 4768,
     "rich_km2": 528,
     "peak": {
      "byte": 178,
@@ -143,7 +143,7 @@
      "x": -36000,
      "z": -126000
     },
-    "nodes": 47
+    "nodes": 46
    },
    "gypsum": {
     "mean": 0,
@@ -190,9 +190,9 @@
     "nodes": 0
    },
    "stone": {
-    "mean": 156,
-    "good_km2": 8496,
-    "rich_km2": 3984,
+    "mean": 156.4,
+    "good_km2": 8512,
+    "rich_km2": 4016,
     "peak": {
      "byte": 255,
      "x": 52000,
@@ -301,8 +301,8 @@
    }
   },
   "farm": {
-   "mean": 0.432,
-   "good_km2": 4576,
+   "mean": 0.434,
+   "good_km2": 4592,
    "best_km2": 2672,
    "peak": {
     "score": 0.885,
@@ -350,10 +350,10 @@
    "why": "the scale model's geology: tin prospectivity 200 on granite ground"
   },
   {
-   "id": "res-mining-coal--48--74",
+   "id": "res-mining-coal--44--74",
    "kind": "mining",
    "family": "coal",
-   "x": -48000,
+   "x": -44000,
    "z": -74000,
    "score": 203,
    "label": "Fuel: coal (rich, 203/255)",
