@@ -25,7 +25,7 @@
 | test_bridges | "a region with no bridges asked plans as before: xanadu-oidong-highrift" | the region's plan hash moved | after the re-run's recut, refresh the expected hash |
 | test-audio | 2 checks: clips without a source page and creator, unknown category | catalogue data | fix core/audio's catalogue records |
 | test-hamlet | harvest.wood unparseable: labyrinth "a bitter", "the berries" | biome species tags | fix biomes/labyrinth's harvest.wood strings |
-| test-slab (seen at step 4) | golden-slab.json is not the module's output | golden stale | node core/terrain/test-slab.js --write after checking the diff is intended |
+| test-slab (seen at step 4) | golden-slab.json is not the module's output | not stale: cross-machine floats (2026-11-23: the parsed values are equal, a few floats differ in the last digit, about 1 ulp, and the test fails at the golden's own commit ec642bf43 on this machine's node v24.20.0) | a `--write` here would only move the failure to the machine that wrote it: round the golden's floats (or compare within a tolerance) in test-slab.js, then rewrite it; check test-lava and test-scarp for the same cause |
 | drum, torus, sw-arcology tests | dist/*.html 0 KB | pages never built here | build them in the rebuild |
 | test-outposts | 8 places moved since the cut | model 5.1 moved pins | update after the re-run |
 | nwbay test-geology | page's nodes not the field's | page older than the geology re-bake | rebuild after the re-run |
