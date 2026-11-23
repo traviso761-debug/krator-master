@@ -104,3 +104,7 @@ Built in step **L3** of the shared target (`../PLAN.md` section 10): the spec ro
 (`tools/fit_lake_town.py hot-bath`), the plan and its verify (`verify.py --assert ?town=hot-bath` on the GPU lane), its
 `bake_towns.py` entry and tile, and the region drawing it. Done when the verify passes, `bake_towns.py hot-bath --check` reads
 the same, the node tests hold its census to the tune, and `tools/check_core_use.py` passes.
+
+**Held 2026-11-23** (step L3): the spec row is written, but the fit's 40 m rest grid cannot carry the 50 m inlet 800 m west
+of the landing, so the shore check fails by 100 m there (`../KNOWN_ISSUES.md`). The town waits for a finer rest grid along the
+shore in `tools/fit_lake_town.py`; its Ālph crossing is the region's at step L6 (`../PLAN.md` section 10).

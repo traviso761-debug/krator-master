@@ -55,7 +55,8 @@ CITY_JS = r"""
    const lo=h(p.x,p.z)-(p.drop||0)-.8,hi=Math.max.apply(null,hs)+1;if(!(p.o.y>=lo&&p.o.y<=hi)){bg++;first=first||(p.id+' '+p.key+' floor '+p.o.y.toFixed(1)+' ground '+hs[0].toFixed(1));}}
   R.push({name:'xl-ground',ok:bg===0,detail:bg?bg+' off their ground, first '+first:'every floor on its ground (its footing under it)'});
   const F=XL.FIT[key],tol=.015*S.world.band;let worst=0,at=null;for(const [x,z,y] of F.check.ring){const e=Math.abs(h(x,z)-y);if(e>worst){worst=e;at=[x,z];}}
-  R.push({name:'xl-world',ok:worst<=tol&&F.check.ring.length>100,detail:'the ground at the footprint\'s edge and the band within '+worst.toFixed(2)+' m of the region\'s ('+F.check.ring.length+' points; worst at '+JSON.stringify(at)+')'});
+  /* a third of the 144 ring points at least: a town whose pin stands far inland of its landing (Pāṭari) has much of its ring over the lake, which the fit leaves out (tests/test-xl-site.js the same) */
+  R.push({name:'xl-world',ok:worst<=tol&&F.check.ring.length>=48,detail:'the ground at the footprint\'s edge and the band within '+worst.toFixed(2)+' m of the region\'s ('+F.check.ring.length+' points; worst at '+JSON.stringify(at)+')'});
   const W=window._xlWater||{};R.push({name:'xl-water',ok:!!W.lake&&(!W.hasStream||!!W.stream),detail:'the lake '+(W.lake?'drawn':'MISSING')+', the stream '+(!W.hasStream?'none (the town has none)':W.stream?'drawn ('+W.streamPts+' points)':'MISSING')});
   const ru=P.filter(p=>p.ruin);if(S.ruins||ru.length){const want=S.ruins?S.ruins.houses:0,n=P.filter(p=>p.kind==='ruin').length;
    R.push({name:'xl-ruins',ok:Math.abs(n-want)<=want*.1&&Q.ruinsWatched>0&&typeof KRUINS!=='undefined',detail:n+' ruined houses (the spec\'s '+want+'), '+ru.filter(p=>p.kind!=='ruin').length+' ruined landmarks, '+(Q.ruinsWatched||0)+' chunks watched by core/ruins'});}}}

@@ -14,7 +14,7 @@
   "kits/xanadu/extra/88e-xa-stall.js",
   "kits/xanadu/extra/88f-xa-harbour.js",
   "kits/xanadu/extra/88g-xa-works.js",
-  "kits/xanadu/extra/88h-xa-landing.js"
+  "kits/xanadu/extra/88h-xa-landing.js", "kits/xanadu/extra/88i-xa-timber-yard.js"
  ],
  "scoped": [
   "69p-kcity-bundle.js",
@@ -77,6 +77,7 @@
   "88f-xa-harbour.js",
   "88g-xa-works.js",
   "88h-xa-landing.js",
+  "88i-xa-timber-yard.js",
   "89-atmos-0-core.js",
   "89-atmos-0p-presets.js",
   "89-atmos-a-waves.js",

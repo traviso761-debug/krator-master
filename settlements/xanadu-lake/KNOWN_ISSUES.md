@@ -54,4 +54,19 @@
 - **The biome core is Xanadu's older copy** (as Phēr's: `settlements/pher/KNOWN_ISSUES.md`): `31b-core-leafset.js` is read
   from core into `gen/` at every build; its MINSET finding (`34-core-impostor.js`) and the `_registered` clash with core/host's
   probe are baselined in `tools/check_assembly_baseline.json`, as Phēr's are.
-- **GPU.** The page was first verified on SwiftShader in a cloud session with no GPU lane; the `KRATOR_GL=gpu` run is owed.
+- **Hoṭ-Bāṭh is held back from step L3** (2026-11-23). Its spec row stands, but it has no fit and no region tile: the region's
+  raw shore 800 m west of its landing has an inlet about 50 m wide (the Ālph's outflow coast), narrower than the fit's 40 m rest
+  grid (`tools/fit_lake_town.py` RES_STEP), so inside the footprint the page's waterline there is 100 m off the region's
+  (`test-xl-site.js`, "the shore within 50 m"). Tried: R 2400, a tighter smoothing (40 m: 1,584 hollow cells), a waterfront
+  of 500 to 700 m. Owed: a finer rest grid along the shore in the fit tool (or a footprint that leaves the inlet to the region,
+  which the town's 1.4 km from its pin does not allow), then `python3 tools/fit_lake_town.py hot-bath` and the step's checks.
+- **The south-east round's footprints are larger where the pin stands far inland.** Pāṭari's pin is 1.9 km above its landing
+  (R 3000 m), Hoṭ-Bāṭh's 1.4 km (R 2400 m), Ālph-Hēḍ's on a point (R 2100 m): the footprint is round the pin, so it has to reach
+  the whole town. Their band rings lose the points over the lake, so `test-xl-site.js` asks a third of the 144, not 100.
+- **The shipwrights' pieces stand out into the lake** (`XL.WATER_KEYS`: Boṭ-Yārḍ's slipways and dry dock, Ālph-Hēḍ's barge
+  slips), as the boat sheds do: the beach between the water and the shore road is too narrow for a 32 m slipway.
+- **Every south-east landing reads `sand`** in the region's coast field, where the plans proposed shelf or shingle; the specs
+  keep the plans' word, the ground is the region's.
+- **Boṭ-Yārḍ's timber yard is a new opt-in piece** (`kits/xanadu/extra/88i-xa-timber-yard.js`, `xa_timber_yard`); Pāṭari needs
+  no clay pit of its own (88g's kiln yard has its pit and sherd heap).
+- **GPU.** The page was first verified on SwiftShader in a cloud session with no GPU lane; the `KRATOR_GL=gpu` run is owed (the north shore's seven by the master session; the south-east round's six from step L3).

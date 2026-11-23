@@ -102,7 +102,7 @@ for (const key of KEYS) {
     (x, z) => { const d = xlShoreZ(key, x) - z, B = G.benches[0]; return d > B.d0 && d < B.d1 && x > B.x0 && x < B.x1 ? xlProf(F, d) : h(x, z); }, h);
   // 4. the band
   const BE = bandErr(h, F), tol = .015 * S.world.band;
-  T.ok(N + ': no step at the band: the ground at the footprint\'s edge (R ' + S.world.R + ' m) and the band\'s (+' + S.world.band + ' m) within ' + tol.toFixed(1) + ' m of the region\'s', BE.worst <= tol && F.check.ring.length > 100,
+  T.ok(N + ': no step at the band: the ground at the footprint\'s edge (R ' + S.world.R + ' m) and the band\'s (+' + S.world.band + ' m) within ' + tol.toFixed(1) + ' m of the region\'s', BE.worst <= tol && F.check.ring.length >= 48,   /* a third of the 144 points at least: a town whose pin stands far inland of its landing (Pāṭari, Hoṭ-Bāṭh) has much of its ring over the lake, which the fit leaves out */
     'worst ' + BE.worst.toFixed(2) + ' m at ' + JSON.stringify(BE.at) + ' over ' + F.check.ring.length + ' points');
   T.neg(N + ': ...its negative: the profile alone (no region rest) is caught', g => bandErr(g, F).worst <= tol, (x, z) => xlProf(F, xlShoreZ(key, x) - z), h);
   // 5. the frame

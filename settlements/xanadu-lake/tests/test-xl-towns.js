@@ -63,7 +63,7 @@ function onStreets(list, ways) { let n = 0, first = null;
   for (const p of list) { if (p.kind === 'stall' || p.water || OVER_WAYS[p.key]) continue; const C = corners(p.bo).concat([p.bo.c]);
     if (ways.some(w => { for (let i = 1; i < w.pts.length; i++) for (const q of C) if (segD(q, w.pts[i - 1], w.pts[i]) < w.w / 2 - 0.05) return true; return false; })) { n++; first = first || p.id; } }
   return { n, first }; }
-const WET_OK = { xa_quay: 1, xa_boatshed: 1, xa_ghat: 1, xa_fish_racks: 1, xa_dye_works: 1 };   /* the dye works' wash runs down the beach too */   /* the racks stand on the beach, their poles' feet may touch the wet sand */
+const WET_OK = { xa_quay: 1, xa_boatshed: 1, xa_ghat: 1, xa_fish_racks: 1, xa_dye_works: 1, xa_slipway: 1, xa_slip: 1, xa_drydock: 1 };   /* the shipwrights' slipways, slips and dry dock stand out into the lake as the sheds do (XL.WATER_KEYS) */   /* the dye works' wash runs down the beach too */   /* the racks stand on the beach, their poles' feet may touch the wet sand */
 const inWater = (key, list) => list.filter(p => !WET_OK[p.key] && corners(p.bo).concat([p.bo.c]).some(q => xlH(key, q[0], q[1]) < 0.2));
 const onStream = (key, G, list) => !G.stream ? [] : list.filter(p => p.key !== 'xa_bridge' && corners(p.bo).concat([p.bo.c]).some(q => { const d = xlShoreZ(key, q[0]) - q[1]; return d > 0 && d < G.stream.to && Math.abs(q[0] - xlStreamXd(G, d)) < 9; }));
 const census = (C, people) => Math.abs(C.houses * XL.HH - people) <= people * 0.1;

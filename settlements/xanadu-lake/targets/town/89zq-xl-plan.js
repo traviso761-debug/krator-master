@@ -62,7 +62,8 @@ const xlEast=(G,d)=>xlStreamXd(G,d)-24;
 // ---------------------------------------------------------------- the civic pieces: [key, x, d (inland of the waterline) | 'water' | 'beach' | 'ghat', ry, why, v]
 // 'water': at the waterline, its deck 1.2 m over the lake (the quays, the sheds, the landing stair); 'beach': on the beach
 // below the shore road; every other piece on its ground by core/city's stance
-XL.WHY={xa_net_loft:'a net loft: the nets laid up and hung to dry on their frames',xa_fermentary:'a fermentary: the cacao sweating in its boxes',
+XL.WHY={xa_timber_yard:'a timber yard: the logs, the saw pit, the planks seasoning',xa_slipway:'a slipway: a hull on the stocks',xa_slip:'a slip: the barges hauled up',xa_drydock:'the dry dock: the Sultan\'s launches',xa_loom_house:'a loom house: thirty looms working',xa_saffron_house:'a saffron house: the drying loft over the picking floor',xa_kiln_yard:'a kiln yard: the kilns, the clay pit, the sherd heap',xa_tea_factory:'a tea factory: the leaf withered, rolled and fired',xa_sulfur_works:'the sulfur works: the crust beds and the melting shed',xa_bath:'the bath house over the hot spring',xa_windmill:'a windmill on the rim',xa_warehouse:'a warehouse',xa_teahouse:'a teahouse',
+ xa_net_loft:'a net loft: the nets laid up and hung to dry on their frames',xa_fermentary:'a fermentary: the cacao sweating in its boxes',
  xa_apiary:'an apiary: the hive walls',xa_reeling_house:'a reeling house: the silk wound off the cocoons',xa_watermill:'a watermill',xa_workshop:'a workshop',
  xa_farm:'a drying floor (the beans spread in the sun)',xa_caravanserai:'the han at the road\'s start',xa_orchard_plot:'an orchard plot',
  xa_ghat:'the landing stair: the broad steps into the lake where the dugouts are drawn up and the washing done',
@@ -70,7 +71,7 @@ XL.WHY={xa_net_loft:'a net loft: the nets laid up and hung to dry on their frame
  xa_shops:'the market\'s hall at the head of the square',xa_bridge:'the footbridge: the shore road over the stream',xa_fish_racks:'the fish racks: the catch drying',
  xa_boatshed:'a boat shed',xa_dye_works:'a dye works: the vats, the coppers, the cloth drying down to the beach',xa_granary:'the town\'s granary (the terraces\' grain and the hub\'s)',
  xa_smithy:'the smithy (the boats\' nails, the hoes)',xa_wayside_shrine:'a wayside shrine at a terrace stair\'s head',xa_serai_ruin:'the old caravan market, left empty when Thalaba moved up'};
-XL.WATER_KEYS={xa_boatshed:1};   /* the beach's pieces that stand out into the lake (the rest stand on the beach) */
+XL.WATER_KEYS={xa_boatshed:1,xa_slipway:1,xa_slip:1,xa_drydock:1};   /* the beach's pieces that stand out into the lake (the rest stand on the beach): the boat sheds, and the shipwrights' slipways, slips and dry dock (L3: Boṭ-Yārḍ, Ālph-Hēḍ's barge slips) */
 // the main stair: the terrace stair nearest the landing
 const xlMain=Lay=>Lay.stairs.reduce((a,b)=>Math.abs(b)<Math.abs(a)?b:a,Lay.stairs[0]);
 // a beach piece fitted between the water and the shore road: the shore's turn across it, half that, then square-on, each set so
