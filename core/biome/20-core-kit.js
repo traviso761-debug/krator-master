@@ -599,7 +599,7 @@ function _crownAO(R){const C=BIO.CROWN_AO;if(!C)return 0;const G=new Map();
    IC[i*3]*=a;IC[i*3+1]*=a;IC[i*3+2]*=a;n++;}}
  return n;}
 BIO._crownAO=_crownAO;
-function _baseGround(K){const C=BIO.BASE_AO,u=K.mat&&K.mat.userData,kind=u&&u.bio&&u.bio.kind;
+function _baseGround(K){const C=BIO.BASE_AO,u=K.mat&&K.mat.userData,kind=u&&u.bio&&u.bio.kind||(u&&u.bioSolid?'solid':null);   /* a solidMat has no export kind: its flag */
  if(!C||BIO.BASE_KINDS.indexOf(kind)<0)return 0;const H=C.h==null?.35:+C.h,lo=C.lo==null?.72:+C.lo;if(!(H>0))return 0;
  const P=K.pos.a,Cc=K.col.a,nt=K.pos.length/9,CELL=8,cache=new Map();
  const top=(x,z)=>{const cx=Math.floor(x/CELL),cz=Math.floor(z/CELL),k=cx*2097152+cz;let v=cache.get(k);
@@ -611,13 +611,25 @@ function _baseGround(K){const C=BIO.BASE_AO,u=K.mat&&K.mat.userData,kind=u&&u.bi
    Cc[q]*=k;Cc[q+1]*=k;Cc[q+2]*=k;n++;}}
  return n;}
 BIO._baseGround=_baseGround;
+// M4's grounding on instances (30-core-foliage.js BIO._groundHook): the instanced items of rock, rod or bark (a solid or bark
+// material) rooted on the ground: of 32 sampled instances, half or more have their lowest point (the origin's height plus the
+// geometry's lowest y along the instance's up axis) within .6 m of the drawn ground. Their materials take the hook; their
+// instances get aGrY at bake (below). An item hung in a tree or set on a rock face is not rooted and stays as it was.
+function _groundItems(){if(!BIO.GROUND_ITEMS||!BIO._groundHook)return 0;let n=0;
+ for(const kn in BIO.kits){const R=BIO.kits[kn];for(const name of R.order){const it=R.items[name],def=R.defs[name];if(!it.count||!def.mat||def.grounded!=null)continue;
+  const u=def.mat.userData||{},k=u.bio&&u.bio.kind;if(!(u.bioSolid||k==='bark')){def.grounded=false;continue;}
+  const g=def.geo;if(!g.boundingBox)g.computeBoundingBox();const minY=g.boundingBox.min.y,IM=it.m.a,st=Math.max(1,Math.floor(it.count/32));let hit=0,tot=0;
+  for(let i=0;i<it.count&&tot<32;i+=st){const o=i*16,bot=IM[o+13]+minY*IM[o+5];tot++;if(Math.abs(bot-BIO.drawnH(IM[o+12],IM[o+14]))<.6)hit++;}
+  def.grounded=tot>0&&hit/tot>=.5;if(def.grounded){BIO._groundHook(def.mat);n++;}}}
+ return n;}
+BIO._groundItems=_groundItems;
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
 BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
  BIO._tagCheck();
  if(BIO.host.tags)for(const kn in BIO.kits){const R=BIO.kits[kn];for(const name of R.order)if(R.defs[name].set==null&&R.items[name].count)BIO._tagItem(name,R.defs[name],kn);}   // put before core/tags loaded
- let crownAO=0,baseAO=0;
+ let crownAO=0,baseAO=0;const grounded=_groundItems();   /* M4: before the instances are copied out */
  for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
  crownAO+=_crownAO(R);   /* B2: before the colours are copied out */
  if(BIO._swardBake)BIO._swardBake(R);   /* B6: the grass the sward grows on, counted before the stores empty */
@@ -630,6 +642,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    const IM=it.m.a,IC=it.c.a,INN=it.n.a,IC2=it.c2.a;idx.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=IM[i*16+q];for(let q=0;q<3;q++){cA[j*3+q]=IC[i*3+q];if(nA)nA[j*3+q]=INN[i*3+q];if(c2A)c2A[j*3+q]=IC2[i*3+q];}const y=IM[i*16+13];if(y<y0)y0=y;if(y>y1)y1=y;});
    if(def.attrs&&nA)geo.setAttribute('aN',new T.InstancedBufferAttribute(nA,3));
    if(def.attrs&&c2A)geo.setAttribute('aC2',new T.InstancedBufferAttribute(c2A,3));
+   if(def.grounded){const gA=new Float32Array(n);idx.forEach((i,j)=>{gA[j]=10000+BIO.drawnH(IM[i*16+12],IM[i*16+14]);});geo.setAttribute('aGrY',new T.InstancedBufferAttribute(gA,1));}   /* M4: the ground under each */
    for(const a in it.x){const X=it.x[a].a,xA=new Float32Array(n*4);idx.forEach((i,j)=>{for(let q=0;q<4;q++)xA[j*4+q]=X[i*4+q];});geo.setAttribute(a,new T.InstancedBufferAttribute(xA,4));}
    const im=new T.InstancedMesh(geo,def.mat,n);
    im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
@@ -662,7 +675,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
  _lodShareBox();_lodFadeBake();
  const a2c=BIO._a2cAuto?BIO._a2cAuto():false;   /* B4: alpha-to-coverage by default, on a page that never asked */
  const sward=BIO._swardAuto?BIO._swardAuto():false;   /* B6: the grass sward, on a page that grows grass and never asked */
- BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length,crownAO,baseAO,a2cAuto:a2c,sward};return BIO.lastBake;};
+ BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length,crownAO,baseAO,grounded,a2cAuto:a2c,sward};return BIO.lastBake;};
 // ONE BOX A CHUNK (2026-10-27, the owner: branches not drawn, foliage floating). A tree keyed by its owner puts its bark (a
 // bucket, boxed by its triangles), its rods and its leaf cards (instanced, boxed by their origins) into the same chunk, but
 // each mesh kept its own height range, so the camera stood at different distances from them and the leaves could switch on
