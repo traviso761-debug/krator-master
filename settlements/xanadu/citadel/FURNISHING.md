@@ -101,6 +101,32 @@ pack (`settlements/xanadu/build.py`, `PICS_PACK`). A hanging's decal paints the 
 (`xanPicPaint` in the Xanadu culture file); where the page has no pack (the catalog sheet, another world, node) it paints the
 stand-in (`xanKublaPaint`, `xanPicStandIn`). This is a stop-gap for image decals in the engine itself, owed in `core/catalog`.
 The earlier, non-Mughal takes (`patterns/easter/*.classic`) are in the library for Talia's art museum, not wired.
+
+## Light: the lamps and the windows set by hand (2026-11-23)
+
+The owner: "we should give the ramp and the stair some kind of light source; same for the temple areas". The room graph
+(XS2, `settlements/xanadu/citadel/rooms`) had found six rooms dark by day with their leaves shut: the Ramp of the Sultan and its
+two landings, the palace's service stair and its head, and the Court Temple's prayer hall. Each now has light of its own, set
+in the citadel's interior set (`kits/interiors/sets/xanadu-citadel.js`: `room.lamps`, `room.wins`), drawn by the builder (78n
+`xcPlan`, the lamps by 78m `xmLamp`) and listed in the graph on its room:
+
+| Room | Lamps | Windows set by hand |
+|---|---|---|
+| the Ramp (`ramp`) | 4 brass wall lanterns, one on each wall its first lap passes, 2.4 m over the run under it | 3 slits (0.5 m) in the back wall over the north run, each sill a metre over the run, stepping up with it |
+| its landing at the Sultan's floor (`ramp_u`) | a mosque lamp from the ceiling (its walls are all openings) | none: it takes the Ramp's light through its rail |
+| its head at the roof (`ramp_t`) | a mosque lamp from the ceiling, clear of the hanging and the rug | none: the same |
+| the service stair (`sstair`) | a lantern on the west wall, one over the flight | 2 lights (0.6 m) in the back wall, one by the flight's foot, one over it |
+| its head (`sland`) | a lantern over the flight's arrival | a light in the east wall over the east range's roof (sill 10.1, the roof 9.6) |
+| the prayer hall (`hall`) | 4 polycandelons and 4 mosque lamps hung round the great chandelier and the skylight columns at the middle; 4 niche lamps on the end walls over the friezes | a clerestory of 22 jali lights in the 4.6 m of wall that rises over the side rooms' roofs, sills 7.6 m up |
+| the kora (`kora`) | 3 mosque lamps down its middle | none (it had windows) |
+
+The Ramp's second lap climbs in the tower's shaft above the room's box and is not a room: it takes the landings' lamps. The
+temple's dome stays on its solid slab (a lantern through it would mean a new ceiling): the clerestory fits the blueprint as it
+is. Every lamp's lowest drawn point is at least 1.1 m over its floor (the hung ones 2.2 m and more); the graph's test
+(`settlements/xanadu/tests/test-citadel-rooms.js`, section 7) checks each lamp against what 78n draws, that each of these rooms
+has one, that every roofed room but the three named stores takes daylight or has a lamp, the 1.1 m rule, and that a window set
+by hand with a room behind its glass is refused. The lamps are the builder's, not the furnisher's: the furnishing pass does not
+see them, so each was set clear of what it places (`furnish_census.js --where <room>` lists a room's pieces with their heights).
 ## Checks
 
 `node settlements/xanadu/citadel/furnish_census.js [--brief] [--assert] [--json f]` furnishes every room of the citadel's

@@ -178,6 +178,38 @@
   };
   const stair = function (id, a, b, w, o) { return Object.assign({ id: id, a: a, b: b, w: w }, o || {}); };
   const fx = function (id, x, z, w, d) { return { id: id, kind: 'stair', x: x, z: z, w: w, d: d, reach: false }; };
+  const roomOf = function (R, id) { const r = R.find(function (q) { return q.id === id; }); if (!r) throw new Error('xanadu-citadel set: no room ' + id); return r; };
+  /* a room's lamps (the owner, 2026-11-23: "we should give the ramp and the stair some kind of light source; same for the
+     temple areas"): the builder draws each (78n xcPlan -> 78m xmLamp), the room graph lists each on its room
+     (settlements/xanadu/citadel/rooms XACITR). room.lamps [{k, x, z, y, ry, top}]: y the light's height (the room's frame),
+     ry the facing into the room, top the ceiling a hung lamp's chain rises to. Given as
+       [k, edge, u, y]     'lantern' (a pierced brass lantern on a bracket) or 'niche' (an oil lamp on a marble niche plate) on
+                           the wall of the edge ('x0', 'x1', 'z0', 'z1'), u along it, y over the floor; a lantern 0.7 m in from the wall line (its bracket
+                           reaches an outer wall's face), a niche lamp 0.45 m (its plate on a partition's face: set it only on one)
+       [k, x, z, y]        'mosque' (a glass mosque lamp on its chains) or 'ring' (a polycandelon: a gilt ring of glass cups)
+                           hung from the ceiling over (x, z), the light y over the floor
+     Anything hung keeps its lowest point 1.1 m over the floor at least (the hanging rule; test-citadel-rooms.js) */
+  const roomLamps = function (R, id, list) {
+    const r = roomOf(R, id), xs = r.poly.map(function (p) { return p[0]; }), zs = r.poly.map(function (p) { return p[1]; });
+    const b = [Math.min.apply(null, xs), Math.max.apply(null, xs), Math.min.apply(null, zs), Math.max.apply(null, zs)], top = r3(r.y + r.h);
+    r.lamps = (r.lamps || []).concat(list.map(function (L) {
+      if (L[0] === 'mosque' || L[0] === 'ring') return { k: L[0], x: L[1], z: L[2], y: r3(r.y + L[3]), ry: 0, top: top };
+      const e = L[1], u = L[2], y = r3(r.y + L[3]), off = L[0] === 'niche' ? 0.45 : 0.7;
+      if (e === 'z0') return { k: L[0], x: u, z: r3(b[2] + off), y: y, ry: 0 };
+      if (e === 'z1') return { k: L[0], x: u, z: r3(b[3] - off), y: y, ry: r3(Math.PI) };
+      if (e === 'x0') return { k: L[0], x: r3(b[0] + off), z: u, y: y, ry: r3(Math.PI / 2) };
+      if (e === 'x1') return { k: L[0], x: r3(b[1] - off), z: u, y: y, ry: r3(-Math.PI / 2) };
+      throw new Error('xanadu-citadel set: lamp edge ' + e);
+    }));
+  };
+  /* windows set by hand where xcPlan's rule draws none (78n "windows:"), each on a wall with nothing behind it over its glass
+     (the room graph's build throws otherwise): room.wins [{e, u, sill, top, w}], sill and top in the room's frame. Given as
+     [edge, [u, ...], sill, top, w] with sill and top over the floor: the Ramp's slits stepping up with it, the service stair's
+     lights, the stair head's light over the east range's roof, the prayer hall's clerestory over its side rooms' roofs */
+  const roomWins = function (R, id, list) {
+    const r = roomOf(R, id); r.wins = r.wins || [];
+    for (const L of list) for (const u of L[1]) r.wins.push({ e: L[0], u: u, sill: r3(r.y + L[2]), top: r3(r.y + L[3]), w: L[4] });
+  };
   const L = [];
   const add = function (it) { L.push(Object.assign({ culture: 'xanadu' }, it)); return it; };
 
@@ -280,6 +312,21 @@
       let s = 0; for (let i = 0; i + 1 < P.length; i++) { const l = Math.hypot(P[i + 1][0] - P[i][0], P[i + 1][1] - P[i][1]);
         ramp.push(stair('ramp' + ramp.length, [P[i][0], P[i][1], r3(lap[0] + (lap[1] - lap[0]) * s / tot)], [P[i + 1][0], P[i + 1][1], r3(lap[0] + (lap[1] - lap[0]) * (s + l) / tot)], 2.8, { ramp: true })); s += l; }
     }
+    /* the light on the Ramp, its landings and the service stair (2026-11-23; they were dark by day with their leaves shut):
+       on the Ramp's first lap a lantern on each wall it passes, 2.4 m over the run under it (the run rises 7.55 m in 52 m:
+       0.45 + 7.55 s / 52), and three slits in the back wall over its north run, each sill a metre over the run, stepping up
+       with it (the second lap climbs in the tower's shaft above the room); on the landings, whose walls are all openings, a
+       mosque lamp from the ceiling clear of the hanging; on the service stair a lantern on the west wall and one over the
+       flight, and two lights in its back wall (the edge too short for the rule's window); on its head a lantern over the
+       flight's arrival and a light in the east wall over the east range's roof (9.6) */
+    roomLamps(R, 'ramp', [['lantern', 'z1', -18.5, 3.05], ['lantern', 'x1', -30, 4.35], ['lantern', 'z0', -21, 5.9], ['lantern', 'z0', -25, 6.45]]);
+    roomWins(R, 'ramp', [['z0', [-19], 4.2, 5.8, 0.5], ['z0', [-23], 4.75, 6.35, 0.5], ['z0', [-27], 5.35, 6.5, 0.5]]);
+    roomLamps(R, 'ramp_u', [['mosque', -23, -24.4, 3.0]]);
+    roomLamps(R, 'ramp_t', [['mosque', -22, -24.4, 2.55]]);
+    roomLamps(R, 'sstair', [['lantern', 'x0', -31.5, 3.0], ['lantern', 'x1', -33.5, 4.5]]);
+    roomWins(R, 'sstair', [['z0', [27.2], 1.4, 3.4, 0.6], ['z0', [29.5], 4.0, 6.0, 0.6]]);
+    roomLamps(R, 'sland', [['lantern', 'z0', 28.0, 2.6]]);
+    roomWins(R, 'sland', [['x1', [-24.5], 2.1, 4.0, 1.0]]);
     add({ key: 'xa_cit_palace', name: "Sultan's Palace (the citadel)", wealth: 0.9, types: ['civic', 'military', 'single-family dwelling'], lot: [112, 100],
       rooms: R, stairs: [SW, SE, stair('service', [29.5, -37.2, FL], [29.5, -24.6, PU], 1.3)].concat(ramp),
       cit: { kind: 'palace', curtain: [110, 90], FL: FL, RU: RU, PU: PU, TY: TY, rangeTop: r3(RU + RH + 0.4), blockTop: TY, ochreTop: r3(TY + OH + 0.4) },
@@ -383,6 +430,17 @@
     link(R, 'porch', 'street', [0, 22], 3.2, { h: 4.4 }); link(R, 'porch', 'hall', [0, 14], 3.4, { h: 5 });
     link(R, 'porch', 'priests', [-25, 14], 1.4); link(R, 'porch', 'vestry', [25, 14], 1.4);
     link(R, 'kora', 'priests', [-20, -19], 1.6); link(R, 'kora', 'vestry', [20, -19], 1.6); link(R, 'hall', 'kora', [0, -16], 2, { h: 3 });
+    /* the prayer hall's light (2026-11-23; it had no opening at all: the porch, the kora and the side rooms on every side, the
+       dome on a solid slab over the star ceiling): a clerestory of jali lights in the 4.6 m of its walls that rise over the
+       side rooms' roofs (the porch's at 6.95, the others' at 5.95, the parapet at 6.95), sills 7.6 m up; four polycandelons
+       and four mosque lamps hung round the great chandelier and the skylight columns that the furnisher stands at the
+       middle; four niche lamps on the end walls over the friezes and rugs (to 2.7 m). Three mosque lamps down the kora */
+    roomWins(R, 'hall', [['z0', [-15, -9, -3, 3, 9, 15], 7.6, 9.6, 1.2], ['z1', [-15, -9, -3, 3, 9, 15], 7.6, 9.6, 1.2],
+      ['x0', [-13, -7, -1, 5, 11], 7.6, 9.6, 1.2], ['x1', [-13, -7, -1, 5, 11], 7.6, 9.6, 1.2]]);
+    roomLamps(R, 'hall', [['ring', -10, -8.5, 5.5], ['ring', 10, -8.5, 5.5], ['ring', -10, 6.5, 5.5], ['ring', 10, 6.5, 5.5],
+      ['mosque', 0, -11, 4.2], ['mosque', 0, 9, 4.2], ['mosque', -14, -1, 4.2], ['mosque', 14, -1, 4.2],
+      ['niche', 'z0', -8, 3.4], ['niche', 'z0', 8, 3.4], ['niche', 'z1', -8, 3.4], ['niche', 'z1', 8, 3.4]]);
+    roomLamps(R, 'kora', [['mosque', -12, -19, 3.3], ['mosque', 0, -19, 3.3], ['mosque', 12, -19, 3.3]]);
     add({ key: 'xa_cit_temple', name: 'Court Temple (the citadel)', wealth: 0.75, types: ['religious'], lot: [62, 54], rooms: R, stairs: [],
       cit: { kind: 'temple', FL: FL }, note: 'E6: the prayer hall under its star ceiling and lantern, the tiled porch behind the great iwan, the drum circuit behind, the priests\' rooms and the vestry' });
   })();

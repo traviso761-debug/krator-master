@@ -207,6 +207,14 @@ recording stub), so the data cannot drift from the page unseen.
   two landings; the palace's service stair and its head; **the Court Temple's prayer hall** (rooms on every side, its dome on
   a solid slab: no opening in the page). The oculus alone lights the hall at 0.85 (by its open area) and only the nine rooms open portals join
   to it. Every room is reachable on foot.
+- **Lit since (2026-11-23, branch `claude/citadel-furnishing-cb5e01`; the owner: "we should give the ramp and the stair some
+  kind of light source; same for the temple areas"):** the six are no longer dark. The citadel's set gives a room its own lamps
+  (`room.lamps`: wall lanterns, niche lamps, mosque lamps, polycandelons; 78n draws them through 78m `xmLamp`) and windows set
+  by hand where the rule draws none (`room.wins`: the Ramp's three slits, the service stair's two lights and its head's one
+  over the east range's roof, the prayer hall's clerestory of 22 jali lights over its side rooms' roofs); XACITR reads both. Now
+  851 windows (278 jali), **50 lamps** (24 set in rooms: the Ramp 4, its landings 1 each, the stair 2, its head 1, the hall 12,
+  the kora 3), and 3 rooms dark, the three stores. `test-citadel-rooms.js` section 7 holds it (23 checks);
+  `settlements/xanadu/citadel/FURNISHING.md`, "Light", has the room-by-room table.
 - **The stack's module, fixed (2026-11-23, branch `claude/roomlight-fixes` off `claude/vertical-stack`; this branch carries
   the same `10-core-roomlight.js`):** a window and a skylight take an `aperture` (the jali's 0.35, *proposed*), in the table
   and in `pickPool`; a door takes `shut` (or `o.shut(room, door)`, core/door's live state), so a leaf is a wall to the light;

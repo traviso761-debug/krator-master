@@ -8,6 +8,7 @@
      node settlements/xanadu/citadel/furnish_census.js --brief      one line per building
      node settlements/xanadu/citadel/furnish_census.js --assert     exit 1 when a check fails
      node settlements/xanadu/citadel/furnish_census.js --json f     the census as JSON
+     node settlements/xanadu/citadel/furnish_census.js --where k    where each piece of key k, or each piece in the room whose id ends .k, stands
 
    The checks (FURNISHING.md, "Checks"):
      audit     IX.audit on every room: every piece inside, clear of the others and of the doors, every piece reached
@@ -93,8 +94,9 @@ const out = run(`const NEWKEYS = ${JSON.stringify(NEWKEYS)}, WHERE = ${JSON.stri
       const audit = IX.audit(R, P, C), hems = [], floats = [];
       for (const p of P.placements) {
         keys[p.key] = (keys[p.key] || 0) + 1;
-        if (WHERE && p.key === WHERE) where.push({ room: R.id, x: Math.round(p.x * 100) / 100, z: Math.round(p.z * 100) / 100, ry: Math.round(p.ry * 1000) / 1000, poly: R.poly });
         const A = FURN_BY_KEY[p.key], m = measure(p.key, p.variant | 0), lo = p.y + m.lo - fy;
+        if (WHERE && (p.key === WHERE || R.id.slice(-WHERE.length - 1) === '.' + WHERE)) where.push({ key: p.key, room: R.id, x: Math.round(p.x * 100) / 100, z: Math.round(p.z * 100) / 100,
+          ry: Math.round(p.ry * 1000) / 1000, lo: Math.round(lo * 100) / 100, hi: Math.round((p.y + m.hi - fy) * 100) / 100, anchor: A.anchor || 'floor', poly: R.poly });
         if (A.anchor === 'wall' && HUNG.indexOf(A.type) >= 0 && (ceil - fy) >= m.hi - m.lo + HEM + 0.3 && lo < HEM - 1e-3) hems.push({ key: p.key, hem: Math.round(lo * 100) / 100 });
         if ((A.anchor || 'floor') === 'floor' && Math.abs(lo) > 0.02) floats.push({ key: p.key, lo: Math.round(lo * 100) / 100 });
         if (A.anchor === 'surface' && !p.host) floats.push({ key: p.key, lo: 'no host' });
@@ -154,7 +156,7 @@ const out = run(`const NEWKEYS = ${JSON.stringify(NEWKEYS)}, WHERE = ${JSON.stri
   return JSON.stringify({ res: res, zf: zf, where: where });
 })()`, 'census.js');
 const OUT = JSON.parse(out), res = OUT.res;
-if (WHERE) for (const w of OUT.where) console.log('WHERE ' + WHERE + ' in ' + w.room + ' at ' + w.x + ', ' + w.z + ' ry ' + w.ry + ' poly ' + JSON.stringify(w.poly));
+if (WHERE) for (const w of OUT.where) console.log('WHERE ' + w.key + ' in ' + w.room + ' at ' + w.x + ', ' + w.z + ' ry ' + w.ry + ' (' + w.anchor + ', ' + w.lo + '..' + w.hi + ' m over the floor) poly ' + JSON.stringify(w.poly));
 let fails = 0, rooms = 0, pieces = 0;
 for (const B of res) {
   const n = B.rooms.reduce((a, r) => a + r.pieces, 0); pieces += n; rooms += B.rooms.length;

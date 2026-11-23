@@ -4,7 +4,8 @@
    The graph is checked against what the page draws (citadel-load.js runs the kit's 78d and 78n under a recording stub), then
    the table: every room reachable on foot or named dark; the Pleasure Dome's oculus lights its own room and only what an open
    portal joins to it; a windowless store at daylight 0; a jali window a reduced aperture; pickPool never reaches through a
-   wall. Each claim has a negative: the check fails on a fault and passes on the fix (tools/ktest.js).
+   wall; the lamps and windows set by hand (2026-11-23) are 78n's, each room once dark has a lamp, anything hung keeps 1.1 m
+   under it. Each claim has a negative: the check fails on a fault and passes on the fix (tools/ktest.js).
    Run: node settlements/xanadu/tests/test-citadel-rooms.js */
 'use strict';
 const fs=require('fs'),path=require('path');
@@ -70,10 +71,10 @@ const T0=table();
  const darkOk=g=>{const t=KROOMLIGHT.buildTable(XACITR.tableInput(g)),z=t.order.filter(id=>t.byId[id].interior&&t.byId[id].daylight===0);
   return z.length===Object.keys(g.dark).length&&z.every(id=>g.dark[id]);};
  T.neg('the rooms at daylight 0 (the leaves shut) are exactly the '+Object.keys(G.dark).length+' named dark, each with its reason',
-  darkOk,(()=>{const g=clone(G);delete g.dark['cit.temple.hall'];return g;})(),G);
+  darkOk,(()=>{const g=clone(G);delete g.dark['cit.kitchens.ice'];return g;})(),G);
  const lit=T0.order.filter(id=>T0.byId[id].interior&&T0.byId[id].daylight>0).length;
- T.ok('the leaves open, every room but the Ramp\'s tower and its landings takes some daylight',(()=>{const t=table(G,{leaves:'open'});
-  return t.order.filter(id=>t.byId[id].interior&&t.byId[id].daylight===0).every(id=>/^cit\.palace\.ramp/.test(id));})());
+ T.ok('the leaves open, every room takes some daylight (the Ramp\'s tower and its landings too since its slits, 2026-11-23)',(()=>{const t=table(G,{leaves:'open'});
+  return t.order.filter(id=>t.byId[id].interior&&t.byId[id].daylight===0).length===0;})());
  console.log('      rooms '+G.rooms.length+' ('+G.rooms.filter(r=>!r.outdoor).length+' roofed, '+G.rooms.filter(r=>r.outdoor).length+' open courts and terraces); by day, leaves shut: '+lit+' lit, '+Object.keys(G.dark).length+' dark');
 }
 
@@ -152,7 +153,40 @@ const T0=table();
   wallOk,(()=>{const t=clone(T0),[a,b]=pairs[0];t.byId[a.id].portals.push(b.id);return t;})(),T0);
 }
 
-/* ---------------------------------------------------------------- 7. the counts (STACK-PLAN.md section 9, XS2's row) */
+/* ---------------------------------------------------------------- 7. the lamps and the windows set by hand (2026-11-23)
+   The owner: "we should give the ramp and the stair some kind of light source; same for the temple areas". The Ramp, its two
+   landings, the service stair and its head, and the prayer hall were dark by day with their leaves shut; each now has a lamp
+   (room.lamps, drawn by 78m xmLamp) and, where its walls allow, a window set by hand (room.wins) */
+{
+ const LIT=['cit.palace.ramp','cit.palace.ramp_u','cit.palace.ramp_t','cit.palace.sstair','cit.palace.sland','cit.temple.hall','cit.temple.kora'];
+ /* the graph's lamps are the lamps 78n draws: per building, one record for every xmLamp call, at its light */
+ const lampsMatch=g=>XACITR.SITES.filter(S=>S.id!=='dome').every(S=>{const s=site(S.id),mine=g.lamps.filter(l=>l.room.indexOf('cit.'+S.id+'.')===0&&l.what!=='lamp post'),D=drawn.cit[S.id].lamps;
+  return mine.length===D.length&&D.every(d=>mine.some(l=>near(l.x-s.at[0],d.x)&&near(l.z-s.at[1],d.z)&&near(l.y,d.y)&&l.what===XACITR.XC_LAMP[d.k].what&&(d.top==null||near(l.hang,d.top))));});
+ T.neg('every lamp a room sets is a lamp 78n draws, at its light ('+G.lamps.filter(l=>l.src==='drawn'&&l.what!=='lamp post'&&l.room.indexOf('cit.dome.')<0).length+' in the citadel\'s buildings)',
+  lampsMatch,(()=>{const g=clone(G);g.lamps.splice(g.lamps.findIndex(l=>l.room==='cit.temple.hall'),1);return g;})(),G);
+ /* each room the owner named has a light of its own: a lamp in it */
+ const eachLamp=g=>LIT.every(id=>g.lamps.some(l=>l.room===id));
+ T.neg('the Ramp, its two landings, the service stair, its head, the prayer hall and the kora each have a lamp ('+LIT.map(id=>id.split('.').pop()+' '+G.lamps.filter(l=>l.room===id).length).join(', ')+')',
+  eachLamp,(()=>{const g=clone(G);g.lamps=g.lamps.filter(l=>l.room!=='cit.palace.ramp_u');return g;})(),G);
+ /* and every roofed room that is not a store has a lamp or daylight with its leaves shut (the stores stay dark, named) */
+ const noneUnlit=g=>{const t=KROOMLIGHT.buildTable(XACITR.tableInput(g));return g.rooms.filter(r=>!r.outdoor&&r.kind!=='store'&&!g.dark[r.id]).every(r=>t.byId[r.id].daylight>0||g.lamps.some(l=>l.room===r.id));};
+ T.neg('every roofed room but the named stores takes daylight or has a lamp',noneUnlit,(()=>{const g=clone(G);g.windows=g.windows.filter(w=>w.room!=='cit.temple.hall');g.lamps=g.lamps.filter(l=>l.room!=='cit.temple.hall');return g;})(),G);
+ /* the hanging rule: anything hung keeps its lowest drawn point 1.1 m over its floor at least */
+ const hemOk=g=>g.lamps.filter(l=>l.low!=null).every(l=>{const r=g.rooms.find(q=>q.id===l.room);return l.low>=r.box[1]+1.1-1e-6;});
+ const lows=G.lamps.filter(l=>l.low!=null).map(l=>l.low-byId[l.room].box[1]);
+ T.neg('every lamp set in a room keeps its lowest point 1.1 m over the floor at least (the lowest '+Math.min(...lows).toFixed(2)+' m)',
+  hemOk,(()=>{const g=clone(G);const l=g.lamps.find(q=>q.room==='cit.palace.ramp_t');l.low=byId['cit.palace.ramp_t'].box[1]+.6;return g;})(),G);
+ /* a window set by hand has nothing behind its glass: the graph's build refuses one that would cut into a room */
+ const IXs=L.IX.sets,hall=IXs.find('xa_cit_temple').rooms.find(r=>r.id==='hall');
+ const buildsWith=sill=>()=>{const it=clone(IXs.find('xa_cit_temple')),h=it.rooms.find(r=>r.id==='hall');h.wins=[{e:'z1',u:0,sill,top:sill+2,w:1.2}];
+  XACITR.build({item:k=>k==='xa_cit_temple'?it:IXs.find(k),XPDOME:L.XPDOME,plan:L.plan});return true;};
+ T.neg('a window set by hand with a room behind its glass (the prayer hall\'s, low enough to look into the porch) is refused',
+  f=>f(),buildsWith(hall.y+2),buildsWith(hall.y+7.6));
+ const hw=G.windows.filter(w=>LIT.includes(w.room));
+ console.log('      by hand: '+LIT.map(id=>id.slice(4)+' '+G.lamps.filter(l=>l.room===id).map(l=>l.what).join('/')+(G.windows.some(w=>w.room===id)?', '+G.windows.filter(w=>w.room===id).length+' windows':'')).join('; ')+' ('+hw.length+' windows in all)');
+}
+
+/* ---------------------------------------------------------------- 8. the counts (STACK-PLAN.md section 9, XS2's row) */
 {
  const n=k=>G.rooms.filter(r=>r.building===k).length,by=XACITR.SITES.map(s=>s.id+' '+n(s.id)).join(', ');
  const lampsIn=G.lamps.filter(l=>!byId[l.room].outdoor).length;
