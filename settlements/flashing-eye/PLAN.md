@@ -251,6 +251,36 @@ to four days.
 **Stores.** The bench eats about 40 t of grain a year from below (section 4.1): about 400 mule loads, one or two a day.
 The granary on the bench holds a winter. Fuel comes from the Order's woodlot on the cone's upper flanks (`Cfb`, 12 °C).
 
+### 2.7 The revamp (the owner, 2026-11-23)
+
+The owner, with four references (two sketches of a white complex of red-roofed towers climbing a crag, a painted tall white
+tower under a round cap, a photograph of a tall Bhutanese tower of window bays): "can we revamp the design so it's more like the
+two pics of the complex with red-tipped / red roofed towers? and add tall towers similar to the other two"; then "i want there to
+be a sequence of rope bridges to reach the main monastery with a shrine on each step"; then "make those stacks look like more of a
+natural extension of the terrain and cliff face". What changed (the layout and the page; everything below is *proposed* in its
+details):
+
+- **The style.** White-washed walls, a teal frieze with red roundels, the Order's crimson in the cornices and bands, and **red
+  tiled roofs with upturned eaves** (the library's `roof.tile`, tinted red), **tiered** on the towers and gates (`src/89qe-fe-roofs.js`).
+- **The terraces.** The precinct climbs the slope in three terraces: the Lip terrace (the Lip Range, the courts) at the bench's
+  1,660 m, the middle (the Red Monastery and its ranges) at +4 m, the upper (the Ember Tower, the granary, the infirmary, the
+  Mirror School) at +9 m, with a stair on the axis between each. This also answers question 16 (*proposed*).
+- **The towers.** The **Mirror Tower** (the first reference: tall, white, tapering, a crimson band, an open lantern under a round
+  red cap; the readers' mirrors in the lantern) at the Lip Range's west end; the **Labrang Tower** (the second: the painted window
+  bays one over another, the crimson band, a gallery on brackets, a broad red roof; the Prismarch's floors) at its east end; four
+  **corner towers** under two red tiers, the two on the Lip on battered bases down the face. The **Hall of the Ember** becomes the
+  **Ember Tower**, the tallest roof of the house: a white tower under three red tiers over the hall, its gilt finial the sanctum's.
+  The **Eye Post** on the rim takes the first reference's form.
+- **The Red Monastery** is the Order's own temple on the Qiblai kit's 52 m plan (`qb_fe_temple`): white ranges under red roofs
+  round the court, the gate tower and the Assembly Hall under two tiers, the gilt crown on the hall.
+- **The Way of Shrines** replaces the Cleft Stair. A **spur** of the coulee's columns runs out of the band under the Gate of the
+  Rift into the apron, an arete (`FLASHING_EYE.ground`: its crest, flanks at the colonnade's angle, a talus fan; it only raises the
+  ground and joins the face). Six **gendarmes** rise from its crest, each step 30 m higher, a **shrine on each top**, named for the
+  Song's last lines: Beware, the Floating Hair, the Flashing Eyes, the Circle Thrice, Holy Dread, the Dome in Air. A stair climbs the
+  spur's nose from the Stair of the Eye; on each stack a stair winds 25 m from the landing on the crest to its shrine; a **rope
+  bridge** runs 5 m up from each shrine to the next landing, and the last lands at the Gate of the Rift. The mules still go round the
+  band's west end.
+
 ## 3. The site in numbers
 
 **The method** (the Beacon plan's): the ground from `tools/scale-model/model/data/h.png`, decoded as `smodel.page.heights`

@@ -42,15 +42,24 @@ const feC=b=>[(b[0]+b[1])/2,(b[2]+b[3])/2];
 function feRange(id,v,st,o){const P=fePart(id),b=P.box,c=feC(b),du=b[1]-b[0],dv=b[3]-b[2],turn=du>dv*1.4;
  const ry=o&&o.ry!=null?o.ry:(turn?Math.PI/2:0),w=turn?du:dv,d=turn?dv:du;
  return fePut('qb_fe_range',c[0],c[1],ry,Object.assign({v,st,w:w-.6,d:d-.6,name:P.name},o||{}),P.zone==='bench'?'house':'cap',id,P.zone!=='bench');}
-// the bench (y 0: FLASHING_EYE.ground holds it level)
-fePut('qb_fe_lip_range',-7,0,0,{len:120},'house','lip-range');
-{const M=fePart('monastery');fePut('qb_monastery',M.host.centre[0],M.host.centre[1],0,{v:M.host.v},'sacred','red-monastery');}
-fePut('qb_fe_ember',-118,0,0,{},'sacred','ember');
-fePut('qb_fe_gate',-3,-75,0,{w:8,d:5,st:1,name:'The Gate of the Rift'},'gate','g.rift');
-fePut('qb_fe_gate',-87,-90,Math.PI/2,{w:10,d:8,st:2,name:'The Mule Gate'},'gate','g.mule');
-fePut('qb_fe_gate',-145,0,Math.PI,{w:10,d:10,st:2,name:'The Gate of Breath'},'gate','g.breath');
-for(const [id,v,st] of[['granary',1,2],['infirmary',1,2],['kitchen',1,2],['refectory',1,1],['bath',1,1],['woodstore',1,1],['chapter',0,3],['novices',0,2],['school',0,2]])feRange(id,v,st);
-{const c=feC(fePart('founders').box);fePut('qb_chorten',c[0],c[1],0,{v:0},'sacred','founders');}
+// the bench: each building on its terrace's level (FLASHING_EYE.ground holds each level; the layout's terraces)
+const feTY=u=>FLASHING_EYE.terraceY(FE.L,u);
+const feAt=id=>{const c=feC(fePart(id).box);return{u:c[0],v:c[1],y:feTY(c[0])};};
+fePut('qb_fe_lip_range',-7,0,0,{len:120,y:0},'house','lip-range');
+{const M=fePart('monastery');fePut('qb_fe_temple',M.host.centre[0],M.host.centre[1],0,{v:M.host.v,y:feTY(M.host.centre[0])},'sacred','red-monastery');}
+{const em=feAt('ember');fePut('qb_fe_ember',em.u,em.v,0,{y:em.y},'sacred','ember');}
+{const t=feAt('tw.mirror');fePut('qb_fe_tower',t.u,t.v,0,{style:'round',W:10,H:24,mirror:3,y:0,name:'The Mirror Tower'},'tower','tw.mirror');}
+{const t=feAt('tw.labrang');fePut('qb_fe_tower',t.u,t.v,0,{style:'bays',W:11,H:26,bays:6,mirror:true,y:0,name:'The Labrang Tower'},'tower','tw.labrang');}
+for(const id of['tw.nw','tw.ne','tw.sw','tw.se']){const P=fePart(id),t=feAt(id);fePut('qb_fe_tower',t.u,t.v,0,{style:'pagoda',W:8,H:12,drop:P.drop,y:P.drop?0:t.y,name:P.name},'tower',id);}
+fePut('qb_fe_gate',-3,-80,0,{w:8,d:5,st:1,y:0,name:'The Gate of the Rift'},'gate','g.rift');
+fePut('qb_fe_gate',-87,-90,Math.PI/2,{w:10,d:8,st:2,y:feTY(-87),name:'The Mule Gate'},'gate','g.mule');
+fePut('qb_fe_gate',-145,0,Math.PI,{w:10,d:10,st:2,y:feTY(-140),name:'The Gate of Breath'},'gate','g.breath');
+for(const [id,v,st] of[['granary',1,2],['infirmary',1,2],['kitchen',1,2],['refectory',1,1],['bath',1,1],['woodstore',1,1],['chapter',0,3],['novices',0,2],['school',0,2]])feRange(id,v,st,{y:feAt(id).y});
+{const c=feAt('founders');fePut('qb_chorten',c.u,c.v,0,{v:0,y:c.y},'sacred','founders');}
+// the stairs between the terraces, on the axis: each from the upper terrace's edge down into the lower (the kit's terrace stair)
+for(const id of['st.lower','st.upper']){const P=fePart(id);fePut('qb_terrace_stair',P.box[0],0,0,{v:0,rise:P.rise,w:6,every:6,y:feTY(P.box[0]-1)},'way',id);}
+// the terraces as pads, so the retaining faces between them are drawn (90fg); the Lip terrace is the bench's own level
+for(const T of FE.L.terraces)if(T.y)fePad('terrace:'+T.id,-90,T.u0,90,T.u1,T.y,.5);
 // the cap (on pads), the rim and the apron
 feRange('byres',1,1);feRange('woodlot',1,1);feRange('shelter',1,1,{ry:Math.PI/2});
 for(const id of['ch.breath1','ch.breath2','ch.breath3','threshold','stairhead']){const c=feC(fePart(id).box);fePut('qb_chorten',c[0],c[1],0,{v:id==='threshold'?2:0},'sacred',id,true);}
@@ -61,11 +70,29 @@ const FE_WALLS=[];
 for(const W of FE.L.walls){const g=FE.L.gates.filter(G=>G.wall===W.id),L=Math.hypot(W.b[0]-W.a[0],W.b[1]-W.a[1]),dir=[(W.b[0]-W.a[0])/L,(W.b[1]-W.a[1])/L];
  const cuts=g.map(G=>{const t=(G.at[0]-W.a[0])*dir[0]+(G.at[1]-W.a[1])*dir[1],hw=(G.id==='gate.rift'?8:10)/2;return[t-hw,t+hw];}).sort((a,b)=>a[0]-b[0]);
  let t0=0;const segs=[];for(const [c0,c1] of cuts){if(c0>t0+.5)segs.push([t0,c0]);t0=c1;}if(L>t0+.5)segs.push([t0,L]);
- for(const [s0,s1] of segs){const a=[W.a[0]+dir[0]*s0,W.a[1]+dir[1]*s0],b=[W.a[0]+dir[0]*s1,W.a[1]+dir[1]*s1],m=FE_P((a[0]+b[0])/2,(a[1]+b[1])/2);
-  const alongX=Math.abs(dir[1])>Math.abs(dir[0]);FE_WALLS.push({id:'wall:'+W.id+':'+s0.toFixed(0),x:m[0],z:m[1],len:s1-s0,ry:alongX?0:Math.PI/2,h:W.h,parapet:!!W.parapet});}}
-for(const W of FE_WALLS)FE_PLACE.push({key:'qb_wall',x:W.x,z:W.z,ry:W.ry,o:{v:1,len:W.len,y:0},kind:'wall',id:W.id,h:W.parapet?2.4:5});
+ /* a wall along u steps with the terraces: cut it at each terrace's edge, each piece on its own level */
+ const cutsT=[];for(const T of FE.L.terraces)for(const e of[T.u0,T.u1]){if(Math.abs(dir[0])<.5)continue;const t=(e-W.a[0])/dir[0];if(t>.5&&t<L-.5)cutsT.push(t);}
+ const segs2=[];for(const [s0,s1] of segs){let a=s0;for(const t of cutsT.sort((x,y)=>x-y))if(t>a+.5&&t<s1-.5){segs2.push([a,t]);a=t;}segs2.push([a,s1]);}
+ for(const [s0,s1] of segs2){const a=[W.a[0]+dir[0]*s0,W.a[1]+dir[1]*s0],b=[W.a[0]+dir[0]*s1,W.a[1]+dir[1]*s1],mu=(a[0]+b[0])/2,m=FE_P(mu,(a[1]+b[1])/2);
+  const alongX=Math.abs(dir[1])>Math.abs(dir[0]);FE_WALLS.push({id:'wall:'+W.id+':'+s0.toFixed(0),x:m[0],z:m[1],len:s1-s0,ry:alongX?0:Math.PI/2,h:W.h,parapet:!!W.parapet,y:W.parapet?0:feTY(mu)});}}
+for(const W of FE_WALLS)FE_PLACE.push({key:'qb_wall',x:W.x,z:W.z,ry:W.ry,o:{v:1,len:W.len,y:W.y},kind:'wall',id:W.id,h:W.parapet?2.4:5});
+// ---------------------------------------------------------------- the Way of Shrines: the stacks, the shrines on them, the rope bridges
+// (the owner, 2026-11-23). Page frame: x = v, z = u. A stack is a cluster of basalt columns from below the ground to its top; the
+// first is climbed by a stair wound round it from the ground, the others from the landing shoulder where the bridge arrives
+// (FE_STACKS[i].land, on the side toward the last stack) up round the main column to the shrine. Bridges: a deck from one top's edge
+// to the next landing's, sagging sagK x span at its middle (FE_BRIDGES; drawn by 90fi)
+const FE_STACKS=FE.L.bridgeway.stacks.map((S,i,A)=>{const c=FE_P(S.u,S.v),prev=i?FE_P(A[i-1].u,A[i-1].v):FE_P(FE.L.bridgeway.spur.nose[0],FE.L.bridgeway.spur.nose[1]),d=Math.hypot(prev[0]-c[0],prev[1]-c[1]),dir=[(prev[0]-c[0])/d,(prev[1]-c[1])/d];
+ const land=[c[0]+dir[0]*(S.r+2.5),c[1]+dir[1]*(S.r+2.5)];return{id:S.id,x:c[0],z:c[1],r:S.r,top:S.top,landing:S.landing,ground:feBase(c[0],c[1]),dir,land,landR:4.5,shrine:S.shrine,ry:Math.atan2(dir[0],dir[1])};});
+/* the stair up the spur's nose: from the Stair of the Eye's head (its chorten) to the first stack's landing */
+const FE_NOSE={from:FE_P(feC(fePart('stairhead').box)[0],feC(fePart('stairhead').box)[1])};
+const FE_BRIDGES=FE_STACKS.map((S,i)=>{const N=FE_STACKS[i+1],bwEnd=FE.L.bridgeway.end,tgt=N?[N.land[0],N.land[1],N.landing]:(()=>{const g=FE_P(bwEnd.at[0]+3.5,bwEnd.at[1]);return[g[0],g[1],bwEnd.y];})();
+ const d=Math.hypot(tgt[0]-S.x,tgt[1]-S.z),dir=[(tgt[0]-S.x)/d,(tgt[1]-S.z)/d],a=[S.x+dir[0]*(S.r-1.5),S.top,S.z+dir[1]*(S.r-1.5)],b=[tgt[0]-dir[0]*(N?N.landR-1:0),tgt[2],tgt[1]-dir[1]*(N?N.landR-1:0)];
+ const span=Math.hypot(b[0]-a[0],b[2]-a[2]),sag=FE.L.bridgeway.sagK*span,pts=[];
+ for(let k=0;k<=48;k++){const t=k/48;pts.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t-sag*4*t*(1-t),a[2]+(b[2]-a[2])*t]);}
+ return{from:S.id,to:N?N.id:bwEnd.gate,a,b,span,sag,pts};});
+for(const [i,S] of FE_STACKS.entries())fePut('qb_fe_shrine',FE.L.bridgeway.stacks[i].u,FE.L.bridgeway.stacks[i].v,S.ry,{v:i,y:S.top,name:S.shrine.replace(/^the /,'The ')},'shrine','shrine.'+(i+1));
 // the ways (painted; 90fe): [kind, width, points (page)]
-const FE_WAYS=FE.L.ways.filter(w=>w.id!=='kora.open'&&w.id!=='stair').map(w=>[w.id==='kora.lower'?'kora':w.id==='cleft'?'cleft':'way',w.id==='mule'?3.5:w.id==='breath'?3:2.4,w.pts.map(p=>FE_P(p[0],p[1]))]);
+const FE_WAYS=FE.L.ways.filter(w=>w.id!=='kora.open'&&w.id!=='stair'&&w.id!=='bridges').map(w=>[w.id==='kora.lower'?'kora':'way',w.id==='mule'?3.5:w.id==='breath'?3:2.4,w.pts.map(p=>FE_P(p[0],p[1]))]);
 FE_WAYS.push(['way',3,FE.L.ways.find(w=>w.id==='stair').pts.filter(p=>p[0]<700).map(p=>FE_P(p[0],p[1]))]);
 FE_WAYS.push(['rim',2,FE.L.ways.find(w=>w.id==='kora.open').pts.map(p=>FE_P(p[0],p[1]))]);
 // the paved courts and the terraces' fields (page boxes)

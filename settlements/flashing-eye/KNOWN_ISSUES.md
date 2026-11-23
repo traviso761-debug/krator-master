@@ -10,9 +10,17 @@
   walls. The banks are bare earth: a retaining face like the pads' would read better.
 - **The face is one surface.** The band is a heightfield: its colonnade is a texture projected on the face, not columns. A
   `core/terrain` carve patch (overhangs, column relief) or `KSTACKS` columns would make it read as the plan's coulee front.
-  The Cleft Stair's cleft is in the layout, not cut in the ground.
 - **The far field.** The far ground is the region cut only (52 x 44 km): the Beacon, Erehwon and the Tears' camp are beyond
   it, so the sights past 2 km are `tools/sights.py`'s on the scale model, not the page's.
+
+## The revamp (2026-11-23)
+
+- **The Way of Shrines' spur is a heightfield arete**, its gendarmes hex columns (`90fi-bridges.js`); the stairs are cantilevered
+  steps with no rail; the bridges are drawn, not walked (no `core/walk` registration yet) and not registered in core/tags.
+- **The windows are still the Qiblai kit's** (Tibetan trapezoids in strict rows); the references' Chinese-style lattices and
+  bracket sets are not drawn. The roofs' tiles are the library's grey barrel tiles tinted red, on a world-UV projection.
+- **The blueprint's room plans** (sheets L, H, M1-MR) are the pre-revamp rooms with the revamp's notes; the towers have no
+  floor plans of their own yet.
 
 ## The house
 

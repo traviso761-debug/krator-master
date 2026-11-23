@@ -1,110 +1,123 @@
 // ================================================================= THE FLASHING EYE — the Order's own buildings (prefix fe)
-// The Lip Range, the Hall of the Ember, the Eye Post, the Watch's hut, the gates and the bench's ranges (settlements/flashing-eye/
-// PLAN.md section 2.3; BLUEPRINT.md sheets L, H, P, E1, E2), on the Qiblai kit's contract (QB.def, the qn* helpers; kits/qiblai/src
-// read in place) in the crimson dress (QSPOKE[0]: crimson walls, saffron trim, the oxblood band). As the Potala's palaces, the
-// lower storeys are white-washed and the upper crimson. Gilt only on the Ember's sanctum (its little crown); the monastery's
-// crown is the kit's. Seeds 34400-34599 (*proposed*, the block after Viridian's): the range 34401, the Lip Range 34411, the
-// Ember 34421, the post 34431, the hut 34441, the gate 34451. Local frame as the kit's: origin at the plot's centre on the
-// ground, +z the front, y up, metres. No oil: the fire basket and the Ember's window are the only lights a builder hangs.
+// The ranges, the Lip Range, the Red Monastery (the Order's temple), the Ember Tower, the towers, the Eye Post, the Watch's hut,
+// the gates and the shrines of the Way of Shrines (settlements/flashing-eye/PLAN.md sections 2.3 and 2.7; BLUEPRINT.md), on the
+// Qiblai kit's contract (QB.def, the qn* helpers; kits/qiblai/src read in place) and the revamp's shapes (89qe: red tiled roofs with
+// upturned eaves, tiers, the round cap, the towers of the owner's references, 2026-11-23). White-washed walls, a teal frieze, the
+// Order's crimson in its cornices and bands (QSPOKE[0]); gilt only on the temple's crown and the Ember's sanctum. Seeds 34400-34599
+// (*proposed*): the range 34401, the Lip Range 34411, the Ember 34421, the post 34431, the hut 34441, the gate 34451, the temple
+// 34461, the towers 34471, the shrine 34481. Local frame as the kit's: origin at the plot's centre on the ground, +z the front.
 const FE_SP=QSPOKE[0],FE_ST=4.2;
-// the Ember's glow (the Hall's north window) and the fire basket's: their own items, so 90fh can set their light by the hour and
-// the burst without touching anything else
+// the Ember's glow (the tower's north window) and the fire basket's: their own items, so 90fh can set their light by the hour
 MAT.feEmber=new THREE.MeshStandardMaterial({color:0x3a1a10,emissive:0xff6a20,emissiveIntensity:.25,roughness:.6,metalness:0});
 MAT.feFire=new THREE.MeshStandardMaterial({color:0x2a1408,emissive:0xff7a28,emissiveIntensity:.4,roughness:.7,metalness:0});
 kdef('feEmberB',VBOX,MAT.feEmber);kdef('feFireB',VBOX,MAT.feFire);
-// the lights a builder hangs, in its local frame (the page sets FE_LAMPREC.cur before VERN.place and turns each into the world):
-// [x, y, z, kind]: 'ember' (the Hall's window), 'fire' (the post's basket)
+// the lights a builder hangs, in its local frame (the page sets FE_LAMPREC.cur before VERN.place): [x, y, z, kind]
 const FE_LAMPREC={cur:null};
 const feLamp=(x,y,z,k)=>{if(FE_LAMPREC.cur)FE_LAMPREC.cur.push([x,y,z,k]);};
-const feBronze=()=>xC(0xa07a48);
+const feWash=()=>xC(xPick(XPAL.wash)),feCrimson=()=>xC(FE_SP.wall);
+// a white block of storeys with its windows, a teal frieze, a crimson cornice and a red hip roof; returns the roof's top
+function feBlock(x,z,w,d,ry,hs,o){o=o||{};const wash=o.wash||feWash(),y0=o.y==null?0:o.y;
+ const S=qnStack(x,y0,z,w,d,ry,hs,wash,'wash',false);
+ if(o.wins!==false)qnWins(x,y0,z,w,d,ry,hs,S.k,{pitch:o.pitch==null?3:o.pitch,ww:.7,wh:1.05,kind:o.lit?'lit':'glass',trim:feCrimson(),skip:o.skip});
+ feFrieze(x,S.y-.95,z,S.w,S.d,ry,.5,!!o.roundels);vB('xPaint',x,S.y-.3,z,S.w+.35,.3,S.d+.35,ry,feCrimson());
+ return feRoof(x,S.y,z,S.w+2.6,S.d+2.6,ry,Math.min(S.w,S.d)*(o.pitchK==null?.22:o.pitchK)+.6);}
 
-// ---------------------------------------------------------------- a range sized to its layout box (the bench's other buildings)
-// o.w across (x), o.d deep (z), o.st storeys, o.v the dress: 0 white-washed below and crimson above (the chapter's, the school's),
-// 1 white-washed (the lay ranges: kitchen, granary, infirmary, bath, stores), 2 crimson (the Labrang's household, the Ember's
-// tenders). A door in its front, windows in a grid, the oxblood band on its parapet.
-function buildFeRange(G,o){reseed(34401+(o.v|0));const W=o.w==null?20:o.w,D=o.d==null?12:o.d,st=o.st==null?1:o.st,P=.5,stone=xC(xPick(QSTONE)),wash=xC(xPick(XPAL.wash)),red=xC(FE_SP.wall),band=xC(FE_SP.band);
- vnReg(o.name==null?'A range of the Flashing Eye':o.name,0,0,Math.hypot(W,D)/2,P+st*3.6+1);
- qnPlinth(0,0,W,D,P,0,stone);
- const hs=[];for(let i=0;i<st;i++)hs.push(3.6);
- const lo=o.v===2?red:wash,hi=o.v===1?wash:red,n0=o.v===0&&st>1?Math.ceil(st/2):st;
- let S=qnStack(0,P,0,W,D,0,hs.slice(0,n0),lo,'wash');
- if(n0<st)S=qnStack(0,S.y,0,S.w,S.d,0,hs.slice(n0),hi,'wash');
- qnWins(0,P,0,W,D,0,hs,S.k,{pitch:3,ww:.7,wh:1,kind:'glass',trim:red,skip:[[-1.8,1.8]]});
- qnDoor(0,P,D/2,0,1.6,2.5,{c:xC(XPAL.red),valC:red});
- qnRoof(0,S.y,0,S.w,S.d,0,o.v===1?wash:red,{band,parapet:.6});}
-QB.def({key:'qb_fe_range',name:'A range of the Flashing Eye',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic']),w:20,d:12,h:8,nv:3,build:buildFeRange});
+// ---------------------------------------------------------------- a range sized to its layout box (the bench's lesser buildings)
+// o.w across (x), o.d deep (z), o.st storeys
+function buildFeRange(G,o){reseed(34401+(o.v|0));const W=o.w==null?20:o.w,D=o.d==null?12:o.d,st=o.st==null?1:o.st,P=.5;
+ vnReg(o.name==null?'A range of the Flashing Eye':o.name,0,0,Math.hypot(W,D)/2,P+st*3.6+4);
+ qnPlinth(0,0,W,D,P,0,xC(xPick(QSTONE)));const hs=[];for(let i=0;i<st;i++)hs.push(3.6);
+ feBlock(0,0,W,D,0,hs,{y:P,skip:[[-1.8,1.8]],roundels:W>24});
+ qnDoor(0,P,D/2,0,1.6,2.5,{c:xC(XPAL.red),valC:feCrimson()});}
+QB.def({key:'qb_fe_range',name:'A range of the Flashing Eye',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic']),w:20,d:12,h:10,nv:3,build:buildFeRange});
 
 // ---------------------------------------------------------------- the Lip Range (sheet L)
-// 120 x 14 m on the Lip, its front (+z) the Rift. Its two lower floors (L-2, L-1) are cut into the band's top and stand 3 m proud
-// of the face, white-washed, their windows in the cliff; a battered stone apron carries them down the face to their footing; their
-// roof is the long terrace in front of L0, the Mirror Hall's balcony at its west end with the 30 cm mirrors on the parapet. L0 and
-// L1 crimson, the oxblood band, the Labrang's east end a storey higher. o.len the length (120)
-function buildFeLipRange(G,o){reseed(34411);const W=o.len==null?120:o.len,D=14,PR=3,stone=xC(0x4a4542),wash=xC(xPick(XPAL.wash)),red=xC(FE_SP.wall),band=xC(FE_SP.band);
- vnReg('The Lip Range (the Mirror Hall, the Book House, the guest house, the Labrang)',0,0,W/2+4,4*FE_ST+4);
- /* the apron down the face: three battered courses, each a little proud of the one above, white-washed as the Potala's walls */
- const apron=wash.clone().multiplyScalar(.9);for(const [y0,h,dz] of[[-34,9,2.2],[-25,8.5,1.2],[-16.5,8.1,.4]])vB('qAshB',0,y0,D/2+PR/2+dz/2-.6,W+2,h,PR+dz+1.2,0,apron);
+// 120 x 14 m on the Lip, its front (+z) the Rift: its two lower floors white-washed, cut into the band's top and 3 m proud of the
+// face on a battered white apron, their roof the terrace in front of L0 (the Mirror Hall's balcony at its west end); L0 and L1
+// white under the teal frieze and the crimson cornice; one long red roof. o.len the length (120)
+function buildFeLipRange(G,o){reseed(34411);const W=o.len==null?120:o.len,D=14,PR=3,wash=feWash(),stone=xC(0x4a4542);
+ vnReg('The Lip Range (the Mirror Hall, the Book House, the guest house, the Prismarch\'s Hall)',0,0,W/2+4,4*FE_ST+8);
+ feApron(0,D/2+PR/2-.6,W+2,PR+1.2,0,34,wash.clone().multiplyScalar(.9));
  const L=qnStack(0,-2*FE_ST,PR/2,W,D+PR,0,[FE_ST,FE_ST],wash,'wash');
- qnWins(0,-2*FE_ST,PR/2,W,D+PR,0,[FE_ST,FE_ST],L.k,{pitch:3.4,ww:.8,wh:1.1,kind:'lit',trim:red});
- vB('xPaint',0,-.12,D/2+PR-.2,W,.14,.3,0,xC(FE_SP.band));
- /* the balcony's parapet along the front of the terrace; the mirrors on it at the Mirror Hall's end */
- vB('qAshB',0,0,D/2+PR-.25,W,1.05,.35,0,stone);
- for(let i=0;i<3;i++){const x=-W/2+9+i*5;vPst('vPost',x,1.05,D/2+PR-.25,.05,.7,xC(0x3a3028));vB('xPaint',x,1.65,D/2+PR-.2,.42,.42,.06,0,feBronze());}
- const U=qnStack(0,0,0,W,D,0,[FE_ST,FE_ST],red,'wash');
- qnWins(0,0,0,W,D,0,[FE_ST,FE_ST],U.k,{pitch:3,ww:.75,wh:1.05,kind:'glass',trim:xC(XPAL.saffron)});
- for(const x of[-W/2+15,-W/2+45,W/2-45])qnDoor(x,0,D/2,0,1.6,2.6,{c:xC(XPAL.red),valC:red});
- /* the Labrang's top floor at the east end, a storey higher; its tall south windows (the mirror room) */
- const LB=qnStack(W/2-15,U.y,0,30*U.k,U.d,0,[FE_ST],red,'wash');qnWins(W/2-15,U.y,0,30*U.k,U.d,0,[FE_ST],LB.k,{pitch:2.6,ww:.9,wh:2.2,kind:'glass',trim:xC(XPAL.saffron)});
- qnRoof(W/2-15,LB.y,0,LB.w,LB.d,0,red,{band,parapet:.8});
- qnRoof(-15,U.y,0,U.w-30*U.k,U.d,0,red,{band,parapet:.7});
- qnSpokeBanner(W/2-15,LB.y+.7,0,0,5);}
-QB.def({key:'qb_fe_lip_range',name:'The Lip Range',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic'],{note:'the Mirror Hall, the Book House, the guest house and the Labrang on the Lip; two floors cut into the band'}),w:122,d:18,h:22,fw:120,fd:17,nv:1,build:buildFeLipRange});
+ qnWins(0,-2*FE_ST,PR/2,W,D+PR,0,[FE_ST,FE_ST],L.k,{pitch:3.4,ww:.8,wh:1.1,kind:'lit',trim:feCrimson()});
+ vB('xPaint',0,-.12,D/2+PR-.2,W,.14,.3,0,feCrimson());
+ vB('qAshB',0,0,D/2+PR-.25,W,1.05,.35,0,stone);   /* the balcony's parapet; the mirrors on it at the Mirror Hall's end */
+ for(let i=0;i<3;i++){const x=-W/2+9+i*5;vPst('vPost',x,1.05,D/2+PR-.25,.05,.7,xC(0x3a3028));vB('xPaint',x,1.65,D/2+PR-.2,.42,.42,.06,0,xC(0xa07a48));}
+ feBlock(0,0,W,D,0,[FE_ST,FE_ST],{pitch:3,roundels:true,skip:[[-W/2+13,-W/2+17],[-W/2+43,-W/2+47],[W/2-47,W/2-43]]});
+ for(const x of[-W/2+15,-W/2+45,W/2-45])qnDoor(x,0,D/2,0,1.6,2.6,{c:xC(XPAL.red),valC:feCrimson()});}
+QB.def({key:'qb_fe_lip_range',name:'The Lip Range',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic'],{note:'the Mirror Hall, the Book House, the guest house and the Prismarch\'s hall on the Lip; two floors cut into the band'}),w:124,d:20,h:20,fw:120,fd:17,nv:1,build:buildFeLipRange});
 
-// ---------------------------------------------------------------- the Hall of the Ember (sheet H)
-// 16 x 20 m, its porch (+z) to the monastery, its sanctum at the back (-z) under a small gilt pavilion (the one gilt thing the
-// house builds; PLAN.md 2.3), its north window glowing with the fire lit from the vent
-function buildFeEmber(G,o){reseed(34421);const W=16,D=20,P=.9,stone=xC(xPick(QSTONE)),red=xC(FE_SP.wall),band=xC(FE_SP.band);
- vnReg('The Hall of the Ember',0,0,13,P+12);
- qnPlinth(0,0,W+1.2,D+1.2,P,0,stone);
- const S=qnStack(0,P,0,W,D,0,[4.6,4],red,'wash');
- qnWins(0,P,0,W,D,0,[4.6,4],S.k,{pitch:3.2,ww:.7,wh:1.2,kind:'lit',trim:xC(XPAL.saffron),skip:[[-2,2]]});
- qnDoor(0,P,D/2,0,2,3,{c:xC(XPAL.red),valC:red});
- const top=qnRoof(0,S.y,0,S.w,S.d,0,red,{band,parapet:.7});
- qnCrown(0,top,-D/2+3.2,5,4.4,0,{banners:false,deer:false,pav:[3.2,2.6]});
- /* the north window: the Ember seen from the cap */
- vB('feEmberB',0,P+1.6,-D/2-.03,2.4,3,.1,0,xC(0xffffff));vB('xPaint',0,P+4.6,-D/2-.08,3,.2,.16,0,xC(XPAL.saffron));
- feLamp(0,P+2.5,-D/2+1.5,'ember');}
-QB.def({key:'qb_fe_ember',name:'The Hall of the Ember',family:'The Flashing Eye',tags:QTAG('civic',['religious'],{note:'the fire lit from the vent once a year; every hearth and lamp in the house is lit from it'}),w:18,d:22,h:14,fw:17,fd:21,nv:1,build:buildFeEmber});
+// ---------------------------------------------------------------- the Red Monastery: the Order's temple on the kit's plan (sheets M1-MR)
+// 52 x 52 m: the front range with its gate tower (two tiers), the side ranges and the back range round the court, two storeys
+// white under red roofs; the Assembly Hall in the court under two tiers, the gilt crown its finial (the house's one gilt crown)
+function buildFeTemple(G,o){reseed(34491);const wash=feWash(),P=.8;
+ vnReg('The Red Monastery (the Order of the Flashing Eye\'s great monastery)',0,0,37,P+22);
+ qnPlinth(0,0,52,52,P,0,xC(xPick(QSTONE)));vB('qAshB',0,P-.02,1,36,.05,34,0,xC(0x8c8984));
+ feBlock(-15.5,22.5,21,7,0,[3.6,3.4],{y:P,roundels:true});feBlock(15.5,22.5,21,7,0,[3.6,3.4],{y:P,roundels:true});
+ for(const s of[-1,1])feBlock(s*22.5,0,7,38,s<0?-Math.PI/2:Math.PI/2,[3.6,3.4],{y:P});
+ feBlock(0,-22.5,52,7,Math.PI,[3.6,3.4],{y:P,roundels:true});
+ /* the gate tower: three storeys, two tiers, the Gate of the Open Eye */
+ const g=qnStack(0,P,22.5,10,9,0,[3.8,3.4,3.2],wash,'wash',false);qnWins(0,P,22.5,10,9,0,[3.8,3.4,3.2],g.k,{pitch:2.6,kind:'glass',trim:feCrimson(),skip:[[-1.6,1.6]]});
+ qnDoor(0,P,27,0,2.4,3.4,{c:xC(XPAL.red),valC:feCrimson()});feFrieze(0,g.y-.9,22.5,g.w,g.d,0,.5,true);
+ feTiers(0,g.y,22.5,g.w,g.d,0,2,{ov:1.6,wash});
+ /* the Assembly Hall: 24 x 17, its porch to the gate; two tiers; the gilt crown */
+ const H=qnStack(0,P,-8.5,24,17,0,[5,4.2],wash,'wash',false);qnWins(0,P,-8.5,24,17,0,[5,4.2],H.k,{pitch:3,ww:.9,wh:1.6,kind:'lit',trim:feCrimson(),skip:[[-2.4,2.4]]});
+ qnDoor(0,P,0,0,2.6,3.6,{c:xC(XPAL.red),valC:feCrimson()});
+ for(let i=-2;i<=2;i++)vPst('vPost',i*2.4,P,1.6,.22,4.6,feCrimson());feRoof(0,P+4.6,1.8,13,4,0,1.4);
+ feFrieze(0,H.y-.95,-8.5,H.w,H.d,0,.55,true);
+ const top=feTiers(0,H.y,-8.5,H.w,H.d,0,2,{ov:2,step:.66,drum:2.6,wash,finial:false});
+ vPst('qGiltB',0,top-.4,-8.5,.5,1.2,xC(xPick(XPAL.gold)));vBall('qGiltBall',0,top+1.2,-8.5,.7,xC(xPick(XPAL.gold)));vPst('qGiltB',0,top+1.6,-8.5,.12,2.4,xC(xPick(XPAL.gold)));
+ qnSpokeBanner(-20,P,18,0,6);qnSpokeBanner(20,P,18,0,6);}
+QB.def({key:'qb_fe_temple',name:'The Red Monastery',family:'The Flashing Eye',tags:QTAG('civic',['religious'],{note:'the great monastery of the Order of the Flashing Eye: the kit\'s plan, the revamp\'s roofs'}),w:56,d:56,h:28,fw:52,fd:52,nv:1,build:buildFeTemple});
 
-// ---------------------------------------------------------------- the Eye Post (sheet P)
-// 8 x 8 m and 12 m on the crater's south rim: two storeys of dark basalt and the mirror room in crimson; on its platform the
-// 60 cm speculum on a pier (its face to the south-west: the Beacon, Erehwon, the Tears) and the shuttered fire basket
-function buildFeEyePost(G,o){reseed(34431);const W=8,D=8,basalt=xC(0x3d3936),red=xC(FE_SP.wall),band=xC(FE_SP.band),iron=xC(0x2a2826);
- vnReg('The Eye Post',0,0,6,13);
- qnPlinth(0,0,W+.8,D+.8,.6,0,basalt);
- const S=qnStack(0,.6,0,W,D,0,[3.8,3.8],basalt,'ashlar'),T=qnStack(0,S.y,0,S.w,S.d,0,[3.6],red,'wash');
- qnWins(0,.6,0,W,D,0,[3.8,3.8,3.6],T.k,{pitch:2.4,ww:.55,wh:.9,kind:'lit',trim:xC(XPAL.saffron),skip:[[-1.2,1.2]]});
- qnDoor(0,.6,D/2,0,1.2,2.2,{c:xC(XPAL.red),valC:red});
- const top=qnRoof(0,T.y,0,T.w,T.d,0,red,{band,parapet:1});
- const mx=1.6,mz=1.4;vB('qAshB',mx,top-.9,mz,.9,1.3,.9,0,basalt);vB('xPaint',mx,top+.4,mz+.35,.7,.7,.08,-.7,feBronze());
- vPst('vPost',mx+.5,top+.4,mz+.6,.03,.8,iron);   /* the sighting vane */
- const fx=-1.8,fz=-1.6;for(const [a,b] of[[-.35,-.35],[.35,-.35],[-.35,.35],[.35,.35]])vPst('vPipe',fx+a,top-.9,fz+b,.035,1.9,iron);
- vB('feFireB',fx,top+.75,fz,.8,.5,.8,0,xC(0xffffff));
- for(let i=0;i<5;i++)vB('xPaint',fx-.42,top+.6+i*.14,fz,.04,.1,.9,0,iron);   /* the shutter's slats */
- feLamp(fx,top+1.1,fz,'fire');
- qnSpokeBanner(-mx,top,mz,0,3);}
-QB.def({key:'qb_fe_post',name:'The Eye Post',family:'The Flashing Eye',tags:QTAG('civic',['religious'],{note:'the Rim Watch\'s tower on the crater\'s rim: the heliograph and the fire basket'}),w:9,d:9,h:14,fw:9,fd:9,nv:1,build:buildFeEyePost});
+// ---------------------------------------------------------------- the Ember Tower (sheet H): the Hall of the Ember and its tower
+// The hall (20 deep, 16 across) one tall storey under a red skirt roof, its porch (+z) to the monastery; the tower rising from its
+// back half, white and tapering, the crimson band, three red tiers and the gilt finial of the sanctum; the north window glowing
+function buildFeEmber(G,o){reseed(34421);const wash=feWash(),P=.9;
+ vnReg('The Ember Tower (the Hall of the Ember)',0,0,13,44);
+ qnPlinth(0,0,17,21,P,0,xC(xPick(QSTONE)));
+ const h=qnStack(0,P,2.5,16,15,0,[5.2],wash,'wash',false);qnWins(0,P,2.5,16,15,0,[5.2],h.k,{pitch:3,ww:.8,wh:2,kind:'lit',trim:feCrimson(),skip:[[-2,2]]});
+ qnDoor(0,P,10,0,2.2,3.2,{c:xC(XPAL.red),valC:feCrimson()});feRoof(0,h.y,2.5,h.w+3,h.d+3,0,3.4);
+ const S=qnStack(0,P,-4,11,11,0,[6,6,6,6,5],wash,'wash',false);qnWins(0,P+6,-4,11,11,0,[6,6,6,5],S.k,{pitch:2.6,ww:.55,wh:1.1,kind:'lit',trim:feCrimson()});
+ qnCube(0,S.y,-4,S.w,2.2,S.d,0,feCrimson(),'wash');feFrieze(0,S.y+2.2,-4,S.w,S.d,0,.5,true);
+ const top=feTiers(0,S.y+2.7,-4,S.w,S.d,0,3,{ov:2,step:.76,drum:2.4,wash,finialC:xC(xPick(XPAL.gold)),finialH:3.2});
+ vBall('qGiltBall',0,top-.6,-4,.5,xC(xPick(XPAL.gold)));   /* the sanctum's gilt: the finial and its ball */
+ vB('feEmberB',0,P+1.6,-9.55,2.4,3,.1,0,xC(0xffffff));vB('xPaint',0,P+4.6,-9.6,3,.2,.16,0,xC(XPAL.saffron));
+ feLamp(0,P+2.5,-8,'ember');}
+QB.def({key:'qb_fe_ember',name:'The Ember Tower',family:'The Flashing Eye',tags:QTAG('civic',['religious'],{note:'the fire lit from the vent once a year; every hearth and lamp in the house is lit from it'}),w:20,d:22,h:46,fw:17,fd:21,nv:1,build:buildFeEmber});
 
-// ---------------------------------------------------------------- the Watch's hut, and a gate
-function buildFeHut(G,o){reseed(34441);const W=8,D=8,basalt=xC(0x3d3936),wash=xC(xPick(XPAL.wash)),band=xC(FE_SP.band);
- vnReg('The Watch\'s Hut',0,0,6,5);qnPlinth(0,0,W,D,.4,0,basalt);const S=qnStack(0,.4,0,W,D,0,[3.2],wash,'wash');
- qnWins(0,.4,0,W,D,0,[3.2],S.k,{pitch:2.6,ww:.5,wh:.8,kind:'lit',trim:xC(FE_SP.wall),skip:[[-1,1]]});qnDoor(0,.4,D/2,0,1.1,2.1,{c:xC(XPAL.red),valC:xC(FE_SP.wall)});
- qnRoof(0,S.y,0,S.w,S.d,0,wash,{band,parapet:.5});}
-QB.def({key:'qb_fe_hut',name:'The Watch\'s Hut',family:'The Flashing Eye',tags:QTAG('poor',['religious']),w:9,d:9,h:5,nv:1,build:buildFeHut});
-// a gatehouse through the precinct's wall: o.w across, o.d deep, o.st storeys (1 or 2); the passage through it front to back
-function buildFeGate(G,o){reseed(34451);const W=o.w==null?10:o.w,D=o.d==null?8:o.d,st=o.st==null?2:o.st,stone=xC(xPick(QSTONE)),wash=xC(xPick(XPAL.wash)),red=xC(FE_SP.wall),band=xC(FE_SP.band);
- vnReg(o.name==null?'A gate of the Flashing Eye':o.name,0,0,Math.hypot(W,D)/2,st*3.8+2);
- qnPlinth(0,0,W,D,.4,0,stone);const hs=st>1?[4,3.6]:[4.2];
- let S=qnStack(0,.4,0,W,D,0,hs.slice(0,1),wash,'wash');if(st>1)S=qnStack(0,S.y,0,S.w,S.d,0,hs.slice(1),red,'wash');
- for(const s of[-1,1])qnDoor(0,.4,s*D/2,s<0?Math.PI:0,2.4,3.2,{c:xC(XPAL.red),valC:red});
- qnRoof(0,S.y,0,S.w,S.d,0,red,{band,parapet:.7});}
-QB.def({key:'qb_fe_gate',name:'A gate of the Flashing Eye',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic']),w:10,d:8,h:9,nv:1,build:buildFeGate});
+// ---------------------------------------------------------------- the towers (the references): o.style 'round' (the Mirror Tower),
+// 'bays' (the Labrang Tower), 'pagoda' (the corner towers); o.W, o.H, o.drop (a battered base down the face), o.mirror
+function buildFeTower(G,o){reseed(34471+(o.style==='bays'?1:o.style==='pagoda'?2:0));const W=o.W==null?10:o.W,H=o.H==null?24:o.H;
+ vnReg(o.name==null?'A tower of the Flashing Eye':o.name,0,0,W,H+10);
+ if(o.style==='bays')feTowerBays({W,H,bays:o.bays,drop:o.drop,mirror:o.mirror});
+ else if(o.style==='pagoda')feTowerPagoda({W,H,drop:o.drop});
+ else feTowerRound({W,H,drop:o.drop,mirror:o.mirror,lantern:3});}
+QB.def({key:'qb_fe_tower',name:'A tower of the Flashing Eye',family:'The Flashing Eye',tags:QTAG('civic',['religious','military']),w:12,d:12,h:40,nv:3,build:buildFeTower});
+
+// ---------------------------------------------------------------- the Eye Post (sheet P): the first reference's tower on the rim
+// 8 x 8 m and 12 m to its lantern: the watch room, the Book's room and the mirror room in the shaft; in the lantern under the round
+// red cap the 60 cm speculum (to the south-west: the Beacon, Erehwon, the Tears) and the shuttered fire basket
+function buildFeEyePost(G,o){reseed(34431);vnReg('The Eye Post',0,0,6,20);feTowerRound({W:8,H:9.5,mirror:3,basket:true,lantern:2.6});}
+QB.def({key:'qb_fe_post',name:'The Eye Post',family:'The Flashing Eye',tags:QTAG('civic',['religious'],{note:'the Rim Watch\'s tower on the crater\'s rim: the heliograph and the fire basket'}),w:9,d:9,h:20,fw:9,fd:9,nv:1,build:buildFeEyePost});
+
+// ---------------------------------------------------------------- the Watch's hut, a gate, a shrine
+function buildFeHut(G,o){reseed(34441);vnReg('The Watch\'s Hut',0,0,6,7);qnPlinth(0,0,8,8,.4,0,xC(0x3d3936));
+ feBlock(0,0,8,8,0,[3.2],{y:.4,lit:true,skip:[[-1,1]],pitch:2.6});qnDoor(0,.4,4,0,1.1,2.1,{c:xC(XPAL.red),valC:feCrimson()});}
+QB.def({key:'qb_fe_hut',name:'The Watch\'s Hut',family:'The Flashing Eye',tags:QTAG('poor',['religious']),w:9,d:9,h:7,nv:1,build:buildFeHut});
+// a gatehouse through the precinct's wall: o.w across, o.d deep, o.st storeys (1 or 2); the passage front to back; two red tiers
+function buildFeGate(G,o){reseed(34451);const W=o.w==null?10:o.w,D=o.d==null?8:o.d,st=o.st==null?2:o.st,wash=feWash();
+ vnReg(o.name==null?'A gate of the Flashing Eye':o.name,0,0,Math.hypot(W,D)/2,st*3.8+8);
+ qnPlinth(0,0,W,D,.4,0,xC(xPick(QSTONE)));const S=qnStack(0,.4,0,W,D,0,st>1?[4,3.6]:[4.2],wash,'wash',false);
+ for(const s of[-1,1])qnDoor(0,.4,s*D/2,s<0?Math.PI:0,2.4,3.2,{c:xC(XPAL.red),valC:feCrimson()});
+ feFrieze(0,S.y-.9,0,S.w,S.d,0,.5,true);vB('xPaint',0,S.y-.3,0,S.w+.35,.3,S.d+.35,0,feCrimson());
+ feTiers(0,S.y,0,S.w,S.d,0,2,{ov:1.4,wash});}
+QB.def({key:'qb_fe_gate',name:'A gate of the Flashing Eye',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic']),w:10,d:8,h:16,nv:1,build:buildFeGate});
+// a shrine of the Way of Shrines: a small white cube on its stack's top, the teal frieze, two red tiers, its door (+z) to the bridge
+// that arrives, the lamp niche, prayer flags to a pole
+function buildFeShrine(G,o){reseed(34481+(o.v|0));const wash=feWash();vnReg(o.name==null?'A shrine of the Way of Shrines':o.name,0,0,5,9);
+ qnPlinth(0,0,6.4,6.4,.4,0,xC(0x3d3936));const S=qnStack(0,.4,0,5,5,0,[3.2],wash,'wash',false);
+ qnDoor(0,.4,2.5,0,1.3,2.3,{c:xC(XPAL.red),valC:feCrimson()});feFrieze(0,S.y-.7,0,S.w,S.d,0,.45,false);
+ feTiers(0,S.y,0,S.w,S.d,0,2,{ov:1.1,step:.7,drum:1.4,wash,finialH:1.8});
+ vPst('vPost',2.9,.4,-2.9,.05,5.5,xC(0x5a4632));qnFlags([2.9,5.6,-2.9],[-2.9,.6,2.9]);}
+QB.def({key:'qb_fe_shrine',name:'A shrine of the Way of Shrines',family:'The Flashing Eye',tags:QTAG('civic',['religious']),w:7,d:7,h:9,nv:6,build:buildFeShrine});

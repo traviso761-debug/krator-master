@@ -68,19 +68,25 @@ for key, origin, ln in (('balcony', tuple(PARTS['lip.mirror']['balcony']), 800),
         SIGHTS.append(bearing_line(origin, s['bearing'], ln, lab if s.get('must') or (key == 'post' and s['id'] == 'g1') else None, (200, 60, 40) if seen else (170, 170, 170), 3 if seen else 2))
 SIGHTS = [s if s[3] else s[:3] for s in SIGHTS]
 E0_ROOMS = [from_part(p) for p in L['parts'] if 'E0' in p['sheets'] and p['zone'] in ('cap', 'rim', 'band', 'apron')]
+# the Way of Shrines (the owner, 2026-11-23): the stacks as circles, the rope bridges from each top to the next landing, the last to the Gate
+BW = L['bridgeway']
+STACK_FILLS = [(circle((S['u'], S['v']), S['r'], 6), (110, 104, 98), S['shrine'].split(' of ')[-1]) for S in BW['stacks']]
+BRIDGE_PTS = [(S['u'], S['v']) for S in BW['stacks']] + [tuple(BW['end']['at'])]
+BRIDGE_LINE = ([(360, -100)] + BRIDGE_PTS, (150, 40, 34), 4, 'the Way of Shrines (rope bridges)')
 FLOORS.append(dict(R=999, rect=(-2620, 420, -1100, 1100), id='E0', tier=0,
   title='Sheet E0: the cone from the crater to the band\'s foot (3 x 2.2 km)',
   sub='The east volcano of Erewhon\'s lake (881,1526 on the scale model 5.1; the summit 1,838 m before the vent is cut). The crater (*proposed*: 600 m across, 150 m deep, a Strombolian vent that flashes red at night; the owner, question 3) is not yet on the model (step F0): the page draws it. The Way of Breath climbs the cap 2 km at 8 % from the Gate of Breath to the Threshold Chorten, past three chortens and the Halfway Shelter; beyond it only the professed: the Eye Post, the Watch\'s hut and the Open Kora on the rim. The bench and its house on the Lip (sheets E1, E2); the band falls 200 m below it, the Cleft Stair in its cleft, the mule road round its west end, the Stair of the Eye down the spur to the Foot House (sheet F, 6.6 km south). Sights in red are seen by 10 m or more, grey are hidden; from the Mirror Hall\'s balcony and the Eye Post (tools/sights.py).',
   axisnote=AXIS,
   outlines=[(-150, 4, -96, 96, 'the house (E1, E2)')],
   fills=[(circle(CR['centre'], CR['r']), (196, 160, 140), 'the crater'), (circle(CR['vent'], CR['ventR'] * 3), (220, 70, 40), 'the vent'),
-         BENCH_FILL + ('the bench',)],
-  lines=[LIP_LINE, way_line('breath', (140, 100, 60), 4), way_line('mule', (110, 90, 70), 3), way_line('cleft', (150, 40, 34), 4),
+         BENCH_FILL + ('the bench',)] + STACK_FILLS,
+  lines=[LIP_LINE, way_line('breath', (140, 100, 60), 4), way_line('mule', (110, 90, 70), 3), BRIDGE_LINE,
          way_line('kora.open', (120, 90, 160), 3), ([(p[0], p[1]) for p in WAYS['stair']['pts'] if p[0] < 400], (110, 90, 70), 3, 'the Stair of the Eye (on to the Foot House)')] + SIGHTS,
   rooms=E0_ROOMS))
 
 # ------------------------------------------------------------------------------------------------ E1 the bench, ground floor
-SEE = {'monastery': ('see', 'The Red Monastery (sheets M1, M2, MR)'), 'ember': ('see', 'The Hall of the Ember (sheet H)'),
+SEE = {'monastery': ('see', 'The Red Monastery (sheets M1, M2, MR)'), 'ember': ('see', 'The Ember Tower (sheet H)'),
+       'tw.mirror': ('see', 'The Mirror Tower (sheet L)'), 'tw.labrang': ('see', 'The Labrang Tower (sheet L)'),
        'lip.mirror': ('see', 'The Mirror Hall (sheet L)'), 'lip.books': ('see', 'The Book House (sheet L)'), 'lip.guests': ('see', 'Guest House (sheet L)'),
        'lip.labrang': ('see', 'The Labrang (sheet L)')}
 E1_ROOMS = []
@@ -94,7 +100,8 @@ FLOORS.append(dict(ENCL, id='E1', tier=0,
   title='Sheet E1: the bench, ground floor (behind its wall, 144 x 180 m, on the Lip)',
   sub='The owner (2026-11-16): a cliffside house on the cone, facing the Rift; about 320. The bench is the flat top of the last lava flow, its south edge the Lip. The Lip Range (the Mirror Hall, the Book House, the guest house, the Labrang) stands on the Lip, its two lower storeys in the band\'s top (sheet L); nothing else comes within 12 m of the Lip. The Red Monastery\'s gate faces south across its court to the range and the Rift; the Hall of the Ember stands on its axis to the north, toward the crater. The Mule Gate (west) takes the mule road into the Mule Court, among the kitchen, granary, infirmary and bath; the Gate of Breath (north) leads to the rim; the Gate of the Rift (south-west, on the Lip) is the head of the Cleft Stair. The lower kora (purple) goes round the monastery, eyes lowered. Walls crimson; the Lip brown.',
   fills=[BENCH_FILL] + GATE_FILLS,
-  lines=WALL_LINES + [KORA, ([p for p in LIP if -100 <= p[1] <= 100], (120, 60, 30), 4, 'the Lip')],
+  lines=WALL_LINES + [KORA, ([p for p in LIP if -100 <= p[1] <= 100], (120, 60, 30), 4, 'the Lip')]
+        + [([(t['u0'], -90), (t['u0'], 90)], (90, 140, 130), 2, 'the %s terrace\'s edge (%+d m)' % (t['id'], t['y'])) for t in L['terraces'] if t['u0'] > -150],
   rooms=E1_ROOMS))
 
 # ------------------------------------------------------------------------------------------------ E2 upper storeys
@@ -108,8 +115,8 @@ E2_ROOMS = [
   R(6, 'Novices\' Dormitory', 'dormitory', nv[0], nv[1], nv[2], 67, 1, 'fifty boys in two rooms; a lamp lit from the Ember burns all night'),
   R(7, 'Master of Novices', 'chamber', nv[0], -92, 67, nv[3], 2),
   R(8, 'Novices\' School', 'school', -92, nv[1], 67, nv[3], 1, 'the syllabary\'s sound grid on the slate wall: the boys learn to read the flashes before they learn to read'),
-  R(9, 'Mirror School Dormitory', 'dormitory', sc[0], -122, sc[2], sc[3], 1, 'thirty keepers in training for the line\'s posts'),
-  R(10, 'The Code Room', 'office', -122, sc[1], sc[2], sc[3], 2, 'the signal books, the Book of Flashes\' copies, the call signs of every post on the line'),
+  R(9, 'Mirror School Dormitory', 'dormitory', sc[0], sc[1], sc[2], 66, 1, 'thirty keepers in training for the line\'s posts'),
+  R(10, 'The Code Room', 'office', sc[0], sc[1], 66, sc[3], 2, 'the signal books, the Book of Flashes\' copies, the call signs of every post on the line'),
   R(11, 'Porters\' loft (the Mule Gate)', 'guard', *pb('g.mule'), 1, 'four lay porters'),
   R(12, 'The Veil Room (over the Gate of Breath)', 'guard', *pb('g.breath'), 2, 'the crimson veils of the professed hang here; a novice keeps the gate'),
   R(13, 'The Red Monastery (sheet M2)', 'see', *pb('monastery'), 4),
@@ -132,8 +139,8 @@ M_BACK = (MU - 26, MU - 22.5, 15, 19); M_HALL = (MU - 2, MU + 0.2, 8, 11.8)
 MBLOCK = dict(R=300, rect=(MU - 30, MU + 30, -30, 30), poly=[(MU - 26, -26), (MU + 26, -26), (MU + 26, 26), (MU - 26, 26)],
               axisnote='u -> south: the hall at the left (north, toward the Ember and the crater), the gate at the right facing the Rift; v east, up')
 FLOORS.append(dict(MBLOCK, id='M1', tier=0,
-  title='Sheet M1: the Red Monastery, ground floor (the kit\'s 52 m great monastery, crimson dress)',
-  sub='The kit\'s block whole (kits/qiblai qb_monastery, o.v 0, QSPOKE[0]: crimson walls 0xa8302a, saffron trim, the oxblood band; two storeys of ranges; the Song drum in the court). Its gate faces south across the Monastery Court to the Lip Range and the Rift. The Assembly Hall at the back under the gilt crown, the Shrine of the Eye behind it on the axis toward the Hall of the Ember; the inner kora round the hall; the chapter two to a cell.',
+  title='Sheet M1: the Red Monastery, ground floor (the Order\'s temple on the kit\'s 52 m plan)',
+  sub='The revamp (the owner, 2026-11-23): the Qiblai kit\'s great-monastery plan built as the Order\'s own temple (qb_fe_temple), white ranges under red tiled roofs with upturned eaves, the teal frieze and the crimson cornice; the gate tower and the Assembly Hall under two red tiers. The plan is the kit\'s (QSPOKE[0]: crimson walls 0xa8302a, saffron trim, the oxblood band; two storeys of ranges; the Song drum in the court). Its gate faces south across the Monastery Court to the Lip Range and the Rift. The Assembly Hall at the back under the gilt crown, the Shrine of the Eye behind it on the axis toward the Hall of the Ember; the inner kora round the hall; the chapter two to a cell.',
   rooms=[
     K(1, 'Gate of the Open Eye', 'gatehouse', 19, 26, -5, 5, 3, 'the gate tower; the doorkeeper; the boots and the veils left here'),
     box(2, 'Front stair (west)', 'stair', M_FRONT_W, 0), box(3, 'Front stair (east)', 'stair', M_FRONT_E, 0),
@@ -215,7 +222,7 @@ LR += LF(3, [R(22, 'The Master of Mirrors', 'office', -14, 0, -60, -33, 2, 'L1: 
              R(29, 'His oratory', 'chapel', -14, -7, 42, 57, 4), box(30, 'Stair', 'stair', st(57), 0)])
 FLOORS.append(dict(R=300, rect=(-18, 66, -64, 64), id='L', tier=0,
   title='Sheet L: the Lip Range (120 x 14 m), its four floors side by side',
-  sub='The range stands on the Lip, its two lower floors cut into the band\'s top (the Potala effect): L-2 and L-1 have their windows in the cliff\'s face, L0 is at the bench\'s level, L1 above it. West to east: the Mirror Hall (the readers and their balcony toward the Beacon at 245, Erehwon at 284 and the Tears\' camp at 197), the Book House (the Vault of Breaths in the rock), the guest house (60 beds), the Labrang (the crimson Prismarch\'s four floors). The floors are drawn 20 m apart along u, each at u -14..0.',
+  sub='The revamp (2026-11-23): white under one long red tiled roof, the teal frieze, the crimson cornice; the Mirror Tower (the first reference\'s: tapering, a crimson band, a round red cap) at its west end and the Labrang Tower (the second\'s: the painted window bays, a gallery, a broad red roof) at its east, the Prismarch\'s floors in it. The range stands on the Lip, its two lower floors cut into the band\'s top (the Potala effect): L-2 and L-1 have their windows in the cliff\'s face, L0 is at the bench\'s level, L1 above it. West to east: the Mirror Hall (the readers and their balcony toward the Beacon at 245, Erehwon at 284 and the Tears\' camp at 197), the Book House (the Vault of Breaths in the rock), the guest house (60 beds), the Labrang (the crimson Prismarch\'s four floors). The floors are drawn 20 m apart along u, each at u -14..0.',
   axisnote='each floor: u -> south (the face, the Rift at the right); v east, up. L-2, L-1, L0, L1 from the left',
   outlines=[(-14 + 20 * k, 20 * k, -60, 60, ('L-2', 'L-1', 'L0', 'L1')[k]) for k in range(4)],
   rooms=LR))
@@ -225,7 +232,7 @@ EB = pb('ember')   # u -128..-108, v -8..8
 def HF(k, rooms):
     out = []
     for r in rooms:
-        r = dict(r); r['u0'] += 24 * k; r['u1'] += 24 * k; out.append(r)
+        r = dict(r); r['u0'] += 24 * k - 8; r['u1'] += 24 * k - 8; out.append(r)
     return out
 HR = HF(0, [R(1, 'Porch', 'porch', -112, -108, -8, 8, 3, 'facing south to the monastery\'s back: the carried fire comes in here once a year'),
             R(2, 'The Hall', 'ember_hall', -122, -112, -8, 8, 3, 'where every lamp in the house is lit; the lamp-lighters\' benches'),
@@ -234,9 +241,9 @@ HR = HF(0, [R(1, 'Porch', 'porch', -112, -108, -8, 8, 3, 'facing south to the mo
 HR += HF(1, [R(6, 'Gallery of the Hall', 'gallery', -122, -112, -8, 8, 3, 'over the hall; the house watches the Ember lit on the founding night'),
              R(7, 'The Book of the Ember', 'archive', -128, -122, -5, 5, 2, 'each year\'s lighting written down: who carried it, how the mountain breathed'),
              R(8, 'Tenders\' dormitory', 'dormitory', -112, -108, -8, 8, 1, 'the two lay tenders'), R(9, 'Store', 'store', -128, -122, -8, -5, 0), box(10, 'Stair', 'stair', (-128, -122, 5, 8), 0)])
-FLOORS.append(dict(R=300, rect=(-132, -80, -12, 12), id='H', tier=0,
-  title='Sheet H: the Hall of the Ember (20 x 16 m), its two floors side by side',
-  sub='On the axis north of the monastery, toward the crater. Once a year the Ember is lit from the vent on the rim and carried down the Way of Breath to the sanctum; every hearth and lamp in the house is lit from it (the Ateshgah at Baku is the model). H0 (left) the porch, the hall and the sanctum; H1 (right) the gallery and the Book of the Ember. Floors drawn 24 m apart.',
+FLOORS.append(dict(R=300, rect=(-140, -88, -12, 12), id='H', tier=0,
+  title='Sheet H: the Ember Tower: the Hall of the Ember (20 x 16 m) and its tower, the hall\'s two floors side by side',
+  sub='The revamp (2026-11-23): the tallest roof of the house, on the upper terrace: the hall under a red skirt roof, the white tower rising from its back half (five storeys, the crimson band, three red tiers, the sanctum\'s gilt finial). On the axis north of the monastery, toward the crater. Once a year the Ember is lit from the vent on the rim and carried down the Way of Breath to the sanctum; every hearth and lamp in the house is lit from it (the Ateshgah at Baku is the model). H0 (left) the porch, the hall and the sanctum; H1 (right) the gallery and the Book of the Ember. Floors drawn 24 m apart.',
   axisnote='each floor: u -> south (the porch at the right, the sanctum and its north window at the left); v east, up',
   outlines=[(EB[0] + 24 * k, EB[1] + 24 * k, EB[2], EB[3], 'H%d' % k) for k in range(2)],
   rooms=HR))
@@ -256,7 +263,7 @@ PR += PF(2, [box(7, 'Stair', 'stair', P_ST, 0), R(8, 'The Mirror Room', 'signal_
 PR += PF(3, [R(10, 'The Mirror Platform', 'eye_roof', -1908, -1900, -4, 4, 2, 'at 12 m: the 60 cm speculum on its stand (to the Beacon, Erehwon, the Tears) and the shuttered fire basket for the night\'s answer; the parapet')])
 FLOORS.append(dict(R=300, rect=(-1912, -1860, -8, 8), id='P', tier=0,
   title='Sheet P: the Eye Post on the crater\'s south rim (8 x 8 m, 12 m), its levels side by side',
-  sub='The crater is never unwatched: the Rim Watch keeps the post day and night, four monks a watch, six watches (24 on rota, a week on the rim). P0 the watch room, P1 the rim\'s Book of Breaths, P2 the mirror room, P3 the platform with the 60 cm speculum and the fire basket, lit from the Ember (no oil on the mountain). Levels drawn 12 m apart. A 30 m tower would reach G1 directly on the clearest days (+9 m): question 14.',
+  sub='The revamp (2026-11-23): the first reference\'s tower, white and tapering, the crimson band, the lantern under a round red cap. The crater is never unwatched: the Rim Watch keeps the post day and night, four monks a watch, six watches (24 on rota, a week on the rim). P0 the watch room, P1 the rim\'s Book of Breaths, P2 the mirror room, P3 the platform with the 60 cm speculum and the fire basket, lit from the Ember (no oil on the mountain). Levels drawn 12 m apart. A 30 m tower would reach G1 directly on the clearest days (+9 m): question 14.',
   axisnote='each level: u -> south (the bench, 2 km off, at the right); v east, up. P0 to P3 from the left',
   outlines=[(PB[0] + 12 * k, PB[1] + 12 * k, PB[2], PB[3], 'P%d' % k) for k in range(4)],
   rooms=PR))
@@ -300,6 +307,8 @@ def programs():
       'chorten': lambda a, w, d, D: [('xanadu_court_chorten', 1)],
       'sacristy': lambda a, w, d, D: [('xanadu_common_chest', 2), ('xanadu_common_rack', 2), ('xanadu_court_cabinet', 1)],
       'chapter_house': lambda a, w, d, D: [('xanadu_court_throne', 1), ('xanadu_common_meditation_cushion', cs(a / 2.5)), ('xanadu_court_low_table', 1)],
+      'tower': lambda a, w, d, D: [('xanadu_common_signal_mirror', 3), ('xanadu_signal_lectern', 1), ('xanadu_common_bench', 2)],
+      'corner_tower': lambda a, w, d, D: [('xanadu_common_bench', 2), ('xanadu_common_lamp', 2)],
       'shrine': lambda a, w, d, D: [('xanadu_court_altar', 1), ('xanadu_court_statue', 1), ('xanadu_court_incense_burner', 2), ('xanadu_common_butter_lamp_rack', 2), ('xanadu_crimson_banner', 1)],
       'gallery': lambda a, w, d, D: [('xanadu_common_meditation_cushion', cs(a / 3)), ('xanadu_court_painted_hanging', cs(a / 20))],
       'drum_room': lambda a, w, d, D: [('xanadu_common_hour_drum', 1), ('xanadu_common_bench', 1), ('xanadu_common_water_clock', 1)],
@@ -390,7 +399,7 @@ def draw_section():
     dr.text((X2(-14), Y2(8.4) - 44), 'the Lip Range', font=fb, fill=(150, 40, 34))
     rect(-44, -18, 0, 0.4, (214, 236, 250)); dr.text((X2(-44), Y2(-6) + 4), 'court; the great cistern under it', font=fs, fill=(0, 60, 120))
     dr.rectangle([X2(-42), Y2(-0.5), X2(-20), Y2(-5)], outline=(0, 90, 160), width=2)
-    g = 0; P = 1.2
+    g = 4; P = 1.2   # the middle terrace (+4 m)
     rect(-100, -48, g, g + P, (220, 216, 206))
     rect(-100, -93, g + P, g + P + 6.4, (168, 48, 42), 'back range', (255, 255, 255))
     rect(-90.8, -73.8, g + P + 0.6, g + P + 9.6, (168, 48, 42)); dr.text((X2(-90.8) + 3, Y2(g + P + 9.6) + 2), 'Assembly Hall', font=fs, fill=(255, 255, 255))
@@ -399,8 +408,9 @@ def draw_section():
     dr.polygon([(X2(-86), Y2(ct)), (X2(-78.6), Y2(ct)), (X2(-80), Y2(ct + 3)), (X2(-82.3), Y2(ct + 4.5)), (X2(-84.6), Y2(ct + 3))], fill=(238, 200, 90), outline=(120, 80, 0))
     dr.text((X2(-112), Y2(ct + 4.5) - 22), 'the gilt crown', font=fs, fill=(120, 80, 0))
     rect(-55, -48, g + P, g + P + 9.8, (230, 120, 100), 'gate')
-    rect(-128, -108, 0, 8.4, (168, 48, 42)); dr.text((X2(-128) + 3, Y2(8.4) + 2), 'Hall of the Ember', font=fs, fill=(255, 255, 255))
-    rect(-128, -122, 0, 6, (238, 200, 90)); dr.text((X2(-150), Y2(12) - 22), 'its sanctum (gilt), the north window to the plume', font=fs, fill=(120, 80, 0))
+    rect(-136, -116, 9, 15.2, (240, 236, 228)); rect(-129.5, -118.5, 15.2, 44, (240, 236, 228)); rect(-129.5, -118.5, 44, 46.2, (168, 48, 42))
+    dr.polygon([(X2(-133), Y2(46.2)), (X2(-115), Y2(46.2)), (X2(-124), Y2(56))], fill=(176, 58, 44), outline=(90, 30, 20)); dr.text((X2(-150), Y2(56) - 22), 'the Ember Tower (+9 m terrace)', font=fs, fill=(0, 0, 0))
+    rect(-136, -130, 9, 13, (238, 200, 90)); dr.text((X2(-150), Y2(12) - 22), 'its sanctum (gilt), the north window to the plume', font=fs, fill=(120, 80, 0))
     rect(-146, -144, 0, 6, (150, 40, 34)); dr.text((X2(-168), Y2(6) - 22), 'north wall', font=fs, fill=(0, 0, 0))
     dr.line([(X2(-3), Y2(0)), (X2(-3), Y2(2.4))], fill=(150, 40, 34), width=4)
     dr.text((X2(40), Y2(-100)), 'the band\'s face: columnar basalt, the front of the cone\'s last flow', font=fs, fill=(60, 40, 20))

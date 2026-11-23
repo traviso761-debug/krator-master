@@ -32,8 +32,8 @@ PAGE_JS = r"""
  const mon=P.find(p=>p.id==='red-monastery');
  R.push({name:'eye-laid',ok:Z.placed>=30&&need.every(has)&&(K.wall||0)>=6&&Z.talus>=10&&mon&&mon.o.v===0,
   detail:Z.placed+' placed ('+JSON.stringify(K)+'), '+Z.chunks+' chunks, '+Z.talus+' talus heaps; missing: '+need.filter(id=>!has(id)).join(',')});
- const lv=[];for(let u=-140;u<=-16;u+=8)for(let v=-84;v<=84;v+=12)lv.push(Math.abs(terrainH(v,u)));const lvm=Math.max(...lv);
- R.push({name:'bench-level',ok:lvm<0.6,detail:'the bench inside its wall within '+lvm.toFixed(2)+' m of 1,660 m ('+lv.length+' points)'});
+ const lv=[];for(let u=-140;u<=-16;u+=8)for(let v=-84;v<=84;v+=12)lv.push(Math.abs(terrainH(v,u)-FLASHING_EYE.terraceY(L,u)));const lvm=Math.max(...lv);
+ R.push({name:'bench-level',ok:lvm<0.6,detail:'the bench inside its wall within '+lvm.toFixed(2)+' m of the level of its terrace (+0, +4, +9 m over 1,660 m; '+lv.length+' points)'});
  const B=L.band,face=v=>{const lu=FLASHING_EYE.lipU(L,v);return terrainH(v,lu-1)-terrainH(v,lu+B.batter+B.talusRun);};
  const fs=[-400,0,400].map(face),lr=P.find(p=>p.id==='lip-range'),onLip=lr&&Math.abs((lr.z+7)-FLASHING_EYE.lipU(L,0))<3;
  R.push({name:'band-face',ok:fs.every(h=>h>=150)&&onLip,detail:'the face at v -400, 0, 400: '+fs.map(h=>h.toFixed(0)).join(', ')+' m; the Lip Range\'s front '+(lr?(lr.z+7).toFixed(1):'?')+' m from the Lip\'s origin'});
@@ -49,6 +49,11 @@ PAGE_JS = r"""
  const bad=[];for(let v=-500;v<=500;v+=50){const lu=FLASHING_EYE.lipU(L,v);for(const d of[6,14,22])if(feBioMask(v,lu+d)>0)bad.push('face '+v+','+d);}
  for(let a=0;a<12;a++){const x=FE_CR[0]+Math.sin(a*.52)*(C.r+60),z=FE_CR[1]+Math.cos(a*.52)*(C.r+60);if(feBioMask(x,z)>0)bad.push('rim '+a);if(feBioMask(FE_CR[0]+Math.sin(a*.52)*C.r*.5,FE_CR[1]+Math.cos(a*.52)*C.r*.5)>0)bad.push('crater '+a);}
  R.push({name:'no-trees',ok:bad.length===0,detail:bad.length?bad.slice(0,6).join('; '):'the mask is empty on the face (33 points), the rim and the crater (24)'});
+ const SB=typeof FE_BRIDGES!=='undefined'?FE_BRIDGES:[],ST=typeof FE_STACKS!=='undefined'?FE_STACKS:[],low=[];
+ SB.forEach(B=>B.pts.forEach((p,k)=>{if(k>2&&k<B.pts.length-3&&p[1]-terrainH(p[0],p[2])<3)low.push(B.from+':'+k);}));
+ const shr=ST.filter((S,i)=>P.some(p=>p.id==='shrine.'+(i+1)&&p.o.y===S.top)).length,last=SB[SB.length-1],g=FE_P(-3,-80);
+ R.push({name:'way-of-shrines',ok:ST.length===6&&SB.length===6&&shr===6&&low.length===0&&last&&Math.hypot(last.b[0]-g[0],last.b[2]-g[1])<5&&Math.abs(last.b[1])<.5,
+  detail:ST.length+' stacks ('+ST.map(S=>(S.top-S.ground).toFixed(0)+' m').join(', ')+' tall), '+SB.length+' bridges ('+SB.map(B=>B.span.toFixed(0)).join(', ')+' m), '+shr+' shrines on their tops; '+(low.length?'decks within 3 m of the ground at '+low.slice(0,4).join(', '):'every deck clear of the ground by 3 m')});
  const LA=typeof FE_LAMPS!=='undefined'?FE_LAMPS:[];
  R.push({name:'fires',ok:LA.length===2&&LA.some(l=>l[3]==='ember')&&LA.some(l=>l[3]==='fire')&&!LA.some(l=>l[3]==='oil'),detail:LA.length+' lights: '+LA.map(l=>l[3]+' ('+l[4]+')').join(', ')});}
 return R;}"""

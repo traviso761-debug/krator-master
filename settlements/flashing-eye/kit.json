@@ -77,7 +77,10 @@
   "89-atmos-3-particles.js",
   "89-atmos-a-waves.js",
   "89-atmos-b-skylight.js",
-  "89-atmos-fx-ashplume.js"
+  "89-atmos-fx-ashplume.js",
+  "89qe-fe-roofs.js",
+  "90fh-vent.js",
+  "90fi-bridges.js"
  ],
  "interiorSets": []
 }
