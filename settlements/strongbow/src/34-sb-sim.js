@@ -58,9 +58,9 @@ var SB_SIM=(function(){
    if(corr){const cn=corrNodes.get(corr.id);for(const k of ring){const best=cn.slice().sort((p,q)=>hyp(p.x-k.x,p.z-k.z)-hyp(q.x-k.x,q.z-k.z)).slice(0,2);for(const b of best)edge(k,b,'walk',3);}}}
   /* a plate room's doors: the room, its door, the room or corridor it opens on */
   for(const rm of R.rooms){if(!rm.doors||!rm.poly||isCorr(rm))continue;const rn=byId.get('r:'+rm.id);if(!rn)continue;
-   rm.doors.forEach((d,i)=>{if(!d.at)return;const dn=node('d:'+rm.id+':'+i,d.at[0],rm.y,d.at[1],'door');edge(rn,dn,'walk',d.w||1);
+   rm.doors.forEach((d,i)=>{if(!d.at)return;const dn=node('d:'+rm.id+':'+i,d.at[0],rm.y,d.at[1],'door');edge(rn,dn,'walk',(d.w==null?1:d.w));
     const to=d.to&&(corrNodes.get(d.to)||(byId.get('r:'+d.to)?[byId.get('r:'+d.to)]:null));
-    if(to){const b=to.slice().sort((p,q)=>hyp(p.x-dn.x,p.z-dn.z)-hyp(q.x-dn.x,q.z-dn.z))[0];edge(dn,b,'walk',d.w||1);}});}
+    if(to){const b=to.slice().sort((p,q)=>hyp(p.x-dn.x,p.z-dn.z)-hyp(q.x-dn.x,q.z-dn.z))[0];edge(dn,b,'walk',(d.w==null?1:d.w));}});}
   /* the stair halls (a box's, the tower's): three nodes across; a box's bars' end rooms are open to it */
   for(const rm of R.rooms){if(!/\.hall$/.test(rm.id)||/\.core$/.test(rm.id))continue;const f=R.floors.find(q=>q.id===rm.id);if(!f)continue;
    const P2=f.poly?f.poly.map(q=>[q[0],q[1]]):f.rect?[[f.rect[0],f.rect[2]],[f.rect[1],f.rect[2]],[f.rect[1],f.rect[3]],[f.rect[0],f.rect[3]]]:null;if(!P2)continue;
@@ -135,7 +135,7 @@ var SB_SIM=(function(){
   if(o.town){const T=o.town,snap=(x,y,z)=>{const c=near(x,y,z,3,2,n=>n.tag==='street');return c[0]||null;};
    T.ways.forEach((w,wi)=>{let prev=null;const pts=w.pts;let acc=0,last=null;
     for(let i=0;i<pts.length;i++){const p=pts[i];if(last)acc+=hyp(p[0]-last[0],p[1]-last[1]);last=p;if(i>0&&i<pts.length-1&&acc<8)continue;acc=0;
-     const y=o.ground?o.ground(p[0],p[1]):0,n=snap(p[0],y,p[1])||node('t:'+wi+':'+i,p[0],y,p[1],'street');if(prev)edge(prev,n,'street',w.w||6);prev=n;}});
+     const y=o.ground?o.ground(p[0],p[1]):0,n=snap(p[0],y,p[1])||node('t:'+wi+':'+i,p[0],y,p[1],'street');if(prev)edge(prev,n,'street',(w.w==null?6:w.w));prev=n;}});
    /* a street that ends on another's side (a T-junction between two of its samples): its end joined to that street's nearest node */
    {const deg=new Map();for(const e of edges)if(e.kind==='street'){deg.set(e.a,(deg.get(e.a)||0)+1);deg.set(e.b,(deg.get(e.b)||0)+1);}
     for(const n of nodes){if(n.tag!=='street'||deg.get(n.id)!==1)continue;const own=new Set(edges.filter(e=>e.a===n.id||e.b===n.id).map(e=>e.a===n.id?e.b:e.a));

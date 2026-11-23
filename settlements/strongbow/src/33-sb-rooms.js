@@ -77,7 +77,7 @@ var SB_ROOMS=(function(){
   /* a flight from y0 to y1 at SLOPE, placed by search: inside every circle of cons ([cx, cz, r]) along its whole run, clear of the
      stairs already placed at heights it shares and of the lifts' shafts. The first place that fits, nearest the circles' mean. */
   const liftPts=S.lifts.map(l=>({rect:[l.car.rect[0]-.6,l.car.rect[1]+.6,l.car.rect[2]-.6,l.car.rect[3]+.6]}));   /* the shaft: the car and its walls */
-  const placeFlight=(id,y0,y1,cons,o)=>{o=o||{};const run=Math.max(4,Math.abs(y1-y0)/SLOPE),w=o.w||1.6,m=w/2+.5,ylo=Math.min(y0,y1)-3,yhi=Math.max(y0,y1)+3;
+  const placeFlight=(id,y0,y1,cons,o)=>{o=o||{};const run=Math.max(4,Math.abs(y1-y0)/SLOPE),w=(o.w==null?1.6:o.w),m=w/2+.5,ylo=Math.min(y0,y1)-3,yhi=Math.max(y0,y1)+3;
    const avoid=liftPts.concat(R.stairs.filter(s=>Math.max(s.a[2],s.b[2])>ylo&&Math.min(s.a[2],s.b[2])<yhi).map(s=>({a:s.a,b:s.b,w:s.w})));
    let cx=0,cz=0;for(const c of cons){cx+=c[0];cz+=c[1];}cx/=cons.length;cz/=cons.length;
    const offs=[[0,0]];for(let r=2;r<=20;r+=2)for(let k=0;k<12;k++){const a=k/12*TAU;offs.push([r*Math.cos(a),r*Math.sin(a)]);}
@@ -267,7 +267,7 @@ var SB_ROOMS=(function(){
    /* the Nock's deck round the tower (the landing's side is the walk's, behind the wall the layout keeps shut) */
    if(nock){const s=nock.shape;floor('sb.room.nock.deck',{rect:[s[1]+1,s[2],s[3],s[4]],y:nock.y,room:'sb.room.nock.deck'});
     R.rooms.push({id:'sb.room.nock.deck',kind:'deck',part:'sb.nock.c',state:nock.state,by:nock.by,y:nock.y,h:3,level:0});R.parts['sb.nock.c']={kind:'deck',storeys:1};
-    const nw=PT['sb.nock.wall'];if(nw)R.walls.push({id:'sb.nock.wall',box:[nw.shape[1],nw.shape[2],nw.shape[3],nw.shape[4],nw.y,nw.y+(nw.h||4)]});}}
+    const nw=PT['sb.nock.wall'];if(nw)R.walls.push({id:'sb.nock.wall',box:[nw.shape[1],nw.shape[2],nw.shape[3],nw.shape[4],nw.y,nw.y+((nw.h==null?4:nw.h))]});}}
 
   /* the stairwells: every floor a flight climbs to is cut open over the flight (core/walk's walker has no head, but a host that
      keeps head room, Recast's agent height in Godot, finds a flight's top under a ceiling and stops there) */
@@ -298,7 +298,7 @@ var SB_ROOMS=(function(){
  // ---- the registry --------------------------------------------------------------------------------------------------------------
  /* the town's buildings as solids: each lot's footprint (turned by ry) in slices a metre thick along its longer side, each slice's
     bounds a block */
- function solids(town,skip){const out=[];if(!town)return out;for(const L of town.lots){if(skip&&skip.has(L.id))continue;const c=Math.cos(L.ry||0),s=Math.sin(L.ry||0),w=L.w/2,d=L.d/2,h=L.h||6;
+ function solids(town,skip){const out=[];if(!town)return out;for(const L of town.lots){if(skip&&skip.has(L.id))continue;const c=Math.cos((L.ry==null?0:L.ry)),s=Math.sin((L.ry==null?0:L.ry)),w=L.w/2,d=L.d/2,h=(L.h==null?6:L.h);
    const long=L.w>=L.d,n=Math.max(1,Math.ceil(long?L.w:L.d));
    for(let k=0;k<n;k++){const u0=-1+2*k/n,u1=-1+2*(k+1)/n,pts=long?[[u0*w,-d],[u1*w,-d],[u1*w,d],[u0*w,d]]:[[-w,u0*d],[w,u0*d],[w,u1*d],[-w,u1*d]];
     let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [a,b] of pts){const x=L.x+a*c+b*s,z=L.z-a*s+b*c;x0=Math.min(x0,x);x1=Math.max(x1,x);z0=Math.min(z0,z);z1=Math.max(z1,z);}
@@ -348,7 +348,7 @@ var SB_ROOMS=(function(){
     is flooded from every seed in it; a doorstep or a stair reached in one window seeds the windows its far side lies in, and a
     window is flooded again when it gets new seeds. Seeds start at o.starts (the town, the lifts' stops the walk proves). Returns
     {reached: Set of floor names, windows, nodes, ms}. */
- function audit(W,R,o){o=o||{};const t0=Date.now(),K=W.create?W:KWALK,cell=o.cell||.6,step=o.step==null?.7:o.step;
+ function audit(W,R,o){o=o||{};const t0=Date.now(),K=W.create?W:KWALK,cell=(o.cell==null?.6:o.cell),step=o.step==null?.7:o.step;
   const FL=W.floors,BL=W.blocks.filter(b=>!b.off),wins=[];
   const fb=f=>f.kind==='rect'?[f.rect[0],f.rect[1],f.rect[2],f.rect[3],f.y,f.y]:f.kind==='poly'?[f.bbox[0],f.bbox[1],f.bbox[2],f.bbox[3],Math.min(...f.pts.map(p=>p[2])),Math.max(...f.pts.map(p=>p[2]))]:
    [Math.min(f.a[0],f.b[0])-f.w/2,Math.max(f.a[0],f.b[0])+f.w/2,Math.min(f.a[1],f.b[1])-f.w/2,Math.max(f.a[1],f.b[1])+f.w/2,Math.min(f.a[2],f.b[2]),Math.max(f.a[2],f.b[2])];
@@ -378,7 +378,7 @@ var SB_ROOMS=(function(){
   while(Q.length){const w=Q.shift();w.queued=false;const k=kw(w),had=w.got||(w.got=new Set());
    /* a seed on a floor this window's earlier floods stood on adds nothing: leave it out (else each new seed floods it all again) */
    const sd=(w.seeds||[]).filter(p=>!k.floorsAt(p[0],p[2]).some(q=>Math.abs(q[0]-p[1])<=step&&had.has(q[1])));w.seeds=[];if(!sd.length)continue;
-   const RE=k.reach(sd,{cell,step,box:w.box,ground:o.ground,limit:o.limit||2e6});nodes+=RE.nodes;floods++;
+   const RE=k.reach(sd,{cell,step,box:w.box,ground:o.ground,limit:(o.limit==null?2e6:o.limit)});nodes+=RE.nodes;floods++;
    const got=new Set(RE.reached);for(const f of RE.reached)had.add(f);
    for(const f of RE.reached){const src=f.src;if(!src)continue;const nm=src.name;
     /* a stair's end seeds the windows it reaches into only when the flood stood on what it lands on there (a flight blocked half
