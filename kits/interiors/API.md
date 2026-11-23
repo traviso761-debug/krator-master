@@ -44,7 +44,13 @@ const R = ROOM({
   fixtures: [{ id, kind: 'stair', x, z, ry, w, d, h?, clearance: { front: 0.9 }, reach: true }]
                                   // optional: what the building already put in the room (a stair's
                                   //   flight, the well a stair rises through): furniture keeps off it
-                                  //   and out of its clearance; reach: its front is a way in, kept reachable
+                                  //   and out of its clearance; reach (default true; false for a post or a
+                                  //   bench that is only kept clear of): its front is a way in, kept
+                                  //   reachable, and keeps at least 0.45 m free (MIN_USE, as a usable piece
+                                  //   does) whatever its clearance.front; a reachable fixture whose front has
+                                  //   no walkable cell (it faces a wall, or a desk), or none the first door
+                                  //   reaches, is left out of the walk check and listed in
+                                  //   plan.report.blockedFixtures [{ id, reason }] (not in report.missing)
 });
 ```
 
