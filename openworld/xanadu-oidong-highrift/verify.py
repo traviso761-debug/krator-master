@@ -85,6 +85,27 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
  if(!PD||!E)bad2.push('no Pleasure Dome isle or no Erehwon');else{const d=Math.hypot(PD.x-(E.x+70),PD.z-(E.z-613));if(d>10)bad2.push('the Pleasure Dome isle '+d.toFixed(0)+' m off the page\'s island');else l2.push('the Pleasure Dome isle '+d.toFixed(1)+' m off the page\'s island');}
  LF.off=false;
  R.push({name:'the lake\'s small islands stand over the water at their records, the Pleasure Dome\'s at the page\'s island',ok:!bad2.length,detail:bad2.length?bad2.join('; '):l2.join('; ')});
+ /* Gihon (settlements/gihon G3 on this region, 2026-11-22): the site at the tune's place with its ring of five; the Landing
+    (core/world 48s laidVillage) on both banks of the outlet, over 50 lots a bank on dry ground, a pier of three runs or more into
+    the lake each side with its light over the water; the Alph's five; each of them among the villages 88s draws. The
+    negative reads the Landing without its south bank and pier */
+ {const P=WORLD_DATA.sites,b3=[],l3=[],G=(M.sites||[]).find(s=>s.id==='sgihon000001'),K=P.sites.find(s=>s.id==='sl758m2396'),Gs=P.sites.find(s=>s.id==='sgihon000001');
+  const drawn=new Set(_sites.villages.map(v=>v.id));
+  if(!G||!Gs)b3.push('no site sgihon000001');else{if(G.px!==955.7||G.py!==1607.9)b3.push('Gihon at px '+G.px+','+G.py);
+   const ring=(Gs.hamlets||[]).filter(h=>/gh\.ring\./.test(h.id));if(ring.length!==5)b3.push(ring.length+' ring villages');
+   ring.forEach(h=>{if(!drawn.has(h.id))b3.push(h.id+' not drawn');});l3.push(ring.length+' in the ring ('+ring.reduce((n,h)=>n+h.census.pop,0)+' people)');}
+  const Ld=K&&(K.hamlets||[]).find(h=>h.id==='sl758m2396/hamlet/landing');
+  if(!Ld)b3.push('no Landing');else{const R0=neg==='site'?Ld.records.filter(r=>!/\/gl\.(south|pier\.south)\./.test(r.id)):Ld.records,has=(r,p)=>r.id.indexOf('/gl.'+p)>0;
+   const lots=b=>R0.filter(r=>!r.on&&has(r,b+'.')),runs=b=>R0.filter(r=>r.kind==='pier'&&has(r,'pier.'+b+'.')),light=b=>R0.find(r=>r.kind==='lighthouse'&&has(r,'pier.'+b+'.'));
+   for(const b of ['north','south']){const n=lots(b).length,rs=runs(b),L=light(b);if(n<50)b3.push('the '+b+' bank: '+n+' lots');
+    if(rs.length<3)b3.push('the '+b+' pier: '+rs.length+' runs');
+    if(!L)b3.push('no light on the '+b+' pier');else if(!(WORLD.water(L.x,L.z)>WORLD.H(L.x,L.z)+1))b3.push('the '+b+' pier\'s light not over the lake');
+    const wet=lots(b).find(r=>!(WORLD.water(r.x,r.z)<WORLD.H(r.x,r.z)-1));if(wet)b3.push(wet.id+' in the water');}
+   if(!drawn.has(Ld.id))b3.push('the Landing not drawn');
+   l3.push('the Landing: '+lots('north').length+' and '+lots('south').length+' lots, piers of '+runs('north').length+' and '+runs('south').length+' runs, '+Ld.census.pop+' people, '+Ld.dropped.length+' laid records the world has no ground or water for ('+Ld.dropped.join(', ')+')');}
+  const alph=K?(K.hamlets||[]).filter(h=>/\/alph\./.test(h.id)):[];if(alph.length!==5)b3.push(alph.length+' Alph hamlets');
+  alph.forEach(h=>{if(!drawn.has(h.id))b3.push(h.id+' not drawn');});l3.push(alph.length+' on the Alph ('+alph.reduce((n,h)=>n+h.census.pop,0)+' people)');
+  R.push({name:'Gihon on the region: its ring of five, the Landing on both banks with a pier into the lake each side, the Alph\'s five',ok:!b3.length,detail:b3.length?b3.join('; '):l3.join('; ')});}
  return R;}"""
 
 
@@ -313,7 +334,8 @@ async def run(a):
             print('--- the region ---')
             for neg in (None, 'site', 'landforms'):
                 for r in await pg.evaluate(REGION, neg):
-                    # a negative is judged on the check it breaks: the site's on the region, the stamp's on the islands
+                    # a negative is judged on the check it breaks: the site's on the region (and Gihon's: its Landing read
+                    # without the south bank), the stamp's on the islands
                     if neg and (neg == 'landforms') != ('islands' in r['name']):
                         continue
                     if say(r, neg): fails.append(('negative ' + neg + ' ' if neg else '') + r['name'])

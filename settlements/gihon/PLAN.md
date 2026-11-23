@@ -256,8 +256,12 @@ of colour). Until they are delivered the temple draws the kit's gold and a tinte
   (`--assert`, the rtx lane) passes.
 - **G3.** The Landing (`src/43-gh-landing.js`): about 2,770 people on two core/city instances, a stone pier each side of the
   mouth into the lake, the barges' berths, the transfer sheds and ox-cart yards at the portage road's head; the Alph's five
-  hamlets on core/hamlet's Xanadu row (`src/42-gh-ring.js`). Records for the region; drawing them in
-  `openworld/xanadu-oidong-highrift` is the next step.
+  hamlets on core/hamlet's Xanadu row (`src/42-gh-ring.js`). Records for the region.
+- **G3 on the region** (2026-11-22). `openworld/xanadu-oidong-highrift` draws the site `sgihon000001` (its `SITES.json` row,
+  `model: false` until the scale model's queue takes the pin) with the ring's five on the world's ground at the tune's places, and,
+  with Kirstabal's lake, the Landing as its page laid it (`bake_landing.js`, core/world 48s `laidVillage`: both banks, both piers;
+  6 of its 430 records left out where the world has no river, `KNOWN_ISSUES.md`) and the Alph's five, their roads joined up the
+  valley. The region's `verify.py --assert` checks them (with a negative).
 
 ## 10. Questions for the owner
 

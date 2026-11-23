@@ -265,11 +265,9 @@
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/xanadu.py": "6e7562ab022acc1e2aeadfa55a0222b7ed8a4994a4e70ff5e1982ddce617cf46",
-    "settlements/gihon/KNOWN_ISSUES.md": "9e04017b4e01e434de2fc03895f76e07231965108cfb3bc2d0b39253b4cbc4eb",
+    "settlements/gihon/KNOWN_ISSUES.md": "d14b073a9432f29651378bd6f0178cca150de802fd0cfa2da1603319f27826ff",
     "settlements/gihon/PORT.md": "a0a8b5771a3654ec37540fea41a82975fc926b4a678b75f8c97143cf388af0ab",
     "settlements/gihon/build.py": "079cb02d560a30e6418cb7b1516b1d21da80bf82e563429e57c6c03a5f598b32",
-    "settlements/gihon/gen/69g-kcity-bundle.js": "a536c6910f1956d7e79c0b841e30b5490ff4596ce2eb2a24f3c76e798f26c906",
-    "settlements/gihon/gen/69g2-gh-flora-bundle.js": "843aa5eb580f9d57c80cf5246815f25fcc333da8737a422aa107c354d9cf695b",
     "settlements/gihon/kit.json": "f0615d21409dede2e32ae64854b54c6711c042c1b84a74d30dfc96940a4b35bd",
     "settlements/gihon/src/39g-gh-model.js": "b17a9f8ec4aaa4c79b611f165fad48ce8e3d84a8a809c3392be27d68558bc266",
     "settlements/gihon/src/40-gh-ground.js": "9d126872850dafefe34666e629c5b075e43b0d82d636ba8ef011bec05a641a5f",
@@ -524,13 +522,17 @@
     "settlements/gihon/build-manifest-town.json": "4e72cb683b733af73d192e5e9d9ac7b65e7dd70d4948ed04ade3d8cacb59becf",
     "settlements/gihon/dist/gihon.html": "4f2fc0460d0462a27f89549ff116a7895cb62ba76423108ba17ff25679f37d30",
     "settlements/gihon/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
-    "settlements/gihon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
+    "settlements/gihon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
+    "settlements/gihon/gen/69g-kcity-bundle.js": "a536c6910f1956d7e79c0b841e30b5490ff4596ce2eb2a24f3c76e798f26c906",
+    "settlements/gihon/gen/69g2-gh-flora-bundle.js": "843aa5eb580f9d57c80cf5246815f25fcc333da8737a422aa107c354d9cf695b"
    },
    "outputs_raw": {
     "settlements/gihon/build-manifest-town.json": "5946a14572bfc31c1926e01034e39715f823aedb20cd67fa7bde43fb947b1dc8",
     "settlements/gihon/dist/gihon.html": "4f2fc0460d0462a27f89549ff116a7895cb62ba76423108ba17ff25679f37d30",
     "settlements/gihon/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
-    "settlements/gihon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
+    "settlements/gihon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
+    "settlements/gihon/gen/69g-kcity-bundle.js": "a536c6910f1956d7e79c0b841e30b5490ff4596ce2eb2a24f3c76e798f26c906",
+    "settlements/gihon/gen/69g2-gh-flora-bundle.js": "843aa5eb580f9d57c80cf5246815f25fcc333da8737a422aa107c354d9cf695b"
    }
   }
  }

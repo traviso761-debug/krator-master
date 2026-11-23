@@ -40,7 +40,18 @@ Mint, the assessors' hall, the treasury, the temple's gold-and-opal dress, the v
 | `test-gh-load.js`, `test-gh-town.js` | | the node tests (tools/ktest.js) |
 | `verify.py` | | Xanadu's verify plus `gihon-laid`, `walled`, `forbidden-city`, `people`, `ring-laid`, `water` |
 
+## On the open world
+
+`openworld/xanadu-oidong-highrift` draws Gihon's site (2026-11-22): the site `sgihon000001` at the tune's place with its ring of
+five, the Landing on both banks with its two piers, and the Alph's five (with Kirstabal's lake). The Landing's records reach the
+region through `bake_landing.js`:
+
+```
+node bake_landing.js            # openworld/xanadu-oidong-highrift/src/47g-site-gihon-landing.js (GH_LANDING_LAID)
+node bake_landing.js --check    # fails when the written file is stale (after a change to 43-gh-landing.js or the kit's boxes)
+python3 ../../core/world/bake_sites.py xanadu-oidong-highrift   # then the region's plan, its page and its verify
+```
+
 ## Not here yet
 
-`KNOWN_ISSUES.md`. The site in the open world (Gihon, its ring, the Landing's piers and the Alph's hamlets drawn on
-`openworld/xanadu-oidong-highrift`'s ground) is a later step; the region's site spec only dropped Ōpal-Māuṭh.
+`KNOWN_ISSUES.md`.

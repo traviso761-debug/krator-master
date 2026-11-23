@@ -11,7 +11,8 @@
 //   KSITES.discOk(x, z, R)          a whole disc of good ground (rings from the middle out: the middle fails first)
 //   KSITES.siteFor(near, look, R)   the nearest point to `near` (a 50 m grid out to `look` m) with a disc of R m
 //   KSITES.plan(spec, kit)          -> the region's plan (below). spec: the region's SITE_SPEC (a hamlet's `link`
-//                                   [dx, dz] aims its main lane, `road: false` lays it no road: a page-less site's own house)
+//                                   [dx, dz] aims its main lane, `road: false` lays it no road: a page-less site's own house;
+//                                   `laid` puts a village its own page laid on the world as it is: laidVillage below)
 //                                   {region, world, sites: {<site id>: {camps: [{tribe, near: [dx, dz] from the site, look?}],
 //                                   road?: {r}}}}; kit: {dims(key, v) -> {w, d, h}, programs(tribe) -> a band's program}
 //   KSITES.hash(plan)               FNV-1a of the plan's canonical text (no log, no hash): the bake and a re-plan agree
@@ -65,11 +66,12 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
     census:{pop:cs.pop,adults:cs.adults,children:cs.children,elders:cs.elders,riders:cs.riders,mounts:cs.mounts,households:cs.households.length},
     records:c.records.map(rec),hedge:loop(c.hedge),fence:loop(c.fence),pasture:c.pasture?{pts:c.pasture.pts.map(p=>[r2(p[0]),r2(p[1])]),ha:r2(c.pasture.ha)}:null,
     short:(c.short||[]).slice()});}
-  /* the hamlets (core/hamlet): each village searched from its spot (an offset from the site, or a bearing and a
-     distance), laid out by KHAMLET.village on the world's land with the site's town as its link */
+  /* the hamlets (core/hamlet): each village searched from its spot (px: a place on the 5.1 canvas, near: an offset from the
+     site, or a bearing and a distance), laid out by KHAMLET.village on the world's land with the site's town as its link */
   if(SP.hamlets)site.hamlets=[];
   for(const Hs of SP.hamlets||[]){const id=S.id+'/hamlet/'+Hs.id,look=Hs.look==null?3000:Hs.look;
-   const near=Hs.near?[S.x+Hs.near[0],S.z+Hs.near[1]]:[S.x+Math.sin(Hs.bearing*Math.PI/180)*Hs.km*1000,S.z-Math.cos(Hs.bearing*Math.PI/180)*Hs.km*1000];
+   if(Hs.laid){site.hamlets.push(laidVillage(id,Hs,S,SP));if(Hs.road===false)site.hamlets[site.hamlets.length-1].noRoad=true;continue;}
+   const near=Hs.px?WORLD.fromPx(Hs.px[0],Hs.px[1]):Hs.near?[S.x+Hs.near[0],S.z+Hs.near[1]]:[S.x+Math.sin(Hs.bearing*Math.PI/180)*Hs.km*1000,S.z-Math.cos(Hs.bearing*Math.PI/180)*Hs.km*1000];
    const at=siteFor(near,look,HAMLET_R);if(!at){out.errors.push(id+': no ground for a village within '+look+' m of its spot');continue;}
    if(typeof KHAMLET==='undefined'){out.errors.push(id+': core/hamlet is not on the page');continue;}
    /* link: where the village's main lane points (the site, or an offset from it: a house that is itself the site's
@@ -252,6 +254,30 @@ function road(n,siteId,fromId,at,to,hw){const R=ROADS.route({name:fromId,x:at.x,
  const pts=[[at.x,at.z,eg]].concat(rest);
  return{id:siteId+'/road/'+n,from:fromId,to:siteId,hw:hw==null?R.hw:hw,pts:pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?0:p[2])]),
   length_m:Math.round(R.length_m),maxGrade:Math.round((R.maxGrade||0)*1e4)/1e4};}
+/* A VILLAGE LAID BY ITS OWN PAGE (a hamlet's `laid`, opt-in, 2026-11-22: Gihon's Landing, settlements/gihon/src/43-gh-landing.js
+   on core/city, over core/hamlet's 500; settlements/gihon/bake_landing.js writes it). Hs.laid: {records: [{id, key, v, kind, role,
+   x, z, ry, w, d, h, people?, on?, deck?, len?}], lanes: [{id, w, main, pts}], end: [x, z] (where its road starts), census: {pop}}
+   in metres from its own origin, which stands at Hs.px (the 5.1 canvas) or the site's offset Hs.near, moved by Hs.shift [dx, dz]
+   and turned by Hs.turn (degrees, clockwise seen from above) round itself. Nothing is searched or laid again: each record is
+   kept where the world's ground takes it and dropped where it does not (the village's `dropped`: the laid ids), so the plan says
+   what the world lacks. On land: KSITES.groundOk at its corners and middle. `on: 'water'`: a pier's run or its light stands
+   from the bed, its deck `deck` m over the water, where the ground under its middle is below its deck; a boat (kind 'boat')
+   floats where there is water under its middle. `level` is the water those records stand on (88s seats them on it). */
+function laidOk(r){const x=r.x,z=r.z;if(r.on==='water'){const w=WORLD.water(x,z),h=HL(x,z);return w>-1e8&&(r.kind==='boat'?w>h+.5:h<w+r.deck-.3);}
+ return boxPts(x,z,r.ry,r.w,r.d).every(p=>groundOk(p[0],p[1]));}
+function laidVillage(id,Hs,S,SP){const L=Hs.laid,o=Hs.px?WORLD.fromPx(Hs.px[0],Hs.px[1]):[S.x+(Hs.near||[0,0])[0],S.z+(Hs.near||[0,0])[1]],sh=Hs.shift||[0,0];
+ const ox=o[0]+sh[0],oz=o[1]+sh[1],a=(Hs.turn||0)*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),P=p=>[r2(p[0]*ca-p[1]*sa+ox),r2(p[0]*sa+p[1]*ca+oz)];
+ const records=[],dropped=[];let level=null,pop=0,households=0;
+ for(const r of L.records){const [x,z]=P([r.x,r.z]),q={id:id+'/'+r.id,key:r.key,role:r.role,kind:r.kind,pending:false,x,z,ry:Math.round((r.ry-a)*1e4)/1e4,w:r.w,d:r.d,h:r.h};
+  if(r.on==='water'){q.on='water';q.deck=r.deck;if(r.len)q.len=r.len;}
+  if(!laidOk(q)){dropped.push(r.id);continue;}
+  if(q.on)level=Math.max(level==null?-1e9:level,WORLD.water(x,z));
+  records.push(q);pop+=r.people||0;if(r.kind==='house')households++;}
+ const end=P(L.end);
+ return{id,name:Hs.name||'a laid village',focus:Hs.focus||'laid',culture:Hs.culture||SP.culture,site:{x:r2(ox),z:r2(oz)},end:{x:end[0],z:end[1]},
+  census:{pop,households},green:null,records,
+  lanes:L.lanes.map(l=>({id:id+'/'+l.id,w:l.w,main:!!l.main,pts:l.pts.map(P)})),error:records.length?null:'no record on the world\'s ground',
+  laid:L.from||true,turn:Hs.turn||0,level:level==null?null:r2(level),dropped};}
 const HAMLET_R=120;   /* a village's ground: core/hamlet wants a 45 m disc of good ground at its green; its houses, lanes and works reach farther */
 function hash(P){const s=JSON.stringify(P,(k,v)=>k==='hash'||k==='log'||k==='ms'?undefined:v);let h=0x811c9dc5;
  for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return('00000000'+h.toString(16)).slice(-8);}
@@ -269,7 +295,9 @@ function check(P,opt){opt=opt||{};const problems=[],counts={sites:0,camps:0,reco
    if(V.error)problems.push(V.id+': '+V.error);
    /* the generator's own rules (core/hamlet's test): no two boxes overlap (touching allowed), each box's corners and
       centre on good ground */
-   const ok=opt.groundOk||groundOk,RS=V.records.map(r=>KHAMLET.rect(r.x,r.z,Math.cos(r.ry),-Math.sin(r.ry),r.w,r.d));let ov=0,off=0;
+   /* a laid village's records on the water (laidVillage): its own rule, and apart from the boxes on land */
+   const wet=V.records.filter(r=>r.on),wbad=wet.filter(r=>!laidOk(r)).length;if(wbad)problems.push(V.id+': '+wbad+' records on the water with no water for them');
+   const ok=opt.groundOk||groundOk,RS=(wet.length?V.records.filter(r=>!r.on):V.records).map(r=>KHAMLET.rect(r.x,r.z,Math.cos(r.ry),-Math.sin(r.ry),r.w,r.d));let ov=0,off=0;
    for(let i=0;i<RS.length;i++){for(let j=i+1;j<RS.length;j++)if(KHAMLET.overlap(RS[i],RS[j],0))ov++;
     if(!KHAMLET.corners(RS[i]).concat([[RS[i].x,RS[i].z]]).every(q=>ok(q[0],q[1])))off++;}
    if(ov)problems.push(V.id+': '+ov+' overlapping boxes');if(off)problems.push(V.id+': '+off+' boxes off good ground');

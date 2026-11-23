@@ -63,7 +63,13 @@ Riders' `BR_CAMP`), hamlets (core/hamlet: a row's `kit` picks the drawing, `88s`
 through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns, and `ways` (opt-in, 2026-11-16: a road from a town, or one of its villages, to a point, routed as a kept link and ending at the cut's edge, `short`, while the point lies outside it; Thalaba's expedition road toward Godshearth's Spillway) (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
 `every` m of road and a rest stop between, drawn as one-building villages; a stop with no ground is a `gap`). The bake
 reads the kits' declared boxes from their source (`ASSET`, `XA.def`, `VERN.def`); a new village kit adds its records
-there and an entry in `VK`.
+there and an entry in `VK`. A hamlet's spot may be `px` (the 5.1 canvas) as well as `near` or a bearing. **A village its own
+page laid** (opt-in, 2026-11-22: Gihon's Landing on core/city, over core/hamlet's 500) is a hamlet with `laid` (its records and
+lanes in its own frame), `px`, `shift` and `turn`: `48s` `laidVillage` puts it on the world as it is, searches nothing, keeps each
+record where the world's ground takes it and lists the rest as `dropped`; a record `on: 'water'` (a pier's run, a light, a boat)
+stands on the water at the village's `level` (`88s`: its deck over it, a footing to the bed, a run stretched to its `len`). The
+bake loads a region's `src/NN-site-*.js` (such records, generated) before its spec, and the Xanadu row by name
+(core/hamlet/xanadu/23), which a spec registers as a row of its own.
 
 **A town's own ground** (`openworld/PLAN-VOTH.md` section 3, Layer 2; Voth the first case, 2026-11-11). A settlement whose
 layout is keyed to its page's ground (its shore, its river) hands that ground to the world instead of being rebuilt on it:

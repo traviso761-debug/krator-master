@@ -6,8 +6,9 @@
 // kit's buildings): farming villages ringed round the town, a ranching village farther out, a road from each village's
 // lane end to its town, and roads between the towns. KSITES (core/world/48s-world-sites.js) plans it;
 // core/world/bake_sites.py bakes it to plan/sites.json.
-//   hamlets   {id, focus, near: [dx, dz] from the site | bearing (degrees from north, clockwise) and km, look (m, the
-//             search round that spot), pop (the village's ceiling), name}
+//   hamlets   {id, focus, near: [dx, dz] from the site | px: [x, y] on the 5.1 canvas | bearing (degrees from north,
+//             clockwise) and km, look (m, the search round that spot), pop (the village's ceiling), name}; or a village its
+//             own page laid, put here as it is: {id, name, laid, px, shift, turn} (core/world 48s laidVillage)
 //   links     the roads between the towns: [site a, site b, {hw, r (where the town's own streets take over)}]
 // Longsong's three villages stand where its page lays them (settlements/longsong/src/40h-ls-hamlets.js: east and west
 // farmers and the herders, in its frame round the monastery).
@@ -34,6 +35,13 @@ KHAMLET.CULTURES['xanadu-fishing']=Object.assign({},KHAMLET.CULTURES.xanadu,{
  focusJobs:Object.assign({},KHAMLET.CULTURES.xanadu.focusJobs,{fishing:90}),reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{fishing:260}),
  pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{xh_fish_racks:{w:16,d:11,h:3.6,what:'fish racks and a smokehouse'}})});
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-fishing']={culture:'xanadu'};
+/* the Xanadu row by name (core/hamlet/xanadu/23, KHAMLET.xanaduRow: the shared row with the orchard and tea foci and a wayside
+   shrine in each village), as Gihon's page lays its ring and the Alph's hamlets (settlements/gihon/src/42-gh-ring.js). Its works
+   keys the kit's src lacks (the shrine, the apiary) are its pending boxes here: this page loads the kit's extra/88d and 88f, not
+   88g, which would size them on the page and not in the bake */
+if(!KHAMLET.xanaduRow)throw new Error('the region\'s sites: core/hamlet/xanadu/23-hamlet-xanadu-row.js is not loaded');
+KHAMLET.CULTURES['xanadu-row']=KHAMLET.xanaduRow({});
+if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-row']={culture:'xanadu'};
 // bridges (core/world/42b-world-bridges.js; 2026-11-16, for Thalaba's Briḍj): every road and link this region lays is bridged
 // where it crosses a named river, in the Xanadu kit's stone, so the roads are laid over the rivers and the rivers run on under them
 /* the Qiblai temple estates' row (settlements/qiblai, Q7f): the Xanadu row with the Orders' foci. The estate's shrine is its
@@ -106,8 +114,18 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
      the portage, the barges' stop at the lake's west end. A lake village's spot is the model's lake cell nearest the tune's
      place (2 km cells: the tune's places stand 2 to 3 km back from the water), so the search finds the shore. Each lake
      village is laid at the row's own size (about 240: its census fills the focus's jobs), under its ceiling of 500
-     (KHAMLET.POP_MAX); the tune keeps their whole numbers (Phisharī 1,400 ... the Landing 2,500). Ōpal-Māuṭh is now the town
-     Gihon (settlements/gihon, G1 2026-11-22): its own page; its site, ring and the Landing's piers on this region wait for its step */
+     (KHAMLET.POP_MAX); the tune keeps their whole numbers (Phisharī 1,400 ...). Ōpal-Māuṭh is now the town Gihon (settlements/
+     gihon, G1 2026-11-22: its own site below).
+     THE LANDING (settlements/gihon G3; the owner, 2026-11-17: "a village of 2.5k, built along monumental stone piers on either
+     side of the river mouth"; 2026-11-22: "Keep at the outlet") is laid by Gihon's page on core/city (src/47g-site-gihon-landing.js,
+     settlements/gihon/bake_landing.js) and put here as it is (core/world 48s laidVillage): its two banks and their piers at the
+     outlet's model cell (px 933.4,1598.2), turned 27 degrees and moved 360 m north-west onto the world's shore. The world's shore
+     runs north-south there and the Landing's own frame meets the lake on the river's line, 22 degrees off: the turn and the shift
+     are the fit that puts 410 of its 411 lots on dry ground and both piers out into the lake (KNOWN_ISSUES.md: the world's
+     Nahr ash-Shalālāt starts 2.8 km inland, so the river between the banks is dry ground here, and the barges' berths and the
+     ferry, which want it, are left out). THE ALPH'S FIVE (T.alph; settlements/gihon PLAN.md section 7) at the tune's places on
+     the Xanadu row by name: the lower three tithe to the Landing, the upper two to Theodiga, which is no site of this region, so
+     all five are this site's, the lower two's roads joined to the lake's (the upper three's wait: below) */
   sl758m2396:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
    {id:'mil',name:'Mil (the mill)',focus:'farming',near:[-3000,3600],look:2000,pop:240},
    {id:'kanal',name:'Kanāl (the canal)',focus:'farming',near:[-5000,6000],look:2000,pop:240},
@@ -117,10 +135,30 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
    {id:'phishari',name:'Phisharī',culture:'xanadu-fishing',focus:'fishing',near:[-30000,-24000],look:4000,pop:500},
    {id:'kako-bagh',name:'Kāko-Bāgh',culture:'xanadu-fishing',focus:'fishing',near:[-54000,-26000],look:4000,pop:500},
    {id:'rid',name:'Rīḍ',culture:'xanadu-fishing',focus:'fishing',near:[-80000,-20000],look:4000,pop:500},
-   {id:'landing',name:'The Landing',focus:'farming',near:[-110000,0],look:4000,pop:500},
+   {id:'landing',name:'The Landing',focus:'landing',laid:GH_LANDING_LAID,px:GH_LANDING_LAID.px,shift:[-246,-260],turn:-27},
    {id:'timbar',name:'Ṭimbar',culture:'xanadu-fishing',focus:'fishing',near:[-100000,10000],look:4000,pop:500},
    {id:'rais-teras',name:'Rāis-Ṭeras',culture:'xanadu-fishing',focus:'fishing',near:[-44000,10000],look:4000,pop:500},
-   {id:'kattal',name:'Kaṭal',culture:'xanadu-fishing',focus:'fishing',near:[-20000,8000],look:4000,pop:500}]},
+   {id:'kattal',name:'Kaṭal',culture:'xanadu-fishing',focus:'fishing',near:[-20000,8000],look:4000,pop:500},
+   {id:'alph.weyar',name:'Wēyar (the weir)',culture:'xanadu-row',focus:'farming',px:[936.5,1585.5],look:3000,pop:240},
+   {id:'alph.medo',name:'Mēḍō (the meadow)',culture:'xanadu-row',focus:'ranch',px:[929.5,1573.5],look:3000,pop:145},
+   /* the upper three lay no road yet: the Alph's last 45 km on the world are a trench (its bed flat at -2,051 m from px
+      916.5,1544.5 to the lake, 366 m under the lake's surface: the carve floors settlements/gihon PLAN.md section 1 queued
+      for the scale model), and their roads out of it hairpin, the legs 30-60 m apart, so one leg's cut and fill lifts the
+      ground under the next (up to 17 m off: the highways check). Their roads come with the trench's fix (KNOWN_ISSUES.md) */
+   {id:'alph.gorj',name:'Gōrj-Phuṭ (the gorge\'s foot)',culture:'xanadu-row',focus:'orchard',px:[919,1565],look:3000,pop:240,road:false},
+   {id:'alph.hil-ti',name:'Hil-Ṭī (the hill tea)',culture:'xanadu-row',focus:'tea',px:[916,1552],look:3000,pop:240,road:false},
+   {id:'alph.pheri',name:'Phērī (the ferry)',culture:'xanadu-row',focus:'farming',px:[911.5,1541],look:3000,pop:240,road:false}]},
+  /* Gihon (settlements/gihon, G0-G3; the owner, 2026-11-17 and 2026-11-22): the Lower Lake's garrison town at the Opal River's
+     mouth, its own page's (a target on Xanadu's page). The pin is the tune's place (T.gihon, 955.7,1607.9: a lake cell; the
+     town's square stands about 1.5 km south-west of it), so the roads end 2.2 km out, at the town's edge. Its ring (the owner:
+     "A ring of its own"; T.ghRing) at the tune's places on the Xanadu row by name, as the page lays it: Paḍī, Bārlī, Bīnz and
+     Ōṭs, farming villages on the apron west and south of the town, and Bulak, the ranch east of the river */
+  sgihon000001:{culture:'xanadu',road:{r:2200,hw:3,join:true},hamlets:[
+   {id:'gh.ring.padi',name:'Paḍī (the paddies)',culture:'xanadu-row',focus:'farming',px:[952.6,1608.2],look:2000,pop:240},
+   {id:'gh.ring.barli',name:'Bārlī (the barley)',culture:'xanadu-row',focus:'farming',px:[953.6,1609.3],look:2000,pop:240},
+   {id:'gh.ring.binz',name:'Bīnz (the beans)',culture:'xanadu-row',focus:'farming',px:[955.4,1610.3],look:2000,pop:240},
+   {id:'gh.ring.ots',name:'Ōṭs (the oats)',culture:'xanadu-row',focus:'farming',px:[950.4,1609.1],look:2000,pop:240},
+   {id:'gh.ring.bulak',name:'Bulak (the bullocks)',culture:'xanadu-row',focus:'ranch',px:[958.2,1609.7],look:2500,pop:145}]},
   /* Strongbow's foot (PROPOSED by settlements/kirstabal K6, openworld/SITES.json sstrongbowft): the bottom of the lift on the Xanadu
      floor, where Kirstabal's page ends its Strongbow road. Strongbow's own session places its foot town; nothing is planned here
      but the road's end */

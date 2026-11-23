@@ -101,7 +101,7 @@
     "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "core/world/42b-world-bridges.js": "580e78a811f0262d69da69e9045b28a6e2da498bbcb55b4ace7b4877f86e82d4",
     "core/world/45-world-host.js": "4f67add1a87c01af548999122e1c4562345f8871418ea7a478eebfb8699323bc",
-    "core/world/48s-world-sites.js": "495b58988f4a7fc3d0203240ea6d886f3a23e1fafa2a87ab78af799c66688ba6",
+    "core/world/48s-world-sites.js": "054590caa6979d1ec56c6d550071459f040a9fa51b0b4c056ea0d48e02c7d34c",
     "core/world/49r-world-resources.js": "c06677b5dcd39f7269b5e15bd790ad7532c87c1a99f17ff70565c77373db7b24",
     "core/world/80-world-sky.js": "824f51c793e1835057f01241b306fc9e4cda0ee4d2fd1277010d0cb201852ad2",
     "core/world/81-world-terrain.js": "3b823bb79ff4f327d3c025c1f62f23c47d1504d36d260da8f4b064ba0366c6a2",
@@ -113,7 +113,7 @@
     "core/world/87-world-places.js": "c2e365d5edf628bb849a1c0e00453d4a6d0489fc2c2afd278d71df00d1471682",
     "core/world/88-world-towns.js": "59db64b6f6aa1c4a7c59f0e1f64ddb069161f182c30f9e7dfaad6914a59e0c25",
     "core/world/88b-world-bridges.js": "c1a01a3161ca2103f1663d00bebe25e709455949f2c4e62244eea75157783b56",
-    "core/world/88s-world-sites.js": "564072154ed655560859ab259da68a8f23affbfb2d2386761fe1eecd59c41637",
+    "core/world/88s-world-sites.js": "91f3800801aa9b37c7ac3528411923e158648888ba84c408f5d6493475567d61",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
     "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
     "core/world/91-world-probe.js": "96c4cac77b8ddf0489c0625931823813d609fc051355f7ae3cbdf7e68b757f03",
@@ -263,13 +263,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/oidong-highrift/dist/oidong-highrift.html": "72c9c082168a880b0edf50edfeda5ae6d2b39871cd42f737ba10b7da04743e01",
+    "openworld/oidong-highrift/dist/oidong-highrift.html": "f01a45cd134dfb4c7c12d2dba0f310098692e6aa03253b784c62c67409123334",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.highrift.js": "4479466cd7a0b4b44fb528bf6bbabefa766177537b05169bd84b7c04df5d460a",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.oidong.js": "e77e451ed26a6290e3b2b7d5178829b705319497eafae1126c2fd1f58ce793a0",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.xanadu.js": "735252f2a934d5a6a0f3c9be75c27750935fa59e8a7240a329512fb8e01c27c3"
    },
    "outputs_raw": {
-    "openworld/oidong-highrift/dist/oidong-highrift.html": "72c9c082168a880b0edf50edfeda5ae6d2b39871cd42f737ba10b7da04743e01",
+    "openworld/oidong-highrift/dist/oidong-highrift.html": "f01a45cd134dfb4c7c12d2dba0f310098692e6aa03253b784c62c67409123334",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.highrift.js": "4479466cd7a0b4b44fb528bf6bbabefa766177537b05169bd84b7c04df5d460a",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.oidong.js": "e77e451ed26a6290e3b2b7d5178829b705319497eafae1126c2fd1f58ce793a0",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.xanadu.js": "735252f2a934d5a6a0f3c9be75c27750935fa59e8a7240a329512fb8e01c27c3"
