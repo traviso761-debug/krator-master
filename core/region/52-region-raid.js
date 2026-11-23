@@ -155,7 +155,7 @@ H.raidInit = function (V, S) {
   });
 };
 H.raidReport = function () {
-  var RS = H.SIM && H.SIM.raiding; if (!RS) return null;
+  var RS = H.VALLEY && H.VALLEY.raiding; if (!RS) return null;
   var by = {}; RS.raids.forEach(function (r) { if (r.band) by[r.band] = (by[r.band] || 0) + 1; });
   return { raids: RS.raids.length, bands: by, events: RS.events.length, targets: Object.keys(RS.targets).map(function (id) { var t = RS.targets[id]; return { id: id, standing: +t.standing.toFixed(3), minStanding: +(t.minStanding == null ? 1 : t.minStanding).toFixed(3), people: Math.round(t.people), state: t.state, hits: t.hits.length }; }) };
 };

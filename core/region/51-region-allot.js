@@ -114,7 +114,7 @@ H.allotInit = function (V, S) {
 };
 /* the plan held to itself: what it took is what it landed and what is still on the road, good by good; no load straight */
 H.allotCheck = function () {
-  var R = H.SIM && H.SIM.allot, out = { ok: true, problems: [] }; if (!R) return { ok: false, problems: ['no Allotment on this valley'] };
+  var R = H.VALLEY && H.VALLEY.allot, out = { ok: true, problems: [] }; if (!R) return { ok: false, problems: ['no Allotment on this valley'] };
   var road = {}; R.loads.forEach(function (L) { if (!L.landed) road[L.good] = (road[L.good] || 0) + L.qty; });
   Object.keys(R.taken).forEach(function (g) { var d = R.taken[g] - (R.landed[g] || 0) - (road[g] || 0); if (Math.abs(d) > 0.5) { out.ok = false; out.problems.push(g + ': ' + d + ' unaccounted'); } });
   R.loads.forEach(function (L) { if (!L.via || L.via[0] !== L.from || L.via[L.via.length - 1] !== L.to) { out.ok = false; out.problems.push(L.id + ': bad route'); } });

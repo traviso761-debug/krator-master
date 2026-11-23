@@ -82,6 +82,13 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **The balanced basket into Voth, Mungo and Dhelv** (2026-11-12, `core/simulation/77-sim-6-items.js`, branch
+  `claude/sim-s4-s7-fdaeba`). The change reaches `settlements/voth` (city and site), `settlements/mungo` and
+  `settlements/dhelv`. Their committed pages were built on 2026-11-08, before core/biome's e983ec13d and e6543a3a9. Rebuilt
+  now, they fail their GPU verifies on the biome side: Mungo's error panel has `ReferenceError: bk is not defined` at
+  `BIO.geo.stemClump`; Voth's city fails on page errors, flora (swbay), embassies, the Arena canton not walkable, and the
+  flora editor; Dhelv gave no result. Their pages were left as committed. Rebuild them with the biome rebuild. The basket
+  itself is tested in node: `test-sim.js` (Dhelv's trace), the isle demo's 15 tests, Godot's isle books.
 - **Wire the Codex sets of 2026-11-12** (the collection for main, 2026-11-22): `claude/textures-2026-11-12` put 63 sets in the library,
   none wired. Their prompts are in `core/materials/PROMPTS-archived.md` ("Delivered 2026-11-12" and "Delivered 2026-11-12 for prompts that
   lived on other branches"): High Rift's `rock.hematite.mirror`; Opal Valley's three; the Siphon Pits' three; the Rift line's five; five of
