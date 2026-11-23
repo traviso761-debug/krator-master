@@ -13,8 +13,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `43-world-ohr.js` | 3 |  |
+| `43-world-ohr.js` | 5 |  |
 | `46-world-config.js` | 2 |  |
-| `47-world-kits.js` | 1 |  |
-| `48-world-site.js` | 14 |  |
+| `47-world-kits.js` | 4 |  |
+| `48-world-site.js` | 17 |  |
 | `49-world-highrift.js` | 3 |  |
+| `83c-world-cataract.js` | 4 |  |

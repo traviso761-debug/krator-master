@@ -115,6 +115,13 @@ function growPatch(S){const K=KIT[S.kit],t0=performance.now(),prof=FLOORS[S.kit]
  catch(e){reportErr('floor patch '+S.kit+'/'+S.profile+': '+(e.stack||e));out={parts:[],tris:0};}
  finally{HOST.world();}
  ST.patches++;ST.tris+=out.tris||0;ST.ms+=performance.now()-t0;return out;}
+function growCustom(S){const t0=performance.now(),prevKit=BIO.kit(S.kit);
+ HOST.nursery(Object.assign({},NEUTRAL,S.fields||{}),[0,0]);
+ let out=null;
+ try{BIO.fn.reseed(S.seed==null?7701:S.seed);S.build();out=harvest(S.kit,0,0,false);out.H=1;out.crownR=S.r==null?2.5:S.r;}
+ catch(e){reportErr('custom proto '+S.kit+': '+(e.stack||e));out={none:true,parts:[],H:1};}
+ finally{BIO.kit(prevKit);HOST.world();}
+ ST.patches++;ST.tris+=out.tris||0;ST.ms+=performance.now()-t0;return out;}
 // the floor profiles per kit (WORLD_KITS[].floor.profiles): the fields that make the kit's zones() give that zone; each
 // profile's index i moves its patches elsewhere on the stage
 const FLOORS={};WORLD_KITS.forEach(k=>{if(!k.floor)return;   /* a kit with no floor of its own (a lender of trees only) */
@@ -124,7 +131,7 @@ const FLOORS={};WORLD_KITS.forEach(k=>{if(!k.floor)return;   /* a kit with no fl
 function get(key,spec,pri){const p=PROTO.get(key);if(p)return p;const q=QUEUE.get(key);if(q){if(pri<q.pri)q.pri=pri;}else QUEUE.set(key,{key,spec,pri});return null;}
 function update(budgetMs){if(!QUEUE.size)return 0;const t0=performance.now();let n=0;
  const L=[...QUEUE.values()].sort((a,b)=>a.pri-b.pri);
- for(const q of L){QUEUE.delete(q.key);PROTO.set(q.key,q.spec.patch?growPatch(q.spec):growTree(q.spec));n++;if(performance.now()-t0>budgetMs)break;}
+ for(const q of L){QUEUE.delete(q.key);PROTO.set(q.key,q.spec.custom?growCustom(q.spec):q.spec.patch?growPatch(q.spec):growTree(q.spec));n++;if(performance.now()-t0>budgetMs)break;}
  return n;}
 /* harvest(kit, ox, oz, anchor): what a kit drew, as parts relative to (ox, oz) (a world's set pieces use it: openworld/isle-demo's geyser sites) */
 return{get,update,FLOORS,KIDX,stats:ST,queued:()=>QUEUE.size,protos:PROTO,worldMat,harvest};})();

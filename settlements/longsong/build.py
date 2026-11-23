@@ -87,6 +87,7 @@ for f, d in {'08-core-rand.js': 'rand', '50-core-tags.js': 'tags', '52-core-tags
     PATH.setdefault(f, os.path.join(ROOT, 'core', d, f))
 for f in ('07-core-export.js', '09-core-export-adapters.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'export', f))
+PATH.setdefault('10-core-roomlight.js', os.path.join(ROOT, 'core', 'interiors', '10-core-roomlight.js'))   # Stage 7 I2-I4: room-graph daylight, gated pool & corner AO
 # the OIDONG kit, read in place (biomes/oidong/src): the species, the trees, the floor and its build; its own stage (45),
 # ground (84), build (88) and page (99) are this page's. Its sky (82) is read in place: the valley's light.
 OD = os.path.join(ROOT, 'biomes', 'oidong')
@@ -192,18 +193,30 @@ def _kchar():
     import json
     J = lambda *p: json.load(open(os.path.join(CM, 'data', *p), encoding='utf-8'))
     peoples = [p for p in J('peoples.json')['peoples'] if p['id'] in KCHAR_PEOPLES]
-    bodies, need = {}, []
+    kd = os.path.join(DIST, 'kchar')
+    has_piece = lambda k: (os.path.exists(os.path.join(CM, 'dist', 'pieces', k + '.txt'))
+                           or os.path.exists(os.path.join(kd, k.replace('/', '__') + '.js')))
+    bodies, need, skipped = {}, [], []
     for b in ('mpfb_male', 'mpfb_female'):
         kit = J(b, 'kit.json')
         sty = {x for p in peoples for x in p['styles'][b[5:]]}
-        kit['items'] = [it for it in kit['items'] if it.get('culture') in KCHAR_PEOPLES or (it['slot'] == 'hair' and it['id'] in sty)
-                        or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
+        cand = [it for it in kit['items'] if it.get('culture') in KCHAR_PEOPLES or (it['slot'] == 'hair' and it['id'] in sty)
+                or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
+        kept = []
+        for it in cand:
+            pk = it['glb'][len('pieces/'):-len('.glb')]
+            if BSRC.LISTING or has_piece(pk):
+                kept.append(it)
+            else:
+                skipped.append(pk)
+        kit['items'] = kept
         bodies[b] = {'skeleton': J(b, 'skeleton.json'), 'kit': kit}
         need += [b + '/base', b + '/anims'] + [it['glb'][len('pieces/'):-len('.glb')] for it in kit['items']]
     if BSRC.LISTING:   # --list-sources: the pieces it would copy beside the page, by name; nothing is written
         BSRC.note([os.path.join(CM, 'dist', 'pieces', k + '.txt') for k in need])
         return ''
-    kd = os.path.join(DIST, 'kchar')
+    if skipped:
+        print('NOTE: %d new kit.json piece(s) have no sidecar in dist/kchar yet (skipped until core/charactermodels pieces build)' % len(skipped))
     os.makedirs(kd, exist_ok=True)
     keep, missing = set(), []
     for k in need:

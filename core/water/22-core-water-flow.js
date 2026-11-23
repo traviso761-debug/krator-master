@@ -29,7 +29,7 @@
   // direction deg from the current]; the flow-map phase (whole cycles per period); rapids from the line's slope [a, b];
   // edge foam over this many m from the bank; the foam's share for each
   flow:{step:6,across:6,margin:1.5,ripple:[[.07,3.1,15],[.05,1.9,-55],[.035,1.15,80],[.02,.62,-20]],phases:150,
-   rapids:[.015,.12],rapidGain:2.4,edge:1.6,foam:[.6,.45]},
+   rapids:[.015,.12],rapidGain:2.4,edge:1.6,foam:[.6,.45],slopeWin:24},
   // a curtain: rows down, cols across; the streaks (cycles per period of the pattern, across-streaks per metre of lip);
   // how much wider it is at the foot (m a side per 100 m of drop); the plunge pool (radius as a share of the drop,
   // at least the lip's width; ring wavelength m, cycles per period)
@@ -56,7 +56,7 @@
    // stretched by 1/cos(half the turn) so the ribbon keeps its width round the bend)
    let dx=g.ex,dz=g.ez,st=1;const jn=u===0&&i>0?seg[i-1]:u===1&&i+2<n?seg[i+1]:null;
    if(jn){const bx=g.ex+jn.ex,bz=g.ez+jn.ez,bl=Math.hypot(bx,bz);if(bl>1e-6){dx=bx/bl;dz=bz/bl;st=1/Math.max(.35,dx*g.ex+dz*g.ez);}}
-   const hw=w/2+mg;for(let k=0;k<=NA;k++){const q=(k/NA*2-1)*hw*st;pos.push(x-dz*q,y,z+dx*q);flow.push(dx*v,dz*v);slope.push(a.slope+(b.slope-a.slope)*u);
+   const hw=w/2+mg;for(let k=0;k<=NA;k++){const q=(k/NA*2-1)*hw*st;pos.push(x-dz*q,y,z+dx*q);flow.push(dx*v,dz*v);slope.push(a.slopeV==null?a.slope+(b.slope-a.slope)*u:a.slopeV+(b.slopeV-a.slopeV)*u);   /* the windowed slope (W.flow's slopeV) */
     bank.push(w/2-Math.abs(k/NA*2-1)*hw);along.push(g.s0+g.L*u);}}
   // wound to face up (three.js: counter-clockwise seen from above)
   for(let r=0;r+1<rows.length;r++)for(let k=0;k<NA;k++){const p=r*(NA+1)+k,q=p+NA+1;idx.push(p,q+1,q,p,p+1,q+1);}
@@ -109,6 +109,12 @@
  W.hash2=(x,y)=>{let q=fr3([x*.1031,y*.1031,x*.1031]);const d=q[0]*(q[1]+33.33)+q[1]*(q[2]+33.33)+q[2]*(q[0]+33.33);q=q.map(v=>v+d);return fr((q[0]+q[1])*q[2]);};
  W.noiseP=(x,y,per)=>{const i=Math.floor(x),j=Math.floor(y),u=x-i,v=y-j,a=u*u*(3-2*u),b=v*v*(3-2*v),j0=j-per*Math.floor(j/per),j1=(j+1)-per*Math.floor((j+1)/per);
   const h00=W.hash2(i,j0),h10=W.hash2(i+1,j0),h01=W.hash2(i,j1),h11=W.hash2(i+1,j1);return(h00*(1-a)+h10*a)*(1-b)+(h01*(1-a)+h11*a)*b;};
+ // the flow's breakup (drawFlow's wtrBreak, 51-core-water-kinds.js): gradient noise, a quintic fade, two octaves, the second turned 37 degrees
+ W.gnoise=(x,y)=>{const i=Math.floor(x),j=Math.floor(y),fx=x-i,fy=y-j,q=t=>t*t*t*(t*(t*6-15)+10),ux=q(fx),uy=q(fy);
+  const g=(a,b,dx,dy)=>{const h=W.hash2(a,b)*6.2831853;return Math.cos(h)*dx+Math.sin(h)*dy;};
+  const a=g(i,j,fx,fy),b=g(i+1,j,fx-1,fy),c=g(i,j+1,fx,fy-1),d=g(i+1,j+1,fx-1,fy-1);
+  return .5+.75*((a*(1-ux)+b*ux)*(1-uy)+(c*(1-ux)+d*ux)*uy);};
+ W.breakNoise=(x,y)=>.65*W.gnoise(x,y)+.35*W.gnoise((.8*x-.6*y)*2.03+5.2,(.6*x+.8*y)*2.03+5.2);
  // the streak value 0..1 at (u, f): the pattern a parcel of water carries from the lip, so it falls with the water: noise
  // stretched down the fall (fine across the lip, coarse along the parcel's phase, which wraps whole)
  W.fallStreak=(u,f,t,S)=>{const Q=PL().streak,n=Q.cycles,per=W.period(),th=fr(t*n/per-f*S.tFall*n/per),lw=S.lipW*Q.across;

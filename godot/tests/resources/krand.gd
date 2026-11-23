@@ -91,6 +91,48 @@ static func fbm(x: float, y: float, z: float, o: int = 3, sd: int = 0) -> float:
 	return a / s
 
 
+# gradient noise (core/world/PLAN-MICRO.md): the table as in the JS file, exact binary fractions (n/1024), so the parser reads the same bits
+const GX := [1.0, 0.923828125, 0.70703125, 0.3828125, 0.0, -0.3828125, -0.70703125, -0.923828125, -1.0, -0.923828125, -0.70703125, -0.3828125, 0.0, 0.3828125, 0.70703125, 0.923828125]
+const GZ := [0.0, 0.3828125, 0.70703125, 0.923828125, 1.0, 0.923828125, 0.70703125, 0.3828125, 0.0, -0.3828125, -0.70703125, -0.923828125, -1.0, -0.923828125, -0.70703125, -0.3828125]
+
+
+static func gnoise(x: float, z: float, sd: int = 0) -> float:
+	var i := floori(x)
+	var j := floori(z)
+	var fx := x - float(i)
+	var fz := z - float(j)
+	var u := fx * fx * fx * (fx * (fx * 6 - 15) + 10)
+	var v := fz * fz * fz * (fz * (fz * 6 - 15) + 10)
+	var k := _hash3(sd, i, j, 0x6E) & 15
+	var a: float = GX[k] * fx + GZ[k] * fz
+	k = _hash3(sd, i + 1, j, 0x6E) & 15
+	var b: float = GX[k] * (fx - 1) + GZ[k] * fz
+	k = _hash3(sd, i, j + 1, 0x6E) & 15
+	var c: float = GX[k] * fx + GZ[k] * (fz - 1)
+	k = _hash3(sd, i + 1, j + 1, 0x6E) & 15
+	var d: float = GX[k] * (fx - 1) + GZ[k] * (fz - 1)
+	var p := a + (b - a) * u
+	var q := c + (d - c) * u
+	return (p + (q - p) * v) * 1.4142135623730951
+
+
+static func gfbm(x: float, z: float, o: int = 3, sd: int = 0) -> float:
+	var a := 0.0
+	var f := 1.0
+	var s := 0.0
+	var X := x
+	var Z := z
+	for i in o:
+		a += gnoise(X, Z, (sd + i) & M32) / f
+		s += 1.0 / f
+		var nx := (.8 * X - .6 * Z) * 2.03 + 17.3
+		var nz := (.6 * X + .8 * Z) * 2.03 - 9.1
+		X = nx
+		Z = nz
+		f *= 2
+	return a / s
+
+
 static func cell(sd: int, ix: int, iz: int) -> int:
 	return _hash3(sd, ix, iz, 0x51ED)
 

@@ -14,7 +14,9 @@ const avLoadNote=(()=>{let el=null;return t=>{if(!el){el=document.createElement(
 const avYield=t=>{avLoadNote(t);return new Promise(r=>setTimeout(r,0));};
 const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after');if(!el)return;const s=document.createElement('script');s.textContent=el.textContent;el.remove();document.body.appendChild(s);};
 (async function(){const t0=performance.now();const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
- const adjust=(T,w)=>{for(let i=REG.length-1;i>=0&&i>=REG.length-400;i--){const r=REG[i];if(r.kind==='tree'&&r.x===T.x&&r.z===T.z){if(!w){REG.splice(i,1);break;}r.h=w.h;r.r=r.r*w.kx;break;}}};
+ const adjust=(T,w)=>{for(let i=REG.length-1;i>=0&&i>=REG.length-400;i--){const r=REG[i];if(r.kind==='tree'&&r.x===T.x&&r.z===T.z){if(!w){REG.splice(i,1);break;}r.y=w.y==null?kitH(T.x,T.z):w.y;r.h=w.h;r.r=r.r*w.kx;if(w.substrate&&r.tags)r.tags.substrate=w.substrate;break;}}};
+ const stands=AV.stands?AV.stands({ground:kitH,lakeY:STAGE.lakeY,F:STAGE.F,street:STAGE.street,built:STAGE.built,scorch:STAGE.scorch,seed:STAGE.seed}):null;
+ window.AV_STANDS=stands;
  /* a kit's build() in its two passes, each a stage: the same calls, BIO.cur and output as the kit's own build (each lowland kit's 70 fragment) */
  const kitStages=async(K,cur,label,f,o)=>{const R=o.R==null?2850:o.R,qq=o.quality==null?1:o.quality,out={R,quality:qq,trees:0,heroes:0,far:0};
   if(K.buildTrees){await avYield(label+', the trees');masked(f,()=>{BIO.cur=cur+'/trees';Object.assign(out,K.buildTrees(R,qq,o));});}
@@ -61,15 +63,48 @@ const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after'
    if(out.length>=2)break;}return out;}:null;
  const perched=(T,pc,h)=>{AV.FERAL.perchedH=Math.max(AV.FERAL.perchedH||0,h);};
  window.AV_TOPS=TOPS;   /* ?feral=0: the kits as they are (the species kept, nothing grown), to tell the wrap's faults from the kits' */
- if(typeof SWLOW!=='undefined'&&STAGE.swQ){AV.feralKit(SWLOW,{ground:kitH,feral,capH,allow:STAGE.swAllow?new Set(STAGE.swAllow):null,keep:new Set(STAGE.swKeep||[]),adjust,perch,perched,seed:STAGE.seed+31});
+ const standFn=stands&&AVQ_ON('stands')?stands.at:null;
+ if(typeof SWLOW!=='undefined'&&STAGE.swQ){AV.feralKit(SWLOW,{ground:kitH,feral,capH,stand:standFn,allow:STAGE.swAllow?new Set(STAGE.swAllow):null,keep:new Set(STAGE.swKeep||[]),adjust,perch,perched,seed:STAGE.seed+31});
   try{window._swlow=await kitStages(SWLOW,'lowlands','the south-western forest',(x,z)=>clamp(STAGE.zone(x,z).sw,0,1),{R:STAGE.R-60,quality:q*STAGE.swQ,avenues:[]});}catch(e){BIO.cur=null;reportErr('swlowlands: '+e.stack);}}
  _mark('swlowlands');
- if(typeof NWLOW!=='undefined'&&STAGE.nwQ){AV.feralKit(NWLOW,{ground:kitH,feral,capH,allow:STAGE.nwAllow?new Set(STAGE.nwAllow):null,adjust,perch,perched,seed:STAGE.seed+37});
+ if(typeof NWLOW!=='undefined'&&STAGE.nwQ){AV.feralKit(NWLOW,{ground:kitH,feral,capH,stand:standFn,allow:STAGE.nwAllow?new Set(STAGE.nwAllow):null,adjust,perch,perched,seed:STAGE.seed+37});
   try{window._nwlow=await kitStages(NWLOW,'nwlow','the north-western forest',(x,z)=>clamp(STAGE.zone(x,z).nw,0,1),{R:STAGE.R-60,quality:q*STAGE.nwQ,avenues:[]});}catch(e){BIO.cur=null;reportErr('nwlowlands: '+e.stack);}}
  _mark('nwlowlands');
  if(typeof avSurfaceFree==='function')avSurfaceFree();   /* the creepers (71) and the roof trees are placed: the rays' buckets go (70) */
  if(Q.has('nobake')){window._instances=0;window._bakeCalls=0;return;}
  await avYield('the bake');const b=BIO.bake();_mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;
+ /* A2.4: standing snags and fallen timber from AV.stands.deadwood (2 instanced draws) */
+ if(stands&&AVQ_ON('stands')){const DW=stands.deadwood({R:STAGE.R-60,groundH:kitH,max:320});window.AV_DEADWOOD=DW;
+  if(DW.length){REGISTER({name:'standing snags and fallen timber',kind:'deadwood',x:0,z:0,r:STAGE.R,h:24,tags:{kind:'deadwood',count:DW.length}});
+   const dwGeo=new THREE.CylinderGeometry(.62,1,1,6,1),dwMat=new THREE.MeshLambertMaterial({color:0x4b4034}),snags=DW.filter(d=>d.kind==='snag'),logs=DW.filter(d=>d.kind==='log');
+   const M4=new THREE.Matrix4(),Q4=new THREE.Quaternion(),E4=new THREE.Euler(),P4=new THREE.Vector3(),S4=new THREE.Vector3(),C4=new THREE.Color();
+   [[snags,'snags',0],[logs,'logs',1]].forEach(([L,nm,isLog])=>{if(!L.length)return;const im=new THREE.InstancedMesh(dwGeo,dwMat,L.length);
+    L.forEach((d,i)=>{if(isLog)M4.compose(P4.set(d.x,d.y+d.r*.55,d.z),Q4.setFromEuler(E4.set(0,d.yaw,Math.PI*.48,'YXZ')),S4.set(d.r,d.h,d.r));
+     else M4.compose(P4.set(d.x,d.y+d.h*.48,d.z),Q4.setFromEuler(E4.set(.06*Math.cos(d.yaw),d.yaw,.06*Math.sin(d.yaw),'YXZ')),S4.set(d.r,d.h,d.r));
+     im.setMatrixAt(i,M4);const v=.75+.35*KRAND.unit(KRAND.hash(STAGE.seed+89,i,isLog));C4.setRGB(v,v*(isLog?.98:.92),v*.85);im.setColorAt(i,C4);});
+    im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;
+    im.frustumCulled=false;im.userData.host=true;im.userData.probeSkip=true;im.userData.inspectLabel=isLog?'fallen timber':'a dead snag';im.name='av.deadwood.'+nm;scene.add(im);});}}
+ /* A2.3: far canopy tier past the kits' 1.2 km tree range (KNOWN_ISSUES.md:93): 1 instanced draw, vertex-faded inside 1,050..1,320 m */
+ if(AVQ_ON('farcanopy')){const step=72,Rmax=5000,n=Math.floor(Rmax/step),fc=[];
+  for(let i=-n;i<=n;i++)for(let j=-n;j<=n;j++){const h0=KRAND.hash(STAGE.seed+97,i+3000,j+3000,0),x=(i+KRAND.unit(h0)-.5)*step,z=(j+KRAND.unit(KRAND.hash(h0,1,0,0))-.5)*step,rad=Math.hypot(x,z);
+   if(rad>Rmax)continue;const inPage=Math.abs(x)<STAGE.R*.96&&Math.abs(z)<STAGE.R*.96;
+   const fo=inPage?STAGE.forest(x,z):(STAGE.modelY(x,z)>STAGE.lakeY+3&&STAGE.F.scar(x,z)<.3&&(1-STAGE.F.density(x,z))*STAGE.F.wild(x,z)>.35?.75:0);
+   if(fo<.32||KRAND.unit(KRAND.hash(h0,2,0,0))>fo*.85)continue;
+   const y=inPage?kitH(x,z):STAGE.modelY(x,z);if(y<STAGE.lakeY+1)continue;
+   const u3=KRAND.unit(KRAND.hash(h0,3,0,0)),w=28+26*u3,ht=11+14*fo*(.6+.6*u3),pt=STAGE.paint(x,z);
+   fc.push({x,y:y-1.5,z,w,h:ht,yaw:KRAND.unit(KRAND.hash(h0,4,0,0))*TAU,c:[pt[0]*(.85+.3*u3),pt[1]*(.92+.28*u3),pt[2]*(.85+.25*u3)]});}
+  if(fc.length){REGISTER({name:'the far forest canopy (past 1.2 km)',kind:'farcanopy',x:0,z:0,r:Rmax,h:40,tags:{kind:'farcanopy',crowns:fc.length}});
+   const cg=new THREE.BufferGeometry(),P=[0,1,0],N0=[0,1,0],I=[];
+   for(let k=0;k<8;k++){const a=k/8*TAU,ca=Math.cos(a),sa=Math.sin(a);P.push(ca*.5,0,sa*.5);N0.push(ca*.45,.89,sa*.45);}
+   for(let k=0;k<8;k++)I.push(0,1+k,1+(k+1)%8);
+   cg.setAttribute('position',new THREE.Float32BufferAttribute(P,3));cg.setAttribute('normal',new THREE.Float32BufferAttribute(N0,3));cg.setIndex(I);
+   const cm=new THREE.MeshLambertMaterial({color:0xffffff});
+   cm.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n{vec3 fcEye=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);vec3 fcC=(modelMatrix*vec4(instanceMatrix[3].xyz,1.0)).xyz;transformed*=smoothstep(1050.0,1320.0,length(fcC-fcEye));}');};
+   cm.customProgramCacheKey=()=>'av-far-canopy';
+   const im=new THREE.InstancedMesh(cg,cm,fc.length),M4=new THREE.Matrix4(),Q4=new THREE.Quaternion(),Y4=new THREE.Vector3(0,1,0),P4=new THREE.Vector3(),S4=new THREE.Vector3(),C4=new THREE.Color();
+   fc.forEach((e,i)=>{M4.compose(P4.set(e.x,e.y,e.z),Q4.setFromAxisAngle(Y4,e.yaw),S4.set(e.w,e.h,e.w));im.setMatrixAt(i,M4);C4.setRGB(Math.pow(clamp(e.c[0],0,1),2.2),Math.pow(clamp(e.c[1],0,1),2.2),Math.pow(clamp(e.c[2],0,1),2.2));im.setColorAt(i,C4);});
+   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;
+   im.frustumCulled=false;im.userData.biome=true;im.userData.farCanopy=true;im.userData.probeSkip=true;im.userData.host=true;im.userData.inspectLabel='the far canopy';im.name='av.farCanopy';scene.add(im);window.AV_FAR_CANOPY=im;}}
  if(AVQ_ON('tint'))window._tinted=AV.tint(scene,{strength:1});_mark('tint');
  window._buildMs=Math.round(performance.now()-t0);
  REGISTER({name:STAGE.name+' (a piece of it)',x:0,z:0,r:STAGE.R,h:600});

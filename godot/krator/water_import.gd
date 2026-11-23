@@ -42,17 +42,26 @@ static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.
 		rep["gaps"]["field"] = "the surfaces take a share of the shared wave field, and no Atmos was given: drawn without it"
 	if atm != null and absf(float(atm.waves["period"]) - float(sec.get("period", 600))) > 1e-9:
 		rep["gaps"]["period"] = "the section's period (%s s) is not Atmos's wave period (%s s): atm_wave_t wraps at the wrong time" % [sec.get("period"), atm.waves["period"]]
+	var loc_org: Array = opts["local_origin"] if opts.get("local_origin") is Array and (opts["local_origin"] as Array).size() == 3 else []
+	var has_loc := not loc_org.is_empty()
+	var clip: Array = opts["clip_box"] if opts.get("clip_box") is Array and (opts["clip_box"] as Array).size() == 4 else []
+	var has_clip := not clip.is_empty()
 	for r in sec.get("surfaces", []):
 		rep["surfaces"] += 1
 		if r.get("kind") in ["flow", "fall", "still"]:
 			var k := KWater.from_record(r, sec, atm)
 			by_id[k.id] = k
-			for mi in _kind_nodes(k, opts):
+			var knodes := _kind_nodes(k, opts)
+			for mi in knodes:
 				root.add_child(mi)
-			rep["drawn"].append(k.id)
+			if not knodes.is_empty():
+				rep["drawn"].append(k.id)
 			continue
 		if r.get("kind") in ["pan", "ice"]:
-			for mi in _ext_nodes(r, opts):
+			var enodes := _ext_nodes(r, opts)
+			for mi in enodes:
+				if has_loc:
+					(mi as Node3D).position = Vector3(-float(loc_org[0]), -float(loc_org[1]), -float(loc_org[2]))
 				root.add_child(mi)
 			rep["drawn"].append(str(r.get("id")))
 			continue
@@ -69,6 +78,8 @@ static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.
 		var mi := MeshInstance3D.new()
 		mi.name = w.id.replace(":", "_")
 		mi.mesh = grid(rect, w.level_at(0.0), spacing)
+		if has_loc:
+			mi.position = Vector3(-float(loc_org[0]), -float(loc_org[1]), -float(loc_org[2]))
 		var mat := ShaderMaterial.new()
 		mat.shader = load(SHADER)
 		apply(mat, w, spacing)
@@ -85,6 +96,12 @@ static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.
 	for g in sec.get("groups", []):
 		if not (g is Dictionary) or g.get("kind") != "confluence":
 			continue
+		if has_clip:
+			var gx := float(g["at"][0])
+			var gz := float(g["at"][1])
+			var gr := float(g["r"])
+			if gx + gr < float(clip[0]) or gx - gr > float(clip[2]) or gz + gr < float(clip[1]) or gz - gr > float(clip[3]):
+				continue
 		root.add_child(_confluence_node(g, sec, opts))
 		rep["drawn"].append("confluence: " + str(g.get("name")))
 		for fid in g.get("flows", []):
@@ -97,7 +114,14 @@ static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.
 				rep["gaps"]["confluences"] = "a ribbon in more than 4 confluences: the 5th and later do not fade it"
 				continue
 			var discs: Array = m.get_shader_parameter("cf_disc") if m.get_shader_parameter("cf_disc") is Array else [Vector4.ZERO, Vector4.ZERO, Vector4.ZERO, Vector4.ZERO]
-			discs[n] = Vector4(float(g["at"][0]), float(g["at"][1]), float(g["r"]), float(g["feather"]))
+			var dx := float(g["at"][0])
+			var dz := float(g["at"][1])
+			if has_loc:
+				var ox := float(loc_org[0])
+				var oz := float(loc_org[2])
+				dx = (dx - ox) + fposmod(ox, 4000.0)
+				dz = (dz - oz) + fposmod(oz, 4000.0)
+			discs[n] = Vector4(dx, dz, float(g["r"]), float(g["feather"]))
 			m.set_shader_parameter("cf_disc", discs)
 			m.set_shader_parameter("cf_n", n + 1)
 	root.set_meta("report", rep)
@@ -117,11 +141,15 @@ static func _confluence_node(g: Dictionary, sec: Dictionary, opts: Dictionary) -
 	var M := KWater.confluence_mesh(g)
 	var P: PackedFloat64Array = M["pos"]
 	var n: int = int(g["n"])
+	var loc_org: Array = opts["local_origin"] if opts.get("local_origin") is Array and (opts["local_origin"] as Array).size() == 3 else []
+	var ox := float(loc_org[0]) if not loc_org.is_empty() else 0.0
+	var oy := float(loc_org[1]) if not loc_org.is_empty() else 0.0
+	var oz := float(loc_org[2]) if not loc_org.is_empty() else 0.0
 	var v := PackedVector3Array()
 	var c0 := PackedFloat32Array()
 	var c1 := PackedFloat32Array()
 	for i in n * n:
-		v.append(Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]))
+		v.append(Vector3(P[i * 3] - ox, P[i * 3 + 1] - oy, P[i * 3 + 2] - oz))
 		c0.append_array([float(g["vx"][i]), float(g["vz"][i]), float(g["slope"][i]), float(g["bank"][i])])
 		c1.append_array([float(g["fade"][i]), float(g["meetV"][i]), 0.0, 0.0])
 	var mi := MeshInstance3D.new()
@@ -239,6 +267,13 @@ static func _kind_nodes(k: KWater, opts := {}) -> Array:
 	var out := []
 	var L: Dictionary = k.look if k.look is Dictionary else {}
 	var u := k.kind_uniforms()
+	var loc_org: Array = opts["local_origin"] if opts.get("local_origin") is Array and (opts["local_origin"] as Array).size() == 3 else []
+	var has_loc := not loc_org.is_empty()
+	var ox := float(loc_org[0]) if has_loc else 0.0
+	var oy := float(loc_org[1]) if has_loc else 0.0
+	var oz := float(loc_org[2]) if has_loc else 0.0
+	var clip: Array = opts["clip_box"] if opts.get("clip_box") is Array and (opts["clip_box"] as Array).size() == 4 else []
+	var has_clip := not clip.is_empty()
 	var mk := func(mesh: ArrayMesh, shader: String, suffix: String) -> MeshInstance3D:
 		var mi := MeshInstance3D.new()
 		mi.name = k.id.replace(":", "_") + suffix
@@ -254,21 +289,64 @@ static func _kind_nodes(k: KWater, opts := {}) -> Array:
 		var R := k.ribbon(k.ribbon_opt)
 		var P: PackedFloat64Array = R["pos"]
 		var F: PackedFloat64Array = R["flow"]
-		var v := PackedVector3Array()
-		var c := PackedFloat32Array()
-		for i in int(R["count"]):
-			v.append(Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]))
-			c.append_array([F[i * 2], F[i * 2 + 1], (R["slope"] as PackedFloat64Array)[i], (R["bank"] as PackedFloat64Array)[i]])
+		var S_arr: PackedFloat64Array = R["slope"]
+		var B_arr: PackedFloat64Array = R["bank"]
+		var orig_cnt := int(R["count"])
+		var same = _same_mesh(k.ribbon_opt, orig_cnt, P)
 		# drawFlow's keep: the host's function sampled at each vertex, or its values (opts.keep[id]); the record only says it had one
 		var kp = opts.get("keep", {}).get(k.id)
-		var c1 = null
-		if kp != null:
-			c1 = PackedFloat32Array()
-			for i in int(R["count"]):
-				var kv: float = float(kp.call(P[i * 3], P[i * 3 + 2])) if kp is Callable else float(kp[i])
-				c1.append_array([clampf(kv, 0.0, 1.0), 0.0, 0.0, 0.0])
-		var mi: MeshInstance3D = mk.call(_mesh(v, R["idx"], null, null, c, true, false, c1), SHADERS["flow"], "")
+		var raw_idx: PackedInt32Array = R["idx"]
+		var idx_use := raw_idx
+		var v := PackedVector3Array()
+		var c := PackedFloat32Array()
+		var c1 = PackedFloat32Array() if kp != null else null
+		if has_clip:
+			var bx0 := float(clip[0]) - 1.0
+			var bz0 := float(clip[1]) - 1.0
+			var bx1 := float(clip[2]) + 1.0
+			var bz1 := float(clip[3]) + 1.0
+			var remap := PackedInt32Array()
+			remap.resize(orig_cnt)
+			remap.fill(-1)
+			idx_use = PackedInt32Array()
+			var next_v := 0
+			for ti in range(0, raw_idx.size(), 3):
+				var ia := raw_idx[ti]
+				var ib := raw_idx[ti + 1]
+				var ic := raw_idx[ti + 2]
+				var ax := P[ia * 3]; var az := P[ia * 3 + 2]
+				var bx := P[ib * 3]; var bz := P[ib * 3 + 2]
+				var cx := P[ic * 3]; var cz := P[ic * 3 + 2]
+				if ax < bx0 or ax > bx1 or az < bz0 or az > bz1:
+					continue
+				if bx < bx0 or bx > bx1 or bz < bz0 or bz > bz1:
+					continue
+				if cx < bx0 or cx > bx1 or cz < bz0 or cz > bz1:
+					continue
+				for iv in [ia, ib, ic]:
+					if remap[iv] < 0:
+						remap[iv] = next_v
+						next_v += 1
+						v.append(Vector3(P[iv * 3] - ox, P[iv * 3 + 1] - oy, P[iv * 3 + 2] - oz))
+						c.append_array([F[iv * 2], F[iv * 2 + 1], S_arr[iv], B_arr[iv]])
+						if c1 != null:
+							var kv: float = float(kp.call(P[iv * 3], P[iv * 3 + 2])) if kp is Callable else float(kp[iv])
+							c1.append_array([clampf(kv, 0.0, 1.0), 0.0, 0.0, 0.0])
+				idx_use.append_array([remap[ia], remap[ib], remap[ic]])
+			if idx_use.is_empty():
+				return out
+		else:
+			for i in orig_cnt:
+				v.append(Vector3(P[i * 3] - ox, P[i * 3 + 1] - oy, P[i * 3 + 2] - oz))
+				c.append_array([F[i * 2], F[i * 2 + 1], S_arr[i], B_arr[i]])
+				if c1 != null:
+					var kv: float = float(kp.call(P[i * 3], P[i * 3 + 2])) if kp is Callable else float(kp[i])
+					c1.append_array([clampf(kv, 0.0, 1.0), 0.0, 0.0, 0.0])
+		var mi: MeshInstance3D = mk.call(_mesh(v, idx_use, null, null, c, true, false, c1), SHADERS["flow"], "")
 		var m: ShaderMaterial = mi.material_override
+		if has_loc:
+			m.set_shader_parameter("use_flow_origin", true)
+			m.set_shader_parameter("flow_origin", Vector2(fposmod(ox, 4000.0), fposmod(oz, 4000.0)))
 		if c1 != null:
 			m.set_shader_parameter("use_keep", true)
 		if opts.get("breakup"):
@@ -278,10 +356,13 @@ static func _kind_nodes(k: KWater, opts := {}) -> Array:
 		if L.has("deep"):
 			m.set_shader_parameter("deep", _lin(L["deep"]))
 		m.set_shader_parameter("margin", float(k.ribbon_opt.get("margin", k.presets["flow"]["margin"])))
-		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "flow", "vertices": R["count"], "rows": R["rows"], "matches_page": _same_mesh(k.ribbon_opt, R["count"], P),
+		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "flow", "vertices": v.size(), "rows": R["rows"], "matches_page": same,
 			"keep": c1 != null, "keep_noted": bool(k.ribbon_opt.get("keep", false))})
 		out.append(mi)
 	elif k.kind == "fall":
+		var pl := k.plunge()
+		if has_clip and (pl[0] + pl[3] * 3.0 < float(clip[0]) or pl[0] - pl[3] * 3.0 > float(clip[2]) or pl[2] + pl[3] * 3.0 < float(clip[1]) or pl[2] - pl[3] * 3.0 > float(clip[3])):
+			return out
 		var M := k.curtain(k.curtain_opt)
 		var P: PackedFloat64Array = M["pos"]
 		var N: PackedFloat64Array = M["nrm"]
@@ -290,7 +371,7 @@ static func _kind_nodes(k: KWater, opts := {}) -> Array:
 		var n := PackedVector3Array()
 		var t := PackedVector2Array()
 		for i in int(M["count"]):
-			v.append(Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]))
+			v.append(Vector3(P[i * 3] - ox, P[i * 3 + 1] - oy, P[i * 3 + 2] - oz))
 			n.append(Vector3(N[i * 3], N[i * 3 + 1], N[i * 3 + 2]))
 			t.append(Vector2(UV[i * 2], UV[i * 2 + 1]))
 		var mi: MeshInstance3D = mk.call(_mesh(v, M["idx"], n, t, null), SHADERS["fall"], "")
@@ -303,25 +384,34 @@ static func _kind_nodes(k: KWater, opts := {}) -> Array:
 			fm.set_shader_parameter("side_edge", float(k.curtain_opt["edge"]) if k.curtain_opt.get("edge") != null else 0.08 * k.lip_w)
 			fm.set_shader_parameter("lip_w", k.lip_w)
 		var fo: Dictionary = opts.get("fall", {}).get(k.id, {})
-		if fo.get("lipK") != null:
-			(mi.material_override as ShaderMaterial).set_shader_parameter("lip_k", float(fo["lipK"]))
-		if fo.get("footK") != null:
-			(mi.material_override as ShaderMaterial).set_shader_parameter("foot_k", float(fo["footK"]))
+		var lip_k_val = fo.get("lipK", k.curtain_opt.get("lipK"))
+		var foot_k_val = fo.get("footK", k.curtain_opt.get("footK"))
+		if lip_k_val != null:
+			(mi.material_override as ShaderMaterial).set_shader_parameter("lip_k", float(lip_k_val))
+		if foot_k_val != null:
+			(mi.material_override as ShaderMaterial).set_shader_parameter("foot_k", float(foot_k_val))
 		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "fall", "vertices": M["count"], "drop": k.drop, "matches_page": _same_mesh(k.curtain_opt, M["count"], P)})
 		out.append(mi)
 		# the plunge pool: a disc 2.4 r across at the foot (WATER.drawFall's), or plungeR m with its outer quarter faded
-		var pl := k.plunge()
-		var pr: float = float(fo["plungeR"]) if fo.get("plungeR") != null else pl[3] * 2.4
-		var dv := PackedVector3Array([Vector3(pl[0], pl[1] + 0.06, pl[2])])
+		var pr_opt = fo.get("plungeR", k.curtain_opt.get("plungeR"))
+		var pr: float = float(pr_opt) if pr_opt != null else pl[3] * 2.4
+		var px0 := pl[0] - ox
+		var py0 := pl[1] + 0.06 - oy
+		var pz0 := pl[2] - oz
+		var dv := PackedVector3Array([Vector3(px0, py0, pz0)])
 		var di := PackedInt32Array()
 		for a in 48:
 			var th := TAU * a / 48.0
-			dv.append(Vector3(pl[0] + cos(th) * pr, pl[1] + 0.06, pl[2] + sin(th) * pr))
+			dv.append(Vector3(px0 + cos(th) * pr, py0, pz0 + sin(th) * pr))
 		for a in 48:
 			di.append_array([0, 1 + (a + 1) % 48, 1 + a])
 		var pm: MeshInstance3D = mk.call(_mesh(dv, di, null, null, null), SHADERS["plunge"], "_plunge")
-		if fo.get("plungeR") != null:
-			(pm.material_override as ShaderMaterial).set_shader_parameter("plunge_fade", Vector3(pl[0], pl[2], pr))
+		var pmat := pm.material_override as ShaderMaterial
+		if has_loc:
+			pmat.set_shader_parameter("plunge_local", true)
+			pmat.set_shader_parameter("wk_plunge", Vector4(px0, pz0, pl[3], 0.0))
+		if pr_opt != null:
+			pmat.set_shader_parameter("plunge_fade", Vector3(px0 if has_loc else pl[0], pz0 if has_loc else pl[2], pr))
 		pm.set_meta("krator", {"id": k.id, "name": k.name, "kind": "plunge", "r": pl[3], "disc": pr})
 		out.append(pm)
 	elif k.kind == "still":
@@ -329,15 +419,26 @@ static func _kind_nodes(k: KWater, opts := {}) -> Array:
 		var idx := PackedInt32Array()
 		var y := float(k.level)
 		if k.poly is Array:
+			var sx0 := INF; var sz0 := INF; var sx1 := -INF; var sz1 := -INF
 			var P2 := PackedVector2Array()
 			for p in k.poly:
-				P2.append(Vector2(float(p[0]), float(p[1])))
-				v.append(Vector3(float(p[0]), y, float(p[1])))
+				var px := float(p[0])
+				var pz := float(p[1])
+				sx0 = minf(sx0, px); sz0 = minf(sz0, pz); sx1 = maxf(sx1, px); sz1 = maxf(sz1, pz)
+				P2.append(Vector2(px - ox, pz - oz))
+				v.append(Vector3(px - ox, y - oy, pz - oz))
+			if has_clip and (sx1 < float(clip[0]) or sx0 > float(clip[2]) or sz1 < float(clip[1]) or sz0 > float(clip[3])):
+				return out
 			idx = Geometry2D.triangulate_polygon(P2)
 		else:
 			var b: Array = k.bounds
-			v = PackedVector3Array([Vector3(b[0], y, b[1]), Vector3(b[2], y, b[1]), Vector3(b[2], y, b[3]), Vector3(b[0], y, b[3])])
+			if has_clip and (float(b[2]) < float(clip[0]) or float(b[0]) > float(clip[2]) or float(b[3]) < float(clip[1]) or float(b[1]) > float(clip[3])):
+				return out
+			v = PackedVector3Array([Vector3(float(b[0]) - ox, y - oy, float(b[1]) - oz), Vector3(float(b[2]) - ox, y - oy, float(b[1]) - oz),
+				Vector3(float(b[2]) - ox, y - oy, float(b[3]) - oz), Vector3(float(b[0]) - ox, y - oy, float(b[3]) - oz)])
 			idx = PackedInt32Array([0, 1, 2, 0, 2, 3])
+		if idx.is_empty():
+			return out
 		var mi: MeshInstance3D = mk.call(_mesh(v, idx, null, null, null, false, true), SHADERS["still"], "")
 		if L.has("colour"):
 			(mi.material_override as ShaderMaterial).set_shader_parameter("colour", _lin(L["colour"]))

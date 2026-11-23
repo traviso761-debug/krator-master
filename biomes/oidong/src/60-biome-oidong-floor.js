@@ -23,34 +23,37 @@ OIDONG.STONES=[];   // the standing-stone groups: {x,z,n,r}
 function tuft(item,x,y,z,h,w,col){BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col);}
 function mossMat(x,y,z,set,k){const R=rr(.8,2.2)*(k||1);BIO.put('mossmat',[x,y+.04,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[R,1,R],leafCol(set||PAL.moss,1.15,.03,.08,.06));}
 function cushion(x,y,z,set,k){const R=rr(.3,.8)*(k||1);BIO.put('lobe',[x,y-.08,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.45,.7),R],leafCol(set||PAL.moss,1.1,.03,.08,.06));}
-function grass(x,y,z,lv,set,k){const h=rr(.3,.7)*(k||1)*(lv===0?1.6:1),n=lv===2?ri(2,4):lv===1?2:1;
- for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.5,1.6):0;tuft('grass',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*1.4,leafCol(set||PAL.sage,1.25,.03));}}
-function fern(x,y,z,lv,k){const n=lv===2?ri(5,8):3,L=rr(.6,1.3)*(k||1),hc=leafCol(PAL.celadon,1.2,.03,.08,.05),a0=rr(0,TAU);
- for(let i=0;i<n;i++){const a=a0+i*GOLD;BIO.put('fern',[x,y+.03,z],qEuler(rr(-.08,.08),-a,rr(.2,.65)),[L,L,L*rr(.32,.42)],bright(vary(hc,.02,.05,.05),rr(.95,1.1)));}}
+function grass(x,y,z,lv,set,k){const h=rr(.35,.78)*(k||1)*(lv===0?1.6:1),n=lv===2?ri(4,7):lv===1?3:2;
+ for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.4,1.7):0;tuft('grass',x+Math.cos(a)*d,Y(x+Math.cos(a)*d,z+Math.sin(a)*d),z+Math.sin(a)*d,h*rr(.8,1.15),h*1.45,leafCol(set||PAL.sage,1.25,.03));}}
+function fern(x,y,z,lv,k){const n=lv===2?ri(7,11):5,L=rr(.68,1.42)*(k||1),hc=leafCol(PAL.celadon,1.2,.03,.08,.05),a0=rr(0,TAU);
+ for(let i=0;i<n;i++){const a=a0+i*GOLD;BIO.put('fern',[x,y+.03,z],qEuler(rr(-.08,.08),-a,rr(.2,.68)),[L,L,L*rr(.34,.45)],bright(vary(hc,.02,.05,.05),rr(.95,1.12)));}}
 function mooncaps(x,y,z,lv,n,r){const col=bright(C(pick(PAL.mooncap)),1.05);for(let k=0;k<n;k++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,h=rr(.14,.34);
  {const cd=OIDONG.CARD.mooncapcard;BIO.put('mooncap',[px,Y(px,pz)-.02,pz],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),cd?[h*.55,h*1.1,h*.55]:[h*.9,h,h*.9],cd?nearW(rr(.95,1.08)):vary(col,.02,.05,.04));}}}
-function box(x,y,z,lv){const R=rr(.5,1.3),hc=vary(pick(PAL.jade),.02,.05,.04);
+function box(x,y,z,lv){const R=rr(.55,1.35),hc=vary(pick(PAL.jade),.02,.05,.04);
  BIO.put('boxdome',[x,y+R*.35,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.65,.85),R],bright(hc,rr(1.05,1.2)));
- if(lv===2&&rng()<.4){const R2=R*rr(.5,.8),a=rr(0,TAU);BIO.put('boxdome',[x+Math.cos(a)*R,y+R2*.3,z+Math.sin(a)*R],qEuler(0,rr(0,TAU),0),[R2,R2*.8,R2],bright(hc,1.1));}}
-function teaBush(x,y,z,lv){const R=rr(.5,.9),hc=vary(pick(PAL.celadon),.02,.05,.04);BIO.put('lobe',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[R,R*.8,R],shade(hc,-.3));
- for(let k=0,m=lv===2?4:2;k<m;k++){const a=rr(0,TAU),d=R*.5;BIO.put('teabush',[x+Math.cos(a)*d,y+R*.6,z+Math.sin(a)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[R*1.1,R*.7,R*1.1],bright(hc,1.2),{n:[0,1,0]});}}
+ for(let f=0,nf=lv===2?3:1;f<nf;f++){const fa=rr(0,TAU);BIO.put('teabush',[x+Math.cos(fa)*R*.65,y+R*.45,z+Math.sin(fa)*R*.65],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[R*.75,R*.55,R*.75],bright(hc,1.15),{n:[0,1,0]});}
+ if(lv===2&&rng()<.5){const R2=R*rr(.5,.8),a=rr(0,TAU);BIO.put('boxdome',[x+Math.cos(a)*R,Y(x+Math.cos(a)*R,z+Math.sin(a)*R)+R2*.3,z+Math.sin(a)*R],qEuler(0,rr(0,TAU),0),[R2,R2*.8,R2],bright(hc,1.1));}}
+function teaBush(x,y,z,lv){const R=rr(.55,.98),hc=vary(pick(PAL.celadon),.02,.05,.04);BIO.put('lobe',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[R,R*.8,R],shade(hc,-.3));
+ for(let k=0,m=lv===2?6:3;k<m;k++){const a=rr(0,TAU),d=R*.48;BIO.put('teabush',[x+Math.cos(a)*d,y+R*.55,z+Math.sin(a)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[R*1.1,R*.72,R*1.1],bright(hc,1.2),{n:[0,1,0]});}}
 // the sky poppies: a drift of powder-blue blooms on short stems, iridescent at the edges
 function poppies(x,y,z,lv,n,r){const col=bright(C(pick(PAL.poppy)),1.1);
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),fx=x+Math.cos(a)*d,fz=z+Math.sin(a)*d,fy=Y(fx,fz),h=rr(.3,.7),s=rr(.2,.34);
-  if(lv===2)BIO.beam('rod',[fx,fy,fz],[fx,fy+h,fz],.012,.008,shade(C(0x7a9a6a),-.3));
+  if(lv===2)BIO.beam('rod',[fx,fy,fz],[fx,fy+h,fz],.012,.012,shade(C(0x7a9a6a),-.3));
   BIO.put('poppy',[fx,fy+h,fz],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),s,vary(col,.02,.05,.04),{c2:bright(C(pick(PAL.irid.lily)),1.0)});}}
 function snowLotus(x,y,z,lv){const s=rr(.25,.45);BIO.put('snowlotus',[x,y+.02,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[s,s*.8,s],nearW(1.02));}
 function ginseng(x,y,z,lv){const s=rr(.35,.6);BIO.put('ginseng',[x,y+s*.4,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*1.4,s*.8,s*1.4],leafCol(PAL.jade,1.2,.02),{n:[0,1,0]});
  if(lv===2)for(let k=0,m=ri(4,8);k<m;k++)BIO.put('ball',[x+rr(-.08,.08),y+s*.75+rr(-.03,.03),z+rr(-.08,.08)],null,.025,bright(C(pick(PAL.coral)),1.1));}
-function sage(x,y,z,lv){const h=rr(.3,.6),n=lv===2?ri(2,4):1;for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.3,.8):0;tuft('sagebush',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*2,leafCol(PAL.sage,1.2,.02));}}
+function sage(x,y,z,lv){const h=rr(.32,.65),n=lv===2?ri(3,5):2;for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.3,.85):0;tuft('sagebush',x+Math.cos(a)*d,Y(x+Math.cos(a)*d,z+Math.sin(a)*d),z+Math.sin(a)*d,h*rr(.8,1.1),h*2,leafCol(PAL.sage,1.2,.02));}}
 function peyote(x,y,z,lv){const n=lv===2?ri(1,3):1;around(x,z,n,.4,1.2,(px,pz)=>{const s=rr(.25,.5);{const cd=OIDONG.CARD.peyotecard;BIO.put('peyote',[px,Y(px,pz)+(cd?.04:-.03),pz],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),cd?[s*2.8,s*2.8,s*2.8]:[s,s,s],cd?nearW(rr(.95,1.08)):leafCol(PAL.peyote,1.05,.02,.05,.03));}});}
 function stoneBloom(x,y,z,lv){const n=lv===2?ri(1,3):1;around(x,z,n,.3,.9,(px,pz)=>{const s=rr(.14,.28),c=rockTint(PAL.sand,rr(.7,.95)).lerp(C(pick(PAL.lavender)),.25);
  BIO.put('stonebloom',[px,Y(px,pz)-.02,pz],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[s,s,s],c);
  if(lv===2)BIO.put('daisy',[px,Y(px,pz)+s*.45,pz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),s*.9,bright(C(pick(PAL.blush)),1.15));});}
-function iris(x,y,z,lv){const h=rr(.6,1.1);tuft('blade',x,y,z,h,h*.7,leafCol(PAL.celadon,1.25,.02));
- if(lv>=1&&rng()<.5)BIO.put('poppy',[x+rr(-.2,.2),y+h*.95,z+rr(-.2,.2)],qEuler(rr(-.3,.3),rr(0,TAU),0),rr(.15,.25),bright(C(pick(PAL.lavender)),1.15),{c2:bright(C(0x8a90e8),1.0)});}
-function reeds(x,y,z,lv){const h=rr(1.4,2.6)*(lv===0?1.5:1),n=lv===2?ri(3,5):lv===1?2:1;for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.4,1.1):0;tuft('reed',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*.55,leafCol(PAL.jade,1.2,.02));}}
-function shoots(x,y,z,lv){const n=lv===2?ri(2,5):2;around(x,z,n,.3,1,(px,pz)=>{const h=rr(.3,.9);BIO.put('cone',[px,Y(px,pz)-.05,pz],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[h*.35,h,h*.35],leafCol(PAL.gold,1.1,.02));});}
+function iris(x,y,z,lv){const h=rr(.65,1.18),n=lv===2?ri(2,3):2;
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.25,.7):0,ix=x+Math.cos(a)*d,iz=z+Math.sin(a)*d,iy=Y(ix,iz);
+  tuft('blade',ix,iy,iz,h*rr(.85,1.1),h*.72,leafCol(PAL.celadon,1.25,.02));
+  if(lv>=1&&rng()<.55)BIO.put('poppy',[ix+rr(-.18,.18),iy+h*.95,iz+rr(-.18,.18)],qEuler(rr(-.3,.3),rr(0,TAU),0),rr(.15,.25),bright(C(pick(PAL.lavender)),1.15),{c2:bright(C(0x8a90e8),1.0)});}}
+function reeds(x,y,z,lv){const h=rr(1.4,2.6)*(lv===0?1.5:1),n=lv===2?ri(4,7):lv===1?3:2;for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.4,1.2):0;tuft('reed',x+Math.cos(a)*d,Y(x+Math.cos(a)*d,z+Math.sin(a)*d),z+Math.sin(a)*d,h*rr(.8,1.1),h*.58,leafCol(PAL.jade,1.2,.02));}}
+function shoots(x,y,z,lv){const n=lv===2?ri(3,5):2;around(x,z,n,.28,.95,(px,pz)=>{const h=rr(.20,.44),py=Y(px,pz);BIO.put('cone',[px,py-.04,pz],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[h*.20,h,h*.20],shade(vary(C(0x68643a),.02,.05,.04),-.18));if(lv>=1)tuft('blade',px,py,pz,h*.68,h*.48,leafCol(PAL.jade,1.08,.02));});}
 function stone(x,y,z,lv,st,k,mossy){around(x,z,lv===2?ri(1,3):1,.5,1.5,(px,pz)=>{const r=rr(.15,.5)*(k||1),py=Y(px,pz);
  if(putRooted(px,pz,'stone',[px,py+r*.2,pz],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),[r*rr(.9,1.4),r*.7,r*rr(.9,1.4)],rockTint(PAL.granite))){st.stones++;
   if(mossy&&lv===2)BIO.put('moss',[px,py+r*.75,pz],qEuler(0,rr(0,TAU),0),[r*1.6,r*.6,r*1.6],leafCol(PAL.moss,1.1,.03),{n:[0,1,0]});}});}
@@ -82,71 +85,71 @@ OIDONG.small={tuft,grass,fern,mooncaps,poppies};
 // ---------------------------------------------------------------- the zone planters
 // Each takes (x,y,z,Z,lv,st) and places one plant of the zone's mix.
 function plantMoss(x,y,z,Z,lv,st){const t=rng();
- if(t<.34){mossMat(x,y,z);st.moss++;}
- else if(t<.46){fern(x,y,z,lv);st.ferns++;}
- else if(t<.56){cushion(x,y,z);st.moss++;}
- else if(t<.66){mooncaps(x,y,z,lv,lv===2?ri(3,7):2,rr(.6,1.4));st.caps++;}
- else if(t<.72){ginseng(x,y,z,lv);st.herbs++;}
- else if(t<.86){stone(x,y,z,lv,st,1,true);}
- else{mossMat(x,y,z,PAL.mossDark,1.3);st.moss++;}}
+ if(t<.28){mossMat(x,y,z);fern(x+rr(-.5,.5),Y(x,z),z+rr(-.5,.5),lv,.75);st.moss++;st.ferns++;}
+ else if(t<.48){fern(x,y,z,lv,1.1);st.ferns++;}
+ else if(t<.60){cushion(x,y,z);st.moss++;}
+ else if(t<.70){mooncaps(x,y,z,lv,lv===2?ri(4,8):3,rr(.6,1.4));st.caps++;}
+ else if(t<.78){ginseng(x,y,z,lv);st.herbs++;}
+ else if(t<.90){stone(x,y,z,lv,st,1,true);}
+ else{mossMat(x,y,z,PAL.mossDark,1.35);st.moss++;}}
 function plantMeadow(x,y,z,Z,lv,st){const t=rng();
- if(t<.36){grass(x,y,z,lv);st.grass++;}
- else if(t<.5){box(x,y,z,lv);st.boxes++;}
- else if(t<.64){poppies(x,y,z,lv,lv===2?ri(3,8):2,rr(.8,2));st.flowers++;}
- else if(t<.74){teaBush(x,y,z,lv);st.herbs++;}
- else if(t<.84){mossMat(x,y,z,PAL.mossPale,1.1);st.moss++;}
- else if(t<.92){stone(x,y,z,lv,st,.8,true);}
- else{grass(x,y,z,lv,PAL.gold,.9);st.grass++;}}
+ if(t<.38){grass(x,y,z,lv);st.grass++;}
+ else if(t<.52){box(x,y,z,lv);st.boxes++;}
+ else if(t<.68){poppies(x,y,z,lv,lv===2?ri(4,9):3,rr(.8,2.2));grass(x,y,z,lv,PAL.sage,.75);st.flowers++;st.grass++;}
+ else if(t<.80){teaBush(x,y,z,lv);st.herbs++;}
+ else if(t<.88){mossMat(x,y,z,PAL.mossPale,1.15);st.moss++;}
+ else if(t<.94){stone(x,y,z,lv,st,.85,true);}
+ else{grass(x,y,z,lv,PAL.gold,1.0);st.grass++;}}
 function plantShore(x,y,z,Z,lv,st){const t=rng();
- if(t<.28){reeds(x,y,z,lv);st.reeds++;}
- else if(t<.5){iris(x,y,z,lv);st.reeds++;}
- else if(t<.7){mossMat(x,y,z);st.moss++;}
- else if(t<.82){stone(x,y,z,lv,st,.7,true);}
- else{fern(x,y,z,lv,.8);st.ferns++;}}
+ if(t<.32){reeds(x,y,z,lv);st.reeds++;}
+ else if(t<.56){iris(x,y,z,lv);st.reeds++;}
+ else if(t<.72){mossMat(x,y,z);fern(x,y,z,lv,.7);st.moss++;st.ferns++;}
+ else if(t<.84){stone(x,y,z,lv,st,.75,true);}
+ else{fern(x,y,z,lv,.95);st.ferns++;}}
 function plantFlats(x,y,z,Z,lv,st){const t=rng();
- if(t<.3){peyote(x,y,z,lv);st.peyote++;}
- else if(t<.5){stoneBloom(x,y,z,lv);st.flowers++;}
- else if(t<.68){sage(x,y,z,lv);st.herbs++;}
- else if(t<.86){stone(x,y,z,lv,st,.6,false);}
- else{grass(x,y,z,lv,PAL.sand,.5);st.grass++;}}
+ if(t<.28){peyote(x,y,z,lv);st.peyote++;}
+ else if(t<.48){stoneBloom(x,y,z,lv);st.flowers++;}
+ else if(t<.70){sage(x,y,z,lv);st.herbs++;}
+ else if(t<.86){stone(x,y,z,lv,st,.65,false);}
+ else{grass(x,y,z,lv,PAL.sand,.65);st.grass++;}}
 function plantBamboo(x,y,z,Z,lv,st){const t=rng();
- if(t<.4){shoots(x,y,z,lv);st.shoots++;}
- else if(t<.7){mossMat(x,y,z,PAL.mossPale);st.moss++;}
- else if(t<.86){fern(x,y,z,lv,.7);st.ferns++;}
- else{stone(x,y,z,lv,st,.7,true);}}
+ if(t<.42){shoots(x,y,z,lv);fern(x,y,z,lv,.65);st.shoots++;st.ferns++;}
+ else if(t<.70){mossMat(x,y,z,PAL.mossPale,1.2);st.moss++;}
+ else if(t<.88){fern(x,y,z,lv,.9);st.ferns++;}
+ else{stone(x,y,z,lv,st,.75,true);}}
 function plantTerrace(x,y,z,Z,lv,st){const t=rng(),cold=Z.cold>.62;
  if(cold&&t<.3){snowLotus(x,y,z,lv);st.herbs++;}
- else if(t<.4){teaBush(x,y,z,lv);st.herbs++;}
- else if(t<.58){poppies(x,y,z,lv,lv===2?ri(2,6):2,rr(.6,1.6));st.flowers++;}
- else if(t<.78){grass(x,y,z,lv,PAL.sage,.8);st.grass++;}
- else if(t<.9){stone(x,y,z,lv,st,.9,!cold);}
- else{cushion(x,y,z,PAL.mossPale,.8);st.moss++;}}
+ else if(t<.42){teaBush(x,y,z,lv);st.herbs++;}
+ else if(t<.62){poppies(x,y,z,lv,lv===2?ri(3,7):3,rr(.6,1.8));st.flowers++;}
+ else if(t<.82){grass(x,y,z,lv,PAL.sage,.9);st.grass++;}
+ else if(t<.92){stone(x,y,z,lv,st,.9,!cold);}
+ else{cushion(x,y,z,PAL.mossPale,.9);st.moss++;}}
 function plantMist(x,y,z,Z,lv,st){const t=rng();
- if(t<.34){fern(x,y,z,lv,1.1);st.ferns++;}
- else if(t<.6){mossMat(x,y,z,PAL.mossDark,1.2);st.moss++;}
- else if(t<.72){mooncaps(x,y,z,lv,lv===2?ri(2,5):2,rr(.5,1.2));st.caps++;}
- else if(t<.86){boulder(x,y,z,lv,st,1,true);}
- else{cushion(x,y,z,PAL.moss,1.3);st.moss++;}}
+ if(t<.40){fern(x,y,z,lv,1.2);st.ferns++;}
+ else if(t<.64){mossMat(x,y,z,PAL.mossDark,1.3);st.moss++;}
+ else if(t<.76){mooncaps(x,y,z,lv,lv===2?ri(3,6):2,rr(.5,1.2));st.caps++;}
+ else if(t<.88){boulder(x,y,z,lv,st,1,true);}
+ else{cushion(x,y,z,PAL.moss,1.35);st.moss++;}}
 function plantStream(x,y,z,Z,lv,st){const t=rng();
- if(t<.3){iris(x,y,z,lv);st.reeds++;}
- else if(t<.5){fern(x,y,z,lv,.9);st.ferns++;}
- else if(t<.74){mossMat(x,y,z);st.moss++;}
- else{stone(x,y,z,lv,st,.8,true);}}
+ if(t<.34){iris(x,y,z,lv);st.reeds++;}
+ else if(t<.58){fern(x,y,z,lv,1.0);st.ferns++;}
+ else if(t<.78){mossMat(x,y,z);st.moss++;}
+ else{stone(x,y,z,lv,st,.85,true);}}
 
 // ---------------------------------------------------------------- the pass
 OIDONG.FLOOR_ZONES=['moss','meadow','shore','flats','bamboo','terrace','mistZ','stream'];
 const PLANTERS=[plantMoss,plantMeadow,plantShore,plantFlats,plantBamboo,plantTerrace,plantMist,plantStream];
-OIDONG.floorWeights=Z=>[Z.moss*1.5,Z.meadow*1.1,Z.shore*1.4,Z.flats*.7,Z.bamboo*.9,Z.terrace*.9,Z.mistZ*1.4,Z.stream*1.6];
+OIDONG.floorWeights=Z=>[Z.moss*1.6,Z.meadow*1.25,Z.shore*1.5,Z.flats*.8,Z.bamboo*1.1,Z.terrace*1.05,Z.mistZ*1.5,Z.stream*1.7];
 OIDONG.buildFloor=function(R,q){
  reseed(600019);q=q==null?1:q;R=R||2500;means();OIDONG.STONES.length=0;
  const st={moss:0,ferns:0,caps:0,herbs:0,grass:0,boxes:0,flowers:0,reeds:0,peyote:0,shoots:0,stones:0,boulders:0,logs:0,groups:0,lotus:0,lilies:0,pods:0};
- function plant(x,y,z,lv){if(blocked(x,z,.6))return;const Z=zones(x,z);if(Z.cliff>.6||Z.pool>.3)return;
+ function plant(x,y,z,lv){if(blocked(x,z,.55))return;const Z=zones(x,z);if(Z.cliff>.6||Z.pool>.3)return;
   const w=OIDONG.floorWeights(Z);let tot=0;for(let i=0;i<w.length;i++)tot+=w[i];if(tot<=0)return;
-  let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
+  let r=rng()*Math.max(.85,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   PLANTERS[k](x,y,z,Z,lv,st);}
- const L=BIO.LOD(),bands=[[8,L.floor[0],0],[16,L.floor[1],L.floor[0]],[32,1e9,L.floor[1]]];
+ const L=BIO.LOD(),bands=[[6,L.floor[0],0],[12,L.floor[1],L.floor[0]],[24,1e9,L.floor[1]]];
  bands.forEach((b,bi)=>{const lv=2-bi;
-  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .72*q*(lv===0?.5:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.55,patchScale:.014,pad:.6,box:b[1]<1e9?BIO.originBox(b[1]):null});});
+  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .88*q*(lv===0?.55:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.45,patchScale:.014,pad:.45,box:b[1]<1e9?BIO.originBox(b[1]):null});});
  // the still water: lotus pads, lotus flowers standing out of them, seed heads after the flowers, the iridescent lilies
  BIO.grid(5,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.mid)return 0;const dep=BIO.depth(x,z);if(dep<.15||dep>3.5)return 0;return .55*q*smooth(.42,.6,fbm(x*.007+1,z*.007-2,808,2));},
   (x,y,z,d)=>{if(!BIO.clearOf(x,z,.8)||blocked(x,z,1.2))return;const wl=BIO.waterH(x,z),lv=BIO.lodD(x,z)<L.hero?2:1,t=rng();

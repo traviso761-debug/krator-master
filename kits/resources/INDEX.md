@@ -29,6 +29,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `44t-res-nodes-gem.js` | 8 |  |
 | `44u-res-nodes-ground.js` | 6 |  |
 | `45r-res-field.js` | 9 |  |
-| `46r-res-ledger.js` | 8 |  |
+| `46r-res-ledger.js` | 10 |  |
 | `89-rows.js` | 3 |  |
 | `98r-host-geomap.js` | 8 |  |

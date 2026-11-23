@@ -40,6 +40,9 @@ MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DETAIL};sh
    ' diffuseColor.rgb*=mix(mix(near,mid,fd),far,ff);',
    ' if(uOverlay>0.5){vec3 oc=uOverlay<1.5?vOvK:vOvB;diffuseColor.rgb=mix(diffuseColor.rgb,oc*(0.8+0.25*d3.r),0.82);}}'].join('\n'));};
 MAT.customProgramCacheKey=()=>'world-ground';
+const HZ=(typeof KHORIZON!=='undefined'&&KHORIZON&&KHORIZON.bake&&KHORIZON.shade)?(()=>{
+ const hz=KHORIZON.bake({box:BOX,n:256,reach:40000,bias:2,h:(x,z)=>WORLD.H(x,z,2000)});
+ KHORIZON.shade(MAT,hz,{shade:1,sky:.72});return hz;})():null;
 
 // ---------------------------------------------------------------- nodes
 function Node(cx,cz,s,l,parent){this.cx=cx;this.cz=cz;this.s=s;this.l=l;this.parent=parent;this.kids=null;this.chunk=null;this.queued=false;
@@ -87,7 +90,7 @@ function buildChunk(n){const t0=performance.now();
  g.setAttribute('aDUV',new THREE.BufferAttribute(duv.subarray(0,sv*2),2));g.setIndex(idx);
  g.setAttribute('aOvK',new THREE.BufferAttribute(ovk.subarray(0,sv*3),3));g.setAttribute('aOvB',new THREE.BufferAttribute(ovb.subarray(0,sv*3),3));
  g.boundingSphere=new THREE.Sphere(new THREE.Vector3(s/2,(y0+y1)/2,s/2),Math.hypot(s*.71,(y1-y0)/2+skD));
- const m=new THREE.Mesh(g,MAT);m.position.set(x0,0,z0);m.matrixAutoUpdate=false;m.updateMatrix();m.visible=false;m.userData.terrain=n;
+ const m=new THREE.Mesh(g,MAT);m.position.set(x0,0,z0);m.matrixAutoUpdate=false;m.updateMatrix();m.visible=false;m.receiveShadow=true;m.userData.terrain=n;
  m.userData.inspectLabel='ground';scene.add(m);
  n.chunk={mesh:m,grid,x0,z0,ds,y0,y1,water:null,floor:null,anyWater,wet};n.y0=y0-skD;n.y1=y1;
  ALL.add(n);S.chunks=ALL.size;S.built++;S.ms+=performance.now()-t0;
@@ -133,4 +136,4 @@ function heightDrawn(x,z){const n=drawnAt(x,z);return n?chunkH(n.chunk,x,z):WORL
 // by the next frames' update (coarse first, nearest first, within the frame's budget)
 function refresh(x0,z0,x1,z1){let n=0;for(const q of [...ALL]){const c=q.chunk;if(!c)continue;if(c.x0>x1||c.x0+q.s<x0||c.z0>z1||c.z0+q.s<z0)continue;freeChunk(q);n++;}
  drawn=drawn.filter(q=>q.chunk);S.refreshed=(S.refreshed||0)+n;return n;}
-return{OVERLAY,stats:S,update,refresh,chunkH,drawnAt,heightDrawn,MAT,STRATA,meshes:()=>drawn.map(n=>n.chunk.mesh),pending:()=>want.length,NSEG,MAXL,ROOT};})();});
+return{OVERLAY,stats:S,update,refresh,chunkH,drawnAt,heightDrawn,MAT,STRATA,horizon:HZ,meshes:()=>drawn.map(n=>n.chunk.mesh),pending:()=>want.length,NSEG,MAXL,ROOT};})();});

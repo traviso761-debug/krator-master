@@ -27,24 +27,24 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `40h-ls-hamlets.js` | 3 |  |
 | `42-ls-world.js` | 1 |  |
 | `45-host-stage.js` | 19 | the land, cached (33); the plan's shapes on the land (51); the stream as a line (page metres), on a level t (71); the fields the Oidong kit reads (BIOME-API.md) (164); the host binding (190) |
-| `57a-ls-interiors.js` | 36 **big** | the room kinds: the catalog kinds each may draw  (31); the layouts: what the Order arranges itself (wor (100); one room: its layout, then the placer (216); the checks (verify.py --assert, through 64's mon (292) |
+| `57a-ls-interiors.js` | 37 **big** | the room kinds: the catalog kinds each may draw  (31); the layouts: what the Order arranges itself (wor (100); one room: its layout, then the placer (220); the checks (verify.py --assert, through 64's mon (296) |
 | `62-ls-arch.js` | 28 | the pieces (the vocabulary), in the kit's local  (116); the Order's own pieces (ROOMS.md section 1: the  (218) |
-| `63-ls-signs.js` | 8 |  |
-| `64-ls-monastery.js` | 56 **big** | the outer wall, its towers and gates (18); the Great Gate: the parabolic arch between two p (39); the ward: the terraces' retaining walls, the ave (74); the Great Stair and the White Palace's base (L1) (119); the White Palace round the Debate Court (L2-L4) (175); the drum halls: the Assembly, the Hall of Hours, (213); the Red Palace (R1-R3) and its wings; the gilded (225); the Eastern Watch: the Archive's louvre tower (254); the Lower Gate and its paired drums (L1) (278); the rock top's other houses: the Closed Ward, th (287) |
+| `63-ls-signs.js` | 9 |  |
+| `64-ls-monastery.js` | 55 **big** | the outer wall, its towers and gates (18); the Great Gate: the parabolic arch between two p (39); the ward: the terraces' retaining walls, the ave (74); the Great Stair and the White Palace's base (L1) (119); the White Palace round the Debate Court (L2-L4) (175); the drum halls: the Assembly, the Hall of Hours, (212); the Red Palace (R1-R3) and its wings; the gilded (224); the Eastern Watch: the Archive's louvre tower (253); the Lower Gate and its paired drums (L1) (277); the rock top's other houses: the Closed Ward, th (286) |
 | `65-ls-marks.js` | 3 |  |
 | `66-ls-vault.js` | 43 **big** | THE PROCRASTINATOR (151); the lights' arrays for the shader (fixed after t (329); the Vault's checks (verify.py --assert) (334) |
 | `68-ls-life.js` | 22 |  |
 | `69-ls-figures.js` | 11 |  |
 | `84-ls-ground.js` | 9 | the water's records (core/water draws it: 89w-ls (88) |
-| `85-ls-farms.js` | 38 **big** | the farms' checks (verify.py --assert; 64's mona (267) |
+| `85-ls-farms.js` | 40 **big** | the farms' checks (verify.py --assert; 64's mona (289) |
 | `85h-ls-hamlets.js` | 14 |  |
 | `86-ls-far.js` | 2 |  |
-| `87-ls-interiors.js` | 21 |  |
+| `87-ls-interiors.js` | 24 |  |
 | `88-host-build.js` | 2 |  |
 | `89w-ls-water.js` | 7 | the water's checks (verify.py --assert; 64's mon (42) |
 | `89x-ls-night.js` | 11 |  |
 | `89y-ls-festival.js` | 11 |  |
 | `89z-ls-atmos.js` | 3 |  |
-| `94-ls-export.js` | 10 |  |
+| `94-ls-export.js` | 19 |  |
 | `99-host-take.js` | 16 | the inspector's words: the record under the hit  (54); the camera: above the ground, or inside the Vaul (76); the probe's budgets and the page's checks (verif (87); the page, handed to the host (111) |
 | `99-tail.html` | <1 |  |

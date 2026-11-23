@@ -27,8 +27,10 @@ DIMS_SOURCES = ([os.path.join(ROOT, 'kits', 'beast-riders', 'src', f) for f in
                 + sorted(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in os.listdir(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')) if f.endswith('.js')))
 JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.js'), None,
       ('core', 'mask', '25-core-mask.js'), ('core', 'mask', '27-core-mask-distance.js'), ('core', 'coast', '30-core-coast.js'),
-      ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'), ('core', 'world', '42b-world-bridges.js'),
-      ('core', 'world', '44c-world-coast.js'),   # the coasts, as the page has them
+      ('core', 'world', '40-world-smooth.js'), ('core', 'world', '43-world-relief.js'), ('core', 'world', '43m-world-micro.js'),
+      ('core', 'world', '44-world-streams.js'), ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'),
+      ('core', 'world', '42b-world-bridges.js'),
+      ('core', 'world', '44c-world-coast.js'),   # the coasts, as the page has them (opt-in)
       ('core', 'space', '20-core-space.js'),
       ('core', 'camp', '10-camp-cultures.js'), ('core', 'camp', '20-camp-census.js'), ('core', 'camp', '30-camp-pitch.js'),
       ('kits', 'beast-riders', 'src', '79-br-camp.js'),
@@ -104,6 +106,9 @@ def script(region):
             continue
         if j[-1] == COAST_JS and not takes(region, COAST_JS):
             continue
+        if j[-1] == '41-world-fields.js':   # the landform records first (core/world/world_data.py land_js)
+            for k in WD.land_js(region):
+                parts.append('\n// ---- %s\n' % '/'.join(k) + open(os.path.join(ROOT, *k), encoding='utf-8').read())
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
         # the sub-cell landforms (core/world/41l-world-landforms.js), only for a region whose page takes them (its build.py
         # lists the fragment): the plan is made on the same land the page stamps
@@ -139,13 +144,16 @@ def resources_script(region):
     and WRES.markers(), as the page makes them"""
     base = os.path.join(ROOT, 'openworld', region)
     parts = ['"use strict";var window=globalThis;\n']
-    for j in JS[:JS.index(('core', 'world', '44c-world-coast.js')) + 1]:   # the land, with its coasts
+    for j in JS[:JS.index(('core', 'world', '44c-world-coast.js')) + 1]:   # the land, with its coasts where taken
         if j is None:
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             continue
         if j[-1] == COAST_JS and not takes(region, COAST_JS):
             continue
+        if j[-1] == '41-world-fields.js':   # the landform records first (core/world/world_data.py land_js)
+            for k in WD.land_js(region):
+                parts.append('\n// ---- %s\n' % '/'.join(k) + open(os.path.join(ROOT, *k), encoding='utf-8').read())
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))
     for where, f in WD.RES_FRAGS + [('core/world', '49r-world-resources.js')]:

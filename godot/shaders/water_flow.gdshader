@@ -19,6 +19,8 @@ uniform float metal = 0.1;
 uniform float margin = 1.5;
 uniform bool transparent = true;
 uniform bool use_keep = false;
+uniform bool use_flow_origin = false;
+uniform vec2 flow_origin = vec2(0.0);
 uniform int cf_n = 0;
 uniform vec4 cf_disc[4];
 
@@ -29,7 +31,7 @@ varying float v_k;
 void vertex() {
 	v_f = CUSTOM0;
 	v_k = use_keep ? CUSTOM1.x : 1.0;
-	v_w = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xz;
+	v_w = use_flow_origin ? (VERTEX.xz + flow_origin) : (MODEL_MATRIX * vec4(VERTEX, 1.0)).xz;
 	NORMAL = vec3(0.0, 1.0, 0.0);
 }
 

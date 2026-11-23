@@ -29,6 +29,8 @@ godot --headless --path godot --script res://tests/export/longsong_test.gd   # t
 godot --headless --path godot --script res://tests/export/oidong_world_test.gd   # M7: the world-oidong-highrift case streamed along its road (krator/world_stream.gd), its places at 1:1, its roads joined, the valley's books after a week
 godot --headless --path godot --script res://tests/export/oidong_walk_test.gd    # M8: a walker driven along the road on the stream's collision, onto Strongbow's plateau (each check with a negative)
 godot --headless --path godot --script res://tests/export/oidong_traffic_test.gd # M9: the valley's road traffic replayed from its week on the region's roads (each check with a negative)
+godot --headless --path godot --script res://tests/export/conversion_audit_test.gd # 7-category 3D Web->Godot scene audit across standalone & streamed cases (each category with a negative)
+python3 tools/check_godot_exports.py                                               # static export & LFS hygiene gate across all godot/data/world-* cases
 godot --path godot res://walk.tscn                                                # M8: walk the one world (WASD, Shift, Q/E, R rides the road); -- --at=strongbow
 godot --headless --path godot --script res://tests/shaders/library_test.gd   # the shader library: the hook table; world-sedesert's ground layers and pond
 godot --headless --path godot --script res://tests/water/water_test.gd     # KWater (core/water's twin) against WATER's own heights, frames, foam, bed

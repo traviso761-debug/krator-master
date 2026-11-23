@@ -135,7 +135,7 @@ function full(C){const G=new THREE.Group(),by={},missing=[],thorn=[];
   C.thorn={L:thorn,near:P.parts.map(pt=>{const im=new THREE.InstancedMesh(pt.geo,pt.mat,thorn.length);im.name=id;im.userData.inspectLabel=id;im.count=0;G.add(im);return im;}),
    cards:new THREE.InstancedMesh(hedgeCardG,hedgeM,thorn.length),at:null};
   C.thorn.cards.name='camp hedge cards';C.thorn.cards.count=0;G.add(C.thorn.cards);}
- G.position.set(C.c.site.x,0,C.c.site.z);G.name='camp '+C.c.id;scene.add(G);return G;}
+ G.position.set(C.c.site.x,0,C.c.site.z);G.name='camp '+C.c.id;if(HOST.shadow)HOST.shadow.cast(G);scene.add(G);return G;}
 function split(C,P){const T=C.thorn;if(!T)return;if(T.at&&T.at.distanceTo(P)<8){S.near+=T.n;return;}T.at=(T.at||P.clone()).copy(P);let n=0,c=0;
  for(const t of T.L){const d=Math.hypot(P.x-t.p.x,P.z-t.p.z,(P.y-t.p.y)*.5);
   if(d<NEAR){for(const im of T.near)im.setMatrixAt(n,t.M4);n++;}else T.cards.setMatrixAt(c++,t.C4);}
@@ -182,7 +182,7 @@ function villageFull(W){const G=new THREE.Group(),copies=[],boxes=[],ox=W.V.site
    P.push(...Q4[0],...Q4[1],...Q4[2],...Q4[0],...Q4[2],...Q4[3]);}}
  if(P.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.computeVertexNormals();
   const lm=new THREE.Mesh(g,earthM);lm.material.side=THREE.DoubleSide;G.add(lm);}
- G.position.set(ox,0,oz);G.name='village '+W.V.id;scene.add(G);return G;}
+ G.position.set(ox,0,oz);G.name='village '+W.V.id;if(HOST.shadow)HOST.shadow.cast(G);scene.add(G);return G;}
 function villageMass(W){const im=new THREE.InstancedMesh(boxG,wallM,Math.max(1,W.B.length)),ox=W.V.site.x,oz=W.V.site.z;
  W.B.forEach((b,i)=>{const r=b.r;im.setMatrixAt(i,m4.compose(v3.set(r.x-ox,b.base,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)),new THREE.Vector3(r.w*.9,r.h,r.d*.9)));});
  im.count=W.B.length;const G=new THREE.Group();G.add(im);G.position.set(ox,0,oz);G.name='village massing '+W.V.id;scene.add(G);return G;}

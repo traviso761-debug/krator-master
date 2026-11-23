@@ -10,26 +10,26 @@
 /* a hull map's height is 0.1 + 0.9 y/H, 0 where nothing is: a surface at the ground (the Spindle's skirt's reveal floor) stands clear of the empty test (0.05), where at
    0.02 over 0.01 the mips' blur at its edge flickered it between solid and air, as spines round the skirt seen from above */
 const BV=['uniform float uMode,uH,uA,uWrap,uXs,uYs;uniform vec3 uFaceN;uniform float uFaceD;uniform mat4 uVP;',
- 'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;',
+ 'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;varying float vPY;',
 
  'uniform mat3 uUvT;','void main(){vUv=(uUvT*vec3(uv,1.0)).xy;vCol=vec3(1.0);','#ifdef USE_COLOR','vCol*=color;','#endif','#ifdef USE_INSTANCING_COLOR','vCol*=instanceColor;','#endif',
  '#ifdef USE_INSTANCING','vec4 p=instanceMatrix*vec4(position,1.0);vN=normalize(mat3(instanceMatrix)*(normal/vec3(dot(instanceMatrix[0].xyz,instanceMatrix[0].xyz),dot(instanceMatrix[1].xyz,instanceMatrix[1].xyz),dot(instanceMatrix[2].xyz,instanceMatrix[2].xyz))));',
  '#else','vec4 p=vec4(position,1.0);vN=normal;','#endif',
- 'vXZ=p.xz;if(uMode<0.5){float th=uWrap==0.0?atan(p.z,p.x):atan(-p.z,-p.x)+uWrap*3.14159265;vTh=th;float r=length(p.xz);vH=r/uA;gl_Position=vec4(th/3.14159265*uXs,(p.y/uH*2.0-1.0)*uYs,1.0-2.0*vH,1.0);}',
+ 'vXZ=p.xz;vPY=p.y;if(uMode<0.5){float th=uWrap==0.0?atan(p.z,p.x):atan(-p.z,-p.x)+uWrap*3.14159265;vTh=th;float r=length(p.xz);vH=r/uA;gl_Position=vec4(th/3.14159265*uXs,(p.y/uH*2.0-1.0)*uYs,1.0-2.0*vH,1.0);}',
  'else if(uMode<1.5){vTh=0.0;vH=1.0-clamp((uFaceD-dot(p.xyz,uFaceN))/uA,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}else{vTh=0.0;vH=0.1+0.9*clamp(p.y/uH,0.0,1.0);gl_Position=uVP*vec4(p.xyz,1.0);}}'].join('\n');
 // a triangle torn over the seam has theta running the long way round: its interpolated theta and the true theta of the point part company, and it is dropped. The
 // wrap passes (+1, -1) cut theta at 0, not at the seam (0..2pi and -2pi..0), so a triangle across the seam is whole in them and fills the slot's edge and gutter: with one
 // cut for all three passes a strip at -180 degrees went unbaked (a seam down the shell, 2026-11-03); and each wrap pass keeps to its own side of the cut, or a triangle
 // torn across the seam in a wrap pass sweeps through the middle of the slot and writes spikes there
-const BF=['uniform float uPass,uRough,uMetal,uWin,uMode,uWrap,uClip;uniform vec3 uFaceN;uniform vec3 uColor;uniform sampler2D uMap;uniform float uHasMap;uniform sampler2D uRMap;uniform float uHasRMap;',
- 'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;',
+const BF=['uniform float uPass,uRough,uMetal,uWin,uMode,uWrap,uClip,uH;uniform vec3 uFaceN;uniform vec3 uColor;uniform sampler2D uMap;uniform float uHasMap;uniform sampler2D uRMap;uniform float uHasRMap;',
+ 'varying vec2 vUv;varying vec3 vN;varying float vH;varying float vTh;varying vec3 vCol;varying vec2 vXZ;varying float vPY;',
  'void main(){if(uMode<0.5&&((uWrap==0.0?abs(vTh)>2.5:abs(vTh)<2.2)||abs(vTh-(uWrap==0.0?atan(vXZ.y,vXZ.x):atan(-vXZ.y,-vXZ.x)+uWrap*3.14159265))>0.25))discard;if(uMode>1.5&&vH<uClip)discard;',
  ' if(uPass<0.5){vec3 c=uHasMap>0.5?texture2D(uMap,vUv).rgb:vec3(1.0);c*=pow(uColor*vCol,vec3(1.0/2.2));gl_FragColor=vec4(c,1.0);}',
  /* roughness is linear data: it is read with texture() and no sRGB decode (check_source's RAWTEX rule is for colour maps) */
 /* a side map's sills and reveals are flat ledges (|ny| == 1) a pixel tall: an up-facing normal there catches a high sun as a bright slit, so in a side map a flat ledge
    takes the wall's normal; sloped roofs and domes (|ny| < 0.99) keep their own */
  ' else if(uPass<1.5){vec3 n=normalize(vN);if(uMode<1.5&&abs(n.y)>0.99)n=uMode<0.5?normalize(vec3(vXZ.x,0.0,vXZ.y)):uFaceN;gl_FragColor=vec4(n*0.5+0.5,vH);}',
- ' else gl_FragColor=vec4(uRough*(uHasRMap>0.5?texture(uRMap,vUv).g:1.0),uMetal,uWin,1.0);}'].join('\n');
+ ' else{vec3 n2=normalize(vN);float baseOcc=0.72+0.28*smoothstep(0.0,max(6.0,min(28.0,uH*0.35)),vPY),revOcc=uMode<1.5?mix(0.76,1.0,clamp(vH,0.0,1.0)):1.0,sofOcc=mix(0.80,1.0,clamp(n2.y*0.5+0.5,0.0,1.0));gl_FragColor=vec4(uRough*(uHasRMap>0.5?texture(uRMap,vUv).g:1.0),uMetal,uWin,clamp(baseOcc*revOcc*sofOcc,0.35,1.0));}}'].join('\n');
 function bakeMat(src,P,pass){const m=new THREE.ShaderMaterial({vertexShader:BV,fragmentShader:BF,side:THREE.DoubleSide,vertexColors:!!src.vertexColors,
  uniforms:{uPass:{value:pass},uMode:P.mode,uClip:P.clip,uH:P.H,uA:P.A,uWrap:P.wrap,uXs:P.xs,uYs:P.ys,uFaceN:P.faceN,uFaceD:P.faceD,uVP:P.vp,uRough:{value:src.roughness==null?1:src.roughness},uRMap:{value:src.roughnessMap||null},uHasRMap:{value:src.roughnessMap?1:0},uUvT:{value:(()=>{const t=src.map||src.roughnessMap;if(!t)return new THREE.Matrix3();if(t.matrixAutoUpdate)t.updateMatrix();return t.matrix.clone();})()},uMetal:{value:src.metalness==null?0:src.metalness},uWin:{value:src.userData.win?1:0},uColor:{value:src.color?src.color.clone():new THREE.Color(1,1,1)},uMap:{value:src.map||null},uHasMap:{value:src.map?1:0}}});return m;}
 KSHELL.atlas=function(size,renderer){const mk=()=>{const t=new THREE.WebGLRenderTarget(size,size,{depthBuffer:true,format:THREE.RGBAFormat,type:THREE.UnsignedByteType,minFilter:THREE.LinearMipmapLinearFilter,magFilter:THREE.LinearFilter,generateMipmaps:false});return t;};
@@ -64,7 +64,7 @@ const DV=['attribute vec4 aSlot;attribute vec4 aFrame;attribute vec4 aTop;attrib
    instance's base (it was from y 0, so a tower on low ground faded at another distance than its hero) */
 const DM=['vMpP=position;',
  'vec3 mpC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);vMpE=(inverse(instanceMatrix)*vec4(mpC,1.0)).xyz;vMpRot=instanceMatrix[0].xz;vMpSlot=aSlot;vMpFrame=aFrame;vMpTop=aTop;vMpBot=aBot;',
- '{vec3 c=instanceMatrix[3].xyz,e=mpC;vec2 hb=aFrame.x<0.5?vec2(aFrame.z*.6):vec2(aFrame.z,aFrame.w);if(abs(instanceMatrix[0].x)<0.5)hb=hb.yx;float dx=max(abs(e.x-c.x)-hb.x,0.0),dz=max(abs(e.z-c.z)-hb.y,0.0),dy=max(e.y-(c.y+aFrame.y),max(c.y-e.y,0.0)),ld=length(vec3(dx,dy,dz)),bx=aBand<0.0?0.0:(aBand>0.0?aBand:uBand.x)*uBandS;',
+ '{vec3 c=instanceMatrix[3].xyz,e=mpC;vec2 hb=aFrame.x<0.5?vec2(aFrame.z*.6):vec2(aFrame.z,aFrame.w);if(abs(normalize(vec2(instanceMatrix[0].x,instanceMatrix[2].x)).x)<0.5)hb=hb.yx;float dx=max(abs(e.x-c.x)-hb.x,0.0),dz=max(abs(e.z-c.z)-hb.y,0.0),dy=max(e.y-(c.y+aFrame.y),max(c.y-e.y,0.0)),ld=length(vec3(dx,dy,dz)),bx=aBand<0.0?0.0:(aBand>0.0?aBand:uBand.x)*uBandS;',
  ' vLodK=vec2(uBand.y>0.0?smoothstep(uBand.y*(1.0-uBand.z),uBand.y,ld):0.0,bx>0.0?smoothstep(bx*(1.0-uBand.z),bx,ld):1.0);}'].join('\n');
 const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;uniform float uTexel;uniform float uDbg;uniform mat4 projectionMatrix;\n#define mpProj projectionMatrix','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
  'vec2 mpUV;float mpLod;float mpGeo;vec3 mpHP;vec3 mpRd;float mpBr;float mpCl;vec2 mpTUV;float mpTCl;',MP.ROOM_GLSL,
@@ -106,7 +106,8 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;unifor
  'bool mpTrace(){mpBr=0.0;vec3 ro=vMpP,rd=normalize(vMpP-vMpE);mpRd=rd;float dist=length(vMpP-vMpE);mpLod=max(0.0,log2(max(dist*uPx/uTexel,1.0)));mpGeo=mpLod;float t=0.0,tp=0.0,mn=max(0.25,dist*uPx*.6),g,ta,ty;',
  ' vec4 F=vMpFrame;float lim=F.x<0.5?F.z*1.08:0.0;',
  ' vec2 hxz=F.x<0.5?vec2(F.z):F.zw;float ey=F.y/255.0*1.2;',
- ' for(int i=0;i<MP_STEPS;i++){vec3 p=ro+rd*t;if(p.y>F.y+.5||p.y<-.1)return false;',
+ ' int nSteps=int(mix(float(MP_STEPS),10.0,smoothstep(600.0,2200.0,dist)));',
+ ' for(int i=0;i<MP_STEPS;i++){if(i>=nSteps)break;vec3 p=ro+rd*t;if(p.y>F.y+.5||p.y<-.1)return false;',
  /* a hit is found by stepping, which lands anywhere up to a step inside: it is bisected back to the surface between the last point outside and this one,
     so the colour is read at the surface's own height (a deep landing read a skirt's side lower down, as spines, and a roof's map flipped with the camera). On the polar
     skirt (0.65..22 m, where the top map holds recessed reveal rings under the flared wall) only the three portal canopies (7.6..8.7 m, 5 m proud of the wall) take the top
@@ -125,24 +126,29 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;unifor
  '  float s=max(gs*.85,mn);if(rd.y<0.0&&ta>0.05){if(g<mn*.5)s=clamp((p.y-ty-ey*.4)/(-rd.y),mn,2.0);else if(p.y>ty-ey)s=min(s,max((p.y-ty)/(-rd.y),mn*.5));}if(rd.y<0.0&&p.y>.05)s=min(s,max((p.y-.05)/(-rd.y),mn*.5));t+=s;',
  '  if(F.x<0.5){vec2 q=p.xz;if(length(q)>lim&&dot(q,rd.xz)>0.0)return false;}else if((abs(p.x)>F.z||abs(p.z)>F.w)&&((abs(p.x)>F.z&&p.x*rd.x>0.0)||(abs(p.z)>F.w&&p.z*rd.z>0.0)))return false;}',
  ' return false;}'].join('\n');
-KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uAt:{value:at.size},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)},uBandS:{value:1},uDbg:{value:0}};m.userData.U=U;
+KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,gl=at&&at.renderer&&at.renderer.getContext?at.renderer.getContext():null;
+ const noCD=typeof location!=='undefined'&&/[?&]noconserv\b/.test(location.search),hasCD=!noCD&&!!(gl&&gl.getExtension&&gl.getExtension('EXT_conservative_depth'));
+ if(hasCD&&gl&&!gl._kshellCD){const orig=gl.shaderSource.bind(gl);gl.shaderSource=function(sh,src){if(typeof src==='string'&&src.indexOf('/*KSHELL_CD*/')>=0)src=src.replace('#version 300 es','#version 300 es\n#extension GL_EXT_conservative_depth : enable');return orig(sh,src);};gl._kshellCD=true;}
+ const m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uAt:{value:at.size},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)},uBandS:{value:1},uDbg:{value:0}};m.userData.U=U;m.userData.conservativeDepth=hasCD;
  m.onBeforeCompile=function(sh){Object.assign(sh.uniforms,U);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+DV).replace('#include <begin_vertex>','#include <begin_vertex>\n'+DM);
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n#define MP_STEPS '+steps+'\n'+DF)
+  const cdDecl=hasCD?'/*KSHELL_CD*/\n#if __VERSION__ >= 300\nlayout(depth_greater) out float gl_FragDepth;\n#endif\n':'';
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+cdDecl+'#define MP_STEPS '+steps+'\n'+DF)
    /* the colour is read a quarter mip under the distance's level, and up to 1.25 coarser where the surface is seen edge-on (the distance alone left a grazing face's windows
       sparkling from above); the shape (mpGeo) at the distance's level. Sharper (three quarters, and the shape a level under: 2026-11-03) aliased into a dither */
    .replace('#include <map_fragment>',['{float _lh=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(0.06711056,0.00583715))));if(_lh<vLodK.x||_lh>=vLodK.y)discard;}','if(!mpTrace())discard;',
     /* the depth of the surface the ray found, not of the cage (2026-11-09, the Ancient's Valley: the cage's depth hid or cut whatever stood between the cage's face
        and the traced wall: creepers hung off a face, trees on a broken top, rubble at the plinth, a neighbour's corner). The hit's distance from the eye is the same
        in the instance's frame (no scale), so the hit in view space is the cage fragment's view position stretched to it. WebGL1 keeps the cage's depth */
-    '#if __VERSION__ >= 300','{vec3 _vp=-vViewPosition;float _dc=length(_vp),_dh=length(mpHP-vMpE);vec4 _cl=mpProj*vec4(_vp*(_dh/max(_dc,1e-4)),1.0);gl_FragDepth=clamp(_cl.z/_cl.w*0.5+0.5,0.0,1.0);}','#endif',
-    'vec2 sUV=mpUV;vec3 gN=mpBr==1.0?vec3(0.0,1.0,0.0):mpBr==2.0?vec3(0.0,-1.0,0.0):vMpFrame.x<0.5?normalize(vec3(mpHP.x,0.0,mpHP.z)):(abs(mpHP.x)/vMpFrame.z>abs(mpHP.z)/vMpFrame.w?vec3(sign(mpHP.x),0.0,0.0):vec3(0.0,0.0,sign(mpHP.z)));float sL=mpCl>0.5?0.0:max(0.0,mpLod-.25+.5*clamp(-log2(max(abs(dot(gN,mpRd)),.05)),0.0,2.5));vec4 mA=textureLod(uA,sUV,sL),mB=textureLod(uB,sUV,sL),mC=textureLod(uC,sUV,sL);diffuseColor.rgb=pow(mA.rgb,vec3(2.2));'].join('\n'))
+    '#if __VERSION__ >= 300','{vec3 _vp=-vViewPosition;float _dc=length(_vp),_dh=length(mpHP-vMpE);vec4 _cl=mpProj*vec4(_vp*(_dh/max(_dc,1e-4)),1.0);gl_FragDepth=max(gl_FragCoord.z,clamp(_cl.z/_cl.w*0.5+0.5,0.0,1.0));}','#endif',
+    'vec2 sUV=mpUV;vec3 gN=mpBr==1.0?vec3(0.0,1.0,0.0):mpBr==2.0?vec3(0.0,-1.0,0.0):vMpFrame.x<0.5?normalize(vec3(mpHP.x,0.0,mpHP.z)):(abs(mpHP.x)/vMpFrame.z>abs(mpHP.z)/vMpFrame.w?vec3(sign(mpHP.x),0.0,0.0):vec3(0.0,0.0,sign(mpHP.z)));float sL=mpCl>0.5?0.0:max(0.0,mpLod-.25+.5*clamp(-log2(max(abs(dot(gN,mpRd)),.05)),0.0,2.5));vec4 mA=textureLod(uA,sUV,sL),mB=textureLod(uB,sUV,sL),mC=textureLod(uC,sUV,sL);diffuseColor.rgb=pow(mA.rgb,vec3(2.2))*mix(0.80,1.0,mC.a);'].join('\n'))
    .replace('#include <roughnessmap_fragment>','float roughnessFactor=mC.r;').replace('#include <metalnessmap_fragment>','float metalnessFactor=mC.g;')
+   .replace('#include <aomap_fragment>','reflectedLight.indirectDiffuse*=mix(0.55,1.0,mC.a);')
    .replace('#include <normal_fragment_begin>',['vec3 mN=normalize(mB.xyz*2.0-1.0),mW=vec3(vMpRot.x*mN.x-vMpRot.y*mN.z,mN.y,vMpRot.y*mN.x+vMpRot.x*mN.z);vec3 normal=normalize((viewMatrix*vec4(mW,0.0)).xyz);vec3 geometryNormal=normal;'].join('\n'))
    .replace('#include <normal_fragment_maps>','')
    .replace('#include <dithering_fragment>',['#include <dithering_fragment>','if(uDbg>0.5){if(uDbg<1.5)gl_FragColor=vec4(mA.rgb,1.0);else if(uDbg<2.5)gl_FragColor=vec4(mB.rgb,1.0);else if(uDbg<3.5)gl_FragColor=vec4(mC.rgb,1.0);else gl_FragColor=vec4(mpBr==1.0?1.0:0.0,mpBr==2.0?1.0:0.0,mpBr==0.0?0.6:0.0,1.0);}'].join(String.fromCharCode(10)))
    .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nif(mC.b>0.5){totalEmissiveRadiance+=mpRoom(mpHP,mpRd,mN,0.0)*(mC.g>.2?0.55:1.0);}');};
- m.customProgramCacheKey=()=>'kshell'+steps;return m;};
+ m.customProgramCacheKey=()=>'kshell'+steps+(hasCD?':cd':'');return m;};
 // placements: [[x, z, yaw], ...]
 /* band (optional): the fade band's far edge for these instances (aBand, above); omitted or 0, the material's uBand.x */
 KSHELL.draw=function(at,rec,slot,mat,places,top,bot,band){const g=new THREE.BufferGeometry(),C=rec.cage,S=at.size,f=rec.frame,n=places.length;g.setAttribute('position',new THREE.Float32BufferAttribute(C.pos,3));g.setIndex(C.idx);g.computeVertexNormals();

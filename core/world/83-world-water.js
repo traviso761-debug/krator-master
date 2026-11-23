@@ -11,7 +11,7 @@
 // its own level (and the name WATER, now core/water's global).
 var RIVERS;LATE.push(()=>{RIVERS=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera;
-ATMOS.init({THREE,scene,camera,hour:()=>11.5,onFrame:fn=>HOST.TICKS.push(fn),ground:(x,z)=>WORLD.H(x,z),seed:4242,
+ATMOS.init({THREE,scene,camera,hour:()=>HOST.hour(),onFrame:fn=>HOST.TICKS.push(fn),ground:(x,z)=>WORLD.H(x,z),seed:4242,
  err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>HOST.renderer.getPixelRatio()});
 const list=[];
 for(const R of WORLD.riverLines(40)){if(R.pts.length<2)continue;
