@@ -31,7 +31,7 @@ function tpWard(Q,C,nm,Wk,Dm,dseed){const st=Dm.state,ruined=st==='ruined';
  Q.curtains.forEach(c=>{const L=Math.hypot(c.b[0]-c.a[0],c.b[1]-c.a[1]),mid=[(c.a[0]+c.b[0])/2,(c.a[1]+c.b[1])/2];vnReg(nm+' — curtain',mid[0],mid[1],L/2,c.h+1.3,{part:'wall'});
   tpCurtain(c,C,Dm,dseed);});
  Dm.heaps.forEach(H=>xfHeap(H,C.rubble));
- Q.towers.forEach(t=>{if(t.kind==='utse')return;const T=Dm.towers[t.id]||{};vnReg(nm+' — '+(t.kind==='great'?'the Storm Tower':'tower'),t.ctr[0],t.ctr[1],XFORT.half(t)+.5,t.h*(T.keep==null?1:T.keep)+2,{part:'tower'});
+ Q.towers.forEach(t=>{if(t.utse)return;const T=Dm.towers[t.id]||{};vnReg(nm+' — '+(t.kind==='great'?'the Storm Tower':'tower'),t.ctr[0],t.ctr[1],XFORT.half(t)+.5,t.h*(T.keep==null?1:T.keep)+2,{part:'tower'});
   xfTower(t,C,Object.assign({seed:dseed},T,{gaps:Wk.gaps[t.id]}),t.id);});
  Q.gates.forEach(g=>{if(g.kind==='utse')return;const c=Q.curtains.find(q=>q.id===g.curtain);vnReg(nm+' — '+(g.kind==='main'?'the Main Gate':'a sally gate'),g.at[0],g.at[1],g.w/2+2,c.h+4,{part:'gate'});
   xfGate(g,c,C,Dm.gates[g.id]||'kept',g.kind==='main');});

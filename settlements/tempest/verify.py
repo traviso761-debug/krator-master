@@ -41,6 +41,10 @@ return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + HOUSE_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
 xv._voth_trades = lambda: {'name': 'voth-trades', 'ok': True, 'detail': 'the Xanadu kit\'s table (kits/xanadu): checked on its own sheet'}
+# step 3: the interiors are on by default on the House's page (targets/house/89xs): the audit runs unless --no-interiors, and every
+# floor of both wards' stacks (the set xanadu-tempest, src/80v) must be reached from their doors (interiors-hollow-and-reach). The
+# states sheet has no interiors (a damaged or ruined House is not furnished): run it with --no-interiors.
+xv.INTERIORS_MUST = ['xa_tempest_outer', 'xa_tempest_inner']
 
 if __name__ == '__main__':
     import argparse, asyncio
@@ -58,6 +62,8 @@ if __name__ == '__main__':
     ap.add_argument("--eval", action="append")
     ap.add_argument("--size", default="1280x800")
     ap.add_argument("--no-cache", action="store_true")
-    ap.add_argument("--interiors", action="store_true")   # settlements/xanadu/verify.py reads it (the hollow-wall audit): the House has no interiors yet (KNOWN_ISSUES.md)
+    ap.add_argument("--interiors", action="store_true")   # settlements/xanadu/verify.py reads it (the hollow-wall audit): on by default here
+    ap.add_argument("--no-interiors", action="store_true")
     a = ap.parse_args([os.path.abspath(x) if x.endswith('.html') and os.path.exists(x) else x for x in sys.argv[1:]])
+    a.interiors = not a.no_interiors and 'states' not in os.path.basename(a.html)
     sys.exit(asyncio.run(xv.run(a)))

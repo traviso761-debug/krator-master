@@ -24,8 +24,21 @@
   House's own page draws it kept. A raid's breach and burnt gate are `XFORT.damage`'s choice by seed; the stable range whose roof
   burns is the House's own (80u), hashed the same way.
 - **The breaches** are drawn by 80u as `xfDraw` draws them (its ragged courses), a copy until the fort asset's `xfDrawPlan`.
-- **Not drawn yet**: the interiors (step 3) and the grounds and the crest (step 4: the muster court, drill court and range, the
-  Maydan, the paddock, the hay barns, the terraces).
+- **The interiors (step 3)** furnish the House's own stacks by room kind from the catalog's Xanadu sets: the blueprint's NEW
+  pieces (bow racks, arrow bins, bow forms, saddle racks, the Storm banner, the gonkhang's pillars, the oath stone:
+  `settlements/strongwall/tempest/FURNITURE.md`) are not in the catalog yet, so the Sword Hall is furnished as an armoury and the
+  stables as stables. The violet monastery's rooms (its cells, the dukhang, the gonkhang: sheets M1-MR) are the Qiblai kit's
+  interiors, which its own city draws lazily (`settlements/qiblai` 90t); they are not wired here.
+- **The stair alley.** Every range against the outer curtain stands 2.5 m further in than sheets T1 and T2 draw it: XFORT.walks
+  climbs a curtain 2.5 m off its line, and a stair inside a hollow range was cut off from its walk.
+- **The utse is a gate tower in the plan's records** (`kind:'gate'`, `utse:true`): so XFORT.walks climbs the wall's own tower
+  beside it first and keeps no room for a flight up its 25 m (as a plain tower it left the walk piece beside it to a stair
+  inside the utse, cut off once the utse is hollow). A raid's damage therefore never fells its top (XFORT.damage spares gate
+  towers); a ruin still brings it down to a storey or two.
+- **The inner ward** is reached from its own doors and stairs (its ground is the talus top): a walker cannot yet go from the
+  outer ward to the inner through the utse, since the keep the fort asset draws has no gate passage (asked of 80g, above).
+- **Not drawn yet**: the grounds and the crest (step 4: the muster court, drill court and range, the Maydan, the paddock, the
+  hay barns, the terraces).
 - **The barbican** is three walls with its opening on the south side (the bent entrance); the road up to it is not drawn.
 - **The utse stands 8 m out of the inner front** (the blueprint's u -63..-41), so its east half stands on the outer ward's ground
   and its west half on the talus; its storeys are counted from the outer ground (the inner court's door is on its first floor).

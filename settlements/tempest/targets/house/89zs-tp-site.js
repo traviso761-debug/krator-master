@@ -27,7 +27,12 @@ const TPS=(function(){const P=TP_PLAN,ry=Math.PI/2,cx=0,cz=0,EASE=60;
 /* how much of the pad is here: 1 on the lot (and 6 m round it), easing to 0 over TPS.EASE */
 function tpPadW(x,z){const b=TPS.box,dx=Math.max(b[0]-6-x,0,x-b[2]-6),dz=Math.max(b[1]-6-z,0,z-b[3]-6),d=Math.hypot(dx,dz);
  if(d<=0)return 1;if(d>=TPS.EASE)return 0;const t=1-d/TPS.EASE;return t*t*(3-2*t);}
-/* the ground as drawn: the model with the pad cut and filled into it */
-function tpGround(x,z){const h=tpModel(x,z),w=tpPadW(x,z);return w?h+(TPS.pad-h)*w:h;}
+/* the inner ward's floor (step 3): inside the inner curtain the ground a walker stands on is the talus top, 4 m over the pad, so
+   the inner ward's doors, stairs and walks are seeded where they are (core/walk; the interiors' reach audit seeds at terrainH).
+   The near ground's slope up to it falls inside the talus mass (4 m wider each side than the ward). */
+const TP_INB=(function(){const IB=TP_PLAN.inner.box,c0=TPS.toPage(IB[0],IB[1]),c1=TPS.toPage(IB[2],IB[3]);return[Math.min(c0[0],c1[0]),Math.min(c0[1],c1[1]),Math.max(c0[0],c1[0]),Math.max(c0[1],c1[1])];})();
+const tpInInner=(x,z)=>x>TP_INB[0]&&x<TP_INB[2]&&z>TP_INB[1]&&z<TP_INB[3];
+/* the ground as drawn: the model with the pad cut and filled into it, the talus top in the inner ward */
+function tpGround(x,z){if(tpInInner(x,z))return TPS.pad+TPS.inner;const h=tpModel(x,z),w=tpPadW(x,z);return w?h+(TPS.pad-h)*w:h;}
 terrainH=function(x,z){return tpGround(x,z);};
 window._tempestSite={pin:{model:Math.round(tpModel(0,0)*10)/10,cell:TP_GROUND.cell},pad:TPS.pad,cut:TPS.cut,fill:TPS.fill,lot:[Math.round(TPS.box[2]-TPS.box[0]),Math.round(TPS.box[3]-TPS.box[1])]};

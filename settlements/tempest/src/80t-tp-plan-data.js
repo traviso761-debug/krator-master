@@ -67,37 +67,40 @@ const TEMPEST=(function(){
   /* ---- the inner ward: 4 m up on its talus, its own curtain; the utse astride its front, the inner gate through it */
   const ic=ward(P,'inner',rect(INNER),IN,IN.tower,IN.y);
   P.gates.push({id:'gate.inner',curtain:ic[0].id,t:.5,kind:'utse',w:4,at:[0,INNER[3]],ry:0,through:'utse',rise:IN.y});
-  tower(P,'utse','utse',[0,INNER[3]],ic[0].out,{form:'square',w:UTSE.w,h:UTSE.h},IN.curtT,UTSE.at.slice());   /* a block on the inner front, for the walks (drawn as the utse, not a tower) */
+  tower(P,'utse','gate',[0,INNER[3]],ic[0].out,{form:'square',w:UTSE.w,h:UTSE.h,utse:true},IN.curtT,UTSE.at.slice());   /* a block on the inner front for the walks, the inner gate's tower (drawn as the utse, not a tower): as a gate tower XFORT.walks climbs the wall's own tower beside it first, and keeps no room for a flight up its 25 m */
   fill(P,ic,IN.tower,IN.gap);
   /* ---- the stairs up the curtains' inner faces (XFORT.walks adds one wherever a piece of walk is left unreached) */
   for(const c of oc)for(const u of(c.id===front.id?[.25,.75]:[.2,.8]))P.stairs.push({curtain:c.id,u});
-  for(const c of ic)P.stairs.push({curtain:c.id,u:c.id===ic[0].id?.25:.5});
-  /* ---- the buildings: the blueprint's ranges and blocks (T1, T2), each a body the fort's builders draw. x, z the middle; w across x, d along z */
+  for(const c of ic)P.stairs.push({curtain:c.id,u:c.id===ic[0].id?.25:c.id===ic[1].id?.8:.5});   /* the north one clear of the infirmary */
+  /* ---- the buildings: the blueprint's ranges and blocks (T1, T2), each a body the fort's builders draw. x, z the middle; w across x, d along z.
+    Step 3: every range against the outer curtain stands 2.5 m further in than the sheets draw it, so the curtain's stairs climb
+    in an alley behind it (XFORT.walks puts a stair 2.5 m off the curtain's line; with the ranges hollow, one inside a range is
+    cut off from its walk) */
   const B=(id,kind,u0,u1,v0,v1,h,more)=>{const a=fromBlueprint(u0,v0),b=fromBlueprint(u1,v1),x0=Math.min(a[0],b[0]),x1=Math.max(a[0],b[0]),z0=Math.min(a[1],b[1]),z1=Math.max(a[1],b[1]);
    P.buildings.push(Object.assign({id,kind,at:[r2((x0+x1)/2),r2((z0+z1)/2)],w:r2(x1-x0),d:r2(z1-z0),h},more||{}));};
   /* the east range either side of the Main Gate: the guards, the Sword Hall, the Marshal; the gate stable, the guest house (two storeys) */
-  B('east.n','range',-128,-114,9,79,6.4,{ward:'outer',rooms:['guard','sword hall','marshal\'s hall'],upper:['gate watch','bow loft','quiver house','the Marshal']});
-  B('east.s','range',-128,-114,-79,-9,6.4,{ward:'outer',rooms:['guard','gate stable','guest house'],upper:['gate watch','grooms\' loft','hay loft','guest chambers']});
+  B('east.n','range',-125.5,-111.5,9,77,6.4,{ward:'outer',rooms:['guard','sword hall','marshal\'s hall'],upper:['gate watch','bow loft','quiver house','the Marshal']});
+  B('east.s','range',-125.5,-111.5,-77,-9,6.4,{ward:'outer',rooms:['guard','gate stable','guest house'],upper:['gate watch','grooms\' loft','hay loft','guest chambers']});
   /* the stables of the north and south, the eight companies over them, a sally gate between each pair */
-  B('stables.n.e','stable-range',-112,-22,81,93,6.4,{ward:'outer',companies:['North Wind','North-East Wind']});
-  B('stables.n.w','stable-range',-10,78,81,93,6.4,{ward:'outer',companies:['North-West Wind','West Wind']});
-  B('stables.s.e','stable-range',-112,-22,-93,-81,6.4,{ward:'outer',companies:['South Wind','South-East Wind']});
-  B('stables.s.w','stable-range',-10,78,-93,-81,6.4,{ward:'outer',companies:['South-West Wind','East Wind']});
+  B('stables.n.e','stable-range',-112,-22,78.5,90.5,6.4,{ward:'outer',companies:['North Wind','North-East Wind']});
+  B('stables.n.w','stable-range',-10,78,78.5,90.5,6.4,{ward:'outer',companies:['North-West Wind','West Wind']});
+  B('stables.s.e','stable-range',-112,-22,-90.5,-78.5,6.4,{ward:'outer',companies:['South Wind','South-East Wind']});
+  B('stables.s.w','stable-range',-10,78,-90.5,-78.5,6.4,{ward:'outer',companies:['South-West Wind','East Wind']});
   /* the novices' court (north-west): three ranges round the yard */
-  B('novices.n','range',80,124,81,93,6.4,{ward:'outer',rooms:['school of the Song','novices\' refectory'],upper:['novices\' dormitory']});
-  B('novices.w','range',116,128,39,79,6.4,{ward:'outer',rooms:['Master of Novices','the Little Armoury','wash house'],upper:['novices\' dormitory']});
-  B('novices.s','range',80,114,39,51,6.4,{ward:'outer',rooms:['Hall of the Bow'],upper:['elder novices','masters of arms']});
+  B('novices.n','range',80,122,78.5,90.5,6.4,{ward:'outer',rooms:['school of the Song','novices\' refectory'],upper:['novices\' dormitory']});
+  B('novices.w','range',113.5,125.5,39,76.5,6.4,{ward:'outer',rooms:['Master of Novices','the Little Armoury','wash house'],upper:['novices\' dormitory']});
+  B('novices.s','range',80,111.5,39,51,6.4,{ward:'outer',rooms:['Hall of the Bow'],upper:['elder novices','masters of arms']});
   /* the refectory block (south-west) */
-  B('refectory','range',80,116,-61,-39,8,{ward:'outer',rooms:['Great Refectory'],upper:[]});
-  B('kitchens','range',80,116,-81,-61,6.4,{ward:'outer',rooms:['great kitchen','bakehouse'],upper:['lay brothers\' dormitory']});
-  B('granary','granary',116,128,-79,-39,7,{ward:'outer'});
-  B('larder','range',80,124,-93,-81,6.4,{ward:'outer',rooms:['larder, tea and butter','dairy'],upper:['the Cellarer','stores']});
+  B('refectory','range',80,111.5,-61,-39,8,{ward:'outer',rooms:['Great Refectory'],upper:[]});
+  B('kitchens','range',80,111.5,-78.5,-61,6.4,{ward:'outer',rooms:['great kitchen','bakehouse'],upper:['lay brothers\' dormitory']});
+  B('granary','granary',113.5,125.5,-76.5,-39,7,{ward:'outer'});
+  B('larder','range',80,122,-90.5,-78.5,6.4,{ward:'outer',rooms:['larder, tea and butter','dairy'],upper:['the Cellarer','stores']});
   /* the west range either side of the Storm Tower */
-  B('smithy','smithy',114,128,12,39,5,{ward:'outer'});
-  B('bowyers','smithy',114,128,-39,-12,5,{ward:'outer',chimney:true});
+  B('smithy','smithy',111.5,125.5,12,39,5,{ward:'outer'});
+  B('bowyers','smithy',111.5,125.5,-39,-12,5,{ward:'outer',chimney:true});
   /* the hay sheds in the lists, the well of the muster */
-  B('hay.n','stables',56,80,69,81,4,{ward:'outer',shed:'hay'});
-  B('hay.s','stables',-63,-51,-80,-66,4,{ward:'outer',shed:'hay'});
+  B('hay.n','stables',56,78,66,76.5,4,{ward:'outer',shed:'hay'});
+  B('hay.s','stables',-63,-51,-77,-66,4,{ward:'outer',shed:'hay'});
   B('well.muster','cistern',-104,-92,-70,-58,1,{ward:'outer'});
   /* the inner ward's (on the talus: drawn 4 m up) */
   B('infirmary','range',-51,0,30,46,6.4,{ward:'inner',rooms:['infirmary of the Order'],upper:['infirmary, upper ward','the Infirmarer']});
@@ -110,7 +113,7 @@ const TEMPEST=(function(){
   P.inner={box:INNER.slice(),y:IN.y,talus:IN.talus,talusBox:[INNER[0]-IN.talus,INNER[1]-IN.talus,INNER[2]+IN.talus,INNER[3]+IN.talus]};
   /* the open grounds (never built on, never dressed) */
   const A=(id,u0,u1,v0,v1)=>{const a=fromBlueprint(u0,v0),b=fromBlueprint(u1,v1);P.areas.push({id,box:[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[0],b[0]),Math.max(a[1],b[1])]});};
-  A('muster',-114,-63,-79,79);A('lists.n',-63,80,52,81);A('lists.s',-63,80,-81,-52);A('archery',-50,76,-74,-58);A('drill',63,114,-39,39);A('novices.yard',86,116,51,81);
+  A('muster',-111.5,-63,-76.5,76.5);A('lists.n',-63,80,52,78.5);A('lists.s',-63,80,-78.5,-52);A('archery',-50,76,-74,-58);A('drill',63,111.5,-39,39);A('novices.yard',86,113.5,51,76.5);
   A('inner.court',-41,-20,-26,26);A('fallen',-5,51,-46,-30);A('founder',34,53,-26,26);
   P.chortens={fallen:{box:P.areas.find(a=>a.id==='fallen').box,rows:2,n:14},founder:{at:fromBlueprint(43,0),s:1.6}};
   P.people={companies:8,perCompany:40,captains:8,chapter:65,officers:6,prismarch:2,novices:150,lay:50};
