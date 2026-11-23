@@ -993,8 +993,8 @@
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
   "kits/xanadu/dist/xanadu.html": {
-   "bytes": 1252545,
-   "sha256": "dcb8bcdcb2849fd864ac62b2552f7d99a330fc760681dde4a507034de82912be"
+   "bytes": 1260675,
+   "sha256": "9e56521de473ec091f34ed5b2c34ff360e9ac98f308dfa529dd6d680408f84c4"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
@@ -1285,8 +1285,8 @@
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"
   },
   "settlements/strongwall/dist/strongwall.html": {
-   "bytes": 8830715,
-   "sha256": "174dbaf1bd659ebe6473cdd04afd3c3415dce649bb0e6a467e5c3808bc1f02d2"
+   "bytes": 8831804,
+   "sha256": "bfa4d6ba8f28122b440c3c9647d2a84a4424b00213af7199c4cea31881d32baf"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,
