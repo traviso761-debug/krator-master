@@ -20,6 +20,12 @@
                     (o.ground(x, z), the page's, in world metres; flat at local y 0 without it), sunk 0.5 m, and every heap and
                     beam lies on its lowest face 0.15 m into the ground, so core/ruins' watch (KRUINS.watch) finds nothing
                     floating and every wreck seated
+     xa_net_loft    the net-makers' loft (Nēṭ, step L2; one in every fishing town's lane): a stone ground floor where the
+                    twine is laid up, a timber loft over it open on the front with the nets hung from its rail, a flat roof;
+                    two drying frames before it with nets stretched on them, the coils of line and the floats; v 1 three frames
+     xa_orchard_plot  the orchard plot (the gap 89-xa-trades names; Qōqō's cacao, Malbari's mulberry, step L2): a plot of trees in
+                    rows on a terrace bench, 30 x 24; v 0 cacao (two rows of tall shade trees over the cacao's low crowns, the
+                    pods on the trunks), v 1 mulberry (pollarded rows, the leaf-pickers' ladders), v 2 fruit (round crowns)
      xa_serai_ruin  the caravan market left empty (40 x 40): the outer ranges' walls broken, the court's arcade as stumps, the
                     gate's two towers as broken stacks, the rubble of the ranges; v 1 more of it fallen */
 
@@ -89,11 +95,13 @@ function xrGround(o){const C=VERN.cur;return(lx,lz)=>{if(!o.ground||!C)return 0;
    (sunk 0.5 m) to a height h x a draw in [lo, 1]; gaps (the doorway, windows) where gap(s) says, s the distance along */
 function xrWall(gy,a,b,t,h,lo,c,gap){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(!(L>.2))return;const n=Math.max(1,Math.round(L/1.4)),ry=Math.atan2(dx,dz)+Math.PI/2;
  for(let k=0;k<n;k++){const s0=L*k/n,s1=L*(k+1)/n,sm=(s0+s1)/2;if(gap&&gap(sm))continue;const x=a[0]+dx*sm/L,z=a[1]+dz*sm/L,g=gy(x,z);
-  const hh=Math.max(.5,h*(lo+(1-lo)*rng()));vB('vStone',x,g-.5,z,s1-s0+.02,hh+.5,t,ry,c.clone().multiplyScalar(rr(.86,1.06)));}}
+  const a0=[a[0]+dx*s0/L,a[1]+dz*s0/L],a1=[a[0]+dx*s1/L,a[1]+dz*s1/L],gl=Math.min(g,gy(a0[0],a0[1]),gy(a1[0],a1[1]));   /* on the lowest ground under it */
+  const hh=Math.max(.5,h*(lo+(1-lo)*rng()));vB('vStone',x,gl-.5,z,s1-s0+.02,hh+.5+(g-gl),t,ry,c.clone().multiplyScalar(rr(.86,1.06)));}}
 /* a heap of rubble at (x, z): boxes on their lowest faces, 0.15 m into the ground under each */
-function xrHeap(gy,x,z,rx,rz,n,c){for(let k=0;k<n;k++){const px=x+rr(-rx,rx),pz=z+rr(-rz,rz),w=rr(.35,.9),d=rr(.3,.8),h=rr(.2,.5);vB('vStone',px,gy(px,pz)-.15,pz,w,h,d,rng()*Math.PI,c.clone().multiplyScalar(rr(.75,1.05)));}}
+function xrHeap(gy,x,z,rx,rz,n,c){for(let k=0;k<n;k++){const px=x+rr(-rx,rx),pz=z+rr(-rz,rz),w=rr(.35,.9),d=rr(.3,.8),h=rr(.2,.5),r=Math.hypot(w,d)/2;
+  const gl=Math.min(gy(px,pz),gy(px+r,pz),gy(px-r,pz),gy(px,pz+r),gy(px,pz-r));vB('vStone',px,gl-.15,pz,w,h,d,rng()*Math.PI,c.clone().multiplyScalar(rr(.75,1.05)));}}   /* on the lowest ground under it */
 /* a fallen lintel or beam lying on the ground, its middle at (x, z) */
-function xrBeam(gy,x,z,L,ry,c){vB('vWood',x,gy(x,z)-.12,z,.24,.26,L,ry,c);}
+function xrBeam(gy,x,z,L,ry,c){const ex=Math.sin(ry)*L/2,ez=Math.cos(ry)*L/2,gl=Math.min(gy(x,z),gy(x+ex,z+ez),gy(x-ex,z-ez));vB('vWood',x,gl-.12,z,.24,.26,L,ry,c);}   /* on the lowest ground under its ends */
 function buildXaRuinHouse(W,D,H,big){return function(G,o){reseed(34861+(o.v|0)*7+W);const gy=xrGround(o),V=xV(o)%4,rub=xC(xPick(XPAL.rubble)),earth=xC(xPick(XPAL.earth)),tim=xC(xPick(XPAL.aged));
  vnReg(big?'Ruined house (large)':'Ruined house',0,0,Math.max(W,D)/2,H);
  const hw=W/2-.4,hd=D/2-.4,lo=[.25,.4,.15,.55][V],door=s=>Math.abs(s-W/2+.4)<.9,win=s=>(Math.abs(s-W*.22)<.5||Math.abs(s-W*.78)<.5);
@@ -118,13 +126,51 @@ function buildXaSeraiRuin(G,o){reseed(34881+(o.v|0));const gy=xrGround(o),V=xV(o
  const bay=s=>(s%4.2)<1.2;
  xrWall(gy,[-r,r],[r,r],.6,3.4,lo,rub,s=>bay(s)||Math.abs(s-r)<2.2);xrWall(gy,[r,-r],[-r,-r],.6,3.4,lo,rub,bay);
  xrWall(gy,[-r,-r+.3],[-r,r-.3],.6,3.4,lo,rub,bay);xrWall(gy,[r,-r+.3],[r,r-.3],.6,3.4,lo,rub,bay);
- for(let k=-2;k<=2;k++)for(const [x,z] of[[k*4.2,r-1.3],[k*4.2,-r+1.3],[r-1.3,k*4.2],[-r+1.3,k*4.2]]){const g=gy(x,z);vB('vStone',x,g-.5,z,.7,.5+rr(.4,2.8),.7,0,stone);}
+ for(let k=-2;k<=2;k++)for(const [x,z] of[[k*4.2,r-1.3],[k*4.2,-r+1.3],[r-1.3,k*4.2],[-r+1.3,k*4.2]]){const g=Math.min(gy(x,z),gy(x-.35,z-.35),gy(x+.35,z+.35),gy(x-.35,z+.35),gy(x+.35,z-.35));vB('vStone',x,g-.5,z,.7,.5+rr(.4,2.8),.7,0,stone);}
  /* the cross walls between the rooms of the ranges */
  for(const t of[-7,0,7]){xrWall(gy,[t,R-.5],[t,r+.4],.5,4,lo,rub,null);xrWall(gy,[t,-R+.5],[t,-r-.4],.5,4,lo,rub,null);xrWall(gy,[R-.5,t],[r+.4,t],.5,4,lo,rub,null);xrWall(gy,[-R+.5,t],[-r-.4,t],.5,4,lo,rub,null);}
  /* the gate's two towers, broken stacks */
- for(const sx of[-1,1]){const x=sx*3.6,z=R-1.6,g=gy(x,z);vB('vStone',x,g-.5,z,2.6,.5+rr(4,7),2.6,0,stone);}
+ for(const sx of[-1,1]){const x=sx*3.6,z=R-1.6,g=Math.min(gy(x-1.3,z-1.3),gy(x+1.3,z-1.3),gy(x-1.3,z+1.3),gy(x+1.3,z+1.3));vB('vStone',x,g-.5,z,2.6,.5+rr(4,7),2.6,0,stone);}
  /* the rubble of the ranges, the well in the court, beams */
  for(let k=0;k<8;k++){const a=k/8*TAU,x=Math.cos(a)*16,z=Math.sin(a)*16;xrHeap(gy,x,z,1.6,1.6,5+(V?3:0),rub);}
- {const g=gy(0,0);vPst('vStone',0,g-.3,0,1.1,1.0,stone);}
+ {const g=Math.min(gy(0,0),gy(1.1,0),gy(-1.1,0),gy(0,1.1),gy(0,-1.1));vPst('vStone',0,g-.3,0,1.1,1.0,stone);}
  for(let k=0;k<4;k++)xrBeam(gy,rr(-8,8),rr(-8,8),rr(3,5),rr(0,Math.PI),tim);}
 XA.def({key:'xa_serai_ruin',name:'Ruined caravan market',family:'Ruins',tags:{type:['inn','market'],wealth:'civic',state:'ruined',lit:false},w:40,d:40,h:8,fw:40,fd:40,nv:2,build:buildXaSeraiRuin});
+
+/* ---------------------------------------------------------------- the net loft: 18 x 16, two takes; its front +z */
+function buildXaNetLoft(G,o){reseed(34891+(o.v|0));const V=xV(o)%2,stone=xC(xPick(XPAL.rubble)),wash=xC(xPick(XPAL.wash)),tim=xC(xPick(XPAL.timber)),timD=xC(0x5a4632),
+ net=xC(0x5a4a38),netL=xC(0x7a6a52),rope=xC(0xb8a070),float=xC(0xd8b060);
+ vnReg('Net loft',0,-3,8,8);
+ /* the ground floor (the laying-up room) and the loft over it: a stone room, a timber frame open at the front */
+ xnWall(0,0,-3.5,14,3.2,8,0,stone,'stone');vnDoor(-3.5,0,.5,0,1.3,2.3,'vWood',timD,timD,false);
+ vB('vWood',0,3.2,-3.5,14.4,.25,8.4,0,tim);                                         /* the loft's floor */
+ for(const x of[-6.8,-2.3,2.3,6.8]){vPst('vPost',x,3.45,.45,.14,2.8,timD);vPst('vPost',x,3.45,-7.45,.14,2.8,timD);}
+ vB('vWood',0,3.45,-7.5,14,2.8,.2,0,tim);for(const s of[-1,1])vB('vWood',s*7,3.45,-3.5,.2,2.8,8,0,tim);   /* the back and the ends boarded */
+ xnFlatRoof(0,6.25,-3.5,14.6,8.6,0,wash,{parapet:.3});
+ vB('vWood',0,5.6,.55,14,.12,.12,0,timD);                                            /* the hanging rail */
+ for(let k=0;k<6;k++){const x=-5.8+k*2.3;kput('xPaintPl',[x,4.4,.62],qEuler(0,0,0),[1.9,2.3,1],(k%2?net:netL).clone().multiplyScalar(rr(.85,1.1)));}   /* the nets hung from it */
+ /* the drying frames before it: two posts and a rail top and bottom, a net stretched between */
+ const frames=V?3:2;for(let f=0;f<frames;f++){const x=(f-(frames-1)/2)*5.6,z=4.6;
+  for(const s of[-1,1])vPst('vPost',x+s*2.4,0,z,.08,2.6,timD);vB('vWood',x,2.5,z,5,.1,.1,0,timD);vB('vWood',x,.35,z,5,.08,.08,0,timD);
+  kput('xPaintPl',[x,1.42,z],null,[4.7,2.0,1],netL.clone().multiplyScalar(rr(.85,1.05)));}
+ /* the coils of line, the floats in a basket, the bench where the nets are mended */
+ for(let k=0;k<3;k++)vPst('vRope',-6+k*1.1,0,6.6,.38,.3,rope);
+ vB('vWood',5,0,7,1.2,.6,.9,0,tim);for(let k=0;k<5;k++)vBall('vBall',4.7+rr(0,.6),.65,6.8+rr(0,.4),.12,float);
+ vB('vWood',0,0,7.2,3,.45,.5,0,tim);
+ xnFolk(0,0,6,2,2);}
+XA.def({key:'xa_net_loft',name:'Net loft',family:'Works',tags:{type:['industry'],wealth:'poor',job:'fishing',lit:false},w:18,d:16,h:7,fw:15,fd:9,nv:2,build:buildXaNetLoft});
+
+/* ---------------------------------------------------------------- the orchard plot: 30 x 24, three takes */
+function buildXaOrchardPlot(G,o){reseed(34895+(o.v|0));const V=xV(o)%3,bark=xC(0x5a4632),earth=xC(xPick(XPAL.earth)).multiplyScalar(.9);
+ const leaf=[xC(0x2f5a2a),xC(0x5a8a3a),xC(0x4a7a34)][V],pod=xC(0xc08030),fruit=xC(0xd8a040);
+ vnReg(['Cacao grove','Mulberry plot','Orchard plot'][V],0,0,14,V===0?9:5);
+ const sx=V===0?5:V===1?4:6,sz=V===0?5:4,nx=Math.floor(28/sx),nz=Math.floor(22/sz);
+ for(let i=0;i<nx;i++)for(let k=0;k<nz;k++){const x=-((nx-1)*sx)/2+i*sx+rr(-.3,.3),z=-((nz-1)*sz)/2+k*sz+rr(-.3,.3);
+  if(V===0){vPst('vPost',x,0,z,.09,1.6,bark);vBall('vBall',x,2.2,z,1.3,leaf.clone().multiplyScalar(rr(.85,1.1)),.9);
+   for(let p=0;p<3;p++)vBall('vBall',x+rr(-.12,.12),.5+p*.35,z+rr(-.12,.12),.12,pod,.2);}
+  else if(V===1){vPst('vPost',x,0,z,.1,1.4,bark);vBall('vBall',x,1.9,z,.9,leaf.clone().multiplyScalar(rr(.85,1.1)),.6);}
+  else{vPst('vPost',x,0,z,.11,1.5,bark);vBall('vBall',x,2.5,z,1.5,leaf.clone().multiplyScalar(rr(.85,1.1)),1.1);vBall('vBall',x+rr(-.6,.6),2.2,z+rr(-.6,.6),.12,fruit,.12);}}
+ if(V===0)for(const z of[-8,8])for(let i=0;i<5;i++){const x=-12+i*6;vPst('vPost',x,0,z,.2,6.5,bark);vBall('vBall',x,7.4,z,2.4,xC(0x3a6a2a),1.4);}   /* the shade trees */
+ if(V===1)for(let k=0;k<3;k++){const x=rr(-10,10),z=rr(-8,8);vB('vWood',x,0,z,.5,2.6,.08,rr(0,Math.PI),bark);}   /* the pickers' ladders */
+ vB('xEarthB',0,-.05,0,29,.08,23,0,earth);}
+XA.def({key:'xa_orchard_plot',name:'Orchard plot',family:'Works',tags:{type:['farm'],wealth:'poor',job:'farming',lit:false},w:30,d:24,h:10,fw:30,fd:24,nv:3,build:buildXaOrchardPlot});

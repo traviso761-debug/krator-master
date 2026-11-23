@@ -15,6 +15,9 @@ its pixel (2 km a pixel), each named region its own polygon, and each corridor (
   - then extract_region.py reads the model's data (model/data, always the 5.1 canvas, never a saved page) with
     `model` for the settlements, so they keep their ids and current pixels.
 
+A region row may pin its frame's origin (`origin_px`: [px, py]) so a cut that grows keeps its frame (the world's relief and
+every coordinate are laid in it); otherwise the origin is the polygons' middle.
+
 region.json then gains `sites`: [{id, name, type, culture, px, py, x, z, reach_km, page}], in the cut's frame (metres, x
 east, z south, the origin at the box's centre pixel). Deterministic: the same SITES.json and model data give the same cut.
 """
@@ -103,6 +106,9 @@ def cut(region, dry=False):
            os.path.join(src, 'regions.json'), 'model', name, data, '--upsample', str(G.get('upsample', 'auto'))]
     if added:
         cmd += ['--add', os.path.join(src, 'added-areas.json')]
+    if G.get('origin_px'):   # the region row pins its frame's origin: a region that grows keeps its frame (the world's relief is
+        cmd += ['--origin', '%d,%d' % tuple(G['origin_px'])]   # laid in it), its sites and towns where they were
+
     for p in P:
         xs = [q[0] for q in p['map_px']]; ys = [q[1] for q in p['map_px']]
         print('  %-56s px %7.1f..%7.1f x %7.1f..%7.1f' % (p['name'][:56], min(xs), max(xs), min(ys), max(ys)))

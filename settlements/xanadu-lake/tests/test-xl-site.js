@@ -1,9 +1,11 @@
 // node settlements/xanadu-lake/tests/test-xl-site.js [key ...] — the lake towns' ground (targets/town/89zp-xl-site.js) against
 // their region's (89zm-xl-fit.js: tools/fit_lake_town.py), without the page. Every fitted town unless keys are named. The
 // checks (settlements/xanadu-lake/PLAN.md section 6, the shore, the terraces and the world), each with its negative pair:
-//   - dry above the level: no ground under the lake's level (-520 m) that is not the lake (a hollow), and the town's core
-//     dry from the waterline in;
-//   - the shore within 50 m of the region's (the fit's raw crossings of the level inside the footprint);
+//   - dry above the level: no ground under the lake's level (-520 m) that is not the lake (a hollow) in the town's waterfront,
+//     none beyond it bigger than a sliver (12 cells of 10 m: an inlet's mouth or a bay's side the 40 m rest closes off), and the town's core dry
+//     from the waterline in (its stream's channel apart);
+//   - the shore within 50 m of the region's (from each of the fit's raw crossings inside the footprint, the page's waterline
+//     in any direction);
 //   - each bench level within 0.5 m;
 //   - no step at the band: the page's ground at the footprint's edge and the band's outer edge within 1.5 % of the band of
 //     the region's (the world eases a difference at R across the band: 9 m over 600 m adds a grade of 1.5 %, no step);
@@ -31,26 +33,38 @@ function hollows(h, F, S) {
   for (let k = 0; k < n; k++) for (const c of [k, (n - 1) * n + k, k * n, k * n + n - 1]) if (wet[c] && !seen[c]) { seen[c] = 1; q.push(c); }
   while (q.length) { const c = q.pop(), i = c % n, j = (c - i) / n;
     for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const ii = i + a, jj = j + b; if (ii < 0 || jj < 0 || ii >= n || jj >= n) continue; const e = jj * n + ii; if (wet[e] && !seen[e]) { seen[e] = 1; q.push(e); } } }
+  /* each hollow apart (4-connected); one inside the footprint fails if it is in the town's waterfront (G.wf, the core's depth)
+     or bigger than SLIVER cells (beyond the waterfront the 40 m rest can close off the mouth of one of the region's own narrow
+     inlets: a sliver of 10 m cells, not a pit) */
+  const G = xlGeo(S.key), SLIVER = 12;
   let bad = 0, first = null;
-  for (let c = 0; c < n * n; c++) { if (!wet[c] || seen[c]) continue; const x = cx - half + (c % n) * st, z = cz - half + Math.floor(c / n) * st;
-    if (Math.hypot(x - cx, z - cz) > S.world.R) continue;   /* in the band the world eases back to its own ground (and its own hollows) */
-    bad++; if (!first) first = [Math.round(x), Math.round(z)]; }
+  for (let c0 = 0; c0 < n * n; c0++) { if (!wet[c0] || seen[c0]) continue; const comp = [c0]; seen[c0] = 2;
+    for (let q = 0; q < comp.length; q++) { const c = comp[q], i = c % n, j = (c - i) / n;
+      for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const ii = i + a, jj = j + b; if (ii < 0 || jj < 0 || ii >= n || jj >= n) continue; const e = jj * n + ii; if (wet[e] && !seen[e]) { seen[e] = 2; comp.push(e); } } }
+    const cells = comp.map(c => [cx - half + (c % n) * st, cz - half + Math.floor(c / n) * st]).filter(([x, z]) => Math.hypot(x - cx, z - cz) <= S.world.R);
+    if (!cells.length) continue;   /* in the band the world eases back to its own ground (and its own hollows) */
+    const inTown = cells.some(([x, z]) => x >= G.wf[0] && x <= G.wf[1] && xlShoreZ(S.key, x) - z < G.core.d);
+    if (inTown || cells.length > SLIVER) { bad += cells.length; if (!first) first = cells[0].map(Math.round); } }
   return { bad, first };
 }
-// the core's land: every point of the core 3 m or more inland of the waterline over the level
+// the core's land: every point of the core along the town's waterfront (G.wf: beyond it the waterline is the region's own)
+// 3 m or more inland of the page's line over the level
 function coreWet(h, key, G) {
   let bad = 0, first = null;
-  for (let x = -G.core.x; x <= G.core.x; x += 20) for (let d = 3; d < G.core.d; d += 15) { const z = xlShoreZ(key, x) - d; if (h(x, z) <= 0) { bad++; first = first || [x, Math.round(z)]; } }
+  for (let x = Math.max(-G.core.x, G.wf[0]); x <= Math.min(G.core.x, G.wf[1]); x += 20) for (let d = 3; d < G.core.d; d += 15) { if (G.stream && Math.abs(x - xlStreamXd(G, d)) < 14) continue;   /* the stream's own channel (its mouth an estuary) */ const z = xlShoreZ(key, x) - d; if (h(x, z) <= 0) { bad++; first = first || [x, Math.round(z)]; } }
   return { bad, first };
 }
-// the shore: at each of the region's crossings (x, z), the page's crossing of the level marching lakeward from 300 m inland
+// the shore: from each of the region's crossings (x, z), the distance to the page's waterline: the nearest crossing of the
+// level along 16 directions, 0.5 m steps to 120 m (a shore running along z, a bay's side, is measured across it, not along)
 function shoreErr(h, F) {
   let worst = 0, at = null, miss = 0;
   for (const [x, zr] of F.check.shore) {
-    let z = zr - 300, a = h(x, z), zc = null;
-    for (let k = 1; k <= 1200; k++) { const z2 = zr - 300 + k * .5, b = h(x, z2); if (a >= 0 && b < 0) { zc = z2 - .5 + .5 * a / (a - b); break; } a = b; }
-    if (zc == null) { miss++; continue; }
-    const e = Math.abs(zc - zr); if (e > worst) { worst = e; at = [x, zr, +zc.toFixed(1)]; }
+    let best = 1e9; const a0 = h(x, zr);
+    if (a0 === 0) best = 0;
+    for (let k = 0; k < 16 && best > 0; k++) { const dx = Math.cos(k * Math.PI / 8), dz = Math.sin(k * Math.PI / 8); let a = a0;
+      for (let q = 1; q <= 240; q++) { const d = q * .5; if (d - .5 >= best) break; const b = h(x + dx * d, zr + dz * d); if ((a < 0) !== (b < 0)) { best = Math.min(best, d - .5 + .5 * Math.abs(a) / Math.max(1e-9, Math.abs(a) + Math.abs(b))); break; } a = b; } }
+    if (best > 1e8) { miss++; continue; }
+    if (best > worst) { worst = best; at = [x, zr]; }
   }
   return { worst, at, miss };
 }
@@ -79,7 +93,7 @@ for (const key of KEYS) {
   const E = shoreErr(h, F);
   T.ok(N + ': the shore within 50 m of the region\'s (' + F.check.shore.length + ' crossings inside the footprint)', E.worst <= 50 && E.miss === 0 && F.check.shore.length > 20,
     'worst ' + E.worst.toFixed(1) + ' m at ' + JSON.stringify(E.at) + ', ' + E.miss + ' not found');
-  T.neg(N + ': ...its negative: the waterline pushed 80 m inland is caught', g => shoreErr(g, F).worst <= 50, (x, z) => h(x, z + 80), h);
+  T.neg(N + ': ...its negative: the waterline pushed 80 m inland is caught', g => shoreErr(g, F).worst <= 50 && shoreErr(g, F).miss === 0, (x, z) => h(x, z + 80), h);
   // 3. the benches
   const sp = G.benches.map(B => benchSpread(h, key, B));
   T.ok(N + ': ' + G.benches.length + ' benches (the spec\'s ' + S.wall.benches + '), each level within 0.5 m', G.benches.length === S.wall.benches && sp.every(s => s <= .5),

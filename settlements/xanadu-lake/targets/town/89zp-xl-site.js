@@ -12,8 +12,9 @@
 //   - the terrace benches: each a band of the contour [d0, d1] cut and filled level at the profile's height at its middle,
 //     its ends eased over 30 m, its risers over 18 m (the verify: level within 0.5 m);
 //   - the stream (xlStream): a ravine down the slope to the shore, deepening inland, ending at its head (its `to`);
-//   - outside the town's core (|x| < core.x, -core.lake < d < core.d) the region's rest (the fit's res, every 50 m) fades in
-//     over core.fade m, so at the footprint's edge and the band the page's ground is the world's.
+//   - outside the town's core (|x| < core.x, -core.lake < d < core.d) the region's rest (the fit's res, every 40 m in the page's x, z) fades in
+//     over core.fade m, and in full from 50 m inside the footprint's edge (R round the pin), so at the footprint's edge and
+//     the band the page's ground is the world's.
 //   xlH(key, x, z)        the ground's height over the level
 //   xlShoreZ(key, x)      z of the page's waterline at x (the fit's smoothed shore)
 //   xlStream(key)         the stream: {x, drift, to, pts: [[x, z], ...] mouth first, every 20 m}, or null (layout.stream null:
@@ -27,8 +28,8 @@ function xlFit(key){const F=XL.FIT&&XL.FIT[key];if(!F)throw new Error('xanadu-la
 // the profile across the shore: the fit's knots (beyond the last, the last knot's grade carries on)
 function xlProf(F,d){const K=F.prof.d,V=F.prof.y,n=K.length-1;
  if(d>K[n])return V[n]+(V[n]-V[n-1])/(K[n]-K[n-1])*(d-K[n]);if(d<K[0])return V[0]+(V[1]-V[0])/(K[1]-K[0])*(d-K[0]);return xlLerpK(K,V,d);}
-// the region's rest at (x, d): bilinear on the fit's grid (tenths of a metre), held at its edges
-function xlRes(F,x,d){const R=F.res,u=Math.min(R.nx-1.0001,Math.max(0,(x-R.x0)/R.step)),v=Math.min(R.nd-1.0001,Math.max(0,(d-R.d0)/R.step)),i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,g=(a,b)=>R.v[b*R.nx+a]*.1;
+// the region's rest at the page's (x, z): bilinear on the fit's grid (tenths of a metre), held at its edges
+function xlRes(F,x,z){const R=F.res,u=Math.min(R.nx-1.0001,Math.max(0,(x-R.x0)/R.step)),v=Math.min(R.nz-1.0001,Math.max(0,(z-R.z0)/R.step)),i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,g=(a,b)=>R.v[b*R.nx+a]*.1;
  return (g(i,j)*(1-fu)+g(i+1,j)*fu)*(1-fv)+(g(i,j+1)*(1-fu)+g(i+1,j+1)*fu)*fv;}
 // z of the waterline at x (the fit's smoothed shore every 50 m)
 function xlShoreZ(key,x){const S=xlFit(key).shore,u=Math.min(S.z.length-1.0001,Math.max(0,(x-S.x0)/S.step)),i=Math.floor(u),t=u-i;return S.z[i]+(S.z[i+1]-S.z[i])*t;}
@@ -42,7 +43,8 @@ function xlStream(key){const G=xlGeo(key),pts=[];if(!G.stream)return null;for(le
 // the derived geometry (cached a town): the benches' levels and x extents (kept 60 m clear of the stream), the core
 const XL_GEO={};
 function xlGeo(key){if(XL_GEO[key])return XL_GEO[key];const S=XL.SPECS[key],F=xlFit(key),L=S.layout,st=L.stream;
- const G={key,S,F,L,stream:st?{x:st.x,drift:st.drift,to:st.to}:null,core:L.core,benches:[]};
+ const G={key,S,F,L,stream:st?{x:st.x,drift:st.drift,to:st.to}:null,core:L.core,benches:[],
+  wf:[-L.half-120,Math.max(L.half,st?st.x+60:-1e9)+120]};   /* the town's waterfront (tools/fit_lake_town.py's e0, e1) */
  L.benches.forEach(([d0,d1],i)=>{const x1=st?Math.min(L.benchHalf,st.x+st.drift*d0-60):L.benchHalf,x0=-L.benchHalf;
   G.benches.push({i,d0,d1,x0,x1,y:+xlProf(F,(d0+d1)/2).toFixed(2)});});
  return XL_GEO[key]=G;}
@@ -53,8 +55,13 @@ function xlH(key,x,z){const G=xlGeo(key),F=G.F,C=G.core,d=xlShoreZ(key,x)-z;let 
  if(G.stream){const dx=x-xlStreamXd(G,d),s=G.stream,deep=(1.6+3.6*xlSm(0,260,d))*xlSm(s.to,s.to-160,d),wd=7+9*xlSm(0,300,d);
   if(deep>0&&Math.abs(dx)<wd*3)y-=deep*Math.exp(-(dx*dx)/(wd*wd))*xlSm(-12,25,d);}
  // outside the core the region's rest fades in
- const f=Math.max(xlSm(C.x,C.x+C.fade,Math.abs(x)),xlSm(C.d,C.d+C.fade,d),xlSm(-C.lake,-C.lake-C.fade,d));
- if(f>0)y+=f*xlRes(F,x,d);
+ /* ...and in full from 50 m inside the footprint's edge (R round the pin, the world's seam), whatever the core */
+ const W=G.S.world,rr=Math.hypot(x-F.centre[0],z-F.centre[1]);
+ /* and in full along the shore beyond the town's waterfront (the fit's eased line ends there: tools/fit_lake_town.py), so the
+    waterline there is the region's own */
+ const wf=Math.max(xlSm(G.wf[1],G.wf[1]+60,x),xlSm(G.wf[0],G.wf[0]-60,x))*xlSm(220,140,Math.abs(d));
+ const f=Math.max(xlSm(C.x,C.x+C.fade,Math.abs(x)),xlSm(C.d,C.d+C.fade,d),xlSm(-C.lake,-C.lake-C.fade,d),xlSm(W.R-350,W.R-50,rr),wf);
+ if(f>0)y+=f*xlRes(F,x,z);
  return y;}
 // THE WORLD'S FRAME (core/world/bake_towns.py samples xlH through it): world = the pin + Ry(rot)(page - centre), y0 the level
 function xlWorldFrame(key){const F=xlFit(key);return{rot:F.rot,centre:F.centre.slice(),y0:F.level};}

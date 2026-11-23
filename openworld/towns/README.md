@@ -26,4 +26,5 @@ R 1.4 km, band 600 m, its stream the page's own (joined to no model river: the m
 fitted to the region's (`tools/fit_lake_town.py mouth`), so at the footprint's edge and the band it is the region's (within
 6 m: `settlements/xanadu-lake/tests/test-xl-site.js`). Rebake after a change to the town's spec, fit or `89zp-xl-site.js`
 (`bake_towns.py mouth --check` says when). **Ōlḍ-Thalaba** (`old-thalaba/`) and **Ḍāiyar** (`dyer/`), step L1: the same frame,
-R and band, no stream (no river in their records).
+R and band, no stream (no river in their records). **Qōqō** (`cocoa/`), **Nēṭ** (`net/`), **Malbari** (`mulberry/`), **Hāibh**
+(`hive/`), step L2: the same, no stream.

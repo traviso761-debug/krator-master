@@ -5,6 +5,14 @@
   darkened to 55 %, a stand-in until the set lands; then the wet steps take it (a slot in `kits/xanadu/materials.json`).
 - **The shore is sand, not the plan's shingle.** Māuṭh's plan proposed `shingle` at the landing; the region's coast field
   reads `sand` there (`tools/fit_lake_town.py`, `XL.FIT.mouth.coast`), and the plan says to keep the region's.
+- **Malbari's river is outside its footprint.** The Qol Siṭrīm reaches the lake 2 km west of the pin, past R: the river's
+  quarter (the reeling houses, the watermills) and the road's (the han, the market) stand on the town's west edge toward it
+  (`layout.side`), the watermills without a race drawn, and the Qol bridge (`xa_river_span`) is not placed (it wants the
+  town's own stream). The rearing houses are the kit's workshop (no rearing house in the kit).
+- **Qōqō's drying floors are the kit's farm yard** (`xa_farm`, 56 x 44 m) up the slope, as its plan says; the cacao groves and
+  Malbari's mulberry are the kit's orchard plots over the benches' fields.
+- **Hāibh's honey houses are the kit's workshop** on the beach, its apiaries in rows on the benches behind the bench houses.
+- **Nēṭ's two landings** (one each side of its point) are one: the landing stair and the quay on its south side.
 - **Ōlḍ-Thalaba and Ḍāiyar have no stream** (the model has none within 8 km of either; their plans name none): their records
   in the world carry no river.
 - **The ruins are the kit's ruin pieces, not the kit's houses stripped.** Ōlḍ-Thalaba's 331 empty houses are `xa_ruin_s/m/l`
@@ -19,6 +27,14 @@
 - **The stream is the page's own.** The scale model has no stream within 8 km of Māuṭh (`mouth/PLAN.md` open point 1):
   the page draws one (`xlStream`), and the world takes it as a river of the town's own, joined to no model river
   (`core/world/bake_towns.py`, `join: null`). A records-only stream for the scale-model queue only if the owner asks.
+- **How the ground meets the region's** (`tools/fit_lake_town.py`, step L2's rules after the re-cut made the coast more jagged).
+  The page's waterline is a smoothed line along the town's own waterfront (`world.smooth`: 40 m at Ōlḍ-Thalaba, 35 m at Nēṭ,
+  60 m at Ḍāiyar, 70 m at Malbari, else 120 m) and the region's own beyond it (the rest applied in full along the shore there);
+  the rest is a 40 m grid in the page's own (x, z) (not in depth from the shore: a bend would shear it), applied in full from
+  50 m inside the footprint's edge; the region's hollows not joined to the lake
+  are filled 0.3 m over the level. Beyond the waterfront the 40 m rest can close off the mouth of one of the region's narrow
+  inlets: slivers of at most 12 cells of 10 m are allowed there (none in the town's waterfront). The town's beach is less
+  straight than a quay front would make it: the beach's works are fitted to it piece by piece (`xlBeachFit`).
 - **The town's ground is the profile inside its core.** Inside the core (`layout.core`: |x| < 700 m, from 180 m out in the
   lake to 760 m inland) the ground is the fitted profile across the shore, with its benches and the stream: the region's
   own relief there (up to 15 m) is let go; outside it the region's rest fades back in over 300 m, so the footprint's edge
@@ -29,6 +45,8 @@
   holds its share with a margin (`XL.DENSITY`, `XL.MARGIN`), core/city's frontage-courts fills them, and the houses
   farthest from the landing are let go (`died`) until each quarter holds its share. The wealth comes out near the spec's
   (the node test: within .12 a class), not on it: the rich houses (26-32 m) find fewer plots.
+- **The quarters' margins are found by re-running the plan.** A quarter short of its households after a run takes more blocks
+  (the rest quarter short: the others take fewer) and the plan runs again, at most four times, the least short run kept.
 - **No market boat runs and no fair launches.** The boats are moored, drawn up or fishing; the north-east round's barge and
   the fair's east loop (`T.rounds`, `T.loops`) are not drawn on their courses yet.
 - **The towns' rooms are not planned.** The page takes the furniture bundle and the interiors core as Phēr's does, but the

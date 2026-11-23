@@ -5,7 +5,8 @@ each town's records from its tune row (`XAN_TUNE.lake`, read in place) and its d
 `dist/xanadu-lake.html`, draws the town its query names: `?town=<key>`, the default `mouth`. The open-world regions take the
 same ground (`core/world/bake_towns.py`). Built so far: **Māuṭh** (`mouth`, step L0: `mouth/PLAN.md`); **Ōlḍ-Thalaba**
 (`old-thalaba`, step L1: the village and its empty old town, `old-thalaba/PLAN.md`) and **Ḍāiyar** (`dyer`, step L1: the dyers'
-town, `dyer/PLAN.md`).
+town, `dyer/PLAN.md`); Phēr's north-west round, step L2: **Qōqō** (`cocoa`), **Nēṭ** (`net`), **Malbari** (`mulberry`) and
+**Hāibh** (`hive`), their sites added to `openworld/SITES.json` and the region re-cut.
 
 ## Core adoption
 
@@ -21,7 +22,7 @@ Written before the first fragment (CLAUDE.md, "Start a new build from the neares
 | Placement | `core/rand` (`KRAND`), `core/tags` | Every town's seed `KRAND.child(XL.SEED, 'xanadu-lake:' + key)`; the blocks from their own cells (core/city), the boats and stalls from named streams and hashes; the kit's `XA.def` records registered in `core/tags` (through Xanadu's page) before the page draws them |
 | Masks | `core/mask` | None yet: the benches' fields and the flora's mask are polygons and indexes of the plan's records (no canvas is read back); `KMASK` comes in with the reed beds (L1-L4) |
 | The drawn ground | `core/drawn` (`KDRAWN`) | Both ground meshes registered (`KDRAWN.grid`), through kit.json `files` |
-| The buildings | `kits/xanadu` | The kit through Xanadu's page; its opt-in pieces read in place (kit.json `external`): `extra/69dz, 88c, 88d, 88e, 88f, 88g, 88h` (88h: the landing stair `xa_ghat` and the governor's house `xa_governor`, new in L0) and `src/87k-xa-lake-trades.js` (the fish racks) |
+| The buildings | `kits/xanadu` | The kit through Xanadu's page; its opt-in pieces read in place (kit.json `external`): `extra/69dz, 88c, 88d, 88e, 88f, 88g, 88h` (88h: the landing stair `xa_ghat` and the governor's house `xa_governor`, L0; the ruins, L1; the net loft `xa_net_loft` and the orchard plot `xa_orchard_plot`, L2) and `src/87k-xa-lake-trades.js` (the fish racks) |
 | The ruins | `core/ruins` (`KRUINS`) | Ōlḍ-Thalaba's old town (L1): the ruined houses and the caravan market are the kit's ruin pieces (`kits/xanadu/extra/88h`: roofless shells whose every wall section and heap sits on the page's ground), each ruin chunk `KRUINS.watch`ed once baked (`90r-xl-build.js`); the harness asserts them. `core/ruins` through kit.json `files` |
 | Interiors | `kits/interiors`, `kits/catalog` | kit.json `interiors` as Phēr's (the furniture bundle, the `xanadu` sets); the towns' rooms are L5 |
 | The sky and hour | `core/atmos`, `core/host`, `core/door` | Through Xanadu's build and kit.json `files` |

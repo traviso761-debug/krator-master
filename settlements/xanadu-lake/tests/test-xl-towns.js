@@ -5,7 +5,7 @@
 //   - every spec key is a XAN_TUNE.lake record, and no spec copies a tune number (people, px, trade);
 //   - every lake record but Phēr is a town of the twenty (a spec, or still to be written: listed);
 //   - the census: a built town's houses x XL.HH within 10 % of the tune's people, each quarter at its share;
-//   - the footprints: no two overlap (exact SAT, 0.1 m), no house on a way, nothing but the water pieces under the level,
+//   - the footprints: no two overlap (exact SAT, 0.1 m), no building on a way (the bridge, the shrines apart), nothing but the water pieces under the level,
 //     nothing on the stream but the bridge;
 //   - the shore: the quay and the landing stair at the water's edge (their decks within 2 m of the level); every dugout
 //     afloat (the water under it) or drawn up (on the beach or the stair, within 2 m of the level);
@@ -56,8 +56,11 @@ function overlaps(list, eps) { const I = KSPACE.create({ cell: 60 }); let n = 0,
   list.forEach((p, i) => { p._i = i; I.insert(p, p.x, p.z, Math.hypot(p.bo.hw, p.bo.hd)); });
   list.forEach(A => I.query(A.x, A.z, Math.hypot(A.bo.hw, A.bo.hd)).forEach(B => { if (B._i > A._i && pen(A.bo, B.bo) > eps) { n++; first = first || A.id + ' ' + A.key + ' x ' + B.id + ' ' + B.key; } }));
   return { n, first }; }
+// the pieces a way may cross: the bridge carries the shore road, the shrines stand at the stairs' heads, the beach's works stand
+// below the shore road (their backs may reach its verge)
+const OVER_WAYS = { xa_bridge: 1, xa_wayside_shrine: 1 };
 function onStreets(list, ways) { let n = 0, first = null;
-  for (const p of list) { if (p.kind !== 'house') continue; const C = corners(p.bo).concat([p.bo.c]);
+  for (const p of list) { if (p.kind === 'stall' || p.water || OVER_WAYS[p.key]) continue; const C = corners(p.bo).concat([p.bo.c]);
     if (ways.some(w => { for (let i = 1; i < w.pts.length; i++) for (const q of C) if (segD(q, w.pts[i - 1], w.pts[i]) < w.w / 2 - 0.05) return true; return false; })) { n++; first = first || p.id; } }
   return { n, first }; }
 const WET_OK = { xa_quay: 1, xa_boatshed: 1, xa_ghat: 1, xa_fish_racks: 1, xa_dye_works: 1 };   /* the dye works' wash runs down the beach too */   /* the racks stand on the beach, their poles' feet may touch the wet sand */
@@ -88,7 +91,7 @@ for (const key of keys.filter(k => XL.FIT[k])) {
   T.neg(N + ': ...its negative: a house moved onto its neighbour is caught', L => overlaps(L, 0.1).n === 0,
     P.map((p, i) => i === 1 ? Object.assign({}, p, { x: P[0].x, z: P[0].z, bo: Object.assign({}, p.bo, { c: P[0].bo.c }) }) : p), P);
   const st = onStreets(P, Tn.ways);
-  T.ok(N + ': no house on a way\'s carriageway', st.n === 0, st.n + ', first ' + st.first);
+  T.ok(N + ': no house, work or landmark on a way\'s carriageway (the bridge and the shrines at the stairs\' heads apart)', st.n === 0, st.n + ', first ' + st.first);
   const wet = inWater(key, P), str = onStream(key, G, P);
   T.ok(N + ': nothing but the water pieces stands in the lake; nothing but the bridge on the stream', wet.length === 0 && str.length === 0,
     wet.slice(0, 3).map(p => p.id + ' ' + p.key).join(', ') + ' | ' + str.slice(0, 3).map(p => p.id + ' ' + p.key).join(', '));
@@ -121,8 +124,8 @@ for (const key of keys.filter(k => XL.FIT[k])) {
       off.length + ' outside their quarter');
   }
   // the fields' crops: the spec's bucket from kits/crops (what the Vale grows by rain), else the terraces' grain
-  const FB = (S.layout.fields || {}).bucket, badCrop = Tn.fields.filter(f => FB ? !(CROPS.BY_ID[f.crop] && CROPS.BY_ID[f.crop].bucket === FB && CROPS.BY_ID[f.crop].form !== 'tree') : f.bucket !== 'grain');
-  T.ok(N + ': the benches\' crops ' + (FB ? 'from kits/crops\' ' + FB + ' plants' : 'the terraces\' grain') + ' (' + [...new Set(Tn.fields.map(f => f.crop))].join(', ') + ')',
+  const FS = S.layout.fields || {}, FB = FS.bucket, badCrop = Tn.fields.filter(f => FS.crop ? !(f.crop === FS.crop && CROPS.BY_ID[f.crop] && (!FS.orchard || CROPS.BY_ID[f.crop].form === 'tree')) : FB ? !(CROPS.BY_ID[f.crop] && CROPS.BY_ID[f.crop].bucket === FB && CROPS.BY_ID[f.crop].form !== 'tree') : f.bucket !== 'grain');
+  T.ok(N + ': the benches\' crops ' + (FS.crop ? 'kits/crops\' ' + FS.crop + (FS.orchard ? ' (a tree: the orchard plots)' : '') : FB ? 'from kits/crops\' ' + FB + ' plants' : 'the terraces\' grain') + ' (' + [...new Set(Tn.fields.map(f => f.crop))].join(', ') + ')',
     badCrop.length === 0, badCrop.map(f => f.id + ' ' + f.crop).join(', '));
   // the same twice
   const sig = T2 => T2.place.map(p => p.key + '@' + p.x.toFixed(2) + ',' + p.z.toFixed(2)).join('|') + '#' + T2.boats.out.map(b => b.x.toFixed(2)).join(',');
