@@ -92,5 +92,5 @@ with its toll bar), `xa_fort_post` (the Tears' post), `xa_temple`, `xa_shops`, `
 | Step | What | When |
 |---|---|---|
 | **OF1** (**built** 2026-11-23: README.md; KNOWN_ISSUES.md has what is owed) | The page: a build on Xanadu's page (`--kit`, as Phēr's), the town on its own ground, the tune record and the road, its verify | after the lake towns (BUILD-PLAN phase A), before Stage 8 (a layout) |
-| **OF1b** | The Iridescent Order's house (section 2b): its blueprint (the precinct, the Hall of the Bow, the cells, the guest house, the kora to the fall), then its records on the Qiblai kit in the page's reserved precinct | after OF1 |
+| **OF1b** (**blueprint drawn** 2026-11-23: `iridescent/BLUEPRINT.md`, the owner's forks: a house of studies, the kit block with stepped cells, a prior under Rēnbō-Phāl, the moonglass hall under the gilt crown; the records next) | The Iridescent Order's house (section 2b): its blueprint (the precinct, the Hall of the Bow, the cells, the guest house, the kora to the fall), then its records on the Qiblai kit in the page's reserved precinct | after OF1 |
 | **OF2** | On the Siqārp region: the ground fitted to the region's, the town baked in, the road to Gihon and up to Lāiṭwāl | when the stack cuts Siqārp (STACK-PLAN XP5) |
