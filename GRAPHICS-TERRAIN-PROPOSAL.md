@@ -635,7 +635,7 @@ Because `core/biome` (`231` builds / `540` pages), `core/materials/record` (`279
 
 ### B. All-Kit Core Steps (`core/materials/*`, `core/engine/*`, `core/catalog/*`, `core/furnish/*`, `kits/interiors/*`, `godot/shaders/` — up to `758` pages; individualized 36-kit checklist in `KIT-REBUILD-SURVEY.md`)
 
-*Written 2026-11-23, before Stage 8 (the owner's D1), on `claude/kit-graphics-k1k5`: KIT-GRAPHICS-K1-K5.md says what each one is, what was left out (K1's sine-free hash and pack.py's mipVariance/cavity split), its tests and which pages move.*
+*K1, K2, K4 and K5 written 2026-11-23, before Stage 8 (the owner's D1), on `claude/kit-graphics-k1k5`; K3 dropped (the owner: "Agree all but k3"): KIT-GRAPHICS-K1-K5.md says what each one is, what was left out (K1's sine-free hash and pack.py's mipVariance/cavity split), its tests and which pages move.*
 
 
 1. **`K1` (`M1` + `M2` + `M4`) `[G data]` / `[G shader]` Material-library uniform dedup, sine-free breakup & `mipVariance` AA (`core/materials/record/25-matlib-host.js`, `opt/69a-world-uv.js`, `tools/textures/pack.py`):**

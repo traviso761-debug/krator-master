@@ -95,14 +95,6 @@ NORMAL_BITS = 6   # a normal's channels kept to 6 bits (each value the middle of
                   # 2026-10-14). The pages were three times their lossy size with 8-bit lossless normals
 
 
-def normal_bits(cfg):
-    """A family's normal-map bit depth on a packFormat 1 page: NORMAL_BITS, or its own "normalBits" (6 or 8)."""
-    b = int(cfg.get('normalBits', NORMAL_BITS))
-    if b not in (6, 8):
-        raise ValueError('normalBits must be 6 or 8, not %r' % cfg.get('normalBits'))
-    return b
-
-
 def quantize(a, bits):
     s = 8 - bits
     return a if s <= 0 else (((a >> s) << s) + (1 << (s - 1))).astype(np.uint8)
@@ -248,8 +240,6 @@ def assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_ref, n_dec, r_arr, 
 
 def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
     lib = cfg['lib']
-    if pack_format == 2 and normal_enc == 'xy6' and normal_bits(cfg) == 8:   # a family's "normalBits": 8 in packFormat 2 is xy8
-        normal_enc = 'xy8'                                                   # (decoded as xy6 is: the Godot shader reads both)
     d = set_dir(lib)
     sz = cfg.get('size', size)                # a family may ask for a smaller map (a detail map on small furniture), or [w, h]
     size = [int(v) for v in sz] if isinstance(sz, list) else int(sz)
@@ -340,9 +330,7 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
             # lossless: lossy WebP is always 4:2:0, which halves the X and Y the normal keeps in red and green (measured on
             # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08),
             # its channels kept to NORMAL_BITS
-            # a smooth or glazed family (lacquer, ceramic, gilt, polished metal, nacre, obsidian, glazed tile) asks for 8 bits
-            # ("normalBits": 8, K3 of GRAPHICS-TERRAIN-PROPOSAL.md 12d): its broad highlights step at 6
-            out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=normal_bits(cfg))
+            out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=NORMAL_BITS)
         # roughness
         if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
             r = load(pr, size, 'L')
@@ -367,8 +355,6 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
     }
     if height:
         entry['height'] = True
-    if pack_format != 2 and has_lit and normal_bits(cfg) != NORMAL_BITS:
-        entry['normalBits'] = normal_bits(cfg)
     if pack_format == 2:
         entry['packVersion'] = 2
         entry['alphaMode'] = alpha_mode
