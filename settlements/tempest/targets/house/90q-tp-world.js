@@ -8,7 +8,8 @@ const TP_T0=performance.now();
 for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 // ---------------------------------------------------------------- the sky and its light (KratorSky, as Strongwall's and Thalaba's)
 camera.near=.5;camera.far=62000;camera.updateProjectionMatrix();
-const TP_SKY={hour:9.2,day:200,dens:1.0};   /* a morning on the crest */
+const TP_SKY={hour:9.2,day:200,dens:1.0};   /* a morning on the crest; ?hour=21 a night (the herds in the paddock, the fires lit: 90qt) */
+{const h=parseFloat(new URLSearchParams(location.search).get('hour'));if(isFinite(h))TP_SKY.hour=h;}
 KratorSky.attach(scene,7000);scene.fog.density=.000016;
 const tpHemi=scene.children.find(o=>o.isHemisphereLight);
 function tpSkyTick(){KratorSky.update(camera.position,TP_SKY.hour,TP_SKY.day,TP_SKY.dens);const L=KratorSky.lighting();

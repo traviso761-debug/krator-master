@@ -11,7 +11,10 @@ for(const[key,y,v]of[['xa_tempest_outer',TPS.pad,0],['xa_tempest_inner',TPS.pad+
 {TSTAT.cur='xa_tempest_grounds/0';const r0=REG.length;TPS.G.xa_tempest_grounds=VERN.place(TP_GROUP,'xa_tempest_grounds',TPS.x,TPS.z,TPS.ry,{v:0,y:TPS.pad});for(let i=r0;i<REG.length;i++)REG[i].type='xa_tempest_grounds';}
 {const H=TP_PLAN.hosted,p=TPS.toPage(H.at[0],H.at[1]);TSTAT.cur=H.key+'/'+H.o.v;const r0=REG.length;
  TPS.G[H.key]=VERN.place(TP_GROUP,H.key,p[0],p[1],TPS.ry+H.ry,{v:H.o.v,y:TPS.pad+TPS.inner});for(let i=r0;i<REG.length;i++)REG[i].type=H.key;}
+/* step 4b: the brow lookout (90qt), the fort asset's watch post at its pin on the far land, baked with the House */
+TP_LIFE_DRAWN.placeLookout(TP_GROUP);
 TSTAT.cur=null;kbake(TP_GROUP);if(typeof xaDoorsBind==='function')xaDoorsBind();
+const TP_BEACON=TP_LIFE_DRAWN.afterBake();   /* the utse's beacon fire, on the basket the fort's keep drew */
 /* the interiors (89xs, step 3): every door's walk block into core/walk, the unlocked doorways cleared (89y xaIxWalk; window._interiors) */
 if(typeof xaIxWalk==='function')xaIxWalk();
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
@@ -26,5 +29,7 @@ window._tempest=Object.assign({},window._tempestSite,{placed:!!(TPS.G.xa_tempest
  forts:(window._xaForts||[]).length,towers:TP_PLAN.towers.length,buildings:TP_PLAN.buildings.length,
  grounds:{placed:TP_GPLACED.length,of:TP_GROUNDS.pieces.length,rules:TP_GROUNDS.check(TP_PLAN),seat:TP_GPLACED.reduce((m,p)=>Math.max(m,Math.abs(p.y-p.ground)),0),
   fields:TP_GROUNDS.fields.length,tracks:TP_GROUNDS.tracks.length,offPad:TP_GPLACED.filter(p=>Math.abs(p.ground-TPS.pad)>.05).length},
+ life:(function(){const D=TP_LIFE_DRAWN,st=D.stats(),n={};for(const h of TP_LIFE.herds)n[h.id]={n:h.n,day:D.PLACED.day.filter(a=>a.herd===h.id).length,night:D.PLACED.night.filter(a=>a.herd===h.id).length};
+  return{herds:n,rules:TP_LIFE.check(TP_GROUNDS,TP_PLAN).fails,drawn:st,lookout:D.lookout,beacon:TP_BEACON,fires:D.fires.map(f=>f.name),mirrors:D.mirrors.map(m=>m.name),relay:TP_LIFE.signals.relay.waits};})(),
  rooms:['xa_tempest_outer','xa_tempest_inner'].reduce((s,k)=>s+((TPS.G[k]&&TPS.G[k].userData.interior)?TPS.G[k].userData.interior.rooms:0),0),
  pieces:['xa_tempest_outer','xa_tempest_inner'].reduce((s,k)=>s+((TPS.G[k]&&TPS.G[k].userData.interior)?TPS.G[k].userData.interior.pieces:0),0)});

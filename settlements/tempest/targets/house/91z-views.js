@@ -14,7 +14,10 @@ const VIEWS=(function(){const V={},pg=id=>{const g=TP_PLAN.gates.find(q=>q.id===
  {const fb=id=>{const b=TP_GROUNDS.fields.find(f=>f.id===id).box,c=at([(b[0]+b[2])/2,(b[1]+b[3])/2]);return c;};
   V['Over the crest from the east']=[TPS.x+620,TPS.pad+260,TPS.z+260,TPS.x-80,TPS.pad,TPS.z-40];
   const pd=fb('paddock'),hy=fb('hay');V['The remounts paddock and the hay barns']=tpEye(hy[0]-40,hy[1]-20,pd[0],pd[1],0,2);
-  const md=fb('maydan');V['The Maydan']=tpEye(md[0]+40,md[1]+70,md[0]-60,md[1],0,3);}
+  const md=fb('maydan');V['The Maydan']=tpEye(md[0]+40,md[1]+70,md[0]-60,md[1],0,3);
+  /* step 4b: the herds at grass on the commons (by day), and the brow lookout 14 km west on the far land */
+  const cm=fb('commons');V['The remounts at grass']=tpEye(cm[0]+40,cm[1]-150,cm[0],cm[1],6,1);}
+ {const L=TP_LIFE_DRAWN.lookout;if(L)V['The brow lookout']=[L.x+38,L.y+14,L.z+22,L.x,L.y+5,L.z];}
  V['West toward Komodo']=[st[0],TPS.pad+24,st[1],st[0]-6000,TPS.pad-500,st[1]+400];
  return V;})();
 // the House as one budget (as Strongwall's): every type in the class 'city'

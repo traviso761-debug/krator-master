@@ -41,8 +41,9 @@
   crops), the tea garden and the commons are colour only, the great tank's water is a dark surface (core/water is not on this
   page), the hives, butts, pells and targets are simple boxes and posts (the blueprint's NEW training pieces are not in the
   catalog). The near ground is 10 m a cell, so a 4 m track is drawn wider and softer than it is.
-- **Not here yet**: life on the page (the companies at drill, the riders on the Maydan's track, the relay's mirrors), and the
-  brow lookout and its relay, 14 km west (the open world, step 5: it waits on the vertical stack).
+- **Life (step 4b)** is what needs no people: the herds, the mirrors and the fires. The herds are kits/fauna's procedural horse and yak (the farm group, without its detail maps or its Meshy models): 474 stills instanced by coat and pose, a dozen alive; about 3.8 M triangles where the whole herd is in view (the showcase budget is 6 M). They change field at dusk and dawn without walking there. The mirror flashes one proposed code ("all quiet"); no reply is read off the brow. The fires burn by night (`?hour=21`; the page's default hour is a morning).
+- **Not here yet**: the people (the riders, the companies at drill, the horse-archery track ridden, the herdsmen: core/charactermodels' figures and the riding work, on its own branch); the relay between the brow and the Storm Tower (step 5: on the model's ground no single site sees both ends, the best misses by 21 m, and the best pair misses by 4 m on its 500 m grid; it is sited at 1:1 on the world's ground).
+- **The brow lookout** stands at its pin on the far land, a 500 m mesh in one colour by height: its ground reads bare, and it is seated by its lowest corner (about 2.5 m of fall across the post). Its own ground comes with the open world (step 5).
 - **The barbican** is three walls with its opening on the south side (the bent entrance); the road up to it is not drawn.
 - **The utse stands 8 m out of the inner front** (the blueprint's u -63..-41), so its east half stands on the outer ward's ground
   and its west half on the talus; its storeys are counted from the outer ground (the inner court's door is on its first floor).
@@ -50,4 +51,4 @@
   284 for the 292 war horses.
 - **The ground baker** is `tools/scale_ground.py` (new, 2026-11-23); Strongwall's and Thalaba's `build.py` keep their own copies
   of the same bake (theirs to move over).
-- **The open world** (step 5) waits on the vertical stack; the lookout `stempestlk01` and its relay are not on this page.
+- **The open world** (step 5) waits on the vertical stack: the House on the world's ground at 1:1, the lookout re-seated there and its relay sited.

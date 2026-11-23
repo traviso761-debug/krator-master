@@ -9,6 +9,9 @@ House's own:
   on-the-model       the ground is the scale model's: at the pin the model's bicubic height within 1 m of the cell's own, and the
                      drawn ground 300 m beyond the pad's ease the model's to 0.5 m
   house-on-its-pad   the ground under the lot's corners and middle level at the pad's height to 5 cm, the cut and fill under 12 m
+  tempest-life       step 4b: every herd at its count by day and by night, all drawn (stills and the live ones), on the drawn ground, the
+                     live ones moving; by night the horses in the walled paddock and the three fires lit, by day out; the mirror's code
+                     flashing; the brow lookout on its pin, seated on the far land (TP_LIFE's rules kept)
   house-walks        every wall walk and tower stair of both wards reached from its stairs' feet (core/walk, xfReach)
 
     KRATOR_GL=gpu python3 verify.py dist/tempest.html --assert --views "Overview,The Main Gate"
@@ -34,6 +37,17 @@ if(typeof TPS!=="undefined"){const Q=window._tempest||{},D=Q.drawn||{};
  {const F=(typeof xfReach==='function'?xfReach():null)||[],bad=F.filter(q=>!q.floors||q.unreached.length||q.capped);
   {const g=Q.grounds||{};R.push({name:'tempest-grounds',ok:g.placed===g.of&&g.of>0&&g.seat<.05&&Array.isArray(g.rules)&&!g.rules.length,
    detail:(g.placed|0)+' of '+(g.of|0)+' pieces of the crest placed ('+(g.offPad|0)+' off the pad, on the crest\'s own ground), each within '+(+(g.seat||0)).toFixed(3)+' m of the drawn ground; '+(g.fields|0)+' fields and '+(g.tracks|0)+' tracks on the ground\'s colour; '+(g.rules&&g.rules.length?'rules BROKEN: '+g.rules.slice(0,3).join('; '):'the grounds\' rules kept')});}
+  if(typeof TP_LIFE_DRAWN!=='undefined'){const D=TP_LIFE_DRAWN,l=Q.life||{},H=l.herds||{},st=D.stats(),tot=TP_LIFE.herds.reduce((s,h)=>s+h.n,0);
+   const counts=TP_LIFE.herds.every(h=>H[h.id]&&H[h.id].day===h.n&&H[h.id].night===h.n),Lk=l.lookout||{},lkOk=!!Lk.placed&&Lk.y<=Math.min(...Lk.corners)+1e-6&&Math.min(...Lk.corners)-Lk.y<.5;
+   const g=D.live[0]&&D.live[0].g,hd=g&&g.userData.parts.head,r0=hd?(KratorFauna.animate(g,0,'graze'),hd.rotation.x):0,r1=hd?(KratorFauna.animate(g,.7,'graze'),hd.rotation.x):0;
+   const seatDay=D.seat,flash=[0,1,2,3,4,5,6,7].map(t=>TP_LIFE.lit(TP_LIFE.signals.code,t*.9));
+   D.tick(0,true);const rm=REG.find(r=>r.type==='xa_tempest_life'&&r.key==='horse'),pb=TP_GROUNDS.fields.find(f=>f.id==='paddock').box,pc=TPS.toPage((pb[0]+pb[2])/2,(pb[1]+pb[3])/2);
+   const nightOk=D.when==='night'&&D.seat<.05&&D.fires.every(f=>f.g.visible)&&!!rm&&Math.hypot(rm.x-pc[0],rm.z-pc[1])<1;D.tick(0,false);
+   const dayOk=D.when==='day'&&D.fires.every(f=>!f.g.visible);
+   R.push({name:'tempest-life',ok:counts&&Array.isArray(l.rules)&&!l.rules.length&&st.instanced+st.live===tot&&seatDay<.05&&lkOk&&l.beacon===true&&D.fires.length===3&&D.mirrors.length===2&&nightOk&&dayOk&&Math.abs(r1-r0)>1e-4&&flash.includes(true)&&flash.includes(false),
+    detail:TP_LIFE.herds.map(h=>h.id+' '+(H[h.id]?H[h.id].day+'/'+H[h.id].night:'?')+' of '+h.n).join(', ')+' (day/night); '+st.instanced+' stills in '+st.looks+' looks and '+st.live+' alive'+(Math.abs(r1-r0)>1e-4?'':' (NOT moving)')+
+     ', each within '+seatDay.toFixed(3)+' m of the drawn ground'+(l.rules&&l.rules.length?'; RULES: '+l.rules.slice(0,3).join('; '):'; the rules kept')+'; by night '+(nightOk?'the horses in the paddock, the fires lit':'NOT switched')+
+     '; the brow lookout '+(lkOk?'on its pin, seated on the far land':'NOT seated')+', fires '+D.fires.length+' (the utse\'s beacon '+(l.beacon?'found':'MISSING')+'), mirrors '+D.mirrors.length+'; the relay waits on step 5'});}
   R.push({name:'house-walks',ok:F.length===2&&!bad.length,detail:F.map(q=>q.reached+' of '+q.floors+' walks and stairs reached'+(q.unreached.length?', NOT '+q.unreached.slice(0,4).join(', '):'')).join('; ')||'no walks registered (core/walk not on the page?)'});}}
 if(typeof TP_STATES!=="undefined"){const Q=window._tempestStates||{},S=Q.sites||[],D=Q.damage||[],o=D.find(d=>d.key==='xa_tempest_outer')||{},i=D.find(d=>d.key==='xa_tempest_inner')||{};
  const all=['xa_tempest_outer','xa_tempest_inner'].every(k=>[0,1,2].every(v=>S.some(s=>s.key===k&&s.v===v)));

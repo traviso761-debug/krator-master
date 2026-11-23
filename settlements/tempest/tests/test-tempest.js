@@ -85,4 +85,18 @@ T.neg('a sally track that leaves from no gate is caught', grule('the sally track
   (() => { const G = gcopy(); G.tracks.find(t => t.id === 'track.sally.n').pts[0] = [60, 60]; return G; })(), gcopy());
 T.neg('a hay rick standing in the tea garden is caught', grule('every piece stands in its ground'),
   (() => { const G = gcopy(); G.pieces.find(p => p.id === 'hay.rick.0').at = GR.fields.find(f => f.id === 'tea').box.slice(0, 2).map(v => v + 5); return G; })(), gcopy());
+// 7. step 4b, life on the crest (src/80x TP_LIFE): the herds by day and by night, seeded through core/rand, and the chain of fires
+const LI = require(path.join(__dirname, '..', 'src', '80x-tp-life-data.js'));
+{ const f = LI.check(GR, P), day = LI.place(GR, 'day'), night = LI.place(GR, 'night');
+  T.ok('the herds keep their rules by day and by night', f.ok, f.fails.join('; ') || (day.length + ' beasts by day, ' + night.length + ' by night'));
+  const again = LI.place(GR, 'day');
+  T.ok('the herds stand where they stood (each beast from its own hash)', JSON.stringify(again) === JSON.stringify(day), 'a second draw moved them'); }
+const lrule = name => G => LI.RULES[name](G, P).length === 0;
+T.neg('a paddock too small for the horses is caught (a short count)', lrule('every herd is at its count by day and by night'),
+  (() => { const G = gcopy(); const b = G.fields.find(f => f.id === 'paddock').box; b[2] = b[0] + 40; b[3] = b[1] + 40; return G; })(), gcopy());
+T.neg('a beast standing on a shed is caught', A => LI.RULES['every beast stands inside its field, clear of the pieces and the tracks'](GR, P, null, A).length === 0,
+  (() => { const A = LI.place(GR, 'day'), sh = GR.pieces.find(p => p.id === 'byres.shed.a'), a = A.find(q => q.herd === 'milk'); a.x = sh.at[0]; a.z = sh.at[1]; return A; })(),
+  LI.place(GR, 'day'));
+T.neg('a horse herd kept out of the paddock by night is caught', hs => LI.RULES['the horses come into the walled paddock by night'](GR, P, hs).length === 0,
+  LI.herds.map((h, i) => Object.assign({}, h, i === 0 ? { night: 'commons' } : {})), LI.herds.map(h => Object.assign({}, h)));
 T.done();
