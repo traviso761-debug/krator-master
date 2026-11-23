@@ -85,7 +85,7 @@ T.islands=[['great-isle','Grēṭ-Āil (the long isle: the head monastery of the
  ['great-isle-north','Nōṛ-Shōr (the long isle\'s north shore village, on the north-east coast facing Phēr)',849.7,1501.3,200],
  ['great-isle-east','Īsṭ-Ēn (East End: the long isle\'s fishing and herding village, on the south shore east of the cove)',851.5,1508.8,150],
  ['bay-isle','Bē-Āil (the Sultan\'s fishponds)',844.1,1511.5,300],
- ['west-isle','Wesṭ-Āil (the fishermen\'s isle)',831,1499,400],['east-isle','Lāiṭ-Hāus (the light and the customs)',864,1503,200]]
+ ['west-isle','Wesṭ-Āil (the fishermen\'s isle)',831,1495,400],['east-isle','Lāiṭ-Hāus (the light and the customs)',864,1501,200]]   /* west and east isles: the vale ring's warp moved them north 4 and 2 cells (2026-11-23 re-run) */
  .map(([key,name,px,py,people])=>({key,name,px,py,people}));
 /* PHĒR'S RING (the owner, 2026-11-16, settlements/pher/PLAN.md section 4: "the plain's farms as named villages"): KHAMLET
    farming villages on the rim plain behind Phēr (the plain rises north at 6-7 m a km from the rim at -20 m), tithing to
