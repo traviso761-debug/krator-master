@@ -130,9 +130,12 @@ T.ok('KROOMLIGHT pickPool & vertexCornerAO gate room lights and darken floor-wal
   KROOMLIGHT.vertexCornerAO(0, 0.02, 2.0, 1, 0, 0, [0, 0, 0, 6, 4, 6], 0.85) < 0.82);
 
 /* 6. RIK settlement bundle (kits/ria/kit_bundle.py) */
-const pyBundle = cp.execFileSync('python3', ['-c', 'import sys; sys.path.insert(0, "kits/ria"); import kit_bundle; js, _ = kit_bundle.bundle("RIK"); sys.stdout.write(js)'],
+const PY = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');   /* as kits/tungang/tests/test-bundle.js */
+const pyBundle = cp.execFileSync(PY, ['-c', 'import sys; sys.path.insert(0, "kits/ria"); import kit_bundle; js, _ = kit_bundle.bundle("RIK"); sys.stdout.write(js)'],
   { cwd: ROOT, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
-const threePath = cp.execSync('find tools core settlements kits -maxdepth 3 -name "three.min.js" | head -n 1', { cwd: ROOT, encoding: 'utf8' }).trim();
+/* the repo's three.js r128, where tools/harness.py takes it (kits/ancients/three.min.js); no shell (`find | head` is not on Windows) */
+const threePath = ['kits/ancients/three.min.js', 'tools/three.min.js'].find(p => fs.existsSync(path.join(ROOT, p)) && fs.statSync(path.join(ROOT, p)).size > 100000);
+if (!threePath) throw new Error('three.min.js not found (kits/ancients/three.min.js): a Git LFS pointer? git lfs pull --include="kits/ancients/three.min.js"');
 const bCtx = {
   console, Math, Date, JSON, Object, Array, Number, String, Boolean, RegExp, Error, TypeError,
   Float32Array, Float64Array, Uint8Array, Uint16Array, Uint32Array, Int32Array, Map, Set, WeakMap, Proxy,
