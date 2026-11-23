@@ -19,7 +19,7 @@ const LDL=(S,i)=>S.lay[i]||{y:150+i*20,deck:154+i*20,top:170+i*20,za:-300,zb:300
 // the foot for scale.
 const LDHERO=S=>LDW(S,-990,36,1400).concat(LDW(S,-250,445,-40));
 const VIEWS={
- 'The Ledge':              LDHERO(LDA),
+ 'Shelf':                  LDHERO(LDA),
  // THE ELEVATION, square on to the cliff from the west, 1 750 m out.
  'The cliff face':         LDW(LDA,-1750,440,0).concat(LDW(LDA,0,440,0)),
  // THE SECTION: looking north along the cliff from 1 700 m south, so the stack

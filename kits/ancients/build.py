@@ -242,7 +242,7 @@ TARGET_OUT = {
     'trigon': 'trigon.html',                 # the triangular pyramid, 3:1
     'monolith': 'monolith.html',             # the slab with the arch and the oculi
     'crescent': 'crescent.html',             # the terraced crescent moon
-    'ledge': 'ledge.html',                   # terraced slabs cantilevered off a cliff
+    'shelf': 'shelf.html',                   # terraced slabs cantilevered off a cliff (built as the Ledge; designated for Shelf, renamed 2026-11-22)
     'wheel': 'wheel.html',                   # ring plate of parkland on eight towers
     'interiors': 'interiors.html',           # the original kit's buildings with their rooms (kits/ancients-interiors)
     'skyi': 'skyi.html',                     # Skyscraper I on its own (joins the kit rows)

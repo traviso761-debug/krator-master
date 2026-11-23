@@ -1,6 +1,6 @@
 # The Ledge — hand-back
 
-**Designated for Shelf** (the owner, 2026-11-17): Ledge does not take this target (`settlements/ledge/PLAN.md` 9.1); it is Shelf's, the
+**Designated for Shelf** (the owner, 2026-11-17; the target renamed `shelf` 2026-11-22, its builder file keeping its name): Ledge does not take this target (`settlements/ledge/PLAN.md` 9.1); it is Shelf's, the
 Line's north station town on the Outer Wall's north escarpment. The spot, measured: `settlements/shelf/PLAN.md` (the face at 5.1 px
 461.43,1160.39, facing 35 degrees, the plateau ~3,680 m, the shelf ~2,830 m).
 

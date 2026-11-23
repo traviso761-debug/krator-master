@@ -1,5 +1,5 @@
 // ================================================================= KCLIFF — the Ancients' cliff city as records ([G data])
-// The Ancients' cantilevered cliff city (the kit's target `targets/ledge`, 2026-09: pale slab layers stepping out of a cliff as an
+// The Ancients' cantilevered cliff city (the kit's target `targets/shelf`, built 2026-09 as `targets/ledge`: pale slab layers stepping out of a cliff as an
 // INVERTED ZIGGURAT, each layer reaching further than the one below, the top flush with the cliff top) as plain records, for any
 // build that hangs one off its own cliff: Ledge (settlements/ledge, a 1,265 m face over the great lake) and Shelf (settlements/shelf,
 // an 850 m face on the Outer Wall). Lifted from Ledge's rules (2026-11-22) when Shelf took the same form; no THREE, no DOM, no

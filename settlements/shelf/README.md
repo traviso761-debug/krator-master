@@ -1,7 +1,7 @@
 # Shelf
 
 The Line's north station town on the Outer Wall's north escarpment, the Dalab Council's (scale model 5.1 px 461,1161): the Ancients' cliff
-city (the kit's `targets/ledge` form, designated for Shelf by the owner, 2026-11-17, and rebuilt from records, 2026-11-22) hung off an
+city (the kit's `targets/shelf` form, built as `targets/ledge`, designated for Shelf by the owner, 2026-11-17, and rebuilt from records, 2026-11-22) hung off an
 850 m face toward Dalab's plain, the station and the caravan terminus on the plateau at 3,680 m, the shelf town on the bench at 2,830 m.
 The spot, the plan and the owner's answers: `PLAN.md`. The size: `AREAS.md`. The sheets: `floors/`. The gaps: `KNOWN_ISSUES.md`.
 

@@ -62,7 +62,7 @@ north portal, 458,1159, 3,845 m); **the city hung down the cliff**; **the shelf 
 
 1. ~~**The spot**~~: **settled** (2026-11-17): the face at 461.43,1160.39, facing 35 degrees, the station on the plateau and the town on the shelf below.
 2. ~~**Use the target as it is or redraw it**~~: **settled** (the owner, 2026-11-22: "Rebuild from records"): section 5.
-3. **Rename the target** `kits/ancients/targets/ledge` to `shelf` (the kit's sheet and its view names), or leave the folder as is
+3. ~~**Rename the target**~~: **settled** (the owner, 2026-11-22, "Rename it"): `kits/ancients/targets/shelf` (its page `dist/shelf.html`, title and hero view "Shelf", the gallery's `arc-shelf`); its builder file `src/89i-ledge.js` keeps its name, because every kit page carries it. Was: rename the folder, or leave the folder as is
    with this designation noted?
 
 ## 5. The build: Shelf from records (the owner, 2026-11-22: "Rebuild from records")
@@ -127,4 +127,4 @@ the page: the shelf is dry), `core/city` and `core/simulation` (as Ledge), `core
 The layout (238 decks, 360 parts), its 23 checks and their negatives (`test-shelf.js`: 57 pass), the sheets and `AREAS.md` (**7.7 million
 m2** at the Ancients' peak, ~110,000 people then; **32.9 %** broken; 10,000 today), and `dist/shelf.html`, GPU-verified (`KRATOR_GL=gpu`,
 the rtx lane): every page check and negative, the ruin watches (the shell, the wreck), samplers and the eye on the drawn ground in 12 views.
-Owed: `KNOWN_ISSUES.md`. Still open: question 3 (rename the kit's target folder).
+Owed: `KNOWN_ISSUES.md`. Question 3 settled 2026-11-22 (the target renamed `shelf`).

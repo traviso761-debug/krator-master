@@ -6,4 +6,3 @@
 - **No flora**: the Wall's cold steppe (Dsb) is bare; the barley terraces are the Dalab set's orchards without trees (`dnTree` returns nothing).
 - **The station's Tungangs** live in the station (300, `tungang`); their loj's name is open, and its buildings wait on the `tg` set.
 - **The shell's look** is Ledge's first pass (slabs, rooms, window strips, mullions); **no night**.
-- **The open question**: rename the kit's target folder `targets/ledge` to `shelf` (`PLAN.md` section 4, question 3).
