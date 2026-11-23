@@ -50,7 +50,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,O=M.frame.origin_px,fx=(px,py)
  {const bad=[],lines=[],T=(M.sites||[]).filter(s=>/^sxanlk/.test(s.id));
   if(T.length!==16)bad.push(T.length+' of 16 shore towns and isles in the cut');
   const dry=(x,z)=>WORLD.inside(x,z)&&WORLD.at(x,z).depth<0;
-  for(const S of T){let x=S.x,z=S.z;if(neg==='shore'&&S.id==='sxanlkalph01'){const p=fx(850,1511);x=p[0];z=p[1];}   /* the negative: Ālph-Hēḍ read in the open lake */
+  for(const S of T){let x=S.x,z=S.z;if(neg==='shore'&&S.id==='sxanlkalph01'){const p=fx(835,1500);x=p[0];z=p[1];}   /* the negative: Ālph-Hēḍ read in the open lake (835,1500 since the vale ring narrowed it: 850,1511 is Erehwon's shore now) */
    if(!WORLD.inside(x,z)){bad.push(S.name+' outside the cut');continue;}
    let d=dry(x,z)?0:null;
    for(const r of [500,1000])for(let a=0;a<8&&d==null;a++)if(dry(x+r*Math.cos(a*Math.PI/4),z+r*Math.sin(a*Math.PI/4)))d=r;
@@ -63,7 +63,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,O=M.frame.origin_px,fx=(px,py)
   if(WLAND.skipped.length)bad.push('skipped: '+JSON.stringify(WLAND.skipped));
   const C=WLAND.check(),byId={};C.forEach(c=>byId[c.id]=c);
   const joined=c=>c&&Math.abs(c.top-c.crest)<.2*(c.crest+520)+3&&c.waterline.filter(w=>w!=null&&w>.7&&w<1.35).length>=3;
-  const open=fx(850,1511);
+  const open=fx(835,1500);   /* the open lake since the vale ring narrowed it */
   for(const L of LS){let c=byId[L.id];if(c)c=Object.assign({},c,{ok:c.ok||joined(c)});
    if(neg==='landforms'){const top=WORLD.Hbare(open[0],open[1]);c={id:L.id,ok:top>L.water,top};}
    if(!c||!c.ok)bad.push(L.id+' '+JSON.stringify(c));else l2.push(L.id+' top '+c.top+' m (crest '+L.crest+')');}
