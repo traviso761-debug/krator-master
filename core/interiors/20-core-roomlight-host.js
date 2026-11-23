@@ -262,7 +262,7 @@ var KRLHOST = (function(){
   function wirePage(o){
     var st = { rooms:0, tagged:0, indoor:0, materials:0, on:!(typeof location !== 'undefined' && /[?&]roomlight=0\b/.test(location.search)) };
     if(!st.on || typeof KROOMLIGHT === 'undefined') return st;
-    var cap = o.capacity || 8192, D = new Float32Array((cap + 1) * 2 * 4), tex = new THREE.DataTexture(D, cap + 1, 2, THREE.RGBAFormat, THREE.FloatType);
+    var cap = (o.capacity==null?8192:o.capacity), D = new Float32Array((cap + 1) * 2 * 4), tex = new THREE.DataTexture(D, cap + 1, 2, THREE.RGBAFormat, THREE.FloatType);
     tex.minFilter = tex.magFilter = THREE.NearestFilter; tex.generateMipmaps = false; tex.flipY = false; tex.needsUpdate = true;
     var U = uniforms({ tex:tex }), uById = {}, geo = new WeakMap(), hooked = new WeakSet(), list = [];
     st.tex = tex; st.U = U;
@@ -297,7 +297,7 @@ var KRLHOST = (function(){
       todo.forEach(function(m){ geo.set(m, { g:m.geometry, n:m.geometry.attributes.position.count }); hookMat(m); });
       if(o.sunUp){ var s = o.sunUp(); U.uRlSun.value = s; U.uRlLamp.value = 1 + 0.6 * (1 - s); }
     }
-    st.tick = tick; tick(); if(o.every !== 0 && typeof setInterval === 'function') st.timer = setInterval(tick, o.every || 1000);   /* every 0: the page ticks it itself */
+    st.tick = tick; tick(); if(o.every !== 0 && typeof setInterval === 'function') st.timer = setInterval(tick, (o.every==null?1000:o.every));   /* every 0: the page ticks it itself */
     return st;
   }
   return { texData:texData, texture:texture, uniforms:uniforms, hook:hook, apply:apply, tagRooms:tagRooms, lightPool:lightPool, wirePage:wirePage };
