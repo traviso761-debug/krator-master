@@ -24,10 +24,31 @@ const MAT=new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide
 // the map overlays (the camera's "overlay" switch): each vertex carries the Köppen class's colour and the biome
 // overlay's colour of its map pixel; uOverlay picks one (0 none, 1 Köppen, 2 biome) and tints the lit ground with it
 const OVERLAY={value:0};
+// S4 (GRAPHICS-TERRAIN-PROPOSAL section 5; Godot's KratorGroundLayers, STAGE-3-4-REPORT 2.2; 2026-11-23): the near ground (to ~240 m)
+// takes the region's kits' library ground sets, hex-tiled (KGROUND.glsl's kgSample: Mikkelsen 2022), in place of the noise detail
+// alone. Four roles, each the first set the region's kits pack (KGROUND.layer: KMAT, the kits' materials.json slots): meadow, forest
+// floor, sand, gravel. A vertex carries the roles' weights (aGL, from the fields: dune, flow and salt the sand; a canyon floor and
+// steep loose ground the gravel; the wet the forest floor; the rest meadow; less where the strata's rock or a road takes it), and
+// the pixel's weights are sharpened by each sample's own height (its luminance about its mean), so pebbles stand through a margin.
+// A set is a DETAIL here: its luminance over its mean, with a third of its own hue, times the ground's colour (WORLD.ground keeps
+// the colour). UVs are the chunk's local metres (aDUV, a 4096 m frame: world metres lose float precision at 150 km), each set's
+// scale snapped so 4096 m holds whole tiles. No pack, no KGROUND, or ?s4=0: the ground as before.
+const S4=(function(){if(typeof KGROUND==='undefined'||!KGROUND.glsl||!KGROUND.layer||typeof KMAT==='undefined'||KMAT.mode!=='lib'||
+   (typeof location!=='undefined'&&/[?&#]s4=0\b/.test(location.search+location.hash)))return null;
+ const ROLES=[['meadow',['ground.meadow','ground.grass','ground.turf','ground.moss','ground.tundra','ground.steppe','ground.lawn']],
+  ['forest',['ground.forest','ground.litter','ground.leaf','ground.duff']],['sand',['ground.sand','ground.silt','ground.beach','ground.shore','ground.wadi.sand','ground.dune']],
+  ['gravel',['ground.gravel','ground.scree','ground.wadi.cobble','ground.cobble','ground.pebble']]];
+ const kits=(typeof WORLD_KITS!=='undefined'?WORLD_KITS:[]).map(K=>K.name);
+ const L=ROLES.map(([role,slots])=>{for(const kn of kits)for(const s of slots){const Y=KGROUND.layer(kn,s);if(Y&&Y.map){Y.map.wrapS=Y.map.wrapT=THREE.RepeatWrapping;
+   const k=Math.max(1,Math.round(4096*(Y.k==null?.4:Y.k)))/4096;return {role,slot:kn+'|'+s,map:Y.map,k};}}return null;});
+ return L.some(Boolean)?L:null;})();
 MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DETAIL};sh.uniforms.uOverlay=OVERLAY;sh.uniforms.uRoad={value:new THREE.Color(0xa49a8a).convertSRGBToLinear()};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aRock;attribute vec2 aDUV;attribute vec3 aOvK;attribute vec3 aOvB;attribute float aRoad;varying float vRoad;varying float vRock;varying vec2 vDUV;varying float vDist;varying vec3 vOvK;varying vec3 vOvB;')
-  .replace('#include <project_vertex>','#include <project_vertex>\nvRock=aRock;vRoad=aRoad;vDUV=aDUV;vDist=-mvPosition.z;vOvK=aOvK;vOvB=aOvB;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform float uOverlay;uniform vec3 uRoad;varying float vRoad;varying float vRock;varying vec2 vDUV;varying float vDist;varying vec3 vOvK;varying vec3 vOvB;')
+ if(S4)S4.forEach((Y,i)=>{if(Y)sh.uniforms['uGL'+i]={value:Y.map};});
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aRock;attribute vec2 aDUV;attribute vec3 aOvK;attribute vec3 aOvB;attribute float aRoad;varying float vRoad;varying float vRock;varying vec2 vDUV;varying float vDist;varying vec3 vOvK;varying vec3 vOvB;'+
+   (S4?'attribute vec4 aGL;varying vec4 vGL;':''))
+  .replace('#include <project_vertex>','#include <project_vertex>\nvRock=aRock;vRoad=aRoad;vDUV=aDUV;vDist=-mvPosition.z;vOvK=aOvK;vOvB=aOvB;'+(S4?'vGL=aGL;':''));
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform float uOverlay;uniform vec3 uRoad;varying float vRoad;varying float vRock;varying vec2 vDUV;varying float vDist;varying vec3 vOvK;varying vec3 vOvB;'+
+   (S4?'varying vec4 vGL;\n'+S4.map((Y,i)=>Y?'uniform sampler2D uGL'+i+';\n':'').join('')+KGROUND.glsl({}):''))
   .replace('#include <map_fragment>',['#include <map_fragment>',
    /* the strata (about nine dependent texture reads a pixel) only where the rock's weight can move the colour: under
       0.004 it moves it by less than half a percent of the difference (2026-11-16: 3-6 ms of the Arc 140T's ~22 ms a
@@ -37,9 +58,21 @@ MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DETAIL};sh
    ' if(rk>0.004){vec3 bc=strataColor(vSWP,vSWN);diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*d2.r),rk);}',
    ' diffuseColor.rgb=mix(diffuseColor.rgb,uRoad*(0.82+0.36*d1.g),vRoad);',   // a highway's packed gravel
    ' vec3 near=d1*d2*1.16,mid=d2*d3*1.12,far=d3*d4*1.1;',
+   S4?S4GLSL(S4):'',
    ' diffuseColor.rgb*=mix(mix(near,mid,fd),far,ff);',
    ' if(uOverlay>0.5){vec3 oc=uOverlay<1.5?vOvK:vOvB;diffuseColor.rgb=mix(diffuseColor.rgb,oc*(0.8+0.25*d3.r),0.82);}}'].join('\n'));};
-MAT.customProgramCacheKey=()=>'world-ground';
+MAT.customProgramCacheKey=()=>'world-ground'+(S4?'|s4'+S4.map(Y=>Y?1:0).join(''):'');
+// the near ground's term: each role present sampled where its weight is above 0 (a branch: a meadow pixel reads one set), the
+// weights sharpened by the samples' heights, the detail faded in from 240 m to 140 m (and by a pixel's footprint, so it never shimmers)
+function S4GLSL(L){const s=['{float s4n=1.0-smoothstep(140.0,240.0,vDist);vec4 s4w=vGL;vec2 s4x=dFdx(vDUV),s4y=dFdy(vDUV);',   /* derivatives outside the branch */
+  ' if(s4n>0.0&&dot(s4w,vec4(1.0))>0.01){vec3 s4d=vec3(0.0);float s4s=0.0;'];
+ L.forEach((Y,i)=>{if(!Y)return;const c=['x','y','z','w'][i],k=Y.k.toFixed(6);
+  s.push(' if(s4w.'+c+'>0.01){vec3 t=pow(kgSample(uGL'+i+',vDUV*'+k+',s4x*'+k+',s4y*'+k+',0.0).rgb,vec3(2.2));vec3 m=max(pow(KG_LOD(uGL'+i+',vec2(0.5),16.0).rgb,vec3(2.2)),vec3(0.02));'+
+   'float h=clamp(kgLum(t)/kgLum(m),0.0,3.0);float w=s4w.'+c+'*pow(h,4.0);s4d+=w*mix(vec3(h),t/m,0.33);s4s+=w;}');});
+ /* the sets take the noise's place in the near and mid detail (not on top of it), faded where a pixel covers a tile */
+ s.push(' if(s4s>0.0){s4d=clamp(s4d/s4s,0.0,2.5);float s4k=s4n*(1.0-smoothstep(0.35,0.9,length(s4x)*'+Math.max(...L.filter(Boolean).map(Y=>Y.k)).toFixed(6)+'))*0.9;',
+  '  near=mix(near,s4d,s4k);mid=mix(mid,s4d,s4k);}}}');
+ return s.join('\n');}
 const HZ=(typeof KHORIZON!=='undefined'&&KHORIZON&&KHORIZON.bake&&KHORIZON.shade)?(()=>{
  const hz=KHORIZON.bake({box:BOX,n:256,reach:40000,bias:2,h:(x,z)=>WORLD.H(x,z,2000)});
  KHORIZON.shade(MAT,hz,{shade:1,sky:.72});return hz;})():null;
@@ -52,7 +85,11 @@ const ALL=new Set();
 function kidsOf(n){if(!n.kids){const q=n.s/4,h=n.s/2;n.kids=[new Node(n.cx-q,n.cz-q,h,n.l+1,n),new Node(n.cx+q,n.cz-q,h,n.l+1,n),new Node(n.cx-q,n.cz+q,h,n.l+1,n),new Node(n.cx+q,n.cz+q,h,n.l+1,n)];}return n.kids;}
 function distTo(n,P){const dx=Math.max(0,Math.abs(P.x-n.cx)-n.s/2),dz=Math.max(0,Math.abs(P.z-n.cz)-n.s/2),dy=Math.max(0,n.y0-P.y,P.y-n.y1);return Math.hypot(dx,dy,dz);}
 
-// ---------------------------------------------------------------- building a chunk
+// S4's roles at a vertex (meadow, forest floor, sand, gravel), from its fields; under the strata's rock and a road, less of each
+function s4Weights(F,rk,rd,out,o){const sat=v=>v<0?0:v>1?1:v,sm=(a,b,x)=>{const t=sat((x-a)/(b-a));return t*t*(3-2*t);};
+ const sand=sat((F.dune||0)*1.1+(F.flow||0)*.55+(F.salt||0)*.3),grav=sat((F.canyon||0)*(1-(F.flow||0))*.9+sm(.35,.7,F.slope||0)*.5)*(1-sand),
+  forest=sat(sm(.45,.85,F.wet||0)*.7)*sat(1-sand-grav),meadow=sat(1-sand-grav-forest),keep=(1-sat(rk)*.8)*(1-sat(rd));
+ out[o]=meadow*keep;out[o+1]=forest*keep;out[o+2]=sand*keep;out[o+3]=grav*keep;return out;}// ---------------------------------------------------------------- building a chunk
 const G=NSEG+3;   // the height grid with a one-vertex border for the normals
 const _P={},_F={},_C=[0,0,0,0];
 const PK=WORLD.PARTS,NPK=PK.length;
@@ -62,7 +99,7 @@ function buildChunk(n){const t0=performance.now();
  for(let j=0;j<G;j++)for(let i=0;i<G;i++){const x=x0+(i-1)*ds,z=z0+(j-1)*ds,k=j*G+i;
   HB[k]=WORLD.Hp(x,z,mw,_P);for(let p=0;p<NPK;p++)PB[k*NPK+p]=_P[PK[p]];}
  const V=(NSEG+1)*(NSEG+1),SK=4*NSEG,NV=V+SK+4;
- const pos=new Float32Array(NV*3),nor=new Float32Array(NV*3),col=new Float32Array(NV*3),rock=new Float32Array(NV),road=new Float32Array(NV),duv=new Float32Array(NV*2),ovk=new Float32Array(NV*3),ovb=new Float32Array(NV*3);
+ const pos=new Float32Array(NV*3),nor=new Float32Array(NV*3),col=new Float32Array(NV*3),rock=new Float32Array(NV),road=new Float32Array(NV),gl=S4?new Float32Array(NV*4):null,duv=new Float32Array(NV*2),ovk=new Float32Array(NV*3),ovb=new Float32Array(NV*3);
  const grid=new Float32Array(V);let y0=1e9,y1=-1e9,wet=false,anyWater=false;
  const ox=Math.floor(x0/4096)*4096,oz=Math.floor(z0/4096)*4096;
  for(let j=0;j<=NSEG;j++)for(let i=0;i<=NSEG;i++){const k=(j+1)*G+(i+1),v=j*(NSEG+1)+i,x=x0+i*ds,z=z0+j*ds,h=HB[k];
@@ -70,7 +107,7 @@ function buildChunk(n){const t0=performance.now();
   pos[v*3]=i*ds;pos[v*3+1]=h;pos[v*3+2]=j*ds;nor[v*3]=-hx/nl;nor[v*3+1]=1/nl;nor[v*3+2]=-hz/nl;
   for(let p=0;p<NPK;p++)_P[PK[p]]=PB[k*NPK+p];
   const F=WORLD.fieldsFrom(x,z,h,Math.hypot(hx,hz),_P,_F);WORLD.ground(x,z,F,_C);
-  col[v*3]=_C[0];col[v*3+1]=_C[1];col[v*3+2]=_C[2];rock[v]=_C[3];road[v]=WORLD.roadCover(x,z,ds);duv[v*2]=x-ox;duv[v*2+1]=z-oz;
+  col[v*3]=_C[0];col[v*3+1]=_C[1];col[v*3+2]=_C[2];rock[v]=_C[3];road[v]=WORLD.roadCover(x,z,ds);if(gl)s4Weights(F,rock[v],road[v],gl,v*4);duv[v*2]=x-ox;duv[v*2+1]=z-oz;
   const ck=WORLD.classColour(x,z),cb=WORLD.biomeColour(x,z);for(let q=0;q<3;q++){ovk[v*3+q]=ck[q];ovb[v*3+q]=cb[q];}
   grid[v]=h;if(h<y0)y0=h;if(h>y1)y1=h;if(F.water>-1e8){anyWater=true;if(F.water>h-.5)wet=true;}}
  // the skirt: every edge vertex again, hung below
@@ -80,14 +117,14 @@ function buildChunk(n){const t0=performance.now();
  const skirtOf=[];
  for(const v of edge){pos[sv*3]=pos[v*3];pos[sv*3+1]=pos[v*3+1]-skD;pos[sv*3+2]=pos[v*3+2];
   nor[sv*3]=nor[v*3];nor[sv*3+1]=nor[v*3+1];nor[sv*3+2]=nor[v*3+2];col[sv*3]=col[v*3];col[sv*3+1]=col[v*3+1];col[sv*3+2]=col[v*3+2];
-  rock[sv]=rock[v];road[sv]=road[v];duv[sv*2]=duv[v*2];duv[sv*2+1]=duv[v*2+1];for(let q=0;q<3;q++){ovk[sv*3+q]=ovk[v*3+q];ovb[sv*3+q]=ovb[v*3+q];}skirtOf.push(sv);sv++;}
+  rock[sv]=rock[v];road[sv]=road[v];if(gl)for(let q=0;q<4;q++)gl[sv*4+q]=gl[v*4+q];duv[sv*2]=duv[v*2];duv[sv*2+1]=duv[v*2+1];for(let q=0;q<3;q++){ovk[sv*3+q]=ovk[v*3+q];ovb[sv*3+q]=ovb[v*3+q];}skirtOf.push(sv);sv++;}
  const idx=[];
  for(let j=0;j<NSEG;j++)for(let i=0;i<NSEG;i++){const a=j*(NSEG+1)+i,b=a+NSEG+1,c=b+1,d=a+1;idx.push(a,b,d,b,c,d);}
  for(let e=0;e<edge.length;e++){const a=edge[e],b=edge[(e+1)%edge.length],sa=skirtOf[e],sb=skirtOf[(e+1)%edge.length];idx.push(a,sa,b,b,sa,sb);}
  const g=new THREE.BufferGeometry();
  g.setAttribute('position',new THREE.BufferAttribute(pos.subarray(0,sv*3),3));g.setAttribute('normal',new THREE.BufferAttribute(nor.subarray(0,sv*3),3));
  g.setAttribute('color',new THREE.BufferAttribute(col.subarray(0,sv*3),3));g.setAttribute('aRock',new THREE.BufferAttribute(rock.subarray(0,sv),1));g.setAttribute('aRoad',new THREE.BufferAttribute(road.subarray(0,sv),1));
- g.setAttribute('aDUV',new THREE.BufferAttribute(duv.subarray(0,sv*2),2));g.setIndex(idx);
+ g.setAttribute('aDUV',new THREE.BufferAttribute(duv.subarray(0,sv*2),2));g.setIndex(idx);if(gl)g.setAttribute('aGL',new THREE.BufferAttribute(gl.subarray(0,sv*4),4));
  g.setAttribute('aOvK',new THREE.BufferAttribute(ovk.subarray(0,sv*3),3));g.setAttribute('aOvB',new THREE.BufferAttribute(ovb.subarray(0,sv*3),3));
  g.boundingSphere=new THREE.Sphere(new THREE.Vector3(s/2,(y0+y1)/2,s/2),Math.hypot(s*.71,(y1-y0)/2+skD));
  const m=new THREE.Mesh(g,MAT);m.position.set(x0,0,z0);m.matrixAutoUpdate=false;m.updateMatrix();m.visible=false;m.receiveShadow=true;m.userData.terrain=n;
@@ -136,4 +173,4 @@ function heightDrawn(x,z){const n=drawnAt(x,z);return n?chunkH(n.chunk,x,z):WORL
 // by the next frames' update (coarse first, nearest first, within the frame's budget)
 function refresh(x0,z0,x1,z1){let n=0;for(const q of [...ALL]){const c=q.chunk;if(!c)continue;if(c.x0>x1||c.x0+q.s<x0||c.z0>z1||c.z0+q.s<z0)continue;freeChunk(q);n++;}
  drawn=drawn.filter(q=>q.chunk);S.refreshed=(S.refreshed||0)+n;return n;}
-return{OVERLAY,stats:S,update,refresh,chunkH,drawnAt,heightDrawn,MAT,STRATA,horizon:HZ,meshes:()=>drawn.map(n=>n.chunk.mesh),pending:()=>want.length,NSEG,MAXL,ROOT};})();});
+return{OVERLAY,S4,s4Weights,stats:S,update,refresh,chunkH,drawnAt,heightDrawn,MAT,STRATA,horizon:HZ,meshes:()=>drawn.map(n=>n.chunk.mesh),pending:()=>want.length,NSEG,MAXL,ROOT};})();});
