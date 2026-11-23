@@ -1659,7 +1659,6 @@
    }
   },
   "fauna_wing": {
-   "anchor": "tight",
    "breakup": null,
    "card": true,
    "files": {
@@ -1668,7 +1667,6 @@
    "lib": "wing.butterfly",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 1,
    "roughLift": 0,
    "scale": [
     1,

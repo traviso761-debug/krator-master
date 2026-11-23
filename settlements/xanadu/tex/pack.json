@@ -893,32 +893,6 @@
     "sourceMean": 0.4194
    }
   },
-  "xJaliC": {
-   "breakup": null,
-   "card": true,
-   "files": {
-    "map": "xJaliC.albedo.webp"
-   },
-   "lib": "patterns/xanadu/jali",
-   "metal": 0,
-   "normalScale": 0.5,
-   "roughLift": 0.0,
-   "scale": [
-    1,
-    1
-   ],
-   "size": 512,
-   "source": {
-    "albedo": "acf8365792a10bc639e74208f73f63f554f37ac9"
-   },
-   "specular": 0.5,
-   "tint": {
-    "contrast": 1.0,
-    "keep": 1.0,
-    "mean": 0.8963770646247338,
-    "sourceMean": 0.8964
-   }
-  },
   "xMarK": {
    "breakup": null,
    "card": false,
