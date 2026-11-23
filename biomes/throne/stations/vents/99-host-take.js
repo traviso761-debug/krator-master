@@ -19,8 +19,10 @@ const VIEWS={
  'Vent country':(function(){const a=gp(420,GRABEN.W(420)-60),b=gp(-300,GRABEN.W(-300)-30);return[a[0],gh(a[0],a[1],3),a[1],b[0],gh(b[0],b[1],14),b[1]];})(),
  'The graben from its rim':(function(){const W=GRABEN.W(-250),a=gp(-250,-W-25),b=gp(-150,W);return[a[0],gh(a[0],a[1],4),a[1],b[0],gh(b[0],b[1],12),b[1]];})(),
  /* the Rheoliths at the fissure throat (89y): from its bench, looking into the breach */
- 'The fissure throat and its Rheoliths':(function(){if(!RHEO_SITE)return[0,gh(0,0,20),0,100,gh(100,0,0),0];   /* ?rheo=0: a plain view of the graben */const P=RHEO_SITE.pit,B=RHEO_SITE.bench,dx=B.x-P.x,dz=B.z-P.z,d=Math.hypot(dx,dz)||1,
-  x=P.x+dx/d*55,z=P.z+dz/d*55;return[x,gh(x,z,30),z,P.x,gh(P.x,P.z,-4),P.z];})(),   /* high enough to see over the fissure's spatter rampart */
+ 'The fissure throat and its Rheoliths':(function(){if(!RHEO_SITE)return[0,gh(0,0,20),0,100,gh(100,0,0),0];   /* ?rheo=0: a plain view of the graben */const P=RHEO_SITE.pit;
+  /* across the fissure from the breach, 30 m out and 45 m over its rim (over the spatter ramparts), looking down the shaft */
+  const um=(FISS.u0+FISS.u1)/2,a=fissPt(um+20),fx=a[0]-P.x,fz=a[1]-P.z,fl=Math.hypot(fx,fz)||1,x=P.x-fz/fl*30,z=P.z+fx/fl*30;
+  return[x,Math.max(gh(x,z,12),P.y+45),z,P.x,P.y-12,P.z];})(),
  'The fissure and its cones':(function(){const C=CONES[1],a=upAt(C.u+260,fissL(C.u+260)-140);return[a[0],gh(a[0],a[1],4),a[1],C.x,gh(C.x,C.z,C.h*.4),C.z];})(),
  'The fissure at night':(function(){const a=upAt(1290,fissL(1290)+10),b=fissPt(1200);return[a[0],gh(a[0],a[1],2.5),a[1],b[0],gh(b[0],b[1],1),b[1]];})(),
  'The sulphur marsh':(function(){const a=upAt(MARSH.u+MARSH.ru*.35,MARSH.p+MARSH.rp*1.12),b=upAt(MARSH.u-MARSH.ru*.2,MARSH.p);return[a[0],Math.max(gh(a[0],a[1],3),MARSH.level+4),a[1],b[0],MARSH.level,b[1]];})(),

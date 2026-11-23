@@ -8,9 +8,12 @@ const ridged=(x,z,s)=>1-Math.abs(fbm(x,z,s,3)*2-1);
 function coneAt(x,z){let h=0,k=0;for(const C of CONES){const d=Math.hypot(x-C.x,z-C.z)/C.r;if(d>1.4)continue;h=Math.max(h,C.h*Math.pow(smooth(1,.4,d),.9)-C.h*.5*smooth(.42,.15,d));k=Math.max(k,smooth(1.2,.85,d));}return{h,k};}
 // the wall's profile from the crest (t 0) to its foot (t 1): terraced by its old collapses
 const wallP=t=>clamp(t+.085*Math.sin(t*TAU*2.5),0,1);
+// THE RHEOLITHS' BREACH (89y; src/44r): the throat in the lake's hot ring on the side toward the rim, at the kit's own size, cut into the ground last. ?rheo=0 none
+const BREACH=new URLSearchParams(location.search).get('rheo')==='0'?null:(function(){const ul=Math.hypot(LAKE.x,LAKE.z)||1,R1=LAKE.r*1.22;return{x:LAKE.x-LAKE.x/ul*R1,z:LAKE.z-LAKE.z/ul*R1,r:26,throatR:7.4,floor:-21,rim:3.6};})();
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
-function terrainH0(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a),pk=peakH(a),n=fbm(x*.002,z*.002,113,3)-.5;let h;
+function terrainH0(x,z){return THRONE_BREACH(BREACH,terrainH0u(x,z),x,z);}
+function terrainH0u(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a),pk=peakH(a),n=fbm(x*.002,z*.002,113,3)-.5;let h;
  if(r>=cr){const e=r-cr;h=CAL.rim+pk*Math.exp(-Math.pow(e/150,2))+30*ridged(x*.008,z*.008,114)*Math.exp(-Math.pow(e/260,2))-e*.07+22*n+5*(fbm(x*.02,z*.02,115,2)-.5);}
  else{const t=clamp((cr-r)/(cr-CAL.foot),0,1),p=Math.pow(wallP(t),.85);
   h=mix(CAL.rim+pk,CAL.floor,p)+(1-p)*p*60*(ridged(a*9,r*.02,116)-.5)+3*(fbm(x*.03,z*.03,117,2)-.5);
@@ -18,6 +21,7 @@ function terrainH0(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a),pk=peakH(a),n
  // the lake's pit: steep walls down to the lava, a spatter lip round it
  const dl=LAKE.de(x,z);if(dl<LAKE.r*1.35){h+=3.5*Math.exp(-Math.pow((dl-LAKE.r*1.12)/(LAKE.r*.06),2));h=mix(h,LAKE.level-5,smooth(LAKE.r*1.07,LAKE.r*.99,dl));}
  return h;}
+if(BREACH){let s=0;for(let i=0;i<16;i++){const a=i/16*TAU;s+=terrainH0u(BREACH.x+Math.cos(a)*BREACH.throatR,BREACH.z+Math.sin(a)*BREACH.throatR);}BREACH.y=s/16;}   /* the rim's height (the kit's pitY) */
 function waterH(x,z){return -1e9;}   // no water up here: the lake is lava (86 draws it); the snow is solid
 
 // ---------------------------------------------------------------- the fields (cached below; these are the definitions)

@@ -17,6 +17,7 @@
   const awAt=o.aw||((x,y,z)=>0.5);
   const phAt=o.ph||((x,z)=>5.5);
   const pit=o.pit||{x:0,z:0,r:26,throatR:7.4,floor:-21,rim:3.6};
+  const yRef=o.pitY==null?0:o.pitY;   /* the ground's height at the throat's rim (a host that cut the breach into its own ground: biomes/throne 44r) */
   const vents=o.vents||[];
   const bench=o.bench||{x:76,z:-22,rx:44,rz:32};
   const wind=o.wind||[0.82,0.57];
@@ -68,7 +69,7 @@
   for(let i=0;i<nWall;i++){
    const ang=H(i,1,11)*TAU,rr=pit.throatR*(.74+.76*H(i,2,11));
    const x=pit.x+Math.cos(ang)*rr,z=pit.z+Math.sin(ang)*rr,y=gH(x,z);
-   if(y>-5.0||y<-19.0)continue;
+   if(y-yRef>-5.0||y-yRef<-19.0)continue;   /* the shaft's depth under the rim: this page's rim stands at 0, a host's at o.pitY */
    const tC=temp3(x,y,z),aw=awAt(x,y,z),ph=phAt(x,z);
    const win=RHEO_PHYS.windowAt({tempC:tC,waterActivity:aw,acidPh:ph});
    if(!win.viable)continue;

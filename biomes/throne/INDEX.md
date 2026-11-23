@@ -47,6 +47,15 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `99-host-tz-core.js` | 3 |  |
 | `99-tail.html` | <1 |  |
 
+## shared/
+
+Fragments only some stations take, each listed in that station's `station.json` `kits` (not in `src/`, so the other pages do not carry them).
+
+| Fragment | KB | What |
+|---|---|---|
+| `44r-host-breach.js` | 1 | `THRONE_BREACH`: the Rheoliths' breached throat cut into a station's ground (the kit's own profile, from the local ground); vents and caldera |
+| `83r-host-breach-ground.js` | 2 | the breach's ground eight times finer than the 6.5 m mesh, its coarse cells left out (`THRONE_BREACH_CELLS`, `breachSkip`, `THRONE_BREACH_MESH`); vents and caldera |
+
 ## stations/
 
 Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.

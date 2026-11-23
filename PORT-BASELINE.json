@@ -617,8 +617,8 @@
    "sha256": "b722cc1174f10f36956a76993aafaad0e31c78c7fcbeef129ce3e81e458103c2"
   },
   "biomes/rheolith/dist/rheolith.html": {
-   "bytes": 2657075,
-   "sha256": "02e418f73e5659d4c43bd4faf8c79bb5e7e9edfd2080a0de2ac6ed0802150fc4"
+   "bytes": 2657326,
+   "sha256": "41863e5411877602d33871c57fcb7d9e1633ca58b32eb8d595415e7bc5c5a882"
   },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7521099,
@@ -817,8 +817,8 @@
    "sha256": "c0df083eff5560b560735404347c0d37408c1ea76a569097029a31d9b67f77bc"
   },
   "biomes/throne/dist/throne-caldera.html": {
-   "bytes": 1136715,
-   "sha256": "c1a94ecb302841db19bd3c17efc0cd14c829ff7246b55783d8ef5d6df5818edf"
+   "bytes": 1142023,
+   "sha256": "a9e6638c9f38896a8e32e5c957086d49e389a9ac7c270facf1a1b99b530eb8f6"
   },
   "biomes/throne/dist/throne-cloud.html": {
    "bytes": 1272721,
@@ -853,12 +853,12 @@
    "sha256": "85e56079dcca787aa2214968bf9da61b44227db271f47a480857f99ec17fed6f"
   },
   "biomes/throne/dist/throne-tube.html": {
-   "bytes": 1032219,
-   "sha256": "947b67a55a6852986ff2ccc84b28e507aa2aacfa6f058d1306d8d667e7cfa72c"
+   "bytes": 1032470,
+   "sha256": "7c87b4f0e4ed15503491c71aaf2a2c3ed1265ba3cfa0d3fe504efcc0976a90a5"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 1497905,
-   "sha256": "46b63c2926d1c79aed8fde415f75c45d7490cab9c665f321201af8ac364f5f1e"
+   "bytes": 1503126,
+   "sha256": "a51a7619af2272f10a2be5b9e9db202ae8e6ce71f4d8ecbf644f3a740e92cb0a"
   },
   "biomes/throne/dist/throne.html": {
    "bytes": 1292415,
