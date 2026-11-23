@@ -153,6 +153,13 @@ T.rounds=[['round.south-east','s57bkv9741',['boatyard','weaver','saffron','potte
    opals at the assay house on the bench; the mines' opal comes over by the ferry (27 km) and goes on with the town's */
 T.laitwal={id:'slaitwal0001',name:'Lāiṭwāl (the Light Wall: the Glaziers\' hold and the seat of Ōpal-Bhālī)',px:[1028,1653],people:5000,
  make:{opal:300,moonglass:6000},adits:600,glass:80,terraces:.25,fishK:1.2,ferryKm:27,kirstabalKm:150};
+/* Ōpal-Phōrḍ (settlements/opal-ford/PLAN.md section 2; the owner, 2026-11-23: "Opal-road river town", its record with its build,
+   BUILD-PLAN A11): the opal road's ford over the Sitār Ḍrāi at the valley's mouth, a town of 1,500 in the Scarp (P5). Its paddies
+   and terraces on the flats grow terraces of its own grain, its weirs some fish; the han at the ford is the road's stage (road.lw-ks
+   passes it). Its hub is Kirstabal, the Scarp's seat, until Gihon's record lands (claude/gihon-6258a4): then the hub and the road
+   go to Gihon, 30 km down the river (the plan). Proposed, every number: people, the terraces' share, the weirs, the road's 85 km */
+T.opalford={id:'sopalford01',name:'Ōpal-Phōrḍ (the Opal Ford: the opal road\'s river town)',px:[969,1634],people:1500,prov:'p5',hub:'sl758m2396',
+ terraces:.6,fishK:.25,roadKm:85};
 T.thalaba={id:'xan.thalaba',name:'Thalaba (at the mouth of Godshearth, over the spillway)',px:[840,1463],people:2400,make:{sulfur:30000},sulfurCrew:.075,terraces:.5,roadKm:105};
 /* the first stores are last year's harvest: they last to the end of the first harvest the clock reaches and a month over.
    core/clock's day 0 is year day 259 (77-sim-6-season.js's year; the test checks it), so the harvest (year days 150-200)
@@ -419,6 +426,18 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?50:o.scale,yr=365,win=w=>{c
  T.lake.filter(L=>L.key!=='pher').forEach(lakeTown);
  T.islands.forEach(I=>lakeTown({key:I.key,name:I.name,px:I.px,py:I.py,people:I.people,make:{},prov:'p1',hub:'s57bkv9741'}));
  T.lowerLake.forEach(lakeTown);   /* K1: Kirstabal's lake, hub Kirstabal (its ids 'll.', its roads 'lowerlake.') */
+ /* Ōpal-Phōrḍ (T.opalford): the town diet; its paddies and terraces, its weirs, the han; the rest of its grain, its salt, tea and
+    tools up the road from its hub */
+ {const O=T.opalford,p=at(O.px[0],O.px[1]),dk='town',crew=crewOf(O.people,400),tc=Math.round(crew*.5),fc=Math.round(crew*.12),
+   terr=eatYr(dk,O.people)*O.terraces,fish=O.people*T.fishKgPerson*O.fishK;
+  const s=add({id:O.id,name:O.name,faction:'xanadu',parent:O.hub,people:O.people,x:p.x,z:p.z,eats:eats(dk),keepDays:15,
+   start:{grain:Math.round(eatYr(dk,O.people)*T.startDays/yr),salt:O.people*2.5,tea:O.people*.3,tools:O.people*.2,fish:O.people*2},
+   works:[{id:O.id+'.han',kind:'market',name:'the han at the ford',crew:12,out:[],rate:0},
+    {id:O.id+'.paddies',kind:'terraces',name:'the paddies on the flats and the terraces above them',crew:tc,out:['grain'],rate:rate(terr,tc,win('harvest')),season:'harvest'},
+    {id:O.id+'.weirs',kind:'fishing',name:'the fish weirs',crew:fc,out:['fish'],rate:rate(fish,fc),site:T.fishery(fish)}]});
+  seats[O.id]=s;bump(O.hub,Math.max(0,eatYr(dk,O.people)-terr));
+  R.push({id:'road.ks-opalford',from:O.hub,to:O.id,minutes:Math.round(O.roadKm/25*1440),cap:20000,carriers:2,stagger:Math.round(O.roadKm/25*1440/2),want:30,
+   goods:{[O.hub]:['grain','salt','tea','tools']}});}
  /* the Order of the Flashing Eye's head house on the east volcano (settlements/flashing-eye/PLAN.md section 4), after the lake
     towns: its tea road starts at Ṭī-Ṭeras. Grain, salt and tools from the capital: the lake leg by launch, then the west road */
  {const Fe=T.flashingeye,p=at(Fe.px[0],Fe.px[1]),tc=Math.round(Fe.people*.3),terr=eatYr('fort',Fe.people)*Fe.terraces;

@@ -35,6 +35,25 @@ the rice terraces (a share of its grain, Gihon sending the rest), the han (a sto
 *proposed*), the ford's toll (a road `cut`, the Sultan's, as the Strongbow lift's toll is), the fish weirs (a small
 fishery). Its people come out of P5's bulk district, as the rings' do.
 
+## 2b. The Iridescent Order's house at the cataract (the owner, 2026-11-23)
+
+The owner, 2026-11-23: *"Opal phord will also contain the monastery HQ of the iridescent order, which we will need to design"*;
+asked the same day, the owner chose:
+- **"Both are big houses"**: Rēnbō-Phāl at Lāiṭwāl's lake outlet (`settlements/iridescent/PLAN.md`, pin `siridesc0001`) stays the
+  Order's head house; Ōpal-Phōrḍ holds its **second great house**, the Order's seat in the lowlands, on the opal road where it
+  leaves the valley.
+- **"At the cataract"**: its own precinct at the cataract's foot up the river from the town, the bow standing in the spray; the
+  town is its lay town, joined to it by the river road.
+- **"~450, Qiblai Turquoise"**: about 450 (some 300 monks and novices, the lay servants and their households, a guest house of
+  60 beds), in the Qiblai kit's dress for the Turquoise spoke, the Hall of the Bow glazed with the Glaziers' moonglass.
+- **"Town first, then design"**: step OF1 lays the town with the precinct's ground kept clear; the house's blueprint is its own
+  step (OF1b, below), as the Beacon's and the Tempest's were, and then goes into the page.
+
+**The cataract** (the scale model): the Sitār Ḍrāi falls from 265 m (px 981.5,1641.5) to 120 m (975,1637.5) and on to the town
+(-14 m at 969,1634) and below it to -155 m (964,1629): the town stands in the middle of the cataract reach, on a bench of flats
+where the river runs slack for a few kilometres (the ford). *Proposed:* the page draws the reach above the town as rapids with
+one fall of about 20 m some 3 km up (the bow's fall), and the precinct on the north-east bank at its foot.
+
 ## 3. The layout (on core/city)
 
 *Proposed:* the town on the river's east bank on the first rise above the flood (the flats flood in the wet season), its
@@ -72,5 +91,6 @@ with its toll bar), `xa_fort_post` (the Tears' post), `xa_temple`, `xa_shops`, `
 
 | Step | What | When |
 |---|---|---|
-| **OF1** | The page: a build on Xanadu's page (`--kit`, as Phēr's), the town on its own ground, the tune record and the road, its verify | after the lake towns (BUILD-PLAN phase A), before Stage 8 (a layout) |
+| **OF1** (**built** 2026-11-23: README.md; KNOWN_ISSUES.md has what is owed) | The page: a build on Xanadu's page (`--kit`, as Phēr's), the town on its own ground, the tune record and the road, its verify | after the lake towns (BUILD-PLAN phase A), before Stage 8 (a layout) |
+| **OF1b** | The Iridescent Order's house (section 2b): its blueprint (the precinct, the Hall of the Bow, the cells, the guest house, the kora to the fall), then its records on the Qiblai kit in the page's reserved precinct | after OF1 |
 | **OF2** | On the Siqārp region: the ground fitted to the region's, the town baked in, the road to Gihon and up to Lāiṭwāl | when the stack cuts Siqārp (STACK-PLAN XP5) |

@@ -98,7 +98,7 @@
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/region/data/xan-tune.js": "b9bdf986bed575cf7e1dd45ccb9237b14bf2b567f46ee6b18713aa9d0adb854e",
+    "core/region/data/xan-tune.js": "61c96303a0051268bb202ab7bac34b6f7247a4c409eecb8d5dee90fe2a57ba31",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
@@ -327,11 +327,11 @@
     "tools/textures": "fa8de3e4e1df6a9ae0b8c4444df219a259e6be8b65d23976deb8568cf975c662"
    },
    "outputs": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "90be31ae515c19fdbc06cda72011c97eb3e41071fb3004109123d6816ae1521c",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "83e30449c86c81942b2bf6d36bd805f65537f7055bde412236576d87423f4f59",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    },
    "outputs_raw": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "90be31ae515c19fdbc06cda72011c97eb3e41071fb3004109123d6816ae1521c",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "83e30449c86c81942b2bf6d36bd805f65537f7055bde412236576d87423f4f59",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    }
   }

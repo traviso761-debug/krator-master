@@ -369,6 +369,8 @@
  "settlements/mungo/dist/mungo.html: MISSING BIO.leafOn": 1,
  "settlements/mungo/dist/mungo.html: MISSING BIO.leafQ": 1,
  "settlements/mungo/dist/mungo.html: ORDER KMAT": 1,
+ "settlements/opal-ford/dist/opal-ford.html: CLASH _registered": 1,
+ "settlements/opal-ford/dist/opal-ford.html: MINSET core/biome/34-core-impostor.js": 1,
  "settlements/pher/dist/pher.html: CLASH _registered": 1,
  "settlements/pher/dist/pher.html: MINSET core/biome/34-core-impostor.js": 1,
  "settlements/xanadu-lake/dist/xanadu-lake.html: CLASH _registered": 1,
