@@ -155,19 +155,33 @@
     const placed = [];
     const report = { culture: room.culture, own: 0, thin: false, fallbacks: [], missing: [], required: [], optional: 0, tries: 0 };
     const prog = IX.PROGRAMS[room.kind] || IX.DEFAULT_PROGRAM;
-    /* the room's fixtures (a stair, a stairwell) stand before any furniture does */
+    /* the room's fixtures (a stair, a stairwell) stand before any furniture does. A reachable one (reach: the default) keeps at
+       least MIN_USE free in front, as a usable piece does: a shorter or missing front clearance left its use zone inside its own
+       stamped footprint (the grid grows it by the agent), so no cell could reach it and every floor piece failed the walk check */
     (room.fixtures || []).forEach(function (f) {
       const P = { key: f.id, w: f.w, d: f.d, h: Math.min(f.h, room.h), type: 'fixture', anchor: 'floor', clear: f.clearance || {}, usable: !!f.reach, fixture: true };
       const fp = G.rect(f.x, f.z, f.ry, f.w, f.d);
-      const Q = { id: f.id, P: P, x: f.x, z: f.z, ry: f.ry, fp: fp, zones: clearanceZones(P, f.x, f.z, f.ry, false), layer: 'floor', host: null, fixture: true };
+      const Q = { id: f.id, P: P, x: f.x, z: f.z, ry: f.ry, fp: fp, zones: clearanceZones(P, f.x, f.z, f.ry, true), layer: 'floor', host: null, fixture: true };
       Q.top = room.y + P.h;
       placed.push(Q);
       grid.stamp(fp, +1);
     });
     let nFurn = 0;
     const doorStarts = room.doors.map(function (d) { return grid.doorCells(d); });
-    /* the ways in: every door, and every fixture's front (a stair's foot, the landing at a well's top) */
-    const entries = doorStarts.concat(placed.filter(function (Q) { return Q.fixture && Q.P.usable; }).map(function (Q) { return useCells(Q); }));
+    /* the ways in: every door, and every fixture's front (a stair's foot, the landing at a well's top). A fixture whose front has
+       no walkable cell even in the empty room (it faces a wall, or another fixture: a cushion drawn up to a desk), or none the
+       first door reaches, is left out and listed in report.blockedFixtures (not report.missing: no need went unmet): kept, it
+       would fail the walk check for every floor piece */
+    const fixEntries = [], door0 = doorStarts.length && doorStarts[0].length ? doorStarts[0] : null;
+    report.blockedFixtures = [];
+    placed.forEach(function (Q) {
+      if (!Q.fixture || !Q.P.usable) return;
+      const cs = useCells(Q);
+      if (!cs.some(grid.walkable)) report.blockedFixtures.push({ id: Q.id, reason: 'no walkable cell in front' });
+      else if (door0 && !grid.reaches(door0, [cs])) report.blockedFixtures.push({ id: Q.id, reason: 'cut off from door 0' });
+      else fixEntries.push(cs);
+    });
+    const entries = doorStarts.concat(fixEntries);
     if (!room.doors.length) report.noDoors = true;
     doorStarts.forEach(function (s, i) { if (!s.length) report.missing.push({ need: 'door ' + i, reason: 'door has no walkable cell inside it' }); });
 

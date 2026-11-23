@@ -7,6 +7,20 @@ pieces a seed, 16 walkers; seeds 0–2, and seeds 0–7 with `--seeds 8`) with n
 What follows is what the checks do not cover, or what the kit does not do yet.
 
 ## Open
+- [x] **A fixture with a short or missing front clearance voided its room (found 2026-11-11 by the Qiblai kit session).** A fixture
+  is reachable unless it says `reach: false`, and the placer kept its use zone reachable; that zone was the declared
+  `clearance.front` alone. At 0.2 m it lay inside the fixture's own footprint as the grid stamps it (grown by the agent), with no
+  front clearance there was no zone at all, so no cell reached it and every floor piece failed the walk check: a shrine's altar
+  or a hall's table came out `no-fit`. The audit (`48-audit.js`) and the life layer already gave a fixture the usable piece's
+  0.45 m (`MIN_USE`); the placer now does too (`src/45-placer.js`), and a reachable fixture whose front has no walkable cell, or
+  none the first door reaches, even in the empty room, is left out of the walk check and listed in `report.blockedFixtures`
+  (not `report.missing`, which Longsong's and Voth's hosts count as failures: a cushion drawn up to its desk is not one). Builds
+  whose hosts write fixtures without `reach: false` (Voth's palace rooms, `56-vc-interiors-host.js`; Longsong's columns and laid-out
+  pieces, `57a-ls-interiors.js`) furnish rooms that had taken no floor piece. `tests/test-fixtures.js` (run by `verify.py
+  --assert`) holds the case. **Not yet on the fix:** Dhelv, Girder (and its hero page), Locus (its kit sheets too), Mungo, Verge,
+  Roketstad and Pinnacle Rock keep their committed pages: rebuilt on 2026-11-11 they took other sources main had moved on since
+  (the biome core: `bk is not defined` in `BIO.geo.stemClump`, `BIO.animMat`, `BIO.fung`, the attach audit; `KratorSky`,
+  `wkSupport`) and failed their verifies for those reasons, not this one. Rebuild them once those are fixed.
 - [x] **`verify.py dist/interiors-sets.html --assert` and `dist/interiors-walk.html --assert` threw in the snapshot (2026-11-09).**
   Both ran the demo's checks: the demo's snapshot reads `window._interiors.walkers`, which neither page has (the sets sheet needs
   `--sets`; the walk mockup had no verify, only `tools/walkshots.py`). `verify.py` now takes the mode from the page's name
