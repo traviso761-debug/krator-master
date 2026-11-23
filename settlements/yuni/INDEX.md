@@ -41,7 +41,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 33 **big** | 8. LAYOUT (1); THE INNER-CITY PLOT SCHEDULE (67); STREET NETWORK (202); WALK GRAPH (life-layer framework) (430) |
 | `40-ground.js` | 10 | 9. GROUND CANVAS + MASK (1) |
-| `45-kit.js` | 33 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (130) |
+| `45-kit.js` | 29 | 10. KIT (1); NIGHT LIGHT VOLUME (130) |
 | `47-texture.js` | 15 | 11. TEXTURES (1) |
 | `50-structure.js` | 16 | 12. STRUCTURE (massing) (1) |
 | `51-fixtures.js` | 13 | 13a. FIXTURES: BUILDINGS, DOORS, WINDOWS, LIGHTS (1); EXPORT (130) |

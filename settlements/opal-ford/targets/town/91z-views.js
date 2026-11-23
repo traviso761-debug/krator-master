@@ -12,6 +12,10 @@ const VIEWS=(function(){const V={},c0=ofRiverX(0),T=OF.TOWN,F=OF.REACH.fall,PR=O
  {const cf=ofRiverX(F.z),x=cf+ofHW(F.z)+90,z=F.z-260;V['The fall and the precinct ground']=[x,ofH(x,z)+22,z,cf,ofW(F.z)-8,F.z];}
  {const Hh=OF.HOUSE,m=OF_PLACE.find(p=>p.key==='qb_monastery');
   if(m)V['The Iridescent house']=[m.x+150,m.o.y+70,m.z-170,m.x-60,m.o.y,m.z+40];
+  /* inside the hall (the kit block's hall centred at its local z -8.3, its floor 1.8 m up, its storeys 5 and 4 m): from its door
+     toward the shrine at its back (the river side); and the Gallery of the Bow at the top, toward its moonglass wall */
+  if(m){const c=Math.cos(m.ry),s=Math.sin(m.ry),at=(lx,lz)=>[m.x+lx*c+lz*s,m.z-lx*s+lz*c],a=at(0,-2.2),b=at(0,-15.5),g=at(0,-4);
+   V['Inside the Hall of the Bow']=[a[0],m.o.y+3.6,a[1],b[0],m.o.y+3,b[1]];V['In the Gallery of the Bow']=[g[0],m.o.y+12.6,g[1],b[0],m.o.y+12,b[1]];}
   const x=Hh.x0-120,z=Hh.z0+120;V['The Bow Terrace and the cells']=[x+250,ofH(x+250,z-60)+30,z-60,x,ofH(x,z),z+60];}
  V['Up the river from the bridge']=[c0,ofW(OF_SPAN_Z)+7,OF_SPAN_Z,c0,ofW(2400),2400];
  return V;})();

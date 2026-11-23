@@ -21,4 +21,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `town` | `89z-rows.js`, `89zp-of-site.js`, `90q-of-world.js`, `90r-of-build.js`, `90s-of-interiors.js`, `90w-of-river.js`, `91z-views.js` | 69 |
+| `town` | `89z-rows.js`, `89zp-of-site.js`, `90q-of-world.js`, `90r-of-build.js`, `90s-of-interiors.js`, `90w-of-river.js`, `91z-views.js` | 75 |

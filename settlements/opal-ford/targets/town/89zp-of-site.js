@@ -127,6 +127,9 @@ const OF_HOSTS=(function(){const H=[],P2=Math.PI/2,c=ofRiverX(OF_SPAN_Z);
  {const cf=ofRiverX(0);H.push(['xa_ford',cf,0,0,'the paved ford: the opal road crosses the Sitār Ḍrāi',0,'bridge',0]);
   const zr=-70;H.push(['xa_ferry_raft',ofRiverX(zr)+ofHW(zr)-12,zr,0,'the ferry raft, for the high water when the ford is shut',0,'boat',0]);}
  for(let i=-1;i<=1;i++)H.push(['xa_river_span',c+i*26,OF_SPAN_Z,P2,'the footbridge beside the ford (the wet months)',0,'bridge',2.2]);
+ /* the mill's weir across the river above the town, and the three fish weirs below it (kits/xanadu/extra/88j), their tips down the current */
+ H.push(['xa_weir',ofRiverX(840),840,0,'the mill\'s weir: its race leaves at the north-east end',0,'works',0]);
+ for(const z of[-560,-820,-1080])H.push(['xa_fish_weir',ofRiverX(z-15),z-15,0,'a fish weir: stake fences in a V, a basket at its tip',0,'works',0]);
  /* the fish racks and smokehouses by the fish weirs (kits/xanadu/src/87k, opt-in: kit.json), on the north-east flats facing the river */
  for(const zr of OF_RACKS_Z)H.push(['xa_fish_racks',ofRiverX(zr)+ofHW(zr)+40,zr,-P2,'fish racks and a smokehouse: the weirs\' catch dried and smoked',0,'civic']);
  /* the dugouts drawn up on the north-east bank above the ford, bows to the water */

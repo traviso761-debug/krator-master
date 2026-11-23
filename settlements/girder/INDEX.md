@@ -41,7 +41,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 26 | 5. LAYOUT — GIRDER (1); THE RUIN (41); THE TERRACE (148); THE FOREST (182); NAV GRAPH (217) |
 | `32-branches.js` | 5 | 6. BRANCH SKELETONS (1) |
-| `45-kit.js` | 34 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (176) |
+| `45-kit.js` | 30 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (176) |
 | `47-texture.js` | 15 | 11. TEXTURES (1) |
 | `48-detail.js` | 7 | 11b. DETAIL MAPS: the library on meshes without  (1) |
 | `50-structure.js` | 19 | 12. STRUCTURE — GIRDER (1) |
