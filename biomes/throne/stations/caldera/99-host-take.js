@@ -15,6 +15,9 @@ const VMODE={},VWEATHER={};
 // a point by its angle round the caldera and its radius from the centre
 const ca=(a,r)=>[CAL.x+Math.cos(a)*r,CAL.z+Math.sin(a)*r];
 const VIEWS={
+ /* the Rheoliths in the lake's hot ring (89y): from outside the ring, looking into the breach */
+ 'The lake ring throat and its Rheoliths':(function(){if(!RHEO_SITE)return[0,gh(0,0,30),0,LAKE.x,LAKE.level,LAKE.z];const P=RHEO_SITE.pit,dx=P.x-LAKE.x,dz=P.z-LAKE.z,d=Math.hypot(dx,dz)||1,
+  x=P.x+dx/d*45,z=P.z+dz/d*45;return[x,gh(x,z,24),z,P.x,gh(P.x,P.z,-2),P.z];})(),
  'The rim over the caldera':(function(){const a=Math.PI+.12,c=ca(a,crestR(a)+6);return[c[0],gh(c[0],c[1],2),c[1],LAKE.x,LAKE.level+40,LAKE.z];})(),
  'The lava lake':(function(){const a=Math.PI-.05,c=ca(a,crestR(a)-30);return[c[0],gh(c[0],c[1],3),c[1],LAKE.x,LAKE.level,LAKE.z];})(),
  'The lava lake, close':(function(){const a=Math.PI+.35,r=LAKE.rAt(a)*1.04,c=[LAKE.x+Math.cos(a)*r,LAKE.z+Math.sin(a)*r],ta=a,tr=LAKE.rAt(a)*.7;return[c[0],Math.max(gh(c[0],c[1],4),LAKE.level+16),c[1],LAKE.x+Math.cos(ta)*tr,LAKE.level,LAKE.z+Math.sin(ta)*tr];})(),
@@ -63,7 +66,7 @@ const KEYOF=t=>THRONE.SPECIES[t.sp].key;
 const LIFE=['lichen','mossclump','mat','cushion'];
 const HCHK={
  // nothing lives here but lichen and the warm ground's life: no trees, and every plant one of the hardy few (or a glow mushroom)
- lifeless(T,P){const bad=P.filter(p=>/^biome:/.test(p[3])&&LIFE.indexOf(p[3].slice(6))<0&&!/^biome:(glowshroom|penitente|icetower|boulder|stone|ventcone)/.test(p[3]));
+ lifeless(T,P){const bad=P.filter(p=>/^biome:/.test(p[3])&&LIFE.indexOf(p[3].slice(6))<0&&!/^biome:(glowshroom|penitente|icetower|boulder|stone|ventcone|rh_)/.test(p[3]));   /* rh_: the Rheoliths in the lake's hot ring (89y), the one life the heat allows */
   return{ok:!T.length&&!bad.length,detail:T.length+bad.length?(T.length+' trees, '+bad.length+' other plants ('+[...new Set(bad.map(p=>p[3]))].slice(0,4).join(', ')+')'):'no trees; only lichen, moss, the mat and glow mushrooms'};},
  // and the little there is lives on the warm ground and the rocks, not on the floor or in the lake
  floor(P){const bad=P.filter(p=>LIFE.indexOf(p[3].slice(6))>=0&&calR(p[0],p[2])<CAL.foot);return{ok:!bad.length,detail:bad.length?bad.length+' plants on the caldera floor':'nothing on the floor'};},
@@ -80,6 +83,10 @@ const HCHK={
   return{ok:!bad.length,detail:bad.length?'untagged: '+bad.join(', '):L.length+' species and plants tagged'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras clear'};}};
 const plantList=()=>Object.keys(THRONE.PLANTS).map(k=>Object.assign({key:k},THRONE.PLANTS[k]));
+/* THE RHEOLITHS (89y, biomes/rheolith read in place): every living guild where RHEO_PHYS.windowAt says it can live, and the dead byproducts round it */
+function rheoCheck(L,minLive,minDead){if(!RHEO_SITE||!L)return{ok:false,detail:'no rheoliths (89y)'};const live=L.filter(p=>p[4]===1),dead=L.length-live.length,
+ bad=live.filter(p=>!RHEO_PHYS.windowAt({tempC:p[5],waterActivity:p[6],acidPh:p[7]}).viable);
+ return{ok:live.length>=minLive&&dead>=minDead&&!bad.length,detail:live.length+' living in the throat, '+dead+' dead byproducts round it'+(bad.length?', '+bad.length+' living outside the window (first '+bad[0][0]+' at '+Math.round(bad[0][5])+' degC)':'')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('nothing lives here but the hardiest few',HCHK.lifeless(THRONE.TREES,P));
  add('nothing on the caldera floor',HCHK.floor(P));
@@ -87,6 +94,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the eruption toggle',HCHK.erupt(SUMMIT));
  add('the snow and the ash (core/atmos, opt-in) are here',HCHK.weather(ATMOS.W,ATMOS.U));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
+ add('the Rheoliths live only in the hot dry acid throat',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED:null,10,30));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
@@ -97,6 +105,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('an eruption that never starts',HCHK.erupt(Object.assign({},SUMMIT,{eruptStep:(E)=>E})));
  add('a weather without the ash',HCHK.weather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES.concat(['snowfall','blizzard'])}),ATMOS.U));
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
+ add('a living guild in the cool ground',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED.concat([['chokecoral',0,terrainH(0,0),0,1,40,.5,5.5]]):null,10,30));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

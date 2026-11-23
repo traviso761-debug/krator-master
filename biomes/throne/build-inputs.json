@@ -737,6 +737,10 @@
   "build.py --station caldera": {
    "inputs": {
     "biomes/godthrone/src/45a5-host-region.js": "3251b595191c23bafaeb9c8c70e9ab88f2208dcaf030367be5882a9402b9740e",
+    "biomes/rheolith/src/40-rheolith-phys.js": "0226a1cfd2f6a9233bcdc71aa2c31bc98a62c99bd8785d250bbe035edd9dd1da",
+    "biomes/rheolith/src/50-rheolith-species.js": "9c2b33f079ee1e55e5e3025a817678df31a90ce8582b4cdd2a7d3b3d2e0e8c20",
+    "biomes/rheolith/src/60-rheolith-place.js": "09582bb3c1576ff926b3c119a84682922cc1387728cc3f7743d20fe647fe02b3",
+    "biomes/rheolith/src/70-rheolith.js": "6f67f7420b4e8cf5e36a7c96d596e0c78465349c6a09568d91bfcfc4e3793f8a",
     "biomes/throne/KNOWN_ISSUES.md": "82c2178ed0d57696908561305559bb36cabba6dbbee4a36cc387e06128292528",
     "biomes/throne/PORT.md": "5610a75cf0cf54a8ca78a02f327d4ab83f625bdbe7cbfc19a8e410eb4d1dc272",
     "biomes/throne/build.py": "b299328745f69cd972aeac30b174e4d4ea6a04f881cd3cec621895edaeb4a279",
@@ -761,10 +765,11 @@
     "biomes/throne/stations/caldera/86-host-caldera.js": "6ae41e52bb9852d684ac1a98459e9a8db9b8b7543cf7529726ea4c0e95274f83",
     "biomes/throne/stations/caldera/89-host-atmos.js": "58b817b25f15676c50ef976b2058b9862cc0eef5a6fccc7bf1a630264a879feb",
     "biomes/throne/stations/caldera/89-host-sky.js": "6ee3ce72344e72aa0db72331d53618bee6ac6336be9b3e255b22314edf3c51e8",
+    "biomes/throne/stations/caldera/89y-host-rheo.js": "9109ce15ccc7e9819654745aae0cb5653912c84ec1a6250f9a15b35bbc3112b8",
     "biomes/throne/stations/caldera/89z-host-build.js": "cabedfa62046e8e18c3eb24ca51c122c80dc2bf82dd62da0480d35ab58ee9880",
-    "biomes/throne/stations/caldera/99-host-take.js": "559254f87a218dcb8236c88b0660885bbed30be65c77c05c2b3458c05f4ae141",
+    "biomes/throne/stations/caldera/99-host-take.js": "d45a775a7d3617e776612150ef78b055dc0d8c4f299585197436f18d750a84f4",
     "biomes/throne/stations/caldera/region.json": "7a5f50fe2a078bb666dfc33afa783ebb1cdf5431ab14a5c35f16c99ed939b44c",
-    "biomes/throne/stations/caldera/station.json": "4285bc68eec568c32576ac31daa422a19421e64378638868ac1715db292a5de3",
+    "biomes/throne/stations/caldera/station.json": "8d6a0ec6dfdca3a5013a6cb8441bfef012c5a7915cbd542fc052ceb9ffcd1e36",
     "biomes/throne/tex/bark.armored.albedo.webp": "96289b2dd259c262955a7a422bc2ca69263c06070735b945ec10bb8f2f36391e",
     "biomes/throne/tex/bark.bracket.albedo.webp": "a6492b1f636abfb36e2ff0692dabbdef08e6ee3ac34df19bebb71af23d16e913",
     "biomes/throne/tex/bark.brimstone.albedo.webp": "5a1255049c5640ae3833b611175db7d1f7300f0499768d925db0258f5b8e9f6d",
@@ -958,18 +963,18 @@
    "listings": {
     "biomes/throne/src": "dc5f91398fcac784e7cd289fdb7d7c3354b5fb9c108259a3a72c5c6222e805be",
     "biomes/throne/stations": "f8a9060726a60058d938360218c112979aa64d34ad2a0eef0e256d915ffe4c47",
-    "biomes/throne/stations/caldera": "7df84d8f9fd2a21ffcd1bf72cd1d0bc9f572fb5ec0e4f94a7d1a623a5a406731",
+    "biomes/throne/stations/caldera": "9db44a3e1a6a97c57316c82209a4cbda9a9ca14bf8c07195c48cf39492888c5c",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/throne/dist/throne-caldera.html": "627850a29a0c54962a1107e3b105ebc8c123b9bd07cc29105226cf4e7bc54712",
+    "biomes/throne/dist/throne-caldera.html": "c1a94ecb302841db19bd3c17efc0cd14c829ff7246b55783d8ef5d6df5818edf",
     "biomes/throne/dist/throne.tex.throne-2.js": "0b33ea45dd0e7fcba0f9eaae4dbf0bbf1e6a5b39aff7baa63e6ac6c7b5e1c798",
     "biomes/throne/dist/throne.tex.throne.js": "9d67bfeb890067b2372ae341d3e9e1c43cc481cde64847d2853c88d05c93ce87"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-caldera.html": "627850a29a0c54962a1107e3b105ebc8c123b9bd07cc29105226cf4e7bc54712",
+    "biomes/throne/dist/throne-caldera.html": "c1a94ecb302841db19bd3c17efc0cd14c829ff7246b55783d8ef5d6df5818edf",
     "biomes/throne/dist/throne.tex.throne-2.js": "0b33ea45dd0e7fcba0f9eaae4dbf0bbf1e6a5b39aff7baa63e6ac6c7b5e1c798",
     "biomes/throne/dist/throne.tex.throne.js": "9d67bfeb890067b2372ae341d3e9e1c43cc481cde64847d2853c88d05c93ce87"
    }
@@ -3086,6 +3091,10 @@
   },
   "build.py --station tube": {
    "inputs": {
+    "biomes/rheolith/src/40-rheolith-phys.js": "0226a1cfd2f6a9233bcdc71aa2c31bc98a62c99bd8785d250bbe035edd9dd1da",
+    "biomes/rheolith/src/50-rheolith-species.js": "9c2b33f079ee1e55e5e3025a817678df31a90ce8582b4cdd2a7d3b3d2e0e8c20",
+    "biomes/rheolith/src/60-rheolith-place.js": "09582bb3c1576ff926b3c119a84682922cc1387728cc3f7743d20fe647fe02b3",
+    "biomes/rheolith/src/70-rheolith.js": "6f67f7420b4e8cf5e36a7c96d596e0c78465349c6a09568d91bfcfc4e3793f8a",
     "biomes/throne/KNOWN_ISSUES.md": "82c2178ed0d57696908561305559bb36cabba6dbbee4a36cc387e06128292528",
     "biomes/throne/PORT.md": "5610a75cf0cf54a8ca78a02f327d4ab83f625bdbe7cbfc19a8e410eb4d1dc272",
     "biomes/throne/build.py": "b299328745f69cd972aeac30b174e4d4ea6a04f881cd3cec621895edaeb4a279",
@@ -3110,9 +3119,10 @@
     "biomes/throne/stations/tube/84-host-ground.js": "b6dcee68c40e498e94187114484deb5802b751b62a406b45e76548d208b02042",
     "biomes/throne/stations/tube/86-host-tube.js": "b330c2341e7a7d9c6b87dd3a38a159ee7631dc2e1895a5301273cbf3ef659e81",
     "biomes/throne/stations/tube/89-host-sky.js": "c8dacccb896c2664005b47923846eb824546636f6e92037350aa4e4f0545f878",
+    "biomes/throne/stations/tube/89y-host-rheo.js": "dbb1df7fd2f4cfd520306c92495f2c40d8758c2d5ec0c94d836691a4f4f238fa",
     "biomes/throne/stations/tube/89z-host-build.js": "88ccd352de80e053417d3ff12f6e7115bcec3f5a0bf6f5bcd03f623f1c04b33a",
-    "biomes/throne/stations/tube/99-host-take.js": "70dde16e90450122fd0065eab2100795148c9d36d64fdd279b6a5737c8240699",
-    "biomes/throne/stations/tube/station.json": "882903e7fbdf7a2986465cd5cebf68ff0b4635ba564aed941c3f155dcc635891",
+    "biomes/throne/stations/tube/99-host-take.js": "17a5d73301791b3b429a3c933be3c0d5cc8280a6b3c1b7e2ea11cd07d8bd0640",
+    "biomes/throne/stations/tube/station.json": "dcb7ab26eabe8fcc49e9229939fc6f6697b57bf4511963fc5fea61509d4a45cf",
     "biomes/throne/tex/bark.armored.albedo.webp": "96289b2dd259c262955a7a422bc2ca69263c06070735b945ec10bb8f2f36391e",
     "biomes/throne/tex/bark.bracket.albedo.webp": "a6492b1f636abfb36e2ff0692dabbdef08e6ee3ac34df19bebb71af23d16e913",
     "biomes/throne/tex/bark.brimstone.albedo.webp": "5a1255049c5640ae3833b611175db7d1f7300f0499768d925db0258f5b8e9f6d",
@@ -3300,18 +3310,18 @@
    "listings": {
     "biomes/throne/src": "dc5f91398fcac784e7cd289fdb7d7c3354b5fb9c108259a3a72c5c6222e805be",
     "biomes/throne/stations": "f8a9060726a60058d938360218c112979aa64d34ad2a0eef0e256d915ffe4c47",
-    "biomes/throne/stations/tube": "0494879bf6424c18c1a16b5f37abfd41ab9de56ce4f6f71c2b66ea678196ee53",
+    "biomes/throne/stations/tube": "a98ae82b113195a5a1573294b918c51ba25ae388726402342084a127ce10bc04",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/throne/dist/throne-tube.html": "9364180ea86429837512f5b7899756024ad5eac26caf1528ce4bb8ea7fc1d704",
+    "biomes/throne/dist/throne-tube.html": "947b67a55a6852986ff2ccc84b28e507aa2aacfa6f058d1306d8d667e7cfa72c",
     "biomes/throne/dist/throne.tex.throne-2.js": "0b33ea45dd0e7fcba0f9eaae4dbf0bbf1e6a5b39aff7baa63e6ac6c7b5e1c798",
     "biomes/throne/dist/throne.tex.throne.js": "9d67bfeb890067b2372ae341d3e9e1c43cc481cde64847d2853c88d05c93ce87"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-tube.html": "9364180ea86429837512f5b7899756024ad5eac26caf1528ce4bb8ea7fc1d704",
+    "biomes/throne/dist/throne-tube.html": "947b67a55a6852986ff2ccc84b28e507aa2aacfa6f058d1306d8d667e7cfa72c",
     "biomes/throne/dist/throne.tex.throne-2.js": "0b33ea45dd0e7fcba0f9eaae4dbf0bbf1e6a5b39aff7baa63e6ac6c7b5e1c798",
     "biomes/throne/dist/throne.tex.throne.js": "9d67bfeb890067b2372ae341d3e9e1c43cc481cde64847d2853c88d05c93ce87"
    }

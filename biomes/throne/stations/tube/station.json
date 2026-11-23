@@ -11,5 +11,11 @@
   "89-atmos-b-skylight.js",
   "fx/89-atmos-fx-lava.js"
  ],
- "atmosHost": true
+ "atmosHost": true,
+ "kits": {
+  "48r1-rheo-phys.js": "../rheolith/src/40-rheolith-phys.js",
+  "48r2-rheo-species.js": "../rheolith/src/50-rheolith-species.js",
+  "48r3-rheo-place.js": "../rheolith/src/60-rheolith-place.js",
+  "48r4-rheo-build.js": "../rheolith/src/70-rheolith.js"
+ }
 }
