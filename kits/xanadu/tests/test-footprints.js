@@ -45,7 +45,9 @@ const KNOWN = {
   // the opt-in pieces in extra/, measured 2026-11-17 when the test began sealing them: the wind-catcher and white twins (88f)
   // carry their house's own overhang; the launch's sail-leaf and the stall's awning (88d, 88e: settlements/pher's) are theirs
   xa_mid_a_badgir: 0.36, xa_mid_b_badgir: 6.30, xa_rich_a_badgir: 2.90, xa_rich_c_badgir: 3.10,
-  xa_house_turk_a_badgir: 0.79, xa_monastery_white: 1.69, xa_launch: 1.12, xa_stall: 1.02
+  xa_house_turk_a_badgir: 0.79, xa_monastery_white: 1.69, xa_launch: 1.12, xa_stall: 1.02,
+  // Gihon's dress twins (88h, 2026-11-23): the gold-and-opal temple and the violet house carry their base def's overhang
+  xa_grand_temple_gold: 2.11, xa_monastery_violet: 1.69
 };
 const BUILD_FAILS = {
   xa_lighthouse: 'FRAME_HOOKS is a page global (the sheet and Erewhon have it), not in XAK: the lamp\'s turn hook',
