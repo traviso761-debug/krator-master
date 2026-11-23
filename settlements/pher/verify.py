@@ -8,7 +8,7 @@ town's own:
   pher-civic       the governor's house (the Sultan's heir's seat), the pilgrims' house, the quays, the boat sheds, the
                    warehouses, the generator, the harbour light, the temple of the Decree, the granaries placed
   pher-people      the households about 6,000 (PLAN.md section 2), within 25 % (reported as a budget)
-  pher-boats       the lake craft (P4): over 80 boats, the four runs, every boat under way on water (moored and beached at the quays and the beach)
+  pher-boats       the lake craft (P4): over 80 boats, the six runs, every boat under way on water (moored and beached at the quays and the beach)
   pher-ground      every building's floor on its ground: the floor no lower than the ground at its middle less its footing,
                    no higher than the ground's highest corner plus a metre (the quays and sheds stand at the water)
 
@@ -38,7 +38,7 @@ CITY_JS = r"""
   const lo=phH(p.x,p.z)-(p.drop||0)-.8,hi=Math.max.apply(null,hs)+1;if(!(p.o.y>=lo&&p.o.y<=hi)){bad++;first=first||(p.id+' '+p.key+' floor '+p.o.y.toFixed(1)+' ground '+hs[0].toFixed(1));}}
  R.push({name:'pher-ground',ok:bad===0,detail:bad?bad+' off their ground, first '+first:'every floor on its ground (its footing under it)'});
  const BS=Q.boatSpot?Q.boatSpot():[],wet=BS.filter(b=>!b.moored&&b.h>-1);
- R.push({name:'pher-boats',ok:BS.length>=80&&Q.runs===4&&!wet.length,detail:BS.length+' boats ('+BS.filter(b=>b.moored).length+' moored or beached), '+Q.runs+' runs'+(wet.length?'; aground: '+wet.slice(0,3).map(b=>b.id+' '+b.h).join(', '):'; every one under way on open water')});}
+ R.push({name:'pher-boats',ok:BS.length>=80&&Q.runs===6&&!wet.length,detail:BS.length+' boats ('+BS.filter(b=>b.moored).length+' moored or beached), '+Q.runs+' runs'+(wet.length?'; aground: '+wet.slice(0,3).map(b=>b.id+' '+b.h).join(', '):'; every one under way on open water')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + CITY_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

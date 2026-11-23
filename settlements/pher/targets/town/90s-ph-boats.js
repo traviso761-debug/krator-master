@@ -19,7 +19,7 @@ function phBoatsTick(t){const P=camera.position;let shown=0;
   if(E.m){x=E.m.x;z=E.m.z;}
   else if(E.o){const a=E.o.ry+t*E.o.w;x=E.o.x+Math.cos(a)*E.o.r;z=E.o.z+Math.sin(a)*E.o.r;ry=a+(E.o.w>0?0:Math.PI);E.G.position.set(x,Math.sin(t*.9+E.o.x)*.06,z);E.G.rotation.y=ry;}
   else{const q=phRunAt(E.R,E.loop,E.b,t);x=q.x;z=q.z;E.G.position.set(x,Math.sin(t*.7+E.b.phase*9)*.08,z);E.G.rotation.y=q.ry;}
-  const v=Math.hypot(P.x-x,P.z-z)<PH_BOAT_RANGE;E.G.visible=v;if(v)shown++;}
+  const v=Math.hypot(P.x-x,P.z-z)<PH_BOAT_RANGE&&(!E.R||E.R.kind!=='fair'||PH_FAIR_TODAY);E.G.visible=v;if(v)shown++;}   /* the fair's launches only on its days */
  window._boatsShown=shown;}
 FRAME_HOOKS.push((dt)=>{PH_BOAT_T+=Math.min(.25,dt||0);phBoatsTick(PH_BOAT_T);});phBoatsTick(0);
 Object.assign(window._pher,{failed:PH_FAILS.length,fails:PH_FAILS.slice(0,20),boats:PH_BOAT_G.length,runs:PH_BOATS?PH_BOATS.runs.length:0,

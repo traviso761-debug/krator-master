@@ -225,46 +225,49 @@ The hall's top storey is the Hall of Vigil round the light well, where the Song-
 
 ## Sheet U: the Prismarch's tower (the utse), its five floors side by side
 
-The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the wards: the war room and the order's banner below, his cell in the middle, his chapel and the beacon on top; he rides to Qiblai for the councils. 22 x 22 m, battered, about 23 m to the roof; the inner gate climbs 4 m through its base. In each panel the Main Gate side (east) is on the left.
+The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the wards: the war room and the order's banner below, his cell in the middle, his chapel and the beacon on top; he rides to Qiblai for the councils. 22 x 22 m, battered, about 23 m to the roof; the inner gate climbs 4 m through its base, under the murder gallery. One stair serves every floor; a rope hoist in its well carries the runners' notes up to the War Room. The balcony on U2's east face looks down on the muster court. In each panel the Main Gate side (east) is on the left.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
 | 2 | U0: Keepers of the Inner Gate | guard | plain | 136 | xanadu_arms_arrow_bin x1 **NEW**, xanadu_common_armour_stand x2, xanadu_common_banner x1, xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_table x1, xanadu_common_weapon_rack x2 |
 | 3 | U0: Stair | stair | fine | 25 | xanadu_common_lamp x1 |
-| 4 | U0: Runners' Room | runners | plain | 176 | xanadu_common_banner x1, xanadu_common_bench x4, xanadu_common_board x1, xanadu_common_chest x1, xanadu_common_hanging x1, xanadu_common_hour_drum x1 **NEW**, xanadu_common_lamp x3 |
-| 5 | U1: War Room | war room | rich | 308 | xanadu_common_board x3, xanadu_common_chair x12, xanadu_common_planter x3, xanadu_court_art x2, xanadu_court_bookcase x2, xanadu_court_carpet x4, xanadu_court_council_table x1, xanadu_court_hanging x3, xanadu_court_lamp x8, xanadu_court_map_table x1, xanadu_court_statue x1, xanadu_court_tapestry x4, xanadu_court_wall_rug x2 |
-| 6 | U1: Clerks of the Raid Ledger | office | fine | 136 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x3, xanadu_common_chair x5, xanadu_common_chest x1, xanadu_common_desk x3, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rug x2, xanadu_common_scroll x1 |
-| 7 | U1: Stair | stair | fine | 25 | xanadu_common_lamp x1 |
-| 8 | U2: Hall of the Banner | banner hall | rich | 374 | xanadu_common_planter x3, xanadu_common_weapon_rack x2, xanadu_court_art x3, xanadu_court_banner x8, xanadu_court_carpet x5, xanadu_court_hanging x4, xanadu_court_lamp x9, xanadu_court_statue x1, xanadu_court_storm_banner x1 **NEW**, xanadu_court_tapestry x5, xanadu_court_wall_rug x3 |
-| 9 | U2: Antechamber | antechamber | fine | 85 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_chair x3, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_scroll x1, xanadu_court_divan x2, xanadu_court_low_table x1, xanadu_court_screen x1 |
-| 10 | U2: Stair | stair | fine | 25 | xanadu_common_lamp x1 |
-| 11 | U3: Audience Room | audience | rich | 242 | xanadu_common_meditation_cushion x8, xanadu_common_planter x2, xanadu_court_art x2, xanadu_court_carpet x3, xanadu_court_hanging x3, xanadu_court_lamp x6, xanadu_court_low_table x2, xanadu_court_screen x1, xanadu_court_statue x1, xanadu_court_tapestry x4, xanadu_court_throne x1, xanadu_court_wall_rug x2 |
-| 12 | U3: The Prismarch's Cell | abbot cell | fine | 132 | xanadu_arms_bow_rack x1 **NEW**, xanadu_common_armour_stand x1, xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_meditation_cushion x1, xanadu_common_rug x2, xanadu_common_scroll x1, xanadu_common_weapon_rack x1 |
-| 13 | U3: Secretary | office | fine | 60 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x2, xanadu_common_hanging x1, xanadu_common_lamp x1, xanadu_common_rug x1, xanadu_common_scroll x1 |
-| 14 | U3: Stair | stair | fine | 25 | xanadu_common_lamp x1 |
-| 15 | U4: Roof Terrace | roof | fine | 484 |  |
-| 16 | U4: Chapel of the Prismarch | chapel | sumptuous | 256 | xanadu_common_candle x8, xanadu_common_planter x3, xanadu_court_altar x1, xanadu_court_art x3, xanadu_court_candelabra x3, xanadu_court_carpet x4, xanadu_court_fire x2, xanadu_court_frieze x5, xanadu_court_hanging x4, xanadu_court_lamp x9, xanadu_court_painted_hanging x2, xanadu_court_statue x2, xanadu_court_tapestry x7 |
-| 17 | U4: Beacon | beacon | plain | 25 | xanadu_common_beacon_basket x1 **NEW**, xanadu_common_lamp x1, xanadu_common_signal_mirror x1 **NEW**, xanadu_common_store x2 |
-| 18 | U4: Stair (head) | stair | fine | 25 | xanadu_common_lamp x1 |
+| 5 | U0: Runners' Room | runners | plain | 176 | xanadu_common_banner x1, xanadu_common_bench x4, xanadu_common_board x1, xanadu_common_chest x1, xanadu_common_hanging x1, xanadu_common_hour_drum x1 **NEW**, xanadu_common_lamp x3 |
+| 6 | U1: War Room | war room | rich | 176 | xanadu_common_board x3, xanadu_common_chair x12, xanadu_common_planter x1, xanadu_court_art x2, xanadu_court_bookcase x2, xanadu_court_carpet x2, xanadu_court_council_table x1, xanadu_court_hanging x2, xanadu_court_lamp x4, xanadu_court_map_table x1, xanadu_court_statue x1, xanadu_court_tapestry x4, xanadu_court_wall_rug x2 |
+| 7 | U1: Murder Gallery | murder | plain | 102 | xanadu_arms_arrow_bin x2 **NEW**, xanadu_common_banner x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_store x2, xanadu_common_weapon_rack x2 |
+| 8 | U1: Clerks of the Raid Ledger | office | fine | 136 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x3, xanadu_common_chair x5, xanadu_common_chest x1, xanadu_common_desk x3, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_rug x2, xanadu_common_scroll x1 |
+| 9 | U1: Stair | stair | fine | 25 | xanadu_common_lamp x1 |
+| 11 | U2: Hall of the Banner | banner hall | rich | 374 | xanadu_common_planter x3, xanadu_common_weapon_rack x2, xanadu_court_art x3, xanadu_court_banner x8, xanadu_court_carpet x5, xanadu_court_hanging x4, xanadu_court_lamp x9, xanadu_court_statue x1, xanadu_court_storm_banner x1 **NEW**, xanadu_court_tapestry x5, xanadu_court_wall_rug x3 |
+| 12 | U2: Balcony | balcony | rich | 30 |  |
+| 13 | U2: Antechamber | antechamber | fine | 85 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_chair x3, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_scroll x1, xanadu_court_divan x2, xanadu_court_low_table x1, xanadu_court_screen x1 |
+| 14 | U2: Stair | stair | fine | 25 | xanadu_common_lamp x1 |
+| 15 | U3: Audience Room | audience | rich | 242 | xanadu_common_meditation_cushion x8, xanadu_common_planter x2, xanadu_court_art x2, xanadu_court_carpet x3, xanadu_court_hanging x3, xanadu_court_lamp x6, xanadu_court_low_table x2, xanadu_court_screen x1, xanadu_court_statue x1, xanadu_court_tapestry x4, xanadu_court_throne x1, xanadu_court_wall_rug x2 |
+| 16 | U3: The Prismarch's Cell | abbot cell | fine | 132 | xanadu_arms_bow_rack x1 **NEW**, xanadu_common_armour_stand x1, xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_bed x1, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x3, xanadu_common_meditation_cushion x1, xanadu_common_rug x2, xanadu_common_scroll x1, xanadu_common_weapon_rack x1 |
+| 17 | U3: Secretary | office | fine | 60 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x2, xanadu_common_hanging x1, xanadu_common_lamp x1, xanadu_common_rug x1, xanadu_common_scroll x1 |
+| 18 | U3: Attendant and Garderobe | attendant | plain | 25 | xanadu_common_bed x1, xanadu_common_chest x1, xanadu_common_lamp x1 |
+| 19 | U3: Stair | stair | fine | 25 | xanadu_common_lamp x1 |
+| 20 | U4: Roof Terrace | roof | fine | 484 |  |
+| 21 | U4: Chapel of the Prismarch | chapel | sumptuous | 256 | xanadu_common_candle x8, xanadu_common_planter x3, xanadu_court_altar x1, xanadu_court_art x3, xanadu_court_candelabra x3, xanadu_court_carpet x4, xanadu_court_fire x2, xanadu_court_frieze x5, xanadu_court_hanging x4, xanadu_court_lamp x9, xanadu_court_painted_hanging x2, xanadu_court_statue x2, xanadu_court_tapestry x7 |
+| 22 | U4: Beacon | beacon | plain | 25 | xanadu_common_beacon_basket x1 **NEW**, xanadu_common_lamp x1, xanadu_common_signal_mirror x1 **NEW**, xanadu_common_store x2 |
+| 23 | U4: Stair (head) | stair | fine | 25 | xanadu_common_lamp x1 |
 
 ## Totals by piece
 
 | Key | Count | Note |
 |---|---|---|
-| xanadu_common_bed | 670 |  |
-| xanadu_common_chest | 614 |  |
-| xanadu_common_lamp | 535 |  |
+| xanadu_common_bed | 671 |  |
+| xanadu_common_chest | 615 |  |
+| xanadu_common_lamp | 538 |  |
 | xanadu_common_armour_stand | 382 |  |
 | xanadu_common_meditation_cushion | 343 |  |
 | xanadu_trade_stall | 327 |  |
-| xanadu_common_weapon_rack | 290 |  |
+| xanadu_common_weapon_rack | 292 |  |
 | xanadu_common_bench | 264 |  |
 | xanadu_common_bowl | 258 |  |
 | xanadu_arms_bow_rack | 227 | strung horn-and-sinew recurve bows on wall pegs, a quiver hung under each, violet cords |
-| xanadu_common_hanging | 200 |  |
+| xanadu_common_hanging | 201 |  |
 | xanadu_common_candle | 171 |  |
 | xanadu_trade_hayrack | 139 |  |
-| xanadu_arms_arrow_bin | 125 | a slatted bin of arrows in sheaves of thirty, fletched violet and white |
+| xanadu_arms_arrow_bin | 127 | a slatted bin of arrows in sheaves of thirty, fletched violet and white |
 | xanadu_arms_saddle_rack | 123 | saddles on wall pegs, bridles and the violet saddle-cloths below |
 | xanadu_common_rug | 122 |  |
 | xanadu_arms_bow_form | 121 | a composite bow lashed to its shaped wooden form to cure (a loft holds them in rows for a year) |
@@ -272,11 +275,11 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 | xanadu_works_sickbed | 120 |  |
 | xanadu_common_table | 109 |  |
 | xanadu_common_chair | 107 |  |
-| xanadu_common_banner | 102 |  |
+| xanadu_common_banner | 103 |  |
+| xanadu_common_store | 100 |  |
 | xanadu_common_wall_shelves | 99 |  |
-| xanadu_common_store | 98 |  |
 | xanadu_trade_bin | 96 |  |
-| xanadu_court_lamp | 95 |  |
+| xanadu_court_lamp | 91 |  |
 | xanadu_trade_trough | 90 |  |
 | xanadu_court_tapestry | 85 |  |
 | xanadu_common_art | 81 |  |
@@ -285,10 +288,10 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 | xanadu_common_prayer_wheels | 57 |  |
 | xanadu_common_low_table | 53 |  |
 | xanadu_common_stool | 52 |  |
-| xanadu_common_planter | 51 |  |
-| xanadu_court_hanging | 49 |  |
-| xanadu_court_carpet | 47 |  |
+| xanadu_common_planter | 49 |  |
+| xanadu_court_hanging | 48 |  |
 | xanadu_common_scroll | 46 |  |
+| xanadu_court_carpet | 45 |  |
 | xanadu_common_workbench | 43 |  |
 | xanadu_common_bath_basin | 38 |  |
 | xanadu_court_art | 36 |  |
@@ -357,7 +360,7 @@ The owner, 2026-11-16: the violet Prismarch lives here, in a tower between the w
 
 ## Pieces the catalog lacks (NEW)
 
-- `xanadu_arms_arrow_bin`: a slatted bin of arrows in sheaves of thirty, fletched violet and white (x125)
+- `xanadu_arms_arrow_bin`: a slatted bin of arrows in sheaves of thirty, fletched violet and white (x127)
 - `xanadu_arms_bow_form`: a composite bow lashed to its shaped wooden form to cure (a loft holds them in rows for a year) (x121)
 - `xanadu_arms_bow_rack`: strung horn-and-sinew recurve bows on wall pegs, a quiver hung under each, violet cords (x227)
 - `xanadu_arms_fletching_bench`: the fletcher's bench: shafts, a feather box, a glue pot on a brazier, a straightening iron (x15)

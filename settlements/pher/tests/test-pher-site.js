@@ -97,7 +97,7 @@ function boatsBad(B) { const bad = [];
     if (h > -1.5) { bad.push(R.id + ' aground at ' + Math.round(x) + ',' + Math.round(z) + ' (' + h.toFixed(1) + ' m)'); break; } } }
   return bad; }
 { const B = PH_BOATS, bad = boatsBad(B), n = B.moored.length + B.out.length + B.runs.reduce((a, R) => a + R.boats.length, 0);
-  T.ok('the boats afloat: moored and fishing boats on water, the beached dugouts at the waterline, every run on open water', bad.length === 0 && n >= 80 && B.runs.length === 4,
+  T.ok('the boats afloat: moored and fishing boats on water, the beached dugouts at the waterline, every run on open water', bad.length === 0 && n >= 80 && B.runs.length === 6,
     bad.length ? bad.slice(0, 4).join('; ') : n + ' boats, ' + B.runs.length + ' runs');
   const thru = Object.assign({}, B, { runs: B.runs.concat([{ id: 'through the headland', pts: [[-150, 200], [PH.HEAD.b[0] - 100, PH.HEAD.b[1] - 300], [-2000, 1400]], boats: [], speed: 1 }]) });
   T.neg('...its negative: a run cut across the headland is caught', X => boatsBad(X).length === 0, thru, B); }

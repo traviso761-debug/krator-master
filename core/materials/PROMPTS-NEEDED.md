@@ -3,9 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 0 prompts** (2026-11-17: the 25 below delivered, sections 57, 58 and 43, the archive has them; before: 25, +12 easter eggs for Erewhon's walls, section 58: the Ancient Mariner, Samuel Butler, Caves of Qud, Kenshi,
-2026-11-17; +10 for Erewhon's citadel, section 57: the hangings of Kubla Khan and the suzani, 2026-11-16. Before: 3,
-2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
+**Count: 8 prompts** (2026-11-22: +2, Xanadu on the vertical stack, `ground.paddy.wet`, `tile.dome.bannai`, section 60. 2026-11-22: +3, Xanadu's lake towns and mines, `stone.ghat.wet`, `ground.sherds`, `ground.tailings.ore`, section 59. 2026-11-17: +2, the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 58 (the second). 2026-11-17: +1, Kirstabal's `wall.slate.coursed`, section 57 (the second). 2026-11-17: 25 delivered, the first sections 57 and 58 and the Tungang section 43, the archive has them: 12 easter eggs for Erewhon's walls (the Ancient Mariner, Samuel Butler, Caves of Qud, Kenshi), 10 hangings for Erewhon's citadel (Kubla Khan and the suzani), and the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
 owner's Codex batches delivered the rest: 22 new sets on 2026-11-16 (`PLAN.md`, "Delivered 2026-11-16"), and, merged here the same day
 ("keep the installed 2026-11-12 takes, merge them here"), the 2026-11-12 batch's 63 sets from `claude/textures-2026-11-12`, whose
 entries are in `PROMPTS-archived.md`; every entry whose set is now in the library was taken off this list. None is wired yet: each
@@ -431,8 +429,8 @@ stand-in its `KNOWN_ISSUES.md` names. Full colour: the colour is the point (do n
 ## 53. The mined goods' resource nodes (`kits/resources`, 2026-11-16)
 
 The nodes for the mined goods of Gemini's trade model (`kits/resources/src/44s`-`44u`). Until these come the nodes draw vertex
-colours (`kits/resources/KNOWN_ISSUES.md`). Three sets owed elsewhere are wanted here too, so each serves both when it lands:
-`rock.sphalerite` (section 51: the zinc node's blackjack bands), `rock.opal.matrix` (section 46: the opal node's outcrop) and
+colours (`kits/resources/KNOWN_ISSUES.md`). Two sets owed elsewhere are wanted here too, so each serves both when it lands:
+`rock.opal.matrix` (section 46: the opal node's outcrop) and
 `rock.serpentinite` (section 52: the jade node's host rock). Wire each into `kits/resources/materials.json` as well as its first
 build. Full colour, 1 m a tile: the colour is the point (do not tint them). **3 prompts.**
 
@@ -467,6 +465,81 @@ Order's blue, the Xanadu wash and `cloth.wool`. **3 prompts**, all full colour.
 ## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
 
 **Delivered 2026-11-17** (the owner's Codex batch; `tools/textures/batches/citadel-hangings-2026-11-17.json`; `PLAN.md`, "Delivered 2026-11-17"); the prompts are in `PROMPTS-archived.md`. `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs` are in the library, **not wired**: `kits/tungang` wires them (its `materials.json`) at its next turn.
+
+## 57. Kirstabal's slate town wall (`settlements/kirstabal`, the Xanadu kit's opt-in wall `kits/xanadu/src/87k2-xa-slate-wall.js`, 2026-11-17)
+
+The owner, 2026-11-17: "a wall made of slate similar to the thin brick wall of chiang mai". No library set is a wall of thin
+slate courses; the wall draws `brick.dark` tinted slate grey (families `xSlate`, `xSlateD` in `settlements/kirstabal/materials.json`)
+until this lands. It lands as `wall.slate.coursed` in the library, the two families repointed to it, then
+`python3 tools/textures/pack.py settlements/kirstabal`. **1 prompt.**
+
+`wall.slate.coursed` (the curtain, the gate pillars, the bastions and buttresses; 2 m a tile; near-colourless so the families'
+colour can tint it lighter or darker):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an old town wall built of thin split slate laid flat in long narrow courses like Chiang Mai's thin bricks, each slab 3 to 6 cm thick and 20 to 60 cm long, the courses straight but each slab's edge slightly ragged and chipped, laid with thin grey lime mortar joints set back a little so every course casts a fine dark line; a few slabs a shade darker or lighter, faint rust-brown iron staining in streaks, pale lime bloom in the joints, a little dark weathering grime and specks of grey-green lichen. Blue-grey and charcoal slate only, low saturation, so it can be tinted.
+```
+
+## 58. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)
+
+The lake towns' work pieces draw on the kit's procedural textures with tinted stand-ins. Three of the four gaps are already in
+the library, to wire when the pieces move into `src/`: the mat shed's reed thatch is `roof.thatch.reed`, the hot spring's apron
+`ground.sinter` (or `ground.travertine.white`), the fishponds' walls and the weed line `rock.wet.dark`. Two are not. They land
+in the library and the kit's `materials.json` takes them at the all-builds rebuild. **2 prompts.**
+
+`ground.dyeworks` (the yard under the dye works' vats and drying lines, Ḍāiyar and Wībhar; 4 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the packed earth and worn flagstone yard of an old dye works, pale dusty earth with a few broken flat stones set in it, soaked over years with spilled dye: broad irregular stains and drip trails of deep indigo blue, madder red and saffron yellow, the colours bled into the earth and faded at their edges, darker where wet, a few puddle rings and splash marks, fine grit and scattered straw. Muted, earthy, not bright.
+```
+
+`ground.sulfur.crust` (the crust beds and the spring's edge at the sulfur works, Hoṭ-Bāṭh; 4 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the crusted ground round a volcanic hot spring where native sulfur is scraped: a brittle lemon-yellow sulfur crust in thin cracked plates and needle crystals over pale grey-white mineral mud, patches scraped back to the grey mud with rake marks, small orange and ochre stains, a few white salt efflorescences, hairline cracks and tiny vent holes. Natural, slightly dusty, not glossy.
+```
+
+## 59. Xanadu's lake towns and mines (`settlements/xanadu-lake`, `settlements/xanadu/WORKS-PLAN.md`, 2026-11-22)
+
+The twenty lake towns of the shared target and the two mines' camps (plans only; `settlements/xanadu/BUILD-PLAN.md`). Most
+of what they draw is in the library (`roof.thatch.reed`, `ground.reedbed`, `rock.wet.dark`, `rock.hewn.drillmarked`,
+`ground.tundra`, `rock.opal.matrix`); `ground.dyeworks` and `ground.sulfur.crust` are owed in section 58. Three are not.
+They land in the library; the lake-town target's and `kits/xanadu`'s `materials.json` take them when the pieces that use
+them are built. Until then the stand-in each row names is drawn and said in the build's `KNOWN_ISSUES.md`. **3 prompts.**
+
+`stone.ghat.wet` (the landing stairs into the lake at every lake town, and the quays' lower courses; 2 m a tile; the stand-in
+is `stone.cut` darkened):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on stone surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the worn grey-brown volcanic stone blocks of an old lake-shore landing stair, the blocks laid in rough courses with wide weathered joints, their edges rounded by centuries of feet and water; the stone dark and damp, with a band of slick green-black algae and pale lime scale in the joints, a few tiny snail shells and grit, small chips and pits in the surfaces. Muted dark greys, olive green and black, not glossy.
+```
+
+`ground.sherds` (Pāṭari's kiln yards and the potters' lanes, paved and strewn with broken pots; 4 m a tile; the stand-in is
+`ceramic.terracotta` on `ground.ash.soil`):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects standing up, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the trodden yard of an old potters' kiln works, packed reddish-brown earth thickly strewn and half buried with broken pottery sherds of every size, unglazed red and buff terracotta, a few pieces of dark smoked pot and pale cream slip, flat curved fragments and broken rims lying every which way, grey wood ash in patches near where the kilns would be, fine red clay dust. Earthy, warm, matte.
+```
+
+`ground.tailings.ore` (the spoil and tailings heaps of Kōlḍ-Lōḍ's gold mines and the opal diggings; 4 m a tile; the stand-in
+is `ground.fellfield.fines` tinted):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: mine tailings and crushed waste rock dumped from a hard-rock mine, angular grey and blue-grey broken rock from fist-sized lumps down to coarse sand and fine grey powder, streaked with rusty orange and ochre iron staining and a few pale quartz fragments, small patches of fine wet grey silt where water has run, no plants. Neutral greys with rust streaks, matte, dusty.
+```
+
+## 60. Xanadu on the vertical stack (`settlements/xanadu/STACK-PLAN.md`, 2026-11-22)
+
+Xanadu's own S4 ground-layer set for Godot (the owner, 2026-11-22: "Xanadu's own layer set") and the stack's glazed-surface
+case (M1-M2). The rest of the set is in the library (`ground.grass.lush`, `ground.terrace.field`, `ground.redsoil`,
+`ground.shingle`, `rock.tuff`) or owed in section 59 (`stone.ghat.wet`). They land in the library in today's packing;
+`godot/tools/pack_ground_layers.py`'s `xanadu` set and `kits/xanadu/materials.json` take them. **2 prompts.**
+
+`ground.paddy.wet` (S4 layer 3: the Vale's rice paddies and the lake's flooded margins; 4 m a tile; the stand-in is
+`ground.brown_mud_02`):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no reflections of sky or objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the soft wet grey-brown mud of a flooded rice paddy after the harvest, a few centimetres of muddy water standing in shallow puddles between low smooth mud ridges, rows of short cut rice stubble poking up in loose lines, scattered straw, faint footprints and the pocked marks of rain, small patches of green algae scum. Muted earthy browns and olive greys, damp but not glossy.
+```
+
+`tile.dome.bannai` (the domes' and drums' glazed brick, laid in banna'i pattern: the Pleasure Dome, the temples' drums; 2 m a
+tile; full colour; the glazed class, so its normals are packed at 8 bits on the web):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Persian banna'i wall of small fired bricks laid in running bond with thin pale mortar joints, about a third of the bricks glazed in deep turquoise and cobalt blue and the rest left plain warm buff, the glazed bricks set to form a repeating angular geometric pattern of interlocking squares and stepped diamonds; the glaze slightly uneven with fine crazing and a few chipped corners showing the buff body beneath, the plain bricks a little rough and sandy. Full colour: turquoise #2aa3a0, cobalt #1f3f8a, buff brick #c9a77a, mortar #d8cdb8.
+```
 
 ## Gaps with no prompt yet
 

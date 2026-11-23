@@ -37,7 +37,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `84-gz-host.js` | 8 |  |
 | `89-rows.js` | 4 |  |
 | `91t-fg-sheet.js` | 9 |  |
-| `91z-gz-sheet.js` | 7 |  |
+| `91z-gz-sheet.js` | 8 |  |
 | `96t-fg-views.js` | <1 |  |
 | `96z-gz-views.js` | 2 |  |
 | `99-sheet-fg.js` | 1 |  |

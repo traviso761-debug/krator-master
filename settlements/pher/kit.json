@@ -3,11 +3,15 @@
   "town": "pher.html"
  },
  "external": [
-  "settlements/pher/gen/69p-kcity-bundle.js",
+  "settlements/pher/gen/69p-kcity-bundle.js", "settlements/pher/gen/86-bio-31b-core-leafset.js",
+  "kits/xanadu/src/78l-xa-moorish-data.js",
+  "kits/xanadu/src/78m-xa-moorish.js",
+  "kits/xanadu/src/78n-xa-citadel.js",
   "kits/xanadu/extra/69dz-ix-xanadu-extra.js",
   "kits/xanadu/extra/88c-xa-caravanserai.js",
   "kits/xanadu/extra/88d-xa-lakecraft.js",
-  "kits/xanadu/extra/88e-xa-stall.js"
+  "kits/xanadu/extra/88e-xa-stall.js",
+  "kits/xanadu/extra/88g-xa-works.js"
  ],
  "scoped": [
   "69p-kcity-bundle.js"

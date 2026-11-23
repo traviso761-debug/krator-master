@@ -14,6 +14,7 @@
   "core/terrain/39-core-cavern.js",
   "core/terrain/host/39e-core-cavern-draw.js",
   "core/terrain/host/39h-core-cavern-cut.js",
+  "core/terrain/host/39i-core-cavern-rock.js",
   "core/terrain/43-core-ground.js",
   "core/walk/box/24-core-walk-box.js"
  ],
@@ -26,6 +27,7 @@
   "39-core-cavern.js",
   "39e-core-cavern-draw.js",
   "39h-core-cavern-cut.js",
+  "39i-core-cavern-rock.js",
   "43-core-ground.js",
   "24-core-walk-box.js"
  ],
@@ -63,7 +65,10 @@
   "69r-lw-flora-bundle.js",
   "90s-lw-flora.js",
   "37c-core-rubble.js",
-  "90n-lw-scree.js"
+  "90n-lw-scree.js",
+  "89q5s-qb-shells.js",
+  "39i-core-cavern-rock.js",
+  "90o-lw-opal.js"
  ],
  "interiors": [
   "town"

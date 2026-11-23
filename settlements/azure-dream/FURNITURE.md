@@ -7,87 +7,84 @@ Decor: 0 bare (stores, cells), 1 plain (service), 2 fine (offices, the lesser gu
 
 ## Sheet G: Grēṭ-Āil, the grounds (the cove facing Erehwon to the Hall of Dreaming)
 
-u from the cove's waterline (left) uphill to the brow (right); v along the isle, its east tip up. The wharf on the cove: the pilgrims' landing and the mole on the west, the fishermonks' jetties, beach, boathouse and racks on the east. The lower ward on the first terraces (pilgrims below, the Order's farm and workshops beside them); the Stair of Lowered Eyes up the slope; the walled upper precinct on the brow: the Blue Gate, the great monastery in the blue dress, the cells and the Prismarch's house, the Lotus Garden, and the Hall of Dreaming wrapped in its kora at the head of the axis. The Dream Road leaves the back gate for the summit kora, 8 km up the isle (sheet S).
+Drawn from the page (floors/page-isle.json, export_records.py): the cove's head on the 1:1 waterline at the scarp's toe; u uphill (right), v along the isle, its east tip up. The wharf in the cove: the mole and the Lustral Steps on the west, the fishermonks' jetties, beach, boathouse and racks on the east. The lower ward on the drowned flat's dry edge under the scarp; the Stair of Lowered Eyes zigzags up the scarp's face between the terraced orchards and their bee walls; the walled upper precinct on four terraces above it: the Blue Gate and the court, the great monastery in the blue dress, the cells, the Lotus Garden, and the Hall of Dreaming wrapped in its kora. The Dream Road leaves the back gate for the summit (sheet S) past the relay lamp, 1 km up.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
-| 1 | The Mole and the Barge Berth | quay | plain | 864 |  |
-| 2 | Wave-wheel Shrine | wave shrine | fine | 96 |  |
-| 3 | The Lustral Steps | ghat | fine | 812 |  |
-| 4 | Threshold Chorten | chorten | rich | 144 |  |
-| 5 | Ferry House | ferry house | plain | 1288 |  |
-| 6 | Fishermonks' Jetty | jetty | plain | 252 |  |
-| 7 | Fishermonks' Jetty | jetty | plain | 228 |  |
-| 8 | Fishermonks' Jetty | jetty | plain | 204 |  |
-| 9 | Dugout Beach | beach | plain | 960 |  |
+| 1 | The Mole and the Barge Berth | quay | plain | 414 |  |
+| 2 | Wave-wheel Shrine | wave shrine | fine | 72 |  |
+| 3 | The Lustral Steps | ghat | fine | 1152 |  |
+| 4 | Threshold Chorten | chorten | rich | 121 |  |
+| 5 | Ferry House | ferry house | plain | 336 |  |
+| 6 | Jetty of the Night Boats | jetty | plain | 126 |  |
+| 7 | Jetty of the Line Boats | jetty | plain | 114 |  |
+| 8 | Jetty of the Net Boats | jetty | plain | 102 |  |
+| 9 | Dugout Beach | beach | plain | 514 |  |
 | 10 | Boathouse | boathouse | plain | 1380 |  |
-| 11 | Net Racks | net racks | plain | 2112 |  |
-| 12 | Fish-drying Racks | fish racks | plain | 1300 |  |
-| 13 | Smokehouses | smokehouse | plain | 616 |  |
-| 14 | Net Loft and Fish Store | net loft | plain | 1080 |  |
-| 15 | Ropewalk | ropewalk | plain | 1440 |  |
-| 16 | Boatwrights' Yard | workshop | plain | 1260 |  |
+| 11 | Net Racks | net racks | plain | 1920 |  |
+| 12 | Fish-drying Racks | fish racks | plain | 1152 |  |
+| 13 | Smokehouses | smokehouse | plain | 312 |  |
+| 14 | Net Loft and Fish Store | net loft | plain | 273 |  |
+| 15 | Ropewalk | ropewalk | plain | 1260 |  |
+| 16 | Boatwrights' Yard | workshop | plain | 322 |  |
 | 17 | Fishermonks' House | fishermonks house | fine | 3080 |  |
-| 19 | Pilgrims' Hostel (east range) | hostel | plain | 3360 | xanadu_common_banner x1, xanadu_common_bed x84, xanadu_common_bench x21, xanadu_common_chest x42, xanadu_common_hanging x7, xanadu_common_hearth x4, xanadu_common_lamp x14, xanadu_common_table x10 |
-| 20 | Pilgrims' Hostel (west range) | hostel | plain | 3600 | xanadu_common_banner x1, xanadu_common_bed x90, xanadu_common_bench x22, xanadu_common_chest x45, xanadu_common_hanging x8, xanadu_common_hearth x4, xanadu_common_lamp x15, xanadu_common_table x11 |
-| 21 | Hall of Fasting | fast hall | fine | 3168 | xanadu_common_art x2, xanadu_common_banner x2, xanadu_common_bench x40, xanadu_common_cup_table x1 **NEW**, xanadu_common_desk x1, xanadu_common_hanging x8, xanadu_common_lamp x18, xanadu_common_rug x13, xanadu_common_scroll x1, xanadu_common_table x20 |
-| 22 | Waiting Garden | garden | fine | 2584 | xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_planter x4, xanadu_court_statue x1 |
-| 23 | Lay Servants' Houses | dormitory | bare | 3080 | generic_lamp x8, generic_trade_bunk x86, generic_trade_locker x43, xanadu_common_stool x19 |
-| 24 | Granary and Stores | store | bare | 2080 | generic_lamp x6, generic_trade_bin x13, xanadu_common_ladder x1, xanadu_common_store x21, xanadu_common_wall_shelves x9 |
-| 25 | Dairy and Byres | dairy | plain | 3240 | generic_trade_hayrack x8, generic_trade_trough x8, xanadu_common_store x6, xanadu_common_workbench x1 |
-| 26 | Lower Gate | entrance | fine | 280 | xanadu_common_art x3, xanadu_common_banner x2, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_rug x5, xanadu_common_scroll x2, xanadu_court_banner x4, xanadu_court_fire x2, xanadu_court_statue x2 |
-| 27 | Stair of Lowered Eyes | stair | rich | 1480 | xanadu_common_lamp x1 |
-| 28 | Prayer-wheel Row (west) | kora | fine | 444 | xanadu_common_art x11, xanadu_common_candle x44, xanadu_common_prayer_wheels x37 |
-| 29 | Prayer-wheel Row (east) | kora | fine | 444 | xanadu_common_art x11, xanadu_common_candle x44, xanadu_common_prayer_wheels x37 |
-| 30 | Terraced Orchards (west) | garden | fine | 10804 | xanadu_common_bench x9, xanadu_common_fire x4, xanadu_common_planter x18, xanadu_court_statue x4 |
-| 31 | Terraced Orchards (east) | garden | fine | 10804 | xanadu_common_bench x9, xanadu_common_fire x4, xanadu_common_planter x18, xanadu_court_statue x4 |
-| 32 | Apiary | apiary | plain | 1620 | xanadu_common_hive_wall x7 **NEW** |
-| 33 | The Blue Gate | entrance | rich | 392 | xanadu_common_planter x3, xanadu_court_art x3, xanadu_court_banner x4, xanadu_court_carpet x5, xanadu_court_fire x2, xanadu_court_hanging x4, xanadu_court_lamp x10, xanadu_court_statue x3, xanadu_court_tapestry x5, xanadu_court_wall_rug x3 |
-| 34 | Court of Arrival | court | fine | 5520 | xanadu_common_bench x17, xanadu_common_planter x46, xanadu_common_well x1 |
+| 19 | Pilgrims' Hostel (the men's range) | hostel | plain | 728 | xanadu_common_banner x1, xanadu_common_bed x18, xanadu_common_bench x4, xanadu_common_chest x9, xanadu_common_hanging x2, xanadu_common_hearth x1, xanadu_common_lamp x3, xanadu_common_table x2 |
+| 20 | Pilgrims' Hostel (the women's range) | hostel | plain | 728 | xanadu_common_banner x1, xanadu_common_bed x18, xanadu_common_bench x4, xanadu_common_chest x9, xanadu_common_hanging x2, xanadu_common_hearth x1, xanadu_common_lamp x3, xanadu_common_table x2 |
+| 21 | Hall of Fasting | fast hall | fine | 1088 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bench x14, xanadu_common_cup_table x1 **NEW**, xanadu_common_desk x1, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_rug x4, xanadu_common_scroll x1, xanadu_common_table x7 |
+| 22 | Waiting Garden | garden | fine | 1140 | xanadu_common_bench x1, xanadu_common_fire x1, xanadu_common_planter x2, xanadu_court_statue x1 |
+| 23 | Lay Servants' Houses | dormitory | bare | 1237 | generic_lamp x4, generic_trade_bunk x34, generic_trade_locker x17, xanadu_common_stool x8 |
+| 24 | Granary and Stores | store | bare | 154 | generic_lamp x2, generic_trade_bin x4, xanadu_common_ladder x1, xanadu_common_store x6, xanadu_common_wall_shelves x3 |
+| 25 | Dairy | dairy | plain | 260 | generic_trade_hayrack x3, generic_trade_trough x3, xanadu_common_store x2, xanadu_common_workbench x2 |
+| 26 | Lower Gate | entrance | fine | 268 | xanadu_common_art x2, xanadu_common_banner x2, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_rug x4, xanadu_common_scroll x1, xanadu_court_banner x4, xanadu_court_fire x2, xanadu_court_statue x2 |
+| 27 | Stair of Lowered Eyes | stair | rich | 1697 | xanadu_common_lamp x1 |
+| 30 | Terraced Orchards (west) | garden | fine | 2756 | xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_planter x4, xanadu_court_statue x1 |
+| 31 | Terraced Orchards (east) | garden | fine | 2756 | xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_planter x4, xanadu_court_statue x1 |
+| 32 | Apiary (east) | apiary | plain | 83 | xanadu_common_hive_wall x1 **NEW** |
+| 54 | Apiary (west) | apiary | plain | 83 | xanadu_common_hive_wall x1 **NEW** |
+| 33 | The Blue Gate | entrance | rich | 268 | xanadu_common_planter x2, xanadu_court_art x2, xanadu_court_banner x4, xanadu_court_carpet x3, xanadu_court_fire x2, xanadu_court_hanging x3, xanadu_court_lamp x7, xanadu_court_statue x3, xanadu_court_tapestry x4, xanadu_court_wall_rug x2 |
+| 34 | Court of Arrival | court | fine | 21080 | xanadu_common_bench x66, xanadu_common_planter x176, xanadu_common_well x1 |
 | 35 | The Great Monastery (blue dress) | monastery core | sumptuous | 2704 |  |
-| 36 | The Prismarch's House | abbot house | rich | 3432 | xanadu_common_chair x2, xanadu_common_planter x7, xanadu_court_altar x1, xanadu_court_art x2, xanadu_court_bed x1, xanadu_court_bookcase x1, xanadu_court_carpet x11, xanadu_court_desk x1, xanadu_court_hanging x10, xanadu_court_lamp x22, xanadu_court_statue x3, xanadu_court_table x1, xanadu_court_tapestry x4, xanadu_court_throne x1, xanadu_court_wall_rug x2 |
-| 37 | Prior's and Officers' House | office | fine | 2024 | xanadu_common_art x2, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x10, xanadu_common_chair x17, xanadu_common_chest x1, xanadu_common_desk x13, xanadu_common_hanging x5, xanadu_common_lamp x11, xanadu_common_rug x8, xanadu_common_scroll x1 |
-| 38 | Novices' College | school | fine | 3328 | xanadu_common_art x2, xanadu_common_banner x2, xanadu_common_board x1, xanadu_common_bookcase x1, xanadu_common_chair x2, xanadu_common_desk x2, xanadu_common_hanging x8, xanadu_common_lamp x18, xanadu_common_rug x14, xanadu_common_scroll x1, xanadu_court_desk x1, xanadu_court_throne x1 |
-| 39 | Refectory and Kitchen | refectory | plain | 2024 | xanadu_common_banner x1, xanadu_common_bench x25, xanadu_common_hanging x4, xanadu_common_hearth x1, xanadu_common_lamp x8, xanadu_common_store x5, xanadu_common_table x13, xanadu_common_tea_copper x1 |
-| 40 | Monks' Cells (west range) | cells | plain | 6216 | xanadu_common_banner x1, xanadu_common_bed x111, xanadu_common_candle x111, xanadu_common_chest x111, xanadu_common_desk x111, xanadu_common_hanging x13, xanadu_common_lamp x26, xanadu_common_prayer_wheels x8 |
-| 41 | Monks' Cells (east range) | cells | plain | 6216 | xanadu_common_banner x1, xanadu_common_bed x111, xanadu_common_candle x111, xanadu_common_chest x111, xanadu_common_desk x111, xanadu_common_hanging x13, xanadu_common_lamp x26, xanadu_common_prayer_wheels x8 |
-| 42 | The Lotus Garden | garden | rich | 6600 | xanadu_common_bench x6, xanadu_common_fire x3, xanadu_common_planter x11, xanadu_court_statue x2 |
-| 43 | Lustral Bath | bath | fine | 1596 |  |
-| 44 | The Cup House | cup house | fine | 728 |  |
-| 45 | Kora Gallery of the Hall | kora | rich | 3700 |  |
-| 46 | The Hall of Dreaming | dream hall ext | sumptuous | 2112 |  |
-| 47 | The Waking Gallery | waking booths | rich | 1400 |  |
-| 48 | The Register | register | rich | 2970 |  |
-| 49 | Readers' Court | court | fine | 2200 | xanadu_common_bench x7, xanadu_common_planter x18, xanadu_common_well x1 |
-| 50 | Dream-keepers' House | cells | fine | 2992 | xanadu_common_art x2, xanadu_common_banner x2, xanadu_common_bed x54, xanadu_common_candle x54, xanadu_common_chest x54, xanadu_common_desk x54, xanadu_common_hanging x8, xanadu_common_lamp x16, xanadu_common_prayer_wheels x4, xanadu_common_rug x12, xanadu_common_scroll x1 |
-| 51 | Cells of the Seven Nights | long sleep | fine | 2052 |  |
-| 52 | The Quiet Walk | garden | rich | 2112 | xanadu_common_bench x2, xanadu_common_fire x1, xanadu_common_planter x4, xanadu_court_statue x1 |
-| 53 | Kitchen Terraces of the Precinct | garden | plain | 10200 | xanadu_common_bench x8, xanadu_common_fire x4, xanadu_common_planter x17, xanadu_court_statue x3 |
+| 36 | The Prismarch's House | abbot house | rich | 660 | xanadu_common_chair x2, xanadu_common_planter x2, xanadu_court_altar x1, xanadu_court_art x1, xanadu_court_bed x1, xanadu_court_bookcase x1, xanadu_court_carpet x2, xanadu_court_desk x1, xanadu_court_hanging x2, xanadu_court_lamp x4, xanadu_court_statue x1, xanadu_court_table x1, xanadu_court_tapestry x2, xanadu_court_throne x1, xanadu_court_wall_rug x1 |
+| 37 | Prior's and Officers' Houses | office | fine | 276 | xanadu_common_art x2, xanadu_common_banner x2, xanadu_common_board x1, xanadu_common_bookcase x6, xanadu_common_chair x9, xanadu_common_chest x1, xanadu_common_desk x7, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_rug x5, xanadu_common_scroll x1 |
+| 38 | Novices' College | school | fine | 1088 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_bookcase x1, xanadu_common_chair x2, xanadu_common_desk x2, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_rug x4, xanadu_common_scroll x1, xanadu_court_desk x1, xanadu_court_throne x1 |
+| 39 | Refectory and Kitchen | refectory | plain | 336 | xanadu_common_banner x1, xanadu_common_bench x17, xanadu_common_hanging x3, xanadu_common_hearth x2, xanadu_common_lamp x6, xanadu_common_store x3, xanadu_common_table x8, xanadu_common_tea_copper x2 |
+| 40 | Monks' Cells (west range) | cells | plain | 1800 | xanadu_common_banner x1, xanadu_common_bed x32, xanadu_common_candle x32, xanadu_common_chest x32, xanadu_common_desk x32, xanadu_common_hanging x4, xanadu_common_lamp x8, xanadu_common_prayer_wheels x2 |
+| 41 | Monks' Cells (east range) | cells | plain | 1800 | xanadu_common_banner x1, xanadu_common_bed x32, xanadu_common_candle x32, xanadu_common_chest x32, xanadu_common_desk x32, xanadu_common_hanging x4, xanadu_common_lamp x8, xanadu_common_prayer_wheels x2 |
+| 42 | The Lotus Garden | garden | rich | 6320 | xanadu_common_bench x5, xanadu_common_fire x3, xanadu_common_planter x10, xanadu_court_statue x2 |
+| 43 | Lustral Bath | bath | fine | 384 |  |
+| 44 | The Cup House | cup house | fine | 168 |  |
+| 45 | Kora Gallery of the Hall | kora | rich | 2772 |  |
+| 46 | The Hall of Dreaming | dream hall ext | sumptuous | 1879 |  |
+| 47 | The Waking Gallery | waking booths | rich | 870 |  |
+| 48 | The Register | register | rich | 870 |  |
+| 49 | Readers' Court | court | fine | 1140 | xanadu_common_bench x4, xanadu_common_planter x10, xanadu_common_well x1 |
+| 50 | Dream-keepers' House | cells | fine | 336 | xanadu_common_art x3, xanadu_common_banner x2, xanadu_common_bed x24, xanadu_common_candle x24, xanadu_common_chest x24, xanadu_common_desk x24, xanadu_common_hanging x3, xanadu_common_lamp x7, xanadu_common_prayer_wheels x2, xanadu_common_rug x6, xanadu_common_scroll x2 |
+| 51 | Cells of the Seven Nights | long sleep | fine | 348 |  |
 
 ## Sheet W: the fishermonks' wharf
 
-The cove faces Erehwon across 20 km of water, the bay isle (a lamp chorten, the Threshold Light) 6 km out on the line. The barge berth and the Lustral Steps on the west; three jetties, the dugout beach, the boathouse, the racks, the smokehouses, the ropewalk and the fishermonks' own house on the east. The fishermonks fish the lake the Atitlán way, from dugouts with nets and lines, and by night with lamps: from the Hall of Dreaming's terrace the night fleet is a second, lower sky.
+Drawn from the page (floors/page-isle.json). The cove faces Erehwon across 20 km of water. The barge berth and the Lustral Steps on the west; three jetties, the dugout beach, the boathouse, the racks, the smokehouses, the ropewalk and the fishermonks' own house on the east. The fishermonks fish the lake from dugouts with nets and lines, and by night with lamps: from the Hall of Dreaming's terrace the night fleet is a second, lower sky.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
-| 1 | The Mole and the Barge Berth | quay | plain | 864 | xanadu_common_creel x4 **NEW** |
-| 2 | Wave-wheel Shrine | wave shrine | fine | 96 | xanadu_common_butter_lamp_rack x1, xanadu_common_wave_wheel x1 **NEW** |
-| 3 | The Lustral Steps | ghat | fine | 812 | xanadu_common_bench x4, xanadu_court_screen x1 |
-| 4 | Threshold Chorten | chorten | rich | 144 | xanadu_common_butter_lamp_rack x1, xanadu_court_chorten x1 |
-| 5 | Ferry House | ferry house | plain | 1288 | xanadu_common_banner x2, xanadu_common_bench x52, xanadu_common_desk x1, xanadu_common_hanging x11, xanadu_common_lamp x21, xanadu_common_rack x2, xanadu_common_store x3 |
-| 6 | Jetty of the Night Boats | jetty | plain | 252 | xanadu_common_creel x4 **NEW**, xanadu_common_paddle_rack x1 **NEW** |
-| 7 | Jetty of the Line Boats | jetty | plain | 228 | xanadu_common_creel x4 **NEW**, xanadu_common_paddle_rack x1 **NEW** |
-| 8 | Jetty of the Net Boats | jetty | plain | 204 | xanadu_common_creel x3 **NEW**, xanadu_common_paddle_rack x1 **NEW** |
-| 9 | Dugout Beach | beach | plain | 960 | xanadu_common_dugout x24 **NEW**, xanadu_common_paddle_rack x5 **NEW** |
+| 1 | The Mole and the Barge Berth | quay | plain | 414 | xanadu_common_creel x4 **NEW** |
+| 2 | Wave-wheel Shrine | wave shrine | fine | 72 | xanadu_common_butter_lamp_rack x1, xanadu_common_wave_wheel x1 **NEW** |
+| 3 | The Lustral Steps | ghat | fine | 1152 | xanadu_common_bench x4, xanadu_court_screen x1 |
+| 4 | Threshold Chorten | chorten | rich | 121 | xanadu_common_butter_lamp_rack x1, xanadu_court_chorten x1 |
+| 5 | Ferry House | ferry house | plain | 336 | xanadu_common_banner x1, xanadu_common_bench x13, xanadu_common_desk x1, xanadu_common_hanging x3, xanadu_common_lamp x6, xanadu_common_rack x2, xanadu_common_store x3 |
+| 6 | Jetty of the Night Boats | jetty | plain | 126 | xanadu_common_creel x2 **NEW**, xanadu_common_paddle_rack x1 **NEW** |
+| 7 | Jetty of the Line Boats | jetty | plain | 114 | xanadu_common_creel x2 **NEW**, xanadu_common_paddle_rack x1 **NEW** |
+| 8 | Jetty of the Net Boats | jetty | plain | 102 | xanadu_common_creel x2 **NEW**, xanadu_common_paddle_rack x1 **NEW** |
+| 9 | Dugout Beach | beach | plain | 514 | xanadu_common_dugout x13 **NEW**, xanadu_common_paddle_rack x3 **NEW** |
 | 10 | Boathouse | boathouse | plain | 1380 | xanadu_common_dugout x12 **NEW**, xanadu_common_paddle_rack x2 **NEW**, xanadu_common_rack x9, xanadu_common_workbench x2 |
-| 11 | Net Racks | net racks | plain | 2112 | xanadu_common_net_rack x35 **NEW** |
-| 12 | Fish-drying Racks | fish racks | plain | 1300 | xanadu_common_fish_rack x32 **NEW** |
-| 13 | Smokehouses | smokehouse | plain | 616 | xanadu_common_smoke_rack x21 **NEW**, xanadu_common_store x2 |
-| 14 | Net Loft and Fish Store | net loft | plain | 1080 | xanadu_common_creel x27 **NEW**, xanadu_common_net_rack x7 **NEW**, xanadu_common_store x18, xanadu_common_workbench x2 |
-| 15 | Ropewalk | ropewalk | plain | 1440 | xanadu_common_rope_walk_post x30 **NEW**, xanadu_common_workbench x1 |
-| 16 | Boatwrights' Yard | workshop | plain | 1260 | generic_trade_lathe x3, xanadu_common_banner x2, xanadu_common_hanging x10, xanadu_common_lamp x21, xanadu_common_loom x2, xanadu_common_rack x21, xanadu_common_stool x32, xanadu_common_store x21, xanadu_common_workbench x32 |
-| 17 | Fishermonks' House: cells | cells | plain | 1320 | xanadu_common_banner x2, xanadu_common_bed x94, xanadu_common_candle x94, xanadu_common_chest x94, xanadu_common_desk x94, xanadu_common_hanging x11, xanadu_common_lamp x22, xanadu_common_prayer_wheels x7 |
-| 18 | Fishermonks' House: refectory and chapel | fishermonks house | fine | 1584 | xanadu_common_art x5, xanadu_common_banner x4, xanadu_common_bench x53, xanadu_common_hanging x16, xanadu_common_hearth x1, xanadu_common_lamp x35, xanadu_common_prayer_wheels x2, xanadu_common_rug x26, xanadu_common_scroll x3, xanadu_common_table x26, xanadu_court_altar x1 |
+| 11 | Net Racks | net racks | plain | 1920 | xanadu_common_net_rack x32 **NEW** |
+| 12 | Fish-drying Racks | fish racks | plain | 1152 | xanadu_common_fish_rack x29 **NEW** |
+| 13 | Smokehouses | smokehouse | plain | 312 | xanadu_common_smoke_rack x10 **NEW**, xanadu_common_store x2 |
+| 14 | Net Loft and Fish Store | net loft | plain | 273 | xanadu_common_creel x7 **NEW**, xanadu_common_net_rack x2 **NEW**, xanadu_common_store x5, xanadu_common_workbench x2 |
+| 15 | Ropewalk | ropewalk | plain | 1260 | xanadu_common_rope_walk_post x30 **NEW**, xanadu_common_workbench x1 |
+| 16 | Boatwrights' Yard | workshop | plain | 322 | generic_trade_lathe x1, xanadu_common_banner x1, xanadu_common_hanging x3, xanadu_common_lamp x5, xanadu_common_loom x1, xanadu_common_rack x5, xanadu_common_stool x8, xanadu_common_store x5, xanadu_common_workbench x8 |
+| 17 | Fishermonks' House: cells | cells | plain | 1540 | xanadu_common_banner x2, xanadu_common_bed x110, xanadu_common_candle x110, xanadu_common_chest x110, xanadu_common_desk x110, xanadu_common_hanging x13, xanadu_common_lamp x26, xanadu_common_prayer_wheels x8 |
+| 18 | Fishermonks' House: refectory and chapel | fishermonks house | fine | 1540 | xanadu_common_art x5, xanadu_common_banner x4, xanadu_common_bench x51, xanadu_common_hanging x15, xanadu_common_hearth x1, xanadu_common_lamp x34, xanadu_common_prayer_wheels x2, xanadu_common_rug x26, xanadu_common_scroll x3, xanadu_common_table x26, xanadu_court_altar x1 |
 
 ## Sheet H1: the Hall of Dreaming, the sleepers' floor
 
@@ -141,118 +138,119 @@ The cot bays are roofed at +7 m under a ceiling painted as the night: deep blue,
 
 ## Sheet S: the summit of Grēṭ-Āil and the High Kora
 
-The isle's crest, about 300 m over the lake and 8 km from the monastery up the Dream Road, which has a chorten at every kilometre (eight, one a turning). The High Kora rings the summit at 260 m out (1.6 km round), with sixteen wheel houses; the pilgrims walk it on the Station's nights, when the whole Order comes up. The Station Watch keeps the sky and signals the monastery by lamp when the Station is due; the Summit Chorten bears the isle's one gilt crown visible from every shore.
+Drawn from the page (floors/page-summit.json). The crest of the isle's dome at 1:1, +308 m over the lake, 8 km up the Dream Road from the monastery's back gate (the road's line runs off the sheet toward the bottom left: south-south-east). The High Kora rings the summit 260 m out (1.6 km round) with sixteen wheel houses on its inner side, the road meeting it between two of them by its chorten; the pilgrims walk it on the Station's nights. The Station Watch keeps the sky; its signal lamp is answered by the relay lamp on the shoulder above the monastery, which the dome hides from here. The Summit Chorten, twice the kit's large one, bears the isle's gilt crown.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|
-| 1 | Summit Chorten | chorten | sumptuous | 784 | xanadu_common_butter_lamp_rack x1, xanadu_court_chorten x1 |
-| 2 | Wheel House of the Summit | wheel house | rich | 576 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 3 | The Station Watch | astronomers | fine | 784 | xanadu_common_art x4, xanadu_common_banner x3, xanadu_common_board x1, xanadu_common_bookcase x10, xanadu_common_chair x16, xanadu_common_desk x13, xanadu_common_hanging x8, xanadu_common_lamp x17, xanadu_common_rug x13, xanadu_common_scroll x2, xanadu_court_armillary x3, xanadu_court_map_table x1 |
-| 4 | Pilgrims' Shelter | hostel | plain | 1600 | xanadu_common_banner x2, xanadu_common_bed x160, xanadu_common_bench x40, xanadu_common_chest x80, xanadu_common_hanging x13, xanadu_common_hearth x8, xanadu_common_lamp x27, xanadu_common_table x20 |
-| 6 | Wheel House 1 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 7 | Wheel House 2 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 8 | Wheel House 3 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 9 | Wheel House 4 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 10 | Wheel House 5 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 11 | Wheel House 6 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 12 | Wheel House 7 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 13 | Wheel House 8 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 14 | Wheel House 9 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 15 | Wheel House 10 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 16 | Wheel House 11 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 17 | Wheel House 12 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 18 | Wheel House 13 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 19 | Wheel House 14 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 20 | Wheel House 15 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
-| 21 | Wheel House 16 | wheel house | fine | 144 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 1 | Summit Chorten | chorten | sumptuous | 484 | xanadu_common_butter_lamp_rack x1, xanadu_court_chorten x1 |
+| 2 | Wheel House of the Summit | wheel house | rich | 400 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 3 | The Station Watch | astronomers | fine | 576 | xanadu_common_art x3, xanadu_common_banner x2, xanadu_common_board x1, xanadu_common_bookcase x7, xanadu_common_chair x12, xanadu_common_desk x10, xanadu_common_hanging x6, xanadu_common_lamp x13, xanadu_common_rug x10, xanadu_common_scroll x2, xanadu_court_armillary x3, xanadu_court_map_table x1 |
+| 4 | Pilgrims' Shelter | hostel | plain | 336 | xanadu_common_banner x1, xanadu_common_bed x34, xanadu_common_bench x8, xanadu_common_chest x17, xanadu_common_hanging x3, xanadu_common_hearth x2, xanadu_common_lamp x6, xanadu_common_table x4 |
+| 5 | Dream Road Chorten (the eighth) | chorten | fine | 180 | xanadu_common_butter_lamp_rack x1, xanadu_court_chorten x1 |
+| 6 | Wheel House 1 | wheel house | fine | 198 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 7 | Wheel House 2 | wheel house | fine | 219 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 8 | Wheel House 3 | wheel house | fine | 178 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 9 | Wheel House 4 | wheel house | fine | 124 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 10 | Wheel House 5 | wheel house | fine | 198 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 11 | Wheel House 6 | wheel house | fine | 219 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 12 | Wheel House 7 | wheel house | fine | 178 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 13 | Wheel House 8 | wheel house | fine | 124 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 14 | Wheel House 9 | wheel house | fine | 198 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 15 | Wheel House 10 | wheel house | fine | 219 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 16 | Wheel House 11 | wheel house | fine | 178 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 17 | Wheel House 12 | wheel house | fine | 124 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 18 | Wheel House 13 | wheel house | fine | 198 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 19 | Wheel House 14 | wheel house | fine | 219 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 20 | Wheel House 15 | wheel house | fine | 178 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
+| 21 | Wheel House 16 | wheel house | fine | 124 | xanadu_common_butter_lamp_rack x1, xanadu_common_prayer_wheels x1 |
 
 ## Totals by piece
 
 | Key | Count | Note |
 |---|---|---|
-| xanadu_common_bed | 917 |  |
-| xanadu_common_chest | 672 |  |
-| xanadu_common_candle | 548 |  |
-| xanadu_common_lamp | 476 |  |
-| xanadu_common_desk | 440 |  |
-| xanadu_common_bench | 357 |  |
+| xanadu_common_bed | 481 |  |
+| xanadu_common_chest | 368 |  |
+| xanadu_common_lamp | 324 |  |
+| xanadu_common_candle | 288 |  |
 | xanadu_common_dream_cot | 264 | the dream cot: a low timber frame 0.8 x 1.95 m, a reed (tul) mat, a blue wool blanket and a round bolster, the turning's syllable painted on the foot rail |
-| xanadu_common_prayer_wheels | 194 |  |
-| xanadu_common_hanging | 190 |  |
-| xanadu_common_planter | 179 |  |
+| xanadu_common_desk | 259 |  |
+| xanadu_common_planter | 243 |  |
+| xanadu_common_bench | 235 |  |
 | xanadu_common_register_press | 176 | a register press: a cupboard of bound dream books by year and turning, its doors lettered |
-| xanadu_common_rug | 134 |  |
-| xanadu_common_chair | 117 |  |
-| xanadu_common_table | 100 |  |
-| xanadu_common_stool | 99 |  |
-| xanadu_court_lamp | 96 |  |
-| generic_trade_bunk | 86 |  |
-| xanadu_common_store | 80 |  |
-| xanadu_common_art | 55 |  |
-| xanadu_court_carpet | 48 |  |
-| generic_trade_locker | 43 |  |
-| xanadu_court_hanging | 43 |  |
-| xanadu_common_banner | 42 |  |
-| xanadu_common_creel | 42 | a fish creel and a stack of baskets |
-| xanadu_common_net_rack | 42 | an outdoor net rack: pole frames 3 m apart with nets hung over the top rail (the port kit's hbNetRack is the form) |
-| xanadu_common_workbench | 38 |  |
-| xanadu_court_tapestry | 38 |  |
-| xanadu_common_dugout | 36 | a dugout canoe hauled out on two chocks (the Iziz Vernacular's vldDugout is the form) |
+| xanadu_common_hanging | 117 |  |
+| xanadu_common_prayer_wheels | 107 |  |
+| xanadu_common_chair | 105 |  |
+| xanadu_common_rug | 102 |  |
+| xanadu_court_lamp | 75 |  |
+| xanadu_common_stool | 64 |  |
+| xanadu_common_table | 49 |  |
+| xanadu_common_banner | 37 |  |
+| xanadu_court_carpet | 37 |  |
 | xanadu_common_scroll_rack | 36 |  |
-| xanadu_court_statue | 35 |  |
-| xanadu_common_bookcase | 33 |  |
-| xanadu_common_rack | 32 |  |
-| xanadu_common_fish_rack | 32 | an outdoor fish rack: two A-frames and rails, split fish hung by the tail |
+| xanadu_court_tapestry | 35 |  |
+| generic_trade_bunk | 34 |  |
+| xanadu_court_hanging | 34 |  |
+| xanadu_common_net_rack | 34 | an outdoor net rack: pole frames 3 m apart with nets hung over the top rail (the port kit's hbNetRack is the form) |
+| xanadu_common_art | 30 |  |
+| xanadu_common_store | 30 |  |
 | xanadu_common_rope_walk_post | 30 | a ropewalk post: a T-post carrying the strands, every 6 m down the walk |
+| xanadu_common_fish_rack | 29 | an outdoor fish rack: two A-frames and rails, split fish hung by the tail |
+| xanadu_common_bookcase | 26 |  |
+| xanadu_common_dugout | 25 | a dugout canoe hauled out on two chocks (the Iziz Vernacular's vldDugout is the form) |
+| xanadu_common_butter_lamp_rack | 24 |  |
 | xanadu_common_keeper_lamp | 24 | a keeper's hooded lamp: a brass lantern shaded to throw light only downward, on a hook or carried |
-| xanadu_common_butter_lamp_rack | 23 |  |
+| xanadu_court_statue | 23 |  |
 | xanadu_court_painted_hanging | 22 |  |
-| xanadu_court_art | 21 |  |
-| xanadu_court_wall_rug | 21 |  |
-| xanadu_common_smoke_rack | 21 | a smokehouse rack: tiers of slatted trays over a fire pit |
-| xanadu_common_fire | 20 |  |
-| xanadu_common_hearth | 18 |  |
+| xanadu_court_art | 19 |  |
+| xanadu_court_wall_rug | 19 |  |
 | xanadu_common_scroll | 18 |  |
+| generic_trade_locker | 17 |  |
+| xanadu_common_creel | 17 | a fish creel and a stack of baskets |
+| xanadu_common_rack | 16 |  |
 | xanadu_common_turning_screen | 16 | a low painted screen (1.2 m) marking a turning's end, its number in the sound-grid script |
 | xanadu_common_azure_lamp | 16 | an azure lamp: a butter lamp under blue glass in a floor niche with a pierced brass cover (the Keepers' Walk) |
 | xanadu_common_waking_booth | 16 | a waking booth: a scribe's low desk and inkstone behind a lattice screen, a cushion for the dreamer, a blue thread to tie on the wrist |
-| generic_trade_bin | 15 |  |
-| generic_lamp | 14 |  |
+| xanadu_common_workbench | 15 |  |
 | xanadu_common_tablet_rack | 14 | a rack of wax tablets and styluses for the words spoken in sleep |
 | order_reading_table | 14 | the History Monks' set, settlements/yuni/src/59-civic.js (the Register's reading table) |
 | xanadu_common_robe_rack | 14 | a pegged rack of blue sleeping robes |
 | order_bookcase | 12 |  |
-| xanadu_common_wall_shelves | 10 |  |
-| xanadu_common_paddle_rack | 10 | a paddle rack: paddles stood on end in a timber frame, a lamp pole beside |
-| generic_trade_hayrack | 8 |  |
-| generic_trade_trough | 8 |  |
+| xanadu_common_smoke_rack | 10 | a smokehouse rack: tiers of slatted trays over a fire pit |
+| xanadu_common_fire | 9 |  |
 | xanadu_court_banner | 8 |  |
-| xanadu_common_hive_wall | 7 | a bee wall: hive niches in a terrace wall |
+| xanadu_common_paddle_rack | 8 | a paddle rack: paddles stood on end in a timber frame, a lamp pole beside |
+| xanadu_common_hearth | 7 |  |
+| generic_lamp | 6 |  |
+| generic_trade_bin | 6 |  |
 | xanadu_court_fire | 5 |  |
 | order_lectern | 5 |  |
+| xanadu_common_wall_shelves | 4 |  |
 | xanadu_common_board | 4 |  |
+| generic_trade_hayrack | 3 |  |
+| generic_trade_trough | 3 |  |
 | xanadu_court_altar | 3 |  |
 | xanadu_court_screen | 3 |  |
-| generic_trade_lathe | 3 |  |
+| xanadu_court_chorten | 3 |  |
 | xanadu_common_censer_stand | 3 | a standing censer on a tripod, lidded, for lotus resin and juniper |
 | order_globe_stand | 3 |  |
 | order_library_ladder | 3 |  |
 | xanadu_court_armillary | 3 |  |
 | xanadu_common_cup_table | 2 | the cup table: a silver jug, a honey jar, a milk pail and the lotus steeping bowl; a tray of small cups |
 | xanadu_common_ladder | 2 |  |
+| xanadu_common_hive_wall | 2 | a bee wall: hive niches in a terrace wall |
 | xanadu_common_well | 2 |  |
 | xanadu_court_desk | 2 |  |
 | xanadu_court_throne | 2 |  |
-| xanadu_court_chorten | 2 |  |
-| xanadu_common_loom | 2 |  |
+| xanadu_common_tea_copper | 2 |  |
 | xanadu_court_incense_burner | 2 |  |
 | xanadu_court_divan | 2 |  |
 | xanadu_court_wall_fountain | 2 |  |
 | xanadu_court_bed | 1 |  |
 | xanadu_court_bookcase | 1 |  |
 | xanadu_court_table | 1 |  |
-| xanadu_common_tea_copper | 1 |  |
 | xanadu_common_wave_wheel | 1 | a wave wheel: a prayer wheel on a post at the mole head, turned by a paddle in the water |
+| generic_trade_lathe | 1 |  |
+| xanadu_common_loom | 1 |  |
 | xanadu_common_meditation_cushion | 1 |  |
 | xanadu_court_lulling_dais | 1 | the Lulling dais: a low lacquer platform, a cushion and the dulcimer (ḍalsimar) on its stand |
 | xanadu_court_damsel_image | 1 | the gilt image of the Damsel with her dulcimer, on a lotus throne, under a canopy |
@@ -264,19 +262,19 @@ The isle's crest, about 300 m over the lake and 8 km from the monastery up the D
 
 - `xanadu_common_azure_lamp`: an azure lamp: a butter lamp under blue glass in a floor niche with a pierced brass cover (the Keepers' Walk) (x16)
 - `xanadu_common_censer_stand`: a standing censer on a tripod, lidded, for lotus resin and juniper (x3)
-- `xanadu_common_creel`: a fish creel and a stack of baskets (x42)
+- `xanadu_common_creel`: a fish creel and a stack of baskets (x17)
 - `xanadu_common_cup_table`: the cup table: a silver jug, a honey jar, a milk pail and the lotus steeping bowl; a tray of small cups (x2)
 - `xanadu_common_dream_cot`: the dream cot: a low timber frame 0.8 x 1.95 m, a reed (tul) mat, a blue wool blanket and a round bolster, the turning's syllable painted on the foot rail (x264)
-- `xanadu_common_dugout`: a dugout canoe hauled out on two chocks (the Iziz Vernacular's vldDugout is the form) (x36)
-- `xanadu_common_fish_rack`: an outdoor fish rack: two A-frames and rails, split fish hung by the tail (x32)
-- `xanadu_common_hive_wall`: a bee wall: hive niches in a terrace wall (x7)
+- `xanadu_common_dugout`: a dugout canoe hauled out on two chocks (the Iziz Vernacular's vldDugout is the form) (x25)
+- `xanadu_common_fish_rack`: an outdoor fish rack: two A-frames and rails, split fish hung by the tail (x29)
+- `xanadu_common_hive_wall`: a bee wall: hive niches in a terrace wall (x2)
 - `xanadu_common_keeper_lamp`: a keeper's hooded lamp: a brass lantern shaded to throw light only downward, on a hook or carried (x24)
-- `xanadu_common_net_rack`: an outdoor net rack: pole frames 3 m apart with nets hung over the top rail (the port kit's hbNetRack is the form) (x42)
-- `xanadu_common_paddle_rack`: a paddle rack: paddles stood on end in a timber frame, a lamp pole beside (x10)
+- `xanadu_common_net_rack`: an outdoor net rack: pole frames 3 m apart with nets hung over the top rail (the port kit's hbNetRack is the form) (x34)
+- `xanadu_common_paddle_rack`: a paddle rack: paddles stood on end in a timber frame, a lamp pole beside (x8)
 - `xanadu_common_register_press`: a register press: a cupboard of bound dream books by year and turning, its doors lettered (x176)
 - `xanadu_common_robe_rack`: a pegged rack of blue sleeping robes (x14)
 - `xanadu_common_rope_walk_post`: a ropewalk post: a T-post carrying the strands, every 6 m down the walk (x30)
-- `xanadu_common_smoke_rack`: a smokehouse rack: tiers of slatted trays over a fire pit (x21)
+- `xanadu_common_smoke_rack`: a smokehouse rack: tiers of slatted trays over a fire pit (x10)
 - `xanadu_common_tablet_rack`: a rack of wax tablets and styluses for the words spoken in sleep (x14)
 - `xanadu_common_turning_screen`: a low painted screen (1.2 m) marking a turning's end, its number in the sound-grid script (x16)
 - `xanadu_common_waking_booth`: a waking booth: a scribe's low desk and inkstone behind a lattice screen, a cushion for the dreamer, a blue thread to tie on the wrist (x16)

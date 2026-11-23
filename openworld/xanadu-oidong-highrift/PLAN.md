@@ -42,7 +42,7 @@ Not taken, each with its reason:
    by the land's fitness rather than at given bearings.
 4. **The towns:**
    - Erehwon is `settlements/xanadu`'s page;
-   - Qiblai has none;
+   - Qiblai's is `settlements/qiblai` (its hand-over: `settlements/qiblai/WORLD.md`; its ring the temple estates, 2026-11-16);
    - Longsong's monastery is its own page.
 
    A town on the world's ground waits on the town steps lifted out of `ISLE` (`PLAN-SITES.md` step 3).

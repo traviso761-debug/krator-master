@@ -46,5 +46,8 @@ town's own (`verify.py`'s docstring).
 ## The frame
 
 The page is in metres, x along the shore, z toward the lake, y over the lake's level (the world's height is y - 520). The
-open world's region (`openworld/xanadu-north-shore`) holds the ground round it. Placing the page there is a later step
-(PLAN.md step P7): the page's frame turns by the shore's bearing (`PH.TURN`).
+open world's region (`openworld/xanadu-north-shore`) holds the ground round it and, since step P7, the page's own ground
+inside its footprint (`core/world/bake_towns.py pher`, `openworld/towns/pher`): `phWorldFrame` turns the page by the
+shore's bearing (`PH.TURN`) and stands its cove head on the scale model's (842.5,1492), the lake at -520 m. Its stream
+runs in the world at its own height (`core/world` 41t `over`), joined to the model's `r_pher_swit` on the plain the
+scale model raised behind the rim (`tools/scale-model/edit_517_pher_rim.py`, PLAN.md question 17).

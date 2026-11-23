@@ -21,7 +21,7 @@ FAMILIES.push({name:'Gypsum (a salt basin rim)',keys:['node-gypsum-low','node-gy
 FAMILIES.push({name:'Nickel ore (the melt sheet\'s margin)',keys:['node-nickel-low','node-nickel-medium','node-nickel-high']},
  {name:'Marble (a quarry)',keys:['node-marble-low','node-marble-medium','node-marble-high']});
 /* the mined goods of Gemini's trade model (2026-11-16, 42s and 44s-44u) */
-for(const [k,n] of [['zinc','Zinc ore (sphalerite)'],['lodestone','Lodestone (magnetite)'],['peat','Peat (a bog cut)'],['silica','Quartz sand (a sand pit)'],
+for(const [k,n] of [['lodestone','Lodestone (magnetite)'],['peat','Peat (a bog cut)'],['silica','Quartz sand (a sand pit)'],
  ['quartz','Rock crystal (a quartz reef)'],['alabaster','Alabaster (a quarry)'],['bitumen','Bitumen (a pitch lake)'],['opal','Opal (boulder opal)'],
  ['diamond','Diamond and garnet (a paleoplacer)'],['jade','Jade (a serpentinite contact)'],['amber','Amber (the blue earth)']])
  FAMILIES.push({name:n,keys:['low','medium','high'].map(g=>'node-'+k+'-'+g)});

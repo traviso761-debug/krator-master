@@ -4,7 +4,6 @@
       The world's ground is the model's: the bands' camps stand round a knoll, not round a 500 m mesa. `PLAN.md`, "What is left" 1.
       On the list for the next scale-model run (the owner, 2026-11-10: `tools/scale-model/README.md`, "To do on the
       model", "Pinnacle Rock's mesa"): a landform record the cut carries and core/world stamps at 1:1.
-- [ ] **The frame rate over the camps** (about 1 fps) is being worked in its own session (pinnacle-perf, 2026-11-10).
 - [x] **The savage hyperjungle grew nothing** while the rock stood on the rim. Since the move of 2026-11-10 the
       hyperjungle is in the registry on that overlay (little-demo's pass table). The cut's two overlays (the savage
       hyperjungle and the NE rim) both grow now.
@@ -44,16 +43,46 @@
       The fps is the page's own loop (vsync caps it at 60), GPU the world pass alone (the timer query). The numbers swing
       by up to 2x between runs while other work shares the machine; the "1 fps" first reported did not come back in
       headless runs, where the RTX held 60 fps at view 2 before the pass.
-- [ ] **The Arc 140T is fill-bound.** After the pass the frame costs it ~23 ms at view 2 with 2.9 M triangles. Half the
-      pixel ratio halves it. The largest single cost is the ground (`core/world/81-world-terrain.js`): 7-8 ms at every view,
-      even from 2.5 km up, with the logarithmic depth buffer writing every fragment's depth. Then the mid crowns (~4.5 ms)
-      and the heroes and far impostors (~2 ms each). A laptop window at pixel ratio 1.5 draws 2.25x the pixels the
-      measurements above did. Next: a cheaper ground shader or a render scale, both `core/world` (the isle demo shares them).
+- [x] **The ground's strata ran on every pixel** (2026-11-16, the second pass). The ground's fragment shader
+      (`core/world/81-world-terrain.js`) read the strata (about nine dependent texture reads) everywhere and mixed them in
+      by the rock's weight, mostly 0 over the jungle: 7-8 ms of the Arc 140T's frame at every view. Now it reads them only
+      where that weight is over 0.004 (the colour moves by under half a percent below it; screenshots before and after
+      differ only in the swaying leaves). The six regions that read the file were rebuilt; four passed `verify.py
+      --assert` on the GPU and were committed; the isle demo's and the Xanadu-Oidong highrift's pages fail checks of their
+      own (their hamlets and coast, the lake's islands: records merged on 2026-11-16 without a rebuild), so their committed
+      pages were left as they were and take this when their owners rebuild them.
+      The camps' pieces are built once at load (`core/world/88s-world-sites.js`), not when a camp first comes within 900 m.
+      Measured with the branch's merges in (the villages, the corridors), before and after in one lock:
+
+      | Arc 140T | before | after |
+      |---|---|---|
+      | view 2 (the camp, 120 m up) | GPU 20.9-23.0 ms | 17.2 ms |
+      | view 2, flying 150 m/s | 40.5-43.4 fps, p95 55-62 ms, 6-10 frames over 100 ms | 51.3 fps, p95 33 ms, 3 |
+      | ground (30 m up) | 43.2-49.4 fps, GPU 19.6-21.3 ms | 52.3 fps, 17.3 ms |
+      | walking 6 m/s | 44.0-49.1 fps, p95 52-65 ms | 55.5 fps, p95 37 ms |
+
+      The RTX 5060 holds 60 fps at every view and in every flight (GPU 3.0 to 2.5 ms at view 2).
+- [ ] **The Arc 140T is still fill-bound.** ~17 ms at view 2: the mid crowns ~4.5 ms, the ground ~4 ms, the heroes and
+      far impostors ~2 ms each. Half the pixel ratio halves the frame, and a laptop window at pixel ratio 1.5 draws 2.25x
+      the pixels measured here. Next: a render scale (`core/world/45-world-host.js`), or cheaper mid crowns.
+- [x] **A prototype grown on demand was a hitch** (fixed 2026-11-16, the third pass). The nursery grew each species'
+      level the first time a tree of it came into reach, and the first tree of a kit paid for the kit's own setup: an
+      eastern abyss mid tree stalled a flight 0.1-0.5 s the first time it reached the NE rim. Timed one by one
+      (`tools/grow_times.py`) the region's 152 prototypes are 0.71 M triangles and grow in 0.3 s on a warm page, the
+      slowest 41 ms: the stall was the kit's first use. `core/world/85p-world-pregrow.js` (opt-in, listed here) queues
+      all of them at load behind the streaming's own requests; the curtain waits for them (0.8-1.7 s of nursery work
+      in all, against 0.6-0.9 s before; the curtain lifted at the same time within the runs' spread). No flight grows
+      one since. On the RTX 5060 the flight from view 2 at 150 m/s went from 3-6 frames over 100 ms (worst 178-423 ms)
+      to 1 (worst 119-150 ms).
+- [ ] **Terrain and floor chunks are the flight's remaining hitches.** One terrain chunk (`core/world/81`, 0.2-0.7 s)
+      or floor chunk (`86`, once 1.8 s on the Arc 140T) built in a frame past its budget: `tools/perf.py --fly` prints
+      the worst frame's steps. Both are shared by every region; splitting a chunk's build across frames is the fix.
 - [ ] **The far canopy's look changed** with the impostors: from the blob crowns' rounded pastel greens to the kit's own
       crowns (purple, lime, rust, the ghostwood's white boles), with gaps to the dark floor. Their light is the kit's
       impostor look at gain 2.4 (`src/47-world-kits.js`). Awaiting the owner's eye.
-- [ ] **One 3.3 s stall** was seen once on the RTX while walking at 6 m/s (after the pass), not again in four other runs.
-      Not traced; watch for it (`tools/perf.py --fly`).
+- [ ] **Multi-second stalls** (3.3 s walking, once; 2.4 s in the terrain, 10.8 s in the nursery, once each in one run)
+      did not come back in four later runs of the same flights with a CPU profile (`tools/perf.py --fly --profile`): most
+      likely other work on the machine. Watch for them; the flight prints its worst frame's steps and the long tasks.
 - [ ] **No grass.** The kit's floor (its thatch, bunchgrass and vain fronds) is not on the world's floor yet, so the
       parkland reads as bare gold ground between the trees.
 - [ ] **The savannah kit's world adapter lives here** (`src/49-world-absav.js`), not in the kit. A new fragment in

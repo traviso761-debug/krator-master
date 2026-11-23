@@ -289,13 +289,15 @@ const swCheck=(Bk,Tr,X)=>{const bad=[],op=(((Tr['mine.opal']||{}).landed||{})['s
  if(!((Bk['march.e'].eaten.power||0)>0))bad.push('the beacon fort dark');
  const tpIn=Object.values(((Tr['road.sw-tempest']||{}).landed||{})['sxan7r1sln>xan.tempest']||{}).reduce((n,v)=>n+v,0);   /* its first year's grain is in its stores: the road lands its salt, tea and tools */
  if(!((tp.made.grain||0)>0&&tpIn>0))bad.push('the Tempest\'s terraces or its road from Strongwall');
+ if(!((tp.made.fodder||0)>0&&(tp.eaten.fodder||0)>0)||((tp.hungry||{}).fodder||0)>1)bad.push('the Tempest\'s horses unfed (its meadows\' hay)');   /* the owner, 2026-11-16: "add fodder" */
  if(th[2]!=='sxan7r1sln'||th[3]!==912||th[4]!==1640)bad.push('the Tears\' house outside the fort');
  return{ok:!bad.length,bad,op,inward,tp,pay};};
 {const C=swCheck(B,Y.trade,Y.xfer);
  T.ok('Strongwall\'s W1: the mines\' opal by Lāiṭwāl\'s ferry and inward, never by Strongwall; powder at the fort, the musketeers paid, the beacon fort lit, the House of the Tempest fed, the Tears inside the fort',C.ok,
   C.bad.join(', ')||('the mines\' opal ferried to Lāiṭwāl '+Math.round(C.op*1000)/1000+' kg, at Qiblai and the capital '+Math.round(C.inward*1000)/1000+' kg; Strongbow imported opal '+Math.round((B.sfgtxw10kr.imported.opal||0)*1000)/1000+
   ', Kirstabal '+Math.round((B.sl758m2396.imported.opal||0)*1000)/1000+'; powder eaten at Strongwall '+Math.round(B.sxan7r1sln.eaten.powder||0)+' kg; pay sent '+((C.pay.sent||{}).coin||0)+', owed '+((C.pay.owed||{}).coin||0)+
-  '; the Tempest made grain '+t(C.tp.made.grain||0)+' of the '+t(C.tp.eaten.grain||0)+' it ate'));
+  '; the Tempest made grain '+t(C.tp.made.grain||0)+' of the '+t(C.tp.eaten.grain||0)+' it ate, hay '+t(C.tp.made.fodder||0)+' and its horses ate '+t(C.tp.eaten.fodder||0)));
+ T.neg('a House of the Tempest whose horses went hungry is caught',x=>swCheck(x,Y.trade,Y.xfer).ok,Object.assign({},B,{'xan.tempest':Object.assign({},B['xan.tempest'],{hungry:Object.assign({},B['xan.tempest'].hungry||{},{fodder:1e5})})}),B);
  T.neg('opal that never reached Qiblai or the capital is caught',x=>swCheck(x,Y.trade,Y.xfer).ok,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{opal:0})}),[E]:Object.assign({},B[E],{imported:Object.assign({},B[E].imported,{opal:0})})}),B);}
 // 30. L1 (settlements/lightwall/PLAN.md 4; the owner, 2026-11-16): Lāiṭwāl, the seat of Ōpal-Bhālī, fed all year; the Great
 //     Potch Line's opal and the glass shops' moonglass made; the Glaziers' Fifth in opals a fifth, to the Treasury; the

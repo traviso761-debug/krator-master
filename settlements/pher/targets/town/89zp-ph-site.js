@@ -27,7 +27,9 @@
 //                        lakeward side (the owner: "houses line lower switchbacks"); a teahouse or a stall row on each turn
 // Blocks are filled by core/city's frontage-courts (KCITY.strategies) with the Xanadu kit's houses; the civic pieces are
 // placed first as hosts (stamped HARD), the streets laid as ways. Every lot is a core/city record; 90r draws the records.
-var PH={SEED:84391,TURN:17*Math.PI/180,UP:[220,-4920],LAKE:0,
+/* the fair (PLAN.md step P6; core/region/data/xan-tune.js T.fairDays, proposed: question 16): two days of the lake's seven-day week.
+   The page's day (90q: ?day=N, else FAIR.day, a fair day) picks the weekday: day mod 7 */
+var PH={SEED:84391,TURN:17*Math.PI/180,UP:[220,-4920],LAKE:0,FAIR:{days:[3,6],week:7,day:122},
  COVE:{x:40,depth:450,half:380},HEAD:{a:[-640,-120],b:[-330,1260],w:170,crest:[62,26]},POINT:{a:[620,-80],b:[760,330],w:110,crest:18},
  WALL:{strand:300,top:4300,rise:.125,plain:.007}};
 const phSm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
@@ -37,7 +39,7 @@ const phShoreZ=x=>-PH.COVE.depth*Math.exp(-Math.pow((x-PH.COVE.x)/PH.COVE.half,2
 // the stream's line: its x at z (from the cove's head inland, drifting a little east up the wall)
 const phStreamX=z=>PH.COVE.x+Math.max(0,-z-PH.COVE.depth)*.03;
 // the land's height at inland distance d (from the waterline)
-function phProfile(d){const W=PH.WALL;if(d<0)return 1.2-2.7*phSm(0,6,-d)-.18*(-d)-.0006*d*d;   /* the beach shelving into the water: the waterline about 2.5 m out of the shore line */
+function phProfile(d){const W=PH.WALL;if(d<0){const y=1.2-2.7*phSm(0,6,-d)-.18*(-d)-.0006*d*d;return y>-60?y:-60-300*(1-Math.exp((y+60)/300));}   /* the beach shelving into the water (the waterline about 2.5 m out of the shore line), the bowl falling fast, its floor easing toward ~360 m down (the model: 150 m 4 km out) */
  return 1.2+19*phSm(0,W.strand,d)+W.rise*Math.max(0,Math.min(d,W.top)-W.strand)+W.plain*Math.max(0,d-W.top);}
 function phH(x,z){const d=phShoreZ(x)-z;let y=phProfile(d);
  // the stream: a channel on the strand and the plain, a ravine down the wall
@@ -49,10 +51,16 @@ function phH(x,z){const d=phShoreZ(x)-z;let y=phProfile(d);
  return y;}
 // on the page: the ground every builder and the camera read, and the core/tags registry under the town's name (91t takes it up)
 if(typeof VERN!=='undefined'){terrainH=phH;if(typeof KTAGS!=='undefined')KTAGS.page=KTAGS.page||KTAGS.create({build:'pher'});}
-// page metres to the world's (x east, z south, metres from the pin's 5.1 frame) and back: the page turned by PH.TURN, its
-// origin PH_ORIGIN_WORLD (the cove's middle on the open shore: the pin's spot 600 m out, in the world's frame)
-const PH_ORIGIN_WORLD=[0,0];
-function phToWorld(x,z){const c=Math.cos(PH.TURN),s=Math.sin(PH.TURN);return[PH_ORIGIN_WORLD[0]+x*c-z*s,PH_ORIGIN_WORLD[1]+x*s+z*c];}
+// THE WORLD'S FRAME (PLAN.md step P7; core/world/bake_towns.py 'pher' samples phH through it): the page stands on the open
+// world turned by the shore's bearing, world = Ry(rot)(page - centre) + the pin (three.js's rotation.y, rot = -PH.TURN), its
+// heights lifted by y0 (the lake's level, -520 m). The centre is the page point that stands on the pin (843,1491): the page's
+// cove head (COVE.x, -COVE.depth) on the scale model's (842.5,1492: edit_517_pher), so centre = cove head + Ry(-rot)(the pin
+// less the cove head, in world metres).
+PH.WORLD={pin:[843,1491],coveHeadPx:[842.5,1492],y0:-520};
+function phWorldFrame(){const rot=-PH.TURN,W=PH.WORLD,wx=(W.pin[0]-W.coveHeadPx[0])*2000,wz=(W.pin[1]-W.coveHeadPx[1])*2000,c=Math.cos(-rot),s=Math.sin(-rot);
+ return{rot,centre:[PH.COVE.x+wx*c+wz*s,-PH.COVE.depth-wx*s+wz*c],y0:W.y0};}
+// page metres to the world's: metres from the pin (x east, z south) and the world's height
+function phToWorld(x,z){const F=phWorldFrame(),dx=x-F.centre[0],dz=z-F.centre[1],c=Math.cos(F.rot),s=Math.sin(F.rot);return[dx*c+dz*s,-dx*s+dz*c,phH(x,z)+F.y0];}
 
 // ---------------------------------------------------------------- the kit: the Xanadu kit's defs (VERN.defs on the page)
 const phDims=(key,v)=>{const D=(typeof VERN!=='undefined'&&VERN.defs&&VERN.defs[key])||(typeof PH_KIT_DIMS!=='undefined'&&PH_KIT_DIMS[key]);
@@ -230,7 +238,7 @@ function phRun(){
  // pairs, every 9.5 m along, the crossing aisles on the avenue's axis and the Swīṭ Siṭrīm's banks left open; each stall's trade from its own cell
  {const F=PH_FAIR,U=PH.UP,D=phDims('xa_stall',0);if(D)for(let r=0;r<6;r++){const z=-50+r*20,ry=r%2?Math.PI:0;
   for(let i=0;i<22;i++){const x=-100+i*9.5;const q=[U[0]+x,U[1]+z];if(Math.abs(x)<10||Math.abs(z)<8||Math.abs(q[0]-phStreamX(q[1]))<16)continue;const v=KRAND.hash(PH.SEED,r,i)%4;
-   PH_PLACE.push({id:'fair:'+r+':'+i,level:'upper',key:'xa_stall',v,x:q[0],z:q[1],ry,w:D.w,d:D.d,h:D.h,o:{v,y:phH(q[0],q[1])+.05},kind:'stall',why:'a stall of the fair',
+   PH_PLACE.push({id:'fair:'+r+':'+i,level:'upper',key:'xa_stall',v,x:q[0],z:q[1],ry,w:D.w,d:D.d,h:D.h,o:{v,y:phH(q[0],q[1])+.05},kind:'stall',daily:r<2,why:r<2?'a stall of the daily market':'a stall of the fair',
     bo:{c:q,u:[Math.cos(ry),-Math.sin(ry)],hw:D.w/2,hd:D.d/2},drop:0});}}}
  for(const s of PH_ROAD.stops){const D=phDims(s.key,0);if(!D)continue;PH_PLACE.push({id:'road:'+s.key+':'+Math.round(s.z),level:'road',key:s.key,v:0,x:s.x,z:s.z,ry:s.ry,w:D.w,d:D.d,h:D.h,
    o:{v:0,y:phH(s.x,s.z)+.1},kind:'roadside',why:s.why,bo:{c:[s.x,s.z],u:[Math.cos(s.ry),-Math.sin(s.ry)],hw:D.w/2,hd:D.d/2},drop:0});}
@@ -272,6 +280,9 @@ function phBoats(){const B={moored:[],out:[],runs:[]},S=KRAND.stream(KRAND.child
  run('lake.cross','cross','the cross-lake run to Erehwon: lake.cross, six carriers',[[190,at(190,30)],[130,420],[90,1300],[420,9000]],'xa_launch',PH.FLEET.cross);
  run('round.north-west','round','the north-west market round (Qōqō, Nēṭ, Malbari, Hāibh)',[[-150,at(-150,30)],[-110,520],[-120,1600],[-9000,1800]],'xa_lake_barge',PH.FLEET.rounds);
  run('round.north-east','round','the north-east market round (Māuṭh, Ōlḍ-Thalaba, Ḍāiyar)',[[-150,at(-150,30)],[-40,620],[700,1000],[9000,1100]],'xa_lake_barge',PH.FLEET.rounds);
+ /* the fair's launches (T.loops fair-west, fair-east): on the fair's days the north shore's towns come in by launch, two each way */
+ run('loop.pher.fair-west','fair','the fair\'s launches from the west (Qōqō, Nēṭ, Malbari, Hāibh)',[[10,at(10,30)],[-30,700],[-160,1650],[-9000,1800]],'xa_launch',2);
+ run('loop.pher.fair-east','fair','the fair\'s launches from the east (Māuṭh, Ōlḍ-Thalaba, Ḍāiyar)',[[28,at(28,30)],[200,700],[900,1150],[9000,1250]],'xa_launch',2);
  run('loop.pher.pilgrims','pilgrims','the pilgrims\' launch to Grēṭ-Āil (the Azure Dream)',[[10,at(10,30)],[60,600],[220,1500],[1600,9000]],'xa_launch',PH.FLEET.pilgrims);
  return B;}
 // a run's loop: out along its points and back on a lane 30 m to the right; returns its stations and their lengths
@@ -284,6 +295,8 @@ function phRunLoop(R){const P=R.pts,out=[];for(let i=0;i<P.length;i++)out.push(P
 function phRunAt(R,loop,b,t){const s=((b.phase*loop.len+t*R.speed)%loop.len+loop.len)%loop.len;let i=1;while(i<loop.cum.length-1&&loop.cum[i]<s)i++;
  const a=loop.pts[i-1],c=loop.pts[i],f=(s-loop.cum[i-1])/Math.max(1e-6,loop.cum[i]-loop.cum[i-1]);return{x:a[0]+(c[0]-a[0])*f,z:a[1]+(c[1]-a[1])*f,ry:Math.atan2(c[0]-a[0],c[1]-a[1])};}
 var PH_BOATS=null;
+// is the page's day a fair day (the lake's week: day mod 7 among PH.FAIR.days)
+const phFairDay=day=>PH.FAIR.days.indexOf(((Math.floor(day)%PH.FAIR.week)+PH.FAIR.week)%PH.FAIR.week)>=0;
 try{phRun();PH_BOATS=phBoats();}catch(e){PH_ERR=String(e&&e.stack||e);if(typeof reportErr==='function')reportErr('Phēr plan: '+PH_ERR);}
 
 // ---------------------------------------------------------------- the flora's mask (the Vale of Xanadu biome Xanadu's page carries)

@@ -298,6 +298,21 @@
       "port": 8859
     },
     {
+      "name": "tungang",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8826",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/tungang/dist"
+      ],
+      "port": 8826,
+      "autoPort": false
+    },
+    {
       "name": "kirstabal",
       "runtimeExecutable": "python",
       "runtimeArgs": [
@@ -367,6 +382,21 @@
         "kits/qiblai/dist"
       ],
       "port": 8883,
+      "autoPort": false
+    },
+    {
+      "name": "viridian",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8893",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "settlements/viridian/dist"
+      ],
+      "port": 8893,
       "autoPort": false
     }
   ]

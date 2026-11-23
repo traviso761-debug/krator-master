@@ -114,8 +114,10 @@ LOAD_MS = 900000
 # they were merged; they still work.
 CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
 # ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`, Voth's city plan and site
-# editor as `_vc.ready` and `_site.ready`), or the error panel has filled
-READY_JS = ("window._ready===true || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
+# editor as `_vc.ready` and `_site.ready`), or the error panel has filled. A page that builds on after its first frame
+# (core/host 91: `window._hostPending`, a count it raises while that work is queued and lowers when it is done) is ready
+# when the count is back to 0; a page that never sets it is ready as before
+READY_JS = ("(window._ready===true&&!(window._hostPending>0)) || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
             "(window._site&&window._site.ready) || (document.getElementById('errs')&&"
             "document.getElementById('errs').textContent.length>0)")
 STATS_JS = """()=>{const w={};for(const k of Object.keys(window)){if(!k.startsWith('_')||k==='__THREE__')continue;
@@ -1930,24 +1932,30 @@ async def check_profile(pg, box, profile, opt=None, inject=False):
     return ok, lines
 
 
-def _pack_dir(name, page):
-    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first)."""
+def _pack_dir(name, page, families=None):
+    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first). Two packs can share a
+    name (2026-11-16: biomes/xanadu's flora pack and kits/xanadu's building pack are both 'xanadu', and an open-world
+    region carries both): with `families` (the ones the export's textures name), the pack that holds them all wins."""
     d = os.path.dirname(os.path.abspath(page))
     if os.path.basename(d) == 'dist':
         d = os.path.dirname(d)
     cands = [d] + sorted(os.path.dirname(os.path.dirname(p)) for p in glob.glob(os.path.join(ROOT, '*', '*', 'tex', 'pack.json')))
+    first = None
     for c in cands:
         pj = os.path.join(c, 'tex', 'pack.json')
         if os.path.isfile(pj):
             with open(pj, encoding='utf-8') as f:
-                if json.load(f).get('build') == name:
+                j = json.load(f)
+            if j.get('build') == name:
+                if not families or set(families) <= set(j.get('families', {})):
                     return os.path.join(c, 'tex')
-    return None
+                first = first or os.path.join(c, 'tex')
+    return first
 
 
 async def export_main(argv):
     """python3 tools/harness.py export <page> --out godot/data/<case>/ [--box x0,z0,x1,z1] [--sections a,b] [--sky 1024]
-                                             [--json] [--query ?..]
+                                             [--json] [--query ?..] [--before <js>]
     The krator-world container (core/export/README.md) written headless: load the page, wait for it and its library
     textures, call EXPORT.world({box, sections}) and EXPORT.check, and write <out>/world.json (everything but the meshes)
     and <out>/world.glb (the meshes: EXT_mesh_gpu_instancing), or one world.json with the meshes inline (--json); the
@@ -1960,6 +1968,8 @@ async def export_main(argv):
     ap.add_argument('html'); ap.add_argument('--out', required=True); ap.add_argument('--box'); ap.add_argument('--sections')
     ap.add_argument('--sky', type=int); ap.add_argument('--json', action='store_true'); ap.add_argument('--query', default='')
     ap.add_argument('--profile', help='the sections the case must fill (core/export/README.md, "Profiles"): a,b,c=field,d?')
+    ap.add_argument('--before', help='a JS expression the page awaits before the export: a case\'s own preparation, '
+                    'e.g. placing an open world\'s camera at the box and settling its flora (openworld/<region>/tools/godot_case.py)')
     a = ap.parse_args(argv)
     opt = {}
     if a.box:
@@ -1985,6 +1995,8 @@ async def export_main(argv):
             except Exception:
                 fails.append('library textures still decoding after 180 s')
             injected = await inject_export(pg)
+            if a.before:
+                print('before: %s' % json.dumps(await pg.evaluate(a.before))[:300], flush=True)
             await pg.wait_for_timeout(1500)   # a few frames, so the stage hook has seen what the page renders
             t1 = time.time()
             res = await evaluate_big(pg, EXPORT_JS, [opt, not a.json])
@@ -2011,7 +2023,7 @@ async def export_main(argv):
         os.makedirs(dst)
         copied = {}
         for name in packs:
-            src = _pack_dir(name, a.html)
+            src = _pack_dir(name, a.html, {t['family'] for t in w['textures'] if t.get('pack') == name})
             if not src:
                 fails.append('no tex/pack.json for library pack %s' % name)
                 continue

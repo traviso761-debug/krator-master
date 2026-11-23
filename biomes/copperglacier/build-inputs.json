@@ -131,7 +131,7 @@
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
+    "kits/resources/data/geology.json": "ba8056b5b450bee4d924af56547a0cad01f25cf5232d671683c29a4cca6a32c6",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
@@ -144,10 +144,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier.html": "854a1af699d31889416d1f0d87870069f363eb667b7607ed97ae45b48551951d"
+    "biomes/copperglacier/dist/copperglacier.html": "c6bbea0f53a985a09bd7aadae88186220ee443a52f06a50c02ba9a27ffc5a666"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier.html": "854a1af699d31889416d1f0d87870069f363eb667b7607ed97ae45b48551951d"
+    "biomes/copperglacier/dist/copperglacier.html": "c6bbea0f53a985a09bd7aadae88186220ee443a52f06a50c02ba9a27ffc5a666"
    }
   },
   "build.py --station icefield": {
@@ -282,7 +282,7 @@
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
+    "kits/resources/data/geology.json": "ba8056b5b450bee4d924af56547a0cad01f25cf5232d671683c29a4cca6a32c6",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
@@ -296,10 +296,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-icefield.html": "cfc9ecad97e09e269591fa79bdb32c15de4ef5be72c2ce2c52fefbc88c6f24e2"
+    "biomes/copperglacier/dist/copperglacier-icefield.html": "ccced9c06c263f9761db9e6f57d4188b58fabb3b9c0e5717cf1614cbbcaf53bd"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-icefield.html": "cfc9ecad97e09e269591fa79bdb32c15de4ef5be72c2ce2c52fefbc88c6f24e2"
+    "biomes/copperglacier/dist/copperglacier-icefield.html": "ccced9c06c263f9761db9e6f57d4188b58fabb3b9c0e5717cf1614cbbcaf53bd"
    }
   },
   "build.py --station pass": {
@@ -434,7 +434,7 @@
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/ext/61-core-water-plume.js": "3b1eb79ddcc511cd6c09dc145253e116ed8377252c7d7811d2d9b3fa35faf18f",
-    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
+    "kits/resources/data/geology.json": "ba8056b5b450bee4d924af56547a0cad01f25cf5232d671683c29a4cca6a32c6",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
@@ -448,10 +448,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/copperglacier/dist/copperglacier-pass.html": "8f75eaf82cff28c63f0c6f7ee65ca605e45590ff7885bbb9bdd95ca00b6c6552"
+    "biomes/copperglacier/dist/copperglacier-pass.html": "6bf605279353ac650e92d6a0859f74ded84190ba0fbe0083d795d5ad225b383d"
    },
    "outputs_raw": {
-    "biomes/copperglacier/dist/copperglacier-pass.html": "8f75eaf82cff28c63f0c6f7ee65ca605e45590ff7885bbb9bdd95ca00b6c6552"
+    "biomes/copperglacier/dist/copperglacier-pass.html": "6bf605279353ac650e92d6a0859f74ded84190ba0fbe0083d795d5ad225b383d"
    }
   }
  }

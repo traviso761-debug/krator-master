@@ -35,13 +35,16 @@ core/door's 10 and 20 and 69e5 into `XAK` (the kit's own KDOOR; no walk: a proto
 
 **Opt-in pieces** (2026-11-16, `extra/`). New pieces that only one page takes so far wait in `extra/`, not `src/`, so no
 other page of the kit changes until the next all-builds rebuild moves them into `src/` (TODO.md, "Ride along with the next
-all-builds rebuild"). A page takes one through its kit.json `"external"` (`settlements/pher` takes them all):
+all-builds rebuild"). A page takes one through its kit.json `"external"` (`settlements/pher` takes all but 88f, `settlements/kirstabal` 88d and 88f);
+the kit's own sheet takes none of them, so they have no sheet rows until the rebuild moves them into `src/`:
 
 | File | What |
 |---|---|
 | `extra/88c-xa-caravanserai.js` | `xa_caravanserai` (the owner, 2026-11-16: "build xanadu one"): a 48 m court of two-storey battered ranges, the stables' arcade, a gate block with an open iwan, four corner towers, the fountain court; v0 wash and gold, v1 earth and plainer |
-| `extra/88d-xa-lakecraft.js` | the lake craft owed by `core/simulation/PROPOSAL-XANADU.md` 2a: `xa_dugout` (the cayuco; empty, with its fisher, beached), `xa_launch` (the lancha; under sail, furled), `xa_lake_barge` (the cargo barge; sail set, brailed) |
+| `extra/88d-xa-lakecraft.js` | vessels (core/tags class `vessel`, the Ring Sea's tags; 2026-11-17): the lake craft owed by `core/simulation/PROPOSAL-XANADU.md` 2a: `xa_dugout` (the cayuco; empty, with its fisher, beached), `xa_launch` (the lancha; under sail, furled), `xa_lake_barge` (the cargo barge; sail set, brailed) |
 | `extra/88e-xa-stall.js` | `xa_stall`: a trestle stall under a cloth awning, four trades (cloth, cacao and fruit, pots and baskets, fish and salt) |
+| `extra/88f-xa-harbour.js` | the lake harbour (2026-11-17, `settlements/kirstabal` takes it): `xa_harbour_quay` (a continuous 34 m quay: coursed ashlar, weed line, coping, bollards, rings, fenders, water stairs; a jib crane, a cargo stack or a tally shed), `xa_mole_run` (the breakwater, `o.len` long: a harbour quay face, a parapet, boulder armour), `xa_harbour_warehouse`, `xa_drydock` (flooded, 88d's cargo barge in it when the page has 88d), `xa_slip`, `xa_river_span` (a segmental arch bridge in 26 m pieces; v 1 the abutment), `xa_monastery_white` (the monastery under a lime-white paint filter), `xa_garden_wall` (a garden square's coped wall; v 1 a gate with an arched head), the wind-catchers (`<house>_badgir`: seven common houses with a badgir at the back corner, `XH_BADGIR`) |
+| `extra/88g-xa-works.js` | the works the Xanadu build-out's lake towns, mines and villages want (2026-11-17, `settlements/xanadu/BUILD-OUT.md` 4a, wave 0.1; core/hamlet's focus records name these keys; `settlements/pher` takes it, places none yet): `xa_kiln_yard` (bottle kilns, v 1 a climbing kiln), `xa_dye_works` (vats, coppers, drying lines; v 1 indigo), `xa_loom_house` (a long hall, the clerestory, looms in the portico), `xa_saffron_house` (the louvred loft over the sorting floor), `xa_apiary` (hive walls of log or clay hives, the honey house), `xa_reeling_house` (silk: the hearth range, basins, reels; v 0 the undershot wheel, v 1 treadles), `xa_mat_shed` (reed racks, the weaving shed), `xa_quarry_yard` (three cut benches, the masons' yard, the sheerlegs), `xa_sulfur_works` (the hot spring, crust beds, the melting shed), `xa_customs_house` (v 0 on a quay, v 1 a road's toll house), `xa_fishponds` (stone pens in the shallows, the lake at local y 0, sluices), `xa_slipway` (the twin of 88f's `xa_slip` with its timber yard, steam box and saw pit: needs 88f), `xa_mine_head` (the adit, ore and spoil, the winze, the tally hut; v 1 opal), `xa_placer_sluice` (the sluice box down the bank, the rocker, tailings), `xa_wayside_shrine` (a chorten, a niche pillar, a mani wall). Seeds 34601-34799. Not a third caravanserai: `xa_serai` (87k, 46 m) and `xa_caravanserai` (88c, 54 x 56 m) stay, the two sizes |
 | `extra/69dz-ix-xanadu-extra.js` | the interior set `xanadu-extra`: the caravanserai's five ranges (the common room, its kitchen and the stores below, the travellers' rooms above). It joins `kits/interiors/sets/xanadu.js` with the pieces |
 
 **Hollow walls and interiors** (2026-11-09). The kit's interior set is `kits/interiors/sets/xanadu.js` (one item per def:
@@ -110,6 +113,16 @@ A fifth, `87k-xa-lake-trades.js` (2026-11-16, for Kirstabal: `settlements/kirsta
 `xa_fish_racks` (a fishing village's racks and smokehouse: core/hamlet's fishing works on the Xanadu row, as Kirstabal's
 `KS_RING.fishingRow` extends it). A world that wants them lists the file; folding it into `FILES` changes every page that
 takes the kit (TODO.md, "Ride along").
+Its interiors are `87k1-xa-lake-rooms.js`, opt-in with it: the interior set `xanadu-lake` (the serai's four ranges, the
+tea factory's ground storey, the latex house's sealing room; the fermentary and the fish racks skipped as open), added with
+`KratorInteriors.sets.add` when the page carries the interiors core, so Xanadu's `?interiors=1` mode hollows and furnishes
+them (Kirstabal, K5). It belongs in `kits/interiors/sets/` and moves there with the next rebuild of the interiors sheet.
+A third, `87k2-xa-slate-wall.js` (2026-11-17, Kirstabal's town wall after Chiang Mai's: the owner), is opt-in the same way:
+`xa_slate_wall` (a run of curtain, `o.len` long, merlons with stepped peaks and a loophole under each), `xa_slate_gate`
+(Tha Phae's: two tall stepped pillars either side of the road, the leaves open, `o.pass`), `xa_slate_bastion` (the corner
+bastion) and `xa_slate_tower` (the buttress at a turn), on the items `xSlateB` and `xSlateDB` (`MAT.xSlate`, `MAT.xSlateD`:
+a page binds a library family of those names; Kirstabal's is `brick.dark` tinted slate until `wall.slate.coursed` lands,
+`core/materials/PROMPTS-NEEDED.md` section 57). They draw along core/city's wall records (`KCITY.grid.wall`).
 
 **Footprints** (2026-11-10; the owner: "the garden pieces ... stick out way over what their footprint is supposed to be").
 A def's footprint is its `w x d`, its lot: the sheet spaces sites by it, Erewhon's garden grid and blocks set 8 m and 16 m
@@ -118,10 +131,28 @@ Everything a def draws stays on its lot, foliage included: a plant's crown is fi
 lot line (`xaRoom`, `72-xa-helpers.js`): the kit's own crowns (`xnTree`, `xnCypress`, the garden palm `xnXPPalm`) shrink to
 it, and `xaPlant` (`86b-xa-plants.js`) reads the crown the Vale biome is about to draw (its first three draws, replayed from a
 seed set on the biome's own stream) and scales the whole tree to fit, reporting an error if the biome ever draws past it.
-`node kits/xanadu/tests/test-footprints.js` (a `tools/test_all.py` step) seals the kit as `XAK`, builds every def and variant
+`node kits/xanadu/tests/test-footprints.js` (a `tools/test_all.py` step) seals the kit as `XAK` (with the opt-in `extra/88*.js` since 2026-11-17: the test wraps `kit_bundle.files`, so no sealed page changes; `--no-extra` leaves them out), builds every def and variant
 alone and measures every instance's box against its lot (0.25 m tolerance, townsfolk left out): a garden or water piece
 past it fails; any other def past it must be listed in the test's `KNOWN` with its overhang (`KNOWN_ISSUES.md`, "Defs past
 their lot") and must not grow.
+
+**The Xanadui fort** (2026-11-16, `settlements/strongwall/PLAN.md` section 5, its steps F1-F4). One fort for the Sultanate:
+Strongwall, the Marches' watch forts, the gate works of a town, the watch line's posts, and later the House of the Tempest
+round the Qiblai kit's violet monastery. It is planned before it is drawn:
+- `src/80f-xa-fort-data.js` (`[G data]`, `XFORT`): `XFORT.plan({size})` turns a size (`watch`, `march`, `gate`; a watch fort
+  may take a convex `outline`) into records (curtains with their outward normals, towers with the point on the wall the rules
+  read and the centre they are drawn at, gates, buildings, stairs, guns, the beacon); `XFORT.check(P)` holds the rules (a
+  tower at every corner, towers at most the size's gap apart, the gate on an edge, every wall walk joined to a stair, nothing
+  overlapping, the keep 6 m clear of the curtain); `XFORT.damage(P, state, seed)` hashes the damaged and ruined states from
+  core/rand. `node kits/xanadu/tests/test-fort.js` tests it, each rule with its negative.
+- `src/80g-xa-fort.js` draws it: four defs in the family *Forts* (`xa_fort_watch`, `xa_fort_march` (Strongwall),
+  `xa_fort_gate`, `xa_fort_post`), each with `o.v` 0 kept, 1 damaged, 2 ruined. The gold is only the main gate's pavilion and
+  the keep's chapel (the owner, 2026-11-16). A ruin's rubble is a core/terrain `KRUBBLE` heap (decoration to core/ruins); fallen
+  pieces are seated on their lowest points. A standing fort's wall walks, stairs and landings are on core/walk.
+- The sheet (`build.py` names both fragments, with `core/terrain/37c-core-rubble.js` and `core/ruins`, here and not in
+  `xanadu.py`: `XAK` and Xanadu's own pages do not take them): `targets/sheet/91u-xasheet-ruins.js` watches every damaged and
+  ruined fort with `KRUINS`; `verify.py` adds `fort-plans` and `fort-walks` (every standing fort's walks reached from its
+  stairs, with a negative) through `sheet_verify.run(extra=...)`.
 
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).

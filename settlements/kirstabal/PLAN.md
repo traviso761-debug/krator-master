@@ -292,6 +292,12 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
 - **K2.** `settlements/kirstabal`: the town on core/city as a target on Xanadu's page, with only the Xanadu kit
   (`README.md`). About 440 buildings and 2,850 people. The caravanserai, the latex house, the tea factory and the fermentaries
   are new Xanadu kit pieces (`kits/xanadu/src/87k-xa-lake-trades.js`, opt-in, 2026-11-16).
+  Tightened the same day (the owner: "add some gardens and foliage and maybe densify the settlement a bit more? it looks too
+  spread out"): the build zone from 1.2 km by 640 m to 960 by 440 m, the side streets' lots back in, little frontage left
+  vacant (3 to 10 %, was 42 to 66 %): about 420 buildings on half the ground, twice as dense. Four public gardens, palms down
+  the avenues and shade trees along the main streets, the Rift's trees and plants in the yards (a third of the country's).
+  The yards are painted as garden plots (the owner: "Paint the yards as green garden plots"): every bit of the zone not under a
+  building, its doorstep or a street, in 9 m plots, green garden or tilled beds, a few left beaten earth (about 18 ha).
 - **K3.** The harbour (quays, mole, lighthouse, boat sheds), the lake (core/water open), Keb Riwā from the lip down the
   scarp to its mouth (core/water flow) and the bridge on the Strongbow road. `core/coast` is not taken: the lake's shore
   near the town is designed ground, and the open world (K6) takes core/coast.
@@ -303,6 +309,49 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   Rift kit (`biomes/rift`) on today's core/biome, not the Vale's `biomes/xanadu`, zoned by one wetness field (jungle along
   the lake and Keb Riwā and toward the scarp's foot, savannah inland) that also tints the grass, under the Rift's air
   (`targets/town/90m-ks-flora.js`, `ksWet` in 89zk). The scarp's cloud forest and tea belt are still to come.
+- **K5.** The interiors, on Xanadu's own mode (`?interiors=1`: hollow walls, real doors, rooms furnished from the catalog's
+  Xanadu pieces, their floors and stairs in core/walk), turned on for the five buildings of this step only: the governor's
+  house and the Two Horns' factor house (the kit's own items), the serai, the tea factory and the latex house's sealing room
+  (new items, `kits/xanadu/src/87k1-xa-lake-rooms.js`, opt-in; the serai's ranges now have doors onto the court). Every open
+  door of the five gets a threshold in core/walk and, where the sill stands over the sloping ground, a flight of steps. The
+  serai, the tea factory and the latex house are reached throughout (`verify.py --interiors`); the two manors keep the kit's
+  own gap (settlements/xanadu KNOWN_ISSUES.md: their items' plan doors are not cut, so the upper house and the konak stay
+  sealed). The factor house has no counting rooms of its own yet (it is the kit's merchant's konak), and the governor's
+  audience hall waits for a seat piece of its own.
+- **The walled square** (the owner, 2026-11-17: "make the layout more square, with a wall made of slate similar to the thin
+  brick wall of chiang mai ... mostly square, but somewhat irregular, also like chiang mai"). The town is now core/city's
+  irregular square (`KCITY.grid`, `core/city/37-city-grid.js`, new for this): an inner street 660 m a side, the wall 16 m
+  outside it with a bastion at each corner and a buttress about every 90 m, four gates (the Lake Gate on the harbour, the
+  Strongbow Gate, the Works Gate, the Scarp Gate) where the two avenues cross it, a grid of main streets that wanders, ends in
+  T's and bends, core/city's side streets in the blocks. The bazaar is at the avenues' crossing, the temple of the Decree
+  beside it (as Chiang Mai's great temple stands at its centre). Outside the wall: the quay street and the harbour, the serai,
+  the works and the monastery. About 490 buildings, 3,100 people. The wall is slate laid like Chiang Mai's thin bricks
+  (`kits/xanadu/src/87k2-xa-slate-wall.js`, opt-in), drawn in `brick.dark` tinted slate grey until a coursed-slate set
+  is made (`core/materials/PROMPTS-NEEDED.md` section 57). The moat (the owner, 2026-11-17: "Yes, add a moat"): Chiang Mai's,
+  16 m wide, its middle 15 m outside the wall, dug 3 m into the apron, its water 1.4 m under the banks (core/water, a flow a side),
+  the kit's street bridges over it at the four gates; core/city's square gives its line and the bridges' places.
+  The garden squares (the owner, 2026-11-17: "strategically add some Xanadu kit garden tiles in groups that form even squares or
+  rectangles among the city grid instead of aimless pathways through unfilled squares ... maybe 10% of the city total"): seven
+  rectangles of the kit's 8 m garden tiles, squared to the shore frame inside their grid cells, 727 tiles, 10.1 % of the walled
+  zone. Each is a chahar bagh: the rills cross at its middle, a pool cap ends each arm, jet allees with cypresses flank the cross
+  in the big ones, a court stands at each quarter's middle, and parterres fill the rest. The Governor's garden fills the cell
+  beside the seat (11 x 13 tiles; the kiosk, the star court, the lily pond, the painted-vault pavilion). The garden of the Decree
+  faces the temple across the street (15 x 9). The Lake, East, West and Scarp gardens take half their cells (one quarter each),
+  and the Works garden (5 x 5) closes the share in the poor quarter by the Works Gate. Each is a core/city green (kind `garden`)
+  laid before the infill and stamped HARD, so the side streets and lots go round it. The four loose `xa_garden` plots of
+  2026-11-16 gave way to them. About 2,870 people (was 3,280 on the denser square). Each is walled (a low coped wall, a gate
+  where a rill ends). The houses' wind-catchers (the plan's heat): badgir twins of seven common houses, about a quarter of them.
+  The quarters outside the walls (the owner, 2026-11-17: "we can put a little bit of the housing (and empty buildable lots)
+  outside the walls"): the Strongbow quarter along the road from the Strongbow Gate, the Works quarter by the works and the
+  Scarp quarter along the monastery road, a second core/city instance over them (no civic pieces), 63 lots, about 330 people
+  (a tenth of the town's 3,230), 13 of the house lots left empty and buildable, 5 with their materials piled (kits/construction).
+- **K6.** The site in the open world: `openworld/xanadu-oidong-highrift` (Kirstabal `sl758m2396` in `openworld/SITES.json` and the
+  region's cut, by hand, inside the Xanadu polygon). The ring (Mil, Kanāl, Grēnz, Bāiyar) at the tune's places and the lake's
+  nine on the shore round the lake, eight of them on a fishers' row in the region's site spec, planned on the world's ground
+  (`core/world/bake_sites.py`); their roads to the town; the link to **Strongbow's foot** (5.3 km over Keb Riwā's mouth) and
+  the lake road to Qiblai (143 km). Strongbow's foot is a *proposed* point (`sstrongbowft`, px 991.14,1596.84, where this
+  page ends its Strongbow road) until Strongbow's session places its foot town. The town itself stays this page's; the
+  region does not draw it, and its ground is the model's at 1 km (KNOWN_ISSUES.md).
 
 ## 7. Questions for the owner
 
