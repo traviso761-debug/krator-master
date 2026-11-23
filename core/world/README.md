@@ -9,6 +9,13 @@ page that reads it came out byte-identical after the move.
 | Fragment | Tag | What |
 |---|---|---|
 | `00-head.html` | [web] | the page shell; a region's `build.py` swaps in its title and caption |
+| `40-world-smooth.js` | [G data] | `WSMOOTH`: the smoothing that takes the scale model's linear artifacts out of the land ("Smoothing" below): `heights` (along the contours, at the cut), `river` and `line` (the curves a smoothed region carves). A smoothed region's build lists it before `41` |
+| `43-world-relief.js` | [G data] | `WRELIEF`: the land below the model's 2 km (`PLAN-RELIEF.md`). So far: terraces only on caprock (`bench`, P1), the erosion filter (`erode`, P2) and the peaks (`peaks`, P5: by the style's `peak` and 41's `PEAK` grid); every overlay's style is `41`'s `BIOME_GROUND`. A region with region.json `relief` lists it before `41` |
+| `43b-world-landforms.js` | [G data] | `WLAND`: landform records (`PLAN-RELIEF.md` P4): KSTACKS bodies placed per 2 km cell by the land style (buttes on caprock, kopjes, inselbergs, hoodoos, towers; by overlay, the High Rift's tension fissures, carved) and a region's pins (`WLAND.pin`: Pinnacle's rock), folded into `H` from per-body rasters. A relief region lists `core/terrain/37-core-stacks.js` and it before `41`; its bakes read them through `world_data.py` `LAND_JS`, `PINS` |
+| `44-world-streams.js` | [G data] | `WSTREAMS`: the small streams (`PLAN-RELIEF.md` P3): `trace` (the network on a grid, run by `bake_streams.py` after the cut), `decode`, `rebed`, `check`. A region whose region.json has `streams` lists it before `41`, which carves them (`WORLD.streams`, `streamAt`, `streamWater`) |
+| `golden-relief.json` | data | the relief modules' golden vectors (`PLAN-RELIEF.md` P9: 40, 43, 44, 43b on fixed inputs, to 1e-6), checked by `test-golden-relief.js` (`--write` after a change meant to move the land): the bar a Godot port meets |
+| `43m-world-micro.js`, `wmicro.gd`, `test-micro.js`, `PLAN-MICRO.md` | [G data] | `WMICRO`: the land a DEM shows below ~1 km (the owner, 2026-11-16, with the World Menagerie's DEM builds as the bar): hills by style (`hill`, gradient noise), the drainage (the erosion filter in six octaves 800 m to 25 m, replacing `WRELIEF.erode` in a relief region, flat floors), the grain by the slope. A relief region takes it by listing it after `43-world-relief.js` (`relief.micro: false` turns it off) |
+| `wrelief.gd`, `wsmooth.gd`, `wstreams.gd`, `wland.gd`, `wrelief_test.gd` | GDScript | the twins of `43-world-relief.js`, `40-world-smooth.js`, `44-world-streams.js` and `43b-world-landforms.js` (on `core/terrain/kstacks.gd`) (`PLAN-RELIEF.md` P15), every key of `golden-relief.json` checked in Godot 4.7.2: copies in `godot/tests/relief/` (`godot/tools/sync_core.py`), `godot --headless --path godot --script res://tests/relief/wrelief_test.gd` |
 | `41-world-fields.js` | [G data] | `WORLD`: the region's rasters decoded into the land. It holds:<ul><li>`WORLD.H(x, z, minWave)`: the model's heights, synthesized relief, scarps, river channels and `landHook`;</li><li>the water (`water`, `lakeWater`, `riverWater`);</li><li>the fields every kit reads (`at`, `fieldsFrom`);</li><li>`townW`, `clearHook`, the climate's colour.</li></ul> |
 | `41t-world-town-water.js` | [G data] | `WTOWN`: a town's own water with its ground (WORLD_DATA.towns, `bake_towns.py`): inside its footprint the town's water mask decides the water (`lakeWater`, `waterBodyAt`), its water joins the model's body at its level (one body, the mask taking it in), its river is served by `riverWater`, the model river it joins is cut outside the band and led in by a carved link; `drawn: false` keeps 41 from sinking the ground 3 m. `WTOWN.check()`: the shore against the page's trace, the river, one body. Listed right after 41 |
 | `41l-world-landforms.js` | [G data] | `WLAND`: the scale model's landform records under a cell (`DATA.landforms`, carried by `extract_region.py` into region.json) stamped at 1:1 through the land hook: island, islet, stack, shoal; water (edit_513's forms page, narrows and strait as one field: the bed set to the record's profile, the coarse wet cells beside closed to its width; river left to 41's named river) and shelf (the page's bed for the water it names); `WLAND.check()` |
@@ -19,6 +26,8 @@ page that reads it came out byte-identical after the move.
 | `81-world-terrain.js` | [web] | the terrain tiles (the land drawn, coloured by `WORLD.ground`) |
 | `83-world-water.js` | [G data] | the water levels |
 | `83w-world-seas.js` | [web] | the seas and lakes drawn; with core/water/farbed listed, each body's far bed (no straight edge at the shore window) |
+| `83s-world-streams.js` | [web] | a relief region's wet streams drawn: core/water flow ribbons built a kilometre piece at a time near the camera (`STREAMW`; `PLAN-RELIEF.md` P3). A build with streams lists it after `83w` |
+| `88l-world-landforms.js` | [web] | a relief region's landform records in core/tags (class `feature`) and on the minimap (`PLAN-RELIEF.md` P10). A build with records lists it after `88s` |
 | `84-world-nursery.js` | [web] | each kit's species grown as variants (`KIT.make`, `KIT.grow`) |
 | `84i-world-impostors.js` | [web] | opt-in: a kit whose registry entry asks (`impostor: {lv, variants, grid, cell}`) draws its far level as the biome core's octahedral impostors (`core/biome/34`), baked once per species and variant from the tree the nursery grows at `lv`, written with the world's logarithmic depth. A region lists it after `84` (Pinnacle does, for the hyperjungle) |
 | `85-world-flora.js` | [web] | the flora tile by tile, seeded by cell with `KRAND.hash` (the same tile in any order) |
@@ -32,6 +41,7 @@ page that reads it came out byte-identical after the move.
 | `90-world-camera.js` | [web] | the camera, the minimap (its overlays: Köppen, biome regions, a page's `MAP_LAYERS`), "Go to", the inspector, the polygon tool, `pick` |
 | `91-world-probe.js` | [web] | the camera, the probe and its checks (`_api.hostChecks`: order-free seeding, land continuous, nothing in water, spacing across tiles, roads, towns, no NaN) |
 | `93-world-propose.js` | [web] | "propose": place a new site on the ground or the minimap, name and type it, see its ground and resources (`WRES.assess`), keep it, export it or send it to the edit queue; `tools/scale-model/propose_site.py` takes it into `openworld/SITES.json` and the scale model |
+| `94-world-export.js` | [web] | the region through core/export (GODOT-PLAN.md M7, opt-in: a build lists it after core/export 07, 09, 10): the parts' registries (88s, 88b) as one page registry (ids `<part>:<id>`), the terrain (WORLD.H and WORLD.water on a grid `WORLD_EXPORT.step` apart), and the scene in the box as items and buckets (the villages' pieces, the bridges by their records, the flora round the camera; not the terrain, water, sky or beacons). A floating origin (2026-11-16): the meshes are written about the case's own origin, the flora's floating origin (85) where it is drawn near the box, else the box's centre (`WORLD_EXPORT.origin`; core/export README, "origin"). The flora's pools (85) are core/tags item sets in a `flora` part, registered when the export reads them, so every plant carries its uid (`KTAGS.uid('flora', key, position)`). `openworld/oidong-highrift/tools/godot_case.py` drives it (`tools/harness.py export --before`) |
 | `98-world-start.js`, `99-tail.html` | [web] | start-up and the page's tail |
 
 **Resources and proposals in a region's build:** list `('resgeo', 'geology')` (a generated fragment:
@@ -61,7 +71,10 @@ Riders' `BR_CAMP`), hamlets (core/hamlet: a row's `kit` picks the drawing, `88s`
 through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
 `every` m of road and a rest stop between, drawn as one-building villages; a stop with no ground is a `gap`). The bake
 reads the kits' declared boxes from their source (`ASSET`, `XA.def`, `VERN.def`); a new village kit adds its records
-there and an entry in `VK`.
+there and an entry in `VK`. The bake plans on the land the page draws: 41l and 44c (the coasts) only when the region's
+`build.py` lists them (2026-11-16: oidong-highrift takes no coast, and planning on coasts it never drew made the bake and
+the page's plan differ). A region's own shaping of its land that the plan must see (a `WORLD.landHook`) goes in its
+`src/48-world-site.js`, which the bake reads (oidong-highrift's OHR_CUT: Strongbow's face).
 
 **A town's own ground** (`openworld/PLAN-VOTH.md` section 3, Layer 2; Voth the first case, 2026-11-11). A settlement whose
 layout is keyed to its page's ground (its shore, its river) hands that ground to the world instead of being rebuilt on it:
@@ -139,6 +152,70 @@ the isle demo's):
 - `91-world-probe.js` writes its own PRNG for the probe's samples;
 - `80-world-sky.js` draws its own sky dome, not core/atmos's standard skybox;
 - numeric defaults written with `||` in `41`, `84`, `85` and `88`.
+
+## Smoothing
+
+The owner, 2026-11-11, on a census map's hillshade of `openworld/xanadu-oidong-highrift`: "we might need a world module to
+smooth over linear artifacts". Seen at the height grid's own resolution (`python3 core/world/hillshade.py <region>`), the
+land had three kinds, each traced to its source:
+
+| Artifact | Where it came from | The fix |
+|---|---|---|
+| **Staircases** along scarps and ridges | The model's 2 km pixels: a diagonal scarp is a run of pixel steps, and the cut's cubic upsample keeps them | The cut smooths the upsampled heights **along their contours** (`WSMOOTH.heights`) before its synthesis, so the synthesis's ledges follow clean contours. The scarps' levels (`scarpl`, `scarpu`) are upsampled by the B-spline, not bilinearly, so their 4 km seams go too |
+| **Streaks** along the rows and columns | The cut clamped its cubic to the bilinear interpolation of 3x3 min and max boxes, whose squares and seams show; the model's own rows show through a cubic | The cut upsamples by the cubic B-spline, which cannot overshoot, so it needs no clamp; streaks across a slope's contours are smoothed with the stairs |
+| **Ruler-straight river cuts** | The cut carved each river's trench along its polyline's straight 2 km runs, rounded to cells (dashed trenches at 500 m). The page carved along every fourth vertex (8 km) after two Chaikin passes. The model's traced rivers (`px` with `q_m3s`) are themselves D8 paths in axis and diagonal moves | Both carve along `WSMOOTH.river`: a centripetal Catmull-Rom through every vertex, with a traced river's zigzag relaxed first (one 1-2-1 pass, at most 400 m) and a little seeded meander (about its width, zero at every vertex). The page carves a smoothed region's rivers unwarped, so they lie on their curve through the model's vertices, not up to 250 m off (the offset seen at Longsong). The D8 drainage lines are relaxed into curves (`WSMOOTH.line`) |
+
+**How the heights are smoothed.** A pass takes the structure tensor (Gaussians, the only kernel both separable and
+round): at every cell the contour's direction and how sure it is. The new height is the weighted mean of the heights down
+the streamline through the cell, followed both ways for 4 model pixels and bending with the contour, and blended in by
+coherence. Across a contour nothing moves, so a cliff keeps its profile, and nothing is aligned to the grid, so there is
+no axis or 45-degree bias. Two passes, at 3 model pixels' integration scale; about 1 s for 50,000 cells, about 15 s for a
+million. A plain blur strong enough to fill the stairs widens a scarp by 70 %; this widens it by under 2 %.
+`node core/world/test-smooth.js` proves it on synthetic land. Each check has a negative:
+- a staircase is filled at every angle, and the staircase itself fails that check;
+- the profile is kept, and the blur fails that check;
+- a smooth scarp moves equally little at 24 angles;
+- streaks across a slope go;
+- a peak stays;
+- the curves pass through their vertices with no corners, and the meander is seeded and the same in any cut.
+
+**What it does not do.** A streak running *along* the contours reads as a terrace, so it stays. Lakes keep the model's
+2 km masks: where the land round a lake lies under its level (pinnacle's), only the mask draws the shore. A follow-up
+would draw shores from a finer source.
+
+**Turning it on.** A region opts in with `"smooth": true` in `openworld/SITES.json`. Then:
+1. `tools/scale-model/cut_site.py` passes `--smooth` to `extract_region.py`, which runs the JS in node
+   (`core/world/smooth.py`), keeps every river vertex in region.json (two past the box at each end), and writes
+   region.json's `smooth` record. A cut of 1.5 cells a model pixel or coarser is left alone (isle-demo, north-basin).
+2. `41` reads the `smooth` record, and throws if `40` is not on the page. `WORLD.riverCourse()` gives each named
+   river's carved line. The probe's river check (`91`) puts a smoothed river's stations on that line, since a curve
+   can pass more than the 500 m it searches from a long chord's middle (593 m on the Rīfar al-Jadwal).
+3. The region's `build.py` lists `40` before `41`. `core/world/bake_sites.py` always loads it.
+4. Re-bake (`bake_sites.py <region>`, `--resources`), rebuild, GPU-verify.
+
+Without the flag the cut is byte-identical to before (checked on pinnacle) and `41` takes the old path.
+
+**Where it is on:**
+- `openworld/pinnacle` (2026-11-12): re-cut, re-baked (its nine camps and tracks all stand), verified on the GPU.
+- `openworld/oidong-highrift` (2026-11-12, after Longsong's move onto the Bīruk al-Ghaym): re-cut and re-baked. Its 23
+  hamlets and 937 records are unchanged. It has 15 bridges where it had 18: the curved rivers cross three fewer roads.
+  Longsong's pin stays on the south bank, 401 m from the river as the page draws it.
+
+**Rollout to the other regions**, one region at a time, after the owner's word:
+
+| Region | Cells | What it reaches | Notes |
+|---|---|---|---|
+| `xanadu-oidong-highrift` | 1789 x 589 at 1 km (2 a pixel) | its own page (Erehwon's and Qiblai's sites are in it) | On, with relief (2026-11-16, `PLAN-RELIEF.md` P8): re-cut, streams traced at 400 m, Erehwon's farm-1 moved off the smoothed lake shore |
+| `iziz-cluster` | 329 x 609 at 500 m | its own page | Girder, Mav's Refuge and Talia's ground. Re-bake its sites and check the corridors' roads |
+| `isle-demo`, `north-basin` | 4 km cells (half a pixel) | `isle-demo`: its page and `settlements/isle-demo` | **Nothing to do.** Coarser than the model, so no stairs (the flag is ignored). `isle-demo`'s rivers could take `WSMOOTH.river` alone, but it is cut by hand, not by `cut_site.py` |
+
+Each turn:
+1. Re-cut the region without the flag first, to confirm it reproduces its committed data. A re-cut takes whatever the
+   model holds now, such as pins moved since.
+2. Cut it with the flag.
+3. Run `hillshade.py` on the old and new `elev.png` with `--diff`.
+4. Re-bake, rebuild what `tools/reach.py openworld/<region>/data/elev.png` lists, GPU-verify, and `port_baseline.py --update`
+   the pages.
 
 **Next** (`openworld/PLAN-SITES.md` section 6):
 - `WORLD.H`'s land rule becomes core/terrain `KLAND` (Hook's lift on `claude/silly-hawking-929a87`, redone from this

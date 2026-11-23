@@ -186,6 +186,8 @@ func _update() -> void:
 	m.set_shader_parameter("uCloud", Vector4(L["cover"], Cl["cumulus"], Cl["cirrus"], Cl["bank"]))
 	m.set_shader_parameter("uCloudH", Vector4(Cl["height"], Cl["cirrusHeight"], Cl["scale"], Cl["drift"]))
 	m.set_shader_parameter("uWind", Vector2(1.0, 0.3))
+	RenderingServer.global_shader_parameter_set("atm_sun_dir", s["sunDir"])
+	RenderingServer.global_shader_parameter_set("atm_hour", hour)
 	RenderingServer.global_shader_parameter_set("atm_cloud", Vector4(L["cover"], Cl["cumulus"], Cl["cirrus"], Cl["bank"]))
 	RenderingServer.global_shader_parameter_set("atm_cloud_h", Vector4(Cl["height"], Cl["cirrusHeight"], Cl["scale"], Cl["drift"]))
 	RenderingServer.global_shader_parameter_set("atm_cloud_wind", Vector2(1.0, 0.3))
@@ -206,3 +208,4 @@ func _update() -> void:
 	env.tonemap_exposure = L["exp"]
 	env.fog_light_color = _c(L["fogC"])
 	env.fog_density = L["fogD"] * 0.8326   # one exponential matched to three's squared one (stage.gd)
+	env.fog_sun_scatter = clampf(0.26 * float(L["sunI"]), 0.0, 0.34)

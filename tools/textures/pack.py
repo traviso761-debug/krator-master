@@ -104,12 +104,139 @@ def webp(arr, quality, mode, lossless=False, bits=8):
     return buf.getvalue()
 
 
-def process(fam, cfg, size):
+def webp_bytes(u8_arr, quality, mode, lossless=False):
+    im = Image.fromarray(u8_arr, mode)
+    buf = io.BytesIO()
+    if lossless:
+        im.save(buf, 'WEBP', lossless=True, quality=100, method=6)
+    else:
+        im.save(buf, 'WEBP', quality=quality, method=6, alpha_quality=100, exact=(mode == 'RGBA'))
+    return buf.getvalue()
+
+
+def reconstruct_height_from_normal(n):
+    """Exact periodic Frankot-Chellappa integration of a tangent-space OpenGL normal map (+X right, +Y up, +Z out)
+    inverting process.py's central-difference operator on the torus."""
+    H, W = n.shape[:2]
+    nz = np.maximum(n[..., 2], 0.08)
+    p = -n[..., 0] / nz
+    q = n[..., 1] / nz
+    sx = np.sin(2.0 * np.pi * np.fft.fftfreq(W))[None, :]
+    sy = np.sin(2.0 * np.pi * np.fft.fftfreq(H))[:, None]
+    denom = sx * sx + sy * sy
+    denom[0, 0] = 1.0
+    fh = (-1j * sx * np.fft.fft2(p) - 1j * sy * np.fft.fft2(q)) / denom
+    fh[0, 0] = 0.0
+    hm = np.real(np.fft.ifft2(fh))
+    lo, hi = np.percentile(hm, [1, 99])
+    span = max(float(hi - lo), 1e-4)
+    return np.clip(0.5 + (hm - hm.mean()) / span, 0.02, 1.0)
+
+
+def compute_cavity_from_normal(n):
+    """Concave-only pore/joint occlusion (M4: cavity never brightens or darkens convex ridges).
+    Laplacian d2h/dx2 + d2h/dy2 > 0 marks local minima (mortar joints, pits, furrows)."""
+    nz = np.maximum(n[..., 2], 0.08)
+    p = -n[..., 0] / nz
+    q = n[..., 1] / nz
+    lap1 = 0.5 * ((np.roll(p, -1, 1) - np.roll(p, 1, 1)) + (np.roll(q, -1, 0) - np.roll(q, 1, 0)))
+    lap3 = 0.25 * ((np.roll(p, -3, 1) - np.roll(p, 3, 1)) + (np.roll(q, -3, 0) - np.roll(q, 3, 0))) / 3.0
+    conc = np.maximum(0.0, 0.55 * lap1 + 0.45 * lap3)
+    p98 = float(np.percentile(conc, 98))
+    if p98 < 0.015:
+        return np.ones(n.shape[:2], dtype=np.float64)
+    return np.clip(1.0 - 0.62 * (conc / max(p98, 0.05)), 0.18, 1.0)
+
+
+def compute_mip_variance(n):
+    """M2 Specular AA: Toksvig/Kaplanyan normal variance (1 - ||E[n]||) / ||E[n]|| per mip level from float normals
+    before quantising (zero image bytes; shared in pack.json between web and Godot)."""
+    cur = n.astype(np.float64)
+    out = [0.0]
+    while cur.shape[0] >= 2 and cur.shape[1] >= 2 and len(out) < 10:
+        h2, w2 = cur.shape[0] // 2, cur.shape[1] // 2
+        cur = 0.25 * (cur[0:h2 * 2:2, 0:w2 * 2:2] + cur[1:h2 * 2:2, 0:w2 * 2:2] +
+                      cur[0:h2 * 2:2, 1:w2 * 2:2] + cur[1:h2 * 2:2, 1:w2 * 2:2])
+        rlen = np.clip(np.linalg.norm(cur, axis=2), 1e-3, 1.0)
+        var = float(np.mean((1.0 - rlen) / rlen))
+        out.append(round(var, 5))
+    return out
+
+
+def oct_encode_u8(n):
+    """Cigolle et al. (JCGT 2014, Sec. 3.2) 8-bit Hemisphere Octahedral normal encoding into uint8 [H, W, 2].
+    Maps the upper hemisphere (nz >= 0) bijectively onto [-1, 1]^2 (100% codeword utilisation, branchless decode)."""
+    nz = np.maximum(n[..., 2], 0.0)
+    l1 = np.maximum(np.abs(n[..., 0]) + np.abs(n[..., 1]) + nz, 1e-8)
+    px = n[..., 0] / l1
+    py = n[..., 1] / l1
+    eu = px + py
+    ev = px - py
+    u = np.clip(np.rint((eu * 0.5 + 0.5) * 255.0), 0, 255).astype(np.uint8)
+    v = np.clip(np.rint((ev * 0.5 + 0.5) * 255.0), 0, 255).astype(np.uint8)
+    return np.stack([u, v], axis=-1)
+
+
+def oct_decode_u8(uv_u8):
+    """Decode uint8 [H, W, 2] Hemisphere Octahedral normals back to unit float64 [H, W, 3] (branchless)."""
+    e = uv_u8.astype(np.float64) / 255.0 * 2.0 - 1.0
+    vx = (e[..., 0] + e[..., 1]) * 0.5
+    vy = (e[..., 0] - e[..., 1]) * 0.5
+    vz = np.maximum(0.0, 1.0 - np.abs(vx) - np.abs(vy))
+    out = np.stack([vx, vy, vz], axis=-1)
+    return out / np.maximum(np.linalg.norm(out, axis=-1, keepdims=True), 1e-8)
+
+
+def encode_normal_rg(n, enc):
+    """Encode float unit normal [H, W, 3] into uint8 [H, W, 2] and return (rg_u8, n_decoded)."""
+    if enc == 'oct8':
+        rg = oct_encode_u8(n)
+        return rg, oct_decode_u8(rg)
+    bits = 6 if enc == 'xy6' else 8
+    raw = quantize(np.clip(np.rint((n[..., :2] * 0.5 + 0.5) * 255.0), 0, 255).astype(np.uint8), bits)
+    xy = raw.astype(np.float64) / 255.0 * 2.0 - 1.0
+    nz = np.sqrt(np.maximum(0.0, 1.0 - xy[..., 0] ** 2 - xy[..., 1] ** 2))
+    dec = np.stack([xy[..., 0], xy[..., 1], nz], axis=-1)
+    dec /= np.maximum(np.linalg.norm(dec, axis=-1, keepdims=True), 1e-8)
+    return raw, dec
+
+
+def normal_error_stats(n_ref, n_dec):
+    dots = np.clip(np.sum(n_ref * n_dec, axis=-1), -1.0, 1.0)
+    deg = np.degrees(np.arccos(dots))
+    return {
+        'meanDeg': round(float(deg.mean()), 4),
+        'p95Deg': round(float(np.percentile(deg, 95)), 4),
+        'p99Deg': round(float(np.percentile(deg, 99)), 4),
+        'maxDeg': round(float(deg.max()), 4),
+    }
+
+
+def assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_ref, n_dec, r_arr, cav_arr):
+    """Section 9.2 Gate 1: channel physics check at write time (honouring flat declarations and never putting height in a card)."""
+    if card and alpha_mode == 'height':
+        raise ValueError('%s: Gate 1 violation — height must never overwrite alpha on a cut-out card' % fam)
+    for nm, arr in (('height', h_arr), ('normal', n_dec), ('roughness', r_arr), ('cavity', cav_arr)):
+        if arr is not None and not np.all(np.isfinite(arr)):
+            raise ValueError('%s: Gate 1 violation — NaN/Inf in %s' % (fam, nm))
+    if r_arr is not None and (float(r_arr.min()) < 0.0 or float(r_arr.max()) > 1.0001):
+        raise ValueError('%s: Gate 1 violation — roughness outside [0, 1]' % fam)
+    if n_ref is not None and n_dec is not None:
+        st = normal_error_stats(n_ref, n_dec)
+        if st['meanDeg'] > 3.5:
+            raise ValueError('%s: Gate 1 violation — normal quantisation mean error %.2f deg > 3.5 deg' % (fam, st['meanDeg']))
+    if h_arr is not None and not cfg.get('flat') and not card:
+        span = float(np.percentile(h_arr, 99) - np.percentile(h_arr, 1))
+        if span < 0.02:
+            raise ValueError('%s: Gate 1 violation — height p99-p01 %.4f < 0.02 without "flat": true' % (fam, span))
+
+
+def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
     lib = cfg['lib']
     d = set_dir(lib)
     sz = cfg.get('size', size)                # a family may ask for a smaller map (a detail map on small furniture), or [w, h]
     size = [int(v) for v in sz] if isinstance(sz, list) else int(sz)
-    meta = json.load(open(os.path.join(d, 'meta.json')))
+    meta = json.load(open(os.path.join(d, 'meta.json'), encoding='utf-8'))
     rec = meta.get('record', {})
     # map paths come from meta.json 'maps' (a neutral copy points at its sibling's normal and roughness)
     mp = meta.get('maps') or {}
@@ -137,31 +264,72 @@ def process(fam, cfg, size):
     col = a * k[..., None] / m * target
     rgb = grey * (1 - keep) + col * keep
     ph = path('heightMap', 'height.png')
-    height = bool(cfg.get('height')) and not card and os.path.isfile(ph)
-    if cfg.get('height') and not height:
-        print('note: %s asks for a height channel but %s has no height map (%s); packed without one' % (fam, lib, os.path.basename(ph)))
-    if card:
-        out['map'] = webp(np.concatenate([rgb, alpha[..., None]], -1), 85, 'RGBA')
-    elif height:          # the height in the colour map's alpha, for KGROUND's h: {from: 'a'}
-        hm = load(ph, size, 'L')
-        lo, hi = np.percentile(hm, [1, 99])
-        h = np.clip(0.5 + (hm - hm.mean()) / max(float(hi - lo), 1e-4), 0.02, 1.0)
-        out['map'] = webp(np.concatenate([rgb, h[..., None]], -1), 82, 'RGBA')
+    has_lit = os.path.isfile(pn) and not card and not cfg.get('mapOnly')
+
+    if pack_format == 2:
+        n_float, n_dec, r_final, cav_arr, h_arr, mip_var = None, None, None, None, None, None
+        if has_lit:
+            n_float = load(pn, size, 'RGB') * 2.0 - 1.0
+            n_float /= np.maximum(np.linalg.norm(n_float, axis=2, keepdims=True), 1e-6)
+            mip_var = compute_mip_variance(n_float)
+            cav_arr = compute_cavity_from_normal(n_float)
+            if os.path.isfile(ph):
+                hm = load(ph, size, 'L')
+                lo, hi = np.percentile(hm, [1, 99])
+                h_arr = np.clip(0.5 + (hm - hm.mean()) / max(float(hi - lo), 1e-4), 0.02, 1.0)
+                h_from = 'heightMap'
+            else:
+                h_arr = reconstruct_height_from_normal(n_float)
+                h_from = 'normalPoisson'
+            if os.path.isfile(pr):
+                r_raw = load(pr, size, 'L')
+                lift = float(cfg.get('roughLift', 0.0))
+                r_final = np.clip(r_raw + (1.0 - r_raw) * lift, 0.0, 1.0)
+            else:
+                r_final = np.full(n_float.shape[:2], 0.85, dtype=np.float64)
+            rg_u8, n_dec = encode_normal_rg(n_float, normal_enc)
+            r_u8 = quantize(np.clip(np.rint(r_final * 255.0), 0, 255).astype(np.uint8), 7 if normal_enc == 'xy6' else 8)
+            c_u8 = quantize(np.clip(np.rint(cav_arr * 255.0), 0, 255).astype(np.uint8), 7 if normal_enc == 'xy6' else 8)
+            nrc_u8 = np.concatenate([rg_u8, r_u8[..., None], c_u8[..., None]], axis=-1)
+            out['nrcMap'] = webp_bytes(nrc_u8, 100, 'RGBA', lossless=True)
+        if card:
+            alpha_mode = 'cutout'
+            out['map'] = webp(np.concatenate([rgb, alpha[..., None]], -1), 85, 'RGBA')
+        elif h_arr is not None:
+            alpha_mode = 'height'
+            out['map'] = webp(np.concatenate([rgb, h_arr[..., None]], -1), 82, 'RGBA')
+        else:
+            alpha_mode = 'none'
+            out['map'] = webp(rgb, 82, 'RGB')
+        assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_float, n_dec, r_final, cav_arr)
+        height = (alpha_mode == 'height')
     else:
-        out['map'] = webp(rgb, 82, 'RGB')
-    # normal
-    if os.path.isfile(pn) and not card and not cfg.get('mapOnly'):
-        n = load(pn, size, 'RGB') * 2 - 1
-        n /= np.maximum(np.linalg.norm(n, axis=2, keepdims=True), 1e-6)
-        # lossless: lossy WebP is always 4:2:0, which halves the X and Y the normal keeps in red and green (measured on
-        # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08),
-        # its channels kept to NORMAL_BITS
-        out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=NORMAL_BITS)
-    # roughness
-    if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
-        r = load(pr, size, 'L')
-        lift = float(cfg.get('roughLift', 0.0))
-        out['roughnessMap'] = webp(r + (1 - r) * lift, 85, 'L')
+        height = bool(cfg.get('height')) and not card and os.path.isfile(ph)
+        if cfg.get('height') and not height:
+            print('note: %s asks for a height channel but %s has no height map (%s); packed without one' % (fam, lib, os.path.basename(ph)))
+        if card:
+            out['map'] = webp(np.concatenate([rgb, alpha[..., None]], -1), 85, 'RGBA')
+        elif height:          # the height in the colour map's alpha, for KGROUND's h: {from: 'a'}
+            hm = load(ph, size, 'L')
+            lo, hi = np.percentile(hm, [1, 99])
+            h = np.clip(0.5 + (hm - hm.mean()) / max(float(hi - lo), 1e-4), 0.02, 1.0)
+            out['map'] = webp(np.concatenate([rgb, h[..., None]], -1), 82, 'RGBA')
+        else:
+            out['map'] = webp(rgb, 82, 'RGB')
+        # normal
+        if has_lit:
+            n = load(pn, size, 'RGB') * 2 - 1
+            n /= np.maximum(np.linalg.norm(n, axis=2, keepdims=True), 1e-6)
+            # lossless: lossy WebP is always 4:2:0, which halves the X and Y the normal keeps in red and green (measured on
+            # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08),
+            # its channels kept to NORMAL_BITS
+            out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=NORMAL_BITS)
+        # roughness
+        if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
+            r = load(pr, size, 'L')
+            lift = float(cfg.get('roughLift', 0.0))
+            out['roughnessMap'] = webp(r + (1 - r) * lift, 85, 'L')
+
     entry = {
         'lib': lib,
         'size': size,
@@ -174,12 +342,20 @@ def process(fam, cfg, size):
         'tint': dict({'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
                      **({'colour': t['colour']} if t.get('colour') else {})),
         'roughLift': cfg.get('roughLift', 0.0),
-        'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) + ((('height', ph),) if height else ())
-                   if os.path.isfile(f)},
+        'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) +
+                   ((('height', ph),) if (height and os.path.isfile(ph)) else ()) if os.path.isfile(f)},
         'files': {},
     }
     if height:
         entry['height'] = True
+    if pack_format == 2:
+        entry['packVersion'] = 2
+        entry['alphaMode'] = alpha_mode
+        if has_lit:
+            entry['normalEncoding'] = normal_enc
+            entry['heightSource'] = h_from
+            entry['mipVariance'] = mip_var
+            entry['normalError'] = normal_error_stats(n_float, n_dec)
     if cfg.get('own'):    # the kit's own page only: matlib_pack leaves it out of a host's copy of the pack (see `own` above)
         entry['own'] = True
     if cfg.get('cell'):   # a card shown one cell at a time [x0, y0, x1, y1], fractions of the sheet from its top left
@@ -200,8 +376,9 @@ def process(fam, cfg, size):
             entry['anchor'] = anchor
         if cfg.get('sheet'):
             entry['sheet'] = cfg['sheet']
+    slot_suffix = {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough', 'nrcMap': 'nrc'}
     for k, data in out.items():
-        name = '%s.%s.webp' % (fam, {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough'}[k])
+        name = '%s.%s.webp' % (fam, slot_suffix[k])
         entry['files'][k] = name
         files[name] = data
     return entry, files
@@ -211,20 +388,27 @@ def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument('build')
     ap.add_argument('--check', action='store_true')
+    ap.add_argument('--format', type=int, choices=(1, 2), default=None, help='override packFormat (1=three maps, 2=M1 two maps)')
+    ap.add_argument('--normal-enc', choices=('xy6', 'xy8', 'oct8'), default=None, help='packFormat 2 normal encoding')
     a = ap.parse_args(argv)
     bdir = os.path.join(ROOT, a.build) if not os.path.isabs(a.build) else a.build
-    cfg = json.load(open(os.path.join(bdir, 'materials.json')))
+    cfg = json.load(open(os.path.join(bdir, 'materials.json'), encoding='utf-8'))
     size = int(cfg.get('size', 512))
+    pfmt = int(a.format if a.format is not None else cfg.get('packFormat', 1))
+    nenc = str(a.normal_enc if a.normal_enc is not None else cfg.get('normalEncoding', 'xy6'))
     tdir = os.path.join(bdir, 'tex')
     pack = {'what': 'generated by tools/textures/pack.py from materials.json; do not edit', 'build': cfg['build'],
             'size': size, 'families': {}}
+    if pfmt == 2:
+        pack['packVersion'] = 2
+        pack['normalEncoding'] = nenc
     allfiles = {}
     for fam in sorted(cfg['families']):
         fc = cfg['families'][fam]
         if fc.get('optional') and not os.path.isfile(os.path.join(set_dir(fc['lib']), 'meta.json')):
             print('skipped %s: library set %s not delivered yet (optional)' % (fam, fc['lib']))
             continue
-        e, files = process(fam, fc, size)
+        e, files = process(fam, fc, size, pack_format=pfmt, normal_enc=nenc)
         pack['families'][fam] = e
         allfiles.update(files)
     pj = json.dumps(pack, indent=1, sort_keys=True) + '\n'
@@ -249,3 +433,4 @@ def main(argv):
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
+

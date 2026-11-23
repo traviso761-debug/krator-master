@@ -30,15 +30,44 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   {id:'eastern-watch',name:'The Eastern Watch',x:96,z:118,r:6.2}].concat(WARD.map(B=>({id:B.id,name:B.name,x:B.x,z:B.z,w:B.w,d:B.d,ward:true})))
   .map(u=>Object.assign(u,{levels:[...FLOORS[u.id]].sort((a,b)=>a-b).map((y,i)=>({y,name:u.ward?(i?'the upper storey'+(FLOORS[u.id].size>2?' ('+(i+1)+')':''):'the ground floor'):NAMES[String(y)]||''}))}));
  // ---------------------------------------------------------------- geometry: quads into per-family arrays (ARCH's materials)
- const MAT={};const mat=f=>MAT[f]||(MAT[f]=(ARCH.MATS[f]||ARCH.MATS.wall)());
+ const INDOOR_UNI={uIndoorMask:{value:1},uRoomAmb:{value:new THREE.Vector3(.2,.22,.26)}};
+ const FURN_MAT=new Map();
+ function indoorMat(m,tag){
+  if(!m||m.isMeshBasicMaterial||m.userData.indoorHooked)return m;
+  m.userData.indoorHooked=true;m.userData.interiorFlag=1;
+  const prev=m.onBeforeCompile,prevKey=m.customProgramCacheKey?m.customProgramCacheKey.bind(m):()=>'';
+  m.onBeforeCompile=(sh,ren)=>{
+   if(prev)prev(sh,ren);
+   sh.uniforms.uIndoorMask=INDOOR_UNI.uIndoorMask;sh.uniforms.uRoomAmb=INDOOR_UNI.uRoomAmb;
+   sh.fragmentShader='uniform float uIndoorMask;\nuniform vec3 uRoomAmb;\n'+sh.fragmentShader;
+   const lfb=(THREE.ShaderChunk.lights_fragment_begin||'')
+    .replace('getDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );',
+     'getDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\ndirectLight.color *= ( 1.0 - uIndoorMask );')
+    .replace('irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );',
+     'irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry ) * ( 1.0 - uIndoorMask );')
+    .replace('#if defined( RE_IndirectSpecular )',
+     '#if defined( RE_IndirectDiffuse )\nirradiance = mix( irradiance, uRoomAmb * 3.14159265, uIndoorMask );\n#endif\n#if defined( RE_IndirectSpecular )');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <lights_fragment_begin>',lfb);
+  };
+  m.customProgramCacheKey=()=>prevKey()+':ls-indoor-'+(tag||'std');
+  return m;}
+ const MAT={
+  dark:indoorMat(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92}),'dark'),
+  cloth:indoorMat(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.88,side:THREE.DoubleSide}),'cloth')
+ };
+ const mat=f=>MAT[f]||(MAT[f]=indoorMat((ARCH.MATS[f]||ARCH.MATS.wall)(),f));
  const cl=h=>{const c=new THREE.Color(h).convertSRGBToLinear();return [c.r,c.g,c.b];};
  function bucket(B,f){return B[f]||(B[f]={p:[],n:[],u:[],c:[]});}
+ let CUR_BOX=null;
  // a triangle facing N (its winding turned to match), UVs from the world (2 m to a tile) or given (uv: one a corner),
  // colour C; a quad is two
  function tri(B,f,a,b,c,N,C,uv){const S=bucket(B,f),ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
   if((uy*vz-uz*vy)*N[0]+(uz*vx-ux*vz)*N[1]+(ux*vy-uy*vx)*N[2]<0){const t=b;b=c;c=t;if(uv)uv=[uv[0],uv[2],uv[1]];}
   const U=p=>Math.abs(N[1])>.7?[p[0]/2,p[2]/2]:Math.abs(N[0])>.7?[p[2]/2,p[1]/2]:[p[0]/2,p[1]/2];
-  [a,b,c].forEach((p,i)=>{S.p.push(p[0],p[1],p[2]);S.n.push(N[0],N[1],N[2]);S.u.push(...(uv?uv[i]:U(p)));S.c.push(C[0],C[1],C[2]);});}
+  const doAO=!!(CUR_BOX&&f!=='pane'&&f!=='still'&&typeof KROOMLIGHT!=='undefined');
+  [a,b,c].forEach((p,i)=>{S.p.push(p[0],p[1],p[2]);S.n.push(N[0],N[1],N[2]);S.u.push(...(uv?uv[i]:U(p)));
+   const ao=doAO?KROOMLIGHT.vertexCornerAO(p[0],p[1],p[2],N[0],N[1],N[2],CUR_BOX,.85):1;
+   S.c.push(C[0]*ao,C[1]*ao,C[2]*ao);});}
  function quad(B,f,a,b,c,d,N,C,uv){tri(B,f,a,b,c,N,C,uv&&[uv[0],uv[1],uv[2]]);tri(B,f,a,c,d,N,C,uv&&[uv[0],uv[2],uv[3]]);}
  // a box turned ry about (x, y, z) from local bounds; uvs: per face ('+z' front, '-z', '+x', '-x', 'top') [u0, u1, v0, v1]
  // (u left to right as the face is seen, v up) or its four corners' [u, v], the rest from the world
@@ -68,17 +97,30 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
  // the daylight behind the panes: one unlit material for every floor, its colour the hour's sky (89x: LSIXD.PANE)
  const PANE=new THREE.MeshBasicMaterial({color:0xdde6f2,toneMapped:false});MAT.pane=PANE;
  // the Room of Slow Water's held water: pale, a little lit from within, half seen through
- MAT.still=new THREE.MeshStandardMaterial({color:0x9ec4d4,emissive:0x2a4a58,roughness:.08,metalness:.1,transparent:true,opacity:.72});
+ MAT.still=indoorMat(new THREE.MeshStandardMaterial({color:0x9ec4d4,emissive:0x2a4a58,roughness:.08,metalness:.1,transparent:true,opacity:.72}),'still');
  // the colours: lime white for the plain rooms, red ochre for the Red Palace's sacred ones, the floors' boards and flags
  const PAINT=[1,1,1],CASE=cl(0x5e3420),WHITE=cl(0xece6da),RED=cl(0x9a3a2c),OCHRE=cl(0xd8b070),FLAG=cl(0x9a948a),BOARD=cl(0x8a6a4a),CEIL=cl(0x6a4a34),DARK=cl(0x2a1e18),LAC=cl(0x8e2a1e),BLUE=cl(0x2e5a9c);
+ function vSpan(B,f,at,s0,s1,va,vb,y0,y1,N,wc){
+  const pts=[va];
+  if(y0+.85>va+.02&&y0+.85<vb-.02)pts.push(y0+.85);
+  if(y1-.85>pts[pts.length-1]+.02&&y1-.85<vb-.02)pts.push(y1-.85);
+  pts.push(vb);
+  for(let j=1;j<pts.length;j++)quad(B,f,at(s0,pts[j-1]),at(s1,pts[j-1]),at(s1,pts[j]),at(s0,pts[j]),N,wc);}
  function roomShell(B,r){const y0=r.y,y1=r.y+r.h,sacred=r.tier>=4||r.building==='red-palace'&&r.tier>=3,wc=sacred?RED:r.tier>=3?OCHRE:WHITE;
   const P=r.poly,n=P.length,cx=P.reduce((s,p)=>s+p[0],0)/n,cz=P.reduce((s,p)=>s+p[1],0)/n;
-  // the floor (boards in the fine rooms, flags in the rest) and the ceiling (painted timber), as fans round the middle
+  CUR_BOX=r.outdoor?null:[r.x0,y0+.02,r.z0,r.x1,y1,r.z1];
+  // the floor (boards in the fine rooms, flags in the rest) and the ceiling (painted timber), with an 85 cm perimeter crease ring indoors (I4)
   const ff=r.tier>=2&&!r.outdoor?'wood':'paving',fc=ff==='wood'?BOARD:FLAG;
-  for(let i=0;i<n;i++){const p=P[i],q=P[(i+1)%n];
-   tri(B,ff,[cx,y0+.02,cz],[q[0],y0+.02,q[1]],[p[0],y0+.02,p[1]],[0,1,0],fc);
-   if(!r.outdoor)tri(B,'wood',[cx,y1,cz],[p[0],y1,p[1]],[q[0],y1,q[1]],[0,-1,0],CEIL);}
-  if(r.outdoor)return;
+  if(r.outdoor){
+   for(let i=0;i<n;i++){const p=P[i],q=P[(i+1)%n];tri(B,ff,[cx,y0+.02,cz],[q[0],y0+.02,q[1]],[p[0],y0+.02,p[1]],[0,1,0],fc);}
+   CUR_BOX=null;return;
+  }
+  const Q=P.map(p=>{const dx=cx-p[0],dz=cz-p[1],d=Math.hypot(dx,dz),t=d>.05?Math.min(.42,.85/d):0;return [p[0]+dx*t,p[1]+dz*t];});
+  for(let i=0;i<n;i++){const p=P[i],q=P[(i+1)%n],pi=Q[i],qi=Q[(i+1)%n];
+   quad(B,ff,[p[0],y0+.02,p[1]],[pi[0],y0+.02,pi[1]],[qi[0],y0+.02,qi[1]],[q[0],y0+.02,q[1]],[0,1,0],fc);
+   tri(B,ff,[cx,y0+.02,cz],[qi[0],y0+.02,qi[1]],[pi[0],y0+.02,pi[1]],[0,1,0],fc);
+   quad(B,'wood',[p[0],y1,p[1]],[q[0],y1,q[1]],[qi[0],y1,qi[1]],[pi[0],y1,pi[1]],[0,-1,0],CEIL);
+   tri(B,'wood',[cx,y1,cz],[pi[0],y1,pi[1]],[qi[0],y1,qi[1]],[0,-1,0],CEIL);}
   // the walls' inner faces, with a doorway at each door (an opening 2.4 m high under a lintel, a dark frame round it) and
   // a window wherever the facade has one (LS_WINS, 62): the opening cut through to the face, its reveal in the wall's
   // colour, a lattice of dark timber and the daylight pane behind it (PANE: 89x gives it the hour's sky)
@@ -90,12 +132,12 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
    const dh=Math.min(2.6,r.h-.3),at=(u,v,d)=>[a[0]+tx*u-nx*(d||0),v,a[1]+tz*u-nz*(d||0)];
    r.doors.forEach(d=>{const u=(d.x-a[0])*tx+(d.z-a[1])*tz,off=Math.abs(-(d.x-a[0])*tz+(d.z-a[1])*tx);if(off<.7&&u>-.1&&u<L+.1)holes.push({u0:Math.max(0,u-d.w/2),u1:Math.min(L,u+d.w/2),v0:y0,v1:y0+dh,door:true});});
    W.filter(w=>w.edge===i).forEach(w=>{if(!holes.some(h=>h.door&&h.u0<w.u1+.1&&h.u1>w.u0-.1))holes.push(w);});
-   // the solid wall round the holes: strips between every hole's edges, each solid where no hole covers it
-   const cuts=[...new Set([0,L].concat(...holes.map(h=>[h.u0,h.u1])))].filter(u=>u>=0&&u<=L).sort((p,q)=>p-q);
+   // the solid wall round the holes: strips between every hole's edges + 85 cm corner creases (I4)
+   const cuts=[...new Set([0,L,Math.min(L,.85),Math.max(0,L-.85)].concat(...holes.map(h=>[h.u0,h.u1])))].filter(u=>u>=0&&u<=L).sort((p,q)=>p-q);
    for(let k=1;k<cuts.length;k++){const s0=cuts[k-1],s1=cuts[k];if(s1-s0<.01)continue;const m=(s0+s1)/2;
     const cov=holes.filter(h=>h.u0<m&&h.u1>m).sort((p,q)=>p.v0-q.v0);let v=y0;
-    cov.forEach(h=>{if(h.v0>v)quad(B,'wall',at(s0,v),at(s1,v),at(s1,h.v0),at(s0,h.v0),N,wc);v=Math.max(v,h.v1);});
-    if(y1>v)quad(B,'wall',at(s0,v),at(s1,v),at(s1,y1),at(s0,y1),N,wc);}
+    cov.forEach(h=>{if(h.v0>v)vSpan(B,'wall',at,s0,s1,v,h.v0,y0,y1,N,wc);v=Math.max(v,h.v1);});
+    if(y1>v)vSpan(B,'wall',at,s0,s1,v,y1,y0,y1,N,wc);}
    holes.forEach(h=>{
     if(h.door){// the frame: two posts and the lintel, lacquered dark, standing proud of the wall by 6 cm
      for(const e of [h.u0,h.u1]){const x=a[0]+tx*e,z=a[1]+tz*e;box(B,'wood',x-.08,x+.08,y0,y0+dh,z-.08,z+.08,DARK);}
@@ -137,7 +179,8 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   // it; drawn up to this floor's ceiling (the rest of it rises through to the storey over it)
   if(r.flight){const F=r.flight,dx=(F.b[0]-F.a[0])/F.n,dz=(F.b[1]-F.a[1])/F.n,hw=F.w/2,alongZ=Math.abs(dz)>Math.abs(dx);
    for(let k=0;k<F.n;k++){const yy=y0+(k+1)*F.rise/F.n;if(yy>y1-.05)break;const x=F.a[0]+dx*k,z=F.a[1]+dz*k;
-    if(alongZ)box(B,'paving',x-hw,x+hw,y0,yy,z,z+dz,FLAG);else box(B,'paving',x,x+dx,y0,yy,z-hw,z+hw,FLAG);}}}
+    if(alongZ)box(B,'paving',x-hw,x+hw,y0,yy,z,z+dz,FLAG);else box(B,'paving',x,x+dx,y0,yy,z-hw,z+hw,FLAG);}}
+  CUR_BOX=null;}
  // ---------------------------------------------------------------- a floor: its rooms' shells and their pieces
  // the rugs and the bookcases are drawn here, from their records, in the library's pictures: a rug the whole rug (its
  // border to its edge, the second colours turned a quarter), a bookcase its carcass and the book spines behind its front
@@ -150,15 +193,18 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   for(const s of [-1,1])obox(B,'wood',p.x,p.y,p.z,p.ry,s*w/2-.03,s*w/2+.03,0,h,-d/2,d/2,CASE);
   obox(B,'wood',p.x,p.y,p.z,p.ry,-w/2,w/2,h-.08,h,-d/2,d/2,CASE);obox(B,'wood',p.x,p.y,p.z,p.ry,-w/2+.03,w/2-.03,0,.06,-d/2,d/2,CASE);
   obox(B,'books',p.x,p.y,p.z,p.ry,-w/2+.03,w/2-.03,.06,h-.08,-d/2,d/2-.05,PAINT,{'+z':[0,(w-.06)/tw,0,(h-.14)/tw]});}
+ let shellsOnly=false;
  function build(key){const [uid,ys]=key.split('@'),y=+ys,t0=performance.now(),open=key===OPEN;
   const rooms=RM.list.filter(r=>drawn(r)&&(open?r.outdoor:!r.outdoor&&UNIT_OF[r.building]===uid&&Math.abs(r.y-y)<.05));
   const grp=new THREE.Group();grp.name='interiors:'+key;grp.userData.interiors=true;
   const B={};if(!open)rooms.forEach(r=>{if(r.layout==='pillars'&&!r.columns)LSIX.record(r.id);roomShell(B,r);});
   let pieces=0;
-  if(LSIX.on){const bt=KratorFurniture.batch({indexed:true});
-   rooms.forEach(r=>{const R=LSIX.record(r.id);if(!R)return;R.pieces.forEach(p=>{pieces++;if(RUGS[p.key]||CASES[p.key]){ownPiece(B,p);return;}
-    bt.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,seed:p.seed,wealth:r.wealth,building:r.building,room:r.id,setting:'indoor'});});});
-   const fg=bt.flush(grp);if(fg)fg.traverse(o=>{if(o.isMesh){o.userData.interiors=true;o.userData.inspectLabel=o.userData.inspectLabel||'The rooms\' furniture (kits/catalog)';}});}
+  if(LSIX.on){const bt=shellsOnly?null:KratorFurniture.batch({indexed:true});
+   rooms.forEach(r=>{const R=LSIX.record(r.id);if(!R)return;R.pieces.forEach(p=>{pieces++;if(RUGS[p.key]||CASES[p.key]){if(!open)ownPiece(B,p);return;}
+    if(bt)bt.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,seed:p.seed,wealth:r.wealth,building:r.building,room:r.id,setting:'indoor'});});});
+   const fg=bt?bt.flush(grp):null;if(fg)fg.traverse(o=>{if(o.isMesh){o.userData.interiors=true;o.userData.inspectLabel=o.userData.inspectLabel||'The rooms\' furniture (kits/catalog)';
+    if(!open&&o.material){const wrapM=mm=>{let im=FURN_MAT.get(mm);if(!im){im=indoorMat(mm.clone(),'furn-'+FURN_MAT.size);FURN_MAT.set(mm,im);}return im;};
+     o.material=Array.isArray(o.material)?o.material.map(wrapM):wrapM(o.material);}}});}
   for(const f in B){const S=B[f],g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(S.p,3));
    g.setAttribute('normal',new THREE.Float32BufferAttribute(S.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(S.u,2));
    g.setAttribute('color',new THREE.Float32BufferAttribute(S.c,3));g.computeBoundingSphere();
@@ -167,6 +213,10 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   grp.visible=false;scene.add(grp);
   return G[key]={grp,rooms:rooms.length,pieces,tris:tris|0,ms:Math.round(performance.now()-t0)};}
  function drop(key){const E=G[key];if(!E)return;scene.remove(E.grp);E.grp.traverse(o=>{if(o.geometry)o.geometry.dispose();});delete G[key];}
+ function buildShellsForExport(){Object.keys(G).forEach(drop);ORDER.length=0;shellsOnly=true;
+  const all=[];UNITS.forEach(u=>u.levels.forEach(l=>all.push(u.id+'@'+l.y)));
+  want=new Set(all);all.forEach(k=>{build(k);G[k].grp.visible=true;ORDER.push(k);});
+  return {floors:all.length};}
  // ---------------------------------------------------------------- what is wanted: the cutaway's floor, the floor the eye stands on
  let want=new Set(),cutKeys=[];
  function show(keys){keys=keys.concat([OPEN]);want=new Set(keys);keys.forEach(k=>{if(!G[k])build(k);const i=ORDER.indexOf(k);if(i>=0)ORDER.splice(i,1);ORDER.push(k);});
@@ -178,15 +228,15 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   cutKeys=[...ys].map(y=>u.id+'@'+y);show(cutKeys.concat(eyeKeys()));}
  let eyeRoom=null;
  function eyeKeys(){return eyeRoom?[UNIT_OF[eyeRoom.building]+'@'+(Math.round(eyeRoom.y*100)/100)]:[];}
- TICKS.push(()=>{const c=camera.position,r=RM.at(c.x,c.y,c.z),rr=r&&drawn(r)&&!r.outdoor?r:null;
+ TICKS.push(()=>{if(shellsOnly)return;const c=camera.position,r=RM.at(c.x,c.y,c.z),rr=r&&drawn(r)&&!r.outdoor?r:null;
   if(rr!==eyeRoom){eyeRoom=rr;show(cutKeys.concat(eyeKeys()));}});
  window._interiors={get floors(){const o={};for(const k in G)o[k]={rooms:G[k].rooms,pieces:G[k].pieces,tris:G[k].tris,ms:G[k].ms,shown:G[k].grp.visible};return o;},
   units:UNITS.map(u=>({id:u.id,levels:u.levels.map(l=>l.y)})),windows:id=>windowsOf(RM.byId[id]||{}).length,bake:()=>({state:LSIX.bakeState,fromBake:LSIX.fromBake,computed:LSIX.computed,ms:Math.round(LSIX.ms)}),
-  show,cut,build:k=>{const E=G[k]||build(k);return{rooms:E.rooms,pieces:E.pieces,tris:E.tris,ms:E.ms};}};
+  show,cut,buildShellsForExport,build:k=>{const E=G[k]||build(k);return{rooms:E.rooms,pieces:E.pieces,tris:E.tris,ms:E.ms};}};
  show([]);
  // a person at (x, y, z) (y: the floor they stand on) is in a room whose floor is drawn now (the cutaway's or the eye's):
  // 68 shows the walkers and the people at indoor places there (taken at the waist: a floor's y is also the top of the
  // room under it)
  function drawnAt(x,y,z){const r=RM.at(x,y+.8,z);if(!r||!drawn(r)||r.outdoor)return false;const E=G[UNIT_OF[r.building]+'@'+(Math.round(r.y*100)/100)];return !!(E&&E.grp.visible);}
- return {UNITS,cut,show,G,windowsOf,PANE,drawnAt};})();
+ return {UNITS,UNIT_OF,drawn,cut,show,buildShellsForExport,G,windowsOf,PANE,INDOOR_UNI,drawnAt};})();
 _mark('interiors');

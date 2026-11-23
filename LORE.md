@@ -532,6 +532,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - "The remote southern Sultanate": a rich hilly valley "like Shangri-La". **Gold is on everything wealthy, religious or civic; the valley's mines pay for it.**
 - Look: Tibetan massing with Indian, Turkish and Persian detail; Andean "cholet" paint. **No minarets, great prayer wheels instead.**
 - Rulers: the Sultan's Palace, the **Pleasure Dome**, the **Grand Vizier**.
+- **Money: the qud** (the owner, 2026-11-16: "Sultanate currency is the qud"), the coin the economy's Mint strikes from the
+  Treasury's gold; traders take the Izani Talent too (§6.2). Its coins and its rate in Talents are still to be set.
 - Guilds: Farmers, Miners, Goldsmiths ("the richest house in the valley"), Alchemists, Masons, Spicers.
 - Faith: temples, monasteries and a pilgrims' circuit of prayer wheels.
 - **Erewhon, Pearl of Xanadu** [Ed: city is half built rn as hill placement is broken and haven’t been able to spare a session for it].
@@ -1238,4 +1240,4 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Catch** (`biomes/catch/PLAN.md` section 8): what drove Hub 01 mad (contamination, a virus or reprogramming: left open); the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the preserved salvage (proposed); whether the Rift line's bore from Strongbow reached Stair (`openworld/ANCIENT-NETWORK.md` section 8; the sealed Stair tunnel was dropped, 2026-11-11).
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively? (Not needed for the Catch any more: its soft rock is old lake beds.)
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's Decree and the Broken Wheel (§6.13), the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
-- Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named.
+- Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named, but for the Kautoan shells and Xanadu's qud (§6.13).

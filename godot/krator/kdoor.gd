@@ -218,7 +218,8 @@ static func glass_material(kind: String, opt := {}, spec := {}) -> StandardMater
 static func material_for_name(name: String) -> Material:
 	if not name.begins_with("kglass:"):
 		return null
-	var kind := name.substr(7)
+	# core/export's scene reader makes a second material of one name unique with '~<n>' (kglass:clear~38): the kind is before it
+	var kind := name.substr(7).get_slice("~", 0)
 	if kind == "room-lit":   # the room card lit at night (the Ancients' kit: its card's glow on, 8zo-anc-open.js)
 		var m := glass_material("room").duplicate() as StandardMaterial3D
 		m.resource_name = "kglass:room-lit"

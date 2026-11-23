@@ -51,7 +51,7 @@ const KINDS={
  'ls-lecture':   K(['school','hall'],[],[{types:['banner','art'],max:4},{types:['shelf'],max:1},{types:['lamp'],max:2}],10),
  'ls-study':     K(['study','library'],[{need:'desks',types:['desk'],n:2},{need:'shelves',types:['shelf'],n:2}],[{types:['chair'],max:2},{types:['table'],max:1},{types:['lamp'],max:2},{types:['banner','art'],max:2}],6),
  'ls-stair':     K(['hall'],[],[{types:['lamp'],max:1},{types:['banner'],max:1}],20),
- 'ls-court':     K(['court','yard'],[],[{types:['planter'],max:4},{types:['bench'],max:4}],40),
+ 'ls-court':     K(['court','yard'],[],[],40),
  'ls-assembly':  K(['shrine','hall'],[],[{types:['banner'],max:10},{types:['lamp'],max:4},{types:['planter'],max:4}],20),
  'ls-guests':    K(['bedroom','hall'],[{need:'beds',types:['bed'],n:3},{need:'chests',types:['storage'],roles:ITEM,n:2}],[{types:['table'],max:2},{types:SEATS,max:3},{types:['rug'],max:2},{types:['screen'],max:2},{types:['lamp'],max:2},{types:['art','banner'],max:2}],5),
  'ls-welcome':   K(['antechamber','hall'],[{need:'guests\' seats',types:['seating','chair'],n:3},{need:'tea table',types:['table'],n:1},{need:'gift shelves',types:['shelf'],n:2}],[{types:['seating','chair'],max:4},{types:['rug'],max:2},{types:['planter'],max:2},{types:['screen'],max:1},{types:['lamp'],max:2},{types:['art','banner'],max:3}],6),
@@ -129,8 +129,12 @@ const LAYOUTS={
    const ok=[[-1.65,-.5],[1.65,-.5],[-1.65,.5],[1.65,.5]].every(([dx,dz])=>Math.hypot(x+dx-C.x,z0+dz-C.z)<C.r-.6)&&cols.every(c=>Math.abs(c.x-x)>2.3||Math.abs(c.z-z0)>1.25);
    if(ok)out.push(P('xanadu_common_meditation_cushion',row%2,x,z0,PI));}
   return out;},
- // the Debate Court: the examiner's dais at the court's head, before the Assembly's porch, facing the clapping ground
- debate(r){return [P('xanadu_common_debate_dais',0,(r.x0+r.x1)/2,r.z1-2,PI)];},
+ // the Debate Court: the examiner's dais at the court's head, before the Assembly's porch, facing the clapping ground;
+ // Xanadu timber benches and planters set cleanly inside the open courtyard clear of the curved brick arcade piers
+ debate(r){const xc=(r.x0+r.x1)/2,zc=(r.z0+r.z1)/2,out=[P('xanadu_common_debate_dais',0,xc,r.z1-2,PI)];
+  for(const s of [-1,1]){const bx=s<0?r.x0+1.4:r.x1-1.4,ry=s<0?PI/2:-PI/2;
+   out.push(P('xanadu_common_bench',0,bx,zc-5,ry),P('xanadu_common_bench',0,bx,zc+5,ry),P('xanadu_common_planter',s<0?0:1,bx,zc,ry));}
+  return out;},
  // the refectory: lines of low tables down the hall, a platform of cushions either side of each
  refectory(r){const out=[];for(let x=r.x0+3.4;x<r.x1-2.5;x+=5.2){for(let z=r.z0+2.6;z<r.z1-2;z+=1.05)out.push(P('xanadu_common_low_table',0,x,z,PI/2));
   for(let z=r.z0+4.2;z<r.z1-3;z+=3.35){out.push(P('xanadu_common_meditation_cushion',0,x-1.05,z,PI/2),P('xanadu_common_meditation_cushion',0,x+1.05,z,-PI/2));}}return out;},

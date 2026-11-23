@@ -173,7 +173,7 @@ static func oct_encode(v: Vector3) -> Vector2:
 # over the cells where it stands above the ground
 static func ground(g: Dictionary, look = null) -> Node3D:
 	var hf := {"format": "krator-biome ground", "nx": g["nx"], "nz": g["nz"], "step": g["step"], "x0": g["x0"], "z0": g["z0"],
-		"heights": g["heights"]}
+		"heights": g["heights"], "water": g.get("water"), "surface": g.get("surface"), "_origin": g.get("_origin", [0.0, 0.0, 0.0])}
 	var n := _grid(hf, look)
 	var wm := water_sheet(g)
 	if wm:
@@ -183,7 +183,7 @@ static func ground(g: Dictionary, look = null) -> Node3D:
 
 # BIO.export's ground water (waterH on the ground's grid): a quad per wet cell at its own level, or null
 static func water_sheet(g: Dictionary) -> MeshInstance3D:
-	if g.get("water") != null:   # core/export's terrain writes water: null where the build has none
+	if g.get("water") is Dictionary and (g["water"] as Dictionary).get("type") == "Float32Array":   # core/export's terrain writes water: null where the build has none
 		var w := floats(g["water"])
 		var h := floats(g["heights"])
 		# a quad per grid cell with a wet corner, each corner at its own water level (a dry corner takes the cell's
@@ -256,6 +256,8 @@ static func _grid(hf: Dictionary, look = null) -> Node3D:
 			var s := j * nx + i
 			if UV.size() > 0:
 				st.set_uv(Vector2(UV[s * 2], UV[s * 2 + 1]))
+			else:
+				st.set_uv(Vector2((float(i) + 0.5) / float(nx), (float(j) + 0.5) / float(nz)))
 			if CO.size() > 0:
 				st.set_color(Color(CO[s * 3], CO[s * 3 + 1], CO[s * 3 + 2]))
 			st.add_vertex(Vector3(x0 + i * step, h[s], z0 + j * step))
@@ -267,16 +269,23 @@ static func _grid(hf: Dictionary, look = null) -> Node3D:
 			st.add_index(a + 1); st.add_index(a + nx + 1); st.add_index(a + nx)
 	st.generate_normals()
 	var mesh := st.commit()
-	mesh.surface_set_material(0, ground_material(lk, CO.size() > 0))
+	var mat := ground_material(lk, CO.size() > 0)
+	var surf_b := {}
+	if not lk.has("material"):
+		surf_b = _bind_terrain_surface(mat, hf, nx, nz, step, h)
+	mesh.surface_set_material(0, mat)
 	var mi := MeshInstance3D.new()
 	mi.name = "Terrain"
 	mi.mesh = mesh
 	mi.set_meta("krator", {"format": hf["format"], "step": step, "nx": nx, "nz": nz})
-	mi.set_meta("grid", {"h": h, "nx": nx, "nz": nz, "x0": x0, "z0": z0, "step": step})
+	mi.set_meta("grid", {"h": h, "nx": nx, "nz": nz, "x0": x0, "z0": z0, "step": step,
+		"ar": surf_b.get("ar", PackedByteArray()), "nc": surf_b.get("nc", PackedByteArray()),
+		"s3_ms": surf_b.get("s3_ms", 0.0), "s3_bytes": surf_b.get("s3_bytes", 0),
+		"s3_dims": surf_b.get("s3_dims", Vector2i(nx, nz))})
 	return mi
 
 
-# the stage's ground material (look: KSTAGE.ground) for a grid mesh, or the spike's terrain shader without one
+# the stage's ground material (look: KSTAGE.ground) for a grid mesh, or the open-world PBR terrain shader without one
 static func ground_material(lk: Dictionary, has_colours: bool) -> ShaderMaterial:
 	var mat := ShaderMaterial.new()
 	if lk.has("material"):   # the page's own ground: its texture, colour and vertex colours
@@ -295,6 +304,174 @@ static func ground_material(lk: Dictionary, has_colours: bool) -> ShaderMaterial
 	else:
 		mat.shader = load("res://shaders/terrain.gdshader")
 	return mat
+
+
+# Populate terrain.gdshader's smooth normal + multi-ring cavity AO + wetness texture and WORLD.ground albedo + rock texture.
+# Uses core/world 94's exported RGBA8 surface maps when present, and synthesizes both from heights + water otherwise so
+# pre-existing chunks on disk and standalone heightfields still get smooth texel normals, gully cavity AO, and cliff rock.
+static func _bind_terrain_surface(mat: ShaderMaterial, hf: Dictionary, nx: int, nz: int, step: float, h: PackedFloat32Array) -> Dictionary:
+	if nx < 2 or nz < 2 or h.size() < nx * nz:
+		return {}
+	var org := [0.0, 0.0, 0.0]
+	if hf.get("_origin") is Array and (hf["_origin"] as Array).size() == 3:
+		org = [float(hf["_origin"][0]), float(hf["_origin"][1]), float(hf["_origin"][2])]
+	mat.set_shader_parameter("case_origin", Vector3(org[0], org[1], org[2]))
+	mat.set_shader_parameter("macro_origin", Vector2(fposmod(org[0], 32000.0), fposmod(org[2], 32000.0)))
+	mat.set_shader_parameter("detail_origin", Vector2(fposmod(org[0], 4000.0), fposmod(org[2], 4000.0)))
+	mat.set_shader_parameter("grid_step", step)
+	var n := nx * nz
+	var surf = hf.get("surface")
+	var ar := PackedByteArray()
+	var nc := PackedByteArray()
+	var from_export := false
+	if surf is Dictionary and surf.get("albedoRock") is Dictionary and surf.get("normalCav") is Dictionary:
+		ar = raw(surf["albedoRock"])
+		nc = raw(surf["normalCav"])
+		from_export = ar.size() == n * 4 and nc.size() == n * 4
+	if not from_export:
+		var w := floats(hf["water"]) if hf.get("water") is Dictionary and (hf["water"] as Dictionary).get("type") == "Float32Array" else PackedFloat32Array()
+		var has_w := w.size() >= n
+		ar.resize(n * 4)
+		nc.resize(n * 4)
+		var inv_s := 1.0 / maxf(step, 0.25)
+		for j in nz:
+			var jm1 := maxi(j - 1, 0)
+			var jp1 := mini(j + 1, nz - 1)
+			var jm3 := maxi(j - 3, 0)
+			var jp3 := mini(j + 3, nz - 1)
+			var dy := float(jp1 - jm1) * step
+			for i in nx:
+				var im1 := maxi(i - 1, 0)
+				var ip1 := mini(i + 1, nx - 1)
+				var im3 := maxi(i - 3, 0)
+				var ip3 := mini(i + 3, nx - 1)
+				var s := j * nx + i
+				var o := s * 4
+				var hs := h[s]
+				var m1 := 0.25 * (h[j * nx + im1] + h[j * nx + ip1] + h[jm1 * nx + i] + h[jp1 * nx + i]) - hs
+				var m3 := 0.25 * (h[j * nx + im3] + h[j * nx + ip3] + h[jm3 * nx + i] + h[jp3 * nx + i]) - hs
+				var conc := maxf(0.0, m1 * inv_s * 1.35) + maxf(0.0, m3 * inv_s * 0.45)
+				var conv := maxf(0.0, -m1 * inv_s * 0.35)
+				var macro_cav := clampf(1.0 - conc * 0.55 + conv * 0.08, 0.32, 1.0)
+				var dx := float(ip1 - im1) * step
+				var hx := (h[j * nx + ip1] - h[j * nx + im1]) / maxf(dx, 0.25)
+				var hz := (h[jp1 * nx + i] - h[jm1 * nx + i]) / maxf(dy, 0.25)
+				var nl := sqrt(hx * hx + 1.0 + hz * hz)
+				var ny := 1.0 / nl
+				var slope := 1.0 - clampf(ny, 0.0, 1.0)
+				var wet := 0.0
+				if has_w and w[s] > -1e7:
+					wet = clampf((5.0 - (hs - w[s])) / 5.5, 0.0, 1.0)
+				wet = maxf(wet, clampf(conc * 0.45 * (1.0 - smoothstep(0.2, 0.5, slope)), 0.0, 0.65))
+				nc[o] = clampi(int(roundf(((-hx / nl) * 0.5 + 0.5) * 255.0)), 0, 255)
+				nc[o + 1] = clampi(int(roundf(((-hz / nl) * 0.5 + 0.5) * 255.0)), 0, 255)
+				nc[o + 2] = clampi(int(roundf(macro_cav * 255.0)), 48, 255)
+				nc[o + 3] = clampi(int(roundf(wet * 255.0)), 0, 255)
+				var rock := smoothstep(0.16, 0.44, slope)
+				var up := clampf((hs + 400.0) / 3200.0, 0.0, 1.0)
+				var c_val := Vector3(0.17, 0.21, 0.11).lerp(Vector3(0.26, 0.24, 0.16), up)
+				var c_crest := c_val.lerp(Vector3(0.33, 0.30, 0.22), clampf(conv * 2.2, 0.0, 0.65))
+				var c_damp := c_crest.lerp(Vector3(0.10, 0.12, 0.08), wet * 0.55)
+				var c_rock := Vector3(0.28, 0.25, 0.22).lerp(Vector3(0.36, 0.33, 0.30), up)
+				var c_lin := c_damp.lerp(c_rock, rock * 0.85)
+				if hs > 3600.0:
+					var sn := smoothstep(3600.0, 4500.0, hs) * (1.0 - smoothstep(0.30, 0.58, slope))
+					c_lin = c_lin.lerp(Vector3(0.78, 0.82, 0.86), sn)
+					rock *= 1.0 - sn * 0.8
+				var sr := Color(c_lin.x, c_lin.y, c_lin.z, 1.0).linear_to_srgb()
+				ar[o] = clampi(int(roundf(sr.r * 255.0)), 0, 255)
+				ar[o + 1] = clampi(int(roundf(sr.g * 255.0)), 0, 255)
+				ar[o + 2] = clampi(int(roundf(sr.b * 255.0)), 0, 255)
+				ar[o + 3] = clampi(int(roundf(rock * 255.0)), 0, 255)
+	var img_ar := Image.create_from_data(nx, nz, false, Image.FORMAT_RGBA8, ar)
+	var nc_tex_w := nx
+	var nc_tex_h := nz
+	var nc_upload := nc
+	var s3_ms := 0.0
+	if step >= 32.0 and nx >= 8 and nz >= 8:
+		var t_s3 := Time.get_ticks_usec()
+		nc_upload = _build_s3_subgrid_nc(nc, ar, h, nx, nz, step, float(hf["x0"]) + org[0], float(hf["z0"]) + org[2])
+		nc_tex_w = nx * 2 - 1
+		nc_tex_h = nz * 2 - 1
+		s3_ms = float(Time.get_ticks_usec() - t_s3) / 1000.0
+	var img_nc := Image.create_from_data(nc_tex_w, nc_tex_h, false, Image.FORMAT_RGBA8, nc_upload)
+	mat.set_shader_parameter("ar_dims", Vector2(float(nx), float(nz)))
+	mat.set_shader_parameter("nc_dims", Vector2(float(nc_tex_w), float(nc_tex_h)))
+	mat.set_shader_parameter("albedo_rock_tex", ImageTexture.create_from_image(img_ar))
+	mat.set_shader_parameter("normal_cav_tex", ImageTexture.create_from_image(img_nc))
+	mat.set_shader_parameter("has_surface_tex", true)
+	mat.set_meta("surface_from", "export+s3" if (from_export and nc_tex_w > nx) else ("export" if from_export else "synthesized"))
+	return {"ar": ar, "nc": nc, "s3_ms": s3_ms, "s3_bytes": nc_upload.size(), "s3_dims": Vector2i(nc_tex_w, nc_tex_h)}
+
+
+# Stage 4 (S3): Build a 2x denser (2*nx-1 by 2*nz-1, 32 m texels on 64 m chunks) normal-and-crease map on the chunk thread.
+# Preserves exact exported normals at grid vertices while resolving sub-grid 32-90 m downslope erosional rills and creases.
+static func _build_s3_subgrid_nc(nc: PackedByteArray, ar: PackedByteArray, _h: PackedFloat32Array,
+		nx: int, nz: int, step: float, wx0: float, wz0: float) -> PackedByteArray:
+	var n2x := nx * 2 - 1
+	var n2z := nz * 2 - 1
+	var img_up := Image.create_from_data(nx, nz, false, Image.FORMAT_RGBA8, nc)
+	img_up.resize(n2x, n2z, Image.INTERPOLATE_CUBIC)
+	var out := img_up.get_data()
+
+	var half_s := step * 0.5
+	var w_wrap_x := fposmod(wx0, 16000.0)
+	var w_wrap_z := fposmod(wz0, 16000.0)
+
+	for j0 in nz:
+		var j1 := mini(j0 + 1, nz - 1)
+		var r0 := j0 * nx
+		var r1 := j1 * nx
+		var j2_end := 1 if j0 == nz - 1 else 2
+		for i0 in nx:
+			var o00 := (r0 + i0) * 4
+			if nc[o00 + 3] >= 250:
+				var d_w := (j0 * 2 * n2x + i0 * 2) * 4
+				out[d_w + 3] = 255
+			var i1 := mini(i0 + 1, nx - 1)
+			var rk_max := maxi(maxi(int(ar[o00 + 3]), int(ar[(r0 + i1) * 4 + 3])),
+				maxi(int(ar[(r1 + i0) * 4 + 3]), int(ar[(r1 + i1) * 4 + 3])))
+			if rk_max <= 42:
+				continue
+			var amp_rk := clampf(float(rk_max - 42) / 145.0, 0.0, 1.0) * 0.21
+			var i2_end := 1 if i0 == nx - 1 else 2
+			for dj in j2_end:
+				var j2 := j0 * 2 + dj
+				var wz := w_wrap_z + float(j2) * half_s
+				var row_out := j2 * n2x * 4
+				for di in i2_end:
+					var i2 := i0 * 2 + di
+					var dst := row_out + i2 * 4
+					if out[dst + 3] >= 235:
+						continue
+					var fnx := float(out[dst]) * 0.007843137 - 1.0
+					var fnz := float(out[dst + 1]) * 0.007843137 - 1.0
+					var slp2 := fnx * fnx + fnz * fnz
+					if slp2 <= 0.015:
+						continue
+					var inv_slp := 1.0 / sqrt(slp2)
+					var wx := w_wrap_x + float(i2) * half_s
+					var px := -fnz * inv_slp
+					var pz := fnx * inv_slp
+					var across := wx * px + wz * pz
+					var along := (wx * fnx + wz * fnz) * inv_slp
+					var mw := along * 0.0022 + wx * 0.0006
+					var meander := (absf((mw - floorf(mw)) * 4.0 - 2.0) - 1.0) * 14.0
+					var u1 := (across + meander) * 0.0115
+					var s1 := (u1 - floorf(u1)) * 2.0 - 1.0
+					var u2 := (across - meander * 0.6) * 0.0235
+					var s2 := (u2 - floorf(u2)) * 2.0 - 1.0
+					var t1 := 1.0 - absf(s1)
+					var t2 := 1.0 - absf(s2)
+					var d_rill := clampf(s1 * 5.0, -1.0, 1.0) * t1 * 0.65 + clampf(s2 * 5.0, -1.0, 1.0) * t2 * 0.35
+					var trough := maxf(0.0, t1 * 0.65 + t2 * 0.35 - 0.45)
+					var amp := amp_rk * minf(1.0 / inv_slp * 1.4, 0.85)
+					fnx = clampf(fnx + px * d_rill * amp, -0.98, 0.98)
+					fnz = clampf(fnz + pz * d_rill * amp, -0.98, 0.98)
+					out[dst] = clampi(int((fnx * 0.5 + 0.5) * 255.0 + 0.5), 0, 255)
+					out[dst + 1] = clampi(int((fnz * 0.5 + 0.5) * 255.0 + 0.5), 0, 255)
+					out[dst + 2] = clampi(int(float(out[dst + 2]) - trough * amp * 165.0 + 0.5), 36, 255)
+	return out
 
 
 static func height_at(hf_node: Node3D, x: float, z: float) -> float:

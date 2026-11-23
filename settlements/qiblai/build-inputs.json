@@ -3,8 +3,8 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
+    "biomes/oidong/src/50-biome-oidong-species.js": "b0762d57cef48b8f5d5e876f7bc5f8f3ddea7e0e903e9fd64938857229b81282",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "3446d6123f49e3641c0ee8a96ab08293e75041c47294ef0b8516a7d8205ead2d",
     "biomes/oidong/src/70-biome-oidong.js": "ad23374114d41f55b4c1c52fdeb69ed68fa0965ac347437cb85fc697bec2158d",
     "biomes/opalvalley/src/40-biome-opal-sites.js": "a1fad917772e6451ad5e757142453456dccad2df08cc31f8e898ba8fe7cd3e49",
     "biomes/opalvalley/src/50-biome-opal-species.js": "5eeb1c88f879cc2c2f07107d88b6341176b610209ff61a72b54427a481ed9ef8",
@@ -122,7 +122,7 @@
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
@@ -328,6 +328,8 @@
     "settlements/qiblai/KNOWN_ISSUES.md": "8a61544f67830b1154d2e057ab5cf5cb03f5047a12101f3a9c83ad3f7fa0c255",
     "settlements/qiblai/PORT.md": "b491b17f6bf3db085cf05fde8a4f7b05318daf26ce1a0f7f2e517f3e41bfcc96",
     "settlements/qiblai/build.py": "63797dbb3c27759e250d09094c323ca7af9b3cbb7625011b216c4e34228a4dac",
+    "settlements/qiblai/gen/69q-kcity-bundle.js": "cd4b3397adf37472963d64571fddbeac1a8773b13c07a09f4197dc99aaa1caa7",
+    "settlements/qiblai/gen/69y-ykit-bundle.js": "b970955779dbdf8fa66b7ba564f403b8b99d569095134a65e68625793c6187f3",
     "settlements/qiblai/kit.json": "9467a547ef10e852e04f18b6613df721844b1d75aad541f9bfc5ee2deba5d010",
     "settlements/qiblai/targets/city/89z-rows.js": "04b0371664ccb6add6d2a628d0ad3c838103266acb73fbb9da577442e518f5fc",
     "settlements/qiblai/targets/city/89zq-qc-site.js": "5fdad5b9a0602cb2913dec77c83fcb6bad574faf59b5ff1a2f67ec1e0f6ae19b",
@@ -552,28 +554,24 @@
     "settlements/xanadu/targets/erewhon": "c894247da904b4733485bc76d1b527b68cf8db53df276b8654370603b7c08ed3",
     "settlements/xanadu/targets/scrap": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
     "settlements/xanadu/targets/xanadu": "cb97764a5b46d2491c979e0a358d119b1e4ba420dc33c53a6fb81f995b773051",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "8f8a434506f0f5fcd749d4758afde15e9261c3d92121720aa1a42ad314e0a55c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/qiblai/build-manifest-city.json": "5cb11df957554dc5e1015653d835e761ae0c40ea855936c891b5c3b342d13d92",
-    "settlements/qiblai/dist/qiblai.html": "450bc41c123bebecb8a8db5f4d6cc700587574db939b8ba82b92cc2ee7834438",
+    "settlements/qiblai/build-manifest-city.json": "332bfdb0c9566763ddb65308e2f40fdf6d8ad7c33f6004dba15a2fb31fc19a47",
+    "settlements/qiblai/dist/qiblai.html": "b05722f99d6029bbfe0b4289e1595ed9af4f987ac09283ac25c3d9289af50dab",
     "settlements/qiblai/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "settlements/qiblai/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/qiblai/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
-    "settlements/qiblai/gen/69q-kcity-bundle.js": "cd4b3397adf37472963d64571fddbeac1a8773b13c07a09f4197dc99aaa1caa7",
-    "settlements/qiblai/gen/69r-flora-bundle.js": "c90b4064b75f58fbc4b1d24d03c53197589eefe971e70af460e167a5191b6c9f",
-    "settlements/qiblai/gen/69y-ykit-bundle.js": "b970955779dbdf8fa66b7ba564f403b8b99d569095134a65e68625793c6187f3"
+    "settlements/qiblai/gen/69r-flora-bundle.js": "cb4f609ab04957b020aa7224b9814b0dc07713a0220b3d6fcfb35457317b78e6"
    },
    "outputs_raw": {
-    "settlements/qiblai/build-manifest-city.json": "5cb11df957554dc5e1015653d835e761ae0c40ea855936c891b5c3b342d13d92",
-    "settlements/qiblai/dist/qiblai.html": "450bc41c123bebecb8a8db5f4d6cc700587574db939b8ba82b92cc2ee7834438",
+    "settlements/qiblai/build-manifest-city.json": "332bfdb0c9566763ddb65308e2f40fdf6d8ad7c33f6004dba15a2fb31fc19a47",
+    "settlements/qiblai/dist/qiblai.html": "b05722f99d6029bbfe0b4289e1595ed9af4f987ac09283ac25c3d9289af50dab",
     "settlements/qiblai/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "settlements/qiblai/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/qiblai/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
-    "settlements/qiblai/gen/69q-kcity-bundle.js": "cd4b3397adf37472963d64571fddbeac1a8773b13c07a09f4197dc99aaa1caa7",
-    "settlements/qiblai/gen/69r-flora-bundle.js": "c90b4064b75f58fbc4b1d24d03c53197589eefe971e70af460e167a5191b6c9f",
-    "settlements/qiblai/gen/69y-ykit-bundle.js": "b970955779dbdf8fa66b7ba564f403b8b99d569095134a65e68625793c6187f3"
+    "settlements/qiblai/gen/69r-flora-bundle.js": "cb4f609ab04957b020aa7224b9814b0dc07713a0220b3d6fcfb35457317b78e6"
    }
   }
  }

@@ -979,15 +979,16 @@ EYE_NEAR = 1.0             # item 10a: a view nearer than this to a solid surfac
 FIND_JS = """const __kfind=()=>{ let sc=null,cam=null;
  try{ if(typeof scene!=='undefined'&&scene&&scene.isScene) sc=scene; }catch(e){}
  try{ if(typeof camera!=='undefined'&&camera&&camera.isCamera) cam=camera; }catch(e){}
- const A=window._api||{}; sc=sc||(window.scene&&window.scene.isScene?window.scene:null)||(A.scene&&A.scene.isScene?A.scene:null);
- cam=cam||(window.camera&&window.camera.isCamera?window.camera:null)||(A.camera&&A.camera.isCamera?A.camera:null);
+ const A=window._api||{}, H=(typeof HOST!=='undefined'&&HOST)||window.HOST||{};
+ sc=sc||(window.scene&&window.scene.isScene?window.scene:null)||(A.scene&&A.scene.isScene?A.scene:null)||(H.scene&&H.scene.isScene?H.scene:null);
+ cam=cam||(window.camera&&window.camera.isCamera?window.camera:null)||(A.camera&&A.camera.isCamera?A.camera:null)||(H.camera&&H.camera.isCamera?H.camera:null);
  if(!sc||!cam){ for(const k of Object.keys(window)){ let v; try{ v=window[k]; }catch(e){ continue; }
    if(!v||typeof v!=='object') continue; if(!sc&&v.isScene) sc=v; if(!cam&&v.isPerspectiveCamera) cam=v; } }
  return {sc,cam}; };"""
 # Item 27: the samplers each LINKED program really has (getActiveUniform: what the GPU kept after #ifdef pruning and dead-code
 # removal), not a count of declared maps; the worst first. `samplersOf` in biomes/throne guessed from the shader text and
 # overcounted (ringisles).
-SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer); }catch(e){}
+SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer)||((typeof HOST!=='undefined'&&HOST)&&HOST.renderer)||(window.HOST&&window.HOST.renderer); }catch(e){}
  if(!R||!R.info||!R.info.programs||!R.getContext) return null; const gl=R.getContext();
  const S=new Set([0x8B5E,0x8B60,0x8B5F,0x8DC1,0x8B62,0x8DC4,0x8DC5,0x8DCA,0x8DCB,0x8DCC,0x8DCF,0x8DD2,0x8DD3,0x8DD4,0x8DD7]);
  const out=[]; for(const p of R.info.programs){ const g=p.program; if(!g||!gl.getProgramParameter(g,gl.LINK_STATUS)) continue;
@@ -1109,28 +1110,60 @@ DRAWN_EYE_JS = "(src)=>{" + FIND_JS + """
  cam.updateMatrixWorld(); const e=cam.matrixWorld.elements, x=e[12], y=e[13], z=e[14]; let h=null;
  for(const s of srcs){ const v=s.h(x,z); if(v!==null&&(h===null||v>h)) h=v; }
  return {from, h, eye:[+x.toFixed(2),+y.toFixed(2),+z.toFixed(2)], under:h!==null&&y<h}; }"""
-SAMPLE_JS = "()=>{ try{ return {calls:renderer.info.render.calls, tris:renderer.info.render.triangles}; }catch(e){ return null; } }"
+SAMPLE_JS = "()=>{ try{ const R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer)||((typeof HOST!=='undefined'&&HOST)&&HOST.renderer); return R?{calls:R.info.render.calls, tris:R.info.render.triangles}:null; }catch(e){ return null; } }"
+VRAM_JS = "()=>{" + FIND_JS + """
+ const {sc}=__kfind(); if(!sc) return null;
+ const seenT=new Set(), seenG=new Set(), seenB=new Set(); let texB=0, geomB=0;
+ const bppOf=(t)=>{ if(t.type===1015||t.type===1016) return t.type===1015?16:8; return 4; };
+ const addTex=(t)=>{ if(!t||!t.isTexture||seenT.has(t)) return; seenT.add(t);
+  const mips=t.generateMipmaps!==false&&t.minFilter!==1003&&t.minFilter!==1006?1.3333333:1;
+  if(t.isCompressedTexture&&Array.isArray(t.mipmaps)){ for(const m of t.mipmaps) if(m&&m.data) texB+=m.data.byteLength||0; return; }
+  if((t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D)&&t.image){
+   const d=t.image.data; texB+=Math.round((d&&d.byteLength?d.byteLength:(t.image.width||0)*(t.image.height||0)*(t.image.depth||1)*bppOf(t))*mips); return; }
+  const ims=t.isCubeTexture?(t.image||[]):[t.image];
+  for(const im of ims){ if(!im) continue; const w=im.naturalWidth||im.width||0, h=im.naturalHeight||im.height||0, dp=im.depth||1;
+   texB+=Math.round(w*h*dp*bppOf(t)*mips); } };
+ const scanM=(m)=>{ for(const k in m){ let v; try{ v=m[k]; }catch(e){ continue; } if(v&&v.isTexture) addTex(v); }
+  if(m.uniforms) for(const k in m.uniforms){ const v=m.uniforms[k]&&m.uniforms[k].value;
+   if(v&&v.isTexture) addTex(v); else if(Array.isArray(v)) v.forEach(x=>{ if(x&&x.isTexture) addTex(x); }); } };
+ const addArr=(a)=>{ if(!a) return; const buf=a.data&&a.data.array?a.data.array:a.array; if(buf&&buf.byteLength&&!seenB.has(buf)){ seenB.add(buf); geomB+=buf.byteLength; } };
+ sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scanM(m);
+  if(o.geometry&&!seenG.has(o.geometry)){ seenG.add(o.geometry); const at=o.geometry.attributes||{}; for(const k in at) addArr(at[k]); if(o.geometry.index) addArr(o.geometry.index); }
+  if(o.isInstancedMesh){ addArr(o.instanceMatrix); addArr(o.instanceColor); } });
+ if(sc.background&&sc.background.isTexture) addTex(sc.background);
+ if(sc.environment&&sc.environment.isTexture) addTex(sc.environment);
+ return {totalMB:+((texB+geomB)/1048576).toFixed(2), texMB:+(texB/1048576).toFixed(2), geomMB:+(geomB/1048576).toFixed(2), texN:seenT.size, geomN:seenG.size}; }"""
 UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
  const {sc}=__kfind(); const A=window._api||null; const R={scene:!!sc};
  R.panel=document.getElementById('errs')?document.getElementById('errs').textContent:null;
  R.imgErr=(window.__kimgErr||[]).slice(0,8); R.imgErrN=(window.__kimgErr||[]).length;
- const bad=[]; let n=0;
+ const bad=[]; let n=0, texB=0, geomB=0; const seenG=new Set(), seenB=new Set();
+ const addArr=(a)=>{ if(!a) return; const buf=a.data&&a.data.array?a.data.array:a.array; if(buf&&buf.byteLength&&!seenB.has(buf)){ seenB.add(buf); geomB+=buf.byteLength; } };
  if(sc){ const seen=new Set();
+  const bppOf=(t)=>(t.type===1015?16:t.type===1016?8:4);
   const chk=(t,where)=>{ if(!t||!t.isTexture||seen.has(t)) return; seen.add(t); n++;
-   if(t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D||t.isDepthTexture||t.isCompressedTexture||t.isVideoTexture) return;
+   const mips=t.generateMipmaps!==false&&t.minFilter!==1003&&t.minFilter!==1006?1.3333333:1;
+   if(t.isCompressedTexture&&Array.isArray(t.mipmaps)){ for(const m of t.mipmaps) if(m&&m.data) texB+=m.data.byteLength||0; return; }
+   if(t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D||t.isDepthTexture||t.isCompressedTexture||t.isVideoTexture){
+    if(t.image){ const d=t.image.data; texB+=Math.round((d&&d.byteLength?d.byteLength:(t.image.width||0)*(t.image.height||0)*(t.image.depth||1)*bppOf(t))*mips); }
+    return; }
    const ims=t.isCubeTexture?(t.image||[]):[t.image];
    if(t.isCubeTexture&&!ims.length){ bad.push(where+' (cube, no faces)'); return; }
    for(const im of ims){ if(!im){ bad.push(where+' (no image)'); return; }
     let w=im.width,h=im.height;
     if(typeof HTMLImageElement!=='undefined'&&im instanceof HTMLImageElement){ if(!im.complete){ bad.push(where+' (still loading)'); return; } w=im.naturalWidth; h=im.naturalHeight; }
-    if(!(w>=2&&h>=2)){ bad.push(where+' '+w+'x'+h); return; } } };
+    if(!(w>=2&&h>=2)){ bad.push(where+' '+w+'x'+h); return; }
+    texB+=Math.round(w*h*(im.depth||1)*bppOf(t)*mips); } };
   const scan=(m)=>{ for(const k in m){ let v; try{ v=m[k]; }catch(e){ continue; } if(v&&v.isTexture) chk(v,(m.name||m.type)+'.'+k); }
    if(m.uniforms) for(const k in m.uniforms){ const v=m.uniforms[k]&&m.uniforms[k].value;
     if(v&&v.isTexture) chk(v,(m.name||m.type)+'.uniforms.'+k); else if(Array.isArray(v)) v.forEach((x,i)=>{ if(x&&x.isTexture) chk(x,(m.name||m.type)+'.uniforms.'+k+'['+i+']'); }); } };
-  sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scan(m); });
+  sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scan(m);
+   if(o.geometry&&!seenG.has(o.geometry)){ seenG.add(o.geometry); const at=o.geometry.attributes||{}; for(const k in at) addArr(at[k]); if(o.geometry.index) addArr(o.geometry.index); }
+   if(o.isInstancedMesh){ addArr(o.instanceMatrix); addArr(o.instanceColor); } });
   if(sc.background&&sc.background.isTexture) chk(sc.background,'scene.background');
   if(sc.environment&&sc.environment.isTexture) chk(sc.environment,'scene.environment'); }
  R.tex={n, bad:bad.slice(0,8), badN:bad.length};
+ R.vram=sc?{totalMB:+((texB+geomB)/1048576).toFixed(2), texMB:+(texB/1048576).toFixed(2), geomMB:+(geomB/1048576).toFixed(2), texN:n, geomN:seenG.size}:null;
  R.nan=(A&&typeof A.nanSweep==='function')?(()=>{ try{ const s=A.nanSweep(); return {meshes:s.meshes, instances:s.instances,
    first:JSON.stringify((s.firstInstances||[]).concat(s.first||[])).slice(0,300)}; }catch(e){ return {error:String(e)}; } })():null;
  R.occ=(A&&typeof A.regOccupancy==='function')?(()=>{ try{ const o=A.regOccupancy(); const e=o.filter(x=>x.n===0);
@@ -1694,6 +1727,10 @@ class VerifyPage:
                     U.append(("leaf-stems", True, "report: " + msg + ' (opt in: tools/checks_optin.json "leaf-stems")'))
                 else:
                     U.append(("leaf-stems", not bad, msg))
+        if R and R.get("vram"):
+            vr = R["vram"]
+            U.append(("vram", True, "report: %.1f MB estimated VRAM (%.1f MB in %d textures, %.1f MB in %d geometries)"
+                      % (vr["totalMB"], vr["texMB"], vr["texN"], vr["geomMB"], vr["geomN"])))
         if not self.eyes:
             await self.eye("as loaded")
         for v, r in self.eyes:
@@ -1711,8 +1748,10 @@ class VerifyPage:
             wc = max(self.samples, key=lambda s: s[1] or 0) if self.samples else None
             wt = max(self.samples, key=lambda s: s[2] or 0) if self.samples else None
             vals = {"calls": (wc[1], wc[0]) if wc else None, "tris": (wt[2], wt[0]) if wt else None,
-                    "bytes": (os.path.getsize(self.html), "page"), "scene_tris": (R.get("sceneTris"), "probe") if R else None}
-            for k in ("tris", "calls", "bytes", "scene_tris"):
+                    "bytes": (os.path.getsize(self.html), "page"), "scene_tris": (R.get("sceneTris"), "probe") if R else None,
+                    "samplers": (sm["max"], "programs") if sm and not sm.get("error") else None,
+                    "vram_mb": (R["vram"]["totalMB"], "scene") if R and R.get("vram") else None}
+            for k in ("tris", "calls", "bytes", "scene_tris", "samplers", "vram_mb"):
                 lim = b.get(k)
                 if lim is None or not vals.get(k) or vals[k][0] is None:
                     continue
@@ -1993,13 +2032,17 @@ async def walk_main(argv):
 EXPORT_FILES = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js')]
 STAGE_HOOK = os.path.join(ROOT, 'godot', 'tools', 'stage_hook.js')
 STAGE_JS = os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')
-EXPORT_JS = """([opt, split]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile: opt.profile || null });
+# the uid the check recomputes from an item's matrix: a case written about its own origin (core/export README, "origin")
+# has its translations less it, so the check adds it back
+KUID_JS = """const KUID = w => (typeof KTAGS === 'undefined' || !KTAGS) ? null : !w.origin ? KTAGS.uid
+  : (c, k, at) => KTAGS.uid(c, k, [at[0] + w.origin[0], at[1] + w.origin[1], at[2] + w.origin[2]]);"""
+EXPORT_JS = """([opt, split]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile: opt.profile || null });
   if (!split) return { world: w, check: chk };
   const g = EXPORT.glb(w);
   return { world: g.json, glb: EXPORT.pack(g.glb).b64, glbStats: g.stats, check: chk }; }"""
-PROFILE_JS = """([opt, profile]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile });
+PROFILE_JS = """([opt, profile]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile });
   const sections = {}; for (const k in w.sections) sections[k] = w.sections[k].status;
   return { sections, errors: w.errors, stats: w.stats, check: chk }; }"""
 
@@ -2065,24 +2108,30 @@ async def check_profile(pg, box, profile, opt=None, inject=False):
     return ok, lines
 
 
-def _pack_dir(name, page):
-    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first)."""
+def _pack_dir(name, page, families=None):
+    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first). Two packs can share a
+    name (2026-11-16: biomes/xanadu's flora pack and kits/xanadu's building pack are both 'xanadu', and an open-world
+    region carries both): with `families` (the ones the export's textures name), the pack that holds them all wins."""
     d = os.path.dirname(os.path.abspath(page))
     if os.path.basename(d) == 'dist':
         d = os.path.dirname(d)
     cands = [d] + sorted(os.path.dirname(os.path.dirname(p)) for p in glob.glob(os.path.join(ROOT, '*', '*', 'tex', 'pack.json')))
+    first = None
     for c in cands:
         pj = os.path.join(c, 'tex', 'pack.json')
         if os.path.isfile(pj):
             with open(pj, encoding='utf-8') as f:
-                if json.load(f).get('build') == name:
+                j = json.load(f)
+            if j.get('build') == name:
+                if not families or set(families) <= set(j.get('families', {})):
                     return os.path.join(c, 'tex')
-    return None
+                first = first or os.path.join(c, 'tex')
+    return first
 
 
 async def export_main(argv):
     """python3 tools/harness.py export <page> --out godot/data/<case>/ [--box x0,z0,x1,z1] [--sections a,b] [--sky 1024]
-                                             [--json] [--query ?..]
+                                             [--json] [--query ?..] [--before <js>]
     The krator-world container (core/export/README.md) written headless: load the page, wait for it and its library
     textures, call EXPORT.world({box, sections}) and EXPORT.check, and write <out>/world.json (everything but the meshes)
     and <out>/world.glb (the meshes: EXT_mesh_gpu_instancing), or one world.json with the meshes inline (--json); the
@@ -2095,6 +2144,12 @@ async def export_main(argv):
     ap.add_argument('html'); ap.add_argument('--out', required=True); ap.add_argument('--box'); ap.add_argument('--sections')
     ap.add_argument('--sky', type=int); ap.add_argument('--json', action='store_true'); ap.add_argument('--query', default='')
     ap.add_argument('--profile', help='the sections the case must fill (core/export/README.md, "Profiles"): a,b,c=field,d?')
+    ap.add_argument('--before', help='a JS expression the page awaits before the export: a case\'s own preparation, '
+                    'e.g. placing an open world\'s camera at the box and settling its flora (openworld/<region>/tools/godot_case.py)')
+    ap.add_argument('--root', help='the folder served (default the repo): a page built in another worktree is served from its own '
+                    '(openworld/oidong-highrift/tools/godot_case.py exports Strongbow\'s page from its branch\'s worktree)')
+    ap.add_argument('--inject', action='append', default=[], help='a script added to the page after core/export, before --before: '
+                    'a case\'s own contributor (repeatable; core/export 10 where the page lacks the scene reader)')
     a = ap.parse_args(argv)
     opt = {}
     if a.box:
@@ -2107,11 +2162,12 @@ async def export_main(argv):
         opt['sky'] = a.sky
     out = os.path.abspath(a.out)
     os.makedirs(out, exist_ok=True)
+    root = os.path.abspath(a.root) if a.root else ROOT
     fails, t0 = [], time.time()
     async with async_playwright() as p:
         b = await launch_chromium(p)
-        with serve(ROOT) as port:
-            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=ROOT, query=a.query, init=[STAGE_HOOK])
+        with serve(root) as port:
+            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=root, query=a.query, init=[STAGE_HOOK])
             if not ready:
                 fails.append('page never ready')
             print('%s: built in %.0f s (%d page errors)' % (a.html, time.time() - t0, len(errs)), flush=True)
@@ -2120,6 +2176,11 @@ async def export_main(argv):
             except Exception:
                 fails.append('library textures still decoding after 180 s')
             injected = await inject_export(pg)
+            for f in a.inject:
+                await pg.add_script_tag(path=os.path.abspath(f))
+                injected.append(os.path.relpath(os.path.abspath(f), ROOT).replace(os.sep, '/'))
+            if a.before:
+                print('before: %s' % json.dumps(await pg.evaluate(a.before))[:300], flush=True)
             await pg.wait_for_timeout(1500)   # a few frames, so the stage hook has seen what the page renders
             t1 = time.time()
             res = await evaluate_big(pg, EXPORT_JS, [opt, not a.json])
@@ -2146,7 +2207,7 @@ async def export_main(argv):
         os.makedirs(dst)
         copied = {}
         for name in packs:
-            src = _pack_dir(name, a.html)
+            src = _pack_dir(name, a.html, {t['family'] for t in w['textures'] if t.get('pack') == name})
             if not src:
                 fails.append('no tex/pack.json for library pack %s' % name)
                 continue

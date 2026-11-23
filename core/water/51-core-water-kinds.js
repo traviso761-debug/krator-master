@@ -44,6 +44,14 @@
   // the same noise repeating every `per` cells in y (twin: WATER.noiseP)
   'float wtrNoiseP(vec2 p,float per){vec2 i=floor(p);vec2 u=fract(p);float a=u.x*u.x*(3.0-2.0*u.x);float b=u.y*u.y*(3.0-2.0*u.y);float j0=i.y-per*floor(i.y/per);float j1=(i.y+1.0)-per*floor((i.y+1.0)/per);'+
   'float h00=wtrHash(vec2(i.x,j0));float h10=wtrHash(vec2(i.x+1.0,j0));float h01=wtrHash(vec2(i.x,j1));float h11=wtrHash(vec2(i.x+1.0,j1));return (h00*(1.0-a)+h10*a)*(1.0-b)+(h01*(1.0-a)+h11*a)*b;}';
+ // the flow's breakup (2026-11-16; twin WATER.breakNoise): gradient noise with a quintic fade, two octaves, the second turned 37 degrees. The
+ // value noise it replaces flattens along every lattice line, so the foam's threshold on it cut straight edges along its 1.8 m cells: squares, Ls
+ // and diamonds on every flow (the small streams showed them plainest)
+ const BREAK='vec2 wtrGrad(vec2 i){float h=wtrHash(i)*6.2831853;return vec2(cos(h),sin(h));}\n'+
+  'float wtrGNoise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);vec2 u=f*f*f*(f*(f*6.0-15.0)+10.0);'+
+  'float a=dot(wtrGrad(i),f);float b=dot(wtrGrad(i+vec2(1.0,0.0)),f-vec2(1.0,0.0));float c=dot(wtrGrad(i+vec2(0.0,1.0)),f-vec2(0.0,1.0));float d=dot(wtrGrad(i+vec2(1.0,1.0)),f-vec2(1.0,1.0));'+
+  'return 0.5+0.75*mix(mix(a,b,u.x),mix(c,d,u.x),u.y);}\n'+
+  'float wtrBreak(vec2 p){return 0.65*wtrGNoise(p)+0.35*wtrGNoise(mat2(0.8,0.6,-0.6,0.8)*p*2.03+5.2);}';
 
  W.noiseGLSL=NOISE;   // (the value noises' GLSL, for the fragments in core/water/ext that draw their own surfaces)
  // rain rings on a drawing's normal (o.rain, 2026-10-26): the chunk to add to its fragment, the normal expression, the cache key's tail
@@ -81,7 +89,7 @@
   g.setAttribute('normal',new T.Float32BufferAttribute(new Float32Array(R.count*3).map((v,i)=>i%3===1?1:0),3));g.setIndex(R.idx);g.computeBoundingSphere();
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x2b5a5a:o.color,roughness:o.roughness==null?.12:o.roughness,metalness:o.metalness==null?.1:o.metalness,
    transparent:o.transparent!==false,depthWrite:o.transparent===false});sky(mat,o);W.biasMaterial(mat,o);
-  const CH='#include <atmos_waves>\n'+W.flowGLSL(rap)+'\n'+NOISE+'\nvarying vec2 vWtrF;varying float vWtrS;varying float vWtrB;varying vec3 vWtrW;'+(EF?'varying float vWtrE;':'');
+  const CH='#include <atmos_waves>\n'+W.flowGLSL(rap)+'\n'+NOISE+'\n'+BREAK+'\nvarying vec2 vWtrF;varying float vWtrS;varying float vWtrB;varying vec3 vWtrW;'+(EF?'varying float vWtrE;':'');
   const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+(o.transparent!==false?'t':'')+W.rainK(o)+(o.chute!=null?'c'+o.chute:'')+(EF?'e'+EF.len+','+EF.foam+','+EL+','+EF.color+','+!!EF.keepFoam+','+EF.flow+','+EF.turn+','+EF.turnK:'')+(o.mouths&&o.mouths.length?'m'+JSON.stringify(o.mouths):'');
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    W.vs(sh,'wtr-drawFlow',['#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;'+(EF?'attribute float wtrAlong;':'')],['#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;'+(EF?'vWtrE='+f(EL)+'-wtrAlong;'+(EF.flow?'{float wtrU=1.0-smoothstep(0.0,'+f(EF.turn==null?8:EF.turn)+',vWtrE);vWtrF=mix(vWtrF,vec2('+f(EF.flow[0])+','+f(EF.flow[1])+')*length(vWtrF),wtrU*'+f(EF.turnK==null?1:EF.turnK)+');}':''):'')]);   /* endFade.flow [x, z] (a unit), endFade.turn (8 m), endFade.turnK (1: how far it turns): the current turns into the main's over the last turn m, its ripples
@@ -89,7 +97,7 @@
    W.fs(sh,'wtr-drawFlow',['#include <common>','#include <common>\n'+CH+W.rainOn(o,sh.uniforms)],['#include <color_fragment>','#include <color_fragment>\n'+
      'float wtrP0=fract(atmWaveT*'+f(Q.phases/per)+');float wtrW0=1.0-abs(2.0*wtrP0-1.0);'+
      // the breakup noise rides the current too (the same two phases)
-     'float wtrNz=mix(wtrNoise((vWtrW.xz-vWtrF*fract(wtrP0+0.5)*'+f(T2)+')*0.55+7.3),wtrNoise((vWtrW.xz-vWtrF*wtrP0*'+f(T2)+')*0.55),wtrW0);'+
+     'float wtrNz=mix(wtrBreak((vWtrW.xz-vWtrF*fract(wtrP0+0.5)*'+f(T2)+')*0.55+7.3),wtrBreak((vWtrW.xz-vWtrF*wtrP0*'+f(T2)+')*0.55),wtrW0);'+
      'float wtrFoamK=wtrFlowFoam(vWtrS,vWtrB)*smoothstep(0.42,0.82,wtrNz+0.15*wtrFlowFoam(vWtrS,vWtrB));'+
      // o.mouths [[x, z, r], ...] (2026-10-26, a confluence; opt-in): inside a round hole at each (soft from .55 r to r) the water is drawn as
      // mid-channel: no foam, the deep colour, full alpha (a bank's shallow tint and its fade to the ground under it read as a pale line

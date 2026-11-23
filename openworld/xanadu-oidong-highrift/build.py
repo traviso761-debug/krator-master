@@ -73,7 +73,9 @@ RES_FRAGS = _WD.RES_FRAGS
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
-     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js')]
+     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
+     ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js')]
     + [('core/biome', f) for f in CORE_BIOME]
     + [('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'), ('core/biome', '41-core-env.js'),
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
@@ -85,6 +87,7 @@ ORDER = (
        ('core/materials/record', '26-matlib-bind.js'),
        ('biomes/sedesert/src', '35-core-strata.js')]
     + [('core/mask', '25-core-mask.js'), ('core/mask', '27-core-mask-distance.js'), ('core/coast', '30-core-coast.js')]   # core/coast (KCOAST): the natural coasts; core/mask's distance under it
+    + LDF('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js')   # relief P8: smoothed, relief, streams, landforms (SITES.json)
     + LDF('41-world-fields.js', '42-world-roads.js', '42b-world-bridges.js')   # 42b: the roads bridged over the rivers (Thalaba's Bridj, 2026-11-16)
     # the caverns (core/world 42k: WTUBES, the tubes as records on core/terrain's KCAVERN; 88k draws them): Route A's tubes, src/48k
     + [('core/terrain', '39-core-cavern.js'), ('core/terrain/host', '39e-core-cavern-draw.js'), ('ld', '42k-world-caverns.js')]
@@ -102,9 +105,9 @@ ORDER = (
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
        ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '48k-world-tubes.js'), ('src', '49-world-xanadu.js')]
-    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
+    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '83s-world-streams.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js',
-          '88k-world-caverns.js')
+          '88k-world-caverns.js', '88l-world-landforms.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )

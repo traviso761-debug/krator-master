@@ -1,4 +1,5 @@
 // ================================================================= CORE — the ground shader (KGROUND: height-blended layers, hex tiling, distance scale)
+// A layer whose weight is 0 at a pixel is not sampled (every layer, map or kind, sits in an if(kgA0>0.0) guard; 2026-11-17).
 // DETAIL-RESEARCH.md item 1 (2026-10-26, the final rebuild's R4). Every biome draws its ground with its own host shader
 // (biomes/*/src/45-host-stage.js, 47-host-land.js, 84-host-ground.js): a painted macro map, a detail multiply, and the
 // material library's layers mixed in by zone weights, each page with its own anti-tiling trick. This module is the
@@ -229,11 +230,14 @@
         s.push(' {float kgA0=clamp('+L.w+',0.0,1.0)*'+f(L.amt==null?1:L.amt)+';if(kgA0>0.0){'+kindBody(L,i,f)+
           'float kgA=kgHL(kgA0,kgHc,kgH,'+f(bl)+');diffuseColor.rgb=mix(diffuseColor.rgb,kgC,kgA);kgHc=mix(kgHc,kgH,kgA);}}');return;}
       var h=L.h||{},from=h.from||'lum',hc=h.contrast==null?1.6:h.contrast,k=f(L.k);
-      s.push(' {vec4 kgT='+smp(i,k)+';'+
+      // skip the fetches where the layer's weight is 0 (kgHL(0,..) is 0, so the output is unchanged): every fetch in the
+      // branch has explicit gradients (KG_GRAD/textureGrad with kgDx/kgDy taken above) or an explicit LOD (KG_LOD), so it is
+      // defined in non-uniform control flow; WebGL1's fallback (texture2D) takes implicit derivatives there, kept as is
+      s.push(' {float kgA0=clamp('+L.w+',0.0,1.0)*'+f(L.amt==null?1:L.amt)+';if(kgA0>0.0){vec4 kgT='+smp(i,k)+';'+
         'vec3 kgC='+(L.lin===false?'kgT.rgb':'pow(kgT.rgb,vec3(2.2))')+'*('+(L.tint||'vec3(1.0)')+')*'+f(L.gain==null?1:L.gain)+';'+
         'float kgH='+(from==='a'?'kgT.a':'clamp(0.5+(kgLum(kgT.rgb)-kgLum(KG_LOD(uKG'+i+',vec2(0.5),16.0).rgb))*'+f(hc)+',0.02,1.0)')+';'+
-        'float kgA=kgHL(clamp('+L.w+',0.0,1.0)*'+f(L.amt==null?1:L.amt)+',kgHc,kgH,'+f(bl)+');'+
-        'diffuseColor.rgb=mix(diffuseColor.rgb,kgC,kgA);kgHc=mix(kgHc,kgH,kgA);}');});
+        'float kgA=kgHL(kgA0,kgHc,kgH,'+f(bl)+');'+
+        'diffuseColor.rgb=mix(diffuseColor.rgb,kgC,kgA);kgHc=mix(kgHc,kgH,kgA);}}');});
     if(rl){var fd=function(a,b){return '(1.0-smoothstep('+f(a)+','+f(b)+',kgD))';};
       /* the relief's height in metres (kgBH, bumped after the normal is made) and the occlusion (kgOcc, on the light after it is summed) */
       s.push(' {float kgF='+fd(rl.near,rl.far)+';kgBH=(kgHc-0.5+('+rl.h+'))*'+f(rl.bump)+'*kgF;'+

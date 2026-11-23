@@ -97,6 +97,10 @@ def cut(region, dry=False):
            os.path.join(src, 'regions.json'), 'model', name, data, '--upsample', str(G.get('upsample', 'auto'))]
     if added:
         cmd += ['--add', os.path.join(src, 'added-areas.json')]
+    if G.get('smooth'):   # the region opts into core/world's smoothing (core/world/README.md, "Smoothing")
+        cmd += ['--smooth']
+    if G.get('relief'):   # and into its relief (core/world/PLAN-RELIEF.md)
+        cmd += ['--relief']
     for p in P:
         xs = [q[0] for q in p['map_px']]; ys = [q[1] for q in p['map_px']]
         print('  %-56s px %7.1f..%7.1f x %7.1f..%7.1f' % (p['name'][:56], min(xs), max(xs), min(ys), max(ys)))
@@ -124,6 +128,10 @@ def cut(region, dry=False):
     with open(rj, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(M, f, ensure_ascii=False, indent=1)
     print('cut %s: %d sites, origin px %s, box px %s' % (region, len(M['sites']), M['frame']['origin_px'], M['frame']['box_px']))
+    if G.get('relief'):   # its small streams, traced on the land the page draws (core/world/bake_streams.py; PLAN-RELIEF.md P3)
+        r = subprocess.call([sys.executable, os.path.join(ROOT, 'core', 'world', 'bake_streams.py'), region])
+        if r:
+            sys.exit('cut_site: core/world/bake_streams.py failed (%d)' % r)
 
 
 def main():

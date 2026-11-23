@@ -43,3 +43,6 @@ godot/data/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
 # the raw generator output and reference views kept for every model (PLAN-MESHY.md, C1)
 kits/fauna/rig/sources/** filter=lfs diff=lfs merge=lfs -text
 kits/fauna/rig/sources/**/*.json !filter !diff !merge text
+# Godot case exports (core/export + openworld/*/tools/godot_case.py): glb meshes and packed webp detail maps in LFS
+godot/data/**/*.glb filter=lfs diff=lfs merge=lfs -text
+godot/data/**/tex/*.webp filter=lfs diff=lfs merge=lfs -text

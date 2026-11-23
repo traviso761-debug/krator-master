@@ -1,0 +1,86 @@
+{
+  "format": "krator-ground-layers",
+  "version": 1,
+  "size": 512,
+  "layers": [
+    {
+      "index": 0,
+      "name": "grass_lush",
+      "library": "ground.grass.lush",
+      "tile_m": 1.65,
+      "mean_linear": [
+        0.10691,
+        0.25238,
+        0.02085
+      ],
+      "albedo": "tex/layer_0_grass_lush.albedo.webp",
+      "normal_rough": "tex/layer_0_grass_lush.nr.webp"
+    },
+    {
+      "index": 1,
+      "name": "moss_forest",
+      "library": "ground.moss001",
+      "tile_m": 1.55,
+      "mean_linear": [
+        0.25157,
+        0.24737,
+        0.13038
+      ],
+      "albedo": "tex/layer_1_moss_forest.albedo.webp",
+      "normal_rough": "tex/layer_1_moss_forest.nr.webp"
+    },
+    {
+      "index": 2,
+      "name": "turf_native",
+      "library": "ground.turf.native",
+      "tile_m": 1.75,
+      "mean_linear": [
+        0.17032,
+        0.16232,
+        0.08953
+      ],
+      "albedo": "tex/layer_2_turf_native.albedo.webp",
+      "normal_rough": "tex/layer_2_turf_native.nr.webp"
+    },
+    {
+      "index": 3,
+      "name": "gravel_scree",
+      "library": "ground.gravel019",
+      "tile_m": 1.45,
+      "mean_linear": [
+        0.24633,
+        0.21667,
+        0.16349
+      ],
+      "albedo": "tex/layer_3_gravel_scree.albedo.webp",
+      "normal_rough": "tex/layer_3_gravel_scree.nr.webp"
+    },
+    {
+      "index": 4,
+      "name": "rock_granite",
+      "library": "rock.granite.tor",
+      "tile_m": 2.8,
+      "mean_linear": [
+        0.36851,
+        0.30516,
+        0.25145
+      ],
+      "albedo": "tex/layer_4_rock_granite.albedo.webp",
+      "normal_rough": "tex/layer_4_rock_granite.nr.webp"
+    },
+    {
+      "index": 5,
+      "name": "paving_flag",
+      "library": "paving.flagstone",
+      "tile_m": 2.4,
+      "mean_linear": [
+        0.20082,
+        0.16725,
+        0.1117
+      ],
+      "albedo": "tex/layer_5_paving_flag.albedo.webp",
+      "normal_rough": "tex/layer_5_paving_flag.nr.webp"
+    }
+  ],
+  "plume_card": "tex/card_themeda.albedo.webp"
+}

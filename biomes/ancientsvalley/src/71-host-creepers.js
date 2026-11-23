@@ -46,8 +46,19 @@ const AV_CREEPERS=(function(){let CR_MISS=0;const lib=n=>(typeof KMAT!=='undefin
     grid of clumps, the owner, 2026-11-10: "hanging moss is definitely not cut out properly"), cut by the plant's own box (41e, AV.CARD_RECTS), not
     the sheet's thirds; the texture is flipped (a canvas-made DataTexture), so the cells are too */
  const geoOf=fam=>{const R=AV.CARD_RECTS&&AV.CARD_RECTS[fam];if(!R)return geo;const g=BIO.geo.cells(geo.clone(),{rects:R,pick:fam==='mosshang'?[4,7]:[4,1],scale:1,flipY:true});g.userData.cellsFlipY=true;return g;};
- const meshes=[];['creeper','mosshang'].forEach((fam,k)=>{const L=put[k];if(!L.length)return;const im=new THREE.InstancedMesh(geoOf(fam),matOf(fam),L.length);
-  L.forEach((e,i)=>{im.setMatrixAt(i,e.m);im.setColorAt(i,e.c);});im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;im.frustumCulled=false;
-  im.userData.biome=true;im.userData.host=true;im.userData.inspectLabel=k?'hanging moss on a tower':'creepers on a tower';im.castShadow=false;im.receiveShadow=false;im.name='av.creepers.'+fam;scene.add(im);meshes.push(im);});
+ const CELL=800,RANGE=1400,meshes=[];
+ ['creeper','mosshang'].forEach((fam,k)=>{const L=put[k];if(!L.length)return;const mat=matOf(fam),gBase=geoOf(fam);
+  mat.userData=Object.assign({},mat.userData,{bio:{kind:'hang',key:'av.creeper.'+fam}});
+  const byCell=new Map();L.forEach(e=>{const el=e.m.elements,cx=Math.floor(el[12]/CELL),cz=Math.floor(el[14]/CELL),ck=cx+','+cz;let arr=byCell.get(ck);if(!arr){arr=[];byCell.set(ck,arr);}arr.push(e);});
+  byCell.forEach((arr,ck)=>{const cg=gBase.clone();cg.userData=Object.assign({},gBase.userData);const im=new THREE.InstancedMesh(cg,mat,arr.length);
+   let x0=1e9,y0=1e9,z0=1e9,x1=-1e9,y1=-1e9,z1=-1e9;
+   arr.forEach((e,i)=>{im.setMatrixAt(i,e.m);im.setColorAt(i,e.c);const el=e.m.elements,px=el[12],py=el[13],pz=el[14],hw=Math.hypot(el[0],el[2])+2,hl=Math.abs(el[5])+2;
+    if(px-hw<x0)x0=px-hw;if(px+hw>x1)x1=px+hw;if(py-hl<y0)y0=py-hl;if(py+2>y1)y1=py+2;if(pz-hw<z0)z0=pz-hw;if(pz+hw>z1)z1=pz+hw;});
+   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;
+   cg.boundingBox=new THREE.Box3(new THREE.Vector3(x0,y0,z0),new THREE.Vector3(x1,y1,z1));cg.boundingSphere=cg.boundingBox.getBoundingSphere(new THREE.Sphere());
+   im.frustumCulled=true;im.userData.biome=true;im.userData.host=true;im.userData.creeper=true;im.userData.sphere=cg.boundingSphere;
+   im.userData.inspectLabel=k?'hanging moss on a tower':'creepers on a tower';im.castShadow=false;im.receiveShadow=false;im.name='av.creepers.'+fam+'.'+ck;scene.add(im);meshes.push(im);});});
+ let nextCr=0;tick(function(){const now=performance.now();if(now<nextCr)return;nextCr=now+150;const e=camera.position;
+  for(let i=0;i<meshes.length;i++){const im=meshes[i],sp=im.userData.sphere;im.visible=!sp||e.distanceTo(sp.center)-sp.radius<=RANGE;}});
  const n=put[0].length+put[1].length;if(n)REGISTER({name:'the creepers of the wild half',kind:'creeper',x:0,z:0,r:STAGE.R,h:300,tags:{kind:'creeper',curtains:n,towers:towers.length}});
  return{towers:towers.length,curtains:n,meshes,miss:CR_MISS,tw:towers};})();

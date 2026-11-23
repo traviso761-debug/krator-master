@@ -92,6 +92,8 @@ ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
      ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
+     ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js'),
      ('core/biome', '10-core-head.js'), ('core/biome', '20-core-kit.js'), ('core/biome', '30-core-foliage.js'),
      ('core/biome', '31b-core-leafset.js'), ('core/biome', '34-core-impostor.js'),   # BIO.leafOn/leafQ (the kit core), BIO.impostorSet (the lenders' trees)
      ('core/biome', '35-core-anim.js'), ('core/biome', '36-core-walker.js'), ('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'),

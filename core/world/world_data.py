@@ -15,6 +15,16 @@ from PIL import Image
 
 MAP = ('clim', 'rain', 'temp', 'biome', 'mask')
 
+# a relief region's landform records (core/world/PLAN-RELIEF.md P4): core/terrain's KSTACKS and core/world's record engine,
+# read before 41 by every page and bake of such a region, then the region's own pins (each a WLAND.pin), with what they read
+LAND_JS = [('core', 'terrain', '37-core-stacks.js'), ('core', 'world', '43b-world-landforms.js')]
+PINS = {'pinnacle': [('settlements', 'pinnacle-rock', 'src', '40-pr-layout.js'), ('openworld', 'pinnacle', 'src', '43p-world-rock.js')]}
+
+
+def land_js(region):
+    """the landform sources (repo-relative path tuples) a node bake of `region` reads before 41"""
+    return LAND_JS + PINS.get(region, [])
+
 
 def _rgb(path):
     return np.array(Image.open(path).convert('RGB')).astype(np.int64)
@@ -44,6 +54,9 @@ def fragment(data_dir, kits_js, name, source, extra=None):
     WORLD_DATA ({key: JSON-able}, written after meta in key order: a region's baked roads or plans)"""
     M = meta(data_dir)
     R = arrays(data_dir)
+    rj_res = os.path.join(data_dir, 'residual.json')
+    if os.path.isfile(rj_res) and not (extra and 'residual' in extra):
+        extra = dict(extra or {}, residual=json.load(open(rj_res, encoding='utf-8')))
     enc = {k: [('f4' if v.dtype.kind == 'f' else 'u1'), base64.b64encode(np.ascontiguousarray(v).ravel().tobytes()).decode('ascii')] for k, v in R.items()}
     more = ''.join(',%s:%s' % (k, json.dumps(extra[k], separators=(',', ':'), ensure_ascii=False)) for k in sorted(extra or {}))
     return ('// ==================== ' + name + '\n'
