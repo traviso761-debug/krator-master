@@ -42,6 +42,7 @@ python settlements/flashing-eye/flashing_blueprint.py
 | **L** | the Lip Range (120 x 14 m), four floors side by side: L-2 and L-1 in the band's top (the Vault of Breaths, the readers' gallery with windows in the face), L0 at the bench (the Mirror Hall and its balcony, the reading room, the guest hall, the audience hall), L1 (the Master of Mirrors, the guest chambers, the Prismarch's cell, oratory and mirror room) |
 | **H** | the Hall of the Ember (20 x 16 m), two floors: the porch, the hall, the gilt sanctum with its north window on the plume; the gallery and the Book of the Ember |
 | **P** | the Eye Post (8 x 8 m, 12 m), four levels: the watch room, the rim's Book of Breaths, the mirror room, the platform with the 60 cm heliograph and the fire basket |
+| **T** | the towers (the revamp, 2026-11-23): four floors each of the Mirror Tower, the Labrang Tower and the Ember Tower's shaft |
 | **F** | the Foot House at the spur's foot (60 x 80 m): the pilgrims' hostel (120 beds), the mule stables, the stores, the muleteers |
 | **section** | along the spur: the whole profile from the crater to the apron (heights x2, the model's line dashed), and the bench and the band (the Lip Range's floors in the rock, the monastery, the Hall of the Ember, the face and its talus) |
 

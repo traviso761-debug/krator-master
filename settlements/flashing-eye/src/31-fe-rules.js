@@ -31,8 +31,8 @@ const FLASHING_EYE = (function () {
   const overlap = (p, q, e) => Math.min(p[1], q[1]) - Math.max(p[0], q[0]) > e && Math.min(p[3], q[3]) - Math.max(p[2], q[2]) > e;
   const sm = (a, b, x) => { let t = (x - a) / (b - a); t = t < 0 ? 0 : t > 1 ? 1 : t; return t * t * (3 - 2 * t); };
   const lipU = (L, v) => -L.band.lipK * v * v;
-  const ON_WALL = ['gatehouse'];
-  const OPEN = ['court', 'terrace', 'threshing', 'midden', 'tank', 'chorten', 'hives', 'cave'];
+  const ON_WALL = ['gatehouse', 'corner_tower'];
+  const OPEN = ['court', 'terrace', 'threshing', 'midden', 'tank', 'chorten', 'hives', 'cave', 'stair_way'];
   const GOLD = { crown: 'hosted', sanctum: 'ember_hall' };
   const inWall = (b, w) => {
     const n = Math.max(1, Math.ceil(Math.hypot(w.b[0] - w.a[0], w.b[1] - w.a[1]) / 0.25)), e = w.t / 2 - 0.05;
@@ -42,6 +42,49 @@ const FLASHING_EYE = (function () {
     }
     return false;
   };
+  /* the terrace's level at u (behind the Lip): the precinct steps up the slope; north of it the upper terrace's level */
+  const terraceY = (L, u) => { const T = L.terraces == null ? [] : L.terraces; for (const t of T) if (u >= t.u0 && u < t.u1) return t.y; return T.length && u < T[T.length - 1].u0 ? T[T.length - 1].y : 0; };
+  const segX = (a, b, c, d) => { const o = (p, q, r) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])); return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; };
+  /* the Way of Shrines' bridges: [from [u, v, y], to [u, v, y], span (m, in plan), rise] */
+  function bridges(L) {
+    const B = L.bridgeway; if (!B) return [];
+    const out = [], S = B.stacks;
+    for (let i = 0; i < S.length; i++) {
+      const a = [S[i].u, S[i].v, S[i].top], b = i + 1 < S.length ? [S[i + 1].u, S[i + 1].v, S[i + 1].landing] : [B.end.at[0], B.end.at[1], B.end.y];
+      out.push({ from: S[i].id, to: i + 1 < S.length ? S[i + 1].id : B.end.gate, a, b, span: Math.hypot(b[0] - a[0], b[1] - a[1]), rise: b[2] - a[2] });
+    }
+    return out;
+  }
+  /* the spur's spine: [u, v, crest] from its nose through each stack's landing and each bridge's notch into the Lip under the gate */
+  function spine(L) {
+    const B = L.bridgeway; if (!B || !B.spur) return [];
+    const S = B.stacks, SP = B.spur, br = bridges(L), out = [];
+    const c0 = S[0].landing - SP.crestBelow, dn = Math.hypot(SP.nose[0] - S[0].u, SP.nose[1] - S[0].v);
+    out.push([SP.nose[0], SP.nose[1], c0 - 0.55 * dn]);
+    S.forEach((st, i) => {
+      const c = st.landing - SP.crestBelow, b = br[i], deck = (b.a[2] + b.b[2]) / 2 - B.sagK * b.span;
+      const cn = i + 1 < S.length ? S[i + 1].landing - SP.crestBelow : B.end.y - 2;
+      out.push([st.u, st.v, c]);
+      out.push([(b.a[0] + b.b[0]) / 2, (b.a[1] + b.b[1]) / 2, Math.min(deck - SP.notch, (c + cn) / 2)]);
+    });
+    out.push([B.end.at[0] + 3, B.end.at[1], B.end.y - 2]);
+    return out;
+  }
+  /* the spur's surface over (u, v) on ground `base`: the crest, the flanks at `flank`, the talus fan; -Infinity off it */
+  function spurY(L, u, v, base, SPN) {
+    const SP = L.bridgeway && L.bridgeway.spur; if (!SP) return -Infinity;
+    const P = SPN == null ? spine(L) : SPN; let best = -Infinity;
+    for (let i = 0; i + 1 < P.length; i++) {
+      const a = P[i], b = P[i + 1], dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz;
+      const t = l2 ? Math.max(0, Math.min(1, ((u - a[0]) * dx + (v - a[1]) * dz) / l2)) : 0, d = Math.hypot(u - a[0] - dx * t, v - a[1] - dz * t);
+      if (d > 260) continue;
+      const crest = a[2] + (b[2] - a[2]) * t, H = crest - base; if (H <= 0) continue;
+      const y1 = crest - SP.flank * Math.max(0, d - SP.crestW / 2);
+      const y2 = base + SP.talusFrac * H - SP.talusSlope * Math.max(0, d - (SP.crestW / 2 + (1 - SP.talusFrac) * H / SP.flank));
+      best = Math.max(best, Math.min(crest, Math.max(y1, y2)));
+    }
+    return best;
+  }
   const wayLen = pts => pts.reduce((s, p, i) => i ? s + Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0, 0);
   const near = (a, b, e) => Math.hypot(a[0] - b[0], a[1] - b[1]) <= e;
   const inBox = (p, b, e) => p[0] >= b[0] - e && p[0] <= b[1] + e && p[1] >= b[2] - e && p[1] <= b[3] + e;
@@ -89,10 +132,10 @@ const FLASHING_EYE = (function () {
       return out;
     },
     'every gate is on its wall': L => L.gates.filter(g => { const w = L.walls.find(x => x.id === g.wall); return !w || segDist(g.at, w.a, w.b) > 1; }).map(g => g.id + ' is off ' + g.wall),
-    'every zone is reached from the Foot House, and the mules reach the bench without the Cleft Stair': L => {
+    'every zone is reached from the Foot House, and the mules reach the bench without the Way of Shrines': L => {
       const out = [], all = reach(L, 'foot', null);
       Object.keys(L.zones).filter(z => !all.has(z)).forEach(z => out.push(z + ' is reached by no gate or way'));
-      if (!reach(L, 'foot', 'cleft').has('bench')) out.push('the mules can reach the bench only up the Cleft Stair');
+      if (!reach(L, 'foot', 'bridges').has('bench')) out.push('the mules can reach the bench only over the rope bridges');
       if (!reach(L, 'bench', null).has('rim')) out.push('the rim is not reached from the bench');
       return out;
     },
@@ -110,7 +153,7 @@ const FLASHING_EYE = (function () {
       R.forEach(p => [p.box[2], p.box[3]].forEach(v => { const d = Math.abs(p.box[1] - lipU(L, v)); if (d > 3) out.push(p.id + '\'s front stands ' + d.toFixed(1) + ' m off the Lip at v ' + v); }));
       return out;
     },
-    'nothing within 12 m of the Lip but the Lip Range and its gate': L => L.parts.filter(p => p.zone === 'bench' && p.range !== 'lip' && ON_WALL.indexOf(p.kind) < 0 && corners(p.box).some(c => c[0] > lipU(L, c[1]) - 12)).map(p => p.id + ' is within 12 m of the Lip'),
+    'nothing within 12 m of the Lip but the Lip Range and its gate': L => L.parts.filter(p => p.zone === 'bench' && p.range !== 'lip' && !p.onLip && ON_WALL.indexOf(p.kind) < 0 && corners(p.box).some(c => c[0] > lipU(L, c[1]) - 12)).map(p => p.id + ' is within 12 m of the Lip'),
     'the Hall of the Ember stands on the axis, north of the monastery, toward the crater': L => {
       const e = L.parts.find(p => p.kind === 'ember_hall'), m = L.parts.find(p => p.kind === 'hosted'); if (!e || !m) return ['no Hall of the Ember or no monastery'];
       const ce = centre(e.box), cm = centre(m.box), out = [];
@@ -141,7 +184,7 @@ const FLASHING_EYE = (function () {
     },
     'each way joins what it serves': L => {
       const out = [], way = id => L.ways.find(w => w.id === id), part = id => L.parts.find(p => p.id === id), gate = id => L.gates.find(g => g.id === id);
-      const ends = [['breath', gate('gate.breath').at, part('threshold').box], ['cleft', part('stairhead').box, gate('gate.rift').at],
+      const ends = [['breath', gate('gate.breath').at, part('threshold').box], ['bridges', part('stairhead').box, gate('gate.rift').at],
         ['mule', part('stairhead').box, gate('gate.mule').at], ['stair', part('foothouse').box, part('stairhead').box]];
       ends.forEach(([id, a, b]) => {
         const w = way(id); if (!w) { out.push('no way ' + id); return; }
@@ -197,6 +240,30 @@ const FLASHING_EYE = (function () {
       L.parts.filter(p => p.zone === 'foot').forEach(p => Object.keys(p.sleeps || {}).forEach(k => { if (L.footGroups.indexOf(k) < 0) out.push(k + ' sleeps at the Foot House'); }));
       return out;
     },
+    'every building on the bench stands on one terrace': L => L.parts.filter(p => p.zone === 'bench' && ON_WALL.indexOf(p.kind) < 0 && p.level === 0 &&
+      !(L.terraces == null ? [] : L.terraces).some(t => p.box[0] >= t.u0 - 1e-9 && p.box[1] <= t.u1 + 1e-9)).map(p => p.id + ' straddles a terrace\'s edge'),
+    'the Way of Shrines: a shrine on every stack, each step 30 m up, every bridge short and gentle enough, the last at the Gate of the Rift': L => {
+      const B = L.bridgeway, out = []; if (!B) return ['no Way of Shrines'];
+      const S = B.stacks, br = bridges(L);
+      S.forEach((st, i) => {
+        const sh = L.parts.find(p => p.kind === 'shrine' && Math.abs(centre(p.box)[0] - st.u) < 0.5 && Math.abs(centre(p.box)[1] - st.v) < 0.5);
+        if (!sh || sh.y !== st.top) out.push(st.id + ' has no shrine on its top');
+        if (i && st.top - S[i - 1].top !== B.rise + B.stairRise) out.push(st.id + ' is ' + (st.top - S[i - 1].top) + ' m above the last step');
+        if (i && st.top - st.landing !== B.stairRise) out.push(st.id + '\'s stair climbs ' + (st.top - st.landing) + ' m');
+        const d = st.u - lipU(L, st.v); if (d < st.r + 20) out.push(st.id + ' stands ' + d.toFixed(0) + ' m from the Lip');
+        S.forEach((o, j) => { if (j > i && Math.hypot(o.u - st.u, o.v - st.v) < st.r + o.r + 8) out.push(st.id + ' crowds ' + o.id); });
+      });
+      br.forEach(b => {
+        if (b.span > B.maxSpan) out.push('the bridge from ' + b.from + ' spans ' + b.span.toFixed(0) + ' m');
+        if (b.rise / b.span > B.maxGrade + 1e-9 || b.rise < 0) out.push('the bridge from ' + b.from + ' climbs ' + (100 * b.rise / b.span).toFixed(0) + ' %');
+      });
+      br.forEach((p, i) => br.forEach((q, j) => { if (j > i + 1 && segX(p.a, p.b, q.a, q.b)) out.push('the bridges from ' + p.from + ' and ' + q.from + ' cross'); }));
+      const last = br[br.length - 1], g = L.gates.find(x => x.id === B.end.gate);
+      if (!last || !g || Math.hypot(last.b[0] - g.at[0], last.b[1] - g.at[1]) > 1 || last.b[2] !== 0) out.push('the last bridge does not land at the Gate of the Rift');
+      const sh = L.parts.find(p => p.id === 'stairhead'), from = B.spur ? B.spur.nose : [S[0].u, S[0].v];
+      if (!sh || Math.hypot(centre(sh.box)[0] - from[0], centre(sh.box)[1] - from[1]) > 30) out.push('the Way of Shrines does not start by the Stair of the Eye\'s head');
+      return out;
+    },
     'the band is the owner\'s 100-300 m high, about 1.5 km long, facing the Rift': L => {
       const B = L.band, out = [];
       if (B.h < 100 || B.h > 300) out.push('the band is ' + B.h + ' m high');
@@ -229,8 +296,9 @@ const FLASHING_EYE = (function () {
     /* the bench: behind the Lip, filled up to its level over the precinct and a wide skirt (raise only), and inside the precinct
        cut level too where the cap rises above it (its north and west walls retain the cut; a 25 m bank behind them) */
     const wB = sm(-262, -150, u) * (1 - sm(160, 360, Math.abs(v))), wP = sm(-175, -150, u) * (1 - sm(100, 125, Math.abs(v)));
-    if (u <= lu && y < 0) y += (0 - y) * wB;
-    if (u <= lu && y > 0) y += (0 - y) * wP;
+    const tY = terraceY(L, u);
+    if (u <= lu && y < tY) y += (tY - y) * wB;
+    if (u <= lu && y > tY) y += (tY - y) * wP;
     /* the band: in front of the Lip, the face, the talus leaning on it and the apron easing out (lower only) */
     if (u > lu) {
       const t = 1 - sm(B.halfLen - B.taper, B.halfLen, Math.abs(v));
@@ -243,6 +311,9 @@ const FLASHING_EYE = (function () {
       }
     }
     /* the crater: a spatter rampart round the rim, the bowl inside it down to the floor */
+    /* the spur of the Way of Shrines: an arete of the coulee's columns out of the band (raise only) */
+    if (L.bridgeway && L.bridgeway.spur && u > -20 && u < 420 && v < 0) { if (!L._spine) Object.defineProperty(L, '_spine', { value: spine(L), enumerable: false });
+      const sp = spurY(L, u, v, y, L._spine); if (sp > y) y = sp; }
     const dc = Math.hypot(u - C.centre[0], v - C.centre[1]);
     /* the rampart's crest is a few metres inside the rim, so the rim's buildings stand on it; the bowl falls from 15 m inside */
     if (dc < C.r + 160) {
@@ -253,6 +324,6 @@ const FLASHING_EYE = (function () {
     return y;
   }
 
-  return { RULES, checks, reach, area, water, toPx, ground, lipU, segDist, inPoly, wayLen };
+  return { RULES, checks, reach, area, water, toPx, ground, lipU, terraceY, bridges, spine, spurY, segDist, inPoly, wayLen };
 })();
 if (typeof module !== 'undefined') module.exports = FLASHING_EYE;

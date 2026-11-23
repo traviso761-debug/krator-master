@@ -1,6 +1,6 @@
 {
  "build": "flashing-eye",
- "note": "The Flashing Eye's page (settlements/flashing-eye/targets/cone): the Qiblai kit's families (kits/qiblai/materials.json, copied so one pack holds both: the page's pack is bound as 'qiblai' by kits/qiblai's 89q0z, which binds the q* keys) and the cone's own: feColumnar (rock.columnar: the band's colonnade, the face of the coulee), feAsh (ground.ash: the cap's ash soil and the rim), feScoria (ground.scoria: the crater's walls and the spatter rampart), feCinder (ground.cinder: the crater's floor and the talus). The ground shader samples them in world metres (90fe-world.js). Reused sets, none new (PLAN.md question 13).",
+ "note": "The Flashing Eye's page (settlements/flashing-eye/targets/cone): the Qiblai kit's families (kits/qiblai/materials.json, copied so one pack holds both: the page's pack is bound as 'qiblai' by kits/qiblai's 89q0z, which binds the q* keys) and the cone's own: feColumnar (rock.columnar: the band's colonnade, the face of the coulee), feAsh (ground.ash: the cap's ash soil and the rim), feScoria (ground.scoria: the crater's walls and the spatter rampart), feCinder (ground.cinder: the crater's floor and the talus). The ground shader samples them in world metres (90fe-world.js). Reused sets, none new (PLAN.md question 13). feRoof (roof.tile: barrel tiles, a grey detail map coloured red by each roof: the revamp's red tiled roofs, the owner 2026-11-23).",
  "size": 512,
  "families": {
   "qAshlar": {
@@ -181,6 +181,19 @@
    "tint": {
     "keep": 1,
     "mean": 0.36
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "feRoof": {
+   "lib": "roof.tile",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.62
    },
    "metal": 0,
    "roughLift": 0.1
