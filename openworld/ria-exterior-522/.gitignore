@@ -1,0 +1,8 @@
+# Keep deterministic report & zoom map in git; regenerate full staged rasters via:
+#   python3 tools/scale-model/edit_522_ria_hydrology.py --out-dir openworld/ria-exterior-522
+*.png
+*.js
+*.json
+*.jpg
+!edit_522_ria_hydrology.report.json
+!ria_crook_hydrology_highways.jpg
