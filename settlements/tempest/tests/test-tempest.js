@@ -72,4 +72,17 @@ T.neg('a curtain with towers 60 m apart is caught (the fort asset\'s rule, on th
   (() => { const Q = copy(); Q.towers = Q.towers.filter(t => !/^outer\.c1\.i[1-3]$/.test(t.id)); return Q; })(), copy());
 T.neg('a wall walk with no stair is caught (the fort asset\'s rule, on the House)', xrule('every wall walk reaches a stair'),
   (() => { const Q = copy(); Q.stairs = Q.stairs.filter(s => !/^inner/.test(s.curtain)); return Q; })(), copy());
+// 6. step 4, the grounds and the crest (src/80w TP_GROUNDS): the sheet T0's fields, tracks and pieces keep their rules
+global.TEMPEST = TP;
+const GR = require(path.join(__dirname, '..', 'src', '80w-tp-grounds-data.js'));
+const gcopy = () => JSON.parse(JSON.stringify({ fields: GR.fields, tracks: GR.tracks, pieces: GR.pieces }));
+const grule = name => G => GR.RULES[name](P, G).length === 0;
+{ const f = GR.check(P);
+  T.ok('the crest\'s grounds keep their rules (sheet T0)', f.length === 0, f.join('; ') || (GR.fields.length + ' fields, ' + GR.tracks.length + ' tracks, ' + GR.pieces.length + ' pieces')); }
+T.neg('a field pushed inside the curtain is caught', grule('the crest\'s grounds lie outside the curtain'),
+  (() => { const G = gcopy(); G.fields.find(f => f.id === 'hives').box = [0, 0, 20, 20]; return G; })(), gcopy());
+T.neg('a sally track that leaves from no gate is caught', grule('the sally tracks leave from the sally gates'),
+  (() => { const G = gcopy(); G.tracks.find(t => t.id === 'track.sally.n').pts[0] = [60, 60]; return G; })(), gcopy());
+T.neg('a hay rick standing in the tea garden is caught', grule('every piece stands in its ground'),
+  (() => { const G = gcopy(); G.pieces.find(p => p.id === 'hay.rick.0').at = GR.fields.find(f => f.id === 'tea').box.slice(0, 2).map(v => v + 5); return G; })(), gcopy());
 T.done();

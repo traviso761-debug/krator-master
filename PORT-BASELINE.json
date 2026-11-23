@@ -1289,12 +1289,12 @@
    "sha256": "d01c347e5d72b2b73be0ebef3a02ba2284a82f5fbf6f39da7d073959903479bd"
   },
   "settlements/tempest/dist/tempest-states.html": {
-   "bytes": 8921682,
-   "sha256": "c735a9a0617e1ce5e94e66d27e8a5f629bd7ab3b899e2e39de5bb0421e26ce3a"
+   "bytes": 8928640,
+   "sha256": "e91aba05c3af940edd15d689f94a8fc0b018b2e64af1cb3e0d4e022a5030d2c4"
   },
   "settlements/tempest/dist/tempest.html": {
-   "bytes": 8934673,
-   "sha256": "7c284650067e205a660c0028bcb8d3baad9845dacf468db85a6037ca9b4d30cb"
+   "bytes": 8949296,
+   "sha256": "5592b9e954a0820e98b1d92a0718f7569bfb8d5d6ea2357565fa188e4fd04eac"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,

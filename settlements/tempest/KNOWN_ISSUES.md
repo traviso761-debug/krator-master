@@ -37,8 +37,12 @@
   towers); a ruin still brings it down to a storey or two.
 - **The inner ward** is reached from its own doors and stairs (its ground is the talus top): a walker cannot yet go from the
   outer ward to the inner through the utse, since the keep the fort asset draws has no gate passage (asked of 80g, above).
-- **Not drawn yet**: the grounds and the crest (step 4: the muster court, drill court and range, the Maydan, the paddock, the
-  hay barns, the terraces).
+- **The crest (step 4)** is the near ground's colour and a few pieces on it: the terraces are bands of colour (no banks, no
+  crops), the tea garden and the commons are colour only, the great tank's water is a dark surface (core/water is not on this
+  page), the hives, butts, pells and targets are simple boxes and posts (the blueprint's NEW training pieces are not in the
+  catalog). The near ground is 10 m a cell, so a 4 m track is drawn wider and softer than it is.
+- **Not here yet**: life on the page (the companies at drill, the riders on the Maydan's track, the relay's mirrors), and the
+  brow lookout and its relay, 14 km west (the open world, step 5: it waits on the vertical stack).
 - **The barbican** is three walls with its opening on the south side (the bent entrance); the road up to it is not drawn.
 - **The utse stands 8 m out of the inner front** (the blueprint's u -63..-41), so its east half stands on the outer ward's ground
   and its west half on the talus; its storeys are counted from the outer ground (the inner court's door is on its first floor).

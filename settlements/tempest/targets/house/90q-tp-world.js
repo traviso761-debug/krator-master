@@ -18,8 +18,19 @@ FRAME_HOOKS.push(tpSkyTick);tpSkyTick();
 // ---------------------------------------------------------------- the near ground
 const TPG={x0:TPS.x-2000,x1:TPS.x+2000,z0:TPS.z-2000,z1:TPS.z+2000};
 function tpSlope(x,z,e){return Math.hypot(tpGround(x+e,z)-tpGround(x-e,z),tpGround(x,z+e)-tpGround(x,z-e))/(2*e);}
+/* step 4: the crest's grounds (src/80w TP_GROUNDS) as the ground's colour: the barley terraces in 12 m bands, the tea garden's
+   dark rows, the Maydan's and the paddock's trampled turf, the hay yard, the threshing floors, the middens; the road and the
+   tracks as beaten earth. A page point to the plan's frame: lx = -(z - TPS.z), lz = x - TPS.x (TPS.toPage's inverse) */
+const TP_TINT={terraces:[.62,.58,.34],tea:[.27,.40,.22],hives:[.50,.52,.35],commons:[.49,.53,.36],maydan:[.58,.54,.40],paddock:[.55,.49,.36],byres:[.55,.50,.40],
+ hay:[.66,.60,.42],threshing:[.68,.63,.50],midden:[.36,.30,.22],halt:[.60,.55,.43],tank:[.55,.50,.42],brake:[.33,.37,.25]};
+const tpSegD=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=L2?Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/L2)):0;return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);};
+function tpTint(x,z,c){const lx=-(z-TPS.z),lz=x-TPS.x;
+ for(const f of TP_GROUNDS.fields){const b=f.box;if(lx<b[0]||lx>b[2]||lz<b[1]||lz>b[3])continue;const t=TP_TINT[f.kind];if(!t)break;
+  const k=f.kind==='terraces'?((Math.floor(lz/12)&1)?.8:.5):f.kind==='commons'?.4:.75;c.lerp(new THREE.Color(t[0],t[1],t[2]),k);break;}
+ for(const T of TP_GROUNDS.tracks)for(let i=0;i+1<T.pts.length;i++){const d=tpSegD(lx,lz,T.pts[i],T.pts[i+1]);if(d<T.w/2+1.5){c.lerp(new THREE.Color(.60,.53,.41),d<T.w/2?.85:.4);return;}}}
 function tpColour(x,z,h,sl,c){const pad=tpPadW(x,z);
  if(h<200)c.setRGB(.46,.50,.36);else if(h<450)c.setRGB(.50,.52,.38);else c.setRGB(.53,.53,.39);   /* the crest's meadow (Cfb, 19 C), greener down the flanks toward the Rift */
+ tpTint(x,z,c);
  if(sl>.45)c.lerp(new THREE.Color(.40,.37,.34),Math.min(1,(sl-.45)*2.5));   /* bare rock on the steeps */
  if(pad>0)c.lerp(new THREE.Color(.62,.55,.44),pad);   /* the pad: beaten earth and gravel */
  return c;}

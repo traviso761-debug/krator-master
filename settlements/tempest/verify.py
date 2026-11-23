@@ -32,6 +32,8 @@ if(typeof TPS!=="undefined"){const Q=window._tempest||{},D=Q.drawn||{};
  {const L=Q.lotGround||[],off=L.map(h=>Math.abs(h-Q.pad)),bad=off.filter(d=>d>.05).length;
   R.push({name:'house-on-its-pad',ok:L.length===5&&!bad&&Q.cut<12&&Q.fill<12,detail:'the pad at '+Q.pad+' m; under the lot\'s corners and middle '+L.join(', ')+' m'+(bad?' ('+bad+' OFF the pad)':'')+'; cut '+Q.cut+' m, fill '+Q.fill+' m'});}
  {const F=(typeof xfReach==='function'?xfReach():null)||[],bad=F.filter(q=>!q.floors||q.unreached.length||q.capped);
+  {const g=Q.grounds||{};R.push({name:'tempest-grounds',ok:g.placed===g.of&&g.of>0&&g.seat<.05&&Array.isArray(g.rules)&&!g.rules.length,
+   detail:(g.placed|0)+' of '+(g.of|0)+' pieces of the crest placed ('+(g.offPad|0)+' off the pad, on the crest\'s own ground), each within '+(+(g.seat||0)).toFixed(3)+' m of the drawn ground; '+(g.fields|0)+' fields and '+(g.tracks|0)+' tracks on the ground\'s colour; '+(g.rules&&g.rules.length?'rules BROKEN: '+g.rules.slice(0,3).join('; '):'the grounds\' rules kept')});}
   R.push({name:'house-walks',ok:F.length===2&&!bad.length,detail:F.map(q=>q.reached+' of '+q.floors+' walks and stairs reached'+(q.unreached.length?', NOT '+q.unreached.slice(0,4).join(', '):'')).join('; ')||'no walks registered (core/walk not on the page?)'});}}
 if(typeof TP_STATES!=="undefined"){const Q=window._tempestStates||{},S=Q.sites||[],D=Q.damage||[],o=D.find(d=>d.key==='xa_tempest_outer')||{},i=D.find(d=>d.key==='xa_tempest_inner')||{};
  const all=['xa_tempest_outer','xa_tempest_inner'].every(k=>[0,1,2].every(v=>S.some(s=>s.key===k&&s.v===v)));

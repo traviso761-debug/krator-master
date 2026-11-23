@@ -7,6 +7,8 @@ const TP_GROUP=new THREE.Group();TP_GROUP.name='The House of the Tempest';scene.
 TPS.G={};
 for(const[key,y,v]of[['xa_tempest_outer',TPS.pad,0],['xa_tempest_inner',TPS.pad+TPS.inner,0]]){TSTAT.cur=key+'/'+v;const r0=REG.length;
  TPS.G[key]=VERN.place(TP_GROUP,key,TPS.x,TPS.z,TPS.ry,{v,y});for(let i=r0;i<REG.length;i++)REG[i].type=key;}
+/* step 4: the crest's grounds (90p), placed with the House in its frame at the pad; every piece stands on the drawn ground */
+{TSTAT.cur='xa_tempest_grounds/0';const r0=REG.length;TPS.G.xa_tempest_grounds=VERN.place(TP_GROUP,'xa_tempest_grounds',TPS.x,TPS.z,TPS.ry,{v:0,y:TPS.pad});for(let i=r0;i<REG.length;i++)REG[i].type='xa_tempest_grounds';}
 {const H=TP_PLAN.hosted,p=TPS.toPage(H.at[0],H.at[1]);TSTAT.cur=H.key+'/'+H.o.v;const r0=REG.length;
  TPS.G[H.key]=VERN.place(TP_GROUP,H.key,p[0],p[1],TPS.ry+H.ry,{v:H.o.v,y:TPS.pad+TPS.inner});for(let i=r0;i<REG.length;i++)REG[i].type=H.key;}
 TSTAT.cur=null;kbake(TP_GROUP);if(typeof xaDoorsBind==='function')xaDoorsBind();
@@ -22,5 +24,7 @@ window._tempest=Object.assign({},window._tempestSite,{placed:!!(TPS.G.xa_tempest
  innerGround:Math.round(terrainH(TPS.x,TPS.z)*100)/100,
  gates:TP_PLAN.gates.map(g=>{const p=TPS.toPage(g.at[0],g.at[1]);return{id:g.id,x:Math.round(p[0]),z:Math.round(p[1])};}),
  forts:(window._xaForts||[]).length,towers:TP_PLAN.towers.length,buildings:TP_PLAN.buildings.length,
+ grounds:{placed:TP_GPLACED.length,of:TP_GROUNDS.pieces.length,rules:TP_GROUNDS.check(TP_PLAN),seat:TP_GPLACED.reduce((m,p)=>Math.max(m,Math.abs(p.y-p.ground)),0),
+  fields:TP_GROUNDS.fields.length,tracks:TP_GROUNDS.tracks.length,offPad:TP_GPLACED.filter(p=>Math.abs(p.ground-TPS.pad)>.05).length},
  rooms:['xa_tempest_outer','xa_tempest_inner'].reduce((s,k)=>s+((TPS.G[k]&&TPS.G[k].userData.interior)?TPS.G[k].userData.interior.rooms:0),0),
  pieces:['xa_tempest_outer','xa_tempest_inner'].reduce((s,k)=>s+((TPS.G[k]&&TPS.G[k].userData.interior)?TPS.G[k].userData.interior.pieces:0),0)});

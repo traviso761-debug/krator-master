@@ -42,7 +42,7 @@ function tpIxItems(){const R3=v=>Math.round(v*1000)/1000;
   if(utse){const U=utse,hs=[4.8,4.3,4.3,4.3,4.3];   /* xfKeep: five storeys on its 1.2 m plinth, its door on the +z (east) face */
    B.push(stack(U.at[0],U.at[1],U.w,U.d,hs,{id:'utse',y:1.2,doors:[{at:[U.at[0],U.at[1]+U.d/2],w:1.8}],program:UTSE}));}
   const name=VERN.defs[key]?VERN.defs[key].name:key;
-  return{key,name,culture:'xanadu',wealth:.7,types:['military','religious','multi-family dwelling'],lot:[Q.w||200,Q.d||300],bodies:B,
+  return{key,name,culture:'xanadu',wealth:.7,types:['military','religious','multi-family dwelling'],lot:[Q.w==null?200:Q.w,Q.d==null?300:Q.d],bodies:B,
    note:'the House\'s stacks hollow (settlements/tempest 80v, step 3): the ranges, the companies\' halls over the stables, the novices\' court, the refectory block, the utse, the inner ward\'s buildings; towers, gatehouses and the chapel solid'};};
  return[items(TP_OUTER,TP_IXKEY.outer,TP_PLAN.utse),items(TP_INNER,TP_IXKEY.inner,null)];}
 /* the set, on a page that has the interiors core (KratorInteriors: Xanadu's 69d bundle, on with ?interiors=1 or targets/house/89xs);
