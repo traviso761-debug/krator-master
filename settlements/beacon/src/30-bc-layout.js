@@ -9,7 +9,9 @@
    Frame: u runs SOUTH along the shoulder's axis (the saddle and the road on the left of a sheet, the knoll, the fort and
    the Rift on the right), v EAST (up a sheet), y up from the knoll's crown (863 m on the scale model). Metres. The
    origin is the lamp: the keep's place of the fort asset (kits/xanadu XFORT, size 'watch'), whose plan is copied below as
-   a snapshot (fort x is v; fort z, +z the front toward the approach, is -u - 6.6). A box is [u0, u1, v0, v1].
+   a snapshot. The fort is placed turned half round (ry = pi, as Strongwall's), so its front (+z, the gate) faces north:
+   a plan point (x, z) is v = -x, u = -z - 6.6 (test-beacon.js checks the snapshot against XFORT.plan). A box is [u0, u1, v0, v1].
+   The page's x is v and its z is u (x east, z south, metres from the pin sbeacon00001).
    No THREE, no DOM: read by layout_dump.js (the sheets) and test-beacon.js (the rules, 31-bc-rules.js). */
 const BEACON_LAYOUT = (function () {
   'use strict';
@@ -18,8 +20,10 @@ const BEACON_LAYOUT = (function () {
     note: 'the east shoulder of the tune pin (846,1540, the ravine head, 14 km west): the owner, 2026-11-16. The pin moves through the scale-model session (B0)'
   };
 
-  /* the ground along the axis (u, y), the knoll's crown at 0: *assumed* until the region is cut at 1:1 */
-  const ground = [[-560, 34], [-400, 14], [-250, -5], [-200, -9], [-130, -12], [-70, -12], [-40, -2], [-32, -1], [16, 0], [30, -6], [60, -30], [120, -66], [240, -150]];
+  /* the house's levels along the axis (u, y), the knoll's crown at 0 (the page levels the model to them over the house's lot):
+     the precinct flat on the saddle 12 m below the crown, the lamp ward rising to the fort's gate, the fort flat on the crown.
+     Beyond the lot the page draws the model; these outer points are only the section's. *assumed* until the region is cut */
+  const ground = [[-560, 34], [-400, 14], [-262, -8], [-246, -12], [-68, -12], [-33, 0], [16, 0], [30, -6], [60, -30], [120, -66], [240, -150]];
 
   /* the fort asset's watch fort (XFORT.plan({size:'watch'}), 2026-11-16, uncommitted on claude/strongwall-plan-c1ee33),
      in this frame: its ward, towers (centre, side), gate */
@@ -96,12 +100,12 @@ const BEACON_LAYOUT = (function () {
     P(24, 'workshop', 'Keepers\' Workshop', 'workshop', 'lampward', [-60, -46, 8, 22], { decor: 1, note: 'the lamp\'s spares, the lens bench, the engines mended' }),
     P(25, 'chorten', 'Chorten of the Keepers', 'chorten', 'lampward', [-57, -47, 25, 35], { circ: true, decor: 3, note: 'the order\'s dead keepers of the light' }),
     /* ---- the fort (the Sultan's; the fort asset's watch plan) */
-    P(30, 'plinth', 'The Lamp Plinth (in the keep\'s place)', 'plinth', 'fort', [-6, 6, -6, 6], { storeys: 4, decor: 3, gold: 'chapel', sheets: ['B1', 'P'], h: 18, note: 'the keep\'s battered footing, 18 m: the switch room, the signal room, the Lamp Watch, the Chapel of the Beacon (gilt); the lamp head on its roof (sheet P)' }),
-    P(31, 'barracks', 'Barracks', 'barracks', 'fort', [-21.6, 4.4, 17.6, 25.6], { storeys: 2, decor: 1, sleeps: { garrison: 120 }, note: 'the fort asset\'s range: the Sultan\'s watch of the Marches, ten hired musketeers among them' }),
-    P(32, 'stables', 'Stables', 'stable', 'fort', [-19.6, -1.6, -25.6, -18.6], { decor: 0, sleeps: { fortfolk: 30 }, note: 'the garrison\'s horses; the grooms, cooks and smith in its loft and the gate rooms' }),
-    P(33, 'magazine', 'Magazine', 'magazine', 'fort', [6.5, 11.5, -25.1, -19.1], { decor: 0 }),
-    P(34, 'fortgranary', 'Fort Granary', 'store', 'fort', [6.5, 11.5, -16.6, -10.6], { decor: 0 }),
-    P(35, 'fortcistern', 'Fort Cistern', 'cistern', 'fort', [-10, -8, -1, 1], { decor: 0 }),
+    P(30, 'plinth', 'The Lamp Plinth (in the keep\'s place)', 'plinth', 'fort', [-6, 6, -6, 6], { storeys: 4, decor: 3, gold: 'chapel', sheets: ['B1', 'P'], h: 18, xfort: 'keep', note: 'the keep\'s battered footing, 18 m: the switch room, the signal room, the Lamp Watch, the Chapel of the Beacon (gilt); the lamp head on its roof (sheet P)' }),
+    P(31, 'barracks', 'Barracks', 'barracks', 'fort', [-21.6, 4.4, -25.6, -17.6], { storeys: 2, decor: 1, sleeps: { garrison: 120 }, xfort: 'barracks', note: 'the fort asset\'s range: the Sultan\'s watch of the Marches, ten hired musketeers among them' }),
+    P(32, 'stables', 'Stables', 'stable', 'fort', [-19.6, -1.6, 18.6, 25.6], { decor: 0, sleeps: { fortfolk: 30 }, xfort: 'stables', note: 'the garrison\'s horses; the grooms, cooks and smith in its loft and the gate rooms' }),
+    P(33, 'magazine', 'Magazine', 'magazine', 'fort', [6.5, 11.5, 19.1, 25.1], { decor: 0, xfort: 'magazine' }),
+    P(34, 'fortgranary', 'Fort Granary', 'store', 'fort', [6.5, 11.5, 10.6, 16.6], { decor: 0, xfort: 'granary' }),
+    P(35, 'fortcistern', 'Fort Cistern', 'cistern', 'fort', [-10, -8, -1, 1], { decor: 0, xfort: 'cistern' }),
     P(36, 'pavilion', 'Gilt Pavilion over the fort\'s gate', 'pavilion', 'fort', [-29, -26, -3, 3], { level: 1, decor: 3, gold: 'pavilion', note: 'the forts\' gold (the owner, 2026-11-16): the gate pavilion and the chapel, nothing else' }),
     /* ---- outside: the shoulder (sheet T0) */
     P(40, 'yard', 'Carters\' Yard and Stables', 'caravanserai', 'site', [-310, -256, -70, -10], { decor: 0, sheets: ['T0'], note: 'the oil carts from the field (twice a year), the grain trains from Erehwon, the guests\' beasts' }),
@@ -149,6 +153,17 @@ const BEACON_LAYOUT = (function () {
         note: 'the owner, 2026-11-16: "Rim Post relay" (the knoll restored in full). On the summit of Erewhon lake\'s middle volcano, 17 km north-north-east of the lamp: a watch post with a mirror and a shuttered lamp, two keepers on the Lamp Watch\'s rota. If the volcano is given a vent, its flank at 857,1535 sees the lamp +17 and the Eye +12' }]
   };
 
+  /* what the page draws that the parts' boxes do not say (the build's step 0, 2026-11-23): the plinth in the keep's place
+     (the keep's footing, its storeys and the gilt chapel on top), the lamp's mount, the stand-in lamp head (kits/ancients'
+     anc_beacon_lamp is owed: B5), the range storey, and the dress (the Qiblai kit's gold spoke, QSPOKE[2]) */
+  const draw = {
+    storey: 4.2,
+    plinth: { box: [-6, 6, -6, 6], h: 18, storeys: [4.5, 4.5, 4.5], chapel: 4.5, batter: 0.06, finial: 2.2 },
+    mount: { ring: 2.6, h: 1.2, yoke: 2.8 },
+    head: { standIn: true, note: 'a white-metal drum on a yoke, the glazed face south: the stand-in until kits/ancients builds anc_beacon_lamp (B5)' },
+    spoke: 2, precinctWall: { h: 6, t: 1.6 }, joinWall: { h: 6, t: 2 }
+  };
+
   /* the power, from the tune (core/region/data/xan-tune.js: T.oil.kgYr 400,000, licence 0.2, T.lit['march.e'] 0.02,
      T.chain.dynamo 3 kWh a kg) */
   const power = { oilKgYr: 400000 * 0.2 * 0.02, kWhPerKg: 3 };
@@ -157,6 +172,6 @@ const BEACON_LAYOUT = (function () {
   const census = { prismarch: 12, chapter: 150, school: 36, novices: 60, lay: 42, garrison: 120, fortfolk: 30 };
   const orderGroups = ['prismarch', 'chapter', 'school', 'novices', 'lay'], fortGroups = ['garrison', 'fortfolk'];
 
-  return { frame, ground, fort, zones, walls, gates, parts, ways, cable, lamp, power, census, orderGroups, fortGroups };
+  return { frame, ground, fort, zones, walls, gates, parts, ways, cable, lamp, draw, power, census, orderGroups, fortGroups };
 })();
 if (typeof module !== 'undefined') module.exports = BEACON_LAYOUT;

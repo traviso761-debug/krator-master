@@ -1,0 +1,43 @@
+{
+ "targets": {
+  "house": "beacon.html"
+ },
+ "core": {
+  "house": ["sched"]
+ },
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "external": [
+  "settlements/beacon/gen/69wb-bc-ground.js",
+  "kits/xanadu/src/80f-xa-fort-data.js",
+  "kits/xanadu/src/80g-xa-fort.js",
+  "core/terrain/37c-core-rubble.js",
+  "core/ruins/20-core-ruins.js",
+  "core/ruins/21-core-ruins-host.js"
+ ],
+ "pack": "qiblai",
+ "packSide": true,
+ "packFrom": "kits/qiblai",
+ "deterministic": [
+  "69wb-bc-ground.js",
+  "80f-xa-fort-data.js",
+  "37c-core-rubble.js",
+  "20-core-ruins.js",
+  "21-core-ruins-host.js",
+  "20-core-sched.js",
+  "30-bc-layout.js",
+  "31-bc-rules.js",
+  "40-bc-lamp.js",
+  "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89q5f-qb-furnish.js",
+  "89q5s-qb-shells.js",
+  "89z-rows.js",
+  "89zs-bc-site.js",
+  "90q-bc-world.js",
+  "91z-views.js"
+ ]
+}
