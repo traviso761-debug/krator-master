@@ -993,8 +993,8 @@
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
   "kits/xanadu/dist/xanadu.html": {
-   "bytes": 1248203,
-   "sha256": "98d2220300382dab318fa214ad1d8421f97d316c417587f46acd2b671fc3c863"
+   "bytes": 1269122,
+   "sha256": "2b375521ccf4511954c686bfdb11381fa84acab3b3a52a16513a1a4518771098"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
@@ -1285,8 +1285,8 @@
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"
   },
   "settlements/strongwall/dist/strongwall.html": {
-   "bytes": 8826373,
-   "sha256": "d01c347e5d72b2b73be0ebef3a02ba2284a82f5fbf6f39da7d073959903479bd"
+   "bytes": 8840251,
+   "sha256": "af3b700afb5bf570277f53de21d6114f6a113050a23c0be08a7da069de0c56b7"
   },
   "settlements/tempest/dist/tempest-states.html": {
    "bytes": 9071348,
