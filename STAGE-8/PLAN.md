@@ -20,6 +20,28 @@ to main without the owner's word.
 
 ---
 
+## 0. The owner's answers (2026-11-23, one by one)
+
+Taken as recommended: D1, D2, D3, D4, D5, D6, D9, D10, D11, D12, D14, D16, D18, D19, D20, D21, D23, D25, D28, D29 (both parts),
+D32. Where the answer differs from the recommendation, this plan now does what the owner chose:
+
+| # | The owner's answer | What it adds to Stage 8 |
+|---|---|---|
+| D7 | **Hook and the SE wall in** (review-round-3 and dreamy-davinci stay out) | P7c: merge `claude/hook-p1` (Hook P1-P3) and `origin/claude/seouterwall-s1` before Stage 8; Hook's KLAND reconciled with `core/world/41-world-fields.js` before B7's edits to it |
+| D8 | **Wire the multi-kit host now, in every core/city settlement; fix the alleys** | B7b: `core/kits/10-core-kits.js`, `core/city/42-city-multikit.js`, `53-city-host-multikit.js`, `core/region/47s-region-styles.js` into every core/city settlement's `CITY_JS`/`CITY_DATA_JS`/`REGION_JS`; `tools/kit_pack.py --sidecars`; core/city's step-12 alley graze fixed (S3-86a, 47 commands; the owner's word covers core/city's files) |
+| D13 | **Fold every kit's strata recipes** into core | B3: arch, compasshills, doubledelta, drownlands, cut and Opal Valley's `KSTRATA.add` recipes into `35-core-strata.js` `RECIPES`; each kit's load-time add dropped |
+| D15 | **Draw the landforms at 1:1** | B7: `pancake_dome`, `secondary_crater_bay` and the SE Tharn crater as kinds in `core/world/41l-world-landforms.js` (KINDS, the draw, a node test); the regions that hold them re-bake in Phase C |
+| D17 | **Raise the Xanadu sheet's budget to 7 M** | B14: the sheet's `BUDGETS.json` triangle budget to 7 M with a why |
+| D22 | **Tungang's `f_wood` stays `wood.carved`** | nothing (S3-71 closed as intended) |
+| D24 | **Yuni's doors open to 1.75 rad** | B14: Yuni's door swing 1.4 -> 1.75 (`settlements/yuni/src/76-doors.js`; Locus, Mungo and Verge's YKIT read it) |
+| D26 | **WebGL context-loss recovery in Stage 8** | B7: a `webglcontextlost`/`webglcontextrestored` handler in core/host (388 commands): prevent default, pause the loop, on restore rebuild the renderer's programs and textures (S3-76a) |
+| D27 | **Both passes**: fungoid and arms | B14: the fungoid pass on BIO.fung, and the arms: `'arms'` in each garrison build's `FURN_CULTURES`, military rooms in `kits/interiors/sets/highlands.js`, `iziz.js`, `zeijani.js`, the Iziz palace, `kits/eternian/src/61-et-defence.js` (O5) |
+| D30 | **Fix the small known failures** | B14: Locus's `one-key-map` (the small fix that exists), the golden files (`core/terrain/test-slab.js`, `test-lava.js`, `test-scarp.js` after reading each diff; `core/water/test-gaps.js` "neutral by default"); carry the rest of section 5 |
+| D31 | **The garment branch's 112 outfit pieces are published: use them** | Phase C step 20: pull the published pieces before `tools/build.py core/charactermodels`, so Longsong's "people dressed" check can pass |
+| Q5 | **World-tile streams on** the relief regions | step 16: `relief.world_tiles: true` and `bake_streams.py <r> --world-tiles` on pinnacle, oidong-highrift, xanadu-oidong-highrift |
+
+---
+
 ## 1. Decisions the owner makes before Stage 8 starts
 
 Each has a recommendation; a "yes to the recommendations" settles all of them. They are grouped by how much they change the plan.
@@ -81,6 +103,7 @@ Each has a recommendation; a "yes to the recommendations" settles all of them. T
 | P6 | XS0's files only from `claude/xs0-measure-local` 02716be9b (`settlements/xanadu/XS0-MEASURE.md`, its `.json`, `xs0/`) | a path checkout, not a merge |
 | P7 | **The Xanadu settlement and monastery work in flight** (the owner, 2026-11-23: "don't forget ... a few things are in flight"), each at its tip when its session reports done: `claude/xanadu-plans-ad6ef4` (c03333612 at the survey, 18 new: the lake towns A1-A5 and A12 with Māuṭh, Ōlḍ-Thalaba, Ḍāiyar, Qōqō, Nēṭ, Malbari, Hāibh, Erehwon's south-east and west rounds, Wesṭ-Āil, Wesṭ-Rōḍ, Rim-Phārm, the Qol bridge L6; it carries P3, XS1 and A1 e15d66e4f, so it replaces the separate A1 merge); `claude/beacon-monastery-d509f5` (eeece0db5, 17: the Beacon P0-P6, the beacon fort `beacon:'ancient'`, `anc_beacon_lamp`, the Chapel); `claude/tempest-blueprint-139453` (edb860e31, 11: the House of the Tempest steps 0-4c); `claude/strongwall-plan-c1ee33` a7c180af3 (the kit pieces both use); `claude/openworld-sites-24defd` 8d834cac1; `claude/flashing-eye-b4a480` and Lightwall-on-core (`claude/gallant-saha-9b8a59`) once they commit | xanadu-plans adds `--origin` to `extract_region.py`/`cut_site.py`: union with the stack's flags. The lake towns re-bake on the new ground in Phase C (`fit_lake_town.py`) |
 | P7b | **Eight more branches** (the owner, 2026-11-23: "Yes, all eight"): `claude/ancientsvalley-7f521c` 824f451fb and `claude/mystifying-wescoff-d88527` aee00660b (the climbable towers; contains the former), `claude/sim-s4-s7-fdaeba` b9dc01f11 (Pinnacle Rock on the sim), `claude/ancient-network-9cc3e7` 76e2f8539, `claude/ancient-transit-2600a6` ffacfbe74, `claude/nice-wing-075b3c` 7e6ecb822 (Parabola), `claude/agitated-meitner-15ed1a` 865301d3d (an interiors fix), `claude/gifted-faraday-7125ed` d9c56527a (the bench landform; its map edit is in P0) | the sim branch touches core/simulation: Voth's stocks proof, `test-sim.js` and the baseline after it. Ancient's Valley S1 still waits for the owner's look |
+| P7c | **Hook and the SE outer wall** (D7): `claude/hook-p1` (Hook P1-P3) and `origin/claude/seouterwall-s1` | Hook's KLAND lifts the land rule out of `core/world/41-world-fields.js`: reconcile it with the stack's 41 first; the SE wall brings its own katabatic file `89-atmos-fx-gale.js` |
 | P8 | **The region-cut pass** on the merged line with the stack's tools: `extract_region.py --relief --smooth` (pinnacle, oidong-highrift, xanadu-oidong-highrift per D3), the xanadu-oidong-highrift recut (lf_pleasure_dome_isle, stearscamp01 with the High Rift mask at 879,1635, sdevcamp0001, xanaduspill, the gorge corridor), D2's re-anchors if taken | the cuts Stage 8's Phase C bakes on |
 | P9 | **Tool fixes worth making first** (A Q10; C section 3): `write_gen()` under `--list-sources` too (so `dep_graph`, `lfs_needs` and test_all step 4 work in a fresh checkout); `extract_region.py --relief` keeping `micro`/`world_tiles` from the `SITES.json` row (A C5); `test_all.extra_builds()` taking the nested builds `--all` skips; `bake_sites.py` reading `kits/xanadu/xanadu.py` FILES, not every `src/*.js` (S3-43); `bake_towns.py` hashing inputs plus a `BAKE_VERSION` (S3-A1a); the tools and tests bugs of C section 3 (31), so the rebuild's checks are honest | each its own small commit, no page moves |
 
@@ -277,6 +300,9 @@ Codex resolves hook commands from the repo root). Each in its build's turn of Ph
 
 ## 5. Known failures to carry, not fix (D30; D's list)
 
+The owner (D30): fix the small ones; Locus's `one-key-map` and the golden-file tests (`test-slab`, `test-lava`, `test-scarp`,
+`test-gaps`) are fixed in B14, so they drop off this list. The rest are carried:
+
 Voth city's embassies and Arena flight; Longsong's draw-call OVER and stale interiors bake; the Xanadu sheet's triangle budget and
 Iziz Overview's 923 draw calls (warnings); Dalab's and crater-drylands' `instance-cap`; Mav's Refuge `walk-and-reach`; Ys's conch
 house hall spots; Locus's `one-key-map` (unless taken); Ancient's Valley's shell bake on software GL; the isle demo on SwiftShader
@@ -287,8 +313,8 @@ demo's `hamlet-clay-k` shipping nothing by sea (an economy item); `test-east-rif
 
 ## 6. Deferred (not Stage 8)
 
-The graphics-stack upgrades if D1 says before; the 51-settlement pass (D2); the economy fixes and data (D6, D25); core/city's
-alleys and the multi-kit wiring (D8); WebGL context loss (D26); Hook and review round 3 (D7); Xanadu in Godot XP1-XP6 and the
+The graphics-stack upgrades (their own sessions before Stage 8: D1); the 51-settlement pass (D2); the economy fixes and data (D6,
+D25); review round 3 and dreamy-davinci (D7); Xanadu in Godot XP1-XP6 and the
 Xanadu graphics expansion (after Stage 8 is green); C section 7's 26 big items (far-river LOD, KRAND's hash, the pueblo hatches,
 the engine's two-renderer dispose, the Line's car doors, Tungang's round walls, fauna rigs in Godot, Pinnacle's recut stall,
 Strongbow's walk gaps, garments ...); the exports owed outside Stage 8 (loj-twenny, Tungang T10, Qiblai Q7g, thalaba, blakhed,
@@ -296,5 +322,5 @@ azure-dream AD8, viridian V8, jimjam P5, shumar, yeti Y7, coyote C9, line L6, ou
 
 ## 7. Open questions left after D1-D32
 
-- Q5: world-tile streams on the relief regions, and the T2 residual rasters (did T2 pass? `STAGE-2-TERRAIN-REPORT.md` on the stack).
+- Q5 is answered (world tiles on); the T2 residual rasters still depend on whether T2 passed (`STAGE-2-TERRAIN-REPORT.md` on the stack): the session reads it.
 - C section 8's 29 "cannot tell" items need a built page or a GPU run: check them in Phase F's verify, not before.
