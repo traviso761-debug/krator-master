@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 9 prompts** (2026-11-22: +3, Xanadu's lake towns and mines, `stone.ghat.wet`, `ground.sherds`, `ground.tailings.ore`, section 59. 2026-11-17: +2, the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 58. 2026-11-17: +1, Kirstabal's `wall.slate.coursed`, section 57. 2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
+**Count: 11 prompts** (2026-11-22: +2, Xanadu on the vertical stack, `ground.paddy.wet`, `tile.dome.bannai`, section 60. 2026-11-22: +3, Xanadu's lake towns and mines, `stone.ghat.wet`, `ground.sherds`, `ground.tailings.ore`, section 59. 2026-11-17: +2, the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 58. 2026-11-17: +1, Kirstabal's `wall.slate.coursed`, section 57. 2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
 owner's Codex batches delivered the rest: 22 new sets on 2026-11-16 (`PLAN.md`, "Delivered 2026-11-16"), and, merged here the same day
 ("keep the installed 2026-11-12 takes, merge them here"), the 2026-11-12 batch's 63 sets from `claude/textures-2026-11-12`, whose
 entries are in `PROMPTS-archived.md`; every entry whose set is now in the library was taken off this list. None is wired yet: each
@@ -529,6 +529,25 @@ Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat
 is `ground.fellfield.fines` tinted):
 ```
 Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: mine tailings and crushed waste rock dumped from a hard-rock mine, angular grey and blue-grey broken rock from fist-sized lumps down to coarse sand and fine grey powder, streaked with rusty orange and ochre iron staining and a few pale quartz fragments, small patches of fine wet grey silt where water has run, no plants. Neutral greys with rust streaks, matte, dusty.
+```
+
+## 60. Xanadu on the vertical stack (`settlements/xanadu/STACK-PLAN.md`, 2026-11-22)
+
+Xanadu's own S4 ground-layer set for Godot (the owner, 2026-11-22: "Xanadu's own layer set") and the stack's glazed-surface
+case (M1-M2). The rest of the set is in the library (`ground.grass.lush`, `ground.terrace.field`, `ground.redsoil`,
+`ground.shingle`, `rock.tuff`) or owed in section 59 (`stone.ghat.wet`). They land in the library in today's packing;
+`godot/tools/pack_ground_layers.py`'s `xanadu` set and `kits/xanadu/materials.json` take them. **2 prompts.**
+
+`ground.paddy.wet` (S4 layer 3: the Vale's rice paddies and the lake's flooded margins; 4 m a tile; the stand-in is
+`ground.brown_mud_02`):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no reflections of sky or objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the soft wet grey-brown mud of a flooded rice paddy after the harvest, a few centimetres of muddy water standing in shallow puddles between low smooth mud ridges, rows of short cut rice stubble poking up in loose lines, scattered straw, faint footprints and the pocked marks of rain, small patches of green algae scum. Muted earthy browns and olive greys, damp but not glossy.
+```
+
+`tile.dome.bannai` (the domes' and drums' glazed brick, laid in banna'i pattern: the Pleasure Dome, the temples' drums; 2 m a
+tile; full colour; the glazed class, so its normals are packed at 8 bits on the web):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Persian banna'i wall of small fired bricks laid in running bond with thin pale mortar joints, about a third of the bricks glazed in deep turquoise and cobalt blue and the rest left plain warm buff, the glazed bricks set to form a repeating angular geometric pattern of interlocking squares and stepped diamonds; the glaze slightly uneven with fine crazing and a few chipped corners showing the buff body beneath, the plain bricks a little rough and sandy. Full colour: turquoise #2aa3a0, cobalt #1f3f8a, buff brick #c9a77a, mortar #d8cdb8.
 ```
 
 ## Gaps with no prompt yet

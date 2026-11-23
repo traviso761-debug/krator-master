@@ -98,6 +98,9 @@ as sheets).
 
 ### Phase B: the vertical stack, extended with Xanadu (section 3)
 
+**Superseded 2026-11-22 by `STACK-PLAN.md`** (the owner: "vertical stack is done"; the stack's section 12c puts Xanadu after
+Stage 8): XS0-XS2 before Stage 8 (data only), XP1-XP6 after it. The rows below are kept as first written.
+
 | # | Session | Brief | Waits on | Est. |
 |---|---|---|---|---|
 | **B0** | Sync | A test branch joining `claude/vertical-stack` and the integration line; the three Xanadu region pages the stack rebuilt (its stage 3) reconciled with phase A's; the stack's tests and the Xanadu tests green on it; nothing pushed to `main` | A; the owner's word on the relief bias (section 3.3) | 1 |
