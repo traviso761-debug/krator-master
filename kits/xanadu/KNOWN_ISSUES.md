@@ -103,6 +103,14 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
   carriage and a wheel seated on the ground (a ruined fort's guns were carried off); `xa_fort_post` takes `o.fort` (the fort it
   answers to) and `o.rota` (4 by default), on its group (`userData.post`) and in `window._xaPosts` with its place (not on its core/tags volume: the vocabulary has no such key). The interior set
   is not planned for a custom outline, and a custom fort's lot (the def's `w`, `d`) is still the fixed plan's.
+- **The beacon fort** (`beacon:'ancient'`, 2026-11-23, the Beacon's B6; `xa_fort_beacon` is the watch fort with it, or a page passes
+  it to `xa_fort_watch`): the Ancient lamp's plinth in the keep's place (three white storeys, the yellow Chapel of the Beacon with
+  gilt corners and finial, the slewing ring and yoke, the lamp's centre at 22 m: `window._xaBeacons`), the keep's fire basket gone,
+  a stone cable cover in the main gate's passage; ruined, the plinth is the ruined keep and the lamp head lies thrown down by it.
+  Not here: **the lamp head itself** (kits/ancients' `anc_beacon_lamp`, B5; the Beacon's page draws a stand-in at
+  `window._xaBeacons`' point, the kit sheet none), **the generator house** (outside the fort, the Beacon's page), a damaged
+  plinth's dark lamp and cut cable (the page's), and **the plinth's rooms** (the Beacon's sheet P: the switch room, the signal room,
+  the Lamp Watch, the chapel): a beacon fort gets no interiors yet, its keep's item being the three-storey keep's.
 - **The Marches' outside works** (the wayside shrine, the stable yard's cistern and trough, the road: `settlements/marches`
   `src/80m-mr-works.js`, keys `mr_*`) are the kit's to take when that build is merged; they are not here yet.
 - **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its
