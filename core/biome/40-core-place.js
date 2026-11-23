@@ -21,10 +21,13 @@ BIO.stand=function(x,z,n,off,scale,seed){return rng()<(off==null?.26:off)?Math.f
 // The grid applies it to every pass: always in the cell form; in the numeric form when the page asks (BIO.init({cliffGate:
 // true})) or the pass does (opt.cliff 'gate'). opt.cliff true: the pass grows ON faces, never gated. No random draws.
 BIO.CLIFF={slope:[1,1.5],rock:[.3,.6],e:2,full:.99};
-BIO.slopeAt=function(x,z){const h=BIO.host;if(h&&h.slope)return h.slope(x,z);const e=BIO.CLIFF.e;
- return Math.hypot(BIO.placeH(x+e,z)-BIO.placeH(x-e,z),BIO.placeH(x,z+e)-BIO.placeH(x,z-e))/(2*e);};
-BIO.cliff=function(x,z){const h=BIO.host;if(h&&h.cliff)return clamp(h.cliff(x,z),0,1);const C=BIO.CLIFF;
- const s=smooth(C.slope[0],C.slope[1],BIO.slopeAt(x,z));if(s<=0)return 0;
+// drawn (B5 = TODO T22, 2026-11-23): the check's slope from the ground AS DRAWN (BIO.drawnH, core/drawn) when the page registers
+// it, so a step the definition calls gentle but its coarse triangles draw as a face is caught. Placement never passes it.
+BIO.slopeAt=function(x,z,drawn){const h=BIO.host;if(h&&h.slope&&!(drawn&&BIO.drawnOn()))return h.slope(x,z);const e=BIO.CLIFF.e;
+ const H=drawn&&BIO.drawnOn()?(a,b)=>BIO.drawnH(a,b,BIO.placeH):BIO.placeH;
+ return Math.hypot(H(x+e,z)-H(x-e,z),H(x,z+e)-H(x,z-e))/(2*e);};
+BIO.cliff=function(x,z,drawn){const h=BIO.host;if(h&&h.cliff&&!(drawn&&BIO.drawnOn()))return clamp(h.cliff(x,z),0,1);const C=BIO.CLIFF;
+ const s=smooth(C.slope[0],C.slope[1],BIO.slopeAt(x,z,drawn));if(s<=0)return 0;
  return s*(BIO.hasField('rock')?smooth(C.rock[0],C.rock[1],BIO.field('rock',x,z)):1);};
 BIO.cliffW=function(x,z){const c=BIO.cliff(x,z);return c>=BIO.CLIFF.full?0:1-c;};
 function cliffOld(opt){return opt.cliff!==true&&(opt.cliff==='gate'||!!(BIO.host&&BIO.host.cliffGate));}
@@ -36,16 +39,17 @@ function cliffOld(opt){return opt.cliff!==true&&(opt.cliff==='gate'||!!(BIO.host
 BIO.cliffItem=function(names,kit){const R=BIO.kits[kit==null?BIO.kitName||'':kit];if(!R)return;
  (Array.isArray(names)?names:[names]).forEach(n=>{if(R.defs[n])R.defs[n].cliff=true;else BIO.err('BIO.cliffItem: no item '+n);});};
 BIO.cliffCheck=function(opt){opt=opt||{};const near=opt.near==null?1.5:opt.near,full=BIO.CLIFF.full,bad=new Map();let checked=0;
- const on=(x,y,z)=>Math.abs(y-BIO.terrainH(x,z))<=near&&BIO.cliff(x,z)>=full;
+ const dr=BIO.drawnOn(),gH=(x,z)=>BIO.drawnH(x,z,BIO.terrainH);   /* B5: rooted on, and steep as, the ground drawn (terrainH without core/drawn) */
+ const on=(x,y,z)=>Math.abs(y-gH(x,z))<=near&&BIO.cliff(x,z,dr)>=full;
  const hit=(kit,item,x,y,z)=>{const k=kit+'|'+item;let b=bad.get(k);if(!b){b={kit,item,n:0,at:[x,y,z]};bad.set(k,b);}b.n++;};
  for(const m of BIO.baked){if(!m.isInstancedMesh||!m.name||m.name.indexOf('biome:')!==0)continue;
   const kit=m.userData.kit||'',item=m.name.slice(6),R=BIO.kits[kit],def=R&&R.defs[item];if(!def||def.cliff)continue;
   const A=m.instanceMatrix.array;for(let i=0;i<m.count;i++){const x=A[i*16+12],y=A[i*16+13],z=A[i*16+14];checked++;if(on(x,y,z))hit(kit,item,x,y,z);}}
- for(const p of opt.points||[]){checked++;const y=p.y==null?BIO.terrainH(p.x,p.z):p.y;if(on(p.x,y,p.z))hit('points',p.label||'point',p.x,y,p.z);}
+ for(const p of opt.points||[]){checked++;const y=p.y==null?gH(p.x,p.z):p.y;if(on(p.x,y,p.z))hit('points',p.label||'point',p.x,y,p.z);}
  let control=null;const o=BIO.center(),R=opt.R||BIO.radii().far,st=opt.step||Math.max(8,R/150);let best=0,bx=0,bz=0;
- for(let z=o[1]-R;z<=o[1]+R;z+=st)for(let x=o[0]-R;x<=o[0]+R;x+=st){const c=BIO.cliff(x,z);if(c>best){best=c;bx=x;bz=z;}}
- if(best>=full)control={at:[bx,BIO.terrainH(bx,bz),bz],flagged:on(bx,BIO.terrainH(bx,bz),bz)};
- const L=[...bad.values()];return {ok:!L.length&&(!control||control.flagged),bad:L,checked,control};};
+ for(let z=o[1]-R;z<=o[1]+R;z+=st)for(let x=o[0]-R;x<=o[0]+R;x+=st){const c=BIO.cliff(x,z,dr);if(c>best){best=c;bx=x;bz=z;}}
+ if(best>=full)control={at:[bx,gH(bx,bz),bz],flagged:on(bx,gH(bx,bz),bz)};
+ const L=[...bad.values()];return {ok:!L.length&&(!control||control.flagged),bad:L,checked,control,drawn:dr};};
 
 // A JITTERED GRID over a disc [rIn,rOut] round the origin: one candidate per
 // cell, jittered, tested against the host mask, an fbm patch mask (the floor
