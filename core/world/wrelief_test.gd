@@ -83,6 +83,17 @@ func snapshot() -> Dictionary:
 		G.erode.append(WRelief.erode(500.0, x, z, -0.15, 0.05, S, 800.0, 0.0))
 		G.peaks.append(WRelief.peaks(0.0, x, z, S, 1200.0, 0.8, 0.0))
 		G.caprock.append(WRelief.caprock(x, z, S, 600.0))
+	# WRELIEF v2 (alpine=2): rotated-gradient peaks and steep-wall crags at the same points
+	WRelief.init(2000000.0, 3000000.0, 7, 2)
+	var SA := {"peak": 1.0, "rock": 0.5}
+	G.peaks2 = []
+	G.crags2 = []
+	for k in 300:
+		var x := float((k * 7919) % 40000)
+		var z := float((k * 104729) % 40000)
+		G.peaks2.append(WRelief.peaks(0.0, x, z, SA, 1200.0, 0.8, 0.0))
+		G.crags2.append(WRelief.crags(500.0, x, z, -0.75, 0.25, SA, 1400.0, 0.0))
+	WRelief.init(2000000.0, 3000000.0, 7)
 	# WMICRO (PLAN-MICRO.md): the hills, the drainage (its height and the slope it leaves) and the grain
 	WMicro.init(2000000.0, 3000000.0, 9)
 	var SM := {"hill": 40.0, "gully": 0.8, "rough": 1.0}
@@ -162,6 +173,17 @@ func snapshot() -> Dictionary:
 	G.land2 = []
 	for B in S2.slice(0, 24):
 		G.land2.append(WLand.apply(ground(B.x, B.z), B.x + B.R * 0.3, B.z, 0))
+	# version 2 alpine & volcanic ridge-crest gendarmes and plugs
+	var ridge_g := func(x: float, z: float) -> float:
+		return 2400.0 - absf(x - 1600.0 * floorf((x + 800.0) / 1600.0)) * 0.35 + 25.0 * KRand.vnoise(x / 2500.0, z / 2500.0, 0.5, 13)
+	WLand.reset()
+	WLand.init({"ox": 0.0, "oz": 0.0, "seed": 81, "version": 2, "ground": ridge_g, "styleName": func(x, _z): return "alpine" if x < 8000 else "volcanic",
+		"overlay": func(_x, _z): return "", "caprock": func(_x, _z): return 0.0, "keep": func(_x, _z): return false, "sites": []})
+	var SA2 := WLand.list(0, 0, 16000, 12000)
+	G.records_alpine2 = SA2.map(func(B): return [B.id, B.name, B.x, B.z, 0.0 if B.get("top") == null else B.top, B.R])
+	G.land_alpine2 = []
+	for B in SA2.slice(0, 20):
+		G.land_alpine2.append(WLand.apply(ridge_g.call(B.x, B.z), B.x + B.R * 0.3, B.z, 0))
 	# a pinned mesa and the master gja, in a region whose box takes the gja in (its middle at local 6000, 6000)
 	WLand.reset()
 	WLand.pin(func(o): return [KStacks.make({"id": "pin:mesa", "kind": "mesa", "x": -4000.0, "z": 9000.0, "y0": o.ground.call(-4000.0, 9000.0) - 5, "seed": 9, "tiers": [{"h": 150.0, "r": 260.0}]})])
@@ -212,5 +234,6 @@ func _init() -> void:
 	print(("PASS  " if caught else "FAIL  ") + "negative: a value nudged by 1e-5 is caught")
 	if not caught:
 		bad += 1
+	WLand.reset()
 	print(("all passed" if bad == 0 else str(bad) + " FAILED") + " (" + str(Time.get_ticks_msec() - t0) + " ms)")
 	quit(0 if bad == 0 else 1)

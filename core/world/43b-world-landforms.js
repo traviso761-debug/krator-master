@@ -42,6 +42,10 @@ L.KINDS={
  korona:  [{kind:'butte',p:.2,cap:.3,h:[60,180],r:[90,260]}],
  highland:[{kind:'tor',p:.3,n:2,H:[6,16],r:[8,20]}],
  karst:   [{kind:'tower',p:.6,n:3,H:[40,135],r:[35,90]}]};
+// version 2 (alpine=2): convex-crest ridge gendarmes, arête fins, volcanic plugs and lava crags (crest: minimum prominence in m over 120 m cross)
+L.KINDS_V2=Object.assign({},L.KINDS,{
+ alpine:  [{kind:'tor',p:.45,n:3,H:[12,34],r:[10,22],crest:6,label:'A ridge gendarme'},{kind:'fin',p:.3,n:2,H:[16,44],r:[8,16],crest:8,label:'An arete crag'}],
+ volcanic:[{kind:'spire',p:.35,n:2,H:[18,50],r:[8,18],crest:6,label:'A volcanic plug'},{kind:'tor',p:.3,n:2,H:[9,24],r:[9,20],crest:5,label:'A lava crag'}]});
 // per overlay (its name, lower case): carving kinds (relief P7). The High Rift's gjar swarm (biomes/highrift/PLAN.md, station 5:
 // "a swarm of narrow en-echelon tension fissures, 1-40 m wide and 2-60 m deep", striking NNE-SSW): up to three a cell, each
 // offset from the last across its strike, as Thingvellir's are
@@ -52,9 +56,9 @@ L.KINDS={
 // cut to a level (310 m under the plateau beside it), not 310 m under whatever ground lies there
 L.FEATURES=[{id:'gja:master',kind:'gja',name:'The master gja of the Singing Gjar',px:[1569,1643],strike:20,len:24000,w:[300,600],d:310}];
 L.OVERLAY={'high rift':[{kind:'fissure',p:.3,n:3,L:[400,2400],w:[2,30],d:[3,50],strike:20,jit:8}]};
-let OX=0,OZ=0,SEED=0,O=null,PINS=[],PINF=[];const CELLS=new Map();
+let OX=0,OZ=0,SEED=0,O=null,PINS=[],PINF=[],V2=false;const CELLS=new Map();
 L.pin=function(f){PINF.push(f);return L;};
-L.init=function(o){O=o;OX=o.ox||0;OZ=o.oz||0;SEED=KRAND.child(o.seed==null?0x4C4E44:o.seed,'landform');CELLS.clear();
+L.init=function(o){O=o;OX=o.ox||0;OZ=o.oz||0;SEED=KRAND.child(o.seed==null?0x4C4E44:o.seed,'landform');L.version=o.version===2?2:1;V2=L.version===2;CELLS.clear();
  PINS=[];for(const f of PINF)for(const B of (typeof f==='function'?f(o):f)||[]){B.pinned=1;PINS.push(B);}
  for(const F of L.FEATURES){const x=F.px[0]*2000-OX,z=F.px[1]*2000-OZ,a=F.strike*Math.PI/180,ux=Math.sin(a),uz=-Math.cos(a),hl=F.len/2;
   if(!o.inside||!o.inside(x,z))continue;   /* placed only in a region that takes it in */
@@ -62,7 +66,7 @@ L.init=function(o){O=o;OX=o.ox||0;OZ=o.oz||0;SEED=KRAND.child(o.seed==null?0x4C4
   let top=-1e9;for(let t=-hl;t<=hl;t+=2000)for(const sd of [-6000,-4000,4000,6000]){const px=x+ux*t-uz*sd,pz=z+uz*t+ux*sd;if(!o.inside||o.inside(px,pz))top=Math.max(top,o.ground(px,pz));}
   PINS.push({id:F.id,kind:F.kind,name:F.name,carve:1,pinned:1,feature:1,x,z,a:[x-ux*hl,z-uz*hl],b:[x+ux*hl,z+uz*hl],w:(F.w[0]+F.w[1])/2,wr:F.w,d:F.d,bed:top-F.d,R:hl+F.w[1]});}
  return L;};
-L.reset=function(){PINS=[];PINF=[];CELLS.clear();O=null;};
+L.reset=function(){PINS=[];PINF=[];CELLS.clear();O=null;V2=false;L.version=1;};
 const u01=(i,j,k,s)=>KRAND.unit(KRAND.hash(SEED,i,j,k*16+s));
 const rng=(a,i,j,k,s)=>a[0]+(a[1]-a[0])*u01(i,j,k,s);
 // a record may stand at (x, z) with radius R: inside the region, kept clear of what keep() names, and of every site
@@ -76,26 +80,27 @@ function footY(x,z,rx,rz){let m=O.ground(x,z);for(let a=0;a<8;a++)for(const k of
 // the records of cell (i, j) (world-absolute: cell i spans OX + i CELL .. OX + (i + 1) CELL in the world's frame, so two
 // regions cut over one place agree): placed once, kept. Positions are the region's (local) metres
 function cellOf(i,j){const key=(i+32768)*65536+(j+32768);let C=CELLS.get(key);if(C)return C;C=[];CELLS.set(key,C);
- const bx=i*CELL-OX,bz=j*CELL-OZ,mx=bx+CELL/2,mz=bz+CELL/2,K=L.KINDS[O.styleName(mx,mz)];
+ const bx=i*CELL-OX,bz=j*CELL-OZ,mx=bx+CELL/2,mz=bz+CELL/2,KT=V2?L.KINDS_V2:L.KINDS,K=KT[O.styleName(mx,mz)];
  fissures(i,j,bx,bz,mx,mz,C);if(!K)return C;
  K.forEach((D,di)=>{const n=D.n==null?1:D.n;
   for(let t=0;t<n;t++){const k=di*8+t;if(u01(i,j,k,0)>=D.p)continue;
    const big=D.kind==='butte'||D.kind==='dome'||D.kind==='tower',r=rng(D.r,i,j,k,1),inset=Math.min(CELL*.45,(big?r*1.6:r*3)+40);
    const x=bx+inset+(CELL-2*inset)*u01(i,j,k,2),z=bz+inset+(CELL-2*inset)*u01(i,j,k,3);
    if(D.cap&&O.caprock(x,z)<D.cap)continue;
+   if(D.crest){const prom=O.ground(x,z)-.25*(O.ground(x+120,z)+O.ground(x-120,z)+O.ground(x,z+120)+O.ground(x,z-120));if(prom<D.crest)continue;}
    if(!free(x,z,big?r*1.4:r*2))continue;
    if(C.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+(big?r*1.4:r*2)+30))continue;   /* a body, or a fissure, already in the cell */
-   const seed=KRAND.hash(SEED,i,j,k*16+9)>>>0,ry=u01(i,j,k,4)*3.14159,id='lf:'+D.kind+':'+i+':'+j+':'+t;let B=null;
-   if(D.kind==='butte'){const e=1+u01(i,j,k,5)*.8,y0=footY(x,z,r/Math.sqrt(e),r*Math.sqrt(e)),h=rng(D.h,i,j,k,6);
+   const seed=KRAND.hash(SEED,i,j,k*16+9)>>>0,ry=u01(i,j,k,4)*3.14159,id='lf:'+D.kind+':'+i+':'+j+':'+t;let B=null,Hm=0;
+   if(D.kind==='butte'){const e=1+u01(i,j,k,5)*.8,y0=footY(x,z,r/Math.sqrt(e),r*Math.sqrt(e)),h=rng(D.h,i,j,k,6);Hm=h;
     B=KSTACKS.make({id,kind:'butte',x,z,y0,seed,lobes:.18,weather:.8,tiers:[{h:h+(O.ground(x,z)-y0),r,e,ry}],shoulder:{h:Math.min(20,h*.15),back:Math.min(18,h*.12),bed:[3,6]}});
     B.name='A butte ('+Math.round(h)+' m)';}
-   else if(D.kind==='dome'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);B=KSTACKS.make({id,kind:'dome',x,z,H:H+(O.ground(x,z)-y0),r,y0,seed,e:1+u01(i,j,k,5)*.5,ry});B.name='An inselberg ('+Math.round(H)+' m)';}
-   else if(D.kind==='tor'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);B=KSTACKS.make({id,kind:'tor',x,z,H:H+(O.ground(x,z)-y0),r,y0,seed});B.name='A kopje ('+Math.round(H)+' m)';}
-   else if(D.kind==='spire'||D.kind==='fin'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);
+   else if(D.kind==='dome'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);Hm=H;B=KSTACKS.make({id,kind:'dome',x,z,H:H+(O.ground(x,z)-y0),r,y0,seed,e:1+u01(i,j,k,5)*.5,ry});B.name='An inselberg ('+Math.round(H)+' m)';}
+   else if(D.kind==='tor'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);Hm=H;B=KSTACKS.make({id,kind:'tor',x,z,H:H+(O.ground(x,z)-y0),r,y0,seed});B.name='A kopje ('+Math.round(H)+' m)';}
+   else if(D.kind==='spire'||D.kind==='fin'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);Hm=H;
     B=KSTACKS.make({id,kind:D.kind,x,z,y0,seed,H:H+(O.ground(x,z)-y0),r,e:D.kind==='fin'?3+u01(i,j,k,5)*2:1+u01(i,j,k,5)*.4,ry,lean:(u01(i,j,k,7)-.5)*.12});
     B.name=(D.kind==='fin'?'A fin (':'A hoodoo (')+Math.round(H)+' m)';}
-   else if(D.kind==='tower'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);B=KSTACKS.tower({id,seed,x,z,H:H+(O.ground(x,z)-y0),R:r,y0});B.name='A karst tower ('+Math.round(H)+' m)';}
-   if(B){B.placed=1;C.push(B);}}});
+   else if(D.kind==='tower'){const H=rng(D.H,i,j,k,6),y0=footY(x,z,r,r);Hm=H;B=KSTACKS.tower({id,seed,x,z,H:H+(O.ground(x,z)-y0),R:r,y0});B.name='A karst tower ('+Math.round(H)+' m)';}
+   if(B){if(D.label)B.name=D.label+' ('+Math.round(Hm)+' m)';B.placed=1;C.push(B);}}});
  return C;}
 // THE FISSURES of cell (i, j): a carving record {kind 'fissure', carve, a, b (its ends), w, d, x, z, R}, en echelon: each next
 // one offset across the strike by 3 to 6 widths and along it by a third of its length

@@ -22,8 +22,8 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 
 // ---------------------------------------------------------------- the frame and the noise
-let OX=0,OZ=0,SEED=0x52454C;
-R.init=function(o){o=o||{};OX=o.ox||0;OZ=o.oz||0;SEED=(o.seed==null?0x52454C:o.seed)>>>0;return R;};
+let OX=0,OZ=0,SEED=0x52454C,V2=false;
+R.init=function(o){o=o||{};OX=o.ox||0;OZ=o.oz||0;SEED=(o.seed==null?0x52454C:o.seed)>>>0;R.version=o.version===2?2:1;V2=R.version===2;return R;};
 const vn=(x,z,s)=>KRAND.vnoise(x,z,.5,s);
 function fbm(x,z,o,s){let a=0,f=1,w=0,t=1;for(let i=0;i<o;i++){a+=vn(x*f,z*f,s+i)*t;w+=t;t*=.5;f*=2.03;}return a/w;}
 
@@ -96,22 +96,46 @@ R.erode=function(h,x,z,gx,gz,S,rel,minWave,G){   /* G: if given, the slope the o
   const k=-a*gul*sn*6.283185307179586/lam;Gx+=k*nx;Gz+=k*nz;}   /* this octave's own slope, for the next to follow */
  if(G){G[0]=Gx;G[1]=Gz;}
  return out;};
-// ---------------------------------------------------------------- S4: peaks (P5)
-// Sharper ridgelines and summits on the high ground: a ridged multifractal (Musgrave: each octave's ridge (1 - |2n - 1|)^2,
-// weighted by the octave before it, so the ridges stay sharp where they cross and smooth out on the slopes between) in
-// four octaves from 1.3 km to 160 m, its domain warped by 700 m (no straight crest), with the mean taken out, so the
-// land is not lifted, only creased. Its weight: the style's `peak` (alpine 1, volcanic .55, highland .45; 0 in the vales,
-// jungles and lowlands), times pk (0..1: how far the land stands over its 3 km neighbourhood, 41's PEAK grid: summits and
-// crests, not valley floors), its depth with the relief (18 % of it, at most 300 m). Value noise and products only: no
-// sin, cos or exp
-const POCT=[1300,650,325,162];const PMEAN=.56;   /* the weighted ridges' mean over their normaliser, measured (test-relief.js) */
+// ---------------------------------------------------------------- S4: peaks (P5) and steep-wall crags (v2)
+// v1: value-noise ridged multifractal in four octaves (1.3 km to 162 m), mean PMEAN subtracted.
+// v2 (alpine=2): Pythagorean-rotated gradient-noise arête multifractal in five octaves (1120 m to 70 m, band-limited at
+// max(64 m, minWave)) with a C1 non-negative knee (no oval collar moat around PEAK edges), plus WRELIEF.crags along steep
+// rocky flanks (strike-parallel rock buttresses and concave couloir chutes, smoothly damped above 54 degrees so 2.5D
+// heightfields never sawtooth on vertical cliffs).
+const POCT=[1300,650,325,162],PMEAN=.56,POCT2=[1120,560,280,140,70];
+function rotG(x,z,lam,s,turns){let rx=x,rz=z;for(let k=0;k<turns;k++){const nx=.8*rx-.6*rz,nz=.6*rx+.8*rz;rx=nx;rz=nz;}return KRAND.gnoise(rx/lam,rz/lam,s>>>0);}
+function kneePos(y,kn){return y>=kn?y:y<=-kn?0:(y+kn)*(y+kn)/(4*kn);}
 R.peaks=function(h,x,z,S,rel,pk,minWave){const w=(S.peak==null?0:S.peak)*pk;if(!(w>.01))return h;
  const amp=w*clamp(rel*.18,0,300);if(amp<1)return h;
+ if(V2){
+  const mw=Math.max(64,minWave==null?0:minWave),X=x+OX,Z=z+OZ;
+  const wx=KRAND.gfbm(X/2400,Z/2400,2,(SEED^0x5061)>>>0)*480,wz=KRAND.gfbm(X/2400+19.3,Z/2400-7.1,2,(SEED^0x5062)>>>0)*480;
+  let sum=0,norm=0,wt=1,a=1;
+  for(let o=0;o<POCT2.length;o++){norm+=a;if(POCT2[o]<mw){a*=.55;continue;}
+   const gn=rotG(X+wx,Z+wz,POCT2[o],(SEED^(0x5100+o))>>>0,o+1),rd=1-Math.sqrt(gn*gn+.012)*1.95,r=rd>0?rd:0;
+   const r2=r*r;sum+=r2*wt*a;wt=clamp(r2*1.9,.22,1);a*=.55;}
+  return h+amp*2.4*kneePos(sum/norm-.18,.04);}
  const X=x+OX,Z=z+OZ,wx=(fbm(X/2600,Z/2600,2,SEED^0x5045)-.5)*700,wz=(fbm(X/2600+19.3,Z/2600-7.1,2,SEED^0x5046)-.5)*700;
  let sum=0,norm=0,wt=1,a=1;
  for(let o=0;o<POCT.length;o++){norm+=a;if(POCT[o]<(minWave==null?0:minWave)){a*=.5;continue;}
   const n=vn((X+wx)/POCT[o],(Z+wz)/POCT[o],SEED^(0x5050+o));let r=1-Math.abs(2*n-1);r*=r;r*=wt;sum+=r*a;wt=clamp(r*2,0,1);a*=.5;}
  return h+amp*2*(sum/norm-PMEAN);};
+
+R.crags=function(h,x,z,gx,gz,S,rel,minWave){
+ if(!V2)return h;
+ const mw=minWave==null?0:minWave;if(mw>=180)return h;
+ const rk=Math.max(S.rock==null?0:S.rock,(S.peak==null?0:S.peak)*.85);if(!(rk>.22))return h;
+ const sl=Math.sqrt(gx*gx+gz*gz),fade=smooth(.38,1.05,sl);if(fade<=0)return h;
+ const ex=sl>1.35?(sl-1.35)/1.1:0,sheer=1/(1+ex*ex),amp=rk*clamp(rel/1800,.25,1.15)*fade*sheer;
+ if(amp<.005)return h;
+ const ax=x+OX,az=z+OZ,nx=-gz/sl,nz=gx/sl,st=ax*nx+az*nz,dp=(ax*gx+az*gz)/sl;
+ const wx=KRAND.gnoise(ax/1400,az/1400,(SEED^0x5211)>>>0)*220,wz=KRAND.gnoise(ax/1400+17.3,az/1400-9.1,(SEED^0x5212)>>>0)*220;
+ const g1=KRAND.gnoise((st+wx*.45)/150,dp/380,(SEED^0x5221)>>>0),r1=Math.max(0,1-Math.sqrt(g1*g1+.015)*1.9);
+ let d=(r1*r1-.22)*48;
+ if(mw<76){const g2=KRAND.gnoise((st-wz*.45)/76,dp/210,(SEED^0x5222)>>>0),r2=Math.max(0,1-Math.sqrt(g2*g2+.02)*1.95);d+=(r2*r2-.22)*20;}
+ const gc=KRAND.gnoise((st+wx*.3)/115+9.4,dp/460,(SEED^0x5223)>>>0),rc=Math.max(0,1-Math.sqrt(gc*gc+.01)*2.4);
+ d-=rc*rc*34;
+ return h+amp*d;};
 
 return R;})();
 if(typeof module!=='undefined')module.exports=WRELIEF;

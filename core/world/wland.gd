@@ -29,6 +29,18 @@ const KINDS := {
 	"korona": [{"kind": "butte", "p": 0.2, "cap": 0.3, "h": [60, 180], "r": [90, 260]}],
 	"highland": [{"kind": "tor", "p": 0.3, "n": 2, "H": [6, 16], "r": [8, 20]}],
 	"karst": [{"kind": "tower", "p": 0.6, "n": 3, "H": [40, 135], "r": [35, 90]}]}
+const KINDS_V2 := {
+	"savanna": [{"kind": "butte", "p": 0.35, "cap": 0.3, "h": [45, 140], "r": [70, 220]}, {"kind": "tor", "p": 0.3, "n": 2, "H": [6, 14], "r": [8, 18]}, {"kind": "dome", "p": 0.12, "H": [40, 120], "r": [90, 240]}],
+	"desert": [{"kind": "butte", "p": 0.3, "cap": 0.3, "h": [40, 150], "r": [60, 200]}, {"kind": "dome", "p": 0.08, "H": [30, 100], "r": [80, 200]}, {"kind": "spire", "p": 0.12, "n": 4, "H": [18, 45], "r": [5, 11]}],
+	"dryland": [{"kind": "tor", "p": 0.25, "n": 2, "H": [5, 12], "r": [7, 15]}, {"kind": "dome", "p": 0.12, "H": [30, 90], "r": [70, 190]}],
+	"badland": [{"kind": "butte", "p": 0.35, "cap": 0.25, "h": [30, 110], "r": [50, 160]}, {"kind": "spire", "p": 0.4, "n": 6, "H": [12, 35], "r": [4, 9]}, {"kind": "fin", "p": 0.15, "n": 2, "H": [15, 40], "r": [8, 16]}],
+	"chasm": [{"kind": "butte", "p": 0.45, "cap": 0.2, "h": [60, 200], "r": [80, 260]}],
+	"steps": [{"kind": "butte", "p": 0.25, "cap": 0.3, "h": [40, 130], "r": [80, 240]}],
+	"korona": [{"kind": "butte", "p": 0.2, "cap": 0.3, "h": [60, 180], "r": [90, 260]}],
+	"highland": [{"kind": "tor", "p": 0.3, "n": 2, "H": [6, 16], "r": [8, 20]}],
+	"karst": [{"kind": "tower", "p": 0.6, "n": 3, "H": [40, 135], "r": [35, 90]}],
+	"alpine": [{"kind": "tor", "p": 0.45, "n": 3, "H": [12, 34], "r": [10, 22], "crest": 6.0, "label": "A ridge gendarme"}, {"kind": "fin", "p": 0.3, "n": 2, "H": [16, 44], "r": [8, 16], "crest": 8.0, "label": "An arete crag"}],
+	"volcanic": [{"kind": "spire", "p": 0.35, "n": 2, "H": [18, 50], "r": [8, 18], "crest": 6.0, "label": "A volcanic plug"}, {"kind": "tor", "p": 0.3, "n": 2, "H": [9, 24], "r": [9, 20], "crest": 5.0, "label": "A lava crag"}]}
 const FEATURES := [{"id": "gja:master", "kind": "gja", "name": "The master gja of the Singing Gjar", "px": [1569, 1643], "strike": 20, "len": 24000, "w": [300, 600], "d": 310}]
 const OVERLAY := {"high rift": [{"kind": "fissure", "p": 0.3, "n": 3, "L": [400, 2400], "w": [2, 30], "d": [3, 50], "strike": 20, "jit": 8}]}
 const COS_T := [1.0, 0.7071, 0.0, -0.7071, -1.0, -0.7071, 0.0, 0.7071]
@@ -41,6 +53,7 @@ static var O = null
 static var PINS := []
 static var PINF := []
 static var CELLS := {}
+static var V2 := false
 
 
 static func _clamp(v: float, a: float, b: float) -> float:
@@ -74,6 +87,7 @@ static func init(o: Dictionary) -> void:
 	OX = float(o.get("ox", 0.0))
 	OZ = float(o.get("oz", 0.0))
 	SEED = KRand.child(0x4C4E44 if o.get("seed") == null else int(o.seed), "landform")
+	V2 = (int(o.get("version", 1)) == 2)
 	CELLS.clear()
 	PINS = []
 	for f in PINF:
@@ -110,6 +124,7 @@ static func reset() -> void:
 	PINF = []
 	CELLS.clear()
 	O = null
+	V2 = false
 
 
 static func _u01(i: int, j: int, k: int, s: int) -> float:
@@ -150,7 +165,8 @@ static func _cell_of(i: int, j: int) -> Array:
 	var bz := j * CELL - OZ
 	var mx := bx + CELL / 2
 	var mz := bz + CELL / 2
-	var K = KINDS.get(O.styleName.call(mx, mz))
+	var KT := KINDS_V2 if V2 else KINDS
+	var K = KT.get(O.styleName.call(mx, mz))
 	_fissures(i, j, bx, bz, mx, mz, C)
 	if K == null:
 		return C
@@ -168,6 +184,10 @@ static func _cell_of(i: int, j: int) -> Array:
 			var z := bz + inset + (CELL - 2 * inset) * _u01(i, j, k, 3)
 			if D.get("cap") and O.caprock.call(x, z) < D.cap:
 				continue
+			if D.get("crest"):
+				var prom := _g(x, z) - 0.25 * (_g(x + 120.0, z) + _g(x - 120.0, z) + _g(x, z + 120.0) + _g(x, z - 120.0))
+				if prom < float(D.crest):
+					continue
 			if not _free(x, z, r * 1.4 if big else r * 2):
 				continue
 			var clash := false
@@ -181,35 +201,43 @@ static func _cell_of(i: int, j: int) -> Array:
 			var ry := _u01(i, j, k, 4) * 3.14159
 			var id: String = "lf:" + D.kind + ":" + str(i) + ":" + str(j) + ":" + str(t)
 			var B = null
+			var Hm := 0.0
 			if D.kind == "butte":
 				var e := 1 + _u01(i, j, k, 5) * 0.8
 				var y0 := _foot_y(x, z, r / sqrt(e), r * sqrt(e))
 				var h := _rng(D.h, i, j, k, 6)
+				Hm = h
 				B = KStacks.make({"id": id, "kind": "butte", "x": x, "z": z, "y0": y0, "seed": seed, "lobes": 0.18, "weather": 0.8,
 					"tiers": [{"h": h + (_g(x, z) - y0), "r": r, "e": e, "ry": ry}], "shoulder": {"h": minf(20, h * 0.15), "back": minf(18, h * 0.12), "bed": [3.0, 6.0]}})
 				B.name = "A butte (" + str(int(KStacks.jround(h))) + " m)"
 			elif D.kind == "dome":
 				var H := _rng(D.H, i, j, k, 6)
 				var y0 := _foot_y(x, z, r, r)
+				Hm = H
 				B = KStacks.make({"id": id, "kind": "dome", "x": x, "z": z, "H": H + (_g(x, z) - y0), "r": r, "y0": y0, "seed": seed, "e": 1 + _u01(i, j, k, 5) * 0.5, "ry": ry})
 				B.name = "An inselberg (" + str(int(KStacks.jround(H))) + " m)"
 			elif D.kind == "tor":
 				var H := _rng(D.H, i, j, k, 6)
 				var y0 := _foot_y(x, z, r, r)
+				Hm = H
 				B = KStacks.make({"id": id, "kind": "tor", "x": x, "z": z, "H": H + (_g(x, z) - y0), "r": r, "y0": y0, "seed": seed})
 				B.name = "A kopje (" + str(int(KStacks.jround(H))) + " m)"
 			elif D.kind == "spire" or D.kind == "fin":
 				var H := _rng(D.H, i, j, k, 6)
 				var y0 := _foot_y(x, z, r, r)
+				Hm = H
 				B = KStacks.make({"id": id, "kind": D.kind, "x": x, "z": z, "y0": y0, "seed": seed, "H": H + (_g(x, z) - y0), "r": r,
 					"e": 3 + _u01(i, j, k, 5) * 2 if D.kind == "fin" else 1 + _u01(i, j, k, 5) * 0.4, "ry": ry, "lean": (_u01(i, j, k, 7) - 0.5) * 0.12})
 				B.name = ("A fin (" if D.kind == "fin" else "A hoodoo (") + str(int(KStacks.jround(H))) + " m)"
 			elif D.kind == "tower":
 				var H := _rng(D.H, i, j, k, 6)
 				var y0 := _foot_y(x, z, r, r)
+				Hm = H
 				B = KStacks.tower({"id": id, "seed": seed, "x": x, "z": z, "H": H + (_g(x, z) - y0), "R": r, "y0": y0})
 				B.name = "A karst tower (" + str(int(KStacks.jround(H))) + " m)"
 			if B:
+				if D.get("label"):
+					B.name = str(D.label) + " (" + str(int(KStacks.jround(Hm))) + " m)"
 				B.placed = 1
 				C.append(B)
 	return C

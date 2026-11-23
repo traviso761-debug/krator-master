@@ -107,4 +107,18 @@ function aniso(f){let vx=0,vz=0;for(let j=1;j<NE;j++)for(let i=1;i<NE;i++){const
  ok('a far chunk (minWave 700 m) skips the finer octaves',P(1777,2333,1,700)!==P(1777,2333,1,0),false);
  const A=WRELIEF.init({ox:2000000,oz:3000000,seed:7}).peaks(0,1000,2000,SP,RP,1,0),B=WRELIEF.init({ox:2001000,oz:2998000,seed:7}).peaks(0,0,4000,SP,RP,1,0);
  WRELIEF.init({ox:2000000,oz:3000000,seed:7});ok('two cuts of one place get the same peaks',Math.abs(A-B)<1e-9,false);}
+// ---- P5 v2: rotated-gradient peaks (no negative collar moat) and steep-wall crags (sheer-wall damped)
+{WRELIEF.init({ox:2000000,oz:3000000,seed:7,version:2});
+ const SP2={peak:1,rock:.5},RP=1400;
+ let minP=1e9,maxP=-1e9;
+ for(let k=0;k<20000;k++){const d=WRELIEF.peaks(0,(k*977)%40000,(k*631)%40000,SP2,RP,1,0);if(d<minP)minP=d;if(d>maxP)maxP=d;}
+ ok('v2 peaks never dig a negative collar moat (min >= 0) and raise crisp summits (> 120 m)',minP>=-1e-9&&maxP>120,minP<-1);
+ const cGentle=WRELIEF.crags(500,1200,2400,-.15,0,SP2,RP,0)-500;
+ const cSteep=Math.max(...Array.from({length:200},(_,k)=>Math.abs(WRELIEF.crags(500,k*31,k*17,-.85,.25,SP2,RP,0)-500)));
+ const cSheer=Math.max(...Array.from({length:200},(_,k)=>Math.abs(WRELIEF.crags(500,k*31,k*17,-6.5,1.5,SP2,RP,0)-500)));
+ ok('v2 crags stay zero on gentle (< 20 deg) slopes, carve buttresses/couloirs on 42 deg flanks, and damp on 82 deg walls',cGentle===0&&cSteep>8&&cSheer<cSteep*.25,cGentle!==0);
+ const A2=WRELIEF.init({ox:2000000,oz:3000000,seed:7,version:2}).crags(500,1000,2000,-.8,.3,SP2,RP,0);
+ const B2=WRELIEF.init({ox:2001000,oz:2998000,seed:7,version:2}).crags(500,0,4000,-.8,.3,SP2,RP,0);
+ WRELIEF.init({ox:2000000,oz:3000000,seed:7});
+ ok('v2 crags are world-absolute across cuts and skipped when version=1',Math.abs(A2-B2)<1e-9&&WRELIEF.crags(500,1000,2000,-.8,.3,SP2,RP,0)===500,false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
