@@ -57,7 +57,7 @@
   bow-sided, Welsh, croft with outshots, beehive cells; plate lean-to, buried container, cab porch, fir porch); roof form,
   pitch, wall height, chimney, door offset, windows and turf by seed; a village's character ('stony', 'low') from its
   focus. Sheds, pens, the ice house, the cairn house and the egg store vary in fill.
-- **Walls block a walker** (`src/37-wk-rec.js`, core/walk and core/walk/box; round walls as arcs of blocks).
+- **Walls block a walker** (`core/engine/37-wk-rec.js`, round walls `src/37t-wk-ring.js`, core/walk and core/walk/box; round walls as arcs of blocks).
 - **Furniture in a world's draw**: `tungang_bundle.bundle(furniture=True)` (+387 KB without textures).
 - **The catalog pieces** of `PLAN.md` section 4: `fellgang_common_ice_sledge` (placed by the sledge shed), `_poor_egg_basket`
   (the egg store, the nest gear), `_common_wall_peg_rack` (the rope house), `_common_rope_wall`, `_common_tally_board`,
@@ -79,6 +79,7 @@
 ## Open
 
 - [ ] **The daub sheet is owed** (`patterns/fellgang/daub`, `core/materials/PROMPTS-NEEDED.md` section 59): the slogans are
+- [ ] **The daub sheet is owed** (`patterns/fellgang/daub`, `core/materials/PROMPTS-NEEDED.md` section 58): the slogans are
       block letters and the family marks six simple signs, all geometry in `'plain'` vertex colour (`40-fg-kit.js` `fgText`,
       `fgMark`). When the sheet comes, the marks (the wheel, the aurochs, handprints, tallies, the red X) go on as decals; the
       slogans' words stay the kit's own letters.
@@ -126,3 +127,25 @@
       (`core/terrain/host/39h`'s rule, seen on the scarp from above). A per-vertex floor along the flight would fix it in core.
 - [ ] **The sheet's rows run past the engine's ground** (z -880 at the last Glazier row; `GROUND_SIZE` 1600): `91z-gz-sheet.js`
       carries a ground block on under them.
+- [ ] **Not yet built** from `PLAN.md` 3.3: the bands (`fg-war-camp`, `fg-raid-cache`),
+      the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) and Glazier (`gz`) sets. (Wildcat's scrap
+      pueblo is built on `core/pueblo`, 2026-11-11: `PLAN.md` 1.3.1, "Built".)
+- [x] **The sheet's catalog furniture is textured** (2026-11-12, the owner): `build.py` seals the catalog with its library detail
+      maps (`furniture_bundle.bundle(FURN_CULTURES, tex=True)`: about 1.5 MB more), as Loj Twenny does through
+      `tungang_bundle.bundle(furniture_tex=True)`.
+- [ ] **The pueblos: no walk records.** The rooms are hollow and furnished (2026-11-11), but their walls and slabs are
+      prisms, which `core/walk` does not read: no floors on the roofs and terraces, no ladders as climbs. Owed with a pueblo
+      page of its own (or `KWALK` records written from core/pueblo's cells).
+- [ ] **The catalog's twelve new Fellgang pieces reach 36 builds** (every build that lists the catalog folder): only
+      `kits/catalog` and this kit are rebuilt on this branch; the others ride the next all-builds rebuild (as the
+      tungang-furniture branch's pieces do), so `check_stale` flags them until then.
+- [ ] **A host's ground under a pueblo**: the house paves its plazas and digs its kivas, so the world's terrain must sit
+      0.35 m under the plazas and open the pits (`fgWcCarve` on the sheet); a terrain that cannot be carved shows through.
+- [ ] **Barricade's river**: the sheet draws its bed in rock; the water is `core/water`'s, wired where Barricade is placed.
+- [ ] **Furniture triangles**: the two great houses hold 6,000 catalog pieces; they are drawn in 40 m chunks shown within 90 m
+      of the camera (260 m while the section is open). A world calls `TG.fg.chunksTick(camera)`; a LOD of the pieces is owed.
+- [ ] **Wildcat: the Deeds and the slogans are geometry** (block letters, marks and tallies as thin boxes), as the Fellgang
+      set's slogans are, until the daub sheet is delivered (`core/materials/PROMPTS-NEEDED.md` section 58).
+- [ ] **Wildcat's triangles.** The great house draws about 190k triangles (2,400 vigas, 440 salvage panels, 98 ladders) and its
+      stockade about 870 stakes: fine on the sheet, heavy for a station far off. A LOD (the columns alone past ~400 m) is owed
+      with `core/lod`.

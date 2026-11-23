@@ -7,7 +7,7 @@
 
 The text defines the single global `TG` (src/26k-kit.js, its host API src/80-fg-host.js): TG.fg.draw(V, o), TG.fg.ropes,
 TG.fg.pieces, TG.fg.proto, TG.fg.dims, TG.fg.BOX, TG.fg.check, TG.errors. Inside the closure, read in place at bundle
-time (never copied): the building-kit engine (core/engine: 10-core, 27-mat, 30-geo, 36-def, 36o-open, 36s-stair), core/rand
+time (never copied): the building-kit engine (core/engine: 10-core, 27-mat, 30-geo, 36-def, 36o-open, 36s-stair, 37-wk-rec), core/rand
 (KRAND), core/materials/record (KMAT, its own pack of this kit's tex/), and the kit's fragments (26k-kit.js, the Fellgang
 set 40-60, 80-fg-host.js). Left out: the sheet (00-head, 89-rows, 91t, 96t, 99-sheet), the engine's page shell (scene,
 furniture adapter, night, world, clock, host take, tail). Their top-level names (MAT, REG, TAU, clamp, terrainH, KIT...)
@@ -25,10 +25,14 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
 TEX = os.path.join(HERE, 'tex')
 NL = '\n'
-ENGINE = ['10-core.js', '27-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js']
+ENGINE = ['10-core.js', '27-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js',
+          '37-wk-rec.js']   # the walk records (wkLadder, the building wrap) the kit's src/37t-wk-ring.js adds round walls to (wave 2, 2026-11-16)
 CORE = [('core/rand', '08-core-rand.js'), ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'),
-        ('core/materials/record', '25-matlib-host.js')]
-KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js', '91z-gz-sheet.js', '96z-gz-views.js')
+        ('core/materials/record', '25-matlib-host.js'),
+        # Wildcat's plans (src/44-fg-wc-plan.js): core/pueblo and the spatial index it reads (KPUEBLO, KSPACE)
+        ('core/space', '20-core-space.js'), ('core/pueblo', '10-pueblo-plan.js'), ('core/pueblo', '20-pueblo-access.js'), ('core/pueblo', '30-pueblo-court.js'),
+        ('core/pueblo', '40-pueblo-rooms.js')]
+KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js', '91z-gz-sheet.js', '96z-gz-views.js', '91g-tg-sheet.js', '96g-tg-views.js', '89w-wc-rows.js', '91w-wc-sheet.js', '96w-wc-views.js')
 LEAN = ('stone', 'turf', 'pole', 'wood', 'plate', 'rust', 'rope', 'cord')
 # tex='glazier': the families the Glazier set draws with (a town of theirs: settlements/lightwall)
 GLAZIER = ('wash', 'hewn', 'gilt', 'carpet', 'celadon', 'enamel', 'potch', 'carved', 'silk', 'plate', 'iron', 'stone', 'wood', 'rope', 'cord')
@@ -39,8 +43,9 @@ HEAD = r'''
    console). A host without an #errs panel is fine. */
 var TG_ERRS = [], TG_TEXRESET = false;
 /* _texPending: the sealed matlib host's opening reset (25-matlib-host.js: window._texPending = 0) must not wipe the host's own
-   count, so the FIRST 0-write is swallowed while the host holds a number; every later write passes, so the bundle's own loads
-   count up and back down to 0 on the host's counter (riftrim found the last decrement swallowed too, 2026-11-11). */
+   count, so the FIRST 0-write (the reset) is swallowed while the host holds a number, and passes when it holds none; either
+   way every later write passes, so the bundle's own loads count up and back down to 0 on the host's counter (riftrim found
+   the last decrement swallowed too, 2026-11-11; Loj Twenny found it again on a host with no counter of its own). */
 var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) { if (k === 'addEventListener') return function () {};
     var v = t[k]; return typeof v === 'function' && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },
   set: function (t, k, v) { if (k === 'onerror') return true;
@@ -102,12 +107,15 @@ def files():
     return fs
 
 
-def furn_text(on):
+def furn_text(on, cultures=None, tex=False):
+    """tex: the catalog's library detail maps with it (furniture_bundle.bundle(tex=True): every family, about 1.9 MB), so a
+    flush gives each piece its family's set; without, the pieces are vertex colours only (the default, byte for byte)"""
     if not on:
         return STUB_FURN
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return ('/* ---- kits/catalog (furniture_bundle.py: %s) ---- */' % ', '.join(FURN_CULTURES) + NL + furniture_bundle.bundle(FURN_CULTURES) + NL +
+    cs = cultures or FURN_CULTURES
+    return ('/* ---- kits/catalog (furniture_bundle.py: %s%s) ---- */' % (', '.join(cs), '; detail maps' if tex else '') + NL + furniture_bundle.bundle(cs, tex=bool(tex)) + NL +
             'KratorFurniture.setDetail(.6);' + NL + FURN_HEAD)
 
 def pack(tex=True, side=None):
@@ -157,10 +165,13 @@ TG.res={ORE:RES_ORE,source:resSource,rate:resRate,
 '''
 
 
-def bundle(tex=True, with_files=False, furniture=False, side=None, res=False):
+def bundle(tex=True, with_files=False, furniture=False, side=None, res=False, cultures=None, furniture_tex=False):
     """furniture=True seals the catalog's fellgang, generic and generic-goods pieces in (about 0.4 MB more: README.md, "For
     another world"), so TG.fg.draw furnishes what it draws; off by default. res=True seals the Resources kit's ore rule and
-    node defs in (kits/resources/src, read in place: about 40 KB) as TG.res; off by default, so the bundle is as before"""
+    node defs in (kits/resources/src, read in place: about 40 KB) as TG.res; off by default, so the bundle is as before.
+    cultures: the catalog cultures sealed in with the furniture (default FURN_CULTURES; a Tungang hold passes
+    ['tungang', 'generic', 'generic-goods'] for TG.tg.draw). furniture_tex=True: the catalog's library detail maps with
+    the furniture (Loj Twenny; off by default, byte for byte)"""
     fs = files()
     names = sorted(list(fs) + ['26-matlib-pack.js'])
     body = ''
@@ -174,8 +185,8 @@ def bundle(tex=True, with_files=False, furniture=False, side=None, res=False):
         rfs = [os.path.join(ROOT, 'kits', 'resources', 'src', f) for f in RES_FILES]
         body += RES_SHIM + ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) for f in rfs) + RES_HOST
     js = safe('/* TG: the Tungang kit in one closure (kits/tungang/tungang_bundle.py). GENERATED: edit kits/tungang/src or core/. */' + NL +
-              'var TG = (function(){' + NL + HEAD + furn_text(furniture) + body + TAIL + '})();' + NL)
-    return (js, [rel(fs[n]) for n in names if n in fs] + [rel(f) for f in rfs] + ['kits/tungang/tex']) if with_files else js
+              'var TG = (function(){' + NL + HEAD + furn_text(furniture, cultures, furniture_tex) + body + TAIL + '})();' + NL)
+    return (js, [rel(fs[n]) for n in names if n in fs] + [rel(f) for f in rfs] + ['kits/tungang/tex'] + (['kits/catalog/tex'] if furniture and furniture_tex else [])) if with_files else js
 
 
 if __name__ == '__main__':

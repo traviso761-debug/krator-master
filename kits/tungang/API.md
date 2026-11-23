@@ -184,6 +184,51 @@ intensity, owner, on}`. A worn draw dims them; an abandoned one lights none. The
 | `TG.gz.dims(key)` | `{w, d, h, out}` |
 | `TG.gz.LAMP` | the lamp code's colours and their KCAVELIGHT kinds, ranges and intensities (the Tungang set's, with `moon`: the moonglass lantern) |
 | `TG.gz.check` | `box(recs, tol, fill)` (fill {w .6, d .45, h .6}), `plans(minRock)` (rooms marked `join`, a working's stretches, are exempt), `lights(draw)`, `carved(C, sites)`: the checks verify.py and `tests/test-bundle.js` run |
+## Wildcat: the scrap pueblo (`TG.fg.pueblo`)
+
+Wildcat's plans are `core/pueblo`'s (`core/pueblo/README.md`: room cells, storeys and terraces, plazas, kivas, ladders, the
+stockade's ring, as plain records keyed by stable ids); the kit holds the specs and the dress (`src/44-fg-wc-plan.js`) and the
+drawing (`src/46-fg-wc-draw.js`). The bundle seals `core/pueblo` and `core/space` in; `KPUEBLO` is a global, as `KRAND` is.
+
+```js
+const P = TG.fg.wildcat();                           /* the great house: KPUEBLO.house(TG.fg.wcSpec.GREAT), built once */
+TG.fg.puebloRegister(P, KTAGS.page, {x, z, ry, ground: terrainH});        /* the house and every record in core/tags first */
+TG.fg.pueblo(P, {scene, x, z, ry, ground: terrainH, label: 'Wildcat'});   /* then the dry draw */
+TG.fg.wildcatHamlets().forEach((Q, i) => { /* the same two calls for each hamlet */ });
+```
+
+| | |
+|---|---|
+| `TG.fg.wildcat()`, `TG.fg.wildcatHamlets()` | the great house's plan (a D, 805 rooms up to five storeys, 1,145 people) and the two hamlets' (the ford's U, 60; the pens' L, 82) |
+| `TG.fg.wcSpec` | the specs (`FG_WC`: `GREAT`, `HAMLETS`, `block(v)`), for a world that builds its own plan with `KPUEBLO.house` |
+| `TG.fg.puebloRegister(P, T, o)` | registers in core/tags registry `T` the house (`fg-wc-greathouse`, or `fg-wc-hamlet` for a plan of 150 cells or fewer; `o.key` overrides) and, as its children, every room, kiva, plaza (`part`), ladder and piece of dress (`fixture`) and the stockade; returns `{house, count}` |
+| `TG.fg.pueblo(P, o)` | the draw, dry, at `o.x, o.z, o.ry`: the floor at the highest ground under the plan's hull (a knoll's flattened top), each column's footing down to its own ground (`o.ground`), the stockade on `P.enclosure`'s ring (`o.stockade: false` leaves it out); `o.state` `'worn'`; `o.dress` a dress of your own. Returns the meshes with `.group`, `.recs` (the house's `fg` counts: cells, rooms, pop, faced, cars, vigas, doors, hatches, ladders, kivas, crest, trophies, deeds, slogans, shells; the stockade's stakes, panels), `.tris`, `.lights`, `.smokes`, `.plan`, `.dress` |
+| `TG.fg.check.pueblo(P, recs)` | the plan's invariants (`KPUEBLO.check`: terraces, reach, no ground doors, no overlap, the kivas, unique ids) and the draw's counts: `{ok, bad, census, drawn}` |
+
+**The dress** (`fgWcDress(P)`, records placed from the plan's ids by KRAND): aurochs skulls along the hero's parapets and
+the horned crest over the hero's rooms; six trophy poles round the round room (a Labber's helmet, a Lizard's scale, skulls,
+horns), war drums and braziers; **the Deeds** painted on three front-row faces of the east plaza (27 boasts, each with its
+mark and whether it was made good); NO SKABS and the union's words man-high on the outer walls, a painted aurochs beside some;
+glyptodont shells as cisterns on the terraces and in the plazas.
+
+**Barricade** (`PLAN.md` 1.3.2): `TG.fg.barricade()` is its plan (core/pueblo's `bar`: 620 rooms, 1,027 people, a gate and a
+culvert under its rooms), `TG.fg.bcSpec` its spec and kiva table (`FG_BC`). The same two calls draw it
+(`TG.fg.puebloRegister`, `TG.fg.pueblo`): a plan of shape `bar` takes the key `fg-bc-greathouse` and Barricade's dress
+(`fgBcDress`: the wrecks, the gate's and the culvert's gear, the lookouts, the pickets, its slogans), registered as fixtures.
+A world places it across a gorge whose floor is flat under its hull, carves the plaza 0.35 m under the house's paving and the
+kivas' pits (`fgWcCarve` on the sheet shows how), and brings the river through the culvert (`core/water`).
+
+**Inside** (`PLAN.md` 1.3.5): every room is drawn hollow and every plan comes furnished (`P.furniture`, core/pueblo's records:
+`KPUEBLO.furnish` by the table `FG_WC_FURN`, `KPUEBLO.furnishKivas` by `FG_WC_KIVA` or Barricade's). `TG.fg.puebloRegister`
+registers each piece as its room's child. `TG.fg.pueblo` builds them through the catalog's batch in 40 m chunks (`.furniture`:
+`{pieces, missing, chunks}`) when the page or the bundle carries the catalog (`tungang_bundle.bundle(furniture=True)`); a
+world calls `TG.fg.chunksTick(camera)` each frame to show the chunks near the camera only. **The storey section**:
+`TG.fg.section(level)` clips every house drawn by `TG.fg.pueblo` at a storey (1 the ground floor), at `'kiva'` (the plaza's
+level: the kivas open), or `null` (whole); each house's materials are its own clones, so nothing else on the page is cut.
+
+**The defs**: `fg-wc-greathouse`, `fg-wc-hamlet`, `fg-bc-greathouse` (each draws `o.plan`, else its default), `fg-wc-block` (one block alone, the
+sheet's row: `v` 0-4, the hero's crest on the even seeds), `fg-wc-round-room` (the great kiva, the Boast's stand, trophies),
+`fg-wc-kiva`, `fg-wc-stockade` (`o.ring`: a plan's enclosure; alone, a 30 m run with its gate).
 
 ## On the sheet
 
@@ -191,8 +236,24 @@ intensity, owner, on}`. A worn draw dims them; an abandoned one lights none. The
 `?mat=proc` (vertex colours only). `window._fgSheet` holds the test grounds (`village`, `villageDraw`, `pad`, `ropes`,
 `ropeDraw`, `wall`, `road`); `window._gzSheet` the Glaziers' rock (`rows`, `scarp`, `draw`, `cavern`, `rock`, `prims`); C (the
 cut-away) opens the Glaziers' rock 2.2 m over every void's own floor (`core/terrain/host/39h`); `_api` is core/host's probe with the engine's fields (`footprints`, `tags`, `furniture`...).
+`ropeDraw`, `wall`, `road`; Wildcat's `wildcat`, `wildcatReg`, `hamlets`, `hamletRegs`, `wildcatPens`; `barricade`,
+`barricadeReg`), `window._wcChecks()` the pueblos' page checks, `window._wcSection(level)` the section (K steps it; a view's
+seventh entry `{section}` sets it); `_api` is core/host's probe with the engine's fields (`footprints`, `tags`, `furniture`...).
 
 ## The core/hamlet row
 
 `core/hamlet/fellgang/22-hamlet-fellgang.js` (opt-in; `core/hamlet/fellgang/README.md`): `KHAMLET.CULTURES.fellgang`,
 `KHAMLET.FOCI` + `fowling`, `ice`, `KHAMLET.FOCUS_INFO`.
+
+## TG.tg: the Tungang set (src/44-tg-kit.js, 82-tg-host.js)
+
+| Call | What |
+|---|---|
+| `TG.tg.draw(sites, o)` | draw a plan's sites (KCITY.cavern's records `{id, key, x, y, z, ry, state, num, loj, span, h}`: x, y, z the foot of the front) after the world has carved the rock and registered the sites; `o {scene, seed, state, label}`. Dry. Returns the meshes with `.group`, `.recs`, `.missing`, `.tris`, `.lights` (light records), `.furniture` (pieces placed), `.missingFurn` |
+| `TG.tg.plan(key, o)` / `TG.tg.planOf(site)` | a def's void plan: `[{id, kind: 'room', x, z, w, d, y, h}]` or a stair `{kind: 'stair', a, b, w, h}`, in the front-foot frame |
+| `TG.tg.BOX`, `TG.tg.dims(key)` | each def's box behind its front, its tier and its door's lamp code |
+| `TG.tg.LAMP`, `TG.tg.PAL`, `TG.tg.SCALE` | the lamp code (colour, KCAVELIGHT kind, range, intensity), the palette (PLAN.md 1.5.1), 0.94 |
+| `TG.tg.proto(key, o)` | one def alone at the origin |
+| `TG.tg.check.box(recs)`, `.plans()`, `.lamps(out)` | the checks verify.py runs |
+
+A world that loads the bundle with the Tungang pieces passes `cultures` (see `tungang_bundle.bundle`) including `tungang`.

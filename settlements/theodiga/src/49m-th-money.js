@@ -79,7 +79,7 @@ var TH_MONEY=(function(){
   const bad=[];Object.keys(b.prices).forEach(g=>{const p=b.prices[g];if(!(p>=1)||Math.floor(p)!==p)bad.push(g+' '+p);
    const In=b.inputs[g];if(b.made[g]&&In&&b.costs[g]!=null){const ic=Object.keys(In).reduce((n,i)=>n+In[i]*(b.costs[i]||0),0);if(b.costs[g]<ic-1e-9)bad.push(g+' costs less than its inputs');}});
   const P=b.prices;ok('prices whole, at least 1, each made good dearer than its inputs',b.live&&Object.keys(P).length>0&&!bad.length,
-   bad.length?bad.slice(0,4).join('; '):'markup '+(b.markup||1).toFixed(2)+': grain '+P.grain+', milk '+P.milk+', bread '+P.bread+', butter '+P.butter+', tea '+P.tea+', iron '+P.iron+', garments '+P.garments+', a meal out '+P.meal);
+   bad.length?bad.slice(0,4).join('; '):'markup '+(b.markup==null?1:b.markup).toFixed(2)+': grain '+P.grain+', milk '+P.milk+', bread '+P.bread+', butter '+P.butter+', tea '+P.tea+', iron '+P.iron+', garments '+P.garments+', a meal out '+P.meal);
   /* the paid days between the snapshots: the history rows after a's, and the day under way (b's open row less a's) */
   const sub=(x,y)=>{const o={};Object.keys(x).forEach(k=>{if(typeof x[k]==='number')o[k]=x[k]-(typeof y[k]==='number'?y[k]:0);});return o;};
   const D=b.days.slice(a.days.length).concat([sub(b.today||{},a.today||{})]);let w=0,sp=0,dl=0,un=0,ra=0;D.forEach(d=>{w+=(d.wages||0)+(d.ration||0)+(d.takings||0)-(d.cover||0)-(d.placeBought||0);sp+=d.spent||0;dl+=d.dole||0;un+=d.unpaid||0;ra+=d.ration||0;});

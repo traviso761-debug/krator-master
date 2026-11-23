@@ -59,7 +59,7 @@ H.allotInit = function (V, S) {
     SIM.withEcon(from, function () { took = SIM.economyTake(g, Math.floor(qty)); if (took > 0) SIM.economyBook('exported', g, took); });
     if (took <= 0) return null;
     var km = 0; for (var i = 1; i < via.length; i++) km += dist(via[i - 1], via[i]) / 1000;
-    var days = km / (A.kmDay || 20) + (A.hold == null ? 1 : A.hold) * Math.max(0, via.length - 2);
+    var days = km / (A.kmDay == null ? 20 : A.kmDay) + (A.hold == null ? 1 : A.hold) * Math.max(0, via.length - 2);
     var L = { id: 'allot.' + turn + '.' + (id++), season: season, turn: turn, good: g, from: from, to: to, qty: took, by: 'drovers', via: via, deep: !!deep,
       km: Math.round(km), leave: minute, arrive: minute + Math.ceil(days * 1440), landed: false };
     R.loads.push(L); R.taken[g] = (R.taken[g] || 0) + took;

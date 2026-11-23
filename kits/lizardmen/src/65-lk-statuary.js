@@ -117,7 +117,7 @@ function lksTaotieHead(sc,o){o=o||{};const stCol=o.col||P('basaltD'),brCol=o.brC
   /* lateral jugal cheek-spikes */
   lzHorn(s*1.22*sc,.88*sc,.42*sc,s>0?-PI/2+.42:PI/2-.42,1.35*sc,.14*sc,{curl:.45,lean:.32,mk:'stoneP',col:stCol,nt:6,ns:5});
   /* sweeping primary temporal horns */
-  lzHorn(s*1.12*sc,1.78*sc,.15*sc,s>0?-PI/2+.26:PI/2-.26,(o.hornL||2.8)*sc,.21*sc,{curl:.74,lean:.26,mk:hornMk,col:hornMk==='ivory'?P('tusk'):brCol,nt:8,ns:6});
+  lzHorn(s*1.12*sc,1.78*sc,.15*sc,s>0?-PI/2+.26:PI/2-.26,(o.hornL==null?2.8:o.hornL)*sc,.21*sc,{curl:.74,lean:.26,mk:hornMk,col:hornMk==='ivory'?P('tusk'):brCol,nt:8,ns:6});
   /* swept-back occipital crown-crests */
   lzHorn(s*.56*sc,2.15*sc,-.45*sc,PI+s*.18,2.1*sc,.15*sc,{curl:.38,lean:.44,mk:'stoneP',col:stCol,nt:6,ns:5});
   /* sunken lateral eye-slits under the brow */

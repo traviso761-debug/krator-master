@@ -390,7 +390,7 @@ function vnTree(x,y,z,h){
  const th=h*.64,r=h*.34,r0=Math.max(.11,h*.048),bark=vC(0x684a32);
  // If in city mode with real biome plants enabled, register this spot for real HYPERJUNGLE palm/fern/aroid planting
  if(typeof window!=='undefined'&&window.CITY&&VERN.cur){
-  const C=VERN.cur,sc=C.o.scale||1,wp=loc(C.x,C.z,x*sc,z*sc,C.ry);
+  const C=VERN.cur,sc=C.o.scale==null?1:C.o.scale,wp=loc(C.x,C.z,x*sc,z*sc,C.ry);
   (window.MARR_COURTYARD_FLORA=window.MARR_COURTYARD_FLORA||[]).push({x:wp[0],y:(C.o.y||0)+y*sc,z:wp[1],h:h*sc,kind:'palm'});
  }
  // Tapered ringed palm/citrus trunk (3 segments with slight natural lean)
@@ -430,7 +430,7 @@ function maPatioPleasure(x,y,z,w,d,ry,o){o=o||{};
   vnPlanter(p[0],y,p[1],pw,pd,ry,st);
   if((sx+sz===0)||w>=10)vnTree(p[0],y+.35,p[1],Math.min(3.6,Math.min(w,d)*.32));
   else if(typeof window!=='undefined'&&window.CITY&&VERN.cur){
-   const C=VERN.cur,sc=C.o.scale||1,wp=loc(C.x,C.z,p[0]*sc,p[1]*sc,C.ry);
+   const C=VERN.cur,sc=C.o.scale==null?1:C.o.scale,wp=loc(C.x,C.z,p[0]*sc,p[1]*sc,C.ry);
    (window.MARR_COURTYARD_FLORA=window.MARR_COURTYARD_FLORA||[]).push({x:wp[0],y:(C.o.y||0)+(y+.35)*sc,z:wp[1],h:2.2,kind:'shrub'});}
   const q=loc(x,z,sx*(px-pw*.35),sz*(pz-pd*.35),ry);
   kput('maUrn',[q[0],y,q[1]],null,[.24,.42,.24],or);
@@ -451,7 +451,7 @@ function maPatioVegetable(x,y,z,w,d,ry,o){o=o||{};
   vB('maCantera',p[0],y,p[1],bw,.34,bd,ry,st);
   vB('vClayB',p[0],y+.04,p[1],bw-.2,.32,bd-.2,ry,soil);
   if(typeof window!=='undefined'&&window.CITY&&VERN.cur){
-   const C=VERN.cur,sc=C.o.scale||1,wp=loc(C.x,C.z,p[0]*sc,p[1]*sc,C.ry);
+   const C=VERN.cur,sc=C.o.scale==null?1:C.o.scale,wp=loc(C.x,C.z,p[0]*sc,p[1]*sc,C.ry);
    (window.MARR_COURTYARD_FLORA=window.MARR_COURTYARD_FLORA||[]).push({x:wp[0],y:(C.o.y||0)+(y+.36)*sc,z:wp[1],h:1.8,kind:'fern'});}
   const nc=Math.max(2,Math.round(bw/.55));
   for(let i=0;i<nc;i++)for(const r of[-.22,.22]){
@@ -631,7 +631,7 @@ function maFinishReg(C,D,d0,j0){if(!REG||C.r0>=REG.length)return;
    const IX=KratorInteriors,inst=VHOLLOW.plans[item.key]||(VHOLLOW.plans[item.key]=IX.sets.instantiate(item,0,0,0,{baseY:0,register:false,seed:0,prefix:'local.'}));
    for(const Bd of inst.buildings){
     const doors=(Bd.body&&Bd.body.doors)||[];
-    for(const d of doors){const dx=d.at[0],dz=d.at[1],dw=d.w||1.4;
+    for(const d of doors){const dx=d.at[0],dz=d.at[1],dw=d.w==null?1.4:d.w;
      for(const Wl of Bd.walls){if(Wl.kind!=='partition'||Wl.y>2.8)continue;
       const ax=Wl.a[0],az=Wl.a[1],bx=Wl.b[0],bz=Wl.b[1],ux=bx-ax,uz=bz-az,L=Math.hypot(ux,uz)||1;
       const t=Math.max(0,Math.min(1,((dx-ax)*ux+(dz-az)*uz)/(L*L))),px=ax+ux*t,pz=az+uz*t;

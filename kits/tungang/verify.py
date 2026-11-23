@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Headless check for the Tungang kit (its Fellgang and Glazier sets).
+"""Headless check for the Tungang kit (its Fellgang and Glazier sets, and the Tungang set's test hold).
 
   python3 verify.py dist/tungang.html [--views "Opening|Sample village"] [--cut] [--night] [--worn] [--cam cx,cy,cz,tx,ty,tz]
                                       [--assert] [--eval "()=>..."] [--out shots] [--size 1280x800] [--only key1,key2] [--all-views]
@@ -26,7 +26,19 @@ passes is a failure too. The checks (kits/tungang/README.md, "Checks"):
   gz-host-api           TG.gz.draw draws every site of the sample scarp
   gz-loj-rooms          the Register's plaques (one per vein, and the hold's own), the wheel walks' wheels, the tea halls' count wall
   gz-walk-carved        a walker finds the cavern's floor in a carved room (core/walk from the plan)
+  wildcat-plan, wildcat-on-knoll, wildcat-tags, wildcat-dress, wildcat-hamlets, barricade-plan, barricade-in-the-gorge,
+  pueblo-interiors, pueblo-furniture-table, pueblo-section
+                        the scrap pueblo (core/pueblo, TG.fg.pueblo): the plan's invariants and 1,000-2,000 people, the
+                        floor on the knoll, every room registered, the dress drawn, the two hamlets
   coverage, no-nan, furniture-keys, material-records
+The Tungang set's test hold (src/91g-tg-sheet.js: three galleries, kept, worn, abandoned):
+  tg-plans-in-box       every def's void plan inside its box, with a doorway past its front
+  tg-box                every site drawn within its box, in all three states
+  tg-states             the same sites in each state; abandoned thins the furniture and puts the lamps out
+  tg-lamp-code          every door's lamp of its code (red, green, amber, white hooded) at its door; rooms in wax light
+  tg-layout             the galleries laid on core/city/cavern hold every rule (rock, headroom, frontage, grade, decks)
+  tg-carved             KCAVERN open at every site's rooms and rock behind its box
+  tg-furniture-scale    the Tungang catalog pieces placed at 0.94 (PLAN.md 3.1)
 """
 import argparse, asyncio, json, os, sys
 
@@ -91,8 +103,34 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  add('host-api',{ok:!V.error&&V.records&&V.records.length>=8&&vd.recs&&vd.recs.length===V.records.length&&!Object.keys(vd.missing).length&&vd.length>3,
    detail:(V.records?V.records.length:0)+' records (KHAMLET.village, fellgang, fowling: '+(V.census?V.census.pop:0)+' people), '+(vd.recs?vd.recs.length:0)+' drawn into '+vd.length+' meshes, '+vd.tris+' triangles'},
   {ok:!Object.keys(neg.missing).length,detail:'a record of a key the kit lacks: missing '+JSON.stringify(neg.missing)});
+ /* THE TUNGANG SET (91g-tg-sheet.js: the test hold, three galleries, one per state; PLAN.md 3.2, 5) */
+ const G=window._tgSheet||{states:{},draws:[],plans:[],audits:[]},TC=TG.tg.check,st=G.states||{},sk=st.kept||{},sw=st.worn||{},sa=st.abandoned||{},nk=Object.keys(TG.tg.BOX).length;
+ const plans=TC.plans(),bigBox=TG.tg.BOX['tg-cut'],keepD=bigBox.d;bigBox.d=1;const plansNeg=TC.plans();bigBox.d=keepD;
+ add('tg-plans-in-box',{ok:!plans.length,detail:nk+' void plans (one a def) inside their boxes, each with a doorway past its front'+(plans.length?': '+plans.join('; '):'')},{ok:!plansNeg.length,detail:'the box of the cut made 1 m deep: '+plansNeg.slice(0,2).join('; ')});
+ const allRecs=[].concat(...(G.draws||[]).map(d=>d.recs||[])),bx=TC.box(allRecs),bxNeg=TC.box(allRecs.slice(0,1).map(r=>Object.assign({},r,{x:r.x+40})));
+ add('tg-box',{ok:!bx.length&&allRecs.length===3*G.draws[0].recs.length&&sk.recs===sk.sites,detail:allRecs.length+' sites drawn in three states, each within its box'+(bx.length?': '+bx.join('; '):'')},{ok:!bxNeg.length,detail:'a site checked 40 m from its record: '+bxNeg.join('')});
+ add('tg-states',{ok:sk.recs===sw.recs&&sw.recs===sa.recs&&sa.furniture<sk.furniture*.6&&sa.lights<sk.lights&&sw.lights<=sk.lights&&sw.tris!==sk.tris,
+   detail:'kept '+sk.furniture+' pieces, '+sk.lights+' lamps; worn '+sw.furniture+', '+sw.lights+'; abandoned '+sa.furniture+', '+sa.lights},{ok:sk.furniture<sk.furniture*.6,detail:'the kept hold checked as abandoned'});
+ const lampNeg=TC.lamps(Object.assign({},G.draws[0],{lights:[]}));
+ add('tg-lamp-code',{ok:!(sk.lamps||[1]).length&&!(sw.lamps||[1]).length&&(G.draws[0].lights||[]).some(l=>l.kind==='lamp-red')&&(G.draws[0].lights||[]).some(l=>l.kind==='wax'),
+   detail:'every door with the lamp of its code at it (kept, worn); kinds '+[...new Set((G.draws[0].lights||[]).map(l=>l.kind))].join(', ')},{ok:!lampNeg.length,detail:'the lights taken away: '+lampNeg.length+' doors without'});
+ const au=(G.audits||[]).every(a=>a.ok);let auNeg={ok:true};if(G.plans&&G.plans[0]){const H=G.plans[0],s0=H.sites[4];KCITY.cavern.addSite(H,Object.assign({},s0,{id:'neg.overlap',x:s0.x+.5,type:undefined}));
+  auNeg=KCITY.cavern.audit(H);H.sites.pop();delete H.byId['neg.overlap'];}
+ add('tg-layout',{ok:au&&(G.audits||[]).length===3,detail:'three galleries laid on core/city/cavern, every rule held (rock, headroom, frontage, grade, decks)'},{ok:auNeg.ok,detail:'a set cut 0.5 m into its neighbour: '+(auNeg.problems||[]).slice(0,1).map(p=>p.msg).join('')});
+ const CC=G.cavern,openAt=(x,y,z)=>CC&&CC.sdf(x,y,z)>0;let carved={ok:false,detail:'no cavern'},carvedNeg={ok:true,detail:'n/a'};
+ if(CC){const sites=G.plans[0].sites;const inside=sites.filter(s=>{const c=KCITY.cavern.siteCentre(s);const P=TG.tg.plan(s.key).filter(v=>v.kind==='room'&&v.y===0);
+   return P.length&&P.some(v=>openAt(s.x+v.x,s.y+1.2,s.z+v.z));}).length;
+  const behind=sites.filter(s=>openAt(s.x,s.y+1.2,s.z-s.d-1.5)).length;
+  carved={ok:inside===sites.length&&behind===0,detail:inside+'/'+sites.length+' sites open in KCAVERN at their rooms, '+behind+' open 1.5 m behind their boxes; '+G.prims+' primitives, the rock '+(G.rock?G.rock.tris+' triangles in '+G.rock.chunks+' chunks, '+G.rock.ms+' ms':'?')};
+  carvedNeg={ok:sites.every(s=>openAt(s.x,s.y+1.2,s.z-s.d-1.5)),detail:'the rock 1.5 m behind every box checked as open'};}
+ add('tg-carved',carved,carvedNeg);
+ const fz=(G.draws[0]&&G.draws[0].group)?G.draws[0].group.children.find(m=>m.userData&&m.userData.furniture):null;
+ add('tg-furniture-scale',{ok:!!fz&&fz.userData.scale===TG.tg.SCALE&&sk.furniture>100&&!Object.keys(sk.missingFurn||{}).length,detail:sk.furniture+' Tungang pieces at '+(fz&&fz.userData.scale)+' (PLAN.md 3.1)'+(Object.keys(sk.missingFurn||{}).length?': missing '+Object.keys(sk.missingFurn).join(', '):'')},
+  {ok:KratorFurniture.has('tungang_nonesuch'),detail:'tungang_nonesuch'});
  /* coverage: every def drawn, on the rows or by the host API */
- const drawn=new Set(REG.map(r=>r.key));for(const k of ['pad','villageDraw','ropeDraw','wall','road'])for(const r of (S[k]&&S[k].recs||[]))drawn.add(r.key);
+ const drawn=new Set(REG.map(r=>r.key));for(const k of ['pad','villageDraw','ropeDraw','wall','road','wildcat','wildcatPens','barricade'])for(const r of (S[k]&&S[k].recs||[]))drawn.add(r.key);
+ for(const r of allRecs)drawn.add(r.key);
+ for(const h of (S.hamlets||[]))for(const r of h.recs)drawn.add(r.key);
  const miss=Object.keys(DEFS).filter(k=>!drawn.has(k));
  add('coverage',{ok:!miss.length,detail:miss.length?'not drawn: '+miss.join(', '):Object.keys(DEFS).length+' defs drawn'},{ok:!Object.keys(DEFS).concat(['fg-nonesuch']).filter(k=>!drawn.has(k)).length,detail:'fg-nonesuch'});
  add('no-nan',{ok:A.nanSweep()===0,detail:'nan meshes: '+A.nanSweep()},(()=>{const g=new THREE.Group(),b=new THREE.BufferGeometry();b.setAttribute('position',new THREE.Float32BufferAttribute([0,NaN,0,1,0,0,0,0,1],3));g.add(new THREE.Mesh(b));let n=0;g.traverse(m=>{if(m.geometry){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){n++;break;}}});return {ok:n===0,detail:n+' nan mesh'};})());
@@ -125,6 +163,8 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  const gzFr=(gzS.scarp?gzS.scarp.sites:[]).filter(q=>q.key==='gz-front'),gzOnF=(q,dz)=>{const H=TG.gz.plan('gz-front',{v:q.v}).H,x=q.x+H.x+(dz?H.w/2-.35:0),z=q.z+H.z+(dz?-H.d/2-.45:0);return KWALK.floorsAt(x,z).some(f=>Math.abs(f[0]-(q.y+H.y))<.15);};
  add('gz-walk-carved',{ok:gzFr.length===2&&gzFr.every(q=>gzOnF(q,0)),detail:gzFr.length+' household fronts on the scarp: a floor at the hearth room\'s centre, at its height'},{ok:gzFr.length>0&&gzFr.every(q=>gzOnF(q,1)),detail:'a point in the rock behind the hearth room\'s back wall, at its end'});
  const M=A.materials();add('material-records',{ok:!!(M&&M.records&&M.records.length>15&&M.records.filter(r=>r.lib).length>15),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'},{ok:false,detail:'n/a'});
+ /* Wildcat (src/91w-wc-sheet.js): the plan, the knoll, core/tags, the dress, the hamlets */
+ if(window._wcChecks)R.push(...window._wcChecks());else R.push({name:'wildcat',ok:false,detail:'no window._wcChecks'});
  return R;}"""
 
 

@@ -152,7 +152,7 @@ cityTerrainMesh();
   // 3. City parks (Gardon de Pilotaz, Gardon de Kanal, Gardon de Guesta, Paseo de Gardonz)
   for (let pi = 0; pi < PARKS.length; pi++) {
    const P = PARKS[pi];
-   const pr = Math.max(8, (P.r || 12) - 1.5);
+   const pr = Math.max(8, (P.r == null ? 12 : P.r) - 1.5);
    const nRing = pr > 11 ? 10 : 6;
    for (let k = 0; k < nRing; k++) {
     const a = (k / nRing) * Math.PI * 2 + pi * 0.5;
