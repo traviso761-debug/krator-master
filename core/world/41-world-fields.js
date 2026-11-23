@@ -106,6 +106,12 @@ const BIOME_GROUND={'sedesert':['desert','desert'],'e badlands':['badland','badl
  'compass hills':['highland','necanyons'],'red river':['lowland','necanyons'],'carnelian pass':['dryland','outlands'],
  'the dome':['volcanic','firebliss'],'tharn hills':['highland','nwouterwall'],
  'neo-ozarks':['karst','ozarks'],'spider lake':['karst','ozarks'],'silent vale':['vale','silentvale'],
+ // 2026-11-23, the overlays the scale model's re-run brought (continental-scope's and Crook/Ria's names): the Slabfields is
+ // the Mid Basin renamed (its ground); Springhollows takes the neo-ozarks' label and polygon (biomes/springhollows/PLAN.md);
+ // Shroudhills its kit's ground (biomes/shroudhills 47-host-land: moss, granite tors, ironstone, cobble paths); the upper
+ // Ria the Ria valley's palette on the highland style
+ 'slabfields':['steps','midbasin'],'the slabfields':['steps','midbasin'],'springhollows':['karst','ozarks'],
+ 'shroudhills':['highland','shroudhills'],'upper ria':['highland','nsemiarid'],
  // the water overlays: the Ring Sea's beds and shores
  'nwern ocean':['sea','sea'],'bay of voth':['sea','sea'],'lake of shim':['sea','sea']};
 // the ground palettes (sRGB), from the kits' own ground painters where a kit exists (sedesert, eastabyss: 45-host-stage)
@@ -123,6 +129,9 @@ const PAL={
  vale:    {a:0x9cb070,b:0x76964a,pale:0xb4c08a,scrub:0x56722e,sand:0xeeeadf,sand2:0xe2dccd,gravel:0xb0aca4,silt:0x8a8a6a,damp:0x5a7a4a,mtn:0x98a882,rock:0xb0aca4},
  // the abyssal savannah's (biomes/abyssal-savannah/src/45-host-stage.js GROUND: the gold grass, the benches, the foot's loam)
  savanna: {a:0xb39552,b:0x9c8048,pale:0xb8a06a,scrub:0x6e7a3a,sand:0xb8a06a,sand2:0xa48e5c,gravel:0x8c8478,silt:0x4e4a2a,damp:0x4a3424,mtn:0x8a7a62,rock:0x7a6a54},
+ // Shroudhills' (biomes/shroudhills/src/47-host-land.js GROUND: the ravines' shade 0x6e7868, the tors' pale granite 0xdedcd4,
+ // the cobbled paths 0xc8c4ba, moss and ironstone)
+ shroudhills:{a:0x6e7868,b:0x5c6656,pale:0xdedcd4,scrub:0x5a6a44,sand:0xc8c4ba,sand2:0xd4d0c6,gravel:0xb0aca4,silt:0x6a6a5a,damp:0x3e4438,mtn:0x8a8a84,rock:0xb0aca4},
  // 2026-11-15, each from its kit's ground painter (biomes/<kit>/src: 84-host-ground, 45-host-stage, 47-host-land, 46-host-ground)
  nhighlands:   {a:0x52603a,b:0x3e5a24,pale:0x8a9274,scrub:0x6e8e3c,sand:0x8a887c,sand2:0x9a988c,gravel:0x8a887c,silt:0x6d6a66,damp:0x3a3428,mtn:0x7a7b74,rock:0x63655f},
  shighlands:   {a:0x8a8a4a,b:0x7a9a34,pale:0xc8ac62,scrub:0x4e6a2a,sand:0xb89a78,sand2:0xc4a888,gravel:0x9a948a,silt:0x7a7458,damp:0x3a4a34,mtn:0x9a948e,rock:0x6e6a68},

@@ -129,8 +129,8 @@
 "color": "#c9b08a",
 "points": [
 [
-777,
-647
+798,
+648
 ],
 [
 826,
@@ -145,16 +145,12 @@
 708
 ],
 [
-789,
-745
+816,
+718
 ],
 [
-770,
-686
-],
-[
-769,
-667
+818,
+690
 ]
 ],
 "notes": "",
@@ -206,11 +202,115 @@
 ],
 [
 1262,
-914
+912
 ],
 [
-1310,
-913
+1269,
+900
+],
+[
+1269,
+845
+],
+[
+1275,
+815
+],
+[
+1283,
+795
+],
+[
+1299,
+770
+],
+[
+1298,
+755
+],
+[
+1284,
+745
+],
+[
+1268,
+730
+],
+[
+1257,
+710
+],
+[
+1234,
+695
+],
+[
+1223,
+675
+],
+[
+1226,
+655
+],
+[
+1234,
+645
+],
+[
+1243,
+633
+],
+[
+1268,
+631
+],
+[
+1273,
+645
+],
+[
+1281,
+648
+],
+[
+1297,
+656
+],
+[
+1303,
+685
+],
+[
+1297,
+705
+],
+[
+1313,
+735
+],
+[
+1333,
+762
+],
+[
+1340,
+795
+],
+[
+1338,
+825
+],
+[
+1332,
+848
+],
+[
+1317,
+875
+],
+[
+1307,
+912
 ],
 [
 1373,
@@ -272,7 +372,7 @@
 ]
 ],
 "notes": "",
-"kind": "political",
+"kind": "geographic",
 "createdAt": "2026-09-22T07:41:36.907Z"
 },
 {
@@ -463,20 +563,20 @@
 "color": "#5da05c",
 "points": [
 [
-273,
-583
+233,
+586
 ],
 [
-299,
-555
+236,
+552
 ],
 [
-309,
-526
+245,
+516
 ],
 [
-305,
-490
+276,
+484
 ],
 [
 308,
@@ -562,11 +662,31 @@
 ],
 [
 301,
-594
+598
 ],
 [
-280,
-578
+246,
+599
+],
+[
+233,
+585
+],
+[
+237,
+548
+],
+[
+247,
+515
+],
+[
+278,
+482
+],
+[
+306,
+468
 ],
 [
 338,
@@ -1471,32 +1591,32 @@
 1022
 ],
 [
-796,
-922
+794,
+998
 ],
 [
-820,
-933
+826,
+998
 ],
 [
 858,
 1014
 ],
 [
-938,
-1065
+932,
+1058
 ],
 [
 975,
 1033
 ],
 [
-1023,
-1062
+998,
+1056
 ],
 [
-1022,
-1092
+998,
+1088
 ],
 [
 921,
@@ -1937,20 +2057,28 @@
 794
 ],
 [
-857,
-785
+876,
+782
 ],
 [
-824,
-797
+858,
+764
 ],
 [
-797,
-816
+832,
+764
 ],
 [
-796,
-859
+806,
+784
+],
+[
+795,
+814
+],
+[
+795,
+858
 ],
 [
 750,
@@ -4659,12 +4787,24 @@
 605
 ],
 [
-275,
-579
+244,
+602
 ],
 [
-292,
-536
+230,
+585
+],
+[
+234,
+550
+],
+[
+244,
+515
+],
+[
+274,
+482
 ],
 [
 302,
@@ -5186,7 +5326,7 @@
 "points": [
 [
 799,
-550
+546
 ],
 [
 786,
@@ -5213,20 +5353,24 @@
 450
 ],
 [
-872,
-476
+880,
+474
 ],
 [
-852,
-494
+868,
+470
 ],
 [
-841,
-546
+856,
+485
 ],
 [
-817,
-561
+835,
+540
+],
+[
+812,
+558
 ]
 ],
 "notes": "",
@@ -5375,20 +5519,12 @@
 476
 ],
 [
-772,
-483
-],
-[
-781,
-508
-],
-[
-796,
-492
+764,
+460
 ],
 [
 793,
-462
+460
 ],
 [
 818,
@@ -5399,44 +5535,40 @@
 440
 ],
 [
-880,
-480
+882,
+476
 ],
 [
-866,
-484
+868,
+470
 ],
 [
-857,
-495
+856,
+485
 ],
 [
-841,
-528
+835,
+540
 ],
 [
-840,
-542
+812,
+558
 ],
 [
-823,
-564
+800,
+548
 ],
 [
-806,
-557
-],
-[
-798,
+795,
 521
 ],
 [
-791,
+789,
 525
 ],
 [
-780,
-550
+779,
+549
 ],
 [
 766,
@@ -5729,16 +5861,24 @@
 827
 ],
 [
-485,
-843
+492,
+845
 ],
 [
 465,
 863
 ],
 [
+426,
+856
+],
+[
 416,
-859
+796
+],
+[
+378,
+796
 ],
 [
 360,
@@ -5761,12 +5901,28 @@
 645
 ],
 [
-276,
-583
+280,
+606
 ],
 [
-307,
-548
+245,
+601
+],
+[
+232,
+585
+],
+[
+236,
+550
+],
+[
+246,
+515
+],
+[
+322,
+515
 ],
 [
 323,
@@ -5797,31 +5953,59 @@
 599
 ],
 [
-519,
-616
+545,
+596
 ],
 [
-529,
-656
+570,
+598
+],
+[
+571,
+614
+],
+[
+546,
+636
+],
+[
+519,
+641
 ],
 [
 555,
-669
+678
 ],
 [
-573,
-704
+572,
+702
 ],
 [
 534,
-748
+746
 ],
 [
 493,
-745
+744
 ],
 [
-513,
+478,
+720
+],
+[
+442,
+720
+],
+[
+442,
+752
+],
+[
+478,
+752
+],
+[
+512,
 771
 ],
 [
@@ -7943,8 +8127,12 @@
 "color": "#3f8fb5",
 "points": [
 [
-327,
-590
+330,
+588
+],
+[
+336,
+515
 ],
 [
 343,
@@ -7991,24 +8179,28 @@
 530
 ],
 [
-496,
-542
+504,
+562
+],
+[
+478,
+564
 ],
 [
 457,
-553
+555
 ],
 [
 418,
-589
+587
 ],
 [
 394,
-585
+583
 ],
 [
 348,
-592
+590
 ]
 ],
 "notes": "",
@@ -8491,16 +8683,8 @@
 "color": "#c9b08a",
 "points": [
 [
-873,
-708
-],
-[
-883,
-724
-],
-[
-916,
-720
+944,
+712
 ],
 [
 957,
@@ -8611,16 +8795,8 @@
 648
 ],
 [
-933,
-662
-],
-[
-909,
-681
-],
-[
-888,
-696
+944,
+650
 ]
 ],
 "notes": "",
@@ -9873,13 +10049,13 @@
 1116
 ]
 ],
-"notes": "Multi-branch meandering mountain and highland pass network connecting the Yuni Emirate, Stalker Range (Hub 01), Loom-Chasms, Mid Basin, and Siphon Pits around Lake Vapora.",
+"notes": "Multi-branch meandering mountain and highland pass network connecting the Yuni Emirate, Stalker Range (Hub 01), Loom-Chasms, the Slabfields, and Siphon Pits around Lake Vapora.",
 "kind": "biome",
 "createdAt": "2026-10-28T12:15:00.000Z"
 },
 {
 "id": "rmvmidbasin101",
-"name": "Mid Basin",
+"name": "The Slabfields",
 "color": "#c9803c",
 "points": [
 [
@@ -9959,13 +10135,13 @@
 1244
 ]
 ],
-"notes": "Volcano-tectonic transitional hinge zone between Siphon Pits and Loom-Chasms: Western Loess Corridor, faulted basalt relay benches, breached horseshoe maar-diatreme amphitheaters, and subterranean Ostrukh spring resurgences.",
+"notes": "The Slabfields (was Mid Basin; renamed 2026-11-12). Between the Loom-Chasms' stretching and the Siphon Pits' squeezing: north of the hinge the Loom's warp chasms die out in the basalt benches; south of it lone slabs of flood basalt stand out of the flat bench plains, thrust up and tilted as Io's mountains are (a cliff on one face, a long ramp on the other, landslide aprons below): the Anvil, the split Halves with a patera in their gap, the still-tilting Leaner over the corridor road, the Backstop. The six breached maars, the loess-and-tuff corridor and the spring-fed paterae and chasm heads are the outposts' ground; Yuni outlaws roam it. biomes/slabfields/PLAN.md; scale model 5.1 edit 7.",
 "kind": "biome",
 "createdAt": "2026-10-28T12:30:00.000Z"
 },
 {
 "id": "rmvyiyw8ucd1y",
-"name": "neo-ozarks",
+"name": "Springhollows",
 "color": "#3f6e4a",
 "kind": "biome",
 "createdAt": "2026-11-01T23:54:20.692Z",
@@ -10446,84 +10622,6 @@
 ]
 },
 {
-"id": "rmvriavalley",
-"name": "ria valley",
-"color": "#4d9e56",
-"kind": "biome",
-"notes": "The Great Ria River Valley: broad fertile alluvial and terraced valley sloping continuously from the Eastern Highland Lake (+1,460 m) and Tharn foothills westward to the Ring/NW Ocean. Once settled by the Ancients; hosts a rich hybrid ecology of Earthlike gallery forests, terraced orchards, and alien symbiotic flora.",
-"points": [
-[
-642,
-72
-],
-[
-860,
-62
-],
-[
-1140,
-56
-],
-[
-1395,
-74
-],
-[
-1465,
-165
-],
-[
-1390,
-268
-],
-[
-1245,
-255
-],
-[
-1080,
-240
-],
-[
-885,
-245
-],
-[
-645,
-232
-]
-]
-},
-{
-"id": "rmvdoubledelta",
-"name": "double delta",
-"color": "#2c9c91",
-"kind": "biome",
-"notes": "The Great Double Delta: a massive twin-lobed marshy tide-and-wave delta at 0.0 m basin/sea level receiving both the main Ria River from the east and the second Arch & Northern Massif river system from the northwest and north. Features colonial terrestrial sponges and calcified sea-pen fields.",
-"points": [
-[
-515,
-98
-],
-[
-622,
-102
-],
-[
-625,
-208
-],
-[
-516,
-208
-],
-[
-502,
-156
-]
-]
-},
-{
 "id": "rmvarachnoids",
 "name": "arachnoid canyons",
 "color": "#d96b27",
@@ -10565,51 +10663,6 @@
 ]
 },
 {
-"id": "rmvthearch",
-"name": "the arch",
-"color": "#3b82a6",
-"kind": "biome",
-"notes": "The Arch: an exposed undersea mid-ocean spreading ridge over the Steaming Sea (inspired by Capsica's Arch), featuring a double line of parallel rift-shoulder horst ridges (+750 to +2,150 m) with a lowered axial rift valley and drowned median sound in between, linking the northern Ria coast to the Crook.",
-"points": [
-[
-42,
-355
-],
-[
-135,
-185
-],
-[
-310,
-75
-],
-[
-512,
-65
-],
-[
-515,
-240
-],
-[
-355,
-295
-],
-[
-215,
-435
-],
-[
-125,
-555
-],
-[
-45,
-520
-]
-]
-},
-{
 "id": "rmvseamounts",
 "name": "steaming seamounts",
 "color": "#e03c31",
@@ -10643,129 +10696,10 @@
 ]
 },
 {
-"id": "rmvthecrook",
-"name": "the crook",
-"color": "#5c8c46",
-"kind": "biome",
-"notes": "The Crook: a deep tectonic trough squeezed between the western crater wall and the towering Western Boundary Cordillera. Opens at its northern neck into the Arch via a sea-level tidal fjord (0.0 m) and slopes continuously upward toward the south into a fumarolic and malachite-stained montane ecosystem.",
-"points": [
-[
-52,
-535
-],
-[
-195,
-535
-],
-[
-185,
-820
-],
-[
-175,
-1085
-],
-[
-62,
-1085
-],
-[
-48,
-820
-]
-]
-},
-{
-"id": "rmvcopperglacier",
-"name": "copper glacier",
-"color": "#2eb899",
-"kind": "biome",
-"notes": "Copper Glacier & Crook–Rift Glacial Pass: a high-altitude alpine cryosphere in the southern Crook where glaciers grind through copper-porphyry, malachite, and azurite veins, tinting the banded ice verdigris-emerald and feeding the turquoise Copper Tarn (+2,380 m). A glaciated alpine pass extends east-southeast across the western rim to connect The Crook directly with the northwestern head of The Rift. Trimmed 2026-11-09 (scale model 5.1 edit 3) to the Firebliss Range's north edge: the range's cones and valleys are Firebliss's.",
-"points": [
-[
-52,
-1088
-],
-[
-195,
-1088
-],
-[
-255,
-1185
-],
-[
-365,
-1215
-],
-[
-362,
-1268
-],
-[
-307,
-1268
-],
-[
-305,
-1263
-],
-[
-234,
-1237
-],
-[
-211,
-1256
-],
-[
-155,
-1269
-],
-[
-92,
-1237
-],
-[
-48,
-1255
-]
-]
-},
-{
-"id": "rmvtharnuplands",
-"name": "tharn uplands",
-"color": "#b89f7d",
-"kind": "biome",
-"notes": "NE Tharn Uplands & Outer Rim: high, cold-dry windswept alpine and hypobaric outer-rim plateau (+5,800 to +9,800 m) inspired by Chris Wayan's Tharn, where high-elevation freeze-thaw aridity meets the airless outer crater rim.",
-"points": [
-[
-1435,
-18
-],
-[
-1808,
-18
-],
-[
-1808,
-295
-],
-[
-1565,
-295
-],
-[
-1425,
-235
-]
-]
-},
-{
 "id": "rmvoutlandpass",
 "name": "outland gate",
 "color": "#528a58",
-"kind": "geographic",
+"kind": "biome",
 "notes": "Outland Gate (NE Trans-Boundary Water-Gap Pass): a dramatic highland valley and water-gap corridor (+1,460 to +1,734 m floor framed by +4,400..+7,600 m snow peaks) breaching the northeastern rim to carry the Outland Gate River from the northern Outland lake directly into Spider Lake (see biomes/outlandgate/PLAN.md).",
 "points": [
 [
@@ -11014,8 +10948,8 @@
 "color": "#e0e0e0",
 "points": [
 [
-272,
-586
+274,
+606
 ],
 [
 250,
@@ -11078,8 +11012,8 @@
 618
 ],
 [
-253,
-579
+236,
+603
 ]
 ],
 "notes": "",
@@ -11672,16 +11606,16 @@
 894
 ],
 [
-831,
-898
+824,
+897
 ],
 [
-849,
-904
+828,
+900
 ],
 [
-848,
-894
+828,
+890
 ],
 [
 823,
@@ -12630,7 +12564,7 @@
 1206
 ]
 ],
-"notes": "",
+"notes": "Copper Glacier & Crook-Rift Glacial Pass: high-altitude alpine cryosphere in the southern Crook where glaciers grind through copper-porphyry, malachite, and azurite veins, trimmed to the north edge of the Firebliss Range.",
 "kind": "biome",
 "createdAt": "2026-11-13T10:06:08.603Z"
 },
@@ -12832,8 +12766,8 @@
 },
 {
 "id": "rmwetizlzivnz",
-"name": "Scoured hills",
-"color": "#c9b08a",
+"name": "Shroudhills",
+"color": "#4f9e7a",
 "points": [
 [
 470,
@@ -12876,7 +12810,7 @@
 311
 ]
 ],
-"notes": "",
+"notes": "Shroudhills (was Scoured hills; renamed 2026-11-22; Yonni-Zāg: Shrūda-Khīltæ): damp, mist-shrouded coastal-montane rainforest homeland of the Twin-Born Spear-Queens of Yonni. Overloaded at 0.75g & 1.35-1.59 atm with Paired Sister-Cup Cistern Sky-Ponds, Grafted Root-Hammock Canopy Turf, Lithophyte Cloak-Tors on storm-washed granite crowns, and Chambered Myrmecophyte Drum-Galls tended by cat-sized eusocial Shroud-Ant colonies (peaceful unless disturbed, implacable against territorial invaders). biomes/shroudhills/PLAN.md.",
 "kind": "biome",
 "createdAt": "2026-11-13T10:12:46.151Z"
 },
@@ -13254,13 +13188,13 @@
 161
 ]
 ],
-"notes": "",
+"notes": "Weeping Valley: dense with Ancient ruins and formerly the center of Ancient settlement in the Ria Valley. Haunted and dangerous like the Ancient's Valley; boatmen sailing the Ria River try not to linger on its shores for long.",
 "kind": "biome",
 "createdAt": "2026-11-13T10:25:34.194Z"
 },
 {
 "id": "rmweu2qb4nyia",
-"name": "red river",
+"name": "Upper Ria",
 "color": "#5da05c",
 "points": [
 [
@@ -13346,7 +13280,7 @@
 230
 ]
 ],
-"notes": "",
+"notes": "Compass Hills: iron-rich highland ridges whose ores have been permanently magnetized by the activity of an Ancient installation at the region's center. Prime source of natural magnets (lodestone/magnetized iron) used for maritime compasses and high-tech electrical/guidance goods, entering the crater via the Ham-Tsek / Korona Spider Silk route.",
 "kind": "biome",
 "createdAt": "2026-11-13T10:29:33.276Z"
 },
@@ -13442,7 +13376,7 @@
 107
 ]
 ],
-"notes": "",
+"notes": "The Dome: a large shield volcano, much lower than the Throne, yet high enough (+1,440 to +2,925 m) to push its region into a cool, wet tropical/subtropical highland climate (Cfa/Cfb).",
 "kind": "biome",
 "createdAt": "2026-11-13T10:34:50.734Z"
 },
@@ -13707,6 +13641,484 @@
 "notes": "Throne vent-shoulder & ash-nomad kin of Zeijani (Ṣunu-Ašru & Šadū-Qarnu); raid colonizers, export fungal goods & Ranj. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14).",
 "kind": "political",
 "createdAt": "2026-11-13T08:00:00.000Z"
+},
+{
+"id": "rzeijani0001",
+"name": "Zeijani",
+"color": "#8a6fc9",
+"points": [
+[
+800,
+816
+],
+[
+808,
+788
+],
+[
+832,
+768
+],
+[
+858,
+768
+],
+[
+878,
+788
+],
+[
+878,
+806
+],
+[
+874,
+811
+],
+[
+870,
+838
+],
+[
+876,
+868
+],
+[
+849,
+887
+],
+[
+830,
+886
+],
+[
+812,
+866
+],
+[
+802,
+848
+]
+],
+"notes": "Subterranean lava-tube and tuff-chimney realm of the Zeijani on the Throne (Dhelv, Silbaru, Surpu-Dhelv, Qarnu-Tubu, Nuru-Saplu); carved from League of Amphitriton in Wave 0 hygiene (edit_521_wave0_hygiene.py; RING-SEA-SCOPE.md Ruling #28).",
+"kind": "political",
+"createdAt": "2026-11-22T00:00:00.000Z"
+},
+{
+"id": "ryusarcarco1",
+"name": "Yusar (Carcosa)",
+"color": "#6fb5a8",
+"points": [
+[
+382,
+800
+],
+[
+412,
+800
+],
+[
+418,
+848
+],
+[
+372,
+842
+]
+],
+"notes": "Autonomous western Yusar sanctuary enclave around Carcosa (395, 812); carved out of Eternal State in Wave 0 hygiene (edit_521_wave0_hygiene.py; CONTINENTAL-SCOPE.md Ruling #6 & section 3.9 #4).",
+"kind": "political",
+"createdAt": "2026-11-22T00:00:00.000Z"
+},
+{
+"id": "ryusarhenge1",
+"name": "Yusar (Henge)",
+"color": "#6fb5a8",
+"points": [
+[
+445,
+723
+],
+[
+475,
+723
+],
+[
+475,
+749
+],
+[
+445,
+749
+]
+],
+"notes": "Autonomous eastern Yusar sanctuary enclave around Henge (457, 735); carved out of Eternal State in Wave 0 hygiene (edit_521_wave0_hygiene.py; CONTINENTAL-SCOPE.md Ruling #6 & section 3.9 #4).",
+"kind": "political",
+"createdAt": "2026-11-22T00:00:00.000Z"
+},
+{
+"id": "r27lowria01",
+"name": "Lower Ria Dynasty",
+"color": "#d49b42",
+"kind": "political",
+"points": [
+[
+616,
+134
+],
+[
+706,
+146
+],
+[
+765,
+130
+],
+[
+902,
+138
+],
+[
+906,
+224
+],
+[
+858,
+276
+],
+[
+730,
+266
+],
+[
+648,
+206
+],
+[
+616,
+162
+]
+],
+"notes": "Western Dynasty of Lower Ria: Heartland capital (796,176) and Ria Sound bluff port (626,140) above 0-pop Double Delta.",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27uppria01",
+"name": "Upper Ria Dynasty",
+"color": "#b85d43",
+"kind": "political",
+"points": [
+[
+1084,
+34
+],
+[
+1268,
+12
+],
+[
+1352,
+86
+],
+[
+1306,
+162
+],
+[
+1248,
+206
+],
+[
+1112,
+222
+],
+[
+1084,
+164
+]
+],
+"notes": "Eastern Dynasty of Upper Ria: Upper Ria capital (1186,118), Springhollows (1135,153), and The Scaffold (1246,18).",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27weeping1",
+"name": "Weeping Valley Outposts",
+"color": "#7e8f56",
+"kind": "political",
+"points": [
+[
+908,
+114
+],
+[
+1078,
+114
+],
+[
+1078,
+194
+],
+[
+908,
+194
+]
+],
+"notes": "Contested Weeping Valley river-forts (Weeping Fort 996,156) amid feral sap-groves between Lower and Upper Ria.",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27arcflow1",
+"name": "Arcflow Republics",
+"color": "#5c8ead",
+"kind": "political",
+"points": [
+[
+632,
+42
+],
+[
+868,
+48
+],
+[
+886,
+116
+],
+[
+758,
+126
+],
+[
+696,
+140
+],
+[
+634,
+132
+]
+],
+"notes": "Independent popular bell-assembly Veche smith republics on Pak-Ma and Mo-Ma (Pak-Veche 718,124 & Mo-Veche 664,108).",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27moleshlf",
+"name": "Moleshelf Clans",
+"color": "#a8845e",
+"kind": "political",
+"points": [
+[
+872,
+24
+],
+[
+1078,
+24
+],
+[
+1078,
+110
+],
+[
+892,
+110
+]
+],
+"notes": "Sunken-loess yaodong Talpathere-herding clans (Dipu-Yaduwe 945,78) running the northern caravan bypass.",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27compass1",
+"name": "Compass Hills Cantons",
+"color": "#6b7fd7",
+"kind": "political",
+"points": [
+[
+982,
+198
+],
+[
+1108,
+198
+],
+[
+1114,
+276
+],
+[
+992,
+276
+]
+],
+"notes": "Non-ferrous bronze/nephrite delver cantons around Lodestone (1058,224), #1 planetary superconductors & magnets source.",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27yonnishr",
+"name": "Yonni & Shroudhills",
+"color": "#8f5b8a",
+"kind": "political",
+"points": [
+[
+318,
+378
+],
+[
+468,
+206
+],
+[
+628,
+214
+],
+[
+628,
+326
+],
+[
+438,
+446
+],
+[
+336,
+512
+],
+[
+306,
+512
+]
+],
+"notes": "Twin-Born Spear-Queens (Sfira-Kandetae) of Yonni (346,418) and Shroudhills down to Eternia Y = 515 frontier.",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27battisle",
+"name": "Battered Isle Exiles",
+"color": "#4d9b96",
+"kind": "political",
+"points": [
+[
+426,
+224
+],
+[
+506,
+224
+],
+[
+506,
+286
+],
+[
+426,
+286
+]
+],
+"notes": "Unpainted Eternian maritime holdout on Battered Isle (435,259) brokering Farport <-> Ria Sound trade.",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27huerukur",
+"name": "Hueru-Kuran",
+"color": "#3f8f7b",
+"kind": "political",
+"points": [
+[
+52,
+544
+],
+[
+168,
+548
+],
+[
+168,
+712
+],
+[
+52,
+712
+]
+],
+"notes": "Crookshore whale-clans & nephrite wire-sawyers across 4 drowned ejecta calderas (Kopa-Hueru 75,679 & Kaskedi-Kuran 128,660).",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27cflitqbn",
+"name": "cFlit-qBon",
+"color": "#2f6f9e",
+"kind": "political",
+"points": [
+[
+36,
+342
+],
+[
+218,
+342
+],
+[
+218,
+538
+],
+[
+36,
+538
+]
+],
+"notes": "Pelagic free-diving click-speaking Ark-Wards of Drownlands & The Arch (Deep-Ward Anchorage 148,492).",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27dzaghvrd",
+"name": "Dzagh-Vardzi",
+"color": "#9c624c",
+"kind": "political",
+"points": [
+[
+48,
+718
+],
+[
+166,
+718
+],
+[
+166,
+1068
+],
+[
+48,
+1068
+]
+],
+"notes": "Seven disunited gorge-kingdoms K1-K7 + neutral Flumi-Bridzi (94,966) shooting 30 m cypress logs & smelting tin-bronze.",
+"createdAt": "2026-11-23T00:00:00.000Z"
+},
+{
+"id": "r27hushkin1",
+"name": "Hush-Kin",
+"color": "#7d8c99",
+"kind": "political",
+"points": [
+[
+170,
+842
+],
+[
+234,
+842
+],
+[
+234,
+1068
+],
+[
+170,
+1068
+]
+],
+"notes": "Handspeak Sign-Language sanctuary tribes around the Silent Vales twin ribbon lakes (192,962).",
+"createdAt": "2026-11-23T00:00:00.000Z"
 },
 {
 "id": "cut-xanadu-north-shore",

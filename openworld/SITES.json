@@ -7,6 +7,8 @@
   "pinnacle": {
    "name": "Pinnacle Rock",
    "order": 1,
+   "origin_px": [1007, 686],
+   "origin_note": "Pinned 2026-11-23 to the origin its cut had, before the re-run's re-cut (the scale-model queue), so the frame and the relief laid in it hold.",
    "sites": ["staiytii0y"],
    "polygons": [],
    "upsample": "auto",
@@ -17,6 +19,8 @@
   "xanadu-oidong-highrift": {
    "name": "Xanadu, Oidong and the High Rift",
    "order": 2,
+   "origin_px": [1191, 1569],
+   "origin_note": "Pinned 2026-11-23 to the origin its cut had, before the re-run's re-cut (the scale-model queue), so the frame and the relief laid in it hold.",
    "sites": ["s57bkv9741", "sq80bzd7ep", "skm4jjo2vl", "shvo49k0y2", "slaitwal0001", "xanaduspill", "sdevcamp0001", "sl758m2396", "sstrongbowft", "sgihon000001", "stearscamp01"],
    "polygons": ["rmufcgvtxatfx", "rmuklrcae6jb5", "rmvhighrift100"],
    "corridors": [{"from": "shvo49k0y2", "to": "xanaduspill", "width_km": 10}, {"from": "xanaduspill", "to": "sdevcamp0001", "width_km": 10}],
@@ -28,6 +32,8 @@
   "iziz-cluster": {
    "name": "The Iziz cluster",
    "order": 3,
+   "origin_px": [1059, 890],
+   "origin_note": "Pinned 2026-11-23 to the origin its cut had, before the re-run's re-cut (the scale-model queue), so the frame and the relief laid in it hold.",
    "sites": ["seed07", "skukf2qmmq", "sor1zqih8x"],
    "polygons": [],
    "corridors": [{"from": "skukf2qmmq", "to": "seed07", "width_km": 10}, {"from": "seed07", "to": "sor1zqih8x", "width_km": 10}],
@@ -37,6 +43,8 @@
   "oidong-highrift": {
    "name": "The Oidong Valley and the High Rift",
    "order": 4,
+   "origin_px": [1306, 1634],
+   "origin_note": "Pinned 2026-11-23 to the origin its cut had, before the re-run's re-cut (the scale-model queue), so the frame and the relief laid in it hold.",
    "sites": ["sq80bzd7ep", "ssinggjar01", "smirrorgrange01", "scaldronhouse01", "sfgtxw10kr"],
    "polygons": ["rmuklrcae6jb5", "rmvhighrift100"],
    "upsample": "auto",

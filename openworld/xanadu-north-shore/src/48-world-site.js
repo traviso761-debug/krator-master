@@ -29,4 +29,9 @@ var SITE_SPEC={region:'xanadu-north-shore',world:8431491,bridges:{culture:'xanad
     town's spur, east of the Swīṭ Siṭrīm's gorge; P8, the owner: "the switchback road does need to connect in back") */
  links:[['spher0north1','shvo49k0y2',{hw:3,r:1500,keep:true,stops:XNS_STOPS,culture:'xanadu',guide:[[843.60,1489.29],[838,1487.2],
    [833,1485.6],[828,1483.6],[824.3,1481.2],[823,1479.6],[822.7,1477.6],[823.2,1475.6],[822.9,1473.6],[822.9,1471.6],
-   [823.4,1469.6],[824.7,1467.6],[826.2,1465.6],[827,1463.8],[830,1463.6],[833.5,1463.6],[837,1463.3],[840,1463]]}]]};
+   [823.4,1469.6],[824.7,1467.6],[826.2,1465.6],[827,1463.8],[830,1463.6],[833.5,1463.6],[837,1463.3],[840,1463]]}],
+  /* the shore road west from Malbari (825,1488) over the Qol Siṭrīm to Hāibh (817,1490): it crosses the river on the Qol
+     bridge (SITES.json sxanqolbridge01, r272 at 823.57,1487.23; the owner, 2026-11-23: "place bridge on map at open world
+     step"), which `bridges` above builds where the road meets the named river */
+  ['sxanlkmulberry01','sxanlkhive01',{hw:2,r:1000,keep:true,culture:'xanadu',guide:[[825,1488],[824.3,1487.5],[823.57,1487.23],
+   [822.8,1487.3],[820.5,1488.4],[817,1490]]}]]};
