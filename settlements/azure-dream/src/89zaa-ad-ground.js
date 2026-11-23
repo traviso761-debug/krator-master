@@ -5,7 +5,7 @@
 // cells of the far ground's grid), bio: {origin, center} for the flora}. Its own 89zad-site.js then places its records with
 // adPut / adPad / adZigzag and gives AD_WAYS and AD_PAVED (the flora's mask reads them when the biome grows, in 90ae).
 //   the ground   the scale model's cut (region/data, gen/39ad-world-data.js) through the open world's fields (WORLD.H,
-//                openworld/isle-demo 41-world-fields.js, read in place), in world metres x = (px - origin)*2000, z likewise
+//                core/world/41-world-fields.js, read in place), in world metres x = (px - origin)*2000, z likewise
 //   the cove     the two headland records of edit_517_azure.py (lf_azure_cove_west, lf_azure_cove_east), stamped through
 //                WORLD.landHook with core/world's island profile (41l-world-landforms.js, which this branch does not have: the
 //                same records, the same profile, without the waterline's noise wobble; KNOWN_ISSUES.md)
