@@ -34,7 +34,7 @@ function buildXaTimberYard(G,o){reseed(34901+(o.v|0));const V=xV(o),earth=xC(xPi
   for(let j=0;j<6;j++){vB('vWood',x,.2+j*.2,z,4.2,.08,1.6,0,board.clone().multiplyScalar(rr(.9,1.08)));for(const u of[-1.6,0,1.6])vB('vWood',x+u,.28+j*.2,z,.06,.08,1.7,0,timD);}
   vB('vWood',x,1.45,z,4.6,.05,2.0,0,timD);for(const u of[-1.8,1.8])vB('vWood',x+u,0,z,.24,.2,1.7,0,timD);}
  /* the shed: posts, a board gable, the shaping bench and the ribs and knees laid out under it; v 1 a rubble back wall */
- const SX=9,SZ=-1,SW=7,SD=6,SH=3;
+ const SX=8.4,SZ=-1,SW=7,SD=6,SH=3;   /* the shed 0.6 m in from the east line: its gable roof inside the lot (kits/xanadu/tests/test-footprints.js) */
  for(const x of[SX-SW/2,SX,SX+SW/2])for(const s of[-1,1])vB('vWood',x,0,SZ+s*SD/2,.22,SH,.22,0,timD);
  for(const s of[-1,1])vB('vWood',SX,SH,SZ+s*SD/2,SW+.3,.2,.24,0,timD);
  vnGableRoof(SX,SH+.2,SZ,SW+.5,SD+.4,1.2,0,'vWood',board,.5);

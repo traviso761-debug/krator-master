@@ -34,11 +34,7 @@ FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();ofPm.multiplyMatrices(camera.pr
   for(let k=0;k<n;k++){const top=S.yTop-rise*(k+1)/n+rise/n,x=S.xTop-(k+.5)*run;stone.push([x,(top+S.yBot-.3)/2,S.z,Math.abs(run)+.02,top-S.yBot+.3,S.w,0]);nStair++;}
   if(typeof KWALK!=='undefined')KWALK.strip({a:[S.xBot,S.z,S.yBot],b:[S.xTop,S.z,S.yTop],w:S.w,name:'stair:'+S.id,tag:'opalford.stair'});}
  window._opalford.stairSteps=nStair;
- // the mill's weir: a low wall of dressed stone across the river, its top half a metre over the water above it
- const Wr=W.weir,ww=ofW(Wr.z);stone.push([(Wr.x0+Wr.x1)/2,ww+Wr.top-1.6,Wr.z,Wr.x1-Wr.x0,3.2,Wr.w,0]);
- // the fish weirs: stake fences in a V down the current, a stake every 0.8 m, standing a metre over the water
- for(const f of W.fishWeirs){const w=ofW(f.z);for(let i=1;i<f.pts.length;i++){const a=f.pts[i-1],b=f.pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);
-  for(let s=0;s<=L;s+=.8){const x=a[0]+(b[0]-a[0])*s/L,z=a[1]+(b[1]-a[1])*s/L,bed=ofH(x,z),top=w+1+K.next()*.3;wood.push([x,(bed+top)/2,z,.12,top-bed,.12,K.next()*3]);}}}
+ // (the mill's weir and the fish weirs are the kit's pieces now: kits/xanadu/extra/88j xa_weir, xa_fish_weir, placed by 89zp)
  // the ferry's rope: a post on each bank at the raft's mooring (89zp), the hawser between them over the water, the raft's own
  // line runs on it when the ford is shut
  const rope=[];{const raft=OF_PLACE.find(p=>p.key==='xa_ferry_raft');if(raft){const z=raft.z,c=ofRiverX(z),hw=ofHW(z),xs=[c-hw-4,c+hw+4],top=[];
@@ -47,7 +43,7 @@ FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();ofPm.multiplyMatrices(camera.pr
  const mk=(list,color,rough,name)=>{if(!list.length)return;const M=new T3.InstancedMesh(new T3.BoxGeometry(1,1,1),new T3.MeshStandardMaterial({color,roughness:rough}),list.length),m4=new T3.Matrix4(),q=new T3.Quaternion(),eu=new T3.Euler();
   list.forEach((b,i)=>{q.setFromEuler(eu.set(0,b[6],0));m4.compose(new T3.Vector3(b[0],b[1],b[2]),q,new T3.Vector3(b[3],b[4],b[5]));M.setMatrixAt(i,m4);});
   M.instanceMatrix.needsUpdate=true;M.name=name;M.userData.probeSkip=true;scene.add(M);};
- mk(stone,0x9a9484,.9,'the weir and the Spray Stair');mk(wood,0x6b5640,.95,'the fish weirs and the ferry\'s posts');mk(rope,0x5a4a36,.9,'the ferry\'s rope');
+ mk(stone,0x9a9484,.9,'the Spray Stair');mk(wood,0x6b5640,.95,'the ferry\'s posts');mk(rope,0x5a4a36,.9,'the ferry\'s rope');
  window._opalford.ferryRope=rope.length;
  window._opalford.works={stone:stone.length,stakes:wood.length};})();
 // ---------------------------------------------------------------- the flora: the Vale of Xanadu biome over the town's mask (89zp)
