@@ -33,7 +33,7 @@ const GROUND_HZ=(function(){if(typeof KHORIZON==='undefined'||new URLSearchParam
  const t0=performance.now(),S=TERR.R*1.1,H=KHORIZON.bake({box:[-S,-S,S,S],n:256,h:terrainH,
   far:FAR?{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-14000,-14000,14000,14000],n:200}:undefined});
  window._horizon={ms:Math.round(performance.now()-t0),n:H.n,skipped:[]};
- if(samplersOf(MAT_GROUND)+2+(SHADOW_WANT?1:0)<=MAXT)KHORIZON.shade(MAT_GROUND,H);else window._horizon.skipped.push('the ground');
+ if(samplersOf(MAT_GROUND)+2+2+(SHADOW_WANT?1:0)<=MAXT)KHORIZON.shade(MAT_GROUND,H);else window._horizon.skipped.push('the ground');
  return H;})();
 window._units.withHorizon=samplersOf(MAT_GROUND);
 window._far=FAR?{tris:FAR.tris}:null;

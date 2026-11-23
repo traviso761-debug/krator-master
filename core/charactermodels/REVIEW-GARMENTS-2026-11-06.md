@@ -544,3 +544,21 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   `fixes-` and `motifs-2026-11-10.jpg` and nine pairs in `closeups-2026-11-10.jpg` replace the first set (removed).
   The strip changes 53 pieces, not 71. On consistent pages the islander shaman is the same before and after the
   strip to the eye, as the audit said.
+- **The last regressions chased (2026-11-11).** Split by step on consistent pages. The Abyssal trade woman was the
+  sleeve cap narrowing a boubou's sleeve, cut wide on purpose, so its hem sat inside the gown and the armhole showed
+  its inside: `limb_tube` and `sleeves` take `wide=True`, the two boubou calls pass it, and all five Abyssal outfits are
+  back at their figures ("inside" 9846 to 5813; b1256ac3f). The Yuni trade woman and the Xanadu priest are
+  improvements to the eye that the count scores against (the duster's satchel strap no longer a 15 cm spike; the
+  priest's sash on his robe); the dronemaster and the commissar are collars standing as rings. Left as they are.
+- **Issue 5 by sight (2026-11-11): `tools/hole_repair.py`.** For every hole patch of the audit's shots, rays through
+  its pixels against the whole skin, hidden triangles included: the first skin triangle a ray meets is one the eye sees
+  through an opening. On the eighteen outfits with the most "hole" pixels, most patches have no hidden skin behind them
+  at all (the Izani peasant woman, the Yuni trooper woman and both Xanadu rich: none): the audit's "hole" is mostly
+  open air ringed by cloth, between an arm and the body or between the legs, not a hide mask's fault, and issue 5 is
+  far smaller than the report held. The real ones, seen in two shots or more and unhidden through `write_kit`: 20
+  triangles under the Izani peasant's leg wraps, 11 under the islander shaman's mantle, 5 under his kilt, 1 under the
+  Beast Rider peasant's moccasins (`tests/hide-repairs.json`; `hole_repair.py apply` restores them after a Blender
+  rebuild or `make_mpfb.py hides`). "Hole" on the shaman 3435 to 2905 px, on the Izani peasant 9105 to 8932; "under"
+  and "inside" unchanged. Issue 2 (thighs and calves through breeches) does not reproduce: no trousers show skin at
+  the legs in the 66-outfit audit. What skin remains there is kilts and skirts in a crouch (the Dalab peasant woman's
+  kilt 2711 px, the Chichani noble woman's gown 2402, the Order novices), which is the hull's and the chains' work.

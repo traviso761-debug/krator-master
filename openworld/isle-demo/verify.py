@@ -300,12 +300,26 @@ async def run(a):
         if a.list:
             print('\n'.join(await pg.evaluate('_api.views()'))); raise Abort(0)
         print('settle:', json.dumps(await pg.evaluate('_api.settle(240000)')))
+        for ev in (a.eval or []):
+            try:
+                print('eval:', json.dumps(await pg.evaluate(ev))[:6000])
+            except Exception as e:
+                print('eval failed:', str(e)[:600]); fails.append('eval')
         if a.assert_:
             has = await pg.evaluate(HAS)
             # the world's checks read the flora round the camera: the start view (little-demo's, west of a Shade this region
             # does not have) falls back to (-6000, 2500), deep sea, where no tile holds a record; so over Kautoa first, settled
             await pg.evaluate("(()=>{const K=WORLD_DATA.meta.settlements.find(s=>s.name==='Kautoa');CAM.setView(K.x+2500,K.z-2500,300,0,-.2);})()")
             await pg.evaluate('_api.settle(240000)')
+            # the world's flora checks read the tiles round the camera: with none built there (the camera out at sea, as
+            # an old copy of this verify had it: BUGS-2026-11-15 S9, "0 records"), say so once instead of four flora fails
+            where = await pg.evaluate("(()=>{const P=HOST.camera.position;return{x:Math.round(P.x),z:Math.round(P.z),"
+                                      "sea:WORLD.water(P.x,P.z)>WORLD.H(P.x,P.z),started:!!_api.ready(),records:FLORA.stats.records,tiles:FLORA.stats.tiles};})()")
+            if not (where['records'] > 0):
+                print('  FAIL  the flora round the camera is built : none (camera at %d,%d%s; world started %s; %d tiles): '
+                      'the flora checks below read nothing' % (where['x'], where['z'], ', over water' if where['sea'] else '',
+                                                               where['started'], where['tiles']))
+                fails.append('no flora round the camera')
             print('--- the world\'s checks (core/world/91-world-probe.js, over Kautoa) ---')
             for r in await pg.evaluate('_api.hostChecks()'):
                 need = APPLIES.get(r['name'])
@@ -430,4 +444,5 @@ if __name__ == '__main__':
     ap.add_argument('--assert', dest='assert_', action='store_true')
     ap.add_argument('--out', default='./shots')
     ap.add_argument('--size', default='1280x800')
+    ap.add_argument('--eval', action='append', help='JS source to evaluate after the first settle, printed (repeatable)')
     sys.exit(asyncio.run(run(ap.parse_args())))

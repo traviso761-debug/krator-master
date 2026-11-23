@@ -79,7 +79,7 @@ const STAIR_LAM=(function(){if(STAIR.none||typeof KSTRATA==='undefined'||!KSTRAT
  const lin=h=>Math.pow(parseInt(h.slice(1,3),16)/255,2.2)*.3+Math.pow(parseInt(h.slice(3,5),16)/255,2.2)*.59+Math.pow(parseInt(h.slice(5,7),16)/255,2.2)*.11;
  S.H=H;S.k=1/((lin(col.a)+lin(col.b))/2);S.L=L;return S;})();
 window._lamina=STAIR_LAM?{H:STAIR_LAM.H,years:Math.round(STAIR_LAM.H/(.0008*365))}:null;   /* all or none: a page missing a set keeps the old mix whole */
-MAT_GROUND.onBeforeCompile=sh=>{if(STAIR_LAM)Object.assign(sh.uniforms,STAIR_LAM.uniforms);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uMacro={value:TEX_MACRO};Object.assign(sh.uniforms,GRU);
+MAT_GROUND.onBeforeCompile=sh=>{if(STAIR_LAM)Object.assign(sh.uniforms,STAIR_LAM.uniforms);if(!KG_ON)sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uMacro={value:TEX_MACRO};Object.assign(sh.uniforms,GRU);
  const lib=k=>GLAY&&GLAY[k]&&(!KG_ON||k==='mat');   /* on KGROUND only the mats' set is the kit's sampler */
  for(const k in GL_KEYS)if(lib(k))sh.uniforms['uG_'+k]={value:GLAY[k].map};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aC,aT,aU,aW;attribute vec2 aPL;varying vec4 vC,vT,vU,vW;varying vec2 vPL;varying vec3 vGWP;')
@@ -87,14 +87,14 @@ MAT_GROUND.onBeforeCompile=sh=>{if(STAIR_LAM)Object.assign(sh.uniforms,STAIR_LAM
  const libKeys=Object.keys(GL_KEYS).filter(lib);
  const L=k=>{const P=GL_KEYS[k];if(lib(k))return'_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt)';const c=new THREE.Color(P[0]).convertSRGBToLinear();
   return'(vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')*mix(1.0,dt.r*1.08,'+P[1].toFixed(2)+'))';};
- let decl='uniform sampler2D uDetail,uMacro;uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec4 vC,vT,vU,vW;varying vec2 vPL;varying vec3 vGWP;'+
+ let decl=(KG_ON?'uniform sampler2D uMacro;':'uniform sampler2D uDetail,uMacro;')+'uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec4 vC,vT,vU,vW;varying vec2 vPL;varying vec3 vGWP;'+
   (libKeys.length?'uniform sampler2D '+libKeys.map(k=>'uG_'+k).join(',')+';':'')+GEYSER.GLSL_LAY+(STAIR_LAM?STAIR_LAM.glsl:'')+
   // the mats' colour by the heat (0..1 of 33..100 degC): clear water over ~73, yellow-green, orange, orange-brown, brown-olive
   (SG&&SG.mats?'vec3 _matCol(float h){'+SG.mats+'}':'vec3 _matCol(float h){vec3 c=vec3(0.36,0.32,0.14);c=mix(c,vec3(0.56,0.3,0.1),smoothstep(0.1,0.17,h));c=mix(c,vec3(0.85,0.46,0.12),smoothstep(0.25,0.32,h));'+
   'c=mix(c,vec3(0.86,0.72,0.2),smoothstep(0.42,0.47,h));c=mix(c,vec3(0.66,0.74,0.36),smoothstep(0.5,0.55,h));return pow(c,vec3(2.2));}');
- const body='vec3 _E=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);vec3 dt=texture2D(uDetail,p*0.13).rgb;'+
+ const body='vec3 _E=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);vec3 dt=texture2D('+(KG_ON?'uMacro':'uDetail')+',p*0.13).rgb;'+
   'float rock=vC.a,heat=vT.x,sin_=vT.y,film=vT.z,acid=vT.w,dead=vU.z,mud=vU.w,terr=vW.x,sand=vW.y,vent=vW.z,grass=vW.w;'+
-  'vec3 base=pow(vC.rgb,vec3(2.2));float _sk=smoothstep(0.25,0.75,texture2D(uMacro,p*0.011).g+dt.r*0.2-0.1);'+(KG_ON?'vec3 c=base;diffuseColor.rgb=c;\n/*KGROUND*/\nc=diffuseColor.rgb;':'vec3 c=mix('+L('litter')+',base,0.35);'+
+  'vec3 base=pow(vC.rgb,vec3(2.2));float _sk=smoothstep(0.25,0.75,texture2D(uMacro,p*0.011).g+'+(KG_ON?'dt.b':'dt.r')+'*0.2-0.1);'+(KG_ON?'vec3 c=base;diffuseColor.rgb=c;\n/*KGROUND*/\nc=diffuseColor.rgb;':'vec3 c=mix('+L('litter')+',base,0.35);'+
   'c=mix(c,'+L('grass')+'*mix(vec3(1.0),base*3.0,0.3),grass*0.9);'+
   'c=mix(c,'+L('moss')+',grass*smoothstep(0.03,0.09,heat)*(1.0-smoothstep(0.2,0.32,heat))*0.8);'+
   'c=mix(c,'+L('rock')+',rock);c=mix(c,'+L('sand')+'*mix(vec3(1.0),base*4.0,0.25),sand);'+

@@ -29,14 +29,27 @@ function stationBuild(){const t0=performance.now(),C=KCAVERN.create({ground:(x,z
  C.build();
  /* the rock's material: lit by the lamps only (a sealed vault: no sun, no sky) */
  const LAMPS=[[0,VAULT.floor+2,-90],[0,VAULT.floor+2,0],[30,VAULT.floor+2,90],[-40,VAULT.floor+2,40],[TB.conduit[0]*140,VAULT.floor+12,TB.conduit[1]*140],[TB.dir[0]*-260,VAULT.floor+2-.05*-260+10,TB.dir[1]*-260]];
- const U={uLamps:{value:LAMPS.map(p=>new THREE.Vector3(p[0],p[1],p[2]))},uHead:{value:1}};
- const vs='#ifndef USE_OCC\nfloat occ=1.0;\n#else\nattribute float occ;\n#endif\nvarying vec3 vW;varying vec3 vN;varying float vOcc;varying vec3 vC;void main(){\n#ifdef USE_INSTANCING\nmat4 mm=modelMatrix*instanceMatrix;\n#else\nmat4 mm=modelMatrix;\n#endif\nvec4 w=mm*vec4(position,1.0);vW=w.xyz;vN=normalize(mat3(mm)*normal);vOcc=occ;vC=vec3(1.0);gl_Position=projectionMatrix*viewMatrix*w;}';
- const fs='uniform vec3 uLamps[6];uniform float uHead;varying vec3 vW;varying vec3 vN;varying float vOcc;varying vec3 vC;uniform vec3 uBase;uniform float uSheen;'+
+ const U={uLamps:{value:LAMPS.map(p=>new THREE.Vector3(p[0],p[1],p[2]))},uHead:{value:1},uO:{value:new THREE.Vector3(0,VAULT.floor,0)}};
+ /* THE TEXTURE (the owner, 2026-11-15: the columns drew flat grey): the station packs rockColumns (station.json "tex", the library's rock.columnar,
+    a grey map of mean 0.5) and this lamp shader never sampled it. Now the rock takes it triplanar on the world (8 m a tile, as the shield's rock
+    face), and each column face takes its own strip of it up the face (FACES: a face's width across the strip, the cross-joints up it, each face
+    and column its own offset), as a ratio about 1 on the base colour (the pack's 0.5 decodes to 0.218: x4.59), so the colours stay the plan's.
+    Without the library (?tex=0) the shader is the flat one it was.
+    Two things learnt on the GPU shot: the face's offset is hashed in the VERTEX shader from the face's own normal (its three vertices share it:
+    hashed per pixel from an interpolated varying, the rounding noise times the hash's 43758 sampled a random x on every pixel: a dotted noise);
+    and the rock's world coordinates are taken from the vault's floor (uO), as the raw y (12 km: ~1,500 tiles) loses the sampler's sub-texel bits */
+ const TEXC=hostGroundLib('rockColumns',null),TK=1/8;
+ const vs='#ifndef USE_OCC\nfloat occ=1.0;\n#else\nattribute float occ;\n#endif\nvarying vec3 vW;varying vec3 vN;varying float vOcc;varying vec3 vC;varying vec2 vUv;varying vec3 vS;varying float vF;void main(){\n#ifdef USE_INSTANCING\nmat4 mm=modelMatrix*instanceMatrix;\n#else\nmat4 mm=modelMatrix;\n#endif\nvec4 w=mm*vec4(position,1.0);vW=w.xyz;vN=normalize(mat3(mm)*normal);vOcc=occ;vC=vec3(1.0);vUv=uv;'+
+  'vS=vec3(fract(mm[3].x*0.1373+mm[3].z*0.2719),length(mm[0].xyz),mm[3].y);float fk=floor(atan(normal.z,normal.x)/1.0471976+0.5);vF=fract(sin(fk*12.9898+vS.x*78.233)*43758.5453);gl_Position=projectionMatrix*viewMatrix*w;}';
+ const fs='uniform vec3 uLamps[6];uniform float uHead;uniform vec3 uO;varying vec3 vW;varying vec3 vN;varying float vOcc;varying vec3 vC;varying vec2 vUv;varying vec3 vS;varying float vF;uniform vec3 uBase;uniform float uSheen;\n'+
+  '#ifdef USE_TEXC\nuniform sampler2D uTex;\nfloat texK(vec3 n){vec3 a=abs(n);float t;\n#ifdef FACES\nif(a.y<0.5){float f=fract(vUv.x*6.0);t=texture2D(uTex,vec2(vF+f*vS.y*'+TK.toFixed(4)+',(vW.y-vS.z)*'+TK.toFixed(4)+'+vS.x*3.7)).r;}else\n#endif\n'+
+  '{vec3 p=(vW-uO)*'+TK.toFixed(4)+';a/=a.x+a.y+a.z;t=texture2D(uTex,p.zy).r*a.x+texture2D(uTex,p.xz).r*a.y+texture2D(uTex,p.xy).r*a.z;}\nreturn clamp(pow(t,2.2)*4.59,0.25,2.4);}\n#endif\n'+
   'void main(){vec3 n=normalize(vN);vec3 c=vec3(0.0);for(int i=0;i<6;i++){vec3 l=uLamps[i]-vW;float d=length(l);c+=vec3(1.0,0.78,0.52)*max(dot(n,l/d),0.0)*120.0/(d*d+40.0);}'+
   'vec3 e=cameraPosition-vW;float de=length(e);vec3 v=e/de;c+=uHead*vec3(0.95,0.95,1.0)*max(dot(n,v),0.0)*260.0/(de*de+60.0);'+
-  'float sp=pow(max(dot(reflect(-v,n),v),0.0),24.0)*uSheen*uHead*220.0/(de*de+60.0);'+
-  'vec3 col=uBase*vC*(c*vOcc+0.012)+vec3(0.6,0.62,0.66)*sp;gl_FragColor=vec4(pow(col,vec3(1.0/2.2)),1.0);}';
- const mat=(base,sheen,occ)=>{const m=new THREE.ShaderMaterial({uniforms:Object.assign({uBase:{value:new THREE.Color(base).convertSRGBToLinear()},uSheen:{value:sheen}},U),vertexShader:vs,fragmentShader:fs,defines:occ?{USE_OCC:''}:{}});m.userData.noHorizon=true;return m;};
+  'float tk=1.0;\n#ifdef USE_TEXC\ntk=texK(n);\n#endif\nfloat sp=pow(max(dot(reflect(-v,n),v),0.0),24.0)*uSheen*uHead*220.0/(de*de+60.0)*mix(0.6,1.0,clamp(tk,0.0,1.0));'+
+  'vec3 col=uBase*tk*vC*(c*vOcc+0.012)+vec3(0.6,0.62,0.66)*sp;gl_FragColor=vec4(pow(col,vec3(1.0/2.2)),1.0);}';
+ const mat=(base,sheen,occ,faces)=>{const d={};if(occ)d.USE_OCC='';if(TEXC){d.USE_TEXC='';if(faces)d.FACES='';}
+  const m=new THREE.ShaderMaterial({uniforms:Object.assign({uBase:{value:new THREE.Color(base).convertSRGBToLinear()},uSheen:{value:sheen},uTex:{value:TEXC}},U),vertexShader:vs,fragmentShader:fs,defines:d});m.userData.noHorizon=true;return m;};
  const rockM=mat(0x2c2a2b,.4,true);
  let tris=0;C.meshAll().forEach(ch=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(ch.pos,3));g.setAttribute('normal',new THREE.BufferAttribute(ch.nrm,3));
   g.setAttribute('occ',new THREE.BufferAttribute(ch.occ,1));g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
@@ -45,8 +58,10 @@ function stationBuild(){const t0=performance.now(),C=KCAVERN.create({ground:(x,z
  REGISTER({name:VAULT.name+' (sealed; 58 m under the shield)',x:0,z:0,y:VAULT.floor,r:VAULT.rz,h:54,kind:'cavern'});
  [T1,T2].forEach(T=>{const m=T.from+T.len/2;REGISTER({name:T.name,x:T.dir[0]*m,z:T.dir[1]*m,y:T.y0+T.grade*m-2,r:T.len/2,h:T.h+4,kind:'cavern'});});
  /* THE COLUMNS: hexagonal prisms (a unit hexagon 1 m across the flats, 1 m tall), scaled per instance */
- const hex=(function(){const g=new THREE.CylinderGeometry(1,1,1,6,1);g.translate(0,.5,0);g.rotateY(Math.PI/6);g.computeVertexNormals();return g;})();
- const colM=mat(0x1b1a1d,1,false),P=[];
+ /* un-indexed, so each face keeps its own normal (indexed, the six faces shared their edges' normals and shaded as a round post); uv.x runs k/6..(k+1)/6
+    across face k, which the shader's FACES strip reads */
+ const hex=(function(){const g=new THREE.CylinderGeometry(1,1,1,6,1).toNonIndexed();g.translate(0,.5,0);g.rotateY(Math.PI/6);g.computeVertexNormals();return g;})();
+ const colM=mat(0x1b1a1d,1,false,true),P=[];
  const sp=7.5,hp=sp*Math.sqrt(3)/2;let broken=0;
  for(let j=-Math.ceil(VAULT.rz/hp);j<=Math.ceil(VAULT.rz/hp);j++)for(let i=-Math.ceil(VAULT.rx/sp);i<=Math.ceil(VAULT.rx/sp);i++){
   const h=KRAND.hash(WORLD,i,j,0x11C0),u=k=>KRAND.unit(KRAND.hash(h,k)),x=i*sp+(j&1?sp/2:0)+(u(1)-.5)*1.2,z=j*hp+(u(2)-.5)*1.2;

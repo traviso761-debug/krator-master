@@ -18,11 +18,13 @@
 //              'muq' (a muqarnas cornice under a gilt ceiling), 'flat' (painted beams)
 //   courts     zellige and marble paving, the fountains, pools and rills on the axis, porticoes of paired columns
 //   stairs     steps of at most 0.19 m and the Ramp's sloped runs, each a strip in core/walk
+//   lamps      a room's own (room.lamps, 2026-11-23: the Ramp, its landings, the service stair, the temple): lanterns and niche
+//              lamps on the walls, mosque lamps and polycandelons hung (78m xmLamp); windows set by hand (room.wins) beside the rule's
 // Each building's massing is its own builder: the Sultan's palace keeps the kit's look (the battered curtain and towers, the
 // gate iwan, the white base and the ochre block under twin turquoise domes) in marble and red sandstone; the Vizier's keeps
 // his cobalt loggias and pool garden; the houses are Moorish dars. Seeds 33000-33099.
 //   xcItem(key)      the set item (null when the interiors bundle is missing: the builder then draws the massing only)
-//   window._citadel  {buildings, rooms, walls, doors, windows, stairs, cells, stars, vaults}
+//   window._citadel  {buildings, rooms, walls, doors, windows, stairs, cells, stars, vaults, lamps}
 const XC_STYLE={
  mughal: {rank:5,dado:'xmSand',up:'xmPietra',band:'xmGold',bandC:XM_C.gold,head:['cusped','MarW','Gold'],floor:'xmMarW',win:'jali'},
  banded: {rank:4,dado:'xmZel',up:'xmBand',band:'xmGold',bandC:XM_C.gold,head:['pointed','Band','Gold'],floor:'xmPietra',win:'jali'},
@@ -31,7 +33,7 @@ const XC_STYLE={
  gold:   {rank:2.5,dado:'xmMarK',up:'xmMarW',band:'xmGold',bandC:XM_C.gold,head:['cusped','MarK','Gold'],floor:'xmMarK',win:'jali'},
  moorish:{rank:2,dado:'xmZel',up:'xmYes',upC:XM_C.ochre,band:'xmBand',head:['horseshoe','Yes','Band'],floor:'xmZel',win:'glass'},
  plain:  {rank:0,dado:null,up:null,band:null,head:['pointed','Wash',null],floor:'vStone',win:'glass'}};
-window._citadel={buildings:0,rooms:0,walls:0,doors:0,windows:0,stairs:0,cells:0,stars:0,vaults:0};
+window._citadel={buildings:0,rooms:0,walls:0,doors:0,windows:0,stairs:0,cells:0,stars:0,vaults:0,lamps:0};
 // every citadel def has ONE variant (nv:1): its builder draws the blueprint and reads no o.v, so a sheet's variants were copies
 function xcItem(key){return typeof KratorInteriors!=='undefined'&&KratorInteriors.sets?KratorInteriors.sets.find(key):null;}
 const xcBox=r=>{const xs=r.poly.map(p=>p[0]),zs=r.poly.map(p=>p[1]);return[Math.min(...xs),Math.max(...xs),Math.min(...zs),Math.max(...zs)];};
@@ -57,7 +59,7 @@ function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,do
  const edges=[];for(const r of R){const P=r.poly;for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length];if(Math.abs(a[0]-b[0])<1e-6&&Math.abs(a[1]-b[1])<1e-6)continue;
   const axis=Math.abs(a[1]-b[1])<1e-6?'z':'x',c=axis==='z'?a[1]:a[0],u0=Math.min(axis==='z'?a[0]:a[1],axis==='z'?b[0]:b[1]),u1=Math.max(axis==='z'?a[0]:a[1],axis==='z'?b[0]:b[1]);
   const bx=B.get(r),side=axis==='z'?(Math.abs(c-bx[2])<1e-6?1:-1):(Math.abs(c-bx[0])<1e-6?1:-1);   // +1: the room lies on the + side of the line
-  const nm=axis==='z'?(side>0?'z0':'z1'):(side>0?'x0':'x1');edges.push({r,axis,c,u0,u1,side,rail:(r.rail||[]).includes(nm)});}}
+  const nm=axis==='z'?(side>0?'z0':'z1'):(side>0?'x0':'x1');edges.push({r,axis,c,u0,u1,side,nm,rail:(r.rail||[]).includes(nm)});}}
  const keyOf=(axis,c)=>axis+(Math.round(c*20)/20);
  // ---- the openings, per wall line: doors (once each) and windows
  const ops=new Map(),addOp=(axis,c,q)=>{const k=keyOf(axis,c);(ops.get(k)||ops.set(k,[]).get(k)).push(q);};
@@ -76,6 +78,12 @@ function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,do
    const ww=r.h>5?1.6:1.2;if(edges.some(f=>f.axis!==e.axis&&f.r!==r&&!f.rail&&Math.abs(f.c-u)<ww/2+.75&&f.u0<=e.c+.05&&f.u1>=e.c-.05&&f.r.y<r.y+r.h-.3&&f.r.y+Math.max(f.r.h,1)>r.y+.3))continue;
    const sill=r.y+(r.h>5?1.4:1.0),top=Math.min(r.y+r.h-.9,sill+(r.h>5?3.0:1.7)),P=Math.min(ww*.9,r.y+r.h-.25-top)/.86;if(P<.35)continue;
    wins.push({e,u,ww,sill,top,P,style:st(r)});addOp(e.axis,e.c,{u0:u-ww/2,u1:u+ww/2,y0:sill,y1:top+P});}}
+ // windows set by hand where the rule draws none (room.wins, kits/interiors/sets/xanadu-citadel.js: the Ramp's slits, the service
+ // stair's lights, the prayer hall's clerestory over its side rooms' roofs), on the named edge; t the wall's own thickness there
+ // (a partition where a lower room stands behind: the clerestory's), the room graph (XACITR) checks nothing stands behind the glass
+ for(const r of R)for(const Wd of r.wins||[]){const e=edges.find(f=>f.r===r&&f.nm===Wd.e&&Wd.u>f.u0&&Wd.u<f.u1);if(!e)continue;
+  const P=Math.min(Wd.w*.9,r.y+r.h-.25-Wd.top)/.86,px=e.axis==='z'?(e.u0+e.u1)/2:e.c-e.side*.7,pz=e.axis==='z'?e.c-e.side*.7:(e.u0+e.u1)/2,t=across(px,pz,r.y,r.y+r.h,r)?TP:TE;
+  wins.push({e,u:Wd.u,ww:Wd.w,sill:Wd.sill,top:Wd.top,P,style:st(r),t});addOp(e.axis,e.c,{u0:Wd.u-Wd.w/2,u1:Wd.u+Wd.w/2,y0:Wd.sill,y1:Wd.top+P});}
  // ---- the core walls: per line, the rooms' edges as rectangles in (u, y), less the openings; thickness by the outer side
  const lines=new Map();for(const e of edges){if(isCourt(e.r)||e.rail)continue;const r=e.r,k=keyOf(e.axis,e.c);
   const px=e.axis==='z'?(e.u0+e.u1)/2:e.c-e.side*.7,pz=e.axis==='z'?e.c-e.side*.7:(e.u0+e.u1)/2,outer=!across(px,pz,r.y,r.y+r.h,r);
@@ -135,10 +143,13 @@ function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,do
   if(D.w>=1.8){for(const s of[-1,1]){const q=loc(x,z,s*D.w/4,0,fy);IZDOOR.leaf(q[0],D.y,q[1],fy,D.w/2-.02,lh,.08,lc,{mirror:s>0,style:'panel'});}}
   else IZDOOR.leaf(x,D.y,z,fy,D.w*.96,lh,.07,lc,{style:'panel'});}
  for(const W of wins){const e=W.e,ry=e.axis==='z'?(e.side>0?Math.PI:0):(e.side>0?-Math.PI/2:Math.PI/2),x=e.axis==='z'?W.u:e.c,z=e.axis==='z'?e.c:W.u,H=W.style.head;S.windows++;out.windows++;
-  xmArchHead(H[0],x,W.top,z,ry,W.ww,W.P,TE+.1,H[1],H[2],H[1]==='Yes'?XM_C.ochre:null);
+  const tw=W.t==null?TE:W.t;xmArchHead(H[0],x,W.top,z,ry,W.ww,W.P,tw+.1,H[1],H[2],H[1]==='Yes'?XM_C.ochre:null);
   const m=loc(x,z,0,0,ry);vB('vWinClear',m[0],W.sill,m[1],W.ww,W.top+W.P*.6-W.sill,.03,ry);
-  if(W.style.win==='jali'){const q=loc(x,z,0,TE/2-.02,ry);xmJali(q[0],W.sill,q[1],ry,W.ww,W.top-W.sill,{c:null});}
-  const sl=loc(x,z,0,TE*.3,ry);vB('xmMarW',sl[0],W.sill-.08,sl[1],W.ww+.2,.08,TE*.7,ry,null);}
+  if(W.style.win==='jali'){const q=loc(x,z,0,tw/2-.02,ry);xmJali(q[0],W.sill,q[1],ry,W.ww,W.top-W.sill,{c:null});}
+  const sl=loc(x,z,0,tw*.3,ry);vB('xmMarW',sl[0],W.sill-.08,sl[1],W.ww+.2,.08,tw*.7,ry,null);}
+ // the lamps set in the rooms (room.lamps: lanterns and niche lamps on the walls, mosque lamps and polycandelons hung), each a
+ // light of the room graph (XACITR) on its room
+ for(const r of R)for(const Lm of r.lamps||[]){xmLamp(Lm.k,Lm.x,Lm.y,Lm.z,Lm.ry||0,{top:Lm.top});S.lamps=(S.lamps|0)+1;}
  // ---- the floors and the ceilings, cut round the flights' wells
  const wells=(it.stairs||[]).filter(s=>!s.ramp).map(Sx=>{const a=Sx.a,b=Sx.b,f=Math.max(0,(b[2]-a[2]-2.3)/(b[2]-a[2])),p=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f],hw=Sx.w/2+.15,vx=Math.abs(b[0]-a[0])<.01;
   return{y:b[2],x0:Math.min(p[0],b[0])-(vx?hw:0)-.05,x1:Math.max(p[0],b[0])+(vx?hw:0)+.05,z0:Math.min(p[1],b[1])-(vx?0:hw)-.05,z1:Math.max(p[1],b[1])+(vx?0:hw)+.05};});

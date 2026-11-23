@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2037,
+    1865
+   ],
+   "seam_after": [
+    1.354,
+    1.361
+   ],
+   "seam_before": [
+    0.935,
+    0.974
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "patterns/coyote/kilim",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns_coyote_kilim.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20706-8866-7193-8c42-f5982623f823; the finished copy Codex saved after its seam pass, kilim-seamless-2048.png)",
+  "licence": "generated for this project by its owner",
+  "original_title": "kilim-seamless-2048.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Coyote kit (`kits/coyote`, planned 2026-11-16)' on claude/integration-4 (id patterns/coyote/kilim)",
+  "sha1": "f7e4ea8eefdad6322188c163ae1d18c0d562d597"
+ }
+}

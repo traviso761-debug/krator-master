@@ -40,18 +40,16 @@ Sources:
 > - **What happened.** The owner's lake re-run of edit 7 (5f659c054) lowered this stretch of the rim. On that model
 >   853,1540 was 323 m, and a lamp there saw only G1. The tune had moved Erehwon to **841,1517** and the three Marches
 >   forts "with Erehwon (+35,+1 px)", putting `march.e` at 881,1541, where a lamp sees nothing.
-> - **The fix.** The scale-model session leaves the shoulder (about 850-858 x 1534-1544) out of edit 7's rim lowering,
->   so the knoll returns to 863-885 m with its spur and saddle. It re-runs edit 7 and its tests and pins the Beacon at
->   853,1540.
-> - **The tune** puts `march.e` back at **853,1540**. `march.w` and `march.s` stay where they moved, at 818,1531 and
->   847,1549.
-> - **The site, the frame and the sheets stand as planned.** Sections 1.1-1.4 survey the model before the re-run.
-> - **To re-check once the edit is merged** (step B0), from 853,1540 at 22 m:
->   - the sights of section 1.3;
->   - **the moved south watch fort**, now 21 km away at 847,1549, not 83 km at 812,1548;
->   - **the moved Erehwon**, now 51 km away, perhaps still behind the rim.
->
->   The layout's `lamp.sights` take the new figures; the "must" list keeps the south watch fort.
+> - **The fix (done: `d1c7d6682`, the scale-model session).** Edit 7 now keeps an oval round 854,1540 (6 x 10 px) out
+>   of its rim lowering, and a test in `test_smodel` section 19 holds the knoll there.
+>   - The knoll is back: 863 m, its crown 885 m at 854,1540, the saddle 849 m at 854,1538.
+>   - The Beacon is pinned as **`sbeacon00001`**, an outpost of the Xanadu Sultanate at 853,1540.
+> - **The tune** puts `march.e` back at **853,1540**. `march.w` stays where it moved, at 818,1531. `march.s` is on the
+>   scarp at **843,1546** (the owner, "Move to 843,1546"; section 4).
+> - **The site, the frame and the sheets stand as planned.** Sections 1.1-1.4 survey the model before the re-run. Their
+>   sights, re-run on the edited model, agree within a metre.
+> - **North of the saddle stands the lake's middle volcano** (1,578 m at 856,1532), not a plain rim massif. The Rim Post
+>   stands on its summit (section 4).
 > - **Considered and set aside.** While the knoll was lowered, a search found the west brow at 839,1539 (G1, the
 >   Tempest, the Tears' camp, Tuatara and Komodo), the low spur at 856,1563 and the scarp foot at 851,1545. The owner
 >   kept the knoll.
@@ -219,6 +217,55 @@ widening, readable from any bearing) and joins `LH_BEACONS` for its sweep.
   and held: a light for the Wheel. On those nights the Lamp Watch sings the Song in the chapel below.
 - **Dark only** when the engines are down, or in the `damaged` state (5.7 of Strongwall's plan).
 
+**The signal line** (2026-11-16, after edit 7's re-run moved Erehwon and the Marches forts and the Flashing Eye's plan
+was written; measured on the model as edited, `d1c7d6682`):
+- **The Flashing Eye is the relay to the capital** (`settlements/flashing-eye/PLAN.md` 2.4; the owner, 2026-11-16: the
+  Eye "is the relay between the Beacon and the capital"). The Eye keeps the council's mirror line by day, and the
+  Beacon carries the line by night. The Eye answers the lamp with a shuttered fire on the Eye Post. Both use one signal
+  book, the sound grid.
+- **The restored knoll does not see the Eye Post directly.**
+  - The middle volcano's flank north-east of the knoll (1,118 m at 858.2,1537.4) stands in the 63 km line, 95 m too
+    high at 22 m.
+  - The Eye's plan found the line clear (+40 m) because it ran on the lowered rim.
+- **The Rim Post joins them** (the owner, 2026-11-16: "Rim Post relay"; the knoll is restored in full). It is a watch
+  post of the fort asset (`XFORT.post()`) on **the middle volcano's summit at 856,1532** (1,578 m), 17 km from the lamp
+  at 21°, in the layout as `lamp.relays`.
+  - It sees the lamp (+41 m) and the Eye Post (+42 m). It does not see Erehwon (-119 m); the Eye carries that leg.
+  - If the volcano is given a vent, the post moves to its flank at 857,1535, which sees the lamp (+17 m) and the Eye
+    (+12 m).
+  - It carries a mirror and a shuttered lamp, and is kept by two keepers on the Lamp Watch's rota.
+  - The other option, set aside: restore only the knoll and saddle and leave the massif lowered.
+- **The stations** (the edited model):
+
+  | Station | Where | km | Clear by | Reached |
+  |---|---|---|---|---|
+  | G1 | 917,1648 | 251 | +32 m | seen |
+  | The House of the Tempest | 886,1619 | 171 | +25 m | seen |
+  | The Golden Tears' camp | 850,1628 | 176 | +28 m | seen |
+  | Tuatara | 818,1554 | 75 | +38 m | seen |
+  | Sauropolis | 765,1596 | 209 | +11 m | seen |
+  | **Erehwon** | moved to 841,1517 | 52 | -615 m | hidden; by the Rim Post and the Eye |
+  | **The south watch fort** | **843,1546** | 23 | +26 m | seen |
+
+  - **The south watch fort is on the scarp at 843,1546** (the owner, 2026-11-16: "Move to 843,1546"; the tune had
+    moved it to 847,1549, at -1,319 m under the scarp, where the lamp missed it by 288 m).
+  - The new site is at -213 m, 25 °C, `Cfa`, about 1.64 atm.
+  - From there the fort sees the lamp (+26 m), Tuatara (+35 m), the Rim Post (+17 m), Komodo (+46 m) and the Tears'
+    camp (+27 m).
+  - The west watch fort (818,1531) is hidden (-216 m).
+- **The night's schedule** (step B9, `src/40-bc-lamp.js` on `core/sched`, tested by `test-lamp.js`):
+  - **Lit** dusk to dawn, dark by day or with the engines down.
+  - **The sweep:** the southern arc 100-260°, out and back in two minutes.
+  - **On the hour** the beam stops for 150 s on each station in turn: the Rim Post (21°), G1 (149°), the Tempest
+    (157°), the Tears' camp (181°), the south watch fort (239°). The shutters beat that hour's message, or the
+    station's call sign.
+  - **An alarm** holds the beam on the raid's bearing, the shutters beating fast, over everything.
+  - **The Station's pass** raises the beam to it.
+  - **The grid code:** a syllable is `row` flashes of 0.6 s, a 1.8 s pause, then `col` flashes; 3.6 s between
+    syllables.
+  - **The Lamp Watch:** fifteen keepers in a ring, three a night for a week, each brother one week in five, never two
+    running.
+
 **The power** (the tune's numbers):
 - `T.oil.kgYr` 400,000 × the licence 0.2 × `T.lit['march.e']` 0.02 = **1,600 kg of oil a year**.
 - At `T.chain.dynamo`'s 3 kWh a kg, that is **4,800 kWh**.
@@ -298,7 +345,7 @@ and keeps its state from its own plan.
 
 | Step | What | Who | Test |
 |---|---|---|---|
-| **B0** (asked 2026-11-16; **in hand**) | The pin at 853,1540 and the knoll restored: the scale-model session keeps the shoulder out of edit 7's rim lowering, re-runs the edit and pins the Beacon (the owner: "Restore the knoll") | the scale-model session | the pin's ground; the lamp's sights re-run on the edited model, the moved south watch fort and Erehwon among them (section 1) |
+| **B0** (**done** 2026-11-16, `d1c7d6682` on `claude/gemini-trade-reconcile`, the scale-model session's) | The pin `sbeacon00001` at 853,1540 and the knoll restored: edit 7 keeps an oval round 854,1540 out of its rim lowering (the owner: "Restore the knoll") | the scale-model session | `test_smodel` section 19; the lamp's sights re-run on the edited model (section 4) |
 | **B1** (**done** 2026-11-16) | This plan, the owner's forks answered | | |
 | **B2** (**done** 2026-11-16) | The blueprint: `BLUEPRINT.md`, eight sheets and a section, `FURNITURE.md` (`beacon_blueprint.py` on the shared generator) | | the sheets drawn from the layout; the layout's checks must pass first |
 | **B3** (**done** 2026-11-16) | The layout as data: `src/30-bc-layout.js`, `src/31-bc-rules.js`, `layout_dump.js` | | `node settlements/beacon/test-beacon.js` (35 checks, 17 negatives) |
@@ -307,7 +354,7 @@ and keeps its state from its own plan.
 | **B6** | The fort asset's `beacon:'ancient'`: the plinth in the keep's place, the gilt chapel on it, the cable channel through the gate; the generator house **outside** the fort, in the order's ward (this plan's change to Strongwall's 5.7) | `kits/xanadu`'s owner (80f, 80g) | `test-fort.js`; the Xanadu verify |
 | **B7** | The house on the open world: the layout's frame on the region's ground at 1:1, the knoll and the saddle fitted, the lamp's sights asserted on the drawn ground | the open-world session | the region's verify; a line-of-sight assert to G1, the Tempest, Tuatara and the south watch fort |
 | **B8** | Interiors from the blueprint: the Labrang, the plinth, the precinct's ranges; the NEW pieces in the catalog | the interiors owner | the walk and interiors audits |
-| **B9** | Life: the Lamp Watch's rota, the hours, the sweep and the signal book on the sim's clock, the oil carts, the Station's passes | | `core/sched` matches section 4 |
+| **B9** (the lamp's night **done** 2026-11-16, section 4) | Life: the lamp's night as data, `src/40-bc-lamp.js` on `core/sched`: the sweep, the signal hour, the alarm, the Station, the grid code, the Lamp Watch's rota. Still to do on a page: the oil carts, the house's day (the offices, the kora), the host's `env` from `core/atmos` and the sim | | `node settlements/beacon/test-lamp.js` (9 checks, 9 negatives) |
 
 ## 8. Questions for the owner
 
@@ -328,3 +375,5 @@ and keeps its state from its own plan.
 7. **The gold banner on the Rainbow Temple.** It turns toward its monastery (LORE 6.13). Does it now turn toward the
    lamp, 176 km away and out of sight, or toward the daughter house on the inner square?
 8. **A Xanadui name** for the house, as the Marches have *Mārchiz*?
+9. ~~**The line to the Flashing Eye.**~~ **Answered 2026-11-16: "Rim Post relay"**, the knoll restored in full; and
+   for the south watch fort, **"Move to 843,1546"** (section 4, "The signal line").

@@ -14,19 +14,22 @@
 //    and in along the radius to where the page's river leaves R, its bed carved by the land hook, its water falling to
 //    the town's level;
 //    riverLines carries the joined river down the link and a little way under the town's water;
+//    a river marked 'over' (a stream above the town's water, as Phēr's Swīṭ comes down its wall) runs at its own height:
+//    its water OVER_DEPTH over the world's ground at each point, never climbing downstream, served in its channel (its
+//    half-widths) by riverWater, and drawn by riverLines as its own line (on down the link, when it is joined);
 //  * drawn: false -> the world draws the town's ground itself, so 41 does not sink it 3 m under a mesh of the town's own.
 // No THREE, no DOM. A Godot port takes the same records (towns.json) and these rules.
 //
 //   WTOWN.list                 the towns with water: {name, level, R, band, body, river: {name, joined, pts, link}}
 //   WTOWN.wetAt(x,z)           the town's water byte at (x,z) (0 land, 1 polygon, 2 river, 4 edited, 3 a hollow apart), or -1 outside every town
-//   WTOWN.rivers()             each town's river in world metres: {name, town, level, pts: [[x, z, half-width]], joined, link}
+//   WTOWN.rivers()             each town's river in world metres: {name, town, level, over, pts: [[x, z, half-width(, water)]], joined, link}
 //   WTOWN.check(o)             the checks: the shoreline against the page's trace, the river continuous, one body
 var WTOWN=(function(){'use strict';
 const W=WORLD,clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 const base={init:W.init,lakeWater:W.lakeWater,riverWater:W.riverWater,waterBodies:W.waterBodies,waterBodyAt:W.waterBodyAt,riverLines:W.riverLines};
 const WET=v=>v===1||v===2||v===4;
-const LINK_DEPTH=4,LINK_WALL=1.2,LINK_OUT=300,STUB=150,STUB_DROP=.25;
+const LINK_DEPTH=4,LINK_WALL=1.2,LINK_OUT=300,STUB=150,STUB_DROP=.25,OVER_DEPTH=.6;
 let T=[];
 const api={list:T};
 
@@ -56,6 +59,17 @@ function nearOn(P,C,x,z){let bd=1e18,bs=0,bi=0,bt=0;
   if(d<bd){bd=d;bi=i;bt=t;bs=C[i]+(C[i+1]-C[i])*t;}}
  return{d:bd,s:bs,i:bi,t:bt};}
 // the link's water at (x,z): inside its channel, its water height there; -1e9 elsewhere
+// an over-level river's water at (x,z): inside its channel (its half-width there), its water height; -1e9 elsewhere
+function overWater(rv,x,z){const b=rv.box;if(x<b[0]||x>b[2]||z<b[1]||z>b[3])return -1e9;
+ const n=nearOn(rv.pts,rv.cum,x,z),a=rv.pts[n.i],c=rv.pts[n.i+1];return n.d<=lerp(a[2],c[2],n.t)?lerp(a[3],c[3],n.t):-1e9;}
+// an over-level river's line from where it leaves R (or its head) down to its mouth, every step m, at its water's height
+function overDown(rv,step){const P=rv.pts,C=rv.cum,Lr=C[C.length-1],out=[];
+ for(let s=0;s<=Lr+1e-6;s+=step){const a=Math.max(0,Lr-s);let i=0;while(i<C.length-2&&C[i+1]<a)i++;const f=(a-C[i])/Math.max(1e-6,C[i+1]-C[i]);
+  const x=lerp(P[i][0],P[i+1][0],f),z=lerp(P[i][1],P[i+1][1],f);out.push([x,z,Math.max(lerp(P[i][3],P[i+1][3],f),W.H(x,z)+OVER_DEPTH)]);}
+ const e=P[0];if(out.length&&Math.hypot(out[out.length-1][0]-e[0],out[out.length-1][1]-e[1])>1)out.push([e[0],e[1],e[3]]);
+ // over its ground at every sample (the points lie 50 m apart; a bend of the ravine between them stands higher), the
+ // samples upstream raised to it so it never climbs downstream
+ for(let k=out.length-2;k>=0;k--)if(out[k][2]<out[k+1][2])out[k][2]=out[k+1][2];return out;}
 function linkWater(e,x,z){const L=e.link;if(!L||x<L.box[0]||x>L.box[2]||z<L.box[1]||z>L.box[3])return -1e9;
  const n=nearOn(L.pts,L.cum,x,z);if(n.d>L.hw)return -1e9;const a=L.pts[n.i],b=L.pts[n.i+1];return lerp(a[2],b[2],n.t);}
 // the link's bed carved into the land (the hook, before 41 eases the band to the town's ground): a trench to the water
@@ -65,11 +79,12 @@ function linkCarve(e,x,z,h){const L=e.link;if(!L||x<L.box[0]||x>L.box[2]||z<L.bo
  return Math.min(h,y+Math.max(0,n.d-L.hw*.8)*LINK_WALL);}
 
 // ---------------------------------------------------------------- init: cut the joined river, then 41, then the towns' water
-// A model river that reaches a town with water is cut where it enters the circle R + band + LINK_OUT, just outside the
+// A model river that reaches a town with water is cut where it enters the circle R + band + LINK_OUT (or the town's
+// linkOut: Phēr's, where the model's 2 km cells start its stream's fall to the wall a cell before the lip), just outside the
 // band (the point on the circle kept as its last), before 41 builds its channels: inside, the town's ground and river
 // stand. The cut is recorded.
 function cutRivers(){const D=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[],R=WORLD_DATA.meta.rivers||[],cuts=[];
- for(const t of D){if(!t.water)continue;const rr=t.R+(t.band==null?400:t.band)+LINK_OUT;
+ for(const t of D){if(!t.water)continue;const rr=t.R+(t.band==null?400:t.band)+(t.linkOut==null?LINK_OUT:t.linkOut);
   for(const r of R){const P=r.line;if(!P||P.length<2||r._cutBy)continue;
    const inside=p=>Math.hypot(p[0]-t.x,p[1]-t.z)<rr;let k=P.findIndex(inside);if(k<0)continue;
    if(k===0){cuts.push({river:r.name,town:t.name,dropped:true});r._cutBy=t.name;r.line=[];continue;}
@@ -83,15 +98,18 @@ W.init=function(R){const cuts=cutRivers();base.init(R);T.length=0;
  D.forEach((rec,k)=>{const t=W.towns[k];if(!t||!rec.water)return;
   if(rec.drawn===false)t.own=false;   // the world draws the town's ground: no 3 m sink under a mesh of its own (41 townAt)
   const m=rec.water,e={t,name:t.name,level:t.y0+(rec.level==null?0:rec.level),mask:{n:m.n,step:m.step,x0:m.x0,z0:m.z0,data:rle(m.rle,m.n*m.n)},
-   shore:rec.shore||null,shoreSkip:rec.shoreSkip||null,river:null,link:null,body:-1,cut:cuts.filter(c=>c.town===t.name)};
+   shore:rec.shore||null,shoreSkip:rec.shoreSkip||null,river:null,link:null,linkOut:rec.linkOut==null?LINK_OUT:rec.linkOut,body:-1,cut:cuts.filter(c=>c.town===t.name)};
   if(rec.river){const pts=rec.river.pts.map(p=>{const w=toWorld(t,p[0],p[1]);return[w[0],w[1],p[2]];});
    // where the page's river leaves R going upstream (mouth first): C, the link's end
    let C=null,ci=pts.length-1;for(let i=1;i<pts.length;i++){const d0=Math.hypot(pts[i-1][0]-t.x,pts[i-1][1]-t.z),d1=Math.hypot(pts[i][0]-t.x,pts[i][1]-t.z);
     if(d0<t.R&&d1>=t.R){const f=(t.R-d0)/(d1-d0);C=[lerp(pts[i-1][0],pts[i][0],f),lerp(pts[i-1][1],pts[i][1],f),lerp(pts[i-1][2],pts[i][2],f)];ci=i;break;}}
-   const inR=C?pts.slice(0,ci).concat([C]):pts;
+   const inR=C?pts.slice(0,ci).concat([C]):pts,over=!!rec.river.over;
+   // over its town's water: its height from the world's ground (the town's, 41), OVER_DEPTH over it, never falling upstream
+   let box=null;if(over){let y=-1e18;inR.forEach((p,i)=>{y=Math.max(i?y:e.level,W.H(p[0],p[1])+OVER_DEPTH);p[3]=y;});
+    box=[1e18,1e18,-1e18,-1e18];for(const p of inR)box=[Math.min(box[0],p[0]-p[2]),Math.min(box[1],p[1]-p[2]),Math.max(box[2],p[0]+p[2]),Math.max(box[3],p[1]+p[2])];}
    // the river it joins, named by the model's id (r029) or name, as the region carries it (its name from here on)
    const jr=rec.river.join==null?null:(WORLD_DATA.meta.rivers||[]).find(r=>r.id===rec.river.join||r.name===rec.river.join);
-   e.river={name:rec.river.name,join:jr?jr.name:null,joinAs:rec.river.join==null?null:rec.river.join,joined:null,pts:inR,cum:cumOf(inR),C:C||pts[pts.length-1]};}
+   e.river={name:rec.river.name,join:jr?jr.name:null,joinAs:rec.river.join==null?null:rec.river.join,joined:null,over,box,pts:inR,cum:cumOf(inR),C:inR[inR.length-1]};}
   T.push(e);});
  // the link: from the cut model river's last point A (in the world, out of the carve's warped space) round the outside of
  // the band to D, on the radius through C, then straight in along that radius to C. Inside the band 41 eases the land to
@@ -100,14 +118,18 @@ W.init=function(R){const cuts=cutRivers();base.init(R);T.length=0;
  // land. Its water falls from the model river's at A to the town's level at C.
  for(const e of T){const rv=e.river;if(!rv||!rv.join)continue;const c=e.cut.find(c=>c.river===rv.join&&c.at);if(!c)continue;
   const Mr=(WORLD_DATA.meta.rivers||[]).find(r=>r.name===rv.join),A=W.unwarp(c.at[0],c.at[1]),Cx=rv.C[0],Cz=rv.C[1],t=e.t;
-  const ra=Math.hypot(A[0]-t.x,A[1]-t.z),aA=Math.atan2(A[1]-t.z,A[0]-t.x),aC=Math.atan2(Cz-t.z,Cx-t.x),rD=t.R+t.band+LINK_OUT*.5;
+  const ra=Math.hypot(A[0]-t.x,A[1]-t.z),aA=Math.atan2(A[1]-t.z,A[0]-t.x),aC=Math.atan2(Cz-t.z,Cx-t.x),rD=t.R+t.band+e.linkOut*.5;
   let da=aC-aA;while(da>Math.PI)da-=2*Math.PI;while(da<-Math.PI)da+=2*Math.PI;
   const P=[],na=Math.max(1,Math.ceil(Math.abs(da)*rD/40));
   for(let i=0;i<=na;i++){const s=i/na,a=aA+da*s,r=lerp(ra,rD,s);P.push([t.x+Math.cos(a)*r,t.z+Math.sin(a)*r,0]);}   // the arc
   const nr=Math.max(2,Math.ceil((rD-t.R)/40));
   for(let i=1;i<=nr;i++){const r=lerp(rD,t.R,i/nr);P.push([t.x+Math.cos(aC)*r,t.z+Math.sin(aC)*r,0]);}   // the radius in to C
   const ya0=base.riverWater(A[0],A[1]),ya=ya0>-1e8?ya0:W.H(A[0],A[1])+2;
-  const cum=cumOf(P),Lt=cum[cum.length-1];P.forEach((p,i)=>{p[2]=Math.max(e.level,lerp(ya,e.level,cum[i]/Lt));});
+  const yEnd=rv.over?rv.C[3]:e.level,cum=cumOf(P),Lt=cum[cum.length-1];P.forEach((p,i)=>{p[2]=Math.max(yEnd,lerp(ya,yEnd,cum[i]/Lt));});
+  /* an over-level river (Phēr's) comes in off higher ground than a town on its water: in the band 41 eases the land to the
+     town's after the link's carve, so the link's water holds OVER_DEPTH over that eased ground (never over its start's,
+     never climbing) and falls to the town's stream at its end (a cascade into its gorge) */
+  if(rv.over){P.forEach(p=>{p[2]=Math.max(p[2],Math.min(ya,W.H(p[0],p[1])+OVER_DEPTH));});for(let i=1;i<P.length;i++)if(P[i][2]>P[i-1][2])P[i][2]=P[i-1][2];P[P.length-1][2]=yEnd;}
   const hw=Math.max(rv.pts.length?rv.pts[rv.pts.length-1][2]:20,(Mr&&Mr.width_m!=null?Mr.width_m:40)/2),pad=hw*3+60;
   let box=[1e18,1e18,-1e18,-1e18];for(const p of P){box=[Math.min(box[0],p[0]-pad),Math.min(box[1],p[1]-pad),Math.max(box[2],p[0]+pad),Math.max(box[3],p[1]+pad)];}
   e.link={pts:P,cum,hw,box,from:A,ya,len:Lt};rv.joined=rv.join;}
@@ -118,7 +140,8 @@ W.lakeWater=function(x,z){const o=T.length?townOf(x,z):null;
  if(o)return wetNear(o.e,x,z)?o.e.level:-1e9;   // inside the footprint the town's water alone
  return base.lakeWater(x,z);};
 W.riverWater=function(x,z){if(!T.length)return base.riverWater(x,z);const o=townOf(x,z);
- if(o)return wetNear(o.e,x,z,2)?o.e.level:-1e9;   // the page's river; no model river crosses the town
+ if(o){const rv=o.e.river;if(rv&&rv.over){const v=overWater(rv,x,z);if(v>-1e8)return v;}
+  return wetNear(o.e,x,z,2)?o.e.level:-1e9;}   // the page's river; no model river crosses the town
  for(const e of T){const v=linkWater(e,x,z);if(v>-1e8)return v;}   // the link (its box first)
  return base.riverWater(x,z);};
 W.water=(x,z)=>Math.max(W.lakeWater(x,z),W.riverWater(x,z));
@@ -165,16 +188,20 @@ W.riverLines=function(step){step=step==null?40:step;const out=base.riverLines(st
   const pts=L.pts.slice(0,cut),lk=e.link.pts,lc=e.link.cum;
   for(let s=0;s<=e.link.len;s+=step){let i=0;while(i<lc.length-2&&lc[i+1]<s)i++;const f=(s-lc[i])/Math.max(1e-6,lc[i+1]-lc[i]);
    pts.push([lerp(lk[i][0],lk[i+1][0],f),lerp(lk[i][1],lk[i+1][1],f),lerp(lk[i][2],lk[i+1][2],f)]);}
-  // the stub: down the page's river from C (its points run mouth first, so backwards from the end)
-  const P=rv.pts,C=rv.cum,Lr=C[C.length-1];
-  for(let s=step;s<=STUB;s+=step){const a=Lr-s;let i=0;while(i<C.length-2&&C[i+1]<a)i++;const f=(a-C[i])/Math.max(1e-6,C[i+1]-C[i]);
+  // the stub: down the page's river from C (its points run mouth first, so backwards from the end); an over-level river
+  // runs on down its own course to its mouth
+  const P=rv.pts,C=rv.cum,Lr=C[C.length-1];if(rv.over)overDown(rv,step).slice(1).forEach(q=>pts.push(q));
+  else for(let s=step;s<=STUB;s+=step){const a=Lr-s;let i=0;while(i<C.length-2&&C[i+1]<a)i++;const f=(a-C[i])/Math.max(1e-6,C[i+1]-C[i]);
    pts.push([lerp(P[i][0],P[i+1][0],f),lerp(P[i][1],P[i+1][1],f),e.level-STUB_DROP]);}
   for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=pts[i+1][2];   // never climbing downstream
   out[k]=Object.assign({},L,{pts,joined:e.name,link:e.link.pts.length});}
+ // an over-level river joined to nothing: its own line, from its head to its mouth
+ for(const e of T){const rv=e.river;if(!rv||!rv.over||e.link)continue;
+  out.push({name:rv.name,town:e.name,width:2*Math.max(...rv.pts.map(p=>p[2])),pts:overDown(rv,step)});}
  return out;};
 
 api.wetAt=(x,z)=>{const o=T.length?townOf(x,z):null;return o?cellAt(o.e,x,z):-1;};
-api.rivers=()=>T.filter(e=>e.river).map(e=>({name:e.river.name,town:e.name,level:e.level,pts:e.river.pts,joined:e.river.joined,
+api.rivers=()=>T.filter(e=>e.river).map(e=>({name:e.river.name,town:e.name,level:e.level,over:e.river.over,pts:e.river.pts,joined:e.river.joined,
  link:e.link?{from:e.link.from,len:e.link.len,ya:e.link.ya,hw:e.link.hw}:null}));
 
 // ---------------------------------------------------------------- the checks (the region's verify and core/world/test-town-water.js)
@@ -183,7 +210,8 @@ api.rivers=()=>T.filter(e=>e.river).map(e=>({name:e.river.name,town:e.name,level
 // where none is found. Where the site's edits moved the ground, and in the river's vale, the trace is not the page's shore:
 // bake_towns.py lists those points (shoreSkip) and they are left out
 // river: the joined river's line has no gap over 2 steps, never climbs downstream, and stands over the ground (the
-// link's and the model's points: water over the bed by more than 0.3 m); the page's river in R has water at every 50 m
+// link's and the model's points: water over the bed by more than 0.3 m; the link's water never above the model river's
+// at the cut); the page's river in R has water at every 50 m
 // body: every wet cell of the town (every 100 m) answers one body, and that body is the model's (joined: one water body)
 function shoreCheck(e,o){const S=e.shore;if(!S)return{n:0};const errs=[],miss=[],dirs=[];for(let a=0;a<32;a++)dirs.push([Math.cos(a*Math.PI/16),Math.sin(a*Math.PI/16)]);
  const skip=new Set(e.shoreSkip||[]);
@@ -201,6 +229,8 @@ function riverCheck(e,step){const rv=e.river;if(!rv)return{ok:true,none:true};le
  if(rv.joined){const L=W.riverLines(step).find(r=>r.name===rv.joined);let gap=0,climb=0,buried=0,first=null;
   if(L)for(let i=1;i<L.pts.length;i++){const a=L.pts[i-1],b=L.pts[i];if(Math.hypot(b[0]-a[0],b[1]-a[1])>2.01*step)gap++;if(b[2]>a[2]+1e-6)climb++;
    if(Math.hypot(b[0]-e.t.x,b[1]-e.t.z)<e.t.R+e.t.band&&!(b[2]>W.H(b[0],b[1])+.3)){buried++;first=first||[Math.round(b[0]),Math.round(b[1])];}}
+  // the link's first point over the model river's water at the cut: the water would climb into it (a town's river too high to join)
+  if(e.link&&e.link.pts[0][2]>e.link.ya+1e-6)climb++;
   out.line={found:!!L,points:L?L.pts.length:0,gaps:gap,climbs:climb,buriedNearTown:buried,firstBuried:first};}
  out.ok=dry===0&&(!rv.joined||(out.line.found&&out.line.gaps===0&&out.line.climbs===0&&out.line.buriedNearTown===0));return out;}
 function bodyCheck(e){const m=e.mask,ids=new Map();let n=0;

@@ -43,9 +43,9 @@ GODT.buildGround=function(R,q,box){const K=KRAND,F=BIO.host.fields,H=BIO.host.te
  if(F.palag||F.crust)cells(16,0x5E1D,(i,j,x0,z0,h)=>{const x=x0+16*u(h,1),z=z0+16*u(h,2);if(!inBox(x,z))return;
   const y=H(x,z);if(y>9000||F.face(x,z)>.3||F.slope(x,z)>.9)return;
   const w=Math.max(F.crust?F.crust(x,z):0,F.palag?F.palag(x,z)*.6:0,F.talus(x,z)*.5)*smooth(9000,8600,y);if(u(h,3)>w*.4*q)return;
-  const s=mix(.35,1.1,u(h,4)),yaw=u(h,5)*TAU,c=Math.cos(yaw),sn=Math.sin(yaw);BIO.range=260;
+  const s=mix(.35,1.1,u(h,4)),yaw=u(h,5)*TAU;BIO.range=260;
   const r=qEuler(0,yaw,0);BIO.put('splitstone',[x,y+s*.25,z],r,[s,s,s],pick(P.basalt,h));
-  BIO.put('endolith',[x+c*s*.05,y+s*.25,z-sn*s*.05],r,[s,s*.5,s*.55],pick(P.endo,h));st.split=(st.split||0)+1;});
+  BIO.put('endolith',[x,y+s*.25,z],r,[s,s,s],pick(P.endo,h));   /* the band is cut to the break in the stone's frame: the stone's put */st.split=(st.split||0)+1;});
  // ---- ventifacts on the pavement (the airless rim): sparse, each keeled across the wind, the regolith's stones between them
  if(F.pave)cells(12,0x7E17,(i,j,x0,z0,h)=>{const x=x0+12*u(h,1),z=z0+12*u(h,2);if(!inBox(x,z))return;const w=F.pave(x,z)*smooth(.6,.25,F.slope(x,z));if(u(h,3)>w*.12*q)return;
   const s=mix(.25,.9,Math.pow(u(h,4),1.5));BIO.range=300;BIO.put('ventifact',[x,H(x,z)+s*.12,z],qEuler(0,.6+(u(h,5)-.5)*.5,0),[s*1.2,s,s*.9],pick(F.breccia&&F.breccia(x,z)>.3?P.breccia:P.basalt,h));st.ventifacts=(st.ventifacts||0)+1;});

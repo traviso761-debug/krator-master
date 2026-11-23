@@ -27,12 +27,10 @@ function buildArcpile(scene,gx,gz,d){reseed(9690+d);KOFF=[gx,0,gz];
  const crashed=new Map(RU?RU.crashed.map(c=>[c.id,c]):[]),cutEnd=new Map(RU?RU.cut.map(c=>[c.id,c.b]):[]);
  const piercedOf=id=>RU?RU.pierced.filter(x=>x.id===id):[];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
- // the Podium's fix (8aq3): a far plane past the fog, and the sky dome drawn first with its pow() kept off a negative,
- // or the band over the horizon comes out black
+ // the Podium's fix (8aq3): a far plane past the fog, and the sky dome drawn first (its pow() is kept off a negative
+ // in 90-scene.js), or the band over the horizon comes out black
  if(typeof camera!=='undefined'&&camera.far<30000){camera.far=30000;camera.updateProjectionMatrix();}
  if(typeof sky!=='undefined')sky.renderOrder=-1;
- if(typeof skyMat!=='undefined'&&skyMat.fragmentShader.indexOf('pow(h,.55)')>=0){
-  skyMat.fragmentShader=skyMat.fragmentShader.replace('pow(h,.55)','pow(max(h,0.),.55)');skyMat.needsUpdate=true;}
 
  // ---- core/tags: one record per placed thing, before anything is drawn -------------------------------------------
  {const T=KTAGS.arcpile||(KTAGS.arcpile=KTAGS.create({build:'ancients-arcpile'}));

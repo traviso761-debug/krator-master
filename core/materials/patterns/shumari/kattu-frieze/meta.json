@@ -1,0 +1,25 @@
+{
+ "maps": {
+  "map": "albedo.png",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "shumari/kattu-frieze",
+  "metal": 0.08,
+  "pattern": true,
+  "roughness": 0.62,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "generator": "Deterministic SVG glyph rasterizer from lore/tongues-of-krator.html (28-letter Sumaru-kattu Blade-and-Hook script)",
+  "licence": "generated deterministically for this project from repo SVG glyph paths",
+  "reuse": "Shumari pishtaq lintels, qubba drum collars, and kattu chancery bands"
+ }
+}

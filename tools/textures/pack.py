@@ -45,6 +45,13 @@ Processing, per family:
            its mean (0.5, the 1st to 99th percentile spanning one unit, clamped to 0.02..1, as KGROUND's luminance height
            is). core/terrain's KGROUND reads it with a layer's `h: {from: 'a'}`; the pack entry says `"height": true`.
            A set without a height map is packed as before, with a note, and the entry has no `height` (keep `h` on lum).
+
+A build's materials.json may also hold `"decals": { "<texture id>": { "size": 1024, "culture": "xanadu" } }`: delivered PICTURES
+for the catalog's painted panels (core/catalog/krator-furniture-core.js mkDecal, whose key is the texture id). Each is packed
+from the set's albedo at its OWN aspect (the long side `size` px, default 1024), its colours as they are (no tint), into
+tex/decal.<id>.albedo.webp and pack.json "decals" (written only when one is packed). A decal whose set is not delivered yet
+is skipped with a note: the page keeps the painted stand-in. `culture` lets kits/catalog/furniture_bundle.py inline only the
+decals of the cultures a build bundles.
 Requires numpy and Pillow.
 """
 import argparse, base64, hashlib, io, json, os, sys
@@ -398,6 +405,54 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
     return entry, files
 
 
+def family_reads(cfg):
+    """The image files one family's pack reads (what process() opens), as absolute paths."""
+    d = set_dir(cfg['lib'])
+    with open(os.path.join(d, 'meta.json'), encoding='utf-8') as fh:
+        meta = json.load(fh)
+    mp = meta.get('maps') or {}
+    path = lambda k, default: os.path.normpath(os.path.join(d, mp.get(k, default)))
+    card = meta.get('record', {}).get('kind') == 'card'
+    out = [path('map', 'albedo.jpg')]
+    if not card and not cfg.get('mapOnly'):
+        out += [p for p in (path('normalMap', 'normal.jpg'), path('roughnessMap', 'roughness.png')) if os.path.isfile(p)]
+    if cfg.get('height') and not card and os.path.isfile(path('heightMap', 'height.png')):
+        out.append(path('heightMap', 'height.png'))
+    return out
+
+
+def pointer_families(cfg):
+    """[(family, library set, repo path)] of every LFS pointer the build's families would read (T18: one pointer used to
+    abort the pack at the first, without the family that asked for it). A set no family names is never read."""
+    out = []
+    for fam in sorted(cfg['families']):
+        fc = cfg['families'][fam]
+        if fc.get('optional') and not os.path.isfile(os.path.join(set_dir(fc['lib']), 'meta.json')):
+            continue
+        for p in family_reads(fc):
+            if buildlib.is_pointer(p):
+                out.append((fam, fc['lib'], buildlib.rel(p) or p.replace(os.sep, '/')))
+    return out
+
+
+def process_decal(tid, cfg):
+    """A delivered picture for a painted panel: the set's albedo at its own aspect, long side cfg size (1024), colours kept."""
+    d = set_dir(tid)
+    meta = json.load(open(os.path.join(d, 'meta.json'), encoding='utf-8'))
+    pa = os.path.normpath(os.path.join(d, (meta.get('maps') or {}).get('map', 'albedo.jpg')))
+    if buildlib.is_pointer(pa):
+        buildlib.refuse_pointer(pa, 'tools/textures/pack.py')
+    iw, ih = Image.open(pa).size
+    long_side = int(cfg.get('size', 1024))
+    k = min(1.0, float(long_side) / max(iw, ih))
+    wh = [max(1, int(round(iw * k))), max(1, int(round(ih * k)))]
+    name = 'decal.%s.albedo.webp' % tid.replace('/', '.')
+    entry = {'lib': tid, 'size': wh, 'source': {'albedo': sha1(pa)}, 'files': {'map': name}}
+    if cfg.get('culture'):
+        entry['culture'] = cfg['culture']
+    return entry, {name: webp(load(pa, wh, 'RGB'), 88, 'RGB')}
+
+
 def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument('build')
@@ -416,6 +471,12 @@ def main(argv):
     if pfmt == 2:
         pack['packVersion'] = 2
         pack['normalEncoding'] = nenc
+    ptr = pointer_families(cfg)
+    if ptr:   # every one at once, each with the family that reads it, and one pull for all
+        for fam, lib, p in ptr:
+            print('pack.py: family %s (set %s) reads %s, a Git LFS pointer, not the file' % (fam, lib, p))
+        print('a pack written from a pointer is black in every page that takes it. Run: %s' % buildlib.pull_hint([p for _, _, p in ptr]))
+        return 1
     allfiles = {}
     for fam in sorted(cfg['families']):
         fc = cfg['families'][fam]
@@ -425,10 +486,21 @@ def main(argv):
         e, files = process(fam, fc, size, pack_format=pfmt, normal_enc=nenc)
         pack['families'][fam] = e
         allfiles.update(files)
+    decals = {}
+    for tid in sorted(cfg.get('decals') or {}):
+        if not os.path.isfile(os.path.join(set_dir(tid), 'meta.json')):
+            print('skipped decal %s: not delivered yet (the page keeps its painted stand-in)' % tid)
+            continue
+        e, files = process_decal(tid, cfg['decals'][tid])
+        decals[tid] = e
+        allfiles.update(files)
+    if decals:
+        pack['decals'] = decals
     pj = json.dumps(pack, indent=1, sort_keys=True) + '\n'
     if a.check:
         old = open(os.path.join(tdir, 'pack.json'), encoding='utf-8').read() if os.path.isfile(os.path.join(tdir, 'pack.json')) else ''
-        strip = lambda s: {f: {k: v for k, v in e.items()} for f, e in json.loads(s)['families'].items()} if s else {}
+        strip = lambda s: ({f: {k: v for k, v in e.items()} for f, e in json.loads(s)['families'].items()},
+                           json.loads(s).get('decals', {})) if s else ({}, {})
         same = strip(old) == strip(pj)
         print('tex/ matches materials.json' if same else 'tex/ is stale: rerun tools/textures/pack.py ' + a.build)
         return 0 if same else 1

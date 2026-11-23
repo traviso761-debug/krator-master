@@ -21,6 +21,8 @@ What reaches over, by kind:
   14 m depth): the def's `w` and `d` want swapping, which moves Erewhon's placement of it;
 - **held** (the citadel, other sessions' work): `xa_pleasure_dome_bay`;
 - the `_palopo` defs repeat their base def's builder in the Palopó paint.
+- the dress twins in `extra/` (88f's `xa_monastery_white`, 88h's `xa_grand_temple_gold` and `xa_monastery_violet`, Gihon's,
+  2026-11-23) draw their base def's builder in another dress: each carries its base's overhang, and goes back inside with it.
 
 | Def | Family | Lot | Box (worst variant) | Past (m) | Furthest |
 |---|---|---|---|---|---|
@@ -67,6 +69,50 @@ What reaches over, by kind:
 | `xa_temple_palopo` | Palopó paint | 34 x 32 | x -20.82..20.82, z -7.75..19.68 (v2) | 3.82 | vRope 3.82 |
 | `xa_house_turk_a_palopo` | Palopó paint | 22 x 20 | x -9.20..9.20, z -7.05..10.79 (v0) | 0.79 | vDoorLeaf 0.79, vStone 0.70 |
 | `xa_shop_turk_b_palopo` | Palopó paint | 20 x 18 | x -6.75..9.25, z -6.25..9.28 (v0) | 0.28 | vRope 0.28 |
+| `xa_grand_temple_gold` | Gihon (extra/88h) | 60 x 64 | x -26.00..26.00, z -24.00..34.11 (v0) | 2.11 | vStone 2.11, xDomeG 1.78, xWashB 1.48, xPaint 0.79 (the Grand Temple's own) |
+| `xa_monastery_violet` | Gihon (extra/88h) | 50 x 50 | x -26.69..26.69, z -21.82..23.47 (v0) | 1.69 | vRope 1.69 (the monastery's own) |
 
 `xa_lighthouse` throws in `XAK` (`FRAME_HOOKS`, the lamp's turn hook, is a page global the sheet and Erewhon carry): the test
 skips it (`BUILD_FAILS`); measured on the page it is unchecked.
+
+## The Xanadui fort (2026-11-16, `src/80f`-`80g`; `settlements/strongwall/PLAN.md` section 5)
+
+- **Interiors only where a page takes them, and only for a KEPT fort** (F4, 2026-11-22). The interior set `xanadu-fort` is written
+  in `src/80g-xa-fort.js` from the plans (not in `kits/interiors/sets/xanadu.js`: XFORT loads after the interiors bundle), and is
+  registered only on a page with the interiors core (settlements/xanadu's 69d: Strongwall's page, on by default there). The kit
+  sheet has no interiors core, so on it every fort building stays solid and every door locked, as before. A damaged or ruined fort's
+  item is a skip (its keep has lost storeys, its ranges their roofs, or it stands as low walls), so its buildings stay solid too.
+- **Still solid in a kept fort**: the towers, the gatehouses and the barbican (their tops are walked, their insides are not: no
+  chamber is drawn in them), the keep's chapel on its roof (no stair to the roof), the granary (no door), and the stables and ore
+  shed (open sheds). The watch fort's keep, magazine and barracks are planned like Strongwall's; the gate works have no building
+  with a door.
+- **The walks (F4b, 2026-11-23; `XFORT.walks` in 80f)**: the walk no longer runs through the towers and gatehouses. It runs between
+  them and climbs each kept tower it meets by a flight up the walk onto its top (the parapet opened there), and the tops are walk
+  floors. Where an ordinary flight (0.17 m risers) has no room, a **steep stair** (0.20 m on 0.25 m treads, slope 0.8, within
+  core/walk's step) climbs instead: Strongwall's gate towers and the towers on its short back walls (2026-11-23). Every standing
+  tower of every fort is climbed and every piece of walk is reached (`test-fort.js` holds both). What is left: a **gate block is
+  not crossed** (its gatehouse roof carries the main gate's pavilion; each gate tower is climbed from its own side, and the
+  gatehouse roof is not walked); a fallen tower ends the walk at its face; a curtain's last metre past a gate tower at a free end
+  (the gate works' stubs) is the wall's cap, not walk. The flights stand on the walk, so a walker on the walk steps up them; the
+  plan's stairs are kept where they land on plain walk, and stairs are added where a piece of walk had none (`extra: true`).
+- **A breach's broken ends and a burnt gate** (2026-11-23): the wall steps down into a breach in three or four ragged courses from
+  each side (hashed per breach, each side within its third of the gap); a burnt gate keeps a charred stump at each jamb and a leaf
+  fallen flat on its approach (seated on its lowest points), the passage behind still its dim back. The courses are whole blocks of
+  the wall's body (no broken stone faces), and the burnt wood and walls are tints, not textures, until `wall.limewash.scorched` and
+  `wood.gate.studded` are wired (delivered 2026-11-17, in the library; their prompts in `core/materials/PROMPTS-archived.md`,
+  section 61 on the integration line, with `wall.rubble.limewash`).
+- **What a placement can ask of a fort** (2026-11-23, for `settlements/marches`): `o.outline` (a watch fort's convex ward) and
+  `o.gateEdge` draw `XFORT.plan(o)` instead of the size's fixed plan (such a fort gets no interiors: the set's item is planned on
+  the fixed plan); `o.seed` is the fort's look and `o.damageSeed`, when given, what its damage is hashed from, so one fort keeps its
+  look through its three states; a damaged fort's gun whose wall was breached or whose gate burnt lies wrecked inside, its barrel,
+  carriage and a wheel seated on the ground (a ruined fort's guns were carried off); `xa_fort_post` takes `o.fort` (the fort it
+  answers to) and `o.rota` (4 by default), on its group (`userData.post`) and in `window._xaPosts` with its place (not on its core/tags volume: the vocabulary has no such key). The interior set
+  is not planned for a custom outline, and a custom fort's lot (the def's `w`, `d`) is still the fixed plan's.
+- **The Marches' outside works** (the wayside shrine, the stable yard's cistern and trough, the road: `settlements/marches`
+  `src/80m-mr-works.js`, keys `mr_*`) are the kit's to take when that build is merged; they are not here yet.
+- **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its
+  blueprint is another session's (`settlements/strongwall/tempest/`), and the Qiblai kit is not on this sheet.
+- **The sheet is over its showcase budget**: 6.71 M triangles against 6.0 M (`targets/sheet/89z-rows.js`; reported, a failure
+  only with `--strict-budget`). The forts are about 0.44 M of it (a page of the four fort defs alone), so the sheet was near
+  6.27 M, already over, before them.
+

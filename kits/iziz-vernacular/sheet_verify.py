@@ -60,7 +60,7 @@ ASSERT_JS = r"""(o)=>{const A=window._api,R=[];if(!A)return [{name:'probe',ok:fa
  return R;}"""
 
 
-async def _run(a, pack, foreign, census):
+async def _run(a, pack, foreign, census, extra=None):
     os.makedirs(a.out, exist_ok=True)
     q = []
     if a.only:
@@ -97,6 +97,11 @@ async def _run(a, pack, foreign, census):
                 print(('  PASS  ' if ok else '  FAIL  ') + 'voth-trades : ' + detail[:900])
                 if not ok:
                     fails.append('assert voth-trades')
+            if extra:   # a kit's own invariants (run(extra=...)): a JS function returning [{name, ok, detail}], as ASSERT_JS's
+                for r in await pg.evaluate(extra):
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail'])[:900])
+                    if not r['ok']:
+                        fails.append('assert ' + r['name'])
         if a.eval:
             for ev in a.eval:
                 print('eval:', json.dumps(await pg.evaluate(ev))[:4000])
@@ -128,9 +133,10 @@ async def _run(a, pack, foreign, census):
     return V.exit()
 
 
-def run(pack, foreign=(), census=False):
+def run(pack, foreign=(), census=False, extra=None):
     """Parse the command line and check the sheet; pack: the kit's KMAT pack key; foreign: the trade names (the start of a
-    trades-table complaint) whose buildings are another kit's (Iziz's foreign quarter for the Vernacular)."""
+    trades-table complaint) whose buildings are another kit's (Iziz's foreign quarter for the Vernacular); extra: a JS function
+    (a string) returning a kit's own invariants [{name, ok, detail}], run after the sheet's (kits/xanadu/verify.py: the forts)."""
     ap = argparse.ArgumentParser()
     ap.add_argument('html')
     ap.add_argument('--views', default='')
@@ -143,4 +149,4 @@ def run(pack, foreign=(), census=False):
     ap.add_argument('--strict-budget', dest='strict_budget', action='store_true')
     ap.add_argument('--out', default='shots')
     ap.add_argument('--size', default='1280x800')
-    sys.exit(asyncio.run(_run(ap.parse_args(), pack, foreign, census)))
+    sys.exit(asyncio.run(_run(ap.parse_args(), pack, foreign, census, extra)))

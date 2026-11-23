@@ -49,13 +49,20 @@ listed fails. `python3 tools/harness.py ratchet <pages>` reruns the universal as
 
 What a shader failure was (2026-11-11). r128's "THREE.WebGLProgram: shader error" names no material, and a burst of link
 failures with empty logs is also what a lost WebGL context or a driver under load gives a page with nothing wrong in it.
-Two records tell them apart; neither changes what passes or fails (tools/tests/test_gl_diagnosis.py has a case each):
+Two records tell them apart (tools/tests/test_gl_diagnosis.py has a case each):
   1. The context. From before the page loads (GL_HOOK_JS, window.__kgl), every canvas that takes a WebGL context is
      watched: each `webglcontextlost` and `webglcontextrestored` event is kept with its time and canvas, and each program
      as it fails to link with its time, canvas, three's SHADER_NAME and whether its log was empty. The line `gl-context`
-     (a report, never a failure) gives the count: "no WebGL context lost (1 canvas watched)", or "the WebGL context was
+     gives the count: "no WebGL context lost (1 canvas watched)", or "the WebGL context was
      lost 1 time and restored 1 time: canvas 1 (1280x800) lost at 41.2 s, canvas 1 restored at 42.2 s". Headless
      Chromium on software GL often loses the first context by itself as its GPU process starts; that is counted too.
+     The line is where a real loss shows (Chromium's "loseContext: context lost" console line is left out of
+     shader-errors, real loss or not: BUGS-2026-11-15.md T1): a loss the page did not ask for (WEBGL_lose_context,
+     forceContextLoss) and that is not that start-up loss (in the first 3 s, back within 2 s) makes it a WARN, and a
+     renderer still lost at the end of the run after one makes it a FAIL.
+  The `shader-programs` line: KHOOK.checkPrograms on the page's own renderers and scene (it read only the renderers a
+     KHOOK layer compiled on, so a page with no layer passed with programs that never linked: T2); on a page with no
+     KHOOK, the programs drawn now whose LINK_STATUS is false.
   2. The program. A failing `shader-errors` line ends, after " || ", with "programs that do not link now (N): ..." (each
      renderer.info.programs entry whose LINK_STATUS is false at the end of the run: its shader type, the start of its
      cache key, the materials and meshes that draw with it, found as KHOOK.checkPrograms finds them, and its log), or
@@ -114,8 +121,10 @@ LOAD_MS = 900000
 # they were merged; they still work.
 CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
 # ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`, Voth's city plan and site
-# editor as `_vc.ready` and `_site.ready`), or the error panel has filled
-READY_JS = ("window._ready===true || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
+# editor as `_vc.ready` and `_site.ready`), or the error panel has filled. A page that builds on after its first frame
+# (core/host 91: `window._hostPending`, a count it raises while that work is queued and lowers when it is done) is ready
+# when the count is back to 0; a page that never sets it is ready as before
+READY_JS = ("(window._ready===true&&!(window._hostPending>0)) || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
             "(window._site&&window._site.ready) || (document.getElementById('errs')&&"
             "document.getElementById('errs').textContent.length>0)")
 STATS_JS = """()=>{const w={};for(const k of Object.keys(window)){if(!k.startsWith('_')||k==='__THREE__')continue;
@@ -996,6 +1005,107 @@ SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&render
   for(let i=0;i<n;i++){ const u=gl.getActiveUniform(g,i); if(u&&S.has(u.type)){ k+=u.size; names.push(u.name.replace(/\\[0\\]$/,'')); } }
   out.push({name:p.name||'program '+p.id, n:k, names:names.slice(0,20)}); }
  out.sort((a,b)=>b.n-a.n); return {programs:out.length, max:out.length?out[0].n:0, top:out.slice(0,5), units:gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)}; }"""
+WATER_MOUTHS_JS = """()=>{
+ let W=null; try{ W=(typeof WATER!=='undefined'&&WATER)||window.WATER; }catch(e){}
+ if(!W||!Array.isArray(W.surfaces)) return null;
+ const opens=W.surfaces.filter(s=>s&&s.kind==='open'&&typeof s.contains==='function');
+ const flows=W.surfaces.filter(s=>s&&s.kind==='flow'&&Array.isArray(s.pts)&&s.pts.length>=2);
+ if(!opens.length||!flows.length) return {opens:opens.length, flows:flows.length, bad:[]};
+ let G=null;
+ try{ if(typeof terrainH==='function') G=terrainH; }catch(e){}
+ if(!G){ try{ if(typeof landH==='function') G=landH; }catch(e){} }
+ if(!G){ try{ if(typeof DRAWN_H==='function') G=DRAWN_H; }catch(e){} }
+ if(!G&&window._api&&typeof window._api.ground==='function') G=window._api.ground;
+ const lvlOf=O=>typeof O.levelAt==='function'?O.levelAt(0):(O.level||0);
+ const inBounds=(O,x,z)=>{ const b=O.bounds; return !b||(x>=b[0]&&z>=b[1]&&x<=b[2]&&z<=b[3]); };
+ const drawnList=Array.isArray(W.drawn)?W.drawn:[];
+ const keepFnOf=F=>{
+  if(typeof F.keepAt==='function') return F.keepAt;
+  const D=drawnList.find(d=>d&&d.S===F);
+  const ka=D&&D.mesh&&D.mesh.geometry&&D.mesh.geometry.attributes&&D.mesh.geometry.attributes.wtrKeep;
+  const pos=D&&D.ribbon&&D.ribbon.pos;
+  if(ka&&pos&&ka.array){
+   const K=ka.array, n=K.length, ox=(D.mesh.position&&D.mesh.position.x)||0, oz=(D.mesh.position&&D.mesh.position.z)||0;
+   return (x,z)=>{
+    let best=1e18, kv=1;
+    for(let i=0;i<n;i++){
+     const dx=(pos[i*3]+ox)-x, dz=(pos[i*3+2]+oz)-z, d2=dx*dx+dz*dz;
+     if(d2<best){ best=d2; kv=K[i]; }
+    }
+    return kv;
+   };
+  }
+  return null;
+ };
+ const bad=[], step=4;
+ for(const F of flows){
+  const P=F.pts.map(p=>Array.isArray(p)?{x:p[0],z:p[1],y:p[2]||0,w:F.width||10}:{x:p.x,z:p.z,y:p.y||0,w:p.w||F.width||10});
+  const kf=keepFnOf(F);
+  let overM=0, maxOver=0, ox=0, oz=0, oName='';
+  let subM=0, maxSub=0, sx=0, sz=0, sName='';
+  for(let i=0;i+1<P.length;i++){
+   const a=P[i], b=P[i+1], L=Math.hypot(b.x-a.x,b.z-a.z);
+   if(L<1e-6) continue;
+   const n=Math.max(1,Math.ceil(L/step)), ds=L/n, tx=(b.x-a.x)/L, tz=(b.z-a.z)/L, nx=-tz, nz=tx;
+   for(let k=0;k<(i+2===P.length?n+1:n);k++){
+    const u=k/n, x=a.x+(b.x-a.x)*u, z=a.z+(b.z-a.z)*u, w=(a.w+(b.w-a.w)*u)||10;
+    if(kf&&kf(x,z)<0.25){ overM=0; subM=0; continue; }
+    const g=G?G(x,z):null;
+    let hitOpen=null;
+    for(const O of opens){
+     const lv=lvlOf(O);
+     if(inBounds(O,x,z)&&O.contains(x,z)&&(g===null||g<lv-0.02)){ hitOpen=O; break; }
+    }
+    if(hitOpen){ overM+=ds; if(overM>maxOver){ maxOver=overM; ox=x; oz=z; oName=hitOpen.name||'open water'; } }
+    else overM=0;
+    let hitSub=null;
+    if(G){
+     const dOut=w*0.5+Math.max(8,w*0.35);
+     const xl=x+nx*dOut, zl=z+nz*dOut, xr=x-nx*dOut, zr=z-nz*dOut;
+     const gL=G(xl,zl), gR=G(xr,zr);
+     for(const O of opens){
+      const lv=lvlOf(O);
+      if(inBounds(O,x,z)&&O.contains(xl,zl)&&O.contains(xr,zr)&&g<lv+0.15&&gL<lv-0.20&&gR<lv-0.20){ hitSub=O; break; }
+     }
+    }
+    if(hitSub){ subM+=ds; if(subM>maxSub){ maxSub=subM; sx=x; sz=z; sName=hitSub.name||'open water'; } }
+    else subM=0;
+   }
+  }
+  if(maxOver>24) bad.push((F.name||'flow')+' runs '+maxOver.toFixed(0)+' m unfaded inside '+oName+' near ('+ox.toFixed(0)+','+oz.toFixed(0)+')');
+  else if(maxSub>28) bad.push((F.name||'flow')+' runs '+maxSub.toFixed(0)+' m unbanked through submerged bed of '+sName+' near ('+sx.toFixed(0)+','+sz.toFixed(0)+')');
+ }
+ return {opens:opens.length, flows:flows.length, bad};
+}"""
+# Item 33: foliage card sheet cuts and stem-origin attachment: refuses any single-plant library card cut as a multi-cell
+# sheet ("sheet": "geometry" or BIO.geo.cells), and runs BIO.attachAudit with tight stem tolerances (kStem 0.16, pad 0.30 m).
+LEAF_STEMS_JS = """()=>{
+ if(typeof BIO==='undefined'||!BIO||!BIO.kits) return {defs:0, audited:0, floating:0, bad:[]};
+ const bad=[]; let defs=0;
+ for(const K of Object.values(BIO.kits)){
+  for(const [nm,df] of Object.entries((K&&K.defs)||{})){
+   const lc=df&&df.mat&&df.mat.userData&&df.mat.userData.libCard, raw=df&&df.raw;
+   if(!lc||!lc.lib) continue;
+   defs++;
+   const cut=!!(raw&&raw.userData&&raw.userData.cells)||lc.sheet==='geometry';
+   if(lc.plants===1&&cut){
+    bad.push('item '+nm+' ('+(lc.slot||lc.lib)+') cuts single-plant '+lc.lib+' as a multi-cell sheet');
+   }
+  }
+ }
+ let audited=0, floating=0;
+ const G=(BIO.host&&BIO.host.terrainH)||(typeof terrainH==='function'?terrainH:null)||(window._api&&typeof window._api.terrainH==='function'?window._api.terrainH:null);
+ if(typeof BIO.attachAudit==='function'&&G){
+  const a=BIO.attachAudit({ground:G, kStem:0.16, pad:0.30, max:6000});
+  if(!a.note){
+   audited=a.audited||0; floating=a.floating||0;
+   if(audited>0&&a.share>0.015){
+    bad.push(floating+' of '+audited+' foliage cards float under tight stem audit ('+(100*a.share).toFixed(2)+'% > 1.50%)');
+   }
+  }
+ }
+ return {defs, audited, floating, bad};
+}"""
 # Item 28: the eye against the ground as drawn (core/drawn, KDRAWN.h): the page's own KDRAWN sources when it registers them,
 # else its ground meshes (userData.ground, or named ground / terrain), read triangle by triangle. The ray rule misses an eye
 # under the ground when something solid lies below it (a seabed, a cave floor); this does not.
@@ -1105,7 +1215,50 @@ PROGRAMS_JS = "()=>{" + FIND_JS + """
     if(pr.programs&&typeof pr.programs.forEach==='function') pr.programs.forEach((x)=>{ const h=by.get(x); if(h&&h!==rec) put(h.held,mn,4); }); } });
   by.forEach((rec)=>{ if(!rec.meshN&&rec.held.length){ out.heldN++; if(out.bad.length<8) out.bad.push(rec); return; } out.badN++; if(out.bad.length<8) out.bad.push(rec); }); }
  return out; }"""
+# KHOOK.checkPrograms on the page's own renderers and scene (T2, BUGS-2026-11-15.md): with no renderer it reads only
+# KHOOK.renderers, the ones a layer was compiled on, so a page whose materials carry no KHOOK layer passed with programs
+# that never linked. The renderers are found as PROGRAMS_JS finds them; each record once, however many renderers name it.
+# null when the page has no KHOOK (shader-programs then reads PROGRAMS_JS's LINK_STATUS sweep).
+KHOOK_PROGRAMS_JS = "()=>{" + FIND_JS + """
+ if(typeof KHOOK==='undefined'||!KHOOK||typeof KHOOK.checkPrograms!=='function') return null;
+ const {sc}=__kfind(); const rs=[];
+ const add=(r)=>{ try{ if(r&&r.info&&Array.isArray(r.info.programs)&&rs.indexOf(r)<0) rs.push(r); }catch(e){} };
+ try{ if(typeof renderer!=='undefined') add(renderer); }catch(e){}
+ add(window.renderer); add((window._api||{}).renderer);
+ try{ (KHOOK.renderers||[]).forEach(add); }catch(e){}
+ const seen=new Set(), out=[];
+ const take=(list)=>{ for(const r of (list||[])){ const k=r.kind==='anchor'?'a|'+r.layer+'|'+r.anchor:'p|'+r.name+'|'+r.key; if(seen.has(k)) continue; seen.add(k);
+   out.push(r.kind==='anchor'?r.layer+': '+r.anchor:'program '+r.name+': '+String(r.programLog||r.fragmentLog||r.vertexLog||'').replace(/\\s+/g,' ').slice(0,120)); } };
+ if(rs.length) for(const R of rs) take(KHOOK.checkPrograms(R,sc||null)); else take(KHOOK.checkPrograms());
+ return {bad:out, renderers:rs.length}; }"""
 LINK_ERR = re.compile(r"THREE\.WebGLProgram: shader error", re.I)
+# A context loss the page did not ask for in its first START_LOSS_MS, back within START_BACK_MS, is headless software GL
+# losing its first context by itself as its GPU process starts (T3): reported, not warned.
+START_LOSS_MS, START_BACK_MS = 3000, 2000
+
+
+def gl_context_verdict(P):
+    """(ok, prefix) for the `gl-context` line (T1). SHADER_IGNORE keeps Chromium's "loseContext: context lost" console line
+    out of shader-errors, for a real loss too, so this line is where a real loss shows: a loss the page did not ask for
+    (WEBGL_lose_context, forceContextLoss) warns, and fails when a renderer is still lost at the end (nothing draws)."""
+    if not P or not P.get("hooked"):
+        return True, ""
+    ev = P.get("ev") or []
+    real = []
+    for i, e in enumerate(ev):
+        if e["e"] != "lost" or e.get("asked"):
+            continue
+        back = next((x["t"] for x in ev[i + 1:] if x["e"] == "restored" and x["canvas"] == e["canvas"]), None)
+        if e["t"] < START_LOSS_MS and back is not None and back - e["t"] <= START_BACK_MS:
+            continue   # software GL's start-up loss
+        real.append(e)
+    if not real:
+        return True, ""
+    if P.get("lostNow"):
+        return False, "%s the page did not ask for, and a renderer still lost at the end: nothing draws. " % (
+            "a context loss" if len(real) == 1 else "%d context losses" % len(real))
+    return True, "WARN: %s the page did not ask for (a GPU reset or a driver fault; rerun with --no-cache). " % (
+        "a context loss" if len(real) == 1 else "%d context losses" % len(real))
 # A context loss explains a link failure on its canvas from LOSS_LEAD_S before the lost event (the GPU side is gone before
 # the page is told: links fail with empty logs) until LOSS_LAG_S after the context is restored.
 LOSS_LEAD_S, LOSS_LAG_S = 10.0, 1.0
@@ -1335,8 +1488,9 @@ def load_budget(here, html):
 
 
 def survey_checks(here, checks=None):
-    """The survey's opt-in checks (SURVEY) this verify runs: `checks` (SURVEY, a name, or names), plus those the build is
-    listed for in tools/checks_optin.json, plus KRATOR_CHECKS."""
+    """The survey's opt-in checks (SURVEY + OPTIN_CHECKS) this verify runs: `checks` (SURVEY, a name, or names), plus those
+    the build is listed for in tools/checks_optin.json, plus KRATOR_CHECKS."""
+    optin_all = SURVEY + ("water-mouths", "leaf-stems")
     want = set()
     if checks:
         want.update([checks] if isinstance(checks, str) else checks)
@@ -1344,10 +1498,10 @@ def survey_checks(here, checks=None):
     try:
         import buildlib
         b = os.path.relpath(os.path.abspath(here or "."), ROOT).replace(os.sep, "/")
-        want.update(c for c in SURVEY if buildlib.opted_in(c, None if b.startswith("..") else b))
+        want.update(c for c in optin_all if buildlib.opted_in(c, None if b.startswith("..") else b))
     except Exception:
         pass
-    return {c for c in want if c in SURVEY}
+    return {c for c in want if c in optin_all}
 
 
 def page_sources(html):
@@ -1476,15 +1630,23 @@ class VerifyPage:
             P = None
         self.gl = P
         ctx, pre, post = gl_diagnosis(P, sh)
-        U.append(("gl-context", True, ctx))   # a report: it never fails, and says why shader-errors may have
+        cok, cpre = gl_context_verdict(P)
+        U.append(("gl-context", cok, cpre + ctx))   # says why shader-errors may have; a loss the page did not ask for warns (T1)
         U.append(("shader-errors", not sh, pre + "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3])) + post
                   if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % ncons))
         try:
-            bad = await pg.evaluate("() => typeof KHOOK === 'undefined' ? null : KHOOK.checkPrograms().map(r => r.kind === 'anchor' ? r.layer + ': ' + r.anchor : 'program ' + r.name + ': ' + (r.programLog || r.fragmentLog || r.vertexLog).slice(0, 120))")
+            K = await pg.evaluate(KHOOK_PROGRAMS_JS)
         except Exception:
-            bad = None
-        if bad is not None:
-            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else "every program linked, no anchor missed (KHOOK.checkPrograms)"))
+            K = None
+        if K is not None:
+            bad = K["bad"]
+            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else
+                      "every program linked, no anchor missed (KHOOK.checkPrograms on %d renderer%s and the scene)" % (K["renderers"], "" if K["renderers"] == 1 else "s")))
+        elif P and P.get("hooked") and P.get("renderers"):   # no KHOOK: the LINK_STATUS sweep of every program drawn now
+            n = P.get("badN", 0)
+            U.append(("shader-programs", not n, ("%d program%s drawn now did not link: %s" % (n, "" if n == 1 else "s", "; ".join(
+                      "%s on %s" % (b["name"], ", ".join(b["meshes"][:3]) or "no mesh named") for b in (P.get("bad") or []) if b["meshN"] or not b["held"])[:240]))
+                      if n else "every program drawn now linked (%d programs, renderer.info.programs; the page has no KHOOK)" % P.get("programs", 0)))
         U.append(("page-errors", not self.errs, "; ".join(self.errs[:3])[:300] if self.errs else "none"))
         if R:
             panel = R["panel"]
@@ -1592,6 +1754,39 @@ class VerifyPage:
                     U.append(("samplers", False, msg))
                 else:
                     U.append(("samplers", True, ("WARN: " if sm["max"] >= SAMPLER_WARN else "") + msg))
+        try:
+            wm = await pg.evaluate(WATER_MOUTHS_JS)
+        except Exception as e:
+            wm = {"error": str(e).splitlines()[0][:200]}
+        if wm is not None:
+            on = "water-mouths" in self.checks
+            if wm.get("error"):
+                U.append(("water-mouths", not on, ("" if on else "report: ") + "could not inspect WATER surfaces: " + wm["error"]))
+            else:
+                bad = wm.get("bad") or []
+                msg = ("; ".join(bad[:3])[:320] if bad else
+                       "%d flow(s), %d open water surface(s): all mouths terminate or cross-fade cleanly" % (wm["flows"], wm["opens"]))
+                if not on:
+                    U.append(("water-mouths", True, "report: " + msg + ' (opt in: tools/checks_optin.json "water-mouths")'))
+                else:
+                    U.append(("water-mouths", not bad, msg))
+        try:
+            ls = await pg.evaluate(LEAF_STEMS_JS)
+        except Exception as e:
+            ls = {"error": str(e).splitlines()[0][:200]}
+        if ls is not None:
+            on = "leaf-stems" in self.checks
+            if ls.get("error"):
+                U.append(("leaf-stems", not on, ("" if on else "report: ") + "could not inspect BIO foliage cards: " + ls["error"]))
+            else:
+                bad = ls.get("bad") or []
+                msg = ("; ".join(bad[:3])[:320] if bad else
+                       "%d card def(s), %d/%d floating under tight stem audit: all cards cleanly cut and stem-anchored"
+                       % (ls["defs"], ls["floating"], ls["audited"]))
+                if not on:
+                    U.append(("leaf-stems", True, "report: " + msg + ' (opt in: tools/checks_optin.json "leaf-stems")'))
+                else:
+                    U.append(("leaf-stems", not bad, msg))
         if R and R.get("vram"):
             vr = R["vram"]
             U.append(("vram", True, "report: %.1f MB estimated VRAM (%.1f MB in %d textures, %.1f MB in %d geometries)"

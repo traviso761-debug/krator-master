@@ -1,0 +1,125 @@
+// ================================================================= HOST — the views, inspector words and probe checks (every station), handed to core/host
+// copperglacier's take, its views and checks the Gate's: the Hall, the stacks, the pond, the river, the knobs; the checks' negative controls.
+const drawnH=(function(){const p=GROUND.geometry.attributes.position.array,N=480,nx=N+1,S=TERR.R*2.2,cs=S/N,H=k=>p[k*3+1];
+ return(x,z)=>{const fu=clamp((x+S/2)/cs,0,N-1e-6),fv=clamp((z+S/2)/cs,0,N-1e-6),i=Math.floor(fu),j=Math.floor(fv),u=fu-i,v=fv-j,a=j*nx+i,b=a+nx,c=b+1,d=a+1;
+  return u+v<=1?H(a)+(H(d)-H(a))*u+(H(b)-H(a))*v:H(c)+(H(b)-H(c))*(1-u)+(H(d)-H(c))*(1-v);};})();
+const gh=(x,z,dy)=>Math.max(terrainH(x,z),drawnH(x,z),waterH(x,z))+(dy||0);
+const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
+const lookY=(cx,cy,cz,tx,ty,tz)=>[cx,cy,cz,tx,ty,tz];
+const recOf=re=>REG.find(r=>re.test(r.name));
+const stk=k=>STACKS.find(S=>S.key===k);
+const VIEWS=(function(){const V={},Y=LEVEL;
+ if(!HALL){/* a station without the Hall: its views are data in its site (44z: SITE.views [{name, c:[x, dy, z], t:[x, dy, z]}], dy over the drawn ground or water) */
+  for(const v of SITE.views||[])V[v.name]=look(v.c[0],v.c[2],v.c[1],v.t[0],v.t[2],v.t[1]);
+  /* a pueblo (86p): from the floor in front of it and a little to its right, its ladders and its pen in the foreground, its knob and the blocks over them */
+  PUEBLOS.forEach(Q=>{const f=Q.toW(Q.St.pen.x1+28,Q.St.pen.z1+44),m=Q.toW(0,0);V[Q.name]=lookY(f[0],gh(f[0],f[1],6),f[1],m[0],Q.hy+4,m[1]);});
+  return V;}
+
+ // the Hall from the south-east bank across the pond, the stacks behind it and the walls far off
+ V['The Hall of Heroes']=lookY(950,Y+240,-420,-80,Y+170,40);   /* from the east-north-east, with the sun (north-north-east at 11:00 here) on the faces it sees; the stacks to the right */
+ V['The Hall from the south bank']=lookY(-760,Y+210,980,160,Y+180,-260);   /* against the light: the stacks behind it, the neck's walls far off */
+ // from the neck, looking west up the Labyrinth: the Hall in its pond, the chaos's knobs, the north wall's toe
+ V['Into the Labyrinth']=lookY(2300,Y+120,300,-400,Y+180,-200);
+ // the neck from the Hall's upper slab: the river leaving east between the walls (the north wall's toe at 2.4-6.4 km, the south side)
+ V['The neck']=lookY(300,Y+300,150,6000,Y+900,-2500);
+ // the funeral road: causeway 3 (south-west), its skull poles toward the plinth (the Kimr's necropolis)
+ {const a=2*Math.PI/3;V['The funeral road']=look(Math.cos(a)*400,Math.sin(a)*400+16,1.8,Math.cos(a)*190,Math.sin(a)*190,14);}
+ // the stacks from the pond's north-east bank: the bridges, the saucers, the Garden Stack's fall
+ {const S=stk('S1');V['The stacks']=lookY(820,Y+140,-820,S.x,Y+150,S.z);}   /* from the north-east, the Works Stack nearest, the Garden and Mine Stacks and their bridges behind */
+ // the Garden Stack's fall into its pool
+ {const f=GATE.plan.falls[0];if(f)V['The fall of the Garden Stack']=look(f.x+f.nx*240+f.nz*80,f.z+f.nz*240-f.nx*80,20,f.x,f.z,120);}
+ // the Gowd Warra above the pond, its gallery woods
+ {const P=RIVER.lines[0],a=P[Math.floor(P.length*.45)],b=P[Math.floor(P.length*.75)];V['The Gowd Warra']=look(a[0],a[1]+60,8,b[0],b[1],2);}
+ // a knob of the chaos
+ {const K=KNOBS[0];V['A knob of the chaos']=look(K.x+K.R*2.4,K.z+K.R*1.6,20,K.x,K.z,(K.top-K.y0)*.4);}
+ V['From afar']=lookY(-2400,Y+700,2600,0,Y+120,0);
+ return V;})();
+function hazardWords(p){return typeof KTAGS!=='undefined'&&KTAGS.hazardAt?'\n'+KTAGS.hazardAt(p.x,p.y,p.z):'';}
+function describe(hit){const p=hit.point,o=hit.object;
+ let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
+ const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
+ const name=best?best.name+'  ·  '+lab:lab;
+ return name+'\n'+(isItem?'flora (the mammoth steppe, the kit\'s own) · '+SITE.name:o.userData.host?'structure · '+SITE.name:'terrain / water')+
+  '\nwet '+(FIELD.wet(p.x,p.z)*100|0)+'% · rock '+(FIELD.rock(p.x,p.z)*100|0)+'% · meadow '+(FIELD.meadow(p.x,p.z)*100|0)+'%'+
+  hazardWords(p)+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+const BUDGET={showcase:{tris:16000000,calls:220},cls:{pass:15000000,host:4000000},type:{['labyrinth/'+SITE.key]:'pass','host':'host'}};
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+const HCHK={
+ // the Hall, its stacks, its tombs and its funeral road drawn on the page
+ hall(g,ga){const ok=!!(g&&g.tris>50000&&ga&&ga.ruin&&ga.ruin.tombs>100&&ga.ruin.poles>20);
+  return{ok,detail:g?('the Hall '+g.tris+' triangles; '+(ga&&ga.ruin?ga.ruin.tombs+' tombs, '+ga.ruin.poles+' skull poles':'no ruin')):'no Hall'};},
+ // nothing roots in the pond, the river or on the rock
+ dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6;});return{ok:!bad.length,detail:bad.length?bad.length+' plants under the water (first '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' plants, none drowned'};},
+ /* rooted at the ground (within 2 m of it: the growth on the rock and the ruin, 89z's LABY.dress, stands on its ledges on purpose) and more
+    than 12 m inside a body's outline (KSTACKS draws a wall up to 12 m inside it, so the moss on a foot ledge is on the drawn rock, not in it) */
+ offRock(P){const bad=P.filter(p=>rockFoot(p[0],p[2])<-12&&p[1]<terrainH(p[0],p[2])+2);return{ok:!bad.length,detail:bad.length?bad.length+' plants inside a stack or knob (first '+bad[0].slice(0,3).map(v=>v|0)+')':'none on the rock'};},
+ // the river never climbs (the owner's rule)
+ graded(L){let up=0;L.forEach(P=>{for(let i=1;i<P.length;i++)if(P[i][2]>P[i-1][2]+1e-6)up++;});return{ok:!up,detail:up?up+' river steps climb':L.reduce((s,P)=>s+P.length,0)+' river points, none climbing'};},
+ // the bridges' stack ends are in the rock (fit to the drawn outline: GATESTACKS.EMBED)
+ bridges(B){const bad=B.filter(b=>[b.a,b.b].some(e=>e.stack&&!(KSTACKS.topAt(STACKS.filter(S=>S.key===e.stack),e.x,e.z)>=b.y)));return{ok:B.length>=6&&!bad.length,detail:bad.length?bad.length+' bridge ends in the air ('+bad.map(b=>b.key).join(' ')+')':B.length+' bridges, every stack end embedded'};},
+ // the hazards (89h): a rim answers "fall" within 6 m of the drop and not in the mesa's middle; the pond answers "drown"
+ hazards(P){const kinds=p=>(typeof KHAZ==='undefined'?[]:KHAZ.at(p.x,p.z,0,p.y)).map(h=>h.kind),bad=P.filter(p=>kinds(p).includes(p.kind)!==p.want);
+  return{ok:P.length>0&&!bad.length&&typeof KHAZ!=='undefined',detail:bad.length?bad.map(p=>p.what+': '+(p.want?'no ':'a ')+p.kind).join('; '):(window._hazards?window._hazards.n+' hazard records; ':'')+P.length+' probes answered'};},
+ /* a pueblo stands on its knob (86p): every block's corner on the knob's top (no more than 0.3 m over it, at most 1 m into it), the long
+    ladders' feet on the floor past the knob's foot (within 0.8 m of the ground), the round room and the pen off the knob, and no plant rooted
+    on its site. Q.lift moves the house up (the negative control) */
+ pueblo(L,P){const bad=[];let n=0;
+  L.forEach(Q=>{const y=Q.hy+(Q.lift||0),cs=Math.cos(Q.ry),sn=Math.sin(Q.ry),def=(x,z)=>[Q.G0[0]+x*cs+z*sn,Q.G0[1]-x*sn+z*cs],o=Q.St.off;
+   Q.P.cells.forEach(cl=>cl.pts.forEach(pt=>{const w=Q.toW(pt[0],pt[1]),t=KSTACKS.topAt([Q.S],w[0],w[1]);n++;if(!(t>-1e9)||y-t>.3||t-y>1)bad.push('block '+cl.id+(t>-1e9?' '+(y-t).toFixed(2)+' m off the top':' off the knob'));}));
+   Q.St.entries.forEach(E=>{const w=def(E.x+o[0],E.z+o[1]),g=terrainH(w[0],w[1]),fy=Q.y0+(Q.lift||0);n++;if(Math.abs(fy-g)>.8||rockFoot(w[0],w[1])<-.5)bad.push('ladder '+E.id+' foot '+(fy-g).toFixed(2)+' m off the floor');});
+   [[Q.St.round.x,Q.St.round.z,'the round room'],[(Q.St.pen.x0+Q.St.pen.x1)/2,(Q.St.pen.z0+Q.St.pen.z1)/2,'the pen']].forEach(r=>{const w=def(r[0]+o[0],r[1]+o[1]);n++;if(rockFoot(w[0],w[1])<1)bad.push(r[2]+' on the knob');});});
+  const pl=P.filter(p=>p[1]>-1e8&&keptOff(p[0],p[2]));if(pl.length)bad.push(pl.length+' plants rooted on the site (first '+pl[0].slice(0,3).map(v=>v|0)+')');
+  return{ok:L.length>0&&!bad.length,detail:bad.length?bad.slice(0,4).join('; '):L.length+' pueblo(s): '+n+' corners, ladder feet and parts checked'};},
+ camerasOut(Cm){const bad=Cm.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):Cm.length+' cameras above the ground'};}};
+/* the hazard probes: the Garden Stack's top, 2 m in from its rim and at its middle, and the pond's deep middle */
+/* a station's probes are data (44z: SITE.probes); {knob: i} stands for that knob's rim, 2 m in from its edge (a fall) and its top's middle (none) */
+const knobProbes=i=>{const S=KNOBS[i],r=S&&KSTACKS.ring(S,S.top-.5,48);if(!r)return[];const cx=r.reduce((s,p)=>s+p[0],0)/r.length,cz=r.reduce((s,p)=>s+p[1],0)/r.length,p=r[4],d=Math.hypot(p[0]-cx,p[1]-cz)||1,k=(d-2)/d;
+ return[{what:'a knob\'s rim',kind:'fall',want:true,x:cx+(p[0]-cx)*k,z:cz+(p[1]-cz)*k,y:S.top},{what:'a knob\'s middle',kind:'fall',want:false,x:cx,z:cz,y:S.top}];};
+const hazProbes=!HALL?[].concat(...(SITE.probes||[]).map(p=>p.knob!=null?knobProbes(p.knob):[Object.assign({},p,{y:(p.y==null?terrainH(p.x,p.z):p.y)+(p.dy||0)})])):(function(){const S=STACKS.find(s=>s.key==='S1'),r=KSTACKS.ring(S,S.top-.5,48)||[[S.x+30,S.z]],cx=r.reduce((s,p)=>s+p[0],0)/r.length,cz=r.reduce((s,p)=>s+p[1],0)/r.length;
+ const p=r[4],d=Math.hypot(p[0]-cx,p[1]-cz)||1,k=(d-2)/d,y=LEVEL+S.top;
+ return[{what:'the Garden Stack\'s rim',kind:'fall',want:true,x:cx+(p[0]-cx)*k,z:cz+(p[1]-cz)*k,y},{what:'the Garden Stack\'s middle',kind:'fall',want:false,x:cx,z:cz,y},
+  {what:'the pond',kind:'drown',want:true,x:0,z:PONDD.b*.6,y:LEVEL-2}];})();
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
+ add('the hazards: a fall at the rims, not in a top\'s middle; the water drowns (core/hazard)',HCHK.hazards(hazProbes));
+ if(HALL)add('the Hall of Heroes, its tombs and the funeral road drawn',HCHK.hall(window._gate,window._gatearc));
+ add('nothing rooted under the water',HCHK.dry(P));
+ add('nothing rooted on the rock',HCHK.offRock(P));
+ add('the rivers never climb',HCHK.graded(RIVER.lines));
+ if(GATE)add('every bridge\'s stack end is in its rock',HCHK.bridges(GATE.plan.bridges));
+ if(PUEBLOS.length)add('the Kimr pueblo stands on its knob, its ladders, round room and pen on the floor, no plant on its site',HCHK.pueblo(PUEBLOS,P));
+ add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
+ if(HALL)add('no Hall',HCHK.hall(null,null));
+ if(hazProbes.some(p=>p.kind==='fall'&&!p.want))add('a fall wanted in a top\'s middle',HCHK.hazards(hazProbes.map(p=>p.kind==='fall'?Object.assign({},p,{want:!p.want}):p)));
+ if(LAKES.length){const L=LAKES[0];add('a plant drowned',HCHK.dry([[L.cx,L.level-3,L.pond?L.b*.6:L.cz,'biome:x']]));}
+ {const S=STACKS[0]||KNOBS[0];if(S)add('a plant inside a stack',HCHK.offRock([[S.x,S.y0+(STACKS[0]?LEVEL:0),S.z,'biome:x']]));}
+ add('a river that climbs',HCHK.graded([[[0,0,10],[10,0,12]]]));
+ if(GATE){const b=GATE.plan.bridges[0],bad=Object.assign({},b,{b:Object.assign({},b.b,{x:b.b.face[0]+b.b.n[0]*30,z:b.b.face[1]+b.b.n[1]*30})});add('a bridge end in the air',HCHK.bridges([bad].concat(GATE.plan.bridges.slice(1))));}
+ if(PUEBLOS.length){add('a pueblo floating 3 m over its knob',HCHK.pueblo(PUEBLOS.map(Q=>Object.assign({},Q,{lift:3})),[]));
+  const Q=PUEBLOS[0],m=Q.toW(0,0);add('a plant rooted in a pueblo\'s yard',HCHK.pueblo(PUEBLOS,[[m[0],Q.hy,m[1],'biome:x']]));}
+ add('a camera under the ground',HCHK.camerasOut([{view:'under',x:300,y:terrainH(300,600)-20,z:600}]));
+ return R;}
+KHOST.on(SKY.view,'view');
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
+const MS=STILLS[0];
+const EXPORT_BOX=SITE.exportAt?[SITE.exportAt[0]-300,SITE.exportAt[1]-300,SITE.exportAt[0]+300,SITE.exportAt[1]+300]:(function(){const L=LAKES[0],c=!L?[0,0]:L.pond?[L.a*.5,L.b+120]:[clamp(L.cx,-2000,2000),clamp(L.cz,-2000,2000)];return[c[0]-300,c[1]-300,c[0]+300,c[1]+300].map(Math.round);})();
+const MIRROR=MS&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[MS.mat],level:MS.level,center:MS.center,radius:MS.radius,far:MS.far,
+ hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
+KHOST.take({build:'labyrinth-'+SITE.key,title:'Krator biome — the Labyrinth: '+SITE.name,
+ hint:SITE.region+' ('+SITE.koppen.join(', ')+', '+SITE.floor+' m, '+SITE.atm+' atm, '+SITE.rain+' mm): '+(HALL?'the Hall of Heroes (the Kimrs\' ancestral arcology, their necropolis) in its pond on the Gowd Warra, its five carved stacks bridged to it, the chaos\'s knobs':(SITE.blurb||SITE.name))+'; scale model 5.1 px '+SITE.px+','+SITE.py,
+ scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
+ clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,
+ inspect:describe,stats:()=>'inst '+window._instances,
+ layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]},
+  ...(typeof KTAGS!=='undefined'&&KTAGS.hazardLayer?{'hazards':KTAGS.hazardLayer()}:{})},
+ exporters:{biome:()=>BIO.export()},
+ minimap:{title:SITE.name},
+ budget:BUDGET,types:()=>BIO.stats,
+ api:{hostChecks,hostNegatives,
+ get totals(){const t=BIO.totals();return {tris:t.tris+(GATE?GATE.tris:0),inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+ biome:()=>window._biome,gate:()=>window._gate,
+ exportProfile:['registry','items','materials','textures','terrain','stage','atmos'].concat(LAKES.length||RIVER.lines.length?['water']:[]),   /* a dry station (the Mesas) has no water to export */
+ exportBox:EXPORT_BOX,
+ at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});

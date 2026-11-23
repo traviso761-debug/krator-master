@@ -24,7 +24,7 @@
     "core/biome/36-core-walker.js": "84089426e2cc080bc64ce4b0d08210e56d98b2f6ce4e1822e2a70cd4f167544d",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/city/10-city-core.js": "cad0879f60fa725f13caa30b6d7d749f92bb13e3ad765c81499436c18403d7b9",
     "core/city/12-city-index.js": "d68e32fa55f752a444d6b08353382477a8eca0a695fc099f3d5fd5475f1d46a2",
@@ -427,7 +427,7 @@
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
     "kits/fauna/models": "1e536f72bda090449c94d764e5390a53beb2afa6f99a1752e0fb844495288c92",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
-    "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
+    "kits/interiors/sets": "6878430e9531e1e8d7677660d90b9c12627e59981cf0a00feb423bbf87787cf2",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "settlements/voth/src": "fac7ae3f33c9d3af2ebc6c326ea9ccce810f206ae81584faed7dff55b210c7a2",
     "settlements/voth/targets": "49832d6b8c3356132d2ab8b3f5f815b481055b4a5962a637ef7bfa5ec5943ad8",
@@ -436,12 +436,12 @@
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "settlements/voth/dist/voth-city.html": "8745e2b29f0cf4ad0b14de03522c2461e1aa1e8874fb1713f92d706a4bbcb298",
-    "settlements/voth/dist/voth-site.html": "62072fe13143fd60c928119cf5d3e496ef1b9e6f4db5dbbd5d2ce612ffc08870"
+    "settlements/voth/dist/voth-city.html": "fb254c64636bc784358bfd3078af3777338e5918753553dc0c752bfe0a26df43",
+    "settlements/voth/dist/voth-site.html": "2da4a6f4a65f57877573a9c0eb5119305a46573418840e6b63d9a41d280d34c5"
    },
    "outputs_raw": {
-    "settlements/voth/dist/voth-city.html": "8745e2b29f0cf4ad0b14de03522c2461e1aa1e8874fb1713f92d706a4bbcb298",
-    "settlements/voth/dist/voth-site.html": "62072fe13143fd60c928119cf5d3e496ef1b9e6f4db5dbbd5d2ce612ffc08870"
+    "settlements/voth/dist/voth-city.html": "fb254c64636bc784358bfd3078af3777338e5918753553dc0c752bfe0a26df43",
+    "settlements/voth/dist/voth-site.html": "2da4a6f4a65f57877573a9c0eb5119305a46573418840e6b63d9a41d280d34c5"
    }
   }
  }

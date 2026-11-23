@@ -42,8 +42,6 @@ function scnDraw(scene,gx,gz,P){KOFF=[gx,0,gz];
  /* a 430 m figure wants a camera a kilometre and more off: the far plane and the sky's underside as the Podium sets them */
  if(typeof camera!=='undefined'&&camera.far<30000){camera.far=30000;camera.updateProjectionMatrix();}
  if(typeof sky!=='undefined')sky.renderOrder=-1;
- if(typeof skyMat!=='undefined'&&skyMat.fragmentShader.indexOf('pow(h,.55)')>=0){
-  skyMat.fragmentShader=skyMat.fragmentShader.replace('pow(h,.55)','pow(max(h,0.),.55)');skyMat.needsUpdate=true;}
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const D=SANCTUM.DIM,C=Math.cos,S=Math.sin,T30=Math.tan(Math.PI/6),K30=Math.cos(Math.PI/6);
  scnTag(P,gx,gz);

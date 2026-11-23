@@ -17,10 +17,10 @@ SRC = os.path.join(HERE, 'src')
 ROOT = os.path.dirname(os.path.dirname(HERE))
 # the kit's foundation, in filename order: materials and kit items, helpers, hollow bodies, openings, fixtures
 BASE = ['69b-vern-mat.js', '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js', '69f-iziz-fixtures.js']
-# the buildings: dwellings, trades, civic, infrastructure, works, land, guilds, the frontier, and the trades table
+# the buildings: dwellings, trades, civic, infrastructure, works, land, docks, guilds, the frontier, and the trades table
 BUILDINGS = ['70-vern-dwellings.js', '71-vern-trade.js', '71a-vern-food.js', '71b-vern-cloth.js', '71c-vern-craft.js',
-             '72-vern-civic.js', '73-vern-infra.js', '73b-vern-works.js', '73c-vern-land.js', '74-vern-guilds.js',
-             '74b-vern-frontier.js', '74z-vern-trades.js']
+             '72-vern-civic.js', '73-vern-infra.js', '73b-vern-works.js', '73c-vern-land.js', '73d-vern-docks.js',
+             '74-vern-guilds.js', '74b-vern-frontier.js', '74z-vern-trades.js']
 FILES = BASE + BUILDINGS
 
 

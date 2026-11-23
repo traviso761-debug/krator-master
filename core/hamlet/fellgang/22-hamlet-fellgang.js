@@ -26,14 +26,25 @@
     },
     works: {
       fowling: [{key: 'fg-ropehouse', jobs: 8, share: 0.55}, {key: 'fg-eggstore', jobs: 5, share: 0.3}, {key: 'fg-pens', jobs: 3, share: 0.15}],
-      ice: [{key: 'fg-icehouse', jobs: 8, share: 0.75}, {key: 'fg-sledgeshed', jobs: 6, share: 0.25}]
+      ice: [{key: 'fg-icehouse', jobs: 8, share: 0.75}, {key: 'fg-sledgeshed', jobs: 6, share: 0.25}],
+      farming: [{key: 'fg-barn', jobs: 6, share: 0.4}, {key: 'fg-granary', jobs: 4, share: 0.2}, {key: 'fg-smokehouse', jobs: 3, share: 0.18}, {key: 'fg-pens', jobs: 3, share: 0.22}],
+      ranch: [{key: 'fg-pens', jobs: 4, share: 0.6}, {key: 'fg-barn', jobs: 4, share: 0.4}],
+      quarry: [{key: 'fg-sledgeshed', jobs: 6, share: 0.6}, {key: 'fg-store', jobs: 3, share: 0.4}],
+      stair: [{key: 'fg-ropehouse', jobs: 8, share: 0.4}, {key: 'fg-sledgeshed', jobs: 6, share: 0.3}, {key: 'fg-smithy', jobs: 4, share: 0.15}, {key: 'fg-store', jobs: 4, share: 0.15}],
+      copper: [{key: 'fg-smithy', jobs: 6, share: 0.55}, {key: 'fg-store', jobs: 4, share: 0.25}, {key: 'fg-barn', jobs: 4, share: 0.2}],
+      gold: [{key: 'fg-smithy', jobs: 5, share: 0.45}, {key: 'fg-store', jobs: 4, share: 0.35}, {key: 'fg-pens', jobs: 3, share: 0.2}],
+      pass: [{key: 'fg-halting-house', jobs: 6, share: 0.35}, {key: 'fg-ropehouse', jobs: 6, share: 0.3}, {key: 'fg-smokehouse', jobs: 4, share: 0.2}, {key: 'fg-store', jobs: 3, share: 0.15}]
     },
-    focusJobs: {fowling: 48, ice: 48},
-    reach: {fowling: 260, ice: 260},
+    focusJobs: {fowling: 48, ice: 48, farming: 60, ranch: 45, quarry: 40, stair: 55, copper: 52, gold: 44, pass: 46},
+    reach: {fowling: 260, ice: 260, farming: 500, ranch: 700, quarry: 300, stair: 200, copper: 340, gold: 320, pass: 280},
     pending: {}
   };
-  ['fowling', 'ice'].forEach(function (f) { if (KHAMLET.FOCI.indexOf(f) < 0) KHAMLET.FOCI.push(f); });
+  ['fowling', 'ice', 'stair', 'copper', 'gold', 'pass'].forEach(function (f) { if (KHAMLET.FOCI.indexOf(f) < 0) KHAMLET.FOCI.push(f); });
   KHAMLET.FOCUS_INFO = KHAMLET.FOCUS_INFO || {};
   KHAMLET.FOCUS_INFO.fowling = {resource: 'a cliff with nest ledges (the flyers\' eggs and young, wall honey)', reach: 'to the wall\'s foot', rows: ['fellgang']};
   KHAMLET.FOCUS_INFO.ice = {resource: 'a lake frozen in winter (blocks cut, packed and carried)', season: 'the cutting weeks', rows: ['fellgang']};
+  KHAMLET.FOCUS_INFO.stair = {resource: 'a gorge stair and lowering pitch (gin wheels, pack break-bulk and rope splice)', reach: 'to the stair lip', rows: ['fellgang']};
+  KHAMLET.FOCUS_INFO.copper = {resource: 'native glacier skarn copper (cold-worked into wire, sheet and windings)', reach: 'to the skarn drift', rows: ['fellgang']};
+  KHAMLET.FOCUS_INFO.gold = {resource: 'high summer fell gold veins (worked in the shieling months)', season: 'summer shielings', rows: ['fellgang']};
+  KHAMLET.FOCUS_INFO.pass = {resource: 'a high river pass and fishery (halting house, guide ropes and smoked catch)', reach: 'to the ford and pass foot', rows: ['fellgang']};
 })();

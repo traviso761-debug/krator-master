@@ -1,0 +1,59 @@
+{
+ "build": "settlements/komodo",
+ "note": "Komodo's ground pack (PLAN.md sections 1 and 6): four library ground layers under KGROUND (hypertropic red soil, beaten mud streets, damp beach sand along the eastern sea and Kruk Warra's gravel, and tilled shore-bench fields). mapOnly with tint.keep 0.8.",
+ "size": 512,
+ "families": {
+  "gRed": {
+   "lib": "ground.redsoil",
+   "scale": [
+    6,
+    6
+   ],
+   "use": "the hypertropic jungle bluff round Komodo",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.5
+   },
+   "mapOnly": true
+  },
+  "gYard": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    4,
+    4
+   ],
+   "use": "the spiral street, yards, mustering ground and tracks down to the shore and Kruk Warra",
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.28
+   },
+   "mapOnly": true
+  },
+  "gShore": {
+   "lib": "ground.damp_beach_sand",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the eastern terminal sea's beach and Kruk Warra's placer gravel bars",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.48
+   },
+   "mapOnly": true
+  },
+  "gTill": {
+   "lib": "ground.tilled",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the bamboo-rice, taro and shade-manioc fields along the eastern shore bench",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.48
+   },
+   "mapOnly": true
+  }
+ }
+}

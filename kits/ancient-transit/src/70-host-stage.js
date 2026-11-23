@@ -46,6 +46,9 @@ TRS.build=function(){if(TRS.ready)return true;if(window._texPending>0)return fal
  add(KTRANSIT.draw.subway(R.SW,{furn,shadow:sh}),'The subway (two stations)','subway',{sections:R.SW.sections.length,stations:R.SW.stations.length,sinkholes:R.SW.sinkholes.length});
  add(KTRANSIT.draw.train(R.ST,{shadow:sh}),'The subway train in the station','train',{cars:R.ST.cars.length,state:R.ST.state});
  add(KTRANSIT.draw.train(R.SD,{shadow:sh}),'The subway train derailed','train',{cars:R.SD.cars.length,state:R.SD.state});
+ /* the deep line (its records are TR_LINE, made before the ground) and a window of it round its station */
+ R.LN=TR_LINE;R.LW=KTRANSIT.lineWindow(TR_LINE,2200,2900);
+ add(KTRANSIT.draw.line(R.LN,{furn,shadow:sh}),'The deep line (every form once)','line',{sections:R.LN.sections.length,stations:R.LN.stations.length,gaps:R.LN.gaps.length});
  TRS.ms=Math.round(performance.now()-t0);TRS.ready=true;return true;};
 tick(()=>{TRS.build();});
 /* the views: [cx, cy, cz, tx, ty, tz] */
@@ -56,6 +59,10 @@ const VIEWS={
  'The subway station, fallen in':(()=>{const S=TR_SUBWAY.stations.find(s=>s.state==='collapsed')||TR_SUBWAY.stations[0];return [S.x+70,46,S.z+40,S.x,S.y+2,S.z];})(),
  'A subway entrance':(()=>{const E=TR_SUBWAY.stations.flatMap(s=>s.entrances).find(e=>e.state==='intact')||TR_SUBWAY.stations[0].entrances[0];return [E.x+22,9,E.z+18,E.x,E.y+1,E.z];})(),
  'A sinkhole':(()=>{const H=TR_SUBWAY.sinkholes.find(h=>h.section)||TR_SUBWAY.sinkholes[0];return H?[H.x+28,22,H.z+22,H.x,terrainH(H.x,H.z)+2,H.z]:[0,30,0,0,0,10];})(),
+ 'The deep line, elevated and open':(()=>{const p=TR_LINE.path.at(470);return [p.x-60,22,p.z+70,p.x+40,TR_LINE.floorAt(500)+2,p.z];})(),
+ "The sinkhole of the deep line":(()=>{const H=TR_LINE.sinkholes[0]||{x:-500,z:1250};return [H.x+40,24,H.z+46,H.x,terrainH(H.x,H.z)+2,H.z];})(),
+ "In the gallery of the deep line":(()=>{const p=TR_LINE.path.at(1560);return [p.x,TR_LINE.floorAt(1560)+1.2+1.65,p.z-14.8,p.x+200,TR_LINE.floorAt(1760)+4,p.z-2];})(),
+ "The station of the deep line":(()=>{const p=TR_LINE.path.at(2420);return [p.x,TR_LINE.floorAt(2420)+1.8+1.65,p.z,p.x+200,TR_LINE.floorAt(2600)+3,p.z+4];})(),
  'A riot broke out here':[-1250,16,60,-1150,2,0],'Shelled':[-80,22,70,60,2,0],'Bombed to smithereens':[1220,28,80,1340,0,0],
  'A checkpoint':(()=>{const p=TR_WAR[1].positions.find(q=>q.kind==='checkpoint')||TR_WAR[1].positions[0];return p?[p.x+26,10,p.z+30,p.x,2,p.z]:[-300,20,40,-300,2,0];})(),
  'An emplacement':(()=>{const p=TR_WAR[1].positions.find(q=>q.kind!=='checkpoint')||TR_WAR[1].positions[0];return p?[p.x+18,8,p.z+22,p.x,1.5,p.z]:[-300,20,40,-300,2,0];})(),

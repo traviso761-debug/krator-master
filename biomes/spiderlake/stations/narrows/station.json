@@ -1,0 +1,18 @@
+{
+ "id": "narrows",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Spider Lake — Golden Narrows Bridge-Curtains & Ham-Spi Reserve",
+ "out": "spiderlake-narrows.html",
+ "px": [1288, 220],
+ "sky": [1016, -110],
+ "lakeDatumM": 1460.0,
+ "pAtm": 1.33,
+ "pO2Atm": 0.28,
+ "rhoKgM3": 1.56,
+ "outflowM3s": 0.0,
+ "maxSpanM": 220.0,
+ "minBoatClearM": 6.5,
+ "strataStack": "ejecta-over-dolomite",
+ "reserves": ["site:spider-lake-weirs"],
+ "modes": ["Dawn Fog", "Dusk Lake-Smoke", "Smudge Harvest"]
+}

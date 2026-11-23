@@ -1,0 +1,3 @@
+# generated at every build by build.py (the tune under a numbered name)
+gen/
+.syntax-*.js

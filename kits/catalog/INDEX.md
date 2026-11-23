@@ -25,7 +25,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-dalab.js` | 33 **big** |  |
 | `krator-master-furniture-eastabyss.js` | 57 **big** | Harvested from settlements/locus/src/65-abyss-*. (112); Harvested from settlements/locus/src/64-locus-dw (767); The builders' yard (2026-10): building stock for (811) |
 | `krator-master-furniture-eternian.js` | 27 |  |
-| `krator-master-furniture-fellgang.js` | 30 |  |
+| `krator-master-furniture-fellgang.js` | 50 **big** |  |
 | `krator-master-furniture-generic-fruit.js` | 93 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (4 pieces; pandan keys ab (314); Rift (5 pieces; the stone pine is the parasol pi (404); South-eastern Desert (3 pieces) (508); South-west Bay (3 pieces; gatepod above) (576); South-western Lowlands (6 pieces; acorns are the (652); Xanadu (7 pieces; tunas and lantern fruit are sh (777); Eastern Badlands (6 pieces; tunas, acorns and pi (926) |
 | `krator-master-furniture-generic-goods.js` | 93 **big** | Storage containers (17 pieces) (210); Food (21 pieces) (608); Drink (6 pieces) (1150); Supplies (11 pieces) (1316) |
 | `krator-master-furniture-generic.js` | 5 |  |
@@ -48,11 +48,12 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-scrap.js` | 98 **big** | Harvested from kits/post-apoc (61 pieces) (111) |
 | `krator-master-furniture-screamer.js` | 7 |  |
 | `krator-master-furniture-scyvoi.js` | 104 **big** | Seating (240); Tables and storage (350); Light (479); Vessels (556); Fire (618); Riders' gear (767); Felts and rugs (962); Work (1002); The shaman's things (1089); Tanning: the hidemaker's tent (2026-10-06) (1227) |
+| `krator-master-furniture-shumari.js` | 48 **big** |  |
 | `krator-master-furniture-talia.js` | 24 |  |
 | `krator-master-furniture-talovolci.js` | 33 **big** |  |
-| `krator-master-furniture-tungang.js` | 37 **big** |  |
+| `krator-master-furniture-tungang.js` | 114 **big** |  |
 | `krator-master-furniture-voth.js` | 18 |  |
-| `krator-master-furniture-xanadu.js` | 44 **big** |  |
+| `krator-master-furniture-xanadu.js` | 117 **big** |  |
 | `krator-master-furniture-yuni-common.js` | 1 |  |
 | `krator-master-furniture-zeijani.js` | 49 **big** | home (112); brewing and fungi (183); the alchemist (258); light (330); crafts (369); the sacred (549); the dead (675); the scouts and the cistern (735) |
 | `krator-master-furniture.js` | 294 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1406); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1901); Yuni (64 pieces) (2646); Ancients kit extras (32 pieces) (4469) |
@@ -63,7 +64,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 4 |  |
-| `90-sheet.js` | 13 | Catalog contact sheet (1) |
+| `90-sheet.js` | 14 | Catalog contact sheet (1) |
 | `92-hover.js` | 3 | Hover inspector (1) |
 | `93-polygon.js` | 5 | Polygon tool (1) |
 | `99-tail.html` | <1 |  |

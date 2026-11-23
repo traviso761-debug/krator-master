@@ -131,7 +131,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -146,7 +145,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
@@ -167,12 +166,10 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/neouterwall": "328ccf8727d4efd1b33c62804f7524c39514b9e48a8904cdbdf1763bf9113462",
     "biomes/neouterwall/src": "22289376fd5a5001c22efa510bcf13f6ba4f29c08b2d956e0884b8c10c2b0028",
     "biomes/neouterwall/stations": "5c40f8159bcd4b9cb6cde7f7e0d83fe8c90b0b94b3236741dcf39dd55524fea0",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
@@ -180,12 +177,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall.html": "f217c9e731b46ad1b7f76ace60a5f042ecfc21384b0559689c6b7e083ed844d8",
+    "biomes/neouterwall/dist/neouterwall.html": "b252656af7cdf287d6fafd389a3cade17db24db48c255c47616124b8ee472ba3",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall.html": "f217c9e731b46ad1b7f76ace60a5f042ecfc21384b0559689c6b7e083ed844d8",
+    "biomes/neouterwall/dist/neouterwall.html": "b252656af7cdf287d6fafd389a3cade17db24db48c255c47616124b8ee472ba3",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
@@ -323,7 +320,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -338,7 +334,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
@@ -359,10 +355,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/neouterwall/src": "22289376fd5a5001c22efa510bcf13f6ba4f29c08b2d956e0884b8c10c2b0028",
@@ -373,12 +366,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-badlands.html": "47e8936464c28ef17a02572bf0327c5e7ce0210bfb04ae195e11e14c56193d0e",
+    "biomes/neouterwall/dist/neouterwall-badlands.html": "8eff47bcd271695232833d6daaf9299146b4dcff906749125fde2bb9e14bebbd",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-badlands.html": "47e8936464c28ef17a02572bf0327c5e7ce0210bfb04ae195e11e14c56193d0e",
+    "biomes/neouterwall/dist/neouterwall-badlands.html": "8eff47bcd271695232833d6daaf9299146b4dcff906749125fde2bb9e14bebbd",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
@@ -625,7 +618,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -640,7 +632,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
@@ -661,10 +653,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/neouterwall/src": "22289376fd5a5001c22efa510bcf13f6ba4f29c08b2d956e0884b8c10c2b0028",
@@ -675,12 +664,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-garnet.html": "4eefdf23a0f6dffb2680d95023b5026eb1421d5d5f0ffdfda9ce302a9acc69f6",
+    "biomes/neouterwall/dist/neouterwall-garnet.html": "39f0572239e4893d6592fcff93978f4c31ef8d4d6af6b2fe6150e45a96d7af4a",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-garnet.html": "4eefdf23a0f6dffb2680d95023b5026eb1421d5d5f0ffdfda9ce302a9acc69f6",
+    "biomes/neouterwall/dist/neouterwall-garnet.html": "39f0572239e4893d6592fcff93978f4c31ef8d4d6af6b2fe6150e45a96d7af4a",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
@@ -818,7 +807,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -833,7 +821,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
@@ -854,10 +842,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/neouterwall/src": "22289376fd5a5001c22efa510bcf13f6ba4f29c08b2d956e0884b8c10c2b0028",
@@ -868,12 +853,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-portal.html": "447dc17b1af2fd22d7fc1f634fbce911be0d4f69d645e67b5af11614674a822e",
+    "biomes/neouterwall/dist/neouterwall-portal.html": "0766c83235978372e7bf9680fb8435be4301ba3cd12941779509d9d7056d3cef",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-portal.html": "447dc17b1af2fd22d7fc1f634fbce911be0d4f69d645e67b5af11614674a822e",
+    "biomes/neouterwall/dist/neouterwall-portal.html": "0766c83235978372e7bf9680fb8435be4301ba3cd12941779509d9d7056d3cef",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
@@ -1011,7 +996,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -1026,7 +1010,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
@@ -1047,10 +1031,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/neouterwall/src": "22289376fd5a5001c22efa510bcf13f6ba4f29c08b2d956e0884b8c10c2b0028",
@@ -1061,12 +1042,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-shoulder.html": "b32b1348f25518b7d646deff0f96cff7a5bd3fcb47e88083ac9553ebcca38526",
+    "biomes/neouterwall/dist/neouterwall-shoulder.html": "01ec55aab407cb5d6d2fbf8eca0938eb4ee9fe860d8e275e43ff879ddffaf913",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-shoulder.html": "b32b1348f25518b7d646deff0f96cff7a5bd3fcb47e88083ac9553ebcca38526",
+    "biomes/neouterwall/dist/neouterwall-shoulder.html": "01ec55aab407cb5d6d2fbf8eca0938eb4ee9fe860d8e275e43ff879ddffaf913",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
@@ -1203,7 +1184,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -1218,7 +1198,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/30-core-field.js": "be1e3f1c4674ed0aaffc0135e714766fc19cf2a2a3c99938a2aed90f608084aa",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
@@ -1239,10 +1219,7 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/neouterwall/src": "22289376fd5a5001c22efa510bcf13f6ba4f29c08b2d956e0884b8c10c2b0028",
@@ -1253,12 +1230,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-steam.html": "e4075317f1617ba622d10b6ec693220b2e9f94404e90493f65dfe89d1381454b",
+    "biomes/neouterwall/dist/neouterwall-steam.html": "e694bae09a9f09e512c1a59f92ce0461aa87bfd1e836a0e6adb97a689a132954",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-steam.html": "e4075317f1617ba622d10b6ec693220b2e9f94404e90493f65dfe89d1381454b",
+    "biomes/neouterwall/dist/neouterwall-steam.html": "e694bae09a9f09e512c1a59f92ce0461aa87bfd1e836a0e6adb97a689a132954",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }

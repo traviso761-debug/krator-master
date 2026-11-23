@@ -1,0 +1,83 @@
+{
+ "targets": {
+  "cone": "flashing-eye.html"
+ },
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "external": [
+  "core/terrain/37c-core-rubble.js",
+  "core/terrain/38-core-relief.js",
+  "core/world/41-world-fields.js",
+  "settlements/flashing-eye/gen/39fe-world-data.js"
+ ],
+ "scoped": [
+  "37c-core-rubble.js",
+  "41-world-fields.js",
+  "39fe-world-data.js"
+ ],
+ "files": {
+  "cone": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-3-particles.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/atmos/fx",
+    [
+     "89-atmos-fx-ashplume.js"
+    ]
+   ],
+   [
+    "core/sched",
+    [
+     "20-core-sched.js"
+    ]
+   ],
+   [
+    "core/drawn",
+    [
+     "10-core-drawn.js"
+    ]
+   ]
+  ]
+ },
+ "pack": "qiblai",
+ "packSide": true,
+ "deterministic": [
+  "20-core-walk.js",
+  "20-core-sched.js",
+  "30-fe-layout.js",
+  "31-fe-rules.js",
+  "37c-core-rubble.js",
+  "38-core-relief.js",
+  "39fe-world-data.js",
+  "40-fe-watch.js",
+  "41-world-fields.js",
+  "89q0-qb-helpers.js",
+  "89q0w-fe-mats.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89qf-fe-buildings.js",
+  "89zfe-site.js",
+  "90fe-world.js",
+  "90fg-build.js",
+  "89q5f-qb-furnish.js",
+  "89q5s-qb-shells.js",
+  "10-core-drawn.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-3-particles.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "89-atmos-fx-ashplume.js"
+ ],
+ "interiorSets": []
+}

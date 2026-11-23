@@ -4,6 +4,15 @@
 
 ## Open
 
+- [ ] **The Line's towed wagons carry a nominal fuel** (2026-11-11). `tg_flat` and `tg_icewagon` have no motor (`data.towed`), but
+  the kit's fuel vocabulary (`VEHICLE_FUELS`, `vehicles-core.js`) has no "none", so their `tags.fuel` is 'battery'. Adding "none"
+  edits `vehicles-core.js`, which reaches `kits/mechs` and the Catch's three stations: do it with the next change that rebuilds them.
+- [ ] **The Line cars' `kept` is a variant, not a build option** (2026-11-11, `krator-vehicles-line.js`). Variant 1 of each
+  `anc_line_*` car, "Kept (Tungang)", is the Tungangs' upkeep drawn over the built car (agreed with the vehicles session as a build
+  option, `build(key, {kept: 'tungang'})`); made a variant so the runtime, which reaches Locus and Mungo, was not edited. Lift it
+  into `API.build` beside `state` when one culture's upkeep must dress another's vehicle generally.
+- [ ] **The Line cars need the Ancients' file in their bundle.** `krator-vehicles-line.js` reuses `krator-vehicles-ancient.js`'s
+  helpers and culture: a host bundles `['ancient', 'line']` (a bundle of 'line' alone logs an error and draws nothing).
 - [ ] **The detail maps are 256 px a family.** A tile is 0.8 to 2 m, so close up (under a metre) the grain softens. They
   are kept small because every world that takes the bundle carries them (`bundle(['geomancer'])` adds about 250 KB to
   Locus and Mungo). `size` in `materials.json` raises them for every vehicle.

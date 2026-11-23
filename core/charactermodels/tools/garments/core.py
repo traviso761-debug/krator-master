@@ -535,6 +535,48 @@ def hull_rows(P, axes, rows):
     return P
 
 
+def open_seam_rows(p, share=0.10, min_gap=0.001, min_girth=0.15):
+    """the rows of an open grid whose two edges nearly meet without meeting: [(row, gap in metres)].
+    A hood, a cowl or a coif is an open grid wrapped round the head; where its opening is shut the two edge columns
+    must be one line. A row counts when it wraps a real girth (min_girth), its edges stand more than min_gap apart and
+    less than `share` of the row's own length: a face opening is far wider than that, a welded seam is zero."""
+    if p.closed or p.P.ndim != 3 or p.P.shape[1] < 8:
+        return []
+    rows = []
+    for i in range(p.P.shape[0]):
+        row = p.P[i]
+        girth = float(np.linalg.norm(np.diff(row, axis=0), axis=1).sum())
+        gap = float(np.linalg.norm(row[0] - row[-1]))
+        if girth > min_girth and min_gap < gap < share * girth:
+            rows.append((i, gap))
+    # an opening that tapers shut is not a slit: rows that have, higher on the part, a row of real girth whose edges
+    # do meet are the taper below a closed crown (the nomad walker's domed cowl closes its front slot over two rows)
+    z = p.P[:, :, 2].mean(axis=1)
+    shut = [float(z[i]) for i in range(p.P.shape[0])
+            if float(np.linalg.norm(np.diff(p.P[i], axis=0), axis=1).sum()) > min_girth
+            and float(np.linalg.norm(p.P[i, 0] - p.P[i, -1])) <= min_gap]
+    top_shut = max(shut) if shut else -1e9
+    return [(i, g) for i, g in rows if z[i] > top_shut]
+
+
+def check_open_seams(gid, parts):
+    """Check #10 (the hood's crown, 2026-11-15): on a head piece, an open part with two or more rows whose edges nearly
+    meet, with no closed row above them, is a slit that runs to the crown, not an opening (the recurring "hood open
+    over the crown": scalp from the brow to the crown, hidden from an eye-level shot). One such row is the point where
+    a face opening closes and passes; so does a taper under a closed crown. A part cut with a narrow slit on purpose
+    sets `slit_ok = True`."""
+    for p in parts:
+        if getattr(p, 'slit_ok', False):
+            continue
+        rows = open_seam_rows(p)
+        assert len(rows) < 2, (
+            f'[GARMENT CHECK FAIL] {gid}/{p.name}: {len(rows)} rows of this open head part end '
+            f'{min(g for _, g in rows) * 1000:.0f} to {max(g for _, g in rows) * 1000:.0f} mm short of closing '
+            f'(rows {rows[0][0]}..{rows[-1][0]}): a slit over the head. Weld the two edge columns where the opening is '
+            f'shut (types/headgear.py hood does), build the part closed, or set slit_ok on a slit cut on purpose.'
+        )
+
+
 def cloth_spec(p, offset, slot='torso'):
     c = getattr(p, 'cloth', None)
     if not c or slot not in ('torso', 'legs', 'back', 'head'):
@@ -595,6 +637,8 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         elif item is not None:
             flat_parts.append(item)
     parts = flat_parts
+    if slot == 'head':
+        check_open_seams(gid, parts)
     _facts = {}
 
     def fx(p):

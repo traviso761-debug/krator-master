@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.281,
+    1.067
+   ],
+   "seam_before": [
+    1.797,
+    1.415
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.gypsum.bedded",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.gypsum.bedded.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-bcd9-7752-b3b0-9cae14d206f6)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-c9c54601-43f4-4683-b46c-855a310a8b94.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The gypsum maze under Cube's plateau (`biomes/rift --station maze`, 2026-11-09)' on origin/main (id rock.gypsum.bedded)",
+  "sha1": "21423d0a6d56964ae005b76223dcf05631bb1f29"
+ }
+}

@@ -8,6 +8,20 @@
 `F.shade`/`F.TAU`, no literal colours) are assertions now, not warnings.
 
 ## Open
+- [ ] **42 build commands are stale until the joint all-builds rebuild** (2026-11-11, branch `claude/tungang-furniture-4a00dd`).
+  The Tungang holds' pieces (`krator-master-furniture-tungang.js`), the culture-scoped `FAMILY_SPLITS` in
+  `core/catalog/krator-furniture-core.js`, the `tg*` texture rows in `materials.json` and the new set `kits/interiors/sets/tungang.js`
+  reach 44 build commands (`tools/reach.py`). Only kits/catalog and kits/interiors were rebuilt, verified on the GPU and given
+  PORT-BASELINE rows. The coordinating session's ruling: the other builds, and their baseline rows, are rebuilt ONCE, after this branch
+  and the Fellgang branch (`claude/tungang-fellgang-kits-a56ece`) merge, which is after Integration 2. Until then these pages are behind
+  their sources (check_stale lists them):
+  - settlements: dhelv, girder (build.py and build_hero.py), highlands (with roketstad), isle-demo (build.py and --accept), iziz, locus,
+    longsong, mavs-refuge, mungo, noahs-regret, pinnacle-rock, screamers, span, verge, voth;
+  - kits: ancients, ancients-interiors, ash-nomads, beast-riders, desert-nomads, eternian, islanders, lizardmen, mechs, metropolis,
+    motor-vehicles, post-apoc, pylon, resources, scyvoi, talia, tungang (it also lists `core/furnish/`), yeti, zeijani;
+  - biomes: ancientsvalley, catch (and its stations fan, lake, oasis); openworld/isle-demo.
+  Nothing else changes for a culture other than `tungang`: the new splits name their culture, and no page but the interiors sets sheet
+  lists `core/furnish/scale/54-core-furnish-scale.js`.
 
 - [x] **The Ancients' bath fixtures are permanent** (opt-in 2026-11-03, folded in 2026-11-08): the pieces at the end of
   `krator-master-furniture.js` with their PALETTE block (a `FURN_CULTURE('ancient', ...)` merge), the `bath` programme in
@@ -188,3 +202,7 @@ Girder carry no size declarations, so there is nothing there to sync. The catalo
       cords carry up to 23, and Highlands' interiors went from 462 meshes to 580). `Batch.flush` now merges the panels that
       share a material (one canvas map each) into one mesh, the transforms baked in (Dhelv: 1746 panels in 152 meshes).
       `batch.textured` is still the list of placed panel meshes until the flush (Girder and Mav's Refuge read it).
+
+- [x] **The sheet's lamps overflowed the shader's uniforms** (2026-11-11, after the Tungang and the Fellgang pieces met in the
+  merge on `claude/loj-twenny-059a5e`: "FRAGMENT shader uniforms count exceeds MAX_FRAGMENT_UNIFORM_VECTORS(1024)" on both GPU
+  lanes). `src/90-sheet.js` keeps at most 24 of the pieces' PointLights on, the nearest the camera, re-picked every half second.

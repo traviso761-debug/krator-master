@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.209,
+    1.199
+   ],
+   "seam_before": [
+    1.577,
+    1.293
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.husk.dry",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "organic.husk.dry.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-309d-7c83-8b30-dc14b249bc08)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-f92f9886-a7b8-40a3-abe3-be96a24e1890.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Cliff Lungs (`biomes/clivobredos`, 2026-11-11)' on origin/claude/clifflung-biome (id organic.husk.dry)",
+  "sha1": "5a2041172ad68d8a148283c3c84b50b8c4ff5f0f"
+ }
+}

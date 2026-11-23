@@ -176,10 +176,19 @@
   skip('yt_leng_hall', 'Leng: the occupation of a hall', 'a ruin\'s hall sheltering domes and a tunnel: its bay houses are their own item', ['civic']);
 
   /* ---------------- THE FOREST-STEPPE (Y6) */
+  /* the urasa's sleeping places are where kits/yeti src/66-yt-steppe.js lays the household's robes: on the larch-twig floor
+     against the back of the cone and along its left, each robe's part inside the room taken at 1.6 m. They are fixtures with
+     `bed: n`, as a dome's platform is, and the room is a yt_home (the chest and the food; the lamp, the tea board and the pot):
+     the robes are the builder's, as the Sakha's are laid on the floor along the wall, so the planner brings no bed piece. A
+     cottage asked for one, and at the Khaayken's 1.15 (core/furnish/scale) the 2.3 x 2.5 robes and their clearance no longer
+     fit between the open hearth and the cone's foot (2026-11-16) */
   add({ key: 'yt_urasa', name: 'Summer house (the urasa)', wealth: MID, types: SF, lot: [9.9, 9.9],
-    rooms: [{ id: 'room', kind: 'cottage', poly: SH.circle(3.3, N, 0, 0), y: 0.02, h: 1.6, doors: [{ at: [0, r3(3.3 * Math.cos(Math.PI / N))], w: 1.1, swing: 'none' }],
-      fixtures: [{ id: 'hearth', kind: 'hearth', x: 0, z: 0, ry: 0, w: 1.3, d: 1.3, h: 0.2, reach: false }] }],
-    note: 'the birch-bark cone closes in fast: the room is taken at 1.6 m, where the cone stands four fifths out; the open hearth in the middle' });
+    rooms: [{ id: 'room', kind: 'yt_home', poly: SH.circle(3.3, N, 0, 0), y: 0.02, h: 1.6, doors: [{ at: [0, r3(3.3 * Math.cos(Math.PI / N))], w: 1.1, swing: 'none' }],
+      fixtures: [{ id: 'hearth', kind: 'hearth', x: 0, z: 0, ry: 0, w: 1.3, d: 1.3, h: 0.2, reach: false },
+        { id: 'robes-back', kind: 'bedding', x: 0, z: -1.975, ry: 0, w: 2.0, d: 1.95, h: 0.12, reach: false, bed: 2 },
+        { id: 'robes-left', kind: 'bedding', x: -1.975, z: -0.3, ry: 0, w: 1.95, d: 1.8, h: 0.12, reach: false, bed: 1 }] }],
+    note: 'the birch-bark cone closes in fast: the room is taken at 1.6 m, where the cone stands four fifths out; the open hearth in the middle, ' +
+      'the household\'s robes on the twig floor at the back and the left (fixtures that sleep three: the builder lays them)' });
   add({ key: 'yt_khoton', name: 'Byre (the khoton), its hay and its corral', wealth: WORKS, types: ['farm'], lot: [20.3, 15.3],
     rooms: [{ id: 'byre', kind: 'stable', poly: rect(8.1, 5.3, -3.2, 0), y: 0, h: 1.9, doors: [{ at: [-3.2, 2.65], w: 1.4 }] }],
     note: 'the battered walls lean in: the room is taken at the walls\' foot less their batter; the hay stack and the corral are open' });

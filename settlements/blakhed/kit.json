@@ -1,0 +1,144 @@
+{
+ "targets": {
+  "town": "blakhed.html"
+ },
+ "external": [
+  "settlements/blakhed/gen/69bk-kcity-bundle.js",
+  "settlements/blakhed/gen/69bk2-tg-bundle.js",
+  "settlements/blakhed/gen/69bk3-bk-model.js",
+  "settlements/blakhed/gen/69bk4-bk-flora-bundle.js",
+  "settlements/blakhed/gen/69bk5-dalab-pack.js",
+  "settlements/dalab/src/69d-dalab-mat.js",
+  "settlements/dalab/src/69e-dalab-helpers.js",
+  "settlements/dalab/src/70-dalab-dwellings.js",
+  "settlements/dalab/src/71-dalab-trade.js",
+  "settlements/dalab/src/71c-dalab-town.js",
+  "settlements/dalab/src/73-dalab-sacred.js",
+  "kits/xanadu/src/87k-xa-lake-trades.js",
+  "core/walk/box/24-core-walk-box.js"
+ ],
+ "scoped": [
+  "69bk-kcity-bundle.js",
+  "69bk2-tg-bundle.js",
+  "69bk4-bk-flora-bundle.js",
+  "24-core-walk-box.js"
+ ],
+ "pack": "blakhed",
+ "files": {
+  "town": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ],
+   [
+    "core/drawn",
+    [
+     "10-core-drawn.js"
+    ]
+   ],
+   [
+    "core/simulation",
+    [
+     "77-sim-0-core.js",
+     "77-sim-1-world.js",
+     "77-sim-2-places.js",
+     "77-sim-3-actors.js",
+     "77-sim-4-nav.js",
+     "77-sim-5-motion.js",
+     "77-sim-5r-routes.js",
+     "77-sim-6-economy.js",
+     "77-sim-6-govern.js",
+     "77-sim-6-items.js",
+     "77-sim-6-needs.js",
+     "77-sim-6-season.js",
+     "77-sim-7-ledger.js",
+     "77-sim-7-lod.js",
+     "77-sim-7-stocks.js",
+     "77-sim-8-export.js"
+    ]
+   ]
+  ]
+ },
+ "deterministic": [
+  "69bk-kcity-bundle.js",
+  "69bk3-bk-model.js",
+  "69bk5-dalab-pack.js",
+  "69bm-bk-ground.js",
+  "69bn-bk-town.js",
+  "69bo-bk-ring.js",
+  "77-sim-0-core.js",
+  "77-sim-1-world.js",
+  "77-sim-2-places.js",
+  "77-sim-3-actors.js",
+  "77-sim-4-nav.js",
+  "77-sim-5-motion.js",
+  "77-sim-5r-routes.js",
+  "77-sim-6-economy.js",
+  "77-sim-6-govern.js",
+  "77-sim-6-items.js",
+  "77-sim-6-needs.js",
+  "77-sim-6-season.js",
+  "77-sim-7-ledger.js",
+  "77-sim-7-lod.js",
+  "77-sim-7-stocks.js",
+  "77-sim-8-export.js",
+  "78-bk-sim.js",
+  "89b0-bk-matlib.js",
+  "89b1-bk-interiors.js",
+  "89zb-bk-site.js",
+  "90b-bk-world.js",
+  "90c-bk-build.js",
+  "90d-bk-flora.js",
+  "90e-bk-life.js",
+  "24-core-walk-box.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "10-core-drawn.js",
+  "69d-dalab-mat.js",
+  "69e-dalab-helpers.js",
+  "69bk2-tg-bundle.js",
+  "69bk4-bk-flora-bundle.js",
+  "91z-views.js",
+  "89z-rows.js"
+ ],
+ "interiors": [
+  "town"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "iziz",
+  "fellgang",
+  "generic",
+  "generic-goods",
+  "jobs",
+  "scrap"
+ ],
+ "furnitureTex": true,
+ "interiorSets": [
+  "xanadu"
+ ],
+ "sidePacks": true
+}

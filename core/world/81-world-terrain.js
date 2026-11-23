@@ -29,10 +29,12 @@ MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DETAIL};sh
   .replace('#include <project_vertex>','#include <project_vertex>\nvRock=aRock;vRoad=aRoad;vDUV=aDUV;vDist=-mvPosition.z;vOvK=aOvK;vOvB=aOvB;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform float uOverlay;uniform vec3 uRoad;varying float vRoad;varying float vRock;varying vec2 vDUV;varying float vDist;varying vec3 vOvK;varying vec3 vOvB;')
   .replace('#include <map_fragment>',['#include <map_fragment>',
-   '{vec3 bc=strataColor(vSWP,vSWN);',
-   ' float fd=smoothstep(60.0,900.0,vDist),ff=smoothstep(900.0,9000.0,vDist);',
+   /* the strata (about nine dependent texture reads a pixel) only where the rock's weight can move the colour: under
+      0.004 it moves it by less than half a percent of the difference (2026-11-16: 3-6 ms of the Arc 140T's ~22 ms a
+      frame over the hyperjungle, openworld/pinnacle KNOWN_ISSUES.md) */
+   '{float fd=smoothstep(60.0,900.0,vDist),ff=smoothstep(900.0,9000.0,vDist),rk=vRock*0.85*(1.0-ff*0.6);',
    ' vec3 d1=texture2D(uDetail,vDUV*0.31).rgb,d2=texture2D(uDetail,vDUV*0.043+0.37).rgb,d3=texture2D(uDetail,vDUV*0.0061+0.71).rgb,d4=texture2D(uDetail,vDUV*0.00083+0.13).rgb;',
-   ' diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*d2.r),vRock*0.85*(1.0-ff*0.6));',
+   ' if(rk>0.004){vec3 bc=strataColor(vSWP,vSWN);diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*d2.r),rk);}',
    ' diffuseColor.rgb=mix(diffuseColor.rgb,uRoad*(0.82+0.36*d1.g),vRoad);',   // a highway's packed gravel
    ' vec3 near=d1*d2*1.16,mid=d2*d3*1.12,far=d3*d4*1.1;',
    ' diffuseColor.rgb*=mix(mix(near,mid,fd),far,ff);',

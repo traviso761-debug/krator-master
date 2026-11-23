@@ -95,6 +95,19 @@ FRET = [
     "X..........."
 ]
 FRETA = np.array([[c == 'X' for c in r] for r in FRET])
+# the digits of the 'stencil:<digits>' motif, 5 x 7
+STENCIL = {
+    '0': (".XXX.", "X...X", "X..XX", "X.X.X", "XX..X", "X...X", ".XXX."),
+    '1': ("..X..", ".XX..", "..X..", "..X..", "..X..", "..X..", ".XXX."),
+    '2': (".XXX.", "X...X", "....X", "...X.", "..X..", ".X...", "XXXXX"),
+    '3': ("XXXXX", "...X.", "..X..", "...X.", "....X", "X...X", ".XXX."),
+    '4': ("...X.", "..XX.", ".X.X.", "X..X.", "XXXXX", "...X.", "...X."),
+    '5': ("XXXXX", "X....", "XXXX.", "....X", "....X", "X...X", ".XXX."),
+    '6': ("..XX.", ".X...", "X....", "XXXX.", "X...X", "X...X", ".XXX."),
+    '7': ("XXXXX", "....X", "...X.", "..X..", ".X...", ".X...", ".X..."),
+    '8': (".XXX.", "X...X", "X...X", ".XXX.", "X...X", "X...X", ".XXX."),
+    '9': (".XXX.", "X...X", "X...X", ".XXXX", "....X", "...X.", ".XX.."),
+}
 
 
 REPO_ROOT = ROOT.parent.parent
@@ -1273,6 +1286,25 @@ def motif(style, w, h, fg, bg, aspect=1.0):
         img[hex_rim] = np.array(bg) * 1.45 + 0.04
         img[trace_v | trace_h] = np.array(fg) * 0.85
         img[node_dot] = np.minimum(1.0, np.array(fg) * 1.25 + 0.15)
+    elif style.startswith(('stencil:', 'stencil<:')):
+        # a stencilled number (the Tungangs' berth numbers, 'stencil:47'): the digits after the colon on a 5 x 7 grid,
+        # in the lower half of the cell, so a panel of one repeat puts the number a hand below the panel's top.
+        # 'stencil<:' draws the cell mirrored (for a strip whose u runs the other way round the body)
+        txt = style.split(':', 1)[1]
+        img[:] = bg
+        n_ch = max(1, len(txt))
+        for k, ch in enumerate(txt):
+            glyph = STENCIL.get(ch)
+            if glyph is None:
+                continue
+            cell_w = 0.84 / n_ch
+            uu = ((1.0 - u if style.startswith('stencil<:') else u) - (0.08 + cell_w * k)) / (cell_w * 0.86)
+            vv = (v - 0.50) / 0.42
+            ok = (uu >= 0) & (uu < 1) & (vv >= 0) & (vv < 1)
+            ga = np.array([[c == 'X' for c in r] for r in glyph])
+            m = np.zeros(ok.shape, bool)
+            m[ok] = ga[(vv[ok] * 7).astype(int).clip(0, 6), (uu[ok] * 5).astype(int).clip(0, 4)]
+            img[m] = fg
     if style in CULTURAL_MOTIF_PACK_MAP:
         tex_key, tex_w, pal_b = CULTURAL_MOTIF_PACK_MAP[style]
         tex_acc = sample_cultural_tex(tex_key, w, h, fg, bg, pal_blend=pal_b)

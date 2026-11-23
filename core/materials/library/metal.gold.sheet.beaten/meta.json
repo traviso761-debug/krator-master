@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.242,
+    1.237
+   ],
+   "seam_before": [
+    2.642,
+    2.587
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "_source": {
+   "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-8f91-7021-941e-2a5610d667bd)",
+   "licence": "generated for this project by its owner",
+   "original_title": "exec-cec75ce4-7b96-404a-a771-e0ac916ba54b.png",
+   "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Qiblai kit (`kits/qiblai`, 2026-11-11)' on claude/zealous-allen-0cd44d (id metal.gold.sheet.beaten)"
+  },
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.gold.sheet.beaten",
+  "metal": 1,
+  "roughness": 0.35,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "metal.gold.sheet.beaten.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13c-8f91-7021-941e-2a5610d667bd)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-cec75ce4-7b96-404a-a771-e0ac916ba54b.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Qiblai kit (`kits/qiblai`, 2026-11-11)' on claude/elastic-chatterjee-5edac4 (id metal.gold.sheet.beaten)",
+  "sha1": "b8c6451829357a79eb49134d26ca8ba075ed0647"
+ }
+}

@@ -60,7 +60,7 @@ OUT=_args[0] if _args else ('ebadlands-%s.html'%STATION if STATION else 'ebadlan
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # core/terrain, opt-in by name (core/README.md "terrain/"); the final rebuild (2026-11-02): 35 KSTRATA (the badland and canyon beds: src/35-core-strata.js,
 # sedesert's legacy copy, is gone), 37 KSTACKS (domes and tors), 38 KRELIEF (wadis, talus, pavement), 43 KGROUND, 44 KFAR, 45 KHORIZON. A local src/ copy wins.
-CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
+CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','38r-core-rills.js','43-core-ground.js','43n-core-ground-near.js','44-core-farfield.js','45-core-horizon.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit. 32 kin and variant pools, 33 the fungoid parts (the vents' crust),
 # 31j a limb's joint to its parent (BIO.flareJoin), 34 the octahedral impostors, 41 the environmental fields, 44 the stage
@@ -79,6 +79,7 @@ if STATION:
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 PATH.setdefault('35z-core-strata-shade.js',os.path.join(CORE_T,'host','35-core-strata-shade.js'))   # after 35 (Span's lesson: keyed 35z)
+PATH.setdefault('43nz-core-ground-near-draw.js',os.path.join(CORE_T,'host','43n-core-ground-near-draw.js'))   # after 43n (the near ground's data)
 PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
 PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 for f in CORE_BIOME:

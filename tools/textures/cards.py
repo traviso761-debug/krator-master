@@ -215,7 +215,7 @@ def run_one(src, out_dir, rec, opt):
             'source': dict({'file': os.path.basename(src), 'sha1': sha}, **src_meta),
             'processing': {'script': 'tools/textures/cards.py', 'version': VERSION,
                            'options': dict({'size': size, 'anchor': anchor, 'pad': pad}, **{k: opt[k] for k in ('key', 'key_lo', 'key_hi', 'key_gain', 'spill', 'subject', 'choke') if k in opt}), 'source_size': list(im.size)}}
-    with open(os.path.join(out_dir, 'meta.json'), 'w') as fh:
+    with open(os.path.join(out_dir, 'meta.json'), 'w', encoding='utf-8', newline='\n') as fh:   # LF on Windows too (T17)
         json.dump(meta, fh, indent=1, sort_keys=True)
     cover = float((arr[..., 3] > 127).mean())
     print('%-28s %s, anchor %s, coverage %.2f' % (rec['id'], 'x'.join(map(str, im.size)), anchor, cover))

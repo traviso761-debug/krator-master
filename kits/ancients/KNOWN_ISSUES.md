@@ -388,11 +388,31 @@ records drawn from the scrap Xanadu set and the Qiblai kit (`XAK`, `kit_bundle.b
 - [ ] **The walkers are the kit's cylinder figures**, unanimated, with no walk cycle and no activity poses. An indoor
       resident is hidden, not drawn in the opened rooms. The arcology's storeys are a node at each unit's middle, not its
       rooms, and its fin heads reach the kora by a straight "bridge" edge. Posing 5,016 residents costs about 5 ms a frame.
-- [ ] **The economy feeds the town but trades nothing** (T-econ-1, 2026-11-16, `settlements/theodiga/src/49-th-econ.js`).
-      The fields, dairies, hives, kitchens, yards and bore make; the warehouses store; the carters haul; the households and
-      messes eat; the books balance. But the salvage and the artifacts pile up in the warehouses: no caravan takes them out
-      by the East Gate. There is no money, the tools and clothes do not wear, and the Lamp Hall burns no butter. The yields
-      are sized to the census (TH_ECON's diet and surplus), not to the fields' areas.
+- [ ] **Theodiga's economy and money** (T-econ-1 to T-econ-3, T-money-1, 2026-11-16, `settlements/theodiga/src/49-th-econ.js`,
+      `49m-th-money.js`). What runs:
+      - The makers make, the carters haul, the households and messes eat, and the books balance.
+      - The iron tools, the Lamp Hall's butter and the robes wear and are bought again.
+      - The caravans by the East Gate road bring tea, charcoal and garments and take the scrap and iron over; the
+        Devisers' rarities leave with them.
+      - Wages and prices are paid in quds.
+
+      What is off:
+      - **The Dome's fall lasts about fifteen months on the page**, a year at the yards' scheduled hours (the owner
+        asked for "about a year"; T-town-9). The walk down the face costs about a fifth of their day.
+      - The yards' rate (0.25 lots a worker-hour) and the makers' surplus (1.9) are set by nine days on the page. They will
+        drift as the town changes; rerun the page's week after an economy change.
+      - The yards' cookhouse serves the foods the warehouses hold most of (core's `economyMeal`), not the diet, so it
+        leans on the grain: about 1.2 to 1.4 days on the page. Honey is made at about 0.8 of its use, from 7.6 days down
+        to about 4.8 over nine days.
+      - The poor tier's labourers who work the yards still walk home to eat.
+      - The kitchens, churns and smelter are staffed by the census, not by their output, so their goods carry idle hours
+        in their price: bread 15 quds against grain's 5, iron 1,088.
+      - The caravans pay nothing yet, and the rarities' sale earns nothing (M3).
+      - The yields are sized to the census (TH_ECON's diet and a surplus of 1.5, raised from 1.25 when a week on the
+        page ran grain down), not to the fields' areas.
+      - The robes wear and are bought, but are not drawn by their wear.
+      - The Devisers' mules (no port) are not drawn.
+      - The turn of an hour still costs a step up to about 0.2 s, from errand routes the warm-up does not cover.
 - [ ] **The Panel Row's kitchens cannot take a hearth** (`kits/interiors/sets/xanadu-scrap.js`, `xa_scrap_row` houses: a room
       2.2 m wide with the stair in it; no hearth fits at any seed from any culture). The town furnishes them as stores
       (`8zz2-th-town-rooms.js`, `AIK.townRekinded`). The set should widen the kitchen or move the stair.
@@ -1164,10 +1184,10 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
   planes merge and a head reads as an egg. The Eternian kit's head generator (its P2) replaces it.
 - **No ruined state, no interiors, no Godot export check yet.** The Sanctum is shown as built and as kept; the arches'
   halls have terraces and a back wall, no rooms.
-- **Kit-wide, fixed on this page only:** the sky shader is black below the horizon (`pow(h,.55)` with h < 0 in
-  `90-scene.js`), the dome is drawn after the ground with no depth write, and the far plane is 12 km, so a wide shot shows
-  a black band past 9 km. `coDraw` patches it for its own page; the shared fix (`max(h,0.)`, `sky.renderOrder=-1`)
-  would move every page's hash.
+- **Kit-wide, fixed on this page only:** the dome is drawn after the ground with no depth write, and the far plane is
+  12 km, so a wide shot shows a black band past 9 km. `coDraw` patches it for its own page (`sky.renderOrder=-1`, far
+  30 km). The sky shader's own black band below the horizon (`pow(h,.55)` with h < 0) is fixed kit-wide in `90-scene.js`
+  (`pow(max(h,0.),.55)`, 2026-11-15).
 
 ## Span's pieces (`--target span`)
 

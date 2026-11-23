@@ -9,12 +9,7 @@
 //   KTRANSIT.draw.subway(SW, {furn, shadow}) -> Group     userData {tris, sections, stations, sinkholes}
 (function () {
   var T = KTRANSIT, C = function () { return T.COL; };
-  function frames(SW, s0, s1, step, up, offFn) {
-    var out = [], n = Math.max(1, Math.round((s1 - s0) / step));
-    for (var i = 0; i <= n; i++) { var s = s0 + (s1 - s0) * i / n, p = SW.path.at(s), y = SW.floorAt(s), s2 = Math.min(SW.L, s + 2), pitch = s2 > s ? Math.atan2(SW.floorAt(s2) - y, 2) : 0, off = offFn ? offFn(s, i / n) : 0;
-      out.push(T.frame(p.x + Math.cos(p.yaw) * off, y + up, p.z - Math.sin(p.yaw) * off, p.yaw, pitch, 0)); }
-    return out;
-  }
+  var frames = T.draw.frames;   /* the kit's shared helper (46-tr-mats.js); the subway's deckAt is its floorAt */
   /* the bore's section, counter-clockwise so the lining faces inward: the floor from -w to +w, up the right wall over the crown and down the left.
      lower: only the walls to `lower` high and the floor (an open polyline) */
   function bore(R, lower) {
@@ -80,8 +75,8 @@
     });
   }
   T.draw.subway = function (SW, o) {
-    o = o || {}; var B = T.builder(), col = C(), M = T.mats();
-    if (!M.tunnel) { M.tunnel = M.concrete.clone(); M.tunnel.side = THREE.DoubleSide; M.tunnel.name = 'tr.tunnel'; }
+    o = o || {}; var B = T.builder(), col = C();
+    T.draw.tunnelMat();
     SW.sections.forEach(function (S) { tunnel(B, SW, S, T.frame(S.x0, S.y0, S.z0, S.yaw, S.pitch, 0)); });
     /* the rails: both tracks, by section */
     SW.rails.forEach(function (sec) { if (sec.state === 'gone') return; var bent = sec.state === 'bent';

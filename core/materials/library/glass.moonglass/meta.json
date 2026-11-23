@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.173,
+    0.919
+   ],
+   "seam_before": [
+    2.214,
+    2.256
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.1,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "glass",
+  "id": "glass.moonglass",
+  "metal": 0,
+  "roughness": 0.1,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "glass.moonglass.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fe-3905-7ac1-8d83-e416de0af9a4)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-8fc73976-88aa-4b73-8fd0-ec7d47c3432d.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (kits/tungang, 2026-11-11)' (id glass.moonglass)",
+  "sha1": "5f5552dfdd79183b25fbefdd00d05ce45e1f3c21"
+ }
+}

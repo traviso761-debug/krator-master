@@ -15,6 +15,8 @@ const O=M.frame.origin_px;(WORLD_DATA.landforms||[]).forEach(L=>{const x=(L.px-O
 const E=by('Erehwon');
 return{built:{'Erehwon':'openworld/xanadu-oidong-highrift (its villages and roads); the city is settlements/xanadu',
   'Qiblai':'openworld/xanadu-oidong-highrift (its villages and roads); no city page yet',
-  'Longsong':'openworld/xanadu-oidong-highrift (its three villages); the monastery is settlements/longsong'},
+  'Longsong':'openworld/xanadu-oidong-highrift (its three villages); the monastery is settlements/longsong',
+  'Kirstabal':'openworld/xanadu-oidong-highrift (its ring, the lake villages, the Landing on its piers, the Alph\'s five hamlets and its roads); the town is settlements/kirstabal',
+  'Gihon':'openworld/xanadu-oidong-highrift (its ring and its roads); the town is settlements/gihon'},
  goOrder:['Erehwon','Qiblai','Longsong'],goViews:views,
  start:{view:[E.x+5000,E.z+5000,600,.78,-.15],look:[E.x,E.z,80]}};})();

@@ -18,9 +18,9 @@ const HPAL={
  bamboo:[0xc8b870,0xb8a860,0xa89850,0xd0c080],
  turf:[0xa0b080,0x90a070,0xb0b888],
  gold:[0xd4a03a,0xc89030,0xe0b048],
- // painted trim — the carving colours, NW-coast led: teal and red on black and white, with ochre and a Russian blue
- trim:[0x2e9488,0xb3322a,0xefe7d6,0x2e9488,0xb3322a,0x3a6aa8,0xd19a3a],
- teal:0x2e9488,red:0xb3322a,white:0xefe7d6,black:0x201a18,blue:0x3a6aa8,green:0x3f7a4a,ochre:0xd19a3a,
+ // painted trim — Slavic / Carpathian rospis' & nalichnik colours: birch white, Novgorod vermilion, saffron ochre, ultramarine, pine green
+ trim:[0xf3ead8,0xb83224,0xd89e32,0x2d5894,0x2f6d4c,0xf3ead8,0xb83224],
+ teal:0x2f6d4c,red:0xb83224,white:0xf3ead8,black:0x221814,blue:0x2d5894,green:0x3f7a4a,ochre:0xd89e32,
 };
 
 // ---------------------------------------------------------------- world UV with separate u/v tile sizes
@@ -33,10 +33,11 @@ function hWorldUV(mat,Ku,Kv){return vWorldUV(mat,Ku,Kv);}
 const hStd=(o)=>new THREE.MeshStandardMaterial(Object.assign({color:0xffffff,roughness:.92,metalness:0,side:DS},o));
 MAT.logs=hStd({map:TEX.logs});MAT.scale=hStd({map:TEX.scale,roughness:.78});MAT.rubbleW=hStd({map:TEX.rubble,roughness:.97});
 MAT.turf=hStd({map:TEX.turf,roughness:1});MAT.bamboo=hStd({map:TEX.bambooV,roughness:.7});MAT.bmat=hStd({map:TEX.bmat,roughness:.95});
-MAT.paint=hStd({roughness:.72});                         // painted timber: trims, brackets, shutters — no grain, the colour is the point
+MAT.paint=hStd({roughness:.72});                         /* painted timber: trims, brackets, shutters */
 MAT.gold=hStd({color:0xffffff,roughness:.38,metalness:.35,side:THREE.FrontSide});
 MAT.formA=hStd({map:TEX.formA,roughness:.8});MAT.formW=hStd({map:TEX.formW,roughness:.8});MAT.formV=hStd({map:TEX.formV,roughness:.8});
 MAT.formT=hStd({map:TEX.formT,roughness:.8});MAT.formB=hStd({map:TEX.formB,roughness:.8});MAT.formF=hStd({map:TEX.formF,roughness:.8});
+MAT.formF.userData.lib='procedural/slavic';
 MAT.totem=hStd({map:TEX.totem,roughness:.82,side:THREE.FrontSide});MAT.totemP=hStd({map:TEX.totemP,roughness:.82,side:THREE.FrontSide});
 MAT.wing=hStd({map:TEX.wing,alphaTest:.5,roughness:.85});
 MAT.laceV=hStd({map:TEX.laceV,alphaTest:.5,roughness:.75});MAT.laceB=hStd({map:TEX.laceB,alphaTest:.5,roughness:.8});
@@ -44,10 +45,10 @@ MAT.clock=hStd({map:TEX.clock,roughness:.6});
 MAT.meadow=new THREE.MeshStandardMaterial({map:TEX.meadow,roughness:1});
 MAT.rock=hStd({map:TEX.rock,roughness:1});
 /* paving, library-only looks (materials.json cobble: rock_wall_12 cobbles for the town square, ashlarP: rock_wall_11 coursed sandstone for the capital's forecourt); the rubble map stands in without the pack */
-MAT.cobble=hStd({map:TEX.rubble,roughness:.95});MAT.ashlarP=hStd({map:TEX.rubble,roughness:.9});vWorldUV(MAT.cobble,.33);vWorldUV(MAT.ashlarP,.33);                // cliff faces (plain mesh, UVs from the geometry)
+MAT.cobble=hStd({map:TEX.rubble,roughness:.95});MAT.ashlarP=hStd({map:TEX.rubble,roughness:.9});vWorldUV(MAT.cobble,.33);vWorldUV(MAT.ashlarP,.33);
 vWorldUV(MAT.logs,.5);vWorldUV(MAT.scale,.5);vWorldUV(MAT.rubbleW,.25);vWorldUV(MAT.turf,.5);vWorldUV(MAT.bamboo,.5);vWorldUV(MAT.bmat,.5);
 hWorldUV(MAT.formF,.5,2);
-for(const k of['hFrzA','hFrzL','hFrzT','hFrzG']){MAT[k]=hStd({map:TEX.formF,roughness:.8});hWorldUV(MAT[k],1/2.25,2);kdef(k,VBOX,MAT[k]);}   // library friezes: 2.25 m x 0.5 m tile, set in 88y          // frieze: 2 m x 0.5 m tile (boards 0.5 m tall show one band)
+for(const k of['hFrzA','hFrzL','hFrzT','hFrzG']){MAT[k]=hStd({map:TEX.formF,roughness:.8});hWorldUV(MAT[k],1/2.25,2);if(k==='hFrzA'||k==='hFrzT')MAT[k].userData.lib='procedural/slavic';kdef(k,VBOX,MAT[k]);}
 hWorldUV(MAT.laceV,.5,2);          // valance: 2 m x 0.5 m tile
 hWorldUV(MAT.laceB,1.25,1);        // balustrade: 0.8 m x 1 m tile (four 0.2 m boards)
 

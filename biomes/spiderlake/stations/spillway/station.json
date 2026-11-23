@@ -1,0 +1,18 @@
+{
+ "id": "spillway",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Spider Lake — Ham-Tsek Spillway Breach & Suspension Silk Curtains",
+ "out": "spiderlake.html",
+ "px": [1272, 193],
+ "sky": [1000, -137],
+ "lakeDatumM": 1460.0,
+ "pAtm": 1.33,
+ "pO2Atm": 0.28,
+ "rhoKgM3": 1.56,
+ "outflowM3s": 380.0,
+ "maxSpanM": 220.0,
+ "minBoatClearM": 6.5,
+ "strataStack": "ejecta-over-dolomite",
+ "reserves": [],
+ "modes": ["Dawn Fog", "Dusk Lake-Smoke", "Smudge Harvest"]
+}

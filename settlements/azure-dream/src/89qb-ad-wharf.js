@@ -73,10 +73,32 @@ function buildAdRacks(G,o){reseed(34081+(o.v|0));const V=xV(o)%2,W=o.w==null?64:
    for(let x=-W/2+2.5;x<=W/2-2.5;x+=3)if(rng()<.8)vB('vClothB',x,.9,z,2.7,1.4,.04,0,xC(xPick(net)));}
   for(let i=0;i<5;i++)vB('vClothB',rr(-W/2+3,W/2-3),0,rr(-D/2+2,D/2-2),rr(1.4,2.4),.35,rr(1,1.8),rr(0,3),xC(xPick(net)));}   /* nets heaped to mend */
  else{const fish=[0xb8bcc0,0xa8a49a,0xc8c4b8];
+  for(let z=-D/2+2;z<=D/2-2;z+=4)for(const s of[-1,1])vPst('vPost',s*(W/2-.6),0,z,.07,2.1,dark);   /* each row's end posts, for the guy lines */
   for(let z=-D/2+2;z<=D/2-2;z+=4)for(let x=-W/2+4;x<=W/2-4;x+=8){
    for(const s of[-1,1]){const fx=x+s*3.6;kput('vWood',[fx,1.0,z],qEuler(0,0,.35),[.08,2.2,.08],dark);kput('vWood',[fx,1.0,z],qEuler(0,0,-.35),[.08,2.2,.08],dark);}
    for(const e of[-1,1]){vB('vWood',x,1.9,z+e*.25,7.6,.05,.05,0,tim);for(let k=0;k<18;k++)vB('vClothB',x-3.4+k*.4,1.45,z+e*.25,.05,.42,.12,0,xC(xPick(fish)));}}}}
 QB.def({key:'qb_ad_racks',name:'Net and fish racks',family:'The Azure Dream — the wharf',tags:QTAG('poor',['industry']),w:64,d:30,h:3,fw:64,fd:30,nv:2,build:buildAdRacks});
+
+// ---------------------------------------------------------------- the orchards and the hives (PLAN.md section 4c)
+// qb_ad_orchard: a terrace's orchard, o.w x o.d, a low stone kerb round it and fruit trees on a 5 m grid; o.crop a kits/crops
+//   record (CROPS.BY_ID, read in place): 'apricot' (the Vale apricot) or 'persimmon' (the Frost persimmon), its leaf and fruit
+// qb_ad_hives: a bee wall against a terrace's face, o.w long: whitewashed, two rows of niches, a clay hive lying in each
+//   (the honey of the sacrament), a slate hood over them
+const AD_FRUIT={apricot:{leaf:[0x4f7c38,0x5a8a40],fruit:0xf2a43a,bark:0x6a5040,crown:1.5},persimmon:{leaf:[0x3a6a2c,0x2f5c26],fruit:0xe8641e,bark:0x4a3a30,crown:1.7}};
+function buildAdOrchard(G,o){reseed(34181+(o.v|0));const W=o.w==null?40:o.w,D=o.d==null?10:o.d,id=o.crop||'apricot',F=AD_FRUIT[id]||AD_FRUIT.apricot,
+  R=typeof CROPS!=='undefined'&&CROPS.BY_ID?CROPS.BY_ID[id]:null,stone=xC(xPick(QSTONE)),bark=xC(F.bark);
+ vnReg((R?R.name:id)+' orchard',0,0,Math.hypot(W,D)/2,4);
+ for(const s of[-1,1]){vB('vStone',0,0,s*(D/2-.2),W,.35,.4,0,stone);vB('vStone',s*(W/2-.2),0,0,.4,.35,D,0,stone);}
+ for(let x=-W/2+2.5;x<=W/2-2.5;x+=5)for(let z=-D/2+2.5;z<=D/2-2.5;z+=5){const jx=x+rr(-.6,.6),jz=z+rr(-.6,.6),h=rr(1.3,1.7),c=F.crown*rr(.85,1.1);
+  vPst('vPostB',jx,0,jz,.11,h+.4,bark);vBall('xPaintBall',jx,h+c*.55,jz,c,xC(xPick(F.leaf)));vBall('xPaintBall',jx+rr(-.5,.5),h+c*.95,jz+rr(-.5,.5),c*.7,xC(xPick(F.leaf)));
+  for(let k=0;k<6;k++){const a=rr(0,6.28),r=c*rr(.7,.95);vBall('xPaintBall',jx+Math.cos(a)*r,h+c*rr(.3,.8),jz+Math.sin(a)*r,.09,xC(F.fruit));}}}
+QB.def({key:'qb_ad_orchard',name:'Terrace orchard',family:'The Azure Dream — the slopes',tags:QTAG('poor',['industry'],{job:'farming'}),w:40,d:10,h:4,fw:40,fd:10,nv:2,build:buildAdOrchard});
+function buildAdHives(G,o){reseed(34191+(o.v|0));const W=o.w==null?10:o.w,wash=xC(xPick(XPAL.wash)),clay=xC(0xb07850),dark=xC(0x2a221c),slate=xC(0x4a4a50);
+ vnReg('Bee wall',0,0,W/2+.5,2.8);
+ vB('xWashB',0,0,0,W,2.5,.9,0,wash);vB('vStone',0,2.5,.15,W+.3,.14,1.3,0,slate);
+ for(const y of[.55,1.45])for(let x=-W/2+.8;x<=W/2-.8;x+=1.1){vB('vDarkB',x,y,.44,.72,.6,.04,0,dark);
+  kput('xDrumS',[x,y+.3,.32],qEuler(Math.PI/2,0,0),[.26,.5,.26],clay);vBall('xPaintBall',x,y+.3,.58,.06,dark);}}
+QB.def({key:'qb_ad_hives',name:'Bee wall',family:'The Azure Dream — the slopes',tags:QTAG('poor',['industry'],{job:'farming'}),w:10,d:1.2,h:2.8,fw:10,fd:1.2,nv:2,build:buildAdHives});
 
 // ---------------------------------------------------------------- the smokehouse
 // rubble walls, a timber upper with slatted vents, a flat roof with a raised smoke louvre, a low door, split wood stacked

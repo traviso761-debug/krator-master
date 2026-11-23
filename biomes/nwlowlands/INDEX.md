@@ -23,7 +23,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `52-biome-nwlowlands-library.js` | 2 |  |
 | `55-biome-nwlowlands-trees.js` | 45 **big** | zones from the fields (26); colour (41); keep-clear between trees (62); the LIMB (73); foliage and epiphytes (90); the crown, ON its branches (111); the builders (149); impostors (the far canopy) (268); the BAMBOO GROVES (305); the pass (365) |
 | `57-biome-nwlowlands-overlay.js` | 9 |  |
-| `60-biome-nwlowlands-floor.js` | 16 | small plants (26); the zone planters (86); the understorey (under the crowns) (125); the pass (137) |
+| `60-biome-nwlowlands-floor.js` | 17 | small plants (26); the zone planters (98); the understorey (under the crowns) (137); the pass (149) |
 | `65-biome-nwlowlands-dress.js` | 8 |  |
 | `70-biome-nwlowlands.js` | <1 |  |
 | `83-host-range.js` | 8 | the range (23); the foothill pillars (41) |

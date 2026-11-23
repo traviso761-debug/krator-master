@@ -29,6 +29,8 @@ const NEG = [
   ['the cable runs from the engines to the plinth, into the fort only through its gate', M => { M.cable.pts[M.cable.pts.length - 1] = [-20, -1.5]; }],
   ['the lamp sees every place the order must reach, by 10 m or more', M => { M.lamp.sights.find(s => s.id === 'tempest').clear = -5; }],
   ["the lamp's year fits the oil the tune sends", M => { M.lamp.kw = 1.2; }],
+  ['a station the lamp cannot see is reached through a relay or a station it sees', M => { M.lamp.relays[0].seeFar = -20; }],
+  ['a station the lamp cannot see is reached through a relay or a station it sees', M => { M.lamp.sights.find(s => s.id === 'eye').via = 'nowhere'; }],
   ['gold only on the gate pavilion, the chapel and the holy crown', M => { part(M, 'labrang').gold = 'crown'; }],
   ['everyone has a bed: the census sleeps where the parts say', M => { delete part(M, 'school').sleeps; }],
   ['everyone has a bed: the census sleeps where the parts say', M => { M.census.novices = 80; part(M, 'novrange').sleeps.novices = 80; }]];

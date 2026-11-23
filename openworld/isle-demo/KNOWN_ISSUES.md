@@ -5,7 +5,12 @@
       still at the start view. That view comes from little-demo: "west of Shade". This region has no Shade, so it falls back
       to (-6000, 2500), 1.6 km deep in the Ring Sea. `verify.py` now sets the view over Kautoa and settles before
       the world's checks. Checked there: 269,676 records, seeding identical in three orders, 25,313 trees spaced. The page
-      still opens over that sea: an isle start view in `core/world/98-world-start.js` is owed.
+      opens at Kautoa since 2026-11-11 (`WORLD_CONFIG.start`, 697e900ac).
+      **Reported again 2026-11-15** (BUGS-2026-11-15.md S9, "fail headless with 0 records, origin/main's page too"): that run
+      used `claude/isle-sim`'s copy of this verify (its tip 2026-11-02), from before the fix. On origin/main 9cc8bd104 the
+      GPU verify (cloud lane vast4) passes all four: 309,397 records, tile 76,-117 2,880 records identical in three orders,
+      25,313 trees spaced, none on a road or in a town. The verify now fails once, by name ("the flora round the camera is
+      built"), when no flora tile holds a record before the world's checks run, instead of four flora checks reading 0.
 
 - [x] **The towns' buildings read washed out next to their kits** (the owner, 2026-10-20, on the Governor's House). Two
       losses, both in the flatten every town piece goes through (settlements/isle-demo 58), so the city page had them

@@ -28,7 +28,7 @@ No page takes the file yet, so no page's bytes move (`python3 tools/port_baselin
 | `terraces` | Contour-terraced fields: treads on the height lines, risers and bunds. Cut and fill balance by default. They are held to a zone (a polygon, or a circle) and a height band, and fade out at both edges. | `tread`, `riser`, `bund`, with `level` and a field id `level:i,j` | wouterwall §4 (the terraced fields); loom-chasms' Cradle |
 | `maar` | A breached maar-diatreme. A tuff ring surrounds a crater cut to its floor, and a fault's gorge cleaves one rim open. An optional warm spring's pool is dished into the floor, and its outflow runs down the gorge. In the walls, `rock` reads `breccia` inside the pipe (which flares upward), `baked` at its contact, `country` beyond, and `tuff` above the old surface. `rec.fault` drops straight into `KSTRATA.create({faults})`. | `pool`, `floor`, `wall`, `gorge`, `ring`, plus `rock`, `fault`, `rn` | Mid Basin's six horseshoe maars (`tools/scale-model/smodel/se_provinces.py` from l.108: `dir: -PI/2` opens north); the Siphon Pits' pit floors |
 | `relay` | Fault scarps with tapering throws. Where two overlap en echelon, the tapers add into a relay ramp, so the ramp is continuous by construction. The downthrown bench sags at the scarp's foot (back-tilted) and the footwall's crest is lipped. | `scarp`, `crest`, `ramp`, `foot`, `bench`, plus `bench` (how many throws stand above) | Mid Basin's three basalt benches, +4,350 m to +1,550 m (the test builds that stack) |
-| `stepcut` | A cut with sheer stepped walls and **no falloff**: a graben along a line, or a pit (a disc or an ellipse). Its treads are jittered by hash. The cut is either `depth` under the ground or down to an absolute `floor`, and its edge can be warped. | `rim`, `riser`, `tread`, `floor` | the Siphon Pits' graben and pit stamps (`biomes/siphon-pits/PLAN.md` §5.2, `PLAN-STATIONS.md`) |
+| `stepcut` | A cut with sheer stepped walls and **no falloff**: a graben along a line, or a pit (a disc or an ellipse). Its treads are jittered by hash. The cut is either `depth` under the ground or down to an absolute `floor`, and its edge can be warped. | `rim`, `riser`, `tread`, `floor` | the Siphon Pits' graben and pit stamps (`biomes/siphon-pits/PLAN.md` §5.2, `PLAN-STATIONS.md`) A line may take a **chasm head** (`head: {len, minW}`, opt-in, 2026-11-11: Mid Basin's amendment 3, the Loom-Chasms' slots): over its last `len` m at each end the depth tapers to nothing and the floor narrows to `minW` of `w`, so the graben pinches out into the plateau; without it the cut is as before. |
 
 **The Siphon Pits' "negative step brush".** KFIELD's brushes (`31-core-field-brush.js`) stay smooth: they are the editor's
 strokes, and their falloff is what lets a stroke leave no step. The plan's graben and pit stamps are `stepcut` records, applied
@@ -78,3 +78,26 @@ change (`55247ac0`).
 **Not done.** No Godot twin (as for the other relief kinds). The net's cuts are straight segments (a curved fault would be a line of
 several points; the head already follows one). The bastions are found on a grid (`cell`, 25 m): a narrow neck of horst under a cell
 reads as two bastions. The ripples' forks are fixed at record time over the area's bounds (a record is global, not per tile).
+
+## `slab`: a tilted slab's cliff of spurs and gullies (`38d-core-slab.js`, 2026-11-12)
+
+The leading edge of a thrust-tilted block (`biomes/slabfields/PLAN.md` sections 3.4 and 15, item 5). `KRELIEF.scarp` draws one
+smoothstep profile along its line, so a long face reads as a few broad panels (the owner on the Slabfields' first station). `slab`
+draws a **row of spurs**, each with its own run, power, height, projection and fall of its top to its nose. Between them the face
+recedes into **gullies** whose heads cut back into the plateau, with **scree cones** at their mouths. Along the face run **ledges**
+(five by default) where hard flows stand out: their heights wander along the strike and they fade in and out, back-tilting a little
+where strongest. The odd fresh **scar** sets the face back and steepens it. The crest is ragged, the face rough and fluted, and behind the
+rim the slab's **ramp** falls at its dip. The profile drops steeply from the rim (`(1 - t)^power`, the lip eased over 3% of the run)
+and eases into the foot.
+
+Its own file, not part of `38c`, so no page that takes `38c` moves. It composes onto `KRELIEF` as `38c` does, with or without it.
+`KRELIEF.slabProfile(rec, s, n)` gives the height over the ground across the face at arc length `s` (no noise), for the model's
+side. Test: `node core/terrain/test-slab.js` (every check with a negative: the spurs differ, a spur stands out past a gully, gullies
+notch the crest, the ramp's fall, the floor exactly untouched, the cones, the ledges, a scar, every part, continuity, the inputs).
+**Godot:** `KRELIEF.slabExport(rec)` gives the record as plain JSON (`format: 'krator-slab'`); `kslab.gd` (`class_name KSlab`) samples it
+with the same arithmetic (`shape`, `at`), held to `golden-slab.json` (`test-slab.js --write`) by `kslab_test.gd` within 1e-6 m (it reads 1e-12 on
+Godot 4.7.2); copies in `godot/tests/terrain/`.
+
+| Kind | What it draws | Parts (`at`) | Plans it serves |
+|---|---|---|---|
+| `slab` | A cliff of spurs and gullies along a rim, cones at the gullies' mouths, wandering ledges, scars, a ramp behind | `plateau`, `spur`, `face`, `ledge`, `gully`, `scar`, `cone`, `skirt` (and `fresh`: a scar's weight) | the Slabfields (station 1, the Anvil); any tilted block or basalt escarpment |

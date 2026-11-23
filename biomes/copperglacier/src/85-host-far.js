@@ -11,10 +11,10 @@ const FAR=(function(){
  const colr=(x,z,y,q)=>{const n1=clamp(KRAND.fbm(x*.002,.5,z*.002,2,414)*.6+KRAND.fbm(x*.011,.5,z*.011,2,415)*.6-.1,0,1),ice=smooth(.5,4,iceAt(x,z));
   let c=mixC(C.tundra,C.gravel,smooth(lo-300,lo+200,y));c=mixC(c,C.rock,smooth(lo+200,lo+900,y)*(.5+.5*n1));
   c=mixC(c,C.snow,smooth(SITE.snowLine[0],SITE.snowLine[1],y)*smooth(.2,.6,n1));c=mixC(c,C.ice,ice*.8);
-  if(TARN&&y<TARN.level+.5&&ice<.1)c=C.water;
+  if(TARN&&y<TARN.level+.5&&ice<.1&&tarnIn(x,z))c=C.water;
   return mixC(c,C.far,.5*smooth(4500,13000,q.r));};
  const G0=KFAR.grid({lines:KFAR.lines({cell:60,inner:S0+20,out:ROUT,grow:1.03}),dense:true,
-  h:(x,z)=>{if(Math.abs(x)<S0&&Math.abs(z)<S0)return terrainH(x,z)-SINK;const h=terrainH1(x,z);return TARN&&h<TARN.level&&iceAt(x,z)<.1?TARN.level:h;},
+  h:(x,z)=>{if(Math.abs(x)<S0&&Math.abs(z)<S0)return terrainH(x,z)-SINK;const h=terrainH1(x,z);return TARN&&h<TARN.level&&iceAt(x,z)<.1&&tarnIn(x,z)?TARN.level:h;},
   skip:(x0,z0,x1,z1)=>x0>-S0+100&&x1<S0-100&&z0>-S0+100&&z1<S0-100,   /* none under the ground's square */
   color:colr});
  const geo=KFAR.geometry(G0),mat=new THREE.MeshLambertMaterial({vertexColors:true});mat.userData.farField=true;mat.customProgramCacheKey=()=>'copperglacier-far';

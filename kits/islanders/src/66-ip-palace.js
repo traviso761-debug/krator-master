@@ -114,7 +114,7 @@ defBuilding({key:'ip-hall',name:'Great audience hall (Kautoa)',seed:6502,cut:tru
      divans and low tables along both walls, lamps hung on cords from the great posts' ties */
   box('stone',0,yf,-4.8,6,.45,3,P('stone'));box('stone',0,yf,-3.05,4,.22,.5,P('stoneD'));
   FURNISH('islander_court_throne',0,yf+.45,-5.4,0);FURNISH('islander_court_tapestry',0,yf+1.2,-6.86,0);
-  for(const s of [-1,1]){FURNISH('islander_court_banner',s*3.6,yf,-6.86,0,{v:s>0?1:0});FURNISH('islander_court_painted_hanging',s*7.2,yf+.4,-6.86,0);
+  for(const s of [-1,1]){FURNISH_WALL('islander_court_banner',s*3.6,yf,-6.86,0,top,{v:s>0?1:0});FURNISH_WALL('islander_court_painted_hanging',s*7.2,yf,-6.86,0,top);
    FURNISH('islander_court_statue',s*3.6,yf,-4.4,0);FURNISH('islander_court_lamp',s*2.4,yf,-2.6,0);
    for(const z of [-4.2,-1.2,1.8,4.8])FURNISH('islander_court_divan',s*9.35,yf,z,-s*PI/2,{v:z>0?1:0});
    for(const z of [-2.7,3.3])FURNISH('islander_court_low_table',s*7.9,yf,z,-s*PI/2);
@@ -177,7 +177,7 @@ defBuilding({key:'ip-gallery',name:'Palace gallery (Kautoa)',seed:6506,w:31,d:6,
    for(const k of [-1,1])isFigure(k*.55,eY+7.1,0,0,.7,{mk:'carved'});});
   if(o.guard){for(const x of [-8,0,8])FURNISH('islander_common_bench',x,.45,-1.5,0,{setting:'outdoor'});for(const x of [-12,12])FURNISH('islander_common_rack',x,.45,-2.0,0,{setting:'outdoor'});
    FURNISH('islander_common_jug',-4,.45,-1.8,0,{setting:'outdoor'});}
-  else{for(const x of [-9,0,9])FURNISH('islander_common_bench',x,.45,-1.6,0,{setting:'outdoor'});FURNISH('islander_court_banner',-4.5,.45,-2.0,0,{setting:'outdoor'});FURNISH('islander_court_banner',4.5,.45,-2.0,0,{setting:'outdoor',v:1});}
+  else{for(const x of [-9,0,9])FURNISH('islander_common_bench',x,.45,-1.6,0,{setting:'outdoor'});FURNISH_WALL('islander_court_banner',-4.5,.45,-2.0,0,eY,{setting:'outdoor'});FURNISH_WALL('islander_court_banner',4.5,.45,-2.0,0,eY,{setting:'outdoor',v:1});}
   door(0,.45,D/2,0,2.6);});}});
 /* ---------------------------------------------------------------- the houses of the courts */
 defBuilding({key:'ip-pavilion',name:'Council pavilion (Kautoa)',seed:6507,cut:true,w:11,d:14,h:17,budget:90000,
@@ -202,7 +202,7 @@ defBuilding({key:'ip-shrine',name:'Ancestors\' shrine (Kautoa)',seed:6509,cut:tr
  note:'the shrine of the royal ancestors: a small dark house on high piles under a very tall spire with horns on its ridge, the kings\' images inside',
  build(o){W(0,0,-.8,0,()=>{ieHouse({w:5,d:5,floorY:2.2,wallH:2.2,ver:1,verFront:1.6,roof:{over:.8,skirtH:1.4,skirtS:.5,towerH:13,towerS:.46,topSx:.22,topSz:.05},
   wallMk:'planks',wallCol:P('woodD'),facade:'patGableE',stair:'stair',stairW:1.2,finial:'horns',hornPosts:true});
-  for(const s of [-1,1])FURNISH('islander_court_statue',s*1.4,2.2,-1.7,0,{v:s>0?1:0});FURNISH('islander_common_kava_bowl',0,2.2,0,0);FURNISH('islander_court_banner',0,2.2,-2.32,0);FURNISH('islander_court_lamp',1.9,2.2,1.6,0);});}});
+  for(const s of [-1,1])FURNISH('islander_court_statue',s*1.4,2.2,-1.7,0,{v:s>0?1:0});FURNISH('islander_common_kava_bowl',0,2.2,0,0);FURNISH_WALL('islander_court_banner',0,2.2,-2.32,0,2.2+2.2);FURNISH('islander_court_lamp',1.9,2.2,1.6,0);});}});
 defBuilding({key:'ip-treasury',name:'Treasury (Kautoa)',seed:6510,cut:true,w:10,d:15,h:17,budget:80000,
  tags:{types:['civic'],wealth:'rich',style:'east',role:'treasury'},
  note:'the royal treasury: a strong-room of coral stone on a high podium, one barred door up a stone stair, a spire with the moon on its ridge',

@@ -26,9 +26,15 @@ const lwSm=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 function lwBench(x,z){const t=Math.max(0,Math.min(1,(LW.SHORE-z)/(LW.SHORE-LW.FOOT)));
  return -28+118*(.55*t+.45*t*t)+3*Math.sin(x/170)*t+16*lwSm((x-820)/140)*lwSm((z+40)/80)*lwSm((380-z)/120);}
 const LW_TOP=LW.Y0+LW.BANDS*LW.BAND_H;
+/* the foot street (the owner, 2026-11-22: "the street in front of the glazier entrances is weirdly raised and blocks off the
+   entrances partly"): the bench's roll along the shore made the wall's foot 3 m above the first band's floor in the east and 3 m
+   under it in the west. The street along the foot is level with that floor (the band's y, less 4 cm) from the face out to the
+   dirt's edge (FOOT + 4), then eases down into the bench over 24 m, never above the floor (where the roll is highest the bench
+   is still over it 10 m out); the ramp behind the wall's line starts at the same height */
+function lwFootH(x,z){const f=LW.Y0-.04,b=Math.min(f,lwBench(x,Math.max(z,LW.FOOT)));return f+(b-f)*lwSm((z-LW.FOOT-4)/24);}
 terrainH=function(x,z){
  if(z>LW.SHORE)return Math.max(-46,lwBench(x,LW.SHORE)-(z-LW.SHORE)*.09);
- if(z>=LW.WALL)return lwBench(x,Math.max(z,LW.FOOT));
+ if(z>=LW.WALL)return lwFootH(x,z);
  /* behind the wall's line: a ramp under the bands (their blocks stand on it), then the north wall to the far field */
  const d=LW.WALL-z;
  /* across the carved quarter the ramp stays a metre under the floor of every band whose rooms run over it (19 m back from its

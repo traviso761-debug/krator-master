@@ -95,7 +95,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-45-init.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js`, `94-city-export.js` | 136 |
 | `ixtest` | `89y-ix-wrappers.js`, `89z-rows.js`, `91z-views.js` | 8 |
 | `palace` | `78p-palace-plan.js`, `78q-palace-layout.js`, `78r-palace-draw.js`, `78s-palace-citadel.js`, `84-palace-geo.js`, `89z-rows.js`, `91z-views.js`, `95p-palace-furnish.js`, `95q-palace-cutlabels.js` | 164 |
-| `vernacular` | `89z-rows.js`, `91z-views.js` | 6 |
+| `vernacular` | `89z-rows.js`, `91z-views.js` | 7 |
 | `wA` | `89z-rows.js`, `91z-views.js` | 2 |
 | `wB` | `89z-rows.js`, `91z-views.js` | 1 |
 | `wC` | `89z-rows.js`, `91z-views.js` | 2 |

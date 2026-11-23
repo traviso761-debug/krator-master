@@ -45,4 +45,4 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | fan | 00-head.html, 45b-host-stage.js | 9 |
 | lake | 00-head.html, 45b-host-stage.js | 13 |
-| oasis | 00-head.html, 45b-host-stage.js | 14 |
+| oasis | 00-head.html, 45b-host-stage.js | 15 |

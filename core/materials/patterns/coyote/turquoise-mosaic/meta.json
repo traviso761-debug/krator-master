@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    2041
+   ],
+   "seam_after": [
+    0.519,
+    0.502
+   ],
+   "seam_before": [
+    2.919,
+    3.554
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": true,
+   "rough": 0.5,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "patterns/coyote/turquoise-mosaic",
+  "metal": 0,
+  "roughness": 0.5,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns_coyote_turquoise-mosaic.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20706-bd69-7192-9610-a329902ebe3b; the finished copy Codex saved after its seam pass, turquoise-shell-mosaic-2048.png)",
+  "licence": "generated for this project by its owner",
+  "original_title": "turquoise-shell-mosaic-2048.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Coyote kit (`kits/coyote`, planned 2026-11-16)' on claude/integration-4 (id patterns/coyote/turquoise-mosaic)",
+  "sha1": "45ecbe137bc8e23e05aaf3ce53f0073a208ef496"
+ }
+}

@@ -42,6 +42,7 @@ python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups
 python3 tools/lab_shots.py <dir> <spec.json> --page <lab copy> --gpu   # Animation Lab clips per body, side by side (pieces beside the page)
 python3 tools/ease.py /path/to/export male                           # under-items outside the item over them, per outfit
 python3 tools/nonhuman.py [male female giant]                        # the tail and the lizard head on the bodies as they stand (NONHUMAN.md)
+python3 tools/digitigrade.py [mpfb_male mpfb_female]                 # Coyote Men digitigrade legs, paws & Digi* rig joints (NONHUMAN.md)
 python3 tools/make_mpfb.py gshapes male                              # the Godot twin's shapes from the pieces alone (no Blender)
 node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after a change to 10-rig.js, data/ or the pieces
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
@@ -741,6 +742,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/tails.py` | the therian tails: a chain, a tube (or a fan of feathers) and a kit item per species, on the tail joints, with the species' own rest chain | |
 | `tools/heads.py`, `tools/therian.py` | the therian heads: the coyote's field, paint, eyes, lids and nose, taking a species dict; the cat, lion, rat, monkey and bird as species dicts with their own extras (a mane, a beak, a bare face, whiskers) | |
 | `tools/tail.py`, `tools/nonhuman.py`, `tools/reptile.py`, `tools/amphibian.py`, `NONHUMAN.md` | the tail's joints (on every skeleton); the lizard head's fields, paint, lids and crest; the frog head's; the non-human pieces put on the bodies as they stand, from the published pieces; the spike's write-up and the estimate for full non-human peoples | |
+| `tools/digitigrade.py` | the digitigrade leg and foot pieces (`mod_legs_coyote` on male/female, `mod_legs_lizard` and `mod_legs_frog` on male/female/giant), the eight `Digi*` joints appended after `Tail8`, and bidirectional footwear filtering (`KCHAR.fits`) | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |

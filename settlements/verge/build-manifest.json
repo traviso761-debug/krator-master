@@ -121,7 +121,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags/52-core-tags-vocab.js",
-  "a5f13f34ed0f"
+  "24573d0ca6ad"
  ],
  "53-core-furnish-host.js": [
   "core/furnish/53-core-furnish-host.js",
@@ -189,11 +189,11 @@
  ],
  "62-catalog-bundle.js": [
   "GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni, yuni-town)",
-  "a39a9844986f"
+  "bd965297bf4a"
  ],
  "64-izv-bundle.js": [
   "GENERATED: core/door/10-core-door.js, core/door/20-core-glass.js, core/door/30-core-door-leaf.js, kits/ancients/src/10-core.js, kits/ancients/src/12-stats.js, core/materials/20-textures.js, core/materials/22-materials.js, kits/ancients/src/30-kit.js, kits/ancients/src/32-surfaces.js, kits/ancients/src/34-kitdefs.js, kits/ancients/src/38-helpers2.js, kits/ancients/src/50-registry.js, kits/ancients/src/54-mat-concrete.js, core/materials/68-mat-v5.js, kits/ancients/src/69-mat-salvage.js, core/materials/opt/69a-world-uv.js, kits/iziz-vernacular/src/69b-vern-mat.js, kits/iziz-vernacular/src/69c-vern-helpers.js, kits/iziz-vernacular/src/69e-vern-hollow.js, kits/iziz-vernacular/src/69e5-iziz-openings.js, kits/iziz-vernacular/src/70-vern-dwellings.js, kits/iziz-vernacular/src/71-vern-trade.js, kits/iziz-vernacular/src/71a-vern-food.js, kits/iziz-vernacular/src/71b-vern-cloth.js, kits/iziz-vernacular/src/71c-vern-craft.js, kits/iziz-vernacular/src/72-vern-civic.js, kits/iziz-vernacular/src/73-vern-infra.js, kits/iziz-vernacular/src/73b-vern-works.js, kits/iziz-vernacular/src/73c-vern-land.js, kits/iziz-vernacular/src/74-vern-guilds.js, kits/iziz-vernacular/src/74b-vern-frontier.js, kits/iziz-vernacular/src/74z-vern-trades.js, kits/ancients/src/8ap-funicular.js",
-  "8b1f8dbe521c"
+  "08047a983adc"
  ],
  "65-ykit-bundle.js": [
   "GENERATED: settlements/locus/src/05-palette.js, settlements/locus/src/10-core.js, settlements/locus/src/45-kit.js, settlements/locus/src/47-texture.js, settlements/locus/src/50-structure.js, settlements/locus/src/53-assets.js, kits/yuni/src/56-mid.js, kits/yuni/src/57-poor.js, kits/yuni/src/58-rich.js, kits/yuni/src/59-civic.js, kits/locus/src/64-locus-chapterhouse.js, kits/locus/src/64-locus-core.js, kits/locus/src/64-locus-dwellings.js, kits/locus/src/64-locus-farm.js, kits/locus/src/64-locus-infra.js, kits/locus/src/64-locus-petroleum.js, kits/locus/src/64-locus-plants.js, kits/locus/src/64-locus-power.js, kits/eastern-abyssal/src/65-abyss-00-core.js, kits/eastern-abyssal/src/65-abyss-20-plants.js, kits/eastern-abyssal/src/65-abyss-30-housing.js, kits/eastern-abyssal/src/65-abyss-40-shops.js, kits/eastern-abyssal/src/65-abyss-50-civic.js, kits/eastern-abyssal/src/65-abyss-60-temple.js, kits/eastern-abyssal/src/65-abyss-70-palace.js, kits/eastern-abyssal/src/65-abyss-75-verge.js, kits/eastern-abyssal/src/65-abyss-80-military.js, kits/eastern-abyssal/src/65-abyss-90-farm.js, settlements/locus/src/72-lights.js, settlements/locus/src/81-glow.js",

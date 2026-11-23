@@ -37,6 +37,9 @@ Open items are `- [ ]` lines; build.py prints them.
       totem, woodpile, firepit and menhir). Re-vendor it when Reed Lake places furniture from the catalog (take
       `89y-hl-furnish.js` and the catalog runtime as Highlands does); until then `--vendor-check` reports it as
       "adapted on purpose".
+- [ ] (ADAPTED, 2026-11-19) `src/70-hl-tex.js`, `src/71-hl-mat.js` and `src/71b-hl-motif.js` are kept at their pre-Slavic-refactor
+      copies after `kits/highlands` moved the Painted Men set to `kits/painted-men` and replaced NW-coast formline textures/motifs
+      with Slavic *rozetka*/*pletenka*/*rospis'* woodwork; re-vendor or switch Reed Lake to `kits/highlands` in place on its next rebuild.
 - [ ] The reed beds round a pad are placed by angle from the pad centre, so a boat moored just off the landing can stand in reeds on a very irregular outline.
 - [x] Row labels overlap in the whole-kit overview (the label atlas is the vendored Highlands one; per-row views are clean). 2026-10-01: the re-vendored `93-labels.js` brings Iziz's declutter (overlapping labels are hidden, landmarks and the nearest first); not yet checked against the whole-kit overview, so left open. - 2026-10-20: checked: the re-vendored declutter holds at the Overview (3 of 48 labels shown, none overlapping); closed.
 - [x] Vendored fragments had drifted behind `../highlands/src` (`--vendor-check` listed 30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage 69b-vern-mat 69c-vern-helpers 73-hl-carve 93-labels). — 2026-10-01: all re-vendored verbatim from Highlands, plus `71-hl-mat.js` (its `hWorldUV` fix); `--vendor-check`: all 23 identical. Brings the Iziz thatch dress, frame rails, `KIT.meshes`, the concrete topple fix, the `hnKryltso` run fix and the label declutter.

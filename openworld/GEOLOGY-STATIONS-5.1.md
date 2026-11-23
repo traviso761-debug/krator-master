@@ -80,3 +80,33 @@ KNOWN_ISSUES for the scale-model queue. Commit on your own branch and push it; o
 
 **State, 2026-11-16 evening:** no branch on origin carries any of the five yet. Stations 3, 11, 13 and 14 have no brief:
 write one from section 2 when they are wanted. The stations waiting on the reshaping get theirs once it is merged.
+
+## 4. State, 2026-11-17 (branch `ccr-a96f22b6-0hy616`; paused at the usage limit, resumes after 2026-11-23)
+
+The owner asked for stations 3, 4, 6, 11, 13 and 14, plus 7 and 8 on the domes already on the map (2026-11-16). Each was built
+in its own worktree in one cloud session (no GPU: every check ran on SwiftShader; **the GPU verify of every page below is
+owed**) and merged here.
+
+| # | Page | State |
+|---|---|---|
+| 3 | `biomes/swbay/dist/swbay-skarn.html` | **Done.** swbay gained stations (the bay's page byte-identical). Re-sited at exactly 734,998 with the land raised, as in nwbay (owner, 2026-11-17): fossil sea cliffs over raised platforms, the +34 m raised wave-cut bench; the Throne's plume NNE where the map puts it. 25 asserts pass. |
+| 4 | `biomes/geyser/dist/geyser-cove.html` (the kit's station 7) | **Done (GPU-verified 2026-11-17, `--assert --all-views`, 15 views).** Raised ~56 m carbonate-shelf rim so the bluffs read over the hyperjungle; kit-wide pressure-dependent boiling (`GEYSER.boilAt`, ~119.4 °C at 1.93 atm, 88.0 °C at 0.64 atm); 4 moored Hykkousoi/Islander pirate craft (`kits/ringsea`, `CLASH onerror` fixed in `build.py`); all 7 geyser pages rebuilt; `KHORIZON` filter and sampler budget fixed (`84`/`85`/`88`, 15 samplers max, `KSHADOW` attached, 96-152 draw calls). |
+| 6 | `biomes/nhighlands/dist/nhighlands-tiguantin.html` | **Done (GPU-verified 2026-11-17, `--assert --all-views`, 16 views).** Fixed winch windlass/drum/rope `z` indexing (`wd[2]`), snapped 1.67 m `PATCH` nodes to stream edge and skylight lip (`88t`), cleaned colons/apostrophes from view/check names (`98`); 179-275 draw calls, 6.79M drawn / 8.69M scene tris, 12 samplers, `core/ruins` and export profile 9/9 passing. |
+| 7 | `biomes/korona/dist/korona-silkhead.html` | **Done (GPU-verified 2026-11-17, `--assert --all-views`, 12 views).** Added `31b-core-leafset.js` to `station.json` (`check_assembly` clean); carries edit 8's dome metadata (`pancake_dome`, `rhyolite_obsidian`, `near` dome 2); 130-153 draw calls, 3.49-4.14M tris drawn, 13 samplers, export profile 9/9 passing. |
+| 8 | `biomes/firebliss/dist/firebliss-glass.html` | **Done (GPU-verified 2026-11-17 on 16-unit `arc`, `--assert --all-views`, 14 views).** Reads edit 8's `DATA.domes` when present (`model_site.py`, fallback in `station.json`); split `KSTRATA` `obsidian-pancake` cliff (`aRock > 0.05`) onto companion `MAT_WALL` (`84s`) and fixed `89z` `KHORIZON` filter so both ground and cliff link at 15 samplers max on 16-unit hardware; moved `On the carapace` camera onto the stage's ogive crest; all 5 firebliss pages rebuilt; 29-32 draw calls, 16.30M drawn / 14.11M BIO tris, export profile PASS. |
+| 11 | `biomes/copperglacier/dist/copperglacier-azurite.html` | **Done** (asserts pass; the harness's universal asserts and shots cut off by restarts). `rock.azurite` owed (`core/materials/PROMPTS-NEEDED.md` section 63). |
+| 13 | - | **Blocked:** Labyrinth is plan-only on main; it was built on `claude/clever-wilson-6dc681`, which is not on origin. |
+| 14 | `biomes/siphon-pits/dist/siphon-pits-polynya.html` ("Ostrukh-on-Water Shore") | **Done**, with the owner's answers (2026-11-16): open water, frost smoke and shore ice only; at the moved pin 1520,1465 (the pin move and the Ostrukh Riba outflow queued for the scale model); a new station, the other four unchanged. Its last verify failed only `textures-decoded` under load 33-40: **rerun** `python3 verify.py dist/siphon-pits-polynya.html --assert` from `biomes/siphon-pits`. |
+
+**Owed on this branch:**
+- Merge `origin/main` when the integration line reconciles its 230+ conflicts (main has its own merge of `claude/siphon-pits-biome`, the six biome merges, and scale model edits 7 and 8; stations 7 and 8 already carry/read edit 8's dome records cleanly).
+- ~~Finish 4, 6, 7, 8~~ — **Done 2026-11-17** (`KRATOR_GL=gpu` `verify.py --assert --all-views` on all four showcase pages plus kit showcase checks, docs, `INDEX.md`, `PORT.md` and `PORT-BASELINE.json` updated). GPU verify still owed for stations 3 (`swbay-skarn`), 11 (`copperglacier-azurite`) and 14 (`siphon-pits-polynya`).
+- Rebuilds the Siphon Pits merge reaches (crops records): Longsong, ancientsvalley `--station terraces`, nwouterwall (default, taiga,
+  yeti), wouterwall.
+
+**The owner's open questions:**
+- Station 11: keep the ideal crater (2.2 km; the model's tarn is about 30 km), or move the station to the real breach (about 140,1137)? A resource rebake for the IOCG skarn round the tarn?
+- Station 3: none open. Station 14: none open.
+
+**Split off as cloud sessions, 2026-11-17** (off main): the galvanic kit's stations 2+ (`claude/galvanic-stations`) and the
+Slabfields' stations 2+ (`claude/slabfields-stations`).

@@ -87,6 +87,13 @@ window._api={
  get totals(){let tris=0,inst=0,meshes=0;for(const k in TSTAT.by){tris+=TSTAT.by[k].tris;inst+=TSTAT.by[k].inst;meshes+=TSTAT.by[k].meshes;}
   return {tris,inst,meshes,registered:REG.length,types:Object.keys(TSTAT.by).length};},
  typeStats,regOccupancy,nanSweep,
- setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
- views:()=>Object.keys(VIEWS),
+ /* a preset by name (the whole preset: its night flag and its building too, as the select does) or the six numbers;
+    an unknown name throws with the names there are, rather than leave the camera where it was */
+ setView:(cx,cy,cz,tx,ty,tz)=>{
+  if(typeof cx==='string'){const v=VIEWS[cx];
+   if(!v)throw new Error('_api.setView: no view "'+cx+'" (views: '+Object.keys(VIEWS).join(', ')+')');
+   return setView(...v);}
+  return setView(cx,cy,cz,tx,ty,tz);},
+ /* the preset names, read live from VIEWS: a list (`_api.views`), not a function, so an evaluate that reads it gets the names */
+ get views(){return Object.keys(VIEWS);},
 };

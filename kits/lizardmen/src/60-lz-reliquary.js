@@ -31,8 +31,9 @@ defBuilding({key:'lz-reliquary',name:'The reliquary',seed:7601,caste:'all',cut:t
    /* the great stela at the mouth: the Coil and the fracture side by side */
    W(0,PY,0,0,()=>lzStela(-6.5,12.4,0,6.4,1.5,{glyphMk:'bronze',eye:true}));});
   /* the central mass: a battered body 16 x 22 leaning in hard on every face, then a steep stone gable to a ridge at 24 m */
-  const bw=16,bd=22,bh=15,T=lzBatterRoom(bw,bd,PY,bh,'cyclo',P('basalt'),{lean:{front:.2,back:.14,left:.18,right:.18},inner:true,
-   front:[{s:bw/2,w:lzDoorH(6)*1.55*.62,h:lzDoorH(6)*1.55,door:true}]});
+  const bw=16,bd=22,bh=15,Hr=lzDoorH(6)*1.55,wr=Hr*LZ_DW,T=lzBatterRoom(bw,bd,PY,bh,'cyclo',P('basalt'),{lean:{front:.2,back:.14,left:.18,right:.18},inner:true,
+   front:[{s:bw/2,w:wr,h:Hr,openOnly:true}]});
+  door(0,PY,bd/2-.08,0,wr);
   const rid=PY+bh+9;const gx=(T.xl+T.xr)/2;
   for(const s of [-1,1]){const x0=s>0?T.xr:T.xl;const pts=[[x0,PY+bh,T.zf],[x0,PY+bh,T.zb],[gx,rid,T.zb*.92],[gx,rid,T.zf*.92]];poly('cyclo',s>0?pts:pts.slice().reverse(),P('basalt'),false);
    /* the verdigris lines converging on the apex (the owner's reference): bronze strips laid up the slope */

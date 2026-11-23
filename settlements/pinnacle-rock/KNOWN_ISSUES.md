@@ -1,5 +1,15 @@
 # Pinnacle Rock — known issues
 
+- [x] **2026-11-15: the attach audit failed** (BUGS-2026-11-15.md S2: 129 of 6,888 cards, 1.87 %; 89 of 222 seepfern,
+      31 of 102 carnmoss). Not the audit's rod sampling (C1): these cards were measured to the rock's triangles. Necanyons'
+      seep lines (`57-biome-necanyons-carnivores.js`) hang the moss and maidenhair from a bed's lip as KSTACKS' outline
+      gives it; on this mesa the drawn wall stands up to 12 m inside the outline and the weathered rim lower than the
+      bed's top, so the probe found them ~4 m over the top and 10-17 m off the nearest drawn rock. `88-host-build.js`
+      (`SEEP_ON_ROCK`) now moves each such card, while the kit builds, along its bearing onto the drawn wall (`PRR.wallR`):
+      1,300 moved, the kit's draws unchanged. GPU verify (cloud lane vast4): 9 of 6,579 float (0.14 %), none of them seep
+      cards; every check and negative passes. The kit itself still places by the outline (a page with a small rock is
+      unaffected: necanyons' own pages pass at 0.25 %); a `NECANYONS` wall hook would let every host give its drawn wall.
+
 - [ ] **The forest round the mesa is deep hyperjungle; it should be monsoon forest** (the owner, 2026-10-23; `PLAN.md`
       section 1, "The rain, corrected"). The page reads the hyperjungle kit in place with its 150-270 m canopy; at the
       knoll's corrected ~1,100-1,400 mm the ground is semi-deciduous monsoon forest (50-100 m, bare in the dry season)

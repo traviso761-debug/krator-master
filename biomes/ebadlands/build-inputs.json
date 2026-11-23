@@ -4,12 +4,12 @@
   "build.py": {
    "inputs": {
     "biomes/ebadlands/KNOWN_ISSUES.md": "6e3a2ebd4a61269f87e0fa4409e1eca16fb68d56aa9337e7c0516eee4991f995",
-    "biomes/ebadlands/PORT.md": "f4264365c4966fb55cf573a939b00b8dbf8002e3a14fa94034d95569f7f731d0",
-    "biomes/ebadlands/build.py": "563c5b725b68731e6f0acb4383dcb3f167ea986e829d096f3349edcb769871b8",
+    "biomes/ebadlands/PORT.md": "f87f1df771e76ea9e6411db44aa410809db20b17139d7adabd4564a53b120efa",
+    "biomes/ebadlands/build.py": "4c8c01a85d9b8893b5b0a1ab2958bd4d90ba0f91e97ca070d2a23ebba86464d9",
     "biomes/ebadlands/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
     "biomes/ebadlands/src/44v-host-landlib.js": "afddef02fc16efd640e376ff3e0e8021c18c4d4a1376307492c1930c6ef868fb",
-    "biomes/ebadlands/src/44w-host-land.js": "5feee1fecc34bfc7b82599b9e545491be88131b924c5fe19b922ee30b1a9aaaa",
-    "biomes/ebadlands/src/45-host-stage.js": "002ff1509376097e4f6c4de71b190390e9360d2c63b7f386b582f0a41c3fa29d",
+    "biomes/ebadlands/src/44w-host-land.js": "a287013b357bc805083b246abd587b801757807728d2fe41acd9b476628b6ee1",
+    "biomes/ebadlands/src/45-host-stage.js": "fde0c4370863619256eb12ec39716130e1caf411485d1d479546bf43aa741c6a",
     "biomes/ebadlands/src/50-biome-ebadlands-species.js": "a94964fbaa666172683f84bacfa7fe2f25f9322c6aa2c1cbdfdce2eca93a60b4",
     "biomes/ebadlands/src/55-biome-ebadlands-trees.js": "b880f7b404a13572b9f80bb60da756de18e06811a401d6ff4bf8a07d4034e29b",
     "biomes/ebadlands/src/60-biome-ebadlands-floor.js": "4b8d4e7a3989fd68dbe3259f7d1fa718f27cfa6090dca3e446cca8a3d46d463f",
@@ -23,7 +23,7 @@
     "biomes/ebadlands/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
     "biomes/ebadlands/src/89w-host-water.js": "4e71fbe85e6d2a4c06d9b7039e174276755020b384dde69f4ade07bf124eb8fa",
     "biomes/ebadlands/src/89z-host-build.js": "9a6653c377b47621cb38e745f67a7271459f9d392f122932e43759e9177d4517",
-    "biomes/ebadlands/src/99-host-take.js": "2939c921facff90695f39d7b65f586b228bb2af38cc421ab36a090f716236051",
+    "biomes/ebadlands/src/99-host-take.js": "2fe812663f410f0531ccf6dfba62d346976ed7b31b0af8f887276ef0c6888529",
     "biomes/ebadlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ebadlands/tex/bark.alien.albedo.webp": "fad438a0cd0a5903c7097f0310566836e858e401783e9b6648e3e1fc8ecd3701",
     "biomes/ebadlands/tex/bark.aspen.albedo.webp": "6cc73697d8b8c718e7890dc554dfad676775be64b7bd45e3d2dbc5c1a0a13564",
@@ -122,13 +122,16 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
+    "core/terrain/38r-core-rills.js": "5ed78359bd8ea232ab99eb62abf081e0fe530d6d10d9cbe139ea7f753c47a78f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43n-core-ground-near.js": "1e21388631ac99389b6e22e9d4f97a9411f6b55a7426812f18e22ac482fed93e",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
+    "core/terrain/host/43n-core-ground-near-draw.js": "03d01978ddc1d46efb71246db8c810e3be7a526c64b5850868e13539d0ff72b3",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
     "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
@@ -150,25 +153,25 @@
    "listings": {
     "biomes/ebadlands/src": "f9fb32763977fa1c874305d48e28f0055125a811f63a9048b0be2fd151e51fd9",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/ebadlands/dist/ebadlands.html": "c1c9be7624a08b787b6fe1730f49bf373df0ea65adf431bce05ced0e36848031"
+    "biomes/ebadlands/dist/ebadlands.html": "190cc2b24c9f5b9357443bb74483b2b800cb8e4c4041388f76b6eea1c63733c4"
    },
    "outputs_raw": {
-    "biomes/ebadlands/dist/ebadlands.html": "c1c9be7624a08b787b6fe1730f49bf373df0ea65adf431bce05ced0e36848031"
+    "biomes/ebadlands/dist/ebadlands.html": "190cc2b24c9f5b9357443bb74483b2b800cb8e4c4041388f76b6eea1c63733c4"
    }
   },
   "build.py --station canyons": {
    "inputs": {
     "biomes/ebadlands/KNOWN_ISSUES.md": "6e3a2ebd4a61269f87e0fa4409e1eca16fb68d56aa9337e7c0516eee4991f995",
-    "biomes/ebadlands/PORT.md": "f4264365c4966fb55cf573a939b00b8dbf8002e3a14fa94034d95569f7f731d0",
-    "biomes/ebadlands/build.py": "563c5b725b68731e6f0acb4383dcb3f167ea986e829d096f3349edcb769871b8",
+    "biomes/ebadlands/PORT.md": "f87f1df771e76ea9e6411db44aa410809db20b17139d7adabd4564a53b120efa",
+    "biomes/ebadlands/build.py": "4c8c01a85d9b8893b5b0a1ab2958bd4d90ba0f91e97ca070d2a23ebba86464d9",
     "biomes/ebadlands/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
     "biomes/ebadlands/src/44v-host-landlib.js": "afddef02fc16efd640e376ff3e0e8021c18c4d4a1376307492c1930c6ef868fb",
-    "biomes/ebadlands/src/44w-host-land.js": "5feee1fecc34bfc7b82599b9e545491be88131b924c5fe19b922ee30b1a9aaaa",
-    "biomes/ebadlands/src/45-host-stage.js": "002ff1509376097e4f6c4de71b190390e9360d2c63b7f386b582f0a41c3fa29d",
+    "biomes/ebadlands/src/44w-host-land.js": "a287013b357bc805083b246abd587b801757807728d2fe41acd9b476628b6ee1",
+    "biomes/ebadlands/src/45-host-stage.js": "fde0c4370863619256eb12ec39716130e1caf411485d1d479546bf43aa741c6a",
     "biomes/ebadlands/src/50-biome-ebadlands-species.js": "a94964fbaa666172683f84bacfa7fe2f25f9322c6aa2c1cbdfdce2eca93a60b4",
     "biomes/ebadlands/src/55-biome-ebadlands-trees.js": "b880f7b404a13572b9f80bb60da756de18e06811a401d6ff4bf8a07d4034e29b",
     "biomes/ebadlands/src/60-biome-ebadlands-floor.js": "4b8d4e7a3989fd68dbe3259f7d1fa718f27cfa6090dca3e446cca8a3d46d463f",
@@ -182,7 +185,7 @@
     "biomes/ebadlands/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
     "biomes/ebadlands/src/89w-host-water.js": "4e71fbe85e6d2a4c06d9b7039e174276755020b384dde69f4ade07bf124eb8fa",
     "biomes/ebadlands/src/89z-host-build.js": "9a6653c377b47621cb38e745f67a7271459f9d392f122932e43759e9177d4517",
-    "biomes/ebadlands/src/99-host-take.js": "2939c921facff90695f39d7b65f586b228bb2af38cc421ab36a090f716236051",
+    "biomes/ebadlands/src/99-host-take.js": "2fe812663f410f0531ccf6dfba62d346976ed7b31b0af8f887276ef0c6888529",
     "biomes/ebadlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ebadlands/stations/canyons/44w-host-land.js": "66453dc30b11a8e1d7abba703b59c6f7b98ed6ea436a21d5e4e18f59eb5ed497",
     "biomes/ebadlands/tex/bark.alien.albedo.webp": "fad438a0cd0a5903c7097f0310566836e858e401783e9b6648e3e1fc8ecd3701",
@@ -282,13 +285,16 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
+    "core/terrain/38r-core-rills.js": "5ed78359bd8ea232ab99eb62abf081e0fe530d6d10d9cbe139ea7f753c47a78f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43n-core-ground-near.js": "1e21388631ac99389b6e22e9d4f97a9411f6b55a7426812f18e22ac482fed93e",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
+    "core/terrain/host/43n-core-ground-near-draw.js": "03d01978ddc1d46efb71246db8c810e3be7a526c64b5850868e13539d0ff72b3",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
     "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
@@ -311,25 +317,25 @@
     "biomes/ebadlands/src": "f9fb32763977fa1c874305d48e28f0055125a811f63a9048b0be2fd151e51fd9",
     "biomes/ebadlands/stations/canyons": "ec4d3c9d40ee62d4b6c58d7c2f94428c6aba76adf9a2506d11d2fa3a371ce94a",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/ebadlands/dist/ebadlands-canyons.html": "9446e8041946ba849f2b8ad5305c330047dec7c77100814a9e5e78e630169fa1"
+    "biomes/ebadlands/dist/ebadlands-canyons.html": "f6ebc354378b9f0a70f233465df939bb999f6d5af6229071e491841ebc9e56ae"
    },
    "outputs_raw": {
-    "biomes/ebadlands/dist/ebadlands-canyons.html": "9446e8041946ba849f2b8ad5305c330047dec7c77100814a9e5e78e630169fa1"
+    "biomes/ebadlands/dist/ebadlands-canyons.html": "f6ebc354378b9f0a70f233465df939bb999f6d5af6229071e491841ebc9e56ae"
    }
   },
   "build.py --station montane": {
    "inputs": {
     "biomes/ebadlands/KNOWN_ISSUES.md": "6e3a2ebd4a61269f87e0fa4409e1eca16fb68d56aa9337e7c0516eee4991f995",
-    "biomes/ebadlands/PORT.md": "f4264365c4966fb55cf573a939b00b8dbf8002e3a14fa94034d95569f7f731d0",
-    "biomes/ebadlands/build.py": "563c5b725b68731e6f0acb4383dcb3f167ea986e829d096f3349edcb769871b8",
+    "biomes/ebadlands/PORT.md": "f87f1df771e76ea9e6411db44aa410809db20b17139d7adabd4564a53b120efa",
+    "biomes/ebadlands/build.py": "4c8c01a85d9b8893b5b0a1ab2958bd4d90ba0f91e97ca070d2a23ebba86464d9",
     "biomes/ebadlands/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
     "biomes/ebadlands/src/44v-host-landlib.js": "afddef02fc16efd640e376ff3e0e8021c18c4d4a1376307492c1930c6ef868fb",
-    "biomes/ebadlands/src/44w-host-land.js": "5feee1fecc34bfc7b82599b9e545491be88131b924c5fe19b922ee30b1a9aaaa",
-    "biomes/ebadlands/src/45-host-stage.js": "002ff1509376097e4f6c4de71b190390e9360d2c63b7f386b582f0a41c3fa29d",
+    "biomes/ebadlands/src/44w-host-land.js": "a287013b357bc805083b246abd587b801757807728d2fe41acd9b476628b6ee1",
+    "biomes/ebadlands/src/45-host-stage.js": "fde0c4370863619256eb12ec39716130e1caf411485d1d479546bf43aa741c6a",
     "biomes/ebadlands/src/50-biome-ebadlands-species.js": "a94964fbaa666172683f84bacfa7fe2f25f9322c6aa2c1cbdfdce2eca93a60b4",
     "biomes/ebadlands/src/55-biome-ebadlands-trees.js": "b880f7b404a13572b9f80bb60da756de18e06811a401d6ff4bf8a07d4034e29b",
     "biomes/ebadlands/src/60-biome-ebadlands-floor.js": "4b8d4e7a3989fd68dbe3259f7d1fa718f27cfa6090dca3e446cca8a3d46d463f",
@@ -343,7 +349,7 @@
     "biomes/ebadlands/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
     "biomes/ebadlands/src/89w-host-water.js": "4e71fbe85e6d2a4c06d9b7039e174276755020b384dde69f4ade07bf124eb8fa",
     "biomes/ebadlands/src/89z-host-build.js": "9a6653c377b47621cb38e745f67a7271459f9d392f122932e43759e9177d4517",
-    "biomes/ebadlands/src/99-host-take.js": "2939c921facff90695f39d7b65f586b228bb2af38cc421ab36a090f716236051",
+    "biomes/ebadlands/src/99-host-take.js": "2fe812663f410f0531ccf6dfba62d346976ed7b31b0af8f887276ef0c6888529",
     "biomes/ebadlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ebadlands/stations/montane/44w-host-land.js": "dead975ba50029d45284fc41bcec3dbebd670abf0bc64bb4d109e96b750cac8a",
     "biomes/ebadlands/tex/bark.alien.albedo.webp": "fad438a0cd0a5903c7097f0310566836e858e401783e9b6648e3e1fc8ecd3701",
@@ -443,13 +449,16 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
+    "core/terrain/38r-core-rills.js": "5ed78359bd8ea232ab99eb62abf081e0fe530d6d10d9cbe139ea7f753c47a78f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43n-core-ground-near.js": "1e21388631ac99389b6e22e9d4f97a9411f6b55a7426812f18e22ac482fed93e",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
+    "core/terrain/host/43n-core-ground-near-draw.js": "03d01978ddc1d46efb71246db8c810e3be7a526c64b5850868e13539d0ff72b3",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
     "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
@@ -472,25 +481,25 @@
     "biomes/ebadlands/src": "f9fb32763977fa1c874305d48e28f0055125a811f63a9048b0be2fd151e51fd9",
     "biomes/ebadlands/stations/montane": "ec4d3c9d40ee62d4b6c58d7c2f94428c6aba76adf9a2506d11d2fa3a371ce94a",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/ebadlands/dist/ebadlands-montane.html": "2166b16d7253ce601bb94507782cd21c3ded11a2e7ba822608a69c5308bb0abf"
+    "biomes/ebadlands/dist/ebadlands-montane.html": "5961259fd47b7a481990140f58a06cbeadb0cc9ce490234ffac7b764194e627d"
    },
    "outputs_raw": {
-    "biomes/ebadlands/dist/ebadlands-montane.html": "2166b16d7253ce601bb94507782cd21c3ded11a2e7ba822608a69c5308bb0abf"
+    "biomes/ebadlands/dist/ebadlands-montane.html": "5961259fd47b7a481990140f58a06cbeadb0cc9ce490234ffac7b764194e627d"
    }
   },
   "build.py --station tundra": {
    "inputs": {
     "biomes/ebadlands/KNOWN_ISSUES.md": "6e3a2ebd4a61269f87e0fa4409e1eca16fb68d56aa9337e7c0516eee4991f995",
-    "biomes/ebadlands/PORT.md": "f4264365c4966fb55cf573a939b00b8dbf8002e3a14fa94034d95569f7f731d0",
-    "biomes/ebadlands/build.py": "563c5b725b68731e6f0acb4383dcb3f167ea986e829d096f3349edcb769871b8",
+    "biomes/ebadlands/PORT.md": "f87f1df771e76ea9e6411db44aa410809db20b17139d7adabd4564a53b120efa",
+    "biomes/ebadlands/build.py": "4c8c01a85d9b8893b5b0a1ab2958bd4d90ba0f91e97ca070d2a23ebba86464d9",
     "biomes/ebadlands/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
     "biomes/ebadlands/src/44v-host-landlib.js": "afddef02fc16efd640e376ff3e0e8021c18c4d4a1376307492c1930c6ef868fb",
-    "biomes/ebadlands/src/44w-host-land.js": "5feee1fecc34bfc7b82599b9e545491be88131b924c5fe19b922ee30b1a9aaaa",
-    "biomes/ebadlands/src/45-host-stage.js": "002ff1509376097e4f6c4de71b190390e9360d2c63b7f386b582f0a41c3fa29d",
+    "biomes/ebadlands/src/44w-host-land.js": "a287013b357bc805083b246abd587b801757807728d2fe41acd9b476628b6ee1",
+    "biomes/ebadlands/src/45-host-stage.js": "fde0c4370863619256eb12ec39716130e1caf411485d1d479546bf43aa741c6a",
     "biomes/ebadlands/src/50-biome-ebadlands-species.js": "a94964fbaa666172683f84bacfa7fe2f25f9322c6aa2c1cbdfdce2eca93a60b4",
     "biomes/ebadlands/src/55-biome-ebadlands-trees.js": "b880f7b404a13572b9f80bb60da756de18e06811a401d6ff4bf8a07d4034e29b",
     "biomes/ebadlands/src/60-biome-ebadlands-floor.js": "4b8d4e7a3989fd68dbe3259f7d1fa718f27cfa6090dca3e446cca8a3d46d463f",
@@ -504,7 +513,7 @@
     "biomes/ebadlands/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
     "biomes/ebadlands/src/89w-host-water.js": "4e71fbe85e6d2a4c06d9b7039e174276755020b384dde69f4ade07bf124eb8fa",
     "biomes/ebadlands/src/89z-host-build.js": "9a6653c377b47621cb38e745f67a7271459f9d392f122932e43759e9177d4517",
-    "biomes/ebadlands/src/99-host-take.js": "2939c921facff90695f39d7b65f586b228bb2af38cc421ab36a090f716236051",
+    "biomes/ebadlands/src/99-host-take.js": "2fe812663f410f0531ccf6dfba62d346976ed7b31b0af8f887276ef0c6888529",
     "biomes/ebadlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ebadlands/stations/tundra/44w-host-land.js": "ce061b3797a79d018a7f386f35abfc01407fdc4c6aec697541408e3d62ca7e3c",
     "biomes/ebadlands/tex/bark.alien.albedo.webp": "fad438a0cd0a5903c7097f0310566836e858e401783e9b6648e3e1fc8ecd3701",
@@ -604,13 +613,16 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
+    "core/terrain/38r-core-rills.js": "5ed78359bd8ea232ab99eb62abf081e0fe530d6d10d9cbe139ea7f753c47a78f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43n-core-ground-near.js": "1e21388631ac99389b6e22e9d4f97a9411f6b55a7426812f18e22ac482fed93e",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
+    "core/terrain/host/43n-core-ground-near-draw.js": "03d01978ddc1d46efb71246db8c810e3be7a526c64b5850868e13539d0ff72b3",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
     "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
@@ -633,14 +645,14 @@
     "biomes/ebadlands/src": "f9fb32763977fa1c874305d48e28f0055125a811f63a9048b0be2fd151e51fd9",
     "biomes/ebadlands/stations/tundra": "ec4d3c9d40ee62d4b6c58d7c2f94428c6aba76adf9a2506d11d2fa3a371ce94a",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/ebadlands/dist/ebadlands-tundra.html": "d723fcdf1b92f5a29782f49661daab56a330fddddfb09e763b863e9a0822d1e6"
+    "biomes/ebadlands/dist/ebadlands-tundra.html": "f66ed141134939e2303daefecb92464b560977a5e83b6b9cd294dd5d6634573b"
    },
    "outputs_raw": {
-    "biomes/ebadlands/dist/ebadlands-tundra.html": "d723fcdf1b92f5a29782f49661daab56a330fddddfb09e763b863e9a0822d1e6"
+    "biomes/ebadlands/dist/ebadlands-tundra.html": "f66ed141134939e2303daefecb92464b560977a5e83b6b9cd294dd5d6634573b"
    }
   },
   "build.py --station waste": {
@@ -650,12 +662,12 @@
     "biomes/eastabyss/tex/bark2.albedo.webp": "17c51765680ec26b9a0d1a49a3914ebc765ab2c6712a5acfac25b81ba97b3f6c",
     "biomes/eastabyss/tex/pack.json": "c397f8d98758c3eba25e6902fba4120d01ec61b4394110080fc69cc9d43a48e9",
     "biomes/ebadlands/KNOWN_ISSUES.md": "6e3a2ebd4a61269f87e0fa4409e1eca16fb68d56aa9337e7c0516eee4991f995",
-    "biomes/ebadlands/PORT.md": "f4264365c4966fb55cf573a939b00b8dbf8002e3a14fa94034d95569f7f731d0",
-    "biomes/ebadlands/build.py": "563c5b725b68731e6f0acb4383dcb3f167ea986e829d096f3349edcb769871b8",
+    "biomes/ebadlands/PORT.md": "f87f1df771e76ea9e6411db44aa410809db20b17139d7adabd4564a53b120efa",
+    "biomes/ebadlands/build.py": "4c8c01a85d9b8893b5b0a1ab2958bd4d90ba0f91e97ca070d2a23ebba86464d9",
     "biomes/ebadlands/src/00-head.html": "b3ce5d0b20cf83f4621be4cb4ca416bd8207244cf2f52647e22d8d89909f644a",
     "biomes/ebadlands/src/44v-host-landlib.js": "afddef02fc16efd640e376ff3e0e8021c18c4d4a1376307492c1930c6ef868fb",
-    "biomes/ebadlands/src/44w-host-land.js": "5feee1fecc34bfc7b82599b9e545491be88131b924c5fe19b922ee30b1a9aaaa",
-    "biomes/ebadlands/src/45-host-stage.js": "002ff1509376097e4f6c4de71b190390e9360d2c63b7f386b582f0a41c3fa29d",
+    "biomes/ebadlands/src/44w-host-land.js": "a287013b357bc805083b246abd587b801757807728d2fe41acd9b476628b6ee1",
+    "biomes/ebadlands/src/45-host-stage.js": "fde0c4370863619256eb12ec39716130e1caf411485d1d479546bf43aa741c6a",
     "biomes/ebadlands/src/50-biome-ebadlands-species.js": "a94964fbaa666172683f84bacfa7fe2f25f9322c6aa2c1cbdfdce2eca93a60b4",
     "biomes/ebadlands/src/55-biome-ebadlands-trees.js": "b880f7b404a13572b9f80bb60da756de18e06811a401d6ff4bf8a07d4034e29b",
     "biomes/ebadlands/src/60-biome-ebadlands-floor.js": "4b8d4e7a3989fd68dbe3259f7d1fa718f27cfa6090dca3e446cca8a3d46d463f",
@@ -669,7 +681,7 @@
     "biomes/ebadlands/src/89a-host-atmos.js": "f558e8410068eec4c98b51a137d88ed767c399f092781d05ff91efe250778bed",
     "biomes/ebadlands/src/89w-host-water.js": "4e71fbe85e6d2a4c06d9b7039e174276755020b384dde69f4ade07bf124eb8fa",
     "biomes/ebadlands/src/89z-host-build.js": "9a6653c377b47621cb38e745f67a7271459f9d392f122932e43759e9177d4517",
-    "biomes/ebadlands/src/99-host-take.js": "2939c921facff90695f39d7b65f586b228bb2af38cc421ab36a090f716236051",
+    "biomes/ebadlands/src/99-host-take.js": "2fe812663f410f0531ccf6dfba62d346976ed7b31b0af8f887276ef0c6888529",
     "biomes/ebadlands/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ebadlands/stations/waste/44w-host-land.js": "f62da0b82e6f70221e9a1dffed27f88090a20315b9558c85fea6c82be651b7e6",
     "biomes/ebadlands/stations/waste/station.json": "00ef6732529298ce5d66f75a1fdf730cc53ba6e0ed649ae8d8bc61b1d5723ca3",
@@ -770,13 +782,16 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
+    "core/terrain/38r-core-rills.js": "5ed78359bd8ea232ab99eb62abf081e0fe530d6d10d9cbe139ea7f753c47a78f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43n-core-ground-near.js": "1e21388631ac99389b6e22e9d4f97a9411f6b55a7426812f18e22ac482fed93e",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
+    "core/terrain/host/43n-core-ground-near-draw.js": "03d01978ddc1d46efb71246db8c810e3be7a526c64b5850868e13539d0ff72b3",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
     "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
@@ -799,14 +814,14 @@
     "biomes/ebadlands/src": "f9fb32763977fa1c874305d48e28f0055125a811f63a9048b0be2fd151e51fd9",
     "biomes/ebadlands/stations/waste": "106683fa43910ad4cc432f0b49b66a8c5fbcb1449e4cd289fd1b00eab3089e32",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/ebadlands/dist/ebadlands-waste.html": "33e20f91b17aa702d75f0daa37c8b3b8a7f52e1d5d3c6cd0e70973ea4cbb08d6"
+    "biomes/ebadlands/dist/ebadlands-waste.html": "dd13bb619e691f6d80792a1143d0dae7655580d98bb8cb3f7a4c34efa4ac7917"
    },
    "outputs_raw": {
-    "biomes/ebadlands/dist/ebadlands-waste.html": "33e20f91b17aa702d75f0daa37c8b3b8a7f52e1d5d3c6cd0e70973ea4cbb08d6"
+    "biomes/ebadlands/dist/ebadlands-waste.html": "dd13bb619e691f6d80792a1143d0dae7655580d98bb8cb3f7a4c34efa4ac7917"
    }
   }
  }

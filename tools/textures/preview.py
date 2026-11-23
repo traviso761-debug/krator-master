@@ -7,6 +7,8 @@ Per set, one row: [3x3 colour tiling] [one tile, lit] [2x2 tiling, lit]. The lit
 (OpenGL, +Y up) and roughness: Lambert plus a Blinn highlight from the upper left, so a wrong normal sign,
 a seam in the normal map or a shiny-where-it-should-be-matt roughness all show. Seams in the colour map show
 in the first panel. --tint multiplies the colour map by a colour, to see a muted set as a culture would use it.
+A card set (meta.json record kind "card": albedo.png with alpha, no normal or roughness; tools/textures/cards.py) gets
+[over mid grey] [over near black] [its alpha]: a fringe of the key shows on the dark panel, a hole in the cut on the alpha.
 Requires numpy and Pillow.
 """
 import argparse, json, os
@@ -17,12 +19,16 @@ P = 360
 
 
 def load_set(d):
-    meta = json.load(open(os.path.join(d, 'meta.json')))
+    with open(os.path.join(d, 'meta.json'), encoding='utf-8') as fh:
+        meta = json.load(fh)
     m = meta.get('maps', {})
     def get(k, default):
         rel = m.get(k, default)
         p = os.path.normpath(os.path.join(d, rel))
         return p
+    if meta.get('record', {}).get('kind') == 'card':   # T16: a card has no normal.jpg; its albedo carries the cut in alpha
+        rgba = np.asarray(Image.open(get('map', 'albedo.png')).convert('RGBA')).astype(np.float32) / 255
+        return meta, rgba, None, None
     alb = np.asarray(Image.open(get('map', 'albedo.jpg')).convert('RGB')).astype(np.float32) / 255
     nor = np.asarray(Image.open(get('normalMap', 'normal.jpg')).convert('RGB')).astype(np.float32) / 255
     rg = np.asarray(Image.open(get('roughnessMap', 'roughness.png')).convert('L')).astype(np.float32) / 255
@@ -53,9 +59,20 @@ def to_img(a, size=P):
     return Image.fromarray((np.clip(a, 0, 1) * 255 + 0.5).astype(np.uint8)).resize((size, size), Image.LANCZOS)
 
 
+def over(rgba, bg, tint=None):
+    """A card composited over a flat grey `bg` (0..1), the colour tinted first."""
+    rgb, a = rgba[..., :3], rgba[..., 3:4]
+    if tint is not None:
+        rgb = np.clip(rgb * tint, 0, 1)
+    return rgb * a + bg * (1 - a)
+
+
 def row(d, tint):
     meta, alb, nor, rg = load_set(d)
     t = None if tint is None else np.array(tint, np.float32)
+    if nor is None:   # a card: no lighting to show, only the cut
+        a = alb[..., 3:4]
+        return meta['record']['id'], [to_img(over(alb, 0.5, t)), to_img(over(alb, 0.06, t)), to_img(np.repeat(a, 3, axis=2))]
     a = alb if t is None else np.clip(alb * t, 0, 1)
     p1 = to_img(tile(a, 3))
     p2 = to_img(lit(alb, nor, rg, t))

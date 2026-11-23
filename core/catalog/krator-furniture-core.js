@@ -344,8 +344,38 @@ function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
 /* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
    canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
    (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
-   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is. */
+   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is.
+   A DELIVERED IMAGE: when the key is a library texture id (patterns/xanadu/hanging-pleasure-dome) and the page carries
+   that image (FURN_DECAL_IMG, filled by the furniture bundle from a build's materials.json "decals": tools/textures/pack.py
+   packs them; or a page global KF_DECALS { id: url }), the painting is the stand-in until the image loads, then the image
+   is drawn over the same canvas texture (so a batch's shared material shows it too) at the image's own resolution and
+   the PANEL'S aspect: an image of another shape is cropped about its centre, never stretched. Without the image (not
+   delivered, not packed, a page-less context) the painting stays. The material's userData.decal holds the id; Godot
+   takes the id as the panel's texture and the painting as its fallback. */
 const _texCache = new Map();
+const FURN_DECAL_IMG = {}, _decalSt = { pending: 0, loaded: [], failed: [] };
+function furnDecalSrc(key) {
+  return FURN_DECAL_IMG[key] || (typeof KF_DECALS !== 'undefined' && KF_DECALS && KF_DECALS[key]) || null;
+}
+function _decalImage(t, key, src, aspect) {
+  if (typeof Image === 'undefined') return;
+  const img = new Image();
+  _decalSt.pending++;
+  img.onload = function () {
+    _decalSt.pending--;
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    if (!iw || !ih) { _decalSt.failed.push(key); return; }
+    /* the largest crop of the image at the panel's aspect, about its centre, at the image's own pixels (2048 at most) */
+    const sw = Math.min(iw, ih * aspect), sh = sw / aspect, k = Math.min(1, 2048 / Math.max(sw, sh));
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(sw * k)); c.height = Math.max(1, Math.round(sh * k));
+    c.getContext('2d').drawImage(img, (iw - sw) / 2, (ih - sh) / 2, sw, sh, 0, 0, c.width, c.height);
+    t.image = c; t.needsUpdate = true;
+    _decalSt.loaded.push(key);
+  };
+  img.onerror = function () { _decalSt.pending--; _decalSt.failed.push(key); };
+  img.src = src;
+}
 function mkDecal(x, y, z, w, h, ry, key, paint, family) {
   let m = _texCache.get(key);
   if (!m) {
@@ -358,6 +388,8 @@ function mkDecal(x, y, z, w, h, ry, key, paint, family) {
     const rough = family === 'metal' || family === 'gold' ? 0.45 : 0.92;
     m = new THREE.MeshStandardMaterial({ map: t, roughness: rough, metalness: family === 'gold' ? 0.6 : 0, side: THREE.DoubleSide });
     m.userData.family = family || '';
+    const src = furnDecalSrc(key);
+    if (src) { m.userData.decal = key; _decalImage(t, key, src, w / h); }
     _texCache.set(key, m);
   }
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
@@ -518,10 +550,20 @@ function FURN(o) {
    friezes and pennant strings near the top of the wall, and the cloths hung from a rod or hook (scrolls, banners,
    tapestries, wall rugs: the kit draws them from y 0, rod at the top) with their top there too, so in a room taller
    than the cloth they leave the floor; a low room keeps them down to the floor. Everything else on a wall stands on
-   the floor (the painted hanging stands on its own poles). */
-const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top', scroll: 'top', banner: 'top', tapestry: 'top', wall_rug: 'top' };
+   the floor. The painted hanging (a hide laced in a frame of two poles) stood on the floor until 2026-11-17; the owner asked
+   for it raised too, so its frame hangs like a cloth.
+   THE HEM RULE (the owner, 2026-11-16: "make sure wall hangings dont wind up near ground, this has been a recurring
+   issue"): a hung cloth's top is at 2.7 m OR high enough that its hem is FURN_HEM over the floor, whichever is higher,
+   never above the ceiling less 0.15; wall art's lower edge is at least FURN_HEM up too. So a 2.4 m banner in a 4 m hall
+   ends 1.1 m up (it ended 0.3 m up when every top-hung cloth stopped at 2.7 m); only a room too low for the cloth brings
+   it nearer the floor. core/catalog/test-hems.js checks every hung piece of the catalog against it. */
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top', scroll: 'top', banner: 'top', tapestry: 'top', wall_rug: 'top', painted_hanging: 'top' };
+const FURN_HEM = 1.1;
+/* A piece can say so itself: `hung: 'top'` (a cloth drawn from y 0 with its rod at the top, whatever its role: a culture
+   file's sadu, felt or temple banner), `hung: 'eye'`, or `hung: false` (it stands on the floor although its role hangs) */
 function furnWallHung(A) {
   if (!A || A.anchor !== 'wall') return null;
+  if (A.hung != null) return A.hung || null;
   if (A.role && FURN_WALL_HUNG[A.role]) return FURN_WALL_HUNG[A.role];
   return A.type === 'art' ? 'eye' : null;
 }
@@ -532,7 +574,7 @@ function furnAnchorY(A, variant, at) {
   const hung = furnWallHung(A);
   if (hung) {
     const h = entryDims(A, variant).h, top = at.ceilingY != null ? at.ceilingY - 0.15 : floorY + 2.6;
-    const y = hung === 'eye' ? floorY + 1.6 - h / 2 : Math.min(top, floorY + 2.7) - h;
+    const y = floorY + (hung === 'eye' ? Math.max(1.6 - h / 2, FURN_HEM) : Math.max(2.7, h + FURN_HEM) - h);
     return Math.max(floorY, Math.min(y, top - h));
   }
   if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
@@ -844,8 +886,26 @@ function furnCol(culture, key) {
    set of its own gets a texture family on top of the family its builder passed, so a host can map it (f_<texFamily>,
    falling back to f_<family>). The render family, the look, the batch's grouping by family and the declared
    `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
-   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
+   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split.
+   An optional fourth element names the cultures a rule is for (a key name another culture also uses keeps its own set);
+   culture-scoped rules come first. */
 const FAMILY_SPLITS = [
+  /* the Tungangs' fitted salvage (kits/tungang/PLAN.md section 7, the library sets it reuses; 2026-11-11) */
+  [/^enamel(Cream|Red|Green|Blue|Chip)$/, ['ceramic', 'metal'], 'tgEnamel', ['tungang']],
+  [/^paint(Red|Rose|Cream)$/, ['metal'], 'tgPainted', ['tungang']],
+  [/^(plate|plateDark|rivet|hood|cellCase)$/, ['metal'], 'tgPlate', ['tungang']],
+  [/^(rust|rustDeep)$/, ['rust', 'metal'], 'tgRust', ['tungang']],
+  [/^(blanketGrey|blanketRed|blanketBrown|seatBlue|seatWhite)$/, ['cloth'], 'tgWool', ['tungang']],
+  [/^felt$/, ['cloth'], 'tgFelt', ['tungang']],
+  [/^(canvasRaw|bannerRed)$/, ['cloth'], 'tgCanvas', ['tungang']],
+  [/^(plasterWhite|plasterRule)$/, ['plaster', 'stone'], 'tgPlaster', ['tungang']],
+  [/^concrete$/, ['concrete'], 'tgConcrete', ['tungang']],
+  [/^(wax|waxDark)$/, ['food'], 'tallow', ['tungang']],
+  [/^(timberOld|timberDark)$/, ['wood'], 'tgTimber', ['tungang']],
+  [/^ice$/, ['glass'], 'tgIce', ['tungang']],
+  [/^crystal$/, ['glass'], 'tgCrystal', ['tungang']],
+  [/^leather$/, ['leather', 'hide'], 'tgLeather', ['tungang']],
+  [/^oreCopper$/, ['stone'], 'tgOre', ['tungang']],
   /* the library's variants and extras (2026-10-19): candle and tallow wax, twisted rope, linen and patched canvas, red brick,
      the second and olive scale skins, the second plumage, and the shell sets: abalone, soft abalone and the pearls on a nacre
      part, conch on the shell family (a part on the shell family keeps the conch; its whites take the second nacre) */
@@ -914,7 +974,7 @@ function furnFamily(culture, color, family) {
   let keys = rev.get(color);
   if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
   if (!keys) return family;
-  for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
+  for (const [re, from, to, cults] of FAMILY_SPLITS) if ((!cults || cults.indexOf(culture) >= 0) && from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
   return family;
 }
 

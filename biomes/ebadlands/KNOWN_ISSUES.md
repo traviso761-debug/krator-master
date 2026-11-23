@@ -124,11 +124,31 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   `BIO.flareJoin` (core/biome 31j: the root sunk into the parent, a collar, 6-8 sides at the joint; a reader without the fragment draws the old
   tube); the ember crown's bottle has a shoulder over the limbs' roots. The needle bloom's head stood .55 of its size over its stem's tip; it sits
   on it now, the tip inside the core (most of the gap the owner saw was the harvest bug above, which scrambled the head and its eye).
-- [ ] **The painted badlands still read smooth up close** (the owner, 2026-11-03: "too uniformly bright, looks painted on"). Done at page level:
+- [x] **The painted badlands still read smooth up close** (the owner, 2026-11-03: "too uniformly bright, looks painted on"). Done at page level:
   the beds' ledges cut into the transect's mounds (KSTRATA `ledge`; `?ledges=0`), a cavity term from the ground's own curvature and slope
   (`aAO`; `?cavity=0`), chips shed by the beds in each bed's colour within 260 m (`?chips=0`), station 1's ground at 7.9 m cells. Mid and far
   range now show ribs and gullies; up close a flank is still a smooth band, because the ground's cells (13 m on the overview) cannot carry 0.3-2 m
   steps: that wants the core ground session's shading (KGROUND normals, roughness, cavity at texel scale), or a finer mesh near the camera.
+  2026-11-22, closed: **a finer mesh near the camera, and rills to put on it.** The flank's own profile showed why the ledges alone could not do
+  it: the badland beds are all soft (hardness .15-.25), so the ledge pass varies the slope by a fifth and makes no step. Now:
+  - **The near ground** (`45`, core/terrain `43n`, `KGROUND.nearMesh`, opt-in): a 96 m box round the camera (7 x 7 coarse cells) re-meshed at
+    0.5 m from `terrainH`, its rim on the coarse ground's surface, its paint the coarse grid's attributes; the cells under it cut from the index.
+    Re-centred when the camera leaves its middle cell by one (built over frames at 4 ms each; a jump builds it at once, about 0.3 s on the Arc).
+    `?near=0` none. Cost at the flank view: +1 draw call (159 to 160), +57k triangles (4.56M to 4.61M).
+  - **The rills** (`44w`, core/terrain `38r`, `KRELIEF.rills`, opt-in): runnels down the fall line on the mound flanks, 1.8 m apart and
+    0.35 m deep, with gullies 4.7 m apart and 0.6 m deep; each bed's colour dips into them in a V. `?rills=0` none.
+  - **The shading made to fit the finer shape** (`45`): the beds' bump (ksRelief, whose height steps at each contact and drew a dashed black line
+    along it at half-metre cells) fades out inside 30-48 m; the layers' bump has its tilt capped at 35 degrees (`KGROUND.clampBump`, opt-in in `43n`'s
+    host file: its runaway on the steep near faces drew single black pixels and streaks down the slope); the side planes (`tri`) to 60 m.
+    `?bump=<m>`, `?tri=0` for judging.
+  - **New view** `Banded flank, close` (the steepest bedded mound flank near the painted badlands, found, from 14 m at eye height). **New check**
+    `the near ground carries the bed steps at the banded flank` (its departure from the coarse surface: mean 0.72 m, max 8.0 m; rim crack 0.1 mm;
+    49 of 49 coarse cells cut) with two negatives (a patch as smooth as the coarse cells; a rim on the true height, a 3.8 m crack).
+  - **Side effects for the better**: the bed chips and the flowers on the flanks, placed on `terrainH`, floated over the coarse ground or sank
+    under it by up to 8 m; inside the patch they sit on it.
+  - **Left**: outside the 96 m box the flanks are the coarse ground as before, and from a camera 40 m up the box's edge shows as a change in grain;
+    the bed bump's dashed contacts remain at mid range (a fix to `ksRelief` in `43-core-ground.js` reaches 439 pages: for the all-builds rebuild).
+    Before and after: the session notes, `ebadlands-banded-rock-2026-11-22/`.
 - **The transect's land is `src/44w-host-land.js`** (split from `45-host-stage.js`): a station replaces it (`stations/<name>/`); its header is
   the land contract. `88-host-build.js` is `89z-host-build.js` (after the water: the flora reads the water's shore).
 - **Species for readers** (eastabyss, the open world, Yuni): keys and indices unchanged; the item `bloom` is `onLeaf` (held in a leaf card's

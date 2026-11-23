@@ -371,7 +371,7 @@ FURN({
 });
 FURN({
   key: 'jimjam_court_banner', name: 'Banner of the three wheels', culture: 'jimjam', tier: 'court', type: 'banner', setting: 'indoor',
-  rooms: ['hall', 'court', 'temple'], anchor: 'wall', clearance: { front: 0.3 },
+  rooms: ['hall', 'court', 'temple'], anchor: 'wall', hung: 'top', clearance: { front: 0.3 },
   materials: ['cloth', 'gold', 'timber'], w: 1.2, d: 0.08, h: 2.2, variants: 1,
   build: function (F) {
     F.rod(-0.56, 2.14, 0, 0.56, 2.14, 0, 0.025, F.col('rosewood'), 'wood');

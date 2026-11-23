@@ -118,6 +118,17 @@ def hood(gid, paint, ease=0.035, ease_low=0.055, open_front=0.95, low=-0.45, row
     Q[-1] = c + (Q[-1] - c) * 0.2 + t * ease + x * peak
     Q[-2] = c + (Q[-2] - c) * 0.65 + t * ease * 0.6 + x * peak * 0.5
     Q = smooth_push(Q, False, ease, iters=2, rows_ease=eases)
+    # the crown's seam: above the face opening the grid's two edges are one line at the front, but the grid is open,
+    # so the smoothing gave each edge one lateral neighbour and drew it back to its own side: a slit of scalp from the
+    # brow to the crown (the recurring "hood open over the crown"). Where the opening is shut, the edges are welded
+    # and the two columns beside them eased back toward the weld, so the seam is a line and not a gap
+    for i in np.nonzero(opens <= 1e-6)[0]:
+        m = (Q[i, 0] + Q[i, -1]) * 0.5
+        gap = Q[i, 0] - m
+        Q[i, 0] = Q[i, -1] = m
+        for k, w in ((1, 0.5), (2, 0.2)):
+            Q[i, k] = Q[i, k] - gap * w
+            Q[i, -1 - k] = Q[i, -1 - k] + gap * w
     Q[-1] = Q[-1].mean(0)
     return Part(gid, Q, False, ['body'] * rows, paint)
 

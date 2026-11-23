@@ -81,3 +81,145 @@ against the dithered one (`?kground=0`), the shadows (`?shadow=1`).
 - **`KSTRATA` Binding:** **`tepui`** (pink-to-cream cross-bedded orthoquartzite cliff tiers with recessed dark siltstone/shale contour-carving ledges on the upper `3,000 m` wall) + **`contact-marble`** (recrystallized blue-white marble & epidote skarn selvages along the lower ring-fault dike contact) + **`obsidian-pancake`** (vitreous black flow-banded rhyolite dome carapace steaming on the trench floor at `1179, 578`).
 - **Camera Framing (`5.0 × 5.0 km` vertical relief cut):** Vertigo overhang camera tucked under a carved `KCARVE` lip at `+3,580 m` looking ESE along the curved corona ring-scarp: Hum whistle-script contour carvings (`culture: tepui`) etched into a continuous `tepui` bedding recess in the foreground, woven wild-silk basket spans and braided liana rope-ladders bridging a `180 m` gorge cleft, `ATMOS.fogBelt` cloud cascades spilling off the table lip, and `4.7 km` below in dense golden `1.86 atm` haze, a circular `obsidian-pancake` dome steaming beside black pitcher pools.
 - **Hydrology & Trade Tie-In:** Windward (`3,500–4,000 mm/yr`) cloud-water and frost-tank snowmelt plunge off the `tepui` rim as `600 m` free-falling mist-veils (`WATER.fall`) into endorheic trench lakes; winter-adapted hoar-table tribes and Hum-speaking cliff clans hoist rare trench-floor carnivore reagents, lichen stone-dyes, and knapped trench `obsidian-pancake` blades up silk-winch stations to trade with the **Painted Men** (`LORE.md §6.5`) and **Serai** caravans.
+
+### 3. Station 7 as built (`stations/silkhead`, `dist/korona-silkhead.html`; 2026-11-16, GPU-verified 2026-11-17)
+
+`python3 tools/build.py biomes/korona --station silkhead` (station.json `"core"` includes `31b-core-leafset.js` and `45-core-span.js`; GPU `--assert --all-views` passes all 12 views at 130-153 draw calls, 3.49-4.14 M triangles drawn, 13 samplers). On station 1's host and `47` unchanged (no `src/` fragment moved: the six other pages are as before);
+the station's own `45` (the stage), `89-host-sky`, `89x-host-silkhead` (the lip, the veils, the spans, the dome's glass and steam, the
+hazards) and `99-host-take` (views, inspector, checks).
+
+| The spec | As built |
+|---|---|
+| `(1096, 526)`, rim `+3,620 m`, trench `-1,180 m` | the spec's heights, not today's model's (the model has the table at 1,430-1,570 m there: `KNOWN_ISSUES.md`, the map change queued). y 0 is -1,180 m, the rim y 4,800. The model's setting kept: the trench east and south of the table |
+| sheer tiered walls, 4,800 m | three KSTACKS bodies of five tiers (the table, a spur running out ESE, the Silkhead tower beside it): benches at +270, +1,670 and +3,020 m, 70-140 m wide; the summit wall 560-600 m; the spur's 40 m cap over a 30 m ledge (the bedding recess) at +3,580 m |
+| vertigo camera under a carved `KCARVE` lip at `+3,580 m` | a KCARVE alcove through the ledge at the spur's tip (`core/terrain/36-core-carve.js`, read by path through `station.json`): its hood the cap's rock run out over the ledge, its mouth on the ledge's edge, meshed on the walls' strata; the view "Vertigo (under the lip at +3580 m)" stands 0.6 m in from the drop and looks ESE down at the dome, the ledge's edge across the foot of the frame |
+| Hum contour carvings in a continuous bedding recess | `STAGE.carvings` on the spur's cap above the ledge, beside the lip (`47`'s carvings, `culture: korona-tepui`) |
+| silk basket spans and liana rope-ladders over a 180 m cleft | Silkhead Gorge between the spur and the Silkhead, 170-180 m rim to rim at its narrows, joined by the col 600 m under the rims: two wild-silk basket spans, a liana ladder bridge, a liana ladder hung 600 m down the Silkhead's face to the col (`core/biome/45-core-span.js`, KSPAN catenaries between the drawn rims); a silk-winch on the spur's north flank by its tip lowering its line to the bench |
+| `ATMOS.fogBelt` cloud cascades off the lip | the fog belt from +2,470 m to the rim on the faces turned to the trench's wet air (ESE) (`STAGE.belt`, `89a`); spray at each veil's foot. No drawn cloud spilling over the lip: core/atmos has none (`KNOWN_ISSUES.md`) |
+| 600 m mist-veils (`WATER.fall`) into endorheic trench lakes | four `WATER.fall` curtains stacked down the Silkhead's north face (600 m free fall from its rim, then 1,350, 1,400 and 1,450 m), each fitted to its bench (`fit: true`), the last into the trench lake (a `WATER.still` with no outlet) |
+| `tepui` + `contact-marble` + `obsidian-pancake` | one KSTRATA stack (`STAGE.strata`): contact-marble from the walls' foot to 550 m over the floor (the skarn on the ring-fault dike contact), the tepui's quartzite above, a lateral stack of obsidian-pancake east of x 20 (the dome) |
+| an obsidian-pancake dome steaming beside black pitcher pools, 4.7 km below | a KSTACKS `dome` 1.3 km across and 150 m high on the trench floor (steep-sided and flat-topped, k 5), its rock darkened to the glass; steam over four fissures and two ring-fault vents (`core/atmos/fx/89-atmos-fx-plumes.js`; heat and gas on `core/hazard`); black pitcher pools on its apron (trap pads, the bladder pool's trap) |
+| `XA`/`Af` pitcher rainforest; `Dsc`/`Cwb` frost-tank pavement | the hyperjungle and the kit's man-eaters on the trench floor (warm by height: 1 on the floor, .08 at the rim); the eastern highlands' cushions and the frost tanks and butterworts round the rain pools on the summit; no dangerous trap and no vent above the col (the summit's sulfur 0) |
+
+Not as the spec says: the dome is the station's own and small (the model's dome 4, 16 km at 1179,578, is 196 km away, and the nearest, dome 2,
+95 km: scale model 5.1 edit 8 on main, `DATA.domes`; not on this branch's model yet); the main frame holds the lip, the carvings, the veils, the Silkhead's face and the trench, but not
+the spans (from inside the cleft the col hides the drop; the spans have their own view). `KNOWN_ISSUES.md` lists the rest.
+
+## Amendment 2026-11-12: the pancake domes round the corona (the owner, 2026-11-12)
+
+The owner decided on pancake domes round Korona. This section revises one line above: "Talus, tor, dome: not taken ... no
+station has a tor or a dome on its survey" was true of the survey as it stood; the domes now exist on the model (5.1 edit 8,
+`tools/scale-model/edit_518.py`; written as edit 2 on its branch, renumbered at the merge), and station 7 below proposes the first page with one. The Firebliss Range takes the same
+landform round its patera (`biomes/firebliss/PLAN.md` section 1c); the physics shared by both is written there, and only
+Korona's own is repeated here.
+
+### The model, and why Korona
+
+**Venus's pancake domes** are steep-sided, flat-topped domes of very stiff lava: commonly about 25 km across, some over 30
+(one by Aine Corona is about 35 km), the steep-sided class commonly put at a few hundred metres to about a kilometre high.
+**On Venus they cluster round coronae:** inside the annulus of a corona's fractures and on the plains just outside it. Korona
+is Krator's corona (`LORE.md` 3.1, `NOTES.md`), so it is where Krator should have them.
+
+Venus's 90-bar air keeps gas in the magma so it oozes instead of exploding. Korona's trenches stand at 1.6-2.1 atm, the
+densest air on the map outside the abyss, but that is still far too thin to do Venus's work. The plan does not claim it. A
+Korona dome is **degassed magma**, risen slowly, with a pumice apron from its explosive start (Chaitén's and Cordón Caulle's
+way).
+
+### Korona's heat source, and where the rhyolite comes from
+
+- **The heat:** the corona's **mantle plume is still active** (the owner, 2026-10-26; `NOTES.md`, "The plume is active"). It
+  heats the ring faults, which carry geyser fields, hot springs and fumaroles "in the trenches and the moat, where the faults
+  reach deepest". That is the long-lived basalt heat source the domes need (bimodal volcanism, as at Yellowstone).
+- **The crust it melts:** 73% of Korona is quartzite on the 5.1 geology (`kits/resources/ROCK-PROPOSAL.md`): the tepui
+  sandstone. Quartz alone melts at about 1,700 C, far too hot for a crustal melt. The rhyolite comes from **the basement
+  under the sandstone**, a granite and gneiss shield as under Roraima's sandstone on Earth (the Guiana Shield), melted at its
+  wet granite minimum (650-750 C) by the plume's basalt ponded under it. *Proposed:* the geology bake does not model a
+  basement; the plan adds none to the model, only to the lore.
+- **Where it comes up:** where the ring faults cut down through the sandstone cover. That is in **the trenches and the outer
+  moat**, not on the ring crests, which are the cover itself. So the domes stand on the trench floors, black tables among
+  the salt lakes and the jungle.
+- **Why not at the centre:** the corona's middle is the plume's top, where basalt rises (the main trench's lake). Bimodal
+  fields ring their basalt at a distance, as Yellowstone's rhyolite rings its plume. The domes stand 100-220 km out.
+
+### The five domes (`edit_518.py`; the names are working names)
+
+Each is flat on top to about 70% of its radius, then one or two cells of wall. Corona centre: 5.1 px 1086,519 (`NOTES.md`'s
+814,189 on the old canvas). Pressure by the model's 1.6 e^(-h/8 km). Old-canvas px (5.1 less 272, 330) for the station sites.
+
+| Dome | 5.1 px (old) | Across | Ground | Top | Height | From the centre | Ground's climate and air | What it is |
+|---|---|---|---|---|---|---|---|---|
+| **1, NW trench** | 1007,490 (735,160) | 14 km | -1,492 m | -892 m | 600 m | 168 km | XA (hypertropic jungle), 1.93 atm; a salt lake within 12 km | the glass table in the jungle: obsidian cliffs streaming with vines, carnivores on its poor glass soil (station 7) |
+| **2, NE trench** | 1131,494 (859,164) | 12 km | -901 m | -379 m | 522 m | 103 km | Aw, 1.79 atm | between the inner rings, beside the tepui station's table |
+| **3, S trench** | 1038,581 (766,251) | 16 km | -852 m | -202 m | 650 m | 157 km | BSh, 1.78 atm | a dry table in a lee gorge, the gorge station's country |
+| **4, SE moat** | 1179,578 (907,248) | 16 km | -103 m | 547 m | 650 m | 220 km | BSh, 1.62 atm; about 30 km west of the Tsēk-Gèl | the outer moat, inside The Tiers and the Coyote Kingdom's polygon: the one dome on a polity's ground |
+| **5, N trench** | 1071,430 (799,100) | 14 km | -297 m | 303 m | 600 m | 180 km | BWh, 1.66 atm | a black table on a desert trench floor |
+
+12-16 km across and 520-650 m high: larger than Firebliss's (8-14 km) because the plume is larger than the patera, smaller
+than Venus's. On the model they move 189 height cells, every one inside the Korona polygon, and none touches water or a
+river (the script asserts it). Domes 1 and 3 dam a few upslope cells (24 to 34 and 34 to 44 pit cells): dome-dammed ponds,
+as on Earth.
+
+### What a dome means for the kit's rule
+
+**Carnivory follows poor soil** (the brief). A rhyolite dome weathers to the poorest ground in Korona: glass, pumice and
+acid grit, holding no nutrient and draining fast. So **a dome's top is a carnivore garden**: the pitcher and the sundew
+lawns on the pumice, the frost tanks absent (too warm). The `poor` field reads glass as the poorest rock there is. The
+dome walls are bare glass; the aprons are pumice slopes with the nutrient-hungry traps in their wet hollows.
+
+**The tribes:** obsidian is the blade and the mirror of the tepui tribes (the Hum's word for it is the owner's to make:
+*proposed* none). The glass walls take the contour carvings cleanly: a carving cut in obsidian is a dark groove that shines.
+A dome is a landmark the Hum's road-marks can be read against from across a trench.
+
+### Station 7: the glass table (proposed)
+
+| | |
+|---|---|
+| Where | **dome 1, the NW trench**, 5.1 px 1007,490 (old 735,160): the table's top at -892 m and its wall over the trench floor at -1,492 m |
+| What | a black obsidian table 14 km across standing out of the hypertropic jungle (XA, 1.93 atm): its 600 m glass wall with vines and seep lines down it, a pumice apron with the traps in its wet hollows, the top a poor-soil carnivore garden with melt and rain pools, the salt lake below to the south-west; the hot springs of a ring fault at its foot (the geyser kit's `corona` station read in place) |
+| Built on | station 1's host and `47`; a dome is a KSTACKS body with a flat top and a vertical wall (the tepui's machinery: a table is a table), its rock the `rhyolite` recipe (`biomes/firebliss/PLAN.md` 8, item 9) instead of `tepui` |
+| Alternatives | dome 5 (N trench, BWh): a dry table, the glass in the desert's light; dome 2 beside the tepui station |
+
+### Core adoption (for station 7)
+
+| Need | Module | How |
+|---|---|---|
+| the table | `KSTACKS` (37) | one body, a flat top, a wall, `contour` for the flow banding's joints; `KSTRATA` with the proposed `rhyolite` recipe (flow-banded glass, a pumice skin) |
+| the apron | `KRELIEF` (38), `KGROUND` (43) | a pumice talus apron, its wet hollows as a ground layer |
+| the hot springs | `core/water` (`spring`, `geyser`) and the geyser kit's `corona` station | read in place |
+| the hazards | `core/hazard` | `fall` on the glass walls, `heat` at the springs, `gas` in the trench's hollows, the traps as before; glass edges as `thorn` (cuts) |
+| sky, weather | `core/atmos` | as station 1: the standard sky, height fog, the rain cover |
+| everything else | as the kit's other stations | |
+
+**New in core:** nothing beyond what Firebliss proposes (the `rhyolite` strata recipe; the obsidian resource node). The
+`poor` field needs glass as a rock kind (`kits/resources` provinces): a one-line addition when the node lands.
+
+### Textures
+
+`stone.obsidian`, `ground.obsidian`, `stone.pumice`; the gap `rock.rhyolite.flowbanded` is entered once, by Firebliss
+(`core/materials/PROMPTS-NEEDED.md`).
+
+### Ideas set aside
+
+- **Domes on the ring crests:** the crests are the sandstone cover; the melt comes up where the cover is cut (the trenches).
+- **Domes at the centre:** the plume's top is basalt's; rhyolite rings it at a distance.
+- **Domes in the high cold country** (the hoar table's): no heat reaches the cover there.
+- **Venus's sizes (25-35 km):** a 30 km dome would bury a whole trench floor and its lake; 12-16 km keeps each trench.
+- **Pressure as the reason they ooze:** 1.6-2.1 atm is not Venus's 90 bars (above).
+
+### Order of work
+
+1. The model edit (done: 5.1 edit 8, run on main 2026-11-16 with the Firebliss patera held).
+2. The `rhyolite` recipe and the obsidian node (with Firebliss).
+3. Station 7, the glass table, after the trenches' re-survey (karst site 7 and the cave mouths wait on it too).
+
+### Questions for the owner
+
+- **The domes' age:** all cold (default), or one young and steaming over a fault's hot springs?
+- **Station 7:** dome 1 in the jungle (default), or dome 5 in the desert?
+- **Dome 4 and the Coyote Kingdom:** it stands on the Kingdom's ground (and The Tiers'). Is it theirs, a quarry, a stronghold, a holy hill?
+- **The basement:** canon that a granite shield lies under the tepui sandstone, melted by the plume (proposed)?
+- **Names:** the domes' names in the Hum, and the Hum's word for obsidian.
+- **LORE.md** (proposed sentences, not written there): *"Round Korona's corona, on the floors of its trenches, stand the
+  black tables: domes of glass-skinned rhyolite, 12-16 km across and 500-650 m high, risen where the ring faults cut
+  through the tepui sandstone to the granite the plume has melted beneath it. Their tops are the poorest ground in Korona, so
+  the carnivores rule them, and their glass gives the tepui tribes their blades and mirrors."*

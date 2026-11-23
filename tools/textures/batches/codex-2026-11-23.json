@@ -1,0 +1,291 @@
+[
+ {
+  "src": "rock.azurite.png",
+  "out": "core/materials/library/rock.azurite",
+  "record": {
+   "id": "rock.azurite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20705-fa86-77d1-9a0f-07f2964c3ef8; the finished copy Codex saved after its seam pass, weathered-copper-skarn-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '63. Copper Glacier's azurite tarn (`biomes/copperglacier`, station 11, 2026-11-17)' on claude/integration-4 (id rock.azurite)",
+    "licence": "generated for this project by its owner",
+    "original_title": "weathered-copper-skarn-2048.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.8,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "brick.mud.coursed.png",
+  "out": "core/materials/library/brick.mud.coursed",
+  "record": {
+   "id": "brick.mud.coursed",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20706-6f39-7d61-9921-499d4241e3cd; the finished copy Codex saved after its seam pass, mud-brick-tile-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Coyote kit (`kits/coyote`, planned 2026-11-16)' on claude/integration-4 (id brick.mud.coursed)",
+    "licence": "generated for this project by its owner",
+    "original_title": "mud-brick-tile-2048.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "patterns_coyote_kilim.png",
+  "out": "core/materials/patterns/coyote/kilim",
+  "record": {
+   "id": "patterns/coyote/kilim",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20706-8866-7193-8c42-f5982623f823; the finished copy Codex saved after its seam pass, kilim-seamless-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Coyote kit (`kits/coyote`, planned 2026-11-16)' on claude/integration-4 (id patterns/coyote/kilim)",
+    "licence": "generated for this project by its owner",
+    "original_title": "kilim-seamless-2048.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "patterns_coyote_frieze.png",
+  "out": "core/materials/patterns/coyote/frieze",
+  "record": {
+   "id": "patterns/coyote/frieze",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20706-a342-7eb0-a79f-723d955d2d13; the finished copy Codex saved after its seam pass, bronze-age-bird-tile.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Coyote kit (`kits/coyote`, planned 2026-11-16)' on claude/integration-4 (id patterns/coyote/frieze)",
+    "licence": "generated for this project by its owner",
+    "original_title": "bronze-age-bird-tile.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "patterns_coyote_turquoise-mosaic.png",
+  "out": "core/materials/patterns/coyote/turquoise-mosaic",
+  "record": {
+   "id": "patterns/coyote/turquoise-mosaic",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20706-bd69-7192-9610-a329902ebe3b; the finished copy Codex saved after its seam pass, turquoise-shell-mosaic-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Coyote kit (`kits/coyote`, planned 2026-11-16)' on claude/integration-4 (id patterns/coyote/turquoise-mosaic)",
+    "licence": "generated for this project by its owner",
+    "original_title": "turquoise-shell-mosaic-2048.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "stone.coral.colonial.png",
+  "out": "core/materials/library/stone.coral.colonial",
+  "record": {
+   "id": "stone.coral.colonial",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-0bc2-7323-9775-12543017daf1; the finished copy Codex saved after its seam pass, coquina-limestone-tile-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '65. The Marr kit (`kits/marr`, 2026-11-18)' on claude/integration-4 (id stone.coral.colonial)",
+    "licence": "generated for this project by its owner",
+    "original_title": "coquina-limestone-tile-2048.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "patterns_marr_azulejo-maritime.png",
+  "out": "core/materials/patterns/marr/azulejo-maritime",
+  "record": {
+   "id": "patterns/marr/azulejo-maritime",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-16b7-74a0-b682-7835d3bc18e7; the finished copy Codex saved after its seam pass, azulejo-tileable-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '65. The Marr kit (`kits/marr`, 2026-11-18)' on claude/integration-4 (id patterns/marr/azulejo-maritime)",
+    "licence": "generated for this project by its owner",
+    "original_title": "azulejo-tileable-2048.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "wall.slate.coursed.png",
+  "out": "core/materials/library/wall.slate.coursed",
+  "record": {
+   "id": "wall.slate.coursed",
+   "family": "wall",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-6498-77e2-8519-66a54b66fcf1)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '66. Kirstabal's slate town wall (`settlements/kirstabal`, the Xanadu kit's opt-in wall `kits/xanadu/src/87k2-xa-slate-wall.js`, 2026-11-17)' on claude/integration-4 (id wall.slate.coursed)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-c22743cd-c41a-4ab0-a812-4582501703f6.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "ground.dyeworks.png",
+  "out": "core/materials/library/ground.dyeworks",
+  "record": {
+   "id": "ground.dyeworks",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-7f33-7e82-ba79-834654fa20a2; the finished copy Codex saved after its seam pass, dye-works-yard-seamless-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '67. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)' on claude/integration-4 (id ground.dyeworks)",
+    "licence": "generated for this project by its owner",
+    "original_title": "dye-works-yard-seamless-2048.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "ground.sulfur.crust.png",
+  "out": "core/materials/library/ground.sulfur.crust",
+  "record": {
+   "id": "ground.sulfur.crust",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-9b92-7873-a23b-224ef99ad6b2; the finished copy Codex saved after its seam pass, sulfur-hot-spring-ground-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '67. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)' on claude/integration-4 (id ground.sulfur.crust)",
+    "licence": "generated for this project by its owner",
+    "original_title": "sulfur-hot-spring-ground-2048.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2
+  }
+ }
+]

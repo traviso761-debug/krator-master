@@ -344,7 +344,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -358,7 +357,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
@@ -374,12 +373,10 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/abyssal-savannah": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/abyssal-savannah/src": "03a55419ec3bb63a96b3e69c62079ab96e63243a2071af0c9605a1af6df49cfa",
     "biomes/abyssal-savannah/src/rim": "26ea920c7764d1f0b9762e60338dcd468c003193a58fdfa2fa43749620550e59",
     "biomes/abyssal-savannah/stations": "ee57c758605333af364af21c6a62446a7a1cf5d9aa766658360f8135358c7a1b",
@@ -389,10 +386,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": "d980bf95cd07a327371541c600aa97c1435d0ff4cfd571fd72bf9c504e27f97c"
+    "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": "3007bf6620f7026c64cfde3cd65a64bdf0c618b6e32ce1092d4e1ca3695041ff"
    },
    "outputs_raw": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": "d980bf95cd07a327371541c600aa97c1435d0ff4cfd571fd72bf9c504e27f97c"
+    "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": "3007bf6620f7026c64cfde3cd65a64bdf0c618b6e32ce1092d4e1ca3695041ff"
    }
   },
   "build.py --station bench": {
@@ -549,7 +546,6 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -563,7 +559,7 @@
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38c-core-landforms.js": "3feab77294dd3adea9402c0ffd15cccfb3efe999a532763a753626fcc02bbc8f",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
@@ -580,10 +576,7 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/abyssal-savannah/src": "03a55419ec3bb63a96b3e69c62079ab96e63243a2071af0c9605a1af6df49cfa",
@@ -595,10 +588,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah-bench.html": "2446417c67812e8d5a67c8addc55e42fa4d3db80daa16b11b4aebf6ebb394c0f"
+    "biomes/abyssal-savannah/dist/abyssal-savannah-bench.html": "8e3f57926ced9dac6b1faaec44ffa39f6984088eb26fb0fafb1b30c821390f03"
    },
    "outputs_raw": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah-bench.html": "2446417c67812e8d5a67c8addc55e42fa4d3db80daa16b11b4aebf6ebb394c0f"
+    "biomes/abyssal-savannah/dist/abyssal-savannah-bench.html": "8e3f57926ced9dac6b1faaec44ffa39f6984088eb26fb0fafb1b30c821390f03"
    }
   },
   "build.py --station erim": {

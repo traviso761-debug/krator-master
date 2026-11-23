@@ -16,7 +16,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
@@ -317,14 +317,14 @@
    },
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
-    "core/furnish": "09dc20b7272ccbab9dbdf81fa2c1eecb624e5d192d40370d2ae9c1443e6c81c7",
+    "core/furnish": "ce80f99bac79c2ceb339d05ec0e601e97b7ebdf9aba7b964e57178fb20fccdd4",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/sockets": "6216ac29803c8319ef932a89b4c3913096098f5698307764f731bbd769c202f9",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
-    "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
+    "kits/interiors/sets": "6878430e9531e1e8d7677660d90b9c12627e59981cf0a00feb423bbf87787cf2",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/post-apoc": "19071375fa232acb6833543345098ce4eae840d12e6ddcdc5402c9e877e0ca29",
     "settlements/span/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -333,14 +333,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/span/dist/span.html": "67151a713175feebef5c1bf3d6562734093e62b060a855b67003b919bce9595f",
+    "settlements/span/dist/span.html": "5f60ab71d13008c52134aef07e35acdcdd0e25b07c46cbfe982dc90fafe68921",
     "settlements/span/dist/span.tex.ancients.js": "166466565181f7fff70d5b6e436300c03e43515d3c69af5c5dc67f7bad489fae",
     "settlements/span/dist/span.tex.dalab-2.js": "f526b3dc0e2438d876987e698e6900b3acaf1a0da12dadc5039a89314995bb94",
     "settlements/span/dist/span.tex.dalab.js": "ed602ccc5977f37c18dc73afa899289c67953db66da2b0985bf486e14cfe0eb1",
     "settlements/span/dist/span.tex.span.js": "f71dd7d64211262fd6d14d8e71013c888ed706cb5419b4df8555c5552bb402b8"
    },
    "outputs_raw": {
-    "settlements/span/dist/span.html": "67151a713175feebef5c1bf3d6562734093e62b060a855b67003b919bce9595f",
+    "settlements/span/dist/span.html": "5f60ab71d13008c52134aef07e35acdcdd0e25b07c46cbfe982dc90fafe68921",
     "settlements/span/dist/span.tex.ancients.js": "166466565181f7fff70d5b6e436300c03e43515d3c69af5c5dc67f7bad489fae",
     "settlements/span/dist/span.tex.dalab-2.js": "f526b3dc0e2438d876987e698e6900b3acaf1a0da12dadc5039a89314995bb94",
     "settlements/span/dist/span.tex.dalab.js": "ed602ccc5977f37c18dc73afa899289c67953db66da2b0985bf486e14cfe0eb1",

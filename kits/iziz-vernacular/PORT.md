@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 257 (65%) | 2 (1%) | 0 (0%) | 15 (4%) | 121 (31%) |
+| KB | 286 (67%) | 2 (1%) | 0 (0%) | 15 (4%) | 121 (29%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -28,15 +28,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/73-vern-infra.js` | 8.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/73b-vern-works.js` | 31.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/73c-vern-land.js` | 34.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/73d-vern-docks.js` | 29.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/74-vern-guilds.js` | 35.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74b-vern-frontier.js` | 38.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/74z-vern-trades.js` | 6.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/74z-vern-trades.js` | 6.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-vsheet-scene.js` | 8.4 | [web] | 9 | 0 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/95-vsheet-doors.js` | 1.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell: binds the doors to core/door's host and the frame |
 | `src/99-vsheet-start.js` | 3.9 | [web] | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-vsheet-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/sheet/88y-vsheet-matlib.js` | 2.2 | [G shader] | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |  |
-| `targets/sheet/89z-rows.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/sheet/89z-rows.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sheet/91t-vsheet-tags.js` | 2.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 
 ## Notes

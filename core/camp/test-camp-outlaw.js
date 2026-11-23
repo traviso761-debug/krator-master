@@ -93,5 +93,19 @@ let threw = false, e1 = null;
 try { e1 = KCAMP.outlawCamp({ id: 'x', world: 1, road, ground: { h: (x, z) => 0 }, box: { x0: 40, z0: -300, x1: 420, z1: 300 } }).error; } catch (e) { threw = e; }
 ok('on open flat ground there is nowhere to hide: an error, not an exception', !threw && !!e1, !OC.error, e1 || String(threw));
 
+// ---- opt-in Fellgang / Wildcat raiding band row (core/camp/fellgang/52-camp-fellgang.js)
+{
+  load('core/camp/fellgang/52-camp-fellgang.js');
+  const FB = KCAMP.CULTURES['fellgang-band'];
+  const fp = [];
+  for (let w = 0; w < 80; w++) fp.push(KCAMP.census({ id: 'wc-raid-' + w, world: w, culture: 'fellgang-band', program: FB.program }).pop);
+  const FC = KCAMP.outlawCamp({ id: 'wc-ice-raid', world: 19, culture: 'fellgang-band', road, ground: { h: G, ok: () => true }, cover, box: { x0: 40, z0: -300, x1: 420, z1: 300 }, water: [{ x: 380, z: 60 }] });
+  const fwatch = FC.census && FC.census.people.filter(p => p.role === 'lookout');
+  ok('a fellgang-band war camp holds 25 to 60 raiders/hunters, hides out of sight of wr.road.ice, and posts lookouts',
+    fp.every(p => p >= 25 && p <= 60) && !FC.error && hiddenCamp(FC) && KCAMP.check(FC.camp).overlaps === 0 && fwatch.length === 2 * FC.lookouts.length,
+    !fp.every(p => p <= 30) && !!KCAMP.outlawCamp({ id: 'x', world: 1, culture: 'nonesuch', road, ground: { h: G } }).error,
+    'band ' + Math.min(...fp) + '-' + Math.max(...fp) + ', pitched ' + FC.camp.records.length);
+}
+
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

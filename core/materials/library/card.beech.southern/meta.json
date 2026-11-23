@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2048,
+   2048
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.beech.southern",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.beech.southern.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-badb-7ca1-88e9-4581e125974f; the finished copy Codex saved after its seam pass, nothofagus-sprays-2048.png)",
+  "licence": "generated for this project by its owner",
+  "note": "a sheet: hosts show one cell",
+  "original_title": "nothofagus-sprays-2048.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '64. The eastern highlands' combed beech (`biomes/ehighlands`, stations 5 and 6, 2026-11-15)' on claude/integration-4 (id card.beech.southern)",
+  "sha1": "955b175d8666ef126586caf338ebe1fef74b69b6"
+ }
+}

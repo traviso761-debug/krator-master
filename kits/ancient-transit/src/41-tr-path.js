@@ -10,6 +10,7 @@
 //   KTRANSIT.profile(P, o)        o.mode 'deck' (the highest ground within o.window of each sample, plus o.clearance) or 'grade' (the
 //                                  ground plus o.above); o.maxGrade (rise over run); o.lift(s) -> a floor the deck must clear (a crossing)
 //      -> Y {Y (array), at(s)}
+//                                  o.mode 'given': o.ys [[s, y], ...] the heights by arc length, read linearly (a bored line's invert)
 //   KTRANSIT.intersections(P, Q)  where P crosses Q (a path, or a polyline [[x, z], ...]): [{sP, sQ, x, z, yawP, yawQ}]
 (function () {
   var T = KTRANSIT;
@@ -109,6 +110,12 @@
         for (i = 1; i < n; i++) { if (held[i]) continue; var d1 = P.S[i] - P.S[i - 1]; Y[i] = Math.max(Y[i - 1] - g * d1, Math.min(Y[i - 1] + g * d1, Y[i])); }
         for (i = n - 2; i >= 0; i--) { if (held[i]) continue; var d2b = P.S[i + 1] - P.S[i]; Y[i] = Math.max(Y[i + 1] - g * d2b, Math.min(Y[i + 1] + g * d2b, Y[i])); } }
       return { Y: Y, at: function (s) { s = Math.max(0, Math.min(P.L, s)); var f = s / P.L * (n - 1), a = Math.floor(f), t = f - a; return a >= n - 1 ? Y[n - 1] : Y[a] + (Y[a + 1] - Y[a]) * t; }, mode: mode };
+    } else if (mode === 'given') {
+      /* heights given by arc length (a bored line's invert, KTRANSIT.line): o.ys [[s, y], ...] in order of s, read linearly between, held at
+         the ends; no grade limit, no lift (the heights are the record's) */
+      var G = o.ys; if (!Array.isArray(G) || !G.length) throw new Error('KTRANSIT.profile: the given mode needs o.ys [[s, y], ...]');
+      var yAt = function (s) { if (s <= G[0][0]) return G[0][1]; for (var q = 1; q < G.length; q++) if (s <= G[q][0]) { var d = G[q][0] - G[q - 1][0]; return d > 1e-9 ? G[q - 1][1] + (G[q][1] - G[q - 1][1]) * (s - G[q - 1][0]) / d : G[q][1]; } return G[G.length - 1][1]; };
+      return { Y: P.S.map(yAt), at: function (s) { return yAt(Math.max(0, Math.min(P.L, s))); }, mode: mode };
     } else { var ab = o.above == null ? 0.45 : o.above; for (i = 0; i < n; i++) Y[i] = P.YG[i] + ab; }
     if (o.lift) for (i = 0; i < n; i++) { var lv = o.lift(P.S[i]); if (lv != null && lv > Y[i]) Y[i] = lv; }
     for (i = 1; i < n; i++) { var ds = P.S[i] - P.S[i - 1]; if (Y[i] < Y[i - 1] - g * ds) Y[i] = Y[i - 1] - g * ds; }

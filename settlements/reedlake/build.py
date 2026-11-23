@@ -329,8 +329,9 @@ HL_VENDORED = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers
 IZIZ_VENDORED = []
 # kept behind upstream on purpose: drift expected, recorded in KNOWN_ISSUES.md. 73-hl-carve.js keeps the drawn
 # furniture helpers (hnTotem, hnWoodpile, hnFirepit, hnMenhir): Highlands' copy places them from the master catalog
-# (FURNISH, its 89y-hl-furnish.js), which this build does not load.
-ADAPTED = {'73-hl-carve.js'}
+# (FURNISH, its 89y-hl-furnish.js), which this build does not load. 70-hl-tex.js, 71-hl-mat.js and 71b-hl-motif.js
+# keep Reed Lake's pre-Slavic-refactor copies so the floating reed village's existing pages stay bit-identical until re-vendored.
+ADAPTED = {'70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '73-hl-carve.js'}
 
 
 def vendor_manifest():

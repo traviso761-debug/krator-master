@@ -159,3 +159,10 @@ spine) carries only ferns, shrubs, bracken, boulders, moss cushions and smoke bu
   lattice, fields on an 18 m one and the shade on a 512 one, and allocated four colours a pixel:
   painted at half size and scaled up by the canvas, with its noises on lattices, it is ~4x faster
   and the same to the eye.
+- **A neighbour's tree read in place costs what the lattice covers, not what the eye sees** (station 6, 2026-11-16). The Throne's
+  elfin tree on 11 m cells over the whole sheet was ~50,000 trees, each a hero and a far stand-in: the renderer died of memory before
+  the first frame. Station 3's swlowlands oaks are wide apart; a small, dense kin tree needs a reach (station 6: ~450 m round the
+  showcase) and a shorter hero range than the kit's own.
+- **A heightfield cannot hold a cliff's beds; a finer patch can** (station 6). The ground mesh's 6.7 m cells drew the gully's 57 m
+  walls as a slope a cell or two wide, and its paint is top-down. The near patch (the coarse cells dropped from the index, the
+  patch's rim on their edges, its gentle faces on the ground's own material) gives the steep its own KSTRATA material at 1.67 m.
