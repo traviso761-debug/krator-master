@@ -989,7 +989,7 @@ FURN({
 });
 FURN({
   key: 'ashnomad_wall_hanging', name: 'Painted wall hanging', culture: 'ashnomad', tier: 'common', type: 'banner', setting: 'indoor',
-  rooms: ['hall', 'bedroom', 'antechamber', 'court', 'shrine'], anchor: 'wall', clearance: {},
+  rooms: ['hall', 'bedroom', 'antechamber', 'court', 'shrine'], anchor: 'wall', hung: 'top', clearance: {},
   materials: ['cloth', 'lacquer', 'bone', 'rope'],
   w: 1.8, d: 0.08, h: 1.7, variants: 1,
   build: function (F) {

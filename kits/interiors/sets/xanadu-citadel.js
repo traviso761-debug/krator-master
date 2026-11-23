@@ -46,6 +46,122 @@
     ['hall', 'study'], 1.6);
   kind('office', { require: [{ need: 'desk', types: ['desk', 'table'], n: 1 }], optional: [{ types: ['shelf', 'storage', 'chair'], max: 5 }, SURFACE], extra: 5 }, ['study', 'library'], 1);
   kind('treasury', { require: [{ need: 'chests', types: ['storage'], n: 2 }], optional: [{ types: ['storage', 'shelf'], max: 6 }], extra: 3 }, ['store'], 1);
+  /* THE SULTAN'S COURT FURNISHED (2026-11-16; settlements/xanadu/citadel/FURNISHING.md, the plan room by room). The citadel's
+     rich rooms take kinds of their own, xc_*, with NO aliases: a room of one takes only the catalog pieces whose rooms list it
+     (kits/catalog/krator-master-furniture-xanadu.js, its citadel section and the table at its end), so the curation is the
+     catalog's, and no top-hung cloth a tall room would drop toward the floor reaches them (the owner, 2026-11-16: "make sure
+     wall hangings dont wind up near ground"). The signature pieces are required by role; the rest fills while the room's
+     area allows (extra m2 per piece, scaled by wealth). The Garden Pleasure Dome's rooms (sets/xanadu.js) take these kinds too;
+     both sets load together wherever the Dome is furnished (settlements/xanadu, the interiors sets sheet). Checked headlessly by
+     settlements/xanadu/citadel/furnish_census.js. */
+  const ITEM = IX.ITEM_ROLES, FOOD = IX.FOOD_ROLES;
+  const xc = function (k, spec, alias) { IX.PROGRAMS[k] = spec; IX.KIND_ALIAS[k] = alias || []; IX.KIND_WEIGHT[k] = 1; };
+  const surf = function (n) { return { anchor: 'surface', max: n }; };
+  const hang = function (n) { return { types: ['banner'], max: n }; };
+  const ceil = function (n) { return { types: ['lamp'], anchor: 'ceiling', max: n }; };
+  const lamps = function (n) { return { types: ['lamp'], anchor: 'floor', max: n }; };
+  const SEAT = ['masnad', 'divan'];   /* the Great Divan is one of a kind (type monument): asked for by name where the Sultan sits */
+  xc('xc_audience', { require: [{ need: 'the Peacock Throne', roles: ['state_throne'], n: 1, types: ['monument'] }, { need: 'courtiers\' seats', types: ['seating'], roles: SEAT, n: 4 }],
+    optional: [{ types: ['seating'], max: 8 }, { types: ['table'], max: 4 }, hang(8), { types: ['brazier'], max: 6 }, ceil(4), lamps(6), { types: ['statue'], max: 6 },
+      { types: ['fountain'], max: 2 }, { types: ['rug'], max: 5 }, { types: ['art'], max: 4 }, surf(8)], extra: 6 });
+  xc('xc_reception', { require: [{ need: 'seats', types: ['seating'], roles: SEAT, n: 3 }, { need: 'tray table', types: ['table'], roles: ['low_table'], n: 1 }],
+    optional: [{ types: ['seating'], max: 6 }, { types: ['table'], max: 3 }, hang(6), { types: ['brazier'], max: 4 }, ceil(2), lamps(4), { types: ['statue'], max: 2 },
+      { types: ['fountain'], max: 1 }, { types: ['rug'], max: 4 }, { types: ['art'], max: 3 }, surf(6)], extra: 6 });
+  /* the Dome's Hall of Feasts is furnished on the rectangle inside its arcades (sets/xanadu.js): its sides are open arches, so it
+     takes no hanging, frieze or wall fountain (they would stand free in an arch, their backs to the court); the palace's dining
+     halls (xc_dining, real walls) take them */
+  xc('xc_feast', { require: [{ need: 'the Great Divan', types: ['monument'], roles: ['great_divan'], n: 1 }, { need: 'the musicians', types: ['seating'], roles: ['musicians_dais'], n: 1 },
+      { need: 'the caves of ice', types: ['table'], roles: ['sorbet_table'], n: 1 }, { need: 'dining couches', types: ['seating'], roles: ['dining_couch'], n: 6 },
+      { need: 'tray tables', types: ['table'], roles: ['low_table'], n: 4 }],
+    optional: [{ types: ['seating'], max: 8 }, { types: ['table'], max: 2 }, { types: ['brazier'], max: 6 }, ceil(3), lamps(6), { types: ['fountain'], max: 3 },
+      { types: ['statue'], max: 4 }, { types: ['workstation'], max: 1 }, { types: ['rug'], max: 4 }, { types: ['planter'], max: 4 }, surf(12)], extra: 5 });
+  xc('xc_dining', { require: [{ need: 'couches', types: ['seating'], roles: ['dining_couch', 'masnad'], n: 4 }, { need: 'tray tables', types: ['table'], roles: ['low_table'], n: 3 },
+      { need: 'the caves of ice', types: ['table'], roles: ['sorbet_table'], n: 1 }],
+    optional: [{ types: ['seating'], max: 6 }, { types: ['table'], max: 2 }, { types: ['brazier'], max: 4 }, hang(6), ceil(2), lamps(4), { types: ['fountain'], max: 1 },
+      { types: ['statue'], max: 2 }, { types: ['rug'], max: 3 }, { types: ['planter'], max: 2 }, surf(10)], extra: 5 }, ['xc_feast']);
+  xc('xc_music', { require: [{ need: 'the musicians\' dais', types: ['seating'], roles: ['musicians_dais'], n: 1 }, { need: 'the dulcimer', types: ['workstation'], roles: ['dulcimer'], n: 1 }],
+    optional: [{ types: ['rack'], max: 2 }, { types: ['seating'], max: 6 }, hang(4), lamps(3), ceil(1), { types: ['brazier'], max: 2 }, { types: ['rug'], max: 2 },
+      { types: ['table'], max: 2 }, { types: ['storage'], max: 2 }, surf(4)], extra: 5 });
+  xc('xc_musicbox', { require: [{ need: 'the Sultan\'s lattice box', types: ['seating'], roles: ['lattice_box'], n: 1 }, { need: 'the musicians\' dais', types: ['seating'], roles: ['musicians_dais'], n: 1 }],
+    optional: [{ types: ['seating'], max: 3 }, { types: ['rack'], max: 1 }, hang(3), lamps(2), { types: ['rug'], max: 2 }, surf(3)], extra: 5 }, ['xc_music']);
+  xc('xc_dayroom', { require: [{ need: 'seats', types: ['seating'], roles: SEAT, n: 3 }, { need: 'tray table', types: ['table'], roles: ['low_table'], n: 1 }],
+    optional: [{ types: ['seating'], max: 6 }, { types: ['table'], max: 3 }, { types: ['fountain'], max: 2 }, hang(5), lamps(4), ceil(2), { types: ['brazier'], max: 3 },
+      { types: ['statue'], max: 3 }, { types: ['shelf'], max: 2 }, { types: ['stove'], max: 1 }, { types: ['screen'], max: 2 }, { types: ['workstation'], max: 1 },
+      { types: ['rug'], max: 3 }, { types: ['art'], max: 3 }, { types: ['planter'], max: 3 }, surf(8)], extra: 5 });
+  /* the Sultan's own day rooms (the day room behind the jharokhas, the Kiosk of the Domes): a day room with the Great Divan */
+  xc('xc_sultan_day', Object.assign({}, IX.PROGRAMS.xc_dayroom, { require: [{ need: 'the Great Divan', types: ['monument'], roles: ['great_divan'], n: 1 }].concat(IX.PROGRAMS.xc_dayroom.require) }), ['xc_dayroom']);
+  xc('xc_family', { require: [{ need: 'seats', types: ['seating'], roles: SEAT.concat(['cushions']), n: 2 }, { need: 'table', types: ['table'], n: 1 },
+      { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, anchors: ['floor', 'wall'], n: 1 }],
+    optional: [{ types: ['seating'], max: 4 }, { types: ['table'], max: 2 }, { types: ['storage'], max: 2 }, hang(4), lamps(3), ceil(1), { types: ['stove'], max: 1 },
+      { types: ['screen'], max: 1 }, { types: ['fountain'], max: 1 }, { types: ['statue'], max: 1 }, { types: ['rug'], max: 2 }, { types: ['art'], max: 2 }, surf(6)], extra: 6 });
+  xc('xc_bedchamber', { require: [{ need: 'the state bed', types: ['bed'], roles: ['state_bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 },
+      { need: 'the Great Divan', types: ['monument'], roles: ['great_divan'], n: 1 }, { need: 'the hoist', types: ['monument'], roles: ['hoist'], n: 1 }],
+    optional: [{ types: ['seating'], max: 4 }, { types: ['table'], max: 2 }, hang(6), lamps(4), ceil(2), { types: ['brazier'], max: 3 }, { types: ['screen'], max: 3 },
+      { types: ['stove'], max: 1 }, { types: ['storage'], max: 3 }, { types: ['fountain'], max: 1 }, { types: ['statue'], max: 2 }, { types: ['workstation'], max: 1 },
+      { types: ['rug'], max: 4 }, { types: ['art'], max: 3 }, surf(8)], extra: 5 });
+  xc('xc_harem', { require: [{ need: 'beds', types: ['bed'], roles: ['harem_bed'], n: 2 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 },
+      { need: 'seats', types: ['seating'], roles: SEAT, n: 2 }],
+    optional: [{ types: ['bed'], max: 4 }, { types: ['seating'], max: 6 }, { types: ['table'], max: 4 }, { types: ['screen'], max: 4 }, hang(6), lamps(4), ceil(2),
+      { types: ['brazier'], max: 3 }, { types: ['fountain'], max: 2 }, { types: ['storage'], max: 4 }, { types: ['stove'], max: 1 }, { types: ['statue'], max: 2 },
+      { types: ['workstation'], max: 1 }, { types: ['rug'], max: 4 }, { types: ['art'], max: 3 }, { types: ['planter'], max: 2 }, surf(8)], extra: 5 });
+  xc('xc_cage', { require: [{ need: 'beds', types: ['bed'], roles: ['harem_bed'], n: 2 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 },
+      { need: 'seats', types: ['seating'], roles: SEAT, n: 2 }, { need: 'books', types: ['shelf'], n: 1 }, { need: 'the princes\' game', types: ['table'], roles: ['nard_table'], n: 1 }],
+    optional: [{ types: ['bed'], max: 3 }, { types: ['desk'], max: 2 }, { types: ['seating'], max: 4 }, { types: ['table'], max: 3 }, { types: ['shelf'], max: 2 },
+      { types: ['screen'], max: 3 }, hang(5), lamps(3), ceil(2), { types: ['brazier'], max: 2 }, { types: ['statue'], max: 2 }, { types: ['fountain'], max: 1 },
+      { types: ['storage'], max: 3 }, { types: ['rug'], max: 3 }, { types: ['art'], max: 3 }, surf(8)], extra: 5 });
+  xc('xc_guest', { require: [{ need: 'bed', types: ['bed'], roles: ['harem_bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'seat', types: ['seating'], roles: SEAT, n: 1 }],
+    optional: [{ types: ['seating'], max: 3 }, { types: ['table'], max: 2 }, { types: ['screen'], max: 2 }, hang(3), lamps(2), ceil(1), { types: ['storage'], max: 2 },
+      { types: ['stove'], max: 1 }, { types: ['brazier'], max: 1 }, { types: ['statue'], max: 1 }, { types: ['rug'], max: 2 }, { types: ['art'], max: 2 }, surf(4)], extra: 5 });
+  xc('xc_dorm', { require: [{ need: 'pallets', types: ['bed'], roles: ['pallet'], n: 6 }, { need: 'chests', types: ['storage'], roles: ITEM, n: 2 }],
+    optional: [{ types: ['bed'], max: 20 }, { types: ['storage'], max: 6 }, { types: ['screen'], max: 4 }, hang(4), { types: ['lamp'], max: 3 }, { types: ['rug'], max: 3 }], extra: 3 });
+  xc('xc_bath', { require: [{ need: 'the hot stone', types: ['fountain'], roles: ['hammam_slab'], n: 1 }, { need: 'basins', types: ['fountain'], roles: ['kurna'], n: 2 }],
+    optional: [{ types: ['fountain'], max: 4 }, { types: ['seating'], max: 4 }, { types: ['rack'], max: 2 }, { types: ['screen'], max: 2 }, lamps(3), ceil(2),
+      { types: ['brazier'], max: 2 }, hang(3), { types: ['monument'], max: 1 }, { types: ['bed'], max: 1 }, { types: ['planter'], max: 2 }, surf(3)], extra: 5 });
+  xc('xc_study', { require: [{ need: 'desk', types: ['desk'], roles: ['desk'], n: 1 }, { need: 'books', types: ['shelf'], n: 2 }, { need: 'ledgers', types: ['storage'], n: 1 }],
+    optional: [{ types: ['desk'], max: 2 }, { types: ['shelf'], max: 3 }, { types: ['storage'], max: 3 }, { types: ['table'], max: 1 }, { types: ['statue'], max: 2 },
+      { types: ['seating'], max: 3 }, hang(4), lamps(3), ceil(1), { types: ['brazier'], max: 2 }, { types: ['stove'], max: 1 }, { types: ['rug'], max: 3 }, { types: ['art'], max: 2 }, surf(8)], extra: 5 });
+  xc('xc_chancery', { require: [{ need: 'desks', types: ['desk'], n: 4 }, { need: 'shelves', types: ['shelf'], n: 2 }],
+    optional: [{ types: ['desk'], max: 8 }, { types: ['shelf'], max: 4 }, { types: ['storage'], max: 4 }, hang(3), lamps(4), ceil(2), { types: ['rug'], max: 3 },
+      { types: ['art'], max: 2 }, surf(6)], extra: 4 });
+  xc('xc_divan', { require: [{ need: 'the Vizier\'s seat', types: ['chair'], roles: ['throne'], n: 1 }, { need: 'the council\'s seats', types: ['seating'], roles: SEAT, n: 6 },
+      { need: 'tray tables', types: ['table'], roles: ['low_table'], n: 2 }],
+    optional: [{ types: ['seating'], max: 6 }, { types: ['table'], max: 2 }, { types: ['desk'], max: 2 }, { types: ['storage'], max: 2 }, hang(6), { types: ['brazier'], max: 4 },
+      ceil(2), lamps(4), { types: ['statue'], max: 2 }, { types: ['rug'], max: 4 }, { types: ['art'], max: 2 }, surf(6)], extra: 6 });
+  xc('xc_treasury', { require: [{ need: 'chests', types: ['storage'], n: 4 }],
+    optional: [{ types: ['storage'], max: 10 }, { types: ['stack'], max: 4 }, { types: ['shelf'], max: 2 }, lamps(2), ceil(1), hang(2), { types: ['rug'], max: 2 },
+      { types: ['art'], max: 2 }, surf(4)], extra: 3 });
+  xc('xc_gifts', { require: [{ need: 'the gifts', types: ['stack'], n: 2 }],
+    optional: [{ types: ['stack'], max: 4 }, { types: ['rack'], max: 4 }, { types: ['statue'], max: 4 }, { types: ['storage'], max: 3 }, { types: ['seating'], max: 4 }, hang(6),
+      { types: ['brazier'], max: 3 }, lamps(4), ceil(2), { types: ['rug'], max: 3 }, { types: ['art'], max: 3 }, { types: ['planter'], max: 3 }, surf(4)], extra: 5 });
+  xc('xc_wardrobe', { require: [{ need: 'presses', types: ['storage'], n: 3 }],
+    optional: [{ types: ['storage'], max: 6 }, { types: ['rack'], max: 4 }, { types: ['screen'], max: 2 }, { types: ['table'], max: 1 }, { types: ['lamp'], max: 2 }, hang(2), { types: ['rug'], max: 1 }], extra: 3 });
+  xc('xc_hall', { require: [],
+    optional: [{ types: ['seating', 'bench'], max: 6 }, hang(6), { types: ['brazier'], max: 4 }, lamps(4), ceil(2), { types: ['statue'], max: 4 }, { types: ['planter'], max: 4 },
+      { types: ['fountain'], max: 1 }, { types: ['stack'], max: 2 }, { types: ['art'], max: 3 }, { types: ['rug'], max: 2 }], extra: 7 });
+  xc('xc_loggia', { require: [{ need: 'the Great Divan (the Sultan shown to the court)', types: ['monument'], roles: ['great_divan'], n: 1 }],
+    optional: [{ types: ['seating'], max: 4 }, { types: ['brazier'], max: 4 }, hang(6), lamps(4), ceil(2), { types: ['statue'], max: 4 }, { types: ['planter'], max: 4 },
+      { types: ['fountain'], max: 1 }, { types: ['table'], max: 2 }, { types: ['rug'], max: 2 }, surf(3)], extra: 5 });
+  xc('xc_court', { require: [],
+    optional: [{ types: ['planter'], max: 10 }, { types: ['seating', 'bench'], max: 6 }, { types: ['fountain'], max: 2 }, { types: ['lamp'], max: 3 }, { types: ['brazier'], max: 3 },
+      { types: ['statue'], max: 3 }], extra: 12 });
+  /* the rest of the citadel's furnished rooms on kinds of their own, so no top-hung cloth reaches them either: the vestibules,
+     stairs and landings of the palaces and houses, the guard's mess, the court temple's prayer hall, its priests' cells and its
+     drum circuit (the guard's dormitories, the kitchens, stores and stables hang nothing and keep the shared kinds) */
+  xc('xc_lobby', { require: [], optional: [{ types: ['seating', 'bench'], max: 3 }, { types: ['lamp'], anchor: 'floor', max: 2 }, ceil(1), hang(2), { types: ['statue'], max: 1 },
+    { types: ['planter'], max: 2 }, { types: ['brazier'], max: 1 }], extra: 8 });
+  xc('xc_mess', { require: [{ need: 'tables', types: ['table'], n: 2 }, { need: 'benches', types: ['bench'], n: 4 }],
+    optional: [{ types: ['table'], max: 6 }, { types: ['bench'], max: 12 }, { types: ['lamp'], max: 3 }, { types: ['rack', 'weapon'], max: 2 }, { types: ['storage'], max: 2 },
+      { types: ['stove'], max: 1 }, surf(6)], extra: 5 });
+  xc('xc_temple', { require: [{ need: 'the altar', types: ['altar'], n: 1 }, { need: 'the rows', types: ['seating'], n: 8 }, { need: 'the skylight columns', types: ['monument'], n: 2 }],
+    optional: [{ types: ['seating'], max: 16 }, { types: ['lamp'], anchor: 'wall', max: 4 }, { types: ['shrine'], max: 2 }, hang(6), { types: ['brazier'], max: 4 }, lamps(4), ceil(2),
+      { types: ['statue', 'tomb'], max: 2 }, { types: ['rug'], max: 3 }, { types: ['planter'], max: 2 }, surf(6)], extra: 8 });
+  xc('xc_cell', { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
+    optional: [{ types: ['desk'], max: 2 }, { types: ['shelf'], max: 1 }, { types: ['rack'], max: 1 }, { types: ['lamp'], max: 2 }, hang(2), { types: ['rug'], max: 2 },
+      { types: ['bed'], max: 3 }, { types: ['storage'], max: 2 }, surf(4)], extra: 6 });
+  xc('xc_kora', { require: [{ need: 'the prayer wheels', types: ['shrine'], n: 4 }],
+    optional: [{ types: ['shrine'], max: 10 }, { types: ['lamp'], max: 6 }, hang(3), { types: ['brazier'], max: 2 }, { types: ['bench'], max: 2 }, { types: ['rug'], max: 2 }, { types: ['planter'], max: 2 }], extra: 4 });
+  xc('xc_litter', { require: [{ need: 'the palanquins', types: ['monument'], roles: ['palanquin'], n: 2 }],
+    optional: [{ types: ['bench'], max: 4 }, { types: ['storage'], max: 3 }, { types: ['rack'], max: 3 }, { types: ['lamp'], max: 4 }], extra: 6 });
 
   const room = function (id, k, x0, x1, z0, z1, y, h, o) {
     return Object.assign({ id: id, kind: k, poly: [[r3(x0), r3(z0)], [r3(x1), r3(z0)], [r3(x1), r3(z1)], [r3(x0), r3(z1)]], y: r3(y), h: r3(h), doors: [] }, o || {});
@@ -79,8 +195,8 @@
     const FL = 0.45, RG = 4.2, RU = r3(FL + RG + 0.35), RH = 4.2, PG = 7.2, PU = r3(FL + PG + 0.35), PH = 5.2, TY = r3(PU + PH + 0.4), OH = 5.0;
     const R = [];
     /* the gate, the forecourt, the guard */
-    R.push(room('gate', 'lobby', -6, 6, 41, 44, FL, 10, { style: 'iwan', ceil: 'muq' }));   /* the passage behind the gate iwan's recess (z 44..49, outside) */
-    R.push(polyRoom('forecourt', 'court', [[-31, 2], [31, 2], [31, 28], [11, 28], [11, 41], [-11, 41], [-11, 28], [-31, 28]], FL, 12,
+    R.push(room('gate', 'xc_hall', -6, 6, 41, 44, FL, 10, { style: 'iwan', ceil: 'muq' }));   /* the passage behind the gate iwan's recess (z 44..49, outside) */
+    R.push(polyRoom('forecourt', 'xc_court', [[-31, 2], [31, 2], [31, 28], [11, 28], [11, 41], [-11, 41], [-11, 28], [-31, 28]], FL, 12,
       { style: 'moorish', ceil: 'open', water: [{ kind: 'pool', x: 0, z: 17, w: 7, d: 22 }, { kind: 'fountain', x: 0, z: 31, w: 3, d: 3 }, { kind: 'rill', x: 0, z: 36.5, w: 1, d: 7 }],
         fixtures: [{ id: 'pool', kind: 'pool', x: 0, z: 18, w: 8, d: 26, reach: false }] }));
     R.push(room('guard_w', 'guard', -31, -11, 28, 41, FL, RG, { style: 'plain', ceil: 'flat' }), room('guard_e', 'guard', 11, 31, 28, 41, FL, RG, { style: 'plain', ceil: 'flat' }));
@@ -88,12 +204,12 @@
     const range = function (s, names) {
       const xa = s < 0 ? -47 : 31, xb = s < 0 ? -31 : 47, xo = s * 44, id = function (n) { return n + (s < 0 ? '_w' : '_e'); };
       R.push(room(id('front'), names[0][1], xa, xb, 34, 41, FL, RG, { style: names[0][2] }));
-      R.push(room(id('stair'), 'lobby', xa, xb, 22, 34, FL, RG, { style: 'plain', ceil: 'flat', fixtures: [fx('flight', xo, 28, 1.8, 10)] }));
+      R.push(room(id('stair'), 'xc_lobby', xa, xb, 22, 34, FL, RG, { style: 'plain', ceil: 'flat', fixtures: [fx('flight', xo, 28, 1.8, 10)] }));
       R.push(room(id('r1'), names[1][1], xa, xb, 8, 22, FL, RG, { style: names[1][2], ceil: names[1][3] || 'flat' }));
       R.push(room(id('r2'), names[2][1], xa, xb, -14, 8, FL, RG, { style: names[2][2], ceil: names[2][3] || 'flat' }));
       R.push(room(id('r3'), names[3][1], xa, xb, -38, -14, FL, RG, { style: names[3][2], ceil: names[3][3] || 'flat' }));
       /* upstairs: the stair's head landing, the room over the front, then the three */
-      R.push(room(id('land'), 'lobby', s < 0 ? -47 : 41, s < 0 ? -41 : 47, 22, 26, RU, RH, { style: 'plain', ceil: 'flat' }));
+      R.push(room(id('land'), 'xc_lobby', s < 0 ? -47 : 41, s < 0 ? -41 : 47, 22, 26, RU, RH, { style: 'plain', ceil: 'flat' }));
       R.push(room(id('u0'), names[4][1], s < 0 ? -41 : 31, s < 0 ? -31 : 41, 22, 41, RU, RH, { style: names[4][2], ceil: 'flat' }));
       R.push(room(id('u1'), names[5][1], xa, xb, 8, 22, RU, RH, { style: names[5][2], ceil: names[5][3] || 'flat' }));
       R.push(room(id('u2'), names[6][1], xa, xb, -14, 8, RU, RH, { style: names[6][2], ceil: names[6][3] || 'flat' }));
@@ -107,51 +223,51 @@
       link(R, id('u1'), id('u2'), [s * 39, 8], 1.2); link(R, id('u2'), id('u3'), [s * 39, -14], 1.2);
       return stair('range' + (s < 0 ? '_w' : '_e'), [xo, 32.5, FL], [xo, 23.5, RU], 1.4);
     };
-    const SW = range(-1, [['front', 'lobby', 'gold'], ['kitchen', 'kitchen', 'plain'], ['servants', 'dormitory', 'plain'], ['litter', 'lobby', 'moorish', 'tiled'],
+    const SW = range(-1, [['front', 'xc_hall', 'gold'], ['kitchen', 'kitchen', 'plain'], ['servants', 'dormitory', 'plain'], ['litter', 'xc_litter', 'moorish', 'tiled'],
       ['store', 'store', 'plain'], ['cooks', 'dormitory', 'plain'], ['bearers', 'dormitory', 'plain'], ['servants_u', 'dormitory', 'plain']]);
-    const SE = range(1, [['armoury', 'armoury', 'plain'], ['guardhall', 'guard', 'plain'], ['chancery', 'office', 'mughal', 'star'], ['gifts', 'treasury', 'mughal', 'muq'],
-      ['guest_b', 'bedroom', 'banded', 'banded'], ['guest_a', 'bedroom', 'mughal', 'star'], ['guest_a2', 'living', 'moorish', 'muq'], ['gifts_u', 'treasury', 'mughal', 'muq']]);
+    const SE = range(1, [['armoury', 'armoury', 'plain'], ['guardhall', 'guard', 'plain'], ['chancery', 'xc_chancery', 'mughal', 'star'], ['gifts', 'xc_treasury', 'mughal', 'muq'],
+      ['guest_b', 'xc_guest', 'banded', 'banded'], ['guest_a', 'xc_guest', 'mughal', 'star'], ['guest_a2', 'xc_dayroom', 'moorish', 'muq'], ['gifts_u', 'xc_treasury', 'mughal', 'muq']]);
     link(R, 'front_w', 'street', [-39, 41], 1.8);   /* the Harem Postern: the Golden Way's door, black, white and gold */
     link(R, 'gate', 'street', [0, 44], 4.4, { h: 4.6 }); link(R, 'gate', 'forecourt', [0, 41], 5, { open: true, h: 6 });
     link(R, 'guard_w', 'forecourt', [-21, 28], 1.4); link(R, 'guard_e', 'forecourt', [21, 28], 1.4);
     link(R, 'front_e', 'guard_e', [31, 37.5], 1.2);
     /* the palace block: ground */
-    R.push(room('gifts', 'lobby', -31, -15, -22, 2, FL, PG, { style: 'mughal', ceil: 'muq', wealth: 0.9 }));
-    R.push(room('audience', 'audience', -15, 15, -22, 2, FL, PG, { style: 'mughal', ceil: 'star', wealth: 0.95 }));
-    R.push(room('vizier', 'office', 15, 31, -22, 2, FL, PG, { style: 'mughal', ceil: 'star', wealth: 0.85 }));
+    R.push(room('gifts', 'xc_gifts', -31, -15, -22, 2, FL, PG, { style: 'mughal', ceil: 'muq', wealth: 0.9 }));
+    R.push(room('audience', 'xc_audience', -15, 15, -22, 2, FL, PG, { style: 'mughal', ceil: 'star', wealth: 0.95 }));
+    R.push(room('vizier', 'xc_study', 15, 31, -22, 2, FL, PG, { style: 'mughal', ceil: 'star', wealth: 0.85 }));
     R.push(room('ramp', 'ramp', -31, -15, -38, -22, FL, PG, { style: 'arcade', ceil: 'flat', fixtures: [fx('core', -23, -30, 6, 6)] }));
-    R.push(room('dining', 'hall', -15, 15, -38, -22, FL, PG, { style: 'banded', ceil: 'banded', wealth: 0.9 }));
+    R.push(room('dining', 'xc_dining', -15, 15, -38, -22, FL, PG, { style: 'banded', ceil: 'banded', wealth: 0.9 }));
     R.push(room('steward', 'office', 15, 25, -38, -22, FL, PG, { style: 'moorish', ceil: 'flat' }));
-    R.push(room('sstair', 'lobby', 25, 31, -38, -22, FL, PG, { style: 'plain', ceil: 'flat', fixtures: [fx('flight', 29.5, -31, 1.6, 14)] }));
+    R.push(room('sstair', 'xc_lobby', 25, 31, -38, -22, FL, PG, { style: 'plain', ceil: 'flat', fixtures: [fx('flight', 29.5, -31, 1.6, 14)] }));
     link(R, 'gifts', 'forecourt', [-23, 2], 2.4); link(R, 'audience', 'forecourt', [0, 2], 4.2, { h: 5 }); link(R, 'vizier', 'forecourt', [23, 2], 2.4);
     link(R, 'audience', 'gifts', [-15, -10], 2.6, { h: 4 }); link(R, 'audience', 'vizier', [15, -10], 2.2, { h: 4 });
     link(R, 'audience', 'dining', [0, -22], 3, { h: 4 }); link(R, 'gifts', 'ramp', [-23, -22], 3.2, { h: 4 });
     link(R, 'dining', 'steward', [15, -30], 1.4); link(R, 'steward', 'sstair', [25, -26], 1.2); link(R, 'vizier', 'r2_e', [31, -6], 1.4);
     link(R, 'ramp', 'r3_w', [-31, -30], 3.2, { h: 3.6 });   /* the litter house at the Ramp's foot */
     /* the Sultan's floor (E2a) */
-    R.push(room('dayroom', 'living', -15, 15, -10, 2, PU, PH, { style: 'mughal', ceil: 'star', wealth: 0.95 }));
-    R.push(room('bedchamber', 'bedroom', -15, 15, -38, -10, PU, PH, { style: 'banded', ceil: 'banded', wealth: 0.95 }));
-    R.push(room('bath', 'bath', -31, -15, -22, 2, PU, PH, { style: 'moorish', ceil: 'muq', wealth: 0.9, water: [{ kind: 'pool', x: -23, z: -10, w: 6, d: 8 }],
+    R.push(room('dayroom', 'xc_sultan_day', -15, 15, -10, 2, PU, PH, { style: 'mughal', ceil: 'star', wealth: 0.95 }));
+    R.push(room('bedchamber', 'xc_bedchamber', -15, 15, -38, -10, PU, PH, { style: 'banded', ceil: 'banded', wealth: 0.95 }));
+    R.push(room('bath', 'xc_bath', -31, -15, -22, 2, PU, PH, { style: 'moorish', ceil: 'muq', wealth: 0.9, water: [{ kind: 'pool', x: -23, z: -10, w: 6, d: 8 }],
       fixtures: [{ id: 'pool', kind: 'pool', x: -23, z: -10, w: 7, d: 9, reach: false }] }));
-    R.push(room('sdining', 'hall', 15, 31, -22, 2, PU, PH, { style: 'banded', ceil: 'banded', wealth: 0.9 }));
-    R.push(room('wardrobe', 'bedroom', 15, 25, -38, -22, PU, PH, { style: 'moorish', ceil: 'flat' }));
-    R.push(room('sland', 'lobby', 25, 31, -27, -22, PU, PH, { style: 'plain', ceil: 'flat' }));
-    R.push(room('ramp_u', 'lobby', -25, -21, -25, -22, PU, PH, { style: 'arcade', ceil: 'flat', rail: ['z0'] }));
+    R.push(room('sdining', 'xc_dining', 15, 31, -22, 2, PU, PH, { style: 'banded', ceil: 'banded', wealth: 0.9 }));
+    R.push(room('wardrobe', 'xc_wardrobe', 15, 25, -38, -22, PU, PH, { style: 'moorish', ceil: 'flat' }));
+    R.push(room('sland', 'xc_lobby', 25, 31, -27, -22, PU, PH, { style: 'plain', ceil: 'flat' }));
+    R.push(room('ramp_u', 'xc_lobby', -25, -21, -25, -22, PU, PH, { style: 'arcade', ceil: 'flat', rail: ['z0'] }));
     link(R, 'dayroom', 'bedchamber', [0, -10], 2.4); link(R, 'bath', 'dayroom', [-15, -4], 1.6); link(R, 'sdining', 'dayroom', [15, -4], 1.6);
     link(R, 'bath', 'ramp_u', [-23, -22], 3.2, { h: 3.8 }); link(R, 'wardrobe', 'bedchamber', [15, -30], 1.4);
     link(R, 'sland', 'street', [29.5, -27], 1.5, { open: true, head: true }); link(R, 'ramp_u', 'street', [-25, -23.5], 2.8, { open: true, head: true });
     link(R, 'ramp_u', 'street', [-21, -23.5], 2.8, { open: true, head: true });
     link(R, 'wardrobe', 'sland', [25, -24.5], 1.2); link(R, 'sdining', 'sland', [28, -22], 1.2);
     /* the roof of the white base and the ochre block (E2b) */
-    R.push(room('terrace_s', 'court', -31, 31, -4, 2, TY, 6, { style: 'moorish', ceil: 'open', rail: ['z1'] }));
-    R.push(room('terrace_w', 'court', -31, -20, -22, -4, TY, 6, { style: 'moorish', ceil: 'open', rail: ['x0'] }));
-    R.push(room('terrace_e', 'court', 20, 31, -38, -4, TY, 6, { style: 'moorish', ceil: 'open', rail: ['x1', 'z0'] }));
-    R.push(room('terrace_n', 'court', -15, 20, -38, -20, TY, 6, { style: 'moorish', ceil: 'open', rail: ['z0'] }));
-    R.push(room('loggia', 'gallery', -20, 20, -12, -4, TY, OH, { style: 'mughal', ceil: 'star', wealth: 0.95 }));
-    R.push(room('gallery', 'lobby', -20, 0, -20, -12, TY, OH, { style: 'banded', ceil: 'banded', wealth: 0.95 }));
-    R.push(room('kiosk', 'living', 0, 20, -20, -12, TY, OH, { style: 'banded', ceil: 'star', wealth: 0.95, water: [{ kind: 'fountain', x: 10, z: -16, w: 2, d: 2 }],
+    R.push(room('terrace_s', 'xc_court', -31, 31, -4, 2, TY, 6, { style: 'moorish', ceil: 'open', rail: ['z1'] }));
+    R.push(room('terrace_w', 'xc_court', -31, -20, -22, -4, TY, 6, { style: 'moorish', ceil: 'open', rail: ['x0'] }));
+    R.push(room('terrace_e', 'xc_court', 20, 31, -38, -4, TY, 6, { style: 'moorish', ceil: 'open', rail: ['x1', 'z0'] }));
+    R.push(room('terrace_n', 'xc_court', -15, 20, -38, -20, TY, 6, { style: 'moorish', ceil: 'open', rail: ['z0'] }));
+    R.push(room('loggia', 'xc_loggia', -20, 20, -12, -4, TY, OH, { style: 'mughal', ceil: 'star', wealth: 0.95 }));
+    R.push(room('gallery', 'xc_gifts', -20, 0, -20, -12, TY, OH, { style: 'banded', ceil: 'banded', wealth: 0.95 }));
+    R.push(room('kiosk', 'xc_sultan_day', 0, 20, -20, -12, TY, OH, { style: 'banded', ceil: 'star', wealth: 0.95, water: [{ kind: 'fountain', x: 10, z: -16, w: 2, d: 2 }],
       fixtures: [{ id: 'fountain', kind: 'pool', x: 10, z: -16, w: 2.4, d: 2.4, reach: false }] }));
-    R.push(room('ramp_t', 'lobby', -25, -21, -25, -22, TY, 3.4, { style: 'arcade', ceil: 'flat', rail: ['z0'] }));
+    R.push(room('ramp_t', 'xc_lobby', -25, -21, -25, -22, TY, 3.4, { style: 'arcade', ceil: 'flat', rail: ['z0'] }));
     link(R, 'terrace_s', 'terrace_w', [-25.5, -4], 6, { open: true }); link(R, 'terrace_s', 'terrace_e', [25.5, -4], 6, { open: true });
     link(R, 'terrace_e', 'terrace_n', [20, -29], 6, { open: true }); link(R, 'loggia', 'terrace_s', [0, -4], 8, { open: true, h: 4 });
     link(R, 'gallery', 'loggia', [-10, -12], 1.6); link(R, 'kiosk', 'loggia', [10, -12], 1.6); link(R, 'ramp_t', 'terrace_w', [-23, -22], 3.2, { h: 3 }); link(R, 'ramp_t', 'street', [-25, -23.5], 2.8, { open: true, head: true });
@@ -175,26 +291,26 @@
      the garden (z 2..10), the house behind in two storeys (5.4 and 4.4 m) */
   (function () {
     const FL = 0.45, G = 5.4, U = r3(FL + G + 0.35), H = 4.4, R = [];
-    R.push(room('garden', 'court', -22, 22, 10, 46, 0.05, 12, { style: 'moorish', ceil: 'open', arcade: [],
+    R.push(room('garden', 'xc_court', -22, 22, 10, 46, 0.05, 12, { style: 'moorish', ceil: 'open', arcade: [],
       water: [{ kind: 'pool', x: 0, z: 27, w: 5, d: 28 }, { kind: 'fountain', x: 0, z: 13.5, w: 3, d: 3 }],
       fixtures: [{ id: 'pool', kind: 'pool', x: 0, z: 27, w: 6, d: 29, reach: false }, { id: 'bed_w', kind: 'bed', x: -12, z: 28, w: 12, d: 26, reach: false },
         { id: 'bed_e', kind: 'bed', x: 12, z: 28, w: 12, d: 26, reach: false }] }));
-    R.push(room('loggia', 'gallery', -22, 22, 2, 10, FL, G, { style: 'arcade', ceil: 'tiled', wealth: 0.85 }));
-    R.push(room('petitions', 'lobby', -22, 6, -14, 2, FL, G, { style: 'moorish', ceil: 'muq' }));
-    R.push(room('divan', 'divan', -22, 6, -40, -14, FL, G, { style: 'mughal', ceil: 'star', wealth: 0.9 }));
+    R.push(room('loggia', 'xc_hall', -22, 22, 2, 10, FL, G, { style: 'arcade', ceil: 'tiled', wealth: 0.85 }));
+    R.push(room('petitions', 'xc_hall', -22, 6, -14, 2, FL, G, { style: 'moorish', ceil: 'muq' }));
+    R.push(room('divan', 'xc_divan', -22, 6, -40, -14, FL, G, { style: 'mughal', ceil: 'star', wealth: 0.9 }));
     R.push(room('archive', 'library', -22, 6, -46, -40, FL, G, { style: 'plain', ceil: 'flat' }));
-    R.push(room('chancery', 'office', 6, 22, -38, 2, FL, G, { style: 'arcade', ceil: 'tiled' }));
-    R.push(room('vstair', 'lobby', 6, 22, -46, -38, FL, G, { style: 'plain', ceil: 'flat', fixtures: [fx('flight', 14.5, -42.5, 13, 1.8)] }));
+    R.push(room('chancery', 'xc_chancery', 6, 22, -38, 2, FL, G, { style: 'arcade', ceil: 'tiled' }));
+    R.push(room('vstair', 'xc_lobby', 6, 22, -46, -38, FL, G, { style: 'plain', ceil: 'flat', fixtures: [fx('flight', 14.5, -42.5, 13, 1.8)] }));
     link(R, 'garden', 'street', [0, 46], 2.4); link(R, 'loggia', 'garden', [-15, 10], 5, { open: true, h: 4.4 }); link(R, 'loggia', 'garden', [0, 10], 6, { open: true, h: 4.8 });
     link(R, 'loggia', 'garden', [15, 10], 5, { open: true, h: 4.4 });
     link(R, 'loggia', 'petitions', [-8, 2], 1.8); link(R, 'loggia', 'chancery', [14, 2], 1.6); link(R, 'petitions', 'divan', [-8, -14], 2.6, { h: 3.6 });
     link(R, 'divan', 'archive', [-8, -40], 1.4); link(R, 'chancery', 'divan', [6, -26], 1.6); link(R, 'chancery', 'vstair', [14, -38], 1.4);
-    R.push(room('uloggia', 'gallery', -22, 22, 2, 10, U, H, { style: 'arcade', ceil: 'tiled', rail: ['z1'] }));
-    R.push(room('family', 'living', -22, 6, -14, 2, U, H, { style: 'banded', ceil: 'banded' }));
-    R.push(room('study', 'study', -22, -2, -46, -14, U, H, { style: 'banded', ceil: 'banded', wealth: 0.85 }));
-    R.push(room('reception', 'audience', -2, 22, -38, -14, U, H, { style: 'mughal', ceil: 'star', wealth: 0.85 }));
+    R.push(room('uloggia', 'xc_hall', -22, 22, 2, 10, U, H, { style: 'arcade', ceil: 'tiled', rail: ['z1'] }));
+    R.push(room('family', 'xc_family', -22, 6, -14, 2, U, H, { style: 'banded', ceil: 'banded' }));
+    R.push(room('study', 'xc_study', -22, -2, -46, -14, U, H, { style: 'banded', ceil: 'banded', wealth: 0.85 }));
+    R.push(room('reception', 'xc_reception', -2, 22, -38, -14, U, H, { style: 'mughal', ceil: 'star', wealth: 0.85 }));
     R.push(room('clerks', 'bedroom', 6, 22, -14, 2, U, H, { style: 'moorish', ceil: 'flat' }));
-    R.push(room('uland', 'lobby', 17, 22, -46, -38, U, H, { style: 'plain', ceil: 'flat' }));
+    R.push(room('uland', 'xc_lobby', 17, 22, -46, -38, U, H, { style: 'plain', ceil: 'flat' }));
     link(R, 'uland', 'reception', [20, -38], 1.2); link(R, 'uland', 'street', [17, -42.5], 1.6, { open: true, head: true }); link(R, 'reception', 'study', [-2, -26], 1.6); link(R, 'family', 'study', [-12, -14], 1.4);
     link(R, 'family', 'uloggia', [-8, 2], 1.6); link(R, 'clerks', 'uloggia', [14, 2], 1.4); link(R, 'clerks', 'reception', [14, -14], 1.4);
     link(R, 'family', 'clerks', [6, -6], 1.2);
@@ -213,18 +329,18 @@
     R.push(room('court', 'court', -cx, cx, B, F, 0.05, 10, { style: st, ceil: 'open', arcade: o.plain ? [] : ['x0', 'x1'],
       water: o.plain ? [] : [{ kind: 'fountain', x: 0, z: (B + F) / 2, w: 3, d: 3 }, { kind: 'rill', x: 0, z: (F + (B + F) / 2) / 2 + 0.75, w: 0.8, d: F - (B + F) / 2 - 3 }],
       fixtures: o.plain ? [] : [{ id: 'fountain', kind: 'pool', x: 0, z: (B + F) / 2, w: 4, d: 4, reach: false }] }));
-    R.push(room('vest', 'lobby', -4, 4, F, hz, FL, G, { style: st, ceil: 'muq' }));
+    R.push(room('vest', o.plain ? 'lobby' : 'xc_lobby', -4, 4, F, hz, FL, G, { style: st, ceil: 'muq' }));
     R.push(room('front_l', o.g[0][0], -hx, -4, F, hz, FL, G, { style: o.g[0][1] || st, ceil: 'flat' }));
     R.push(room('front_r', o.g[1][0], 4, hx, F, hz, FL, G, { style: o.g[1][1] || st, ceil: 'flat' }));
     R.push(room('side_l', o.g[2][0], -hx, -cx, B, F, FL, G, { style: o.g[2][1] || st, ceil: o.g[2][2] || 'flat' }));
     R.push(room('side_r', o.g[3][0], cx, hx, B, F, FL, G, { style: o.g[3][1] || st, ceil: o.g[3][2] || 'flat' }));
     R.push(room('hall', o.g[4][0], -hx, hx - 8, -hz, B, FL, G, { style: o.g[4][1] || 'mughal', ceil: o.g[4][2] || 'star', wealth: o.hallWealth }));
-    R.push(room('stair', 'lobby', hx - 8, hx, -hz, B, FL, G, { style: 'plain', ceil: 'flat', fixtures: [fx('flight', hx - 1.5, (B - hz) / 2, 1.6, 12 - 1)] }));
+    R.push(room('stair', o.plain ? 'lobby' : 'xc_lobby', hx - 8, hx, -hz, B, FL, G, { style: 'plain', ceil: 'flat', fixtures: [fx('flight', hx - 1.5, (B - hz) / 2, 1.6, 12 - 1)] }));
     link(R, 'vest', 'street', [0, hz], 2, { h: 3 }); link(R, 'vest', 'court', [0, F], 2.4, { open: true, h: 3.2 });
     link(R, 'front_l', 'vest', [-4, (F + hz) / 2], 1.2); link(R, 'front_r', 'vest', [4, (F + hz) / 2], 1.2);
     link(R, 'side_l', 'court', [-cx, (B + F) / 2], 1.6); link(R, 'side_r', 'court', [cx, (B + F) / 2], 1.6);
     link(R, 'hall', 'court', [0, B], 2.6, { h: 3.4 }); link(R, 'hall', 'stair', [hx - 8, (B - hz) / 2], 1.2);
-    R.push(room('land', 'lobby', hx - 4, hx, -hz, -hz + 3, U, H, { style: 'plain', ceil: 'flat' }));
+    R.push(room('land', o.plain ? 'lobby' : 'xc_lobby', hx - 4, hx, -hz, -hz + 3, U, H, { style: 'plain', ceil: 'flat' }));
     R.push(room('back_u', o.u[0][0], -hx, hx - 4, -hz, B, U, H, { style: o.u[0][1] || 'banded', ceil: o.u[0][2] || 'banded' }));
     R.push(room('side_l_u', o.u[1][0], -hx, -cx, B, F, U, H, { style: o.u[1][1] || st, ceil: 'flat' }));
     R.push(room('side_r_u', o.u[2][0], cx, hx, B, F, U, H, { style: o.u[2][1] || st, ceil: 'flat' }));
@@ -236,34 +352,34 @@
       cit: { kind: 'dar', W: W, D: D, FL: FL, U: U, top: r3(U + H + 0.4), plain: !!o.plain, court: [-cx, cx, B, F], dress: o.dress || 0 }, note: o.note });
   }
   dar('xa_cit_treasurer', 'House of the Treasurer', 36, 40, { wealth: 0.8, types: ['civic', 'single-family dwelling'], dress: 0,
-    g: [['guard', 'plain'], ['kitchen', 'plain'], ['treasury', 'mughal', 'muq'], ['office'], ['library', 'mughal', 'star']],
-    u: [['bedroom'], ['bedroom'], ['living'], ['study', 'mughal', 'star']],
+    g: [['guard', 'plain'], ['kitchen', 'plain'], ['xc_treasury', 'mughal', 'muq'], ['xc_chancery'], ['xc_chancery', 'mughal', 'star']],
+    u: [['xc_guest'], ['xc_guest'], ['xc_family'], ['xc_study', 'mughal', 'star']],
     note: 'E6: the Hall of Ledgers at the back, the strongroom and the tax farmers\' room on the court, the guard and the kitchen at the door; the family upstairs' });
   dar('xa_cit_chancellor', 'House of the Chancellor of Seals and Provinces', 30, 40, { wealth: 0.8, types: ['civic', 'single-family dwelling'], dress: 1,
-    g: [['guard', 'plain'], ['kitchen', 'plain'], ['office'], ['library', 'mughal', 'muq'], ['audience', 'mughal', 'star']],
-    u: [['bedroom'], ['bedroom'], ['living'], ['study', 'banded', 'banded']],
+    g: [['guard', 'plain'], ['kitchen', 'plain'], ['xc_chancery'], ['library', 'mughal', 'muq'], ['xc_reception', 'mughal', 'star']],
+    u: [['xc_guest'], ['xc_guest'], ['xc_family'], ['xc_study', 'banded', 'banded']],
     note: 'E6: the Hall of Seals (the Chancellor\'s audience) at the back, the provincial clerks and the archive on the court; the family upstairs' });
   dar('xa_cit_mines', 'House of the Master of Mines and Mints', 38, 38, { wealth: 0.8, types: ['civic', 'single-family dwelling'], dress: 2,
-    g: [['guard', 'plain'], ['kitchen', 'plain'], ['office', 'moorish', 'muq'], ['treasury', 'mughal'], ['workshop', 'plain', 'tiled']],
-    u: [['bedroom'], ['bedroom'], ['living'], ['study', 'mughal', 'star']],
+    g: [['guard', 'plain'], ['kitchen', 'plain'], ['xc_chancery', 'moorish', 'muq'], ['xc_treasury', 'mughal'], ['workshop', 'plain', 'tiled']],
+    u: [['xc_guest'], ['xc_guest'], ['xc_family'], ['xc_study', 'mughal', 'star']],
     note: 'E6: the assay room at the back (its furnace the catalog\'s forge until the assay furnace is made), the bureau and the mint\'s counting room on the court; the family upstairs' });
   dar('xa_cit_envoys', "Envoys' House", 26, 38, { wealth: 0.8, types: ['multi-family dwelling'], units: 3, dress: 1,
-    g: [['guard', 'plain'], ['kitchen', 'plain'], ['bedroom', 'banded', 'banded'], ['bedroom', 'banded', 'banded'], ['hall', 'mughal', 'star']],
-    u: [['bedroom'], ['living'], ['living'], ['bedroom', 'mughal', 'muq']],
+    g: [['guard', 'plain'], ['kitchen', 'plain'], ['xc_guest', 'banded', 'banded'], ['xc_guest', 'banded', 'banded'], ['xc_reception', 'mughal', 'star']],
+    u: [['xc_guest'], ['xc_family'], ['xc_family'], ['xc_guest', 'mughal', 'muq']],
     note: 'E6: a walled house with its own kitchen and guard; three suites (the Izizian, the Yuni and the Historian envoy) round the court' });
   dar('xa_cit_barracks', 'Barracks of the Citadel Guard', 40, 38, { wealth: 0.35, types: ['military'], style: 'plain', plain: true, G: 4.2,
-    g: [['guard', 'plain'], ['kitchen', 'plain'], ['armoury', 'plain'], ['store', 'plain'], ['hall', 'plain', 'flat']],
+    g: [['guard', 'plain'], ['kitchen', 'plain'], ['armoury', 'plain'], ['store', 'plain'], ['xc_mess', 'plain', 'flat']],
     u: [['dormitory', 'plain', 'flat'], ['dormitory', 'plain'], ['dormitory', 'plain'], ['dormitory', 'plain', 'flat']],
     note: 'E6: the gate company\'s house round its parade court: the mess, the armoury, the stores, the dormitories above; plain, as the blueprint has the guard' });
 
   /* ================================================================ the court temple and the citadel kitchens (E6) */
   (function () {
     const FL = 0.6, R = [];
-    R.push(room('hall', 'shrine', -20, 20, -16, 14, FL, 11, { style: 'mughal', ceil: 'star', wealth: 0.85 }));
-    R.push(room('porch', 'lobby', -30, 30, 14, 22, FL, 6, { style: 'arcade', ceil: 'tiled' }));
-    R.push(room('priests', 'bedroom', -30, -20, -22, 14, FL, 5, { style: 'moorish', ceil: 'flat' }));
+    R.push(room('hall', 'xc_temple', -20, 20, -16, 14, FL, 11, { style: 'mughal', ceil: 'star', wealth: 0.85 }));
+    R.push(room('porch', 'xc_lobby', -30, 30, 14, 22, FL, 6, { style: 'arcade', ceil: 'tiled' }));
+    R.push(room('priests', 'xc_cell', -30, -20, -22, 14, FL, 5, { style: 'moorish', ceil: 'flat' }));
     R.push(room('vestry', 'store', 20, 30, -22, 14, FL, 5, { style: 'moorish', ceil: 'flat' }));
-    R.push(room('kora', 'lobby', -20, 20, -22, -16, FL, 5, { style: 'banded', ceil: 'banded' }));
+    R.push(room('kora', 'xc_kora', -20, 20, -22, -16, FL, 5, { style: 'banded', ceil: 'banded' }));
     link(R, 'porch', 'street', [0, 22], 3.2, { h: 4.4 }); link(R, 'porch', 'hall', [0, 14], 3.4, { h: 5 });
     link(R, 'porch', 'priests', [-25, 14], 1.4); link(R, 'porch', 'vestry', [25, 14], 1.4);
     link(R, 'kora', 'priests', [-20, -19], 1.6); link(R, 'kora', 'vestry', [20, -19], 1.6); link(R, 'hall', 'kora', [0, -16], 2, { h: 3 });
