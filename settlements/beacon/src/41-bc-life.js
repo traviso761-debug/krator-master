@@ -41,8 +41,9 @@ const BEACON_LIFE = (function () {
   }
 
   const WALK = 1.1;   /* m a second, a monk's pace on the stair and the kora */
-  /* the Lamp Watch: up from 17:40 (in the plinth before 18:00, the lamp's dusk), down from 06:00 (the lamp out) */
-  const WATCH = { up: 17 * HR + 40 * 60, down: 6 * HR, gap: 4 };
+  /* the Lamp Watch: up from 17:40 (in the plinth before 18:00, when core/atmos's evening lights the lamp), down from 06:30 (the
+     lamp out at about 06:21, the dawn half light) */
+  const WATCH = { up: 17 * HR + 40 * 60, down: 6 * HR + 30 * 60, gap: 4 };
   /* the kora: three rounds, then a rest at the monastery's gate, a round every so many minutes; six walkers spread apart */
   const KORA = { n: 6, rounds: 3, rest: 20 * 60, from: 5.5 * HR, to: 21 * HR };
   /* the novices' round: out at 17:50 and back by 18:20; out at 05:40 and back by 06:10 */

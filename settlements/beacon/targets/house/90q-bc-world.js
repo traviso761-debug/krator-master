@@ -3,7 +3,7 @@
 // (a 4 km square round the lamp at 10 m: the knoll, its spur, the saddle, the house's levels) wears the kit's meadow in world
 // metres under a colour per vertex; the far land (the scale model out to 40 km: the Rift floor 2,500 m below to the south, the
 // rim and the middle volcano north) is one coarse mesh coloured by height and slope. The hour is ?hour= (default 18.4: dusk, the
-// lamp lit by its schedule, src/40-bc-lamp.js). [web]
+// lamp lit by its schedule, src/40-bc-lamp.js, on core/atmos's evening). [web]
 const BC_T0=performance.now();
 for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 camera.near=.5;camera.far=62000;camera.updateProjectionMatrix();
@@ -14,6 +14,11 @@ function bcSkyTick(){KratorSky.update(camera.position,BC_SKY.hour,BC_SKY.day,BC_
  sun.position.copy(Lg.sunDir).multiplyScalar(1500).add(camera.position);sun.target.position.copy(camera.position);sun.target.updateMatrixWorld();sun.intensity=Lg.sunIntensity;sun.color.copy(Lg.sunColor);
  fill.intensity=.22*Lg.dayF+.08;if(bcHemi)bcHemi.intensity=Math.max(.18,Lg.ambient);scene.fog.color.copy(Lg.fog);scene.fog.density=.000014;renderer.setClearColor(Lg.fog);}
 FRAME_HOOKS.push(bcSkyTick);bcSkyTick();
+/* the house's clock (the page's hour running on from ?hour=, a second a second) and core/atmos on it: its evening is the lamp's
+   night (90r BC_ENV), and its wave clock ripples the still water (90s, the saddle tank) */
+const bcHourAt=t=>((t/3600)%24+24)%24,bcClockS=()=>BC_SKY.hour*3600+(performance.now()-BC_T0)/1000;
+ATMOS.init({THREE,scene,camera,hour:()=>bcHourAt(bcClockS()),onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:20261123,
+ err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
 // ---------------------------------------------------------------- the near ground
 const BCG_BOX={x0:-2000,x1:2000,z0:-2000,z1:2000};
 function bcSlope(x,z,e){return Math.hypot(bcGround(x+e,z)-bcGround(x-e,z),bcGround(x,z+e)-bcGround(x,z-e))/(2*e);}

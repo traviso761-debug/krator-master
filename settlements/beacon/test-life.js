@@ -8,7 +8,11 @@ const L = require('./src/30-bc-layout.js');
 const LAMP = require('./src/40-bc-lamp.js');
 const H = 3600, D = 86400;
 const W = LIFE.walkers(), watch = W.filter(w => w.group === 'watch'), kora = W.filter(w => w.group === 'kora');
-const night = t => { const h = ((t % D) + D) % D / H; return h >= 18 || h < 6; };
+/* the lamp's night as the page has it: core/atmos's evening half dark or more (loaded as core/atmos/test-atmos.js loads it) */
+const fs = require('fs'), path = require('path');
+global.window = global; global.THREE = global.THREE || {};
+eval(['89-atmos-0-core.js', '89-atmos-0p-presets.js'].map(f => fs.readFileSync(path.join(__dirname, '../../core/atmos', f), 'utf8')).join('\n') + ';global.ATMOS=ATMOS;');
+const night = t => ATMOS.night(((t % D) + D) % D / H) >= .5;
 
 /* 1. the Lamp Watch is in the plinth whenever the lamp is lit (its night), and in the monastery by midday */
 const watchRight = at => { for (let m = 0; m < 24 * 60; m += 5) { const t = m * 60, lit = LAMP.state(t, { night }).lit;

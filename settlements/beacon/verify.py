@@ -20,6 +20,10 @@ house's own:
   life-on-the-ground   the house's walkers (src/41-bc-life.js: the Lamp Watch, the kora's six, the novices' round): every one
                        drawn, six or more out at the page's hour, each on the drawn ground under its feet
   watch-at-the-plinth  while the lamp is lit the Lamp Watch's three are in the plinth (the page's figures hidden there)
+  lamp-night-on-atmos  the lamp's night is core/atmos's evening (ATMOS.night half dark or more): about 12.4 h of the day, the Lamp
+                       Watch in the plinth whenever the lamp is lit
+  tank-still-water     the saddle tank's water is core/water's still water (WATER.at finds it at its level, between the tank's
+                       floor and rim) and drawn by WATER.drawStill
   rimpost-placed       the Rim Post (xa_fort_post) 17 km off on the rimpost station's bearing, its base on the far land as drawn
                        (the highest of its corners and centre), its footing past the lowest, near the model's summit
   rimpost-in-sight     the line from the lamp to the post's light clears the page's ground (the near ground, the far land as drawn;
@@ -76,6 +80,12 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
   R.push({name:'life-on-the-ground',ok:Lf.length===BEACON_LIFE.walkers().length&&vis.length>=6&&!bad.length,detail:Lf.length+' walkers, '+vis.length+' out at '+BC_SKY.hour+' h ('+[...new Set(vis.map(w=>w.where))].join(', ')+'), each on the drawn ground under its feet (a ray down from a metre up)'+(bad.length?'; OFF: '+bad.slice(0,4).join('; '):'')});}
  {const S=window._beaconLamp||{},Lf=window._beaconLife||[],wt=Lf.filter(w=>w.group==='watch'),inP=wt.filter(w=>w.where==='in the plinth'&&!w.visible).length;
   R.push({name:'watch-at-the-plinth',ok:wt.length===3&&(S.lit?inP===3:true)&&(S.lit===true),detail:'the lamp '+(S.lit?'lit':'DARK')+'; the Lamp Watch\'s three '+wt.map(w=>w.where).join(', ')});}
+ /* P5: core/atmos's evening is the lamp's night, and the saddle tank is core/water's still water */
+ {const t0=bcClockS(),h=bcHourAt(t0),agree=BC_ENV.night(t0)===(ATMOS.night(h)>=.5),W=BEACON_LIFE.walkers().filter(w=>w.group==='watch');let lit=0,bad=[];
+  for(let m=0;m<1440;m+=5){const t=m*60;if(!BEACON_LAMP.state(t,BC_ENV).lit)continue;lit++;W.forEach(w=>{const p=BEACON_LIFE.at(w,t);if(p.where!=='in the plinth'&&bad.length<3)bad.push(w.id+' '+p.where+' at '+(m/60).toFixed(2)+' h');});}
+  R.push({name:'lamp-night-on-atmos',ok:agree&&lit>120&&lit<170&&!bad.length,detail:'the lamp\'s night is ATMOS.night half dark or more ('+h.toFixed(2)+' h: '+ATMOS.night(h).toFixed(2)+', '+(agree?'agreed':'NOT agreed')+'); lit '+(lit*5/60).toFixed(1)+' h of the day, the Lamp Watch in the plinth throughout'+(bad.length?'; OUT: '+bad.join('; '):'')});}
+ {const T=(window._beaconGrounds||{}).tank,S=T&&WATER.at(T.x,T.z),hh=S?S.heightAt(T.x,T.z):null,drawn=!!(typeof BC_TANK!=='undefined'&&BC_TANK&&BC_TANK.D&&BC_TANK.D.mesh.parent);
+  R.push({name:'tank-still-water',ok:!!T&&!!S&&S.kind==='still'&&Math.abs(hh-T.level)<.01&&T.level>T.floor+.3&&T.level<T.rim-.3&&drawn,detail:T?'the Saddle Tank: WATER.at gives '+(S?S.kind+' ('+S.name+') at '+hh+' m':'NOTHING')+', its floor '+T.floor+' m, its rim '+T.rim+' m; '+(drawn?'drawn by WATER.drawStill':'NOT drawn'):'no tank recorded'});}
  /* P4: the signal line on the page (src/42-bc-relay.js, targets/house/90u-bc-relay.js) */
  {const Q=window._beaconRelay||{},P=(window._beacon||{}).placed||{},rel=BEACON_LAYOUT.lamp.relays.find(r=>r.id==='rimpost'),g=Q.ground||[],hi=Math.max(...g),lo=Math.min(...g),st=BEACON_LAMP.STATIONS.find(s=>s.id==='rimpost');
   const ok=P.xa_fort_post===1&&g.length===5&&Math.abs(Q.at[1]-(hi+.05))<.02&&Q.at[1]-Q.drop<lo&&Math.abs(Q.km-17)<1.5&&Math.abs(Q.bearing-st.bearing)<1.5&&Math.abs(hi-rel.ground)<40;

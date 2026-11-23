@@ -12,7 +12,7 @@ const BC_LIFE=(function(){const W=BEACON_LIFE.walkers(),G=new THREE.Group();G.na
   const s=new THREE.Mesh(sashG,sash);s.position.y=1.05;s.rotation.z=.5;f.add(s);
   if(w.group==='novices'){const j=new THREE.Mesh(new THREE.CylinderGeometry(.12,.1,.22,8),new THREE.MeshStandardMaterial({color:0xe8d8a8,roughness:.6}));j.position.set(.26,.95,0);f.add(j);}   /* the butter jar */
   G.add(f);return{w,f};});
- function tick(){const t=BC_SKY.hour*3600+(performance.now()-BC_B0)/1000,out=[];
+ function tick(){const t=bcClockS(),out=[];
   for(const F of figs){const p=BEACON_LIFE.at(F.w,t),x=p.v,z=p.u,y=terrainH(x,z);F.f.visible=!!p.visible;F.f.position.set(x,y,z);F.f.rotation.y=Math.atan2(Math.sin(p.heading),Math.cos(p.heading));   /* heading 0 is toward +u (+z): rotation.y 0 faces +z */
    out.push({id:F.w.id,group:F.w.group,where:p.where,visible:!!p.visible,x:Math.round(x*10)/10,z:Math.round(z*10)/10,y:Math.round(y*100)/100});}
   window._beaconLife=out;}

@@ -17,6 +17,7 @@
   "core/ruins/20-core-ruins.js",
   "core/ruins/21-core-ruins-host.js"
  ],
+ "files": {"house": [["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]], ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]], ["core/water/ext", ["56-core-water-breakup.js"]]]},
  "pack": "qiblai",
  "packSide": true,
  "packFrom": "kits/qiblai",

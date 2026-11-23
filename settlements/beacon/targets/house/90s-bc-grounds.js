@@ -35,7 +35,7 @@ XA.def({key:'bc_tea',name:'The Beacon - the tea garden',family:'The Beacon',tags
 function bcFloorBuild(G,o){reseed(34730);vnReg(o.name,0,0,o.r,1,{part:o.part});const st=xC(xPick(QSTONE));
  if(o.part==='threshing')kput('xDrumE',[0,-o.fdrop,0],null,[o.r*2,o.fdrop+.3,o.r*2],st);
  else if(o.part==='tank'){const w=o.w,d=o.d,h=o.fdrop+.9;for(const e of[[0,d/2,w,.8],[0,-d/2,w,.8],[w/2,0,.8,d],[-w/2,0,.8,d]])vB('vStone',e[0],-o.fdrop,e[1],e[2],h,e[3],0,st);
-  vB('vStone',0,-o.fdrop,0,w-.8,.2,d-.8,0,xC(0x4a4238));vB('vStone',0,-o.fdrop+.2,0,w-.9,Math.max(.4,o.fdrop*.6),d-.9,0,xC(0x2e4c56));}   /* the tank: walls to the uphill side, its water at mid-depth */
+  vB('vStone',0,-o.fdrop,0,w-.8,.2,d-.8,0,xC(0x4a4238));}   /* the tank: walls to the uphill side, its floor; its water is core/water's (BC_TANK, below) */
  else if(o.part==='midden')xfHeap({id:'midden',x:0,z:0,rx:o.w*.42,rz:o.d*.4,ry:0,h:1.6,seed:KRAND.child(20261123,'midden')},xC(0x5a4a34));}
 XA.def({key:'bc_floor',name:'The Beacon - a floor, tank or heap',family:'The Beacon',tags:XTAG_BC('farm'),w:20,d:20,h:2,nv:1,build:bcFloorBuild});
 function bcWayBuild(G,o){reseed(34740);const P=o.pts,pos=[],idx=[],hw=o.w/2;let n=0;vnReg(o.name,o.mid[0],o.mid[1],o.r,o.h,{part:'road'});   /* the def stands at the road's lowest ground (o.y), its volume up to its highest */
@@ -73,4 +73,10 @@ XA.def({key:'bc_way',name:'The Beacon - a road',family:'The Beacon',tags:XTAG_BC
   const y0=Math.min(...hs)-.5,h=Math.max(...hs)-y0+1.5;
   TSTAT.cur='bc_way/0';const r0=REG.length;VERN.place(BC_OUT,'bc_way',0,0,0,{y:y0,h,pts,w:w.id==='road'?5:3.6,col:w.id==='road'?0x8a7a5e:0x7c6e56,name:w.name.split(' (')[0],mid,r:Math.max(...pts.map(p=>Math.hypot(p[0]-mid[0],p[1]-mid[1])))});for(let i=r0;i<REG.length;i++)REG[i].type='bc_way';TSTAT.cur=null;}}
 kbake(BC_OUT);
-window._beaconGrounds={pieces:BC_OUTREC,parts:[...new Set(BC_OUTREC.map(r=>r.id))],ways:BC_WAYS.length};
+/* the saddle tank's water: core/water still water at mid-depth over the tank's floor (WATER.still: WATER.at and core/export read
+   it; WATER.drawStill: the sky in it, ATMOS's ripple) */
+const BC_TANK=(function(){const r=BC_OUTREC.find(q=>q.id==='tank');if(!r)return null;const b=r.box,x=(b[0]+b[1])/2,z=(b[2]+b[3])/2,hw=(b[1]-b[0]-.9)/2,hd=(b[3]-b[2]-.9)/2;
+ const level=Math.round((r.y-r.drop+.2+Math.max(.4,r.drop*.6))*100)/100,S=WATER.still({name:'the Saddle Tank',level,poly:[[x-hw,z-hd],[x+hw,z-hd],[x+hw,z+hd],[x-hw,z+hd]]});
+ const D=WATER.drawStill(S,{color:0x2e4c56});return{S,D,level,x,z,floor:r.y-r.drop+.2,rim:r.y+.9};})();
+window._beaconGrounds={pieces:BC_OUTREC,parts:[...new Set(BC_OUTREC.map(r=>r.id))],ways:BC_WAYS.length,
+ tank:BC_TANK?{level:BC_TANK.level,x:BC_TANK.x,z:BC_TANK.z,floor:Math.round(BC_TANK.floor*100)/100,rim:Math.round(BC_TANK.rim*100)/100}:null};

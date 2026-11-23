@@ -101,8 +101,10 @@ kbake(BC_GRP);if(typeof xaDoorsBind==='function')xaDoorsBind();
    less the fort's own yaw (the fort turned half round: -b) */
 const BC_LAMP=BC.lampRec&&BC.lampRec.lamp||null;
 const BC_FORTYAW=(function(){if(!BC_LAMP)return 0;BC_LAMP.root.updateWorldMatrix(true,false);const q=new THREE.Quaternion();BC_LAMP.root.getWorldQuaternion(q);return new THREE.Euler().setFromQuaternion(q,'YXZ').y;})();
-const BC_ENV={night:t=>{const h=((t/3600)%24+24)%24;return h>=18||h<6;},engines:()=>true};
-const bcClock=()=>BC_SKY.hour*3600+(performance.now()-BC_B0)/1000;
+/* the lamp's night is core/atmos's evening (ATMOS.night: dusk 17.2-18.8 h, dawn 5.5-7.2 h): lit while it is half dark or more,
+   about 18:00 to 06:21; the engines run (the sim's oil, when the house is on the open world: B7) */
+const BC_ENV={night:t=>ATMOS.night(bcHourAt(t))>=.5,engines:()=>true};
+const bcClock=bcClockS;
 function bcLampTick(){const t=bcClock(),s=BEACON_LAMP.state(t,BC_ENV);
  if(BC_LAMP){const o={on:s.lit,shutter:s.lit&&s.shutter?0:1,mode:'hold',night:()=>BC_ENV.night(bcClock())};
   if(s.bearing!=null){o.bearing=Math.PI-s.bearing*Math.PI/180-BC_FORTYAW;o.tilt=(s.elevation||0)*Math.PI/180;}BC_LAMP.set(o);}
