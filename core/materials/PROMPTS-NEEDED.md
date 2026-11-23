@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 33 prompts** (step 4, `claude/openworld-sites-24defd`, merged 2026-11-22: +3 for its Kirstabal slate wall and the Xanadu kit's works pieces, sections 66 and 67 (59 and 60 on its branch); 24 delivered by the Codex batches of 2026-11-16 and 2026-11-17 moved to `PROMPTS-archived.md`, emptying sections 46, 52, 56, 58, 60 and 62. Before: 54, +3 for the Marr kit, section 65 (57 on its branch: main's 57 is the Coyote kit), at its merge, 2026-11-22, checked by `tools/textures/check_prompts.py`; before that, 51: checked by `tools/textures/check_prompts.py` at the merge of main into the integration line, 2026-11-22: main's 82 less 31 the Codex batch of 2026-11-12 had delivered (its note below: sections 32, 38-41, 48-50, 53 and 55 emptied, five of the Tungang kit's 59), plus the eastern highlands' combed beech as section 64; three blocks main had left open closed (`rock.pseudotachylite.mirror`, `rock.amber.blueearth`, `glass.moonglass`); before that, 82: main's 52 and this line's 30: +2 for the Rift battery's station 2, section 51, merged from `claude/galvanic-stations` 2026-11-18; +28 at the merge of `ccr-a96f22b6-0hy616` into main, 2026-11-18, its sections renumbered after main's: the Qiblai kit 58 (43 on the branch; +7), the Tungang kit 59 (43; +11), the mined goods' resource nodes 60 (53; +3), the Xanadui fort 61 (54; +3), Grēṭ-Āil 62 (56; +3), Copper Glacier's azurite tarn 63 (58; +1), after main's Coyote kit took 57; the branch's Opal Valley and Siphon Pits sections were main's 53 and 55; +1 for the pancake domes, section 56 (43 on its branch); +3 for Opal Valley, section 53, +4 for the Cliff Lungs, section 54, and +3 for the Siphon Pits, section 55, at the merge of 2026-11-16 (numbered 46, 44 and 46 on their branches); +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).; main: +5 for the Coyote kit, section 57, 2026-11-16; +1 for the pancake domes, section 56 (43 on its branch); +3 for Opal Valley, section 53, +4 for the Cliff Lungs, section 54, and +3 for the Siphon Pits, section 55, at the merge of 2026-11-16 (numbered 46, 44 and 46 on their branches); +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 15 prompts** (2026-11-23: 18 more whose sets are in the library, missed by the first prune (bold or heading id lines, `patterns/` ids): sections 37, 43, 44, 45, 47, 54, 59 and 61 now hold notes only, their prompts in `PROMPTS-archived.md`, the sets unwired. Step 4, `claude/openworld-sites-24defd`, merged 2026-11-22: +3 for its Kirstabal slate wall and the Xanadu kit's works pieces, sections 66 and 67 (59 and 60 on its branch); 24 delivered by the Codex batches of 2026-11-16 and 2026-11-17 moved to `PROMPTS-archived.md`, emptying sections 46, 52, 56, 58, 60 and 62. Before: 54, +3 for the Marr kit, section 65 (57 on its branch: main's 57 is the Coyote kit), at its merge, 2026-11-22, checked by `tools/textures/check_prompts.py`; before that, 51: checked by `tools/textures/check_prompts.py` at the merge of main into the integration line, 2026-11-22: main's 82 less 31 the Codex batch of 2026-11-12 had delivered (its note below: sections 32, 38-41, 48-50, 53 and 55 emptied, five of the Tungang kit's 59), plus the eastern highlands' combed beech as section 64; three blocks main had left open closed (`rock.pseudotachylite.mirror`, `rock.amber.blueearth`, `glass.moonglass`); before that, 82: main's 52 and this line's 30: +2 for the Rift battery's station 2, section 51, merged from `claude/galvanic-stations` 2026-11-18; +28 at the merge of `ccr-a96f22b6-0hy616` into main, 2026-11-18, its sections renumbered after main's: the Qiblai kit 58 (43 on the branch; +7), the Tungang kit 59 (43; +11), the mined goods' resource nodes 60 (53; +3), the Xanadui fort 61 (54; +3), Grēṭ-Āil 62 (56; +3), Copper Glacier's azurite tarn 63 (58; +1), after main's Coyote kit took 57; the branch's Opal Valley and Siphon Pits sections were main's 53 and 55; +1 for the pancake domes, section 56 (43 on its branch); +3 for Opal Valley, section 53, +4 for the Cliff Lungs, section 54, and +3 for the Siphon Pits, section 55, at the merge of 2026-11-16 (numbered 46, 44 and 46 on their branches); +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).; main: +5 for the Coyote kit, section 57, 2026-11-16; +1 for the pancake domes, section 56 (43 on its branch); +3 for Opal Valley, section 53, +4 for the Cliff Lungs, section 54, and +3 for the Siphon Pits, section 55, at the merge of 2026-11-16 (numbered 46, 44 and 46 on their branches); +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-12** (generated through Codex; `PLAN.md` "Delivered 2026-11-12"): every prompt in sections 37, 40, 41, 43, 44, 45, 48,
 49 and 50, two of section 51's and five of section 52's, moved to `PROMPTS-archived.md` with their wiring notes; in the library, none wired yet.
@@ -293,12 +293,6 @@ Stations 2 and 3 (`biomes/shighlands/PLAN-STATIONS.md`, "Built") are wired on li
 `surface.cushion`, `ice.glacier`; the spiral cones are geometry, not a card). One surface is still the kit's stand-in (the fines and the snail
 rosettes' leaf arrived 2026-11-10: `ground.fellfield.fines`, `card.rosette.snail`, in the library and not yet wired: `PLAN.md`, "Delivered 2026-11-10"):
 
-`card.heath.whorl` (station 2's dwarf whorl-heath on the forest floor and the crest, drawn now as the kit's plain shrub lobes: `dwarf` in
-`stations/conifers/62-biome-shigh-conifers.js`; a sheet of nine sprigs on the clump, `"sheet": "geometry"`):
-```
-Square, 2048x2048. Orthographic view looking straight down on nine separate sprigs in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: sprigs of a dwarf alpine heath, each a short woody shoot densely clothed in tiny needle-like leaves set in tight whorls of four up the stem so the leaves spiral round it, dark green leaves with paler tips, three of the sprigs carrying a few small nodding pink bell flowers, seen from above. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
 ## 43. The gypsum maze under Cube's plateau (`biomes/rift --station maze`, 2026-11-09)
 
 `biomes/rift/PLAN-STATIONS.md` section 11; `biomes/KARST-SITES-5.1.md` site 3. The library has no bedded gypsum, the maze's whole rock (its
@@ -309,24 +303,6 @@ reads as veined marble up close) for the gypsum, `ground.gypsum` (`ground.gypsum
 `stations/maze/84-host-rock.js` at it in place of `crystal.selenite`. Full colour (the colour is the point). Reuse: any gypsum or evaporite
 wall (the Hearth hold's upper storey, Korona's gypsum rims, KARST-SITES site 7).
 
-`rock.gypsum.bedded` (2 m; up is the bedding's up):
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: a dry cave wall cut in bedded gypsum rock, the
-beds running straight across the image from left to right: sugary
-fine-grained white to pale grey gypsum (#d8d4cc, #c9c4ba) in beds 10 to 40
-cm thick, thin darker grey-green marl partings between some beds (#8f948a),
-a few beds of larger interlocking clear-grey gypsum crystals with a faint
-glitter, short hairline cracks across the beds, small shallow solution
-pockets and smooth scalloped hollows, a light dusting of buff clay in the
-lowest hollows; matte, dry.
-```
-
 ## 44. The Hearth field's warm ground (`biomes/riftrim --station hearths`, 2026-11-09)
 
 `biomes/riftrim/PLAN.md`, "Station 7, the Hearth field". Inside each disc the snow never lies and the library has no warm bare soil, so the
@@ -336,44 +312,17 @@ ground there is the kit's paint (black-brown, 4 m texels: soft up close). Wire t
 (the station has four layers: the bare-snow mask holds the fifth unit). Full colour. Reuse: the Cold Hearths (oidong), Godstep's hearth, any
 geothermal ground off the sinter (the Throne's vent country's warm flats).
 
-`ground.warmsoil` (3 m):
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: warm geothermal ground on a cold plateau: damp
-fine black-brown volcanic soil (#2a2420, #1e1a17) with a low dark fleshy
-turf in irregular cushions over a third of it (#23211f, #34302a), scattered
-pale grey-white sinter crumbs and flakes (#c8c2b4), a few small rust and
-dull sulphur-yellow stains (#8a5a34, #b8a046), fine cracks; no snow, no
-grass, no leaves; matte, slightly moist.
-```
-
 ## 45. Raw clay (`kits/islanders`, the clay pit, 2026-11-09)
 
 `kits/islanders/KNOWN_ISSUES.md`, "The clay pit": the clay diggers' pit (`ie-claypit`, `src/69-ie-hamlet.js`) draws its cut
 blocks, its heap and its pit floor with the library's `clay` set, which is fired clay, tinted grey (`IE_RAWCLAY`). Lands as
 `earth.clay.raw` in `core/materials/library/`, then the family `rawclay` in `kits/islanders/materials.json`.
 
-#### `earth.clay.raw`
-
-```
-Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: freshly dug wet potter's clay, a cut face of dense smooth grey-ochre clay #9a9284 and #b0a48e with darker damp patches #7e786c, spade cuts and finger smears across it, a few small grey pebbles and root threads, a faint sheen of moisture; no grass, no stones larger than a fingernail, no text
-```
 ## 47. The Firebliss Range (`biomes/firebliss`, 2026-11-10)
 
 The four stations are wired on library sets that already exist (`ground.ash`, `ground.ash.soil`, `ground.cinder`, `ground.sinter`, `ground.mat.thermal`,
 `ground.sulphur`, `ground.grass.lush`, `ground.snow011`, `ice.glacier`, `rock.basalt.flowbanded`, `rock.basalt.vesicular`, `stone.pumice`,
 `stone.obsidian`, `cloth.hide.canopy`, `bone.horn`, `card.fireweed`, `card.ichu`, `card.reed`...). One surface is the kit's stand-in:
-
-`ground.snow.ash` (station 4, Firebliss Mons, and the plume's track on the range's south-east snow: the snow under the plume, drawn now as
-`ground.snow` greyed by the plume's ash-fall mask in the paint, `aAshfall` in `84-host-ground.js`; a family under the snow layer where the deposit is high):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: old wind-packed snow on a volcano's flank dusted and streaked with fine dark basaltic-andesite ash: grey-white snow with a sugary grain, the ash lying in soft dark grey wind streaks and patches, thicker in the small hollows of the snow's surface, a few scattered black lapilli grains, thin grey-brown sun-cupped edges where the ash has warmed the snow, no footprints, no plants. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
 
 ## 51. The Rift battery (`biomes/galvanic`, 2026-11-11)
 
@@ -393,25 +342,6 @@ forts and the gate works will share. Until each set arrives, the fort draws the 
 family in `kits/xanadu/materials.json`, wired when the fort is built (the plan's step F2), followed by `python3 tools/textures/pack.py kits/xanadu`.
 **3 prompts.**
 
-`wall.rubble.limewash` (the curtains, towers and keep of every dress but `earth` and `scrap`; family `xFortWall`, 3 m a tile;
-today `rock.old_stone_wall` bare, or `plaster.white_stucco_02` smooth, neither of them a dzong's wall). Near-colourless, so the
-kit's wash palette tints it:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Himalayan fortress wall of rough rubble masonry, irregular split field stones 15 to 50 cm across laid in mud mortar with small flat chinking stones packed in the gaps, the whole face under many coats of thick lime wash that has been poured from above, so the wash runs down in soft vertical drips and ridges and gathers thicker in the hollows between stones, the stones' lumps still reading through it; in scattered patches the wash has flaked away to show grey stone and brown mud mortar beneath, with fine rain streaks and a faint grey grime. Near-colourless: white, pale grey and grey-beige only, so it can be tinted.
-```
-
-`wood.gate.studded` (the gate leaves of every fort; family `xGate`, one leaf 2.4 m wide a tile; today `wood.wooden_gate` with no
-iron). Full colour:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the face of a heavy fortress gate leaf in the Indian manner: vertical planks of dark weathered hardwood 25 to 30 cm wide, sun-checked and split along the grain (#5a4632, #6e5a44, #3e3024), crossed every 60 cm by broad hand-forged iron straps fixed with rows of large domed nail heads, and between the straps a regular grid of pointed iron spikes about 10 cm long, seen point-on as round iron studs; the iron black-brown (#2e2a26, #3a3430) with rust bleeding down the wood below each stud and strap (#6a3a20, #8a4a26). Full colour: keep the wood and iron as they are, do not tint.
-```
-
-`wall.limewash.scorched` (the `damaged` and `ruined` states: the burnt gate's towers, the barracks after a fire; family
-`xScorch`, 3 m a tile; today the wash darkened by the material's colour, which reads as grey paint, not soot). Near-colourless:
-```
-Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a lime-washed plaster wall over rubble after a fire: broad soft blotches of black soot and smoke-staining scattered over the white wash, densest in irregular patches across the tile and fading through greys to clean white between them; in the worst places the lime is calcined to a crumbly grey and has spalled off in flakes, showing heat-cracked stone and burnt mud mortar; soot washed down by rain in thin vertical streaks. Near-colourless: white, greys and black only, so it can be tinted.
-```
-
 ## 59. The Tungang kit (`kits/tungang`, 2026-11-11)
 
 `kits/tungang/PLAN.md` section 7, agreed by the owner on 2026-11-11 ("agree with your suggestions"). The Line's biome
@@ -421,103 +351,12 @@ Line's) when they come. Numbered 43 because sections 41 and 42 are owed on `clau
 
 
 
-`patterns/tungang/loj-banner` (a loj's banner, carried at meetings and funerals; a single panel, not tiling):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy crimson silk, made by an underground people in honour of their ancestors, the crews of a vanished high-technology transit line: a gold scroll across the top and another across the bottom with worn lettering-shapes that cannot be read; a large central oval painting of pale, hooded tunnel crews raising their hands together at a meeting, dressed in close-fitting padded work suits with high collars, smooth rounded helmet shells under their hoods, small red lamps built into the helmets and chests, tool harnesses across the body, the suits patched with salvaged panels; behind them the smooth curved wall of a perfectly round, machine-bored tunnel lined with glowing strip lights; beneath the oval an emblem of a wheel and a lamp; gold and cream scrollwork in the four corners, a gold fringe along the bottom edge; a thousand years of mending: patched cloth, faded and flaking paint, darned tears, smoke darkening toward the edges. The people and machines in the painting belong to a far-future technology, not to any historical period: no steam, no smoke from machines, no coal, no picks or oil lamps, no nineteenth-century or Victorian clothing, no coats, waistcoats, caps or top hats. Full colour: crimson #7a1a17, gold #c9a24a, cream #f3dfa6.
-```
-
-`patterns/tungang/loj-banner.b` (a second banner):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy deep green silk, made by an underground people in honour of the crews of a vanished high-technology transit line: gold scrolls at top and bottom with worn lettering-shapes that cannot be read; a central oval painting of a long train of sleek white cars gliding out of a perfectly round, machine-bored tunnel mouth ringed with lights: smooth rounded white bodies of seamed panels banded with bronze hoops, a rounded sealed cab at the front, one continuous ribbon of lit blue windows with thin bronze mullions, glowing cyan strips along the sill and the roof, running low on a single raised concrete guideway beam, its wheels hidden under the body; hooded crew figures in close-fitting padded work suits and smooth helmets with built-in lamps standing beside the guideway; cream and gold ornament round the oval, a fringe along the bottom; centuries of mending: patches, faded paint, darns, soot. Far-future technology, not any historical period: no steam locomotive, no chimney, no smoke, no rails on wooden sleepers, no overhead wires, no nineteenth-century or Victorian clothing, no coats, caps or top hats. Full colour: green #2f5a3a, gold #c9a24a, cream #f3dfa6, the train's lamps #e8b24a.
-```
-
-`patterns/tungang/loj-banner.c` (a third banner):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy dark blue silk, made by an underground people in honour of the crews of a vanished high-technology transit line: gold scrolls at top and bottom with worn lettering-shapes that cannot be read; a central oval painting of a column of hooded crew figures in close-fitting padded work suits and smooth helmets with built-in lamps, carrying long slender cutting tools and cable reels, walking down into a perfectly round, light-ringed tunnel mouth, while a red sky burns above the mountains behind them and the tall slender white towers of a gleaming city break and fall on the horizon; two clasped gloved hands in a gold medallion beneath the oval, cream and gold corner scrolls, a fringe along the bottom; centuries of mending: patches, faded paint, darns, soot. Far-future technology, not any historical period: no steam, no smoke from machines, no picks or oil lamps, no nineteenth-century or Victorian clothing, no coats, caps or top hats. Full colour: blue #1f2a4a, gold #c9a24a, cream #f3dfa6, red sky #a8382c.
-```
-
-`patterns/tungang/enamel-signs` (a 4 x 4 atlas of the Line's enamel signs; read as holy marks):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: a 4 by 4 grid of sixteen separate enamel signs, each in its own equal cell on a plain dark grey ground. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no words. Signs: vitreous enamel signs on steel from a high-technology transit line, rectangular, round and diamond, with clean modern pictogram design in red on cream, cream on red, cream on green and white on blue; each carries only a large numeral, an arrow, a lamp symbol, a bell symbol, a downward chevron, a simple pictogram of a person in a rounded helmet, or a side view of a sleek rounded train car with one ribbon of windows on a single raised guideway beam (no chimney, no smoke, no rails), never words; every sign chipped at its edges and corners down to black iron, with small rust blooms, screw holes at the corners, and the enamel faded unevenly. Full colour: red #a8382c, cream #e2d8bc, green #2f6a4a, blue #2a4a7a, iron #2a2826.
-```
-
-`patterns/tungang/crew-mosaic` (the platform's landmark wall; a single panel):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole mural, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no words. Panel: a worn monumental mosaic mural in a heroic civic style with bold, simplified shapes, showing the crews of a vanished high-technology transit line: three tall stylised figures in close-fitting sealed work suits with high collars, smooth rounded helmets with glowing lamp visors and tool harnesses, holding light-wands and long slender cutting tools; behind them a sleek white train with a rounded sealed cab, bronze hoops and one continuous ribbon of lit windows glides out of a perfectly round, light-ringed tunnel mouth on a single raised guideway beam, its wheels hidden under the body; rays fanning out from a great lamp above; far-future technology, not any historical period: no steam locomotive, no chimney, no smoke, no rails, no coats, caps, overalls or nineteenth-century clothing; small tesserae of ceramic, coloured glass and bits of scrap metal; many tiles missing in patches showing grey mortar beneath, cracks running through, grime and soot darkening the upper part. Full colour, muted by age: brick red #8a3a2c, ochre #b8893a, deep green #3a5a44, gold glass #c9a24a, grey mortar #8a867c.
-```
 
 
-
-`glass.moonglass` (the Glaziers' window panes: potch, the common opal with no fire, sliced thin; `kits/tungang` key `potch` and
-the panes, now `glass.frosted` through KGLASS; seen lit from behind at dusk):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Surface: thin translucent slices of common opal (potch) with no play of colour, laid edge to edge like small panes, each slice 8 to 12 cm across: milky white to pale grey-blue, soft cloudy silica banding and faint growth lines, a few tiny inclusions, the edges of each slice slightly ground and frosted. Colour: milk white #e2e4dc, cloud grey #cfd6d2, a faint blue cast #c4d4dc.
-```
 ## 54. The Cliff Lungs (`biomes/clivobredos`, 2026-11-11)
 
 The living flues on the southern Inner Wall (`biomes/clivobredos/PLAN.md` section 15, moved here on the kit's build). The kit runs on reused sets
 until these land (its `materials.json` and `KNOWN_ISSUES.md` name each stand-in). **4 prompts**, paste-ready:
-
-**`organic.lung.ring`**: the ring's sun-side skin, ribbed in a shallow helix; tintable (the pressure band is the tint). Stand-in: `organic.pleat.skin`.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: the living skin of a huge fleshy tube, taut and
-slightly glossy, crossed by broad shallow ribs running diagonally at about
-twenty degrees from vertical, each rib a smooth rounded ridge a hand wide
-with a fine crease along its crest, the skin between the ribs finely
-pebbled with small pores and faint branching veins just under the surface.
-Keep colours natural but slightly muted and even, so the texture can be
-tinted to different palettes without looking stained.
-```
-
-**`organic.comb.throat`**: the throat comb, wet black; full colour. Stand-in: `organic.tendril.banded`.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: a wet black organic comb, thousands of short
-soft black filaments (#141210) packed in dense parallel rows like a baleen
-plate or a gill, beaded with clear water droplets, the rows wavering
-slightly, with a few pale grey-green specks of trapped dust and pollen
-(#9aa58a) caught between the filaments. Full colour: not tinted.
-```
-
-**`organic.husk.dry`**: a dead ring's papery split skin; tintable. Stand-in: `organic.lichen.plates`.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: the dried dead skin of a huge fleshy tube, thin,
-papery and brittle, split along shallow diagonal ribs into curling flakes,
-the surface crazed with fine cracks, dusty, with darker fibrous layers
-showing where the outer skin has flaked off. Keep colours natural but
-slightly muted and even, so the texture can be tinted to different
-palettes without looking stained.
-```
-
-**`card.fallout.lawn`**: the fall-out lawn's jungle seedlings, a cut-out on magenta. Stand-in: a canvas card drawn in `src/72-biome-lung.js` (KNOWN_ISSUES.md says so).
-
-```
-Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta
-background (#ff00ff); no magenta, pink or purple anywhere in the subject; no
-grey or white background. Flat, even, shadowless lighting. Subject: ten
-separate clumps of young tropical seedlings as a lawn, each clump a crowd of
-big soft cotyledons and first leaves in several shapes (round, heart-shaped,
-palmate, strap-like), bright fresh green (#5fae3c to #8fd05a), a few clumps
-yellowing and browning at the edges, no flowers, no soil. No text, no border,
-no watermark.
-```
 
 ## 63. Copper Glacier's azurite tarn (`biomes/copperglacier`, station 11, 2026-11-17)
 
