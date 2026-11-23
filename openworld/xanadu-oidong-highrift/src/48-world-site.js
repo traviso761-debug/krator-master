@@ -102,11 +102,12 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
   /* Kirstabal (settlements/kirstabal/PLAN.md, step K6; the owner, 2026-11-16): the barge port at the head of the Lower Xanadu Lake
      is its own page's (a target on Xanadu's page). Its ring stands at the tune's places (core/region/data/xan-tune.js T.ksRing,
      offsets from the pin in metres): Mil, Kanāl and Grēnz, the farming villages on the apron south of the town, and Bāiyar, the
-     ranch beyond them; the lake's nine (T.lowerLake): eight fishing villages round the shore on the fishers' row and the Landing at
+     ranch beyond them; the lake's eight (T.lowerLake): seven fishing villages round the shore on the fishers' row and the Landing at
      the portage, the barges' stop at the lake's west end. A lake village's spot is the model's lake cell nearest the tune's
      place (2 km cells: the tune's places stand 2 to 3 km back from the water), so the search finds the shore. Each lake
      village is laid at the row's own size (about 240: its census fills the focus's jobs), under its ceiling of 500
-     (KHAMLET.POP_MAX); the tune keeps their whole numbers (Phisharī 1,400 ... the Landing 600) */
+     (KHAMLET.POP_MAX); the tune keeps their whole numbers (Phisharī 1,400 ... the Landing 2,500). Ōpal-Māuṭh is now the town
+     Gihon (settlements/gihon, G1 2026-11-22): its own page; its site, ring and the Landing's piers on this region wait for its step */
   sl758m2396:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
    {id:'mil',name:'Mil (the mill)',focus:'farming',near:[-3000,3600],look:2000,pop:240},
    {id:'kanal',name:'Kanāl (the canal)',focus:'farming',near:[-5000,6000],look:2000,pop:240},
@@ -118,7 +119,6 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
    {id:'rid',name:'Rīḍ',culture:'xanadu-fishing',focus:'fishing',near:[-80000,-20000],look:4000,pop:500},
    {id:'landing',name:'The Landing',focus:'farming',near:[-110000,0],look:4000,pop:500},
    {id:'timbar',name:'Ṭimbar',culture:'xanadu-fishing',focus:'fishing',near:[-100000,10000],look:4000,pop:500},
-   {id:'opal-mouth',name:'Ōpal-Māuṭh',culture:'xanadu-fishing',focus:'fishing',near:[-68000,14000],look:4000,pop:500},
    {id:'rais-teras',name:'Rāis-Ṭeras',culture:'xanadu-fishing',focus:'fishing',near:[-44000,10000],look:4000,pop:500},
    {id:'kattal',name:'Kaṭal',culture:'xanadu-fishing',focus:'fishing',near:[-20000,8000],look:4000,pop:500}]},
   /* Strongbow's foot (PROPOSED by settlements/kirstabal K6, openworld/SITES.json sstrongbowft): the bottom of the lift on the Xanadu
