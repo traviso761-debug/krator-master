@@ -713,23 +713,23 @@ FURN({
 });
 FURN({
   key: 'xanadu_court_gold_banner', name: 'Banner of the Order of the Beacon', culture: 'xanadu', tier: 'court', type: 'banner', setting: 'indoor',
-  rooms: ['shrine', 'audience', 'chamber', 'lobby', 'hall'], anchor: 'wall', clearance: { front: 0.6 },
+  rooms: ['shrine', 'audience', 'chamber', 'lobby', 'hall'], anchor: 'wall', hung: 'top', clearance: { front: 0.6 },
   materials: ['timber', 'cloth', 'metal'],
-  w: 1.1, d: 0.5, h: 2.7, variants: 1,
+  w: 1.1, d: 0.12, h: 1.9, variants: 1,
   build: function (F) {
-    /* gold silk on a lacquer stand: the eight-spoked wheel in darker gold with a ray rising from its hub, a maroon border,
-       the stand's foot weighted, a gilt finial on the pole */
-    /* against the wall: the silk hangs at the stand's back, the pole and crossbar just before it */
+    /* gold silk hung from a red lacquer rod with gilt finials (the hem rule: hung from its top, its hem 1.1 m over the floor;
+       the owner, 2026-11-16 and 11-17): the eight-spoked wheel in darker gold with a ray rising from its hub, a maroon border,
+       a gold fringe at the hem. Drawn from y 0 (the hem) to the rod, flat on the wall */
     const lq = F.col('lacquerRed'), g = F.col('gold'), gd = F.col('goldDark');
-    F.box(0, 0, 0, 0.8, 0.12, 0.45, 0, F.col('lacquerBlack'), 'wood');
-    F.box(0, 0, -0.19, 1.08, 2.55, 0.1, 0, F.col('clothMaroon'), 'cloth');
-    F.box(0, 0, -0.12, 0.07, 2.6, 0.07, 0, lq, 'wood');
-    F.box(0, 2.45, -0.12, 1.05, 0.06, 0.06, 0, lq, 'wood');
-    F.ball(0, 2.62, -0.12, 0.07, g, 'metal');
-    F.box(0, 0.8, -0.135, 0.86, 1.58, 0.02, 0, F.col('clothGoldBand'), 'cloth');
-    F.box(0, 1.45, -0.12, 0.5, 0.06, 0.01, 0, gd, 'cloth'); F.box(0, 1.2, -0.12, 0.06, 0.5, 0.01, 0, gd, 'cloth');
-    F.box(0, 1.41, -0.115, 0.12, 0.14, 0.01, 0, F.col('clothSaffron'), 'cloth');
-    F.box(0, 1.55, -0.115, 0.04, 0.6, 0.01, 0, F.col('clothIvory'), 'cloth');
+    F.box(0, 0.04, -0.03, 1.0, 1.74, 0.03, 0, F.col('clothMaroon'), 'cloth');
+    F.box(0, 0.12, -0.012, 0.88, 1.58, 0.01, 0, F.col('clothGoldBand'), 'cloth');
+    F.box(0, 0, -0.012, 0.92, 0.06, 0.012, 0, gd, 'cloth');
+    F.box(0, 0.98, -0.005, 0.5, 0.06, 0.01, 0, gd, 'cloth'); F.box(0, 0.73, -0.005, 0.06, 0.5, 0.01, 0, gd, 'cloth');
+    F.box(0, 0.94, 0.0, 0.12, 0.14, 0.01, 0, F.col('clothSaffron'), 'cloth');
+    F.box(0, 1.08, 0.0, 0.04, 0.6, 0.01, 0, F.col('clothIvory'), 'cloth');
+    F.box(0, 1.78, -0.03, 1.1, 0.06, 0.06, 0, lq, 'wood');
+    for (const x of [-0.56, 0.56]) F.ball(x, 1.81, -0.03, 0.04, g, 'metal');
+    F.box(0, 1.84, -0.05, 0.03, 0.06, 0.02, 0, F.col('iron'), 'metal');
   }
 });
 FURN({
