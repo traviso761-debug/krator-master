@@ -69,5 +69,18 @@ THRONE.kgGround=function(mat,o){
  KGROUND.hook(mat,{key:o.key,layers:LY,relief,tri:o.tri||undefined});mat.userData.throneRelief=!!relief;return I;};
 THRONE.kgE=(I,GLAY,k)=>'pow(texture2D(uKG'+I[k]+',vGWP.xz*'+GLAY[k].k.toFixed(4)+').rgb,vec3(2.2))';
 THRONE.kgCavity=function(mesh){if(mesh&&mesh.material&&mesh.material.userData.throneRelief&&typeof KGROUND!=='undefined'&&KGROUND.cavityMesh)KGROUND.cavityMesh(mesh,{rings:[3,18],depth:[.5,4]});return mesh;};
+// A STREAM'S SILT IN THE SEA (core/water ext/61, tintFlow; 2026-11-23, HANDOFF-REBUILD's owed "river-mouth plume"): a station's streams
+// carry their valleys' silt out from each mouth, fading over `reach` m and carried on a current outward from the nearest mouth, so it swirls
+// and thins into the clear sea instead of meeting it at an edge. THRONE.plumeOf(mouths [[x, z], ...], {box, c (a linear THREE.Color), reach
+// (420), a (.5), speed (.08 m/s), cell (8)}) -> {tint, tintFlow} for WATER.open, or {} with no mouth or under ?plume=0
+THRONE.plumeOf=function(mouths,o){
+ if(!mouths||!mouths.length||(typeof CORE_Q!=='undefined'&&CORE_Q.get('plume')==='0'))return {};
+ const R=o.reach==null?420:o.reach,A=o.a==null?.5:o.a,V=o.speed==null?.08:o.speed,cell=o.cell==null?8:o.cell,b=o.box;
+ const near=(x,z)=>{let m=null,d=1e9;for(const q of mouths){const e=Math.hypot(x-q[0],z-q[1]);if(e<d){d=e;m=q;}}return{m,d};};
+ const box=[Math.max(b[0],Math.min(...mouths.map(q=>q[0]))-R),Math.max(b[1],Math.min(...mouths.map(q=>q[1]))-R),
+  Math.min(b[2],Math.max(...mouths.map(q=>q[0]))+R),Math.min(b[3],Math.max(...mouths.map(q=>q[1]))+R)];
+ return {tint:{box,cell,at:(x,z)=>{const n=near(x,z);if(n.d>R)return null;const t=Math.min(1,Math.max(0,(R-n.d)/(R-20)));return {c:o.c,a:A*t*t*(3-2*t)};}},
+  tintFlow:{v:(x,z)=>{const n=near(x,z);if(n.d>R*1.2||n.d<1e-3)return null;const k=V*(1-n.d/(R*1.2));return [(x-n.m[0])/n.d*k,(z-n.m[1])/n.d*k];},
+   cell,period:60,swirl:.08,scale:110}};};
 THRONE.canopyH=function(x,z){return THRONE._canopyH?THRONE._canopyH(x,z):6;};
 BIO.kitEnd(THRONE);   // its exports run in its registry; the default kit is current again

@@ -18,6 +18,9 @@ const gp=(u,l)=>upAt(u,GRABEN.pw(u)+l);
 const VIEWS={
  'Vent country':(function(){const a=gp(420,GRABEN.W(420)-60),b=gp(-300,GRABEN.W(-300)-30);return[a[0],gh(a[0],a[1],3),a[1],b[0],gh(b[0],b[1],14),b[1]];})(),
  'The graben from its rim':(function(){const W=GRABEN.W(-250),a=gp(-250,-W-25),b=gp(-150,W);return[a[0],gh(a[0],a[1],4),a[1],b[0],gh(b[0],b[1],12),b[1]];})(),
+ /* the Rheoliths at the fissure throat (89y): from its bench, looking into the breach */
+ 'The fissure throat and its Rheoliths':(function(){if(!RHEO_SITE)return[0,gh(0,0,20),0,100,gh(100,0,0),0];   /* ?rheo=0: a plain view of the graben */const P=RHEO_SITE.pit,B=RHEO_SITE.bench,dx=B.x-P.x,dz=B.z-P.z,d=Math.hypot(dx,dz)||1,
+  x=P.x+dx/d*55,z=P.z+dz/d*55;return[x,gh(x,z,30),z,P.x,gh(P.x,P.z,-4),P.z];})(),   /* high enough to see over the fissure's spatter rampart */
  'The fissure and its cones':(function(){const C=CONES[1],a=upAt(C.u+260,fissL(C.u+260)-140);return[a[0],gh(a[0],a[1],4),a[1],C.x,gh(C.x,C.z,C.h*.4),C.z];})(),
  'The fissure at night':(function(){const a=upAt(1290,fissL(1290)+10),b=fissPt(1200);return[a[0],gh(a[0],a[1],2.5),a[1],b[0],gh(b[0],b[1],1),b[1]];})(),
  'The sulphur marsh':(function(){const a=upAt(MARSH.u+MARSH.ru*.35,MARSH.p+MARSH.rp*1.12),b=upAt(MARSH.u-MARSH.ru*.2,MARSH.p);return[a[0],Math.max(gh(a[0],a[1],3),MARSH.level+4),a[1],b[0],MARSH.level,b[1]];})(),
@@ -87,7 +90,7 @@ const HCHK={
  sulphur(P){const c=n=>P.filter(p=>p[3]==='biome:'+n).length,t=c('tassel')+P.filter(p=>/^biome:reedbrim/.test(p[3])).length,a=c('acidpad'),b=c('bladder'),wet=P.filter(p=>p[3]==='biome:acidpad'&&marshD(p[0],p[2])<1.05).length;
   return{ok:t>=200&&a>=100&&b>=100&&wet>=a*.8,detail:t+' reeds (stems or stands), '+a+' acid pads ('+wet+' on the marsh), '+b+' gas bladders'};},
  // nothing lives on the hot ground (the fissure's ramparts and crack, its cones)
- hot(T,P){const rock=['biome:boulder','biome:stone'],bt=T.filter(t=>hotAt(t.x,t.z)>.6).length,bp=P.filter(p=>hotAt(p[0],p[2])>.6&&rock.indexOf(p[3])<0&&p[1]<terrainH(p[0],p[2])+1.5).length;   // at the ground (a crown may reach over the edge)
+ hot(T,P){const rock=['biome:boulder','biome:stone'],bt=T.filter(t=>hotAt(t.x,t.z)>.6).length,bp=P.filter(p=>hotAt(p[0],p[2])>.6&&rock.indexOf(p[3])<0&&!/^biome:rh_/.test(p[3])&&p[1]<terrainH(p[0],p[2])+1.5).length;   /* the Rheoliths (rh_) live in the hot rock by design (89y) */   // at the ground (a crown may reach over the edge)
   return{ok:!bt&&!bp,detail:bt+bp?(bt+' trees and '+bp+' plants on the hot ground'):'the fissure and its cones are bare'};},
  pools(P){const n=P.filter(p=>(p[3]==='biome:column'||p[3]==='biome:brain')&&POOLS.some(Q=>Math.hypot(p[0]-Q.x,p[2]-Q.z)<Q.r*4)).length;return{ok:n>=10,detail:n+' vent corals and brain caps round the pools'};},
  // the weather: the module's fog (the acid fog) and its opt-in ash both offered
@@ -107,6 +110,10 @@ function bismuthCheck(R,lift){const bad=[];for(const r of R){const y=r.y+(lift||
   if(Math.abs(y-terrainH(r.x,r.z))>.05)bad.push(r.id+' off the ground');else if(!S||Math.hypot(r.x-S.x,r.z-S.z)>S.R*.5+1e-6)bad.push(r.id+' away from its fumarole');
   else if(waterH(r.x,r.z)>-1e8)bad.push(r.id+' in water');}
  return{ok:R.length>=20&&!bad.length,detail:R.length+' bismuth pockets at '+new Set(R.map(r=>r.source)).size+' fumaroles'+(bad.length?'; '+bad.length+' wrong (first '+bad[0]+')':', each on the ground by its vent')};}
+/* THE RHEOLITHS (89y, biomes/rheolith read in place): every living guild where RHEO_PHYS.windowAt says it can live, and the dead byproducts round it */
+function rheoCheck(L){if(!RHEO_SITE||!L)return{ok:false,detail:'no rheoliths (89y)'};const live=L.filter(p=>p[4]===1),dead=L.length-live.length,
+ bad=live.filter(p=>!RHEO_PHYS.windowAt({tempC:p[5],waterActivity:p[6],acidPh:p[7]}).viable);
+ return{ok:live.length>=10&&dead>=40&&!bad.length,detail:live.length+' living in the throat and its mouths, '+dead+' dead byproducts round them'+(bad.length?', '+bad.length+' living outside the window (first '+bad[0][0]+' at '+Math.round(bad[0][5])+' degC)':'')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('Krator\'s own life holds vent country',HCHK.native(THRONE.TREES));
  add('nothing lives in the CO2 hollows',HCHK.hollow(THRONE.TREES,P));
@@ -118,6 +125,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('every species of vent country placed',HCHK.placed(counts(THRONE.TREES)));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
  add('bismuth hoppers in pockets at the fumaroles (KGEODE.around)',bismuthCheck(BISMUTH.records));
+ add('the Rheoliths live only in the hot dry acid throat',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED:null));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),H=HOLLOWS[0];
@@ -131,6 +139,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const C=counts(THRONE.TREES);C[SPK('brimstone')]=0;add('a species never placed',HCHK.placed(C));}
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
  add('the bismuth lifted 5 m off the ground',bismuthCheck(BISMUTH.records,5));
+ add('a living guild in the cool ground',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED.concat([['chokecoral',0,terrainH(0,0),0,1,40,.5,5.5]]):null));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

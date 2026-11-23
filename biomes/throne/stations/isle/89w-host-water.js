@@ -20,7 +20,13 @@ ATMOS.skylight({renderer,sky:SEA_ENV,scene:SEA_HOLD,ground:()=>new THREE.Color(0
 _mark('sea0');
 // the isle (the dome's r 1700 about (-120, -60)) and its shelf; the rim of the box lies 30-42 m deep, where the flood starts
 const SEA_BOX=[-2400,-2400,2400,2400];
-const SEA_WATER=WATER.open({name:'The Ring Sea',level:SEA,field:1,bed:terrainH,bedBox:SEA_BOX,shore:{cell:8,band:100,seeds:'edge'}});
+// the gullies' silt off each mouth (where its line first reaches the sea; the cliff stream falls in, no plume), carried out and swirled (THRONE.plumeOf, 70)
+const SEA_MOUTHS=GULLIES.filter(G=>!G.cliff).map(G=>{const P=G.pts;for(let i=0;i+1<P.length;i++){const a=P[i],b=P[i+1];
+ for(let u=0;u<1;u+=.1){const x=a[0]+(b[0]-a[0])*u,z=a[1]+(b[1]-a[1])*u;if(terrainH0(x,z)<=SEA+.15)return [x,z];}}return null;}).filter(Boolean);
+/* OFF by default here (?plume=1 on): the sea's wet band on the ground (WATER.wetGround) reads the surface's tint and flow maps, two more texture units on a
+   ground already at sixteen (KNOWN_ISSUES.md, "Sixteen texture units"); the GPU verify of 2026-11-23 failed at 18 of 16 */
+const SEA_WATER=WATER.open(Object.assign({name:'The Ring Sea',level:SEA,field:1,bed:terrainH,bedBox:SEA_BOX,shore:{cell:8,band:100,seeds:'edge'}},
+ CORE_Q.get('plume')==='1'?THRONE.plumeOf(SEA_MOUTHS,{box:SEA_BOX,c:new THREE.Color(0x868466).convertSRGBToLinear(),reach:360,a:.45}):{}));
 const SEA_DRAW=WATER.draw(SEA_WATER,{transparent:true,renderOrder:1,roughness:.2,metalness:.05,envMapIntensity:.35,pick:true,
  shallow:new THREE.Color(0x4a9a8a).convertSRGBToLinear(),deep:new THREE.Color(0x1a4050).convertSRGBToLinear()});
 SEA_DRAW.mesh.userData.inspectLabel='The Ring Sea';SEA_DRAW.mesh.userData.probeSkip=true;

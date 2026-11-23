@@ -682,7 +682,7 @@ crowns held on their wood (Ranj, ruff, ash pine's mid tier, great ruff, lehua an
 where `34-core-impostor.js` is on the page; new item `rafthair` (the snare raft's hairs, `free`); `drip` and `moss` cards `onLeaf`, hung inside half a cap; new
 `THRONE.veto`, `THRONE.layGLSL`. **Core fixed on the way:** `cloudShade` on a Phong material (the glacier's ice threw at render), the lava's crust uniform (a cloned map
 never decoded), the acid hook's rain-cover splice. **Found:** the caldera's Lambert ground reads `cameraPosition` (0) for its snow glints; the new stations' copies use `kEye`.
-**Owed:** KFAR per station, the row's terrain (strata, KLAVA, pit chains) and ground kinds, the river-mouth plume on the frontier's and the isle's streams, ringisles'
+**Owed (KFAR per station, the river-mouth plume, the delta's fall steam, the blast's pioneers and the Rheoliths at the vents taken 2026-11-23: `biomes/throne/PLAN.md`):** the row's terrain (strata, KLAVA, pit chains) and ground kinds, the river-mouth plume on the frontier's and the isle's streams, ringisles'
 pandanus (`biomes/throne/KNOWN_ISSUES.md`, "The final rebuild").
 
 **High Rift, a new kit (2026-11-03, cloud; branch `claude/highrift-cloud`, not merged; `biomes/highrift/PLAN.md`, `KNOWN_ISSUES.md`):** scale model 5.1's

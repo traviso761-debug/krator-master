@@ -35,6 +35,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `82-host-sky.js` | <1 |  |
 | `83-host-heat.js` | 6 |  |
 | `84-host-ground.js` | 16 | the ground (18); the water: the acid lake, the hot pools (117); the steam (121) |
+| `85-host-far.js` | 3 | the far country: one KFAR ring round the map from the scale model's region (REGION_DATA, the Godthrone's REGION read in place) |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89w-host-water.js` | 3 |  |

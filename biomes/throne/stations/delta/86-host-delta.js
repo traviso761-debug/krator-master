@@ -25,6 +25,13 @@ TICKS.push(()=>{const m=DELTAS.lavaMesh;if(m&&!m.userData.lavaMat&&typeof ATMOS!
    if(!o)o=c;lo=Math.min(lo,y);hi=Math.max(hi,y);HL.push([c[0]+nx*w-o[0],c[1]+nz*w-o[1]]);HR.unshift([c[0]-nx*w-o[0],c[1]-nz*w-o[1]]);}
   const hz=KHAZ.GROUND.lavaFlow(HL.concat(HR));hz.shape.y0=-3;hz.shape.h=hi-lo+8;
   REGISTER({name:LAVA.name,x:o[0],z:o[1],y:lo,r:SEG+20,h:hi-lo+8,lava:true,tags:{hazard:hz}});}})();
+// THE LAVA FALL'S OWN STEAM (2026-11-23, owed since station 12 was built): steam off the fall's face, where the lava pours down the pali and the rock under it
+// sweats, and off its foot where it lands on the bench; core/atmos's smoke ('steam'), made on the first frame core/atmos is bound (it binds after 86). ?fallsteam=0 none
+TICKS.push(()=>{if(DELTAS.fallSteam!==undefined||typeof ATMOS==='undefined'||!ATMOS.smoke||!ATMOS.T)return;DELTAS.fallSteam=null;
+ if(typeof CORE_Q!=='undefined'&&CORE_Q.get('fallsteam')==='0')return;const em=[];
+ for(let s=LAVA.s0;s<=ENTRY.s;s+=4){const t=LAVA.t(s),p=paliS(t);if(s<p-PALI.face-10||s>p+40)continue;
+  const c=xzOf(s,t),y=Math.max(terrainH(c[0],c[1]),SEA)+1;if(em.length%2===0||s>p)em.push([c[0],y,c[1],'steam']);}
+ DELTAS.fallSteam=em.length?ATMOS.smoke(em):null;DELTAS.fallEmitters=em.length;});
 // the entry's glow: a warm light by the front, brighter at night
 const ENTRY_LIGHT=new THREE.PointLight(0xff6a2a,1.2,260,2);ENTRY_LIGHT.position.set(ENTRY.x,SEA+6,ENTRY.z);scene.add(ENTRY_LIGHT);
 _onLight.push(m=>{ENTRY_LIGHT.intensity=m==='night'?3:1.2;});
