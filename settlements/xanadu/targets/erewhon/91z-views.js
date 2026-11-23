@@ -42,5 +42,13 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
   if(P){V['Citadel — the Hall of Audience']=at(P,[0,2.1,0.6],[0,4.6,-21]);V['Citadel — the gate iwan']=at(P,[0,2.15,XGW.IW+4],[0,10.6,XGW.IW-3.4]);
    if(typeof GOLDEN_WAY!=='undefined'&&GOLDEN_WAY){const m=xgwPlan(GOLDEN_WAY.top).mid,zl=XGW.IW+(XGW.Z.foot+XGW.Z.low)/2;V['Citadel — the Golden Way']=at(P,[XGW.X.turn0+1.6,m+1.75,zl],[XGW.X.bridge+2,2.4,zl]);}}
   if(Vz)V['Citadel — the Divan']=at(Vz,[3.5,2.1,-15.2],[-19,3.9,-38]);
-  if(T)V['Citadel — the court of the Treasurer']=at(T,[-2.5,1.9,8.2],[2.5,2.8,-7]);}
+  if(T)V['Citadel — the court of the Treasurer']=at(T,[-2.5,1.9,8.2],[2.5,2.8,-7]);
+  /* the rooms given their own light (2026-11-23: lamps and windows set by hand, kits/interiors/sets/xanadu-citadel.js): the
+     Ramp from its first corner up its east run to the slits and lanterns of its back wall; the service stair from its head end
+     toward its back wall's lights; its head toward the light over the east range's roof; the Court Temple's prayer hall from
+     beside the porch door up to the clerestory and the polycandelons */
+  const Tm=cb('xa_cit_temple');
+  if(P){V['Citadel — the Ramp of the Sultan']=at(P,[-16.6,3.0,-24.2],[-21,6,-37.6]);V['Citadel — the service stair']=at(P,[27.5,2.1,-24],[28,3.6,-38]);
+   V['Citadel — the service stair head']=at(P,[26,9.6,-23],[30.5,11,-26.5]);}
+  if(Tm)V['Citadel — the Court Temple prayer hall']=at(Tm,[-14,2.3,12],[10,8,-14]);}
  return V;})();

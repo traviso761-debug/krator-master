@@ -3965,11 +3965,11 @@
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "ee233580d36e2fe88283f00556b3b9aa1d2a913edc29e875042e1e821158999b",
+    "kits/catalog/krator-master-furniture-xanadu.js": "b5b7896f2aa4715567c611244a23f23767a159c1ab01ed74d8b3415dcf5cc096",
     "kits/catalog/krator-master-furniture.js": "09773ee896c9a5a9acd256dcf385c62a9e40e49e74f2b0d424749f10ee1905c2",
-    "kits/crops/src/10-crop-core.js": "1638ca5682ab3c476e01274b76d9109fc6c91ee43d9fd6cb3993b8e7d4450b43",
-    "kits/crops/src/20-crop-records.js": "8995b32e805b4f42f9c5e60634c82bf091e509a8a3380f6b86f7ddb929109ce9",
-    "kits/crops/src/40-crop-query.js": "6ac613b37a7349e69889e223fa3476febb5d3f42bb7130c4f825406d3f8a6201",
+    "kits/crops/src/10-crop-core.js": "5d90c0e985a2a6ee6939f269c80902f1424932db7e166ba920429252ccd5f64d",
+    "kits/crops/src/20-crop-records.js": "daf082d84691e67c6944b786c5d2a76199c439ed0842fe18512e25c96ed0b715",
+    "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
     "kits/interiors/sets/noahs-regret.js": "8a03f4ee8cc7705cde0b04aa330fd21ebe5d64992dd3efea3e2477953ae68b62",
     "kits/interiors/sets/xanadu-scrap.js": "e5ddfc74b14dd067ca916886be52e54d5656e4341e5e580598ec941441bfbcc7",
@@ -4222,7 +4222,6 @@
     "core/city": "554d91adf6260cd2ddac1a2380b9247da678b345d82f2154354f9a8c916efa3d",
     "core/lod": "ce04505dcf0d6e6739a489ddb83f6692b9c08a79cfbe7ef33f6cf4585055624a",
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
-    "kits/ancients": "d2498eb13d1f0c1572b7eff6913a7babad9e134fb823756fae770d10620160bb",
     "kits/ancients-interiors/src": "909eb0c4a1cb98caa84bc495cc9410b3ecd5c2a0ca2e36d4b1e59d7447d9f89d",
     "kits/ancients/src": "f1ee7008fa42acb08c5518a3bf28213673c813a68692f543b29b3607ea519bc0",
     "kits/ancients/targets": "550fac1b54fde44d6edf438a2cfe69148f20e43755f6706a6a1ea9eaf88d13e9",
@@ -4283,24 +4282,24 @@
     "kits/interiors/sets": "20b479b387697011a98034af93b628988b1696d1c5afca35dceae837aa1cc2b2",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/xanadu": "25f578ac1a833982cb6c6500e9dbc37febf0194959482d40192c7bfda9cd8754",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-theodiga-today.json": "06f4a5df9f43a8ccbbc9a7530e1b715d1343b093cbb75d3438ae50ba182546eb",
+    "kits/ancients/build-manifest-theodiga-today.json": "3b4255bd0523742b9789396a221dedbb08d67bd0755db0827a5f4a042ab76510",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.qiblai.js": "1dac9ba8f546f8b073c0cfa461730db3b01d7d5408b0331bab83ad8f070e1e91",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/theodiga-today.html": "0667e0143fef7ebc24df8a15a09a146073e29c654fb4bbc9e3f6f2c8eacf46ac"
+    "kits/ancients/dist/theodiga-today.html": "247cedd59871e172eaedbaf4f99a9600b054d226e9a0ad6598bdea9b3a7db703"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-theodiga-today.json": "06f4a5df9f43a8ccbbc9a7530e1b715d1343b093cbb75d3438ae50ba182546eb",
+    "kits/ancients/build-manifest-theodiga-today.json": "d487ee9cfdbd6f6788bdf9d5b3fe5582fd502b55c8ad644634bacaa2df44ec71",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.qiblai.js": "1dac9ba8f546f8b073c0cfa461730db3b01d7d5408b0331bab83ad8f070e1e91",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/theodiga-today.html": "0667e0143fef7ebc24df8a15a09a146073e29c654fb4bbc9e3f6f2c8eacf46ac"
+    "kits/ancients/dist/theodiga-today.html": "247cedd59871e172eaedbaf4f99a9600b054d226e9a0ad6598bdea9b3a7db703"
    }
   }
  }

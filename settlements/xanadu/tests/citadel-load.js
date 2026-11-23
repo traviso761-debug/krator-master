@@ -37,11 +37,12 @@ function load(){
  const XACITR=require(path.join(ROOT,'settlements/xanadu/citadel/rooms/89yr-xa-citadel-rooms.js'));
  const plan=D.out.xdomePlan();
  const G=XACITR.build({item:k=>IX.sets.find(k),XPDOME:D.out.XPDOME,plan});
- /* what the page draws: each citadel building's windows (xcPlan's clear panes, its jali cards) and the Dome's 78d extras */
+ /* what the page draws: each citadel building's windows (xcPlan's clear panes, its jali cards) and lamps (78m xmLamp), and the Dome's 78d extras */
  const drawn={cit:{},dome:{}};
  for(const S of XACITR.SITES){if(S.key==='xa_pleasure_dome')continue;D.rec.LOG.length=0;D.out.xcPlan(IX.sets.find(S.key),{});
   drawn.cit[S.id]={panes:D.rec.LOG.filter(c=>c.name==='vB'&&c.args[0]==='vWinClear').map(c=>({x:c.args[1],y:c.args[2],z:c.args[3],w:c.args[4],h:c.args[5]})),
-   jali:D.rec.LOG.filter(c=>c.name==='xmJali').length};}
+   jali:D.rec.LOG.filter(c=>c.name==='xmJali').length,
+   lamps:D.rec.LOG.filter(c=>c.name==='xmLamp').map(c=>({k:c.args[0],x:c.args[1],y:c.args[2],z:c.args[3],ry:c.args[4],top:c.args[5]&&c.args[5].top}))};}
  D.rec.LOG.length=0;const Kd=D.rec.mk('K');
  D.out.xdomeHall({v:0},{},Kd);D.out.xdomeStairs({v:0},{},Kd);D.out.xdomeRooms({v:0},{},Kd);
  const L=D.rec.LOG;

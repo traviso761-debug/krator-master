@@ -47,14 +47,12 @@ var XACITR=(function(){'use strict';
   {key:'xa_cit_kitchens',id:'kitchens',at:[-466,-150]}];
  // the rooms dark by day with the leaves shut (no window, no skylight, no open portal to a lit room): each named, so a change
  // that darkens or lights a room is a decision, not a drift (the test holds the table to this list)
+ // the Ramp, its landings, the service stair and its head, and the prayer hall were dark too until 2026-11-23 (the owner: "we
+ // should give the ramp and the stair some kind of light source; same for the temple areas"): now windows set by hand (room.wins:
+ // the Ramp's slits, the stair's lights, the hall's clerestory) and lamps (room.lamps) in each; the landings take the Ramp's
+ // light through their rails
  const DARK={
   'cit.palace.u0_w':'the west range\'s upper store: plain, so no window (78n), its one door a leaf',
-  'cit.palace.ramp':'the Ramp of the Sultan\'s tower: no window (78n draws none on a ramp), its doors leaves',
-  'cit.palace.ramp_u':'the Ramp\'s landing at the Sultan\'s floor: in the tower, its rail on the dark shaft',
-  'cit.palace.ramp_t':'the Ramp\'s head at the roof: in the tower, its door to the terrace a leaf',
-  'cit.palace.sstair':'the service stair: rooms on three sides and too short a back wall for a window (78n), its door a leaf',
-  'cit.palace.sland':'the service stair\'s head: no window, its doors leaves, its flight down the dark stair',
-  'cit.temple.hall':'the prayer hall: the porch, the kora and the side rooms on every side, so no window (78n); the dome over it stands on a solid slab and star ceiling; its doors leaves',
   'cit.barracks.side_r':'the guard\'s store on the parade court: plain, no window, its door a leaf',
   'cit.kitchens.ice':'the ice house: no window, its door to the kitchen a leaf'};
 
@@ -68,6 +66,10 @@ var XACITR=(function(){'use strict';
  // ---------------------------------------------------------------- xcPlan's openings (78n), as data: the doors' heights and every window
  // the same rule, line for line (78n: "the openings, per wall line" and "windows:"); returns {doors: Map(door -> Hd), wins}
  const XC_WIN={mughal:'jali',banded:'jali',gold:'jali'};   // XC_STYLE[style].win: every other style clear glass
+ // the lamps a room sets (78m xmLamp): its light's strength and reach (proposed: tuned after Stage 8, as JALI), and how far
+ // under its light its lowest drawn point is
+ const XC_LAMP={lantern:{amp:.6,r:5,low:.29,what:'wall lantern'},niche:{amp:.35,r:3.5,low:.35,what:'niche lamp'},
+  mosque:{amp:.5,r:5,low:.3,what:'mosque lamp'},ring:{amp:1.2,r:9,low:.04,what:'polycandelon'}};
  function xcOpenings(R){const B=new Map();for(const r of R)B.set(r,lbox(r));const isCourt=r=>r.ceil==='open';
   const across=(x,z,y0,y1,self)=>R.find(q=>q!==self&&!isCourt(q)&&(()=>{const b=B.get(q);return x>b[0]&&x<b[1]&&z>b[2]&&z<b[3]&&q.y<y1-.3&&q.y+q.h>y0+.3;})());
   const roomById=id=>R.find(q=>q.id===id||('.'+q.id)===id||String(id).endsWith('.'+q.id));
@@ -90,6 +92,12 @@ var XACITR=(function(){'use strict';
     const ww=r.h>5?1.6:1.2;if(edges.some(f=>f.axis!==e.axis&&f.r!==r&&!f.rail&&Math.abs(f.c-u)<ww/2+.75&&f.u0<=e.c+.05&&f.u1>=e.c-.05&&f.r.y<r.y+r.h-.3&&f.r.y+Math.max(f.r.h,1)>r.y+.3))continue;
     const sill=r.y+(r.h>5?1.4:1.0),top=Math.min(r.y+r.h-.9,sill+(r.h>5?3.0:1.7)),P=Math.min(ww*.9,r.y+r.h-.25-top)/.86;if(P<.35)continue;
     wins.push({r,e,u,ww,sill,top,P,jali:XC_WIN[r.style]==='jali'});addOp(e.axis,e.c,{u0:u-ww/2,u1:u+ww/2,y0:sill,y1:top+P});}}
+  // windows set by hand (room.wins: the Ramp's slits, the service stair's lights, the prayer hall's clerestory; 2026-11-23), as
+  // 78n draws them; one with a room behind its glass is a mistake in the set, not a window (78n would cut it into that room)
+  for(const r of R)for(const Wd of r.wins||[]){const e=edges.find(f=>f.r===r&&f.nm===Wd.e&&Wd.u>f.u0&&Wd.u<f.u1);if(!e)throw new Error('XACITR: '+r.id+' window on no edge '+Wd.e+' '+Wd.u);
+   const P=Math.min(Wd.w*.9,r.y+r.h-.25-Wd.top)/.86,px=e.axis==='z'?Wd.u:e.c-e.side*.7,pz=e.axis==='z'?e.c-e.side*.7:Wd.u,q=across(px,pz,Wd.sill,Wd.top+P,r);
+   if(q)throw new Error('XACITR: '+r.id+' window '+Wd.e+' '+Wd.u+' has '+q.id+' behind its glass');
+   wins.push({r,e,u:Wd.u,ww:Wd.w,sill:Wd.sill,top:Wd.top,P,jali:XC_WIN[r.style]==='jali',hand:true});addOp(e.axis,e.c,{u0:Wd.u-Wd.w/2,u1:Wd.u+Wd.w/2,y0:Wd.sill,y1:Wd.top+P});}
   return{Hd,wins,edges,B};}
 
  // ---------------------------------------------------------------- a citadel building from its set item
@@ -124,6 +132,10 @@ var XACITR=(function(){'use strict';
    const ap=W.jali?R3(((W.top-W.sill)*JALI+(h-(W.top-W.sill)))/h):1,at=F.pt(x,z),nn=F.dir(n[0],n[1]),cy=R2(W.sill+h/2);
    G.windows.push({id:rid(W.r.id)+'.w.'+e.nm+'.'+R2(W.u),room:rid(W.r.id),at:[at[0],cy,at[1]],n:nn,x:R2(at[0]+nn[0]*INSET),y:cy,z:R2(at[1]+nn[1]*INSET),
     w:R2(W.ww),h:R2(h),sill:R2(W.sill),jali:W.jali,aperture:ap,kind:'window'});}
+  // the lamps set in the rooms (room.lamps, drawn by 78m xmLamp from 78n): the light where the lamp's glass is; low its lowest
+  // drawn point (xmLamp's numbers), hang the ceiling a hung lamp's chain rises to
+  for(const r of R)for(const Lm of r.lamps||[]){const A=XC_LAMP[Lm.k];if(!A)throw new Error('XACITR: '+r.id+' a lamp of no kind '+Lm.k);const at=F.pt(Lm.x,Lm.z),rec={id:rid(r.id)+'.lamp.'+Lm.k+'.'+R2(Lm.x)+'.'+R2(Lm.z),
+    room:rid(r.id),x:at[0],y:R2(Lm.y),z:at[1],low:R2(Lm.y-A.low),amp:A.amp,r:A.r,src:'drawn',what:A.what};if(Lm.top!=null)rec.hang=R2(Lm.top);G.lamps.push(rec);}
   return recs;}
 
  // ---------------------------------------------------------------- the Pleasure Dome from its plan (78c) and 78d's numbers
@@ -210,6 +222,6 @@ var XACITR=(function(){'use strict';
   return{rooms,windowsOf:r=>wins[r.id]||[],lampsOf:r=>lamps[r.id]||[],skylightsOf:r=>sky[r.id]||[]};}
  function pool(G){const W=G.windows.map(w=>({room:w.room,x:w.x,y:w.y,z:w.z,aperture:w.aperture})).concat(G.skylights.map(s=>({room:s.room,x:s.x,y:s.y,z:s.z,sky:true})));
   return{windows:W,lamps:G.lamps.map(l=>({room:l.room,x:l.x,y:l.y,z:l.z,amp:l.amp,r:l.r}))};}
- return{SITES,DARK,JALI,INSET,build,tableInput,pool,xcOpenings};
+ return{SITES,DARK,JALI,INSET,XC_LAMP,build,tableInput,pool,xcOpenings};
 })();
 if(typeof module!=='undefined'&&module.exports)module.exports=XACITR;

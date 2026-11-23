@@ -27,8 +27,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `78c-xa-dome-plan.js` | 12 |  |
 | `78d-xa-dome-in.js` | 28 | the Hall of Feasts (90); the stairs (148); the baths, the courts, the passages (189); the Pleasure Dome of the Bay (xa_pleasure_dome_b (209) |
 | `78l-xa-moorish-data.js` | 5 |  |
-| `78m-xa-moorish.js` | 18 | materials (wired in materials.json: the owed set (19); geometry (45); helpers (the running builder's frame) (87) |
-| `78n-xa-citadel.js` | 38 **big** | the plan drawer (47); the Sultan's Palace (E1, E2a, E2b) (213); the Grand Vizier's palace (E5a, E5b) (257); the dars: the great officers' houses, the envoys (279); the court temple and the citadel kitchens (308) |
+| `78m-xa-moorish.js` | 22 | materials (wired in materials.json: the owed set (19); geometry (45); helpers (the running builder's frame) (87) |
+| `78n-xa-citadel.js` | 39 **big** | the plan drawer (49); the Sultan's Palace (E1, E2a, E2b) (224); the Grand Vizier's palace (E5a, E5b) (268); the dars: the great officers' houses, the envoys (290); the court temple and the citadel kitchens (319) |
 | `78o-xa-golden-way.js` | 24 | the Pleasure Dome where the Way is built (85); the builder (102) |
 | `79-xa-guild.js` | 17 | Farmers' Guild (22); Miners' Guild (36); Goldsmiths' Guild (55); Alchemists' Guild (71); Masons' Guild (89); the generator (109) |
 | `80-xa-military.js` | 16 | the barracks (12); a length of the city wall (34); the gate (44); the fortress (dzong) (61); the city watch (86); the mustering ground (105) |
