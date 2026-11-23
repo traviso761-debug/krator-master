@@ -1769,8 +1769,8 @@
    "sha256": "1a45afd49bb2557620335ca788af7f410cf918d3f5d6b3692a92a6d8a163eade"
   },
   "settlements/lightwall/dist/lightwall.html": {
-   "bytes": 3936503,
-   "sha256": "cd537a1172cb9c0443f498fd171c86745fe5da34666efeeb932173da90e11171"
+   "bytes": 3850325,
+   "sha256": "2239aad10e2fe1120e8f1b34d874af5e1b60cd8bf81936a4c0d2c85b5ab05101"
   },
   "settlements/locus/abyss-kit.html": {
    "bytes": 10012939,
