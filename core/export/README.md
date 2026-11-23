@@ -69,6 +69,15 @@ linear for instances, vertices and materials (three's working values as hex: do 
 and the atmosphere; typed arrays `{type, n, b64}` (little-endian bytes); ids as core/tags makes them; the box rule
 (an instance by its origin, `x0 <= x < x1`; a bucket piece by its foot).
 
+**`origin` (optional, 2026-11-16: a floating origin).** A container may carry `origin: [x, y, z]`, in the page's frame. Then
+the meshes (the items' instance translations, the buckets' vertices, in `world.glb` and in the JSON form) are written
+less it, taken off in double precision before the float32 pack, so a case far from its page's origin keeps its
+millimetres (a float32 600 km out keeps 6 cm). Everything else stays in the page's frame: the box, the terrain's grid and
+field, the records' positions, the owners. A reader puts the case's node at `origin` (less its own floating origin) and
+builds the ground about `origin` too. `EXPORT.sceneReader({origin})` does the subtraction; a contributor that sets it
+writes `ctx.out.origin` (core/world 94 does both: the box's centre in whole metres, for an open-world region). A
+container without it is in the page's frame, as before.
+
 #### LOD
 
 `convention.lod = {cell: 150, widen: 'half-diagonal', copies: 'none'}` is the one declared LOD policy (ROADMAP.md

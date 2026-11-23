@@ -33,7 +33,7 @@ page that reads it came out byte-identical after the move.
 | `90-world-camera.js` | [web] | the camera, the minimap (its overlays: Köppen, biome regions, a page's `MAP_LAYERS`), "Go to", the inspector, the polygon tool, `pick` |
 | `91-world-probe.js` | [web] | the camera, the probe and its checks (`_api.hostChecks`: order-free seeding, land continuous, nothing in water, spacing across tiles, roads, towns, no NaN) |
 | `93-world-propose.js` | [web] | "propose": place a new site on the ground or the minimap, name and type it, see its ground and resources (`WRES.assess`), keep it, export it or send it to the edit queue; `tools/scale-model/propose_site.py` takes it into `openworld/SITES.json` and the scale model |
-| `94-world-export.js` | [web] | the region through core/export (GODOT-PLAN.md M7, opt-in: a build lists it after core/export 07, 09, 10): the parts' registries (88s, 88b) as one page registry (ids `<part>:<id>`), the terrain (WORLD.H and WORLD.water on a grid `WORLD_EXPORT.step` apart), and the scene in the box as items and buckets (the villages' pieces, the bridges by their records, the flora round the camera; not the terrain, water, sky or beacons). `openworld/oidong-highrift/tools/godot_case.py` drives it (`tools/harness.py export --before`) |
+| `94-world-export.js` | [web] | the region through core/export (GODOT-PLAN.md M7, opt-in: a build lists it after core/export 07, 09, 10): the parts' registries (88s, 88b) as one page registry (ids `<part>:<id>`), the terrain (WORLD.H and WORLD.water on a grid `WORLD_EXPORT.step` apart), and the scene in the box as items and buckets (the villages' pieces, the bridges by their records, the flora round the camera; not the terrain, water, sky or beacons). A floating origin (2026-11-16): the meshes are written about the case's own origin, the flora's floating origin (85) where it is drawn near the box, else the box's centre (`WORLD_EXPORT.origin`; core/export README, "origin"). The flora's pools (85) are core/tags item sets in a `flora` part, registered when the export reads them, so every plant carries its uid (`KTAGS.uid('flora', key, position)`). `openworld/oidong-highrift/tools/godot_case.py` drives it (`tools/harness.py export --before`) |
 | `98-world-start.js`, `99-tail.html` | [web] | start-up and the page's tail |
 
 **Resources and proposals in a region's build:** list `('resgeo', 'geology')` (a generated fragment:
@@ -63,7 +63,10 @@ Riders' `BR_CAMP`), hamlets (core/hamlet: a row's `kit` picks the drawing, `88s`
 through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns, and `ways` (opt-in, 2026-11-16: a road from a town, or one of its villages, to a point, routed as a kept link and ending at the cut's edge, `short`, while the point lies outside it; Thalaba's expedition road toward Godshearth's Spillway) (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
 `every` m of road and a rest stop between, drawn as one-building villages; a stop with no ground is a `gap`). The bake
 reads the kits' declared boxes from their source (`ASSET`, `XA.def`, `VERN.def`); a new village kit adds its records
-there and an entry in `VK`.
+there and an entry in `VK`. The bake plans on the land the page draws: 41l and 44c (the coasts) only when the region's
+`build.py` lists them (2026-11-16: oidong-highrift takes no coast, and planning on coasts it never drew made the bake and
+the page's plan differ). A region's own shaping of its land that the plan must see (a `WORLD.landHook`) goes in its
+`src/48-world-site.js`, which the bake reads (oidong-highrift's OHR_CUT: Strongbow's face).
 
 **A town's own ground** (`openworld/PLAN-VOTH.md` section 3, Layer 2; Voth the first case, 2026-11-11). A settlement whose
 layout is keyed to its page's ground (its shore, its river) hands that ground to the world instead of being rebuilt on it:

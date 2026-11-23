@@ -14,8 +14,12 @@
 //              the sky (userData.probeSkip: the terrain and water sections carry them) and the resource beacons (map
 //              markers) are left out. The flora is drawn only within reach of the camera, so a case places the camera at
 //              the box and settles the page first (openworld/<region>/tools/godot_case.py, harness.py export --before)
-// The meshes stand at world coordinates (no floating origin under the villages, the bridges or the flora's pools as
-// read here: their world matrices), so the box is in the region's metres, as the plan's.
+// A floating origin: the meshes stand at world coordinates on the page, but a region is 1,300 km across and a float32 600 km
+// out keeps 6 cm. So a case's glb is written about its own origin (the flora's floating origin where it is drawn near the
+// box, else the box's centre in whole metres; or WORLD_EXPORT.origin [x, y, z]; false for the page's frame): sceneReader takes it off the world matrices in double precision before the
+// float32 pack, and world.json says `origin` (core/export README, "origin"). Everything else in world.json (the box, the
+// terrain's grid, the records' positions, the owners) stays in the region's metres, as the plan's; an importer puts the
+// case's node at origin less its own (godot/krator/world_import.gd, world_stream.gd).
 var WORLD_EXPORT=window.WORLD_EXPORT||{};
 (function(){'use strict';
 if(typeof EXPORT==='undefined'||typeof KTAGS==='undefined')return;
@@ -41,7 +45,8 @@ const PAGE={build:REGION,
  /* a prefixed id resolved in its part (EXPORT.sceneReader asks get(id).uid of a bucket's records and isSet of an item's set) */
  part(id){const s=String(id),k=s.indexOf(':');if(k<0)return null;const p=s.slice(0,k),T=parts().find(t=>partOf(t)===p);return T?{T,p,id:s.slice(k+1)}:null;},
  get(id){const q=PAGE.part(id);if(!q)return null;const r=q.T.get(q.id);if(!r)return null;const o={};for(const k in r)o[k]=r[k];o.id=pre(q.p,r.id);if(r.parent!=null)o.parent=pre(q.p,r.parent);return o;},
- isSet(id){const q=PAGE.part(id);return!!(q&&q.T.isSet&&q.T.isSet(q.id));}};
+ isSet(id){const q=PAGE.part(id);return!!(q&&q.T.isSet&&q.T.isSet(q.id));},
+ uidOf(s,i){const q=PAGE.part(typeof s==='string'?s:s.id);return q?q.T.uidOf(q.id,i):null;}};
 if(!KTAGS.page)KTAGS.page=PAGE;
 /* the owner of a mesh's triangle or instance: the smallest site record whose footprint holds it (the villages' buildings,
    tents, pens; their size [w, d] turned by ry) */
@@ -57,12 +62,43 @@ const hidden=m=>up(m,p=>p.visible===false);
 const beacon=m=>up(m,p=>/^resource beacon/.test(p.name||''));
 /* a bridge's pieces (88b: a group named 'bridge <key>') stand in its record, found by its key */
 function byKey(){const M=new Map();parts().forEach(T=>{const p=partOf(T);T.records.forEach(r=>{if(r.key!=null&&!r.removed)M.set(String(r.key),pre(p,r.id));});});return M;}
-const scene_=ctx=>ctx.memo('world-scene',()=>{const box=ctx.box||[-Infinity,-Infinity,Infinity,Infinity],K=byKey();
+function origin_(ctx){const o=WORLD_EXPORT.origin;let O=null;
+ if(Array.isArray(o))O=[+o[0],o[1]==null?0:+o[1],+o[2]];
+ else if(o!==false&&ctx.box){
+  /* the flora's own floating origin (85: its pools' meshes stand there, the rows less it in float32) when it is drawn
+     near the box: a plant's translation is then its row bit for bit, and the reader's sum (row + origin, in doubles) the
+     page's own position, so its uid reproduces exactly. Else (a chunk: no items) the box's centre in whole metres */
+  const cx=(ctx.box[0]+ctx.box[2])/2,cz=(ctx.box[1]+ctx.box[3])/2,span=Math.max(ctx.box[2]-ctx.box[0],ctx.box[3]-ctx.box[1]);
+  let F=null;if(ctx.sections.indexOf('items')>=0&&typeof FLORA!=='undefined'&&FLORA&&FLORA.pools)for(const p of FLORA.pools.values())if(p.n&&p.meshes.length){F=p.meshes[0].position;break;}
+  O=F&&Math.hypot(F.x-cx,F.z-cz)<span*2?[F.x,F.y,F.z]:[Math.round(cx),0,Math.round(cz)];}
+ if(O)ctx.out.origin=O;return O;}
+/* ---------------------------------------------------------------- the flora as item sets */
+/* 85's pools (one per prototype, kit|species|variant|level, its parts sharing one instance table) are drawn round the
+   camera and rebuilt as it moves, so they are registered when an export reads them, not when drawn: a pool is one
+   core/tags item set (class flora, the species' key, name and tags) in the region's 'flora' part, its rows the pool's
+   rows, read live; an instance's position is the pool's mesh position (85's floating origin, a double) plus its row, and
+   its uid KTAGS.uid('flora', key, that position), as the biome kits' plants have theirs (core/biome 20). A plant's parts
+   (trunk, crown) share its uid. A set stays registered once made (its count follows the pool) */
+let FREG=null;const FSETS=new Map();
+function floraSets(){if(typeof FLORA==='undefined'||!FLORA||!FLORA.pools)return FSETS;
+ if(!FREG)FREG=KTAGS.create({build:REGION+':flora'});
+ for(const p of FLORA.pools.values()){if(FSETS.has(p.key)||!p.meshes.length)continue;
+  const f=String(p.key).split('|'),K=FLORA.KITS[f[0]],S=K&&K.SP?K.SP[f[1]]:null,key=S&&S.key?S.key:f[1];
+  const row=i=>({a:p.arr,o:i*16,P:p.meshes[0].position});
+  try{const set=FREG.addSet({'class':'flora',kind:key,key,name:S&&S.name?S.name:key,at:[0,0,0],tags:S&&S.tags?S.tags:{},
+    note:'a flora pool of the open world, '+p.key+' (core/world 85), registered at export'},
+   {get n(){return p.n;},
+    pos(i,out){const w=row(i);out=out||[];out[0]=w.P.x+w.a[w.o+12];out[1]=w.P.y+w.a[w.o+13];out[2]=w.P.z+w.a[w.o+14];return out;},
+    ry(i){const w=row(i);return Math.atan2(w.a[w.o+8],w.a[w.o+10]);}});
+   FSETS.set(p.key,pre('flora',set.id));}catch(e){console.warn('core/world 94: flora pool '+p.key+': '+e.message);}}
+ return FSETS;}
+const scene_=ctx=>ctx.memo('world-scene',()=>{const box=ctx.box||[-Infinity,-Infinity,Infinity,Infinity],K=byKey(),FS=floraSets();
  const ownerOf=m=>{for(let p=m;p;p=p.parent){const n=p.name||'';if(n.indexOf('bridge ')===0&&K.has(n.slice(7)))return K.get(n.slice(7));}return null;};
- return E.sceneReader({name:'world:'+REGION,source:'openworld/'+REGION,scene:HOST.scene,tags:KTAGS.page,owner:owners(box),ownerOf,
+ return E.sceneReader({name:'world:'+REGION,source:'openworld/'+REGION,scene:HOST.scene,tags:KTAGS.page,owner:owners(box),ownerOf,origin:origin_(ctx),
   /* a flora pool's part (85: userData.flora is the pool's key, kit|species|variant|level, shared by the plant's parts) */
   kitOf:m=>m.userData&&m.userData.flora?'flora/'+m.userData.flora+'/'+(m.material&&m.material.name||'')+(m.geometry?'#'+m.geometry.id:''):null,
   itemKit:kit=>kit&&kit.indexOf('flora/')===0?'flora':'world',
+  itemSet:kit=>kit&&kit.indexOf('flora/')===0?FS.get(kit.split('/')[1])||null:null,
   skipInstanced:m=>hidden(m)?'hidden':beacon(m)?'a resource beacon (a map marker)':null,
   skipMesh:m=>m.userData&&m.userData.terrain?'the terrain (the terrain section)':m.userData&&m.userData.probeSkip?'water or sky (their sections)':
    hidden(m)?'hidden':beacon(m)?'a resource beacon (a map marker)':null}).assemble(ctx);});
@@ -72,7 +108,7 @@ E.register('buckets',ctx=>scene_(ctx).buckets,by);
 E.register('materials',ctx=>scene_(ctx).materials,by);
 E.register('textures',ctx=>scene_(ctx).textures,by);
 /* ---------------------------------------------------------------- the ground */
-E.register('terrain',ctx=>{if(!ctx.box)return null;const st=WORLD_EXPORT.step==null?32:+WORLD_EXPORT.step;
+E.register('terrain',ctx=>{if(!ctx.box)return null;origin_(ctx);const st=WORLD_EXPORT.step==null?32:+WORLD_EXPORT.step;
  return E.terrain(ctx.box,{h:(x,z)=>WORLD.H(x,z),water:WORLD_EXPORT.water===false?null:(x,z)=>WORLD.water(x,z),step:st,probes:WORLD_EXPORT.probes==null?16:+WORLD_EXPORT.probes});},by);
 window._worldExport={registries:()=>parts().map(T=>({build:T.build,records:T.records.length}))};
 })();
