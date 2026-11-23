@@ -65,7 +65,7 @@ func _initialize() -> void:
 		"high: 4x MSAA at native scale, 16 taps, debanding")
 	ok(root.use_occlusion_culling, "high: occlusion culling on, against the ground's occluders")
 	ok(str(rep["tier"]) == "high" and (rep["texels"] as Array).size() == 4 and (rep["set"] as Dictionary).has("env.ssao_enabled"), "apply reports the tier, the texels and what it set")
-	ok(sun.shadow_caster_mask == 1, "high: only the outdoor layer casts the sun's shadow (an interior's shells and furniture are on layer 2, which the sun does not light)")
+	ok(sun.shadow_caster_mask == 0xFFFFFFFF, "high: every layer casts the sun's shadow (the indoor shells of an open gallery shade the ground outside it)")
 	KratorLook.apply(KratorLook.tier("low"), env, sun, root)
 	ok(sun.directional_shadow_max_distance == 250.0 and not sun.directional_shadow_blend_splits and not env.ssil_enabled and not env.glow_enabled
 		and root.msaa_3d == Viewport.MSAA_2X and absf(root.scaling_3d_scale - 0.77) < 1e-6 and root.scaling_3d_mode == Viewport.SCALING_3D_MODE_FSR,
@@ -79,9 +79,20 @@ func _initialize() -> void:
 	KratorLook.apply(KratorLook.tier("legacy"), env, sun, root)
 	ok(sun.directional_shadow_max_distance == 2400.0 and absf(env.ssao_radius - 1.4) < 1e-6 and not env.glow_enabled and root.msaa_3d == Viewport.MSAA_4X,
 		"negative: the legacy tier is the rig as it was (2,400 m, SSAO 1.4, no glow, 4x MSAA)")
-	ok(not root.use_occlusion_culling and not bool(KratorLook.from_args(PackedStringArray(["--look=high", "--no-occlusion"]))["occlusion"]), "negative: the legacy tier and --no-occlusion leave occlusion culling off")
-	var all_cast := KratorLook.from_args(PackedStringArray(["--look=high", "--casters=all"]))
-	ok(sun.shadow_caster_mask == 0xFFFFFFFF and int(all_cast["shadow_casters"]) == 0xFFFFFFFF, "negative: under the legacy tier, and with --casters=all, every layer casts")
+	var st_occ := KratorWorldStream.new()
+	KratorLook.apply_stream(KratorLook.tier("high"), st_occ)
+	var stream_on := st_occ.occluders
+	KratorLook.apply_stream(KratorLook.from_args(PackedStringArray(["--look=high", "--no-occlusion"])), st_occ)
+	var stream_off := not st_occ.occluders
+	st_occ.free()
+	ok(not root.use_occlusion_culling and stream_on and stream_off and bool(KratorLook.from_args(PackedStringArray(["--look=legacy", "--occlusion"]))["occlusion"]),
+		"negative: the legacy tier and --no-occlusion leave occlusion culling off, and the stream then makes no occluders")
+	var out_cast := KratorLook.from_args(PackedStringArray(["--look=high", "--casters=outdoor"]))
+	var all_cast := KratorLook.from_args(PackedStringArray(["--look=high", "--casters=outdoor", "--casters=all"]))
+	KratorLook.apply(out_cast, env, sun, root)
+	var only_outdoor := sun.shadow_caster_mask == 1
+	KratorLook.apply(KratorLook.tier("legacy"), env, sun, root)
+	ok(only_outdoor and sun.shadow_caster_mask == 0xFFFFFFFF and int(all_cast["shadow_casters"]) == 0xFFFFFFFF, "--casters=outdoor leaves the indoor layer out of the sun's shadow; --casters=all and every tier put it back")
 
 	# 5. the stream's side: cells and the pixel size an item is culled at
 	var st := KratorWorldStream.new()

@@ -103,7 +103,8 @@ no time is. `README.md`, "The look", says what each piece is. In order:
 - [ ] **Nodes.** The town ends at about ten thousand nodes with cells on. Watch the CPU column, and the frame time while
       turning on the spot.
 - [ ] **Occlusion culling**: walk the avenue and the monastery's terraces watching for anything that pops in late at a
-      crest (`--no-occlusion` for the A/B). The occluders sit under the ground and should hide only what the ground hides.
+      crest (`--no-occlusion` for the A/B). The occluders sit under the ground and should hide only what the ground
+      hides. It starts a few frames after a place opens. The route's CPU column says what the culling itself costs.
 - [ ] **The roads.** The stream's road ribbons were wound face down and their shader culls back faces, so none drew
       from above until this change. They draw now: look for z-fighting with the ground and for the shoulders' fit.
 - [ ] **Back faces.** Single-sided records now cull their back faces (`library.gdshader`). Walk the monastery and the

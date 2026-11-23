@@ -12,7 +12,7 @@
 # Every feature has a switch, as VISUAL-BAR.md asks of any fix:
 #   --no-ssao --no-ssil --gi --no-gi --no-glow --pcss --no-pcss --vfog --no-vfog --aerial=<0..1> --no-deband
 #   --shadow=<metres> --atlas=<px> --msaa=0|2|4|8 --aa=none|fxaa|smaa|taa|fsr2 --scale=<0.25..2> --fsr1 --aniso=<1..16>
-#   --cells --no-cells --cull-px=<pixels> --casters=all --sky-half --no-sky-half --occlusion --no-occlusion
+#   --cells --no-cells --cull-px=<pixels> --casters=all --casters=outdoor --sky-half --no-sky-half --occlusion --no-occlusion
 #   --no-weather --weather=<0..1.5> --wet=<0..1> --no-detail --detail=<0..1.5> --tangents --no-tangents
 #   --room-ambient --no-room-ambient --auto-exposure
 # Volumetric fog and aerial perspective belong to the plan's step 6: the tiers carry their values, off until then.
@@ -32,15 +32,20 @@ const TIER_NAMES := ["low", "high", "photo", "legacy"]
 # room_ambient: indoor surfaces take the room's light as their own ambient, not as emission (L4; kinteriors_light.gd).
 # auto_exposure: the engine's eye adaptation on the camera, held to a stop either way of the colour script's exposure
 # (L5; off in every tier until it is judged on a GPU: `apply_camera`, --auto-exposure).
-# occlusion: Godot's occlusion culling on the viewport, against the occluders the stream makes under each ground
-# (krator/occluders.gd); off for stills, where a late pop would show.
+# occlusion: Godot's occlusion culling on the viewport, against the occluders the stream then makes under each ground
+# (krator/occluders.gd). On in low and high: at Longsong's avenue it takes the frame from 37.0 M primitives to 30.3 M
+# and from 5,605 draws to 3,161 (2026-11-23). It starts a few frames after a place opens, when the occluder scene has
+# committed, so a count taken at once does not show it. Off for stills, where a late pop would show; --no-occlusion.
 # sky_half: the sky's cloud layers in its half-resolution pass (shaders/sky_half.gdshader; `apply_sky`).
-# shadow_casters: the layers that cast the sun's shadow. 1 is the outdoor layer alone: an interior's shells and furniture
-# are on layer 2 (krator/kinteriors_light.gd), the sun does not light them, and the walls outside them already cast
+# shadow_casters: the layers that cast the sun's shadow: all of them in every tier. --casters=outdoor leaves the indoor
+# layer out (an interior's shells and furniture, krator/kinteriors_light.gd), which the sun does not light; it is not a
+# default because it changes the picture: the open galleries beside Longsong's avenue are indoor shells, and their
+# shadow on the verge went with them (1,509 pixels of a 1280 by 720 frame, 2026-11-23). Furniture alone could be left
+# out with a layer of its own
 const TIERS := {
 	"low": {
 		"shadow_max": 250.0, "shadow_splits": [0.06, 0.18, 0.45], "shadow_blend": false, "shadow_fade": 0.8,
-		"shadow_atlas": 4096, "shadow_filter": RenderingServer.SHADOW_QUALITY_SOFT_LOW, "shadow_angular": 0.0, "shadow_casters": 1,
+		"shadow_atlas": 4096, "shadow_filter": RenderingServer.SHADOW_QUALITY_SOFT_LOW, "shadow_angular": 0.0, "shadow_casters": 0xFFFFFFFF,
 		"ssao": true, "ssao_quality": RenderingServer.ENV_SSAO_QUALITY_LOW, "ssao_half": true, "ssao_radius": 1.0, "ssao_intensity": 2.0, "ssao_power": 1.5,
 		"ssil": false, "ssil_quality": RenderingServer.ENV_SSIL_QUALITY_LOW,
 		"sdfgi": false, "sdfgi_cascades": 4, "sdfgi_min_cell": 0.4, "sdfgi_half": true,
@@ -51,7 +56,7 @@ const TIERS := {
 	},
 	"high": {
 		"shadow_max": 400.0, "shadow_splits": [0.05, 0.15, 0.40], "shadow_blend": true, "shadow_fade": 0.85,
-		"shadow_atlas": 8192, "shadow_filter": RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, "shadow_angular": 0.0, "shadow_casters": 1,
+		"shadow_atlas": 8192, "shadow_filter": RenderingServer.SHADOW_QUALITY_SOFT_MEDIUM, "shadow_angular": 0.0, "shadow_casters": 0xFFFFFFFF,
 		"ssao": true, "ssao_quality": RenderingServer.ENV_SSAO_QUALITY_MEDIUM, "ssao_half": true, "ssao_radius": 1.0, "ssao_intensity": 2.0, "ssao_power": 1.5,
 		"ssil": true, "ssil_quality": RenderingServer.ENV_SSIL_QUALITY_MEDIUM,
 		"sdfgi": false, "sdfgi_cascades": 4, "sdfgi_min_cell": 0.4, "sdfgi_half": true,
@@ -62,7 +67,7 @@ const TIERS := {
 	},
 	"photo": {
 		"shadow_max": 500.0, "shadow_splits": [0.04, 0.12, 0.36], "shadow_blend": true, "shadow_fade": 0.9,
-		"shadow_atlas": 8192, "shadow_filter": RenderingServer.SHADOW_QUALITY_SOFT_HIGH, "shadow_angular": 0.5, "shadow_casters": 1,
+		"shadow_atlas": 8192, "shadow_filter": RenderingServer.SHADOW_QUALITY_SOFT_HIGH, "shadow_angular": 0.5, "shadow_casters": 0xFFFFFFFF,
 		"ssao": true, "ssao_quality": RenderingServer.ENV_SSAO_QUALITY_HIGH, "ssao_half": false, "ssao_radius": 1.0, "ssao_intensity": 2.0, "ssao_power": 1.5,
 		"ssil": true, "ssil_quality": RenderingServer.ENV_SSIL_QUALITY_HIGH,
 		"sdfgi": true, "sdfgi_cascades": 6, "sdfgi_min_cell": 0.4, "sdfgi_half": false,
@@ -192,6 +197,8 @@ static func from_args(args: PackedStringArray, default_tier := "auto") -> Dictio
 			s["sky_half"] = false
 		elif a == "--casters=all":
 			s["shadow_casters"] = 0xFFFFFFFF
+		elif a == "--casters=outdoor":
+			s["shadow_casters"] = 1
 		elif a == "--cells":
 			s["cells"] = true
 		elif a.begins_with("--cull-px="):
@@ -228,6 +235,7 @@ static func apply_stream(spec: Dictionary, stream: KratorWorldStream) -> void:
 	stream.cells = bool(spec.get("cells", true)) and OS.get_environment("KRATOR_CELLS") != "0"
 	stream.cells_px = float(spec.get("cull_px", 4.0))
 	stream.room_ambient = bool(spec.get("room_ambient", false))
+	stream.occluders = bool(spec.get("occlusion", false)) and OS.get_environment("KRATOR_OCCLUDERS") != "0"
 
 
 static func _msaa(samples: int) -> int:

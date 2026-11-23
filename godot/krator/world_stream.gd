@@ -34,9 +34,10 @@ var cells_px := 4.0
 var cells_max_nodes := KratorCells.MAX_NODES
 var cell_stats := {}      # place id -> {place | monastery | arcology: KratorCells.split_items' report}, while it is open
 # The ground's occluders (krator/occluders.gd; GODOT-LOOK-PLAN.md C6): a conservative one under each chunk's and place's
-# terrain, made when it is built. They cost nothing until a viewport turns occlusion culling on (krator/look.gd does, by
-# tier); KRATOR_OCCLUDERS=0 leaves them out
-var occluders := OS.get_environment("KRATOR_OCCLUDERS") != "0"
+# terrain, made when it is built, for a viewport with occlusion culling on. Off unless the look has occlusion culling
+# on (krator/look.gd apply_stream: the low and high tiers) or KRATOR_OCCLUDERS=1; KRATOR_OCCLUDERS=0 leaves them out
+# whatever the look says
+var occluders := OS.get_environment("KRATOR_OCCLUDERS") == "1"
 # L4: indoor surfaces take the room's light as their own ambient (krator/kinteriors_light.gd set_room_ambient), by the look
 var room_ambient := false
 var occluder_stats := {"nodes": 0, "tris": 0}
