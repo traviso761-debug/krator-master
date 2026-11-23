@@ -122,9 +122,12 @@ const TEMPEST=(function(){
   P.w=OUTER[2]-OUTER[0];P.d=(P.barbican.at[1]+P.barbican.d/2)-OUTER[1];
   return P;}
 
- /* the two wards apart: each a plan XFORT.walks and the fort's builders take (the inner one's frame is the same, drawn 4 m up) */
+ /* the two wards apart: each a plan XFORT.walks and the fort's builders take, in its own frame: the page places the inner ward's
+    def at the talus top, so there its ward and curtains stand at y 0 (XFORT.recY, which the fort asset honours since 2026-11-23,
+    would raise them a second time). The whole plan keeps y 4: XFORT.walks on it climbs the inner curtain from the talus */
+ const local=r=>r.y?Object.assign({},r,{y:0}):r;
  const sub=(P,w)=>{const ids=new Set(P.curtains.filter(c=>c.ward===w).map(c=>c.id));
-  return Object.assign({},P,{wards:P.wards.filter(x=>x.id===w),curtains:P.curtains.filter(c=>ids.has(c.id)),
+  return Object.assign({},P,{wards:P.wards.filter(x=>x.id===w).map(local),curtains:P.curtains.filter(c=>ids.has(c.id)).map(local),
    towers:P.towers.filter(t=>P.curtains.some(c=>ids.has(c.id)&&segDist(t.at,c.a,c.b)<1)),gates:P.gates.filter(g=>ids.has(g.curtain)),
    stairs:P.stairs.filter(s=>ids.has(s.curtain)),buildings:P.buildings.filter(b=>b.ward===w),S:w==='inner'?Object.assign({},P.S,{gap:IN.gap}):P.S});};
  const outer=P=>sub(P,'outer'),inner=P=>sub(P,'inner');

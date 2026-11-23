@@ -3,7 +3,7 @@
 The Order of the Violet Storm's mother house on the West Arm (scale model px 886,1619, pin `stempest0001`, the crest at 519 m), a
 concentric dzong round the Qiblai kit's violet great monastery. The blueprint (the sheets, the owner's forks, the lore, the
 furniture manifest, `tempest_plan.json`) is `settlements/strongwall/tempest/`; this folder is its build. `PLAN.md` has the steps
-(0 to 4 and 4b done, 2026-11-23; 5, the open world, waits on the vertical stack) and the core adoption; `KNOWN_ISSUES.md` what is not here yet and what the fort asset is asked for.
+(0 to 4, 4b and 4c done, 2026-11-23; 5, the open world, waits on the vertical stack) and the core adoption; `KNOWN_ISSUES.md` what is not here yet and what the fort asset is asked for.
 
 ## Build, test and verify
 
@@ -21,7 +21,7 @@ In a fresh worktree, pull the textures first: `python3 tools/lfs_needs.py settle
 | Fragment | What |
 |---|---|
 | `src/80t-tp-plan-data.js` | `TEMPEST` `[G data]`: the layout as records in the Xanadui fort's shape (XFORT, `kits/xanadu` 80f): the outer ward (260 x 190 m, 4 corner drums, interval towers at 30 m, the Main Gate east with its gate towers, the sally gates north and south, the Storm Tower on the west front, the barbican), the inner ward (110 x 96 m on a 4 m talus, its curtain 12 m over the outer ground), the utse astride its front with the inner gate, the ranges and blocks, the open grounds, the violet monastery it hosts; XFORT's rules and the concentric ones (`TEMPEST.check`); `TEMPEST.outer`, `TEMPEST.inner` the wards apart |
-| `src/80u-tp-house.js` | the drawing: two defs, `xa_tempest_outer` (the outer ward, the talus, the utse as the fort's keep with its gilt chapel and beacon) and `xa_tempest_inner` (the inner ward, the Field of the Fallen, the Founder's Chorten), by kits/xanadu 80g's builders, read in place |
+| `src/80u-tp-house.js` | the drawing: two defs, `xa_tempest_outer` (the outer ward, the talus, the barbican, the utse as the fort's keep with the inner gate's passage, its gilt chapel and beacon) and `xa_tempest_inner` (the inner ward, the Field of the Fallen, the Founder's Chorten), each ward by kits/xanadu 80g's `xfDrawPlan`, read in place |
 | `src/80v-tp-interiors.js` | step 3: the interiors set `xanadu-tempest`, one item per ward def from the plan (each stack an inset body, its doors, a room programme per storey from sheets T1, T2 and U); a skip for a damaged or ruined House |
 | `src/80x-tp-life-data.js` | step 4b: `TP_LIFE` `[G data]`: the herds by day and by night (each beast from its own hash), the chain of fires and mirrors, and their rules |
 | `src/80w-tp-grounds-data.js` | step 4: `TP_GROUNDS` `[G data]`: sheet T0's fields, tracks and pieces round the House, and their rules |

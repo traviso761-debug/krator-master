@@ -53,11 +53,11 @@ const TP_LIFE_DRAWN=(function(){
   const mat=new THREE.MeshBasicMaterial({color:MOFF.clone(),toneMapped:false}),plate=new THREE.Mesh(new THREE.PlaneGeometry(S.storm.mirror.w,S.storm.mirror.h),mat);
   plate.position.set(0,1.9,.06);g.add(plate);const back=new THREE.Mesh(new THREE.BoxGeometry(S.storm.mirror.w+.12,S.storm.mirror.h+.12,.08),new THREE.MeshLambertMaterial({color:0x4a3a2a}));
   back.position.set(0,1.9,0);g.add(back);scene.add(g);mirrors.push({name,g,mat});return g;}
- /* the Storm Tower: the mirror on its roof's brow side, the fire basket beside it (the kit's iron, drum and fuel, as the watch post's) */
- {const k=st.w/2-1.6,mx=sc[0]+Math.sin(toLk)*k,mz=sc[1]+Math.cos(toLk)*k,bx=mx+Math.cos(toLk)*3,bz=mz-Math.sin(toLk)*3;TSTAT.cur='xa_tempest_signals/0';
-  vB('vWood',mx,roof,mz,.14,1.3,.14,0,xC(0x4a3a2a));mirror('the Storm Tower\'s mirror',mx,roof,mz,toLk);
-  vB('vIron',bx,roof,bz,.14,S.storm.basket.h,.14,0,xC(0x2a2a2c));kput('xDrumE',[bx,roof+S.storm.basket.h,bz],null,[.6,.6,.6],xC(0x2a2a2c));
-  vB('xRubB',bx,roof+S.storm.basket.h+.3,bz,.8,.3,.8,0,xC(0x3a2e24));fire('the Storm Tower\'s fire',bx,roof+S.storm.basket.h+.55,bz,1);TSTAT.cur=null;}
+ /* the Storm Tower's basket and its four bronze mirrors are the fort asset's (a signal tower: kits/xanadu 80g xfTower, since
+    2026-11-23); after the bake the fire is lit on that basket and the flash shown on the mirror that faces the brow (afterBake) */
+ function glint(name,x,y,z,ry,r){const g=new THREE.Group();g.name=name;g.position.set(x,y,z);g.rotation.y=ry;g.userData.probeSkip=true;g.visible=false;
+  const mat=new THREE.MeshBasicMaterial({color:MON.clone(),toneMapped:false}),disc=new THREE.Mesh(new THREE.CircleGeometry(r,20),mat);g.add(disc);scene.add(g);
+  mirrors.push({name,g,mat,glint:true});return g;}
  /* ---------------------------------------------------------------- the brow lookout (called by 90r before the bake) */
  const far=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0),o3=new THREE.Vector3();
  const farH=(x,z)=>{o3.set(x,9000,z);far.set(o3,down);const h=far.intersectObject(TP_FARMESH,false)[0];return h?h.point.y:terrainH(x,z);};
@@ -73,13 +73,22 @@ const TP_LIFE_DRAWN=(function(){
  function afterBake(){const U=TP_PLAN.utse,want=TPS.toPage(U.at[0]+U.w/2-1.2,U.at[1]+U.d/2-1.2),im=KIT.meshes.xDrumE;let best=null;
   if(im){const M=new THREE.Matrix4(),p=new THREE.Vector3(),qq=new THREE.Quaternion(),s=new THREE.Vector3();
    for(let i=0;i<im.count;i++){im.getMatrixAt(i,M);M.decompose(p,qq,s);const d=Math.hypot(p.x-want[0],p.z-want[1]);if(d<4&&p.y>TPS.pad+15&&(!best||p.y>best.y))best={x:p.x,y:p.y,z:p.z};}}
-  if(best)fire('the utse\'s beacon',best.x,best.y+.55,best.z,1.1);return!!best;}
+  if(best)fire('the utse\'s beacon',best.x,best.y+.55,best.z,1.1);
+  /* the Storm Tower's: its basket on the roof's middle, its four mirrors (flat drums, .06 thick) at the corners */
+  let basket=null,face=null;
+  if(im){const M=new THREE.Matrix4(),p=new THREE.Vector3(),qq=new THREE.Quaternion(),s=new THREE.Vector3();
+   for(let i=0;i<im.count;i++){im.getMatrixAt(i,M);M.decompose(p,qq,s);const dx=p.x-sc[0],dz=p.z-sc[1],d=Math.hypot(dx,dz);if(p.y<roof||p.y>roof+4||d>st.w*.75)continue;   /* the corners are on the diagonal */
+    if(d<1.2&&s.y>.3){if(!basket||p.y>basket.y)basket={x:p.x,y:p.y,z:p.z};}
+    else if(s.y<.1){const a=Math.atan2(dx,dz),off=Math.abs(Math.atan2(Math.sin(a-toLk),Math.cos(a-toLk)));if(!face||off<face.off)face={x:p.x,y:p.y,z:p.z,a,off,r:s.x};}}}
+  if(basket)fire('the Storm Tower\'s fire',basket.x,basket.y+.55,basket.z,1);
+  if(face)glint('the Storm Tower\'s mirror toward the brow',face.x+Math.sin(face.a)*.06,face.y,face.z+Math.cos(face.a)*.06,face.a,Math.max(.3,face.r*.9));
+  return!!best&&!!basket&&!!face;}
  /* ---------------------------------------------------------------- each frame: the live beasts, the mirrors' code, the fires */
  const clock={t:0};
  function tick(dt,night){clock.t+=dt||0;const t=clock.t,cam=camera.position;
   set(night?'night':'day');
   for(const o of live){if(o.g.position.distanceTo(cam)>700)continue;KratorFauna.animate(o.g,t,o.a.pose==='rest'?'rest':o.a.pose,{phase:o.ph});}
-  const on=!night&&L.lit(S.code,t);for(const m of mirrors)m.mat.color.copy(on?MON:MOFF);
+  const on=!night&&L.lit(S.code,t);for(const m of mirrors){if(m.glint)m.g.visible=on;else m.mat.color.copy(on?MON:MOFF);}
   for(const f of fires){f.g.visible=!!night;if(night){const k=.84+.10*Math.sin(t*5.1+f.ph)+.06*Math.sin(t*13.3+f.ph*1.7);f.l.intensity=2.2*k;f.g.scale.setScalar(.9+.15*k);}}
   return on;}
  FRAME_HOOKS.push(dt=>tick(dt,typeof NIGHT!=='undefined'&&!!NIGHT));
