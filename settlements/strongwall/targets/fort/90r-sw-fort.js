@@ -7,10 +7,12 @@ const SW_GROUP=new THREE.Group();SW_GROUP.name='Strongwall';scene.add(SW_GROUP);
 TSTAT.cur=SW.key+'/0';
 {const r0=REG.length,g=VERN.place(SW_GROUP,SW.key,SW.x,SW.z,SW.ry,{v:0,y:SW.pad});for(let i=r0;i<REG.length;i++)REG[i].type=SW.key;SW.G=g;}
 TSTAT.cur=null;kbake(SW_GROUP);if(typeof xaDoorsBind==='function')xaDoorsBind();
+/* the interiors (89xs): every door's walk block into core/walk, the unlocked doorways cleared (89y xaIxWalk; window._interiors) */
+if(typeof xaIxWalk==='function')xaIxWalk();
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._buildMs=Math.round(performance.now()-SW_B0);
 /* the page's record of the fort: where it stands, its pad, and the ground under its lot's corners and its gates (the verify's) */
 window._strongwall=Object.assign({},window._strongwallSite,{placed:!!SW.G,
  lotGround:[[SW.box[0],SW.box[1]],[SW.box[2],SW.box[1]],[SW.box[2],SW.box[3]],[SW.box[0],SW.box[3]],[SW.x,SW.z]].map(p=>Math.round(terrainH(p[0],p[1])*100)/100),
  gates:SW.P.gates.map(g=>{const p=SW.toPage(g.at[0],g.at[1]);return{id:g.id,x:Math.round(p[0]),z:Math.round(p[1]),ground:Math.round(terrainH(p[0],p[1])*100)/100};}),
- forts:(window._xaForts||[]).length});
+ forts:(window._xaForts||[]).length,rooms:SW.G&&SW.G.userData.interior?SW.G.userData.interior.rooms:0,pieces:SW.G&&SW.G.userData.interior?SW.G.userData.interior.pieces:0});

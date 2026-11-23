@@ -12,6 +12,7 @@
  ],
  "deterministic": [
   "69w-sw-ground.js",
+  "89xs-sw-interiors.js",
   "80f-xa-fort-data.js",
   "37c-core-rubble.js",
   "20-core-ruins.js",

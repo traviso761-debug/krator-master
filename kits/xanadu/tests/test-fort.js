@@ -69,6 +69,37 @@ for (const size of ['watch', 'march', 'gate']) for (const st of ['damaged', 'rui
 {const P = XF.plan({ size: 'watch' }), Dm = XF.damage(P, 'damaged', 3), gated = P.gates[0].curtain;
  const bad = JSON.parse(JSON.stringify(Dm)); bad.breaches = [{ curtain: gated, u0: .45, u1: .55 }];
  T.neg('a breach through the gate\'s curtain is caught', x => stateCheck(P, x).length === 0, bad, Dm);}
+// 7. the walks (XFORT.walks, F4b): never through a tower or a gatehouse; each kept tower climbed by a flight onto its top; the
+//    stairs land on plain walk a stair reaches; the corner and interval towers of every kept fort reached; a fallen tower ends it
+{const SEED = { watch: 32011, march: 32111, gate: 32211 };
+ const len = c => Math.hypot(c.b[0] - c.a[0], c.b[1] - c.a[1]);
+ const sAt = (c, p) => ((p[0] - c.a[0]) * (c.b[0] - c.a[0]) + (p[1] - c.a[1]) * (c.b[1] - c.a[1])) / len(c);
+ /* the faults a layout can have: a walk or a flight inside a block, a stair landing off plain walk or on an unreached one */
+ const faults = (P, W) => {const out = [];
+  W.walks.forEach(w => (W.blocks[w.curtain] || []).forEach(b => {if (w.s1 > b[0] + .05 && w.s0 < b[1] - .05) out.push('walk ' + w.curtain + ' ' + w.s0 + '-' + w.s1 + ' through ' + b.join('-'));}));
+  W.flights.forEach(f => {const lo = Math.min(f.sFoot, f.sHead), hi = Math.max(f.sFoot, f.sHead);
+   (W.blocks[f.curtain] || []).forEach(b => {if (hi > b[0] + .05 && lo < b[1] - .05) out.push('flight ' + f.curtain + ' ' + lo + '-' + hi + ' inside ' + b.join('-'));});
+   if (!(W.blocks[f.curtain] || []).some(b => Math.abs(b[0] - f.sHead) < .05 || Math.abs(b[1] - f.sHead) < .05)) out.push('flight ' + f.curtain + ' head ' + f.sHead + ' off a block');});
+  W.stairs.forEach(s => {const c = P.curtains.find(q => q.id === s.curtain), h = sAt(c, s.head);
+   if (!W.walks.some(w => w.curtain === s.curtain && w.reached && h >= w.s0 && h <= w.s1)) out.push('stair ' + s.curtain + ' lands at ' + h.toFixed(1) + ' off a reached walk');});
+  return out;};
+ for (const size of ['watch', 'march', 'gate']) for (const [v, st] of [[0, 'kept'], [1, 'damaged']]) {
+  const P = XF.plan({ size }), D = XF.damage(P, st, SEED[size] + v), W = XF.walks(P, D), F = faults(P, W);
+  const climbed = new Set(W.tops.filter(t => t.reached).map(t => t.tower)), fallen = Object.keys(D.towers);
+  const want = P.towers.filter(t => (t.kind === 'corner' || t.kind === 'interval') && !fallen.includes(t.id) && P.curtains.some(c => !D.stubs[c.id] && (W.blocks[c.id] || []).length));
+  const miss = want.filter(t => !climbed.has(t.id)).map(t => t.id);
+  const pieces = W.walks.length + W.flights.length + W.tops.length, un = [].concat(W.walks, W.flights, W.tops).filter(x => !x.reached);
+  T.ok('the ' + size + ' fort ' + st + ': ' + W.walks.length + ' walks, ' + W.flights.length + ' flights onto ' + climbed.size + ' towers, ' + W.stairs.length + ' stairs; none through a block, every stair on reached walk',
+   F.length === 0, F.slice(0, 4).join(' | '));
+  if (st === 'kept' && size !== 'gate') T.ok('the ' + size + ' fort kept: every corner and interval tower climbed (' + (want.length - miss.length) + ' of ' + want.length + '); ' + (pieces - un.length) + ' of ' + pieces + ' pieces reached',
+   !miss.length && un.length <= pieces * .12, 'not climbed: ' + miss.join(', ') + '; unreached: ' + un.map(x => x.curtain || x.tower).join(', '));
+  if (st === 'damaged') T.ok('the ' + size + ' fort damaged: no flight onto a fallen tower', !W.flights.some(f => fallen.includes(f.tower)), JSON.stringify(W.flights.filter(f => fallen.includes(f.tower)).map(f => f.tower)));}
+ {const P = XF.plan({ size: 'march' }), W = XF.walks(P, XF.damage(P, 'kept', SEED.march)), bad = JSON.parse(JSON.stringify(W)), b = bad.blocks['inner.c1'][1];
+  bad.walks.push({ curtain: 'inner.c1', s0: b[0] - 2, s1: b[1] + 2, reached: true });
+  T.neg('a walk run through a tower is caught', x => faults(P, x).length === 0, bad, W);
+  const bad2 = JSON.parse(JSON.stringify(W)), s = bad2.stairs[0], c = P.curtains.find(q => q.id === s.curtain), blk = bad2.blocks[s.curtain][0];
+  s.head = [c.a[0] + (c.b[0] - c.a[0]) / len(c) * (blk[0] + blk[1]) / 2, c.a[1] + (c.b[1] - c.a[1]) / len(c) * (blk[0] + blk[1]) / 2];
+  T.neg('a stair landing inside a tower is caught', x => faults(P, x).length === 0, bad2, W);}}
 // 6. the watch post
 {const W = XF.post(); T.ok('the watch post: a tower, its basket, a fuel store and a hut on its lot', W.tower.h > 6 && Math.abs(W.tower.at[0]) + W.tower.w / 2 <= W.w / 2 && W.rota === 4, JSON.stringify(W.tower));}
 T.done();

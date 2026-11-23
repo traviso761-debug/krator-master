@@ -24,9 +24,10 @@ The Xanadui fort is read in place from `kits/xanadu` with the cores its ruined s
 | Fragment | What |
 |---|---|
 | `targets/fort/89z-rows.js` | `window.CITY`, the title, no sheet rows |
+| `targets/fort/89xs-sw-interiors.js` | the interiors on by default (`?interiors=0` turns them off): Xanadu's 89y glue plans, furnishes and floors the rooms of kits/xanadu's `xanadu-fort` set (the keep's five storeys, the barracks, the quarters, the Tears' house, the strongroom, the magazine, the assay court, the smithy, the wheel house: 57 rooms), their bodies hollow and their doors unlocked |
 | `targets/fort/89zs-sw-site.js` | the site as data: the model's ground (`swModel`), the fort's place (XFORT's march plan turned half round, `SW`: its Qiblai Gate facing north down the bench, its gorge wall on the pin's row) and the pad it stands on (`swGround`: the lot levelled to the median of the model's ground there, eased back over 45 m) |
 | `targets/fort/90q-sw-world.js` | the Krator sky and its light; the near ground (a 4 km square at 10 m, the kit's meadow under a colour per vertex: the bench, the scarp's foot, bare rock, the pad's beaten earth); the far land out to 40 km, coloured by height, slope and the rivers (a wadi's gravel, a river's water) |
-| `targets/fort/90r-sw-fort.js` | the march fort (`xa_fort_march`, kept) at its place on the pad, baked; its walks on core/walk |
+| `targets/fort/90r-sw-fort.js` | the march fort (`xa_fort_march`, kept) at its place on the pad, baked; its walks on core/walk; its doors' walk blocks once built (`xaIxWalk`) |
 | `targets/fort/91z-views.js` | the views; the fort as one budget |
 | `verify.py` | Xanadu's verify plus the fort's invariants: `strongwall-laid`, `on-the-model`, `fort-on-its-pad`, `fort-walks` |
 
@@ -44,4 +45,5 @@ bed in `rivers.json`: 910.7,1641.9 to 912.8,1639.9).
 - **The open world** (S1's other half): Strongwall's site in `openworld/xanadu-oidong-highrift`, its ring, and the six watch posts
   at 1:1 with their lines of sight rechecked. The posts' pins wait in the scale-model session's queue (W0).
 - **The gorge** at 1:1 (a carve of Kruk Gill's bed into the scarp), and Kruk Gill's water on core/water: the wadi is drawn dry.
-- **The fort's interiors** (F4: `kits/xanadu/KNOWN_ISSUES.md`), people and life (S3), the raids (S4).
+- **People and life** (S3), the raids (S4). The towers, gatehouses, the keep's chapel and the granary have no rooms yet
+  (`kits/xanadu/KNOWN_ISSUES.md`, the fort section).

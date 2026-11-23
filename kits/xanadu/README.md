@@ -144,11 +144,15 @@ round the Qiblai kit's violet monastery. It is planned before it is drawn:
   read and the centre they are drawn at, gates, buildings, stairs, guns, the beacon); `XFORT.check(P)` holds the rules (a
   tower at every corner, towers at most the size's gap apart, the gate on an edge, every wall walk joined to a stair, nothing
   overlapping, the keep 6 m clear of the curtain); `XFORT.damage(P, state, seed)` hashes the damaged and ruined states from
-  core/rand. `node kits/xanadu/tests/test-fort.js` tests it, each rule with its negative.
+  core/rand; `XFORT.walks(P, D)` lays the wall walks out (F4b, 2026-11-23): between the towers and gatehouses, never through
+  them, a flight up the walk onto each kept tower it meets and that tower's top, the stairs from the ward on plain walk (more
+  added where a piece had none), and which pieces a stair reaches. `node kits/xanadu/tests/test-fort.js` tests it, each rule
+  and the walks' layout with a negative.
 - `src/80g-xa-fort.js` draws it: four defs in the family *Forts* (`xa_fort_watch`, `xa_fort_march` (Strongwall),
   `xa_fort_gate`, `xa_fort_post`), each with `o.v` 0 kept, 1 damaged, 2 ruined. The gold is only the main gate's pavilion and
   the keep's chapel (the owner, 2026-11-16). A ruin's rubble is a core/terrain `KRUBBLE` heap (decoration to core/ruins); fallen
-  pieces are seated on their lowest points. A standing fort's wall walks, stairs and landings are on core/walk.
+  pieces are seated on their lowest points. A standing fort's wall walks, the flights onto its towers, their tops, its stairs
+  and landings are on core/walk (the parapets open where a flight reaches them: `xfCrenel`).
 - The sheet (`build.py` names both fragments, with `core/terrain/37c-core-rubble.js` and `core/ruins`, here and not in
   `xanadu.py`: `XAK` and Xanadu's own pages do not take them): `targets/sheet/91u-xasheet-ruins.js` watches every damaged and
   ruined fort with `KRUINS`; `verify.py` adds `fort-plans` and `fort-walks` (every standing fort's walks reached from its
@@ -168,6 +172,10 @@ sidecar beside the page). No settlement file is read.
 Beside it the kit draws through the Vernacular's `69b`, `69c` and openings (read in place). Not on the kit's sheet (Xanadu's page
 has them): the Vale's biome plants (`86b-xa-plants.js` falls back to the kit's shapes) and core/water's still water (the pools
 take `MAT.xWater`). Xanadu's `xanadu` target stays Xanadu's sheet; `kit_bundle.py` (`XAK`) is unchanged.
+**The forts' interiors** (F4, 2026-11-22): `src/80g-xa-fort.js` writes the interior set `xanadu-fort` from XFORT's plans (one item
+per fort def: the keep, the ranges, the strongroom, the magazine, the assay court, the smithy and the wheel house as INSET bodies, as
+`sets/xanadu.js` writes the kit's other stacks) and registers it on any page with the interiors core (KratorInteriors); a fort
+placed damaged or ruined gets no rooms. Strongwall's page (`settlements/strongwall`) turns them on.
 **Interiors:** the sheet builds the bodies solid, every door locked. A `?interiors=1` mode goes in `targets/sheet/` once the kit's
 interiors and hollow walls land (`kits/interiors/sets/xanadu.js`; another session's work): it already has core/walk, core/door's
 host and `KDOOR.clearDoorways`. The `doors` assert expects every door locked and must be relaxed for that mode.

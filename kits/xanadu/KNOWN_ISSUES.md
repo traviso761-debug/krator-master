@@ -73,15 +73,28 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
 
 ## The Xanadui fort (2026-11-16, `src/80f`-`80g`; `settlements/strongwall/PLAN.md` section 5)
 
-- **No interiors yet** (its step F4 in part): the keep, the barracks, the assay court and the Tears' house are solid, every door
-  locked, and `kits/interiors/sets/xanadu.js` has no items for the four fort defs. No page loads the forts with interiors (the kit
-  sheet has none; Xanadu's `?interiors=1` page does not place them), so items written now could not be tested. They go in when
-  Strongwall or the House of the Tempest is placed on a page that takes interiors.
-- **The wall walks run through the towers and gatehouses** (core/walk strips at the curtain's walk height, end to end): the towers
-  have no doors or stairs of their own and their tops are not walk floors.
-- **A breach's ends are cut square** and a damaged gate's leaves simply go (the passage's dim back shows): no ragged masonry or
-  charred leaf yet. The burnt walls take the wash darkened by its colour until `wall.limewash.scorched` is delivered
-  (`core/materials/PROMPTS-NEEDED.md` section 53, with `wall.rubble.limewash` and `wood.gate.studded`).
+- **Interiors only where a page takes them, and only for a KEPT fort** (F4, 2026-11-22). The interior set `xanadu-fort` is written
+  in `src/80g-xa-fort.js` from the plans (not in `kits/interiors/sets/xanadu.js`: XFORT loads after the interiors bundle), and is
+  registered only on a page with the interiors core (settlements/xanadu's 69d: Strongwall's page, on by default there). The kit
+  sheet has no interiors core, so on it every fort building stays solid and every door locked, as before. A damaged or ruined fort's
+  item is a skip (its keep has lost storeys, its ranges their roofs, or it stands as low walls), so its buildings stay solid too.
+- **Still solid in a kept fort**: the towers, the gatehouses and the barbican (their tops are walked, their insides are not: no
+  chamber is drawn in them), the keep's chapel on its roof (no stair to the roof), the granary (no door), and the stables and ore
+  shed (open sheds). The watch fort's keep, magazine and barracks are planned like Strongwall's; the gate works have no building
+  with a door.
+- **The walks (F4b, 2026-11-23; `XFORT.walks` in 80f)**: the walk no longer runs through the towers and gatehouses. It runs between
+  them and climbs each kept tower it meets by a flight up the walk onto its top (the parapet opened there), and the tops are walk
+  floors. What is left: a **gate block is not crossed** (its gatehouse roof carries the main gate's pavilion), so the walk ends at
+  its gate towers, which are climbed only where the walk before them has room for a 10 m flight (the watch fort's and the gate
+  works' are; Strongwall's, between an interval tower and the gate, are not); **a few stretches are too short for a stair** and
+  are drawn but not walked (Strongwall's two back walls, 5 m between their towers; the gate works' last metre past each gate
+  tower); a fallen tower ends the walk at its face. The flights stand on the walk, so a walker on the walk steps up them; the
+  plan's stairs are kept where they land on plain walk, and stairs are added where a piece of walk had none (`extra: true`).
+- **A breach's broken ends and a burnt gate** (2026-11-23): the wall steps down into a breach in three or four ragged courses from
+  each side (hashed per breach, each side within its third of the gap); a burnt gate keeps a charred stump at each jamb and a leaf
+  fallen flat on its approach (seated on its lowest points), the passage behind still its dim back. The courses are whole blocks of
+  the wall's body (no broken stone faces), and the burnt wood and walls are tints, not textures, until `wall.limewash.scorched` and
+  `wood.gate.studded` are delivered (`core/materials/PROMPTS-NEEDED.md` section 53, with `wall.rubble.limewash`).
 - **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its
   blueprint is another session's (`settlements/strongwall/tempest/`), and the Qiblai kit is not on this sheet.
 - **The sheet is over its showcase budget**: 6.71 M triangles against 6.0 M (`targets/sheet/89z-rows.js`; reported, a failure
