@@ -71,6 +71,7 @@
   // Unified tabs: switch between Regions (Pol/Geo/Bio) and Settlements (Sett)
   const regSec=document.getElementById('regSec'), bSettTab=document.getElementById('bSettTab'), settPills=document.getElementById('settPills'), rSearch=document.getElementById('rSearch');
   let activeSettType='all';
+  window.__activeSettType='all';
   function applySearchAndFilters(){
     const q=(rSearch?.value||'').trim().toLowerCase();
     // Filter regions list
@@ -78,16 +79,25 @@
       const nm=(li.querySelector('.nm')?.textContent||'').toLowerCase();
       li.style.display=(!q||nm.includes(q))?'':'none';
     });
-    // Filter settlements list
+    // Filter settlements list and count visible matches
+    let shown=0;
     document.querySelectorAll('#settList li').forEach(li=>{
       const nm=(li.querySelector('.snm')?.value||'').toLowerCase();
       const ty=(li.querySelector('.sty')?.value||'').toLowerCase();
       const matchQ=!q||nm.includes(q)||ty.includes(q);
       const matchT=activeSettType==='all'||ty===activeSettType;
-      li.style.display=(matchQ&&matchT)?'':'none';
+      const vis=matchQ&&matchT;
+      li.style.display=vis?'':'none';
+      if(vis) shown++;
     });
     const badge=document.getElementById('settCountBadge');
-    if(badge) badge.textContent=settlements.size;
+    if(badge) badge.textContent=(activeSettType==='all'&&!q)?settlements.size:shown;
+    if(bSettTab) bSettTab.title='View & Edit '+settlements.size+' Canonical Settlements';
+    if(typeof updateSettLabels==='function') updateSettLabels();
+    if(settStatus){
+      const suffix=db?' · shared store':' · this browser only';
+      settStatus.textContent=((activeSettType==='all'&&!q)?(settlements.size+' settlement'+(settlements.size===1?'':'s')):(shown+' of '+settlements.size+' settlements ('+activeSettType+')'))+suffix;
+    }
   }
   if(rSearch) rSearch.addEventListener('input', applySearchAndFilters);
   if(settPills){
@@ -96,6 +106,7 @@
         settPills.querySelectorAll('.pill-btn').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         activeSettType=btn.dataset.type||'all';
+        window.__activeSettType=activeSettType;
         applySearchAndFilters();
       };
     });

@@ -971,6 +971,38 @@ reconcile key `5.1e11` (`krator.regMerged.5.1e11`, `SETT_ADDED`/`SETT_MOVED['5.1
 - **Checked**: no two pins within 3 px; every settlement id in Gemini's trade, population, fleet, road and network files
   is on the page but the two held salt works.
 
+## 5.1e14 (2026-11-22): Gemini's settlement stages and pins (no raster change)
+
+`gemini/pins-and-settlement-stages-5.1` (3d720120a and 9163bdfe7, 2026-11-13/14: 149 regions, 191 pins, ten pin stages)
+merged here (the owner's step 5, "merge in gemini scoping branch and crook/ria work", relayed by the build coordinator).
+5.1e11 had already taken 63 of its 69 new pins and all its new regions (gemini-trade carried them); this takes the rest:
+- **The page**: its ten stages in hierarchy order with their own colours, strokes and sizes (city, town, village, fort,
+  outpost, cavern, arcology, inhabited ruin, ruin, ruined arcology), a filter pill each, labels by zoom and stage, the
+  filtered count, "Import JSON"; `geology.py` and `ancient_roads.py` count an inhabited ruin as a ruin.
+- **Stages**: 40 pins take the stage `openworld/populations-gemini.json` gives them (towns from villages and cities,
+  inhabited ruins from ruins, forts from outposts and ruined arcologies); Thalaba stays a town (the owner moved it,
+  5.1e12) and Amaro a city (Shumar's capital on `origin/shumar/amaro-urundashi`).
+- **Regions**: the six coarse ones the Ria Valley and Crook breakdown replaces deleted (ria valley, double delta, the
+  arch, the crook, copper glacier, tharn uplands; Gemini's own `regMerged.5.1e10` does it in browsers); the Lesser Throne
+  and outland gate take Gemini's kinds; the dome, compass hills, weeping valley and copper glacier its notes. Not taken:
+  its emptied Firebliss note and its Stalker Peaks note (which says edit 3 for edit 5). 149 regions.
+- **Ids**: the four duplicates take the ids Gemini's population data keys (`gem_palewharf` -> `spalewharf01`,
+  `gem_godsgate` -> `sbabalhawa01`, `gem_twins_pass` -> `sthetwins01`, the owner's `smgxtultfq` -> `sxangold01`), and
+  Port Tobin's two pins become one (`skwl1d2hdu`, moved by Gemini to 956,943; gemini-trade's `s06eu913kl` dropped). A new
+  `SETT_DROPPED` reconcile removes the old ids from browsers that hold them.
+- **Moves**: Port Goto to 920,703 (edit 8's harbour), and Gemini's own Peak Coyote Plume-Camp and Gate Tarn Mires by a
+  few px. Not taken: Gemini's unexplained moves of Amaro and Driyan, and of the Siphon-Ropers' camp (`sk9e4psl4b`, at
+  the queue's station 3 site).
+- **Names**: the owner's "(to be named)" pins keep their placeholders (as in 5.1e11); Gemini's names for them (Baelu
+  North/Mid/South, Guari, Coyote Lake Village, K7, K2, E1, Xanadu Goldfields) are in their notes. Empty notes take
+  Gemini's; polities fill from the population data.
+- **Held**: the two salt works (`svhmyhf33w`, `s0zgu7u6yb`), the owner's batch 5.1e10. **Open for the owner**: Gemini's
+  test drops the "Tabist town (to be named)" (`seur98e8mv`, 1285,655) as a duplicate of its Tabisti capital Sfenops
+  (1282,663, 17 km off); both stay until the owner says.
+- **Re-baked**: `kits/resources/data/geology.json` (`geology.py --cell 4`, then `--lodes`), `data/ledger.json` and
+  `godot/golden-field.json` (`test-res.js --ledger`), and the Godot test copies (`godot/tools/sync_core.py`).
+- `tests/test_smodel.py` section 21 holds Gemini's stage checks, adapted.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

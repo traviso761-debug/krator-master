@@ -1,6 +1,7 @@
   // ---- minimal orbit controls ----
   const target=new THREE.Vector3(0,0,0);
   let theta=-0.6, phi=0.95, dist=2600, topdown=false;
+  const cam={get k(){return 2600/dist;}};
   function updateCam(){
     if(topdown){ camera.position.set(target.x,dist,target.z+0.001); camera.up.set(0,0,-1); }
     else { camera.position.set(target.x+dist*Math.sin(phi)*Math.sin(theta), target.y+dist*Math.cos(phi), target.z+dist*Math.sin(phi)*Math.cos(theta)); camera.up.set(0,1,0); }
@@ -9,6 +10,7 @@
     if(gu>0&&gu<1&&gv>0&&gv<1){ const gi=Math.round(gv*(VH-1))*VW+Math.round(gu*(VW-1)); const floor=base[gi]*vex+4*vex; if(camera.position.y<floor) camera.position.y=floor; }
     camera.lookAt(target);
     if(handles.children.length) placeHandles();
+    if(window.__settReady && typeof updateSettLabels==='function') updateSettLabels();
   }
   const el=renderer.domElement; let drag=null, dragHandle=null;
   el.addEventListener('pointerdown',e=>{
