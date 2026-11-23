@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Concatenate src/* (+ core/materials/*, core/atmos, core/water) into dist/ringsea.html: the Ring Sea watercraft kit.
+"""Concatenate src/* (+ core/materials/*, core/atmos, core/water) into dist/ringsea.html: the Boats, Ships, and Vessels Kit.
 
 Rules it enforces (the same ones the Ancients-lineage builds use):
 
@@ -157,7 +157,9 @@ def main():
             for e in errs:
                 print('  -', e)
             sys.exit(1)
-    html = ''.join(bodies[f] for f in order)
+    html = ''.join(bodies[f] for f in order).replace(
+        '<title>Ring Sea Watercraft</title>', '<title>Boats, Ships, and Vessels Kit</title>').replace(
+        '<div id="cap">Ring Sea Watercraft</div>', '<div id="cap">Boats, Ships, and Vessels Kit</div>')
     BSRC.report(vendored=[os.path.join(ANCIENTS, r) for r in VENDORED] + [SOCKETS, SYMBOLS])   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, OUT + '.html')

@@ -1,0 +1,21 @@
+{
+ "id": "fumarole",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arachnoid Canyons — Cauldron-Slot Fumaroles and Basalt-Weir Step-Pools",
+ "name": "Cauldron-Slot Fumaroles and Basalt-Weir Step-Pools (1097,331, +912.6 m, 1.43 atm, +28 C trough): 9 monotone turquoise basalt-sill step-pools, KTHERM steaming fumaroles, fumarolefern & sintermat gardens, and tin/gold river placers",
+ "out": "arachnoids-fumarole.html",
+ "px": [1097, 331],
+ "ownVerified": true,
+ "elevM": 912.6,
+ "pAtm": 1.43,
+ "koppen": "Cfa",
+ "rainMmYr": 1224,
+ "riverId": 9102,
+ "dischargeM3s": 995.0,
+ "strataStack": "tibasalt-ponded",
+ "kin": ["nwlowlands", "swlowlands", "korona"],
+ "reserves": [
+  {"id": "site:hum-placer-camp", "x": 112, "z": -36, "r": 120}
+ ],
+ "modes": ["Clear", "Slot-Mist", "Rim-Gale"]
+}

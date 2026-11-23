@@ -1,0 +1,16 @@
+{
+ "id": "dolomite",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Spider Lake — Dolomite Rim Overlook, Porphyry Dike & Calcite-Celestine Grotto",
+ "out": "spiderlake-dolomite.html",
+ "px": [1256, 184],
+ "sky": [984, -146],
+ "lakeDatumM": 1460.0,
+ "pAtm": 1.33,
+ "pO2Atm": 0.28,
+ "rhoKgM3": 1.56,
+ "conduit": "tube_ozarks_15",
+ "strataStack": "dolomite-porphyry",
+ "reserves": [],
+ "modes": ["Dawn Fog", "Dusk Lake-Smoke", "Smudge Harvest"]
+}

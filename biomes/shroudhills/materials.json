@@ -1,0 +1,547 @@
+{
+ "build": "shroudhills",
+ "note": "Shroudhills biome kit adapter onto core/materials/library (biomes/shroudhills/PLAN.md). Covers 100% of ground, granite, ironstone, coal, bark, foliage, Sister-Cup bromeliad tank, Root-Hammock peat turf, Myrmecophyte Drum-Gall, saltpeter crust, amber-resin, bronze-black Shroud-Ant chitin, and Yonni watch-drum plinth surfaces. Run python3 tools/textures/pack.py biomes/shroudhills after any change, then rebuild all stations.",
+ "size": 512,
+ "families": {
+  "mahogany": {
+   "lib": "bark.mahogany",
+   "scale": [
+    3.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.38
+   },
+   "roughLift": 0.3,
+   "specular": 0.18,
+   "mapOnly": true
+  },
+  "kauri": {
+   "lib": "bark.araucaria",
+   "scale": [
+    3.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.44
+   },
+   "roughLift": 0.28,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "rata": {
+   "lib": "bark.strangler",
+   "scale": [
+    2.4,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.38
+   },
+   "roughLift": 0.3,
+   "specular": 0.18,
+   "mapOnly": true
+  },
+  "fernbark": {
+   "lib": "bark.scales.hooked",
+   "scale": [
+    2.6,
+    4.5
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.34
+   },
+   "roughLift": 0.34,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "amber": {
+   "lib": "bark.amber",
+   "scale": [
+    1.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.06,
+   "specular": 0.65
+  },
+  "gall": {
+   "lib": "organic.pod.honeycomb",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.48
+   },
+   "roughLift": 0.28,
+   "specular": 0.22
+  },
+  "saltpeter": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.65,
+    "mean": 0.84
+   },
+   "roughLift": 0.35,
+   "specular": 0.18,
+   "mapOnly": true
+  },
+  "turf": {
+   "lib": "roof.turf",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": 0.48
+   },
+   "roughLift": 0.35,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "tank": {
+   "lib": "organic.scale.olive",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.58
+   },
+   "roughLift": 0.2,
+   "specular": 0.38,
+   "mapOnly": true
+  },
+  "chitin": {
+   "lib": "organic.chitin.iridescent",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.65,
+    "mean": 0.44
+   },
+   "roughLift": 0.12,
+   "specular": 0.6
+  },
+  "shrub": {
+   "lib": "leaf.understorey",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.6
+   },
+   "roughLift": 0.36,
+   "specular": 0.14,
+   "mapOnly": true
+  },
+  "koheleaf": {
+   "lib": "card.mahogany",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.68
+   },
+   "size": 512,
+   "cell": [
+    0.034,
+    0.024,
+    0.964,
+    0.976
+   ],
+   "base": "centre"
+  },
+  "kaurileaf": {
+   "lib": "card.pine",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.66
+   },
+   "size": 512,
+   "rise": 0.28,
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.03,
+      0.329,
+      0.339
+     ],
+     "stem": [
+      0.042,
+      0.315
+     ],
+     "tip": [
+      0.2896,
+      0.0752
+     ],
+     "w": [
+      -0.1068,
+      0.1195
+     ]
+    },
+    {
+     "cell": [
+      0.016,
+      0.343,
+      0.327,
+      0.671
+     ],
+     "stem": [
+      0.048,
+      0.618
+     ],
+     "tip": [
+      0.2896,
+      0.3907
+     ],
+     "w": [
+      -0.1238,
+      0.1264
+     ]
+    },
+    {
+     "cell": [
+      0.686,
+      0.661,
+      0.985,
+      0.97
+     ],
+     "stem": [
+      0.698,
+      0.945
+     ],
+     "tip": [
+      0.9595,
+      0.6957
+     ],
+     "w": [
+      -0.1102,
+      0.1207
+     ]
+    }
+   ],
+   "cell": [
+    0.018,
+    0.03,
+    0.329,
+    0.339
+   ]
+  },
+  "treefern": {
+   "lib": "card.treefern",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.65
+   },
+   "size": 512,
+   "cell": [
+    0.024,
+    0.112,
+    0.978,
+    0.993
+   ],
+   "base": "bottom"
+  },
+  "fern": {
+   "lib": "card.fern",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.64
+   },
+   "size": 512,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
+  },
+  "bromeliad": {
+   "lib": "card.bromeliad",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.72
+   },
+   "size": 512,
+   "cell": [
+    0.024,
+    0.024,
+    0.976,
+    0.976
+   ],
+   "base": "centre"
+  },
+  "orchid": {
+   "lib": "card.orchid.dendrobium",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.74
+   },
+   "size": 512,
+   "cell": [
+    0.665,
+    0.343,
+    0.96,
+    0.653
+   ]
+  },
+  "heath": {
+   "lib": "card.heath",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.347,
+    0.35,
+    0.661,
+    0.648
+   ],
+   "base": "bottom"
+  },
+  "sundew": {
+   "lib": "card.sundew.great",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.76
+   },
+   "size": 512,
+   "cell": [
+    0.03,
+    0.337,
+    0.316,
+    0.671
+   ]
+  },
+  "mosshang": {
+   "lib": "card.beard",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.372,
+    0.337,
+    0.628,
+    0.661
+   ],
+   "base": "top"
+  },
+  "myrtle": {
+   "lib": "card.osmanthus",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.68
+   },
+   "size": 512,
+   "cell": [
+    0.329,
+    0.345,
+    0.651,
+    0.648
+   ]
+  },
+  "ground.floor": {
+   "lib": "leaf.forest_leaves_02",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.34,
+   "specular": 0.18,
+   "mapOnly": true
+  },
+  "ground.ironstone": {
+   "lib": "ground.ironstone",
+   "scale": [
+    2.8,
+    2.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.28,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "ground.moss": {
+   "lib": "ground.moss002",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.18,
+   "mapOnly": true
+  },
+  "ground.granite": {
+   "lib": "rock.granite.tor",
+   "scale": [
+    3.6,
+    3.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.cobble": {
+   "lib": "ground.shingle",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.28,
+   "specular": 0.28,
+   "mapOnly": true
+  },
+  "rock.granite": {
+   "lib": "rock.granite.tor.b",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.25,
+   "own": true
+  },
+  "rock.coal": {
+   "lib": "rock.coal",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.18,
+   "specular": 0.38,
+   "own": true
+  },
+  "works.stone": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "own": true
+  },
+  "works.lime": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "own": true
+  },
+  "works.bronze": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.22,
+   "specular": 0.45,
+   "own": true
+  }
+ }
+}

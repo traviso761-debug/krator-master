@@ -1,0 +1,20 @@
+{
+ "id": "cuesta",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Compass Hills — Dry-Summer Csa Dip-Slope and Dipole Inversion Saddle",
+ "name": "Dry-Summer Csa Pine-Oak-Pistache Dip-Slope & 180-deg Dipole Inversion Saddle (station cuesta): sunlit Mediterranean pine, cork oak, iron-pistache, whorl-olive and saffron woodland crossed by a crisp magnetic domain-wall saddle where compassbush bearings flip 180 degrees",
+ "out": "compasshills-cuesta.html",
+ "px": [1046, 258],
+ "elevM": 987.6,
+ "pAtm": 1.42,
+ "koppen": "Csa",
+ "rainMmYr": 769,
+ "toroidRadiusM": 0.0,
+ "peakFieldMt": 18.5,
+ "strataStack": "banded-ironstone",
+ "kin": ["swlowlands", "wouterwall"],
+ "reserves": [
+  { "id": "site:cuesta-olive-terrace", "x": 142, "z": -118, "r": 32 }
+ ],
+ "modes": ["Clear sky", "Thunder squall", "Field overlay"]
+}

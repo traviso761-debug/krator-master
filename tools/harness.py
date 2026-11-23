@@ -1004,6 +1004,107 @@ SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&render
   for(let i=0;i<n;i++){ const u=gl.getActiveUniform(g,i); if(u&&S.has(u.type)){ k+=u.size; names.push(u.name.replace(/\\[0\\]$/,'')); } }
   out.push({name:p.name||'program '+p.id, n:k, names:names.slice(0,20)}); }
  out.sort((a,b)=>b.n-a.n); return {programs:out.length, max:out.length?out[0].n:0, top:out.slice(0,5), units:gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)}; }"""
+WATER_MOUTHS_JS = """()=>{
+ let W=null; try{ W=(typeof WATER!=='undefined'&&WATER)||window.WATER; }catch(e){}
+ if(!W||!Array.isArray(W.surfaces)) return null;
+ const opens=W.surfaces.filter(s=>s&&s.kind==='open'&&typeof s.contains==='function');
+ const flows=W.surfaces.filter(s=>s&&s.kind==='flow'&&Array.isArray(s.pts)&&s.pts.length>=2);
+ if(!opens.length||!flows.length) return {opens:opens.length, flows:flows.length, bad:[]};
+ let G=null;
+ try{ if(typeof terrainH==='function') G=terrainH; }catch(e){}
+ if(!G){ try{ if(typeof landH==='function') G=landH; }catch(e){} }
+ if(!G){ try{ if(typeof DRAWN_H==='function') G=DRAWN_H; }catch(e){} }
+ if(!G&&window._api&&typeof window._api.ground==='function') G=window._api.ground;
+ const lvlOf=O=>typeof O.levelAt==='function'?O.levelAt(0):(O.level||0);
+ const inBounds=(O,x,z)=>{ const b=O.bounds; return !b||(x>=b[0]&&z>=b[1]&&x<=b[2]&&z<=b[3]); };
+ const drawnList=Array.isArray(W.drawn)?W.drawn:[];
+ const keepFnOf=F=>{
+  if(typeof F.keepAt==='function') return F.keepAt;
+  const D=drawnList.find(d=>d&&d.S===F);
+  const ka=D&&D.mesh&&D.mesh.geometry&&D.mesh.geometry.attributes&&D.mesh.geometry.attributes.wtrKeep;
+  const pos=D&&D.ribbon&&D.ribbon.pos;
+  if(ka&&pos&&ka.array){
+   const K=ka.array, n=K.length, ox=(D.mesh.position&&D.mesh.position.x)||0, oz=(D.mesh.position&&D.mesh.position.z)||0;
+   return (x,z)=>{
+    let best=1e18, kv=1;
+    for(let i=0;i<n;i++){
+     const dx=(pos[i*3]+ox)-x, dz=(pos[i*3+2]+oz)-z, d2=dx*dx+dz*dz;
+     if(d2<best){ best=d2; kv=K[i]; }
+    }
+    return kv;
+   };
+  }
+  return null;
+ };
+ const bad=[], step=4;
+ for(const F of flows){
+  const P=F.pts.map(p=>Array.isArray(p)?{x:p[0],z:p[1],y:p[2]||0,w:F.width||10}:{x:p.x,z:p.z,y:p.y||0,w:p.w||F.width||10});
+  const kf=keepFnOf(F);
+  let overM=0, maxOver=0, ox=0, oz=0, oName='';
+  let subM=0, maxSub=0, sx=0, sz=0, sName='';
+  for(let i=0;i+1<P.length;i++){
+   const a=P[i], b=P[i+1], L=Math.hypot(b.x-a.x,b.z-a.z);
+   if(L<1e-6) continue;
+   const n=Math.max(1,Math.ceil(L/step)), ds=L/n, tx=(b.x-a.x)/L, tz=(b.z-a.z)/L, nx=-tz, nz=tx;
+   for(let k=0;k<(i+2===P.length?n+1:n);k++){
+    const u=k/n, x=a.x+(b.x-a.x)*u, z=a.z+(b.z-a.z)*u, w=(a.w+(b.w-a.w)*u)||10;
+    if(kf&&kf(x,z)<0.25){ overM=0; subM=0; continue; }
+    const g=G?G(x,z):null;
+    let hitOpen=null;
+    for(const O of opens){
+     const lv=lvlOf(O);
+     if(inBounds(O,x,z)&&O.contains(x,z)&&(g===null||g<lv-0.02)){ hitOpen=O; break; }
+    }
+    if(hitOpen){ overM+=ds; if(overM>maxOver){ maxOver=overM; ox=x; oz=z; oName=hitOpen.name||'open water'; } }
+    else overM=0;
+    let hitSub=null;
+    if(G){
+     const dOut=w*0.5+Math.max(8,w*0.35);
+     const xl=x+nx*dOut, zl=z+nz*dOut, xr=x-nx*dOut, zr=z-nz*dOut;
+     const gL=G(xl,zl), gR=G(xr,zr);
+     for(const O of opens){
+      const lv=lvlOf(O);
+      if(inBounds(O,x,z)&&O.contains(xl,zl)&&O.contains(xr,zr)&&g<lv+0.15&&gL<lv-0.20&&gR<lv-0.20){ hitSub=O; break; }
+     }
+    }
+    if(hitSub){ subM+=ds; if(subM>maxSub){ maxSub=subM; sx=x; sz=z; sName=hitSub.name||'open water'; } }
+    else subM=0;
+   }
+  }
+  if(maxOver>24) bad.push((F.name||'flow')+' runs '+maxOver.toFixed(0)+' m unfaded inside '+oName+' near ('+ox.toFixed(0)+','+oz.toFixed(0)+')');
+  else if(maxSub>28) bad.push((F.name||'flow')+' runs '+maxSub.toFixed(0)+' m unbanked through submerged bed of '+sName+' near ('+sx.toFixed(0)+','+sz.toFixed(0)+')');
+ }
+ return {opens:opens.length, flows:flows.length, bad};
+}"""
+# Item 33: foliage card sheet cuts and stem-origin attachment: refuses any single-plant library card cut as a multi-cell
+# sheet ("sheet": "geometry" or BIO.geo.cells), and runs BIO.attachAudit with tight stem tolerances (kStem 0.16, pad 0.30 m).
+LEAF_STEMS_JS = """()=>{
+ if(typeof BIO==='undefined'||!BIO||!BIO.kits) return {defs:0, audited:0, floating:0, bad:[]};
+ const bad=[]; let defs=0;
+ for(const K of Object.values(BIO.kits)){
+  for(const [nm,df] of Object.entries((K&&K.defs)||{})){
+   const lc=df&&df.mat&&df.mat.userData&&df.mat.userData.libCard, raw=df&&df.raw;
+   if(!lc||!lc.lib) continue;
+   defs++;
+   const cut=!!(raw&&raw.userData&&raw.userData.cells)||lc.sheet==='geometry';
+   if(lc.plants===1&&cut){
+    bad.push('item '+nm+' ('+(lc.slot||lc.lib)+') cuts single-plant '+lc.lib+' as a multi-cell sheet');
+   }
+  }
+ }
+ let audited=0, floating=0;
+ const G=(BIO.host&&BIO.host.terrainH)||(typeof terrainH==='function'?terrainH:null)||(window._api&&typeof window._api.terrainH==='function'?window._api.terrainH:null);
+ if(typeof BIO.attachAudit==='function'&&G){
+  const a=BIO.attachAudit({ground:G, kStem:0.16, pad:0.30, max:6000});
+  if(!a.note){
+   audited=a.audited||0; floating=a.floating||0;
+   if(audited>0&&a.share>0.015){
+    bad.push(floating+' of '+audited+' foliage cards float under tight stem audit ('+(100*a.share).toFixed(2)+'% > 1.50%)');
+   }
+  }
+ }
+ return {defs, audited, floating, bad};
+}"""
 # Item 28: the eye against the ground as drawn (core/drawn, KDRAWN.h): the page's own KDRAWN sources when it registers them,
 # else its ground meshes (userData.ground, or named ground / terrain), read triangle by triangle. The ray rule misses an eye
 # under the ground when something solid lies below it (a seabed, a cave floor); this does not.
@@ -1354,8 +1455,9 @@ def load_budget(here, html):
 
 
 def survey_checks(here, checks=None):
-    """The survey's opt-in checks (SURVEY) this verify runs: `checks` (SURVEY, a name, or names), plus those the build is
-    listed for in tools/checks_optin.json, plus KRATOR_CHECKS."""
+    """The survey's opt-in checks (SURVEY + OPTIN_CHECKS) this verify runs: `checks` (SURVEY, a name, or names), plus those
+    the build is listed for in tools/checks_optin.json, plus KRATOR_CHECKS."""
+    optin_all = SURVEY + ("water-mouths", "leaf-stems")
     want = set()
     if checks:
         want.update([checks] if isinstance(checks, str) else checks)
@@ -1363,10 +1465,10 @@ def survey_checks(here, checks=None):
     try:
         import buildlib
         b = os.path.relpath(os.path.abspath(here or "."), ROOT).replace(os.sep, "/")
-        want.update(c for c in SURVEY if buildlib.opted_in(c, None if b.startswith("..") else b))
+        want.update(c for c in optin_all if buildlib.opted_in(c, None if b.startswith("..") else b))
     except Exception:
         pass
-    return {c for c in want if c in SURVEY}
+    return {c for c in want if c in optin_all}
 
 
 def page_sources(html):
@@ -1619,6 +1721,39 @@ class VerifyPage:
                     U.append(("samplers", False, msg))
                 else:
                     U.append(("samplers", True, ("WARN: " if sm["max"] >= SAMPLER_WARN else "") + msg))
+        try:
+            wm = await pg.evaluate(WATER_MOUTHS_JS)
+        except Exception as e:
+            wm = {"error": str(e).splitlines()[0][:200]}
+        if wm is not None:
+            on = "water-mouths" in self.checks
+            if wm.get("error"):
+                U.append(("water-mouths", not on, ("" if on else "report: ") + "could not inspect WATER surfaces: " + wm["error"]))
+            else:
+                bad = wm.get("bad") or []
+                msg = ("; ".join(bad[:3])[:320] if bad else
+                       "%d flow(s), %d open water surface(s): all mouths terminate or cross-fade cleanly" % (wm["flows"], wm["opens"]))
+                if not on:
+                    U.append(("water-mouths", True, "report: " + msg + ' (opt in: tools/checks_optin.json "water-mouths")'))
+                else:
+                    U.append(("water-mouths", not bad, msg))
+        try:
+            ls = await pg.evaluate(LEAF_STEMS_JS)
+        except Exception as e:
+            ls = {"error": str(e).splitlines()[0][:200]}
+        if ls is not None:
+            on = "leaf-stems" in self.checks
+            if ls.get("error"):
+                U.append(("leaf-stems", not on, ("" if on else "report: ") + "could not inspect BIO foliage cards: " + ls["error"]))
+            else:
+                bad = ls.get("bad") or []
+                msg = ("; ".join(bad[:3])[:320] if bad else
+                       "%d card def(s), %d/%d floating under tight stem audit: all cards cleanly cut and stem-anchored"
+                       % (ls["defs"], ls["floating"], ls["audited"]))
+                if not on:
+                    U.append(("leaf-stems", True, "report: " + msg + ' (opt in: tools/checks_optin.json "leaf-stems")'))
+                else:
+                    U.append(("leaf-stems", not bad, msg))
         if not self.eyes:
             await self.eye("as loaded")
         for v, r in self.eyes:
