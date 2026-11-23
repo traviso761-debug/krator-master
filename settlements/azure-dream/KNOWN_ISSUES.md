@@ -2,11 +2,10 @@
 
 The page's first pass (2026-11-16, the owner: "build the page next"). What it does not do yet, and the stand-ins it uses.
 
-- [ ] **The cove's headlands are stamped by the page, not by core/world.** core/world's landform stamper
-      (`core/world/41l-world-landforms.js`) is on the open-world line (`claude/openworld-sites-24defd`), not this branch.
-      `src/89zaa-ad-ground.js` stamps the same two records (`lf_azure_cove_west`, `lf_azure_cove_east`) through
-      `WORLD.landHook` with 41l's island profile, without its waterline's noise wobble. Take core/world when the page moves
-      onto that line, and delete the page's copy.
+- [ ] **The cove's headlands are stamped by the page, not by core/world.** core/world reached main (merged here 2026-11-23): the
+      page reads its fields from `core/world/41-world-fields.js`, but `src/89zaa-ad-ground.js` still stamps the two headland
+      records (`lf_azure_cove_west`, `lf_azure_cove_east`) through `WORLD.landHook` with a copy of 41l's island profile, without
+      its waterline's noise wobble. Next: take `core/world/41l-world-landforms.js` with the records, and delete the page's copy.
 - [ ] **The region cut came from the scale-model line**, with edit 517 and `tools/scale-model/edit_517_azure.py` applied on a
       scratch copy (`region/source` holds its inputs: the Xanadu regions dump with the site's box added, no settlements).
       Re-cut it when the scale-model line lands the cove's records (the cut does not carry landforms today).

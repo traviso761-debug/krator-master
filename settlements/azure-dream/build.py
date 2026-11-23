@@ -8,7 +8,7 @@ targets/, with the Qiblai kit's fragments read in place (kit.json "externalDirs"
 The ground is the scale model's, at 1:1, as Longsong's is: region/data is the cut round the cove (tools/scale-model/
 extract_region.py, from the scale-model line with edit 517 and edit_517_azure.py; region/source holds its inputs), decoded
 here into gen/39ad-world-data.js by Pinnacle Rock's tools/world_data.py (read in place), and drawn by the open world's fields
-(openworld/isle-demo/src/world/41-world-fields.js, read in place) on core/terrain's KRELIEF. core/atmos and core/water draw
+(core/world/41-world-fields.js, read in place) on core/terrain's KRELIEF. core/atmos and core/water draw
 the sky in the lake and the lake itself (kit.json "files").
 
     python3 build.py                 # dist/azure-dream.html

@@ -22,7 +22,7 @@ python3 ../../tools/build.py settlements/azure-dream   # the same through the re
 then runs `settlements/xanadu/build.py --kit settlements/azure-dream`, so the page is a target on Xanadu's page, as Qiblai's
 city and Erewhon are, with these read in place:
 - the Qiblai kit's fragments (`kit.json` `externalDirs`) and its texture pack (`packFrom`);
-- the open world's fields (`openworld/isle-demo/src/world/41-world-fields.js`) and core/terrain's `KRELIEF`;
+- the open world's fields (`core/world/41-world-fields.js`) and core/terrain's `KRELIEF`;
 - core/atmos and core/water (`kit.json` `files`).
 
 The page reads the Qiblai and Xanadu texture packs and the Vale of Xanadu's (`biomes/xanadu/tex`): in a fresh worktree,
