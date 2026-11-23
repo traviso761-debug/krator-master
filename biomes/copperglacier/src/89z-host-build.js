@@ -18,7 +18,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
 (function(){
  const t0=performance.now();
  // ?q=0.5 builds at a lower quality; ?nobake=1 measures the build without drawing it
- const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
+ const Q=new URLSearchParams(location.search),q=(Q.has('q')?+Q.get('q'):1)*(SITE.q==null?1:SITE.q);   /* a station's own share (SITE.q: station 11's open ground) */
  COPPERG.SITE=SITE;
  try{BIO.cur='copperglacier/'+SITE.key;window._biome=COPPERG.build(TERR.R-150,q);BIO.cur=null;}catch(e){reportErr('biome: '+e.stack);}
  window._biome=Object.assign(window._biome||{},{glacier:GLACIER});

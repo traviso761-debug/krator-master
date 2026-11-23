@@ -72,6 +72,7 @@ def move(x, y):
 
 BED_SHORE, BED_DROP = 60.0, 860.0                                 # 60 m deep at the shore, ~920 m in the middle
 WALL_RISE, BENCH_SLOPE, BENCH_REACH = 480.0, 15.0, 16.0          # +480 m over cells 1-3; then 15 m a px, to 16 px
+BEACON = (854.0, 1540.0, 6.0, 10.0)       # the Beacon's knoll, spur and saddle: kept out of the horst's lowering
 HORST_C = 700.0                                                   # rim height over the lake: C ln(1 + h / C)
 VOLCS = [  # id, px, py, summit over the lake (m), base radius (px)
     ('volc_erewhon_west', 794.0, 1525.0, 2000.0, 5.5),
@@ -244,6 +245,10 @@ def main(dry=False):
 
     # ---- 1. the south horst lowered to a caldera rim
     ks = G.sstep(2.0, 8.0, v) * (1 - G.sstep(LAKE['a'] + 8, LAKE['a'] + 20, np.abs(u))) * (1 - G.sstep(30.0, 42.0, v)) * fade
+    # the Beacon's shoulder kept (the owner, 2026-11-16: the Order of the Beacon's head house on the knoll at 853,1540, its
+    # spur and the saddle behind it, as settlements/beacon/PLAN.md measured them before the lake moved east)
+    rb_ = np.hypot((xx - BEACON[0]) / BEACON[2], (yy - BEACON[1]) / BEACON[3])
+    ks = ks * G.sstep(1.0, 1.5, rb_)
     rel = En - LEVEL
     comp = np.where(rel > 0, LEVEL + HORST_C * np.log1p(np.maximum(rel, 0) / HORST_C), En)
     En = En + ks * (comp - En)
@@ -507,13 +512,14 @@ def main(dry=False):
         if y0 <= st['py'] < y1 and x0 <= st['px'] < x1:
             pins[st['name']] = {'px': [st['px'], st['py']], 'before_m': round(float(Eo[st['py'], st['px']])),
                                 'after_m': round(float(En[st['py'], st['px']])), 'wet_after': bool(whas2[st['py'], st['px']])}
-            if st['id'] not in ('s57bkv9741', THALABA_ID):
+            if st['id'] not in ('s57bkv9741', THALABA_ID, 'spher0north1'):   # the pins on the new shore
                 assert abs(En[st['py'], st['px']] - Eo[st['py'], st['px']]) < 0.5 and not whas2[st['py'], st['px']], st['name']
     rep['pins'] = pins
     # Old Thalaba (825,1488) is new with this edit's shore: it must stand dry on it
     pins['Old Thalaba'] = {'px': list(THALABA_NEW), 'after_m': round(float(En[THALABA_NEW[1], THALABA_NEW[0]])),
                                'wet_after': bool(whas2[THALABA_NEW[1], THALABA_NEW[0]])}
     assert not whas2[THALABA_NEW[1], THALABA_NEW[0]], "Old Thalaba's spot is dry"
+    assert not whas2[1491, 843], "Phēr's spot (843,1491) is dry"
 
     moved = (np.abs(En - Eo) > 0.5) | (whas2 != whas0)
     assert not (moved & ~inbox).any(), 'heights moved outside the box'

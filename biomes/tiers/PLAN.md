@@ -390,14 +390,61 @@ Start from **`biomes/korona`** (the station build: `build.py --station`, `statio
 Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_core_use.py` must pass. Fragments are tagged in
 `PORT.md`; data fragments stay free of the browser.
 
+### 10a. Core adoption: the checklist (written 2026-11-16, before the first fragment)
+
+**The start.** The station build is Korona's (section 10), taken in the form its newest sibling has it: `biomes/greatchasm`
+(2026-11-11, the ebadlands line: one `44w-host-land.js` a station, the land made on the scale model's own heights by a
+`44v` land library, `44f` the model's cells round the site baked by `stations/bake_far.py`, the neighbours' species read in
+place by `station.json` "kin", `87-host-kin.js`). Korona's own host (`47-host-land.js`) draws KSTACKS rock and no relief; the
+chasm's draws the model's surface with KRELIEF on it, which is what a staircase needs. Ebadlands gives the cold-desert and
+pinyon-juniper kin and the strata-on-the-ground shading. The build takes the survey's checks from its first commit
+(`tools/new_build/`: `buildlib.through_tools_build`, `buildlib.CORE_BIOME_MIN`, `core/drawn`, `harness.SURVEY`,
+`tools/checks_optin.json`).
+
+| Module | Taken? | For what (station 1 first; later stations add their rows) |
+|---|---|---|
+| `core/rand` (`KRAND`) | yes | every placement: `BIO.grid`'s cell form, the kin lattice, the village's draws |
+| `core/terrain` 35 `KSTRATA` (+ host shade) | yes | the `tiers` recipes (amendment 1: `S.terrace` alone is one recipe's beds; the Black, Red and White Steps are three formations with hard caps, added by `KSTRATA.add` in the kit's `44r` as the chasm adds its flood basalt, no core change); the riser's colours on the ground and the rock |
+| `core/terrain` 38 `KRELIEF` (`scarp`, `talus`, `pavement`) | yes | the Black Step's riser over the north shore drawn as a cliff (`scarp`, its benches the terraces' ledges), its talus foot |
+| `core/terrain` 37 `KSTACKS` | yes | the riser's outliers: basalt stacks standing on the shore and in the shallows (section 2: "mesas and buttes standing in front of them") |
+| `core/terrain` 43 `KGROUND`, 44 `KFAR`, 45 `KHORIZON` | yes | the ground's library layers; the model's surface to 118 km (the coloured steps behind, the east riser across the water); its shade |
+| `core/terrain` 36 `KCARVE`, 42 `KFROST`, 44g `KGLACIER` | not at station 1 | the seep alcoves (station 2's canyon head), the crown's ice (no station on the crown yet); listed when drawn |
+| `core/water` (`WATER.open` for the lake, `WATER.fields`, ext 56-58, 60) | yes | the upper lake as an open surface over the ground's bed, the calm share of the shared wave field and two faint swells, no surf, no breakers (Korona's still-lake rule); the mirror switch off at load; the shore field the flora reads |
+| `core/water` ext 53 `WATER.terraces` | yes | the step moss's rimstone pools down a seep on the riser (section 4: the step moss, "the Tiers in miniature") |
+| `core/atmos` (`bindHost`, the waves, `skylight`, the shared sky `skyBiome`, weather, height fog, rain cover) | yes | the standard sky with the giant at the site; the lake's haze; the rain on the east riser |
+| `core/biome` (`CORE_BIOME_MIN` + 31j, 32 kin, 35 anim, 37 traps' clock, 41 env, 42/43 export, 44 stage) | yes | the natives; kin read in place (ebadlands' cottonwood, pinyon-juniper and sagebrush; necanyons' fan palms) |
+| `core/drawn` (`KDRAWN`) | yes | the ground's strip cells registered for the eye and the audits (item 28) |
+| `core/space` (`KSPACE`) | yes | keep-clear between trees, the kin, the village's lots |
+| `core/tags` | yes | everything placed is a record before it is drawn |
+| `core/host` (`FULL` + the polygon tool), `core/clock` | yes | camera, loop, panel, probe, inspector, polygon tool, minimap, edits |
+| `core/hazard` (`KHAZ`) | yes | rockfall under the riser (`crush`), the riser's edge (`fall`), the lake's drop-off (`drown`), wet tufa (`slip`); pressure and temperature provided |
+| `core/export`, `core/materials` (record, pack), `core/shadow` (off at load) | yes | as every kit |
+| `core/hamlet` (`KHAMLET.village`) | yes | the fishing village on the north shore as records (`KHAMLET.pendingRow('coyote')`: every key pending until `kits/coyote` exists), drawn as stand-ins at their boxes |
+| `core/mask` (`KMASK`) | no | nothing is placed from a painted canvas: placement reads the land's fields and `BIO.mask` |
+| `core/city` | no (station 2) | the capital in Coyote Canyon is station 2's; station 1 holds a village, which is `core/hamlet`'s |
+| `core/camp`, `core/simulation` | no (station 4; the polity) | the herders' summer camp is station 4's; the Kingdom on the sim waits for `kits/coyote` and the map edit's markers |
+| `kits/crops` | no (T4) | the `tiers` entry and the five native records are T4's (section 14); the village's terraces name their crops from section 4's table as plain words until then |
+| `kits/resources`, `kits/fauna` | no | no works or animals drawn at station 1 (fauna is `kits/fauna`'s, section 4) |
+| `core/world` | no | a biome station page, not the open world; its site is on the model through `44f` |
+| `core/lod`, `core/minimap` | through `core/host` | the biome core's LOD; the host's minimap |
+
+**Station 1's site, as drawn** (survey of 2026-11-16, `smodel.page`). The pin, 1262,512, stands at 1,318 m with the water 4
+km south (the 1,150 m shore crosses x 1262 at about y 513.9), so a 5.2 km page centred on it holds no lake. The page is
+centred on the drawn shore, **1262,513.4**: its north edge on the slope at about 1,300-1,380 m, the waterline about a
+kilometre south of the centre, the lake filling the south third and the far field beyond. The riser behind (the Black Step)
+is smeared on the model over 1,400-2,900 m between x 1265 and 1271; the page draws its foot as a `KRELIEF.scarp` in its
+north-east and the far field carries the rest of the stair.
+
 **Core amendments needed:**
 1. **A `tiers` strata recipe** (`KSTRATA`): hard caps (basalt, pale sandstone) over soft coloured beds, one cap per riser,
    with ledges; check whether ebadlands' staircase canyon recipe (`S.terrace`) is enough before proposing code.
 2. **Tiered plant parts** (kit work first): a whorl of flat branch plates, stacked collars, stepped domes, arm rings.
    Lift to `core/biome` if a second kit asks.
 3. **Terracettes** (small, new): the level soil steps that line grazed slopes, as a `KRELIEF.shape` form beside
-   `pavement`, with a lip line the tiergrass reads. Kit work first.
-4. **The gorge flood** on a cycle (shared hazard amendment; the Outland Gate plan's amendment 2).
+   `pavement`, with a lip line the tiergrass reads. Kit work first. **Done kit-side (2026-11-16):** `src/44t` (`TIERS_TERRACETTES`), the floor
+   draws the lips (`tlip`); the lift to a `KRELIEF` kind waits for a second kit.
+4. **The gorge flood** on a cycle (shared hazard amendment; the Outland Gate plan's amendment 2). **Done kit-side (2026-11-16):** `src/44g`
+   (`TIERS_FLOOD`: drown records with a travelling front and the current's pull, core/hazard 21), drawn by `src/89f`, on stations 2 and 4.
 5. **The lip's fall**: the sill is on the model after the map edit (section 8a); the page draws the fall on `WATER.fall`
    (tall falls) and the sill's face with `KRELIEF.scarp`.
 6. **The player-settlement registry** (shared, open world; `openworld/outposts`).
@@ -475,6 +522,32 @@ The trims are a scale-model session's work (section 8a, item 5).
 | **T4** | stations 2 and 4 (Coyote Canyon, the Great Tread); terracettes; the `tiers` crops entry; `outposts.json` | each verified |
 | **T5** | station 3, the Lip (after the map edit's sill); the gorge flood when the shared amendment lands | verified |
 | **T6** | `PORT.md`, the index tools, the Godot export check, the gallery (the owner allows once) | published |
+
+**Status (2026-11-16, a cloud session; software GL only):** T2 wired against library stand-ins (`materials.json` names each owed id in `owed`:
+`card.shelfoak`, `bark.tiered`, `rock.lichen.ledges`; KNOWN_ISSUES.md). T3 built: station 1 (`dist/tiers.html`) with the five `tiers` strata
+recipes, the nine natives of the lake tread, the lake on `WATER.open`, the step moss's pools on `WATER.terraces`, the village on
+`KHAMLET.village` (stand-ins), the far field with the plan's sill; `verify.py --assert` passes in SwiftShader with its negatives; the owner's
+GPU verify is owed before merge. The map edit (T1), T4 and T5 are not started. The lake tread's ground takes `ground.withered_grass` and
+`ground.leafy_grass` for section 11's `ground.steppe` (the owner, 2026-11-16: the ground "a bit too brown, more varied").
+
+**Station 2 started (2026-11-16, software GL only):** Coyote Canyon (`dist/tiers-canyon.html`) on the model's pin at 1265,500, the canyon's mouth: the
+canyon's cells filled and recut as nine `KRELIEF.stepcut` treads (its floor descending in dry falls, the head a bowl), the king's spring and its
+stream down the stair on `WATER.terraces`, irrigated terraces on the treads, the natives and ebadlands' kin, the seat's landmarks as records under the
+Coyote kit's `cy_*` keys (`kits/coyote/PLAN.md`, draft 2026-11-16; its bundle `KratorCoyote` replaces the stand-ins at its C9). **Open:** the town's
+rows on the walls (Masuleh's rule) wait on a layout: `core/city` has no terraced mode, and the Coyote kit's plan leaves that rule at a city's size to
+the city session (KNOWN_ISSUES.md). **Waiting on the city session** (the owner, 2026-11-16).
+
+**Station 3 started (2026-11-16, software GL only; the owner: "do station 3"):** the Lip (`dist/tiers-lip.html`) on the notch's cell, 1246,531, before
+the map edit: the sill as this kit's far field draws it (section 8a's numbers), the lip's plateau, the Black Step's face (~870 m) as a
+`KRELIEF.scarp` profile between the lip and the model's floor, the notch's channel, the fall (911 m) into its pool, the river down the floor, the
+lake tread's natives above and the north-western lowlands' tropical trees below (read in place). When the edit lands, the far field is rebaked and
+the kit's own sill dropped (KNOWN_ISSUES.md).
+
+**Station 4 started (2026-11-16, software GL only; the owner: "do s4 next"):** the Great Tread (`dist/tiers-tread.html`) at 1310,490: the
+high steps' first tread flattened from the model between two risers drawn as cliffs (170 m up to the next step, 190 m down to the great
+tread), a dry gorge cut 70 m into the tread (a `KRELIEF.stepcut`; the Chung-Gel's own 300-480 m gorge is 16 km south, the far field's), four
+buttes, the herders' summer camp on `core/camp` (a culture row of this station's until `kits/coyote` has camp pieces) with its goats, sheep
+and ostriches, the pagoda bush and the stack cushion drawn (60), the eastern badlands' junipers and bristlecones read in place.
 
 ## Sources
 

@@ -1,0 +1,77 @@
+{
+ "build": "rheolith",
+ "note": "The Rheolith kit's adapter onto the material library (biomes/rheolith/PLAN.md section 7.3). Five KGROUND layers on the Breached Throat graben (84-host-ground.js), keeping active samplers well below 16: the rift floor's dark cinder and ash (ground.cinder), the persistent pahoehoe lava-crust bench over the foam-reef keel (ground.crust -> ground.lava.crust), the fumaroles' zeolite sinter aprons (ground.sinter), the white fluoride etch-frost and sulfate bloom (ground.efflorescence), and the fault scarps' flow-banded basalt (ground.basalt -> rock.basalt.flowbanded). Run python3 tools/textures/pack.py biomes/rheolith after any change, then python3 tools/build.py biomes/rheolith.",
+ "size": 512,
+ "families": {
+  "ground.cinder": {
+   "lib": "ground.cinder",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.crust": {
+   "lib": "ground.lava.crust",
+   "scale": [
+    3.6,
+    3.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.28,
+   "mapOnly": true
+  },
+  "ground.sinter": {
+   "lib": "ground.sinter",
+   "scale": [
+    2.8,
+    2.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.efflorescence": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.basalt": {
+   "lib": "rock.basalt.flowbanded",
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.22,
+   "mapOnly": true
+  }
+ }
+}

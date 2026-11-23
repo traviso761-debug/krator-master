@@ -36,5 +36,5 @@ if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._chunks=TB_GROUPS.length;window._buildMs=Math.round(performance.now()-TB_B0);
-window._thalaba=Object.assign(window._thalabaPlan||{},{placed:TB_PLACE.length,dalab:TB_DALAB.length,devisers:TB_PLACE.filter(p=>p.key==='tb_devisers').length,chunks:TB_GROUPS.length,
+window._thalaba=Object.assign(window._thalabaPlan||{},{placed:TB_PLACE.length,dalab:TB_DALAB.length,devisers:TB_PLACE.filter(p=>p.key==='tb_devisers').length,warden:TB_PLACE.filter(p=>p.key==='tb_watchhouse').length,chunks:TB_GROUPS.length,
  byKind:TB_PLACE.reduce((a,p)=>{a[p.kind]=tbD(a[p.kind],0)+1;return a;},{})});

@@ -34,7 +34,9 @@ Sources:
   Beacon and the capital**. Questions 4 and 6-13 are still open.
 - **The Beacon reaches the Eye through its Rim Post** (the owner, 2026-11-16: "Rim Post relay"). The Beacon session found that
   on the restored knoll the rim massif north-east of it (1,111 m at 857.9,1537.5) hides the Eye Post from the lamp (-95 m).
-  The Order of the Beacon's Rim Post at 856,1532 sees both: the lamp (+57 m) and the Eye (+68 m). So the line runs lamp,
+  The Order of the Beacon's Rim Post at 856,1532, the summit of the lake's middle volcano (1,578 m), sees both: the lamp
+  (+41 m) and the Eye Post (+42 m), measured on the scale-model session's restored knoll (d1c7d6682); if the middle volcano
+  is ever given a vent, the fallback post is its flank at 857,1535 (+17 m to the lamp, +12 m to the Eye). So the line runs lamp,
   Rim Post, Eye, Erehwon. Section 3's "+40 m" from the lamp was read on the lowered rim and no longer holds once the knoll is
   restored. The Beacon's layout carries the Rim Post (`claude/beacon-monastery-d509f5`, 8a4b5ae99).
 
@@ -121,7 +123,7 @@ times with eyes lowered (`kits/qiblai/PLAN.md` 2a). The Order reads them as a **
 | Who | People | Where |
 |---|---|---|
 | **The crimson Prismarch** and his household: secretary, chamberlain, attendant monks, cooks | 10 | the Labrang |
-| **The chapter**: the Prior, the chant-master, the Masters, the Rim Watch (24 on rota: a week on the rim, three weeks down), the signal readers, the librarians, the old monks | 130 | the Red Monastery's cells, two to a cell, and the chapter range |
+| **The chapter**: the Prior, the chant-master, the Masters, the Rim Watch (24 on rota in six watches of four, each a week on the rim in turn: *proposed*, reconciling "a week on, three weeks down" with the hut's four bunks), the signal readers, the librarians, the old monks | 130 | the Red Monastery's cells, two to a cell, and the chapter range |
 | **The Mirror School**: masters and keepers in training for the line's posts | 30 | the school's range |
 | **Novices** | 50 | the novices' court |
 | **Lay brothers**: cooks, granary, the infirmary, the herd and dairy, the hives, the woodlot | 60 | over the kitchen and granary, the infirmary, the byres on the cap |
@@ -317,6 +319,12 @@ capital and the Beacon (section 3.2).
 | Theodiga | 56.9 | 108° | -108 m | | |
 
 - The rim also sees the lake's north side over the cone (Ālph-Hēḍ, Ōlḍ-Thalaba). The bench does not.
+- **Re-run for the layout** (`tools/sights.py`, 2026-11-16, the same method): the Lip Range's balcony (the Lip, the bench at
+  1,660 m, 14 m up) sees the Beacon +46 m, Erehwon +40 m and the Tears' camp +54 m; the Eye Post at 12 m sees the Beacon +49 m,
+  Erehwon +63 m and the Tears' camp +52 m. These are on this branch's model, before the scale-model session restored the
+  Beacon's knoll (d1c7d6682). For the Rim Post the layout takes the Beacon session's figures on the restored model (+41 m to
+  the lamp, +42 m to the Eye Post; section 0). On the model before it the Rim Post also saw G1 (+106 m) and the Tempest
+  (+28 m): worth re-checking on the restored model, for the Beacon's session.
 - **G1 is just in sight from a 30 m mirror tower.** That is the Eye Post's height question: 12 m (*proposed*) needs the
   Beacon to relay; a 30 m tower reaches G1 direct on the clearest days.
 - **The vent will change these figures**: the crater lowers the summit's middle, not the rim. Step F0 re-runs them.
@@ -486,19 +494,50 @@ Negatives: a house moved to the north flank (881,1525) is caught; a tea road tha
 | The economy | `core/region` (`XAN_TUNE`) | section 4 |
 | Surfaces | the Xanadu and Qiblai packs through `materials.json` and `tools/textures/pack.py` | **a gap**: no columnar-basalt or fresh-ash set is known in the library. If none is found, the prompt goes in `core/materials/PROMPTS-NEEDED.md` |
 
-## 6. Steps
+## 6. Core adoption (written before the first fragment, 2026-11-16)
+
+The house is built as the Azure Dream's is (`settlements/azure-dream`, the nearest finished head house with a page): a
+**target on Xanadu's page** (`settlements/xanadu/build.py --kit settlements/flashing-eye`), its ground the scale model's at
+1:1 from a region cut of its own round the cone, its buildings the Qiblai kit's helpers read in place, and the house's
+plan as data first (the Beacon's `30-bc-layout.js` and `31-bc-rules.js` are the model), so the sheets, the page, the sim
+and Godot read one plan. It is a new build: it lists itself under every check in `tools/checks_optin.json`, and its
+`build.py` and `verify.py` take what `tools/new_build/` takes.
+
+| Module | Taken for | How |
+|---|---|---|
+| `core/rand` (`KRAND`) | the vent's burst times, the talus's blocks, the pilgrims' spread, every small variation | through Xanadu's page; seeds by (world, day or cell, index, salt), `KRAND.child` for a derived seed. The layout itself draws nothing at random |
+| `core/tags` (`KTAGS`) | every record registered before it is drawn | through Xanadu's page (`REG`). `qiblai` and `vent` are not yet in the vocabulary: parked in `TODO.md`'s ride-along, as the Azure Dream's `qiblai` is |
+| `core/world` (`WORLD.H`) | the cone's ground at 1:1 | the region cut round the cone (`region/`, `tools/scale-model/extract_region.py`, as the Azure Dream's), decoded by Pinnacle Rock's `tools/world_data.py` and drawn by the open world's fields (`openworld/isle-demo/src/world/41-world-fields.js`), read in place. The page's frame maps the layout's (u, v) on it (`FLASHING_EYE.toPx`) |
+| `core/terrain` | the cliff band, the bench, the talus | `KRELIEF` under the fields; the band is a **sign-safe patch on the page's ground** (it only lowers the flank in front of the Lip and only raises the bench behind it, blended to the model's surface at both ends: section 3.4); the talus is `KRUBBLE` heaps along the band's foot (`37c-core-rubble.js`). No `terrainH` of the page's own beyond the patch and the pads |
+| `core/atmos` | the sky, the night, the plume, the glow in the vent | `KratorSky` and `ATMOS.init` as the Azure Dream's; the plume is `ATMOS.ashPlume` (`fx/89-atmos-fx-ashplume.js`: one record the fog, the shade and the ash fall read); the vent's red flash a light and the plume's under-glow on the burst clock |
+| `core/hazard` (`KHAZ`) | the rim's bombs and fumes | `gas`, `heat` and `lava` records round the vent, the vent fuming between puffs by `cycle.base` (section 5). On the page as records for Godot and the sim first; the harm is drawn when the page takes the hazard host |
+| `core/sched` (`KSCHED`) | the Rim Watch's rota, the day line's hours, the Opening and the Closing, the vent's bursts, the fire basket at night, the Station's nights | `src/40-fe-watch.js`, as the Beacon's `40-bc-lamp.js`: a pure function of the clock and the host's `env` |
+| `core/water` | the great cistern and the tanks | still water, drawn with the interiors (F6); the lake is 26 km off and drawn with the far ground |
+| `core/space` (`KSPACE`), `core/mask` | overlap | the layout's own rules check its boxes, as the Beacon's do (one complex, nothing placed at random). No `getImageData`: the page's zone mask is painted, never read back |
+| `core/host` (`KHOST`), `core/walk`, `core/door` | camera, viewer, inspector, polygon tool, walk keys, probe; the Way of Breath and the Cleft Stair as walks; the halls' doors | through Xanadu's page (`kit.json` `external` for `core/walk`) |
+| `core/biome`, `biomes/xanadu` | the cone's woods and meadows, none on the band's face, the rim's bare ash or the crater | the page's vendored Vale of Xanadu kit, over a mask painted from the layout (the Azure Dream's way) |
+| `kits/qiblai`, `kits/xanadu` | the Red Monastery (`qb_monastery`, `o.v 0`), the chortens, the hostels, the walls, the stacks | read in place (`kit.json` `externalDirs`); the house's own records (`qb_fe_*`) in `src/` on the Qiblai kit's helpers, seeds **34400-34599** (*proposed*: the block after Viridian's 34200-34399, to be confirmed with the Qiblai session) |
+| `kits/catalog`, `kits/interiors`, `core/furnish` | the halls' furniture, the manifest's new pieces | F6 |
+| `core/materials` | the surfaces | the Qiblai pack, plus the library's volcanic sets for the band, the bench and the rim: `rock.columnar` (the coulée's colonnade), `ground.ash`, `ground.scoria`, `ground.cinder` (the cap and the rim). **No gap**: question 13's sets are in the library, so nothing goes to `PROMPTS-NEEDED.md` |
+| `core/charactermodels`, `core/simulation`, `core/clock` | the monks and pilgrims, the house in the sim | the sim's record is `xan.flashingeye` (F4); the page's people come later (F6). The page does not take `core/simulation` yet, so `check_core_use`'s core/city rule does not reach it; when it does, the house joins `SINGLE_COMPLEX` (one pre-planned complex, as Longsong) |
+| `core/city` | **not taken** | one precinct, not a town |
+| `core/region` (`XAN_TUNE`) | the economy | done (F4): `T.flashingeye`, check 32 |
+
+`python3 tools/check_core_use.py` is run before the page is called done.
+
+## 7. Steps
 
 | Step | What | Who | Test |
 |---|---|---|---|
 | **F0** (queued 2026-11-16) | **The vent on the scale model**: a vent record for `volc_erewhon_east` at 881,1526, its crater cut (*proposed*: ~600 m across, ~150 m deep, Strombolian); pins for the bench (881,1527) and the Foot House (881,1530.3); the climate and Hoṭ-Bāṭh's springs unchanged. Then section 3's sights re-run on the edited model | the scale-model session | `test_smodel.py`; the bench and the rim still see the Beacon and Erehwon by 10 m or more |
-| **F1** (this plan) | The plan; the owner's answers to section 7 | this session, the owner | |
-| **F2** | **The blueprint**: `BLUEPRINT.md`, sheets in `floors/` (E0 the cone from the rim to the Foot House; E1 and E2 the bench's floors; M1, M2, MR the kit's monastery in crimson; L the Lip Range; P the Eye Post; F the Foot House; a section along the spur), `FURNITURE.md`, `flashing_blueprint.py` on the shared generator (`settlements/voth/palace/blueprint.py`), as the Beacon's | a blueprint session (the large-buildings skill) | the sheets drawn from the layout; the layout's checks pass first |
-| **F3** | **The layout as data**: `src/30-fe-layout.js`, `src/31-fe-rules.js` (section 2.3's rules), `layout_dump.js` | | `node settlements/flashing-eye/test-flashing-eye.js`, every rule with a negative |
-| **F4** | **The tune**: `T.flashingeye`, `xan.flashingeye` (320), its terraces, its three roads, `qb.crimson` and its tenth, the purse (section 4) | the Xanadu sim session | `test-xan-economy.js`, the new check and its negatives; the baseline moved on purpose |
-| **F5** | **The house on the open world**: the recut region with the cone on it; the cliff band authored (`core/terrain` carve, `KRUBBLE`); the vent drawn (`core/atmos`, `core/hazard`); the layout's frame on the 1:1 ground; the sights asserted on the drawn ground | the open-world session | the region's verify; line-of-sight asserts to the Beacon, Erehwon and the Tears' camp; no trees on the band or the rim |
-| **F6** | **The records, the interiors and the life**: the new records (the Lip Range, the Hall of the Ember, the Eye Post, the Foot House) on the Qiblai kit's helpers; the interiors from the blueprint; the catalog's new pieces; the Rim Watch, the day line, the Opening and the Closing and the Station's nights on `core/sched`; pilgrims on the Stair | | the walk and interiors audits; `check_core_use`; the page's `verify.py --assert` on a GPU lane |
+| **F1** (**done** 2026-11-16) | The plan; the owner's answers to section 8 (1, 2, 3 and 5 answered) | this session, the owner | |
+| **F2** (**done** 2026-11-16: ten sheets and the section; E0, E1, E2, M1, M2, MR, L, H, P, F) | **The blueprint**: `BLUEPRINT.md`, sheets in `floors/` (E0 the cone from the rim to the Foot House; E1 and E2 the bench's floors; M1, M2, MR the kit's monastery in crimson; L the Lip Range; P the Eye Post; F the Foot House; a section along the spur), `FURNITURE.md`, `flashing_blueprint.py` on the shared generator (`settlements/voth/palace/blueprint.py`), as the Beacon's | a blueprint session (the large-buildings skill) | the sheets drawn from the layout; the layout's checks pass first |
+| **F3** (**done** 2026-11-16) | **The layout as data**: `src/30-fe-layout.js`, `src/31-fe-rules.js` (section 2.3's rules, and the page's ground: the bench, the band and the crater as one sign-safe function, `FLASHING_EYE.ground`), `layout_dump.js`; the sights re-run by `tools/sights.py` | | `node settlements/flashing-eye/test-flashing-eye.js` (66 checks: 21 rules, 32 negatives, the tune's px and people, the ground) |
+| **F4** (**done** 2026-11-16, e25e691cd: `T.flashingeye`, check 32) | **The tune**: `T.flashingeye`, `xan.flashingeye` (320), its terraces, its three roads, `qb.crimson` and its tenth, the purse (section 4) | the Xanadu sim session | `test-xan-economy.js`, the new check and its negatives; the baseline moved on purpose |
+| **F5** (the page **first pass done** 2026-11-16: `dist/flashing-eye.html` on its own region cut, `verify.py --assert` on the RTX lane; `README.md`, `KNOWN_ISSUES.md`. The open world's region still to take it) | **The house on the open world**: the recut region with the cone on it; the cliff band authored (`core/terrain` carve, `KRUBBLE`); the vent drawn (`core/atmos`, `core/hazard`); the layout's frame on the 1:1 ground; the sights asserted on the drawn ground | the open-world session | the region's verify; line-of-sight asserts to the Beacon, Erehwon and the Tears' camp; no trees on the band or the rim |
+| **F6** (the watch **done** 2026-11-16: `src/40-fe-watch.js`, `test-watch.js`, 25 checks) | **The records, the interiors and the life**: the new records (the Lip Range, the Hall of the Ember, the Eye Post, the Foot House) on the Qiblai kit's helpers; the interiors from the blueprint; the catalog's new pieces; the Rim Watch, the day line, the Opening and the Closing and the Station's nights on `core/sched`; pilgrims on the Stair | | the walk and interiors audits; `check_core_use`; the page's `verify.py --assert` on a GPU lane |
 
-## 7. Questions for the owner
+## 8. Questions for the owner
 
 1. **The doctrine.** The Eye that does not close: the Order watches for the one with "flashing eyes" who will sing the
    Song whole, bears the holy dread for the faithful, and reads the mountain's breath and the Station's glints. Keep it,
@@ -528,4 +567,17 @@ Negatives: a house moved to the north flank (881,1525) is caught; a tea road tha
 12. **A Xanadui name** for the house, as Grēṭ-Āil and Ṭī-Ṭeras have? *Proposed*: *Phlāśin-Āi* (the Flashing Eye), from
     the language's *ph* and *ś* (Phēr, peleśā). The owner's call.
 13. **Textures.** If the library has no columnar basalt or fresh volcanic ash, may the gap go in
-    `core/materials/PROMPTS-NEEDED.md` with a prompt?
+    `core/materials/PROMPTS-NEEDED.md` with a prompt? *Settled by the library* (2026-11-16): it has `rock.columnar`, `ground.ash`, `ground.scoria` and
+    `ground.cinder`; the page uses them and nothing is owed.
+
+Raised while building (2026-11-16; each built as *proposed*, so an answer changes data, not structure):
+
+14. **The Eye Post's height.** 12 m (*built*: the Beacon relays to G1) or 30 m, which reaches G1 direct on the clearest days
+    (+9 m)?
+15. **The Rim Watch's rota.** Section 1.2 says "four monks a watch, six watches" and section 2.1 "a week on the rim, three
+    weeks down". With the hut's four bunks only one watch fits on the rim, so the build has six watches of four, each a week
+    on the rim in turn (a week in six). Keep that, or a bigger hut and a week in four?
+16. **The bench at 1:1.** The region cut rises behind the Lip faster than the 2 km grid (+10 m at the north wall), so the
+    precinct is cut as well as filled, with a bank behind its north and west walls. Keep one level (*built*), or step the
+    north half up a terrace (as Longsong's)?
+17. **The seeds.** 34400-34599 for the Order's records (the block after Viridian's), to be confirmed by the Qiblai session.

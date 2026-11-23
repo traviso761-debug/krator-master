@@ -160,7 +160,13 @@ const GROUND=(function(){const N=STAGE.groundN==null?480:STAGE.groundN,S=TERR.R*
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aG',new THREE.BufferAttribute(ag,4));if(KG_LY&&KG_LY.some(L=>L.g2))g.setAttribute('aG2',new THREE.BufferAttribute(ag2,4));g.setAttribute('aGeo',new THREE.BufferAttribute(agEo,1));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The eastern highlands';scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The eastern highlands';scene.add(m);
+ /* THE GROUND AS DRAWN (2026-11-15, the owner: floating rocks on station 5): the mesh is terrainH sampled every cs metres (11 m on the mixed
+    belt) and cut a,b,d / b,c,d, so on a gorge wall it lies metres off terrainH. EHIGH.groundAt(x, z) is the height of its own triangle there:
+    what hangs from a face (the tower honey's overhangs, 60) is set against it. The kit builds after this (89z) */
+ EHIGH.groundAt=(x,z)=>{const fx=(x+S/2)/cs,fz=(z+S/2)/cs,i=clamp(Math.floor(fx),0,N-1),j=clamp(Math.floor(fz),0,N-1),u=fx-i,v=fz-j,H=(a,b)=>pos[(b*nx+a)*3+1];
+  const a=H(i,j),b=H(i,j+1),c=H(i+1,j+1),d=H(i+1,j);return u+v<=1?a+(d-a)*u+(b-a)*v:c+(b-c)*(1-u)+(d-c)*(1-v);};
+ return m;})();
 
 // ---------------------------------------------------------------- the water
 // Dark open water that takes the deep sky at a glancing angle (thin air: a deep blue, not a white glare)

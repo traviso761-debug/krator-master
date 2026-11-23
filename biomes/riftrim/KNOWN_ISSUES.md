@@ -21,6 +21,11 @@ What the checks caught on the way, all fixed: the river line built from (x, y) i
 outlet carved only to its water line; the gorge's banks under the water past its edge; a ramp reversed on the crossing (its tundra
 under ice); the pack's brightness normalisation lifting the black rim's dark rock to pale (the ground layers keep their own now); the
 frozen lake's ice record in the water fields; three vendors' builders whose crowns or flowers float (their rows commented, below).
+The owner's two marks on station 1 (2026-11-22), fixed, each a page check with its negative (`stations/ledge/44w-host-land.js`, `LAND.checks`):
+the outlet's ribbon drew from 150 m inside the great lake, 0.1 m under its surface (now it starts on a mouth line square to the current,
+and the lake's outline takes that line as its edge); its channel was a 110 m carve 3 m under the water wherever the plain stood, so toward
+the gorge (a 465 m plain over a 293 m river) a 170 m wall (now a valley as wide as the plain stands over the water, sides under 25 degrees,
+no fields on them).
 **Owed to the coordinator:** the GPU `--assert --all-views`; the lakes station's 15.9 M at the canes' view is under the 19.5 M
 budget but the heaviest, and worth a look on the Arc.
 
@@ -65,11 +70,14 @@ Seen and left for the owner (each a look decision or a larger piece of work):
 
 ## Stations 8 and 9, the Fellgang villages (2026-11-11; `PLAN.md`, "Stations 8 and 9, the Fellgang villages")
 
-- [ ] **No building kit has the Fellgangs.** The villages are core/hamlet's records drawn as stand-ins (`stations/fowlers/84f-host-fellgang.js`):
-  drystone boxes under gabled turf roofs, round stores, open sheds, pens, and barrows for the ice houses, with no texture (vertex colours only).
-  A Fellgang building kit owes their real forms and the library's drystone and turf.
-- [ ] **core/hamlet has no fowling or ice-cutting focus**: the Fowlers take the `ranch` slot and the Ice-cutters the `quarry` slot, each naming its
-  own works in the Fellgang row. A `fowling` and an `ice` focus in `KHAMLET.FOCI` would be a core change, owed if more such villages come.
+- [x] **The buildings are the Fellgang kit's** (the owner, 2026-11-11: swap the stand-ins). `kits/tungang`'s bundle (`tungang_bundle.py`, `tex:'lean'`:
+  its eight most-seen library families) draws both villages (`TG.fg.draw`), the Fowlers' ropes (`TG.fg.ropes`: cable low, cordage above, pegs, ladders)
+  and the Ice-cutters' lantern posts (`TG.fg.pieces`, `fg-lantern-post`); the villages run on core/hamlet's opt-in Fellgang row with its `fowling`
+  and `ice` focuses (`core/hamlet/fellgang/22`). Both came from `claude/tungang-fellgang-kits-a56ece` (only `kits/tungang/` and
+  `core/hamlet/fellgang/`, with core/hamlet's test, taken: the branch carries other sessions' work). The villages are the same records as the stand-ins'
+  (27 buildings and 104 people; 23 and 96). Pages ~11.7 MB (the full texture set would pass the 16 MB cap). Without the bundle, 84f's stand-ins draw
+  the same village.
+- [ ] **The kit's furniture is not placed** (the bundle's `FURNISH` is a stub: `kits/tungang/KNOWN_ISSUES.md`), and its doors are drawn shut.
 - [ ] **The Fowlers' wall faces south**, away from the sun at this latitude (~40 degrees S): it stands in its own shadow most of the day, so the
   face reads dark under the `rift` beds' red and black. That is true to the site (scale model 5.1 puts the wall north of the lake); a summer
   dawn or evening, with the sun rising or setting south of east or west, lights it obliquely.

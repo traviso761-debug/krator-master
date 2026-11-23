@@ -61,7 +61,7 @@ defBuilding({key:'tent-chief',name:"Chief's tent",seed:4601,cut:true,w:25,d:28,h
   for(const s of [-1,1]){FURNISH('scyvoi_court_fire',s*2.4,y0,-1.2,0);FURNISH('scyvoi_brazier',s*3.4,y0,3.4,0);}
   for(const s of [-1,1])for(const z of [-.5,2.5]){FURNISH('scyvoi_low_round_table',s*1.6,y0,z,0);FURNISH('scyvoi_tea_set',s*1.6,y0+svfH('scyvoi_low_round_table',0,.36),z,0);}
   FURNISH_HANG('scyvoi_glass_chandelier',0,tcRoofY(.1)-.6,-2.5,0);for(const s of [-1,1])FURNISH_HANG('scyvoi_glass_chandelier',s*3.4,tcRoofY(3.4)-.4,.6,0);
-  for(const a of [TK_DOOR+PI+.55,TK_DOOR+PI-.55,TK_DOOR+PI+1.3,TK_DOOR+PI-1.3]){const p=tkAt(R-.2,a);FURNISH('scyvoi_court_tapestry',p[0],y0+.35,p[1],tkFace(p[0],p[1]),{v:Math.round(a*7)%4});}
+  for(const a of [TK_DOOR+PI+.55,TK_DOOR+PI-.55,TK_DOOR+PI+1.3,TK_DOOR+PI-1.3]){const p=tkAt(R-.2,a);FURNISH_WALL('scyvoi_court_tapestry',p[0],y0,p[1],tkFace(p[0],p[1]),y0+wH,{v:Math.round(a*7)%4});}
   FURNISH('scyvoi_samovar',4.6,y0,1.6,-PI/2);FURNISH('scyvoi_court_statue',-4.6,y0,-4.2,tkFace(-4.6,-4.2));
   for(const s of [-1,1])FURNISH('scyvoi_lance_stand',s*2.2,y0,R-1.0,PI);
   FURNISH('scyvoi_spirit_pole',3.8,0,TC.deckR+2.6,0,{setting:'outdoor'});

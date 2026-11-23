@@ -7,7 +7,7 @@
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
     "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
     "kits/mechs/KNOWN_ISSUES.md": "5acbba5ce62c5584a5d97707b1e4eba8dbf1dec213c168fb6a8fc0068cc12406",
     "kits/mechs/PORT.md": "af738ab1f82bef824bc37731366b9df1538c6f478d8f8528b51335e391616ed6",
@@ -76,14 +76,14 @@
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "kits/mechs/build-manifest.json": "a1e9e18317d220088f746fa019301e6ca6d60a8599c94340b287dbf9a3eeda9f",
-    "kits/mechs/dist/krator-mechs.js": "bb863a3eb8439b2fd4cb3c83ed8e8e63110a4a31a609666406c43ed7d4c472d9",
-    "kits/mechs/dist/mechs.html": "da595693e45ec4673949f68e46fec39c4eaa460e5ba5bd621680e72680bba037"
+    "kits/mechs/build-manifest.json": "5278629d8fe55f878eb343f4dc92487d824999cf5695d0e2e811a09394ffa480",
+    "kits/mechs/dist/krator-mechs.js": "b7db8603e07a13d9eee193dc9e37d7b56832d8a27e30daa9672fd6e598f4f7b5",
+    "kits/mechs/dist/mechs.html": "02cb8052708e1c2420bc694b4779d16714d37a38508f67d844967ce57b36c176"
    },
    "outputs_raw": {
-    "kits/mechs/build-manifest.json": "277fd13b63a5892df9b017b32615ee98eb16d5afab5a9c1f70c752c8d81fe7fe",
-    "kits/mechs/dist/krator-mechs.js": "bb863a3eb8439b2fd4cb3c83ed8e8e63110a4a31a609666406c43ed7d4c472d9",
-    "kits/mechs/dist/mechs.html": "da595693e45ec4673949f68e46fec39c4eaa460e5ba5bd621680e72680bba037"
+    "kits/mechs/build-manifest.json": "13cbb5f97c23a006053c06b01662b0688a46a19425632458b1993eafa73458bb",
+    "kits/mechs/dist/krator-mechs.js": "b7db8603e07a13d9eee193dc9e37d7b56832d8a27e30daa9672fd6e598f4f7b5",
+    "kits/mechs/dist/mechs.html": "02cb8052708e1c2420bc694b4779d16714d37a38508f67d844967ce57b36c176"
    }
   }
  }

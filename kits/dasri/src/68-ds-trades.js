@@ -1,0 +1,52 @@
+// prefix: ds
+// ================================================================= DASRI CENSUS TRADES TABLE ([G data])
+// Every Voth census trade (tools/trades_census.json, checked by tools/check_trades.py): carried by existing ds_jabal_* /
+// ds_vil_* keys, or explicitly explained (na) where desert/wadi geography excludes maritime/wetland/Vothic trades.
+
+const DS_TRADES=[
+ {trade:'bakers',keys:['ds_jabal_bakery','ds_vil_house_poor'],note:'urban tannur bread-houses in Jabal; rooftop clay tabun ovens in villages'},
+ {trade:'butchers',keys:['ds_jabal_souq_row','ds_vil_compound'],note:'mutton and camel meat stalls in the Jabal souq arcade'},
+ {trade:'weavers and dyers',keys:['ds_jabal_weaver_dyer'],note:'indigo, madder, and saffron cloth weaving and rooftop drying'},
+ {trade:'brewers',keys:['ds_jabal_spice_khan'],note:'qishr spiced coffee-husk brew and herbal infusions in the samsarah'},
+ {trade:'tanners',keys:['ds_vil_compound'],note:'camel and goat hides cured in walled drover compounds'},
+ {trade:'shipwrights and boatbuilders',na:'landlocked desert, wadi canyons, and hypersaline playas: the Dasri run camel trains, not ships'},
+ {trade:'innkeepers and grooms',keys:['ds_jabal_caravanserai','ds_vil_oasis_qasr','ds_vil_shade_loggia'],note:'caravanserai funduqs in Jabal and qasr way-stations at Arfwai'},
+ {trade:'town guard',keys:['ds_jabal_bazaar_gate','ds_jabal_call_tower','ds_vil_watch_post']},
+ {trade:'coast guard',na:'no sea coast in the Jabal Sheikhdom, Eastern High Desert, or Catch oases'},
+ {trade:'temple priests and servants',keys:['ds_jabal_hammam_cistern','ds_jabal_call_tower'],note:'Wardens of the Aquifer tend the sacred birka cisterns and call towers'},
+ {trade:'shrine keepers',keys:['ds_vil_oasis_qasr','ds_vil_saqiya_well'],note:'oasis well-keepers and domed qasr shrines'},
+ {trade:'shopkeepers and assistants',keys:['ds_jabal_souq_row','ds_jabal_spice_khan']},
+ {trade:'smiths and craftsmen',keys:['ds_jabal_brazier','ds_vil_potter_kiln'],note:'copper and brass nahhas braziers, blade-smiths, and qadad-lime potters'},
+ {trade:'innkeepers and servers',keys:['ds_jabal_spice_khan','ds_jabal_caravanserai','ds_vil_shade_loggia']},
+ {trade:'porters and warehousemen',keys:['ds_jabal_salt_warehouse','ds_jabal_caravanserai']},
+ {trade:'industrial workers',keys:['ds_jabal_salt_warehouse','ds_vil_salt_shed','ds_vil_potter_kiln'],note:'halite block cutting, alkali panning, and qadad lime burning'},
+ {trade:'power-house stokers and engineers',na:'no electric or salvaged-reactor power grid in Dasri settlements'},
+ {trade:'household service',keys:['ds_jabal_house_rich','ds_jabal_mansion_stepped','ds_jabal_rock_palace','ds_vil_house_elder']},
+ {trade:'soldiers',keys:['ds_jabal_rock_palace','ds_jabal_bazaar_gate','ds_vil_oasis_qasr']},
+ {trade:'teachers and scholars',keys:['ds_jabal_call_tower','ds_jabal_house_rich'],note:'caravan reckoning, star navigation, and Dasri script taught in tower rooms'},
+ {trade:'guild officers and clerks',keys:['ds_jabal_caravanserai','ds_jabal_salt_warehouse'],note:'factors and tally clerks of the Train of Jabal'},
+ {trade:'customs officers and clerks',keys:['ds_jabal_bazaar_gate','ds_vil_oasis_qasr'],note:'caravan gate tolls and oasis water tallies'},
+ {trade:'healers and nurses',keys:['ds_jabal_hammam_cistern'],note:'steam bathhouses and herbalists'},
+ {trade:'priests and undertakers',keys:['ds_jabal_hammam_cistern','ds_vil_oasis_qasr']},
+ {trade:'lighthouse keepers',keys:['ds_jabal_call_tower','ds_vil_watch_post'],note:'desert beacon braziers and caravan call towers guide night crossings'},
+ {trade:'dockers and stevedores',na:'no sea or river ports: cargo is loaded onto camel strings in the funduqs'},
+ {trade:'river bargemen and quay hands',na:'wadi torrents are seasonal or shallow irrigation streams, not barge waterways'},
+ {trade:'fishers',na:'hypersaline salt lakes (Solta, Catch) and desert springs carry no fishery'},
+ {trade:'market traders',keys:['ds_jabal_souq_row','ds_jabal_spice_khan','ds_jabal_caravanserai']},
+ {trade:'farmhands and ploughmen',keys:['ds_vil_granary','ds_vil_saqiya_well','ds_vil_house_mid'],note:'irrigated wadi terrace plots watered by saqiya wells'},
+ {trade:'chinampa growers',na:'arid wadi and desert oases use stone-walled flood terraces and saqiya channels, never floating wetland beds'},
+ {trade:'orchardmen',keys:['ds_vil_saqiya_well','ds_vil_compound'],note:'date-palm and pomegranate oasis gardens watered from the saqiya runnels'},
+ {trade:'miners',keys:['ds_vil_salt_shed','ds_jabal_salt_warehouse'],note:'rock-salt (halite), potash, and gypsum quarrying at Solta and Salt al-Ban'},
+ {trade:'quarrymen and masons',keys:['ds_vil_potter_kiln','ds_vil_cliff_stair'],note:'basalt, sandstone ashlar, and burned qadad waterproof lime'},
+ {trade:'granary keepers and millers',keys:['ds_vil_granary','ds_jabal_bakery']},
+ {trade:'beetle herders',na:'a Vothic beast: the Dasri breed camels and goats (ds_vil_compound)'},
+ {trade:'dairymen',keys:['ds_vil_compound'],note:'camel and goat milk, laban, and clarified samn butter'},
+ {trade:'swineherds and duck keepers',na:'arid desert pastoralists keep camels and goats rather than swine or marsh ducks'},
+ {trade:'mushroom growers',na:'hyperarid sunny climate: no dark-cave fungiculture'},
+ {trade:'envoys and embassy staff',na:'tabled: foreign caravan factors lodge in the Train of Jabal funduq until settlement diplomatic quarters are built'},
+ {trade:'ferrymen',na:'wadis are crossed by stone fords and arches, not ferries'},
+ {trade:'elephant bug handlers and station hands',na:'a Vothic beast: camel caravan lines muster at ds_jabal_caravanserai and ds_vil_oasis_qasr'},
+ {trade:'monks and lay brothers',na:'no monastic order among the Dasri'},
+ {trade:'palace and canton staffs',keys:['ds_jabal_rock_palace','ds_jabal_mansion_stepped']}
+];
+globalThis.DS_TRADES=DS_TRADES;

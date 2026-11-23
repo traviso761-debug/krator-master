@@ -2,6 +2,15 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-11-16) **The citadel's furniture: what is owed.** Furnished room by room in the register of Kubla Khan
+      (`citadel/FURNISHING.md`; 3637 pieces in 153 rooms, `node citadel/furnish_census.js --assert` clean). The hangings' pictures arrived 2026-11-17
+      and are wired through the page's own pack (`citadel/materials.json`, `KMAT.pack('xanadu-pics')`, `xanPicPaint`): a stop-gap in
+      the Xanadu culture file for image decals in the engine itself, owed in core/catalog. The catalog-wide hem of top-hung cloths
+      (`furnAnchorY` puts a 2.1 m tapestry 0.6 m off the floor in any room taller than 2.7 m) is kept out of the citadel by its
+      room kinds, not fixed: that fix is core/catalog's. The Mines' assay furnace is still the forge. Longsong (takes the Xanadu
+      culture) and Lightwall were not rebuilt with this change: Longsong's build wants the character pieces, Lightwall's stops
+      on `89q5s-qb-shells.js` (a generative fragment with no builder), both before this change.
+
 - [ ] (2026-11-10) **The Pleasure Dome's interior: what is not there yet.** Built hollow in the black-and-white pattern system
       (`citadel/PLEASURE-DOME.md` has the record and the table against the owner's twelve references). Open: the catalog
       furniture is still the court set's colours (a tint in core/furnish's draw is owed) and comes only with `?interiors=1`; both

@@ -1,0 +1,23 @@
+{
+ "build": "painted-men",
+ "note": "The Painted Men kit's adapter onto the material library (core/materials/PLAN.md): timber, log, bamboo, reed-mat, thatch, shingle, fieldstone, turf, rusted salvage and Tlingit/Pacific-NW formline friezes (patterns/tribal/formline, patterns/highlands/frieze-nw-totemic). Packed maps are shared in place from kits/highlands/tex/ by build.py (matlib_pack.fragment) and bound onto MAT by targets/sheet/88y-pmsheet-matlib.js.",
+ "size": 512,
+ "families": {
+  "wood": { "lib": "wood.siding", "scale": [2.0, 1.7], "tint": { "keep": 0.0, "mean": 0.62 }, "roughLift": 0.3, "specular": 0.3, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 5 } },
+  "woodV": { "lib": "wood.lamppost", "scale": [0.8, 1.0], "tint": { "keep": 0.0, "mean": 0.62 }, "roughLift": 0.3, "specular": 0.3, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 5 } },
+  "stone": { "lib": "stone.cut", "scale": [2.0, 1.92], "tint": { "keep": 0.0, "mean": 0.68 }, "roughLift": 0.4, "specular": 0.3, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 5 } },
+  "thatch": { "lib": "roof.thatch.neutral", "scale": [2.5, 2.5], "tint": { "keep": 0.0, "mean": 0.57 }, "roughLift": 0.2, "specular": 0.3, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 5 } },
+  "shingle": { "lib": "roof.shingle", "scale": [2.0, 2.0], "tint": { "keep": 0.25, "mean": 0.6 }, "roughLift": 0.3, "specular": 0.3, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 5 } },
+  "cloth": { "lib": "cloth.canvas.striped", "scale": [1.2, 1.18], "tint": { "keep": 0.0, "mean": 0.73, "contrast": 2.2 }, "roughLift": 0.2, "specular": 0.15, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 5 } },
+  "corrugate": { "lib": "metal.corrugated_iron_02", "scale": [1.2, 1.2], "tint": { "keep": 0, "mean": 0.527 }, "metal": 0.3, "roughLift": 0.2, "specular": 0.3, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 6 } },
+  "logs": { "lib": "wood.log.carved", "scale": [2.0, 1.77], "tint": { "keep": 0, "mean": 0.588, "colour": "#a49480" }, "metal": 0, "normalScale": 0.8, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 6 } },
+  "rubbleW": { "lib": "rock.old_stone_wall", "scale": [3.5, 3.5], "tint": { "keep": 0, "mean": 0.55 }, "metal": 0, "normalScale": 0.8, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 6 } },
+  "bamboo": { "lib": "wood.bamboo_wall", "scale": [1.2, 1.2], "tint": { "keep": 0, "mean": 0.678, "colour": "#b5af7c" }, "metal": 0, "normalScale": 0.8, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 6 } },
+  "bmat": { "lib": "fibre.reedmat", "scale": [1.5, 1.5], "tint": { "keep": 0, "mean": 0.685, "colour": "#c1ae80" }, "metal": 0, "normalScale": 0.6, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 6 } },
+  "turf": { "lib": "roof.turf", "scale": [2, 2], "tint": { "keep": 0, "mean": 0.581, "colour": "#83a146" }, "metal": 0, "normalScale": 0.8, "breakup": { "mix": 0.45, "macro": 0.1, "cell": 6 } },
+  "formF": { "lib": "patterns/tribal/formline", "scale": [0.5, 0.5], "tint": { "keep": 1, "mean": null }, "metal": 0, "normalScale": 0.5 },
+  "hFrzA": { "lib": "patterns/highlands/frieze-asian-nw", "scale": [2.25, 0.5], "tint": { "keep": 1, "mean": null }, "metal": 0, "normalScale": 0.5 },
+  "hFrzT": { "lib": "patterns/highlands/frieze-nw-totemic", "scale": [2.25, 0.5], "tint": { "keep": 1, "mean": null }, "metal": 0, "normalScale": 0.5 },
+  "meadow": { "lib": "ground.ground013", "scale": [8.0, 8.0], "tint": { "keep": 1.0, "mean": 0.42 }, "roughLift": 0.35, "specular": 0.25, "mapOnly": true }
+ }
+}

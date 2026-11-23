@@ -21,9 +21,11 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-vehicles-eastabyss.js` | 13 |  |
 | `krator-vehicles-geomancer.js` | 20 |  |
 | `krator-vehicles-iziz.js` | 11 |  |
+| `krator-vehicles-line.js` | 27 |  |
 | `krator-vehicles-post-apoc.js` | 16 |  |
 | `krator-vehicles-republic.js` | 19 |  |
 | `krator-vehicles-runtime.js` | 41 **big** |  |
+| `krator-vehicles-tungang.js` | 13 |  |
 | `vehicles-core.js` | 27 |  |
 | `vehicles-detail.js` | 10 |  |
 

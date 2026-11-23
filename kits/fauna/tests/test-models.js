@@ -25,8 +25,9 @@ const LIMITS = {
   lossyNormal: 0,      // C9: 1 when the normal map is a JPEG
   sourceLost: 0,       // C1: 1 when the model carries no source record
 };
-/* an animal over 6 m has more skin than one colour map can cover at the floor: it may take 2.5 MB, and the floor falls with its length, to 50 px/m at 17 m */
-const bigSide = M => Math.max(M.rest.w, M.rest.d, M.rest.h), LIMIT = (c, M) => (M && bigSide(M) > 6 ? (c === 'mb' ? 2.5 : c === 'density' ? Math.max(50, 850 / bigSide(M)) : LIMITS[c]) : LIMITS[c]);
+/* an animal over 6 m has more skin than one colour map can cover at the floor: it may take 2.5 MB, and the floor falls with its length, to 50 px/m at 17 m. Its size is the
+   widest pose's (rest.extent): a bat that folds to 4 m spans 9 */
+const bigSide = M => Math.max(M.rest.w, M.rest.d, M.rest.h, M.rest.extent ? Math.max(M.rest.extent.w, M.rest.extent.d, M.rest.extent.h) : 0), LIMIT = (c, M) => (M && bigSide(M) > 6 ? (c === 'mb' ? 2.5 : c === 'density' ? Math.max(50, 850 / bigSide(M)) : LIMITS[c]) : LIMITS[c]);
 const CHECKS = Object.keys(LIMITS), FLOOR = { density: 1, lift: 1 }, over = (c, v, M) => (FLOOR[c] ? v < LIMIT(c, M) : v > LIMIT(c, M));
 const worse = (c, v, w) => (FLOOR[c] ? v < w / 1.02 : v > w * 1.02);   /* a waived number may only get better, past rounding */
 const FRAMES = 7, RES = 240, DIRS = L.dirs();
@@ -55,12 +56,26 @@ function worldVert(m, W, P, i, v) { L.apply(W[P.node], P.pos, i * 3, v); return 
 /* ---- C7: slide and depth of the limb ends over the walk */
 function walk(m) {
   const c = m.clips.walk, ex = c && c.extras; if (!ex || !ex.speed) return { slide: 0, below: 0, lift: 1 };
+  if (m.skin) return walkSkinned(m, c, ex);
   const G = ex.ground == null ? m.M.rest.ground : ex.ground, nodes = m.M.nodes, T = []; for (let k = 0; k < 24; k++) T.push(c.dur * k / 24);
   const hasKid = n => Object.keys(m.parts).some(q => walksOn(q) && nodes[m.parts[q].node].parent === m.parts[n].node);
   const ends = Object.keys(m.parts).filter(n => walksOn(n) && !hasKid(n)), per = ex.speed * c.dur, Ws = T.map(t => L.pose(m, c, t)), v = [0, 0, 0]; let worst = 0, lo = 1e9, lift = 1e9;
   for (const n of ends) { const P = m.parts[n], np = P.pos.length / 3, ys = T.map((_, k) => { let y = 1e9; for (let i = 0; i < np; i++) y = Math.min(y, worldVert(m, Ws[k], P, i, v)[1]); return y; });
     const ymin = Math.min(...ys), kst = ys.indexOf(ymin); lo = Math.min(lo, ymin); lift = Math.min(lift, Math.max(...ys) - ymin); let tip = 0, ty = 1e9; for (let i = 0; i < np; i++) { const y = worldVert(m, Ws[kst], P, i, v)[1]; if (y < ty) { ty = y; tip = i; } }
     const zs = []; for (let k = 0; k < T.length; k++) { if (ys[k] > ymin + 0.004) continue; const q = worldVert(m, Ws[k], P, tip, v); zs.push(q[2] + ex.speed * T[k]); }
+    for (let i = 1; i < zs.length; i++) { while (zs[i] - zs[i - 1] > per / 2) zs[i] -= per; while (zs[i] - zs[i - 1] < -per / 2) zs[i] += per; }
+    if (zs.length > 1) worst = Math.max(worst, Math.max(...zs) - Math.min(...zs)); }
+  return { slide: ex.stride ? 100 * worst / ex.stride : 0, below: Math.max(0, (G - lo) * m.M.scale / Math.max(m.M.rest.h, 1e-6)), lift: (ends.length ? lift : 1) * m.M.scale / Math.max(m.M.rest.h, 1e-6) };
+}
+/* a skinned model's walk, the same measure: its feet are the vertices whose heaviest bone is in a foot bone's subtree (M.skin.parts.feet), posed one frame at a time */
+function walkSkinned(m, c, ex) {
+  const G = ex.ground == null ? m.M.rest.ground : ex.ground, nodes = m.M.nodes, S = m.skin, T = []; for (let k = 0; k < 24; k++) T.push(c.dur * k / 24);
+  const under = (i, top) => { for (let q = i; q >= 0; q = nodes[q].parent) if (q === top) return true; return false; };
+  const ends = (m.M.skin.parts.feet || []).map(n => { const b = m.byName[n], vs = []; for (let i = 0; i < S.dom.length; i++) if (under(S.dom[i], b)) vs.push(i); return vs; }).filter(v => v.length);
+  const frames = T.map(t => { L.pose(m, c, t); return Float64Array.from(S.pos); }), per = ex.speed * c.dur; let worst = 0, lo = 1e9, lift = 1e9;
+  for (const vs of ends) { const ys = frames.map(F => { let y = 1e9; for (const i of vs) y = Math.min(y, F[i * 3 + 1]); return y; }), ymin = Math.min(...ys), kst = ys.indexOf(ymin);
+    lo = Math.min(lo, ymin); lift = Math.min(lift, Math.max(...ys) - ymin); let tip = vs[0]; for (const i of vs) if (frames[kst][i * 3 + 1] < frames[kst][tip * 3 + 1]) tip = i;
+    const zs = []; for (let k = 0; k < T.length; k++) if (ys[k] <= ymin + 0.004) zs.push(frames[k][tip * 3 + 2] + ex.speed * T[k]);
     for (let i = 1; i < zs.length; i++) { while (zs[i] - zs[i - 1] > per / 2) zs[i] -= per; while (zs[i] - zs[i - 1] < -per / 2) zs[i] += per; }
     if (zs.length > 1) worst = Math.max(worst, Math.max(...zs) - Math.min(...zs)); }
   return { slide: ex.stride ? 100 * worst / ex.stride : 0, below: Math.max(0, (G - lo) * m.M.scale / Math.max(m.M.rest.h, 1e-6)), lift: (ends.length ? lift : 1) * m.M.scale / Math.max(m.M.rest.h, 1e-6) };
@@ -81,7 +96,7 @@ function through(m) { const c = m.clips.walk; if (!c) return 0; const T = Object
 /* ---- C6: a child's pivot must sit on or in its parent (rest; pivots are fixed in the parent's frame) */
 function pivots(m) {
   const nodes = m.M.nodes, S = m.M.scale, side = Math.max(m.M.rest.w, m.M.rest.d, m.M.rest.h); let worst = 0, who = '';
-  for (const n in m.parts) { const nd = nodes[m.parts[n].node]; if (nd.parent < 0) continue; const pn = nodes[nd.parent].name, Q = m.parts[pn]; if (!Q) continue;
+  for (const n in m.parts) { const nd = nodes[m.parts[n].node]; if (!nd || nd.parent < 0) continue;      /* a skinned model's one part is on no node */ const pn = nodes[nd.parent].name, Q = m.parts[pn]; if (!Q) continue;
     let d = 1e18; const p = nd.t, I = Q.idx, A = [0, 0, 0], B = [0, 0, 0], C = [0, 0, 0], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
     for (let t = 0; t < I.length; t += 3) {      /* to the surface, not its corners: a capped cut has one wide fan with no corner near a leg's root */
       for (let k = 0; k < 3; k++) { A[k] = Q.pos[I[t] * 3 + k]; B[k] = Q.pos[I[t + 1] * 3 + k]; C[k] = Q.pos[I[t + 2] * 3 + k]; }
@@ -95,7 +110,7 @@ function pivots(m) {
 function mapWidth(url) { const b = Buffer.from(url.split(',')[1], 'base64'); let i = 2; while (i < b.length - 9) { if (b[i] !== 0xff) { i++; continue; } const k = b[i + 1]; if (k >= 0xc0 && k <= 0xc2) return b.readUInt16BE(i + 7); i += 2 + b.readUInt16BE(i + 2); } return 1024; }
 /* ---- C9: the colour map's pixels a metre, and the UV area of each part (a card sampling the whole atlas has one near 1) */
 function density(m) {
-  let a3 = 0, a2 = 0; const S = m.M.scale, px = mapWidth(m.M.tex.map);
+  let a3 = 0, a2 = 0; const S = m.M.scale, px = mapWidth(m.M.tex.map); if (m.skin) L.pose(m, null, 0);      /* measured at rest, whatever pose was skinned last */
   for (const n in m.parts) { if (uvOwn(m, n)) continue; const P = m.parts[n], I = P.idx;
     for (let t = 0; t < I.length; t += 3) { const a = I[t] * 3, b = I[t + 1] * 3, c = I[t + 2] * 3, ux = P.pos[b] - P.pos[a], uy = P.pos[b + 1] - P.pos[a + 1], uz = P.pos[b + 2] - P.pos[a + 2], vx = P.pos[c] - P.pos[a], vy = P.pos[c + 1] - P.pos[a + 1], vz = P.pos[c + 2] - P.pos[a + 2];
       const u2 = uvArea(P, t); if (u2 < 1e-12) continue;      /* a cap or a core is one colour by design, sampled at a point: no map is stretched over it */
@@ -112,7 +127,7 @@ function measure(m, file, full) {
   const c = full === false ? { v: 0 } : closure(m), lim = Object.keys(m.parts).filter(isLimb), w = walk(m), piv = pivots(m); let side = 1;
   for (const n of lim) { const q = mirror(n); if (!q || !m.parts[q]) continue; side = Math.max(side, m.parts[n].idx.length / m.parts[q].idx.length); }
   return { closure: c.v, closureAt: c, pieces: lim.filter(n => pieces(m.parts[n]).big > 1).length, sides: side, pivot: piv.pivot, slide: w.slide, below: w.below, lift: w.lift, through: full === false ? 0 : through(m),
-    mb: fs.statSync(file).size / 1e6 / (m.M.share || 1), parts: m.M.merge ? 1 : Object.keys(m.parts).length, density: density(m), lossyNormal: /^data:image\/jpeg/.test(m.M.tex.nrm) ? 1 : 0, sourceLost: m.M.source ? 0 : 1 };
+    mb: fs.statSync(file).size / 1e6 / (m.M.share || 1), parts: m.M.merge || m.M.skin ? 1 : Object.keys(m.parts).length, density: density(m), lossyNormal: /^data:image\/jpeg/.test(m.M.tex.nrm) ? 1 : 0, sourceLost: m.M.source ? 0 : 1 };
 }
 
 const files = fs.readdirSync(DIR).filter(f => f.endsWith('.json')).sort(), MODELS = {}, MEASURED = {};
@@ -164,7 +179,9 @@ for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model
     const clear = new Set(); g.traverse(o => { if (o.isMesh && o.material.transparent) clear.add(o.parent.name); }); const wantClear = Object.values(M.mats || {}).reduce((a, q) => a.concat(q.parts), []);
     if (wantClear.sort().join() !== [...clear].sort().join()) bad.push('see-through parts: packed [' + wantClear + '], built [' + [...clear] + ']');
     for (const [mode, clip] of [['idle', 'perch'], ['walk', 'walk']]) { KFm.animate(g, 1, mode); if (u._mx.cur !== clip) bad.push(mode + ' played ' + u._mx.cur); }
-    if (u.parts.legs.filter(Boolean).length !== Object.keys(M.meshes).filter(n => /^leg(\d+|\d?[LR])$/.test(n)).length) bad.push('legs on the built animal'); return bad; };
+    if (u.parts.legs.filter(Boolean).length !== (M.skin ? (M.skin.parts.legs || []).length : Object.keys(M.meshes).filter(n => /^leg(\d+|\d?[LR])$/.test(n)).length)) bad.push('legs on the built animal');
+    if (M.skin) { let sk = 0; g.traverse(o => { if (o.isSkinnedMesh && o.skeleton && o.skeleton.bones.length === M.nodes.length) sk++; }); if (sk !== 1) bad.push('a skinned model built ' + sk + ' skinned meshes on its skeleton'); }
+    return bad; };
   { const KFm = L.registry(ROOT, packed).KF; for (const r of rows) { const b = realBuild(KFm, r, MODELS[r.model].M); ok(!b.length, 'built ' + r.key + '#' + r.variant + ': ' + (b.join('; ') || 'the model, its anchors on parts, its materials, its clips')); }
     const q = JSON.parse(JSON.stringify(packed[base0])); delete q.anchors; const KF2 = L.registry(ROOT, Object.assign({}, packed, { [base0]: q })).KF; ok(realBuild(KF2, rows.find(r => r.model === base0), packed[base0]).some(s => /^anchors/.test(s)), 'negative: a build that lost its anchors fails, whatever the file says'); }
 
@@ -180,7 +197,11 @@ for (const k in waivers) ok(k in MODELS, 'the waiver for ' + k + ' names a model
   const base = 'giant-dragonfly', fresh = () => L.load(path.join(DIR, base + '.json')), file = path.join(DIR, base + '.json'), row = rows.find(r => r.model === base);
   { const m = fresh(), P = m.parts.thorax, n = P.idx.length, keep = []; const v = [0, 0, 0], W = L.pose(m, null, 0); for (let t = 0; t < n; t += 3) { L.apply(W[P.node], P.pos, P.idx[t] * 3, v); if (!(v[1] > 0.04 && Math.abs(v[0]) < 0.12)) keep.push(P.idx[t], P.idx[t + 1], P.idx[t + 2]); }
     P.idx = Uint32Array.from(keep); const c = closure(m); ok(c.v > LIMITS.closure, 'negative C4: a hole cut in the dragonfly\'s back is seen (' + num(c.v) + ')'); }
-  ok(MEASURED.quetzalcoatlus.closure > LIMITS.closure && MEASURED['giant-bat'].closure > LIMITS.closure && MEASURED['giant-archaeopteryx'].closure > LIMITS.closure, 'negative C4: the three flyers, known to open, read over the limit (' + ['quetzalcoatlus', 'giant-bat', 'giant-archaeopteryx'].map(k => num(MEASURED[k].closure)).join(', ') + ')');
+  ok(MEASURED.quetzalcoatlus.closure > LIMITS.closure && MEASURED['giant-archaeopteryx'].closure > LIMITS.closure, 'negative C4: the two flyers known to open read over the limit (' + ['quetzalcoatlus', 'giant-archaeopteryx'].map(k => num(MEASURED[k].closure)).join(', ') + '; the giant bat, the third, is the skinned Tripo bat since 2026-11-10 and shut)');
+  { const m = L.load(path.join(DIR, 'giant-bat.json')), P = m.parts.torso, W = L.pose(m, null, 0), keep = []; let cy = 0; for (let i = 1; i < P.pos.length; i += 3) cy += P.pos[i] / (P.pos.length / 3);
+    for (let t = 0; t < P.idx.length; t += 3) { const y = P.pos[P.idx[t] * 3 + 1], z = P.pos[P.idx[t] * 3 + 2]; if (!(z < 0 && Math.abs(y - cy) < 0.06)) keep.push(P.idx[t], P.idx[t + 1], P.idx[t + 2]); }
+    P.idx = Uint32Array.from(keep); const c = closure(m); ok(c.v > LIMITS.closure, 'negative C4: a hole cut in the back of the skinned bat is seen (' + num(c.v) + ')'); }
+  { const m = L.load(path.join(DIR, 'giant-bat.json')), c = m.clips.walk; c.extras = Object.assign({}, c.extras, { speed: c.extras.speed * 2 }); ok(walk(m).slide > LIMITS.slide, 'negative C7: a skinned walk at the wrong speed slides'); }
   ok(MEASURED[base].closure <= LIMITS.closure, 'the dragonfly, known to stay shut, reads under it (' + num(MEASURED[base].closure) + ')');
   { const m = fresh(), n = Object.keys(m.parts).find(q => /^leg\dL$/.test(q)), P = m.parts[n], ks = []; const zs = []; for (let t = 0; t < P.idx.length; t += 3) zs.push(P.pos[P.idx[t] * 3 + 1]); const mid = zs.slice().sort((a, b) => a - b)[zs.length >> 1];
     for (let t = 0; t < P.idx.length; t += 3) if (Math.abs(P.pos[P.idx[t] * 3 + 1] - mid) > 0.04 * (Math.max(...zs) - Math.min(...zs)) + 0.004) ks.push(P.idx[t], P.idx[t + 1], P.idx[t + 2]); P.idx = Uint32Array.from(ks);

@@ -4,7 +4,7 @@
 
 Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
+Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`, `README.md`, `ROKETSTAD-BLUEPRINT.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/highlands.html`, `dist/roketstad.html`
 

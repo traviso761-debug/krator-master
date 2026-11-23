@@ -1,6 +1,6 @@
 {
  "build": "ehigh",
- "note": "The eastern highlands kit's adapter onto the material library (core/materials/PLAN.md, Eastern highlands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones): leaf.ichu is a grey detail map the instance colour turns gold (keep 0), one tussock cut from its sheet; leaf.rag (the ragbark's crowns, used whole as a clump) and leaf.broad (one glass-tower leaf cut from its sheet) keep their own colour. skin.cushion and skin.fleece replace the cushions' and the woolbacks' canvases (keep 0 under the instance colour; the shaders divide out the pack's mean). bark.ragbark is the ragbark bucket's map. stone.basalt is the boulders, the stones and the tors' ground grain (full colour). ground.puna, ground.turf and ground.sinter are the ground's library layers (84-host-ground.js): the turf where the sedge mat grows (its polygons are the set's own), the sinter on the geyser field. Run python3 tools/textures/pack.py biomes/ehighlands after any change, then python3 build.py. ground.puna is the open puna's layer (the grass weight), under the ichu tussocks. Station 2 (the wet face, 2026-11-09): laurel (card.broadleaf.cloud, a sheet the clump geometry cuts), bigfrond (card.treefern), fern, beard, epi (card.epiphyte.garden), brom (card.bromeliad), moss (card.moss), bark4 (bark.mossy, the laurel and tree fern), ground.moss (the forest floor). Station 3 (the Lesser Throne): ground.ash, ground.scoria. Stations 4-6 (the treeline, the mixed and montane belts): needle (card.spruce, a sheet the clump cuts) and bark5 (bark.spruce) for the combed fir, beech (card.broadleaf) and bark6 (bark.birch.lichen) for the combed beech, ground.needles under the firs.",
+ "note": "The eastern highlands kit's adapter onto the material library (core/materials/PLAN.md, Eastern highlands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones): leaf.ichu is a grey detail map the instance colour turns gold (keep 0), one tussock cut from its sheet; leaf.rag (the ragbark's crowns, used whole as a clump) and leaf.broad (one glass-tower leaf cut from its sheet) keep their own colour. skin.cushion and skin.fleece replace the cushions' and the woolbacks' canvases (keep 0 under the instance colour; the shaders divide out the pack's mean). bark.ragbark is the ragbark bucket's map. stone.basalt is the boulders, the stones and the tors' ground grain (full colour). ground.puna, ground.turf and ground.sinter are the ground's library layers (84-host-ground.js): the turf where the sedge mat grows (its polygons are the set's own), the sinter on the geyser field. Run python3 tools/textures/pack.py biomes/ehighlands after any change, then python3 build.py. ground.puna is the open puna's layer (the grass weight), under the ichu tussocks. Station 2 (the wet face, 2026-11-09): laurel (card.broadleaf.cloud, a sheet the clump geometry cuts), bigfrond (card.treefern), fern, beard, epi (card.epiphyte.garden), brom (card.bromeliad), moss (card.moss), bark4 (bark.mossy, the laurel and tree fern), ground.moss (the forest floor). Station 3 (the Lesser Throne): ground.ash, ground.scoria. Stations 4-6 (the treeline, the mixed and montane belts): needle (card.spruce: three of its sprigs held by their stems, measured by hand in card-bases.json, on the fir's branches) and bark5 (bark.spruce) for the combed fir, beech (card.broadleaf: one spray, drawn whole on each card under the beech's leaf colour) and bark6 (bark.birch.lichen) for the combed beech, ground.needles under the firs.",
  "size": 512,
  "families": {
   "leaf.ichu": {
@@ -363,7 +363,68 @@
    "roughLift": 0,
    "specular": 0.2,
    "size": 512,
-   "sheet": "geometry"
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.016,
+      0.339,
+      0.339
+     ],
+     "stem": [
+      0.024,
+      0.029
+     ],
+     "tip": [
+      0.3014,
+      0.3219
+     ],
+     "w": [
+      -0.1115,
+      0.0982
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.335,
+      0.653,
+      0.671
+     ],
+     "stem": [
+      0.51,
+      0.344
+     ],
+     "tip": [
+      0.5078,
+      0.6715
+     ],
+     "w": [
+      -0.1171,
+      0.1295
+     ]
+    },
+    {
+     "cell": [
+      0.684,
+      0.661,
+      0.968,
+      0.974
+     ],
+     "stem": [
+      0.967,
+      0.656
+     ],
+     "tip": [
+      0.7037,
+      0.969
+     ],
+     "w": [
+      -0.0994,
+      0.1158
+     ]
+    }
+   ]
   },
   "bark5": {
    "lib": "bark.spruce",
@@ -391,8 +452,7 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 512,
-   "sheet": "geometry"
+   "size": 512
   },
   "bark6": {
    "lib": "bark.birch.lichen",

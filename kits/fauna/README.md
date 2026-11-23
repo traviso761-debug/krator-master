@@ -17,6 +17,7 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `desert` | desert kite, wadi swift, sand strider, rock lizard, mule deer, coyote |
 | `bay` | bay soarer, canopy darter, plains grazer, savannah stalker, bay swimmer, savannah glider, cap moth, bloom glint |
 | `hyperjungle` | sky ray, canopy dart, jungle butterfly, hyperjungle strider, bough sloth, and procedural giant insects and jungle fauna (grown large by the ~2 atm lowland air): lattice mantis, stilt walkingstick, horned scarab, harvester ant, leaf katydid, the Bowl mantis (of the sedesert: it shares the lattice mantis's builder, so it lives in this file), giant caterpillar, gilded orb spider; flyers: atlas moth, emperor hornet, jewel macaw, sparkle hummer, lantern-fly; lantern tree frog, forest tapir, vine boa |
+| `loom` | the Loom-Chasms' two native hexapods (2026-11-11, `biomes/loom-chasms` PLAN.md section 4): the cable-stryder (the canopy's ambusher) and the halite sifter (the White Loom's crust-breaker), on the `wild` group's `faWdHex` (a bundle taking `loom` takes `wild` and `hyperjungle`) |
 | `ringsea` | giant sea lion (needs the `hyperjungle` file's helpers) |
 | `wild` | the biome pass (BIOME-FAUNA-PLAN.md), three waves covering every biome of the plan, and ten more domestic animals (donkey, mule, goose, turkey, rabbit, alpaca, reindeer, bactrian camel, homing pigeon, giant honeybee), and sea and lake fauna (ring dolphin, giant sea turtle, manta ray, giant ring squid, glass jellyfish, reef octopus, ring marlin, banner reef fish, ring cormorant, giant pike, lake sturgeon, giant catfish, lake plesiosaur, lake diver), and eight large hexapods of different countries (dune runner, frost trunker, marsh strider, cavern leaper, cinder crawler, plains hopper, tide crawler, badland digger), and five large hexapods after the owner's reference plates (scytheback, hookstalker, reedneck, gapemaw, clubback), and eight more six-limbed beasts after a second set of plates (burden beast, a saddle and draught animal as massive as a hippo; ember bull; horncrest; barbed ravager; capstilt; slabhorn; gapebill; dunewalker, a desert mount): and six arboreal hyperjungle critters on the `centaur` gait (canopy runner, moss sloth, bough panther, bark skulker, fruit gibber, veil glider): and the fang glider (a six-limbed reptilian glider): and four gliders of the lowlands (all climbers on the centaur gait) (meadow skimmer, hedge glider, cypress glider, sail skimmer), the eastern abyss's rim glider, and four gliders of the Rift's spore-forests, from raccoon to quetzalcoatlus size (lamp glider, spore drifter, gloam hanger, Rift sailwing), and the plumelands' ash racer (a raccoon-sized six-limbed runner): 125 animals, with a new `centaur` gait (grazers, predators, flyers, water creatures) from the shared builders `faWdQuad`, `faWdFish`, `faWdSerpent`, `faWdCrab`, `faWdRay`, `faWdSquid`, `faWdJelly`, `faWdOcto`, `faWdHex` (a flipper option on `faWdQuad` draws paddles); needs the `hyperjungle` file's helpers |
 | `flyers` | quetzalcoatlus, giant bat, giant archaeopteryx, giant dragonfly (each with a `'fly'` pose) |
@@ -25,6 +26,8 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `voth` | seagull, cliff racer, elephant bug, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
 | `pets` | dog, cat (baked Meshy models only) |
+| `xeno` | the native hexapods of the late biome plans, vertebrate-grade, not insects (2026-11-11, `biomes/siphon-pits`): the Woolly Ghaunt-Ox (a draught and riding hexapod), the Flenser-Hound (an ambush predator with scythe-arms), the Basalt Pipe-Borer (a burrower); drawn by the `wild` file's `faWdHex`, so a bundle that takes `xeno` takes `wild` and `hyperjungle` too |
+| `outlands` | the Coyote Men's birds (2026-11-16): ostrich (two procedural plumages on the `desert` file's ratite helpers, plus a baked model; saddle, pack and bridle anchors on every variant), runner bird and golden bird (baked models only). The three models were made on **Tripo** (`rig/tripo_gen.py`; "Tripo" below) |
 
 ```
 cd kits/fauna && python3 build.py                   # dist/fauna.html (the sheet) and dist/krator-fauna.js (the bundle alone)
@@ -44,12 +47,31 @@ yields and life; **Polygon (P)**.
 Some animals carry a second look: a baked Meshy model (`models/<key>.json`, packed by `models_pack.py` from a GLB that `rig/`
 cut into parts and rigged), listed in the entry as `models: { variant: 'key' }`. `mdl` may also be a list of groups: only
 their models are packed (the Voth city takes the pets' two without the farm's dozen). Today: the four giant flyers, the draught
-millipede, the harvester ant, the staghorn beetle and the Bowl mantis, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only. A model plays its
+millipede, the harvester ant, the staghorn beetle and the Bowl mantis, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only, and the Outlands' ostrich, runner bird and golden bird (group `outlands`, made on Tripo). A model plays its
 own clips (`perch` for idle and rest, `graze`, `walk`, `flap` / `glide` for flight) and keeps the kit's part names, so a host
 animates it the same way. They are heavy (7 to 13 thousand triangles, about 1 MB each), so a bundle takes them only when asked:
 `fauna_bundle.bundle(groups, mdl=True)` (the kit's own sheet does); without them a model variant draws the procedural build, and
 a model-only animal draws nothing. See `rig/README.md`, and the first open item in `KNOWN_ISSUES.md`. Every model is held to
 `tests/test-models.js` (`PLAN-MESHY.md` section 4), and a new one must clear it with no waiver.
+
+## Tripo
+
+A second generator beside Meshy (2026-11-16, the owner asked whether the Coyote Men's birds could be built there). The key is
+`~/.krator-keys/tripo.txt` (it works on the international host `openapi.tripo3d.ai/v3` only). `rig/tripo_gen.py <key> <step>` runs one
+paid step at a time and logs each task id and its credits in `rig/sources/<key>/tripo.json`:
+
+```
+python3 rig/tripo_gen.py ostrich balance                 # free
+python3 rig/tripo_gen.py ostrich image "<prompt>"        # 5 credits: ref.png
+python3 rig/tripo_gen.py ostrich multiview [ref.png]     # 10: front, left, back, right.png (check legs and stance here)
+python3 rig/tripo_gen.py ostrich model                   # 30: raw-tripo.glb, textured PBR, at real size
+```
+
+One credit is $0.01, so a model is 45 credits. The account runs one task at a time. Tripo's own auto-rig (25 credits) was tried on
+the ostrich and not used: 14 bones, a toe joint on one leg only, no wings, no clips, and skinned. The kit's scripts rig the mesh
+instead (`rig/qmodel.py` for a two-legged walker, `rig/fbuild.py` and `rig/frig.py` for a flyer). A flyer must be generated standing
+with its wings spread symmetric: a "soaring" prompt came back banked and diving, which the flyer cut cannot level
+(`rig/sources/goldbird/try1-banked/`). `PLAN-MESHY.md` section 15 has the whole trial.
 
 ## What an animal carries (data first)
 

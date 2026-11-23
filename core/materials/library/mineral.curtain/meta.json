@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.528,
+    1.042
+   ],
+   "seam_before": [
+    4.361,
+    17.376
+   ],
+   "source_size": [
+    1536,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "mineral",
+  "id": "mineral.curtain",
+  "metal": 0,
+  "roughness": 0.25,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "mineral.curtain.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13a-6f60-74a3-a38f-a8dff2953958)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-a891156c-9880-4109-90e2-82a06fec9aa6.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '52. The Arch (`biomes/arch`, 2026-11-11)' on origin/main (id mineral.curtain)",
+  "sha1": "ecc86925d2704830a48ac5e261875c07def4dcdb"
+ }
+}

@@ -18,7 +18,9 @@ HEARTH.stills=function(o){const {TAU,clamp,smooth,mix}=BIO.fn,D=HEARTH.DRESS.hot
  const across=Math.atan2(-wz,wx);
  const keys=HEARTH.stillParts((o.geysers||[]).filter(g=>g.kind!=='spouter').map(g=>g.key));
  const out={trees:[],counts:{still:0,sails:0,glass:0,spraymat:0,sailcup:0,tallow:0},rings:[]};
- const STALK=C(0x2e2b29),FOOT=C(0x3a3430),BLACK=C(0x161618),GLASS=C(0xe6ebe8),WAX=C(0xe8dcc0),MAT=C(0x1e1d1b);
+ /* BLACK is a sooty black, about 5 % albedo (sRGB 0x423f44: 0.055 linear): the first, 0x161618, was 0.8 %, darker than soot, and drew every sail as a
+    flat black cut-out with its ribs and its cup unseen (the owner, 2026-11-15). The green the lichen gives is lifted with it */
+ const STALK=C(0x2e2b29),FOOT=C(0x3a3430),BLACK=C(0x423f44),GREEN=C(0x4a5e4c),GLASS=C(0xe6ebe8),WAX=C(0xe8dcc0),MAT=C(0x1e1d1b);
  const tree=(x,z,ring,i,item,yFoot)=>{const y=yFoot==null?G(x,z):yFoot,H=mix(D.stalk[0],D.stalk[1],U(ring,i,1))*q+(1-q)*D.stalk[0],fr=mix(.9,1.6,U(ring,i,2));
   BIO.register({name:'A still tree',key:'still',kit:'hearths',x,z,y:y-.5,r:fr+3,h:H+2,tags:{heat:100+19*U(ring,i,3)}});
   BIO.put('sfoot',[x,y-.12,z],BIO.fn.qEuler(0,U(ring,i,4)*TAU,0),[fr,fr*1.2,fr],FOOT.clone().lerp(C(0x5a4a3c),.35*U(ring,i,5)));
@@ -26,7 +28,7 @@ HEARTH.stills=function(o){const {TAU,clamp,smooth,mix}=BIO.fn,D=HEARTH.DRESS.hot
   /* the sails: 4-6 tiers down the top third of the stalk, each a panel of three fans; the heading across the wind with a little of each tree's own */
   const nt=Math.round(mix(4,6,U(ring,i,8))),L=mix(D.fanL[0],D.fanL[1],U(ring,i,9)),hd=across+(U(ring,i,10)-.5)*.3;
   for(let k=0;k<nt;k++){const v=mix(.66,.96,k/(nt-1)),s=L*mix(1,.7,k/(nt-1));
-   BIO.put(item,[x,y+H*v-s*.15,z],null,s,BLACK.clone().lerp(C(0x2a3a30),D.green*U(ring,i,20+k)),{aP0:[0,0,0,1],aP1:[0,hd+(k%2?Math.PI:0),0,0]});out.counts.sails++;}
+   BIO.put(item,[x,y+H*v-s*.15,z],null,s,BLACK.clone().lerp(GREEN,D.green*U(ring,i,20+k)),{aP0:[0,0,0,1],aP1:[0,hd+(k%2?Math.PI:0),0,0]});out.counts.sails++;}
   if(U(ring,i,11)<.5){const r=mix(.5,1.1,U(ring,i,12)),a=U(ring,i,13)*TAU;BIO.put('stallow',[x+Math.cos(a)*fr*.9,y+.01,z+Math.sin(a)*fr*.9],BIO.fn.qEuler(0,a,0),[r,.06,r],WAX);out.counts.tallow++;}
   out.trees.push({x,z,y,H,ring,heading:hd});out.counts.still++;};
  // the springs: a ring at the rim of each boiling one, a glass still or two by each that went cold

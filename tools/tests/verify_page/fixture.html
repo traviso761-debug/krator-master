@@ -64,6 +64,40 @@ if (CASE === 'samplers-16' || CASE === 'samplers-15') {
   const q = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), m); q.position.set(-5, 1, 0); scene.add(q);
 }
 if (CASE === 'error-panel') document.getElementById('errs').textContent = 'Error: a fragment threw';
+if (CASE === 'flow-in-ocean') {
+  window.terrainH = (x, z) => x < 0 ? 2 : -4;
+  window.WATER = {
+    surfaces: [
+      {kind: 'open', name: 'Test Sea', level: 0, bounds: [-200, -200, 200, 200], contains: (x, z) => x >= 0},
+      {kind: 'flow', name: 'Runaway River', width: 10, pts: [{x: -40, z: 0, y: 2.5, w: 10}, {x: 80, z: 0, y: 0.2, w: 10}]}
+    ],
+    drawn: []
+  };
+}
+if (CASE === 'sheet-on-one') {
+  window.BIO = {
+    kits: {
+      test: {
+        defs: {
+          bad_cork: {
+            raw: {userData: {cells: true}},
+            mat: {userData: {libCard: {slot: 'oak', lib: 'card.oak', plants: 1, sheet: 'geometry'}}}
+          }
+        }
+      }
+    }
+  };
+}
+if (CASE === 'stem-float') {
+  window.terrainH = () => 0;
+  window.BIO = {
+    host: {terrainH: () => 0},
+    kits: {test: {defs: {pine_spray: {mat: {userData: {libCard: {slot: 'pine', lib: 'card.pine', plants: 9}}}}}}},
+    attachAudit(o) {
+      return o && o.kStem <= 0.18 ? {audited: 100, floating: 24, share: 0.24, note: null} : {audited: 100, floating: 0, share: 0, note: null};
+    }
+  };
+}
 /* the probe the biome builds carry, enough for the NaN and registry asserts */
 window._api = {
   nanSweep() { let meshes = 0; scene.traverse(o => { if (o.isMesh && o.geometry.attributes.position.array.some(v => Number.isNaN(v))) meshes++; });

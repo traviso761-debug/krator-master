@@ -34,7 +34,7 @@
     const I = window._interiors, out = { rooms: 0, pieces: 0, usable: 0, reached: 0, fails: [], perRoom: [], fallbacks: 0, missing: [], thin: 0 };
     I.rooms.forEach(function (R, i) {
       const P = I.plans[i];
-      const A = IX.audit(R, P, I.catalog);
+      const A = IX.audit(R, P, I.catalogFor ? I.catalogFor(R) : I.catalog);
       const fails = A.fails.slice();
       P.placements.forEach(function (p, k) {
         const g = P.objects && P.objects[k];

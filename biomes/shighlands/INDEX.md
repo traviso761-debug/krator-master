@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/shighlands-conifers.html`, `dist/shighlands-fellfield.html`, `dist/shighlands.html`
+Built output (never open it; edit `src/` and rebuild): `dist/shighlands-conifers.html`, `dist/shighlands-fellfield.html`, `dist/shighlands-ordeal.html`, `dist/shighlands-shumar.html`, `dist/shighlands.html`
 
 Build: `cd biomes/shighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -51,3 +51,5 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | common | 45-host-stage.js, 89z-host-atmos.js, 99-host-take.js | 19 |
 | conifers | 44s-host-land.js, 62-biome-shigh-conifers.js, 89-host-sky.js, 98-host-views.js | 28 |
 | fellfield | 44s-host-land.js, 62-biome-shigh-fell.js, 86-host-ice.js, 89-host-sky.js, 98-host-views.js | 25 |
+| ordeal | 44s-host-land.js, 62-biome-shigh-ordeal.js, 86-host-ordeal.js, 89-host-sky.js, 98-host-views.js | 33 |
+| shumar | 44s-host-land.js, 62-biome-shigh-shumar.js, 89-host-sky.js, 89zw-host-water.js, 98-host-views.js | 43 |

@@ -101,7 +101,7 @@ return KratorFaunaAPI; })();</script>
   // the skinned trial: one glTF with its own clips, not a catalog animal
   const SK = window.__SKIN, SKS = 4, SKM = { idle: 'glide', walk: 'flap', strike: 'fold' }; let bat = null;
   if (SK) { items.push({ skin: true, key: 'skin', base: 'skin', name: 'Giant bat', vname: SK.label, group: 'Skinned trial', w: SK.w * SKS, d: SK.d * SKS, h: SK.h * SKS }); }
-  const GROUP = { spider: 'Spiders', beetle: 'Beetles', 'staghorn-beetle': 'Beetles', 'bowl-mantis': 'Mantises', 'harvester-ant': 'Ants', hornet: 'Hornets', 'draught-millipede': 'Millipedes', 'elephant-bug': 'Elephant bugs' }, GROUPS = ['Elephant bugs', 'Millipedes', 'Hornets', 'Skinned trial', 'Spiders', 'Beetles', 'Mantises', 'Ants'], PART = { abd: 'abdomen', jaw: 'fangs', head: 'head' };
+  const GROUP = { spider: 'Spiders', beetle: 'Beetles', 'staghorn-beetle': 'Beetles', 'bowl-mantis': 'Mantises', 'harvester-ant': 'Ants', hornet: 'Hornets', 'draught-millipede': 'Millipedes', 'elephant-bug': 'Elephant bugs', 'giant-bat': 'Skinned: one mesh on a skeleton' }, GROUPS = ['Elephant bugs', 'Millipedes', 'Hornets', 'Skinned: one mesh on a skeleton', 'Skinned trial', 'Spiders', 'Beetles', 'Mantises', 'Ants'], PART = { abd: 'abdomen', jaw: 'fangs', head: 'head' };
   const widthOf = it => { if (it.skin) return it.w; const E = KF.entry(it.key); return E.variantDims ? E.variantDims[it.variant].w : E.w; };
   items.forEach(it => { it.group = it.group || GROUP[it.base] || 'Others'; }); items.sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || widthOf(b) - widthOf(a) || a.variant - b.variant);
   const F = window.__MODELS.spider;
@@ -117,7 +117,7 @@ return KratorFaunaAPI; })();</script>
     clear(); together = true; cur = null; const big = [], small = []; items.map(it => { const g = build(it), u = g.userData; return { it: it, w: u.w, d: u.d, h: u.h }; }).sort((a, b) => b.w - a.w).forEach(q => (q.w > 1.9 ? big : small).push(q));
     const row = (list, z) => { const gap = 0.5, tot = list.reduce((s, q) => s + q.w + gap, -gap); let x = -tot / 2; list.forEach((q, i) => { place(q.it, x + q.w / 2, z, actors.length); x += q.w + gap; }); return tot; };
     const a = row(big, -2.6), b = row(small, 2.2), wide = Math.max(a, b); figure.position.set(-wide / 2 - 0.9, 0, 2.2); figure.visible = true; tgt.set(0, 1.5, -0.5); dist = Math.max(16, wide * 1.45); el = 0.26; lit(wide * 0.75 + 6);
-    $('name').textContent = 'Krator Arthropod Bestiary'; $('sub').textContent = 'Generated with Meshy, cut into rigid parts along the exoskeleton\'s own joints, and animated with a planted-foot walk. All shown at true size.';
+    $('name').textContent = 'Krator Arthropod Bestiary'; $('sub').textContent = 'Generated with Meshy, cut into rigid parts along the exoskeleton\'s own joints, and animated with a planted-foot walk; and a giant bat from Tripo, one mesh skinned on its skeleton. All shown at true size.';
     $('facts').innerHTML = '<span><b>' + items.length + '</b> animals</span><span><b>' + LINE.mb + ' MB</b> of models</span><span><b>' + LINE.credits + '</b> Meshy credits</span>';
     tools(); index();
   }

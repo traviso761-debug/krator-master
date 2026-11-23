@@ -121,13 +121,16 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
-    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True) + kit_bundle.bundle(['xanadu', 'xanadu-citadel'])}   # tex: the library's detail maps on every piece (2026-11-10)
+    # tex: the library's detail maps on every piece (2026-11-10); decals: the delivered pictures of the citadel's hangings
+    # (kits/catalog/materials.json "decals", core/materials/PROMPTS-NEEDED.md section 57), the painted stand-ins until then
+    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True, decals=True) + kit_bundle.bundle(['xanadu', 'xanadu-citadel'])}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
 # 88x-matlib-pack.js (tools/textures/matlib_pack.py); src/88y-xanadu-matlib.js binds it onto MAT (KMAT.bindMat)
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 MATLIB_PACK = '88x-matlib-pack.js'
+PICS_PACK = '88x1-pics-pack.js'           # the citadel hangings' pictures (citadel/materials.json), generated
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 
 
@@ -168,7 +171,9 @@ TARGET_KIT = {'scrap': kxa.FOUNDATION + ['86b-xa-plants.js'] + kxa.SCRAP}
 # the build), targets/<t>/ (rows and views, as here) and kit.json: {"targets": {"kit": "qiblai.html"}, "deterministic":
 # [...], "external": ["repo/relative/fragment.js"], "externalDirs": ["kits/x/src"], "scoped": [closures], "packFrom": "kits/x",
 # "core": {"kit": ["mask"]}, "files": {"kit": [["core/water", [...]]]}}
-# ("external" fragments are read in place by their own names; "core" and "files" are TARGET_CORE and TARGET_FILES for the
+# ("external" fragments are read in place by their own names, or, as a pair ["repo/relative/file.js", "69m-name.js"], under the
+# name given, so a file without a number prefix (core/region/data/xan-tune.js) sorts where the kit needs it instead of after
+# 99-start.js (2026-11-23, settlements/marches' pitfall); "core" and "files" are TARGET_CORE and TARGET_FILES for the
 # kit's targets). Its pages and manifests go to the kit's dist/ and folder; its KNOWN_ISSUES.md is the one printed. The
 # kit's build.py calls this. Without --kit nothing below changes: Xanadu's own pages come out byte-identical.
 KIT = None
@@ -190,7 +195,7 @@ KIT_MATLIB_PACK = '88x2-kit-matlib-pack.js'   # a kit's own library pack (kit.js
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88y-xanadu-matlib.js',   # the material library (no rnd())
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88x1-pics-pack.js', '88y-xanadu-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -348,8 +353,11 @@ def build_one(target, do_checks):
         ext = list(KIT.get('external', []))
         for d in KIT.get('externalDirs', []):   # every numbered fragment of a folder read in place (another kit's src/)
             ext += sorted(d + '/' + f for f in os.listdir(os.path.join(ROOT, *d.split('/'))) if f[0].isdigit() and f.endswith('.js'))
-        for rel in ext:   # fragments read in place from elsewhere in the repo (no copy)
-            f = os.path.basename(rel)
+        for rel in ext:   # fragments read in place from elsewhere in the repo (no copy); a pair is [path, the name it sorts by]
+            if isinstance(rel, (list, tuple)):
+                rel, f = rel[0], rel[1]
+            else:
+                f = os.path.basename(rel)
             if f in src or f in kf:
                 sys.exit('kit %s: external fragment %s clashes with a fragment already in the order' % (KIT['dir'], f))
             kf[f] = os.path.join(ROOT, *rel.split('/'))
@@ -384,6 +392,11 @@ def build_one(target, do_checks):
     side = None if '--inline-packs' in sys.argv else {}
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'xanadu', side=side)
     order = sorted(order + [MATLIB_PACK])
+    # the pictures on the citadel's hangings (2026-11-17; citadel/FURNISHING.md): their own pack, KMAT.pack('xanadu-pics'), on the
+    # two pages that draw the citadel, beside the page with Xanadu's own; the catalog's hangings read it (xanPic, the Xanadu culture)
+    if not KIT and target in ('xanadu', 'erewhon') and os.path.isfile(os.path.join(HERE, 'citadel', 'tex', 'pack.json')):
+        bodies[PICS_PACK] = matlib_pack.fragment(os.path.join(HERE, 'citadel'), 'xanadu-pics', side=side)
+        order = sorted(order + [PICS_PACK])
     # a kit with library families of its own (kit.json "pack": its name; its materials.json packed into its tex/ by
     # tools/textures/pack.py): KMAT.pack('<name>') inlined here, bound by the kit's own fragment (KMAT.bindMat), as Iziz's --kit
     _pd = os.path.join(ROOT, *KIT['packFrom'].split('/')) if KIT and KIT.get('packFrom') else (KIT['dir'] if KIT else None)   # "packFrom": a kit's pack another folder's build takes (the city of Qiblai takes kits/qiblai's)

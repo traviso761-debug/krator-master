@@ -9,10 +9,16 @@ CFG = {
                   T_flap=1.4, amp=(0.55, 0.32), lag=0.6, T_walk=1.6, stride=0.12, lift=0.03, fold=dict(inner=(-1.15, 0.45), outer=(2.6, 0.0))),
  'bat': dict(squash_yhi=0.5, head_spikes=(0.15, 4.0), squash_out=0.30, shelf=(0.14, 0.17, 0.23, 0.0012), back_prune=-0.035, torso_trim=(0.22, 0.08), back_squash=(-0.035, 0.0, 0.2, -0.25), split=0.46, fold_scale=0.5, fold_chord=0.5, arm=0.1, armpit_wing_to_torso=False, perch_head=0.35, src='img_bat.glb', classify=fcfg.bat, total=9500, wings=3600, lead=(1, +1), flap_axis=(0, 1, 0), pitch='whole', fly_pitch=1.45,
              T_flap=0.5, amp=(0.55, 0.5), lag=1.0, T_walk=0.9, stride=0.10, lift=0.03, fold=dict(inner=(-1.4, -0.9), outer=(-0.15, -0.5))),
+ 'goldbird': dict(rot_y=-90, split=0.30, src='sources/goldbird/raw-tripo.glb', classify=fcfg.goldbird, total=10000, wings=3600, lead=(1, +1), flap_axis=(0, 0, 1), pitch='whole', fly_pitch=0.25,
+                  T_flap=1.1, amp=(0.2, 0.15), lag=0.8, T_walk=1.0, stride=0.12, lift=0.04, fold=dict(inner=(0.0, 0.0), outer=(0.0, 0.0)), glide_mid=0.12, arm=0.14,
+                  overlaps=[('torso', 'neck', 0.03), ('neck', 'head', 0.025), ('torso', 'tail', 0.05), ('legL', 'torso', 0.05, 'a>b'), ('legR', 'torso', 0.05, 'a>b')]),
  'archaeopteryx': dict(split=0.50, src='img_archaeopteryx.glb', classify=fcfg.archaeopteryx, total=9500, wings=3200, lead=(2, +1), flap_axis=(0, 0, 1), pitch='torso', fly_pitch=0.6,
                        T_flap=0.35, amp=(0.6, 0.45), lag=0.8, T_walk=0.9, stride=0.14, lift=0.04, fold=dict(inner=(-1.2, 0.3), outer=(-0.3, 1.3))),
 }[name]
-J, BIN, P, N, UV, F = load(CFG['src']); W = weld_ids(P); C = P[F].mean(1)
+J, BIN, P, N, UV, F = load(CFG['src'])
+if CFG.get('rot_y'):      # a model that does not face +z: turn it about y (degrees; -90 turns a +x-facing model to face +z)
+    _a = np.radians(CFG['rot_y']); _R = np.array([[np.cos(_a), 0, np.sin(_a)], [0, 1, 0], [-np.sin(_a), 0, np.cos(_a)]]); P = P @ _R.T; N = N @ _R.T
+W = weld_ids(P); C = P[F].mean(1)
 def _fn(V, Fc):
     n = np.cross(V[Fc[:, 1]] - V[Fc[:, 0]], V[Fc[:, 2]] - V[Fc[:, 0]]); return n / (np.linalg.norm(n, axis=1, keepdims=True) + 1e-12)
 lab0 = CFG['classify'](C, None if CFG.get('no_sheet') else _fn(P, F)); isw = np.array([l.startswith('wing') for l in lab0])

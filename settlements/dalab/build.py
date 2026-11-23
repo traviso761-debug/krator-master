@@ -319,6 +319,7 @@ VENDORED_IZIZ = ['90-scene.js', '91-probe.js',
                  '75-port-embassy.js', '76-port-chapterhouse.js']   # ../iziz/src (the vp* kit, the Voth embassy, the Historians' chapterhouse from the Yuni set)
 VENDORED_SKY = ['81-sky.js']   # ../../core/atmos/placeholder (KratorSky; Iziz's src/ copy moved there 2026-11-02; read in place with MODULARITY-PLAN.md step 4)
 VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']   # ../highlands/src (the Republican dwellings, for the embassy)
+ADAPTED = {'70-hl-tex.js': 'kept pre-Slavic texture fork locally until Dalab embassy re-vendors kits/highlands'}
 # The south-west lowlands biome, READ IN PLACE under the names src/86-bio-*.js had (2026-11-03, MODULARITY-PLAN.md step 4's
 # ride-along; the copies had fallen behind core/biome's move, the BIO.kit hooks, the harvest data and the runtime LOD):
 # the biome core from core/biome, the kit's species, trees, floor, dress and assembly from biomes/swlowlands/src.
@@ -353,7 +354,7 @@ def vendor_check():
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % label)
             continue
-        drift = []
+        drift, adapted = [], []
         for f in files:
             f, upf = (f if isinstance(f, tuple) else (f, f))
             a = open(srcpath(f), 'rb').read()
@@ -361,9 +362,15 @@ def vendor_check():
             if not os.path.exists(p):
                 drift.append(f + ' (missing upstream)')
             elif open(p, 'rb').read() != a:
-                drift.append(f)
+                if f in ADAPTED:
+                    adapted.append(f)
+                else:
+                    drift.append(f)
+        adap_note = (', %d adapted on purpose (%s)' % (len(adapted), ', '.join(adapted))) if adapted else ''
         print('vendor-check: %s' % ('all %d fragments identical to ../%s/src' % (len(files), label)
-                                     if not drift else 'DRIFT vs ../%s/src in ' % label + ', '.join(drift) + ' - re-vendor or note in KNOWN_ISSUES.md'))
+                                     if not drift and not adapted else
+                                     ('%d identical to ../%s/src%s' % (len(files) - len(drift) - len(adapted), label, adap_note)
+                                      + ('; DRIFT vs ../%s/src in ' % label + ', '.join(drift) + ' - re-vendor or note in KNOWN_ISSUES.md' if drift else ''))))
 
 
 def main():

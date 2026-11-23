@@ -3095,10 +3095,12 @@
     {
       "id": "coyote_men",
       "name": "Coyote Men",
-      "note": "The Outlands' therian tribes (Sunset, Sunrise, Valley, Peak; biomes/outlands/PLAN.md section 6): furred (a coyote's brush coat; the owner, 2026-10-26), lean. The coyote head is a mod (tools/heads.py); the digitigrade legs are not built yet. Coat colours (tawny to grey, agouti) and the rest are proposals",
+      "note": "The Outlands' therian tribes (Sunset, Sunrise, Valley, Peak; biomes/outlands/PLAN.md section 6): furred (a coyote's brush coat; the owner, 2026-10-26), lean, digitigrade. Coyote head (tools/heads.py), bushy brush tail (tools/tails.py), and digitigrade legs & paws (tools/digitigrade.py). Coat colours (tawny to grey, agouti) and the rest are proposals",
       "coat": "coyote",
       "mods": [
-        "mod_head_coyote"
+        "mod_head_coyote",
+        "mod_tail_coyote",
+        "mod_legs_coyote"
       ],
       "ancestry": {
         "african": [
@@ -3608,6 +3610,570 @@
             "legs": "geo_25_sphere_atlas_legs",
             "feet": "geo_25_sphere_atlas_feet",
             "label": "Geomancer 25 Sphere Atlas"
+          }
+        }
+      }
+    },
+    {
+      "id": "tungang",
+      "name": "Tungangs",
+      "note": "The Rift line's tunnel people (LORE.md section 6.1, kits/tungang/PLAN.md sections 1.5 and 1.5.1): the crews of an Ancient railway kept running in the dark as union lodges. Not dwarves: no beards, braids or axes. Body (the owner): 0.94 of a human, compact, long strong fingers, very large eyes with eyeshine, colourless pale skin, fine colourless hair cropped short, bare faces. Here: the height slider's low end, a little muscle, the eye-size slider's top, the palest skin and hair stops, cropped styles only, no beards. Owed, not faked: the eyeshine, the fingers' length, eyes larger than the morph's end, an exact 0.94 (TUNGANG-OUTFITS.md). Clothes: tools/garments/cultures/tungang.py; rank is shine (the steward's bead stripes), and the goggles are up in the holds and down on the surface (the crew_surface tier)",
+      "ancestry": {
+        "african": [
+          0.1,
+          0.4
+        ],
+        "asian": [
+          0.2,
+          0.6
+        ],
+        "caucasian": [
+          0.2,
+          0.6
+        ]
+      },
+      "skin": [
+        "#ece9e4",
+        "#e0dcd6",
+        "#d3cec8"
+      ],
+      "hair": [
+        "#e8e6e0",
+        "#d6d3cc",
+        "#c2bfb8"
+      ],
+      "eyes": [
+        "#c4ccd0",
+        "#a8b4ba",
+        "#cfc9b4",
+        "#9aa0a4"
+      ],
+      "grey": 0.3,
+      "beard": 0,
+      "morph": {
+        "height": [
+          -0.75,
+          -0.45
+        ],
+        "muscle": [
+          0.0,
+          0.4
+        ],
+        "weight": [
+          -0.2,
+          0.2
+        ],
+        "proportions": [
+          -0.3,
+          0.1
+        ],
+        "eye-scale-decr-incr": [
+          0.7,
+          1.0
+        ]
+      },
+      "styles": {
+        "male": [
+          "short04",
+          "short01",
+          "Low_Fade",
+          "hair_s4_01_feathered_caesar_crop",
+          "hair_meso_01_cropped_fringe_cap",
+          "hair_ea_01_short_textured_spiky_crop"
+        ],
+        "female": [
+          "short03",
+          "hair_s3_01_short_wavy_crop",
+          "hair_s4_01_feathered_caesar_crop",
+          "hair_meso_01_cropped_fringe_cap",
+          "hair_ea_01_short_textured_spiky_crop"
+        ]
+      },
+      "style_share": 1,
+      "tiers": [
+        [
+          "crew",
+          0.5
+        ],
+        [
+          "crew_surface",
+          0.1
+        ],
+        [
+          "fixer",
+          0.22
+        ],
+        [
+          "bookman",
+          0.12
+        ],
+        [
+          "steward",
+          0.06
+        ]
+      ],
+      "tier_labels": {
+        "crew": "Line crew (canvas, felt and grey blanket, hooded, goggles on the brow)",
+        "crew_surface": "Line crew on the night turn above (goggles down)",
+        "fixer": "Fixer (coveralls, fungus-leather apron, tool belt)",
+        "steward": "Loj steward (the faded orange with the shine, berth number, crew badges)",
+        "bookman": "Bookman (long dark coat, the Book in its satchel)"
+      },
+      "outfits": {
+        "male": {
+          "crew": {
+            "torso": "tungang_m_crew_layers",
+            "legs": "tungang_m_trousers",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_hood_goggles_up",
+            "gloves": "tungang_m_fingerless"
+          },
+          "crew_surface": {
+            "torso": "tungang_m_crew_layers",
+            "legs": "tungang_m_trousers",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_hood_goggles_down",
+            "gloves": "tungang_m_fingerless"
+          },
+          "fixer": {
+            "torso": "tungang_m_fixer_coveralls",
+            "legs": "tungang_m_fixer_legs",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_goggles_up",
+            "gloves": "tungang_m_fingerless"
+          },
+          "steward": {
+            "torso": "tungang_m_steward_tabard",
+            "legs": "tungang_m_trousers",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_goggles_up"
+          },
+          "bookman": {
+            "torso": "tungang_m_bookman_coat",
+            "legs": "tungang_m_trousers",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_goggles_up"
+          }
+        },
+        "female": {
+          "crew": {
+            "torso": "tungang_f_crew_layers",
+            "legs": "tungang_f_trousers",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_hood_goggles_up",
+            "gloves": "tungang_f_fingerless"
+          },
+          "crew_surface": {
+            "torso": "tungang_f_crew_layers",
+            "legs": "tungang_f_trousers",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_hood_goggles_down",
+            "gloves": "tungang_f_fingerless"
+          },
+          "fixer": {
+            "torso": "tungang_f_fixer_coveralls",
+            "legs": "tungang_f_fixer_legs",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_goggles_up",
+            "gloves": "tungang_f_fingerless"
+          },
+          "steward": {
+            "torso": "tungang_f_steward_tabard",
+            "legs": "tungang_f_trousers",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_goggles_up"
+          },
+          "bookman": {
+            "torso": "tungang_f_bookman_coat",
+            "legs": "tungang_f_trousers",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_goggles_up"
+          }
+        }
+      }
+    },
+    {
+      "id": "frogmen",
+      "name": "Frogmen (SW Highlands & Span)",
+      "note": "Amphibian martial clients of Dalab in the south-western highlands and flooded Span/Grrmp-Sump bores (LORE.md \u00a76.22): frog head with webbed hands and throat pouch (mod_head_frog, tools/amphibian.py) and webbed digitigrade jumper legs (mod_legs_frog, tools/digitigrade.py), painted in poison-dart greens, umbers, red-browns and creams",
+      "mods": [
+        "mod_head_frog",
+        "mod_legs_frog"
+      ],
+      "ancestry": {
+        "african": [
+          0.25,
+          0.5
+        ],
+        "asian": [
+          0.25,
+          0.5
+        ],
+        "caucasian": [
+          0.1,
+          0.35
+        ]
+      },
+      "skin": [
+        "#2e4a1c",
+        "#5f8a36",
+        "#7a5634",
+        "#9a4a2a"
+      ],
+      "hair": [
+        "#1e2a12",
+        "#2e4a1c",
+        "#3a2a1c"
+      ],
+      "eyes": [
+        "#d6a22a",
+        "#c08a2a",
+        "#b86820",
+        "#8fa832"
+      ],
+      "grey": 0.8,
+      "beard": 0.0,
+      "morph": {
+        "muscle": [
+          0.1,
+          0.7
+        ],
+        "weight": [
+          -0.2,
+          0.4
+        ]
+      },
+      "styles": {
+        "male": [
+          "short02"
+        ],
+        "female": [
+          "short03"
+        ]
+      },
+      "style_share": 1
+    },
+    {
+      "id": "sasquatch",
+      "name": "Sasquatch",
+      "note": "Isolationist giant-stature furred hominids of the high NW Outer Wall crags above the Yeti Kingdom (LORE.md \u00a76.18; Ruling #61): shaggy dark-umber to chestnut body pelt (coat: pelt) and heavy tall build",
+      "coat": "pelt",
+      "ancestry": {
+        "african": [
+          0.25,
+          0.55
+        ],
+        "asian": [
+          0.25,
+          0.55
+        ],
+        "caucasian": [
+          0.1,
+          0.3
+        ]
+      },
+      "skin": [
+        "#5a483e",
+        "#463830",
+        "#342924"
+      ],
+      "hair": [
+        "#4a3222",
+        "#5c3d28",
+        "#3b281c",
+        "#6e4b32",
+        "#2e221b"
+      ],
+      "eyes": [
+        "#6b4624",
+        "#8a5c2e",
+        "#4a321c"
+      ],
+      "grey": 0.65,
+      "beard": 0.0,
+      "morph": {
+        "height": [
+          0.7,
+          1.0
+        ],
+        "muscle": [
+          0.5,
+          1.0
+        ],
+        "weight": [
+          0.3,
+          0.9
+        ]
+      },
+      "styles": {
+        "male": [
+          "long01",
+          "short02"
+        ],
+        "female": [
+          "long01",
+          "braid01"
+        ]
+      },
+      "style_share": 1
+    },
+    {
+      "id": "talovolci",
+      "name": "Talovolci (Ring-Wall & Sea Clans)",
+      "note": "Slavic-inflected maritime and Ring-Wall kinsfolk of the Free Clans around Nereus, Sideros, Port Kon, and Vrivolci (LORE.md \u00a76.4; RING-SEA-SCOPE.md)",
+      "ancestry": {
+        "african": [
+          0.0,
+          0.05
+        ],
+        "asian": [
+          0.0,
+          0.2
+        ],
+        "caucasian": [
+          0.75,
+          1.0
+        ]
+      },
+      "skin": [
+        "#f0d5c2",
+        "#e0bc9e",
+        "#c99c7a"
+      ],
+      "hair": [
+        "#dec68e",
+        "#c49c5a",
+        "#9e6a3a",
+        "#754628",
+        "#4a3220"
+      ],
+      "eyes": [
+        "#48687e",
+        "#567892",
+        "#4c6244",
+        "#645036"
+      ],
+      "grey": 0.45,
+      "beard": 0.7,
+      "morph": {
+        "height": [
+          0.0,
+          0.55
+        ],
+        "muscle": [
+          0.05,
+          0.55
+        ]
+      },
+      "styles": {
+        "male": [
+          "braid01",
+          "long01",
+          "scalpviking",
+          "fourstrandbraid",
+          "short02"
+        ],
+        "female": [
+          "braid01",
+          "elvs_double_mh_braid",
+          "fourstrandbraid",
+          "brunhilde",
+          "long01"
+        ]
+      },
+      "tiers": [
+        [
+          "axeman",
+          0.6
+        ],
+        [
+          "envoy",
+          0.4
+        ]
+      ],
+      "tier_labels": {
+        "axeman": "Talovolci Sea-Reaver & Ring-Cliff Huscarl",
+        "envoy": "Sideros Iron-Quay Factor"
+      },
+      "outfits": {
+        "male": {
+          "axeman": {
+            "torso": "rustic_m_axeman_tunic",
+            "legs": "rustic_m_axeman_trousers",
+            "feet": "rustic_m_axeman_boots",
+            "beard": "rustic_m_axeman_stache"
+          },
+          "envoy": {
+            "torso": "rustic_m_envoy_gambeson",
+            "legs": "order_m_agent_trousers",
+            "feet": "rustic_m_envoy_boots"
+          }
+        }
+      }
+    },
+    {
+      "id": "tiguantin",
+      "name": "Tiguantin (Guari Highlanders)",
+      "note": "High-puna Andean/Quechua-inspired people of Guari and the Principality of Tiguantin around the Lesser Throne (+3.8 to 4.6 km, 0.90-1.05 atm; LORE.md \u00a76.15, Rulings #33 & #71)",
+      "ancestry": {
+        "african": [
+          0.05,
+          0.2
+        ],
+        "asian": [
+          0.55,
+          0.8
+        ],
+        "caucasian": [
+          0.1,
+          0.3
+        ]
+      },
+      "skin": [
+        "#c89268",
+        "#ad764e",
+        "#8f5c3a",
+        "#75482c"
+      ],
+      "hair": [
+        "#12100e",
+        "#1c1714",
+        "#28201a"
+      ],
+      "eyes": [
+        "#2b1b10",
+        "#3d2718",
+        "#4f3520"
+      ],
+      "grey": 0.55,
+      "beard": 0.1,
+      "morph": {
+        "height": [
+          -0.35,
+          0.25
+        ],
+        "muscle": [
+          0.1,
+          0.6
+        ],
+        "weight": [
+          -0.1,
+          0.45
+        ]
+      },
+      "styles": {
+        "male": [
+          "braid01",
+          "fourstrandbraid",
+          "long01",
+          "ponytail01"
+        ],
+        "female": [
+          "elvs_double_mh_braid",
+          "braid01",
+          "fourstrandbraid",
+          "long01"
+        ]
+      },
+      "style_share": 0.9
+    },
+    {
+      "id": "cyberliches",
+      "name": "Cyberliches (Wheel)",
+      "note": "Post-human cybernetic ancients of Wheel (405, 886) on the NW edge of Ancient's Valley (120 souls @ 0.15x metabolic cal-eq; Ruling #53): desiccated ash-pallor frames sustained by pre-Cataclysm life-support conduits and cybernetic limbs",
+      "mods": [
+        "mod_arms_cyber_up"
+      ],
+      "ancestry": {
+        "african": [
+          0.15,
+          0.4
+        ],
+        "asian": [
+          0.3,
+          0.6
+        ],
+        "caucasian": [
+          0.2,
+          0.5
+        ]
+      },
+      "skin": [
+        "#c2c0ba",
+        "#a4a29c",
+        "#86847e"
+      ],
+      "hair": [
+        "#d8d6d0",
+        "#b4b2ac",
+        "#7a7874",
+        "#262422"
+      ],
+      "eyes": [
+        "#6aa8b8",
+        "#8ac0cc",
+        "#c8963e"
+      ],
+      "grey": 0.2,
+      "beard": 0.0,
+      "morph": {
+        "age": [
+          0.55,
+          1.0
+        ],
+        "weight": [
+          -1.0,
+          -0.55
+        ],
+        "muscle": [
+          -0.6,
+          -0.1
+        ]
+      },
+      "styles": {
+        "male": [
+          "short02"
+        ],
+        "female": [
+          "short03"
+        ]
+      },
+      "tiers": [
+        [
+          "archivist",
+          0.45
+        ],
+        [
+          "conduit",
+          0.35
+        ],
+        [
+          "hierophant",
+          0.2
+        ]
+      ],
+      "tier_labels": {
+        "archivist": "Wheel Vault-Lich (Memory-Stack Preserver)",
+        "conduit": "Wheel Live-Conduit Ascetic",
+        "hierophant": "Wheel Spindle-Hierophant"
+      },
+      "outfits": {
+        "male": {
+          "archivist": {
+            "torso": "yusar_m_electropriest_robe",
+            "feet": "rep_m_peasant_boots",
+            "head": "yusar_m_electropriest_hood"
+          },
+          "conduit": {
+            "torso": "yusar_m_electromonk_harness",
+            "legs": "yusar_m_electromonk_pants",
+            "feet": "yusar_m_electromonk_wraps",
+            "head": "yusar_m_electromonk_mask"
+          },
+          "hierophant": {
+            "torso": "yusar_m_hierophant_robe",
+            "feet": "rep_m_peasant_boots",
+            "head": "yusar_m_hierophant_stack"
           }
         }
       }

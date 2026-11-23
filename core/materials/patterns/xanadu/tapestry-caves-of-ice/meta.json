@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1536,
+    1024
+   ],
+   "seam_after": [
+    1.142,
+    1.555
+   ],
+   "seam_before": [
+    1.436,
+    2.03
+   ],
+   "source_size": [
+    1536,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.15,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "xanadu/tapestry-caves-of-ice",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__xanadu__tapestry-caves-of-ice.png",
+  "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8af-492c, exec-452d5c1f-cec9-42af-93a2-e5cd845ef614.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+  "reuse": "the caves of ice and the mighty fountain; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)",
+  "sha1": "d16803d4251888f184389d502619d667772bfb86"
+ }
+}

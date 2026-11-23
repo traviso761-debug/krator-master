@@ -26,7 +26,7 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
               'core/drawn', 'core/biome')   # through Xanadu's build, kit.json and gen/
 
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '37-city-grid.js', '40-city-kcity.js']
 HAMLET_JS = ['10-hamlet-wood.js', '12-hamlet-gather.js', '14-hamlet-farmland.js', '16-hamlet-names.js', '18-hamlet-names.js',
              '20-hamlet-cultures.js', '30-hamlet-village.js']
 SPACE = 'core/space/20-core-space.js'

@@ -1,0 +1,50 @@
+{
+ "targets": {
+  "kit": "marr-kit.html",
+  "city": "marr.html"
+ },
+ "interiors": [
+  "kit",
+  "city"
+ ],
+ "core": {
+  "kit": [
+   "furnish",
+   "export"
+  ],
+  "city": [
+   "atmos",
+   "mask",
+   "export",
+   "furnish"
+  ]
+ },
+ "deterministic": [
+  "69m-mar-mat.js",
+  "69n-mar-helpers.js",
+  "75m-mar-trades.js",
+  "88ym-mar-matlib.js",
+  "94-city-export.js",
+  "44-core-stage.js",
+  "20-core-walk.js",
+  "80-marr-sim.js"
+ ],
+ "external": [
+  "settlements/iziz/targets/city/94-city-export.js",
+  "core/biome/44-core-stage.js",
+  "kits/marr/sim/80-marr-sim.js"
+ ],
+ "pack": "marr",
+ "furniture": [
+  "iziz",
+  "talia",
+  "generic",
+  "generic-goods",
+  "scrap",
+  "jobs"
+ ],
+ "interiorSets": [
+  "iziz",
+  "marr"
+ ]
+}

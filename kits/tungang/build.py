@@ -15,6 +15,7 @@ The page is one <script> made of, in filename order:
   core/space            20-core-space.js (KSPACE: core/hamlet's overlap index)
   core/tags/glazier     52g-tags-glazier.js (the culture id `glazier`, opt-in: no other page changes)
   core/terrain          39-core-cavern.js (KCAVERN), host/39e (drawRock), host/39h (the rock cut): the Glaziers' rock on the sheet
+  core/pueblo           10, 20, 30 (KPUEBLO: Wildcat's plans, the scrap pueblo's room cells, terraces, ladders, kivas)
   core/hamlet           10, 20, 30 (KHAMLET: the sheet's sample village) and fellgang/22-hamlet-fellgang.js (the opt-in
                         `fellgang` row with the `fowling` and `ice` focuses), with core/city/33-city-strategies.js (KCITY.prim)
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
@@ -22,11 +23,11 @@ The page is one <script> made of, in filename order:
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
   core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors
-                        and walls, src/37-wk-rec.js; F walks the sheet)
+                        and walls, core/engine/37-wk-rec.js, round walls src/37t-wk-ring.js; F walks the sheet)
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: the plate
                         doors on their cable hinges open with E; core/engine/36o-open.js draws them)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
-  38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
+  38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py, tex=True): the catalog as one closure, KratorFurniture
 tungang_bundle.py seals the same kit fragments for another world (TG, its API.md): the riftrim stations' villages.
 
 Checks (fragments share one JS scope):
@@ -78,7 +79,8 @@ sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   
 KIT_ID = 'tungang'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'space', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'space', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box',
+                                                                  'pueblo')]
 # core/hamlet by name (its other fragments are not needed here), its opt-in Fellgang row (a subfolder no other build lists:
 # core/hamlet/fellgang/README.md), and the one core/city fragment the village generator reads (KCITY.prim)
 CORE_FILES = ['core/hamlet/10-hamlet-wood.js', 'core/hamlet/20-hamlet-cultures.js', 'core/hamlet/fellgang/22-hamlet-fellgang.js',
@@ -86,7 +88,11 @@ CORE_FILES = ['core/hamlet/10-hamlet-wood.js', 'core/hamlet/20-hamlet-cultures.j
               # the Glaziers' set: their culture id, opt-in (core/tags/glazier/README.md); the cavern the sheet carves their rock in
               # (KCAVERN), its draw and its rock cut (the cut-away opens every void over its own floor)
               'core/tags/glazier/52g-tags-glazier.js', 'core/terrain/39-core-cavern.js', 'core/terrain/host/39e-core-cavern-draw.js',
-              'core/terrain/host/39h-core-cavern-cut.js']
+              'core/terrain/host/39h-core-cavern-cut.js',
+              # its rock dressed in the library's rock face (KCAVERN.rockMaterial) through core/terrain's ground shader (KGROUND)
+              'core/terrain/43-core-ground.js', 'core/terrain/host/39i-core-cavern-rock.js',
+              # the Tungang set's test hold (src/91g-tg-sheet.js): core/city's cavern setting lays it (KCAVERN carves it, 39e draws the rock)
+              'core/city/cavern/10-city-cavern.js']
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the page.
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
@@ -145,7 +151,7 @@ def matlib_pack():
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)}
+    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True)}   # with the library detail maps: the pieces textured, not vertex colours only
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
@@ -174,7 +180,7 @@ def main():
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     bodies.update({f: open(paths[f], encoding='utf-8', newline='').read() for f in files if f not in vb})
-    BSRC.report(paths, vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
+    BSRC.report(dict(paths, **{'(catalog detail maps)': os.path.join(ROOT, 'kits', 'catalog', 'tex', 'pack.json')}), vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
     is_core = lambda f: f in core and paths[f] == core[f]
     errs = []
     if '--no-checks' not in sys.argv:

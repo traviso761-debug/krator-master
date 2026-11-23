@@ -31,5 +31,5 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `74-br-tents-bands.js` | 18 | = (2) |
 | `75-br-tents-bounds.js` | 5 | = (2) |
 | `79-br-camp.js` | 15 | = (2) |
-| `90-br-sheet.js` | 9 | = (1) |
+| `90-br-sheet.js` | 10 | = (1) |
 | `99-tail.html` | <1 |  |

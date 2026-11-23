@@ -16,11 +16,13 @@ for (const row of rows) {
   const m = L.load(row.file || path.join(ROOT, 'kits', 'fauna', 'models', row.model.split('#')[0] + '.json'), row.model && row.model.split('#')[1]), M = m.M, S = M.scale, W = L.pose(m, m.clips.perch, 0), v = [0, 0, 0];
   const off = [-M.rest.center[0] * S, -M.rest.ground * S, -M.rest.center[1] * S], box = new THREE.Box3().setFromObject(g), cz = (box.min.z + box.max.z) / 2, kz = M.rest.d / Math.max(box.max.z - box.min.z, 1e-6);
   const pts = [];
-  for (const n in m.parts) { const P = m.parts[n]; if (!L.TRUNK.test(n) && !HEADISH.test(n)) continue;
-    for (let i = 0; i < P.pos.length; i += 3) { L.apply(W[P.node], P.pos, i, v); pts.push({ n, node: P.node, x: v[0] * S + off[0], y: v[1] * S + off[1], z: v[2] * S + off[2] }); } }
+  for (const n in m.parts) { const P = m.parts[n]; if (!L.TRUNK.test(n) && !HEADISH.test(n) && !P.skinned) continue;      /* a skinned model's head is in skinLimbs */
+    for (let i = 0; i < P.pos.length; i += 3) { L.apply(W[P.node], P.pos, i, v); pts.push({ n, node: P.dom ? P.dom[i / 3] : P.node, x: v[0] * S + off[0], y: v[1] * S + off[1], z: v[2] * S + off[2] }); } }      /* a skinned vertex rides its heaviest bone */
+  const limb = new Set();      /* a skinned model: what straps on rides a vertex whose heaviest bone is on the spine (L.skinLine), not one of the torso's faces that only touches it */
+  if (M.skin) { const line = m.skin.line; M.nodes.forEach((_, i) => { if (!line.has(i)) limb.add(i); }); }
   const res = {};
   for (const a of names) { const p = A[a], q = [p[0], p[1], (p[2] - cz) * kz]; let best = null, bd = 1e30;
-    for (const c of pts) { if (STRAPPED.test(a) && !L.TRUNK.test(c.n)) continue; const d = (c.x - q[0]) ** 2 + (c.y - q[1]) ** 2 + (c.z - q[2]) ** 2; if (d < bd) { bd = d; best = c; } }
+    for (const c of pts) { if (STRAPPED.test(a) && (!L.TRUNK.test(c.n) || limb.has(c.node))) continue; const d = (c.x - q[0]) ** 2 + (c.y - q[1]) ** 2 + (c.z - q[2]) ** 2; if (d < bd) { bd = d; best = c; } }
     if (!best) continue;
     const w = [best.x, best.y, best.z], lx = (w[0] - off[0]) / S, ly = (w[1] - off[1]) / S, lz = (w[2] - off[2]) / S, Mx = W[best.node], dx = lx - Mx[12], dy = ly - Mx[13], dz = lz - Mx[14];
     res[a] = { p: w.map(r4), node: M.nodes[best.node].name, at: [dx * Mx[0] + dy * Mx[1] + dz * Mx[2], dx * Mx[4] + dy * Mx[5] + dz * Mx[6], dx * Mx[8] + dy * Mx[9] + dz * Mx[10]].map(x => Math.round(x * 1e6) / 1e6) }; }

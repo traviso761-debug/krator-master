@@ -22,6 +22,13 @@
   dome's curves in. Each room is taken at the dome's height four fifths of the way out, so a tall piece the planner sets against
   the wall can meet the curve (the drying rack, the loom). The set's rooms are a reading for a world that instances them; the
   kit's own page places its pieces by hand (`ytWallAt` keeps a piece inside the curve).
+- [x] (2026-11-16) **The urasa's interior failed the residence rule at the people's measure.** Wave 2 (integration-4) brought
+  core/furnish's per-culture scale (`KFURN.SCALE.khaayken` 1.15, as PLAN.md's YT.SCALE wants), and `kits/interiors`' sets page
+  furnishes every Khaayken room at it. The urasa's room was a `cottage`, which asks for a bed piece: the 2.3 x 2.5 robes and their
+  clearance no longer fit between the open hearth and the cone's foot (the room taken at 1.6 m), so `verify.py --assert --sets`
+  failed `bed:no-fit` and the residence rule. The scale stays; the urasa now reads as the domes do: its room is a `yt_home`, and
+  its sleeping places are fixtures with `bed: n` where `66-yt-steppe.js` lays the robes on the twig floor (the back, two; the left,
+  one), so the planner brings the chest, the food and the goods round them. The kit's own page did not change.
 - [ ] **The war loot is placed by hand**, per building: each builder offers its places (`ytLoot(slots, tier)`) and the rule takes
   the first `YT_LOOT_N[tier]` of them. A rich house or hall that offers fewer places than its share shows fewer (`verify.py`'s
   `loot-rule` checks the rich ones show six or more). The loot's own size is kept (an Eternian chest is a human's chest).

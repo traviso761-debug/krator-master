@@ -166,6 +166,23 @@
     z -= 12;
   }
 
+  /* --- the pieces' lamps: every lamp a piece holds is a PointLight, and a page of them all overflows a shader's uniforms
+     (MAX_FRAGMENT_UNIFORM_VECTORS 1024 on both GPU lanes once the Tungang and the Fellgang lamps came in, 2026-11-11). So at
+     most LIGHT_MAX are on at once, the ones nearest the camera, re-picked every half second; always exactly that many, so the
+     programs never recompile as the camera moves. */
+  const LIGHTS = [], LIGHT_MAX = 24, _lw = new THREE.Vector3();
+  scene.updateMatrixWorld(true);
+  scene.traverse(function (o) { if (o.isPointLight) { o.getWorldPosition(_lw); LIGHTS.push({ l: o, p: _lw.clone() }); } });
+  function pickLights() {
+    if (LIGHTS.length <= LIGHT_MAX) return;
+    const c = camera.position;
+    LIGHTS.sort(function (a, b) { return a.p.distanceToSquared(c) - b.p.distanceToSquared(c); });
+    LIGHTS.forEach(function (q, i) { q.l.visible = i < LIGHT_MAX; });
+  }
+  pickLights();
+  let lightTick = 0;
+  (window._frameHooks = window._frameHooks || []).push(function () { if (++lightTick % 30 === 0) pickLights(); });
+
   /* --- the standard Krator sky (vendored 81-sky.js), fixed at mid-morning */
   if (window.KratorSky) {
     KratorSky.attach(scene, 4200);

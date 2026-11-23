@@ -171,6 +171,11 @@ def matlib_pack():
         e=pack['families'][fam]
         f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
            'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
+        # what the card's image is and how the slot cuts and holds it, as tools/textures/matlib_pack.py copies them (2026-11-15: this writer
+        # dropped them, so the lichen's cell, the ferns' bases and the fir's stems never reached a page, and the core's card guard, which reads
+        # "plants", never ran on this kit)
+        for k in ('cell','base','stems','rise','plants','anchor','sheet'):
+            if e.get(k) is not None: f[k]=e[k]
         for k,name in sorted(e['files'].items()):
             f[k]='data:image/webp;base64,'+base64.b64encode(open(os.path.join(TEX_DIR,name),'rb').read()).decode()
         out.append(' %s: %s'%(json.dumps(fam),json.dumps(f,sort_keys=True)))

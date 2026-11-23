@@ -19,6 +19,7 @@ import build_batch2_outfits as _b2
 from .yuni import build_yuni_kit
 from .historians import build_historians_kit
 from .xanadu import build_xanadu_kit
+from .tungang import build_tungang_kit
 
 # Culture-indexed registry of outfit builder functions
 CULTURE_BUILDERS = {
@@ -99,6 +100,9 @@ CULTURE_BUILDERS = {
     ],
     'historians': [
         build_historians_kit,
+    ],
+    'tungang': [
+        build_tungang_kit,
     ],
 }
 

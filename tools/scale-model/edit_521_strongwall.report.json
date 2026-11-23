@@ -1,0 +1,361 @@
+{
+ "edit": "5.1 edit 9 (Strongwall W0, V0)",
+ "date": "2026-11-23",
+ "slot": {
+  "rows": [
+   1638,
+   1639,
+   1640,
+   1641
+  ],
+  "full_x": [
+   904,
+   922
+  ],
+  "fade_x": [
+   923,
+   927
+  ],
+  "cells_moved": 90,
+  "row_1641": {
+   "912": 560,
+   "913": 316,
+   "914": 216,
+   "915": 114,
+   "916": -8,
+   "917": -144,
+   "918": -356,
+   "919": -505,
+   "920": -347,
+   "921": -182,
+   "922": 30
+  }
+ },
+ "pit": {
+  "cells": [
+   [
+    913,
+    1633
+   ],
+   [
+    913,
+    1634
+   ],
+   [
+    913,
+    1635
+   ],
+   [
+    914,
+    1633
+   ],
+   [
+    914,
+    1634
+   ],
+   [
+    914,
+    1635
+   ],
+   [
+    915,
+    1633
+   ],
+   [
+    915,
+    1634
+   ],
+   [
+    915,
+    1635
+   ]
+  ],
+  "was_min_m": -351,
+  "now_m": [
+   459,
+   437,
+   446,
+   467,
+   443,
+   438,
+   472,
+   431,
+   431
+  ]
+ },
+ "ground_m": {
+  "fort": {
+   "px": [
+    912,
+    1640
+   ],
+   "ground_m": 755,
+   "wet": false
+  },
+  "G1, the Brow post": {
+   "px": [
+    917,
+    1648
+   ],
+   "ground_m": 3455,
+   "wet": false
+  },
+  "G2, the Cold post": {
+   "px": [
+    911,
+    1653
+   ],
+   "ground_m": 4137,
+   "wet": false
+  },
+  "G3, the Lode post": {
+   "px": [
+    915,
+    1664
+   ],
+   "ground_m": 5046,
+   "wet": false
+  },
+  "R1, the Fan post": {
+   "px": [
+    906,
+    1635
+   ],
+   "ground_m": 585,
+   "wet": false
+  },
+  "R2, the Bench-end post": {
+   "px": [
+    905,
+    1626
+   ],
+   "ground_m": 446,
+   "wet": false
+  },
+  "R3, the Rift post": {
+   "px": [
+    894,
+    1624
+   ],
+   "ground_m": 362,
+   "wet": false
+  },
+  "the House of the Tempest": {
+   "px": [
+    886,
+    1619
+   ],
+   "ground_m": 519,
+   "wet": false
+  },
+  "its west-brow lookout": {
+   "px": [
+    879,
+    1618
+   ],
+   "ground_m": 153,
+   "wet": false
+  }
+ },
+ "posts": {
+  "G1, the Brow post": {
+   "km": 18.9,
+   "clear_m": 14.4,
+   "tightest_at": [
+    916.93,
+    1647.89
+   ],
+   "sees": true,
+   "to": "fort"
+  },
+  "G2, the Cold post": {
+   "km": 15.6,
+   "clear_m": -0.3,
+   "tightest_at": [
+    914.58,
+    1650.02
+   ],
+   "sees": false,
+   "to": "G1, the Brow post"
+  },
+  "G3, the Lode post": {
+   "km": 23.4,
+   "clear_m": 13.3,
+   "tightest_at": [
+    911.04,
+    1653.12
+   ],
+   "sees": true,
+   "to": "G2, the Cold post"
+  },
+  "R1, the Fan post": {
+   "km": 15.6,
+   "clear_m": 11.9,
+   "tightest_at": [
+    906.1,
+    1635.08
+   ],
+   "sees": true,
+   "to": "fort"
+  },
+  "R2, the Bench-end post": {
+   "km": 18.1,
+   "clear_m": 14.3,
+   "tightest_at": [
+    905.01,
+    1626.12
+   ],
+   "sees": true,
+   "to": "R1, the Fan post"
+  },
+  "R3, the Rift post": {
+   "km": 22.4,
+   "clear_m": -0.2,
+   "tightest_at": [
+    894.99,
+    1624.18
+   ],
+   "sees": false,
+   "to": "R2, the Bench-end post"
+  }
+ },
+ "tempest": {
+  "fort": {
+   "km": 66.8,
+   "clear_m": 12.9,
+   "tightest_at": [
+    886.1,
+    1619.08
+   ],
+   "sees": true
+  },
+  "G1, the Brow post": {
+   "km": 84.9,
+   "clear_m": 20.4,
+   "tightest_at": [
+    886.09,
+    1619.09
+   ],
+   "sees": true
+  },
+  "G2, the Cold post": {
+   "km": 84.4,
+   "clear_m": -209.2,
+   "tightest_at": [
+    904.1,
+    1643.62
+   ],
+   "sees": false
+  },
+  "G3, the Lode post": {
+   "km": 107.1,
+   "clear_m": -650.7,
+   "tightest_at": [
+    902.13,
+    1644.02
+   ],
+   "sees": false
+  },
+  "R1, the Fan post": {
+   "km": 51.2,
+   "clear_m": 12.6,
+   "tightest_at": [
+    886.1,
+    1619.08
+   ],
+   "sees": true
+  },
+  "R2, the Bench-end post": {
+   "km": 40.5,
+   "clear_m": 12.0,
+   "tightest_at": [
+    904.88,
+    1625.96
+   ],
+   "sees": true
+  },
+  "R3, the Rift post": {
+   "km": 18.9,
+   "clear_m": -9.0,
+   "tightest_at": [
+    887.6,
+    1620.0
+   ],
+   "sees": false
+  }
+ },
+ "lookout": {
+  "fort": {
+   "km": 79.3,
+   "clear_m": -108.7,
+   "tightest_at": [
+    884.93,
+    1621.96
+   ],
+   "sees": false
+  },
+  "G1, the Brow post": {
+   "km": 96.8,
+   "clear_m": 16.7,
+   "tightest_at": [
+    879.1,
+    1618.08
+   ],
+   "sees": true
+  },
+  "G2, the Cold post": {
+   "km": 94.8,
+   "clear_m": -458.6,
+   "tightest_at": [
+    902.73,
+    1643.95
+   ],
+   "sees": false
+  },
+  "G3, the Lode post": {
+   "km": 116.8,
+   "clear_m": -902.0,
+   "tightest_at": [
+    899.35,
+    1644.0
+   ],
+   "sees": false
+  },
+  "R1, the Fan post": {
+   "km": 63.8,
+   "clear_m": -125.7,
+   "tightest_at": [
+    884.93,
+    1621.73
+   ],
+   "sees": false
+  },
+  "R2, the Bench-end post": {
+   "km": 54.4,
+   "clear_m": -292.4,
+   "tightest_at": [
+    885.95,
+    1620.14
+   ],
+   "sees": false
+  },
+  "R3, the Rift post": {
+   "km": 32.3,
+   "clear_m": -218.8,
+   "tightest_at": [
+    885.05,
+    1620.42
+   ],
+   "sees": false
+  }
+ },
+ "tempest_to_lookout": {
+  "km": 14.1,
+  "clear_m": -126.5,
+  "tightest_at": [
+   882.0,
+   1618.43
+  ],
+  "sees": false
+ }
+}

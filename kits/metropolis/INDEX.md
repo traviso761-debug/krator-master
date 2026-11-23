@@ -45,7 +45,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `59b-mp-ruin-design.js` | 13 |  |
 | `59d-mp-flora.js` | 4 |  |
 | `59e-mp-overgrow.js` | 21 |  |
-| `60-mp-shell-host.js` | 24 |  |
+| `60-mp-shell-host.js` | 25 |  |
 | `70-mp-stage.js` | 25 |  |
 | `70f-mp-stage-farm.js` | 17 |  |
 | `89-host-sky.js` | <1 |  |

@@ -571,6 +571,17 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-11-16 and processed, through Codex** (`tools/textures/batches/codex-2026-11-16.json`; images in
+`~/.codex/generated_images`, each matched to its prompt through its thread's log in `~/.codex/sessions/2026/11/16`): 22 new
+sets, **none wired yet** (each build wires its slot when its branch merges): the Qiblai rooms' `wall.mural.temple`,
+`ceiling.coffer.mandala` and `cloth.rug.temple`; Grēṭ-Āil's `ceiling.night.stars`, `wall.mural.dream` and `cloth.blanket.azure`;
+the fort's `wall.rubble.limewash`, `wood.gate.studded` and `wall.limewash.scorched`; the Ancient Transit's `ground.asphalt.lanes`,
+`ground.ballast.rail` and `metal.rail.rusted`; the resource nodes' `rock.magnetite`, `stone.nephrite` and `rock.amber.blueearth`;
+the Arch's `rock.hyaloclastite`, the Rift battery's `organic.reef.galvanic`, the Tiers' `ground.snow.ash`, Lightwall's
+`glass.moonglass`, the Tungang kit's `patterns/tungang/crew-mosaic` and `loj-banner.c`; and the Viridian estate's
+`foliage.tea.clipped` (its entry is on the Viridian branch). 26 more images that day were second takes of the 2026-11-12 sets,
+and two of `rock.megabreccia` and `ground.coral.rubble`: the owner kept the installed takes ("keep the installed 2026-11-12
+takes, merge them here"), so they were not processed. `card.leaf.photonic`'s second take came on black, not magenta.
 **Delivered 2026-11-03 and processed, demolition rubble** (`tools/textures/batches/metropolis-rubble-2026-11.json`, pasted by the owner):
 `ground.rubble.demolition` (3 m: broken concrete, brick, bent rebar and rusted flat bar over grey and red-brown gravel), the bed of `kits/metropolis`' ruin
 heaps (`core/terrain` `KRUBBLE`); for any collapsed building's rubble or demolition ground.
@@ -2146,6 +2157,83 @@ colours); the Islanders' variant keys `patGableW2`, `patGableE2` and `patHinggi`
 `GEYSER.libCol` (a full-colour card's instances take a near-white); Highlands' repeats for the new sheets in 88y; Iziz's
 aliases onto three `city*` families (Verge leaves them out); Ys gives `pipeRust` world UVs (2 m) in 79z, not in the
 vendored files.
+
+#### Delivered 2026-11-23 and processed: the Coyote kit, the Marr kit, Kirstabal's wall, the works pieces, the azurite, the beech (13 sets)
+
+The owner's Codex batch of 2026-11-23 (`~/.codex/generated_images`, 14 threads, 25 images), each thread matched to its prompt in
+`PROMPTS-NEEDED.md` through its own session log. Where Codex saved a finished 2048 px copy after its seam pass (its project folder
+under `~/.codex/.chatgpt-projects/`), that copy is the source; else the thread's last take (`wall.slate.coursed`). Batches
+`tools/textures/batches/codex-2026-11-23.json` (10 surfaces and patterns, `process.py`) and `codex-2026-11-23-cards.json` (3 cut-outs,
+`cards.py`: magenta key, anchor none). **None is wired yet**: each build takes its slot at the all-builds rebuild (the prompts, with
+their wiring notes, are in `PROMPTS-archived.md`). `(tint)` marks a near-colourless set (muted .6).
+
+| section (integration line) | set | for |
+|---|---|---|
+| 57. The Coyote kit | `brick.mud.coursed` (tint), `patterns/coyote/kilim`, `patterns/coyote/frieze`, `patterns/coyote/turquoise-mosaic`, `card.feather.ostrich` (tint, a sheet of four) | `kits/coyote` |
+| 63. Copper Glacier's azurite tarn | `rock.azurite` | `biomes/copperglacier` station 11 |
+| 64. The eastern highlands' combed beech | `card.beech.southern` (tint, a sheet of nine) | `biomes/ehighlands` stations 5 and 6 |
+| 65. The Marr kit | `stone.coral.colonial` (tint), `patterns/marr/azulejo-maritime`, `patterns/marr/iron-scrollwork` (a cut-out panel) | `kits/marr` |
+| 66. Kirstabal's slate town wall | `wall.slate.coursed` (tint) | `settlements/kirstabal` `xSlate`, `xSlateD` |
+| 67. The Xanadu kit's works pieces | `ground.dyeworks`, `ground.sulfur.crust` | `kits/xanadu/extra/88g-xa-works.js` |
+
+Not delivered: the Rift battery's `rock.sulfide.chimney` and `ground.brine.mud` (section 51); Gihon's and Shumar's prompts are on their
+branches (`metal.gilt.leaf`, `inlay.opal`; `stone.dome.mamluk`, `masonry.ablaq.basalt`, `stone.jali.blade`, `card.apricot.whorl`).
+`patterns/marr/iron-scrollwork` had two threads; the one whose rails meet the top and bottom edges was taken. The frieze came exactly
+periodic from Codex (seams 0.00); `process.py`'s period crop left it at 2039 px, still seamless.
+
+#### Delivered 2026-11-17 and processed: Erewhon's hangings, easter eggs, sultans' portraits, the Tungang banners (40 images)
+
+The owner's Codex batch of 2026-11-17 (`~/.codex/generated_images`), matched to `PROMPTS-NEEDED.md` sections 57, 58 and 43 through the Codex session logs; batch `tools/textures/batches/citadel-hangings-2026-11-17.json` (single panels: `seam_axes` none, no delighting, kept whole, long side 1024).
+- **Wired** (Xanadu's citadel, `settlements/xanadu/citadel/materials.json`, packed alone as `KMAT.pack('xanadu-pics')` for the xanadu and erewhon pages): `patterns/xanadu/hanging-*` (4), `tapestry-*` (4), `portrait-sultan-*` (5), `patterns/common/suzani-roundels` and `.b`, `patterns/easter/*` (11 Mughal panels and `desert-ruins`).
+- **In the library, not wired:** `patterns/xanadu/tapestry-pleasure-dome.b` (a second take); `patterns/easter/*.classic` (nine earlier, non-Mughal takes, for Talia's art museum); `patterns/tungang/loj-banner`, `loj-banner.b`, `enamel-signs` (`kits/tungang` wires them).
+
+#### Delivered 2026-11-12 and processed: 63 sets generated through Codex (main's sections 37-52 and eleven branches' sections)
+
+Generated by the owner through Codex (`~/.codex/generated_images/<thread>/`, 1254 px PNG; three at 1536 x 1024, squeezed square; the
+glazier band 2172 x 724, kept as a band). Each image was matched to its prompt from the thread's own log, so every `meta.json` names its
+thread folder, section and branch. Batches `tools/textures/batches/codex-2026-11-12.json` (53 surfaces and panels, `process.py`) and
+`codex-2026-11-12-cards.json` (10 cut-outs, `cards.py`: magenta key, anchor none for the sheets; `card.leaf.photonic` came with its own
+alpha). **None is wired.** Main's 26 have their prompts moved to `PROMPTS-archived.md` with the wiring notes; the other 37 are owed on
+their branches, which wire the slot and delete their entry at merge. `(tint)` marks a near-colourless set (muted .6).
+
+| branch | section | sets |
+|---|---|---|
+| `main` | Erewhon's citadel: the Pleasure Domes and the Moorish and Mughal palaces | `patterns/xanadu/jali` |
+| `main` | Raw clay | `earth.clay.raw` (tint) |
+| `main` | The Arch | `rock.serpentinite`, `rock.peridotite.rind`, `mineral.travertine.brucite`, `rock.basalt.pillow`, `mineral.curtain` |
+| `main` | The Great Chasm | `ground.komatiite.pavement` |
+| `main` | The Hearth field's warm ground | `ground.warmsoil` |
+| `main` | The NE outer wall | `rock.skarn.banded`, `rock.pseudotachylite.mirror` |
+| `main` | The Rift battery | `ground.sulfide.oxidised` (tint), `rock.sphalerite` (tint) |
+| `main` | The Tiers | `bark.tiered` (tint), `rock.lichen.ledges`, `card.shelfoak` (tint) |
+| `main` | The gypsum maze under Cube's plateau | `rock.gypsum.bedded` |
+| `main` | The hyperjungle's lands and the savannah rims | `organic.comb.bee`, `bark.watcher` (tint), `bark.bloodwood`, `bark.bamboo.bored` (tint), `card.arum.carrion`, `card.bamboo.leaf` (tint), `card.flower.hand`, `card.pod.skull` |
+| `main` | The southern highlands' upper stations | `card.heath.whorl` (tint) |
+| `claude/awesome-varahamihira-66a852` | The Rift line | `concrete.lining.segment`, `concrete.guideway`, `metal.plate.riveted.painted`, `concrete.lining.spalled`, `metal.door.blast`, `mineral.quartz.smoky` |
+| `claude/bold-lamarr-4d844c` | The Kimr | `hide.pachyderm` (tint), `shell.glyptodont` (tint), `earth.dung.stack` (tint), `patterns/kimr/handprints`, `patterns/kimr/bowl-band`, `patterns/kimr/kilt-band`, `patterns/kimr/shield`, `patterns/kimr/mural`, `patterns/kimr/labyrinth` |
+| `claude/clifflung-biome` | The Cliff Lungs | `organic.lung.ring` (tint), `organic.comb.throat`, `organic.husk.dry` (tint), `card.fallout.lawn` |
+| `claude/zealous-allen-0cd44d` | The Qiblai kit | `metal.gold.sheet.beaten`, `metal.copper.mantra` |
+| `claude/fervent-sagan-nnid69` | The Loom-Chasms | `organic.cable.ironsilica` |
+| `claude/firebliss-patera-domes` | The Firebliss Patera's domes and Korona's | `rock.rhyolite.flowbanded` (tint) |
+| `claude/kind-cori-9c4452` | The Tungang kit | `rock.hewn.drillmarked` (tint), `concrete.lining.segment.bolted` (tint, see below), `organic.fungus.leather` (tint), `patterns/fellgang/daub`, `patterns/glazier/cholet-front` |
+| `claude/nice-volta-a09dni` | The Outlands | `organic.tube.waxy` (tint) |
+| `claude/relaxed-ritchie-611932` | The Labyrinth's flora | `surface.melon.rind` (tint), `card.birch.silver` (tint) |
+| `claude/siphon-pits-biome` | The Siphon Pits | `surface.fleece.machinewax`, `ground.feltturf.siphon`, `wax.machine` |
+| `claude/zealous-allen-0cd44d` | Opal Valley | `ground.sinter.opaline`, `rock.opal.matrix`, `card.leaf.photonic` |
+
+- **Not installed.** `rock.megabreccia` and `ground.coral.rubble` were generated again, but both have been in the library since 2026-10-26 and
+  2026-11-03 (section 38's entry was stale, so it is gone); the owner keeps the old megabreccia
+  (2026-11-12), which now answers section 32 for nhighlands' crater wall too (the new image: Codex thread `01a1d135-08d2`). `patterns/tungang/enamel-signs` came out with steam locomotives from the old
+  prompt and is left out: the Tungang prompts were rewritten futuristic that day (`claude/tungang-fellgang-kits-a56ece`, b209ab0bd).
+- **One id, two prompts.** The Rift line's section (`claude/awesome-varahamihira-66a852`) and the Tungang kit's (`claude/kind-cori-9c4452`)
+  each ask for `concrete.lining.segment` with a different prompt. The Line's (rings of curved segments) keeps the id; the Tungang's (one
+  segment face with bolt pockets) is `concrete.lining.segment.bolted`: point the Tungang slot at it, or choose one, at their merge.
+- **Takes.** Two takes each of `card.leaf.photonic` and `organic.tube.waxy` came; the later is installed. Where a thread made two or three
+  images of one prompt, the last is installed. `mineral.curtain` does not tile vertically (its pale-green top edge is in the prompt): use it
+  on a curtain's height, not stacked.
+- **Still owed after this batch:** 7 prompts on main (`rock.hematite.mirror`, the Ancient
+  Transit's three, `ground.snow.ash`, `organic.reef.galvanic`, `rock.hyaloclastite`), plus the branches' prompts that did not come
+  (the Tungang murals and banners, `ground.flark.mud` among them).
 
 ## Next steps
 

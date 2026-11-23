@@ -34,7 +34,7 @@
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/city/36-city-covered.js": "704a859d1e428367e1ec7353fc60cecdf763a7c60866976349d327634fba2cb3",
@@ -279,13 +279,13 @@
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "core/door": "606c86cebee6cecd509a1319eb00f4f3b96202499526068992bd052a85bdca4a",
     "core/engine": "68c10fa5029a8ccb1f86b5138b48a7b71fec613998c3eab75790c04acc07b282",
-    "core/furnish": "09dc20b7272ccbab9dbdf81fa2c1eecb624e5d192d40370d2ae9c1443e6c81c7",
+    "core/furnish": "ce80f99bac79c2ceb339d05ec0e601e97b7ebdf9aba7b964e57178fb20fccdd4",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "core/materials/record": "8e06a3bce5495768ed1649aeffaff73f18e5e50f4fadc7abe22bf892274992d8",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/shader": "096503afdb3e218ae4dee6db5ba7786d7fca4b7a58dc1de35a6a961152b2b8db",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
-    "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
+    "core/walk": "c2dba1d905c6546cc60841fa95b468a852915494776bd7eee35713cb4f48c648",
     "core/walk/box": "640d3e2f0368a531fc4c1f0be0fdca8de1f41b5e2f176112f6212377ea41494d",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/yeti/src": "37a04e437cf4ab1d8167fa33e5e394fe10a4104589c8a61037579e95f579c6c8",
@@ -293,14 +293,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/yeti/build-manifest.json": "272797808ca7422948c51ea37135aba689af02180ca831e648b280b0f43cdc1f",
-    "kits/yeti/dist/yeti.html": "e27d92da062b3512337bcaab4e70780dddc47e9de49f579557d3d2f2c7e43a21",
+    "kits/yeti/build-manifest.json": "1ad636fe9aeb2cdd9b8d23697388983c924dd688b915492df655fa56d29b9373",
+    "kits/yeti/dist/yeti.html": "0294f86b80760b8566a8b223bb6b6fc8eb684b087d12d6ab8dd23f1d18de49bc",
     "kits/yeti/dist/yeti.tex.yeti-2.js": "6b575bf9f85f6ddfe13ac9d5a2e17b0b273344e2698beec16d52b4e18d02cf7d",
     "kits/yeti/dist/yeti.tex.yeti.js": "699f4898963a578c3fc5a7b32b3b5d5ac82b48a8f66768bc43a022c361cf45b5"
    },
    "outputs_raw": {
-    "kits/yeti/build-manifest.json": "272797808ca7422948c51ea37135aba689af02180ca831e648b280b0f43cdc1f",
-    "kits/yeti/dist/yeti.html": "e27d92da062b3512337bcaab4e70780dddc47e9de49f579557d3d2f2c7e43a21",
+    "kits/yeti/build-manifest.json": "1ad636fe9aeb2cdd9b8d23697388983c924dd688b915492df655fa56d29b9373",
+    "kits/yeti/dist/yeti.html": "0294f86b80760b8566a8b223bb6b6fc8eb684b087d12d6ab8dd23f1d18de49bc",
     "kits/yeti/dist/yeti.tex.yeti-2.js": "6b575bf9f85f6ddfe13ac9d5a2e17b0b273344e2698beec16d52b4e18d02cf7d",
     "kits/yeti/dist/yeti.tex.yeti.js": "699f4898963a578c3fc5a7b32b3b5d5ac82b48a8f66768bc43a022c361cf45b5"
    }

@@ -3,8 +3,6 @@
 // after 90-scene.js, so the camera and the sky exist.
 if(typeof camera!=='undefined'&&camera.far<30000){camera.far=30000;camera.updateProjectionMatrix();}
 if(typeof sky!=='undefined')sky.renderOrder=-1;
-if(typeof skyMat!=='undefined'&&skyMat.fragmentShader.indexOf('pow(h,.55)')>=0){
- skyMat.fragmentShader=skyMat.fragmentShader.replace('pow(h,.55)','pow(max(h,0.),.55)');skyMat.needsUpdate=true;}
 // Presets: the two kept bodies, by day and by night (the cyan strips and the lit alabaster are the night's). The sites
 // come from the builders' AI_SITE (Arcoindian) and Plymouth's own frame, as on their own targets.
 const KPL={x:-980,z:0};

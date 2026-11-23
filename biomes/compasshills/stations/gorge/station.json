@@ -1,0 +1,20 @@
+{
+ "id": "gorge",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Compass Hills — Ham-Tsek Magnetite Narrows and Silk-Magnet Ferry",
+ "name": "Ham-Tsek Magnetite Narrows & Silk-Magnet Ferry Gorge (station gorge): 9102 Web-Cleaver River (1,080 m^3/s) carving 90 m banded-ironstone palisades with black magnetite-amber placer bars, mulberry terraces, and non-ferrous bronze ferry bollards at Ham-Tsek Silk Post",
+ "out": "compasshills-gorge.html",
+ "px": [1055, 219],
+ "elevM": 846.7,
+ "pAtm": 1.44,
+ "koppen": "Cfa",
+ "rainMmYr": 831,
+ "toroidRadiusM": 0.0,
+ "peakFieldMt": 26.0,
+ "strataStack": "banded-ironstone",
+ "kin": ["swlowlands", "wouterwall"],
+ "reserves": [
+  { "id": "site:ham-tsek-post", "x": 138, "z": 112, "r": 46 }
+ ],
+ "modes": ["Clear sky", "Thunder squall", "Field overlay"]
+}

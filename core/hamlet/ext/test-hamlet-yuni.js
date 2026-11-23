@@ -1,0 +1,23 @@
+// node core/hamlet/ext/test-hamlet-yuni.js: the Yuni row (ext/21) makes villages, every key a declared box; each check has a negative
+const fs = require('fs'), path = require('path'), vm = require('vm');
+const ROOT = path.join(__dirname, '..', '..', '..'), ctx = {console, Math}; ctx.globalThis = ctx; vm.createContext(ctx);
+const load = f => vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, {filename: f});
+load('core/rand/08-core-rand.js');
+fs.readdirSync(path.join(ROOT, 'core', 'hamlet')).filter(f => /^\d\d-hamlet-.*\.js$/.test(f)).sort().forEach(f => load('core/hamlet/' + f));
+load('core/space/20-core-space.js'); load('core/city/33-city-strategies.js');
+const before = Object.keys(ctx.KHAMLET.CULTURES).sort().join();
+load('core/hamlet/ext/21-hamlet-yuni.js');
+const H = ctx.KHAMLET, row = H.CULTURES.yuni;
+let bad = 0;
+const ok = (name, c, neg, why) => { const pass = !!c && !neg; if (!pass) bad++; console.log((pass ? 'PASS  ' : 'FAIL  ') + name + (pass ? '' : '  (' + (c ? 'the negative passed' : why || 'false') + ')')); };
+const spec = (focus, o) => Object.assign({id: 'yuni-' + focus, world: 11, culture: 'yuni', focus, site: {x: 0, z: 0}, link: {x: 400, z: 0}, resource: {x: -150, z: 80}}, o || {});
+const keys = r => [r.religious, r.civic, r.general, r.food, r.warehouse].concat(...Object.values(r.houses).filter(Array.isArray).map(a => a.map(h => h[0]))).concat(...Object.values(r.works).map(a => a.map(w => w.key)));
+const missing = r => keys(r).filter(k => !r.pending[k]);
+ok('every key of the row has a declared box (' + keys(row).length + ' keys)', !missing(row).length, missing(Object.assign({}, row, {pending: {}})).length === 0, missing(row).join(', '));
+const V = {farming: H.village(spec('farming')), ranch: H.village(spec('ranch'))};
+const noErr = v => !v.error && v.records.length > 10;
+ok('a farming and a ranch village, no error', noErr(V.farming) && noErr(V.ranch), noErr(H.village(spec('farming', {culture: 'nonesuch'}))), V.farming.error || V.ranch.error);
+ok('every record pending with no host dims (the Yuni engine is not on the page)', V.farming.records.every(r => r.pending), H.village(spec('farming', {dims: k => row.pending[k]})).records.every(r => r.pending));
+ok('a host that has the kit\'s boxes clears pending', H.village(spec('farming', {dims: k => row.pending[k]})).records.every(r => !r.pending), V.farming.records.every(r => !r.pending));
+ok('the row is added, not swapped: the core rows are all still there', before.split(',').every(k => H.CULTURES[k]) && !!H.CULTURES.yuni, before.split(',').concat(['nonesuch']).every(k => H.CULTURES[k]));
+console.log(bad ? bad + ' FAILED' : 'all passed'); process.exit(bad ? 1 : 0);

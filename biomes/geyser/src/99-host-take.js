@@ -125,6 +125,11 @@ const HCHK={
   for(const S of L){const t=S.tags||{},k=t.koppen||[];
    if(!t.climate||!t.aridity||t.abyssal==null||!t.riparian||ORIGINS.indexOf(t.origin)<0||HEATS.indexOf(t.heat)<0||!t.harvest||!k.length||k.some(c=>reg.indexOf(c)<0))bad.push(S.key||S.name);}
   return{ok:!bad.length,detail:bad.length?'untagged: '+bad.join(', '):L.length+' species and plants tagged'};},
+ // the water boils at the page's air (46: GEYSER.boilAt, Antoine's fit): the record's boiling point against Clausius-Clapeyron's (water's latent heat
+ // 40.65 kJ/mol from 100 degC at 1 atm) for the air the sky takes (AIR_ATM), within a degree, and every spring at the boil (temp 1) that hot
+ boil(R,atm,S){const cc=1/(1/373.15-8.314*Math.log(atm)/40650)-273.15,hot=S.filter(s=>s.temp>=.999),off=hot.filter(s=>Math.abs(s.Tc-R.bp)>.01);
+  return{ok:Math.abs(R.atm-atm)<1e-6&&Math.abs(R.bp-cc)<1&&!off.length,detail:'the record at '+R.atm+' atm boils at '+R.bp.toFixed(1)+' degC (Clausius-Clapeyron '+cc.toFixed(1)+' at the air\'s '+atm+' atm)'+
+   (off.length?', '+off.length+' boiling springs off it':', '+hot.length+' springs at the boil')};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras clear'};}};
 const plantList=()=>Object.keys(GEYSER.PLANTS).map(k=>Object.assign({key:k},GEYSER.PLANTS[k]));
 const counts=T=>T.reduce((C,t)=>{C[t.sp]++;return C;},GEYSER.SPECIES.map(()=>0));
@@ -143,6 +148,7 @@ function hostChecks(){const R=[],keep=n=>!(ST_TAKE&&ST_TAKE.baseChecks)||ST_TAKE
  add('every species of the kit placed',HCHK.placed(counts(T)));
  add('every species and plant tagged',HCHK.tagged(GEYSER.SPECIES.concat(plantList())));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ R.push(Object.assign({name:'the water boils at the air pressure'},HCHK.boil(GEYSER.R,AIR_ATM,LAYOUT.springs)));   /* every page: no station leaves it out */
  if(ST_TAKE&&ST_TAKE.checks)ST_TAKE.checks((name,r)=>R.push(Object.assign({name},r)),P);
  return R;}
 function hostNegatives(){const R=[],keep=n=>!(ST_TAKE&&ST_TAKE.baseNegatives)||ST_TAKE.baseNegatives.indexOf(n)>=0,add=(name,r)=>{if(keep(name))R.push({name,failed:!r.ok,detail:r.detail});},s=LAYOUT.springs.reduce((a,b)=>b.temp>a.temp?b:a,LAYOUT.springs[0]),T=GEYSER.TREES||[];   /* the hottest spring (the showcase's first, the Great Prism) */
@@ -157,6 +163,7 @@ function hostNegatives(){const R=[],keep=n=>!(ST_TAKE&&ST_TAKE.baseNegatives)||S
  {const C=counts(T);C[0]=0;add('a species never placed',HCHK.placed(C));}
  add('a species with no origin',HCHK.tagged(GEYSER.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
+ {const r=HCHK.boil(Object.assign({},GEYSER.R,{atm:AIR_ATM*.5}),AIR_ATM*.5,LAYOUT.springs);R.push({name:'a record that boils as at twice the air pressure',failed:!r.ok,detail:r.detail});}
  if(ST_TAKE&&ST_TAKE.negatives)ST_TAKE.negatives((name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),instPoints());
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

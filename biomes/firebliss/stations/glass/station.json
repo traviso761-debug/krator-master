@@ -1,0 +1,24 @@
+{
+ "site": [
+  177.9,
+  1337.0
+ ],
+ "key": "glass",
+ "note": "Station 8, South Glass (PLAN.md section 11.2, Gemini's showcase station 8): the pancake dome dome_fb_south at 5.1 px 175,1335. Its record is the model's DATA.domes entry when the model carries the domes (scale model 5.1 edit 8), else the copy under \"dome\" here (the same numbers: 14 km across, its top 5,053 m). The page's middle on the dome's south-east margin, 7.05 km from its middle on a bearing of 125 degrees, so the wall crosses the page: the top north-west, the moat south-east.",
+ "core": {
+  "35-core-strata.js": "core/terrain/35-core-strata.js",
+  "35z-core-strata-shade.js": "core/terrain/host/35-core-strata-shade.js"
+ },
+ "dome": {
+  "id": "dome_fb_south",
+  "name": "South Glass",
+  "px": [
+   175.0,
+   1335.0
+  ],
+  "d_km": 14.0,
+  "base_m": 4503,
+  "top_m": 5053,
+  "h_m": 550
+ }
+}

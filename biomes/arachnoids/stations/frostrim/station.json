@@ -1,0 +1,21 @@
+{
+ "id": "frostrim",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arachnoid Canyons — High Alpine Frost-Rim and Updraft-Sheared Krummholz",
+ "name": "High Alpine Frost-Rim and Updraft-Sheared Krummholz (919,281, +4,784.3 m, 0.88 atm, ET -2 C): KFROST sorted stone polygons, glassy obsidian-vitrophyre dike hogbacks, and radial updraft-sheared rimkrummholz banners",
+ "out": "arachnoids-frostrim.html",
+ "px": [919, 281],
+ "ownVerified": true,
+ "elevM": 4784.3,
+ "pAtm": 0.88,
+ "koppen": "ET",
+ "rainMmYr": 392,
+ "riverId": 0,
+ "dischargeM3s": 0.0,
+ "strataStack": "rift-basement",
+ "kin": ["korona"],
+ "reserves": [
+  {"id": "site:hum-pass-cairn", "x": -42, "z": -36, "r": 95}
+ ],
+ "modes": ["Clear", "Slot-Mist", "Rim-Gale"]
+}

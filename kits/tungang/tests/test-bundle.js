@@ -32,7 +32,11 @@ ok('the Fowlers\' hall has the rope wall (a peg a household), the Ice-cutters\' 
   halls.length === 2 && halls[0].fg.variant === 'fowlers' && halls[0].fg.pegs === Math.max(6, Math.round(fow.census.pop / 5)) && halls[1].fg.variant === 'icecut' && halls[1].fg.slats > 0,
   !(halls[1].fg.variant === 'fowlers'), halls.map(r => r.fg.variant + ' ' + (r.fg.pegs || r.fg.slats)).join(', '));
 const protos = Object.keys(TG.fg.BOX).map(k => TG.fg.proto(k, { v: 1 }).recs[0]), bx = TG.fg.check.box(protos);
-ok('each of the 14 buildings, built alone, keeps its stand-in box within 0.5 m', bx.ok && protos.length === 14, !TG.fg.check.box([Object.assign({}, protos[0], { key: 'fg-pens' })]).ok, bx.bad.join('; '));
+ok('each of the 25 buildings, built alone, keeps its contract box within 0.5 m', bx.ok && protos.length === 25, !TG.fg.check.box([Object.assign({}, protos[0], { key: 'fg-pens' })]).ok, bx.bad.join('; '));
+const dbl = protos.find(r => r.key === 'fg-doublehall');
+ok('the town double hall holds both customs in one (rope wall pegs and coils, tally board slats and notches)',
+  !!(dbl && dbl.fg && dbl.fg.variant === 'double' && dbl.fg.pegs === 28 && dbl.fg.coils === dbl.fg.pegs - dbl.fg.empty && dbl.fg.slats === 44 && dbl.fg.notches >= dbl.fg.slats * 3),
+  !(dbl && dbl.fg && dbl.fg.pegs === 0), dbl && dbl.fg ? JSON.stringify(dbl.fg) : 'none');
 const many = []; for (const k of Object.keys(TG.fg.BOX)) for (let v = 0; v < 8; v++) for (const character of [null, 'stony', 'low']) { const p = TG.fg.proto(k, { v, character }); many.push(p.recs[0]); p.forEach(m => m.geometry.dispose()); }
 const mb = TG.fg.check.box(many), fams = new Set(many.filter(r => r.fg && r.fg.family).map(r => r.key + ':' + r.fg.family));
 ok('every key, 8 seeds in three characters (' + many.length + ' builds, ' + fams.size + ' key-family pairs), within 0.5 m of its box and filling 65 % of w, d and 75 % of h',
@@ -44,8 +48,18 @@ const rope = { id: 'r0', family: 3, pts: [], y0: 0, top: 0 };for (let k = 0; k <
 const RD = TG.fg.ropes([rope], {}), rc = TG.fg.check.rope([rope], RD);
 ok('a fixed line follows its record (' + rc.verts + ' vertices, farthest ' + rc.far + ' m)', rc.ok && RD.recs[0].fg.pegs >= 2 && RD.recs[0].fg.rungs > 30,
   !TG.fg.check.rope([Object.assign({}, rope, { pts: rope.pts.map(p => [p[0], p[1] + 2, p[2]]) })], RD).ok);
-const P = TG.fg.pieces([{ key: 'fg-lantern-post', x: 5, z: 5 }, { key: 'fg-halt', x: 20, z: 5 }, { key: 'fg-wagon', x: 30, z: 5, ry: 1 }], { ground });
-ok('the road pieces draw where they are put, on the ground', P.recs.length === 3 && P.recs.every(r => Math.abs(r.y - ground(r.x, r.z)) < 1e-6), P.recs.length !== 4);
+const P = TG.fg.pieces([{ key: 'fg-lantern-post', x: 5, z: 5 }, { key: 'fg-halt', x: 20, z: 5 }, { key: 'fg-wagon', x: 30, z: 5, ry: 1 },
+  { key: 'fg-cairn', x: 45, z: 5, v: 0 }, { key: 'fg-stone-sign', x: 55, z: 5 }, { key: 'fg-fair-hurdle', x: 65, z: 5 }, { key: 'fg-stair-hoist', x: 80, z: 5 },
+  { key: 'fg-bender', x: 95, z: 5 }, { key: 'fg-camp-hearth', x: 105, z: 5 }, { key: 'fg-tinsmith', x: 120, z: 5 }, { key: 'fg-truce-post', x: 135, z: 5, v: 0 }], { ground });
+const P0 = TG.fg.pieces(['fg-cairn', 'fg-truce-post', 'fg-stone-sign', 'fg-fair-hurdle', 'fg-stair-hoist', 'fg-wagon', 'fg-bender', 'fg-camp-hearth', 'fg-tinsmith'].map((key, i) => ({ key, x: i * 20, z: 0, v: i % 4 })), { ground: () => 0 });
+const pbx = TG.fg.check.box(P0.recs);
+ok('the road, Market truce, Traveller camp, Fair and Stairhead pieces draw where they are put on the ground and fit their declared boxes',
+  P.recs.length === 11 && P.recs.every(r => Math.abs(r.y - ground(r.x, r.z)) < 1e-6) && pbx.ok,
+  P.recs.length !== 12 && !TG.fg.check.box([Object.assign({}, P0.recs[4], { key: 'fg-stone-sign' })]).ok, pbx.bad.join('; '));
+const DS = TG.fg.draw({ records: [{ id: 'sl1', key: 'fg-halting-house', x: 10, z: 10, ry: Math.PI }] }, { ground: (x, z) => .18 * z, steps: true });
+ok('TG.fg.draw(o.steps) builds drystone threshold steps where a door stands above sloped ground without growing rec.bbox',
+  DS.recs.length === 1 && !!DS.recs[0].stair && DS.recs[0].stair.n >= 3,
+  !TG.fg.draw({ records: [{ id: 'fl1', key: 'fg-halting-house', x: 0, z: 0, ry: 0 }] }, { ground: () => 0, steps: true }).recs[0].stair);
 /* THE GLAZIERS (gz): every def's void plan inside its box, every def at 8 seeds in three states within its box; a small scarp laid as
    a world lays one (a KCAVERN mass, carved from the plans by TG.gz.carve, then drawn by TG.gz.draw): the rock open in the rooms
    and solid behind them, the lamps lit kept and dark abandoned */

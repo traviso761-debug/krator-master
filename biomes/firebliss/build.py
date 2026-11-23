@@ -94,6 +94,9 @@ for f in ['07-core-export.js','09-core-export-adapters.js']: PATH.setdefault(f,J
 CORE_TERRAIN=['38-core-relief.js','42-core-frost.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js','47-core-therm.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 for f in ['44-core-farfield-draw.js','45-core-horizon-shade.js']: PATH.setdefault(f,J('core','terrain','host',f))
+# a station's own core pieces (station.json "core": slot -> path from the repo root): station 8 takes KSTRATA (35) and its shader (35z, after 35), the
+# other stations none, so their pages do not change
+for f,rel in SJ.get('core',{}).items(): PATH.setdefault(f,J(*rel.split('/')))
 # core/hazard (KHAZ, 21 its shapes that flow and pool) and the one clock (KTRAPS.cycle, 37 above); core/camp (KCAMP: the census and the pitch)
 PATH.setdefault('20-core-hazard.js',J('core','hazard','20-core-hazard.js'))
 PATH.setdefault('21-core-hazard-flow.js',J('core','hazard','21-core-hazard-flow.js'))
@@ -175,7 +178,7 @@ for i,k in enumerate(['throne','copperglacier','geyser']):
 sys.path.insert(0,HERE)
 import model_site as _ms
 _px,_py=SJ['site']
-VIRTUAL['44m-host-model.js']=_ms.fragment(_px,_py,SJ.get('key','vale'))
+VIRTUAL['44m-host-model.js']=_ms.fragment(_px,_py,SJ.get('key','vale'),SJ.get('dome'))   # a station on a dome (station 8): the model's record, its cells refilled
 # THE RESOURCE DATA round the site (kits/resources, read in place by Copper Glacier's res_site.js): the nodes in the square, as FB_RES
 _node=find_node()
 if not _node and not LISTING: sys.exit('build.py: node is needed to read the resource data (res_site.js)')

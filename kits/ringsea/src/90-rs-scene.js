@@ -3,7 +3,7 @@
 // grid of RS_COLS columns, bows east (+x), so a camera on the south side sees every starboard
 // broadside. The volcano stands on the NW horizon across the sea (as seen from Mav's Refuge on the
 // SE lee shore); the gas giant hangs in the NE.
-const TITLE='Ring Sea — Watercraft Kit';
+const TITLE='Boats, Ships, and Vessels Kit';
 const RS_COLS=4,RS_PX=92,RS_PZ=78;
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);

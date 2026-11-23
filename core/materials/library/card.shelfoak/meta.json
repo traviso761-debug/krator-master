@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.shelfoak",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.shelfoak.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d137-d6ff-7642-a6a2-f81cd0f76b36)",
+  "licence": "generated for this project by its owner",
+  "note": "a sheet: hosts show one cell",
+  "original_title": "exec-5c0a6f62-d795-49b6-a72d-2309cccbd2c5.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '50. The Tiers (`biomes/tiers`, planned 2026-11-10)' on origin/main (id card.shelfoak)",
+  "sha1": "8b93f029258f05505406db6d58c9453435544672"
+ }
+}

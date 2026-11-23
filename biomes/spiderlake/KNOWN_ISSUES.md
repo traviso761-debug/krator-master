@@ -1,0 +1,7 @@
+# biomes/spiderlake: known issues & planned follow-ups
+
+All production quality gates across all six `spiderlake` stations (`spillway`, `narrows`, `pavilion`, `fen`, `dolomite`, `rampart`) pass with `0` untextured meshes, `<= 13` active ground samplers (`< 15` survey ceiling), `0.000 m` `ATMOS` wind drift at pinned silk anchors, `>= 0.06 m` non-coplanar slot clearance on cedar `Silk-Weir` frames, `>= +0.10 m` thermal spring separation above the `+1,460.0 m` open lake datum, and `KSHADOW` off at load.
+
+## Planned future tie-ins (out of scope for the biome kit)
+- **Silk Principality urban & palace architecture (`kits/spider-lake/`, `settlements/`):** Full `SL1–SL4` civic/palace/canal architecture (`sl_silk_bourse`, `sl_palace_pavilion`, `sl_dyehouse_canal`, `sl_weir_dock`) at *Ham-Spi* (`Spider Lake Weirs`, `1288, 220`) is held clear as the registered `KTAGS` reserve `site:spider-lake-weirs` on Station 2 (`narrows`), sharing `slSilkMath` and `ATMOS.U.wind` (`atmWind`) so city velaria and wild `Bridge-Curtains` ripple in unison.
+- **Bespoke material-library sets (`PLAN.md` §6.3):** Currently mapped onto verified existing `core/materials/library/` sets (`cloth.silk`, `cloth.bazin`, `cloth.felt`, `cloth.oiled`, `fibre.rope.twist`, `bark.bark_willow_02`, `stone.travertine`, `mineral.selenite`, `stone.geode.druze`). When dedicated `card.silk.bridgecurtain` or `organic.silk.broodpavilion` library sets land, update `"lib"` in `materials.json` and rerun `python3 tools/textures/pack.py biomes/spiderlake`.

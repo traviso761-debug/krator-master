@@ -164,7 +164,7 @@ defBuilding({key:'ie-square',name:'Ceremonial square (Kautoa)',seed:6102,w:58,d:
   for(const s of [-1,1]){isPou(s*7.5,0,7.5,3.6,.22,{mk:'carved',top:'horns',col:cv});isTomb(s*12,-8,0,{s:1,figures:true});isFlag(s*7.5,-7.5,10,{ry:s>0?0:PI});}
   /* the galleries' furniture: benches along the walls, market stalls on feast days, the banners */
   for(const s of [-1,1]){for(const z of [-10,-4,4,10])FURNISH('islander_common_bench',s*(gx+GD/2-.8),.38,z,s>0?-PI/2:PI/2,{v:z>0?1:0});
-   FURNISH('generic_trade_stall',s*(gx-.4),.38,-14.5,s>0?-PI/2:PI/2);FURNISH('islander_common_banner',s*14,.38,-gz-GD/2+.65,0);}
+   FURNISH('generic_trade_stall',s*(gx-.4),.38,-14.5,s>0?-PI/2:PI/2);FURNISH_WALL('islander_common_banner',s*14,.38,-gz-GD/2+.65,0,.38+2.9);}   /* the gallery's posts: ieGallery ph 2.9 on its .38 floor */
   FURNISH('islander_common_kava_bowl',0,1.35,2.2,0,{setting:'outdoor'});FURNISH('generic_trade_altar',0,1.35,-2.4,0,{setting:'outdoor'});}});
 /* ---------------------------------------------------------------- the school */
 defBuilding({key:'ie-school',name:'School (Kautoa)',seed:6103,cut:true,w:22,d:13.5,h:13.5,budget:150000,

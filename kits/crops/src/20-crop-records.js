@@ -5,7 +5,8 @@
    water          'rain' (default), 'paddy' (wants standing water or flooded beds), 'aquatic' (a wet zone only), 'bed' (dark-grown)
    needs          'salt' (a salt zone) or 'heated' (warm ground)
    home [biomes]  where it is native or already drawn: always plausible there, as 'wild'
-   homeOnly       true for a dye or fibre that is not a climate crop (animal, mineral, resin): home or traded, nothing else
+   homeOnly       true for a dye or fibre that is not a climate crop (animal, mineral, resin), or a crop the owner made its homes' own
+                  (the maar yam, fumewort): home or traded, nothing else
    also [buckets] other buckets it can stand in for
    grown 'field' (default) | 'underground'   (a dark-grown crop ignores the axes; a works that keeps it takes it)
    form, stores, yield (0.5 / 1 / 2), card (a core/materials/library card id), src ('proposed' or the kit that draws it), colour (a dye)
@@ -29,7 +30,7 @@ CROPS.def = function (id, name, bucket, w, a, o) {
 const R = CROPS.def;
 
 /* ---- staple: grain, pulse, tuber, starch-fruit */
-R('rice', 'Rice', 'grain', [3, 4], [3, 4], {water: 'paddy', card: 'card.crop', src: 'ringisles', home: ['ringisles'], stores: ['ground', 'dried']});
+R('rice', 'Rice', 'grain', [3, 4], [3, 4], {water: 'paddy', card: 'card.crop', src: 'ringisles', home: ['ringisles', 'nwlowlands'], stores: ['ground', 'dried']});
 R('emmer', 'Plain emmer', 'grain', [2, 3], [1, 2], {reach: 1, card: 'card.crop.grainhead', home: ['swlowlands'], stores: ['ground', 'dried']});
 R('frostoat', 'Frostoat', 'grain', [1, 2], [2, 3], {atm: [0, 2], reach: 1, card: 'card.crop.grainhead', home: ['nhighlands'], stores: ['ground', 'dried']});
 R('ashmillet', 'Ashmillet', 'grain', [4, 5], [0, 2], {card: 'card.crop.grainhead', home: ['crater-drylands'], stores: ['ground', 'dried'], note: 'sown into burn ash; ripens in weeks'});
@@ -43,6 +44,11 @@ R('sweet-potato', 'Sweet potato', 'tuber', [3, 4], [1, 3], {card: 'card.crop.yam
 R('steambed-yam', 'Steambed yam', 'tuber', [4, 5], [3, 4], {needs: 'heated', card: 'card.crop.yam', home: ['geyser'], note: 'planted in the warm crust'});
 R('frostroot', 'Frostroot', 'tuber', [0, 1], [1, 2], {atm: [0, 1], reach: 0, card: 'card.crop.clover', home: ['ehighlands'], stores: ['dried'], note: 'freeze-dried like chuno'});
 R('murnong', 'Murnong', 'tuber', [2, 3], [1, 2], {reach: 1, card: 'card.crop.rosette', home: ['nwlowlands'], note: 'a yam-daisy'});
+R('painted-camas', 'Painted camas', 'tuber', [1, 3], [1, 2], {reach: 1, home: ['paintedhighlands'], src: 'proposed', stores: ['dried', 'ground'], note: 'a camas or mariposa-lily bulb of the washes and the melt flats, dug after the bloom and roasted in pits (biomes/paintedhighlands/PLAN.md section 4)'});
+/* THE HINGE'S OWN (the owner, 2026-11-12): Region 98's maar oases and loess terraces (biomes/siphon-pits), the Mid Basin's maar floors
+   (biomes/midbasin) and the Loom-Chasms' Cradle (biomes/loom-chasms) share a yam and a herb that grow nowhere else: homeOnly, traded beyond */
+R('maar-yam', 'Maar yam', 'tuber', [2, 3], [1, 2], {homeOnly: true, atm: [1, 2], card: 'card.crop.yam', src: 'siphon-pits', home: ['siphon-pits', 'midbasin', 'loom-chasms'],
+  stores: ['fresh', 'dried', 'ground'], note: 'a climbing yam of the maar floors and the loess terraces: its long tubers go down a metre into the tuff\'s warm crust, sweetened by the vents\' heat; dug in autumn, kept in pits, dried and pounded to a flour for the caravans'});
 R('shade-manioc', 'Shade manioc', 'tuber', [4, 4], [2, 4], {card: 'card.crop.palmate', home: ['hyperjungle'], stores: ['ground', 'dried']});
 R('ashroot', 'Ashroot', 'tuber', [3, 4], [2, 4], {reach: 1, card: 'card.crop.umbrella', home: ['throne'], stores: ['pressed'], note: 'a konjac-like corm on ash soil'});
 R('stub-cone', 'Stub cone', 'tuber', [4, 4], [0, 2], {reach: 1, form: 'plant', src: 'abyssal-savannah', home: ['abyssal-savannah'], stores: ['ground', 'dried'], note: 'the single cone of the stub lycopsid, pounded for its starch'});
@@ -59,10 +65,10 @@ R('mahogany-nut', 'Mahogany nut', 'nut', [4, 4], [3, 4], {form: 'tree', card: 'c
 R('parasol-nut', 'Parasol pine nuts', 'nut', [4, 5], [0, 1], {form: 'tree', card: 'card.pine.b', src: 'crater-drylands', home: ['crater-drylands'], stores: ['dried']});
 R('fireseed', 'Frill-tree fireseed', 'nut', [4, 5], [0, 1], {form: 'tree', card: 'card.pods', src: 'crater-drylands', home: ['crater-drylands'], stores: ['ground']});
 R('fern-egg', 'Fern-egg', 'nut', [4, 4], [3, 4], {src: 'eastabyss', home: ['eastabyss'], stores: ['cured']});
-/* the north basin's nut trees (biomes/nsemiarid draws them; it is not a zone in CROPS.BIOMES yet, so no home): warm-temperate
+/* the north basin's nut trees (biomes/nsemiarid draws them): warm-temperate
    dryland trees, frost-hardy in winter, irrigated a little way past their rain-fed range (2026-11-03, TODO.md "the missing fruit") */
-R('pistachio', 'Pistachios', 'nut', [2, 4], [0, 1], {form: 'tree', reach: 1, src: 'nsemiarid', stores: ['dried', 'roasted'], note: 'the catalog piece is generic_fruit_pistachio'});
-R('almond', 'Almonds', 'nut', [2, 4], [1, 2], {form: 'tree', reach: 1, src: 'nsemiarid', stores: ['dried'], note: 'sweet strains only (the wild are bitter); generic_fruit_almond'});
+R('pistachio', 'Pistachios', 'nut', [2, 4], [0, 1], {form: 'tree', reach: 1, src: 'nsemiarid', home: ['nsemiarid'], stores: ['dried', 'roasted'], note: 'the catalog piece is generic_fruit_pistachio'});
+R('almond', 'Almonds', 'nut', [2, 4], [1, 2], {form: 'tree', reach: 1, src: 'nsemiarid', home: ['nsemiarid'], stores: ['dried'], note: 'sweet strains only (the wild are bitter); generic_fruit_almond'});
 R('coconut', 'Coconut', 'oil', [4, 5], [2, 4], {also: ['nut', 'starch-fruit'], form: 'tree', card: 'card.frond.coconut', src: 'throne', home: ['throne', 'ringisles'], stores: ['dried', 'pressed']});
 R('whorl-olive', 'Whorl olive', 'oil', [3, 3], [1, 2], {form: 'tree', card: 'card.orchard.small', src: 'xanadu', home: ['xanadu'], stores: ['pressed', 'brined']});
 R('avocado', 'Ashfall avocado', 'oil', [3, 4], [2, 3], {also: ['fruit'], form: 'tree', card: 'card.croptree.glossy', home: ['throne'], note: 'volcanic soil'});
@@ -116,13 +122,13 @@ R('bell-date', 'Bell date', 'dried-fruit', [4, 4], [1, 3], {form: 'tree', card: 
 
 /* ---- flavour and drink */
 R('clove', 'Clove', 'spice', [4, 4], [3, 4], {form: 'tree', card: 'card.croptree.glossy', src: 'ringisles', home: ['ringisles'], stores: ['dried']});
-R('juniper', 'Juniper berries', 'spice', [1, 3], [0, 2], {form: 'tree', card: 'card.juniper', src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
+R('juniper', 'Juniper berries', 'spice', [1, 3], [0, 2], {form: 'tree', card: 'card.juniper', src: 'ebadlands', home: ['ebadlands', 'paintedhighlands'], stores: ['dried']});
 R('umbel-seed', 'Umbel seed', 'spice', [2, 3], [0, 2], {src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
-R('saffron', 'Vale saffron', 'spice', [2, 3], [1, 2], {also: ['dye'], card: 'card.crop.saffron', colour: 'saffron', home: ['xanadu'], stores: ['dried']});
+R('saffron', 'Vale saffron', 'spice', [2, 3], [1, 2], {also: ['dye'], card: 'card.crop.saffron', colour: 'saffron', home: ['xanadu', 'tiers'], stores: ['dried']});
 R('herbs', 'Herbs (lemongrass, ginger, basil)', 'herb', [3, 4], [2, 3], {card: 'card.crop', src: 'ringisles', home: ['ringisles'], stores: ['fresh', 'dried']});
 R('sugar-cane', 'Sugar cane', 'sweetener', [4, 4], [1, 3], {card: 'card.crop', src: 'ringisles', home: ['ringisles'], stores: ['pressed']});
 R('coffee', 'Coffee', 'beverage', [3, 4], [3, 4], {form: 'shrub', card: 'card.croptree.glossy', src: 'ringisles', home: ['ringisles'], stores: ['dried']});
-R('tea', 'Mist tea', 'beverage', [1, 3], [3, 4], {atm: [0, 2], form: 'shrub', card: 'card.crop.tea', home: ['xanadu', 'oidong'], stores: ['dried']});
+R('tea', 'Mist tea', 'beverage', [1, 3], [3, 4], {atm: [0, 2], form: 'shrub', card: 'card.crop.tea', home: ['xanadu', 'oidong', 'nwlowlands'], stores: ['dried']});
 R('cacao', 'Cacao', 'beverage', [4, 4], [3, 4], {form: 'tree', card: 'card.croptree.glossy', src: 'xanadu', home: ['xanadu'], stores: ['dried', 'ground']});
 R('kava', 'Kava', 'beverage', [4, 4], [3, 4], {form: 'shrub', card: 'card.broadleaf', src: 'ringisles', home: ['ringisles'], stores: ['dried', 'ground']});
 R('tobacco', 'Tobacco', 'herb', [3, 4], [2, 3], {also: ['medicine'], form: 'plant', card: 'card.broadleaf', src: 'proposed', reach: 1, stores: ['dried'],
@@ -162,7 +168,15 @@ R('measuremelon', 'Measure melon', 'fruit', [3, 4], [1, 3], {form: 'vine', card:
 R('glasswort', 'Glasswort (sea asparagus)', 'vegetable', [3, 5], [0, 3], {also: ['oil'], needs: 'salt', card: 'card.samphire', src: 'sedesert', home: ['sedesert'], stores: ['fresh', 'pressed'], note: 'Salicornia: the jointed shoots in spring, an oil seed in autumn when it turns crimson'});
 R('tamarisk-manna', 'Tamarisk manna', 'sweetener', [3, 5], [0, 2], {form: 'tree', card: 'card.tamarisk', src: 'sedesert', home: ['sedesert'], stores: ['dried'], yield: 0.5, note: 'the sweet secretion scale insects leave on tamarisk twigs: gathered, not sown'});
 R('saxaul', 'Saxaul wood', 'fuel', [3, 5], [0, 1], {form: 'tree', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: 'Haloxylon: the densest firewood there is, and charcoal'});
+R('paintbrush', 'Painter\'s brush', 'medicine', [1, 3], [0, 2], {also: ['dye'], card: 'card.flower.bloom.highland', src: 'paintedhighlands', home: ['paintedhighlands'], stores: ['dried'], colour: 'red', note: 'an Indian-paintbrush of the spring bloom: the Painted Men\'s medicine (a wash for sores and a tea for the women\'s ills), and its bracts a pale red (biomes/paintedhighlands, the flower phfl3)'});
 R('brine-lamp', 'Brine lamp', 'medicine', [4, 5], [0, 1], {needs: 'salt', card: 'card.brinelamp', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Krator's: the crystal-crusted leaf, steeped, is a salt-and-bitters remedy for heat sickness"});
 /* ---- the steppe fringe (biomes/sedesert/PLAN-STEPPE.md; drawn on its station 3) */
 R('myrrh', 'Myrrh', 'medicine', [4, 5], [0, 2], {form: 'tree', also: ['fuel'], src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Commiphora: the resin bled from the peeling bark; a wound wash and an incense, the merchant houses' second trade"});
+/* ---- Torus / Forest Ring (settlements/torus): the suspended Wheel's hanging fruitvine */
+R('sky-fruitvine', 'Sky-fruitvine', 'fruit', [3, 4], [2, 3], {also: ['beverage', 'dried-fruit'], form: 'vine', card: 'card.vine', src: 'torus', home: ['swlowlands', 'swbay'], stores: ['fresh', 'fermented', 'dried'], note: "a pre-Cataclysm woody curtain liana of the Forest Ring arcology (settlements/torus): rooted in the suspended Wheel's loam beds at +300 m, its rope-stems trail 80-140 m into the open air in two cultivars — crimson Ruby-Tart on the shaded inner rim and amber Golden-Sun on the sun-struck outer rim — harvested from tethered winch gondolas and pressed into Torus's sky-cider; cuttings also trained on trellised arbors in the terraced valley below"});
+/* ---- NW lowlands & Gills & Tiers specialties (openworld/TRADE-SCOPE.md sections 2.5 and 7.6, biomes/gills/PLAN.md section 9, biomes/tiers/PLAN.md section 4) */
+R('wine-grape', 'Eternian wine grape', 'fruit', [2, 3], [1, 2], {also: ['beverage'], form: 'vine', card: 'card.vine', src: 'nwlowlands', home: ['nwlowlands'], stores: ['fresh', 'fermented', 'dried'], note: 'trained on trellises across the summer-dry foothills of the Eternal State: pressed for wine and cellar champagne (openworld/TRADE-SCOPE.md section 2.5)'});
+R('lung-salt', 'Lung salt', 'medicine', [0, 2], [0, 3], {homeOnly: true, also: ['reagent'], atm: [0, 1], src: 'gills', home: ['gills'], stores: ['dried'], note: 'an oxygen-carrying salt scraped from a charged gill collar at the end of the in-breath: chewed on the high passes against thin-air sickness (biomes/gills/PLAN.md section 9)'});
+R('shelfoak-mast', 'Shelf oak mast', 'nut', [2, 3], [1, 2], {homeOnly: true, form: 'tree', src: 'tiers', home: ['tiers'], stores: ['ground', 'dried'], note: 'the shelf oak\'s acorns, leached and ground: the lake tread\'s woods\' meal in a lean year'});
+R('stairlily-rhizome', 'Stair lily rhizome', 'tuber', [3, 3], [2, 3], {homeOnly: true, water: 'aquatic', src: 'tiers', home: ['tiers'], stores: ['fresh', 'dried'], note: 'dug from the sheltered bays\' mud, the oldest pads\' roots: boiled, or dried and ground'});
 

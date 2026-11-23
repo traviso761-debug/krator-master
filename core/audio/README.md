@@ -21,7 +21,7 @@ next. The plan is `PLAN.md` (step A1 done 2026-10-28).
 | `CREDITS.md` | generated: required credits first, then courtesy credits. Never edit by hand |
 | `tools/catalog.js` | `board` (rebuild from the sound board), `intake <batch>`, `check`, `credits` |
 | `intake/BRIEF.md` | how anyone (Gemini included) hands new finds in |
-| `lab/template.html`, `lab/build.js` | the **Audio Lab** (step A2): Library (filter by category, tag, license, status, length; sort; usage notes), Cut, Scene. `node core/audio/lab/build.js` makes previews with ffmpeg and writes `<audio folder>/lab/index.html`; `--all` adds the royalty-free clips for a local-only lab (never publish that build) |
+| `lab/template.html`, `lab/build.js` | the **Audio Lab** (step A2): Library (filter by category, tag, license, status, length; sort; usage notes), Cut, Scene, Cues (with a **clip picker** beside the cue, 2026-11-09: the Library's filters on a short list, Play to audition, Add to make a variant, "Add every clip shown"). `node core/audio/lab/build.js` makes previews with ffmpeg and writes `<audio folder>/lab/index.html`; `--all` adds the royalty-free clips for a local-only lab (never publish that build) |
 
 **The Audio Lab is published** at https://claude.ai/artifact/5rro9CbXMzna9Y5joPVgB1 (the sound board's address, so its
 saved scenes, cut clips and comments carried over; the lab maps the board's old clip ids). Its database keeps `scenes`,

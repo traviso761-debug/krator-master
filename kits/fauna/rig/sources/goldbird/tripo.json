@@ -1,0 +1,76 @@
+[
+ {
+  "step": "image",
+  "task_id": "6dbc5e5c-a6e9-4b49-8a93-fb7bac02b3b6",
+  "settings": {
+   "prompt": "A single great golden eagle-vulture raptor with its wings fully spread out flat to both sides as if soaring, full wingspan visible, seen from the front and slightly below in three-quarter view, head turned forward, hooked yellow beak, fierce eyes, a ruff of long golden hackles round the neck. Plumage burnished gold over the whole body and wings, the long primary feathers fingered at the wingtips and darker bronze, a broad fanned gold tail, feathered legs with yellow feet tucked under the body. Exactly two wings and two legs. Realistic wildlife photograph, even studio lighting, plain pure white background, the whole bird and both wingtips in frame with margin. --no fire, flames, rider, extra wings, extra heads, shadow, sky, clouds, text, cropping, frame, border",
+   "model": "seedream_v4",
+   "size": "2048x2048",
+   "output_format": "png"
+  },
+  "credits": 5.0,
+  "at": "2026-11-16 01:04"
+ },
+ {
+  "step": "multiview",
+  "task_id": "9b815a91-38a7-4801-8466-be1779434639",
+  "settings": {},
+  "credits": 10.0,
+  "at": "2026-11-16 01:05"
+ },
+ {
+  "step": "model",
+  "task_id": "e3c65d01-7acf-491b-9f16-32d7c68d8e06",
+  "settings": {
+   "inputs": [
+    {
+     "task_id": "9b815a91-38a7-4801-8466-be1779434639"
+    }
+   ],
+   "model": "v3.1-20260211",
+   "texture": true,
+   "pbr": true,
+   "texture_quality": "standard",
+   "auto_size": true
+  },
+  "credits": 30.0,
+  "at": "2026-11-16 01:09"
+ },
+ {
+  "step": "image",
+  "task_id": "3b69cc7d-47c7-48d1-84dc-2beced273f9e",
+  "settings": {
+   "prompt": "A single great golden eagle standing upright on flat ground with both wings spread wide open, held out level and perfectly symmetric to the left and right like a heraldic spread eagle, the full wingspan visible, seen from the front at eye level, turned about thirty degrees to one side. Head up facing forward, hooked yellow beak, a ruff of long golden hackles round the neck. Burnished gold plumage over the body and wings, the long fingered primary feathers darker bronze at the wingtips, the tail fanned behind. Two strong feathered legs standing apart, bare yellow feet with black talons gripping the ground. Exactly two wings and two legs. Realistic wildlife photograph, even studio lighting, plain pure white background, the whole bird and both wingtips in frame with margin. --no flying, banking, fire, flames, rider, extra wings, extra heads, shadow, perch, branch, text, cropping, frame, border",
+   "model": "seedream_v4",
+   "size": "2048x2048",
+   "output_format": "png"
+  },
+  "credits": 5.0,
+  "at": "2026-11-16 01:28"
+ },
+ {
+  "step": "multiview",
+  "task_id": "cd088dfb-a9bd-4334-a19b-050e5912ebb5",
+  "settings": {},
+  "credits": 10.0,
+  "at": "2026-11-16 01:28"
+ },
+ {
+  "step": "model",
+  "task_id": "35609dc3-3310-4feb-b52f-5a35c7b66e22",
+  "settings": {
+   "inputs": [
+    {
+     "task_id": "cd088dfb-a9bd-4334-a19b-050e5912ebb5"
+    }
+   ],
+   "model": "v3.1-20260211",
+   "texture": true,
+   "pbr": true,
+   "texture_quality": "standard",
+   "auto_size": true
+  },
+  "credits": 30.0,
+  "at": "2026-11-16 01:31"
+ }
+]

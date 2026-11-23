@@ -106,7 +106,7 @@ Grēṭ-Āil in 1b. The hub is Erehwon for P1 and Phēr for P7.
 
 ### 1d. Kirstabal's lake (the Lower Xanadu Lake)
 
-Nine villages, all P5, hub Kirstabal (`ll.<key>`, `T.lowerLake`). Their records and layouts exist in Kirstabal's
+Eight villages (Ōpal-Māuṭh became Gihon, 2026-11-22), all P5, hub Kirstabal (`ll.<key>`, `T.lowerLake`). Their records and layouts exist in Kirstabal's
 `src/42-ks-ring.js` (`KS_RING.lake`, held equal to the tune by its node test), but they are not drawn: they stand 25-115 km
 off the page (Kirstabal's K6). State: **planned** for all nine.
 
@@ -116,11 +116,20 @@ off the page (Kirstabal's K6). State: **planned** for all nine.
 | `ll.phishari` | Phisharī | 975,1587 | 1,400 | fish |
 | `ll.kako-bagh` | Kāko-Bāgh | 963,1586 | 1,200 | cacao 30 t, fruit 120 t |
 | `ll.rid` | Rīḍ | 948,1589 | 700 | mats 30 t |
-| `ll.landing` | The Landing (the barges' stop, the portage road's head) | 932,1600 | 600 | portage (no dugouts) |
+| `ll.landing` | The Landing (the barges' stop, the portage road's head, on its stone piers) | 932,1600 | 2,500 | portage (no dugouts) |
 | `ll.timbar` | Ṭimbar | 938,1606 | 700 | timber 600 t |
-| `ll.opal-mouth` | Ōpal-Māuṭh | 955,1607 | 1,200 | fish |
 | `ll.rais-teras` | Rāis-Ṭeras | 967,1606 | 1,000 | grain 300 t |
 | `ll.kattal` | Kaṭal | 979,1605 | 700 | dairy 60 t |
+
+**Gihon (built 2026-11-22, `settlements/gihon`, PLAN.md G0-G3):** Ōpal-Māuṭh is now **Gihon** (`xan.gihon`, px 955.7,1607.9),
+8,500: the Lower Lake's garrison town, the Sultan's Mint and the assessors, the Golden Tears' head house, a walled forbidden city
+in its river corner; a target on Xanadu's page (`dist/gihon.html`). In the tune: the town (7,060), its forbidden city
+(`xan.gihon.fort`, 1,000, 60 hired musketeers), the Tears' head house (`tears.gihon`, 160; Strongwall keeps their court), the
+White's and the Violet's daughter houses (140 each), its ring (`gh.ring.*`: four farming villages and a ranch); **the Landing**
+grows to 2,500 on its stone piers at the outlet (records on core/city, `src/43-gh-landing.js`, for the region to draw); five
+**hamlets on the Alph** (`alph.*`: Wēyar, Mēḍō, Gōrj-Phuṭ in the Scarp tithing to the Landing; Hil-Ṭī and Phērī in the Vale
+tithing to Theodiga). State: Gihon **built** (its page); the Landing and the Alph's hamlets **planned** (records, not drawn in the
+region yet).
 
 ### 1e. The works, mines and camps
 
@@ -190,6 +199,11 @@ singly (PROPOSAL-XANADU 3e). A region page may draw a seeded sample near the cam
 | All of them | the Xanadu kit draws through **the Iziz Vernacular**'s materials, helpers and openings, so that kit is read by every page above |
 
 ## 3. The order: waves and sessions
+
+**Superseded 2026-11-22 by `BUILD-PLAN.md`** (the owner's order of that day: Xanadu close to complete, then the vertical
+stack extended with Xanadu, then the all-builds rebuild). Waves 0.1 and 0.2 are done (`kits/xanadu/extra/88g-xa-works.js`,
+`core/hamlet/xanadu/23-hamlet-xanadu-row.js`) and 0.3 too (the tune's rings, villages and the Flashing Eye); wave 1's
+merges mostly landed. The table below is kept as it was written.
 
 Each wave is a few sessions; each session a task with a brief. A session starts a new build from `tools/new_build/`, lists
 it in `tools/checks_optin.json`, writes its `Core adoption` section first and runs `tools/check_core_use.py` before calling it
@@ -300,6 +314,17 @@ cut region and give economy Sim records."
   one region each.
 - **Question 5:** the tune gets the records it lacked: Thalaba's 4 and Lāiṭwāl's 4 ring hamlets, Grēṭ-Āil's villages, and the
   Flashing Eye.
+
+**The owner's answers (2026-11-22)** (`BUILD-PLAN.md` section 0):
+- **Question 2:** one shared lake page and the regions ("Shared target + regions": `settlements/xanadu-lake`).
+- **The six province regions not yet cut wait for the vertical stack.** The stack's Xanadu slice is the Lake Shore with
+  Erehwon.
+- **Question 4:** the gold mines are **Kōlḍ-Lōḍ**; Opal Valley Mines keeps its name. The turquoise Order: still open.
+- **Question 6:** Theodiga's ring is four villages in scrap Xanadu's poor tier.
+- **Question 7:** one plan for the Marches' two forts (`settlements/marches/PLAN.md`).
+- **Question 10:** the countryside is sampled near the camera in every province region.
+- **Question 8:** settled by wave 0.1 (the pieces were built). **Questions 9, 11, 12:** taken as the defaults in
+  `BUILD-PLAN.md` section 6 (neighbours left to their plans; the pins through the queue; one caravanserai for the lake towns).
 
 1. **The lake towns over 500 people.** Each a small `core/city` town from one shared lake-town target (*proposed*), or
    core/hamlet laying the first 500 as Kirstabal's lake villages are? Where is the line (1,500 is *proposed*)?

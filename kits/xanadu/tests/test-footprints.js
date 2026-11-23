@@ -16,7 +16,7 @@
        measured, and must not grow past it by more than TOL; one back inside is reported, to be taken off the list;
      - a def that throws in XAK is reported (BUILD_FAILS lists the known ones) and not measured.
 
-     node kits/xanadu/tests/test-footprints.js [--all] [--only key1,key2]     (--all prints every def's box)
+     node kits/xanadu/tests/test-footprints.js [--all] [--only key1,key2] [--no-extra]     (--all prints every def's box)
    Needs python3 (or python) to seal the bundle (kit_bundle.bundle()). */
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process');
@@ -41,7 +41,13 @@ const KNOWN = {
   xa_barge: 7.80, xa_quay: 1.53, xa_prison: 3.00, xa_ice_cave: 1.37,
   xa_pleasure_dome_bay: 6.27, xa_poor_a_palopo: 0.68, xa_mid_a_palopo: 0.36, xa_mid_b_palopo: 6.30,
   xa_mid_c_palopo: 0.75, xa_rich_a_palopo: 2.90, xa_rich_c_palopo: 3.10, xa_shops_palopo: 12.32,
-  xa_temple_palopo: 3.82, xa_house_turk_a_palopo: 0.79, xa_shop_turk_b_palopo: 0.28
+  xa_temple_palopo: 3.82, xa_house_turk_a_palopo: 0.79, xa_shop_turk_b_palopo: 0.28,
+  // the opt-in pieces in extra/, measured 2026-11-17 when the test began sealing them: the wind-catcher and white twins (88f)
+  // carry their house's own overhang; the launch's sail-leaf and the stall's awning (88d, 88e: settlements/pher's) are theirs
+  xa_mid_a_badgir: 0.36, xa_mid_b_badgir: 6.30, xa_rich_a_badgir: 2.90, xa_rich_c_badgir: 3.10,
+  xa_house_turk_a_badgir: 0.79, xa_monastery_white: 1.69, xa_launch: 1.12, xa_stall: 1.02,
+  // Gihon's dress twins (88h, 2026-11-23): the gold-and-opal temple and the violet house carry their base def's overhang
+  xa_grand_temple_gold: 2.11, xa_monastery_violet: 1.69
 };
 const BUILD_FAILS = {
   xa_lighthouse: 'FRAME_HOOKS is a page global (the sheet and Erewhon have it), not in XAK: the lamp\'s turn hook',
@@ -54,7 +60,11 @@ const fail = m => { fails++; console.log('FAIL ' + m); };
 let js = null;
 for (const py of ['python3', 'python']) {
   try {
-    js = cp.execFileSync(py, ['-c', 'import sys; sys.path.insert(0, sys.argv[1]); import kit_bundle; sys.stdout.buffer.write(kit_bundle.bundle()[0].encode("utf-8"))', KIT],
+    /* the opt-in pieces in extra/ (88*: kits/xanadu/README.md, "Opt-in pieces") are sealed with the kit and measured too
+       (2026-11-17): the test wraps kit_bundle.files to append them, so kit_bundle.py, and every page it seals, is unchanged.
+       --no-extra measures the kit alone */
+    const ext = process.argv.includes('--no-extra') ? '' : 'import glob, os; f0 = kit_bundle.files; ex = sorted(glob.glob(os.path.join(sys.argv[1], "extra", "88*.js"))); kit_bundle.files = lambda *a, **k: f0(*a, **k) + ex; ';
+    js = cp.execFileSync(py, ['-c', 'import sys; sys.path.insert(0, sys.argv[1]); import kit_bundle; ' + ext + 'sys.stdout.buffer.write(kit_bundle.bundle()[0].encode("utf-8"))', KIT],
       { encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'inherit'] });
     break;
   } catch (e) { /* the next name */ }

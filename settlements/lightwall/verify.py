@@ -17,6 +17,9 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   ix-glazier          L4: from each carved home's front room a walker reaches its first carved room (core/walk: the front's
                       floor from the walked draw, the doorway, the cavern's floor); the carved rooms furnished
   bench-ground        the blocks' open ground is kitchen gardens, orchards and yards, not bare (the owner, 2026-11-16)
+  opal-lode           the Great Potch Line (L0): opal nodes (kits/resources, TG.res) at the wall's foot, registered and drawn,
+                      on dry ground, some of high grade; every adit, dark adit and vein gallery of the wall takes one by the
+                      kit's nearest-node rule (a mine, 400 m)
   wall-scree          the wall's screes (core/terrain KRUBBLE): a talus cone at each band's two ends and heaps in the gaps on
                       the ledges, each on its ground (the bench or the ledge), the ledges' heaps walkable (core/walk)
   opal-flora          the bench grows Opal Valley's middle terrace (biomes/opalvalley 'middlebed', sealed in LW_FLORA): its kin
@@ -61,6 +64,11 @@ TOWN_JS = r"""
  let n=0,bare=0,kinds={};for(const b of (typeof LW_BLOCKS!=='undefined'?LW_BLOCKS:[]))if(b.kind!=='field'){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]);
   for(let x=Math.min(...xs)+2;x<Math.max(...xs);x+=9)for(let z=Math.min(...zs)+2;z<Math.max(...zs);z+=9){const pl=lwPlot(x,z);if(pl==null)continue;n++;kinds[pl]=(kinds[pl]||0)+1;if(pl==='dooryard')bare++;}}
  R.push({name:'bench-ground',ok:n>500&&bare<n*.35&&(kinds.garden||0)>n*.15&&(kinds.orchard||0)>n*.15,detail:n+' samples of the blocks\' open ground: '+JSON.stringify(kinds)});
+ {const N=typeof LW_OPAL!=='undefined'?LW_OPAL:[],Lk=typeof LW_OPAL_LINKS!=='undefined'?LW_OPAL_LINKS:[],Dw=window._lightwallOpalDraw||{};
+  const reg=KTAGS.page?KTAGS.page.query({'class':'prop',kind:'res-node'}).length:0,wet=N.filter(n=>!(terrainH(n.x,n.z)>LW.LAKE+1)).length,unl=Lk.filter(w=>!w.link);
+  R.push({name:'opal-lode',ok:N.length>=8&&N.some(n=>n.grade==='high')&&reg===N.length&&Dw.recs===N.length&&!Object.keys(Dw.missing||{}).length&&!wet&&Lk.length>=10&&!unl.length,
+   detail:N.length+' opal nodes ('+JSON.stringify(N.reduce((a,n)=>{a[n.grade]=(a[n.grade]||0)+1;return a;},{}))+'), '+reg+' registered, '+(Dw.recs||0)+' drawn; on the water '+wet+'; '+(Lk.length-unl.length)+' of '+Lk.length+' workings take a node'
+    +(Lk.length?' (nearest '+Math.round(Math.max(...Lk.filter(w=>w.link).map(w=>w.link.dist)))+' m at most)':'')});}
  {const SC=typeof LW_SCREE!=='undefined'?LW_SCREE:[],off=SC.filter(H=>{const g=H.walk?null:terrainH(H.x,H.z);return g!=null&&Math.abs(g-H.y0)>.6;}),
    unwalked=SC.filter(H=>H.walk&&!KWALK.floorsAt(H.x,H.z).some(f=>f[1].tag==='lightwall:scree'));
   R.push({name:'wall-scree',ok:SC.length>=15&&SC.filter(H=>/end/.test(H.id)).length===2*LW.BANDS&&!off.length&&!unwalked.length,
@@ -75,6 +83,12 @@ TOWN_JS = r"""
  {const LK=typeof LW_LAKE!=='undefined'?LW_LAKE:null,wet=(x,z)=>!!(LK&&LK.wetAt&&LK.wetAt(x,z)),out=[0,LW.SHORE+400],bench=[0,LW.SHORE-40],h=LK?WATER.heightAt(out[0],out[1],0):null;
   R.push({name:'lake-water',ok:!!LK&&!!LK.bed&&wet(...out)&&!wet(...bench)&&h!=null&&Math.abs(h-LW.LAKE)<1,
    detail:LK?('level '+LW.LAKE+'; heightAt out on the lake '+(h==null?'none':h.toFixed(2))+'; wet out on the lake '+wet(...out)+', on the bench '+wet(...bench)+'; shore grid '+(LK.bed&&LK.bed.nx)+' x '+(LK.bed&&LK.bed.nz)):'no core/water lake'});}
+ /* the foot street: level with the first band's floor before every front at the wall's foot (the owner, 2026-11-22), from the
+    face out to 6 m, and no higher than the floor for 20 m out (the street never rises in front of a door) */
+ {const F0=LW_WALL.filter(s=>s.band===0),hi=[],lo=[];for(const s of F0){const B=TG.gz.BOX[s.key];for(const dz of [.5,2,4,6]){const g=terrainH(s.x,s.z+B.out+dz);if(g>s.y+.05)hi.push(s.id);if(g<s.y-.3)lo.push(s.id);}
+   for(let dz=6;dz<=20;dz+=2)if(terrainH(s.x,s.z+B.out+dz)>s.y+.05)hi.push(s.id);}
+  const uniq=a=>[...new Set(a)];
+  R.push({name:'wall-foot',ok:F0.length>50&&!hi.length&&!lo.length,detail:F0.length+' fronts at the foot; the street above the floor before '+uniq(hi).length+(hi.length?' ('+uniq(hi).slice(0,4).join(', ')+')':'')+', below it before '+uniq(lo).length+(lo.length?' ('+uniq(lo).slice(0,4).join(', ')+')':'')});}
  const bsSP=(typeof LW_PLACE!=='undefined'?LW_PLACE:[]).filter(p=>p.kind!=='quay'&&VERN.defs[p.key]),bsFlights=bsSP.filter(p=>p.stair);
  const bsDoorH=p=>{const D=VERN.defs[p.key],n=D.d/2+.15+.7;return p.o.y-terrainH(p.x+Math.sin(p.ry)*n,p.z+Math.cos(p.ry)*n);};
  const bsOwed=bsSP.filter(p=>!p.stair&&bsDoorH(p)>=.3),bsNoPod=bsSP.filter(p=>p.o.y-lwPodiumLo(p,VERN.defs[p.key])>.25&&!p.podium);

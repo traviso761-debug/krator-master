@@ -1,0 +1,216 @@
+{
+ "build": "dasri",
+ "note": "The Dasri kit's adapter onto the shared material library (core/materials/PLAN.md; kits/dasri/PLAN.md). Covers both architectural registers: Urban Jabal (fired red brick, dark basalt and buff sandstone ashlar bases, crisp white juss/qadad gypsum stucco and yeseria relief, carved cedar mashrabiya and shutters) and Dasri Village / Oasis (battered banco mudbrick and rammed earth, coursed rubble stone, weathered juniper/tamarisk poles, halite rock-salt blocks, striped canvas awnings, woven wool rugs, and stratified desert sandstone cliffs). f_* families provide 256 px triplanar detail maps for master-catalog furniture (core/engine/91f-furnish.js).",
+ "size": 512,
+ "families": {
+  "brick": {
+   "lib": "brick.red",
+   "scale": [1.5, 1.5],
+   "tint": {"keep": 0.55, "mean": 0.58, "contrast": 1.1},
+   "roughLift": 0.22,
+   "specular": 0.16,
+   "breakup": {"mix": 0.28, "macro": 0.08, "cell": 9}
+  },
+  "banco": {
+   "lib": "earth.banco",
+   "scale": [2.2, 2.2],
+   "tint": {"keep": 0.35, "mean": 0.64},
+   "roughLift": 0.28,
+   "specular": 0.12,
+   "breakup": {"mix": 0.32, "macro": 0.09, "cell": 10}
+  },
+  "roof": {
+   "lib": "earth.rammed",
+   "scale": [2.8, 2.8],
+   "tint": {"keep": 0.3, "mean": 0.66},
+   "roughLift": 0.28,
+   "specular": 0.1
+  },
+  "floor": {
+   "lib": "earth.floor.packed",
+   "scale": [2.0, 2.0],
+   "tint": {"keep": 0.3, "mean": 0.62},
+   "roughLift": 0.24,
+   "specular": 0.12
+  },
+  "qadad": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [1.8, 1.8],
+   "tint": {"keep": 0.2, "mean": 0.88},
+   "roughLift": 0.18,
+   "specular": 0.22
+  },
+  "stucco": {
+   "lib": "stone.stucco.yeseria",
+   "scale": [1.1, 1.1],
+   "tint": {"keep": 0.25, "mean": 0.86, "contrast": 1.15},
+   "roughLift": 0.2,
+   "specular": 0.2
+  },
+  "ashlar": {
+   "lib": "stone.sandstone.ashlar",
+   "scale": [2.4, 2.4],
+   "tint": {"keep": 0.45, "mean": 0.66, "contrast": 1.08},
+   "roughLift": 0.2,
+   "specular": 0.18
+  },
+  "basalt": {
+   "lib": "rock.basalt.flowbanded",
+   "scale": [1.8, 1.8],
+   "tint": {"keep": 0.45, "mean": 0.42, "contrast": 1.1},
+   "roughLift": 0.2,
+   "specular": 0.22
+  },
+  "rubble": {
+   "lib": "rock.old_stone_wall",
+   "scale": [2.0, 2.0],
+   "tint": {"keep": 0.4, "mean": 0.56, "contrast": 1.08},
+   "roughLift": 0.26,
+   "specular": 0.15
+  },
+  "cliff": {
+   "lib": "rock.sandstone.navajo",
+   "scale": [6.0, 6.0],
+   "tint": {"keep": 0.65, "mean": 0.58, "contrast": 1.1},
+   "roughLift": 0.2,
+   "specular": 0.16,
+   "breakup": {"mix": 0.38, "macro": 0.06, "cell": 16}
+  },
+  "halite": {
+   "lib": "rock.halite.cut",
+   "scale": [0.9, 0.9],
+   "tint": {"keep": 0.55, "mean": 0.82},
+   "roughLift": 0.08,
+   "specular": 0.42
+  },
+  "cedar": {
+   "lib": "wood.cedar.moorish",
+   "scale": [1.2, 1.2],
+   "tint": {"keep": 0.45, "mean": 0.48},
+   "roughLift": 0.22,
+   "specular": 0.24
+  },
+  "timber": {
+   "lib": "wood.silver",
+   "scale": [1.4, 1.4],
+   "tint": {"keep": 0.35, "mean": 0.56},
+   "roughLift": 0.26,
+   "specular": 0.16
+  },
+  "awning": {
+   "lib": "cloth.canvas.striped",
+   "scale": [1.2, 1.2],
+   "tint": {"keep": 0.55, "mean": 0.68},
+   "roughLift": 0.32,
+   "specular": 0.12
+  },
+  "rug": {
+   "lib": "cloth.rug.wool",
+   "scale": [1.5, 1.5],
+   "tint": {"keep": 0.6, "mean": 0.54},
+   "roughLift": 0.36,
+   "specular": 0.1
+  },
+  "bronze": {
+   "lib": "metal.bronze",
+   "scale": [0.8, 0.8],
+   "tint": {"keep": 0.5, "mean": 0.56},
+   "roughLift": 0.1,
+   "specular": 0.55,
+   "metal": 0.65
+  },
+  "iron": {
+   "lib": "metal.iron",
+   "scale": [0.8, 0.8],
+   "tint": {"keep": 0.5, "mean": 0.38},
+   "roughLift": 0.16,
+   "specular": 0.45,
+   "metal": 0.55
+  },
+  "rope": {
+   "lib": "fibre.rope",
+   "scale": [0.35, 0.35],
+   "tint": {"keep": 0.35, "mean": 0.56},
+   "roughLift": 0.35,
+   "specular": 0.12
+  },
+  "ground": {
+   "lib": "ground.wadi.cobble",
+   "scale": [3.6, 3.6],
+   "tint": {"keep": 0.55, "mean": 0.62, "contrast": 1.06},
+   "roughLift": 0.28,
+   "specular": 0.12,
+   "breakup": {"mix": 0.45, "macro": 0.09, "cell": 14}
+  },
+  "f_cloth": {
+   "lib": "cloth.rug.wool",
+   "scale": [0.35, 0.35],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.0, "mean": 0.58}
+  },
+  "f_wood": {
+   "lib": "wood.cedar.moorish",
+   "scale": [0.65, 0.65],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.12, "mean": 0.55}
+  },
+  "f_stone": {
+   "lib": "rock.old_stone_wall",
+   "scale": [0.6, 0.6],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.1, "mean": 0.55}
+  },
+  "f_metal": {
+   "lib": "metal.iron",
+   "scale": [0.4, 0.4],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.0, "mean": 0.5}
+  },
+  "f_bronze": {
+   "lib": "metal.bronze",
+   "scale": [0.35, 0.35],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.0, "mean": 0.58}
+  },
+  "f_hide": {
+   "lib": "hide.leather009",
+   "scale": [0.35, 0.35],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.0, "mean": 0.55}
+  },
+  "f_rope": {
+   "lib": "fibre.rope",
+   "scale": [0.22, 0.22],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.15, "mean": 0.55}
+  },
+  "f_wicker": {
+   "lib": "fibre.wicker",
+   "scale": [0.28, 0.28],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.15, "mean": 0.55}
+  },
+  "f_bone": {
+   "lib": "bone.horn",
+   "scale": [0.3, 0.3],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.15, "mean": 0.6}
+  },
+  "f_food": {
+   "lib": "food.crust",
+   "scale": [0.18, 0.18],
+   "size": 256,
+   "mapOnly": true,
+   "tint": {"keep": 0.0, "mean": 0.6}
+  }
+ }
+}

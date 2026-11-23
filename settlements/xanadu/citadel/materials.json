@@ -1,0 +1,439 @@
+{
+    "build":  "settlements/xanadu/citadel",
+    "note":  "The pictures on the hangings of Erewhon\u0027s citadel (2026-11-17; settlements/xanadu/citadel/FURNISHING.md): the owner\u0027s Codex panels of Kubla Khan, the easter eggs and the sultans\u0027 portraits, each a single panel shown whole (not tiling), kept in its own colour and shape (tint keep 1, mean null, mapOnly, size [w, h]). Packed alone (tools/textures/pack.py settlements/xanadu/citadel) so only the Xanadu pages that draw the citadel carry them (settlements/xanadu/build.py, the xanadu and erewhon targets: KMAT.pack(\u0027xanadu-pics\u0027)); the catalog\u0027s hangings read them by family (kits/catalog/krator-master-furniture-xanadu.js, xanPic).",
+    "size":  512,
+    "families":  {
+                     "pic-hanging-pleasure-dome":  {
+                                                       "lib":  "patterns/xanadu/hanging-pleasure-dome",
+                                                       "scale":  [
+                                                                     1,
+                                                                     1
+                                                                 ],
+                                                       "tint":  {
+                                                                    "keep":  1,
+                                                                    "mean":  null
+                                                                },
+                                                       "mapOnly":  true,
+                                                       "size":  [
+                                                                    512,
+                                                                    768
+                                                                ]
+                                                   },
+                     "pic-hanging-caves-of-ice":  {
+                                                      "lib":  "patterns/xanadu/hanging-caves-of-ice",
+                                                      "scale":  [
+                                                                    1,
+                                                                    1
+                                                                ],
+                                                      "tint":  {
+                                                                   "keep":  1,
+                                                                   "mean":  null
+                                                               },
+                                                      "mapOnly":  true,
+                                                      "size":  [
+                                                                   512,
+                                                                   768
+                                                               ]
+                                                  },
+                     "pic-hanging-damsel-dulcimer":  {
+                                                         "lib":  "patterns/xanadu/hanging-damsel-dulcimer",
+                                                         "scale":  [
+                                                                       1,
+                                                                       1
+                                                                   ],
+                                                         "tint":  {
+                                                                      "keep":  1,
+                                                                      "mean":  null
+                                                                  },
+                                                         "mapOnly":  true,
+                                                         "size":  [
+                                                                      512,
+                                                                      768
+                                                                  ]
+                                                     },
+                     "pic-hanging-sinuous-rills":  {
+                                                       "lib":  "patterns/xanadu/hanging-sinuous-rills",
+                                                       "scale":  [
+                                                                     1,
+                                                                     1
+                                                                 ],
+                                                       "tint":  {
+                                                                    "keep":  1,
+                                                                    "mean":  null
+                                                                },
+                                                       "mapOnly":  true,
+                                                       "size":  [
+                                                                    512,
+                                                                    768
+                                                                ]
+                                                   },
+                     "pic-tapestry-pleasure-dome":  {
+                                                        "lib":  "patterns/xanadu/tapestry-pleasure-dome",
+                                                        "scale":  [
+                                                                      1,
+                                                                      1
+                                                                  ],
+                                                        "tint":  {
+                                                                     "keep":  1,
+                                                                     "mean":  null
+                                                                 },
+                                                        "mapOnly":  true,
+                                                        "size":  [
+                                                                     768,
+                                                                     512
+                                                                 ]
+                                                    },
+                     "pic-tapestry-caves-of-ice":  {
+                                                       "lib":  "patterns/xanadu/tapestry-caves-of-ice",
+                                                       "scale":  [
+                                                                     1,
+                                                                     1
+                                                                 ],
+                                                       "tint":  {
+                                                                    "keep":  1,
+                                                                    "mean":  null
+                                                                },
+                                                       "mapOnly":  true,
+                                                       "size":  [
+                                                                    768,
+                                                                    512
+                                                                ]
+                                                   },
+                     "pic-tapestry-damsel-dulcimer":  {
+                                                          "lib":  "patterns/xanadu/tapestry-damsel-dulcimer",
+                                                          "scale":  [
+                                                                        1,
+                                                                        1
+                                                                    ],
+                                                          "tint":  {
+                                                                       "keep":  1,
+                                                                       "mean":  null
+                                                                   },
+                                                          "mapOnly":  true,
+                                                          "size":  [
+                                                                       768,
+                                                                       512
+                                                                   ]
+                                                      },
+                     "pic-tapestry-sinuous-rills":  {
+                                                        "lib":  "patterns/xanadu/tapestry-sinuous-rills",
+                                                        "scale":  [
+                                                                      1,
+                                                                      1
+                                                                  ],
+                                                        "tint":  {
+                                                                     "keep":  1,
+                                                                     "mean":  null
+                                                                 },
+                                                        "mapOnly":  true,
+                                                        "size":  [
+                                                                     768,
+                                                                     512
+                                                                 ]
+                                                    },
+                     "pic-suzani-roundels":  {
+                                                 "lib":  "patterns/common/suzani-roundels",
+                                                 "scale":  [
+                                                               1,
+                                                               1
+                                                           ],
+                                                 "tint":  {
+                                                              "keep":  1,
+                                                              "mean":  null
+                                                          },
+                                                 "mapOnly":  true,
+                                                 "size":  [
+                                                              512,
+                                                              512
+                                                          ]
+                                             },
+                     "pic-suzani-roundels-b":  {
+                                                   "lib":  "patterns/common/suzani-roundels.b",
+                                                   "scale":  [
+                                                                 1,
+                                                                 1
+                                                             ],
+                                                   "tint":  {
+                                                                "keep":  1,
+                                                                "mean":  null
+                                                            },
+                                                   "mapOnly":  true,
+                                                   "size":  [
+                                                                512,
+                                                                512
+                                                            ]
+                                               },
+                     "pic-mariner-albatross":  {
+                                                   "lib":  "patterns/easter/mariner-albatross",
+                                                   "scale":  [
+                                                                 1,
+                                                                 1
+                                                             ],
+                                                   "tint":  {
+                                                                "keep":  1,
+                                                                "mean":  null
+                                                            },
+                                                   "mapOnly":  true,
+                                                   "size":  [
+                                                                512,
+                                                                768
+                                                            ]
+                                               },
+                     "pic-mariner-spectre-ship":  {
+                                                      "lib":  "patterns/easter/mariner-spectre-ship",
+                                                      "scale":  [
+                                                                    1,
+                                                                    1
+                                                                ],
+                                                      "tint":  {
+                                                                   "keep":  1,
+                                                                   "mean":  null
+                                                               },
+                                                      "mapOnly":  true,
+                                                      "size":  [
+                                                                   512,
+                                                                   768
+                                                               ]
+                                                  },
+                     "pic-mariner-ice":  {
+                                             "lib":  "patterns/easter/mariner-ice",
+                                             "scale":  [
+                                                           1,
+                                                           1
+                                                       ],
+                                             "tint":  {
+                                                          "keep":  1,
+                                                          "mean":  null
+                                                      },
+                                             "mapOnly":  true,
+                                             "size":  [
+                                                          512,
+                                                          768
+                                                      ]
+                                         },
+                     "pic-erewhon-statues":  {
+                                                 "lib":  "patterns/easter/erewhon-statues",
+                                                 "scale":  [
+                                                               1,
+                                                               1
+                                                           ],
+                                                 "tint":  {
+                                                              "keep":  1,
+                                                              "mean":  null
+                                                          },
+                                                 "mapOnly":  true,
+                                                 "size":  [
+                                                              512,
+                                                              768
+                                                          ]
+                                             },
+                     "pic-erewhon-musical-banks":  {
+                                                       "lib":  "patterns/easter/erewhon-musical-banks",
+                                                       "scale":  [
+                                                                     1,
+                                                                     1
+                                                                 ],
+                                                       "tint":  {
+                                                                    "keep":  1,
+                                                                    "mean":  null
+                                                                },
+                                                       "mapOnly":  true,
+                                                       "size":  [
+                                                                    512,
+                                                                    768
+                                                                ]
+                                                   },
+                     "pic-erewhon-machines":  {
+                                                  "lib":  "patterns/easter/erewhon-machines",
+                                                  "scale":  [
+                                                                1,
+                                                                1
+                                                            ],
+                                                  "tint":  {
+                                                               "keep":  1,
+                                                               "mean":  null
+                                                           },
+                                                  "mapOnly":  true,
+                                                  "size":  [
+                                                               512,
+                                                               768
+                                                           ]
+                                              },
+                     "pic-salt-marsh-village":  {
+                                                    "lib":  "patterns/easter/salt-marsh-village",
+                                                    "scale":  [
+                                                                  1,
+                                                                  1
+                                                              ],
+                                                    "tint":  {
+                                                                 "keep":  1,
+                                                                 "mean":  null
+                                                             },
+                                                    "mapOnly":  true,
+                                                    "size":  [
+                                                                 512,
+                                                                 768
+                                                             ]
+                                                },
+                     "pic-mutant-scholar":  {
+                                                "lib":  "patterns/easter/mutant-scholar",
+                                                "scale":  [
+                                                              1,
+                                                              1
+                                                          ],
+                                                "tint":  {
+                                                             "keep":  1,
+                                                             "mean":  null
+                                                         },
+                                                "mapOnly":  true,
+                                                "size":  [
+                                                             512,
+                                                             768
+                                                         ]
+                                            },
+                     "pic-rust-spindle":  {
+                                              "lib":  "patterns/easter/rust-spindle",
+                                              "scale":  [
+                                                            1,
+                                                            1
+                                                        ],
+                                              "tint":  {
+                                                           "keep":  1,
+                                                           "mean":  null
+                                                       },
+                                              "mapOnly":  true,
+                                              "size":  [
+                                                           512,
+                                                           768
+                                                       ]
+                                          },
+                     "pic-shell-caravan":  {
+                                               "lib":  "patterns/easter/shell-caravan",
+                                               "scale":  [
+                                                             1,
+                                                             1
+                                                         ],
+                                               "tint":  {
+                                                            "keep":  1,
+                                                            "mean":  null
+                                                        },
+                                               "mapOnly":  true,
+                                               "size":  [
+                                                            512,
+                                                            768
+                                                        ]
+                                           },
+                     "pic-wanderer-bones":  {
+                                                "lib":  "patterns/easter/wanderer-bones",
+                                                "scale":  [
+                                                              1,
+                                                              1
+                                                          ],
+                                                "tint":  {
+                                                             "keep":  1,
+                                                             "mean":  null
+                                                         },
+                                                "mapOnly":  true,
+                                                "size":  [
+                                                             512,
+                                                             768
+                                                         ]
+                                            },
+                     "pic-desert-ruins":  {
+                                              "lib":  "patterns/easter/desert-ruins",
+                                              "scale":  [
+                                                            1,
+                                                            1
+                                                        ],
+                                              "tint":  {
+                                                           "keep":  1,
+                                                           "mean":  null
+                                                       },
+                                              "mapOnly":  true,
+                                              "size":  [
+                                                           768,
+                                                           432
+                                                       ]
+                                          },
+                     "pic-portrait-sultan-staff":  {
+                                                       "lib":  "patterns/xanadu/portrait-sultan-staff",
+                                                       "scale":  [
+                                                                     1,
+                                                                     1
+                                                                 ],
+                                                       "tint":  {
+                                                                    "keep":  1,
+                                                                    "mean":  null
+                                                                },
+                                                       "mapOnly":  true,
+                                                       "size":  [
+                                                                    512,
+                                                                    768
+                                                                ]
+                                                   },
+                     "pic-portrait-sultan-triumphant":  {
+                                                            "lib":  "patterns/xanadu/portrait-sultan-triumphant",
+                                                            "scale":  [
+                                                                          1,
+                                                                          1
+                                                                      ],
+                                                            "tint":  {
+                                                                         "keep":  1,
+                                                                         "mean":  null
+                                                                     },
+                                                            "mapOnly":  true,
+                                                            "size":  [
+                                                                         512,
+                                                                         768
+                                                                     ]
+                                                        },
+                     "pic-portrait-sultan-pensive":  {
+                                                         "lib":  "patterns/xanadu/portrait-sultan-pensive",
+                                                         "scale":  [
+                                                                       1,
+                                                                       1
+                                                                   ],
+                                                         "tint":  {
+                                                                      "keep":  1,
+                                                                      "mean":  null
+                                                                  },
+                                                         "mapOnly":  true,
+                                                         "size":  [
+                                                                      512,
+                                                                      768
+                                                                  ]
+                                                     },
+                     "pic-portrait-sultan-poet":  {
+                                                      "lib":  "patterns/xanadu/portrait-sultan-poet",
+                                                      "scale":  [
+                                                                    1,
+                                                                    1
+                                                                ],
+                                                      "tint":  {
+                                                                   "keep":  1,
+                                                                   "mean":  null
+                                                               },
+                                                      "mapOnly":  true,
+                                                      "size":  [
+                                                                   512,
+                                                                   768
+                                                               ]
+                                                  },
+                     "pic-portrait-sultan-sitar":  {
+                                                       "lib":  "patterns/xanadu/portrait-sultan-sitar",
+                                                       "scale":  [
+                                                                     1,
+                                                                     1
+                                                                 ],
+                                                       "tint":  {
+                                                                    "keep":  1,
+                                                                    "mean":  null
+                                                                },
+                                                       "mapOnly":  true,
+                                                       "size":  [
+                                                                    512,
+                                                                    768
+                                                                ]
+                                                   }
+                 }
+}

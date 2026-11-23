@@ -194,9 +194,10 @@ ANIMAL({
   life: { maturity: 3, lifespan: 30, litter: 1, gestation: 160, note: 'one pup a year, carried in flight for its first month' },
   poses: ['perch', 'fly'],
   w: 2.5, d: 3.4, h: 2.0,
-  /* variant 1: the baked Meshy model (kits/fauna/models/giant-bat.json, models_pack.py): the animal's own clips for idle (perch), walk, fly (flap, glide); the box covers every pose, wings spread */
-  variants: 2, variantNames: ['Procedural (Mav\'s Refuge / Girder model)', 'Meshy model (baked maps)'],
-  variantDims: [{ w: 2.5, d: 3.4, h: 2.0 }, { w: 9.05, d: 4.3, h: 6.6 }], models: { 1: 'giant-bat' }, modelData: { 1: { budget: 14000 } },
+  /* variant 1: the skinned Tripo model (kits/fauna/models/giant-bat.json, rig/skin_tripo.py then rig/pack_skinned.py: one mesh on Tripo's 84-bone rig, 9 m across with the wings
+     spread): its own clips for idle (perch, wings folded), walk (a waddle on folded wings), fly (flap, glide; the body pitched level in flight); the box covers every pose, upright perched to level in flight */
+  variants: 2, variantNames: ['Procedural (Mav\'s Refuge / Girder model)', 'Tripo model (skinned)'],
+  variantDims: [{ w: 2.5, d: 3.4, h: 2.0 }, { w: 9.0, d: 7.7, h: 7.9 }], models: { 1: 'giant-bat' }, modelData: { 1: { budget: 14000 } },
   data: { mass: 140, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.0, run: 2.5, fly: [12, 16] }, gait: { type: 'flyer', freq: 1.2, stride: 0.6 },
     flap: { freq: 2.0, amp: 0.78, glide: 0.1, fold: 0 }, grazePitch: 0.5,
     herd: 'a colony of 30 to 200 in a hollow trunk; the riders keep them on roost beams', fleeDistance: 10, aggression: 0.2,

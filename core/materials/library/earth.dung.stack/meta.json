@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.213,
+    1.161
+   ],
+   "seam_before": [
+    1.438,
+    1.348
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "earth",
+  "id": "earth.dung.stack",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "earth.dung.stack.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-a8d2-7f83-beb8-1396874da49e)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-fc4367de-c22c-4f1d-b760-40beeeb0ee03.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)' on claude/bold-lamarr-4d844c (id earth.dung.stack)",
+  "sha1": "cebc8c09a2d460395f170ac08b9ecbd6ea6ae1d4"
+ }
+}

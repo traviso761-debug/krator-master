@@ -29,3 +29,15 @@ var SITE_SPEC={region:'xanadu-lake-shore',world:1191569,bridges:{culture:'xanadu
   sxanlkstack01:{culture:'xanadu'},
   /* the small isles (T.islands) */
   sxanlkwestisle01:{culture:'xanadu'},sxanlkeastisle01:{culture:'xanadu'},sxanlkbayisle01:{culture:'xanadu'}}};
+// THE PITCHED CAMPS (openworld/xanadu-oidong-highrift/src/48t and 88t, read in place: core/camp's halt; settlements/xanadu/WORKS-
+// PLAN.md section 4, step W2): the Annual Great Caravan's halt at Erehwon (T.gateways gate.dalab, round, one carrier, 900 t: the
+// owner, 2026-11-16, "spending the winter in Xanadu visiting Erewhon, Theodiga, and Qiblai"). PROPOSED, every number here: the
+// laager (the wagons in a square round the caravan master's pavilion, the gate on the road), outside the land gate on the Vale
+// road south of the town; 40 wagons (the rest of the 900 t on the Dalab's beasts); the Dalab's dress (the Tents kit has none
+// yet: it falls back to the generic canvas, and the record says so); the Golden Tears' escort's ring beside it (XAN_TUNE
+// T.tears.escort: their share of the caravan's goods; 24 of the house's men). Drawn in its windows of the round: from year day
+// 311 (the winter's start) and from 107 (back in spring to load), fifteen days each; struck otherwise (nothing stays).
+var WORLD_CAMPS={world:1191569,camps:[
+ {id:'s57bkv9741/camp/great-caravan',kind:'halt',name:'The Annual Great Caravan\'s halt (Dalab)',site:'s57bkv9741',near:[0,2200],look:1500,way:[0,-1],
+  culture:'dalab',wagons:40,formation:'laager',season:{days:[[311,325],[107,121]]},
+  escort:{name:'The Golden Tears\' escort',culture:'xanadu',people:24,off:160,program:{sleeping:3,chief:true,supply:0,guard:2,mess:1,stable:1,latrine:1}}}]};

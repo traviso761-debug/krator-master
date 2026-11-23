@@ -13,8 +13,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `89t0-tb-matlib.js` | <1 |  |
-| `89t1-tb-pieces.js` | 6 | the Rare Devisers' house: 52 x 42 m, the front ( (11); a calcarone: 12 x 12 m, the tapping door to the  (43) |
+| `89t0-tb-matlib.js` | 1 |  |
+| `89t1-tb-pieces.js` | 8 | the Rare Devisers' house: 52 x 42 m, the front ( (11); a calcarone: 12 x 12 m, the tapping door to the  (43); the road warden's watch house at Briḍj (PLAN.md  (58) |
+| `89t2-tb-interiors.js` | 4 |  |
 
 ## targets/
 
@@ -23,4 +24,4 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `pieces` | `89z-rows.js`, `91z-views.js` | <1 |
-| `town` | `89z-rows.js`, `89zt-tb-site.js`, `90q-tb-world.js`, `90r-tb-build.js`, `90w-tb-water.js`, `91z-views.js` | 43 |
+| `town` | `89z-rows.js`, `89zt-tb-site.js`, `89zu-tb-people.js`, `90q-tb-world.js`, `90r-tb-build.js`, `90t-tb-life.js`, `90w-tb-water.js`, `91z-views.js` | 70 |

@@ -482,7 +482,7 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
 2. **`Stalker Gate` (`rmvstalkergate`)**: A trans-divide structural pass network (`76,412 km²`) cutting through the
    glaciated Stalker Range (`+5,200–9,400 m`), featuring *Lake Vapora* (`+2,340 m`) and progressive WNW outer-wall slopes
    connecting `Weavers' Cradle` (`Region 99`) and `Ostrukh Terraces` (`Siphon Pits`) to the central basins.
-3. **`Mid Basin` (`rmvmidbasin101`)**: An enclosed intermontane piedmont basin (`79,164 km²`) with coalescing alluvial fans
+3. **`Mid Basin` (`rmvmidbasin101`; the Slabfields since 5.1 edit 3)**: An enclosed intermontane piedmont basin (`79,164 km²`) with coalescing alluvial fans
    and step-faulted benches bridging `Stalker Gate`, `High Rift`, and `Siphon Pits`.
 
 ## 5.0 & 5.1: `build_425_master.py` (Nov 2026) — Unified 2 km/cell Grid, N/W Canvas Expansion (`1821 × 1723`), & Planetary Remodeling
@@ -555,7 +555,7 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
 5. **Ancient's Valley Blast Basins & Southern Inner Wall Scarp (5.1 Round 3)**:
    - **Seven Vitrified Blast Basins & `17.4 m` Lake in `ancient's valley` (`rmva8s97fa99i`)**:
      The Ancient's Valley / SW Lowlands terminal lake (`Body 242`) is settled to **`17.4 m`** (`lake_level_m = 17` on `"western lake (Ancient's Valley) outlet"` in `DATA.outlets`), grading its old `-431..-700 m` trench bed to a shallow `-12..-28 m` lake bed and clamping stale `wlev > 18 m` shore cells to `17.4 m`. The seven vitrified ordnance blast basins are cut **last in the terrain pipeline** so every basin reads as a flat-bottomed depression (`85–110 m` below its local pad) ringed by a raised `+36..+48 m` vitrified glass rim: 4 dry basins at `(476, 915)` (`r = 6 km`), `(398, 966)` (`r = 5.5 km`), `(450, 896)` (`r = 5 km`), and `(406, 908)` (`r = 6.5 km`); 2 drowned lake basins at `(428, 948)` (`r = 7.5 km`, floor `-44 m` under `17.4 m` water) and `(460, 962)` (`r = 7 km`, floor `-46 m` under `17.4 m` water); and 1 half-drowned shore basin at `(420, 984)` (`r = 6.5 km`, north half drowned at `17.4 m`, south half dry melt-sheet).
-   - **Southern Inner Wall Scarp (`biomes/clifflung/PLAN.md` §5 & §14.1, `px 745–930, py 1022–1060`)**:
+   - **Southern Inner Wall Scarp (`biomes/clivobredos/PLAN.md` §5 & §14.1, `px 745–930, py 1022–1060`)**:
      Sculpted along the `s highlands` north edge over `hyperjungle S` and `savage hyperjungle` as a sharp `4–5 cell` (`8–10 km`) step from the `210–420 m` talus foot through the `1,520–1,950 m` cloud-forest bench (`Cfb`) to the `3,320–3,780 m` paramo rim crest (`ET`), indented by 15 recessed V-ravines and projecting megabreccia buttresses while keeping **Spirladunon** (`px 800, 1017` at `1,398.2 m`), **Voth** (`px 742, 1018`), **Torus** (`px 774, 1007`), and **Pylon** (`px 869, 1002`) intact.
 
 ## 5.1 edit 1: `history/edit_511.py` (2026-11-09): the owner's decisions on the biome plans
@@ -777,6 +777,121 @@ river's `walls_unforced` field is its marker).
   (422). No biome station's pin and no lake stands on the changed ground. The Godthrone kit's `-blood` station (r442's
   bloodfalls, not built) will read r442's lower flow.
 - `tests/test_smodel.py` section 18: the walls' band under 400 mm, the caldera's rain kept, the river at 120-135 m³/s.
+## 5.1 edit 7: `edit_517.py` (2026-11-12, run on main 2026-11-16): the Slabfields (was Mid Basin)
+
+Written as 5.1 edit 3 (`edit_513.py`) on `claude/slabfields`; renumbered 7 at the merge into main, where edits 2-6 were taken,
+and re-run on main's data (edits 4-6 in it): its own river check passed with Ostrukh Riba on its rerouted course. The
+reconcile key is `krator.regMerged.5.1e7`. Below, the branch's text: read "edit 3" and `edit_513` as edit 7 and `edit_517`.
+
+`python3 tools/scale-model/edit_513.py` edits `model/data` and `model/src/51-region-store.js` in place and writes
+`edit_513.report.json` (`--dry-run` runs every step and check and writes nothing); it refuses to run twice (the springs list
+is its marker). Every number is `biomes/slabfields/PLAN.md`'s (sections 3 and 5): the owner's decision of 2026-11-12 to
+re-plan Mid Basin around Io-style tilted crustal blocks. (Edit 2, `edit_512.py`, the Firebliss patera and the pancake
+domes, is another session's; the two touch no common cell, and whichever merges second reruns its own script on the merged
+data.)
+
+- **Four slabs, one split**, each a block of flood basalt thrust up on the squeezed side of the stress hinge (the plan's
+  section 3.2: the middle bench, y 1355-1400) and tilted: a cliff one to two cells high on a lobate front, a straight ramp
+  falling to the plain behind, its crest tapering over the last 5-6 km at each end and the slab narrowing there.
+
+  | Slab | Centre | Size | Cliff faces | Plain / crest | Ramp |
+  |---|---|---|---|---|---|
+  | the Anvil | 1662,1376 | 40 x 18 km | N | 3,287 / 5,356 m | 7.0 degrees |
+  | the Halves, NW and SE | 1715,1366; 1729,1382 | 14 x 10 km each, 42 km apart | N | 3,234 / 4,674; 3,435 / 4,875 m | 9.1 |
+  | the Leaner | 1600,1397 | 30 x 12 km | NNW | 2,110 / 3,355 m | 6.7 |
+  | the Backstop | 1690,1411 | 28 x 12 km | S (a back-thrust) | 4,367 / 5,370 m | 5.7 |
+
+- **An apron** in front of every cliff: a lobe 60-140 m thick at the foot, running out about four cliff heights (Heim's ratio
+  about 0.25), narrower than the cliff; 56-264 km2 each.
+- **Two paterae with spring lakes**, closed: the Leaner's (1601.5,1388.6; 10 km across, floor 1,907 m, lake 16 cells at
+  1,997 m, spill 2,073 m) and the Halves' (1722,1374, in the split slab's gap; 12 km, floor 3,062 m, lake 21 cells at
+  3,102 m, spill 3,260 m). Each has a **basin record** (`kind: 'lake'`, with `name`, `region` and `source: 'spring'`).
+- **`DATA.springs`** (new: `model/data/springs.json`): the region's eight springs, one record each (`id`, `name`, `px`,
+  `ground_m`, `kind`, `water`, `region`, `source`, `notes`): the model's three maar springs and the Warp Head, and the
+  edit's two patera springs, the Anvil's apron toe and the Leaner's ramp foot. The page does not draw them yet.
+- **The climate** follows as edit 1's did: temperatures lapsed with the surface (437 cells), rain, class and zone
+  recomputed by `smodel.climate.reclimate` (891 cells, 219 changed class: the crests ET, the ramps Dsc and Dfc), the lakes
+  `WH`; `rt` and `ct` repainted, all four maps relit, `st` and `t` retinted, the lakes painted the flagship maar's lake.
+- **Only the Slabfields' own cells move**: its polygon less the 2,879 cells it shares with the Stalker Gate, Region 99 and
+  the Siphon Pits, and at least 6 px inside that. Every other cell of `h`, `wl`, `wd`, `p`, `c`, `z` and the five
+  temperature rasters is asserted unchanged; `h` and `wl` change only on the 641 moved cells. The painted JPEGs are
+  re-encoded whole, as every edit's are, and the codec's round trip is not exact (up to 58 levels on `ct`), so the check is
+  that away from the region (16 px) each map is **byte for byte the untouched map put through the same two encodes**. No
+  river, vent or station lies in the edit.
+- **The region renamed** in the page's defaults: `rmvmidbasin101` is now "The Slabfields" with a new note, and the Stalker
+  Gate's note names it; a one-time reconcile (`krator.regMerged.5.1e3`) puts both on browsers that hold a saved list. **The
+  id is kept** (a stable key). `extract_region.py` maps both names to its biome kit.
+- `tests/test_smodel.py` section 15 checks the name, the five crests, the Anvil's cliff and ramp, the two lakes and their
+  basins, and the eight springs. (The test also reads the retired little demo's regions from `archive/little-demo` now:
+  `openworld/little-demo` moved there on 2026-11-08, and the test had failed on `main` since.)
+
+**Owed by the owner (this session wrote neither):**
+1. **The live artifact's region database:** write `rmvmidbasin101` on the 5.1 canvas as the defaults hold it (name "The
+   Slabfields", the new note, the points unchanged, `canvas: "5.1 (1821x1723)"`), as edit 1 wrote `rmvraoas90co7`; and
+   `rmvstalkergate`'s note ("... Loom-Chasms, the Slabfields, and Siphon Pits ..."). The rest of the database is still on
+   the old canvas (edit 1's note).
+2. **Publish:** `python3 tools/scale-model/model/build.py --split`, then publish `model/dist/split/index.html` with
+   `data-1.js` and `data-2.js` beside it to the artifact's URL (as version 91 was), and look at the page.
+## 5.1 edit 8: `edit_518.py` (2026-11-12, run on main 2026-11-16 with the patera held): the pancake domes in Firebliss and round Korona
+
+Written as 5.1 edit 2 (`edit_512.py`) on `claude/firebliss-patera-domes`; renumbered 8 at the merge into main. At the merge
+main held a built Firebliss station 1 on the Great Firebliss Vale, the floor the patera takes over, so the owner chose
+"domes only for now" (2026-11-16): the script runs with `PATERA_ON = False` and raises the ten domes and their records only.
+The patera, the Holm, the heat low and the Tlahn Warra's new head are written in it, off. Below, the branch's text as it
+planned the whole edit: read "edit 2" and `edit_512` as edit 8 and `edit_518`.
+
+`python3 tools/scale-model/edit_512.py` edits `model/data` in place and writes `edit_512.report.json`; it refuses to run
+twice (the patera's vent record is its marker). The plans are `biomes/firebliss/PLAN.md` sections 1a-1g and
+`biomes/korona/PLAN.md`, "Amendment 2026-11-12" (the owner's decisions of 2026-11-12).
+
+- **The Firebliss Patera** (a lava lake, Io's Loki Patera at Krator's size): the Great Firebliss Vale's floor taken over by
+  an oval **48 x 32 km** round **181,1317.5** (semi-axes 12 x 8 px, long axis 6 degrees north of east), its crust flat at
+  **2,240 m** over **282 cells (1,128 km²)**, dry land of a new climate class **`L`, patera (lava-lake crust)** (`#5a1a0a`,
+  appended to `climate.json`'s classes so no index moves). Cut up to 2,370 m into the vale's walls; the shore stands at
+  2,740 m or more all round (median 3,607 m): a lip of 2,740 m held on 71 cells where the vale ran out east and south-west
+  (a fill of up to 441 m), eased back into the ground by 1.55 radii. The vale's tarn (60 cells at 2,280 m, WH) is gone.
+  **The Holm**, the island: 12 x 9 km round 175.5,1315, 22 cells (88 km²), flat at 2,700 m. Heat 1.1 / 3.4 / 5.6 TW at
+  1 / 3 / 5 kW/m² (the plan's arithmetic: 2.5-6.4% of Krator's 53-133 TW at the central flux).
+- **Its climate:** the floor a heat island (mean 28 C, warm month 34, cold month 20, hottest afternoon 50, coldest night
+  +8; 1,200 mm that flashes off the crust); **the heat low's rain ring**, +900 mm at its peak 8-24 km off the shore, nothing
+  past 56 km (3,970 cells, mean 647 to 1,191 mm; most of it snow on the plateau), its classes kept (ET, EF, Dfc, Cfb: none
+  dry; the script asserts it). The wind raster `wd` is not touched.
+- **The domes** (a new key, `domes.json`, ten records): flat-topped, one to two cells of wall.
+
+  | Dome | px | Across | Ground | Top |
+  |---|---|---|---|---|
+  | North Glass | 175,1302 | 12 km | 5,133 m | 5,633 m |
+  | West Glass | 157,1324 | 10 km | 4,819 m | 5,269 m |
+  | South Glass | 175,1335 | 14 km | 4,503 m | 5,053 m |
+  | Ember Glass | 201,1331 | 8 km | 4,679 m | 5,079 m |
+  | Gate Glass | 211,1305 | 10 km | 5,396 m | 5,846 m |
+  | Korona 1, NW trench | 1007,490 | 14 km | -1,492 m | -892 m |
+  | Korona 2, NE trench | 1131,494 | 12 km | -901 m | -379 m |
+  | Korona 3, S trench | 1038,581 | 16 km | -852 m | -202 m |
+  | Korona 4, SE moat | 1179,578 | 16 km | -103 m | 547 m |
+  | Korona 5, N trench | 1071,430 | 14 km | -297 m | 303 m |
+
+  None touches water or a river (asserted). Three dam a few upslope cells (pit cells in a 29-cell box: South Glass 23 to 47,
+  Ember Glass 23 to 30, Korona 1 24 to 34, Korona 3 34 to 44): dome-dammed hollows, left dry.
+- **The records:** the patera as a vent (`kind: patera`, `floor` 2,240, `radius` 16 km, `scale` 0.6: the page draws its
+  lava disc, glow and smoke), and as a basin (`kind: lava lake`, `climate: L`, the Holm under `island`). **The Tlahn Warra**
+  (`r_fb_central`) loses its first point, 190,1319, on the lava: it heads on the east lip at 199,1323 (bed 2,292 m), 306 km
+  instead of 326. No settlement and no region record changes.
+- **What moved:** heights on 677 cells (488 in Firebliss, 189 in Korona, 0 elsewhere: asserted); water levels on the 60 tarn
+  cells; temperatures on 659 cells (`th`, `tl` 469); rain on 4,667, class on 556, zone on 98 (the sites, `reclimate`'s
+  re-derived cells round them, and the ring). Every other cell of `h`, `wl`, the five temperatures, `p`, `c` and `z` is
+  checked unchanged; the painted maps (`st`, `t`, `rt`, `ct`) are relit and repainted round the sites and re-encoded.
+- **With edit 513** (the Slabfields, Mid Basin, on another branch): the script reads whatever `model/data` holds and checks
+  only its own cells, so whichever branch merges second reruns its script on the merged data (from a checkout of the other's
+  `model/data`) instead of merging the binary rasters.
+- `tests/test_smodel.py` section 15 checks the crust (flat, dry, class `L`), the shore over 2,640 m, the Holm, the tarn gone,
+  the Tlahn Warra's head, the basin and vent records, the floor's temperatures, the rain ring, and every dome's flat top and
+  height; section 13 now counts the five stratovolcanoes and the three remaining tarns. The test read the little demo's
+  regions from `openworld/little-demo/`, which moved to `archive/`; it now falls back to `archive/little-demo/source/`.
+- **Owed by the owner (not done in the session):** publish the page, `python3 tools/scale-model/model/build.py --split`,
+  then `model/dist/split/index.html` with `data-1.js` and `data-2.js` beside it to the artifact's URL. **No database write
+  is owed:** no settlement or region changed, and the page's defaults (`model/src/`) are untouched. If the owner settles
+  the Holm, its marker is a new settlement (the page's default list and the live database, on the 5.1 canvas).
 
 ## 5.1 edit 7: `edit_517.py` (2026-11-11): Erewhon's lake as a caldera lake
 
@@ -801,6 +916,12 @@ dry on the new shore.
 - The moved lake's north-east shore borders the Vale's lowland (a north river's valley meets it ~30 m over the lake), so
   the check is that the outlet is the lowest way out by 20 m (`RIM_MIN`; blocked, the lake would spill at -491.6 m), not
   a caldera closed 200 m all round; the Vale's floor keeps 6.5 cells off the shore (`VALE_S`), a whole wall between.
+- The Beacon's shoulder (the owner, 2026-11-16): moving the lake east carried the south horst's lowering onto the knoll
+  the Order of the Beacon's head house stands on (853,1540; settlements/beacon/PLAN.md), from 863 m to 324 m. An oval
+  round 854,1540 (6 x 10 px, `BEACON`) is kept out of it, so the knoll (863 m), its crown (885 m at 854,1540), the
+  saddle (849 m at 854,1538) and its spur stand as the plan measured them; the lamp at 22 m clears G1 by 32 m, the House
+  of the Tempest by 25, the Golden Tears' camp by 28, Tuatara by 38 and the south watch fort by 35. Its pin is
+  `sbeacon00001` (SETT_ADDED 5.1e13).
 - `edit_517_crease.py` (after the edit): the straight crease in the heights across the Twins' north-west (985,1419 to
   918,1493, a 150-350 m slope break over a cell) and along the south edge of an old stamp round Qiblai's basin (y
   1639-1640) blended toward a 1.3-px blur within 2.5 px; temperatures lapsed, the paint relit.
@@ -828,8 +949,19 @@ dry on the new shore.
   - `tests/test_smodel.py` section 17 checks them. The open world stamps the landforms with `core/world/41l-world-landforms.js`
     (`openworld/xanadu-north-shore`).
   Written in the Phēr plan's session (claude/pher-plan-55d3f2, f7834e394) and re-run here after `edit_517_gorge.py`.
+- `edit_517_pher_rim.py` (after `edit_517_pher.py`; a raster edit; the owner, 2026-11-16, Phēr's question 17: "do (a)"):
+  Phēr's page (its ground in `openworld/xanadu-north-shore` since its step P7) has the caldera wall's top at 0 m and the
+  rim plain rising ~7 m a km inland; the model's plain behind the same stretch fell at the same rate but ~40 m lower, so
+  the Swīṭ Siṭrīm reached the town under the page's plain. Every dry plain cell north of the wall's top (rows 1485-1493
+  along columns 830-855) is raised by 40 m, full within 5 columns of the stream's 842 and two cells of the top, fading to
+  nothing 11 columns along and 8 cells (16 km) north: 166 cells, the stream's column now +10 m at the lip (was -30 m) and
+  still falling to the wall. The stream's bed is recomputed on it (edit_517_pher.stream), `r_pher_swit.rim_lift_m` set;
+  the temperatures lapsed and the paint relit as `edit_517_crease.py` does. `tests/test_smodel.py` section 17 checks it.
+  Regions over this ground re-cut after it: `openworld/xanadu-north-shore` (done in the Phēr plan's session) and
+  `openworld/xanadu-oidong-highrift` (its box holds it). Written and first run in the Phēr plan's session
+  (claude/pher-plan-55d3f2). Re-run here after `edit_517_pher.py`.
 - Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
-  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`.
+  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`, `edit_517_pher_rim.py`, `edit_517_vale_ring.py`.
 - `edit_517_pher.py` (after the re-run, 5f659c054; records only, no raster change; the owner, 2026-11-16, for Phēr at
   843,1491: "give it a headland and cove; give it a small stream", "coined name"; `settlements/pher/PLAN.md`):
   - Phēr's headland: two `island` records from the shore's bend west of the town (840.65,1491.2 and its tip 841.05,1491.65).
@@ -839,6 +971,47 @@ dry on the new shore.
   - The pin is `spher0north1` (SETT_ADDED '5.1e13', and in `defSetts` for `cut_site.py`).
   - `tests/test_smodel.py` section 17 checks them. The open world stamps the landforms with `core/world/41l-world-landforms.js`
     (`openworld/xanadu-north-shore`).
+
+- `edit_517_pher_rim.py` (after `edit_517_pher.py`; a raster edit; the owner, 2026-11-16, Phēr's question 17: "do (a)"):
+  Phēr's page (its ground in `openworld/xanadu-north-shore` since its step P7) has the caldera wall's top at 0 m and the
+  rim plain rising ~7 m a km inland; the model's plain behind the same stretch fell at the same rate but ~40 m lower, so
+  the Swīṭ Siṭrīm reached the town under the page's plain. Every dry plain cell north of the wall's top (rows 1485-1493
+  along columns 830-855) is raised by 40 m, full within 5 columns of the stream's 842 and two cells of the top, fading to
+  nothing 11 columns along and 8 cells (16 km) north: 166 cells, the stream's column now +10 m at the lip (was -30 m) and
+  still falling to the wall. The stream's bed is recomputed on it (edit_517_pher.stream), `r_pher_swit.rim_lift_m` set;
+  the temperatures lapsed and the paint relit as `edit_517_crease.py` does. `tests/test_smodel.py` section 17 checks it.
+  Regions over this ground re-cut after it: `openworld/xanadu-north-shore` (done in the Phēr plan's session) and
+  `openworld/xanadu-oidong-highrift` (its box holds it). Written and first run in the Phēr plan's session
+  (claude/pher-plan-55d3f2).
+
+- `edit_517_vale_ring.py` (after `edit_517_pher_rim.py`; a raster edit; the owner, 2026-11-17: "something like that kind of
+  effect [Lake Atitlán, the World Menagerie] with the Lake of the Vale, but with the rise to the mountains not quite as
+  steep. they should be visible though, and come up the lake in places"; "Whole lake"): the lake (-520 m, ~140 x 60 km,
+  round its island) was ringed by a ~300 m wall and a plateau 500-600 m over the water. Procedurally from the lake's own
+  shape (SEED 51717): a range 10 km back from the water, 480-820 m over the ground, its height wandering round the ring;
+  17 massifs on it one every 20 km of the ring, 800-1,250 m over the ground; 12 of them with a spur running down to
+  the shore and ending 150-260 m over the water. Every pin and site on the lake (Erehwon, Ōlḍ-Thalaba, Phēr, Māuṭh,
+  Ḍāiyar, the Qol ford and head) keeps its ground (Phēr's within 2 cells: its page climbs to meet the range) and every river reaching the lake its valley; the water and the
+  island are untouched. 3,436 cells; 8 km out the land now stands ~1,000 m over the water (was ~500), peaks to ~1,600 m.
+  Temperatures lapsed, paint relit; `DATA.landforms.vale_ring` marks it run. `tests/test_smodel.py` section 17 checks it.
+  Re-cut after it: `openworld/xanadu-north-shore`, `openworld/xanadu-oidong-highrift`; the lake towns' pages (Erewhon,
+  Kirstabal, Ōlḍ-Thalaba) refit to it in their own sessions. Written and first run in the Phēr plan's session.
+  **Rewritten the same day (v2), and run in its place** (on the data from before the first run), the owner: "can we
+  enhance the mountain profile by making the lake longer and thinner? ... the rougher terrain around the lake now to
+  continue and continue to slope upward to the edge of the vale ... clearly defined valleys that slope to the lake, but
+  will also have mountains that come closer to the lake"; asked, the south shore comes in, the lake reaches west, the
+  island stays (narrower), the edge is the lake basin's rim. Now: (1) a warp, column by column, pressing the lake north to
+  0.62 of its width (the north shore fixed, the south rim moved whole for 10 cells and eased back over 20; every raster
+  and record moved with it, Erehwon's pin to 841,1507.64: `SETT_MOVED` 5.1e14); (2) an arm west from px 816 to a tip at
+  792 (r613 and r753 end on it); (3) the basin rising from the shore to its rim's height, ribbed by a ridged field; (4)
+  the range 3.8 cells back, massifs 3-6.5 cells out with spurs to the shore; (5) every river's valley kept and 12 more
+  cut from the rim to the shore. The lake is 180 x 48 km (was 142 x 62); 8 km out the land stands ~850 m over the water,
+  28 km out ~980 m; no spill; every pin keeps its ground. `edit_517_vale_ring.report.json`; section 17 checks it.
+  The report keeps the warp's columns (`warp`; `Warp.from_report()`), since the lake it was built on is gone after the
+  edit: section 19 (edit_517's caldera lake) reads edit_517's shapes through it (each cell's old row, each old point's
+  new row) and takes the arm as the lake's own water. Under it, three of section 19's bounds give: the east volcano 16
+  cells back (15), the Alph's head within 3 cells of the pressed tip (2), the Vale 380 cells in its band (450: the
+  basin's east ridge takes its west edge).
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge
@@ -896,6 +1069,42 @@ and every raster (heights, water, the five temperatures, rain, class, zone) is c
   with the lake (SETT_MOVED 5.1e12, which runs after 5.1e6).
 - **Left for later**: re-cutting `openworld/xanadu-oidong-highrift` on this model, the Erewhon page's world coordinates,
   and the stale basin record at 922.8,1527.7 (-759 m, outside the box).
+
+## 5.1 edit 22: `edit_522_reshape.py` (Gemini 2026-11-13; run as claude/gemini-trade-reconcile's edit 8, `edit_518.py`, 2026-11-17): the geology reshaping
+
+(Renamed when that line merged into claude/integration-4 on 2026-11-23: main's own edit 8 is `edit_518.py`, the pancake
+domes. Its Firebliss domes were left out there: main's edit 8 built the same domes, `DATA.domes`. See "The 2026-11-23
+re-run".)
+
+Gemini's map reshaping for the 5.1 geology (`openworld/GEOLOGY-STATIONS-5.1.md`, the six KSTRATA 5.1 recipes), written
+as its own `edit_517.py` on `gemini/scale-model-517-reshape` (4a8b14e7f, off claude/integration-3 at 930e5c920) and
+re-run here as edit 8 after Erewhon's lake and Phēr's edits (the owner, 2026-11-17: "apply gemini's geology-based
+reshaping"). Unchanged but for its number and two fixes: it read `DATA.landforms` as a bare list (the file did not exist
+on its base) and now reads and writes the `{format, version, landforms}` file; and the Arch's horsts were regular sine
+bands (concentric round Crookshore, straight diagonals in the Double Delta) that drew stripes across the land (the owner:
+"i don't like that diagonal artifact by crookshore"), so they are now an irregular flat-topped block field from their own
+generator (rng 5181, every other pass's noise unchanged), each zone's edges fading over 10 px instead of 4. Six passes, each keeping settlement pins
+(1-px halo), biome station sites (2 px), vents and the edit 1-6 polygons fixed:
+
+1. **Spider Lake** (1289,213.5): a secondary ejecta crater (59 x 43 px ellipse) round the lake at 1,460 m, a NW
+   boulder-breccia rampart sealing the Ria divide (>= 1,850 m at 1252,175), a SW bedrock spillway for `9102` through
+   1246,232, and strictly falling beds on 9101, 9102, 9106 and 9109.
+2. **The SE Tharn crater** (1375,1525) on the SE outer wall: 108 km, floor 6,880 m, rim 7,950-11,400 m, a 24 km
+   cryo-fumarole tarn at 6,910 m, its vent ("Tharn Cryo-Fumarole Cauldron") and basin.
+3. **The Arch**: onshore flood-basalt horsts across SW Crookshore and NE Double Delta / N Ria, two drowned 24-26 km
+   ejecta bays in Crookshore (115,616 and 176,643), and the Copper Tarn's crater collar with a verdigris tint (147,1148).
+4. **The n semiarid dam-relic salt lakes** (~716,420 and ~872,442): wave-cut benches at +60, +140 and +230 m round
+   them, salt-lake basin records, and bright evaporite strandline rings.
+5. **The Ring Isles**: carbonate benches (+8 to +35 m) and turquoise shoals (-2 to -18 m) outside the tower-karst cores,
+   and Port Goto (920,703) dry with harbour water beside it at 920,704.
+6. **Firebliss**: three flat-topped obsidian pancake domes (18-22 km, 380-490 m relief) as landform records
+   (`kind: 'pancake_dome'`, which core/world's stamper does not know yet and skips); planar normal-fault footwall facets
+   along the Rift Rim's scarps; and the 2-cell neouterwall cauldron shore-apron alignment owed from f124d9ff5.
+
+37,442 height cells moved, 1,372 cells changed wet or dry, 13 landform records in all; the worst dry river climb 26.2 m
+(`r_lab_chaos_n`). Temperatures lapsed, rain, class and zone reclimated, the paint relit; `edit_518.crops.jpg` holds
+the before and after crops. `tests/test_smodel.py` section 20 holds Gemini's checks. With it, the two north-east outer wall
+station bases (garnet, vitreous) that failed before now pass: 290 checks, no failure.
 
 ## 5.1e11 (2026-11-15): Gemini's trade branch reconciled with the map (no raster change)
 
@@ -984,6 +1193,163 @@ is checked unchanged outside it.
   sources from `archive/little-demo` (retired there from `openworld/`).
 - **Left for later**: Voth's ground handed to core/world (V2), the region `openworld/voth` (V3), core/world's stamp of
   the landforms; the live map database (on the old canvas).
+
+## 5.1e14 (2026-11-22): Gemini's settlement stages and pins (no raster change)
+
+`gemini/pins-and-settlement-stages-5.1` (3d720120a and 9163bdfe7, 2026-11-13/14: 149 regions, 191 pins, ten pin stages)
+merged here (the owner's step 5, "merge in gemini scoping branch and crook/ria work", relayed by the build coordinator).
+5.1e11 had already taken 63 of its 69 new pins and all its new regions (gemini-trade carried them); this takes the rest:
+- **The page**: its ten stages in hierarchy order with their own colours, strokes and sizes (city, town, village, fort,
+  outpost, cavern, arcology, inhabited ruin, ruin, ruined arcology), a filter pill each, labels by zoom and stage, the
+  filtered count, "Import JSON"; `geology.py` and `ancient_roads.py` count an inhabited ruin as a ruin.
+- **Stages**: 40 pins take the stage `openworld/populations-gemini.json` gives them (towns from villages and cities,
+  inhabited ruins from ruins, forts from outposts and ruined arcologies); Thalaba stays a town (the owner moved it,
+  5.1e12) and Amaro a city (Shumar's capital on `origin/shumar/amaro-urundashi`).
+- **Regions**: the six coarse ones the Ria Valley and Crook breakdown replaces deleted (ria valley, double delta, the
+  arch, the crook, copper glacier, tharn uplands; Gemini's own `regMerged.5.1e10` does it in browsers); the Lesser Throne
+  and outland gate take Gemini's kinds; the dome, compass hills, weeping valley and copper glacier its notes. Not taken:
+  its emptied Firebliss note and its Stalker Peaks note (which says edit 3 for edit 5). 149 regions.
+- **Ids**: the four duplicates take the ids Gemini's population data keys (`gem_palewharf` -> `spalewharf01`,
+  `gem_godsgate` -> `sbabalhawa01`, `gem_twins_pass` -> `sthetwins01`, the owner's `smgxtultfq` -> `sxangold01`), and
+  Port Tobin's two pins become one (`skwl1d2hdu`, moved by Gemini to 956,943; gemini-trade's `s06eu913kl` dropped). A new
+  `SETT_DROPPED` reconcile removes the old ids from browsers that hold them.
+- **Moves**: Port Goto to 920,703 (edit 8's harbour), and Gemini's own Peak Coyote Plume-Camp and Gate Tarn Mires by a
+  few px. Not taken: Gemini's unexplained moves of Amaro and Driyan, and of the Siphon-Ropers' camp (`sk9e4psl4b`, at
+  the queue's station 3 site).
+- **Names**: the owner's "(to be named)" pins keep their placeholders (as in 5.1e11); Gemini's names for them (Baelu
+  North/Mid/South, Guari, Coyote Lake Village, K7, K2, E1, Xanadu Goldfields) are in their notes. Empty notes take
+  Gemini's; polities fill from the population data.
+- **Held**: the two salt works (`svhmyhf33w`, `s0zgu7u6yb`), the owner's batch 5.1e10.
+- **5.1e16 (2026-11-23)**: Gemini drops the "Tabist town (to be named)" (`seur98e8mv`, 1285,655) as a duplicate of its
+  Tabisti city Sfenops (`sn98ob5duu`, 1282,663, 17 km off); the owner: "Merge them". Sfenops stands where it was and
+  takes the Tabist town's description in its notes (SETT_MOVED 5.1e16); the old id leaves the defaults and its add batch
+  and is cleared from browsers (SETT_DROPPED 5.1e16). `openworld/resources-settlements.json` and `trade-goods.json` name
+  Sfenops for it (eight places), the two docs say so; geology and the ledger re-baked.
+- **Re-baked**: `kits/resources/data/geology.json` (`geology.py --cell 4`, then `--lodes`), `data/ledger.json` and
+  `godot/golden-field.json` (`test-res.js --ledger`), and the Godot test copies (`godot/tools/sync_core.py`).
+- `tests/test_smodel.py` section 21 holds Gemini's stage checks, adapted.
+
+## 5.1 edit 9: `edit_521_strongwall.py` (2026-11-23): Strongwall's slot and pit, its watch posts, the House of the Tempest
+
+Strongwall's W0 and V0 (`settlements/strongwall/PLAN.md` on claude/strongwall-plan-c1ee33; asked 2026-11-16, the owner
+said yes to asking 2026-11-23). Numbered 521 because Shumar's branch holds 519 and 520.
+- **The slot kept.** The owner kept row 1641's fault trough (x 913-922) as the fort's natural moat on 2026-11-16, on
+  the model before `edit_517_crease.py`. That edit's blur along Qiblai's old stamp edge (y 1639.5) half filled it the
+  same day (the trough's floor rose 100-270 m) and moved the fort's bench. Rows 1638-1641 go back to their heights before
+  the crease from x 904 to 922, fading to today's over 923-927: 316 m at 913, -356 m at 918, the fort's cell 755 m. East
+  of 927 the crease stays.
+- **The pit** at 913-915, 1633-1635 (to -351 m, the old pin's cell) filled from its rim: 431-472 m, the bench's level.
+- **The pins** (reconcile 5.1e15), all Xanadu Sultanate: the six watch posts, outposts (the Brow G1 917,1648; the Cold
+  G2 911,1653; the Lode G3 915,1664; the Fan R1 906,1635; the Bench-end R2 905,1626; the Rift R3 894,1624), the House of
+  the Tempest (886,1619, a village: no monastery type) and its west-brow lookout (879,1618, an outpost). The Golden
+  Tears' house is not a pin on the model (nothing at 913,1641); Strongwall's own pin is at 912,1640 already.
+- **Checked** (`edit_521_strongwall.report.json`; a 10 m tower at each end, the earth's curve with refraction 0.13):
+  each pin's ground is the plan's (3,455, 4,137, 5,046, 585, 446, 362 m; the monastery 519, the brow 153). G1 sees the
+  fort (+14 m), G3 sees G2 (+13), R1 the fort (+12), R2 R1 (+14); G2 to G1 and R3 to R2 are marginal (-0.3 and -0.2 m;
+  the plan's +2 m: a mast a few metres taller). The monastery sees the fort (+13), G1 (+20), R1 (+13) and R2 (+12);
+  R3 is marginal (-9 m; the plan's +3); G2 and G3 are behind the scarp. The lookout sees G1 (+17), not the monastery's
+  crest (-127 m: the plan's relay).
+
+**5.1e17 (2026-11-23, records only)**: the Marches' two watch forts, from the Marches forts session
+(claude/vibrant-hopper-3x8lwi c6688875, `settlements/marches`, `MRF.pins()`), relayed by the build coordinator: the west
+watch fort (`smarchw0001`, 818,1531, 289 m on the slope above Erewhon's lake) and the south watch fort (`smarchs0001`,
+843,1546, -213 m on a spur over the Rift, 23 km south of the Beacon), forts of the Xanadu Sultanate. Their proposed names
+(Wesṭ-Wāch, Sāuth-Wāch) wait for the owner and are in their notes. Both dry; geology and the ledger re-baked.
+
+**5.1e18 (2026-11-23, records only)**: the Sultanate's gold mines (`sxangold01`, the owner's `smgxtultfq` until 5.1e14,
+911,1665) take the owner's name **Kōlḍ-Lōḍ** (relayed by the build coordinator: "Yes, rename it"), as the Xanadu works'
+tune names them (claude/xanadu-works-a7). SETT_MOVED 5.1e18 renames them in browsers; geology and the ledger re-baked.
+
+## The 2026-11-23 re-run: claude/gemini-trade-reconcile on claude/integration-4 (step 1)
+
+The single scale-model re-run (the build coordinator, owner-approved), on claude/scale-rerun-1123 from claude/integration-4
+at cf7e849a2. The line held main's model (dc15601bc, then main's Slabfields and pancake domes, the Slabfields' stations,
+the Bay of Voth's edit) and the vale ring's records without its rasters; claude/gemini-trade-reconcile (8c0d4bece) held
+the Beacon's knoll, the Phēr rim, Gemini's reshape and its horst fix, and Strongwall's edit. Both from dc15601bc:
+- **Rasters**: every cell that line changed and the integration line did not took that line's value (paint as the
+  difference, the JPEGs written with their own tables); where both changed (198 height cells: the Slabfields, and the
+  Firebliss domes both built) the integration line's stands; Gemini's Firebliss domes (pass 6a) were left out with their
+  three landform records (main's edit 8 has the same domes as `DATA.domes`). Rivers, landforms by id; basins, outlets,
+  vents and `climate.json`'s lists as three-way record sets.
+- **The vale ring** (`edit_517_vale_ring.py`, after the Phēr rim) re-run on the merged model: its records already on the
+  line (r070, r613, r753, the two isles, `landforms.vale_ring`, Erehwon's default) set back first so it wrote them once.
+  It moves no other pin's ground (the Beacon, the Marches forts, Theodiga, Tuatara: 0 px); Erehwon 841,1507.64 again.
+- **Gemini's landforms** (`edit_522_reshape.py`'s five) were written as `px: [x, y]`; normalised to `px`, `py`.
+- **Pins**: the line's positions for Erehwon, Longsong (1228.88,1621.23), Strongbow (1001,1596) and Marr (926,1014),
+  with this line's stages and polities. **Port Tobin** follows the line (Marr's session): `s06eu913kl` at 956,944, a
+  town; 5.1e14's drop of it is undone and `skwl1d2hdu` dropped instead (SETT_DROPPED 5.1e19). The line's moved key
+  5.1e14 (Erehwon) clashed with 5.1e14's stages: its record is in **5.1e19**, which holds every pin this merge moved.
+  The line's `60-settlements.js` held the vale ring's Erehwon note with unescaped quotes (a syntax error on the page):
+  written escaped now. A repeated `'5.1e12'` key in SETT_MOVED removed (the same records twice).
+- `test_smodel.py`: both lines' sections (15b, 15c, the vale ring's; 20-22, with section 20 for edit 22 without its
+  domes and section 21's Port Tobin the line's). 338 checks pass, none fail.
+- **Step 2**: Shumar's Amaro gorge (`edit_520_amaro_gorge.py`) run on the merged model; its moved key 5.1e20 last.
+
+### Step 3: continental-scope and Crook/Ria, by the owner's order (2026-11-23, "Yes, that order")
+
+Three of Gemini's designs re-shape the same north-west ground: the reshape (edit 22, on this line), continental-scope
+(**C**, `freeze/continental-scope-1123` 045bd9308: the Iron Republic's Alps, the wave-0 hygiene batch, the Ria's hydrology
+with Farside and the Crook, the canals and settlement fits; built on 7dcfa8a5f) and Crook/Ria (**K**, `freeze/crook-ria-1123`
+bbe3c8506: `edit_520_crook.py`, `edit_521_farside.py`; built on 3c1a918b7). The owner's order: K takes the Crook and
+Farside (x <= 335, 460 <= y <= 1110) whole; C takes every other cell it changed; the reshape stays wherever neither
+reached it; C's Beacon knoll (its 523) is skipped (this line's restored knoll stands). Their scripts were written for
+their own models (lake labels, pre-edit commits read from git), so their results are carried, not re-run:
+- **Rasters**: in the zone, K's value wherever K or C changed a cell; elsewhere C's wherever C changed one, but the
+  Beacon's box (845-863 x 1526-1548). C took about 110,000 height cells; 10,210 of its cells in the zone gave way to K's.
+- **Records**: rivers by id, K's in the zone and C's outside it (C's and K's Crook rivers share ids 9111 on: K's);
+  C's 14 new basins outside the zone (the East Abyss sumps, Soda Lake, the eight Alpine lakes) and its 5 replaced Iron
+  Republic lakes removed, its 8 lake outlets and the Heartland palaeolake; K's five Crook calderas (`lf_crook_*`) and
+  its Farside harbour (`tsunami_farside`).
+- **Pins and regions** (one key, **5.1e24**, for all of them: Gemini's own pages used 5.1e20-5.1e23): C's 34 new pins
+  outside the zone and K's 10 Crook towns; C's moves where it gives a reason (wet pins snapped dry, the Alps' owner-
+  approved moves of Glaive and Stahlborn, the settlement fits; White Gills Hermitage to 1015,1430 as the owner moved it;
+  Ardent snapped 22 km onto r024's valley bench by C's settlement fit, from the owner's 830,553: flagged); Yonni (was Yith)
+  as K names it. Not taken: C's 12 pins in the zone (K's own Crook towns stand) and C's registrations of pins this line
+  has (the Beacon, Misṭ-Gārḍan, Rēnbō-Phāl, the Devisers' camp); C's 'monastery' type mapped to a village (the Red
+  Monastery of the Flashing Eye). C's regions (Zeijani, the Yusar enclaves, the Ria dynasties, the border carve-outs) and
+  K's (Farside, crookshore, NWern Ocean, Shroudhills); the Eternal State's border is C's with K's Farside run spliced in.
+- **Canals**: `edit_526_canals.py` (C's edit_523 step 2) traces the 22 canals again on this model: 18 on C's courses,
+  four a little off (the Farside canal 81.7 to 72.8 km on K's Farside; Līng-Mā Lateral, Fossa Iziz, Canal Atton by a km
+  or two). Their painted threads came with C's paint, so those four show C's lines.
+- **Trade v5**: C's `gemini_trade_model.py` run on this model and its geology; its inputs are C's populations and road
+  supplement with Shumar's Amaro entries kept, and the line's net51 (C left it alone).
+- `tests/test_smodel.py` sections 23-25 are C's own checks.
+
+**Malbari's Qol bridge** (the owner: "place bridge on map at open world step"): the model keeps no crossing records, so it
+is recorded as the Qol ford is, a site in `openworld/SITES.json` (`sxanqolbridge01`, "The Qol bridge (Malbari)") on the Qol
+Siṭrīm's own course (r272's point 823.57,1487.23, -423 m, dry, above its mouth; 3.2 km from Malbari), in the north shore's
+sites with corridors from Phēr and to the Qol ford, so the region's road crosses there and core/world's bridge module
+(42b) builds the span. It is drawn at the held region-cut pass; `xanadu-north-shore` must ask for bridges then
+(`SITE_SPEC.bridges`).
+
+**Step 3's fixes**, found by the tests and the bakes:
+- Crook/Ria's 11 re-routed rivers (r002, r061, r078, r089, r113, r120, r130, r148, r175, r196, r234) kept their old courses'
+  `bed_m` and `q_m3s` (145 points, 81 beds on r002: `geology.py` stops on them, on the Crook/Ria branch too): their beds
+  rebuilt from the ground along the new course, held falling between their source and mouth, their flows stretched.
+- Spider Lake, and the Double Delta / N Ria horsts (the reshape's pass 3 boxes 505-648 x 102-208, 645-828 x 185-288),
+  lie on the ground continental-scope's Ria hydrology needs (9101 out of the lake; 9224 climbed 262 m over a horst):
+  they take continental-scope's rasters whole, Spider with its rivers (9101, 9102, 9106, 9109) and without the reshape's
+  crater, basin and outlet records. The Alph (r070), r613 and r753 keep the vale ring's courses over C's copies.
+- The Crook and Farside zone takes Crook/Ria's rasters whole (4,124 height cells where the reshape's Crookshore bays and
+  horsts still stood under K's rivers); the reshape's two bay landforms leave, and their check.
+- Crook/Ria's own data, as on its branch: six of its rivers climbed over 50 m along their courses (9111 by 211 m near
+  its mouth; 9113, 9123, 9129, r002, r130): 71 dry course cells carved down to each river's running low, temperatures
+  lapsed and the paint relit; and 255 of its land cells held a hottest afternoon (th) under the warm month (tw): th
+  raised to tw there.
+- `kits/resources/data/lodes.json` takes continental-scope's three oil lodes (Locus, Yuni North, Shell), which its
+  resource tests expect; the ledger excludes a pin whose stage is ruin as well as an uninhabited type (`46r`).
+
+## 5.1 edit 27: `edit_527_lightwall.py` (2026-11-23): Lāiṭwāl's bay and wall
+
+The owner chose "change the world" for Lāiṭwāl (`settlements/lightwall/PLAN.md` section 10, on claude/lightwall-ground
+75121e0ed). At the model's 2 km cells, round the pin 1028,1653 (its own cell untouched: the town's bench, 1,430 m):
+- **The bay**: the lake (1,315 m) brought up to the bench: 1027-1029 on row 1654 and 1026-1028 on row 1655 (joining it
+  to the lake) flooded, 16-25 m deep; the shingle eased down either side.
+- **The scarp**: the north boundary fault's face: row 1652 at px 1026-1030 raised to 2,650 m, the upthrown block rising
+  about 6 % behind it (2,760 m, 2,880 m) into the existing range, fading over px 1024-1025 and 1031-1032. The open world's
+  cut gathers the rise into a cliff (`extract_region.py`'s scarp layers come from the heights).
+- The lake a cell south of the pin, the wall 1,220 m over it a cell north (`tests/test_smodel.py` section 26). The page's
+  `lwPending` and `LW_PEND` come out after the region's re-cut (held with the others).
 
 ## Cutting a region out for the open world
 

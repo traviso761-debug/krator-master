@@ -1066,8 +1066,11 @@ function KCharFigure(body, sliders, load){
     var i0 = m.userData.index0, g = m.geometry;
     if(!i0) return;
     if(!key){
-      g.setIndex(i0);
-      m.children.forEach(function(s){ if(s.userData.fur && s.userData.index0) s.geometry.setIndex(s.userData.index0); });
+      g.setIndex(Array.isArray(i0) ? i0 : new THREE.BufferAttribute(i0, 1));
+      m.children.forEach(function(s){
+        var si = s.userData.fur && s.userData.index0;
+        if(si) s.geometry.setIndex(Array.isArray(si) ? si : new THREE.BufferAttribute(si, 1));
+      });
       return;
     }
     var n = g.attributes.position.count, aw = m.userData.armW;
@@ -1124,12 +1127,14 @@ function KCharFigure(body, sliders, load){
           if(!TL || !wt || TL.spec !== wt.tail) tailSetup(wt);
           var wj = worn.filter(function(m){ return m.jaw; })[0];
           JAW = wj ? wj.jaw : null;
+          var wd = worn.filter(function(m){ return m.digitigrade; })[0];
+          if(!DG || !wd || DG.spec !== wd.digitigrade) digiSetup(wd);
           var hide = KCHAR.hidden(rec, kit), hideParts = KCHAR.hiddenParts(rec, kit), head = KCHAR.headOf(rec, kit);
-          var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
+          var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso && (!mpfb || KCHAR.fits(it, rec, kit)); })[0];
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
           // trousers (legs, not loose) under a loose top: the top's push clears them too (PAD_OVER more)
-          var legs = rec.armour && rec.armour.legs && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.legs; })[0];
-          var feet = rec.armour && rec.armour.feet && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.feet; })[0];
+          var legs = rec.armour && rec.armour.legs && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.legs && (!mpfb || KCHAR.fits(it, rec, kit)); })[0];
+          var feet = rec.armour && rec.armour.feet && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.feet && (!mpfb || KCHAR.fits(it, rec, kit)); })[0];
           // and under a loose top they are drawn in to the legs, so wide ones (harem pants) stay under it: all the way
           // under one that reaches below the knees (kit item long: a robe, the kimono), else down to its hem (kit item
           // hem: a fraction of the hip-to-ankle length), so below a shirt's hem they are as wide as they are (the
@@ -1148,6 +1153,16 @@ function KCharFigure(body, sliders, load){
           if(mpfb){
             var w = KCHAR.morphWeights(rec, kit), wkey = Array.prototype.join.call(w, ',');
             mj = KCHAR.morphJoints(skel, kit, w);
+            // a species tail with its own chain (wt.tail.rest: tools/tails.py) moves its joints along that chain, not the reptile's
+            if(wt && wt.tail && wt.tail.rest){
+              var tIds = wt.tail.joints.map(function(n){ return byName[n]; }), hQ0 = Q().fromArray(J[byName.Hips].r), accT = V();
+              wt.tail.rest.forEach(function(ow, k){
+                var ti = tIds[k + 1]; if(ti === undefined) return;
+                var l0 = V().fromArray(J[ti].t).length(), l1 = V().fromArray(mj.t[ti]).length(), sk = l0 > 1e-6 ? l1 / l0 - 1 : 0;
+                accT.add(V().fromArray(ow).multiplyScalar(sk).applyQuaternion(hQ0));
+                mj.d[ti] = [mj.d[tIds[0]][0] + accT.x, mj.d[tIds[0]][1] + accT.y, mj.d[tIds[0]][2] + accT.z];
+              });
+            }
             p.t = mj.t;
             Object.keys(want).forEach(function(k){ morphMesh(want[k], w, wkey); });
             var base = Object.keys(want).filter(function(k){ return want[k].userData.part.role === 'base' && want[k].userData.srcMaterial === kit.base_material; })[0];
@@ -1841,7 +1856,7 @@ function KCharFigure(body, sliders, load){
     // the body's capsules, in the world, this frame
     // not the arms: an elbow hanging at the waist pushed a single chain of a cape's edge out, and the cloth below it
     // swung away alone as a long spike (the push in the shader keeps every vertex out of the arms instead)
-    var sc = self.group.getWorldScale(cS).x, W = caps.filter(function(cp){ return !/Arm/.test(bones[cp.a].name); }).map(function(cp){
+    var sc = self.group.getWorldScale(cS).x, W = caps.filter(function(cp){ return !/Arm/.test(bones[cp.a].name) && !(DG && !cp.pa && LEGJ.test(bones[cp.a].name)); }).map(function(cp){
       var A = new THREE.Vector3(), B = new THREE.Vector3();
       capEnds(cp, A, B);
       var rMax = Math.max(cp.r, cp.ra || 0, cp.rb || 0);
@@ -1855,8 +1870,12 @@ function KCharFigure(body, sliders, load){
       W.push({ a:seats[0].a.clone().add(seats[0].b).multiplyScalar(0.5), b:seats[1].a.clone().add(seats[1].b).multiplyScalar(0.5),
                r:seats[0].r, leg:false });
     }
-    // and the feet (footEnds): a chain knew the shin and not the heel kicked up past it
-    FOOTSIDE.forEach(function(sd, i){
+    if(DG){
+      for(var di = 0; di < 6; di++){
+        var ds = digiSeg(di, null, sc, new THREE.Vector3(), new THREE.Vector3());
+        if(ds){ var dr = Math.max(ds.ra, ds.rb); W.push({ a:ds.a, b:ds.b, aBone:-1, r:dr + PAD, r0:0.5 * (ds.ra + ds.rb), ra:ds.ra, rb:ds.rb, leg:true, seat:false }); }
+      }
+    } else FOOTSIDE.forEach(function(sd, i){
       var cp = caps.filter(function(c){ return c.a === byName[sd + 'Leg'] && c.b === byName[sd + 'Foot']; })[0];
       if(!cp) return;
       var A = bones[byName[sd + 'Foot']].getWorldPosition(new THREE.Vector3()), B = bones[byName[sd + 'ToeBase']].getWorldPosition(new THREE.Vector3()), fr = footR(cp) * sc;
@@ -2231,6 +2250,16 @@ function KCharFigure(body, sliders, load){
       pushU.kcK.value = KCHAR.fk(skel, self.pose.t).P[byName.LeftLeg][1];
     }
     LEGS.forEach(function(lg, i){
+      if(DG && i < 6){
+        var ds = digiSeg(i, legInv, 1, cV, cV2);
+        if(ds){
+          pushU.kcA.value[i].set(cV.x, cV.y, cV.z, ds.ra + 0.01);
+          pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, 0);
+          pushU.kcR.value[i] = ds.rb + 0.01;
+          if(i < 4) stride = Math.max(stride, 1 - Math.abs(cV2.y - cV.y) / Math.max(cV.distanceTo(cV2), 1e-5));
+          return;
+        }
+      }
       // a foot has no collider of its own: footEnds
       var foot = i === 4 || i === 5, a = byName[lg[0]], b = byName[lg[1]], sh = foot ? byName[LEGS[i - 2][0]] : a;
       var cp = caps.filter(function(c){ return c.a === sh && c.b === (foot ? a : b); })[0];
@@ -2627,7 +2656,8 @@ function KCharFigure(body, sliders, load){
   }
   function cantFor(ax, drawn){
     var base = drawn ? upright(ax) * self.faceW : 0;      // at full draw (the string hand at the anchor), not held low
-    var legs = caps.filter(function(cp){ return !cp.pa && (cp.a === byName.LeftUpLeg || cp.a === byName.LeftLeg || cp.a === byName.RightUpLeg || cp.a === byName.RightLeg); });
+    var legs = DG ? [0, 1, 2, 3].map(function(i){ var s = digiSeg(i, null, 1, V(), V()); return s ? { a:s.ba, b:s.bb, r:0.5 * (s.ra + s.rb) } : null; }).filter(Boolean)
+                  : caps.filter(function(cp){ return !cp.pa && (cp.a === byName.LeftUpLeg || cp.a === byName.LeftLeg || cp.a === byName.RightUpLeg || cp.a === byName.RightLeg); });
     bow.inLegs = 0;
     if(!legs.length) return base;
     var sc = self.group.getWorldScale(cS).x * SCALE, best = base, least = Infinity;
@@ -2769,7 +2799,7 @@ function KCharFigure(body, sliders, load){
   this.posture = POSTURE;
   this.postureClips = CLIPP;
 
-  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); nhT += dt || 0; tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(); }
+  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); nhT += dt || 0; digitigrade(dt); tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(); }
 
   /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
      joints hung lower on the ribs, on every skeleton). No clip
@@ -2905,7 +2935,8 @@ function KCharFigure(body, sliders, load){
       TL.reset = false; TL.acc = 0;
     }
     // the legs' capsules in the world (thighs and shins: not the seat, which the tail's root lies in)
-    var W = caps.filter(function(cp){ return !cp.pa && LEGJ.test(bones[cp.a].name); }).map(function(cp){
+    var W = DG ? [0, 1, 2, 3, 4, 5].map(function(i){ return digiSeg(i, null, sc, V(), V()); }).filter(Boolean)
+               : caps.filter(function(cp){ return !cp.pa && LEGJ.test(bones[cp.a].name); }).map(function(cp){
       var A = V(), B = V(); capEnds(cp, A, B);
       return { a:A, b:B, ra:(cp.ra || cp.r) * sc, rb:(cp.rb || cp.r) * sc };
     });
@@ -2958,6 +2989,264 @@ function KCharFigure(body, sliders, load){
     }
   }
   this.tailState = function(){ return TL; };          // verify.py, the labs
+
+  /* ---- digitigrade legs (tools/digitigrade.py; kit item digitigrade, Coyote Men): the piece is modelled and bound in
+     its standing canid Z-pose on LeftDigiThigh..Paw and RightDigiThigh..Paw, so with no clip playing (restPose) the
+     bones stay at their binds (bone * inverseBind == Identity). While a clip plays, digitigrade(dt) reads the clip's
+     human leg joints in self.inner space, settles the pelvis slightly on grounded stance, plants the paw ball flat on
+     the floor during stance (lifting and flexing it in swing), compresses the hock in mid-stance and crouch, snaps it
+     open at late-stance push-off, and solves the forward stifle (DigiThigh -> DigiShin -> DigiHock) in closed form ---- */
+  var DG = null, dgInv = new THREE.Matrix4(), dgInvQ = Q(), dgHq = Q(), dgQp = Q(), dgQs = Q(), dgWt = Q(), dgWs = Q(), dgWh = Q(), dgWp = Q(),
+      dgH = V(), dgK = V(), dgA = V(), dgB = V(), dgPaw = V(), dgHock = V(), dgKnee = V(), dgFwd = V(), dgFwd3 = V(), dgSide = V(), dgHipS = V(),
+      dgShinD = V(), dgUh = V(), dgUhC = V(), dgDir = V(), dgAx = V(), dgPole = V(), dgHinge = V(), dgTmp = V(), dgUp = new THREE.Vector3(0, 1, 0), dgM = new THREE.Matrix4();
+  function digiSetup(it){
+    if(DG) DG.all.forEach(function(i){ bones[i].quaternion.fromArray(J[i].r); bones[i].position.fromArray(self.pose.t[i]); });
+    if(!it || !it.digitigrade){ DG = null; return; }
+    var spec = it.digitigrade, sides = [], all = [], ok = true;
+    ['Left', 'Right'].forEach(function(sd, k){
+      var s = {
+        sd:sd, sx:k === 0 ? 1 : -1,
+        up:byName[sd + 'UpLeg'], leg:byName[sd + 'Leg'], foot:byName[sd + 'Foot'], toe:byName[sd + 'ToeBase'],
+        dt:byName[sd + 'DigiThigh'], ds:byName[sd + 'DigiShin'], dh:byName[sd + 'DigiHock'], dp:byName[sd + 'DigiPaw']
+      };
+      if([s.up, s.leg, s.foot, s.toe, s.dt, s.ds, s.dh, s.dp].some(function(x){ return x === undefined; })) ok = false;
+      else { sides.push(s); all.push(s.dt, s.ds, s.dh, s.dp); }
+    });
+    if(!ok){ DG = null; return; }
+    var f0 = KCHAR.fk(skel, J.map(function(j){ return j.t; }));
+    sides.forEach(function(s){
+      var p0 = V().fromArray(f0.P[s.dt]), p1 = V().fromArray(f0.P[s.ds]), p2 = V().fromArray(f0.P[s.dh]), p3 = V().fromArray(f0.P[s.dp]);
+      s.u0 = p1.clone().sub(p0).normalize();
+      s.u1 = p2.clone().sub(p1).normalize();
+      s.u2 = p3.clone().sub(p2).normalize();
+      var ax0 = p2.clone().sub(p0).normalize(), pl0 = p1.clone().sub(p0);
+      pl0.addScaledVector(ax0, -pl0.dot(ax0)).normalize();
+      s.hinge0 = new THREE.Vector3().crossVectors(pl0, ax0).normalize();
+      var hm = p2.clone().sub(p3);
+      s.theta0 = Math.atan2(hm.y, Math.max(1e-4, -hm.z));
+    });
+    DG = { spec:spec, sides:sides, all:all, pose:null, hipDrop:0, state:sides.map(function(){ return { stance:1, hockY:0, pawY:0, hockAng:0, stifleAng:0, hockFwd:-0.15, uh:null }; }) };
+  }
+  function digiRest(){
+    if(DG.pose === self.pose) return;
+    DG.pose = self.pose;
+    var f = KCHAR.fk(skel, self.pose.t), root = self.pose.root == null ? 1 : self.pose.root, floorY = -(self.pose.ground == null ? 0 : self.pose.ground) / root;
+    DG.floorY = floorY;
+    DG.hipRestH = f.P[byName.Hips][1] - floorY;
+    var bc0 = (skel.colliders || []).filter(function(c){ return !c.pa && c.a === byName.LeftUpLeg; })[0];
+    var lc0 = caps.filter(function(c){ return !c.pa && c.a === byName.LeftUpLeg; })[0];
+    DG.girthK = bc0 && lc0 && bc0.r > 1e-4 ? lc0.r / bc0.r : 1;
+    DG.sides.forEach(function(s){
+      var p0 = V().fromArray(f.P[s.dt]), p1 = V().fromArray(f.P[s.ds]), p2 = V().fromArray(f.P[s.dh]), p3 = V().fromArray(f.P[s.dp]);
+      s.l1 = p1.distanceTo(p0); s.l2 = p2.distanceTo(p1); s.l3 = p3.distanceTo(p2);
+      s.ankH = f.P[s.foot][1] - floorY;
+      s.ballH = f.P[s.toe][1] - floorY;
+      s.pawH = Math.max(0.015, p3.y - floorY);
+    });
+  }
+  // i = 0,1 thigh; 2,3 shin/crus; 4,5 metatarsus+paw; in M-transformed world space (M null -> world), radii scaled by sc
+  function digiSeg(i, M, sc, outA, outB){
+    if(!DG) return null;
+    digiRest();
+    var sd = DG.sides[i & 1], kind = i >> 1, rad = DG.spec.radii || {}, gk = DG.girthK == null ? 1 : DG.girthK;
+    var pair = kind === 0 ? [sd.dt, sd.ds, rad.thigh || [0.08, 0.055]]
+             : kind === 1 ? [sd.ds, sd.dh, rad.shin || [0.052, 0.03]]
+             : [sd.dh, sd.dp, rad.meta || [0.03, 0.038]];
+    bones[pair[0]].getWorldPosition(outA); bones[pair[1]].getWorldPosition(outB);
+    if(kind === 2){
+      bones[sd.dp].getWorldQuaternion(dgQp);
+      dgTmp.set(0, -0.008, 0.048).applyQuaternion(dgQp).multiplyScalar(self.inner.getWorldScale(cS).x);
+      outB.add(dgTmp);
+    }
+    if(M){ outA.applyMatrix4(M); outB.applyMatrix4(M); }
+    return { a:outA, b:outB, ba:pair[0], bb:pair[1], ra:pair[2][0] * gk * sc, rb:pair[2][1] * gk * sc };
+  }
+  function digitigrade(dt){
+    if(!DG) return;
+    digiRest();
+    if(!self.action){
+      DG.hipDrop = 0;
+      DG.state.forEach(function(st){ st.uh = null; });
+      DG.all.forEach(function(i){ bones[i].quaternion.fromArray(J[i].r); bones[i].position.fromArray(self.pose.t[i]); });
+      return;
+    }
+    self.group.updateMatrixWorld(true);
+    dgInv.copy(self.inner.matrixWorld).invert();
+    self.inner.getWorldQuaternion(dgInvQ).invert();
+    bones[byName.Hips].getWorldQuaternion(dgHq).premultiply(dgInvQ);
+    dgQp.copy(dgHq).multiply(dgQs.copy(pRest[byName.Hips]).invert());
+    var hipUpY = dgTmp.set(0, 1, 0).applyQuaternion(dgQp).y;
+    var pelvUp = THREE.MathUtils.smoothstep(hipUpY, 0.25, 0.65);
+    dgHipS.set(1, 0, 0).applyQuaternion(dgQp); dgHipS.y = 0;
+    if(dgHipS.lengthSq() < 1e-4){
+      dgTmp.set(0, 0, 1).applyQuaternion(dgQp);
+      dgHipS.crossVectors(dgUp, dgTmp); dgHipS.y = 0;
+    }
+    if(dgHipS.lengthSq() < 1e-6) dgHipS.set(1, 0, 0); else dgHipS.normalize();
+    var floorY = DG.floorY, stMax = 0, loadMax = 0, reachMax = 0, stArr = [0, 0], upArr = [0, 0], clearArr = [0, 0];
+    DG.sides.forEach(function(s, idx){
+      bones[s.up].getWorldPosition(dgH).applyMatrix4(dgInv);
+      bones[s.foot].getWorldPosition(dgA).applyMatrix4(dgInv);
+      bones[s.toe].getWorldPosition(dgB).applyMatrix4(dgInv);
+      var upW = pelvUp;
+      var clearH = Math.min(Math.max(0, (dgA.y - floorY) - s.ankH), Math.max(0, (dgB.y - floorY) - s.ballH));
+      var stance = 1 - THREE.MathUtils.smoothstep(clearH, 0.010, 0.110);
+      var st = stance * upW;
+      stArr[idx] = st; upArr[idx] = upW; clearArr[idx] = clearH;
+      if(st > stMax) stMax = st;
+      var foreAft = Math.hypot(dgA.x - dgH.x, dgA.z - dgH.z);
+      var load = st * (1 - THREE.MathUtils.clamp((foreAft - 0.06) / 0.22, 0, 1));
+      var reach = st * THREE.MathUtils.clamp((foreAft - 0.20) / 0.24, 0, 1);
+      if(load > loadMax) loadMax = load;
+      if(reach > reachMax) reachMax = reach;
+    });
+    // subtle elastic pelvis settle on grounded stance and full stride reach so the leg keeps Z-flex room at push-off
+    var wantDrop = stMax * (0.018 + 0.014 * loadMax + 0.024 * reachMax) * (DG.hipRestH / 0.95);
+    var kDrop = dt > 0 ? 1 - Math.exp(-dt / 0.06) : 1;
+    DG.hipDrop += (wantDrop - DG.hipDrop) * kDrop;
+    if(DG.hipDrop > 1e-5){
+      self.hips.position.y -= DG.hipDrop;
+      self.hips.updateMatrixWorld(true);
+    }
+    DG.sides.forEach(function(s, idx){
+      var st = stArr[idx], upW = upArr[idx], clearH = clearArr[idx];
+      bones[s.up].getWorldPosition(dgH).applyMatrix4(dgInv);
+      bones[s.leg].getWorldPosition(dgK).applyMatrix4(dgInv);
+      bones[s.foot].getWorldPosition(dgA).applyMatrix4(dgInv);
+      bones[s.toe].getWorldPosition(dgB).applyMatrix4(dgInv);
+
+      // Transverse ankle hinge axis from bind-delta orientation: immune to plantarflexion past vertical at toe-off
+      bones[s.foot].getWorldQuaternion(dgQs).premultiply(dgInvQ).multiply(dgWt.copy(pRest[s.foot]).invert());
+      dgTmp.set(1, 0, 0).applyQuaternion(dgQs); dgTmp.y = 0;
+      var sideLen = dgTmp.length();
+      if(sideLen > 0.2){
+        dgTmp.divideScalar(sideLen);
+        var align = THREE.MathUtils.clamp((dgTmp.dot(dgHipS) - 0.1) / 0.4, 0, 1);
+        dgSide.copy(dgHipS).lerp(dgTmp, 0.65 * align).normalize();
+      } else dgSide.copy(dgHipS);
+      dgFwd.crossVectors(dgSide, dgUp).normalize();
+
+      dgShinD.subVectors(dgA, dgK);
+      if(dgShinD.lengthSq() < 1e-8) dgShinD.set(0, -1, 0); else dgShinD.normalize();
+      dgTmp.set(1, 0, 0).applyQuaternion(dgQs);
+      dgFwd3.crossVectors(dgShinD, dgTmp);
+      if(dgFwd3.lengthSq() < 1e-8) dgFwd3.copy(dgFwd); else dgFwd3.normalize();
+
+      // Paw ball target: continuous clearance lift off floorY + pawH with sprint high-kick taper
+      dgPaw.lerpVectors(dgA, dgB, 0.38);
+      var fore = dgTmp.subVectors(dgPaw, dgH).dot(dgFwd);
+      dgPaw.addScaledVector(dgFwd, -0.18 * fore * upW);
+      var effClear = clearH <= 0.16 ? clearH : 0.16 + 0.45 * (clearH - 0.16);
+      var swingLift = (1 - st) * upW * 0.022 * Math.sin(Math.PI * THREE.MathUtils.clamp(clearH / 0.15, 0, 1));
+      var pawYUp = floorY + s.pawH + effClear + swingLift;
+      dgPaw.y = THREE.MathUtils.lerp(dgPaw.y, pawYUp, upW);
+
+      // Hock pastern pitch: compress in mid-stance & crouch, smooth extension on push-off, gradual fold through swing & sprint
+      var stride = dgTmp.subVectors(dgPaw, dgH).dot(dgFwd) / 0.32;
+      var crouch = THREE.MathUtils.clamp((0.86 * DG.hipRestH - (dgH.y - floorY)) / Math.max(0.28 * DG.hipRestH, 1e-4), 0, 1);
+      var midLoad = 1 - Math.min(1, Math.abs(stride));
+      var pushOff = THREE.MathUtils.clamp(-stride, 0, 1.0);
+      var highKick = THREE.MathUtils.clamp((clearH - 0.16) / 0.4, 0, 1);
+      var thStance = s.theta0 - 0.14 * midLoad + 0.12 * pushOff - 0.30 * crouch;
+      var thSwing = s.theta0 - 0.22 * (1 - 0.45 * pushOff) - 0.22 * highKick - 0.18 * crouch;
+      var theta = THREE.MathUtils.clamp(THREE.MathUtils.lerp(thSwing, thStance, st), 0.38, 1.22);
+
+      dgUh.copy(dgFwd).multiplyScalar(-Math.cos(theta)).addScaledVector(dgUp, Math.sin(theta)).addScaledVector(dgSide, -0.04 * s.sx).normalize();
+      dgUhC.copy(dgFwd3).multiplyScalar(-Math.cos(s.theta0)).addScaledVector(dgShinD, -Math.sin(s.theta0));
+      if(dgUhC.lengthSq() < 1e-8) dgUhC.copy(dgUh); else dgUhC.normalize();
+      dgUh.lerp(dgUhC, 1 - upW).normalize();
+
+      var stD = DG.state[idx];
+      if(dt > 0 && stD.uh){
+        stD.uh.lerp(dgUh, 1 - Math.exp(-dt / 0.045)).normalize();
+        dgUh.copy(stD.uh);
+      } else {
+        stD.uh = (stD.uh || V()).copy(dgUh);
+      }
+
+      // Closed-form spherical reachability clamp around dgPaw: keeps |dgPaw - dgHock| == s.l3 AND |dgHock - dgH| <= maxR
+      var maxR = s.l1 + s.l2 - 0.010, minR = Math.abs(s.l1 - s.l2) + 0.025;
+      dgDir.subVectors(dgH, dgPaw);
+      var dHP = dgDir.length();
+      if(dHP > 1e-5){
+        dgDir.divideScalar(dHP);
+        if(dHP >= maxR + s.l3 - 1e-3){
+          dgUh.copy(dgDir);
+        } else {
+          var cosMin = THREE.MathUtils.clamp((dHP * dHP + s.l3 * s.l3 - maxR * maxR) / (2 * dHP * s.l3), -1, 1);
+          var curCos = dgUh.dot(dgDir);
+          if(curCos < cosMin){
+            dgTmp.copy(dgUh).addScaledVector(dgDir, -curCos);
+            if(dgTmp.lengthSq() < 1e-8) dgUh.copy(dgDir);
+            else dgUh.copy(dgDir).multiplyScalar(cosMin).addScaledVector(dgTmp.normalize(), Math.sqrt(Math.max(0, 1 - cosMin * cosMin)));
+          }
+        }
+      }
+      dgHock.copy(dgPaw).addScaledVector(dgUh, s.l3);
+      if(upW > 0.25 && dgHock.y < floorY + 0.11){
+        dgHock.y = floorY + 0.11;
+        dgUh.subVectors(dgHock, dgPaw).normalize();
+        dgHock.copy(dgPaw).addScaledVector(dgUh, s.l3);
+      }
+
+      // Two-bone forward stifle IK: dgH (DigiThigh) -> dgKnee (DigiShin) -> dgHock (DigiHock)
+      dgAx.subVectors(dgHock, dgH);
+      var dHH = dgAx.length();
+      if(dHH < 1e-5){ dgAx.set(0, -1, 0); dHH = minR; } else dgAx.divideScalar(dHH);
+      var dCl = THREE.MathUtils.clamp(dHH, minR, maxR);
+      if(Math.abs(dCl - dHH) > 1e-5) dgHock.copy(dgH).addScaledVector(dgAx, dCl);
+      var cosA = THREE.MathUtils.clamp((s.l1 * s.l1 + dCl * dCl - s.l2 * s.l2) / (2 * s.l1 * dCl), -1, 1);
+      var sinA = Math.sqrt(Math.max(0, 1 - cosA * cosA));
+      dgPole.subVectors(dgK, dgH).addScaledVector(upW > 0.25 ? dgFwd : dgFwd3, 0.35);
+      dgPole.addScaledVector(dgAx, -dgPole.dot(dgAx));
+      if(dgPole.lengthSq() < 1e-8){ dgPole.copy(dgFwd).addScaledVector(dgAx, -dgFwd.dot(dgAx)); }
+      if(dgPole.lengthSq() < 1e-8) dgPole.set(0, 0, 1);
+      dgPole.normalize();
+      dgKnee.copy(dgH).addScaledVector(dgAx, s.l1 * cosA).addScaledVector(dgPole, s.l1 * sinA);
+
+      // Twist-free world/inner rotations from leg sagittal hinge plane + segment directions
+      dgHinge.crossVectors(dgPole, dgAx);
+      if(dgHinge.lengthSq() < 1e-8) dgHinge.copy(s.hinge0); else dgHinge.normalize();
+      dgQp.setFromUnitVectors(s.hinge0, dgHinge);
+
+      dgTmp.subVectors(dgKnee, dgH).normalize();
+      dgQs.setFromUnitVectors(dgDir.copy(s.u0).applyQuaternion(dgQp), dgTmp);
+      dgWt.multiplyQuaternions(dgQs, dgQp);
+
+      dgTmp.subVectors(dgHock, dgKnee).normalize();
+      dgQs.setFromUnitVectors(dgDir.copy(s.u1).applyQuaternion(dgQp), dgTmp);
+      dgWs.multiplyQuaternions(dgQs, dgQp);
+
+      dgTmp.subVectors(dgPaw, dgHock).normalize();
+      dgQs.setFromUnitVectors(dgDir.copy(s.u2).applyQuaternion(dgQp), dgTmp);
+      dgWh.multiplyQuaternions(dgQs, dgQp);
+
+      // Paw orientation: flat along ground fwd in stance, slight plantar droop in swing, follows pastern when non-upright
+      dgM.makeBasis(dgSide, dgUp, dgFwd);
+      dgWp.setFromRotationMatrix(dgM);
+      var droop = 0.34 * (1 - st) * upW;
+      if(droop > 1e-4){
+        dgQs.setFromAxisAngle(dgSide, droop);
+        dgWp.premultiply(dgQs);
+      }
+      if(upW < 0.999) dgWp.slerp(dgWh, 1 - upW);
+
+      bones[s.dt].quaternion.copy(dgHq).invert().multiply(dgWt);
+      bones[s.ds].quaternion.copy(dgWt).invert().multiply(dgWs);
+      bones[s.dh].quaternion.copy(dgWs).invert().multiply(dgWh);
+      bones[s.dp].quaternion.copy(dgWh).invert().multiply(dgWp);
+      bones[s.dt].updateMatrixWorld(true);
+
+      var u0 = dgKnee.clone().sub(dgH).normalize(), u1 = dgHock.clone().sub(dgKnee).normalize(), u2 = dgPaw.clone().sub(dgHock).normalize();
+      DG.state[idx].stance = st;
+      DG.state[idx].hockY = dgHock.y - floorY;
+      DG.state[idx].pawY = dgPaw.y - floorY;
+      DG.state[idx].hockAng = Math.acos(THREE.MathUtils.clamp(-u1.dot(u2), -1, 1));
+      DG.state[idx].stifleAng = Math.acos(THREE.MathUtils.clamp(-u0.dot(u1), -1, 1));
+      DG.state[idx].hockFwd = dgTmp.subVectors(dgHock, dgPaw).dot(dgFwd);
+    });
+  }
+  this.digiState = function(){ return DG; };
 
   /* the jaw of an animal head (a mod with a jaw: tools/mods.py lizard_head, its lower jaw weighted to face_jaw, which
      no clip moves): opened about its hinge (kit jaw.pivot, in Head's frame) by up to jaw.deg, for a share (hold) of

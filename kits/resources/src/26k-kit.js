@@ -8,12 +8,12 @@
 //   SVPAL, P(k)  the palette (sRGB hex; P picks one and jitters it)
 const KIT={id:'resources',title:'Resources Kit',pack:'resources',culture:'generic',faction:'none',band:'none',
  frag:'kits/resources',ground:0x8a8a6e,groundProc:0x7e7e62,fog:0xccd2d0,furnDetail:.6};
-const SV_LIB={stone:'stone',earth:'earth',sand:'sand',sulphur:'sulphur',coal:'coal',tar:'tar',efflor:'efflor',malachite:'malachite',quartz:'quartz',cassiterite:'cassiterite',galena:'galena',gossan:'gossan',pegmatite:'pegmatite',wood:'wood',rope:'rope',iron:'iron'};   /* stone and earth are library sets (materials.json); the rest draw flat */
-const SV_TILE0={stone:2.6,earth:3,sand:4,sulphur:1.6,coal:1.5,tar:3,efflor:2,malachite:1.5,quartz:1.5,cassiterite:1.5,galena:1.5,gossan:2,pegmatite:1.5,wood:1.6,rope:.3,iron:.8};
-/* the packed families SV_LIB missed (potash, soda, marble: packed since 2026-10-26 and 2026-11-03, but the engine makes a
+const SV_LIB={stone:'stone',earth:'earth',sand:'sand',sulphur:'sulphur',coal:'coal',tar:'tar',efflor:'efflor',malachite:'malachite',quartz:'quartz',cassiterite:'cassiterite',galena:'galena',gossan:'gossan',pegmatite:'pegmatite',marble:'marble',schistem:'schistem',turq:'turq',wood:'wood',rope:'rope',iron:'iron'};   /* stone and earth are library sets (materials.json); the rest draw flat */
+const SV_TILE0={stone:2.6,earth:3,sand:4,sulphur:1.6,coal:1.5,tar:3,efflor:2,malachite:1.5,quartz:1.5,cassiterite:1.5,galena:1.5,gossan:2,pegmatite:1.5,marble:2,schistem:2,turq:.8,wood:1.6,rope:.3,iron:.8};
+/* the packed families SV_LIB missed (potash, soda: packed since 2026-10-26 and 2026-11-03, but the engine makes a
    material only for an SV_LIB key, so their nodes drew the fallback), and the mined goods' sets (2026-11-16, 44s-44u) */
-Object.assign(SV_LIB,{potash:'potash',soda:'soda',marble:'marble',peat:'peat',bog:'bog',qsand:'qsand',druze:'druze',alabaster:'alabaster',tepui:'tepui'});
-Object.assign(SV_TILE0,{potash:1.6,soda:1.6,marble:1.6,peat:1.5,bog:1.5,qsand:2,druze:.4,alabaster:1.2,tepui:2.5});
+Object.assign(SV_LIB,{potash:'potash',soda:'soda',peat:'peat',bog:'bog',qsand:'qsand',druze:'druze',alabaster:'alabaster',tepui:'tepui'});
+Object.assign(SV_TILE0,{potash:1.6,soda:1.6,peat:1.5,bog:1.5,qsand:2,druze:.4,alabaster:1.2,tepui:2.5});
 const SV_CLOTH={flag:1};
 const SV_CUT={};
 const KIT_FALLBACK=[];

@@ -18,7 +18,8 @@ function isDim(key){const A=KratorFurniture.FURN_BY_KEY[key];return A?KratorFurn
    o.ceil the ceiling height above the floor (for the hung lamp), o.beds how many beds (default by size), o.noHearth,
    o.extra a list of [key, x, z, ry] placed as given (room-relative) */
 function isFurnRoom(w,d,y,tier,o){o=o||{};const S=IS_FURN[tier]||IS_FURN.middle,cx=o.x||0,cz=o.z||0,g=.12;
- const F=(k,x,z,ry,op)=>FURNISH(k,cx+x,y,cz+z,ry,op);
+ /* with the room's ceiling known a hung piece (art, a banner from the extra list) takes the catalog's hem rule (FURNISH_WALL) */
+ const F=(k,x,z,ry,op)=>o.ceil?FURNISH_WALL(k,cx+x,y,cz+z,ry,y+o.ceil,op):FURNISH(k,cx+x,y,cz+z,ry,op);
  /* the back wall: beds at the corners, the hearth between */
  const bd=isDim(S.bed),hd=isDim(S.hearth),nb=o.beds===undefined?(w>bd.w*2+hd.w+.6?2:1):o.beds;
  if(nb>=1)F(S.bed,-w/2+bd.w/2+g,-d/2+bd.d/2+g,0);if(nb>=2)F(S.bed,w/2-bd.w/2-g,-d/2+bd.d/2+g,0,{v:1});

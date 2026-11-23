@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Krator biome — Compass Hills</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#d8d0be;font:13px/1.4 system-ui,sans-serif;color:#eee}
+canvas{display:block}
+#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
+#compass-hud{position:fixed;right:14px;bottom:14px;width:154px;padding:8px 10px;border-radius:8px;background:rgba(22,20,17,.82);border:1px solid rgba(196,154,86,.55);color:#f2ead8;font:11px/1.35 ui-monospace,monospace;pointer-events:none;z-index:8;box-shadow:0 4px 14px rgba(0,0,0,.38)}
+#compass-hud .ch-row{display:flex;align-items:center;gap:9px}
+#compass-hud svg{flex:0 0 46px;width:46px;height:46px}
+#compass-hud .ch-meta{flex:1;min-width:0}
+#compass-hud .ch-ttl{font-weight:700;color:#e6b868;font-size:10px;letter-spacing:.04em;text-transform:uppercase}
+#compass-hud .ch-val{font-size:11px;color:#fff;white-space:nowrap}
+#compass-hud .ch-sub{font-size:10px;color:#c8c0ad;white-space:nowrap}
+</style>
+<pre id="errs"></pre>
+<script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
+<script>

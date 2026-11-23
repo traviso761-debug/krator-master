@@ -13,7 +13,7 @@
 //                     with the opening cut) and their rings; the muqarnas cell; the star ceilings' panels; the barrel vault
 //                     and its rib; the jali card
 //   helpers (xm*)     xmArchHead, xmMuqHood, xmMuqCornice, xmStarCeiling, xmVault, xmJali, xmIwan, xmBasin, xmFountain,
-//                     xmRill, xmColumnPair, xmBalustrade: drawn in the running builder's frame like the kit's other helpers
+//                     xmRill, xmColumnPair, xmBalustrade, xmLamp: drawn in the running builder's frame like the kit's other helpers
 // No rnd() here: the citadel's builders (78n) reseed.
 
 // ---------------------------------------------------------------- materials (wired in materials.json: the owed set, a library fallback)
@@ -40,7 +40,7 @@ for(const k in XM_WPK){const D=KIT.defs['xm'+k],W=new THREE.MeshStandardMaterial
  Object.defineProperty(D,'mat',{configurable:true,get(){const b=XM_MAT[k];W.copy(b);W.onBeforeCompile=add;
   const bk=b.customProgramCacheKey&&b.customProgramCacheKey!==THREE.Material.prototype.customProgramCacheKey?b.customProgramCacheKey():'';
   W.customProgramCacheKey=()=>bk+'|'+tag;return W;}});}
-kdef('xmJali',VPLANE,MAT.xJaliC);
+kdef('xmJali',VPLANE,MAT.xJaliC);kdef('xmLampGlass',VBALL,KGLASS.material(THREE,'lit'));   // the lamps' glass (xmLamp)
 
 // ---------------------------------------------------------------- geometry
 // a closed outline [[x,y],...] -> a THREE.Shape
@@ -138,6 +138,37 @@ function xmColumnPair(x,y,z,ry,h,o){o=o||{};const r=(o.r==null?.13:o.r),d=(o.d==
 function xmBasin(x,y,z,r){kput('xOctS',[x,y,z],null,[r,.42,r],XM_C.white);kput('xOctT',[x,y+.42,z],null,[r*1.04,.08,r*1.04],xC(XPAL.turquoise));kput('xOctW',[x,y+.06,z],null,[r*.9,.3,r*.9],xC(XPAL.water));}
 function xmFountain(x,y,z,r){xmBasin(x,y,z,r);vPst('xColS',x,y,z,.16,1.0,XM_C.white);kput('xBulbW',[x,y+1.0,z],qEuler(Math.PI,0,0),[.55,.22,.55],XM_C.white);
  kput('xDiscWater',[x,y+.96,z],null,[.48,.05,.48],xC(XPAL.water));vPst('xColS',x,y+1.0,z,.04,.35,xC(XPAL.water));vBall('xGold',x,y+1.4,z,.07,XM_C.gold);}
+// a lamp of the citadel's rooms (78n draws a room's room.lamps; kits/interiors/sets/xanadu-citadel.js places them), its light at
+// (x, y, z), ry its facing into the room, o.top the ceiling a hung lamp's chain rises to:
+//   'lantern'  a pierced brass lantern on a bracket from the wall 0.7 m behind it (a gilt cage round its glass, cap and finial)
+//   'niche'    an oil lamp on the shelf of a marble niche plate on a partition's face 0.25 m behind it, gilt posts and head
+//   'mosque'   a glass mosque lamp (body, flared neck, foot, a gilt band) on three chains and a drop from a ceiling rose
+//   'ring'     a polycandelon: a gilt ring (o.r, 1.1 m) of eight glass cups on four slanting chains to a hub and a drop
+// Its lowest drawn point: a lantern y - 0.29, a niche lamp y - 0.35, a mosque lamp y - 0.3, a ring y - 0.04 (the room graph
+// holds anything hung 1.1 m over its floor at least). The glow (vBulb) only on a lit page, as the kit's other lamps.
+function xmLamp(kind,x,y,z,ry,o){o=o||{};const g=XM_C.gold,lit=typeof xLit==='function'?xLit():true,top=o.top==null?y+1:o.top;
+ const rod=(a,b,t)=>{const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz),h=Math.hypot(dx,dz);
+  kput('xGoldB',[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],qEuler(0,Math.atan2(dx,dz),0).multiply(qEuler(-Math.atan2(dy,h),0,0)),[t,t,L],g);};
+ const drop=(y0)=>{if(top-y0>.05)vB('xmGold',x,y0,z,.025,top-y0,.025,0,g);kput('xDiscG',[x,top-.02,z],null,[.16,.03,.16],g);};
+ if(kind==='lantern'){const a=loc(x,z,0,-.31,ry),w=loc(x,z,0,-.6,ry);
+  vB('xmGold',a[0],y+.37,a[1],.04,.04,.62,ry,g);vB('xmGold',w[0],y+.18,w[1],.14,.34,.04,ry,g);vB('xmGold',x,y+.24,z,.02,.13,.02,0,g);
+  vB('xmGold',x,y+.17,z,.28,.05,.28,ry,g);vBall('xGold',x,y+.25,z,.045,g);
+  kput('xmLampGlass',[x,y,z],null,[.11,.17,.11]);for(let k=0;k<6;k++){const t=k/6*TAU;vB('xmGold',x+Math.sin(t)*.13,y-.18,z+Math.cos(t)*.13,.02,.35,.02,t,g);}
+  vB('xmGold',x,y-.23,z,.24,.05,.24,ry,g);vBall('xGold',x,y-.25,z,.04,g);if(lit)vBall('vBulb',x,y,z,.06);return;}
+ if(kind==='niche'){const p=loc(x,z,0,-.23,ry),sh=loc(x,z,0,-.08,ry);
+  vB('xmMarW',p[0],y-.35,p[1],.5,.8,.04,ry,null);vB('xmSand',sh[0],y-.13,sh[1],.36,.05,.28,ry,XM_C.red);
+  for(const s of[-1,1]){const q=loc(x,z,s*.24,-.2,ry);vB('xmGold',q[0],y-.35,q[1],.04,.8,.04,ry,g);}
+  const hd=loc(x,z,0,-.2,ry);vB('xmGold',hd[0],y+.45,hd[1],.52,.05,.05,ry,g);vBall('xGold',hd[0],y+.53,hd[1],.04,g);
+  kput('xmLampGlass',[x,y-.02,z],null,[.06,.08,.06]);if(lit)vBall('vBulb',x,y,z,.04);return;}
+ if(kind==='mosque'){kput('xmLampGlass',[x,y,z],null,[.2,.22,.2]);kput('xmLampGlass',[x,y+.24,z],null,[.16,.08,.16]);kput('xmLampGlass',[x,y-.25,z],null,[.08,.05,.08]);
+  kput('xDiscG',[x,y+.02,z],null,[.205,.03,.205],g);
+  for(let k=0;k<3;k++){const t=k/3*TAU;rod([x+Math.sin(t)*.17,y+.14,z+Math.cos(t)*.17],[x,y+.75,z],.018);vBall('xGold',x+Math.sin(t)*.18,y+.14,z+Math.cos(t)*.18,.025,g);}
+  vBall('xGold',x,y+.76,z,.04,g);drop(y+.76);if(lit)vBall('vBulb',x,y-.02,z,.08);return;}
+ if(kind==='ring'){const r=o.r==null?1.1:o.r,n=16;
+  for(let k=0;k<n;k++){const t=(k+.5)/n*TAU;vB('xmGold',x+Math.sin(t)*r,y-.025,z+Math.cos(t)*r,.05,.05,2*Math.PI*r/n+.03,t,g);}
+  for(let k=0;k<8;k++){const t=k/8*TAU,px=x+Math.sin(t)*r,pz=z+Math.cos(t)*r;kput('xmLampGlass',[px,y+.06,pz],null,[.07,.09,.07]);if(lit)vBall('vBulb',px,y+.08,pz,.045);}
+  for(let k=0;k<4;k++){const t=(k+.25)/4*TAU;rod([x+Math.sin(t)*r,y,z+Math.cos(t)*r],[x,y+1.2,z],.02);}
+  vBall('xGold',x,y+1.2,z,.06,g);drop(y+1.2);return;}}
 function xmRill(a,b,y,w){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz),m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
  vB('xmZel',m[0],y,m[1],w+.5,.06,L,ry,null);vB('xWaterB',m[0],y+.02,m[1],w*.7,.06,L,ry,xC(XPAL.water));
  for(const s of[-1,1]){const p=loc(m[0],m[1],s*(w/2+.12),0,ry);vB('xmMarW',p[0],y,p[1],.24,.12,L,ry,null);}}

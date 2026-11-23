@@ -23,17 +23,18 @@ page that reads it came out byte-identical after the move.
 | `44c-world-coast.js` | [G data] | the coasts on core/coast (`KCOAST`, `core/coast/README.md`): at init each water body gets a coast field, `landHook` is chained (the coast's profile, sign-safe, then the region's own hook), each body's mask is redrawn from the field, the fields `coast`, `coastC`, `coast:<class>` join `WORLD.FIELDS`, `WORLD.ground` takes the coast's colour bands; a town's ground and a region's `WORLD.coastKeeps()` keep their coast; the region's sub-cell `landforms` (region.json, from the scale model's `model/data/landforms.json`) are stamped as islands by the body they stand in. `WORLD.coast` {list, at, stats, check}. Listed after the region's `43-*`, with core/mask (25, 27) and core/coast (30) before 41 |
 | `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into |
 | `80-world-sky.js` | [G native] | the sky and light |
-| `81-world-terrain.js` | [web] | the terrain tiles (the land drawn, coloured by `WORLD.ground`) |
+| `81-world-terrain.js` | [web] | the terrain tiles (the land drawn, coloured by `WORLD.ground`). The ground reads its strata only where the rock's weight can move the colour (over 0.004, 2026-11-16): 3-5 ms of the Arc 140T's frame over land without rock |
 | `83-world-water.js` | [G data] | the water levels |
 | `83w-world-seas.js` | [web] | the seas and lakes drawn; with core/water/farbed listed, each body's far bed (no straight edge at the shore window) |
 | `83s-world-streams.js` | [web] | a relief region's wet streams drawn: core/water flow ribbons built a kilometre piece at a time near the camera (`STREAMW`; `PLAN-RELIEF.md` P3). A build with streams lists it after `83w` |
 | `88l-world-landforms.js` | [web] | a relief region's landform records in core/tags (class `feature`) and on the minimap (`PLAN-RELIEF.md` P10). A build with records lists it after `88s` |
 | `84-world-nursery.js` | [web] | each kit's species grown as variants (`KIT.make`, `KIT.grow`) |
 | `84i-world-impostors.js` | [web] | opt-in: a kit whose registry entry asks (`impostor: {lv, variants, grid, cell}`) draws its far level as the biome core's octahedral impostors (`core/biome/34`), baked once per species and variant from the tree the nursery grows at `lv`, written with the world's logarithmic depth. A region lists it after `84` (Pinnacle does, for the hyperjungle) |
+| `85p-world-pregrow.js` | [web] | opt-in: every prototype the region's kits can ask the nursery for (species, variants, levels, saplings) queued at load behind the streaming's requests, so the loading curtain waits for them and no flight stalls on a kit's first tree. A region lists it after `85` (Pinnacle: 152 prototypes, 0.7 M triangles, under a second) |
 | `85-world-flora.js` | [web] | the flora tile by tile, seeded by cell with `KRAND.hash` (the same tile in any order) |
 | `86-world-floor.js` | [web] | the kits' floor patches under the zones |
 | `87-world-places.js`, `88-world-towns.js` | [web] | the "Go to" list and the scale model's settlement markers |
-| `48s-world-sites.js`, `88s-world-sites.js` | [G data], [web] | `KSITES`: a region's sites planned (camps, hamlets, roads, links and their stops); drawn |
+| `48s-world-sites.js`, `88s-world-sites.js` | [G data], [web] | `KSITES`: a region's sites planned (camps, hamlets, roads, links and their stops, ways to a point); drawn |
 | `42b-world-bridges.js`, `88b-world-bridges.js` | [G data], [draw] | `BRIDGES`: where a laid road crosses a named river, a span of deck the ground is not shaped under, so the river runs on (a BRIDGE record: slab, arch, a row of arches or a viaduct, by its length and height; its piers; its builders' culture); drawn in stone, tagged, checked (`_bridges.checks`) |
 | `42k-world-caverns.js`, `88k-world-caverns.js` | [G data], [web] | `WTUBES`: a region's lava tubes (`SITE_SPEC.tubes`) planned as records under the ground and drawn with core/terrain's `KCAVERN` near the camera, the ground opened only at their portals and skylights; the walker (90's G) goes in and along them. Below, "Caverns" |
 | `49r-world-resources.js` | [G data] | `WRES`: the region's resources. The scale model's geology (`kits/resources/data/geology.json`, cropped to the region by `world_data.geology_crop`, read through `KRES`) and farmland from the world's fields: `census`, `markers` (the richest mining, farmland and unique spots), `layers`, `assess(x, z, reach)` |
@@ -68,13 +69,20 @@ through `WORLD.clearHook`. `openworld/PLAN-SITES.md` section 3 has the plan.
 
 **Sites** (`48s` plans, `bake_sites.py` bakes, `88s` draws): a region's `SITE_SPEC` names camps (core/camp, the Beast
 Riders' `BR_CAMP`), hamlets (core/hamlet: a row's `kit` picks the drawing, `88s` `VK`: `xanadu` through `XAK`, `iziz`
-through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
+through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns, and `ways` (opt-in, 2026-11-16: a road from a town, or one of its villages, to a point, routed as a kept link and ending at the cut's edge, `short`, while the point lies outside it; Thalaba's expedition road toward Godshearth's Spillway) (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
 `every` m of road and a rest stop between, drawn as one-building villages; a stop with no ground is a `gap`). The bake
 reads the kits' declared boxes from their source (`ASSET`, `XA.def`, `VERN.def`); a new village kit adds its records
 there and an entry in `VK`. The bake plans on the land the page draws: 41l and 44c (the coasts) only when the region's
 `build.py` lists them (2026-11-16: oidong-highrift takes no coast, and planning on coasts it never drew made the bake and
 the page's plan differ). A region's own shaping of its land that the plan must see (a `WORLD.landHook`) goes in its
 `src/48-world-site.js`, which the bake reads (oidong-highrift's OHR_CUT: Strongbow's face).
+there and an entry in `VK`. A hamlet's spot may be `px` (the 5.1 canvas) as well as `near` or a bearing. **A village its own
+page laid** (opt-in, 2026-11-22: Gihon's Landing on core/city, over core/hamlet's 500) is a hamlet with `laid` (its records and
+lanes in its own frame), `px`, `shift` and `turn`: `48s` `laidVillage` puts it on the world as it is, searches nothing, keeps each
+record where the world's ground takes it and lists the rest as `dropped`; a record `on: 'water'` (a pier's run, a light, a boat)
+stands on the water at the village's `level` (`88s`: its deck over it, a footing to the bed, a run stretched to its `len`). The
+bake loads a region's `src/NN-site-*.js` (such records, generated) before its spec, and the Xanadu row by name
+(core/hamlet/xanadu/23), which a spec registers as a row of its own.
 
 **A town's own ground** (`openworld/PLAN-VOTH.md` section 3, Layer 2; Voth the first case, 2026-11-11). A settlement whose
 layout is keyed to its page's ground (its shore, its river) hands that ground to the world instead of being rebuilt on it:
@@ -83,8 +91,22 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
   `openworld/towns/<town>/`: the ground every 10 m (16-bit PNG), the water mask (the page's water polygon, the river's
   channel, the edited ground joined to them), `town.json` (frame, R, band, river, shore trace, stats). `--check` says
   whether the files are behind the page's sources;
+- a **closed** town (`'kind': 'closed'`, 2026-11-16: Phēr, `settlements/pher`) has its ground as a closed-form function of
+  its page: the bake runs only the page's own fragment and reads its `ground` (height, the water at 0), `frameFn` (the turn
+  `rot`, the page point on the pin `centre`, the lift `y0`), `shoreFn` and `streamFn`; the grid stands round the centre, the
+  shore trace is where the ground crosses the level, the stream is the town's river. Its record carries `rot` and `y0`
+  (41 buildTowns takes a fixed lift: the page's heights over its water at 0);
+- a town's river marked **`over`** (2026-11-16: Phēr's Swīṭ Siṭrīm, down its wall) runs above the town's water at its own
+  height: 41t sets its water 0.6 m over the world's ground at each point (never climbing downstream), serves it in its
+  channel (`riverWater`, its half-widths) and draws it as its own line (`riverLines`, or on down the link when joined).
+  A join needs the model river's water at the cut over the stream's head: where it is not, `WTOWN.check` counts the link
+  a climb and fails. An over-level river's link holds its water just over the band's eased ground (41 eases the band after the
+  link's carve) and falls to the town's stream at its end, a cascade into its gorge. A town's `linkOut` (default 300 m) moves the cut further out than R + band: Phēr's 2,300 m, where
+  the model's 2 km cells have not yet begun its stream's fall to the wall's lip;
 - a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41t` (and `41l`) after
-  `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body;
+  `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body. A region that names its towns
+  in `openworld/SITES.json` (its row's `"towns"`) has them in `core/world/bake_sites.py`'s plan too (`towns_data`), so the
+  villages and roads are planned on the town's ground as the page draws it (opt-in, as `41l` is: a build that lists it);
 - `node core/world/test-town-water.js` tests 41t and 41l on a made-up region (with negatives);
 - `python3 core/world/town_view.py voth [--shots] [--reach-km 30] [--model <another checkout's model/data>]` cuts a scratch region round the pin, runs `WTOWN.check()` and
   `WLAND.check()` on the real town in node, builds a viewing page, and with `--shots` takes the same views on the town's

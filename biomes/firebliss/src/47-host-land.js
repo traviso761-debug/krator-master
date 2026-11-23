@@ -68,9 +68,10 @@ function fieldsAt(x,z,h,slope){const w=waterH(x,z),under=w>-1e8&&h<w+.15?1:0,r=R
  const cold=SITE.coldAt?SITE.coldAt(x,z,h,T):clamp((rel-FL[1])/900,0,1)*(1-therm);
  const wet=clamp(.3+.5*shore+.35*floor*(n2-.2)+.2*therm-.3*rock-.2*steep+.12*(MODEL.clim.rain>1100?1:0),0,1);
  const hollow=HOLLOWS.length?smooth(.2,1.2,hollowAt(x,z)):0;
- return{wet,flow:smooth(40,-1,r.d),upland:clamp(rel/600,0,1),canyon:RIVER&&RIVER.gorge?smooth(RIVER.gorge.reach,0,r.d):0,rim:0,rock,dune:0,oasis:floor,slope,abyss:0,salt:0,cold,geo:therm,
-  barren:Math.max(under,ice),fog:0,mist:0,ice,debris:0,moraine,snow,algae:0,copper:0,flat,cave:0,tarn:under,shore,floor,meadow,grove,ash,therm,hollow};}
-const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','fog','mist','ice','debris','moraine','snow','algae','copper','flat','cave','tarn','shore','floor','meadow','grove','ash','therm','hollow'];
+ const o={wet,flow:smooth(40,-1,r.d),upland:clamp(rel/600,0,1),canyon:RIVER&&RIVER.gorge?smooth(RIVER.gorge.reach,0,r.d):0,rim:0,rock,dune:0,oasis:floor,slope,abyss:0,salt:0,cold,geo:therm,
+  barren:Math.max(under,ice),fog:0,mist:0,ice,debris:0,moraine,snow,algae:0,copper:0,flat,cave:0,tarn:under,shore,floor,meadow,grove,ash,therm,hollow};
+ return SITE.fields?Object.assign(o,SITE.fields(x,z,h,slope,o,T)):o;}   /* a station's own fields and overrides (station 8's dome: SITE.fields, SITE.fieldNames) */
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','fog','mist','ice','debris','moraine','snow','algae','copper','flat','cave','tarn','shore','floor','meadow','grove','ash','therm','hollow'].concat(SITE.fieldNames||[]);
 const FC=(function(){const N=400,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}
@@ -95,7 +96,7 @@ if(LAYOUT){LAYOUT.springs.forEach(s=>SPINE.push([s.x,s.z]));LAYOUT.geysers.forEa
  for(let z=TBOX[1]-300;z<=TBOX[3]+300;z+=220)for(let x=TBOX[0]-300;x<=TBOX[2]+300;x+=220)SPINE.push([x,z]);}
 if(SITE.camp)SPINE.push([SITE.camp.x,SITE.camp.z]);HOLLOWS.forEach(H=>SPINE.push([H.x,H.z]));if(RIVER)for(let i=0;i<RIVER.pts.length;i+=30)SPINE.push([RIVER.pts[i][0],RIVER.pts[i][1]]);
 // the mask: nothing roots in the water (the shore's grid, 89z, once it is made) or the river's ribbon; a pass may narrow it (MASK, 89z)
-function rootMask(x,z){if(RIVER&&RBK.at(x,z).d<2.8)return 0;
+function rootMask(x,z){if(RIVER&&RBK.at(x,z).d<2.8)return 0;if(SITE.bare&&SITE.bare(x,z))return 0;   /* a station's bare rock (station 8: the dome's glass and talus) */
  if(window._waterShore){const s=window._waterShore(x,z);if(s===s&&s<1.2)return 0;}
  const w=waterH(x,z);if(w>-1e8){const d=terrainH(x,z)-w;if(d<.7)return d<.15?0:(d-.15)/.55;}return 1;}
 let MASK=rootMask;

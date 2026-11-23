@@ -53,11 +53,11 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | barrens | 44w-host-land.js | 5 |
-| fowlers | 44w-host-land.js, 84f-host-fellgang.js, 89b-host-fowlers.js | 26 |
+| fowlers | 44w-host-land.js, 84f-host-fellgang.js, 89b-host-fowlers.js | 27 |
 | gorge | 44w-host-land.js | 8 |
 | hearths | 44w-host-land.js, 89b-host-hearths.js | 18 |
 | ice | 44w-host-land.js | 6 |
-| icecut | 44w-host-land.js, 89b-host-icecut.js | 17 |
+| icecut | 44w-host-land.js, 89b-host-icecut.js | 19 |
 | lakes | 44w-host-land.js | 8 |
-| ledge | 44w-host-land.js | 9 |
+| ledge | 44w-host-land.js | 14 |
 | pass | 44w-host-land.js | 6 |
