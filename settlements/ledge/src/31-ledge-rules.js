@@ -23,37 +23,22 @@
 (function(root){
 'use strict';
 var R = typeof globalThis !== 'undefined' ? globalThis : root;
-var STATES = ['reclaimed', 'kept', 'squatted', 'dead', 'sealed', 'damaged', 'sheared', 'pancaked', 'gone'];
-var BROKEN = ['damaged', 'sheared', 'pancaked', 'gone'], LIVED = ['reclaimed', 'kept', 'squatted'];
+/* the stack's geometry, its states and its area are the Ancients' cliff-city records (kits/ancients/cliff/10-cliff-stack.js, KCLIFF) */
+var KC = R.KCLIFF, STATES = KC.STATES, BROKEN = KC.BROKEN, LIVED = KC.LIVED;
 var BY = ['dalab', 'fellgang', 'lojfower', 'none'];
 var EPS = .01;
 var smooth = function(a, b, x){ var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
-function layerY(L, k){ return L.stack.y0 + L.stack.pitch * k; }
-function wing(L, id){ return L.stack.wings.filter(function(w){ return w.id === id; })[0]; }
-function widthAt(L, k){ var S = L.stack, t = k / (S.n - 1); return S.w0 + (S.w1 - S.w0) * t; }
-function reachOf(L, k, w){ var S = L.stack, t = k / (S.n - 1), r = (S.r0 + S.r1 * Math.pow(t, S.rExp)) * w.r;
-  if (w.id === S.prow.wing && k >= S.prow.k0) r += S.prow.add * (k - S.prow.k0 + 1) / (S.n - S.prow.k0); return r; }
-function deckBox(L, d){
-  var S = L.stack, w = wing(L, d.wing), W = widthAt(L, d.k), r = reachOf(L, d.k, w), y = layerY(L, d.k);
-  return { x0: W * w.f0, x1: W * w.f1, z0: 0, z1: r, y0: y - S.slab, y1: y + S.pitch - S.slab, floor: y, reach: r, width: W * (w.f1 - w.f0) };
-}
-function deckFloor(L, d){ var b = deckBox(L, d), S = L.stack; return b.width * b.reach * S.cover * S.storeys; }
-function broken(d){ return BROKEN.indexOf(d.state) >= 0; }
+function layerY(L, k){ return KC.layerY(L.stack, k); }
+function wing(L, id){ return KC.wing(L.stack, id); }
+function widthAt(L, k){ return KC.widthAt(L.stack, k); }
+function reachOf(L, k, w){ return KC.reachOf(L.stack, k, w); }
+function deckBox(L, d){ return KC.deckBox(L.stack, d); }
+function deckFloor(L, d){ return KC.deckFloor(L.stack, d); }function broken(d){ return BROKEN.indexOf(d.state) >= 0; }
 function byId(L){ var m = {}; L.decks.concat(L.parts, L.lifts, L.ways).forEach(function(x){ m[x.id] = x; }); return m; }
-function bbox(s){ if (!s) return null; if (s[0] === 'box') return [s[1], s[2], s[3], s[4]]; if (s[0] === 'oval') return [s[1] - s[3], s[1] + s[3], s[2] - s[4], s[2] + s[4]]; return [s[1] - s[3], s[1] + s[3], s[2] - s[3], s[2] + s[3]]; }
-function inShape(s, x, z, pad){ pad = pad || 0;
-  if (s[0] === 'box') return x >= s[1] - pad && x <= s[2] + pad && z >= s[3] - pad && z <= s[4] + pad;
-  var a = (s[0] === 'oval' ? s[3] : s[3]) + pad, b = (s[0] === 'oval' ? s[4] : s[3]) + pad, dx = (x - s[1]) / a, dz = (z - s[2]) / b; return dx * dx + dz * dz <= 1; }
-function overlap(a, b){
-  var A = bbox(a), Bb = bbox(b);
-  if (A[0] >= Bb[1] - EPS || Bb[0] >= A[1] - EPS || A[2] >= Bb[3] - EPS || Bb[2] >= A[3] - EPS) return false;
-  if (a[0] === 'box' && b[0] === 'box') return true;
-  var pts = function(s){ var o = [], i; if (s[0] === 'box'){ for (i = 0; i <= 8; i++){ var t = i / 8; o.push([s[1] + (s[2] - s[1]) * t, s[3]], [s[1] + (s[2] - s[1]) * t, s[4]], [s[1], s[3] + (s[4] - s[3]) * t], [s[2], s[3] + (s[4] - s[3]) * t]); } }
-    else for (i = 0; i < 64; i++){ var q = i / 64 * 2 * Math.PI, ra = s[0] === 'oval' ? s[3] : s[3], rb = s[0] === 'oval' ? s[4] : s[3]; o.push([s[1] + ra * Math.cos(q), s[2] + rb * Math.sin(q)]); }
-    var c = bbox(s); o.push([(c[0] + c[1]) / 2, (c[2] + c[3]) / 2]); return o; };
-  return pts(a).some(function(p){ return inShape(b, p[0], p[1], -EPS); }) || pts(b).some(function(p){ return inShape(a, p[0], p[1], -EPS); });
-}
+function bbox(s){ return KC.bbox(s); }
+function inShape(s, x, z, pad){ return KC.inShape(s, x, z, pad); }
+function overlap(a, b){ return KC.overlap(a, b); }
 
 // ---------------------------------------------------------------- the ground (PLAN.md 9.2)
 // faceZ: the face's top edge. On the dressed face (|x| < dressed) the Ancients cut it sheer along z = 0; beyond it the natural
@@ -87,14 +72,7 @@ function groundAt(L, x, z){
 }
 
 // ---------------------------------------------------------------- the area and the census
-function area(L){
-  var rows = {}, floor = 0, brk = 0, lived = 0, peak = 0;
-  L.zones.forEach(function(z){ if (z.k) rows[z.id] = { zone: z.id, name: z.name, decks: 0, floor: 0, broken: 0, lived: 0, people: 0 }; });
-  L.decks.forEach(function(d){ var f = deckFloor(L, d), r = rows[d.zone]; r.decks++; r.floor += f; floor += f; r.people += d.people;
-    if (broken(d)){ r.broken += f; brk += f; } if (LIVED.indexOf(d.state) >= 0){ r.lived += f; lived += f; } });
-  peak = Math.round(floor * .5 / 35);   /* Span's rule: homes on half the floor at 35 m2 a head (settlements/span/PLAN.md section 3) */
-  return { floor: floor, broken: brk, brokenShare: brk / floor, lived: lived, livedShare: lived / floor, rows: rows, peak: peak };
-}
+function area(L){ return KC.area(L.stack, L.decks, L.zones); }
 function census(L){
   var out = { total: 0, zones: {}, by: {} };
   L.zones.forEach(function(z){ out.zones[z.id] = 0; });
@@ -103,14 +81,8 @@ function census(L){
 }
 
 // ---------------------------------------------------------------- the walk graph and the strike
-function graph(L, o){
-  o = o || {}; var adj = {}, add = function(a, b){ (adj[a] || (adj[a] = [])).push(b); (adj[b] || (adj[b] = [])).push(a); };
-  L.links.forEach(function(k){ if (o.strike && k[2] && k[2].strike) return; add(k[0], k[1]); });
-  L.parts.forEach(function(p){ if (p.in) add(p.id, p.in); });
-  return { adj: adj };
-}
-function reach(L, from, o){ var G = graph(L, o), seen = {}, st = [].concat(from); st.forEach(function(s){ seen[s] = 1; });
-  while (st.length){ var q = st.pop(); (G.adj[q] || []).forEach(function(r){ if (!seen[r]){ seen[r] = 1; st.push(r); } }); } return seen; }
+function graph(L, o){ return KC.graph(L, o); }
+function reach(L, from, o){ return KC.reach(L, from, o); }
 
 // ---------------------------------------------------------------- the Line
 function lineLength(L){

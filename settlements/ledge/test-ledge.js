@@ -10,6 +10,7 @@ const load = f => vm.runInThisContext(fs.readFileSync(path.join(ROOT, f), 'utf8'
 global.window = global;
 load('core/rand/08-core-rand.js');
 load('core/space/20-core-space.js');
+load('kits/ancients/cliff/10-cliff-stack.js');
 load('core/tags/50-core-tags.js'); load('core/tags/52-core-tags-vocab.js'); load('core/tags/53-core-tags-host.js');
 load('settlements/ledge/src/30-ledge-layout.js');
 load('settlements/ledge/src/31-ledge-rules.js');

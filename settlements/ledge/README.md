@@ -15,7 +15,7 @@ owner's answers and what was assumed: `PLAN.md` (section 9 is what is built). Th
 | `build.py` | `dist/ledge.html`: the Ancients kit's runtime and materials, the Dalab set and the Fellgang set (`TG`) read in place, core/rand, drawn, tags, ruins, terrain (KSTRATA, KRUBBLE), water, atmos, host FULL; the library packs in sidecars |
 | `verify.py` | `KRATOR_GL=gpu python3 verify.py dist/ledge.html --assert --all-views --out shots`: the page's checks and negatives, NaN, the inspector's volumes, the universal asserts (ruins, samplers, the eye on the drawn ground), the views |
 | `src/45-host-stage.js` | the renderer, the lights, the ground (`LEDGE.groundAt` meshed near and far; KSTRATA's rift beds and the library's grain) |
-| `src/8l0`-`8lc` | the tags, the shell (every deck from its record), the towns and the Ancients' halls, the wreck and the ruin watches |
+| `src/8l0`-`8lc` | the tags, the shell, the towns and the Ancients' halls, the wreck and the ruin watches: calls to `kits/ancients/cliff` (`KCLIFF`, lifted from here on 2026-11-22 for Shelf) |
 | `src/89z`, `89zw` | the shared sky at Ledge's place and the great lake on core/water |
 | `src/99-host-take.js` | the views and the checks handed to `KHOST.take` |
 

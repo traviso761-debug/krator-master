@@ -12,6 +12,12 @@ What the first page does not do yet, and what it owes. `PLAN.md` section 9 is th
   The dress belongs to `biomes/riftrim` reading Ledge's ground (`PLAN.md` 9.10).
 - **riftrim's station 1 still draws its own benched stand-in cliff** where Ledge's dressed face stands (`PLAN.md` 9.10, the hand-over).
 
+## The shared module (2026-11-22)
+
+The shell, the ground, the towns, the wreck and the sheets are the kit's `kits/ancients/cliff` (`KCLIFF`), lifted from this build when Shelf
+took the same form; Ledge was proved unchanged (its layout, area and census identical; all 160 meshes on its page hashed the same).
+The one change since: the near ground grid now always meets the far ring's edge (a 20 m sliver of sky at the seam is closed).
+
 ## This build's own gaps
 
 - **The shell's look is a first pass**: the decks are slabs, rooms, window strips and mullions in the Ancients' panel; no pods on the
