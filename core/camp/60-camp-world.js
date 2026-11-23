@@ -125,7 +125,7 @@ KCAMP.nextSite = function (W, b, d) {
     if (id === b.at || id === b.last) return; var S = W.sites[id], h = KCAMP.siteHas(S, d), days = Infinity;
     ['meat', 'fodder', 'fruit'].forEach(function (g) { if (need[g] > 0 && S.cap[g] != null) days = Math.min(days, h[g] / need[g]); });
     if (days === Infinity) days = 0;
-    var km = Math.hypot(S.x - cur.x, S.z - cur.z) / 1000, s = days / (1 + km / (W.rules.siteKm || 15)) * (1 + 0.05 * KCAMP.u(W.world, b.id, d, i, 'site'));
+    var km = Math.hypot(S.x - cur.x, S.z - cur.z) / 1000, s = days / (1 + km / ((W.rules.siteKm==null?15:W.rules.siteKm))) * (1 + 0.05 * KCAMP.u(W.world, b.id, d, i, 'site'));
     if (s > bs) { bs = s; best = id; } });
   return best;
 };
