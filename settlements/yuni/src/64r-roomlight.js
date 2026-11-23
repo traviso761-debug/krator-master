@@ -6,7 +6,7 @@
 (function(){
   if(typeof KRLHOST === 'undefined') return;
   function start(){ if(typeof scene === 'undefined' || !scene || !scene.children.length){ setTimeout(start, 500); return; }
-    window.YUNI_RL = KRLHOST.wirePage({ scene:scene, rooms:function(){ var o = []; for(var k in INTERIOR_CACHE){ var P = INTERIOR_CACHE[k], b = FIX.byId[k]; if(!P || !P.rooms || !b) continue;
+    window.YUNI_RL = KRLHOST.wirePage({ scene:scene, renderer:renderer, U:NLV.rl && NLV.rl.U, rooms:function(){ var o = []; for(var k in INTERIOR_CACHE){ var P = INTERIOR_CACHE[k], b = FIX.byId[k]; if(!P || !P.rooms || !b) continue;
         /* a plan's rooms are in its building's frame (intToWorld), their floors over the building's base */
         if(!P._rlWorld) P._rlWorld = P.rooms.map(function(R){ return { id:R.id, y:(b.y || 0) + R.y, h:R.h, poly:R.poly.map(function(q){ return intToWorld(b, q[0], q[1]); }) }; });
         o.push.apply(o, P._rlWorld); } return o; },

@@ -13,13 +13,14 @@ const HOST = fs.readFileSync(path.join(__dirname, '20-core-roomlight-host.js'), 
 const BUILDS = ['girder', 'yuni', 'locus', 'mavs-refuge'];
 const A = '/* ============================== NIGHT LIGHT VOLUME', Z = /function nlMaterial\([^]*?\n}\n/;
 function section(text){ const i = text.indexOf(A), m = Z.exec(text.slice(i)); if(i < 0 || !m) throw new Error('no NIGHT LIGHT VOLUME section'); return text.slice(i, i + m.index + m[0].length); }
-function sandbox(src, withHost){
+function sandbox(src, withHost, noRoom){
   const ctx = { console, Math, JSON, Float32Array, Uint8Array, Uint16Array, Uint32Array, performance: { now: () => 0 } };
   ctx.window = ctx; ctx.self = ctx; vm.createContext(ctx);
   vm.runInContext(THREE_SRC, ctx);
   vm.runInContext('var PAL = { flame: { warm: [1.0, 0.62, 0.28], cool: [0.35, 0.7, 1.0] } }; var CATALOG = false, SHEET = false, KIT = null;' +
     'function phash(x, y, z, s){ var h = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719 + s) * 43758.5453; return h - Math.floor(h); }', ctx);
   if(withHost) vm.runInContext(HOST, ctx, { filename: '20-core-roomlight-host.js' });
+  if(noRoom) vm.runInContext('var _knlvCreate = KNLV.create; KNLV.create = function(c){ c = Object.assign({}, c); delete c.roomLight; return _knlvCreate(c); };', ctx);
   vm.runInContext(src, ctx);
   return ctx;
 }
@@ -56,10 +57,14 @@ for(const b of BUILDS){
   const newText = fs.readFileSync(path.join(ROOT, rel), 'utf8');
   const oldSec = section(oldText), newSec = section(newText);
   T.ok(b + ': the old copy pasted the volume; the new section takes KNLV', /var nlvTex = new THREE\.DataTexture/.test(oldSec) && !/new THREE\.DataTexture/.test(newSec) && /KNLV\.create/.test(newSec));
-  const O = sandbox(oldSec, false), N = sandbox(newSec, true);
+  const O = sandbox(oldSec, false), N = sandbox(newSec, true, true);   /* the identity: the room light off */
   const ho = hookTexts(O), hn = hookTexts(N);
   T.ok(b + ': every hook form writes the same shader text, byte for byte', Object.keys(ho).every(k => ho[k] === hn[k]),
     Object.keys(ho).filter(k => ho[k] !== hn[k]).join(', '));
+  /* with the room light on (the build's own cfg), the only addition is the room light's text, in every lit form, and none in basic */
+  const R = sandbox(newSec, true), hr = hookTexts(R);
+  T.ok(b + ': with roomLight on, the room light is the only addition (lit forms), basic untouched', ['standard', 'lambert', 'shared-wp'].every(k => hr[k] !== ho[k] && /uRlTex/.test(hr[k])) && hr.basic === ho.basic,
+    ['standard', 'lambert', 'shared-wp', 'basic'].filter(k => (k === 'basic') !== (hr[k] !== ho[k])).join(', '));
   fill(O); fill(N);
   const so = vm.runInContext('JSON.stringify(nlvBake())', O), sn = vm.runInContext('JSON.stringify(nlvBake())', N);
   const dO = vm.runInContext('nlvTex.image.data', O), dN = vm.runInContext('nlvTex.image.data', N);
@@ -144,4 +149,18 @@ const WP = (() => { const T3 = H.THREE, scene = new T3.Scene(), rooms = [{ id: '
 T.ok('wirePage: a room\'s column stays put as rooms arrive (fixed-width table)', WP.uA > 0 && WP.uA === WP.uA2 && WP.st.rooms === 2);
 T.neg('wirePage: a room that arrives later tags the meshes in it (re-tag near new rooms)', r => r.inB1 === 1, Object.assign({}, WP, { inB1: WP.inB0 }), WP);
 T.ok('wirePage: new geometry is tagged and every lit material hooked once; the sun follows the page', WP.grown === 1 && WP.hooked && WP.st.U.uRlSun.value === 0.25);
-T.done();
+/* wirePage with the page's own uniforms (KNLV roomLight): a material whose compiled program carries them is not hooked again
+   (no new program); one compiled without them is; one not compiled yet waits until it is */
+const WU = (() => { const T3 = H.THREE, scene = new T3.Scene(), props = new Map(), renderer = { properties: { get: m => props.get(m) || {} } };
+  const U = RL.uniforms({ tex: null });
+  const knlvMat = new T3.MeshStandardMaterial(), plain = new T3.MeshLambertMaterial(), later = new T3.MeshStandardMaterial();
+  props.set(knlvMat, { uniforms: { uRlTex: U.uRlTex } }); props.set(plain, { uniforms: {} });
+  [knlvMat, plain, later].forEach((m, i) => { const me = new T3.Mesh(new T3.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), m); me.position.set(1 + i, 0.01, 1); scene.add(me); });
+  const st = RL.wirePage({ scene, renderer, U, rooms: () => [{ id: 'r', poly: [[0, 0], [4, 0], [4, 4], [0, 4]], y: 0, h: 3 }], every: 0 });
+  const k0 = knlvMat.customProgramCacheKey(), pend0 = st.pending.length;
+  props.set(later, { uniforms: { uRlTex: U.uRlTex } }); st.tick();
+  return { st, k0, pend0, plainKey: plain.customProgramCacheKey(), laterKey: later.customProgramCacheKey(), tex: U.uRlTex.value }; })();
+T.neg('wirePage with o.U: a material lit by the page\'s hook keeps its program; one without is hooked; a pending one waits, then is seen',
+  r => r.st.shared === 2 && r.st.materials === 1 && /\|rla$/.test(r.plainKey) && !/\|rla$/.test(r.k0) && !/\|rla$/.test(r.laterKey) && r.pend0 === 1 && r.st.pending.length === 0,
+  Object.assign({}, WU, { k0: WU.k0 + '|rla' }), WU);
+T.ok('wirePage with o.U: the table goes into the page\'s uniforms', !!WU.tex && WU.tex.image.width === 8193);T.done();

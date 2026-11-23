@@ -6,7 +6,7 @@
 (function(){
   if(typeof KRLHOST === 'undefined' || typeof GIX === 'undefined') return;
   function start(){ if(typeof scene === 'undefined' || !scene || !scene.children.length){ setTimeout(start, 500); return; }
-    window.GIRDER_RL = KRLHOST.wirePage({ scene:scene, rooms:function(){ var o = []; GIX.jobs.forEach(function(J){ o.push.apply(o, J.inst.rooms); }); return o; },
+    window.GIRDER_RL = KRLHOST.wirePage({ scene:scene, renderer:renderer, U:NLV.rl && NLV.rl.U, rooms:function(){ var o = []; GIX.jobs.forEach(function(J){ o.push.apply(o, J.inst.rooms); }); return o; },
       table:function(L){ return KratorInteriors.roomLight(L); },
       sunUp:function(){ return 1 - NLV_U.uNlNight.value; } }); }
   setTimeout(start, 0);

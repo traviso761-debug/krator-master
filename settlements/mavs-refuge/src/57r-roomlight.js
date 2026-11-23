@@ -6,7 +6,7 @@
 (function(){
   if(typeof KRLHOST === 'undefined' || typeof MIX === 'undefined' || !MIX.on) return;
   function start(){ if(typeof scene === 'undefined' || !scene || !scene.children.length){ setTimeout(start, 500); return; }
-    window.MAVS_RL = KRLHOST.wirePage({ scene:scene, rooms:function(){ return MIX.units.map(function(u){ return { id:u.id, poly:u.shell.poly, y:u.shell.y, h:Math.max(2.4, (u.shell.levels || [1]).length * 2.6) }; }); },
+    window.MAVS_RL = KRLHOST.wirePage({ scene:scene, renderer:renderer, U:NLV.rl && NLV.rl.U, rooms:function(){ return MIX.units.map(function(u){ return { id:u.id, poly:u.shell.poly, y:u.shell.y, h:Math.max(2.4, (u.shell.levels || [1]).length * 2.6) }; }); },
       sunUp:function(){ return 1 - NLV_U.uNlNight.value; } }); }
   setTimeout(start, 0);
 })();

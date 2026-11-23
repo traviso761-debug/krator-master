@@ -36,6 +36,11 @@ var KNLV = (function(){
       for(var k=0; k<pool; k++){ U.uIxP.value.push(new THREE.Vector4()); U.uIxC.value.push(new THREE.Vector4()); U.uIxF.value.push(new THREE.Vector2()); }
     }
     var V = { cfg:c, tex:tex, U:U, acc:null };
+    /* cfg.roomLight: the room light (KRLHOST, below) rides in this hook, so every material the page hooks carries it from its
+       first compile: one program per material kind, never a second one when the rooms arrive; the room comes per vertex (aRlU,
+       aRlIn: 0 outside any room, where it changes nothing) and the table in V.rl.U, which KRLHOST.wirePage fills (o.U) */
+    if(c.roomLight){ var ph = new THREE.DataTexture(new Float32Array(16), 2, 2, THREE.RGBAFormat, THREE.FloatType); ph.needsUpdate = true;
+      V.rl = { U:KRLHOST.uniforms({ tex:ph }) }; }
     V.splat = function(ch, x,y,z, amp, rad){
       var N = c.res, S = N/(2*c.ext);
       var cx=(x+c.ext)*S, cz=(z+c.ext)*S, pr=Math.max(1.3, rad*S), pr2=pr*pr;
@@ -128,6 +133,8 @@ var KNLV = (function(){
         .replace('#include <common>', '#include <common>\nuniform sampler2D uNlMap;\nuniform float uNlNight;\nuniform float uNlWin;' + (pool ? '\n' +
                  'uniform vec4 uIxP[' + pool + '];\nuniform vec4 uIxC[' + pool + '];\nuniform vec2 uIxF[' + pool + '];\nuniform float uIxN;' : ''))
         .replace('#include <aomap_fragment>', lines.concat(['#include <aomap_fragment>']).join('\n'));
+      if(V.rl){ var sn = sh.shaderName || '';
+        if(/Lambert/.test(sn)) KRLHOST.hook(sh, V.rl.U, true, true); else if(/Standard|Physical|Phong/.test(sn)) KRLHOST.hook(sh, V.rl.U, false, true); }
     };
     /* one call for any material a later fragment creates itself (bark, foliage, terrain, creatures): the hook and a key */
     V.material = function(mat, key, extraHook, wpName){
@@ -187,11 +194,11 @@ var KRLHOST = (function(){
         .replace('#include <project_vertex>', 'vRlN = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);\n#include <project_vertex>');
       sh.fragmentShader = sh.fragmentShader.replace('#include <common>', decl + '\nvarying vec3 vRlN;')
         .replace('#include <lightmap_fragment>', '#include <lightmap_fragment>\n{ vec3 _rlN = vRlN;\n' + glsl +
-                 'reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, _rIrr, _rlIn * uRlIndoor); }');
+                 'if(_rlIn > 0.0) reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, _rIrr, _rlIn * uRlIndoor); }');
     } else {
       sh.fragmentShader = sh.fragmentShader.replace('#include <common>', decl)
         .replace('#include <lights_fragment_end>', '{ vec3 _rlN = inverseTransformDirection(geometry.normal, viewMatrix);\n' + glsl +
-                 'irradiance = mix(irradiance, _rIrr, _rlIn * uRlIndoor); }\n#include <lights_fragment_end>');
+                 'if(_rlIn > 0.0) irradiance = mix(irradiance, _rIrr, _rlIn * uRlIndoor); }\n#include <lights_fragment_end>');
     }
   }
   function apply(mat, o){
@@ -260,11 +267,14 @@ var KRLHOST = (function(){
      column) and the meshes near the new rooms are tagged again; a mesh with new geometry (a furniture batch that grew) is
      tagged; every lit material of a tagged mesh takes the hook once. ?roomlight=0 leaves the page as it was. -> state */
   function wirePage(o){
-    var st = { rooms:0, tagged:0, indoor:0, materials:0, on:!(typeof location !== 'undefined' && /[?&]roomlight=0\b/.test(location.search)) };
+    var st = { rooms:0, tagged:0, indoor:0, materials:0, shared:0, pending:[], on:!(typeof location !== 'undefined' && /[?&]roomlight=0\b/.test(location.search)) };
     if(!st.on || typeof KROOMLIGHT === 'undefined') return st;
     var cap = (o.capacity==null?8192:o.capacity), D = new Float32Array((cap + 1) * 2 * 4), tex = new THREE.DataTexture(D, cap + 1, 2, THREE.RGBAFormat, THREE.FloatType);
     tex.minFilter = tex.magFilter = THREE.NearestFilter; tex.generateMipmaps = false; tex.flipY = false; tex.needsUpdate = true;
-    var U = uniforms({ tex:tex }), uById = {}, geo = new WeakMap(), hooked = new WeakSet(), list = [];
+    /* o.U: the uniforms a page's own hook already carries (KNLV cfg.roomLight): the table goes into them, and a material whose
+       program has them (o.renderer's properties) is not hooked a second time */
+    var U = o.U || uniforms({ tex:tex }), uById = {}, geo = new WeakMap(), hooked = new WeakSet(), list = [];
+    if(o.U) o.U.uRlTex.value = tex;
     st.tex = tex; st.U = U;
     function rec(R){ var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9; R.poly.forEach(function(p){ x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); });
       return { id:R.id, box:[x0, R.y, z0, x1, R.y + R.h, z1], doors:R.doors || [{ out:true, w:1 }], windows:R.windows || [], lamps:R.lamps || [], vault:!!R.vault }; }
@@ -275,13 +285,26 @@ var KRLHOST = (function(){
         uById[T.order[i]] = (i + 0.5) / w; }
       tex.needsUpdate = true; st.table = T;
     }
-    function hookMat(m){ var mt = m.material; if(!mt || Array.isArray(mt) || hooked.has(mt)) return;
-      if(!(mt.isMeshStandardMaterial || mt.isMeshLambertMaterial || mt.isMeshPhongMaterial)) return;
-      hooked.add(mt); st.materials++;
+    /* a lit material the page's own hook does not light: add the hook (one more program for its kind; the key keeps its old
+       hook's text when it had no key of its own, so two different hooks never share a program) */
+    function doHook(mt){
+      st.materials++;
       var prev = mt.onBeforeCompile, lam = !mt.isMeshStandardMaterial;
       mt.onBeforeCompile = function(sh, r){ if(prev) prev.call(this, sh, r); hook(sh, U, lam, true); };
-      var pk = mt.customProgramCacheKey && mt.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? mt.customProgramCacheKey() : '';
+      var own = mt.customProgramCacheKey && mt.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey;
+      var pk = own ? mt.customProgramCacheKey() : (prev && prev !== THREE.Material.prototype.onBeforeCompile ? 'p:' + prev.toString() : '');
       mt.customProgramCacheKey = function(){ return pk + '|rla'; }; mt.needsUpdate = true; }
+    /* with o.U, a material is looked at once it has compiled: its program has the room light already (the page's hook:
+       nothing to do, no new program) or it gets the hook; one not compiled yet waits (hooking it first would light it twice) */
+    function hookMat(m){ var mt = m.material; if(!mt || Array.isArray(mt) || hooked.has(mt)) return;
+      if(!(mt.isMeshStandardMaterial || mt.isMeshLambertMaterial || mt.isMeshPhongMaterial)) return;
+      hooked.add(mt);
+      if(o.U){ var pr = o.renderer ? o.renderer.properties.get(mt) : null;
+        if(!pr || !pr.uniforms){ st.pending.push(mt); return; }
+        if(pr.uniforms.uRlTex){ st.shared++; return; } }
+      doHook(mt); }
+    function settle(){ st.pending = st.pending.filter(function(mt){ var pr = o.renderer.properties.get(mt);
+      if(!pr || !pr.uniforms) return true; if(pr.uniforms.uRlTex) st.shared++; else doHook(mt); return false; }); }
     function tick(){
       var rooms = o.rooms() || [], fresh = rooms.length !== list.length ? rooms.slice(list.length) : [];
       if(fresh.length){ list = rooms.slice(); retable(); st.rooms = list.length; }
@@ -295,6 +318,7 @@ var KRLHOST = (function(){
       var todo = meshes.concat(again);
       if(todo.length && list.length){ var t = tagRooms(todo, list, uById); st.tagged += t.meshes; st.indoor += t.indoor; }
       todo.forEach(function(m){ geo.set(m, { g:m.geometry, n:m.geometry.attributes.position.count }); hookMat(m); });
+      if(o.U && o.renderer && st.pending.length) settle();
       if(o.sunUp){ var s = o.sunUp(); U.uRlSun.value = s; U.uRlLamp.value = 1 + 0.6 * (1 - s); }
     }
     st.tick = tick; tick(); if(o.every !== 0 && typeof setInterval === 'function') st.timer = setInterval(tick, (o.every==null?1000:o.every));   /* every 0: the page ticks it itself */

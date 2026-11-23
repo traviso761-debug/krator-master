@@ -9,7 +9,7 @@ if(typeof LOCF !== 'undefined' && LOCF.interior){ var _locfInterior = LOCF.inter
 (function(){
   if(typeof KRLHOST === 'undefined' || typeof LOCF === 'undefined' || !LOCF.interiors) return;
   function start(){ if(typeof scene === 'undefined' || !scene || !scene.children.length){ setTimeout(start, 500); return; }
-    window.LOCUS_RL = KRLHOST.wirePage({ scene:scene, rooms:function(){ return LOCF_RL_ROOMS; },
+    window.LOCUS_RL = KRLHOST.wirePage({ scene:scene, renderer:renderer, U:NLV.rl && NLV.rl.U, rooms:function(){ return LOCF_RL_ROOMS; },
       table:function(L){ return KratorInteriors.roomLight(L); },
       sunUp:function(){ return 1 - NLV_U.uNlNight.value; } }); }
   setTimeout(start, 0);
