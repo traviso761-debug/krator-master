@@ -317,24 +317,24 @@
    "sha256": "5f2b4e4d1c4247ea7f06594cceddf2d9b9f380e82003e8c5be056c134716fedc"
   },
   "biomes/greatchasm/dist/greatchasm-bench.html": {
-   "bytes": 9133287,
-   "sha256": "3ea8ed2852ff0df984a1b9a881ee70ca127e5be2b4f0e90a9354068c0cb0b5a8"
+   "bytes": 9106067,
+   "sha256": "b17007177455f15472c0938c7ad4333cfc48ee5fc5ff16887976eb048dbd0ff0"
   },
   "biomes/greatchasm/dist/greatchasm-deep.html": {
-   "bytes": 10547018,
-   "sha256": "fd469c71333aa79e31b7bbef42867c5880ef6f506a000453e9632033187191f9"
+   "bytes": 10519798,
+   "sha256": "d500d6a91353e5b25f6466fc61b46258a16e334a7e870444962701ec37f9dd6a"
   },
   "biomes/greatchasm/dist/greatchasm-eastrim.html": {
-   "bytes": 4791581,
-   "sha256": "39efdaa4f72f1405ed7bdb40d244d31fd7e7fa6cfd17890a2b09d70f7111fe3e"
+   "bytes": 4764446,
+   "sha256": "bfd22c6ce5f695d0828915fde70db80a1d803f9708726748a6b2b924cc57426c"
   },
   "biomes/greatchasm/dist/greatchasm-headwall.html": {
-   "bytes": 9129741,
-   "sha256": "964c65f5a7f4e313279ad5199a3ccf16ae4cf8f9651cc9307e83f32a46089794"
+   "bytes": 9103197,
+   "sha256": "51df9f875ed52ca2e7270a2f75b303767df591c402cd9e17b8752eece0e15427"
   },
   "biomes/greatchasm/dist/greatchasm.html": {
-   "bytes": 9142197,
-   "sha256": "c86ff8c83291817d575419f1adccd5a4434b88e6f2b5c04ec749eb7f844ea944"
+   "bytes": 9114977,
+   "sha256": "758e77ad35330ca3248867e21f287d2de32a8836f3396e8808d440ba43d131f3"
   },
   "biomes/greenstep/dist/greenstep-cloudstep.html": {
    "bytes": 6305384,
@@ -487,6 +487,26 @@
   "biomes/line/dist/line-station.html": {
    "bytes": 8093335,
    "sha256": "fc8c78f4d74cc61ae158e57fa9c1bc42e64a41e1b569d94437b834723a080545"
+  },
+  "biomes/loom-chasms/dist/loom-chasms-caelum.html": {
+   "bytes": 6766993,
+   "sha256": "b69935e388cdd1839a369b83dbcf487bca59d457954279295b713399b3663dc6"
+  },
+  "biomes/loom-chasms/dist/loom-chasms-cradle.html": {
+   "bytes": 11292917,
+   "sha256": "451424ce56b8ab456f5b053e3c802d9f2ed816c3f666a22c79bd02d63fe0409d"
+  },
+  "biomes/loom-chasms/dist/loom-chasms-monocline.html": {
+   "bytes": 6776094,
+   "sha256": "dd4c1ff1f1cdae1dc39882168640df3b2f12e24a8c6e8312998fac7b49ceb2de"
+  },
+  "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": {
+   "bytes": 7165842,
+   "sha256": "d2e5c513080ce29dd304b9a8351e6ffcb44607c2bce1cffd8143b88bbb47f5ea"
+  },
+  "biomes/loom-chasms/dist/loom-chasms.html": {
+   "bytes": 7156050,
+   "sha256": "9e2a7ce822ec20623caa530289b63861b984616277a6c11399f5dde0791c8c40"
   },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1648924,
@@ -1189,8 +1209,8 @@
    "sha256": "8aa0e5511b2a325611fd82e40c3517aab14de78cc1e80efb437dc7394e777de3"
   },
   "kits/fauna/dist/fauna.html": {
-   "bytes": 1212081,
-   "sha256": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2"
+   "bytes": 1218030,
+   "sha256": "b71f604cc4bfe580b4e515961cdeebab07131dbff271af23550b479e9dd5f452"
   },
   "kits/highlands/dist/highlands.html": {
    "bytes": 1974534,

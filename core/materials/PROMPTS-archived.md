@@ -1192,3 +1192,19 @@ Square, 2048x2048. Orthographic view looking straight down on nine separate spri
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the rind of a giant wild gourd, smooth and slightly waxy, with broad irregular lengthwise stripes of lighter and darker skin running top to bottom across the tile, a fine net of pale corky lines over part of the surface like a cantaloupe's, a few small scars and sun-bleached blotches, faint shallow grooves between the stripes. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
 ```
+
+## Delivered 2026-11-12 for prompts that lived on other branches (moved at the collection for main, 2026-11-17)
+
+The Codex batch of 2026-11-12 (`claude/textures-2026-11-12`) made these sets; their prompts reached PROMPTS-NEEDED.md
+with their branches. Each set is in the library; wire it at its build's next turn.
+
+## 63. The Loom-Chasms (`biomes/loom-chasms`, 2026-11-11)
+
+The living cable's fibre (`biomes/loom-chasms/PLAN.md` section 4: the cable spinner's line "thickens with iron-silica fibre into a cable 15-40 cm
+thick"). Until it comes, the cables draw `bark.cord.braided` tinted iron (`biomes/loom-chasms/materials.json`, `cable` and `shoot`): a named
+stand-in. Full colour; it wraps a cylinder, so the strands run along the image's vertical axis, 0.5 m a tile.
+
+`organic.cable.ironsilica`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic straight-on view of a surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the surface of a living plant cable grown in tension, seen close: long fibrous strands running top to bottom, slightly twisted and braided into one another, a fungoid flesh between them gone hard and mineral; the strands a dark rust-brown iron (#4a2e1e, #5e3a24, #6e4630) with a dull metallic grey sheen on the strands' crowns (#6a6662, #7a7470), thin glassy pale silica threads woven through them (#b8b4a4, #c8c2b0) catching a faint glint, rust-orange stains seeping along the grooves (#8a4a22, #a05a2a), and here and there a pale grey-green lichen crust in small patches (#8a907a). No plants other than the lichen. Full colour.
+```

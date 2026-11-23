@@ -26,14 +26,15 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-fauna-crawlers.js` | 20 |  |
 | `krator-fauna-desert.js` | 50 **big** |  |
 | `krator-fauna-farm.js` | 80 **big** |  |
-| `krator-fauna-flyers.js` | 41 **big** | QUETZALCOATLUS: span 12 m (73); GIANT BAT: span 9 m (169); GIANT ARCHAEOPTERYX: span 7 m (293); GIANT DRAGONFLY: 6 m body, 4 wings (389) |
+| `krator-fauna-flyers.js` | 41 **big** | QUETZALCOATLUS: span 12 m (73); GIANT BAT: span 9 m (169); GIANT ARCHAEOPTERYX: span 7 m (294); GIANT DRAGONFLY: 6 m body, 4 wings (390) |
 | `krator-fauna-hyperjungle.js` | 117 **big** |  |
 | `krator-fauna-livestock.js` | 10 |  |
+| `krator-fauna-loom.js` | 6 |  |
 | `krator-fauna-mounts.js` | 8 |  |
 | `krator-fauna-pets.js` | 4 |  |
 | `krator-fauna-riders.js` | 42 **big** | the riding tiger (Tiger) (52); the riding raptor (Raptor) (121); the threehorn (Threehorn) (203); the hardshell (Hardshell) (267); the jungle mammoth (Mammoth) (333) |
 | `krator-fauna-ringsea.js` | 6 |  |
-| `krator-fauna-runtime.js` | 35 **big** |  |
+| `krator-fauna-runtime.js` | 37 **big** |  |
 | `krator-fauna-voth.js` | 65 **big** | the seagull (84-fauna.js 62-73) (54); the cliff racer (84-fauna.js 75-88) (110); the silt strider (79c-strider-model.js 37-182, 4 (181); the arena tiger (78j-life-arena.js 187-223, 533- (276); the pit lizard (78j-life-arena.js 187-223, 533-5 (412); the giant beetle (65k-granary-mills-ranch.js 435 (476); the staghorn beetle (first drawn here, 2026-10-0 (559) |
 | `krator-fauna-wild.js` | 214 **big** |  |
 | `krator-fauna-xeno.js` | 9 |  |
