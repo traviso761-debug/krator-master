@@ -1,0 +1,12 @@
+{
+ "what": "Urundashi (walled Mamluk steppe garrison seat of S4 Sorun-Dubnu, settlements/urundashi/PLAN.md) ceilings.",
+ "pages": {
+  "urundashi.html": {
+   "bytes": 16777216,
+   "tris": 12800000,
+   "calls": 1900,
+   "why": "Full 1,131-building walled KCITY.grid Mamluk garrison town (44 furnished/cutaway hero landmarks, 1,077 instanced Mamluk buildings + 1,121 basalt plinths across the bastioned qasba, 3 extra-mural suburbs and 5 KHAMLET steppe ring villages, 4 stone moat bridges, 3-tier displaced terrain, 5 core/water rivers/moat + sabil pool, 10 active KCONS construction sites, and 789 Station 4 Shumar steppe/riparian trees visible together in panoramic Overview).",
+   "raised": "2026-11-19"
+  }
+ }
+}

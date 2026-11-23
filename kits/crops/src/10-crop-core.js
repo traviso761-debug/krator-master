@@ -61,7 +61,10 @@ CROPS.BIOMES = {
                 salt: {warmth: [4, 5], arid: [0, 1], salt: true, atm: 2}, halo: {warmth: [4, 5], arid: [0, 1], salt: true, atm: 2},
                 delta: {warmth: [4, 5], arid: [2, 3], wet: true, atm: 2},
                 steppe: {warmth: [4, 5], arid: [1, 2]}}},   /* the steppe fringe (biomes/sedesert/PLAN-STEPPE.md, station 3) */
-  shighlands:  {atm: 1, zones: {cloudforest: {warmth: [1, 2], arid: [3, 4]}, paramo: {warmth: [0, 1], arid: [2, 3]}}},
+  /* Shumar & the Ordeal ramp (biomes/shighlands/PLAN-STATIONS.md, stations 4 & 5, 2026-11-18): the western dry-summer plateau and snowmelt
+     gorges (2,850-3,600 m, Dsb, 408-440 mm/yr, 1.06 atm) and the SE initiation ramp under Godthrone (4,300-4,600 m, ET/Dfc, 235 mm/yr, 0.91 atm) */
+  shighlands:  {atm: 1, zones: {cloudforest: {warmth: [1, 2], arid: [3, 4]}, paramo: {warmth: [0, 1], arid: [2, 3]},
+                shumar: {warmth: [1, 2], arid: [1, 2]}, ordeal: {warmth: [0, 0], arid: [1, 1], atm: 0}}},
   swbay:       {atm: 2, atmNote: '?', zones: {ring: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}}},
   swlowlands:  {atm: 1, atmNote: '?', zones: {bayou: {warmth: [4, 4], arid: [3, 4], wet: true}, plain: {warmth: [3, 3], arid: [2, 3]}, hills: {warmth: [2, 3], arid: [1, 2]}}},
   throne:      {atm: 2, atmNote: '?', zones: {windward: {warmth: [4, 4], arid: [3, 4]}, lee: {warmth: [3, 5], arid: [0, 1]}, shoulder: {warmth: [2, 3], arid: [2, 3]}}},
