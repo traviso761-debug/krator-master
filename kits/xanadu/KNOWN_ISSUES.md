@@ -117,6 +117,19 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
   whole roof at the parapet's height (`vB('xPaint', x, y+h, z, w+.04, .08, d+.04)`), not a coping on the walls, so every parapeted
   roof in the kit is closed at parapet height and anything set on the roof below it is hidden. The plinth stands its lamp's ring
   on that cap (`xnFlatRoof`'s returned top). Fixing the helper changes every Xanadu page: it waits for the all-builds rebuild.
+- **What a host plan can ask** (2026-11-23, the House of the Tempest's asks): `xfDrawPlan(P, G, o)` draws a plan handed in (XFORT's
+  record shape) with the fort's states, burnt gates, guns, walks and records; `o.skip` leaves a piece to the host, `o.drawBuilding`
+  draws a host's own, `o.burnt` burns more roofs, `o.mainGate` names the gilt gate. A record's height is its own `y`, else its
+  ward's (`XFORT.recY`): a raised ward's curtains, towers, gates, buildings, guns, heaps, stairs and walks stand at its height
+  (but **nothing is drawn under it**: the host draws its talus; and a wall of a lower ward that meets it needs a stair of its own).
+  A keep takes `b.doors` (a door on any face at any height) and `b.passage` (a gate passage, rising): the passage is **portals and a
+  walk strip, not a carved tunnel** (the keep's battered storeys would lose their faces), so a walker passes the solid foot as
+  through a gatehouse, and a keep with a passage gets no interior body. A tower of kind `great` or with `signal` carries the
+  fire's basket and four bronze signal mirrors. `xfIxHost(key, P, name)` gives a host's def its interior item from its plan
+  (`range`, `stable-range` among the ranges); a host still drawing its keep or towers itself gets no rooms in them, and **a raised
+  ward's buildings get no rooms within one def**: the kits' auto bodies (kits/iziz-vernacular 69e6) match a block in the builder's
+  frame, which a ward's raise (`xfAt`, through `KOFF`) is not in, so their rooms would be sealed in solid blocks. A host keeps a
+  raised ward its own def placed at its height (the House's inner ward is), where it stands at 0 and is furnished.
 - **The Marches' outside works** (the wayside shrine, the stable yard's cistern and trough, the road: `settlements/marches`
   `src/80m-mr-works.js`, keys `mr_*`) are the kit's to take when that build is merged; they are not here yet.
 - **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its

@@ -100,6 +100,17 @@ for (const size of ['watch', 'march', 'gate']) for (const st of ['damaged', 'rui
   const miss = P.towers.filter(t => !fallen.includes(t.id) && !climbed.has(t.id)).map(t => t.id), un = [].concat(W.walks, W.flights, W.tops).filter(x => !x.reached);
   T.ok('a pentagonal watch fort ' + st + ': its walks clear of every block, every standing tower climbed, every piece reached (' + W.walks.length + ' walks, ' + W.flights.length + ' flights)',
    !F.length && !miss.length && !un.length, F.concat(miss, un.map(x => x.curtain || x.tower)).slice(0, 5).join(' | '));}
+ /* a ward on a talus (a host plan's ward.y: the House of the Tempest): its walks, flights and tower tops at its height, the rest not */
+ {const P = withS(XF.plan({ size: 'march' }), clone(XF.plan({ size: 'march' })));P.wards.find(w => w.id === 'inner').y = 4;
+  const W = XF.walks(P, XF.damage(P, 'kept', SEED.march)), inner = W.walks.filter(w => w.curtain.indexOf('inner.') === 0), outer = W.walks.filter(w => w.curtain.indexOf('outer.') === 0);
+  /* the raised ward's own pieces are reached (its stairs climb from its ground); a wall of the outer ward that joined it at one height
+     now meets it 4 m lower, so the march plan's gorge and back walls (not drawn for a raised ward) are not checked here */
+  const tops = W.tops.filter(t => t.tower.indexOf('inner.') === 0), un = [].concat(inner, W.flights.filter(f => f.curtain.indexOf('inner.') === 0), tops).filter(x => !x.reached);
+  T.ok('a ward 4 m up: its walks at 13 m (' + inner.length + '), the outer ward\'s at 9 m (' + outer.length + '), its tower tops 4 m higher, its buildings (by the ward their place is in) at 4 m, every piece of it reached',
+   inner.every(w => Math.abs(w.y - 13) < 1e-6) && outer.every(w => Math.abs(w.y - 9) < 1e-6) && tops.every(t => t.y > 15) && XF.recY(P, { id: 'inner.t0' }) === 4 && XF.recY(P, { id: 'outer.t0' }) === 0 && XF.recY(P, P.buildings.find(b => b.kind === 'keep')) === 4 && XF.recY(P, P.buildings.find(b => b.kind === 'stables')) === 0 && !un.length,
+   'inner ' + inner.slice(0, 2).map(w => w.y) + ' outer ' + outer.slice(0, 2).map(w => w.y) + ' tops ' + tops.slice(0, 2).map(t => t.y) + ' unreached ' + un.map(x => x.curtain || x.tower).join(','));
+  const bad = JSON.parse(JSON.stringify(P));bad.wards.find(w => w.id === 'inner').y = 0;
+  T.neg('a ward\'s height lost is caught (its walks fall to 9 m)', Q => XF.walks(Q, XF.damage(Q, 'kept', SEED.march)).walks.filter(w => w.curtain.indexOf('inner.') === 0).every(w => Math.abs(w.y - 13) < 1e-6), bad, P);}
  {const P = XF.plan({ size: 'march' }), W = XF.walks(P, XF.damage(P, 'kept', SEED.march)), bad = JSON.parse(JSON.stringify(W)), b = bad.blocks['inner.c1'][1];
   bad.walks.push({ curtain: 'inner.c1', s0: b[0] - 2, s1: b[1] + 2, reached: true });
   T.neg('a walk run through a tower is caught', x => faults(P, x).length === 0, bad, W);

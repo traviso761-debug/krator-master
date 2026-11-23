@@ -143,6 +143,8 @@ round the Qiblai kit's violet monastery. It is planned before it is drawn:
   A placement may give `o.outline` and `o.gateEdge` (a watch fort fitted to its ground: `XFORT.plan(o)` is drawn), `o.seed` (its
   look) with `o.damageSeed` (its damage, so the look holds through the three states); a post `o.fort` and `o.rota`
   (`window._xaPosts`). A damaged fort's lost guns lie wrecked inside (`xfGunWreck`). `KNOWN_ISSUES.md` has the limits.
+  `xfDrawPlan(P, G, o)` draws a host's own plan the same way (a ward at its height, `XFORT.recY`; keeps with `doors` and a
+  `passage`; a signal tower's mirrors and fire), and `xfIxHost(key, P)` gives it interiors (2026-11-23, the House of the Tempest).
 - The sheet (`build.py` names both fragments, with `core/terrain/37c-core-rubble.js` and `core/ruins`, here and not in
   `xanadu.py`: `XAK` and Xanadu's own pages do not take them): `targets/sheet/91u-xasheet-ruins.js` watches every damaged and
   ruined fort with `KRUINS`; `verify.py` adds `fort-plans` and `fort-walks` (every standing fort's walks reached from its

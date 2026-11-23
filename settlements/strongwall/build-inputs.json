@@ -195,8 +195,8 @@
     "kits/xanadu/src/78d-xa-dome-in.js": "ca972dc7a21535e3e9c1d2c5a89bedc70111c4f385cf085eb41bfa8da385de49",
     "kits/xanadu/src/79-xa-guild.js": "28c5a5aa3c61afa493614ea45771b8953e7544ff08e740a0b19efe02634aafaa",
     "kits/xanadu/src/80-xa-military.js": "8cad18b1d8e90dc80722ab681b3cbc76d7d202648d413274f0bb8115fe4f42d4",
-    "kits/xanadu/src/80f-xa-fort-data.js": "1ca03a433cd951070d07aeccb7147e160e17ee1d192cb2521b6ff8a3190dae04",
-    "kits/xanadu/src/80g-xa-fort.js": "24a18b1424e53d2e2f0e79dd640c6783ef077ba1f66ded0789a0882d968408d6",
+    "kits/xanadu/src/80f-xa-fort-data.js": "fb2658c1a6c3dcebebdb8b456690dce0629ccf2aa24e35cfc40db06bc9363295",
+    "kits/xanadu/src/80g-xa-fort.js": "e32265e0236b790a0be433b0b78f7a2193f5b2d9157ada1f4e1bbcdcd0f05fcc",
     "kits/xanadu/src/81-xa-public.js": "4097666e9e26d85cb1dcf20a5e2762e59c1401d2351c6428e88759fe06a2ed9b",
     "kits/xanadu/src/82-xa-hill.js": "f9c22d7ecbf4f7be22691f7ebf6a54944c430ed0c3583a56bdc9101e918799f8",
     "kits/xanadu/src/83-xa-turk.js": "8f6d5bfa2ad54116b10b16d2d461003563e6e0813990396636ddf4d1315d8306",
@@ -437,14 +437,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/strongwall/build-manifest-fort.json": "c86f39f89a08e6aaec5900aacb71fbdb4a7f9342a7b65abeb837617a7a6aa813",
-    "settlements/strongwall/dist/strongwall.html": "bfa4d6ba8f28122b440c3c9647d2a84a4424b00213af7199c4cea31881d32baf",
+    "settlements/strongwall/build-manifest-fort.json": "22a1c6ca15f1c03f76312c10af03e46f9072a461d8fe36defcd638725dcac067",
+    "settlements/strongwall/dist/strongwall.html": "af3b700afb5bf570277f53de21d6114f6a113050a23c0be08a7da069de0c56b7",
     "settlements/strongwall/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/strongwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/strongwall/build-manifest-fort.json": "9256877b0c94a636ee8797f48fef22654a2b11493f003a62e537d5d6157fa69c",
-    "settlements/strongwall/dist/strongwall.html": "bfa4d6ba8f28122b440c3c9647d2a84a4424b00213af7199c4cea31881d32baf",
+    "settlements/strongwall/build-manifest-fort.json": "bfa4c3ea0239c1bf7406fe51c0e3d1e599e2043b9fa274842e9fc4909d0c557e",
+    "settlements/strongwall/dist/strongwall.html": "af3b700afb5bf570277f53de21d6114f6a113050a23c0be08a7da069de0c56b7",
     "settlements/strongwall/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/strongwall/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

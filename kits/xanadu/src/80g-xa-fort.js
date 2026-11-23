@@ -24,7 +24,7 @@ function xfSeat(item,x,z,ry,tx,rz,s,c,sink){const q=vQ(ry,tx,rz),m=new THREE.Mat
 function xfHeap(H,c){if(typeof KRUBBLE==='undefined')return;const G=VERN.cur&&VERN.cur.G;if(!G)return;
  const h=KRUBBLE.heap(Object.assign({cover:2.2,blocks:Math.round(6+H.rx),size:[.6,1.8]},H)),o=KRUBBLE.mesh(h,{cell:2}),g=new THREE.BufferGeometry(),uv=new Float32Array(o.uv.length);
  for(let i=0;i<uv.length;i++)uv[i]=o.uv[i]/3;g.setAttribute('position',new THREE.BufferAttribute(o.pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setIndex(new THREE.BufferAttribute(new Uint32Array(o.idx),1));g.computeVertexNormals();
- const M=new THREE.Mesh(g,MAT.xRubble);M.userData.decor=true;M.name='rubble '+H.id;if(c&&M.material.color){M.material=M.material.clone();M.material.color.copy(c);}G.add(M);}
+ const M=new THREE.Mesh(g,MAT.xRubble);M.position.y=XF_Y;M.userData.decor=true;M.name='rubble '+H.id;if(c&&M.material.color){M.material=M.material.clone();M.material.color.copy(c);}G.add(M);}
 // ---------------------------------------------------------------- a stretch of curtain (u0..u1 of c), h high; o.merlons, o.band
 function xfCurtain(c,u0,u1,h,C,o){o=o||{};const a=[c.a[0]+(c.b[0]-c.a[0])*u0,c.a[1]+(c.b[1]-c.a[1])*u0],b=[c.a[0]+(c.b[0]-c.a[0])*u1,c.a[1]+(c.b[1]-c.a[1])*u1];
  const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.3||h<.3)return;const ry=Math.atan2(dx,dz)-Math.PI/2,m=[(a[0]+b[0])/2,(a[1]+b[1])/2],Q=xfQ(ry),base=Math.min(1.4,h);
@@ -57,7 +57,7 @@ function xfWalks(P,W,C,tag){const has=typeof KWALK!=='undefined',feet=[],cur=id=
   else xnFlight(f.foot[0],f.y0,f.foot[1],ry,1.4,rise,'vStone',C.stone);
   if(f.reached&&has){KWALK.strip({a:xfW3(f.foot[0],f.y0,f.foot[1]),b:xfW3(f.head[0],f.y1,f.head[1]),w:1.3,name:'tower stair',tag});n++;}});
  W.tops.forEach(t=>{if(t.reached&&has){KWALK.strip({a:xfW3(t.a[0],t.y,t.a[1]),b:xfW3(t.b[0],t.y,t.b[1]),w:1.6,name:'tower top',tag});n++;}});
- W.stairs.forEach(s=>{const c=cur(s.curtain),f=xfStair(c,s,c.h,C,tag);if(f)feet.push(f);});
+ W.stairs.forEach(s=>{const c=cur(s.curtain),f=xfAt(XFORT.recY(P,c),()=>xfStair(c,s,c.h,C,tag));if(f)feet.push(f);});   /* a stair climbs from its own ward's ground */
  return{feet,n};}
 /* a square tower's crenellated parapet (72 xnCrenel's, square and unturned) that stands aside where a flight reaches it: the low
    wall cut and no merlon within 1.4 m of a gap */
@@ -77,6 +77,11 @@ function xfTower(t,C,o,id){o=o||{};const f=o.keep==null?1:o.keep,h=t.h*f,x=t.ctr
  else{const w=t.w,k=xnWall(x,0,z,w,h,w,0,col,C.batKind),tw=w*k;
   if(f>=1){vB('vStone',x,h-.15,z,tw+.3,.18,tw+.3,0,C.stone);xfCrenel(x,h,z,tw+.2,C.body,o.gaps);
    if(C.dress==='royal'&&tw>5)xnBand(x,h-1.4,z,tw,tw,0,.6,C.maroon);
+   /* a signal tower (t.kind 'great' or t.signal: the House of the Tempest's Storm Tower, sheets T1, T2): the fire's iron basket on its
+      roof, and a bronze signal mirror on a post at each corner, turned outward to read and answer the relay's flashes */
+   if(t.kind==='great'||t.signal){vB('vStone',x,h+.03,z,2.2,.5,2.2,0,C.stone);vB('vIron',x,h+.53,z,.18,1.6,.18,0,C.iron);kput('xDrumE',[x,h+2.13,z],null,[.75,.7,.75],C.iron);vB('xRubB',x,h+2.5,z,.9,.35,.9,0,xC(0x3a2e24));
+    for(const sx of[-1,1])for(const sz of[-1,1]){const px=x+sx*(tw/2-1.3),pz=z+sz*(tw/2-1.3),a=Math.atan2(sx,sz);vB('vWood',px,h+.03,pz,.16,2.4,.16,0,C.tim);
+     kput('xDrumE',[px+Math.sin(a)*.12,h+2.4,pz+Math.cos(a)*.12],qEuler(0,a,0).multiply(qEuler(Math.PI/2,0,0)),[.55,.06,.55],C.bronze);}}
    for(const a of[0,Math.PI/2,Math.PI,-Math.PI/2]){const p=loc(x,z,0,tw/2*1.04+.02,a);xnRoom(p[0],h*.6,p[1],.3,1.2,.1,a);}}}
  if(o.fallen&&f<1){/* the top storey's wreck: blocks seated outside its foot, a heap under them */
   const out=t.at[0]===x&&t.at[1]===z?[0,1]:[x-t.at[0],z-t.at[1]],ol=Math.max(1e-6,Math.hypot(out[0],out[1])),R=XFORT.half(t),s=KRAND.stream(KRAND.child((o.seed==null?1:o.seed),id));
@@ -120,7 +125,8 @@ function xfKeep(b,C,o){o=o||{};if(o.ancient&&!o.ruined)return xfPlinth(b,C,o);co
   yy+=hs[k];}
  if(o.ruined&&o.ancient)xfLampWreck(x+w/2+2.6,z+1.5,C,KRAND.stream(KRAND.child((o.seed==null?1:o.seed),'lamp')));   /* the Ancient lamp thrown down off its plinth */
  if(o.ruined){xnRoom(x,1.2,z+d/2+.02,1.8,2.6,.06,0);for(let i=0;i<6;i++){const s=KRAND.stream(KRAND.child((o.seed==null?1:o.seed),'keep.top.'+i));vB('xRubB',x+s.range(-w*.35,w*.35),S.y,z+s.range(-d*.35,d*.35),s.range(1,2.4),s.range(.4,1.1),s.range(1,2.2),s.range(0,TAU),C.rubble);}return;}
- xnDoorway(x,1.2,z+d/2+.02,0,1.8,2.6,{c:C.tim});xnFlight(x,0,z+d/2+.6+Math.round(1.2/.17)*.34,0,2.4,1.2,'vStone',C.stone);
+ if(!b.passage){xnDoorway(x,1.2,z+d/2+.02,0,1.8,2.6,{c:C.tim});xnFlight(x,0,z+d/2+.6+Math.round(1.2/.17)*.34,0,2.4,1.2,'vStone',C.stone);}
+ xfKeepWays(b,C,S);
  const roof=xnFlatRoof(x,S.y,z,S.w,S.d,0,C.wash,{band:C.maroon,parapet:.6});
  /* the chapel (lhakhang): a red block on the roof, the twig band, the gilt roof */
  const rw=Math.min(S.w*.5,10),rd=Math.min(S.d*.5,8),ry0=S.y+.3,R=xnStack(x,ry0,z-S.d*.12,rw,rd,0,[3.6],C.red,'wash');
@@ -129,6 +135,22 @@ function xfKeep(b,C,o){o=o||{};if(o.ancient&&!o.ruined)return xfPlinth(b,C,o);co
  xnGiltRoof(x,rt-.4,z-S.d*.12,R.w*.62,R.d*.62,0,{frame:1.2,over:.8});
  /* the beacon: an iron fire basket on the roof's front corner */
  if(b.beacon){const bx=x+S.w/2-1.2,bz=z+S.d/2-1.2;vB('vIron',bx,roof,bz,.16,2.2,.16,0,C.iron);kput('xDrumE',[bx,roof+2.2,bz],null,[.55,.6,.55],C.iron);vB('xRubB',bx,roof+2.5,bz,.7,.3,.7,0,xC(0x3a2e24));}}
+/* ---------------------------------------------------------------- a keep's other ways in (2026-11-23, the House of the Tempest's utse)
+   b.doors: [{face: '+z'|'-z'|'+x'|'-x', y, w, h}], a door on that face at y above the keep's foot (on the battered face at that
+   height); b.passage: {w, h, rise, face: 'z'|'x'}, a gate passage through the keep's foot from one face to the other, rising `rise`
+   (the inner ward on its talus): an arched portal on each face (its entry at the foot, its exit at `rise`), and a core/walk strip
+   through. The passage is NOT carved: the keep's storeys are battered blocks, and a tunnel through them would break their faces;
+   the portals' dim backs stand for it, and a walker passes the solid storey (as through the gatehouses). The front door and its
+   flight are the passage's front portal when a keep has one. S: the keep's stack (its top's w, d and y) */
+function xfKeepWays(b,C,S){const x=b.at[0],z=b.at[1],w=b.w,d=b.d,y0=1.2,top=S?S.y:y0+4.5,tw=S?S.w:w,td=S?S.d:d;
+ const half=(face,y)=>{const t=Math.max(0,Math.min(1,(y-y0)/Math.max(1,top-y0))),hb=(face==='+z'||face==='-z')?d/2:w/2,ht=(face==='+z'||face==='-z')?td/2:tw/2;return hb-(hb-ht)*t;};
+ const faceAt=(face,y,off)=>{const h=half(face,y)+(off==null?.02:off);return face==='+z'?[x,z+h,0]:face==='-z'?[x,z-h,Math.PI]:face==='+x'?[x+h,z,Math.PI/2]:[x-h,z,-Math.PI/2];};
+ for(const D of b.doors||[]){const yy=D.y==null?y0:D.y,p=faceAt(D.face||'+z',yy);xnDoorway(p[0],yy,p[1],p[2],D.w==null?1.8:D.w,D.h==null?2.6:D.h,{c:C.tim});}
+ const Pg=b.passage;if(!Pg)return;
+ const pw=Pg.w==null?3.2:Pg.w,ph=Pg.h==null?4:Pg.h,rise=Pg.rise==null?0:Pg.rise,ax=Pg.face==='x',fA=ax?'+x':'+z',fB=ax?'-x':'-z';
+ const A=faceAt(fA,0,.04),B=faceAt(fB,rise,.04);
+ for(const [p,yy] of[[A,0],[B,rise]]){kput('xArchS',[p[0],yy,p[1]],xfQ(p[2]),[pw+1.4,ph+1.2,.45],C.stone);xnRoom(p[0],yy,p[1],pw,ph,.06,p[2]);}   /* the portals and their dim backs */
+ if(typeof KWALK!=='undefined'){const a=faceAt(fA,0,1.2),c=faceAt(fB,rise,1.2);KWALK.strip({a:xfW3(a[0],0,a[1]),b:xfW3(c[0],rise,c[1]),w:Math.max(1.2,pw-.6),name:'keep passage',tag:'fort:passage:'+b.id});}}
 /* ---------------------------------------------------------------- the Ancient lamp's plinth (o.beacon:'ancient', 2026-11-23; settlements/beacon
    KNOWN_ISSUES.md, the Beacon's B6): in the keep's place, on its dressed footing, three white storeys (3.3 + 4.5 + 4.5 m over the
    1.2 m footing), the Chapel of the Beacon on top (4.5 m, yellow, saffron windows, gilt corners and a gilt finial: the forts' gold
@@ -156,11 +178,11 @@ function xfPlinth(b,C,o){const P=XF_PLINTH,x=b.at[0],z=b.at[1],w=b.w,d=b.d,lit=x
  const L=IZDOOR._w(x,lampY,z),rec={key:o.lampAt||null,at:L,roof:Ch.y,lampH:lampY,lamp:null};
  /* the lamp head on its yoke, where the page has the Ancients' piece (kits/ancients/pieces/89p-anc-beacon-lamp.js): live meshes in the
     fort's group, sweeping by itself; rec.lamp is its handle (lamp.set({bearing, shutter, on, mode}) for a page's own schedule) */
- if(typeof ANC_BEACON_LAMP!=='undefined'&&VERN.cur&&VERN.cur.G){const lamp=ANC_BEACON_LAMP.make({night:()=>xLit()});lamp.root.position.set(x,rec.lampH,z);VERN.cur.G.add(lamp.root);rec.lamp=lamp;}
+ if(typeof ANC_BEACON_LAMP!=='undefined'&&VERN.cur&&VERN.cur.G){const lamp=ANC_BEACON_LAMP.make({night:()=>xLit()});lamp.root.position.set(x,rec.lampH+XF_Y,z);VERN.cur.G.add(lamp.root);rec.lamp=lamp;}
  (window._xaBeacons=window._xaBeacons||[]).push(rec);}
 /* the lamp head thrown down in a ruin (the stand-in's size: a 1.6 m drum 2.2 m long, white metal), and its ring, seated on their lowest points */
 function xfLampWreck(x,z,C,s){const a=s.range(0,TAU);
- if(typeof ANC_BEACON_LAMP!=='undefined'&&VERN.cur&&VERN.cur.G){const W=ANC_BEACON_LAMP.wreck({seed:s.range(0,1)});W.position.set(x,0,z);W.rotation.y=a;VERN.cur.G.add(W);   /* the Ancients' head itself, seated */
+ if(typeof ANC_BEACON_LAMP!=='undefined'&&VERN.cur&&VERN.cur.G){const W=ANC_BEACON_LAMP.wreck({seed:s.range(0,1)});W.position.set(x,XF_Y,z);W.rotation.y=a;VERN.cur.G.add(W);   /* the Ancients' head itself, seated */
   const r=loc(x,z,2.2,s.range(-1,1),a);xfSeat('xDrumE',r[0],r[1],0,0,0,[1.3,.6,1.3],C.iron,.03);return;}
  xfSeat('xDrumE',x,z,a,Math.PI/2,s.range(-.3,.3),[.8,2.2,.8],xC(0xc8ccd0),.05);
  const r=loc(x,z,2.2,s.range(-1,1),a);xfSeat('xDrumE',r[0],r[1],0,0,0,[1.3,.6,1.3],C.iron,.03);}
@@ -223,13 +245,31 @@ function xfPlanOf(size,o){if(!o||(o.outline==null&&o.gateEdge==null))return XF_P
 /* o.seed is the fort's LOOK (its colours, merlons: reseeded at once); o.damageSeed, when given, is what its damage is hashed
    from (breaches, fallen towers, ragged courses, low walls, wrecks), so one fort can keep its look through its three states
    (the Marches, 2026-11-23); without it the damage takes the look's seed, as before */
-function xfDraw(size,G,o){const P=xfPlanOf(size,o),V=xV(o),st=o.state||XF_STATES[V]||'kept',seed=o.seed==null?XF_SEED[size]+V:o.seed,dseed=o.damageSeed==null?seed:o.damageSeed,ancient=o.beacon==='ancient';reseed(seed);
- const C=xfCols(size==='watch'?'march':'royal'),Dm=XFORT.damage(P,st,dseed),gated={};P.gates.forEach(g=>{gated[g.curtain]=(gated[g.curtain]||[]).concat([g]);});
- const nm=VERN.defs[o._key].name;   /* no volume over the whole fort: its wards are open ground (a camera or walker in them stands in no building); its curtains, towers, gates and buildings register their own */
+/* XF_Y: the height a ward is being drawn at (xfDrawPlan's xfAt): kput's records take it through KOFF; the live meshes 80g adds to
+   the site's group (rubble heaps, the lamp head and its wreck) add it themselves */
+let XF_Y=0;
+function xfAt(y,f){if(!y)return f();KOFF[1]+=y;XF_Y+=y;try{return f();}finally{KOFF[1]-=y;XF_Y-=y;}}
+/* ---------------------------------------------------------------- xfDrawPlan(P, G, o): a fort drawn from a plan handed in (2026-11-23,
+   the House of the Tempest's ask: a host plan in XFORT's record shape gets the fort's states, burnt gates, guns, walks and records
+   without composing 80g's builders itself). xfDraw(size, G, o) is xfDrawPlan of the size's plan. A record's height is its own y,
+   else its ward's (XFORT.recY): a ward on a talus is drawn at its height (xfAt). o, besides xfDraw's {v, state, seed, damageSeed,
+   beacon, _key}:
+     size, dress ('march' plain, 'royal' banded), seedBase    for a plan of no size (default: o.size's, else 'watch')
+     name                                                     the records' name (default: the def's)
+     mainGate                                                 the id of the gate with the gilt pavilion (else XF_MAIN[size], or a gate of kind 'main')
+     skip {tower(t), gate(g), building(b), barbican, court}   leave a piece to the host (it draws it itself)
+     drawBuilding(b, C, ctx)                                  a host's own building: true when drawn (ctx {st, Dm, dseed, ruined, burnt})
+     burnt {buildingId: true}                                 roofs to burn besides XFORT.damage's
+   -> {P, Dm, Wk, C, st, seed, dseed, feet, walks} */
+function xfDrawPlan(P,G,o){o=o||{};const size=o.size||P.size||'watch',V=xV(o),st=o.state||XF_STATES[V]||'kept',
+  seed=o.seed==null?(o.seedBase==null?(XF_SEED[size]==null?XF_SEED.watch:XF_SEED[size]):o.seedBase)+V:o.seed,dseed=o.damageSeed==null?seed:o.damageSeed,ancient=o.beacon==='ancient';reseed(seed);
+ const C=xfCols(o.dress||(size==='watch'?'march':'royal')),Dm=XFORT.damage(P,st,dseed),SK=o.skip||{},Y=r=>XFORT.recY(P,r);
+ const nm=o.name||(VERN.defs[o._key]?VERN.defs[o._key].name:String(o._key));   /* no volume over the whole fort: its wards are open ground (a camera or walker in them stands in no building); its curtains, towers, gates and buildings register their own */
+ const isMain=g=>o.mainGate!=null?g.id===o.mainGate:(XF_MAIN[size]!=null&&P.gates.some(q=>q.id===XF_MAIN[size]))?g.id===XF_MAIN[size]:g.kind==='main';
  /* the curtains: whole, breached, or in stubs; a standing fort's walks, the flights onto its towers and its stairs on core/walk
     (XFORT.walks: a ruined one has none) */
  const tag='fort:'+o._key+'/'+V,Wk=XFORT.walks(P,Dm);
- P.curtains.forEach(c=>{const L=Math.hypot(c.b[0]-c.a[0],c.b[1]-c.a[1]),mid=[(c.a[0]+c.b[0])/2,(c.a[1]+c.b[1])/2];vnReg(nm+' — curtain',mid[0],mid[1],L/2,c.h+1.3,{part:'wall'});
+ P.curtains.forEach(c=>xfAt(Y(c),()=>{const L=Math.hypot(c.b[0]-c.a[0],c.b[1]-c.a[1]),mid=[(c.a[0]+c.b[0])/2,(c.a[1]+c.b[1])/2];vnReg(nm+' — curtain',mid[0],mid[1],L/2,Y(c)+c.h+1.3,{part:'wall'});
   if(Dm.stubs[c.id]){Dm.stubs[c.id].forEach(s=>xfCurtain(c,s.u0,s.u1,s.h,C,{}));return;}
   const br=Dm.breaches.filter(b=>b.curtain===c.id),cuts=[0];br.forEach(b=>cuts.push(b.u0,b.u1));cuts.push(1);
   for(let i=0;i<cuts.length;i+=2)xfCurtain(c,cuts[i],cuts[i+1],c.h,C,{merlons:true,band:C.dress==='royal'});
@@ -238,47 +278,54 @@ function xfDraw(size,G,o){const P=xfPlanOf(size,o),V=xV(o),st=o.state||XF_STATES
    const s=KRAND.stream(KRAND.child(dseed,'breach.'+c.id+'.'+b.u0));
    for(const side of[-1,1]){const u=side<0?b.u0:b.u1;let hh=c.h,du=0;
     for(let k=0;k<4;k++){const w=s.range(.6,1.1)/L;hh*=s.range(.62,.82);if(hh<1.6||du+w>(b.u1-b.u0)*.3)break;   /* each side keeps to its third of the gap */const ua=side<0?u+du:u-du-w,ub=side<0?u+du+w:u-du;
-     xfCurtain(c,Math.max(b.u0,Math.min(ua,ub)),Math.min(b.u1,Math.max(ua,ub)),hh,C,{});du+=w;}}});});
+     xfCurtain(c,Math.max(b.u0,Math.min(ua,ub)),Math.min(b.u1,Math.max(ua,ub)),hh,C,{});du+=w;}}});}));
  const WD=xfWalks(P,Wk,C,tag),feet=WD.feet,walks=WD.n;
- /* the walk audit's record (core/walk): the stairs' feet, this fort's tag, its lot in the world */
- if(typeof KWALK!=='undefined'&&walks){const W=(x,y,z)=>IZDOOR._w(x,y,z),a=W(-P.w/2-6,0,-P.d/2-6),b=W(P.w/2+6,0,P.d/2+6);
+ /* the walk audit's record (core/walk): the stairs' feet, this fort's tag, its lot in the world (the plan's w and d, else its wards') */
+ if(typeof KWALK!=='undefined'&&walks){let x0=-P.w/2,x1=P.w/2,z0=-P.d/2,z1=P.d/2;
+  if(!(P.w>0&&P.d>0)){const xs=[],zs=[];(P.wards||[]).forEach(w=>(w.poly||[]).forEach(p=>{xs.push(p[0]);zs.push(p[1]);}));P.curtains.forEach(c=>{xs.push(c.a[0],c.b[0]);zs.push(c.a[1],c.b[1]);});x0=Math.min(...xs);x1=Math.max(...xs);z0=Math.min(...zs);z1=Math.max(...zs);}
+  const W=(x,y,z)=>IZDOOR._w(x,y,z),a=W(x0-6,0,z0-6),b=W(x1+6,0,z1+6);
   (window._xaForts=window._xaForts||[]).push({key:o._key,v:V,state:st,tag,feet,walks,box:[Math.min(a[0],b[0]),Math.max(a[0],b[0]),Math.min(a[2],b[2]),Math.max(a[2],b[2])]});}
- Dm.heaps.forEach(H=>xfHeap(H,C.rubble));
+ Dm.heaps.forEach(H=>xfAt(Y(H),()=>xfHeap(H,C.rubble)));
  /* the towers */
- P.towers.forEach(t=>{const T=Dm.towers[t.id]||{};vnReg(nm+' — tower',t.ctr[0],t.ctr[1],XFORT.half(t)+.5,t.h*(T.keep==null?1:T.keep)+2,{part:'tower'});xfTower(t,C,Object.assign({seed:dseed},T,{gaps:Wk.gaps[t.id]}),t.id);});
+ P.towers.forEach(t=>{if(SK.tower&&SK.tower(t))return;const T=Dm.towers[t.id]||{};xfAt(Y(t),()=>{vnReg(nm+' — '+(t.kind==='great'||t.signal?'the signal tower':'tower'),t.ctr[0],t.ctr[1],XFORT.half(t)+.5,Y(t)+t.h*(T.keep==null?1:T.keep)+2,{part:'tower'});
+  xfTower(t,C,Object.assign({seed:dseed},T,{gaps:Wk.gaps[t.id]}),t.id);});});
  /* the gates */
- P.gates.forEach(g=>{const c=P.curtains.find(q=>q.id===g.curtain)||P.curtains.find(q=>q.ward==='works');vnReg(nm+' — '+(g.kind==='water'?'water gate':'gate'),g.at[0],g.at[1],g.w/2+2,(c?c.h:7)+4,{part:'gate'});
-  if(g.kind==='water')xfWaterGate(g,c,C,Dm.gates[g.id]==='gone');else xfGate(g,c,C,Dm.gates[g.id]||'kept',g.id===XF_MAIN[size],{cable:ancient&&g.id===XF_MAIN[size]});});
+ P.gates.forEach(g=>{if(SK.gate&&SK.gate(g))return;const c=P.curtains.find(q=>q.id===g.curtain)||P.curtains.find(q=>q.ward==='works');xfAt(Y(c||g),()=>{vnReg(nm+' — '+(g.kind==='water'?'water gate':'gate'),g.at[0],g.at[1],g.w/2+2,Y(c||g)+(c?c.h:7)+4,{part:'gate'});
+  if(g.kind==='water')xfWaterGate(g,c,C,Dm.gates[g.id]==='gone');else xfGate(g,c,C,Dm.gates[g.id]||'kept',isMain(g),{cable:ancient&&isMain(g)});});});
  /* the barbican before the Qiblai Gate (Strongwall): three low walls, the outer opening on its west side */
- if(P.barbican){const b=P.barbican,x0=b.at[0]-b.w/2,x1=b.at[0]+b.w/2,z0=b.at[1]-b.d/2,z1=b.at[1]+b.d/2,S={curtH:6,curtT:2,walk:1.4};
+ if(P.barbican&&!SK.barbican&&P.barbican.w){const b=P.barbican,x0=b.at[0]-b.w/2,x1=b.at[0]+b.w/2,z0=b.at[1]-b.d/2,z1=b.at[1]+b.d/2,S={curtH:6,curtT:2,walk:1.4};
   const wall=(id,a,c2)=>({id,a,b:c2,h:S.curtH,t:S.curtT,out:[0,0]});
   const ws=[Object.assign(wall('barb.f',[x0,z1],[x1,z1]),{out:[0,1]}),Object.assign(wall('barb.e',[x1,z1],[x1,z0]),{out:[1,0]}),Object.assign(wall('barb.w1',[x0,z0],[x0,z0+3]),{out:[-1,0]}),Object.assign(wall('barb.w2',[x0,z1-3],[x0,z1]),{out:[-1,0]})];
   const ruined=st==='ruined';ws.forEach(c=>xfCurtain(c,0,1,ruined?c.h*.35:c.h,C,{merlons:!ruined}));vnReg(nm+' — barbican',b.at[0],b.at[1],b.w/2,S.curtH+1.3,{part:'wall'});
   if(!ruined)kput('xArchS',[x0-1.05,0,b.at[1]],xfQ(-Math.PI/2),[5.4,6.2,.45],C.stone);}
  /* the buildings */
- P.buildings.forEach(b=>{if(b.kind!=='muster')vnReg(nm+' — '+b.kind.replace(/-/g,' '),b.at[0],b.at[1],Math.max(b.w,b.d)/2,(b.h==null?1:b.h)+(b.kind==='keep'?8:1),{part:b.kind});
-  const ruined=st==='ruined',burnt=Dm.roofs[b.id]==='burnt';
+ P.buildings.forEach(b=>{if(SK.building&&SK.building(b))return;xfAt(Y(b),()=>{const ruined=st==='ruined',burnt=Dm.roofs[b.id]==='burnt'||!!(o.burnt&&o.burnt[b.id]);
+  if(o.drawBuilding&&o.drawBuilding(b,C,{st,Dm,dseed,ruined,burnt}))return;
+  if(b.kind!=='muster')vnReg(nm+' — '+b.kind.replace(/-/g,' '),b.at[0],b.at[1],Math.max(b.w,b.d)/2,Y(b)+(b.h==null?1:b.h)+(b.kind==='keep'?8:1),{part:b.kind});
   if(b.kind==='keep')xfKeep(b,C,{storeys:Dm.keep&&Dm.keep.storeys,ruined,seed:dseed,ancient,lampAt:o._key});
-  else if(b.kind==='barracks'||b.kind==='married-quarters'||b.kind==='merchant-house')xfRange(b,C,{ruined,burnt,seed:dseed});
-  else xfSmall(b,C,{ruined,seed:dseed});});
+  else if(XF_RANGES[b.kind])xfRange(b,C,{ruined,burnt,seed:dseed});
+  else xfSmall(b,C,{ruined,seed:dseed});});});
  /* the Golden Tears' court: its own low wall on the two sides inside the ward, its gate, its tower */
- if(P.court){const K=P.court,p=K.poly,ruined=st==='ruined',wh=ruined?K.wallH*.4:K.wallH;   /* poly: front-left, front-right, back-right, back-left */
+ if(P.court&&!SK.court){const K=P.court,p=K.poly,ruined=st==='ruined',wh=ruined?K.wallH*.4:K.wallH;   /* poly: front-left, front-right, back-right, back-left */
   const segs=[[p[3],p[2]],[p[3],[K.gateAt[0],K.gateAt[1]-2.2]],[[K.gateAt[0],K.gateAt[1]+2.2],p[0]]];
   segs.forEach(sg=>{const dx=sg[1][0]-sg[0][0],dz=sg[1][1]-sg[0][1],L=Math.hypot(dx,dz),m=[(sg[0][0]+sg[1][0])/2,(sg[0][1]+sg[1][1])/2];vB('xRubB',m[0],0,m[1],Math.abs(dx)>Math.abs(dz)?L:K.wallT,wh,Math.abs(dx)>Math.abs(dz)?K.wallT:L,0,C.rubble);
    if(!ruined)vB('xWashB',m[0],wh,m[1],(Math.abs(dx)>Math.abs(dz)?L:K.wallT)+.1,.25,(Math.abs(dx)>Math.abs(dz)?K.wallT:L)+.1,0,xC(xPick(XPAL.ochre)));});
   const T={id:K.id+'.tower',form:'square',w:K.tower.w,h:K.tower.h,at:K.tower.at,ctr:K.tower.at};xfTower(T,xfCols('march'),Object.assign({seed:dseed},Dm.towers[T.id]||(ruined?{keep:.45,fallen:true}:{})),T.id);
   vnReg(nm+' — the Golden Tears\' court',(p[0][0]+p[1][0])/2,(p[0][1]+p[3][1])/2,Math.abs(p[1][0]-p[0][0])/2,K.tower.h,{part:'court'});
   if(!ruined)xnDoorway(K.gateAt[0]-K.wallT/2-.02,0,K.gateAt[1],-Math.PI/2,3,3.2,{c:C.tim});}
- /* the guns */
  /* the guns: a standing one where it is laid; a damaged fort's gun whose wall was breached or whose gate burnt lies wrecked at
     the wall's foot inside (xfGunWreck); a ruined fort's were carried off */
- if(st!=='ruined')P.guns.forEach((g,gi)=>{const wreck=(x,z,ry)=>{if(st==='damaged')xfGunWreck(x,z,ry,C,KRAND.stream(KRAND.child(dseed,'gun.'+gi)));};
+ if(st!=='ruined')(P.guns||[]).forEach((g,gi)=>{const wreck=(x,z,ry)=>{if(st==='damaged')xfGunWreck(x,z,ry,C,KRAND.stream(KRAND.child(dseed,'gun.'+gi)));};
   if(g.curtain){const c=P.curtains.find(q=>q.id===g.curtain),p=[c.a[0]+(c.b[0]-c.a[0])*g.u,c.a[1]+(c.b[1]-c.a[1])*g.u],ry=Math.atan2(c.out[0],c.out[1]);
-   if(Dm.breaches.some(b=>b.curtain===c.id&&g.u>b.u0-.05&&g.u<b.u1+.05)){wreck(p[0]-c.out[0]*(c.t/2+3),p[1]-c.out[1]*(c.t/2+3),ry);return;}
-   xfGun(p[0]-c.out[0]*.3,c.h,p[1]-c.out[1]*.3,ry,C);}
-  else{const gt=P.gates.find(q=>q.id===g.gate),c=P.curtains.find(q=>q.id===gt.curtain);
-   if(Dm.gates[gt.id]==='burnt'){const q=loc(gt.at[0],gt.at[1],gt.w/2+2,-(XFORT.gateHouse(gt,c).d/2+3),gt.ry);wreck(q[0],q[1],gt.ry);return;}
-   const gh=(c?c.h:7)+3+.3,p=loc(gt.at[0],gt.at[1],gt.w/2+.4,-.3,gt.ry);xfGun(p[0],gh,p[1],gt.ry,C);}});}
+   xfAt(Y(c),()=>{if(Dm.breaches.some(b=>b.curtain===c.id&&g.u>b.u0-.05&&g.u<b.u1+.05)){wreck(p[0]-c.out[0]*(c.t/2+3),p[1]-c.out[1]*(c.t/2+3),ry);return;}
+    xfGun(p[0]-c.out[0]*.3,c.h,p[1]-c.out[1]*.3,ry,C);});}
+  else{const gt=P.gates.find(q=>q.id===g.gate);if(!gt)return;const c=P.curtains.find(q=>q.id===gt.curtain);
+   xfAt(Y(c||gt),()=>{if(Dm.gates[gt.id]==='burnt'){const q=loc(gt.at[0],gt.at[1],gt.w/2+2,-(XFORT.gateHouse(gt,c).d/2+3),gt.ry);wreck(q[0],q[1],gt.ry);return;}
+    const gh=(c?c.h:7)+3+.3,p=loc(gt.at[0],gt.at[1],gt.w/2+.4,-.3,gt.ry);xfGun(p[0],gh,p[1],gt.ry,C);});}});
+ return{P,Dm,Wk,C,st,seed,dseed,feet,walks};}
+/* the ranges xfRange draws (two storeys, a colonnade on the ward face): the forts' own kinds and a host's */
+const XF_RANGES={barracks:1,'married-quarters':1,'merchant-house':1,range:1,'stable-range':1};
+function xfDraw(size,G,o){return xfDrawPlan(xfPlanOf(size,o),G,Object.assign({size},o));}
 /* a gun thrown down: its bronze barrel, its carriage on its side and a wheel, each seated on its lowest points (core/ruins' rule) */
 function xfGunWreck(x,z,ry,C,s){const a=ry+s.range(-.7,.7);
  xfSeat('xColG',x,z,a,Math.PI/2,0,[.2,2.4,.2],C.bronze,.02);
@@ -327,8 +374,9 @@ XA.def({key:'xa_fort_post',name:'Watch post (the watch line\'s)',family:'Forts',
    furnished: a damaged one has lost storeys and roofs, a ruined one is low walls (XF_IXSTATE, set as each top-level fort is
    placed, makes its item a skip). The towers, gatehouses and the keep's chapel stay solid (no stair is drawn into them); the
    granary has no door, the stables and the ore shed are open sheds. */
-const XF_IXKEY={watch:'xa_fort_watch',march:'xa_fort_march',gate:'xa_fort_gate'},XF_IXSTATE={state:null};
-function xfIxItems(){const R3=v=>Math.round(v*1000)/1000;
+const XF_IXKEY={watch:'xa_fort_watch',march:'xa_fort_march',gate:'xa_fort_gate'},XF_IXSTATE={state:null},XF_IXHOST=new Set();
+/* the item of one plan (a size's, or a host's: xfIxHost); a raised ward's buildings get none (see below) */
+function xfIxItem(P,key,name){const R3=v=>Math.round(v*1000)/1000;
  /* sets/xanadu.js inset() and stack(), on the kit's own batter (xnBatterK): every storey on the footprint they all share, the doors
     drawn on the blocks' outer faces moved in onto it */
  const inset=(P,id,o)=>{const w=R3(P[1]-P[0]),d=R3(P[3]-P[2]),cx=R3((P[0]+P[1])/2),cz=R3((P[2]+P[3])/2);
@@ -341,11 +389,16 @@ function xfIxItems(){const R3=v=>Math.round(v*1000)/1000;
  const stack=(cx,cz,w,d,hs,o)=>{let ww=w,dd=d;hs.forEach(h=>{const k=xnBatterK(ww,h,dd);ww*=k;dd*=k;});return inset([cx-ww/2,cx+ww/2,cz-dd/2,cz+dd/2],o.id,Object.assign({},o,{hs}));};
  const RANGE={barracks:n=>n>3?[['barracks','hall','kitchen','barracks'],['barracks','barracks','store','barracks']]:[['barracks','hall','kitchen'],['barracks','barracks','store']],
   'married-quarters':n=>n>3?[['living','kitchen','living','kitchen'],['bedroom','bedroom','bedroom','bedroom']]:[['living','kitchen','living'],['bedroom','bedroom','bedroom']],
-  'merchant-house':()=>[['shop','store','kitchen'],['living','bedroom','study']],'ore-store':()=>[['store','store'],['store','study']]};
+  'merchant-house':()=>[['shop','store','kitchen'],['living','bedroom','study']],'ore-store':()=>[['store','store'],['store','study']],
+  range:n=>n>3?[['barracks','hall','kitchen','barracks'],['barracks','barracks','store','barracks']]:[['barracks','hall','kitchen'],['barracks','barracks','store']],
+  'stable-range':n=>n>3?[['stable','stable','store','stable'],['barracks','barracks','barracks','barracks']]:[['stable','stable','store'],['barracks','barracks','barracks']]};   /* a host's: the House's companies sleep over their horses */
  const SMALL={'assay-furnace':'workshop','assay-weigh':'workshop',smithy:'smithy','wheel-house':'shrine'};
- return Object.keys(XF_IXKEY).map(size=>{const P=XF_PLANS[size],key=XF_IXKEY[size],B=[];
-  for(const b of P.buildings){const x=b.at[0],z=b.at[1],w=b.w,d=b.d,h=b.h,front=z>0?-1:1;
-   if(b.kind==='keep'){const n=h>=25?5:3,hs=[];for(let i=0;i<n;i++)hs.push(i?4.3:4.8);   /* xfKeep: on its 1.2 m plinth, its door on the +z face */
+ const B=[];
+  for(const b of P.buildings){const x=b.at[0],z=b.at[1],w=b.w,d=b.d,h=b.h,front=z>0?-1:1,Y=XFORT.recY(P,b),n0=B.length;
+   if(Y){}   /* a building of a raised ward: no body (the kits' auto bodies, kits/iziz-vernacular 69e6, match a block in the builder's frame,
+               which the ward's raise is not in: its rooms would be sealed in a solid block). A host keeps such a ward its own def */
+   else if(b.kind==='keep'&&b.passage){}   /* a keep with a gate passage: its foot is the passage (80g xfKeepWays), so it stays solid here */
+   else if(b.kind==='keep'){const n=h>=25?5:3,hs=[];for(let i=0;i<n;i++)hs.push(i?4.3:4.8);   /* xfKeep: on its 1.2 m plinth, its door on the +z face */
     B.push(stack(x,z,w,d,hs,{id:b.id,y:1.2,doors:[{at:[x,z+d/2],w:1.8}],program:n===5?[['hall','guard','store'],['war_room','armoury','study'],['audience','study'],['living','bedroom','kitchen'],['signals','store']]
      :[['hall','guard','store'],['war_room','armoury'],['living','bedroom','kitchen']]}));}
    else if(RANGE[b.kind]){const alongZ=d>w,L=alongZ?d:w,D=alongZ?w:d,ry=alongZ?Math.PI/2:0,face=alongZ?(x>0?-1:1):(z>0?-1:1),nd=Math.max(1,Math.round(L/9)),doors=[];   /* xfRange: two storeys on a 0.6 m plinth, a door a bay on the ward face */
@@ -353,15 +406,24 @@ function xfIxItems(){const R3=v=>Math.round(v*1000)/1000;
     B.push(stack(x,z,w,d,[3.3,3.1],{id:b.id,y:.6,doors,program:RANGE[b.kind](Math.round(L/8.5))}));}
    else if(b.kind==='strongroom')B.push(stack(x,z,w*.96,d*.96,[h-.8],{id:b.id,y:.8,doors:[{at:[x,z+front*d*.48],w:1.2}],program:['store'],windows:false}));
    else if(b.kind==='magazine')B.push(stack(x,z,w,d,[h],{id:b.id,y:0,doors:[{at:[x,z+front*d/2],w:1.1}],program:['magazine'],windows:false}));
-   else if(SMALL[b.kind])B.push(stack(x,z,w,d,[h],{id:b.id,y:0,doors:[{at:[x,z+front*d/2],w:1.8}],program:[SMALL[b.kind]]}));}
-  const name=VERN.defs[key]?VERN.defs[key].name:key;
+   else if(SMALL[b.kind])B.push(stack(x,z,w,d,[h],{id:b.id,y:0,doors:[{at:[x,z+front*d/2],w:1.8}],program:[SMALL[b.kind]]}));
+   }
+  name=name||(VERN.defs[key]?VERN.defs[key].name:key);
   return B.length?{key,name,culture:'xanadu',wealth:.65,types:['military','civic','multi-family dwelling'],lot:[P.w+12,P.d+12],bodies:B,
    note:'the fort\'s stacks hollow (kits/xanadu 80g, F4): the keep, the ranges, the strongroom, the magazine and the court\'s small buildings; towers, gatehouses and the chapel solid'}
-   :{key,name,types:['military'],skip:'no building the fort draws has a door into a stack'};});}
+   :{key,name,types:['military'],skip:'no building the fort draws has a door into a stack'};}
+function xfIxItems(){return Object.keys(XF_IXKEY).map(size=>xfIxItem(XF_PLANS[size],XF_IXKEY[size]));}
 /* the set, on a page that has the interiors core (KratorInteriors: settlements/xanadu's 69d bundle); a skip while the fort being
    placed is damaged or ruined. XF_IXSTATE is set before the placement (the 69e hollow wrap reads the item as the def is built) */
 if(typeof KratorInteriors!=='undefined'&&KratorInteriors.sets&&!KratorInteriors.sets.byName['xanadu-fort']){
  const S=KratorInteriors.sets.add({set:'xanadu-fort',title:'Xanadu: the forts (F4)',culture:'xanadu',items:xfIxItems()});
  for(const it of S.items)if(!it.skip)Object.defineProperty(it,'skip',{configurable:true,enumerable:true,
-  get:()=>XF_IXSTATE.state==='custom'?'a fort of its own outline (o.outline, o.gateEdge): its buildings stand where this item does not plan them':XF_IXSTATE.state&&XF_IXSTATE.state!=='kept'?'the fort is '+XF_IXSTATE.state+': its stacks have lost storeys or stand as low walls':undefined});
- const p0=VERN.place;VERN.place=function(sc,key,x,z,ry,o){if(!VERN.cur&&/^xa_fort_(watch|march|gate)$/.test(key))XF_IXSTATE.state=o&&(o.outline!=null||o.gateEdge!=null||o.beacon)?'custom':(o&&o.state)||XF_STATES[xV(o||{})]||'kept';return p0.apply(this,arguments);};}
+  get:()=>xfIxSkip(XF_IXSTATE.state)});
+ const p0=VERN.place;VERN.place=function(sc,key,x,z,ry,o){if(!VERN.cur&&(/^xa_fort_(watch|march|gate)$/.test(key)||XF_IXHOST.has(key)))XF_IXSTATE.state=o&&(o.outline!=null||o.gateEdge!=null||o.beacon)?'custom':(o&&o.state)||XF_STATES[xV(o||{})]||'kept';return p0.apply(this,arguments);};}
+/* xfIxHost(key, P, name): a host's fort def (a plan of its own, drawn by xfDrawPlan: the House of the Tempest) gets its item the same
+   way, in a set of its own (`xanadu-fort:<key>`), a skip while it is placed damaged or ruined; call it once, after the def, on a
+   page with the interiors core (else it does nothing). -> the item, or null */
+function xfIxHost(key,P,name){if(typeof KratorInteriors==='undefined'||!KratorInteriors.sets||KratorInteriors.sets.byName['xanadu-fort:'+key])return null;
+ const S=KratorInteriors.sets.add({set:'xanadu-fort:'+key,title:'Xanadu: '+(name||key),culture:'xanadu',items:[xfIxItem(P,key,name)]}),it=S.items[0];
+ if(!it.skip)Object.defineProperty(it,'skip',{configurable:true,enumerable:true,get:()=>xfIxSkip(XF_IXSTATE.state)});XF_IXHOST.add(key);return it;}
+function xfIxSkip(st){return st==='custom'?'a fort of its own outline (o.outline, o.gateEdge): its buildings stand where this item does not plan them':st&&st!=='kept'?'the fort is '+st+': its stacks have lost storeys or stand as low walls':undefined;}
