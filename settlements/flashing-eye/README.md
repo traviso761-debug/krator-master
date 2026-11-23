@@ -41,6 +41,7 @@ Qiblai's city are, with the Qiblai kit's fragments read in place.
 | `targets/cone/90fg-build.js` | the retaining faces, every place chunk by chunk, the Vale of Xanadu's flora |
 | `targets/cone/90fh-vent.js` | the vent on `FE_WATCH`: the throat, its red light, the bombs, the plume (core/atmos smoke with the page's `vent` kind; `ATMOS.ashPlume` as the record), the hazards as records, the Ember and the fire basket by night |
 | `targets/cone/90fi-bridges.js` | the Way of Shrines drawn: the gendarmes of basalt columns rising from the spur (the face's own map), their stairs and the stair up the spur's nose, the rope bridges (planks, deck and hand ropes, hangers, posts, prayer flags) |
+| `targets/cone/90fj-face.js` | the band's colonnade in relief: hexagonal columns in jointed drums along the face's lean |
 | `targets/cone/91z-views.js` | the views, the budgets, the page's `_api` hooks |
 | `verify.py` | Xanadu's verify and the page's asserts: `eye-laid`, `bench-level`, `band-face`, `crater`, `vent`, `sights-near`, `no-trees`, `way-of-shrines`, `way-walk`, `glints`, `fires` |
 | `region/` | the scale model's cut round the cone (`extract_region.py`, box px 858-904 x 1504-1546, 250 m cells; `source/` its inputs) |

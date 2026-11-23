@@ -9,15 +9,17 @@
   grid, so behind the north, west and east walls the cap is cut back in a bank. *Fixed 2026-11-23*: the banks are terraced with
   dry-stone walls along their contours every 1.5 m (`90fg-build.js`, about 150 pieces), open at the Gate of Breath and the Mule
   Gate; the ground itself is still a smooth slope under them.
-- **The face is one surface.** The band is a heightfield: its colonnade is a texture projected on the face, not columns. A
-  `core/terrain` carve patch (overhangs, column relief) or `KSTACKS` columns would make it read as the plan's coulee front.
+- **The face.** The band is a heightfield wearing the colonnade's texture. *Fixed 2026-11-23*: the columns themselves stand in
+  relief on it (`90fj-face.js`: about 280 hexagonal columns in jointed drums along the face's lean and the Lip's curve, some snapped
+  below the top; 69k triangles). Still no overhangs: a `core/terrain` carve patch would give them. The spur's flanks that face east
+  or west take the columnar map stretched along the slope (the ground shader projects it on x or z, not triplanar).
 - **The far field.** The far ground is the region cut only (52 x 44 km): the Beacon, Erehwon and the Tears' camp are beyond
   it, so the sights past 2 km are `tools/sights.py`'s on the scale model, not the page's.
 
 ## The revamp (2026-11-23)
 
 - **The Way of Shrines' spur is a heightfield arete**, its gendarmes hex columns (`90fi-bridges.js`); the stairs are cantilevered
-  steps with no rail. *Fixed 2026-11-23*: the whole way is registered in core/tags before it is drawn (the stacks as features, the
+  steps; *fixed 2026-11-23*, a hand rope on posts along the open side of every stair (both sides of the nose stair). *Fixed 2026-11-23*: the whole way is registered in core/tags before it is drawn (the stacks as features, the
   bridges as infrastructure) and walkable on core/walk (the nose stair, each landing and top, each stair round a crown, each
   bridge's deck; `verify.py`'s `way-walk`). The walker does not yet sway with the bridges.
 - **The windows are the Qiblai kit's** (Tibetan trapezoids in strict rows), kept by the owner's choice (2026-11-23). The roofs'
@@ -29,12 +31,15 @@
 ## The house
 
 - **Sized ranges.** The bench's lesser buildings (granary, kitchen, refectory, bath, stores, chapter range, Mirror School) are
-  one generic record (`qb_fe_range`) sized to their layout boxes. *Fixed 2026-11-23*: the novices' court is four ranges round
+  one generic record (`qb_fe_range`) sized to their layout boxes. *Fixed 2026-11-23*: each shows what it is for (the kitchen's two
+  chimneys smoking, the granary's louvred roof vents, the bath house's steam lantern, the chapter range's wooden gallery, the Mirror
+  School's trial mirrors); the smoke is core/atmos's chimney and steam kinds. *Fixed 2026-11-23*: the novices' court is four ranges round
   its paved yard with a chorten in it (`qb_fe_court`).
 - **No interiors yet.** The blueprint's rooms (sheets L, H, P, T, M1-MR) are not built as room data; the catalog's NEW pieces
   (`FURNITURE.md`) are not made.
-- **The Foot House, the Rest House and the Stair of the Eye** are off the page's near ground (6.6 km south); the Stair is
-  drawn only to the apron.
+- *Fixed 2026-11-23*: **the Foot House** stands on its own ground at the spur's foot (`FE_FOOT`, 1.2 x 0.8 km at 8 m, the far
+  ground cut away under it): its ranges round the loading court and its gate chorten. Still owed: **the Rest House** (about 1,080 m
+  on the Stair) and **the Stair of the Eye** between them, drawn only to the apron; the Foot House's lower terraces and mule yard.
 - **No people, no pilgrims, no Station's night** on the page: `FE_WATCH.state` has the kora flag and the rota; the page does
   not draw them.
 - *Fixed 2026-11-23*: **the mirrors flash.** A glint at the Eye Post's and the Mirror Tower's lanterns whenever the day line's

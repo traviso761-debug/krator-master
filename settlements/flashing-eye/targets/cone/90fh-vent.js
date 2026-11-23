@@ -37,6 +37,8 @@ function feBombsAt(v){const s=v.since,on=s<14;feBombs.visible=on;if(!on)return 0
  if(!S.vent)S.vent={index:next,n:56,rate:.011,rise:720,drift:260,wobble:30,size:[26,190],alpha:.4,rainDamp:0,color:[.42,.4,.38]};
  S.distFade=.00011;S.pxMax=1400;   /* this page's: the plume is read from the bench, 2 km off */
  window._fePlumeSprites=ATMOS.smoke([[FE_VENT.x,FE_VENT.y+8,FE_VENT.z,'vent']]);}
+/* the house's own smoke: the kitchen's chimneys (its hearth lit from the Ember) and the bath's steam (90fg's FE_SMOKES) */
+window._feHouseSmoke=FE_SMOKES.length?ATMOS.smoke(FE_SMOKES):null;
 /* the same plume as a record (core/atmos fx/ashplume): drifting east-north-east on the Vale's west wind, ~800 m tall */
 const FE_PLUME=ATMOS.ashPlume?ATMOS.ashPlume({vents:[{id:'eye.vent',x:FE_VENT.x,z:FE_VENT.z,y:FE_VENT.y,top:800,rate:1}],azimuth:1.2,speed:8,world:'flashing-eye'}):null;
 // ---------------------------------------------------------------- the hazards, as records (core/hazard's kinds: gas, heat, lava; cycle.base)

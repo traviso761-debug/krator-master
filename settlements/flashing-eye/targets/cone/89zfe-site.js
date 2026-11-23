@@ -41,7 +41,7 @@ const feC=b=>[(b[0]+b[1])/2,(b[2]+b[3])/2];
 // a part drawn as a sized range: its long side along its front unless told; dress v (0 wash below and crimson above, 1 wash, 2 crimson)
 function feRange(id,v,st,o){const P=fePart(id),b=P.box,c=feC(b),du=b[1]-b[0],dv=b[3]-b[2],turn=du>dv*1.4;
  const ry=o&&o.ry!=null?o.ry:(turn?Math.PI/2:0),w=turn?du:dv,d=turn?dv:du;
- return fePut('qb_fe_range',c[0],c[1],ry,Object.assign({v,st,w:w-.6,d:d-.6,name:P.name},o||{}),P.zone==='bench'?'house':'cap',id,P.zone!=='bench');}
+ return fePut('qb_fe_range',c[0],c[1],ry,Object.assign({v,st,w:w-.6,d:d-.6,name:P.name,kind:P.kind},o||{}),P.zone==='bench'?'house':'cap',id,P.zone!=='bench');}
 // the bench: each building on its terrace's level (FLASHING_EYE.ground holds each level; the layout's terraces)
 const feTY=u=>FLASHING_EYE.terraceY(FE.L,u);
 const feAt=id=>{const c=feC(fePart(id).box);return{u:c[0],v:c[1],y:feTY(c[0])};};
@@ -65,6 +65,10 @@ for(const T of FE.L.terraces)if(T.y)fePad('terrace:'+T.id,-90,T.u0,90,T.u1,T.y,.
 feRange('byres',1,1);feRange('woodlot',1,1);feRange('shelter',1,1,{ry:Math.PI/2});
 for(const id of['ch.breath1','ch.breath2','ch.breath3','threshold','stairhead']){const c=feC(fePart(id).box);fePut('qb_chorten',c[0],c[1],0,{v:id==='threshold'?2:0},'sacred',id,true);}
 {const c=feC(fePart('post').box);fePut('qb_fe_post',c[0],c[1],0,{},'rim','post',true);}
+// the Foot House (sheet F): its ranges round the loading court (the hostel, the stables, the stores, the muleteers), its gate to the
+// roads south; the gate chorten outside it (on their own ground, FE_FOOT)
+{const P=fePart('foothouse'),c=feC(P.box);fePut('qb_fe_court',c[0],c[1],0,{w:P.box[3]-P.box[2]-.6,d:P.box[1]-P.box[0]-.6,st:2,name:P.name},'foot','foothouse',true);
+ fePut('qb_chorten',P.box[1]+14,c[1]+18,0,{v:1},'sacred','foot-chorten',true);}
 {const c=feC(fePart('hut').box);fePut('qb_fe_hut',c[0],c[1],0,{},'rim','hut',true);}
 // the walls: the layout's, with a gap at each gate (on the bench, y 0)
 const FE_WALLS=[];
@@ -110,6 +114,8 @@ const FE_TALUS=[];
 // the cone's woods and meadows on the flanks and the cap (1), thinner toward the rim (the ash), none on the band's face (steep),
 // the crater, the rim's bare ash within 120 m of it, the bench, a pad, a way, a court or a building; nothing off the fine ground
 const FE_FINE={x0:-560,x1:560,z0:-300,z1:400,cell:4},FE_COARSE={x0:-1000,x1:1000,z0:-2800,z1:800,cell:10};
+/* the Foot House's own ground at the spur's foot, 6.4 km south of the Lip: whole cells of the far ground's 400 m grid (90fe) */
+const FE_FOOT={x0:-600,x1:600,z0:6000,z1:6800,cell:8};
 const feSegD=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz;let t=l?((x-a[0])*dx+(z-a[1])*dz)/l:0;t=t<0?0:t>1?1:t;return Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z);};
 const FE_CR=FE_P(FE.L.crater.centre[0],FE.L.crater.centre[1]);
 function feSlope(x,z){const e=4;return Math.hypot(terrainH(x+e,z)-terrainH(x-e,z),terrainH(x,z+e)-terrainH(x,z-e))/(2*e);}

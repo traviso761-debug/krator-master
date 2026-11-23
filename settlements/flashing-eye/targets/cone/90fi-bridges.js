@@ -49,6 +49,17 @@ for(const B of FE_BRIDGES){const m=B.pts[24];REG.push({name:'The Way of Shrines:
  const im=new THREE.InstancedMesh(new THREE.BoxGeometry(1.7,.22,.55),new THREE.MeshStandardMaterial({color:0x6e6a66,roughness:.95}),steps.length),M=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler();
  steps.forEach((s,i)=>{e.set(0,s[3],0);q.setFromEuler(e);M.compose(new THREE.Vector3(s[0],s[1]-.11,s[2]),q,new THREE.Vector3(1,1,1));im.setMatrixAt(i,M);});
  im.name='the Way of Shrines: its stairs';im.castShadow=true;FE_WAY.add(im);window._feSteps=steps.length;}
+ /* the rails: a hand rope on posts along the open side of every stair (round each crown, outside; both sides of the nose stair) */
+ {const rope=new THREE.MeshStandardMaterial({color:0x5a4632,roughness:.95}),postM=new THREE.MeshStandardMaterial({color:0x4a3a2a,roughness:.9}),posts=[];
+  const runRail=pts=>{if(pts.length<2)return;const c=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1]+1,p[2])));
+   const t=new THREE.Mesh(new THREE.TubeGeometry(c,Math.max(8,pts.length*2),.03,4,false),rope);t.name='the Way of Shrines: a stair\'s rail';FE_WAY.add(t);
+   pts.forEach((p,i)=>{if(i%3===0||i===pts.length-1)posts.push(p);});};
+  for(const S of FE_STACKS){const rise=S.top-S.landing,R=S.r*1.12+.8,a0=Math.atan2(S.dir[1],S.dir[0]),turns=rise/24,n=Math.max(8,Math.round(turns*16)),pts=[];
+   for(let k=0;k<=n;k++){const t=k/n,a=a0+.45+t*turns*Math.PI*2;pts.push([S.x+Math.cos(a)*R,S.landing+rise*t,S.z+Math.sin(a)*R]);}runRail(pts);}
+  {const A=FE_NOSE.from,S=FE_STACKS[0],Bp=S.land,Ln=Math.hypot(Bp[0]-A[0],Bp[1]-A[1]),sx=-(Bp[1]-A[1])/Ln,sz=(Bp[0]-A[0])/Ln;
+   for(const sd of[-1,1]){const pts=[];let y=-1e9;for(let s=0;s<=Ln;s+=3){const x=A[0]+(Bp[0]-A[0])*s/Ln,z=A[1]+(Bp[1]-A[1])*s/Ln;y=Math.min(S.landing,Math.max(y,terrainH(x,z)+.12));pts.push([x+sx*sd*1,y,z+sz*sd*1]);}runRail(pts);}}
+  const pm=new THREE.InstancedMesh(new THREE.BoxGeometry(.12,1.05,.12),postM,posts.length),M=new THREE.Matrix4();
+  posts.forEach((p,i)=>{M.makeTranslation(p[0],p[1]+.52,p[2]);pm.setMatrixAt(i,M);});pm.name='the Way of Shrines: the rails\' posts';FE_WAY.add(pm);window._feRailPosts=posts.length;}
 // ---------------------------------------------------------------- the rope bridges
 {const planks=[],rope=new THREE.MeshStandardMaterial({color:0x5a4632,roughness:.95}),post=new THREE.MeshStandardMaterial({color:0x4a3a2a,roughness:.9}),hang=[],flags=[];
  const at=(P,t)=>{const f=t*(P.length-1),i=Math.min(P.length-2,Math.floor(f)),u=f-i;return[P[i][0]+(P[i+1][0]-P[i][0])*u,P[i][1]+(P[i+1][1]-P[i][1])*u,P[i][2]+(P[i+1][2]-P[i][2])*u];};

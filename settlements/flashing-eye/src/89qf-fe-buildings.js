@@ -14,6 +14,9 @@ kdef('feEmberB',VBOX,MAT.feEmber);kdef('feFireB',VBOX,MAT.feFire);
 // the lights a builder hangs, in its local frame (the page sets FE_LAMPREC.cur before VERN.place): [x, y, z, kind]
 const FE_LAMPREC={cur:null};
 const feLamp=(x,y,z,k)=>{if(FE_LAMPREC.cur)FE_LAMPREC.cur.push([x,y,z,k]);};
+// smoke a builder sends up (the kitchen's chimneys, the bath's steam), in its local frame: [x, y, z, kind] (an ATMOS.PRESETS.smoke kind)
+const FE_SMOKEREC={cur:null};
+const feSmoke=(x,y,z,k)=>{if(FE_SMOKEREC.cur)FE_SMOKEREC.cur.push([x,y,z,k]);};
 const feWash=()=>xC(xPick(XPAL.wash)),feCrimson=()=>xC(FE_SP.wall);
 // a white block of storeys with its windows, a teal frieze, a crimson cornice and a red hip roof; returns the roof's top
 function feBlock(x,z,w,d,ry,hs,o){o=o||{};const wash=o.wash||feWash(),y0=o.y==null?0:o.y;
@@ -27,8 +30,18 @@ function feBlock(x,z,w,d,ry,hs,o){o=o||{};const wash=o.wash||feWash(),y0=o.y==nu
 function buildFeRange(G,o){reseed(34401+(o.v|0));const W=o.w==null?20:o.w,D=o.d==null?12:o.d,st=o.st==null?1:o.st,P=.5;
  vnReg(o.name==null?'A range of the Flashing Eye':o.name,0,0,Math.hypot(W,D)/2,P+st*3.6+4);
  qnPlinth(0,0,W,D,P,0,xC(xPick(QSTONE)));const hs=[];for(let i=0;i<st;i++)hs.push(3.6);
- feBlock(0,0,W,D,0,hs,{y:P,skip:[[-1.8,1.8]],roundels:W>24});
- qnDoor(0,P,D/2,0,1.6,2.5,{c:xC(XPAL.red),valC:feCrimson()});}
+ const top=feBlock(0,0,W,D,0,hs,{y:P,skip:[[-1.8,1.8]],roundels:W>24}),eave=P+hs.reduce((x,y)=>x+y,0),k=o.kind,dark=feCol(FE_DARK);
+ qnDoor(0,P,D/2,0,1.6,2.5,{c:xC(XPAL.red),valC:feCrimson()});
+ /* what each range is for, readable from outside: the kitchen's two chimneys (its hearth lit from the Ember; 90fh smokes them), the
+    granary's louvred vents in its roof, the bath house's steam lantern, the chapter range's wooden gallery, the Mirror School's
+    trial mirrors by its door */
+ if(k==='kitchen')for(const s of[-1,1]){const x=s*W*.28,z=-D*.12;qnCube(x,eave-1,z,1.3,top-eave+2.8,1.3,0,feWash(),'wash');vB('xPaint',x,top+1.8,z,1.7,.25,1.7,0,dark);feSmoke(x,top+2.1,z,'chimney');}
+ if(k==='store')for(let i=-2;i<=2;i++){vB('xPaint',i*W*.17,eave+(top-eave)*.32,D*.2,1.2,.7,1,0,dark);vB('xPaint',i*W*.17,eave+(top-eave)*.32+.72,D*.2,1.5,.12,1.3,0,feCol(FE_RED));}
+ if(k==='bath'){qnCube(0,top-1.4,0,2.6,1.8,2.6,0,feWash(),'wash');feRoof(0,top+.4,0,4,4,0,1.5);feSmoke(0,top+1.2,0,'steam');}
+ if(k==='cells'&&st>1){const yg=P+3.6,red=feCrimson();vB('qPlankB',0,yg-.15,D/2+.7,W-1,.15,1.4,0,xC(0x8a6a48));
+  const n=Math.max(2,Math.round(W/2.4));for(let i=0;i<=n;i++){const x=-W/2+.5+i*(W-1)/n;vPst('vPost',x,yg,D/2+1.35,.07,1.05,red);vB('xPaint',x,yg-.9,D/2+.7,.18,.75,1.2,0,dark);}
+  vB('xPaint',0,yg+1.02,D/2+1.35,W-1,.1,.1,0,xC(FE_OCHRE));}
+ if(k==='mirror_school')for(const s of[-1,1]){vPst('vPost',s*2.6,P,D/2+1.2,.06,1.6,dark);vB('xPaint',s*2.6,P+1.55,D/2+1.25,.5,.5,.06,0,xC(0xa07a48));}}
 QB.def({key:'qb_fe_range',name:'A range of the Flashing Eye',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic']),w:20,d:12,h:10,nv:3,build:buildFeRange});
 
 // ---------------------------------------------------------------- a court: four ranges round a yard (the novices' court)

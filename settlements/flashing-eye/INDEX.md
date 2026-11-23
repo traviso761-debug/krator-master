@@ -28,7 +28,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `40-fe-watch.js` | 8 | THE FLASHING EYE: the vent, the Rim Watch and th (1) |
 | `89q0w-fe-mats.js` | 1 |  |
 | `89qe-fe-roofs.js` | 9 | the hip roof with upturned eaves: a unit shape p (10); the towers (47) |
-| `89qf-fe-buildings.js` | 14 | a range sized to its layout box (the bench's les (25); a court: four ranges round a yard (the novices'  (34); the Lip Range (sheet L) (45); the Red Monastery: the Order's temple on the kit (61); the Ember Tower (sheet H): the Hall of the Ember (84); the towers (the references): o.style 'round' (th (100); the Eye Post (sheet P): the first reference's to (109); the Watch's hut, a gate, a shrine (115) |
+| `89qf-fe-buildings.js` | 15 | a range sized to its layout box (the bench's les (28); a court: four ranges round a yard (the novices'  (47); the Lip Range (sheet L) (58); the Red Monastery: the Order's temple on the kit (74); the Ember Tower (sheet H): the Hall of the Ember (97); the towers (the references): o.style 'round' (th (113); the Eye Post (sheet P): the first reference's to (122); the Watch's hut, a gate, a shrine (128) |
 
 ## targets/
 
@@ -36,4 +36,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `cone` | `89z-rows.js`, `89zfe-site.js`, `90fe-world.js`, `90fg-build.js`, `90fh-vent.js`, `90fi-bridges.js`, `91z-views.js` | 54 |
+| `cone` | `89z-rows.js`, `89zfe-site.js`, `90fe-world.js`, `90fg-build.js`, `90fh-vent.js`, `90fi-bridges.js`, `90fj-face.js`, `91z-views.js` | 61 |

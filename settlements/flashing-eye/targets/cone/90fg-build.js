@@ -5,7 +5,8 @@
 // building's lights (feLamp, 89qf) are turned into the world: FE_LAMPS. Then the Vale of Xanadu's flora over the site's mask.
 // [web]: three.js.
 reseed(34464);const FE_B0=performance.now();
-const FE_LAMPS=[];   /* [x, y, z, kind, id]: the Ember's window and the fire basket, in world metres (90fh lights them by the hour) */
+const FE_LAMPS=[];
+const FE_SMOKES=[];   /* [x, y, z, kind]: the chimneys' smoke and the bath's steam, in world metres (90fh) */   /* [x, y, z, kind, id]: the Ember's window and the fire basket, in world metres (90fh lights them by the hour) */
 const FE_RETAIN=new THREE.Group();FE_RETAIN.name='retaining walls';scene.add(FE_RETAIN);
 {const stone=xC(0x4a4542);let n=0;
  for(const p of FE_PADS){const edges=[[p.x0,p.z0,p.x1,p.z0,0,-1],[p.x0,p.z1,p.x1,p.z1,0,1],[p.x0,p.z0,p.x0,p.z1,Math.PI/2,-1],[p.x1,p.z0,p.x1,p.z1,Math.PI/2,1]];
@@ -26,10 +27,11 @@ for(const p of FE_PLACE){const k=p.kind==='wall'?'walls':Math.floor(p.x/FE_CHUNK
 const FE_GROUPS=[];let FE_INST=0;
 const feD=(v,d)=>v==null?d:v;
 function feBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;scene.add(G);let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9,y0=1e9,y1=-1e9;
- for(const p of list){TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;p.lamps=[];FE_LAMPREC.cur=p.lamps;
+ for(const p of list){TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;p.lamps=[];FE_LAMPREC.cur=p.lamps;p.smokes=[];FE_SMOKEREC.cur=p.smokes;
   if(p.kind!=='wall'){p.stacks=[];QB_SHELLREC.cur=p.stacks;}
-  const g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);FE_LAMPREC.cur=null;QB_SHELLREC.cur=null;if(g)p.G=g;
+  const g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);FE_LAMPREC.cur=null;FE_SMOKEREC.cur=null;QB_SHELLREC.cur=null;if(g)p.G=g;
   for(let i=r0;i<REG.length;i++){REG[i].type=p.key;REG[i].id=REG[i].id||p.id;}
+  for(const L of p.smokes){const w=loc(p.x,p.z,L[0],L[2],p.ry);FE_SMOKES.push([w[0],feD(p.o.y,0)+L[1],w[1],L[3]]);}
   for(const L of p.lamps){const w=loc(p.x,p.z,L[0],L[2],p.ry);FE_LAMPS.push([w[0],feD(p.o.y,0)+L[1],w[1],L[3],p.id]);}
   const r=Math.max(feD(p.w,10),feD(p.d,10))/2+10;x0=Math.min(x0,p.x-r);x1=Math.max(x1,p.x+r);z0=Math.min(z0,p.z-r);z1=Math.max(z1,p.z+r);y0=Math.min(y0,feD(p.o.y,0)-40);y1=Math.max(y1,feD(p.o.y,0)+feD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();FE_INST+=feD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;

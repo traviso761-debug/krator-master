@@ -28,7 +28,7 @@ _spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing r
 
 PAGE_JS = r"""
 {const Z=window._flashing||{},K=Z.byKind||{},P=typeof FE_PLACE!=='undefined'?FE_PLACE:[],has=id=>P.some(p=>p.id===id),L=FE_LAYOUT;
- const need=['lip-range','red-monastery','ember','g.rift','g.mule','g.breath','post','hut','chapter','novices','school','granary','kitchen'];
+ const need=['lip-range','red-monastery','ember','g.rift','g.mule','g.breath','post','hut','chapter','novices','school','granary','kitchen','foothouse'];
  const mon=P.find(p=>p.id==='red-monastery');
  R.push({name:'eye-laid',ok:Z.placed>=30&&need.every(has)&&(K.wall||0)>=6&&Z.talus>=10&&mon&&mon.o.v===0,
   detail:Z.placed+' placed ('+JSON.stringify(K)+'), '+Z.chunks+' chunks, '+Z.talus+' talus heaps; missing: '+need.filter(id=>!has(id)).join(',')});

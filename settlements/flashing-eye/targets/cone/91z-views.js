@@ -16,6 +16,7 @@ const VIEWS=(function(){
  {const B=FE_BRIDGES[5],m=B.pts[24];V['On the last bridge']=[m[0],m[1]+1.7,m[2],B.b[0],B.b[1]+8,B.b[2]-30];}
  V['The house from the Rift']=[260,40,420,0,10,-60];
  V['The terraces and the Ember Tower']=[70,22,-30,0,20,-126];
+ {const F=FE_PLACE.find(p=>p.id==='foothouse');V['The Foot House']=[F.x+90,F.o.y+40,F.z+110,F.x,F.o.y+5,F.z];}
  return V;})();
 BUDGET.showcase={tris:16000000,calls:2400};BUDGET.cls.city=16000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';
 if(window._api)Object.assign(window._api,FE_API);
