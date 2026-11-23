@@ -106,7 +106,7 @@ function buildChunk(n){const t0=performance.now();
   const hx=(HB[k+1]-HB[k-1])/(2*ds),hz=(HB[k+G]-HB[k-G])/(2*ds),nl=Math.hypot(hx,1,hz);
   pos[v*3]=i*ds;pos[v*3+1]=h;pos[v*3+2]=j*ds;nor[v*3]=-hx/nl;nor[v*3+1]=1/nl;nor[v*3+2]=-hz/nl;
   for(let p=0;p<NPK;p++)_P[PK[p]]=PB[k*NPK+p];
-  const F=WORLD.fieldsFrom(x,z,h,Math.hypot(hx,hz),_P,_F);WORLD.ground(x,z,F,_C);
+  const F=WORLD.fieldsFrom(x,z,h,Math.hypot(hx,hz),_P,_F);F.gx=hx;F.gz=hz;WORLD.ground(x,z,F,_C);
   col[v*3]=_C[0];col[v*3+1]=_C[1];col[v*3+2]=_C[2];rock[v]=_C[3];road[v]=WORLD.roadCover(x,z,ds);if(gl)s4Weights(F,rock[v],road[v],gl,v*4);duv[v*2]=x-ox;duv[v*2+1]=z-oz;
   const ck=WORLD.classColour(x,z),cb=WORLD.biomeColour(x,z);for(let q=0;q<3;q++){ovk[v*3+q]=ck[q];ovb[v*3+q]=cb[q];}
   grid[v]=h;if(h<y0)y0=h;if(h>y1)y1=h;if(F.water>-1e8){anyWater=true;if(F.water>h-.5)wet=true;}}

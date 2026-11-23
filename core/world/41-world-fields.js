@@ -756,7 +756,7 @@ W.water=(x,z)=>Math.max(W.lakeWater(x,z),riverWater(x,z),streamWater(x,z),pondWa
 // parts per vertex (W.Hp) and calls W.fieldsFrom with the grid's own slope.
 const A={},PP={};
 W.at=function(x,z){const h=H(x,z,0,PP),e=4,hx=H(x+e,z,0,null)-h,hz=H(x,z+e,0,null)-h;
- return fieldsFrom(x,z,h,Math.hypot(hx,hz)/e,PP,A);};
+ fieldsFrom(x,z,h,Math.hypot(hx,hz)/e,PP,A);A.gx=hx/e;A.gz=hz/e;return A;};   /* gx, gz: the gradient, for S6's aspect (W.ground) */
 W.Hp=(x,z,minWave,P)=>H(x,z,minWave||0,P);
 W.PARTS=['base','rel','cd','cut','cw','co','road','dune','rock','wallK','crease','lift'];   /* crease, lift: PLAN-MICRO.md M4 */
 W.fieldsFrom=(x,z,h,tanS,P,out)=>fieldsFrom(x,z,h,tanS,P,out||{});
@@ -791,24 +791,39 @@ W.abyssUp=(h)=>smooth(-1900,300,h);
 // Returns linear RGB in out[0..2] and the bedded-rock weight (the strata shader's) in out[3].
 const GC=[0,0,0],_t=[0,0,0];
 function mixc(o,c,t){o[0]+=(c[0]-o[0])*t;o[1]+=(c[1]-o[1])*t;o[2]+=(c[2]-o[2])*t;}
+// S6's two terms, plain functions of a sample (GRAPHICS-TERRAIN-PROPOSAL section 5; node core/world/test-s6.js):
+//   W.s6wet(S) -> the wetness the colour reads: S.wet shifted by the aspect, +.16 on a steep slope facing the pole (north, -z on
+//     the map: its gradient S.gz > 0) to -.16 facing the sun, by smooth(.05, .45, slope); no gradient (S.gx, S.gz): S.wet
+//   W.s6tint(S, out) -> [r, g, b] multipliers: a hollow (crease > 0) up to 3.5% less red and 4.5% more blue (cooler, the damp and
+//     the shade), a nose (crease < 0) and a knoll (lift) warmer and paler
+const S6T=[1,1,1];
+W.s6wet=S=>{const gx=S.gx==null?0:S.gx,gz=S.gz==null?0:S.gz,gl=Math.hypot(gx,gz),w=S.wet==null?0:S.wet;
+ return gl>1e-6?clamp(w+.16*clamp(gz/gl,-1,1)*smooth(.05,.45,S.slope==null?0:S.slope),0,1):clamp(w,0,1);};
+W.s6tint=(S,out)=>{const ce=S.crease==null?0:S.crease,hol=Math.max(0,ce),nos=Math.max(0,-ce)*.7+Math.max(0,clamp((S.lift==null?0:S.lift)/40,-1,1))*.5;
+ out=out||[0,0,0];out[0]=1-.035*hol+.03*nos;out[1]=1+.005*nos;out[2]=1+.045*hol-.035*nos;return out;};
 W.ground=function(x,z,S,out){const B=blendAt(x,z,BLEND);GC[0]=GC[1]=GC[2]=0;
+ /* S6 (GRAPHICS-TERRAIN-PROPOSAL section 5, 2026-11-23): the aspect shifts the moisture. A slope facing the pole (north: -z on the map)
+    keeps its damp, one facing the sun dries, by its steepness; S.gx, S.gz the ground's gradient where the caller has it (none: no shift) */
+ const wet=W.s6wet(S);
  const n=N7.vn(x/37,z/37)-.5,n2=N6.fbm(x/900,z/900,2)-.5,pav=N5.fbm(x/240+5,z/240-2,2);
  for(let m=0;m<B.n;m++){const P=PALL[B.id[m]],w=B.w[m];
   _t[0]=P.a[0];_t[1]=P.a[1];_t[2]=P.a[2];mixc(_t,P.b,clamp(.5+n2*2.2,0,1));mixc(_t,P.pale,clamp(.25+n*.5,0,1)*.3);mixc(_t,P.b,smooth(.56,.7,pav)*.35);
-  mixc(_t,P.scrub,clamp(.4*smooth(.2,.6,S.wet),0,1));
+  mixc(_t,P.scrub,clamp(.4*smooth(.2,.6,wet),0,1));
   mixc(_t,P.sand,S.dune*.9);
   mixc(_t,P.mtn,smooth(.2,.7,S.upland)*.5);
   mixc(_t,P.rock,S.rock*.55);
   const cg=S.canyon;if(cg>0){mixc(_t,P.gravel,cg*smooth(.2,.6,1-S.flow)*.8);}
-  mixc(_t,P.silt,S.flow*.6);mixc(_t,P.damp,smooth(.6,.95,S.flow)*S.wet*.6);
+  mixc(_t,P.silt,S.flow*.6);mixc(_t,P.damp,smooth(.6,.95,S.flow)*wet*.6);
   /* PLAN-MICRO.md M4, the drainage in the colour (the Menagerie's DEMs show it): a gully's floor damper (its scrub and damp, by how
      wet the land is), a spur's crest paler and drier */
-  const ce=S.crease||0;if(ce>0)mixc(_t,P.damp,ce*ce*(.15+.25*S.wet)*(1-S.rock*.6));else if(ce<0)mixc(_t,P.pale,ce*ce*.22*(1-S.rock*.5));
+  const ce=S.crease||0;if(ce>0)mixc(_t,P.damp,ce*ce*(.15+.25*wet)*(1-S.rock*.6));else if(ce<0)mixc(_t,P.pale,ce*ce*.22*(1-S.rock*.5));
   GC[0]+=_t[0]*w;GC[1]+=_t[1]*w;GC[2]+=_t[2]*w;}
  if(S.salt>0)mixc(GC,lin(SALT),S.salt*smooth(.3,.1,S.slope)*.7);
  if(S.temp<2){const sn=smooth(2,-6,S.temp)*smooth(.75,.45,S.slope);mixc(GC,lin(S.temp<-14?ICE:SNOW),sn);}
  /* the light on the relief: a hollow a little darker, a crest and a knoll above the land's large form (lift) a little lighter */
- const k=(1+n*.12)*(1-.07*(S.crease||0))*(1+.06*clamp((S.lift||0)/40,-1,1));out[0]=GC[0]*k;out[1]=GC[1]*k;out[2]=GC[2]*k;
+ const k=(1+n*.12)*(1-.07*(S.crease||0))*(1+.06*clamp((S.lift||0)/40,-1,1));
+ /* S6: chromatic: a hollow a little cooler (bluer, the damp and the shade), a nose and a knoll a little warmer (the sun-dried crest) */
+ W.s6tint(S,S6T);out[0]=GC[0]*k*S6T[0];out[1]=GC[1]*k*S6T[1];out[2]=GC[2]*k*S6T[2];
  out[3]=clamp(S.rock*1.1-S.dune-S.salt,0,1)*(S.temp<-2?.4:1)*(1-(S.road||0));
  return out;};
 return W;})();
