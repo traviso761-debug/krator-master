@@ -44,6 +44,8 @@ const ofSlope=(x,z)=>{const e=6;return Math.hypot(ofH(x+e,z)-ofH(x-e,z),ofH(x,z+
  g.strokeStyle='#5c8f8a';line(OF_WORKS.race,4);line(OF_WORKS.tail,4);
  // the square (packed earth), the ways at their widths: the avenue and the roads in packed gravel, the streets and lanes cobbled
  const SQ=OF.SQUARE;g.fillStyle='#a69a84';g.fillRect(ogx(SQ.x[0]),ogz(SQ.z[0]),(SQ.x[1]-SQ.x[0])*OFG_PX,(SQ.z[1]-SQ.z[0])*OFG_PX);
+ /* the Iridescent Order's house: its pavings (the Bow Terrace, the forecourt, the terraces' walks, the pool's ledge) in pale stone, its tank */
+ if(OF_HOUSE){g.fillStyle='#b8b1a0';for(const q of OF_HOUSE.pavings){path(q.poly,true);g.fill();}g.fillStyle='#5f8f8c';path(OF_HOUSE.tank,true);g.fill();}
  for(const w of OF.ways){g.strokeStyle=w.cls==='road'?'#a39a82':w.cls==='avenue'?'#a8a194':w.cls==='main'?'#9b9386':'#8f887b';line(w.pts,w.w);}
  // a dooryard of trodden earth under every building, a shade darker than the ground (none under the spans and the boats)
  g.fillStyle='rgba(92,80,64,.35)';for(const p of OF_PLACE){if(p.kind==='bridge'||p.kind==='boat')continue;const b=p.bo,c=Math.cos(p.ry),s=Math.sin(p.ry),hw=b.hw+2,hd=b.hd+2;

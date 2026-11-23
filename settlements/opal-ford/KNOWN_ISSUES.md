@@ -2,8 +2,11 @@
 
 ## Owed (2026-11-23, step OF1)
 
-- **The Iridescent Order's house** (the owner, 2026-11-23): its precinct at the fall's foot is kept clear; its blueprint is drawn
-  (`iridescent/BLUEPRINT.md`); its records, the terraces' ground cuts and the page are the rest of step OF1b.
+- **The Iridescent Order's house** (step OF1b, 2026-11-23): its records stand on the page from the blueprint, the kit's pieces
+  standing in where the kit has no piece of the blueprint's form: the cells are the Qiblai kit's kora arcades (no cell-range
+  piece), the house of studies is the kit's college, a gate temple and four lodges round its court (no 12 m range: the blueprint's
+  ranges round the debate court), the refectory the Xanadu guild hall. No steps are drawn on the risers between the terraces
+  (the Spray Stair is a painted path); the interiors from the sheets are not wired (`?interiors=1` furnishes the kit's own rooms).
 - **The hub is Kirstabal** (`XAN_TUNE.opalford.hub`, `road.ks-opalford`, 85 km) until Gihon's tune record lands from
   `claude/gihon-6258a4`: then the hub and the road go to Gihon, 30 km down the river, as the plan has it. The han is the stage of
   `road.lw-ks`, which passes the ford; the tune does not stop that road here.

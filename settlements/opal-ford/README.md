@@ -15,8 +15,11 @@ its own ground until the Siqārp region is cut (step OF2).
   it, 65 terraced fields and four farmsteads on the slope behind. The blocks are filled by `core/city`'s frontage-courts with the
   Xanadu kit's houses (216 houses, about 1,380 people against the tune's 1,500). Outside the town: the paddies on both banks' flats
   (about 180 basins), the ford's causeway and stones, the mill's weir, three fish weirs, the roads (down to Gihon, up the river to
-  the fall, over the ford and up the south-west bank). **The Iridescent Order's precinct** at the fall's foot is kept clear for
-  its design (`OF.PRECINCT`; PLAN.md section 2b, step OF1b). The people come from the tune (`XAN_TUNE.opalford`, read in place).
+  the fall, over the ford and up the south-west bank). **The Iridescent Order's house** at the fall's foot (`OF.HOUSE`, PLAN.md
+  section 2b, step OF1b; `iridescent/BLUEPRINT.md`): the Qiblai kit's great monastery in the Turquoise dress, the house of studies,
+  the cells on four terraces graded down toward the gorge, the guest house, the infirmary, the service court, the Prismarch's
+  Lodge, eight chortens down the Way of the Colours, the Bridge of the Spray; the Bow Terrace levelled before the hall, the
+  pool's ledge over the water (50 pieces; the Qiblai kit is taken in place, `kit.json` externalDirs, as Lightwall's page takes it). The people come from the tune (`XAN_TUNE.opalford`, read in place).
 - `targets/town/90q-of-world.js` (`[web]`): the sky, the painted ground with the library's sets over it, the far ground, the river
   (a ribbon at its water's height, white water over the fall); the near ground registered with core/drawn.
 - `targets/town/90r-of-build.js` (`[web]`): every record drawn with `VERN.place`, chunk by chunk, with the runtime LOD; the ford,

@@ -3,7 +3,9 @@
   "town": "opal-ford.html"
  },
  "external": [
-  "settlements/opal-ford/gen/69p-kcity-bundle.js", "settlements/opal-ford/gen/69m-of-tune.js", "settlements/opal-ford/gen/86-bio-31b-core-leafset.js",
+  "settlements/opal-ford/gen/69p-kcity-bundle.js",
+  "settlements/opal-ford/gen/69m-of-tune.js",
+  "settlements/opal-ford/gen/86-bio-31b-core-leafset.js",
   "kits/xanadu/extra/69dz-ix-xanadu-extra.js",
   "kits/xanadu/extra/88c-xa-caravanserai.js",
   "kits/xanadu/extra/88d-xa-lakecraft.js",
@@ -22,7 +24,13 @@
   "89zp-of-site.js",
   "90q-of-world.js",
   "90r-of-build.js",
-  "69dz-ix-xanadu-extra.js"
+  "69dz-ix-xanadu-extra.js",
+  "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89q5f-qb-furnish.js",
+  "89q5s-qb-shells.js"
  ],
  "interiors": [
   "town"
@@ -37,5 +45,10 @@
  "furnitureTex": true,
  "interiorSets": [
   "xanadu"
- ]
+ ],
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "pack": "qiblai",
+ "packFrom": "kits/qiblai"
 }

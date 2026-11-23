@@ -137,7 +137,7 @@ About 150 novices sleep in the long dormitories over the refectory, the lecture 
 
 ## Sheet C: the cell terraces down the gorge wall beside the fall (four terraces, drawn in place)
 
-Forty-eight cells on four terraces stepping down toward the gorge, each cut 3 m below the one above into the level bank (12 m in all, down to the pool's ledge over the water; proposed: step OF1b grades the cuts into the page's ground), every cell with its window on the spray of the fall 80 m up the river. Each terrace has its walk in front (the kora's station), its shrine at the fall's end in one of the bow's colours, red at the top to violet at the foot. The Spray Stair links them to the Bow Terrace and the pool's ledge.
+Forty-eight cells on four terraces stepping down toward the gorge, each graded 2.2 m below the one above into the level bank, the pool's ledge 10 m below the Bow Terrace and some 2.5 m over the water (the page's ground: OF.HOUSE), every cell with its window on the spray of the fall 80 m up the river. Each terrace has its walk in front (the kora's station), its shrine at the fall's end in one of the bow's colours, red at the top to violet at the foot. The Spray Stair links them to the Bow Terrace and the pool's ledge.
 
 | # | Room | Kind | Decor | m2 | Pieces |
 |---|---|---|---|---|---|

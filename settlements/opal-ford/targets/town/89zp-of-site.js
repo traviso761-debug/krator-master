@@ -18,8 +18,9 @@
 // the market square at the ford street's head with the han across it, the temple above it, the toll house and the Golden Tears'
 // post at the ford's head; blocks filled by core/city's frontage-courts with the Xanadu kit's houses. Outside the town, placed as
 // hosts in the same instance: the footbridge's spans, the watermill on its race, the terraced fields and farmsteads on the
-// slope behind, the dugouts drawn up by the ford. Not built: the Iridescent Order's precinct at the fall's foot (OF.PRECINCT,
-// the owner, 2026-11-23: "Town first, then design"; PLAN.md step OF1b), kept clear of everything.
+// slope behind, the dugouts drawn up by the ford. At the fall's foot, in its own precinct (OF.PRECINCT; PLAN.md step OF1b): the
+// Iridescent Order's house from its blueprint (iridescent/BLUEPRINT.md), hand-placed records on platforms graded into the ground
+// (OF.HOUSE, ofH), none of the town's in it.
 var OF={SEED:96413,PIN:[969,1634],Y0:-13,DOWN:[-11,-8.5],
  RIVER:{hw:26,depth:2.4,ford:{hw:18,depth:1.8,len:110},meander:[30,1300,200]},
  REACH:{slack:[-1500,2500],slackRise:.0008,down:.012,up:.009,fall:{z:3100,h:20,len:90,gorge:420}},
@@ -27,7 +28,10 @@ var OF={SEED:96413,PIN:[969,1634],Y0:-13,DOWN:[-11,-8.5],
  SW:{bank:1.6,flats:130,spur:320,spurK:1800},
  TOWN:{o:[700,0],half:900,bank:460,high:620,back:800,z:[-440,440],cross:[-300,-140,140,300]},
  SQUARE:{x:[470,602],z:[16,128]},
- PRECINCT:{x:[90,560],z:[2580,3020]}};
+ PRECINCT:{x:[90,560],z:[2580,3045]},
+ /* the Iridescent Order's house (settlements/opal-ford/iridescent/BLUEPRINT.md): its site frame is u = z - 2860, v = x - 300;
+    the Bow Terrace levelled, the four cell terraces graded 2.2 m apart below it and the pool's ledge below them */
+ HOUSE:{z0:2860,x0:300,bow:{u:[20,140],v:[-62,-22]},terr:[-70,-105,-140,-175],cut:2.2,tu:[88,174],ledge:{u:[143,180],v:[-214,-203],below:10},blend:5}};
 const ofSm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
 const ofD=(v,d)=>v==null?d:v;
 // the river: its line (x of the channel's middle at z), its half-width and depth (the ford widens and shoals it)
@@ -43,7 +47,22 @@ function ofW(z){const R=OF.REACH,s=R.slack,F=R.fall;let y;
 // the valley's floor level at z: the water's, but the fall's step taken earlier (the banks stand over the river below it: the gorge)
 function ofFloor(z){const F=OF.REACH.fall;return ofW(z)-F.h*ofSm(F.z-F.len/2,F.z+F.len/2,z)+F.h*ofSm(F.z-F.gorge,F.z+F.len/2,z);}
 // the ground's height at page (x, z): the channel, then each bank's profile from the channel's edge (e metres out)
-function ofH(x,z){const w=ofW(z),c=ofRiverX(z),hw=ofHW(z),d=x-c,a=Math.abs(d);
+// the ground with the Iridescent Order's platforms graded into it (OF.HOUSE): the Bow Terrace levelled at its middle's height,
+// the four cell terraces 2.2 m apart below it, the pool's ledge 10 m below it; each a level platform blended into the bank over
+// OF.HOUSE.blend metres at its edges (cut where the bank stands higher, filled where it stands lower)
+let ofBowY=null;
+function ofHouseRects(){const Hh=OF.HOUSE,R=[{u:Hh.bow.u,v:Hh.bow.v,drop:0}];
+ Hh.terr.forEach((vt,k)=>R.push({u:Hh.tu,v:[vt-17,vt+(k?18:2)],drop:Hh.cut*(k+1)}));
+ R.push({u:Hh.ledge.u,v:Hh.ledge.v,drop:Hh.ledge.below});return R;}
+const OF_HOUSE_RECTS=ofHouseRects();
+function ofH(x,z){const y=ofHbare(x,z),Hh=OF.HOUSE,u=z-Hh.z0,v=x-Hh.x0;
+ if(u<Hh.bow.u[0]-Hh.blend||u>Hh.ledge.u[1]+Hh.blend||v<Hh.ledge.v[0]-Hh.blend||v>Hh.bow.v[1]+Hh.blend)return y;
+ if(ofBowY==null)ofBowY=ofHbare(Hh.x0+(Hh.bow.v[0]+Hh.bow.v[1])/2,Hh.z0+(Hh.bow.u[0]+Hh.bow.u[1])/2);
+ const b=Hh.blend;let bw=0,bl=0;for(const r of OF_HOUSE_RECTS){if(u<r.u[0]-b||u>r.u[1]+b||v<r.v[0]-b||v>r.v[1]+b)continue;
+  const w=ofSm(-b,0,u-r.u[0])*ofSm(-b,0,r.u[1]-u)*ofSm(-b,0,v-r.v[0])*ofSm(-b,0,r.v[1]-v);
+  if(w>bw){bw=w;bl=ofBowY-r.drop;}}   /* the platform it stands most within: adjacent terraces meet in a riser */
+ return bw>0?y+(bl-y)*bw:y;}
+function ofHbare(x,z){const w=ofW(z),c=ofRiverX(z),hw=ofHW(z),d=x-c,a=Math.abs(d);
  if(a<hw){const t=a/hw;return w-ofDepth(z)*(1-t*t);}
  const e=a-hw,L=ofFloor(z),lift=Math.max(0,L-w),N=OF.NE,S=OF.SW;
  let y=w+(lift+N.bank)*ofSm(0,14+2*lift,e);
@@ -171,8 +190,56 @@ function ofWorks(){const c0=ofRiverX(0),hw0=ofHW(0),W={};
   {tag:'the opal road up the south-west bank',w:6,pts:[[cw0-hw0-2,0],[-150,120],[-215,700],[-235,1500],[-255,2400],[-300,3500]]}];
  return W;}
 
+// ---------------------------------------------------------------- THE IRIDESCENT ORDER'S HOUSE (iridescent/BLUEPRINT.md; PLAN.md step OF1b)
+// The blueprint's buildings as records in its site frame (u up the river, v north-east: page x = v + 300, z = u + 2860), each
+// the kit piece that stands for it: the Qiblai kit's great monastery in the Turquoise dress (o.v 4) for sheets M1-MR, its gate
+// north-east and the Hall of the Bow toward the spray; the house of studies as the kit's college, a gate temple and four lodges
+// round the debate court (H1, H2: the kit has no 12 m range, the lodges stand for the dormitories); the cells as the kit's kora
+// arcades on the four graded terraces (C: no cell-range piece yet), a chorten at each terrace's fall end; the guest house as the
+// kit's caravanserai, the infirmary and the Prismarch's Lodge as its lodges, the service court in the Xanadu kit's pieces (G);
+// eight chortens down the Way of the Colours; the Bridge of the Spray (two spans) below the pool and the chorten on the far lip.
+// [key, u, v, facing ('+u' up the river, '-u' down it, '+v' away from the river, '-v' toward it), why, o.v, fy (a fixed floor
+// over the water: the spans)]
+const OF_FACE={'+u':0,'-u':Math.PI,'+v':Math.PI/2,'-v':-Math.PI/2};
+const OF_HOUSE_SPEC=(function(){
+ const S=[],TR=OF.HOUSE.terr;
+ S.push(['qb_monastery',50,20,'+v','the great monastery: the Hall of the Bow under the gilt crown, the Gallery of the Bow in moonglass facing the spray (sheets M1, M2, MR)',4]);
+ S.push(['qb_wheel_house',36,80,'+u','the forecourt\'s wheel house',0],['qb_wheel_house',64,80,'-u','the forecourt\'s wheel house',0],['qb_chorten',50,86,'-v','the eighth chorten, before the Gate of the White Light',0]);
+ S.push(['qb_guild_lodge',107,43,'-u','the Prismarch\'s Lodge: kept for the Prismarch of the Turquoise spoke on his way to Qiblai',0]);
+ TR.forEach((vt,k)=>{S.push(['qb_kora_arcade',107.2,vt-4,'-v','terrace '+(k+1)+': the cells (the kit\'s kora arcade stands for the cell range)',0],
+  ['qb_kora_arcade',131.6,vt-4,'-v','terrace '+(k+1)+': the cells',0],['qb_chorten',157,vt-5,'-v','terrace '+(k+1)+'\'s shrine, in '+['red','orange and yellow','green and turquoise','blue and violet'][k],0]);});
+ S.push(['qb_gate_temple',-110,150,'-v','the Gate of the Novices (the house of studies, sheet H1)',0],['qb_college',-110,201,'-v','the school of the divided light: lecture halls, the library, the scriptorium',0],
+  ['qb_guild_lodge',-140,160,'+u','a novices\' lodge (the dormitories, sheet H2)',0],['qb_guild_lodge',-140,200,'+u','a novices\' lodge',0],
+  ['qb_guild_lodge',-80,160,'-u','a novices\' lodge',0],['qb_guild_lodge',-80,200,'-u','the masters\' lodge',0],['qb_chorten',-110,171.5,'-v','the prism pillar of the debate court',0]);
+ S.push(['qb_gate_temple',-273,111,'-u','the Gate of the Road, on the river road from the town',0],['qb_caravanserai',-229,168,'-v','the guest house: the pilgrims and the opal road\'s travellers, its stable court',0],
+  ['qb_guild_lodge',-173,170,'-u','the infirmary',0],['qb_guild_lodge',-173,196,'-u','the apothecary',0],
+  ['xa_guild_farm',-46,142,'-v','the monks\' refectory (the Song read at meals)',0],['qb_bakery',-16,142,'-v','the great kitchen',0],
+  ['xa_granary',-50,184,'-v','the granary (the town\'s rice tithe)',0],['xa_granary',-28,184,'-v','the stores',0],['qb_workshop',-6,184,'-v','the laundry and dye house',0],
+  ['qb_workshop',-50,216,'-v','the Prism Workshop: the Glaziers\' lodge',0],['qb_workshop',-34,216,'-v','the glass store',0]);
+ [['xa_poor_c',-140],['xa_poor_a',-121],['xa_poor_b',-100],['xa_poor_c',-81]].forEach(([k,u])=>S.push([k,u,242,'-v','a lay servant\'s house',0]));
+ for(let k=0;k<8;k++)S.push(['qb_chorten',-250+23*k,128,'-v','a chorten of the Way of the Colours: '+['red','orange','yellow','green','turquoise','blue','violet','white'][k],0]);
+ return S;})();
+function ofHouse(){const K=KCITY.lib,Hh=OF.HOUSE,out=[],errs=[];
+ const put=(key,x,z,ry,why,v0,kind,fy)=>{const v=v0|0,D=ofDims(key,v);if(!D){errs.push(key);return;}
+  const u=[Math.cos(ry),-Math.sin(ry)],o=K.obb([x,z],u,D.w/2,D.d/2);let y,drop=0;
+  if(fy!=null)y=ofW(z)+fy;else{const st=KCITY.stance(o,ofH,{maxDrop:24});y=st?st.y:ofH(x,z);if(st)drop=st.drop||0;}
+  out.push({id:'house:'+out.length,key,v,x,z,ry,w:D.w,d:D.d,h:D.h,o:{v,y},kind,why,court:null,bo:{c:[x,z],u:o.u,hw:D.w/2,hd:D.d/2},drop});};
+ for(const [key,su,sv,f,why,v] of OF_HOUSE_SPEC)put(key,sv+Hh.x0,su+Hh.z0,OF_FACE[f],why,v,'order');
+ /* the Bridge of the Spray below the pool, and the chorten on the far lip where the kora turns */
+ const zb=Hh.z0+165,cb=ofRiverX(zb),hwb=ofHW(zb);
+ for(const i of[-1,1])put('xa_river_span',cb+i*13,zb,Math.PI/2,'the Bridge of the Spray: the kora crosses below the pool',0,'bridge',4);
+ put('qb_chorten',cb-hwb-34,zb,Math.PI/2,'the chorten on the far lip, facing the fall: the kora turns here',0,'order');
+ /* the pavings and the kora's paths, in page metres (drawn by 90q's paint and 90r) */
+ const P=(u,v)=>[v+Hh.x0,u+Hh.z0],rect=(us,vs)=>[P(us[0],vs[0]),P(us[1],vs[0]),P(us[1],vs[1]),P(us[0],vs[1])];
+ const pav=[{what:'the Bow Terrace',poly:rect(Hh.bow.u,Hh.bow.v)},{what:'the forecourt',poly:rect([30,70],[48,92])},{what:'the pool\'s ledge',poly:rect(Hh.ledge.u,Hh.ledge.v)}]
+  .concat(Hh.terr.map((vt,k)=>({what:'terrace '+(k+1)+'\'s walk',poly:rect([92,170],[vt-15,vt-9])})));
+ const ways=[{cls:'path',w:6,tag:'the Way of the Colours',pts:[P(-268,110),P(-60,110),P(20,96),P(50,62)]},
+  {cls:'path',w:3,tag:'the Kora of the Falls: down the Spray Stair',pts:[P(140,-42),P(166,-48),P(166,-208),P(160,-210)]},
+  {cls:'path',w:3,tag:'the kora up the far bank',pts:[[cb-hwb-2,zb],[cb-hwb-30,zb]]}];
+ return{place:out,errs,pavings:pav,ways,tank:rect([-60,-20],[72,98]),bridge:{z:zb}};}
+
 // ---------------------------------------------------------------- run the plan
-var OF_TOWN={},OF_PLACE=[],OF_WORKS=null,OF_ERR=null;
+var OF_TOWN={},OF_PLACE=[],OF_WORKS=null,OF_HOUSE=null,OF_ERR=null;
 function ofRun(){
  const C=KCITY.create({name:'opal-ford',tune:ofTune(OF.TOWN.half),seed:OF.SEED,ground:{h:OF_L.h},kit:{dims:ofDims},rand:'krand',index:{order:'insertion'},steps:ofSteps()});
  OF_TOWN.C=C;OF_TOWN.plan=C.run();OF_WORKS=ofWorks();
@@ -181,6 +248,8 @@ function ofRun(){
    kind:T.cls==='landmark'?(T.ofKind||'civic'):'house',why:T.why||T.role||null,court:T.court||null,bo:{c:q,u:T.bo.u,hw:T.bo.hw,hd:T.bo.hd},drop:T.drop||0});}
  OF.ways=OF_TOWN.plan.ways.map(w=>({cls:w.cls,w:w.w,tag:w.tag,pts:w.pts.map(p=>[p[0]+OF_L.o[0],p[1]+OF_L.o[1]]),closed:w.closed}))
   .concat(OF_WORKS.roads.map(r=>({cls:'road',w:r.w,tag:r.tag,pts:r.pts})));
+ /* the Iridescent Order's house, after the town (its records in OF_PLACE with kind 'order' and 'bridge', its paths with the ways) */
+ OF_HOUSE=ofHouse();for(const p of OF_HOUSE.place)OF_PLACE.push(p);OF.ways=OF.ways.concat(OF_HOUSE.ways);
  /* the people: each house's household by its key (the tune's 1,500, within 25 %), the hosts none */
  let people=0;for(const p of OF_PLACE)if(p.kind==='house')people+=ofD(OF_PEOPLE[p.key],5);
  OF.people={total:people,tune:OF_TUNE.people};
@@ -201,7 +270,9 @@ function ofBioMaskMake(){const S=KCITY.lib.KSPACE,B=S.create({cell:40}),W=S.crea
   for(const q of W.query(x,z,1)){const dx=q.b[0]-q.a[0],dz=q.b[1]-q.a[1],L2=Math.max(1e-9,dx*dx+dz*dz);let t=((x-q.a[0])*dx+(z-q.a[1])*dz)/L2;t=t<0?0:t>1?1:t;if(Math.hypot(q.a[0]+dx*t-x,q.a[1]+dz*t-z)<q.r)return 0;}
   for(const p of B.query(x,z,1))if(Math.abs((x-p.x)*p.bo.u[0]+(z-p.z)*p.bo.u[1])<p.bo.hw+1.5&&Math.abs(-(x-p.x)*p.bo.u[1]+(z-p.z)*p.bo.u[0])<p.bo.hd+1.5)return 0;
   for(const q of Pd.query(x,z,1))if(ofInPoly([x,z],q.poly))return 0;
-  if(x>PR.x[0]&&x<PR.x[1]&&z>PR.z[0]&&z<PR.z[1])return .02;                                    /* the precinct's clearing, kept */
+  if(x>PR.x[0]&&x<PR.x[1]&&z>PR.z[0]&&z<PR.z[1]){                                              /* the house's grounds (sheet S0) */
+   const u=z-OF.HOUSE.z0,v=x-OF.HOUSE.x0,inR=(u0,u1,v0,v1)=>u>u0&&u<u1&&v>v0&&v<v1;
+   if(inR(-262,-80,-150,96))return .5;if(inR(-262,-150,-210,-158))return .3;if(inR(92,150,66,124))return .22;if(inR(-60,14,-60,60))return .12;return .03;}
   const F=OF.REACH.fall;if(z>F.z-F.gorge-200&&z<F.z+300&&e<160)return .9;                      /* the gorge below the fall and its lip */
   if(d<0)return e<OF.SW.flats?.06:.75;                                                          /* the south-west bank: its flats, the spur */
   if(x>T.bank-20&&x<T.back+20&&z>T.z[0]&&z<T.z[1])return .05;                                    /* a yard in the town */
@@ -212,4 +283,5 @@ if(typeof BIO!=='undefined'&&BIO.host&&typeof VERN!=='undefined'&&!OF_ERR){
    flow:(x,z)=>Math.max(0,1-(Math.abs(x-ofRiverX(z))-ofHW(z))/30),mist:(x,z)=>Math.max(0,1-Math.hypot(x-ofRiverX(z),z-OF.REACH.fall.z)/220)}});}
 if(typeof window!=='undefined')window._opalford={placed:OF_PLACE.length,err:OF_ERR,people:OF.people,
  hosts:OF_PLACE.filter(p=>p.kind!=='house').length,houses:OF_PLACE.filter(p=>p.kind==='house').length,
- blocks:(OF_TOWN.blocks||[]).length,ways:(OF.ways||[]).length,paddies:OF_WORKS?OF_WORKS.paddies.length:0};
+ blocks:(OF_TOWN.blocks||[]).length,ways:(OF.ways||[]).length,paddies:OF_WORKS?OF_WORKS.paddies.length:0,
+ house:OF_HOUSE?{placed:OF_HOUSE.place.length,errs:OF_HOUSE.errs,bow:ofBowY}:null};

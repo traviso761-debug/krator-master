@@ -36,8 +36,10 @@ CITY_JS = r"""
   const b=p.bo,c=Math.cos(p.ry),s=Math.sin(p.ry),hs=[[0,0],[-b.hw,-b.hd],[b.hw,-b.hd],[b.hw,b.hd],[-b.hw,b.hd]].map(q=>ofH(p.x+q[0]*c+q[1]*s,p.z-q[0]*s+q[1]*c));
   const lo=ofH(p.x,p.z)-(p.drop||0)-.8,hi=Math.max.apply(null,hs)+1;if(!(p.o.y>=lo&&p.o.y<=hi)){bad++;first=first||(p.id+' '+p.key+' floor '+p.o.y.toFixed(1)+' ground '+hs[0].toFixed(1));}}
  R.push({name:'of-ground',ok:bad===0,detail:bad?bad+' off their ground, first '+first:'every floor on its ground (its footing under it)'});
- const Wk=Q.works||{},PR=typeof OF!=='undefined'?OF.PRECINCT:null,inPr=PR?P.filter(p=>p.x>PR.x[0]&&p.x<PR.x[1]&&p.z>PR.z[0]&&p.z<PR.z[1]).length:-1;
- R.push({name:'of-works',ok:Wk.stone>40&&Wk.stakes>100&&inPr===0,detail:(Wk.stone||0)+' stones of the ford and the weir, '+(Wk.stakes||0)+' stakes, '+inPr+' buildings in the precinct'});}
+ const Wk=Q.works||{},PR=typeof OF!=='undefined'?OF.PRECINCT:null,inPr=PR?P.filter(p=>p.kind!=='order'&&p.kind!=='bridge'&&p.x>PR.x[0]&&p.x<PR.x[1]&&p.z>PR.z[0]&&p.z<PR.z[1]).length:-1;
+ R.push({name:'of-works',ok:Wk.stone>40&&Wk.stakes>100&&inPr===0,detail:(Wk.stone||0)+' stones of the ford and the weir, '+(Wk.stakes||0)+' stakes, '+inPr+' of the town\'s buildings in the precinct'});
+ const Ho=Q.house||{},mon=P.find(p=>p.key==='qb_monastery'),hd=P.filter(p=>p.kind==='order'||p.kind==='bridge');
+ R.push({name:'of-house',ok:Ho.placed>=40&&!(Ho.errs||[]).length&&!!mon&&mon.v===4&&!!mon.G,detail:(Ho.placed||0)+' pieces of the Iridescent Order\'s house, '+hd.filter(p=>p.G).length+' drawn'+((Ho.errs||[]).length?', no def: '+Ho.errs.join(', '):'')+(mon?', the great monastery in dress '+mon.v:', no great monastery')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + CITY_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

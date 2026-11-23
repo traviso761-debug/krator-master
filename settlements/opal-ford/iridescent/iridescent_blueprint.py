@@ -59,7 +59,7 @@ def of_h_ne(x, z):
 BLK = (22, 78, -8, 48)
 COLL = (-150, -70, 140, 220)           # the house of studies, 80 x 80 m round its debate court
 TERR = [(-70 - 35 * k) for k in range(4)]   # the cell terraces' upper edges (v), stepping down toward the gorge
-CUT = 3.0                                   # each terrace graded 3 m below the one above (the page's bank is level: OF1b grades the cuts)
+CUT = 2.2                                   # each terrace graded 2.2 m below the one above (the page's OF.HOUSE.cut: the ledge stays over the water)
 FLOORS.append(dict(R=300, rect=(-290, 190, -270, 275), id='S0', tier=0,
   title='Sheet S0: the Iridescent Order\'s house at the cataract\'s foot, the precinct (480 x 545 m)',
   sub='On the north-east bank below the bow\'s fall (off the sheet to the right, at u 240): the flats, the riser of the first rise above the flood and the bench\'s edge, the gorge wall falling to the river at the bottom. '
@@ -247,7 +247,7 @@ crooms += [box(n, 'The Spray Stair', 'stair', SPRAY, 1, 'the kora goes down it; 
            R(n + 3, 'The Bow Terrace (above)', 'bow_terrace', 92, 170, -62, -50, 3)]
 FLOORS.append(dict(R=80, rect=(86, 182, -216, -46), id='C', tier=0,
   title='Sheet C: the cell terraces down the gorge wall beside the fall (four terraces, drawn in place)',
-  sub='Forty-eight cells on four terraces stepping down toward the gorge, each cut 3 m below the one above into the level bank (12 m in all, down to the pool\'s ledge over the water; proposed: step OF1b grades the cuts into the page\'s ground), every cell with its window on the spray of the fall 80 m up the river. '
+  sub='Forty-eight cells on four terraces stepping down toward the gorge, each graded 2.2 m below the one above into the level bank, the pool\'s ledge 10 m below the Bow Terrace and some 2.5 m over the water (the page\'s ground: OF.HOUSE), every cell with its window on the spray of the fall 80 m up the river. '
       'Each terrace has its walk in front (the kora\'s station), its shrine at the fall\'s end in one of the bow\'s colours, red at the top to violet at the foot. The Spray Stair links them to the Bow Terrace and the pool\'s ledge.',
   axisnote='u -> up the river, toward the fall (right); v north-east (up); the river below',
   lines=[([(86, -214), (182, -214)], (90, 150, 170), 4, 'the river\'s edge below the ledge')],
@@ -362,6 +362,7 @@ def draw_section():
     def gy(v):
         """the ground with the terraces' cuts (proposed: the page's bank is level here; step OF1b grades the cuts into its ground)"""
         if v > TERR[0]: return gn(v)
+        if v <= -203: return min(gn(v), gflat - 10)          # the pool's ledge (OF.HOUSE.ledge.below)
         k = min(3, int((TERR[0] - v) // 35))
         return min(gn(v), gflat - CUT * (k + 1))
     y0 = min(gy(v) for v in range(vmin, vmax + 1)) - 4

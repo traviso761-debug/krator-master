@@ -6,7 +6,9 @@
 //   - no two standing footprints overlap (exact SAT, 0.1 m);
 //   - no house stands on a street's carriageway or a road's;
 //   - nothing but the footbridge's spans and the dugouts stands in the river; the dugouts at the waterline;
-//   - nothing on a paddy, nothing in the Iridescent Order's precinct (kept for its design, PLAN.md step OF1b);
+//   - nothing on a paddy, nothing of the town's in the Iridescent Order's precinct;
+//   - the house (iridescent/BLUEPRINT.md): every piece with its def, the great monastery in the Turquoise dress, the cells'
+//     arcades on their graded terraces, the Bow Terrace level, the pool's ledge over the water;
 //   - the people the tune's 1,500 within 25 %;
 //   - the han, the toll house, the Tears' post, the temple, the granaries, the mill, the footbridge, the dugouts, the terraces placed;
 //   - the plan is the same when run twice (KRAND).
@@ -23,9 +25,9 @@ KCITY.lib = { SL, plan: () => PLAN, KSPACE, Raster, OCC, obb, obbCorners };
 load('core/region/data/xan-tune.js');
 // the kit's boxes from its defs (src and the opt-in extra/ pieces the page takes: kit.json)
 global.OF_KIT_DIMS = {};
-const XS = [path.join(ROOT, 'kits', 'xanadu', 'src'), path.join(ROOT, 'kits', 'xanadu', 'extra')];
+const XS = [path.join(ROOT, 'kits', 'xanadu', 'src'), path.join(ROOT, 'kits', 'xanadu', 'extra'), path.join(ROOT, 'kits', 'qiblai', 'src')];   /* qiblai: the Iridescent Order's house */
 for (const f of [].concat(...XS.map(d => fs.readdirSync(d).filter(f => f.endsWith('.js')).map(f => path.join(d, f))))) {
-  const s = fs.readFileSync(f, 'utf8'), re = /XA\.def\(\{/g; let m;
+  const s = fs.readFileSync(f, 'utf8'), re = /(?:XA|QB)\.def\(\{/g; let m;
   while ((m = re.exec(s))) { const head = s.slice(m.index, m.index + 1500), k = /key:\s*'([^']+)'/.exec(head), b = /\bw:\s*([\d.]+),\s*d:\s*([\d.]+)(?:,\s*h:\s*([\d.]+))?/.exec(head);
     if (k && b && !OF_KIT_DIMS[k[1]]) OF_KIT_DIMS[k[1]] = { w: +b[1], d: +b[2], h: b[3] == null ? 8 : +b[3] }; }
 }
@@ -48,7 +50,7 @@ const WET_OK = { xa_river_span: 1, xa_dugout: 1 };
 const inRiver = list => list.filter(p => !WET_OK[p.key] && corners(p.bo).concat([p.bo.c]).some(q => ofH(q[0], q[1]) < ofW(q[1]) + 0.3));
 const boatsBad = list => list.filter(p => p.key === 'xa_dugout').filter(p => { const h = ofH(p.x, p.z) - ofW(p.z); return h < -1.2 || h > 1.6; });
 const onPaddy = list => list.filter(p => corners(p.bo).concat([p.bo.c]).some(q => OF_WORKS.paddies.some(P => ofInPoly(q, P.poly))));
-const inPrecinct = list => { const R = OF.PRECINCT; return list.filter(p => corners(p.bo).concat([p.bo.c]).some(q => q[0] > R.x[0] && q[0] < R.x[1] && q[1] > R.z[0] && q[1] < R.z[1])); };
+const inPrecinct = list => { const R = OF.PRECINCT; return list.filter(p => p.kind !== 'order' && p.kind !== 'bridge').filter(p => corners(p.bo).concat([p.bo.c]).some(q => q[0] > R.x[0] && q[0] < R.x[1] && q[1] > R.z[0] && q[1] < R.z[1])); };
 
 // ---------------------------------------------------------------- 1. the plan lays
 const P = OF_PLACE, houses = P.filter(p => p.kind === 'house');
@@ -78,10 +80,26 @@ T.ok('nothing but the footbridge\'s spans and the dugouts stands in the river; t
 
 // ---------------------------------------------------------------- 5. off the paddies; the precinct kept
 const pd = onPaddy(P), pr = inPrecinct(P);
-T.ok('nothing stands on a paddy; nothing in the Iridescent Order\'s precinct (kept for its design)', !pd.length && !pr.length && OF_WORKS.paddies.length > 60,
+T.ok('nothing stands on a paddy; nothing of the town\'s in the Iridescent Order\'s precinct', !pd.length && !pr.length && OF_WORKS.paddies.length > 60,
   pd.length + ' on a paddy' + (pd[0] ? ' (' + pd[0].id + ' ' + pd[0].key + ')' : '') + ', ' + pr.length + ' in the precinct, ' + OF_WORKS.paddies.length + ' paddies');
 { const a = houses[0], R = OF.PRECINCT, inp = Object.assign({}, a, { id: 'in', bo: Object.assign({}, a.bo, { c: [(R.x[0] + R.x[1]) / 2, (R.z[0] + R.z[1]) / 2] }) });
   T.neg('...its negative: a house set in the precinct is caught', L => inPrecinct(L).length === 0, [inp], [a]); }
+
+// ---------------------------------------------------------------- 5b. the Iridescent Order's house (iridescent/BLUEPRINT.md)
+// every piece with its def; the great monastery in the Turquoise dress (o.v 4); each terrace's arcades standing on its graded
+// level (the Bow Terrace's less 2.2 m a terrace); the Bow Terrace level over its whole length; the pool's ledge over the water
+function houseBad(H, bowY) { const bad = [], Hh = OF.HOUSE;
+  if (H.errs.length) bad.push('no def: ' + H.errs.join(', '));
+  const m = H.place.find(p => p.key === 'qb_monastery'); if (!m || m.v !== 4) bad.push('the great monastery missing or not Turquoise');
+  H.place.filter(p => p.key === 'qb_kora_arcade').forEach(p => { const k = Hh.terr.findIndex(vt => Math.abs(p.x - Hh.x0 - (vt - 4)) < 1), lv = bowY - Hh.cut * (k + 1);
+    if (k < 0 || Math.abs(ofH(p.x, p.z) - lv) > .3) bad.push(p.id + ' off its terrace (' + ofH(p.x, p.z).toFixed(2) + ' / ' + lv.toFixed(2) + ')'); });
+  for (const u of [Hh.bow.u[0] + 6, (Hh.bow.u[0] + Hh.bow.u[1]) / 2, Hh.bow.u[1] - 6]) { const h = ofH(Hh.x0 - 42, Hh.z0 + u); if (Math.abs(h - bowY) > .05) bad.push('the Bow Terrace not level at u ' + u + ' (' + h.toFixed(2) + ')'); }
+  for (const u of Hh.ledge.u) { const z = Hh.z0 + u, x = Hh.x0 + (Hh.ledge.v[0] + Hh.ledge.v[1]) / 2; if (ofH(x, z) - ofW(z) < 1.5) bad.push('the pool\'s ledge ' + (ofH(x, z) - ofW(z)).toFixed(2) + ' m over the water at u ' + u); }
+  return bad; }
+{ const H = OF_HOUSE, bad = houseBad(H, ofBowY);
+  T.ok('the Iridescent Order\'s house: ' + H.place.length + ' pieces, the monastery Turquoise, the cells on their terraces, the Bow Terrace level, the ledge over the water',
+    !bad.length && H.place.length >= 40, bad.slice(0, 4).join('; ') || ('the Bow Terrace at ' + ofBowY.toFixed(2) + ' m over the ford\'s water'));
+  T.neg('...its negative: the cells checked against the wrong level are caught', b => houseBad(H, b).length === 0, ofBowY + 1, ofBowY); }
 
 // ---------------------------------------------------------------- 6. the people and the hosts
 const ppl = OF.people.total, tune = OF.people.tune;

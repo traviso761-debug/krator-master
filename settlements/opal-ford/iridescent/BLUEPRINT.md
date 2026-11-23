@@ -119,9 +119,10 @@ the prayer flags; inside, the colour charts on silk and the white Chapel of the 
 ## Assumptions and open points
 
 - **The ground.** The town page's bank is level from the forecourt to the gorge's lip (the flats at about 11 m over the water at
-  the block's axis, more toward the fall). The cell terraces are cuts graded into it, 3 m each, 12 m in all, down to the pool's
-  ledge; step OF1b grades them into the page's ground (`ofH`) with the precinct's records. The forecourt is levelled into the
-  riser's foot (a cut of 2 to 3 m).
+  the block's axis, more toward the fall). The page grades the house's platforms into it (`OF.HOUSE` in
+  `targets/town/89zp-of-site.js`, `ofH`): the Bow Terrace levelled at its middle's height, the four cell terraces 2.2 m apart
+  below it, the pool's ledge 10 m below it and some 2.5 m over the water (3 m a terrace would put the ledge under the river).
+  The forecourt is not levelled; the block stands on the kit's stance.
 - **The block's heights** are the kit's (`qb_monastery`: the ranges two storeys, the hall three, the crown); the gallery's
   moonglass wall is the hall's third storey's back wall, above the back range's roof.
 - **The kora's far side** (the Bridge of the Spray below the pool, the chorten on the south-west lip) is off the precinct and

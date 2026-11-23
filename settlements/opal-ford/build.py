@@ -68,8 +68,13 @@ def write_gen():
 
 
 BSRC.note(*([SPACE, TUNE] + ['core/city/' + f for f in CITY_JS] + sorted(BIO_MIN.values())))
+# the Xanadui script the Qiblai kit lifts from the chart (kits/qiblai/xanadui_script.py), current before its fragments are read
+# (the Iridescent Order's house is the Qiblai kit's: kit.json externalDirs kits/qiblai/src, as settlements/lightwall takes it)
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'qiblai')); import xanadui_script
+BSRC.note(xanadui_script.CHART, os.path.join(ROOT, 'kits', 'qiblai', 'xanadui_script.py'))
 if not BSRC.LISTING:
     write_gen()
+    xanadui_script.write()
 
 if '--no-checks' not in sys.argv:
     if subprocess.call([sys.executable, os.path.join(ROOT, 'tools', 'check_port.py'), '--quiet', HERE]) != 0:
