@@ -91,7 +91,7 @@ cut site or a pin only), **3 sited**, **32 with a tune record or nothing**. Now:
 | **A9** | Countryside H2 | The sample module (`core/world/48v`, `88v`), opt-in, on `xanadu-lake-shore` and `xanadu-north-shore` | A5 (the regions settled) | 1 |
 | **A10** | (the scale-model queue) | The records-only batch of section 4 | its turn in the queue | |
 | **A11** | Ōpal-Phōrḍ OF1 | The river town's page on Xanadu's page (`--kit`), on its own ground; its tune record and the road (the owner: records with the build) | A5 | 1 |
-| **A12** | West villages H6 | Wesṭ-Rōḍ and Rim-Phārm on the Lake Shore region (`HAMLETS-PLAN.md` 3d, H6): two sites, the cut widened west, their hamlets | A5 | 1 |
+| **A12** (**in part** 2026-11-23: the sites and the cut; the villages held, their 1:1 ground refuses half their houses) | West villages H6 | Wesṭ-Rōḍ and Rim-Phārm on the Lake Shore region (`HAMLETS-PLAN.md` 3d, H6): two sites, the cut widened west, their hamlets | A5 | 1 |
 
 About **11-13 sessions** (est.). **Merged on this branch 2026-11-23** (local, 2e0516bf3): A1-A3, A7, A8 and STACK-PLAN XS0 (partial), XS1, XS2, from their cloud branches. A1 first; then A2-A5 one at a time (they share the target's fragments: two writers never
 touch the same files), A7 and A8 beside them (their own files), A9 after A5. **Phase A is done** when every lake town and

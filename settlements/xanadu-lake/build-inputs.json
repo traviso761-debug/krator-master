@@ -259,7 +259,7 @@
     "settlements/xanadu-lake/kit.json": "7c71b44ee16a5fbce9d41476826b29ad00a5c4822142f0c989c3bd3ea3d8ef5b",
     "settlements/xanadu-lake/targets/town/89z-rows.js": "37c569aea3be7ef886b9f7fb61d80f2b778bcd2aa7f416a93f0ceb5a485e3a87",
     "settlements/xanadu-lake/targets/town/89zl-xl-specs.js": "5b06863ce93b88c97322245afeb3bd5c24ac98aa4c48a3b45b8d2820c3bd678c",
-    "settlements/xanadu-lake/targets/town/89zm-xl-fit.js": "4d9522a173325ea8695325edc6e065db086d3ddb4508caaa0b4910c14ef88291",
+    "settlements/xanadu-lake/targets/town/89zm-xl-fit.js": "4f3e801408a72f8f8ec03ec2e7e23583584d92a60d907cedbc3f27d683ed35e5",
     "settlements/xanadu-lake/targets/town/89zp-xl-site.js": "218f92f892bfb2938a1456fcfc8ad9da7d19d260bce4574d968575a067a7f146",
     "settlements/xanadu-lake/targets/town/89zq-xl-plan.js": "ed1d8dfa0044112153c17ce72613d42e5176ca369b228bbee473a8c76a72c721",
     "settlements/xanadu-lake/targets/town/90q-xl-world.js": "cfc04f66759c3efd0734fa4339d02fbf9439c5dbf746f1074771d25799a38ed0",
@@ -479,14 +479,14 @@
     "tools/textures": "fa8de3e4e1df6a9ae0b8c4444df219a259e6be8b65d23976deb8568cf975c662"
    },
    "outputs": {
-    "settlements/xanadu-lake/build-manifest-town.json": "504867f7edc8aef18f1184222d66896e4a8995bf61c366628032f82e8bb5b538",
-    "settlements/xanadu-lake/dist/xanadu-lake.html": "bffa1c5a85a4479db0279f15f42e6d5055172a97013d7eba8aff457544868087",
+    "settlements/xanadu-lake/build-manifest-town.json": "51457394e9aa4a8982706e58c1ae414beeb79eb2844c560a3ff9fc165db629e2",
+    "settlements/xanadu-lake/dist/xanadu-lake.html": "3eb5b795b69374b0a03650d4f721d67c059ff944e16242f5976957c197ab6eef",
     "settlements/xanadu-lake/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu-lake/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/xanadu-lake/build-manifest-town.json": "402e854869aa1dbfc6e0f0a929dc4fc87959a2387bc8bc6600afceb91c61d50e",
-    "settlements/xanadu-lake/dist/xanadu-lake.html": "bffa1c5a85a4479db0279f15f42e6d5055172a97013d7eba8aff457544868087",
+    "settlements/xanadu-lake/build-manifest-town.json": "b2037f9b11f7d6cf2d78c4e5b7e60695b17314f3cb959633e1ad8b27bb538e45",
+    "settlements/xanadu-lake/dist/xanadu-lake.html": "3eb5b795b69374b0a03650d4f721d67c059ff944e16242f5976957c197ab6eef",
     "settlements/xanadu-lake/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu-lake/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

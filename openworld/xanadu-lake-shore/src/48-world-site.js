@@ -38,7 +38,13 @@ var SITE_SPEC={region:'xanadu-lake-shore',world:1191569,bridges:{culture:'xanadu
   /* HELD (2026-11-23): Lāiṭ-Hāus (200) and Bē-Āil (300) are too small at 1:1 for core/hamlet's village at their people (the
      bake could not place 18 and 23 houses); they wait for a denser isle layout (HAMLETS-PLAN.md section 1) */
   sxanlkeastisle01:{culture:'xanadu'},
-  sxanlkbayisle01:{culture:'xanadu'}}};
+  sxanlkbayisle01:{culture:'xanadu'},
+  /* west of Phīsh-Mārkiṭ (settlements/xanadu/HAMLETS-PLAN.md section 3d, step H6; the owner, 2026-11-23): the rim plain's farm
+     village and the west road's hill village. HELD (2026-11-23): their sites and the cut stand, but core/hamlet could not place
+     about half of either village's houses on this ground at 1:1 (KSITES.groundOk: the wadis' beds and the synthesized slopes;
+     at 400, 240 and 145 people alike). Owed: a survey of the 1:1 ground for their spots, then the villages */
+  sxanrimfarm01:{culture:'xanadu'},
+  sxanwestroad01:{culture:'xanadu'}}};
 /* the lake's fishers' row, as openworld/xanadu-oidong-highrift/src/48-world-site.js defines it for Kirstabal's lake (K6), key for
    key: the Xanadu row with the dugouts' boat sheds and the fish racks with their smokehouse, the racks a pending box (xh_fish_racks)
    because kits/xanadu's xa_fish_racks is opt-in and not in XAK. Both copies fold into core/hamlet's Xanadu row at the all-builds

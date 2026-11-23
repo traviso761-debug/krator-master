@@ -856,11 +856,11 @@
    ],
    [
     2396,
-    98.2
+    98.1
    ],
    [
     2420,
-    100.5
+    100.4
    ],
    [
     2444,
@@ -868,7 +868,7 @@
    ],
    [
     2468,
-    141.2
+    141.7
    ],
    [
     2492,
@@ -934,7 +934,7 @@
    "settlements/xanadu-lake/targets/town/89zm-xl-fit.js",
    "settlements/xanadu-lake/targets/town/89zp-xl-site.js"
   ],
-  "hash": "4dd6ff4e6ce7223a",
+  "hash": "2aa93bfea5c0880a",
   "by": "core/world/bake_towns.py"
  }
 }

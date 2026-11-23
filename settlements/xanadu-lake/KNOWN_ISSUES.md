@@ -78,4 +78,7 @@
   fruit trees the Vale grows by rain), on the kit's orchard plot (fruit).
 - **The west shore faces north-east**: Ōrcharḍ's, Lōṭas's, Phīsh-Mārkiṭ's and Siṭāq's bearings are 45 degrees (the fits read
   47-60); Lōṭas's pin is 1.7 km and Siṭāq's 1.3 km above their landings (R 2600, 2200).
+- **One refit stales every town's bake.** `core/world/bake_towns.py` hashes the whole fit file (`89zm-xl-fit.js`) into each
+  lake town's sources, so refitting one town marks all nineteen stale though their own rows are unchanged: re-bake them all
+  and rebuild both lake regions after any refit (`bake_towns.py <key> --check` says which). Owed: hash each town's own row.
 - **GPU.** The page was first verified on SwiftShader in a cloud session with no GPU lane; the `KRATOR_GL=gpu` run is owed (the north shore's seven by the master session; the south-east round's six from step L3).
