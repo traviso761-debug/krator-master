@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 378 (12%) | 39 (1%) | 176 (6%) | 48 (2%) | 2420 (79%) |
+| KB | 485 (15%) | 39 (1%) | 176 (5%) | 49 (1%) | 2534 (77%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -94,7 +94,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89d3-arcube-ruin.js` | 16.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89e-hill.js` | 64.7 | [draw] | 38 | 3 | 0 | 0 | 0 | 6 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/89f-trigon.js` | 52.0 | [draw] | 73 | 4 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89g-monolith.js` | 49.1 | [draw] | 53 | 5 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89g-monolith.js` | 49.1 | [draw] | 53 | 5 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89h-crescent.js` | 50.9 | [draw] | 65 | 6 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89i-ledge.js` | 51.7 | [draw] | 54 | 6 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89j-wheel.js` | 70.2 | [draw] | 42 | 7 | 0 | 0 | 0 | 31 | 0 | 0 | 0 | 0 | 0 |  |
@@ -148,7 +148,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8zo-anc-open.js` | 14.4 | [web] | 11 | 0 | 0 | 1 | 3 | 6 | 0 | 0 | 0 | 0 | 0 | split: the openings (panes, room cards, the doors' KDOOR records: data) and their host (the tick, E, the tip) |
 | `src/8zz-interiors.js` | 11.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/90-scene.js` | 9.4 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 4 | 0 | 0 | 0 | 0 |  |
-| `src/91-probe.js` | 5.8 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/91-probe.js` | 6.3 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 6.3 | [web] | 5 | 0 | 6 | 8 | 3 | 0 | 0 | 2 | 2 | 0 | 0 |  |
 | `src/92z-interior-ui.js` | 4.8 | [web] | 2 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
@@ -166,7 +166,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/arcoindian2/91z-views.js` | 9.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/arcpile/89z-rows.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/arcpile/8at0-arcpile-plan.js` | 25.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/arcpile/8at1-arcpile-draw.js` | 28.1 | [draw] | 61 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/arcpile/8at1-arcpile-draw.js` | 27.9 | [draw] | 61 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/arcpile/91z-views.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/arcpile/test-arcpile.js` | 4.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/arcube/89z-rows.js` | 1.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -191,6 +191,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/forest/91z-views.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/funicular/89z-rows.js` | 3.8 | [draw] | 5 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/funicular/91z-views.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/gatearc/89z-rows.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/gatearc/8av0-gatearc-plan.js` | 13.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/gatearc/8av1-gatearc-draw.js` | 19.4 | [draw] | 23 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/gatearc/8av2-gatestacks-plan.js` | 11.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/gatearc/8av3-gatestacks-draw.js` | 12.0 | [draw] | 22 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/gatearc/91z-views.js` | 3.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/gatearc/test-gatearc.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hexahedron/89z-rows.js` | 4.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hexahedron/91z-views.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hill/89z-rows.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -205,7 +212,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/iziz-variants/91z-views.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kept/89z-rows.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kept/8aq5-kept-pass.js` | 3.7 | [G shader] | 2 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 |  |
-| `targets/kept/91z-views.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/kept/91z-views.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kit/89z-rows.js` | 14.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kit/91z-views.js` | 11.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/launch/89z-rows.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -220,13 +227,19 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/lozenge/91z-views.js` | 7.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/monolith/89z-rows.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/monolith/91z-views.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/parabola/89z-rows.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/parabola/8av0-parabola-plan.js` | 16.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 0 | 0 | no three.js, no DOM: the geom count is the dish frame (F.at, F.surf), not the geometry kit |
+| `targets/parabola/8av1-parabola-draw.js` | 26.1 | [draw] | 59 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/parabola/90p-parabola-lake.js` | 1.4 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the rain lake: core/water still water |
+| `targets/parabola/91z-views.js` | 3.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/parabola/test-parabola.js` | 6.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | node test of the plan |
 | `targets/plymouth/89z-rows.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/plymouth/91z-views.js` | 5.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/podium/89z-rows.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/podium/8aq0-podium-plan.js` | 13.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/podium/8aq1-podium-kept.js` | 14.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/podium/8aq2-podium-skins.js` | 15.1 | [draw] | 15 | 3 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/podium/8aq3-podium-draw.js` | 28.6 | [draw] | 19 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/podium/8aq3-podium-draw.js` | 28.4 | [draw] | 19 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/podium/91z-views.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/podium/test-podium.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/quintagon/89z-rows.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -235,7 +248,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/ring/91z-views.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sanctum/89z-rows.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sanctum/8ar0-sanctum-plan.js` | 11.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/sanctum/8ar3-sanctum-draw.js` | 21.3 | [draw] | 14 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/sanctum/8ar3-sanctum-draw.js` | 21.1 | [draw] | 14 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/sanctum/91z-views.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sanctum/test-sanctum.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/shelf/89z-rows.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -254,14 +267,14 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/spire/89z-rows.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/spire/91z-views.js` | 2.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/strongbow/89z-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/strongbow/8aw0-strongbow-plan.js` | 21.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 | records only: the 'geom' count is the frame's own F.w( / F.flank( calls, not geometry |
-| `targets/strongbow/8aw1-strongbow-parts.js` | 14.8 | [draw] | 15 | 0 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/strongbow/8aw2-strongbow-draw.js` | 23.0 | [draw] | 40 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/strongbow/8aw3-strongbow-foot.js` | 7.6 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/strongbow/8aw0-strongbow-plan.js` | 23.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 | records only: the 'geom' count is the frame's own F.w( / F.flank( calls, not geometry |
+| `targets/strongbow/8aw1-strongbow-parts.js` | 21.3 | [draw] | 26 | 0 | 0 | 0 | 0 | 26 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/strongbow/8aw2-strongbow-draw.js` | 26.7 | [draw] | 38 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/strongbow/8aw3-strongbow-foot.js` | 8.3 | [draw] | 8 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/strongbow/91z-views.js` | 4.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/strongbow/test-strongbow.js` | 9.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | node test of the plan (no browser) |
-| `targets/strongbow-today/89z-rows.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/strongbow-today/91z-views.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/strongbow-today/89z-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/strongbow-today/91z-views.js` | 4.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/theodiga/77-dam.js` | 21.4 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/theodiga/77a-theodiga-dome-plan.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/theodiga/77b-theodiga-dome-draw.js` | 7.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |

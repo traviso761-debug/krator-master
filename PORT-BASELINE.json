@@ -1172,6 +1172,10 @@
    "bytes": 2625756,
    "sha256": "c617b59fd62d736a5f5bd521859ea3305343fea55831dd741165daef23532bb0"
   },
+  "kits/ancients/dist/parabola.html": {
+   "bytes": 2898143,
+   "sha256": "499f94cd094c02b6ec59854d1532ddaa60947c553f89d954a9a01f83303c8421"
+  },
   "kits/ancients/dist/plymouth.html": {
    "bytes": 2627885,
    "sha256": "f6d835ba8c4bdd387aec1ad0e383b40d9a56637fa64bf5d63ee4d5a1c4a9965c"
