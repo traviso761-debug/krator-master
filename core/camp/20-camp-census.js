@@ -4,7 +4,7 @@
    adults by the culture row's `work`. Every draw is KRAND.hash(seed, index, salt) of the band's own seed, so the same
    band has the same people wherever it pitches and in Godot.
      KCAMP.census({id, world, culture, program}) ->
-       {pop, adults, children, elders, riders, mounts, households: [{id, tent, size, chief}],
+       {pop, adults, children, elders, riders, mounts, tents, households: [{id, tent, size, chief}],
         people: [{id, household, tent, age: 'adult' | 'child' | 'elder', role, work}], error?}
        tent and work are tent ids, `<band id>:<key>:<i>` (i counts that key in the program, from 0): the ids KCAMP.pitch
        gives the records, so a family's tent is the same record at every site.
@@ -69,7 +69,7 @@ KCAMP.census = function (o) {
     p.role = p.age === 'child' ? 'child' : p.age === 'elder' ? 'elder' : u(6, i) < 0.55 ? 'hunter' : 'gatherer';
   });
   var adults = people.filter(function (p) { return p.age === 'adult'; }).length, riders = people.filter(function (p) { return p.age === 'adult' && p.role !== 'shaman'; }).length;
-  return {pop: people.length, adults: adults, children: people.filter(function (p) { return p.age === 'child'; }).length,
+  return {pop: people.length, adults: adults, tents: T.filter(function (t) { return !t.pen; }).length, children: people.filter(function (p) { return p.age === 'child'; }).length,
     elders: people.filter(function (p) { return p.age === 'elder'; }).length, riders: riders, mounts: Math.round(riders * C.mountsPer),
     households: households, people: people};
 };

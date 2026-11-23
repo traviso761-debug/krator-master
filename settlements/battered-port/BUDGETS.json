@@ -1,0 +1,9 @@
+{
+  "tris": 16000000,
+  "calls": 650,
+  "bytes": 3670016,
+  "samplers": 15,
+  "vram_mb": 420,
+  "why": "Bè-tõ-pò (~5,000-pop Unpainted Eternian Exile & Smuggler Stronghold on Battered Isle): dual KCITY rim/cove plans, ETK sidecar textures, BATTER biome flora, KCAVERN palagonite sea-cave vault, 4 twin-chain cliff-hoists, KROOMLIGHT interiors & SIM economy; HTML kept < 3.5 MB via .tex sidecars and active shader samplers <= 13 (< 15).",
+  "raised": "2026-11-23"
+}

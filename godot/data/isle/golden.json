@@ -8,7 +8,7 @@
   "watched": "valapo",
   "abstract": "kautoa",
   "decided": 0,
-  "moved": 128340
+  "moved": 126486
  },
  "start": {
   "clock": {
@@ -423,6 +423,97 @@
       "short": 0,
       "bought": 0,
       "eaten": 0
+     },
+     "mahogany": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "gum": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "kapok": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "canoes": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "medicinals": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "sulphur": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "pearls": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
      }
     }
    },
@@ -431,10 +522,10 @@
     "level": "presented",
     "goods": {
      "sweet-potato": {
-      "warehouses": 7878,
+      "warehouses": 4809,
       "sites": 0,
       "carts": 0,
-      "total": 11063,
+      "total": 7422,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -444,10 +535,10 @@
       "eaten": 0
      },
      "taro": {
-      "warehouses": 0,
+      "warehouses": 4809,
       "sites": 0,
       "carts": 0,
-      "total": 0,
+      "total": 7447,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -470,10 +561,10 @@
       "eaten": 0
      },
      "banana": {
-      "warehouses": 5818,
+      "warehouses": 3206,
       "sites": 0,
       "carts": 0,
-      "total": 8978,
+      "total": 5961,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -483,10 +574,10 @@
       "eaten": 0
      },
      "coconut": {
-      "warehouses": 2182,
+      "warehouses": 2137,
       "sites": 0,
       "carts": 0,
-      "total": 5441,
+      "total": 4802,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -496,10 +587,10 @@
       "eaten": 0
      },
      "fish": {
-      "warehouses": 5515,
+      "warehouses": 6078,
       "sites": 0,
       "carts": 0,
-      "total": 8669,
+      "total": 8789,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -509,10 +600,10 @@
       "eaten": 0
      },
      "meat": {
-      "warehouses": 404,
+      "warehouses": 445,
       "sites": 0,
       "carts": 0,
-      "total": 3622,
+      "total": 3417,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -522,10 +613,10 @@
       "eaten": 0
      },
      "bread": {
-      "warehouses": 3030,
+      "warehouses": 3340,
       "sites": 0,
       "carts": 0,
-      "total": 6090,
+      "total": 5950,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -535,10 +626,10 @@
       "eaten": 0
      },
      "sugar-cane": {
-      "warehouses": 0,
+      "warehouses": 400,
       "sites": 0,
       "carts": 0,
-      "total": 0,
+      "total": 400,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -561,10 +652,10 @@
       "eaten": 0
      },
      "cotton": {
-      "warehouses": 0,
+      "warehouses": 600,
       "sites": 0,
       "carts": 0,
-      "total": 0,
+      "total": 600,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -832,6 +923,97 @@
       "short": 0,
       "bought": 0,
       "eaten": 0
+     },
+     "mahogany": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "gum": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "kapok": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "canoes": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "medicinals": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "sulphur": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
+     },
+     "pearls": {
+      "warehouses": 0,
+      "sites": 0,
+      "carts": 0,
+      "total": 0,
+      "made": 0,
+      "used": 0,
+      "imported": 0,
+      "exported": 0,
+      "short": 0,
+      "bought": 0,
+      "eaten": 0
      }
     }
    }
@@ -932,7 +1114,14 @@
     "woodtools": 0,
     "nets": 0,
     "poultices": 0,
-    "hats": 0
+    "hats": 0,
+    "mahogany": 0,
+    "gum": 0,
+    "kapok": 0,
+    "canoes": 0,
+    "medicinals": 0,
+    "sulphur": 0,
+    "pearls": 0
    },
    "valapo": {
     "sweet-potato": 0,
@@ -965,11 +1154,18 @@
     "woodtools": 0,
     "nets": 0,
     "poultices": 0,
-    "hats": 0
+    "hats": 0,
+    "mahogany": 0,
+    "gum": 0,
+    "kapok": 0,
+    "canoes": 0,
+    "medicinals": 0,
+    "sulphur": 0,
+    "pearls": 0
    }
   },
   "counts": {
-   "places": 2841,
+   "places": 2817,
    "actors": 8225,
    "people": [
     [

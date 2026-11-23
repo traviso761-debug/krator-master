@@ -1,0 +1,16 @@
+{
+  "id": "crown",
+  "out": "thedome-crown.html",
+  "title": "The Dome — +2,924.8 m Lenticular Cloud-Cap Crown & Concentric Treeline Garlands",
+  "px": [1328, 150],
+  "inDomeVerified": true,
+  "elevM": 2924.8,
+  "pAtm": 1.11,
+  "koppen": "Cfb",
+  "rainMmYr": 1255,
+  "domeApexPx": [1328, 150],
+  "strataStack": "laccolith-shell",
+  "kin": {},
+  "reserves": ["site:dome-observatory"],
+  "modes": ["Crown-Mist", "Vernal-Brim", "Sun-Baked Dry"]
+}

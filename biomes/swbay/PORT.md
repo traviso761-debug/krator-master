@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 5 (2%) | 0 (0%) | 5 (2%) | 45 (20%) | 169 (76%) |
+| KB | 5 (2%) | 0 (0%) | 5 (2%) | 47 (19%) | 186 (77%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -21,14 +21,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/65-biome-swbay-dress.js` | 8.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-swbay.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/75-biome-swbay-fauna.js` | 18.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 7 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build) |
+| `src/76-biome-swbay-termites.js` | 13.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/85-host-tower.js` | 5.5 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/86-host-jetty.js` | 5.1 | [draw] | 4 | 1 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86t-host-termites.js` | 3.4 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87-host-kin.js` | 8.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the neighbours' cousins (BIO.kin): the cuts (SWBAY.veto) and the places by KRAND hash are data; the source kits' builders draw them |
-| `src/88-host-build.js` | 3.3 | [web] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/88-host-build.js` | 3.6 | [web] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89a-host-atmos.js` | 2.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindHost on the host clock's hour; the wind field, alpha-to-coverage, wet ground and the puddles' hollows (2026-10-27) |
 | `src/89s-host-sky.js` | 4.6 | [G native] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the shared sky (core/atmos, SKY-PLAN.md S1): ATMOS.sky at Voth's site, its lights and fog by the hour, the cloud shade on the lit materials; Godot: krator/sky.gd and atmos_cloudshade |
 | `src/89w-host-water.js` | 7.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/water records and draws; the skylight from the shared sky's scene |
-| `src/99-host-take.js` | 9.7 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
+| `src/99-host-take.js` | 11.2 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

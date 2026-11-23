@@ -183,9 +183,9 @@
     "biomes/crater-drylands/stations/edge/45-host-stage.js": "4c8f207ba29c47fead4e2065ca4db4a3516ecd0eb16a652569670191f394de09",
     "biomes/crater-drylands/stations/edge/48n0-host-nwbay-open.js": "3f9be533143ddb15ef7fac194518b515b7bb868a5456f659344191039482208d",
     "biomes/crater-drylands/stations/edge/48n9-host-nwbay-close.js": "60c429e906910c9deb7c4c412aa144b253922b9bec06dbffc6157a9637745008",
-    "biomes/crater-drylands/stations/edge/86-host-edge.js": "87fe41c4f89915357e9bbe64cfe5f192e3d139819dd8bcf08827f7457117bf97",
+    "biomes/crater-drylands/stations/edge/86-host-edge.js": "d9f3f6b3a20430861f380432d142326af0f211f5456f794c0eb1cafd5e3b4975",
     "biomes/crater-drylands/stations/edge/99-host-zseason.js": "c7aa96f9b3a1350c2ae2e8ef3a5e4c21aa0e7e7884466faa4cd8dc9e4f7fcd88",
-    "biomes/crater-drylands/stations/edge/station.json": "61eae9c459cb7723c6b8d8ef987776b4e5821e7e17fcc1c33ff956a3de9f58d8",
+    "biomes/crater-drylands/stations/edge/station.json": "0eaefaeb2a6adc2d4df11e6a41b86f26c4762bc9a1f86c9b25e7da3c0d583d3b",
     "biomes/crater-drylands/tex/bark.gum.albedo.webp": "8170b6c68f2aa2e15782fad8e2bc79f6a0434c03bbd13a2dd4aa56b18c28c8f4",
     "biomes/crater-drylands/tex/bark.mallee.albedo.webp": "ef7e8d4a649e41ce81ddbde6f67ef729119dc1c8d1884014c0c4e559cff0ca4d",
     "biomes/crater-drylands/tex/bark.pillar.albedo.webp": "5ae7545c0b0beec40e3db75b505831e19bd01012c562f9c828796c70cc1a0519",
@@ -227,6 +227,7 @@
     "biomes/swbay/src/65-biome-swbay-dress.js": "32e3eca60c6ca9cb819175b7595dc1dce57b96b9309dfeac11e5dc18e16eb1dd",
     "biomes/swbay/src/70-biome-swbay.js": "eba90e7f1c93c8a67bf5660c515861da24ccf28945ff0815cc09908244106007",
     "biomes/swbay/src/75-biome-swbay-fauna.js": "1a5bcc366d0db0cc6b6841c0836069d934a2041495e8ba8bbc3b5d066a8d45d7",
+    "biomes/swbay/src/76-biome-swbay-termites.js": "cb90b37b74b97dfa1f9942bb2dee5217e2ab7e33f04e3290bef376caca671c2e",
     "biomes/swbay/tex/bark0.albedo.webp": "398b718948721ff61f0474a3da76d944edb10bc5d0cc9316dd7c25ce08e6729b",
     "biomes/swbay/tex/bark1.albedo.webp": "9bdd4a46d46534f0ce9457cacf4ebc533681b43f7758f9b0fe169f8d71099341",
     "biomes/swbay/tex/bark2.albedo.webp": "ca51565539296a09ada58dc6b3d3070c9e045dae1ae8cf1c3e171483e54dce0e",
@@ -283,6 +284,7 @@
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
+    "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
     "core/biome/36-core-walker.js": "84089426e2cc080bc64ce4b0d08210e56d98b2f6ce4e1822e2a70cd4f167544d",
@@ -314,7 +316,7 @@
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -324,16 +326,16 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
@@ -353,14 +355,14 @@
     "biomes/crater-drylands/stations/edge": "c18cb86d880f61f14a4edc0ec25d5e2b8189b6164387d7025a6e5b2dbd568c09",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "kits/fauna": "f5f8a097fdf9ec301799bd1a41f781732803c964d3a10dda1aded58f9a1d2f18",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-edge.html": "14f5780659101a52ab0e0d9a9afe6785c3678ef0995d0549c7df8a3b809bfeae"
+    "biomes/crater-drylands/dist/crater-drylands-edge.html": "d609616b8d50fc76ef289ba216b1ec56fbddaf97ef176e28d2da897d293b8d80"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-edge.html": "14f5780659101a52ab0e0d9a9afe6785c3678ef0995d0549c7df8a3b809bfeae"
+    "biomes/crater-drylands/dist/crater-drylands-edge.html": "d609616b8d50fc76ef289ba216b1ec56fbddaf97ef176e28d2da897d293b8d80"
    }
   },
   "build.py --station salt": {

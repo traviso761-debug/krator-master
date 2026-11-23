@@ -30,6 +30,9 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
+| `14-pr-legs.js` | 2 |  |
+| `15-pr-tune.js` | 21 |  |
+| `16-pr-sim.js` | 14 |  |
 | `40-pr-layout.js` | 18 |  |
 | `42-pr-world.js` | <1 |  |
 | `43-pr-roosts.js` | 45 **big** |  |

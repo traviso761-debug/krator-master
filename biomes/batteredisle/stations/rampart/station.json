@@ -1,0 +1,14 @@
+{
+ "id": "rampart",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Battered Isle — WNW Megatsunami Rampart, Blowhole Sea-Caves and Radial-Dike Sea-Stacks",
+ "name": "WNW Megatsunami Rampart, Blowhole Sea-Caves and Radial-Dike Stacks (Station 2, 444,244, +13.8 m bench, 1.60 atm): tsunami-planed +6..+48 m basalt/scoria benches, offshore KSTACKS feeder-dike stacks, wave-compressed blowhole plumes, and +56 m trimline",
+ "out": "batteredisle-rampart.html",
+ "px": [444, 244],
+ "skyOffsetPx": [172, -86],
+ "lithology": "ultramafic",
+ "strataStack": "worn-scoria-palagonite",
+ "pAtm": 1.60,
+ "trimElevM": 56.0,
+ "modes": ["Calm", "Gale", "Tsunami Drawdown"]
+}

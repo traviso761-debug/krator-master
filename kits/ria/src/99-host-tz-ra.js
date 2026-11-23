@@ -20,8 +20,10 @@
     sel.insertBefore(opt,sel.options[2]||null);
    }
   };
-  if(ROWS[0])addView('Lower Ria Row Overview',[ROWS[0].w*.12,34,ROWS[0].z+68,0,6,ROWS[0].z]);
-  if(ROWS[1])addView('Upper Ria Row Overview',[ROWS[1].w*.12,34,ROWS[1].z+68,0,6,ROWS[1].z]);
+  if(ROWS[0])addView('Lower Ria Row Overview',[ROWS[0].w*.12,36,ROWS[0].z+72,0,6,ROWS[0].z]);
+  if(ROWS[1])addView('Lower Ria Works Row Overview',[ROWS[1].w*.12,32,ROWS[1].z+64,0,5,ROWS[1].z]);
+  if(ROWS[2])addView('Upper Ria Row Overview',[ROWS[2].w*.12,36,ROWS[2].z+72,0,6,ROWS[2].z]);
+  if(ROWS[3])addView('Upper Ria Works Row Overview',[ROWS[3].w*.12,32,ROWS[3].z+64,0,5,ROWS[3].z]);
   const byKey=k=>SITES.find(s=>s.key===k);
   const pWest=byKey('ra_west_prasat_palace');
   if(pWest)addView('Chakri-Ishtar Prasat Palace front',[pWest.x+16,15,pWest.z+32,pWest.x,8.5,pWest.z-1]);
@@ -31,6 +33,8 @@
   if(pPyat)addView('Konbaung 7-Tier Pyatthat Tribute Hall',[pPyat.x+13,13,pPyat.z+26,pPyat.x,9.0,pPyat.z]);
   const pGate=byKey('ra_west_water_gate');
   if(pGate)addView('Ishtar-Pyatthat Canal Water-Gate',[pGate.x+12,11,pGate.z+24,pGate.x,6.5,pGate.z]);
+  const pBaz=byKey('ra_west_covered_bazaar');
+  if(pBaz)addView('Babylonian Souk Bazaar and Pyatthat',[pBaz.x+12,11,pBaz.z+23,pBaz.x,5.5,pBaz.z]);
   const pSwan=byKey('ra_east_swan_prasat');
   if(pSwan)addView('Akwala-Liwayi Grand Hongsa Terrace-Palace',[pSwan.x+16,15,pSwan.z+32,pSwan.x,8.5,pSwan.z-2]);
   const pMand=byKey('ra_east_mandala_cloister');
@@ -39,6 +43,24 @@
   if(pDome)addView('Bagan-Ptolemaic Lotus-Dome Concourse',[pDome.x+14,14,pDome.z+28,pDome.x,8.0,pDome.z]);
   const pLift=byKey('ra_east_boatlift_hall');
   if(pLift)addView('Karst Counterweight Boat-Lift Pavilion',[pLift.x+12,12,pLift.z+25,pLift.x,6.0,pLift.z]);
+  const pStoa=byKey('ra_east_stoa_agora');
+  if(pStoa)addView('Classical Palm-Column Agora Stoa',[pStoa.x+12,11,pStoa.z+22,pStoa.x,5.5,pStoa.z]);
+  const pChak=byKey('ra_west_chakri_chancellery');
+  if(pChak)addView('Chakri-Classical Triple-Prasat Chancellery',[pChak.x+15,13,pChak.z+30,pChak.x,8.2,pChak.z]);
+  const pMond=byKey('ra_west_mondop_library');
+  if(pMond)addView('Peripteral Gilded-Mosaic Mondop Library',[pMond.x+13,12,pMond.z+25,pMond.x,8.0,pMond.z-.4]);
+  const pCela=byKey('ra_west_celadon_prang_terrace');
+  if(pCela)addView('Celadon Phra-Prang and Caryatid Terrace',[pCela.x+13,12,pCela.z+25,pCela.x,7.2,pCela.z-.8]);
+  const pBuss=byKey('ra_west_bussabok_gate');
+  if(pBuss)addView('Battered Bussabok Pylon Precinct Gate',[pBuss.x+11,10,pBuss.z+22,pBuss.x,5.8,pBuss.z+.5]);
+  const pThep=byKey('ra_east_thepbidorn_pantheon');
+  if(pThep)addView('Cruciform Royal Ancestor Pantheon-Prasat',[pThep.x+16,14,pThep.z+30,pThep.x,8.5,pThep.z-1]);
+  const pKinn=byKey('ra_east_kinnara_dromos');
+  if(pKinn)addView('Spear-Guardian Cloister and White Prangs',[pKinn.x+12,11,pKinn.z+28,pKinn.x,5.5,pKinn.z-1]);
+  const pDica=byKey('ra_east_archon_dicastery');
+  if(pDica)addView('Porphyry-and-Dolomite Triple-Spire Dicastery',[pDica.x+15,13,pDica.z+29,pDica.x,8.0,pDica.z]);
+  const pCary=byKey('ra_east_caryatid_reliquary');
+  if(pCary)addView('Silver-Caryatid Stupa and Scripture Mondop',[pCary.x+13,12,pCary.z+26,pCary.x,7.2,pCary.z-.6]);
  }
 
  const settle=n=>{for(let i=0;i<(n==null?40:n);i++)KDOOR.step(.1);};
@@ -289,6 +311,105 @@
     }
    }
    return {ok:!conflicts.length&&tris.length>1000,triangles:tris.length,conflicts};
+  },
+
+  tradesAudit(){
+   if(typeof RA_TRADES==='undefined'||!Array.isArray(RA_TRADES))return {ok:false,bad:['RA_TRADES missing']};
+   const bad=[];
+   if(RA_TRADES.length!==44)bad.push('rows:'+RA_TRADES.length);
+   for(const row of RA_TRADES){
+    if(row.na)continue;
+    if(!Array.isArray(row.lowerRia)||!row.lowerRia.length)bad.push(row.trade+':no-lowerRia');
+    if(!Array.isArray(row.upperRia)||!row.upperRia.length)bad.push(row.trade+':no-upperRia');
+    for(const k of (row.lowerRia||[])){
+     if(!DEFS[k]||DEFS[k].tags.style!=='lower-ria')bad.push(row.trade+':bad-lower:'+k);
+    }
+    for(const k of (row.upperRia||[])){
+     if(!DEFS[k]||DEFS[k].tags.style!=='upper-ria')bad.push(row.trade+':bad-upper:'+k);
+    }
+   }
+   for(const st of ['lower-ria','upper-ria']){
+    for(const wt of ['poor','middle','rich']){
+     const has=Object.keys(DEFS).some(k=>DEFS[k].cls==='building'&&DEFS[k].tags.style===st&&DEFS[k].tags.wealth===wt);
+     if(!has)bad.push(st+':missing-wealth-'+wt);
+    }
+   }
+   return {ok:!bad.length,rows:RA_TRADES.length,bad};
+  },
+
+  vstackAudit(){
+   const m1Loaded=typeof KMAT_M1!=='undefined'&&KMAT_M1.version>=2;
+   let gate3Ok=false,mipAaOk=false;
+   if(m1Loaded){
+    const domeH=(u,v)=>Math.max(0.05,0.9*Math.exp(-((u-0.5)*(u-0.5)+(v-0.5)*(v-0.5))/(2*0.18*0.18)));
+    const domeN=(u,v)=>{
+     const e=1/512,dx=(domeH(u+e,v)-domeH(u-e,v))/(2*e),dy=(domeH(u,v+e)-domeH(u,v-e))/(2*e);
+     const nx=-dx*0.25,ny=-dy*0.25,l=Math.hypot(nx,ny,1);
+     return [nx/l,ny/l,1/l];
+    };
+    gate3Ok=!!KMAT_M1.handednessProbe(domeN,domeH).ok;
+    const Lc=KMAT.packed(KIT.pack,'cobalt'),Lg=KMAT.packed(KIT.pack,'giltroof');
+    mipAaOk=!!(Lc&&Array.isArray(Lc.mipVariance)&&KMAT_M1.roughnessWithVariance(0.24,4,Lc.mipVariance)>0.26&&
+               Lg&&Array.isArray(Lg.mipVariance)&&KMAT_M1.roughnessWithVariance(0.24,4,Lg.mipVariance)>0.32);
+   }
+   const meta=typeof RA_VSTACK_META!=='undefined'?RA_VSTACK_META:{mipFamilies:0,pomFamilies:0};
+   const m1Ok=m1Loaded&&gate3Ok&&mipAaOk&&meta.mipFamilies>=12&&meta.pomFamilies>=5;
+
+   const rl=window._raRoomLight,tb=rl&&rl.table;
+   let roomlightOk=false,roomsN=0,dayRooms=0,pickN=0;
+   if(typeof KROOMLIGHT!=='undefined'&&tb&&Array.isArray(tb.order)){
+    roomsN=tb.order.length;
+    dayRooms=tb.order.filter(id=>tb.byId[id]&&tb.byId[id].interior&&tb.byId[id].daylight>0).length;
+    const sampleRm=rl.rooms.find(r=>!r.outdoor&&(r.windows.length>0||r.lamps.length>0))||rl.rooms[0];
+    if(sampleRm){
+     const b=sampleRm.box;
+     const picks=KROOMLIGHT.pickPool({
+      eye:[(b[0]+b[3])*0.5,(b[1]+b[4])*0.5,(b[2]+b[5])*0.5],eyeRoom:sampleRm.id,table:tb,
+      count:6,maxWindows:3,heroShadows:2,sunUp:1.0,windows:rl.windows,lamps:rl.lamps
+     });
+     pickN=picks.length;
+    }
+    const cornerAO=KROOMLIGHT.vertexCornerAO(0,0.02,2.0,1,0,0,[0,0,0,4,3.5,4],0.85);
+    const midAO=KROOMLIGHT.vertexCornerAO(0,1.8,2.0,1,0,0,[0,0,0,4,3.5,4],0.85);
+    roomlightOk=roomsN>=36&&dayRooms>=28&&pickN>=1&&rl.pool.length===6&&cornerAO<0.85&&midAO>0.95;
+   }
+
+   /* Shader program deduplication & active sampler budget check */
+   const cacheKeys=new Set();
+   for(const k in MAT){
+    const m=MAT[k];
+    if(m&&typeof m.customProgramCacheKey==='function')cacheKeys.add(m.customProgramCacheKey());
+   }
+   let programs=cacheKeys.size,maxSamplers=0,glChecked=false;
+   if(typeof renderer!=='undefined'&&renderer&&renderer.info&&Array.isArray(renderer.info.programs)&&typeof renderer.getContext==='function'){
+    const gl=renderer.getContext();
+    if(gl&&typeof gl.getProgramParameter==='function'){
+     glChecked=true;
+     const S=new Set([0x8B5E,0x8B60,0x8B5F,0x8DC1,0x8B62,0x8DC4,0x8DC5,0x8DCA,0x8DCB,0x8DCC,0x8DCF,0x8DD2,0x8DD3,0x8DD4,0x8DD7]);
+     let linked=0;
+     for(const p of renderer.info.programs){
+      const g=p.program;
+      if(!g||!gl.getProgramParameter(g,gl.LINK_STATUS))continue;
+      linked++;
+      const nu=gl.getProgramParameter(g,gl.ACTIVE_UNIFORMS);
+      let cnt=0;
+      for(let i=0;i<nu;i++){
+       const u=gl.getActiveUniform(g,i);
+       if(u&&S.has(u.type))cnt+=u.size;
+      }
+      if(cnt>maxSamplers)maxSamplers=cnt;
+     }
+     programs=linked;
+    }
+   }
+   const progOk=cacheKeys.size<=5&&programs<=28&&(!glChecked||maxSamplers<=12);
+   return {
+    ok:!!(m1Ok&&roomlightOk&&progOk),
+    m1Ok,roomlightOk,progOk,
+    programs,maxSamplers,matCacheKeys:cacheKeys.size,
+    rooms:roomsN,dayRooms,pickN,
+    mipFamilies:meta.mipFamilies,pomFamilies:meta.pomFamilies
+   };
   },
 
   fingerprint:fp,

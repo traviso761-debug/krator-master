@@ -21,6 +21,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 5 |  |
+| `27v-sl-vstack.js` | 9 |  |
 | `27z-sl-matfix.js` | 1 |  |
 | `34-sl-trades.js` | 6 |  |
 | `39-sl-furn.js` | 14 |  |

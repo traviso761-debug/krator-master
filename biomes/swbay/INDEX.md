@@ -9,9 +9,9 @@ Built output (never open it; edit `src/` and rebuild): `dist/swbay-skarn.html`, 
 Build: `cd biomes/swbay && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
+From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `35-core-anim.js`, `36-core-walker.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `35-core-anim.js`, `36-core-walker.js`, `37-core-traps.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -30,14 +30,16 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `65-biome-swbay-dress.js` | 9 |  |
 | `70-biome-swbay.js` | <1 |  |
 | `75-biome-swbay-fauna.js` | 19 | geometries (vertex-coloured, unit-sized) (39); the animated materials (77); the pass (82) |
+| `76-biome-swbay-termites.js` | 14 |  |
 | `85-host-tower.js` | 5 |  |
 | `86-host-jetty.js` | 5 |  |
+| `86t-host-termites.js` | 3 |  |
 | `87-host-kin.js` | 8 |  |
-| `88-host-build.js` | 3 |  |
+| `88-host-build.js` | 4 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 5 |  |
 | `89w-host-water.js` | 7 |  |
-| `99-host-take.js` | 10 | the inspector's words (45); the probe's budgets and the kit's own checks (ve (55); the page, handed to the host (88) |
+| `99-host-take.js` | 11 | the inspector's words (49); the probe's budgets and the kit's own checks (ve (60); the page, handed to the host (101) |
 | `99-tail.html` | <1 |  |
 
 ## stations/

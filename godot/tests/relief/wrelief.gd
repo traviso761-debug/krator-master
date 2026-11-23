@@ -17,12 +17,14 @@ const M32 := 0xFFFFFFFF
 static var OX := 0.0
 static var OZ := 0.0
 static var SEED := 0x52454C
+static var V2 := false
 
 
-static func init(ox: float, oz: float, sd: int) -> void:
+static func init(ox: float, oz: float, sd: int, ver: int = 1) -> void:
 	OX = ox
 	OZ = oz
 	SEED = sd & M32
+	V2 = (ver == 2)
 
 
 static func _clamp(v: float, a: float, b: float) -> float:
@@ -179,9 +181,25 @@ static func erode(h: float, x: float, z: float, gx: float, gz: float, S: Diction
 	return out
 
 
-# ---------------------------------------------------------------- S4: peaks
+# ---------------------------------------------------------------- S4: peaks and steep-wall crags (v2)
 const POCT := [1300.0, 650.0, 325.0, 162.0]
 const PMEAN := 0.56
+const POCT2 := [1120.0, 560.0, 280.0, 140.0, 70.0]
+
+
+static func _rot_g(x: float, z: float, lam: float, s: int, turns: int) -> float:
+	var rx := x
+	var rz := z
+	for k in turns:
+		var nx := 0.8 * rx - 0.6 * rz
+		var nz := 0.6 * rx + 0.8 * rz
+		rx = nx
+		rz = nz
+	return KRand.gnoise(rx / lam, rz / lam, s & M32)
+
+
+static func _knee_pos(y: float, kn: float) -> float:
+	return y if y >= kn else (0.0 if y <= -kn else (y + kn) * (y + kn) / (4.0 * kn))
 
 
 static func peaks(h: float, x: float, z: float, S: Dictionary, rel: float, pk: float, min_wave: float) -> float:
@@ -191,6 +209,29 @@ static func peaks(h: float, x: float, z: float, S: Dictionary, rel: float, pk: f
 	var amp := w * _clamp(rel * 0.18, 0.0, 300.0)
 	if amp < 1.0:
 		return h
+	if V2:
+		var mw := maxf(64.0, min_wave)
+		var X2 := x + OX
+		var Z2 := z + OZ
+		var wx2 := KRand.gfbm(X2 / 2400.0, Z2 / 2400.0, 2, _sx(0x5061)) * 480.0
+		var wz2 := KRand.gfbm(X2 / 2400.0 + 19.3, Z2 / 2400.0 - 7.1, 2, _sx(0x5062)) * 480.0
+		var sum2 := 0.0
+		var norm2 := 0.0
+		var wt2 := 1.0
+		var a2 := 1.0
+		for o in POCT2.size():
+			norm2 += a2
+			if POCT2[o] < mw:
+				a2 *= 0.55
+				continue
+			var gn := _rot_g(X2 + wx2, Z2 + wz2, POCT2[o], _sx(0x5100 + o), o + 1)
+			var rd := 1.0 - sqrt(gn * gn + 0.012) * 1.95
+			var r2v := rd if rd > 0.0 else 0.0
+			var r2sq := r2v * r2v
+			sum2 += r2sq * wt2 * a2
+			wt2 = _clamp(r2sq * 1.9, 0.22, 1.0)
+			a2 *= 0.55
+		return h + amp * 2.4 * _knee_pos(sum2 / norm2 - 0.18, 0.04)
 	var X := x + OX
 	var Z := z + OZ
 	var wx := (_fbm(X / 2600.0, Z / 2600.0, 2, _sx(0x5045)) - 0.5) * 700.0
@@ -212,3 +253,41 @@ static func peaks(h: float, x: float, z: float, S: Dictionary, rel: float, pk: f
 		wt = _clamp(r * 2.0, 0.0, 1.0)
 		a *= 0.5
 	return h + amp * 2.0 * (sum / norm - PMEAN)
+
+
+static func crags(h: float, x: float, z: float, gx: float, gz: float, S: Dictionary, rel: float, min_wave: float) -> float:
+	if not V2:
+		return h
+	if min_wave >= 180.0:
+		return h
+	var rk := maxf(float(S.get("rock", 0.0)), float(S.get("peak", 0.0)) * 0.85)
+	if not (rk > 0.22):
+		return h
+	var sl := sqrt(gx * gx + gz * gz)
+	var fade := _smooth(0.38, 1.05, sl)
+	if fade <= 0.0:
+		return h
+	var ex := (sl - 1.35) / 1.1 if sl > 1.35 else 0.0
+	var sheer := 1.0 / (1.0 + ex * ex)
+	var amp := rk * _clamp(rel / 1800.0, 0.25, 1.15) * fade * sheer
+	if amp < 0.005:
+		return h
+	var ax := x + OX
+	var az := z + OZ
+	var nx := -gz / sl
+	var nz := gx / sl
+	var st := ax * nx + az * nz
+	var dp := (ax * gx + az * gz) / sl
+	var wx := KRand.gnoise(ax / 1400.0, az / 1400.0, _sx(0x5211)) * 220.0
+	var wz := KRand.gnoise(ax / 1400.0 + 17.3, az / 1400.0 - 9.1, _sx(0x5212)) * 220.0
+	var g1 := KRand.gnoise((st + wx * 0.45) / 150.0, dp / 380.0, _sx(0x5221))
+	var r1 := maxf(0.0, 1.0 - sqrt(g1 * g1 + 0.015) * 1.9)
+	var d := (r1 * r1 - 0.22) * 48.0
+	if min_wave < 76.0:
+		var g2 := KRand.gnoise((st - wz * 0.45) / 76.0, dp / 210.0, _sx(0x5222))
+		var r2 := maxf(0.0, 1.0 - sqrt(g2 * g2 + 0.02) * 1.95)
+		d += (r2 * r2 - 0.22) * 20.0
+	var gc := KRand.gnoise((st + wx * 0.3) / 115.0 + 9.4, dp / 460.0, _sx(0x5223))
+	var rc := maxf(0.0, 1.0 - sqrt(gc * gc + 0.01) * 2.4)
+	d -= rc * rc * 34.0
+	return h + amp * d

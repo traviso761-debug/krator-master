@@ -9,6 +9,7 @@
  "drop": [
   "85-host-tower.js",
   "86-host-jetty.js",
+  "86t-host-termites.js",
   "87-host-kin.js"
  ],
  "neigh": false,

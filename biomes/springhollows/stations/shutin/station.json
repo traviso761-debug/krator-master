@@ -1,0 +1,19 @@
+{
+ "id": "shutin",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Springhollows — Purple-Red Rhyolite Porphyry Shut-In Gorge & Boat-Lift Bypass",
+ "out": "springhollows-shutin.html",
+ "px": [1224, 158],
+ "sky": [952, -172],
+ "elevM": 1480.0,
+ "pAtm": 1.33,
+ "koppen": "Cfa",
+ "rainMmYr": 1510,
+ "riverQM3s": 195.0,
+ "tubeId": "tube_ozarks_15",
+ "strataStack": "porphyry-dike-contact",
+ "reserves": [
+  { "id": "site:high-ria-boatlift", "x": 8, "z": -108, "r": 48 }
+ ],
+ "modes": ["Day", "Dusk Cave-Glow"]
+}

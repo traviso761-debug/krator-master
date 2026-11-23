@@ -40,6 +40,10 @@ const VIEWS={
  'From over the bay':V(-200,0,220,1200,0,30),
  'The volcano':(function(){const c=XZ(2300,-100);return[c[0],terrainH(c[0],c[1])+70,c[1],VOLC.c[0],1000,VOLC.c[1]];})(),
  'Umbrella thorns':V(2650,-450,5,2850,-520,14),
+ 'Giant termite cathedrals':(function(){const L=(window.SWBAY_MOUNDS&&window.SWBAY_MOUNDS.list)||[];let M=null,best=-1e9;
+  for(const m of L){const s=(m.top-m.y0)-(BIO.lodD?BIO.lodD(m.x,m.z)*.004:0);if(s>best){best=s;M=m;}}
+  if(!M)return V(2750,-220,4,2820,-240,5);
+  const cx=M.x-13.5,cz=M.z+9.5;return[cx,terrainH(cx,cz)+2.6,cz,M.x,M.y0+(M.top-M.y0)*.42,M.z];})(),
  'Krator rising':V(600,0,30,3000,-1400,650),
 };
 // ---------------------------------------------------------------- the inspector's words
@@ -50,8 +54,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
  // a tree's volume names its species: show what it yields (biomes/FRUIT.md)
- const S=best&&SWBAY.SPECIES.find(s=>s.name===best.name),hv=S&&S.tags.harvest;
- return name+(hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ const S=best&&SWBAY.SPECIES.find(s=>s.name===best.name),hv=(S&&S.tags.harvest)||(best&&best.tags&&best.tags.harvest);
+ const hz=best&&best.tags&&best.tags.hazard;
+ return name+(hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'')+(hz?'\nhazard: '+hz.kind+' (danger '+hz.danger+') · '+(hz.tell&&hz.tell.sign||''):'')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
@@ -63,7 +68,7 @@ const BUDGET={
  // 57-97 calls. `rendered` is tracked, not asserted by verify.py.
  showcase:{tris:10500000,calls:400,rendered:8000000},
  cls:{pass:7500000,host:900000},
- type:{'bay/trees':'pass','bay/floor':'pass','bay/dress':'pass','bay/fauna':'pass','host':'host'},
+ type:{'bay/trees':'pass','bay/floor':'pass','bay/dress':'pass','bay/fauna':'pass','bay/termites':'pass','host':'host'},
 };
 // species that yield something edible the kit does not draw as a catalog fruit: named, not hidden. The umbrella
 // the tree fern's fruit are fiddleheads: no catalog piece (biomes/FRUIT.md); the thorn's pods, the monkey-puzzle seeds and the cherries are catalogued, not drawn on the stage.
@@ -76,14 +81,22 @@ const HCHK={
  // gatepods are the 'pod' items, the parasol caps the 'parasol' items; the coral fungus is built into its bucket)
  fruit(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
   const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key),np=P.filter(p=>/:pod$/.test(p[3])).length,nc=P.filter(p=>/:parasol$/.test(p[3])).length;
-  return{ok:!miss.length&&!untagged.length&&np>=20&&nc>=100,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+np+' gatepods and '+nc+' parasol caps drawn; catalog keys: '+SWBAY.FRUIT_KEYS.join(', ')+'; not drawn: '+FRUIT_NOT_DRAWN.join(', ')};}};
+  return{ok:!miss.length&&!untagged.length&&np>=20&&nc>=100,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+np+' gatepods and '+nc+' parasol caps drawn; catalog keys: '+SWBAY.FRUIT_KEYS.join(', ')+'; not drawn: '+FRUIT_NOT_DRAWN.join(', ')};},
+ termites(M,st,hzList){
+  const L=M||[],s=st||{},bad=L.filter(m=>SWBAY.zones(m.x,m.z).sav<.5||riverD(m.x,m.z)<50);
+  const nH=(hzList||[]).filter(h=>h.rec&&h.rec.key==='termite-mound').length;
+  return{ok:L.length>=15&&!bad.length&&(s.workers||0)>=100&&(s.soldiers||0)>=40&&(s.caps||0)>=60&&(s.combs||0)>=40&&nH>=10,
+   detail:L.length+' savanna cathedrals ('+bad.length+' off savanna), '+(s.workers||0)+' workers, '+(s.soldiers||0)+' wolf-sized soldiers, '+(s.caps||0)+' mound-caps, '+(s.combs||0)+' hive-combs, '+nH+' KHAZ lair hazards'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(SWBAY.SPECIES,P));
+ if(window.SWBAY_MOUNDS&&new URLSearchParams(location.search).get('termites')!=='0')
+  add('giant termite cathedrals, hive-fungi and KHAZ hazards on savanna',HCHK.termites(window.SWBAY_MOUNDS.list,window.SWBAY_MOUNDS.stats,typeof KHAZ!=='undefined'?KHAZ.list().map(rec=>({rec})):[]));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  add('a fruiting species with no catalog fruit',HCHK.fruit(SWBAY.SPECIES.map(S=>S.key==='baobab'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
  add('a species with no harvest tag',HCHK.fruit(SWBAY.SPECIES.map(S=>S.key==='coral'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),P));
  add('no gatepods drawn',HCHK.fruit(SWBAY.SPECIES,P.filter(p=>!/:pod$/.test(p[3]))));
+ if(window.SWBAY_MOUNDS)add('a termite cathedral placed in the bay hyperjungle',HCHK.termites([{x:BAY.c[0]+850*SQ,z:BAY.c[1]-850*SQ}],window.SWBAY_MOUNDS.stats,[]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 // the runtime LOD: which chunk meshes this camera draws (after the camera is placed, before the draw)

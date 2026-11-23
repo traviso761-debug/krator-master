@@ -11,6 +11,7 @@
 | `core/space` | the camps' boxes (`KCAMP.pitch`) |
 | `core/tags` | every camp, tent, pen and hedge registered before it is drawn (build `pinnacle:sites`) |
 | `core/camp` | the bands' camps (`KCAMP.pitch`, `KCAMP.census`) |
+| `core/hamlet` | the four clearings (2026-11-12): the `beast-rider` row, kept in `src/48-world-site.js` until a second region takes it |
 | `core/biome` | the kits' trees and placement |
 | `core/terrain` | the relief noise under `WORLD.H` (`KRELIEF`) |
 | `core/atmos` | the sky and air, as the isle demo's world page takes them |
@@ -23,8 +24,7 @@ Not taken, each with its reason:
 | Module | Reason |
 |---|---|
 | `core/city` | no town is planned here: the town on the mesa is `settlements/pinnacle-rock`'s own |
-| `core/hamlet` | no Beast Rider hamlet row yet (`KHAMLET.CULTURES` has the Islanders' and Xanadu's) |
-| `core/simulation` | the bands are not declared on the sim yet (the isle demo's camp is: `48k simDeclare`, to be lifted with the next site) |
+| `core/simulation` | not on this page: Pinnacle Rock's economy (the town, the clearings and the eighteen bands) runs at the abstract level in `settlements/pinnacle-rock/tests/test-pr-economy.js`, which reads this region's plan |
 | `core/mask` | nothing is placed from a mask |
 | `core/host` | the world has its own camera and probe (`core/world` 90, 91), as the isle demo's does |
 
@@ -33,7 +33,7 @@ Not taken, each with its reason:
 1. **The mesa in the world.** The rock is the page's own landform, built from KSTACKS records out of its layout
    (`settlements/pinnacle-rock/src/40-pr-layout.js`). The world shows the knoll the model has, with the bands round it.
    Either draw the rock's records here, or carve the mesa into the land (core/terrain).
-2. **The countryside farther out**, when a Beast Rider hamlet row exists: farming and ranching hamlets
+2. **The countryside farther out**: the four clearings are laid (2026-11-12); more farming and ranching hamlets
    (`core/hamlet`, busy-keller's hinterland survey, lifted into core), and the roads between them.
 3. **The bands on core/simulation** (the isle demo's `48k simDeclare`, lifted into `core/world` or `core/camp`).
 4. **The savannah kit's world fragment** moves into `biomes/abyssal-savannah`, with its floor (`WORLD_FLOOR`).

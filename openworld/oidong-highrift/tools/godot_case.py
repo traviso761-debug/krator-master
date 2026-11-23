@@ -120,13 +120,41 @@ def parse_micro(argv):
     return None
 
 
-def export(out, box, before, sections=None, micro=None, page_rel=PAGE):
+def parse_alpine(argv):
+    for i, a in enumerate(argv):
+        if a.startswith('--alpine='):
+            return int(a.split('=', 1)[1])
+        if a == '--alpine' and i + 1 < len(argv):
+            return int(argv[i + 1])
+    return None
+
+
+def parse_alpine_step(argv):
+    for i, a in enumerate(argv):
+        if a.startswith('--alpine-step='):
+            return int(a.split('=', 1)[1])
+        if a == '--alpine-step' and i + 1 < len(argv):
+            return int(argv[i + 1])
+    return None
+
+
+def build_query(micro=None, alpine=None):
+    parts = []
+    if micro is not None:
+        parts.append('micro=%d' % micro)
+    if alpine is not None:
+        parts.append('alpine=%d' % alpine)
+    return ('?' + '&'.join(parts)) if parts else ''
+
+
+def export(out, box, before, sections=None, micro=None, alpine=None, page_rel=PAGE):
     cmd = [sys.executable, os.path.join(ROOT, 'tools', 'harness.py'), 'export', page_rel, '--out', out,
            '--box=' + ','.join('%g' % v for v in box)]
     if before:
         cmd += ['--before', before]
-    if micro is not None:
-        cmd += ['--query', '?micro=%d' % micro]
+    q = build_query(micro=micro, alpine=alpine)
+    if q:
+        cmd += ['--query', q]
     if sections:
         cmd += ['--sections', sections]
     r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
@@ -193,12 +221,12 @@ FLORA_LIB_JS = """([opt]) => {
 }"""
 
 
-async def _export_flora_lib_async(out_dir, micro=None):
+async def _export_flora_lib_async(out_dir, micro=None, alpine=None):
     import harness as H
     from playwright.async_api import async_playwright
     shutil.rmtree(out_dir, ignore_errors=True)
     os.makedirs(out_dir, exist_ok=True)
-    q = ('?micro=%d' % micro) if micro is not None else ''
+    q = build_query(micro=micro, alpine=alpine)
     page_abs = os.path.join(ROOT, PAGE)
     async with async_playwright() as p:
         b = await H.launch_chromium(p)
@@ -241,10 +269,10 @@ async def _export_flora_lib_async(out_dir, micro=None):
         len(w.get('items', [])), files['world.glb'] / 1e6), flush=True)
 
 
-async def _export_places_batch_async(pl, out_root, micro=None):
+async def _export_places_batch_async(pl, out_root, micro=None, alpine=None):
     import harness as H
     from playwright.async_api import async_playwright
-    q = ('?micro=%d' % micro) if micro is not None else ''
+    q = build_query(micro=micro, alpine=alpine)
     page_abs = os.path.join(ROOT, PAGE)
     async with async_playwright() as p:
         b = await H.launch_chromium(p)
@@ -359,7 +387,7 @@ def _flora_corridor_pts(P):
     return pts
 
 
-def _export_chunks_node(cells, place_boxes, out_root, P, micro=None, prune=True, resume=False):
+def _export_chunks_node(cells, place_boxes, out_root, P, micro=None, alpine=None, alpine_step=None, prune=True, resume=False):
     import re, tempfile
     sys.path.insert(0, os.path.join(ROOT, 'core', 'world'))
     import world_data as WD
@@ -411,6 +439,16 @@ def _export_chunks_node(cells, place_boxes, out_root, P, micro=None, prune=True,
   let totalTrees = 0;
   for (let i = 0; i < cfg.cells.length; i++) {
     const c = cfg.cells[i], id = cfg.ids[i], box = [c[0] * cfg.chunk, c[1] * cfg.chunk, (c[0] + 1) * cfg.chunk, (c[1] + 1) * cfg.chunk];
+    let cellStep = cfg.step;
+    if (cfg.alpineStep && cfg.alpineStep < cfg.step) {
+      let lo = 1e9, hi = -1e9;
+      for (let pz = 0; pz <= 4; pz++) for (let px = 0; px <= 4; px++) {
+        const h = WORLD.Hbare(box[0] + (box[2] - box[0]) * px / 4, box[1] + (box[3] - box[1]) * pz / 4, 250);
+        if (h < lo) lo = h; if (h > hi) hi = h;
+      }
+      if (hi - lo >= 2400) cellStep = cfg.alpineStep;
+    }
+    window.WORLD_EXPORT.step = cellStep;
     const d = path.join(cfg.chunksDir, id);
     fs.rmSync(d, { recursive: true, force: true });
     fs.mkdirSync(d, { recursive: true });
@@ -436,12 +474,12 @@ def _export_chunks_node(cells, place_boxes, out_root, P, micro=None, prune=True,
     }
     const meta = {
       case: id, page: cfg.page, kind: 'world', route: 'godot_case.py node chunk export (core/export)',
-      box, sections: g.json.sections, files, injected: ['core/biome/44-core-stage.js'],
+      box, step: cellStep, sections: g.json.sections, files, injected: ['core/biome/44-core-stage.js'],
       stats: g.json.stats, glb: g.stats, check: chk.joins, flora_count: fcnt, page_errors: [], exported: cfg.date
     };
     fs.writeFileSync(path.join(d, 'meta.json'), JSON.stringify(meta) + '\n');
     if ((i + 1) % 5 === 0 || (i + 1) === cfg.cells.length) {
-      console.log('  worker ' + cfg.worker + ' [' + (i + 1) + '/' + cfg.cells.length + '] ' + id + ' (' + ((Date.now() - t0) / 1000).toFixed(1) + ' s, ' + totalTrees + ' stream trees)');
+      console.log('  worker ' + cfg.worker + ' [' + (i + 1) + '/' + cfg.cells.length + '] ' + id + ' (step=' + cellStep + 'm, ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s, ' + totalTrees + ' stream trees)');
     }
   }
 })().catch(e => { console.error(e); process.exit(1); });
@@ -449,7 +487,7 @@ def _export_chunks_node(cells, place_boxes, out_root, P, micro=None, prune=True,
     with tempfile.TemporaryDirectory() as tmp:
         with open(stage_js, encoding='utf-8') as fst:
             stage_src = fst.read()
-        q_str = ('?micro=%d' % micro) if micro is not None else ''
+        q_str = build_query(micro=micro, alpine=alpine)
         gl_patch = """
 THREE.WebGLRenderer = function() {
   const base = {
@@ -492,6 +530,7 @@ THREE.PMREMGenerator = function() {
                     'ids': [cid(c) for c in w_cells],
                     'chunk': CHUNK,
                     'step': STEP,
+                    'alpineStep': alpine_step,
                     'chunksDir': chunks_dir,
                     'placeBoxes': place_boxes,
                     'corridor': corr_pts,
@@ -713,6 +752,8 @@ def main():
         elif a == '--out' and i + 1 < len(argv):
             OUT = os.path.abspath(argv[i + 1])
     micro = parse_micro(argv)
+    alpine = parse_alpine(argv)
+    alpine_step = parse_alpine_step(argv)
     if only not in ('index', 'chunks', 'monastery') and os.environ.get('KRATOR_GL') != 'gpu':   # under SwiftShader the page's start fails on a shader (CAM never made)
         sys.exit('godot_case: set KRATOR_GL=gpu (the page needs the GPU; SwiftShader fails its start)')
     P = plan()
@@ -725,12 +766,12 @@ def main():
     place_boxes = [p['box'] for p in pl]
     if only in (None, 'flora'):
         print('flora library: shared 3D Hero (lv=2) + Mid (lv=1) + Sapling + Undergrowth prototypes', flush=True)
-        asyncio.run(_export_flora_lib_async(os.path.join(OUT, 'flora'), micro=micro))
+        asyncio.run(_export_flora_lib_async(os.path.join(OUT, 'flora'), micro=micro, alpine=alpine))
     if only in (None, 'places'):
         want_pl = [a.split('=', 1)[1] for a in argv if a.startswith('--place=')]
         run_pl = [p for p in pl if p['id'] in want_pl] if want_pl else pl
         print('places (%d): lattice-snapped boxes, single-boot camera settle across sites & villages' % len(run_pl), flush=True)
-        asyncio.run(_export_places_batch_async(run_pl, OUT, micro=micro))
+        asyncio.run(_export_places_batch_async(run_pl, OUT, micro=micro, alpine=alpine))
     if only in (None, 'monastery'):
         M = MONASTERY
         mpage = os.path.join(ROOT, M['page'])
@@ -769,9 +810,11 @@ def main():
             if a.startswith('--chunk-range='):
                 lo, hi = [int(x) for x in a.split('=', 1)[1].split(':', 1)]
                 sub_cells = cells[lo:hi]
-        print('chunks (%d of %d: %d on road %s + %d High Rift/site/escarpment cells): %d m cells every %d m + full-chunk flora'
-              % (len(sub_cells), len(cells), len(route_cells), L['id'], len(cells) - len(route_cells), CHUNK, STEP), flush=True)
-        _export_chunks_node(sub_cells, place_boxes, OUT, P, micro=micro, prune=(len(sub_cells) == len(cells)), resume=('--resume' in argv))
+        print('chunks (%d of %d: %d on road %s + %d High Rift/site/escarpment cells): %d m cells every %d m%s + full-chunk flora'
+              % (len(sub_cells), len(cells), len(route_cells), L['id'], len(cells) - len(route_cells), CHUNK, STEP,
+                 (' (alpine massifs %d m)' % alpine_step) if alpine_step else ''), flush=True)
+        _export_chunks_node(sub_cells, place_boxes, OUT, P, micro=micro, alpine=alpine, alpine_step=alpine_step,
+                            prune=(len(sub_cells) == len(cells)), resume=('--resume' in argv))
     arcology(pl)
     monastery(pl)
     reg_meta = {}
@@ -801,10 +844,15 @@ def main():
         idx['flora'] = {'case': 'flora', 'protos': 'flora/protos.json'}
     if micro is not None:
         idx['micro'] = micro
+    if alpine is not None:
+        idx['alpine'] = alpine
+    if alpine_step is not None:
+        idx['chunk']['alpine_step'] = alpine_step
     with open(os.path.join(OUT, 'index.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump(idx, f, separators=(',', ':'), ensure_ascii=False)
-    print('wrote %s: %d chunks (%d route), %d places, %d roads (plan %s%s)' % (os.path.relpath(OUT, ROOT).replace(os.sep, '/'),
-          len(cells), len(route_cells), len(pl), len(idx['roads']), P['hash'], ', micro=%d' % micro if micro is not None else ''))
+    print('wrote %s: %d chunks (%d route), %d places, %d roads (plan %s%s%s)' % (os.path.relpath(OUT, ROOT).replace(os.sep, '/'),
+          len(cells), len(route_cells), len(pl), len(idx['roads']), P['hash'],
+          ', micro=%d' % micro if micro is not None else '', ', alpine=%d' % alpine if alpine is not None else ''))
 
 
 if __name__ == '__main__':

@@ -166,7 +166,7 @@ for f in ('56-core-water-breakup.js', '57-core-water-audit.js', '58-core-water-m
     PATH.setdefault(f, P('core', 'water', 'ext', f))
 
 # 8. core/materials/record + packed library textures from tex/pack.json
-for f in ('23-mat-record.js', '25-matlib-host.js'):
+for f in ('23-mat-record.js', '25-matlib-host.js', '27-matlib-m1.js'):
     PATH.setdefault(f, P('core', 'materials', 'record', f))
 for slot, rel in sorted(SJ.get('core', {}).items()):
     PATH[slot] = P(*rel.split('/'))

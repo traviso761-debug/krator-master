@@ -117,7 +117,10 @@ CORE_HOST = khost.SHELL + ['94-host-polytool.js', '20-core-space.js']
 khost.resolve(PATH, CORE_HOST)
 
 # core/materials/record & packed library textures (tex/pack.json)
-for f in ('23-mat-record.js', '25-matlib-host.js'):
+PATH.setdefault('06-core-khook.js', core('shader', '06-core-khook.js'))
+PATH.setdefault('06b-core-kcolor.js', core('shader', '06b-core-kcolor.js'))
+PATH.setdefault('10-core-drawn.js', core('drawn', '10-core-drawn.js'))
+for f in ('23-mat-record.js', '25-matlib-host.js', '27-matlib-m1.js'):
     PATH.setdefault(f, core('materials', 'record', f))
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack as _mp  # noqa: E402

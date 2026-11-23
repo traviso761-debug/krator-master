@@ -9,6 +9,8 @@ const M=WORLD_DATA.meta,S=(M.sites||[])[0]||{x:0,z:0,name:'the site'},P=WORLD_DA
 const views=[{label:'Overview: the cut from 90 km up',pos:[S.x,90000,S.z+70000],look:[S.x,0,S.z]},
  {label:'The floor round the rock from 2.5 km up',view:[S.x+1800,S.z+3200,2500,.5,-.6]}];
 if(P)P.sites.forEach(St=>St.camps.forEach(C=>views.push({label:C.name+' ('+St.name+')',view:[C.site.x-240,C.site.z+280,120,-.7,-.3]})));
+/* the clearings (2026-11-12): each farming village from 180 m up */
+if(P)P.sites.forEach(St=>(St.hamlets||[]).forEach(V=>views.push({label:V.name+' ('+St.name+')',view:[V.site.x-260,V.site.z+300,180,-.7,-.35]})));
 return{built:{[S.name]:'openworld/pinnacle (the site: its bands and tracks); the town on the mesa is settlements/pinnacle-rock'},
  goOrder:[S.name],goViews:views,
  start:{view:[S.x+2600,S.z+2600,260,.78,-.18],look:[S.x,S.z,40]}};})();

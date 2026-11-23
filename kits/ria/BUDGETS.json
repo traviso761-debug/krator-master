@@ -1,10 +1,13 @@
 {
- "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls and bytes; CORE-IMPROVEMENTS.md 3d). A raise needs a new why.",
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls, bytes, samplers and vram_mb; GRAPHICS-TERRAIN-PROPOSAL.md Stage 1). A raise needs a new why.",
  "pages": {
   "ria.html": {
-   "tris": 1800000,
-   "calls": 180,
-   "why": "16 monumental Lower Ria and Upper Ria palaces, multi-tiered Prasat/Pyatthat halls, circular Mandala cloisters, lotus domes, water-gates and furnished interiors in one two-row kit sheet",
+   "tris": 3200000,
+   "calls": 220,
+   "bytes": 16777216,
+   "samplers": 15,
+   "vram_mb": 320,
+   "why": "36 Lower Ria and Upper Ria dynastic monuments, civic halls, trade works and dwellings across four rows with furnished interiors, Stage 5 M1-M4 materials and Stage 7 KROOMLIGHT",
    "raised": "2026-11-23"
   }
  }

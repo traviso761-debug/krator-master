@@ -35,6 +35,9 @@ async function start(){
  if(typeof window.KRATOR_MICRO==='undefined'&&typeof location!=='undefined'&&location.search){
   const qm=new URLSearchParams(location.search).get('micro');
   if(qm!=null)window.KRATOR_MICRO=qm==='0'||qm==='false'?false:qm==='2'?2:1;}
+ if(typeof window.KRATOR_ALPINE==='undefined'&&typeof location!=='undefined'&&location.search){
+  const qa=new URLSearchParams(location.search).get('alpine');
+  if(qa!=null)window.KRATOR_ALPINE=qa==='0'||qa==='false'?false:qa==='2'?2:1;}
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);

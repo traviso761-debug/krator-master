@@ -138,5 +138,16 @@ for (const id of ['maar-yam', 'fumewort'])
  ok('the Tiers make a plaid from their own (saffron, the band lichen\'s orchil, the shelf oak\'s tannin)', C.canPlaid('tiers') && plaid3(C.palette('tiers').colours),
    !plaid3(C.palette('tiers').colours.filter(k => k !== 'purple')));}
 
+
+// giant mound-termite hive fungi (swbay Aw upland savanna and crater-drylands N edge ONLY): subterranean hive-comb & fruiting mound-cap
+{const sw = C.forBiome('swbay'), cd = C.forBiome('crater-drylands'), hj2 = C.forBiome('hyperjungle'), as2 = C.forBiome('abyssal-savannah');
+ const comb = C.BY_ID['hive-comb'], cap = C.BY_ID['mound-cap'];
+ ok('termites: hive-comb is an underground termite-hive crop (mushroom + reagent + medicine) with soldier hazard',
+   !!comb && comb.grown === 'underground' && comb.works.includes('termite-hive') && !!comb.hazard && C.isBucket(comb, 'mushroom') && C.isBucket(comb, 'reagent') && C.isBucket(comb, 'medicine'),
+   !C.isBucket(comb, 'grain'));
+ ok('termites: hive-comb and mound-cap grow ONLY in swbay and crater-drylands (never hyperjungle or abyssal-savannah)',
+   how(sw, 'hive-comb') === 'wild' && how(cd, 'hive-comb') === 'wild' && how(C.forBiome('swbay', { works: ['termite-hive'] }), 'hive-comb') === 'bed' && how(sw, 'mound-cap') === 'wild' && how(cd, 'mound-cap') === 'wild',
+   how(hj2, 'hive-comb') === 'no' && how(as2, 'hive-comb') === 'no' && how(hj2, 'mound-cap') === 'no' && how(as2, 'mound-cap') === 'no');}
 console.log(bad ? '\n' + bad + ' FAILED' : '\nall passed');
 process.exit(bad ? 1 : 0);
+

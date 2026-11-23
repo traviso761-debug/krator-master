@@ -55,6 +55,12 @@ if(typeof XAK!=='undefined'){try{XAK.bind(typeof KMAT!=='undefined'?KMAT:null);}
  VK.xanadu={dims:XAK.dims(),piece:(key,v,drop)=>{const G=XAK.proto(key,v,{drop,footC:0x8f8676});return G&&typeof isleFlatten==='function'?isleFlatten(G):null;}};}
 if(typeof IZV!=='undefined'&&typeof isleProto==='function')VK.iziz={dims:IZV.dims(),piece:(key,v,drop)=>{const P=isleProto('izv',key,v,CACHE);if(!P)return null;
  const D=VK.iziz.dims[key],g=new THREE.BoxGeometry(D.w,drop,D.d).translate(0,-drop/2+.05,0);return P.parts.concat([{geo:g,mat:footM,tris:12}]);}};
+/* beast-riders: the Beast Riders kit's own buildings (CAT, settlements/isle-demo/bundles.py cat_bundle) through the shared
+   instancer, on the same footing (2026-11-11: Pinnacle Rock's clearings, core/hamlet's `beast-rider` row) */
+if(typeof CAT!=='undefined'&&CAT&&CAT.ASSET_BY_KEY&&typeof isleProto==='function'){const cd={};
+ Object.keys(CAT.ASSET_BY_KEY).forEach(k=>{if(!/^br_bldg_/.test(k))return;const A=CAT.ASSET_BY_KEY[k];cd[k]={w:A.w,d:A.d,h:A.h,variants:Array.isArray(A.variants)?A.variants.length:(A.variants|0)||1};});
+ VK['beast-riders']={dims:cd,piece:(key,v,drop)=>{const P=isleProto('cat',key,v,CACHE);if(!P)return null;
+  const D=cd[key],g=new THREE.BoxGeometry(D.w,drop,D.d).translate(0,-drop/2+.05,0);return P.parts.concat([{geo:g,mat:footM,tris:12}]);}};}
 const KD=Object.assign({},...Object.keys(VK).map(k=>VK[k].dims));
 /* a village's kit: its core/hamlet row's `kit` (the Order's row draws in the Xanadu kit's pieces), else its culture's name */
 const vkit=c=>{const R=typeof KHAMLET!=='undefined'&&KHAMLET.CULTURES&&KHAMLET.CULTURES[c];return R&&R.kit&&VK[R.kit]?R.kit:c;};

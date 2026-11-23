@@ -20,7 +20,9 @@ import world_data as WD   # noqa: E402
 
 # the kits whose boxes a site's camps take (a key's box: its own, or its variant's: variantDims)
 DIMS_SOURCES = ([os.path.join(ROOT, 'kits', 'beast-riders', 'src', f) for f in
-                 ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js')]
+                 ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js',
+                 # its own buildings (core/hamlet's `beast-rider` row: Pinnacle Rock's clearings, 2026-11-11), as CAT gives them on a page
+                 '50-br-mounts.js', '51-br-trades.js', '52-br-trades-b.js', '53-br-trades-c.js', '54-br-houses.js')]
                 # the Xanadu kit's buildings (core/hamlet's `xanadu` row), as XAK.dims() gives them on a page
                 + sorted(os.path.join(ROOT, 'kits', 'xanadu', 'src', f) for f in os.listdir(os.path.join(ROOT, 'kits', 'xanadu', 'src')) if f.endswith('.js'))
                 # the Iziz Vernacular's (core/hamlet's `iziz` row, 21-hamlet-iziz.js), as IZV.dims() gives them: its VERN.def records
