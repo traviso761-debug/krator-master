@@ -65,6 +65,10 @@ const STRATA=LQ.get('strata')==='0'?BIO.strata({seed:5813,columnM:120,
 // the basin to the river's braided reach (cobble floor, bars between its channels, cut banks on the outsides of its bends, a pool or two after rain),
 // slickrock DOMES on the plateau (Zion's checkerboard country, the canyon recipe's beds) and granite TORS on the tundra. Records first (KRAND-hashed by
 // slot), composed on the land, read by the painter and the placement as fields (talus, wash), not only as height (the review's second line)
+/* THE RILLS (core/terrain 38r, KRELIEF.rills; the owner, 2026-11-03: the banded flanks "look painted on" up close): the soft beds are scored down the fall
+   line by runnels 1.8 m apart and gullies 4.7 m apart, 0.35 and 0.6 m deep, so each bed's colour dips into the gullies and rides the ribs (the rule of V's).
+   Too fine for the ground's 13 m cells: the near ground (45, KGROUND.nearMesh) draws them round the camera. ?rills=0 none */
+const RILLS=LQ.get('rills')!=='0'&&typeof KRELIEF!=='undefined'&&KRELIEF.rills?KRELIEF.rills({seed:5431,spacing:1.8,depth:.35}):null;
 const LANDF=(function(){if(LQ.get('landforms')==='0'||typeof KRELIEF==='undefined')return null;
  const TAL=KRELIEF.talus({h:52,reach:90,rough:.6,scale:.02,seed:5401,footD:(x,z)=>ESC(z)-60-x});
  const a=[-1080,-2960],b=[-1300,zR(-1300)-120];
@@ -79,9 +83,11 @@ function landH(x,z){const e=ESC(z),step=smooth(e-70,e+70,x);
  let h=mix(basinH(x,z),plateauH(x,z),step)+rangeH(x,z);
  // the escarpment's face: a band of steep red rock, benched
  h+=8*Math.sin(clamp((x-e+70)/140,0,1)*Math.PI*3)*smooth(0,.3,step)*smooth(1,.7,step);
- const bk=badK(x,z);if(bk>0){h+=bk*moundH(x,z);
+ const bk=badK(x,z);if(bk>0){h+=bk*moundH(x,z);const e=3,gx=bk*(moundH(x+e,z)-moundH(x-e,z))/(2*e),gz=bk*(moundH(x,z+e)-moundH(x,z-e))/(2*e),sl=Math.hypot(gx,gz);
   /* the beds' differential erosion (KSTRATA's ledge pass, the owner 2026-11-03): where the mound's flank is steep, hard beds stand proud and soft ones ease back */
-  if(STRATA.ledge&&LQ.get('ledges')!=='0'){const e=3,sl=bk*Math.hypot(moundH(x+e,z)-moundH(x-e,z),moundH(x,z+e)-moundH(x,z-e))/(2*e);if(sl>.4)h=STRATA.ledge(x,z,h,sl,{k:.75,bench:1.4,anchor:14});}}
+  if(STRATA.ledge&&LQ.get('ledges')!=='0'&&sl>.4)h=STRATA.ledge(x,z,h,sl,{k:.75,bench:1.4,anchor:14});
+  /* the rills (core/terrain 38r, RILLS above): runnels down the fall line, cut into the steep flanks; the near ground (45) draws them */
+  if(RILLS)h+=bk*RILLS.at(x,z,gx,gz);}
  if(LANDF)h=LANDF.apply(x,z,h);
  // the vents' flat: a shallow basin, crusted
  const dv=Math.hypot(x-VENTS.x,z-VENTS.z);if(dv<VENTS.r*1.3)h=mix(h,basinH(x,z)-18+3*(fbm(x*.01,z*.01,77,2)-.5),smooth(VENTS.r*1.25,VENTS.r*.7,dv));
@@ -177,6 +183,11 @@ const LAND={name:'The eastern badlands (ideal type)',region:{name:'The eastern b
  'Needle bloom stand':atTree(nearTree('needlebloom',P.waste[0],P.waste[1]),14,1.2,2),
  'Needle bloom close-up':(function(){const T=nearTree('needlebloom',P.waste[0],P.waste[1],6);return[T.x+Math.cos(1.2)*4.5,T.y0+T.H*.85,T.z+Math.sin(1.2)*4.5,T.x,T.y0+T.H*.85,T.z];})(),
  'Painted badlands':look(P.bad[0]-260,P.bad[1]+180,40,P.bad[0]+60,P.bad[1]-60,10),
+ // the near ground's view (core/terrain 43n, KGROUND.nearMesh): a steep bedded flank of the painted badlands (found, not typed: the steepest mound
+ // flank within 300 m where the beds show, its slope under 1.1), from 14 m down its slope at eye height, looking up it
+ 'Banded flank, close':(function(){let T=null,bs=-1;for(let dz=-300;dz<=300;dz+=10)for(let dx=-300;dx<=300;dx+=10){const x=P.bad[0]+dx,z=P.bad[1]+dz,bk=badK(x,z);if(bk<.6)continue;
+   const e=6,gx=bk*(moundH(x+e,z)-moundH(x-e,z))/(2*e),gz=bk*(moundH(x,z+e)-moundH(x,z-e))/(2*e),sl=Math.hypot(gx,gz),s=sl<1.1?sl*FIELD.strata(x,z):-1;if(s>bs){bs=s;T={x,z,gx,gz,sl};}}
+  if(!T)return look(P.bad[0]-60,P.bad[1]+40,1.7,P.bad[0],P.bad[1],2);const ux=-T.gx/T.sl,uz=-T.gz/T.sl,cx=T.x+ux*14,cz=T.z+uz*14;return[cx,gh(cx,cz,1.7),cz,T.x,terrainH(T.x,T.z)+2,T.z];})(),
  'Green badlands':look(P.green[0]-220,P.green[1]-160,30,P.green[0]+60,P.green[1]+40,6),
  'Sagebrush and pinyon-juniper':atTree(nearTree('juniper',P.steppe[0],P.steppe[1]),22,2.0,2.5),
  'Rose weepers and giant umbels':atTree(nearTree('weeper',P.vale[0],P.vale[1]),30,1.4,2.5),
