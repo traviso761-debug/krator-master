@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 6 prompts** (2026-11-17: +2, the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 58. 2026-11-17: +1, Kirstabal's `wall.slate.coursed`, section 57. 2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
+**Count: 9 prompts** (2026-11-22: +3, Xanadu's lake towns and mines, `stone.ghat.wet`, `ground.sherds`, `ground.tailings.ore`, section 59. 2026-11-17: +2, the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 58. 2026-11-17: +1, Kirstabal's `wall.slate.coursed`, section 57. 2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
 owner's Codex batches delivered the rest: 22 new sets on 2026-11-16 (`PLAN.md`, "Delivered 2026-11-16"), and, merged here the same day
 ("keep the installed 2026-11-12 takes, merge them here"), the 2026-11-12 batch's 63 sets from `claude/textures-2026-11-12`, whose
 entries are in `PROMPTS-archived.md`; every entry whose set is now in the library was taken off this list. None is wired yet: each
@@ -503,6 +503,32 @@ Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat
 `ground.sulfur.crust` (the crust beds and the spring's edge at the sulfur works, Hoṭ-Bāṭh; 4 m a tile):
 ```
 Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the crusted ground round a volcanic hot spring where native sulfur is scraped: a brittle lemon-yellow sulfur crust in thin cracked plates and needle crystals over pale grey-white mineral mud, patches scraped back to the grey mud with rake marks, small orange and ochre stains, a few white salt efflorescences, hairline cracks and tiny vent holes. Natural, slightly dusty, not glossy.
+```
+
+## 59. Xanadu's lake towns and mines (`settlements/xanadu-lake`, `settlements/xanadu/WORKS-PLAN.md`, 2026-11-22)
+
+The twenty lake towns of the shared target and the two mines' camps (plans only; `settlements/xanadu/BUILD-PLAN.md`). Most
+of what they draw is in the library (`roof.thatch.reed`, `ground.reedbed`, `rock.wet.dark`, `rock.hewn.drillmarked`,
+`ground.tundra`, `rock.opal.matrix`); `ground.dyeworks` and `ground.sulfur.crust` are owed in section 58. Three are not.
+They land in the library; the lake-town target's and `kits/xanadu`'s `materials.json` take them when the pieces that use
+them are built. Until then the stand-in each row names is drawn and said in the build's `KNOWN_ISSUES.md`. **3 prompts.**
+
+`stone.ghat.wet` (the landing stairs into the lake at every lake town, and the quays' lower courses; 2 m a tile; the stand-in
+is `stone.cut` darkened):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on stone surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the worn grey-brown volcanic stone blocks of an old lake-shore landing stair, the blocks laid in rough courses with wide weathered joints, their edges rounded by centuries of feet and water; the stone dark and damp, with a band of slick green-black algae and pale lime scale in the joints, a few tiny snail shells and grit, small chips and pits in the surfaces. Muted dark greys, olive green and black, not glossy.
+```
+
+`ground.sherds` (Pāṭari's kiln yards and the potters' lanes, paved and strewn with broken pots; 4 m a tile; the stand-in is
+`ceramic.terracotta` on `ground.ash.soil`):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects standing up, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the trodden yard of an old potters' kiln works, packed reddish-brown earth thickly strewn and half buried with broken pottery sherds of every size, unglazed red and buff terracotta, a few pieces of dark smoked pot and pale cream slip, flat curved fragments and broken rims lying every which way, grey wood ash in patches near where the kilns would be, fine red clay dust. Earthy, warm, matte.
+```
+
+`ground.tailings.ore` (the spoil and tailings heaps of Kōlḍ-Lōḍ's gold mines and the opal diggings; 4 m a tile; the stand-in
+is `ground.fellfield.fines` tinted):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: mine tailings and crushed waste rock dumped from a hard-rock mine, angular grey and blue-grey broken rock from fist-sized lumps down to coarse sand and fine grey powder, streaked with rusty orange and ochre iron staining and a few pale quartz fragments, small patches of fine wet grey silt where water has run, no plants. Neutral greys with rust streaks, matte, dusty.
 ```
 
 ## Gaps with no prompt yet
