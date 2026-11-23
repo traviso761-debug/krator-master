@@ -45,9 +45,11 @@ KCLIFF.rock = function (o) {
 
 KCLIFF.ground = function (o) {
   var PG = o.page, H = o.H;
-  var xs = []; for (var x = -PG; x <= PG + .01; x += (Math.abs(x) < o.xDense ? o.dx[0] : o.dx[1])) xs.push(x);
+  /* o.xBands / o.zBands [[a, b, step]...]: more dense bands (along a road, so its cut is drawn) */
+  var band = function (v, st, list) { (list || []).forEach(function (b) { if (v >= b[0] && v < b[1]) st = Math.min(st, b[2]); }); return st; };
+  var xs = []; for (var x = -PG; x <= PG + .01; x += band(x, Math.abs(x) < o.xDense ? o.dx[0] : o.dx[1], o.xBands)) xs.push(x);
   if (xs[xs.length - 1] < PG - .01) xs.push(PG);   /* the near grid always meets the far ring's edge (no sliver of sky at the seam) */
-  var zs = new Set(); for (var z = -PG; z <= PG + .01; z += (z > o.zDense[0] && z < o.zDense[1] ? o.dz[0] : o.dz[1])) zs.add(Math.round(z * 100) / 100);
+  var zs = new Set(); for (var z = -PG; z <= PG + .01; z += band(z, z > o.zDense[0] && z < o.zDense[1] ? o.dz[0] : o.dz[1], o.zBands)) zs.add(Math.round(z * 100) / 100);
   (o.rows || []).forEach(function (r) { zs.add(r); }); zs.add(PG); zs.add(-PG);
   var ZS = Array.from(zs).sort(function (a, b) { return a - b; });
   var nx = xs.length, nz = ZS.length, NV = nx * nz, P = new Float32Array(NV * 3), C = new Float32Array(NV * 3), Dr = new Float32Array(NV);
@@ -81,28 +83,14 @@ KCLIFF.ground = function (o) {
   return { near: mesh, far: fm, verts: NV + fn * fn };
 };
 
-// KCLIFF.road(o) -> {mesh, legs, ramps, maxGrade, length}   a road drawn on the ground as a ribbon (2026-11-22). Each leg of o.pts [[x, z]...]
-// steeper than o.grade (.09) is switched back (zigzag legs across its fall line, each at the grade); a leg steeper than o.cliff (.6) is a
-// cut ramp up a cliff, recorded and not drawn; everything outside the near square (o.page) is left to the far ground. The ribbon lies
-// 0.3 m over o.H, sampled every 4 m. o: {pts, H, w (6), grade, cliff, page, scene, name, color}
+// KCLIFF.road(o) -> {mesh, legs, ramps, maxGrade, length}   a road drawn on its cut (2026-11-22). o.path is the cut's path
+// (KCLIFF.roadCut(L, H).path: the runs of [x, z], switched back where a leg is steep, broken at a ramp), o.H the ground with the cut in it,
+// so the ribbon, 0.3 m over o.H and sampled every 4 m, lies on the graded bed; everything outside the near square (o.page) is left to the
+// far ground. maxGrade is read off o.H over 40 m of road. o: {path, H, w (6), page, scene, name, color}
 KCLIFF.road = function (o) {
-  var H = o.H, w = o.w || 6, grade = o.grade || .09, cliff = o.cliff || .6, PG = o.page, path = [], ramps = 0, legs = 0;
-  var inside = function (p) { return Math.abs(p[0]) < PG - 1 && Math.abs(p[1]) < PG - 1; };
-  for (var i = 0; i < o.pts.length - 1; i++) {
-    var a = o.pts[i], b = o.pts[i + 1], dx = b[0] - a[0], dz = b[1] - a[1], D = Math.hypot(dx, dz), dy = Math.abs(H(b[0], b[1]) - H(a[0], a[1]));
-    if (D < 1) continue;
-    if (dy / D > cliff) { ramps++; path.push(null); continue; }
-    var ux = dx / D, uz = dz / D, mx = (a[0] + b[0]) / 2, mz = (a[1] + b[1]) / 2;
-    /* the zigzag's sideways step runs along the slope's contour at the leg's middle (across the fall line), not across the leg */
-    var gx = H(mx + 20, mz) - H(mx - 20, mz), gz = H(mx, mz + 20) - H(mx, mz - 20), gl = Math.hypot(gx, gz) || 1, nx = -gz / gl, nz = gx / gl, n = 1, wz = 0;
-    if (dy / D > grade) { n = Math.max(2, Math.ceil(D / 120)); var s = D / n, len = dy / (n * grade); wz = Math.sqrt(Math.max(0, len * len - s * s)) / 2; }
-    for (var j = 0; j <= n; j++) {
-      var off = (j === 0 || j === n) ? 0 : (j % 2 ? wz : -wz);
-      path.push([a[0] + ux * D * j / n + nx * off, a[1] + uz * D * j / n + nz * off]);
-    }
-    legs += n;
-  }
-  var P = [], I = [], C = [], total = 0, maxG = 0, run = [], prof = [], off = 0;   /* off: a gap between runs, so no grade window spans a cut ramp */
+  var H = o.H, w = o.w || 6, PG = o.page;
+  var inside = function (x, z) { return Math.abs(x) < PG - 1 && Math.abs(z) < PG - 1; };
+  var P = [], I = [], total = 0, maxG = 0, run = [], prof = [], off = 0;   /* off: a gap between runs, so no grade window spans two */
   var flush = function () {
     off += 1e4; if (run.length < 2) { run = []; return; }
     var base = P.length / 3;
@@ -114,22 +102,21 @@ KCLIFF.road = function (o) {
     }
     run = [];
   };
-  for (var m = 0; m < path.length - 1; m++) {
-    var p0 = path[m], p1 = path[m + 1];
-    if (!p0 || !p1) { flush(); continue; }
-    var L = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]), ns = Math.max(1, Math.ceil(L / 4));
-    for (var t = 0; t < ns; t++) {
-      var f = t / ns, px = p0[0] + (p1[0] - p0[0]) * f, pz = p0[1] + (p1[1] - p0[1]) * f;
-      if (!inside([px, pz])) { flush(); continue; }
-      if (run.length) { var lp = run[run.length - 1], sl = Math.hypot(px - lp[0], pz - lp[1]); if (sl > 0) { total += sl; prof.push([total + off, H(px, pz)]); } } else prof.push([total + off, H(px, pz)]);
-      run.push([px, pz]);
+  o.path.runs.forEach(function (pts) {
+    for (var m = 0; m < pts.length - 1; m++) {
+      var p0 = pts[m], p1 = pts[m + 1], L = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]), ns = Math.max(1, Math.ceil(L / 4)), last = m === pts.length - 2;
+      for (var t = 0; t < ns + (last ? 1 : 0); t++) {
+        var f = t / ns, px = p0[0] + (p1[0] - p0[0]) * f, pz = p0[1] + (p1[1] - p0[1]) * f;
+        if (!inside(px, pz)) { flush(); continue; }
+        if (run.length) { var lp = run[run.length - 1]; total += Math.hypot(px - lp[0], pz - lp[1]); }
+        prof.push([total + off, H(px, pz)]); run.push([px, pz]);
+      }
     }
-  }
-  flush();
-  /* the road's grade over 40 m of it (a 4 m sample reads the ground's bumps, which the road drapes over: no cut yet) */
+    flush();
+  });
   for (var q = 0, e = 0; q < prof.length; q++) { while (e < prof.length && prof[e][0] - prof[q][0] < 40) e++; if (e < prof.length && prof[e][0] - prof[q][0] < 60) maxG = Math.max(maxG, Math.abs(prof[e][1] - prof[q][1]) / (prof[e][0] - prof[q][0])); }
   var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setIndex(I); g.computeVertexNormals();
   var mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: o.color || 0x5e5242, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }));
   mesh.name = o.name || 'the road'; mesh.userData.inspectLabel = mesh.name; mesh.userData.probeSkip = true; mesh.userData.decor = true; o.scene.add(mesh);
-  return { mesh: mesh, legs: legs, ramps: ramps, maxGrade: maxG, length: total };
+  return { mesh: mesh, legs: o.path.legs, ramps: o.path.ramps, maxGrade: maxG, length: total };
 };

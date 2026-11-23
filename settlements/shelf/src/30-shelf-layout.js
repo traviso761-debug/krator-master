@@ -19,6 +19,8 @@ var L = {
   // THE GROUND (SHELF.groundAt): the plateau's cut, the dressed face, the shelf, the lower escarpment, Dalab's plain
   ground: { head: 3680, bench: 600, rise: .09, top: 4400, dressed: 1100, run: 260, shelf: 2830, shelfFlat: 1200, shelfEdge: 2000, shelfEnd: 2780,
     shelfLen: 1600, plainZ: 8500, plain: 1450, plainFar: 1200, page: 3000, far: 12000 },
+  // DALAB'S ROAD as cut into the ground (KCLIFF.roadCut): 6 m wide, held to 9 %, the cut eased back over 14 m each side (wider where deep)
+  road: { w: 6, shoulder: 14, grade: .09 },
   // THE SHELL (PLAN.md 5.3): the target's numbers at Shelf
   stack: { n: 34, y0: 2980, pitch: 700 / 33, slab: 4, storey: 4.5, storeys: 3, plenum: 700 / 33 - 4 - 13.5, w0: 400, w1: 950, r0: 40, r1: 290, rExp: 1.4,
     root: 20, gallery: 6, cover: .7, prow: { wing: 'c', k0: 20, add: 130 },
@@ -129,6 +131,8 @@ B('head_tower_1', 'the fort\'s tower', 'dalab_watchtower', 720, -440, z0({ peopl
 B('head_tower_2', 'the fort\'s tower', 'dalab_watchtower', 1040, -440, z0({ people: 0 }));
 row('head_fort_rows', 'the garrison\'s families', ['dalab_rowhouse', 'dalab_tenement'], 700, 1060, -380, 30, z0({ people: 50 }));
 B('head_tower_edge', 'the edge tower over the face', 'dalab_watchtower', 1000, -40, z0({ people: 0 }));
+P('portal_head', 'the road tunnel\'s upper portal (the Ancients\' portal house, west of the north-west gate)', 'portal', ['box', -1272, -1240, -216, -184],
+  z0({ key: 'anc:portal', face: 'x+', h: 14, by: 'dalab', state: 'kept', people: 0 }));
 
 // ---- Z4 THE SHELF (the bench at 2,830 m): the foot lift halls at the face's base, the shelf town either side of the prow's wreck, the
 //      caravans' yards and the sheep pens, the Travellers' halting place at the north-west end, the barley terraces
@@ -153,6 +157,8 @@ P('foot_halting', 'the Travellers\' halting place (barrel-top wagons)', 'halting
 row('foot_terraces', 'the barley terraces', ['dalab_orchard'], -900, -500, 700, 30, z4({ people: 0, kind: 'terrace' }));
 row('foot_terraces2', 'the barley terraces', ['dalab_orchard'], 400, 900, 760, 30, z4({ people: 0, kind: 'terrace' }));
 B('foot_shrine', 'the shelf shrine', 'dalab_shrine', -230, 230, z4({ people: 0 }));
+P('portal_shelf', 'the road tunnel\'s lower portal (the Ancients\' portico on the dressed face)', 'portal', ['box', -1074, -1046, 1, 13],
+  z4({ key: 'anc:portal', face: 'z+', h: 16, by: 'dalab', state: 'kept', people: 0 }));
 
 // ---- the census of the parts: the people above are weights, scaled to each zone's and people's total (largest remainders)
 var PARTFOLK = { 'Z0:dalab': 2200, 'Z0:tungang': 300, 'Z4:dalab': 1900, 'Z4:fellgang': 300 };
@@ -174,9 +180,23 @@ var CAR = { w: 10, d: 16, h: 7, beasts: 6, t: 40, note: 'a wagon and its team, o
 });
 
 // ---------------------------------------------------------------- the ways
-L.ways.push({ id: 'road', kind: 'road', name: 'Dalab\'s road: up the lower escarpment to the shelf, then the cut ramp at the north-west end to the plateau', by: 'dalab',
-  pts: [[-1600, 9000, null], [-1500, 5000, null], [-1450, 2000, null], [-1350, 500, null], [-1300, 100, null], [-1250, -150, null], [-1100, -200, null]],
-  note: 'switchbacks on the lower escarpment and in the natural cliff past the dressed face (a record: not drawn yet)' });
+/* Dalab's road: up the lower escarpment and across the shelf (between the Travellers' halting place and the carters' yard) to the
+   Ancients' road tunnel's lower portal in the dressed face; the tunnel climbs the Wall in a helix to its upper portal on the plateau, west
+   of the north-west gate (2026-11-22: the cliff's 850 m in 260 m is no road's; the old record's cut ramp is this tunnel) */
+L.ways.push({ id: 'road', kind: 'road', name: 'Dalab\'s road: up the lower escarpment to the shelf and the tunnel\'s lower portal', by: 'dalab',
+  pts: [[-1600, 9000, null], [-1500, 5000, null], [-1450, 2000, null], [-1060, 700, null], [-1060, 14, null]],
+  note: 'switched back where the escarpment is steep and cut to 9 % (KCLIFF.roadCut)' });
+/* the tunnel's record: its lower adit (pts 0 to 1: north from the portal into the Wall), the helix (1 to 2: entering and leaving the
+   circle round c), its upper adit (2 to 3: to the portal house); every adit at the grade, the helix's length its climb over the grade */
+var TUN = { c: [-1190, -420], r: 130, grade: .09 }, TP = [[-1060, 7, G.shelf], [-1060, -420], [-1190, -290], [-1256, -200, HY]];
+TP[1][2] = G.shelf + Math.hypot(TP[1][0] - TP[0][0], TP[1][1] - TP[0][1]) * TUN.grade;
+TP[2][2] = HY - Math.hypot(TP[3][0] - TP[2][0], TP[3][1] - TP[2][1]) * TUN.grade;
+TUN.y0 = TP[1][2]; TUN.y1 = TP[2][2]; TUN.length = (TUN.y1 - TUN.y0) / TUN.grade; TUN.turns = TUN.length / (2 * Math.PI * TUN.r);
+L.ways.push({ id: 'tunnel', kind: 'tunnel', name: 'the Ancients\' road tunnel: up the Wall in a helix from the shelf to the plateau', by: 'dalab',
+  pts: TP, helix: TUN,
+  note: 'in the rock: its two portals drawn, its bore a record (KCARVE comes with the interiors)' });
+L.ways.push({ id: 'road.head', kind: 'road', name: 'Dalab\'s road from the tunnel\'s upper portal to the north-west gate', by: 'dalab',
+  pts: [[-1238, -200, null], [-1040, -200, null]] });
 ['g1', 'g2'].forEach(function(g){
   var lf = L.lifts.filter(function(x){ return x.id === 'lift.' + g; })[0];
   L.ways.push({ id: 'stair.' + g, kind: 'stair', name: 'the stair in the ' + lf.name + '\'s shaft', by: 'tungang', pts: [[lf.x, lf.z, AY], [lf.x, lf.z, HY]], steps: Math.round((HY - AY) / .18) });
@@ -210,7 +230,8 @@ L.lifts.filter(function(lf){ return lf.kind === 'core' && lf.runs; }).forEach(fu
   K(lf.id, 'plateau', { via: 'core' });
 });
 K('station', 'line', { via: 'platform' }); K('station', 'station_hall', { via: 'stairs' });
-K('plateau', 'road', { via: 'the north-west gate' }); K('shelf', 'road', { via: 'the ramp' });
+K('plateau', 'road.head', { via: 'the north-west gate' }); K('road.head', 'portal_head', { via: 'the road' }); K('portal_head', 'tunnel', { via: 'the upper portal' });
+K('tunnel', 'portal_shelf', { via: 'the lower portal' }); K('portal_shelf', 'road', { via: 'the road' }); K('shelf', 'road', { via: 'the shelf town' });
 L.parts.forEach(function(p){
   if (p.zone === 'Z0' && !p.in && !p.rock) K('plateau', p.id, { via: 'door' });
   else if (p.zone === 'Z4' && !p.in) K('shelf', p.id, { via: 'door' });

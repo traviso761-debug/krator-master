@@ -23,9 +23,6 @@ The one change since: the near ground grid now always meets the far ring's edge 
 - **The shafts, the station's platforms and the gene bank's vault are inside the rock and not drawn** beyond the station's mouth on the
   face and the lift halls; `KCARVE` / `KCAVERN` (and `KKARST` for the cliff springs) come with the interiors.
 - **The Line's helix is a record**, checked for its grade and its length (64 km), not drawn.
-- **The road drapes over the ground** (`KCLIFF.road`): its switchbacks hold 9 % across the escarpment's fall line, but the escarpment's
-  bumps (40 m of noise at a 90 m scale) give it local grades to ~50 % over 40 m. A cut under it (the ground lowered along the road's record)
-  is owed.
 - **No interiors**; the Dalab set's buildings have no night lights of their own.
 
 ## Done (2026-11-22, the known-issues pass)
@@ -39,6 +36,13 @@ The one change since: the near ground grid now always meets the far ring's edge 
 - **The harbour**: a landing stage 1.5 m over the water along the mole, three stairs down the mole's face, six lake boats moored
   (`src/8ld-host-harbour.js`).
 - **Dalab's road** drawn down the escarpment to the west gate (`KCLIFF.road`).
+
+## Done (2026-11-22, the second known-issues pass)
+
+- **Dalab's road on a graded cut** (`KCLIFF.roadCut`, read by `LEDGE.groundAt`): the old switchbacks collapsed where a leg ran oblique
+  to the slope (the zig and the zag cancelled: ~50 % over 40 m). Now they are solved on the slope's plane per 400 m piece, each leg at the
+  grade, and the ground is graded to the road (its deepest cut or fill 16 m, the shoulder at most 1 in 1.5). The rules check it holds 9 %
+  over 40 m; the ground grid is 10 m along the road (`xBands`, `zBands`) so the cut is drawn.
 ## Baselined on purpose (2026-11-17)
 
 - `tools/check_assembly_baseline.json`: `CLASH KMAT`, `_materials`, `_texPending`, `onerror` on `dist/ledge.html`. The first, third and

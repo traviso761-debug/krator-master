@@ -8,4 +8,4 @@ global.window = global;
 const L = SHELF_LAYOUT;
 const boxes = L.decks.map(d => Object.assign({ id: d.id }, SHELF.deckBox(L, d), { floorM2: SHELF.deckFloor(L, d) }));
 const prof = {}; for (let z = -1500; z < 9000; z += 4) prof[z] = SHELF.groundAt(L, 0, z);
-process.stdout.write(JSON.stringify({ layout: L, boxes, area: SHELF.area(L), census: SHELF.census(L), line: SHELF.lineLength(L), checks: SHELF.checks(L), profile: prof }));
+process.stdout.write(JSON.stringify({ road: SHELF.roadCut(L).path.runs, layout: L, boxes, area: SHELF.area(L), census: SHELF.census(L), line: SHELF.lineLength(L), checks: SHELF.checks(L), profile: prof }));

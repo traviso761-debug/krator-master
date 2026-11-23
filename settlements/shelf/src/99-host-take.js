@@ -15,6 +15,9 @@ const VIEWS={
  'Under the overhang':[-260,2837,250,0,3200,20],
  'The halting place':[-1540,2875,820,-1230,2832,440],
  'Down the face from the plateau':[-60,3722,-40,0,3000,500],
+ 'The road tunnels lower portal':[-985,2852,95,-1060,2838,8],
+ 'The portal house on the plateau':[-1170,3702,-150,-1256,3688,-200],
+ 'The road up the escarpment':[-1150,3050,3150,-1380,2820,2150],
 };
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89z-host-sky.js) */
 function shelfFootprints(own){return own.filter(r=>r.kit==='dalab').filter(r=>{const a=[r.w,r.d].sort((x,y)=>x-y),b=r.def.slice().sort((x,y)=>x-y);

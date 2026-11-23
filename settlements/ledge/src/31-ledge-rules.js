@@ -64,12 +64,16 @@ function dressed(L, x, z){
   if (z <= G.quay) return G.apron;
   return lakeBed(L, G.quay, z);
 }
-function groundAt(L, x, z){
+function baseAt(L, x, z){
   var G = L.ground, a = Math.abs(x), k = smooth(G.dressed + 60, G.dressed - 20, a);
   if (k >= 1) return dressed(L, x, z);
   if (k <= 0) return natural(L, x, z);
   return dressed(L, x, z) * k + natural(L, x, z) * (1 - k);
 }
+/* the ground as drawn: the base ground with Dalab's road cut into it (KCLIFF.roadCut: within w/2 of the road at its graded profile,
+   eased back over the shoulder), when the layout has a road record (L.road) */
+function roadCut(L){ return KC.roadCutOf(L, function(x, z){ return baseAt(L, x, z); }); }
+function groundAt(L, x, z){ var h = baseAt(L, x, z), c = roadCut(L); return c ? c.apply(x, z, h) : h; }
 
 // ---------------------------------------------------------------- the area and the census
 function area(L){ return KC.area(L.stack, L.decks, L.zones); }
@@ -201,10 +205,12 @@ function checks(L){
   // the wreck lies under what fell
   var hb = L.heaps.filter(function(h){ return Math.abs(h.x) > G.dressed || h.z < 0; }).map(function(h){ return h.id; });
   ok('every wreck heap lies before the face, under the shell', hb);
+  var rc = roadCut(L), rb = KC.roadBad(rc, function(x, z){ return groundAt(L, x, z); }, .09);
+  ok('Dalab\'s road holds its 9 % on its cut (over 40 m of it)', rb, rc ? '(' + rc.profiles.map(function(P){ return Math.round(P[P.length - 1].s / 100) / 10; }).join(' + ') + ' km, ' + rc.path.legs + ' legs, the deepest cut or fill ' + Math.round(rc.deepest) + ' m)' : '');
   return out;
 }
 
 R.LEDGE = { STATES: STATES, BROKEN: BROKEN, LIVED: LIVED, BY: BY, layerY: layerY, wing: wing, widthAt: widthAt, reachOf: reachOf, deckBox: deckBox,
-  deckFloor: deckFloor, broken: broken, byId: byId, bbox: bbox, inShape: inShape, overlap: overlap, faceZ: faceZ, groundAt: groundAt,
+  deckFloor: deckFloor, broken: broken, byId: byId, bbox: bbox, inShape: inShape, overlap: overlap, faceZ: faceZ, groundAt: groundAt, baseAt: baseAt, roadCut: roadCut,
   area: area, census: census, graph: graph, reach: reach, lineLength: lineLength, checks: checks, seed: seed, draw: draw, tags: tags };
 })(typeof window !== 'undefined' ? window : globalThis);

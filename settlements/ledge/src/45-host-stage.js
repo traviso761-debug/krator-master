@@ -26,7 +26,7 @@ const LEDGE_ROCK=(function(){const G=LEDGE_LAYOUT.ground;
  return {mat:KCLIFF.rock({recipe:'rift-redbeds',seed:4373,range:[G.lake-200,G.top],pack:'ledge',lib:{wall:'cliffWall',dressed:'faceDressed',flat:'turf',low:'shore'},
   lowY:[330,420],tanMix:.45,key:'ledge-rock'})};})();
 const LEDGE_GROUND=(function(){const G=LEDGE_LAYOUT.ground;
- return KCLIFF.ground({H:LEDGE_H,page:G.page,far:G.far,xDense:1000,zDense:[-1000,700],dx:[6,30],dz:[8,30],rows:[-.05,.05,G.quay-.05,G.quay+.05],
+ return KCLIFF.ground({H:LEDGE_H,page:G.page,far:G.far,xDense:1000,zDense:[-1000,700],dx:[6,30],dz:[8,30],xBands:[[-3000,-700,10]],zBands:[[-3000,-250,10]],rows:[-.05,.05,G.quay-.05,G.quay+.05],
   dressed:(x,z,y)=>Math.abs(x)<G.dressed-10&&z>-30&&z<=G.quay+.1&&y<G.head-1?1:0,
   colour:(x,y,z,n,dr)=>dr&&y<G.apron+.5&&y>G.apron-.5?[.74+.05*n,.72+.05*n,.68+.04*n]:y<G.lake-.5?[.42,.40,.33]:y<G.lake+30?[.58+.06*n,.53+.05*n,.43]:y<1400?[.36+.08*n,.44+.07*n,.25]:[.42+.08*n,.47+.06*n,.29],
   farColour:(x,y,z,n)=>y<G.lake?[.42,.40,.33]:y<2400?[.34+.06*n,.42+.06*n,.24]:[.48+.08*n,.47+.06*n,.36],

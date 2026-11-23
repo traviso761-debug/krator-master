@@ -28,6 +28,8 @@ var L = {
   world: 4370,
   // THE GROUND (LEDGE.groundAt): the head's bench, the dressed face, the apron and the lake (PLAN.md 9.2)
   ground: { head: 1562, top: 3480, apron: 312, lake: 297, quay: 180, dressed: 750, bench: 700, escarp: .26, run: 380, shore: 40, page: 3000, far: 12000 },
+  // DALAB'S ROAD as cut into the ground (KCLIFF.roadCut): 6 m wide, held to 9 %, the cut eased back over 14 m each side
+  road: { w: 6, shoulder: 14, grade: .09 },
   // THE SHELL (PLAN.md 9.3): layers at y0 + pitch k; a layer's width along the face and its reach out of the rock grow with k
   stack: { n: 42, y0: 332, pitch: 30, slab: 5, storey: 4.5, storeys: 4, plenum: 7, w0: 320, w1: 700, r0: 24, r1: 196, rExp: 1.5,
     root: 20, gallery: 6, cover: .7, prow: { wing: 'c', k0: 26, add: 120 },

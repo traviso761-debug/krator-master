@@ -43,7 +43,12 @@ T.neg('a great lift landing on a gone deck is caught', check('the great lifts ru
 T.neg('a great lift out on the face is caught', check('the great lifts run in the rock'), broke(M => { M.lifts[0].z = 10; }), L);
 T.neg('a lived deck with no way to it is caught', check('every lived deck and peopled part is reached'),
   broke(M => { M.links = M.links.filter(k => k[0] !== 'd.28.e1' && k[1] !== 'd.28.e1'); M.lifts.forEach(l => { l.stops = l.stops.filter(s => s !== 'd.28.e1'); }); }), L);
-T.neg('the road cut off leaves the shelf to the lifts', check('the plateau reaches the shelf by Dalab\'s road'), broke(M => { M.links = M.links.filter(k => k[0] !== 'shelf' || k[1] !== 'road'); }), L);
+T.neg('the road tunnel shut leaves the shelf to the lifts', check('the plateau reaches the shelf by Dalab\'s road'), broke(M => { M.links = M.links.filter(k => k[0] !== 'tunnel' && k[1] !== 'tunnel'); }), L);
+T.neg('a road cut to a steeper grade than Dalab\'s is caught', check('Dalab\'s road holds its 9 %'), broke(M => { M.road.grade = .3; }), L);
+T.neg('a road with no cut under it is caught', check('Dalab\'s road holds its 9 %'), broke(M => { delete M.road; }), L);
+T.neg('a road tunnel bored out to the face is caught', check('the road tunnel climbs inside the Wall'), broke(M => { M.ways.find(w => w.id === 'tunnel').helix.c[1] = -120; }), L);
+T.neg('a road tunnel steeper than the road is caught', check('the road tunnel climbs inside the Wall'), broke(M => { const h = M.ways.find(w => w.id === 'tunnel').helix; h.grade = .15; h.length = (h.y1 - h.y0) / .15; }), L);
+T.neg('a road tunnel ending off its portal is caught', check('the road tunnel climbs inside the Wall'), broke(M => { M.ways.find(w => w.id === 'tunnel').pts[0][0] = -900; }), L);
 T.neg('a Line falling to its station is caught', check('the Line climbs the spirals'), broke(M => { M.line.approach[2][2] = 3600; }), L);
 T.neg('a Line steeper than the ruling grade is caught', check('the Line climbs the spirals'), broke(M => { M.line.helix.grade = .06; }), L);
 T.neg('a wreck heap behind the face is caught', check('every wreck heap lies before the face'), broke(M => { M.heaps[0].z = -50; }), L);

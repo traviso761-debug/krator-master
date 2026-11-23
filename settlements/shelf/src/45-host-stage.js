@@ -19,7 +19,7 @@ const SHELF_ROCK=(function(){const G=SHELF_LAYOUT.ground;
  return {mat:KCLIFF.rock({recipe:'secondary-ejecta',seed:4613,range:[G.plainFar-200,G.top],pack:'shelf',lib:{wall:'cliffWall',dressed:'faceDressed',flat:'turf',low:'shore'},
   lowY:[2700,2790],tanMix:.4,key:'shelf-rock'})};})();
 const SHELF_GROUND=(function(){const G=SHELF_LAYOUT.ground;
- return KCLIFF.ground({H:SHELF_H,page:G.page,far:G.far,xDense:1400,zDense:[-800,2200],dx:[6,30],dz:[10,30],rows:[-.05,.05],
+ return KCLIFF.ground({H:SHELF_H,page:G.page,far:G.far,xDense:1400,zDense:[-800,2200],dx:[6,30],dz:[10,30],xBands:[[-1500,-1400,8]],zBands:[[2200,3000,10]],rows:[-.05,.05],
   dressed:(x,z,y)=>Math.abs(x)<G.dressed-10&&z>-30&&z<=300&&y<G.head-1?1:0,
   colour:(x,y,z,n,dr)=>dr&&y<G.shelf+.5&&y>G.shelf-.5&&z<300?[.72+.05*n,.69+.05*n,.63+.04*n]:y>G.head-40?[.50+.07*n,.49+.06*n,.33]:y>G.shelfEnd-10?[.52+.07*n,.50+.06*n,.35]:[.56+.06*n,.50+.05*n,.38],
   farColour:(x,y,z,n)=>y<1600?[.56+.06*n,.50+.05*n,.38]:y<3600?[.52+.06*n,.48+.05*n,.36]:[.55+.08*n,.53+.06*n,.42],

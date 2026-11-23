@@ -140,7 +140,7 @@ def site_sheet(C, title, sub, ext=1500):
         fills.append(([(x, -z) for x, z in [(-ext, W['quay']), (ext, W['quay']), (ext, ext), (-ext, ext)]], WATER, W['label']))
     for h in L['heaps']:
         fills.append(([(x, -z) for x, z in ellipse_pts(h)], B.KIND_FILL['heap'], h['id']))
-    lines = [([(x, -z) for x, z, y in L['ways'][0]['pts']], (150, 70, 30), 4, "Dalab's road"),
+    lines = road_lines(C, 4) + [
              ([(-G['dressed'], 0), (G['dressed'], 0)], (0, 0, 0), 6, 'the dressed face'),
              ([(p[0], -p[1]) for p in L['line']['approach']], (40, 110, 40), 5, 'the Line to the station')]
     if W:
@@ -152,6 +152,26 @@ def site_sheet(C, title, sub, ext=1500):
     if L.get('piers'):
         lines.append(([(p['x'], -p['z']) for p in L['piers']], (90, 90, 120), 2, 'the viaduct\'s stumps'))
     sheet_plan(C, 'S0-site', title, sub, [-ext, ext, -ext, ext], rooms, fills, lines)
+
+
+def road_lines(C, wgt):
+    """Dalab's road as drawn: the cut's path (its switchbacks; layout_dump.js gives it as 'road') or, failing that, every road way's
+    record; a road tunnel's adits and its helix in grey (2026-11-22)."""
+    L, out = C.L, []
+    runs = C.dump.get('road') or [[(p[0], p[1]) for p in w['pts']] for w in L['ways'] if w['kind'] == 'road']
+    for r in runs:
+        out.append(([(p[0], -p[1]) for p in r], (150, 70, 30), wgt, "Dalab's road"))
+    for w in L['ways']:
+        if w['kind'] != 'tunnel':
+            continue
+        tp = w['pts']
+        out.append(([(tp[0][0], -tp[0][1]), (tp[1][0], -tp[1][1])], (110, 110, 110), wgt - 1, ''))
+        out.append(([(tp[2][0], -tp[2][1]), (tp[3][0], -tp[3][1])], (110, 110, 110), wgt - 1, ''))
+        h = w.get('helix')
+        if h:
+            out.append(([(h['c'][0] + h['r'] * math.cos(t), -(h['c'][1] + h['r'] * math.sin(t))) for t in [2 * math.pi * i / 36 for i in range(37)]],
+                        (110, 110, 110), wgt - 1, 'the road tunnel (r %d m, %.1f turns)' % (h['r'], h['turns'])))
+    return out
 
 
 def zone_sheet(C, id_, zone, title, rect, ground_word):
@@ -188,7 +208,7 @@ def zone_sheet(C, id_, zone, title, rect, ground_word):
             lines.append(([(p['x'], -p['z']) for p in L['piers'][:8]], (90, 90, 120), 3, 'the viaduct\'s stumps'))
     else:
         fills.append(([(x, -z) for x, z in [(rect[0], 0), (rect[1], 0), (rect[1], 60), (rect[0], 60)]], (230, 230, 236), 'the face (the shell\'s crown below the edge)'))
-        lines.append(([(w[0], -w[1]) for w in L['ways'][0]['pts']], (150, 70, 30), 4, "Dalab's road"))
+        lines += road_lines(C, 4)
     lines.append(([(rect[0], 0), (rect[1], 0)], (0, 0, 0), 5, 'the face'))
     people = sum(p['people'] for p in L['parts'] if p['zone'] == zone)
     sub = ('%s, %s. %d buildings and yards, %d people in them (%s); buildings are their kit\'s def at its footprint '

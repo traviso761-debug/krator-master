@@ -45,12 +45,16 @@ function dressed(L, x, z){
   return below(G, z, R.KRAND.fbm(x / 110, z / 110, 2.3, 3, 4612) - .5);
 }
 /* the shelf runs on past the dressed face: within shelfLen of the middle the natural ground keeps it flat too (the bench the town spreads on) */
-function groundAt(L, x, z){
+function baseAt(L, x, z){
   var G = L.ground, a = Math.abs(x), k = smooth(G.dressed + 60, G.dressed - 20, a);
   var hn = k >= 1 ? 0 : natural(L, x, z), hd = k <= 0 ? 0 : dressed(L, x, z), h = k >= 1 ? hd : k <= 0 ? hn : hd * k + hn * (1 - k);
   if (k < 1 && z > faceZ(L, x) + G.run && a < G.shelfLen){ var f = smooth(G.shelfLen, G.shelfLen - 150, a); h = h * (1 - f) + below(G, z, 0) * f; }
   return h;
 }
+/* the ground as drawn: the base ground with Dalab's road cut into it (KCLIFF.roadCut: within w/2 of the road at its graded profile,
+   eased back over the shoulder), when the layout has a road record (L.road) */
+function roadCut(L){ return KC.roadCutOf(L, function(x, z){ return baseAt(L, x, z); }); }
+function groundAt(L, x, z){ var h = baseAt(L, x, z), c = roadCut(L); return c ? c.apply(x, z, h) : h; }
 
 // ---------------------------------------------------------------- the area, the census, the Line
 function area(L){ return KC.area(L.stack, L.decks, L.zones); }
@@ -80,7 +84,7 @@ function tags(L, T){
   L.parts.forEach(function(p){ var b = KC.bbox(p.shape); if (!b) return;
     var tg = { culture: p.key && p.key.indexOf('anc:') === 0 ? 'ancient' : CULT[p.by] || 'ancient', state: tagState(p.state), finish: p.state, part: p.kind };
     if (p.key && p.key.indexOf('anc:') === 0 && p.by !== 'none') tg.role = p.by + '-held';
-    out.push(T.add({ id: 'shelf.' + p.id, class: p.kind === 'yard' || p.kind === 'halting' || p.kind === 'terrace' ? 'feature' : p.kind === 'lifthall' || p.kind === 'station' ? 'infrastructure' : 'building',
+    out.push(T.add({ id: 'shelf.' + p.id, class: p.kind === 'yard' || p.kind === 'halting' || p.kind === 'terrace' ? 'feature' : p.kind === 'lifthall' || p.kind === 'station' || p.kind === 'portal' ? 'infrastructure' : 'building',
       kind: p.kind, key: p.key || null, name: p.name, at: [(b[0] + b[1]) / 2, p.y, (b[2] + b[3]) / 2], size: [b[1] - b[0], b[3] - b[2], Math.max(p.h, 1)],
       ry: p.ry || 0, tags: tg, src: src })); });
   L.lifts.forEach(function(lf){ out.push(T.add({ id: 'shelf.' + lf.id, class: 'infrastructure', kind: lf.kind === 'car' ? 'lift' : 'lift-core', key: null, name: lf.name,
@@ -151,11 +155,32 @@ function checks(L){
   ok('every wreck heap lies before the face', L.heaps.filter(function(h){ return h.z < 0; }).map(function(h){ return h.id; }));
   var pr = L.heaps.filter(function(h){ return h.id === 'heap.prow'; })[0], gash = L.decks.filter(function(d){ return d.wing === S.prow.wing && d.state === 'gone'; });
   ok('the prow\'s wreck lies across the shelf under the gash, within its fall', pr && gash.length && Math.abs(pr.x) < 150 && pr.z > 300 && pr.z < 900 ? [] : ['heap.prow']);
+  var rc = roadCut(L), rb = KC.roadBad(rc, function(x, z){ return groundAt(L, x, z); }, .09);
+  ok('Dalab\'s road holds its 9 % on its cut (over 40 m of it)', rb, rc ? '(' + rc.profiles.map(function(P){ return Math.round(P[P.length - 1].s / 100) / 10; }).join(' + ') + ' km, ' + rc.path.legs + ' legs, the deepest cut or fill ' + Math.round(rc.deepest) + ' m)' : '');
+  /* the road tunnel: a helix in the Wall at the road's grade, behind the face and under the plateau, clear of the Line's spirals and the
+     station's platforms, from the lower portal's door to the upper's */
+  var tw = ids.tunnel, tb = [], LH = L.line.helix;
+  if (!tw || !tw.helix) tb.push('no tunnel');
+  else {
+    var hx = tw.helix, tp = tw.pts, pl = ids.portal_shelf, ph = ids.portal_head;
+    if (hx.grade > .09 + 1e-9) tb.push('grade ' + hx.grade);
+    if (Math.abs(hx.length * hx.grade - (hx.y1 - hx.y0)) > 1 || Math.abs(hx.y0 - tp[1][2]) > EPS || Math.abs(hx.y1 - tp[2][2]) > EPS) tb.push('the helix\'s length does not make its climb');
+    [tp[1], tp[2]].forEach(function(e, n){ if (Math.abs(Math.hypot(e[0] - hx.c[0], e[1] - hx.c[1]) - hx.r) > 1) tb.push('its ' + (n ? 'upper' : 'lower') + ' adit meets the helix off its circle'); });
+    for (var q = 0; q < 48; q++){ var qx = hx.c[0] + hx.r * Math.cos(q / 48 * 2 * Math.PI), qz = hx.c[1] + hx.r * Math.sin(q / 48 * 2 * Math.PI);
+      if (qz > faceZ(L, qx) - 40) { tb.push('the bore within 40 m of the face at ' + Math.round(qx) + ', ' + Math.round(qz)); break; }
+      if (groundAt(L, qx, qz) < hx.y1 - EPS) { tb.push('the bore not under the plateau at ' + Math.round(qx) + ', ' + Math.round(qz)); break; } }
+    if (Math.hypot(hx.c[0] - LH.c[0], hx.c[1] - LH.c[1]) < hx.r + LH.r + 60) tb.push('crosses the Line\'s spirals');
+    if (ids.station && KC.overlap(['circle', hx.c[0], hx.c[1], hx.r + 40], ids.station.shape)) tb.push('crosses the station\'s platforms');
+    for (var t2 = 1; t2 < tp.length; t2++){ if (t2 === 2) continue; var run2 = Math.hypot(tp[t2][0] - tp[t2 - 1][0], tp[t2][1] - tp[t2 - 1][1]); if (run2 > 0 && Math.abs(tp[t2][2] - tp[t2 - 1][2]) / run2 > hx.grade + 1e-6) tb.push('its adit ' + t2 + ' too steep'); }
+    [[pl, tp[0]], [ph, tp[tp.length - 1]]].forEach(function(e){ if (!e[0]) { tb.push('a portal missing'); return; } var b = KC.bbox(e[0].shape);
+      if (!KC.inShape(e[0].shape, e[1][0], e[1][1], 1) || Math.abs(e[1][2] - e[0].y) > EPS) tb.push('ends off ' + e[0].id); });
+  }
+  ok('the road tunnel climbs inside the Wall from the shelf to the plateau at the road\'s 9 %', tb, tw && tw.helix ? '(' + Math.round(tw.helix.length / 100) / 10 + ' km, ' + tw.helix.turns.toFixed(1) + ' turns of ' + tw.helix.r + ' m)' : '');
   return out;
 }
 
 R.SHELF = { STATES: STATES, BROKEN: BROKEN, LIVED: LIVED, BY: BY, deckBox: deckBox, deckFloor: deckFloor, broken: broken, byId: byId,
-  bbox: KC.bbox, faceZ: faceZ, groundAt: groundAt, area: area, census: census, graph: KC.graph, reach: KC.reach, lineLength: lineLength,
+  bbox: KC.bbox, faceZ: faceZ, groundAt: groundAt, baseAt: baseAt, roadCut: roadCut, area: area, census: census, graph: KC.graph, reach: KC.reach, lineLength: lineLength,
   checks: checks, seed: seed, draw: draw, tags: tags, reachOf: function(L, k, w){ return KC.reachOf(L.stack, k, w); }, layerY: function(L, k){ return KC.layerY(L.stack, k); },
   wing: function(L, id){ return KC.wing(L.stack, id); } };
 })(typeof window !== 'undefined' ? window : globalThis);

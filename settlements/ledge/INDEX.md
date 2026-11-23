@@ -33,8 +33,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | <1 |  |
-| `30-ledge-layout.js` | 27 | the decks: one per wing per layer, by the ruin t (56); the parts (96); the lifts (PLAN.md 9.5) (230); the ways (246); the wreck heaps (KRUBBLE) (266); the links (the walk graph: PLAN.md 9.5) (271) |
-| `31-ledge-rules.js` | 20 | the ground (PLAN.md 9.2) (43); the area and the census (74); the walk graph and the strike (83); the Line (87); seeds and tags (95); the checks (120) |
+| `30-ledge-layout.js` | 27 | the decks: one per wing per layer, by the ruin t (58); the parts (98); the lifts (PLAN.md 9.5) (232); the ways (248); the wreck heaps (KRUBBLE) (268); the links (the walk graph: PLAN.md 9.5) (273) |
+| `31-ledge-rules.js` | 20 | the ground (PLAN.md 9.2) (43); the area and the census (78); the walk graph and the strike (87); the Line (91); seeds and tags (99); the checks (124) |
 | `45-host-stage.js` | 3 |  |
 | `69f-host-dalab.js` | <1 |  |
 | `89z-host-sky.js` | <1 |  |

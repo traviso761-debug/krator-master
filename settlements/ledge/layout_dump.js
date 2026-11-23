@@ -10,5 +10,5 @@ const boxes = L.decks.map(d => Object.assign({ id: d.id }, LEDGE.deckBox(L, d), 
 // the ground on a coarse grid (the sheets' site plan and section)
 const grid = []; for (let z = -1500; z <= 1500; z += 25) { const row = []; for (let x = -1500; x <= 1500; x += 25) row.push(Math.round(LEDGE.groundAt(L, x, z) * 10) / 10); grid.push(row); }
 const profile = {}; for (let z = -1000; z < 900; z += 2) profile[z] = LEDGE.groundAt(L, 0, z);   /* the section's ground (cliff_blueprint.py) */
-process.stdout.write(JSON.stringify({ profile, layout: L, boxes, area: LEDGE.area(L), census: LEDGE.census(L), line: LEDGE.lineLength(L),
+process.stdout.write(JSON.stringify({ profile, road: LEDGE.roadCut(L).path.runs, layout: L, boxes, area: LEDGE.area(L), census: LEDGE.census(L), line: LEDGE.lineLength(L),
   checks: LEDGE.checks(L), ground: { x0: -1500, z0: -1500, step: 25, h: grid } }));

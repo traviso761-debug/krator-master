@@ -29,7 +29,7 @@ if __name__ == '__main__':
     CB.site_sheet(C, 'S0: Shelf, the site (the Wall up)',
                   'The site at 1:1 on Shelf\'s own ground (SHELF.groundAt): the plateau\'s cut at %d m, the face dressed sheer for %d m and 850 m tall, the shelf at %d m '
                   'out to %d m, the lower escarpment below it to Dalab\'s plain (~%d m, %.1f km out). The shell\'s outline at its top layer (brown) and its lowest '
-                  '(grey); the wreck heaps; Dalab\'s road up to the shelf and the ramp at the north-west end; the Line\'s spirals inside the Wall and its approach '
+                  '(grey); the wreck heaps; Dalab\'s road up to the shelf, its tunnel up the Wall (grey: the adits and the helix, in the rock) and on to the north-west gate; the Line\'s spirals inside the Wall and its approach '
                   'to the station (%.1f km from %d m at %g %%, %.0f turns). The face faces azimuth 35 (toward the sun at ~40 S, and Dalab, 111 km off).'
                   % (G['head'], 2 * G['dressed'], G['shelf'], G['shelfEdge'], G['plain'], G['plainZ'] / 1000, LINE['total'] / 1000, L['line']['portal']['y'],
                      L['line']['helix']['grade'] * 100, LINE['turns']), ext=1600)

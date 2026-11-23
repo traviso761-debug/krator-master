@@ -25,22 +25,22 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `layout_dump.js` | <1 |  |
-| `test-shelf.js` | 7 |  |
+| `layout_dump.js` | 1 |  |
+| `test-shelf.js` | 8 |  |
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | <1 |  |
-| `30-shelf-layout.js` | 19 | the decks, by the ruin table (PLAN.md 5.4); the  (46); the parts (73); the lifts (PLAN.md 5.4) (164); the ways (176); the wreck heaps (KRUBBLE) (186); the links (the walk graph) (191) |
-| `31-shelf-rules.js` | 16 | the ground (PLAN.md 5.2) (23); the area, the census, the Line (55); seeds and tags (69); the checks (93) |
+| `30-shelf-layout.js` | 22 | the decks, by the ruin table (PLAN.md 5.4); the  (48); the parts (75); the lifts (PLAN.md 5.4) (170); the ways (182); the wreck heaps (KRUBBLE) (206); the links (the walk graph) (211) |
+| `31-shelf-rules.js` | 19 | the ground (PLAN.md 5.2) (23); the area, the census, the Line (59); seeds and tags (73); the checks (97) |
 | `45-host-stage.js` | 3 |  |
 | `69f-host-dalab.js` | <1 |  |
 | `89z-host-sky.js` | <1 |  |
 | `8s0-host-tags.js` | <1 |  |
 | `8sa-host-shell.js` | <1 |  |
-| `8sb-host-town.js` | <1 |  |
+| `8sb-host-town.js` | 1 |  |
 | `8sc-host-ruin.js` | <1 |  |
 | `99-host-take.js` | 4 |  |
 | `99-tail.html` | <1 |  |

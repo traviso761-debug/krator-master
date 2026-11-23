@@ -3,7 +3,7 @@
 // at its footprint centre on its ground, turned by its ry:
 //   dalab_*     the Dalab set, read in place (settlements/dalab): VERN.place
 //   fg-*        the Fellgang set (kits/tungang, sealed as TG): TG.fg.draw, one call a quarter (o.quarters: a zone each)
-//   anc:*       the Ancients' own pieces in the shell's panel (KCLIFF.LB): the lift halls, a mole, a station's mouth on the face (o.mouth)
+//   anc:*       the Ancients' own pieces in the shell's panel (KCLIFF.LB): the lift halls, a mole, a station's mouth on the face (o.mouth), a road tunnel's portals
 //   tg:*        a Tungang def: a tagged stand-in until the tg set merges (claude/loj-twenny-059a5e): a winding house is a rust block and
 //               the great lifts' headframes; one with no shape (inside its deck) is left undrawn (it is tagged)
 //   yard, halting: fenced earth; the Travellers' barrel-top wagons in loose rows
@@ -55,6 +55,18 @@ KCLIFF.drawTown = function (o) {
       var d1 = KCLIFF.deckBox(L.stack, L.decks.filter(function (d) { return d.id === o.mouth.decks[0]; })[0]), d2 = KCLIFF.deckBox(L.stack, L.decks.filter(function (d) { return d.id === o.mouth.decks[1]; })[0]);
       var x0 = Math.max(b[0], d1.x0) + 4, x1 = Math.min(b[1], d2.x1) - 4;
       box('dead', (x0 + x1) / 2, p.y + 9, .15, x1 - x0, 18, .3); box('lampG', (x0 + x1) / 2, p.y + 19, .35, x1 - x0 - 20, .6, .3);
+      placed.push(p.id); own.push({ id: p.id, kit: 'ancient' });
+    } else if (p.key === 'anc:portal') {
+      /* a road tunnel's portal (2026-11-22): a portico of the shell's panel round a dark bore 10 m wide, its open side p.face ('z+', 'z-',
+         'x+', 'x-'); u runs across the opening, v out through it */
+      var ax = (p.face || 'z+')[0], sg = (p.face || 'z+')[1] === '-' ? -1 : 1, wide = ax === 'z' ? sx : sz, deep = ax === 'z' ? sz : sx;
+      var ow = Math.min(10, wide * .45), oh = Math.min(9, p.h * .6), cw = (wide - ow) / 2;
+      var pb = function (key, u, v, y, su, sv, sy) { if (ax === 'z') box(key, c[0] + u, y, c[1] + v * sg, su, sy, sv); else box(key, c[0] + v * sg, y, c[1] + u, sv, sy, su); };
+      [-1, 1].forEach(function (s) { pb('panel', s * (ow + cw) / 2, 0, p.y + p.h / 2, cw, deep, p.h); });
+      pb('panel', 0, 0, p.y + (oh + p.h) / 2, ow, deep, p.h - oh);
+      pb('dead', 0, -.3, p.y + oh / 2, ow - .1, deep - .6, oh);
+      pb('panel', 0, deep / 2 + .4, p.y + p.h - .6, wide + 1.6, .8, 1.2);
+      pb('lampG', 0, deep / 2 + .2, p.y + oh + .8, ow - 2, .3, .4);
       placed.push(p.id); own.push({ id: p.id, kit: 'ancient' });
     } else if (p.key === 'tg:tg_lift_head') {
       /* the winding house over the great lifts: a stand-in block and the lifts' headframes */

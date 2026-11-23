@@ -111,7 +111,7 @@ mended, less ruined than Ledge).
 
 **The lifts**: two great lifts in the rock (plateau to shelf, 850 m; vehicle cars as at Ledge), both running; four face cores, two running.
 **The Line** comes up the spirals (a helix of 4 % inside the Wall, from its low portal on Dalab's plain) to the station at 3,680 m.
-**Dalab's road** climbs the lower escarpment to the shelf and the shelf's north-west end by a cut ramp to the plateau.
+**Dalab's road** climbs the lower escarpment to the shelf and, at its north-west end, the Ancients' road tunnel up the Wall to the plateau (2026-11-22: the cut ramp it replaced was 850 m of cliff in 260 m).
 
 ### 5.5 Core adoption (written before the first fragment, 2026-11-22)
 
