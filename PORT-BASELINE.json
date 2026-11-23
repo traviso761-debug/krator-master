@@ -1513,8 +1513,8 @@
    "sha256": "1bfd8796f0eee236883b6e51e669602b10d6cb0bfe358ae35c8bc3b57b5035df"
   },
   "kits/xanadu/dist/xanadu.html": {
-   "bytes": 1269260,
-   "sha256": "c30de754ee20df7dd94effc960972fff620319d4c0087c41630c1a5898369d27"
+   "bytes": 1245450,
+   "sha256": "92ee8c9d804e247d37457679f6312e1fa6f22fadfbb4d33e26906f71bb75ab6d"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
@@ -1673,12 +1673,12 @@
    "sha256": "75223875a57f714df4f068e09e66292721bf3f11c05ee54ab9414a9e4daaa346"
   },
   "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": {
-   "bytes": 2577919,
-   "sha256": "0237a73849bffeccdc08852816e28606c6c35cf7231706efab755e956f267133"
+   "bytes": 11522307,
+   "sha256": "75aabc153017e414e6347ff272aaa1546ba2cb72c9b5ba47dd019a521d2730ed"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 4734822,
-   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
+   "bytes": 8189228,
+   "sha256": "fa141c67fc1a3f0741b9d0aebaf6e585a4db4fb7eca339dc3a718722ee4880e5"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
    "bytes": 8874743,
@@ -2013,8 +2013,8 @@
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"
   },
   "settlements/strongwall/dist/strongwall.html": {
-   "bytes": 8840389,
-   "sha256": "8591f2814e6d52ad2c802d35f45fdfca69f85574462f3a02e584afcb54f28613"
+   "bytes": 8823620,
+   "sha256": "dd91fdda22564a0eb6206187e37dfcfbafd256b7b094d49843fd0787b5f6397b"
   },
   "settlements/tempest/dist/tempest-states.html": {
    "bytes": 9083309,
@@ -2047,6 +2047,10 @@
   "settlements/voth/dist/voth-site.html": {
    "bytes": 3614742,
    "sha256": "efedacdf87fae06ae85cc20164498bb7001bc23494ee5f60dc5044d91ca97771"
+  },
+  "settlements/xanadu-lake/dist/xanadu-lake.html": {
+   "bytes": 11107884,
+   "sha256": "3eb5b795b69374b0a03650d4f721d67c059ff944e16242f5976957c197ab6eef"
   },
   "settlements/xanadu-works/dist/xanadu-works.html": {
    "bytes": 9203827,

@@ -7,6 +7,9 @@ water as the town's water mask and its river as a named river (core/world/41t-wo
     python3 core/world/bake_towns.py <town> --check    # bake again and compare with the files (exit 1 if stale)
     python3 core/world/bake_towns.py --list
 
+The towns are Voth's and Phēr's (TOWNS, written by hand) and the lake towns of settlements/xanadu-lake (generated from
+their specs and fits: lake_towns()).
+
 The page's code is run read-only in node, as bake_sites.py runs core/hamlet: its terrain field (Voth: src/10-core.js
 terrainH, landDist, RIVER, ISLES), its shore trace (src/15-shore.js SHORE) and the site editor's ground edits
 (targets/voth-site/10-site-model.js TERR, replayed from site/voth-site.json as the city page replays them:
@@ -75,15 +78,65 @@ TOWNS = {
                 'to the model\'s r_pher_swit'},
 }
 
+# the lake towns (settlements/xanadu-lake, PLAN.md section 3; step L0, 2026-11-23): one CLOSED entry a town, generated from
+# its spec (targets/town/89zl-xl-specs.js XL.SPECS[key]: its site, footprint and band) and its fit (89zm-xl-fit.js, written by
+# tools/fit_lake_town.py), never written by hand: the page's xlH(key, x, z) and its frame, shore and stream functions, each
+# called with `args` ([key]) before its own arguments (SAMPLE_CLOSED binds them). Its px is the tune's (XAN_TUNE.lake); a
+# town is baked once it has a fit. The frame (the page's square) is R + band + 100 m, the grid 10 m as Phēr's
+LAKE = 'settlements/xanadu-lake/targets/town/'
+LAKE_JS = [LAKE + '89zl-xl-specs.js', LAKE + '89zm-xl-fit.js', LAKE + '89zp-xl-site.js']
+
+
+def lake_towns():
+    js = ('var window=globalThis;var XAN_TUNE=require(%s);\n' % json.dumps(os.path.join(ROOT, 'core', 'region', 'data', 'xan-tune.js')) +
+          ''.join(read(f) + '\n' for f in LAKE_JS) +
+          'process.stdout.write(JSON.stringify(Object.keys(XL.FIT).sort().filter(k=>XL.SPECS[k]).map(k=>{const S=XL.SPECS[k],L=XAN_TUNE.lake.find(r=>r.key===k);'
+          'return{key:k,name:L.name,px:[L.px,L.py],world:S.world,stream:!!(S.layout&&S.layout.stream)};})));\n')
+    with tempfile.TemporaryDirectory() as tmp:   # a file, not -e: the fits outgrow a command line
+        path = os.path.join(tmp, 'lake.js')
+        open(path, 'w', encoding='utf-8', newline='\n').write(js)
+        r = subprocess.run([node(), path], capture_output=True, text=True, encoding='utf-8')
+    if r.returncode:
+        sys.exit('bake_towns: the lake towns did not load:\n' + r.stderr[-3000:])
+    out = {}
+    for t in json.loads(r.stdout):
+        W = t['world']
+        out[t['key']] = {
+            'name': t['name'], 'site': W['site'], 'pin_px': t['px'], 'page': 'settlements/xanadu-lake', 'kind': 'closed',
+            'js': list(LAKE_JS), 'args': [t['key']],
+            'ground': 'xlH', 'frameFn': 'xlWorldFrame', 'shoreFn': 'xlShoreZ',
+            **({'streamFn': 'xlStreamX', 'streamTo': 'xlStreamTo(__T.args[0])'} if t['stream'] else {}),
+            'frame': W['R'] + W['band'] + 100, 'step': 10, 'R': W['R'], 'band': W['band'], 'level': 0,
+            # the town's stream is the page's own (the model has none at Māuṭh): an over-level river joined to no model river;
+            # a town with no stream has none (river None: no river in its record)
+            'river': {'name': 'the stream of ' + t['name'], 'join': None, 'over': True} if t['stream'] else None,
+            'note': '%s\'s ground (settlements/xanadu-lake, its spec and fit): the page\'s xlH(\'%s\', x, z) turned by the shore\'s '
+                    'bearing, the lake at its level, its stream over the lake at its own height' % (t['name'], t['key'])}
+    return out
+
+
+def towns():
+    """Voth's and Phēr's entries and the lake towns' (generated)"""
+    T = dict(TOWNS)
+    for k, v in lake_towns().items():
+        if k in T:
+            sys.exit('bake_towns: lake town %r clashes with a town of TOWNS' % k)
+        T[k] = v
+    return T
+
+
 # the closed towns' sampling (plain ES5 over the page's own globals): the ground, the water under the level, the stream,
 # the shore where the ground crosses the level (marched south from the shore line)
 SAMPLE_CLOSED = r'''
-var __T = __TOWN, F = eval(__T.frameFn)(), G = eval(__T.ground), SH = eval(__T.shoreFn), SX = eval(__T.streamFn);
+/* a generated town's functions take its key first (`args`: the lake towns' xlH(key, x, z)); Voth's and Phēr's take none */
+var __T = __TOWN, __A = __T.args || [], __B = function (f) { return __A.length ? function () { return f.apply(null, __A.concat(Array.prototype.slice.call(arguments))); } : f; };
+var F = __B(eval(__T.frameFn))(), G = __B(eval(__T.ground)), SH = __B(eval(__T.shoreFn)), SX = __T.streamFn ? __B(eval(__T.streamFn)) : null;
 var half = __T.frame, st = __T.step, n = Math.round(2 * half / st) + 1, cx = F.centre[0], cz = F.centre[1];
 var H = new Float32Array(n * n), Wt = new Uint8Array(n * n);
 for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) { var x = cx - half + i * st, z = cz - half + j * st, h = G(x, z), k = j * n + i; H[k] = h; if (h < __T.level) Wt[k] = 1; }
 /* the stream from its mouth (the shore at its line) upstream, every 50 m, half-width 5 m (centre-relative) */
-var z0 = SH(SX(0)) + 2, zEnd = eval(__T.streamTo), riv = [], rlen = 0, last = null;
+/* (a town with no stream, streamFn unset: none) */
+var z0 = SX ? SH(SX(0)) + 2 : 0, zEnd = SX ? eval(__T.streamTo) : 1, riv = [], rlen = 0, last = null;
 for (var z = z0; z >= zEnd; z -= 50) { var x = SX(z); if (last) rlen += Math.hypot(x - last[0], z - last[1]); last = [x, z];
   if (Math.hypot(x - cx, z - cz) > half) continue; riv.push([x - cx, z - cz, 5]); }
 /* the shore: every 24 m along x, the first crossing of the level marching south from 60 m inland of the shore line */
@@ -248,7 +301,7 @@ TOWNS_R_GUARD = 4800.0
 
 
 def bake(key, check=False):
-    T = TOWNS[key]
+    T = towns()[key]
     global TOWNS_R_GUARD
     TOWNS_R_GUARD = T['R']
     with tempfile.TemporaryDirectory() as tmp:
@@ -290,7 +343,7 @@ def bake(key, check=False):
             'R': T['R'], 'band': T['band'], **({'linkOut': T['linkOut']} if T.get('linkOut') is not None else {}),
             'level': T['level'], 'onWater': True, 'drawn': False,
             'river': {'name': T['river']['name'], 'join': T['river']['join'], **({'over': True} if T['river'].get('over') else {}), 'mouth_first': True, 'length_m': round(P['rlen'], 1),
-                      'pts': river, 'note': '[x, z, half-width] in the frame, from the mouth upstream (the page\'s RIVER)'},
+                      'pts': river, 'note': '[x, z, half-width] in the frame, from the mouth upstream (the page\'s RIVER)'} if T.get('river') else None,
             'shore': {'step_m': 24, 'length_m': round(P['slen'], 1), 'pts': shore, 'skip': sorted(eedit + eriv),
                       'note': 'skip: the trace points where the site edits moved the ground or the river vale shapes it (not the page shore)'},
             'isles': P['isles'], 'stats': stats,
@@ -316,7 +369,8 @@ def bake(key, check=False):
         stats['lake_km2'], stats['river_km2'], stats['joined_hollow_cells'], stats['hollow_cells'], stats['hollow_cells_in_R']))
     print('  shore trace vs the ground at the level: %d points inside R, worst %.2f m, mean %.2f m, %d unmatched within 60 m; '
           '%d where the site\'s edits moved the ground, %d in the river\'s vale' % (en, emax, emean, emiss, len(eedit), len(eriv)))
-    print('  river: %.0f m, its bed at most %.2f m (the level %g) inside R; %d site strokes' % (P['rlen'], P['bedMax'] if P['bedMax'] is not None else float('nan'), T['level'], P['strokes']))
+    print('  river: %.0f m, its bed at most %.2f m (the level %g) inside R; %d site strokes' % (P['rlen'], P['bedMax'] if P['bedMax'] is not None else float('nan'), T['level'], P['strokes'])
+          if T.get('river') else '  river: none (the town has no stream)')
     return 0
 
 
@@ -352,7 +406,7 @@ def record(key, region, shore=True):
            'grid': {'n': G['n'], 'step': G['step'], 'x0': G['x0'], 'z0': G['z0'], 'h0': G['h0'], 's': G['s'],
                     'h': base64.b64encode(np.ascontiguousarray(g.astype('<i2')).tobytes()).decode('ascii')},
            'water': {'n': G['n'], 'step': G['step'], 'x0': G['x0'], 'z0': G['z0'], 'rle': WD._rle_encode(w)},
-           'river': {k: meta['river'][k] for k in ('name', 'join', 'over', 'pts') if k in meta['river']}}
+           **({'river': {k: meta['river'][k] for k in ('name', 'join', 'over', 'pts') if k in meta['river']}} if meta.get('river') else {})}
     if meta.get('y0') is not None:
         rec['y0'] = meta['y0']   # a fixed lift (41 buildTowns: t.y0): a closed town's page heights are over its water at 0
     if meta.get('linkOut') is not None:
@@ -367,12 +421,13 @@ def main():
     a = sys.argv[1:]
     if not a or a[0] in ('-h', '--help'):
         sys.exit(__doc__)
+    ALL = towns()
     if a[0] == '--list':
-        for k, T in TOWNS.items():
+        for k, T in ALL.items():
             print('%-8s %s: %s, pin px %s, R %d m, band %d m' % (k, T['name'], T['page'], T['pin_px'], T['R'], T['band']))
         return
-    if a[0] not in TOWNS:
-        sys.exit('bake_towns: no town %r (%s)' % (a[0], ', '.join(TOWNS)))
+    if a[0] not in ALL:
+        sys.exit('bake_towns: no town %r (%s)' % (a[0], ', '.join(ALL)))
     sys.exit(bake(a[0], check='--check' in a))
 
 

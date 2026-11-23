@@ -81,7 +81,12 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[],O=M.frame.orig
  /* Phēr's own ground in the world (P7: core/world 41t WTOWN.check: the page's shore where the world's water meets its
     ground, the stream continuous into the model's, one lake). Its negatives are core/world/test-town-water.js's */
  if(typeof WTOWN!=='undefined'){const C=WTOWN.check()||[],c=C.find(q=>q.town==='Phēr');const ok=!!c&&c.ok,det=c?JSON.stringify({shore:c.shore,river:c.river&&(c.river.ok?{ok:true}:{inTown:c.river.inTown,line:c.river.line}),body:c.body&&{one:c.body.one}}).slice(0,400):'no town Phēr';
-  R.push({name:'Phēr stands in the world: its shore, its stream and its lake (WTOWN.check)',ok,detail:det});}
+  R.push({name:'Phēr stands in the world: its shore, its stream and its lake (WTOWN.check)',ok,detail:det});
+  /* the lake towns (settlements/xanadu-lake, step L0 on): each town the region carries besides Phēr, its own ground in the
+     world the same way (its stream the page's own, joined to no model river) */
+  const others=(WORLD_DATA.towns&&WORLD_DATA.towns.towns||[]).filter(t=>t.name!=='Phēr');
+  for(const t of others){const c2=C.find(q=>q.town===t.name),det2=c2?JSON.stringify({shore:c2.shore,river:c2.river&&(c2.river.ok?{ok:true}:{inTown:c2.river.inTown}),body:c2.body&&{one:c2.body.one}}).slice(0,400):'no town '+t.name;
+   R.push({name:t.name+' stands in the world: its shore, its stream and its lake (WTOWN.check)',ok:!!c2&&c2.ok,detail:det2});}}
  /* the Thalaba road: the link up the Qol valley, about 105 km (the plan's trace), its hans on the way */
  const L=(WORLD_DATA.sites.links||[]).find(l=>l.id==='spher0north1/link/shvo49k0y2'),len=L?L.length_m*(neg==='road'?.65:1):0;
  R.push({name:'the Thalaba road goes up the Qol valley, about 105 km with its hans',ok:!!L&&len>95000&&len<115000&&(L.stops||[]).length>=4,

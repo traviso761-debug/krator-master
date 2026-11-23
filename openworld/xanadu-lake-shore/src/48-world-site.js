@@ -27,8 +27,37 @@ var SITE_SPEC={region:'xanadu-lake-shore',world:1191569,bridges:{culture:'xanadu
   sxanlkboatyard01:{culture:'xanadu'},sxanlkgarden01:{culture:'xanadu'},sxanlkquarry01:{culture:'xanadu'},
   sxanlkorchard01:{culture:'xanadu'},sxanlklotus01:{culture:'xanadu'},sxanlkfish01:{culture:'xanadu'},
   sxanlkstack01:{culture:'xanadu'},
-  /* the small isles (T.islands) */
-  sxanlkwestisle01:{culture:'xanadu'},sxanlkeastisle01:{culture:'xanadu'},sxanlkbayisle01:{culture:'xanadu'}}};
+  /* the small isles (T.islands; settlements/xanadu/HAMLETS-PLAN.md section 1, step H1, 2026-11-23): fishing villages on
+     the fishers' row below, at the tune's people (KHAMLET's census at 240 a village; pop the ceiling). Wesṭ-Āil's 400 are two
+     villages at its two ends; Bē-Āil's fishponds and Lāiṭ-Hāus's light and customs house are opt-in pieces the region's kit
+     bundle lacks until the all-builds rebuild (kits/xanadu/extra/88g, src/87c's lighthouse is in it but no hamlet row lays
+     it): the plan's owed, the villages stand meanwhile */
+  sxanlkwestisle01:{culture:'xanadu',hamlets:[
+   {id:'west-isle-n',name:'Wesṭ-Āil',culture:'xanadu-fishing',focus:'fishing',near:[0,-900],look:1500,pop:240},
+   {id:'west-isle-s',name:'Wesṭ-Āil (south landing)',culture:'xanadu-fishing',focus:'fishing',near:[0,900],look:1500,pop:160}]},
+  /* HELD (2026-11-23): Lāiṭ-Hāus (200) and Bē-Āil (300) are too small at 1:1 for core/hamlet's village at their people (the
+     bake could not place 18 and 23 houses); they wait for a denser isle layout (HAMLETS-PLAN.md section 1) */
+  sxanlkeastisle01:{culture:'xanadu'},
+  sxanlkbayisle01:{culture:'xanadu'},
+  /* west of Phīsh-Mārkiṭ (settlements/xanadu/HAMLETS-PLAN.md section 3d, step H6; the owner, 2026-11-23): the rim plain's farm
+     village and the west road's hill village, each the heart of its site (near [0, 0]). The survey (2026-11-23) found the ground
+     good over both squares (dry, slopes under 0.11 at the 90th centile); what refused the houses was the frame: a village at its
+     site's own point has its link on its green, so its lanes had no direction. `link` points each main lane down the corridor
+     road toward Phīsh-Mārkiṭ. Wesṭ-Rōḍ is laid as farming until the Xanadu row's orchard focus comes with the rebuild */
+  sxanrimfarm01:{culture:'xanadu',hamlets:[
+   {id:'rim-farm',name:'Rim-Phārm',focus:'farming',near:[0,0],link:[700,660],look:1500,pop:240}]},
+  sxanwestroad01:{culture:'xanadu',hamlets:[
+   {id:'west-road',name:'Wesṭ-Rōḍ',focus:'farming',near:[0,0],link:[985,174],look:1500,pop:400}]}}};
+/* the lake's fishers' row, as openworld/xanadu-oidong-highrift/src/48-world-site.js defines it for Kirstabal's lake (K6), key for
+   key: the Xanadu row with the dugouts' boat sheds and the fish racks with their smokehouse, the racks a pending box (xh_fish_racks)
+   because kits/xanadu's xa_fish_racks is opt-in and not in XAK. Both copies fold into core/hamlet's Xanadu row at the all-builds
+   rebuild (TODO.md, "core/hamlet's Xanadu row: its fishing works") */
+if(typeof KHAMLET!=='undefined'&&KHAMLET.CULTURES&&KHAMLET.CULTURES.xanadu&&!KHAMLET.CULTURES['xanadu-fishing']){
+ KHAMLET.CULTURES['xanadu-fishing']=Object.assign({},KHAMLET.CULTURES.xanadu,{
+  works:Object.assign({},KHAMLET.CULTURES.xanadu.works,{fishing:[{key:'xa_boatshed',jobs:8,share:0.55},{key:'xh_fish_racks',jobs:4,share:0.45}]}),
+  focusJobs:Object.assign({},KHAMLET.CULTURES.xanadu.focusJobs,{fishing:90}),reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{fishing:260}),
+  pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{xh_fish_racks:{w:16,d:11,h:3.6,what:'fish racks and a smokehouse'}})});
+ if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-fishing']={culture:'xanadu'};}
 // THE PITCHED CAMPS (openworld/xanadu-oidong-highrift/src/48t and 88t, read in place: core/camp's halt; settlements/xanadu/WORKS-
 // PLAN.md section 4, step W2): the Annual Great Caravan's halt at Erehwon (T.gateways gate.dalab, round, one carrier, 900 t: the
 // owner, 2026-11-16, "spending the winter in Xanadu visiting Erewhon, Theodiga, and Qiblai"). PROPOSED, every number here: the

@@ -45,6 +45,7 @@
     "biomes/xanadu/tex/star.albedo.webp": "1620c520171ecc75824287e09c171eea323ba15ee9f37c998cb237623468a5be",
     "biomes/xanadu/tex/under.albedo.webp": "653b5da172acffd091c9bf4ef2a222d75693a54bd24fef808641f6b723bc4ae9",
     "biomes/xanadu/tex/willow.albedo.webp": "4964809cce206cdc1e3e7c1f10e951f5abc87a8589d826091b697291ed18affd",
+    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-detail.js": "486e0ebf0c9910043764063e48046cf1e518a6d8a7d6814a13dca9af16d64507",
@@ -86,6 +87,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/lod/09-lod.js": "eb45c6a34a0131af2d973e3be72bf27b6c2fa465b2c6406edbe5a0240841375a",
     "core/lod/97-lod-auto.js": "534461fd7d6d5b3e684f7189cfa7f72ab10bb5a66c500af3cc7d45f3104155be",
     "core/materials/20-textures.js": "9488f355ee917f901c062e119de4aa5e7ac53ed620ada2555bd2e2dfe1a9a3cb",
@@ -99,7 +101,7 @@
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
-    "core/region/data/xan-tune.js": "b9bdf986bed575cf7e1dd45ccb9237b14bf2b567f46ee6b18713aa9d0adb854e",
+    "core/region/data/xan-tune.js": "61c96303a0051268bb202ab7bac34b6f7247a4c409eecb8d5dee90fe2a57ba31",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
@@ -110,6 +112,7 @@
     "core/tags/glazier/52g-tags-glazier.js": "855dbbe0661567e9b7838af3e0548a76b6c200ef1b6c167b2478e0191762ef36",
     "core/terrain/37c-core-rubble.js": "39455fe139e35fcaf06d90c21301f0201b30bd0b6b4de6678d8b837303aae775",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
+    "kits/catalog/furniture_bundle.py": "29163379638b541819175cf4a9a09c4ea1da7c5979730016b3eda80360ba0f03",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
@@ -179,6 +182,7 @@
     "kits/catalog/tex/wicker.albedo.webp": "88010bf97a4e66158e7db9fca32a3c010a8e4c19a04a01fcbc4ba914229a4f52",
     "kits/catalog/tex/wood.albedo.webp": "bdf1af0b681f77edfadda2ac8e991cbd0b9bb44a8abf65a1a17690da70e7112c",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
+    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/xanadu-citadel.js": "3eb8663e7b94e9e6583b61a21d21ebb4b55bf9fef3b1993b55e0c179d18b51f0",
     "kits/interiors/sets/xanadu.js": "7242b04cf21dee161ae6b5b9203183df49c390cc06c9533141eb6260e927a870",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
@@ -256,6 +260,7 @@
     "kits/tungang/tex/wood.albedo.webp": "af92ec5a90da3fb61efe4e041c3232dd7c10ae1e5484b016fc079799a2750966",
     "kits/tungang/tex/wood.normal.webp": "795ef401ec856aa70ef2659626f11e433e6bf0e39a3a4c2b4e21d7366950005b",
     "kits/tungang/tex/wood.rough.webp": "a0aaf35beedc4ad83f8ab4cd611e6a65ebd332b1fcfab7c33f2ad886bd0a7e17",
+    "kits/tungang/tungang_bundle.py": "6d9b110e3013776fe451a79c7b54b1282d21fb3a733ecd0f46d00dfcbed96d39",
     "kits/xanadu/extra/88d-xa-lakecraft.js": "78ca747971079e42f97c94e03884dfe4f94f83babf2bfb7506ea8662db3580e2",
     "kits/xanadu/extra/88g-xa-works.js": "fa223d9ec427f1097e16ac55aaa06b762149af1bc6ed8c1d3aaed9addd21acff",
     "kits/xanadu/extra/88h-xa-mine-works.js": "b590e5a681659ef1de1c689f751389c568b48beb7bd90a07359a62bea95f959b",
@@ -274,8 +279,8 @@
     "kits/xanadu/src/78d-xa-dome-in.js": "ca972dc7a21535e3e9c1d2c5a89bedc70111c4f385cf085eb41bfa8da385de49",
     "kits/xanadu/src/79-xa-guild.js": "28c5a5aa3c61afa493614ea45771b8953e7544ff08e740a0b19efe02634aafaa",
     "kits/xanadu/src/80-xa-military.js": "8cad18b1d8e90dc80722ab681b3cbc76d7d202648d413274f0bb8115fe4f42d4",
-    "kits/xanadu/src/80f-xa-fort-data.js": "8e28e53c8b915a818d93aac2be89fa55a8726f2d549f8cf8ff887871489a60ce",
-    "kits/xanadu/src/80g-xa-fort.js": "78354d4156717a3889984cdeca61271bac2e81a0b4ec48be714b77f487b04827",
+    "kits/xanadu/src/80f-xa-fort-data.js": "1ca03a433cd951070d07aeccb7147e160e17ee1d192cb2521b6ff8a3190dae04",
+    "kits/xanadu/src/80g-xa-fort.js": "ed68dae4484dc6fd4f8873bdccea827d89e2ee2751211891b667a15463ba892b",
     "kits/xanadu/src/81-xa-public.js": "4097666e9e26d85cb1dcf20a5e2762e59c1401d2351c6428e88759fe06a2ed9b",
     "kits/xanadu/src/82-xa-hill.js": "f9c22d7ecbf4f7be22691f7ebf6a54944c430ed0c3583a56bdc9101e918799f8",
     "kits/xanadu/src/83-xa-turk.js": "8f6d5bfa2ad54116b10b16d2d461003563e6e0813990396636ddf4d1315d8306",
@@ -289,11 +294,11 @@
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
+    "kits/xanadu/xanadu.py": "6e7562ab022acc1e2aeadfa55a0222b7ed8a4994a4e70ff5e1982ddce617cf46",
     "settlements/xanadu-works/KNOWN_ISSUES.md": "f57d7e43fae38bfe6d74e1a90996e2adefb9ae27f0fd0edbb0d5fbcfb798a72d",
     "settlements/xanadu-works/PORT.md": "d5b6c8a09f00e719bdeb82962fd5d58bf9ac1ef0adc633f106f3afc231959e2d",
     "settlements/xanadu-works/build.py": "60f44853ae5a56cd3c16d6d3580201e9fa0350de9f51d00a2ca2835cf8ab11fd",
-    "settlements/xanadu-works/gen/69w-works-core.js": "2c92d4e865b8c584429b0af42aea90e466b2a07614896356e729fea6db37ad02",
-    "settlements/xanadu-works/gen/69w2-tungang-bundle.js": "a06544d1e0cf0b1780ce3d500ed4b7fe01d72b1a4d7dadf88f94ed106d8688dd",
+    "settlements/xanadu-works/gen/69w-works-core.js": "27285409d148b345180151b467c8338e163c6ab158b3f477351a2c554dbfc9e4",
     "settlements/xanadu-works/kit.json": "f47c22e8928dbd895f36a441dc0b1d5bbe69c0b6b693408a4b7a66835ed0ee15",
     "settlements/xanadu-works/targets/works/89z-rows.js": "668a51075cf5101b7e372be6c83a3ba9dced826559f2831d649263004f99fbce",
     "settlements/xanadu-works/targets/works/89zw-works-site.js": "4befc6a2064a3304651fb4382b6e07ac9827b8311c2c0a84108257729090af7b",
@@ -481,7 +486,10 @@
     "settlements/xanadu/tex/xZel.albedo.webp": "97fa4a26d7fa438a84e673bdeeba8f95e731bdc63178299ba40c173a72f59d64",
     "settlements/xanadu/tex/xZel.normal.webp": "ed6303b74594d57b7503ca3d3b6ed1e018cd65f48224310c66265dbf5af02027",
     "settlements/xanadu/tex/xZel.rough.webp": "ac851819ff2a7cc5cc2ba114080d2125e068ab234ada8b3faf6b643d4cbcd4ee",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
@@ -489,7 +497,7 @@
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "core/lod": "ce04505dcf0d6e6739a489ddb83f6692b9c08a79cfbe7ef33f6cf4585055624a",
     "core/mask": "591fb66d1f8ec8075e3a9d0a277ea3ae89f6454d20bcad540b418d7d22ce7439",
-    "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
+    "core/materials": "f6448257553fa8189cb4dd666e583f84b91b2adf8049f099af37fa3eb2285e37",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/tags": "38b4880d922aa900d485404bd0eb7ae88d7fe16181d58b2e1c5f62c5c8aa9910",
     "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
@@ -508,22 +516,24 @@
     "settlements/xanadu/targets/erewhon": "c894247da904b4733485bc76d1b527b68cf8db53df276b8654370603b7c08ed3",
     "settlements/xanadu/targets/scrap": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
     "settlements/xanadu/targets/xanadu": "cb97764a5b46d2491c979e0a358d119b1e4ba420dc33c53a6fb81f995b773051",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "92a0a97ea27f02e1dde4d9432be08aa7967eed9089527b10efcbad139d6e01a0",
+    "tools/textures": "fa8de3e4e1df6a9ae0b8c4444df219a259e6be8b65d23976deb8568cf975c662"
    },
    "outputs": {
-    "settlements/xanadu-works/build-manifest-works.json": "7adf12952fa1b8cf1a77da796378c58cfa10d879db5013e46e47418f56f84e0a",
-    "settlements/xanadu-works/dist/xanadu-works.html": "3b41a65b7784114dd13d01a95173405ed9a698a51b149faa714099bd9ae18502",
+    "settlements/xanadu-works/build-manifest-works.json": "d978a2233bdbaa335161e5c5b6bc74e4d7f9aec62482142dc68b7c6a4e641012",
+    "settlements/xanadu-works/dist/xanadu-works.html": "d6c155edd59870de3e40671794be2bb00fdf5b2306dc1ea4dfe833907c879be0",
     "settlements/xanadu-works/dist/xanadu-works.tex.tungang.js": "157a0aa2c5d4cd356dafd7dea27c5074ba4cb6709e2ae33f31ae32dd44d71878",
     "settlements/xanadu-works/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
-    "settlements/xanadu-works/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
+    "settlements/xanadu-works/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
+    "settlements/xanadu-works/gen/69w2-tungang-bundle.js": "a06544d1e0cf0b1780ce3d500ed4b7fe01d72b1a4d7dadf88f94ed106d8688dd"
    },
    "outputs_raw": {
-    "settlements/xanadu-works/build-manifest-works.json": "7adf12952fa1b8cf1a77da796378c58cfa10d879db5013e46e47418f56f84e0a",
-    "settlements/xanadu-works/dist/xanadu-works.html": "3b41a65b7784114dd13d01a95173405ed9a698a51b149faa714099bd9ae18502",
+    "settlements/xanadu-works/build-manifest-works.json": "03c324cbdb8f10e277e6bc7de2fc6039faa7ec8dc0a6a3f12f9aa0778010da0b",
+    "settlements/xanadu-works/dist/xanadu-works.html": "d6c155edd59870de3e40671794be2bb00fdf5b2306dc1ea4dfe833907c879be0",
     "settlements/xanadu-works/dist/xanadu-works.tex.tungang.js": "157a0aa2c5d4cd356dafd7dea27c5074ba4cb6709e2ae33f31ae32dd44d71878",
     "settlements/xanadu-works/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
-    "settlements/xanadu-works/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
+    "settlements/xanadu-works/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4",
+    "settlements/xanadu-works/gen/69w2-tungang-bundle.js": "a06544d1e0cf0b1780ce3d500ed4b7fe01d72b1a4d7dadf88f94ed106d8688dd"
    }
   }
  }

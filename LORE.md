@@ -589,7 +589,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise (teal) monastery is the
     **Iridescent Order**: it keeps a house in Lāiṭwāl, the Light Wall, and its head monastery stands at the outlet of Lāiṭwāl's
     lake in Opal Valley, on the shelf below the sill where the lake spills over the lower riser (scale model px 1016,1655) [the
-    owner, 2026-11-16 and 17; `settlements/iridescent/PLAN.md`].
+    owner, 2026-11-16 and 17; `settlements/iridescent/PLAN.md`]; it keeps a second great house at Ōpal-Phōrḍ, the opal road's ford at the valley's mouth, at the
+    cataract's foot [the owner, 2026-11-23; `settlements/opal-ford/PLAN.md`].
     The city is fed by the Orders' **temple estates**: about 128 villages and 30,000 people out to 30 km, each Order
     holding the sector round its monastery's spoke, rice farms near the city, buffalo dairies and hives toward the
     forest (milk and honey are the sacraments) [the owner, 2026-11-16: "Grow the estates"; `settlements/qiblai/WORLD.md`].

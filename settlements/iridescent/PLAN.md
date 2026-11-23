@@ -9,6 +9,11 @@ it keeps a house in Lāiṭwāl (`settlements/lightwall`: the Qiblai kit's `qb_m
 eastern spur); its **head monastery** stands at the outlet of Lāiṭwāl's lake, where Terrace II's lake spills over the lower riser.
 Everything else here is *proposed* and marked so; section 8 asks the owner.
 
+**A second great house (the owner, 2026-11-23).** *"Opal phord will also contain the monastery HQ of the iridescent order"*;
+asked, the owner chose **"Both are big houses"**: Rēnbō-Phāl here stays the head house, and the Order keeps a second great house
+(about 450, the Qiblai kit's Turquoise dress) at Ōpal-Phōrḍ, the opal road's river town at the valley's mouth, in its own
+precinct at the cataract's foot (`settlements/opal-ford/PLAN.md` section 2b, step OF1b). This is close to the survey's site D.
+
 Files: `survey_site.py` (the survey, re-run from the scale model's data), `sites.png` (the five sites on the valley's map).
 
 ## 1. The site: the shelf at the lake's sill (scale model 5.1 px 1016,1655)

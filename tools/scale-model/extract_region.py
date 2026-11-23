@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cut one region of the Krator Scale Model out as the data an open-world build reads (Option C Super-Resolution).
 
-    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>] [--upsample <N|auto>] [--no-synth] [--legacy-px] [--smooth] [--relief]
+    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>] [--upsample <N|auto>] [--no-synth] [--legacy-px] [--smooth] [--relief] [--origin <px>,<py>]
 
 <page.html>        the model's data: tools/scale-model/model/data (the build's source), or a saved page (Artifact read,
                    or model/dist/scale-model.html), whose DATA object holds the rasters
@@ -1129,7 +1129,8 @@ def main():
     do_smooth = '--smooth' in argv
     do_relief = '--relief' in argv
     argv = [a for a in argv if a not in ('--smooth', '--relief')]
-    while '--add' in argv or '--upsample' in argv or '--no-synth' in argv or '--legacy-px' in argv:
+    origin_arg = None
+    while '--add' in argv or '--upsample' in argv or '--no-synth' in argv or '--legacy-px' in argv or '--origin' in argv:
         if '--add' in argv:
             k = argv.index('--add')
             added = json.load(open(argv[k + 1], encoding='utf-8'))
@@ -1146,6 +1147,10 @@ def main():
             k = argv.index('--legacy-px')
             legacy_px_flag = True
             argv = argv[:k] + argv[k + 1:]
+        elif '--origin' in argv:   # the frame's origin pixel, pinned (a region that grows keeps its frame: cut_site.py origin_px)
+            k = argv.index('--origin')
+            origin_arg = [int(v) for v in argv[k + 1].split(',')]
+            argv = argv[:k] + argv[k + 2:]
     if len(argv) != 5:
         sys.exit(__doc__)
     page, rdir, sdir, name, out = argv
@@ -1170,6 +1175,8 @@ def main():
     x0, y0, x1, y1 = max(0, x0), max(0, y0), min(OW - 1, x1), min(OH - 1, y1)
     W, H = x1 - x0 + 1, y1 - y0 + 1
     cx, cy = int((min(xs) + max(xs)) // 2), int((min(ys) + max(ys)) // 2)
+    if origin_arg:
+        cx, cy = origin_arg
     os.makedirs(out, exist_ok=True)
 
     # Determine Option C super-sampling factor U (cells per 2 km map pixel)

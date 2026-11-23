@@ -7,7 +7,8 @@ records from its tune row, one page shows any town, and the province regions dra
 This file is the target's design: what is common to every town. Each town has its own plan beside it
 (`settlements/xanadu-lake/<key>/PLAN.md`, the key is its `XAN_TUNE.lake` key): its site and ground, its people and
 trades, its layout, its pieces, its pins. The order the towns are built in is `settlements/xanadu/BUILD-PLAN.md`.
-Nothing here is built yet. Everything not from the owner, the lore or the tune is *proposed*.
+Steps L0 to L2 are built (2026-11-23: the target and Māuṭh; Ōlḍ-Thalaba and Ḍāiyar; Qōqō, Nēṭ, Malbari and Hāibh: `README.md`;
+verified on SwiftShader, the GPU lane's runs owed). Everything not from the owner, the lore or the tune is *proposed*.
 
 ## 1. The twenty towns
 
@@ -190,7 +191,7 @@ From `extra/` (opt-in, read in place): `xa_dugout`, `xa_launch`, `xa_lake_barge`
 From the library and the kit: the Xanadu kit's own families (`xanadu.tex.*`), `roof.thatch.reed`, `ground.reedbed`,
 `card.reed`, `rock.wet.dark`, `stone.cut`, `ground.shingle`, `ground.lakebed.algal`, `ground.sinter.opaline`,
 `rock.hewn.drillmarked`, `ceramic.terracotta`. Owed already: `ground.dyeworks` and `ground.sulfur.crust`
-(`core/materials/PROMPTS-NEEDED.md` section 58). **New, added to PROMPTS-NEEDED.md section 59**: `stone.ghat.wet` (the
+(`core/materials/PROMPTS-NEEDED.md` section 67, delivered 2026-11-23). **New, added to PROMPTS-NEEDED.md section 69 (59 on its branch)**: `stone.ghat.wet` (the
 landing stairs' wet band, every town), `ground.sherds` (Pāṭari's kiln yards). Until each lands the town draws the stand-in
 its row names, and says so in its `KNOWN_ISSUES.md`.
 
@@ -204,6 +205,12 @@ ids reused as the pins' ids (`sxanlk*`, `sxanmouth01`, `sxandyer01`, and four ne
 model. Two want a landform record on the region (`core/world/41l-world-landforms.js`, not a model edit): Siṭāq's stack and
 Lāiṭ-Hāus's reef (the isles' plan).
 
+**Malbari's Qol bridge** (the owner, 2026-11-23: *"place bridge on map at open world step"*; recorded on the integration line
+in `settlements/xanadu/BUILD-OUT.md` section 1c, 8d834cac1): the bridge where the road crosses the Qol Siṭrīm (`r272`, near
+its mouth at 824,1489) is **a map feature**, added by the scale-model queue's re-run, not drawn by Malbari's page (the river is
+outside the town's footprint: its spec's `xa_river_span` is skipped there, and the page stays as it is). The region draws it at
+step L6.
+
 ## 10. Steps (sessions; the order across Xanadu is BUILD-PLAN.md)
 
 | Step | What | Done when |
@@ -214,6 +221,7 @@ Lāiṭ-Hāus's reef (the isles' plan).
 | **L3** | Erehwon's south-east round: Boṭ-Yārḍ, Wībhar, Saphran, Pāṭari, Ṭī-Ṭeras, Hoṭ-Bāṭh, Ālph-Hēḍ | each verified; `xanadu-lake-shore` draws them |
 | **L4** | Erehwon's west round: Gārḍan, Qorī, Ōrcharḍ, Lōṭas, Phish-Mārkiṭ, Siṭāq | each verified; the region draws all thirteen |
 | **L5** | Life and interiors: the crowds by the tune's census, the market days, the trades' rooms | the life checks as Phēr's |
+| **L6** | **The open-world step: the regions draw what the town pages leave to them.** First Malbari's Qol bridge (the owner, 2026-11-23, section 9): `xanadu-north-shore` draws an `xa_river_span` on the road's crossing of the Qol Siṭrīm once the scale-model re-run carries the bridge as a map feature, seated on the region's banks; then whatever else a town's page leaves outside its footprint (Hoṭ-Bāṭh's crossing of the Ālph's outflow on the shore road, 3 km north-east of the town: *proposed*, the same way) | a region check that the road meets the deck on both banks, every bridge of this step |
 
 L1 to L4 are a session each (est.); each town's plan says what is its own. The missing pieces (section 5) land in L0 to
 L4 where their first town needs them.

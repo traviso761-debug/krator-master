@@ -65,6 +65,7 @@ planned here). **New here**: planned by this plan's files.
 | **The mines** | Kōlḍ-Lōḍ, Opal Valley Mines (two camps each) | 1,800 | `WORKS-PLAN.md` sections 1-2 | Gōlḍ-Mārch, Ōpal-Bhālī (after the stack) |
 | **The Golden Tears' camp** | `exp.rift-gold` | 120 | `WORKS-PLAN.md` section 3 | `xanadu-oidong-highrift` (now) |
 | **The Great Caravan's halts** | Erehwon's, Theodiga's, Qiblai's | (the caravan's) | `WORKS-PLAN.md` section 4 | Erehwon's now; the other two after the stack |
+| **New, the owner 2026-11-23** | NE of Theodiga: **Klāuḍ-Ṭī** (tea, ~500, 935,1546) and **Skāi-Pāpi** (sky poppy, ~400, 967,1526); south of Gihon: **Ōpal-Phōrḍ** (the opal road's river town, ~1,500, 969,1634); S/SE of Theodiga: **Ṭeras-Hil** (~400, 902,1556) and **Gōṭ-Mesā** (~150, 900,1544); west of Phīsh-Mārkiṭ: **Wesṭ-Rōḍ** (~400, 778,1479) and **Rim-Phārm** (~400, 795,1482) | ~3,750 | `HAMLETS-PLAN.md` sections 3b-3d; `settlements/opal-ford/PLAN.md` | Bhēl and Siqārp (after the stack); Ōpal-Phōrḍ's page and the two west villages (Lake Shore) now |
 
 **Counts.** In scope here: **35 places** (20 lake towns, 3 isles, 4 ring villages, 2 forts, 2 mines, the Tears' camp, 3
 caravan halts) and the countryside sample. Before this plan: **0 planned** (3 lake towns, the 3 isles and the mines had a
@@ -79,18 +80,21 @@ cut site or a pin only), **3 sited**, **32 with a tune record or nothing**. Now:
 | # | Session | Brief | Waits on | Est. |
 |---|---|---|---|---|
 | **A0** | (the owner's merges) | Land what is in flight (branches ahead of this line on 2026-11-22): Strongbow `claude/keen-swanson-68a311` 37, Ledge `claude/ledge-70af2f` 5, Viridian 3, Phēr `claude/pher-plan-55d3f2` 3, scrap Xanadu `claude/scrap-xanadu` 3, the Azure Dream 1, Thalaba 1, Strongwall 1, Gihon as it lands; every owned session carries on with its next step (1a) | the owner | |
-| **A1** | Lake towns L0 | The shared target `settlements/xanadu-lake` (fragments, `tools/fit_lake_town.py`, the tests, the `bake_towns.py` generator, `?town=`) and **Māuṭh** in full, on the north shore's region; `xa_ghat` and `xa_governor` in `kits/xanadu/extra/` | nothing | 1-2 |
-| **A2** | Lake towns L1 | Ōlḍ-Thalaba (with `core/ruins` on its old town) and Ḍāiyar | A1 | 1 |
-| **A3** | Lake towns L2 | The north-west round: Qōqō, Nēṭ, Malbari, Hāibh; their four sites and corridors in `openworld/SITES.json`, `xanadu-north-shore` re-cut and re-baked; `xa_net_loft` and the orchard plot | A1 | 1 |
-| **A4** | Lake towns L3 | Erehwon's south-east round: Boṭ-Yārḍ, Wībhar, Saphran, Pāṭari, Ṭī-Ṭeras, Hoṭ-Bāṭh, Ālph-Hēḍ; `xa_timber_yard`, `xa_clay_pit`; the region's `towns` | A1 | 2 |
-| **A5** | Lake towns L4 and the isles | Erehwon's west round: Gārḍan, Qorī, Ōrcharḍ, Lōṭas, Phish-Mārkiṭ, Siṭāq (Siṭāq's stack a landform); the three isles (H1) | A1 | 2 |
+| **A1** (**built** 2026-11-23, cloud, `claude/festive-johnson-lp780f`; GPU verify owed) | Lake towns L0 | The shared target `settlements/xanadu-lake` (fragments, `tools/fit_lake_town.py`, the tests, the `bake_towns.py` generator, `?town=`) and **Māuṭh** in full, on the north shore's region; `xa_ghat` and `xa_governor` in `kits/xanadu/extra/` | nothing | 1-2 |
+| **A2** (**built** 2026-11-23, the same branch; GPU verify owed) | Lake towns L1 | Ōlḍ-Thalaba (with `core/ruins` on its old town) and Ḍāiyar | A1 | 1 |
+| **A3** (**built** 2026-11-23, the same branch; GPU verify owed) | Lake towns L2 | The north-west round: Qōqō, Nēṭ, Malbari, Hāibh; their four sites and corridors in `openworld/SITES.json`, `xanadu-north-shore` re-cut and re-baked; `xa_net_loft` and the orchard plot | A1 | 1 |
+| **A4** (**built** 2026-11-23, locally: six of the seven on the GPU lanes, the region drawing them; **Hoṭ-Bāṭh held**: the fit's rest grid cannot carry the inlet west of it, `settlements/xanadu-lake/KNOWN_ISSUES.md`) | Lake towns L3 | Erehwon's south-east round: Boṭ-Yārḍ, Wībhar, Saphran, Pāṭari, Ṭī-Ṭeras, Hoṭ-Bāṭh, Ālph-Hēḍ; `xa_timber_yard`, `xa_clay_pit`; the region's `towns` | A1 | 2 |
+| **A5** (**built** 2026-11-23, locally: the six on the Lake Shore and Wesṭ-Āil's villages; Lāiṭ-Hāus and Bē-Āil held, too small for core/hamlet at 1:1) | Lake towns L4 and the isles | Erehwon's west round: Gārḍan, Qorī, Ōrcharḍ, Lōṭas, Phish-Mārkiṭ, Siṭāq (Siṭāq's stack a landform); the three isles (H1) | A1 | 2 |
 | **A6** | Lake towns L5 | Life and interiors: the crowds by the census, the fair and market days, the trades' rooms | A2-A5 | 1 |
-| **A7** | Works W1-W3, W5 | The camp census option in core/hamlet (opt-in, negatives); `xa_stamp_mill`, `xa_sorting_shed`; both mines' camps on a sheet; the Tears' camp as a `xanadu-oidong-highrift` site; Erehwon's caravan halt; the Kōlḍ-Lōḍ rename in the tune and pin | nothing | 1-2 |
+| **A7** (**built** 2026-11-23, cloud, `claude/xanadu-works-a7`; W2 in part; GPU verify owed) | Works W1-W3, W5 | The camp census option in core/hamlet (opt-in, negatives); `xa_stamp_mill`, `xa_sorting_shed`; both mines' camps on a sheet; the Tears' camp as a `xanadu-oidong-highrift` site; Erehwon's caravan halt; the Kōlḍ-Lōḍ rename in the tune and pin | nothing | 1-2 |
 | **A8** (**built** 2026-11-23: `settlements/marches`, its verify passed on SwiftShader, the GPU run owed) | Marches M1, M3 | Both watch forts on a sheet (a build of its own, `settlements/marches`, on Xanadu's page), the three states; the pins listed | nothing | 1 |
 | **A9** | Countryside H2 | The sample module (`core/world/48v`, `88v`), opt-in, on `xanadu-lake-shore` and `xanadu-north-shore` | A5 (the regions settled) | 1 |
 | **A10** | (the scale-model queue) | The records-only batch of section 4 | its turn in the queue | |
+| **A11** (**built** 2026-11-23: `settlements/opal-ford`, the town on its own ground, its tune record `T.opalford` and `road.ks-opalford` (hub Kirstabal until Gihon's record lands); the Iridescent Order's precinct kept clear) | Ōpal-Phōrḍ OF1 | The river town's page on Xanadu's page (`--kit`), on its own ground; its tune record and the road (the owner: records with the build) | A5 | 1 |
+| **A11b** (**built** 2026-11-23: the blueprint, `settlements/opal-ford/iridescent/BLUEPRINT.md`, and its records on Ōpal-Phōrḍ's page; its interiors owed) | Ōpal-Phōrḍ OF1b | The Iridescent Order's second great house at the cataract's foot (the owner, 2026-11-23: "Both are big houses", ~450, Qiblai Turquoise): its blueprint, then its records in the page's precinct (`settlements/opal-ford/PLAN.md` section 2b) | A11 | 1 |
+| **A12** (**built** 2026-11-23: the sites, the cut and both villages; the ground was good, the villages' lanes wanted a link) | West villages H6 | Wesṭ-Rōḍ and Rim-Phārm on the Lake Shore region (`HAMLETS-PLAN.md` 3d, H6): two sites, the cut widened west, their hamlets | A5 | 1 |
 
-About **11-13 sessions** (est.). A1 first; then A2-A5 one at a time (they share the target's fragments: two writers never
+About **11-13 sessions** (est.). **Merged on this branch 2026-11-23** (local, 2e0516bf3): A1-A3, A7, A8 and STACK-PLAN XS0 (partial), XS1, XS2, from their cloud branches. A1 first; then A2-A5 one at a time (they share the target's fragments: two writers never
 touch the same files), A7 and A8 beside them (their own files), A9 after A5. **Phase A is done** when every lake town and
 isle passes its verify and stands in its region, the works and forts pass on their sheets, and the owned sessions have
 landed what they can without the stack (Erehwon's re-seat, Gihon G0-G3, Strongbow, the Tempest's and the Beacon's pages
@@ -191,6 +195,7 @@ re-baked once more at the rebuild anyway. Nothing in phase A adds a core/world f
 ## 4. The pins (one batch for the scale-model queue; listed, not edited)
 
 Records-only, through the queue's owner (the scale-model session), on the integration line's model:
+- **7 new pins** (the owner, 2026-11-23): Ōpal-Phōrḍ (`sopalford01`, town, 969,1634), Klāuḍ-Ṭī (`steabench01`, village, 935,1546), Skāi-Pāpi (`sskypoppy01`, village, 967,1526), Ṭeras-Hil (`sterrhill01`, 902,1556), Gōṭ-Mesā (`sgoatmesa01`, 900,1544), Wesṭ-Rōḍ (`sxanwestroad01`, 778,1479), Rim-Phārm (`sxanrimfarm01`, 795,1482);
 - **22 lake pins**: nineteen towns (`settlements/xanadu-lake/PLAN.md` section 9: every lake town but Ōlḍ-Thalaba, which is
   `soldthalaba1`), three isle villages (`HAMLETS-PLAN.md` section 1), ids their SITES.json ids;
 - **the rename** of `smgxtultfq` to "Kōlḍ-Lōḍ" (the owner);
