@@ -174,4 +174,23 @@ ok('every deck is above its ground and every pier reaches it',V.decks.every(d=>d
   LY=AV.lattice(mY,{cell:32,half:4400,tol:1e9}),LS=AV.lattice(sK,{cell:32,half:4400,tol:1e9});let eY=0,eS=0;
  for(let i=0;i<20000;i++){const x=(KRAND.unit(KRAND.hash(13,i,1,0))*2-1)*4300,z=(KRAND.unit(KRAND.hash(13,i,2,0))*2-1)*4300;eY=Math.max(eY,Math.abs(LY.h(x,z)-mY(x,z)));eS=Math.max(eS,Math.abs(LS.h(x,z)-sK(x,z)));}
  ok(nm+': the model on its 32 m lattice is within 5 cm ('+(eY*100).toFixed(2)+' cm worst; the slope within '+eS.toExponential(1)+')',eY<.05&&eS<1e-3);});
+/* A2.5: district hierarchy & landmark silhouettes (AV.districts) */
+{const DP=AV.plan({R:3000,pitch:160,theta:.3,seed:5,ground,lakeY:LAKE,F,coreKeys:['spindle','ledger'],shelfKeys:['ledger'],lakeK:(x,z)=>AV.smooth(2000,-1500,x)});
+ const secs=DP.districts&&DP.districts.sectors||[],kinds=new Set(secs.map(s=>s.kind)),lms=DP.towers.filter(t=>t.landmark);
+ ok('A2.5 districts classify sectors and elect tall landmark silhouettes ('+secs.length+' sectors, '+lms.length+' landmarks, kinds: '+[...kinds].join(',')+')',
+  secs.length>=8&&kinds.size>=2&&lms.length>=6&&lms.every(t=>t.state==='intact'||t.state==='gutted'||t.state==='crown'),
+  AV.plan({R:3000,pitch:160,theta:.3,seed:5,ground,lakeY:LAKE,F,coreKeys:['spindle'],shelfKeys:['ledger'],districts:false}).districts!==null);}
+/* A2.4: ecological stands & deadwood placement records (AV.stands) */
+{const C=AV.craters({R:2800,n:12,seed:3,ok:(x,z,r)=>ground(x,z)>LAKE+10});
+ const ST=AV.stands({ground,lakeY:LAKE,F,street:(x,z)=>Math.abs(x)<6?1:0,built:(x,z)=>Math.hypot(x-500,z-500)<25?1:0,scorch:(x,z)=>AV.scorch(C,x,z,3),seed:7});
+ const onScar=ST.at(1500,-200),onPlinth=ST.at(500,500),onStreet=ST.at(0,200);
+ const DW=ST.deadwood({R:2600,max:300}),DW2=ST.deadwood({R:2600,max:300});
+ const snags=DW.filter(d=>d.kind==='snag').length,logs=DW.filter(d=>d.kind==='log').length;
+ const badSub=DW.filter(d=>d.substrate==='water'||d.substrate==='scar'||d.substrate==='plinth'||d.substrate==='street').length;
+ ok('A2.4 stands distinguish scar, plinth and pioneer street cracks',
+  onScar.substrate==='scar'&&onScar.scale===0&&onPlinth.substrate==='plinth'&&onPlinth.scale===0&&onStreet.substrate==='street'&&onStreet.guild==='pioneer'&&onStreet.scale<.7,
+  onScar.scale>0);
+ ok('A2.4 deadwood places deterministic snags ('+snags+') and fallen logs ('+logs+') off water, scars, plinths and streets',
+  DW.length>=40&&snags>=10&&logs>=10&&badSub===0&&JSON.stringify(DW)===JSON.stringify(DW2)&&DW.every(d=>Math.abs(d.y-ground(d.x,d.z))<1e-6),
+  badSub>0||DW.concat([{substrate:'scar'}]).every(d=>d.substrate!=='scar'));}
 console.log(fails?fails+' FAILED of '+n:'all '+n+' passed');process.exit(fails?1:0);

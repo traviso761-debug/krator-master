@@ -227,6 +227,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `host/underground/40-world.js` | 4.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `host/underground/60-scene.js` | 3.0 | [web] | 11 | 0 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `host/underground/98-take.js` | 2.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `interiors/10-core-roomlight.js` | 8.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Stage 7 I2 BFS room-graph daylight & lamp ambience, I3 room-gated light pool, I4 analytic corner AO; test-roomlight.js |
 | `lod/09-lod.js` | 32.7 | [G native] | 0 | 0 | 6 | 3 | 8 | 14 | 0 | 10 | 3 | 0 | 0 | keep for the preview; no port |
 | `lod/97-lod-auto.js` | 0.8 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `mask/25-core-mask.js` | 11.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the placement raster: KMASK.canvas, hard-edged by pixel centre; test-mask.js, GDScript twin kmask.gd (passing in Godot 4.5). Used by the Iziz, Dalab, Erewhon and Roketstad cities |

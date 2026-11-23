@@ -89,7 +89,7 @@ function avRust(H,key){if(H.userData.avRusted)return H;H.userData.avRusted=true;
   const l=(c[o]*.3+c[o+1]*.59+c[o+2]*.11),tw=S3(.4,.6,g),R0=T[0]*(1-tw)+T2[0]*tw,R1=T[1]*(1-tw)+T2[1]*tw,R2=T[2]*(1-tw)+T2[2]*tw;
   c[o]=(c[o]*(1-r)+R0*(.6+l)*r)*dirt;c[o+1]=(c[o+1]*(1-r)+R1*(.6+l)*r)*dirt;c[o+2]=(c[o+2]*(1-r)+R2*(.6+l)*r)*dirt;
   /* the palette (the owner: a more uniform rust-shaded palette): every colour drawn half way to a rust-brown of its own brightness */
-  const l2=(c[o]*.3+c[o+1]*.59+c[o+2]*.11);c[o]=c[o]*.35+l2*PAL[0]*.65;c[o+1]=c[o+1]*.35+l2*PAL[1]*.65;c[o+2]=c[o+2]*.35+l2*PAL[2]*.65;
+  const l2=(c[o]*.3+c[o+1]*.59+c[o+2]*.11),baseOcc=.78+.22*S3(0,24,y);c[o]=(c[o]*.35+l2*PAL[0]*.65)*baseOcc;c[o+1]=(c[o+1]*.35+l2*PAL[1]*.65)*baseOcc;c[o+2]=(c[o+2]*.35+l2*PAL[2]*.65)*baseOcc;
   c[o]=c[o]*(1-soot)+SOOT[0]*soot;c[o+1]=c[o+1]*(1-soot)+SOOT[1]*soot;c[o+2]=c[o+2]*(1-soot)+SOOT[2]*soot;};
  const M=new THREE.Matrix4();
  /* the owner, 2026-11-08: the black tower (the Wedge's black curtain glass and dark piers) stood out; its dark materials are swapped for a grey like
@@ -210,28 +210,69 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
   AVC.debris[k]=G.children.map(m=>{const im=new THREE.InstancedMesh(m.geometry,m.material,cap);im.count=0;im.frustumCulled=false;im.name=m.name;im.castShadow=im.receiveShadow=!!MP.shadow;scene.add(im);return im;});
   const Gf=MP.debris(MP.FAMILY[p[0]],p[1],true);AVC.debrisFar[k]=Gf.children.map(m=>{const im=new THREE.InstancedMesh(m.geometry,m.material,cap);im.count=0;im.frustumCulled=false;im.name=m.name+'.far';scene.add(im);return im;});});
  AVC.bakeMs=Math.round(performance.now()-t0);
- /* the impostors: one set, a slot a family and state, from the hero's own meshes; the bake runs on the metro kit alone (the valley's forest is baked already: 88) */
- const S=BIO.impostorSet('av',{grid:8,cell:/[?&]impcell=(\d+)/.test(location.search)?+RegExp.$1:128,slots:14});AVC.impSet=S;const savedKits=BIO.kits;BIO.kit('metro');
+ /* the impostors (A0.4): baked directly into GPU WebGLRenderTarget atlases per set (viewport/scissor + single generateMipmap when a set finishes),
+    eliminating 671 MB of CPU Uint8Array readbacks, 8.8 GB of DataTexture re-uploads, and ~300 MB of BIO.kits.metro clipGeoY buffers (?imprt=0 falls back) */
+ const impCell=/[?&]impcell=(\d+)/.test(location.search)?+RegExp.$1:64,useImpRT=AVQ_ON('imprt');
+ const S=BIO.impostorSet('av',{grid:8,cell:impCell,slots:14});AVC.impSet=S;const savedKits=BIO.kits;BIO.kit('metro');
  AVC.imp={};
- /* a hero's meshes, wherever they sit in its tree (a design's ruin pass nests groups), each with its matrix in the hero's frame */
- /* the owner, 2026-11-09: a ruin's impostor showed its floors as dashes hanging in the air (the slabs inside under the tear, and the storeys' plates,
-    read at a texel while the piers between them do not): the impostor is baked without them, the skin and the frame alone */
  const heroMeshes=H=>{const out=[];H.updateMatrixWorld(true);H.traverse(m=>{if(!m.isMesh||!m.geometry||!m.material||m.userData.door)return;let o=m,skip=false;while(o&&o!==H){if(/slab|floor|storey|plate/i.test(o.name||''))skip=true;o=o.parent;}if(!skip)out.push(m);});return out;};
- const impOf=(k,S)=>{const pk=k.split('.'),fam=pk[0],look=pk[1],F=MP.FAMILY[fam];let top=Infinity;
-  if(look!=='intact')top=avCutTop(F,look);
+ const impNV=['varying vec3 vN;varying vec2 vUv;uniform mat3 uvTransform;',
+  'void main(){vUv=(uvTransform*vec3(uv,1.0)).xy;',
+  '#ifdef USE_INSTANCING','mat4 M=modelMatrix*instanceMatrix;','#else','mat4 M=modelMatrix;','#endif',
+  'vN=normalize(mat3(M)*normal);gl_Position=projectionMatrix*viewMatrix*(M*vec4(position,1.0));}'].join('\n');
+ const impNF=['varying vec3 vN;varying vec2 vUv;uniform sampler2D map;uniform float alphaTest;uniform float useMap;',
+  '/* alpha mask: no srgbToLinear */void main(){if(useMap>0.5&&texture2D(map,vUv).a<max(alphaTest,0.01))discard;vec3 n=normalize(vN);if(!gl_FrontFacing)n=-n;gl_FragColor=vec4(n*0.5+0.5,1.0);}'].join('\n');
+ const impNormalMat=(src,cache)=>{if(cache.has(src.uuid))return cache.get(src.uuid);const map=src.map||null;if(map&&map.matrixAutoUpdate)map.updateMatrix();
+  const m=new THREE.ShaderMaterial({uniforms:{map:{value:map},useMap:{value:map?1:0},alphaTest:{value:src.alphaTest||0},uvTransform:{value:map?map.matrix.clone():new THREE.Matrix3()}},vertexShader:impNV,fragmentShader:impNF,side:src.side});cache.set(src.uuid,m);return m;};
+ const avImpEnsureRT=set=>{if(set.rtC)return;const W=set.N*set.px,SW=set.K*W,mk=()=>new THREE.WebGLRenderTarget(SW,SW,{depthBuffer:true,format:THREE.RGBAFormat,type:THREE.UnsignedByteType,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,generateMipmaps:false});
+  set.rtC=mk();set.rtN=mk();set._bakedSlots=0;const old=renderer.getRenderTarget(),oc=renderer.getClearColor(new THREE.Color()),oa=renderer.getClearAlpha();renderer.setClearColor(0,0);
+  [set.rtC,set.rtN].forEach(rt=>{renderer.setRenderTarget(rt);renderer.clear(true,true,true);});renderer.setRenderTarget(old);renderer.setClearColor(oc,oa);
+  const U=set.mat.uniforms;if(U.uAtlas.value&&U.uAtlas.value.image&&U.uAtlas.value.image.width<=1){U.uAtlas.value.dispose();U.uNorm.value.dispose();}
+  set.atlas=U.uAtlas.value=set.rtC.texture;set.normal=U.uNorm.value=set.rtN.texture;U.uK.value=set.K;};
+ const avImpFinishRT=set=>{const gl=renderer.getContext(),old=renderer.getRenderTarget();[set.rtC,set.rtN].forEach(rt=>{rt.texture.generateMipmaps=true;rt.texture.minFilter=THREE.LinearMipmapLinearFilter;const tx=renderer.properties.get(rt.texture).__webglTexture;if(tx){gl.bindTexture(gl.TEXTURE_2D,tx);gl.generateMipmap(gl.TEXTURE_2D);gl.bindTexture(gl.TEXTURE_2D,null);}
+  const rp=renderer.properties.get(rt);if(rp&&rp.__webglDepthbuffer){gl.deleteRenderbuffer(rp.__webglDepthbuffer);rp.__webglDepthbuffer=null;}});renderer.setRenderTarget(old);};
+ const avImpCaptureRT=rec=>{const set=rec.set;avImpEnsureRT(set);const k=rec.avKey,pk=k.split('.'),fam=pk[0],look=pk[1],F=MP.FAMILY[fam],top=look!=='intact'?avCutTop(F,look):Infinity;
+  const H=heroOf(look==='intact'?k:fam+'.intact',true),G=new THREE.Group(),owned=[],M=new THREE.Matrix4(),W=new THREE.Matrix4(),b=new THREE.Box3(),B=new THREE.Box3(),v=new THREE.Vector3();
+  heroMeshes(H).forEach(m=>{W.copy(m.matrixWorld);if(m.isInstancedMesh){const keep=[];for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);M.premultiply(W);if(M.elements[13]<=top)keep.push(i);}if(!keep.length)return;
+    const im=new THREE.InstancedMesh(m.geometry,m.material,keep.length),ca=m.instanceColor?m.instanceColor.array:null,cA=ca?new Float32Array(keep.length*3):null;
+    keep.forEach((i,j)=>{m.getMatrixAt(i,M);M.premultiply(W);im.setMatrixAt(j,M);if(cA){cA[j*3]=ca[i*3];cA[j*3+1]=ca[i*3+1];cA[j*3+2]=ca[i*3+2];}});if(cA)im.instanceColor=new THREE.InstancedBufferAttribute(cA,3);im.frustumCulled=false;G.add(im);}
+   else{let g=m.geometry;if(top<Infinity){g=clipGeoY(g,m,top);if(!g)return;if(g!==m.geometry)owned.push(g);}else{g=g.clone().applyMatrix4(W);owned.push(g);}const ms=new THREE.Mesh(g,m.material);ms.frustumCulled=false;G.add(ms);}});
+  if(!G.children.length){owned.forEach(g=>g.dispose());return false;}
+  G.children.forEach(m=>{const g=m.geometry;if(!g.boundingBox)g.computeBoundingBox();if(m.isInstancedMesh){for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);b.copy(g.boundingBox).applyMatrix4(M);B.union(b);}}else B.union(g.boundingBox);});
+  const O=B.getCenter(new THREE.Vector3());let r2=0;G.children.forEach(m=>{const P=m.geometry.attributes.position,n=m.isInstancedMesh?m.count:1;
+   for(let i=0;i<n;i++){if(m.isInstancedMesh)m.getMatrixAt(i,M);else M.identity();const st=Math.max(1,Math.floor(P.count/2048));for(let j=0;j<P.count;j+=st){v.fromBufferAttribute(P,j).applyMatrix4(M);const d=v.distanceToSquared(O);if(d>r2)r2=d;}}});
+  const rad=Math.min(B.getSize(new THREE.Vector3()).length()*.5,Math.sqrt(r2))*1.02||1;
+  const N=rec.N,px=rec.px,Wpx=N*px,ox=(rec.slot%set.K)*Wpx,oy=Math.floor(rec.slot/set.K)*Wpx,sc=new THREE.Scene();sc.add(G);sc.add(new THREE.AmbientLight(0xffffff,1));
+  const cam=new THREE.OrthographicCamera(-rad,rad,rad,-rad,rad*.01,rad*4),oldRT=renderer.getRenderTarget(),oldCol=renderer.getClearColor(new THREE.Color()),oldA=renderer.getClearAlpha(),oldAuto=renderer.autoClear;
+  renderer.setClearColor(0x000000,0);renderer.autoClear=false;const cache=new Map();
+  const pass=(rt,swap)=>{const keep=[];if(swap)G.children.forEach(m=>{keep.push(m.material);m.material=swap(m);});
+   for(let j=0;j<N;j++)for(let i=0;i<N;i++){const d=BIO.IMP.dec(i/(N-1),j/(N-1)),bs=BIO.IMP.basis(d);cam.position.set(O.x+d[0]*rad*2,O.y+d[1]*rad*2,O.z+d[2]*rad*2);cam.up.set(bs.u[0],bs.u[1],bs.u[2]);cam.lookAt(O);cam.updateMatrixWorld();
+    rt.viewport.set(ox+i*px,oy+j*px,px,px);rt.scissor.set(ox+i*px,oy+j*px,px,px);rt.scissorTest=true;renderer.setRenderTarget(rt);renderer.clear(true,true,false);renderer.render(sc,cam);}
+   rt.scissorTest=false;rt.viewport.set(0,0,rt.width,rt.height);if(swap)G.children.forEach((m,q)=>{m.material=keep[q];});};
+  try{pass(set.rtC,null);pass(set.rtN,m=>impNormalMat(m.material,cache));}finally{renderer.setRenderTarget(oldRT);renderer.setClearColor(oldCol,oldA);renderer.autoClear=oldAuto;}
+  cache.forEach(m=>m.dispose());owned.forEach(g=>g.dispose());
+  rec.mat.uniforms.uRS.value[rec.slot].set(rad,O.x,O.y,O.z);rec.radius=rad;rec.centre=[O.x,O.y,O.z];rec.ready=true;
+  Object.assign(set.mat.userData.bio.opts.slots[rec.slot],{radius:rad,centre:[O.x,O.y,O.z]});
+  set._bakedSlots++;if(set._bakedSlots>=set.recs.length)avImpFinishRT(set);if(BIO.IMP.readLights)BIO.IMP.readLights();return true;};
+ AVC.impCaptureRT=avImpCaptureRT;
+ const impOf=(k,set)=>{if(useImpRT){const rec=BIO.impostor('av.'+k,function(){},{set,label:k});rec.avKey=k;return rec;}
+  const pk=k.split('.'),fam=pk[0],look=pk[1],F=MP.FAMILY[fam];let top=Infinity;if(look!=='intact')top=avCutTop(F,look);
   const H=heroOf(look==='intact'?k:fam+'.intact',true),names=[];heroMeshes(H).forEach((m,i)=>{let g=m.geometry;if(top<Infinity&&!m.isInstancedMesh){g=clipGeoY(g,m,top);if(!g)return;}const n='av.'+k+'.'+i;BIO.def(n,g,m.material,{indexed:false});names.push([n,m]);});
   return BIO.impostor('av.'+k,function(){const M=new THREE.Matrix4(),W=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3(),c=new THREE.Color();
    names.forEach(function(e){const n=e[0],m=e[1];W.copy(m.matrixWorld);if(!m.isInstancedMesh){W.decompose(p,q,s);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],null);return;}
-    for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);M.premultiply(W).decompose(p,q,s);if(p.y>top)continue;if(m.instanceColor)m.getColorAt(i,c);else c.setRGB(1,1,1);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],c.clone().convertLinearToSRGB());}});},{set:S,label:k});};
+    for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);M.premultiply(W).decompose(p,q,s);if(p.y>top)continue;if(m.instanceColor)m.getColorAt(i,c);else c.setRGB(1,1,1);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],c.clone().convertLinearToSRGB());}});},{set,label:k});};
  /* every look the plan uses, shelled families and designs alike, in sets of 14 (a set is one atlas pair and one draw call a chunk) */
  AVC.dkeys=[];{const seen=new Set();AVC.towers.forEach(t=>{if(!seen.has(t.ikey)){seen.add(t.ikey);AVC.dkeys.push(t.ikey);}});}
- AVC.dsets=[S];AVC.dset={};let slotLeft=0,cur=null;AVC.dkeys.forEach(k=>{if(!slotLeft){cur=AVC.dsets.length===1&&!AVC.dsets[0].used?S:BIO.impostorSet('avd'+AVC.dsets.length,{grid:8,cell:128,slots:14});cur.used=true;if(cur!==S)AVC.dsets.push(cur);slotLeft=14;BIO.impostorItem('avImp'+(AVC.dsets.length-1),cur,{label:'a far tower'});}
+ AVC.dsets=[S];AVC.dset={};let slotLeft=0,cur=null;AVC.dkeys.forEach(k=>{if(!slotLeft){cur=AVC.dsets.length===1&&!AVC.dsets[0].used?S:BIO.impostorSet('avd'+AVC.dsets.length,{grid:8,cell:impCell,slots:14});cur.used=true;if(cur!==S)AVC.dsets.push(cur);slotLeft=14;BIO.impostorItem('avImp'+(AVC.dsets.length-1),cur,{label:'a far tower'});}
   AVC.imp[k]=impOf(k,cur);AVC.dset[k]='avImp'+(AVC.dsets.indexOf(cur));slotLeft--;});
  BIO.range=AV_IMPFAR;BIO.minRange=0;BIO.chunk=800;AVC.towers.forEach(T=>{BIO.impostorPut(AVC.dset[T.ikey],AVC.imp[T.ikey],[T.x,T.y,T.z],-(T.yaw||0),1);});BIO.range=null;BIO.minRange=0;BIO.chunk=null;
  {const mine={metro:BIO.kits.metro};BIO.kits=mine;try{BIO.bake();}finally{BIO.kits=savedKits;}}BIO.kit('');AVC.impQ=BIO.IMP.list.slice();BIO.IMP.list.length=0;AVC.impN=0;
+ if(useImpRT){AVC.dsets.forEach(avImpEnsureRT);delete BIO.kits.metro;}
  AVC.impMeshes=[];scene.traverse(o=>{if(o.isInstancedMesh&&/avImp/.test(o.name||'')){AVC.impMeshes.push(o);o.userData.full=o.instanceMatrix.array.slice();}});AVC.impKeys=AVC.dkeys.length;
  AVC.bakeAllMs=Math.round(performance.now()-t0);AVC.impMs=0;AVC.ready=true;AVC.nextTier=0;return true;};
-AVC.impTick=function(){if(!AVC.impQ||!AVC.impQ.length)return;const r=AVC.impQ.shift(),t0=performance.now();BIO.IMP.list.length=0;BIO.IMP.list.push(r);AVC.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;AVC.impMs+=Math.round(performance.now()-t0);};
+AVC.impTick=function(){if(!AVC.impQ||!AVC.impQ.length)return;const t0=performance.now();
+ if(AVQ_ON('imprt')&&AVC.impCaptureRT){const batch=Math.min(4,AVC.impQ.length);for(let i=0;i<batch;i++){const r=AVC.impQ.shift();if(!r||r.ready)continue;if(r.avKey){try{if(AVC.impCaptureRT(r))AVC.impN++;}catch(e){reportErr('impRT '+r.key+': '+(e.message||e));}}else{BIO.IMP.list.length=0;BIO.IMP.list.push(r);AVC.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;}}AVC.impMs+=Math.round(performance.now()-t0);return;}
+ const r=AVC.impQ.shift();BIO.IMP.list.length=0;BIO.IMP.list.push(r);AVC.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;AVC.impMs+=Math.round(performance.now()-t0);if(!AVC.impQ.length&&BIO.kits.metro)delete BIO.kits.metro;};
 // a hero placed on the ground: a clone that shares the geometry
 /* the farm families are walked into (the Terraces' pods, vaults, halls): their walls are single strips facing out, so from inside their back faces were
    culled and the walls stood transparent (the owner, 2026-11-10: "it's pod walls that are transparent from inside"). Their hero templates take
@@ -340,7 +381,7 @@ const AV_LINES=(function(){const V={piers:[],decks:[],length:0};(STAGE.transit?[
  /* THE DEBRIS (the owner's third pass): the craters' ejecta and the streets' fallen slabs (STAGE.debris, AV.debris), tilted concrete blocks in the
     same rusted grime as the towers, one instanced mesh; every record on the ground at its own height */
  const D=STAGE.debris,dm=new THREE.MeshStandardMaterial({map:T.map||null,normalMap:T.normalMap||null,color:0x5a5048,roughness:.98,metalness:0}),deb=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),dm,D.length);
- D.forEach((d,i)=>{const g=terrainH(d.x,d.z);M.compose(P3.set(d.x,g+d.sy*.3,d.z),Q.setFromEuler(E.set(d.tilt*.6,d.yaw,d.tilt,'YXZ')),S3.set(d.sx,d.sy,d.sz));deb.setMatrixAt(i,M);});
+ D.forEach((d,i)=>{const g=(typeof GROUND!=='undefined'&&GROUND.meshH?GROUND.meshH:terrainH)(d.x,d.z);M.compose(P3.set(d.x,g+d.sy*.3,d.z),Q.setFromEuler(E.set(d.tilt*.6,d.yaw,d.tilt,'YXZ')),S3.set(d.sx,d.sy,d.sz));deb.setMatrixAt(i,M);});
  deb.frustumCulled=false;deb.userData.inspectLabel='fallen slabs';deb.userData.host=true;deb.castShadow=deb.receiveShadow=!!MP.shadow;scene.add(deb);
  STAGE.craters.forEach((c,i)=>REGISTER({name:'A blast crater ('+Math.round(c.r)+' m)',kind:'crater',x:c.x,z:c.z,y:terrainH(c.x,c.z)-2,r:c.r*2.4,h:c.depth+c.rim+6,tags:{kind:'crater',n:i+1}}));
  /* THE LAMP STANDARDS (the owner, 2026-11-08: the grid carried by rows the eye follows): along both kerbs of every avenue, one every 30 m, 7 m tall, a

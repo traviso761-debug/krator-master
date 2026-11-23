@@ -11,6 +11,7 @@ extends Node3D
 
 const DEFAULT_CASE := "res://data/world-oidong-highrift/index.json"
 const KratorSky := preload("res://krator/sky.gd")
+const KInteriorsLight := preload("res://krator/kinteriors_light.gd")
 var case_index := DEFAULT_CASE
 var W: KratorWorldWalk
 var ui: KratorHostUI
@@ -33,6 +34,9 @@ var _shown := 0
 var _tt := 0.0
 var _indoors := false
 var _in_vault := false
+var _indoor_room_id := ""
+var _mask_indoor_sun := true
+var _use_corner_ao := true
 var _ls_lights: Array = []
 var _ls_light_regs: Array = []
 var _ls_light_timer := 0.0
@@ -91,6 +95,9 @@ func _ready() -> void:
 	sky_node.set_process(false)   # driven deterministically in _update_sun_and_ambience
 	env_res = sky_node.env
 	sun = sky_node.sun
+	sun.light_cull_mask = 1
+	if sky_node.shine != null:
+		sky_node.shine.light_cull_mask = 1
 	env_res.tonemap_mode = Environment.TONE_MAPPER_AGX
 	env_res.ssao_enabled = true
 	env_res.ssao_radius = 1.4
@@ -277,11 +284,17 @@ func _build_overlays() -> void:
 	# Pooled OmniLight3D rig for Longsong indoor rooms (butter lamps + window daylight portals) and the subterranean Vault
 	_ls_lights.clear()
 	_ls_light_regs.clear()
+	var is_compat_l := RenderingServer.get_current_rendering_method() == "gl_compatibility"
 	for li in 10:
 		var ol := OmniLight3D.new()
 		ol.name = "LongsongLamp_%d" % li
 		ol.visible = false
 		ol.shadow_enabled = false
+		ol.omni_shadow_mode = OmniLight3D.SHADOW_CUBE if is_compat_l else OmniLight3D.SHADOW_DUAL_PARABOLOID
+		ol.shadow_bias = 0.04
+		ol.shadow_normal_bias = 1.15
+		ol.shadow_blur = 1.25
+		ol.light_cull_mask = KInteriorsLight.INDOOR_LAYER
 		ol.omni_attenuation = 1.3
 		_overlays.add_child(ol)
 		_ls_lights.append(ol)
@@ -751,6 +764,7 @@ static func _shader_label(mat: Material) -> String:
 
 func _check_indoors() -> bool:
 	_in_vault = false
+	_indoor_room_id = ""
 	var probe_reg: Vector3
 	if not W.walk_mode:
 		probe_reg = W.cam_region()
@@ -760,6 +774,7 @@ func _check_indoors() -> bool:
 	var mrm := W.stream.monastery_room_at(probe_reg, 0.55)
 	if not mrm.is_empty():
 		_in_vault = bool(mrm.get("vault", false))
+		_indoor_room_id = str(mrm.get("id", ""))
 		return true
 	var probe_g := W.cam.global_position if not W.walk_mode else (W.walker.global_position + Vector3(0.0, 0.5, 0.0))
 	for pid in W.stream.places_open:
@@ -768,7 +783,9 @@ func _check_indoors() -> bool:
 		var host: Node = frame if (frame != null and frame.has_meta("rooms")) else pw
 		if host.has_meta("rooms") and host is Node3D and (host as Node3D).is_inside_tree():
 			var p_in_host := (host as Node3D).to_local(probe_g)
-			if KratorLampPool.room_at(host.get_meta("rooms"), p_in_host) != "":
+			var rid_other := KratorLampPool.room_at(host.get_meta("rooms"), p_in_host)
+			if rid_other != "":
+				_indoor_room_id = rid_other
 				return true
 	return false
 
@@ -789,8 +806,13 @@ func _refresh_longsong_lights(force: bool, dt := 0.0) -> void:
 			break
 	if mon == null:
 		for ol in _ls_lights:
-			(ol as OmniLight3D).visible = false
+			var l0 := ol as OmniLight3D
+			l0.visible = false
+			l0.shadow_enabled = false
 		return
+	var sun_up := clampf((-sun.global_transform.basis.z.y + 0.06) / 0.28, 0.0, 1.0) if sun != null else 1.0
+	var night_k := 1.0 - sun_up
+	KInteriorsLight.update_uniforms(mon, sun_up, 0.72 + 1.05 * night_k, _mask_indoor_sun, _use_corner_ao)
 	var M: Dictionary = mon.get_meta("monastery")
 	var imeta: Dictionary = mon.get_meta("interiors_meta")
 	var mat_at: Array = M.get("at", [0.0, 0.0, 0.0])
@@ -801,14 +823,19 @@ func _refresh_longsong_lights(force: bool, dt := 0.0) -> void:
 	var lp := Basis(Vector3.UP, -ry) * (cr - m_orig)
 	if absf(lp.x) > 360.0 or absf(lp.z) > 320.0:
 		for ol in _ls_lights:
-			(ol as OmniLight3D).visible = false
+			var l1 := ol as OmniLight3D
+			l1.visible = false
+			l1.shadow_enabled = false
 		return
-	var Ldict: Dictionary = imeta.get("lights", {})
-	var chosen := []   # [[score_or_dist2, reg_pos, Color, energy, range]]
+	var is_compat := RenderingServer.get_current_rendering_method() == "gl_compatibility"
+	var max_l := mini(6 if is_compat else 10, _ls_lights.size())
+	var chosen := []   # Array of Dictionaries {reg_pos, color, energy, range, shadow}
 	if _in_vault or lp.y < -1.5:
+		var Ldict: Dictionary = imeta.get("lights", {})
 		var pulse := 0.88 + 0.18 * sin(Time.get_ticks_msec() * 0.0012)
 		var lk_reg := W.look_region(14.0)
 		var lk_lp := Basis(Vector3.UP, -ry) * (lk_reg - m_orig)
+		var v_cand := []
 		for vl in Ldict.get("vault", []):
 			var vp := Vector3(float(vl[0]), float(vl[1]), float(vl[2]))
 			var d_eye := vp.distance_to(lp)
@@ -821,39 +848,15 @@ func _refresh_longsong_lights(force: bool, dt := 0.0) -> void:
 				var en := raw_k * 3.4 * (pulse if vp.y < -30.0 else 1.0)
 				var rng := maxf(11.0, raw_r * 1.4)
 				var sort_key := (d_eff + 3.5) / maxf(0.35, raw_k * (raw_r / 11.0))
-				chosen.append([sort_key, m_orig + m_rot * vp, col, en, rng])
-		chosen.sort_custom(func(a, b): return a[0] < b[0])
-	elif _indoors:
-		var sun_up := clampf((-sun.global_transform.basis.z.y + 0.06) / 0.28, 0.0, 1.0) if sun != null else 1.0
-		var night_k := 1.0 - sun_up
-		if sun_up > 0.08:
-			var w_cand := []
-			for wl in Ldict.get("windows", []):
-				var wy := float(wl[1])
-				if absf(wy - lp.y) > 5.8:
-					continue
-				var wp := Vector3(float(wl[0]), wy, float(wl[2]))
-				var d2w := wp.distance_squared_to(lp)
-				if d2w <= 25.0 * 25.0:
-					w_cand.append([d2w, m_orig + m_rot * wp, Color(0.88, 0.93, 1.0), 1.35 * sun_up, 15.0])
-			w_cand.sort_custom(func(a, b): return a[0] < b[0])
-			for wi in mini(4, w_cand.size()):
-				chosen.append(w_cand[wi])
-		var l_cand := []
-		for rl in Ldict.get("lamps", []):
-			var ly := float(rl[1])
-			if absf(ly - lp.y) > 5.8:
-				continue
-			var rp := Vector3(float(rl[0]), ly, float(rl[2]))
-			var d2l := rp.distance_squared_to(lp)
-			if d2l <= 28.0 * 28.0:
-				var amp := float(rl[3])
-				var lrng := maxf(7.5, float(rl[4]) * 1.2)
-				l_cand.append([d2l, m_orig + m_rot * rp, Color(1.0, 0.76, 0.44), amp * (0.72 + 1.15 * night_k), lrng])
-		l_cand.sort_custom(func(a, b): return a[0] < b[0])
-		var rem := _ls_lights.size() - chosen.size()
-		for ri in mini(rem, l_cand.size()):
-			chosen.append(l_cand[ri])
+				v_cand.append({"score": sort_key, "reg_pos": m_orig + m_rot * vp, "color": col, "energy": en, "range": rng, "shadow": false})
+		v_cand.sort_custom(func(a, b): return float(a["score"]) < float(b["score"]))
+		for vi in mini(max_l, v_cand.size()):
+			var vd: Dictionary = v_cand[vi]
+			if vi < 2:
+				vd["shadow"] = true
+			chosen.append(vd)
+	elif _indoors and _indoor_room_id != "":
+		chosen = KInteriorsLight.pick_pool(imeta, M, lp, _indoor_room_id, sun_up, max_l, 2)
 	var m_items := mon.get_node_or_null("Items")
 	if m_items != null and _builds_vis:
 		var near_xz2 := 46.0 * 46.0 if _indoors else 195.0 * 195.0
@@ -870,22 +873,22 @@ func _refresh_longsong_lights(force: bool, dt := 0.0) -> void:
 							show_f = true
 							break
 				(ch as MultiMeshInstance3D).visible = show_f
-	var is_compat := RenderingServer.get_current_rendering_method() == "gl_compatibility"
-	var max_l := mini(4 if _in_vault else 3, _ls_lights.size()) if is_compat else _ls_lights.size()
 	for i in _ls_lights.size():
 		var ol := _ls_lights[i] as OmniLight3D
 		if i < mini(max_l, chosen.size()):
-			var c_entry: Array = chosen[i]
-			var rpos: Vector3 = c_entry[1]
+			var c_entry: Dictionary = chosen[i]
+			var rpos: Vector3 = c_entry["reg_pos"]
 			_ls_light_regs[i] = rpos
 			ol.position = W.stream.local(rpos.x, rpos.y, rpos.z)
-			ol.light_color = c_entry[2]
-			ol.light_energy = float(c_entry[3]) * (1.35 if is_compat else 1.0)
-			ol.omni_range = float(c_entry[4])
+			ol.light_color = c_entry["color"]
+			ol.light_energy = float(c_entry["energy"]) * (1.25 if is_compat else 1.0)
+			ol.omni_range = float(c_entry["range"])
 			ol.omni_attenuation = 0.72 if _in_vault else 1.25
+			ol.shadow_enabled = bool(c_entry.get("shadow", false))
 			ol.visible = true
 		else:
 			ol.visible = false
+			ol.shadow_enabled = false
 			ol.light_energy = 0.0
 
 
@@ -911,15 +914,16 @@ func _update_sun_and_ambience(dt: float, snap: bool) -> void:
 		sky_node._update()
 		if W != null and sky_node.mat != null:
 			sky_node.mat.set_shader_parameter("uCamPos", Vector3(fmod(cr.x, 260000.0), cr.y, fmod(cr.z, 260000.0)))
-		sun.light_energy = 0.0 if _in_vault else clampf(sun.light_energy * (0.12 if _indoors else 0.68), 0.0, 1.45)
+		# Stage 7 I1: Indoor faces mask directional sun in library_interior.gdshader, so outdoor sun stays full-bright for views out windows!
+		sun.light_energy = 0.0 if _in_vault else clampf(sun.light_energy * 0.68, 0.0, 1.45)
 		if sky_node.shine != null:
-			sky_node.shine.light_energy = 0.0 if _in_vault else sky_node.shine.light_energy * (0.15 if _indoors else 1.0)
+			sky_node.shine.light_energy = 0.0 if _in_vault else sky_node.shine.light_energy
 	var atm = get_node_or_null("/root/Atmos")
 	if atm != null and "hour" in atm:
 		atm.hour = hr
 	env_res.ambient_light_color = Color(0.24, 0.22, 0.27) if _in_vault else Color(0.18, 0.16, 0.15)
 	env_res.ambient_light_energy = 1.0
-	var want_sky := 0.0 if _in_vault else (0.26 if _indoors else 0.95)
+	var want_sky := 0.0 if _in_vault else 0.95
 	env_res.ambient_light_sky_contribution = want_sky if snap else lerpf(env_res.ambient_light_sky_contribution, want_sky, clampf(dt * 5.0, 0.0, 1.0))
 	_refresh_longsong_lights(snap, dt)
 

@@ -226,11 +226,28 @@ STOP_EVAL_JS = r"""async ({stop, hours, nFrames, drawnSrc}) => {
           if (errs.length >= 400) break;
         }
       }
+      if (!errs.length && typeof REG !== 'undefined' && Array.isArray(REG)) {
+        for (let i = 0; i < REG.length && errs.length < 400; i++) {
+          const rec = REG[i];
+          if (!rec || rec.kind !== 'tree' || rec.y == null) continue;
+          const dx = rec.x - cx, dz = rec.z - cz;
+          if (dx*dx + dz*dz > r2) continue;
+          const gh = drawnFn(rec.x, rec.z);
+          if (gh != null && Number.isFinite(gh)) {
+            const err = Math.abs(rec.y - gh);
+            if (err < 40.0) errs.push(err);
+          }
+        }
+      }
       if (!errs.length) {
         sc.updateMatrixWorld(true);
         sc.traverse(o => {
           if (!o.isInstancedMesh || !o.visible || o.count <= 0 || errs.length >= 400) return;
           const ud = o.userData || {};
+          if (ud.creeper || ud.farCanopy) return;
+          const mat = Array.isArray(o.material) ? o.material[0] : o.material;
+          const bkind = mat && mat.userData && mat.userData.bio && mat.userData.bio.kind;
+          if (bkind === 'leaf' || bkind === 'hang' || bkind === 'impostor') return;
           const nm = String(o.name || ud.item || ud.tag || ud.kind || ud.inspectLabel || ud.flora || '').toLowerCase();
           const isPlant = /tree|shrub|palm|fern|bamboo|cedar|pine|birch|grass|flora|herb|bush|kauri|gum|larch/.test(nm) || !!ud.kit || !!ud.flora;
           if (!isPlant) return;

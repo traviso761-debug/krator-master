@@ -87,6 +87,7 @@ for f, d in {'08-core-rand.js': 'rand', '50-core-tags.js': 'tags', '52-core-tags
     PATH.setdefault(f, os.path.join(ROOT, 'core', d, f))
 for f in ('07-core-export.js', '09-core-export-adapters.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'export', f))
+PATH.setdefault('10-core-roomlight.js', os.path.join(ROOT, 'core', 'interiors', '10-core-roomlight.js'))   # Stage 7 I2-I4: room-graph daylight, gated pool & corner AO
 # the OIDONG kit, read in place (biomes/oidong/src): the species, the trees, the floor and its build; its own stage (45),
 # ground (84), build (88) and page (99) are this page's. Its sky (82) is read in place: the valley's light.
 OD = os.path.join(ROOT, 'biomes', 'oidong')

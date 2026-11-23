@@ -38,7 +38,7 @@ function collect(){const mats=[],texs=[],sig=new Map(),texBy=new Map(),dropped={
  const pngTex=t=>{if(!t)return null;const key='tex:'+t.uuid;if(texBy.has(key))return texBy.get(key);const p=png(t);
   const r={id:'tex:longsong:png'+texs.length,from:p?'png':'none',png:p?p.png:undefined,size:p?p.size:undefined,wrap:['clamp','clamp'],repeat:[1,1],offset:[0,0],flipY:t.flipY!==false};
   if(!p)r.error='no drawable image';texs.push(r);texBy.set(key,r.id);return r.id;};
- const matOf=(o,m)=>{const raw=o.name||'',key=raw.replace(/^(?:longsong|interiors):/,'')||null,vault=!!(o.userData&&o.userData.vault),shader=m.isShaderMaterial;
+ const matOf=(o,m)=>{const raw=o.name||'',isInt=raw.indexOf('interiors:')===0||!!(o.userData&&o.userData.interiors),key=raw.replace(/^(?:longsong|interiors):/,'')||null,vault=!!(o.userData&&o.userData.vault),shader=m.isShaderMaterial;
   const vAdd=vault&&shader&&m.blending===THREE.AdditiveBlending,vBand=!!(vAdd&&m.uniforms&&m.uniforms.uMap&&m.uniforms.uMap.value),vField=!!(vAdd&&!vBand&&m.uniforms&&m.uniforms.uCol&&m.uniforms.uCol.value);
   if(vBand||vField){const ak=vBand?'v-glyphband':'v-field',asig='add|'+ak;if(sig.has(asig))return sig.get(asig);
    const ar={id:'longsong:'+ak+'~'+mats.length,name:ak,family:vBand?'glyphband':ak,source:'longsong',kind:'basic',blending:'additive',
@@ -47,10 +47,11 @@ function collect(){const mats=[],texs=[],sig=new Map(),texBy=new Map(),dropped={
     scale:[1,1],lib:null,breakup:null,normalScale:1,map:vBand?(libTex('glyphband','map',[3,1])||pngTex(m.uniforms.uMap.value)):null,normalMap:null,roughnessMap:null};
    mats.push(ar);sig.set(asig,ar.id);return ar.id;}
   const fam=vault?(VFAM[key]||null):(key&&typeof KMAT!=='undefined'&&KMAT.packed('longsong',key)?key:null);
-  const s=[key,m.type,m.color?m.color.getHex():'',m.map?m.map.uuid:'',m.roughness,m.metalness,m.side,!!m.vertexColors,vault,m.transparent,m.opacity].join('|');if(sig.has(s))return sig.get(s);
+  const s=[key,isInt,m.type,m.color?m.color.getHex():'',m.map?m.map.uuid:'',m.roughness,m.metalness,m.side,!!m.vertexColors,vault,m.transparent,m.opacity].join('|');if(sig.has(s))return sig.get(s);
   const L=fam&&typeof KMAT!=='undefined'?KMAT.packed('longsong',fam):null;
   const emI=m.emissiveIntensity==null?1:m.emissiveIntensity,rough=m.roughness==null?.9:m.roughness,metal=m.metalness==null?0:m.metalness,alphaT=m.alphaTest==null?0:m.alphaTest;
-  const r={id:'longsong:'+(key||m.type)+'~'+mats.length,name:key||m.type,family:fam||key||m.type,source:'longsong',kind:m.isMeshBasicMaterial?'basic':'standard',
+  const r={id:'longsong:'+(isInt?'interiors:':'')+(key||m.type)+'~'+mats.length,name:(isInt?'interiors:':'')+(key||m.type),family:fam||key||m.type,source:'longsong',kind:m.isMeshBasicMaterial?'basic':'standard',
+   interior:isInt,
    colour:m.color?hex(m.color):'#ffffff',roughness:rough,metal:metal,specular:L&&L.specular!=null?L.specular:.5,
    emissive:m.emissive&&emI>0&&m.emissive.getHex()?hex(m.emissive):null,emissiveIntensity:emI,
    doubleSided:m.side===THREE.DoubleSide,transparent:!!m.transparent,opacity:m.opacity==null?1:m.opacity,alphaTest:alphaT,
@@ -161,23 +162,33 @@ function exportMetadata(){
  [['Through the Warden\'s gate into the open vault','lv.wardens-gate'],['The open vault (the forbidden depths)','lv.open-vault'],
   ['Down the Long Stair\'s foot into the hall','lv.procrastinator'],['The Procrastinator','lv.procrastinator'],
   ['The Procrastinator from below','lv.procrastinator']].forEach(([k,rm])=>addV(k,'vault',V[k],rm));
- const rooms=[];
- LS.ROOMS.list.forEach(r=>{if(r.outdoor||r.roof||r.furnish==='vault')return;
-  const o={id:r.id,vault:false,box:[R2(r.x0),R2(r.y),R2(r.z0),R2(r.x1),R2(r.y+r.h),R2(r.z1)]};
+ const rooms=[],tableRooms=[];
+ LS.ROOMS.list.forEach(r=>{if(r.roof||r.furnish==='vault')return;
+  tableRooms.push(r);
+  if(r.outdoor)return;
+  const drs=(r.doors||[]).map(d=>({to:d.to||d.room||null,out:!!d.out,x:R2(d.x),z:R2(d.z),w:R2(d.w==null?1.2:d.w)}));
+  const o={id:r.id,vault:false,box:[R2(r.x0),R2(r.y),R2(r.z0),R2(r.x1),R2(r.y+r.h),R2(r.z1)],doors:drs};
   if(r.circle)o.circle=[R2(r.circle.x),R2(r.circle.z),R2(r.circle.r)];rooms.push(o);});
  if(typeof VAULT_ROOMS!=='undefined')VAULT_ROOMS.forEach(r=>{
-  rooms.push({id:'lv.'+r.id,vault:true,shaft:!!r.shaft,box:[R2(r.x0),R2(r.y0),R2(r.z0),R2(r.x1),R2(r.y0+r.h),R2(r.z1)]});});
- {const Q=LS.PROCRASTINATOR;rooms.push({id:'lv.procrastinator',vault:true,box:[R2(Q.x-Q.hallR),R2(Q.y0),R2(Q.z-Q.hallR),R2(Q.x+Q.hallR),R2(Q.y0+Q.hallH),R2(Q.z+Q.hallR)],circle:[R2(Q.x),R2(Q.z),R2(Q.hallR)]});}
+  const vo={id:'lv.'+r.id,vault:true,shaft:!!r.shaft,box:[R2(r.x0),R2(r.y0),R2(r.z0),R2(r.x1),R2(r.y0+r.h),R2(r.z1)],doors:[]};
+  rooms.push(vo);tableRooms.push(vo);});
+ {const Q=LS.PROCRASTINATOR,po={id:'lv.procrastinator',vault:true,box:[R2(Q.x-Q.hallR),R2(Q.y0),R2(Q.z-Q.hallR),R2(Q.x+Q.hallR),R2(Q.y0+Q.hallH),R2(Q.z+Q.hallR)],circle:[R2(Q.x),R2(Q.z),R2(Q.hallR)],doors:[]};
+  rooms.push(po);tableRooms.push(po);}
  const vlights=(typeof VLIGHTS!=='undefined'?VLIGHTS:[]).map(L=>{
   const mx=Math.max(L.c[0],L.c[1],L.c[2],.01),col=new THREE.Color(L.c[0]/mx,L.c[1]/mx,L.c[2]/mx).convertLinearToSRGB();
   return [R2(L.p[0]),R2(L.p[1]),R2(L.p[2]),'#'+col.getHexString(),R2(mx),R2(L.r)];});
  const lamps=[],wins=[],winSeen=new Set();
  LS.ROOMS.list.forEach(r=>{if(r.outdoor||r.roof||r.furnish==='vault')return;
-  if(typeof LSIX!=='undefined'&&LSIX.on){const rec=LSIX.record(r.id);if(rec&&rec.lights)rec.lights.forEach(l=>lamps.push([R2(l[0]),R2(l[1]),R2(l[2]),R2(l[3]==null?1:l[3]),R2(l[4]==null?8:l[4])]));}
-  if(typeof LSIXD!=='undefined'){LSIXD.windowsOf(r).forEach(w=>{const wx=w.x+w.nx*1.35,wz=w.z+w.nz*1.35,gk=Math.round(wx/2.5)+','+Math.round(w.y/2)+','+Math.round(wz/2.5);
-   if(!winSeen.has(gk)){winSeen.add(gk);wins.push([R2(wx),R2(w.y),R2(wz)]);}});}});
+  if(typeof LSIX!=='undefined'&&LSIX.on){const rec=LSIX.record(r.id);if(rec&&rec.lights)rec.lights.forEach(l=>lamps.push([R2(l[0]),R2(l[1]),R2(l[2]),R2(l[3]==null?1:l[3]),R2(l[4]==null?8:l[4]),r.id]));}
+  if(typeof LSIXD!=='undefined'){LSIXD.windowsOf(r).forEach(w=>{const wx=w.x+w.nx*1.35,wz=w.z+w.nz*1.35,gk=r.id+':'+Math.round(wx/2.5)+','+Math.round(w.y/2)+','+Math.round(wz/2.5);
+   if(!winSeen.has(gk)){winSeen.add(gk);wins.push([R2(wx),R2(w.y),R2(wz),r.id]);}});}});
+ const room_table=typeof KROOMLIGHT!=='undefined'?KROOMLIGHT.buildTable({
+  rooms:tableRooms,
+  windowsOf:r=>(!r.vault&&!r.outdoor&&typeof LSIXD!=='undefined')?LSIXD.windowsOf(r):[],
+  lampsOf:r=>(!r.vault&&!r.outdoor&&typeof LSIX!=='undefined'&&LSIX.on&&LSIX.record(r.id))?LSIX.record(r.id).lights:[]
+ }):null;
  const ds=LS.VAULT[0];
- return {format:'krator-longsong-interiors',version:1,deep_stair:ds?[ds.x0,ds.z0,ds.x1,ds.z1]:null,views,rooms,lights:{vault:vlights,lamps,windows:wins}};}
+ return {format:'krator-longsong-interiors',version:2,deep_stair:ds?[ds.x0,ds.z0,ds.x1,ds.z1]:null,views,rooms,room_table,lights:{vault:vlights,lamps,windows:wins}};}
 const B=ctx=>ctx.memo('longsong',()=>assemble(ctx));
 EXPORT.register('items',ctx=>B(ctx).items,BY);
 EXPORT.register('buckets',ctx=>B(ctx).buckets,BY);

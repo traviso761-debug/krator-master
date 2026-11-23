@@ -153,57 +153,65 @@ const HNEG_SHARED={handOfMan:['a view with nothing built anywhere',()=>HCHK.hand
  cardsUp:['every cut card loaded flipped',()=>HCHK.cardsUp(true)],
  floraHeld:['the roof trees lifted 3 m',()=>HCHK.floraHeld(window.AV_TOPS,typeof AV_CREEPERS!=='undefined'&&AV_CREEPERS?AV_CREEPERS.tw:[],3,[10,40])],
  clear:['a tenth of the trees on the plinths',()=>HCHK.clear(REG.filter(r=>r.kind==='tree').map((r,i)=>i%10?r:Object.assign({},r,{x:STAGE.plan.towers[0].x,z:STAGE.plan.towers[0].z})))]};
-function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;
- /* a station with its own content names its own list (STAGE.checkList(add, HCHK, VIEWS): the Yards); the Overlook's follows */
- if(STAGE.checkList){STAGE.checkList(add,HCHK,VIEWS);return R;}
- if(STAGE.shared){STAGE.shared.forEach(k=>{const e=HCHK_SHARED[k];if(e)add(e[0],e[1]());});if(STAGE.checks)STAGE.checks(add);return R;}
- add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('the towers front the kerb lines',HCHK.kerb(T));add('the impostors hide behind their heroes and shells',HCHK.impHidden((x,z)=>x+','+z));if(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)add('the House: larger inside than out, its door onto its floor',HCHK.house(AV_HOUSE));if(typeof AV_ANOM!=='undefined'&&AV_ANOM)add('the distortions of space and time are in place',HCHK.anomalies(AV_ANOM));if(typeof AV_RAD!=='undefined'&&AV_RAD)add('radiation glows over the scars',HCHK.radiation(AV_RAD));if(typeof AV_OIL!=='undefined'&&AV_OIL)add('the oily rain stands over the polluted half',HCHK.oilRain(AV_OIL));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
- add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the cards are cut: every alpha map is tested',HCHK.cardsCut());add('the cut cards load the right way up',HCHK.cardsUp());
-if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the subway',HCHK.transit(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null));add('the war rises toward the lake',HCHK.warToLake(STAGE.transit));add('the towers rise toward the lake (the lake-front property values)',HCHK.lakeFront(STAGE.transit));}else add('the viaduct stands',HCHK.lines(AV_LINES.V));
- add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));add('the broken towers lean, a little',HCHK.lean(T));
- add('the grid runs between the buildings',HCHK.grid(T));if(!STAGE.transit)add('the avenues have their lamp standards',HCHK.lamps(AV_LAMPS));
- add('the lake steams',HCHK.steam(AV_STEAM));add('the keepers walk their rounds',HCHK.keepers(AV_KEEPERS));add('the land is half wild, half foul',HCHK.halves(STAGE.F,STAGE.forest));add('the wild half is overgrown: trees on the ruins, creepers on the towers',HCHK.overgrown(STAGE.F,REG,AV_CREEPERS));
- add('the ruined vehicles stand in the streets',HCHK.wrecks(AVW.records));
- add('the extraplanar hunters walk their rounds',HCHK.hunters(AV_XP.hunters));add('the walkers keep clear of the piers, the plinths and the wrecks',HCHK.clearOf(AV_KEEPERS.concat(AV_XP.hunters)));add('the roof trees and the creepers are held by the drawn ruins',HCHK.floraHeld(window.AV_TOPS,AV_CREEPERS.tw));add('no green in the clouds\' mood',HCHK.moodHues(Object.assign({seed:STAGE.seed|0},STAGE.cloudMood||{})));add('the phenomena and the portals: registered, drawn, their weather bound, the water line right',HCHK.extraplanar(AV_XP));
- if(typeof AVL!=='undefined')AVL.checks(add);   /* the lobbies and climbs (76, PLAN.md section 15) */
- if(STAGE.checks)STAGE.checks(add);return R;}
-function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
- if(STAGE.negativeList){STAGE.negativeList(add,HCHK,VIEWS);return R;}
- if(STAGE.shared){STAGE.shared.forEach(k=>{const e=HNEG_SHARED[k];if(e)add(e[0],e[1]());});if(STAGE.negatives)STAGE.negatives(add);return R;}
- add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
- add('a tower under the lake',HCHK.standing(T.slice(0,80).map((t,i)=>i?t:Object.assign({},t,{y:STAGE.lakeY-5}))));
- add('every tower intact',HCHK.ruinShare(T.map(t=>Object.assign({},t,{state:'intact'}))));
- add('no tree grown',HCHK.feral({trees:AV.FERAL.trees,grown:0,floor:0,dropped:0},window._tinted||0));
- add('a tenth of the trees on the plinths',HCHK.clear(REG.filter(r=>r.kind==='tree').map((r,i)=>i%10?r:Object.assign({},r,{x:STAGE.plan.towers[0].x,z:STAGE.plan.towers[0].z}))));
- if(STAGE.transit){add('no transit at all',HCHK.transit(null));add('the war the same everywhere',HCHK.warToLake(Object.assign({},STAGE.transit,{wars:STAGE.transit.wars.map(W=>Object.assign({},W,{damageAt:()=>.3}))})));add('the towers the same height everywhere',HCHK.lakeFront({lakeK:(x,z)=>KRAND.unit(KRAND.hash(x|0,z|0,1,0))}));}
- else add('a deck under the water',HCHK.lines({decks:AV_LINES.V.decks.map((d,i)=>i?d:Object.assign({},d,{y:STAGE.lakeY})),piers:AV_LINES.V.piers}));
- add('a tower in a crater',HCHK.craters(STAGE.craters,T.concat([{x:STAGE.craters[0].x,z:STAGE.craters[0].z}])));
- add('an intact tower leaning twenty degrees',HCHK.lean(T.map((t,i)=>i?t:Object.assign({},t,{lean:20,state:'intact'}))));
- if(typeof AV_RAD!=='undefined'&&AV_RAD){const pk=STAGE.views()['A park gone feral'];add('radiation in the park, off every scar',HCHK.radiation({zones:AV_RAD.zones.map(z=>Object.assign({},z,{x:pk[3],z:pk[5]})),n:AV_RAD.n}));}add('every cut card loaded flipped',HCHK.cardsUp(true));if(typeof AV_OIL!=='undefined'&&AV_OIL)add('oily rain over the wild half',HCHK.oilRain(Object.assign({},AV_OIL,{field:(x,z)=>1-AV_OIL.field(x,z)})));if(typeof AV_ANOM!=='undefined'&&AV_ANOM)add('no anomaly at all',HCHK.anomalies({records:[],warp:null}));if(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)add('a House whose door leads nowhere',HCHK.house({H:Object.assign({},AV_HOUSE.H,{thresholds:[]}),blocks:AV_HOUSE.blocks}));add('impostors looked up by the float64 key',HCHK.impHidden((x,z)=>(x+1e-3)+','+z));add('the towers on their nodes, no kerb',HCHK.kerb(T.map(t=>Object.assign({},t,{kerb:null}))));add('a plinth across a road',HCHK.kerb(T.filter(t=>Math.hypot(t.x,t.z)<1500&&t.rx!=null).slice(0,1).map(t=>{const L=STAGE.lattice,p=L.pitch,v=(Math.round((t.x*L.c+t.z*L.s)/p-.5)+.5)*p,w=-t.x*L.s+t.z*L.c;return Object.assign({},t,{x:v*L.c-w*L.s,z:v*L.s+w*L.c,kerb:{}});}).concat(T)));
- add('a tower standing in an avenue',HCHK.grid(T.concat([{x:(STAGE.avenueLines()[2]||0)*STAGE.lattice.c,z:(STAGE.avenueLines()[2]||0)*STAGE.lattice.s}])));
- if(!STAGE.transit)add('every lamp standing',HCHK.lamps(AV_LAMPS.map(l=>Object.assign({},l,{state:'up'}))));
- add('no steam on the water',HCHK.steam({banks:0,plumes:0}));add('no keeper on a round',HCHK.keepers([]));
- add('the whole land wild',HCHK.halves({wild:()=>1},STAGE.forest));
- add('no tree on a ruin and no creeper',HCHK.overgrown(STAGE.F,REG.filter(r=>r.kind!=='rooftree'),{curtains:0,towers:0}));
- add('a wreck under the lake',HCHK.wrecks(AVW.records.map((w,i)=>i?w:Object.assign({},w,{y:STAGE.lakeY-3}))));
- add('no extraplanar hunter on a round',HCHK.hunters([]));
- add('every roof tree and curtain lifted 6 m off the ruin',HCHK.floraHeld(window.AV_TOPS,AV_CREEPERS.tw,6));
- if(typeof ATMOS!=='undefined'&&ATMOS.MOOD_PALETTE)add('the clouds\' mood on core/atmos\'s whole palette (its sickly green and jaundice)',HCHK.moodHues(Object.assign({seed:STAGE.seed|0},STAGE.cloudMood||{},{palette:ATMOS.MOOD_PALETTE})));
- {const W=AV_KEEPERS.concat(AV_XP.hunters);let pier=null;if(STAGE.transit&&STAGE.transit.highway)pier=(STAGE.transit.highway.piers||[]).find(p=>p.state!=='none');
-  if(pier&&W.length)add('a walker standing on a highway pier',HCHK.clearOf(W.map((k,i)=>i?k:Object.assign({},k,{g:{position:{x:pier.x,z:pier.z}}}))));}
- if(AV_XP.hunters.length&&AV_XP.spots.void)add("a hunter's corner under the lake",HCHK.hunters(AV_XP.hunters.map((k,i)=>i?k:Object.assign({},k,{route:k.route.map((p,j)=>j?p:AV_XP.spots.void)}))));
- if(AV_XP.registry){const RG=AV_XP.registry,fake=o=>Object.assign({},AV_XP,{registry:Object.assign({check:RG.check.bind(RG),phenomena:RG.phenomena.bind(RG),portals:RG.portals.bind(RG)},o)});
-  add('a phenomenon drawn before it was registered',HCHK.extraplanar(fake({check:()=>({ok:false,fails:['a void drawn unregistered'],records:1,drawn:0})})));
-  add('the void hanging over dry ground',HCHK.extraplanar(fake({phenomena:()=>RG.phenomena().map(r=>r.key==='void'?Object.assign({},r,{at:[STAGE.near.x,STAGE.lakeY,STAGE.near.z]}):r)})));
-  add('a drowned portal on dry land',HCHK.extraplanar(fake({portals:()=>RG.portals().map(r=>r.key==='drowned'?Object.assign({},r,{at:[r.at[0],STAGE.lakeY+5,r.at[2]]}):r)})));
-  add("a phenomenon without its weather",HCHK.extraplanar(Object.assign({},AV_XP,{drawn:AV_XP.drawn.map((g,i)=>i?g:{userData:Object.assign({},g.userData,{weather:null})})})));}
- if(typeof AVL!=='undefined')AVL.negatives(add);
- if(STAGE.negatives)STAGE.negatives(add);return R;}
+ HCHK.groundSeat=function(recs,wrecks,lift){const fn=(typeof GROUND!=='undefined'&&GROUND.meshH)?GROUND.meshH:terrainH,dy=lift||0;let n=0,bad=0,worst=0;
+  for(const r of recs||[]){if(r.kind!=='tree'||r.y==null)continue;n++;const e=Math.abs((r.y+dy)-fn(r.x,r.z));if(e>worst)worst=e;if(e>.35)bad++;}
+  for(const w of wrecks||[]){n++;const e=Math.max(0,(w.y+dy)-fn(w.x,w.z));if(e>worst)worst=e;if(e>1.2)bad++;}
+  return{ok:n>=50&&bad<=Math.ceil(n*.005),detail:n+' trees and wrecks checked against GROUND.meshH, '+bad+' off drawn ground (worst '+worst.toFixed(3)+' m)'};};
+ HCHK_SHARED.groundSeat=['the trees sit on the drawn ground (GROUND.meshH)',()=>HCHK.groundSeat(REG,[])];
+ HNEG_SHARED.groundSeat=['the trees lifted 2 m off the drawn ground',()=>HCHK.groundSeat(REG,[],2)];
+ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;
+  /* a station with its own content names its own list (STAGE.checkList(add, HCHK, VIEWS): the Yards); the Overlook's follows */
+  if(STAGE.checkList){STAGE.checkList(add,HCHK,VIEWS);return R;}
+  if(STAGE.shared){STAGE.shared.forEach(k=>{const e=HCHK_SHARED[k];if(e)add(e[0],e[1]());});if(STAGE.checks)STAGE.checks(add);return R;}
+  add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('the towers front the kerb lines',HCHK.kerb(T));add('the impostors hide behind their heroes and shells',HCHK.impHidden((x,z)=>x+','+z));if(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)add('the House: larger inside than out, its door onto its floor',HCHK.house(AV_HOUSE));if(typeof AV_ANOM!=='undefined'&&AV_ANOM)add('the distortions of space and time are in place',HCHK.anomalies(AV_ANOM));if(typeof AV_RAD!=='undefined'&&AV_RAD)add('radiation glows over the scars',HCHK.radiation(AV_RAD));if(typeof AV_OIL!=='undefined'&&AV_OIL)add('the oily rain stands over the polluted half',HCHK.oilRain(AV_OIL));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
+  add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the trees and wrecks sit on the drawn ground (GROUND.meshH)',HCHK.groundSeat(REG,AVW.records));add('the cards are cut: every alpha map is tested',HCHK.cardsCut());add('the cut cards load the right way up',HCHK.cardsUp());
+ if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the subway',HCHK.transit(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null));add('the war rises toward the lake',HCHK.warToLake(STAGE.transit));add('the towers rise toward the lake (the lake-front property values)',HCHK.lakeFront(STAGE.transit));}else add('the viaduct stands',HCHK.lines(AV_LINES.V));
+  add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));add('the broken towers lean, a little',HCHK.lean(T));
+  add('the grid runs between the buildings',HCHK.grid(T));if(!STAGE.transit)add('the avenues have their lamp standards',HCHK.lamps(AV_LAMPS));
+  add('the lake steams',HCHK.steam(AV_STEAM));add('the keepers walk their rounds',HCHK.keepers(AV_KEEPERS));add('the land is half wild, half foul',HCHK.halves(STAGE.F,STAGE.forest));add('the wild half is overgrown: trees on the ruins, creepers on the towers',HCHK.overgrown(STAGE.F,REG,AV_CREEPERS));
+  add('the ruined vehicles stand in the streets',HCHK.wrecks(AVW.records));
+  add('the extraplanar hunters walk their rounds',HCHK.hunters(AV_XP.hunters));add('the walkers keep clear of the piers, the plinths and the wrecks',HCHK.clearOf(AV_KEEPERS.concat(AV_XP.hunters)));add('the roof trees and the creepers are held by the drawn ruins',HCHK.floraHeld(window.AV_TOPS,AV_CREEPERS.tw));add('no green in the clouds\' mood',HCHK.moodHues(Object.assign({seed:STAGE.seed|0},STAGE.cloudMood||{})));add('the phenomena and the portals: registered, drawn, their weather bound, the water line right',HCHK.extraplanar(AV_XP));
+  if(typeof AVL!=='undefined')AVL.checks(add);   /* the lobbies and climbs (76, PLAN.md section 15) */
+  if(STAGE.checks)STAGE.checks(add);return R;}
+ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
+  if(STAGE.negativeList){STAGE.negativeList(add,HCHK,VIEWS);return R;}
+  if(STAGE.shared){STAGE.shared.forEach(k=>{const e=HNEG_SHARED[k];if(e)add(e[0],e[1]());});if(STAGE.negatives)STAGE.negatives(add);return R;}
+  add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
+  add('a tower under the lake',HCHK.standing(T.slice(0,80).map((t,i)=>i?t:Object.assign({},t,{y:STAGE.lakeY-5}))));
+  add('every tower intact',HCHK.ruinShare(T.map(t=>Object.assign({},t,{state:'intact'}))));
+  add('no tree grown',HCHK.feral({trees:AV.FERAL.trees,grown:0,floor:0,dropped:0},window._tinted||0));
+  add('a tenth of the trees on the plinths',HCHK.clear(REG.filter(r=>r.kind==='tree').map((r,i)=>i%10?r:Object.assign({},r,{x:STAGE.plan.towers[0].x,z:STAGE.plan.towers[0].z}))));
+  add('the trees lifted 2 m off the drawn ground',HCHK.groundSeat(REG,AVW.records,2));
+  if(STAGE.transit){add('no transit at all',HCHK.transit(null));add('the war the same everywhere',HCHK.warToLake(Object.assign({},STAGE.transit,{wars:STAGE.transit.wars.map(W=>Object.assign({},W,{damageAt:()=>.3}))})));add('the towers the same height everywhere',HCHK.lakeFront({lakeK:(x,z)=>KRAND.unit(KRAND.hash(x|0,z|0,1,0))}));}
+  else add('a deck under the water',HCHK.lines({decks:AV_LINES.V.decks.map((d,i)=>i?d:Object.assign({},d,{y:STAGE.lakeY})),piers:AV_LINES.V.piers}));
+  add('a tower in a crater',HCHK.craters(STAGE.craters,T.concat([{x:STAGE.craters[0].x,z:STAGE.craters[0].z}])));
+  add('an intact tower leaning twenty degrees',HCHK.lean(T.map((t,i)=>i?t:Object.assign({},t,{lean:20,state:'intact'}))));
+  if(typeof AV_RAD!=='undefined'&&AV_RAD){const pk=STAGE.views()['A park gone feral'];add('radiation in the park, off every scar',HCHK.radiation({zones:AV_RAD.zones.map(z=>Object.assign({},z,{x:pk[3],z:pk[5]})),n:AV_RAD.n}));}add('every cut card loaded flipped',HCHK.cardsUp(true));if(typeof AV_OIL!=='undefined'&&AV_OIL)add('oily rain over the wild half',HCHK.oilRain(Object.assign({},AV_OIL,{field:(x,z)=>1-AV_OIL.field(x,z)})));if(typeof AV_ANOM!=='undefined'&&AV_ANOM)add('no anomaly at all',HCHK.anomalies({records:[],warp:null}));if(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)add('a House whose door leads nowhere',HCHK.house({H:Object.assign({},AV_HOUSE.H,{thresholds:[]}),blocks:AV_HOUSE.blocks}));add('impostors looked up by the float64 key',HCHK.impHidden((x,z)=>(x+1e-3)+','+z));add('the towers on their nodes, no kerb',HCHK.kerb(T.map(t=>Object.assign({},t,{kerb:null}))));add('a plinth across a road',HCHK.kerb(T.filter(t=>Math.hypot(t.x,t.z)<1500&&t.rx!=null).slice(0,1).map(t=>{const L=STAGE.lattice,p=L.pitch,v=(Math.round((t.x*L.c+t.z*L.s)/p-.5)+.5)*p,w=-t.x*L.s+t.z*L.c;return Object.assign({},t,{x:v*L.c-w*L.s,z:v*L.s+w*L.c,kerb:{}});}).concat(T)));
+  add('a tower standing in an avenue',HCHK.grid(T.concat([{x:(STAGE.avenueLines()[2]||0)*STAGE.lattice.c,z:(STAGE.avenueLines()[2]||0)*STAGE.lattice.s}])));
+  if(!STAGE.transit)add('every lamp standing',HCHK.lamps(AV_LAMPS.map(l=>Object.assign({},l,{state:'up'}))));
+  add('no steam on the water',HCHK.steam({banks:0,plumes:0}));add('no keeper on a round',HCHK.keepers([]));
+  add('the whole land wild',HCHK.halves({wild:()=>1},STAGE.forest));
+  add('no tree on a ruin and no creeper',HCHK.overgrown(STAGE.F,REG.filter(r=>r.kind!=='rooftree'),{curtains:0,towers:0}));
+  add('a wreck under the lake',HCHK.wrecks(AVW.records.map((w,i)=>i?w:Object.assign({},w,{y:STAGE.lakeY-3}))));
+  add('no extraplanar hunter on a round',HCHK.hunters([]));
+  add('every roof tree and curtain lifted 6 m off the ruin',HCHK.floraHeld(window.AV_TOPS,AV_CREEPERS.tw,6));
+  if(typeof ATMOS!=='undefined'&&ATMOS.MOOD_PALETTE)add('the clouds\' mood on core/atmos\'s whole palette (its sickly green and jaundice)',HCHK.moodHues(Object.assign({seed:STAGE.seed|0},STAGE.cloudMood||{},{palette:ATMOS.MOOD_PALETTE})));
+  {const W=AV_KEEPERS.concat(AV_XP.hunters);let pier=null;if(STAGE.transit&&STAGE.transit.highway)pier=(STAGE.transit.highway.piers||[]).find(p=>p.state!=='none');
+   if(pier&&W.length)add('a walker standing on a highway pier',HCHK.clearOf(W.map((k,i)=>i?k:Object.assign({},k,{g:{position:{x:pier.x,z:pier.z}}}))));}
+  if(AV_XP.hunters.length&&AV_XP.spots.void)add("a hunter's corner under the lake",HCHK.hunters(AV_XP.hunters.map((k,i)=>i?k:Object.assign({},k,{route:k.route.map((p,j)=>j?p:AV_XP.spots.void)}))));
+  if(AV_XP.registry){const RG=AV_XP.registry,fake=o=>Object.assign({},AV_XP,{registry:Object.assign({check:RG.check.bind(RG),phenomena:RG.phenomena.bind(RG),portals:RG.portals.bind(RG)},o)});
+   add('a phenomenon drawn before it was registered',HCHK.extraplanar(fake({check:()=>({ok:false,fails:['a void drawn unregistered'],records:1,drawn:0})})));
+   add('the void hanging over dry ground',HCHK.extraplanar(fake({phenomena:()=>RG.phenomena().map(r=>r.key==='void'?Object.assign({},r,{at:[STAGE.near.x,STAGE.lakeY,STAGE.near.z]}):r)})));
+   add('a drowned portal on dry land',HCHK.extraplanar(fake({portals:()=>RG.portals().map(r=>r.key==='drowned'?Object.assign({},r,{at:[r.at[0],STAGE.lakeY+5,r.at[2]]}):r)})));
+   add("a phenomenon without its weather",HCHK.extraplanar(Object.assign({},AV_XP,{drawn:AV_XP.drawn.map((g,i)=>i?g:{userData:Object.assign({},g.userData,{weather:null})})})));}
+  if(typeof AVL!=='undefined')AVL.negatives(add);
+  if(STAGE.negatives)STAGE.negatives(add);return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');if(window.AV_AIR)KHOST.on(AV_AIR.view,'view');   /* the colour of the air after the sky's own update (89v) */
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
+const avWalkGround=(typeof GROUND!=='undefined'&&GROUND.meshH)?GROUND.meshH:terrainH;
 KHOST.take({build:'ancientsvalley-'+STAGE.key,title:STAGE.title,hint:STAGE.hint,
- scene,camera,renderer,ground:(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)?((x,z)=>{const g=AV_HOUSE.groundAt(x,z);return g==null?terrainH(x,z):g;}):terrainH,clear:1.8,registry:REG,
+ scene,camera,renderer,ground:(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)?((x,z)=>{const g=AV_HOUSE.groundAt(x,z);return g==null?avWalkGround(x,z):g;}):avWalkGround,clear:1.8,registry:REG,
  /* the walk: AVL.walk (76) is core/walk less the lobbies' fallen floors, the same registry the House's floors and walls (75) are on */
  walk:typeof AVL!=='undefined'?AVL.walk:((typeof AV_HOUSE!=='undefined'&&AV_HOUSE)?KWALK:undefined),
  views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],

@@ -144,7 +144,51 @@ AV.plan=function(o){var P=[],pitch=o.pitch==null?150:o.pitch,th=o.theta==null?0:
   var q=Math.floor(u(i,j,5)*4),yaw=th+(fam==='ledger'?(u(i,j,6)<.5?Math.PI/2:0):q*Math.PI/2);
   P.push({id:'av.t.'+i+'.'+j,key:fam+'.'+st,family:fam,state:st,x:x,z:z,y:y,yaw:yaw,i:i,j:j,kind:kind,lean:AV.lean(seed,i,j,st),leanDir:u(i,j,7)*Math.PI*2});}
  var dropped=o.kerb?AV.kerbPlace(P,o,u,pitch,c,s):0;
- return{towers:P,pitch:pitch,theta:th,kerbDropped:dropped};};
+ var dist=o.districts===false?null:AV.districts({towers:P,F:F,lakeK:o.lakeK,seed:seed,promote:o.promoteLandmarks!==false});
+ return{towers:P,pitch:pitch,theta:th,kerbDropped:dropped,districts:dist};};
+/* THE CITY'S HIERARCHY (A2.5, [G data]): district classification, landmark silhouette election per 750 m sector, and far-tier sector records */
+AV.districts=function(o){var T=o.towers||[],cell=o.cell==null?750:o.cell,F=o.F,lk=o.lakeK,by={},order=[];
+ for(var i=0;i<T.length;i++){var t=T[i],gx=Math.floor(t.x/cell),gz=Math.floor(t.z/cell),k=gx+','+gz,d=by[k];
+  if(!d){d={id:'av.d.'+gx+'.'+gz,gx:gx,gz:gz,list:[],sx:0,sz:0,sy:0};by[k]=d;order.push(d);}
+  d.list.push(t);d.sx+=t.x;d.sz+=t.z;d.sy+=t.y;}
+ var tallN=0;for(var q=0;q<T.length;q++)if(T[q].state==='intact'||T[q].state==='gutted'||T[q].state==='crown')tallN++;
+ var maxAdd=o.promote?Math.max(0,Math.floor(T.length*.31)-tallN):0,sectors=[];
+ for(var m=0;m<order.length;m++){var s=order[m],n=s.list.length,cx=s.sx/n,cz=s.sz/n,cy=s.sy/n;
+  var lake=lk?lk(cx,cz):0,zn=F?F.zone(cx,cz):'floor';
+  var kind=lake>.58?'waterfront_spire':zn==='floor'?'civic_core':zn==='shelf'?'midrise_ring':'terrace_edge';
+  var best=null,bs=-1e9;
+  for(var j=0;j<n;j++){var tw=s.list[j];tw.district=s.id;tw.districtKind=kind;
+   var w=(tw.state==='intact'?40:tw.state==='gutted'?32:tw.state==='crown'?24:tw.state==='broken'?10:0)-Math.hypot(tw.x-cx,tw.z-cz)*.04;
+   if(w>bs){bs=w;best=tw;}}
+  if(best&&n>=3){best.landmark=true;
+   if(maxAdd>0&&best.state!=='intact'&&best.state!=='gutted'&&best.state!=='crown'&&best.family!=='terrace'){best.state='crown';best.key=best.family+'.crown';best.lean=AV.lean(o.seed|0,best.i,best.j,'crown');maxAdd--;}}
+  var r=0;for(var j2=0;j2<n;j2++){var dd=Math.hypot(s.list[j2].x-cx,s.list[j2].z-cz);if(dd>r)r=dd;}
+  sectors.push({id:s.id,kind:kind,x:Math.round(cx),z:Math.round(cz),y:Math.round(cy*10)/10,r:Math.round(Math.max(120,r+80)),count:n,landmarkId:best&&n>=3?best.id:null});}
+ return{cell:cell,sectors:sectors};};
+/* FORESTS AS STANDS (A2.4, [G data]): species guild & growth by moisture, slope, aspect and substrate; windthrow gaps, snags and fallen timber */
+AV.stands=function(o){var g=o.ground,ly=o.lakeY==null?0:o.lakeY,F=o.F,seed=o.seed|0,stFn=o.street,blFn=o.built,scFn=o.scorch;
+ function at(x,z){var y=g(x,z);if(y<ly+.5)return{substrate:'water',guild:'none',moisture:1,slope:0,aspectSouth:0,gap:0,scale:0};
+  var sc=F.scar(x,z),sco=scFn?scFn(x,z):0;if(sc>.5||sco>.65)return{substrate:'scar',guild:'none',moisture:0,slope:0,aspectSouth:0,gap:1,scale:0};
+  var b=blFn?blFn(x,z):0;if(b>.5)return{substrate:'plinth',guild:'none',moisture:.2,slope:0,aspectSouth:0,gap:1,scale:0};
+  var st=stFn?stFn(x,z):0,gx=(g(x+8,z)-g(x-8,z))/16,gz=(g(x,z+8)-g(x,z-8))/16,sl=Math.hypot(gx,gz),asp=gz/Math.max(sl,.02);
+  var pk=F.park(x,z),wl=F.wild(x,z),fl=F.foul(x,z),dn=F.density(x,z);
+  var moist=AV.clamp(.66+.22*AV.smooth(14,1.5,y-ly)-.24*sl-.10*asp+.14*pk-.22*fl,0,1);
+  var gap=AV.smooth(.60,.78,KRAND.fbm(x*.0055+4.1,z*.0055-2.8,0,2,seed+61));
+  var sub=st>.45?'street':(dn>.35&&pk<.35)?'rubble':pk>=.35?'park':(wl>.5?'wild':'foul');
+  var guild=(sub==='street'||sub==='rubble'||sub==='foul'||gap>.55||(sl>.35&&asp>.2))?'pioneer':(moist>.78?'riparian':'emergent');
+  var scale=sub==='street'?.58:sub==='foul'?.72:sub==='rubble'?.78:gap>.55?.84:(guild==='emergent'?1.08:1.0);
+  return{substrate:sub,guild:guild,moisture:moist,slope:sl,aspectSouth:asp,gap:gap,scale:scale};}
+ function deadwood(opt){opt=opt||{};var R=opt.R==null?2600:opt.R,step=opt.step==null?85:opt.step,max=opt.max==null?420:opt.max,gh=opt.groundH||g,n=Math.floor(R/step),cands=[];
+  for(var i=-n;i<=n;i++)for(var j=-n;j<=n;j++){var h0=KRAND.hash(seed+83,i+2000,j+2000,0),x=(i+KRAND.unit(h0)-.5)*step,z=(j+KRAND.unit(KRAND.hash(h0,1,0,0))-.5)*step;
+   if(Math.hypot(x,z)>R-40)continue;var s=at(x,z);if(s.substrate==='water'||s.substrate==='scar'||s.substrate==='plinth'||s.substrate==='street')continue;
+   var sco=scFn?scFn(x,z):0,w=F.wild(x,z),want=s.gap*.65+(sco>.18&&sco<.65?.55:0)+w*.25+(s.substrate==='park'?.2:0);
+   if(KRAND.unit(KRAND.hash(h0,2,0,0))>want*.55)continue;
+   var u3=KRAND.unit(KRAND.hash(h0,3,0,0)),u4=KRAND.unit(KRAND.hash(h0,4,0,0)),snag=sco>.25||u3<.42;
+   cands.push({k:KRAND.hash(h0,5,0,0)>>>0,id:'av.dw.'+i+'.'+j,x:x,z:z,y:gh(x,z),yaw:KRAND.unit(KRAND.hash(h0,6,0,0))*Math.PI*2,
+    kind:snag?'snag':'log',h:snag?7+11*u4:5+9*u4,r:snag?.38+.35*u4:.32+.28*u4,substrate:s.substrate});}
+  cands.sort(function(a,b){return a.k-b.k;});if(cands.length>max)cands.length=max;
+  for(var q=0;q<cands.length;q++)delete cands[q].k;return cands;}
+ return{at:at,deadwood:deadwood};};
 /* THE KERB LINES (the owner, 2026-11-09: "place the towers along the transit kit's kerb lines instead of the bare grid lines"). The streets run on
    the lattice's half lines ((k + 1/2) pitch; every third, k % 3 == 1, an avenue), so a tower on its node stood alone in the middle of its 165 m
    cell, 50 m of plinth from any street. Here each tower slides in its cell until its plinth stops o.kerb.gap metres behind the pavement of one

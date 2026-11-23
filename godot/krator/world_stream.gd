@@ -13,6 +13,7 @@ class_name KratorWorldStream
 extends Node3D
 
 const ROAD_SHADER := preload("res://shaders/road.gdshader")
+const KInteriorsLight := preload("res://krator/kinteriors_light.gd")
 
 var index: Dictionary = {}
 var dir := ""
@@ -967,6 +968,8 @@ func monastery(p: Dictionary, w: Node3D) -> Node3D:
 							var fo := fi * fstride
 							pts[fi] = Vector3(fbuf[fo + 3], fbuf[fo + 7], fbuf[fo + 11])
 						fmmi.set_meta("furn_pts", pts)
+	if m.has_meta("interiors_meta"):
+		KInteriorsLight.setup_monastery(m, m.get_meta("interiors_meta") as Dictionary)
 
 	# Blend the outer 28 m skirt of Monastery's ground mesh smoothly into Place_sq80bzd7ep's 8 m terrain, and open Deep Stair shaft
 	var pg := (w.get_meta("ground") if w.has_meta("ground") else null) as MeshInstance3D
