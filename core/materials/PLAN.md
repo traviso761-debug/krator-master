@@ -2158,6 +2158,29 @@ colours); the Islanders' variant keys `patGableW2`, `patGableE2` and `patHinggi`
 aliases onto three `city*` families (Verge leaves them out); Ys gives `pipeRust` world UVs (2 m) in 79z, not in the
 vendored files.
 
+#### Delivered 2026-11-23 and processed: the Coyote kit, the Marr kit, Kirstabal's wall, the works pieces, the azurite, the beech (13 sets)
+
+The owner's Codex batch of 2026-11-23 (`~/.codex/generated_images`, 14 threads, 25 images), each thread matched to its prompt in
+`PROMPTS-NEEDED.md` through its own session log. Where Codex saved a finished 2048 px copy after its seam pass (its project folder
+under `~/.codex/.chatgpt-projects/`), that copy is the source; else the thread's last take (`wall.slate.coursed`). Batches
+`tools/textures/batches/codex-2026-11-23.json` (10 surfaces and patterns, `process.py`) and `codex-2026-11-23-cards.json` (3 cut-outs,
+`cards.py`: magenta key, anchor none). **None is wired yet**: each build takes its slot at the all-builds rebuild (the prompts, with
+their wiring notes, are in `PROMPTS-archived.md`). `(tint)` marks a near-colourless set (muted .6).
+
+| section (integration line) | set | for |
+|---|---|---|
+| 57. The Coyote kit | `brick.mud.coursed` (tint), `patterns/coyote/kilim`, `patterns/coyote/frieze`, `patterns/coyote/turquoise-mosaic`, `card.feather.ostrich` (tint, a sheet of four) | `kits/coyote` |
+| 63. Copper Glacier's azurite tarn | `rock.azurite` | `biomes/copperglacier` station 11 |
+| 64. The eastern highlands' combed beech | `card.beech.southern` (tint, a sheet of nine) | `biomes/ehighlands` stations 5 and 6 |
+| 65. The Marr kit | `stone.coral.colonial` (tint), `patterns/marr/azulejo-maritime`, `patterns/marr/iron-scrollwork` (a cut-out panel) | `kits/marr` |
+| 66. Kirstabal's slate town wall | `wall.slate.coursed` (tint) | `settlements/kirstabal` `xSlate`, `xSlateD` |
+| 67. The Xanadu kit's works pieces | `ground.dyeworks`, `ground.sulfur.crust` | `kits/xanadu/extra/88g-xa-works.js` |
+
+Not delivered: the Rift battery's `rock.sulfide.chimney` and `ground.brine.mud` (section 51); Gihon's and Shumar's prompts are on their
+branches (`metal.gilt.leaf`, `inlay.opal`; `stone.dome.mamluk`, `masonry.ablaq.basalt`, `stone.jali.blade`, `card.apricot.whorl`).
+`patterns/marr/iron-scrollwork` had two threads; the one whose rails meet the top and bottom edges was taken. The frieze came exactly
+periodic from Codex (seams 0.00); `process.py`'s period crop left it at 2039 px, still seamless.
+
 #### Delivered 2026-11-17 and processed: Erewhon's hangings, easter eggs, sultans' portraits, the Tungang banners (40 images)
 
 The owner's Codex batch of 2026-11-17 (`~/.codex/generated_images`), matched to `PROMPTS-NEEDED.md` sections 57, 58 and 43 through the Codex session logs; batch `tools/textures/batches/citadel-hangings-2026-11-17.json` (single panels: `seam_axes` none, no delighting, kept whole, long side 1024).

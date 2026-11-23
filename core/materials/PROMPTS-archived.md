@@ -1543,3 +1543,88 @@ palmate, strap-like), bright fresh green (#5fae3c to #8fd05a), a few clumps
 yellowing and browning at the edges, no flowers, no soil. No text, no border,
 no watermark.
 ```
+
+## Delivered sets still listed at step 4's merge, found by the second prune (2026-11-23)
+
+## 63. Copper Glacier's azurite tarn (`biomes/copperglacier`, station 11, 2026-11-17)
+
+`rock.azurite` (azurite seams and nodules in contact marble over the Copper Tarn; full colour, 1.2 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on rock face filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered copper skarn: pale grey-white contact marble (#d8d4cc) cut by irregular seams and veinlets of deep azure-blue azurite (#1f3f8f, #2a55b0) a few centimetres wide, with small botryoidal azurite nodules and radiating crystal sprays in the thicker seams, patches of green malachite (#2f7a52) where the azurite has altered, thin rusty limonite rims along the seam edges (#8a5a2a), and fine sugary marble grain between. Full colour: keep the minerals as they are, do not tint.
+```
+
+## 57. The Coyote kit (`kits/coyote`, planned 2026-11-16)
+
+`brick.mud.coursed` (the Valley's and the Tierhounds' walls, unplastered; near-colourless, the kit tints it by place; 2 m a tile;
+the courses run left to right):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall of hand-moulded sun-dried mud bricks laid in level courses running left to right, about fourteen courses from top to bottom, each brick roughly 40 cm long and 12 cm tall, slightly irregular and soft-cornered as if pressed in a wooden mould and dried in the sun, laid in a running bond with thick joints of the same mud as mortar, the joints a little recessed and smeared; chopped straw showing in the bricks' faces as short pale streaks, small pebbles and pits, fine shrinkage cracks, a few bricks eroded rounder than their neighbours and a few with finger marks; the brick and the mortar almost the same earth colour, the mortar a shade lighter. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/coyote/kilim` (the rugs, blankets and saddle cloths; full colour; a pattern sheet, cropped to its period):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a flat-woven wool kilim seen straight on, the weave's fine horizontal weft ribs visible all over, in hand-spun wool dyed with saffron yellow (#d9a521), lichen purple (#6a2e5c), pomegranate-rind brown (#7a4a26) and the undyed cream (#e6dcc6) and dark brown-grey (#4a4038) of goat and sheep wool; in horizontal bands running left to right: a broad band of nested stepped lozenges in purple and cream, a narrow band of a single continuous line that rises and falls in steps like a melody written as a line (a stepped meander, cream on brown), a band of small paired triangles like pricked ears in yellow on purple, and the bands repeating; small slit gaps where two colours meet on a vertical, slight irregularity in each motif as in hand weaving, the dyes a little uneven (abrash) along the rows.
+```
+
+`patterns/coyote/frieze` (the painted band on a limewashed shrine front and in the painted rooms; full colour; a pattern sheet,
+tiling left to right, about 1.2 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Bronze Age wall painting in earth pigments on a slightly uneven white limewash plaster (#ece6d8) with brush marks and a few fine cracks: across the middle of the panel a procession of three long-legged running birds in profile, each a slim crested ground bird with a long straight tail held level, legs stretched mid-stride and a small speed-flick of lines behind its feet, painted in red ochre (#9a3a22) with black (#2a2622) outlines and a yellow ochre (#c89a3a) eye and crest; above and below them a border band of a continuous stepped line that rises and falls like a melody drawn as a line, in black, and a row of small red ochre dots; flat colour fields, hand-painted, the edges of the colour a little soft, the ochre slightly faded and rubbed in places so the plaster shows through.
+```
+
+`patterns/coyote/turquoise-mosaic` (inlay on the rich and royal goods, the king's bench and boxes; full colour; a pattern sheet,
+about 20 cm a tile):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a mosaic of small hand-cut turquoise tesserae, each 4 to 9 mm and irregular, set close in a dark resin bed (#1e1a16), the turquoise in many tones from sky blue (#5cb8b0) to deep green-blue (#2e8a7e) and pale chalky blue (#9acfc4), some with fine dark matrix veins (#4a3e30); through it a pattern of a continuous stepped line that rises and falls, laid in tiny pieces of red spiny-oyster shell (#b04a32), and a row of small black jet (#141210) triangles along its edge; the stones polished, with a faint soft sheen and slight unevenness in their surfaces, the resin showing as thin dark lines between them.
+```
+
+`card.feather.ostrich` (the plumes: fans, riders' tassels, the feather stores' bundles; a sheet of four, one cell a plume, wired
+as a family with `"cell"`; near-colourless, the kit tints the white and black plumes):
+```
+Square, 2048x2048. Orthographic view of four separate ostrich plumes in a 2x2 grid, each centred in its quarter of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: ostrich feathers, each a long soft drooping plume about three times as long as it is wide, its thin quill running from the bottom of its cell up the middle and curving over at the top, the barbs long, loose and fluffy, not zipped into a vane, hanging in soft wavy strands that thin to wisps at the edges and tip so the magenta shows between them; one plume broad and full, one narrow and young, one curled over at the tip, one a little ragged; all four in a pale neutral grey-white with faint darker shading in the depth of the barbs. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+## 65. The Marr kit (`kits/marr`, 2026-11-18)
+
+`library/stone.coral.colonial` (near-colourless, tintable; replaces `stone.sandstone.ashlar` on `maCantera` for San Juan / Cartagena coquina and coral-stone walls, bastions, garitas, and portals):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a colonial sea-fort and portal wall of dressed coquina and porous coral-limestone ashlar (piedra ostionera), rectangular blocks about 60 by 30 cm in level courses with staggered joints, wide pale lime-and-sand mortar joints, the stone faces pitted with tiny fossil shell cavities and sea-salt weathering, a faint trace of dark tidal damp in a few mortar lines. Keep colours natural but slightly muted and even, a warm mid grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/marr/azulejo-maritime` (full colour; replaces `patterns/common/zellige-blue` on `maZellige` for courtyard fountain dadoes, the Navigators' Guild, Customs House, and Governor's Palace wainscoting):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall dado of hand-painted Spanish colonial glazed ceramic azulejo tiles, a four-by-four grid of 20 cm square tin-glazed white tiles (#f2ede2) with fine crazing and narrow mortar joints, painted in deep cobalt blue (#1e4e7a), sea turquoise (#246e68), warm ochre (#dfa848) and burnt orange (#d86228) with an interlocking compass-star rosette at the four-tile crossings and scrolled ocean wave and rope strapwork framing each square. Full colour, do not mute.
+```
+
+`patterns/marr/iron-scrollwork` (cut-out alpha card on magenta; wrought-iron gallery balustrade panel for New Orleans / French Quarter balconies):
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: a seamless horizontal wrought-iron balcony railing panel filling the frame from left edge to right edge (so it tiles horizontally), top rail at the top edge and bottom rail at the bottom edge, forged in matte carriage-black and dark Charleston green-black iron (#1c2220) with slender vertical bars, delicate S- and C-scrolls, a central maritime compass-rose medallion, and small forged brass collar rings (#c8983c) where the scrolls meet. No text, no border, no watermark.
+
+```
+
+## 66. Kirstabal's slate town wall (`settlements/kirstabal`, the Xanadu kit's opt-in wall `kits/xanadu/src/87k2-xa-slate-wall.js`, 2026-11-17)
+
+`wall.slate.coursed` (the curtain, the gate pillars, the bastions and buttresses; 2 m a tile; near-colourless so the families'
+colour can tint it lighter or darker):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an old town wall built of thin split slate laid flat in long narrow courses like Chiang Mai's thin bricks, each slab 3 to 6 cm thick and 20 to 60 cm long, the courses straight but each slab's edge slightly ragged and chipped, laid with thin grey lime mortar joints set back a little so every course casts a fine dark line; a few slabs a shade darker or lighter, faint rust-brown iron staining in streaks, pale lime bloom in the joints, a little dark weathering grime and specks of grey-green lichen. Blue-grey and charcoal slate only, low saturation, so it can be tinted.
+```
+
+## 67. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)
+
+`ground.dyeworks` (the yard under the dye works' vats and drying lines, Ḍāiyar and Wībhar; 4 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the packed earth and worn flagstone yard of an old dye works, pale dusty earth with a few broken flat stones set in it, soaked over years with spilled dye: broad irregular stains and drip trails of deep indigo blue, madder red and saffron yellow, the colours bled into the earth and faded at their edges, darker where wet, a few puddle rings and splash marks, fine grit and scattered straw. Muted, earthy, not bright.
+```
+
+`ground.sulfur.crust` (the crust beds and the spring's edge at the sulfur works, Hoṭ-Bāṭh; 4 m a tile):
+```
+Seamless tileable texture, square, 2048x2048. Top-down orthographic view of flat ground filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the crusted ground round a volcanic hot spring where native sulfur is scraped: a brittle lemon-yellow sulfur crust in thin cracked plates and needle crystals over pale grey-white mineral mud, patches scraped back to the grey mud with rake marks, small orange and ochre stains, a few white salt efflorescences, hairline cracks and tiny vent holes. Natural, slightly dusty, not glossy.
+```
+
+## 64. The eastern highlands' combed beech (`biomes/ehighlands`, stations 5 and 6, 2026-11-15)
+
+`card.beech.southern`:
+```
+Square, 2048x2048. Orthographic view looking straight down on nine separate leafy sprays in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: flat sprays of a southern beech (Nothofagus) of a cold cloud forest, each a thin dark twig branching in one plane like a fishbone, densely set with small, stiff, oval leaves a centimetre or two long with finely toothed edges, overlapping in neat rows along the twigs, the twig's cut end at the top of each cell and the spray fanning down and out from it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
