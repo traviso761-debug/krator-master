@@ -238,10 +238,10 @@
     "openworld/xanadu-lake-shore/data/scarpw.png": "5abe4b98c60349bf0a2f79525779091c1b40ae59d8ea9f2281e05cfa3a933064",
     "openworld/xanadu-lake-shore/data/temp.png": "b817d85c33df21edf32de5e3e68d36e4906a1e69a98dd0e4a9e62cbeebbfd590",
     "openworld/xanadu-lake-shore/data/wlev.png": "033e11e6d2bfd8fe84192070190d1e4674d054339a1b50cfa48ce48ba2548e7a",
-    "openworld/xanadu-lake-shore/plan/sites.json": "f314ef4db7eeb49c0f8dd7f0e7ff81f2e6d35dd180b8cddefdb703b6bce51b5a",
+    "openworld/xanadu-lake-shore/plan/sites.json": "030b49e55380a8e2afe51df3157dc80fe40de4cc4e42815ddf75550392d39d8f",
     "openworld/xanadu-lake-shore/src/46-world-config.js": "0a49c544e31d134e9a47a36e88c870042181cfb5bbcc1c300914bb6672f064d9",
     "openworld/xanadu-lake-shore/src/47-world-kits.js": "303969bccbdfb52d444a9d51c97095e0201085850c1e70c355705ef02e7cb214",
-    "openworld/xanadu-lake-shore/src/48-world-site.js": "c48c8b3ff39cf7e494e558602931b8be17875b5f6827e216c7980852205aa588",
+    "openworld/xanadu-lake-shore/src/48-world-site.js": "96466b5128b7deafd26effe00a431e6093d89d3b76974a597daa7e6e1366b591",
     "openworld/xanadu-oidong-highrift/src/43-world-xoh.js": "516868f08a23ec2515291f2d565a15d58c97fd034799b8c354f906821f1fe0d4",
     "openworld/xanadu-oidong-highrift/src/48t-world-camps.js": "68e6b3fa2324952fd09500fc4112e92b2eca845811bd4bdafb31fa89c2674761",
     "openworld/xanadu-oidong-highrift/src/49-world-xanadu.js": "4e2176fa79328240b3c57a7aba4c741e262441807972076c0ad7f089dfe1f903",
@@ -327,11 +327,11 @@
     "tools/textures": "fa8de3e4e1df6a9ae0b8c4444df219a259e6be8b65d23976deb8568cf975c662"
    },
    "outputs": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "75aabc153017e414e6347ff272aaa1546ba2cb72c9b5ba47dd019a521d2730ed",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "90be31ae515c19fdbc06cda72011c97eb3e41071fb3004109123d6816ae1521c",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    },
    "outputs_raw": {
-    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "75aabc153017e414e6347ff272aaa1546ba2cb72c9b5ba47dd019a521d2730ed",
+    "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": "90be31ae515c19fdbc06cda72011c97eb3e41071fb3004109123d6816ae1521c",
     "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.tex.xanadu.js": "956a0b2414c8c6921a9aa281c3598d3c0062763ef65a54c66db73ff945ad20f6"
    }
   }

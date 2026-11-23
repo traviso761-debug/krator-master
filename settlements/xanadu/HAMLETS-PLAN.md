@@ -153,13 +153,16 @@ build.
 
 | Site (*proposed*) | Village (*proposed* name) | px | Ground (the model) | Focus | People |
 |---|---|---|---|---|---|
-| `sxanwestroad01` | **Wesṭ-Rōḍ** (West Road): the road's hill village and halt | 778,1479 | 1,593 m, 0.5 %, a level bench in the foothills; the Girīn Ḍrāi (a wadi, 7.2 m³/s) 9 km off | `orchard` (the hill orchards; laid as `farming` until the rebuild brings the Xanadu row's orchard focus) with a han's halt on the road (the road's stop, `KCAMP.halt` or a `xa_caravanserai` in its works) | 240 (one village: core/hamlet could not place a village of 400) |
+| `sxanwestroad01` | **Wesṭ-Rōḍ** (West Road): the road's hill village and halt | 778,1479 | 1,593 m, 0.5 %, a level bench in the foothills; the Girīn Ḍrāi (a wadi, 7.2 m³/s) 9 km off | `orchard` (the hill orchards; laid as `farming` until the rebuild brings the Xanadu row's orchard focus) with a han's halt on the road (the road's stop, `KCAMP.halt` or a `xa_caravanserai` in its works) | 400 |
 | `sxanrimfarm01` | **Rim-Phārm** (Rim Farm): the plain's farm village | 795,1482 | 105 m, flat; the Barāiṭ Ḍrāi (a wadi, 4.9 m³/s) 1 km off | `farming` (grain on the rim plain, watered from the wadi in the wet season) | 240 |
 
-**Held (2026-11-23, step H6).** The two sites and the Lake Shore cut widened west to them are in (`openworld/SITES.json`,
-origin pinned; Siṭāq's and Phīsh-Mārkiṭ's fits redone on it), but core/hamlet could not place about half of either village's houses
-on this ground at 1:1 (KSITES.groundOk refuses ground near the wadis' beds and on the synthesized slopes), at 400, 240 and 145
-people alike. Owed: a survey of the 1:1 ground (a slope and dryness map over the two squares) to pick each village's spot.
+**Built (2026-11-23, step H6).** The two sites and the Lake Shore cut widened west to them are in (`openworld/SITES.json`,
+origin pinned; Siṭāq's and Phīsh-Mārkiṭ's fits redone on it), and both villages stand whole at their sites' points. The survey of
+the 1:1 ground found it good over both 6 km squares (KSITES.groundOk at 40 m: nothing wet, nothing out, 3 and 4 steep points of
+22,801; slope 0.05 at the median, 0.11 at the 90th centile). The refusals were the village's frame, not the ground: a village set
+at its site's own point (`near: [0, 0]`) has its link (the site) on its own green, so core/hamlet's lanes had no direction and
+no house could front one. Each now takes `link`, its main lane pointed down the corridor road toward Phīsh-Mārkiṭ. Owed: Wesṭ-Rōḍ's
+orchard focus and its han's halt (with the rebuild); the guard in core/hamlet for a link on the green (TODO.md).
 
 **Pins** (the queue, records-only): four village pins, Ṭeras-Hil 902,1556, Gōṭ-Mesā 900,1544, Wesṭ-Rōḍ 778,1479, Rim-Phārm
 795,1482 (*proposed* ids `sterrhill01`, `sgoatmesa01`, `sxanwestroad01`, `sxanrimfarm01`).

@@ -90,6 +90,11 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
+- **core/hamlet: a village whose link is on its own green** (2026-11-23, `openworld/xanadu-lake-shore`, HAMLETS-PLAN.md 3d):
+  `KHAMLET.village` takes its frame from `spec.link - spec.site`; KSITES passes the site as the link, so a village laid at its site's
+  own point (`near: [0, 0]`) gets a zero frame (`ux = uz = 0`), every lane collapses onto the green and its houses fail as "could not
+  place: N houses", which reads like bad ground. The Lake Shore's two west villages pass `link` in their spec meanwhile. Fall back to
+  `[1, 0]` when the link is nearer than the green in `core/hamlet/30-hamlet-village.js` (or in KSITES), or report it as its own error.
 - **core/hamlet's Xanadu row: its fishing works** (2026-11-16, `settlements/kirstabal`): `KS_RING.fishingRow` (`src/42-ks-ring.js`) passes
   `KHAMLET.CULTURES.xanadu` with `works.fishing` (`xa_boatshed`, `xa_fish_racks`), `focusJobs.fishing` 90, `reach.fishing` 260, `landing`
   (`xa_quay`) and the racks' pending box; move them into the row itself (`core/hamlet/20-hamlet-cultures.js` reaches ten builds) and

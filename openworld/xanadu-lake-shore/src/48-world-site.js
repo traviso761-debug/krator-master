@@ -40,11 +40,14 @@ var SITE_SPEC={region:'xanadu-lake-shore',world:1191569,bridges:{culture:'xanadu
   sxanlkeastisle01:{culture:'xanadu'},
   sxanlkbayisle01:{culture:'xanadu'},
   /* west of Phīsh-Mārkiṭ (settlements/xanadu/HAMLETS-PLAN.md section 3d, step H6; the owner, 2026-11-23): the rim plain's farm
-     village and the west road's hill village. HELD (2026-11-23): their sites and the cut stand, but core/hamlet could not place
-     about half of either village's houses on this ground at 1:1 (KSITES.groundOk: the wadis' beds and the synthesized slopes;
-     at 400, 240 and 145 people alike). Owed: a survey of the 1:1 ground for their spots, then the villages */
-  sxanrimfarm01:{culture:'xanadu'},
-  sxanwestroad01:{culture:'xanadu'}}};
+     village and the west road's hill village, each the heart of its site (near [0, 0]). The survey (2026-11-23) found the ground
+     good over both squares (dry, slopes under 0.11 at the 90th centile); what refused the houses was the frame: a village at its
+     site's own point has its link on its green, so its lanes had no direction. `link` points each main lane down the corridor
+     road toward Phīsh-Mārkiṭ. Wesṭ-Rōḍ is laid as farming until the Xanadu row's orchard focus comes with the rebuild */
+  sxanrimfarm01:{culture:'xanadu',hamlets:[
+   {id:'rim-farm',name:'Rim-Phārm',focus:'farming',near:[0,0],link:[700,660],look:1500,pop:240}]},
+  sxanwestroad01:{culture:'xanadu',hamlets:[
+   {id:'west-road',name:'Wesṭ-Rōḍ',focus:'farming',near:[0,0],link:[985,174],look:1500,pop:400}]}}};
 /* the lake's fishers' row, as openworld/xanadu-oidong-highrift/src/48-world-site.js defines it for Kirstabal's lake (K6), key for
    key: the Xanadu row with the dugouts' boat sheds and the fish racks with their smokehouse, the racks a pending box (xh_fish_racks)
    because kits/xanadu's xa_fish_racks is opt-in and not in XAK. Both copies fold into core/hamlet's Xanadu row at the all-builds
