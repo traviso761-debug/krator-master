@@ -102,7 +102,8 @@ for(const E of KM.list()){
     if(!sm.length)r.fail.push('build: no skinned meshes');
     if(sm.some(o=>o.skeleton!==sm[0].skeleton))r.fail.push('build: more than one skeleton');
     if(g.userData.bones.indexOf('body')<0)r.fail.push('build: no body bone');
-    if(!g.userData.legs.length)r.fail.push('build: no legs');
+    if(!g.userData.legs.length&&E.tags.drive!=='hover')r.fail.push('build: no legs');
+    if(g.userData.legs.length&&E.tags.drive==='hover')r.fail.push('build: a hover drive with legs');
     /* declared size, at rest */
     const m0=measure(g), b=m0.box;
     r.size=[f2(b.max.x-b.min.x),f2(b.max.y-b.min.y),f2(b.max.z-b.min.z)]; r.box=[f2(b.min.x),f2(b.max.x),f2(b.min.y),f2(b.max.y),f2(b.min.z),f2(b.max.z)];
@@ -139,7 +140,7 @@ for(const E of KM.list()){
     if(st.reach>cfg.reachMax)r.fail.push('gait: a leg reaches '+f2(st.reach)+' of its length');
     g.userData.legs.forEach((L,i)=>{ if(!steps[L.name])r.fail.push('gait: '+L.name+' never stepped');
       if(slide[i]>cfg.slide)r.fail.push('gait: '+L.name+' slides '+f2(slide[i])+' m while planted'); });
-    r.slide=f2(Math.max.apply(null,slide));
+    r.slide=f2(slide.length?Math.max.apply(null,slide):0);
     /* the attack */
     KM.setState(g,'idle'); step(g,G.period*1.5,dt);
     const dur=KM.attack(g), A=KM.clip(E.key,v), want={};
@@ -159,6 +160,8 @@ for(const E of KM.list()){
     const VT=u.tags||{}, unarmed=/^none/.test(String((u.data||D).weapon));
     if(!Array.isArray(VT.weapon)||(!VT.weapon.length&&!unarmed)||(VT.weapon.length&&unarmed)||VT.weapon.some(x=>!inList(x,KM.WEAPONS)))r.fail.push('tags: weapon '+VT.weapon);
     if(KM.tagsOf(E.key,v).weapon.join()!==VT.weapon.join())r.fail.push('tags: tagsOf and userData disagree');
+    if(VT.role!=null&&!inList(VT.role,KM.ROLES))r.fail.push('tags: role '+VT.role);
+    if(VT.role==='feigner'&&!(A.events||[]).some(e=>e.type==='call'&&e.kind==='tell'))r.fail.push('feigner: no tell event (call, kind tell) in its clip');
     for(const k of ['height','mass','crew','pilot','weapon'])if(D[k]==null)r.fail.push('tags: data.'+k+' missing');
     if(!(D.speed>0))r.fail.push('tags: data.speed');
     if(u.key!==E.key||u.culture!==E.culture||!u.tags||u.tags.class!==T2.class)r.fail.push('tags: userData does not carry key/culture/tags');

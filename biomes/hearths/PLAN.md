@@ -118,7 +118,7 @@ the black discs, the hour off whether the forest is black or silver, and where t
 | The body is a host that takes a partner, and the partner decides how it lives (canon, the owner, 2026-11-02, `biomes/gills/PLAN.md` section 2) | a third partner kind, **heat**, beside light and redox, and the first body that carries two partners in two places (light on the spindle's skin, heat in the stalk): *proposed* as an amendment to the rule (section 17) |
 | Life carries state on the sky's cues: everything leans to the giant (`biomes/ehighlands/NOTES.md:117-122`), the sun-dial turns with the sun (`biomes/sedesert/PLAN-STEPPE.md:61`), the night rosette closes at night (`rift/PLAN-STATIONS.md:203`), the Gills breathe on the tide | the Hearths run on the day and on the eclipse: the one biome the eclipse seasons change, opening at noon for the two hours the sun is gone (`LORE.md` section 2: "for about two and a half months the sun passes behind the giant every day, for up to two hours") |
 | Native life is the natives' armoury, medicine and trade (`throne/NOTES.md:109-134`; `riftrim/PLAN.md:287-288`: the Tungangs' dark crops in the warm chambers by the vents) | the Tungangs' holds are under these very vents; the hearth wax is their food and lamp, the stalk's brine their cold remedy; Dalab holds Ledge "to study the rim's flora and fauna ... for useful genes" (`LORE.md` 6.1), and this is the plant it came for (section 9) |
-| Native fauna are vertebrate-grade hexapods coevolved with the flora (`biomes/outlands/PLAN.md:57-58`; `kits/fauna/BIOME-FAUNA-PLAN.md:52-54`) | three hexapods on the heat (section 8) |
+| Native fauna are vertebrate-grade hexapods coevolved with the flora (`biomes/outlands/PLAN.md` section 2, "Hexapods and plants"; `kits/fauna/BIOME-FAUNA-PLAN.md:52-54`) | three hexapods on the heat (section 8) |
 | Lineages cross kits as cousins (`BIO.kin`; `hyperjungle/PLAN-LANDS.md:49-56`) | the hearth tree's fans are the frill line's fins turned radiator; the ember mat is the Throne's thermal mats' kin; the two countries (the rim's and Oidong's) are sister forms by cold |
 | Nothing lives on active heat (`throne/NOTES.md:287`: "nothing lives on its hot ramparts or its cones") | kept: the fumarole mouths and the boiling pools are bare; the Hearths stand on warm ground, not hot, and the plan says where the line is (section 3) |
 
@@ -163,7 +163,7 @@ All numbers from scale model 5.1 at the two sites (section 5) and the model's ai
   spindle's skin adds the leaf's 50 W by day, which is why the hearth tree keeps it.
 - **Day and night.** By day the sun would put 600 W/m2 onto an open fan and warm the cold end; the engine would run
   backward at the surface. So the fans fold into a spindle whose outer skin reflects (the owner's lineage has sealed
-  skins already: `outlands/PLAN.md:53`), and the engine idles on the stalk's conduction alone. At dusk the fans open in
+  skins already: `outlands/PLAN.md` section 2), and the engine idles on the stalk's conduction alone. At dusk the fans open in
   minutes (a turgor hinge at each rib's root: the fans are the frill line's fins on a hinge). The **eclipse**: in the two
   and a half months round each equinox the sun goes behind the giant for up to two hours a day; the sky stays bright
   but the fans' solar load is gone, so the field opens at midday and shuts again when the sun comes out. A traveller in

@@ -5,7 +5,8 @@
    water          'rain' (default), 'paddy' (wants standing water or flooded beds), 'aquatic' (a wet zone only), 'bed' (dark-grown)
    needs          'salt' (a salt zone) or 'heated' (warm ground)
    home [biomes]  where it is native or already drawn: always plausible there, as 'wild'
-   homeOnly       true for a dye or fibre that is not a climate crop (animal, mineral, resin): home or traded, nothing else
+   homeOnly       true for a dye or fibre that is not a climate crop (animal, mineral, resin), or a crop the owner made its homes' own
+                  (the maar yam, fumewort): home or traded, nothing else
    also [buckets] other buckets it can stand in for
    grown 'field' (default) | 'underground'   (a dark-grown crop ignores the axes; a works that keeps it takes it)
    form, stores, yield (0.5 / 1 / 2), card (a core/materials/library card id), src ('proposed' or the kit that draws it), colour (a dye)
@@ -43,6 +44,11 @@ R('sweet-potato', 'Sweet potato', 'tuber', [3, 4], [1, 3], {card: 'card.crop.yam
 R('steambed-yam', 'Steambed yam', 'tuber', [4, 5], [3, 4], {needs: 'heated', card: 'card.crop.yam', home: ['geyser'], note: 'planted in the warm crust'});
 R('frostroot', 'Frostroot', 'tuber', [0, 1], [1, 2], {atm: [0, 1], reach: 0, card: 'card.crop.clover', home: ['ehighlands'], stores: ['dried'], note: 'freeze-dried like chuno'});
 R('murnong', 'Murnong', 'tuber', [2, 3], [1, 2], {reach: 1, card: 'card.crop.rosette', home: ['nwlowlands'], note: 'a yam-daisy'});
+R('painted-camas', 'Painted camas', 'tuber', [1, 3], [1, 2], {reach: 1, home: ['paintedhighlands'], src: 'proposed', stores: ['dried', 'ground'], note: 'a camas or mariposa-lily bulb of the washes and the melt flats, dug after the bloom and roasted in pits (biomes/paintedhighlands/PLAN.md section 4)'});
+/* THE HINGE'S OWN (the owner, 2026-11-12): Region 98's maar oases and loess terraces (biomes/siphon-pits), the Mid Basin's maar floors
+   (biomes/midbasin) and the Loom-Chasms' Cradle (biomes/loom-chasms) share a yam and a herb that grow nowhere else: homeOnly, traded beyond */
+R('maar-yam', 'Maar yam', 'tuber', [2, 3], [1, 2], {homeOnly: true, atm: [1, 2], card: 'card.crop.yam', src: 'siphon-pits', home: ['siphon-pits', 'midbasin', 'loom-chasms'],
+  stores: ['fresh', 'dried', 'ground'], note: 'a climbing yam of the maar floors and the loess terraces: its long tubers go down a metre into the tuff\'s warm crust, sweetened by the vents\' heat; dug in autumn, kept in pits, dried and pounded to a flour for the caravans'});
 R('shade-manioc', 'Shade manioc', 'tuber', [4, 4], [2, 4], {card: 'card.crop.palmate', home: ['hyperjungle'], stores: ['ground', 'dried']});
 R('ashroot', 'Ashroot', 'tuber', [3, 4], [2, 4], {reach: 1, card: 'card.crop.umbrella', home: ['throne'], stores: ['pressed'], note: 'a konjac-like corm on ash soil'});
 R('stub-cone', 'Stub cone', 'tuber', [4, 4], [0, 2], {reach: 1, form: 'plant', src: 'abyssal-savannah', home: ['abyssal-savannah'], stores: ['ground', 'dried'], note: 'the single cone of the stub lycopsid, pounded for its starch'});
@@ -116,7 +122,7 @@ R('bell-date', 'Bell date', 'dried-fruit', [4, 4], [1, 3], {form: 'tree', card: 
 
 /* ---- flavour and drink */
 R('clove', 'Clove', 'spice', [4, 4], [3, 4], {form: 'tree', card: 'card.croptree.glossy', src: 'ringisles', home: ['ringisles'], stores: ['dried']});
-R('juniper', 'Juniper berries', 'spice', [1, 3], [0, 2], {form: 'tree', card: 'card.juniper', src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
+R('juniper', 'Juniper berries', 'spice', [1, 3], [0, 2], {form: 'tree', card: 'card.juniper', src: 'ebadlands', home: ['ebadlands', 'paintedhighlands'], stores: ['dried']});
 R('umbel-seed', 'Umbel seed', 'spice', [2, 3], [0, 2], {src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
 R('saffron', 'Vale saffron', 'spice', [2, 3], [1, 2], {also: ['dye'], card: 'card.crop.saffron', colour: 'saffron', home: ['xanadu'], stores: ['dried']});
 R('herbs', 'Herbs (lemongrass, ginger, basil)', 'herb', [3, 4], [2, 3], {card: 'card.crop', src: 'ringisles', home: ['ringisles'], stores: ['fresh', 'dried']});
@@ -125,6 +131,8 @@ R('coffee', 'Coffee', 'beverage', [3, 4], [3, 4], {form: 'shrub', card: 'card.cr
 R('tea', 'Mist tea', 'beverage', [1, 3], [3, 4], {atm: [0, 2], form: 'shrub', card: 'card.crop.tea', home: ['xanadu', 'oidong'], stores: ['dried']});
 R('cacao', 'Cacao', 'beverage', [4, 4], [3, 4], {form: 'tree', card: 'card.croptree.glossy', src: 'xanadu', home: ['xanadu'], stores: ['dried', 'ground']});
 R('kava', 'Kava', 'beverage', [4, 4], [3, 4], {form: 'shrub', card: 'card.broadleaf', src: 'ringisles', home: ['ringisles'], stores: ['dried', 'ground']});
+R('tobacco', 'Tobacco', 'herb', [3, 4], [2, 3], {also: ['medicine'], form: 'plant', card: 'card.broadleaf', src: 'proposed', reach: 1, stores: ['dried'],
+  note: 'the broad leaf cured and smoked or chewed; the Hykkousoi colony Nephtos grows it for Tethys (settlements/isle-demo, 2026-11-09)'});
 R('rattlepod', 'Rattle coffee', 'beverage', [2, 3], [1, 2], {form: 'tree', src: 'swlowlands', home: ['swlowlands'], stores: ['dried']});
 R('alecap', 'Alecap', 'beverage', [0, 5], [0, 4], {also: ['vegetable', 'dye'], form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', card: 'card.mushroom.alecap', colour: 'purple', src: 'zeijani', home: ['throne'], stores: ['fermented', 'fresh'], note: 'fermented to a passable beer; the Zeijani beds (zj_farm_alecap)'});
 
@@ -141,6 +149,15 @@ R('stonepine', 'Pine nuts', 'nut', [0, 1], [1, 2], {atm: [0, 1], form: 'tree', c
 R('cloudberry', 'Cloudberry', 'berry', [0, 1], [3, 4], {atm: [0, 1], src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'cured'], note: 'Rubus chamaemorus, in the alas bogs: frozen, or kept in fat'});
 R('crowberry', 'Crowberry', 'berry', [0, 1], [1, 3], {atm: [0, 1], form: 'shrub', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fresh', 'dried'], note: 'Empetrum, on the tundra'});
 R('ivanchai', 'Ivan-chai', 'beverage', [0, 2], [1, 3], {also: ['greens'], atm: [0, 2], card: 'card.fireweed', src: 'nwouterwall', home: ['nwouterwall'], stores: ['fermented', 'dried'], note: 'fireweed (Chamerion angustifolium) on the burns and the larch edges: the fermented leaves are the Yeti\'s tea; the young shoots greens'});
+/* ---- the loess bench (biomes/wouterwall, PLAN.md section 4, the owner 2026-11-10: "make up some crops for it"): the Hayrant's terraces,
+   on the Loess Plateau's own habit (cool, summer-dry, deep silt, the spring line's water). Broomcorn millet and Tartary buckwheat are the
+   plateau's oldest grains; the jujube stands by every yaodong's door; garlic braids hang under the cave eaves. Drawn on station 1's
+   terraced fields (biomes/wouterwall src/88c), each field one crop, rotated millet, lentil, buckwheat, garlic, fallow */
+R('dustmillet', 'Dustmillet', 'grain', [1, 2], [0, 2], {atm: [0, 2], reach: 1, card: 'card.crop.plume', src: 'wouterwall', home: ['wouterwall'], stores: ['dried', 'ground'], note: 'broomcorn millet (Panicum miliaceum): sown late into the dust after the spring winds, ripe in ten weeks on the summer-dry loess; its nodding panicles gold by autumn, its straw the cave houses\' mats'});
+R('redstem', 'Redstem buckwheat', 'grain', [0, 2], [1, 3], {atm: [0, 2], reach: 1, card: 'card.crop.plume', src: 'wouterwall', home: ['wouterwall'], stores: ['ground', 'dried'], note: 'Tartary buckwheat (Fagopyrum tataricum): the upper terraces\' grain, bitter and frost-hard, its stems turning red as it ripens; ground for noodles and the winter porridge'});
+R('dust-lentil', 'Terrace lentil', 'pulse', [1, 2], [1, 2], {atm: [0, 2], reach: 1, card: 'card.crop.bean', src: 'wouterwall', home: ['wouterwall'], stores: ['dried'], note: 'the lentil (Lens culinaris): small and brown, sown in rotation after the millet to mend the silt'});
+R('cave-date', 'Cave-date', 'fruit', [1, 3], [0, 2], {also: ['dried-fruit'], atm: [1, 2], form: 'tree', card: 'card.croptree.glossy', src: 'wouterwall', home: ['wouterwall'], stores: ['fresh', 'dried'], note: 'the jujube (Ziziphus jujuba): a thorny small tree planted by each yaodong\'s door and on the terraces\' risers, its red dates dried on the cave roofs; only on the lower bench'});
+R('bench-garlic', 'Bench garlic', 'spice', [0, 2], [0, 2], {also: ['vegetable', 'medicine'], atm: [0, 2], reach: 1, card: 'card.crop.rosette', src: 'wouterwall', home: ['wouterwall'], stores: ['cured', 'dried'], note: 'hardneck garlic (Allium sativum): planted in autumn, lifted in summer, braided and hung under the cave eaves; the Hayrant eat it against the winter\'s cold'});
 /* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26): the hyperbamboo (its shoots; its culms and leaves stand in for weaving and
    thatch), the bamboo rice of a grove's gregarious flowering, the measure melon in its three sizes. The rest of the bowl grows
    nwlowlands' crops, at the warp's fixed sizes */
@@ -151,6 +168,7 @@ R('measuremelon', 'Measure melon', 'fruit', [3, 4], [1, 3], {form: 'vine', card:
 R('glasswort', 'Glasswort (sea asparagus)', 'vegetable', [3, 5], [0, 3], {also: ['oil'], needs: 'salt', card: 'card.samphire', src: 'sedesert', home: ['sedesert'], stores: ['fresh', 'pressed'], note: 'Salicornia: the jointed shoots in spring, an oil seed in autumn when it turns crimson'});
 R('tamarisk-manna', 'Tamarisk manna', 'sweetener', [3, 5], [0, 2], {form: 'tree', card: 'card.tamarisk', src: 'sedesert', home: ['sedesert'], stores: ['dried'], yield: 0.5, note: 'the sweet secretion scale insects leave on tamarisk twigs: gathered, not sown'});
 R('saxaul', 'Saxaul wood', 'fuel', [3, 5], [0, 1], {form: 'tree', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: 'Haloxylon: the densest firewood there is, and charcoal'});
+R('paintbrush', 'Painter\'s brush', 'medicine', [1, 3], [0, 2], {also: ['dye'], card: 'card.flower.bloom.highland', src: 'paintedhighlands', home: ['paintedhighlands'], stores: ['dried'], colour: 'red', note: 'an Indian-paintbrush of the spring bloom: the Painted Men\'s medicine (a wash for sores and a tea for the women\'s ills), and its bracts a pale red (biomes/paintedhighlands, the flower phfl3)'});
 R('brine-lamp', 'Brine lamp', 'medicine', [4, 5], [0, 1], {needs: 'salt', card: 'card.brinelamp', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Krator's: the crystal-crusted leaf, steeped, is a salt-and-bitters remedy for heat sickness"});
 /* ---- the steppe fringe (biomes/sedesert/PLAN-STEPPE.md; drawn on its station 3) */
 R('myrrh', 'Myrrh', 'medicine', [4, 5], [0, 2], {form: 'tree', also: ['fuel'], src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Commiphora: the resin bled from the peeling bark; a wound wash and an incense, the merchant houses' second trade"});

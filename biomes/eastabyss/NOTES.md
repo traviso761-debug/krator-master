@@ -141,3 +141,6 @@ The kit's turn in the all-biomes rebuild (HANDOFF-REBUILD.md, pair 1 with nwbay)
   (ebadlands.cottonwood x1.35 tall, bole x1.5) on the dry river reaches, `abyssbottle` (sedesert.bottle, the Bowl's baobab habit) on
   the salt steppe and the shelf foot (`?kin=0`). As vendor, `araucaria` (to ebadlands) and `jade` (to sedesert) keep their keys and
   indices (17, 10).
+
+## Scale-Model 5.1 Evaporite Strandline Note (`2026-11-13`)
+- **Low-Bench Lacustrine Recession Steps (`evaporite-strand`):** While the `1.9 km` far eastern abyss wall (`83`, `KFAR`) retains `canyon` redbed strata, low shoreline benches, salt-steppe (`XS`) pans, and Station 2's winding-lake (`1041, 493` old / `1313, 823` `5.1`) recession terraces bind to `KSTRATA` **`evaporite-strand`** (`core/terrain/35-core-strata.js` — `0.4–1.5 m` white aragonite tufa steps, `gypsum` crusts, and pale lacustrine marl laminae marking seasonal lake-level swings under `~2.0 atm` abyssal evaporation).

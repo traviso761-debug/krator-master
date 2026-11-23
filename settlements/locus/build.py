@@ -73,6 +73,7 @@ WATER_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'water'
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
 import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 # The eastern-abyss biome: core/biome and the canonical kit biomes/eastabyss, read in place under Locus's slot names (the
 # names keep their order: after the kit builders, before 69b's host binding and 69z's planting). Mungo reads this map too.
 _ROOT = os.path.dirname(os.path.dirname(HERE))

@@ -49,4 +49,45 @@ From `PLAN.md` section 10 and what station 1 met:
   detail canvas) against MAX_TEXTURE_IMAGE_UNITS 16 (ANGLE/D3D11, both lanes). The detail canvas `uDetail` is now computed in the shader
   (`SWH_DET`, 84-host-ground.js; the pillars' copy too, for headroom): 16 units. A new sampler on this ground needs another one dropped.
   GPU-verified `--assert --all-views`: swhighlands (rtx) and swhighlands-pillars (arc) pass.
-- [ ] Stations 2-5 are not built. Station 4 (the pillar rim) waits for the Span arcology's hand-over (its own session).
+- [ ] **Station 5, the fan coast** (2026-11-09), a first pass for the owner's look: the fans are KRELIEF.wadi's own fans (a cone at a 5%
+  fall from the scarp's foot, its surface standing over the shoreface, so it runs on under the sea); a Gilbert-type fan delta's steep
+  foreset is not a core form, so the fronts fall as the cone's edge does. The coast's flora runs at a fifth of 59c's density (the whole map
+  is scarp: at 1 it grew 56,000 caudex, past the instance cap). The crater drylands' yucca grows as itself and the sword spire as a
+  cousin (the source's builder with this kit's glaucous palette and two thirds of its height: CRATERDRY.make/grow, its fire fragment read
+  too, every plant unburnt). **Owed**: the sea caves along the beach (refs/31: a KCARVE mouth in the scarp's foot), and Drum's lights along
+  the shore (the Vothic city is a settlement's, `settlements/drum`; its lights belong to its placement). The beach's sand is the kit's
+  own family (`ground.sand`, packed for this station only).
+- [ ] **Station 2, the rain wall** (2026-11-09), a first pass for the owner's look: the dam is `KRELIEF.runout` with low broad hummocks
+  (55 m apart, a sixth of its thickness) and its margins hardly raised (rim .06): the defaults stood as 25 m spikes and a raised rim that
+  held the lake inside the dam. The lake is drawn out to its first shore from its middle (360 rays), so a bay behind a spur may be cut
+  short. The fall over the hanging lip is ~170 m at the station's scale (the model's thread of falls is hundreds of metres). The drowned
+  trees are bare boles of the kit's own (`stations/rainwall/58b`), not a species' dead form. The impostor gain is station 1's.
+- [ ] **Station 3, Span's tableland** (2026-11-09): stands on station 4's ground (`INHERIT`), so the ground's paint is the pillar rim's
+  (the hanging swamps are not painted greener: the moss, reeds and lamps carry them). The twin falls run on the table's own fall line
+  without a carved channel (their ribbons hug the slickrock; where the ground rises the water is under it); since the look pass each
+  falls in ONE curtain (a WATER.fall on the face, from the stream's steepest 12 m) and the streams are wider, but from the floor the
+  curtains still read thin and stop partway down the caprock (the foot is where the stream next runs under a 30% fall, high on the
+  apron); a carved notch and a lip at the cap's very edge want a pass, and the notch is station 4's ground. Cell lamps: the kit's pass (5 m cells) found 19 in pools 3-5 m across, so the station puts
+  one to four in every pool with the kit's own put (87-host-kin.js). The flayed madrone grows from swlowlands in place (`SWLOW.make`/`grow`,
+  station.json `kin`) on the slickrock's sunny side. **The tier cedar is held back** (`?kincedar=1` grows it): grown here its tier
+  pads, sized from its 16-26 m crown and set up to a third of their size off the limb, leave 3.7% of the page's cards floating in the core
+  attach audit (limit 1%; the needle cards, `d` null at the worst: no structure within reach), at full detail as at the mid tier; its own
+  page passes. Owed: read the audit's worst list against the cedar's `clumpAt` calls (swlowlands' 55, B[16]). The slot-canyon view is skipped when no slot is deep
+  and open enough away from Span's canyon.
+- [ ] **Station 7, the ridge karst** (2026-11-09): **KKARST names two branch levels' sinks alike** (`sink:i,j` has no level in it), so a
+  network with `levels` of kind 'branch' throws in KCAVERN (duplicate id); the old level is built as its own network and merged with
+  `old:` ids. **A core fix is owed in core/terrain** (the level in the id for `lv > 0`, which leaves single-level pages' bytes as they are).
+  KCAVERN still has no limestone material (KARST-SITES-5.1.md "Notes for the module"): the cave is drawn here in the library's karst
+  limestone in full (the kit's own `caveRock` family: albedo, normals and roughness, all three sampled triplanar on the world position,
+  the normals blended per axis in world space). The sun reaches a cave point by the sky it sees (its depth, a well's light); a lamp at
+  the eye lights the rest, so a passage past 60 m of the eye reads black (the openings in a chamber's walls). The ground
+  round a well is the cavern's own mesh on the page's ground material, 10 cm under the page's ground; the wells' rims (9 m) are wide so
+  the 6 m grid is cut whole. The springs downstream where swlowlands' spring cypress stands are off this map. Most of the cave (8,500
+  chunks) is meshed only when the eye comes within 90 m.
+- [ ] `stations/span/INHERIT` makes station 3 follow every change to station 4's fragments: rebuild and verify both after editing
+  `stations/pillars/`.
+- [ ] **A repack changes the cards' facts**: `tools/textures/pack.py` today writes `"anchor"` (and for `brush`, `"plants": 3`) on the card
+  families (brush, club, eggs, glass, heath, moss and others), which changes every page's bytes, and the core card guard then refuses the
+  bottle brush's clump (card.frond.needle: no "stems"). The 2026-11-09 repack (for the `own` families) kept the committed `pack.json` and
+  added only `caveRock` and `ground.sand`; the next full repack needs the brush's card given "stems" (check_cells.py), and every page
+  rebuilt and re-verified.

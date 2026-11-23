@@ -158,10 +158,12 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            # a station page names its own box (window.EXPORT_BOX: stations/skarn/99-host-take.js, the crown's savannah); the bay's page has none
+            box = await pg.evaluate("()=>Array.isArray(window.EXPORT_BOX)?window.EXPORT_BOX:null") or EXPORT_BOX
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
             if not pok:
                 fails.append("assert export-profile")
 

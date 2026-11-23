@@ -15,7 +15,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`, `92k-host-keys.js`
 
 From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
 
@@ -24,18 +24,8 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `10-core.js` | 3 | error panel (1); rng + noise (7) |
-| `12-stats.js` | 1 | per-type accounting (1) |
-| `30-kit.js` | 3 | instancing kit (1) |
-| `32-surfaces.js` | 8 | surfaces (1) |
-| `34-kitdefs.js` | 10 | kit definitions (shared geometry) (1); THE LEAF CARD (54) |
 | `35-furn-frame.js` | 7 |  |
-| `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
-| `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `42-offices.js` | 15 |  |
-| `46-bunker.js` | 5 |  |
-| `48-library.js` | 4 |  |
-| `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `52-sky-abc.js` | 31 **big** |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 6 |  |
@@ -45,48 +35,19 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
 | `61-hyk-shell.js` | 16 | the surface builder (35); lathe: the shell body (47); pod: a superellipsoid with real openings (73); conch: a tapering tube along a log spiral (92); tube along a polyline (parallel-transport frames (108); fillet: roots a shell into a face or the ground (122); disc: floors, landings, lily pads (normal up unl (129) |
 | `62-hyk-helpers.js` | 24 | openings: a hole in a shell gets a lip and a rev (65); rooms and the spots the later placer fills (kits (90); landings, stairs, ladders (world frame unless in (101) |
-| `62-robotics.js` | 8 |  |
-| `64-houses-def.js` | 9 |  |
 | `64-hyk-accrete.js` | 17 | the tideline: crust, weed, barnacle specks, foam (62); accretion: pods grown onto a host's face (79) |
 | `64b-ys-ruins.js` | 7 |  |
 | `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 26 | the helpers (all through F) (10); the pieces (70) |
 | `66-office-c.js` | 5 |  |
-| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
-| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (116); kit items (141) |
-| `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
-| `69e-vern-hollow.js` | 13 |  |
-| `69h-host-0-lib.js` | 7 |  |
-| `69h-host-a-facet.js` | 7 |  |
-| `69h-host-b-bastion.js` | 12 |  |
-| `69h-host-c-arcades.js` | 10 |  |
-| `69h-host-d-stalks.js` | 9 |  |
-| `69h-host-e-bellhall.js` | 13 |  |
 | `69i-host-ancients.js` | 14 | numeric helpers (plans as [x,z] polygons, rays t (16); the specs (36) |
 | `69j-host-offices.js` | 6 | the specs (28) |
-| `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
-| `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
 | `70-hyk-housing.js` | 68 **big** | shared helpers (prefix hykHouse…) (7); POOR 1: the clam house. A low ribbed body, a rib (116); POOR 2: the stilt pod. A small pod carried 2.6 m (134); POOR 3: the limpet house. One ringed limpet cone (154); MIDDLE 1: the barnacle tower. One tall twisted b (171); MIDDLE 2: the pod cluster. Three pods of graded  (194); MIDDLE 3: the stair drum. A lobed drum with a st (220); RICH 1: the conch stair house. A nacre conch who (234); RICH 2: the urchin house. A lobed nacre dome rin (299); RICH 3: the scallop court. A ribbed scallop valv (334) |
-| `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
-| `70-vern-dwellings.js` | 23 | POOR (24); MIDDLE (83); RICH (148) |
-| `71-hl-mat.js` | 8 | world UV with separate u/v tile sizes (26); materials (32); geometry (51); kit items (71) |
 | `71-hyk-shops.js` | 51 **big** | helpers (12); the free-standing base (58); the grown-on base (the G frame: origin on the ho (105); the trade dressings (F from a base: at(th,y,out) (132); the free-standing stores (row 'Shops') (293); the grown-on stores (row 'Grown-on shops', the G (364) |
 | `71-port-terrain.js` | 21 | the natural coast (7); stamps (24); materials (103); the terrain grid (198) |
 | `71-sky-h.js` | 5 |  |
-| `71-vern-trade.js` | 19 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (44); workshops (72); scrap smithy: forge under a salvaged roof on pip (107); market canopy: a great two-tier rain roof over r (135); warehouse: long timber shed clad in board and sh (158) |
-| `71b-hl-motif.js` | 33 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
-| `71w-port-sea.js` | 4 |  |
-| `72-datacenter.js` | 8 |  |
-| `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
 | `72-hyk-hospitality.js` | 34 **big** | shared helpers (7) |
-| `72-port-kit.js` | 9 | materials (11); geometry (56) |
-| `73-hl-carve.js` | 32 **big** | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (33); dougong (painted bracket sets under eaves) (77); bargeboards, gable finials, horns (97); windows, porches, balconies (122); towers (Peles, clocktowers, wall towers) (155); bamboo (tribal and the poorest Republican/Rustic (184); cliff walkways (tribal cliff settlements) (197); yard furniture of the highlands (221); round 4: fitting murals and bracket rows (hlFlus (251) |
 | `73-hyk-sacred.js` | 14 | shared bits (7) |
-| `73-police.js` | 5 |  |
-| `73-port-edges.js` | 17 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151); land blocks and sea platforms (190) |
-| `74-hospital.js` | 5 |  |
-| `74-port-dress.js` | 12 | the stacked-container house (23); lamps, rails, boats (60); the shed (118) |
-| `74-rep-dwell.js` | 33 **big** | R-A kit items and helpers (prefix hRA / hnRA) (9); POOR (65); MIDDLE (96); RICH (135); RICH (cont.) (236) |
 | `74a-hyk-amphitriton.js` | 29 | the builder (35) |
 | `74b-hyk-citadel.js` | 23 |  |
 | `74b2-hyk-arena.js` | 11 |  |
@@ -94,41 +55,28 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `74d-hyk-winds.js` | 10 | the temple (16) |
 | `74e-hyk-pharos.js` | 13 | the crown (20) |
 | `74f-hyk-civic-minor.js` | 34 **big** | helpers shared by the three (prefixed hykLib…) (8); the Library of Ys: a nautilus of reading galleri (29); a barnacle cone: the Wet Cells' unit (and the Tr (154); the Treasury: the strongroom in the Citadel's co (167); the Wet Cells: the prison, a barnacle island rea (219) |
-| `75-hotel.js` | 15 |  |
 | `75-hyk-harbour.js` | 37 **big** | shared bits (12) |
-| `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
 | `76-hyk-industry.js` | 46 **big** | shared helpers (8); the armoured hall (73); warehouses: armoured halls with lipped cart door (124); the scrap smithies (157); the shipwright: a slipway under an open shed, a  (232); the granary: sealed silos on a raised pad, the s (274); the windmill: a sail-wheel of weed-cloth fins on (307); the generator: an Ancient machine reclaimed insi (350) |
-| `76-port-chapterhouse.js` | 17 |  |
 | `76b-hyk-warehouse-round.js` | 2 |  |
 | `77-hyk-military.js` | 30 | shared helpers (used by 78-hyk-agri.js too) (7); the barracks (86); the ballista emplacement (156); the mustering ground (204) |
 | `78-hyk-agri.js` | 14 | the farm field (18); farmhouse 1: fused barnacle cones with a byre (48); farmhouse 2: a long pod with a drying-rack yard (86) |
-| `79-government.js` | 8 |  |
 | `79-hyk-markets.js` | 18 | shared bits (7) |
 | `79z-ys-matlib.js` | 6 |  |
-| `80-aa-battery.js` | 1 |  |
-| `81-sky.js` | 10 |  |
 | `82-apartments.js` | 9 |  |
-| `89-lab.js` | 7 |  |
 | `89m-sky-k.js` | 42 **big** |  |
 | `89x-ys-trades.js` | 6 | = (1) |
 | `8aj-alt-a-bole.js` | 16 | THE BOLE (74) |
 | `8aj-alt-b-stack.js` | 10 |  |
 | `8aj-alt-c-hotel.js` | 8 |  |
 | `8ak-alt-a-houses.js` | 25 | helpers (27) |
-| `8al-alt-00-lib.js` | 10 |  |
 | `8al-alt-01-office-terrace.js` | 7 |  |
-| `8al-alt-05-bunker.js` | 5 |  |
 | `8al-alt-06-library.js` | 7 |  |
-| `8al-alt-10-police.js` | 5 |  |
-| `8al-alt-11-hospital.js` | 5 |  |
 | `90-ys-scene.js` | 8 | the sky and the clock (16); core/atmos for the sea (core/water, 71w-port-sea (34); the port: stamps, terrain, sea, builders, bake (44) |
 | `91-ys-probe.js` | 8 | probe (window._api) (1) |
 | `91t-ys-tags.js` | 3 | CORE TAGS: YS'S REG (1) |
 | `92-camera.js` | 7 | what stays of the camera on core/host: the prese (1) |
-| `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `93-ys-ui.js` | 4 |  |
 | `99-start.js` | 3 | 99. the take: Ys on core/host (every target: the (1) |
-| `99-tail.html` | <1 |  |
 
 ## targets/
 

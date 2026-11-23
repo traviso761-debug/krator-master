@@ -56,10 +56,15 @@
 /* the vocabularies a mech's tags are checked against (verify.py --assert) */
 const MECH_CLASSES = ['mech'];
 const MECH_TYPES = ['war machine', 'industrial', 'siege', 'transport', 'utility', 'standard-bearer', 'scout', 'line', 'heavy'];
-const MECH_DRIVES = ['biped', 'digitigrade', 'quadruped'];
+const MECH_DRIVES = ['biped', 'digitigrade', 'quadruped', 'tripod', 'hexapod', 'hover'];
+/* 'hover': an entry with `hover: { bob, lean, roll }` and no legs. It rides at its body bone's height above the host's ground, bobs,
+   and leans into its motion; its gait gives only the speed (period 1, duty 1, stride = m/s). */
+/* a feral machine's behaviour (biomes/ancientsvalley/PLAN.md section 6): a KEEPER at its thousand-year routine, a HUNTER that attacks on
+   sight, a FEIGNER that passes for a keeper until it turns (a keeper chassis with the attack clip and a tell). tags.role, per variant. */
+const MECH_ROLES = ['keeper', 'hunter', 'feigner'];
 const MECH_PILOTS = ['head', 'chest', 'cab', 'saddle', 'none'];
 const MECH_WEAPONS = ['ballista', 'twin ballista', 'repeating ballista', 'harpoon', 'rivet gun', 'cleaver', 'shield', 'pile driver',
-  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'blade', 'none'];
+  'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'blade', 'lance', 'beam', 'cannon', 'gun', 'none'];
 
 /* a culture: its palette goes into the catalog core's FPAL (inside this closure only), so F.col('orange')
    resolves against the mech's own culture */
@@ -82,6 +87,7 @@ function MECH(o) {
   o.variantTags = o.variantTags || [];
   o.data = o.data || {};
   o.idle = Object.assign({ breathe: 0.025, scan: 0.12, look: 0.35 }, o.idle || {});
+  if (o.gait && !o.gait.offsets) o.gait.offsets = [];   /* a hover entry's gait is only a speed */
   o.anim = o.anim || {};
   MECHS.push(o); MECH_BY_KEY[o.key] = o;
 }
@@ -155,6 +161,7 @@ function mechRig() {
     R.links.push({ a: R.by[a].index, b: R.by[b].index, A: A, B: B, group: g });
   };
   R.banner = function (o) {
+    if (R.bare) return;   /* a bare build hangs no banner */
     if (!R.by[o.bone]) throw new Error('mech rig: banner on missing bone ' + o.bone);
     R.banners.push(Object.assign({ kind: 'hang', x: 0, y: 0, z: 0, ry: 0, w: 0.8, h: 1.2, paint: {} }, o));
   };

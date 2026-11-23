@@ -19,11 +19,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `69u-tal-helpers.js` | 48 **big** | arches (6); columns, balusters, entablature (125); drums, domes, lanterns (173); bays, screens, stairs, paving (214); vaults, courts, shop fronts (the trade buildings (292); P4: tiers, petals, rays, coffers, niches (72t-73 (323); interiors: ceilings, and storey slabs as rings ( (369); walking (F) on the floors (the owner, 2026-10-19 (402); the civic dress (the owner, 2026-10-19: more ela (426) |
 | `70t-tal-dwellings.js` | 16 | POOR (23); MIDDLE (81) |
 | `70u-tal-rich.js` | 11 |  |
-| `71t-tal-trade.js` | 36 **big** | CIVIC: the customs, the bourse, the baths (7); THE CARAVAN ROAD: the caravanserai, the stoa, th (92); THE STREET: the shop arcade, the inn, the press (168) |
+| `71t-tal-trade.js` | 37 **big** | CIVIC: the customs, the bourse, the baths (7); THE CARAVAN ROAD: the caravanserai, the stoa, th (92); THE STREET: the shop arcade, the inn, the press (172) |
 | `72t-tal-uni.js` | 32 **big** | THE CORE (8); THE FACULTIES (150); THE COLLEGES (252) |
 | `72u-tal-arts.js` | 14 |  |
 | `73t-tal-civic.js` | 22 | THE WALL AND THE GATE OF THE PASSES (132); THE FOUNTAIN AND THE BRIDGE (182) |
-| `74t-tal-palace.js` | 14 | THE LION AND THE PAVILIONS (19); THE PALACE (47) |
+| `74t-tal-palace.js` | 25 | THE LION AND THE PAVILIONS (20); THE ROOMS (the interior set's plan: kits/interio (58); THE PALACE (134) |
 | `88yt-tal-matlib.js` | <1 |  |
 
 ## targets/

@@ -11,7 +11,7 @@
 - [ ] **The mixed rich street leaves a 4 m alley after the Xanadu merchant's konak** (`xa_rich_c`): it draws 3.3 m past its plot's `w`
   (its cumba), which the street audit measures. A fix belongs in `kits/xanadu` (an honest `w`), not here.
 - [ ] **Two Qiblai textures are owed** (the owner, 2026-11-11: "sure new textures"): the beaten-gold roof sheet and the prayer-wheel
-  copper with mantra relief, `core/materials/PROMPTS-NEEDED.md` section 43. The dressed ashlar is in: `stone.sandstone.ashlar` as the
+  copper with mantra relief, `core/materials/PROMPTS-NEEDED.md` section 53. The dressed ashlar is in: `stone.sandstone.ashlar` as the
   kit's own family `qAshlar` (`materials.json`, `tex/`, bound by `src/89q0z-qb-matlib.js`) on the plinths, the walls' bases and the ghats.
 - [ ] **kits/interiors: a fixture with a small front clearance blocks the wall pieces** (found 2026-11-11, a node probe on the
   interiors core): one room fixture whose `clearance.front` is under 0.4 m (0.2, 0 or absent) anywhere in a room leaves the placer

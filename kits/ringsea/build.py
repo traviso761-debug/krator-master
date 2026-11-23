@@ -139,6 +139,7 @@ def main():
     paths.update({f: os.path.join(SHADER_DIR, f) for f in CORE_SHADER})
     paths.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS})
     paths.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER})
+    paths['56-core-water-breakup.js'] = os.path.join(WATER_DIR, 'ext', '56-core-water-breakup.js')   # the breakup (core/water ext/56), on by default since 2026-11-09
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack

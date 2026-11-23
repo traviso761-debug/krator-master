@@ -322,10 +322,18 @@
   //   depth (60 m under the ground) | floor (an absolute y: the treads then lie between the ground and it), steps (3: risers,
   //   the last landing on the floor), tread (12 m: each tread's width, jittered .7..1.3), riser (1.5 m: a riser's run in plan;
   //   under a field cell it is a sheer step), share (each riser's share of the depth, jittered: [.7,1.3] then normalised),
-  //   rim (0: a lip, m, at the edge), warp {amp (0), scale (1/200)}: the edge wandering, seed})
+  //   rim (0: a lip, m, at the edge), warp {amp (0), scale (1/200)}: the edge wandering, seed,
+  //   head (a line only; opt-in 2026-11-09, Mid Basin's amendment 3 and the Loom-Chasms' slots: a chasm head) {at ('end' |
+  //     'start' | 'both'), len (4 x the outline's half-width: the m of line over which the depth tapers), amph (.6: the
+  //     amphitheatre's rounding, the bowl's radius as a share of the outline's half-width: 1 a box-canyon bowl as wide as the
+  //     cut, 0 the walls closing to a point), wall (0: the share of the depth the bowl's headwall keeps at the tip; .4 a
+  //     sapped headwall)}: over its last len the outline narrows to the bowl (a tapered capsule, its distance exact), the walls
+  //     and their steps wrap round it, and the depth falls to wall x depth at the tip. A record without head is unchanged.})
   //   -> {kind:'stepcut', form:'line' | 'disc' | 'ell', line | disc | ell, depth, floor, treads:[w], drops:[share], riser, rim,
-  //       warp, edge (the outline's distance from the floor's edge: the treads and risers summed), seed}
-  //   shape: g cut down by the steps. at(): {part:'rim' | 'riser' | 'tread' | 'floor', i (the step), e (m in from the edge)} or null
+  //       warp, edge (the outline's distance from the floor's edge: the treads and risers summed), seed, head? {at, len, amph,
+  //       wall, rb (the bowl's radius)}}
+  //   shape: g cut down by the steps. at(): {part:'rim' | 'riser' | 'tread' | 'floor', i (the step), e (m in from the edge),
+  //   head? (in a head's taper: the share of the depth lost there, 0..1)} or null
   function stepcut(o){var K=KRq();if(!o)throw new Error('KRELIEF.stepcut: options are needed');var seed=seedOf(o),form=o.line?'line':o.disc?'disc':o.ell?'ell':null;
     if(!form)throw new Error('KRELIEF.stepcut: a line, a disc or an ell is needed');
     var n=d(o.steps,3),tw=d(o.tread,12),rr=d(o.riser,1.5),sh=o.share||[.7,1.3];if(!(n>=1)||!(rr>0))throw new Error('KRELIEF.stepcut: steps >= 1 and riser > 0');
@@ -338,20 +346,37 @@
     R.drops=R.drops.map(function(v){return v/tot;});R.edge=R.treads.reduce(function(a,b){return a+b;},0)+n*rr;
     var inner=form==='disc'?R.disc.r:form==='ell'?Math.min(R.ell.rx,R.ell.rz):R.line.w+R.edge;
     if(form!=='line'&&inner<=R.edge)throw new Error('KRELIEF.stepcut: the steps ('+R.edge.toFixed(1)+' m) do not fit inside the pit: fewer or narrower treads');
+    if(o.head)R.head=scHeadRec(o.head,R,form==='line'?Ln.L:0);
     return R;}
+  // the chasm head's record: the bowl's radius rb is amph x Wo, held where the taper's sides stay under 64 deg off the line
+  function scHeadRec(h,R,L){if(R.form!=='line')throw new Error('KRELIEF.stepcut: a head needs a line (a graben), not a pit');
+    var at=d(h.at,'end'),Wo=R.line.w+R.edge,len=d(h.len,4*Wo),amph=d(h.amph,.6),wall=d(h.wall,0);
+    if(at!=='end'&&at!=='start'&&at!=='both')throw new Error('KRELIEF.stepcut: head.at is end, start or both');
+    if(!(len>0)||len>(at==='both'?L/2:L))throw new Error('KRELIEF.stepcut: head.len ('+len+' m) must be over 0 and within the line ('+(at==='both'?'half of ':'')+L.toFixed(0)+' m)');
+    if(!(amph>=0&&amph<=1)||!(wall>=0&&wall<=1))throw new Error('KRELIEF.stepcut: head.amph and head.wall are 0..1');
+    return {at:at,len:len,amph:amph,wall:wall,rb:Math.max(amph*Wo,Wo-.9*len,0)};}
+  // the head's distance in from the outline, and its depth share: per tapered end, the cut is the union of the line's own
+  // outline short of the taper and a tapered capsule (Quilez's uneven capsule: radius Wo at u = len, rb at the line's end)
+  function scHead(R,N,e0,out){var H=R.head,S=R.line.S,L=S[S.length-1],Wo=R.line.w+R.edge,a=N.past>0?Math.abs(N.q):N.dist,
+      s=N.s+(N.past>0?(N.s<L/2?-N.past:N.past):0),b=(Wo-H.rb)/H.len,c=Math.sqrt(1-b*b),e=Infinity,f=1;
+    for(var k=0;k<2;k++){if(H.at!=='both'&&H.at!==(k?'end':'start'))continue;
+      var u=k?L-s:s,py=H.len-u,kk=-b*a+c*py,sd=kk<0?Math.hypot(a,py)-Wo:kk>c*H.len?Math.hypot(a,py-H.len)-H.rb:a*c+py*b-Wo;
+      e=Math.min(e,Math.max(Math.min(e0,u-H.len),-sd));f=Math.min(f,H.wall+(1-H.wall)*sm(-H.rb,H.len,u));}
+    out.f=f;return e;}
   // e: metres in from the outline (negative outside)
-  function scE(R,x,z){if(R.warp.amp){var K=KRq(),W=R.warp;x+=W.amp*(2*K.fbm(x*W.scale,z*W.scale,.5,3,R.seed+3)-1);z+=W.amp*(2*K.fbm(x*W.scale+31,z*W.scale-17,.5,3,R.seed+4)-1);}
+  function scE(R,x,z,out){if(R.warp.amp){var K=KRq(),W=R.warp;x+=W.amp*(2*K.fbm(x*W.scale,z*W.scale,.5,3,R.seed+3)-1);z+=W.amp*(2*K.fbm(x*W.scale+31,z*W.scale-17,.5,3,R.seed+4)-1);}
     if(R.form==='disc')return R.disc.r-Math.hypot(x-R.disc.c[0],z-R.disc.c[1]);
     if(R.form==='ell'){var E=R.ell,dx=x-E.c[0],dz=z-E.c[1],c=Math.cos(E.ry),s=Math.sin(E.ry),lx=dx*c+dz*s,lz=-dx*s+dz*c,rn=Math.hypot(lx/E.rx,lz/E.rz);
       return (1-rn)*Math.min(E.rx,E.rz);}
-    var N=near(R.line.pts,R.line.S,x,z);return R.line.w+R.edge-Math.hypot(N.past,N.past>0?N.q:N.dist);}
-  function scRead(R,x,z){var e=scE(R,x,z),n=R.drops.length;if(e<=-3)return null;if(e<=0)return {sh:0,part:R.rim?'rim':null,i:-1,e:e};
+    var N=near(R.line.pts,R.line.S,x,z),e0=R.line.w+R.edge-Math.hypot(N.past,N.past>0?N.q:N.dist);return R.head?scHead(R,N,e0,out):e0;}
+  function scRead(R,x,z){var hd=R.head?{f:1}:null,q=scRead0(R,scE(R,x,z,hd));if(q&&hd)q.f=hd.f;return q;}
+  function scRead0(R,e){var n=R.drops.length;if(e<=-3)return null;if(e<=0)return {sh:0,part:R.rim?'rim':null,i:-1,e:e};
     var at=0,acc=0;for(var i=0;i<n;i++){if(e<at+R.riser)return {sh:acc+R.drops[i]*sm(0,R.riser,e-at),part:'riser',i:i,e:e};at+=R.riser;acc+=R.drops[i];
       if(i<n-1){if(e<at+R.treads[i])return {sh:acc,part:'tread',i:i,e:e};at+=R.treads[i];}}
     return {sh:1,part:'floor',i:n,e:e};}
-  function stepcutH(R,x,z,g){g=g==null?0:g;var q=scRead(R,x,z);if(!q)return g;var lip=R.rim&&q.e<=0?R.rim*sm(-3,0,q.e):0;
-    if(R.floor!=null)return Math.min(g,lerp(g,R.floor,q.sh))+lip;return g-R.depth*q.sh+lip;}
-  function stepcutAt(R,x,z){var q=scRead(R,x,z);if(!q||!q.part)return null;return {part:q.part,i:q.i,e:q.e};}
+  function stepcutH(R,x,z,g){g=g==null?0:g;var q=scRead(R,x,z);if(!q)return g;var lip=R.rim&&q.e<=0?R.rim*sm(-3,0,q.e):0,sh=q.f==null?q.sh:q.sh*q.f;
+    if(R.floor!=null)return Math.min(g,lerp(g,R.floor,sh))+lip;return g-R.depth*sh+lip;}
+  function stepcutAt(R,x,z){var q=scRead(R,x,z);if(!q||!q.part)return null;var o={part:q.part,i:q.i,e:q.e};if(q.f!=null&&q.f<1)o.head=1-q.f;return o;}
 
   // ---------------------------------------------------------------- the composition
   var EXT={slump:[slumpH,slumpAt,slumpWaters],runout:[runoutH,runoutAt,runoutWaters],gully:[gullyH,gullyAt],terraces:[terracesH,terracesAt],

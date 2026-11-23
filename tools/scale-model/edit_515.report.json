@@ -1,0 +1,340 @@
+{
+ "edit": "5.1 edit 5",
+ "date": "2026-11-11",
+ "godshearth_vents": "kept 5.1 edit 2's 6 records",
+ "godshearth_rim": {
+  "cells": 7,
+  "raised_m_max": 23,
+  "held_m": 3644.0
+ },
+ "godshearth_outlet": {
+  "from_px": [
+   837,
+   1396
+  ],
+  "sill_m": 3640.0,
+  "to_px": [
+   847,
+   1454
+  ],
+  "cells": 59,
+  "length_km": 124,
+  "cut_m_max": 100,
+  "bed_m": [
+   3640,
+   2549
+  ],
+  "spill": {
+   "spill_m": 3640.0,
+   "at_px": [
+    837,
+    1396
+   ]
+  },
+  "name": "Āirã Siṭrīm",
+  "q_mouth_m3s": 183.7,
+  "catchment_km2": 74232,
+  "joins_r442_at": [
+   846.7,
+   1453.6
+  ],
+  "r442_q_mouth_now": 197.0,
+  "r272_q_mouth_now": 198.1
+ },
+ "highrift_gorge": {
+  "from_px": [
+   1394,
+   1658
+  ],
+  "to_px": [
+   1362,
+   1666
+  ],
+  "cells": 33,
+  "length_km": 71,
+  "bed_m": [
+   2783,
+   2595
+  ],
+  "caldron_level_m": 2580,
+  "cataract_m": 15,
+  "cut_m_max": 115,
+  "cut_m_mean": 70,
+  "wall_over_bed_m_median": 84
+ },
+ "xanadui_names_restored": [
+  [
+   "r105",
+   "Bīruk al-Ghaym",
+   "Solṭ Riwā"
+  ],
+  [
+   "r107",
+   "Rīfar al-Jadwal",
+   "Keb Riwā"
+  ],
+  [
+   "r252",
+   "Bīruk al-Dhahab",
+   "Balāk Siṭrīm"
+  ],
+  [
+   "r272",
+   "Bīruk al-Yāqūt",
+   "Qol Siṭrīm"
+  ],
+  [
+   "r418",
+   "Gūlī al-Zumurrud",
+   "Satõ Ḍrāi"
+  ],
+  [
+   "r442",
+   "Rīfar al-Bihār",
+   "Solṭ Siṭrīm"
+  ],
+  [
+   "r469",
+   "Gūlī al-Jadwal",
+   "Sanõ Ḍrāi"
+  ],
+  [
+   "r488",
+   "Gūlī al-Ṣafā",
+   "Sakāi Ḍrāi"
+  ],
+  [
+   "r492",
+   "Gūlī al-Ward",
+   "Bhon Ḍrāi"
+  ],
+  [
+   "r521",
+   "Gūlī al-Nūr",
+   "Sã Ḍrāi"
+  ],
+  [
+   "r532",
+   "Gūlī al-Ghaym",
+   "Silwā Ḍrāi"
+  ],
+  [
+   "r559",
+   "Gūlī al-Kahf",
+   "Mũ Ḍrāi"
+  ],
+  [
+   "r570",
+   "Gūlī al-Ṣakhr",
+   "Balāk Ḍrāi"
+  ],
+  [
+   "r836",
+   "Gūlī al-Salsabīl",
+   "Reḍ Ḍrāi"
+  ],
+  [
+   "r585",
+   "Gūlī al-Yāqūt",
+   "Sekriḍ Ḍrāi"
+  ],
+  [
+   "r613",
+   "Gūlī al-Bard",
+   "Girīn Ḍrāi"
+  ],
+  [
+   "r616",
+   "Gūlī al-Jawhar",
+   "Ḍhom Ḍrāi"
+  ],
+  [
+   "r640",
+   "Gūlī al-Barad",
+   "Wĩḍ Ḍrāi"
+  ],
+  [
+   "r649",
+   "Gūlī al-Bihār",
+   "Solṭ Ḍrāi"
+  ],
+  [
+   "r676",
+   "Gūlī al-Rīḥ",
+   "Kilāuḍ Ḍrāi"
+  ],
+  [
+   "r671",
+   "Gūlī al-Layl",
+   "Ghol Ḍrāi"
+  ],
+  [
+   "r682",
+   "Gūlī Qubbah",
+   "Sitār Ḍrāi"
+  ],
+  [
+   "r683",
+   "Gūlī al-Fiḍḍah",
+   "Āis Ḍrāi"
+  ],
+  [
+   "r684",
+   "Gūlī al-Dhahab",
+   "Ḍhīp Ḍrāi"
+  ],
+  [
+   "r713",
+   "Gūlī Qubbah al-Janūb",
+   "Āirã Ḍrāi"
+  ],
+  [
+   "r753",
+   "Gūlī al-Bard al-ṣaghīr",
+   "Barāiṭ Ḍrāi"
+  ],
+  [
+   "r770",
+   "Gūlī al-Layl al-kabīr",
+   "Kilīā Ḍrāi"
+  ],
+  [
+   "r837",
+   "Gūlī al-Jadwal al-ṣaghīr",
+   "Keb Ḍrāi"
+  ],
+  [
+   "r786",
+   "Gūlī al-Samā",
+   "Jeḍ Ḍrāi"
+  ],
+  [
+   "r804",
+   "Gūlī al-Zumurrud al-aʿlā",
+   "Wāiṭ Ḍrāi"
+  ]
+ ],
+ "junction_names_updated": 4,
+ "regions": {
+  "rmvstalkergate": {
+   "name": "Stalker Gate",
+   "points_before": 21,
+   "points_after": 23,
+   "cells_before": 36103,
+   "cells_after": 32676,
+   "overlap_before": 3509,
+   "overlap_after": 75,
+   "pieces_dropped_km2": 0,
+   "cells_gained_outside_old": 8
+  },
+  "rmvkknh1am4fw": {
+   "name": "stalker range",
+   "points_before": 10,
+   "points_after": 13,
+   "cells_before": 65208,
+   "cells_after": 64128,
+   "overlap_before": 1137,
+   "overlap_after": 36,
+   "pieces_dropped_km2": 0,
+   "cells_gained_outside_old": 22
+  },
+  "rmvraoas90co7": {
+   "name_before": "Region 99",
+   "name_after": "Loom Chasms"
+  },
+  "rmvkaq9fftvpp": {
+   "name_before": "e inner wall",
+   "name_after": "e highlands"
+  },
+  "rmwstalkerpks": {
+   "name": "Stalker Peaks",
+   "kind": "geographic",
+   "points": 11,
+   "cells": 22799,
+   "km2": 91196,
+   "heights_p10_50_90": [
+    5897,
+    8411,
+    12713
+   ],
+   "holds_peaks": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "overlap_catch_cells": 59,
+   "overlap_geographic": {
+    "The Catch": 59
+   }
+  }
+ },
+ "catch_oases": [
+  {
+   "name": "Kolli",
+   "px": [
+    1058,
+    1367
+   ],
+   "ground_m": 1446
+  },
+  {
+   "name": "Arfwai",
+   "px": [
+    1090,
+    1387
+   ],
+   "ground_m": 1074
+  },
+  {
+   "name": "Bitta",
+   "px": [
+    1088,
+    1455
+   ],
+   "ground_m": 1576
+  },
+  {
+   "name": "Lasso",
+   "px": [
+    1083,
+    1474
+   ],
+   "ground_m": 1509
+  }
+ ],
+ "catch_oases_floor": {
+  "north_end": [
+   1058,
+   1367
+  ],
+  "south_end": [
+   1083,
+   1474
+  ],
+  "stair": [
+   1106,
+   1442
+  ]
+ },
+ "reclimate": {
+  "cells": 113,
+  "class_changed": 98,
+  "rain_mean_before_mm": 344.0,
+  "rain_mean_after_mm": 354.0,
+  "classes_now": {
+   "Csb": 52,
+   "Dsb": 16,
+   "Dsc": 31,
+   "Dfb": 14
+  }
+ },
+ "cells_changed": {
+  "h": 156,
+  "tm": 24,
+  "p": 80,
+  "c": 98,
+  "z": 0
+ }
+}

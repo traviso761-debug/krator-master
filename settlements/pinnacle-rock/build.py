@@ -7,7 +7,7 @@
   39-pr-world-data    GENERATED (tools/world_data.py): the scale model round the site (region/data, cut by
                       tools/scale-model/extract_region.py), decoded at build time
   40-pr-layout        THE PLAN as data (the settled layout, PLAN.md section 1)
-  41-world-fields     the open world's fields, read in place (openworld/isle-demo/src/world, moved from the deprecated little-demo): WORLD.H, the land at 1:1
+  41-world-fields     the open world's fields, read in place (core/world, moved from the deprecated little-demo): WORLD.H, the land at 1:1
   42-pr-world         HOST: WORLD.init, the knoll's height at the south foot
   45-host-stage       HOST: renderer, light, the floor (the model's), the rock (KSTACKS records from the plan), LAND
   46, 47, 50..70      the NECANYONS kit and its land fragment, read in place (biomes/necanyons/src)
@@ -89,8 +89,8 @@ NC=os.path.normpath(os.path.join(HERE,'..','..','biomes','necanyons'))
 for f in ('46-biome-necanyons-layout.js','47-host-land.js','50-biome-necanyons-species.js','55-biome-necanyons-trees.js',
           '57-biome-necanyons-carnivores.js','60-biome-necanyons-floor.js','70-biome-necanyons.js','89n-host-night.js'):
     PATH[f]=os.path.join(NC,'src',f)
-# the open world's fields (openworld/isle-demo/src/world/41-world-fields.js, moved there from the deprecated little-demo), read in place: the land round the site at 1:1
-PATH['41-world-fields.js']=os.path.normpath(os.path.join(HERE,'..','..','openworld','isle-demo','src','world','41-world-fields.js'))
+# the open world's fields (core/world/41-world-fields.js, moved there from the deprecated little-demo), read in place: the land round the site at 1:1
+PATH['41-world-fields.js']=os.path.normpath(os.path.join(HERE,'..','..','core','world','41-world-fields.js'))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
@@ -113,7 +113,7 @@ import host as khost
 # viewer"): host.FULL, the shell and the record inspector, stocks, marks (they supersede the polytool), pictures, the
 # minimap, the editor and the cutaway, with core/edits, core/space and core/minimap; the page's edits log inlined
 # (host.edits_js: <build>/edits.json, or a newer browser draft)
-CORE_HOST=khost.FULL
+CORE_HOST=khost.FULL+khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 khost.resolve(PATH,CORE_HOST)
 # core/walk (KWALK): the floors a walker stands on that the ground does not carry (the decks, the climbs, the bridges, the
 # Stair, the lift road, the Deep Root: 89h-host-walk.js, and KCAVERN writes its own); core/lod (every build takes it:
@@ -125,6 +125,7 @@ CORE_X={'20-core-walk.js':('walk','20-core-walk.js'),'09-lod.js':('lod','09-lod.
         '44-core-stage.js':('biome','44-core-stage.js')}
 for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-2-lights.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): CORE_X[f]=('atmos',f)
 for f in ('20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js'): CORE_X[f]=('water',f)
+CORE_X['56-core-water-breakup.js']=('water','ext/56-core-water-breakup.js')   # the breakup (core/water ext/56), on by default since 2026-11-09
 for f,(d,n) in CORE_X.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,n))
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

@@ -41,5 +41,7 @@ ok('what cannot bend is named: the quad, the raw shader, the sky',r.left.length=
 ok('text: a screen quad is null',W.text('void main(){gl_Position=vec4(0.0);}',G)===null,false);
 ok('text: atmQuad is null',W.text('void main(){gl_Position=atmQuad(mv,ps);}',G)===null,false);
 const late=add(new T.MeshLambertMaterial());ok('a material added later bends after a sweep',!/kWarpV\(/.test(compile(late).vs)&&(w.sweep(),/kWarpV\(/.test(compile(late).vs)),false);
+{const src=add(new T.MeshStandardMaterial());w.sweep();const cl=src.clone();cl.onBeforeCompile=src.onBeforeCompile;add(cl);w.sweep();const v=compile(cl).vs,n=(v.match(/vec4 kWarpV\(/g)||[]).length;
+ ok('a clone that took its source\'s composed hook has the warp once ('+n+')',n===1,false);ok('...and the text is unchanged on a second pass',W.text(v,G)===v,false);}
 w.remove();ok('remove: the slot is empty and a material recompiles unbent',K.warp===null&&!/kWarp/.test(compile(mats[0]).vs),false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

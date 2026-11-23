@@ -18,7 +18,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | File | KB | Sections (line) |
 |---|---|---|
 | `krator-transit-furniture.js` | 24 |  |
-| `transit-furnish.js` | 10 |  |
+| `transit-furnish.js` | 11 |  |
 
 ## src/
 

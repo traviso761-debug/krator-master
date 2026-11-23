@@ -63,7 +63,7 @@ def files(cultures=None, harvested=False):
     return out + [RUNTIME]
 
 
-def textures():
+def textures(side=None):
     """KF_TEX: per texture family the packed colour map (tex/, committed) as a data URL, its tile size in metres and the
     mean brightness the shader divides back out. Every family is inlined (about 1 MB): a piece's family is known only
     when it is built."""
@@ -74,6 +74,10 @@ def textures():
         if name:
             out[fam] = {'lib': e['lib'], 'scale': e['scale'][0], 'mean': e['tint']['mean'],
                         'map': 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX, name), 'rb').read()).decode()}
+    if side is not None:   # beside the page (tools/textures/matlib_pack.py write_sidecar): the page reads KMAT_SIDE['catalog-furniture']
+        side['catalog-furniture'] = json.dumps(out, sort_keys=True)
+        return ("const KF_TEX = (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE['catalog-furniture']) || "
+                "(console.warn('KF: the furniture detail maps are missing (the .tex.catalog-furniture.js beside the page did not load)'), null);\n")
     return 'const KF_TEX = %s;\n' % json.dumps(out, sort_keys=True)
 
 
@@ -84,17 +88,19 @@ PLANTS_ADAPTER = ('/* ---- the plants as pieces (furniture_bundle.py plants=True
                   'PLANTS.forEach(function (p) { if (!FURN_BY_KEY[p.key]) { if (!p.type) p.type = \'plant\'; FURN_BY_KEY[p.key] = p; } });\n')
 
 
-def bundle(cultures=None, harvested=False, tex=False, plants=False):
+def bundle(cultures=None, harvested=False, tex=False, plants=False, side=None):
     """tex=True adds the library detail maps (KF_TEX and krator-furniture-detail.js): a batch's flush then gives each
     family's mesh its set as a triplanar detail map. tex=False is the bundle as before, byte for byte. plants=True adds
-    the plant registry (krator-master-plants.js) as pieces a batch can place; plants=False changes nothing."""
+    the plant registry (krator-master-plants.js) as pieces a batch can place; plants=False changes nothing. side (a dict,
+    with tex=True): the maps go into side['catalog-furniture'] for a sidecar file beside the page (matlib_pack.write_sidecar)
+    and the bundle reads them from KMAT_SIDE; side=None is the bundle as before, byte for byte."""
     fs = files(cultures, harvested)
     if plants:
         fs = fs[:-1] + [PLANTS_FILE] + fs[-1:]
     body = ''.join('/* ---- %s ---- */\n%s\n' % (kcat.rel(f), read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
     if tex:
         fs = fs + [DETAIL]
-        body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures()
+        body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures(side)
         body += '/* ---- %s ---- */\n%s\n' % (kcat.rel(DETAIL), read(DETAIL))
     return safe('/* kits/catalog furniture bundle (furniture_bundle.py): %s. GENERATED; edit the catalog files. */\n'
             'var KratorFurniture = (function () {\n%s\nreturn KF_API;\n})();\n' % (', '.join(fs), body))

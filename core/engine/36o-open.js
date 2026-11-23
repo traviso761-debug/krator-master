@@ -13,7 +13,8 @@
 //                                 meeting in the middle; default when w > 1.6), shape ('box', or 'tri': a triangle, its apex
 //                                 over the middle: the Lizardmen's caste doors), pivot (turns about its own middle, not a jamb:
 //                                 a triangle pivots so it never meets its slanted jambs), out (swings out of the face, not into
-//                                 the room), style (core/door's leaf look, KDOORLEAF: 'plank', 'panel', 'glazed', 'half', 'glass',
+//                                 the room), hwCol (a hardware style's metal, 'banded', 'scrolled', '...+pull': a hex, default brass),
+//                                 style (core/door's leaf look, KDOORLEAF: 'plank', 'panel', 'glazed', 'half', 'glass',
 //                                 'louvre', 'grille', 'slat'; the glazed ones' lights in the clear glass), and core/door's kind,
 //                                 preset, pair, both, spring (a sliding, lifting, folding, saloon door: KDOOR.add), ajar (radians: drawn standing that far open, as the builder drew it; E shuts it), name}. It draws nothing into the buckets:
 //                                 the leaves are one InstancedMesh per material key (two when the page has tents: a leaf in a
@@ -66,7 +67,7 @@ function svLeaf(x,y,z,yaw,w,h,o){o=o||{};const split=o.split==null?w>1.6:!!o.spl
  const st=o.style&&typeof KDOORLEAF!=='undefined'&&KDOORLEAF.STYLES.indexOf(o.style)>=0&&o.shape!=='tri'?o.style:null;
  const D=KDOOR.add({id:o.id==null?base+'.d'+i:o.id,at,hinge,p0,yaw:wy,sign:(o.mirror?-1:1)*(o.out?-1:1),w:w*sc,h:h*sc,t:t*sc,locked:!!o.locked,
   open,pivot:!!o.pivot,key:CURREC?CURREC.key:null,name:o.name||null,preset:o.preset,kind:o.kind,pair:o.pair,both:o.both,spring:o.spring,swing:o.swing,roll:o.roll,walk:o.walk,style:st});
- SV_OPEN.leaves.push({D,mk:o.mk||'wood',shape:o.shape==='tri'?'tri':'box',style:st,n:KDOOR.leafCount(D),col:o.col==null?0xffffff:(typeof o.col==='number'?o.col:o.col.clone()),cut:CUTC[3]>.5,q:new THREE.Quaternion().setFromAxisAngle(_up,wy),s:[w*sc,h*sc,t*sc]});
+ SV_OPEN.leaves.push({D,hwCol:o.hwCol==null?0xb8913f:o.hwCol,mk:o.mk||'wood',shape:o.shape==='tri'?'tri':'box',style:st,n:KDOOR.leafCount(D),col:o.col==null?0xffffff:(typeof o.col==='number'?o.col:o.col.clone()),cut:CUTC[3]>.5,q:new THREE.Quaternion().setFromAxisAngle(_up,wy),s:[w*sc,h*sc,t*sc]});
  return D;}
 function svDoorway(x,y,z,yaw,w,h,o){o=o||{};
  if(o.open){if(!o.hollow)svRoom(x,y,z,yaw,w,h);return null;}
@@ -93,6 +94,9 @@ function svLeafMat(mk){if(SV_LEAFMAT[mk])return SV_LEAFMAT[mk];const S=MAT[mk]||
  if(S&&S.map){m.map=S.map;m.normalMap=S.normalMap||null;m.roughnessMap=S.roughnessMap||null;if(S.normalMap)m.normalScale.copy(S.normalScale);
   const L=S.userData&&S.userData.lib;if(L)matHook(m,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}
  m.name='leaf:'+mk;return SV_LEAFMAT[mk]=m;}
+/* a hardware style's metal (core/door KDOORLEAF hw: bands, scrolls, pulls): one polished metal, tinted per leaf (instance colour) */
+let SV_HWMAT=null;
+function svHwMat(){return SV_HWMAT||(SV_HWMAT=Object.assign(new THREE.MeshStandardMaterial({color:0xffffff,roughness:.32,metalness:.85}),{name:'leaf:hardware'}));}
 function svOpenReset(){KDOOR.clear();SV_OPEN.leaves.length=0;SV_OPEN.meshes.length=0;SV_OPEN.cutMeshes.length=0;SV_OPEN.panes=0;SV_OPEN.cards=0;SV_OPEN.perKey={};}
 function svOpenFlush(parent,o){
  const groups=new Map();for(const L of SV_OPEN.leaves){const k=L.mk+'|'+L.shape+(L.style?'|'+L.style:'')+(L.cut?'|cut':'');if(!groups.has(k))groups.set(k,[]);groups.get(k).push(L);}
@@ -100,12 +104,14 @@ function svOpenFlush(parent,o){
   const im=new THREE.InstancedMesh(G[0].shape==='tri'?svTriGeo():LG?LG.frame:gbox(),svLeafMat(G[0].mk),N);im.name='door leaves '+k;im.userData.doorLeaves=true;
   /* a styled leaf's lights: their own mesh in the clear glass, every instance set with its leaf's (KDOORHOST.instanced, both meshes) */
   const gim=LG&&LG.glass?new THREE.InstancedMesh(LG.glass,MAT.paneClear,N):null;if(gim){gim.name='door glass '+k;gim.userData.doorLeaves=true;gim.frustumCulled=false;gim.receiveShadow=true;}
+  const hm=LG&&LG.hw?new THREE.InstancedMesh(LG.hw,svHwMat(),N):null;if(hm){hm.name='door hardware '+k;hm.userData.doorLeaves=true;hm.frustumCulled=false;hm.receiveShadow=true;}
+  const parts=[im,gim,hm].filter(Boolean);
   im.castShadow=true;im.receiveShadow=true;im.frustumCulled=false;   /* r128 culls an InstancedMesh by its geometry's sphere: the unit box at the origin */
   let n=0;G.forEach(L=>{const idx=[],shut=KDOOR.leaves(Object.assign({},L.D,{open:0}));
    for(let j=0;j<L.n;j++){const P=shut[j].p,S=L.n===1?L.s:shut[j].size;_svP.set(P[0],P[1],P[2]);_svS.set(S[0],S[1],S[2]);_svM.compose(_svP,L.q,_svS);
-    im.setMatrixAt(n,_svM);if(gim)gim.setMatrixAt(n,_svM);im.setColorAt(n,typeof L.col==='number'?hc(L.col):L.col);idx.push(n++);}   /* a hex is sRGB (hc); a THREE.Color is already linear, as emit() takes it */
-   KDOORHOST.instanced(L.D,gim?[im,gim]:im,L.n===1?idx[0]:idx,L.q,L.n===1?L.s:null);});
-  for(const m of gim?[im,gim]:[im]){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere&&m.computeBoundingSphere();
+    im.setMatrixAt(n,_svM);if(gim)gim.setMatrixAt(n,_svM);if(hm){hm.setMatrixAt(n,_svM);hm.setColorAt(n,hc(L.hwCol));}im.setColorAt(n,typeof L.col==='number'?hc(L.col):L.col);idx.push(n++);}   /* a hex is sRGB (hc); a THREE.Color is already linear, as emit() takes it */
+   KDOORHOST.instanced(L.D,parts.length>1?parts:im,L.n===1?idx[0]:idx,L.q,L.n===1?L.s:null);});
+  for(const m of parts){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere&&m.computeBoundingSphere();
    parent.add(m);SV_OPEN.meshes.push(m);if(G[0].cut)SV_OPEN.cutMeshes.push(m);}}
  for(const D of KDOOR.list)if(D.target>0||D.open>0)KDOORHOST.pose(D);
  if(typeof KWALK!=='undefined'&&!(o&&o.walk===false))svOpenWalk(KWALK);}   /* o.walk false: the page calls svOpenWalk itself, after its last walk records (Zeijani's interiors) */

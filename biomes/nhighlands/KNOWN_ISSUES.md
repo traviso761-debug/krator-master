@@ -29,6 +29,36 @@
       burns are a field (snags, fireweed), not `KFIRE`. Station 3's oaks, sycamore, manzanita and madrone are swlowlands' own, grown in place: they move with
       swlowlands' sources (`tools/reach.py`). Station 4's bristlecone role is the kit's own foxtail pine. Not built: seasons (the aspens' autumn, the
       snowline's year), the fire mosaic, ice on the tarns (`ext/54`), people (the herders, the Republic's and the Clansmen's camps).
+      **Fixed 2026-11-09 (branch `claude/nsemiarid-scablands-3b022c`):** the stations' own ground families (`ground.needles`, `goldgrass`, `slab`,
+      `chaparral`, `lush`, `fell`, `scree`, `snowbed`) were named in `materials.json` but never packed (that turn had no library images), so their
+      KGROUND layers drew untextured. Re-packed (`pack.py`: every older file the same bytes); montane, foothills and alpine rebuilt and GPU-verified
+      (`--assert --all-views`, `KRATOR_GL=gpu`); station 1 and the bogs name none of them and are unchanged.
+- [ ] **Station 6, the Tiguantin cloud-terraces (2026-11-16; GPU-verified 2026-11-17): what is approximate and for the scale-model queue** (`PLAN-STATIONS.md`,
+      "Showcase Station #6, as built"; branch `worktree-agent-a2e5b7deffd2170b1`).
+      - **GPU-verified 2026-11-17** (`KRATOR_GL=gpu` `verify.py dist/nhighlands-tiguantin.html --assert --all-views`, lane `rtx`): **all 16 views pass, exit 0 `OK`**
+        (179-275 draw calls, 6.79 M triangles drawn at the spur / 8.69 M scene triangles, max samplers 12, export profile 9/9 over the gully's box, core/ruins
+        16,171 terrace stones + 548 cell stones with 0 floating, attach audit 0.44%, 5,095 volumes none empty). Fixed on the way (`stations/tiguantin/88t-host-tiguantin.js`,
+        `98-host-station-take.js`): windlass posts/drums/ropes indexed `wd[2]` (`z = 0` bug had put them 130 m south of the winches); `PATCH` interior nodes
+        snapped to the stream ribbon's edge and to `holeR = SKY.r + 1.1` with `caveM` overlapping to `uHole.z + 1.35` (`polygonOffset`) so the stream bank and
+        the skylight collar have no sawtooth or rim sliver; `tibasalt` shade lifted and lip moss blended on `mS`; colons and apostrophes removed from view and
+        check names so Windows writes every screenshot cleanly.
+      - **The base's stage has no shaping hook**: `stations/tiguantin/44z-host-site.js` wraps the base's `baseH` (a hoisted function declaration in
+        `stations/montane/45-host-stage.js`) before the stage runs. The clean form is a `SITE.shape(x, z, h)` hook in the base's `baseH`, owed at the next
+        rebuild of stations 2-4 (it changes their pages' bytes, not their land).
+      - **The heights are real** (2,293-2,667 m), not station 1's page scale; nothing in the kit reads an absolute height but the sky's air and the fog.
+      - **Approximate**: the vault is a C.hall on the world's axes (rx 70 on x, rz 45 on z), not turned to the tube's ESE line (KCAVERN's hall has no yaw);
+        the tube's ends are rounded caps, not breakdown chokes; the paleosol is a plane (KSTRATA's formations), so it follows the terraces' bench at the
+        cliff's foot only inside the showcase stretch (the patch's s -420..440; elsewhere the NE wall's foot and the sheet's front read it ~2 m off);
+        the springs are a field (wet moss, ferns) and four cisterns, not running water; the fiamme are thin black partings, not lenses.
+      - **For the scale-model queue** (never edited here): `tube_lesser_06` / `cav_monks_archive` read `skylight_m: 0` and `depth_m: 65`; this station
+        opens a **16 m skylight** (`tiguantin-skylight`) over the vault's NE side where the gully has thinned the roof to ~9 m. The map could take
+        `skylight_m: 16` and a note that `depth_m` is the tube's run under the Lesser Throne's flank. The eastern highlands' station `lesser`
+        (`biomes/ehighlands/stations/lesser/46-host-land.js`) also opens a skylight on `tube_lesser_06` (r 11 m, on its flow's ESE flank): two pages draw
+        two holes in one tube, a question for the owner (one of them, or both as two skylights on the 38 km tube).
+      - **The renderer's memory**: the Throne's elfin trees on 11 m cells over the whole sheet were ~50,000 trees and the page died (an OOM kill under the
+        other sessions' load); they now grow within ~450 m of the showcase (`87-host-station-kin.js`).
+      - **The far country under the gully**: 82's KFAR lattice runs under the whole map 25 m below terrainH at its 110 m nodes; its cells stood over
+        the gully's floor as grey planes. `88t` drops its cells wholly inside the map's square (the ground covers them; the apron hides the edge).
 - [ ] **The crater wall's megabreccia (pair 7): the look to judge.** The crag pillars draw KSTRATA's `megabreccia` (swhighlands' `crest`) and the
       ground's steep faces KGROUND's `clast` blocks in the same rocks, where the geology bake puts this flank in the `impact` province
       (`kits/resources/ROCK-PROPOSAL.md`). The pillars use a crag-scale copy of the recipe (8 m blocks, `nhl-crag-breccia`); the steep's blocks take the

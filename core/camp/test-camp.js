@@ -100,5 +100,45 @@ ok('a tent is the same record at every site (its id is the band\'s and the progr
 ok('the same band at the same site pitches the same camp', JSON.stringify(KCAMP.pitch(base)) === JSON.stringify(P),
   JSON.stringify(KCAMP.pitch(Object.assign({}, base, { gap: 3 }))) !== JSON.stringify(P));
 
+// ---- the Coyote herders' row (11-camp-coyote.js) on kits/coyote's declared tipi, rack and pen boxes
+const cy58 = fs.readFileSync(path.join(ROOT, 'kits/coyote/src/58-cy-herders.js'), 'utf8');
+const CY_DIMS = {};
+const tipiM = cy58.match(/const CY_TIPI=\{s:\{R:([\d.]+),H:([\d.]+)\},m:\{R:([\d.]+),H:([\d.]+)\},l:\{R:([\d.]+),H:([\d.]+)\}\}/);
+if (tipiM) [['s', +tipiM[1], +tipiM[2]], ['m', +tipiM[3], +tipiM[4]], ['l', +tipiM[5], +tipiM[6]]].forEach(q => {
+  CY_DIMS['cy_tipi_' + q[0]] = { w: 2 * q[1] + 2, d: 2 * q[1] + 2, h: +(q[2] + 0.2).toFixed(2) };
+});
+for (const f of ['54-cy-peak.js', '58-cy-herders.js']) {
+  const s = fs.readFileSync(path.join(ROOT, 'kits/coyote/src', f), 'utf8');
+  for (const m of s.matchAll(/defBuilding\(\{key:'(cy_[a-z_]+)'[\s\S]{0,400}?\bw:([\d.]+),d:([\d.]+),h:([\d.]+)/g)) {
+    CY_DIMS[m[1]] = { w: +m[2], d: +m[3], h: +m[4] };
+  }
+}
+const cyDims = (k) => CY_DIMS[String(k).split('@')[0]] || null;
+const CPROG = KCAMP.coyoteProgram(0), CPROG_W = KCAMP.coyoteProgram('winter'), CROW = KCAMP.CULTURES['coyote-herder'];
+ok('kits/coyote declares a box matching 11-camp-coyote.js for every key of the Coyote herders\' program',
+  !!CROW && keysOf(CPROG).every(k => { const a = cyDims(k), b = CROW.pending[k] || CROW.pending[k.split('@')[0]];
+    return a && b && a.w === b.w && a.d === b.d && a.h === b.h; }),
+  !cyDims('cy_tipi_xl'), keysOf(CPROG).filter(k => !cyDims(k)).join(', '));
+const cpops = [];
+for (let w = 0; w < 60; w++) cpops.push(KCAMP.census({ id: 'sunrise-' + w, world: w, culture: 'coyote-herder', program: CPROG }).pop);
+const cSmall = { tents: CPROG.tents.filter(e => !/^cy_tipi_[ml]$/.test(e.key)), pens: CPROG.pens };
+const CC0 = KCAMP.census({ id: 'sunrise-0', world: 11, culture: 'coyote-herder', program: CPROG });
+ok('a Coyote herder band is 45 to 75 people across 60 seeds, households in tipis, shrine, racks and pens staffed',
+  cpops.every(p => p >= 45 && p <= 75) && CC0.households.length === 8 && CC0.households.every(h => h.tent) &&
+  CC0.people.filter(p => p.role === 'chief').length === 1 && CC0.people.filter(p => p.work).length === 7,
+  KCAMP.census({ id: 'x', world: 1, culture: 'coyote-herder', program: cSmall }).pop < 45,
+  'from ' + Math.min(...cpops) + ' to ' + Math.max(...cpops));
+const cBase = { id: 'sunrise-summer', world: 11, culture: 'coyote-herder', program: CPROG, site: { x: 0, z: 0 }, dims: cyDims, ground: { ok: () => true }, way: [0, 1] };
+const CP = KCAMP.pitch(cBase), CPW = KCAMP.pitch(Object.assign({}, cBase, { id: 'sunrise-winter', program: CPROG_W })), cChk = KCAMP.check(CP, { ok: () => true });
+const cChief = CP.records.find(r => r.kind === 'chief'), cPens = CP.records.filter(r => r.kind === 'pen');
+const cMouth = R => R.filter(r => r.kind !== 'pen').filter(r => dot([r.x - cBase.site.x, r.z - cBase.site.z], cBase.way) > Math.cos(Math.PI / 5)).length;
+ok('the Coyote band pitches its default horseshoe whole in summer and winter: chief opposite way in, mouth open, pens downwind',
+  CP.formation === 'horseshoe' && CP.short.length === 0 && CP.records.length === 16 && cChk.overlaps === 0 &&
+  cMouth(CP.records) === 0 && dot([cChief.x - CP.site.x, cChief.z - CP.site.z], [0, -1]) > 0.95 &&
+  cPens.length === 3 && cPens.every(r => dot([r.x - CP.site.x, r.z - CP.site.z], CROW.wind) > 0.3) &&
+  CPW.records.filter(r => r.kind !== 'pen' && r.kind !== 'trade').every(r => r.v === 1),
+  cMouth(CP.records.map(r => Object.assign({}, r, { z: 2 * cBase.site.z - r.z }))) > 0,
+  CP.records.length + ' records, overlaps ' + cChk.overlaps);
+
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

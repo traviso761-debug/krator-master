@@ -26,7 +26,10 @@ ytRoomDef({key:'yt_quunsul_hall',name:'Quunsul hall (the council of the clans)',
   ytHanging('applique',D.Ri,D.Hi,.4,2.2,PI*1.15,PI*1.45);ytHanging('applique',D.Ri,D.Hi,.4,2.2,PI*1.55,PI*1.85);ytHanging('ob',D.Ri,D.Hi,2.35,2.75,PI*1.1,PI*1.9,.1);
   for(let i=0;i<4;i++){const a=PI*(1.2+i*.2);ytLamp(Math.cos(a)*(D.Rr-.35),D.yFl+.45,Math.sin(a)*(D.Rr-.35),-a-PI/2);}
   ytRug('mosaic',0,D.yFl,2.2,2.4,1.6,0);wkPad(0,0,D.Rr*1.4,D.Rr*1.4,D.yFl);
-  FURNISH('generic_writing_supplies',.9,D.yFl,-D.Rr+1.2,0);FURNISH('generic_tea_set',-1.2,D.yFl,-D.Rr+1.3,0);FURNISH('generic_spirits',1.6,D.yFl,-D.Rr+1.5,0);FURNISH('generic_water',-2.0,D.yFl,1.8,0);
+  FURNISH('generic_writing_supplies',.9,D.yFl,-D.Rr+2.4,0);FURNISH('khaayken_common_tea_board',-1.2,D.yFl,-D.Rr+2.4,0);FURNISH('generic_water',-2.0,D.yFl,1.8,0);FURNISH('generic_spirits',1.9,D.yFl,-3.3,0);
+  /* the clans' figures on plinths round the stove; the State's faces hung round the wall above the hangings, tracery by the door */
+  for(const a of [PI*1.3,PI*1.5,PI*1.7])ytFigure(Math.cos(a)*2.6,D.yFl,Math.sin(a)*2.6,-a-PI/2,.75,{plinth:.45});
+  ytLoot(ytWallSlots(D,PI*.78,PI*2.22,7,3.15,'mask').map(S=>(S[5]=.5,S)).concat([ytWallSlot(D,'tracery',PI*.32,1.5,.9),ytWallSlot(D,'tracery',PI*.68,1.5,.9)]),'state');
   return h;},
  after(D){ytSerge(-2.6,D.Ro+2.4,3.0);ytSerge(2.6,D.Ro+2.4,3.0);}});
 ytRoomDef({key:'yt_song_house',name:'Song house (the qaggiq)',seed:9403,dims:{Rr:5.6,Ho:6.2,sink:.5,pass:2.8},budget:160000,
@@ -35,13 +38,14 @@ ytRoomDef({key:'yt_song_house',name:'Song house (the qaggiq)',seed:9403,dims:{Rr
  inside(D,season){ytBenchRing(D.Rr-.6,PI*.65,PI*2.35,D.yFl);ytDrum(0,D.yFl,-.6,0);ytRug('mosaic',0,D.yFl,.4,2.6,2.6,0);
   for(let i=0;i<6;i++){const a=PI*(.85+i*.26);ytLamp(Math.cos(a)*(D.Rr-.3),D.yFl+.45,Math.sin(a)*(D.Rr-.3),-a-PI/2);}
   wkPad(0,0,D.Rr*1.4,D.Rr*1.4,D.yFl);FURNISH('generic_water',-1.6,D.yFl,-D.Rr+1.0,0);FURNISH('generic_ale',1.6,D.yFl,-D.Rr+1.0,0);FURNISH('generic_tea_set',2.4,D.yFl,1.2,0);FURNISH('generic_snack_bowl',-2.4,D.yFl,1.2,0);
+  ytFigure(-1.5,D.yFl,-1.9,.4,.7,{form:'drummer',plinth:.35});ytLoot([ytWallSlot(D,'mask',PI*1.3,2.3,.34),ytWallSlot(D,'mask',PI*1.7,2.3,.34)],'common');
   return {stove:null,lamps:6,fuel:'fat',crowd:true,heated:season!=='summer'};}});
 ytRoomDef({key:'yt_shrine',name:'Shrine (the spirit house)',seed:9405,dims:{Rr:2.6,Ho:3.6,kind:'stone',pass:2.4},budget:80000,
  tags:{types:['religious'],wealth:'middle',style:'state',role:'shrine',job:'worship'},opts:{window:false},
  note:'a small stone dome: carved masks round its wall, the shaman\'s drum, offerings on a slab altar under the vent',
  inside(D){ytMaskWall(D.Ri,D.Hi,1.5,PI*1.05,PI*1.95,9);ytMaskWall(D.Ri,D.Hi,2.15,PI*1.15,PI*1.85,6);
   box('soap',0,D.yFl,-D.Rr+.9,1.4,.75,.6,P('ice'));ytLamp(-.4,D.yFl+.75,-D.Rr+.9,0);ytLamp(.4,D.yFl+.75,-D.Rr+.9,0);ytDrum(1.2,D.yFl,0,-.6);
-  FURNISH('generic_herb_bundles',.0,D.yFl+.75,-D.Rr+.95,0);FURNISH('generic_candle_supply',-1.1,D.yFl,-.4,0);FURNISH('generic_meal',.0,D.yFl,.6,0);FURNISH('generic_cured_meat',-1.0,D.yFl,.9,0);
+  ytFigure(0,D.yFl+.75,-D.Rr+.85,0,.5,{form:'transform',mk:'soap'});FURNISH('generic_herb_bundles',-.9,D.yFl,-1.25,.6);FURNISH('generic_candle_supply',-1.1,D.yFl,-.4,0);FURNISH('generic_meal',.0,D.yFl,.6,0);FURNISH('generic_cured_meat',-1.0,D.yFl,.9,0);
   wkPad(0,0,D.Rr*1.3,D.Rr*1.3,D.yFl);return {stove:null,lamps:2,fuel:'fat',heated:false};}});
 /* the clan tomb: a corbelled mound, no room to walk: the dead lie in stone cists round a low inner chamber */
 defBuilding({key:'yt_clan_tomb',name:'Clan tomb (corbelled mound)',seed:9407,w:9,d:9.5,h:3.4,cut:true,budget:50000,
@@ -70,5 +74,13 @@ defBuilding({key:'yt_chief_hall',name:"High Chief's hall (Khaay Chiip)",seed:940
    ytHanging('applique',D.Ri,D.Hi,yP+.4,yP+2.5,PI+.45,PI*1.42);ytHanging('applique',D.Ri,D.Hi,yP+.4,yP+2.5,PI*1.58,TAU-.45);ytHanging('amur',D.Ri,D.Hi,yP+2.65,yP+3.2,PI+.45,TAU-.45,.1);
    box('bead',0,D.yFl+.28,D.zPlat+.04,3.4,.5,.02,P('ice'));ytRug('mosaic',0,D.yFl,D.zPlat+1.6,3.6,2.2,0);
    for(const s of [-1,1]){ytSerge(s*2.8,D.Ro+2.8,3.2);W(0,D.yFl,0,0,()=>ytSerge(s*2.2,D.zPlat+.6,2.6));}
-   FURNISH('generic_strongbox',2.2,yP,-2.2,-.6);FURNISH('generic_spirits',-1.4,yP,-1.6,.2);FURNISH('generic_writing_supplies',1.2,yP,-1.8,0);});
+   FURNISH('khaayken_court_bead_chest',2.1,yP,-2.1,-.65);FURNISH('generic_spirits',-1.4,yP,-1.6,.2);FURNISH('generic_writing_supplies',1.2,yP,-1.8,0);
+   /* the High Chief's trophies, the most of any hall (the loot rule, 45-yt-inside.js): the State's faces on stands either side
+      of the high seat, its masks hung over the hangings, tracery and silk on the front walls, alabaster lamps by the rug;
+      carved figures at the platform's front corners */
+   ytFigure(-2.0,yP,D.zPlat-.35,.4,.6,{});ytFigure(2.0,yP,D.zPlat-.35,-.4,.6,{});
+   const sl=[['head',-1.25,yP,D.zPlat-1.3,0,.46],['head',1.25,yP,D.zPlat-1.3,0,.46]];
+   for(let i=0;i<5;i++)sl.push(ytWallSlot(D,'mask',PI+.6+i*(PI-1.2)/4,yP+1.7,.34,.16));
+   sl.push(ytWallSlot(D,'tracery',.55,D.yFl+1.4,1.0),ytWallSlot(D,'silk',PI-.55,D.yFl+1.5,1.1),['eternian_court_alabaster_lamp',-2.2,D.yFl,D.zPlat+2.9,0],['eternian_court_alabaster_lamp',2.2,D.yFl,D.zPlat+2.9,0]);
+   ytLoot(sl,'state');});
   CURREC.riches=['applique','amur','mosaic','bead','serge','high seat'];}});

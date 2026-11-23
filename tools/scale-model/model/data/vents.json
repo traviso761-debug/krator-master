@@ -95,9 +95,15 @@
 {"px": [1024.0, 1485.0], "floor": 4460.0, "peak": 4610.0, "scale": 0.18, "radius": 1.6},
 {"px": [176.0, 322.0], "floor": -680.0, "rim_m": 12.0, "r_km": 32.0, "name": "Arch Krakatoan Seamount (Main Caldera)", "kind": "submarine_caldera"},
 {"px": [166.0, 338.0], "floor": -540.0, "rim_m": -18.0, "r_km": 24.0, "name": "South-West Surtseyan Vent", "kind": "submarine_caldera"},
-{"name": "Mount Pyre", "px": [104.0, 1304.0], "peak": 6650, "kind": "stratovolcano", "region": "Firebliss Range"},
-{"name": "Cinder-Crown", "px": [148.0, 1292.0], "peak": 5940, "kind": "stratovolcano", "region": "Firebliss Range"},
-{"name": "Firebliss Mons", "px": [206.0, 1284.0], "peak": 6380, "kind": "stratovolcano", "region": "Firebliss Range"},
-{"name": "Brimstone Spire", "px": [254.0, 1288.0], "peak": 5780, "kind": "stratovolcano", "region": "Firebliss Range"},
-{"name": "Copper-Fissure Vent", "px": [298.0, 1286.0], "peak": 5360, "kind": "stratovolcano", "region": "Firebliss Range"}
+{"name": "Mount Pyre", "px": [104.0, 1304.0], "peak": 6650, "kind": "stratovolcano", "region": "Firebliss Range", "floor": 5820.0, "scale": 0.4, "radius": 7.2},
+{"name": "Cinder-Crown", "px": [148.0, 1292.0], "peak": 5940, "kind": "stratovolcano", "region": "Firebliss Range", "floor": 5320.0, "scale": 0.4, "radius": 6.8},
+{"name": "Firebliss Mons", "px": [206.0, 1284.0], "peak": 6380, "kind": "stratovolcano", "region": "Firebliss Range", "floor": 5480.0, "scale": 0.4, "radius": 8.8},
+{"name": "Brimstone Spire", "px": [254.0, 1288.0], "peak": 5780, "kind": "stratovolcano", "region": "Firebliss Range", "floor": 5180.0, "scale": 0.4, "radius": 6.4},
+{"name": "Copper-Fissure Vent", "px": [298.0, 1286.0], "peak": 5360, "kind": "stratovolcano", "region": "Firebliss Range", "floor": 4680.0, "scale": 0.4, "radius": 6.0},
+{"px": [839.0, 1394.0], "floor": 3637.1, "scale": 0.3, "radius": 1.4, "kind": "spring", "name": "Godshearth: the hot lake's bed vents", "region": "rmw4wou2y1hhc", "T": 88, "reach_m": 900},
+{"px": [841.62, 1393.78], "floor": 3643.2, "scale": 0.15, "radius": 0.8, "kind": "spring", "name": "Godshearth: the hot lake's shore vents", "region": "rmw4wou2y1hhc", "T": 80, "reach_m": 250},
+{"px": [842.02, 1394.06], "floor": 3642.6, "scale": 0.2, "radius": 1.0, "kind": "geyser", "name": "Godshearth: the shore geyser field", "region": "rmw4wou2y1hhc", "T": 94, "reach_m": 430},
+{"px": [842.34, 1393.77], "floor": 3646.7, "scale": 0.12, "radius": 0.6, "kind": "fumarole", "name": "Godshearth: the shore vent line (station 1's hearth grove)", "region": "rmw4wou2y1hhc", "T": 92, "reach_m": 100, "line": [[842.19, 1393.62], [842.35, 1393.765], [842.48, 1393.925]]},
+{"px": [836.033, 1388.033], "floor": 3739.7, "scale": 0.15, "radius": 0.7, "kind": "fumarole", "name": "Godshearth: the grove's vent line (station 2)", "region": "rmw4wou2y1hhc", "T": 92, "reach_m": 140, "line": [[835.4, 1387.4], [836.0, 1388.0], [836.7, 1388.7]]},
+{"px": [845.0, 1396.5], "floor": 3619.0, "scale": 0.12, "radius": 0.6, "kind": "fumarole", "name": "Godshearth: the spillway's head", "region": "rmw4wou2y1hhc", "T": 90, "reach_m": 120}
 ]

@@ -56,5 +56,5 @@ The page's first pass (2026-11-16, the owner: "build the page next"). What it do
       Order's herds has its corral and pens but no animals. The footpath round the isle is drawn only on each village's near
       ground.
 - [ ] **Not on the page:** the bay isle's Threshold Light, the people asleep in the
-      Hall, the textures owed (`core/materials/PROMPTS-NEEDED.md` section 56: the ceiling is a deep-blue lacquer with gold stars
+      Hall, the textures owed (`core/materials/PROMPTS-NEEDED.md` section 62: the ceiling is a deep-blue lacquer with gold stars
       until then).

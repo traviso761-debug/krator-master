@@ -47,7 +47,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `60-flora.js` | 2 | 15. FLORA — LOCUS (1) |
 | `62-plants.js` | 4 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
-| `66-locus-furnish.js` | 12 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
+| `66-locus-furnish.js` | 13 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
 | `67-lo-trades.js` | 6 | = (1) |
 | `68-place.js` | 17 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `68c-locus-crossings.js` | 10 | 18c. POOL CROSSINGS — LOCUS (2026-10-01) (1) |

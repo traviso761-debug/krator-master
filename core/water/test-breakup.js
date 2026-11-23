@@ -29,7 +29,10 @@ const SWELL=[[.05,22,35,0,.03],[.03,13,-50,1.3,.03],[.012,6,80,2.2,.02]];
 const L=W.open({name:'lake',level:0,swell:SWELL,field:0,bounds:[-500,-500,500,500]}),P=W.still({name:'pool',level:0,bounds:[0,0,40,40]});
 const dL0=W.draw(L,{}),dP0=W.drawStill(P,{}),k0=compiled(dL0.material),s0=compiled(dP0.material);
 eval(fs.readFileSync(path.join(ROOT,'core/water/ext/56-core-water-breakup.js'),'utf8'));
-ok('loading ext/56 changes no drawing (the lake\'s and the pool\'s shaders and keys as they were)',JSON.stringify(compiled(W.draw(L,{}).material))===JSON.stringify(k0)&&JSON.stringify(compiled(W.drawStill(P,{}).material))===JSON.stringify(s0),false);
+{const AUTO0=W.BREAKUP_AUTO;W.BREAKUP_AUTO=false;   /* on by default since 2026-11-09: with it off, loading ext/56 is neutral */
+ok('loading ext/56 with BREAKUP_AUTO off changes no drawing (the lake\'s and the pool\'s shaders and keys as they were)',JSON.stringify(compiled(W.draw(L,{}).material))===JSON.stringify(k0)&&JSON.stringify(compiled(W.drawStill(P,{}).material))===JSON.stringify(s0),false);
+W.BREAKUP_AUTO=AUTO0;
+ok('with the default (on) the lake and the pool take the breakup as they are drawn',compiled(W.draw(L,{}).material).fs.includes('wtrBreakup(')&&compiled(W.drawStill(P,{}).material).fs.includes('wtrBreakup('),false);}
 
 // the twin and the text
 {const t=211.7,G=glslProgram(A.waveGLSL()+'\n'+W.breakupGLSL({}),{atmWaveT:A.waveWrap(t),atmWaveAmp:PW.amp,cameraPosition:[0,0,0]});let e=0;
@@ -68,9 +71,10 @@ const corr=(fn)=>{const a=[],b=[];for(let x=-200;x<200;x+=.5){a.push(fn(x));b.pu
   nf>=1&&cf.fs.includes('wtrBreakupF(wtrBn,vWtrW.xz,vWtrF)')&&cf.fs.indexOf('vec3 wtrBreakupV(')<cf.fs.indexOf('void main('),cf.fs.includes('wtrBreakup(wtrBn,vWtrW.xz)'));}
 // ---- AUTO (the core pass): the default behind a switch
 {const fresh=()=>W.open({name:'auto lake',level:0,swell:SWELL,field:0,bounds:[-50,-50,50,50]}),R=()=>W.flow({name:'auto stream',pts:[[0,0,1],[40,0,.9]],width:8,speed:.6});
- const off=compiled(W.draw(fresh(),{}).material).fs;W.BREAKUP_AUTO=true;
+ const def=W.BREAKUP_AUTO;W.BREAKUP_AUTO=false;const off=compiled(W.draw(fresh(),{}).material).fs;W.BREAKUP_AUTO=true;
  const on=compiled(W.draw(fresh(),{}).material).fs,fl=compiled(W.drawFlow(R(),{}).material).fs,opt=compiled(W.draw(fresh(),{breakup:false}).material).fs,sm=compiled(W.stillMaterial({})).fs;W.BREAKUP_AUTO=false;
- const after=compiled(W.draw(fresh(),{}).material).fs;
- ok('BREAKUP_AUTO: off (the default) a drawing is the old one; on, open water, ribbons (with the current) and stillMaterial take it as they are made; breakup: false keeps one out',
+ const after=compiled(W.draw(fresh(),{}).material).fs;W.BREAKUP_AUTO=def;
+ ok('BREAKUP_AUTO is on by default (the owner\'s flip, 2026-11-09)',def===true,false);
+ ok('BREAKUP_AUTO: off a drawing is the old one; on, open water, ribbons (with the current) and stillMaterial take it as they are made; breakup: false keeps one out',
   !off.includes('wtrBreakup(')&&on.includes('wtrBreakup(wtrBn,vWtrP)')&&fl.includes('wtrBreakupF(wtrBn,vWtrW.xz,vWtrF)')&&sm.includes('wtrBreakup(wtrBn,vWtrW.xz)')&&!opt.includes('wtrBreakup(')&&!after.includes('wtrBreakup('),false);}
 console.log(bad?'\n'+bad+' FAILED':'\nall passed');process.exit(bad?1:0);

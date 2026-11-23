@@ -100,7 +100,7 @@ every ruined metal), `paint` (`metal.painted.chipped`, 1.5 m: the furniture bodi
 (`metal.ancient.white`, 4 m: the Ancients' panel on canopies and kiosks), `ballast` (`ground.gravel042`, 3 m), `rubble`
 (`ground.ruin`, 3 m), `corrugated` (`metal.corrugated.rusty`, 1.2 m: the wagons' sides). Lane paint is geometry (thin pale
 strips on the surface), glass a plain material. Owed to the library and listed in `core/materials/PROMPTS-NEEDED.md`
-section 42: worn asphalt with faded lane paint, rail ballast with sleeper shadows, a rusted rail head.
+section 37: worn asphalt with faded lane paint, rail ballast with sleeper shadows, a rusted rail head.
 
 ## 6. Order of work
 

@@ -1,5 +1,9 @@
 # kits/zeijani: the Zeijani building kit
 
+The building kit of the Zeijani, the Throne's hidden cave people: dwellings, galleries and estates carved into the tuff, the
+kiva, the temple cut from one rock, the council in its pit, shops, works and alecap beds in the dark, each with its rooms
+carved or planned and furnished. Its first world is Dhelv.
+
 The Zeijani are the Throne's hidden cave people (the owner's name for them since 2026-10-07; they were first called
 the Cthonians). See `biomes/throne/NOTES.md`, "Peoples of the island".
 
@@ -10,7 +14,7 @@ the Cthonians). See `biomes/throne/NOTES.md`, "Peoples of the island".
 - Their arts: fungus medicine and alchemy, and the alecap, a purple mushroom brewed into beer. In some kiva ceremonies
   they burn Ranj, the Throne's spice, as incense.
 
-**The kit is finished** (PLAN.md phases P0 to P7). It holds 83 defs on one sheet (`dist/zeijani.html`), in rows by family:
+**The kit is finished** (PLAN.md phases P0 to P8; P8, the docs and the wrap-up, 2026-11-09). It holds 83 defs on one sheet (`dist/zeijani.html`), in rows by family:
 
 | Row | Defs |
 |---|---|
@@ -42,17 +46,20 @@ Its first world is the capital, **`settlements/dhelv`**.
 ## Build and verify
 
 ```
-cd kits/zeijani && python3 build.py                            # dist/zeijani.html (about 11 MB: the texture pack is inlined)
+cd kits/zeijani && python3 build.py                            # dist/zeijani.html (1.5 MB) and its texture pack, two sidecars (dist/zeijani.tex.*.js, 24 MB)
 python3 verify.py dist/zeijani.html --assert                   # the gate: the kit's invariants and their negatives
 python3 verify.py dist/zeijani.html --only zj_kiva --views "<view name>" --out <scratch>/shots   # one def, shots (also --all-views, --cut, --night, --cam)
 python3 tools/textures/pack.py kits/zeijani                    # after editing materials.json (from the repo root)
-python3 tools/node_in_chromium.py core/terrain/test-cavern.js  # the cavern module's node test (no node here)
+node core/terrain/test-cavern.js                               # the cavern module's test (tools/node_in_chromium.py runs it where no node is)
 ```
 
-On the page: **T** inspector, **C** cut-away (a carved def's rock is cut 2 m above each void's own floor, a dollhouse at every level, shafts whole; the ground over a carved or sunk def opens; a built def opens on the camera's side), **N**
-night, **P** polygon tool, **F** walk: the walker stands on the `core/walk` floors the plans wrote (the sheet's ground, the
-carved rooms, the stairs, the tubes) and is refused where no floor lies within a step or a block stands; **R** run,
-**double-click** drops a marker and **G** goes to it. `?only=key,key`,
+On the page (the controls are core/host's since 2026-10-18, `core/host/README.md`): drag to orbit, right-drag to pan, the wheel
+to zoom, **W A S D** to move, **Q / E** down and up (**E** also opens or shuts the door in reach), Shift faster, Ctrl slower;
+**click** to inspect (the inspector panel's tools lay out a polygon or a path), **C** cut-away (a carved def's rock is cut 2 m
+above each void's own floor, a dollhouse at every level, shafts whole; the ground over a carved or sunk def opens; a built def
+opens on the camera's side), **N** night, **F** walk: the walker stands on the `core/walk` floors the plans wrote (the sheet's
+ground, the carved rooms, the stairs, the tubes) and is refused where no floor lies within a step or a block stands;
+**double-click** drops a pin, **G** flies to it, **F** walks from it, **Esc** lifts it. `?only=key,key`,
 `?mat=proc` (vertex colours only), `?t=` (pin the clock), `?hour=` (the sky's hour), `?furniture=0` (no furniture drawn),
 `?interiors=0` (no interiors).
 
@@ -81,11 +88,13 @@ carved rooms, the stairs, the tubes) and is refused where no floor lies within a
 | `52-zj-trade.js` | the tavern and the inn, each carved and constructed; the market stalls (a wall niche; a frame under a felt awning or, `v: 1`, fungus caps) |
 | `53-zj-additions.js` | PLAN.md 13's additions: the air-shaft head, the rolling stone door (its own passage), the bat roost, the dovecote, the hot-spring bath, the light-well mirror, the ancestor niche, the signal station |
 | `54-zj-square.js` | the square (the owner's review, to fill Dhelv's square): the park under the light well (`zj_park`), the row house (a planned body, three variants), the market hall, the public fountain |
+| `55-zj-trades.js` | `ZT_TRADES`, the Voth census's 44 trades against the kit's defs ([G data]; `tools/check_trades.py`, verify's `voth-trades`) |
 | `89-rows.js` | the sheet's rows by family |
 | `90-scene.js` | renderer, sky, ground, layout, `buildWorld()` |
 | `91-probe.js` | `window._api`, `hostChecks()` and `hostNegatives()` |
 | `91f-furnish.js`, `91n-night.js`, `93-anim.js` | catalog furniture (`core/furnish`), lamp halos and the light pool, the clock and smoke |
-| `92-camera.js` | views, orbit, walk, inspector, polygon tool |
+| `92-world.js` | builds the world and names the views (`autoViews`); core/engine's file, byte for byte |
+| `99-host-take.js` | hands the page to core/host (the camera, the loop, the panel, the probe, the polygon and path tools): the kit's views, inspector words, the walk registry and the interiors' furniture records. It replaced the kit's own `92-camera.js` (2026-10-18) |
 
 The cavern composes a carved def's plan in phases (`cvFromItem`): masses and pits, the rock left standing in them (monoliths), the rooms, then every other void (`phase` on a void overrides). Void kinds `floor` and `block` are walk entries only (a monolith's terrace, its sides).
 
@@ -95,6 +104,17 @@ The Zeijani's vocabulary lives in the shared modules (P1): the `zeijani` culture
 `zeijani` socket pack and its `spiralarch` emblem in `core/sockets`, the furniture in
 `kits/catalog/krator-master-furniture-zeijani.js`, the room kinds (`kiva brewery lab cell ossuary cistern guardroom court alecap taproom records`, and per trade `zjshop_<trade>`, `zjwork_<trade>`) in
 `kits/interiors/sets/zeijani.js`.
+
+## The engine: a fork of core/engine (status, 2026-11-09)
+
+The kit runs its own fork of the building-kit engine (`core/engine`, from `kits/scyvoi`; MODULARITY-PLAN.md step 4, "Not
+yet on it"): `10-core.js`, `27-mat.js`, `30-geo.js`, `36-def.js`, `90-scene.js`, `91f-furnish.js`, `91n-night.js`, `93-anim.js` and
+`99-host-take.js` differ from the engine's (the cavern host, the walk registry, the interiors and the carved defs' cut-away run
+through them); `92-world.js` is the engine's byte for byte, and `core/engine/36o-open.js` (doors and glass) is read in place.
+The camera is not the kit's any more: the sheet and Dhelv are on `core/host` (2026-10-18), and the kit's old `92-camera.js`,
+which MODULARITY-PLAN.md still names as the controls' reference, is retired (its controls live on in `core/host/90-host-camera.js`,
+the walk on the page's `core/walk` floors). Porting the fork onto `core/engine` is its own step, with a fingerprint
+(`core/engine/fingerprint.py`); it is not done.
 
 ## Doors and glass (core/door, 2026-11-03)
 

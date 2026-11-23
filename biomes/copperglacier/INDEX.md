@@ -4,7 +4,7 @@
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/copperglacier-icefield.html`, `dist/copperglacier-pass.html`, `dist/copperglacier.html`
+Built output (never open it; edit `src/` and rebuild): `dist/copperglacier-azurite.html`, `dist/copperglacier-icefield.html`, `dist/copperglacier-pass.html`, `dist/copperglacier.html`
 
 Build: `cd biomes/copperglacier && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -35,11 +35,11 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44z-host-site.js` | 3 |  |
-| `45-host-stage.js` | 17 | the land (38); the copper (kits/resources' data, CG_RES: 44r, w (108); the fields (cached below; these are the definiti (117); the host binding (150) |
+| `45-host-stage.js` | 19 | the land (41); the copper (kits/resources' data, CG_RES: 44r, w (120); the fields (cached below; these are the definiti (129); the host binding (164) |
 | `50-biome-copperglacier.js` | 9 | palettes (18); the small plants, tagged (60 places them; the in (29); textures (the procedural fallbacks: a page with  (44); materials (BIO.libSwap gives each slot its libra (55); geometries local to this kit (69); instanced items (84) |
 | `60-biome-copperglacier-floor.js` | 8 |  |
 | `70-biome-copperglacier.js` | <1 |  |
-| `84-host-ground.js` | 8 |  |
+| `84-host-ground.js` | 11 |  |
 | `85-host-far.js` | 3 |  |
 | `86-host-glacier.js` | 8 |  |
 | `89-host-sky.js` | 1 |  |
@@ -48,3 +48,13 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `89z-host-build.js` | 5 |  |
 | `99-host-take.js` | 13 |  |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| azurite | 44z-host-site.js | 13 |
+| icefield | 44z-host-site.js | 2 |
+| pass | 44z-host-site.js | 3 |

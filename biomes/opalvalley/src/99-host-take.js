@@ -11,15 +11,15 @@ const VIEWS=(function(){const S=SITE;
  if(SKEY==='riftmouth'){const xl=SITE.chain[0].x1,xp=(SITE.chain[2].x0+SITE.chain[2].x1)/2,gw=gorgeW(-600);
   v['The Opal Cataract']=look(420,axisZ(420)-30,25,1500,axisZ(1500),60);v['From the lip']=look(xl+70,axisZ(xl)-70,3,xp,axisZ(xp),-60);
   v['The plunge pool']=look(xp-260,axisZ(xp)+gorgeW(xp)-30,40,xp+100,axisZ(xp),0);v['The gorge']=look(-500,axisZ(-500)-gw-25,4,-1600,axisZ(-1600),-30);
-  if(site)v['The toll-house\'s site']=look(site.x+60,site.z+70,6,site.x,site.z,0);}
+  if(site)v['The toll-house site']=look(site.x+60,site.z+70,6,site.x,site.z,0);}
  else{v['The lakes stepping down']=look(LAKES[0].x0+260,axisZ(LAKES[0].x0+260)-520,110,LAKES[LAKES.length-1].x1,axisZ(LAKES[LAKES.length-1].x1),0);
   v[{sinter:'The sinter dams',moraine:'A moraine bar',tuff:'A tuff sill'}[SITE.dam]]=look(xr-170,zr-90,14,xr+60,zr,6);
-  v['The station\'s lake from its shore']=look(0,0,1.7,0,axisZ(0)+120,0);
+  v['The station lake from its shore']=look(0,0,1.7,0,axisZ(0)+120,0);
   if(SKEY==='upperbed')v['A placer sluice on the bar']=(function(){const s=DIGS.find(r=>r.kind==='sluice'&&r.x);return s?look(s.x+24,s.z+(s.z>axisZ(s.x)?22:-22),5,s.x,s.z,1):look(300,-200,8,0,axisZ(0),0);})();
   if(SITE.canyon)v['Down the canyon']=look(LAKES[0].x1+100,axisZ(LAKES[0].x1+100)-30,30,LAKES[2].x1,axisZ(LAKES[2].x1),0);}
  if(ad){const ca=Math.cos(ad.az),sa=Math.sin(ad.az),cx=ad.x+ca*30+sa*14,cz=ad.z+sa*30-ca*14;v['An adit on the wall']=[cx,gh(cx,cz,3),cz,ad.x,gh(ad.x,ad.z,1.4),ad.z];}   /* from down the slope and a little to the side */
  if(pl&&SKEY!=='riftmouth')v['The placer pits']=look(pl.x+30,pl.z-24,6,pl.x,pl.z,0);
- if(SKEY==='middlebed'&&S.vents){const vv=S.vents[0];v['The warm seeps\' crust']=look(vv.x+34,vv.z-24,11,vv.x,vv.z,0);}
+ if(SKEY==='middlebed'&&S.vents){const vv=S.vents[0];v['The warm seeps crust']=look(vv.x+34,vv.z-24,11,vv.x,vv.z,0);}
  if(typeof ADIT!=='undefined'&&ADIT){const P=ADIT.pts,a=P[1],b=P[Math.min(3,P.length-1)],V=ADIT.vug,e=P[P.length-1];
   v['Inside the adit']=[a[0],a[1]+1.6,a[2],b[0],b[1]+1.4,b[2]];
   {const r=ADIT.record,ca=Math.cos(r.az),sa=Math.sin(r.az),cx=r.x+ca*13+sa*2.5,cz=r.z+sa*13-ca*2.5;v['An adit on the wall']=[cx,gh(cx,cz,1.8),cz,r.x,ADIT.y0+1.5,r.z];}   /* the walk-in adit: in front of its portal, looking in */v['The opal vug']=[e[0],e[1]+1.6,e[2],V[0],V[1]+1.2,V[2]];}

@@ -45,7 +45,7 @@ vec3 kf_hash(vec3 p) {
 }
 
 void vertex() {
-	kc_push(VERTEX, NORMAL);
+	kc_push(VERTEX, NORMAL, CUSTOM1.x, CUSTOM1.y);
 	vec3 n = normalize(NORMAL);
 	vec3 d = kfDir;
 	float ln = 1.0;

@@ -16,12 +16,15 @@ XANADU.LOD={tree:1200,floor:600,farFloor:3000,dress:1200,logs:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),flow=BIO.field('flow',x,z),mist=BIO.field('mist',x,z),h=Y(x,z);
+// h and shore are getters, sampled at the first read (as biomes/xanadu's, the load-time pass 2026-11-11): few passes
+// ask, and every caller reads them at once, so the values are the same
+function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),flow=BIO.field('flow',x,z),mist=BIO.field('mist',x,z);
+ let hv;const hAt=()=>hv===undefined?(hv=Y(x,z)):hv;
  const low=smooth(.22,.08,up),mz=smooth(.35,.7,mist);
  // the groves: the vale's trees gather in them round sunny glades ("forests ancient as the hills, enfolding sunny spots of greenery")
  const grove=smooth(.45,.58,fbm(x*.0036+11,z*.0036-7,4747,3));
- return{up,wet,flow,mist,h,grove,
-  shore:low*smooth(10,2.5,h)*smooth(.68,.84,wet),                         // the lake shore
+ return{up,wet,flow,mist,get h(){return hAt();},grove,
+  get shore(){return low*smooth(10,2.5,hAt())*smooth(.68,.84,wet);},     // the lake shore
   rip:smooth(.25,.75,flow)*smooth(.45,.2,up),                              // the river's banks
   forest:low*smooth(.64,.78,wet)*(1-.6*mz),                                // the green flanks: Hyrcanian and East Asian wood
   vale:low*smooth(.80,.62,wet)*(1-.6*mz),                                  // the open vale: parkland, glades, gardens nobody planted

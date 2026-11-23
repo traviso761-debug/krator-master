@@ -171,6 +171,18 @@
     ],
     "harbour_wlev_m": 0.0
    }
+  },
+  {
+   "key": "landforms",
+   "file": "landforms.json"
+  },
+  {
+   "key": "springs",
+   "file": "springs.json"
+  },
+  {
+   "key": "domes",
+   "file": "domes.json"
   }
  ]
 }
