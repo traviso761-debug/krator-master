@@ -16,12 +16,16 @@ const KIT={id:'tungang',title:'Tungang Kit',pack:'tungang',culture:'fellgang',fa
 const SV_LIB={stone:'stone',stoneD:'stone',turf:'turf',pole:'pole',wood:'wood',plate:'plate',rust:'rust',scrap:'scrap',paint:'paint',
  tin:'tin',iron:'iron',cable:'iron',rope:'rope',cord:'cord',hide:'hide',fur:'fur',horn:'horn',skull:'skull',tyre:'tyre',ice:'ice',straw:'straw',
  /* single-sided takes of the hide for roofs (a double-sided cloth key self-shadows at a grazing sun) */
- hideW:'hide'};
+ hideW:'hide',
+ /* the Glaziers' set (gz, src/62-69): whitewash on the carved fronts, the scarp's hewn basalt, gilt, the carpets, celadon,
+    the Register's enamel, potch (the common opal), carved timber, silk */
+ wash:'wash',hewn:'hewn',gilt:'gilt',carpet:'carpet',celadon:'celadon',enamel:'enamel',potch:'potch',carved:'carved',silk:'silk'};
 const SV_TILE0={stone:2.4,stoneD:1.6,turf:2.2,pole:1.2,wood:1.6,plate:1.4,rust:1.4,scrap:1.6,paint:1.2,tin:1.4,iron:.8,cable:.6,rope:.3,cord:.3,
- hide:1.4,fur:1,horn:.7,skull:.6,tyre:.8,ice:1.2,straw:1,hideW:1.4};
+ hide:1.4,fur:1,horn:.7,skull:.6,tyre:.8,ice:1.2,straw:1,hideW:1.4,
+ wash:2,hewn:2.2,gilt:.6,carpet:1.6,celadon:.4,enamel:.8,potch:.6,carved:.8,silk:1.2};
 const SV_CLOTH={hide:1,flag:1};
 const SV_CUT={stone:1,stoneD:1,turf:1,pole:1,wood:1,plate:1,rust:1,scrap:1,paint:1,tin:1,iron:1,rope:1,cord:1,hide:1,fur:1,horn:1,skull:1,tyre:1,hideW:1,
- flag:1,plain:1,brass:1,bone:1,glass:1};
+ flag:1,plain:1,brass:1,bone:1,glass:1,wash:1,hewn:1,gilt:1,carpet:1,celadon:1,enamel:1,potch:1,carved:1,silk:1};
 const KIT_FALLBACK=[];
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
 /* ---------------------------------------------------------------- the palette (sRGB hex). Arrays are picked with P(k). */

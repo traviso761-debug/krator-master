@@ -102,10 +102,13 @@
       for (i = 0; i < n; i++) { var acc = 0, cnt = 0; for (j = Math.max(0, i - cw); j <= Math.min(n - 1, i + cw); j++) { acc += P.YG[j]; cnt++; } Y[i] = acc / cnt + ab2; }
       /* pins: heights the alignment must take (a junction's level, set by the first road through it); held through the passes */
       var pins = (o.pins || []).map(function (pn) { return [Math.max(0, Math.min(n - 1, Math.round(pn.s / P.L * (n - 1)))), pn.y]; }), setPins = function () { pins.forEach(function (pn) { Y[pn[0]] = pn[1]; }); };
+      /* a pinned sample is HELD inside the passes, not only restored after them: clamped in a pass, a lone pin took its neighbour's height,
+         its other neighbour was graded to that, and the restore left a one-sample notch (the network test bed, 2026-11-11: a trail's crossing pin) */
+      var held = new Array(n); pins.forEach(function (pn) { held[pn[0]] = true; });
       setPins();
       for (var pass = 0; pass < 4; pass++) {
-        for (i = 1; i < n; i++) { var d1 = P.S[i] - P.S[i - 1]; Y[i] = Math.max(Y[i - 1] - g * d1, Math.min(Y[i - 1] + g * d1, Y[i])); } setPins();
-        for (i = n - 2; i >= 0; i--) { var d2b = P.S[i + 1] - P.S[i]; Y[i] = Math.max(Y[i + 1] - g * d2b, Math.min(Y[i + 1] + g * d2b, Y[i])); } setPins(); }
+        for (i = 1; i < n; i++) { if (held[i]) continue; var d1 = P.S[i] - P.S[i - 1]; Y[i] = Math.max(Y[i - 1] - g * d1, Math.min(Y[i - 1] + g * d1, Y[i])); }
+        for (i = n - 2; i >= 0; i--) { if (held[i]) continue; var d2b = P.S[i + 1] - P.S[i]; Y[i] = Math.max(Y[i + 1] - g * d2b, Math.min(Y[i + 1] + g * d2b, Y[i])); } }
       return { Y: Y, at: function (s) { s = Math.max(0, Math.min(P.L, s)); var f = s / P.L * (n - 1), a = Math.floor(f), t = f - a; return a >= n - 1 ? Y[n - 1] : Y[a] + (Y[a + 1] - Y[a]) * t; }, mode: mode };
     } else if (mode === 'given') {
       /* heights given by arc length (a bored line's invert, KTRANSIT.line): o.ys [[s, y], ...] in order of s, read linearly between, held at
@@ -130,14 +133,16 @@
        o: id, ground (required), width (11), pavement (3.5), maxGrade, shift, radius (fillet, 40), above (0.06)
        o.drift (0..1 or a function of s: the road under sand, Rd.drifts), o.kind (a name: KTRANSIT.ROAD_KINDS), o.lines ('both' | 'edges' | 'none'),
        o.pins [{s, y}] (heights the alignment takes: a junction's level, KTRANSIT.network)
+       o.crosses [Rd...] (roads it crosses at their level with no junction: KTRANSIT.crossPins; Rd.crossings the centre pins), o.surface (how
+       KTRANSIT.draw.road and draw.junctions lay its surface: a family name or {fam, col}; KTRANSIT.surfaceOf)
        -> Rd {id, kind: 'road', path, width, pavement, yAt(s), levelAt(x, z) (the alignment, dipping by o.carve there), regrade(pins) (more pins, in place), form (the depth of the formation under the surface, 0.45),
              segs: [{s0, s1, x0, z0, y0, x1, z1, y1, fill (the surface over the ground at the middle: + a fill, - a cut)}],
              drifts: [{id, s0, s1, side, reach, depth}], L} */
   T.road = function (pts, o) {
     o = o || {};
     if (typeof o.ground !== 'function') throw new Error('KTRANSIT.road: o.ground(x, z) is required');
-    var P = T.path(pts, { ground: o.ground, radius: o.radius == null ? 40 : o.radius, step: 4, shift: o.shift }), Y = T.profile(P, { mode: 'cutfill', above: o.above == null ? 0.06 : o.above, maxGrade: o.maxGrade == null ? 0.08 : o.maxGrade, window: 30, pins: o.pins });
-    var Rd = { id: o.id == null ? 'road' : String(o.id), kind: 'road', roadKind: o.kind == null ? 'road' : o.kind, lines: o.lines == null ? 'both' : o.lines, path: P, L: P.L, width: o.width == null ? 11 : o.width, pavement: o.pavement == null ? 3.5 : o.pavement, form: 0.45, segs: [], pins: (o.pins || []).slice(), opts: o, Y: Y };
+    var P = T.path(pts, { ground: o.ground, radius: o.radius == null ? 40 : o.radius, step: 4, shift: o.shift }), pins0 = (o.pins || []).concat(o.crosses ? T.crossPins(P, o.crosses, o) : []), Y = T.profile(P, { mode: 'cutfill', above: o.above == null ? 0.06 : o.above, maxGrade: o.maxGrade == null ? 0.08 : o.maxGrade, window: 30, pins: pins0 });
+    var Rd = { id: o.id == null ? 'road' : String(o.id), kind: 'road', roadKind: o.kind == null ? 'road' : o.kind, lines: o.lines == null ? 'both' : o.lines, path: P, L: P.L, width: o.width == null ? 11 : o.width, pavement: o.pavement == null ? 3.5 : o.pavement, form: 0.45, segs: [], pins: pins0, crossings: pins0.filter(function (pn) { return pn.centre; }), surface: o.surface == null ? null : o.surface, opts: o, Y: Y };
     /* the heights read the LIVE profile (Rd.Y), so a road regraded in place (Rd.regrade: a junction joined later pins it) changes under every
        holder of its yAt / levelAt (a street's ground, a war built on it) */
     Rd.yAt = function (s) { return Rd.Y.at(s); }; Rd.deckAt = Rd.yAt;
@@ -187,6 +192,31 @@
       });
     });
     out.sort(function (a, b) { return a.sP - b.sP; });
+    return out;
+  };
+  /* the convex hull of [[x, z]...] (Andrew's monotone chain), counter-clockwise */
+  T.hull = function (pts) {
+    var P = pts.map(function (q) { return [q[0], q[1]]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }); if (P.length < 3) return P;
+    var cr = function (o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); }, lo = [], up = [];
+    P.forEach(function (q) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); });
+    for (var i = P.length - 1; i >= 0; i--) { var q = P[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+    lo.pop(); up.pop(); return lo.concat(up);
+  };
+  /* the pins that carry a lane (a trail, a footpath, a farm track) ACROSS roads at their level, with no junction: one at each crossing on the
+     road's centre line (centre: true) and one every o.every m (2) out to the road's kerbs + o.margin (1) on both sides, each at the crossed road's
+     surface there less o.drop (0.04). Pinned on the centre line alone, a lane climbs at its own grade across the road's width and, between sparse
+     pins, follows the hillside over the road's surface (the network test bed, 2026-11-11: a trail 0.5 m proud of a highway's edge). P: a path
+     (KTRANSIT.path) or points, read with o.ground and o.radius (40) as KTRANSIT.road reads them; roads: road records (yAt, levelAt, path, width) */
+  T.crossPins = function (P, roads, o) {
+    o = o || {}; if (!P.seg) P = T.path(P, { ground: o.ground, radius: o.radius == null ? 40 : o.radius, step: 4, shift: o.shift });
+    var drop = o.drop == null ? 0.04 : o.drop, every = o.every == null ? 2 : o.every, margin = o.margin == null ? 1 : o.margin, out = [];
+    (roads || []).forEach(function (R) {
+      T.intersections(P, R.path).forEach(function (c) {
+        out.push({ s: c.sP, y: R.yAt(c.sQ) - drop, centre: true, road: R.id });
+        var sin = Math.max(0.3, Math.abs(Math.sin(c.yawP - c.yawQ))), dl = (R.width / 2 + (R.pavement == null ? 0 : R.pavement) + margin) / sin, n = Math.max(1, Math.ceil(dl / every));
+        for (var k = 1; k <= n; k++) [-1, 1].forEach(function (sd) { var s = c.sP + sd * dl * k / n; if (s <= 0 || s >= P.L) return; var q = P.at(s); out.push({ s: s, y: R.levelAt(q.x, q.z) - drop, road: R.id }); });
+      });
+    });
     return out;
   };
 })();

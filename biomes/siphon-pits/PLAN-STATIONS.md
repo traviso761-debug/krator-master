@@ -63,6 +63,7 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
 | **2** | **Scarp Pass** (Central Divide) | `1559, 1457` | $+3,289\text{ m}$ | $1.06$ | $+4^\circ\text{C}$ ($+17 / -9$) | Dsc | Stepped columnar wall, switchback road, tollhouse |
 | **3** | **Siphon Maar Floor** (SE Sink) | `1687, 1555` | $+2,277\text{ m}$ | $1.20$ | $+18^\circ\text{C}$ ($+32 / +6$) | Cfa | Deep maar sink, woolly siphon grove, steam vents |
 | **4** | **The Arête Way** (SE Rim) | `1678, 1542` | $+4,269\text{ m}$ | $0.94$ | $-5^\circ\text{C}$ ($+8 / -18$) | ET | $6\text{ m}$ knife-edge bridge, blizzard gales, flenser ambush |
+| **14** | **Ostrukh-on-Water Shore** (Gemini 5.1 showcase; the moved pin on Lake Ostrukh's west shore) | `1520, 1465` | $+1,925\text{ m}$ | $1.26$ | $+18^\circ\text{C}$ ($+30 / +4$) | Cwb | Lake Ostrukh ($+1,850$ m) open and steaming in frost smoke over fault springs, shore ice in the shallows, loess terraces, qanats, the village's waterfront |
 
 *Corrected 2026-11-11 from scale model 5.1 (`PLAN.md` section 0): pressure is the model's air law, $1.6\,e^{-h/8000}$ atm; the temperatures are the model's `tm` / `tw` / `tc`. The old Station 3 note (pressure "boosted by CO$_2$ pooling") is dropped: a pure CO$_2$ layer 303 m deep would add 0.017 atm and kill everything in it. `verify.py --assert` reads this table.*
 
@@ -139,3 +140,9 @@ To create a physically coherent split between a **warmer, cold-but-arable NW** a
 4. **Performance Targets (`GRAPHIC-LOAD.md`):**
    * Geometry welding (`BIO.INDEX_ITEMS = true`) on all siphon chimneys and fleece meshes.
    * Tight MultiMesh culling: Station 3 floor capped at 250 active trees per chunk; zero tree instances on Station 2 and 4.
+
+---
+
+## 5. Scale-Model 5.1 Settlement Pin & Showcase Station #14 Sync (`2026-11-13`)
+- **Station 1 Anchor Synced to `Ostrukh-on-Water` (`5.1 px 1516, 1471`, `+2,090–2,115 m`, `1.31 atm`):** Aligns Station 1 (`1519, 1453` piedmont terraces) directly with the canonical village pin **`Ostrukh-on-Water` (`1516, 1471`)** on the geothermal shoreline polynya of fresh **Lake Ostrukh** (`+2,090 m`), locking the **`2,620 m` `KSTRATA` split** (`loess` graben terraces `<= +2,620 m` vs. `tibasalt-ponded` maar plateau `> +2,620 m`) and the calibrated **`15–25 m³/s`** perennial `Ostrukh Riba` outflow (see `biomes/siphon-pits/PLAN.md` §6, **Showcase Station #14**).
+- **As built (2026-11-16), closed by the owner ("keep it as new station"):** the anchor sync is **not** done: station 14 is a new station (`stations/polynya`, `dist/siphon-pits-polynya.html`, row **14** of section 2) at the pin the owner moved onto the lake's shore (1520,1465), and station 1 stays at 1519,1453. The numbers are the model's (1,925 m, 1.26 atm, Lake Ostrukh at 1,850 m and open), not this section's: `PLAN.md` section 8.3.

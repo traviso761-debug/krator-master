@@ -65,6 +65,46 @@ is small); the fix in its `57` is owed to its next turn, since 9 build commands 
 recipe's per bed), the fog belt's height, the far field (the station's floor function carried 9 km with no tables on it), KGROUND's floor
 against the dithered one (`?kground=0`), the shadows (`?shadow=1`).
 
+---
+
+## Scale-Model 5.1 Geological Reconciliation & Showcase Station #7 (`2026-11-13`)
+
+### 1. Corona Plume-Tectonic Lithology & Resource Hygiene (`tepui` + `obsidian-pancake` + `contact-marble`)
+- **Summit Hoar-Tables vs. Deep Ring-Fault Trenches (`GEOLOGY-SANITY-CHECK.md` §3):** Korona is an active Venusian-type mantle-plume corona whose concentric ring horsts uplift ancient pre-impact **`tepui`** orthoquartzite and indurated arkose tables (`+1,500 to +4,100 m`), while active magmatic/hydrothermal degassing is strictly confined to the deep concentric ring-fault trenches (`-1,000 to -2,600 m`, `1.75–2.10 atm`).
+  - **Purge Summit `sulfur = 60`:** High quartzite hoar-table summits carry **zero fumarolic sulfur** (`sulfur = 0` on upland tables); native sulfur, geyserite sinter (`geyser` station `corona`, `1123, 517`), and acid-sulfate springs occur **only** along deep ring-fault trench floors.
+  - **5 Trench Viscous Pancake Domes (`obsidian-pancake`):** Five flat-topped Venusian-type silicic rhyolite/dacite pancake domes extrude along the eastern and southern ring-fault floor intersections (anchored at **`5.1 px (1179, 578)`**), bound to `KSTRATA` **`obsidian-pancake`** (`core/terrain/35-core-strata.js` — `2–6 m` flow-banded glassy obsidian carapace ledges with iridescent `irid: 1` sheen over frothy grey pumice and basal perlite breccia).
+  - **Trench-Wall Skarn & Evaporite Contacts:** Where plume ring-dikes cut buried intracrater carbonate lenses on lower trench walls (`KARST-SITES-5.1.md` Site #7), walls expose **`contact-marble`** skarn ribs above **`evaporite-strand`** endorheic salt-lake shorelines.
+
+### 2. Showcase Station #7 — `Korona Silkhead Gorge & Hoar-Table Rim`
+- **Canonical `5.1` Coordinates:** **`(1096, 526)`** (primary Silkhead Gorge overhang & `+3,620 m` hoar-table rim plunging toward the `-1,180 m` wet ring-trench) paired with **`(1179, 578)`** (viscous trench-floor pancake dome view).
+- **Elevation & Atmosphere:** **`+3,620 m`** summit rim (`0.99 atm`, `Dsc` / `Cwb` hoar-table mist & frost-tank pavement) dropping `4,800 m` across sheer tiered walls into the **`-1,180 m`** ring-fault trench (`1.86 atm`, `XA` / `Af` carnivorous-pitcher rainforest and steaming ring-fault vents).
+- **`KSTRATA` Binding:** **`tepui`** (pink-to-cream cross-bedded orthoquartzite cliff tiers with recessed dark siltstone/shale contour-carving ledges on the upper `3,000 m` wall) + **`contact-marble`** (recrystallized blue-white marble & epidote skarn selvages along the lower ring-fault dike contact) + **`obsidian-pancake`** (vitreous black flow-banded rhyolite dome carapace steaming on the trench floor at `1179, 578`).
+- **Camera Framing (`5.0 × 5.0 km` vertical relief cut):** Vertigo overhang camera tucked under a carved `KCARVE` lip at `+3,580 m` looking ESE along the curved corona ring-scarp: Hum whistle-script contour carvings (`culture: tepui`) etched into a continuous `tepui` bedding recess in the foreground, woven wild-silk basket spans and braided liana rope-ladders bridging a `180 m` gorge cleft, `ATMOS.fogBelt` cloud cascades spilling off the table lip, and `4.7 km` below in dense golden `1.86 atm` haze, a circular `obsidian-pancake` dome steaming beside black pitcher pools.
+- **Hydrology & Trade Tie-In:** Windward (`3,500–4,000 mm/yr`) cloud-water and frost-tank snowmelt plunge off the `tepui` rim as `600 m` free-falling mist-veils (`WATER.fall`) into endorheic trench lakes; winter-adapted hoar-table tribes and Hum-speaking cliff clans hoist rare trench-floor carnivore reagents, lichen stone-dyes, and knapped trench `obsidian-pancake` blades up silk-winch stations to trade with the **Painted Men** (`LORE.md §6.5`) and **Serai** caravans.
+
+### 3. Station 7 as built (`stations/silkhead`, `dist/korona-silkhead.html`; 2026-11-16, GPU-verified 2026-11-17)
+
+`python3 tools/build.py biomes/korona --station silkhead` (station.json `"core"` includes `31b-core-leafset.js` and `45-core-span.js`; GPU `--assert --all-views` passes all 12 views at 130-153 draw calls, 3.49-4.14 M triangles drawn, 13 samplers). On station 1's host and `47` unchanged (no `src/` fragment moved: the six other pages are as before);
+the station's own `45` (the stage), `89-host-sky`, `89x-host-silkhead` (the lip, the veils, the spans, the dome's glass and steam, the
+hazards) and `99-host-take` (views, inspector, checks).
+
+| The spec | As built |
+|---|---|
+| `(1096, 526)`, rim `+3,620 m`, trench `-1,180 m` | the spec's heights, not today's model's (the model has the table at 1,430-1,570 m there: `KNOWN_ISSUES.md`, the map change queued). y 0 is -1,180 m, the rim y 4,800. The model's setting kept: the trench east and south of the table |
+| sheer tiered walls, 4,800 m | three KSTACKS bodies of five tiers (the table, a spur running out ESE, the Silkhead tower beside it): benches at +270, +1,670 and +3,020 m, 70-140 m wide; the summit wall 560-600 m; the spur's 40 m cap over a 30 m ledge (the bedding recess) at +3,580 m |
+| vertigo camera under a carved `KCARVE` lip at `+3,580 m` | a KCARVE alcove through the ledge at the spur's tip (`core/terrain/36-core-carve.js`, read by path through `station.json`): its hood the cap's rock run out over the ledge, its mouth on the ledge's edge, meshed on the walls' strata; the view "Vertigo (under the lip at +3580 m)" stands 0.6 m in from the drop and looks ESE down at the dome, the ledge's edge across the foot of the frame |
+| Hum contour carvings in a continuous bedding recess | `STAGE.carvings` on the spur's cap above the ledge, beside the lip (`47`'s carvings, `culture: korona-tepui`) |
+| silk basket spans and liana rope-ladders over a 180 m cleft | Silkhead Gorge between the spur and the Silkhead, 170-180 m rim to rim at its narrows, joined by the col 600 m under the rims: two wild-silk basket spans, a liana ladder bridge, a liana ladder hung 600 m down the Silkhead's face to the col (`core/biome/45-core-span.js`, KSPAN catenaries between the drawn rims); a silk-winch on the spur's north flank by its tip lowering its line to the bench |
+| `ATMOS.fogBelt` cloud cascades off the lip | the fog belt from +2,470 m to the rim on the faces turned to the trench's wet air (ESE) (`STAGE.belt`, `89a`); spray at each veil's foot. No drawn cloud spilling over the lip: core/atmos has none (`KNOWN_ISSUES.md`) |
+| 600 m mist-veils (`WATER.fall`) into endorheic trench lakes | four `WATER.fall` curtains stacked down the Silkhead's north face (600 m free fall from its rim, then 1,350, 1,400 and 1,450 m), each fitted to its bench (`fit: true`), the last into the trench lake (a `WATER.still` with no outlet) |
+| `tepui` + `contact-marble` + `obsidian-pancake` | one KSTRATA stack (`STAGE.strata`): contact-marble from the walls' foot to 550 m over the floor (the skarn on the ring-fault dike contact), the tepui's quartzite above, a lateral stack of obsidian-pancake east of x 20 (the dome) |
+| an obsidian-pancake dome steaming beside black pitcher pools, 4.7 km below | a KSTACKS `dome` 1.3 km across and 150 m high on the trench floor (steep-sided and flat-topped, k 5), its rock darkened to the glass; steam over four fissures and two ring-fault vents (`core/atmos/fx/89-atmos-fx-plumes.js`; heat and gas on `core/hazard`); black pitcher pools on its apron (trap pads, the bladder pool's trap) |
+| `XA`/`Af` pitcher rainforest; `Dsc`/`Cwb` frost-tank pavement | the hyperjungle and the kit's man-eaters on the trench floor (warm by height: 1 on the floor, .08 at the rim); the eastern highlands' cushions and the frost tanks and butterworts round the rain pools on the summit; no dangerous trap and no vent above the col (the summit's sulfur 0) |
+
+Not as the spec says: the dome is the station's own and small (the model's dome 4, 16 km at 1179,578, is 196 km away, and the nearest, dome 2,
+95 km: scale model 5.1 edit 8 on main, `DATA.domes`; not on this branch's model yet); the main frame holds the lip, the carvings, the veils, the Silkhead's face and the trench, but not
+the spans (from inside the cleft the col hides the drop; the spans have their own view). `KNOWN_ISSUES.md` lists the rest.
+
 ## Amendment 2026-11-12: the pancake domes round the corona (the owner, 2026-11-12)
 
 The owner decided on pancake domes round Korona. This section revises one line above: "Talus, tor, dome: not taken ... no

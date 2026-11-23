@@ -46,6 +46,28 @@ ok('a fixed line follows its record (' + rc.verts + ' vertices, farthest ' + rc.
   !TG.fg.check.rope([Object.assign({}, rope, { pts: rope.pts.map(p => [p[0], p[1] + 2, p[2]]) })], RD).ok);
 const P = TG.fg.pieces([{ key: 'fg-lantern-post', x: 5, z: 5 }, { key: 'fg-halt', x: 20, z: 5 }, { key: 'fg-wagon', x: 30, z: 5, ry: 1 }], { ground });
 ok('the road pieces draw where they are put, on the ground', P.recs.length === 3 && P.recs.every(r => Math.abs(r.y - ground(r.x, r.z)) < 1e-6), P.recs.length !== 4);
+/* THE GLAZIERS (gz): every def's void plan inside its box, every def at 8 seeds in three states within its box; a small scarp laid as
+   a world lays one (a KCAVERN mass, carved from the plans by TG.gz.carve, then drawn by TG.gz.draw): the rock open in the rooms
+   and solid behind them, the lamps lit kept and dark abandoned */
+const gp = TG.gz.check.plans();
+ok('every Glazier void plan (' + gp.voids + ' voids over 8 seeds of ' + Object.keys(TG.gz.PLANS).length + ' defs) inside its box, its rooms kept apart by rock', gp.ok, !TG.gz.check.plans(4).ok, gp.bad.slice(0, 4).join('; '));
+const gmany = []; for (const k of Object.keys(TG.gz.BOX)) for (let v = 0; v < 8; v++) for (const state of ['kept', 'worn', 'abandoned']) { const p = TG.gz.proto(k, { v, state }); gmany.push(p.recs[0]); p.forEach(m => m.geometry.dispose()); }
+const gmb = TG.gz.check.box(gmany);
+ok('every Glazier key, 8 seeds in three states (' + gmany.length + ' builds), within its box and filling its share', gmb.ok && gmany.length === 13 * 24,
+  !TG.gz.check.box([Object.assign({}, gmany.find(r => r.key === 'gz-tea-hall'), { key: 'gz-cell' })]).ok, [...new Set(gmb.bad.map(b => b.replace(/#[0-9]+/, '')))].slice(0, 12).join('; '));
+if (typeof KRAND === 'undefined') load('core/rand/08-core-rand.js');
+load('core/terrain/39-core-cavern.js');
+const gsites = [{ id: 'a', key: 'gz-cell', x: -12, y: 0, z: 0, v: 1 }, { id: 'b', key: 'gz-front', x: 0, y: 0, z: 0, v: 0 }, { id: 'c', key: 'gz-register-room', x: 12, y: 0, z: 0, v: 2 },
+  { id: 'd', key: 'gz-house', x: 2, y: 9, z: -8, v: 3, ry: 0 }];
+const GC = KCAVERN.create({ ground: () => -.5, cell: .5, chunk: 16, seed: 9400, walk: null, minRock: .6 });
+GC.mass({ id: 'lo', poly: [[-20, -30], [20, -30], [20, 0], [-20, 0]], y0: -.5, y1: 9 });GC.mass({ id: 'hi', poly: [[-20, -30], [20, -30], [20, -8], [-20, -8]], y0: 8.8, y1: 28 });
+const gprims = TG.gz.carve(GC, gsites);GC.build();
+const gcv = TG.gz.check.carved(GC, gsites);
+ok('a scarp carved from the plans (' + gprims.length + ' primitives): open in each first room, rock behind its back wall', gcv.ok && gcv.n === 4,
+  !TG.gz.check.carved(GC, gsites.map(q => Object.assign({}, q, { x: q.x + 500 }))).ok, gcv.bad.join('; '));
+const GK = TG.gz.draw(gsites, { seed: 9410 }), GA = TG.gz.draw(gsites, { seed: 9410, state: 'abandoned' }), GN = TG.gz.draw([{ key: 'gz-nonesuch', x: 0, z: 0 }], {});
+ok('TG.gz.draw lays the scarp\'s sites (' + GK.recs.length + ' drawn, ' + GK.tris + ' triangles): ' + GK.lights.length + ' lamps lit kept, ' + GA.lights.length + ' abandoned',
+  GK.recs.length === 4 && GK.lights.length > 10 && GA.lights.length === 0 && TG.errors.length === 0, Object.keys(GN.missing).length === 1, TG.errors.join('; '));
 /* the bundle with the catalog sealed in: a world's draw comes furnished (the default bundle places nothing) */
 const nofurn = D1.group.userData.furniture | 0;
 vm.runInThisContext(cp.execFileSync(py, ['-c', 'import sys; sys.path.insert(0, "."); import tungang_bundle; sys.stdout.write(tungang_bundle.bundle(tex=False, furniture=True))'], { cwd: KIT, encoding: 'utf8', maxBuffer: 64 << 20 }), { filename: 'tungang_bundle_furniture.js' });

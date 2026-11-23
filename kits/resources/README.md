@@ -2,7 +2,7 @@
 
 World content that belongs to no culture (owner, 2026-10-15). So far it holds the **resource nodes** the building kits'
 works draw on.
-- **The kinds:** twelve: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, potash, alkali salts and oil.
+- **The kinds:** twenty-seven since 2026-11-16 (the mined goods of Gemini's trade model, below); first twelve: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, potash, alkali salts and oil.
   Potash and alkali salts (soda and its kin, borates and lithium folded in: no finer than these two, the owner, 2026-10-23)
   are the Catch's salt field (`biomes/catch/PLAN.md` section 6a); elsewhere on Krator they are traces.
 - **The grades:** each kind comes in a low, a medium and a high grade, visible and placeable.
@@ -35,6 +35,30 @@ python3 ../../tools/textures/pack.py kits/resources       # (from the repo root)
 | potash | `potash` | mine | a salt pan's crust broken open: a pit through the white halite skin into pink-red potash beds, the slabs stacked, ochre salt polygons round it |
 | alkali | `alkali_salts` | mine | a soda pan: peach plates of soda crust curling round a cut brine pit, white trona nodules heaped by it |
 | oil | `crude_oil` | derrick | a seep: black pools with a sheen in a tar-crusted stain, tar humps, bubbles |
+| emerald | `emerald` | mine | Muzo's: dark green-black schist (`rock.schist.emerald`) crossed by white calcite veins holding six-sided green crystals (2026-11-16) |
+| turquoise | `turquoise` | mine | Nishapur's: pale bleached altered rock netted with blue-green veinlets (`rock.turquoise.vein`), nodules where they swell (2026-11-16) |
+
+**The mined goods of Gemini's trade model** (2026-11-16, the owner: "build nodes for mineable resources from the Gemini trade
+docs, that do not already have one"): eleven more kinds, in `42s-res-ore-mined.js` (the kinds, [G data]) and three drawing
+fragments, `44s` (metals), `44t` (gems) and `44u` (dug from the ground). Each kind names the Gemini good it feeds (`good`).
+Emeralds and turquoise are the Coyote Men kit's (`kits/coyote`). All are dug by a mine.
+
+| Kind | Item | Gemini good | Looks like |
+|---|---|---|---|
+| zinc | `zinc_ore` | `zinc` | the dark outcrop banded with resinous black sphalerite, honey-yellow where thin, a galena streak, pale calamine crust on top |
+| lodestone | `lodestone` | `magnets` | a crest of rounded black magnetite boulders, iron filings bristling in tufts, a fulgurite where the lightning struck |
+| peat | `peat` | `peat` | a bog cut: the sphagnum top over a dark bank cut in spade-deep steps, black water below, turves stacked to dry |
+| silica | `silica_sand` | `silica-sand` | a sand pit in a white quartz-sand rise, the washed sand heaped, a washing trough |
+| quartz | `quartz_crystal` | `gems` (optical quartz) | a white vein-quartz reef, druzy pockets with clear hexagonal points, a cluster at the foot |
+| alabaster | `alabaster` | `alabaster` | a quarry of honey-white alabaster benches, cut blocks, thin sawn panes leaning on a frame |
+| bitumen | `bitumen` | `pitch-tar` (its mineral leg) | a pitch lake: a dark skin crept into folds, a square cut with rain in it, blocks stacked |
+| opal | `opal` | `gems`, `photonic-opals` | Opal Valley's boulder opal: rust ironstone and a dark dike, milky potch seams flashing colour, a pale mullock heap |
+| diamond | `diamond` | `gems` (Korona's diamonds, garnets) | a stepped bench of tepui quartzite conglomerate, washed gravel with garnets and glints, a rocker cradle |
+| jade | `jade` | `frost-coral` (Verdigris Jade) | a serpentinite contact, a stream below with water-rounded jade boulders, one sawn open |
+| amber | `amber` | `ria-amber`, `abyss-lac` (swamp amber) | a cut bank of blue-grey clay under lignite and sand, amber nodules in the face, the dug clay heaped |
+
+None has a geology layer yet, so the node field places none: they are owner nodes until a bake gives them one (`GEOLOGY.md`, "The
+mined goods' kinds"). Building kits that read `42r` and `44r` in place do not see them unless they also read `42s` and `44s`-`44u`.
 
 Each kind has a def per grade:
 - **Keys:** `node-<kind>-<grade>`, for example `node-coal-high` or `node-rare-earth-low`.
@@ -68,6 +92,7 @@ The kit's own files:
 - `26k-kit.js`: the identity and the palette;
 - `42r-res-ore.js`: the kinds and the rule;
 - `44r-res-nodes.js`: the nodes;
+- `42s-res-ore-mined.js`, `44s-res-nodes-metal.js`, `44t-res-nodes-gem.js`, `44u-res-nodes-ground.js`: the mined goods' kinds and nodes (2026-11-16);
 - `89-rows.js`: the sheet, a row per kind.
 
 The rock, earth, sand, ground and the sulfur crust (`ground.sulphur`) are library sets (`materials.json`). The other
@@ -80,7 +105,8 @@ veins, seams, pools and grains are vertex colours until their sets arrive (`core
   blades) and **rock salt** (`node-halite-*`, item `salt`: a pit cut in the pan's white crust, the blocks stacked). Fourteen in all,
 then two from the geology's new rocks (2026-11-03, `REBAKE-PLAN.md` R3): **nickel** (`node-nickel-*`, item `nickel_ore`: a dark norite outcrop
 with brassy sulphide, at the crater's melt-sheet margin and on bare mantle) and **marble** (`node-marble-*`, item `marble`, a
-quarry on the library's `rock.marble012`, where a pluton or a volcano cooked the limestone). Sixteen kinds, 48 defs.
+quarry on the library's `rock.marble012`, where a pluton or a volcano cooked the limestone). Sixteen kinds, 48 defs; then the **gems** (2026-11-16, the owner: the Coyote Men's exports, `kits/coyote`): **emerald**
+(`node-emerald-*`) and **turquoise** (`node-turquoise-*`), added to the bake in place (`geology.py --gems`): eighteen kinds, 54 defs; with the mined goods (2026-11-16, above), twenty-nine kinds and 87 defs.
 - **The geology** (`tools/scale-model/geology.py` -> `data/geology.json`): a province per scale-model cell (sedimentary,
   crystalline, volcanic, evaporite, rift; ruin ground as a flag) and one prospectivity byte per family per cell.
 - **The node field** (`45r-res-field.js`, `KRES.nodesIn(tile)`): one candidate per family per placement cell, by KRAND, kept

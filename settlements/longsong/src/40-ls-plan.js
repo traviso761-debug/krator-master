@@ -3,9 +3,12 @@
 // here (the builders draw records; they never decide where a thing goes), and everything here exists whether or not it
 // is drawn (the Vault, the people indoors). PLAN.md says why each number is what it is; BLUEPRINT.md is the programme.
 //
-// THE FRAME. Page metres: x east, z south, y up. The page's origin is the monastery's: the foot of Longsong's rock on
-// its north face, at the head of the avenue, which is the scale model's ground at LS.SITE (world metres of the region
-// cut, region/data: x = (px - 955) * 2000, z = (py - 1295) * 2000). y 0 is the model's height there (WORLD_H0).
+// THE FRAME. Page metres: x along the river (up-valley, east-south-east), z away from it (south-south-west), y up: the
+// page is turned LS.SITE.rot (28.6 degrees) clockwise from the compass, so its "north" is the river's side (bearing 29)
+// and its "east" up the river (bearing 119). The page's origin is the monastery's: the foot of Longsong's rock on its
+// north face, at the head of the avenue, which is the scale model's ground at LS.SITE (world metres of the region cut,
+// region/data: x = (px - 1229) * 2000, z = (py - 1621) * 2000; P.toWorld and P.toPage turn between the two). y 0 is the
+// model's height there (WORLD_H0).
 // The blueprint's frame maps straight onto it: u (from the Great Gate uphill) is +z, v (across) is +x; the grounds are
 // x -200..200, z -200..200, the Great Gate in the north wall. The monastery faces NORTH: Krator's settlements lie near
 // 40 degrees south, so the sun stands in the north and lights the White Palace's face all day (as the Potala's south
@@ -17,23 +20,28 @@ const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 const P={};
 
 // ---------------------------------------------------------------- the site (PLAN.md section 1)
-// px 954, 1296 on the scale model (4.21): the gentle apron south of the Longsong stream (Lõsõ-bi Siṭrīm, r105, ~40 m3/s
-// here, its bed ~2,050 m), 7 km west-south-west of where the model's Longsong marker stood (957,1294, on the medial swell
-// between the valley's two streams 8 km from either). The apron rises ~3 % to the southern wall's foot 4 km south; the
-// lake the stream feeds (2,000 m) is 40 km west.
-// the model's marker was moved onto the build's site by the owner (2026-10-19: px 957,1294 to 954,1296, in the Scale
-// Model's settlements collection); it had stood 7 km east-north-east, on the medial swell
-P.SITE={wx:-2000,wz:2080,px:954,py:1296,name:'Longsong',marker:{px:954,py:1296}};
-// the Longsong stream runs WEST here (to the highland lake at 2,000 m, 40 km west): the page's stream takes its level from
-// the east end down (45: STREAM). The model's 4 km levels inside the page cannot say which way it runs (both ends stand
-// higher than the dip at the site), so the plan does
+// px 1228.88, 1621.23 on the scale model (5.1; edit 5.1e7, the owner 2026-11-11, openworld/PLAN-SETTLEMENTS.md answer
+// 10: "Move the pin onto the 550 m3/s river"): the south bank of the Bīruk al-Ghaym (r105, ~550 m3/s, 112 m wide, its
+// bed ~2,060 m), which runs west-north-west (bearing 299) down the Oidong Valley to the highland lake (2,000 m) 60 km
+// west. The rock stands 356 m south of the river's centre as the world draws it (its 1:1 line runs ~150 m south of the
+// model's vertex here, so the pin was set from the drawn river), its south bank ~100 m in front of the Great Gate; the
+// river runs in a trough ~16-20 m under the rock's foot, the apron rising ~4 % south behind it. The pin had stood
+// at 1226,1626 (11.7 km south-east, on the medial swell); on map 4.21 the page stood at 954,1296 by a ~40 m3/s stream.
+// rot: the page's turn from the compass (radians, clockwise seen from above): the river's own line, so the page's x runs
+// along it and its north is across it
+P.SITE={wx:-240,wz:460,rot:28.6275*Math.PI/180,px:1228.88,py:1621.23,name:'Longsong',marker:{px:1228.88,py:1621.23}};
+// the river runs WEST down the page (to the highland lake): the page's stream takes its level from the east end down
+// (45: STREAM)
 P.STREAM_FLOW=[-1,0];
 // what stands round the sky from here (the Oidong kit's sky takes it: OIDONG_SKY), read off the scale model's regions on
 // 2026-10-19 (region/source/regions.json): the Throne ('Throne/Volcano', centroid px 571,514) bears 334 degrees, 1,740 km
 // off; the Oidong Valley's outline (px 725-1035 by 1234-1350) puts its head (its east end, round px 1028,1330) at
 // about 118 degrees, 190 km up-valley, and its west end toward the pass at about 280. The cascade at the valley's head
-// is the owner's (the model's painting, 2026-10-19): a thin thread on the head wall at that distance, if seen at all
-P.SKY={head:118,pass:280,throne:334,cataract:true};
+// is the owner's (the model's painting, 2026-10-19): a thin thread on the head wall at that distance, if seen at all.
+// These are compass bearings; the sky is drawn in the page's frame, so each is turned by SITE.rot (P.pageBearing)
+P.SKY_COMPASS={head:118,pass:280,throne:334};
+P.pageBearing=b=>((b-P.SITE.rot*180/Math.PI)%360+360)%360;
+P.SKY={head:P.pageBearing(118),pass:P.pageBearing(280),throne:P.pageBearing(334),cataract:true};
 // THE SUN BY THE HOUR (P5, 2026-10-19): Longsong lies near 40 S, so the sun crosses the north. A plain arc: it rises at 6 in
 // the east-north-east, stands at noon where the page's light always stood (azimuth 305, altitude 36.4: 45's SUN_POS and
 // the sky's), sets at 18; under the horizon between. sunAt(h) -> {dir: unit [x, y, z] toward the sun, alt (degrees)}.
@@ -44,7 +52,12 @@ P.sunAt=function(h){const N=P.SUN_NOON,L=Math.hypot(N[0],N[1],N[2]),hl=Math.hypo
  const d=[Ex*c+Hx*Math.cos(ph)*s,Math.sin(ph)*s,Ez*c+Hz*Math.cos(ph)*s],m=Math.hypot(d[0],d[1],d[2]);
  return {dir:[d[0]/m,d[1]/m,d[2]/m],alt:Math.asin(d[1]/m)*180/Math.PI};};
 P.LIGHT_HOURS={bulbs:[18.4,29.6],windows:[17.8,30.4]};   // on in the evening, off next morning (past 24)
-P.toWorld=(x,z)=>[x+P.SITE.wx,z+P.SITE.wz];
+/* page <-> world (the region cut's metres): turned by SITE.rot about the origin, then moved to (wx, wz). dirToWorld and
+   dirToPage turn an offset only (a village's spot from the house, a direction) */
+P.dirToWorld=(x,z)=>{const c=Math.cos(P.SITE.rot),s=Math.sin(P.SITE.rot);return [x*c-z*s,x*s+z*c];};
+P.dirToPage=(dx,dz)=>{const c=Math.cos(P.SITE.rot),s=Math.sin(P.SITE.rot);return [dx*c+dz*s,-dx*s+dz*c];};
+P.toWorld=(x,z)=>{const d=P.dirToWorld(x,z);return [d[0]+P.SITE.wx,d[1]+P.SITE.wz];};
+P.toPage=(wx,wz)=>P.dirToPage(wx-P.SITE.wx,wz-P.SITE.wz);
 
 // ---------------------------------------------------------------- the rock: Longsong's hill
 // A granite knoll on the apron, authored finer than the model's 4 km cells (as Pinnacle Rock's gorge is): a level top
@@ -114,8 +127,10 @@ P.KORA={cx:0,cz:95,a:235,b:150,w:5,name:'The outer kora (the pilgrims\' circuit 
 // the bridge before the gate; the lotus pond between the wall and the stream
 // (2026-10-19: it bends south round the Mirror, between the pond and the wall's north-west tower; it had run through the water)
 P.TRACK=[[-1500,-240],[-900,-250],[-560,-240],[-420,-200],[-330,-172],[-262,-170],[-228,-186],[-220,-214],[-170,-226],[-60,-227],[0,-225],[0,-200]];
-P.BRIDGE={x:0,z:-290,w:8,L:70,y:3,name:'The bridge of the Longsong stream'};
-P.TRACK_N=[[0,-330],[0,-420],[-200,-700],[-600,-1400]];   // north of the bridge, toward the valley's floor
+/* the bridge over the Bīruk al-Ghaym (2026-11-11: the river is ~112 m wide; 45's BRIDGE takes its true line and length
+   from the river where it crosses x 0, nearest this z) */
+P.BRIDGE={x:0,z:-356,w:8,L:150,y:3,name:'The bridge of the Bīruk al-Ghaym (the Longsong river)'};
+P.TRACK_N=[[0,-440],[0,-520],[-200,-800],[-600,-1500]];   // north of the bridge, toward the valley's floor
 P.POND={x:-290,z:-235,r:52,y:-9.4,depth:3.2,name:'The Mirror of Longsong (the lotus pond)'};
 
 // ---------------------------------------------------------------- the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR)

@@ -152,13 +152,13 @@
             "runtimeArgs": [
                 "-m",
                 "http.server",
-                "8831",
+                "8886",
                 "--bind",
                 "127.0.0.1",
                 "--directory",
                 "biomes/ancientsvalley/dist"
             ],
-            "port": 8831
+            "port": 8886
         },
         {
             "name": "pinnacle-world",
@@ -360,6 +360,78 @@
                 "biomes/labyrinth/dist"
             ],
             "port": 8864
+        },
+        {
+            "name": "kirstabal",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8885",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "settlements/kirstabal/dist"
+            ],
+            "port": 8885,
+            "autoPort": false
+        },
+        {
+            "name": "census-atlas",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8881",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "C:/Users/travi/AppData/Local/Temp/claude/fb90a45e00650bd0/3c8541e4-a2b4-461b-b662-31b858516b6a/scratchpad/census_art"
+            ],
+            "port": 8881,
+            "autoPort": false
+        },
+        {
+            "name": "lightwall",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8823",
+                "--directory",
+                "settlements/lightwall/dist"
+            ],
+            "port": 8823
+        },
+        {
+            "name": "ancients-dist",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8887",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "kits/ancients/dist"
+            ],
+            "port": 8887,
+            "autoPort": false
+        },
+        {
+            "name": "qiblai-dist",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8883",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "kits/qiblai/dist"
+            ],
+            "port": 8883,
+            "autoPort": false
         }
     ]
 }

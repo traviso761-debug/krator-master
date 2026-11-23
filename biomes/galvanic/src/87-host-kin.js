@@ -7,6 +7,8 @@ const KIN_ROWS=[
  {ref:'rift.baobab',key:'baobab',name:'Baobab',cell:70,minR:9,accept:(x,z)=>.5*smooth(.55,.9,FIELD.upland(x,z))*smooth(.35,.15,FIELD.slope(x,z))},
  {ref:'rift.dragon',key:'dragon',name:'Dragon tree',cell:34,minR:4,accept:(x,z)=>.45*smooth(.4,.8,FIELD.upland(x,z))*smooth(.5,.25,FIELD.slope(x,z))}];
 const KIN_PH=5.5;
+/* station 3: no tree on the footslope's seasonal wet (the table at the surface more than ~10 days a year: a dambo's grass); the strand's: none */
+const KIN_WET=HILL?(x,z)=>smooth(14,4,FLOOD_AT(x,z)):(x,z)=>1;
 function growKin(){
  if(new URLSearchParams(location.search).get('kin')==='0'||!BIO.kin)return null;
  const W=4403,out={},missing=[];const S=KSPACE.create({cell:40});
@@ -15,7 +17,7 @@ function growKin(){
   const K=BIO.kin(row.ref,{key:row.key,name:row.name,tags:{borrowed:true,from:'biomes/rift'}});if(!K){missing.push(row.ref);out[row.key]=0;return;}
   const cell=row.cell,N=Math.ceil(R/cell),salt=0x6e40+ri0;let n=0;
   for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(W,i,j,salt),u=k=>KRAND.unit(KRAND.hash(h,k,0,salt)),x=(i+u(1))*cell,z=(j+u(2))*cell;
-   if(Math.abs(x)>R||Math.abs(z)>R||BIO.lodD(x,z)>BIO.LOD().hero*1.25)continue;if(!(u(3)<row.accept(x,z))||PH_AT(x,z)<KIN_PH)continue;
+   if(Math.abs(x)>R||Math.abs(z)>R||BIO.lodD(x,z)>BIO.LOD().hero*1.25)continue;if(!(u(3)<row.accept(x,z)*KIN_WET(x,z))||PH_AT(x,z)<KIN_PH)continue;
    if(S.some(x,z,row.minR,o=>Math.hypot(x-o.x,z-o.z)<row.minR+o.r)||!BIO.clearOf(x,z,row.minR)||BIO.mask(x,z)<.9)continue;
    reseed(h);const T=K.make(x,terrainH(x,z),z);K.grow(T,2);   /* the hero always, within the hero range (riftrim's finding: past it the vendors' lite crowns float) */
    S.insert({x,z,r:row.minR},x,z,row.minR);window._kinTrees.push([x,z,row.key]);

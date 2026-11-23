@@ -4,6 +4,11 @@ Roadmap stage 6's example: two Islander towns, Kautoa (a city) and Valapo (a vil
 isles. `PLAN.md` holds the assay and the plan (P0-P8). This folder is P4, **the site planner**, where the owner lays
 out the two towns (P5). Both are drawn (2026-10-18, `site/isle-site.json`); `PLAN.md` section 8 is their programme.
 
+**The region host is core/region** (2026-11-11, core/simulation/PROPOSAL-LONGSONG-PINNACLE.md phase S0). The fragments
+this page had as `src/40-49` (`40-isle-sim.js` ... `49-isle-govern.js`; `47`, `47k`, `47x`, `47y` stay here) are now
+`core/region/40-region-sim.js` ... `49-region-govern.js`. They are unchanged but for `ISLE.` read as `RH.`, and run on
+`ISLE` through `src/39-isle-region.js`. The docs here still name them by their old names. See `core/region/README.md`.
+
 ```
 python3 build.py                       # writes dist/isle-site.html
 python3 serve.py                       # http://127.0.0.1:8817/dist/isle-site.html  (?town=Valapo for Valapo)

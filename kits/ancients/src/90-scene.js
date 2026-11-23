@@ -62,7 +62,11 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIDE,GROUND_SIDE),MA
 // A target may add builders of its own by declaring EXTRA_BUILDERS in its
 // 89z-rows.js fragment, so new work can live entirely in its own target and
 // its own new src/ fragment without editing this file.
-const BUILDERS=Object.assign({},typeof EXTRA_BUILDERS!=='undefined'?EXTRA_BUILDERS:{},{skyA:buildSkyA,skyB:buildSkyB,skyC:buildSkyC,mega:buildMega,fac:buildFactory,port:buildStarport,gov:buildGovernment,lib:buildLibrary,bunk:buildBunker,off:buildOffices,apt:buildApartments,amph:buildAmphitheater,fuel:buildFuelStation,radar:buildRadarTower,dish:buildDish,house:buildHouses,lab:buildLab,house2:buildHouses2,skyD:buildSkyD,skyE:buildSkyE,skyF:buildSkyF,arc:buildArc,robo:buildRobotics,campus:buildCampus,skyG:buildSkyG,skyH:buildSkyH,dc:buildDataCenter,police:buildPolice,hosp:buildHospital,hotel:buildHotel,dam:buildDam});
+const ANC_BUILDER_NAMES={skyA:'buildSkyA',skyB:'buildSkyB',skyC:'buildSkyC',mega:'buildMega',fac:'buildFactory',port:'buildStarport',gov:'buildGovernment',lib:'buildLibrary',bunk:'buildBunker',off:'buildOffices',apt:'buildApartments',amph:'buildAmphitheater',fuel:'buildFuelStation',radar:'buildRadarTower',dish:'buildDish',house:'buildHouses',lab:'buildLab',house2:'buildHouses2',skyD:'buildSkyD',skyE:'buildSkyE',skyF:'buildSkyF',arc:'buildArc',robo:'buildRobotics',campus:'buildCampus',skyG:'buildSkyG',skyH:'buildSkyH',dc:'buildDataCenter',police:'buildPolice',hosp:'buildHospital',hotel:'buildHotel',dam:'buildDam'};
+// THE BUILDERS BY NAME (2026-11-15): a page carries only the builder fragments its rows place (build.py, PRUNE), so the
+// table names them and takes each one the page has; a row whose builder is not on the page is a build error, not a gap.
+const BUILDERS=Object.assign({},typeof EXTRA_BUILDERS!=='undefined'?EXTRA_BUILDERS:{},Object.fromEntries(Object.entries(ANC_BUILDER_NAMES)
+ .filter(e=>typeof self[e[1]]==='function').map(e=>[e[0],self[e[1]]])));
 // A target may choose which decay levels it shows by declaring DECAYS in its
 // 89z-rows.js. 0 intact, 1 ruined, 2 toppled, 3 repaired, 4 rehabilitated and
 // STILL STANDING ("The Project"). Level 3 is a whole showcase of its own, so it

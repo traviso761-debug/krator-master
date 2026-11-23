@@ -28,6 +28,28 @@
 - [ ] **Ice worms** are points that glow from dusk to dawn (`86`): no motion, no daytime look. Animals belong to the fauna kit; this is the
   glacier's one native animal as a placeholder.
 
+## Station 11, the azurite tarn (2026-11-16, Gemini's 5.1 showcase; `PLAN.md` section 7.3)
+
+- [ ] **The GPU verify is owed** (`python3 verify.py dist/copperglacier-azurite.html --assert --all-views` on a lane). Only SwiftShader ran here
+  (the report in the station's commit says which checks). Its texture units were counted on SwiftShader; the Arc's ANGLE fails a program at 16.
+- [ ] **An ideal type: the crater is drawn about 1:13.** On the model the Copper Tarn is a round basin ~30 km across (px 138-154, 1134-1162), its
+  outlet 9105 leaving the NW lip at px 142,1136 for the west, the ice 16 km east of the middle. The page draws the spec's framing (the whole
+  collar in a 5.2 km cut): the tarn 2.2 km across, the glacier from the ENE, the breach WSW. **For the owner:** keep the ideal crater, or move
+  the station to the real breach (about px 140,1137, the outlet's head) and lose the snout from the frame (the ice is 30 km off there).
+- [ ] **The copper is the spec's, not the resource data's.** The data has the cell as water, no copper and no node within 3 km; the spec's IOCG
+  skarn (section 7.1) is drawn as the station's own copper field (the seams on the marble, the bars' green pebbles). A rebake with the IOCG
+  skarn round the tarn would make it the data's (`kits/resources/REBAKE-PLAN.md`; the first item above).
+- [ ] **No azurite texture.** The azurite seams are the library's `rock.malachite` tinted azure (`84`, `aST.y`): a stand-in. Owed to
+  `core/materials/PROMPTS-NEEDED.md` (outside this kit; the coordinating session adds it): `rock.azurite`, banded azurite and malachite in
+  contact marble, deep azure nodules and crusts, 2 m tile.
+- [ ] **Layers left out for the texture units** (`SITE.layersOff`): the beds take five, so the station's bare ice is all `ice.verdigris` (the
+  spec's banded ice), and the dirty ice (the medial moraine), the snow and the wall rock are the paint's and the beds'.
+- [ ] **The beds are planar.** KSTRATA's dip is one plane, so the collar's beds dip gently WSW everywhere, not radially out of the crater (the
+  spec's upturned flap). A radial dip is not in KSTRATA.
+- [ ] **For the scale-model queue (no edit made):** none needed for this ideal type. If the owner wants the 1:1 framing, the model would need the
+  spec's small cirque crater at 147,1143 inside today's 30 km basin, which contradicts the model's lake; not proposed.
+- [ ] **Not drawn:** the Fellgang and Dalab prospectors on the bars (no people in a biome kit), the native-copper nuggets as objects.
+
 ## Left out, with reasons
 
 - **KSTRATA:** the walls are foliated gneiss and granite, with no beds.

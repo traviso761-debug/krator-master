@@ -370,6 +370,8 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
   question below.
 - **Qiblai -> Xanadu** (2026-11-11) stays for the same reason: the Qiblai kit is a vassal kit of the Xanadu kit and builds inside
   Xanadu's page (`settlements/xanadu/build.py --kit`; `kits/qiblai/PLAN.md` section 7). It goes when Xanadu's page shell does.
+- **The city of Qiblai -> Xanadu** (2026-11-11), the same: the city is a target on Xanadu's page, as Erewhon is
+  (`settlements/qiblai/build.py`, `settlements/xanadu/build.py --kit`). It goes with the Qiblai kit's edge, when Xanadu's page shell becomes a core host.
 - On the biome rebuild only (not on this branch): `core/atmos/demo/build.py` looks for three.js in Ancients and Ring Sea;
   it takes `harness.local_three` when that branch lands, as the materials demo does now.
 
@@ -398,6 +400,11 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
       Girder's and Mav's Refuge's towns), and Talia's villages draw the Iziz Vernacular through the isle demo's `izv_bundle`
       (the Vernacular with Iziz's Ancients core) and Iziz's library pack, through the same instancer, as `openworld/isle-demo`
       does. These go when the kits own their bundles and packs and the instancer moves to core/world.
+    - `openworld/oidong-highrift -> settlements/xanadu` and `-> settlements/isle-demo` (2026-11-11): the fourth region's
+      villages and the Order's houses draw the Xanadu building kit as the second region's do (its pack, the isle demo's
+      flattener); they go with those. `settlements/longsong -> openworld/oidong-highrift` (2026-11-11) is content:
+      Longsong's page reads the region's baked plan (`plan/sites.json`: its ring and the Order's houses, `LS.RING`), the
+      open world's plan of its countryside, as the owner asked ("the Longsong page's census and plan read them").
   - **`vendored`**, every module -> upstream pair a build keeps copies of and checks with `--vendor-check` (38 today,
     counting pairs a build also reads, which DEPS.json's "vendored" leaves out). A new copy is an error: read the
     upstream in place, or record here why it must drift. The rule is per pair, not per file (a per-file list would

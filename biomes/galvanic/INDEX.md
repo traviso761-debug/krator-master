@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/galvanic.html`
+Built output (never open it; edit `src/` and rebuild): `dist/galvanic-deep.html`, `dist/galvanic-gossan.html`, `dist/galvanic.html`
 
 Build: `cd biomes/galvanic && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -26,19 +26,30 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-galvanic-cell.js` | 11 |  |
-| `45-host-stage.js` | 13 | the land (38); the climate fields (the field contract's units:  (102); the host binding (132) |
-| `48-host-therm.js` | 2 |  |
+| `40-galvanic-cell.js` | 16 |  |
+| `45-host-stage.js` | 18 | the land (44); the climate fields (the field contract's units:  (150); the host binding (180) |
+| `48-host-therm.js` | 3 |  |
 | `50-galvanic-species.js` | 6 | palettes (sRGB hex; the colour maths is the core (14); the species (21); materials (no maps: the forms are small and read (40); the items (46) |
-| `60-galvanic-place.js` | 8 |  |
+| `60-galvanic-place.js` | 9 |  |
 | `70-galvanic.js` | <1 |  |
-| `84-host-ground.js` | 8 |  |
+| `84-host-ground.js` | 9 |  |
 | `85-host-far.js` | 5 |  |
 | `87-host-kin.js` | 3 |  |
 | `88-host-place.js` | 1 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
+| `89c-host-chimneys.js` | 4 |  |
+| `89u-host-steam.js` | 2 |  |
 | `89w-host-water.js` | 7 |  |
 | `89z-host-build.js` | 5 |  |
-| `99-host-take.js` | 12 |  |
+| `99-host-take.js` | 20 |  |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| deep | 44z-host-site.js | <1 |
+| gossan | 44z-host-site.js | <1 |

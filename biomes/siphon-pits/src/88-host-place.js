@@ -14,6 +14,8 @@ const STATION_BUILD=function(Q){Q=Q==null?1:Q;let st;
    keep:(x,z)=>DRY(x,z)&&camp(x,z)>12?1:0});}
  else if(SKEY==='terraces'){const lot=PLAN.lot||(()=>1e9);
   st=SIPHON.build({station:'terraces',R:TERR.R-150,quality:Q,fieldAt:FIELD_OF,braid:PLAN.braid,willow:SITE.willow,keep:(x,z)=>DRY(x,z)&&lot(x,z)>6?1:0});}
+ else if(SKEY==='polynya'){const lot=PLAN.lot||(()=>1e9);   /* station 14: station 1's pass on the bluff (crops, willow by the qanats, sedge), off the lots */
+  st=SIPHON.build({station:'polynya',R:TERR.R-150,quality:Q,fieldAt:FIELD_OF,braid:PLAN.braid,willow:[3,26],keep:(x,z)=>DRY(x,z)&&lot(x,z)>6?1:0});}
  else if(SKEY==='scarp'){const road=(x,z)=>L.ROAD.at(x,z).d;
   st=SIPHON.build({station:'scarp',R:TERR.R-150,quality:Q,slope:SLOPE_AT,normal:(x,z)=>KF.normal(x,z),keep:(x,z)=>road(x,z)>5?1:0});}
  else{/* the Arete: the lee of every block (the blizzard comes from 290 degrees: west-north-west), off the trail on the knife-edge */

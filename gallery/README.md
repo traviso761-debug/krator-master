@@ -6,6 +6,14 @@ It is shared as anyone-with-the-link (the four world parts and Krator Biomes A�
 
 **Retired entry:** the Little Demo was deprecated (October 2026) and retired to `archive/little-demo` (owner, 2026-11-03; its `DEPRECATED.md`). `build_gallery.py` no longer lists it; the 2026-11-09 publish dropped it from the live parts.
 
+## The Tiers added to Krator Biomes S–X (2026-11-17)
+
+The Tiers (`biomes/tiers`, a new biome kit, merged to `main` at e0091b9a8) went into the part its name sorts to, Krator Biomes S–X
+(https://claude.ai/artifact/Cs4gLyiqdKfmL1oFkvSTx4, version 6): its four pages (`worlds/tiers.html`, `tiers-canyon.html`,
+`tiers-lip.html`, `tiers-tread.html`, ~40 MB) uploaded beside the part's files, and the part's index given their four `ENTRIES` between the
+southwestern lowlands and the Twins. The other parts were not re-split (a re-split needs every page pulled from LFS to size the parts);
+`build_gallery.py`'s `ENTRIES` carry the four lines for the next full publish. The part stays private until the owner shares it.
+
 ## Twelve artifacts: the merge of 2026-11-16 (2026-11-17)
 
 Republished after eight biome sessions were merged into `main` (218481e88; the owner: "yes", 2026-11-17). `ENTRIES` gained 78

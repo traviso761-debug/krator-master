@@ -2,19 +2,15 @@
 
 The culture kit of the Rift's tunnel people, the Tungangs, their kin on the rim and the fells, the Fellgangs, and the
 Glaziers of Opal Valley: **one kit, three sets** on one salvage foundation (`PLAN.md`, the design; its owner's answers
-blocks are the decisions). **Built so far: the Fellgang set (`fg`)**, the fell villages of `PLAN.md` section 3.3.1 (the
-owner, 2026-11-11: "build the fellgang villages now") and **the Tungang set (`tg`)**, the carved defs Loj Twenny needs (`PLAN.md`
-section 3.2; below). The Glazier (`gz`) set comes later.
+blocks are the decisions). **Built here: the Fellgang set (`fg`)**, the fell villages of `PLAN.md` section 3.3.1 (the
+owner, 2026-11-11: "build the fellgang villages now"), and **the Glazier set (`gz`)**, the eastern loj of Opal Valley (`PLAN.md`
+sections 1.4, 3.4; 2026-11-16). The Tungang (`tg`) set is on Loj Twenny's branch (`claude/loj-twenny-059a5e`).
 
 - **Page:** `dist/tungang.html` (the kit sheet), its library pack beside it (`dist/tungang.tex.tungang.js`).
 - **Build:** `python3 tools/build.py kits/tungang` (runs `build.py`, records `build-inputs.json`).
 - **Check:** `python3 verify.py dist/tungang.html --assert` (on `tools/harness.py`; `KRATOR_GL=gpu` for the real GPU),
-  `node tests/test-bundle.js` (the sealed bundle in plain node), `node core/hamlet/test-hamlet.js` (the `fellgang` row),
-  `node tests/test-wildcat.js` (Wildcat through the bundle), `node core/pueblo/test-pueblo.js` (the pueblo builder).
+  `node tests/test-bundle.js` (the sealed bundle in plain node), `node core/hamlet/test-hamlet.js` (the `fellgang` row).
 - **For another world:** `tungang_bundle.py` seals the kit as the global `TG`; `API.md` says what to call (`TG.fg.draw`).
-  `bundle(furniture=True, furniture_tex=True)` seals the catalog's library detail maps in with the furniture (about 1.9 MB:
-  every family, since a piece's family is known only when it is built), so the pieces are textured, not vertex colours only;
-  Loj Twenny takes it. Off by default, byte for byte.
 
 ## The Fellgang set
 
@@ -89,41 +85,46 @@ East of the rows **a sample village** laid by `KHAMLET.village` on core/hamlet's
 through `TG.fg.draw`, with a stretch of lantern road, a halt and a wagon; west **a sloped pad** (12 % and 5 %) with five
 buildings on its ground; north-west **a test wall** with a ledge, six families' ropes, wall stations, nest gear and burial ledges.
 
-## Wildcat: the scrap pueblo
+## The Glazier set
 
-The Fellgangs' raiding village, about half Kimr (`PLAN.md` 1.3.1, the owner's round 6): **one great house** of Pueblo
-Bonito's scale and **two hamlets**, planned by **`core/pueblo`** (`KPUEBLO.house`: room cells keyed by stable ids, storeys
-stepping back from the plazas, terraces, kivas, ladders, the stockade's ring; plain records, no three.js) and drawn by the
-kit: drystone and rammed-earth columns faced in salvage (sheet, rusted and white plate, car shells, container panels),
-vigas and rail ends in rows, parapets, T-doors framed in mammoth ivory onto the terraces, plate hatches, ladders of pipe and
-fir, no door at the ground; the round room (the great kiva, the Boast's stand on its roof, trophy poles), small kivas; the
-dress: the hero's horned crest and aurochs skulls, the Deeds on the front, NO SKABS on the outer walls, glyptodont shells.
+The Glaziers are the eastern loj: the crew who went up the Opal River into the fault and were not absorbed, a thousand years
+apart from the Union (`PLAN.md` 1.4, `LORE.md` 6.13). Their hold is **carved into a fault scarp over the milk-opal tarns**, the
+only Tungang hold with a face to the sky: tiered, battered, whitewashed fronts in the cliff, tapering window cuts under cusped
+arches glazed with **moonglass** (potch, the common opal with no fire, sliced thin), the parapets banded in alecap purple,
+cholet bands in rose, teal and saffron, gilt on the rich (bought with opal), the eight-spoked wheel over the door, the **click
+wheels** (Xanadu's prayer wheels hung with opal chips and frost-willow spicules), Oidong's celadon and the Register's enamel in
+the Order's blue. A Tungang loj underneath: the count wall, the banner, the timetable of the train that never comes, the lamp
+code. The Orientalism is kept light. Culture id `glazier` (opt-in: `core/tags/glazier/`); openings at `TG.SCALE` 0.94.
 
-| | |
-|---|---|
-| The great house | a D 148 x 83 m: 805 rooms up to five storeys, 1,145 people, two plazas, the round room and three kivas, 98 ladders, a stockade 24 m out at the knoll's foot |
-| The hamlets | the ford's U (60 people, a low stockade), the pens' L (82) |
-| Fragments | `44-fg-wc-plan.js` (the specs and the dress: records), `46-fg-wc-draw.js` (the drawing and the six `fg-wc-*` defs), `82-wc-host.js` (`TG.fg.pueblo`, `TG.fg.puebloRegister`, `TG.fg.check.pueblo`), and the sheet's `89w`, `91w`, `96w` |
-| On the sheet | the great house on a knoll at (600, -170), the hamlets below it; rows of one room block alone, the round room and kivas, the stockade; `Wildcat:` views |
+**A carved def is a front plus a void plan** (`kits/zeijani/PLAN.md` 6.3). The front is the builder's; the rooms are voids
+in the rock, and **the void plan is the one source** (`TG.gz.plan`): the sheet carves the rock from it (KCAVERN), the builder
+draws its floors, whitewash linings, furniture and lamps from it, core/walk takes its floors from it. The frame: the origin at
+the front's foot on the rock face, the front out toward +z, the rooms into the rock at -z (`API.md`, `TG.gz`).
 
-## Barricade: the wall across the pass
+| Key | Tier | What |
+|---|---|---|
+| `gz-cell` | poor | one tier and a door (a trefoil arch, a curtain or a carved leaf); a carved room (hewn or plastered) with a bed shelf, the tea board, the mask rack; a store niche |
+| `gz-front` | middle | two tiers; the hearth room (a drum stove, carpet, tea, bolsters), the sleeping room, the store; a steep timber stair up to the upper room behind tier two, which opens on the terrace |
+| `gz-house` | rich | three or four tiers (by seed): five-lobed arches, gilt, a lattice bay (jharokha), the eight-spoked wheel, a gilt finial; the polished reception room with carpets, bolsters, celadon and the tea copper; the kitchen and the store; the family rooms; the shrine room with its click wheel and opal boss; the top room |
+| `gz-stair` | common | two or three switchback flights up the scarp: masonry from the ground, timber on iron brackets above; white hooded lamps at the landings (the edge) |
+| `gz-wheel-walk` | common | 8 to 12 click wheels in a rock-cut niche row under a carved eave, a parapet on the ledge's edge |
+| `gz-tea-hall` | civic | the loj's meeting hall (12 x 10.4 m, polished, vaulted): the benches down the west wall, the count lamps behind them and the ruled count wall opposite, the steward's carved seat on its dais, the gilt-framed timetable and the banner, the brass urn on its carpet, celadon, the guest benches for monks and clerks; three tiers of front, the guest gallery |
+| `gz-register-room` | civic | the Register of the Veins: one enamel plaque per vein (24 to 47), the hold's own on the front; the claim book, the counting table with its trays of cut stones and balance, the seal; the Fifth's strongroom behind an iron door |
+| `gz-glass-shop` | common | the moonglass workshop: wide windows with the wares, the slicing and polishing benches, the lens lathe, racks of panes, plate frames, the wet trough |
+| `gz-monks-house` | civic | the Order's blue bands; the reading room (low desks, the scroll rack, cushions, butter lamps), the pigment mill (an edge-runner grinding opal spoil), a cell |
+| `gz-adit` | common | a plate-framed portal, the Register's plaque, the amber and the white hooded lamps, the potch spoil heap, the wet-drilling flume from the tarn, timber sets to the lit face |
+| `gz-vein-gallery` | common | a narrow gallery in, a turn and on along a potch line (a pale band at the contact), the wet floor, the lit face with its opal |
+| `gz-dark-adit` | poor | the old mouth behind a wax-cloth curtain and a glow-cap lamp; three kerbed beds of pale fungi and alecap, the spawn trays, the water channel |
+| `gz-lotus-pond` | common | three whitewashed basins stepping down from the face to the tarn, the opal water-lotus, a sluice from the rock, a path of flags |
 
-The second great house (`PLAN.md` 1.3.2, the owner's round 7): Fellgangs who wall **the Weyt Warra's gorge**, a major pass into
-Firebliss, and count everyone through (*proposed*: the union's picket line made stone). core/pueblo's **`bar`**: one block four
-rows deep and 176 m across, its outer face sheer and **barricaded with stacked Ancient wrecks**, bastions of six storeys at
-the gorge's walls with crow's nests, terraces stepping down to a long plaza open toward Firebliss between two wings; **a gate
-tunnel** (the tallies of the crossings painted inside) and **a culvert** for the river under its rooms; red picket banners;
-NOBODY CROSSES. 620 rooms, 1,027 people; the count room (the great kiva) with its count boards and toll chests. Fragments
-`47-fg-bc-plan.js` (spec, dress) and `48-fg-bc-draw.js` (def `fg-bc-greathouse`); on the sheet across a gorge at (-480, -170).
+**States.** kept, worn (greyed, the paint flaking, doors ajar, lamps dimmed, rubble) and abandoned (dark: no lamp lit, the panes
+broken out, the curtains rags, the furniture thinned, the gilt dull): `?state=` or the panel's State select.
 
-## Inside the pueblos
-
-Both great houses (and the hamlets and the row's blocks) are hollow (`PLAN.md` 1.3.5): every room walled, plastered, its
-door or window open, its hatch and ladder; the kivas dug (bench, pilasters, hearth, deflector); the plazas paved. Every room
-furnished by its use from the catalog (12 new Fellgang pueblo pieces: sleeping platform, mealing bins, corner hearth, wall
-shelves, grain bin, storage jars, water jar, felting frame, horned seat, spear rack, count board, salvage bin), placed by
-core/pueblo (`KPUEBLO.furnish`), drawn in chunks near the camera. **K** steps the storey section (whole, the kivas, storeys
-1-6); the `... inside:` views open it.
+**The sheet.** Thirteen Glazier rows, three seeds each, each row in a block of the scarp's rock carved from its plans; east of
+them **a sample scarp hold** in two steps over a tarn: on the lower face the stair, two cells, two household fronts, the
+Register, the glass shop and the dark adit, lotus ponds on the shore; on the ledge (6.8 m) and the upper face an adit, a vein
+gallery, a cell, a rich house, the wheel walk and the tea hall, the monks' house. C (the cut-away) opens the rock 2.2 m over
+every void's own floor.
 
 ## Core adoption
 
@@ -134,7 +135,6 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `core/engine` | yes, read in place | the defs, their records, the merged buckets, the sheet's scene; the host draw (`80-fg-host.js`) runs it dry into buckets of its own |
 | `core/rand` (`KRAND`) | yes | the village's look per building (a hash of the world seed and the record's index), the test grounds; the engine's per-def stream is seeded by `place()` from the def's seed and variant |
 | `core/tags` (`KTAGS`) | yes | every row building, piece and furniture piece registered before it is drawn; the sheet registers its test grounds' records first, as a station does; culture `fellgang` (in the vocabulary) |
-| `core/pueblo` (`KPUEBLO`) | yes, read in place (new) | Wildcat's great house and hamlets: the plan as records; the bundle seals it with `core/space` |
 | `core/hamlet` | yes | the sample village; the new opt-in `core/hamlet/fellgang/22-hamlet-fellgang.js` (the `fellgang` row, the `fowling` and `ice` focuses) |
 | `core/space` (`KSPACE`) | through core/hamlet | the village's overlap index (no new occupancy grid) |
 | `core/city` | `33-city-strategies.js` only, through core/hamlet | `KCITY.prim` (the lanes' frontage cursor), read in place; the cavern setting comes with the Tungang set |
@@ -143,8 +143,10 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `core/door` | yes | the plate doors are `KDOOR` records: they open with E on the sheet |
 | `core/host` | yes | camera, panel, inspector, polygon tool, probe |
 | `core/atmos` | yes | the placeholder sky and the skylight on the library materials |
-| `core/walk`, `core/walk/box` | yes | every box a building draws is a floor or a block (`core/engine/37-wk-rec.js`, round walls `src/37t-wk-ring.js`); round walls as arcs of blocks; the doors' blocks switch as they open; F walks the sheet |
-| `core/sockets`, `core/lod`, `core/export`, `core/terrain` (`KCAVERN`), `core/camp`, `core/minimap`, `core/shader` x-ray, `core/hazard`, `kits/ancient-transit`, `kits/motor-vehicles` | not yet | the Tungang set's holds and the Line; the Godot export is a `KNOWN_ISSUES.md` item |
+| `core/walk`, `core/walk/box` | yes | the Glaziers' carved floors from their plans (KCAVERN writes them); every box a building draws is a floor or a block (`src/37-wk-rec.js`); round walls as arcs of blocks; the doors' blocks switch as they open; F walks the sheet |
+| `core/terrain` (`KCAVERN`, `host/39e`, `host/39h`) | yes (the Glazier set) | the Glaziers' rock on the sheet, carved from their void plans (`TG.gz.carve`), its floors to core/walk; the cut-away's rock cut |
+| `core/tags/glazier` | yes, opt-in | the culture id `glazier` |
+| `core/sockets`, `core/lod`, `core/export`, `core/camp`, `core/minimap`, `core/shader` x-ray, `core/hazard`, `kits/ancient-transit`, `kits/motor-vehicles` | not yet | the Tungang set's holds and the Line; the Godot export is a `KNOWN_ISSUES.md` item |
 
 ## Checks
 
@@ -162,47 +164,17 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `plinth-on-slope` | on the sloped pad every floor at its footprint's highest corner, every plinth down to its lowest; the longhouse's byre down-slope there and at +x on the flat | the pad's buildings checked against ground 3 m lower |
 | `fixed-line-follows` | the six ropes: every cable and cordage vertex within 0.12 m of its record, every record point within 0.12 m of the line; pegs and rungs drawn | the records moved 3 m east |
 | `host-api` | `TG.fg.draw` draws every record of the sample village | a record of a key the kit lacks is reported missing |
+| `gz-box-within` | every Glazier site within its box (x within +-w/2, z within [out - d, out], y within h, by 0.5 m) and filling 60 % of w and h, 45 % of d: kept on the rows, worn and abandoned through `TG.gz.proto` | the tea hall measured against the cell's box |
+| `gz-void-plans` | every def's void plan at 8 seeds inside its box, its rooms 0.6 m of rock apart (a working's joined stretches exempt) | 4 m of rock asked between rooms |
+| `gz-rock-carved` | the rows' and the scarp's rock (KCAVERN) open at each site's first room and solid behind its back wall | every site moved 2 km north, off the rock |
+| `gz-lights-by-state` | the kept scarp's lamps as light records (seven kinds of the code), the worn rows' dimmed, the abandoned rows' none | the kept scarp checked as abandoned |
+| `gz-host-api` | `TG.gz.draw` draws every site of the sample scarp | a site of a key the kit lacks is reported missing |
+| `gz-loj-rooms` | the Register's plaques (one per vein and the hold's own), the wheel walks' 8-12 wheels, the tea halls' count wall, timetable, benches and eight count lamps | one plaque more asked of every Register |
+| `gz-walk-carved` | a walker finds the cavern's floor at the hearth room's centre of each household front on the scarp (core/walk from the plan) | a point in the rock behind the hearth room's back wall |
 | `coverage`, `no-nan`, `furniture-keys`, `material-records` | every def drawn; no NaN; every catalog key found; the library records | an unknown def, a NaN mesh, an unknown catalog key |
-| `wildcat-plan` | the great house's plan passes `KPUEBLO.check` (terraces, reach from outside, no ground doors, no overlap, kivas, ids), 1,000-2,000 people, every column, kiva, door and hatch drawn | a front room raised to nine storeys over the terrace behind it |
-| `wildcat-on-knoll` | the floor at the hull's highest ground on the knoll, the footings to the ground, the stockade's stakes down the slope | the floor checked against the knoll 3 m lower |
-| `wildcat-tags` | every room, kiva and ladder a child of the house's record in core/tags | the rooms counted against one more |
-| `wildcat-dress`, `wildcat-hamlets` | the crest, six trophy poles, the Deeds, the slogans, the shells; both hamlets pass, 40-300 people, yards open | seven poles; the hamlets against the great house's range |
-| `barricade-plan`, `barricade-in-the-gorge` | Barricade's plan passes, 600-2,000 people, its gate and culvert, wrecks, gear, lookouts, pickets, slogans drawn; its floor on the gorge's floor, its bastions within 4 m of the walls, the river's bed under the culvert | its plan against Wildcat's draw; walls 1 m off |
-| `pueblo-interiors`, `pueblo-furniture-table`, `pueblo-section` | both houses' rooms hollow, every piece placed, `KPUEBLO.check.furniture` clean; the table's keys and sizes as the catalog's; the section clips every house at a storey and closes | a piece on its hatch; `fellgang_nonesuch`; storey 2 as the ground floor |
 
 `node tests/test-bundle.js` runs the sealed bundle without a browser: both riftrim villages (their stations' specs) drawn on a
 slope, the plinth, the hall variants by focus, every key at 8 seeds in three characters within the contract, the ice village
-lower than the Fowlers', a rope, the road pieces, the furnished bundle; each with its negative.
-
-## The Tungang set (`tg`, 2026-11-11)
-
-The Line's crews' rooms, cut into the rock (`PLAN.md` 3.1-3.2, 5): squared, small and many, hewn or plastered; every door on a
-gallery with its lamp of the code's colour, a stencilled number and its click-ribs; wealth in the salvage fitted. **Carved
-first**: a def is its front and a **void plan** (`TG.tg.plan(key)`: rooms behind its front at -z, a doorway .4 m out past it),
-the one source the world carves (KCAVERN through `KCITY.cavern.carve(H, {plan: TG.tg.planOf})`), the builder draws inside
-and core/city's cavern setting lays out. The frame is a wall site's: the origin the foot of the front, the door facing +z.
-
-| Key | Box (w x d x h) | What it is |
-|---|---|---|
-| `tg-cut` | 2.8 x 3.6 x 2.4 | a single hewn cell: a curtain door, a red lamp, a bunk, a glow-cap jar, a peg wall |
-| `tg-set` | 7.4 x 8.6 x 2.6 | a household's cut rooms: the hearth room (drum stove, trestle, seats, peg wall, bait locker), the sleeping room (box beds), the store; the doorway plastered white with the berth numbers, a child's chalk on it |
-| `tg-loj-hall` | 14 x 17 x 6 | the meeting: the white count wall ruled in squares behind the steward's desk, its low lamp row behind six rows of raked benches, the banner wall, the minutes on enamel, the crew mosaic, the Book's lectern, the Tpresden's chair, the minute chest, the turn bell |
-| `tg-signal-box` | 6.4 x 5.2 x 3 | the steward's office: the lever frame, the desk, the timetable, the rota, the lockers |
-| `tg-carriage-house` | 27 x 8.6 x 5.4 | a Line carriage drawn into a cut bay: plated slit windows, the livery band, the number plate, a brass bell, the banner, the carriage seats set out, a cut galley behind |
-| `tg-dark-beds` | 12.4 x 14 x 3.2 | racks of fungus trays in four rows under amber tending lamps, the mat beds, the mash bin, the drip gutter |
-| `tg-cistern` | 8.4 x 9.4 x 3.6 | a sunk tank of dark water under a plate walk and rails, the drip gutters, the tap and the butts |
-| `tg-bath` | 8.4 x 9.4 x 3.2 | a plastered pool of warm water with steps, benches, the wash trough, the steam |
-| `tg-fan-house` | 6.4 x 8.2 x 4.4 | the Ancients' fan in its frame before the duct, the draught doors, the rota |
-| `tg-doors` | 10 x 4.4 x 5 | the gate across the way (`span`): two plate leaves folded back, the winding gear, the guard cut, the white lamp hooded |
-| `tg-night-mouth` | 3.4 x 16 x 3 | a porch with its click-ribs and hooded white lamp, a cut stair climbing 4.2 m toward the surface, a door at its head |
-| `tg-last-stop` | 7 x 12 x 3 | the seal plates across the siding with the berth numbers painted, the last lamps burning down, the dead in their berths behind |
-
-**States**: `kept`, `worn` (greyed, lamps dimmed, curtains rags, rubble), `abandoned` (dark, the furniture thinned, doors
-hanging, the plaster stained); `o.state`, a site's `state`, or `?tgstate=` on the sheet. **Light**: every lamp is a light
-record in `TG.tg.LIGHTS` (core/cavelight's shape: the lamp code's `lamp-red`, `lamp-green`, `lamp-amber`, `glowcap`,
-`lamp-white` hooded, and `wax` in the rooms). **Furniture**: the catalog's Tungang pieces at **0.94** (`tgFurn` queues them;
-`TG.tg.draw` places them in a batch of their own scaled by `TG.tg.SCALE`: KFURN.drawRec passes no scale).
-
-**The sheet's test hold** (`src/91g-tg-sheet.js`, south of the rows): three galleries, kept, worn and abandoned, each lined
-with every def, laid on `KCITY.cavern`, carved in KCAVERN (drawn as a dollhouse with the rock cut, `39h`), drawn through
-`TG.tg.draw`. Its views start "Test hold". `verify.py --assert` runs the `tg-*` checks.
+lower than the Fowlers', a rope, the road pieces, the furnished bundle; the Glaziers' plans inside their boxes and their rooms
+apart, every Glazier key at 8 seeds in three states within its box, a small scarp carved from the plans (KCAVERN in node) and drawn
+lit kept and dark abandoned; each with its negative.

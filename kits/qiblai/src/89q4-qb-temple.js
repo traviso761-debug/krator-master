@@ -99,13 +99,13 @@ const qnRun=h=>Math.max(2,Math.round(h/.17))*.34;   // a flight's run for a rise
 // ---------------------------------------------------------------- the walls (each ring walled; a full wall on the outer square)
 // o.v 0: the outer square's full wall (8 m, a walk and a parapet); 1: an inner ring's low wall (3.6 m); 2: the full wall
 // with a buttress tower at its middle. White wash over a dressed stone base, the maroon band under the parapet.
-function buildQbWall(G,o){reseed(33741+(o.v|0));const V=xV(o),L=30,inner=V===1,H=inner?3.6:8,T=inner?1.4:4;
+function buildQbWall(G,o){reseed(33741+(o.v|0));const V=xV(o),L=o.len==null?30:o.len,inner=V===1,H=inner?3.6:8,T=inner?1.4:4;   /* o.len: a run of any length (the city's, between its towers) */
  const wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon));
- vnReg('Ring wall',0,0,15,H+2);
+ vnReg('Ring wall',0,0,L/2,H+2);
  qnCube(0,0,0,L,1.2,T+.6,0,stone,'ashlar');const k=qnCube(0,1.2,0,L,H-1.2,T,0,wash,'wash');
  vB('xBandB',0,H-.8,0,L,.5,T*k+.12,0,band);vB('xWashB',0,H-.3,0,L,.3,T*k+.2,0,wash);
  for(const s of[-1,1])vB('xWashB',0,H,s*(T*k/2-.15),L,inner?.5:1.1,.3,0,wash);
- if(!inner)for(let i=0;i<10;i++){const u=-L/2+1.5+i*3;vB('vDarkB',u,H+.35,T*k/2+.02,.25,.5,.06,0);}   // the loops in the parapet
+ if(!inner)for(let i=0;i<Math.floor(L/3);i++){const u=-L/2+1.5+i*3;vB('vDarkB',u,H+.35,T*k/2+.02,.25,.5,.06,0);}   // the loops in the parapet
  if(V===2){const tk=qnCube(0,0,T/2+2.2,9,H+3,4.4,0,wash,'wash');qnWins(0,0,T/2+2.2,9,4.4,0,[H+3],tk,{pitch:3,ww:.3,wh:1.0,kind:'open',trim:xC(XPAL.black),back:false,left:false,right:false,sill:H-1.4});
   const t=qnRoof(0,H+3,T/2+2.2,9*tk,4.4*tk,0,wash,{band,parapet:.8,corner:'flag'});}}
 // the corner tower: a square cube tower over the wall's corner, slit windows, banners on its roof
@@ -133,10 +133,45 @@ function buildQbWallGate(G,o){reseed(33761+(o.v|0));const V=xV(o),inner=V===1,W=
   const tt=qnRoof(x,Tt.y,0,Tt.w,Tt.d,0,red,{band,gold:true,parapet:.7,corner:'gold'});}
  qnCrown(0,t,0,S.w,S.d,0,{pav:[S.w*.4,S.d*.5],deerS:inner?.8:1.2});}
 
+// ---------------------------------------------------------------- the terrace stair (PLAN.md Q7a; the owner, 2026-11-16: "make gates go both ways")
+// A gate's way down its lower side: from its sill (y 0, z 0, the gate's face) out along +z and down o.rise metres, in flights
+// of 3 m at most (0.17 m risers, 0.34 m treads) with a 3 m landing between them, a 1.2 m landing at the top and 1 m at the
+// foot; o.w wide between ashlar side walls 0.9 m over the treads; a banner post either side of the foot. Each tread and landing
+// is a solid ashlar mass down to 1.5 m under the foot, so the stair stands on a falling ground. qnStairPlan(rise) is its
+// layout ({segs: [{k: 'land', z0, z1, y} | {k: 'flight', z0, z1, y0, y1, n}], len}): a world reads it for the walker's floors.
+function qnStairPlan(rise,o){o=o||{};const rh=.17,td=.34,every=o.every==null?3:o.every,land=o.land==null?3:o.land,top=o.top==null?1.2:o.top,segs=[];
+ segs.push({k:'land',z0:0,z1:top,y:0});let z=top,y=0,left=rise;
+ while(left>1e-6){const r=Math.min(every,left),n=Math.max(1,Math.round(r/rh)),run=n*td;segs.push({k:'flight',z0:z,z1:z+run,y0:y,y1:y-r,n});z+=run;y-=r;left-=r;
+  if(left>1e-6){segs.push({k:'land',z0:z,z1:z+land,y});z+=land;}}
+ segs.push({k:'land',z0:z,z1:z+1,y});return{segs,len:z+1};}
+function buildQbTerraceStair(G,o){reseed(33791+(o.v|0));const rise=o.rise==null?4:o.rise,w=o.w==null?8:o.w,stone=xC(xPick(QSTONE)),base=-rise-1.5,S=qnStairPlan(rise);
+ vnReg('Terrace stair',0,S.len/2,Math.max(w,S.len)/2+1,1.2);{const R=REG[REG.length-1],s=o.scale==null?1:o.scale;R.y-=rise*s;R.h+=rise*s;}   /* the volume spans the stair's whole fall, from its foot (rise below the head) to 1.2 m above it */
+ const mass=(x,ww,zc,d,top)=>vB('qAshB',x,base,zc,ww,top-base,d,0,stone);
+ for(const s of S.segs){if(s.k==='land'){mass(0,w,(s.z0+s.z1)/2,s.z1-s.z0,s.y);for(const e of[-1,1])mass(e*(w/2+.3),.6,(s.z0+s.z1)/2,s.z1-s.z0,s.y+.9);continue;}
+  const rh=(s.y0-s.y1)/s.n,td=(s.z1-s.z0)/s.n;
+  for(let i=0;i<s.n;i++){const top=s.y0-(i+1)*rh,zc=s.z0+(i+.5)*td;vB('vStone',0,base,zc,w,top-base,td,0,stone);for(const e of[-1,1])mass(e*(w/2+.3),.6,zc,td,top+.9);}}
+ const f=S.segs[S.segs.length-1];for(const e of[-1,1])qnBanner(e*(w/2+.3),f.y+.9,f.z1-.4,3.4);}
+// ---------------------------------------------------------------- the Temple Mountain, whole (Q7a): ring 0's one landmark lot
+// The central 3 x 3 blocks less their streets, 312 m square: the Rainbow Temple at the centre, its four flights on the four
+// avenues (which end at the lot's edge on the axes, so nothing stands on an axis); the Hall of the Decree, where the
+// Prismarchy sits, in the north-west quarter facing the temple; the great wheel house in the north-east; the treasury in the
+// south-west; the great chorten in the south-east; the court laid in ashlar, a chorten at each corner.
+function buildQbTempleMountain(G,o){reseed(33771+(o.v|0));const W=312,stone=xC(xPick(QSTONE));
+ vnReg('The Temple Mountain',0,0,W*.48,52);
+ vB('qAshB',0,0,0,W-6,.2,W-6,0,stone);
+ xnSub('qb_temple',0,0,0,0,{v:0});
+ const Q=100;
+ xnSub('qb_hall_decree',-Q,0,-Q,0,{v:0});
+ xnSub('qb_great_wheel',Q,0,-Q,0,{v:0});
+ xnSub('qb_treasury',-Q,0,Q,Math.PI,{v:0});
+ xnSub('qb_chorten',Q,0,Q,0,{v:2});
+ for(const sx of[-1,1])for(const sz of[-1,1])xnSub('qb_chorten',sx*(W/2-14),0,sz*(W/2-14),0,{v:1});}
+QB.def({key:'qb_temple_mountain',name:'The Temple Mountain',family:'The Temple Mountain',tags:QTAG('civic',['religious','civic'],{landmark:true,note:'ring 0, whole: the Rainbow Temple, the Hall of the Decree, the great wheel house, the treasury, the great chorten'}),w:312,d:312,h:52,fw:306,fd:306,nv:1,build:buildQbTempleMountain});
 QB.def({key:'qb_temple',name:'Great temple (the Rainbow Temple)',family:'The Temple Mountain',tags:QTAG('civic',['religious'],{landmark:true,job:'worship',note:'ring 0: the stepped platform, the sanctum, the central dome'}),w:120,d:120,h:48,fw:92,fd:92,nv:2,build:buildQbTemple});
 QB.def({key:'qb_hall_decree',name:'Hall of the Decree (the Prismarchy)',family:'The Temple Mountain',tags:QTAG('civic',['civic','religious'],{landmark:true,note:'the Prismarchy, the council of the eight Prismarchs; the Sultan\'s seat kept empty'}),w:42,d:42,h:26,fw:42,fd:32,nv:2,build:buildQbHallDecree});
 QB.def({key:'qb_treasury',name:'Treasury',family:'The Temple Mountain',tags:QTAG('civic',['civic']),w:24,d:26,h:22,fw:24,fd:20,nv:2,build:buildQbTreasury});
 QB.def({key:'qb_great_wheel',name:'Great wheel house',family:'The Temple Mountain',tags:QTAG('civic',['religious'],{landmark:true}),w:34,d:28,h:28,fw:20,fd:20,nv:2,build:buildQbGreatWheel});
 QB.def({key:'qb_wall',name:'Ring wall',family:'Walls and gates',tags:QTAG('civic',['military','infrastructure']),w:30,d:14,h:12,fw:30,fd:5,build:buildQbWall});
 QB.def({key:'qb_wall_corner',name:'Wall corner tower',family:'Walls and gates',tags:QTAG('civic',['military']),w:12,d:12,h:17,fw:12,fd:12,nv:2,build:buildQbWallCorner});
+QB.def({key:'qb_terrace_stair',name:'Terrace stair',family:'Walls and gates',tags:QTAG('civic',['infrastructure']),w:10,d:24,h:6,fw:10,fd:24,build:(G,o)=>buildQbTerraceStair(G,Object.assign({rise:6,w:8},o))});
 QB.def({key:'qb_wall_gate',name:'Gate tower',family:'Walls and gates',tags:QTAG('civic',['military','infrastructure']),w:40,d:16,h:26,fw:40,fd:15,nv:2,build:buildQbWallGate});

@@ -10,14 +10,16 @@
 // edge), so the 6 m bridge is drawn from the KFIELD inset that holds it. ?kground=0: the paint alone. ?strata=0: no beds on the faces.
 const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
 const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
-const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:9840+SITE.zone,recipe:SKEY==='terraces'?'loess':'rift-volcanic',range:[SITE.base-1200,SITE.base+2200],
+const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:9840+SITE.zone,recipe:SKEY==='terraces'||SKEY==='polynya'?'loess':'rift-volcanic',range:[SITE.base-1200,SITE.base+2200],
  dip:[.05,1,.02],warp:[6,2]});
-const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:SKEY==='terraces'?0xb8a888:0x6e6660}):null;
+const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:SKEY==='terraces'||SKEY==='polynya'?0xb8a888:0x6e6660}):null;
 // THE FIELDS (station 1): FIELD_OF (80-host-plan.js), each tread's field and its crop, or null
 function masksAt(x,z,h,out){const T=HEAT_AT(x,z),rock=FC.at(FC.a.rock,x,z),sl=SLOPE_AT(x,z),fl=1-smooth(.06,.22,sl);
  let a=0,b=0,c=0,d=clamp(1-rock*.85,0,1);
  if(SKEY==='terraces'){const q=Math.abs(z-L.zc(x)),bed=smooth(SITE.chan.w+16,SITE.chan.w-4,q);const f=FIELD_OF(x,z);
   a=smooth(.18,.4,sl)*(1-bed);b=bed;c=f&&f.crop?1-bed:0;d=(1-bed)*(1-c)*(1-a*.7);}
+ else if(SKEY==='polynya'){const dd=L.dOf(x,z),s=L.shoreD(L.aOf(x,z)),beach=smooth(s-SITE.shore.beach-14,s-SITE.shore.beach+4,dd)*(1-smooth(s+25,s+60,dd)),f=FIELD_OF(x,z);
+  a=smooth(.18,.4,sl)*(1-beach);b=beach;c=f&&f.crop?1-beach:0;d=(1-beach)*(1-c)*(1-a*.7);}
  else if(SKEY==='scarp'){const dr=L.dRim(x,z),pl=smooth(-20,-120,dr)+smooth(SITE.wall.run+80,SITE.wall.run+300,dr);
   a=smooth(.35,.7,sl)*.6+pl*.35;b=smooth(.2,.42,sl)*(1-smooth(.6,.8,sl));c=pl*fl*.5;d=(1-a)*(1-b);}
  else if(SKEY==='pitfloor'){const deck=FC.at(FC.a.deck,x,z),hot=smooth(40,60,T);
@@ -25,15 +27,15 @@ function masksAt(x,z,h,out){const T=HEAT_AT(x,z),rock=FC.at(FC.a.rock,x,z),sl=SL
  else{const edge=smooth(.4,.75,sl);a=fl*(1-smooth(-30,-6,-Math.abs(h-SITE.base)*0));b=smooth(.15,.4,sl)*(1-edge*.5);c=fl*smooth(.3,.7,KRAND.fbm(x*.01,.4,z*.01,2,9846));d=(1-b)*(1-c)*.6;}
  out[0]=clamp(a,0,1);out[1]=clamp(b,0,1);out[2]=clamp(c,0,1);out[3]=clamp(d,0,1);return out;}
 // THE PAINT: the macro colour under the layers
-const PAINT={terraces:{base:0x6e8448,dry:0x8a8a58},scarp:{base:0x5e5a56,dry:0x7a7468},pitfloor:{base:0x5a6238,dry:0x6e6a46},arete:{base:0x56545a,dry:0x6a6870}}[SKEY];
+const PAINT={terraces:{base:0x6e8448,dry:0x8a8a58},polynya:{base:0x7a7c56,dry:0x948a62},scarp:{base:0x5e5a56,dry:0x7a7468},pitfloor:{base:0x5a6238,dry:0x6e6a46},arete:{base:0x56545a,dry:0x6a6870}}[SKEY];
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),dd=id.data;const S=TERR.R*2.2;
  const c=new THREE.Color(),K=hx=>new THREE.Color(hx),m=[0,0,0,0];
- const BASE=K(PAINT.base),DRY=K(PAINT.dry),ROCK=K(SKEY==='terraces'?0xa89a78:0x3e3a3a),RUB=K(SKEY==='terraces'?0x8a8478:0x4a4644),SNOW=K(0xe6eaf0),SIN=K(0xd8d4c4),FELT=K(0x7e8a4a),LICH=K(0xc8783a);
+ const BASE=K(PAINT.base),DRY=K(PAINT.dry),ROCK=K(SKEY==='terraces'||SKEY==='polynya'?0xa89a78:0x3e3a3a),RUB=K(SKEY==='terraces'||SKEY==='polynya'?0x8a8478:0x4a4644),SNOW=K(0xe6eaf0),SIN=K(0xd8d4c4),FELT=K(0x7e8a4a),LICH=K(0xc8783a);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
   const n=KRAND.fbm(x/24,.5,y/24,2,9843)-.5,hh=FC.at(FC.a.h,wx,wz),wet=FC.at(FC.a.wet,wx,wz);masksAt(wx,wz,hh,m);
   c.copy(BASE).lerp(DRY,smooth(.45,.2,wet)*.6+.2*smooth(.4,.7,KRAND.fbm(x/60,.5,y/60,2,9844)));
   c.lerp(ROCK,m[0]*.7).lerp(RUB,m[1]*.7);
-  if(SKEY==='terraces'){const f=FIELD_OF(wx,wz);if(f&&f.crop)c.lerp(K(f.paint),.9*m[2]);}
+  if(SKEY==='terraces'||SKEY==='polynya'){const f=FIELD_OF(wx,wz);if(f&&f.crop)c.lerp(K(f.paint),.9*m[2]);}
   if(SKEY==='pitfloor'){c.lerp(FELT,m[2]*.8);c.lerp(SIN,m[3]*.8);}
   if(SKEY==='scarp'||SKEY==='arete')c.lerp(LICH,m[2]*.25*smooth(.5,.75,KRAND.fbm(x/14,.5,y/14,2,9845)));
   c.lerp(SNOW,smooth(SITE.snow[0],SITE.snow[1],hh)*smooth(.25,.65,KRAND.fbm(x/14,.5,y/14,3,9847))*(1-m[0]*.6)+(SKEY==='arete'?.35*m[2]:0));
@@ -56,6 +58,7 @@ const LAYERS={
  terraces:[['rock.loess','vGL.x',.75,'loess (the risers)'],['ground.wadi.cobble','vGL.y',.9,'the braided bed\'s cobble'],['ground.terrace.field','vGL.z',.85,'the fields'],['ground.tundra','vGL.w*0.7',.55,'turf']],
  scarp:[['rock.basalt.polygonal','vGL.x',.8,'column tops'],['rock.basalt.vesicular','vGL.y',.8,'scree and breccia'],['ground.lichen.crust','vGL.z',.6,'lichen'],['ground.tundra','vGL.w*0.8',.6,'tundra']],
  pitfloor:[['rock.basalt.polygonal','vGL.x',.75,'column tops on the rim'],['rock.basalt.vesicular','vGL.y',.85,'talus'],['cloth.felt','vGL.z',.75,'siphon felt (stand-in: cloth.felt, tinted by the paint)','_gT'],['ground.sinter','vGL.w',.85,'sinter on the hot ground']],
+ polynya:[['rock.loess','vGL.x',.75,'loess (the bluff\'s risers)'],['ground.wadi.cobble','vGL.y',.8,'the beach\'s shingle'],['ground.terrace.field','vGL.z',.85,'the fields'],['ground.tundra','vGL.w*0.7',.55,'turf']],
  arete:[['rock.basalt.polygonal','vGL.x',.75,'column tops'],['rock.basalt.vesicular','vGL.y',.85,'breccia'],['ground.snow.drift','vGL.z',.85,'drifted snow'],['ground.lichen.crust','vGL.w*0.6',.5,'lichen']]}[SKEY];
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'siphon-'+SKEY+'-ground',at:'/*KGROUND*/',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,layers:
  LAYERS.map(l=>KGROUND.layer('siphon',l[0],{w:l[1],amt:l[2],gain:1.0,tint:l[4]||'vec3(1.0)',name:l[3]})).concat(
@@ -73,6 +76,8 @@ const GROUND=(function(){const N=SKEY==='arete'?620:560,NZ=SKEY==='arete'?1000:N
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.title;scene.add(m);return m;})();
 // the places, as records the inspector and the export read
 REGISTER({name:SITE.title,x:0,z:0,y:terrainH(0,0)-40,r:600,h:200});
+if(SKEY==='polynya'){REGISTER({name:'The loess bluff (Ostrukh-on-Water\'s terraces, 75 m down to the lake)',x:L.xz(SITE.shore.d*.55,0)[0],z:L.xz(SITE.shore.d*.55,0)[1],y:SITE.lake.level-2,r:900,h:SITE.base-SITE.lake.level+30});
+ REGISTER({name:'The beach (shingle, 0.3 m over the lake)',x:L.xz(SITE.shore.d-30,0)[0],z:L.xz(SITE.shore.d-30,0)[1],y:SITE.lake.level-3,r:700,h:12});}
 if(SKEY==='terraces')REGISTER({name:'The meltwater braids (from the Stalker glaciers)',x:0,z:L.zc(0),y:L.floorAt(0)-4,r:2600,h:20});
 if(SKEY==='scarp'){REGISTER({name:'The Ostrukh Wall (the central dividing fault, '+SITE.wall.h+' m)',x:L.RV.x,z:L.RV.z,y:SITE.wall.floor+L.off-20,r:1600,h:SITE.wall.h+300,tags:{hazard:{kind:'fall',danger:.9}}});
  REGISTER({name:'The Scarp Pass (the ravine\'s scree ramp)',x:L.FAN[0]*.5,z:L.FAN[1]*.5,y:terrainH(L.FAN[0],L.FAN[1])-20,r:700,h:1400});}

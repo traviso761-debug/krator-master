@@ -116,3 +116,21 @@ nothing at the waterline, the fade over the sand), the dome and the giant in the
 `86-host-water.js` keeps the creek (Phase 3 of `core/atmos/WATER.md` puts it on the flow shader). From the beach looking
 east along the coast (`?q=0.5&nojungle&nofauna`, the plants hidden): 28 draw calls before and after, 1.87M triangles
 before and 1.83M after (the sea's shore grid and far ring became 115 CDLOD nodes).
+
+## 2026-11-16: station 7, the Boiling Bay phreatic cove (`--station cove`)
+
+Gemini's showcase station #4 (`openworld/GEOLOGY-STATIONS-5.1.md`; the spec is PLAN-STATIONS.md's "Showcase Station #4", the page as built its section 3).
+How it is made, for the next station on the showcase's own sources:
+
+- **A station on `src/` that swaps the stage.** `stations/cove/45-host-stage.js` defines every name the showcase's stage did (BASIN, basinK, basinE, STAIR,
+  stairX/W/K/H, STAIR_TOP, shoreZ, landH, CREEK, creekAt, THERMAL, SEA, WIND...), so 47, 84, 85, 88, 89w-host-water and 99 run unchanged; a name the
+  station adds (`STATION_GROUND`) is read by 84 with `typeof`, so it is declared in 45 (a `const` declared after 84 would throw in its dead zone).
+  The showcase's Stair machinery (terraceMask, the flight's pools, the lamina curtains, the "Stair steps down" check) carries the Lime Stair as it is.
+- **The crescent as one height function**: the coast's plateau and cliff (`baseH`), the crater's section in the rim's sector (`rimProf`: bay, apron,
+  bluff, bench, wall, crest), the breach weighted out by the cosine to the sea (`rimK`), the dike added on top, then `STRATA.terrace` where the section is a
+  cliff. `shoreZ` is the bay's north arc and the outer coast past it (one shore a column, which the horns cross: KNOWN_ISSUES.md).
+- **The plumes are the kit's**: a boil in the bay is `WATER.geyser` as a spouter at the sea's surface and `WATER.drawPlume` over it, on the show's uniforms
+  (`GEYSER.SHOW.U`), exactly as 65 draws its big columns' steam; the sea's turquoise water is core/water's river plume (ext/61) with the vents and the
+  outflows' feet as its sources.
+- **Ground truth**: `node` can run the stage's land alone (`core/rand`, `core/terrain/35`, `core/biome/10` and 45's land section): 200,000 `landH` calls
+  take ~0.3 s, the ring round the crest reads the rim and the breach as the crescent check does.

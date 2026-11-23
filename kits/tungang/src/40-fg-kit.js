@@ -19,7 +19,7 @@
 //   fgFurn(key,x,y,z,ry,o)       a catalog piece (core/furnish through the engine's FURNISH), fgDim(key) its size
 //   fgNote(k,n)                  a count on the record (rec.fg[k]): verify.py reads the rope wall's pegs, the tally's slats
 /* the builder's context */
-function fgCx(o){o=o||{};const st=o.state==='worn'||(o.state==null&&typeof FG_STATE!=='undefined'&&FG_STATE==='worn')?'worn':'kept';
+function fgCx(o){o=o||{};const wn=s=>s==='worn'||s==='abandoned',st=wn(o.state)||(o.state==null&&typeof FG_STATE!=='undefined'&&wn(FG_STATE))?'worn':'kept';   /* the Fellgangs draw the Glaziers' abandoned state as worn */
  return {lo:o.lo==null?-.5:o.lo,gl:typeof o.gl==='function'?o.gl:()=>0,worn:st==='worn',st,v:o.v|0,o};}
 /* a count on the current record (verify.py: the meeting hall's variants, the ice house's blocks) */
 function fgNote(k,n){if(!CURREC)return;const f=CURREC.fg||(CURREC.fg={});f[k]=(f[k]==null?0:f[k])+(n==null?1:n);}

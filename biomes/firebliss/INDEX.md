@@ -4,7 +4,7 @@
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/firebliss-east.html`, `dist/firebliss-glen.html`, `dist/firebliss-mons.html`, `dist/firebliss.html`
+Built output (never open it; edit `src/` and rebuild): `dist/firebliss-east.html`, `dist/firebliss-glass.html`, `dist/firebliss-glen.html`, `dist/firebliss-mons.html`, `dist/firebliss.html`
 
 Build: `cd biomes/firebliss && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -28,7 +28,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `44z-host-site.js` | 6 |  |
 | `45-host-stage.js` | 10 | the land (40) |
-| `47-host-land.js` | 10 | the fields (cached below; these are the definiti (49); the host binding (88) |
+| `47-host-land.js` | 10 | the fields (cached below; these are the definiti (49); the host binding (89) |
 | `50-biome-firebliss-species.js` | 15 | palettes (22); the plants and pieces, tagged (60 and 65 place t (31); textures (the procedural fallbacks: a page with  (51); materials (BIO.libSwap gives each slot its libra (61); geometries local to this kit (77); instanced items (108); the kin (core/biome 32: grown by the Throne's ow (131); the hunters' culture rows (core/camp, KCAMP.CULT (141) |
 | `60-biome-firebliss-floor.js` | 10 |  |
 | `65-biome-firebliss-hunters.js` | 7 |  |
@@ -51,5 +51,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | east | 44z-host-site.js | 5 |
+| glass | 44y-host-glass.js, 44z-host-site.js, 66-biome-firebliss-glass.js, 84s-host-strata.js | 29 |
 | glen | 44z-host-site.js | 4 |
 | mons | 44z-host-site.js | 3 |

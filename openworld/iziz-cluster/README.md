@@ -7,7 +7,7 @@ from Mav's Refuge to Girder and from Girder to Talia, cut by `tools/scale-model/
 
 | Site | Model id | Px | Where | What is planned round it |
 |---|---|---|---|---|
-| Mav's Refuge | `skukf2qmmq` | 1024,807 | the savage hyperjungle | the spider, longcrawler and dragonfly bands camped in the jungle (`core/camp`, `kits/beast-riders` `BR_CAMP`), a track from each camp's gate to the town |
+| Mav's Refuge | `skukf2qmmq` | 1049,841 (moved 2026-11-11 onto the Béesh Baatar) | the savage hyperjungle | the spider, longcrawler and dragonfly bands camped in the jungle (`core/camp`, `kits/beast-riders` `BR_CAMP`), a track from each camp's gate to the town |
 | Girder | `seed07` | 1039,869 | the savage hyperjungle | the raptor and threehorn bands, their tracks |
 | Talia | `sor1zqih8x` | 1073,939 | the SE savannah rim | four farming villages and a ranch (`core/hamlet`'s `iziz` row: the Iziz Vernacular's houses, farms, silos, byres and pens), a road from each lane end to the town, joined |
 

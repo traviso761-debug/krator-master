@@ -70,6 +70,27 @@ python3 tools/scale-model/geology.py --zinc kits/resources/data/geology.json
 python3 tools/scale-model/geology.py --carbonate kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --shift=-272,-330
 python3 tools/scale-model/geology.py --rocks kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --vents tools/scale-model/model/data --shift=-272,-330
 ```
+
+**Authored deposits.** The owner's lodes that the model's geology does not give live in `data/lodes.json`
+(`krator-lodes`: `{id, family, px, py, r_km, peak, why}`, 5.1 px). They are stamped on the bake in place:
+- the command is `python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json`;
+- each land cell within `r_km` is raised to `peak * sqrt(1 - (d/r)^2)` and never lowered, so a second run changes nothing;
+- **run it after every re-bake.**
+
+The first lode is Xanadu's gold field (2026-11-12, `openworld/TRADE-GOODS.md`).
+
+**The gems** (2026-11-16) were added in place, as the carbonate and the rocks were, so every other layer stays byte for byte
+(the model has moved since the 11-09 bake: a full rebake would also move the other families' nodes):
+
+```
+python3 tools/scale-model/geology.py --gems kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js
+```
+
+What they gave: emerald's land mean 13.0, turquoise's 32.6; in the Outlands (N and S, 38,229 cells) 130.1 and 112.6, so 55% of the
+emerald and 19% of the turquoise lie there (the rest of the turquoise in the dry copper country: the Yuni Emirate most, 973 nodes in
+the ledger). The ledger: the Coyote Kingdom holds 33 emerald and 135 turquoise nodes and imports both (the Tiers plan: the gems stay
+the Outlands'); the fairness audit 25 findings to 24. A full bake runs `gems()` itself, after the R3 ores.
+
 ## The format (`krator-geology`, version 1)
 
 One JSON object. The browser, node and Godot read the same integers; nothing is interpolated.
@@ -146,10 +167,33 @@ airless.
 | ultramafic | 255 on the ultramafic province; 120 falling to 0 over 20-30 km round the White Gills' root (5.1 px 1015,1438 and the twins 988,1458, 1042,1498: *proposed* deep, not at the surface) |
 | tuff | ash and ignimbrite round every vent: 200 falling to 0 at 2.5 reaches (reach `10 + 4 x radius` km), the apron longest downwind (to the south-east) |
 | marble | **a node kind** (R3, a quarry): .9 x the limestone within 8 km of granite or volcanic ground (where the limestone is 40 or more) |
+| emerald | **a node kind** (the gems, 2026-11-16; `gems()`): 170 on gneiss and impact breccia within 8 km of granite (pegmatites), at .45 of it unless bare mantle or the flood basalt lies within 30 km (chromium: Kafubu, Itabira); 130 on folded sedimentary ground (relief over 300 m) within 30 km of evaporite (Muzo); raised to 170 x the ruggedness in the regions N and S Outlands (the Coyote Men's gem hills). Ruggedness from the stone byte. Cells of 8 km |
+| turquoise | **a node kind** (the gems, 2026-11-16; `gems()`): .9 x copper x the aridity (the saltpeter byte less its evaporite part: Nishapur, Sinai); raised to 170 x the ruggedness x (.4 + .6 aridity) in the Outlands. Cells of 7 km |
 | skarn | 200 on the cell beside granite or volcanic ground where the limestone is 30 or more |
 | glass | the Ancients' seven blast basins in Ancient's Valley: 180 on the melt floor, 255 on the vitrified rim (to 1.5 radii) |
 
 Water cells carry no family but water. The metals, coal and oil are zero on evaporite ground.
+
+### The mined goods' kinds (2026-11-16): no layer yet
+
+Eleven node kinds came with Gemini's trade model (`src/42s-res-ore-mined.js`). None is a family in `data/geology.json`, so the
+node field places none of them: until a bake gives each a layer they are **owner nodes** (`KRES.nodesIn(tile, {owner: [...]})`,
+placed by a settlement or a biome kit, as Opal Valley's diggings already carry `{kind: 'opal', grade}`). The scale model is not
+edited here; a layer is a request to the scale-model session (`tools/scale-model/geology.py`). What each would need:
+
+| Kind | A layer of its own? | Where it would come from |
+|---|---|---|
+| zinc | **yes** | Gemini's rebake (`data/geology-gemini.json`) already has a `zinc` layer (mean 25.5); `geology.py` on this line does not. Sphalerite with galena: carbonate-hosted (limestone, the Mississippi Valley type) and skarn, + volcanic massive sulfide. Port Gemini's rule into `geology.py` |
+| lodestone | no: a rule on two layers | iron on the ultramafic province's crests (the Arch's lightning-struck magnetite) and the Compass Hills' iron (a region weight, as limestone's platforms) |
+| peat | **yes** | cold, wet, flat ground: rain over ~900 mm, low slope, a short warm season (the blanket bogs Gemini lists at Stahlborn, Cascade, Lipp, Gate Tarn Mires); no rock layer gives it |
+| silica | **yes**, derived | the quartzite province, the sand coasts, and the `glass` layer's melt-glass cullet |
+| quartz | no: a rule | granite and gneiss (vein quartz), the quartzite province; High Rift and Singing Gjar by name |
+| alabaster | no: gypsum's | the gypsum layer where the bed is massive (Jimjam's basin): an alias of gypsum, a finer grade of the same ring |
+| bitumen | no: oil's | the oil layer where it reaches the surface (a seep's ground), dug where the oil node is pumped |
+| opal | no: owner nodes | one valley (`biomes/opalvalley`), the tuff layer at Opal Valley; a region weight if it should spread |
+| diamond | no: owner nodes | the Korona Hoar-Table's quartzite conglomerate (K7): one site |
+| jade | no: a rule | ultramafic contacts (the Arch's nephrite); the Crook's Verdigris Jade is off the map |
+| amber | no: owner nodes | the Ria Valley is off the map; the East Abyss's swamp amber (Sfenops, Liikofi) by name |
 
 ### The evaporite rings (feature 3)
 

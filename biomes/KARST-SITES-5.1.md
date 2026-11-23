@@ -34,7 +34,7 @@ named soluble rock but thin or patchy beds, or a stand-in for the true process. 
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | **The Hykkousoi karst**: NW bay, Ys and k-guilin | 780,725 (plain), 745,728 (lake), 789,738 (Ys) | 1560,1450 | `k-guilin` page; `nwbay` page (its tiankeng and cenotes); Ys | thick grey limestone (`nwbay-karst` recipe) | branch, with a drowned level | **A** | high: cenotes and the tiankeng get a cave under them, and Ys's drowned stacks get sumps | none (the Zeijani tubes are 95-260 km off) |
 | 2 | **swhighlands' ring folds** | 545-555, 975-985 | 1100,1960 | `swhighlands` station 1 (built: has a river cave) | limestone ridges in `ringfold` (opal-shell limestone) | branch: river cave, sinkhole chain, 1 old level | **A** | high: the plan's river cave, natural bridges and karst springs | none (the nearest tube is 520 km off) |
-| 3 | **Cube's plateau**: gypsum maze in the rift fill | 720,1570 | 1440,3140 | `rift` station 4 (Cube's plateau); its springs at station 2 | gypsum and stromatolite limestone (`rift` recipe) | maze, 2 storeys, dry | **B+** | high: the reward under Cube, and the Tungangs' lost east | `tube_rift_08` 200 km off; The Tubes is a lava tube, not this |
+| 3 | **the Pile's plateau** (Cube's, before 2026-11-11): gypsum maze in the rift fill | 720,1570 | 1440,3140 | `rift` station 4 (the Pile's plateau); its springs at station 2 | gypsum and stromatolite limestone (`rift` recipe) | maze, 2 storeys, dry | **B+** | high: the reward under the Pile, and the Tungangs' lost east | `tube_rift_08` 200 km off; The Tubes is a lava tube, not this |
 | 4 | **The Hearth hold**: hypogene chambers | 525,1400 | 1050,2800 | `hearths` station 2 (the hold, under `riftrim --station hearths`) | lake limestone and gypsum under the vent field | hypogene (`kind:'hypogene'`): feeders, chambers and cupolas, 2 storeys | **B** | high: the plan asks for it ("huge chambers, gypsum blocks") | none; the field's fumarole shaft goes through it |
 | 5 | **The great river gorge** | 690,1050 | 1380,2100 | `swlowlands` station 2 (built); Shim's ground | limestone walls (the station takes `rock.limestone.karst`) | branch from the rim to the wall springs, 1 old level | **B** | medium: springs in the gorge walls, dry valleys and dolines on the rims | none |
 | 6 | **Ledge's cliff springs** | 437-445, 1330-1345 | 880,2670 | `riftrim` (Ledge's point and the great lake) | `rift` fill in the trough wall | branch from the highland to the lake's foot | **B-** | medium: "the springs at the great lake's foot are the caves' outflow" | the Ancients' Rift-line tunnels come out here (they join natural caves by design); `tube_rift_08` 125 km off |
@@ -125,9 +125,9 @@ KKARST.network({box:[-1800,-1800,1800,1800], ground, world, kind:'branch',
   w:[3,8], h:[2.5,6], canyon:[1.5,5], chamber:{p:.2, r:[8,18], h:[5,12]}, thin:10})
 ```
 
-## 3. Cube's plateau: the gypsum maze in the rift fill
+## 3. The Pile's plateau: the gypsum maze in the rift fill
 
-- **Where.** The rift kit's station 4, the plateau round Cube (4.2x 448,1240 is 5.1 **720,1570**): -260 m, Cfa,
+- **Where.** The rift kit's station 4, the plateau round the Pile (4.2x 448,1240 is 5.1 **720,1570**): -260 m, Cfa,
   **2,055 mm**, +22 °C. It is a table of 3,600-5,000 km² standing 1.2-2.3 km over the jungle floor. Its west scarp drops
   to station 2, the mouth of the Lizardmen's river 3, at 692,1578 (-1,843 m, XA, 3,686 mm). The terminal sea is at
   -2,600 m (Sauropolis, 765,1596). The salt lakes in the trough (basins 112, 114, 150 at 644-713, 1476-1526; Gila's lake
@@ -143,7 +143,7 @@ KKARST.network({box:[-1800,-1800,1800,1800], ground, world, kind:'branch',
 - **Sinks and spring.** There are few sinks: a maze is entered by collapses (dolines on the plateau top) and by the scarp
   face. The springs are at the **west scarp's foot**, station 2's algal shore and stream mouth.
 - **Surface.** Collapse dolines on the table, a scarp lined with cave mouths, the springs at its foot.
-- **Who uses it.** Cube was the Ancients' hub (`riftrim/PLAN.md` section 5), "the reward for a player who
+- **Who uses it.** The Pile (Cube until 2026-11-11) was the Ancients' hub (`riftrim/PLAN.md` section 5), "the reward for a player who
   braves the Lizardmen". The Tungangs once lived throughout the Rift: those east of Chimes were wiped out in tunnel wars
   after the Lizardmen came, and a lost loj in the east is rumoured (`LORE.md`). **Approved by the owner (2026-11-03):** this
   maze is where that lost loj lies, and where the Ancients' line joined natural caves under its hub.

@@ -280,7 +280,7 @@ function xnCharBagh(x,y,z,w,d,ry,o){o=o||{};const P=(u,v)=>loc(x,z,u,v,ry);const
  const cw=o.channel||1.2;xnChannel(P(-w/2,0),P(w/2,0),cw);xnChannel(P(0,-d/2),P(0,d/2),cw);
  const pc=P(0,0);if(o.fountain!==false)xnFountain(pc[0],y,pc[1],o.r||2.2);
  for(const sx of[-1,1])for(const sz of[-1,1]){const bw=w/2-cw/2-1,bd=d/2-cw/2-1;const c=P(sx*(cw/2+.5+bw/2),sz*(cw/2+.5+bd/2));
-  vB('xEarthB',c[0],y,c[1],bw,.12,bd,ry,xC(0x6a5a3a));vB('xPaint',c[0],y,c[1],bw,.45,.3,ry,hedge);vB('xPaint',c[0],y,c[1],.3,.45,bd,ry,hedge);   // beds with a low cross hedge
+  vB('xEarthB',c[0],y,c[1],bw,.12,bd,ry,xC(0x6a5a3a));vB('xHedgeB',c[0],y,c[1],bw,.45,.3,ry,hedge);vB('xHedgeB',c[0],y,c[1],.3,.45,bd,ry,hedge);   // beds with a low cross hedge (leaves, 86b)
   for(let k=0;k<Math.max(2,Math.round(bw*bd/22));k++){const q=P(sx*(cw/2+.5+rr(.8,bw-.8)),sz*(cw/2+.5+rr(.8,bd-.8)));if(rng()<.35)xnCypress(q[0],q[1],rr(4,7));else xnTree(q[0],q[1],rr(3,4.5));}
   kput('xLeaf',[c[0],y+.4,c[1]],null,[.6,.5,.6],xC(xPick([0xd04a4a,0xe8a0c0,0xf0e060,0xe86030])));}}
 // paving: a bed with flags on a grid (no overlaps)

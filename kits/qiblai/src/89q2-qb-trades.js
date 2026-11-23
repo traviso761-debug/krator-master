@@ -8,7 +8,7 @@
 // ---------------------------------------------------------------- a shop front on a ground storey: a dark bay, a timber
 // counter with its shutter propped up as an awning, the goods on the counter; (x,z) on the face, ry outward
 function qnShopFront(x,y,z,ry,w,trim,goods){const p=loc(x,z,0,.04,ry);vB('vDarkB',p[0],y,p[1],w,1.9,.1,ry);
- for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.1),.12,ry);vB('xPaint',q[0],y,q[1],.2,2.1,.24,ry,trim);}
+ for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.1),.12,ry);vB('qLacqB',q[0],y,q[1],.2,2.1,.24,ry,trim);}   /* lacquered posts (the owner, 2026-11-16: "those columns seem textureless") */
  const l=loc(x,z,0,.16,ry);vB('vWood',l[0],y+2.05,l[1],w+.5,.2,.3,ry,xC(xPick(XPAL.timber)));
  const c=loc(x,z,0,.45,ry);vB('vWood',c[0],y,c[1],w,.85,.6,ry,xC(xPick(XPAL.timber)));
  const a=loc(x,z,0,.75,ry);kput('vWood',[a[0],y+2.25,a[1]],vQ(ry,-.5,0),[w+.2,.06,1.3],xC(xPick(XPAL.timber)));
@@ -61,7 +61,7 @@ function buildQbButcher(G,o){reseed(33331+(o.v|0));const V=xV(o),W=8,D=9,P=.4;
  qnPlinth(0,-1,W,D,P,0);const S=qnStack(0,P,-1,W,D,0,[3.2,2.8],wall,'wash');
  qnShopFront(-.8,P,D/2-1,0,4.2,R.trim,[0x8a2a22,0xa8382a,0xe8d8c8]);qnDoor(2.9,P,D/2-1,0,.95,2.0,{c:R.trim,val:false});
  // the rail under the shutter, the joints on hooks, the block, the salt tub
- const F=D/2-1;vB('vIron',-.8,P+1.9,F+1.1,4.4,.05,.05,0);for(let i=0;i<6;i++){const u=-2.6+i*.72;vB('xPaint',u,P+1.05,F+1.1,.24,.75,.2,0,red.clone().multiplyScalar(rr(.8,1.15)));}
+ const F=D/2-1;vB('vIron',-.8,P+1.9,F+1.1,4.4,.05,.05,0);for(let i=0;i<6;i++){const u=-2.6+i*.72;vB('qLacqB',u,P+1.05,F+1.1,.24,.75,.2,0,red.clone().multiplyScalar(rr(.8,1.15)));}
  vB('vWood',-2.6,0,F+2.2,.9,.9,.9,0,xC(xPick(XPAL.timber)));qnBarrel(2.4,F+1.8);
  qnWins(0,P,-1,W,D,0,[3.2,2.8],S.k,{pitch:2.4,ww:.75,wh:.95,trim:R.trim,from:1});
  qnRoof(0,S.y,-1,S.w,S.d,0,wall,{parapet:.6,corner:V===1?'flag':null});}
@@ -145,9 +145,13 @@ function buildQbGuildLodge(G,o){reseed(33431+(o.v|0));const V=xV(o);
 // ---------------------------------------------------------------- the gate market (civic): an arcaded square
 // four two-storey ranges round an open square, an arcade of square piers on the court side of each, the stalls under
 // awnings in the square, a chorten in the middle; the gate through the front range on the axis.
-function buildQbGateMarket(G,o){reseed(33441+(o.v|0));const V=xV(o),W=44,D=44,Dr=6,P=.5,hs=[4.2,3.2];
+function buildQbGateMarket(G,o){reseed(33441+(o.v|0));qnGateMarket(o,44,44);}
+// the half market (Q7a): ring 2's axial blocks are halved by their 24 m avenue into ~36 m strips, a market on each, its
+// front on the avenue; the same body on a 44 x 32 plan
+function buildQbGateMarketHalf(G,o){reseed(33445+(o.v|0));qnGateMarket(o,44,32);}
+function qnGateMarket(o,W,D){const V=xV(o),Dr=6,P=.5,hs=[4.2,3.2];
  const R=qnRingC('kora'),wall=R.wall,stone=xC(xPick(QSTONE)),tim=xC(xPick(XPAL.timber));
- vnReg('Gate market',0,0,26,P+7.4+3);
+ vnReg('Gate market',0,0,Math.max(W,D)*.6,P+7.4+3);
  qnPlinth(0,0,W,D,P,0,stone);
  const ranges=[[0,D/2-Dr/2,W,Dr,0],[0,-D/2+Dr/2,W,Dr,Math.PI],[W/2-Dr/2,0,D-2*Dr,Dr,Math.PI/2],[-W/2+Dr/2,0,D-2*Dr,Dr,-Math.PI/2]];
  for(const [x,z,L,dd,ry] of ranges){const S=qnStack(x,P,z,L,dd,ry,hs,wall,'wash');
@@ -157,13 +161,15 @@ function buildQbGateMarket(G,o){reseed(33441+(o.v|0));const V=xV(o),W=44,D=44,Dr
   const n=Math.max(3,Math.round((L-2*Dr)/3.6)),inner=ry+Math.PI;
   for(let i=0;i<=n;i++){const u=-(L-2*Dr)/2+(L-2*Dr)*i/n,p=loc(x,z,u,-dd/2-1.2,ry);vB('xWashB',p[0],P,p[1],.7,3.4,.7,ry,wall);}
   const lp=loc(x,z,0,-dd/2-1.2,ry);vB('vWood',lp[0],P+3.4,lp[1],L-2*Dr+.7,.35,.8,ry,tim);const rp=loc(x,z,0,-dd/2-.6,ry);vB('xWashB',rp[0],P+3.75,rp[1],L-2*Dr+.7,.3,2.2,ry,wall);
-  for(let i=0;i<n;i++){const u=-(L-2*Dr)/2+(L-2*Dr)*(i+.5)/n;if(ry===0&&Math.abs(u)<2.5)continue;const p=loc(x,z,u,-dd/2+.02,ry);qnShopFront(p[0],P,p[1],inner,2.6,R.trim);}}
+  for(let i=0;i<n;i++){const u=-(L-2*Dr)/2+(L-2*Dr)*(i+.5)/n;if(ry===0&&Math.abs(u)<2.5)continue;const p=loc(x,z,u,-dd/2+.02,ry);
+   if(i===n-1||(i===0&&(ry===0||ry===Math.PI))){const q=loc(x,z,u,-dd/2,ry);qnDoor(q[0],P,q[1],inner,1.2,2.4,{c:R.trim,step:false,val:false});continue;}   /* the range's door from the arcade: its shops and stores (settlements/qiblai 90u) */
+   qnShopFront(p[0],P,p[1],inner,2.6,R.trim);}}
  // the gate through the front range, and the far one
- for(const [z,ry] of[[D/2,0],[-D/2,Math.PI]]){vB('vDarkB',0,P,z-Dr/2,3.6,3.6,Dr+.1,0);xnPortico(0,P,z,ry,6,1.4,4.0,wall,{band:true,valC:xC(XPAL.saffron)});}
+ for(const [z,ry] of[[D/2,0],[-D/2,Math.PI]]){vB('vDarkB',0,P,z-Math.sign(z)*Dr/2,3.6,3.6,Dr+.1,0);   /* the back passage through the back range (it stood 3 m behind it, 2026-11-16) */xnPortico(0,P,z,ry,6,1.4,4.0,wall,{band:true,valC:xC(XPAL.saffron)});}
  xnFlight(0,0,D/2+1.4+Math.max(2,Math.round(P/.17))*.34,0,5,P,'vStone',stone);
  // the square: paving, the stalls, the chorten on the axis
  qnPave(0,0,W-2*Dr-3,D-2*Dr-3,0,P);qnChorten(0,P,0,.8);
- for(let i=0;i<8;i++){const a=i*Math.PI/4+.39,r=10;const x=Math.cos(a)*r,z=Math.sin(a)*r;vB('vWood',x,P,z,2,.85,1,a,tim);
+ for(let i=0;i<8;i++){const a=i*Math.PI/4+.39,r=Math.min(10,(Math.min(W,D)-2*Dr)/2-2.6);const x=Math.cos(a)*r,z=Math.sin(a)*r;vB('vWood',x,P,z,2,.85,1,a,tim);
   kput('vClothB',[x,P+2.2,z],qEuler(0,-a,0),[2.6,.06,1.8],xC(xPick(XPAL.cloth)));for(const s of[-1,1])vPst('vPost',x+s*.9,P,z,.05,2.2,tim);}
  vnFolk(0,D/2+3,6,6);xnFolk(0,P,-6,6,8);}
 
@@ -184,7 +190,7 @@ function buildQbBath(G,o){reseed(33451+(o.v|0));const V=xV(o),W=24,D=16,P=.6,hs=
 // ---------------------------------------------------------------- the temple estates' granary (civic)
 // a tall blank cube on a high plinth, vent slits in a strict grid, the loading door and its ramp, the keeper's room on top
 function buildQbGranary(G,o){reseed(33461+(o.v|0));const V=xV(o),W=14,D=11,P=1.4,hs=[4,3.6,3.4];
- const R=qnRingC('clergy'),wall=R.wall,stone=xC(xPick(QSTONE)),dark=xC(xPick(XPAL.dark));
+ const R=qnRingC('clergy',o),wall=R.wall,stone=xC(xPick(QSTONE)),dark=xC(xPick(XPAL.dark));   /* o.sp: the sector's colour */
  vnReg('Temple granary',0,-1,9,P+11+3);
  qnPlinth(0,-1,W,D,P,0,stone);const S=qnStack(0,P,-1,W,D,0,hs,wall,'wash');
  // the vents: dark slits, no glazing (a store breathes), every storey, every face
@@ -210,5 +216,6 @@ QB.def({key:'qb_guild_mason',name:"Masons' Hall",family:'Guilds',tags:QTAG('civi
 QB.def({key:'qb_guild_spice',name:"Spicers' Hall",family:'Guilds',tags:QTAG('civic',['civic','market/shop']),w:18,d:20,h:19,fw:18,fd:15.6,build:buildQbGuildSpice});
 QB.def({key:'qb_guild_lodge',name:'Guild lodge',family:'Guilds',tags:QTAG('civic',['civic']),w:14,d:18,h:15,fw:14,fd:13.6,build:buildQbGuildLodge});
 QB.def({key:'qb_gate_market',name:'Gate market',family:'Civic',tags:QTAG('civic',['market','civic'],{note:'one of the four gate markets of the kora square'}),w:44,d:48,h:11,fw:44,fd:44,build:buildQbGateMarket});
+QB.def({key:'qb_gate_market_half',name:'Gate market (half)',family:'Civic',tags:QTAG('civic',['market','civic'],{note:'a gate market on one half of an axial block, its front on the avenue'}),w:44,d:36,h:11,fw:44,fd:32,build:buildQbGateMarketHalf});
 QB.def({key:'qb_bath',name:'Baths',family:'Civic',tags:QTAG('civic',['infrastructure','civic']),w:24,d:22,h:11,fw:24,fd:16,build:buildQbBath});
 QB.def({key:'qb_granary',name:'Temple granary',family:'Civic',tags:QTAG('civic',['infrastructure'],{job:'warehousing'}),w:14,d:16,h:17,fw:14,fd:11,build:buildQbGranary});

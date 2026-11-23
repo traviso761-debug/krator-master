@@ -3,9 +3,9 @@
 // cold ground's small life (SIPHON.buildCold), the terraces' crops, willow and sedge (SIPHON.buildTerraces). The woolly siphon is the Throne's siphon as a
 // kin, grown by the Throne's builder (read in place). No fauna drawn here: the Ghaunt-Ox, the Flenser-Hound and the Pipe-Borer are kits/fauna's records.
 SIPHON.build=function(opt){opt=opt||{};const R=opt.R==null?2450:opt.R,q=opt.quality==null?1:opt.quality,k=opt.station||'pitfloor',out={R,quality:q,station:k};
- BIO.cur='siphon/'+(k==='pitfloor'?'pit':k==='terraces'?'terraces':'cold');
+ BIO.cur='siphon/'+(k==='pitfloor'?'pit':k==='terraces'||k==='polynya'?'terraces':'cold');
  if(k==='pitfloor')Object.assign(out,SIPHON.buildPit(R,q,opt));
- else if(k==='terraces')Object.assign(out,SIPHON.buildTerraces(R,q,opt));
+ else if(k==='terraces'||k==='polynya')Object.assign(out,SIPHON.buildTerraces(R,q,opt));   /* station 14 is station 1's arable bluff */
  else Object.assign(out,SIPHON.buildCold(R,q,opt));
  BIO.cur=null;return out;};
 SIPHON.canopyH=function(x,z){return 1;};

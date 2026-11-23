@@ -19,6 +19,109 @@ says how it is built, in what order, and how each step is proved. Written 2026-1
 which (nothing here pushes or merges without the owner's word). The kits/interiors clearance fix (`claude/agitated-meitner-15ed1a`)
 and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prerequisites: the kit works round both.
 
+## Progress (2026-11-11)
+
+- **Q7a** done in part: the Temple Mountain compound (`qb_temple_mountain`), the monastery astride its avenue
+  (`qb_monastery_half`), the half gate market (`qb_gate_market_half`), walls and kora arcades by length (`o.len`). Not yet:
+  the terrace stair (`qb_terrace_stair`; the avenues climb by the ground's slope), QBK (the city is a target on Xanadu's page,
+  so it needs no bundle; the open world will).
+- **Q7b-Q7d** built as a first city (`README.md`): the site laid, the walls, gates and towers, the kora, the monasteries on
+  their spokes, the gate markets, the rings filled (2,253 lots, a third of the lay houses Xanadu's), the ghat way
+  and the ghats, the caravanserai, the temple estates' fields, the Vale of Xanadu flora as a stand-in; GPU-verified. Open:
+  the people by ring (`KNOWN_ISSUES.md`), the Af flora, the river's cataracts and the open world's ground.
+- **The density fades from the centre** (the owner, 2026-11-11: "a 4-way symmetrical pattern of squares with mostly gardens
+  on the edge and some gardens placed like enclosed courtyards in the more built up area"). A lay block's use is set by its
+  ring r and its step t along the side from the avenue, so the pattern is the same under both mirrors and both diagonals
+  (`QC_GARDEN`, `QC_COURT` in `targets/city/89zq-qc-site.js`):
+
+  | ring (r) | whole gardens (t) | courtyard blocks (t) | built (t) |
+  |---|---|---|---|
+  | 4, rich | | 1, 2, 3, 4 | 0 |
+  | 5, middle | 3 | 1, 2, 4, 5 | 0 |
+  | 6, poor | 2, 3, 4, 5, 6 | 1 | 0 |
+  | 7, poor, at the wall | 2, 3, 4, 5, 6 (7: a meditation garden) | 1 | 0 |
+
+  84 garden blocks and 72 courtyard blocks ("more gardens", the owner, 2026-11-11: the lay rings ~6,350 against the plan's
+  6,000). A courtyard block keeps its frontage round a square cleared of houses (48 m in the rich ring, 54 m in the middle,
+  56 m at the wall) with a chahar-bagh in it; every garden faces the centre.
+- **The four meditation gardens** (the owner, 2026-11-11: "a unique meditation garden in each corner, featuring the colors
+  of the two closest monasteries"; "pick flora tastefully by color"): `qb_meditation_garden` (kits/qiblai) in each corner
+  block, in the colours of the two monasteries whose sides of the wall meet there: NE the Stone Garden (crimson, gold), SE
+  the Lotus Water (gold, turquoise), SW the Walking Circle (turquoise, violet), NW the Grove of Cells (violet, crimson).
+  Their plants are picked by colour (`targets/city/90p-qc-flora.js`) from the Rift, the Rift Rim, Oidong, today's Vale of
+  Xanadu and Opal Valley (its fire-opal breaker crown for the crimson trees, its prism fern and opal pads), sealed with
+  today's core/biome in `gen/69r-flora-bundle.js` (Xanadu's page runs an older biome core those kits cannot load on),
+  and the gold from the page's own Vale (the ginkgo): 182 plants, no gaps (2026-11-12; notes in `KNOWN_ISSUES.md`).
+- **The walk-in rooms, on demand** (the owner, 2026-11-15): the sanctum of the Rainbow Temple (new: the Station as it was, whole,
+  a gilt shrine on its dais, the eight pillars in the eight colours), the council chamber of the Prismarchy, a great monastery's
+  assembly hall and a hostel's dormitory, each inside its own building at its storey's size, built and furnished when the camera
+  comes (`targets/city/90t-qc-interiors.js`); floors, ceilings, walls, columns, gilt and furniture all textured from the library
+  (`qMarble`, `qPlank`, `qLacq`, `qGilt`, `qRug`; the furniture's detail maps). The fancier surfaces are owed (PROMPTS-NEEDED 43).
+- **Every lot building's interior** (the owner, 2026-11-15: "work on wiring in kit interiors to all buildings"): the ground storey
+  of all 976 lot buildings that hold a room (28 types: the Qiblai kit's houses, trades, guilds, colleges, hostels, granaries and the
+  Xanadu kit's houses; the 490 shrines, wheel houses and the great rooms' own lot left out), planned by kits/interiors, drawn with
+  the kit's textured floorboards, lacquer and wash, furnished from the catalog, built per type and cloned onto each lot as the
+  camera comes (`targets/city/90u-qc-lot-interiors.js`). Every storey (the owner, 2026-11-16: "Yes, upper storeys"): up to four
+  storeys a building, a stair (a ladder in the smallest houses) between each pair, each upper floor a plank slab with its stair's well
+  over a lacquered ceiling; all 31 types in ~4.5 s, 446 furniture meshes, all textured.
+- **The clergy ring in eight sectors** (the owner, 2026-11-15: "clearly defined areas of each color, and red is not
+  over-represented"): its colleges and granaries take the colour of the monastery whose spoke their block stands on.
+- **Q7e-Q7g** not started.
+
+- **Walk in, and the rest of the interiors** (the owner, 2026-11-16: "unlock the front doors so I can walk in; work on open
+  issues; and work on giving appropriately fancy interiors to shrines, monasteries, and anything else that doesn't have an
+  interior yet"): the page loads core/walk and hands it to the host's walker (F). Every lot's street door is the one its builder
+  drew; E opens it (unlocked when the lot's interior comes), the room shows through it, and the walker climbs in, up every stair.
+  Every great monastery has its assembly hall in its spoke's colours, each whole one a gate hall (the four guardian kings, prayer
+  wheels), and the monks' quarters in its cell ranges (a chapel, kitchen, dormitories, a reading room), each range with a door to
+  the court; the court is a floor, the gate a flight from the street. The Rainbow Temple's terraces are floors with their
+  flights, so the sanctum is walked to. The 473 wayside shrines are small chapels seen through a glazed window (a hanging in one
+  of the eight colours, the altar, a gilt image, the seven bowls, butter lamps, a hand prayer wheel). The page now names its
+  build (`window.CITY_BUILD`, Xanadu's `99-start.js` and `91t`).
+- **Every interior** (the owner, 2026-11-16: "finish all interiors"): each city gate's passage (the guardian kings, prayer
+  wheels, lamps) with a guard room either side (bunks, a spear rack, a brazier); the caravanserai's gate passage and its five
+  ranges (a common room, kitchen, store and stable below, the merchants' rooms above), each with a court door; the gate
+  markets' two passages and their ranges' shops (shops and stores below, the shopkeepers' rooms above), a door from the arcade
+  to each; the treasury's strong room (the eight gilt images, the coin chests, the scripture boxes); the wheel houses' insides
+  (a hanging, two murals, a rug, butter lamps) and the great wheel's floor; the manors and merchants' houses entered too. 109
+  great rooms and 1,073 lot interiors (52 types), every one walked into by the verify.
+- **The Order of Viridian Thought** (the owner, 2026-11-16, relayed by the Xanadu sim session: "find a site that's a great
+  tea production site and place the head monastery of Qiblai's green monastery there, the Order of Viridian Thought"): the
+  green spoke's monastery is the tea Order's house on the council; its head monastery is a tea estate on the scarp's mist
+  slopes (scale model px 962,1562, 104 km off; the sim's `qb.viridian`: ~400 people, ~40 t a year), a page of its own not
+  yet planned. In the city its court grows clipped tea, with a withering rack and the estate's chests by the gate.
+- **The Order of the White Lily and the Order of the Flashing Eye** (the owner, 2026-11-16: "the white monastery, the
+  Order of the White Lily, is known for their knowledge of medicine and healing. unlike the other great orders, their
+  complex in the city is their actual HQ and doubles as a hospital. the crimson monastery is called the Order of the
+  Flashing Eye"): the white monastery's cell ranges are the hospital's wards (QB_IX_HOSPITAL: a porters' hall, wards, a
+  bath, the kitchen, the apothecary's store; wards and the physicians' study above); its court the physic garden (herb beds
+  edged with white lilies, a washing pool, drying herbs, litters), the Order's banners at the gate (white, a gold lily on
+  green). The crimson monastery is named; its dress is unchanged.
+- **The Order of the Azure Dream** (the owner, 2026-11-16, relayed: "Grēṭ-Āil will be the head monastery for qiblai's blue
+  monastery, the Order of the Azure Dream"): the blue spoke's monastery is its town house on the council; its head monastery
+  is Grēṭ-Āil, the monastery isle in the middle of Erewhon's lake (px 816.5,1501.5, ~600 people; PROPOSAL-XANADU section
+  2a), a page of its own not yet planned.
+- **The History Monks' monastery** (the owner, 2026-11-16: "one of the monasteries of Qiblai (and therefore of the
+  Prismatic Council) is a History Monk monastery, and uses the Order's banner and color. as such the order gets 1/8 of the
+  council income"; which: "Yes, saffron"): the saffron spoke's monastery (spoke 1, bearing 45 degrees) is the Order of
+  Longsong's; its Prismarch sits on the council and the Order takes an eighth of the council's income. Its trim and band
+  are the Order's blue; Longsong's touches: the parabolic gate between blue-banded pylons, the toron spire, two drum halls
+  with electric lanterns, the Order's banners; the Rainbow Temple's saffron banner carries the Order's device.
+- **The terrace stairs** (the owner, 2026-11-16: "make gates go both ways"; Q7a's `qb_terrace_stair`): before every city gate's
+  lower side a stair down to the ground outside (flights of 3 m, 3 m landings, ashlar side walls, banner posts at the foot);
+  the verify walks each gate from the city side and from its stair's foot.
+- **The oilfield and Yuni's mission** (the owner, 2026-11-16: "we need to also build the yuni mission/oilfield near town";
+  whose: "both"): ~1.7 km south-east of the centre, as the Xanadu sim's tune has it (XAN_TUNE: ~300 workers, ~400 t of oil a
+  year, most to Qiblai, a fifth to the Sultan's citadel; the Geomancers' caravans stop at the town). The Geomancers' yard (the
+  still-house, four tanks, pipe racks, the generator house, warehouses, drum stacks, their chapterhouse, the caravans' fuel
+  station), twelve pumpjacks, the workers' village of stilt houses and tents; Yuni's mission (the Order's chapter house behind
+  a gatehouse, its school, bell tower and bathhouse); the Prismarchy's tithe house on the road (the council's cut: a Qiblai
+  gate temple; the council's cut a tenth, the Sultan's licence a fifth); a cobbled road off the south road. The light (the
+  owner, relayed the same day: "Qiblai will be electrified along all major avenues and in buildings except in poor areas"):
+  the Prismarchy's generator house by the south road burns its cut and wires the four major avenues (a lamp on every pole,
+  others hung across the street), and the rooms of every building not poor get ceiling bulbs. Records
+  `targets/city/89zr-qc-oil-site.js`, drawing `90v-qc-oilfield.js`.
+
 ## 1. What the city build is
 
 **A settlement build, `settlements/qiblai`,** with its own `build.py` on Verge's pattern (`settlements/verge/build.py`):

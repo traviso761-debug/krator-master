@@ -296,7 +296,9 @@ def make(body, out, sp_id, rec):
         b = 100.0 if v1 is None else round(v1 * Lc[-1] / VSCALE, 3)
         fur.append([a, b, kind, round(2 * math.pi * float(rfn(0.5)), 4), VSCALE])
     entry = {'id': mid, 'name': sp['name'], 'slot': 'mods', 'glb': 'pieces/%s/%s.glb' % (os.path.basename(out), mid),
-             'grants': {'tail': True}, 'group': 'tail', 'kind': 'therian', 'test': True, 'tail': tail}
+             'grants': {'tail': True}, 'group': 'tail', 'kind': 'therian', 'tail': tail}
+    if sp_id != 'coyote':
+        entry['test'] = True
     if fur:
         entry['fur'] = fur
     print(os.path.basename(out), mid, '%d vertices, %d triangles, %.2f m' % (len(prim['P']), len(prim['T']), Lc[-1]))

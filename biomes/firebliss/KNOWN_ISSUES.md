@@ -47,3 +47,31 @@ Open items are `- [ ]`; build.py counts them.
 - [ ] **The flood's period** is a page's (90 minutes), not the range's (a lahar every few years): it shows the front; the world clock
   will set the real one.
 - [ ] **Shadows** are off at load (`?shadow=1`): only the kin pines and tree ferns cast. Not measured on this kit yet.
+
+## Station 8, South Glass (2026-11-16; GPU-verified 2026-11-17)
+
+- [x] **The GPU verify was owed** (closed 2026-11-17): `KRATOR_GL=gpu` `KRATOR_GPU_LANE=arc` `verify.py dist/firebliss-glass.html --assert --all-views`
+  passes all 14 views (`OK`: 29-32 draw calls, 16.30M triangles drawn / 14.11M BIO triangles, 103 volumes, export profile PASS). Fixed on the way for real
+  16-unit hardware (`Intel Arc 140T`): `stations/glass/84s-host-strata.js` splits cliff triangles (`aRock > 0.05`) onto a shared-attribute companion mesh
+  `MAT_WALL` carrying `rock.basalt` and `KSTRATA` `obsidian-pancake` (`S.inject`: 5 samplers), `44z-host-site.js` drops `rock.basalt` from `MAT_GROUND` so
+  both materials link at 15 samplers max, `src/89z-host-build.js` filters `KHORIZON.shadeScene` by `m.material !== MAT_GROUND`, and `V['On the carapace']`
+  moves to `GLASS.crest(122, 230)` inside the stage's carapace (bearing 98 landed at `z = -3162`, outside `GROUND`). Station 1 (`dist/firebliss.html`) also
+  passes `KRATOR_GL=gpu` `verify.py --assert` (45 draw calls, 14 samplers).
+- [ ] **The dome and the model** (2026-11-17). `model_site.py` reads the dome's record from the model's `DATA.domes` (scale model 5.1
+  edit 8, `tools/scale-model/edit_518.py`, on `main`) when the model carries it, else `station.json`'s copy (this branch's model has no
+  domes). With edit 8 the model's 37 dome cells are refilled from the land round them (a Laplace fill) and the page raises its own,
+  sharper dome once: tested on main's model outside the page (the page's ground within ~5 m of this branch's off the dome; the moat
+  unchanged). **Owed after the merge with main:** rebuild the page on edit 8's model and verify it. The moat's pit (a dome-dammed pond
+  in the patera plan) has no water level on the model: a map change for the scale-model queue if the owner wants a pond there.
+- [ ] **The spec's numbers are not the model's** (PLAN.md section 11.3): the spec's moat 2,890 m, top 3,290 m, 1.11-1.16 atm and Dfc/Cfb; here
+  ~4,220 m, 5,053 m, 0.94 / 0.85 atm, ET. The wall is ~800 m to the moat (the spec's 380 m is its cliff part). The model was followed.
+- [ ] **A texture is a stand-in:** the wall takes `rock.basalt.flowbanded` under KSTRATA's beds (the gap `rock.rhyolite.flowbanded`, entered in
+  `core/materials/PROMPTS-NEEDED.md` on the patera branch, not on this one); the carapace takes `stone.obsidian` (the kit's solids' set) as a
+  ground layer, the talus `ground.cinder` greyed.
+- [ ] **The two views stand for the spec's one** (PLAN.md section 11.3): Mons' plume and the wall cannot share one frame from the moat.
+  Golden hour is the clock's, not the load hour.
+- [ ] **The ground's slots.** The dome's glass and pumice ride the ground's ice and meadow attributes (`SITE.groundAttr`): the ground already has 16
+  vertex attributes, so a new one is not safe. A station with a tarn or ice that also wants them needs another way (a packed attribute).
+- [ ] **Not drawn:** the tuff and tibasalt under the dome, an obsidian resource node (no such kind in `kits/resources`), the other four Glasses
+  (past the far field).
+

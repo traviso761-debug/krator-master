@@ -15,8 +15,9 @@
   "xanadu-oidong-highrift": {
    "name": "Xanadu, Oidong and the High Rift",
    "order": 2,
-   "sites": ["s57bkv9741", "sq80bzd7ep", "skm4jjo2vl"],
+   "sites": ["s57bkv9741", "sq80bzd7ep", "skm4jjo2vl", "shvo49k0y2", "slaitwal0001", "xanaduspill"],
    "polygons": ["rmufcgvtxatfx", "rmuklrcae6jb5", "rmvhighrift100"],
+   "corridors": [{"from": "shvo49k0y2", "to": "xanaduspill", "width_km": 10}],
    "upsample": "auto",
    "note": "the owner, 2026-11-09: one region over the Xanadu Sultanate (political), the Oidong Valley and the High Rift (biomes); about 1,740 x 540 km, so the sub-continental cut (1 km cells)"
   },
@@ -28,15 +29,46 @@
    "corridors": [{"from": "skukf2qmmq", "to": "seed07", "width_km": 10}, {"from": "seed07", "to": "sor1zqih8x", "width_km": 10}],
    "upsample": "auto",
    "note": "the owner, 2026-11-09: Girder, Mav's Refuge and Talia as three sites in one region, with the roads between them"
+  },
+  "oidong-highrift": {
+   "name": "The Oidong Valley and the High Rift",
+   "order": 4,
+   "sites": ["sq80bzd7ep", "ssinggjar01", "smirrorgrange01", "scaldronhouse01", "sfgtxw10kr"],
+   "polygons": ["rmuklrcae6jb5", "rmvhighrift100"],
+   "upsample": "auto",
+   "note": "the owner, 2026-11-11 (core/simulation/PROPOSAL-LONGSONG-PINNACLE.md section 6): Longsong moves onto the open world's ground, cut from the Oidong Valley and the High Rift out of the xanadu-oidong-highrift region; the Singing Gjar outpost and its two work camps, and the Order's two accessory houses (the owner: 'one or two other accessory monasteries in places that look strategic or very productive'). The two polygons hold the Mirror Graben and the beck road whole, so the outpost's grain trade stays inside the cut"
+  },
+  "xanadu-north-shore": {
+   "name": "Erewhon's lake: the north shore and Thalaba",
+   "order": 5,
+   "sites": ["spher0north1", "shvo49k0y2", "soldthalaba1", "sxanmouth01", "sxandyer01", "sxanqolford01", "sxanqolhead01"],
+   "polygons": [],
+   "corridors": [{"from": "spher0north1", "to": "sxanqolford01", "width_km": 12}, {"from": "sxanqolford01", "to": "sxanqolhead01", "width_km": 12}, {"from": "sxanqolhead01", "to": "shvo49k0y2", "width_km": 10}, {"from": "spher0north1", "to": "sxanmouth01", "width_km": 10}, {"from": "sxanmouth01", "to": "soldthalaba1", "width_km": 10}, {"from": "soldthalaba1", "to": "sxandyer01", "width_km": 10}],
+   "upsample": "auto",
+   "note": "the owner, 2026-11-16 (settlements/pher/PLAN.md section 7): a new region north of Erewhon's that also holds Thalaba, reaching east along the shore to Ḍāiyar but not taking the long isle (Grēṭ-Āil). Phēr's square stops a row short of the isle; the shore towns east of it are small squares joined by corridors along the shore; the Qol road to Thalaba (the owner: \"up into the qol valley\") has its two halts as sites, so its corridors follow the valley"
   }
  },
  "sites": {
   "staiytii0y": {"name": "Pinnacle Rock", "type": "city", "region": "pinnacle", "reach_km": 30, "moved": "2026-11-10: 1027,681 -> 1007,686 (the owner: more forest; the savage hyperjungle's north-east edge)", "culture": "beast-rider", "page": "settlements/pinnacle-rock", "state": "built"},
   "s57bkv9741": {"name": "Erehwon", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": "settlements/xanadu", "state": "built"},
-  "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "xanadu-oidong-highrift", "reach_km": 15, "culture": "xanadu", "page": "settlements/longsong", "state": "built"},
+  "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "oidong-highrift", "reach_km": 15, "moved": "2026-11-11: 1226,1626 -> 1228.88,1621.23, the rock on the south bank of the Bīruk al-Ghaym (r105, ~550 m3/s), 356 m from its centre (the owner, openworld/PLAN-SETTLEMENTS.md answer 10: move the pin onto the 550 m3/s river)", "culture": "xanadu", "page": "settlements/longsong", "state": "built", "also": "xanadu-oidong-highrift keeps its first plan (three villages) until that region is recut"},
+  "sfgtxw10kr": {"name": "Strongbow", "type": "arcology", "region": "oidong-highrift", "reach_km": 30, "moved": "2026-11-11: 1026,1594 -> 1298,1647 -> 1013,1585 -> 1001,1596 (the owner: a cliff arcology set in the side of a cliff; then: at the other end of the valley, by Qiblai; then: right on the Xanadu-Oidong border, the cliff the cataract is on, so its elevator is a real advantage)", "culture": "xanadu", "page": null, "state": "planned", "notes": "the Ancients' cliff arcology in the scarp between the Oidong Valley and Xanadu, 3 km north of the cataract by which the valley's river leaves: its top on the lip (about 1,400 m), where the valley road from Longsong ends, its foot on the Xanadu floor about 3,100 m below, its elevator the way between; its own build (the cliff and the arcology) is a separate session's"},
+  "slaitwal0001": {"name": "Lāiṭwāl", "type": "town", "px": 1028, "py": 1653, "model": false, "region": "xanadu-oidong-highrift", "reach_km": 20, "culture": "xanadu", "page": "settlements/lightwall", "state": "planned", "notes": "The Light Wall (settlements/lightwall/PLAN.md, step L5; the owner, 2026-11-16): 5,000 on the north shore of Opal Valley's great lake under the north boundary fault, half Glaziers in the wall, half Xanadui on the bench; the seat of Ōpal-Bhālī (slaitwal0001 in core/region/data/xan-tune.js). Its pin is slaitwal0001, model edit 5.1e12 (4ba66f57c on claude/gemini-trade-reconcile); model false and its own px until that branch merges here"},
+  "xanaduspill": {"name": "The Spillway (Godshearth station 4)", "type": "station", "px": 845, "py": 1422, "model": false, "region": "xanadu-oidong-highrift", "reach_km": 6, "culture": null, "page": "biomes/godshearth", "state": "planned", "notes": "Godshearth's station 4 (biomes/godshearth/PLAN.md), the end of Thalaba's expedition road (settlements/thalaba/PLAN.md T6; core/world 48s SITE_SPEC.ways). A site of its own so the region's recut north to the Catch takes an ordinary corridor up the gorge from Thalaba, 10 km wide (the owner, 2026-11-16: \"Grow the cut up the gorge\"); no hamlets, no pin on the model"},
+  "ssinggjar01": {"name": "The Singing Gjar", "type": "outpost", "px": 1572, "py": 1643, "model": false, "region": "oidong-highrift", "reach_km": 12, "culture": "order", "page": null, "state": "planned", "notes": "The History Monks' house in the High Rift (~350) beside the faith's pilgrimage site, with the Beck Fields and the Vein Camp (PROPOSAL-LONGSONG-PINNACLE.md section 2a; biomes/highrift/PLAN.md station 5). Not on the scale model's list yet: add it to model/src/60-settlements.js after the Qiblai move lands"},
+  "smirrorgrange01": {"name": "The Mirror Grange", "type": "outpost", "px": 1430, "py": 1644, "model": false, "region": "oidong-highrift", "reach_km": 10, "culture": "order", "page": null, "state": "planned", "notes": "an accessory house of the Order on the Mirror Graben's fans, the High Rift's mildest ground (Dfb): the outpost's grain (openworld/oidong-highrift/PLAN.md)"},
+  "scaldronhouse01": {"name": "The Caldron House", "type": "outpost", "px": 1366, "py": 1668, "model": false, "region": "oidong-highrift", "reach_km": 8, "culture": "order", "page": null, "state": "planned", "notes": "an accessory house of the Order at the foot of the graben staircase, where the beck road from Longsong climbs into the High Rift past the Opaline Cataract: the road's hospice and its toll of the peace (openworld/oidong-highrift/PLAN.md)"},
   "skm4jjo2vl": {"name": "Qiblai", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": null, "state": "built"},
+  "shvo49k0y2": {"name": "Thalaba", "type": "town", "region": "xanadu-oidong-highrift", "reach_km": 22, "moved": "2026-11-16: 825,1481 -> 840,1463, the bench at the mouth of Godshearth's spillway gorge (the owner; scale model 5.1e12); reach 22 km so the ring reaches Salphar at the cataract's foot", "culture": "xanadu", "page": "settlements/thalaba", "state": "cut"},
   "seed07": {"name": "Girder", "type": "village", "region": "iziz-cluster", "reach_km": 15, "culture": "beast-rider", "page": "settlements/girder", "state": "built"},
   "skukf2qmmq": {"name": "Mav's Refuge", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "beast-rider", "page": "settlements/mavs-refuge", "state": "built"},
-  "sor1zqih8x": {"name": "Talia", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "talia", "page": "kits/talia", "state": "built"}
+  "sor1zqih8x": {"name": "Talia", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "talia", "page": "kits/talia", "state": "built"},
+  "spher0north1": {"name": "Phēr", "type": "town", "region": "xanadu-north-shore", "reach_km": 16, "culture": "xanadu", "page": "settlements/pher", "state": "planned", "notes": "The north shore's fair (settlements/pher/PLAN.md): a lake town of 6,000, the lake's northern hub and P7's seat, held by the Sultan's heir. The town on core/city is settlements/pher's (step P3); the region plans its farming ring and the roads"},
+  "shvo49k0y2": {"name": "Thalaba", "type": "town", "region": "xanadu-north-shore", "reach_km": 14, "culture": "xanadu", "page": null, "state": "planned", "notes": "At the mouth of Godshearth, 2,400 (settlements/thalaba/PLAN.md); the Qol road's top end"},
+  "soldthalaba1": {"name": "Ōlḍ-Thalaba", "type": "village", "region": "xanadu-north-shore", "reach_km": 6, "culture": "xanadu", "page": null, "state": "planned"},
+  "sxanmouth01": {"name": "Māuṭh", "type": "village", "px": 852, "py": 1494, "model": false, "region": "xanadu-north-shore", "reach_km": 6, "culture": "xanadu", "page": null, "state": "planned", "notes": "A lake town of 1,500 (core/region/data/xan-tune.js T.lake 'mouth'); not on the scale model's list"},
+  "sxandyer01": {"name": "Ḍāiyar", "type": "village", "px": 870, "py": 1500, "model": false, "region": "xanadu-north-shore", "reach_km": 6, "culture": "xanadu", "page": null, "state": "planned", "notes": "The dyers' lake town, 1,400 (T.lake 'dyer'): the region's east end (the owner: 'have it reach east'); not on the scale model's list"},
+  "sxanqolford01": {"name": "The Qol ford", "type": "outpost", "px": 822.7, "py": 1480, "model": false, "region": "xanadu-north-shore", "reach_km": 8, "culture": "xanadu", "page": null, "state": "planned", "notes": "The Thalaba road's bridge and caravan halt where it meets the Qol Siṭrīm above its lower gorge (settlements/pher/PLAN.md section 3)"},
+  "sxanqolhead01": {"name": "The Qol head", "type": "outpost", "px": 826.7, "py": 1464, "model": false, "region": "xanadu-north-shore", "reach_km": 8, "culture": "xanadu", "page": null, "state": "planned", "notes": "The top of the Qol valley (1,198 m), where the Thalaba road turns east onto the bench (settlements/pher/PLAN.md section 3)"}
  }
 }

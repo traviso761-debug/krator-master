@@ -34,3 +34,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 ## Notes
 
 **Hand pass (2026-10-03): the kit's own copies.** PRNG and noise: none of its own. `reseed`/`rng` (mulberry32), `h3` (a sin hash), `vnoise` and `fbm` are the one copy in `core/biome/10-core-head.js` (`BIO.fn`); its `rng` already equals `KRAND.stream` (`core/PORT.md`), and the sin-based `h3`, `vnoise` and `fbm` move to `core/rand` in the biome reseeding event. Terrain: its own `terrainH` (line 77) in `src/45-host-stage.js` and the climate-field bake `FC`, which is the data `core/terrain` replaces. Palette: its own `SWBAY.PAL`, built in `src/50-biome-swbay-species.js` (line 34).
+
+**Showcase station 3, the skarn-marble cliffs (2026-11-16, `stations/skarn/`; not in the table above, which lists `src/`):** the page
+takes `src/` (the kit's 50-75 and the shell) with the station's own host in place of 45 and 85-99 (`85-host-tower.js`, `86-host-jetty.js`
+and `87-host-kin.js` dropped, no neighbours' cousins). `45-host-stage.js` is `[web]` split as the bay's 45: the old shoreline (a polyline and its
+signed distance, its level U from the model), the profiles (`platformH`, `marbleH`, `shelfH`), the raised stack, `terrainH`, the masonry's sections and the fields are data for core/terrain, the
+renderer and the lights host; `45b-host-ground.js` `[draw]`: the height lattices and the plant mask (data), the KSTRATA stack (data, its
+shader core's), the ground's material (a hook: the beds, the grain, the magnetite's gloss) and meshes, the far country (KFAR) and the
+Throne's plume; `85-host-quarry.js` `[draw]`: the visor's lip, the cut blocks (their places by KRAND hash are data), the ledge trees (`SWBAY.treeAt`)
+and the masonry's builder (no masonry since the re-siting, 2026-11-17); `88`, `89a`, `89s`, `89w`, `99` as the bay's own. Read in place: `core/terrain/35`
+(KSTRATA) and its shade, `core/shader/06b` (KCOLOR), `biomes/godthrone/src/45a5-host-region.js` (REGION).

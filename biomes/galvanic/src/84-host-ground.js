@@ -10,15 +10,19 @@
 // ?kground=0: the paint alone. ?strata=0: no beds on the faces.
 const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
 const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
-const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:4402,recipe:'rift',range:[SITE.sea-120,SITE.sea+260],dip:[.2,.97,.06],warp:[6,2]});
+const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:4402,recipe:'rift',range:HILL?[HILL.y0-200,HILL.y0+400]:[SITE.sea-120,SITE.sea+260],dip:[.2,.97,.06],warp:[6,2]});
 const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:0x8a5a3e}):null;
 function setStones(){}
 // the masks at a point: [mud, terraces, gossan, vitriol] and the salt (out[4]); read from the baked fields and the site's own shapes
 function masksAt(x,z,h,out){const acid=FC.at(FC.a.acid,x,z),fl=FC.at(FC.a.flood,x,z),up=FC.at(FC.a.upland,x,z),wet=FC.at(FC.a.wet,x,z),rock=FC.at(FC.a.rock,x,z);
  let gos=0;for(const M of MOUNDS){const d=Math.hypot(x-M.x,z-M.z)/M.r;gos=Math.max(gos,smooth(1.1,.85,d));}
- {const d=Math.hypot(x-DP.x,z-DP.z)/DP.r;gos=Math.max(gos,.6*smooth(1.2,1.02,d)*smooth(.88,.98,d));}   /* the Deep's rim: mound rubble */
+ if(DP){const d=Math.hypot(x-DP.x,z-DP.z)/DP.r;gos=Math.max(gos,.6*smooth(1.2,1.02,d)*smooth(.88,.98,d));}   /* the Deep's rim: mound rubble */
+ gos=Math.max(gos,HAT_AT(x,z));   /* station 3: the iron hat */
  let ter=0;for(const S of STREAMS){const q=S.F.at(x,z);if(q.d>26)continue;const t=S.tread(q.s);if(t)ter=Math.max(ter,smooth(t.w/2+14,t.w/2+3,q.d));else if(q.s>S.sT*.7)ter=Math.max(ter,.5*smooth(S.w+8,S.w/2,q.d));}
  for(const M of MOUNDS){const d=Math.hypot(x-M.x,z-M.z)/M.r;ter=Math.max(ter,.8*smooth(1.6,1.15,d)*smooth(.95,1.12,d));}
+ for(const M of SEEPS){const d=Math.hypot(x-M.x,z-M.z)/M.r;ter=Math.max(ter,smooth(6,1.2,d));}   /* station 3: the seeps' ochre aprons */
+ if(ORE){const q=ORE.F.at(x,z);if(q.d<ORE.w*1.6)ter=Math.max(ter,.6*smooth(ORE.sx-20,ORE.sx+40,q.s)*smooth(ORE.w*1.6,ORE.w*.5,q.d));}   /* the ore's trough below the line */
+ if(DP&&DP.shelf){const d=Math.hypot(x-DP.x,z-DP.z)/DP.r;ter=Math.max(ter,.55*smooth(.82,.86,d)*smooth(.99,.95,d));}   /* station 2: the brine's muds on the shelf */
  const strand=1-up;
  /* the vitriols bloom in patches on the driest ground (old beach ridges, the mounds' skirts), not over the whole strand */
  const vit=clamp(strand*(1-smooth(0,.06,fl))*smooth(.5,.3,wet)*smooth(.15,.45,acid)*(1-gos)*(1-ter)*smooth(.56,.68,fbm(x*.006,z*.006,4.4,3)),0,1);
@@ -27,14 +31,16 @@ function masksAt(x,z,h,out){const acid=FC.at(FC.a.acid,x,z),fl=FC.at(FC.a.flood,
 // THE PAINT: the macro colour under the layers: rusted mud, the vitriol's white, the salt, the ochre terraces, the gossan's red, the hills' red soil and grass
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
  const c=new THREE.Color(),K=hx=>new THREE.Color(hx),m=[0,0,0,0,0];
- const MUD=K(0x4a4038),RUST=K(0x7e4626),OCHRE=K(0xb8642a),GOS=K(0x8a3a1c),VIT=K(0xdcd8cc),BLUE=K(0x9ab8c4),SALT=K(0xd2cabc),SOIL=K(0x8a5a3e),GRASS=K(0x7a7040),ROCK=K(0x6e5444);
+ const SHR=K(0x7a3a22),SHK=K(0x2a2622),SHG=K(0x4e5236),SHB=K(0x3a2a24),SHW=K(0xcfc6b4),MUD=K(0x4a4038),RUST=K(0x7e4626),OCHRE=K(0xb8642a),GOS=K(0x8a3a1c),VIT=K(0xdcd8cc),BLUE=K(0x9ab8c4),SALT=K(0xd2cabc),SOIL=K(0x8a5a3e),GRASS=K(0x7a7040),ROCK=K(0x6e5444);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
-  const n=fbm(x/24,y/24,.3,2)-.5,hh=FC.at(FC.a.h,wx,wz),rock=FC.at(FC.a.rock,wx,wz),up=FC.at(FC.a.upland,wx,wz),acid=FC.at(FC.a.acid,wx,wz);masksAt(wx,wz,hh,m);
+  const n=fbm(x/24,y/24,.3,2)-.5,hh=FC.at(FC.a.h,wx,wz),rock=FC.at(FC.a.rock,wx,wz),acid=FC.at(FC.a.acid,wx,wz),up=FC.at(FC.a.upland,wx,wz)*(HILL?1-.9*smooth(.05,.4,acid):1);masksAt(wx,wz,hh,m);
   c.copy(MUD).lerp(RUST,.55*acid*smooth(.35,.7,fbm(x/40,y/40,.9,2)));
   c.lerp(SALT,m[4]*.6).lerp(VIT,m[3]*.6*smooth(.45,.7,fbm(x/14,y/14,2.1,2))).lerp(BLUE,m[3]*.35*smooth(.72,.8,fbm(x/9,y/9,4.2,2)));
   c.lerp(OCHRE,m[1]*.85).lerp(GOS,m[2]*.85);
   c.lerp(SOIL,up).lerp(GRASS,up*.55*smooth(.35,.65,fbm(x/50,y/50,3.3,2))*(1-acid));
   c.lerp(ROCK,smooth(.3,.65,rock)*.5);
+  if(DP&&DP.shelf){const dd=Math.hypot(wx-DP.x,wz-DP.z)/DP.r;if(dd>.8&&dd<1){const b=hh-SITE.sea,k=smooth(.8,.86,dd)*smooth(.99,.95,dd);   /* the brine's muds in bands by height (the Atlantis II Deep's: red-brown oxide, black sulfide, green silicate, a pale anhydrite crust at the top) */
+    const band=b<-.8?SHB:b<-.3?SHG:b<.2?SHK:b<.6?SHR:SHW;c.lerp(band,k*.75*(.8+.4*fbm(x/11,y/11,6.6,2)));}}
   const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;

@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcpile.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/gatearc.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/lozenge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/quintagon.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/span.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcpile.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/lozenge.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/quintagon.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/span.html`, `dist/spire.html`, `dist/theodiga-today.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -42,7 +42,6 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `63-canyon.js` | 18 |  |
 | `64-dalab.js` | 12 |  |
 | `64-houses-def.js` | 9 |  |
-| `65-veladiga.js` | 16 |  |
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
 | `67-cultural.js` | 8 |  |
@@ -70,7 +69,6 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-65-biome-hyperjungle-dress.js` | 7 |  |
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 11 |  |
-| `77-dam.js` | 14 |  |
 | `77z-iziz-style.js` | 55 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 8 |  |
@@ -183,7 +181,6 @@ Each target adds its own fragments to `src/` and builds one output.
 | `engines` | `89z-rows.js`, `8aj-engines3.js`, `91y-engine-checks.js`, `91z-views.js` | 36 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
 | `funicular` | `89z-rows.js`, `91z-views.js` | 5 |
-| `gatearc` | `89z-rows.js`, `8av0-gatearc-plan.js`, `8av1-gatearc-draw.js`, `8av2-gatestacks-plan.js`, `8av3-gatestacks-draw.js`, `91z-views.js` | 61 |
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 8 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
 | `hosts` | `89z-rows.js`, `91z-views.js` | 6 |
@@ -198,19 +195,20 @@ Each target adds its own fragments to `src/` and builds one output.
 | `lozenge` | `89d5-lozenge.js`, `89d6-lozenge-faces.js`, `89d7-lozenge-elevation.js`, `89d8-lozenge-ruin.js`, `89z-rows.js`, `91z-views.js` | 79 |
 | `monolith` | `89z-rows.js`, `91z-views.js` | 4 |
 | `plymouth` | `89z-rows.js`, `91z-views.js` | 6 |
-| `podium` | `89z-rows.js`, `8aq0-podium-plan.js`, `8aq1-podium-kept.js`, `8aq2-podium-skins.js`, `8aq3-podium-draw.js`, `91z-views.js` | 75 |
+| `podium` | `89z-rows.js`, `8aq0-podium-plan.js`, `8aq1-podium-kept.js`, `8aq2-podium-skins.js`, `8aq3-podium-draw.js`, `91z-views.js` | 76 |
 | `quintagon` | `89z-rows.js`, `91z-views.js` | 3 |
 | `ring` | `89z-rows.js`, `91z-views.js` | 10 |
-| `sanctum` | `89z-rows.js`, `8ar0-sanctum-plan.js`, `8ar3-sanctum-draw.js`, `91z-views.js` | 36 |
+| `sanctum` | `89z-rows.js`, `8ar0-sanctum-plan.js`, `8ar3-sanctum-draw.js`, `91z-views.js` | 37 |
 | `skyi` | `89z-rows.js`, `91z-views.js` | 4 |
 | `skyj` | `89z-rows.js`, `91z-views.js` | 3 |
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
 | `span` | `89z-rows.js`, `8as0-span-parts.js`, `91z-views.js` | 30 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 4 |
-| `theodiga` | `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `89z-rows.js`, `91z-views.js` | 16 |
+| `theodiga` | `77-dam.js`, `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `77c-theodiga-water.js`, `89z-rows.js`, `90w-theodiga-water.js`, `91z-views.js` | 43 |
+| `theodiga-today` | `89z-rows.js`, `91z-views.js` | 3 |
 | `trigon` | `89z-rows.js`, `91z-views.js` | 5 |
-| `veladiga` | `89z-rows.js`, `91z-views.js` | 1 |
+| `veladiga` | `65-veladiga.js`, `89z-rows.js`, `91z-views.js` | 17 |
 | `wheel` | `89z-rows.js`, `91z-views.js` | 7 |
 | `wing` | `89z-rows.js`, `91z-views.js` | 5 |
 | `worn` | `89z-rows.js`, `91z-views.js` | 11 |

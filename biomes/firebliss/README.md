@@ -13,6 +13,7 @@ python3 build.py                       # dist/firebliss.html: station 1, the Gre
 python3 build.py --station glen        # dist/firebliss-glen.html: station 2, Solfatara Glen
 python3 build.py --station east        # dist/firebliss-east.html: station 3, East Bliss Vale and the Weyt Warra's gorge
 python3 build.py --station mons        # dist/firebliss-mons.html: station 4, Firebliss Mons' crater
+python3 build.py --station glass       # dist/firebliss-glass.html: station 8 (Gemini's showcase), South Glass, an obsidian pancake dome
 KRATOR_GL=gpu python3 verify.py dist/firebliss.html --assert --all-views
 ```
 
@@ -38,6 +39,11 @@ branch is merged. A checkout without the branch stops the build with a message n
 - **The hunters' camps are core/camp's** (`KCAMP.pitch` on the kit's culture rows, `65`); their trails' cairns and their peoples' marks.
 - **The hazards** (`86`): gas in the hollows at night, crusts over the boiling springs, the gorge's lahar, falls, thin air and cold; the
   geyser kit registers its own; the plume (`89b`) adds ash and the rain's pH.
+- **Station 8, South Glass** (`stations/glass`, PLAN.md section 11.2): the dome's shape is plain maths in `44y` (`GLASS`: the top, the crest's lobes and
+  flutes, the wall, the apron, the slumped lobe, the cracks, the pumice bench) added to the model's ground through the stage's `SITE.bench`; its fields
+  (`SITE.fields`), ground slots and layers (`SITE.groundAttr`, `groundLayers`, `groundPaint`), KSTRATA's `obsidian-pancake` beds on the wall (`84s`, a KHOOK
+  layer) and its pieces (`66`: `FIREBLISS.station`, the spines, blocks, knapping floors, quarry and cairns). The hooks are inert on the other stations.
+  A station names its own core pieces in `station.json` (`"core"`).
 - **The oases** are offered to the open world's outpost registry as candidates (`outposts.json`); nothing is drawn for them.
 
 ## Files

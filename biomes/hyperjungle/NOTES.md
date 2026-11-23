@@ -78,3 +78,7 @@ Predators and canopy climbers (the herds have nothing to run from); flyers that 
 then the abyssal savannah, Yuni Valley, highlands and arctic biomes, each as
 `5x-biome-<name>.js` on the same core; then drop the Hexahedron into the hyperjungle
 through `dress()`.
+
+## Scale-Model 5.1 Geology, Coastal Shelf & Canopy Hydration Notes (`2026-11-13`)
+- **Coastal `carbonate-shelf` Benches (`Port Goto` `918, 698` to `Crescent` `994, 694`, `5.1 px ~922, 704`):** Where the northern and eastern Savage Hyperjungle meets the `-1,500 m` Ring Sea (`1.93 atm`), coastal headlands, drowned river mouths, and raised littoral terraces expose `KSTRATA` **`carbonate-shelf`** (`2–5 m` cream/buff bioclastic limestone and marl beds with tidal solution notches, `KARST-SITES-5.1.md`), stepping inland onto weathered **`tibasalt`** and impact-melt ferrallitic clays that supply Ca/Mg/P cations to the emergent hypertrees without requiring continental granite basement.
+- **0.75 g + 1.93 atm Canopy Hydraulics (Foliar Cloud-Water Uptake):** Even at `g = 7.4 m/s²` (`0.75 g`, lifting the hydrostatic xylem cavitation ceiling from `~125 m` on Earth to `~165 m`), `170–220 m` emergent hypertrees rely on **direct upper-crown foliar fog/mist uptake** (`ATMOS.fogBelt` / dense `1.93 atm` abyssal boundary-layer condensation) and vascular aerial-root/epiphyte water tanks to hydrate crowns above `150 m`, matching Earth's *Sequoia sempervirens* foliar-uptake pathway.

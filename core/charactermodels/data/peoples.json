@@ -3095,10 +3095,12 @@
     {
       "id": "coyote_men",
       "name": "Coyote Men",
-      "note": "The Outlands' therian tribes (Sunset, Sunrise, Valley, Peak; biomes/outlands/PLAN.md section 6): furred (a coyote's brush coat; the owner, 2026-10-26), lean. The coyote head is a mod (tools/heads.py); the digitigrade legs are not built yet. Coat colours (tawny to grey, agouti) and the rest are proposals",
+      "note": "The Outlands' therian tribes (Sunset, Sunrise, Valley, Peak; biomes/outlands/PLAN.md section 6): furred (a coyote's brush coat; the owner, 2026-10-26), lean, digitigrade. Coyote head (tools/heads.py), bushy brush tail (tools/tails.py), and digitigrade legs & paws (tools/digitigrade.py). Coat colours (tawny to grey, agouti) and the rest are proposals",
       "coat": "coyote",
       "mods": [
-        "mod_head_coyote"
+        "mod_head_coyote",
+        "mod_tail_coyote",
+        "mod_legs_coyote"
       ],
       "ancestry": {
         "african": [

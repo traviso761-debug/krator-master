@@ -136,3 +136,32 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
 - [ ] **The stations still load the hyperjungle's `41` globals** (TAU, clamp, smooth, fbm...) though only corona grows it (`"nojungle"` drops the rest
   and its pack).
 - [ ] **No GPU look yet** at any of the four: the gravel's and ice's tints, the run-off ramps per station, the lodgepole's crown, the ice towers and caves.
+
+## Station 7, the Boiling Bay phreatic cove (2026-11-16; PLAN-STATIONS.md, "Station 7 as built")
+
+- [x] **The GPU verify is owed** (closed 2026-11-17): `KRATOR_GL=gpu` `verify.py dist/geyser-cove.html --assert --all-views` passes all 15 views (`OK`:
+  96-152 draw calls, 2.35M triangles drawn at the skiff / 21.84M scene triangles, attach audit 0.44%, export profile 9/9). Fixed on the way so the ground
+  stays at 15 samplers on 16-unit hardware and `KSHADOW` attaches cleanly (4 console messages, down from 2,453 WebGL sampler warnings): `88-host-build.js`
+  filters `KHORIZON.shadeScene` by `m.material !== MAT_GROUND` (was `m !== MAT_GROUND`), `85-host-far.js` counts weather's two samplers (`atmRainOcc`,
+  `atmSnowBare`), and `84-host-ground.js` reads `uMacro.b` in place of `uDetail` when `KG_ON` is on. Showcase `dist/geyser.html` (14 samplers, 118.9 degC)
+  and `dist/geyser-ice.html` (11 samplers, 88.0 degC) also pass `KRATOR_GL=gpu` `verify.py --assert`.
+- [x] **The look from the skiff** (closed 2026-11-17, owner: "raise the rim"): the rim crest stands at ~56 m (`45-host-stage.js` `COVE_CREST`), so the
+  cream carbonate-shelf bluffs and visors read clearly above the hyperjungle behind the scald line in the GPU skiff shot.
+- [x] **The other geyser pages were stale against `core/terrain/35-core-strata.js`** (closed 2026-11-17): all seven pages (`geyser`, `basin`, `corona`,
+  `cove`, `ice`, `puna`, `stills`) rebuilt through `tools/build.py` (`check_stale` clean on `biomes/geyser`); `build.py`'s `89v-host-ringsea.js` wrapper
+  rewrites `window.onerror=` to `window['onerror']=` so `check_assembly.py` sees no `CLASH onerror`.
+- [ ] **For the scale-model queue (never edited here):** the model has no vent and no cove at px 884,716 (the ground -1,494 m in a 2 km cell, the sea one
+  cell south-east). The station wants a geyser vent there (kind `geyser`, radius ~0.4 px) and, if the reshaping's Ring Sea pass reaches this shore, the cove
+  kept as a notch in the coast (its breach toward bearing ~158). Gemini's `edit_517` is not merged: the station stands on today's ground.
+- [x] **The spec's skiffs were not drawn** (closed 2026-11-17, owner: "hykkoussoi pirates primarily"): four moored pirate craft from `kits/ringsea`
+  (`COVE_SHIPS` in `45`, drawn in `89w`, sealed via `settlements/voth/ringsea.py`): two Hykkousoi Scroll-Sail Galleys, one Hykkousoi Amphora Corbita and one
+  Islander Lanong, moored 72-121 m clear of the boils.
+- [ ] **No tide**: the spec's 24 h libration tide flushes the littoral; the sea stands at one level (core/water's open surface has no tide yet).
+- [x] **The boiling point** (closed 2026-11-17, owner: kit-wide pressure-dependent boiling): `GEYSER.boilAt(atm)` (`46-biome-geyser-layout.js`) sets each
+  page's boiling water, vents, run-off, mud pots and fumaroles from `AIR_ATM` (~119.4 degC at the cove's 1.93 atm, 118.9 at 1.9, 88.0 at ice's 0.64), while
+  `heat` stays 0..1 to 100 degC for the thermophilic mat bands; checked on every page (`99-host-take.js`).
+- [ ] **Approximate, by design**: the cove is an ideal type (an explosion crater 720 m across in a plateau at 32-40 m; the model's cell says only -1,494 m);
+  the outer coast's line, the dike's bearing and the vents' places are the station's. The sulphur chimneys are the kit's geyserite bead drawn tall and
+  yellow (one item: no chimney geometry of their own); the breccia blocks the same bead in tibasalt's colours.
+- [ ] **84's beach paint reads `shoreZ` (one shore a column)**, which the crescent's horns cross: the station repaints the beach by height at the water
+  (`80`), so 84's own sand is overwritten there. A two-sided shore in 84 would let the station drop it.

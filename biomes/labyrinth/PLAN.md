@@ -273,3 +273,21 @@ negatives (the house lifted 3 m, a plant in its yard).
 - the model's data at 260b90d44 (`gemini/scale-model-5.1-r3`), read with `smodel.page`;
 - `tools/scale-model/river-names-5.1.md` (`r_lab_cat_nw`, `r_lab_cat_sw`);
 - `biomes/copperglacier/PLAN.md`, the neighbour to the north, the form this plan follows.
+
+---
+
+## 10. Scale-Model 5.1 Three-Tier Chaos Stratigraphy & Showcase Station #13 (`2026-11-13`)
+
+### 10.1 How the Labyrinth Formed (`tibasalt-ponded` Caprock + `megabreccia` Walls + `loess` Paddocks)
+- **Cryo-Magmatic Jökulhlaup Genesis (Martian *Noctis Labyrinthi* + Channeled Scablands Analogue):** Radial dike swarms propagating west-southwest from the **Rift / Firebliss** triple-junction intruded ice-rich outer-flank **`megabreccia`** beneath a thick **`tibasalt-ponded`** flood-basalt caprock plateau (`+5,200–6,200 m`). Subsurface cryosphere melting triggered catastrophic **jökulhlaup outburst floods** and magma-withdrawal collapse, shattering the plateau into intersecting `2–4 km` deep diamond grabens while windblown periglacial rock-flour settled across the sheltered graben floors (`+1,400–2,300 m`) as `15–60 m` of fertile calcareous **`loess`** mammoth-steppe soil.
+- **Three-Tier `KSTRATA` Binding (`core/terrain/35-core-strata.js`):**
+  1. **Upper Tilted Mesa Caps (`+4,500–6,100 m`):** **`tibasalt-ponded`** (`4–12 m` massive ponded flood-trap colonnades and hackly entablatures tilted `4–12°` on rotational slump blocks).
+  2. **Middle Chasm Bastions (`+1,800–4,500 m`):** **`megabreccia`** (`5–15 m` angular polymictic chaos blocks, dike-baked red breccia ribs, and drystone pueblo cliff-ledges).
+  3. **Graben Floor Terraces (`+1,400–1,950 m`):** **`loess`** (`2–6 m` vertical-cleaving buff silt bluffs, paleosol stripes, and braided jökulhlaup gravel bars supporting tall `Cfb`/`Dfb` mammoth-steppe grass and gallery woods).
+
+### 10.2 Showcase Station #13 — `Hall of Heroes Mammoth-Steppe Arcology`
+- **Canonical `5.1` Coordinates:** **`(328, 1476)` to `(367, 1486)`** (eastern Labyrinth **Gate Lake** graben threshold centered on `(348, 1481)` where the eastern Rift-rim pass opens onto the `+1,419 m` Gate Lake floor).
+- **Elevation & Atmosphere:** **`+1,419 m`** Gate Lake water level & `+1,430–1,580 m` loess steppe floor (**`1.34 atm`**, `Cfb` / `Dfb` sheltered mammoth-steppe microclimate, `+11 °C` annual mean) enclosed between **`+5,400 m`** tilted basalt-capped chaos bastions.
+- **`KSTRATA` Binding:** **`tibasalt-ponded`** (dark columnar flood-trap caprock crowning the tilted skyline mesas) + **`megabreccia`** (sheer `2.5 km` chaos-block canyon walls with natural rock-shelter ledges) + **`loess`** (buff vertical stream-cut silt terraces framing Gate Lake's braided inlet).
+- **Camera Framing (`5.2 × 5.2 km` graben-gate vista):** Sweeping bench-brow camera at `+32 m` on a golden `loess` steppe terrace looking WNW across **Gate Lake** (`+1,419 m`) toward the half-collapsed Ancient **Hall of Heroes** cliff-arcology (`Ancients` / Girder megastructure slotted into a `megabreccia` fault-recess beneath a overhanging `tibasalt-ponded` colonnade cap): **Kimr** mud-and-stone ladder-pueblos (`KCITY` / pueblo tiers with Aurochs-skull totems and retractable timber ladders) clinging to `80 m` cliff ledges safe above the browse/trample line, a dust-raising herd of bus-sized **Great Aurochs**, woolly mammoths, and ground sloths (`kits/fauna`) crossing the gallery-wooded delta below, and `4 km` chaos bastions catching warm afternoon light through canyon dust shafts.
+- **Hydrology & Trade Tie-In:** Fed by Firebliss's **Weyt** and **Tlahn Warra** meltwaters and spring seepage out of the `loess` and `megabreccia` aquifers into Gate Lake (`+1,419 m`); the **Kimr** hold the Hall of Heroes as their sacred clan moot and trade mammoth ivory, cured Aurochs hides, Firebliss obsidian (`175, 1335`), and scavenged Ancient alloys with **Fellgang** intermediaries from **Wildcat** (`427, 1453`) and a lone resident **History Monk** chronicler from **Longsong**.

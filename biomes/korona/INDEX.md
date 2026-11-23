@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/korona-basin.html`, `dist/korona-gorge.html`, `dist/korona-hoar.html`, `dist/korona-hollow.html`, `dist/korona-trench.html`, `dist/korona.html`
+Built output (never open it; edit `src/` and rebuild): `dist/korona-basin.html`, `dist/korona-gorge.html`, `dist/korona-hoar.html`, `dist/korona-hollow.html`, `dist/korona-silkhead.html`, `dist/korona-trench.html`, `dist/korona.html`
 
 Build: `cd biomes/korona && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -48,4 +48,5 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | gorge | 00-head.html, 45-host-stage.js, 89-host-sky.js, 99-host-take.js | 22 |
 | hoar | 00-head.html, 45-host-stage.js, 89-host-sky.js, 89s-host-snow.js, 99-host-take.js | 21 |
 | hollow | 00-head.html, 45-host-stage.js, 89-host-sky.js, 99-host-take.js | 22 |
+| silkhead | 00-head.html, 45-host-stage.js, 89-host-sky.js, 89x-host-silkhead.js, 99-host-take.js | 52 |
 | trench | 00-head.html, 45-host-stage.js, 89-host-sky.js, 99-host-take.js | 25 |

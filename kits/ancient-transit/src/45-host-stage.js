@@ -59,7 +59,9 @@ const TR_WAR_O=[{damage:s=>0.1+0.9*s/3000,seed:901,blockades:[1560]},{damage:0.5
  {damage:0.22,seed:904},{damage:0.15,seed:905},{damage:0.15,seed:906},{damage:0.3,military:0.5,seed:907},{damage:0.3,seed:908},{damage:0.2,seed:909}];
 /* the cargo line too comes before the ground: its cutting through the knoll is carved */
 const TR_CARGO=KTRANSIT.rail([[-1750,-150],[650,-150],[1750,-900]],{id:'cargo',ground:TR_RELIEF,streets:TR_STREETS.slice(1),catenary:true,shift:TR_SHIFT,quake:TR_QUAKE});
-const terrainH=(x,z)=>{let h=TR_RELIEF(x,z)+KTRANSIT.sinkholeH(TR_SUBWAY,x,z);for(let i=0;i<TR_WAR.length;i++)h+=KTRANSIT.craterH(TR_WAR[i],x,z);for(let i=0;i<TR_ROADS.length;i++)h+=KTRANSIT.lineH(TR_ROADS[i],x,z);h+=KTRANSIT.lineH(TR_CARGO,x,z,{form:0.45});h+=KTRANSIT.lineCarveH(TR_LINE,x,z);return h;},waterH=()=>-1e6;
+/* where cuttings overlap (a junction, the cargo line beside a road) the ground takes the DEEPEST single cut, not their sum: summed, a junction
+   was carved twice (the network test bed, 2026-11-11) */
+const terrainH=(x,z)=>{let h=TR_RELIEF(x,z)+KTRANSIT.sinkholeH(TR_SUBWAY,x,z);for(let i=0;i<TR_WAR.length;i++)h+=KTRANSIT.craterH(TR_WAR[i],x,z);let c=KTRANSIT.lineH(TR_CARGO,x,z,{form:0.45});for(let i=0;i<TR_ROADS.length;i++)c=Math.min(c,KTRANSIT.lineH(TR_ROADS[i],x,z));return h+c;},waterH=()=>-1e6;
 /* THE HIGHWAY is built here, with the data, not on the stage: its ramps' landing roads JOIN the network (KTRANSIT.joinRamps: the off ramp's lands on
    the street rs, a T; the on ramp's ends beside st2 and is carried to it, a T), so those junctions exist before the wars and the dress. The wars
    come after it (a crater is carved only once the war exists; the deck clears the ground without them) */

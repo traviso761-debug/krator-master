@@ -177,6 +177,38 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 
 ## Open
 
+- [x] **Station 7, Silkhead Gorge (2026-11-16, `stations/silkhead`, `dist/korona-silkhead.html`): the GPU verify was owed** (closed 2026-11-17).
+      Added `"31b-core-leafset.js"` to `stations/silkhead/station.json` `"core"` (eliminating `check_assembly.py` `MISSING BIO.leafOn / BIO.leafQ`),
+      rebuilt through `tools/build.py`, and ran `KRATOR_GL=gpu` `verify.py dist/korona-silkhead.html --assert --all-views` on `rtx`: **all 12 views
+      pass, exit 0 `OK`** (130-153 draw calls, 3.49-4.14 M triangles drawn / 2.95 M BIO triangles, attach audit 0.91%, max samplers 13, export
+      profile 9/9).
+- [ ] **Station 7: the spec's heights are not the model's (for the scale-model queue; nothing edited here).** The spec puts the rim at
+      +3,620 m over the trench at -1,180 m; today's model (5.1, `tools/scale-model/model/data`) has the table at **1,430-1,570 m** round
+      1096,526 and the trench at -580 to -1,400 m within 12-16 km east (`NOTES.md`, "What the model says there today"). The page keeps the
+      spec's 4,800 m. For the model: either raise the central table round 1096,526 (px 1088-1098 by 516-528) to about 3,600 m, which makes it
+      the high cold country the hoar table's tribes live in, or keep the model and read the page as a vertical exaggeration of 2,050 m.
+      The owner's call; the page does not change either way until the map does.
+- [ ] **Station 7: Korona's domes are not on this line's model yet.** Built on the integration line, whose model has none (edit 2's
+      `d6c00c3e0` lives on `claude/firebliss-patera-domes`; 1179,578 reads -86 m here). `origin/main` now has them as **scale model 5.1 edit 8**
+      (`77f94b97d`, `tools/scale-model/edit_518.py`, `DATA.domes`): the same five Korona domes, 12-16 km across and 522-650 m high, the nearest
+      to this station dome 2 (NE trench, 1131,494, 95 km north-east), dome 4 (SE moat, 1179,578) 196 km south-east, and its 189 changed
+      cells all round the domes, none near 1096,526 (the station's ground is the same before and after). The page's dome is its own, 1.3 km
+      on the trench floor below the rim (the spec's "4.7 km below"), with the model records' kind and rock (`pancake_dome`,
+      `rhyolite_obsidian`) and `near` naming dome 2 (`45`, `DOME`; the layout export's `dome`). This branch was not merged with main here
+      (2026-11-17: 232 conflicted files between the integration line and main); when it is, nothing on the page moves. Dome 4 wants its own
+      station (16 km: the spec's "paired" view) or a far-field landmark the open world draws.
+- [ ] **Station 7: what is approximate.** (1) The fog belt is the only "cloud cascade": core/atmos draws no cloud spilling over a lip
+      (a tablecloth cloud would be a core/atmos effect: none written). (2) The water between the veils on the benches is not drawn (each
+      curtain lands in its plunge disc and the next leaves the bench's edge 24 m out); no stream runs in the gorge's col. (3) The dome's glass
+      is the walls' material darkened by vertex colour east of x 20 (`89x`, `?glass=0`) over the lateral obsidian-pancake strata; the
+      `rock.rhyolite.flowbanded` texture is still owed (`core/materials/PROMPTS-NEEDED.md`, Firebliss's entry). (4) The spans, ladders and
+      winch are host-drawn tubes and boxes in flat colours, no texture and no sway in the wind. (5) The main view holds the lip, the
+      carvings, the Silkhead's face and its veils and the trench, not the spans: from inside the cleft the col (600 m below the rims) hides
+      the drop, so the spans have their own view. (6) `45` wraps `KSTACKS.at` with a reject by the lowest bed (`?reject=0` leaves it): these
+      bodies are kilometres across and the layout spent minutes asking every bed; the same reject in `core/terrain/37-core-stacks.js` would
+      speed every big-body page (a core candidate, not done here). (7) The page is the kit's heaviest (a 3.4 km square, 4.8 km of wall):
+      on SwiftShader under load it takes 10-15 minutes to build.
+
 - [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
       gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
       day (dawn), `#hour=13` is about the old fixed light. It read the hyperjungle's dome in place (all six pages); now the

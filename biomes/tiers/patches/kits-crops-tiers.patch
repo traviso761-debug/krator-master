@@ -1,0 +1,70 @@
+diff --git a/kits/crops/src/10-crop-core.js b/kits/crops/src/10-crop-core.js
+index 79651cfcd..4b60fd9eb 100644
+--- a/kits/crops/src/10-crop-core.js
++++ b/kits/crops/src/10-crop-core.js
+@@ -85,5 +85,12 @@ CROPS.BIOMES = {
+   cut:         {atm: 2, zones: {lake: {warmth: [5, 5], arid: [4, 4], wet: true}, floor: {warmth: [5, 5], arid: [1, 2], salt: true}, walls: {warmth: [3, 4], arid: [2, 3], atm: 1}, lip: {warmth: [1, 2], arid: [1, 2], atm: 1}}},
+   /* the abyssal savannah (biomes/abyssal-savannah/PLAN.md): the eastern abyss's rim slope (Aw, BSh, 1.6-1.75 atm) and its floor's savanna belt
+      (XV, 2 atm, ~1,050 mm, +34 C); the parkland, the bench's steppe, the gullies' gallery and the bench's pan */
++  /* the Tiers (biomes/tiers/PLAN.md section 4, "Crops"; 2026-11-16): the Coyote Kingdom's stair. lake: the lake tread (1.15-2.2 km, Csa and
++     Cfa, 455-1,290 mm, 1.36-1.4 atm: dense); shallows: its bays (the stair lily's); steps-mid: the Red and White Steps (2.2-3.7 km, Csb, Dsb,
++     BSk); tread: the great tread (3.7-4.7 km, Dsc, BWk, 31-300 mm, 0.9 atm); steps-high: the Grey Steps toward the crown (thin over ~6 km);
++     floor: the hot trench under the stair (Korona's, Am, dense) */
++  tiers:       {atm: 1, zones: {lake: {warmth: [3, 3], arid: [1, 2], atm: 2}, shallows: {warmth: [3, 3], arid: [2, 3], wet: true, atm: 2},
++    'steps-mid': {warmth: [2, 2], arid: [1, 1]}, tread: {warmth: [1, 1], arid: [0, 0]}, 'steps-high': {warmth: [1, 1], arid: [0, 0], atm: 0},
++    floor: {warmth: [4, 4], arid: [3, 3], atm: 2}}},
+   'abyssal-savannah': {atm: 2, zones: {parkland: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 4], arid: [0, 1]}, gallery: {warmth: [4, 4], arid: [2, 3], wet: true}, pan: {warmth: [4, 4], arid: [0, 1], salt: true}}}
+ };
+diff --git a/kits/crops/src/20-crop-records.js b/kits/crops/src/20-crop-records.js
+index 9f041f6ee..d4fa453b8 100644
+--- a/kits/crops/src/20-crop-records.js
++++ b/kits/crops/src/20-crop-records.js
+@@ -118,7 +118,7 @@ R('bell-date', 'Bell date', 'dried-fruit', [4, 4], [1, 3], {form: 'tree', card:
+ R('clove', 'Clove', 'spice', [4, 4], [3, 4], {form: 'tree', card: 'card.croptree.glossy', src: 'ringisles', home: ['ringisles'], stores: ['dried']});
+ R('juniper', 'Juniper berries', 'spice', [1, 3], [0, 2], {form: 'tree', card: 'card.juniper', src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
+ R('umbel-seed', 'Umbel seed', 'spice', [2, 3], [0, 2], {src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
+-R('saffron', 'Vale saffron', 'spice', [2, 3], [1, 2], {also: ['dye'], card: 'card.crop.saffron', colour: 'saffron', home: ['xanadu'], stores: ['dried']});
++R('saffron', 'Vale saffron', 'spice', [2, 3], [1, 2], {also: ['dye'], card: 'card.crop.saffron', colour: 'saffron', home: ['xanadu', 'tiers'], stores: ['dried']});   /* the Tiers: the Coyote Kingdom's dear crop on its terraces (biomes/tiers/PLAN.md section 4) */
+ R('herbs', 'Herbs (lemongrass, ginger, basil)', 'herb', [3, 4], [2, 3], {card: 'card.crop', src: 'ringisles', home: ['ringisles'], stores: ['fresh', 'dried']});
+ R('sugar-cane', 'Sugar cane', 'sweetener', [4, 4], [1, 3], {card: 'card.crop', src: 'ringisles', home: ['ringisles'], stores: ['pressed']});
+ R('coffee', 'Coffee', 'beverage', [3, 4], [3, 4], {form: 'shrub', card: 'card.croptree.glossy', src: 'ringisles', home: ['ringisles'], stores: ['dried']});
+@@ -165,4 +165,6 @@ R('saxaul', 'Saxaul wood', 'fuel', [3, 5], [0, 1], {form: 'tree', src: 'sedesert
+ R('brine-lamp', 'Brine lamp', 'medicine', [4, 5], [0, 1], {needs: 'salt', card: 'card.brinelamp', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Krator's: the crystal-crusted leaf, steeped, is a salt-and-bitters remedy for heat sickness"});
+ /* ---- the steppe fringe (biomes/sedesert/PLAN-STEPPE.md; drawn on its station 3) */
+ R('myrrh', 'Myrrh', 'medicine', [4, 5], [0, 2], {form: 'tree', also: ['fuel'], src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Commiphora: the resin bled from the peeling bark; a wound wash and an incense, the merchant houses' second trade"});
+-
++/* ---- the Tiers' natives (biomes/tiers/PLAN.md section 4, 2026-11-16): the Kingdom's own; homeOnly, so no other world's picks move */
++R('shelfoak-mast', 'Shelf oak mast', 'nut', [2, 3], [1, 2], {homeOnly: true, form: 'tree', src: 'tiers', home: ['tiers'], stores: ['ground', 'dried'], note: 'the shelf oak\'s acorns, leached and ground: the lake tread\'s woods\' meal in a lean year'});
++R('stairlily-rhizome', 'Stair lily rhizome', 'tuber', [3, 3], [2, 3], {homeOnly: true, water: 'aquatic', src: 'tiers', home: ['tiers'], stores: ['fresh', 'dried'], note: 'dug from the sheltered bays\' mud, the oldest pads\' roots: boiled, or dried and ground'});
+diff --git a/kits/crops/src/22-crop-material.js b/kits/crops/src/22-crop-material.js
+index 78513e223..35a6d0f83 100644
+--- a/kits/crops/src/22-crop-material.js
++++ b/kits/crops/src/22-crop-material.js
+@@ -114,3 +114,8 @@ R('wallhemp', 'Wallhemp', 'cordage', [1, 2], [1, 3], {also: ['spinning', 'oil'],
+ /* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26) */
+ R('rankgrass', 'Rankgrass', 'thatch', [4, 5], [0, 1], {needs: 'salt', form: 'grass', card: 'card.rankgrass', src: 'cut', home: ['cut'], note: 'a salt grass seeding in straight lines along the field of the warp; grazing on the flats, salt-tolerant thatch'});
+ R('circlelichen', 'Circle lichen', 'herb', [1, 2], [0, 4], {also: ['medicine', 'dye'], colour: 'orange', atm: [0, 2], form: 'lichen', src: 'cut', home: ['cut'], stores: ['dried'], note: 'perfect circles on the bare cut faces; scraped and steeped as an antiseptic wash (as Usnea); boiled, the orange circles dye wool yellow to orange (as Xanthoria)'});
++/* ---- the Tiers' natives (biomes/tiers/PLAN.md section 4, 2026-11-16): homeOnly, the Kingdom's own and its trade */
++R('steppalm-fibre', 'Step palm fibre', 'cordage', [3, 3], [1, 2], {homeOnly: true, also: ['thatch'], form: 'tree', src: 'tiers', home: ['tiers'], stores: ['dried'], note: 'the collar skirts\' fibre (each year\'s dead crown): rope, and the fronds for thatch'});
++R('bandlichen-orchil', 'Band lichen orchil', 'dye', [1, 3], [0, 2], {homeOnly: true, colour: 'purple', src: 'tiers', home: ['tiers'], note: 'the risers\' band lichen scraped from the beds and steeped in stale urine: the Kingdom\'s trade purple'});
++R('shelfoak-tannin', 'Shelf oak tannin', 'dye', [2, 3], [1, 2], {homeOnly: true, also: ['reagent'], colour: 'brown', form: 'tree', src: 'tiers', home: ['tiers'], stores: ['dried'], note: 'the grey bark\'s inner layer, boiled: a warm brown, and the tanners\' bark'});
++R('stepmoss-lime', 'Step moss lime', 'reagent', [2, 3], [1, 3], {homeOnly: true, src: 'tiers', home: ['tiers'], stores: ['dried'], note: 'the tufa the step moss lays down, burned: quicklime for mortar, tanning and the dyers\' mordant'});
+diff --git a/kits/crops/tests/test-crops.js b/kits/crops/tests/test-crops.js
+index e104fc316..9645c46e8 100644
+--- a/kits/crops/tests/test-crops.js
++++ b/kits/crops/tests/test-crops.js
+@@ -70,6 +70,14 @@ ok('the ember plum stands in for a medicine', C.isGroup(C.BY_ID['ember-plum'], '
+ ok('the rock bottle carries its hazard', C.BY_ID['rock-bottle'].hazard === 'poison', C.BY_ID.rimdew.hazard !== 'poison');
+ ok('the northern clans can make a plaid', C.canPlaid('nhighlands'), !C.canPlaid('sedesert'));
+ ok('copper and sulfur nodes give a desert its third colour', C.canPlaid('sedesert', { nodes: ['copper', 'sulfur'] }), !C.canPlaid('sedesert', { nodes: [] }));
++const plaid3 = cols => ['orange', 'purple', 'brown'].every(k => cols.includes(k));
++ok('the Tiers make a plaid from their own (saffron, the band lichen\'s orchil, the shelf oak\'s tannin)', C.canPlaid('tiers') && plaid3(C.palette('tiers').colours),
++  !plaid3(C.palette('tiers').colours.filter(k => k !== 'purple')));
++const strays = L => L.filter(c => c.home.indexOf('tiers') >= 0 && c.src === 'tiers' && Object.keys(C.BIOMES).some(b => b !== 'tiers' && C.forBiome(b).some(r => r.crop.id === c.id)));
++const roam = C.def('test-roaming-mast', 'Test mast (not homeOnly)', 'nut', [2, 3], [1, 2], {src: 'tiers', home: ['tiers']});
++const caught = strays(C.LIST).length > 0;
++C.LIST.splice(C.LIST.indexOf(roam), 1); delete C.BY_ID[roam.id];
++ok('the Tiers\' natives stay home (homeOnly: no other biome draws them)', strays(C.LIST).length === 0, caught);
+ ok('growing dyes widens a palette (irrigated indigo in the wadis)', C.palette('sedesert', { grow: true }).colours.length > C.palette('sedesert').colours.length, true);
+ ok('a mineral dye needs its node', C.palette('swlowlands', { nodes: ['iron'] }).sources.red.some(s => /terracotta/.test(s)), !C.palette('swlowlands', { nodes: [] }).sources.red.some(s => /falu/.test(s)));
+ 

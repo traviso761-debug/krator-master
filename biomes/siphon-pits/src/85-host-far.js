@@ -7,13 +7,13 @@ const FAR=(function(){
  if(new URLSearchParams(location.search).get('far')==='0'||typeof KFAR==='undefined')return null;
  const S0=TERR.R*1.1,ROUT=14000,SINK=18;
  const L=a=>a.map(v=>Math.pow(v/255,2.2)),mixC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
- const C={floor:L(SKEY==='terraces'?[132,132,96]:SKEY==='pitfloor'?[96,98,70]:[96,92,90]),terrace:L(SKEY==='terraces'?[150,142,110]:[110,104,100]),scree:L([118,112,108]),rock:L([80,76,76]),snow:L([228,232,238]),far:L([156,160,172])};
+ const AR=SKEY==='terraces'||SKEY==='polynya',C={lake:L([70,88,96]),floor:L(AR?[132,132,96]:SKEY==='pitfloor'?[96,98,70]:[96,92,90]),terrace:L(AR?[150,142,110]:[110,104,100]),scree:L([118,112,108]),rock:L([80,76,76]),snow:L([228,232,238]),far:L([156,160,172])};
  // the far colour by the height over the floor (the floor, the benches, the scree, the wall's gneiss, the snow from ~1.9 km up)
- const colr=(x,z,y,q)=>{const f0=floor0(x),u=y-f0,n1=clamp(KRAND.fbm(x*.002,.5,z*.002,2,414)*.6+KRAND.fbm(x*.011,.5,z*.011,2,415)*.6-.1,0,1);   /* two scales: the snow broken by rock ribs, not one sheet */let c=mixC(C.floor,C.terrace,smooth(80,300,u));
+ const colr=(x,z,y,q)=>{if(SKEY==='polynya'&&y<SITE.lake.level+.3)return mixC(C.lake,C.far,.4*smooth(4500,13000,q.r));const f0=floor0(x),u=y-f0,n1=clamp(KRAND.fbm(x*.002,.5,z*.002,2,414)*.6+KRAND.fbm(x*.011,.5,z*.011,2,415)*.6-.1,0,1);   /* two scales: the snow broken by rock ribs, not one sheet */let c=mixC(C.floor,C.terrace,smooth(80,300,u));
   c=mixC(c,C.scree,smooth(500,900,u));c=mixC(c,C.rock,smooth(900,1500,u)*(.5+.5*n1));c=mixC(c,C.snow,smooth(1900,2400,u)*smooth(.2,.6,n1));
   return mixC(c,C.far,.5*smooth(4500,13000,q.r));};
  const G=KFAR.grid({lines:KFAR.lines({cell:60,inner:S0+20,out:ROUT,grow:1.03}),dense:true,
-  h:(x,z)=>{if(Math.abs(x)<S0&&Math.abs(z)<S0)return terrainH(x,z)-SINK;return landH(x,z);},
+  h:(x,z)=>{if(Math.abs(x)<S0&&Math.abs(z)<S0)return terrainH(x,z)-SINK;const h=landH(x,z);return SKEY==='polynya'?Math.max(h,SITE.lake.level):h;},   /* station 14: the lake past the square, flat at its level (open water) */
   skip:(x0,z0,x1,z1)=>x0>-S0+100&&x1<S0-100&&z0>-S0+100&&z1<S0-100,   /* none under the ground's square */
   color:colr});
  const geo=KFAR.geometry(G),mat=new THREE.MeshLambertMaterial({vertexColors:true});mat.userData.farField=true;mat.customProgramCacheKey=()=>'siphon-far';

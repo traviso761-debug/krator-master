@@ -229,7 +229,7 @@ def tex_fragment(fams=('stone', 'ground', 'rock', 'sand')):
 
 def trades_fragment():
     """kits/islanders' census trades (src/68-is-trades.js IS_TRADES, read in place) as ISLE_TRADES: the sim's places carry
-    the trade their key works (src/40-isle-sim.js ISLE.tradeOf), without the kit's drawing bundle"""
+    the trade their key works (core/region/40-region-sim.js, ISLE.tradeOf), without the kit's drawing bundle"""
     s = read(os.path.join(ROOT, 'kits', 'islanders', 'src', '68-is-trades.js'))
     m = re.search(r'const IS_TRADES=(\[.*?\n\]);', s, re.S)
     if not m:
@@ -309,8 +309,8 @@ CITY_MAT = [os.path.join(ROOT, 'core', 'materials', 'record', f) for f in ('23-m
 CITY_EXPORT = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js', '10-core-export-scene.js')] + [os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')]   # KSTAGE: the stage section (light, fog, sky, the ground's look; standalone, needs only THREE)
 # core/simulation (P7b, PLAN.md section 9): every fragment, as Dhelv and Shade take it; the isle host is src/15 and 40-49
 CITY_SIM = [os.path.join(ROOT, 'core', 'simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
-CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js',
-                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js', '46-isle-stocks.js', '47-isle-trade.js', '47b-isle-build.js', '47c-isle-crime.js', '47f-isle-found.js', '47h-isle-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', '47n-isle-herders.js', '47m-isle-money.js', '47u-isle-unrest.js', '47r-isle-refugees.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js', 'core/region/00-region-core.js', '39-isle-region.js',
+                'core/region/40-region-sim.js', 'core/region/41-region-nav.js', 'core/region/42-region-people.js', 'core/region/43-region-items.js', 'core/region/44-region-economy.js', 'core/region/45-region-sim-checks.js', 'core/region/46-region-stocks.js', '47-isle-trade.js', 'core/region/47b-region-build.js', 'core/region/47c-region-crime.js', 'core/region/47f-region-found.js', 'core/region/47h-region-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', 'core/region/47n-region-herders.js', 'core/region/47m-region-money.js', 'core/region/47u-region-unrest.js', 'core/region/47r-region-refugees.js', 'core/region/48-region-week.js', 'core/region/49-region-govern.js', '50-isle-export.js']
 # the Construction kit (kits/construction, KCONS: a building site's gear) and core/city's build-up of a kit piece
 # (KCITY.constructMesh), read in place for the empty lots' works (60, 2026-11-04)
 CITY_CONSTRUCT = [os.path.join(ROOT, 'core', 'city', '54-city-host-construct.js'), os.path.join(ROOT, 'kits', 'construction', 'src', '10-cons-site.js')]
@@ -367,7 +367,9 @@ def city_page():
     data = raw_fragment() + dims_fragment() + trades_fragment() + site_fragment()
     core = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_CORE + CITY_SIM)
     mats = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_MAT + CITY_EXPORT) + packs
-    own = lambda L: ''.join('/* ---- settlements/isle-demo/src/%s ---- */%s%s%s' % (f, NL, read(os.path.join(HERE, 'src', f)), NL) for f in L)
+    # a name is this page's (src/); a path is read in place (core/region: the region host, lifted from src/40-49 in S0)
+    own = lambda L: ''.join('/* ---- %s ---- */%s%s%s' % (f if '/' in f else 'settlements/isle-demo/src/' + f, NL,
+                                                       read(os.path.join(ROOT, *f.split('/')) if '/' in f else os.path.join(HERE, 'src', f)), NL) for f in L)
     kc = bundles.kcity_bundle()
     cat, _ = bundles.cat_bundle(side)      # the towns' maps beside the page (isle-city.tex.brtowns.js)
     isk, _ = bundles.isk_bundle()

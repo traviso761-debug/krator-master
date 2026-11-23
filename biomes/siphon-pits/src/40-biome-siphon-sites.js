@@ -2,7 +2,7 @@
 // Each page is a 5.2 km ideal type (R 2600 m) of its station: it takes the model's numbers (SIPHON_STATIONS, the survey's records that build.py inlines
 // from stations/*/station.json: heights, pressure by the air law, the temperatures, rain, class, wind), not its pixels. Page metres: x east, z south,
 // the origin the station's point (its height is the record's base). Plain data: no THREE, no DOM; the stage (45) draws the land from these records.
-var SIPHON_SITES=(function(){const S=SIPHON_STATIONS,o=(k,lay)=>Object.assign({key:k,zone:{terraces:1,scarp:2,pitfloor:3,arete:4}[k]},S[k],{temp:{mean:S[k].mean,warm:S[k].warm,cold:S[k].cold,high:S[k].high,low:S[k].low}},lay);
+var SIPHON_SITES=(function(){const S=SIPHON_STATIONS,o=(k,lay)=>Object.assign({key:k,zone:{terraces:1,scarp:2,pitfloor:3,arete:4,polynya:14}[k]},S[k],{temp:{mean:S[k].mean,warm:S[k].warm,cold:S[k].cold,high:S[k].high,low:S[k].low}},lay);
  return{
  // STATION 1: the Ostrukh Terraces. The graben's floor at 2,157 m (level within 16 km on the model), falling gently east; the braided meltwater from the
  // Stalker glaciers running west to east through the middle on a cobble bed (KRELIEF.wadi's bars); loess terraces up both sides, the north-facing
@@ -44,12 +44,37 @@ var SIPHON_SITES=(function(){const S=SIPHON_STATIONS,o=(k,lay)=>Object.assign({k
   crest:[-640,640],stanchion:6,
   gantry:{x:-430,side:1},
   lairs:[[-260,1],[180,-1],[520,1],[-560,-1],[880,-1]],
-  vents:null})};})();
+  vents:null}),
+ // STATION 14 (Gemini's 5.1 showcase): Ostrukh-on-Water's geothermal shore, at the pin the owner moved onto Lake Ostrukh (1520,1465; 2026-11-16).
+ // The pin's cell at 1,925 m (the model's) borders the lake (1,850 m, the model's level), whose nearest water cell is 2 km east: the shore is drawn
+ // ~0.9 km east of the pin, where the two cells meet (PLAN.md section 8.3). The frame turned to the lake: d metres toward it (east), a metres along the
+ // shore (south). A loess bluff falls 75 m from the plain to a shingle beach, terraced (KRELIEF.terraces) and worked. The lake is OPEN at the winter
+ // dawn (the model's climate: cold month +4 degC, record low -4): the fault springs under the bay (the Tharn-foot fault) warm it and it steams in frost
+ // smoke; the only ice is a fringe in the shallows, where the water is under `shoreIce.depth` m and KTHERM's field under `shoreIce.open` degrees
+ // (the springs, the fault and the qanats' outflows keep leads in it). Qanat mouths in the bluff; hot springs on the beach; the village's edge
+ polynya:o('polynya',{sky:{px:1248,py:1135},snow:[3400,3900],soil:2,
+  toLake:[1,0],
+  shore:{d:900,amp:[70,30],beach:50,top:100,plain:.012},
+  terr:{rise:2.6,riser:.25,band:[6,68],field:55},
+  bed:{depth:14,reach:450,fault:{d:460,drop:6}},
+  bay:{a:60,d:450},   /* the warm water over the fault springs (not "warm": that is the record's warm month) */
+  shoreIce:{depth:.9,open:4,step:10},
+  vents:[[-200,450,42,350],[60,420,40,390],[300,480,34,330]],   /* a, d past the shore, degC at the vent, reach m */
+  springs:[[-430,20,9,42],[330,16,7,34]],   /* a, m inland of the waterline, r, degC: the fault's hot springs breaking out on the beach */
+  qanats:[[-640,360],[-70,340],[540,330]],   /* a, m inland of the waterline where the gallery daylights */
+  quay:{a:[-200,230],w:12,h:1.6},
+  granaries:[[-330,130,9],[-190,150,8],[420,140,9]],   /* a, m inland, r */
+  yard:{a:110,d:190,r:55},
+  edge:[[-1180,220],[-1320,300],[-1240,430],[-1420,470],[-1080,360],[1080,210],[1230,290],[1150,420],[1330,380]],   /* the village's edge: a, m inland */
+  lakeView:{a:-80,d:300,h:24},   /* on an upper tread of the bluff, 24 m up (the spec's terrace wall), looking east over the bay */
+  winterDay:-91,dawn:8.6,
+  vents_note:'the fault springs are 28-42 degC (the spec): under 4 to 14 m of fresh water at 2 degC'})};})();
 // THE TREE RULE (PLAN.md section 5): a station's cap on the trees it may stand (null: no cap); the counts the build keeps and verify asserts
-var SIPHON_TREECAP={terraces:null,scarp:0,pitfloor:250,arete:0};
+var SIPHON_TREECAP={terraces:null,scarp:0,pitfloor:250,arete:0,polynya:null};
 // THE SOUND: each station's sources as records for core/audio (not in core yet: data only, exported with the page), highrift's form
 var SIPHON_SOUND={
  terraces:[{id:'braids',kind:'stream',along:'braids',band:[300,3000]},{id:'wind',kind:'wind',band:[60,1500],gust:false}],
  scarp:[{id:'wind',kind:'wind',band:[60,2500],gust:true},{id:'rockfall',kind:'rattle',along:'ravine',band:[400,4000],when:'thaw'}],
  pitfloor:[{id:'geyser',kind:'geyser',source:'WATER.geyser'},{id:'mud',kind:'bubble',along:'mud',band:[60,400]},{id:'chimneys',kind:'drone',along:'trees',f:[8,30],note:'each woolly siphon a pipe: c / 2L for a 20-30 m open chimney, felt more than heard'}],
- arete:[{id:'gale',kind:'wind',band:[40,3000],gust:true},{id:'chains',kind:'clank',along:'stanchions',band:[800,5000],when:'gust'}]};
+ arete:[{id:'gale',kind:'wind',band:[40,3000],gust:true},{id:'chains',kind:'clank',along:'stanchions',band:[800,5000],when:'gust'}],
+ polynya:[{id:'ice',kind:'creak',along:'the ice\'s edge',band:[30,900],when:'dawn',note:'lake ice booming and creaking as the dawn warms it'},{id:'springs',kind:'bubble',along:'springs',band:[80,600]},{id:'qanats',kind:'stream',along:'qanats',band:[300,3000]},{id:'wind',kind:'wind',band:[60,1200],gust:false}]};

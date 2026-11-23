@@ -1,5 +1,5 @@
 // ================================================================= THEODIGA — the Dome on the Water: the drawing
-// Draws THEODOME.plan's records into buildDam's group (src/77-dam.js calls it when this target is on the page; without
+// Draws THEODOME.plan's records into buildDam's group (77-dam.js calls it; without
 // it the dam keeps its old low public dome). ctx: {gx,gz} the group's world offset, {H,SPAN,BOW,CREST} the dam's
 // numbers, zc the dam's arc, WL the reservoir level. Registers every record with core/tags before drawing it. Draws no
 // rng(): the dam's own draws (fins, tunnels, decay) are the same with the dome as without it.
@@ -7,6 +7,9 @@ THEODOME.draw=function(G,d,ctx){
  const dd=d>0,P=THEODOME.plan({seed:9270,d:d,dam:{H:ctx.H,SPAN:ctx.SPAN,BOW:ctx.BOW,CREST:ctx.CREST}});
  const skin=SHELL(d),conc=CONC(d),bandM=dd?MAT.verdigris:MAT.pipe,cx=P.cx,cz=P.cz,S=P.shell,DK=P.deck,DR=P.drum;
  const h=(a,b,c)=>KRAND.h3(a,b,c,P.seed);
+ /* THE DOME TODAY (theodiga-today only, ctx.today: settlements/theodiga src/8ay4-th-dome-today.js): the faith's pilgrims' stairs
+    up through the deck and the frame re-glazed but for the Tear. Without it the ruin is drawn as it was */
+ const TD=dd&&ctx.today?ctx.today:null;
  const polar=(r,a,y)=>[cx+r*Math.cos(a),y,cz+r*Math.sin(a)];
 
  // ---- core/tags: one record per placed thing, before anything is drawn ---------------------------------------
@@ -23,10 +26,11 @@ THEODOME.draw=function(G,d,ctx){
   for(const p of P.piers)part(p.id,'pier',W(p.x,0,p.z),{r:p.r1,h:p.top,tags:{role:p.ring,state:p.broken?'ruined':st}});
   for(const b of P.beams)part(b.id,'beam',W(cx,b.y,cz),{r:b.r,h:b.h});
   for(const r of P.rubble)T.child(B.id,{'class':'prop',kind:'rubble',key:r.id,at:W(r.x,r.on==='deck'?DK.y:P.wl,r.z),tags:{variant:r.kind}});}
+ const TDP=TD?TD.plan(P,ctx):null;   /* the stairs' and the glazing's records, under the Dome's */
 
  // ---- the deck, the piers and the ring beams: one concrete mesh ------------------------------------------------
  const CON=[];
- const deckHole=(u,v)=>THEODOME.deckGone(P,u*TAU,v*DK.r);
+ const deckHole=(u,v)=>THEODOME.deckGone(P,u*TAU,v*DK.r)||!!(TDP&&TDP.cut(Math.floor(u*72),Math.floor(v*12)));
  CON.push(gridSurface((u,v)=>polar(v*DK.r,u*TAU,DK.y),72,12,{uS:DK.r*TAU/8,vS:DK.r/8,hole:deckHole}));
  CON.push(gridSurface((u,v)=>polar(v*DK.r,u*TAU,DK.y-DK.t),72,12,{uS:DK.r*TAU/8,vS:DK.r/8,hole:deckHole}));
  CON.push(gridSurface((u,v)=>polar(DK.r,u*TAU,DK.y-DK.t+v*DK.t),72,1,{uS:DK.r*TAU/8,vS:1,hole:u=>THEODOME.deckGone(P,u*TAU,DK.r)}));
@@ -39,6 +43,7 @@ THEODOME.draw=function(G,d,ctx){
   for(const r of [b.r-b.dep/2,b.r+b.dep/2])CON.push(gridSurface((u,v)=>polar(r,u*TAU,b.y+v*b.h),120,1,{uS:b.r*TAU/8,vS:1,hole:gone}));
   for(const y of [b.y,b.y+b.h])CON.push(gridSurface((u,v)=>polar(b.r-b.dep/2+v*b.dep,u*TAU,y),120,1,{uS:b.r*TAU/8,vS:1,hole:gone}));}
  meshMerged(CON,conc,G);
+ if(TD)TD.deck(G,P,TDP,conc);
 
  // ---- the drum, the shell and the lantern: one skin mesh ------------------------------------------------------
  const SK=[];
@@ -57,6 +62,7 @@ THEODOME.draw=function(G,d,ctx){
  // the glazing: blue glass when intact; in the ruin the kit's dark void behind the empty frames (as the old public
  // dome's), open where the sector tore, so the gap reads as a hole in the dome and not as one more empty bay
  if(!dd)mesh(lathe({rFn:y=>Math.max(.5,THEODOME.shellR(P,y)-.8),H:S.top,nu:72,nv:24}),MAT.glass,G,cx,S.y,cz);
+ else if(TD)TD.glaze(G,P,NU,NV);
  else mesh(lathe({rFn:y=>Math.max(.5,THEODOME.shellR(P,y)-1.2),H:S.top,nu:NU,nv:NV,
   hole:(u,y)=>THEODOME.shellGone(P,u*TAU,y,false)}),MAT.dark,G,cx,S.y,cz);
 
@@ -74,16 +80,18 @@ THEODOME.draw=function(G,d,ctx){
  // ---- the hall: the crest's old fluted public dome, now standing on the deck under the great one -------------
  mesh(lathe({rFn:y=>44*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,flutes:24,amp:.06,sharp:2,nu:96,nv:14,
   hole:(u,y)=>Math.cos(u*TAU*24)<.3&&y>3&&y<22}),skin,G,cx,DK.y,cz);
- mesh(lathe({rFn:y=>(dd?40:42)*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),dd?MAT.dark:MAT.glass,G,cx,DK.y,cz);
+ if(TD)TD.glazeHall(G,P);
+ else mesh(lathe({rFn:y=>(dd?40:42)*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),dd?MAT.dark:MAT.glass,G,cx,DK.y,cz);
 
  // ---- what fell ----------------------------------------------------------------------------------------------
- // the mud's height is read off buildDam's own silt surface (src/77-dam.js, the reservoir), so a piece lies on it
- const mudY=(x,z)=>{const u=x/(ctx.SPAN+40)+.5,v=clamp((z+700)/(700+ctx.zc(x)-2),0,1);return ctx.WL-6+30*fbm(u*5,v*5,2500,2)*v*v;};
- for(const r of P.rubble){const y=r.on==='deck'?DK.y:mudY(r.x,r.z),s=r.size;
+ // on the deck the pieces lie flat; in the lake a rib stands tilted out of the water from the bed, its foot 4 m under
+ for(const r of P.rubble){const y=r.on==='deck'?DK.y:ctx.WL,s=r.size;
+  if(r.on==='lake'){kput('postR',[r.x,y-4,r.z],new THREE.Quaternion().setFromEuler(new THREE.Euler(r.tilt,r.ry,0,'YXZ')),s,null);continue;}
   if(r.kind==='rib')kput('postR',[r.x,y+1,r.z],qEuler(Math.PI/2+r.tilt*.3,r.ry,0),s,null);
   else if(r.kind==='slab')kput(BOXC(d),[r.x,y+s[1]*.3,r.z],qEuler(r.tilt,r.ry,r.tilt*.6),s,null);
   else kput('boxR',[r.x,y+.5,r.z],qEuler(r.tilt*1.4,r.ry,r.tilt),s,null);}
 
+ if(TD)TD.stairs(G,P,TDP);
  REGISTER({name:'Theodiga — the Dome on the Water ('+STATE(d)+')',x:cx,z:cz,r:DK.r+6,y:DK.y-4,h:P.top-DK.y+8});
  REGISTER({name:'Theodiga — the dome\'s piers',x:cx,z:cz,r:DK.r,y:0,h:DK.y-DK.t});
  return P;};

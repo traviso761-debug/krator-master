@@ -2,7 +2,7 @@
 
 - [ ] **The beech's card is not a beech** (2026-11-15). `card.broadleaf` is a jungle rosette of big monstera-like leaves; the combed beech
       (small toothed Nothofagus leaves) draws it whole since 2026-11-15 (it was cut into ninths). `card.beech.southern` is owed
-      (`core/materials/PROMPTS-NEEDED.md` section 62): a sheet of nine sprays to hold by their stems, as the fir's needles are.
+      (`core/materials/PROMPTS-NEEDED.md` section 64): a sheet of nine sprays to hold by their stems, as the fir's needles are.
 - [ ] **The laurel's and the epiphyte gardens' crowns are cut into cells and centred on their twigs** (2026-11-15). The fir's defect
       (its sprigs 0.25 m median off the rod, fixed with `stems`) is theirs too: `tools/textures/check_cells.py` reports `NO STEM laurel`
       and `NO STEM epi` (in its baseline as known). Measure their sprigs' stems into `card-bases.json`, `check_cells.py --fix`, re-pack.

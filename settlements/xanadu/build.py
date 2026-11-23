@@ -150,17 +150,24 @@ CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
 CORE_WATER_EXT = ['56-core-water-breakup.js']   # the breakup (core/water ext/56), on by default since 2026-11-09
-TARGET_FILES = {'xanadu': [(ATMOS_DIR, CORE_ATMOS), (WATER_DIR, CORE_WATER), (os.path.join(WATER_DIR, 'ext'), CORE_WATER_EXT)]}
+TARGET_FILES = {'xanadu': [(ATMOS_DIR, CORE_ATMOS), (WATER_DIR, CORE_WATER), (os.path.join(WATER_DIR, 'ext'), CORE_WATER_EXT)],
+                'scrap': [(ATMOS_DIR, CORE_ATMOS), (WATER_DIR, CORE_WATER), (os.path.join(WATER_DIR, 'ext'), CORE_WATER_EXT),
+                          (os.path.join(TARGETS, 'xanadu'), ['90-xa-still.js'])]}   # the scrap sheet's still water, read in place
 TARGET_OUT = {
     'erewhon': 'erewhon.html',          # the city of Erewhon, Pearl of Xanadu
     'xanadu': 'xanadu.html',            # the whole kit in rows by family
+    'scrap': 'xanadu-scrap.html',       # Scrap Xanadu (kits/xanadu/PLAN-SCRAP.md): the reclaimed set's sheet
 }
+# the kit files a target takes when not all of them (kxa.FILES): the scrap sheet shows the opt-in scrap package on the
+# kit's foundation alone (86b-xa-plants: the plant shim xnTree routes through)
+TARGET_KIT = {'scrap': kxa.FOUNDATION + ['86b-xa-plants.js'] + kxa.SCRAP}
 
 # --kit <folder>: build a vassal kit written on the Xanadu kit's contract (XA.def on VERN.def, the xn* helpers; kits/qiblai,
 # its PLAN.md section 6) on this build's page, with no copy of it, as settlements/iziz/build.py --kit builds Pylon and Talia.
 # The kit folder holds src/ (its own fragments, merged into the one sorted order with this build's; a name that clashes stops
 # the build), targets/<t>/ (rows and views, as here) and kit.json: {"targets": {"kit": "qiblai.html"}, "deterministic":
-# [...], "external": ["repo/relative/fragment.js"], "core": {"kit": ["mask"]}, "files": {"kit": [["core/water", [...]]]}}
+# [...], "external": ["repo/relative/fragment.js"], "externalDirs": ["kits/x/src"], "scoped": [closures], "packFrom": "kits/x",
+# "core": {"kit": ["mask"]}, "files": {"kit": [["core/water", [...]]]}}
 # ("external" fragments are read in place by their own names; "core" and "files" are TARGET_CORE and TARGET_FILES for the
 # kit's targets). Its pages and manifests go to the kit's dist/ and folder; its KNOWN_ISSUES.md is the one printed. The
 # kit's build.py calls this. Without --kit nothing below changes: Xanadu's own pages come out byte-identical.
@@ -207,6 +214,7 @@ DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | set(CORE_WATER_EXT) | {'90-
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-xanadu-tags.js', '89-xa-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 DETERMINISTIC |= set(DOOR_FILES) | {'71c-xa-openings.js', '90-xa-doors.js', '89y-xa-interiors.js'}   # core/door, the openings (69e5, 71c), the leaves' hand-over: no rnd()
 DETERMINISTIC |= {'78a-xa-pattern-data.js', '78b-xa-pattern.js', '78c-xa-dome-plan.js', '78d-xa-dome-in.js'}   # the Pleasure Dome's pattern system, plan and interior: drawn inside buildXaPleasureDome's reseed (78-xa-palace.js)
+DETERMINISTIC |= {'87s-xs-mat.js', '87t-xs-helpers.js'}   # Scrap Xanadu's items and helpers: no rnd() outside its builders
 if KIT:
     DETERMINISTIC |= set(KIT.get('deterministic', [])) | {KIT_MATLIB_PACK}
 
@@ -221,7 +229,8 @@ SEED_COLLISION_EXCEPTIONS = set()
 # reseed rule does not apply either. Matched by filename prefix.
 SCOPED_PREFIXES = ('86-bio-',)
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL or f in CORE_HOST or (KIT is not None and f == KIT_FURN_BUNDLE)   # core/host: each file one IIFE (KHOST); the generated bundles
+    return (f.startswith(SCOPED_PREFIXES) or f in VIRTUAL or f in CORE_HOST   # core/host: each file one IIFE (KHOST); the generated bundle
+            or (KIT is not None and (f == KIT_FURN_BUNDLE or f in KIT.get('scoped', []))))   # a kit's furniture bundle and its own closures (kit.json "scoped")
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -319,9 +328,10 @@ def build_one(target, do_checks):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    src.update({f: p for f, p in kxa.paths().items() if f not in src})   # the Xanadu kit (a src/ copy would win: none)
-    src.update({f: p for f, p in kxa.paths(kxa.CITADEL).items() if f not in src})   # the citadel's vocabulary and buildings (kits/xanadu/xanadu.py CITADEL)
-    src.update({f: p for f, p in kxa.paths(['78o-xa-golden-way.js']).items() if f not in src})   # the Golden Way with it (named here, not in xanadu.py: Longsong reads that)
+    src.update({f: p for f, p in kxa.paths(TARGET_KIT.get(target)).items() if f not in src})   # the Xanadu kit (a src/ copy would win: none)
+    if KIT is None and target not in TARGET_KIT:   # the scrap sheet takes the foundation and the scrap package alone; a --kit page (Qiblai) no citadel
+        src.update({f: p for f, p in kxa.paths(kxa.CITADEL).items() if f not in src})   # the citadel's vocabulary and buildings (kits/xanadu/xanadu.py CITADEL)
+        src.update({f: p for f, p in kxa.paths(['78o-xa-golden-way.js']).items() if f not in src})   # the Golden Way with it (named here, not in xanadu.py: Longsong reads that)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
@@ -335,7 +345,10 @@ def build_one(target, do_checks):
         clash = set(src) & set(kf)
         if clash:
             sys.exit('kit %s shadows a fragment of settlements/xanadu: %s' % (KIT['dir'], ', '.join(sorted(clash))))
-        for rel in KIT.get('external', []):   # fragments read in place from elsewhere in the repo (no copy)
+        ext = list(KIT.get('external', []))
+        for d in KIT.get('externalDirs', []):   # every numbered fragment of a folder read in place (another kit's src/)
+            ext += sorted(d + '/' + f for f in os.listdir(os.path.join(ROOT, *d.split('/'))) if f[0].isdigit() and f.endswith('.js'))
+        for rel in ext:   # fragments read in place from elsewhere in the repo (no copy)
             f = os.path.basename(rel)
             if f in src or f in kf:
                 sys.exit('kit %s: external fragment %s clashes with a fragment already in the order' % (KIT['dir'], f))
@@ -351,7 +364,11 @@ def build_one(target, do_checks):
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
     paths = dict(src); paths.update(tgt)
-    vb = virtual_bodies()
+    # a --kit target with interiors of its own (kit.json "interiors": the kit's furniture bundle and interiors core, 88z below)
+    # does not take Xanadu's (69d) too: two KratorFurniture bundles on one page put the Qiblai city over its cap. Xanadu's glue
+    # (89y, which 99-start.js reads) stays and runs on the kit's bundle, which comes first in the order
+    own_ix = bool(KIT and target in KIT.get('interiors', []))
+    vb = {} if own_ix else virtual_bodies()
     order = sorted(list(paths) + list(vb))
 
     bodies = dict(vb)
@@ -369,19 +386,27 @@ def build_one(target, do_checks):
     order = sorted(order + [MATLIB_PACK])
     # a kit with library families of its own (kit.json "pack": its name; its materials.json packed into its tex/ by
     # tools/textures/pack.py): KMAT.pack('<name>') inlined here, bound by the kit's own fragment (KMAT.bindMat), as Iziz's --kit
-    if KIT and KIT.get('pack') and os.path.isfile(os.path.join(KIT['dir'], 'tex', 'pack.json')):
-        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(KIT['dir'], KIT['pack'])
+    _pd = os.path.join(ROOT, *KIT['packFrom'].split('/')) if KIT and KIT.get('packFrom') else (KIT['dir'] if KIT else None)   # "packFrom": a kit's pack another folder's build takes (the city of Qiblai takes kits/qiblai's)
+    # kit.json "sidePacks": true puts the kit's pack, the vendored biome's and the furniture's detail maps beside the page too
+    # (xanadu.tex.<key>.js; settlements/lightwall, 2026-11-16: its page near the 16 MB cap). Absent, they stay inline as before
+    _sp = side if KIT and KIT.get('sidePacks') else None
+    if KIT and KIT.get('pack') and os.path.isfile(os.path.join(_pd, 'tex', 'pack.json')):
+        # kit.json "packSide": true writes the kit's pack beside the page too (<page>.tex.<pack>.js, as Xanadu's own), so a
+        # page near its size cap keeps its code inline and its images apart (the city of Qiblai, 2026-11-16: 7.5 MB of 15)
+        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(_pd, KIT['pack'], side=side if KIT.get('packSide') else _sp)
         order = sorted(order + [KIT_MATLIB_PACK])
     if KIT and target in KIT.get('interiors', []):   # a kit target with interiors: the furniture bundle and the interiors core
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
         import furniture_bundle, kit_bundle
         # kit.json "furnitureTex": true gives every piece the library's detail maps (KF_TEX, krator-furniture-detail.js)
-        bodies[KIT_FURN_BUNDLE] = furniture_bundle.bundle(KIT.get('furniture'), tex=bool(KIT.get('furnitureTex'))) + \
+        bodies[KIT_FURN_BUNDLE] = furniture_bundle.bundle(KIT.get('furniture'), tex=bool(KIT.get('furnitureTex')), side=_sp) + \
             kit_bundle.bundle(KIT.get('interiorSets', []))
         order = sorted(order + [KIT_FURN_BUNDLE])
     if any(f.startswith('86-bio-') for f in order):   # the vendored xanadu biome: its library pack, before the biome code
-        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu')
+        # under its own key (2026-11-12): as 'xanadu' the building kit's pack (88x, after it) replaced it whole (KMAT.pack
+        # sets, it does not merge), so its ground sets never reached the page. Erewhon's ground reads it (85-er-paint, 90a)
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu-bio', side=_sp if KIT else None)
         order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:

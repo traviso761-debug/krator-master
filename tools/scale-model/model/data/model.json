@@ -173,6 +173,10 @@
    }
   },
   {
+   "key": "landforms",
+   "file": "landforms.json"
+  },
+  {
    "key": "springs",
    "file": "springs.json"
   },
