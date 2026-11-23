@@ -83,6 +83,12 @@ TOWN_JS = r"""
  {const LK=typeof LW_LAKE!=='undefined'?LW_LAKE:null,wet=(x,z)=>!!(LK&&LK.wetAt&&LK.wetAt(x,z)),out=[0,LW.SHORE+400],bench=[0,LW.SHORE-40],h=LK?WATER.heightAt(out[0],out[1],0):null;
   R.push({name:'lake-water',ok:!!LK&&!!LK.bed&&wet(...out)&&!wet(...bench)&&h!=null&&Math.abs(h-LW.LAKE)<1,
    detail:LK?('level '+LW.LAKE+'; heightAt out on the lake '+(h==null?'none':h.toFixed(2))+'; wet out on the lake '+wet(...out)+', on the bench '+wet(...bench)+'; shore grid '+(LK.bed&&LK.bed.nx)+' x '+(LK.bed&&LK.bed.nz)):'no core/water lake'});}
+ /* the foot street: level with the first band's floor before every front at the wall's foot (the owner, 2026-11-22), from the
+    face out to 6 m, and no higher than the floor for 20 m out (the street never rises in front of a door) */
+ {const F0=LW_WALL.filter(s=>s.band===0),hi=[],lo=[];for(const s of F0){const B=TG.gz.BOX[s.key];for(const dz of [.5,2,4,6]){const g=terrainH(s.x,s.z+B.out+dz);if(g>s.y+.05)hi.push(s.id);if(g<s.y-.3)lo.push(s.id);}
+   for(let dz=6;dz<=20;dz+=2)if(terrainH(s.x,s.z+B.out+dz)>s.y+.05)hi.push(s.id);}
+  const uniq=a=>[...new Set(a)];
+  R.push({name:'wall-foot',ok:F0.length>50&&!hi.length&&!lo.length,detail:F0.length+' fronts at the foot; the street above the floor before '+uniq(hi).length+(hi.length?' ('+uniq(hi).slice(0,4).join(', ')+')':'')+', below it before '+uniq(lo).length+(lo.length?' ('+uniq(lo).slice(0,4).join(', ')+')':'')});}
  const bsSP=(typeof LW_PLACE!=='undefined'?LW_PLACE:[]).filter(p=>p.kind!=='quay'&&VERN.defs[p.key]),bsFlights=bsSP.filter(p=>p.stair);
  const bsDoorH=p=>{const D=VERN.defs[p.key],n=D.d/2+.15+.7;return p.o.y-terrainH(p.x+Math.sin(p.ry)*n,p.z+Math.cos(p.ry)*n);};
  const bsOwed=bsSP.filter(p=>!p.stair&&bsDoorH(p)>=.3),bsNoPod=bsSP.filter(p=>p.o.y-lwPodiumLo(p,VERN.defs[p.key])>.25&&!p.podium);
