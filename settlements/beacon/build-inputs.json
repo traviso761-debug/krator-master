@@ -241,7 +241,7 @@
     "kits/xanadu/src/79-xa-guild.js": "28c5a5aa3c61afa493614ea45771b8953e7544ff08e740a0b19efe02634aafaa",
     "kits/xanadu/src/80-xa-military.js": "8cad18b1d8e90dc80722ab681b3cbc76d7d202648d413274f0bb8115fe4f42d4",
     "kits/xanadu/src/80f-xa-fort-data.js": "1ca03a433cd951070d07aeccb7147e160e17ee1d192cb2521b6ff8a3190dae04",
-    "kits/xanadu/src/80g-xa-fort.js": "51d6f839b1788ae348cb76643587e0dd1d31d47b4e6802353848dcbc32471f67",
+    "kits/xanadu/src/80g-xa-fort.js": "05a09aca45492f04c96951d8f344ea4b84c7bf239c08e80b08a52dd55833376b",
     "kits/xanadu/src/81-xa-public.js": "4097666e9e26d85cb1dcf20a5e2762e59c1401d2351c6428e88759fe06a2ed9b",
     "kits/xanadu/src/82-xa-hill.js": "f9c22d7ecbf4f7be22691f7ebf6a54944c430ed0c3583a56bdc9101e918799f8",
     "kits/xanadu/src/83-xa-turk.js": "8f6d5bfa2ad54116b10b16d2d461003563e6e0813990396636ddf4d1315d8306",
@@ -256,7 +256,7 @@
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/xanadu.py": "6e7562ab022acc1e2aeadfa55a0222b7ed8a4994a4e70ff5e1982ddce617cf46",
-    "settlements/beacon/KNOWN_ISSUES.md": "e7729095528c6399198fde9ab42a3008ebe0bc3939252de94bbac5be6be40c25",
+    "settlements/beacon/KNOWN_ISSUES.md": "9820ea879c70fe07664ce84796d9d44fea62bd4aa374d28dd8cb0fd6362654a4",
     "settlements/beacon/PORT.md": "ae1fc391859c86b262ce4d223ae60ef9f6fa6751afa46172b8c34ad9ca4b4017",
     "settlements/beacon/build.py": "1487fbae9756dcfcc0b8c1703b15b8c1b3c5750eb72f150f5eaf3ea06398dd54",
     "settlements/beacon/gen/69wb-bc-ground.js": "9547aa772904e94235a49290ec9cc85ee557fe9235f636d8980389ee045035b9",
@@ -268,7 +268,7 @@
     "settlements/beacon/targets/house/89z-rows.js": "affcac8c6e7d404d5d6ad6906846f1bef9d7c668dbc161832f6d492be084eef9",
     "settlements/beacon/targets/house/89zs-bc-site.js": "8391e3470e59d3fcb36c09c47a06322a33b1bcd1627fb26702edf6903e85bdb9",
     "settlements/beacon/targets/house/90q-bc-world.js": "b42255b68c9e2f91f20ee75a35690ddb40ff0e605c8fd10593335c4a2b07d549",
-    "settlements/beacon/targets/house/90r-bc-house.js": "40f4cbd18a4c7e9e516630dff47077d3ab4a33106f5b6b7585ed8e563ea8e839",
+    "settlements/beacon/targets/house/90r-bc-house.js": "203f9549bfdd71b5ad35019677cf50f5374796fccda86defc40ee30f7102084f",
     "settlements/beacon/targets/house/90s-bc-grounds.js": "24addc4cf0e20d40661fadd952626375c9bdd1f8fbbd1cd2f0ea187f588177ed",
     "settlements/beacon/targets/house/91z-views.js": "4c523d3f1cfa81fbcf4f06a8009e1aa0da4f361e54ba5344ebd18b39e5abc2cf",
     "settlements/xanadu/PORT.md": "6451aaac798d97eca5394d312cf25c25c7b066e3ef439960827a075ba186ab99",
@@ -489,15 +489,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/beacon/build-manifest-house.json": "55f82864db6509131c4c1dea710915a9947b5a68fcdbe034b36c6411576bb1dc",
-    "settlements/beacon/dist/beacon.html": "352e114a30cef14ab0c04ea09b0c162834b322033fd27751552129ca44fa6d06",
+    "settlements/beacon/build-manifest-house.json": "82a639541ff5ed2a5124cfdbbfd122b5e3c67474184dab8077a7d7be906d89a5",
+    "settlements/beacon/dist/beacon.html": "481d7ff0c1c2280e8af04288ea68f94225ccc5cd4d59d3196e4b1094a6568ab9",
     "settlements/beacon/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "settlements/beacon/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/beacon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/beacon/build-manifest-house.json": "119a17518468bef10d79513931ad662f60993000010edfb9742540f0f2ec1ea7",
-    "settlements/beacon/dist/beacon.html": "352e114a30cef14ab0c04ea09b0c162834b322033fd27751552129ca44fa6d06",
+    "settlements/beacon/build-manifest-house.json": "80fd06a1ba3f5d114ae04680d904b3f3c65fe7bb314d88ed0bc77eb07cad4d25",
+    "settlements/beacon/dist/beacon.html": "481d7ff0c1c2280e8af04288ea68f94225ccc5cd4d59d3196e4b1094a6568ab9",
     "settlements/beacon/dist/xanadu.tex.qiblai.js": "31374323647466f5f1977771cb8ef28d561e19c7b87bf62359247faa1d783dcf",
     "settlements/beacon/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/beacon/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"

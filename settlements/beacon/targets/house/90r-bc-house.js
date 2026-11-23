@@ -1,9 +1,9 @@
 // ================================================================= THE BEACON - the build: the house and the fort on their levels (the build's step 1)
 // Everything is drawn from the layout (src/30-bc-layout.js as 89b0: BEACON_LAYOUT), on the site's levels (89zs: BC):
 //   - the Sultan's watch fort (kits/xanadu 80g xa_fort_watch, read in place) on the knoll's crown, turned half round so its gate
-//     faces north to the order, its keep's place on the lamp (0,0); the keep drawn as the LAMP PLINTH by a shim on 80g's xfKeep
-//     (bcPlinth: the keep's footing, three white storeys, the Chapel of the Beacon in the gold spoke's yellow with its gilt
-//     corners and finial, the lamp's ring and yoke on the roof) until 80g takes beacon:'ancient' (KNOWN_ISSUES.md);
+//     faces north to the order, its keep's place on the lamp (0,0), placed with beacon:'ancient': 80g draws the keep as the LAMP
+//     PLINTH (the keep's footing, three white storeys, the Chapel of the Beacon in yellow with its gilt corners and finial, the
+//     lamp's ring and yoke on the roof) and records the lamp's centre in window._xaBeacons;
 //   - the Yellow Monastery: the Qiblai kit's great monastery in the gold dress (qb_monastery, o.v 2), its gate south to the lamp;
 //   - the order's other buildings (bc_block: a stack per layout part, its storeys, windows, door, parapet roof), the precinct wall
 //     and Gyantse's two walls (bc_wall: 80g's xfCurtain), the Lamp Stair, the courts and the kora garden, the Chorten of the
@@ -17,27 +17,6 @@ const BC_GRP=new THREE.Group();BC_GRP.name='The Beacon';scene.add(BC_GRP);
 const bcPart=id=>BCL.parts.find(p=>p.id===id);
 const bcMid=b=>[(b[2]+b[3])/2,(b[0]+b[1])/2];   /* a layout box's middle on the page: [x (v), z (u)] */
 const XTAG_BC=(type,more)=>Object.assign({type:[type],wealth:'civic',lit:true},more||{});
-// ---------------------------------------------------------------- the plinth: the keep's place of the watch fort (a shim on 80g's xfKeep)
-let BC_PLINTH=false;const bcKeep0=xfKeep;
-xfKeep=function(b,C,o){return BC_PLINTH&&!(o&&o.ruined)?bcPlinth(b,C,o):bcKeep0(b,C,o);};
-function bcPlinth(b,C,o){const x=b.at[0],z=b.at[1],w=b.w,d=b.d,P=BCD.plinth,M=BCD.mount,lit=xLit()?'lit':'glass',trim=xC(xPick(XPAL.trim));
- const gold=xC(BC_SP.wall),band=xC(BC_SP.band),gilt=xC(xPick(XPAL.gold));
- xnWall(x,0,z,w+1.2,1.2,d+1.2,0,C.stone,'dressed');
- const hs=[P.storeys[0]-1.2].concat(P.storeys.slice(1)),S=xnStack(x,1.2,z,w,d,0,hs,C.wash,'wash');
- let yy=1.2;for(let k=0;k<hs.length;k++){const f=Math.pow(.96,k),n=3;
-  for(let i=0;i<n;i++)for(const s of[-1,1]){const u=-w*f/2+w*f*(i+.5)/n;if(s>0&&k===0&&Math.abs(u)<1.8)continue;
-   xnTibWin(x+u,yy+hs[k]*.36,z+s*(d*f/2-.06),s>0?0:Math.PI,.8,1.1,lit,trim,{noVal:true});xnTibWin(x+s*(w*f/2-.06),yy+hs[k]*.36,z+u,s*Math.PI/2,.8,1.1,lit,trim,{noVal:true});}
-  yy+=hs[k];}
- xnDoorway(x,1.2,z+d/2+.02,0,1.8,2.6,{c:C.tim});xnFlight(x,0,z+d/2+.6+Math.round(1.2/.17)*.34,0,2.4,1.2,'vStone',C.stone);
- vB('xBandB',x,S.y-.7,z,S.w+.1,.5,S.d+.1,0,C.maroon);   /* the maroon band under the chapel */
- /* the Chapel of the Beacon: the plinth's top storey in the gold spoke's yellow, its windows saffron, its roof's corners gilt */
- const Ch=xnStack(x,S.y,z,S.w,S.d,0,[P.chapel],gold,'wash');
- for(const s of[-1,1])for(const u of[-2.2,2.2]){xnTibWin(x+u,S.y+1.3,z+s*(S.d/2-.06),s>0?0:Math.PI,.9,1.4,lit,xC(XPAL.saffron),{valC:xC(XPAL.saffron)});xnTibWin(x+s*(S.w/2-.06),S.y+1.3,z+u,s*Math.PI/2,.9,1.4,lit,xC(XPAL.saffron),{valC:xC(XPAL.saffron)});}
- const top=qnRoof(x,Ch.y,z,Ch.w,Ch.d,0,gold,{band,gold:true,corner:'gold',parapet:.9});
- const fx=x+Ch.w/2-1,fz=z+Ch.d/2-1;vB('vIron',fx,Ch.y,fz,.14,P.finial,.14,0,gilt);vBall('xGold',fx,Ch.y+P.finial,fz,.3,gilt);   /* the gilt finial (the forts' gold: the chapel) */
- /* the lamp's mount on the roof: the slewing ring and the yoke (the head is the live stand-in, BC_LAMP) */
- kput('xDrumE',[x,Ch.y,z],null,[M.ring,M.h,M.ring],C.iron);for(const s of[-1,1])vB('vIron',x+s*1.05,Ch.y+M.h,z,.18,M.yoke,.34,0,C.iron);
- BC.plinthTop=Ch.y;BC.parapetTop=top;}
 // ---------------------------------------------------------------- the order's buildings, walls, stair and grounds as defs (registered in core/tags as they draw)
 const BC_HOLY=['hall_of_lights','butter_lamps','lamp_school','refectory','chamber'],BC_EARTH=['generator','workshop'];
 function bcBlockBuild(G,o){const p=bcPart(o.part),i=BCL.parts.indexOf(p);reseed(34100+i);
@@ -84,7 +63,10 @@ XA.def({key:'bc_cable',name:'The Beacon - the cable\'s channel',family:'The Beac
 const BC_PLACED={};
 function bcPlace(key,x,z,ry,o,type){TSTAT.cur=(type||key)+'/0';const r0=REG.length,g=VERN.place(BC_GRP,key,x,z,ry,o);for(let i=r0;i<REG.length;i++)REG[i].type=type||key;TSTAT.cur=null;BC_PLACED[key]=(BC_PLACED[key]|0)+1;return g;}
 /* the fort: its keep's place on the lamp, turned half round (its gate north), on the crown */
-BC_PLINTH=true;BC.fortG=bcPlace('xa_fort_watch',0,-6.6,Math.PI,{v:0,y:BC.F,seed:20261123});BC_PLINTH=false;
+{const n0=(window._xaBeacons||[]).length;BC.fortG=bcPlace('xa_fort_watch',0,-6.6,Math.PI,{v:0,y:BC.F,seed:20261123,beacon:'ancient'});
+ /* the plinth's record (80g xfPlinth, pushed as the fort drew): the lamp's centre in the world, and its roof (the chapel's top) under it */
+ BC.lampRec=(window._xaBeacons||[])[n0]||null;}
+if(BC.lampRec)BC.plinthTop=BC.lampRec.at[1]-(BC.lampRec.lampH-BC.lampRec.roof);
 /* the Yellow Monastery on the saddle, its gate south to the lamp */
 {const m=bcPart('monastery'),[mx,mz]=bcMid(m.box);BC.monG=bcPlace('qb_monastery',mx,mz,0,{v:m.host.v,y:BC.level(mz)});}
 /* the order's buildings, courts and pits */
@@ -114,7 +96,7 @@ BCL.parts.forEach(p=>{if(p.zone!=='precinct'&&p.zone!=='lampward')return;const [
 kbake(BC_GRP);if(typeof xaDoorsBind==='function')xaDoorsBind();
 // ---------------------------------------------------------------- the lamp head (the stand-in) and its beam, turned by the lamp's night
 const BC_LAMP=(function(){const g=new THREE.Group();g.name='the lamp head (a stand-in for kits/ancients anc_beacon_lamp)';g.rotation.order='YXZ';
- g.position.set(0,BC.F+BCD.plinth.h+BCD.mount.h+BCD.mount.yoke,0);
+ if(BC.lampRec)g.position.set(BC.lampRec.at[0],BC.lampRec.at[1],BC.lampRec.at[2]);else g.position.set(0,BC.F+BCL.lamp.h,0);   /* seated at 80g's record */
  const white=new THREE.MeshStandardMaterial({color:0xdfe1e2,metalness:.55,roughness:.32}),iron=new THREE.MeshStandardMaterial({color:0x2e2a26,metalness:.4,roughness:.6});
  const body=new THREE.Mesh(new THREE.CylinderGeometry(.8,.8,2.2,28),white);body.rotation.x=Math.PI/2;g.add(body);
  for(const z of[-.6,.55]){const s=new THREE.Mesh(new THREE.CylinderGeometry(.84,.84,.12,28),iron);s.rotation.x=Math.PI/2;s.position.z=z;g.add(s);}   /* the Xanadui iron straps */
@@ -137,7 +119,7 @@ FRAME_HOOKS.push(bcLampTick);bcLampTick();
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._buildMs=Math.round(performance.now()-BC_B0);
 /* the page's record (the verify's): what was placed, the levels under the fort's and the precinct's corners, the plinth's top, the rules */
-window._beacon=Object.assign({},window._beaconSite,{placed:BC_PLACED,fort:!!BC.fortG,monastery:!!BC.monG,plinthTop:BC.plinthTop==null?null:Math.round((BC.F+BC.plinthTop)*100)/100,
+window._beacon=Object.assign({},window._beaconSite,{placed:BC_PLACED,fort:!!BC.fortG,monastery:!!BC.monG,plinthTop:BC.plinthTop==null?null:Math.round(BC.plinthTop*100)/100,lampAt:BC.lampRec?BC.lampRec.at.map(v=>Math.round(v*100)/100):null,
  lampY:Math.round(BC_LAMP.g.position.y*100)/100,
  fortGround:[[-28,-28],[28,-28],[28,14],[-28,14],[0,0]].map(p=>Math.round(terrainH(p[0],p[1])*100)/100),
  precinctGround:[[-58,-238],[58,-238],[58,-70],[-58,-70],[0,-160]].map(p=>Math.round(terrainH(p[0],p[1])*100)/100),

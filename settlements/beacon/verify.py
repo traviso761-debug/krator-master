@@ -8,8 +8,9 @@ house's own:
   on-the-model         the ground is the scale model's with the restored knoll: at the pin the model's bicubic height within 1 m of
                        the cell's own (863 m: ground/knoll-patch.json), and the drawn ground 300 m past the lot's ease the model's
   house-on-its-levels  the fort's corners and the lamp level on the crown, the precinct's corners and middle 12 m below it, to 5 cm
-  lamp-on-its-plinth   the plinth's roof (the chapel's top) at the crown + 18 m and the lamp's centre at + 22 m: the height the
-                       layout's sights are taken from
+  lamp-on-its-plinth   80g's plinth (beacon:'ancient') records the lamp in window._xaBeacons: its roof (the chapel's top) at the
+                       crown + 18 m, the lamp's centre at + 22 m over the layout's lamp (0,0), the height the sights are taken
+                       from; the stand-in head seated there
   fort-walks           every wall walk and stair of the fort reached from its stairs' feet (core/walk, xfReach)
   layout-rules         every rule of src/31-bc-rules.js passes on the layout the page drew from
   lamp-lit             at the page's hour (?hour=, default 18.4) the lamp is lit by its night (src/40-bc-lamp.js), sweeping or
@@ -37,7 +38,8 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
   R.push({name:'house-on-its-levels',ok:fg.length===5&&pg.length===5&&!bf&&!bp&&Math.max(Q.cut,Q.fill)<15,
    detail:'the crown at '+Q.crown+' m; the fort\'s corners and the lamp '+fg.join(', ')+'; the precinct\'s corners and middle '+pg.join(', ')+(bf||bp?' ('+(bf+bp)+' OFF their level)':'')+'; cut '+Q.cut+' m, fill '+Q.fill+' m'});}
  {const t=Q.crown+BEACON_LAYOUT.draw.plinth.h,l=Q.crown+BEACON_LAYOUT.lamp.h;
-  R.push({name:'lamp-on-its-plinth',ok:Math.abs(Q.plinthTop-t)<.05&&Math.abs(Q.lampY-l)<.05,detail:'the plinth\'s roof at '+Q.plinthTop+' m (the crown + '+BEACON_LAYOUT.draw.plinth.h+' = '+t.toFixed(2)+'), the lamp\'s centre at '+Q.lampY+' m (+ '+BEACON_LAYOUT.lamp.h+' = '+l.toFixed(2)+')'});}
+  const A=Q.lampAt||[NaN,NaN,NaN],off=Math.hypot(A[0],A[2]);
+  R.push({name:'lamp-on-its-plinth',ok:Math.abs(Q.plinthTop-t)<.05&&Math.abs(Q.lampY-l)<.05&&off<.05&&Math.abs(A[1]-Q.lampY)<.01,detail:(Number.isFinite(off)?'80g\'s record (beacon:\'ancient\'): the lamp '+off.toFixed(2)+' m off the layout\'s (0,0); ':'NO record in window._xaBeacons; ')+'the plinth\'s roof at '+Q.plinthTop+' m (the crown + '+BEACON_LAYOUT.draw.plinth.h+' = '+t.toFixed(2)+'), the lamp\'s centre at '+Q.lampY+' m (+ '+BEACON_LAYOUT.lamp.h+' = '+l.toFixed(2)+')'});}
  {const F=(typeof xfReach==='function'?xfReach():null)||[],bad=F.filter(q=>!q.floors||q.unreached.length||q.capped);
   R.push({name:'fort-walks',ok:F.length===1&&!bad.length,detail:F.map(q=>q.reached+' of '+q.floors+' walks and stairs reached'+(q.unreached.length?', NOT '+q.unreached.slice(0,4).join(', '):'')).join('; ')||'no walks registered (core/walk not on the page?)'});}
  R.push({name:'layout-rules',ok:Array.isArray(Q.rules)&&!Q.rules.length,detail:(Q.rules||['no record']).length?'FAILED: '+(Q.rules||[]).join('; '):'every rule of the layout passes ('+BEACON.checks(BEACON_LAYOUT).length+')'});
