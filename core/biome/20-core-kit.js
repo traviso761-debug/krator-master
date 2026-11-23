@@ -620,6 +620,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
  let crownAO=0,baseAO=0;
  for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
  crownAO+=_crownAO(R);   /* B2: before the colours are copied out */
+ if(BIO._swardBake)BIO._swardBake(R);   /* B6: the grass the sward grows on, counted before the stores empty */
  for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
   // group the instances by lod key (null: the always-drawn mesh; BIO.LOD.merge: by chunk, each group's rows sorted by range)
   const f=_lodFactor(it.k,def.tris),G=new Map();for(let i=0;i<it.count;i++){const k=_lodGroup(it.k[i],f);let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
@@ -660,7 +661,8 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
   K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();if(K.c2)K.c2=new F32();K.k=[];}}
  _lodShareBox();_lodFadeBake();
  const a2c=BIO._a2cAuto?BIO._a2cAuto():false;   /* B4: alpha-to-coverage by default, on a page that never asked */
- BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length,crownAO,baseAO,a2cAuto:a2c};return BIO.lastBake;};
+ const sward=BIO._swardAuto?BIO._swardAuto():false;   /* B6: the grass sward, on a page that grows grass and never asked */
+ BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length,crownAO,baseAO,a2cAuto:a2c,sward};return BIO.lastBake;};
 // ONE BOX A CHUNK (2026-10-27, the owner: branches not drawn, foliage floating). A tree keyed by its owner puts its bark (a
 // bucket, boxed by its triangles), its rods and its leaf cards (instanced, boxed by their origins) into the same chunk, but
 // each mesh kept its own height range, so the camera stood at different distances from them and the leaves could switch on

@@ -63,3 +63,15 @@ function update(budgetMs){const t0=performance.now(),P=camera.position;
   if(n._ft&&performance.now()-n._ft<400)continue;   // still waiting on its patches: try again in a moment
   n._ft=performance.now();if(build(n))QUEUE.delete(n);if(performance.now()-t0>budgetMs)break;}}
 return{forChunk,free,show,update,stats:ST,setOn:v=>{on=v;}};})();});
+// B6 (2026-11-23): the grass sward (core/biome/30-core-foliage.js BIO.sward, the twin of Godot's KratorWorldGrass) on the open
+// world. It grows where the floor would: inside the region, off towns and roads, weighted as the floor weighs its kits (WORLD.kitW),
+// a kit counting once it defines grass (BIO.swardGrass on its items, so a desert or ice kit grows none); the host's mask, the
+// cliff gate and the water do the rest. ?sward=0 leaves it out.
+LATE.push(()=>{if(typeof BIO==='undefined'||!BIO.sward||typeof location!=='undefined'&&/[?&#]sward=0\b/.test(location.search+location.hash))return;
+ const G=new Map();
+ const grassy=q=>{const R=BIO.kits[WORLD_KITS[q].name];if(!R)return 0;const s=G.get(q);if(s&&s.n===R.order.length)return s.g;let g=0;
+  for(const n of R.order)if(BIO.swardGrass(n,R.defs[n])){g=1;break;}
+  if(!s||s.g!==g){BIO.SWARD.cache.clear();BIO.SWARD.dirty=true;}G.set(q,{n:R.order.length,g});return g;};   /* a kit's items arrive as it grows: the tiles are made again */
+ BIO.sward({camera:HOST.camera,
+  density:(x,z)=>{let s=0;for(let q=0;q<WORLD_KITS.length;q++)if(WORLD_KITS[q].floor&&grassy(q))s+=WORLD.kitW(q,x,z);return Math.min(1,s*1.2);},
+  skip:(x,z)=>!WORLD.inside(x,z)||WORLD.townW(x,z)>0||WORLD.roadD(x,z)<1.5});});
