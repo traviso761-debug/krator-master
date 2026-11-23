@@ -8,6 +8,12 @@
       animal from 3.2 of its size, under 1 m away, which the eye check (1 m) fails (bloom glint, wadi swift, rock lizard, hen,
       salt, char and boring beetles, sparkle hummer, lantern fly, homing pigeon: the animals under about 0.6 m): the camera stands at least 1.15 m beyond the animal's bounding radius and the lens
       narrows to keep its size in the frame (`gotoRow` puts the 48 degree lens back; walking straight from a view keeps the narrow one).
+- [ ] The Outlands' birds (2026-11-16, Tripo models). The **runner bird** has no wing-fan: `rig/qmodel.py` cuts a walker into
+      head, tail and legs only, so its wings ride the torso; the lore's fast run with the wings fanned wants a `wingL`/`wingR` cut
+      (the flyer scripts' rule) and a run clip. The **golden bird** was generated standing with its wings raised in a V, and perch
+      and walk keep them there (folding a raised wing tears the shoulder open past `tests/test-models.js`'s closure limit); its flap
+      is shallow (0.20 / 0.15 rad) for the same reason. Both want a wrist joint, or a skinned wing (PLAN-MESHY.md section 12). The
+      **ostrich**'s model is one plumage (the cock): the hen draws the procedural build.
 - [ ] Every animal is here (48 species, 2026-10-06), but the builds still draw their own copies (each entry's `source` says
       where): point the biome kits and settlements at the bundle, one build at a time, and check each still reads the same.
 - [ ] Wings are rigid: a perched bird's wing is turned back, shortened and rolled down the flank (`flap.sweep`, `foldScale`,

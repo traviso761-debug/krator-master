@@ -41,3 +41,16 @@ def archaeopteryx(C, Nf=None):
     wing = ((ax > 0.2) | ((ax > 0.13) & (y > 0.05))) & (y > -0.02) & (z > 0.1) & ~((z > 0.62) & (y > 0.26) & (ax < 0.26))
     for i in np.where(wing)[0]: lab[i] = ('wingO' if ax[i] > 0.5 else 'wing') + sd[i]
     return lab
+
+def goldbird(C, Nf=None):
+    """The golden bird (Tripo, standing with its wings raised in a V; turned on load so +z is the beak)."""
+    x, y, z = C[:, 0], C[:, 1], C[:, 2]; ax = np.abs(x)
+    lab = np.full(len(C), 'torso', dtype=object); sd = np.where(x >= 0, 'R', 'L')
+    lab[(y > 0.0) & (ax < 0.11) & (z > -0.04)] = 'neck'
+    lab[(y > 0.075) & (ax < 0.11) & (z > -0.02)] = 'head'
+    lab[(z < -0.10) & (y < -0.12) & (ax < 0.16)] = 'tail'
+    leg = (y < -0.27) & (ax < 0.085) & (z > -0.02) & (lab == 'torso')      # the feathers hanging off the belly to one side stay with the body
+    for i in np.where(leg)[0]: lab[i] = ('foot' if y[i] < -0.415 else ('legT' if y[i] < -0.33 else 'leg')) + sd[i]
+    wing = ((ax > 0.19) | ((ax > 0.11) & (y > 0.02))) & (y > -0.22) & ~leg & (lab != 'tail')      # the flanks under the shoulder stay with the body
+    for i in np.where(wing)[0]: lab[i] = ('wingO' if ax[i] > 0.30 else 'wing') + sd[i]
+    return lab

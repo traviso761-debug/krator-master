@@ -27,6 +27,7 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
 | `pets` | dog, cat (baked Meshy models only) |
 | `xeno` | the native hexapods of the late biome plans, vertebrate-grade, not insects (2026-11-11, `biomes/siphon-pits`): the Woolly Ghaunt-Ox (a draught and riding hexapod), the Flenser-Hound (an ambush predator with scythe-arms), the Basalt Pipe-Borer (a burrower); drawn by the `wild` file's `faWdHex`, so a bundle that takes `xeno` takes `wild` and `hyperjungle` too |
+| `outlands` | the Coyote Men's birds (2026-11-16): ostrich (two procedural plumages on the `desert` file's ratite helpers, plus a baked model; saddle, pack and bridle anchors on every variant), runner bird and golden bird (baked models only). The three models were made on **Tripo** (`rig/tripo_gen.py`; "Tripo" below) |
 
 ```
 cd kits/fauna && python3 build.py                   # dist/fauna.html (the sheet) and dist/krator-fauna.js (the bundle alone)
@@ -46,12 +47,31 @@ yields and life; **Polygon (P)**.
 Some animals carry a second look: a baked Meshy model (`models/<key>.json`, packed by `models_pack.py` from a GLB that `rig/`
 cut into parts and rigged), listed in the entry as `models: { variant: 'key' }`. `mdl` may also be a list of groups: only
 their models are packed (the Voth city takes the pets' two without the farm's dozen). Today: the four giant flyers, the draught
-millipede, the harvester ant, the staghorn beetle and the Bowl mantis, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only. A model plays its
+millipede, the harvester ant, the staghorn beetle and the Bowl mantis, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only, and the Outlands' ostrich, runner bird and golden bird (group `outlands`, made on Tripo). A model plays its
 own clips (`perch` for idle and rest, `graze`, `walk`, `flap` / `glide` for flight) and keeps the kit's part names, so a host
 animates it the same way. They are heavy (7 to 13 thousand triangles, about 1 MB each), so a bundle takes them only when asked:
 `fauna_bundle.bundle(groups, mdl=True)` (the kit's own sheet does); without them a model variant draws the procedural build, and
 a model-only animal draws nothing. See `rig/README.md`, and the first open item in `KNOWN_ISSUES.md`. Every model is held to
 `tests/test-models.js` (`PLAN-MESHY.md` section 4), and a new one must clear it with no waiver.
+
+## Tripo
+
+A second generator beside Meshy (2026-11-16, the owner asked whether the Coyote Men's birds could be built there). The key is
+`~/.krator-keys/tripo.txt` (it works on the international host `openapi.tripo3d.ai/v3` only). `rig/tripo_gen.py <key> <step>` runs one
+paid step at a time and logs each task id and its credits in `rig/sources/<key>/tripo.json`:
+
+```
+python3 rig/tripo_gen.py ostrich balance                 # free
+python3 rig/tripo_gen.py ostrich image "<prompt>"        # 5 credits: ref.png
+python3 rig/tripo_gen.py ostrich multiview [ref.png]     # 10: front, left, back, right.png (check legs and stance here)
+python3 rig/tripo_gen.py ostrich model                   # 30: raw-tripo.glb, textured PBR, at real size
+```
+
+One credit is $0.01, so a model is 45 credits. The account runs one task at a time. Tripo's own auto-rig (25 credits) was tried on
+the ostrich and not used: 14 bones, a toe joint on one leg only, no wings, no clips, and skinned. The kit's scripts rig the mesh
+instead (`rig/qmodel.py` for a two-legged walker, `rig/fbuild.py` and `rig/frig.py` for a flyer). A flyer must be generated standing
+with its wings spread symmetric: a "soaring" prompt came back banked and diving, which the flyer cut cannot level
+(`rig/sources/goldbird/try1-banked/`). `PLAN-MESHY.md` section 15 has the whole trial.
 
 ## What an animal carries (data first)
 

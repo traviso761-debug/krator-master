@@ -1,0 +1,33 @@
+{
+ "generator": "Tripo (openapi.tripo3d.ai v3, rig/tripo_gen.py)",
+ "prompt": "A single adult male common ostrich standing on flat ground, full body, seen from the side in three-quarter view, head up on a long straight neck. Exactly two long bare pinkish-grey legs, each ending in a foot with two toes, the large inner toe with a thick nail. Black body plumage, white wing plumes and white tail plumes, bare pinkish neck and thighs, large eyes, flat broad beak. Realistic wildlife photograph style, even studio lighting, plain pure white background, the whole bird in frame with margin. --no rider, saddle, harness, extra legs, extra heads, shadow, ground texture, text, cropping",
+ "reference": "ref.png; views front/left/back/right.png (image-to-multiview)",
+ "task_ids": [
+  {
+   "step": "image",
+   "task_id": "24f88a7f-e2cd-400a-975e-2c709406901d",
+   "credits": 5.0
+  },
+  {
+   "step": "multiview",
+   "task_id": "e7c259e3-972c-4698-845f-9bbb8dc6f677",
+   "credits": 10.0
+  },
+  {
+   "step": "model",
+   "task_id": "48468db2-09a0-44ed-909c-4823ba56cde2",
+   "credits": 30.0
+  },
+  {
+   "step": "rig",
+   "task_id": "52b44541-4cd4-4fec-9f3b-70abff1ac657",
+   "credits": 25.0
+  }
+ ],
+ "ai_model": "text-to-image seedream_v4; multiview-to-model v3.1-20260211, texture standard, pbr",
+ "credits": 70.0,
+ "raw": "raw-tripo.glb",
+ "rigged_by": "rig/qmodel.py ostrich",
+ "note": "the reference trimmed of its frame (ref-crop.png) before the views; Tripo's own avian rig (rig-tripo.glb, 25 credits) was tried and not used",
+ "date": "2026-11-16"
+}
