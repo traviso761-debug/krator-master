@@ -51,7 +51,10 @@ function xfStair(c,s,h,C,tag){const L=Math.hypot(c.b[0]-c.a[0],c.b[1]-c.a[1]),dx
    the flights are drawn whether or not they are reached. -> {feet, n} */
 function xfWalks(P,W,C,tag){const has=typeof KWALK!=='undefined',feet=[],cur=id=>P.curtains.find(q=>q.id===id);let n=0;
  W.walks.forEach(w=>{if(!w.reached||!has)return;const c=cur(w.curtain);KWALK.strip({a:xfW3(w.a[0],w.y,w.a[1]),b:xfW3(w.b[0],w.y,w.b[1]),w:Math.max(.9,c.t*.82-.9),name:'wall walk',tag});n++;});
- W.flights.forEach(f=>{const dx=f.head[0]-f.foot[0],dz=f.head[1]-f.foot[1];xnFlight(f.foot[0],f.y0,f.foot[1],Math.atan2(-dx,-dz),1.4,f.y1-f.y0,'vStone',C.stone);
+ W.flights.forEach(f=>{const dx=f.head[0]-f.foot[0],dz=f.head[1]-f.foot[1],ry=Math.atan2(-dx,-dz),rise=f.y1-f.y0;
+  if(f.steep){const S=XFORT.STEEP,n=Math.max(2,Math.round(rise/S.riser));   /* a steep stair (xnFlight's form, 0.20 m risers on 0.25 m treads) */
+   for(let k=0;k<n;k++){const p=loc(f.foot[0],f.foot[1],0,-(k+.5)*S.tread,ry);vB('vStone',p[0],f.y0,p[1],1.2,rise*(k+1)/n,S.tread+.01,ry,C.stone);}}
+  else xnFlight(f.foot[0],f.y0,f.foot[1],ry,1.4,rise,'vStone',C.stone);
   if(f.reached&&has){KWALK.strip({a:xfW3(f.foot[0],f.y0,f.foot[1]),b:xfW3(f.head[0],f.y1,f.head[1]),w:1.3,name:'tower stair',tag});n++;}});
  W.tops.forEach(t=>{if(t.reached&&has){KWALK.strip({a:xfW3(t.a[0],t.y,t.a[1]),b:xfW3(t.b[0],t.y,t.b[1]),w:1.6,name:'tower top',tag});n++;}});
  W.stairs.forEach(s=>{const c=cur(s.curtain),f=xfStair(c,s,c.h,C,tag);if(f)feet.push(f);});

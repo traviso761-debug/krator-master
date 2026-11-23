@@ -86,13 +86,13 @@ for (const size of ['watch', 'march', 'gate']) for (const st of ['damaged', 'rui
  for (const size of ['watch', 'march', 'gate']) for (const [v, st] of [[0, 'kept'], [1, 'damaged']]) {
   const P = XF.plan({ size }), D = XF.damage(P, st, SEED[size] + v), W = XF.walks(P, D), F = faults(P, W);
   const climbed = new Set(W.tops.filter(t => t.reached).map(t => t.tower)), fallen = Object.keys(D.towers);
-  const want = P.towers.filter(t => (t.kind === 'corner' || t.kind === 'interval') && !fallen.includes(t.id) && P.curtains.some(c => !D.stubs[c.id] && (W.blocks[c.id] || []).length));
+  const want = P.towers.filter(t => !fallen.includes(t.id));
   const miss = want.filter(t => !climbed.has(t.id)).map(t => t.id);
   const pieces = W.walks.length + W.flights.length + W.tops.length, un = [].concat(W.walks, W.flights, W.tops).filter(x => !x.reached);
-  T.ok('the ' + size + ' fort ' + st + ': ' + W.walks.length + ' walks, ' + W.flights.length + ' flights onto ' + climbed.size + ' towers, ' + W.stairs.length + ' stairs; none through a block, every stair on reached walk',
+  T.ok('the ' + size + ' fort ' + st + ': ' + W.walks.length + ' walks, ' + W.flights.length + ' flights (' + W.flights.filter(f => f.steep).length + ' steep) onto ' + climbed.size + ' towers, ' + W.stairs.length + ' stairs; none through a block, every stair on reached walk',
    F.length === 0, F.slice(0, 4).join(' | '));
-  if (st === 'kept' && size !== 'gate') T.ok('the ' + size + ' fort kept: every corner and interval tower climbed (' + (want.length - miss.length) + ' of ' + want.length + '); ' + (pieces - un.length) + ' of ' + pieces + ' pieces reached',
-   !miss.length && un.length <= pieces * .12, 'not climbed: ' + miss.join(', ') + '; unreached: ' + un.map(x => x.curtain || x.tower).join(', '));
+  T.ok('the ' + size + ' fort ' + st + ': every standing tower climbed (' + (want.length - miss.length) + ' of ' + want.length + ', gate towers too); every piece of walk reached (' + (pieces - un.length) + ' of ' + pieces + ')',
+   !miss.length && !un.length, 'not climbed: ' + miss.join(', ') + '; unreached: ' + un.map(x => x.curtain || x.tower).join(', '));
   if (st === 'damaged') T.ok('the ' + size + ' fort damaged: no flight onto a fallen tower', !W.flights.some(f => fallen.includes(f.tower)), JSON.stringify(W.flights.filter(f => fallen.includes(f.tower)).map(f => f.tower)));}
  {const P = XF.plan({ size: 'march' }), W = XF.walks(P, XF.damage(P, 'kept', SEED.march)), bad = JSON.parse(JSON.stringify(W)), b = bad.blocks['inner.c1'][1];
   bad.walks.push({ curtain: 'inner.c1', s0: b[0] - 2, s1: b[1] + 2, reached: true });
