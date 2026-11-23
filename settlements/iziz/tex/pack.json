@@ -9,6 +9,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "brick.cw.webp",
     "map": "brick.albedo.webp",
     "normalMap": "brick.normal.webp",
     "roughnessMap": "brick.rough.webp"
@@ -16,6 +17,7 @@
    "lib": "brick.red",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.015,
    "roughLift": 0.2,
    "scale": [
     1.2,
@@ -1657,6 +1659,7 @@
    }
   },
   "fauna_wing": {
+   "anchor": "tight",
    "breakup": null,
    "card": true,
    "files": {
@@ -1665,6 +1668,7 @@
    "lib": "wing.butterfly",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1,
@@ -1724,6 +1728,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "plaster.cw.webp",
     "map": "plaster.albedo.webp",
     "normalMap": "plaster.normal.webp",
     "roughnessMap": "plaster.rough.webp"
@@ -1826,6 +1831,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "stone.cw.webp",
     "map": "stone.albedo.webp",
     "normalMap": "stone.normal.webp",
     "roughnessMap": "stone.rough.webp"
@@ -1833,6 +1839,7 @@
    "lib": "stone.cut",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.4,
    "scale": [
     2.0,

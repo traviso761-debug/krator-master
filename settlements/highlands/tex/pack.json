@@ -107,6 +107,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "brick.cw.webp",
     "map": "brick.albedo.webp",
     "normalMap": "brick.normal.webp",
     "roughnessMap": "brick.rough.webp"
@@ -114,6 +115,7 @@
    "lib": "brick.red",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.015,
    "roughLift": 0.2,
    "scale": [
     1.2,
@@ -345,16 +347,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "bdc4beb5fa3b30d3efa9b19e142178f6b64254b5",
-    "normal": "699cf0bffdd3de0bb9e9c0612d19151bfdde2908",
-    "roughness": "907e0310a06892a41390bceb22ace9a5a27da5bd"
+    "albedo": "1cb3ca1124a77e12dc21e0373a759f6c75863e36",
+    "normal": "ec21df3b3c6d8b63e2c4ef435ec9404ec7cd700f",
+    "roughness": "4f29c85bc8f0259b46d057d472104f6152265661"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.29933754386752265,
-    "sourceMean": 0.2993
+    "mean": 0.2792698660098805,
+    "sourceMean": 0.2793
    }
   },
   "hCaihua": {
@@ -1293,6 +1295,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "stone.cw.webp",
     "map": "stone.albedo.webp",
     "normalMap": "stone.normal.webp",
     "roughnessMap": "stone.rough.webp"
@@ -1300,6 +1303,7 @@
    "lib": "stone.cut",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.4,
    "scale": [
     2.0,

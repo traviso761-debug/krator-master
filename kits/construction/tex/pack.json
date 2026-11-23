@@ -5,6 +5,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "block.cw.webp",
     "map": "block.albedo.webp",
     "normalMap": "block.normal.webp",
     "roughnessMap": "block.rough.webp"
@@ -65,6 +66,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "brick.cw.webp",
     "map": "brick.albedo.webp",
     "normalMap": "brick.normal.webp",
     "roughnessMap": "brick.rough.webp"
