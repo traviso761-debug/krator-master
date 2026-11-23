@@ -70,6 +70,12 @@ T.ok('the wall\'s middle keeps its colour (gridded at the reach)', (v => v.lengt
 T.neg('the outer face and the roof stay as they were (only faces inside the room and turned into it)',
   P => P.filter(q => q.z < -0.1).every(q => q.c === 1),
   S.map(q => Object.assign({}, q, { c: q.z < -0.1 ? 0.5 : q.c })), S);
+vm.runInContext(fs.readFileSync(path.resolve(HERE, '../../core/interiors/20-core-roomlight-host.js'), 'utf8'), ctx, { filename: '20-core-roomlight-host.js' });
+const RLT = vm.runInContext('KRLHOST', ctx).texture(IX.roomLight(null, plans));
+const lit = IX.view.shell(store, { kdoor: false, roomLight: RLT });
+T.neg('opt.roomLight: the shell is lit from its room\'s column of the table (KRLHOST on its walls, floor, roof)',
+  g => ['wall', 'floor', 'roof'].every(k => g.userData.shell.mats[k].userData.roomLight && g.userData.shell.mats[k].userData.roomLight.uRlU.value === RLT.uById['t.store']),
+  IX.view.shell(store, { kdoor: false }), lit);
 T.ok('opt.cornerAO false: plain boxes, no colour', (() => { const g = IX.view.shell(store, { kdoor: false, cornerAO: false });
   return wallsOf(g).every(m => !m.geometry.attributes.color) && !g.userData.shell.mats.wall.vertexColors; })());
 T.done();

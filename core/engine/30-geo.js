@@ -55,10 +55,21 @@ let MAT_ALT=0;const MAT_VAR={};
 let BASE_AO={lo:.72,band:.30};let PLOT_Y=null,AO_ON=0;
 const AO_SKIP={glass:1,glow:1,water:1};
 function aoKey(mk){if(!BASE_AO||PLOT_Y===null||AO_SKIP[mk]||SV_CUT[mk])return false;const m=MAT[mk];return !(m&&m.isMeshBasicMaterial);}
+/* JOINTS (M4 "corner and joint darkening is baked per vertex by the builders"): the ramp's base is whatever the piece stands on,
+   its plot or a slab the same building drew before it (a floor, a deck, a platform: a flat box, SLABS), so a wall on an upper
+   floor or a post on a deck darkens at its joint as one on the ground does. aoGrounded sets AO_BASE to that surface. */
+let AO_BASE=0,SLABS=[];
 function aoGrounded(x,y,z){const e=CM.elements,sy=Math.hypot(e[4],e[5],e[6]);if(!(sy>0)||e[5]/sy<.999)return false;
- return Math.abs(e[1]*x+e[5]*y+e[9]*z+e[13]-PLOT_Y)<.06;}
+ const wx=e[0]*x+e[4]*y+e[8]*z+e[12],wy=e[1]*x+e[5]*y+e[9]*z+e[13],wz=e[2]*x+e[6]*y+e[10]*z+e[14];
+ if(Math.abs(wy-PLOT_Y)<.06){AO_BASE=PLOT_Y;return true;}
+ for(let i=SLABS.length-1;i>=0;i--){const s=SLABS[i];if(Math.abs(wy-s[4])<.06&&wx>=s[0]&&wx<=s[1]&&wz>=s[2]&&wz<=s[3]){AO_BASE=s[4];return true;}}
+ return false;}
+/* a flat box drawn inside a plot is a slab others may stand on: its world box (the turned corners' bounds) and top */
+function aoSlab(x,y,z,w,h,d,ry){if(PLOT_Y===null||!BASE_AO)return;const m=TF(x,y,z,ry),v=new THREE.Vector3();let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,top=-1e9;
+ for(const[a,b]of[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]]){v.set(a,h,b).applyMatrix4(m).applyMatrix4(CM);x0=Math.min(x0,v.x);x1=Math.max(x1,v.x);z0=Math.min(z0,v.z);z1=Math.max(z1,v.z);top=Math.max(top,v.y);}
+ SLABS.push([x0,x1,z0,z1,top]);}
 function aoRun(fn){AO_ON=1;try{fn();}finally{AO_ON=0;}}
-function aoF(wy){const t=(wy-PLOT_Y)/BASE_AO.band;return t>=1?1:BASE_AO.lo+(1-BASE_AO.lo)*(t>0?t:0);}
+function aoF(wy){const t=(wy-AO_BASE)/BASE_AO.band;return t>=1?1:BASE_AO.lo+(1-BASE_AO.lo)*(t>0?t:0);}
 function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk];if(MAT_ALT&&MAT_VAR[mk]&&MAT[MAT_VAR[mk][1]]){const v=MAT_VAR[mk];mk=v[MAT_ALT%v.length];}_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
@@ -87,7 +98,30 @@ function gsph(seg){const k='sph'+(seg||12);return _G[k]||(_G[k]=new THREE.Sphere
 function gtor(R,t,rs,ts){const k='tor'+R.toFixed(3)+'_'+t.toFixed(3)+'_'+(rs||6)+'_'+(ts||14);return _G[k]||(_G[k]=(()=>{const g=new THREE.TorusGeometry(R,t,rs||6,ts||14);g.rotateX(PI/2);return g;})());}
 function gplane(){return _G.pl||(_G.pl=new THREE.PlaneGeometry(1,1));}
 // ---- primitives. Boxes and cylinders are BASE-anchored: (x,y,z) is the middle of the underside.
+/* HERO BEVELS (M4 "bevels are geometry", 2026-11-23): a kit names its masonry keys and their chamfer in BEVEL_KEYS (its
+   31-alt-takes.js: BEVEL_KEYS.stoneP=.05) and box() draws those boxes with boxBevel(), axis-aligned ones at least 2.5
+   chamfers thick on every side, until the page has spent BEVEL_BUDGET extra triangles (32 a box, more where the grounding
+   band cuts it). BEVEL_STAT counts what was spent; the kit's sheet reports it. A grounded bevelled box keeps its base ramp:
+   its triangles are cut at the band (clipY) so the darkening ends there, as a split box's does. */
+const BEVEL_KEYS={};let BEVEL_BUDGET=60000;const BEVEL_STAT={boxes:0,extra:0,skipped:0};
+function clipY(g,c){const P=g.attributes.position,N=g.attributes.normal,I=g.index?g.index.array:null,n=I?I.length:P.count,pos=[],nor=[],uv=[],idx=[];
+ const V=k=>({x:P.getX(k),y:P.getY(k),z:P.getZ(k),nx:N.getX(k),ny:N.getY(k),nz:N.getZ(k)});
+ const cut=(a,b)=>{const t=(c-a.y)/(b.y-a.y);return {x:a.x+(b.x-a.x)*t,y:c,z:a.z+(b.z-a.z)*t,nx:a.nx,ny:a.ny,nz:a.nz};};
+ for(let t=0;t<n;t+=3){const T=[V(I?I[t]:t),V(I?I[t+1]:t+1),V(I?I[t+2]:t+2)];
+  for(const below of[true,false]){const poly=[];for(let i=0;i<3;i++){const a=T[i],b=T[(i+1)%3],ia=below?a.y<=c:a.y>=c,ib=below?b.y<=c:b.y>=c;
+    if(ia)poly.push(a);if(ia!==ib)poly.push(cut(a,b));}
+   for(let i=1;i+1<poly.length;i++)for(const q of[poly[0],poly[i],poly[i+1]]){idx.push(pos.length/3);pos.push(q.x,q.y,q.z);nor.push(q.nx,q.ny,q.nz);uv.push(0,0);}}}
+ return mkGeo(pos,nor,uv,idx);}
+function bevelBox(mk,x,y,z,w,h,d,col,ry){const e=Math.min(BEVEL_KEYS[mk],.45*Math.min(w,h,d));
+ const grounded=h>=.12&&h>=.6*Math.min(w,d)&&aoKey(mk)&&aoGrounded(x,y,z),B=BASE_AO?BASE_AO.band:0;
+ const k='bevc'+[w,h,d,e,grounded&&h>B*1.5?B:0].map(v=>v.toFixed(3)).join('_');
+ const g=_G[k]||(_G[k]=grounded&&h>B*1.5?clipY(gbevel(w,h,d,e),-h/2+B):gbevel(w,h,d,e));
+ const extra=(g.index?g.index.count:g.attributes.position.count)/3-12;
+ BEVEL_STAT.boxes++;BEVEL_STAT.extra+=extra;
+ const run=()=>emit(mk,g,TF(x,y+h/2,z,ry),col);if(grounded)aoRun(run);else run();}
 function box(mk,x,y,z,w,h,d,col,ry,rx,rz){
+ if(!rx&&!rz&&h<.6*Math.min(w,d)&&h>=.02&&aoKey(mk))aoSlab(x,y,z,w,h,d,ry);
+ if(BEVEL_KEYS[mk]&&!rx&&!rz){if(Math.min(w,h,d)>=2.5*BEVEL_KEYS[mk]&&BEVEL_STAT.extra+40<=BEVEL_BUDGET)return bevelBox(mk,x,y,z,w,h,d,col,ry);BEVEL_STAT.skipped++;}
  if(!rx&&!rz&&h>=.12&&h>=.6*Math.min(w,d)&&aoKey(mk)&&aoGrounded(x,y,z)){const B=BASE_AO.band;   /* grounded: the band ramped, the rest above */
   if(h>B*1.5){aoRun(()=>boxRaw(mk,x,y,z,w,B,d,col,ry));boxRaw(mk,x,y+B,z,w,h-B,d,col,ry);}else aoRun(()=>boxRaw(mk,x,y,z,w,h,d,col,ry));return;}
  boxRaw(mk,x,y,z,w,h,d,col,ry,rx,rz);}

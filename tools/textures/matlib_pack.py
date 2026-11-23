@@ -72,7 +72,7 @@ def _families(build_dir, exclude, own=False):
             f['cell'] = e['cell']
         if e.get('base'):
             f['base'] = e['base']
-        for k in ('stems', 'rise', 'plants', 'anchor', 'sheet'):
+        for k in ('stems', 'rise', 'plants', 'anchor', 'sheet', 'mipVariance', 'pomDepth'):
             if e.get(k) is not None:
                 f[k] = e[k]
         for k, name in sorted(e['files'].items()):

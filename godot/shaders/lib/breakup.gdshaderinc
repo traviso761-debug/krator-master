@@ -2,14 +2,14 @@
 // (core/materials/record/25-matlib-host.js), read from a material record's `breakup` {mix, macro, cell}: a world-space
 // value noise of `cell` metres blends every map with a copy shifted by KM_OFF (up to `mix`), the same mask for colour,
 // normal and roughness so they stay in register; a slower noise (cell * 2.7) varies the brightness by +-`macro`.
-// The hash is three's sin-based one: it matches three.js within float precision, not bit for bit (nothing on the CPU
-// shares it). Pure functions: include anywhere.
+// The hash is sine-free (Hoskins' hash13), the same expression as three's kmH: fract(sin(large)) differed between GPUs.
+// Pure functions: include anywhere.
 #ifndef K_BREAKUP
 #define K_BREAKUP
 
 const vec2 KM_OFF = vec2(0.371, 0.613);
 
-float km_h(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
+float km_h(vec3 q) { vec3 p = fract(q * 0.1031); p += dot(p, p.zyx + 31.32); return fract((p.x + p.y) * p.z); }
 float km_n(vec3 p) {
 	vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
 	return mix(mix(mix(km_h(i), km_h(i + vec3(1., 0., 0.)), f.x), mix(km_h(i + vec3(0., 1., 0.)), km_h(i + vec3(1., 1., 0.)), f.x), f.y),

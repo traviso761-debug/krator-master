@@ -115,7 +115,9 @@
 
   /* ---------- register, shell, furnish, build */
   const single = defs.map(function (d) { return ROOM(d.room); });
-  const shells = single.map(function (R) { const s = IX.view.shell(R); scene.add(s); IX.view.cutaway.add(s); return s; });
+  /* the rooms lit from the room table (KROOMLIGHT through IX.roomLight; KRLHOST, core/interiors): ?roomlight=0 shows the sky's light */
+  const RLT = window.KRLHOST && !/[?&]roomlight=0\b/.test(location.search) ? window.KRLHOST.texture(IX.roomLight(single)) : null;
+  const shells = single.map(function (R) { const s = IX.view.shell(R, RLT ? { roomLight: RLT } : {}); scene.add(s); IX.view.cutaway.add(s); return s; });
   const buildings = BUILDINGS.map(function (b) {
     const B = IX.planBuilding(b.shell, b.program, { register: true });
     const s = IX.view.building(B); scene.add(s); IX.view.cutaway.add(s); shells.push(s);

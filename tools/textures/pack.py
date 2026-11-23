@@ -157,6 +157,21 @@ def compute_cavity_from_normal(n):
     return np.clip(1.0 - 0.62 * (conc / max(p98, 0.05)), 0.18, 1.0)
 
 
+def compute_wear_from_normal(n):
+    """Convex-only edge wear (M4, the twin of compute_cavity_from_normal): a negative Laplacian of the integrated height marks
+    ridges and arrises, the edges a hand or a boot wears pale. 0 none .. 1 most worn."""
+    nz = np.maximum(n[..., 2], 0.08)
+    p = -n[..., 0] / nz
+    q = n[..., 1] / nz
+    lap1 = 0.5 * ((np.roll(p, -1, 1) - np.roll(p, 1, 1)) + (np.roll(q, -1, 0) - np.roll(q, 1, 0)))
+    lap3 = 0.25 * ((np.roll(p, -3, 1) - np.roll(p, 3, 1)) + (np.roll(q, -3, 0) - np.roll(q, 3, 0))) / 3.0
+    conv = np.maximum(0.0, -(0.55 * lap1 + 0.45 * lap3))
+    p98 = float(np.percentile(conv, 98))
+    if p98 < 0.015:
+        return np.zeros(n.shape[:2], dtype=np.float64)
+    return np.clip(conv / max(p98, 0.05), 0.0, 1.0)
+
+
 def compute_mip_variance(n):
     """M2 Specular AA: Toksvig/Kaplanyan normal variance (1 - ||E[n]||) / ||E[n]|| per mip level from float normals
     before quantising (zero image bytes; shared in pack.json between web and Godot)."""
@@ -318,6 +333,16 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
             print('note: %s asks for a height channel but %s has no height map (%s); packed without one' % (fam, lib, os.path.basename(ph)))
         if card:
             out['map'] = webp(np.concatenate([rgb, alpha[..., None]], -1), 85, 'RGBA')
+        elif cfg.get('pom') and has_lit:   # M3: the height for the parallax march in the colour map's alpha (the set's own, else
+            n_pom = load(pn, size, 'RGB') * 2 - 1   # integrated from its normals); a masonry family's pomDepth says how deep
+            n_pom /= np.maximum(np.linalg.norm(n_pom, axis=2, keepdims=True), 1e-6)
+            if os.path.isfile(ph):
+                hm = load(ph, size, 'L')
+                lo, hi = np.percentile(hm, [1, 99])
+                h = np.clip(0.5 + (hm - hm.mean()) / max(float(hi - lo), 1e-4), 0.02, 1.0)
+            else:
+                h = reconstruct_height_from_normal(n_pom)
+            out['map'] = webp(np.concatenate([rgb, h[..., None]], -1), 82, 'RGBA')
         elif height:          # the height in the colour map's alpha, for KGROUND's h: {from: 'a'}
             hm = load(ph, size, 'L')
             lo, hi = np.percentile(hm, [1, 99])
@@ -333,6 +358,15 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
             # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08),
             # its channels kept to NORMAL_BITS
             out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=NORMAL_BITS)
+            # M2: the normal map's variance per mip level, from the float normals before quantising: the shader adds it to the
+            # roughness at the mip it samples (specular anti-aliasing, no new bytes; core/materials/record 25-matlib-host.js)
+            if cfg.get('specAA'):
+                mip_v1 = compute_mip_variance(n)
+            # M4: cavity and wear as two masks (one channel cannot say both): R concave pores and joints (1 open, darker in),
+            # G worn convex edges (0 none .. 1 worn): the shader darkens the one and lifts the other
+            if cfg.get('m4'):
+                cw = np.stack([compute_cavity_from_normal(n), compute_wear_from_normal(n), np.zeros(n.shape[:2])], -1)
+                out['cwMap'] = webp(cw, 90, 'RGB', lossless=True)
         # roughness
         if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
             r = load(pr, size, 'L')
@@ -357,6 +391,10 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
     }
     if height:
         entry['height'] = True
+    if pack_format != 2 and has_lit and cfg.get('specAA'):
+        entry['mipVariance'] = mip_v1
+    if pack_format != 2 and has_lit and cfg.get('pom') and not card:
+        entry['pomDepth'] = float(cfg['pom'])
     if pack_format == 2:
         entry['packVersion'] = 2
         entry['alphaMode'] = alpha_mode
@@ -385,7 +423,7 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
             entry['anchor'] = anchor
         if cfg.get('sheet'):
             entry['sheet'] = cfg['sheet']
-    slot_suffix = {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough', 'nrcMap': 'nrc'}
+    slot_suffix = {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough', 'nrcMap': 'nrc', 'cwMap': 'cw'}
     for k, data in out.items():
         name = '%s.%s.webp' % (fam, slot_suffix[k])
         entry['files'][k] = name
