@@ -172,6 +172,10 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   and `of_college_range` (`_m`, `_s`) are written on the kit's contract for Ōpal-Phōrḍ's Iridescent house only; move them into
   `kits/qiblai/src/89q3-qb-sacred.js` (as `qb_cell_range`, `qb_college_range`, the keys renamed in opal-ford's `89zp` and its test)
   and rebuild every page that takes the kit (Qiblai's, Lightwall's, Ōpal-Phōrḍ's).
+- **The Iridescent Order's five furniture pieces into the catalog** (2026-11-23, `settlements/opal-ford/iridescent/FURNITURE.md`, NEW):
+  the prism stand, the moonglass screen, the colour-chart rack, the lens-grinding wheel and the Order's banner are Ōpal-Phōrḍ's own
+  props (`targets/town/90s-of-interiors.js` `ofPropMesh`) until they are catalog pieces in `kits/catalog/krator-master-furniture-xanadu.js`
+  (it reaches 61 builds); then the hall's programme can furnish with them and the page's props go.
 - **core/hamlet: a village whose link is on its own green** (2026-11-23, `openworld/xanadu-lake-shore`, HAMLETS-PLAN.md 3d):
   `KHAMLET.village` takes its frame from `spec.link - spec.site`; KSITES passes the site as the link, so a village laid at its site's
   own point (`near: [0, 0]`) gets a zero frame (`ux = uz = 0`), every lane collapses onto the green and its houses fail as "could not

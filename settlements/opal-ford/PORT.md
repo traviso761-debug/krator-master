@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 33 (44%) | 0 (0%) | 0 (0%) | 32 (43%) | 9 (13%) |
+| KB | 33 (42%) | 0 (0%) | 0 (0%) | 37 (47%) | 9 (12%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,10 +14,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/89q8-of-order-pieces.js` | 4.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Qiblai kit's builders (qn* helpers): the house's two pieces |
 | `targets/town/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/town/89zp-of-site.js` | 30.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/town/89zp-of-site.js` | 31.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/town/90q-of-world.js` | 13.1 | [web] | 11 | 3 | 0 | 0 | 2 | 3 | 5 | 0 | 0 | 0 | 0 |  |
-| `targets/town/90r-of-build.js` | 9.2 | [web] | 4 | 0 | 0 | 0 | 2 | 3 | 0 | 2 | 0 | 0 | 0 |  |
-| `targets/town/90s-of-interiors.js` | 9.1 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `targets/town/90r-of-build.js` | 8.7 | [web] | 4 | 0 | 0 | 0 | 2 | 3 | 0 | 2 | 0 | 0 | 0 |  |
+| `targets/town/90s-of-interiors.js` | 14.9 | [web] | 8 | 0 | 0 | 0 | 2 | 9 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `targets/town/90w-of-river.js` | 5.1 | [draw] | 6 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/town/91z-views.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 

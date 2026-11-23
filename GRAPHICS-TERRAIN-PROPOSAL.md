@@ -632,8 +632,15 @@ Because `core/biome` (`231` builds / `540` pages), `core/materials/record` (`279
 5. **`B5` (`S6` + `A0.2`) `[G data]` Drawn-ground audits & chromatic land-shape tint (`core/biome/20-core-kit.js`, `40-core-place.js`, `core/terrain/`):**
    - Point `BIO.attachAudit`, `cliffOld`, and `57-core-water-audit.js` at `KDRAWN.h` whenever `core/drawn` is loaded so coarse-triangle plant float is caught automatically.
    - Upgrade vertex crease/lift ground tinting (`S6`) from achromatic `±6%` to chromatic hollow/nose & aspect-moisture tinting across shared terrain builders.
+6. **`B6` (`M5`) `[G shader]` Web `barkMat` & `solidMat` furrow normals, crevice AO & root-collar sheen parity (`core/biome/30-core-foliage.js`, `20-core-kit.js`):**
+   - Port Godot `bark.gdshader`'s `bark_furrow_normal` (`dFdx`/`dFdy` screen-space luma bump `< 65 m`) and `bark_ao_rough` crevice/root-collar darkening + subtle grazing sheen into Web `BIO.barkMat` and `BIO.solidMat`, so tree trunks, boughs, roots, and biome boulders stop rendering as flat 2D-wallpaper Lambert cylinders across all `540` biome/settlement pages.
+7. **`B7` (`M5`) `[G shader]` Web `foliageHook` volumetric crown AO, leaf-vein normal relief & chlorophyll transmittance parity (`core/biome/30-core-foliage.js`):**
+   - Port Godot `foliage.gdshaderinc`'s `fol_crown_ao` (`0.46..1.0`), `< 45 m` `fol_vein_normal` midrib/chevron relief, yellow-green chlorophyll shift `fol_transmittance` (with a `0.14` subtle default even when `o.backlit` is unset), and `±6%` per-instance hash tint jitter (`bioSnHash`) so canopies read as layered 3D volumes instead of flat cutouts.
 
 ### B. All-Kit Core Steps (`core/materials/*`, `core/engine/*`, `core/catalog/*`, `core/furnish/*`, `kits/interiors/*`, `godot/shaders/` — up to `758` pages; individualized 36-kit checklist in `KIT-REBUILD-SURVEY.md`)
+
+*K1, K2, K4 and K5 written 2026-11-23, before Stage 8 (the owner's D1), on `claude/kit-graphics-k1k5`; K3 dropped (the owner: "Agree all but k3"): KIT-GRAPHICS-K1-K5.md says what each one is, what was left out (K1's sine-free hash and pack.py's mipVariance/cavity split), its tests and which pages move.*
+
 
 1. **`K1` (`M1` + `M2` + `M4`) `[G data]` / `[G shader]` Material-library uniform dedup, sine-free breakup & `mipVariance` AA (`core/materials/record/25-matlib-host.js`, `opt/69a-world-uv.js`, `tools/textures/pack.py`):**
    - Replace literal GLSL floats in `KMAT.specularHook`, `KMAT.breakupHook`, and `69a-world-uv.js` with per-material uniforms (`uKmSpec`, `uKmBreak`, `uWuvScale`), collapsing `30–45` duplicate `MeshStandardMaterial` programs per kit/settlement down to `1–2` programs; replace `sin()` in `kmH` with a sine-free hash matching `godot/shaders/lib/breakup.gdshaderinc`.
@@ -648,6 +655,19 @@ Because `core/biome` (`231` builds / `540` pages), `core/materials/record` (`279
    - Extract Longsong's `uIndoorMask` + `room_light_tex` `KHOOK` shader layer (`89z-ls-atmos.js`) into `core/interiors/20-core-roomlight-host.js` so the four Yuni-lineage builds (`girder`, `yuni`, `locus`, `mavs-refuge`) and standalone kit sheets (`highlands`, `iziz-vernacular`, `xanadu`) can drop their pasted `nlvTex` copies onto one shared module.
 5. **`K5` `[G native]` Godot opaque `library.gdshader` split (`godot/shaders/library.gdshader` + `library_cutout.gdshader`, `godot/krator/kmat.gd`):**
    - Remove unconditional `ALPHA = 1.0; ALPHA_SCISSOR_THRESHOLD = 0.0;` from `godot/shaders/library.gdshader` (moving `alpha_test > 0.0` materials onto a dedicated `library_cutout.gdshader`), restoring Godot's opaque depth prepass, hardware Early-Z rejection, and vertex-only shadow-map passes across **every** building kit and town in Godot (proven in Stage 7 `library_interior.gdshader`).
+6. **`K6` (`M3` + `M4`) `[G shader]` Universal normal-derived ambient/direct cavity, micro-horizon bump self-shadowing & masonry relief gain (`core/materials/record/25-matlib-host.js`, `godot/shaders/library.gdshader`):**
+   - Derive micro-crevice occlusion from tangent-normal steepness (`N_ts.z`) + albedo high-pass contrast to occlude **both** `reflectedLight.indirectDiffuse` (shaded walls, under-eaves, overcast sides!) and `directDiffuse`, add grazing-sun micro-horizon bump self-shadowing, and raise default rough-masonry/timber/thatch `normalScale` (`1.0 -> 1.35`) so shaded walls across all `758` pages keep deep 3D mortar/plank relief instead of flattening into wallpaper.
+7. **`K7` (`M4`) `[G data]` / `[G shader]` Zero-triangle narrow-member chamfer normals, chipped-arris edge wear & vertical weathering streaks (`core/engine/30-geo.js`, `25-matlib-host.js`, `godot/shaders/library.gdshader`):**
+   - Automatically bias `box()`/`prism()` vertex normals outward (`~9°`) on narrow structural members (`min(w, h, d) < 0.65 m`: posts, beams, frames, steps, quoins, merlons) so `90°` edges catch real specular highlights with zero extra triangles, bake subtle top-soffit / corner shading into box vertex colours, and add `fwidth(N)` + noise chipped-edge wear, upward dust/moss, and vertical rain-drip streaks in `KMAT` / `library.gdshader`.
+8. **`K8` (`M4`) `[G shader]` Catalog triplanar screen-space bump normals, roughness contrast & grain cavity (`core/catalog/krator-furniture-detail.js`):**
+   - Upgrade `KF.detailize` (`1,696` furniture pieces, Beast Riders buildings, Motor Vehicles, Mechs, Fauna across `263` pages) from albedo-only multiplication to Mikkelsen `dFdx`/`dFdy` screen-space bump perturbation, per-texel roughness contrast, and deep-grain crevice darkening with `0` extra texture bytes.
+
+### C. All-Water Core & Biome Steps (`core/water/*`, `biomes/*/src/89w-host-water.js`, `godot/shaders/water*.gdshader` — `149` builds; open-world stream/river continuity `W3` landed in `core/world/`)
+
+1. **`W1` `[G shader]` Beer-Lambert 3-channel optical depth absorption, shallow riverbed pebble/caustic shimmer & Schlick grazing Fresnel (`core/water/50-core-water-draw.js`, `51-core-water-kinds.js`, `godot/shaders/water.gdshader`, `water_flow.gdshader`):**
+   - Replace flat 2-colour `mix(shallow, deep, smoothstep(...))` with physical RGB depth extinction (rapid red absorption `< 1.5 m`, emerald mid-depths, deep cobalt), subtle refracted riverbed pebble/caustic dapple in `< 2.2 m` clear shallows, and stronger grazing sky Fresnel across both open water and flow ribbons (alongside the parked `drawFlow` gradient-noise foam breakup).
+2. **`W2` `[G data]` Biome river-to-lake mouth `endFade`/`keep` sweep & monotonic `oidong` stream grading (`biomes/*/src/89w-host-water.js`):**
+   - Add `endFade` / `keep` (`refine: true`) where biome `WATER.flow` rivers enter `WATER.open` lakes/tarns/seas across the `12` currently un-faded biome builds (`xanadu`, `highrift`, `opalvalley`, `copperglacier`, `firebliss`, `cut`, `catch`, `farside`, `nwbay`, `rift`, `swbay`, `swlowlands`), and replace `biomes/oidong`'s ungraded 7-point moving-average stream profile with monotonic `KRELIEF.river` grading.
 
 ## 13. Sources
 

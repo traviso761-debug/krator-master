@@ -46,7 +46,7 @@ function onStreets(list, ways) { let n = 0, first = null;
     const hit = ways.some(w => { for (let i = 1; i < w.pts.length; i++) for (const q of C) if (segD(q, w.pts[i - 1], w.pts[i]) < w.w / 2 - 0.05) return true; return false; });
     if (hit) { n++; first = first || p.id; } }
   return { n, first }; }
-const WET_OK = { xa_river_span: 1, xa_dugout: 1, xa_ford: 1, xa_ferry_raft: 1 };
+const WET_OK = { xa_river_span: 1, xa_dugout: 1, xa_ford: 1, xa_ferry_raft: 1, xa_weir: 1, xa_fish_weir: 1 };
 const inRiver = list => list.filter(p => !WET_OK[p.key] && corners(p.bo).concat([p.bo.c]).some(q => ofH(q[0], q[1]) < ofW(q[1]) + 0.3));
 const boatsBad = list => list.filter(p => p.key === 'xa_dugout').filter(p => { const h = ofH(p.x, p.z) - ofW(p.z); return h < -1.2 || h > 1.6; })
   .concat(list.filter(p => p.key === 'xa_ferry_raft').filter(p => corners(p.bo).concat([p.bo.c]).some(q => ofH(q[0], q[1]) > ofW(q[1]) - 0.4)));   /* the ferry raft afloat: every corner over 0.4 m of water */
@@ -108,7 +108,7 @@ function houseBad(H, bowY) { const bad = [], Hh = OF.HOUSE;
 // ---------------------------------------------------------------- 6. the people and the hosts
 const ppl = OF.people.total, tune = OF.people.tune;
 T.ok('the people the tune\'s ' + tune + ' (XAN_TUNE.opalford) within 25 %', ppl > tune * .75 && ppl < tune * 1.25, ppl + ' in ' + houses.length + ' houses');
-const want = ['xa_ford', 'xa_ferry_raft', 'xa_fish_racks', 'xa_caravanserai', 'xa_customs_house', 'xa_watch', 'xa_temple', 'xa_guild_farm', 'xa_granary', 'xa_watermill', 'xa_river_span', 'xa_dugout', 'xa_farm', 'xa_farmhouse'];
+const want = ['xa_ford', 'xa_ferry_raft', 'xa_fish_racks', 'xa_weir', 'xa_fish_weir', 'xa_caravanserai', 'xa_customs_house', 'xa_watch', 'xa_temple', 'xa_guild_farm', 'xa_granary', 'xa_watermill', 'xa_river_span', 'xa_dugout', 'xa_farm', 'xa_farmhouse'];
 const have = new Set(P.filter(p => p.kind !== 'house').map(p => p.key)), miss = want.filter(k => !have.has(k));
 T.ok('the han, the toll house, the Tears\' post, the temple, the grain office, the granaries, the mill, the footbridge, the dugouts and the terraces placed', !miss.length,
   miss.length ? 'missing ' + miss.join(', ') : (P.length - houses.length) + ' hosts');

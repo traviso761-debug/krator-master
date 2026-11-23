@@ -110,8 +110,8 @@ function fissures(i,j,bx,bz,mx,mz,C){const ov=O.overlay?O.overlay(mx,mz):'',F=ov
    const len=rng(D.L,i,j,k,1),w=rng(D.w,i,j,k,2),d=Math.min(rng(D.d,i,j,k,3),w*2+2),a=(D.strike+(u01(i,j,k,4)-.5)*2*D.jit)*Math.PI/180,ux=Math.sin(a),uz=-Math.cos(a);
    let x,z;if(px==null){x=bx+CELL*(.25+.5*u01(i,j,k,5));z=bz+CELL*(.25+.5*u01(i,j,k,6));}
    else{const off=w*(3+3*u01(i,j,k,5)),al=len*.33*(u01(i,j,k,6)<.5?-1:1);x=px-uz*off+ux*al;z=pz+ux*off+uz*al;}
-   const hl=Math.min(len/2,CELL*.45),A=[x-ux*hl,z-uz*hl],B2=[x+ux*hl,z+uz*hl];   /* its reach takes in the wander (R + 14 m) */
-   if(O.keep(x,z)||O.keep(A[0],A[1])||O.keep(B2[0],B2[1]))continue;
+   const hl=Math.min(len/2,CELL*.45),A=[x-ux*hl,z-uz*hl],B2=[x+ux*hl,z+uz*hl],ns=Math.max(2,Math.ceil(2*hl/60));   /* its reach takes in the wander (R + 14 m) */
+   let blocked=O.keep(x,z);for(let s=0;s<=ns&&!blocked;s++){const u=s/ns;if(O.keep(A[0]+(B2[0]-A[0])*u,A[1]+(B2[1]-A[1])*u))blocked=true;}if(blocked)continue;
    C.push({id:'lf:fissure:'+i+':'+j+':'+t,kind:'fissure',carve:1,placed:1,x,z,a:A,b:B2,w,d,R:hl+w+14,name:'A tension fissure ('+Math.round(w)+' m wide, '+Math.round(d)+' m deep)'});px=x;pz=z;}});}
 // a fissure's cut at (x, z): its depth across the width (the walls a ramp of a twentieth of the depth, so the land stays
 // continuous), easing out over the last fifth of its length at each end

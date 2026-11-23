@@ -45,6 +45,20 @@ let GSTAT={tris:0};
                   entry the usual material (repeats weight it); the library mode only, and only when the second is a MAT */
 let GABLE_ALT=0;const GABLE_ALT_K={};
 let MAT_ALT=0;const MAT_VAR={};
+/* PLOT-BASE GROUNDING (K2/M4, GRAPHICS-TERRAIN-PROPOSAL.md 12d): a wall, post or plinth standing on its plot darkens toward
+   its foot, BASE_AO.lo at the ground to 1 at BASE_AO.band metres up, baked into the vertex colour (no shader, so Godot's
+   import takes it as it is). box(), cyl() and a vertical beam() whose foot is on the plot (PLOT_Y, the plot's ground,
+   set by place(); within 6 cm, the frame upright) are drawn in two: the band, ramped, and the rest above it, untouched, so
+   the ramp ends at the band and does not stretch up a 3 m wall. Flat pieces (a slab, a floor: lower than 0.6 of their
+   narrowest side), glass, glow, water, unlit (basic) materials and the cut-away's cloth keys are left as they were.
+   A kit turns it off with BASE_AO=null before it builds. */
+let BASE_AO={lo:.72,band:.30};let PLOT_Y=null,AO_ON=0;
+const AO_SKIP={glass:1,glow:1,water:1};
+function aoKey(mk){if(!BASE_AO||PLOT_Y===null||AO_SKIP[mk]||SV_CUT[mk])return false;const m=MAT[mk];return !(m&&m.isMeshBasicMaterial);}
+function aoGrounded(x,y,z){const e=CM.elements,sy=Math.hypot(e[4],e[5],e[6]);if(!(sy>0)||e[5]/sy<.999)return false;
+ return Math.abs(e[1]*x+e[5]*y+e[9]*z+e[13]-PLOT_Y)<.06;}
+function aoRun(fn){AO_ON=1;try{fn();}finally{AO_ON=0;}}
+function aoF(wy){const t=(wy-PLOT_Y)/BASE_AO.band;return t>=1?1:BASE_AO.lo+(1-BASE_AO.lo)*(t>0?t:0);}
 function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk];if(MAT_ALT&&MAT_VAR[mk]&&MAT[MAT_VAR[mk][1]]){const v=MAT_VAR[mk];mk=v[MAT_ALT%v.length];}_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
@@ -53,7 +67,8 @@ function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk
  const c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
  for(let i=0;i<Pa.count;i++){_v.fromBufferAttribute(Pa,i).applyMatrix4(_mm);_n.fromBufferAttribute(Na,i).applyMatrix3(_nm).normalize();
   b.p.push(_v.x,_v.y,_v.z);b.n.push(_n.x,_n.y,_n.z);
-  if(Ca)b.c.push(c.r*Ca.getX(i),c.g*Ca.getY(i),c.b*Ca.getZ(i));else b.c.push(c.r,c.g,c.b);
+  if(AO_ON){const f=aoF(_v.y);if(Ca)b.c.push(c.r*Ca.getX(i)*f,c.g*Ca.getY(i)*f,c.b*Ca.getZ(i)*f);else b.c.push(c.r*f,c.g*f,c.b*f);}
+  else if(Ca)b.c.push(c.r*Ca.getX(i),c.g*Ca.getY(i),c.b*Ca.getZ(i));else b.c.push(c.r,c.g,c.b);
   if(b.f){if(CLOTHW){_lp.fromBufferAttribute(Pa,i);if(lm)_lp.applyMatrix4(lm);CLOTHW(_lp,_fl);_fl.applyMatrix3(_cm3);b.f.push(_fl.x,_fl.y,_fl.z);}else b.f.push(0,0,0);}
   if(b.k)b.k.push(CUTC[0],CUTC[1],CUTC[2],CUTC[3]);
   if(b.w)b.w.push(a1);
@@ -72,9 +87,38 @@ function gsph(seg){const k='sph'+(seg||12);return _G[k]||(_G[k]=new THREE.Sphere
 function gtor(R,t,rs,ts){const k='tor'+R.toFixed(3)+'_'+t.toFixed(3)+'_'+(rs||6)+'_'+(ts||14);return _G[k]||(_G[k]=(()=>{const g=new THREE.TorusGeometry(R,t,rs||6,ts||14);g.rotateX(PI/2);return g;})());}
 function gplane(){return _G.pl||(_G.pl=new THREE.PlaneGeometry(1,1));}
 // ---- primitives. Boxes and cylinders are BASE-anchored: (x,y,z) is the middle of the underside.
-function box(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,d));emit(mk,gbox(),m,col);}
+function box(mk,x,y,z,w,h,d,col,ry,rx,rz){
+ if(!rx&&!rz&&h>=.12&&h>=.6*Math.min(w,d)&&aoKey(mk)&&aoGrounded(x,y,z)){const B=BASE_AO.band;   /* grounded: the band ramped, the rest above */
+  if(h>B*1.5){aoRun(()=>boxRaw(mk,x,y,z,w,B,d,col,ry));boxRaw(mk,x,y+B,z,w,h-B,d,col,ry);}else aoRun(()=>boxRaw(mk,x,y,z,w,h,d,col,ry));return;}
+ boxRaw(mk,x,y,z,w,h,d,col,ry,rx,rz);}
+function boxRaw(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,d));emit(mk,gbox(),m,col);}
+/* boxBevel(mat, x,y,z, w,h,d, bev, col, ry): box()'s base-anchored box with every edge chamfered by bev metres (44 triangles
+   to box()'s 12: six inset faces, twelve chamfer strips, eight corner triangles; flat normals, so the chamfers catch the
+   light). For near-tier plinths, piers and lintels where the budget allows (K2, GRAPHICS-TERRAIN-PROPOSAL.md 12d); the
+   chamfer is clamped to 0.45 of the smallest side. Its foot grounds like a box's (no split: the ramp runs to its top
+   when it is under the band, else it is left as it is). */
+function gbevel(w,h,d,e){const k='bev'+[w,h,d,e].map(v=>v.toFixed(3)).join('_');if(_G[k])return _G[k];
+ const H=[w/2,h/2,d/2],pos=[],nor=[],uv=[],idx=[];
+ const put=(pts,n)=>{const b=pos.length/3,l=Math.hypot(n[0],n[1],n[2]);for(const p of pts){pos.push(p[0],p[1],p[2]);nor.push(n[0]/l,n[1]/l,n[2]/l);uv.push(0,0);}
+  if(pts.length===4)idx.push(b,b+1,b+2,b,b+2,b+3);else idx.push(b,b+1,b+2);};
+ const P=(i,vi,j,vj,k,vk)=>{const p=[0,0,0];p[i]=vi;p[j]=vj;p[k]=vk;return p;};
+ for(let i=0;i<3;i++){const j=(i+1)%3,k=(i+2)%3,J=H[j]-e,K=H[k]-e;
+  for(const s of[-1,1]){const n=[0,0,0];n[i]=s;put([P(i,s*H[i],j,-J,k,-K),P(i,s*H[i],j,J,k,-K),P(i,s*H[i],j,J,k,K),P(i,s*H[i],j,-J,k,K)],n);   /* face */
+   for(const t of[-1,1]){const m=[0,0,0];m[i]=s;m[j]=t;   /* the chamfer between face i and face j, along k */
+    put([P(i,s*H[i],j,t*J,k,-K),P(i,s*H[i],j,t*J,k,K),P(i,s*(H[i]-e),j,t*H[j],k,K),P(i,s*(H[i]-e),j,t*H[j],k,-K)],m);}}}
+ for(const sx of[-1,1])for(const sy of[-1,1])for(const sz of[-1,1])   /* the corner triangles */
+  put([[sx*H[0],sy*(H[1]-e),sz*(H[2]-e)],[sx*(H[0]-e),sy*H[1],sz*(H[2]-e)],[sx*(H[0]-e),sy*(H[1]-e),sz*H[2]]],[sx,sy,sz]);
+ return (_G[k]=fixWind(mkGeo(pos,nor,uv,idx)));}
+function boxBevel(mk,x,y,z,w,h,d,bev,col,ry){const e=Math.max(0,Math.min(bev==null?.04:bev,.45*Math.min(w,h,d)));
+ if(!(e>1e-4))return box(mk,x,y,z,w,h,d,col,ry);
+ const run=()=>emit(mk,gbevel(w,h,d,e),TF(x,y+h/2,z,ry),col);
+ if(aoKey(mk)&&h<=BASE_AO.band*1.5&&aoGrounded(x,y,z))aoRun(run);else run();}
 // cyl(mat, x,y,z, r,h, colour, seg, rTop, wrap): vertical, base at y. wrap: own UVs (u round, v up) so a pattern follows the surface
-function cyl(mk,x,y,z,r,h,col,seg,rt,wrap){seg=seg||14;const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));const tl=TILE[mk]||1;const uv=wrap?{su:TAU*r/tl,sv:h/tl}:undefined;
+function cyl(mk,x,y,z,r,h,col,seg,rt,wrap){
+ if(!wrap&&(rt==null||rt===r)&&h>=.12&&h>=1.2*r&&aoKey(mk)&&aoGrounded(x,y,z)){const B=BASE_AO.band;   /* a grounded post: see box() */
+  if(h>B*1.5){aoRun(()=>cylRaw(mk,x,y,z,r,B,col,seg));cylRaw(mk,x,y+B,z,r,h-B,col,seg);}else aoRun(()=>cylRaw(mk,x,y,z,r,h,col,seg));return;}
+ cylRaw(mk,x,y,z,r,h,col,seg,rt,wrap);}
+function cylRaw(mk,x,y,z,r,h,col,seg,rt,wrap){seg=seg||14;const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));const tl=TILE[mk]||1;const uv=wrap?{su:TAU*r/tl,sv:h/tl}:undefined;
  if(rt!==undefined&&rt!==null&&rt!==r)emit(mk,gfrus(seg,rt/r),m,col,uv);else emit(mk,gcyl(seg),m,col,uv);}
 function cone(mk,x,y,z,r,h,col,seg){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));emit(mk,gcone(seg||14),m,col);}
 function sph(mk,x,y,z,r,col,sy,seg){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,r*(sy||1),r));emit(mk,gsph(seg),m,col);}
@@ -87,6 +131,11 @@ function beamQ(dir){const q=new THREE.Quaternion();
  if(Math.abs(dir.y)>.999){if(dir.y>0)q.identity();else q.setFromAxisAngle(new THREE.Vector3(1,0,0),PI);}
  else{const X=new THREE.Vector3().crossVectors(_up,dir).normalize();const Z=new THREE.Vector3().crossVectors(X,dir).normalize();q.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,dir,Z));}return q;}
 function beam(mk,a,b,w,col,round,seg,w2){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.hypot(dx,dy,dz);if(L<1e-6)return;
+ if(dy/L>.9999&&(w2===undefined||w2===w)&&L>=.12&&L>=(round?1.2:.6)*w&&aoKey(mk)&&aoGrounded(a[0],a[1],a[2])){const B=BASE_AO.band;   /* a grounded post: see box() */
+  if(L>B*1.5){const m=[a[0]+dx*B/L,a[1]+B,a[2]+dz*B/L];aoRun(()=>beamRaw(mk,a,m,w,col,round,seg,w2));beamRaw(mk,m,b,w,col,round,seg,w2);}
+  else aoRun(()=>beamRaw(mk,a,b,w,col,round,seg,w2));return;}
+ beamRaw(mk,a,b,w,col,round,seg,w2);}
+function beamRaw(mk,a,b,w,col,round,seg,w2){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.hypot(dx,dy,dz);if(L<1e-6)return;
  const dir=new THREE.Vector3(dx/L,dy/L,dz/L);const q=beamQ(dir);const m=new THREE.Matrix4();
  if(round){m.compose(new THREE.Vector3(a[0],a[1],a[2]),q,new THREE.Vector3(w,L,w));emit(mk,w2!==undefined&&w2!==w?gfrus(seg||8,w2/w):gcyl(seg||8),m,col);}
  else{m.compose(new THREE.Vector3((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),q,new THREE.Vector3(w,L,w2===undefined?w:w2));emit(mk,gbox(),m,col);}}

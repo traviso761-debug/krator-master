@@ -80,6 +80,9 @@ VENDORED = {}
 sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky  # noqa: E402
 SKY = psky.paths(psky.SKY_H3)
+# KROOMLIGHT (core/interiors/10-core-roomlight.js), read in place ahead of the core (K2, GRAPHICS-TERRAIN-PROPOSAL.md 12d):
+# 49-exports.js builds the room table, the light pool and the v2 export on it, 50-shell.js bakes its corner AO
+SKY['05-roomlight.js'] = os.path.join(ROOT, 'core', 'interiors', '10-core-roomlight.js')
 
 
 def src_path(f):

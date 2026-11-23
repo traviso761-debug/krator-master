@@ -40,7 +40,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 40 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (91); THE ROUTE GRID (107); WALK GRAPH (the life layer's network) (498) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
-| `45-kit.js` | 32 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (128) |
+| `45-kit.js` | 28 | 10. KIT (1); NIGHT LIGHT VOLUME (128) |
 | `47-texture.js` | 17 | 11. TEXTURES (1) |
 | `50-structure.js` | 10 | 12. STRUCTURE (massing) (1) |
 | `53-assets.js` | 23 | 13b. ASSET REGISTRY + BUILD FRAME (1) |

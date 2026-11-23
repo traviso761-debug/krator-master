@@ -16,9 +16,42 @@ const OF_IX_NEAR=40,OF_IX_FAR=90;
 const OF_IX_CELLS={name:'cells',wealth:.35,program:(l,a)=>Array(Math.max(4,Math.round(a/26))).fill('bedroom')};
 const OF_IX_COLLEGE={name:'college',wealth:.5,program:(l,a)=>l?(a>=300?['dormitory','dormitory','dormitory','study']:['dormitory','study']):(a>=300?['hall','study','hall','kitchen','store']:['hall','study','store'])};
 const OF_IX_PROG={of_cell_range:OF_IX_CELLS,of_college_range:OF_IX_COLLEGE,of_college_range_m:OF_IX_COLLEGE,of_college_range_s:OF_IX_COLLEGE};
+/* the great monastery's hall (its 24 x 17 m stack of three storeys, kits/qiblai 89q3): the Hall of the Bow on the ground storey,
+   the Masters' Gallery over it, the Gallery of the Bow at the top behind the moonglass (iridescent/BLUEPRINT.md, sheets M1-MR) */
+const OF_IX_BOW={name:'bow',wealth:.85,program:(l,a)=>l===1?['study','study']:['shrine']};
+
+// ---------------------------------------------------------------- the blueprint's own pieces (FURNITURE.md's NEW list)
+// The prism stand, the moonglass screen, the colour-chart rack, the lens-grinding wheel and the Order's banner are owed to the
+// catalog (kits/catalog's Xanadu file reaches 61 builds: with the all-builds rebuild, TODO.md); until then this page draws them
+// itself, in the Hall and the Galleries of the Bow (in the hall's type, so every clone has them, each registered with core/tags
+// as the type's furniture is) and the lens wheels in the Prism Workshop's yard. [web]: three.js meshes, one material set.
+const OF_PROP_MAT=(function(){const M=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.6,metalness:0},o||{}));
+ return{lac:M(0x2a9a94,{roughness:.35}),gilt:M(0xd4a640,{roughness:.3,metalness:.7}),prism:M(0xe8f4f4,{roughness:.05,metalness:.1,transparent:true,opacity:.55}),
+  glass:M(0xeef0ea,{roughness:.2,transparent:true,opacity:.7}),wood:M(0x5a4232,{roughness:.8}),iron:M(0x4a4a4a,{roughness:.5,metalness:.6}),
+  stone:M(0x9a9484,{roughness:.9}),silk:M(0x2a9a94,{roughness:.7,side:THREE.DoubleSide}),
+  bands:[0xc0392b,0xe67e22,0xf1c40f,0x27ae60,0x2a9a94,0x2e5aa8,0x6a3a8a,0xf4efe4].map(c=>M(c,{roughness:.7,side:THREE.DoubleSide}))};})();
+function ofPropMesh(kind){const G=new THREE.Group(),M=OF_PROP_MAT,box=(w,h,d,m,x,y,z,ry)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);if(ry)o.rotation.y=ry;G.add(o);return o;},
+  cyl=(r0,r1,h,m,x,y,z,n)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(r0,r1,h,n||12),m);o.position.set(x,y,z);G.add(o);return o;};
+ if(kind==='prism stand'){cyl(.32,.38,.8,M.lac,0,.4,0);cyl(.36,.36,.06,M.gilt,0,.83,0);const p=cyl(.2,.2,.55,M.prism,0,1.15,0,3);p.rotation.z=Math.PI/2;return{G,size:[.8,1.45,.8]};}
+ if(kind==='moonglass screen'){for(let i=0;i<3;i++){const x=(i-1)*.92,ry=(i-1)*.35;box(.9,1.8,.03,M.glass,x,1.0,Math.abs(i-1)*.15,ry);box(.94,.06,.06,M.lac,x,1.92,Math.abs(i-1)*.15,ry);box(.94,.06,.06,M.lac,x,.08,Math.abs(i-1)*.15,ry);}return{G,size:[2.8,2,.5]};}
+ if(kind==='colour-chart rack'){for(const s of[-1,1])box(.08,2.2,.08,M.wood,s*1,1.1,0);box(2.1,.08,.08,M.wood,0,2.15,0);
+  M.bands.forEach((m,i)=>{const o=new THREE.Mesh(new THREE.PlaneGeometry(.22,1.5),m);o.position.set(-.86+i*.245,1.35,.02);G.add(o);});return{G,size:[2.1,2.2,.3]};}
+ if(kind==='lens-grinding wheel'){box(1.4,.8,.7,M.wood,0,.4,0);const w=cyl(.45,.45,.12,M.stone,.2,1.15,0,16);w.rotation.x=Math.PI/2;box(.08,.5,.08,M.iron,.2,.85,.32);box(.5,.06,.3,M.wood,-.45,.1,.5);return{G,size:[1.4,1.6,1]};}
+ if(kind==='bow banner'){cyl(.05,.05,3.6,M.gilt,0,1.8,0,8);cyl(.18,.22,.12,M.lac,0,.06,0);const c=new THREE.Mesh(new THREE.PlaneGeometry(.9,1.9),M.silk);c.position.set(.47,2.5,0);G.add(c);
+  M.bands.slice(0,7).forEach((m,i)=>{const o=new THREE.Mesh(new THREE.PlaneGeometry(.09,.7),m);o.position.set(.47,1.6,.01);o.rotation.z=(i-3)*.14;G.add(o);});return{G,size:[1,3.6,.3]};}
+ return null;}
+const OF_PROP_KEY={'prism stand':'of_prism_stand','moonglass screen':'of_moonglass_screen','colour-chart rack':'of_colour_chart_rack','lens-grinding wheel':'of_lens_grinding_wheel','bow banner':'of_bow_banner'};
+/* the hall type's pieces, in the building's frame (the shell: the hall's stack; its back, toward the spray, at -z) */
+function ofBowProps(T,sh){const lv=T.plan&&T.plan.levels||[],y=i=>lv[i]?lv[i].y:null,back=sh.z-sh.d/2,out=[];
+ const put=(kind,x,yy,z,ry)=>{if(yy==null)return;const P=ofPropMesh(kind);if(!P)return;P.G.position.set(x,yy,z);P.G.rotation.y=ry||0;P.G.name=kind;T.G.add(P.G);
+  out.push({kind,key:OF_PROP_KEY[kind],name:kind,x,y:yy,z,ry:ry||0,size:P.size,tags:{culture:'xanadu'}});};
+ put('prism stand',sh.x,y(0),back+2.2,0);for(const s of[-1,1])put('bow banner',sh.x+s*4.5,y(0),back+1.0,0);
+ for(const s of[-1,1])for(const dz of[-3,3])put('colour-chart rack',sh.x+s*(sh.w/2-.7),y(1),sh.z+dz,s*-Math.PI/2);
+ for(let i=-2;i<=2;i++)put('prism stand',sh.x+i*4,y(2),back+1.1,0);for(const s of[-1,1])put('moonglass screen',sh.x+s*(sh.w/2-2.5),y(2),back+2.6,0);
+ if(T.F){T.F.placed=(T.F.placed||[]).concat(out);}return out.length;}
 const OF_IX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noShell:0,noProgram:0,skipped:0,fails:[],ms:0,byProgram:{},tex:{meshes:0,mapped:0},doors:0,walked:0,ranges:0};
  const report=()=>{window._ofIx={lots:S.lots.length,types:S.nTypes,built:S.built,clones:S.clones,noShell:S.noShell,noProgram:S.noProgram,skipped:S.skipped,noStorey:S.noStorey|0,
-  byProgram:S.byProgram,fails:S.fails.slice(0,8),ms:S.ms,tex:S.tex,doors:S.doors,walked:S.walked,ranges:S.ranges,buildTypes:S.buildTypes,walkIn:S.walkIn,error:S.error};};
+  byProgram:S.byProgram,fails:S.fails.slice(0,8),ms:S.ms,tex:S.tex,doors:S.doors,walked:S.walked,ranges:S.ranges,hall:S.hall|0,bowProps:S.bowProps|0,buildTypes:S.buildTypes,walkIn:S.walkIn,error:S.error};};
  if(typeof qnShellOf!=='function'||typeof qnIxType!=='function'){S.error='the Qiblai kit\'s interiors (89q5s) are not on the page';report();return S;}
  const hash=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h;};
  const byId=new Map();for(const D of KDOOR.list){const m=/^(.*)\.\d+(#\d+)?$/.exec(D.id);if(m)(byId.get(m[1])||byId.set(m[1],[]).get(m[1])).push(D);}   /* a builder's doors by their placement: key@x,z */
@@ -33,6 +66,8 @@ const OF_IX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noSh
  /* the great monastery's cell ranges (each storey stack 5.5-7.5 m deep, 14 m long or more): the monks' quarters */
  for(const p of house){if(p.key!=='qb_monastery'||!p.stacks)continue;let i=0;
   for(const s of p.stacks){const dd=Math.min(s.w,s.d);if(dd<5.5||dd>7.5||Math.max(s.w,s.d)<14||s.hs[0]>4.4)continue;const sh=qnShellOf([s]);if(sh){addLot(p,p.id+'.range'+(i++),sh,QB_IX_MONKS);S.ranges++;}}
+  /* the hall: the stack of three storeys at least 15 m deep */
+  const hs=p.stacks.find(s=>Math.min(s.w,s.d)>=15&&s.hs.length>=3);if(hs){const sh=qnShellOf([hs]);if(sh){addLot(p,p.id+'.hall',sh,OF_IX_BOW);S.hall=(S.hall|0)+1;}}
   p.stacks=null;}
  for(const p of house){if(!p.stacks)continue;if(!p.stacks.length){p.stacks=null;S.noStorey=(S.noStorey|0)+1;continue;}
   if(QB_IX_OPEN[p.key]){p.stacks=null;S.skipped++;continue;}
@@ -44,6 +79,7 @@ const OF_IX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noSh
  S.buildType=function(ty){if(ty.tried)return ty.T;ty.tried=true;const t0=performance.now();
   try{let T=null;for(let k=0;k<3;k++){const U=qnIxType(ty.sh,ty.key,hash(ty.tk)+k*7919,ty.door,ty.prog);if(!U||!U.G){if(!T)T=U;break;}
     if(!T||!T.G||U.F.fails.length<T.F.fails.length)T=U;if(!T.F.fails.length)break;}
+   if(T&&T.G&&ty.prog===OF_IX_BOW)S.bowProps=ofBowProps(T,ty.sh);   /* the Hall and the Galleries of the Bow: the blueprint's pieces */
    if(T&&T.G){ty.T=T;S.built++;S.byProgram[T.program]=ofD(S.byProgram[T.program],0)+1;
     if(T.F){S.fails=S.fails.concat(T.F.fails.map(f=>ty.key+': '+f));if(T.F.tex){S.tex.meshes+=T.F.tex.meshes;S.tex.mapped+=T.F.tex.mapped;}}}
    else if(T&&T.error)S.fails.push(ty.key+': '+T.error);}
@@ -82,3 +118,10 @@ const OF_IX=(function(){const S={lots:[],types:{},nTypes:0,built:0,clones:0,noSh
    if(ty.T&&newClone<6){S.place(L);newClone++;}}
   if(newClone)report();});
  report();return S;})();
+// the Prism Workshop's yard (89zp OF_HOUSE: the Glaziers' lodge at site u -50, v 216, its front to the south-west): two
+// lens-grinding wheels before its door, registered with core/tags as props
+(function ofWorkshopYard(){const Hh=OF.HOUSE,TG=KTAGS.page||(KTAGS.page=KTAGS.create({build:'opal-ford'}));let n=0;
+ for(const du of[-3.2,3.2]){const x=Hh.x0+204,z=Hh.z0-50+du,y=ofH(x,z),P=ofPropMesh('lens-grinding wheel');if(!P)continue;
+  P.G.position.set(x,y,z);P.G.rotation.y=-Math.PI/2;P.G.name='lens-grinding wheel';scene.add(P.G);
+  TG.add({'class':'prop',kind:'lens-grinding wheel',key:OF_PROP_KEY['lens-grinding wheel'],name:'a lens-grinding wheel (the Prism Workshop)',at:[x,y,z],ry:-Math.PI/2,size:P.size,tags:{culture:'xanadu'},frag:'90s-of-interiors.js'});n++;}
+ window._ofIx.yardProps=n;})();

@@ -37,6 +37,20 @@ half, and adds `openings()`, `doorExport()` and `doorState()` to the probe. Ever
 build.py `CORE_DIRS`); Zeijani's fork reads `36o-open.js` by path. A bundle without `core/door` (the isle demo's `ISK`, built
 dry) gets the leaves drawn shut into the buckets and the engine's lamp glass for panes.
 
+**Plot-base grounding and bevels** (K2 of GRAPHICS-TERRAIN-PROPOSAL.md 12d, 2026-11-23). A `box()`, `cyl()` or vertical `beam()`
+whose foot stands on its plot (`PLOT_Y`, the ground `place()` sets; within 6 cm, the frame upright) darkens toward its foot in
+the vertex colour, `BASE_AO.lo` (0.72) at the ground to 1 at `BASE_AO.band` (0.30 m) up. A piece taller than 1.5 bands is drawn
+in two, the band ramped and the rest above it as it was, so the ramp ends at the band (12 more triangles a grounded wall);
+flat pieces (a slab), glass, glow, water, basic materials and the cut-away's cloth keys are left alone. `BASE_AO=null` before
+the build turns it off. `boxBevel(mk, x,y,z, w,h,d, bev, col, ry)` is `box()` with every edge chamfered by `bev` (44
+triangles; for near-tier plinths, piers and lintels). `node core/engine/test-k2-geo.js`. Both move every engine page's
+fingerprint (the colours, and the triangle counts of the records with grounded pieces): rewrite `fingerprint.json` once,
+after the owner has seen the shots.
+
+**Room light** (K2): with `?interiors=1` the planned rooms' `KROOMLIGHT` table is `SVIX.lightTable` (`_api.interiors().light`
+counts the lit, reached and dark rooms), `svixLightPool(eye)` the eye's room's light pool and `svixExport()` interiors.json v2
+(kits/interiors API.md, "Room light").
+
 **Taken by:** kits scyvoi, ash-nomads, desert-nomads, eternian, islanders, lizardmen, yeti, resources. `settlements/isle-demo`
 bundles it with the Islanders kit (`bundles.py` `isk_files`). Not yet: `kits/zeijani` and `settlements/noahs-regret` run
 their own forks of it (most files differ); porting them is a later step.

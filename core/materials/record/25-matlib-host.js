@@ -29,21 +29,35 @@
     img.src = url;
     return (cache[key] = t);
   }
+  /* THE PROGRAM KEY (K1, GRAPHICS-TERRAIN-PROPOSAL.md 12d; TODO.md "Fewer shader programs"). The hooks' numbers are
+     uniforms set per material (sh.uniforms is the material's own), so their GLSL text varies only with WHICH hooks are on;
+     KMAT.libKey(L) keys on that alone and every library material of one kind shares one program. The uniforms hold the
+     values the text used to print (toFixed(3)), so a page draws the same pixels. KMAT.libId(L) is the old value-bearing
+     key, kept for ids (26-matlib-bind.js). */
+  var r3 = function(x){ return +(+x).toFixed(3); };
+  var specK = function(specular){ return (specular == null ? 0.5 : specular) / 0.5; };
+  var specOn = function(specular){ return Math.abs(specK(specular) - 1) >= 1e-6; };
+  var breakOn = function(b){ return !!(KMAT.breakupOn && b && (b.mix > 0 || b.macro > 0)); };
   /* Godot's `specular` in three.js r128: scale the direct specular term (0.5 leaves it as it is). A shader hook:
-     call it from the material's onBeforeCompile. */
+     call it from the material's onBeforeCompile. uKmSpec holds the scale. */
   KMAT.specularHook = function(sh, specular){
-    var k = (specular == null ? 0.5 : specular) / 0.5;
-    if(Math.abs(k - 1) < 1e-6) return;
-    sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_end>',
-      '#include <lights_fragment_end>\n  reflectedLight.directSpecular *= ' + k.toFixed(3) + ';');
+    if(!specOn(specular)) return;
+    sh.uniforms = sh.uniforms || {};
+    sh.uniforms.uKmSpec = { value: r3(specK(specular)) };
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uKmSpec;')
+      .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n  reflectedLight.directSpecular *= uKmSpec;');
   };
   /* 'breakup' (core/materials/PLAN.md "Repetition break-up"): a world-space value noise blends each map with a copy
      shifted by a fixed offset (the same scale and direction, so planks stay planks), and a slower noise varies the
-     brightness. Colour, normal and roughness use the same mask, so they stay in register. b = {mix, macro, cell}. */
+     brightness. Colour, normal and roughness use the same mask, so they stay in register. b = {mix, macro, cell};
+     uKmBreak = (mix, macro, cell). */
   KMAT.breakupHook = function(sh, b){
-    if(!KMAT.breakupOn || !b || !(b.mix > 0 || b.macro > 0)) return;
-    var cell = (b.cell || 8).toFixed(3), mx = (b.mix || 0).toFixed(3), mc = (b.macro || 0).toFixed(3);
+    if(!breakOn(b)) return;
+    sh.uniforms = sh.uniforms || {};
+    sh.uniforms.uKmBreak = { value: [r3(b.mix || 0), r3(b.macro || 0), r3(b.cell || 8)] };
     var noise = [
+      'uniform vec3 uKmBreak;',
       'varying vec3 vKmWP;',
       'float kmH(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }',
       'float kmN(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);',
@@ -57,13 +71,13 @@
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', '#include <common>\n' + noise)
       .replace('#include <map_fragment>', [
-        'float kmM = smoothstep(0.3, 0.7, kmN(vKmWP / ' + cell + ')) * ' + mx + ';',
+        'float kmM = smoothstep(0.3, 0.7, kmN(vKmWP / uKmBreak.z)) * uKmBreak.x;',
         '#ifdef USE_MAP',
         '  vec4 texelColor = mix(texture2D(map, vUv), texture2D(map, vUv + KM_OFF), kmM);',
         '  texelColor = mapTexelToLinear(texelColor);',
         '  diffuseColor *= texelColor;',
         '#endif',
-        'diffuseColor.rgb *= 1.0 + ' + mc + ' * (kmN(vKmWP / (' + cell + ' * 2.7) + 19.1) * 2.0 - 1.0);'].join('\n'))
+        'diffuseColor.rgb *= 1.0 + uKmBreak.y * (kmN(vKmWP / (uKmBreak.z * 2.7) + 19.1) * 2.0 - 1.0);'].join('\n'))
       .replace('#include <roughnessmap_fragment>', THREE.ShaderChunk.roughnessmap_fragment
         .split('texture2D( roughnessMap, vUv )').join('mix(texture2D( roughnessMap, vUv ), texture2D( roughnessMap, vUv + KM_OFF ), kmM)'))
       .replace('#include <normal_fragment_maps>', THREE.ShaderChunk.normal_fragment_maps
@@ -72,7 +86,8 @@
   };
   /* every hook a library material takes, in order; and the matching part of its program cache key */
   KMAT.libHooks = function(sh, L){ KMAT.specularHook(sh, L.specular); KMAT.breakupHook(sh, L.breakup); };
-  KMAT.libKey = function(L){ var b = L.breakup; return '|lib' + (L.specular == null ? '' : L.specular) + (b ? '|bu' + [b.mix, b.macro, b.cell].join('_') : ''); };
+  KMAT.libKey = function(L){ return '|lib' + (specOn(L.specular) ? 's' : '') + (breakOn(L.breakup) ? '|bu' : ''); };
+  KMAT.libId = function(L){ var b = L.breakup; return '|lib' + (L.specular == null ? '' : L.specular) + (b ? '|bu' + [b.mix, b.macro, b.cell].join('_') : ''); };
   /* opt.flipY false: row 0 of the image is v = 0, as in a DataTexture or canvas texture a card replaces */
   KMAT.textures = function(entry, opt){
     var a = (opt && opt.aniso) || 1, fy = opt && opt.flipY;

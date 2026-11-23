@@ -310,6 +310,18 @@ function buildChannels(){const L=M.drainage.lines.slice(),S=[],X=[],SMO=!!M.smoo
   if(L[li].riv)RIVSEG.push({name:L[li].name,width:L[li].width,s0:S.length/9,n:P.length-1,exact:!!L[li].exact});
   for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];S.push(a.x,a.z,b.x,b.z,a.a,b.a,a.bed,b.bed,L[li].riv||0);X.push(L[li].exact?1:0);}}
  SEG=new Float64Array(S);SEGX=new Uint8Array(X);CHASH=new Map();const n=SEG.length/9;
+ /* Grade named perennial rivers against the pre-channel terrain (benches, hills, ridges, dunes) up to RIVCUT m of gorge
+    incision so rivers cut antecedent gorges through fault risers and spurs instead of climbing +45 m up terrace steps */
+ const RIVCUT=52,RIVWIN=35,lh=W.landHook;W.landHook=null;
+ try{for(const R of RIVSEG){if(R.n<1)continue;const nv=R.n+1,hp=new Float64Array(nv),gb=new Float64Array(nv);
+  for(let k=0;k<nv;k++){const o=(R.s0+(k<R.n?k:R.n-1))*9,vx=k<R.n?SEG[o]:SEG[o+2],vz=k<R.n?SEG[o+1]:SEG[o+3];
+   const w=R.exact?[vx,vz]:W.unwarp(vx,vz);let h0=H(w[0],w[1],0,null,true,true);
+   if(k>0){const po=(R.s0+k-1)*9,mx=(SEG[po]+vx)*.5,mz=(SEG[po+1]+vz)*.5,mw=R.exact?[mx,mz]:W.unwarp(mx,mz);
+    h0=Math.min(h0,H(mw[0],mw[1],0,null,true,true));}
+   hp[k]=h0;}
+  for(let k=0;k<nv;k++){let wlo=hp[k];for(let j=Math.max(0,k-RIVWIN);j<k;j++)if(gb[j]<wlo)wlo=gb[j];
+   gb[k]=Math.max(wlo,hp[k]-RIVCUT);}
+  for(let k=0;k<R.n;k++){const o=(R.s0+k)*9;SEG[o+6]=Math.min(SEG[o+6],gb[k]);SEG[o+7]=Math.min(SEG[o+7],gb[k+1]);}}}finally{W.landHook=lh;}
  for(let s=0;s<n;s++){const o=s*9,R=CHREACH+(SEGX[s]?WARPMAX:0),x0=Math.min(SEG[o],SEG[o+2])-R,x1=Math.max(SEG[o],SEG[o+2])+R,z0=Math.min(SEG[o+1],SEG[o+3])-R,z1=Math.max(SEG[o+1],SEG[o+3])+R;
   for(let iz=Math.floor(z0/CHC);iz<=Math.floor(z1/CHC);iz++)for(let ix=Math.floor(x0/CHC);ix<=Math.floor(x1/CHC);ix++){const k=(ix+32768)*65536+(iz+32768);
    let a=CHASH.get(k);if(!a){a=[];CHASH.set(k,a);}a.push(s);}}
@@ -383,7 +395,7 @@ W.carveAt=(x,z)=>{const c=carveAt(x,z,baseH(x,z),.5,{});return c.d<1e9?Object.as
 // threshold: the owner, 2026-11-15) holds water in its bed (streamWater), a dry one is a wadi. The hash's cells are 512 m
 // and a segment sits in every cell its reach (SREACH) touches, so a point reads a handful of segments (a flat grid over
 // the streams' box, not a Map: a Map keyed past the small integers made H twice as slow).
-const STCELL=512,SREACH=90,SDMAX=6;   /* m: the most a stream cuts under its bank to keep its bed falling; past it, it follows the ground */let STSEG=null,STHASH=null,STIDX=null,STLN=[],STPC=null;const STG={x0:0,z0:0,nx:0,nz:0};const STC={k:0,d:1e9,hw:0,wet:0};
+const STCELL=512,SREACH=90,SDMAX=22;   /* m: the most a stream cuts under its bank to keep its bed falling; past it, it follows the ground */let STSEG=null,STHASH=null,STIDX=null,STLN=[],STPC=null;const STG={x0:0,z0:0,nx:0,nz:0};const STC={k:0,d:1e9,hw:0,wet:0};
 const stW=s=>.75+3.25*s,stD=s=>.6+1.9*s;   /* half-width and depth (m) from the strength */
 const stVW=s=>25+50*s,stVD=s=>1.2+3.3*s;
 /* THE PROFILE BY STYLE (relief P11, S5): a stream's bed shaped by the land's style blend S (its slot, box and peat, 0..1) and
@@ -397,15 +409,43 @@ function stProf(S,s,wet,P){const sl=S.slot||0,bx=S.box||0,pt=S.peat||0,cf=Math.m
  P.wm=(1-.4*sl+.3*bx-.35*pt)*(1+2.5*bx*(1-smooth(0,.15,s)))*(1+1.5*dry);
  P.dm=(1+1.5*sl+1*bx-.3*pt)*(1-.45*dry);P.wk=lerp(lerp(S.wallK==null?.5:S.wallK,.1,cf),.2,pt*(1-cf));P.vm=1-.7*cf-.4*pt;P.bars=.35*dry;return P;}
 const SDEF={wallK:.5,slot:0,box:0,peat:0};    /* its valley: a swale this half-width and depth (m) under the bank, so a stream lies in a fold of the land, not a slot cut in it */
+function snapMouthRiver(mx,mz,mbed){if(!CHASH)return null;const q=warpQ(mx,mz);let bd=280,bx=0,bz=0,bb=mbed;
+ for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){const L=CHASH.get((Math.floor(q[0]/CHC)+dx+32768)*65536+(Math.floor(q[1]/CHC)+dz+32768));if(!L)continue;
+  for(let i=0;i<L.length;i++){const o=L[i]*9;if(!(SEG[o+8]>0))continue;const ax=SEG[o],az=SEG[o+1],ex=SEG[o+2]-ax,ez=SEG[o+3]-az,l2=ex*ex+ez*ez,ux=SEGX[L[i]]?mx:q[0],uz=SEGX[L[i]]?mz:q[1];
+   let t=l2>0?((ux-ax)*ex+(uz-az)*ez)/l2:0;t=t<0?0:t>1?1:t;const px=ax+ex*t,pz=az+ez*t,w=SEGX[L[i]]?[px,pz]:W.unwarp(px,pz),d=Math.hypot(w[0]-mx,w[1]-mz);
+   if(d<bd){bd=d;bx=w[0];bz=w[1];bb=Math.min(mbed,lerp(SEG[o+6],SEG[o+7],t));}}}
+ return bd<280?[bx,bz,bb]:null;}
 function streamCurves(SR,each){const MD=SR.meander?{amp:SR.meander.amp,wave:SR.meander.wave,seed:KRAND.child(SR.meander.seed,'streams'),ox:cx*2000,oz:cy*2000}:null;
- for(const L of SR.lines){const P=WSMOOTH.line(WSTREAMS.decode(L,SR),{step:SR.step==null?60:SR.step,relax:SR.relax==null?2:SR.relax,meander:MD});
-  let lo=1e9;for(const p of P){lo=Math.min(lo,p[3]);p[3]=lo;}each(L,P);}}
+ const stp=SR.step==null?60:SR.step,rlx=SR.relax==null?2:SR.relax,jpos=new Map();
+ for(const L of SR.lines){const raw=WSTREAMS.decode(L,SR),raw0=raw.map(p=>[Math.round(p[0]),Math.round(p[1])]),last=raw.length-1;
+  /* Snap a tributary's mouth ('j') to its trunk's relaxed vertex before relaxing so 1-2-1 smoothing never pulls the trunk
+     60-300 m away from the tributary; snap a channel-ending stream ('c') onto a nearby named river's centreline */
+  if(last>=1&&L.e==='j'){const jp=jpos.get(raw0[last][0]+','+raw0[last][1]);if(jp){raw[last][0]=jp[0];raw[last][1]=jp[1];raw[last][3]=Math.min(raw[last][3],jp[2]);}}
+  else if(last>=1&&L.e==='c'){const rp=snapMouthRiver(raw[last][0],raw[last][1],raw[last][3]);if(rp){raw[last][0]=rp[0];raw[last][1]=rp[1];raw[last][3]=rp[2];}}
+  const Q=WSMOOTH.line(raw,{step:1e12,relax:rlx});
+  if(Q.length===raw0.length){for(let v=0;v<last;v++){const k=raw0[v][0]+','+raw0[v][1];if(!jpos.has(k))jpos.set(k,[Q[v][0],Q[v][1],Q[v][3]]);}}
+  else{for(let v=0;v<last;v++){const k=raw0[v][0]+','+raw0[v][1];if(jpos.has(k))continue;let bv=0,bd=1e18;
+   for(let q=0;q<Q.length;q++){const d=(Q[q][0]-raw[v][0])*(Q[q][0]-raw[v][0])+(Q[q][1]-raw[v][1])*(Q[q][1]-raw[v][1]);if(d<bd){bd=d;bv=q;}}jpos.set(k,[Q[bv][0],Q[bv][1],Q[bv][3]]);}}
+  const P=WSMOOTH.curve(Q,{step:stp,meander:MD});
+  let lo=1e9;for(const p of P){lo=Math.min(lo,p[3]);p[3]=lo;}each(L,P,Q,raw0,jpos);}}
 function buildStreams(){STSEG=null;STHASH=null;STIDX=null;STLN=[];STPC=null;const SR=M.streams;W.streamCount=0;W.streamSegments=0;if(!SR||!SR.lines||!SR.lines.length)return;
  if(typeof WSTREAMS==='undefined'||typeof WSMOOTH==='undefined')throw new Error('41-world-fields: region.json has streams: list 40-world-smooth.js and 44-world-streams.js before 41');
+ const recs=[],owner=new Map();let jposRef=null;
+ streamCurves(SR,(L,P,Q,raw0,jpos)=>{jposRef=jpos;const li=recs.length;
+  for(let v=0;v<raw0.length-1;v++){const k=raw0[v][0]+','+raw0[v][1];if(!owner.has(k))owner.set(k,[li,v]);}
+  recs.push({L,P,Q,raw0});});
+ /* Propagate perennial water downstream across confluences: a mountain stream entering a rain-shadow trunk wets the trunk from that junction on */
+ const wetFrom=new Int32Array(recs.length);for(let i=0;i<recs.length;i++)wetFrom[i]=recs[i].L.w?0:1e9;
+ for(let i=recs.length-1;i>=0;i--){const R=recs[i];if(wetFrom[i]>=R.raw0.length||R.L.e!=='j')continue;
+  const m=R.raw0[R.raw0.length-1],ow=owner.get(m[0]+','+m[1]);if(ow&&ow[0]<i&&ow[1]<wetFrom[ow[0]])wetFrom[ow[0]]=ow[1];}
  const parts=[];let n=0;
- streamCurves(SR,(L,P)=>{const A=new Float32Array((P.length-1)*9);
-  for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],o=i*9;A[o]=a[0];A[o+1]=a[1];A[o+2]=b[0];A[o+3]=b[1];A[o+4]=a[2];A[o+5]=b[2];A[o+6]=a[3];A[o+7]=b[3];A[o+8]=L.w;}
-  parts.push(A);STLN.push({s0:n,n:P.length-1,wet:L.w});n+=P.length-1;});
+ for(let li=0;li<recs.length;li++){const {L,P,raw0}=recs[li],ns=P.length-1,A=new Float32Array(ns*9);
+  let sWet=ns;
+  if(wetFrom[li]<=0)sWet=0;
+  else if(wetFrom[li]<raw0.length){const rk=raw0[wetFrom[li]],jp=jposRef&&jposRef.get(rk[0]+','+rk[1]);
+   if(jp){let bi=0,bd=1e18;for(let i=0;i<ns;i++){const d=(P[i][0]-jp[0])*(P[i][0]-jp[0])+(P[i][1]-jp[1])*(P[i][1]-jp[1]);if(d<bd){bd=d;bi=i;}}sWet=bi;}else sWet=0;}
+  for(let i=0;i<ns;i++){const a=P[i],b=P[i+1],o=i*9;A[o]=a[0];A[o+1]=a[1];A[o+2]=b[0];A[o+3]=b[1];A[o+4]=a[2];A[o+5]=b[2];A[o+6]=a[3];A[o+7]=b[3];A[o+8]=i>=sWet?1:0;}
+  parts.push(A);STLN.push({s0:n,sWet,n:ns,wet:sWet<ns,end:L.e,_wl:null});n+=ns;}
  STSEG=new Float32Array(n*9);let off=0;for(const A of parts){STSEG.set(A,off);off+=A.length;}
  // the hash: a flat grid of STCELL cells over the segments' reach, each cell's segments a run of STIDX (STHASH[c] to STHASH[c + 1])
  let gx0=1e9,gz0=1e9,gx1=-1e9,gz1=-1e9;
@@ -458,7 +498,7 @@ function streamWater(x,z){if(!STHASH)return -1e9;
   let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const qx=ax+dx*t,qz=az+dz*t,d=Math.hypot(qx-x,qz-z);
   if(d>stW(1)*2)continue;if(!Sx)Sx=styleAt(x,z);   /* the bed's width by its profile (P11): no wider than a box canyon's */
   const s=lerp(STSEG[o+4],STSEG[o+5],t),hw=stW(s)*stProf(Sx,s,1,PR).wm;
-  if(d<hw&&d<bd){bd=d;px=qx;pz=qz;wd=.6*stD(s);}}
+  if(d<hw&&(d<bd-.5||(d<=bd+.5&&.6*stD(s)>wd))){bd=Math.min(bd,d);px=qx;pz=qz;wd=.6*stD(s);}}
  return bd<1e9?H(px,pz,0,null,true)+wd:-1e9;}
 W.streamWater=streamWater;
 // THE TARNS (relief P7, S12: region.json streams.ponds, 44-world-streams.js): each a level over its basin's cells (grown by one:
@@ -485,34 +525,50 @@ W.fans=()=>FANS||[];
 // the wet streams in pieces for drawing their water (83s-world-streams.js: built near the camera, dropped behind it):
 // [{line, s0, s1, x, z, r}], a piece a run of about PIECE m of one line's segments (s0 to s1, the last shared with the next
 // piece so the ribbons meet), its centre and the radius that holds it. Made once
-const PIECE=1000,STPOOL=.8;
+const PIECE=1000,STPOOL=2.4;
 W.streamPieces=function(){if(STPC)return STPC;STPC=[];
- STLN.forEach((Ln,li)=>{if(!Ln.wet)return;let a=Ln.s0;const e=Ln.s0+Ln.n;
+ STLN.forEach((Ln,li)=>{if(!Ln.wet)return;let a=Ln.s0+Ln.sWet;const e=Ln.s0+Ln.n;
   while(a<e){let b=a,len=0;while(b<e&&len<PIECE){const o=b*9;len+=Math.hypot(STSEG[o+2]-STSEG[o],STSEG[o+3]-STSEG[o+1]);b++;}
    let x0=1e18,z0=1e18,x1=-1e18,z1=-1e18;for(let s=a;s<b;s++){const o=s*9;x0=Math.min(x0,STSEG[o],STSEG[o+2]);x1=Math.max(x1,STSEG[o],STSEG[o+2]);z0=Math.min(z0,STSEG[o+1],STSEG[o+3]);z1=Math.max(z1,STSEG[o+1],STSEG[o+3]);}
    STPC.push({line:li,s0:a,s1:b,x:(x0+x1)/2,z:(z0+z1)/2,r:Math.hypot(x1-x0,z1-z0)/2});a=b;}});
  return STPC;};
-// a piece's water as a flow line: pts [[x, z, y]...] every `step` m down its segments (the water: the carved ground at the
-// centre, its roughness under 90 m left out, plus 60 % of the stream's depth; never under 0.1 m over the ground less its 13 m grain), w its width there (m: 85 % of the bed's), v the current (1 m/s on
-// the flat, faster as the water falls, at most 3)
-W.streamWaterLine=function(pc,step){step=step==null?8:step;const pts=[],w=[];
- for(let s=pc.s0;s<pc.s1;s++){const o=s*9,ax=STSEG[o],az=STSEG[o+1],bx=STSEG[o+2],bz=STSEG[o+3],L=Math.hypot(bx-ax,bz-az),m=Math.max(1,Math.ceil(L/step));
-  for(let k=0;k<m+(s===pc.s1-1?1:0);k++){const t=k/m,x=ax+(bx-ax)*t,z=az+(bz-az)*t,st=lerp(STSEG[o+4],STSEG[o+5],t);
-   const P=stProf(styleAt(x,z),st,1,PR);pts.push([x,z,Math.max(H(x,z,90,null,true)+.6*stD(st),H(x,z,13,null,true)+.1)]);w.push(2*stW(st)*P.wm*.85);}}   /* a wet stream's own width (its profile, P11) */
- /* the water lies on the carved bed without the ground's roughness under 90 m (followed, the water met the banks in jagged steps), but never under
-    0.1 m over the ground less its 13 m grain (which stands through as stones),, and never climbs downstream past
-    a pool of STPOOL m held behind a sill: read off the full ground every 8 m its surface rose and fell with every bump */
- for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=Math.min(pts[i+1][2],pts[i][2]+STPOOL);
- /* the current from the fall over 32 m round each point, then eased (three passes of 1-2-1): core/water carries its ripples and its breakup noise down
-    the current, so a speed that jumped row by row (1 to 3 m/s off each 8 m step's own slope) stretched the pattern into squares and seams */
+function buildStreamWater(li,step){const Ln=STLN[li],sStart=Ln.s0+Ln.sWet,sEnd=Ln.s0+Ln.n,segIdx=new Int32Array(sEnd-sStart+1);
+ const pts=[],w=[],gAt=[];let inWaterM=0,cutAt=-1;
+ for(let s=sStart;s<sEnd;s++){segIdx[s-sStart]=pts.length;const o=s*9,ax=STSEG[o],az=STSEG[o+1],bx=STSEG[o+2],bz=STSEG[o+3],L=Math.hypot(bx-ax,bz-az),m=Math.max(1,Math.ceil(L/step));
+  for(let k=0;k<m+(s===sEnd-1?1:0);k++){const t=k/m,x=ax+(bx-ax)*t,z=az+(bz-az)*t,st=lerp(STSEG[o+4],STSEG[o+5],t);
+   const P=stProf(styleAt(x,z),st,1,PR),g90=H(x,z,90,null,true),g0=H(x,z,0,null,true);
+   let y=Math.max(g90+.6*stD(st),g0+.12);
+   const lw=Math.max(W.lakeWater(x,z),pondWater(x,z));
+   if(lw>-1e8&&g90<lw){y=Math.min(Math.max(y,lw+.02),g0+2.8);if(pts.length){const q=pts[pts.length-1];inWaterM+=Math.hypot(x-q[0],z-q[1]);if((inWaterM>16||lw-g0>2.2)&&cutAt<0)cutAt=pts.length;}}
+   else inWaterM=0;
+   pts.push([x,z,Math.min(y,g0+2.85)]);w.push(2*stW(st)*P.wm*.85);gAt.push(g0);}}
+ segIdx[sEnd-sStart]=pts.length-1;
+ let endFade=0,orderAfter=false;
+ if(cutAt>=2&&cutAt<pts.length){pts.length=cutAt;w.length=cutAt;gAt.length=cutAt;for(let k=0;k<segIdx.length;k++)if(segIdx[k]>=cutAt)segIdx[k]=cutAt-1;endFade=16;}
+ if(pts.length>=2){const last=pts.length-1,mx=pts[last][0],mz=pts[last][1],gLast=gAt[last];
+  if(Ln.end==='w'){const lw=W.lakeWater(mx,mz);if(lw>-1e8){pts[last][2]=Math.min(Math.max(pts[last][2],lw+.02),gLast+2.85);endFade=endFade||16;}}
+  else if(Ln.end==='p'){const pw=pondWater(mx,mz);if(pw>-1e8){pts[last][2]=Math.min(Math.max(pts[last][2],pw+.02),gLast+2.85);endFade=endFade||16;}else endFade=36;}
+  else if(Ln.end==='c'){const rw=riverWater(mx,mz);if(rw>-1e8){pts[last][2]=Math.min(Math.max(pts[last][2],rw+.03),gLast+2.85);endFade=16;}else endFade=36;}
+  else if(Ln.end==='j'){const tw=streamWater(mx,mz);if(tw>-1e8)pts[last][2]=Math.min(Math.max(pts[last][2],tw+.02),gLast+2.85);endFade=Math.max(8,w[last]*1.8);orderAfter=true;}}
+ /* Whole-stream grading: hold backwater pools up to STPOOL behind sills across piece seams, strictly inside 83s's (g - 0.8 .. g + 3.0 m) bed envelope */
+ for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=Math.min(pts[i+1][2],pts[i][2]+STPOOL,gAt[i]+2.85);
+ for(let i=1;i<pts.length;i++)if(pts[i][2]>pts[i-1][2])pts[i][2]=Math.max(pts[i-1][2],gAt[i]-.72);
  const n=pts.length,arc=[0];for(let i=1;i<n;i++)arc.push(arc[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+ if(endFade===36&&n>=2){const tot=arc[n-1];for(let i=0;i<n;i++){const rem=tot-arc[i];if(rem<36)w[i]*=.28+.72*(rem/36);}}
  let v=pts.map((p,i)=>{let a=i,b=i;while(a>0&&arc[i]-arc[a]<16)a--;while(b<n-1&&arc[b]-arc[i]<16)b++;const L=arc[b]-arc[a];
   return L>1e-6?Math.min(3,1+40*Math.max(0,(pts[a][2]-pts[b][2])/L)):1;});
  for(let it=0;it<3;it++)v=v.map((s,i)=>(v[Math.max(0,i-1)]+2*s+v[Math.min(n-1,i+1)])/4);
- return{pts,w,v};};
-// the decoded streams: [{wet, end, pts: [[x, z, s, bed]...]}] (the curves the page carves; made again at each call, for a
+ return{pts,w,v,segIdx,sStart,endFade,orderAfter};}
+// a piece's water as a flow line: sliced from its stream's graded profile so 1 km pieces share exact boundary heights, widths and speeds
+W.streamWaterLine=function(pc,step){step=step==null?8:step;const Ln=STLN[pc.line];if(!Ln||!Ln.wet)return{pts:[],w:[],v:[],endFade:0,orderAfter:false};
+ const Wl=step===8?(Ln._wl||(Ln._wl=buildStreamWater(pc.line,8))):buildStreamWater(pc.line,step);
+ const k0=Math.max(0,pc.s0-Wl.sStart),k1=Math.min(Wl.segIdx.length-1,pc.s1-Wl.sStart),i0=Wl.segIdx[k0],i1=Wl.segIdx[k1];
+ if(i1<=i0)return{pts:[],w:[],v:[],endFade:0,orderAfter:false};
+ const isEnd=i1===Wl.pts.length-1;
+ return{pts:Wl.pts.slice(i0,i1+1),w:Wl.w.slice(i0,i1+1),v:Wl.v.slice(i0,i1+1),endFade:isEnd?Wl.endFade:0,orderAfter:isEnd&&Wl.orderAfter};};
+// the decoded streams: [{wet, end, pts: [[x, z, s, bed]...], verts}] (the curves the page carves; made again at each call, for a
 // probe or a test: the page keeps only its segments)
-W.streams=()=>{const out=[];if(M.streams&&M.streams.lines)streamCurves(M.streams,(L,P)=>out.push({wet:L.w,end:L.e,pts:P}));return out;};
+W.streams=()=>{const out=[];if(M.streams&&M.streams.lines){let i=0;streamCurves(M.streams,(L,P,Q)=>{out.push({wet:STLN[i]?STLN[i].wet?1:0:L.w,end:L.e,pts:P,verts:Q});i++;});}return out;};
 W.streamAt=(x,z)=>{if(!STHASH)return null;const c=streamAt(x,z,H(x,z,150,null,true,true),styleAt(x,z),STW);return c.d<1e9?Object.assign({},c):null;};
 // the flow surface at (x,z), for the streams' bake (core/world/bake_streams.py): out {h: the land as drawn down to 150 m
 // (its hills, ridges, benches, roughness and gullies, the channels carved; no streams, no finer detail), K: 0 land, 1 a
