@@ -211,8 +211,8 @@ recording stub), so the data cannot drift from the page unseen.
   the same `10-core-roomlight.js`):** a window and a skylight take an `aperture` (the jali's 0.35, *proposed*), in the table
   and in `pickPool`; a door takes `shut` (or `o.shut(room, door)`, core/door's live state), so a leaf is a wall to the light;
   a room takes sized `skylights`, and `pickPool` reads a `sky: true` window as a column of light down from its opening (the
-  oculus 41 m up lights the hall's floor; the Godot twin `pick_pool` the same); Longsong's two rooms say `skylight: true` in
-  its own `40c` instead of the module naming them; `STAGE-6-7-REPORT.md` 2.1 describes the code; `test-roomlight.js` is on
+  oculus 41 m up lights the hall's floor; the Godot twin `pick_pool` the same); Longsong's two skylit rooms are named in
+  its own `40g` (outside `40c`, whose text keys its interiors bake) instead of the module naming them; `STAGE-6-7-REPORT.md` 2.1 describes the code; `test-roomlight.js` is on
   `tools/ktest.js`. Without the new fields every table is what it was: Longsong's, byte for byte. Still open there: the
   Godot `pick_pool` was already apart from the JS before (a window's energy 1.25 against 1.35; the night factor), left as
   it was: looks, after Stage 8.
