@@ -1681,12 +1681,12 @@
    "sha256": "75223875a57f714df4f068e09e66292721bf3f11c05ee54ab9414a9e4daaa346"
   },
   "openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html": {
-   "bytes": 11522307,
-   "sha256": "75aabc153017e414e6347ff272aaa1546ba2cb72c9b5ba47dd019a521d2730ed"
+   "bytes": 2591675,
+   "sha256": "ba8e5179e326f4e61f0a98f333c82d7df9345e6baaabe1627fdf353f230b5712"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 8189228,
-   "sha256": "fa141c67fc1a3f0741b9d0aebaf6e585a4db4fb7eca339dc3a718722ee4880e5"
+   "bytes": 4832932,
+   "sha256": "06585cb4056fb591de348badd28970172bf83b0d03310422d075660b45e9caff"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
    "bytes": 8874743,
