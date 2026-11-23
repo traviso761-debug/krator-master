@@ -38,7 +38,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `74-host-transit.js` | 15 |  |
 | `75-host-extraplanar.js` | 15 |  |
 | `75-host-house.js` | 11 |  |
-| `76-host-lobbies.js` | 24 | the geometry: flat-shaded prisms in the kit's co (50); the checks (verify.py --assert; 99 calls them),  (119) |
+| `76-host-lobbies.js` | 26 | the geometry: flat-shaded prisms in the kit's co (50); the checks (verify.py --assert; 99 calls them),  (138) |
 | `88-host-build.js` | 17 |  |
 | `89a-host-atmos.js` | <1 |  |
 | `89s-host-sky.js` | 3 |  |

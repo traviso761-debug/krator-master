@@ -108,7 +108,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/yuni`](kits/yuni/INDEX.md) | 8 | 229 | 64 |  |
 | [`kits/zeijani`](kits/zeijani/INDEX.md) | 31 | 257 | 27 | The Zeijani building kit (finished, P0 to P8): carved and built dwellings, galleries, estates, shops, the temple, council, kiva, cistern, portal, works and the outpost, each carved by the cavern module (core/terrain/39-core-cavern.js) from the void plans in kits/interiors/sets/zeijani.js. |
 | [`biomes/abyssal-savannah`](biomes/abyssal-savannah/INDEX.md) | 14 | 101 | 23 | Biome kit: see `biomes/README.md`. |
-| [`biomes/ancientsvalley`](biomes/ancientsvalley/INDEX.md) | 32 | 391 | 62 | Biome kit: see `biomes/README.md`. |
+| [`biomes/ancientsvalley`](biomes/ancientsvalley/INDEX.md) | 32 | 394 | 62 | Biome kit: see `biomes/README.md`. |
 | [`biomes/arachnoids`](biomes/arachnoids/INDEX.md) | 17 | 169 | 36 | Biome kit: see `biomes/README.md`. |
 | [`biomes/arch`](biomes/arch/INDEX.md) | 19 | 140 | 24 | Biome kit: see `biomes/README.md`. |
 | [`biomes/catch`](biomes/catch/INDEX.md) | 21 | 102 | 15 | Biome kit: see `biomes/README.md`. |

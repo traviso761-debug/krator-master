@@ -245,7 +245,10 @@ inside. So a blocked tower is blocked everywhere, and a hero's other doors are s
 round the stair's box and round it to the stair (a Spindle's portal stands up to 60 degrees off the street's normal), and a tower whose own
 inner lobby rings cut it (the Swell's lobes, the Terrarium's dome, known only off the hero) is shut at its door instead. The families of several bodies (the Organ's pipes, the
 Pods, the Crescent) are never climbed (their floors would hang between the parts), intact towers never open (their glass stands), and a flight
-down to a sunk plinth keeps its cheeks at the pavement's level as retaining walls of a sunken court.
+down to a sunk plinth keeps its cheeks at the pavement's level as retaining walls of a sunken court. **Sunken courts (2026-11-15):** the ground
+mesh is a 14 m grid, so a plinth below the ground round it sits in a smooth bowl; the bowl round every door tower's plinth is now paved in tiers
+that hug the drawn ground (`AVL.drawCourt` on `GROUND.meshH`: rings 1.4 m deep and about 2.2 m along the plinth's ellipse out to 14 m, 0.4 m
+risers, clear of the streets, other plinths and the approach), about 400 tiles a tower, built and freed with the door's group near the eye.
 
 ## Station 2a: the Yards (2026-11-10; `stations/yards/`, `dist/ancientsvalley-yards.html`)
 
