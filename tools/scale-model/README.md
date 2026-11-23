@@ -1033,6 +1033,10 @@ watch fort (`smarchw0001`, 818,1531, 289 m on the slope above Erewhon's lake) an
 843,1546, -213 m on a spur over the Rift, 23 km south of the Beacon), forts of the Xanadu Sultanate. Their proposed names
 (Wesṭ-Wāch, Sāuth-Wāch) wait for the owner and are in their notes. Both dry; geology and the ledger re-baked.
 
+**5.1e18 (2026-11-23, records only)**: the Sultanate's gold mines (`sxangold01`, the owner's `smgxtultfq` until 5.1e14,
+911,1665) take the owner's name **Kōlḍ-Lōḍ** (relayed by the build coordinator: "Yes, rename it"), as the Xanadu works'
+tune names them (claude/xanadu-works-a7). SETT_MOVED 5.1e18 renames them in browsers; geology and the ledger re-baked.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

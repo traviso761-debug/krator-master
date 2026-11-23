@@ -8106,6 +8106,32 @@
    },
    "ok": true
   },
+  "Kōlḍ-Lōḍ": {
+   "polity": null,
+   "px": 911,
+   "py": 1665,
+   "type": "village",
+   "pop": 750,
+   "reachKm": 15,
+   "catchment": {
+    "iron": 94,
+    "copper": 146,
+    "gold": 62,
+    "tin": 20,
+    "silver": 54,
+    "rare-earth": 11,
+    "sulfur": 161,
+    "saltpeter": 81,
+    "marble": 9
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
   "Lasso": {
    "polity": null,
    "px": 1083,
@@ -11020,32 +11046,6 @@
    "basics": {
     "stone": true,
     "wood": true,
-    "water": true,
-    "salt": false
-   },
-   "ok": false
-  },
-  "Xanadu gold mines (to be named)": {
-   "polity": null,
-   "px": 911,
-   "py": 1665,
-   "type": "village",
-   "pop": 750,
-   "reachKm": 15,
-   "catchment": {
-    "iron": 94,
-    "copper": 146,
-    "gold": 62,
-    "tin": 20,
-    "silver": 54,
-    "rare-earth": 11,
-    "sulfur": 161,
-    "saltpeter": 81,
-    "marble": 9
-   },
-   "basics": {
-    "stone": true,
-    "wood": false,
     "water": true,
     "salt": false
    },
