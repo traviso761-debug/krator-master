@@ -8,7 +8,8 @@
 //              ground uses: the test holds the two within 45 degrees)
 //   shore      the core/coast class at the landing (the region's, read by tools/fit_lake_town.py)
 //   wall       {rise: metres to the rim within 7 km (the model's), benches: the terrace benches' count}
-//   world      {region, site, R, band}: the open world's region and site, the footprint and the band (core/world/bake_towns.py)
+//   world      {region, site, R, band, smooth}: the open world's region and site, the footprint and the band
+//              (core/world/bake_towns.py), the shore's smoothing (m, default 120: tools/fit_lake_town.py)
 //   quarters   [{id, role, share, at}]: share of the houses; at 'shore' | 'slope' | 'bench' | 'stream'
 //   landmarks  [{id, key, at}]: the civic set
 //   works      [{key, n, at}]: the trade's pieces
@@ -40,7 +41,54 @@ XL.SPECS={
    stream:{x:430,drift:.06,to:960},
    core:{x:700,d:760,lake:180,fade:300},
    fields:{rows:9}},
-  notes:'The first lake town: the plain pattern the shared target is proved on (mouth/PLAN.md). A quay and landing stair, the fish racks and boat sheds along the beach, the market square with the temple and the governor\'s house by the landing, the town up the 8 % slope in five contour rows, two terrace benches above, the stream\'s ravine at its east edge with a footbridge.'}};
+  notes:'The first lake town: the plain pattern the shared target is proved on (mouth/PLAN.md). A quay and landing stair, the fish racks and boat sheds along the beach, the market square with the temple and the governor\'s house by the landing, the town up the 8 % slope in five contour rows, two terrace benches above, the stream\'s ravine at its east edge with a footbridge.'},
+ /* step L1: the fishing village left on Thalaba's shore (old-thalaba/PLAN.md): the village in the lowest streets, the old town
+    above it standing empty (its roofs and timber carried up to the new Thalaba: open point 1's default, about 440 houses in
+    all, the village living in the lowest 110), the old caravan market a ruin; every ruin watched by core/ruins */
+ 'old-thalaba':{key:'old-thalaba',bearing:180,
+  shore:'shingle',   /* the plan's; the fit reads the region's at the landing (XL.FIT['old-thalaba'].coast) */
+  wall:{rise:502,benches:2},
+  world:{region:'xanadu-north-shore',site:'soldthalaba1',R:1400,band:600},
+  quarters:[{id:'landing',role:'harbour',share:.20,at:'shore'},{id:'village',role:'residential',share:.50,at:'shore'},
+   {id:'temple',role:'civic',share:.15,at:'shore'},{id:'bench',role:'farm',share:.15,at:'bench'},
+   {id:'ruins',role:'ruin',share:0,at:'slope',rest:true}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'serai',key:'xa_serai_ruin',at:'slope',q:'ruins'}],
+  works:[{key:'xa_fish_racks',n:4,at:'shore'},{key:'xa_boatshed',n:2,at:'shore'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:25,launches:1,barges:0},
+  stalls:0,
+  wealth:[.75,.22,.03],andean:.30,
+  ruins:{houses:331,quarter:'ruins',note:'the old town of about 440 houses (old Thalaba\'s 2,400 people), less the village\'s 109'},
+  layout:{half:620,road:26,rows:[26,92,158,224,290,356,422,488],stairs:[-310,0,310],
+   market:null,
+   benches:[[560,670],[750,860]],benchHalf:700,
+   stream:null,
+   core:{x:820,d:900,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'A village inside a town too big for it: the fishers in the lower streets by the water, the temple still kept, a quay too long for its boats; above them the empty old town, its houses roofless, the caravan market a ruin.'},
+ /* step L1: the dyers' town, the north shore's east end (dyer/PLAN.md): the dye works along the water, the cloth hung down to
+    the beach, the dye plants on the benches (kits/crops: what the Vale grows by rain), the fishers at the landing */
+ dyer:{key:'dyer',bearing:180,
+  shore:'sand',
+  wall:{rise:510,benches:2},
+  world:{region:'xanadu-north-shore',site:'sxandyer01',R:1400,band:600,smooth:60},   /* its shore jagged (the coast's coves): a tighter line */
+  quarters:[{id:'dyes',role:'industry',share:.20,at:'shore'},{id:'landing',role:'harbour',share:.10,at:'shore'},
+   {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'fields',role:'farm',share:.15,at:'bench'},
+   {id:'market',role:'market',share:.10,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'temple',key:'xa_temple',at:'slope',q:'market'},{id:'market',key:'xa_shops',at:'slope'}],
+  works:[{key:'xa_dye_works',n:5,at:'shore'},{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:50,launches:2,barges:1},
+  stalls:12,
+  wealth:[.55,.35,.10],andean:.25,ruins:null,
+  layout:{half:520,road:40,rows:[40,106,172,238,304,370],stairs:[-250,0,250],
+   market:{x:140,w:100,d:48,d0:114},
+   benches:[[450,560],[640,750]],benchHalf:600,
+   stream:null,
+   core:{x:760,d:820,lake:180,fade:300},
+   fields:{rows:9,bucket:'dye',biome:'xanadu'}},
+  notes:'Colour on the shore: five dye works along the water with their vats and cloth on lines down to the beach, the fishers\' racks and sheds beyond them, the market and the temple a row up the slope, the dye plants on the two benches.'}};
 // the town's tune record (XAN_TUNE.lake), read in place
 XL.tune=key=>(typeof XAN_TUNE!=='undefined'&&XAN_TUNE.lake||[]).find(L=>L.key===key)||null;
 // the town's household size: the tune's (T.farm.hh, people a household), read in place

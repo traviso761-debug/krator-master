@@ -6,18 +6,22 @@
 reseed((XL.seed(XLK)>>>8)+2);const XL_B0=performance.now();
 const xlD=(v,d)=>v==null?d:v;
 const XL_CHUNK=160,XL_CHUNKS={},XL_FAILS=[];
-for(const p of XLT.place){const k=p.kind==='civic'||p.kind==='work'?'civic':p.kind==='stall'?'stall':Math.floor(p.x/XL_CHUNK)+','+Math.floor(p.z/XL_CHUNK);(XL_CHUNKS[k]=XL_CHUNKS[k]||[]).push(p);}
+for(const p of XLT.place){const k=p.ruin?'ruin:'+Math.floor(p.x/XL_CHUNK)+','+Math.floor(p.z/XL_CHUNK):p.kind==='civic'||p.kind==='work'?'civic':p.kind==='stall'?'stall':Math.floor(p.x/XL_CHUNK)+','+Math.floor(p.z/XL_CHUNK);(XL_CHUNKS[k]=XL_CHUNKS[k]||[]).push(p);}
 const XL_GROUPS=[];let XL_INST=0;
 function xlBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;scene.add(G);let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9,y0=1e9,y1=-1e9;
  for(const p of list){
   TSTAT.cur=p.key+'/'+(p.o.v|0);const r0=REG.length;let g=null;
-  try{g=VERN.place(G,p.key,p.x,p.z,p.ry,p.o);}catch(e){XL_FAILS.push(p.key+': '+(e&&e.message||e));}
+  try{g=VERN.place(G,p.key,p.x,p.z,p.ry,p.ruin?Object.assign({},p.o,{ground:terrainH}):p.o);}catch(e){XL_FAILS.push(p.key+': '+(e&&e.message||e));}   /* a ruin follows the page's ground (88h) */
   if(g)p.G=g;else XL_FAILS.push(p.id+' '+p.key+': not placed');
   for(let i=r0;i<REG.length;i++)REG[i].type=p.key;
   x0=Math.min(x0,p.x-40);x1=Math.max(x1,p.x+40);z0=Math.min(z0,p.z-40);z1=Math.max(z1,p.z+40);y0=Math.min(y0,xlD(p.o.y,0)-xlD(p.drop,0)-3);y1=Math.max(y1,xlD(p.o.y,0)+xlD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();XL_INST+=xlD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
  const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='civic'?1e9:2200,n:list.length};XL_GROUPS.push(e);return e;}
 for(const k of Object.keys(XL_CHUNKS).sort())xlBakeChunk(k,XL_CHUNKS[k]);
+// every ruined structure watched by core/ruins (the owner, 2026-11-10): each ruin chunk once it is baked, on the page's ground;
+// the verify harness asserts nothing floats and every wreck lies on its lowest points
+let XL_RUINS_WATCHED=0;
+if(typeof KRUINS!=='undefined'&&KRUINS.watch)for(const e of XL_GROUPS)if(e.key.startsWith('ruin:')){KRUINS.watch(e.G,{name:XLT.name+': the old town, chunk '+e.key.slice(5),ground:terrainH});XL_RUINS_WATCHED++;}
 window._instances=XL_INST;
 // the runtime LOD: a chunk is drawn while it is in the view and within its range
 const xlFr=new THREE.Frustum(),xlPm=new THREE.Matrix4();
@@ -49,5 +53,5 @@ const XL_FLIGHT_MIN=.3;
  window._xl.flights={n,tall,steps:boxes.length};})();
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._chunks=XL_GROUPS.length;window._buildMs=Math.round(performance.now()-XL_B0);
-Object.assign(window._xl,{chunks:XL_GROUPS.length,fails:XL_FAILS.slice(0,20),failed:XL_FAILS.length,
+Object.assign(window._xl,{chunks:XL_GROUPS.length,ruinsWatched:XL_RUINS_WATCHED,fails:XL_FAILS.slice(0,20),failed:XL_FAILS.length,
  byKind:XLT.place.reduce((a,p)=>{a[p.kind]=xlD(a[p.kind],0)+1;return a;},{}),byQuarter:XLT.place.reduce((a,p)=>{if(p.quarter)a[p.quarter]=xlD(a[p.quarter],0)+1;return a;},{})});

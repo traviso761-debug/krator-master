@@ -12,7 +12,16 @@
      xa_governor    the governor's house: a lake town's head is the Sultan's man. A two-storey house at the back of a walled
                     forecourt (dressed stone below, whitewash above, the twig band and gilt corners), the audience portico at
                     its door, the gate with the guard, the office wing on the court's east side, the Sultan's flag; v 1
-                    earth-washed and plainer (no gilt) */
+                    earth-washed and plainer (no gilt)
+     xa_ruin_s, xa_ruin_m, xa_ruin_l   a house stripped of its roof and timber (Ōlḍ-Thalaba's old town, step L1: the beams and
+                    the roofs carried up to the new Thalaba), the size of the kit's small, middling and large houses: its walls
+                    broken to uneven heights, the doorway and the windows' gaps, an inner wall in the large, rubble heaps and a
+                    fallen lintel inside; v 0-3 the breaks. THE GROUND FOLLOWED: each wall section stands on the ground under it
+                    (o.ground(x, z), the page's, in world metres; flat at local y 0 without it), sunk 0.5 m, and every heap and
+                    beam lies on its lowest face 0.15 m into the ground, so core/ruins' watch (KRUINS.watch) finds nothing
+                    floating and every wreck seated
+     xa_serai_ruin  the caravan market left empty (40 x 40): the outer ranges' walls broken, the court's arcade as stumps, the
+                    gate's two towers as broken stacks, the rubble of the ranges; v 1 more of it fallen */
 
 /* ---------------------------------------------------------------- the landing stair: 24 x 16, two takes */
 function buildXaGhat(G,o){reseed(34801+(o.v|0));const V=xV(o)%2,stone=xC(xPick(XPAL.stone)),cope=stone.clone().multiplyScalar(1.1),wet=stone.clone().multiplyScalar(.55),
@@ -72,3 +81,50 @@ function buildXaGovernor(G,o){reseed(34821+(o.v|0));const V=xV(o)%2,plain=V===1,
  for(const x of[-6,6])vPst('vClayPot',x,0,zf+4.2,.45,.8,xC(0xb87050));
  xnFolk(0,0,10.6,2,1.2);xnFolk(-4,0,6,3,3);}
 XA.def({key:'xa_governor',name:'Governor\'s house',family:'Public',tags:{type:['civic','residential'],wealth:'rich',lit:false},w:30,d:26,h:14,fw:28,fd:24,nv:2,build:buildXaGovernor});
+
+/* ---------------------------------------------------------------- the ruins: roofless shells on the ground under them */
+/* the ground at a local point, over the piece's own floor (o.y): the page's ground when the record gives it, else flat */
+function xrGround(o){const C=VERN.cur;return(lx,lz)=>{if(!o.ground||!C)return 0;const p=loc(C.x,C.z,lx,lz,C.ry);return o.ground(p[0],p[1])-(o.y||0);};}
+/* a wall from a to b (local x, z), t thick, broken into sections of about 1.4 m: each stands on the ground under its middle
+   (sunk 0.5 m) to a height h x a draw in [lo, 1]; gaps (the doorway, windows) where gap(s) says, s the distance along */
+function xrWall(gy,a,b,t,h,lo,c,gap){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(!(L>.2))return;const n=Math.max(1,Math.round(L/1.4)),ry=Math.atan2(dx,dz)+Math.PI/2;
+ for(let k=0;k<n;k++){const s0=L*k/n,s1=L*(k+1)/n,sm=(s0+s1)/2;if(gap&&gap(sm))continue;const x=a[0]+dx*sm/L,z=a[1]+dz*sm/L,g=gy(x,z);
+  const hh=Math.max(.5,h*(lo+(1-lo)*rng()));vB('vStone',x,g-.5,z,s1-s0+.02,hh+.5,t,ry,c.clone().multiplyScalar(rr(.86,1.06)));}}
+/* a heap of rubble at (x, z): boxes on their lowest faces, 0.15 m into the ground under each */
+function xrHeap(gy,x,z,rx,rz,n,c){for(let k=0;k<n;k++){const px=x+rr(-rx,rx),pz=z+rr(-rz,rz),w=rr(.35,.9),d=rr(.3,.8),h=rr(.2,.5);vB('vStone',px,gy(px,pz)-.15,pz,w,h,d,rng()*Math.PI,c.clone().multiplyScalar(rr(.75,1.05)));}}
+/* a fallen lintel or beam lying on the ground, its middle at (x, z) */
+function xrBeam(gy,x,z,L,ry,c){vB('vWood',x,gy(x,z)-.12,z,.24,.26,L,ry,c);}
+function buildXaRuinHouse(W,D,H,big){return function(G,o){reseed(34861+(o.v|0)*7+W);const gy=xrGround(o),V=xV(o)%4,rub=xC(xPick(XPAL.rubble)),earth=xC(xPick(XPAL.earth)),tim=xC(xPick(XPAL.aged));
+ vnReg(big?'Ruined house (large)':'Ruined house',0,0,Math.max(W,D)/2,H);
+ const hw=W/2-.4,hd=D/2-.4,lo=[.25,.4,.15,.55][V],door=s=>Math.abs(s-W/2+.4)<.9,win=s=>(Math.abs(s-W*.22)<.5||Math.abs(s-W*.78)<.5);
+ xrWall(gy,[-hw,hd],[hw,hd],.6,H,lo,rub,s=>door(s)||win(s));                  /* the front: the doorway, two windows */
+ xrWall(gy,[hw,-hd],[-hw,-hd],.6,H*.9,lo,rub,null);                            /* the back */
+ xrWall(gy,[-hw,-hd+.3],[-hw,hd-.3],.6,H,lo,earth,s=>Math.abs(s-D/2)<.5);      /* the sides, earth-rendered, a window each */
+ xrWall(gy,[hw,-hd+.3],[hw,hd-.3],.6,H*.95,lo,earth,null);
+ if(big)xrWall(gy,[-hw+.3,-hd*.1],[hw*.4,-hd*.1],.45,H*.6,lo,rub,s=>Math.abs(s-W*.2)<.6);   /* the large house's inner wall */
+ xrHeap(gy,-hw*.45,-hd*.35,hw*.3,hd*.25,6+V,rub);xrHeap(gy,hw*.5,hd*.4,hw*.25,hd*.2,4,rub);
+ xrBeam(gy,rr(-hw*.3,hw*.3),rr(-hd*.3,hd*.3),Math.min(W,D)*.55,rr(0,Math.PI),tim);
+ if(V!==2)xrHeap(gy,hw*.2,hd+.0,.9,.15,3,rub);};}   /* a little spill at the doorway */
+XA.def({key:'xa_ruin_s',name:'Ruined house (small)',family:'Ruins',tags:{type:['single-family dwelling'],wealth:'poor',state:'ruined',lit:false},w:14,d:13,h:3.4,fw:13,fd:12,nv:4,build:buildXaRuinHouse(14,13,3.2,false)});
+XA.def({key:'xa_ruin_m',name:'Ruined house',family:'Ruins',tags:{type:['single-family dwelling'],wealth:'middle',state:'ruined',lit:false},w:19,d:16,h:5,fw:18,fd:15,nv:4,build:buildXaRuinHouse(19,16,4.6,false)});
+XA.def({key:'xa_ruin_l',name:'Ruined house (large)',family:'Ruins',tags:{type:['single-family dwelling'],wealth:'rich',state:'ruined',lit:false},w:24,d:18,h:6.5,fw:23,fd:17,nv:4,build:buildXaRuinHouse(24,18,6.2,true)});
+/* the empty caravan market: 40 x 40, its gate on +z */
+function buildXaSeraiRuin(G,o){reseed(34881+(o.v|0));const gy=xrGround(o),V=xV(o)%2,rub=xC(xPick(XPAL.rubble)),earth=xC(xPick(XPAL.ochre)),stone=xC(xPick(XPAL.stone)),tim=xC(xPick(XPAL.aged));
+ vnReg('Ruined caravan market',0,0,20,6);
+ const R=19.4,r=12.6,lo=V?.12:.25,gate=s=>Math.abs(s-R)<2.4;
+ xrWall(gy,[-R,R],[R,R],.8,6,lo,earth,gate);xrWall(gy,[R,-R],[-R,-R],.8,6,lo,earth,null);
+ xrWall(gy,[-R,-R+.4],[-R,R-.4],.8,6,lo,earth,null);xrWall(gy,[R,-R+.4],[R,R-.4],.8,6,lo,earth,null);
+ /* the ranges' court walls, lower, broken at every bay; the arcade's piers as stumps in front of them */
+ const bay=s=>(s%4.2)<1.2;
+ xrWall(gy,[-r,r],[r,r],.6,3.4,lo,rub,s=>bay(s)||Math.abs(s-r)<2.2);xrWall(gy,[r,-r],[-r,-r],.6,3.4,lo,rub,bay);
+ xrWall(gy,[-r,-r+.3],[-r,r-.3],.6,3.4,lo,rub,bay);xrWall(gy,[r,-r+.3],[r,r-.3],.6,3.4,lo,rub,bay);
+ for(let k=-2;k<=2;k++)for(const [x,z] of[[k*4.2,r-1.3],[k*4.2,-r+1.3],[r-1.3,k*4.2],[-r+1.3,k*4.2]]){const g=gy(x,z);vB('vStone',x,g-.5,z,.7,.5+rr(.4,2.8),.7,0,stone);}
+ /* the cross walls between the rooms of the ranges */
+ for(const t of[-7,0,7]){xrWall(gy,[t,R-.5],[t,r+.4],.5,4,lo,rub,null);xrWall(gy,[t,-R+.5],[t,-r-.4],.5,4,lo,rub,null);xrWall(gy,[R-.5,t],[r+.4,t],.5,4,lo,rub,null);xrWall(gy,[-R+.5,t],[-r-.4,t],.5,4,lo,rub,null);}
+ /* the gate's two towers, broken stacks */
+ for(const sx of[-1,1]){const x=sx*3.6,z=R-1.6,g=gy(x,z);vB('vStone',x,g-.5,z,2.6,.5+rr(4,7),2.6,0,stone);}
+ /* the rubble of the ranges, the well in the court, beams */
+ for(let k=0;k<8;k++){const a=k/8*TAU,x=Math.cos(a)*16,z=Math.sin(a)*16;xrHeap(gy,x,z,1.6,1.6,5+(V?3:0),rub);}
+ {const g=gy(0,0);vPst('vStone',0,g-.3,0,1.1,1.0,stone);}
+ for(let k=0;k<4;k++)xrBeam(gy,rr(-8,8),rr(-8,8),rr(3,5),rr(0,Math.PI),tim);}
+XA.def({key:'xa_serai_ruin',name:'Ruined caravan market',family:'Ruins',tags:{type:['inn','market'],wealth:'civic',state:'ruined',lit:false},w:40,d:40,h:8,fw:40,fd:40,nv:2,build:buildXaSeraiRuin});

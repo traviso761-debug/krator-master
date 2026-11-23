@@ -13,9 +13,11 @@ default the page's, mouth).
   xl-terraces   each bench level within 0.5 m, every field on its bench
   xl-ground     every building's floor on its ground (no lower than the ground at its middle less its footing, no higher
                 than its highest corner plus a metre; the water pieces stand at the water)
-  xl-world      the page's ground at the footprint's edge and the band within 6 m of the region's (the fit's samples; the
+  xl-world      the page's ground at the footprint's edge and the band within 1.5 % of the band of the region's (the fit's samples; the
                 bake's own check is core/world/bake_towns.py <key> --check)
-  xl-water      the lake (core/water WATER.open) and the stream (WATER.flow) drawn
+  xl-water      the lake (core/water WATER.open) and the stream (WATER.flow) drawn (a town with no stream: the lake)
+  xl-ruins      a town with ruins (Ōlḍ-Thalaba): the spec's count of ruined houses within 10 %, every ruin chunk watched by
+                core/ruins (KRUINS.watch: the harness's own assert then holds nothing floating, every wreck seated)
 
 The plan's own checks (no overlap, nothing on a way, in the lake or on the stream, the same twice) are the node tests':
 node settlements/xanadu-lake/tests/test-xl-towns.js, test-xl-site.js.
@@ -49,12 +51,14 @@ CITY_JS = r"""
   const G=T.geo,spread=G.benches.map(B=>{let lo=1e9,hi=-1e9;for(let x=B.x0+20;x<=B.x1-20;x+=10)for(let d=B.d0+4;d<=B.d1-4;d+=6){const v=h(x,xlShoreZ(key,x)-d);lo=Math.min(lo,v);hi=Math.max(hi,v);}return hi-lo;});
   const off=T.fields.filter(f=>{const B=G.benches[f.bench];return f.poly.some(p=>{const d=xlShoreZ(key,p[0])-p[1];return d<B.d0-.5||d>B.d1+.5;});});
   R.push({name:'xl-terraces',ok:spread.length===S.wall.benches&&spread.every(s=>s<=.5)&&!off.length,detail:spread.length+' benches, spread '+spread.map(s=>s.toFixed(2)).join(', ')+' m; '+T.fields.length+' fields'+(off.length?', off their bench: '+off.map(f=>f.id).join(', '):', each on its bench')});
-  let bg=0,first=null;for(const p of P){if(p.water)continue;const b=p.bo,c2=Math.cos(p.ry),s2=Math.sin(p.ry),hs=[[0,0],[-b.hw,-b.hd],[b.hw,-b.hd],[b.hw,b.hd],[-b.hw,b.hd]].map(q=>h(p.x+q[0]*c2+q[1]*s2,p.z-q[0]*s2+q[1]*c2));
+  let bg=0,first=null;for(const p of P){if(p.water||p.ruin)continue;   /* the ruins follow the ground themselves (core/ruins watches them) */const b=p.bo,c2=Math.cos(p.ry),s2=Math.sin(p.ry),hs=[[0,0],[-b.hw,-b.hd],[b.hw,-b.hd],[b.hw,b.hd],[-b.hw,b.hd]].map(q=>h(p.x+q[0]*c2+q[1]*s2,p.z-q[0]*s2+q[1]*c2));
    const lo=h(p.x,p.z)-(p.drop||0)-.8,hi=Math.max.apply(null,hs)+1;if(!(p.o.y>=lo&&p.o.y<=hi)){bg++;first=first||(p.id+' '+p.key+' floor '+p.o.y.toFixed(1)+' ground '+hs[0].toFixed(1));}}
   R.push({name:'xl-ground',ok:bg===0,detail:bg?bg+' off their ground, first '+first:'every floor on its ground (its footing under it)'});
-  const F=XL.FIT[key];let worst=0,at=null;for(const [x,z,y] of F.check.ring){const e=Math.abs(h(x,z)-y);if(e>worst){worst=e;at=[x,z];}}
-  R.push({name:'xl-world',ok:worst<=6&&F.check.ring.length>100,detail:'the ground at the footprint\'s edge and the band within '+worst.toFixed(2)+' m of the region\'s ('+F.check.ring.length+' points; worst at '+JSON.stringify(at)+')'});
-  const W=window._xlWater||{};R.push({name:'xl-water',ok:!!W.lake&&!!W.stream,detail:'the lake '+(W.lake?'drawn':'MISSING')+', the stream '+(W.stream?'drawn ('+W.streamPts+' points)':'MISSING')});}}
+  const F=XL.FIT[key],tol=.015*S.world.band;let worst=0,at=null;for(const [x,z,y] of F.check.ring){const e=Math.abs(h(x,z)-y);if(e>worst){worst=e;at=[x,z];}}
+  R.push({name:'xl-world',ok:worst<=tol&&F.check.ring.length>100,detail:'the ground at the footprint\'s edge and the band within '+worst.toFixed(2)+' m of the region\'s ('+F.check.ring.length+' points; worst at '+JSON.stringify(at)+')'});
+  const W=window._xlWater||{};R.push({name:'xl-water',ok:!!W.lake&&(!W.hasStream||!!W.stream),detail:'the lake '+(W.lake?'drawn':'MISSING')+', the stream '+(!W.hasStream?'none (the town has none)':W.stream?'drawn ('+W.streamPts+' points)':'MISSING')});
+  const ru=P.filter(p=>p.ruin);if(S.ruins||ru.length){const want=S.ruins?S.ruins.houses:0,n=P.filter(p=>p.kind==='ruin').length;
+   R.push({name:'xl-ruins',ok:Math.abs(n-want)<=want*.1&&Q.ruinsWatched>0&&typeof KRUINS!=='undefined',detail:n+' ruined houses (the spec\'s '+want+'), '+ru.filter(p=>p.kind!=='ruin').length+' ruined landmarks, '+(Q.ruinsWatched||0)+' chunks watched by core/ruins'});}}}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + CITY_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

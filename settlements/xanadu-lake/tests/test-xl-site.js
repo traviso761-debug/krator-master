@@ -5,7 +5,8 @@
 //     dry from the waterline in;
 //   - the shore within 50 m of the region's (the fit's raw crossings of the level inside the footprint);
 //   - each bench level within 0.5 m;
-//   - no step at the band: the page's ground at the footprint's edge and the band's outer edge within 6 m of the region's;
+//   - no step at the band: the page's ground at the footprint's edge and the band's outer edge within 1.5 % of the band of
+//     the region's (the world eases a difference at R across the band: 9 m over 600 m adds a grade of 1.5 %, no step);
 //   - the world's frame: the pin stands on the page's centre, the lake toward the town's bearing.
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -86,10 +87,10 @@ for (const key of KEYS) {
   T.neg(N + ': ...its negative: a bench left on the slope is caught', g => benchSpread(g, key, G.benches[0]) <= .5,
     (x, z) => { const d = xlShoreZ(key, x) - z, B = G.benches[0]; return d > B.d0 && d < B.d1 && x > B.x0 && x < B.x1 ? xlProf(F, d) : h(x, z); }, h);
   // 4. the band
-  const BE = bandErr(h, F);
-  T.ok(N + ': no step at the band: the ground at the footprint\'s edge (R ' + S.world.R + ' m) and the band\'s (+' + S.world.band + ' m) within 6 m of the region\'s', BE.worst <= 6 && F.check.ring.length > 100,
+  const BE = bandErr(h, F), tol = .015 * S.world.band;
+  T.ok(N + ': no step at the band: the ground at the footprint\'s edge (R ' + S.world.R + ' m) and the band\'s (+' + S.world.band + ' m) within ' + tol.toFixed(1) + ' m of the region\'s', BE.worst <= tol && F.check.ring.length > 100,
     'worst ' + BE.worst.toFixed(2) + ' m at ' + JSON.stringify(BE.at) + ' over ' + F.check.ring.length + ' points');
-  T.neg(N + ': ...its negative: the profile alone (no region rest) is caught', g => bandErr(g, F).worst <= 6, (x, z) => xlProf(F, xlShoreZ(key, x) - z), h);
+  T.neg(N + ': ...its negative: the profile alone (no region rest) is caught', g => bandErr(g, F).worst <= tol, (x, z) => xlProf(F, xlShoreZ(key, x) - z), h);
   // 5. the frame
   const W = xlWorldFrame(key), w0 = xlToWorld(key, W.centre[0], W.centre[1]), b = F.bearing * Math.PI / 180;
   const lake = xlToWorld(key, 0, 500), dir = Math.atan2(lake[0] - xlToWorld(key, 0, 0)[0], -(lake[1] - xlToWorld(key, 0, 0)[1])) * 180 / Math.PI;

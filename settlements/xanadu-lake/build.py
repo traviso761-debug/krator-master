@@ -8,9 +8,9 @@ every build from core/city and core/space, never edited by hand). Two more fragm
 every build under names that put them in the page's order: core/biome's 31b leafset (Phēr's BIO_MIN) and the Sultanate's
 tune (core/region/data/xan-tune.js as gen/89zk-xl-tune.js, before the specs that read XAN_TUNE.lake in place). The
 buildings are the Xanadu kit's (kits/xanadu, through the page, and its opt-in pieces in extra/: kit.json "external");
-core/rand, core/tags, core/host and the interiors through Xanadu's build, core/atmos, core/water and core/drawn through
-kit.json "files", core/city and core/space through the bundle, core/region through gen/ (CORE_TAKEN names them for
-tools/check_core_use.py).
+core/rand, core/tags, core/host and the interiors through Xanadu's build, core/atmos, core/water, core/drawn and core/ruins
+through kit.json "files", core/city and core/space through the bundle, core/region and kits/crops through gen/ (CORE_TAKEN
+names them for tools/check_core_use.py).
 
     python3 tools/build.py settlements/xanadu-lake        # dist/xanadu-lake.html (a plain python3 build.py comes through it)
     python3 tools/fit_lake_town.py mouth                   # a town's ground fitted to its region (targets/town/89zm-xl-fit.js)
@@ -27,7 +27,7 @@ import buildlib                                   # noqa: E402
 buildlib.through_tools_build(__file__)            # item 25: build-inputs.json is always written
 import build_sources as BSRC                      # noqa: E402  (--list-sources: tools/dep_graph.py)
 CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 'core/atmos', 'core/water', 'core/drawn', 'core/region',
-              'core/biome')   # through Xanadu's build, kit.json and gen/
+              'core/biome', 'core/ruins')   # through Xanadu's build, kit.json and gen/
 
 # core/city in one closure (settlements/pher/build.py's kcity_bundle): its globals stay inside, and so does core/space, which
 # writes KSPACE onto `window` (the closure hands every module a window of its own). Every data fragment of core/city (the
@@ -35,6 +35,9 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
 CITY_JS = sorted(f for f in os.listdir(os.path.join(ROOT, 'core', 'city')) if f[:2].isdigit() and f.endswith('.js') and '-host-' not in f)
 SPACE = 'core/space/20-core-space.js'
 TUNE = 'core/region/data/xan-tune.js'
+# kits/crops (its API.md, "Reading it from a build"): the records and queries, sealed in one closure as gen/89zc-crops-bundle.js
+# (its fragments share top-level names, `R`, which Xanadu's page scope may not hold); CROPS lands on globalThis
+CROPS_JS = ['kits/crops/src/10-crop-core.js', 'kits/crops/src/20-crop-records.js', 'kits/crops/src/22-crop-material.js', 'kits/crops/src/40-crop-query.js']
 GEN = os.path.join(HERE, 'gen')
 
 
@@ -64,7 +67,10 @@ def write_gen():
     os.makedirs(GEN, exist_ok=True)
     outs = {'69p-kcity-bundle.js': kcity_bundle(),
             # the tune, read in place: XAN_TUNE.lake (people, px, trade, hub, province) for the specs (89zl), never copied
-            '89zk-xl-tune.js': '/* %s, read from core at every build (settlements/xanadu-lake/build.py). GENERATED: edit core/region. */\n%s' % (TUNE, rd(TUNE))}
+            '89zk-xl-tune.js': '/* %s, read from core at every build (settlements/xanadu-lake/build.py). GENERATED: edit core/region. */\n%s' % (TUNE, rd(TUNE)),
+            # the crops: what a town's benches may grow (Ḍāiyar's dye plants), read in place at every build
+            '89zc-crops-bundle.js': '/* CROPS: kits/crops in one closure (settlements/xanadu-lake/build.py). GENERATED: edit kits/crops. */\n(function(){\n' +
+                                    ''.join('\n/* ---- %s ---- */\n%s\n' % (f, rd(f)) for f in CROPS_JS) + '\n})();\n'}
     for f, rel in BIO_MIN.items():
         outs[f] = '/* %s, read from core at every build (settlements/xanadu-lake/build.py BIO_MIN). GENERATED: edit core/biome. */\n%s' % (rel, rd(rel))
     for f, new in outs.items():
@@ -75,7 +81,7 @@ def write_gen():
                 fh.write(new)
 
 
-BSRC.note(*([SPACE, TUNE] + ['core/city/' + f for f in CITY_JS] + sorted(BIO_MIN.values())))
+BSRC.note(*([SPACE, TUNE] + CROPS_JS + ['core/city/' + f for f in CITY_JS] + sorted(BIO_MIN.values())))
 if not BSRC.LISTING:
     write_gen()
 

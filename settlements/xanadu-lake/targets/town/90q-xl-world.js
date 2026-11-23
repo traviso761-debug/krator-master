@@ -28,9 +28,12 @@ ATMOS.hook(()=>{XL_SKYC.position.set(0,0,0);xlSkyGroup.children.forEach((o,i)=>{
 ATMOS.skylight({renderer,sky:XL_SKYS,scene:XL_ENV,ground:()=>new THREE.Color(0x4a5a3a)});
 // ---------------------------------------------------------------- the town's ground: its box and its painted canvas
 const XLB=(function(){const L=XLT.spec?XLT.spec.layout:XL.SPECS[XLK].layout,top=XLG.benches.length?XLG.benches[XLG.benches.length-1].d1:L.rows[L.rows.length-1];
- return{x0:-L.half-360,x1:XLG.stream.x+360,z0:xlShoreZ(XLK,0)-top-320,z1:xlShoreZ(XLK,0)+420};})();XLB.W=XLB.x1-XLB.x0;XLB.H=XLB.z1-XLB.z0;
+ return{x0:-L.half-360,x1:(XLG.stream?XLG.stream.x:L.half)+360,z0:xlShoreZ(XLK,0)-top-320,z1:xlShoreZ(XLK,0)+420};})();XLB.W=XLB.x1-XLB.x0;XLB.H=XLB.z1-XLB.z0;
 const XL_PX=3072/Math.max(XLB.W,XLB.H),xgx=x=>(x-XLB.x0)*XL_PX,xgz=z=>(z-XLB.z0)*XL_PX;
 const xlCv=document.createElement('canvas');xlCv.width=Math.ceil(XLB.W*XL_PX);xlCv.height=Math.ceil(XLB.H*XL_PX);
+// the crops' rows on the benches by the crop's colour (kits/crops: a dye plant's flower or leaf; the grain's green)
+const XL_CROP_RGBA={green:'rgba(96,140,64,.7)',red:'rgba(150,60,70,.55)',blue:'rgba(70,96,150,.6)',yellow:'rgba(200,170,60,.6)',orange:'rgba(200,120,50,.6)',
+ purple:'rgba(120,70,130,.6)',brown:'rgba(110,84,56,.6)',gold:'rgba(200,160,60,.6)',saffron:'rgba(210,120,60,.6)'};
 const xlSlope=(x,z)=>{const e=4;return Math.hypot(xlH(XLK,x+e,z)-xlH(XLK,x-e,z),xlH(XLK,x,z+e)-xlH(XLK,x,z-e))/(2*e);};
 (function xlPaint(){const g=xlCv.getContext('2d'),W=xlCv.width,H=xlCv.height,img=g.createImageData(W,H),D=img.data,lastRow=XLT.spec?XLT.spec.layout.rows.slice(-1)[0]:300;
  // the ground's colour by place: the bed, the wet beach, the sand, the slope's grass, the wall above; stone on the risers
@@ -45,11 +48,11 @@ const xlSlope=(x,z)=>{const e=4;return Math.hypot(xlH(XLK,x+e,z)-xlH(XLK,x-e,z),
  const line=(P,w,closed)=>{g.lineWidth=w*XL_PX;path(P,closed);g.stroke();};
  g.lineCap='round';g.lineJoin='round';
  // the benches' fields: tilled earth, the furrows along the bench, a crop's green in rows
- for(const F of XLT.fields){g.fillStyle=F.crop==='amaranth'?'#8a6a48':'#7a7448';path(F.poly,true);g.fill();
-  g.save();path(F.poly,true);g.clip();g.strokeStyle=F.crop==='amaranth'?'rgba(150,60,70,.55)':'rgba(96,140,64,.7)';g.lineWidth=1.1*XL_PX;
+ for(const F of XLT.fields){g.fillStyle=F.bucket==='dye'?'#7e6a4c':F.crop==='amaranth'?'#8a6a48':'#7a7448';path(F.poly,true);g.fill();
+  g.save();path(F.poly,true);g.clip();g.strokeStyle=XL_CROP_RGBA[F.colour]||'rgba(96,140,64,.7)';g.lineWidth=1.1*XL_PX;
   const B=XLG.benches[F.bench];for(let d=B.d0+44;d<B.d1;d+=2.4){const P=[];for(let x=B.x0;x<=B.x1;x+=20)P.push([x,xlShoreZ(XLK,x)-d]);path(P,false);g.stroke();}g.restore();}
  // the stream's bed and its water's line
- g.strokeStyle='#5a6a60';line(xlStream(XLK).pts,9);g.strokeStyle='#3f6f78';line(xlStream(XLK).pts,3.5);
+ {const S_=xlStream(XLK);if(S_){g.strokeStyle='#5a6a60';line(S_.pts,9);g.strokeStyle='#3f6f78';line(S_.pts,3.5);}}
  // the market square (packed earth), the ways at their widths: the shore road in setts, the rows and stairs in cobbles
  g.fillStyle='#a69a84';for(const G_ of XLT.greens){path(G_.poly,true);g.fill();}
  for(const w of XLT.ways){g.strokeStyle=w.cls==='main'?'#9b9386':w.cls==='lane'?'#8a7a62':'#8f887b';line(w.pts,w.w,w.closed);}
@@ -62,8 +65,8 @@ const xlSlope=(x,z)=>{const e=4;return Math.hypot(xlH(XLK,x+e,z)-xlH(XLK,x-e,z),
 function xlGroundShader(g,m,cx,cz){const T3=THREE,sm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);},p=g.attributes.position;
  const lay=new Float32Array(p.count*4),gm=new Float32Array(p.count);
  for(let i=0;i<p.count;i++){const x=p.getX(i)+cx,z=-p.getY(i)+cz,d=xlShoreZ(XLK,x)-z,y=xlH(XLK,x,z),s=xlSlope(x,z);
-  const shore=sm(-12,2,d)*sm(40,8,d),peb=sm(.42,.62,fbm(x*.012+4,z*.012-1,617,2)),sd=Math.abs(x-xlStreamXd(XLG,d));
-  lay[i*4]=shore*(1-peb);lay[i*4+1]=shore*peb;lay[i*4+2]=sm(10,3,sd)*(y>-.5&&d<XLG.stream.to?1:0);lay[i*4+3]=0;gm[i]=sm(.32,.7,s);}
+  const shore=sm(-12,2,d)*sm(40,8,d),peb=sm(.42,.62,fbm(x*.012+4,z*.012-1,617,2)),sd=XLG.stream?Math.abs(x-xlStreamXd(XLG,d)):1e9;
+  lay[i*4]=shore*(1-peb);lay[i*4+1]=shore*peb;lay[i*4+2]=sm(10,3,sd)*(y>-.5&&XLG.stream&&d<XLG.stream.to?1:0);lay[i*4+3]=0;gm[i]=sm(.32,.7,s);}
  g.setAttribute('aGL',new T3.BufferAttribute(lay,4));g.setAttribute('aGM',new T3.BufferAttribute(gm,1));
  const P=n=>(typeof KMAT!=='undefined'&&KMAT.packed)?KMAT.packed('xanadu-bio',n):null,TX=L=>KMAT.textures(L,{aniso:8}).map;
  const dL=P('groundDetail'),a=P('ground.shore'),b=P('ground.pebble'),c=P('ground.gravel'),LIB=!!(dL&&a&&b&&c);window._xlGround={lib:LIB};if(!LIB)return;
@@ -105,11 +108,11 @@ const xlLinC=c=>new THREE.Color(c).convertSRGBToLinear();
 const XL_LAKE=(function(){try{const W=WATER.open({name:'Erewhon\'s lake',level:0,field:.12,bounds:[-6000,XLB.z0-5200,6000,XLB.z1+5200],bed:terrainH,bedBox:[XLB.x0,XLB.z0,XLB.x1,XLB.z1+1200],bedCell:12});
   const D=WATER.draw(W,{renderOrder:1,roughness:.08,metalness:.05,envMapIntensity:.45,surf:false,breakers:false,pick:true,shallow:xlLinC(0x5f8a84),deep:xlLinC(0x1f4a56)});
   D.mesh.userData.inspectLabel='Erewhon\'s lake (-520 m)';D.mesh.userData.probeSkip=true;return D;}catch(e){reportErr('lake: '+(e&&e.stack||e));return null;}})();
-const XL_STREAM=(function(){const S=xlStream(XLK),pts=S.pts.slice().reverse().map(p=>[p[0],p[1],Math.max(.15,xlH(XLK,p[0],p[1])+.3)]);
+const XL_STREAM=(function(){const S=xlStream(XLK);if(!S)return null;const pts=S.pts.slice().reverse().map(p=>[p[0],p[1],Math.max(.15,xlH(XLK,p[0],p[1])+.3)]);
  for(let i=1;i<pts.length;i++)pts[i][2]=Math.min(pts[i][2],pts[i-1][2]);   /* never climbing downstream */
  try{const F=WATER.flow({name:'the stream',pts,width:pts.map((p,i)=>2.4+2.2*i/pts.length),speed:1.1,densify:10});
   const D=WATER.drawFlow(F,{shallow:xlLinC(0x7a8a6c),deep:xlLinC(0x3a5a50),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.45,step:6,across:4,margin:1.5,renderOrder:2});
   if(D&&D.mesh){D.mesh.userData.inspectLabel='the stream (the page\'s own: the model has none)';D.mesh.userData.probeSkip=true;}return{F,D,n:pts.length};}
  catch(e){reportErr('the stream: '+(e&&e.stack||e));return null;}})();
 window._worldMs=Math.round(performance.now()-XL_T0);
-window._xlWater={lake:!!XL_LAKE,stream:!!(XL_STREAM&&XL_STREAM.D),streamPts:XL_STREAM?XL_STREAM.n:0};
+window._xlWater={lake:!!XL_LAKE,stream:!!(XL_STREAM&&XL_STREAM.D),streamPts:XL_STREAM?XL_STREAM.n:0,hasStream:!!XLG.stream};

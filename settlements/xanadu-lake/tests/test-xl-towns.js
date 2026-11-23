@@ -21,6 +21,9 @@ global.XAN_TUNE = require(path.join(ROOT, 'core', 'region', 'data', 'xan-tune.js
 ['core/rand/08-core-rand.js', 'core/space/20-core-space.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js'].forEach(load);
 fs.readdirSync(path.join(ROOT, 'core', 'city')).filter(f => /^\d\d-city-.*\.js$/.test(f) && !/host/.test(f)).sort().forEach(f => load('core/city/' + f));
 KCITY.lib = { SL, plan: () => PLAN, KSPACE, Raster, OCC, obb, obbCorners };
+// kits/crops in one closure, as the page's gen/89zc-crops-bundle.js (its fragments share top-level names); CROPS on globalThis
+vm.runInThisContext('(function(){' + ['10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-crop-query.js']
+  .map(f => fs.readFileSync(path.join(ROOT, 'kits', 'crops', 'src', f), 'utf8')).join('\n') + '\n})();', { filename: 'kits/crops (bundled)' });
 global.XL_KIT_DIMS = {};
 for (const d of ['src', 'extra']) for (const f of fs.readdirSync(path.join(ROOT, 'kits', 'xanadu', d)).filter(f => f.endsWith('.js'))) {
   const s = fs.readFileSync(path.join(ROOT, 'kits', 'xanadu', d, f), 'utf8'), re = /XA\.def\(\{/g; let m;
@@ -57,9 +60,9 @@ function onStreets(list, ways) { let n = 0, first = null;
   for (const p of list) { if (p.kind !== 'house') continue; const C = corners(p.bo).concat([p.bo.c]);
     if (ways.some(w => { for (let i = 1; i < w.pts.length; i++) for (const q of C) if (segD(q, w.pts[i - 1], w.pts[i]) < w.w / 2 - 0.05) return true; return false; })) { n++; first = first || p.id; } }
   return { n, first }; }
-const WET_OK = { xa_quay: 1, xa_boatshed: 1, xa_ghat: 1, xa_fish_racks: 1 };   /* the racks stand on the beach, their poles' feet may touch the wet sand */
+const WET_OK = { xa_quay: 1, xa_boatshed: 1, xa_ghat: 1, xa_fish_racks: 1, xa_dye_works: 1 };   /* the dye works' wash runs down the beach too */   /* the racks stand on the beach, their poles' feet may touch the wet sand */
 const inWater = (key, list) => list.filter(p => !WET_OK[p.key] && corners(p.bo).concat([p.bo.c]).some(q => xlH(key, q[0], q[1]) < 0.2));
-const onStream = (key, G, list) => list.filter(p => p.key !== 'xa_bridge' && corners(p.bo).concat([p.bo.c]).some(q => { const d = xlShoreZ(key, q[0]) - q[1]; return d > 0 && d < G.stream.to && Math.abs(q[0] - xlStreamXd(G, d)) < 9; }));
+const onStream = (key, G, list) => !G.stream ? [] : list.filter(p => p.key !== 'xa_bridge' && corners(p.bo).concat([p.bo.c]).some(q => { const d = xlShoreZ(key, q[0]) - q[1]; return d > 0 && d < G.stream.to && Math.abs(q[0] - xlStreamXd(G, d)) < 9; }));
 const census = (C, people) => Math.abs(C.houses * XL.HH - people) <= people * 0.1;
 
 // ---------------------------------------------------------------- 2. each built town
@@ -110,6 +113,17 @@ for (const key of keys.filter(k => XL.FIT[k])) {
   // the fields on their benches
   const offBench = Tn.fields.filter(f => { const b = G.benches[f.bench]; return f.poly.some(p => { const d = xlShoreZ(key, p[0]) - p[1]; return d < b.d0 - .5 || d > b.d1 + .5 || p[0] < b.x0 - .5 || p[0] > b.x1 + .5; }); });
   T.ok(N + ': ' + Tn.fields.length + ' fields, each on its bench', Tn.fields.length >= G.benches.length && offBench.length === 0, offBench.map(f => f.id).join(', '));
+  // the ruins: the spec's count of ruined houses (within 10 %), the ruined quarter holding them, none counted in the census
+  if (S.ruins) {
+    const ru = P.filter(p => p.kind === 'ruin'), off = ru.filter(p => p.quarter !== S.ruins.quarter);
+    T.ok(N + ': the old town: ' + ru.length + ' ruined houses (the spec\'s ' + S.ruins.houses + '), all in the ' + S.ruins.quarter + ' quarter, none in the census',
+      Math.abs(ru.length - S.ruins.houses) <= S.ruins.houses * 0.1 && off.length === 0 && P.filter(p => p.kind === 'house' && /^xa_ruin_/.test(p.key)).length === 0,
+      off.length + ' outside their quarter');
+  }
+  // the fields' crops: the spec's bucket from kits/crops (what the Vale grows by rain), else the terraces' grain
+  const FB = (S.layout.fields || {}).bucket, badCrop = Tn.fields.filter(f => FB ? !(CROPS.BY_ID[f.crop] && CROPS.BY_ID[f.crop].bucket === FB && CROPS.BY_ID[f.crop].form !== 'tree') : f.bucket !== 'grain');
+  T.ok(N + ': the benches\' crops ' + (FB ? 'from kits/crops\' ' + FB + ' plants' : 'the terraces\' grain') + ' (' + [...new Set(Tn.fields.map(f => f.crop))].join(', ') + ')',
+    badCrop.length === 0, badCrop.map(f => f.id + ' ' + f.crop).join(', '));
   // the same twice
   const sig = T2 => T2.place.map(p => p.key + '@' + p.x.toFixed(2) + ',' + p.z.toFixed(2)).join('|') + '#' + T2.boats.out.map(b => b.x.toFixed(2)).join(',');
   const a = sig(Tn), b2 = sig(xlRun(key));

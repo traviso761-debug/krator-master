@@ -26,7 +26,7 @@
   "step": 10,
   "x0": -2100,
   "z0": -2367.1,
-  "h0": 97.01,
+  "h0": 85.44,
   "s": 0.01,
   "file": "ground.png",
   "encoding": "16-bit grey v: h = h0 + (v - 32768) * s; row j at z0 + j*step, column i at x0 + i*step"
@@ -876,10 +876,10 @@
  },
  "isles": [],
  "stats": {
-  "h_min": -87.8,
+  "h_min": -110.94,
   "h_max": 281.83,
   "quant_m": 0.01,
-  "h0": 97.01,
+  "h0": 85.44,
   "lake_km2": 7.425,
   "river_km2": 0.0,
   "joined_hollow_cells": 0,
@@ -930,7 +930,7 @@
    "settlements/xanadu-lake/targets/town/89zm-xl-fit.js",
    "settlements/xanadu-lake/targets/town/89zp-xl-site.js"
   ],
-  "hash": "d1095ed03273b334",
+  "hash": "41d5b21d01c658e0",
   "by": "core/world/bake_towns.py"
  }
 }

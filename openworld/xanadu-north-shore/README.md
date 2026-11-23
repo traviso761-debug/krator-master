@@ -18,7 +18,8 @@ On map 5.1 with edit 7 re-run (5f659c054) and Phēr's polish (`tools/scale-model
   `core/world/41l-world-landforms.js` from `region.json`'s `landforms`.
 - **The rivers:** the Qol Siṭrīm and the Swīṭ Siṭrīm (Phēr's stream, `r_pher_swit`), named rivers of the model.
 - **The towns' own ground** (`openworld/SITES.json`'s `towns`, `core/world/bake_towns.py`): Phēr's (`settlements/pher`, step P7)
-  and Māuṭh's (`settlements/xanadu-lake`, step L0) inside their footprints, the band easing back to the region's.
+  and the lake towns' (`settlements/xanadu-lake`: Māuṭh, Ōlḍ-Thalaba, Ḍāiyar) inside their footprints, the band easing back
+  to the region's.
 - **The sites** (`src/48-world-site.js`, baked by `core/world/bake_sites.py` to `plan/sites.json`):
   - Phēr's ring: six farming villages on the rim plain, on core/hamlet's `xanadu` row, drawn with the Xanadu kit (XAK).
   - The Thalaba road up the Qol valley: 104.8 km, with a han every 25 km, bridged where it crosses a named river.

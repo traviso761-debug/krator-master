@@ -177,12 +177,18 @@
     "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
-    "openworld/SITES.json": "27cbe81f78c2367c63ab6bf5e372edcbec479842b694f3a3ec4d8477419f6c34",
-    "openworld/towns/mouth/ground.png": "d3f9292d06426a72256570290b57923b6f05c4b5fe94681d09f7b890c6f51e40",
-    "openworld/towns/mouth/town.json": "a5f1d8d731d9216e8f63d43305aa59ded47abd37d341857203074f6f61f97248",
+    "openworld/SITES.json": "7c49ceb4bd59d93cba89e653be07223b910629bb2b4c335558f91548fae32d61",
+    "openworld/towns/dyer/ground.png": "541d3d821c506eedd8902850438ead146332c3b35ecdc60036b19c2fc3351442",
+    "openworld/towns/dyer/town.json": "9d57d29c8384714be6e6c3a923e8d5a480787ff4d23a815a56aa42aeb0972ec0",
+    "openworld/towns/dyer/water.png": "6a6cf8bcbdf1c52f8dd6a9dd889b4c9f9042ce98099347a2b25c28c0ccb36937",
+    "openworld/towns/mouth/ground.png": "5cfb0eaf499f55da02dc68553e146b6d71c7ea8569964800b96e1985e74a11f9",
+    "openworld/towns/mouth/town.json": "7ae1c4b386aa9913bb18cadf35c58be342ae14f2eafbe26a5c31aea3e583f472",
     "openworld/towns/mouth/water.png": "87346861068efe03734490ff69a39fca3c09541d8162367e3766a6bb1081cce8",
+    "openworld/towns/old-thalaba/ground.png": "b91cc096dd20f7929cfcb5df1498fca1504aee5e996eafeffcfa308e4765133c",
+    "openworld/towns/old-thalaba/town.json": "f9712ba05f9402ddb585d5fb6faf158e9c3daa85822eddc660e1b9e8ef1734b2",
+    "openworld/towns/old-thalaba/water.png": "63912de8b9795d364fdaf99781d14a0a5236dd17c6ba1e8d3df4c84586c698a3",
     "openworld/towns/pher/ground.png": "1254d446ecacc6d7c14c173a39ce87dc277ddac82f0689f5d32027359ba8db12",
-    "openworld/towns/pher/town.json": "54d29aa6546887c810508f7379dfac361458e7fa19259efe18dc0d28d2f2687b",
+    "openworld/towns/pher/town.json": "2af7161b148020e4ea487694498e92b3c9b18963781ec12a29e5a22f6589a7d5",
     "openworld/towns/pher/water.png": "1df60b93cb0fbdd54bd0aa4e1ba22e37752dd6857b097c2f7560fad6df338916",
     "openworld/xanadu-north-shore/PORT.md": "67a3101c71d93803dab4bffe38ec86e41cc8f2c6bd19beed3116b3d258dac3d5",
     "openworld/xanadu-north-shore/build.py": "e23225ef0b55b9bcb624d48b3260c2d03628124d2c6485ddec8e18c002069ef3",
@@ -281,11 +287,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "ce7fcdb48aa9e5271a700f5a5fb7b00d9ef43239e69c6dab26b715d6bdc4722f",
+    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "b8db4b7866d80cad353fdc9971794673b5adb5f65b7abaa7acd2c4f2ba2b6a61",
     "openworld/xanadu-north-shore/dist/xanadu-north-shore.tex.xanadu.js": "370454615bab77e228e914527a94236b18bb083467e3071143249c0b0f57dd68"
    },
    "outputs_raw": {
-    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "ce7fcdb48aa9e5271a700f5a5fb7b00d9ef43239e69c6dab26b715d6bdc4722f",
+    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "b8db4b7866d80cad353fdc9971794673b5adb5f65b7abaa7acd2c4f2ba2b6a61",
     "openworld/xanadu-north-shore/dist/xanadu-north-shore.tex.xanadu.js": "370454615bab77e228e914527a94236b18bb083467e3071143249c0b0f57dd68"
    }
   }

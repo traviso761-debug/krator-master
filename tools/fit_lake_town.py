@@ -15,7 +15,7 @@ region's landforms when its build takes them: WORLD.Hbare, the land without road
              within 1.2 km of the town's pin
   landing    where the land crosses the lake's level going from the pin along the bearing: the page's origin
   shore      the page's waterline: z of the level's first crossing (marching lakeward) every 50 m along the page's x,
-             smoothed (a Gaussian of 120 m) so the quay and the landing stand on a clean line
+             smoothed (a Gaussian of 120 m, or the spec's world.smooth) so the quay and the landing stand on a clean line
   prof       the profile across the shore: the median over the town's width of the land's height over the level at each
              inland distance d (knots), made to rise inland and fall lakeward
   res        the rest: the region's height less the profile at every node of a 50 m grid in (x, d), which the page adds back outside the
@@ -41,8 +41,8 @@ SPECS = os.path.join(LAKE, 'targets', 'town', '89zl-xl-specs.js')
 TUNE = os.path.join(ROOT, 'core', 'region', 'data', 'xan-tune.js')
 
 # the page's sampling grid (page metres: x along the shore, z toward the lake, from the landing)
-GX, GZ0, GZ1, GS = 2800, -3400, 1600, 25
-RES_STEP, RES_D0, RES_D1 = 50, -1200, 3000
+GX, GZ0, GZ1, GS = 2800, -3400, 2600, 25
+RES_STEP, RES_D0, RES_D1 = 50, -2400, 3000   # lakeward to the band's far edge (R + band from a pin up to 400 m inland)
 KNOTS = [-1200, -800, -500, -300, -180, -100, -50, -20, 0, 20, 50, 100, 160, 240, 330, 430, 550, 700, 860, 1050, 1300, 1600, 2000, 2500, 3000]
 SMOOTH = 120.0
 
@@ -154,7 +154,8 @@ def fit(key):
     raw_f = np.interp(xs, xs[ok], raw[ok])
     # the page's shore every 50 m, a Gaussian of SMOOTH m over the raw line
     sx = np.arange(-GX, GX + 1, 50.0)
-    w = np.exp(-((sx[:, None] - xs[None, :]) / SMOOTH) ** 2)
+    sm = W.get('smooth') or SMOOTH                # a town's own (a jagged shore wants a tighter line: XL.SPECS[key].world.smooth)
+    w = np.exp(-((sx[:, None] - xs[None, :]) / sm) ** 2)
     shore = (w * raw_f[None, :]).sum(1) / w.sum(1)
     shore -= np.interp(0.0, sx, shore)            # the landing (page x 0) on the line at z 0
     shoreAt = lambda x: np.interp(x, sx, shore)
@@ -172,7 +173,12 @@ def fit(key):
         prof[k] = max(prof[k], prof[k - 1] + .05 * (KNOTS[k] - KNOTS[k - 1]) / 100, .4 if k == k0 + 1 else 0)
     for k in range(k0 - 1, -1, -1):               # falling lakeward
         prof[k] = min(prof[k], prof[k + 1] - .05 * (KNOTS[k + 1] - KNOTS[k]) / 100, -.4 if k == k0 - 1 else 0)
-    pf = lambda d: np.interp(d, KNOTS, prof)
+    K = np.array(KNOTS, float)
+    def pf(d):   # the page's xlProf (89zp): the knots, the end knots' grade carried on beyond them (never held flat)
+        d = np.asarray(d, float)
+        y = np.interp(d, K, prof)
+        lo, hi = (prof[1] - prof[0]) / (K[1] - K[0]), (prof[-1] - prof[-2]) / (K[-1] - K[-2])
+        return np.where(d < K[0], prof[0] + lo * (d - K[0]), np.where(d > K[-1], prof[-1] + hi * (d - K[-1]), y))
     # ---- the rest, every RES_STEP m in (x, d)
     rx = np.arange(-GX, GX + 1, RES_STEP)
     rd = np.arange(RES_D0, RES_D1 + 1, RES_STEP)
@@ -208,7 +214,7 @@ def fit(key):
     inR = [p for p in chk_shore]
     sd = max((abs(float(shoreAt(p[0])) - p[1]) for p in inR), default=0)
     stats = {'shore_max_m': round(sd, 1), 'bearing': S['bearing'], 'landing_from_pin_m': round(S['run'], 1), 'coast': S['coast'],
-             'res_max_m': round(float(np.abs(res).max()), 1)}
+             'res_max_m': round(float(np.abs(res).max()), 1), 'smooth_m': sm}
     return row, stats
 
 

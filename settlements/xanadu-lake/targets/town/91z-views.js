@@ -6,12 +6,15 @@ const VIEWS=(function(){const V={},G=XLG,S=XL.SPECS[XLK],L=S.layout,z0=xlShoreZ(
  V['Overview']=[620,260,z0+520,0,30,z0-260];
  V['From the water']=[60,9,z0+300,0,12,z0-120];
  const g=find('xa_ghat');if(g)V['The landing stair']=[g.x+26,g.o.y+9,g.z+30,g.x,g.o.y-1,g.z];
- {const q=xlAt(XLK,mk.x,L.road+6+mk.d/2);V['The market square']=xlEye(q[0]+mk.w/2+8,q[1]+18,q[0]-10,q[1]-6,1);}
+ if(mk){const q=xlAt(XLK,mk.x,(mk.d0==null?L.road+6:mk.d0)+mk.d/2);V['The market square']=xlEye(q[0]+mk.w/2+8,q[1]+18,q[0]-10,q[1]-6,1);}
  const t=find('xa_temple');if(t)V['The temple by the landing']=[t.x+40,t.o.y+16,t.z+46,t.x,t.o.y+6,t.z];
  const gv=find('xa_governor');if(gv)V['The governors house']=[gv.x+34,gv.o.y+14,gv.z+40,gv.x,gv.o.y+4,gv.z];
  V['Up the main stair']=xlEye(6,z0-L.road-4,0,z0-(top?top.d0:300),1);
  if(top){const q=xlAt(XLK,(top.x0+top.x1)/2,(top.d0+top.d1)/2);V['The terraces']=[q[0]+260,top.y+90,q[1]+260,q[0],top.y,q[1]];
   const b0=G.benches[0],e=xlAt(XLK,b0.x0+30,b0.d0+60);V['Along the lower bench']=xlEye(e[0],e[1],e[0]+300,xlShoreZ(XLK,e[0]+300)-b0.d0-60,1.5);}
+ const dw=find('xa_dye_works');if(dw)V['The dye works']=[dw.x+40,dw.o.y+16,dw.z+40,dw.x,dw.o.y+2,dw.z];
+ const sr=find('xa_serai_ruin');if(sr)V['The old caravan market']=[sr.x+60,sr.o.y+34,sr.z+60,sr.x,sr.o.y+2,sr.z];
+ const ru=XLT.place.filter(p=>p.kind==='ruin');if(ru.length){const r=ru[Math.floor(ru.length/2)];V['The empty old town']=[r.x+120,r.o.y+60,r.z+140,r.x,r.o.y,r.z];}
  const br=find('xa_bridge');if(br)V['The stream and the bridge']=[br.x+40,br.o.y+18,br.z+50,br.x,br.o.y,br.z-30];
  V['The fishing dugouts']=[200,26,z0+260,-200,0,z0+900];
  V['From the wall above']=[0,(top?top.y:80)+120,z0-(top?top.d1+260:600),0,10,z0+200];
