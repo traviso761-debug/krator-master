@@ -1003,6 +1003,27 @@ merged here (the owner's step 5, "merge in gemini scoping branch and crook/ria w
   `godot/golden-field.json` (`test-res.js --ledger`), and the Godot test copies (`godot/tools/sync_core.py`).
 - `tests/test_smodel.py` section 21 holds Gemini's stage checks, adapted.
 
+## 5.1 edit 9: `edit_521_strongwall.py` (2026-11-23): Strongwall's slot and pit, its watch posts, the House of the Tempest
+
+Strongwall's W0 and V0 (`settlements/strongwall/PLAN.md` on claude/strongwall-plan-c1ee33; asked 2026-11-16, the owner
+said yes to asking 2026-11-23). Numbered 521 because Shumar's branch holds 519 and 520.
+- **The slot kept.** The owner kept row 1641's fault trough (x 913-922) as the fort's natural moat on 2026-11-16, on
+  the model before `edit_517_crease.py`. That edit's blur along Qiblai's old stamp edge (y 1639.5) half filled it the
+  same day (the trough's floor rose 100-270 m) and moved the fort's bench. Rows 1638-1641 go back to their heights before
+  the crease from x 904 to 922, fading to today's over 923-927: 316 m at 913, -356 m at 918, the fort's cell 755 m. East
+  of 927 the crease stays.
+- **The pit** at 913-915, 1633-1635 (to -351 m, the old pin's cell) filled from its rim: 431-472 m, the bench's level.
+- **The pins** (reconcile 5.1e15), all Xanadu Sultanate: the six watch posts, outposts (the Brow G1 917,1648; the Cold
+  G2 911,1653; the Lode G3 915,1664; the Fan R1 906,1635; the Bench-end R2 905,1626; the Rift R3 894,1624), the House of
+  the Tempest (886,1619, a village: no monastery type) and its west-brow lookout (879,1618, an outpost). The Golden
+  Tears' house is not a pin on the model (nothing at 913,1641); Strongwall's own pin is at 912,1640 already.
+- **Checked** (`edit_521_strongwall.report.json`; a 10 m tower at each end, the earth's curve with refraction 0.13):
+  each pin's ground is the plan's (3,455, 4,137, 5,046, 585, 446, 362 m; the monastery 519, the brow 153). G1 sees the
+  fort (+14 m), G3 sees G2 (+13), R1 the fort (+12), R2 R1 (+14); G2 to G1 and R3 to R2 are marginal (-0.3 and -0.2 m;
+  the plan's +2 m: a mast a few metres taller). The monastery sees the fort (+13), G1 (+20), R1 (+13) and R2 (+12);
+  R3 is marginal (-9 m; the plan's +3); G2 and G3 are behind the scarp. The lookout sees G1 (+17), not the monastery's
+  crest (-127 m: the plan's relay).
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

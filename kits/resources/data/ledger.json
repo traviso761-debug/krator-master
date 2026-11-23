@@ -151,7 +151,6 @@
     "marble"
    ],
    "exports": [
-    "copper",
     "sulfur"
    ],
    "basics": {
@@ -659,7 +658,6 @@
    "exports": [
     "iron",
     "copper",
-    "tin",
     "silver",
     "coal",
     "sulfur",
@@ -2445,7 +2443,6 @@
    ],
    "exports": [
     "copper",
-    "gold",
     "silver",
     "sulfur",
     "marble"
@@ -2603,8 +2600,6 @@
    ],
    "exports": [
     "copper",
-    "gold",
-    "tin",
     "rare-earth",
     "oil",
     "alkali",
@@ -3139,11 +3134,9 @@
     "iron",
     "gold",
     "tin",
-    "silver",
     "rare-earth",
     "coal",
     "saltpeter",
-    "oil",
     "halite",
     "nickel"
    ],
@@ -4782,7 +4775,13 @@
     "Strongwall",
     "Thalaba",
     "The Beacon (the Order of the Beacon's head house; the Sultan's watch fort over the Rift)",
+    "The Bench-end post (R2)",
+    "The Brow post (G1)",
+    "The Cold post (G2)",
+    "The Fan post (R1)",
+    "The House of the Tempest (the Violet Storm's monastery)",
     "The Mist Garden's valley village",
+    "The Rift post (R3)",
     "The cloud hermitages (Misṭ-Gārḍan)",
     "The dry garden's grange (Misṭ-Gārḍan)",
     "Theodiga",
@@ -4916,6 +4915,7 @@
     "tin",
     "silver",
     "rare-earth",
+    "sulfur",
     "oil",
     "marble"
    ],
@@ -4971,7 +4971,43 @@
       ]
      },
      {
+      "settlement": "The Bench-end post (R2)",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "The Brow post (G1)",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "The Cold post (G2)",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "The Fan post (R1)",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "The House of the Tempest (the Violet Storm's monastery)",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
       "settlement": "The Mist Garden's valley village",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "The Rift post (R3)",
       "lack": [
        "salt"
       ]
@@ -5003,22 +5039,22 @@
     ]
    },
    "reach": {
-    "iron": 1064,
-    "copper": 1009,
-    "gold": 473,
-    "tin": 419,
-    "silver": 491,
-    "rare-earth": 727,
+    "iron": 1574,
+    "copper": 1625,
+    "gold": 776,
+    "tin": 601,
+    "silver": 744,
+    "rare-earth": 1000,
     "coal": 0,
-    "sulfur": 61,
-    "saltpeter": 30,
-    "oil": 316,
+    "sulfur": 367,
+    "saltpeter": 102,
+    "oil": 470,
     "gypsum": 0,
     "halite": 4,
     "potash": 0,
     "alkali": 0,
     "nickel": 0,
-    "marble": 19
+    "marble": 57
    }
   },
   "Yeti Kingdom": {
@@ -10161,6 +10197,112 @@
    },
    "ok": false
   },
+  "The Bench-end post (R2)": {
+   "polity": "Xanadu Sultanate",
+   "px": 905,
+   "py": 1626,
+   "type": "outpost",
+   "pop": 300,
+   "reachKm": 12,
+   "catchment": {
+    "iron": 74,
+    "copper": 87,
+    "gold": 47,
+    "tin": 40,
+    "silver": 39,
+    "rare-earth": 58,
+    "oil": 39,
+    "marble": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "The Brow post (G1)": {
+   "polity": "Xanadu Sultanate",
+   "px": 917,
+   "py": 1648,
+   "type": "outpost",
+   "pop": 300,
+   "reachKm": 12,
+   "catchment": {
+    "iron": 98,
+    "copper": 128,
+    "gold": 57,
+    "tin": 21,
+    "silver": 51,
+    "rare-earth": 34,
+    "sulfur": 110,
+    "saltpeter": 21,
+    "oil": 6,
+    "marble": 14
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "The Cold post (G2)": {
+   "polity": "Xanadu Sultanate",
+   "px": 911,
+   "py": 1653,
+   "type": "outpost",
+   "pop": 300,
+   "reachKm": 12,
+   "catchment": {
+    "iron": 88,
+    "copper": 136,
+    "gold": 65,
+    "tin": 19,
+    "silver": 54,
+    "rare-earth": 21,
+    "sulfur": 160,
+    "saltpeter": 43,
+    "oil": 1,
+    "marble": 9
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "The Fan post (R1)": {
+   "polity": "Xanadu Sultanate",
+   "px": 906,
+   "py": 1635,
+   "type": "outpost",
+   "pop": 300,
+   "reachKm": 12,
+   "catchment": {
+    "iron": 94,
+    "copper": 90,
+    "gold": 48,
+    "tin": 31,
+    "silver": 45,
+    "rare-earth": 52,
+    "sulfur": 36,
+    "saltpeter": 7,
+    "oil": 18,
+    "marble": 13
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
   "The Gate": {
    "polity": null,
    "px": 1438,
@@ -10185,6 +10327,56 @@
     "salt": true
    },
    "ok": true
+  },
+  "The House of the Tempest (the Violet Storm's monastery)": {
+   "polity": "Xanadu Sultanate",
+   "px": 886,
+   "py": 1619,
+   "type": "village",
+   "pop": 750,
+   "reachKm": 15,
+   "catchment": {
+    "iron": 80,
+    "copper": 92,
+    "gold": 42,
+    "tin": 36,
+    "silver": 34,
+    "rare-earth": 53,
+    "oil": 53
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "The Lode post (G3)": {
+   "polity": null,
+   "px": 915,
+   "py": 1664,
+   "type": "outpost",
+   "pop": 300,
+   "reachKm": 12,
+   "catchment": {
+    "iron": 93,
+    "copper": 141,
+    "gold": 63,
+    "tin": 19,
+    "silver": 55,
+    "rare-earth": 14,
+    "sulfur": 157,
+    "saltpeter": 72,
+    "marble": 8
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
   },
   "The Mist Garden's valley village": {
    "polity": "Xanadu Sultanate",
@@ -10236,6 +10428,31 @@
    },
    "ok": false
   },
+  "The Rift post (R3)": {
+   "polity": "Xanadu Sultanate",
+   "px": 894,
+   "py": 1624,
+   "type": "outpost",
+   "pop": 300,
+   "reachKm": 12,
+   "catchment": {
+    "iron": 76,
+    "copper": 83,
+    "gold": 44,
+    "tin": 35,
+    "silver": 30,
+    "rare-earth": 55,
+    "saltpeter": 1,
+    "oil": 37
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
   "The Sill (Sam-Lok)": {
    "polity": null,
    "px": 1697,
@@ -10258,6 +10475,30 @@
     "wood": false,
     "water": false,
     "salt": true
+   },
+   "ok": false
+  },
+  "The Tempest's west-brow lookout": {
+   "polity": null,
+   "px": 879,
+   "py": 1618,
+   "type": "outpost",
+   "pop": 300,
+   "reachKm": 12,
+   "catchment": {
+    "iron": 71,
+    "copper": 94,
+    "gold": 43,
+    "tin": 36,
+    "silver": 28,
+    "rare-earth": 47,
+    "oil": 46
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
    },
    "ok": false
   },
@@ -11050,7 +11291,13 @@
    "Xanadu Sultanate: Strongwall lacks salt within 30 km",
    "Xanadu Sultanate: Thalaba lacks salt within 30 km",
    "Xanadu Sultanate: The Beacon (the Order of the Beacon's head house; the Sultan's watch fort over the Rift) lacks salt within 30 km",
+   "Xanadu Sultanate: The Bench-end post (R2) lacks salt within 30 km",
+   "Xanadu Sultanate: The Brow post (G1) lacks salt within 30 km",
+   "Xanadu Sultanate: The Cold post (G2) lacks salt within 30 km",
+   "Xanadu Sultanate: The Fan post (R1) lacks salt within 30 km",
+   "Xanadu Sultanate: The House of the Tempest (the Violet Storm's monastery) lacks salt within 30 km",
    "Xanadu Sultanate: The Mist Garden's valley village lacks salt within 30 km",
+   "Xanadu Sultanate: The Rift post (R3) lacks salt within 30 km",
    "Xanadu Sultanate: The cloud hermitages (Misṭ-Gārḍan) lacks salt within 30 km",
    "Xanadu Sultanate: The dry garden's grange (Misṭ-Gārḍan) lacks salt within 30 km",
    "Xanadu Sultanate: Theodiga lacks salt within 30 km",

@@ -795,4 +795,18 @@ check('Ria Valley & Crook 20-region breakdown (%d regions, the six coarse ones g
       len(R) == 149
       and not any(i in rr_21 for i in ('rmvriavalley', 'rmvdoubledelta', 'rmvthearch', 'rmvthecrook', 'rmvcopperglacier', 'rmvtharnuplands'))
       and all(rid in rr_21 and rr_21[rid].get('notes') for rid in ('rmweubdnyts8y', 'rmweu4kpowzji', 'rmwetzg8idewz')))
+# ---- 22. 5.1 edit 9 (edit_521_strongwall.py, 2026-11-23): Strongwall's slot kept, its pit filled, the watch posts and
+#          the House of the Tempest (settlements/strongwall/PLAN.md W0, V0)
+check('Strongwall\'s slot, row 1641, is the fault trough the owner kept (316 m at 913, -356 m at 918, -347 m at 920)',
+      abs(float(E[1641, 913]) - 316) <= 3 and abs(float(E[1641, 918]) + 356) <= 3 and abs(float(E[1641, 920]) + 347) <= 3
+      and float(E[1640, 912]) > 700.0)
+check('the old pin\'s pit (913-915, 1633-1635) is filled to the bench (%.0f-%.0f m)' % (
+    float(E[1633:1636, 913:916].min()), float(E[1633:1636, 913:916].max())),
+      float(E[1633:1636, 913:916].min()) >= 400.0 and float(E[1633:1636, 913:916].max()) <= 500.0)
+sw_ids = ('sswpostg1', 'sswpostg2', 'sswpostg3', 'sswpostr1', 'sswpostr2', 'sswpostr3', 'stempest0001', 'stempestlk01')
+check('Strongwall\'s six watch posts, the House of the Tempest and its lookout are pinned, dry, of the Xanadu Sultanate',
+      all(i in by_id_21 for i in sw_ids)
+      and all(not bool(whas[by_id_21[i]['py'], by_id_21[i]['px']]) and by_id_21[i].get('polity') == 'Xanadu Sultanate'
+              for i in sw_ids)
+      and (by_id_21['sxan7r1sln']['px'], by_id_21['sxan7r1sln']['py']) == (912, 1640))
 print('%d checks passed' % ok)
