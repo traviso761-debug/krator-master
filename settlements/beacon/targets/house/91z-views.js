@@ -11,6 +11,7 @@ const VIEWS=(function(){const V={},F=BC.F,lv=BC.level;
  V['The precinct from the road']=bcEye(30,-330,0,F-4,-190);
  V['Over the Rift from above the fort']=[-60,F+180,-40,300,F-1700,14000];   /* above the lamp, south down the spur to the Rift floor 2,500 m below (at 2 km a pixel the spur falls gently for its first 4 km: from the walk it reads flat) */
  V['The house from the spur']=[-70,F+40,260,0,F+6,-80];
+ V['The terraces and the carters yard']=[160,F+55,-560,-20,F-14,-270];   /* from the rising ground north: the North Terraces, the byres, the yard, the road */
  return V;})();
 // the house as one budget (as Strongwall's): every type in the class 'city'
 BUDGET.showcase={tris:6000000,calls:1500};BUDGET.cls.city=6000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';

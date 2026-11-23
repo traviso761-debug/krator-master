@@ -41,8 +41,12 @@ is placed (`BC_PLINTH`), and draws `bcPlinth` in its stead. When 80g takes the o
   (`BC_GROUND.patched` reads 0) and the file can go.
 - **The order's buildings** are stacks sized from the layout (`bc_block`: Qiblai's plinth, stack, windows, door and parapet roof
   in the gold spoke's colours). They have no interiors yet, and the Labrang is not yet the four-floor house of sheet L.
-- **No outside parts yet**: the terraces, byres, hives, tea garden, carters' yard and tank of sheet T0 are not drawn; the road
-  and the fort road are not laid (the region's ways are the open-world session's).
+- **The outside parts (P2)** are drawn, with a few compromises:
+  - the terraces are tiled with the kit's terraced-field piece (`xa_farm`), each tile footed on its own ground, so they read as
+    separate fields rather than one stepped hillside;
+  - the byres are a long shed beside the kit's farmstead and dairy, and the herd is not drawn;
+  - the roads are ribbons on the 2 km-a-pixel ground, laid only as far as the layout's ways reach; the region's own ways are
+    the open-world session's (B7).
 - **No Rim Post** on this page: it stands 17 km off on the middle volcano (`lamp.relays`), outside the near ground.
 - **The ground** is the model at 2 km a pixel, bicubic, with the house's levels cut and filled into it. The knoll's faces, the
   saddle and the spur at 1:1 wait for the region (B7). The view "Over the Rift from above the fort" shows the problem: the

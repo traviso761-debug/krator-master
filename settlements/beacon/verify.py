@@ -41,6 +41,14 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
  {const F=(typeof xfReach==='function'?xfReach():null)||[],bad=F.filter(q=>!q.floors||q.unreached.length||q.capped);
   R.push({name:'fort-walks',ok:F.length===1&&!bad.length,detail:F.map(q=>q.reached+' of '+q.floors+' walks and stairs reached'+(q.unreached.length?', NOT '+q.unreached.slice(0,4).join(', '):'')).join('; ')||'no walks registered (core/walk not on the page?)'});}
  R.push({name:'layout-rules',ok:Array.isArray(Q.rules)&&!Q.rules.length,detail:(Q.rules||['no record']).length?'FAILED: '+(Q.rules||[]).join('; '):'every rule of the layout passes ('+BEACON.checks(BEACON_LAYOUT).length+')'});
+ /* P2: the grounds outside the walls (90s) */
+ {const G=window._beaconGrounds||{pieces:[],parts:[]},site=L.parts.filter(p=>p.zone==='site').map(p=>p.id),miss=site.filter(id=>G.parts.indexOf(id)<0),tiles=G.pieces.filter(r=>r.key==='xa_farm').length;
+  R.push({name:'grounds-laid',ok:!miss.length&&tiles>=30&&G.ways===2,detail:(site.length-miss.length)+' of '+site.length+' outside parts placed'+(miss.length?' (NOT '+miss.join(', ')+')':'')+'; '+tiles+' terraced-field tiles; '+G.ways+' roads'});}
+ {const bad=[];let n=0;(window._beaconGrounds||{pieces:[]}).pieces.forEach(r=>{if(r.mode==='walls')return;n++;const[lo,hi]=bcBoxGround(r.box);
+   if(r.mode==='footed'?(r.y<hi-.01||r.y-r.drop>lo+.01):Math.abs(r.y-lo)>.01)bad.push(r.id+'/'+r.key+' at '+r.y+' on '+lo.toFixed(2)+'..'+hi.toFixed(2));});
+  R.push({name:'grounds-on-the-ground',ok:n>30&&!bad.length,detail:n+' pieces: the footed on their high side with their footing past the low, the draped on their low side'+(bad.length?'; OFF: '+bad.slice(0,4).join('; '):'')});}
+ {let n=0,bad=0,worst=0;(typeof BC_WAYS!=='undefined'?BC_WAYS:[]).forEach(M=>{const p=M.geometry.attributes.position;for(let i=0;i<p.count;i+=3){const d=p.getY(i)-terrainH(p.getX(i),p.getZ(i));n++;if(d<.1||d>.4){bad++;worst=Math.max(worst,Math.abs(d));}}});
+  R.push({name:'ways-on-the-ground',ok:n>100&&!bad,detail:n+' road vertices sampled, '+bad+' off the ground'+(bad?' (worst '+worst.toFixed(2)+' m)':' (each 0.22 m over it)')});}
  {const S=window._beaconLamp||{};
   R.push({name:'lamp-lit',ok:S.lit===true&&(S.mode==='sweep'||S.mode==='signal')&&Array.isArray(S.keepers)&&S.keepers.length===3,detail:'at '+BC_SKY.hour+' h the lamp is '+(S.lit?'lit':'DARK')+', '+S.mode+(S.bearing!=null?' at '+S.bearing+' deg':'')+(S.station?' to '+S.station:'')+'; the Lamp Watch '+(S.keepers||[]).join(', ')});}}
 return R;}"""
