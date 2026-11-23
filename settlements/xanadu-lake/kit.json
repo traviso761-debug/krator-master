@@ -1,0 +1,70 @@
+{
+ "targets": {
+  "town": "xanadu-lake.html"
+ },
+ "external": [
+  "settlements/xanadu-lake/gen/69p-kcity-bundle.js", "settlements/xanadu-lake/gen/86-bio-31b-core-leafset.js",
+  "settlements/xanadu-lake/gen/89zk-xl-tune.js",
+  "kits/xanadu/src/87k-xa-lake-trades.js",
+  "kits/xanadu/extra/69dz-ix-xanadu-extra.js",
+  "kits/xanadu/extra/88c-xa-caravanserai.js",
+  "kits/xanadu/extra/88d-xa-lakecraft.js",
+  "kits/xanadu/extra/88e-xa-stall.js",
+  "kits/xanadu/extra/88f-xa-harbour.js",
+  "kits/xanadu/extra/88g-xa-works.js",
+  "kits/xanadu/extra/88h-xa-landing.js"
+ ],
+ "scoped": [
+  "69p-kcity-bundle.js"
+ ],
+ "files": {
+  "town": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]],
+   ["core/water/ext", ["56-core-water-breakup.js"]],
+   ["core/drawn", ["10-core-drawn.js"]]
+  ]
+ },
+ "deterministic": [
+  "69p-kcity-bundle.js",
+  "89zk-xl-tune.js",
+  "89zl-xl-specs.js",
+  "89zm-xl-fit.js",
+  "89zp-xl-site.js",
+  "89zq-xl-plan.js",
+  "90q-xl-world.js",
+  "90r-xl-build.js",
+  "90s-xl-boats.js",
+  "69dz-ix-xanadu-extra.js",
+  "87k-xa-lake-trades.js",
+  "88f-xa-harbour.js",
+  "88g-xa-works.js",
+  "88h-xa-landing.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "56-core-water-breakup.js",
+  "10-core-drawn.js"
+ ],
+ "interiors": [
+  "town"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "generic",
+  "generic-goods",
+  "jobs"
+ ],
+ "furnitureTex": true,
+ "interiorSets": [
+  "xanadu",
+  "xanadu-citadel"
+ ]
+}

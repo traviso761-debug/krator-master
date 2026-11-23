@@ -7,6 +7,9 @@ water as the town's water mask and its river as a named river (core/world/41t-wo
     python3 core/world/bake_towns.py <town> --check    # bake again and compare with the files (exit 1 if stale)
     python3 core/world/bake_towns.py --list
 
+The towns are Voth's and Phēr's (TOWNS, written by hand) and the lake towns of settlements/xanadu-lake (generated from
+their specs and fits: lake_towns()).
+
 The page's code is run read-only in node, as bake_sites.py runs core/hamlet: its terrain field (Voth: src/10-core.js
 terrainH, landDist, RIVER, ISLES), its shore trace (src/15-shore.js SHORE) and the site editor's ground edits
 (targets/voth-site/10-site-model.js TERR, replayed from site/voth-site.json as the city page replays them:
@@ -72,10 +75,54 @@ TOWNS = {
                 'over the lake at its own height, joined to the model\'s r_pher_swit'},
 }
 
+# the lake towns (settlements/xanadu-lake, PLAN.md section 3; step L0, 2026-11-23): one CLOSED entry a town, generated from
+# its spec (targets/town/89zl-xl-specs.js XL.SPECS[key]: its site, footprint and band) and its fit (89zm-xl-fit.js, written by
+# tools/fit_lake_town.py), never written by hand: the page's xlH(key, x, z) and its frame, shore and stream functions, each
+# called with `args` ([key]) before its own arguments (SAMPLE_CLOSED binds them). Its px is the tune's (XAN_TUNE.lake); a
+# town is baked once it has a fit. The frame (the page's square) is R + band + 100 m, the grid 10 m as Phēr's
+LAKE = 'settlements/xanadu-lake/targets/town/'
+LAKE_JS = [LAKE + '89zl-xl-specs.js', LAKE + '89zm-xl-fit.js', LAKE + '89zp-xl-site.js']
+
+
+def lake_towns():
+    js = ('var window=globalThis;var XAN_TUNE=require(%s);\n' % json.dumps(os.path.join(ROOT, 'core', 'region', 'data', 'xan-tune.js')) +
+          ''.join(read(f) + '\n' for f in LAKE_JS) +
+          'process.stdout.write(JSON.stringify(Object.keys(XL.FIT).sort().filter(k=>XL.SPECS[k]).map(k=>{const S=XL.SPECS[k],L=XAN_TUNE.lake.find(r=>r.key===k);'
+          'return{key:k,name:L.name,px:[L.px,L.py],world:S.world,stream:!!(S.layout&&S.layout.stream)};})));\n')
+    r = subprocess.run([node(), '-e', js], capture_output=True, text=True, encoding='utf-8')
+    if r.returncode:
+        sys.exit('bake_towns: the lake towns did not load:\n' + r.stderr[-3000:])
+    out = {}
+    for t in json.loads(r.stdout):
+        W = t['world']
+        out[t['key']] = {
+            'name': t['name'], 'site': W['site'], 'pin_px': t['px'], 'page': 'settlements/xanadu-lake', 'kind': 'closed',
+            'js': list(LAKE_JS), 'args': [t['key']],
+            'ground': 'xlH', 'frameFn': 'xlWorldFrame', 'shoreFn': 'xlShoreZ', 'streamFn': 'xlStreamX', 'streamTo': 'xlStreamTo(__T.args[0])',
+            'frame': W['R'] + W['band'] + 100, 'step': 10, 'R': W['R'], 'band': W['band'], 'level': 0,
+            # the town's stream is the page's own (the model has none at Māuṭh): an over-level river joined to no model river
+            'river': {'name': 'the stream of ' + t['name'], 'join': None, 'over': True},
+            'note': '%s\'s ground (settlements/xanadu-lake, its spec and fit): the page\'s xlH(\'%s\', x, z) turned by the shore\'s '
+                    'bearing, the lake at its level, its stream over the lake at its own height' % (t['name'], t['key'])}
+    return out
+
+
+def towns():
+    """Voth's and Phēr's entries and the lake towns' (generated)"""
+    T = dict(TOWNS)
+    for k, v in lake_towns().items():
+        if k in T:
+            sys.exit('bake_towns: lake town %r clashes with a town of TOWNS' % k)
+        T[k] = v
+    return T
+
+
 # the closed towns' sampling (plain ES5 over the page's own globals): the ground, the water under the level, the stream,
 # the shore where the ground crosses the level (marched south from the shore line)
 SAMPLE_CLOSED = r'''
-var __T = __TOWN, F = eval(__T.frameFn)(), G = eval(__T.ground), SH = eval(__T.shoreFn), SX = eval(__T.streamFn);
+/* a generated town's functions take its key first (`args`: the lake towns' xlH(key, x, z)); Voth's and Phēr's take none */
+var __T = __TOWN, __A = __T.args || [], __B = function (f) { return __A.length ? function () { return f.apply(null, __A.concat(Array.prototype.slice.call(arguments))); } : f; };
+var F = __B(eval(__T.frameFn))(), G = __B(eval(__T.ground)), SH = __B(eval(__T.shoreFn)), SX = __B(eval(__T.streamFn));
 var half = __T.frame, st = __T.step, n = Math.round(2 * half / st) + 1, cx = F.centre[0], cz = F.centre[1];
 var H = new Float32Array(n * n), Wt = new Uint8Array(n * n);
 for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) { var x = cx - half + i * st, z = cz - half + j * st, h = G(x, z), k = j * n + i; H[k] = h; if (h < __T.level) Wt[k] = 1; }
@@ -245,7 +292,7 @@ TOWNS_R_GUARD = 4800.0
 
 
 def bake(key, check=False):
-    T = TOWNS[key]
+    T = towns()[key]
     global TOWNS_R_GUARD
     TOWNS_R_GUARD = T['R']
     with tempfile.TemporaryDirectory() as tmp:
@@ -364,12 +411,13 @@ def main():
     a = sys.argv[1:]
     if not a or a[0] in ('-h', '--help'):
         sys.exit(__doc__)
+    ALL = towns()
     if a[0] == '--list':
-        for k, T in TOWNS.items():
+        for k, T in ALL.items():
             print('%-8s %s: %s, pin px %s, R %d m, band %d m' % (k, T['name'], T['page'], T['pin_px'], T['R'], T['band']))
         return
-    if a[0] not in TOWNS:
-        sys.exit('bake_towns: no town %r (%s)' % (a[0], ', '.join(TOWNS)))
+    if a[0] not in ALL:
+        sys.exit('bake_towns: no town %r (%s)' % (a[0], ', '.join(ALL)))
     sys.exit(bake(a[0], check='--check' in a))
 
 
