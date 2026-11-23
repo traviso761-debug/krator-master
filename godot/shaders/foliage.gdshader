@@ -39,6 +39,14 @@ varying float v_depth;
 varying float v_lod;
 varying vec3 v_sn_p;
 varying float v_sn_h;
+varying vec3 v_bn;                        // B1: the leaf's normal in the world, for the back-light's gate
+
+// B1 (GRAPHICS-TERRAIN-PROPOSAL 12d, 2026-11-23), the twin of BIO.foliageHook's back-light gate (core/biome/30-core-foliage.js;
+// core/biome/test-graphics-b.js reads both): d = dot(the leaf's normal, the sun). A face turned from the sun glows (0.65), one
+// edge-on to it a little (0.35), one that sees the sun is lit from the front and does not (0)
+float fol_back_gate(float d) {
+	return clamp(-d * 0.65 + 0.35 * (1.0 - abs(d)), 0.0, 1.0);
+}
 
 void vertex() {
 	// MODEL_MATRIX already holds the instance's transform for a MultiMesh
@@ -55,6 +63,7 @@ void vertex() {
 	} else {
 		n = fol_card_normal(mat3(MODEL_MATRIX) * NORMAL);
 	}
+	v_bn = n;
 	v_c2 = vec3(COLOR.a, INSTANCE_CUSTOM.z, INSTANCE_CUSTOM.w);
 	v_lod = klod(MODEL_MATRIX[3].xyz, CAMERA_POSITION_WORLD, INSTANCE_ID);
 	if (v_lod > 1.5) {
@@ -104,5 +113,10 @@ void fragment() {
 	// twig strokes at full strength into the distance; with coverage they thin and soften as the page's do
 	ALPHA_ANTIALIASING_EDGE = 0.25;
 	ALPHA_TEXTURE_COORDINATE = tuv * vec2(textureSize(albedo_tex, 0));
-	BACKLIGHT = fol_transmittance(lin_leaf, back_light);
+	// B1: gated by the leaf's normal: the clump's own (use_an), else the card's turned to the face drawn (as the page does)
+	vec3 bn = normalize(v_bn);
+	if (!use_an && !FRONT_FACING) {
+		bn = -bn;
+	}
+	BACKLIGHT = fol_transmittance(lin_leaf, back_light) * fol_back_gate(dot(bn, atm_sun_dir));
 }
