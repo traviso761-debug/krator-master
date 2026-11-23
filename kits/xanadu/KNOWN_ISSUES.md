@@ -78,11 +78,18 @@ skips it (`BUILD_FAILS`); measured on the page it is unchecked.
   registered only on a page with the interiors core (settlements/xanadu's 69d: Strongwall's page, on by default there). The kit
   sheet has no interiors core, so on it every fort building stays solid and every door locked, as before. A damaged or ruined fort's
   item is a skip (its keep has lost storeys, its ranges their roofs, or it stands as low walls), so its buildings stay solid too.
-- **Still solid in a kept fort**: the towers, the gatehouses and the barbican (no stair is drawn into them: the wall walks run
-  through), the keep's chapel on its roof (no stair to the roof), the granary (no door), and the stables and ore shed (open sheds).
-  The watch fort's keep, magazine and barracks are planned like Strongwall's; the gate works have no building with a door.
-- **The wall walks run through the towers and gatehouses** (core/walk strips at the curtain's walk height, end to end): the towers
-  have no doors or stairs of their own and their tops are not walk floors.
+- **Still solid in a kept fort**: the towers, the gatehouses and the barbican (their tops are walked, their insides are not: no
+  chamber is drawn in them), the keep's chapel on its roof (no stair to the roof), the granary (no door), and the stables and ore
+  shed (open sheds). The watch fort's keep, magazine and barracks are planned like Strongwall's; the gate works have no building
+  with a door.
+- **The walks (F4b, 2026-11-23; `XFORT.walks` in 80f)**: the walk no longer runs through the towers and gatehouses. It runs between
+  them and climbs each kept tower it meets by a flight up the walk onto its top (the parapet opened there), and the tops are walk
+  floors. What is left: a **gate block is not crossed** (its gatehouse roof carries the main gate's pavilion), so the walk ends at
+  its gate towers, which are climbed only where the walk before them has room for a 10 m flight (the watch fort's and the gate
+  works' are; Strongwall's, between an interval tower and the gate, are not); **a few stretches are too short for a stair** and
+  are drawn but not walked (Strongwall's two back walls, 5 m between their towers; the gate works' last metre past each gate
+  tower); a fallen tower ends the walk at its face. The flights stand on the walk, so a walker on the walk steps up them; the
+  plan's stairs are kept where they land on plain walk, and stairs are added where a piece of walk had none (`extra: true`).
 - **A breach's ends are cut square** and a damaged gate's leaves simply go (the passage's dim back shows): no ragged masonry or
   charred leaf yet. The burnt walls take the wash darkened by its colour until `wall.limewash.scorched` is delivered
   (`core/materials/PROMPTS-NEEDED.md` section 53, with `wall.rubble.limewash` and `wood.gate.studded`).
