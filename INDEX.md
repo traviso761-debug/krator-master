@@ -15,7 +15,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/dilihan`](settlements/dilihan/INDEX.md) | 11 | 257 | 98 |  |
 | [`settlements/drum`](settlements/drum/INDEX.md) | 22 | 388 | 59 |  |
 | [`settlements/eternian-canal`](settlements/eternian-canal/INDEX.md) | 9 | 129 | 56 |  |
-| [`settlements/flashing-eye`](settlements/flashing-eye/INDEX.md) | 8 | 77 | 22 |  |
+| [`settlements/flashing-eye`](settlements/flashing-eye/INDEX.md) | 9 | 104 | 27 |  |
 | [`settlements/gihon`](settlements/gihon/INDEX.md) | 8 | 148 | 68 |  |
 | [`settlements/gila`](settlements/gila/INDEX.md) | 7 | 90 | 35 |  |
 | [`settlements/girder`](settlements/girder/INDEX.md) | 41 | 16374 | 14510 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |

@@ -91,6 +91,36 @@
     "sourceMean": 0.4493
    }
   },
+  "feRoof": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "feRoof.albedo.webp",
+    "normalMap": "feRoof.normal.webp",
+    "roughnessMap": "feRoof.rough.webp"
+   },
+   "lib": "roof.tile",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3fe97591a097a60c76a30b462b8d59a12bf1b18d",
+    "normal": "0cdf7b26e3e3e08651e0290f498e85cf1abad1a4",
+    "roughness": "5aa83257cab4d5f10257a72ed30508a218a0deca"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.62,
+    "sourceMean": 0.5324
+   }
+  },
   "feScoria": {
    "breakup": null,
    "card": false,
