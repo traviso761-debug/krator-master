@@ -15,6 +15,8 @@ house's own:
   layout-rules         every rule of src/31-bc-rules.js passes on the layout the page drew from
   lamp-lit             at the page's hour (?hour=, default 18.4) the lamp is lit by its night (src/40-bc-lamp.js), sweeping or
                        signalling, and its keepers on watch
+  lamp-head-follows    the Ancient lamp head (kits/ancients anc_beacon_lamp, mounted by 80g on the plinth's yoke) faces the
+                       bearing the lamp's night gives, to half a degree, its beam shown only with the shutters open
   life-on-the-ground   the house's walkers (src/41-bc-life.js: the Lamp Watch, the kora's six, the novices' round): every one
                        drawn, six or more out at the page's hour, each on the drawn ground under its feet
   watch-at-the-plinth  while the lamp is lit the Lamp Watch's three are in the plinth (the page's figures hidden there)
@@ -62,6 +64,10 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
   R.push({name:'ways-on-the-ground',ok:n>100&&!bad,detail:n+' road vertices sampled, '+bad+' off the ground'+(bad?' (worst '+worst.toFixed(2)+' m)':' (each 0.22 m over it)')});}
  {const S=window._beaconLamp||{};
   R.push({name:'lamp-lit',ok:S.lit===true&&(S.mode==='sweep'||S.mode==='signal')&&Array.isArray(S.keepers)&&S.keepers.length===3,detail:'at '+BC_SKY.hour+' h the lamp is '+(S.lit?'lit':'DARK')+', '+S.mode+(S.bearing!=null?' at '+S.bearing+' deg':'')+(S.station?' to '+S.station:'')+'; the Lamp Watch '+(S.keepers||[]).join(', ')});}
+ {bcLampTick();const S=window._beaconLamp||{},Lp=typeof BC_LAMP!=='undefined'?BC_LAMP:null;let face=null,beam=null;
+  if(Lp){Lp.head.updateWorldMatrix(true,false);const d=new THREE.Vector3(0,0,1).transformDirection(Lp.head.matrixWorld);face=(Math.atan2(d.x,-d.z)*180/Math.PI+360)%360;beam=Lp.beam.visible;}
+  const off=face==null||S.bearing==null?NaN:Math.abs(((face-S.bearing)%360+540)%360-180),want=!!(S.lit&&S.shutter);
+  R.push({name:'lamp-head-follows',ok:!!Lp&&off<.5&&beam===want,detail:Lp?'the Ancient lamp head (anc_beacon_lamp, on 80g\'s yoke) faces '+(face==null?'?':face.toFixed(1))+' deg, the lamp\'s night says '+S.bearing+' ('+off.toFixed(2)+' off); its beam '+(beam?'shown':'hidden')+', the shutters '+(S.shutter?'open':'shut'):'NO lamp head on the plinth (kits/ancients/pieces/89p not on the page?)'});}
  /* P3: the house's life (src/41-bc-life.js, targets/house/90t-bc-life.js) */
  {const Lf=window._beaconLife||[],vis=Lf.filter(w=>w.visible),skip=o=>{for(;o;o=o.parent){if(o.userData&&o.userData.probeSkip||o.visible===false)return true;}return false;};
   const rc=new THREE.Raycaster(),bad=[],meshes=[];rc.camera=camera;scene.updateMatrixWorld(true);scene.traverse(o=>{if((o.isMesh||o.isInstancedMesh)&&(o.userData.isGround||!skip(o)))meshes.push(o);});   /* the terrain is probeSkip (kept out of the volumes' probe) but is the ground */

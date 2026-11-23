@@ -8,7 +8,7 @@
 //   - the order's other buildings (bc_block: a stack per layout part, its storeys, windows, door, parapet roof), the precinct wall
 //     and Gyantse's two walls (bc_wall: 80g's xfCurtain), the Lamp Stair, the courts and the kora garden, the Chorten of the
 //     Keepers, the oil pit, the cable's channel;
-//   - the lamp head (a stand-in for kits/ancients' anc_beacon_lamp, B5) and its beam, live, turned by the lamp's night
+//   - the lamp head (kits/ancients' anc_beacon_lamp, B5, mounted by 80g on the plinth's yoke) and its beam, turned by the lamp's night
 //     (src/40-bc-lamp.js as 89b2: BEACON_LAMP.state) at the page's hour.
 // [web]: three.js.
 const BC_B0=performance.now();
@@ -94,33 +94,25 @@ BCL.parts.forEach(p=>{if(p.zone!=='precinct'&&p.zone!=='lampward')return;const [
 /* the cable in its stone channel, from the engines to the plinth under the fort's gate */
 {const P=BCL.cable.pts,y0=P.map(p=>terrainH(p[1],p[0])+.05),y=Math.min(...y0);bcPlace('bc_cable',0,0,0,{y,y0});}
 kbake(BC_GRP);if(typeof xaDoorsBind==='function')xaDoorsBind();
-// ---------------------------------------------------------------- the lamp head (the stand-in) and its beam, turned by the lamp's night
-const BC_LAMP=(function(){const g=new THREE.Group();g.name='the lamp head (a stand-in for kits/ancients anc_beacon_lamp)';g.rotation.order='YXZ';
- if(BC.lampRec)g.position.set(BC.lampRec.at[0],BC.lampRec.at[1],BC.lampRec.at[2]);else g.position.set(0,BC.F+BCL.lamp.h,0);   /* seated at 80g's record */
- const white=new THREE.MeshStandardMaterial({color:0xdfe1e2,metalness:.55,roughness:.32}),iron=new THREE.MeshStandardMaterial({color:0x2e2a26,metalness:.4,roughness:.6});
- const body=new THREE.Mesh(new THREE.CylinderGeometry(.8,.8,2.2,28),white);body.rotation.x=Math.PI/2;g.add(body);
- for(const z of[-.6,.55]){const s=new THREE.Mesh(new THREE.CylinderGeometry(.84,.84,.12,28),iron);s.rotation.x=Math.PI/2;s.position.z=z;g.add(s);}   /* the Xanadui iron straps */
- for(let k=0;k<6;k++){const f=new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,.04,28),white);f.rotation.x=Math.PI/2;f.position.z=-1.05+k*.08;g.add(f);}   /* the cooling fins at its back */
- const tr=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,2.2,10),iron);tr.rotation.z=Math.PI/2;g.add(tr);   /* the trunnions on the yoke */
- const face=new THREE.Mesh(new THREE.CircleGeometry(.72,28),new THREE.MeshBasicMaterial({color:0x3a3a36}));face.position.z=1.111;g.add(face);
- const L=2600,w0=.7,w1=46,near=[1,.9,.66].map(v=>v*.55),pos=[],colr=[],idx=[];
- const quad=(a,b,c,d)=>{const i0=pos.length/3;[a,b,c,d].forEach((p,k)=>{pos.push(...p);colr.push(...(k<2?near:[0,0,0]));});idx.push(i0,i0+1,i0+2,i0,i0+2,i0+3);};
- quad([0,-w0,1.1],[0,w0,1.1],[0,w1,L],[0,-w1,L]);quad([-w0,0,1.1],[w0,0,1.1],[w1,0,L],[-w1,0,L]);
- const bg=new THREE.BufferGeometry();bg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));bg.setAttribute('color',new THREE.Float32BufferAttribute(colr,3));bg.setIndex(idx);
- const beam=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
- beam.name='the beam';beam.userData.probeSkip=true;beam.userData.lodSkip=true;beam.frustumCulled=false;g.add(beam);
- g.userData.probeSkip=true;scene.add(g);return{g,face,beam};})();
+// ---------------------------------------------------------------- the lamp head (kits/ancients anc_beacon_lamp, B5), driven by the lamp's night
+/* 80g's plinth mounts ANC_BEACON_LAMP on its yoke (kits/ancients/pieces/89p, on the page through kit.json): the handle is the
+   record's lamp. The page holds it ('hold') on the bearing BEACON_LAMP.state gives each frame (its sweep, its signal slots), its
+   shutters on the signal book's flashes, its beam on the lamp's night. A compass bearing b is the head's yaw pi - b in the world,
+   less the fort's own yaw (the fort turned half round: -b) */
+const BC_LAMP=BC.lampRec&&BC.lampRec.lamp||null;
+const BC_FORTYAW=(function(){if(!BC_LAMP)return 0;BC_LAMP.root.updateWorldMatrix(true,false);const q=new THREE.Quaternion();BC_LAMP.root.getWorldQuaternion(q);return new THREE.Euler().setFromQuaternion(q,'YXZ').y;})();
 const BC_ENV={night:t=>{const h=((t/3600)%24+24)%24;return h>=18||h<6;},engines:()=>true};
-function bcLampTick(){const t=BC_SKY.hour*3600+(performance.now()-BC_B0)/1000,s=BEACON_LAMP.state(t,BC_ENV),on=s.lit&&s.shutter;
- BC_LAMP.beam.visible=on;BC_LAMP.face.material.color.setHex(on?0xfff3cf:0x3a3a36);
- if(s.bearing!=null){BC_LAMP.g.rotation.y=Math.PI-s.bearing*Math.PI/180;BC_LAMP.g.rotation.x=-(s.elevation||0)*Math.PI/180;}
- window._beaconLamp={lit:s.lit,mode:s.mode,bearing:s.bearing==null?null:Math.round(s.bearing*10)/10,station:s.station,keepers:s.keepers};}
+const bcClock=()=>BC_SKY.hour*3600+(performance.now()-BC_B0)/1000;
+function bcLampTick(){const t=bcClock(),s=BEACON_LAMP.state(t,BC_ENV);
+ if(BC_LAMP){const o={on:s.lit,shutter:s.lit&&s.shutter?0:1,mode:'hold',night:()=>BC_ENV.night(bcClock())};
+  if(s.bearing!=null){o.bearing=Math.PI-s.bearing*Math.PI/180-BC_FORTYAW;o.tilt=(s.elevation||0)*Math.PI/180;}BC_LAMP.set(o);}
+ window._beaconLamp={lit:s.lit,mode:s.mode,bearing:s.bearing==null?null:Math.round(s.bearing*10)/10,station:s.station,keepers:s.keepers,shutter:!!s.shutter};}
 FRAME_HOOKS.push(bcLampTick);bcLampTick();
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._buildMs=Math.round(performance.now()-BC_B0);
 /* the page's record (the verify's): what was placed, the levels under the fort's and the precinct's corners, the plinth's top, the rules */
 window._beacon=Object.assign({},window._beaconSite,{placed:BC_PLACED,fort:!!BC.fortG,monastery:!!BC.monG,plinthTop:BC.plinthTop==null?null:Math.round(BC.plinthTop*100)/100,lampAt:BC.lampRec?BC.lampRec.at.map(v=>Math.round(v*100)/100):null,
- lampY:Math.round(BC_LAMP.g.position.y*100)/100,
+ lampY:BC.lampRec?Math.round(BC.lampRec.at[1]*100)/100:null,head:!!BC_LAMP,
  fortGround:[[-28,-28],[28,-28],[28,14],[-28,14],[0,0]].map(p=>Math.round(terrainH(p[0],p[1])*100)/100),
  precinctGround:[[-58,-238],[58,-238],[58,-70],[-58,-70],[0,-160]].map(p=>Math.round(terrainH(p[0],p[1])*100)/100),
  rules:BEACON.checks(BCL).filter(c=>!c.pass).map(c=>c.name+': '+c.detail),forts:(window._xaForts||[]).length});

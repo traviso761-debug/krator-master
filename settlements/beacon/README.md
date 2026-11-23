@@ -22,4 +22,5 @@ The Order of the Beacon's head house and the Sultan's watch fort over the Rift, 
 
 The page reads the Xanadui fort (`kits/xanadu` 80f/80g) and the Qiblai kit (`kits/qiblai/src`) in place. The fort is placed
 with `beacon:'ancient'`: 80g draws the lamp's plinth in the keep's place and records the lamp's centre in `window._xaBeacons`,
-where the page seats its stand-in lamp head (`KNOWN_ISSUES.md`).
+and mounts there the Ancient lamp head (`kits/ancients/pieces/89p-anc-beacon-lamp.js`), which the page turns by the lamp's
+night (`KNOWN_ISSUES.md`).

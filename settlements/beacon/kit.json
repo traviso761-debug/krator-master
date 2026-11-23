@@ -12,6 +12,7 @@
   "settlements/beacon/gen/69wb-bc-ground.js",
   "kits/xanadu/src/80f-xa-fort-data.js",
   "kits/xanadu/src/80g-xa-fort.js",
+  "kits/ancients/pieces/89p-anc-beacon-lamp.js",
   "core/terrain/37c-core-rubble.js",
   "core/ruins/20-core-ruins.js",
   "core/ruins/21-core-ruins-host.js"
@@ -22,6 +23,7 @@
  "deterministic": [
   "69wb-bc-ground.js",
   "80f-xa-fort-data.js",
+  "89p-anc-beacon-lamp.js",
   "37c-core-rubble.js",
   "20-core-ruins.js",
   "21-core-ruins-host.js",

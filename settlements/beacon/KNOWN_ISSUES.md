@@ -6,18 +6,22 @@ asset (`kits/xanadu` 80f/80g, the Strongwall session's; this build does not edit
 ## The fort asset (kits/xanadu 80f-xa-fort-data.js, 80g-xa-fort.js): `beacon:'ancient'`
 
 The Strongwall session folded the option into 80g (`583999842`, merged here); the page's shim on `xfKeep` is gone. The fort is
-placed as `xa_fort_watch` with `{beacon:'ancient', lampAt:'beacon'}`, and 80g's `xfPlinth` draws the keep's place as the lamp's
-plinth: the footing, three white storeys (3.3 + 4.5 + 4.5 m), the Chapel of the Beacon (4.5 m, yellow, saffron windows, gilt
-corners, a 2.2 m gilt finial), the slewing ring and yoke at 18 m. No keep basket; a stone cable cover in the gate passage; when
-ruined, the lamp head thrown down. It records the lamp's centre in `window._xaBeacons`, where the page seats its stand-in head
-(`verify.py` lamp-on-its-plinth checks the record against the layout's figures).
+placed as `xa_fort_watch` with `{beacon:'ancient'}`, and 80g's `xfPlinth` draws the keep's place as the lamp's plinth: the
+footing, three white storeys (3.3 + 4.5 + 4.5 m), the Chapel of the Beacon (4.5 m, yellow, saffron windows, gilt corners, a
+2.2 m gilt finial), the slewing ring and yoke on the parapet's cap. No keep basket; a stone cable cover in the gate passage;
+when ruined, the lamp head thrown down. It records the lamp's centre in `window._xaBeacons` and mounts the Ancient lamp head
+there (below); `verify.py` lamp-on-its-plinth checks the record against the layout's figures.
+
+**The lamp head** is kits/ancients' `anc_beacon_lamp` (B5, `kits/ancients/pieces/89p-anc-beacon-lamp.js`, `4adea4d27`, on the
+page through `kit.json` external). 80g mounts it on the yoke; the page holds it on the bearing `BEACON_LAMP.state` gives each
+frame, its shutters on the signal book's flashes, its beam on the lamp's night (`90r`, `bcLampTick`; `verify.py`
+lamp-head-follows). The page's stand-in head and beam are gone.
 
 Still the page's, or waiting:
 
 - **The chapel's yellow** is 80g's `0xdcb048`, a shade off the gold spoke's wall (`QSPOKE[2].wall`, `0xd4b040`) that the order's
   own buildings wear. 80g offers to take the colour as an option if the two should match exactly.
-- **The lamp head**, the **generator house** (the order's, in its lamp ward outside the gate) and **the plinth's rooms** are this
-  build's.
+- **The generator house** (the order's, in its lamp ward outside the gate) and **the plinth's rooms** are this build's.
 - **The interiors set** (`xanadu-fort`): on a beacon fort the plinth's floors are this plan's sheet P (the switch room, the
   signal room, the Lamp Watch, the Chapel). The page keeps the interiors off until the set follows the option.
 - **The states.** The page draws only `kept`. `damaged` (the plinth stands, the lamp dark, the cable cut at the gate) is not yet
@@ -25,9 +29,6 @@ Still the page's, or waiting:
 
 ## Stand-ins on this page
 
-- **The lamp head** is a stand-in (`BC_LAMP` in `90r`): a white-metal drum with iron straps, cooling fins and a glazed face,
-  drawn as live meshes so the lamp's night (`src/40-bc-lamp.js`) can turn it. **`anc_beacon_lamp` (B5) is kits/ancients' to
-  build**; then the beam should come from 89n's `lhBeamGeo` rather than the page's two crossed quads.
 - **The knoll** is overlaid from `ground/knoll-patch.json` (295 cells from the scale-model session's `d1c7d6682`, on
   `claude/gemini-trade-reconcile`) while that line is unmerged here. Once it is merged, the patch's cells equal the model's
   (`BC_GROUND.patched` reads 0) and the file can go.
