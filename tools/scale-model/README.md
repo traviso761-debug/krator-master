@@ -944,7 +944,7 @@ dry on the new shore.
     (`openworld/xanadu-north-shore`).
   Written in the Phēr plan's session (claude/pher-plan-55d3f2, f7834e394) and re-run here after `edit_517_gorge.py`.
 - Run order from the pre-edit model (055bc43ce): `edit_517.py`, `edit_517_crease.py`, `edit_517_paint.py`,
-  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`.
+  `edit_517_alph.py`, `edit_517_gorge.py`, `edit_517_pher.py`, `edit_517_pher_rim.py`, `edit_517_vale_ring.py`.
 - `edit_517_pher.py` (after the re-run, 5f659c054; records only, no raster change; the owner, 2026-11-16, for Phēr at
   843,1491: "give it a headland and cove; give it a small stream", "coined name"; `settlements/pher/PLAN.md`):
   - Phēr's headland: two `island` records from the shore's bend west of the town (840.65,1491.2 and its tip 841.05,1491.65).
@@ -954,6 +954,47 @@ dry on the new shore.
   - The pin is `spher0north1` (SETT_ADDED '5.1e13', and in `defSetts` for `cut_site.py`).
   - `tests/test_smodel.py` section 17 checks them. The open world stamps the landforms with `core/world/41l-world-landforms.js`
     (`openworld/xanadu-north-shore`).
+
+- `edit_517_pher_rim.py` (after `edit_517_pher.py`; a raster edit; the owner, 2026-11-16, Phēr's question 17: "do (a)"):
+  Phēr's page (its ground in `openworld/xanadu-north-shore` since its step P7) has the caldera wall's top at 0 m and the
+  rim plain rising ~7 m a km inland; the model's plain behind the same stretch fell at the same rate but ~40 m lower, so
+  the Swīṭ Siṭrīm reached the town under the page's plain. Every dry plain cell north of the wall's top (rows 1485-1493
+  along columns 830-855) is raised by 40 m, full within 5 columns of the stream's 842 and two cells of the top, fading to
+  nothing 11 columns along and 8 cells (16 km) north: 166 cells, the stream's column now +10 m at the lip (was -30 m) and
+  still falling to the wall. The stream's bed is recomputed on it (edit_517_pher.stream), `r_pher_swit.rim_lift_m` set;
+  the temperatures lapsed and the paint relit as `edit_517_crease.py` does. `tests/test_smodel.py` section 17 checks it.
+  Regions over this ground re-cut after it: `openworld/xanadu-north-shore` (done in the Phēr plan's session) and
+  `openworld/xanadu-oidong-highrift` (its box holds it). Written and first run in the Phēr plan's session
+  (claude/pher-plan-55d3f2).
+
+- `edit_517_vale_ring.py` (after `edit_517_pher_rim.py`; a raster edit; the owner, 2026-11-17: "something like that kind of
+  effect [Lake Atitlán, the World Menagerie] with the Lake of the Vale, but with the rise to the mountains not quite as
+  steep. they should be visible though, and come up the lake in places"; "Whole lake"): the lake (-520 m, ~140 x 60 km,
+  round its island) was ringed by a ~300 m wall and a plateau 500-600 m over the water. Procedurally from the lake's own
+  shape (SEED 51717): a range 10 km back from the water, 480-820 m over the ground, its height wandering round the ring;
+  17 massifs on it one every 20 km of the ring, 800-1,250 m over the ground; 12 of them with a spur running down to
+  the shore and ending 150-260 m over the water. Every pin and site on the lake (Erehwon, Ōlḍ-Thalaba, Phēr, Māuṭh,
+  Ḍāiyar, the Qol ford and head) keeps its ground (Phēr's within 2 cells: its page climbs to meet the range) and every river reaching the lake its valley; the water and the
+  island are untouched. 3,436 cells; 8 km out the land now stands ~1,000 m over the water (was ~500), peaks to ~1,600 m.
+  Temperatures lapsed, paint relit; `DATA.landforms.vale_ring` marks it run. `tests/test_smodel.py` section 17 checks it.
+  Re-cut after it: `openworld/xanadu-north-shore`, `openworld/xanadu-oidong-highrift`; the lake towns' pages (Erewhon,
+  Kirstabal, Ōlḍ-Thalaba) refit to it in their own sessions. Written and first run in the Phēr plan's session.
+  **Rewritten the same day (v2), and run in its place** (on the data from before the first run), the owner: "can we
+  enhance the mountain profile by making the lake longer and thinner? ... the rougher terrain around the lake now to
+  continue and continue to slope upward to the edge of the vale ... clearly defined valleys that slope to the lake, but
+  will also have mountains that come closer to the lake"; asked, the south shore comes in, the lake reaches west, the
+  island stays (narrower), the edge is the lake basin's rim. Now: (1) a warp, column by column, pressing the lake north to
+  0.62 of its width (the north shore fixed, the south rim moved whole for 10 cells and eased back over 20; every raster
+  and record moved with it, Erehwon's pin to 841,1507.64: `SETT_MOVED` 5.1e14); (2) an arm west from px 816 to a tip at
+  792 (r613 and r753 end on it); (3) the basin rising from the shore to its rim's height, ribbed by a ridged field; (4)
+  the range 3.8 cells back, massifs 3-6.5 cells out with spurs to the shore; (5) every river's valley kept and 12 more
+  cut from the rim to the shore. The lake is 180 x 48 km (was 142 x 62); 8 km out the land stands ~850 m over the water,
+  28 km out ~980 m; no spill; every pin keeps its ground. `edit_517_vale_ring.report.json`; section 17 checks it.
+  The report keeps the warp's columns (`warp`; `Warp.from_report()`), since the lake it was built on is gone after the
+  edit: section 19 (edit_517's caldera lake) reads edit_517's shapes through it (each cell's old row, each old point's
+  new row) and takes the arm as the lake's own water. Under it, three of section 19's bounds give: the east volcano 16
+  cells back (15), the Alph's head within 3 cells of the pressed tip (2), the Vale 380 cells in its band (450: the
+  basin's east ridge takes its west edge).
 
 **5.1e12 (2026-11-16, records only)**: the owner, "we can move thalaba to the mouth of godshearth and put a new village
 on the lake in its place": Thalaba (`shvo49k0y2`) moves from 825,1481 to 840,1463, where Godshearth's spillway gorge

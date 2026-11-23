@@ -145,7 +145,12 @@ FURN({
   mounts: `floor` stands on the floor; `wall` stands at floor level with its back
   (local z = -d/2) flush to a wall, except the hung roles (`FURN_WALL_HUNG`: art at eye height; friezes,
   pennants, scrolls, banners, tapestries and wall rugs with their top near the wall's top), which `furnAnchorY`
-  lifts; `ceiling` hangs, top at the ceiling
+  lifts. **The hem rule** (the owner, 2026-11-16): a hung cloth's hem, and wall art's lower edge, sit `FURN_HEM` (1.1 m)
+  up whenever the ceiling allows; a cloth drawn from y 0 whose role is not a hung one says `hung: 'top'` (or `'eye'`; `hung: false`
+  stands a hung role on the floor). `node core/catalog/test-hangings.js` fails any wall hanging of the catalog under 1 m in a
+  room tall enough for it. **Decal pictures**: an `F.decal` key that is a texture id (`patterns/xanadu/hanging-pleasure-dome`)
+  shows that image once a build packs it (`materials.json` "decals", `tools/textures/pack.py`, `furniture_bundle.bundle(...,
+  decals=True)`), cropped to the panel's aspect; the painting is the stand-in until then. `ceiling` hangs, top at the ceiling
   (`furnAnchorY` lifts it to `ceilingY - h`); `surface` stands on a table or shelf
   top (`surfaceY`). A piece authored off-centre calls `F.shift(-cx, -cz)` first.
 - **Rooms** use the `kits/interiors/SPEC.md` room kinds (`hall bedroom kitchen

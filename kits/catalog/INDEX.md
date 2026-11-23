@@ -52,7 +52,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-talovolci.js` | 33 **big** |  |
 | `krator-master-furniture-tungang.js` | 114 **big** |  |
 | `krator-master-furniture-voth.js` | 18 |  |
-| `krator-master-furniture-xanadu.js` | 44 **big** |  |
+| `krator-master-furniture-xanadu.js` | 117 **big** |  |
 | `krator-master-furniture-yuni-common.js` | 1 |  |
 | `krator-master-furniture-zeijani.js` | 49 **big** | home (112); brewing and fungi (183); the alchemist (258); light (330); crafts (369); the sacred (549); the dead (675); the scouts and the cistern (735) |
 | `krator-master-furniture.js` | 294 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1406); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1901); Yuni (64 pieces) (2646); Ancients kit extras (32 pieces) (4469) |

@@ -571,6 +571,17 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-11-16 and processed, through Codex** (`tools/textures/batches/codex-2026-11-16.json`; images in
+`~/.codex/generated_images`, each matched to its prompt through its thread's log in `~/.codex/sessions/2026/11/16`): 22 new
+sets, **none wired yet** (each build wires its slot when its branch merges): the Qiblai rooms' `wall.mural.temple`,
+`ceiling.coffer.mandala` and `cloth.rug.temple`; Grēṭ-Āil's `ceiling.night.stars`, `wall.mural.dream` and `cloth.blanket.azure`;
+the fort's `wall.rubble.limewash`, `wood.gate.studded` and `wall.limewash.scorched`; the Ancient Transit's `ground.asphalt.lanes`,
+`ground.ballast.rail` and `metal.rail.rusted`; the resource nodes' `rock.magnetite`, `stone.nephrite` and `rock.amber.blueearth`;
+the Arch's `rock.hyaloclastite`, the Rift battery's `organic.reef.galvanic`, the Tiers' `ground.snow.ash`, Lightwall's
+`glass.moonglass`, the Tungang kit's `patterns/tungang/crew-mosaic` and `loj-banner.c`; and the Viridian estate's
+`foliage.tea.clipped` (its entry is on the Viridian branch). 26 more images that day were second takes of the 2026-11-12 sets,
+and two of `rock.megabreccia` and `ground.coral.rubble`: the owner kept the installed takes ("keep the installed 2026-11-12
+takes, merge them here"), so they were not processed. `card.leaf.photonic`'s second take came on black, not magenta.
 **Delivered 2026-11-03 and processed, demolition rubble** (`tools/textures/batches/metropolis-rubble-2026-11.json`, pasted by the owner):
 `ground.rubble.demolition` (3 m: broken concrete, brick, bent rebar and rusted flat bar over grey and red-brown gravel), the bed of `kits/metropolis`' ruin
 heaps (`core/terrain` `KRUBBLE`); for any collapsed building's rubble or demolition ground.
@@ -2146,6 +2157,12 @@ colours); the Islanders' variant keys `patGableW2`, `patGableE2` and `patHinggi`
 `GEYSER.libCol` (a full-colour card's instances take a near-white); Highlands' repeats for the new sheets in 88y; Iziz's
 aliases onto three `city*` families (Verge leaves them out); Ys gives `pipeRust` world UVs (2 m) in 79z, not in the
 vendored files.
+
+#### Delivered 2026-11-17 and processed: Erewhon's hangings, easter eggs, sultans' portraits, the Tungang banners (40 images)
+
+The owner's Codex batch of 2026-11-17 (`~/.codex/generated_images`), matched to `PROMPTS-NEEDED.md` sections 57, 58 and 43 through the Codex session logs; batch `tools/textures/batches/citadel-hangings-2026-11-17.json` (single panels: `seam_axes` none, no delighting, kept whole, long side 1024).
+- **Wired** (Xanadu's citadel, `settlements/xanadu/citadel/materials.json`, packed alone as `KMAT.pack('xanadu-pics')` for the xanadu and erewhon pages): `patterns/xanadu/hanging-*` (4), `tapestry-*` (4), `portrait-sultan-*` (5), `patterns/common/suzani-roundels` and `.b`, `patterns/easter/*` (11 Mughal panels and `desert-ruins`).
+- **In the library, not wired:** `patterns/xanadu/tapestry-pleasure-dome.b` (a second take); `patterns/easter/*.classic` (nine earlier, non-Mughal takes, for Talia's art museum); `patterns/tungang/loj-banner`, `loj-banner.b`, `enamel-signs` (`kits/tungang` wires them).
 
 #### Delivered 2026-11-12 and processed: 63 sets generated through Codex (main's sections 37-52 and eleven branches' sections)
 

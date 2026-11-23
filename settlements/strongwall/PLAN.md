@@ -14,7 +14,8 @@ build a Xanadui fort asset as well"*.
   and connected to a generator".
 - The garrison and the ore trains ride **horses and donkeys**.
 - "I'm open to new texture proposals": three are proposed (`core/materials/PROMPTS-NEEDED.md` section 61).
-- **The opal goes to Strongbow first**, as it is closer.
+- ~~**The opal goes to Strongbow first**, as it is closer.~~ **Superseded the same day:** the owner chose "Ferry to laitwal": the Opal
+  Valley mines are Lāiṭwāl's works village, their opal ferried to Lāiṭwāl and down the valley by Kirstabal (section 4).
 - **The watch posts go on the map**, with English names.
 - The musketeers are **"all of the above"**: Izani, Yuni and free companies of the Crater.
 - The beacon's keepers are **the Yellow Monastery, the Order of the Beacon**: Qiblai's gold monastery, which may keep
@@ -255,7 +256,12 @@ Xanadu's last high ground before the Rift, between the two low roads.
   inner ward, the martial ranges against the outer curtain); **the Prismarch lives in the utse** between the wards;
   **the novices in their own court**; **the horses inside, three gates** (the Main Gate east, sally gates north and
   south). So `size:'monastery'` (section 5.4) is two curtains with the utse astride the inner one (BLUEPRINT, "For the
-  fort asset").
+  fort asset"). The data for V2, F4 and V3 is `tempest/tempest_plan.json`.
+- **War and the Decree** (the owner, 2026-11-16: "they ride out to chase a raid"): the order makes no war; its riders go
+  out only after a raid (`LORE.md` 6.13).
+- **Fodder** (the owner, 2026-11-16: "add fodder"): in the tune as `T.tempest.horses`, the duty rota (*proposed* numbers):
+  about 181 horses stabled at a time, about 530 t of hay a year from the crest's meadows (`tp.meadows`, the good
+  `fodder`), about 66 t of barley up the Strongwall road with the grain (BLUEPRINT, "Assumptions").
 
 ## 4. The economy (tied to `XAN_TUNE`)
 
@@ -269,15 +275,15 @@ What the tune did before W1, from `test-xan-economy.js` on this branch:
 | **The Sultan's Fifth** | `fifth`: a 0.2 share of the gold to `xan.citadel`, 404 km | about **55 kg a year** |
 | The rest of the gold | `road.sw-er` to Erehwon (404 km) and `road.qb-sw` to Qiblai (83 km) | 275 kg exported |
 | Copper | P4's countryside's copper (240 t a year, the band's lode) passes through | 203 t in, mostly on to Qiblai and Erehwon |
-| Opal | `mine.opal`: Opal Valley Mines' opal less its Fifth, 260 km | 136 kg in. **Moved to Strongbow in W1** (below) |
+| Opal | `mine.opal`: Opal Valley Mines' opal less its Fifth, 260 km | 136 kg in. **No longer through Strongwall** (below: Lāiṭwāl's ferry) |
 | Food | grain, salt, tea and tools up from Qiblai (`road.qb-sw`) and on to the mines (`road.sw-gold`) | 231 t of grain in. The fort eats about 45 t; the rest feeds the mines' 950 |
 
 **W1, done 2026-11-16** (`core/region/data/xan-tune.js`; the test, `core/region/tests/test-xan-economy.js`, 48 passed,
-with a new check 24 and its negative: "Strongwall's W1"):
+with a new check and its negative, now number 29: "Strongwall's W1"):
 
 | What | In the tune | The test year |
 |---|---|---|
-| **The opal to Strongbow first** (the owner) | `mine('sjuarjbku0',...)` under `sfgtxw10kr`; `mine.opal` lands at Strongbow (160 km, against 260); `road.sb-opal` supplies the mines from Strongbow in place of `road.sw-opal`; the opal goes inward on `road.ks-sb` and `road.qb-ks`, each expecting a day's make (`T.gateWant.opal`), to Qiblai (Yuni's caravans) and on `road.er-qb` to the capital. Strongwall's roads no longer carry opal. `fifth.opal` still goes straight from the mines to the Treasury | 139 kg landed at Strongbow, 76 kg on to Kirstabal, 64 kg to Qiblai, 52 kg on from Qiblai; none at Strongwall |
+| **The opal: by Lāiṭwāl's ferry** (the owner, 2026-11-16: "Ferry to laitwal", over W1's first route, "opal goes to Strongbow first as it's closer") | on `claude/openworld-sites-24defd` (154c2970d), with the Light Wall's L1: the mines (`sjuarjbku0`) are Lāiṭwāl's works village; `mine.opal` ferries their opal to Lāiṭwāl (27 km), the mines' bread back; it goes down the valley with the town's own by Kirstabal (`road.lw-ks`) to Qiblai and the capital. W1's Strongbow road (`road.sb-opal`, the mines under Strongbow, the expects on `road.ks-sb`) is gone. Strongwall's roads carry no opal either way | test-xan-economy's W1 check (now 29) looks for the opal by the ferry and inward, never by Strongwall |
 | **The Golden Tears inside the fort** (the owner) | `tears.strongwall` at 912,1640, "the Tears' court, inside Strongwall" | the camp's ore still sold to the assay |
 | **Powder** (the owner: "enough gunpowder for a few cannon") | a new good `powder` (kg), brought in by the Iziz and Yuni gateways (`T.gatePool`); the fort diet eats 2 kg a head a year (drill and the guns' proof); it travels on every road that carries arms; `road.qb-sw` now carries arms and powder up to Strongwall | 280 kg into Strongwall, 25 arms |
 | **The hired musketeers** (the owner: "mostly hired from the north"; Izani, Yuni and free companies) | `T.muskets`: 30 at Strongwall and 10 at each Marches fort, 12 dinars a man a year (a dinar is 4 g of the Mint's gold), paid by the Treasury on year day 240 as transfers `pay.muskets.*`, owed when it is short | 360 dinars to Strongwall |
@@ -481,13 +487,13 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 | Step | What | Who | Test |
 |---|---|---|---|
 | **W0** (asked 2026-11-16; the scale-model session's to do) | **The model and the pins**, through the scale-model session's queue (`local_bf163a02`): **six watch-post pins** (G1 917,1648; G2 911,1653; G3 915,1664; R1 906,1635; R2 905,1626; R3 894,1624), each `type:'outpost'` of the Xanadu Sultanate; **the Golden Tears' house pin into the fort** (913,1641 to 912,1640); **the slot kept**, so nothing is smoothed on row 1641; **the pit** at 913-915, 1633-1635 filled to the bench (already owed) | the scale-model session | the pins' ground; each post's line to the one before it re-run on the edited model |
-| **W1** (**done** 2026-11-16, section 4) | The tune: **the opal road to Strongbow** (`mine.opal` and `fifth.opal`); Strongwall's stores and the Fifth's two caravans; `tears.strongwall`'s px into the fort; the Golden Tears' season; powder bought and the musketeers' hire on the Marches' bill; **the beacon fort's generator** (`march.e` on the oil licence); the fort's `state` as a record raid outcomes can set | the tune's owner | `test-xan-economy.js` |
-| **F0** | This specification accepted, the questions answered | the owner | |
-| **F1** | `XFORT.plan` as `[G data]` (`kits/xanadu/src/80f-xa-fort-data.js`, *proposed* name), with a node test of its rules (the corner towers, the gate on the approach edge, every walk joined, no overlap) | **whoever owns `kits/xanadu` then** | `node kits/xanadu/tests/test-fort.js` (`tools/ktest.js`, with negatives) |
-| **F2** | The pieces drawn (`80g-xa-fort.js`, *proposed*): curtain, towers, gates, the water gate, keep, barracks, magazine, gun platforms, beacon, cistern, granary, stables, the assay court; the four dresses; the three new texture sets wired as they arrive; on Xanadu's sheet. The Ancient beacon's lamp head is `kits/ancients`' piece (5.7) | the same, and `kits/ancients`' owner for the lamp head | `kits/xanadu/verify.py --assert` (the overlap audit, every door in KDOOR); `check_core_use` |
-| **F3** | The states: damaged and ruined from the same plan, rubble on `KRUBBLE` | the same | `KRUINS` on every verify |
-| **F4** | Hollow and walkable: the keep's floors, the barracks, the walks; the interiors set's items | the same | the walk and interiors audits |
-| **S1** | **Strongwall on the open world**: the gorge wall, the two wards with the Tears' court, the slot as the east moat, the six watch posts sited at 1:1 (the lines of sight rechecked on the region's own ground, the two marginal hops first) | the open-world session | the region's verify; a line-of-sight assert between each post and the next |
+| **W1** (**done** 2026-11-16, section 4) | The tune: **the opal** (first to Strongbow; then, by the owner's choice, by Lāiṭwāl's ferry: section 4); Strongwall's stores and the Fifth's two caravans; `tears.strongwall`'s px into the fort; the Golden Tears' season; powder bought and the musketeers' hire on the Marches' bill; **the beacon fort's generator** (`march.e` on the oil licence); the fort's `state` as a record raid outcomes can set | the tune's owner | `test-xan-economy.js` |
+| **F0** (**done** 2026-11-16) | This specification accepted, the questions answered | the owner | |
+| **F1** (**done** 2026-11-16) | `XFORT` (`kits/xanadu/src/80f-xa-fort-data.js`, `[G data]`): `XFORT.plan` for the watch fort, Strongwall and the gate works (and a watch fort of any convex outline), `XFORT.check` with its six rules, `XFORT.damage` for the states, `XFORT.post` | this session | `node kits/xanadu/tests/test-fort.js`: 20 passed, each rule with its negative; the rules caught three faults in the first plan (a 35 m gap between towers, the married quarters on a tower, a cistern on the keep) |
+| **F2** (**done** 2026-11-16) | `kits/xanadu/src/80g-xa-fort.js`: four defs in the family *Forts* (`xa_fort_watch`, `xa_fort_march` = Strongwall, `xa_fort_gate`, `xa_fort_post`), every piece of section 5.3 but the monastery size; gold only on the main gate's pavilion and the keep's chapel; on the kit's sheet (`kits/xanadu/build.py` names the fragments, not `xanadu.py`, so `XAK` and Xanadu's pages are unchanged) | this session | `kits/xanadu/verify.py --assert` on the GPU (the RTX and Arc lanes): every sheet assert passes, `fort-plans` passes; the showcase budget is over (6.71 M of 6.0 M: it was over before the forts, about 6.27 M) |
+| **F3** (**done** 2026-11-16) | The damaged and ruined states (`o.v` 1, 2) from the same plan: breaches with their talus, fallen tower tops seated on their lowest points, a burnt gate and barracks roof; ruins in stubs, shells and low walls; rubble on `KRUBBLE` | this session | `KRUINS` on every verify (`targets/sheet/91u-xasheet-ruins.js`): all eight damaged and ruined forts pass, nothing floating, every wreck lying right |
+| **F4** (**walkable done**, interiors waiting, 2026-11-16) | The wall walks, stairs and their landings on core/walk; the interiors set's items wait for a page that loads the forts with interiors (`kits/xanadu/KNOWN_ISSUES.md`) | this session; the interiors with S1 or V2 | `fort-walks`: every standing fort's walks reached from its stairs (watch 8/8, Strongwall 23/23, the gate works 6/6, and their damaged states), with a negative |
+| **S1** (**the page done** 2026-11-16; the open world to come) | **Strongwall on its ground.** Done: the page (`settlements/strongwall`, a target on Xanadu's page): the march fort on a pad levelled into the bench at the pin (738.6 m; 4.4 m cut, 5.4 m fill), its gorge wall on the pin's row, the scarp behind from the model's next cell, the model's ground to 40 km (`README.md`). Turned so its Qiblai Gate faces north, the water gate stands in the west wing, where Kruk Gill comes down from the south-west. To come: the site in `openworld/xanadu-oidong-highrift` with its ring, the gorge carved at 1:1, Kruk Gill on core/water, and the six watch posts at 1:1 with their lines of sight rechecked (their pins wait on W0) | this session (the page); the open-world session with this one (the region) | `verify.py --assert` on the GPU: `strongwall-laid`, `on-the-model`, `fort-on-its-pad`, `fort-walks` and Xanadu's page asserts |
 | **S2** | The Marches' three watch forts (the beacon fort with the Ancient beacon and its generator) and Kirstabal's and Strongbow's gate works from the same asset, each by its own plan | those plans' sessions | |
 | **S3** | Life: the garrison's rota, the ore trains up and down the gorge, the assay's furnaces at work, the Fifth's escort | | the sim's schedule matches the tune's batches |
 | **S4** | The raids (Lizardmen Z4) set the fort's state | the Lizardmen session | a raid's outcome draws the damaged fort |
@@ -513,7 +519,7 @@ The rest is the library already in the Xanadu pack: `stone.cut`, `earth.rammed`,
 8. ~~**Mounts.**~~ **Answered 2026-11-16: horses and donkeys.**
 9. ~~**Textures.**~~ **Answered 2026-11-16: "open to new texture proposals".** Three are proposed (section 5.8;
    `PROMPTS-NEEDED.md` section 61).
-10. ~~**The opal.**~~ **Answered 2026-11-16: to Strongbow first, as it is closer** (W1).
+10. ~~**The opal.**~~ **Answered 2026-11-16: to Strongbow first, as it is closer; then the owner chose "Ferry to laitwal"** (section 4).
 11. ~~**The watch line.**~~ **Answered 2026-11-16: on the map** (section 1's six posts; W0).
 12. ~~**The hired musketeers.**~~ **Answered 2026-11-16: all of the above** (Izani, Yuni and free companies of the
     Crater).

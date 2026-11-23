@@ -239,6 +239,115 @@ spring, sealed deep inside). Theodiga's end:
       grain fields).
     - **The checks.** `test-th-econ.js` runs 10, a week at the abstract level each. The books balance (core's ledger); the
       town feeds itself; every maker makes; the Dome's fall runs down by what was taken; the carters are there.
-    - **Next.** The caravans (the serai's trade by the East Gate road: salvage and artifacts out, what the canyon lacks in),
-      money, tools and clothes, and the Lamp Hall's butter.
-11. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.
+11. **T-econ-2, the caravans** (done 2026-11-16, the next step of the build, relayed by the open-world session).
+    - **The goods** take the region tune's names (core/region/data/xan-tune.js on the open-world line): the yards' scrap, the
+      bore's rarities. The Salvagers' smelter is the yard with the most hands; it turns scrap and charcoal to iron in
+      batches. Every field hand, yard hand, dairyman and bore hand owns an iron tool that wears by the worked hour and is
+      bought again at the bazaar. The warehouses open with the Salvagers' stockpile, so the smelter runs from the first hour
+      (a good nobody uses yet is no carter's errand).
+    - **The road.** The tea the town drinks (its households' diet) and the smelter's charcoal come by the East Gate road. When
+      either runs under three days the serai sends for a lot: a caravan comes in by the road's port, the town's east-most
+      street node, walks to the serai, unloads, stays, and leaving buys the town's surplus of scrap or iron.
+    - **Fixed on the way.**
+      - The stalls had no room to buy at (core's `BUY` slots), so the households went without.
+      - The motion clock ran in real seconds, not six times them (the walks' convention), so every walk took six times its
+        world minutes and the carters and field hands fell behind.
+      - Rush hours: the router's first searches all fell in one minute (seconds a step). Now every resident's commute and
+        errand pairs are warmed in the background after load, and the town's roles keep two schedules an hour apart. The
+        worst step went from 3.6 s to under 0.2 s.
+    - **On the page** (two days fast-forwarded): the caravan came, landed 3,000 tea and took 2,747 scrap; no meal went
+      without; grain holds; the books balance. `test-th-econ.js` runs 14 checks.
+    - **Next.** Money, clothes, the Lamp Hall's butter, the rarities' sale to the Devisers' factor house.
+12. **T-econ-3, what was still owed** (done 2026-11-16, relayed by the open-world session: "money, clothes, the Lamp Hall's
+    butter, the rarities' sale").
+    - **The butter.** Every sixth farmstead is a churn, which turns milk to butter in batches. The Lamp Hall's keepers tend
+      the butter lamps. Each holds a crock of butter that burns by the worked hour (core's tool wear, four pats for four
+      hours, about a keeper's day). Worn out, it is filled again at the Hall's store-room from the town's butter. The
+      churns are sized to the pats the keepers' schedules burn; the dairies are sized to the town's milk and the churns'.
+    - **The clothes.** Every resident wears a robe that lasts 240 days and keeps one. Worn out, a new one is bought at the
+      bazaar from the town's garments, which the East Gate road brings as it brings the tea. The warehouses open with a
+      month of them. The pilgrims and the caravaneers travel in their own.
+    - **The rarities' sale.** The bore's finds stay the Rare Devisers' licence, never sold in the town. The Devisers send
+      them to their factor house at Erehwon: with the road's port they leave with each caravan as its stay ends, apart
+      from its own cargo; without one, the Devisers' mules take them each morning. `TH_ECON.tick(SIM)` after each
+      `SIM.step` does it (core has no hook for a world's own flows), booked exported, so the books balance.
+    - **Fixed on the way.** A rerun of T-econ-2's page found 399 meals of nothing in two days, against that report's none.
+      They fell in a few big salvagers' houses whose one shopper works all day. A household now buys at two days left,
+      not one, and opens with two to four days of food. Now no meal goes without.
+    - **On the page** (two days fast-forwarded, everyone walking):
+      - two caravans came and took 4,660 scrap, and the Devisers' 17 rarities went with them;
+      - 104 pats were churned and 60 burnt;
+      - 41 robes wore out;
+      - no meal went without, and the books balance.
+
+      `test-th-econ.js` runs 20 checks: the butter, the robes and the consignments, each with a negative.
+    - **Money** waited on the owner's currency: T-money-1 below.
+13. **T-money-1, the qud** (done 2026-11-16; the owner, relayed by the open-world session: "Sultanate currency is the
+    qud"). The open-world line was merged first (LORE is a shared file). `src/49m-th-money.js` runs core's money (M0
+    and M1) for one town, as the isle demo does.
+    - **The currency.** The qud is the Sultanate's coin, with the Izani Talent beside it. Proposed, then agreed by
+      the owner (2026-11-16; LORE 6.13): a thin struck gold coin of about a gram, twenty to the Talent (0.05), a day's wage about 54
+      quds. The treasury opens with 120 quds a person.
+    - **The accounts.** The town's treasury owns every workplace. Every household opens with an endowment by its home:
+      the square's and the bazaar's merchants are middle class, the Devisers' lodge rich, the rest poor.
+      The messes keep no purse. The Dome's clergy and lay servants and the Devisers are kept by the Dome and the licence,
+      fed from the warehouses, and draw no wage. Paid as the isles' barracks are, their wages sat unspent and drained the
+      treasury: 35,000 quds in two days of the test town. The pilgrims are guests.
+    - **M1.** Wages are paid at midnight. Prices are the labour cost at the wage times a markup, calibrated over days 2
+      to 5. The road's goods cost their fallback. The treasury covers what a household cannot pay.
+    - **The makers' surplus went from 1.25 to 1.5.** The first week-long run of the page found the warehouses running
+      down: grain 0.6 days, milk 0.8. At 1.5 they hold for nine days.
+    - **On the page** (nine days fast-forwarded, everyone walking): the market opens at day 5. Over four paid days every
+      money check passes:
+      - 964,560 quds of wages, the dole 7% of what was bought;
+      - the circular flow balances, and the treasury is down 145,484;
+      - the ledger balances.
+
+      Prices: grain 5 quds a serving, milk 9, bread 15, tea 10, a meal out 20, a robe's garments 310, iron 1,088.
+    - **Found, not fixed: the salvagers' commute.** The yards are at the foot of the face, a walk of about 2.3 world
+      hours each way from the salvagers' homes in town. Their meals at home eat their free hours, so a few big
+      salvagers' houses never reach the bazaar. About 600 meals of nothing a day from day 3, all in salvagers' houses,
+      while the warehouses hold. The fix is in the census: homes by the works, a cookhouse at the yards, or a salvage
+      schedule.
+    - `test-th-econ.js` runs 35 checks, adding eight for money. The data checks (accounts, nobody below zero, the ledger,
+      prices, the flow, the treasury) each get a fault. A real run with an empty treasury and no endowments shows the
+      wage bill cannot be paid.
+    - **Not here yet:** what the caravans pay in Talents for the scrap and the iron, the Devisers' rarities (M3), the
+      stations, moving prices (M2).
+14. **T-town-8, the salvagers' day** (done 2026-11-16; the owner: "do next build step", after agreeing the qud).
+    - **The fault.** The yards are at the foot of the face, about 2.3 world hours' walk below the salvagers' homes on the
+      rim. On the town's day they walked home to eat at noon and at six, so they worked a few hours of their ten. A few big
+      salvagers' houses never reached the bazaar in their free hours: about 600 meals of nothing a day from day 3.
+    - **The fix** (`src/47-th-sim.js`). The salvagers keep their own day. They go down at five and eat at the yards'
+      cookhouse at dawn and noon: their EAT is pinned to work, and the yards offer EAT. They come up at five in the
+      afternoon, home by about half past seven with free hours to shop. A meal at the cookhouse is bought there (20
+      quds) and drawn from the warehouses.
+    - **On the page** (nine days):
+      - no meal went without, against 2,673 before;
+      - about 2,600 cookhouse meals a day;
+      - every money check passes;
+      - grain about 1.4 days and steady.
+    - **What it shows next:** the salvagers now work their full days, so the Dome's fall (60,000 lots) runs out in about
+      a month. Its size and the yards' rate are the page's guesses (KNOWN_ISSUES).
+    - `test-th-sim.js`: the salvagers eat at the yards' cookhouse (178 of 178 at noon), with a negative.
+15. **T-town-9, the Dome's fall lasts about a year** (done 2026-11-16; the owner: "About a year").
+    - **The fall is sized to the yards' take.** Each yard hand's worked hours a day (by schedule) times the yards' rate,
+      over `fallDays` (365): 994,625 lots on the page, 163,338 in the test town (`src/49-th-econ.js`; a number in `dome`
+      overrides it).
+    - **Workers now go to their own jobs.** Sizing it showed the yards took far less than their hands could. Most
+      salvagers worked at the town's stores and fields, and a few at the arcology's studies: core sends a worker to the
+      nearest place offering WORK unless the role pins WORK to its job, and Theodiga's roles pinned only SLEEP and EAT.
+      Every role now pins WORK (`src/47-th-sim.js`).
+    - **The rates, re-set on the page.** The foods lost the borrowed hands and were made at 0.85 of their use, so the
+      makers' surplus went from 1.5 to 1.9. The yards could make 12,000 to 16,000 lots a day, but their stores filled in
+      two days and they then made only what the carters haul up the face (about 2,700). Their rate is now 0.25 lots a
+      worker-hour, about what the town moves.
+    - **On the page** (nine days):
+      - the yards take a steady 2,176 lots a day and none sits full, so the fall lasts about fifteen months (a year at
+        the yards' scheduled hours; the walk down costs about a fifth of their day);
+      - no meal went without, and every money check passes;
+      - grain about 1.2 to 1.4 days, milk rising, bread and honey about 4 to 5 days.
+    - **Tests:** `test-th-sim.js` adds "every worker works its own job" (2,172 of 2,172), with a negative.
+      `test-th-econ.js` adds "the Dome's fall lasts about a year at the yards' take", whose negative is the old
+      60,000 lots.
+16. **Later**: the Qiblai buildings' rooms (as Strongbow's), core/simulation's roles, the open world.

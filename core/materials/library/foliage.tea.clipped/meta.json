@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.192,
+    1.315
+   ],
+   "seam_before": [
+    1.67,
+    1.74
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "foliage",
+  "id": "foliage.tea.clipped",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "foliage.tea.clipped.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fe-d80e-7cb2-8d18-f4d9fcb2c201)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-481c4354-fef6-457f-84de-c85b915e2720.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Viridian estate's tea (settlements/viridian, 2026-11-16)' (id foliage.tea.clipped)",
+  "sha1": "357874c7be42ee64ef24dbee7d9f060b9fffe79d"
+ }
+}

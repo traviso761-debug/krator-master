@@ -29,6 +29,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `73-vern-infra.js` | 9 | grain silos: four stave silos on stilts under th (5); storage tank: a reclaimed Ancient tank on a ston (24); electric generator: stone engine house, a reclai (47) |
 | `73b-vern-works.js` | 31 **big** | mine head: adit into the rock, pipe headframe ov (53); quarry: a stepped cut in a block of orange stone (118); watermill: mill house on a stone plinth, oversho (178); fungus house: a long windowless shed banked with (239) |
 | `73c-vern-land.js` | 35 **big** | yard pieces (9); FARMHOUSE (middle): the farm belt's homestead (54); BYRE AND DAIRY (poor): the cattle house (111); STOCK PENS (poor): the swineherd's and duck keep (153); BOATWRIGHT'S YARD (middle): river boats and moat (191); FISH LANDING AND SMOKEHOUSE (poor) (265) |
+| `73d-vern-docks.js` | 29 | dock and vessel helpers (8); 1. HARBOUR QUAY (middle): stone seawall, water-s (38); 2. TIMBER HARBOUR PIER (poor): long pile jetty,  (70); 3. HARBOUR CRANE WHARF (middle): treadwheel cran (101); 4. PORT BONDED WAREHOUSE (middle): 2-storey plas (149); 5. PORT CUSTOMS HOUSE (civic, lit): weigh-loggia (185); 6. HARBOUR LIGHTHOUSE (civic, lit): octagonal st (218); 7. SAILORS' TAVERN (poor): overhanging timber ga (250); 8. ROPEWALK & SAIL LOFT (poor): long cordage she (281); 9. FERRY SLIP (middle): counterweighted ramp, wa (316) |
 | `74-vern-guilds.js` | 35 **big** | local helpers (LOCAL frame, y = base of the piec (8); Farmers' Guild: half-timber hall on a stone plin (86); Beast Hunters' Guild: trophy hall with a towerin (141); caravanserai: walled court, gatehouse with a two (191); Forgemaster's Hall: tall stone hall with a 9 m o (239) |
 | `74b-vern-frontier.js` | 38 **big** | local helpers (LOCAL frame, y = base of the piec (9); the Governor's House (Kautoa's isle demo calls f (41); the guard tower and barracks: a square stone tow (99); the watch house: a two-storey city-watch post, s (141); the toll house: at the trailhead, a toll window  (161); the palisade: ONE modular segment, o.len metres  (194); the palisade gate: two log towers either side of (205); the mustering ground: an open drill yard inside  (230); the rest stop on the cliff trail. v0: cut into t (259) |
 | `74z-vern-trades.js` | 6 |  |
@@ -43,4 +44,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `sheet` | `88y-vsheet-matlib.js`, `89z-rows.js`, `91t-vsheet-tags.js` | 8 |
+| `sheet` | `88y-vsheet-matlib.js`, `89z-rows.js`, `91t-vsheet-tags.js` | 9 |

@@ -27,7 +27,11 @@ The second region of sites cut off the scale model into the open world (`openwor
     south, and a ranching village 14 km out on the uplands. The city's page stands with its centre on the pin, unturned
     (its `ER_WORLD`); its island, the Pleasure Dome's, is stamped here (`src/44-world-landforms.js`).
   - **Qiblai** (`skm4jjo2vl`, px 922,1595 since 2026-11-11, moved from 963,1566 to the cataracts of Nahr ash-Shalālāt:
-    by a river, near rock salt and ore; the owner's word), with no page yet: the same ring, re-planned on the new ground.
+    by a river, near rock salt and ore; the owner's word). Its page is `settlements/qiblai` (the town stays the page's
+    until `PLAN-SITES.md` step 3; the hand-over is `settlements/qiblai/WORLD.md`). Its ring is the great Orders' temple
+    estates (2026-11-16, `QIBLAI_ESTATES` in `src/48-world-site.js`; the owner: "Grow the estates"): 128 villages, sixteen in
+    each Order's sector round its spoke, in seven rings from 7 to 27.5 km: 80 rice farms, 24 buffalo dairies and 24 apiaries,
+    29,584 people (the ~30,000 the city's food needs).
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages
     stand where its page lays them: Shar and Nub (farming) and Dzo-ling (the herders), 585 people in 110 buildings.
     Recut 2026-11-16 at its 2026-11-11 pin (1228.88,1621.23), so its three villages now stand round the moved monastery.
@@ -41,12 +45,31 @@ The second region of sites cut off the scale model into the open world (`openwor
 - **Bridges** (core/world 42b and 88b, since 2026-11-16): every road and link the region lays is bridged where it crosses a
   named river, in the Xanadu kit's stone (`SITE_SPEC.bridges`): Thalaba's north road over the Solṭ Siṭrīm, a Qiblai village
   road and the Qiblai-Longsong link.
+- **The expedition road** (`SITE_SPEC.ways`, core/world 48s, since 2026-11-16; the owner: "Grow the cut up the gorge"): Thalaba's
+  road goes on from Salphar up Godshearth's gorge, past the Spillway (the gorge's station 4, `xanaduspill`, px 845,1422), to the
+  Rare Devisers' camp at the hot lake's outlet (px 839,1398, the owner's choice; `settlements/devisers-camp`): 35.8 km at 8 % with
+  one more bridge so far, laid like the villages' roads. It ends at the cut's edge (px 842.8,1437.7, `short`) until the region's
+  recut takes a corridor up the gorge to the camp.
   - **Lāiṭwāl** (`slaitwal0001`, px 1028,1653, added 2026-11-16: `settlements/lightwall`, its step L5): the Light Wall on the
     north shore of Opal Valley's great lake, under the north boundary fault. Its id is `model: false` in `SITES.json` until
     the scale model lists it (the pin is queued with the scale-model edits). Three farming villages on the shore's bench,
     east and west, and a ranch at its western end. Opal Valley grows no kit yet, so they stand on bare ground. Its square was
     added to the cut by hand from a re-cut (the site's row, its polygon, its added area, its mask square); the re-cut's other
     changes (the model's drift since this region's cut: Longsong's move, the rivers) were left for the region's own re-cut.
+  - **Kirstabal** (`sl758m2396`, px 989,1600, added 2026-11-16: `settlements/kirstabal`, its step K6): the barge port at the
+    head of the Lower Xanadu Lake, reach 20 km; the town is its own page's (a target on Xanadu's page). Its ring stands at
+    the tune's places (`core/region/data/xan-tune.js` `T.ksRing`): Mil, Kanāl and Grēnz (farming) on the apron south of the
+    town and Bāiyar (ranch) beyond. The lake's nine (`T.lowerLake`) stand on the shore round the whole lake: eight fishing
+    villages on the fishers' row (`xanadu-fishing` in `src/48-world-site.js`: boat sheds, and fish racks as pending boxes
+    under `xh_fish_racks`: kits/xanadu's `xa_fish_racks` is opt-in and not in `XAK`, and the bake, which reads every kit file,
+    would size it while the page could not) and the Landing at the portage, 114 km west. Each is searched from the
+    model's lake cell nearest the tune's place, so it stands at the water. Two links: to **Strongbow's foot** (5.3 km over
+    Keb Riwā's mouth) and along the lake to Qiblai (143 km).
+  - **Strongbow's foot** (`sstrongbowft`, px 991.14,1596.84, `model: false`): *proposed* by `settlements/kirstabal` K6, the
+    bottom of Strongbow's lift where Kirstabal's page ends its Strongbow road (69 m over the lake). Strongbow's own session
+    places its foot town and replaces this point; nothing else is planned there. Kirstabal and the foot were added to the cut
+    by hand (`data/region.json`: two site rows, two polygon rows), as Lāiṭwāl was: both stand inside the Xanadu polygon, so
+    the mask did not change.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its town (`core/world` `ROADS`, the grade held to 8 %).
     They join the roads already laid where those are nearer than the town, so they share a trunk.

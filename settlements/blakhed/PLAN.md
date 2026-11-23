@@ -3,7 +3,8 @@
 The owner, 2026-11-16: **"upscale a bit to 5k"**. The lore and the Tungang kit's plan gave Blakhed 1,000-2,000; this plan
 sizes it for **5,000 people**, the figure `core/region/WEST-RIFT-SCOPE.md` section 3b already counts.
 
-Nothing here is built. It is a plan, written on the `claude/openworld-sites-24defd` worktree. Every invented thing is
+It was written as a plan on the `claude/openworld-sites-24defd` worktree; the build session (`claude/blakhed-72bd22`,
+2026-11-16) settled it for the build (section 0) and builds steps B1-B5's first pass (`README.md`). Every invented thing is
 marked *proposed*. Every estimate is marked (est.). Pixels are on scale model 5.1 (1821 x 1723 px, 2 km a pixel).
 
 **What is settled** (quoted, not proposed):
@@ -19,6 +20,64 @@ marked *proposed*. Every estimate is marked (est.). Pixels are on scale model 5.
 - **The Great Caravan** stops at Blakhed each summer (the owner, 2026-11-16, `core/region/data/xan-tune.js` l.163-176:
   `gate.dalab.blakhed`, year day ~159, between Erehwon and Nulab). There Blakhed "takes the exports".
 - **The size:** 5,000 (the owner, 2026-11-16).
+- **The town and its country** (the owner, 2026-11-16: "Some live in farmsteads. And there is a healthy hamlet network around
+  it"): the 5,000 are the town and its farmsteads along the river (question 1's ~4,400 and ~600, *proposed*), and a network of
+  Fellgang hamlets on core/hamlet lies round it beyond them. *Proposed:* about a dozen hamlets of ~150, ~2,000 people (est.),
+  counted with the scope's Fellgang fells; their grain, herds and ice come to Blakhed's market.
+
+### 0. The answers the build takes (2026-11-16, the build session `claude/blakhed-72bd22`)
+
+The owner's answers above are taken as settled. Every other question of section 8 takes this plan's recommended answer,
+*proposed*, so the build can go on; the owner can overturn any of them, and the five marked **ask** went to the owner.
+
+| Q | Taken | Status |
+|---|---|---|
+| 1 | The 5,000 are **~4,250 in the town, ~150 at the Stairhead, ~600 on four steadings** along the river within 10 km. The hamlet network (twelve of ~150, ~1,800) lies beyond, counted with the fells (section 3.2a). The extra people: settled carriers, Travellers who stayed, drovers' families, the Stairmen | owner (the split), *proposed* (the numbers) |
+| 2 | The town stays at the pin; **the Stairhead is a ward at the falls' lip**, ~24 km down the river, with Dalab's toll post. Both are on the page: two near grounds joined by the river's country | *proposed*, **ask** |
+| 3 | The stair is a **switchback beast path with roped pitches and hoists** (the Stairhead's gin wheels) | *proposed*, **ask** |
+| 4 | The crossing to the north rim is a route record only; its form stays open | open, **ask** (not on the page) |
+| 5 | **Ice ponds** on the river flats below the town, fed by leats, cut in winter, beside the Ice-cutters' lake ice | *proposed* |
+| 6 | The Fair in **autumn**, after the shielings come down, on Blakhed's own **Fairfell** south of the town | *proposed* |
+| 7 | The herd beasts stay unnamed: the folds and byres are drawn empty | open, **ask** |
+| 8 | Salt: the drovers, from the western fells' salt basins (scope 4.4) | owner |
+| 9 | Blakhed is a **transit market**: Dalab's factors buy the Great Caravan's goods there; the caravan camps on the Fairfell | *proposed* |
+| 10 | The toll: **a tenth** of what goes down the stair, in kind; a post of **~25** with a genepriest. A Giant guard: not drawn | *proposed*, **ask** (the Giant) |
+| 11 | **One head**, elected by the double meeting: two meeting halls face each other across the Market, the Fowlers' rope wall in one and the Ice-cutters' tally board in the other (the kit's two `fg-meethall` variants), until the kit has a double hall | *proposed* |
+| 12 | **No wall**: the market peace and a watch | *proposed* |
+| 13 | The Kradz winter at the western Hearth vent's caves, off the page | *proposed* |
+| 14 | **`settlements/blakhed/build.py` of its own**, a target on Xanadu's page as Thalaba, Kirstabal and Lāiṭwāl are, with the Tungang kit sealed in as `TG` (the Fellgang set) and the Dalab set read in place for the toll post | *proposed* |
+
+**The Golden Tears' mission** (the owner, 2026-11-16: "there should be a 100-200 person strong Golden Tears mission nearby;
+home away from home, such as it is, for Xanadui in the west rift"). The Golden Tears are the Xanadu merchant house that
+escorts Dalab's Great Caravan for 4 % of what it lands (`xan-tune.js` `T.tears`), so Blakhed, the caravan's western stop, is
+where their escort rests and their house keeps its western factor. *Proposed*:
+- **~150 people** (the escort's resting company, the factor's household, a priest of the Decree, cooks, grooms, a few
+  Xanadui merchants and wives), year round, more when the caravan is in;
+- **a walled compound of its own** about 1 km south-east of the Market, on the caravan road where it comes in from the east,
+  beside the Fairfell where the caravan camps: outside the town's market peace, under its own walls;
+- **in the Xanadu kit's buildings** (the page is Xanadu's, so its kit is at hand): the factor's house, a hall of the Decree,
+  the escort's barracks round a muster yard, a teahouse, stables and pens, a store, a bath, the households' houses;
+- in the sim records: `tears.blakhed`, a house of the Golden Tears (faction `xanadu`, org `tears`), beside `tears.strongwall`
+  and `tears.erehwon` (`sim/wr-blakhed.js`; XAN_TUNE is left alone until the West Rift's W3 joins it).
+
+**Town form, Traveller Winterings, and Dalab's mission** (the owner, 2026-11-17: less spread out with a clearly defined center
+loosely clustered around the Marketplace; an authentic Irish Traveller / Romani campground; and a 100-150 person Dalab mission
+near the center of town):
+- **Compact radial-concentric town (~720 x 580 m):** irregular organic polygon blocks and crooked ring/spoke lanes loosely
+  clustered around a flagged 92 x 72 m Marketplace (median house ~195 m from the Peace Stone), with the Ropewalk, Icegarth,
+  Fairfell, Winterings, Cairn Hall and Golden Tears pulled into close visual reach;
+- **Dalab's mission (~134 people):** a low rammed-earth walled compound ~185 m ESE of the Peace Stone on the inner-to-middle
+  ring by the Caravan Road, holding Dalab's resident factor, clerks, genepriest, caravan brokers and guards in 13 Dalab
+  buildings (`dalab.blakhed` raised to 160 across mission + Stairhead toll post);
+- **The Winterings (~454 Travellers in 7 extended-family circles):** pitched through `core/camp` (`KCAMP.pitch`,
+  `culture: 'traveller'`) in circular and horseshoe greens around iron-tripod campfires (`fg-camp-hearth`), with painted
+  spoked bow-top vardos (`fg-wagon`), arched canvas bender tents (`fg-bender`), tinsmith/coppersmith pitches and washing lines
+  (`fg-tinsmith`), and hurdle-fenced pony paddocks.
+
+**One finding of the town-scale survey (B1), taken by the build.** The model's Blak Riba runs **1.9 km north-west of the pin**
+(its vertex 440.2,1399.5); the town is to stand on its south bank. The build moves that one vertex about 1 km toward the pin
+(to 440.8,1399.8: inside its own 2 km cell, so within the model's resolution) and carves the channel into the model's ground
+(section 5). The river then passes ~0.6 km north-west of the Market. *Proposed*: for the scale-model session's pin batch.
 
 Sources read: `core/region/WEST-RIFT-SCOPE.md`; `LORE.md` 6.1 (l.236-284); `kits/tungang/PLAN.md` 1.3, 1.3.3, 1.3.4, 3.3,
 3.3.1, `README.md`, `API.md`; `biomes/riftrim/PLAN.md` (the 5.1 survey, section 6, stations 8 and 9, the 2026-11-13 note);
@@ -225,6 +284,31 @@ Question 2.
 - **Shielings** on the fells south and west, summer only.
 - **Peat banks** on the wet flats, if the town survey finds them.
 
+### 3.2a The hamlet network (the owner, 2026-11-16: "a healthy hamlet network around it"; *proposed*: the sites, names, foci)
+
+Twelve Fellgang hamlets of ~150 (~1,800 people), one in each 30-degree sector round the town, 13-24 km out, each on the
+bench's gentlest 2 km cell in its sector (under 5 % and 3,350-4,150 m, read from `h.png`). The names are placeholders in the
+Fellgangs' worn English. They send grain, herds, ice and slate to Blakhed's market. Each is a `core/hamlet` village on the
+Fellgang row (`BK_ROW`); their records are for the open world, and the page draws those inside its country.
+
+| Hamlet | Px | Bearing, km | Height | Focus |
+|---|---|---|---|---|
+| Highgarth | 439,1392 | N, 16.5 | 3,743 m | farming |
+| Beckfoot | 443,1393 | NNE, 14.6 | 3,647 m | farming |
+| Pondhead | 451,1397 | ENE, 20.9 | 3,519 m | ice (ponds on the falls bench) |
+| Fallsfield | 450,1398 | E, 18.4 | 3,557 m | farming |
+| Cragfold | 449,1404 | ESE, 17.9 | 3,659 m | ranch |
+| Hayfell | 445,1411 | SSE, 23.4 | 4,142 m | ranch |
+| Slatebank | 443,1409 | S, 18.4 | 4,127 m | quarry (roof slate and drystone) |
+| Highbyre | 438,1406 | SSW, 13.4 | 4,141 m | ranch |
+| Peatmoss | 434,1403 | WSW, 15.2 | 4,143 m | farming |
+| Coldwater | 430,1398 | W, 22.4 | 4,147 m | ice |
+| Drovers' Rest | 432,1392 | WNW, 24.1 | 3,726 m | ranch (on the drove road) |
+| Tarnside | 434,1391 | NW, 22.8 | 3,669 m | farming |
+
+**The steadings** (part of the 5,000): four clusters of ~150 on the river within 10 km of the town, two above it and two below
+(focus `farming`, one `ranch`), drawn on the page.
+
 ### 3.3 Light, fuel and look
 
 - **Fire people** (tungang plan 1.3): tallow, hearth wax, peat fires of moor sponge, spiked braziers. **Lantern lobelia**
@@ -324,9 +408,36 @@ figure); the stair is slower.
 - Whether beasts can go down at all decides whether the Great Caravan's beasts reach Nulab or its goods are broken down
   into porter loads at Blakhed (question 3).
 
-## 5. Which kits and core modules draw it
+## 5. Core adoption
 
-Written first, as CLAUDE.md asks ("CORE MODULES ARE NOT OPTIONAL"). The PLAN's `Core adoption` section is this table.
+Written first, as CLAUDE.md asks ("CORE MODULES ARE NOT OPTIONAL"), and settled for the build on 2026-11-16 (section 0).
+
+**What the page takes** (`settlements/blakhed/build.py`, `kit.json`; checked by `tools/check_core_use.py`):
+
+| Module | Taken | For |
+|---|---|---|
+| Xanadu's page (`settlements/xanadu/build.py --kit`) | the host | core/host's camera, panel, inspector, polygon tool and probe; core/rand, core/tags, core/door, core/lod; the verify harness (`settlements/xanadu/verify.py` on `tools/harness.py`). No Xanadu kit building is drawn |
+| `core/city` (with `core/space`) | yes, sealed in `gen/69b-kcity-bundle.js` | **the town**: one instance (`rand: 'krand'`, insertion order, `TUNE.exact`); its own steps lay the raster, the roads (the drove road, the stair road, the ice road, the fair lane) and the lanes; the **frontage-courts** strategy fills the house blocks with the Fellgang keys (`kit.dims` from `TG.fg.dims`, `TUNE.classes` the Fellgang keys). The Market, the Icegarth, the Ropewalk, the Folds, the Fairfell, the Winterings and the cairn hall's knoll are the plan's records, placed by the town's site step, never by a builder |
+| `core/hamlet` + `core/hamlet/fellgang` | yes, in the same closure | **the four steadings** (focus `farming` / `ranch`), **the Stairhead** (the row's own focus `stair`), **the twelve hamlets** of the network (records for the open world; those within the page's country drawn). The Fellgang row has works for `fowling` and `ice` only: the page extends it locally (`BK_ROW`: farming, ranch, quarry and stair works from the kit's keys), as Kirstabal extends the Xanadu row, so no other world's villages move |
+| `kits/tungang` (the Fellgang set) | yes, sealed as `TG` (`tungang_bundle.bundle(tex=True, furniture=True, side=...)`, the maps beside the page) | every Fellgang building and road piece: `TG.fg.draw` (seated by the kit: floor at the highest corner, plinth to the lowest; `walk`, `doors`, `steps` and catalog `furniture` on in the town), `TG.fg.pieces` (lantern posts, halts, wagons, ice tools, Fair hurdles, peace stone, cairns, road signs, Stairhead hoists) |
+| the Dalab set (`settlements/dalab/src` 69d, 69e, 70, 71, 71c, 73, read in place as Thalaba does) | yes | **Dalab's mission** near the Marketplace (~134 people in 13 buildings within a low rammed-earth compound) and **Dalab's toll post** at the Stairhead; Dalab's pack trimmed to its 21 used families |
+| `core/camp` (`KCAMP`) | yes, sealed in `gen/69b-kcity-bundle.js` | **The Winterings**: 7 extended-family Traveller circles and horseshoes (`culture: 'traveller'`) pitched round central campfires (`fg-camp-hearth`) with vardos (`fg-wagon`), bender tents (`fg-bender`), tinsmiths and clotheslines (`fg-tinsmith`), and pony paddocks |
+| `core/water` (+ `core/atmos` for its clock and waves) | yes | the **Blak Riba** a `flow` from 8 km above the town down the falls to their foot (white on the falls), the **leats** off it, the **ice ponds** `still` |
+| `core/drawn` | yes | every ground mesh registered (`KDRAWN.grid`), so the eye check measures the drawn ground |
+| `core/biome` + `biomes/riftrim` (rim `w`, the veiled rim of the W rift highland) | yes, sealed in `gen/69bk4-bk-flora-bundle.js` | the country's flora over a mask made from the plan's records (never from pixels): the cloud belt's moor sponge, sedge and cotton grass, prism heath, bell firs and lobe larch where the fields allow, lantern lobelia along the lanes |
+| `core/materials/record` | yes | the town's ground sets (`materials.json`, `tex/`); the kit's own pack for the buildings |
+| `core/walk`, `core/door`, `core/furnish`, `kits/interiors`, `kits/catalog` | yes (step B6, interiors) | every town Fellgang building furnished from the catalog, its boxes recorded on `KWALK`, its Ancient plate doors operable (`KDOOR`/`KDOORHOST`), drystone threshold steps on slopes, and `XA_CUT` cutaway (`X`); the Golden Tears' Xanadui buildings hollowed, planned, furnished and walked (`89b1-bk-interiors.js`, `89y-xa-interiors.js`) |
+| `core/clock`, `core/sched`, `core/simulation`, `core/charactermodels`, `core/hazard`, `core/export` | not yet | the people and citizen schedules, the hazards and the Godot export remain open (`KNOWN_ISSUES.md`) |
+| `core/region` | yes (`sim/wr-blakhed.js`) | Blakhed's economy on `50-region-valley.js` (`WR_BLAKHED.valley`) and its W3 join (`WR_BLAKHED.join`) replacing `gate.dalab.blakhed` and `gate.dalab.nulab` on `XAN_TUNE`'s Annual Great Caravan (`test-bk-economy.js`) |
+
+**Town-scale pieces added to `kits/tungang` (step B2, `src/58-fg-town.js` and `src/60-fg-road.js`):** `fg-doublehall` (holding
+both customs in one: rope wall + tally board), `fg-ropewalk` (44 m town rope-walk range, five along the 225 m walk),
+`fg-great-icehouse` (5-tier vaulted town store, eight in the Icegarth beside four smaller barrows), `fg-markethall` and
+`fg-booth`, `fg-fair-stand` and `fg-fair-hurdle` (the Fair's judges' dais and ring rails), `fg-halting-house` (inn),
+`fg-smithy`, `fg-tannery` (tannery and felt house), `fg-granary` (raised on staddle piers), `fg-stair-hoist` (beast-walked gin
+wheels at the Stairhead), `fg-cairn` (the Market's peace stone and fell cairns) and `fg-stone-sign`.
+
+**The first table (the plan's survey of every need, before the build):**
 
 | Need | Module | How | Gap |
 |---|---|---|---|
@@ -397,12 +508,12 @@ Its roads and others' records:
 | Step | What | Test |
 |---|---|---|
 | **B0** | **The records.** The owner's answers (section 8). Blakhed's pin (and the Stairhead's) in the scale-model session's queue, with the West Rift's pin batch (scope W0). A West Rift region in `openworld/SITES.json` with the stair as a corridor to Nulab | the model and `SITES.json` agree |
-| **B1** | **The ground.** `cut_site.py` for the region; the town's ground bicubic round the pin; the Blak Riba as a `core/water` flow; the leats and ice ponds; the falls and the stair cut in the face; **a town-scale survey** of the slope, the wind and the river's banks, which the 2 km model cannot give | the region's bake checks; nothing on a slope past the town's limit |
-| **B2** | **The kit's town pieces**, asked of the Tungang kit (section 5's list), on the set's contract: the same frame, the plinth to the lowest corner, everything registered in `core/tags` | the kit's `verify.py --assert` and its box checks |
-| **B3** | **The town on `core/city`** with a Fellgang adapter (`TG.fg.dims`); the Market, the Icegarth, the Ropewalk, the Folds, the Fairfell, the Winterings and the houses as districts; a target on the Tungang kit's page, or a build of its own (question 14) | Voth's checks: exact footprint overlap, nothing on a street or in water; each building dry and on its plinth |
-| **B4** | **The outworks.** The Stairhead (a `core/hamlet` village and Dalab's toll house), the steadings, the shielings (summer), the ice ponds; the Winterings on `core/camp`'s new `traveller` row | `test-hamlet.js`; the camp's tests |
-| **B5** | **The sim.** Blakhed's record, roads and toll in `WR_TUNE` (W1, W4); the Great Caravan's stand-in replaced (W3) | the town fed in a year; the stair's grain arrives; the toll lands in Dalab's books; `test-east-rift.js` and `test-xan-economy.js` unchanged unless meant to move |
-| **B6** | **Interiors and people.** The Fellgang interiors; the people on `core/simulation`; the Fair and the caravan as the year's two events | the interiors' checks; the sim's schedules |
+| **B1** | **The ground** (*done, first pass*). The town's ground bicubic round the pin (`gen/69bk3-bk-model.js`, `src/69bm-bk-ground.js`); the Blak Riba as a `core/water` flow; the leats and six ice ponds; the falls and the stair (`openworld/` cut awaits B0) | `verify.py`: `on-the-model`, `water-on-core` |
+| **B2** | **The kit's town pieces** (*done*: `kits/tungang/src/58-fg-town.js` and `60-fg-road.js`), on the set's contract: `fg-doublehall`, `fg-halting-house`, `fg-markethall`, `fg-booth`, `fg-ropewalk`, `fg-great-icehouse`, `fg-smithy`, `fg-tannery`, `fg-granary`, `fg-fair-stand`, `fg-stair-hoist`, `fg-fair-hurdle`, `fg-cairn`, `fg-stone-sign`; wired into `69bn-bk-town.js`, `69bo-bk-ring.js` and `90c-bk-build.js` | `kits/tungang/verify.py --assert`, `test-bundle.js`, `test-bk-town.js` |
+| **B3** | **The town on `core/city`** (*done*: `src/69bn-bk-town.js`) with `TG.fg.dims`; the Market, the Icegarth, the Ropewalk, the Folds, the Fairfell, the Winterings, the cairn hall and the Golden Tears' compound on Xanadu's `--kit` host | `test-bk-town.js` (no overlap, off roads and water, 5,000 within 15 %); `verify.py`: `blakhed-laid`, `golden-tears` |
+| **B4** | **The outworks** (*done*: `src/69bo-bk-ring.js`). The Stairhead (`core/hamlet`, `fg-stair-hoist` gin wheels and Dalab's toll post), the four steadings, the twelve hamlets of 3.2a (`core/camp` Traveller row still owed) | `test-bk-town.js`; `verify.py`: `villages`, `toll-post` |
+| **B5** | **The sim** (*done*: `sim/wr-blakhed.js`). Blakhed's valley spec, its four roads and Dalab's tenth toll in `dalab.blakhed` (W1, W4); `WR_BLAKHED.join` replacing `gate.dalab.blakhed` and `gate.dalab.nulab` on the Annual Great Caravan (W3) without altering `xan-tune.js` | `test-bk-economy.js`; `test-east-rift.js` and `test-xan-economy.js` unchanged |
+| **B6** | **Interiors (*done*) and people (*owed*).** Fellgang town interiors furnished (`furniture=True`), walked (`KWALK`), with operable `KDOOR` plate doors, threshold steps on slopes and `XA_CUT` cutaway (`X`); Golden Tears Xanadu compound hollowed, furnished and walked (`89b1-bk-interiors.js`). Citizen actors and schedules on `core/simulation` remain open | `verify.py`: `ix-fellgang`, `ix-golden-tears` |
 
 ## 8. Questions for the owner
 
@@ -422,7 +533,8 @@ Its roads and others' records:
 6. **The Fair.** In autumn, after the shielings come down (proposed)? And on Blakhed's own Fairfell, or on "a fell everyone
    knows" nearby?
 7. **The herd beasts.** The rim's big animals are still unnamed (tungang plan 1.3). What are the town's herds?
-8. **Salt.** Where does Blakhed's salt come from? No salt lies within 169 km (scope Q5). The fells' rock salt at 354,1347
+8. **Salt.** (**Settled, the owner 2026-11-16: "We'll have the drovers be a major salt source"**; Blakhed is their market. *The map's answer, 2026-11-16, in the scope's 4.4 item 1: the western fells' high salt basins, 219 km west,
+   the farthest salt from the Lizardmen, worked by the western Fellgangs and droved to Blakhed's market.*) Where does Blakhed's salt come from? No salt lies within 169 km (scope Q5). The fells' rock salt at 354,1347
    (204 km straight), carried by the drovers?
 9. **The Great Caravan at Blakhed.** Is Blakhed a **transit market** where Dalab's factors buy Xanadu's goods (proposed),
    or does `WR_TUNE` have Blakhed eat them? Does the caravan camp on the Fairfell?

@@ -18,14 +18,15 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-ls-plan.js` | 49 **big** | the site (PLAN.md section 1) (19); the rock: Longsong's hill (49); the ward and the grounds (71); the ways (85); the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR (121); the sacred furniture of the grounds (187); the planted ground (the kit grows only here insi (205); the Vault (BLUEPRINT.md LV; LORE.md 6.15) (218); the people (the life layer's scaffold; README.md (296); zones (the inspector's words, the kit's mask) (454) |
-| `40b-ls-farms.js` | 14 | what the house needs (BLUEPRINT.md's numbers) (20); the fields outside the wall (ROOMS.md 5.1) (28); the gardens inside the wall (ROOMS.md 5.2) (42); the farm's works and marks (57); the cells: which strip, terrace, pool, bed or tr (79); the year (2026-10-20): the fields through the se (129) |
+| `15-ls-tune.js` | 16 |  |
+| `40-ls-plan.js` | 51 **big** | the site (PLAN.md section 1) (22); the rock: Longsong's hill (62); the ward and the grounds (84); the ways (98); the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR (136); the sacred furniture of the grounds (202); the planted ground (the kit grows only here insi (220); the Vault (BLUEPRINT.md LV; LORE.md 6.15) (233); the people (the life layer's scaffold; README.md (311); zones (the inspector's words, the kit's mask) (469) |
+| `40b-ls-farms.js` | 16 | what the house needs (BLUEPRINT.md's numbers) (20); the fields outside the wall (ROOMS.md 5.1) (33); the gardens inside the wall (ROOMS.md 5.2) (47); the farm's works and marks (62); the cells: which strip, terrace, pool, bed or tr (88); the year (2026-10-20): the fields through the se (142) |
 | `40c-ls-rooms.js` | 67 **big** | the shells (64-ls-monastery.js draws them; the r (60); L1: the base (two storeys under the rock top) an (72); L2: the School (storey 0, round the Debate Court (107); L3: the White Palace, lower (storey 1) (153); L4: the White Palace, upper (storey 2), the logg (180); R1: the Red Palace's first level (storeys 0-1) (207); R2: the Great Archive (storey 2) and the wings (234); R3: the Hall of Stillness, the Abbot, the Counci (248); the upper storeys (2026-10-20, the owner: the in (268); L0: the ward's buildings (ROOMS.md 2.2; 2026-10- (341) |
 | `40d-ls-sim.js` | 25 |  |
 | `40e-ls-kchar.js` | 2 |  |
 | `40h-ls-hamlets.js` | 3 |  |
 | `42-ls-world.js` | 1 |  |
-| `45-host-stage.js` | 19 | the land, cached (33); the plan's shapes on the land (51); the stream as a line (page metres), on a level t (71); the fields the Oidong kit reads (BIOME-API.md) (163); the host binding (189) |
+| `45-host-stage.js` | 19 | the land, cached (33); the plan's shapes on the land (51); the stream as a line (page metres), on a level t (71); the fields the Oidong kit reads (BIOME-API.md) (164); the host binding (190) |
 | `57a-ls-interiors.js` | 36 **big** | the room kinds: the catalog kinds each may draw  (31); the layouts: what the Order arranges itself (wor (100); one room: its layout, then the placer (216); the checks (verify.py --assert, through 64's mon (292) |
 | `62-ls-arch.js` | 28 | the pieces (the vocabulary), in the kit's local  (116); the Order's own pieces (ROOMS.md section 1: the  (218) |
 | `63-ls-signs.js` | 8 |  |
@@ -35,7 +36,7 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `68-ls-life.js` | 22 |  |
 | `69-ls-figures.js` | 11 |  |
 | `84-ls-ground.js` | 9 | the water's records (core/water draws it: 89w-ls (88) |
-| `85-ls-farms.js` | 36 **big** | the farms' checks (verify.py --assert; 64's mona (267) |
+| `85-ls-farms.js` | 38 **big** | the farms' checks (verify.py --assert; 64's mona (267) |
 | `85h-ls-hamlets.js` | 14 |  |
 | `86-ls-far.js` | 2 |  |
 | `87-ls-interiors.js` | 21 |  |
@@ -45,5 +46,5 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `89y-ls-festival.js` | 11 |  |
 | `89z-ls-atmos.js` | 3 |  |
 | `94-ls-export.js` | 10 |  |
-| `99-host-take.js` | 16 | the inspector's words: the record under the hit  (54); the camera: above the ground, or inside the Vaul (76); the probe's budgets and the page's checks (verif (87); the page, handed to the host (110) |
+| `99-host-take.js` | 16 | the inspector's words: the record under the hit  (54); the camera: above the ground, or inside the Vaul (76); the probe's budgets and the page's checks (verif (87); the page, handed to the host (111) |
 | `99-tail.html` | <1 |  |

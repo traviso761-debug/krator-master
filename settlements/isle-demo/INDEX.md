@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `10-isle-frame.js` | 8 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
-| `15-isle-tune.js` | 76 **big** | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
+| `15-isle-tune.js` | 78 **big** | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
 | `20-isle-ground.js` | 7 | 1. THE CITY PAGE'S GROUND: THE REGION'S RASTERS, (1) |
 | `30-isle-programme.js` | 21 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
 | `32-isle-city.js` | 50 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
@@ -32,8 +32,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `57-isle-run.js` | 2 | 6b. THE SIM'S RUN LOOP ON THE CITY PAGE (P7b) (1) |
 | `58-isle-protos.js` | 10 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
 | `59-isle-citizens.js` | 6 | 5c. A FEW CITIZENS DRAWN NEAR THE CAMERA (P7b) (1) |
-| `60-isle-draw.js` | 29 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
+| `60-isle-draw.js` | 32 **big** | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
 | `61-isle-canoes.js` | 3 | 5d. THE CANOE LINE'S VESSELS AT THE STOP (P7c) (1) |
 | `62-isle-export-scene.js` | 10 | 5e. THE DRAWN TOWN IN THE EXPORT (P8, 2026-10-20 (1) |
+| `63-isle-doors.js` | 10 | 4d. THE DOORS: the Vernacular's leaves on core/d (1) |
 | `98-isle-city-start.js` | 10 | 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK (1) |
 | `98-isle-start.js` | 5 | 4. START (1) |

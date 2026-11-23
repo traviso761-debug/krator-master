@@ -392,7 +392,7 @@ FURN({
 });
 FURN({
   key: 'tungang_court_banner', name: 'The loj banner', culture: 'tungang', tier: 'court', type: 'banner', setting: 'indoor',
-  rooms: ['hall', 'court', 'shrine'], anchor: 'wall', clearance: { front: 0.4 },
+  rooms: ['hall', 'court', 'shrine'], anchor: 'wall', hung: 'top', clearance: { front: 0.4 },
   materials: ['cloth', 'timber', 'bronze', 'gold'], w: 1.4, d: 0.08, h: 2.0, variants: 2, variantNames: ['the wheel and lamp', 'the show of hands'],
   build: function (F) {
     const v = F.variant | 0;

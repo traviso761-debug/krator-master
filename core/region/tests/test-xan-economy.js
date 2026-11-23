@@ -26,8 +26,8 @@ console.log('a year of the Sultanate in '+secs.toFixed(1)+' s: '+Y.S.order.lengt
 const people=Y.V.settlements.filter(s=>s.people>0);
 // 1. declared: the towns, the eight countrysides, the lake towns and islands, the rings, the camps, the forts, the gateways
 {const ids=Y.S.order,cnt=re=>ids.filter(s=>re.test(s)).length;
- T.ok('the Sultanate declared: 8 countrysides, 24 lake towns and islands, 12 ring villages, 4 gateways and the Great Caravan\'s 3 Dalab towns, no problems',
-  cnt(/^prov\./)===8&&cnt(/^lk\./)===24&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===7&&!Y.S.problems.length,
+ T.ok('the Sultanate declared: 8 countrysides, 27 lake towns and islands, 19 ring villages, 4 gateways and the Great Caravan\'s 3 Dalab towns, no problems',
+  cnt(/^prov\./)===8&&cnt(/^lk\./)===27&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===7&&!Y.S.problems.length,
   ids.length+' settlements; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));
  T.neg('a road to a settlement that is not declared is a problem the host reports',
   V=>{const H=load();return H.simValley(V).problems.length===0;},
@@ -289,13 +289,15 @@ const swCheck=(Bk,Tr,X)=>{const bad=[],op=(((Tr['mine.opal']||{}).landed||{})['s
  if(!((Bk['march.e'].eaten.power||0)>0))bad.push('the beacon fort dark');
  const tpIn=Object.values(((Tr['road.sw-tempest']||{}).landed||{})['sxan7r1sln>xan.tempest']||{}).reduce((n,v)=>n+v,0);   /* its first year's grain is in its stores: the road lands its salt, tea and tools */
  if(!((tp.made.grain||0)>0&&tpIn>0))bad.push('the Tempest\'s terraces or its road from Strongwall');
+ if(!((tp.made.fodder||0)>0&&(tp.eaten.fodder||0)>0)||((tp.hungry||{}).fodder||0)>1)bad.push('the Tempest\'s horses unfed (its meadows\' hay)');   /* the owner, 2026-11-16: "add fodder" */
  if(th[2]!=='sxan7r1sln'||th[3]!==912||th[4]!==1640)bad.push('the Tears\' house outside the fort');
  return{ok:!bad.length,bad,op,inward,tp,pay};};
 {const C=swCheck(B,Y.trade,Y.xfer);
  T.ok('Strongwall\'s W1: the mines\' opal by Lāiṭwāl\'s ferry and inward, never by Strongwall; powder at the fort, the musketeers paid, the beacon fort lit, the House of the Tempest fed, the Tears inside the fort',C.ok,
   C.bad.join(', ')||('the mines\' opal ferried to Lāiṭwāl '+Math.round(C.op*1000)/1000+' kg, at Qiblai and the capital '+Math.round(C.inward*1000)/1000+' kg; Strongbow imported opal '+Math.round((B.sfgtxw10kr.imported.opal||0)*1000)/1000+
   ', Kirstabal '+Math.round((B.sl758m2396.imported.opal||0)*1000)/1000+'; powder eaten at Strongwall '+Math.round(B.sxan7r1sln.eaten.powder||0)+' kg; pay sent '+((C.pay.sent||{}).coin||0)+', owed '+((C.pay.owed||{}).coin||0)+
-  '; the Tempest made grain '+t(C.tp.made.grain||0)+' of the '+t(C.tp.eaten.grain||0)+' it ate'));
+  '; the Tempest made grain '+t(C.tp.made.grain||0)+' of the '+t(C.tp.eaten.grain||0)+' it ate, hay '+t(C.tp.made.fodder||0)+' and its horses ate '+t(C.tp.eaten.fodder||0)));
+ T.neg('a House of the Tempest whose horses went hungry is caught',x=>swCheck(x,Y.trade,Y.xfer).ok,Object.assign({},B,{'xan.tempest':Object.assign({},B['xan.tempest'],{hungry:Object.assign({},B['xan.tempest'].hungry||{},{fodder:1e5})})}),B);
  T.neg('opal that never reached Qiblai or the capital is caught',x=>swCheck(x,Y.trade,Y.xfer).ok,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{opal:0})}),[E]:Object.assign({},B[E],{imported:Object.assign({},B[E].imported,{opal:0})})}),B);}
 // 30. L1 (settlements/lightwall/PLAN.md 4; the owner, 2026-11-16): Lāiṭwāl, the seat of Ōpal-Bhālī, fed all year; the Great
 //     Potch Line's opal and the glass shops' moonglass made; the Glaziers' Fifth in opals a fifth, to the Treasury; the
@@ -329,6 +331,30 @@ const bcCheck=(Bk,Tr,Ss)=>{const bad=[],Bc=XAN_TUNE.beacon,h=Bk[Bc.id],f=Ss.find
  T.ok('the Order of the Beacon\'s head house: beside the beacon fort, fed by its terraces and the capital\'s road, no arms or powder, the lamp lit',C.ok,
   C.bad.join(', ')||('made grain '+t(C.h.made.grain||0)+' of the '+t(C.h.eaten.grain||0)+' it ate; landed from the capital '+t(C.lt)+'; the fort\'s power '+Math.round(B['march.e'].eaten.power||0)+' kWh'));
  T.neg('a head house drawn off to another place is caught',Ss=>bcCheck(B,Y.trade,Ss).ok,Y.V.settlements.map(s=>s.id===XAN_TUNE.beacon.id?Object.assign({},s,{x:s.x+5000}):s),Y.V.settlements);}
+// 32. the records the tune lacked (the owner, 2026-11-16: "give economy Sim records"): the Order of the Flashing Eye's head
+//     house on the east volcano's south flank, fed by its terraces and the capital's road, its tea from Ṭī-Ṭeras, no arms or
+//     powder; Thalaba's and Lāiṭwāl's ring hamlets tithing to their towns; Grēṭ-Āil's three villages declared and fed
+const recCheck=(Bk,Tr,Tn)=>{const bad=[],Fe=Tn.flashingeye,h=Bk[Fe.id],land=(r,k)=>Object.values(((Tr[r]||{}).landed||{})[k]||{}).reduce((n,v)=>n+v,0);
+ if(!h)return{ok:false,bad:['no Flashing Eye'],rings:{}};
+ if(!(Math.hypot(Fe.px[0]-881,Fe.px[1]-1526)<=1.5&&Fe.px[1]>1526))bad.push('the house is not on the cone\'s south flank');
+ if(!((h.made.grain||0)>0))bad.push('its terraces made no grain');
+ const lc=land('road.er-eye',E+'>'+Fe.id),lt=land('road.eye-tea','lk.tea-terraces>'+Fe.id);
+ if(!(lc>0))bad.push('nothing landed from the capital');
+ if(!(lt>0))bad.push('no tea landed from Ṭī-Ṭeras');
+ const starved=s=>(Bk[s].hungry.grain||0)>(Bk[s].eaten.grain||1)*.01;   /* the lake check's rule: short of a hundredth of its grain */
+ if(starved(Fe.id))bad.push('the house went hungry');
+ if((h.eaten.powder||0)>0||(h.eaten.arms||0)>0)bad.push('the monks took arms or powder');
+ const rings={};Object.keys(Tn.ringSites).forEach(sid=>{const ids=Object.keys(Bk).filter(s=>s.indexOf(Tn.ringSites[sid].site+'.hamlet.')===0);
+  rings[sid]=ids.length;if(!ids.length)bad.push(sid+' has no ring');
+  ids.forEach(id=>{if(!(land('tithe.'+id,id+'>'+sid)>0))bad.push(id+' tithed nothing');});});
+ ['lk.great-isle-west','lk.great-isle-north','lk.great-isle-east'].forEach(id=>{if(!Bk[id])bad.push(id+' not declared');
+  else if(starved(id))bad.push(id+' went hungry');});
+ return{ok:!bad.length,bad,h,lc,lt,rings};};
+{const C=recCheck(B,Y.trade,XAN_TUNE);
+ T.ok('the records the tune lacked: the Flashing Eye fed on its south flank with its tea, Thalaba\'s and Lāiṭwāl\'s rings tithing, Grēṭ-Āil\'s villages fed',C.ok,
+  C.bad.join(', ')||('the Eye made grain '+t(C.h.made.grain||0)+', landed from the capital '+t(C.lc)+', tea '+t(C.lt)+'; rings '+JSON.stringify(C.rings)));
+ T.neg('a tea road that landed nothing is caught',Tr=>recCheck(B,Tr,XAN_TUNE).ok,Object.assign({},Y.trade,{'road.eye-tea':{landed:{}}}),Y.trade);
+ T.neg('a house moved to the cone\'s north flank is caught',Tn=>recCheck(B,Y.trade,Tn).ok,Object.assign({},XAN_TUNE,{flashingeye:Object.assign({},XAN_TUNE.flashingeye,{px:[881,1525]})}),XAN_TUNE);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
 ['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln','slaitwal0001','sjuarjbku0','sl758m2396'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));

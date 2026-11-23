@@ -26,6 +26,7 @@ This is a plan for the owner to approve. Nothing is built. The blueprint sheets 
 | 12. Textures | **"Yes new textures"**: three prompts in `core/materials/PROMPTS-NEEDED.md` section 62; felt and reed matting are already in the library |
 | 13. The people | **"300 people in monastery and 600 in villages"**: the isle holds 900, not 600 (section 3) |
 | 14. Building it | **"Build the page next"**: the page's first pass is built (README.md) |
+| 15. The Station Watch's signal | **"You can move the relay lamp"**: the relay lamp stands by the Dream Road's first chorten, answering the Watch and seen from the Hall's lantern roof (section 4e) |
 
 ## 0. What is settled, and what this plan proposes
 
@@ -319,7 +320,8 @@ From the gate up the axis:
 - **The High Kora** rings the summit at 260 m out (1.6 km round), with **sixteen wheel houses** (`qb_wheel_house`).
 - **The Summit Chorten** (`qb_chorten`, large) carries the isle's one gilt crown seen from every shore.
 - **The Wheel House of the Summit** holds the isle's great wheel.
-- **The Station Watch**: four monks keep the Station's passes and signal the monastery by lamp when it is due.
+- **The Station Watch**: four monks keep the Station's passes and signal the monastery by lamp when it is due, through the
+  **relay lamp** by the Dream Road's first chorten (the dome hides the summit from the monastery at 1:1; Q15).
 - **A Pilgrims' Shelter** for the festival.
 
 The faith walks its kora three times with eyes lowered (LORE 6.13). The Order walks it three times in two places:
@@ -500,7 +502,8 @@ on every new record before it goes on a sheet.
 ## 8. The fishing villages
 
 West End, North Shore and East End are **`core/hamlet` fishing villages** (`KHAMLET.village`), placed with what they
-work:
+work (built 2026-11-16 as three pages: `src/89zac-ad-village.js`; at 1:1 they stand at px 834.5, 1503.5, 849.7, 1501.3 and
+851.5, 1508.8, the gentle shores nearest the first pins):
 - the shore and its shallows;
 - the dawn-redwood woods for the boats;
 - East End's meadows for the Order's herds.
@@ -595,17 +598,34 @@ isle's food bill, and a real demand for its dairy and hives.
 | **AD0** (**done** 2026-11-16) | this plan and its sheets; the owner's answers to section 13 (all but 14) | this session, the owner | |
 | **AD1a** (**written** 2026-11-16) | the cove: `tools/scale-model/edit_517_azure.py`, two headland records (section 1), to be re-run on the scale-model line after `edit_517_pher.py` | this session; the re-run is the scale-model session's | the script's own checks; `test_smodel.py` on that line |
 | **AD1b** | a pin for the monastery at the cove's head (846,1508), one for the Station Watch at the summit, the Dream Road; the three villages' pins | the scale-model session's queue | the pins' ground |
-| **AD2** | the sim: `lk.great-isle` re-fitted to 900 (the monastery 300 and three villages); pilgrims as a flow; the isle's goods | the sim session | its economy test |
+| **AD2** (the records **done** 2026-11-16 on `claude/openworld-sites-24defd`, e25e691cd: `lk.great-isle` 304 at the cove's head, `lk.great-isle-west` 250, `-north` 200, `-east` 150 at the villages' pixels; test-xan-economy 70/70, every village fed) | the sim: `lk.great-isle` re-fitted to 900 (the monastery 300 and three villages); pilgrims as a flow; the isle's goods | the sim session | its economy test |
 | **AD3** (**done** with the page: `src/89qa-ad-hall.js`, `src/89qb-ad-wharf.js`) | the new records (section 6) in `settlements/azure-dream/src/` on the Qiblai kit's helpers and `QSPOKE[5]`'s dress, seeds 34000-34199, on a sheet beside the blue monastery; the reused records' blue dress | this settlement | the footprint test; the sheet's `verify.py --assert` |
 | **AD4** | the 22 catalog pieces in the Xanadu culture file | the catalog's owner | `kits/catalog/verify.py --assert` |
-| **AD5** | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
-| **AD6** (**first pass done** 2026-11-16, the owner: "build the page next"; README.md, KNOWN_ISSUES.md) | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
-| **AD7** | the three villages (`core/hamlet`); the summit kora as a second station, with a far form from the cove | | the page's asserts |
+| **AD5** (**begun** 2026-11-16: the Foot Gallery and its stair walked; every other building's ground storey planned, furnished and walked into on demand, `targets/isle/90ai-ad-interiors.js`; the great monastery's assembly and gate halls, `90aj`; KNOWN_ISSUES.md) | the Hall as room data, its cot grid, the side rooms furnished; the reach audit in node first | | `core/walk` reach in node; the page's `--interiors` assert |
+| **AD6** (**first pass done** 2026-11-16, the owner: "build the page next"; the night on `core/sched` done the same day, `targets/isle/90ah-ad-night.js`, its wheels turning and the Station's passes from core/atmos's sky model (Q16); the orchards and bee walls; README.md, KNOWN_ISSUES.md) | the page, `settlements/azure-dream`: the cove, the wharf, the ward, the stair, the precinct on core/world's ground, the lake on `core/water`, the night on `core/atmos` and `core/sched` (the Lulling, the watches, the shutters, the blue window), people asleep | | `verify.py --assert` on the GPU lane; `check_core_use` |
+| **AD7** (the summit **first pass done** 2026-11-16: `dist/azure-dream-summit.html`, a second target on the same build; the three villages **first pass done** 2026-11-16, three more targets on core/hamlet, on the probed 1:1 shore, East End with the Order's meadow: KNOWN_ISSUES.md; the sheets redrawn from the pages, `export_records.py`) | the three villages (`core/hamlet`); the summit kora as a second station, with a far form from the cove | | the page's asserts (the summit's: `summit-laid`, `high-kora`, `summit-crest`, `signal-lamp`) |
 | **AD8** | the open world's site; the Godot export; the gallery (a new settlement goes to the gallery when it reaches `main`) | | the export test; the gallery's card |
 
 ## 13. Questions for the owner
 
-Questions 1 to 13 are answered (the table at the top; 10 by the Qiblai kit's session). One is open:
+Questions 1 to 15 are answered (the table at the top; 10 by the Qiblai kit's session). One is open:
 
 14. ~~**Building it.**~~ **Answered 2026-11-16: "build the page next"** (step AD6's first pass). The original question: Is the page the next step after the owner's answers, or does it wait until core/world has cut the
     isle on the new lake?
+
+15. ~~**The Station Watch's signal.**~~ **Answered 2026-11-16: "You can move the relay lamp".** The relay stands by the Dream Road's
+    first chorten after all, 1 km up from the back gate on the road's west side, its lamp 23 m up; the monastery's end is the Hall of
+    Dreaming's lantern roof (+133.5), not the back gate, which the terrace's cut hides (`AD_SIGNAL`, `src/89zaa-ad-ground.js`;
+    `verify.py` `signal-lamp`, `signal-relay`). The original question: At 1:1 the isle's dome is convex: from the Station Watch's lamp on the summit (+322 m) to
+    the monastery's back gate (+136 m), the ground 1.5-2.5 km above the Hall stands about 69 m over the sight line, so the
+    summit cannot signal the monastery directly. A relay lamp about 14 m up at the Dream Road's first chorten (1 km above the
+    back gate, +223 m) sees both. Is the relay right (a small lamp tower at the first chorten, kept by the Watch), or should
+    the signal be something else (a runner, a drum, a bell)? The same shoulder hides the Summit Chorten from the cove (the
+    scarp half a kilometre up stands over 100 m above that sight line), so "its gilt crown seen from every shore" is not checked
+    yet for any shore; a far form from the cove (AD7) would show nothing there.
+
+16. **The Station's nights.** At 1:1 the isle lies at 59.5 S, and the Station's orbit is tilted 52 degrees, so it never crosses
+    overhead here: the night's best lit pass peaks at about 64-66.6 degrees (core/atmos's sky model). The page takes a Station's
+    night to be one whose best lit pass reaches 66.3 degrees: about 21 nights a year, clustered in runs of a few weeks as the
+    orbit turns (the first after the game's start is night 2, its pass at 20.5 h). Is that the festival, or should it be rarer
+    (66.5 degrees: 5 nights a year) or fixed by the calendar instead?

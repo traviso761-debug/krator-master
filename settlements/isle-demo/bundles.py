@@ -92,6 +92,7 @@ var SVF = { WEALTH: {}, missing: {}, placed: [] };
 function svfNewBatch() {}
 function FURNISH() { return null; }
 function FURNISH_HANG() { return null; }
+function FURNISH_WALL() { return null; }
 function svfH(key, v, dflt) { return dflt; }
 /* ...and no catalog: the dresser (42-is-dress.js isDim) asks a piece's size only to place it */
 var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, entryDims: function () { return { w: 1, d: 1, h: 1 }; }, setDetail: function () {} };

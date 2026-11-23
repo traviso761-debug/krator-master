@@ -16,7 +16,7 @@ const AD_LAMPREC={cur:null};
 const adLamp=(x,y,z,k)=>{if(AD_LAMPREC.cur)AD_LAMPREC.cur.push([x,y,z,k||'oil']);};
 // the hall's figures, in its local frame (the plan's H1 frame turned: z = 33 - u, x = v): the page reads them for the views and
 // the verify. The cots: two to a 3 m bay, four bays either side of the walk, sixteen bays long: 256
-const AD_HALL={P:1.2,HX:16.2,HZ:29,T:1.2,H1:7,H2:12,bays:16,turns:['the Decree','the Garden','the Chasm','the Fountain','the Dome and the Caves','the Damsel','the Song Revived','the Circle Thrice'],cots:[]};
+const AD_HALL={P:1.2,HX:16.2,HZ:29,T:1.2,H1:7,H2:12,bays:16,wheels:[],great:null,turns:['the Decree','the Garden','the Chasm','the Fountain','the Dome and the Caves','the Damsel','the Song Revived','the Circle Thrice'],cots:[]};
 
 // ---------------------------------------------------------------- the Hall of Dreaming
 // A Tibetan pillared hall (a dukhang) 54 x 30 m inside on a 3 m grid: 18 bays long, 10 across, 136 columns. Down the middle two
@@ -29,7 +29,7 @@ const AD_HALL={P:1.2,HX:16.2,HZ:29,T:1.2,H1:7,H2:12,bays:16,turns:['the Decree',
 // a stand-in for ceiling.night.stars, PROMPTS-NEEDED section 56); the walk rises to a clerestory at +12 m whose panes glow blue by
 // night. Round it all, on the one plinth, the covered kora with 48 wheels each long side and the hall's great wheel behind the
 // head; the gilt lantern over the shrine. The cots are builder geometry until the catalog has the dream cot (FURNITURE.md).
-function buildAdDreamHall(G,o){reseed(34001);const A=AD_HALL,P=A.P,HX=A.HX,HZ=A.HZ,T=A.T,H1=A.H1,H2=A.H2;A.cots.length=0;
+function buildAdDreamHall(G,o){reseed(34001);const A=AD_HALL,P=A.P,HX=A.HX,HZ=A.HZ,T=A.T,H1=A.H1,H2=A.H2;A.cots.length=0;A.wheels.length=0;A.great=null;
  const wash=xC(xPick(XPAL.wash)),blue=xC(AD_BLUE),band=xC(AD_BAND),stone=xC(xPick(QSTONE)),g=xC(xPick(XPAL.gold)),red=xC(XPAL.red),
   tim=xC(xPick(XPAL.timber)),dark=xC(0x2a2018),night=xC(0x16295a),felt=xC(0x2c3550),indigo=xC(0x1e2e6a),cream=xC(0xe8e0cc),straw=xC(0xc8b07a),sf=xC(XPAL.saffron);
  vnReg('Hall of Dreaming',0,0,40,P+H2+7,{turnings:8,cots:256});
@@ -81,7 +81,7 @@ function buildAdDreamHall(G,o){reseed(34001);const A=AD_HALL,P=A.P,HX=A.HX,HZ=A.
  for(let z=-24;z<=24;z+=.4)vB('vWood',0,P+.16,z,.05,.92,.05,0,dark);
  vB('vClothB',0,P+.06,0,6,.02,2*(HZ-T),0,felt);   /* the felt runner */
  for(let z=22.5;z>=-22.5;z-=3)for(const s of[-1,1]){vB('vStone',s*1.5,P+.06,z,.42,.1,.42,0,stone);vB('adAzureB',s*1.5,P+.16,z,.3,.05,.3,0);adLamp(s*1.5,P+.4,z,'azure');}
- for(const z of[18,6,-6,-18])for(const s of[-1,1]){const bz=xC(0x8a6a3a);kput('xDrumS',[s*2.3,P+.06,z],null,[.2,.85,.2],bz);kput('xConeG',[s*2.3,P+.9,z],null,[.24,.3,.24],bz);}   /* the censers */
+ for(const z of[18,6,-6,-18])for(const s of[-1,1]){const bz=xC(0x8a6a3a);kput('xDrumS',[s*2.3,P+.06,z],null,[.2,.85,.2],bz);kput('xConeG',[s*2.3,P+.9,z],null,[.24,.3,.24],bz);adLamp(s*2.3,P+1.05,z,'censer');}   /* the censers: their embers lit from the Lulling to the first watch's end (targets/isle/90ah) */
  // the head: the Lulling dais and its dulcimer, the Damsel's shrine against the head wall, her gold lamp, the Wheel above
  const zh=-HZ+T;vB('qLacqB',0,P+.06,-25.6,5,.32,2.2,0,red);vB('vClothB',0,P+.38,-25.1,.8,.12,.8,0,sf);
  for(const s of[-1,1])vB('vWood',s*.4,P+.38,-25.9,.05,.5,.05,0,dark);vB('qGiltB',0,P+.88,-25.9,1.0,.07,.42,0,g);vB('vWood',0,P+.95,-25.9,.92,.03,.36,0,tim);   /* the ḍalsimar on its stand */
@@ -95,8 +95,12 @@ function buildAdDreamHall(G,o){reseed(34001);const A=AD_HALL,P=A.P,HX=A.HX,HZ=A.
  // (east), the Foot Gallery over them at +4 m
  vB('vClothB',-.5,P+.06,HZ-T-.6,2.6,3.4,.1,0,felt);vB('vClothB',.5,P+.06,HZ-T-2.6,2.6,3.4,.1,0,felt);
  vB('vWood',-9,P+.06,26,2.2,.75,.8,0,tim);vB('vWood',-9,P+.06,27.1,1.6,.45,.4,0,tim);for(const x of[-13,-5])vB('vWood',x,P+.06,27.4,1.4,1.6,.4,0,dark);   /* desk, bench, the tablet racks */
- for(let i=0;i<5;i++)vB('vWood',5+i*2,P+.06,27,1.2,.7,.8,0,tim);
- vB('vWood',0,P+4,26.2,2*(HX-T),.22,4.4,0,tim);vB('vWood',0,P+5.0,24.05,2*(HX-T),.08,.08,0,dark);for(let x=-14.5;x<=14.5;x+=.5)vB('vWood',x,P+4.22,24.05,.05,.8,.05,0,dark);
+ for(let i=0;i<5;i++)vB('vWood',5+i*2,P+.06,25.2,1.2,.7,.8,0,tim);   /* the blanket chests, under the gallery's front */
+ // the gallery's floor, a hatch left at its east end over its stair: fourteen solid treads along the foot wall from the floor
+ // (x 6.6) up to the gallery (x 13.8), the keepers' way up (targets/isle/90ag walks it)
+ vB('vWood',(-(HX-T)+9.6)/2,P+4,26.2,9.6+(HX-T),.22,4.4,0,tim);vB('vWood',(9.6+HX-T)/2,P+4,25.25,HX-T-9.6,.22,2.5,0,tim);vB('vWood',(9.6+HX-T)/2,P+4,28.05,HX-T-9.6,.22,.7,0,tim);
+ for(let i=0;i<14;i++)vB('vWood',6.6+(i+.5)*7.2/14,P+.06,27,7.2/14+.01,(i+1)*4.16/14,1.2,0,tim);
+ vB('vWood',(9.6+HX-T)/2,P+5.0,26.45,HX-T-9.6,.08,.08,0,dark);   /* the hatch's rail */vB('vWood',0,P+5.0,24.05,2*(HX-T),.08,.08,0,dark);for(let x=-14.5;x<=14.5;x+=.5)vB('vWood',x,P+4.22,24.05,.05,.8,.05,0,dark);
  for(const s of[-1,1])for(const z of[24.2,28])vPst('vPostB',s*14.6,P+.06,z,.14,3.94,dark);
  // the lantern over the shrine: a blue cube on the head bays' roof, its gilt crown, the gold lamp seen through its south pane
  const ly=P+H1+.6,lz=-HZ+T+3.4,lt=ly+3.2;qnCube(0,ly,lz,6,3.2,5,0,blue,'wash');vB('vWinLit',0,ly+1.0,lz+2.47,2.2,1.4,.08,0);
@@ -106,10 +110,15 @@ function buildAdDreamHall(G,o){reseed(34001);const A=AD_HALL,P=A.P,HX=A.HX,HZ=A.
  const KX=20.6,KZ=32.6,KY=P+3.4;
  for(const s of[-1,1]){for(let z=-KZ+1.6;z<=KZ-1.6;z+=3.2)vPst('vPostB',s*KX,P,z,.15,KY-P,red);
   vB('xWashB',s*(HX+(KX+.4-HX)/2),KY,0,KX+.4-HX,.28,2*KZ,0,wash);vB('xWashB',s*(KX+.3),KY-.5,0,.2,.6,2*KZ,0,blue);
-  for(const z of[-13,13])qnDrums(s*(HX+.32),P,z,s*Math.PI/2,14.9);}
+  /* the kit's drum run (xnXDDrums), its rails and posts drawn here and its wheels kept apart (AD_HALL.wheels, hall-local
+     [x, y, z, radius, height]) so they can turn: targets/isle/90ah draws them as the kit's prayer-wheel item, braked at the Lulling */
+  for(const z of[-13,13]){const x=s*(HX+.32),ry=s*Math.PI/2,w=14.9,n=Math.max(2,Math.round(w/.62)),c=xC(xPick(XPAL.dark));
+   for(const yy of[P+.35,P+1.65]){const a=xnOn(x,yy,z,ry,-w/2,.45),b=xnOn(x,yy,z,ry,w/2,.45);vBeam(a,b,.08,c);}
+   for(let i=0;i<n;i++){const q=loc(x,z,-w/2+w*(i+.5)/n,.45,ry);A.wheels.push([q[0],P+.5,q[1],.24,1.0]);}
+   const n2=Math.max(1,Math.round(w/2.2));for(let i=0;i<=n2;i++){const q=loc(x,z,-w/2+w*i/n2,.45,ry);vPst('vPost',q[0],P,q[1],.06,1.8,c);}}}
  for(const s of[-1,1]){for(let x=-KX;x<=KX;x+=3.2){if(s>0&&Math.abs(x)<2.5)continue;vPst('vPostB',x,P,s*KZ,.15,KY-P,red);}
   vB('xWashB',0,KY,s*(HZ+(KZ+.4-HZ)/2),2*HX,.28,KZ+.4-HZ,0,wash);vB('xWashB',0,KY-.5,s*(KZ+.3),2*KX+.6,.6,.2,0,blue);}
- kput('xDrumS',[0,P,-31],null,[1.6,.35,1.6],stone);kput('qSongDrum',[0,P+.35,-31],null,[1.3,2.6,1.3],null);
+ kput('xDrumS',[0,P,-31],null,[1.6,.35,1.6],stone);A.great=[0,P+.35,-31,1.3,2.6];   /* the great wheel: kept apart to turn, as the gallery's */
  for(const t of[.35,1.65,2.95])kput('xDrumS',[0,P+t,-31],null,[1.36,.14,1.36],g);kput('xDomeT',[0,P+2.95,-31],null,[1.3,.45,1.3],red);
  for(const s of[-1,1])qnFlags([s*KX,KY+.3,KZ],[s*(CX+CW),P+H2+.8,CL/2]);
  xnFolk(0,0,HZ+7,4,4);}
@@ -127,6 +136,19 @@ function buildAdWaking(G,o){reseed(34011);const W=30,D=58,P=.8,stone=xC(xPick(QS
  qnRoof(0,S2.y,0,S2.w,S2.d,0,blue,{band,parapet:.7});
  xnFolk(0,0,D/2+3,2,3);}
 QB.def({key:'qb_ad_waking',name:'The Waking Gallery and the Register',family:'The Azure Dream',tags:QTAG('civic',['religious','civic'],{job:'scribing',note:'the dream told to a scribe before any other word; the archive of dreams'}),w:30,d:60,h:10,fw:30,fd:58,nv:1,build:buildAdWaking});
+
+// ---------------------------------------------------------------- a lotus pond (the Lotus Garden's four)
+// a raised still pool in a dressed kerb, 14 x 10, its water 0.38 m over the ground (core/water's still water: the page draws
+// the surface, WATER.still and drawStill, from AD_POND's interior), blue lotus on it: pads and flowers (the Order's flower,
+// the dream cup's lotus; the biome's own lotus floats on the lake). AD_POND gives the page the water's box
+const AD_POND={W:14,D:10,K:.6,H:.5,level:.38};
+function buildAdLotusPond(G,o){reseed(34031+(o.v|0));const A=AD_POND,stone=xC(xPick(QSTONE)),pad=[0x3f6a34,0x4e7a3c,0x35602e],fl=[0x5a6ad8,0x6a5ad0,0x4a7ae0];
+ vnReg('Lotus pond',0,0,9,1);
+ for(const s of[-1,1]){vB('qAshB',0,0,s*(A.D/2-A.K/2),A.W,A.H,A.K,0,stone);vB('qAshB',s*(A.W/2-A.K/2),0,0,A.K,A.H,A.D-2*A.K,0,stone);}
+ vB('vStone',0,-.05,0,A.W-2*A.K,.08,A.D-2*A.K,0,xC(0x3a3a34));   /* the basin's dark floor under the water */
+ for(let i=0;i<18;i++){const x=rr(-A.W/2+1.2,A.W/2-1.2),z=rr(-A.D/2+1.2,A.D/2-1.2),r=rr(.28,.5);kput('xDisc',[x,A.level+.02,z],qEuler(0,rng()*TAU,0),[r,.02,r],xC(xPick(pad)));
+  if(rng()<.45){kput('xPaintBall',[x+r*.3,A.level+.12,z],null,[.13,.1,.13],xC(xPick(fl)));kput('xPaintBall',[x+r*.3,A.level+.2,z],null,[.07,.08,.07],xC(0xf0e8a0));}}}
+QB.def({key:'qb_ad_lotus_pond',name:'Lotus pond',family:'The Azure Dream',tags:QTAG('civic',['religious'],{note:'the Lotus Garden\'s four still ponds of blue lotus'}),w:14,d:10,h:1,fw:14,fd:10,nv:4,build:buildAdLotusPond});
 
 // ---------------------------------------------------------------- the cup house
 // where the dream cup is poured at dusk (honey, milk and steeped blue lotus: the owner, 2026-11-16), and the robing room

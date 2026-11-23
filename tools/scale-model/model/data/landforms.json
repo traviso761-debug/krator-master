@@ -6,7 +6,7 @@
    "id": "lf_pleasure_dome_isle",
    "kind": "island",
    "px": 840.886,
-   "py": 1516.799,
+   "py": 1507.441,
    "r_m": 80.0,
    "rx_m": 110.0,
    "rz_m": 55.0,
@@ -18,7 +18,7 @@
    "id": "lf_west_stack",
    "kind": "island",
    "px": 816.757,
-   "py": 1495.619,
+   "py": 1493.805,
    "r_m": 160.0,
    "crest_m": -478.0,
    "water_m": -520.0,
@@ -443,5 +443,17 @@
    "role": "light",
    "note": "An islet in Voth's water (light), 17 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
   }
- ]
+ ],
+ "vale_ring": {
+  "edit": "edit_517_vale_ring.py",
+  "seed": 51717,
+  "K": 0.62,
+  "massifs": 19,
+  "valleys": 12,
+  "erehwon_px": [
+   841,
+   1507.642
+  ],
+  "note": "The Lake of the Vale longer and thinner, and its basin's mountains (the owner, 2026-11-17)."
+ }
 }

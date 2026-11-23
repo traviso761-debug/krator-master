@@ -134,6 +134,9 @@ def data_fragment():
     # not laid yet: they cross the rivers' carved channels, and the world has no bridge, so their fill would bury the rivers
     # (KNOWN_ISSUES.md)
     roads = [dict(r, town=r['to']) for S in P['sites'] for r in S['roads']]
+    # the ways (core/world 48s `ways`: a town's road to a point, bridged like the villages' roads) are laid too: Thalaba's
+    # expedition road up Godshearth's gorge toward the Spillway (2026-11-16, the owner: "Grow the cut up the gorge")
+    roads += [dict(w, town=w['from']) for w in P.get('ways', [])]
     # the scale model's sub-cell landforms inside the cut (edit 5.1-512's islands), stamped by src/44-world-landforms.js
     bx = meta['frame']['box_px']
     lf = [r for r in json.load(open(LANDFORMS, encoding='utf-8'))['landforms'] if bx[0] <= r['px'] <= bx[2] and bx[1] <= r['py'] <= bx[3]]

@@ -4,7 +4,7 @@
 
 Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
+Docs: `API.md`, `BUILD-OUT.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/erewhon.html`, `dist/xanadu-scrap.html`, `dist/xanadu.html`
 
@@ -39,11 +39,11 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `81-sky.js` | 10 |  |
 | `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (83) |
 | `86-bio-20-core-kit.js` | 19 | merged buckets (46); runtime LOD (xanadu-1, additive) (140); indexed buckets (164); bake (187) |
-| `86-bio-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
+| `86-bio-30-core-foliage.js` | 14 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `86-bio-40-core-place.js` | 6 | surface sampling (53) |
 | `86-bio-45-init.js` | 1 |  |
 | `86-bio-50-biome-xanadu-species.js` | 53 **big** | THE LAKE COLOUR (20); the tree species (73); leaf and flower textures (182); an iridescent bark (shared hook; the Rift kit's) (330); bark textures (342); geometries local to this biome (391); materials (466); instanced items (526) |
-| `86-bio-55-biome-xanadu-trees.js` | 66 **big** | zones from the fields (17); colour (34); polyline helpers (56); keep-clear between trees (72); foliage helpers (79); the builders (109); impostors (the far canopy) (502); the pass (534); one tree at a point (additive, for a world's gar (622) |
+| `86-bio-55-biome-xanadu-trees.js` | 66 **big** | zones from the fields (17); colour (37); polyline helpers (59); keep-clear between trees (75); foliage helpers (82); the builders (112); impostors (the far canopy) (505); the pass (537); one tree at a point (additive, for a world's gar (625) |
 | `86-bio-60-biome-xanadu-floor.js` | 19 | small plants (34); the zone planters (99); the pass (166) |
 | `86-bio-65-biome-xanadu-dress.js` | 5 |  |
 | `86-bio-70-biome-xanadu.js` | <1 |  |
@@ -55,7 +55,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `91t-xanadu-tags.js` | 3 | CORE TAGS: XANADU'S REG (1) |
 | `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
-| `99-start.js` | 3 | 99. the take: Xanadu on core/host (1) |
+| `99-start.js` | 4 | 99. the take: Xanadu on core/host (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
@@ -64,6 +64,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 318 |
+| `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 357 |
 | `scrap` | `89z-rows.js`, `91z-views.js` | <1 |
 | `xanadu` | `89z-rows.js`, `90-xa-still.js`, `91z-views.js` | 3 |

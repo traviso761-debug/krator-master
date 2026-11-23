@@ -82,12 +82,46 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **core/terrain's ground shader under an environment map** (2026-11-17, found on the Glaziers' sheet): `43-core-ground.js` names
+  `kgTri`'s and the hex sampler's locals `v1 v2 v3` and `r1 r2 r3`, which three r128's `cube_uv_reflection_fragment` `#define`s as
+  numbers whenever the scene or the material has an environment map (a skylight): the fragment fails ("'0.276' : syntax error").
+  Rename them (`kgV1`..., `kgR1`...) and drop the `#undef` guard in `core/terrain/host/39i-core-cavern-rock.js`; 199 builds read it.
+- **The catalog's hem rule and decal pictures** (2026-11-17, branch `claude/dreamy-turing-3902d7`, which also carries the unmerged
+  `claude/citadel-furnishing-cb5e01`; the owner: "make sure wall hangings dont wind up near ground, this has been a recurring issue",
+  and "fold into the all-build rebuild"). `core/catalog/krator-furniture-core.js`: `furnAnchorY` hangs a top-hung cloth with its hem
+  `FURN_HEM` (1.1 m) up when the ceiling allows (wall art's lower edge too), a piece may say `hung: 'top' | 'eye' | false`, and
+  `mkDecal` shows a delivered picture (`FURN_DECAL_IMG` / `KF_DECALS`, a key that is a texture id) over its painted stand-in; eight
+  culture cloths take `hung: 'top'`, `br_h_hung_hide`'s hide is 1.6-2.0 m, and the kit's painted hanging (a hide in a frame of two poles)
+  hangs instead of standing on the floor (the owner, 2026-11-17: "Raise it too"; every culture's `*_court_painted_hanging` moves).
+  Hangings a kit places by hand take the same rule through the engine's new `FURNISH_WALL(key, x, floorY, z, ry, ceilY, o)`
+  (`core/engine/91f-furnish.js`; a stub in `settlements/isle-demo/bundles.py`): the Islanders palace, gallery and shrine banners and
+  painted hangings, `isFurnRoom`'s art and extras (the residence's banners), the Scyvoi chief's tapestries, the Lizardmen Interpreters'
+  scroll. Those three kits' pages move: `python3 core/engine/fingerprint.py` will say so for them, on purpose. Not built yet. `python3 tools/reach.py core/catalog/krator-furniture-core.js`
+  reaches 66 build commands: none is rebuilt on the branch, so every catalog-taking page moves in the rebuild. Then
+  `python3 core/furnish/fingerprint.py` and `python3 core/engine/fingerprint.py` (hung cloths in furnished rooms move on purpose: read
+  which, do not re-baseline blind), `kits/catalog` and `kits/interiors` `verify.py --assert` on a lane with `KRATOR_GL=gpu`, the
+  hash baseline. Checked headless already: `node core/catalog/test-hangings.js` (every wall hanging of the catalog, 458 variants, hem
+  at least 1 m in a room tall enough), `node core/tags/test-tags.js`, `node core/furnish/test-furnish.js`, the citadel census.
+  The pictures: `kits/catalog/materials.json` "decals" lists the ten owed in `core/materials/PROMPTS-archived.md` section 57 (delivered); once one
+  is delivered, `python3 tools/textures/pack.py kits/catalog` packs it and Erewhon (`furniture_bundle.bundle(..., decals=True)`) and
+  the catalog's sheet show it (about 150 KB each inline).
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
-  `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
+  `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour) into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
 - **Register the `coyote` culture** (the owner, 2026-11-16, `kits/coyote/PLAN.md` sections 7 and 12): `'coyote': 'Coyote Men'` in
   `core/tags/52-core-tags-vocab.js` `CULTURE_NAMES` (and `test-tags.js`'s digest), with the catalog's `coyote` culture file in
   `FURN_CULTURES` once the kit's C8 has written it. Until then `kits/coyote`'s `tags-vocabulary` assert fails (its `KNOWN_ISSUES.md`).
+- **core/tags' `vessel` and `vehicle` classes** (2026-11-17, the owner: "make sure boats are properly tagged as ships, see ring sea
+  vessels", "we should add a vehicle tag as well", "barges and boats need to take the vessels tag which will be fully implemented in
+  next all build rebuild"; ride along by the owner's choice): `core/tags/52-core-tags-vocab.js` has them (ids
+  `ves_`, `veh_`; keys `propulsion`, `hull`, `crew`, `drive`, `seats`, `fuel`; the vessels' and vehicles' types), and
+  `kits/lizardmen`'s `lz-barge` (`settlements/komodo`, `settlements/basilisk/basilisk_plan.json`) already registers as
+  `class: 'vessel'` (`ves_*`), but every older page
+  that inlines core/tags is behind it (`tools/check_stale_baseline.json` records them). The rebuild clears them. With it: the Ring Sea
+  (`kits/ringsea`, its REG already says `cls:'vessel'`), Xanadu's lake craft (`extra/88d-xa-lakecraft.js` / `88f-xa-harbour.js`),
+  `core/engine`'s walkable deck/stair hooks (`36s-stair.js` / `37-wk-rec.js` for `cls === 'vessel'`), the Motor Vehicles kit and the
+  Mechs register through core/tags as `vessel` and `vehicle` (the vehicles' own `class:'motor vehicle'` tag is a core/tags problem key:
+  drop it for the class).
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
@@ -96,6 +130,17 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   (`xa_quay`) and the racks' pending box; move them into the row itself (`core/hamlet/20-hamlet-cultures.js` reaches ten builds) and
   `kits/xanadu/src/87k-xa-lake-trades.js` into `xanadu.py` FILES (if every Xanadu page should have the lake's trades), then let
   Kirstabal pass the row by name.
+- **core/hamlet's Xanadu row passed by name folds into the row** (2026-11-17, `settlements/xanadu/BUILD-OUT.md` wave 0.2):
+  `core/hamlet/xanadu/23-hamlet-xanadu-row.js` (`KHAMLET.xanaduRow(opts)`: fishing as Kirstabal's `fishingRow` has it, the foci
+  orchard, tea, saffron, estate, placer, pottery and quarry, the wayside shrine, the mine head, the reeling house, `shallows`, the
+  `camp` overrides) folds into `20-hamlet-cultures.js` then, and the subfolder goes. This takes the fishing item above with it.
+  Decide whether the shared row takes the shrine and the mine head (they move every Xanadu village: the switch with them off moves
+  none, `node core/hamlet/test-hamlet-xanadu-row.js`); give `KHAMLET.census` the camp option from the row's `camp` and drop
+  `openworld/oidong-highrift`'s `xanadu-camp` row (the work-camp item below). Its new keys are pending until
+  `kits/xanadu/extra/88g-xa-works.js` is in the kit's `src/`.
+- **The lake's trades' interior set** (2026-11-16, `settlements/kirstabal` K5): `kits/xanadu/src/87k1-xa-lake-rooms.js` adds the set
+  `xanadu-lake` at run time; move it to `kits/interiors/sets/xanadu-lake.js` (the interiors sheet inlines every set, so it stales
+  `kits/interiors`'s sets page: rebuild and `verify.py --sets --assert` it) and let Kirstabal take it through kit.json "interiorSets".
 - **Any new file in `tools/` stales eight builds** (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo,
   longsong record `tools/` as a listing input, likely Python's importer reading it): a rebuild clears it; worth a fix in `build_sources`.
 - **Switch on checks 22-31 everywhere** (the survey of 2026-11-11, CORE-IMPROVEMENTS.md items 22-31; landed opt-in on
@@ -173,6 +218,8 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `KHAMLET.CULTURES['xanadu-camp']` (the `xanadu` row with workShare .9, household 4, a cookhouse, store and tally house for
   services). Give `KHAMLET.census` a `camp` option (or a row's `camp` overrides, taken when `spec.camp`) and pass it through
   `core/world/48s-world-sites.js` from a hamlet's spec, then drop that row. core/hamlet reaches 56 pages (`tools/reach.py`).
+  The overrides exist since 2026-11-17 as `KHAMLET.xanaduRow().camp`, and `xanaduRow({camp: true})` is the row a region can pass
+  today (`core/hamlet/xanadu/`; with `shrine` and `mineHead` false it lays the Vein Camp unchanged).
 
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?

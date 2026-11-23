@@ -432,6 +432,63 @@
             ],
             "port": 8883,
             "autoPort": false
+        },
+        {
+            "name": "tungang",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8826",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "kits/tungang/dist"
+            ],
+            "port": 8826,
+            "autoPort": false
+        },
+        {
+            "name": "viridian",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8893",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "settlements/viridian/dist"
+            ],
+            "port": 8893,
+            "autoPort": false
+        },
+        {
+            "name": "blakhed",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8891",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "settlements/blakhed/dist"
+            ],
+            "port": 8891,
+            "autoPort": false
+        },
+        {
+            "name": "ledge-dist",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8894",
+                "--directory",
+                "settlements/ledge/dist"
+            ],
+            "port": 8894
         }
     ]
 }

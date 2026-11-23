@@ -28,7 +28,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 13 | the land (46); the climate fields (cached below; these are the  (101); the host binding (128) |
 | `50-biome-oidong-species.js` | 73 **big** | palettes (24); the tree species (59); harvest (biomes/FRUIT.md, kits/crops) (134); the small plants (the floor), tagged (163); leaf and flower textures (193); bark textures (313); geometries local to this biome (373); materials (536); the library (materials.json; core/materials/PLAN (584); instanced items (621) |
-| `55-biome-oidong-trees.js` | 56 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (48); polyline helpers (Xanadu's) (68); keep-clear between trees (98); foliage helpers (105); the builders (121); the diversity pass (the owner's reference pictur (398); impostors (the far canopy) (503); the pass (529); the passes (data: species, cell, acceptance from (570) |
+| `55-biome-oidong-trees.js` | 56 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (48); polyline helpers (Xanadu's) (68); keep-clear between trees (98); foliage helpers (105); the builders (121); the diversity pass (the owner's reference pictur (400); impostors (the far canopy) (505); the pass (531); the passes (data: species, cell, acceptance from (572) |
 | `60-biome-oidong-floor.js` | 22 | small plants (22); the zone planters (82); the pass (136); the high country (the passes station, PLAN-STATI (171) |
 | `70-biome-oidong.js` | <1 |  |
 | `82-host-sky.js` | 12 |  |

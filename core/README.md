@@ -415,6 +415,10 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
   out the ground's triangles inside an opening. *Adopting it:* list both after `39-core-cavern.js` (`tools/fragment_needs.json`), then
   `const floorH = KCAVERN.floorFn(C, {from: <under the lowest floor>, to: <over the highest>, fallback})` and
   `scene.add(KCAVERN.drawRock(C, {THREE, material, attrs: ['aA'], weight: (x, y, z, nx, ny, nz, ch, i, w) => { w[0] = ...; }}).group)`.
+  `KCAVERN.rockMaterial({THREE, map, tile, scale, color, roughness, side, far, tri, name, key})` (`host/39i-core-cavern-rock.js`, `[web]`,
+  2026-11-17, lifted from Lightwall's page): a material for drawRock that dresses the rock in a library set through `KGROUND.hook`
+  (`43-core-ground.js`: triplanar on the steep, the far levels that break a tile's repeat), the vertex colours multiplying it; without
+  KGROUND or a map, the plain material. Taken by `kits/tungang` (the Glaziers' sheet) and `settlements/lightwall`.
 - **Geodes** (`KGEODE`, 2026-11-09, the scablands' coulee first: `biomes/CRYSTAL-CAVES-5.1.md` site 3): `39f-core-geode.js` (`[G data]`,
   `test-geode.js`): `KGEODE.scatter({box, world, cell, bands: [{y0, y1, id}], ground, normal, near, wall, loose, r, split, accept})` puts
   geodes on a cell lattice hashed by (world, cell, salt): **wall** ones in a band where the ground is steep (broken open, the face out

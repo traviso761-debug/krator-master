@@ -4,7 +4,7 @@
 
 Xanadu, Oidong and the High Rift: the second region of sites (openworld/PLAN-SITES.md): the Xanadu Sultanate, the Oidong Valley and the High Rift on map 5.1 at 1:1 (1,780 x 582 km at 1 km cells) on core/world, the Xanadu and Oidong kits growing on their overlays, and three sites planned on that ground (core/world KSITES, baked to plan/sites.json): Erehwon's and Qiblai's farming and ranching villages and Longsong's three, on core/hamlet's xanadu row, drawn with the Xanadu building kit (XAK), with their roads; the links between the towns planned as records. Verified: build.py, verify.py --assert. Read README.md
 
-Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
+Docs: `KNOWN_ISSUES.md`, `PLAN-TWINS-CROSSING.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/xanadu-oidong-highrift.html`
 
@@ -19,6 +19,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `44-world-landforms.js` | 3 |  |
 | `46-world-config.js` | 2 |  |
 | `47-world-kits.js` | 1 |  |
-| `48-world-site.js` | 3 |  |
-| `48k-world-tubes.js` | 3 |  |
+| `48-world-site.js` | 14 |  |
+| `48k-world-tubes.js` | 4 |  |
 | `49-world-xanadu.js` | 4 |  |

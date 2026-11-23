@@ -1,24 +1,140 @@
 {
  "targets": {
-  "isle": "azure-dream.html"
+  "isle": "azure-dream.html",
+  "summit": "azure-dream-summit.html",
+  "west-end": "azure-dream-west-end.html",
+  "north-shore": "azure-dream-north-shore.html",
+  "east-end": "azure-dream-east-end.html"
  },
  "externalDirs": [
   "kits/qiblai/src"
  ],
  "external": [
   "core/walk/20-core-walk.js",
+  "core/sched/20-core-sched.js",
+  "kits/crops/src/10-crop-core.js",
+  "kits/crops/src/20-crop-records.js",
   "core/terrain/38-core-relief.js",
   "openworld/isle-demo/src/world/41-world-fields.js",
-  "settlements/azure-dream/gen/39ad-world-data.js"
+  "settlements/azure-dream/gen/39ad-world-data.js",
+  "settlements/azure-dream/gen/69ad-kcity-bundle.js"
  ],
  "scoped": [
   "41-world-fields.js",
-  "39ad-world-data.js"
+  "39ad-world-data.js",
+  "69ad-kcity-bundle.js"
  ],
  "files": {
   "isle": [
-   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
-   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]]
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ],
+   [
+    "core/atmos/sky",
+    [
+     "89-atmos-e-skymodel.js"
+    ]
+   ]
+  ],
+  "summit": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ]
+  ],
+  "west-end": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ]
+  ],
+  "north-shore": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ]
+  ],
+  "east-end": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ]
   ]
  },
  "pack": "qiblai",
@@ -26,6 +142,10 @@
  "packFrom": "kits/qiblai",
  "deterministic": [
   "20-core-walk.js",
+  "20-core-sched.js",
+  "10-crop-core.js",
+  "20-crop-records.js",
+  "89zac-ad-village.js",
   "38-core-relief.js",
   "39ad-world-data.js",
   "41-world-fields.js",
@@ -35,12 +155,31 @@
   "89q0z-qb-matlib.js",
   "89qa-ad-hall.js",
   "89qb-ad-wharf.js",
+  "89zaa-ad-ground.js",
+  "89qc-ad-summit.js",
   "89zad-site.js",
   "90ad-world.js",
   "90ae-build.js",
-  "90af-hall-night.js",
+  "90af-night.js",
   "89q5f-qb-furnish.js",
-  "89q5s-qb-shells.js"
+  "89q5s-qb-shells.js",
+  "69ad-kcity-bundle.js",
+  "89-atmos-e-skymodel.js"
  ],
- "interiorSets": []
+ "interiorSets": [
+  "locus",
+  "yuni-town"
+ ],
+ "interiors": [
+  "isle"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "generic",
+  "generic-goods",
+  "jobs",
+  "yuni-common"
+ ],
+ "furnitureTex": true
 }

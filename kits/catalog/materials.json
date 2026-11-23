@@ -1160,5 +1160,17 @@
    "mapOnly": true,
    "size": 256
   }
+ },
+ "decals": {
+  "patterns/common/suzani-roundels": {"culture": "xanadu", "size": 1024},
+  "patterns/common/suzani-roundels.b": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/hanging-caves-of-ice": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/hanging-damsel-dulcimer": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/hanging-pleasure-dome": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/hanging-sinuous-rills": {"culture": "xanadu", "size": 1024},
+  "patterns/xanadu/tapestry-caves-of-ice": {"culture": "xanadu", "size": 1536},
+  "patterns/xanadu/tapestry-damsel-dulcimer": {"culture": "xanadu", "size": 1536},
+  "patterns/xanadu/tapestry-pleasure-dome": {"culture": "xanadu", "size": 1536},
+  "patterns/xanadu/tapestry-sinuous-rills": {"culture": "xanadu", "size": 1536}
  }
 }

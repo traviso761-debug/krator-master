@@ -80,7 +80,10 @@ ORDER = (
        ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
        ('core/materials/record', '26-matlib-bind.js'),
-       ('biomes/sedesert/src', '35-core-strata.js')]
+       ('biomes/sedesert/src', '35-core-strata.js'),
+       # core/export (GODOT-PLAN.md M7, the owner 2026-11-16): the region is the one-world case, exported by
+       # tools/godot_case.py through core/world 94
+       ('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js')]
     + LDF('41-world-fields.js', '42-world-roads.js', '42b-world-bridges.js') + [('src', '43-world-ohr.js')]
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
@@ -97,7 +100,7 @@ ORDER = (
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
-    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
+    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '94-world-export.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site; 94: the export (M7)
 )
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator: the Oidong Valley and the High Rift</title>'),
         ("<b>Little Demo</b> · the scale model's eastern desert at 1:1",

@@ -532,6 +532,10 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - "The remote southern Sultanate": a rich hilly valley "like Shangri-La". **Gold is on everything wealthy, religious or civic; the valley's mines pay for it.**
 - Look: Tibetan massing with Indian, Turkish and Persian detail; Andean "cholet" paint. **No minarets, great prayer wheels instead.**
 - Rulers: the Sultan's Palace, the **Pleasure Dome**, the **Grand Vizier**.
+- **Money: the qud** (the owner, 2026-11-16: "Sultanate currency is the qud"), the coin the economy's Mint strikes from the
+  Treasury's gold; traders take the Izani Talent too (§6.2). Settled (the owner, 2026-11-16, agreeing Theodiga's money's proposal): a thin struck gold coin of about a gram, twenty to the Talent (0.05 Talents, the Kautoan shell's
+  worth, so a day's wage reads alike across the nations); a working day's wage about 54 quds (6 an hour, as the isles').
+  The sim keeps it in `settlements/theodiga/src/49m-th-money.js` (`TH_MONEY.TUNE`).
 - Guilds: Farmers, Miners, Goldsmiths ("the richest house in the valley"), Alchemists, Masons, Spicers.
 - Faith: temples, monasteries and a pilgrims' circuit of prayer wheels.
 - **Erewhon, Pearl of Xanadu** [Ed: city is half built rn as hill placement is broken and haven’t been able to spare a session for it].
@@ -539,6 +543,11 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - The palace sits on a plateau above a cliff; the prison is in a cliff.
   - The **Pleasure Dome of the Bay** is the Sultans' own extravagance, built for their feasts. It is not Ancient: no Ancient dome stood there. [the owner, Oct 2026]
   - **The Caves of Ice** are an Ancient construction, not a natural cave. Something deep inside keeps them unnaturally cold. The sacred river Alph. [the owner, Oct 2026]
+- **A domesticated glyptodont**: the Xanadui's slow, armoured pack and draught beast, domed shell and thick legs, carrying the
+  caravans' bales and water-jars; got from the **Kimr** (the Labyrinth's people, `biomes/labyrinth/PLAN.md`) in the distant past and bred tame since, a cousin of the
+  wild glyptodonts the Beast Riders' **Hardshell** tribe rides. Its name is still to be set. [the owner, 2026-11-17: "given the
+  painting, we can also canonically give the Xanadui a domesticated glyptodont, perhaps acquired from the Kimr in the distant past";
+  the painting is the envoys' tapestry of the shell-backed caravan in Erewhon's citadel, `patterns/easter/shell-caravan`]
 - **Origins:** the Xanadui likely descend from **Theodiga**, the Ancient dam arcology at the valley mouth that harnessed the cascade (§4). *Xanadu*, *Alph* and the *Caves of Ice* are Ancient names, taken from Coleridge's *Kubla Khan*. [the owner, Oct 2026]
 - **The faith: the Decree (*Ḍikrī*) and the Broken Wheel** [the owner, 2026-11-11; the detail is *proposed*:
   `kits/qiblai/PLAN.md` section 2a].
@@ -572,8 +581,17 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     runs the latex house", "takes a share and a small fee"]. The violet monastery is the **Order of the Violet Storm**, a
     martial order of sword and bow; its central monastery is **the House of the Tempest** on the West Arm in the Gold March,
     about 600 strong, and its house in Qiblai is the Tempest's daughter [the owner, 2026-11-16; `settlements/strongwall/PLAN.md`].
+    The Decree forbids its clergy war-making, and the Violet Storm keeps that law by keeping the Vale: it makes no war, and
+    its riders go out only to chase a raid [the owner, 2026-11-16: "they ride out to chase a raid";
+    `settlements/strongwall/tempest/BLUEPRINT.md`].
     The gold monastery is **the Yellow Monastery, the Order of the Beacon**, whose head house is the refurbished Ancient
-    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise monastery is not yet named.
+    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise (teal) monastery is the
+    **Iridescent Order**: it keeps a house in Lāiṭwāl, the Light Wall, and its head monastery stands at the outlet of Lāiṭwāl's
+    lake in Opal Valley, on the shelf below the sill where the lake spills over the lower riser (scale model px 1016,1655) [the
+    owner, 2026-11-16 and 17; `settlements/iridescent/PLAN.md`].
+    The city is fed by the Orders' **temple estates**: about 128 villages and 30,000 people out to 30 km, each Order
+    holding the sector round its monastery's spoke, rice farms near the city, buffalo dairies and hives toward the
+    forest (milk and honey are the sacraments) [the owner, 2026-11-16: "Grow the estates"; `settlements/qiblai/WORLD.md`].
   - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
     cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
     - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.
@@ -952,8 +970,12 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   hall's stock: hides for roofs, bone for building). Captives would be pointless anyway: their kin always know where they
   are, and as slaves they are listless.
 - **Where.** The Rift floor east of the great lake's basin: the "Lizardmen" region on the scale model (px ~293-610 by
-  1087-1345), round the Rift's terminal seas. On the model: **Sauropolis** (city, px 493,1266, at the trough's deepest,
-  -2,600 m), the villages **Komodo** (593,1287), **Gila** (381,1155) and **Tuatara** (546,1224). Too high for them to go
+  1087-1345), round the Rift's terminal seas. On the model: **Basilisk**, the capital (city, px 493,1266, at the trough's deepest,
+  -2,600 m; called Sauropolis until the owner renamed it, 2026-11-17), the villages **Komodo** (593,1287), **Gila** (381,1155) and **Tuatara** (546,1224),
+  and **Iguana**, the granary town on the Pile's plateau (the owner, 2026-11-17: "the cube plateau village will be called iguana";
+  *proposed* 5.1 px 713,1569); and **Skink**, the salt village on the country's richest rock salt beside a salt lake north
+  of the Pile's plateau, ~1,500, between Iguana and Gila (the owner, 2026-11-17: "this will be the village of Skink";
+  *proposed* 5.1 px 691,1521; `settlements/skink/PLAN.md`). These are old-canvas pixels: 5.1 is +272,+330 (`core/simulation/PLAN-LIZARDMEN.md`). Too high for them to go
   comfortably: the rift rim, which is why the Tungangs and Dalab hold out there (§6.1). **The Pile**, the Ancients' hub in the
   Rift and the reward for whoever braves the Lizardmen (§4), lies deep in their country.
 - **The reliquaries.** They build great **cyclopean reliquaries** (the Xanadui call them temples), store strange
@@ -1501,4 +1523,4 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Catch** (`biomes/catch/PLAN.md` section 8): what drove Hub 01 mad (contamination, a virus or reprogramming: left open); the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the preserved salvage (proposed); whether the Rift line's bore from Strongbow reached Stair (`openworld/ANCIENT-NETWORK.md` section 8; the sealed Stair tunnel was dropped, 2026-11-11).
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively? (Not needed for the Catch any more: its soft rock is old lake beds.)
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's Decree and the Broken Wheel (§6.13), the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
-- Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named.
+- Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named, but for the Kautoan shells and Xanadu's qud (§6.13).

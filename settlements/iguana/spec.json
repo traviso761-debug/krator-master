@@ -1,0 +1,581 @@
+{
+ "_": "Proposed for Iguana (kits/lizardmen/settle/towns_plan.py; settlements/iguana/PLAN.md). Page frame: x east, z SOUTH, metres from the pin. GUIDE.md section 4 turns this into src/81-ig-spec.js (var LZV_SPEC). Keys starting with _ are the plan's notes, not the spec's.",
+ "_pin": {
+  "px": [
+   713,
+   1569
+  ],
+  "id": null,
+  "model_m": -372.8,
+  "build": {
+   "near": [
+    -5000,
+    5000,
+    -5000,
+    5000,
+    20
+   ],
+   "far": [
+    -30000,
+    30000,
+    -30000,
+    30000,
+    500
+   ]
+  }
+ },
+ "_census": {
+  "Tenders": 660,
+  "Makers": 450,
+  "Drovers": 1200,
+  "Line warriors": 300,
+  "Interpreters": 90,
+  "Bulwarks": 300
+ },
+ "key": "iguana",
+ "name": "Iguana",
+ "seed": 8501,
+ "spiral": {
+  "axis": 105,
+  "windings": 5,
+  "depth0": 44,
+  "court": 52,
+  "street": 7,
+  "ratio": 1.25,
+  "mouthExtra": 24
+ },
+ "ley": {
+  "to": [
+   790,
+   1578
+  ],
+  "name": "the east reliquary",
+  "stone": 58
+ },
+ "court": {
+  "nest": "lz-nest"
+ },
+ "pools": {
+  "w0": [
+   [
+    "lz-warren",
+    1
+   ]
+  ],
+  "w1": [
+   [
+    "lz-warren",
+    4
+   ],
+   [
+    "lz-tower",
+    2
+   ]
+  ],
+  "w2": [
+   [
+    "lz-makers",
+    1
+   ]
+  ],
+  "w3": [
+   [
+    "lz-longhouse",
+    1
+   ]
+  ],
+  "w4": [
+   [
+    "lz-longhouse",
+    2
+   ],
+   [
+    "lz-lodge",
+    1
+   ]
+  ]
+ },
+ "gaps": {
+  "w0": [
+   2.4,
+   4.6
+  ],
+  "w1": [
+   3.6,
+   7.0
+  ],
+  "w2": [
+   5.0,
+   9.0
+  ],
+  "w3": [
+   14.0,
+   24.0
+  ],
+  "w4": [
+   16.0,
+   28.0
+  ]
+ },
+ "wells": [
+  1,
+  2,
+  2,
+  3,
+  3
+ ],
+ "specials": [
+  [
+   "gl-tank",
+   0,
+   0,
+   0.52,
+   2.2
+  ],
+  [
+   "lz-seer",
+   0,
+   1,
+   0.45,
+   2.0
+  ],
+  [
+   "lz-medicine",
+   0,
+   2,
+   0.38,
+   1.8
+  ],
+  [
+   "lz-obelisk",
+   0,
+   3,
+   0.55,
+   2.0
+  ],
+  [
+   "lz-hall-bronze",
+   2,
+   0,
+   0.35,
+   2.0
+  ],
+  [
+   "lz-hall-reed",
+   2,
+   1,
+   0.62,
+   2.0
+  ],
+  [
+   "lz-hall-bone",
+   2,
+   2,
+   0.38,
+   2.0
+  ],
+  [
+   "lz-warehouse",
+   2,
+   3,
+   0.6,
+   2.0
+  ],
+  [
+   "lz-barracks",
+   4,
+   1,
+   0.35,
+   2.4
+  ]
+ ],
+ "mouth": {
+  "muster": true,
+  "tents": [
+   "lc-seer",
+   "lc-sail"
+  ]
+ },
+ "fields": {
+  "dir": [
+   -1.0,
+   0.0
+  ],
+  "r0": 1500,
+  "r1": 4600,
+  "w": 140,
+  "d": 90,
+  "half": 14,
+  "crops": [
+   "rice",
+   "helix-bean",
+   "sweet-potato",
+   "ashroot"
+  ],
+  "farms": 11,
+  "windmills": 7,
+  "maxSlope": 0.1,
+  "gaps": 12,
+  "circle": true
+ },
+ "hamlet": {
+  "id": "iguana.farm",
+  "focus": "farming",
+  "site": [
+   -3000,
+   1400
+  ],
+  "workers": 110,
+  "popMax": 210
+ },
+ "expect": {
+  "people": 3000,
+  "wells": 14,
+  "keys": [
+   "lz-nest",
+   "lz-ley",
+   "lz-muster",
+   "gl-tank",
+   "lz-granary",
+   "lz-lookout",
+   "lz-windmill"
+  ],
+  "lake": false,
+  "hamlet": true
+ },
+ "look": {
+  "hour": 9.0,
+  "dens": 1.7,
+  "fog": 3e-05
+ },
+ "layers": [
+  "ground.grass.lush",
+  "ground.dirt",
+  "ground.tilled",
+  "ground.terrace.field"
+ ],
+ "_spiral": {
+  "axis_deg": 105.0,
+  "why": "the mouth (+e2) due east, toward the Pile (14.6 km) and the watch on Loj Nahn; the ground is flat (0.3 %), so the axis is free",
+  "winding_depths_m": [
+   44.0,
+   55.0,
+   68.8,
+   85.9,
+   107.4
+  ],
+  "outer_radius_m": 594.9,
+  "mouth": [
+   436.5,
+   568.8
+  ]
+ },
+ "_ley": {
+  "unit": [
+   0.9932,
+   0.1161
+  ],
+  "distM": 155048,
+  "bearing_deg": 96.7,
+  "stone": [
+   57.6,
+   6.7
+  ]
+ },
+ "_muster": [
+  474.5,
+  568.8
+ ],
+ "sites": [
+  {
+   "key": "lz-granary",
+   "x": -1224.0,
+   "z": 0.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1224.0,
+   "z": 26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1250.0,
+   "z": 26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1276.0,
+   "z": 26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1276.0,
+   "z": 0.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1276.0,
+   "z": -26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1250.0,
+   "z": -26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1224.0,
+   "z": -26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1198.0,
+   "z": -26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1198.0,
+   "z": 0.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1198.0,
+   "z": 26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1198.0,
+   "z": 52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1224.0,
+   "z": 52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1250.0,
+   "z": 52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1276.0,
+   "z": 52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1302.0,
+   "z": 52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1302.0,
+   "z": 26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1302.0,
+   "z": 0.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1302.0,
+   "z": -26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1302.0,
+   "z": -52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1276.0,
+   "z": -52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1250.0,
+   "z": -52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1224.0,
+   "z": -52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1198.0,
+   "z": -52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1172.0,
+   "z": -52.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1172.0,
+   "z": -26.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-granary",
+   "x": -1172.0,
+   "z": 0.0,
+   "ry": 0,
+   "kind": "granary",
+   "name": "a hall of the Great Granary"
+  },
+  {
+   "key": "lz-lookout",
+   "x": 2600,
+   "z": -400,
+   "ry": 1.6,
+   "kind": "lookout",
+   "name": "a lookout on the Pile (the watch on Loj Nahn)"
+  },
+  {
+   "key": "lz-lookout",
+   "x": 3700,
+   "z": 300,
+   "ry": 1.6,
+   "kind": "lookout",
+   "name": "a lookout on the Pile (the watch on Loj Nahn)"
+  },
+  {
+   "key": "lz-lookout",
+   "x": 4700,
+   "z": -200,
+   "ry": 1.6,
+   "kind": "lookout",
+   "name": "a lookout on the Pile (the watch on Loj Nahn)"
+  }
+ ],
+ "views": [
+  {
+   "name": "Overview",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    -800,
+    460,
+    900
+   ]
+  },
+  {
+   "name": "The nest hall",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    60,
+    26,
+    70
+   ]
+  },
+  {
+   "name": "The Great Granary",
+   "at": [
+    -1250,
+    0
+   ],
+   "from": [
+    -160,
+    70,
+    160
+   ]
+  },
+  {
+   "name": "The watch on the Pile",
+   "at": [
+    2600,
+    -400
+   ],
+   "from": [
+    -60,
+    30,
+    60
+   ]
+  }
+ ]
+}

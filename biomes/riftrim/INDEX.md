@@ -59,5 +59,5 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | ice | 44w-host-land.js | 6 |
 | icecut | 44w-host-land.js, 89b-host-icecut.js | 19 |
 | lakes | 44w-host-land.js | 8 |
-| ledge | 44w-host-land.js | 9 |
+| ledge | 44w-host-land.js | 14 |
 | pass | 44w-host-land.js | 6 |

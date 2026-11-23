@@ -53,7 +53,7 @@
 KREGION.part('50-region-valley', function (H) {
 H.simValley = function (V) {
   var KV = V.scale == null ? 10 : V.scale, m0 = V.start == null ? 0 : V.start, C = { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
-  var S = H.SIM = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, carry: {}, moves: [], last: m0, veinWorks: [], veinMoves: [], cuts: {} };
+  var S = H.SIM = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, carry: {}, moves: [], last: m0, veinWorks: [], veinMoves: [], cuts: {}, raids: {} };
   SIM.init({ seed: V.seed == null ? 1 : V.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
   ['SLEEP', 'WORK', 'REST'].forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a, indoor: a !== 'WORK' }); });
   if (V.calendar) SIM.calendar(V.calendar);
@@ -121,7 +121,7 @@ H.simValley = function (V) {
       TR.carriers.forEach(function (Cr) { if (Cr.phase !== 'sail' || Cr.from == null) return; var mark = Cr.from + '@' + Cr.eta;
         if (Cr._lossSeen === mark) return; Cr._lossSeen = mark;
         Rd.losses.forEach(function (Ls) { if (Ls.legs.indexOf(Cr.from) < 0) return; if (Ls.window && !(SIM.inSeason && SIM.inSeason(Ls.window, minute))) return;
-          var cnt = Cr._lossN || (Cr._lossN = {}), key = Ls.why, n = cnt[key] = (cnt[key] || 0) + 1, every = Ls.every || 1, spare = Ls.spare || 0;   /* counted over every leg of its kind */
+          var cnt = Cr._lossN || (Cr._lossN = {}), key = Ls.why, n = cnt[key] = (cnt[key] || 0) + 1, every = Ls.every == null ? 1 : Ls.every, spare = Ls.spare == null ? 0 : Ls.spare;   /* counted over every leg of its kind */
           if ((n - 1) % every < spare || Cr.beasts <= 0) return;
           var dead = Math.max(1, Math.round(Cr.beasts * Ls.share)); Cr.beasts -= dead; TR.died += dead;
           S.losses[Rd.id].push({ carrier: Cr.k, leg: Cr.from, dead: dead, why: Ls.why, minute: minute });
@@ -146,6 +146,33 @@ H.simValley = function (V) {
             if (took <= 0) return;
             SIM.withEcon(c.to, function () { SIM.economyLand(g, took, S.towns[c.to].spec.works[0].id); SIM.economyBook('imported', g, took); });
             Cx.taken[c.to + ':' + g] = (Cx.taken[c.to + ':' + g] || 0) + took; }); }); }); });
+  });
+  /* W5: road cargo raids: on a road's landing at `at` (optionally from `from`, while `window` is open), of every `every`
+     arrivals `spare` pass whole and the rest lose `share` of their landed goods to `to`'s first warehouse (booked exported
+     from `at` and imported into `to`, keeping SIM.ledgerSnap zero-sum); S.raids[road] = {events, taken} */
+  var RAIDS = (V.roads || []).filter(function (Rd) { return Rd.raids && Rd.raids.length && SIM.TRADE && SIM.TRADE.routes[Rd.id]; });
+  RAIDS.forEach(function (Rd) { S.raids[Rd.id] = { events: [], seen: {}, count: {}, taken: {} }; });
+  if (RAIDS.length) SIM.stepHooks.push(function (minute) {
+    RAIDS.forEach(function (Rd) { var L = SIM.TRADE.routes[Rd.id].landed, Rx = S.raids[Rd.id];
+      Rd.raids.forEach(function (ra, ri) { if (!S.towns[ra.at] || !S.towns[ra.to]) return;
+        Object.keys(L).sort().forEach(function (leg) { var sp = leg.split('>');
+          if (sp[1] !== ra.at || (ra.from && sp[0] !== ra.from)) return;
+          var got = L[leg], deltas = [], ck = ri + '|' + leg;
+          Object.keys(got).sort().forEach(function (g) {
+            var k = ck + '|' + g, d = (got[g] || 0) - (Rx.seen[k] || 0);
+            if (d <= 0) return; Rx.seen[k] = got[g];
+            if (!ra.goods || ra.goods.indexOf(g) >= 0) deltas.push([g, d]); });
+          if (!deltas.length) return;
+          if (ra.window && !(SIM.inSeason && SIM.inSeason(ra.window, minute))) return;
+          var nPass = Rx.count[ck] = (Rx.count[ck] || 0) + 1, ev = ra.every == null ? 1 : ra.every, sp0 = ra.spare == null ? 0 : ra.spare;
+          if ((nPass - 1) % ev < sp0) return;
+          deltas.forEach(function (pair) { var g = pair[0], d = pair[1], want = Math.max(1, Math.floor(d * ra.share)), took = 0;
+            SIM.withEcon(ra.at, function () { took = SIM.economyTake(g, want); if (took > 0) SIM.economyBook('exported', g, took); });
+            if (took <= 0) return;
+            SIM.withEcon(ra.to, function () { SIM.economyLand(g, took, S.towns[ra.to].spec.works[0].id); SIM.economyBook('imported', g, took); });
+            Rx.taken[ra.to + ':' + g] = (Rx.taken[ra.to + ':' + g] || 0) + took;
+            Rx.events.push({ leg: leg, to: ra.to, good: g, n: took, why: ra.why, minute: minute });
+            SIM.logEvent('caravan raid', { route: Rd.id, leg: leg, to: ra.to, good: g, n: took, why: ra.why }); }); }); }); });
   });
   /* X2: a vein run dry moves its work to the next vein of its field */
   if (S.veinWorks.length) SIM.stepHooks.push(function (minute) {

@@ -42868,6 +42868,30 @@
    "z": 168000.0,
    "reach_km": 20,
    "page": "settlements/lightwall"
+  },
+  {
+   "id": "sl758m2396",
+   "name": "Kirstabal",
+   "type": "town",
+   "culture": "xanadu",
+   "px": 989,
+   "py": 1600,
+   "x": -404000.0,
+   "z": 62000.0,
+   "reach_km": 20,
+   "page": "settlements/kirstabal"
+  },
+  {
+   "id": "sstrongbowft",
+   "name": "Strongbow's foot",
+   "type": "outpost",
+   "culture": "xanadu",
+   "px": 991.14,
+   "py": 1596.84,
+   "x": -399720.0,
+   "z": 55680.0,
+   "reach_km": 6,
+   "page": null
   }
  ],
  "cut": {
@@ -42915,6 +42939,16 @@
     "name": "site Lāiṭwāl (slaitwal0001)",
     "kind": "site",
     "ref": "slaitwal0001"
+   },
+   {
+    "name": "site Kirstabal (sl758m2396)",
+    "kind": "site",
+    "ref": "sl758m2396"
+   },
+   {
+    "name": "site Strongbow's foot (sstrongbowft)",
+    "kind": "site",
+    "ref": "sstrongbowft"
    }
   ]
  }

@@ -20,6 +20,53 @@ What is settled, from the owner, the lore and the census:
 
 Everything else here is *proposed*. Every figure marked (est.) is my estimate, with its basis given beside it.
 
+## 0. Where this stands (2026-11-16, the build session)
+
+**Settled by the owner:**
+- **Salt** (question 4): the drovers are a major salt source, from the western fells' high salt basins (`basin:104` and
+  `basin:32`, halite at 327-355 x 1335-1359, 197 km west; `core/region/WEST-RIFT-SCOPE.md` section 4.4 item 1). Salt comes
+  down by drove to Blakhed's market and Ledge's head, and on to Nulab by the lake or by the stair. Options 1, 2, 3 and 4 of
+  section 5.3 are dropped: the map has no salt and no gypsum within 120 km.
+- **Size:** a lake town over 500 is laid out in full on `core/city`, and that rule holds for big towns generally (section 7b).
+- **20,000 in the town** (the owner, 2026-11-16: "with the town pop distributed between different zones i think we can raise it
+  to 20k"). The town is laid as two `core/city` instances (the town from the mound to the quays; the copper works across the
+  river at the outlet) and the Line quarter on the main shore. Every per-quarter figure in section 3.2 doubles (est.). The food
+  balance of section 5 is recomputed for 20,000 in `data/nulab-sim.js`: Nulab eats 3,000 t of grain, not 1,500, and with the
+  farmers' wards' 1,900 hands alongside the basin's 12,000 the surplus stands at about 3,900 t (still above the exports). **Open:** the scope's rule puts the basin at 2.5 times Nulab and
+  Ledge together, which would make it 75,000 at 20,000 + 10,000; this plan keeps the basin at 50,000 until the owner says.
+
+**Settled by the owner, 2026-11-16: "agree with the answers to the questions"**: every answer in this table (it was
+written as the plan's recommended answers, marked proposed, and the owner took them all):
+
+| Q | Taken | What it moves if overturned |
+|---|---|---|
+| 1 | Clustered by the bay round the harbour (the owner, 2026-11-16): the ceremonial mound set back from the sea inside its palisade; the town ~33 % denser between the palisade and the coast, surrounded by an outer earthen mound, with crop fields in among the empty lots and outside the rampart; the copper works at the outlet | the whole layout (`src/41-nl-town.js`, `src/42-nl-ring.js`) |
+| 2 | The viaduct fallen in the deep middle, its stubs standing in the shallows; the Nulab-Chimes tunnel worked by the Union to the first gap; a loj, **Loj Faiv**. Only the station's site is reserved here (a pending box); the station, the stubs and the loj are step N6 | the Line quarter's records |
+| 3 | 46,000 of the basin's 50,000 are Nulab's; 4,000 on the north shore pay their tithe to Ledge | the sim records' districts (`data/nulab-sim.js`) |
+| 5 | The rare earths lie unworked until the Union is licensed (no works drawn) | nothing drawn |
+| 6 | Copper from the near rift fill, smelted at the outlet; the skarn hamlet's ore comes down the Kould road too | the works' records |
+| 7 | Tin by the Line from the north | the sim's roads |
+| 8 | No wall: an earthwork ring round the mound's precinct and the granaries; ~300 soldiers, ~60 of them Giants, in two barracks | the town's ring |
+| 9 | A priest governs (the **Warden of the Lake**, *proposed* title), from the earth-walled manor on the mound's west side; the mound faces the lab, 7.7° east of north, across the bay and the lake to Ledge | the court's records |
+| 10 | The gene farms breed rim crops and the lizards; one monster pen, at the ranch | the `gene` focus |
+| 11 | The Great Caravan comes down the stair from Blakhed and goes on by the lake and the lifts; its ground is at Nulab, by the market | the caravan ground |
+| 12 | "Nulab" kept; the lake unnamed (the page calls it *the great lake*); the outlet's port unnamed | labels only |
+
+The batch put to the owner (the town on the rise, the Line at Nulab, the earthworks, the governor, the names) is answered
+by the same message. No question of section 10 is open.
+
+**The site at 1:1** (the scale model read through Catmull-Rom over its 2 km cells, as `core/world` and Kirstabal's page
+read it; `src/39n-nl-model.js`):
+- The pin's cell is on the **west bank of the lake's south bay**, not on the main shore. The bay is the lake's arm 6-8 km
+  wide (px 444-447, y 1357-1358, bed 288-294 m) reaching south from the main lake; its west shore runs about 1.8 km east of
+  the pin, its head about 1 km north-east of the outlet. The main south shore is 5.7 km north of the pin.
+- The ground falls about 20 m a km east from the pin to the bay and to the plain of the Chimes Riba (300-320 m), and rises
+  west and south to the walls.
+- **The page's frame** is centred at **px 443.45, 1358.45**: x east and z south in metres, y absolute metres. The pin is at
+  (-900, 1100), the harbour's quays at about (900, -1200), the outlet at (5500, 2100).
+- **The wind:** the model's `wd.png` holds the wind's power and speed, not its direction. So "the works downwind" cannot be
+  read from the model. The works stand at the outlet, 5.5 km east of the mound, across the river (*proposed*).
+
 Sources:
 - `core/region/WEST-RIFT-SCOPE.md`: Nulab's row, the basin district, the routes and flows, W0-W6.
 - `LORE.md` section 6.1: Dalab (l.206-235), Ledge and the Tungangs (l.236), the Fellgangs, Blakhed and the western peoples
@@ -377,6 +424,26 @@ has room, and so does a growing Realm.
 | Placement, records | `core/rand`, `core/tags`, `core/space`, `core/mask` | everything seeded by (world, cell, index, salt) and registered before it is drawn | |
 | Host, tools, export | `core/host`, `core/walk`, `core/lod`, `core/export` | as every build | |
 
+## 7b. Core adoption (written 2026-11-16, before the first fragment)
+
+Following `README.md`, "CORE MODULES ARE NOT OPTIONAL". Started from **Kirstabal** (a lake harbour town on `core/city` and
+`core/hamlet`, a target on Xanadu's page) and **Thalaba** (the Dalab set read in place on that page).
+
+| Need | Take |
+|---|---|
+| The page | **a target on Xanadu's page**, as Kirstabal and Thalaba are: `settlements/nulab/build.py` runs `settlements/xanadu/build.py --kit settlements/nulab`. `build.py` and `verify.py` start from `tools/new_build/`; the build is listed under every check in `tools/checks_optin.json`. Xanadu's page brings `core/rand`, `core/tags`, `core/host`, `core/door`, `core/lod` |
+| The town's streets, lots and infill | **`core/city`** (`KCITY`): two instances on a 2.5 m raster (the town over ±2.2 km round the page's origin; the copper works over ±0.8 km across the Chimes Riba at the outlet). Steps 0-5 are each zone's own (the site, the landmarks, the avenues), and steps 6-12 are the defaults. `kit.dims` and `TUNE.classes` come from the Dalab set's boxes. Sealed with `core/space` and `core/hamlet` in one closure (`gen/69n-kcity-bundle.js`), as Kirstabal's |
+| The buildings | **the Dalab set** (`settlements/dalab/src` 69d, 69e, 70, 71, 71c, 72, 72b, 73, 74), read in place through `kit.json` `external`, as Thalaba reads three of them. Dalab's texture pack is trimmed to the families its pieces draw (`build.py` `DALAB_FAMILIES`); the page cap is 16 MB. The pieces the set lacks are **pending boxes**, counted and named in `KNOWN_ISSUES.md` (section 7's list): the harbour set, the copper works, the gene beds, the tithe barn, the station |
+| The harbour's quays and mole | rubble-stone banks drawn by the page (they are made ground, not buildings), as Kirstabal's mole |
+| The ground | **the scale model 5.1** at 1:1 (`src/39n-nl-model.js`, baked by `build.py --bake-model`; Catmull-Rom over its cells), with the harbour's basin and the Chimes Riba's channel cut into it (`src/40-nl-ground.js`). **`core/drawn`** (`KDRAWN`) registers every ground mesh. `core/world` is not taken: there is no West Rift region in `openworld/SITES.json` yet (N0); the region's session cuts it |
+| The lake and the river | **`core/water`**: `WATER.open` for the great lake (level 297.4 m, its bed the ground), `WATER.flow` for the Chimes Riba from the outlet down the level reach |
+| Sky | **`core/atmos`** for the water's clock and skylight; the Krator sky (`KratorSky`) of Xanadu's page |
+| The villages | **`core/hamlet`** with a new opt-in row, **`core/hamlet/dalab/23-hamlet-dalab.js`** (`KHAMLET.CULTURES.dalab` and the `gene` focus; the Fellgang row's pattern: no other page's bytes move). The near ring is laid and drawn; the basin's 135 villages are records for the sim (`data/nulab-sim.js`) |
+| Flora | **`core/biome`** with **`biomes/riftrim`**'s veiled rim (`RRIM.biome('w')`), sealed in one closure (`gen/69n2-nl-flora-bundle.js`) as Kirstabal seals the Rift's. The borrowed SW-lowlands species (cork oak, tier cedar, bay laurel, veil willow) wait on the kin rows (`KNOWN_ISSUES.md`) |
+| Placement | **`core/rand`** (`KRAND`: every village and field seeded by its id), **`core/tags`** (`KTAGS.page`), **`core/space`** (`KSPACE`: the flora's mask and the fields' index). No canvas is read back |
+| The sim's records | **`core/region`**'s valley spec shapes (`{id, faction, people, x, z, scale, eats, works}`, the roads), as data in `data/nulab-sim.js`; the sim itself is a later step (W1) |
+| Not taken yet | **`core/ruins`**: nothing ruined is drawn until N6 (the viaduct's stubs). **`core/simulation`**, **`core/sched`**: the life layer (N7). **`kits/interiors`**, **`core/furnish`**: no Dalab interiors set (N7). **`core/terrain`**: the walls are the model's far field here; the cliff carves are riftrim's |
+
 ## 8. Its record in a future West Rift sim (the scope's W0-W6)
 
 The East Rift's spec (`50-region-valley.js`): `{id, name, faction, people, x, z, scale, eats, start, works}`. Its roads are
@@ -432,12 +499,12 @@ The East Rift's spec (`50-region-valley.js`): `{id, name, faction, people, x, z,
 | Step | What | Test |
 |---|---|---|
 | **N0** | **The answers and the records.** The owner's answers (section 10). Queue the pins with the scale-model session (the skarn and iron hamlets, the harbour if separate; the pin itself stays). A West Rift region in `openworld/SITES.json` (that region's session) with Nulab and Ledge as sites. The salt lode record if option 1 is taken | `cut_site.py --dry` lists Nulab; the pin's ground is 344 m |
-| **N1** | **The tune rows** (W1) in `WR_TUNE`, data only | a year runs; the food balance of section 5 within 10 % |
-| **N2** | **The ground:** the region cut round the basin; the lake on `core/water` (`open` and `shore`), the Chimes Riba, the Kould and the Blak Riba as `flow`s; the shelf and the low bank shaped at the harbour; the far walls and Ledge's cliff out to 50 km; read the model's wind (`wd`) to set the works downwind | `on-the-model` at the pin; `water-on-core`; the lake level 297 m drawn |
-| **N3** | **The town on `core/city`** with the Dalab set read in place. A new build from `tools/new_build/`, with its `PLAN.md` "Core adoption" written first and listed under every check in `tools/checks_optin.json`. The mound facing the lab, the ten quarters, ~10,000 residents. New pieces are pending boxes until the Dalab set has them | the GPU verify (`nulab-laid`, `on-the-model`, `people` as a budget); `check_core_use.py` |
-| **N4** | **The new pieces**, asked of the Dalab set's session: the harbour set, the copper works, the daughter Halls, the gene farm, the tithe barn; Dalab's texture pack. Three lake hulls asked of `kits/ringsea` | the Dalab sheet's verify; each piece's overlap and ground checks |
-| **N5** | **The basin on `core/hamlet`:** `core/hamlet/dalab/` (the row, the `gene` focus, the per-culture fallow); the 135 villages in the region's ring; the farmland with `KHAMLET.farmland`; crops from `CROPS.at` | `node core/hamlet/test-hamlet.js` with a negative per new rule; the villages' census sums to ~50,000 |
-| **N6** | **The Line's station 5:** the station on the shore, the viaduct's fallen spans and standing stubs (`KTRANSIT`, every wreck under `KRUINS.watch`), the tunnel portal; Loj Faiv with `kits/tungang` if the owner agrees | the ruins' float and seat checks; the station on the drawn ground |
+| **N1** | **The tune rows** (W1) in `WR_TUNE`, data only (**data done:** `data/nulab-sim.js`; live `WR_TUNE` runner later) | a year runs; the food balance of section 5 (`test-nl-town.js`) |
+| **N2** | **The ground** (**town page done:** `src/39n-nl-model.js`, `src/40-nl-ground.js`, `targets/town/90n-nl-world.js`; open-world region cut later): the lake on `core/water` (`open`), the Chimes Riba as a `flow`; the basin dredged at the harbour; the far walls and Ledge's cliff out to 70 km | `on-the-model` at the pin; `water`; the lake level 297.4 m drawn |
+| **N3** | **The town on `core/city`** (**done**): two `core/city` instances (`src/41-nl-town.js`) clustered by the bay inside a shore-to-shore outer earthen mound, with the ceremonial mound set back inside its timber palisade, pruned street network, ~20,244 residents and 264 urban infill crop plots. Listed under the survey's checks in `tools/checks_optin.json` | the GPU verify (`nulab-laid`, `on-the-model`, `people`, `pending`); `check_core_use.py` |
+| **N4** | **The new pieces** (**done**: `settlements/dalab/opt/75-dalab-lake-works.js` and `kits/ringsea/opt/90..92`): the harbour set (`nl_boatshed`, `nl_fishracks`, `nl_smokehouse`, `nl_slip`, `nl_ferry`, `nl_jetty`), the copper works (`nl_oreyard`, `nl_roastbed`, `nl_smelter`, `nl_foundry`, `nl_charcoal`, `nl_adit`), the daughter Halls (`nl_halls`), the gene farm (`nl_vats`, `nl_genebeds`), the tithe barn (`nl_tithebarn`); Dalab's full 23-family sidecar texture pack (`dist/nulab.tex.dalab.js`, `sidePacks: true`); and three Dalab lake hulls (`dalabLakeFerry`, `dalabGrainBarge`, `dalabFishingBoat`) riding `WATER.ride` | `node settlements/nulab/test-nl-town.js` (32/32); GPU `verify.py --assert --all-views` |
+| **N5** | **The basin on `core/hamlet`** (**row and near ring done:** `core/hamlet/dalab/23-hamlet-dalab.js`, `src/42-nl-ring.js` — eight villages drawn with `KHAMLET.farmland` `fallow` 0 and 1; the 135-village census in `data/nulab-sim.js`; full region ring waits on N0's cut) | `node settlements/nulab/test-nl-town.js` with negatives; `ring-laid` |
+| **N6** | **The Line's station 5** (**done**: `src/43-nl-line.js`, `targets/town/90q-nl-line.js`, `kits/ancient-transit/opt/`, `kits/tungang/opt/`): Station 5 on the shore terrace (`KTRANSIT.line` + 6-bay Ancient headhouse), the 4-track Line lake viaduct and parallel Ancient highway lake viaduct with fallen spans and standing pier stubs (`KRUINS.watch` on all three ruined structures), the Nulab-Chimes tunnel portal, kept inner guideways (`t2, t3`) to the gap bulkhead and hoist shaft, and **Loj Faiv** (~152 Tungangs in 22 `KCAVERN` carved `TG.tg` sites along the deep approach cutting + 3 `TG.fg` rim sheds); zero pending stand-ins remain | `node settlements/nulab/test-nl-town.js` (36/36); GPU `verify.py` (`line-laid`, `ruins: *`) |
 | **N7** | **Interiors and people:** the Dalab interiors (a new set); the people on `core/simulation` (the castes, the Giants' patrols, the harbour's day, the Great Caravan's arrival) | the interiors' checks; the sim's schedules |
 
 ## 10. Questions for the owner
@@ -450,7 +517,8 @@ The East Rift's spec (`50-region-valley.js`): `{id, name, faction, people, x, z,
    - Is there a loj at station 5, and is it **Loj Faiv** (the station's number, after Loj Fower)?
 3. **The basin's split.** Should 4,000 of the 50,000 live on the north shore under Ledge and pay their tithe there, with the
    other 46,000 Nulab's?
-4. **Salt** (the scope's Q5). Which source: a salt maze in the rift fill worked by the Union, the rock salt at 354,1347 at
+4. **Salt** (the scope's Q5; **settled, the owner 2026-11-16: the drovers are a major salt source**; *the map's answer, 2026-11-16, in the scope's 4.4 item 1: no salt within 120 km; the nearest
+   and the safest from the Lizardmen are the western fells' high salt basins, 327-355 x 1335-1359, 197 km from Nulab*). Which source: a salt maze in the rift fill worked by the Union, the rock salt at 354,1347 at
    5.9 km, Tallwalls through the Travellers, or Dalab's own salt by the Line?
 5. **Rare earths** (the scope's Q7). Does the Union work Nulab's (the best on the map) along the Nulab-Chimes bore under
    licence from Dalab, or do they lie unworked?

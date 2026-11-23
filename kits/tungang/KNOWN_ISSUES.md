@@ -1,5 +1,16 @@
 # kits/tungang: known issues and the running note
 
+## Done (2026-11-16, town-scale Fellgang pieces & host walk/doors/steps: `settlements/blakhed` step B2 & B6)
+
+- **10 town-scale Fellgang buildings** (`src/58-fg-town.js`, `TG.fg.BOX` 14 -> 24 keys, seeds 9151-9160): `fg-doublehall` (both
+  customs under one roof: rope wall + tally board), `fg-halting-house` (inn), `fg-markethall`, `fg-booth`, `fg-ropewalk` (44 m
+  range), `fg-great-icehouse` (5-tier vaulted store), `fg-smithy`, `fg-tannery`, `fg-granary` (staddle piers) and `fg-fair-stand`.
+- **4 road, Fair and Stairhead pieces** (`src/60-fg-road.js`, seeds 9161-9164): `fg-stair-hoist`, `fg-fair-hurdle`, `fg-cairn`
+  (peace stone & fell cairn) and `fg-stone-sign`.
+- **Host walk, operable doors and threshold steps** (`src/80-fg-host.js`, `tungang_bundle.py`): `TG.fg.draw` opt-in `o.walk`
+  (`KWALK`/`KWALKBOX`), `o.doors` (`KDOOR`/`KDOORHOST` instanced plate leaves), `o.steps` (drystone threshold flights on slopes),
+  `o.furnish === false` skip, and `'jobs'` added to `tungang_bundle.py` `FURN_CULTURES`.
+
 ## Done (2026-11-16, the Glazier set: `PLAN.md` sections 1.4, 3.4)
 
 - **The owner's choices (2026-11-16):** build the Glaziers on the Fellgang foundation here, not on the Tungang set (which is on
@@ -56,6 +67,15 @@
   (`triangle-budget`). The sheet's Fowlers' village draws about 109k (was 160k), the riftrim Fowlers' spec 112k.
 
 
+## Done (2026-11-17)
+
+- **The Glaziers' rock is textured** on the sheet: core/terrain's new `KCAVERN.rockMaterial` (`host/39i-core-cavern-rock.js`,
+  lifted from Lightwall's page) dresses the KCAVERN rock in the library's scanned rock face (the kit's new `rockface` family,
+  `rock.rock_face`) through `KGROUND.hook` (triplanar on the steep, the far levels that break the tile's repeat), the occlusion
+  multiplying it. It guards against three r128's environment-map macros, which break `43-core-ground.js`'s hex tiling under a
+  skylight (the lasting fix is in `TODO.md`, the next all-builds rebuild). `rockface` stays out of the bundle's `glazier` pack:
+  Lightwall takes the same set from Xanadu's.
+
 ## Open
 
 - [ ] **The daub sheet is owed** (`patterns/fellgang/daub`, `core/materials/PROMPTS-NEEDED.md` section 59): the slogans are
@@ -80,7 +100,7 @@
 - [ ] **Gallery.** The kit is a new build: it goes into the Krator Worlds gallery when it first reaches `main`.
 - [ ] **Not yet built** from `PLAN.md` 3.3: the bands (`fg-war-camp`, `fg-raid-cache`); Wildcat's scrap pueblo (`fg-wc-*`) is the
       wildcat-pueblo session's (the owner, 2026-11-11: a pueblo builder and ONE Chaco-sized great house for 1-2k people at most, maybe one or two small hamlets), not this branch's;
-      the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) set is on Loj Twenny's branch.
+      the fells (`fg-shieling`); the Tungang (`tg`) set is on Loj Twenny's branch.
 - [ ] **The Glazier catalog culture file is owed** (`kits/catalog/krator-master-furniture-glazier.js`, `PLAN.md` section 4): the
       twelve `glazier_*` pieces are drawn in the kit (`gzLantern`, `gzBrass`, `gzClick`, `gzTeaBoard`, `gzCarpet`, `gzMaskRack`,
       `gzSeat`, `gzPlaque`, `gzUrn`, `gzGlassBench`, the timetable's gilt frame), not placed through core/furnish; a culture file
@@ -89,10 +109,7 @@
 - [ ] **The culture id `glazier` is opt-in** (`core/tags/glazier/52g-tags-glazier.js`): fold it into
       `core/tags/52-core-tags-vocab.js` with the next all-builds rebuild (`TODO.md`), then delete the folder and drop it from
       `build.py`.
-- [ ] **The Glaziers' rock has no texture**: KCAVERN's rock is drawn in vertex colour (its occlusion), one basalt-rose tint; the
-      Zeijani kit's triplanar rock shader (`kits/zeijani/src/40-zj-cave.js`) is a fork, not core. The library's `hewn` family
-      (`rock.basalt.flowbanded`) dresses the builders' floors and plinths only. Owed with a core rock material for carved pages.
-      The rock costs about 315k triangles on the sheet (the 13 rows' blocks and the scarp, cell 0.5 m).
+- [ ] **The rock costs about 315k triangles on the sheet** (the 13 rows' blocks and the scarp, KCAVERN at 0.5 m).
 - [ ] **The cholet band and the moonglass are owed textures** (`core/materials/PROMPTS-NEEDED.md`: `patterns/glazier/cholet-front`,
       `glass.moonglass`): the bands are geometry (lozenges in vertex colour) and the panes KGLASS's frosted kind until they come.
 - [ ] **The Glaziers in their script and in the sim**: the plaques' numbers are Latin digits (the Register would be in Xanadu's

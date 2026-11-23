@@ -43,8 +43,11 @@ python3 ../../tools/harness.py lock --lane arc -- python3 tools/perf.py dist/pin
 
 `tools/perf.py` is the frame's cost from fixed views (fps, the world pass's GPU time, draw calls, triangles, the flora by
 level). `--detail` breaks it down by flora prototype and camp piece, `--fly` times a flight (with each streaming step's CPU
-time), and `--ablate` times the GPU with each kind of mesh hidden. Compare a before and an after inside one lock: other
-work on the machine swings the numbers by up to 2x. The numbers of 2026-11-16 are in `KNOWN_ISSUES.md`.
+time, its worst frame, the long tasks and the prototypes grown; `--profile` adds a CPU profile's hottest functions by
+fragment), and `--ablate` times the GPU with each kind of mesh hidden. `tools/grow_times.py` times every flora prototype
+the kits can ask for (every one is grown at load: `core/world/85p-world-pregrow.js`). Compare a before and an after
+inside one lock: other work on the machine swings the numbers by up to 2x. The numbers of 2026-11-16 are in
+`KNOWN_ISSUES.md`.
 
 On the GPU: `KRATOR_GL=gpu` and `python3 ../../tools/harness.py lock --lane auto -- python3 verify.py ...`.
 

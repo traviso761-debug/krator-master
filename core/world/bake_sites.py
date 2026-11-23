@@ -38,6 +38,15 @@ JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.j
       ('core', 'world', '48s-world-sites.js')]
 
 LANDFORMS_JS = '41l-world-landforms.js'   # opt-in: a region whose build.py lists it (script())
+# the coasts (core/world 44c on core/coast) are opt-in too: a region whose page does not take them (openworld/oidong-highrift)
+# is planned without them, or the plan is made on land the page never draws (2026-11-16: the coast's shaping lowered points
+# 838 m that the page leaves as they are, so the browser's plan and the bake differed)
+COAST_JS = '44c-world-coast.js'
+
+
+def takes(region, frag):
+    """the region's page lists `frag` (its build.py names it)"""
+    return frag in open(os.path.join(ROOT, 'openworld', region, 'build.py'), encoding='utf-8').read()
 
 
 def node():
@@ -70,6 +79,19 @@ def kit_dims(files=DIMS_SOURCES):
     return out
 
 
+def region_towns(region):
+    """the towns a region carries (openworld/SITES.json's region row "towns": bake_towns.py's keys), [] for most"""
+    S = json.load(open(os.path.join(ROOT, 'openworld', 'SITES.json'), encoding='utf-8'))
+    return S['regions'].get(region, {}).get('towns', [])
+
+
+def towns_data(region):
+    """WORLD_DATA.towns for a region: bake_towns.record for each of its towns, on the region's meta"""
+    import bake_towns as BT
+    meta = json.load(open(os.path.join(ROOT, 'openworld', region, 'data', 'region.json'), encoding='utf-8'))
+    return {'format': 'krator-openworld-towns', 'version': 1, 'towns': [BT.record(k, meta) for k in region_towns(region)]}
+
+
 def script(region):
     base = os.path.join(ROOT, 'openworld', region)
     parts = ['"use strict";var window=globalThis;\n']
@@ -78,11 +100,18 @@ def script(region):
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
             continue
+        if j[-1] == COAST_JS and not takes(region, COAST_JS):
+            continue
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
         # the sub-cell landforms (core/world/41l-world-landforms.js), only for a region whose page takes them (its build.py
         # lists the fragment): the plan is made on the same land the page stamps
         if j[-1] == '41-world-fields.js' and LANDFORMS_JS in open(os.path.join(base, 'build.py'), encoding='utf-8').read():
             parts.append('\n// ---- core/world/%s\n' % LANDFORMS_JS + open(os.path.join(HERE, LANDFORMS_JS), encoding='utf-8').read())
+        # the towns' own ground (core/world/bake_towns.py: openworld/SITES.json's region row "towns", opt-in): the records
+        # the page carries in WORLD_DATA.towns and 41t, so the plan is made on the town's ground as the page draws it
+        if j[-1] == '41-world-fields.js' and region_towns(region):
+            parts.append('\nWORLD_DATA.towns=' + json.dumps(towns_data(region), separators=(',', ':'), ensure_ascii=False) + ';\n')
+            parts.append('\n// ---- core/world/41t-world-town-water.js\n' + open(os.path.join(HERE, '41t-world-town-water.js'), encoding='utf-8').read())
     parts.append(WD.net_fragment(os.path.join(base, 'src', '48-world-site.js')))   # the network routes the region's links follow
     parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + open(os.path.join(base, 'src', '48-world-site.js'), encoding='utf-8').read())
     # the geology the coast's classes read (44c: rock hardness from the provinces), as the page loads it
@@ -109,6 +138,8 @@ def resources_script(region):
         if j is None:
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))
+            continue
+        if j[-1] == COAST_JS and not takes(region, COAST_JS):
             continue
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))
