@@ -176,3 +176,6 @@ const FG_SLOGANS=['NO SKABS','ALL OUT','HOLD FAST','STAND','OWT FOR NOWT','ONE O
 function fgSlogan(){return pick(FG_SLOGANS);}
 /* a few fallen stones at a wall's foot (the worn state) */
 function fgRubble(x,z,n,C){const col=fgCol('stone',C);for(let k=0;k<n;k++)ellip('stone',x+rr(-1,1),.05,z+rr(-.08,.08),rr(.12,.2),rr(.08,.14),rr(.1,.16),col,rr(0,PI),6);}
+
+/* the hero masonry's chamfer (core/engine 30-geo.js BEVEL_KEYS, M4): the old stone walls */
+BEVEL_KEYS.stone=.03;

@@ -974,6 +974,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "stone.cw.webp",
     "map": "stone.albedo.webp",
     "normalMap": "stone.normal.webp",
     "roughnessMap": "stone.rough.webp"
@@ -981,6 +982,7 @@
    "lib": "rock.old_stone_wall",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.3,
    "scale": [
     2.4,
@@ -1128,6 +1130,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "wash.cw.webp",
     "map": "wash.albedo.webp",
     "normalMap": "wash.normal.webp",
     "roughnessMap": "wash.rough.webp"

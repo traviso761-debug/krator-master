@@ -245,6 +245,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "clayBlock.cw.webp",
     "map": "clayBlock.albedo.webp",
     "normalMap": "clayBlock.normal.webp",
     "roughnessMap": "clayBlock.rough.webp"
@@ -252,6 +253,7 @@
    "lib": "plaster.clay_block_wall",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.015,
    "roughLift": 0.35,
    "scale": [
     2.4,
@@ -275,6 +277,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "coral.cw.webp",
     "map": "coral.albedo.webp",
     "normalMap": "coral.normal.webp",
     "roughnessMap": "coral.rough.webp"
@@ -282,6 +285,7 @@
    "lib": "rock.coral_stone_wall",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.3,
    "scale": [
     2.4,
