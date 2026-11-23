@@ -384,7 +384,7 @@ FURN({
 });
 FURN({
   key: 'talovolci_court_hanging', name: 'Checked wool hanging', culture: 'talovolci', tier: 'court', type: 'banner', setting: 'indoor',
-  rooms: ['hall', 'court', 'bedroom', 'living'], anchor: 'wall', clearance: { front: 0.3 },
+  rooms: ['hall', 'court', 'bedroom', 'living'], anchor: 'wall', hung: 'top', clearance: { front: 0.3 },
   materials: ['cloth', 'timber', 'bronze'], w: 1.8, d: 0.08, h: 2.2, variants: 2, variantNames: ['weld-yellow, checked woad and madder', 'woad-blue, checked weld'],
   build: function (F) {
     const v = F.variant | 0;

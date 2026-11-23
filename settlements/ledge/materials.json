@@ -1,0 +1,11 @@
+{
+ "build": "ledge",
+ "note": "Ledge's own adapter onto the material library (core/materials/PLAN.md), for the page's own ground (src/45-host-stage.js); the shell's panels are kits/ancients' pack, the Dalab set's and the Fellgang set's their own. Grey detail maps (keep 0): the colour is core/terrain KSTRATA's rift recipe on the faces and the vertex colour on the flats, the map the grain. cliffWall: the natural rift-fill cliff (bedded gypsum); faceDressed: the Ancients' cut face and benches (drill-marked); turf: the head's bench and the escarpment; shore: the apron's edges, the talus and the lake's bed. Run python3 tools/textures/pack.py settlements/ledge after any change, then python3 tools/build.py settlements/ledge.",
+ "size": 1024,
+ "families": {
+  "cliffWall": {"lib": "rock.gypsum.bedded", "scale": [14, 14], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3},
+  "faceDressed": {"lib": "rock.hewn.drillmarked", "scale": [8, 8], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3},
+  "turf": {"lib": "ground.grass.lush", "scale": [6, 6], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3},
+  "shore": {"lib": "ground.gravelly_sand", "scale": [5, 5], "tint": {"keep": 0.0, "mean": 0.47}, "mapOnly": true, "roughLift": 0.3}
+ }
+}

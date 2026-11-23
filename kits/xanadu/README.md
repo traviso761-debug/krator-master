@@ -122,7 +122,7 @@ A third, `87k2-xa-slate-wall.js` (2026-11-17, Kirstabal's town wall after Chiang
 (Tha Phae's: two tall stepped pillars either side of the road, the leaves open, `o.pass`), `xa_slate_bastion` (the corner
 bastion) and `xa_slate_tower` (the buttress at a turn), on the items `xSlateB` and `xSlateDB` (`MAT.xSlate`, `MAT.xSlateD`:
 a page binds a library family of those names; Kirstabal's is `brick.dark` tinted slate until `wall.slate.coursed` lands,
-`core/materials/PROMPTS-NEEDED.md` section 57). They draw along core/city's wall records (`KCITY.grid.wall`).
+`core/materials/PROMPTS-NEEDED.md` section 59). They draw along core/city's wall records (`KCITY.grid.wall`).
 
 **Footprints** (2026-11-10; the owner: "the garden pieces ... stick out way over what their footprint is supposed to be").
 A def's footprint is its `w x d`, its lot: the sheet spaces sites by it, Erewhon's garden grid and blocks set 8 m and 16 m

@@ -1860,13 +1860,17 @@ async def walk_main(argv):
 EXPORT_FILES = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js')]
 STAGE_HOOK = os.path.join(ROOT, 'godot', 'tools', 'stage_hook.js')
 STAGE_JS = os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')
-EXPORT_JS = """([opt, split]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile: opt.profile || null });
+# the uid the check recomputes from an item's matrix: a case written about its own origin (core/export README, "origin")
+# has its translations less it, so the check adds it back
+KUID_JS = """const KUID = w => (typeof KTAGS === 'undefined' || !KTAGS) ? null : !w.origin ? KTAGS.uid
+  : (c, k, at) => KTAGS.uid(c, k, [at[0] + w.origin[0], at[1] + w.origin[1], at[2] + w.origin[2]]);"""
+EXPORT_JS = """([opt, split]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile: opt.profile || null });
   if (!split) return { world: w, check: chk };
   const g = EXPORT.glb(w);
   return { world: g.json, glb: EXPORT.pack(g.glb).b64, glbStats: g.stats, check: chk }; }"""
-PROFILE_JS = """([opt, profile]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile });
+PROFILE_JS = """([opt, profile]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile });
   const sections = {}; for (const k in w.sections) sections[k] = w.sections[k].status;
   return { sections, errors: w.errors, stats: w.stats, check: chk }; }"""
 
@@ -1970,6 +1974,10 @@ async def export_main(argv):
     ap.add_argument('--profile', help='the sections the case must fill (core/export/README.md, "Profiles"): a,b,c=field,d?')
     ap.add_argument('--before', help='a JS expression the page awaits before the export: a case\'s own preparation, '
                     'e.g. placing an open world\'s camera at the box and settling its flora (openworld/<region>/tools/godot_case.py)')
+    ap.add_argument('--root', help='the folder served (default the repo): a page built in another worktree is served from its own '
+                    '(openworld/oidong-highrift/tools/godot_case.py exports Strongbow\'s page from its branch\'s worktree)')
+    ap.add_argument('--inject', action='append', default=[], help='a script added to the page after core/export, before --before: '
+                    'a case\'s own contributor (repeatable; core/export 10 where the page lacks the scene reader)')
     a = ap.parse_args(argv)
     opt = {}
     if a.box:
@@ -1982,11 +1990,12 @@ async def export_main(argv):
         opt['sky'] = a.sky
     out = os.path.abspath(a.out)
     os.makedirs(out, exist_ok=True)
+    root = os.path.abspath(a.root) if a.root else ROOT
     fails, t0 = [], time.time()
     async with async_playwright() as p:
         b = await launch_chromium(p)
-        with serve(ROOT) as port:
-            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=ROOT, query=a.query, init=[STAGE_HOOK])
+        with serve(root) as port:
+            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=root, query=a.query, init=[STAGE_HOOK])
             if not ready:
                 fails.append('page never ready')
             print('%s: built in %.0f s (%d page errors)' % (a.html, time.time() - t0, len(errs)), flush=True)
@@ -1995,6 +2004,9 @@ async def export_main(argv):
             except Exception:
                 fails.append('library textures still decoding after 180 s')
             injected = await inject_export(pg)
+            for f in a.inject:
+                await pg.add_script_tag(path=os.path.abspath(f))
+                injected.append(os.path.relpath(os.path.abspath(f), ROOT).replace(os.sep, '/'))
             if a.before:
                 print('before: %s' % json.dumps(await pg.evaluate(a.before))[:300], flush=True)
             await pg.wait_for_timeout(1500)   # a few frames, so the stage hook has seen what the page renders

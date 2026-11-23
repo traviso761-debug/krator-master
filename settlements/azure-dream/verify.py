@@ -102,7 +102,17 @@ PAGE_JS = r"""
    /* applied: at 21 h the Hall's doors shut (core/door) and the keeper's lamp is on the walk; back at the day's hour they open */
    const h0=AD_SKY.hour,L=(window._adWalk||{}).leaves||[],shut=()=>L.length&&L.every(D=>Math.abs(KDOOR.angle(D))<.05);
    AD_SKY.hour=21;N.tick(30);for(let i=0;i<40;i++)KDOOR.step(.1);const sh=shut(),lp=N.lamp?Math.hypot(N.lamp[0]-AD_PLACE.find(p=>p.id==='hall-of-dreaming').x,N.lamp[2]-AD_PLACE.find(p=>p.id==='hall-of-dreaming').z):99;
-   AD_SKY.hour=h0;N.tick(0);for(let i=0;i<40;i++)KDOOR.step(.1);const op=!shut();(sh?ok:bad).push('the doors shut at 21 h');(op?ok:bad).push('open again by day');(lp<30?ok:bad).push('the keeper\'s lamp on the walk ('+lp.toFixed(1)+' m from the centre)');}
+   AD_SKY.hour=h0;N.tick(0);for(let i=0;i<40;i++)KDOOR.step(.1);const op=!shut();(sh?ok:bad).push('the doors shut at 21 h');(op?ok:bad).push('open again by day');(lp<30?ok:bad).push('the keeper\'s lamp on the walk ('+lp.toFixed(1)+' m from the centre)');
+   /* the Station (core/atmos's sky model): the first Station's night in 60 days, its shutters open at its pass and shut at noon;
+      the first ordinary night's best pass leaves them shut */
+   {const Wh=window._adWheels,b0=N.at(12).brake,bL=N.at(19.25).brake,b1=N.at(21).brake;
+    if(!Wh||!Wh.n)bad.push('no turning wheels (window._adWheels)');
+    else (Wh.n===97&&Wh.turningAt(b0)===97&&Wh.turningAt(b1)===0&&Wh.turningAt(bL)>0&&Wh.turningAt(bL)<97?ok:bad).push(Wh.n+' wheels: '+Wh.turningAt(b0)+' turning at noon, '+Wh.turningAt(bL)+' halfway through the Lulling, '+Wh.turningAt(b1)+' at 21 h');}
+   let fd=-1,nd=-1;for(let d=0;d<60&&(fd<0||nd<0);d++){if(N.festival(d)){if(fd<0)fd=d;}else if(nd<0&&N.night(d).length)nd=d;}
+   if(!N.sky)bad.push('no sky model on the page (core/atmos/sky)');else if(fd<0)bad.push('no Station\'s night in 60 days');else{
+    const F=N.festival(fd),ph=F.at%24,s1=N.at(ph,ph<12?fd+1:fd),s0=N.at(12,fd);(s1.shutters===1&&s1.stationNight?ok:bad).push('the shutters open at the Station\'s pass on night '+fd+' ('+ph.toFixed(2)+' h, '+F.peak.toFixed(1)+' degrees)');
+    (s0.shutters===0?ok:bad).push('shut at noon');
+    if(nd>=0){const P=N.night(nd).reduce((b,p)=>!b||p.peak>b.peak?p:b,null),qh=P.at%24,s2=N.at(qh,qh<12?nd+1:nd);(s2.shutters===0&&!s2.stationNight?ok:bad).push('shut at night '+nd+'\'s best pass ('+P.peak.toFixed(1)+' degrees)');}}}
   R.push({name:'night-schedule',ok:!!N&&bad.length===0,detail:!N?'window._adNightly missing (targets/isle/90ah)':(bad.length?'WRONG: '+bad.join('; ')+'; ':'')+ok.length+' right: '+ok.join(', ')+(N&&N.station?'; a Station\'s night':'')});}
  {const O=P.filter(p=>p.key==='qb_ad_orchard'),Hv=P.filter(p=>p.key==='qb_ad_hives'),by=c=>O.filter(p=>p.o.crop===c),
    step=['west','east'].every(s=>{const a=O.find(p=>p.id==='orchard:'+s+':apricot'),b=O.find(p=>p.id==='orchard:'+s+':persimmon');return a&&b&&b.o.y>a.o.y;}),
@@ -115,6 +125,10 @@ PAGE_JS = r"""
   const WI=J0&&J0.walkIn?J0.walkIn(6):null,wb=WI&&WI.length?WI.filter(w=>!w.ok):[];
   R.push({name:'walk-in-rooms',ok:!!(WI&&WI.length>=4&&!wb.length),detail:!WI?'window._adIx.walkIn missing':WI.error?WI.error:WI.length+' buildings walked into ('+WI.map(w=>w.key+' '+w.floors+' floors').join(', ')+')'+
    (wb.length?'; FAIL '+wb.map(w=>w.key+(w.shut?'':' door not blocking shut')+(w.open?'':' doorway blocked open')+(w.unreached.length?' unreached '+w.unreached.join(','):'')).join(' | '):'')});}
+ {const G0=window._adGreat,G=G0&&G0.buildAll?G0.buildAll():G0,WG=G0&&G0.walkIn?G0.walkIn():null;
+  R.push({name:'great-rooms',ok:!!(G&&G.built===2&&G.pieces>=10&&!G.fails.length&&G.tex.meshes&&G.tex.mapped===G.tex.meshes&&WG&&WG.ok&&WG.gate),
+   detail:!G?'window._adGreat missing (targets/isle/90aj-ad-great-rooms.js)':G.built+' rooms built ('+G.rooms.map(r=>r.name).join(', ')+'), '+G.pieces+' pieces, textured '+G.tex.mapped+'/'+G.tex.meshes+', '+G.bulbs+' bulbs'+
+    (G.fails.length?'; FAILS '+G.fails.join(' | '):'')+(WG?'; from the terrace before the gate ('+(WG.gate?'its door opened':'NO GATE DOOR')+') '+(WG.ok?'the court and both rooms reached':'MISSED '+WG.miss.join(', ')):'')});}
  R.push({name:'lamps',ok:n('azure')===32&&n('gold')===1&&n('oil')>=4,detail:LA.length+' lamps: azure '+n('azure')+', gold '+n('gold')+', oil '+n('oil')+', clerestory panes '+n('pane')});}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + SUMMIT_JS + VILLAGE_JS + PAGE_JS

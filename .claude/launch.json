@@ -413,6 +413,30 @@
       ],
       "port": 8891,
       "autoPort": false
+    },
+    {
+      "name": "ledge-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8893",
+        "--directory",
+        "settlements/ledge/dist"
+      ],
+      "port": 8893
+    },
+    {
+      "name": "ledge-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8893",
+        "--directory",
+        "settlements/ledge/dist"
+      ],
+      "port": 8893
     }
   ]
 }

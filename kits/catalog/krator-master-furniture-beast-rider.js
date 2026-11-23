@@ -546,7 +546,7 @@ FURN({
       for (const x of [-0.35, 0.35]) F.cyl(x, 2.08, 0.0, 0.03, 0.06, 0, F.col('timberBistre'), 'wood');
       return;
     }
-    const bl = F.rr(2.0, 2.6), bw = F.rr(1.0, 1.3);
+    const bl = F.rr(1.6, 2.0), bw = F.rr(1.0, 1.3);   /* the bar is fixed at 3 m: a hide of at most 2 m keeps its hem 1 m up (core/catalog/test-hangings.js) */
     F.box(0, 3.0, -0.01, 1.6, 0.08, 0.08, 0, F.col('timberBistre'), 'wood');
     F.box(0, 3.0 - bl, -0.03, bw, bl, 0.04, 0, F.pick(['lacquerDeep', 'clothRust', 'clothForest', 'clothMustard', 'clothPlum', 'clothTerracotta']), 'hide');
   }

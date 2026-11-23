@@ -3,7 +3,9 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 6 prompts** (2026-11-17: +2, the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 58. 2026-11-17: +1, Kirstabal's `wall.slate.coursed`, section 57. 2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
+**Count: 3 prompts** (2026-11-22: the Xanadu kit's works pieces' `ground.dyeworks` and `ground.sulfur.crust`, section 60, and Kirstabal's `wall.slate.coursed`, section 59, still owed. 2026-11-17: the 25 below delivered, sections 57, 58 and 43, the archive has them; before: 25, +12 easter eggs for Erewhon's walls, section 58: the Ancient Mariner, Samuel Butler, Caves of Qud, Kenshi,
+2026-11-17; +10 for Erewhon's citadel, section 57: the hangings of Kubla Khan and the suzani, 2026-11-16. Before: 3,
+2026-11-16: the Tungang kit's `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs`. The
 owner's Codex batches delivered the rest: 22 new sets on 2026-11-16 (`PLAN.md`, "Delivered 2026-11-16"), and, merged here the same day
 ("keep the installed 2026-11-12 takes, merge them here"), the 2026-11-12 batch's 63 sets from `claude/textures-2026-11-12`, whose
 entries are in `PROMPTS-archived.md`; every entry whose set is now in the library was taken off this list. None is wired yet: each
@@ -454,28 +456,19 @@ Order's blue, the Xanadu wash and `cloth.wool`. **3 prompts**, all full colour.
 | id | Prompt |
 |---|---|
 
+## 57. Erewhon's citadel: the hangings of Kubla Khan (`kits/catalog` culture `xanadu`, 2026-11-16)
+
+**Delivered 2026-11-17** (the owner's Codex batch; `tools/textures/batches/citadel-hangings-2026-11-17.json`; `PLAN.md`, "Delivered 2026-11-17"); the prompts are in `PROMPTS-archived.md`. All ten in the library (`patterns/xanadu/hanging-*`, `tapestry-*`, `patterns/common/suzani-roundels`, `.b`; a second take of the pleasure-dome tapestry as `tapestry-pleasure-dome.b`) and wired: packed as `KMAT.pack('xanadu-pics')` (`settlements/xanadu/citadel/materials.json`), painted on the hangings by `xanPicPaint`.
+
+## 58. Easter eggs for Erewhon's walls: the Ancient Mariner, Samuel Butler, Caves of Qud, Kenshi (2026-11-17)
+
+**Delivered 2026-11-17** (the owner's Codex batch; `tools/textures/batches/citadel-hangings-2026-11-17.json`; `PLAN.md`, "Delivered 2026-11-17"); the prompts are in `PROMPTS-archived.md`. Eleven of the twelve in the Mughal style, in the library (`patterns/easter/*`) and wired (the envoy's hangings); `skeleton-scholars` dropped (the owner: it "does not fit this current setting"), and in its place the owner's own Kenshi panel (`patterns/easter/desert-ruins`, 16:9, the envoy's tapestry). The first, non-Mughal takes of nine of them are in the library too (`patterns/easter/*.classic`), not wired, kept for a later use (Talia's art museum). With them, five portraits of turbaned sultans (`patterns/xanadu/portrait-sultan-*`, the owner's own requests), wired (the sultan's portrait).
+
 ## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
 
-`kits/tungang/PLAN.md` section 7, agreed by the owner on 2026-11-11 ("agree with your suggestions"). The Line's biome
-(`biomes/line`) wants the lining segment and the hewn rock too. Wire them into `kits/tungang/materials.json` (and the
-Line's) when they come. Numbered 43 because sections 41 and 42 are owed on `claude/rift-hearths-cavern-b8baf6`.
+**Delivered 2026-11-17** (the owner's Codex batch; `tools/textures/batches/citadel-hangings-2026-11-17.json`; `PLAN.md`, "Delivered 2026-11-17"); the prompts are in `PROMPTS-archived.md`. `patterns/tungang/loj-banner`, `loj-banner.b` and `enamel-signs` are in the library, **not wired**: `kits/tungang` wires them (its `materials.json`) at its next turn.
 
-`patterns/tungang/loj-banner` (a loj's banner, carried at meetings and funerals; a single panel, not tiling):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy crimson silk, made by an underground people in honour of their ancestors, the crews of a vanished high-technology transit line: a gold scroll across the top and another across the bottom with worn lettering-shapes that cannot be read; a large central oval painting of pale, hooded tunnel crews raising their hands together at a meeting, dressed in close-fitting padded work suits with high collars, smooth rounded helmet shells under their hoods, small red lamps built into the helmets and chests, tool harnesses across the body, the suits patched with salvaged panels; behind them the smooth curved wall of a perfectly round, machine-bored tunnel lined with glowing strip lights; beneath the oval an emblem of a wheel and a lamp; gold and cream scrollwork in the four corners, a gold fringe along the bottom edge; a thousand years of mending: patched cloth, faded and flaking paint, darned tears, smoke darkening toward the edges. The people and machines in the painting belong to a far-future technology, not to any historical period: no steam, no smoke from machines, no coal, no picks or oil lamps, no nineteenth-century or Victorian clothing, no coats, waistcoats, caps or top hats. Full colour: crimson #7a1a17, gold #c9a24a, cream #f3dfa6.
-```
-
-`patterns/tungang/loj-banner.b` (a second banner):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a hand-painted guild banner on heavy deep green silk, made by an underground people in honour of the crews of a vanished high-technology transit line: gold scrolls at top and bottom with worn lettering-shapes that cannot be read; a central oval painting of a long train of sleek white cars gliding out of a perfectly round, machine-bored tunnel mouth ringed with lights: smooth rounded white bodies of seamed panels banded with bronze hoops, a rounded sealed cab at the front, one continuous ribbon of lit blue windows with thin bronze mullions, glowing cyan strips along the sill and the roof, running low on a single raised concrete guideway beam, its wheels hidden under the body; hooded crew figures in close-fitting padded work suits and smooth helmets with built-in lamps standing beside the guideway; cream and gold ornament round the oval, a fringe along the bottom; centuries of mending: patches, faded paint, darns, soot. Far-future technology, not any historical period: no steam locomotive, no chimney, no smoke, no rails on wooden sleepers, no overhead wires, no nineteenth-century or Victorian clothing, no coats, caps or top hats. Full colour: green #2f5a3a, gold #c9a24a, cream #f3dfa6, the train's lamps #e8b24a.
-```
-
-`patterns/tungang/enamel-signs` (a 4 x 4 atlas of the Line's enamel signs; read as holy marks):
-```
-Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: a 4 by 4 grid of sixteen separate enamel signs, each in its own equal cell on a plain dark grey ground. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no words. Signs: vitreous enamel signs on steel from a high-technology transit line, rectangular, round and diamond, with clean modern pictogram design in red on cream, cream on red, cream on green and white on blue; each carries only a large numeral, an arrow, a lamp symbol, a bell symbol, a downward chevron, a simple pictogram of a person in a rounded helmet, or a side view of a sleek rounded train car with one ribbon of windows on a single raised guideway beam (no chimney, no smoke, no rails), never words; every sign chipped at its edges and corners down to black iron, with small rust blooms, screw holes at the corners, and the enamel faded unevenly. Full colour: red #a8382c, cream #e2d8bc, green #2f6a4a, blue #2a4a7a, iron #2a2826.
-```
-
-## 57. Kirstabal's slate town wall (`settlements/kirstabal`, the Xanadu kit's opt-in wall `kits/xanadu/src/87k2-xa-slate-wall.js`, 2026-11-17)
+## 59. Kirstabal's slate town wall (`settlements/kirstabal`, the Xanadu kit's opt-in wall `kits/xanadu/src/87k2-xa-slate-wall.js`, 2026-11-17)
 
 The owner, 2026-11-17: "a wall made of slate similar to the thin brick wall of chiang mai". No library set is a wall of thin
 slate courses; the wall draws `brick.dark` tinted slate grey (families `xSlate`, `xSlateD` in `settlements/kirstabal/materials.json`)
@@ -488,7 +481,7 @@ colour can tint it lighter or darker):
 Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an old town wall built of thin split slate laid flat in long narrow courses like Chiang Mai's thin bricks, each slab 3 to 6 cm thick and 20 to 60 cm long, the courses straight but each slab's edge slightly ragged and chipped, laid with thin grey lime mortar joints set back a little so every course casts a fine dark line; a few slabs a shade darker or lighter, faint rust-brown iron staining in streaks, pale lime bloom in the joints, a little dark weathering grime and specks of grey-green lichen. Blue-grey and charcoal slate only, low saturation, so it can be tinted.
 ```
 
-## 58. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)
+## 60. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)
 
 The lake towns' work pieces draw on the kit's procedural textures with tinted stand-ins. Three of the four gaps are already in
 the library, to wire when the pieces move into `src/`: the mat shed's reed thatch is `roof.thatch.reed`, the hot spring's apron

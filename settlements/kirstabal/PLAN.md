@@ -327,7 +327,7 @@ Following `README.md`, "CORE MODULES ARE NOT OPTIONAL":
   beside it (as Chiang Mai's great temple stands at its centre). Outside the wall: the quay street and the harbour, the serai,
   the works and the monastery. About 490 buildings, 3,100 people. The wall is slate laid like Chiang Mai's thin bricks
   (`kits/xanadu/src/87k2-xa-slate-wall.js`, opt-in), drawn in `brick.dark` tinted slate grey until a coursed-slate set
-  is made (`core/materials/PROMPTS-NEEDED.md` section 57). The moat (the owner, 2026-11-17: "Yes, add a moat"): Chiang Mai's,
+  is made (`core/materials/PROMPTS-NEEDED.md` section 59). The moat (the owner, 2026-11-17: "Yes, add a moat"): Chiang Mai's,
   16 m wide, its middle 15 m outside the wall, dug 3 m into the apron, its water 1.4 m under the banks (core/water, a flow a side),
   the kit's street bridges over it at the four gates; core/city's square gives its line and the bridges' places.
   The garden squares (the owner, 2026-11-17: "strategically add some Xanadu kit garden tiles in groups that form even squares or

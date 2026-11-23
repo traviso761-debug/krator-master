@@ -80,3 +80,68 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
    [1033,1592],[1027,1590],[1021,1590],[1016,1593],[1010,1596],[1004,1596],[1001,1596]]}],
   ['scaldronhouse01','smirrorgrange01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}],
   ['smirrorgrange01','ssinggjar01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}]]};
+
+/* ---------------------------------------------------------------- Strongbow's face, cut into the scarp
+   The owner, 2026-11-16: "Yes, carve it", and "make sure this doesn't result in water flowing uphill". Strongbow's page
+   (kits/ancients' strongbow-today, settlements/strongbow) has a 900 m face (STRONGBOW.DIM.LIP); here the scale model's
+   2 km cells spread the scarp's 3,100 m over 19 km, so seated on its lip at the pin the page's foot, town and floor stood
+   about 800 m inside the ground. The cut gives the page its face. It is a land hook (WORLD.landHook, chained after the
+   coast), here in the sites' spec so the bake (core/world/bake_sites.py), the page and the Godot export read one ground.
+   In the page's frame turned to the site (OHR_CUT.ry: the page's +z, its front, to the region's west), its lip 150 m in
+   front of the pin (the pin stays on the plateau), u along the face and v ahead of it from the lip:
+     behind the lip (1.6 km, Strongbow's top: the page  the pad at the lip's level at its back and sides, 0.5 m under it
+     draws no plateau of its own there)                at the lip's middle: it drains over the edge, never back
+     at the lip, 40 to 20 m behind the page's face    the step down, behind the page's own cliff
+     ahead (the page's floor and town, 1.1 km)         1 m under the page's floor (the lip less 900 m), falling 0.4 % west,
+                                                      and on as a gorge, narrowing to 450 m, whose bed falls the same until
+                                                      the scarp's own slope reaches it (about 7 km out)
+   It only lowers the ground (min with the land), its sides ease back over 300 to 600 m and its back over 1 km (about 2 %:
+   the Sultanate's road comes onto the pad from the east within its 8 % grade), and it keeps off the rivers: its
+   weight is 0 within 500 m of a channel and whole only past 900 m (WORLD.carveAt), so no river's bed or water moves.
+   The flora keeps off the page's footprint (WORLD.clearHook). OHR_CUT.info() gives the lip's level, where the page's
+   anchor stands (openworld/oidong-highrift/tools/godot_case.py). */
+var OHR_CUT=(function(){'use strict';
+const W=WORLD,C={site:'sfgtxw10kr',px:[1001,1596],ry:-Math.PI/2,ahead:150,lip:900,half:1150,sideB:600,gorgeHalf:450,gorgeB:300,town:1100,taper:2500,
+ back:1596,backB:1000,pageHalf:1100,rec0:-40,rec1:-20,padDrop:.5,floorSlope:.004,maxV:14000,river:[500,900]};
+const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);},lerp=(a,b,t)=>a+(b-a)*t;
+let P=null,LIPH=null,busy=false;
+/* the page's anchor (its lip at the bay's centre) stands C.ahead m in front of the pin, so the pin (the site's own point,
+   where its road ends and its records stand) is on the plateau, back from the edge: the road router aims at the pin's
+   200 m cell, which must not fall over the lip */
+function frame(){if(P)return P;const p=W.fromPx(C.px[0],C.px[1]),c=Math.cos(C.ry),s=Math.sin(C.ry);
+ P={x:p[0]+C.ahead*s,z:p[1]+C.ahead*c,pin:p,c,s};
+ busy=true;try{LIPH=W.Hbare(P.x,P.z);}finally{busy=false;}return P;}
+/* region (x, z) to the page's frame about the pin: u along the face, v ahead of the lip */
+function local(x,z){const F=frame(),dx=x-F.x,dz=z-F.z;return [dx*F.c-dz*F.s,dx*F.s+dz*F.c];}
+const floorAt=v=>LIPH-C.lip-1-C.floorSlope*(v-C.rec1);
+/* the pad under the page's plateau: a shallow bowl, flush with the plateau (the lip's level) at its back and side edges, so
+   a walker steps from the region's ground onto the page's plateau without a step, falling to padDrop under it at the
+   lip's middle, so it drains forward over the edge (never back into the plateau) */
+/* the page draws no plateau of its own behind the lip (its plateau is its far ground, which the export leaves out:
+   godot/tests/export/oidong_walk_test.gd found the region's ground under every ray), so the region's ground is
+   Strongbow's top: the pad stands at the lip's level, where the page's yard and post stand, falling padDrop to the lip
+   to drain (0.5 m over 1.6 km) */
+const padAt=(u,v)=>C.rec0-v>=C.back||Math.abs(u)>=C.pageHalf?LIPH:
+ LIPH-C.padDrop*(1-(C.rec0-v)/C.back)*(1-smooth(C.pageHalf-300,C.pageHalf,Math.abs(u)));
+function target(u,v){
+ if(v<=C.rec0)return padAt(u,v);
+ if(v<C.rec1)return lerp(padAt(u,C.rec0),floorAt(C.rec1),smooth(0,1,(v-C.rec0)/(C.rec1-C.rec0)));
+ return floorAt(v);}
+function weight(x,z){const L=local(x,z),u=Math.abs(L[0]),v=L[1];
+ if(v<C.rec0-C.back-C.backB||v>C.maxV)return 0;
+ const k=v<=C.town?0:Math.min(1,(v-C.town)/(C.taper-C.town)),hw=lerp(C.half,C.gorgeHalf,k),B=lerp(C.sideB,C.gorgeB,k);
+ if(u>=hw+B)return 0;
+ let w=(1-smooth(hw,hw+B,u))*(v<C.rec0?1-smooth(C.back,C.back+C.backB,C.rec0-v):1)*(1-smooth(C.maxV-1000,C.maxV,v));
+ if(w<=0)return 0;
+ const ch=W.carveAt(x,z);if(ch)w*=smooth(C.river[0],C.river[1],ch.d);
+ return w;}
+function cut(x,z,h){if(busy)return h;frame();const w=weight(x,z);if(w<=0)return h;const L=local(x,z),T=target(L[0],L[1]);return h>T?h-w*(h-T):h;}
+const prevLand=W.landHook;
+W.landHook=(x,z,h,mw)=>cut(x,z,prevLand?prevLand(x,z,h,mw):h);
+const prevClear=W.clearHook;
+W.clearHook=(x,z)=>{if(prevClear&&prevClear(x,z))return true;frame();const L=local(x,z);
+ return Math.abs(L[0])<=C.half&&L[1]>=C.rec0-C.back&&L[1]<=C.town;};
+return {spec:C,local,weight,target,
+ /* f() on the land without the cut (the test's comparison: tests/test_cut.py) */
+ uncut:f=>{frame();const was=busy;busy=true;try{return f();}finally{busy=was;}},
+ info:()=>{const F=frame();return {site:C.site,at:[F.x,LIPH,F.z],pin:F.pin,ry:C.ry,lip:C.lip,floor:LIPH-C.lip};}};})();

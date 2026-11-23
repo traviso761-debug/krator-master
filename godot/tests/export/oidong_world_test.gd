@@ -9,6 +9,7 @@
 # (a fresh checkout runs godot --headless --path godot --import once first, so the class names register)
 extends SceneTree
 
+const KTags := preload("res://tests/tags/ktags.gd")
 var CASE := "res://data/world-oidong-highrift/"
 const LOAD_R := 20000.0   # metres: a chunk within this of the camera is loaded
 const KEEP_R := 28000.0   # metres: a loaded chunk farther than this is freed (the gap keeps the edge from flickering)
@@ -91,10 +92,13 @@ func _stream(S: KratorWorldStream, route: PackedVector2Array) -> void:
 	var checked := 0
 	var pmax := 0.0
 	var pn := 0
+	var far := 0.0   # the farthest a held chunk's node stands from the stream's origin
 	for at in route:
 		var r := S.update(at, LOAD_R, KEEP_R)
 		unloads += (r["unloaded"] as Array).size()
 		held_max = max(held_max, S.chunks.size())
+		for id in S.chunks:
+			far = max(far, Vector2((S.chunks[id] as Node3D).position.x, (S.chunks[id] as Node3D).position.z).length())
 		if S.covering(at.x, at.y) == "":
 			misses += 1
 		for id in r["loaded"]:
@@ -110,9 +114,12 @@ func _stream(S: KratorWorldStream, route: PackedVector2Array) -> void:
 	ok(ever.size() == n and misses == 0, "the camera walked the road %s (%d steps of %d m): every one of its %d chunks loaded, the chunk under the camera every step (%d misses)"
 		% [S.index["route"]["link"], route.size(), int(WALK), n, misses])
 	ok(unloads > 0 and held_max <= HELD_MAX, "chunks left behind are freed: %d unloads, at most %d held at once (limit %d)" % [unloads, held_max, HELD_MAX])
+	var reach := KEEP_R + 0.75 * float(S.index["chunk"]["size"]) + KratorWorldStream.REBASE * 1.5
+	ok(S.rebases > 0 and far <= reach, "a floating origin: the stream moved its origin %d times along the road, so every held chunk's node stood within %.0f m of it (limit %.0f; the road runs %.0f km from the region's origin)"
+		% [S.rebases, far, reach, absf(route[route.size() - 1].x) / 1000.0])
 	ok(checked == n and vmax <= GRID_TOL and hmax <= GRID_TOL,
 		"each chunk's drawn ground passes through the page's samples: %d chunks, heights to %s m, KData.height_at at the samples to %s m" % [checked, str(vmax), str(hmax)])
-	print("     between samples (every %d m) the grid's bilinear cells and the page's own WORLD.H differ by up to %.2f m at %d probes; the lattice's x and z land on their samples to %.3f m in float32 (multiples of the step are exact even 600 km out; a building's own vertices there keep ~6 cm: GODOT-PLAN.md M7, a floating origin)"
+	print("     between samples (every %d m) the grid's bilinear cells and the page's own WORLD.H differ by up to %.2f m at %d probes; the lattice's x and z land on their samples to %.4f m (each chunk's grid about its own origin)"
 		% [int(S.index["chunk"]["step"]), pmax, pn, xyerr])
 	# two loaded neighbours: their samples on the shared edge agree (the same WORLD.H at the same points)
 	S.update(route[0], 1e9, 1e9)   # every chunk, to compare the pairs
@@ -148,8 +155,9 @@ func _stream(S: KratorWorldStream, route: PackedVector2Array) -> void:
 	ok(neg > 0, "negative: half a step along an edge, %d chunks differ" % neg)
 
 
-func _h(w: Node3D, x: float, z: float) -> float:
-	return KData.height_at(w.get_meta("ground", null), x, z)
+func _h(w: Node3D, x: float, z: float) -> float:   # x, z in the region's metres; the ground stands about the case's origin
+	var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	return KData.height_at(w.get_meta("ground", null), x - o[0], z - o[2]) + o[1]
 
 
 func _ground_check(w: Node3D) -> Dictionary:
@@ -158,8 +166,9 @@ func _ground_check(w: Node3D) -> Dictionary:
 	var H := KData.floats(gr["heights"])
 	var nx := int(gr["nx"])
 	var st := float(gr["step"])
-	var x0 := float(gr["x0"])
-	var z0 := float(gr["z0"])
+	var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+	var x0: float = float(gr["x0"]) - float(o[0])   # the grid about the case's origin, as the importer builds it
+	var z0: float = float(gr["z0"]) - float(o[2])
 	var g: Node3D = w.get_meta("ground", null)
 	var out := {"vmax": INF, "hmax": INF, "xy": 0.0, "pmax": 0.0, "probes": 0}
 	var mi := g as MeshInstance3D
@@ -185,7 +194,7 @@ func _ground_check(w: Node3D) -> Dictionary:
 	var pmax := 0.0
 	var pts: Array = d["terrain"]["probes"]["points"]
 	for p in pts:
-		pmax = max(pmax, absf(KData.height_at(g, float(p[0]), float(p[1])) - float(p[2])))
+		pmax = max(pmax, absf(KData.height_at(g, float(p[0]) - o[0], float(p[1]) - o[2]) - float(p[2])))
 	out["vmax"] = vmax if seen == H.size() else INF
 	out["hmax"] = hmax
 	out["xy"] = xy
@@ -230,7 +239,7 @@ func _places(S: KratorWorldStream) -> void:
 		var box: Array = p["box"]
 		var pin: Array = p["pin"]
 		var inbox: bool = float(pin[0]) > float(box[0]) and float(pin[0]) < float(box[2]) and float(pin[1]) > float(box[1]) and float(pin[1]) < float(box[3])
-		var gh := KData.height_at(w.get_meta("ground", null), float(pin[0]), float(pin[1]))
+		var gh := _h(w, float(pin[0]), float(pin[1]))
 		var items := w.get_node_or_null("Items")
 		var inst := 0
 		var floras := 0
@@ -245,8 +254,10 @@ func _places(S: KratorWorldStream) -> void:
 				# item set: the gap below)
 				var own: Array = it.get_meta("krator_owners", [])
 				var flora: bool = str((it.get_meta("krator", {}) as Dictionary).get("kit", "")) == "flora"   # 94: itemKit
-				if flora:
+				if flora:   # a flora pool's plants: a uid each from its item set (_flora_uids checks them)
 					floras += n
+					if (it.get_meta("krator_records", PackedStringArray()) as PackedStringArray).size() != n or not tags.has(it.get_meta("krator_record", "")):
+						nouid += n
 				elif own.size() != n:
 					nouid += n
 				else:
@@ -278,6 +289,9 @@ func _places(S: KratorWorldStream) -> void:
 			"%s opens at its own place, its villages %s (pin %.0f, %.0f on its ground at %.1f m): %s; %d building instances each standing in its record (%d records), %d bucket records resolved in its registry, %d plants, materials %s"
 			% [p["name"], (p.get("detail", "?") if built else "none drawn by the region"), float(pin[0]), float(pin[1]), gh, "sections ok" if bad.is_empty() else "NOT " + ", ".join(bad),
 			inst - floras, uids.size(), brec - bmiss, floras, "resolved" if mgaps.is_empty() else "GAPS " + ", ".join(mgaps)])
+	_precision(S)
+	_flora_uids(S)
+	_arcology(S)
 	# negative: a place's bucket records read against another place's registry do not resolve
 	var a: Dictionary = S.index["places"][0]
 	var b: Dictionary = S.index["places"][1]
@@ -290,6 +304,172 @@ func _places(S: KratorWorldStream) -> void:
 				if not (regs[b["id"]] as Dictionary).has(id):
 					miss += 1
 	ok(miss > 0, "negative: %s's buckets read against %s's registry, %d records do not resolve" % [a["name"], b["name"], miss])
+
+
+# 2b. a floating origin: the massing places' buildings (88s villageMass: a box a building, at its record's x, low, z)
+#     stand where their records say, to PREC_TOL, from the instance's float32 translation in the case plus the case's
+#     origin in double. The negative holds the same positions as float32 in the region's frame (no floating origin):
+#     the Order's houses are 120 to 530 km out, where a float32 keeps 1 to 6 cm
+const PREC_TOL := 0.005
+# an instance's origin from the MultiMesh's buffer (rows of the basis, the origin's component last), as iziz_test.gd reads it
+func _inst_origin(b: PackedFloat32Array, mm: MultiMesh, j: int) -> Vector3:
+	var o := j * (12 + (4 if mm.use_colors else 0) + (4 if mm.use_custom_data else 0))
+	return Vector3(b[o + 3], b[o + 7], b[o + 11])
+
+# a node's transform in its place's frame (not global_transform: the place's own seat in the stream is far from it in float32)
+func _in_place(n: Node, w: Node) -> Transform3D:
+	var t := Transform3D.IDENTITY
+	var p := n
+	while p != null and p != w:
+		if p is Node3D:
+			t = (p as Node3D).transform * t
+		p = p.get_parent()
+	return t
+
+func _precision(S: KratorWorldStream) -> void:
+	var emax := 0.0
+	var nmax := 0.0
+	var n := 0
+	var out_km := 0.0
+	for p in S.index["places"]:
+		if p.get("detail") != "massing":
+			continue
+		var w := S.get_node("Places/Place_" + str(p["id"]))
+		var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+		var tags: Dictionary = w.get_meta("tags", {})
+		var items := w.get_node_or_null("Items")
+		if items == null:
+			continue
+		for it in items.get_children():
+			if not (it is MultiMeshInstance3D):
+				continue
+			var own: Array = it.get_meta("krator_owners", [])
+			var mm: MultiMesh = (it as MultiMeshInstance3D).multimesh
+			var buf := mm.buffer   # headless, the dummy renderer answers get_instance_transform with the identity
+			for i in mini(own.size(), mm.instance_count):
+				var r = tags.get(own[i]) if own[i] != null else null
+				if not (r is Dictionary) or r.get("class") != "building" or not (r.get("at") is Array):
+					continue
+				var t: Vector3 = _in_place(it, w) * _inst_origin(buf, mm, i)   # the importer's LOD chunk node has its own place
+				var at: Array = r["at"]
+				var e := 0.0
+				var e32 := 0.0
+				for k in 3:
+					e = max(e, absf(float(t[k]) + float(o[k]) - float(at[k])))
+					var abs32 := Vector3(float(t.x) + o[0], float(t.y) + o[1], float(t.z) + o[2])   # float32 in the region's frame
+					e32 = max(e32, absf(float(abs32[k]) - float(at[k])))
+				emax = max(emax, e)
+				nmax = max(nmax, e32)
+				out_km = max(out_km, absf(float(at[0])) / 1000.0)
+				n += 1
+	ok(n > 0 and emax <= PREC_TOL, "a floating origin: %d buildings in the Order's houses (to %.0f km out) stand on their records' positions to %.5f m (limit %.3f)" % [n, out_km, emax, PREC_TOL])
+	ok(nmax > PREC_TOL, "negative: the same positions held as float32 in the region's frame are off by up to %.3f m" % nmax)
+
+
+# 2c. the flora's uids (core/world 94: a pool an item set): every plant instance in a place carries the uid
+#     KTags.uid('flora', its set's key, its position), recomputed here from the instance's translation plus the case's
+#     origin. A place's origin is the flora's own floating origin (core/world 94), so a plant's translation is its row in
+#     the page bit for bit and the sum here (row + origin, in doubles) is the page's own position: every uid reproduces.
+#     Only a plant within EDGE_TOL of a decimetre's rounding edge would be excused, and the check wants none
+const EDGE_TOL := 0.001
+func _flora_uids(S: KratorWorldStream) -> void:
+	var n := 0
+	var same := 0
+	var edge := 0
+	var bad := 0
+	var sets := {}
+	var neg := 0
+	for p in S.index["places"]:
+		var w := S.get_node("Places/Place_" + str(p["id"]))
+		var o: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
+		var tags: Dictionary = w.get_meta("tags", {})
+		var items := w.get_node_or_null("Items")
+		if items == null:
+			continue
+		for it in items.get_children():
+			if str((it.get_meta("krator", {}) as Dictionary).get("kit", "")) != "flora":
+				continue
+			var set_id: String = it.get_meta("krator_record", "")
+			var uids: PackedStringArray = it.get_meta("krator_records", PackedStringArray())
+			var mm: MultiMesh = (it as MultiMeshInstance3D).multimesh
+			var buf := mm.buffer   # headless, the dummy renderer answers get_instance_transform with the identity
+			if not tags.has(set_id) or uids.size() != mm.instance_count:
+				bad += mm.instance_count
+				continue
+			var rec: Dictionary = tags[set_id]
+			sets[set_id] = true
+			for i in mm.instance_count:
+				var t: Vector3 = _in_place(it, w) * _inst_origin(buf, mm, i)   # the importer's LOD chunk node has its own place
+				var at := [float(t.x) + o[0], float(t.y) + o[1], float(t.z) + o[2]]
+				n += 1
+				if KTags.uid("flora", rec["key"], at) == uids[i]:
+					same += 1
+				else:
+					var near := false
+					for k in 3:
+						var f: float = at[k] * 10.0 + 0.5
+						near = near or absf(f - roundf(f)) * 0.1 <= EDGE_TOL
+					if near:
+						edge += 1
+					else:
+						bad += 1
+				if KTags.uid("flora", rec["key"], [float(t.x), float(t.y), float(t.z)]) != uids[i]:
+					neg += 1
+	ok(n > 0 and bad == 0 and edge == 0, "the flora's uids: %d plants in %d item sets (a pool each), %d uids recomputed here from position and case origin, %d within %.0f mm of a decimetre's rounding edge, %d otherwise wrong"
+		% [n, sets.size(), same, edge, EDGE_TOL * 1000.0, bad])
+	ok(neg > n * 0.99, "negative: the same uids from the positions without the case's origin: %d of %d differ" % [neg, n])
+
+
+# 2d. Strongbow's arcology (godot_case.py ARCOLOGY: kits/ancients' strongbow-today page, from its own branch, as the page
+#     draws it from afar) on the region's ground cut to its face (src/48-world-site.js OHR_CUT; tests/test_cut.py proves the
+#     cut drains): it opens under Strongbow's place with its meshes and materials, its anchor (the lip at the bay's centre)
+#     on the cut's lip level, turned to face west, and the ground stands just under the page: under its plateau within
+#     PLATEAU_TOL below the lip, under its floor within FLOOR_TOL below the floor (the lip less the face). Negative: the
+#     page unturned (facing south) puts the same points on uncut ground, hundreds of metres over its floor
+const PLATEAU_TOL := 1.0   # Strongbow's top is the region's ground at the lip's level (the page draws no plateau of its own), falling 0.5 m to the lip
+const FLOOR_TOL := 10.0
+func _arcology(S: KratorWorldStream) -> void:
+	var p := S.place("sfgtxw10kr")
+	var w := S.get_node_or_null("Places/Place_sfgtxw10kr")
+	var a: Node3D = w.get_node_or_null("Arcology") if w else null
+	if a == null or not (p.get("arcology") is Dictionary):
+		ok(false, "Strongbow's arcology: no Arcology node under its place (index: %s)" % str(p.has("arcology")))
+		return
+	var A: Dictionary = p["arcology"]
+	var rep: Dictionary = a.get_meta("report")
+	var mgaps := []
+	for k in rep["gaps"]:
+		if "material" in k or "hook" in k or "texture" in k or "load" in k:
+			mgaps.append(k)
+	var c: Dictionary = rep["counts"]
+	var at: Array = A["at"]
+	var lip := float(at[1])
+	var fl := lip - float((A.get("cut", {}) as Dictionary).get("lip", 900))
+	# the region's ground under a point of the page's frame (u along the face, v ahead of the lip), the page turned by ry
+	var under := func(ry: float, u: float, v: float) -> float:
+		var q := Basis(Vector3.UP, ry) * Vector3(u, 0, v)
+		return _h(w, float(at[0]) + q.x, float(at[2]) + q.z)
+	var ry := float(A["ry"])
+	var pl := [INF, -INF]
+	var fr := [INF, -INF]
+	for u in [-600.0, 0.0, 600.0]:
+		for v in [-100.0, -300.0, -600.0]:
+			var d: float = lip - under.call(ry, u, v)
+			pl = [minf(pl[0], d), maxf(pl[1], d)]
+		for v in [150.0, 300.0, 500.0]:
+			var d: float = fl - under.call(ry, u, v)
+			fr = [minf(fr[0], d), maxf(fr[1], d)]
+	var face := (a.transform.basis * Vector3(0, 0, 1)).normalized()
+	var good: bool = pl[0] >= 0.0 and pl[1] <= PLATEAU_TOL and fr[0] >= 0.0 and fr[1] <= FLOOR_TOL
+	ok(int(c["items"]) + int(c["buckets"]) > 0 and mgaps.is_empty() and face.dot(Vector3(-1, 0, 0)) > 0.999 and good,
+		"Strongbow's arcology stands at its site (%s on %s): %d items, %d buckets, %d triangles, materials %s; its lip at %.1f m, its face turned west (%.3f); the ground %.1f to %.1f m under its plateau and %.1f to %.1f m under its floor (%.1f m)"
+		% [A["page"], A.get("branch"), int(c["items"]), int(c["buckets"]), int(c["triangles"]), "resolved" if mgaps.is_empty() else "GAPS " + ", ".join(mgaps),
+		lip, face.dot(Vector3(-1, 0, 0)), pl[0], pl[1], fr[0], fr[1], fl])
+	var worst := 0.0
+	for u in [-600.0, 0.0, 600.0]:
+		for v in [150.0, 300.0, 500.0]:
+			worst = maxf(worst, absf(fl - under.call(0.0, u, v)))
+	ok(worst > FLOOR_TOL, "negative: the page unturned (facing south) puts its floor up to %.0f m off the ground under it" % worst)
 
 
 # 3. the roads join them: every link leaves its first site and reaches its second (within the site's reach of its pin),

@@ -245,7 +245,7 @@ The town keeps **Thalaba**, the owner's name; the dental **th** is kept as in *N
 ## 4. The economy (in `XAN_TUNE` as it stands; *proposed* additions marked)
 
 All figures are the tune's. `T.diet.town` is 160 kg of grain a person a year; the calendar's windows are harvest days 150-200
-and the expedition days 120-240.
+and the expedition days 120-240 (a northern year on core/clock's southern one: the owner asked to turn it, not done yet, KNOWN_ISSUES.md).
 
 **Grain.**
 - The town eats 2,400 × 160 kg = **384 t a year**.
@@ -298,7 +298,7 @@ tea and tools. All of these are already on `road.pher-thalaba`.
 
 **Proposed for later passes (not in the tune):**
 - **Mules, yaks and sheep** from the bench's pasture, sold to the expeditions and down to the north shore.
-- **The hired men's wages:** the two expeditions' ~150 locals leave the town in the expedition window (days 120-240) and come
+- **The hired men's wages:** the two expeditions' ~150 locals leave the town in the expedition window (days 120-240 in the tune; the southern summer, 302-57, on the page) and come
   home with pay. The sim does not count that yet; the camp is a separate settlement of 150.
 - **Night-soil and kiln ash** onto the terraces: the reason the terraces can carry half the grain at 1,500 m. It is not a sim
   good.

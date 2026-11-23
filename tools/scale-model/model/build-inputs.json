@@ -1,0 +1,70 @@
+{
+ "what": "the inputs each build command read and the pages it wrote; tools/build.py writes it, tools/check_stale.py and tools/reach.py read it (tools/buildlib.py)",
+ "runs": {
+  "build.py": {
+   "inputs": {
+    "tools/scale-model/model/build.py": "a3cbbb374101f3b32e8308b83c0f7cd0a8142c64255b571703ee926f7ca81471",
+    "tools/scale-model/model/data/basins.json": "e2a92411c3d7976adfb5e437d1f3b29067ca255babedc1e5903f0f60111013ae",
+    "tools/scale-model/model/data/c.png": "fff69a39fdbb935729476a45351515a82ae6ab2aab0eda9bceee7fb2b9a6beaa",
+    "tools/scale-model/model/data/climate.json": "80a3398afd9dc944a674621391f43f7f0eb5d367480a91eec31abec36c410ae0",
+    "tools/scale-model/model/data/ct.jpg": "991ff23e9668e03591be7053ebf36282339923d19fb63dd565b6a47e26fbc048",
+    "tools/scale-model/model/data/dams.json": "8fef3c2003e682d96993c7104fd3e5cc23c7172e8bb152f4b042fde3da0be830",
+    "tools/scale-model/model/data/floods.json": "90e93a3c22e10160560018535037bb1c087231c959c76eb8212b9645408c4859",
+    "tools/scale-model/model/data/h.png": "111677947f8e50029ba5e55542690d9ecd2db986643c565666733bb99066ae01",
+    "tools/scale-model/model/data/hydro.json": "d4abe2475d8c8034c72b865c132b8871069ab759caab4071a642d13ef0ab07c8",
+    "tools/scale-model/model/data/landforms.json": "8c47699135ec83d8b858958d7e5bad75946c0069bc674a613f3da4f2356d6bf8",
+    "tools/scale-model/model/data/model.json": "099b0e2a7bf88bae32c5f5c038df69671eb4ea193ffe37bbb9e0a0a88be2f5db",
+    "tools/scale-model/model/data/outlets.json": "4686b020c5e8af7d8d419750cd2d1dc611ccf6bb94c1788b28e813f8bf60bf72",
+    "tools/scale-model/model/data/p.png": "a73d60e2338418cf3024e81943da0f8a0bbc6dde6e07bc2b2a9945f055259dbb",
+    "tools/scale-model/model/data/palaeolakes.json": "607b3569d78c94d0dd3694b12b392890bc058c755fa8cf49588987a1bb2f7de6",
+    "tools/scale-model/model/data/rivers.json": "3f387065cc0a7f43a89a0dbafd55e3ddf0755ddc79f76d11b04a557bdecd036f",
+    "tools/scale-model/model/data/rt.jpg": "4b8fb97021bdaee5d1dd93855ce38be09fc89182102ef45aa7523f8b2c24108c",
+    "tools/scale-model/model/data/st.jpg": "5c35f42f81d23e6f0e817b6585dc3b01f8733d67cf1eb84b9bd68258068ffcda",
+    "tools/scale-model/model/data/t.jpg": "c912150d1e2ada7e2a22b36f0b5810433d6e5d1342d7fbdac71e4b807e0436eb",
+    "tools/scale-model/model/data/tc.png": "852d70ac0d59fafb504c77f3d376960b783118703745e37f6ed50e8e427abdeb",
+    "tools/scale-model/model/data/th.png": "334b47d93a74d6a523f8f8161e3aa97abece4a6d638bc65f0154d30b9fa757d8",
+    "tools/scale-model/model/data/tl.png": "cc0a090284c6dca18fb30bd41d69351265498b028a984516b62f146c1d61b3d8",
+    "tools/scale-model/model/data/tm.png": "5435ce0e2e64ad6b2b03da5d1f1ab7cee2d1e77c6e98b7b33b4185ec18d0c3fd",
+    "tools/scale-model/model/data/tubes.json": "fe9c2c19173c06879b67e1b2aa99de9f793bf17c85603302fd0dd371c42742a5",
+    "tools/scale-model/model/data/tw.png": "b984a700cc14f2ae11da96abe81488a4508e206e5f51d7655246e2b4257e9df3",
+    "tools/scale-model/model/data/vents.json": "8d69f99831bed091fbeaf5c2584c1eec7319329f512b71c0babf6987b82d8ed5",
+    "tools/scale-model/model/data/volc.json": "a9531b16082e6c1d9f3ec1d7cf714fd555b80f3c41ef63ed0b39eee3153d448b",
+    "tools/scale-model/model/data/wd.png": "a84401ca8c91fc354cefe89c2cc88e89f902d5fdc4257978ad53b08e4b776651",
+    "tools/scale-model/model/data/wl.png": "acfbaba54e7ce5045400deadc1e1e300b2700711faeafe57a6fe7e81c45561dd",
+    "tools/scale-model/model/data/z.png": "c4ee2accedc4128d5b0320970d2d851beaa8c83ee2835b9483e9c77a6d03a9f1",
+    "tools/scale-model/model/src/00-head.html": "0240e50cf9d25d562443b2bdb73cd5241dcedc482e4017476b1706d4ffffe0d5",
+    "tools/scale-model/model/src/10-panel.html": "1f67fa0ae10d48db7d6c3b73c3fa7d922e982d1e4d4abd7a79153066a1d6b8e6",
+    "tools/scale-model/model/src/20-decode.js": "ffbb11d85831d347c9a35485dea6ec9801ad5c0e948581d9e4b5817f04fb12da",
+    "tools/scale-model/model/src/21-scene.js": "269920599bc22f9bda7fd2732607b5c69edd17a1dd3ac366df1bb80cede4bf04",
+    "tools/scale-model/model/src/22-temp-ramp.js": "abe38a548207a0582ecd88f04db3584a3c70a0f7202a3ad774f459e25d7d53ca",
+    "tools/scale-model/model/src/23-wind.js": "cb6d0235a906c92c95c94df1660d4c0b025930c81abdc989e3bd88bc0c77ae51",
+    "tools/scale-model/model/src/24-temp-map.js": "1814384b327bba7a4817b9a61e9e874dc5761923824a47da05728f268f1a2820",
+    "tools/scale-model/model/src/25-zones.js": "3c5c462b42167ece196e0ddf9c1c4f032d58e9e94c557361d79fa3d5efaef9d9",
+    "tools/scale-model/model/src/26-overlay.js": "7941dd3334e14033f5507442fc19adb8eecacfa516d52a077bea6ba2616e4d0a",
+    "tools/scale-model/model/src/27-water.js": "83c0032ba70c7657b65da9a3d1c4b8d408a3a9b2e10e943b3f3e34ac3c203147",
+    "tools/scale-model/model/src/30-vents.js": "ab40717fc33f00d2300f38e43e0ec55991b2df1b05bda5754085e77beb2a764e",
+    "tools/scale-model/model/src/31-orbit.js": "3e23bc1e92fa4d1898d930f2ff093374a61f5e91e615ad7a7b70a74d569c5fae",
+    "tools/scale-model/model/src/32-fly.js": "5b26011c327bbf2de41565f5b99a3e7f379bb70a6136303ae5dee3056f04a435",
+    "tools/scale-model/model/src/33-hover.js": "3e284b17159db753c4bc3e4d933e28b596a8851da2636fd22cd1993031e5b607",
+    "tools/scale-model/model/src/40-regions.js": "5efbc9bfbc74533f1914e07f3fc481c81fec4b2b291ea25746699e8792517186",
+    "tools/scale-model/model/src/41-region-layers.js": "bb736f6a0e8a1ded3db688975ff1ccf3414c7689d311de3564a6718ee327e661",
+    "tools/scale-model/model/src/42-labels.js": "90eddeed1bb30b8110f81a8c332b560fb160a810ee340f7af8e205e8c3113ace",
+    "tools/scale-model/model/src/43-region-list.js": "4adbf8ae07cf59e642b973154c7526ab82e0ba9853078347bc7a13884dc084db",
+    "tools/scale-model/model/src/44-region-draw.js": "57b51ad83f36f6d1c4902404b950cbe992473dc38aec378fab55251bba15514e",
+    "tools/scale-model/model/src/45-region-status.js": "7ac163e76efb0e0941d94f78f9f900bfd19e2bb55561880f5cc5f7803b295279",
+    "tools/scale-model/model/src/50-measure.js": "6ddf6aacd6e32129375d44d2d9d48de42dc4dea4df59bbb0fc5b753928ef8b35",
+    "tools/scale-model/model/src/51-region-store.js": "e928208079fa1dd90675954fc95bf4d0561c67bd772044566c285cff10528aa6",
+    "tools/scale-model/model/src/60-settlements.js": "c1bcd2ba9f4f990006723b6b4a58fbf6ff5544504c307e1f355d9b1731bffede",
+    "tools/scale-model/model/src/90-ui.js": "c2c0590bb4dd047907c508e8bd66cf6946f0b13be12fd1b8f24d90f30b4b9da4",
+    "tools/scale-model/model/src/99-tail.html": "5c3e2e7dff568dec32a2c07cd6f775c8634a9963e2334ee057dcd4d0f32c6e8e"
+   },
+   "listings": {},
+   "outputs": {
+    "tools/scale-model/model/dist/scale-model.html": "63245e56a1e27525266d97638a6c9ac414d0e1eade95186b296ca4cce3ada83e"
+   },
+   "outputs_raw": {
+    "tools/scale-model/model/dist/scale-model.html": "63245e56a1e27525266d97638a6c9ac414d0e1eade95186b296ca4cce3ada83e"
+   }
+  }
+ }
+}

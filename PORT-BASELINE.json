@@ -785,8 +785,8 @@
    "sha256": "2640e7a1f50a00cc7bc0e3f4313421905e97832f8e0071c43cbde9b5d63692ff"
   },
   "kits/ancients/dist/strongbow-today.html": {
-   "bytes": 2007801,
-   "sha256": "a58ba0c301d4d814d1adc6a370b52eea981ff7985c5cb48633353850a6aeb2e2"
+   "bytes": 2027445,
+   "sha256": "aa7b9ba0bcc3230c2d2777c8872259b12ab93237450491d3187f76c369efc131"
   },
   "kits/ancients/dist/strongbow.html": {
    "bytes": 857715,
@@ -833,8 +833,8 @@
    "sha256": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 2210863,
-   "sha256": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+   "bytes": 2294798,
+   "sha256": "0bb372c65c728eb072c44991a5b2571b4f36b0a7cd12fe16f4a2013a5e4f0073"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2570483,
@@ -853,12 +853,12 @@
    "sha256": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 769493,
-   "sha256": "1dec8b0f8d48f003f5bd0a7878975f7a83149d2ea223eaa79b6d74a549bba0d6"
+   "bytes": 938408,
+   "sha256": "e763a3127a3fe90029cc0e15a4b1d9ff6458a02996d8c9d88ba9901a1edbe2e5"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 10336973,
-   "sha256": "8b02c6406101760187f5d5f713d22da20a952cca23553e0b03b71f99910cefe8"
+   "bytes": 10304748,
+   "sha256": "9b6b1a5d279f494fbc0c80dfacfd08f903d639151c719a43cc2e952c8831e3b7"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 261765,
@@ -1201,8 +1201,8 @@
    "sha256": "0237a73849bffeccdc08852816e28606c6c35cf7231706efab755e956f267133"
   },
   "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": {
-   "bytes": 4734822,
-   "sha256": "a16bcb9f38d829b223a561cdc6b82673da869be711ac555e4d9ec890b26ba5c9"
+   "bytes": 4811556,
+   "sha256": "8ec495098c4bad58ff96b3fc8d7cac36f6f218345689441317bba68b6c1158d9"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
    "bytes": 8874743,
@@ -1349,8 +1349,8 @@
    "sha256": "9257ada7ff9fcc427412c29e180fbd1040236f21f320aa3e9b7b61c7c72f644a"
   },
   "settlements/pher/dist/pher.html": {
-   "bytes": 8924162,
-   "sha256": "6215940afde03649269882e1d81899a9b80b7a047c9274c67e54b12d00211333"
+   "bytes": 9056042,
+   "sha256": "6744b76e3dd2b2e7876fcb5f2ad5aa74ac2260ac441774a482b6d0af8ac7d921"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
    "bytes": 4342913,
@@ -1529,12 +1529,8 @@
    "sha256": "efedacdf87fae06ae85cc20164498bb7001bc23494ee5f60dc5044d91ca97771"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 6479284,
-   "sha256": "b5b4ca87b0476b22030e1576861f2255520d07b249701b675571726ca266f4e3"
-  },
-  "settlements/xanadu/dist/xanadu-scrap.html": {
-   "bytes": 6351996,
-   "sha256": "563969ac9ea052753128b1ee5af20a3f2b3a9d0bb981fd591d72ede448d73cfb"
+   "bytes": 9104549,
+   "sha256": "8736428908e07a05c9f1b5815d8de4d76e694b1f2596c7f4ce0f52180e7d0223"
   },
   "settlements/xanadu/dist/xanadu.html": {
    "bytes": 6262060,

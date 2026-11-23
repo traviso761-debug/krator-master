@@ -3590,6 +3590,7 @@
     "core/city/35-city-squares.js": "e73a096d0cfa6d5e3c11361bf52ddfa72bacde5ff15e537a554d2623b79c7b18",
     "core/city/36-city-covered.js": "704a859d1e428367e1ec7353fc60cecdf763a7c60866976349d327634fba2cb3",
     "core/city/37-city-grid.js": "f1dd1cc2e1245f762acde7c1887f0cbf1cb395c2a1a6cb23ea6da77bb307b562",
+    "core/city/37-city-hillside.js": "e270e192eb318ab87ac65cc29394302732f952ac8349fd5a37833a7444320365",
     "core/city/40-city-kcity.js": "a4b5b225afc98c800c38abf6ee0b1f79156974eeccfc1c84fd669ded37fb09f5",
     "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
@@ -4124,7 +4125,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "core/city": "554d91adf6260cd2ddac1a2380b9247da678b345d82f2154354f9a8c916efa3d",
+    "core/city": "52c49dab111d3db35b0f8dab537f29b3e205fc9fda88dd70d24b285453f34ecc",
     "core/lod": "ce04505dcf0d6e6739a489ddb83f6692b9c08a79cfbe7ef33f6cf4585055624a",
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
     "kits/ancients/src": "f1ee7008fa42acb08c5518a3bf28213673c813a68692f543b29b3607ea519bc0",
@@ -4189,18 +4190,18 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-strongbow-today.json": "7915f27fda64c1d7be6e42e96747511a879b16c47e59ec8d9d8008f96ff7b4ee",
+    "kits/ancients/build-manifest-strongbow-today.json": "38d72925852c00e054cb222efc5189d2dd9ea9e6fbf0ca322dd1a422f59b118b",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/strongbow-today.html": "a58ba0c301d4d814d1adc6a370b52eea981ff7985c5cb48633353850a6aeb2e2"
+    "kits/ancients/dist/strongbow-today.html": "aa7b9ba0bcc3230c2d2777c8872259b12ab93237450491d3187f76c369efc131"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-strongbow-today.json": "5b4098a66469c813b59091435f319f96201edc3261f0c9a9df939b19b7d01714",
+    "kits/ancients/build-manifest-strongbow-today.json": "eed16dd8ba59a584ab6b5a5311cd4a93eeb5cc6cae25aeae608a9b9a4ec537ae",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
     "kits/ancients/dist/ancients.tex.xanadu-2.js": "7503fe94ba1a6aef4913c3cad9745cf6d7167d1529833981c9a17e0bb342cf46",
     "kits/ancients/dist/ancients.tex.xanadu.js": "2f50bf4d1e032c7a6b33fa398ddffa2388623ef2713b7005f3a50991bc22f1a9",
-    "kits/ancients/dist/strongbow-today.html": "a58ba0c301d4d814d1adc6a370b52eea981ff7985c5cb48633353850a6aeb2e2"
+    "kits/ancients/dist/strongbow-today.html": "aa7b9ba0bcc3230c2d2777c8872259b12ab93237450491d3187f76c369efc131"
    }
   },
   "build.py --target theodiga": {

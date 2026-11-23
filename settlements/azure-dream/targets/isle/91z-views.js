@@ -20,6 +20,8 @@ const VIEWS=(function(){
  V['Toward Erehwon']=[0,T.hall.y+16,-500,adWx(841)-AD.WX,0,adWz(1517)-AD.WZ];
  /* the terraced orchards either side of the stair, from over the east ones looking west across it */
  {const O=AD_ORCHARDS,e=O.find(p=>p.id==='orchard:east:persimmon'),w=O.find(p=>p.id==='orchard:west:apricot');if(e&&w)V['The orchards by the stair']=[e.x+40,e.o.y+26,e.z+40,w.x,w.o.y,w.z];}
+ /* inside the great monastery's assembly hall (90aj builds it when the eye comes near), from its door end toward its head */
+ {const m=AD_PLACE.find(p=>p.id==='great-monastery');if(m){const y=m.o.y+1.8+1.7,e=loc(m.x,m.z,0,-8.3+6.5,m.ry),t=loc(m.x,m.z,0,-8.3-7,m.ry);V['Inside the assembly hall']=[e[0],y,e[1],t[0],y-.4,t[1]];}}
  /* the Dream Road out of the back gate, and the relay lamp 1 km up it */
  {const a=AD_DREAM.a,r=AD_DREAM.relay,d=AD_SIGNAL.dir;V['Up the Dream Road']=adEye(a[0]+d[0]*30+6,a[1]+d[1]*30,r.x,r.z,0);
   V['The relay lamp']=[r.x+d[0]*-46+20,r.o.y+16,r.z+d[1]*-46,r.x,r.o.y+12,r.z];V['From the relay to the Hall']=[r.x+4,r.o.y+21,r.z+6,0,AD_TERR.hall.y+8,-430];}

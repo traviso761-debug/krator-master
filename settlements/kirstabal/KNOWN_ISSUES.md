@@ -50,7 +50,7 @@ Nothing builds on them yet: the sim's builders (core/simulation 77, as the isle 
   (kits/interiors/sets/xanadu.js or 69e6), not the town's. No view looks inside: a view in a room would stand in a solid
   block with the interiors off.
 - **The wall's stone is a stand-in**: `brick.dark` tinted slate grey (families `xSlate`, `xSlateD`) until a coursed-slate set
-  is made (`core/materials/PROMPTS-NEEDED.md` section 57). The curtain steps down the slope in runs of at most 14 m, each
+  is made (`core/materials/PROMPTS-NEEDED.md` section 59). The curtain steps down the slope in runs of at most 14 m, each
   set at the lowest ground under it, so its top steps rather than following the ground. The moat's water follows the apron's
   slope (it falls about 6 m from the inland side to the lake side) with no weirs drawn; its trench is drawn by the town's 6 m
   ground cells, so its slopes are coarse up close.

@@ -43,7 +43,7 @@ if(typeof TB_PLACE!=="undefined"){const Q=window._thalaba||{},K=Q.byKind||{};   
   detail:Lf.on?(Lf.actors+' actors of '+Lf.people+', '+Lf.places+' places, '+Lf.nodes+' walk nodes; '+Lf.problems+' problems'+(Lf.problems?' ('+JSON.stringify(Lf.firstProblems)+')':'')+
    ', '+Lf.stuck+' without a task, '+Lf.moving+' walking, '+Lf.indoors+' indoors, '+Lf.shown+' drawn; declared in '+Lf.ms+' ms'):('the simulation did not start'+(Lf.err?': '+Lf.err:''))});
  const E=Lf.exp||{},ph=d=>(typeof TBL!=='undefined'&&TBL.phaseAt&&typeof SIM!=='undefined'&&SIM.CAL)?TBL.phaseAt(d*1440+720):'no calendar',
-  XP={spring:ph(0),muster:ph(34),summer:ph(61),count:ph(154),winter:ph(250)};
+  XP={spring:ph(0),muster:ph(39),summer:ph(71),count:ph(166),winter:ph(250)};
  R.push({name:'expedition-season',ok:!!(Lf.on&&E.devisers===150&&E.dalab===40&&XP.spring===null&&XP.muster==='muster'&&XP.summer==='away'&&XP.count==='count'&&XP.winter===null),
   detail:'the hands: the Devisers\' '+E.devisers+' (150), the Dalab party '+E.dalab+' (40); the windows by sim day: '+JSON.stringify(XP)+'; now '+Lf.phase});}
 return R;}"""

@@ -94,10 +94,11 @@ const TBL=(function(){const O={inited:false,problems:[],CELL:12};
   O.ROLES.push(R(h+'.away',org,XS.away,{AWAY:{ids:['away:godshearth']}}));
   O.ROLES.push(R(h+'.count',org,XS.count,{UNLOAD:{ids:[store]}}));}
  /* the year (core/simulation 77-sim-6-season.js on core/clock's: KCLOCK.YEAR starts the sim's day 0 at year day 259, mid-
-    spring, its summer centred on day 350): the muster the week from year day 290, the expedition from 297 to 45 (the summer
-    and the autumn's start, about 113 days), the count the week from 45. *Proposed* (PLAN.md section 2: "they muster here each
-    spring") */
- O.WINDOWS={muster:[290,297],expedition:[297,45],count:[45,52]};
+    spring, its summer centred on day 350): the expedition 302-57, the summer; the muster the week before it in late spring
+    (PLAN.md section 2: "they muster here each spring"), the count the week after it. 302-57 is the tune's `expedition`
+    window (core/region/data/xan-tune.js T.calendar, 120-240) turned half a year to the southern year, as the owner asked
+    ("Turn the tune to the south", 2026-11-22); the tune itself is not turned yet (KNOWN_ISSUES.md) */
+ O.WINDOWS={muster:[295,302],expedition:[302,57],count:[57,64]};
  O.phaseAt=function(m){const S=SIM.season(m);if(!S)return null;const w=S.windows||{};return w.muster?'muster':w.expedition?'away':w.count?'count':null;};
  /* every hand's role for the window minute m falls in (its own role out of season); returns how many changed */
  O.applySeason=function(m){const ph=O.phaseAt(m);let n=0;O.phase=ph;
