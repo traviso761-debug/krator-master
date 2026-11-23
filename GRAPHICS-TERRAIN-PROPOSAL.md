@@ -611,6 +611,43 @@ Once the collected sessions are merged and Stage 8 lands, the next graphics expa
 - **Glazed Domes, Tilework & Masonry (`M1`–`M4`):** Bring Xanadu's glazed domes, Persian/Turkish tilework, carved eaves, and lacquerware onto `hemi-oct8` + `mipVariance` specular AA (eliminating curved highlight banding), `M3` planar POM on hero ashlar/brick walls, and `M4` concave cavity + base grounding.
 - **Erewhon & Sultanate Interiors (`I1`–`I4`, Gate 5):** Export `interiors.json` v2 (`core/interiors/10-core-roomlight.js` `KROOMLIGHT`) for Erewhon and `kits/xanadu` interiors (`89y-xa-interiors.js`, `kits/interiors/sets/xanadu.js`), wire native Godot `KInteriorsLight` + `library_interior.gdshader` (`INDOOR_LAYER = 2` sun/sky mask, BFS portal daylight + lamp bounce, room-gated `OmniLight3D` pool with 2 shadowed hero lamps, per-vertex dihedral corner AO), and verify with a Xanadu deterministic route and Gate 5 Sun-Leak Probe.
 
+## 12d. All-biome and all-kit shared core steps for the all-builds rebuild *(2026-11-22)*
+
+Because `core/biome` (`231` builds / `540` pages), `core/materials/record` (`279` builds / `758` pages), `core/catalog` (`53` builds / `263` pages), and `core/engine` (`16` builds / `74` pages) reach nearly every LFS HTML page in the repo, the following shared-core upgrades are designed to land **once, inside the all-builds rebuild**, lifting every biome and kit simultaneously without extra intermediate rebuild passes:
+
+### A. All-Biome Core Steps (`core/biome/*`, `core/terrain/*`, `godot/shaders/foliage.gdshader` & `bark.gdshader` — `540` pages)
+
+1. **`B1` (`M5`) `[G shader]` Normal-aware leaf transmittance (`core/biome/30-core-foliage.js:361-365`, `godot/shaders/lib/foliage.gdshaderinc`):**
+   - Today `foliageHook` computes `_bk = pow(max(dot(_bV, uSunDir), 0.0), 6.0)` with no leaf normal, illuminating leaves whose sunlit side is occluded.
+   - Multiply `_bk` by a leaf-normal gate (`clamp(-dot(_bN, uSunDir) * 0.65 + 0.35 * (1.0 - abs(dot(_bN, uSunDir))), 0.0, 1.0)` using `vFlN` when `o.aN` else `transformedNormal`), and mirror the exact normal gate in `foliage.gdshaderinc` (`BACKLIGHT`).
+2. **`B2` (`M4` + `M5`) `[G data]` Baked crown self-occlusion & trunk/boulder base grounding (`core/biome/20-core-kit.js`):**
+   - In `BIO.bake()`, multiply tree-crown clump `_COLOR` by radial-and-height crown occlusion (`0.62` low/interior -> `1.00` outer/top canopy) so both Web and Godot glTF MultiMeshes inherit volumetric crown depth with zero runtime shader taps.
+   - Bake a `0.72 .. 1.00` base-height contact ramp over the lowest `0.35 m` of merged `bark` and `solid` rock/trunk buckets (`M4` grounding, zero terrain-texture reads).
+3. **`B3` `[web]` Foliage & bark shader-program deduplication (`core/biome/30-core-foliage.js:304,372,393`, `TODO.md`):**
+   - Move `o.swayA` (`uSwayA`) and `iridBarkMat` `colA`/`colB` (`uIridA`, `uIridB`) from interpolated GLSL float literals into per-material uniforms, and key `customProgramCacheKey` strictly on structural shader flags (`aN`, `irid`, `axis`, `swayW`, `spin`, `ground`, `backlit`, `season`, `a2c`, `BIO._fx()`). Collapses `50–90` foliage programs per biome/settlement page down to `3–6` programs (`~2–5 s` faster WebGL link time, pixel-identical).
+4. **`B4` (`A0.3` + `R7`) `[web]` Default-on biome indexing, LOD culling, `A2C` & card-fringe dilation (`core/biome/20-core-kit.js`, `44-core-stage.js`):**
+   - Enable `BIO.INDEX_ITEMS = true` and `BIO.setA2C(renderer)` by default in `44-core-stage.js` (and `BIO.LOD.merge = true; BIO.LOD.minTris = 4000; BIO.LOD.cull = true; BIO.LOD.fade = 0.15` on multi-pass station hosts).
+   - Fix `BIO.libSwap` (`20-core-kit.js:242-245`) to dilate `alpha < 48` texels with the sheet's mean opaque RGB on a `willReadFrequently` canvas once per cached library card, eliminating dark mipmap fringes across all 231 biome builds.
+5. **`B5` (`S6` + `A0.2`) `[G data]` Drawn-ground audits & chromatic land-shape tint (`core/biome/20-core-kit.js`, `40-core-place.js`, `core/terrain/`):**
+   - Point `BIO.attachAudit`, `cliffOld`, and `57-core-water-audit.js` at `KDRAWN.h` whenever `core/drawn` is loaded so coarse-triangle plant float is caught automatically.
+   - Upgrade vertex crease/lift ground tinting (`S6`) from achromatic `±6%` to chromatic hollow/nose & aspect-moisture tinting across shared terrain builders.
+
+### B. All-Kit Core Steps (`core/materials/*`, `core/engine/*`, `core/catalog/*`, `core/furnish/*`, `kits/interiors/*`, `godot/shaders/` — up to `758` pages)
+
+1. **`K1` (`M1` + `M2` + `M4`) `[G data]` / `[G shader]` Material-library uniform dedup, sine-free breakup & `mipVariance` AA (`core/materials/record/25-matlib-host.js`, `opt/69a-world-uv.js`, `tools/textures/pack.py`):**
+   - Replace literal GLSL floats in `KMAT.specularHook`, `KMAT.breakupHook`, and `69a-world-uv.js` with per-material uniforms (`uKmSpec`, `uKmBreak`, `uWuvScale`), collapsing `30–45` duplicate `MeshStandardMaterial` programs per kit/settlement down to `1–2` programs; replace `sin()` in `kmH` with a sine-free hash matching `godot/shaders/lib/breakup.gdshaderinc`.
+   - Have `pack.py` emit pre-quantisation normal `mipVariance` (`8` floats) into every kit's `pack.json` (`M2` specular AA) and separate concave pore/mortar `cavity` from convex edge `wear` (`M4`).
+2. **`K2` (`M4` + `I1`–`I4`) `[G data]` Building-kit engine grounding, hero bevels & universal `KROOMLIGHT` (`core/engine/30-geo.js`, `91i-interiors.js`, `kits/interiors/src/49-exports.js` & `50-shell.js`):**
+   - Add per-vertex plot-base grounding (`0.72 .. 1.00` over `y = 0 .. 0.30 m` on exterior walls/posts) and an opt-in `boxBevel()` chamfered primitive (`44` tris vs `12` for near-tier plinths, piers, and lintels where budget permits) in `core/engine/30-geo.js`.
+   - Wire `core/interiors/10-core-roomlight.js` (`KROOMLIGHT.buildTable`, `vertexCornerAO`, `pickPool`) directly into `core/engine/91i-interiors.js` and `kits/interiors` (`50-shell.js`, `49-exports.js`), giving **every kit with an interior set** (`kits/interiors/sets/*.js`) automatic `I1` indoor sun/sky masking, `I2` discrete doorway-portal daylight, `I3` room-gated lights, `I4` dihedral corner AO, and `interiors.json` v2 exports for Godot `KInteriorsLight`. Re-baseline `core/engine/fingerprint.json` once after visual verification.
+3. **`K3` (`M1` + `M4`) `[G data]` Master catalog smooth-normal promotion & batched foot grounding (`core/catalog/krator-furniture-core.js`, `krator-furniture-detail.js`, `core/furnish/50-core-furnish.js`):**
+   - Promote smooth/curved catalog detail families (`lacquer`, `ceramic`, `gold`, `metal`, `bronze`, `nacre`, `obsidian`, `tile`) from `xy6` to `8-bit` (`xy8` on Web, `hemi-oct8` + `mipVariance` in Godot), eliminating specular stepping across all `1,696` catalog pieces (`53` builds).
+   - Bake subtle foot-contact darkening (`0.76 .. 1.00` over local `y = 0 .. 0.18 m`) inside `KF.batch({indexed: true})` so every batched table, shelf, chest, and vessel grounds onto its floor in both engines at zero runtime cost; fix `rec.scale == null ? 1 : rec.scale` in `50-core-furnish.js:65` and verify `core/furnish/fingerprint.py`.
+4. **`K4` (`I1`–`I3`) `[G data]` / `[web]` Shared `KROOMLIGHT` Web host hook replacing copied `nlvTex` (`core/interiors/20-core-roomlight-host.js`):**
+   - Extract Longsong's `uIndoorMask` + `room_light_tex` `KHOOK` shader layer (`89z-ls-atmos.js`) into `core/interiors/20-core-roomlight-host.js` so the four Yuni-lineage builds (`girder`, `yuni`, `locus`, `mavs-refuge`) and standalone kit sheets (`highlands`, `iziz-vernacular`, `xanadu`) can drop their pasted `nlvTex` copies onto one shared module.
+5. **`K5` `[G native]` Godot opaque `library.gdshader` split (`godot/shaders/library.gdshader` + `library_cutout.gdshader`, `godot/krator/kmat.gd`):**
+   - Remove unconditional `ALPHA = 1.0; ALPHA_SCISSOR_THRESHOLD = 0.0;` from `godot/shaders/library.gdshader` (moving `alpha_test > 0.0` materials onto a dedicated `library_cutout.gdshader`), restoring Godot's opaque depth prepass, hardware Early-Z rejection, and vertex-only shadow-map passes across **every** building kit and town in Godot (proven in Stage 7 `library_interior.gdshader`).
+
 ## 13. Sources
 
 - Schott, Paris, Fournier, Guérin, Galin: [Large-scale terrain authoring through interactive erosion simulation](https://history.siggraph.org/learning/large-scale-terrain-authoring-through-interactive-erosion-simulation-by-schott-paris-fournier-guerin-and-galin) (TOG 2023); [code](https://github.com/H-Schott/StreamPowerErosion)
