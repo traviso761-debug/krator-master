@@ -727,6 +727,173 @@
     }
   }
 
+  /* ================================================================ vassal set (Drum & Torus, PLAN-SCRAP / sw-arcology PLAN §3) */
+  function tenement(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), pan = F.pick(PANEL), porph = F.pick(PORPH), verd = F.pick(VERD), bc = shade(c, -0.1);
+    const B = { x: 0, z: 0, w: 16.4, d: 15.6 };
+    F.box(0, 0, 0, B.w + 0.8, 0.55, B.d + 0.8, 0, bas, FB);
+    /* U-shaped 3-storey battered stone & Ancient-panel courtyard tenement around a +z gallery court */
+    F.box(0, 0.55, -4.4, B.w, 10.2, 6.4, 0, c, FS);
+    [-1, 1].forEach(function (sx) {
+      F.box(sx * 5.6, 0.55, 1.8, 5.2, 9.4, 6.0, 0, shade(c, -0.04), FS);
+      K.plates({ x: sx * 5.6, z: 1.8, w: 5.2, d: 6.0 }, 0, 6.4, 3.3, { pat: 'band', band: porph });
+      K.slit({ x: sx * 5.6, z: 1.8, w: 5.2, d: 6.0 }, 0, 0, 4.0, 0.42, 1.45, { lit: sx > 0 });
+      K.pylon(sx * 7.8, 4.6, 9.95, 0.45, 1.8, bc);
+    });
+    K.plates({ x: 0, z: -4.4, w: B.w, d: 6.4 }, 0, 7.2, 3.4, { pat: 'band', band: porph });
+    K.carapace(0, -4.4, 10.75, B.w - 0.6, 6.2, 2.2, { n: 3, col: verd });
+    K.door({ x: 0, z: -4.4, w: B.w, d: 6.4 }, 0, 0, 0.55, 1.45, 2.45, { wall: c, leaf: porph, diaC: GOLD, lamp: true });
+    [-3.6, 3.6].forEach(function (u) {
+      K.slit({ x: 0, z: -4.4, w: B.w, d: 6.4 }, 0, u, 4.1, 0.45, 1.5, { lit: true });
+      K.slit({ x: 0, z: -4.4, w: B.w, d: 6.4 }, 0, u, 7.5, 0.45, 1.4, { lit: u < 0, dia: false });
+    });
+    /* exterior stone stair & cable-railed court gallery */
+    F.box(0, 3.8, -0.5, 6.0, 0.24, 1.5, 0, STEEL, FT);
+    K.rail(-2.9, 0.2, 2.9, 0.2, 4.04);
+    K.flight(-2.2, 3.8, -2.2, 0.3, 0.55, 4.04, 1.25, bc);
+    K.banner({ x: 0, z: -4.4, w: B.w, d: 6.4 }, 0, 0, 9.8, 2.6, porph);
+  }
+
+  function vsSmithy(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), pan = F.pick(PANEL), porph = F.pick(PORPH), bc = shade(c, -0.12);
+    F.box(0, 0, 0, 13.4, 0.45, 11.2, 0, bas, FB);
+    const B = { x: -2.8, z: -1.0, w: 6.8, d: 8.2 };
+    F.box(B.x, 0.45, B.z, B.w, 5.2, B.d, 0, c, FS);
+    K.plates(B, 0, 3.6, 2.0, { pat: 'band', band: porph });
+    K.tankDome(B.x, B.z, 5.65, 3.1, 1.6, pan, { ribs: 8, fin: 0.6 });
+    K.door(B, 0, 0, 0.45, 1.25, 2.25, { wall: c, leaf: STEEL, diaC: BRONZE, lamp: true });
+    /* basalt forge stack with gold diamond & hull-plate anvil hood on +x */
+    F.frustum(2.8, 0.45, -2.4, 1.35, 0.9, 7.8, 0, bas, FB, 4);
+    K.dia({ x: 2.8, z: -2.4, w: 2.1, d: 2.1 }, 0, 0, 5.8, 0.48, 0.04, GOLD, 'gold');
+    F.cyl(2.8, 8.25, -2.4, 0.45, 0.65, 0, STEEL, FT);
+    F.box(3.2, 0.45, 0.8, 4.8, 0.18, 5.6, 0, bc, FS);
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) { F.box(3.2 + q[0] * 2.1, 0.63, 0.8 + q[1] * 2.4, 0.18, 3.1, 0.18, 0, STEEL, FT); });
+    F.ell(3.2, 3.73, 0.8, 2.5, 0.85, 2.8, 0, F.pick(VERD), FV);
+    F.box(2.8, 0.63, -1.1, 1.5, 0.85, 1.2, 0, bas, FB);
+    F.box(2.8, 1.48, -1.1, 0.9, 0.16, 0.7, 0, GLOW, 'glow');
+    K.jar(5.2, 3.8, 0.45, 1.0); K.crate(4.4, 4.1, 0.45, 0.9);
+  }
+
+  function vsBakery(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), pan = F.pick(PANEL), porph = F.pick(PORPH), cloth = F.pick(SAIL);
+    F.box(0, 0, 0, 13.2, 0.4, 11.2, 0, bas, FB);
+    const B = { x: 1.8, z: -0.6, w: 8.2, d: 8.4 };
+    F.box(B.x, 0.4, B.z, B.w, 4.8, B.d, 0, c, FS);
+    K.parapet(B, 5.2, 0.45, 0.35, shade(c, -0.1));
+    K.plates(B, 0, 3.4, 1.7, { pat: 'band', band: porph });
+    K.door(B, 0, -2.0, 0.4, 1.15, 2.15, { wall: c, leaf: porph, diaC: BRONZE });
+    K.slit(B, 0, 1.8, 1.5, 0.5, 1.4, { lit: true });
+    /* domed basalt & tank-head beehive oven on -x + ration bread canopy in front */
+    F.cyl(-4.0, 0.4, -1.2, 2.25, 1.8, 0, bas, FB);
+    K.tankDome(-4.0, -1.2, 2.2, 2.2, 1.65, pan, { ribs: 6, fin: 0.35 });
+    F.cyl(-4.0, 3.85, -1.2, 0.32, 3.4, 0, STEEL, FT);
+    F.box(-4.0, 0.9, 1.05, 0.9, 0.7, 0.3, 0, GLOW, 'glow');
+    K.canopy(1.8, 4.3, 0.4, 5.4, 2.0, cloth);
+    F.box(1.8, 0.4, 4.1, 4.4, 0.95, 0.65, 0, TIMBER, FW);
+    K.jar(-1.6, 4.2, 0.4, 1.1); K.jar(-0.8, 4.4, 0.4, 0.9);
+  }
+
+  function vsBrewery(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), pan = F.pick(PANEL), porph = F.pick(PORPH), verd = F.pick(VERD);
+    F.box(0, 0, 0, 15.2, 0.45, 11.2, 0, bas, FB);
+    const B = { x: -2.4, z: -0.6, w: 9.2, d: 8.6 };
+    F.box(B.x, 0.45, B.z, B.w, 6.6, B.d, 0, c, FS);
+    K.carapace(B.x, B.z, 7.05, B.w - 0.5, B.d - 0.6, 2.1, { n: 3, col: verd });
+    K.door(B, 0, -1.6, 0.45, 1.3, 2.3, { wall: c, leaf: porph, diaC: GOLD, lamp: true });
+    K.slit(B, 0, 2.0, 1.8, 0.45, 1.5, { lit: true });
+    K.slit(B, 0, 2.0, 4.3, 0.45, 1.3, { lit: false, dia: false });
+    /* twin salvaged copper/panel brewing stills on +x with bronze condenser bridge */
+    [[-1.8, 5.2], [1.8, 4.6]].forEach(function (q) {
+      const top = K.tank(4.6, q[0], 0.45, 1.65, q[1], pan);
+      K.tankDome(4.6, q[0], top, 1.68, 0.95, BRONZE, { ribs: 6, fin: 0.5 });
+    });
+    F.rod(4.6, 6.1, -1.8, 1.8, 5.8, -1.0, 0.14, BRONZE, FZ);
+    K.banner(B, 0, 0.4, 6.5, 2.4, porph);
+    K.jar(4.8, 4.2, 0.45, 1.15); K.crate(3.4, 4.4, 0.45, 0.95);
+  }
+
+  function vsWorkshop(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), pan = F.pick(PANEL), porph = F.pick(PORPH), bc = shade(c, -0.1);
+    F.box(0, 0, 0, 13.4, 0.45, 11.2, 0, bas, FB);
+    const B = { x: 0, z: -0.5, w: 11.8, d: 8.8 };
+    F.box(B.x, 0.45, B.z, B.w, 6.2, B.d, 0, c, FS);
+    K.plates(B, 0, 4.1, 2.4, { pat: 'band', band: porph });
+    K.parapet(B, 6.65, 0.45, 0.35, bc);
+    /* Ancient-glass clerestory lantern framed in salvaged I-beams on roof */
+    F.box(0, 6.65, -0.5, 6.8, 1.55, 3.6, 0, GLASSC, 'glass');
+    F.box(0, 6.85, -0.5, 4.2, 1.0, 2.0, 0, GLOW, 'glow');
+    F.pyrRoof(0, 8.2, -0.5, 7.4, 1.05, 4.2, 0, pan, FP);
+    K.door(B, 0, -2.6, 0.45, 1.35, 2.3, { wall: c, leaf: TIMBERS[0], panel: true, diaC: BRONZE, lamp: true });
+    [-0.2, 2.2, 4.2].forEach(function (u) { K.slit(B, 0, u, 1.6, 0.55, 1.6, { lit: u < 3 }); });
+    [-5.9, 5.9].forEach(function (x) { K.pylon(x, 3.9, 6.65, 0.42, 1.5, bc); });
+    K.crate(-4.6, 4.5, 0.45, 1.0); K.jar(4.8, 4.4, 0.45, 1.0);
+  }
+
+  function vsBathhouse(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), pan = F.pick(PANEL), porph = F.pick(PORPH), bc = shade(c, -0.12);
+    F.box(0, 0, 0, 19.2, 0.55, 17.2, 0, bas, FB);
+    const B = { x: -1.4, z: -0.4, w: 14.6, d: 13.6 };
+    F.box(B.x, 0.55, B.z, B.w, 6.4, B.d, 0, c, FS);
+    K.plates(B, 0, 4.5, 2.3, { pat: 'band', band: porph });
+    K.parapet(B, 6.95, 0.5, 0.4, bc);
+    /* twin ribbed Ancient tank-head steam domes crowning the caldarium & tepidarium */
+    K.tankDome(-4.6, -0.4, 6.95, 3.6, 2.6, pan, { ribs: 10, fin: 0.9, gold: true });
+    K.tankDome(2.2, -0.4, 6.95, 2.9, 2.1, shade(pan, -0.05), { ribs: 8, fin: 0.7 });
+    K.door(B, 0, -1.4, 0.55, 1.65, 2.65, { wall: c, leaf: porph, diaC: GOLD, diaK: 0.6, lamp: true });
+    [-5.6, 2.6, 4.8].forEach(function (u) { K.slit(B, 0, u, 2.2, 0.48, 1.6, { lit: true }); });
+    /* salvaged vertical boiler tank & steam pipe on +x */
+    const bTop = K.tank(7.6, -1.8, 0.55, 1.6, 5.8, STEEL);
+    F.cyl(7.6, bTop, -1.8, 0.32, 3.2, 0, STEEL, FT);
+    F.rod(7.6, 4.4, -1.8, 5.9, 4.4, -0.8, 0.16, BRONZE, FZ);
+    K.banner(B, 0, -4.4, 6.4, 2.6, porph); K.banner(B, 0, 1.6, 6.4, 2.6, porph);
+  }
+
+  function vsGranary(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), pan = F.pick(PANEL), porph = F.pick(PORPH), bc = shade(c, -0.1);
+    F.box(0, 0, 0, 21.2, 0.65, 17.2, 0, bas, FB);
+    const B = { x: 0, z: -1.4, w: 18.6, d: 11.8 };
+    F.box(B.x, 0.65, B.z, B.w, 8.2, B.d, 0, c, FS);
+    /* girder flying buttresses along both flanks & 3 tribute tank-head domes along ridge */
+    [-6.2, 0, 6.2].forEach(function (x, i) {
+      K.tankDome(x, B.z, 8.85, 2.7, 2.1, pan, { ribs: 8, fin: 0.85, gold: i === 1 });
+    });
+    [-1, 1].forEach(function (sx) {
+      [-3.8, 1.0].forEach(function (z) { K.buttress(sx * 10.2, z, sx * 9.3, z, 5.8, 7.6, bc); });
+    });
+    K.plates(B, 0, 5.6, 3.1, { pat: 'band', band: porph });
+    /* elevated tribute weigh-porch & Ordinator gold diamond seal at +z */
+    F.box(0, 0.65, 5.6, 8.4, 1.1, 2.6, 0, bc, FS);
+    K.flight(0, 8.0, 0, 6.9, 0.65, 1.75, 2.4, shade(c, -0.08));
+    K.door(B, 0, 0, 1.75, 1.8, 2.8, { wall: c, panel: true, diaC: GOLD, diaK: 0.75, lamp: true });
+    [-5.6, 5.6].forEach(function (u) { K.slit(B, 0, u, 3.8, 0.42, 1.6, { lit: false }); });
+    K.jar(-3.2, 5.8, 1.75, 1.2); K.jar(3.2, 5.8, 1.75, 1.2);
+  }
+
+  function vsBarracks(F, K) {
+    const c = F.pick(STONE), bas = F.pick(BASALT), pan = F.pick(PANEL), porph = F.pick(PORPH), bc = shade(c, -0.12);
+    F.box(0, 0, 0, 23.2, 0.55, 17.2, 0, bas, FB);
+    const B = { x: 0, z: -1.6, w: 21.4, d: 11.4 };
+    F.box(B.x, 0.55, B.z, B.w, 7.6, B.d, 0, c, FS);
+    K.plates(B, 0, 5.0, 2.9, { pat: 'band', band: porph });
+    K.parapet(B, 8.15, 0.55, 0.4, bc);
+    /* flanking Velothi corner pylons, central watch lantern, double billet doors */
+    [-10.2, 10.2].forEach(function (x) {
+      [-6.8, 3.6].forEach(function (z) { K.pylon(x, z, 8.15, 0.55, 2.1, bc); });
+    });
+    K.tankDome(0, B.z, 8.15, 2.8, 1.95, pan, { ribs: 8, fin: 0.85, gold: true });
+    [-4.8, 4.8].forEach(function (u) {
+      K.door(B, 0, u, 0.55, 1.45, 2.45, { wall: c, leaf: porph, diaC: BRONZE, lamp: true });
+    });
+    [-8.2, -1.8, 1.8, 8.2].forEach(function (u) {
+      K.slit(B, 0, u, 2.0, 0.42, 1.45, { lit: true, dia: false });
+      K.slit(B, 0, u, 5.2, 0.42, 1.45, { lit: Math.abs(u) < 4 });
+    });
+    K.dia(B, 0, 0, 6.4, 0.95, 0.08, GOLD, 'gold', 0.11);
+    K.banner(B, 0, -2.2, 7.4, 3.0, porph); K.banner(B, 0, 2.2, 7.4, 3.0, porph);
+    /* front muster wall with weapon racks */
+    [-7.6, 7.6].forEach(function (x) { F.box(x, 0.55, 7.4, 6.2, 1.35, 0.45, 0, bas, FB); });
+  }
+
   /* ================================================================ the entries */
   const E = [
     ['voth_scrap_house_poor', 'Scrap Poor House', 'housing', ['poor', 'warren', 'shore'], [0, 0.3], 3, poor,
@@ -750,10 +917,46 @@
     ['voth_scrap_market', 'Scrap Slave Market', 'civic', ['market', 'harbour'], [0.2, 0.8], 2, market,
       'The slave market in the container compounds (Hook): Ancient containers ranged round a square, their pens barred inward, the auction block under a purple canopy, a gate under the gold diamond; or a lane of container pens to a block under a hull-plate shell.'],
     ['voth_scrap_arena', 'Scrap Arena', 'civic', ['canton', 'common'], [0.3, 1], 2, arena,
-      'A round arena: a sand floor in a podium wall faced in Ancient panels with barred pit gates, stone tiers, a basalt drum with a porphyry band, girder masts carrying shade sails on cable, a royal box under a tank-head dome; or a fighting pit ringed by container stands under a girder gantry and its cage.']
+      'A round arena: a sand floor in a podium wall faced in Ancient panels with barred pit gates, stone tiers, a basalt drum with a porphyry band, girder masts carrying shade sails on cable, a royal box under a tank-head dome; or a fighting pit ringed by container stands under a girder gantry and its cage.'],
+    ['voth_scrap_tenement', 'Scrap Courtyard Tenement', 'housing', ['common', 'canton', 'vassal'], [0.2, 0.6], 1, tenement,
+      'Three-storey U-shaped battered stone and Ancient-panel courtyard tenement under a copper hull-plate carapace, with exterior stone stair and cable-railed gallery.'],
+    ['voth_scrap_smithy', 'Scrap Voth Smithy', 'industrial', ['industry', 'market', 'vassal'], [0.25, 0.65], 1, vsSmithy,
+      'Domed forge hall beside a battered basalt chimney stamped with the gold diamond, open anvil yard under a verdigris hull-plate shell.'],
+    ['voth_scrap_bakery', 'Scrap Voth Bakery', 'shop', ['market', 'common', 'vassal'], [0.2, 0.6], 1, vsBakery,
+      'Ration bakehouse with a tank-head beehive oven, steel flue, and street bread counter under a flat sail canopy.'],
+    ['voth_scrap_brewery', 'Scrap Voth Brewery & Vat-House', 'industrial', ['industry', 'common', 'vassal'], [0.25, 0.65], 1, vsBrewery,
+      'Carapace-roofed vat-house flanked by twin salvaged Ancient distillation tanks with bronze dome heads and condenser bridge.'],
+    ['voth_scrap_workshop', 'Scrap Voth Craft Hall', 'industrial', ['common', 'market', 'vassal'], [0.25, 0.7], 1, vsWorkshop,
+      'Skylit craft and artisan workshop framed in salvaged I-beams, faced in Ancient panel courses with corner Velothi pylons.'],
+    ['voth_scrap_bathhouse', 'Scrap Voth Steam Bathhouse', 'civic', ['common', 'canton', 'vassal'], [0.3, 0.85], 1, vsBathhouse,
+      'Twin tank-head domed caldarium and tepidarium heated by an exterior salvaged steel steam boiler and bronze header pipe.'],
+    ['voth_scrap_granary', 'Scrap Voth Tribute Granary', 'industrial', ['industry', 'market', 'vassal'], [0.35, 0.85], 1, vsGranary,
+      'Girder-buttressed imperial tribute granary under three tank-head domes with elevated weigh porch and gold Ordinator seal.'],
+    ['voth_scrap_barracks', 'Scrap Voth Garrison Barracks', 'military', ['fortress', 'canton', 'vassal'], [0.3, 0.8], 1, vsBarracks,
+      'Two-storey Chichani and vassal levy billet block with four corner Velothi pylons, central tank-head watch dome, and basalt muster wall.']
   ];
   /* measured sizes per variant (shoot.py --audit), including stairs, canopies, yards and props */
-  const DIMS = {voth_scrap_market:[{w:27.1,d:26.9,h:6.3},{w:14.4,d:30.8,h:6.3}],voth_scrap_arena:[{w:34.5,d:35.2,h:13},{w:21.7,d:21.7,h:9.3}],"voth_scrap_house_poor":[{w:8.1,d:5.7,h:5.4},{w:6.6,d:5.4,h:4.2},{w:11.0,d:5.3,h:5.9}],"voth_scrap_house":[{w:11.6,d:10.7,h:15.6},{w:10.2,d:12.2,h:10.0},{w:9.7,d:7.3,h:10.2}],"voth_scrap_manor":[{w:15.4,d:16.4,h:13.0},{w:15.7,d:14.6,h:15.2}],"voth_scrap_shop":[{w:7.8,d:9.6,h:6.5},{w:6.6,d:12.1,h:8.7}],"voth_scrap_tavern":[{w:10.5,d:12.3,h:9.9}],"voth_scrap_warehouse":[{w:20.8,d:10.6,h:9.5}],"voth_scrap_tomb":[{w:5.4,d:9.7,h:7.0},{w:6.0,d:6.0,h:7.1}],"voth_scrap_shrine":[{w:9.2,d:10.9,h:8.6},{w:3.0,d:3.0,h:5.8}],"voth_scrap_watch":[{w:11.7,d:7.0,h:17.3},{w:11.5,d:4.0,h:10.5}]};
+  const DIMS = {
+    voth_scrap_market: [{ w: 27.1, d: 26.9, h: 6.3 }, { w: 14.4, d: 30.8, h: 6.3 }],
+    voth_scrap_arena: [{ w: 34.5, d: 35.2, h: 13 }, { w: 21.7, d: 21.7, h: 9.3 }],
+    voth_scrap_house_poor: [{ w: 8.1, d: 5.7, h: 5.4 }, { w: 6.6, d: 5.4, h: 4.2 }, { w: 11.0, d: 5.3, h: 5.9 }],
+    voth_scrap_house: [{ w: 11.6, d: 10.7, h: 15.6 }, { w: 10.2, d: 12.2, h: 10.0 }, { w: 9.7, d: 7.3, h: 10.2 }],
+    voth_scrap_manor: [{ w: 15.4, d: 16.4, h: 13.0 }, { w: 15.7, d: 14.6, h: 15.2 }],
+    voth_scrap_shop: [{ w: 7.8, d: 9.6, h: 6.5 }, { w: 6.6, d: 12.1, h: 8.7 }],
+    voth_scrap_tavern: [{ w: 10.5, d: 12.3, h: 9.9 }],
+    voth_scrap_warehouse: [{ w: 20.8, d: 10.6, h: 9.5 }],
+    voth_scrap_tomb: [{ w: 5.4, d: 9.7, h: 7.0 }, { w: 6.0, d: 6.0, h: 7.1 }],
+    voth_scrap_shrine: [{ w: 9.2, d: 10.9, h: 8.6 }, { w: 3.0, d: 3.0, h: 5.8 }],
+    voth_scrap_watch: [{ w: 11.7, d: 7.0, h: 17.3 }, { w: 11.5, d: 4.0, h: 10.5 }],
+    voth_scrap_tenement: [{ w: 18.0, d: 18.0, h: 14.0 }],
+    voth_scrap_smithy: [{ w: 14.0, d: 12.0, h: 9.0 }],
+    voth_scrap_bakery: [{ w: 14.0, d: 12.0, h: 8.0 }],
+    voth_scrap_brewery: [{ w: 16.0, d: 12.0, h: 10.0 }],
+    voth_scrap_workshop: [{ w: 14.0, d: 12.0, h: 9.0 }],
+    voth_scrap_bathhouse: [{ w: 20.0, d: 18.0, h: 11.0 }],
+    voth_scrap_granary: [{ w: 22.0, d: 18.0, h: 13.0 }],
+    voth_scrap_barracks: [{ w: 24.0, d: 18.0, h: 11.0 }]
+  };
   E.forEach(function (e) {
     const V = DIMS[e[0]], mx = function (k) { return Math.max.apply(null, V.map(function (q) { return q[k]; })); };
     ASSET({
