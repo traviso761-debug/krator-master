@@ -24,6 +24,10 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
                       the ledges, each on its ground (the bench or the ledge), the ledges' heaps walkable (core/walk)
   opal-flora          the bench grows Opal Valley's middle terrace (biomes/opalvalley 'middlebed', sealed in LW_FLORA): its kin
                       trees in the orchards and yards, its own floor plants, every species found, none on a street or a building
+  world-ground        the page stands on the open world (core/world/bake_ground.py: the region's WORLD.H baked round the pin):
+                      at the far ground's edge its ground is the world's, past the town's patch the world's with the model
+                      edit owed (PLAN.md L6), its lake at the world's water; the bake holds WORLD.H (16 m grid: mean under
+                      0.5 m); it reports what the owed edit still moves (0 once the scale model has the bay and the scarp)
   lake-water          the great lake is core/water's open water with its shore grid: wet out on the lake and at the quays'
                       heads, dry on the bench above the shore; WATER.heightAt within a metre of the lake's level there
   bench-stairs        every building on the bench whose floor stands over the street has a podium and a flight of steps
@@ -80,6 +84,19 @@ TOWN_JS = r"""
    for(let i=0;i<c;i+=st){const x=A[i*16+12],z=A[i*16+14];if(z>LW.SHORE-2)continue;n++;if(lwBioMask(x,z)<=0)bad++;}}
   R.push({name:'opal-flora',ok:!!FL.on&&(K.trees||0)>150&&(FL.stats.orchard||0)>300&&!(K.missing||[]).length&&!K.errors&&own>5000&&!bad,
    detail:'kin trees '+(K.trees||0)+', orchard and yard trees '+((FL.stats&&FL.stats.orchard)||0)+'; '+' '+JSON.stringify(Object.fromEntries(Object.entries(K).filter(([k])=>!/^(trees|errors|missing)$/.test(k))))+'; floor plants '+own+'; trees off the mask '+bad+' of '+n+' read; '+(FL.ms||0)+' ms'});}
+ /* the open world under the page (gen/41w-lw-world-ground.js, core/world/bake_ground.py): at the far ground's edge the page's
+    ground is the world's (no layer, no patch), past the patch it is the world's with the model edit owed, the lake's level is the
+    world's water, the bake holds WORLD.H; and what the owed edit still moves (zero once the scale model has it) */
+ {const WG=typeof LW_WORLD!=='undefined'?LW_WORLD:null,FB=(window._lightwallFar||{}).box||[-8000,-9000,8000,9000],edge=[],ring=[];
+  if(WG){for(let t=0;t<=1;t+=.05){const x=FB[0]+100+(FB[2]-FB[0]-200)*t,z=FB[1]+100+(FB[3]-FB[1]-200)*t;edge.push([x,FB[1]+100],[x,FB[3]-100],[FB[0]+100,z],[FB[2]-100,z]);}
+   for(let z=-2000;z<=3000;z+=250)ring.push([-1750,z],[1750,z]);}
+  const dE=edge.reduce((m,p)=>Math.max(m,Math.abs(terrainH(p[0],p[1])-lwWorld(p[0],p[1]))),0),dR=ring.reduce((m,p)=>Math.max(m,Math.abs(terrainH(p[0],p[1])-lwPending(p[0],p[1],lwWorld(p[0],p[1])))),0);
+  const lv=WG?WG.water.map(w=>w.level):[],lvOk=lv.length&&lv.every(l=>l!=null&&Math.abs(l-(LW.LAKE+LW.Y_W))<.01),st=WG?WG.stats:[];
+  let lift=0,cut=0,moved=0;if(WG)for(let x=-6500;x<=6500;x+=100)for(let z=-8000;z<=6000;z+=100){const w0=lwWorld(x,z),d=lwPending(x,z,w0)-w0;if(d>lift)lift=d;if(-d>cut)cut=-d;if(Math.abs(d)>1)moved++;}
+  R.push({name:'world-ground',ok:!!WG&&dE<.01&&dR<.01&&lvOk&&st.length&&st[0].mean<.5&&st[0].max<3,
+   detail:WG?('the world: '+WG.region+' at '+WG.site.id+' (px '+WG.site.px+','+WG.site.py+'), page 0 = '+LW.Y_W.toFixed(2)+' m; the far ground\'s edge off the world by '+dE.toFixed(3)+' m, past the patch off the world with the owed edit by '+dR.toFixed(3)+
+    ' m; the lake '+(LW.LAKE+LW.Y_W).toFixed(2)+' m, the world\'s water '+lv.join(', ')+'; the bake vs WORLD.H '+st.map(s=>s.cell+' m: max '+s.max+', mean '+s.mean).join('; ')+
+    '; THE MODEL EDIT OWED moves '+(moved/100).toFixed(1)+' km2 by over a metre (the scarp lifts up to '+lift.toFixed(0)+' m, the bay cuts up to '+cut.toFixed(0)+' m)'):'no LW_WORLD (gen/41w-lw-world-ground.js)'});}
  {const LK=typeof LW_LAKE!=='undefined'?LW_LAKE:null,wet=(x,z)=>!!(LK&&LK.wetAt&&LK.wetAt(x,z)),out=[0,LW.SHORE+400],bench=[0,LW.SHORE-40],h=LK?WATER.heightAt(out[0],out[1],0):null;
   R.push({name:'lake-water',ok:!!LK&&!!LK.bed&&wet(...out)&&!wet(...bench)&&h!=null&&Math.abs(h-LW.LAKE)<1,
    detail:LK?('level '+LW.LAKE+'; heightAt out on the lake '+(h==null?'none':h.toFixed(2))+'; wet out on the lake '+wet(...out)+', on the bench '+wet(...bench)+'; shore grid '+(LK.bed&&LK.bed.nx)+' x '+(LK.bed&&LK.bed.nz)):'no core/water lake'});}

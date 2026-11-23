@@ -85,11 +85,36 @@
   3 medium, 4 low at the ends), registered in core/tags (`res-node`); every adit, dark adit and vein gallery of the wall (18)
   takes the nearest by the kit's rule, 78 m at most (`opal-lode`; the view "Opal outcrops at an adit of the Great Potch Line").
 
+## Done (2026-11-23, the owner: "change the world"; PLAN.md step L6, the page side)
+
+- **The page stands on the open world's ground.** `core/world/bake_ground.py` runs the region's own land chain in node
+  (`openworld/xanadu-oidong-highrift`: its rasters, its baked roads, core/coast's coasts, its hooks, its SITE_SPEC's kept coasts,
+  the geology) and samples `WORLD.H` round the pin, a 16 m grid over 6 km (bilinear within 0.18 m of `WORLD.H` on average, 1.6 m
+  at most) and a 64 m one over 24 km (at the far chunks' minWave); `build.py` writes it into `gen/41w-lw-world-ground.js`
+  (`LW_WORLD`), skipping the ~30 s node run while its key (every input's bytes) is unchanged. The page's x, z are the world's
+  moved to the pin; its y the world's less 1,345.05 m, so the lake's -30 is the world's water (1,315.05 m; was 1,300 by the
+  site's numbers).
+- **The town's own ground is a patch on it**: the bench, the foot street and the band block (the carved quarter's held ramp)
+  are the page's inside x +-1,150 m, from the wall's line to 300 m out on the lake, eased into the world over 550 m east and
+  west and 400 m south (`lwNear`, `lwPatchW`); everything else is the world's.
+- **The far ground** (`90l`): one mesh round the bench, 16 by 18 km (12 m cells by the bands, 60 m within 4 km, 150 m beyond;
+  about 100,000 vertices), the bench's mesh cut out of it, the fault's beds on the steep, grass on the gentle, the shingle and
+  the bed at the water; the flat lake bed plane is gone (the world's lake bed and the bay are the ground).
+- **`world-ground`** (verify): the far ground's edge is the world's, past the patch the world's with the owed edit, the lake's
+  level the world's water, the bake within its tolerance; it reports what the owed edit still moves.
+
 ## Open
 
-- [ ] **The ground is the site's numbers, not the open world's**: the bench's profile, the wall's line and the north wall
-      are functions of the scale model's numbers for the site (PLAN.md 1), not `core/world`'s heightfield (the site is on the
-      open world since L5, its countryside planned there; the town's page is not yet).
+- [ ] **The scale-model edit owed** (PLAN.md section 10): the world has the lake's shore 4-5 km south of the pin and no cliff
+      north of it. Until the scale-model session's queue runs the edit (the bay up to the bench, the scarp behind the bands)
+      and the region is re-cut, the page carries both as one layer over the world's ground (`lwPending`: the bay a min, the
+      scarp a max), so inside that layer the page's ground and the region's still differ (`world-ground` reports how much;
+      the region's own view of Lāiṭwāl still has the shore far off and no wall). At the layer's ends (x +-6.5 km for the scarp,
+      +-2.5 km for the bay) the scarp fades into the world's slope and the bay into the world's apron, which reads as made.
+- [ ] **The bench's mesh shows as a rectangle from afar** (the view "The town on the open world"): its painted canvas (grass,
+      fields) is lighter and greener than the far ground's vertex colours over the rock texture, so from 4 km out the bench reads
+      as a patch. The far ground wants the bench's grass set (the Qiblai kit's `qGrass`) on its gentle slopes, or the canvas
+      faded into the far ground's tint toward its edges.
 - [ ] **The north wall is a heightfield** (its gullies and buttresses since 2026-11-16): Opal Valley's own strata recipes
       (`KSTRATA` with `OPAL.STRATA`) and `KFAR` past a few km are owed; overhangs it cannot have.
 - [ ] **The ledges' lips are straight in plan**: the screes break the ledges' line, but the lip itself runs straight (the
@@ -97,8 +122,6 @@
 - [ ] **Interiors near the Stair Foot only**: the bench's houses past 260 m are solid; the wall's fronts past the carved
       quarter are fronts on whole rock (by design: the quarter is what is walked).
 - [ ] No people (`core/charactermodels`).
-- [ ] **The town's page and its open-world site are two grounds**: the page shapes its ground from the site's numbers; the
-      region's ground is the scale model's at 1 km cells. The page placed on `core/world` (as Longsong's) is owed.
 - [ ] **The Register's numbers are Latin digits** (the kit's: `kits/tungang/KNOWN_ISSUES.md`). Xanadui is English in Indic
       dress and its syllabary has no numerals, so the Register would spell its numbers as words in the syllables: the number
       words are the owner's to settle.

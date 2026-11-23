@@ -6,6 +6,7 @@
   "kits/qiblai/src"
  ],
  "external": [
+  "settlements/lightwall/gen/41w-lw-world-ground.js",
   "settlements/lightwall/gen/69l-kcity-bundle.js",
   "settlements/lightwall/gen/69t-tungang-bundle.js",
   "settlements/lightwall/gen/69r-lw-flora-bundle.js",
@@ -40,6 +41,7 @@
   "89q0z-qb-matlib.js",
   "89q5f-qb-furnish.js",
   "89q5s-qb-shells.js",
+  "41w-lw-world-ground.js",
   "69l-kcity-bundle.js",
   "69t-tungang-bundle.js",
   "52g-tags-glazier.js",

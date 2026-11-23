@@ -112,6 +112,16 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
   `WLAND.check()` on the real town in node, builds a viewing page, and with `--shots` takes the same views on the town's
   page and in the world side by side (GPU, under the harness's lock). It writes nothing in the repo.
 
+**The world's ground under a town's page** (the other way round; Lāiṭwāl the first case, 2026-11-23). A town page that draws
+its own near ground on the region's: `python3 core/world/bake_ground.py <region> --site <id>` (and `bake_ground.bake`,
+`fragment`, `key` for a build) runs the region's own land chain in node, in its `build.py`'s order (core/rand, core/terrain's
+relief, the rasters with the baked plan's roads and the model's landforms as the page's `WORLD_DATA` has them, core/mask,
+core/coast, 41 and its land fragments up to 45, the region's `SITE_SPEC` for 44c's kept coasts, the geology), then samples
+`WORLD.H` on nested grids round the site (uint16, 5 cm steps; a coarse level at its own minWave) and checks them, bilinear,
+against `WORLD.H` at 400 points each. The page's fragment (`fragment(...)`: `H(x, z)` in world metres at metres from the
+site, `water` at the points named) carries a few hundred KB, not the region's rasters. `settlements/lightwall/build.py` is
+the worked example: it bakes at build into its `gen/`, skipping the node run (~30 s: the coasts' init) while the key holds.
+
 A town with no tile (`drawn: false`) is kept by `98-world-start.js` when the tiles cannot be fetched, and `88-world-towns.js`
 draws only the towns that have one (2026-11-12).
 

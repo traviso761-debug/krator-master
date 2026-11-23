@@ -14,7 +14,8 @@ python3 ../../tools/build.py settlements/lightwall # the same through the repo's
 KRATOR_GL=gpu python3 verify.py dist/lightwall.html --assert --views "Overview,From the lake,The Stair Foot"
 ```
 
-`build.py` writes two closures into `gen/` (generated at every build, not committed): `69l-kcity-bundle.js` (core/city and
+`build.py` writes the open world's ground into `gen/41w-lw-world-ground.js` (`core/world/bake_ground.py`: the region's land
+chain run in node, about 30 s, skipped while its inputs are unchanged) and two closures into `gen/` (generated at every build, not committed): `69l-kcity-bundle.js` (core/city and
 core/space, as Qiblai's, with the raster's `Raster` and `OCC` handed out on `KCITY.lib`) and `69t-tungang-bundle.js` (the
 Tungang kit sealed as `TG`: the Glaziers' `gz-*` set), then runs `settlements/xanadu/build.py --kit settlements/lightwall`: the
 town is a target on Xanadu's page, as Qiblai and Erewhon are, with the Qiblai kit read in place (the Decree's caravanserai and
@@ -25,8 +26,9 @@ monastery, its ground sets) and core/terrain's cavern (`KCAVERN`, its draw, its 
 | Fragment | What |
 |---|---|
 | `targets/town/89z-rows.js` | `window.CITY` (Xanadu's showcase is skipped), the title, no sheet rows |
-| `targets/town/89zl-lw-site.js` | the frame and the ground (`terrainH`: the lake bed, the bench's profile, the wall's foot, the ramp under the bands held under the carved rooms, the north wall); the wall's four bands and their sites (`LW_WALL`: the specials, then each band filled poor to rich by its place); the bench's streets and blocks laid on a core/city instance and filled by frontage-courts with the Xanadu kit's houses; the landmarks by hand (the Iridescent Order on the eastern spur); the people; the blocks' plots (`lwPlot`: kitchen gardens, orchards, yards, dooryards); the flora's mask |
-| `targets/town/90l-lw-world.js` | the Krator sky; the bench's mesh wearing a canvas painted from the records (never read back); the north wall rising to the far field; the lake |
+| `gen/41w-lw-world-ground.js` | GENERATED at build (`core/world/bake_ground.py`): the open world's ground round the pin, the region's `WORLD.H` on a 16 m and a 64 m grid (`LW_WORLD`) |
+| `targets/town/89zl-lw-site.js` | the frame and the ground (`terrainH`: the open world's ground (`LW_WORLD`) with the scale-model edit owed (`lwPending`: the bay, the scarp), the town's own patch on it: the lake bed, the bench's profile, the wall's foot, the ramp under the bands held under the carved rooms); the wall's four bands and their sites (`LW_WALL`: the specials, then each band filled poor to rich by its place); the bench's streets and blocks laid on a core/city instance and filled by frontage-courts with the Xanadu kit's houses; the landmarks by hand (the Iridescent Order on the eastern spur); the people; the blocks' plots (`lwPlot`: kitchen gardens, orchards, yards, dooryards); the flora's mask |
+| `targets/town/90l-lw-world.js` | the Krator sky; the bench's mesh wearing a canvas painted from the records (never read back); the far ground round it (the north wall, the shore east and west, the lake's bed: 16 by 18 km); the lake's plane where core/water is missing |
 | `targets/town/90o-lw-opal.js` | the Great Potch Line: the Resources kit's opal nodes at the wall's foot (`TG.res`), each working of the wall linked to its nearest |
 | `targets/town/90n-lw-scree.js` | the wall's screes: KRUBBLE heaps, talus cones at the bands' ends and heaps in the gaps, the ledges' walked |
 | `targets/town/90s-lw-flora.js` | Opal Valley's flora (the sealed `LW_FLORA`): the middle terrace's station over the bench's mask, the orchards planted |
@@ -34,7 +36,7 @@ monastery, its ground sets) and core/terrain's cavern (`KCAVERN`, its draw, its 
 | `targets/town/90m-lw-wall.js` | every Glazier site registered in core/tags (culture `glazier`); the bands' plain rock between the carved sites; the carved quarter's rock carved from the sites' void plans (`TG.gz.carve`, KCAVERN; the floors to core/walk; the rock cut for the cut-away); the fronts drawn through `TG.gz.draw`, the outer wall as fronts on whole rock (`facade`) |
 | `targets/town/90r-lw-build.js` | the bench's buildings, chunk by chunk (each on a footing of dressed stone down a slope), those within 260 m of the Stair Foot with the Xanadu kit's interiors (L4); the flora (the Vale of Xanadu biome over the mask, and the kits' own plants) |
 | `targets/town/91z-views.js` | the views and the town's budget |
-| `verify.py` | Xanadu's verify plus the town's: `town-laid`, `wall-drawn`, `wall-carved`, `wall-tags`, `half-and-half` (a budget), `lights-of-the-wall`, `ix-bench` and `ix-glazier` (L4: the furnished houses, every carved home walked into), `bench-ground` (the blocks' plots), `bench-stairs` (the podiums and their steps, climbed from the street into the houses), `lake-water` (the lake on core/water, its shore), `wall-scree`, `opal-flora`, `opal-lode` |
+| `verify.py` | Xanadu's verify plus the town's: `town-laid`, `wall-drawn`, `wall-carved`, `wall-tags`, `half-and-half` (a budget), `lights-of-the-wall`, `ix-bench` and `ix-glazier` (L4: the furnished houses, every carved home walked into), `bench-ground` (the blocks' plots), `bench-stairs` (the podiums and their steps, climbed from the street into the houses), `world-ground` (the page on the open world's ground, PLAN.md L6), `lake-water` (the lake on core/water, its shore), `wall-scree`, `opal-flora`, `opal-lode` |
 
 ## The town by the numbers (2026-11-16, with L4)
 
