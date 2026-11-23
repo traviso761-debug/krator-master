@@ -86,7 +86,7 @@ cut site or a pin only), **3 sited**, **32 with a tune record or nothing**. Now:
 | **A5** | Lake towns L4 and the isles | Erehwon's west round: Gārḍan, Qorī, Ōrcharḍ, Lōṭas, Phish-Mārkiṭ, Siṭāq (Siṭāq's stack a landform); the three isles (H1) | A1 | 2 |
 | **A6** | Lake towns L5 | Life and interiors: the crowds by the census, the fair and market days, the trades' rooms | A2-A5 | 1 |
 | **A7** | Works W1-W3, W5 | The camp census option in core/hamlet (opt-in, negatives); `xa_stamp_mill`, `xa_sorting_shed`; both mines' camps on a sheet; the Tears' camp as a `xanadu-oidong-highrift` site; Erehwon's caravan halt; the Kōlḍ-Lōḍ rename in the tune and pin | nothing | 1-2 |
-| **A8** | Marches M1, M3 | Both watch forts on a sheet (a `marches` target on Strongwall's page), the three states | nothing | 1 |
+| **A8** (**built** 2026-11-23: `settlements/marches`, its verify passed on SwiftShader, the GPU run owed) | Marches M1, M3 | Both watch forts on a sheet (a build of its own, `settlements/marches`, on Xanadu's page), the three states; the pins listed | nothing | 1 |
 | **A9** | Countryside H2 | The sample module (`core/world/48v`, `88v`), opt-in, on `xanadu-lake-shore` and `xanadu-north-shore` | A5 (the regions settled) | 1 |
 | **A10** | (the scale-model queue) | The records-only batch of section 4 | its turn in the queue | |
 
