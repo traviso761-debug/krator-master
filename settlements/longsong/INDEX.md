@@ -24,6 +24,7 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `40c-ls-rooms.js` | 67 **big** | the shells (64-ls-monastery.js draws them; the r (60); L1: the base (two storeys under the rock top) an (72); L2: the School (storey 0, round the Debate Court (107); L3: the White Palace, lower (storey 1) (153); L4: the White Palace, upper (storey 2), the logg (180); R1: the Red Palace's first level (storeys 0-1) (207); R2: the Great Archive (storey 2) and the wings (234); R3: the Hall of Stillness, the Abbot, the Counci (248); the upper storeys (2026-10-20, the owner: the in (268); L0: the ward's buildings (ROOMS.md 2.2; 2026-10- (341) |
 | `40d-ls-sim.js` | 25 |  |
 | `40e-ls-kchar.js` | 2 |  |
+| `40g-ls-roomlight.js` | <1 |  |
 | `40h-ls-hamlets.js` | 3 |  |
 | `42-ls-world.js` | 1 |  |
 | `45-host-stage.js` | 19 | the land, cached (33); the plan's shapes on the land (51); the stream as a line (page metres), on a level t (71); the fields the Oidong kit reads (BIOME-API.md) (164); the host binding (190) |
