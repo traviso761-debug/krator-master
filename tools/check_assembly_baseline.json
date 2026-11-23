@@ -235,6 +235,8 @@
  "biomes/wouterwall/dist/wouterwall.html: MISSING BIO.leafOn": 1,
  "biomes/wouterwall/dist/wouterwall.html: MISSING BIO.leafQ": 1,
  "kits/ancients/dist/engines.html: MISSING EN_HEX.computeBoundingBox": 1,
+ "kits/ancients/dist/strongbow-today.html: CLASH _projectFire": 1,
+ "kits/ancients/dist/strongbow-today.html: CLASH onerror": 1,
  "kits/ancients/dist/theodiga-today.html: CLASH _projectFire": 1,
  "kits/ancients/dist/theodiga-today.html: CLASH onerror": 1,
  "kits/beast-riders/dist/beast-riders.html: CLASH _branches": 1,

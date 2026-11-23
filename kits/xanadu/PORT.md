@@ -45,10 +45,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87b-xa-andean.js` | 12.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/87c-xa-erewhon.js` | 24.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87k-xa-lake-trades.js` | 10.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/87s-xs-mat.js` | 3.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/87t-xs-helpers.js` | 13.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/87u-xs-build.js` | 31.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/87v-xs-poor.js` | 19.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/87s-xs-mat.js` | 3.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu (opt-in, xanadu.py SCRAP): kit items over core/materials; the one-sheet panel UVs and the I-girder |
+| `src/87t-xs-helpers.js` | 13.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu: the xnXS* vocabulary (kput records only); per-panel variation from KRAND.hash |
+| `src/87u-xs-build.js` | 31.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu: the fifteen xa_scrap_* defs |
+| `src/87v-xs-poor.js` | 19.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu: the poor tier and the farm (tanks, silos, hull vaults, bottle walls, glint cones; kput records only) |
 | `src/88-xa-dress.js` | 11.9 | [draw] | 4 | 6 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/89-xa-trades.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: plain data |
 | `targets/sheet/88y-xasheet-matlib.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
