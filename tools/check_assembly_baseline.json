@@ -420,6 +420,7 @@
  "settlements/shelf/dist/shelf.html: CLASH _materials": 1,
  "settlements/span/dist/span.html: CLASH _materials": 1,
  "settlements/strongwall/dist/strongwall.html: CLASH _registered": 1,
+ "settlements/tempest/dist/tempest.html: CLASH _registered": 1,
  "settlements/thalaba/dist/thalaba-pieces.html: MINSET core/biome/31b-core-leafset.js": 1,
  "settlements/thalaba/dist/thalaba-pieces.html: MINSET core/biome/34-core-impostor.js": 1,
  "settlements/thalaba/dist/thalaba.html: CLASH _registered": 1,

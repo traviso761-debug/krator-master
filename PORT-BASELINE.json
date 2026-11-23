@@ -1513,8 +1513,8 @@
    "sha256": "1bfd8796f0eee236883b6e51e669602b10d6cb0bfe358ae35c8bc3b57b5035df"
   },
   "kits/xanadu/dist/xanadu.html": {
-   "bytes": 1253744,
-   "sha256": "afedc039c5db6359e7e6ed208b1e83c0921c556390153ddb86d4c2912964af53"
+   "bytes": 1269122,
+   "sha256": "2b375521ccf4511954c686bfdb11381fa84acab3b3a52a16513a1a4518771098"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
@@ -2009,8 +2009,16 @@
    "sha256": "d93360679be5127ae4ce0d3e73f563e10c5be1ae007e57603a432351487871b4"
   },
   "settlements/strongwall/dist/strongwall.html": {
-   "bytes": 8826373,
-   "sha256": "d01c347e5d72b2b73be0ebef3a02ba2284a82f5fbf6f39da7d073959903479bd"
+   "bytes": 8840251,
+   "sha256": "af3b700afb5bf570277f53de21d6114f6a113050a23c0be08a7da069de0c56b7"
+  },
+  "settlements/tempest/dist/tempest-states.html": {
+   "bytes": 9083309,
+   "sha256": "1e2af57aefb888b8635b43bc3bd0d622a7fa726ca8caf95ac2a658b88776dca6"
+  },
+  "settlements/tempest/dist/tempest.html": {
+   "bytes": 9116216,
+   "sha256": "ba98115ea688ec629e54132678a7dedf016ad135ac6ee50f3aec8f9325f47a4e"
   },
   "settlements/thalaba/dist/thalaba-pieces.html": {
    "bytes": 13918208,

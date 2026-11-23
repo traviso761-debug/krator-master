@@ -44,6 +44,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/skink`](settlements/skink/INDEX.md) | 5 | 16 | 6 |  |
 | [`settlements/skywatch`](settlements/skywatch/INDEX.md) | 11 | 175 | 59 |  |
 | [`settlements/span`](settlements/span/INDEX.md) | 11 | 116 | 49 |  |
+| [`settlements/tempest`](settlements/tempest/INDEX.md) | 5 | 46 | 18 |  |
 | [`settlements/thalaba`](settlements/thalaba/INDEX.md) | 3 | 14 | 8 |  |
 | [`settlements/torus`](settlements/torus/INDEX.md) | 23 | 519 | 67 |  |
 | [`settlements/tuatara`](settlements/tuatara/INDEX.md) | 4 | 15 | 7 |  |
@@ -99,7 +100,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/tents`](kits/tents/INDEX.md) | 13 | 71 | 17 | The Tents kit: a generic tent set for camps and caravans of many peoples. 25 culture-neutral defs (tn-<form>-<size>: ridge, bell, yurt, cone, black, marquee, round-ended, wedge, fly, awning, wagon tilt, screen) on core/engine, the Scyvoi tent toolkit read in place; eleven dresses (Scyvoi, desert and ash nomads, Beast Riders, Iziz caravaners, the Republican army, Xanadu silk, Islanders, post-apoc scrap, Eternians, generic); the role (core/camp's) and the dress are placement options; interiors from kits/interiors/sets/tents.js, flap doors on core/door; core/camp's mapping (50-camp-tents.js: tentFor, tentProgram, halt) pitches a Scyvoi band's ring and an Iziz caravan's laager on the sheet. Verified: build.py, verify.py --assert, tests/test-tents.js. Read README.md |
 | [`kits/transit`](kits/transit/INDEX.md) | 9 | 156 | 40 |  |
 | [`kits/tungang`](kits/tungang/INDEX.md) | 39 | 421 | 36 |  |
-| [`kits/xanadu`](kits/xanadu/INDEX.md) | 41 | 642 | 39 |  |
+| [`kits/xanadu`](kits/xanadu/INDEX.md) | 41 | 655 | 51 |  |
 | [`kits/yeti`](kits/yeti/INDEX.md) | 31 | 183 | 21 | The Yeti kit (catalog and tags culture khaayken): the Khaayken of the High Country on the north-western Outer Wall, Inuit-derived catenary domes of pycrete or dry slab stone, half-sunk, joined by half-buried tunnels, austere outside and rich inside (PLAN.md; section 4 the heat, air and cold rules). So far Y1 to Y4 (the state, trades, stores, stock and war added): the Scyvoi engine vendored (10-core.js on core/rand); the toolkit (catenary and corbelled shells, spiral courses, ribs, the slump, the cold-trap entry, the wall layers and the frost rule); the mass heater; the pycrete dome, the travel dome and the stone house in three seasons; the family cluster; the tunnels in three sections and a covered-way network on core/city (KCITY.covered); the sheet's ground holed for sunk floors. Verified: build.py, verify.py --assert. Read PLAN.md |
 | [`kits/yonni`](kits/yonni/INDEX.md) | 26 | 231 | 31 |  |
 | [`kits/yuni`](kits/yuni/INDEX.md) | 8 | 229 | 64 |  |
