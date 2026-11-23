@@ -51,6 +51,13 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **Wire the Codex sets of 2026-11-12** (the collection for main, 2026-11-22): `claude/textures-2026-11-12` put 63 sets in the library,
+  none wired. Their prompts are in `core/materials/PROMPTS-archived.md` ("Delivered 2026-11-12" and "Delivered 2026-11-12 for prompts that
+  lived on other branches"): High Rift's `rock.hematite.mirror`; Opal Valley's three; the Siphon Pits' three; the Rift line's five; five of
+  the Tungang kit's (and the Glaziers' `cholet-front`); the Kimr's nine; the Labyrinth's flora's two; and the batch's own sections 37, 40, 41,
+  43-45, 48-50 and parts of 51-52. Each build's `materials.json` slot, then `python3 tools/textures/pack.py <build>`, then judge it in
+  the demo kit before it stands (memory: demo before commit); each build's KNOWN_ISSUES.md names its stand-ins.
+
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.

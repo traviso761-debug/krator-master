@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.063,
+    1.126
+   ],
+   "seam_before": [
+    1.403,
+    1.193
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "concrete",
+  "id": "concrete.lining.spalled",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "concrete.lining.spalled.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13b-18e0-7cc1-8ee1-808adde9e8b4)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-9e178d88-63a5-4ef9-a578-113d88954660.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)' on claude/awesome-varahamihira-66a852 (id concrete.lining.spalled)",
+  "sha1": "f706346b6f1b6d8ac91b552696ed174b6ef9132c"
+ }
+}

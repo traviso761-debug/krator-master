@@ -162,7 +162,7 @@ the Hall is never carried (nogo).
 ## 4. Object kind to motif and palette
 
 The table a kit follows. The materials are library sets already in `core/materials/library/` unless marked **new** (their prompts are
-in `core/materials/PROMPTS-NEEDED.md` section 59, and in section 6 below).
+in `core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet, and in section 6 below).
 
 | Object kind | Motif | Palette | Materials (library) |
 |---|---|---|---|
@@ -208,11 +208,11 @@ the dead's).
 
 ## 6. Prompts for the owner
 
-### 6a. Textures (also in `core/materials/PROMPTS-NEEDED.md` section 59)
+### 6a. Textures (also in `core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet)
 
 The library already holds most of what the Kimr need (section 4's table). Nine sets are new: three surfaces and six pattern sheets,
 each after `core/materials/PLAN.md` "Prompts for generated sources" (the base template; the pattern form for the sheets).
-The paste-ready blocks are in `PROMPTS-NEEDED.md` section 59, so they are listed once; the ids:
+The paste-ready blocks are in `core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet, so they are listed once; the ids:
 
 | id | Kind | For |
 |---|---|---|

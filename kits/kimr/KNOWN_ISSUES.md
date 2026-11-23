@@ -2,7 +2,7 @@
 
 - [ ] **No textures yet.** The house draws on vertex colours: the library sets `biomes/labyrinth/KIMR.md` section 4 names are not packed
   (no `materials.json`), and the new ones (`hide.pachyderm`, `shell.glyptodont`, `earth.dung.stack`, the `patterns/kimr/*` sheets) are
-  owed: `core/materials/PROMPTS-NEEDED.md` section 59.
+  owed: `core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet.
 - [ ] **The culture `kimr` is added to the page's core/tags vocabulary at load** (`src/89-rows.js`), not in
   `core/tags/52-core-tags-vocab.js`: that file reaches every build, so the entry rides along with the next all-builds rebuild
   (`TODO.md`). Drop the two lines then.

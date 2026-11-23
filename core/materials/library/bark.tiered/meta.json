@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.268,
+    1.616
+   ],
+   "seam_before": [
+    1.768,
+    1.172
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.tiered",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark.tiered.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d137-f17e-7561-a1ba-4f025806167e)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-3648fc67-8bdf-4cde-898a-b83c2ba48c38.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '50. The Tiers (`biomes/tiers`, planned 2026-11-10)' on origin/main (id bark.tiered)",
+  "sha1": "bd822b5f6ac7a355abcad9fa05c65467d9304305"
+ }
+}

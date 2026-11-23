@@ -2,7 +2,7 @@
 
 Built 2026-11-11 in the cloud: every check ran on software GL (SwiftShader), none on the two GPU lanes yet.
 
-## Stand-ins (owed: `core/materials/PROMPTS-NEEDED.md` section 55)
+## Stand-ins (owed: `core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet)
 
 - [ ] **The woolly siphon's pelt** draws `wool.fleece` (slot `fleece`, tinted amber by the vertex colours): a sheep's fleece standing in for
   the machine-wax pelt (`surface.fleece.machinewax` owed). Its hanging fleece (`spfringe`) is a **procedural** strand card (`TX.strand`,

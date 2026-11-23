@@ -7,7 +7,7 @@
   through its host hooks: the page's sections, profile, cuts and openings) from each window again in the page's frame (`RIFT.window().local`).
   But that copy is flat: the record's -0.04 % grade (about 0.5 m over a page) is not drawn. The page's own: its lamps, crown fittings, the
   walkway's grating and posts, the cyan strips, the Fixers' patches, the switch machines, and every station's works.
-- [ ] **Three surfaces stand in for owed sets** (`core/materials/PROMPTS-NEEDED.md` section 57): the lining on `concrete.ancient` (owed
+- [ ] **Three surfaces stand in for owed sets** (`core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet): the lining on `concrete.ancient` (owed
   `concrete.lining.segment`: bolt pockets, gasket joints, ring numbers), the guideways on `concrete.board` (owed `concrete.guideway`),
   the kept cars' plate on the vehicles kit's `paintWorn` (owed `metal.plate.riveted.painted`).
 - [ ] **The lining is the kind's: sweeps and ribs, not rings.** Since the drawing moved to `KTRANSIT.draw.line` the lining is laid in merged
