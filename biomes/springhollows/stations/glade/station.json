@@ -1,0 +1,19 @@
+{
+ "id": "glade",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Springhollows — Cherty-Dolomite & Red-Porphyry Glade, Saffron Terraces & Bleach-Scar",
+ "out": "springhollows-glade.html",
+ "px": [1176, 184],
+ "sky": [904, -146],
+ "elevM": 1106.8,
+ "pAtm": 1.39,
+ "koppen": "Cfa",
+ "rainMmYr": 1380,
+ "cavernId": "cav_ozarks_onyx",
+ "tubeId": "tube_ozarks_15",
+ "strataStack": "carbonate-chert-bleach",
+ "reserves": [
+  { "id": "site:karst-arcology", "x": 156, "z": -138, "r": 56 }
+ ],
+ "modes": ["Day", "Dusk Cave-Glow"]
+}

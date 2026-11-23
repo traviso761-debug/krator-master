@@ -1,0 +1,529 @@
+{
+ "build": "batteredisle",
+ "note": "Battered Isle worn extinct cinder & scoria cone biome kit adapter onto core/materials/library (biomes/batteredisle/PLAN.md). Covers <= 3 KGROUND layers (ground.scoria, ground.palagonite, ground.shingle), PBR wet columnar basalt, vesicular scoria, hydrovolcanic palagonite tuff, upturned coal=201 collar, garnierite-nickel crust, wind-sheared laurel/podocarp barks, and clean botanical cutouts. Run python3 tools/textures/pack.py biomes/batteredisle after any change.",
+ "size": 512,
+ "families": {
+  "laurelbark": {
+   "lib": "bark.strangler",
+   "scale": [
+    2.4,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.42
+   },
+   "roughLift": 0.28,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "podocarpbark": {
+   "lib": "bark.ironbark",
+   "scale": [
+    2.6,
+    4.2
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.38
+   },
+   "roughLift": 0.26,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "pandanbark": {
+   "lib": "bark.palm.spined",
+   "scale": [
+    1.8,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.48
+   },
+   "roughLift": 0.3,
+   "specular": 0.18,
+   "mapOnly": true
+  },
+  "laurelleaf": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.028,
+    0.022,
+    0.972,
+    0.972
+   ],
+   "base": "centre"
+  },
+  "podocarpleaf": {
+   "lib": "card.mahogany",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.65
+   },
+   "size": 512,
+   "cell": [
+    0.034,
+    0.024,
+    0.964,
+    0.976
+   ],
+   "base": "centre"
+  },
+  "nickelmyrtle": {
+   "lib": "card.osmanthus",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.68
+   },
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.011,
+      0.009,
+      0.329,
+      0.329
+     ],
+     "stem": [
+      0.1729,
+      0.3232
+     ],
+     "tip": [
+      0.188,
+      0.0145
+     ],
+     "w": [
+      -0.1347,
+      0.1267
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.345,
+      0.651,
+      0.648
+     ],
+     "stem": [
+      0.5186,
+      0.6416
+     ],
+     "tip": [
+      0.4967,
+      0.3559
+     ],
+     "w": [
+      -0.1207,
+      0.1189
+     ]
+    },
+    {
+     "cell": [
+      0.663,
+      0.667,
+      0.989,
+      0.984
+     ],
+     "stem": [
+      0.8271,
+      0.9775
+     ],
+     "tip": [
+      0.8371,
+      0.6713
+     ],
+     "w": [
+      -0.1343,
+      0.1254
+     ]
+    }
+   ]
+  },
+  "scoriathrift": {
+   "lib": "card.moss",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.68
+   },
+   "size": 512,
+   "cell": [
+    0.024,
+    0.042,
+    0.976,
+    0.954
+   ],
+   "base": "centre"
+  },
+  "cindersedge": {
+   "lib": "card.heath",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.66
+   },
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.026,
+      0.335,
+      0.323
+     ],
+     "stem": [
+      0.1699,
+      0.3193
+     ],
+     "tip": [
+      0.1699,
+      0.0322
+     ],
+     "w": [
+      -0.124,
+      0.1435
+     ]
+    },
+    {
+     "cell": [
+      0.347,
+      0.35,
+      0.661,
+      0.648
+     ],
+     "stem": [
+      0.518,
+      0.6416
+     ],
+     "tip": [
+      0.518,
+      0.3545
+     ],
+     "w": [
+      -0.1421,
+      0.1177
+     ]
+    },
+    {
+     "cell": [
+      0.673,
+      0.679,
+      0.982,
+      0.972
+     ],
+     "stem": [
+      0.8471,
+      0.9658
+     ],
+     "tip": [
+      0.8471,
+      0.6826
+     ],
+     "w": [
+      -0.1449,
+      0.1129
+     ]
+    }
+   ]
+  },
+  "covepandan": {
+   "lib": "card.palm",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.68
+   },
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.018,
+      0.337,
+      0.339
+     ],
+     "stem": [
+      0.3271,
+      0.3389
+     ],
+     "tip": [
+      0.1118,
+      0.0997
+     ],
+     "w": [
+      -0.157,
+      0.1668
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.339,
+      0.648,
+      0.659
+     ],
+     "stem": [
+      0.4912,
+      0.6533
+     ],
+     "tip": [
+      0.5015,
+      0.3423
+     ],
+     "w": [
+      -0.1203,
+      0.1188
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.982,
+      0.984
+     ],
+     "stem": [
+      0.667,
+      0.9775
+     ],
+     "tip": [
+      0.9541,
+      0.653
+     ],
+     "w": [
+      -0.0787,
+      0.0844
+     ]
+    }
+   ]
+  },
+  "tuffcress": {
+   "lib": "card.fern",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
+  },
+  "soundkelp": {
+   "lib": "card.kelp.0",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.64
+   },
+   "size": 512,
+   "cell": [
+    0.165,
+    0.003,
+    0.835,
+    0.958
+   ],
+   "base": "top"
+  },
+  "barnacle": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.8
+   },
+   "roughLift": 0.3,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "fauna_hide": {
+   "lib": "rock.wet.dark",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.48
+   },
+   "roughLift": 0.22,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "rock.basalt": {
+   "lib": "rock.columnar",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 0.65,
+    "mean": 0.34
+   },
+   "roughLift": 0.14,
+   "specular": 0.46
+  },
+  "rock.scoria": {
+   "lib": "rock.basalt.oxidised",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.75,
+    "mean": 0.38
+   },
+   "roughLift": 0.2,
+   "specular": 0.34
+  },
+  "rock.palagonite": {
+   "lib": "rock.palagonite",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.22,
+   "specular": 0.32
+  },
+  "rock.coal": {
+   "lib": "rock.coal",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.24
+   },
+   "roughLift": 0.12,
+   "specular": 0.48
+  },
+  "rock.garnierite": {
+   "lib": "rock.malachite",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.65,
+    "mean": 0.46
+   },
+   "roughLift": 0.22,
+   "specular": 0.36
+  },
+  "works.wood": {
+   "lib": "wood.tarred",
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.42
+   },
+   "roughLift": 0.28,
+   "specular": 0.22,
+   "own": true
+  },
+  "ground.base": {
+   "lib": "ground.cinder",
+   "scale": [
+    2.8,
+    2.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.scoria": {
+   "lib": "ground.scoria",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.26,
+   "specular": 0.24,
+   "mapOnly": true
+  },
+  "ground.palagonite": {
+   "lib": "rock.tuff",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.28,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "ground.shingle": {
+   "lib": "ground.shingle",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.24,
+   "specular": 0.28,
+   "mapOnly": true
+  }
+ }
+}

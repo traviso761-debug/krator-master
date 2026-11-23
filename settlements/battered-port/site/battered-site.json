@@ -1,0 +1,101 @@
+{
+  "settlement": "battered_port",
+  "name": "Bè-tõ-pò (Bare-Stone Port)",
+  "creoleName": "ɓè-cTõ-pò",
+  "censorateName": "Bè-dò-tõ",
+  "pinPx": [435, 259],
+  "rimBenchElevM": 115.0,
+  "plugSummitElevM": 138.0,
+  "tsunamiSafetyFloorM": 85.0,
+  "kettleCenter": [0.0, 90.0],
+  "kettleRadiusM": 410.0,
+  "kettleDepthM": -28.0,
+  "jawWidthM": 110.0,
+  "boltHoleLengthM": 640.0,
+  "districts": [
+    {
+      "id": "D1",
+      "key": "plug_citadel",
+      "name": "Bare-Stone Head (Bè-tõ-hè)",
+      "tier": "rim",
+      "role": "civic",
+      "elevBand": [122, 138],
+      "strategy": "frontage-courts",
+      "pop": 320,
+      "households": 65,
+      "poly": [[-340, -520], [-140, -560], [-80, -390], [-220, -330], [-360, -390]]
+    },
+    {
+      "id": "D2",
+      "key": "factor_rim",
+      "name": "Nine-Hull Terrace",
+      "tier": "rim",
+      "role": "rich",
+      "elevBand": [108, 124],
+      "strategy": "frontage-courts",
+      "pop": 780,
+      "households": 155,
+      "poly": [[-90, -520], [260, -500], [310, -330], [-70, -335]]
+    },
+    {
+      "id": "D3",
+      "key": "crucible_terrace",
+      "name": "Coke and Nickel-Forge Ward",
+      "tier": "rim",
+      "role": "ind",
+      "elevBand": [96, 116],
+      "strategy": "alleys",
+      "pop": 860,
+      "households": 175,
+      "poly": [[275, -470], [560, -360], [585, -70], [385, -80], [320, -320]]
+    },
+    {
+      "id": "D4",
+      "key": "creole_steps",
+      "name": "Wash-Face and Riggers Steps",
+      "tier": "rim",
+      "role": "res",
+      "elevBand": [88, 112],
+      "strategy": "alleys",
+      "pop": 1840,
+      "households": 375,
+      "poly": [[-580, -360], [-365, -385], [-345, -40], [-560, 40], [-640, -170]]
+    },
+    {
+      "id": "D5",
+      "key": "spring_gardens",
+      "name": "Tuff-Spring and Wrack Terraces",
+      "tier": "rim",
+      "role": "farm",
+      "elevBand": [85, 105],
+      "strategy": "fields",
+      "pop": 680,
+      "households": 140,
+      "poly": [[-320, -760], [320, -760], [380, -530], [-340, -565]]
+    },
+    {
+      "id": "D6",
+      "key": "kettle_harbor",
+      "name": "The Kettle and Cliff-Hoist Quays (Kò-pò)",
+      "tier": "cove",
+      "role": "harbor",
+      "elevBand": [2, 32],
+      "strategy": "harbor",
+      "pop": 340,
+      "households": 75,
+      "poly": [[-280, -185], [285, -185], [315, -95], [-305, -95]]
+    },
+    {
+      "id": "D7",
+      "key": "dark_water_vault",
+      "name": "Dark-Water Palagonite Sea-Cave Vault (Da-wò-hò)",
+      "tier": "cave",
+      "role": "vault",
+      "elevBand": [2, 24],
+      "strategy": "cavern-lots",
+      "pop": 180,
+      "households": 35,
+      "poly": [[-355, -75], [-215, -75], [-215, 65], [-355, 65]]
+    }
+  ]
+}

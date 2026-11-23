@@ -16,6 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 2 |  |
 | `10-crop-core.js` | 17 | the Crops kit: the axes, the buckets, the biomes (1) |
 | `20-crop-records.js` | 29 | the Crops kit: the records (plain data, [G data] (1) |
+| `21-crop-termites.js` | 2 | the Crops kit: giant mound-termite hive fungi ([ (1) |
 | `22-crop-material.js` | 23 | the Crops kit: materials (fibre) and utility (dy (1) |
 | `24-crop-vale-wild.js` | 3 | the Crops kit: the Vale's wild medicinal plants  (1) |
 | `40-crop-query.js` | 7 | the Crops kit: the queries (pure functions on th (1) |

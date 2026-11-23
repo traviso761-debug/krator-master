@@ -24,9 +24,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
+| `28-vstack-mipvar.js` | 2 |  |
 | `40-biome-drown-phys.js` | 15 | DROWN_PHYS: Drownlands physics, geochemistry, cr (1) |
 | `41-biome-drown-sites.js` | 7 | DROWN_SITES: 4 surveyed Scale-Model 5.1 stations (1) |
 | `45-host-stage.js` | 22 | HOST — stage: Drownlands stations, landforms, KC (1); landform & bathymetry (76); climate, substrate & coast fields (436); KSPACE occupancy & BIO.init (490) |
+| `46-vstack.js` | <1 |  |
 | `50-biome-drown-species.js` | 32 **big** | DROWN — species, builders, PBR library materials (1) |
 | `60-biome-drown-place.js` | 16 | DROWN — deterministic KRAND.cell + KSPACE placem (1) |
 | `70-biome-drown.js` | <1 | DROWN — BIOME-API build entry & canopy query ([G (1) |
@@ -38,6 +40,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89a-host-atmos.js` | 1 | HOST — atmosphere binding, wind sway, height fog (1) |
 | `89w-host-water.js` | 4 | HOST — water: turquoise shoals -> indigo trenche (1) |
 | `89z-host-build.js` | 3 | HOST — build order, water fields, impostors & KS (1) |
+| `89z9-vstack-post.js` | 6 |  |
 | `99-host-take.js` | 15 | HOST — preset views, tidal/tsunami mode controll (1) |
 | `99-tail.html` | <1 |  |
 

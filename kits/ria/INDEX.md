@@ -21,16 +21,25 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 5 |  |
+| `27v-ra-vstack.js` | 9 |  |
 | `27z-ra-matfix.js` | 2 |  |
 | `31-alt-takes.js` | <1 |  |
 | `39-ra-furn.js` | 11 |  |
-| `40-ra-kit.js` | 24 |  |
-| `42-ra-crowns.js` | 20 |  |
-| `52-ra-west-court.js` | 18 |  |
-| `54-ra-west-town.js` | 15 |  |
-| `62-ra-east-court.js` | 17 |  |
-| `64-ra-east-town.js` | 16 |  |
+| `40-ra-kit.js` | 37 **big** |  |
+| `42-ra-crowns.js` | 23 |  |
+| `52-ra-west-court.js` | 21 |  |
+| `54-ra-west-town.js` | 17 |  |
+| `56-ra-west-civic.js` | 18 |  |
+| `57-ra-west-sacred.js` | 32 **big** |  |
+| `58-ra-west-trades.js` | 14 |  |
+| `62-ra-east-court.js` | 20 |  |
+| `64-ra-east-town.js` | 18 |  |
+| `66-ra-east-civic.js` | 18 |  |
+| `67-ra-east-sacred.js` | 21 |  |
+| `68-ra-east-trades.js` | 14 |  |
 | `70-ra-vocab.js` | <1 |  |
-| `89-rows.js` | <1 |  |
+| `72-ra-trades.js` | 8 |  |
+| `89-rows.js` | 2 |  |
+| `91r-ra-roomlight.js` | 8 |  |
 | `91z-ra-world.js` | 3 |  |
-| `99-host-tz-ra.js` | 13 |  |
+| `99-host-tz-ra.js` | 19 |  |

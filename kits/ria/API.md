@@ -1,35 +1,24 @@
 # `kits/ria` — API Reference
 
-## Kit Identity & Registry (`src/26k-kit.js`, `core/engine/36-def.js`)
+## Kit Identity, Trades & Settlement Bundle (`src/26k-kit.js`, `src/72-ra-trades.js`, `kit_bundle.py`)
 
 - `KIT`: `{ id: 'ria', pack: 'ria', culture: 'ria', faction: 'Ria Dynasties of the Two Reaches', band: 'Ma-Ria', frag: 'kits/ria' }`
 - `RA_DYNASTIES`: `{ lowerRia, upperRia }` — canonical regional seats, linguistic shifts (*Rīwa-Tōka* vs *Līwa-Tōga*), cognates, and hereditary emblems.
-- `DEFS`: 16 `defBuilding` entries (`8` with `tags.style === 'lower-ria'` + `8` with `tags.style === 'upper-ria'`).
-- `raDims()`: returns `{ [key]: { cls, w, d, h, style, wealth, types, role, job, cut } }` for settlement/city layout consumers (`core/city`).
+- `DEFS`: 44 `defBuilding` entries (`22` with `tags.style === 'lower-ria'` + `22` with `tags.style === 'upper-ria'`), covering `poor`, `middle`, and `rich` wealth tiers.
+- `RA_TRADES` / `raTradeDefs(style)` (`[G data]`): all 44 Voth census trades mapped to `lowerRia` (`ra_west_*`) and `upperRia` (`ra_east_*`) building keys.
+- `raDims()`: returns `{ [key]: { cls, name, w, d, h, fw, fd, style, wealth, types, role, job, cut, variants } }` for `core/city` layout consumers.
+- `kit_bundle.bundle(key='RIK')` (`kits/ria/kit_bundle.py`): seals the kit in one closure exposing `RIK.proto(key, v)`, `RIK.dims()`, `RIK.trades`, `RIK.tradeDefs(style)`, `RIK.dynasties`, and `RIK.errors`.
 
-## Structural & Walkability Helpers (`src/40-ra-kit.js`, `// prefix: ra`)
+## Vertical-Stack Graphics (`src/27v-ra-vstack.js`, `src/91r-ra-roomlight.js`)
 
-- `raPlinth(w, d, h, o)` — Battered polychrome glazed-brick (`lower-ria`) or imperial porphyry & dolomite (`upper-ria`) terrace with `wkPad` deck and `raGrandStair`.
-- `raGrandStair(x0, y0, z0, x1, y1, z1, w, o)` — Monumental stair flight drawn in `svNoWalk` with `svStripWalk`, rotation-safe `wkPad` landings, and `rail: 'naga' | 'hongsa'`.
-- `raFloorSlab(cx, yTop, cz, w, d, o)` / `raFloorDisc(cx, cz, r, yTop, mk, col, o)` — Walkable rectangular (`wkPad` / `svWell`) and polygonal (`svFloor`) slabs.
-- `raCeilingSlab(cx, yCeil, cz, w, d, o)` — Coffered teak, gilt, cedar, or carved-dolomite underside ceiling (`svNoWalk`).
-- `raWall(x0, z0, x1, z1, y0, h, o)` / `raWallRing(x0, z0, x1, z1, y0, h, o)` — Multi-course walls drawn in `svNoWalk` with full-height `raWallBlock` collision blocks split around operable `raDoor` portals.
-- `raColumn`, `raColonnade`, `raArcade`, `raBatteredPylon`, `raCavettoCornice`, `raWaterCourt`, `raBoardwalk`, `raDrumWall`, `raSpiralRamp`.
+- **Stage 5 & `K1` (`27v-ra-vstack.js`):** Uniform-deduplicated `uKmSpec`, `uKmBreak` & sine-free 3D hash (`<= 18` compiled WebGL programs, `<= 12` active samplers), `KMAT_M1.GLSL_COMMON` `km1RoughAA` mip-variance specular AA (`mip-variance.json`), 6-step planar POM (`uPomDepth`, `< 18 m`) on `"height": true` masonry families (`travertine`, `dolomite`, `brick`, `paving`, `porphyry`), and plot-base contact AO (`0.74 -> 1.00`) + concave mortar cavity.
+- **Stage 7 `KROOMLIGHT` (`91r-ra-roomlight.js`, `window._raRoomLight`):** Builds a doorway/window room-light graph via `KROOMLIGHT.buildTable` over `CURREC.rooms` (recorded automatically by `raRoom`, `raWallRing`, and `raDrumWall`) and drives a 6-`PointLight` portal-daylight & warm-lamp pool via `KROOMLIGHT.pickPool`.
 
-## Southeast Asian & Dynastic Crowns (`src/42-ra-crowns.js`, `// prefix: ra`)
+## Structural & Crown Helpers (`src/40-ra-kit.js`, `src/42-ra-crowns.js`, `src/57-ra-west-sacred.js`, `// prefix: ra`)
 
-- `raTieredRoof(cx, y0, cz, w, d, tiers, o)` — 1-to-7-tier Thai *Prasat*, Burmese *Pyatthat*, or Lanna indigo-slate roof with solid underside ceiling & tier soffits, carved *panlom* bargeboards, and *chofa* / *Hongsa* finials.
-- `raOctPavilionRoof(cx, y0, cz, rEave, tiers, o)` — Octagonal/hexagonal/square tiered pavilion roof with `{inward: true}` interior vault soffit.
-- `raPrasatSpire(cx, y0, cz, wBase, hSpire, o)` — 5-stage gilded *Prasat* / *Hti* spire (optional `{inward: true}` crossing vault).
-- `raPrang(cx, y0, cz, wBase, hPrang, o)` — Khmer-Thai glazed corncob *Prang* or Angkor-Bagan stepped stone *Shikhara-Prang* with `{inward: true}` sanctuary vault soffit.
-- `raLotusDome(cx, y0, cz, rBase, hDome, o)` — Ribbed porphyry-and-gilt Bagan-Ptolemaic lotus dome with `{inward: true}` gilded interior dome soffit.
-- `raNagaHead5`, `raNagaRail`, `raHongsaSculpt`, `raHongsaRail`, `raSwanFinial`, `raLodestoneObelisk`, `raBanner`.
-
-## Bespoke Furniture Keys (`src/39-ra-furn.js`)
-
-Registered on `KratorFurniture` under culture `'ria'`:
-`ria_sovereign_throne`, `ria_uktena_brazier`, `ria_hongsa_lectern`, `ria_teak_divan`, `ria_porphyry_table`, `ria_lotus_altar`, `ria_amber_seal_desk`, `ria_glazed_amphora_rack`, `ria_saffron_cushion`, `ria_silk_screen`, `ria_lodestone_compass`, `ria_tribute_chest`, `ria_lantern_stand`, `ria_offering_basin`.
+- `raPlinth`, `raGrandStair`, `raFloorSlab`, `raFloorDisc`, `raCeilingSlab`, `raFlatTerraceRoof`, `raWall`, `raWallRing`, `raRoom`, `raIshtarPortal`, `raMerlonParapet`, `raClassicalBalustrade`, `raPiercedFretWall`, `raClassicalPediment`, `raCurvedColonnade`, `raColumn`, `raMosaicSquareCol`, `raColonnade`, `raArcade`, `raBatteredPylon`, `raBussabokPortal`, `raCavettoCornice`, `raWaterCourt`, `raBoardwalk`, `raDrumWall`, `raSpiralRamp`, `raTopiaryUrn`, `raGuardianStatue`.
+- `raTieredRoof`, `raMondopSpireRoof`, `raOctPavilionRoof`, `raPrasatSpire`, `raPrang`, `raPorcelainPrang`, `raCaryatidChedi`, `raLotusDome`, `raPantheonRotundaDome`, `raNagaHead5`, `raNagaRail`, `raHongsaSculpt`, `raHongsaRail`, `raSwanFinial`, `raLodestoneObelisk`, `raBanner`.
 
 ## Verification Probe (`window._api`, `src/99-host-tz-ra.js`)
 
-- `_api.doorsAudit()`, `_api.reachAudit()`, `_api.ceilingAudit()`, `_api.texturesAudit()`, `_api.zfightAudit()`, `_api.fingerprint()`, `_api.rebuild()`.
+- `_api.doorsAudit()`, `_api.reachAudit()`, `_api.ceilingAudit()`, `_api.texturesAudit()`, `_api.zfightAudit()`, `_api.tradesAudit()`, `_api.vstackAudit()`, `_api.fingerprint()`, `_api.rebuild()`.

@@ -98,17 +98,34 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 
 
 def matlib_pack():
-    """The library textures materials.json names, as data URLs (KMAT.pack). Reads the committed tex/ files only."""
+    """The library textures materials.json names, as data URLs (KMAT.pack), plus M2 mipVariance & M3 pom."""
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return "/* no tex/pack.json: the kit runs on vertex colours only */\nKMAT.pack('spider-lake', {});\n"
     pack = json.load(open(pj, encoding='utf-8'))
+    mv_file = os.path.join(HERE, 'mip-variance.json')
+    mv_fams = json.load(open(mv_file, encoding='utf-8')).get('families', {}) if os.path.isfile(mv_file) else {}
+    cfg_file = os.path.join(HERE, 'materials.json')
+    cfg_fams = json.load(open(cfg_file, encoding='utf-8')).get('families', {}) if os.path.isfile(cfg_file) else {}
+    if os.path.isfile(mv_file):
+        BSRC.note(mv_file)
+    if os.path.isfile(cfg_file):
+        BSRC.note(cfg_file)
     out = []
     for fam in sorted(pack['families']):
         e = pack['families'][fam]
-        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+        fc = cfg_fams.get(fam) or {}
+        sz = e.get('size', 512)
+        f = {'lib': e['lib'], 'scale': e['scale'], 'size': sz[0] if isinstance(sz, list) else int(sz),
+             'metal': e['metal'], 'normalScale': e['normalScale'],
              'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
              'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        if e.get('height'):
+            f['height'] = True
+        if fc.get('height'):
+            f['pom'] = True
+        if fam in mv_fams:
+            f['mipVariance'] = mv_fams[fam]
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))

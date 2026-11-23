@@ -23,9 +23,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `20-shroudhills-defs.js` | 16 |  |
+| `28-vstack-mipvar.js` | 1 |  |
 | `30-shroudhills-mats.js` | 25 |  |
 | `44z-host-shell.js` | 2 |  |
 | `45-host-stage.js` | 6 |  |
+| `46-vstack.js` | <1 |  |
 | `47-host-land.js` | 12 |  |
 | `54-shroudhills-trees.js` | 22 |  |
 | `55-shroudhills-epiphytes.js` | 21 |  |
@@ -36,6 +38,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89s-host-sky.js` | 2 |  |
 | `89t-host-weather.js` | 2 |  |
 | `89w-host-water.js` | 6 |  |
+| `89z9-vstack-post.js` | 6 |  |
 | `99-host-take.js` | 17 |  |
 | `99-tail.html` | <1 |  |
 

@@ -69,11 +69,11 @@ if STATION:
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']   # KGROUND (the ground's library layers), KFAR (the far country's lattice), KHORIZON (its terrain shadows): the final rebuild, 2026-10-27; 45-host-stage.js, 88-host-build.js
+CORE_TERRAIN=['37-core-stacks.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']   # KSTACKS (the upland savannah's giant termite cathedrals, 86t), KGROUND (the ground's library layers), KFAR (the far country's lattice), KHORIZON (its terrain shadows)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','35-core-anim.js','36-core-walker.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -91,9 +91,9 @@ PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-f
 PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
-# core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
+# core/rand, core/hazard and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
 # set, instance and registered volume the kit places is a core/tags record (core/biome/20-core-kit.js). A src/ copy wins.
-CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
+CORE_TAGS={'08-core-rand.js':'rand','20-core-hazard.js':'hazard','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
 for f,d in CORE_TAGS.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
 # core/export (core/export/README.md): the krator-world container (EXPORT.world); the biome core fills its items, buckets,

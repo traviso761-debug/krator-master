@@ -4,12 +4,14 @@
   "build.py": {
    "inputs": {
     "biomes/doubledelta/KNOWN_ISSUES.md": "1e2ce60b81b7737421a9b19c7aac9d98e04059afdabca09cc0a46cd57b36d507",
-    "biomes/doubledelta/PORT.md": "6dcbd208a29eb87d2d3272ceaa5f816130375585d72cb6e3c258d83c622b2cfe",
-    "biomes/doubledelta/build.py": "8cd1fe7f0750704fa564ff0079bd36fdb90d405968b95151d72b7c0040aae645",
+    "biomes/doubledelta/PORT.md": "cfb8c75167235b04261675ffc2749ce3987ce7fcb3a60aeb8367abf8f9c95bac",
+    "biomes/doubledelta/build.py": "ba05294c03dfb07099bce81e661d1a359a936d93c97f36fc373df28aa39ff576",
     "biomes/doubledelta/src/00-head.html": "88c6d9cb5da225a21e549e3bbef6dd9b6ef973f6dd9c3c01674e044525cae463",
+    "biomes/doubledelta/src/28-vstack-mipvar.js": "278b8ff77126de573bbedbbb61460d46da4287fb36672cb1ec6970d7a6d78910",
     "biomes/doubledelta/src/40-biome-ddelta-phys.js": "cfc3c311d83c77c56e9f3176fe620fb52baca1f8c0a5c82778efa07d27db4dd8",
     "biomes/doubledelta/src/41-biome-ddelta-sites.js": "cf3c38ef9840809ed12c4c5924a2f284abb1d63547c549d21ff484830b045bbf",
     "biomes/doubledelta/src/45-host-stage.js": "98312dfba1ad4298832b4de0078eaf8d82a2e29ceded49f2a5c9237a4b7e0dcc",
+    "biomes/doubledelta/src/46-vstack.js": "75bc39ea5112e9d78369e740ad1ab3f750618415bf43791a20390250a2c0d55d",
     "biomes/doubledelta/src/50-biome-ddelta-species.js": "f214f49cbe732293bfa0f22095d9e9a38e56e8ce937bf29e3fc8a31ae7fc2e00",
     "biomes/doubledelta/src/60-biome-ddelta-place.js": "4d7686f0b4901bf3a415cd8e79d1be1230cb98b9fd7074b2cbf55d1664d78c8f",
     "biomes/doubledelta/src/70-biome-ddelta.js": "47fd3506e8a9afd411e69d8cce7520eba9b99d77db1409a41d39a12de92974d4",
@@ -21,6 +23,7 @@
     "biomes/doubledelta/src/89a-host-atmos.js": "ccddefbf8a711c5d78694579d50d0ec1541c9172da646f8748d400952a2ff93a",
     "biomes/doubledelta/src/89w-host-water.js": "b1d92116075605ba2f85e1a3ed820070b4a91dfc1bbe670a5ef2ea7f58bea245",
     "biomes/doubledelta/src/89z-host-build.js": "6d32415dcb68f8d5ef36b612e3e6906c37be3d49ee3da4fcaaa86da0fdcb21a7",
+    "biomes/doubledelta/src/89z9-vstack-post.js": "4bae943909d01d2e70a9da5fb6b966d08ec0f56174e18a4c86cfc2e4dda0e07c",
     "biomes/doubledelta/src/99-host-take.js": "642e6d154fcf1495f29f39e06232bfb37729572fb829c3f4b3d9400bce002a16",
     "biomes/doubledelta/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
     "biomes/doubledelta/tex/amber.albedo.webp": "30315bbef980ac8e13bed4b78f2a6d5893448e5b9a847f36ec29e4958349a7f7",
@@ -144,9 +147,10 @@
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -156,17 +160,17 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -179,27 +183,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/doubledelta/src": "63ba2cfe46afa92afb858e9538d887cb3783236055226bfb8adfda1f0bf4b5f2",
+    "biomes/doubledelta": "db791505248c15bab633cd571aed3119120d310248a8d1317e1d47230b139ce9",
+    "biomes/doubledelta/src": "6fe3b75ca8d15cecff7bf65afe7a6a59663d703b05e4c23dd87d5e2a71c5734f",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/doubledelta/dist/doubledelta.html": "ef34e7a375c850c7c37c8f52f8ef3e8d37fa4270646d953826873bbb51aec623"
+    "biomes/doubledelta/dist/doubledelta.html": "335ee606fcf190627a956f9a9a1ea3cd20013c6b886c87657e164a75a6cd0157"
    },
    "outputs_raw": {
-    "biomes/doubledelta/dist/doubledelta.html": "ef34e7a375c850c7c37c8f52f8ef3e8d37fa4270646d953826873bbb51aec623"
+    "biomes/doubledelta/dist/doubledelta.html": "335ee606fcf190627a956f9a9a1ea3cd20013c6b886c87657e164a75a6cd0157"
    }
   },
   "build.py --station bitumen": {
    "inputs": {
     "biomes/doubledelta/KNOWN_ISSUES.md": "1e2ce60b81b7737421a9b19c7aac9d98e04059afdabca09cc0a46cd57b36d507",
-    "biomes/doubledelta/PORT.md": "6dcbd208a29eb87d2d3272ceaa5f816130375585d72cb6e3c258d83c622b2cfe",
-    "biomes/doubledelta/build.py": "8cd1fe7f0750704fa564ff0079bd36fdb90d405968b95151d72b7c0040aae645",
+    "biomes/doubledelta/PORT.md": "cfb8c75167235b04261675ffc2749ce3987ce7fcb3a60aeb8367abf8f9c95bac",
+    "biomes/doubledelta/build.py": "ba05294c03dfb07099bce81e661d1a359a936d93c97f36fc373df28aa39ff576",
     "biomes/doubledelta/src/00-head.html": "88c6d9cb5da225a21e549e3bbef6dd9b6ef973f6dd9c3c01674e044525cae463",
+    "biomes/doubledelta/src/28-vstack-mipvar.js": "278b8ff77126de573bbedbbb61460d46da4287fb36672cb1ec6970d7a6d78910",
     "biomes/doubledelta/src/40-biome-ddelta-phys.js": "cfc3c311d83c77c56e9f3176fe620fb52baca1f8c0a5c82778efa07d27db4dd8",
     "biomes/doubledelta/src/41-biome-ddelta-sites.js": "cf3c38ef9840809ed12c4c5924a2f284abb1d63547c549d21ff484830b045bbf",
     "biomes/doubledelta/src/45-host-stage.js": "98312dfba1ad4298832b4de0078eaf8d82a2e29ceded49f2a5c9237a4b7e0dcc",
+    "biomes/doubledelta/src/46-vstack.js": "75bc39ea5112e9d78369e740ad1ab3f750618415bf43791a20390250a2c0d55d",
     "biomes/doubledelta/src/50-biome-ddelta-species.js": "f214f49cbe732293bfa0f22095d9e9a38e56e8ce937bf29e3fc8a31ae7fc2e00",
     "biomes/doubledelta/src/60-biome-ddelta-place.js": "4d7686f0b4901bf3a415cd8e79d1be1230cb98b9fd7074b2cbf55d1664d78c8f",
     "biomes/doubledelta/src/70-biome-ddelta.js": "47fd3506e8a9afd411e69d8cce7520eba9b99d77db1409a41d39a12de92974d4",
@@ -211,6 +218,7 @@
     "biomes/doubledelta/src/89a-host-atmos.js": "ccddefbf8a711c5d78694579d50d0ec1541c9172da646f8748d400952a2ff93a",
     "biomes/doubledelta/src/89w-host-water.js": "b1d92116075605ba2f85e1a3ed820070b4a91dfc1bbe670a5ef2ea7f58bea245",
     "biomes/doubledelta/src/89z-host-build.js": "6d32415dcb68f8d5ef36b612e3e6906c37be3d49ee3da4fcaaa86da0fdcb21a7",
+    "biomes/doubledelta/src/89z9-vstack-post.js": "4bae943909d01d2e70a9da5fb6b966d08ec0f56174e18a4c86cfc2e4dda0e07c",
     "biomes/doubledelta/src/99-host-take.js": "642e6d154fcf1495f29f39e06232bfb37729572fb829c3f4b3d9400bce002a16",
     "biomes/doubledelta/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
     "biomes/doubledelta/stations/bitumen/44z-host-site.js": "ca527db90886d8213d174af5e312dd60e617e98e73fa5961c19407fd788fdb23",
@@ -336,9 +344,10 @@
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -348,17 +357,17 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -371,28 +380,30 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/doubledelta/src": "63ba2cfe46afa92afb858e9538d887cb3783236055226bfb8adfda1f0bf4b5f2",
+    "biomes/doubledelta/src": "6fe3b75ca8d15cecff7bf65afe7a6a59663d703b05e4c23dd87d5e2a71c5734f",
     "biomes/doubledelta/stations/bitumen": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/doubledelta/dist/doubledelta-bitumen.html": "05142fb0d36e5a35c728eb2caa9ee90bf8b5fc1de63cd57abe115f12d083c972"
+    "biomes/doubledelta/dist/doubledelta-bitumen.html": "6a9e32d5f85ecd8380330bb597ce6cea84871abde6a67aa61674dce1d31d2ae5"
    },
    "outputs_raw": {
-    "biomes/doubledelta/dist/doubledelta-bitumen.html": "05142fb0d36e5a35c728eb2caa9ee90bf8b5fc1de63cd57abe115f12d083c972"
+    "biomes/doubledelta/dist/doubledelta-bitumen.html": "6a9e32d5f85ecd8380330bb597ce6cea84871abde6a67aa61674dce1d31d2ae5"
    }
   },
   "build.py --station throat": {
    "inputs": {
     "biomes/doubledelta/KNOWN_ISSUES.md": "1e2ce60b81b7737421a9b19c7aac9d98e04059afdabca09cc0a46cd57b36d507",
-    "biomes/doubledelta/PORT.md": "6dcbd208a29eb87d2d3272ceaa5f816130375585d72cb6e3c258d83c622b2cfe",
-    "biomes/doubledelta/build.py": "8cd1fe7f0750704fa564ff0079bd36fdb90d405968b95151d72b7c0040aae645",
+    "biomes/doubledelta/PORT.md": "cfb8c75167235b04261675ffc2749ce3987ce7fcb3a60aeb8367abf8f9c95bac",
+    "biomes/doubledelta/build.py": "ba05294c03dfb07099bce81e661d1a359a936d93c97f36fc373df28aa39ff576",
     "biomes/doubledelta/src/00-head.html": "88c6d9cb5da225a21e549e3bbef6dd9b6ef973f6dd9c3c01674e044525cae463",
+    "biomes/doubledelta/src/28-vstack-mipvar.js": "278b8ff77126de573bbedbbb61460d46da4287fb36672cb1ec6970d7a6d78910",
     "biomes/doubledelta/src/40-biome-ddelta-phys.js": "cfc3c311d83c77c56e9f3176fe620fb52baca1f8c0a5c82778efa07d27db4dd8",
     "biomes/doubledelta/src/41-biome-ddelta-sites.js": "cf3c38ef9840809ed12c4c5924a2f284abb1d63547c549d21ff484830b045bbf",
     "biomes/doubledelta/src/45-host-stage.js": "98312dfba1ad4298832b4de0078eaf8d82a2e29ceded49f2a5c9237a4b7e0dcc",
+    "biomes/doubledelta/src/46-vstack.js": "75bc39ea5112e9d78369e740ad1ab3f750618415bf43791a20390250a2c0d55d",
     "biomes/doubledelta/src/50-biome-ddelta-species.js": "f214f49cbe732293bfa0f22095d9e9a38e56e8ce937bf29e3fc8a31ae7fc2e00",
     "biomes/doubledelta/src/60-biome-ddelta-place.js": "4d7686f0b4901bf3a415cd8e79d1be1230cb98b9fd7074b2cbf55d1664d78c8f",
     "biomes/doubledelta/src/70-biome-ddelta.js": "47fd3506e8a9afd411e69d8cce7520eba9b99d77db1409a41d39a12de92974d4",
@@ -404,6 +415,7 @@
     "biomes/doubledelta/src/89a-host-atmos.js": "ccddefbf8a711c5d78694579d50d0ec1541c9172da646f8748d400952a2ff93a",
     "biomes/doubledelta/src/89w-host-water.js": "b1d92116075605ba2f85e1a3ed820070b4a91dfc1bbe670a5ef2ea7f58bea245",
     "biomes/doubledelta/src/89z-host-build.js": "6d32415dcb68f8d5ef36b612e3e6906c37be3d49ee3da4fcaaa86da0fdcb21a7",
+    "biomes/doubledelta/src/89z9-vstack-post.js": "4bae943909d01d2e70a9da5fb6b966d08ec0f56174e18a4c86cfc2e4dda0e07c",
     "biomes/doubledelta/src/99-host-take.js": "642e6d154fcf1495f29f39e06232bfb37729572fb829c3f4b3d9400bce002a16",
     "biomes/doubledelta/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
     "biomes/doubledelta/stations/throat/44z-host-site.js": "605d1dd4bd4c2496bbcee3ef4d450034f59945d45224fc05324262da1cfe8794",
@@ -529,9 +541,10 @@
     "core/mask/27-core-mask-distance.js": "9fdda02f2f944468c96ad1d8dfb8b785cc6f4c4803e45c2b8117572c9ae4b85c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
+    "core/materials/record/27-matlib-m1.js": "3847ce3dac5ce6ac71bd063bdc2e8e0931ddaceac269091e70f4e268d4fafbb4",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
@@ -541,17 +554,17 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "65491b58b7258840a88c1ce17f0ba53d11536acd9bf2c6dacb9e1af00821c76c",
-    "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
+    "core/terrain/43-core-ground.js": "dbd96ca7a1ffa46c44e43dcf27ed2837841c77c7ce4670eafcb65c499bf27e79",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
     "core/terrain/host/35-core-strata-shade.js": "e74e7697dc623380851c6d5d7756584df7bb72777b89b60a961258dcc94f60ea",
     "core/terrain/host/44-core-farfield-draw.js": "54f93a37834f7ced1f312c7df40bf19a7ca377acff641119ad32f00b93cc0417",
     "core/terrain/host/45-core-horizon-shade.js": "b3cf3ea84ecafe4d05e5c9692829f7fd2c62512dbaec37a1e7ed7bc44bcaf157",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -564,17 +577,17 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "biomes/doubledelta/src": "63ba2cfe46afa92afb858e9538d887cb3783236055226bfb8adfda1f0bf4b5f2",
+    "biomes/doubledelta/src": "6fe3b75ca8d15cecff7bf65afe7a6a59663d703b05e4c23dd87d5e2a71c5734f",
     "biomes/doubledelta/stations/throat": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
-    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/doubledelta/dist/doubledelta-throat.html": "51e58a8df13e3e0813e0063dc322d5ce07ba04591112dee4366b4b46584e3823"
+    "biomes/doubledelta/dist/doubledelta-throat.html": "71dbeccfb62034316b9fe4a2f63da8da05deec6ed3cf2d7f1c45342f012a210b"
    },
    "outputs_raw": {
-    "biomes/doubledelta/dist/doubledelta-throat.html": "51e58a8df13e3e0813e0063dc322d5ce07ba04591112dee4366b4b46584e3823"
+    "biomes/doubledelta/dist/doubledelta-throat.html": "71dbeccfb62034316b9fe4a2f63da8da05deec6ed3cf2d7f1c45342f012a210b"
    }
   }
  }

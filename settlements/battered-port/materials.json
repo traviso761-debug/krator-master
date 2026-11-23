@@ -1,0 +1,80 @@
+{
+  "build": "battered_port",
+  "note": "Library material slots for settlements/battered-port (Bè-tõ-pò): dark oxidized scoria & columnar basalt plinths, yellow-tan palagonite tuff mortar/caverns, celadon/slate roofs, cupronickel/nickel-steel hoist hardware, driftwood sea-galleries, and <=3-layer KGROUND (< 15 active samplers).",
+  "size": 512,
+  "families": {
+    "plinth_scoria": {
+      "lib": "rock.basalt.oxidised",
+      "scale": [2.2, 2.2],
+      "tint": { "keep": 0.45, "mean": 0.28 },
+      "metal": 0
+    },
+    "plinth_basalt": {
+      "lib": "rock.basalt.polygonal",
+      "scale": [2.4, 2.4],
+      "tint": { "keep": 0.45, "mean": 0.26 },
+      "metal": 0
+    },
+    "mortar_tuff": {
+      "lib": "stone.tuff.hewn",
+      "scale": [2.6, 2.6],
+      "tint": { "keep": 0.50, "mean": 0.56 },
+      "metal": 0
+    },
+    "wall_lime": {
+      "lib": "plaster.white_stucco_02",
+      "scale": [2.4, 2.4],
+      "tint": { "keep": 0, "mean": 0.84 },
+      "metal": 0
+    },
+    "roof_grey": {
+      "lib": "roof.tile",
+      "scale": [1.3, 1.3],
+      "tint": { "keep": 0, "mean": 0.58 },
+      "metal": 0
+    },
+    "roof_celadon": {
+      "lib": "roof.tile.celadon",
+      "scale": [2.2, 2.2],
+      "tint": { "keep": 1, "mean": null },
+      "metal": 0,
+      "roughLift": 0.42
+    },
+    "metal_cuproni": {
+      "lib": "metal.bronze.verdigris",
+      "scale": [1.4, 1.4],
+      "tint": { "keep": 0.55, "mean": 0.48 },
+      "metal": 0.65
+    },
+    "metal_nickel": {
+      "lib": "metal.iron",
+      "scale": [1.0, 1.0],
+      "tint": { "keep": 0.35, "mean": 0.52 },
+      "metal": 0.85
+    },
+    "wood_drift": {
+      "lib": "wood.weathered_brown_planks",
+      "scale": [2.0, 2.0],
+      "tint": { "keep": 0.35, "mean": 0.52 },
+      "metal": 0
+    },
+    "ground_scoria": {
+      "lib": "ground.scoria",
+      "scale": [3.2, 3.2],
+      "tint": { "keep": 0.35, "mean": 0.28 },
+      "metal": 0
+    },
+    "ground_cobble": {
+      "lib": "ground.gravel019",
+      "scale": [2.6, 2.6],
+      "tint": { "keep": 0.35, "mean": 0.44 },
+      "metal": 0
+    },
+    "strata_coal": {
+      "lib": "rock.coal",
+      "scale": [2.2, 2.2],
+      "tint": { "keep": 0.50, "mean": 0.16 },
+      "metal": 0
+    }
+  }
+}
