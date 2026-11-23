@@ -31,8 +31,8 @@ measurement, until the route harness runs on the two GPU lanes.
      holds a shape. No bounce light, no local reflections, no fog with depth, no glow, no eye adaptation.
 3. **The frame already costs too much, and for one reason.** Every instanced item in a town is a single `MultiMesh`
    spanning the whole place, so the culler sees one box and the view and each of the sun's four shadow splits draw all of
-   it: 46 million primitives a frame without the sun's shadow, 181 million with it. Nothing is added before that comes
-   down (section 5).
+   it: 46 million primitives a frame without the sun's shadow, 181 million with it. Cutting those into 64 m cells when the
+   place opens was tried in this pass: 2.4 million and 10 million, the same picture. That comes first (section 5).
 4. **So the order is cost, light, surface, form, plants, air.** The first three are Godot-only work on the exports as they
    stand, and they move the picture most for what they cost.
 5. **Three things need the exporters, and they must be specified before Stage 8**, because a change to shared core is only
@@ -76,7 +76,7 @@ reports, `GRAPHIC-LOAD.md`, `KIT-REBUILD-SURVEY.md`, `BIOME-REBUILD-SURVEY.md`, 
 | Statement | Correction |
 |---|---|
 | Proposal 2.4: "Forward+, MSAA 2x" | `godot/project.godot` sets `anti_aliasing/quality/msaa_3d=2`, which is 4x (0 off, 1 is 2x, 2 is 4x, 3 is 8x; **read**, and the 4.7.2 class reference). Nothing in `walk.gd` lowers it |
-| Proposal 2.4: "No SDFGI ... or SSAO anywhere" | Since then `walk.gd` turns SSAO on and has SDFGI behind `--gi` and a UI toggle (**read**, `walk.gd:101-112`). Still true: no `ReflectionProbe`, `VoxelGI`, `OccluderInstance3D`, `generate_lods` or `generate_tangents` in any script under `godot/` (**measured**, grep) |
+| Proposal 2.4: "No SDFGI ... or SSAO anywhere" | Since then `walk.gd` turns SSAO on and has SDFGI behind `--gi` and a UI toggle (**read**, `walk.gd:101-112`). Still true: no `ReflectionProbe`, `VoxelGI`, `OccluderInstance3D` or `generate_lods` in any script under `godot/` (**measured**, grep) |
 | Stage reports: Godot render medians | Every Godot frame time in the reports is llvmpipe. `godot/PERF.md` holds only a headless run. The route has no Forward+ number on either lane |
 | Proposal M4: a chamfered box is "44 triangles for 12" | True, and the number that matters is vertices: a hard-edged box already has 24, and a chamfer whose strips reuse them has 24 as well (R1). `GRAPHIC-LOAD.md` found the load is vertices |
 
@@ -94,11 +94,11 @@ reports, `GRAPHIC-LOAD.md`, `KIT-REBUILD-SURVEY.md`, `BIOME-REBUILD-SURVEY.md`, 
 
 ## 3. Why the frame reads as a blockout
 
-### 3.1 Two frames
+### 3.1 Four frames
 
 Shot in this pass with the walk scene's own rig (`walk.gd`: AgX, SSAO 1.4 / 1.55, four splits to 2,400 m, the colour
-script's fog and exposure) at two of the monastery's exported views, 16:20. They are not committed (`shots/` is ignored);
-appendix A has the commands.
+script's fog and exposure) at three of the place's exported views and the route's forest edge, 16:20. They are not
+committed (`shots/` is ignored); appendix A has the settings.
 
 - **"The White Palace from the avenue."** The palace is flat white planes with black rectangles in a grid. The avenue is a
   blurred noise texture with no kerb, cobble or wear. Arcade posts are sticks. Prayer flags are flat squares. The stair on
@@ -106,6 +106,12 @@ appendix A has the commands.
   150 m away.
 - **"The Hall of Forms."** The brick is one saturated orange from eave to ground. The shadow beside the hall is a soft blob
   with no edge. The lawn is a flat pale green with tufts on it. The houses behind are white boxes with a red stripe.
+- **"[Village] East", a green with blossom trees and conifers.** The sward's blades hold up near the eye: stage 4's work
+  shows. The conifers are near-black cut-outs of layered cards, trunks are black with no relief, the far trees are two
+  pale tones. A whole canopy's shadow on the grass is one dithered blob. The path is an untextured band.
+- **The route's forest edge, from 12 m up.** Each crown is a flat disc of cards in one pastel, with no inside and no
+  shade of its own. Trunks are black sticks. Every tree's shadow is the same soft oval. The slope between them is one
+  smooth colour with scattered tufts.
 
 Against `VISUAL-BAR.md` section 3 these fail on: flat-lit streets, bare terrain texture underfoot, smooth low-poly
 silhouettes on a landmark, single-noise albedo, and a population of one colour.
@@ -117,10 +123,12 @@ silhouettes on a landmark, single-noise albedo, and a population of one colour.
 | Primitives a frame, avenue view | 180.7 M in 3,372 draws; 181.1 M in 3,543 at the Hall of Forms | **measured**, `Performance.RENDER_TOTAL_*`, every pass counted |
 | The same view by shadow setting | no sun shadow: 46.3 M in 1,164 draws. Shadow to 400 m: 180.6 M in 3,323. Shadow to 2,400 m: 180.7 M in 3,372. **Shortening the shadow does not lower the count** | **measured** |
 | Why | 392 of the town's 420 instanced items have instances spread over more than 1,000 m (about 2.4 km: the whole place), and they hold 33.5 M triangles, all of the instanced total. `gltf_instancing.gd` makes one `MultiMesh` an item. (180.7 - 46.3) / 4 = 33.6 M a split: the instanced total | **measured**, the glb's instance translations; **read**, `gltf_instancing.gd` |
+| The cure, tried | Every `MultiMesh` wider than 96 m cut into 64 m cells after the place opened (1,067 of them into 38,287 cells, 108,724 instances, half a second of GDScript), each cell keeping its item's visibility range. No sun shadow: **2.4 M in 259 draws**. Shadow to 400 m: **10.0 M in 697**. Shadow to 2,400 m: **10.3 M in 723**. The frame matched the one before to a mean difference of 1.4 in 255, the difference being the verge's sway and the clouds' drift | **measured**, appendix A |
 | The town place (`sq80bzd7ep/world.glb`) | 456 meshes, 1.31 M triangles, 3.21 M vertices (2.45 a triangle: hard edges and unindexed soup), **34.2 M triangles once instanced** (33.5 M of them in instanced items) | **measured**, the glb's JSON |
 | The monastery place | 911 meshes, 1.11 M triangles, 8.7 M instanced; 165 of 911 meshes have UVs | **measured** |
 | The streamed flora | 541 meshes, exactly 3 vertices a triangle | **measured** |
 | Vertex attributes in all three | POSITION, NORMAL, TEXCOORD_0, COLOR_0. No TANGENT | **measured** |
+| What a runtime glTF load adds | `girder/region.glb` through `GLTFDocument`: 57 surfaces, all 57 with a tangent array, none with a level of detail, none with a shadow mesh | **measured**, 4.7.2 |
 | Materials | town: 70, of which 18 have a normal map and 60 are double-sided; monastery: 184, 24 and 115. `library.gdshader` is `cull_disabled` for all of them and writes `ALPHA` always | **measured**; **read**, `library.gdshader:10,170` |
 | The sun's shadow texels | about 0.29 m, 0.54 m, 1.4 m and 2.7 m in the four splits (4096 atlas, 2,400 m, splits 0.1 / 0.2 / 0.5, 58 degrees, 16:9) | computed from **read** settings (`walk.gd:110-112`; the project keeps the 4096 default) |
 | Packs, repo-wide | 111 packs, 2,761 surface families. `tint.keep` 0: 1,051 (38 %); 0.3 or under: 375 more. `roughLift` above 0: 75 %; 0.3 or more: 56 % | **measured**, every `tex/pack.json` |
@@ -176,25 +184,26 @@ So the bar is stated as properties of the frame, each one a row the route harnes
 The probe in 3.2 says where it goes. A `MultiMesh` is culled as one box. Each of a town's instanced items (a tree
 species, a bench, a lamp) is one `MultiMesh` over the whole 2.4 km place, so whichever way the eye looks, and for each
 of the sun's four splits, all 33.5 M instanced triangles are drawn. The per-instance cull in `lod.gdshaderinc` collapses
-far instances to a point, which saves fill but still runs every vertex. `GRAPHIC-LOAD.md` saw the same on a biome tile
-("13.2 M primitives at the stream and at the hummocks alike"). Every item below is Godot-side and changes no page.
+far instances to a point, which saves fill but still runs every vertex. And a visibility range on such a node never
+acts: the eye is always inside its box. `GRAPHIC-LOAD.md` saw the same on a biome tile ("13.2 M primitives at the stream
+and at the hummocks alike"). Every item below is Godot-side and changes no page.
 
 | Item | What | Why it pays | Godot's tool |
 |---|---|---|---|
-| C1 | **Cut every instanced item into cells** of about 48 to 64 m when a place is cooked or opened, each cell its own `MultiMeshInstance3D` with a visibility range from the item's size and LOD range | Then the frustum, each shadow split, the range and the occluders all cull by cell. This is the item that takes 181 M toward 20 M; the rest refine it | `MultiMesh`, `visibility_range_end`; the indoor furniture is already in 36 m cells (`kinteriors_light.gd`) |
+| C1 | **Cut every instanced item into cells** of about 48 to 64 m when a place is cooked or opened, each cell its own `MultiMeshInstance3D` with a visibility range from the item's size and LOD range | Then the frustum, each shadow split, the range and the occluders all cull by cell. **Measured** (3.2): 181 M to 10 M, 46 M to 2.4 M without the sun's shadow. One thing the trial hit: a cell that copies the node's `lod_*` instance uniforms overflows the buffer for them (29,068 errors at 38,287 cells), so a cell carries its range on the node, and rows of different range become different cells | `MultiMesh`, `visibility_range_end`; the indoor furniture is already in 36 m cells (`kinteriors_light.gd`) |
 | C2 | **The sun's shadow to 250 to 400 m**, splits near 0.05 / 0.15 / 0.40; S1's baked horizon carries the land beyond | An object in all four splits is drawn five times (**docs**). The far splits hold the most objects and give the least: 1.4 and 2.7 m texels. It is a quality item first (L1): on its own it left the count where it was | `DirectionalLight3D.directional_shadow_*` |
 | C3 | **Who casts.** No shadow from furniture when the eye is outside, from undergrowth, lamps, bunting; none from anything under about 0.4 m beyond the second split | Shadow passes run the vertex shader for every caster | `cast_shadow` a cell, `Light3D.shadow_caster_mask` (4.4), layers |
 | C4 | **A shadow mesh a surface**: positions only, welded | The shadow and depth passes then read a third of the vertex data and far fewer vertices (2.45 a triangle today) | `ArrayMesh.shadow_mesh`, set by the cook (N2) |
 | C5 | **K5 now, and widened**: `library.gdshader` split into opaque (`cull_back`, no `ALPHA`), two-sided and cut-out | 60 of 70 town materials are two-sided and all draw two-sided; writing `ALPHA` keeps them out of the opaque depth prepass. The same for `terrain.gdshader` (`cull_disabled`) | render modes |
 | C6 | **Occluders from the records.** A box a room block or a wall run, built when a place opens | From the avenue the halls behind the facade are drawn: interiors are culled by range (160 m), not by what hides them. **Docs**: occlusion culling is most effective indoors, costs CPU, and `ArrayOccluder3D` is meant for generation from script | `OccluderInstance3D`, `BoxOccluder3D`, `ArrayOccluder3D`; `rendering/occlusion_culling/use_occlusion_culling` |
-| C7 | **Mesh levels of detail** on every static surface and item | A runtime glTF load makes none (**docs**: generation happens on import). 33.5 M instanced triangles have one level | `ImporterMesh.generate_lods()` in the cook (N2); `mesh_lod_threshold` per tier |
+| C7 | **Mesh levels of detail** on every static surface and item | A runtime glTF load makes none (**measured**, 3.2; **docs**: generation happens on import). 33.5 M instanced triangles have one level | `ImporterMesh.generate_lods()` in the cook (N2); `mesh_lod_threshold` per tier |
 | C8 | **Far tiers**: a town past about 600 m as one merged low mesh a block; trees as impostors (P6) | what is left after C1 at long range | `visibility_range_*` with `visibility_parent` (HLOD) |
 | C9 | **The sky's radiance pass**: a cheap branch (gradient, sun, mean cloud) when `AT_CUBEMAP_PASS`; clouds in a half-resolution pass | The radiance map re-renders whenever the sky's uniforms change, which is every frame | sky shader built-ins, `use_half_res_pass` |
 | C10 | **MSAA by tier** (it is 4x for everyone today) | Section 6.6 | `Viewport.msaa_3d` |
 
 **Exit:** the route harness's four stops in Forward+ on the RTX and the Arc lanes, with GPU time from
-`RenderingServer.viewport_get_measured_render_time_gpu` (frame delta hides what is CPU). Target for the step: under 30 M
-primitives a frame at every stop with the sun's shadow on, and the caps of section 12 for "opaque" and "shadows".
+`RenderingServer.viewport_get_measured_render_time_gpu` (frame delta hides what is CPU). Target for the step: the
+primitive caps of section 12 at every stop with the sun's shadow on, and its caps for "opaque" and "shadows".
 `tests/perf/route_harness.gd` already records draws, primitives and memory; it gains the GPU timer and a `--look=` tier.
 
 ## 6. Track L: the light rig
@@ -224,9 +233,9 @@ the names are the 4.7.2 class reference's.
 | far field | S1's baked horizon | the same |
 
 At 400 m the four splits have texels of about 2.4, 7, 18 and 46 cm on a 4096 atlas (half that on 8192), against 29 cm at
-best today. That is the largest single change to how solid things look. Tried in this pass (appendix A): on the avenue
-the arcade's shadow goes from a soft blur to the roof's edge, the rail and each post drawn on the paving. It does not lower the primitive count on its
-own (3.2); C1 does.
+best today. That is the largest single change to how solid things look. Tried in this pass (appendix A): on the avenue the
+arcade's shadow goes from a soft blur to the roof's edge, the rail and each post drawn on the paving. It does not lower
+the primitive count on its own (3.2); C1 does.
 
 On 4.8, turn on the new screen-space contact shadows for the sun (a per-light and per-environment option, **docs**): they
 cover the last centimetres no shadow map resolves. Do not write a compositor effect for it on 4.7.2.
@@ -243,10 +252,11 @@ cover the last centimetres no shadow map resolves. Do not write a compositor eff
 | Baked vertex occlusion | on | on | I4 and B2, extended to every exterior wall foot and eave by the form pass (R4) |
 
 SDFGI is the right first GI because the world is generated and streamed: lightmaps cannot be baked outside the editor
-(**docs**), and VoxelGI must be baked a place at a time. Three things to check on the lanes before it is on by default:
-that `MultiMesh` content contributes (most of a town is instanced); what it does at the 0.2 m walls (indoor surfaces
-take no ambient today, so the leak to watch is lamp light reaching the street through a wall at night); and its cost
-while the stream rebases.
+(**docs**), and VoxelGI must be baked a place at a time. It ran on the avenue in this pass and deepened the shade under
+eaves; it also lit the volumetric fog until the frame washed out, so `volumetric_fog_gi_inject` comes down with it
+(appendix A). Three things to check on the lanes before it is on by default: that `MultiMesh` content contributes (most of
+a town is instanced); what it does at the 0.2 m walls (indoor surfaces take no ambient today, so the leak to watch is lamp
+light reaching the street through a wall at night); and its cost while the stream rebases.
 
 ### 6.3 Local reflections (L3)
 
@@ -313,7 +323,7 @@ Fog today is one exponential whose density the colour script sets, with no heigh
 |---|---|---|---|
 | F1 Aerial perspective | far things take the sky's colour, not one fog colour | `fog_aerial_perspective` 0.4 to 0.6 (**docs**: "a better sense of depth" in large open worlds) | both |
 | F2 Height fog | mist that lies in valleys at dawn, dusk and after rain; none at noon | `fog_height`, `fog_height_density`, keyed by the colour script and the region's floor height | both |
-| F3 Volumetric fog, near | shafts through trees and arcades, lamps that glow in mist | `volumetric_fog_*`: length 200 to 300 m, anisotropy 0.6 to 0.8, density near 0.001 on a clear day, ambient inject 0.5; the sun's `light_volumetric_fog_energy` 1.5 to 2. **Docs**: Forward+ only, a finite range, meant to be used with the non-volumetric fog | high |
+| F3 Volumetric fog, near | shafts through trees and arcades, lamps that glow in mist | `volumetric_fog_*`: length 200 to 300 m, anisotropy 0.6 to 0.8, ambient inject 0.5; density and the sun's `light_volumetric_fog_energy` as per-hour keys of the colour script (the trial's 0.001 and 2 read well across the sun and whitened a third of the sky toward it, appendix A). **Docs**: Forward+ only, a finite range, meant to be used with the non-volumetric fog | high |
 | F4 Fog volumes | mist over water, spray at falls, hollows, chimney smoke, dust in a hall | `FogVolume` (box, ellipsoid, cone, cylinder), `FogMaterial` or a `shader_type fog` with wind-scrolled noise | high |
 | F5 Particles | smoke, motes in shafts, petals and leaves, spindrift, rain with splashes | `GPUParticles3D`, `GPUParticlesCollisionHeightField3D` | both, counts by tier |
 | F6 Wetness | darker, smoother ground and stone in rain; puddles in hollows that reflect | the `atm_wet` global, in the weathering stack (M7) and the terrain shader; SSR | both; SSR high |
@@ -354,7 +364,8 @@ and warm and cool patches, with nothing changed in the export. It is crude, and 
 
 ### M8. True colour and true gloss for the hero families
 
-About forty families cover most of a town's screen (walls, roofs, paving, timber, bark, ground). For those:
+About forty families cover most of a town's screen (walls, roofs, paving, timber, bark, ground; **assumed**: the look lab
+counts screen share a family to pick them). For those:
 
 - **Scans where they exist.** Poly Haven and ambientCG are CC0 and carry albedo, normal, roughness, occlusion and
   displacement at 4K and up; `tools/textures/fetch_polyhaven.py` and `ingest_polyhaven.py` exist. Ingest roughness with
@@ -374,10 +385,12 @@ by the family's class. One sampler for every material.
 
 ### M10. Tangents
 
-`library.gdshader` builds its tangent frame from screen derivatives because the export has no tangents. That is exact on
-flat world-UV walls and noisy on curved and minified ones. The cook (N2) welds and calls
-`SurfaceTool.generate_tangents()` where a mesh has UVs; the shader uses the mesh's when present and keeps the derivative
-frame for triplanar and UV-less furniture.
+The engine already makes them: a runtime glTF load gives every surface a tangent array (**measured**, 3.2).
+`library.gdshader` does not use it. It builds its frame from screen derivatives, as three.js does for a mesh with no
+tangents (**read**, `library.gdshader:96-103`). That is exact on a flat face and noisy where a surface curves or shrinks to
+a few pixels, and the parallax march inherits the noise. Writing `NORMAL_MAP` against the mesh's `TANGENT` and
+`BINORMAL` is the engine's own path, and `wuv_box` only scales the mesh's UVs, so the tangents stay right for world-UV
+boxes. The derivative frame stays for triplanar and UV-less furniture.
 
 ### M11. Decals
 
@@ -401,7 +414,7 @@ furniture reading as moulded plastic. Small, and it rides with section 13.
 | `library_interior.gdshader` | the room table through `IRRADIANCE` and `RADIANCE`, not emission; `ambient_light_disabled` off | L4 | 2 |
 | `lib/weather.gdshaderinc` (new) | the weathering stack: one shared noise texture, the vertex fields when they exist, `atm_wet` and the season globals, an instance `age` | M7 | 3 |
 | `lib/detail.gdshaderinc` (new) | a detail-normal array keyed by class, faded by distance | M9 | 3 |
-| `library*.gdshader` | the mesh's tangents when it has them; the derivative frame as the fallback | M10 | 4 |
+| `library*.gdshader` | `NORMAL_MAP` on the mesh's tangents; the derivative frame only for triplanar and UV-less meshes | M10 | 3 |
 | `bark.gdshader` | a normal map; the weather include for moss and wet | P3, M7 | 5 |
 | `foliage.gdshader`, `lib/foliage.gdshaderinc` | normal and thickness maps, B1's gate; then wind in three levels | P2, P4 | 5, 8 |
 | fog shaders (new, `shader_type fog`) | density from wind-scrolled noise with a height falloff, for mist, spray and smoke | F4 | 6 |
@@ -416,7 +429,8 @@ furniture reading as moulded plastic. Small, and it rides with section 13.
 A hard-edged box has 24 vertices: three at each corner, one a face. Move each a bevel's width in along its face and
 stitch the gaps: twelve edge strips and eight corner triangles. 44 triangles on the same 24 vertices. Leave the strips'
 normals as the faces' normals and the strip shades as a rounded edge with no new normal data. The load is vertices
-(`GRAPHIC-LOAD.md`), and this adds none.
+(`GRAPHIC-LOAD.md`), and on an indexed bucket this adds none (the engine's buckets keep indices, `flushBuckets`; the
+catalog's can, `KF.batch({indexed:true})`).
 
 Two limits. The strip's texture is an interpolation between two faces' mappings, which is fine at 1 to 4 cm and wrong
 for a wide chamfer. And the plain 12 triangles cannot be drawn from the same vertices without cracks, so the far level
@@ -439,8 +453,8 @@ moves. It costs nothing at run time.
 
 Every window and door inside 20 m: a reveal of 10 to 25 cm, a frame, a sill that projects, a lintel. With L1's shadows
 each one then draws a shadow line, which is most of what makes a facade read as built. From the avenue the palace's
-windows read as flat dark rectangles. An audit per kit first (`36o-open.js` and `KDOOR` cut real openings in some), because this is
-where kits differ most.
+windows read as flat dark rectangles. An audit per kit first (`36o-open.js` and `KDOOR` cut real openings in some),
+because this is where kits differ most.
 
 ### R4. Silhouette where the silhouette is
 
@@ -491,7 +505,7 @@ Trees keep their own generator: `BIO.tree` knows structure the Godot tree add-on
 | `Decal` | M11 | 7 |
 | `MultiMesh` in cells with visibility ranges | C1 | 1 |
 | `OccluderInstance3D` with box and array occluders | C6 | 1 |
-| Mesh LOD, `ArrayMesh.shadow_mesh`, `SurfaceTool.generate_tangents` | C4, C7, M10 | 4 |
+| Mesh LOD, `ArrayMesh.shadow_mesh` | C4, C7 | 4 |
 | Visibility ranges and `visibility_parent` | C8 | 4 |
 | Instance uniforms and global shader parameters | M7's age and weather (both in use already for LOD and the atmosphere) | 3 |
 | Sky shader passes (`AT_CUBEMAP_PASS`, half resolution) | C9 | 1 |
@@ -506,7 +520,7 @@ Trees keep their own generator: `BIO.tree` knows structure the Godot tree add-on
 | Item | What | Why |
 |---|---|---|
 | N1 | **`KratorLook`** and its tier table | one rig, switchable, harness-driven |
-| N2 | **A mesh cook**: per place, once, off line (`godot --headless --script`): instanced items cut into cells, weld, tangents, levels of detail, shadow mesh, occluders, far tiers; saved as a `.res` beside the glb and keyed by its hash | load time, C4, C7, C8, M10 (and C1 and C6, which step 1 does when a place opens). Today a place is parsed from glTF every time it streams in |
+| N2 | **A mesh cook**: per place, once, off line (`godot --headless --script`): instanced items cut into cells, weld, levels of detail, shadow mesh, occluders, far tiers; saved as a `.res` beside the glb and keyed by its hash | load time, C4, C7, C8 (and C1 and C6, which step 1 does when a place opens). Today a place is parsed from glTF every time it streams in |
 | N3 | **A texture cook**: BC7 once, keyed by the source hash `pack.json` already carries; `PortableCompressedTexture2D` or `Image.save_dds` | the BC7-at-load stall (3.2). On 4.8, mip streaming on top |
 | N4 | **An impostor baker** in Godot (`SubViewport`, albedo and normal atlases) | P6 without a round trip through the page |
 | N5 | **A look lab scene**: swatches of every hero family under the rig, a tier and hour switch, the debug views, A/B by flag | where M7's amounts are tuned and Gate 7's swatches are shot |
@@ -549,7 +563,7 @@ step 1.
 | Sky and its radiance | 1 | 0.5 |
 | Post, anti-aliasing, upscale | 3 | 1.0 |
 | Headroom | 4.8 | 1.0 |
-| Primitives a frame, all passes | 15 M | 30 M |
+| Primitives a frame, all passes | 10 M | 20 M |
 | Video memory | 1.5 GB | 3 GB |
 
 What pays for what: C1 to C5 pay for L1's finer shadow and 8192 atlas. C6 and C7 pay for M7's extra fetches and R1's
@@ -580,10 +594,10 @@ Oidong forest edge and one hall. Nothing goes to every case until that slice hol
 
 | Step | What | Exit |
 |---|---|---|
-| 1 | **Cost, at open time.** C1 to C3, C5, C6, C9, C10; N1, N6; the route timed in Forward+ on both lanes for the first time | under 30 M primitives at every stop; the caps for opaque and shadows; baselines recorded |
+| 1 | **Cost, at open time.** C1 to C3, C5, C6, C9, C10; N1, N6; the route timed in Forward+ on both lanes for the first time | the primitive cap at every stop; the caps for opaque and shadows; baselines recorded |
 | 2 | **Light.** `KratorLook`, L1 to L6 | the bar's near-shadow, grounding and hour rows; before and after at three hours; AA chosen per tier |
-| 3 | **Surface in the shader.** M7 on today's exports, M9, N5 | the bar's colour and gloss rows on the slice's hero families; fetches and GPU time inside the caps |
-| 4 | **The cooks.** N2 (with C4, C7, C8), N3, M10 | a place streams in from caches; no BC7 at load; levels of detail, shadow meshes and tangents on every surface |
+| 3 | **Surface in the shader.** M7 on today's exports, M9, M10, N5 | the bar's colour and gloss rows on the slice's hero families; fetches and GPU time inside the caps |
+| 4 | **The cooks.** N2 (with C4, C7, C8), N3 | a place streams in from caches; no BC7 at load; levels of detail and shadow meshes on every surface |
 | 5 | **True maps.** M8 for the forty families; P1 to P3 | roughness and saturation spreads measured from the packs; the swatch gallery |
 | 6 | **Air.** F1 to F6 | three depth planes at every hour; shafts at 16:20 and at dawn |
 | 7 | **Dressing.** M11, P7, P8 | `VISUAL-BAR.md`'s bare-ground gate on the avenue and the lawn |
@@ -593,6 +607,15 @@ Oidong forest edge and one hall. Nothing goes to every case until that slice hol
 
 Steps 1 to 3 need nothing from the web side and can start now. Step 8's contract (section 13) is the one thing with a
 deadline.
+
+The first thing to run needs no code: the route as it stands, in Forward+, on each lane (the header of
+`godot/tests/perf/route_harness.gd`; `--gpu-index 1` is the Arc on the owner's laptop, `GRAPHIC-LOAD.md`). It is the
+baseline every later number is read against.
+
+```
+python tools/harness.py lock --lane rtx -- <godot> --path godot --script res://tests/perf/route_harness.gd -- --out=res://PERF-route-rtx.json --md=res://PERF-route-rtx.md --shots=shots/route-rtx
+python tools/harness.py lock --lane arc -- <godot> --gpu-index 1 --path godot --script res://tests/perf/route_harness.gd -- --out=res://PERF-route-arc.json --md=res://PERF-route-arc.md --shots=shots/route-arc
+```
 
 ### 14.1 What could go wrong
 
@@ -680,10 +703,28 @@ What the frames show:
   roof's edge, the rail and each post. The sky toward the sun gains a glow from the volumetric fog and the palace sits
   behind a thin haze. The palace itself does not change: its walls are as flat as before. That is why surfaces and form
   come after light and are not replaced by it.
+- **`cur` to `light`, the green.** The canopy's shadow goes from one dithered blob to dappled shade: leaf-shaped light
+  and dark on the grass, with the trunk's own line in it. This is the same setting as on the avenue and it does as much
+  for plants as for buildings.
+- **`cur` to `light`, the forest edge.** Shadows take the crowns' shapes and the crowns shade themselves underneath. The
+  volumetric fog toward the sun is too strong at these values: it whitens a third of the sky. Density and the sun's fog
+  energy are per-hour keys for the colour script, not constants. The trees are still flat pastel discs: light does not
+  fix what P1 to P6 are for.
 - **`light` to `weather`.** The facade gains run-off and warm and cool patches and stops reading as one plane; the brick
   hall beside it gains value. The streaks ignore the windows and the eaves, which is what the opening's mark in section
-  13 is for.
+  13 is for. On the green nothing changed: almost nothing there uses the library shader, which is why M7 is an include
+  for the bark and terrain shaders too.
+- **`weather` to `gi`.** SDFGI ran on this content and changed the frame: shade under the eaves and the arcade deepened
+  and took the sky's blue. But the volumetric fog takes GI light too (`volumetric_fog_gi_inject` is 1 by default), and
+  with both on the air brightened until the flags and the facade washed out. The two have to be tuned together: the
+  inject down to about a third, or the density down. Whether the instanced geometry contributed cannot be told from one
+  frame.
 - **Primitives** were 180.6 M in every variant: none of these settings changes what is drawn.
+- **The cells.** At the avenue, after the other variants were undone, the script cut every visible `MultiMesh` wider than
+  96 m into 64 m cells by its instances' positions, each cell a new `MultiMeshInstance3D` with the same mesh, material,
+  layers, shadow setting and visibility range, and hid the original. Counts before and after are in 3.2. It is a count
+  experiment: the cells copied the node's `lod_*` uniforms, most of them overflowed, and a row can then draw past its
+  range, so the numbers are an upper bound on what a proper split gives.
 
 The weathering blocks. After `c *= bu_bright(v_wp, bu_macro, bu_cell);`:
 
