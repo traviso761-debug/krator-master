@@ -24,6 +24,10 @@ house's own:
                        Watch in the plinth whenever the lamp is lit
   tank-still-water     the saddle tank's water is core/water's still water (WATER.at finds it at its level, between the tank's
                        floor and rim) and drawn by WATER.drawStill
+  interiors-furnished  every building of the order with rooms (BC_IX_PROG: all but the gatehouses) and the Lamp Plinth planned on
+                       its shell with as many floors as it has storeys and furnished (the plinth's four: the switch room, the
+                       signal room, the Lamp Watch, the Chapel of the Beacon); the Order's own catalog pieces placed
+  interiors-walk-in    every interior in core/walk with its street door found and unlocked
   offices-kept         the Lamp School's six masters out on the drawn ground on their way to the noon office, then in the hall
   carts-on-their-days  the oil carts away on the page's day (unless ?day= is 110 or 290); on day 110 up the fort road on the ground
                        before 11:00 and unloading side by side at the Oil Pit at 11:30
@@ -57,7 +61,7 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
    detail:'the crown at '+Q.crown+' m; the fort\'s corners and the lamp '+fg.join(', ')+'; the precinct\'s corners and middle '+pg.join(', ')+(bf||bp?' ('+(bf+bp)+' OFF their level)':'')+'; cut '+Q.cut+' m, fill '+Q.fill+' m'});}
  {const t=Q.crown+BEACON_LAYOUT.draw.plinth.h,l=Q.crown+BEACON_LAYOUT.lamp.h;
   const A=Q.lampAt||[NaN,NaN,NaN],off=Math.hypot(A[0],A[2]);
-  R.push({name:'lamp-on-its-plinth',ok:Math.abs(Q.plinthTop-t)<.05&&Math.abs(Q.lampY-l)<.05&&off<.05&&Math.abs(A[1]-Q.lampY)<.01,detail:(Number.isFinite(off)?'80g\'s record (beacon:\'ancient\'): the lamp '+off.toFixed(2)+' m off the layout\'s (0,0); ':'NO record in window._xaBeacons; ')+'the plinth\'s roof at '+Q.plinthTop+' m (the crown + '+BEACON_LAYOUT.draw.plinth.h+' = '+t.toFixed(2)+'), the lamp\'s centre at '+Q.lampY+' m (+ '+BEACON_LAYOUT.lamp.h+' = '+l.toFixed(2)+')'});}
+  R.push({name:'lamp-on-its-plinth',ok:Math.abs(Q.plinthTop-t)<.05&&Math.abs(Q.lampY-l)<.05&&off<.05&&Math.abs(A[1]-Q.lampY)<.01&&XF_PLINTH.yellow===BC_SP.wall,detail:'the chapel '+(XF_PLINTH.yellow===BC_SP.wall?'in the gold spoke\'s wall':'NOT in the gold ('+XF_PLINTH.yellow.toString(16)+' against '+BC_SP.wall.toString(16)+')')+'; '+(Number.isFinite(off)?'80g\'s record (beacon:\'ancient\'): the lamp '+off.toFixed(2)+' m off the layout\'s (0,0); ':'NO record in window._xaBeacons; ')+'the plinth\'s roof at '+Q.plinthTop+' m (the crown + '+BEACON_LAYOUT.draw.plinth.h+' = '+t.toFixed(2)+'), the lamp\'s centre at '+Q.lampY+' m (+ '+BEACON_LAYOUT.lamp.h+' = '+l.toFixed(2)+')'});}
  {const F=(typeof xfReach==='function'?xfReach():null)||[],bad=F.filter(q=>!q.floors||q.unreached.length||q.capped);
   R.push({name:'fort-walks',ok:F.length===1&&!bad.length,detail:F.map(q=>q.reached+' of '+q.floors+' walks and stairs reached'+(q.unreached.length?', NOT '+q.unreached.slice(0,4).join(', '):'')).join('; ')||'no walks registered (core/walk not on the page?)'});}
  R.push({name:'layout-rules',ok:Array.isArray(Q.rules)&&!Q.rules.length,detail:(Q.rules||['no record']).length?'FAILED: '+(Q.rules||[]).join('; '):'every rule of the layout passes ('+BEACON.checks(BEACON_LAYOUT).length+')'});
@@ -101,6 +105,17 @@ if(typeof BC!=="undefined"){const Q=window._beacon||{},P=Q.placed||{},L=BEACON_L
   BC_LIFE.tick();
   R.push({name:'offices-kept',ok:sOk,detail:'the Lamp School\'s '+noon.length+' masters: at 12:01 '+noon.filter(w=>w.visible&&onGround(w)).length+' out on the drawn ground, at 12:20 '+hall.filter(w=>w.where==='at the office').length+' at the office in the monastery\'s hall'});
   R.push({name:'carts-on-their-days',ok:cOk,detail:'the oil carts on day '+BC_SKY.day+': '+nowC.map(w=>w.where).join(', ')+'; on day '+BEACON_LIFE.CARTS.days[0]+' at 10:57 '+road.map(w=>w.where+(onGround(w)?'':' OFF the ground')).join(', ')+', at 11:30 '+atPit.map(w=>w.where+(near(w)?'':' AWAY from the pit')+(onGround(w)?'':' OFF the ground')).join(', ')});}
+ /* B8: the interiors (targets/house/90w-bc-interiors.js) */
+ {const X=window._beaconIx||{buildings:[],placed:{}},want=L.parts.filter(p=>(p.zone==='precinct'||p.zone==='lampward')&&BC_IX_PROG[p.kind]).map(p=>p.id).concat(['plinth']);
+  const by=id=>X.buildings.find(b=>b.id===id),miss=want.filter(id=>!by(id)||!by(id).rooms||!by(id).pieces),P=by('plinth')||{kinds:[]};
+  const lev=want.filter(id=>{const b=by(id),p=L.parts.find(q=>q.id===id);return b&&b.levels!==(id==='plinth'?4:(p.storeys==null?1:p.storeys));});
+  const own=[['plinth','xanadu_lamp_switchboard'],['plinth','xanadu_signal_lectern'],['lights','xanadu_register_of_lights'],['generator','xanadu_generator_set'],['workshop','xanadu_lens_bench'],['school','xanadu_signal_lectern']]
+   .filter(([b,k])=>!((by(b)||{}).keys||{})[k]).map(([b,k])=>k+' in '+b);
+  R.push({name:'interiors-furnished',ok:X.on&&!miss.length&&!lev.length&&P.levels===4&&P.kinds.indexOf('signals')>=0&&P.kinds.indexOf('shrine')>=0&&!own.length,
+   detail:(X.on?'':'interiors OFF; ')+(want.length-miss.length)+' of '+want.length+' buildings planned and furnished ('+X.rooms+' rooms, '+X.pieces+' pieces, '+X.ms+' ms)'+(miss.length?'; NOT '+miss.join(', '):'')+(lev.length?'; storeys OFF: '+lev.join(', '):'')+
+    '; the plinth '+P.levels+' floors: '+P.kinds.join(', ')+(own.length?'; the Order\'s pieces NOT placed: '+own.join(', '):'; the Order\'s own pieces placed')});
+  const nw=X.buildings.filter(b=>!b.walk||!b.door).map(b=>b.id+(b.door?'':' (no door)')+(b.walk?'':' (not walked)'));
+  R.push({name:'interiors-walk-in',ok:X.on&&X.buildings.length>=want.length&&!nw.length,detail:X.walked+' of '+X.buildings.length+' interiors in core/walk with their street door unlocked'+(nw.length?'; NOT '+nw.slice(0,5).join(', '):'')});}
  /* P4: the signal line on the page (src/42-bc-relay.js, targets/house/90u-bc-relay.js) */
  {const Q=window._beaconRelay||{},P=(window._beacon||{}).placed||{},rel=BEACON_LAYOUT.lamp.relays.find(r=>r.id==='rimpost'),g=Q.ground||[],hi=Math.max(...g),lo=Math.min(...g),st=BEACON_LAMP.STATIONS.find(s=>s.id==='rimpost');
   const ok=P.xa_fort_post===1&&g.length===5&&Math.abs(Q.at[1]-(hi+.05))<.02&&Q.at[1]-Q.drop<lo&&Math.abs(Q.km-17)<1.5&&Math.abs(Q.bearing-st.bearing)<1.5&&Math.abs(hi-rel.ground)<40;

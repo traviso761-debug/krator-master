@@ -353,7 +353,7 @@ and keeps its state from its own plan.
 | **B5** (**done** 2026-11-23: `kits/ancients/pieces/89p-anc-beacon-lamp.js`, `4adea4d27`; on the page, mounted by 80g and driven by the lamp's night) | The lamp head, `anc_beacon_lamp`, on the lighthouse beam | `kits/ancients`' owner | the Ancients kit's verify |
 | **B6** (**done** 2026-11-23: `583999842` in 80g, the page on it in `42a0f854e`) | The fort asset's `beacon:'ancient'`: the plinth in the keep's place, the gilt chapel on it, the cable channel through the gate; the generator house **outside** the fort, in the order's ward (this plan's change to Strongwall's 5.7) | `kits/xanadu`'s owner (80f, 80g) | `test-fort.js`; the Xanadu verify |
 | **B7** | The house on the open world: the layout's frame on the region's ground at 1:1, the knoll and the saddle fitted, the lamp's sights asserted on the drawn ground | the open-world session | the region's verify; a line-of-sight assert to G1, the Tempest, Tuatara and the south watch fort |
-| **B8** | Interiors from the blueprint: the Labrang, the plinth, the precinct's ranges; the NEW pieces in the catalog | the interiors owner | the walk and interiors audits |
+| **B8** (**done** 2026-11-23; the owner: "do B8; the rebuild is imminent") | Interiors from the blueprint: the Labrang, the plinth, the precinct's ranges; the NEW pieces in the catalog. The eleven pieces in `kits/catalog/krator-master-furniture-xanadu.js` (the switchboard, the cable drum, the signal book's lectern, the signal mirror, the Register of Lights, the gold banner, the relic lamp, the engine set, the lens bench, the hour drum, the reader's seat); every building of the order and the plinth planned on its shell and furnished by kits/qiblai's `qnIxType` (`targets/house/90w-bc-interiors.js`), the Labrang and the plinth floor by floor (sheets L and P), walked into through their unlocked doors | | the catalog's `verify.py --assert`; the page's verify: interiors-furnished, interiors-walk-in |
 | **P0** (**done** 2026-11-23; the owner: "have beacon and tempest agents do steps 0-1 of their builds") | The layout ready to draw: the plinth and mount records (`draw`), the house's levels (`ground`), the fort snapshot set to XFORT turned half round (it had been mirrored: the barracks now west, the stables, magazine and granary east), a rule that the lamp stands on the plinth's roof | | `test-beacon.js` (43 checks): the snapshot against `XFORT.plan`, the plinth rule, each with negatives |
 | **P1** (**done** 2026-11-23) | The page as a sheet on Xanadu's page (`build.py`, `kit.json`, `targets/house/`, as Strongwall's): the ground from the model with the restored knoll (`ground/knoll-patch.json` while the scale-model line is unmerged), the watch fort on the crown with the lamp's plinth (a shim on 80g's keep: `KNOWN_ISSUES.md`), the gold great monastery, the order's buildings, walls, stair, courts and cable, the stand-in lamp head and its beam turned by the lamp's night | | `KRATOR_GL=gpu verify.py dist/beacon.html --assert --all-views` |
 | **P2** (**done** 2026-11-23, `3b344cecc`; the owner: "have them build to stage 4") | The grounds outside the walls on the page (sheet T0): the terraces tiled with the Xanadu kit's terraced fields (`xa_farm`), the tea garden, the byres and dairy (`xa_dairy`, `xa_farmhouse`), the hives, the threshing floor, the midden (a KRUBBLE heap), the saddle tank, the carters' yard; the road from Erehwon and the fort road laid on the ground | | the page's verify: every T0 part placed on its ground, the ways on the ground |
@@ -361,7 +361,7 @@ and keeps its state from its own plan.
 | **P4** (**done** 2026-11-23) | The signal line on the page: the Rim Post (the fort asset's watch post, `xa_fort_post`) on the middle volcano's summit 17 km off, its answering light on the lamp's signal hour; the line from the lamp to the post checked on the page's own ground | | the page's verify: the post placed on the model's ground, the line clear by 10 m, the post lit while the lamp signals it |
 | **P5** (**done** 2026-11-23; the owner: "run rest of build to completion") | core/atmos and core/water on the page (`kit.json` "files"): the house's clock runs core/atmos, whose evening is the lamp's night (ATMOS.night half dark or more: about 18:00 to 06:21; the Lamp Watch now comes down at 06:30); the saddle tank's water is core/water's still water (`WATER.still`, `WATER.drawStill`) in place of a tinted box | | `test-life.js` on ATMOS's night; the page's verify: lamp-night-on-atmos, tank-still-water |
 | **P6** (**done** 2026-11-23) | The house's day (`src/41-bc-life.js`): the Lamp School's six masters to the Yellow Monastery's hall for the dawn, noon and dusk offices; the oil carts on days 110 and 290 by the fort road and the Ward Gate to the Oil Pit, and the pit's year (`pitYear`: the lamp's burn on core/atmos's night against 800 kg twice a year, topped to 2,500 kg); the page's clock runs over days (`?day=`), the carts drawn as stand-ins | | `test-life.js` (20 checks); the page's verify: offices-kept, carts-on-their-days |
-| *Waits* | **Interiors and furnishing** of the house and the fort: the fort's keep item is still the keep's on a `beacon:'ancient'` fort (the plinth's floors are sheet P), and the order's buildings need an interiors item in `kits/interiors/sets` (a shared set, at the next all-builds rebuild). **The region at 1:1** (B7) waits for the vertical stack and the open world (BUILD-PLAN phase B) | | |
+| *Waits* | **The fort's own buildings' interiors** (the barracks, stables, magazine, granary: 80g's `xanadu-fort` set skips a `beacon:'ancient'` fort) and **the Yellow Monastery's** (a host's building: Qiblai's great rooms and cell ranges are its city's, `settlements/qiblai` 90t/90u). **The region at 1:1** (B7) waits for the vertical stack and the open world (BUILD-PLAN phase B) | | |
 | **B9** (the lamp's night **done** 2026-11-16, section 4) | Life: the lamp's night as data, `src/40-bc-lamp.js` on `core/sched`: the sweep, the signal hour, the alarm, the Station, the grid code, the Lamp Watch's rota. On the page since: the kora (P3), core/atmos's evening (P5), the offices and the oil carts (P6). Still to do: the engines' `env` from the sim (`core/simulation`'s oil), when the house is on the open world (B7) | | `node settlements/beacon/test-lamp.js` (9 checks, 9 negatives) |
 
 ## 8. Questions for the owner
@@ -372,16 +372,16 @@ and keeps its state from its own plan.
    daughter.**
 3. ~~**The garrison.**~~ **Answered 2026-11-16: the Sultan's fort above, the monastery below (Gyantse).**
 4. ~~**The lamp.**~~ **Answered 2026-11-16: every night, the signal book, raised to the Station.**
-5. **The signal code.** Is the signal book written in the sound grid, so that a signal is holy writing in light
-   (*proposed*), or in a plain code of the Sultan's?
-6. **The order's other lights.** Which lights does it keep now? Candidates:
-   - a lamp for Strongbow's gate;
-   - the House of the Tempest's beacon on its utse;
-   - Ancient lamps found later.
-
-   Or is this lamp the only one until more are found?
-7. **The gold banner on the Rainbow Temple.** It turns toward its monastery (LORE 6.13). Does it now turn toward the
-   lamp, 176 km away and out of sight, or toward the daughter house on the inner square?
-8. **A Xanadui name** for the house, as the Marches have *Mārchiz*?
+5. ~~**The signal code.**~~ **Answered 2026-11-23: the sound grid**: the signal book is written in it, so a signal is holy
+   writing in light (what `src/40-bc-lamp.js` already flashes).
+6. ~~**The order's other lights.**~~ **Answered 2026-11-23: Strongbow's gate lamp, and the Ancient lamps found later.** The
+   Hall of Lights' Register burns two lamps (the Beacon's and Strongbow's gate) and keeps empty niches for the lamps still to
+   be found and refurbished. The House of the Tempest's beacon is not the order's.
+7. ~~**The gold banner on the Rainbow Temple.**~~ **Answered 2026-11-23: toward the lamp**, the head house 176 km off and
+   out of sight, where the gold Prismarch sits.
+8. ~~**A Xanadui name.**~~ **Answered 2026-11-23: Chirāghān**, "the lamps" (Persian *chirāgh*), in the court's register as
+   the Marches are *Mārchiz*.
+10. ~~**The chapel's yellow.**~~ **Answered 2026-11-23: "match the gold"**: the Chapel of the Beacon wears the gold
+    spoke's wall (`QSPOKE[2].wall`, `0xd4b040`), as the order's own buildings do.
 9. ~~**The line to the Flashing Eye.**~~ **Answered 2026-11-16: "Rim Post relay"**, the knoll restored in full; and
    for the south watch fort, **"Move to 843,1546"** (section 4, "The signal line").

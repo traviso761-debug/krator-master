@@ -789,8 +789,8 @@
    "sha256": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 2210863,
-   "sha256": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+   "bytes": 2233801,
+   "sha256": "972dea4d8b4d65380ea92b53b5be6520e510d7a682c9369f739b0340bdf53d3b"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2570483,
@@ -1025,8 +1025,8 @@
    "sha256": "e0395d260e160bfe4072b652248648d962489afea520f3948c87cdfaf4fb489f"
   },
   "settlements/beacon/dist/beacon.html": {
-   "bytes": 9295741,
-   "sha256": "5885765b16c8e9d4ab53deb131194c750335f69e0ea19c8d1ecd13ef3736ddc9"
+   "bytes": 9330156,
+   "sha256": "d83ffc7cd770fe5ab359833a469cdc5805c1a98d7cb8a8d9c050ef964f5f10df"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,

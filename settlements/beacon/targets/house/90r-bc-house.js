@@ -61,7 +61,12 @@ function bcCableBuild(G,o){reseed(34600);const P=BCL.cable.pts,c=xC(0x3a3632);
 XA.def({key:'bc_cable',name:'The Beacon - the cable\'s channel',family:'The Beacon',tags:XTAG_BC('infrastructure'),w:4,d:40,h:1,nv:1,build:bcCableBuild});
 // ---------------------------------------------------------------- placing
 const BC_PLACED={};
-function bcPlace(key,x,z,ry,o,type){TSTAT.cur=(type||key)+'/0';const r0=REG.length,g=VERN.place(BC_GRP,key,x,z,ry,o);for(let i=r0;i<REG.length;i++)REG[i].type=type||key;TSTAT.cur=null;BC_PLACED[key]=(BC_PLACED[key]|0)+1;return g;}
+/* the buildings that hold rooms (B8, 90w): while each draws, kits/qiblai's QB_SHELLREC lists its storey stacks (qnStack, and the
+   fort's xnStack), in its own frame; 90w plans its interior on them */
+const BC_IXREC=[];
+function bcPlace(key,x,z,ry,o,type){TSTAT.cur=(type||key)+'/0';const r0=REG.length,rec=key==='bc_block'||key==='xa_fort_watch'?[]:null;QB_SHELLREC.cur=rec;
+ let g;try{g=VERN.place(BC_GRP,key,x,z,ry,o);}finally{QB_SHELLREC.cur=null;}
+ if(rec)BC_IXREC.push({key,part:o&&o.part||(key==='xa_fort_watch'?'plinth':null),x,z,ry,y:o&&o.y,list:rec});for(let i=r0;i<REG.length;i++)REG[i].type=type||key;TSTAT.cur=null;BC_PLACED[key]=(BC_PLACED[key]|0)+1;return g;}
 /* the fort: its keep's place on the lamp, turned half round (its gate north), on the crown */
 {const n0=(window._xaBeacons||[]).length;BC.fortG=bcPlace('xa_fort_watch',0,-6.6,Math.PI,{v:0,y:BC.F,seed:20261123,beacon:'ancient'});
  /* the plinth's record (80g xfPlinth, pushed as the fort drew): the lamp's centre in the world, and its roof (the chapel's top) under it */

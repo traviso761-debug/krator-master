@@ -289,7 +289,9 @@ def keymap():
         m['generic_trade_' + r] = 'xanadu_trade_' + r
     return m
 
-NEW = {
+# the pieces the catalog lacked, all built since (B5, B8; 2026-11-23): the lamp head in kits/ancients/pieces (89p, 4adea4d27), the
+# rest in kits/catalog/krator-master-furniture-xanadu.js. Kept as the record of what was asked for; nothing is NEW now
+NEW_BUILT = {
   'anc_beacon_lamp': '**kits/ancients, not the catalog**: the Ancient high-intensity lamp head, a fat white-metal drum 1.6 m across and 2.2 m long with a glazed face 1.4 m across and cooling fins, on a slewing yoke and ring 2.6 m across; Xanadui iron straps and a new cable gland. Drawn with the lighthouse beam (89n `lhBeamGeo`)',
   'xanadu_lamp_switchboard': 'the Ancient switchboard refitted: a slate panel of brass levers and dials, the shutter key on a cord, a small lamp that shows the engine is running',
   'xanadu_generator_set': 'an engine set of the Geomancers\' make on an Ancient engine: a cast block on a timber bed, flywheel, exhaust stack through the roof, a day tank',
@@ -303,6 +305,7 @@ NEW = {
   'xanadu_common_reader_seat': 'the refectory reader\'s raised seat and lectern (shared with the House of the Tempest\'s list)',
   'xanadu_common_signal_mirror': 'a signal mirror on a tripod with a sighting vane and a shutter (shared with the House of the Tempest\'s list)',
 }
+NEW = {}
 
 # ------------------------------------------------------------------------------------------------ the section
 def ground_at(u):

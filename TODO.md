@@ -73,6 +73,12 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **Eleven Xanadu furniture pieces for the Order of the Beacon** (2026-11-23, `claude/beacon-monastery-d509f5`; settlements/beacon B8):
+  `kits/catalog/krator-master-furniture-xanadu.js` gains the switchboard, cable drum, signal lectern, signal mirror, Register of
+  Lights, gold banner, relic lamp, engine set, lens bench, hour drum and reader's seat, and two palette colours. The catalog's page
+  and the Beacon are rebuilt and verified; every other page that bundles the catalog (`python3 tools/reach.py
+  kits/catalog/krator-master-furniture-xanadu.js`: 49 builds) is behind until the rebuild. The pieces are appended to the file;
+  a Xanadu room whose kind and piece type they match may now take one, so furnished pages' hashes will move.
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
   `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.

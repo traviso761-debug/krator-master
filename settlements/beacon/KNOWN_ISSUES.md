@@ -19,11 +19,23 @@ lamp-head-follows). The page's stand-in head and beam are gone.
 
 Still the page's, or waiting:
 
-- **The chapel's yellow** is 80g's `0xdcb048`, a shade off the gold spoke's wall (`QSPOKE[2].wall`, `0xd4b040`) that the order's
-  own buildings wear. 80g offers to take the colour as an option if the two should match exactly.
+- **The chapel's yellow** matches the gold spoke's wall (`QSPOKE[2].wall`, `0xd4b040`), the owner's "match the gold"
+  (2026-11-23): 80g's `XF_PLINTH.yellow` (`a7c180af3`, the Strongwall session's, merged here).
 - **The generator house** (the order's, in its lamp ward outside the gate) and **the plinth's rooms** are this build's.
-- **The interiors set** (`xanadu-fort`): on a beacon fort the plinth's floors are this plan's sheet P (the switch room, the
-  signal room, the Lamp Watch, the Chapel). The page keeps the interiors off until the set follows the option.
+- **The interiors (B8, `targets/house/90w-bc-interiors.js`).** The plinth's four floors (sheet P: the switch room and cable
+  vault, the signal room and log, the Lamp Watch, the Chapel of the Beacon) and every building of the order are planned and
+  furnished on the page by kits/qiblai's `qnIxType`, not by 80g's `xanadu-fort` set, which skips a `beacon:'ancient'` fort.
+  Compromises:
+  - the plinth is battered (12 m at its foot, 9.75 m at the chapel), and a plan has one outline for every floor, so its rooms
+    are planned 9.86 m square inside the narrowest storey; the doorway runs through the thicker wall below as a passage
+    (jambs, a lintel, a threshold, the portal at the body's face);
+  - the rooms follow the blueprint's programme by kind (kits/interiors' planner divides each floor), not the sheets' exact
+    room outlines;
+  - the pieces that make a room (the Register in the Hall of Lights, the switchboard and the lectern in the plinth, the engine
+    set in the generator house, the lens bench in the workshop) are given as the only Xanadu pieces of their type there; the
+    rest is the catalog's choice;
+  - all fifteen interiors are built at load (about 3.5 s), not on demand as Qiblai's city builds its lots';
+  - the fort's own buildings (the barracks, stables, magazine, granary) and the Yellow Monastery (a host's) have none here.
 - **The states.** The page draws only `kept`. `damaged` (the plinth stands, the lamp dark, the cable cut at the gate) is not yet
   an option of 80g's.
 
@@ -33,7 +45,7 @@ Still the page's, or waiting:
   `claude/gemini-trade-reconcile`) while that line is unmerged here. Once it is merged, the patch's cells equal the model's
   (`BC_GROUND.patched` reads 0) and the file can go.
 - **The order's buildings** are stacks sized from the layout (`bc_block`: Qiblai's plinth, stack, windows, door and parapet roof
-  in the gold spoke's colours). They have no interiors yet, and the Labrang is not yet the four-floor house of sheet L.
+  in the gold spoke's colours), with their interiors (above).
 - **The outside parts (P2)** are drawn, with a few compromises:
   - the terraces are tiled with the kit's terraced-field piece (`xa_farm`), each tile footed on its own ground, so they read as
     separate fields rather than one stepped hillside;
