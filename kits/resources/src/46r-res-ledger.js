@@ -41,14 +41,30 @@ const RES_LEDGER=(function(){
     else if(b.sea&&(c.mask&8))out[k]=true;}}
   for(const k in bs){const b=bs[k];if(!out[k]&&b.kinds)for(const n of nodes){if(b.kinds.indexOf(n.kind)>=0){out[k]=true;break;}}}
   return out;}
- const L={BASIC:B.basics};
+ const STAGES={
+  city:{living:true,pop:10000,reachKm:25,glyph:'city'},
+  town:{living:true,pop:2800,reachKm:20,glyph:'town'},
+  village:{living:true,pop:750,reachKm:15,glyph:'village'},
+  fort:{living:true,pop:800,reachKm:15,glyph:'fort'},
+  outpost:{living:true,pop:300,reachKm:12,glyph:'outpost'},
+  cavern:{living:true,pop:1200,reachKm:15,glyph:'cavern'},
+  arcology:{living:true,pop:8000,reachKm:22,glyph:'arcology'},
+  'inhabited ruin':{living:true,pop:1200,reachKm:15,glyph:'inhabited ruin'},
+  ruin:{living:false,pop:0,reachKm:0,glyph:'ruin'},
+  'ruined arcology':{living:false,pop:0,reachKm:0,glyph:'ruined arcology'}
+ };
+ const L={BASIC:B.basics,STAGES:STAGES};
+ L.stageOf=function(t){const k=typeof t==='string'?t.trim().toLowerCase():'';return STAGES[k]||STAGES.village;};
+ L.isLiving=function(t){const k=typeof t==='string'?t.trim().toLowerCase():'';return STAGES[k]?STAGES[k].living:true;};
  L.items=function(kinds){const s=[];for(const k of kinds){const K=RES_ORE.kinds[k];if(K&&s.indexOf(K.item)<0)s.push(K.item);}return s;};
  L.build=function(o){o=o||{};const D=RES_GEO.data(),dayKm=o.dayKm==null?B.dayKm:o.dayKm,sur=o.surplus==null?B.surplus:o.surplus,bs=o.basics||B.basics;
   const kinds=(o.families||D.field.families).filter(k=>RES_ORE.kinds[k]),pm=D.grid.px_m,cs=D.grid.cell_km;
   const out={dayKm:dayKm,kinds:kinds,polities:{},settlements:{},world:{},audit:{ok:true,failures:[]}};
   for(const k of kinds)out.world[k]=0;let landCells=0;
   const su=(D.grid.w-1)/(D.grid.fullW-1),sv=(D.grid.h-1)/(D.grid.fullH-1);
-  for(const P of D.polities){const bb=bbox(P.points);
+  const polList=[],seenPol={};
+  for(const P of D.polities){if(!P||!P.name||seenPol[P.name])continue;seenPol[P.name]=1;polList.push(P);
+   const bb=bbox(P.points);
    const nodes=RES_GEO.nodesIn({x0:bb[0]*pm,z0:bb[1]*pm,x1:bb[2]*pm,z1:bb[3]*pm},{families:kinds}).filter(n=>inPoly(P.points,n.gx/pm,n.gz/pm));
    let cells=0;for(let j=Math.floor(bb[1]*sv);j<=Math.ceil(bb[3]*sv);j++)for(let i=Math.floor(bb[0]*su);i<=Math.ceil(bb[2]*su);i++){
     if(!inPoly(P.points,i/su,j/sv))continue;const c=RES_GEO.at(i/su*pm,j/sv*pm);if(c&&!(c.mask&1))cells++;}
@@ -57,15 +73,16 @@ const RES_LEDGER=(function(){
    if(o.fields)for(const f of o.fields){const c=f.poly.reduce((a,p)=>[a[0]+p[0]/f.poly.length,a[1]+p[1]/f.poly.length],[0,0]);
     if(inPoly(P.points,c[0],c[1])){R.fields=R.fields||{};R.fields[f.kind]=(R.fields[f.kind]||0)+(f.cap||0);}}
    landCells+=cells;out.polities[P.name]=R;}
-  for(const S of D.settlements){if(S.stage==='ruin'||S.type==='ruin')continue;let pol=null;for(const P of D.polities)if(inPoly(P.points,S.px,S.py)){pol=P.name;break;}
+  for(const S of D.settlements){if(!L.isLiving(S.type))continue;
+   const st=L.stageOf(S.type);let pol=null;for(const P of polList)if(inPoly(P.points,S.px,S.py)){pol=P.name;break;}
    const r=dayKm*1000,gx=S.px*pm,gz=S.py*pm;
    const nodes=RES_GEO.nodesIn({x0:gx-r,z0:gz-r,x1:gx+r,z1:gz+r},{families:kinds}).filter(n=>Math.hypot(n.gx-gx,n.gz-gz)<=r);
    const cat={};for(const n of nodes)cat[n.kind]=(cat[n.kind]||0)+1;
    const bas=basicsAt(S.px,S.py,dayKm,nodes,bs),ok=Object.keys(bas).every(k=>bas[k]);
    let nm=S.name;if(out.settlements[nm])nm=S.name+' @'+S.px+','+S.py;
-   out.settlements[nm]={polity:pol,px:S.px,py:S.py,type:S.type,catchment:cat,basics:bas,ok:ok};
+   out.settlements[nm]={polity:pol,px:S.px,py:S.py,type:S.type,pop:S.population!=null?S.population:st.pop,reachKm:S.reachKm!=null?S.reachKm:st.reachKm,catchment:cat,basics:bas,ok:ok};
    if(pol){const R=out.polities[pol];R.settlements.push(nm);if(!ok){R.basics.ok=false;R.basics.missing.push({settlement:nm,lack:Object.keys(bas).filter(k=>!bas[k])});}}}
-  for(const P of D.polities){const R=out.polities[P.name];R.reach={};for(const k of kinds)R.reach[k]=0;
+  for(const P of polList){const R=out.polities[P.name];R.reach={};for(const k of kinds)R.reach[k]=0;
    if(!R.settlements.length){let cx=0,cy=0;for(const p of P.points){cx+=p[0]/P.points.length;cy+=p[1]/P.points.length;}
     const r=dayKm*1000;const nodes=RES_GEO.nodesIn({x0:cx*pm-r,z0:cy*pm-r,x1:cx*pm+r,z1:cy*pm+r},{families:kinds}).filter(n=>Math.hypot(n.gx-cx*pm,n.gz-cy*pm)<=r);
     for(const n of nodes)R.reach[n.kind]++;
@@ -74,7 +91,7 @@ const RES_LEDGER=(function(){
    else for(const nm of R.settlements){const c=out.settlements[nm].catchment;for(const k in c)R.reach[k]+=c[k];}}
   /* what its towns reach: a kind no town of it reaches it must buy; a kind its towns reach `surplus` times the mean polity's
      (and at least 3 nodes) it can sell */
-  const pn=D.polities.map(P=>P.name),avg={};for(const k of kinds)avg[k]=pn.reduce((a,p)=>a+out.polities[p].reach[k],0)/Math.max(1,pn.length);
+  const pn=polList.map(P=>P.name),avg={};for(const k of kinds)avg[k]=pn.reduce((a,p)=>a+out.polities[p].reach[k],0)/Math.max(1,pn.length);
   for(const p of pn){const R=out.polities[p];
    for(const k of kinds){const n=R.reach[k];if(!n)R.imports.push(k);else if(n>=3&&n>=sur*avg[k])R.exports.push(k);}
    if(!R.basics.ok)R.basics.missing.forEach(m=>out.audit.failures.push(p+': '+(m.settlement||'(no settlement; its centroid)')+' lacks '+m.lack.join(', ')+' within '+dayKm+' km'));

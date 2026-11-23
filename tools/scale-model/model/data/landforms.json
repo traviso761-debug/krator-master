@@ -442,6 +442,74 @@
    "water_m": -1500.0,
    "role": "light",
    "note": "An islet in Voth's water (light), 17 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_spider_crater",
+   "kind": "secondary_crater",
+   "name": "Spider Lake Secondary Ejecta Crater",
+   "px": 1289.0,
+   "rx_px": 29.5,
+   "ry_px": 21.5,
+   "angle_deg": -20.0,
+   "floor_m": 1396,
+   "lake_m": 1460.0,
+   "spillway_px": [
+    1246.0,
+    232.0
+   ],
+   "py": 213.5
+  },
+  {
+   "id": "lf_se_tharn_crater",
+   "kind": "secondary_crater",
+   "name": "SE Tharn Secondary Ejecta Crater",
+   "px": 1375.0,
+   "radius_px": 27.0,
+   "diameter_km": 108,
+   "floor_m": 6880.0,
+   "tarn_wl_m": 6910.0,
+   "tarn_radius_px": 6.0,
+   "py": 1525.0
+  },
+  {
+   "id": "lf_crookshore_north_bay",
+   "kind": "secondary_crater_bay",
+   "name": "Crookshore North Ejecta Bay",
+   "px": 115.5,
+   "radius_px": 5.4,
+   "diameter_km": 21.6,
+   "py": 616.0
+  },
+  {
+   "id": "lf_crookshore_south_bay",
+   "kind": "secondary_crater_bay",
+   "name": "Crookshore South Ejecta Bay",
+   "px": 176.0,
+   "radius_px": 5.8,
+   "diameter_km": 23.2,
+   "py": 643.0
+  },
+  {
+   "id": "lf_copper_tarn_collar",
+   "kind": "secondary_crater",
+   "name": "Copper Tarn Secondary-Crater Collar",
+   "px": 147.0,
+   "radius_px": 12.0,
+   "lake_m": 2380.1,
+   "py": 1148.0
+  },
+  {
+   "id": "lf_viridian_bench",
+   "kind": "bench",
+   "px": 962.032,
+   "py": 1562,
+   "w_m": 208,
+   "l_m": 216,
+   "rotation": 0,
+   "level_m": 792,
+   "batter_deg": 33.7,
+   "skirt_m": 30,
+   "note": "Misṭ-Gārḍan's bench: cut into the scarp's hillside on the uphill (east) side, filled with batter slopes on the downhill (west) side, like a dzong's terrace. settlements/viridian/PLAN.md V1; core/world 41l's bench kind (d9c56527a)."
   }
  ],
  "vale_ring": {

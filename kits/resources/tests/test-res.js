@@ -138,6 +138,20 @@ const LG = RES_LEDGER.build();
   ok(pols.length >= 20, 'ledger: ' + pols.length + ' polities');
   ok(pols.every(p => LG.polities[p].cells > 0), 'every polity has land');
   ok(Object.values(LG.polities).some(R => R.imports.length) && Object.values(LG.polities).some(R => R.exports.length), 'imports and exports found');
+  ['city', 'town', 'village', 'fort', 'outpost', 'cavern', 'arcology', 'inhabited ruin'].forEach(st =>
+    ok(RES_LEDGER.isLiving(st), 'stage ' + st + ' is living'));
+  ['ruin', 'ruined arcology'].forEach(st =>
+    ok(!RES_LEDGER.isLiving(st), 'negative: stage ' + st + ' is uninhabited'));
+  ok(RES_LEDGER.stageOf('town').pop === 2800 && RES_LEDGER.stageOf('inhabited ruin').pop === 1200 && RES_LEDGER.stageOf('fort').pop === 800,
+    'stage default populations: town 2800, inhabited ruin 1200, fort 800');
+  const lgTypes = new Set(Object.values(LG.settlements).map(s => s.type));
+  ['town', 'inhabited ruin', 'fort'].forEach(st =>
+    ok(lgTypes.has(st), 'ledger settlements include living stage ' + st));
+  ['ruin', 'ruined arcology'].forEach(st =>
+    ok(!lgTypes.has(st), 'negative: ledger settlements omit uninhabited stage ' + st));
+  ['Yuni Emirate', 'Frogmen', 'Hookfleet', 'Tiguantin', 'Andaru', 'Jabal Shiekdom', 'Kimr'].forEach(pn =>
+    ok(!!LG.polities[pn], 'polity present in ledger: ' + pn));
+  ok(DATA.polities.filter(p => p.name === 'Yuni Emirate').length === 1, 'Yuni Emirate is single (deduplicated) in geology.json');
   const kt = LG.polities['Kautoa'];
   ok(kt && kt.settlements.length > 0, 'Kautoa has its settlements in the ledger');
   const tg = RES_LEDGER.tradeGoods(LG, { kautoa: 'Kautoa', nobody: 'No Such Polity' }, { kautoa: ['cloves'] });

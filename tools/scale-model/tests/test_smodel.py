@@ -152,7 +152,7 @@ for v in [D.get('volc', {})] + list(D.get('vents', [])):
     in_disc = np.hypot(xx - vx, yy - vy) <= r_cells
     check('vent peak near %s' % v['px'], float(E[j0:j1, i0:i1][in_disc].max()) >= float(v['peak']) - 400.0)
 
-# ---- 5. biome stations (every station's stated `base` must be within 150 m of the ground at its `px`)
+# ---- 5. biome stations (every station's stated `base` must be within 150 m of the ground at its `px`, or its tarn's water level when `level: true`)
 import glob as _glob, json as _json   # noqa: E402
 REPO_ROOT = os.path.abspath(os.path.join(TOOL, '..', '..'))
 for st_path in sorted(_glob.glob(os.path.join(REPO_ROOT, 'biomes', '**', 'station*.json'), recursive=True)):
@@ -161,11 +161,17 @@ for st_path in sorted(_glob.glob(os.path.join(REPO_ROOT, 'biomes', '**', 'statio
     if 'px' not in site or 'py' not in site or 'base' not in site:
         continue
     raw_px, raw_py = float(site['px']), float(site['py'])
-    if '4.2' in st_doc.get('source', '') and '5.' not in st_doc.get('canvas', ''):
-        raw_px, raw_py = P.legacy_px(raw_px, raw_py, D)
-    spx = min(E.shape[1] - 1, max(0, int(round(raw_px * su))))
-    spy = min(E.shape[0] - 1, max(0, int(round(raw_py * sv))))
-    ground_m = float(E[spy, spx])
+    if site.get('level') and site.get('clim_px'):
+        cpx, cpy = float(site['clim_px'][0]), float(site['clim_px'][1])
+        csx = min(E.shape[1] - 1, max(0, int(round(cpx * su))))
+        csy = min(E.shape[0] - 1, max(0, int(round(cpy * sv))))
+        ground_m = float(wlev[csy, csx]) if whas[csy, csx] else float(E[csy, csx])
+    else:
+        if '4.2' in st_doc.get('source', '') and '5.' not in st_doc.get('canvas', ''):
+            raw_px, raw_py = P.legacy_px(raw_px, raw_py, D)
+        spx = min(E.shape[1] - 1, max(0, int(round(raw_px * su))))
+        spy = min(E.shape[0] - 1, max(0, int(round(raw_py * sv))))
+        ground_m = float(E[spy, spx])
     base_m = float(site['base'])
     rel_st = os.path.relpath(st_path, REPO_ROOT).replace('\\', '/')
     check('station base within 150 m: %s (stated %.0f m vs ground %.0f m)' % (rel_st, base_m, ground_m),
@@ -516,7 +522,7 @@ check('Godshearth floor is mostly Cwb, the rest Dwb (%.0f%% Cwb)' % (100.0 * gh_
       gh_cls.count('Cwb') / len(gh_cls) >= .6 and gh_cls.count('Cwb') + gh_cls.count('Dwb') == len(gh_cls))
 s_src = open(os.path.join(TOOL, 'model', 'src', '60-settlements.js'), encoding='utf-8').read()
 check('The Gate (sthegate) stands at the Narrows, 1438,326 (ground %.0f m)' % E[326, 1438],
-      '"id": "sthegate", "name": "The Gate", "type": "outpost", "px": 1438, "py": 326' in s_src
+      '"id": "sthegate", "name": "The Gate", "type": "fort", "px": 1438, "py": 326' in s_src
       and abs(float(E[326, 1438]) - 1423.0) <= 50.0)
 r99_t = next(r for r in R if r.get('id') == 'rmvraoas90co7')
 gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
@@ -540,7 +546,7 @@ check('the model draws fumaroles and springs as steam (30-vents.js)', "v.kind===
 import re as _re   # noqa: E402
 defregs = _json.loads(_re.search(r'const defRegs = (\[.*?\]);\n', open(os.path.join(TOOL, 'model', 'src', '51-region-store.js'),
                                                                         encoding='utf-8').read(), _re.S).group(1))
-cg_t = next(r for r in defregs if r['id'] == 'rmvcopperglacier')
+cg_t = next(r for r in defregs if r['id'] in ('rmvcopperglacier', 'rmwetaguz7zhe'))
 fb_t = next(r for r in defregs if r['id'] == 'rmw8hj62nmugn')
 mcg_t, mfb_t = G.poly(cg_t['points'], 1.0, 1.0, E.shape) > .5, G.poly(fb_t['points'], 1.0, 1.0, E.shape) > .5
 check('Copper Glacier and Firebliss share only their edge (%d cells); the cones and valleys are Firebliss\'s' % int((mcg_t & mfb_t).sum()),
@@ -693,6 +699,9 @@ for r_id in ('r613', 'r753', 'r492', 'r272'):
     r_t = next(r for r in D['rivers'] if r['id'] == r_id)
     check('%s ends in the lake' % r_id, bool(lk_full[int(round(r_t['px'][-1][1])), int(round(r_t['px'][-1][0]))])
           and r_t['to'].get('lake_m') == -520)
+check('the Beacon\'s knoll (853,1540) is kept out of the rim\'s lowering: %.0f m, its crown %.0f m, the saddle %.0f m' % (
+    float(E[1540, 853]), float(E[1540, 854]), float(E[1538, 854])),
+      840.0 <= float(E[1540, 853]) <= 900.0 and float(E[1540, 854]) >= 860.0 and float(E[1538, 854]) >= 820.0)
 for r_id in ('r488', 'r616'):
     r_t = next(r for r in D['rivers'] if r['id'] == r_id)
     check('%s joins the Alph in the Vale, or the lake at its east tip (%s)' % (r_id, r_t['to']),
@@ -818,4 +827,110 @@ check('the Lake of the Vale is longer and thinner (%d x %d km, was 142 x 62) and
       bool(D['landforms'].get('vale_ring')) and (_xs.max() - _xs.min() + 1) * 2 >= 170 and (_ys.max() - _ys.min() + 1) * 2 <= 50
       and float(E[_r8].mean()) + 520 > 750 and float(E[_r28].mean()) > float(E[_r8].mean())
       and -470.0 <= float(E[1491, 843]) <= -420.0 and abs(float(E[1508, 841]) + 485.0) < 15)
+# ---- 20. 5.1 edit 22 (edit_522_reshape.py: Gemini's reshape, its edit_517 of 2026-11-13, re-run 2026-11-17 as this
+#          line's edit 8, carried onto claude/integration-4 2026-11-23 without its Firebliss domes: main's edit 8 has them): Spider Lake crater &
+#          SW 9102 spillway, SE Tharn 108 km crater & cryo-tarn, Crookshore twin bays & Copper Tarn collar, n semiarid salt
+#          lakes, Ring Isles shoals & Port Goto, Firebliss domes (Gemini's checks, landforms read from their file)
+lfl20 = D['landforms']['landforms']
+lfs20 = {lf['id']: lf for lf in lfl20}
+check('edit_522_reshape records its five landforms (Spider crater, SE Tharn crater, the twin bays, the Copper Tarn collar); '
+      'the Firebliss domes are main\'s edit 8 (DATA.domes), not Gemini\'s three',
+      {'lf_spider_crater', 'lf_se_tharn_crater', 'lf_crookshore_north_bay', 'lf_crookshore_south_bay',
+       'lf_copper_tarn_collar'} <= set(lfs20) and not any(i.startswith('lf_fb_dome_') for i in lfs20))
+r9102_20 = next(r for r in D['rivers'] if str(r['id']) == '9102')
+r9101_20 = next(r for r in D['rivers'] if str(r['id']) == '9101')
+check('Spider NW divide sealed (>= 1,850 m at 1252,175); 9102 exits SW through (1246,232) with strictly monotonic bed_m',
+      float(E[175, 1252]) >= 1850.0 and any(abs(p[0] - 1246.0) < 1.5 and abs(p[1] - 232.0) < 1.5 for p in r9102_20['px'])
+      and all(b2 < b1 for b1, b2 in zip(r9102_20['bed_m'], r9102_20['bed_m'][1:]))
+      and all(b2 <= b1 for b1, b2 in zip(r9101_20['bed_m'], r9101_20['bed_m'][1:])))
+check('SE Tharn 108 km crater (1375,1525) holds its 6,910 m cryo-fumarole tarn and fumarole vent',
+      bool(whas[1525, 1375]) and abs(float(wlev[1525, 1375]) - 6910.0) <= 2.0
+      and any(v.get('name') == 'Tharn Cryo-Fumarole Cauldron' and v.get('kind') == 'fumarole' for v in D['vents']))
+check('Crookshore twin secondary-ejecta bays (115,616 & 176,643) hold sea water at 0 m',
+      bool(whas[616, 114]) and bool(whas[645, 176]) and abs(float(wlev[616, 114])) <= 1.0)
+check('n semiarid closed dam-relic salt lakes are recorded as salt lake basins',
+      sum(1 for b in D['basins'] if b.get('kind') == 'salt lake' and 'Dam Relic' in b.get('name', '')) == 2)
+check('Port Goto (920,703) stands dry directly adjacent to Ring Sea harbor water at (920,704)',
+      (not whas[703, 920]) and bool(whas[704, 920]) and float(wlev[704, 920] - E[704, 920]) >= 5.0)
+# ---- 21. 5.1e14 (2026-11-22): Gemini's settlement stages and pins (gemini/pins-and-settlement-stages-5.1, its section 19)
+#          reconciled on this line: its stage checks kept; its counts, coordinates and Tabist removal give way to this line's
+p10_src = open(os.path.join(TOOL, 'model', 'src', '10-panel.html'), encoding='utf-8').read()
+EXPECTED_STAGES = [
+    'city', 'town', 'village', 'fort', 'outpost',
+    'cavern', 'arcology', 'inhabited ruin', 'ruin', 'ruined arcology',
+]
+check('60-settlements.js defines all 10 SETT_TYPES stages in hierarchy order',
+      [m for m in _re.findall(r"\{k:'([^']+)'", s_src)] == EXPECTED_STAGES)
+check('10-panel.html #settPills exposes filter pills for all 10 settlement stages',
+      all(f'data-type="{k}"' in p10_src for k in EXPECTED_STAGES))
+all_setts = P.settlements()
+by_nm_21 = {s['name']: s for s in all_setts}
+by_id_21 = {s['id']: s for s in all_setts}
+check('%d unique pins across the 10 stages; the duplicates on the ids Gemini\'s population data keys (%s); the held salt works out' % (
+    len(all_setts), ', '.join(i for i in ('spalewharf01', 'sbabalhawa01', 'sthetwins01', 'sxangold01')
+                              if i not in by_id_21) or 'all there'),
+      len({s['id'] for s in all_setts}) == len(all_setts)
+      and {s['type'] for s in all_setts} <= set(EXPECTED_STAGES)
+      and all(i in by_id_21 for i in ('spalewharf01', 'sbabalhawa01', 'sthetwins01', 'sxangold01'))
+      and not any(i in by_id_21 for i in ('gem_palewharf', 'gem_godsgate', 'gem_twins_pass', 'smgxtultfq', 'skwl1d2hdu',
+                                          'svhmyhf33w', 's0zgu7u6yb'))
+      and sum(1 for s in all_setts if s['name'] == 'Port Tobin') == 1
+      and 'SETT_DROPPED' in s_src)
+check('living ruins classified as inhabited ruin (Carcosa, Henge, Leng, Stair, Noa\'s Regret, Port Visas, Parabola, Hall of Heroes, Corpus)',
+      all(by_nm_21.get(nm, {}).get('type') == 'inhabited ruin' for nm in (
+          'Carcosa', 'Henge', 'Leng', 'Stair', "Noa's Regret", 'Port Visas', 'Parabola', 'Hall of Heroes', 'Corpus')))
+check('strongholds classified as fort (Span, Blade, Bastion, Fort Vaklu, Tzunfort, The Gate, Strongwall, Veil, Tallhouse, Tzinguard, the Baelu forts)',
+      all(by_nm_21.get(nm, {}).get('type') == 'fort' for nm in (
+          'Span', 'Blade', 'Bastion', 'Fort Vaklu', 'Tzunfort', 'The Gate', 'Strongwall',
+          'Veil', 'Tallhouse', 'Tzinguard'))
+      and all(by_id_21[i]['type'] == 'fort' for i in ('sqdxhk5fyd', 'shijs5pm39', 'so1jl0hoo4')))
+check('intermediate centres classified as town; Port Tobin at 956,944 (s06eu913kl), Port Goto at 920,703; Thalaba (owner) a town, Amaro (Shumar) a city',
+      all(by_nm_21.get(nm, {}).get('type') == 'town' for nm in (
+          'Spirladunon', 'Tallwalls', 'Pinnacle Rock', "Mav's Refuge", 'Nulab', 'Furrow', 'Pontus',
+          'Mantis', 'Serai', 'Locus', 'Mungo', 'Mirabilis', 'Glaive', 'Longsong', 'Port Tobin', 'Port Goto',
+          'Port Mira', 'Nephtos', 'Ybera', 'Ṣunu-Ašru', 'Sethas', 'Dapor', 'Daridel',
+          'Kirstabal', 'Stahlborn', 'Silkhead', 'Skywatch', 'Qoold Lheek', 'Ostrukh-on-Water',
+          'Spider Lake Weirs', 'Peak Coyote Plume-Camp', 'Thalaba'))
+      and by_nm_21['Amaro']['type'] == 'city' and by_id_21['s5p5j083tj']['type'] == 'town'
+      and (by_nm_21['Port Tobin']['id'], by_nm_21['Port Tobin']['px'], by_nm_21['Port Tobin']['py']) == ('s06eu913kl', 956, 944)
+      and (by_nm_21['Port Goto']['px'], by_nm_21['Port Goto']['py']) == (920, 703)
+      and (by_nm_21['Sfenops']['px'], by_nm_21['Sfenops']['py'], by_nm_21['Sfenops']['type']) == (1282, 663, 'city')
+      and 'seur98e8mv' not in by_id_21 and 'seur98e8mv' in by_nm_21['Sfenops']['notes']
+      and (by_nm_21['Liikofi']['px'], by_nm_21['Liikofi']['py'], by_nm_21['Liikofi']['type']) == (1316, 797, 'city'))
+reg_names_lower = [r['name'].strip().lower() for r in R]
+REQ_REGS_21 = [
+    'frogmen', 'hookfleet', 'tiguantin', 'andaru', 'screamer country',
+    'east ring isles', 'steampits', 'ruins of nazar', 'jabal shiekdom', 'kimr',
+]
+check('the 10 reconciled political & geographic regions present once each',
+      all(reg_names_lower.count(rn) == 1 for rn in REQ_REGS_21))
+check('Dhelv and Šurpu-Dhelv (Zeijani caverns) stand on dry inland Throne land, not water',
+      by_nm_21['Dhelv']['type'] == 'cavern'
+      and not bool(whas[by_nm_21['Dhelv']['py'], by_nm_21['Dhelv']['px']])
+      and not bool(whas[by_nm_21['Šurpu-Dhelv']['py'], by_nm_21['Šurpu-Dhelv']['px']]))
+rr_21 = {r['id']: r for r in R}
+check('Ria Valley & Crook 20-region breakdown (%d regions, the six coarse ones gone) and notes on the dome, compass hills, weeping valley' % len(R),
+      len(R) == 149
+      and not any(i in rr_21 for i in ('rmvriavalley', 'rmvdoubledelta', 'rmvthearch', 'rmvthecrook', 'rmvcopperglacier', 'rmvtharnuplands'))
+      and all(rid in rr_21 and rr_21[rid].get('notes') for rid in ('rmweubdnyts8y', 'rmweu4kpowzji', 'rmwetzg8idewz')))
+# ---- 22. 5.1 edit 9 (edit_521_strongwall.py, 2026-11-23): Strongwall's slot kept, its pit filled, the watch posts and
+#          the House of the Tempest (settlements/strongwall/PLAN.md W0, V0)
+check('Strongwall\'s slot, row 1641, is the fault trough the owner kept (316 m at 913, -356 m at 918, -347 m at 920)',
+      abs(float(E[1641, 913]) - 316) <= 3 and abs(float(E[1641, 918]) + 356) <= 3 and abs(float(E[1641, 920]) + 347) <= 3
+      and float(E[1640, 912]) > 700.0)
+check('the old pin\'s pit (913-915, 1633-1635) is filled to the bench (%.0f-%.0f m)' % (
+    float(E[1633:1636, 913:916].min()), float(E[1633:1636, 913:916].max())),
+      float(E[1633:1636, 913:916].min()) >= 400.0 and float(E[1633:1636, 913:916].max()) <= 500.0)
+sw_ids = ('sswpostg1', 'sswpostg2', 'sswpostg3', 'sswpostr1', 'sswpostr2', 'sswpostr3', 'stempest0001', 'stempestlk01')
+check('Strongwall\'s six watch posts, the House of the Tempest and its lookout are pinned, dry, of the Xanadu Sultanate',
+      all(i in by_id_21 for i in sw_ids)
+      and all(not bool(whas[by_id_21[i]['py'], by_id_21[i]['px']]) and by_id_21[i].get('polity') == 'Xanadu Sultanate'
+              for i in sw_ids)
+      and (by_id_21['sxan7r1sln']['px'], by_id_21['sxan7r1sln']['py']) == (912, 1640))
+# 5.1e17 (2026-11-23): the Marches' west and south watch forts (settlements/marches, records only)
+check('the Marches\' west (818,1531) and south (843,1546) watch forts are pinned, dry forts of the Xanadu Sultanate',
+      all(i in by_id_21 and by_id_21[i]['type'] == 'fort' and not bool(whas[by_id_21[i]['py'], by_id_21[i]['px']])
+          for i in ('smarchw0001', 'smarchs0001'))
+      and (by_id_21['smarchw0001']['px'], by_id_21['smarchw0001']['py']) == (818, 1531)
+      and (by_id_21['smarchs0001']['px'], by_id_21['smarchs0001']['py']) == (843, 1546))
 print('%d checks passed' % ok)
