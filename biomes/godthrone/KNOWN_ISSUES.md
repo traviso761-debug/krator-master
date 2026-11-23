@@ -62,7 +62,22 @@ The rebuild turn (2026-11-04, in the cloud: no GPU; software GL only, PLAN.md se
 - [ ] **The ground's relief is on by default** (`?kgrelief=0` turns it off): judge it on the owner's eye. In software GL the bead sand's glints
   read as strong white flecks under the bumped normal on station 1's halo; possibly SwiftShader's derivatives, possibly the look.
 - [ ] **The Red Gill's drawing is a port**: `stations/gills/87-host-gills.js` is xanadu's `stations/gills/87-host-gills.js` with the Red dress;
-  lifting it into `biomes/gills` as one host fragment both read is owed (two copies now).
+  lifting it into `biomes/gills` as one host fragment both read is owed (two copies now). The first piece is lifted (2026-11-15): both copies
+  fit the mouth's life to their own pipes with `GILLS.fitMouths` and check it with `GILLS.collarFit` (biomes/gills 44, tests/test-gills.js).
+- [x] **The rust collars floated (the owner, 2026-11-15: "gill ring almost but doesn't quite touch").** `GILLS.life` sizes and places the
+  collars, fringes and steam for the White pipe; the Red host then makes each pipe 1.7x as tall and .72x as wide, so every collar hung part
+  way up the shaft, centred on the pipe's foot (the pipe leans up to .65 m off it at the lip) and 0.5-2.4 m clear of it. Each is now fitted
+  to its pipe's lip by `KSTACKS.ring` (the drawn mesh follows it within 0.1 m): top .3 m under the lip, centred on the ring, its inner rim at
+  .98 of the ring's least radius. Checked: `GCHK.collars` (none clear by over 5 cm; the life's own collars its negative). View "A rust collar".
+  The White Gill (xanadu) had the same fault in another form: its pipe is built from `y0 - 0.6` and forks into up to three mouths, so the
+  collar sat 0.6 m over the lip on the trunk's centre; it now takes one collar per mouth (2,031 on 1,010 pipes in the test). View "A lime collar".
+- [x] **The ilmenite columns drew flat grey (station 9, the owner, 2026-11-15).** The station packs `rockColumns` but the vault's lamp
+  `ShaderMaterial` never sampled it (a flat `uBase`). Now the rock takes it triplanar from the vault's floor and each column face its own strip;
+  the hexagons are un-indexed so their faces shade flat. Checked: `TCHK.tex`. Learnt on the GPU shot: a per-face hash taken per pixel from an
+  interpolated varying draws dotted noise (hash it in the vertex shader), and world UVs at 12 km lose the sampler's sub-texel bits.
+- [x] **A flat green square on the split stones (station 3, the owner, 2026-11-15).** The endolith band was a box 0.45 x 0.72 of the stone in
+  the middle of the break. The break is now a plane and the band a ring cut from its outline (.85-.93 of the way out), put with the stone's own
+  matrix; the view "The endolith band" faces the break. Checked: `OCHK.band` (its negative the old box). Every station's split stones change.
 - [ ] **GILLS.layout's radial form is still ring arcs** (biomes/gills/BIOME-API.md): the Red Gill and the ladder's cracks are arcs of a 60 km
   radius (straight to centimetres over 1.6 km), not a true radial geometry.
 - [ ] **The Red ladder is its top rungs only** (8.2-8.9 km): the ladder's 80 km (7.2-8.7 km, px 900-940) cannot be one 9.6 km page. Every pipe

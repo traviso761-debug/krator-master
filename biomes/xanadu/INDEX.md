@@ -59,5 +59,5 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | cloud | 45b-host-land.js, 87-host-cloud.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
 | descent | 45a-host-descent-land.js, 45b-host-land.js, 87-host-descent.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
 | floor | 45b-host-land.js, 87-host-floor.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
-| gills | 45b-host-land.js, 87-host-gills.js, 89-host-sky.js, 89w-host-water.js, 89x-host-fountain.js, 98-host-views.js | 37 |
+| gills | 45b-host-land.js, 87-host-gills.js, 89-host-sky.js, 89w-host-water.js, 89x-host-fountain.js, 98-host-views.js | 39 |
 | ranges | 45b-host-land.js, 87-host-ranges.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 36 |

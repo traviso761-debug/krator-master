@@ -62,11 +62,29 @@ GODT.PAL={basalt:[0x2a2826,0x232124,0x1e1d1f,0x302c2a],rubble:[0x433c37,0x383431
  BIO.def('splat',block(1,S+3,.28),M.bomb,{label:'Spatter (clots of lava that landed molten)',cls:'feature',kind:'rock'});
  /* THE ENDOLITHS (PLAN.md section 5; the orange belt and below, to ~9 km): a stone split by frost, its broken face showing the green
     band a few mm under the glass skin. The stone a half block (its flat face the split), the band a thin plate on that face */
- const half=(det,seed)=>{const g=block(det,seed,.8),p=g.attributes.position;for(let i=0;i<p.count;i++)if(p.getX(i)>0)p.setX(i,p.getX(i)*.04);g.computeVertexNormals();return g;};
- const plate=()=>{const g=new T3.BoxGeometry(.02,.9,1.3);return g;};
- M.endo=BIO.solidMat(null);M.endo.userData.godt='endolith';
- BIO.def('splitstone',half(1,S+5),M.rock,{label:'Split stones (frost-split; the endolith band in the break)',cls:'feature',kind:'rock'});
- BIO.def('endolith',plate(),M.endo,{label:'The endolith band (Krator\'s own life in the glass: a green band a few mm under the surface)',cls:'feature',kind:'life'});
+ /* THE BAND (the owner, 2026-11-15: "a flat green square on the back of the rocks"): it was a box 0.45 x 0.72 of the stone, stuck on the middle of
+    the break, which drew as a green rectangle on a black stone. The band lies a few mm under the skin, so on a break it shows as a line just inside
+    the break's edge, all round. The break is now a plane (x = 0: frost splits along one), and the band a ring cut from the break's own outline (its
+    boundary edges, inset toward their centre: .93 to .85 of the way out), 6 mm proud of it in the stone's frame; put with the stone's own position,
+    turn and scale (60-biome-godthrone-ground.js) so it stays on the break */
+ const half=(det,seed)=>{const g=block(det,seed,.8),p=g.attributes.position;for(let i=0;i<p.count;i++)if(p.getX(i)>0)p.setX(i,0);g.computeVertexNormals();return g;};
+ const band=(src,o0,o1,dx)=>{const p=src.attributes.position,E=new Map(),pt={},key=(y,z)=>Math.round(y*1e4)+','+Math.round(z*1e4);
+  for(let i=0;i<p.count;i+=3){if(p.getX(i)<-1e-6||p.getX(i+1)<-1e-6||p.getX(i+2)<-1e-6)continue;   /* a triangle of the break */
+   for(let k=0;k<3;k++){const a=i+k,b=i+(k+1)%3,ka=key(p.getY(a),p.getZ(a)),kb=key(p.getY(b),p.getZ(b));if(ka===kb)continue;pt[ka]=[p.getY(a),p.getZ(a)];pt[kb]=[p.getY(b),p.getZ(b)];
+    const e=ka<kb?ka+'|'+kb:kb+'|'+ka;E.set(e,(E.get(e)||0)+1);}}
+  const nb={};E.forEach((n,e)=>{if(n!==1)return;const ab=e.split('|');(nb[ab[0]]||(nb[ab[0]]=[])).push(ab[1]);(nb[ab[1]]||(nb[ab[1]]=[])).push(ab[0]);});
+  const s0=Object.keys(nb)[0],loop=[s0];let prev=null,cur=s0;for(let n=0;n<999;n++){const nx=(nb[cur]||[]).find(q=>q!==prev);if(nx==null||nx===s0)break;loop.push(nx);prev=cur;cur=nx;}
+  if(loop.length<3)throw new Error('godthrone: the split stone has no break outline');
+  let cy=0,cz=0;loop.forEach(k=>{cy+=pt[k][0];cz+=pt[k][1];});cy/=loop.length;cz/=loop.length;
+  const at=(k,f)=>[dx,cy+(pt[k][0]-cy)*f,cz+(pt[k][1]-cz)*f],pos=[],nor=[],uv=[];
+  const tri=(a,b,c)=>{/* wound to face +x, the break's side */const nx=(b[1]-a[1])*(c[2]-a[2])-(b[2]-a[2])*(c[1]-a[1]);
+   const q=nx<0?[a,c,b]:[a,b,c];q.forEach(v=>{pos.push(v[0],v[1],v[2]);nor.push(1,0,0);uv.push(v[2]*.5+.5,v[1]*.5+.5);});};
+  for(let i=0;i<loop.length;i++){const k0=loop[i],k1=loop[(i+1)%loop.length],A=at(k0,o1),B=at(k1,o1),Ci=at(k1,o0),D=at(k0,o0);tri(A,B,Ci);tri(A,Ci,D);}
+  const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));g.setAttribute('uv',new T3.Float32BufferAttribute(uv,2));return g;};
+ const splitG=half(1,S+5),bandG=band(splitG,.85,.93,.006);
+ M.endo=BIO.solidMat(null);M.endo.userData.godt='endolith';M.endo.polygonOffset=true;M.endo.polygonOffsetFactor=-1;M.endo.polygonOffsetUnits=-2;
+ BIO.def('splitstone',splitG,M.rock,{label:'Split stones (frost-split; the endolith band in the break)',cls:'feature',kind:'rock'});
+ BIO.def('endolith',bandG,M.endo,{label:'The endolith band (Krator\'s own life in the glass: a green band a few mm under the surface)',cls:'feature',kind:'life'});
  /* VENTIFACTS (PLAN.md section 4, the airless rim): stones the thin wind's sand faceted and polished, keeled where two faces meet */
  const vent=()=>{const g=block(0,S+6,.55),p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i);if(y>0)p.setY(i,y*.6+Math.abs(x)*.25);}g.computeVertexNormals();return g;};
  BIO.def('ventifact',vent(),M.rock,{label:'Ventifacts (stones faceted and polished by the thin wind\'s sand)',cls:'feature',kind:'rock'});

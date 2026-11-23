@@ -12,7 +12,10 @@ var HRIFT_SITES={
   pool:{x:0,z:120,r:330,level:2580,depth:26},
   cataract:{from:[1700,-1500],to:[230,-190],tiers:[2760,2712,2668,2622],gorge:2900,lip:2760},
   gill:{from:[2400,1500],to:[260,330],y0:2617,y1:2581,w:16},
-  outlet:{from:[-290,330],to:[-2350,1500],levels:[2577,2573,2569,2564,2559,2554,2549,2543,2537,2531,2525,2519,2513],edge:2490},
+  /* the outlet leaves the pool over a fall (the owner, 2026-11-15: "fall where the stream leaves the pool"): 18 m from the pool's level to the first
+     tread, then the rimstone steps on down to the same last level (they began 3 m under the pool, so the water slid out over a 180 m tread); `from`
+     moved 17.5 m back along the line (from -290,330) so the first tread begins under the fall, 8 m past its lip */
+  outlet:{from:[-274.8,321.4],to:[-2350,1500],fall:18,levels:[2562,2558,2554,2550,2546,2542,2538,2534,2530,2526,2522,2518,2513],edge:2490},
   geyser:{x:-1150,z:1150,T:96,reach:170,H:28,period:260,style:'cone'},
   vents:[{x:0,z:120,T:97,reach:520,decay:2.4},{x:-1150,z:1150,T:96,reach:170},{x:380,z:-20,T:88,reach:90},{x:-420,z:-60,T:84,reach:80}]},
  // ZONE 2: the North Mirror Graben at Lake Verdigris's north shore (2,880 m). The master fault's mirror runs east-west across the page's north; the lake
