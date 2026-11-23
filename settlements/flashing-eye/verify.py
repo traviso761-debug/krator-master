@@ -54,6 +54,13 @@ PAGE_JS = r"""
  const shr=ST.filter((S,i)=>P.some(p=>p.id==='shrine.'+(i+1)&&p.o.y===S.top)).length,last=SB[SB.length-1],g=FE_P(-3,-80);
  R.push({name:'way-of-shrines',ok:ST.length===6&&SB.length===6&&shr===6&&low.length===0&&last&&Math.hypot(last.b[0]-g[0],last.b[2]-g[1])<5&&Math.abs(last.b[1])<.5,
   detail:ST.length+' stacks ('+ST.map(S=>(S.top-S.ground).toFixed(0)+' m').join(', ')+' tall), '+SB.length+' bridges ('+SB.map(B=>B.span.toFixed(0)).join(', ')+' m), '+shr+' shrines on their tops; '+(low.length?'decks within 3 m of the ground at '+low.slice(0,4).join(', '):'every deck clear of the ground by 3 m')});
+ const W=typeof KWALK!=='undefined'?KWALK:null,fl=(x,z,y)=>{const f=W&&W.floorBelow(x,z,y+.3,.6);return!!f&&Math.abs(f[0]-y)<.6;},miss=[];
+ if(W){const A=FE_NOSE.from,B1=ST[0].land,mx=(A[0]+B1[0])/2,mz=(A[1]+B1[1])/2;if(!(W.floorBelow(mx,mz,terrainH(mx,mz)+6,8)))miss.push('the nose stair');
+  ST.forEach(S=>{if(!fl(S.x,S.z,S.top))miss.push(S.id+' top');if(!fl(S.land[0],S.land[1],S.landing))miss.push(S.id+' landing');});
+  SB.forEach(B=>{const m=B.pts[24];if(!fl(m[0],m[2],m[1]))miss.push('the bridge from '+B.from);});}
+ R.push({name:'way-walk',ok:!!W&&miss.length===0,detail:W?(miss.length?'no floor at '+miss.join(', '):'a floor at every top, landing and bridge\'s middle; '+JSON.stringify(typeof FE_WALKS!=='undefined'?FE_WALKS:{})):'no core/walk on the page'});
+ const t0=FE_CLOCK.set,ts=FE_API.signal(1),gs=FE_WATCH.state(ts,FE_ENV);FE_CLOCK.set=t0;
+ R.push({name:'glints',ok:FE_GLINTS.length===2&&gs.mode==='mirror'&&gs.shutter===true,detail:FE_GLINTS.length+' glints (the Eye Post, the Mirror Tower); on the hour the day line '+gs.mode+' to '+gs.station+', shutter '+(gs.shutter?'open':'shut')});
  const LA=typeof FE_LAMPS!=='undefined'?FE_LAMPS:[];
  R.push({name:'fires',ok:LA.length===2&&LA.some(l=>l[3]==='ember')&&LA.some(l=>l[3]==='fire')&&!LA.some(l=>l[3]==='oil'),detail:LA.length+' lights: '+LA.map(l=>l[3]+' ('+l[4]+')').join(', ')});}
 return R;}"""

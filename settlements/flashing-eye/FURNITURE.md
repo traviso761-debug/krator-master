@@ -239,6 +239,39 @@ The revamp (2026-11-23): the first reference's tower, white and tapering, the cr
 | 9 | Shutter store | store | bare | 10 | xanadu_common_ladder x1, xanadu_common_lamp x1, xanadu_common_store x1, xanadu_common_wall_shelves x1, xanadu_trade_bin x1 |
 | 10 | The Mirror Platform | eye roof | fine | 64 | xanadu_eye_heliograph x1 **NEW**, xanadu_fire_basket x1 **NEW** |
 
+## Sheet T: the towers, four floors of each (the revamp, 2026-11-23)
+
+Bottom row: the Mirror Tower (10 m, the first reference's: tapering, the crimson band, the open lantern under a round red cap; the readers send and read the day line from it). Middle: the Labrang Tower (11 m, the second reference's: the painted window bays, the crimson band, the gallery and the broad red roof; the Prismarch's floors). Top: the Ember Tower's shaft (11 m, rising from the hall of sheet H under three red tiers). Floors drawn 16 m apart, ground floor at the left; the stair in each floor's north-west corner.
+
+| # | Room | Kind | Decor | m2 | Pieces |
+|---|---|---|---|---|---|
+| 1 | The readers' door | hall | fine | 74 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bench x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_scroll x1, xanadu_court_lamp x1 |
+| 900 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 2 | The signal store | store | bare | 74 | xanadu_common_ladder x1, xanadu_common_lamp x1, xanadu_common_store x3, xanadu_common_wall_shelves x1, xanadu_trade_bin x2 |
+| 901 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 3 | The readers' room | signal room | fine | 74 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_board x1, xanadu_common_chair x2, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rug x1, xanadu_common_scroll x1, xanadu_common_signal_mirror x1 **NEW**, xanadu_common_water_clock x1, xanadu_signal_lectern x1 **NEW** |
+| 902 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 4 | The lantern | tower | rich | 74 | xanadu_common_bench x2, xanadu_common_planter x1, xanadu_common_signal_mirror x3 **NEW**, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x2, xanadu_court_tapestry x2, xanadu_court_wall_rug x1, xanadu_signal_lectern x1 **NEW** |
+| 14 | The lantern (its east side) | tower | bare | 19 | xanadu_common_bench x2, xanadu_common_lamp x1, xanadu_common_signal_mirror x3 **NEW**, xanadu_signal_lectern x1 **NEW** |
+| 903 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 21 | The Prismarch's door and his guard | guard | fine | 91 | generic_trade_armour_stand x2, xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bench x2, xanadu_common_chest x1, xanadu_common_fire x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_rack x2, xanadu_common_rug x2, xanadu_common_scroll x1, xanadu_common_table x1 |
+| 910 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 22 | The household | dormitory | plain | 91 | xanadu_common_bed x10, xanadu_common_chest x5, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_stool x2 |
+| 911 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 23 | The Prismarch's cell and oratory | abbot cell | sumptuous | 91 | xanadu_common_bed x1, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_meditation_cushion x1, xanadu_common_planter x2, xanadu_court_art x2, xanadu_court_candelabra x1, xanadu_court_carpet x2, xanadu_court_fire x1, xanadu_court_frieze x3, xanadu_court_hanging x1, xanadu_court_lamp x3, xanadu_court_painted_hanging x1, xanadu_court_statue x2, xanadu_court_tapestry x4 |
+| 33 | The Prismarch's cell and oratory (its east side) | chamber | plain | 22 | xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_lamp x1, xanadu_common_screen x1, xanadu_common_table x1 |
+| 912 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 24 | The mirror room and the gallery | window of light | sumptuous | 91 | xanadu_common_meditation_cushion x6, xanadu_common_planter x2, xanadu_common_signal_mirror x1 **NEW**, xanadu_court_art x2, xanadu_court_candelabra x1, xanadu_court_carpet x2, xanadu_court_fire x1, xanadu_court_frieze x3, xanadu_court_hanging x1, xanadu_court_lamp x3, xanadu_court_low_table x1, xanadu_court_painted_hanging x1, xanadu_court_statue x2, xanadu_court_tapestry x4, xanadu_court_throne x1, xanadu_signal_lectern x1 **NEW** |
+| 913 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 41 | The tenders' room | chamber | plain | 91 | xanadu_common_bed x1, xanadu_common_chair x2, xanadu_common_chest x1, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_lamp x2, xanadu_common_screen x1, xanadu_common_table x1 |
+| 920 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 42 | The Book of the Ember | archive | fine | 91 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bookcase x6, xanadu_common_chair x1, xanadu_common_chest x2, xanadu_common_desk x1, xanadu_common_hanging x1, xanadu_common_ladder x1, xanadu_common_lamp x2, xanadu_common_rug x2, xanadu_common_scroll x1 |
+| 921 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 43 | The bell of the Opening | drum room | fine | 91 | xanadu_common_art x1, xanadu_common_banner x1, xanadu_common_bench x1, xanadu_common_hanging x1, xanadu_common_hour_drum x1 **NEW**, xanadu_common_lamp x2, xanadu_common_rug x2, xanadu_common_scroll x1, xanadu_common_water_clock x1 |
+| 922 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+| 44 | The belvedere under the tiers | gallery | rich | 91 | xanadu_common_meditation_cushion x31, xanadu_common_planter x1, xanadu_court_art x1, xanadu_court_carpet x1, xanadu_court_hanging x1, xanadu_court_lamp x2, xanadu_court_painted_hanging x5, xanadu_court_tapestry x2, xanadu_court_wall_rug x1 |
+| 923 | Stair | stair | bare | 6 | xanadu_common_lamp x1 |
+
 ## Sheet F: the Foot House at the spur's foot (60 x 80 m; ~460 m, 6.6 km south of the bench)
 
 Where the west road from Ti-Teras and the east road from the Eye's Ghat meet, at the foot of the Stair of the Eye: the Hosteller and the forty of the Foot House, the pilgrims' hostel (120 beds, two storeys), the stores, the mule stables (about 40 mules), the kitchen; the gate faces south to the roads. The lower terraces lie east of it.
@@ -258,82 +291,82 @@ Where the west road from Ti-Teras and the east road from the Eye's Ghat meet, at
 
 | Key | Count | Note |
 |---|---|---|
-| xanadu_common_bed | 636 |  |
-| xanadu_common_chest | 422 |  |
-| xanadu_common_meditation_cushion | 417 |  |
-| xanadu_common_lamp | 402 |  |
-| xanadu_common_bench | 295 |  |
-| xanadu_common_planter | 245 |  |
+| xanadu_common_bed | 649 |  |
+| xanadu_common_meditation_cushion | 455 |  |
+| xanadu_common_chest | 433 |  |
+| xanadu_common_lamp | 431 |  |
+| xanadu_common_bench | 303 |  |
+| xanadu_common_planter | 251 |  |
 | xanadu_common_candle | 187 |  |
-| xanadu_common_hanging | 144 |  |
-| xanadu_common_chair | 136 |  |
-| xanadu_common_rug | 129 |  |
-| xanadu_court_lamp | 123 |  |
-| xanadu_common_store | 116 |  |
-| xanadu_court_tapestry | 115 |  |
-| xanadu_common_table | 114 |  |
-| xanadu_common_desk | 92 |  |
-| xanadu_common_bookcase | 91 |  |
-| xanadu_common_banner | 74 |  |
-| xanadu_common_art | 71 |  |
-| xanadu_common_wall_shelves | 67 |  |
-| xanadu_court_hanging | 67 |  |
-| xanadu_common_stool | 66 |  |
-| xanadu_court_carpet | 65 |  |
+| xanadu_common_hanging | 151 |  |
+| xanadu_common_chair | 143 |  |
+| xanadu_common_rug | 137 |  |
+| xanadu_court_lamp | 134 |  |
+| xanadu_court_tapestry | 127 |  |
+| xanadu_common_store | 119 |  |
+| xanadu_common_table | 117 |  |
+| xanadu_common_bookcase | 97 |  |
+| xanadu_common_desk | 97 |  |
+| xanadu_common_banner | 79 |  |
+| xanadu_common_art | 76 |  |
+| xanadu_court_carpet | 71 |  |
+| xanadu_court_hanging | 71 |  |
+| xanadu_common_wall_shelves | 68 |  |
+| xanadu_common_stool | 68 |  |
 | xanadu_trade_stall | 62 |  |
-| xanadu_trade_bin | 59 |  |
+| xanadu_trade_bin | 61 |  |
+| xanadu_common_scroll | 54 |  |
+| xanadu_court_art | 54 |  |
 | xanadu_common_prayer_wheels | 54 |  |
-| xanadu_common_scroll | 49 |  |
-| xanadu_court_art | 48 |  |
-| xanadu_court_painted_hanging | 43 |  |
-| xanadu_court_wall_rug | 31 |  |
-| xanadu_court_frieze | 31 |  |
-| xanadu_court_statue | 30 |  |
+| xanadu_court_painted_hanging | 50 |  |
+| xanadu_court_frieze | 37 |  |
+| xanadu_court_statue | 34 |  |
+| xanadu_court_wall_rug | 33 |  |
 | xanadu_court_bookcase | 29 |  |
 | xanadu_court_incense_burner | 24 |  |
 | xanadu_common_butter_lamp_rack | 23 |  |
-| xanadu_court_candelabra | 20 |  |
-| xanadu_common_ladder | 19 |  |
+| xanadu_court_candelabra | 22 |  |
+| xanadu_common_ladder | 21 |  |
 | xanadu_trade_trough | 18 |  |
 | xanadu_court_strongbox | 18 |  |
+| xanadu_court_fire | 16 |  |
+| xanadu_common_signal_mirror | 16 | a 30 cm signal mirror on a tripod with a sighting vane and a shutter (shared with the Beacon's and the Tempest's lists) |
 | xanadu_common_hearth | 15 |  |
 | xanadu_common_workbench | 14 |  |
-| xanadu_court_fire | 14 |  |
 | xanadu_trade_hayrack | 14 |  |
 | xanadu_common_bowl | 12 |  |
 | xanadu_common_jug | 12 |  |
 | xanadu_common_skylight_column | 12 |  |
 | xanadu_court_cabinet | 11 |  |
+| xanadu_common_rack | 11 |  |
 | xanadu_court_altar | 10 |  |
+| xanadu_signal_lectern | 10 | the signal book on a lectern beside the shutter key, the sound grid of the syllabary painted above it (shared with the Beacon's list) |
+| xanadu_common_board | 10 |  |
 | xanadu_crimson_banner | 9 | the Order of the Flashing Eye's banner on its lacquer stand: crimson silk, the eight-spoked wheel with an open eye at the hub, rayed |
-| xanadu_common_board | 9 |  |
-| xanadu_common_rack | 9 |  |
-| xanadu_common_signal_mirror | 8 | a 30 cm signal mirror on a tripod with a sighting vane and a shutter (shared with the Beacon's and the Tempest's lists) |
+| generic_trade_armour_stand | 8 |  |
+| xanadu_common_water_clock | 7 |  |
 | xanadu_court_chorten | 6 |  |
-| xanadu_signal_lectern | 6 | the signal book on a lectern beside the shutter key, the sound grid of the syllabary painted above it (shared with the Beacon's list) |
-| generic_trade_armour_stand | 6 |  |
+| xanadu_common_screen | 6 |  |
+| xanadu_court_throne | 6 |  |
 | xanadu_court_table | 6 |  |
 | xanadu_common_tea_copper | 5 |  |
 | xanadu_court_divan | 5 |  |
-| xanadu_court_throne | 5 |  |
-| xanadu_common_water_clock | 5 |  |
+| xanadu_court_low_table | 5 |  |
 | xanadu_veil_rack | 4 | a rack of the professed's crimson veils (worn on the rim against the fumes) on pegs, a basin to wet them |
 | xanadu_common_well | 4 |  |
 | xanadu_court_screen | 4 |  |
-| xanadu_common_screen | 4 |  |
-| xanadu_court_low_table | 4 |  |
+| xanadu_common_fire | 3 |  |
 | xanadu_book_lectern | 3 | the Book of Breaths' lectern: a sloped crimson-lacquered lectern, the great book on it chained, a water clock and a stand of brushes beside it |
 | xanadu_court_banner | 3 |  |
 | xanadu_works_bread_oven | 2 |  |
 | xanadu_court_wall_fountain | 2 |  |
 | xanadu_mirror_bench | 2 | the mirror bench: a grinding wheel and a silvering trough, speculum blanks in felt, rouge and pitch in boxes |
 | xanadu_court_desk | 2 |  |
-| xanadu_common_fire | 2 |  |
+| xanadu_common_hour_drum | 2 | a big barrel drum on a lacquer stand, beaten for the hours (shared with the Beacon's and the Tempest's lists) |
 | generic_churn | 1 |  |
 | xanadu_works_churn | 1 |  |
 | xanadu_common_reader_seat | 1 | the refectory reader's raised seat and lectern (shared with the Beacon's and the Tempest's lists) |
 | xanadu_court_bath_pool | 1 |  |
-| xanadu_common_hour_drum | 1 | a big barrel drum on a lacquer stand, beaten for the hours (shared with the Beacon's and the Tempest's lists) |
 | xanadu_court_bed | 1 |  |
 | xanadu_court_hearth | 1 |  |
 | xanadu_ember_hearth | 1 | the Ember's hearth: a gilt bronze bowl on a stepped basalt altar under a copper hood, a pair of tongs and the brass lantern the fire is carried in |
@@ -345,13 +378,13 @@ Where the west road from Ti-Teras and the east road from the Eye's Ghat meet, at
 ## Pieces the catalog lacks (NEW)
 
 - `xanadu_book_lectern`: the Book of Breaths' lectern: a sloped crimson-lacquered lectern, the great book on it chained, a water clock and a stand of brushes beside it (x3)
-- `xanadu_common_hour_drum`: a big barrel drum on a lacquer stand, beaten for the hours (shared with the Beacon's and the Tempest's lists) (x1)
+- `xanadu_common_hour_drum`: a big barrel drum on a lacquer stand, beaten for the hours (shared with the Beacon's and the Tempest's lists) (x2)
 - `xanadu_common_reader_seat`: the refectory reader's raised seat and lectern (shared with the Beacon's and the Tempest's lists) (x1)
-- `xanadu_common_signal_mirror`: a 30 cm signal mirror on a tripod with a sighting vane and a shutter (shared with the Beacon's and the Tempest's lists) (x8)
+- `xanadu_common_signal_mirror`: a 30 cm signal mirror on a tripod with a sighting vane and a shutter (shared with the Beacon's and the Tempest's lists) (x16)
 - `xanadu_crimson_banner`: the Order of the Flashing Eye's banner on its lacquer stand: crimson silk, the eight-spoked wheel with an open eye at the hub, rayed (x9)
 - `xanadu_ember_hearth`: the Ember's hearth: a gilt bronze bowl on a stepped basalt altar under a copper hood, a pair of tongs and the brass lantern the fire is carried in (x1)
 - `xanadu_eye_heliograph`: the Eye Post's heliograph: a 60 cm disc of polished speculum bronze in a yoke on a stone pier, a second mirror to turn the sun when it stands behind, a sighting vane with a crosswire, and a slatted shutter on a lever (x1)
 - `xanadu_fire_basket`: the night's answer: an iron fire basket on a tall stand behind a screen of hinged iron slats worked by a lever (the shutter), juniper piled beside it; lit from the Ember (x1)
 - `xanadu_mirror_bench`: the mirror bench: a grinding wheel and a silvering trough, speculum blanks in felt, rouge and pitch in boxes (x2)
-- `xanadu_signal_lectern`: the signal book on a lectern beside the shutter key, the sound grid of the syllabary painted above it (shared with the Beacon's list) (x6)
+- `xanadu_signal_lectern`: the signal book on a lectern beside the shutter key, the sound grid of the syllabary painted above it (shared with the Beacon's list) (x10)
 - `xanadu_veil_rack`: a rack of the professed's crimson veils (worn on the rim against the fumes) on pegs, a basin to wet them (x4)

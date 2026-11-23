@@ -13,7 +13,14 @@ const FE_RETAIN=new THREE.Group();FE_RETAIN.name='retaining walls';scene.add(FE_
    for(let i=0;i<k;i++){const t=(i+.5)/k,x=ax+(bx-ax)*t,z=az+(bz-az)*t,ox=ry?s*.6:0,oz=ry?0:s*.6,g=feBase(x+ox*3,z+oz*3);
     if(Math.abs(g-p.y)<1)continue;const lo=Math.min(g,p.y),hi=Math.max(g,p.y),T=3,cx=x+(ry?s*T/2:0),cz=z+(ry?0:s*T/2);
     vB('qAshB',cx,lo-1,cz,seg+.05,hi-lo+1.4,T,ry,stone);n++;}}}
- kbake(FE_RETAIN);for(const k in KIT.items)KIT.items[k].length=0;window._feRetain=n;}
+ /* the banks the bench is cut into, behind its north, west and east walls: dry-stone walls along the bank's contours every 1.5 m,
+    so it reads as terraced, not bare earth; open where the Way of Breath and the mule road come through */
+ const dry=xC(0x6e675f),T0=FE.L.terraces;let nb=0;
+ const bank=(x0,z0,dx,dz,lvl,len,along)=>{for(let k=1;k<12;k++){const L=lvl+1.5*k;let hit=null;for(let s=0;s<=len;s+=.5){const x=x0+dx*s,z=z0+dz*s;if(terrainH(x,z)>=L){hit=[x,z];break;}}
+  if(!hit)break;vB('qAshB',hit[0],L-1.7,hit[1],along?6.1:.9,1.85,along?.9:6.1,0,dry);nb++;}};
+ for(let x=-93;x<=93;x+=6)if(Math.abs(x)>6)bank(x,-147,0,-1,T0[T0.length-1].y,40,true);
+ for(let z=-141;z<=-30;z+=6)for(const s of[-1,1]){if(s<0&&Math.abs(z+87)<9)continue;bank(s*92,z,s,0,FLASHING_EYE.terraceY(FE.L,z),40,false);}
+ kbake(FE_RETAIN);for(const k in KIT.items)KIT.items[k].length=0;window._feRetain=n;window._feBanks=nb;}
 const FE_CHUNK=240,FE_CHUNKS={};
 for(const p of FE_PLACE){const k=p.kind==='wall'?'walls':Math.floor(p.x/FE_CHUNK)+','+Math.floor(p.z/FE_CHUNK);(FE_CHUNKS[k]=FE_CHUNKS[k]||[]).push(p);}
 const FE_GROUPS=[];let FE_INST=0;

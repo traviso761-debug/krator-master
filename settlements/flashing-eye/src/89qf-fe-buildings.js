@@ -31,6 +31,17 @@ function buildFeRange(G,o){reseed(34401+(o.v|0));const W=o.w==null?20:o.w,D=o.d=
  qnDoor(0,P,D/2,0,1.6,2.5,{c:xC(XPAL.red),valC:feCrimson()});}
 QB.def({key:'qb_fe_range',name:'A range of the Flashing Eye',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic']),w:20,d:12,h:10,nv:3,build:buildFeRange});
 
+// ---------------------------------------------------------------- a court: four ranges round a yard (the novices' court)
+// o.w across, o.d deep, o.st storeys; the ranges 7 m deep, the front one with its gate passage, a small chorten in the paved yard
+function buildFeCourt(G,o){reseed(34492);const W=o.w==null?30:o.w,D=o.d==null?40:o.d,st=o.st==null?2:o.st,R=7,P=.5,hs=[];for(let i=0;i<st;i++)hs.push(3.6);
+ vnReg(o.name==null?'A court of the Flashing Eye':o.name,0,0,Math.hypot(W,D)/2,P+st*3.6+4);
+ qnPlinth(0,0,W,D,P,0,xC(xPick(QSTONE)));vB('qAshB',0,P-.02,0,W-2*R,.05,D-2*R,0,xC(0x8c8984));
+ feBlock(0,D/2-R/2,W,R,0,hs,{y:P,skip:[[-2,2]],roundels:true});feBlock(0,-D/2+R/2,W,R,Math.PI,hs,{y:P});
+ for(const s of[-1,1])feBlock(s*(W/2-R/2),0,D-2*R,R,s<0?Math.PI/2:-Math.PI/2,hs,{y:P});
+ qnDoor(0,P,D/2,0,2.2,3,{c:xC(XPAL.red),valC:feCrimson()});qnDoor(0,P,D/2-R,Math.PI,2.2,3,{c:xC(XPAL.red),valC:feCrimson()});
+ qnChorten(0,P,0,.42);}
+QB.def({key:'qb_fe_court',name:'A court of the Flashing Eye',family:'The Flashing Eye',tags:QTAG('civic',['religious','civic']),w:30,d:40,h:12,nv:1,build:buildFeCourt});
+
 // ---------------------------------------------------------------- the Lip Range (sheet L)
 // 120 x 14 m on the Lip, its front (+z) the Rift: its two lower floors white-washed, cut into the band's top and 3 m proud of the
 // face on a battered white apron, their roof the terrace in front of L0 (the Mirror Hall's balcony at its west end); L0 and L1
@@ -54,7 +65,7 @@ function buildFeTemple(G,o){reseed(34491);const wash=feWash(),P=.8;
  vnReg('The Red Monastery (the Order of the Flashing Eye\'s great monastery)',0,0,37,P+22);
  qnPlinth(0,0,52,52,P,0,xC(xPick(QSTONE)));vB('qAshB',0,P-.02,1,36,.05,34,0,xC(0x8c8984));
  feBlock(-15.5,22.5,21,7,0,[3.6,3.4],{y:P,roundels:true});feBlock(15.5,22.5,21,7,0,[3.6,3.4],{y:P,roundels:true});
- for(const s of[-1,1])feBlock(s*22.5,0,7,38,s<0?-Math.PI/2:Math.PI/2,[3.6,3.4],{y:P});
+ for(const s of[-1,1])feBlock(s*22.5,0,38,7,s<0?Math.PI/2:-Math.PI/2,[3.6,3.4],{y:P});
  feBlock(0,-22.5,52,7,Math.PI,[3.6,3.4],{y:P,roundels:true});
  /* the gate tower: three storeys, two tiers, the Gate of the Open Eye */
  const g=qnStack(0,P,22.5,10,9,0,[3.8,3.4,3.2],wash,'wash',false);qnWins(0,P,22.5,10,9,0,[3.8,3.4,3.2],g.k,{pitch:2.6,kind:'glass',trim:feCrimson(),skip:[[-1.6,1.6]]});

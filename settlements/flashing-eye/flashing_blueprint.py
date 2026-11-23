@@ -268,6 +268,44 @@ FLOORS.append(dict(R=300, rect=(-1912, -1860, -8, 8), id='P', tier=0,
   outlines=[(PB[0] + 12 * k, PB[1] + 12 * k, PB[2], PB[3], 'P%d' % k) for k in range(4)],
   rooms=PR))
 
+# ------------------------------------------------------------------------------------------------ T the towers: four floors of each
+# the revamp's towers (the owner, 2026-11-23): the Mirror Tower (10 m square), the Labrang Tower (11 m), the Ember Tower's shaft
+# (11 m over the hall). Each floor drawn in the tower's own frame, 16 m apart along u, the towers in rows 18 m apart along v; a stair
+# in the north-west corner of every floor
+def TW(row, k, W, rooms):
+    out = []
+    cu, cv = 16 * k, 18 * row
+    for (n, name, kind, a0, a1, b0, b1, dec, note) in rooms:
+        out.append(R(n, name, kind, cu + a0 * W, cu + a1 * W, cv + b0 * W, cv + b1 * W, dec, note))
+    out.append(R(900 + 10 * row + k, 'Stair', 'stair', cu - W / 2, cu - W / 2 + 2.6, cv - W / 2, cv - W / 2 + 2.6, 0))
+    return out
+FULL = (-.5, .5, -.5, .5)
+TR = []
+for k, (n, name, kind, dec, note) in enumerate([
+        (1, 'The readers\' door', 'hall', 2, 'from the Lip terrace; the boots, the veils'),
+        (2, 'The signal store', 'store', 0, 'the shutters, the spare 30 cm discs in felt, the vanes'),
+        (3, 'The readers\' room', 'signal_room', 2, 'the hour board, the Book of Flashes\' day copy, the readers on watch'),
+        (4, 'The lantern', 'tower', 3, 'open under the round red cap: three 30 cm mirrors on their stands, the call board')]):
+    TR += TW(0, k, 10, [(n, name, kind, -.5, .5, -.24, .5, dec, note), (n + 10, name + ' (its east side)', 'passage' if k < 3 else 'tower', -.24, .5, -.5, -.24, 0, '')])
+for k, (n, name, kind, dec, note) in enumerate([
+        (21, 'The Prismarch\'s door and his guard', 'guard', 2, 'lay brothers with staves; the gate to the Lip terrace'),
+        (22, 'The household', 'dormitory', 1, 'his secretary, chamberlain and attendant monks over the gate floor'),
+        (23, 'The Prismarch\'s cell and oratory', 'abbot_cell', 4, 'his cell to the south, his oratory to the north, the painted bays\' windows'),
+        (24, 'The mirror room and the gallery', 'window_of_light', 4, 'under the broad red roof: he sits on the council by mirror; the gallery all round')]):
+    TR += TW(1, k, 11, [(n, name, kind, -.5, .5, -.26, .5, dec, note), (n + 10, name + ' (its east side)', 'chamber' if k == 2 else 'passage', -.26, .5, -.5, -.26, 1, '')])
+for k, (n, name, kind, dec, note) in enumerate([
+        (41, 'The tenders\' room', 'chamber', 1, 'over the hall\'s sanctum: the two lay tenders, the tongs and the brass lantern'),
+        (42, 'The Book of the Ember', 'archive', 2, 'each year\'s lighting written down'),
+        (43, 'The bell of the Opening', 'drum_room', 2, 'rung at sunrise when the Eye opens; the water clock'),
+        (44, 'The belvedere under the tiers', 'gallery', 3, 'the plume watched from the north windows; the sanctum\'s gilt finial above')]):
+    TR += TW(2, k, 11, [(n, name, kind, -.5, .5, -.26, .5, dec, note), (n + 10, name + ' (its east side)', 'passage', -.26, .5, -.5, -.26, 0, '')])
+FLOORS.append(dict(R=300, rect=(-9, 58, -9, 45), id='T', tier=0,
+  title='Sheet T: the towers, four floors of each (the revamp, 2026-11-23)',
+  sub='Bottom row: the Mirror Tower (10 m, the first reference\'s: tapering, the crimson band, the open lantern under a round red cap; the readers send and read the day line from it). Middle: the Labrang Tower (11 m, the second reference\'s: the painted window bays, the crimson band, the gallery and the broad red roof; the Prismarch\'s floors). Top: the Ember Tower\'s shaft (11 m, rising from the hall of sheet H under three red tiers). Floors drawn 16 m apart, ground floor at the left; the stair in each floor\'s north-west corner.',
+  axisnote='each floor: u -> south (the Rift); v east, up. Rows: Mirror (bottom), Labrang, Ember (top)',
+  outlines=[(16 * k - W / 2, 16 * k + W / 2, 18 * r - W / 2, 18 * r + W / 2, ('M', 'L', 'E')[r] + str(k)) for r, W in ((0, 10), (1, 11), (2, 11)) for k in range(4)],
+  rooms=TR))
+
 # ------------------------------------------------------------------------------------------------ F the Foot House
 FB = pb('foothouse')   # u 6370..6430, v -40..40
 FLOORS.append(dict(R=300, rect=(6364, 6436, -46, 46), id='F', tier=0, poly=[(FB[0], FB[2]), (FB[1], FB[2]), (FB[1], FB[3]), (FB[0], FB[3])],

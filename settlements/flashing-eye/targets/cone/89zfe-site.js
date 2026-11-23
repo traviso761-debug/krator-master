@@ -54,7 +54,8 @@ for(const id of['tw.nw','tw.ne','tw.sw','tw.se']){const P=fePart(id),t=feAt(id);
 fePut('qb_fe_gate',-3,-80,0,{w:8,d:5,st:1,y:0,name:'The Gate of the Rift'},'gate','g.rift');
 fePut('qb_fe_gate',-87,-90,Math.PI/2,{w:10,d:8,st:2,y:feTY(-87),name:'The Mule Gate'},'gate','g.mule');
 fePut('qb_fe_gate',-145,0,Math.PI,{w:10,d:10,st:2,y:feTY(-140),name:'The Gate of Breath'},'gate','g.breath');
-for(const [id,v,st] of[['granary',1,2],['infirmary',1,2],['kitchen',1,2],['refectory',1,1],['bath',1,1],['woodstore',1,1],['chapter',0,3],['novices',0,2],['school',0,2]])feRange(id,v,st,{y:feAt(id).y});
+for(const [id,v,st] of[['granary',1,2],['infirmary',1,2],['kitchen',1,2],['refectory',1,1],['bath',1,1],['woodstore',1,1],['chapter',0,3],['school',0,2]])feRange(id,v,st,{y:feAt(id).y});
+{const P=fePart('novices'),c=feAt('novices');fePut('qb_fe_court',c.u,c.v,0,{w:P.box[3]-P.box[2]-.6,d:P.box[1]-P.box[0]-.6,st:2,y:c.y,name:P.name},'house','novices');}   /* four ranges round its yard */
 {const c=feAt('founders');fePut('qb_chorten',c.u,c.v,0,{v:0,y:c.y},'sacred','founders');}
 // the stairs between the terraces, on the axis: each from the upper terrace's edge down into the lower (the kit's terrace stair)
 for(const id of['st.lower','st.upper']){const P=fePart(id);fePut('qb_terrace_stair',P.box[0],0,0,{v:0,rise:P.rise,w:6,every:6,y:feTY(P.box[0]-1)},'way',id);}
