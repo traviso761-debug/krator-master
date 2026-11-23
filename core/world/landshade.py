@@ -16,8 +16,9 @@ Gaussians at 20-60, 60-180 and 180-540 m), the drainage alignment (cos^2 between
 540 m slope, weighted by the detail's gradient: 0.5 for detail with no direction, lower where it runs downslope as a DEM's
 does (.17-.46), higher for contour terraces) and the slope at the grid step (p50, p90, p99). The box needs to be ~2 km or
 more (800 m is cropped off each side). --fixed draws the hillshade under a fixed light, unstretched, so two images compare.
-    python3 core/world/landshade.py --dem <city> <out.png> [--win 4000]   a World Menagerie DEM's steepest window
-                                                                           (host/WorldMenagerie/data/cities/<city>-osm.json), the same measures
+    python3 core/world/landshade.py --dem <city> <out.png> --osm-json <file> [--win 4000]   a city DEM's steepest window
+                                                                           (the city's OSM terrain JSON, named by --osm-json: core never
+                                                                           names the host's folders, tools/check_insulation.py), the same measures
 
 The band metric: over the sloped samples (> 3 %), for every step s from 20 to 100 m, the histogram of height mod s in 20 bins;
 its contrast is max / min, read only where the sloped ground spans five steps or more. A land terraced every s metres on its absolute height reads 2 or more at s; a land without
@@ -190,8 +191,8 @@ def fixed_shade(E, step_m, exag=2.0):
     return np.clip(v * 255, 0, 255).astype(np.uint8)
 
 
-def dem(city, win):
-    j = json.load(open(os.path.join(ROOT, 'host', 'WorldMenagerie', 'data', 'cities', city + '-osm.json'), encoding='utf-8'))['terrain']
+def dem(osm_json, win):
+    j = json.load(open(osm_json, encoding='utf-8'))['terrain']
     E = np.array(j['h'], dtype=np.float64).reshape(j['nz'], j['nx']) / 10
     n, best = int(win / j['step']), None
     for r in np.linspace(0, j['nz'] - n, 5).astype(int):
@@ -244,7 +245,10 @@ def main():
         print('joined', a[3]); return
     opt = lambda k, n: a[a.index(k) + 1:a.index(k) + 1 + n] if k in a else None
     if a[0] == '--dem':
-        E, step = dem(a[1], float((opt('--win', 1) or [4000])[0]))
+        src = (opt('--osm-json', 1) or [None])[0]
+        if not src:
+            sys.exit('landshade --dem: name the city\'s OSM terrain JSON with --osm-json <file>')
+        E, step = dem(src, float((opt('--win', 1) or [4000])[0]))
         Image.fromarray(fixed_shade(E, step)).save(a[2])
         print('landshade %s: the %s DEM, %d x %d at %g m%s' % (a[2], a[1], E.shape[1], E.shape[0], step, texline(texture(E, step))))
         return
