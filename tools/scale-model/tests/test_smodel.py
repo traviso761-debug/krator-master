@@ -837,4 +837,25 @@ check('Wave 0 polygons: Zeijani, Yusar enclaves, Eternal State Farside/Bastion, 
       and bool(regs_w0['rmvkkra7o3ep4'][554, 490])
       and bool(regs_w0['rmucc476rj9ie'][652, 1165]) and bool(regs_w0['rmucc476rj9ie'][639, 1276])
       and not bool(regs_w0['rmucc476rj9ie'][678, 1280]) and not bool(regs_w0['rmucc476rj9ie'][828, 1322]))
+
+# ---- 19. 5.1e22 + 5.1e23: 39 Ria rivers, 22 Continental Canals (`DATA.canals`), and `[B]`/`[D]` pins
+canals_523 = D.get('canals') or []
+check('5.1e23 DATA.canals holds all 22 engineered canals across Eternia (8), Ria (7), Iziz (2), Hykkousoi (2) & Voth (3)',
+      len(canals_523) == 22
+      and sum(1 for c in canals_523 if c['culture'] == 'eternian') == 8
+      and sum(1 for c in canals_523 if c['culture'] == 'ria') == 7
+      and sum(1 for c in canals_523 if c['culture'] == 'iziz') == 2
+      and sum(1 for c in canals_523 if c['culture'] == 'ys') == 2
+      and sum(1 for c in canals_523 if c['culture'] in ('voth', 'shim')) == 3)
+ria_rivs_522 = [r for r in D.get('rivers', []) if isinstance(r.get('id'), int) and (r['id'] in (9101, 9102, 9103, 9104, 9106, 9107, 9108, 9109) or 9201 <= r['id'] <= 9232)]
+check('5.1e22 Ria & Shroudhills holds >= 39 sinuous dendritic rivers (%d)' % len(ria_rivs_522), len(ria_rivs_522) >= 39)
+for e23_sid, e23_xy in (
+    ('sshimrest01', (655, 1111)), ('s5x27pj6hn', (792, 860)), ('sn6y4sx8tr', (819, 552)),
+    ('sirb5um6cr', (671, 930)), ('sy42jwlyk4', (777, 1003)), ('sjau3958qz', (723, 885)),
+    ('sshuangzha1', (450, 782)), ('slingkou001', (445, 645)), ('swuxicoll01', (416, 782)),
+    ('smakouiron1', (702, 182)), ('sbeacon0001', (853, 1540)), ('sgihon00001', (955, 1608)),
+):
+    s_23 = setts_w0.get(e23_sid)
+    check('5.1e23 pin %s (%s) stands on dry ground at %s' % (e23_sid, s_23 and s_23['name'], e23_xy),
+          s_23 is not None and (int(round(s_23['px'])), int(round(s_23['py']))) == e23_xy and not bool(whas[e23_xy[1], e23_xy[0]]))
 print('%d checks passed' % ok)

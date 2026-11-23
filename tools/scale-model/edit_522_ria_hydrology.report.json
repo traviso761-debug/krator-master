@@ -1,0 +1,295 @@
+{
+  "edit": "5.1e22 Exterior Stage: Ria Valley Sinuous Hydrology, Iron Gates Sill, Farside Foreland & Crook Calderas",
+  "version_tag": "5.1e22",
+  "date": "2026-11-23",
+  "dry_run": false,
+  "out_dir": null,
+  "strict_mask_check": {
+    "outside_ext_mask_pixels_changed": {
+      "h": 0,
+      "wl": 0,
+      "wd": 0,
+      "p": 0,
+      "c": 0,
+      "z": 0,
+      "tm": 0,
+      "th": 0,
+      "tl": 0,
+      "tw": 0,
+      "tc": 0
+    },
+    "inside_ext_mask_pixels_changed": {
+      "h": 89879,
+      "wl": 4679,
+      "wd": 0,
+      "p": 117229,
+      "c": 45484,
+      "z": 7573,
+      "tm": 79314,
+      "th": 195213,
+      "tl": 79314,
+      "tw": 79314,
+      "tc": 79314
+    },
+    "zero_inner_crater_diff_verified": true
+  },
+  "ria_hydrology": {
+    "ria_shroudhills_river_count": 39,
+    "new_ria_tributaries_added": 32,
+    "crook_gorge_rivers_added": 18,
+    "total_world_rivers": 946,
+    "ria_watershed_km2": 842384,
+    "ria_total_channel_km": 11299.8,
+    "ria_drainage_density_km_per_1000km2": 13.41,
+    "sinuosity_9101_ma_ria": 1.29,
+    "sinuosity_9107_pak_ma": 1.368,
+    "sinuosity_9108_mo_ma": 1.38,
+    "sinuosity_9109_ching_ma": 1.36,
+    "tributary_sinuosity_mean": 1.396,
+    "tributary_sinuosity_min": 1.3,
+    "tributary_sinuosity_max": 1.51,
+    "all_ria_sinuosity_mean": 1.389
+  },
+  "iron_gates_and_rain_shadow": {
+    "hogback_crest_max_m": 1725.4,
+    "hogback_crest_p75_m": 1333.0,
+    "iron_gates_length_km": 101.6,
+    "iron_gates_drop_m": 45.3,
+    "iron_gates_slope": 0.00045,
+    "iron_gates_q_m3s": 4210.0,
+    "heartland_rain_median_mm": 580.4,
+    "heartland_rain_iqr_mm": [
+      533.3,
+      627.5
+    ],
+    "weeping_valley_rain_median_mm": 1098.0
+  },
+  "key_pins": {
+    "Farport": {
+      "px": [
+        248,
+        585
+      ],
+      "elev_m": 212.0,
+      "rain_mm": 1913.7,
+      "wet": false
+    },
+    "Yonni": {
+      "px": [
+        346,
+        418
+      ],
+      "elev_m": 1395.3,
+      "rain_mm": 3152.9,
+      "wet": false
+    },
+    "Battered Isle": {
+      "px": [
+        435,
+        259
+      ],
+      "elev_m": 115.0,
+      "rain_mm": 1788.2,
+      "wet": false
+    },
+    "Ria Sound": {
+      "px": [
+        626,
+        140
+      ],
+      "elev_m": 78.0,
+      "rain_mm": 2305.9,
+      "wet": false
+    },
+    "Heartland": {
+      "px": [
+        796,
+        176
+      ],
+      "elev_m": 170.5,
+      "rain_mm": 611.8,
+      "wet": false
+    },
+    "Pak-Veche": {
+      "px": [
+        718,
+        124
+      ],
+      "elev_m": 198.8,
+      "rain_mm": 1254.9,
+      "wet": false
+    },
+    "Mo-Veche": {
+      "px": [
+        664,
+        108
+      ],
+      "elev_m": 97.0,
+      "rain_mm": 1568.6,
+      "wet": false
+    },
+    "Dipu-Yaduwe": {
+      "px": [
+        945,
+        78
+      ],
+      "elev_m": 3002.9,
+      "rain_mm": 549.0,
+      "wet": false
+    },
+    "Weeping Fort": {
+      "px": [
+        996,
+        156
+      ],
+      "elev_m": 575.8,
+      "rain_mm": 1145.1,
+      "wet": false
+    },
+    "Lodestone": {
+      "px": [
+        1058,
+        224
+      ],
+      "elev_m": 691.3,
+      "rain_mm": 831.4,
+      "wet": false
+    },
+    "Springhollows": {
+      "px": [
+        1135,
+        153
+      ],
+      "elev_m": 757.5,
+      "rain_mm": 1192.2,
+      "wet": false
+    },
+    "Upper Ria": {
+      "px": [
+        1186,
+        118
+      ],
+      "elev_m": 1072.5,
+      "rain_mm": 956.9,
+      "wet": false
+    },
+    "The Scaffold": {
+      "px": [
+        1246,
+        18
+      ],
+      "elev_m": 1938.3,
+      "rain_mm": 768.6,
+      "wet": false
+    },
+    "Kopa-Hueru": {
+      "px": [
+        75,
+        679
+      ],
+      "elev_m": 88.0,
+      "rain_mm": 1913.7,
+      "wet": false
+    },
+    "Kaskedi-Kuran": {
+      "px": [
+        128,
+        660
+      ],
+      "elev_m": 96.0,
+      "rain_mm": 1725.5,
+      "wet": false
+    },
+    "Deep-Ward Anchorage": {
+      "px": [
+        148,
+        492
+      ],
+      "elev_m": 28.0,
+      "rain_mm": 1647.1,
+      "wet": false
+    },
+    "Flumi-Bridzi": {
+      "px": [
+        94,
+        966
+      ],
+      "elev_m": 834.9,
+      "rain_mm": 1254.9,
+      "wet": false
+    },
+    "Silent Vales": {
+      "px": [
+        192,
+        962
+      ],
+      "elev_m": 2643.9,
+      "rain_mm": 2290.2,
+      "wet": false
+    },
+    "Copper Tarn": {
+      "px": [
+        148,
+        1142
+      ],
+      "elev_m": 2388.0,
+      "rain_mm": 1913.7,
+      "wet": false
+    }
+  },
+  "relight": {
+    "st": {
+      "az_deg": 315,
+      "zf": 10,
+      "gain": 0.673,
+      "corr": 0.528
+    },
+    "t": {
+      "az_deg": 315,
+      "zf": 5,
+      "gain": 1.4,
+      "corr": 0.571
+    },
+    "rt": {
+      "az_deg": 315,
+      "zf": 5,
+      "gain": 0.706,
+      "corr": 0.615
+    },
+    "ct": {
+      "az_deg": 315,
+      "zf": 5,
+      "gain": 0.723,
+      "corr": 0.29
+    }
+  },
+  "reclimate": {
+    "cells": 103073,
+    "class_changed": 18061,
+    "rain_mean_before_mm": 1216.0,
+    "rain_mean_after_mm": 1281.0,
+    "classes_now": {
+      "Af": 1114,
+      "Am": 7779,
+      "Aw": 798,
+      "BSk": 42,
+      "Csa": 12417,
+      "Csb": 365,
+      "Csc": 2,
+      "Cwa": 122,
+      "Cwb": 4,
+      "Cfa": 71148,
+      "Cfb": 3413,
+      "Dsb": 193,
+      "Dsc": 206,
+      "Dwb": 50,
+      "Dfb": 1074,
+      "Dfc": 1131,
+      "ET": 1373,
+      "EF": 798,
+      "HT": 543,
+      "HF": 211,
+      "WS": 290
+    }
+  }
+}

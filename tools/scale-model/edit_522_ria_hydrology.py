@@ -720,25 +720,30 @@ def main(argv=None):
 
     # --- 4A. Extend Farside Coastal Rivers Across New Seaward Foreland ---
     r002 = rivers_by_id['r002']
-    r002_keep = [p for p in r002['px'] if p[0] >= 292.0]
-    r002_beds_keep = list(r002['bed_m'][:len(r002_keep)])
+    cut_002 = next((i for i, p in enumerate(r002['px']) if p[0] < 302.0), len(r002['px']))
+    r002_keep = list(r002['px'][:cut_002])
+    r002_beds_keep = list(r002['bed_m'][:cut_002])
     r002_ext = weave_meanders(
-        [r002_keep[-1], [280.0, 586.5], [268.0, 584.0], [256.0, 586.8], [246.2, 585.8], [245.0, 586.0]],
-        target_sin=1.28, seed=502, step_px=1.8, amp_cap_px=3.5,
+        [r002_keep[-1], [294.0, 586.2], [280.0, 586.5], [268.0, 584.0], [256.0, 586.8], [246.2, 585.8], [245.0, 586.0]],
+        target_sin=1.28, seed=502, step_px=1.8, amp_cap_px=3.2,
     )
     r002_ext = clamp_river_to_dry_land(r002_ext, whas2, keep_wet_tail=True)
     r002['px'] = r002_keep + r002_ext[1:]
-    b_start_002 = r002_beds_keep[-1]
+    b_start_002 = float(r002_beds_keep[-1])
     n_ext_002 = len(r002_ext) - 1
-    r002_ext_beds = [round(max(1.0, b_start_002 * (1.0 - (k + 1) / float(n_ext_002))), 1) for k in range(n_ext_002)]
+    r002_ext_beds = [round(max(0.2, b_start_002 * (1.0 - (k + 1) / float(n_ext_002))), 1) for k in range(n_ext_002)]
     r002_ext_beds[-1] = 0.0
-    r002['bed_m'] = r002_beds_keep + r002_ext_beds
+    r002_beds_all = r002_beds_keep + r002_ext_beds
+    for k in range(1, len(r002_beds_all)):
+        if r002_beds_all[k] > r002_beds_all[k - 1]:
+            r002_beds_all[k] = r002_beds_all[k - 1]
+    r002['bed_m'] = r002_beds_all
     r002['mouth_m'] = 0.0
     r002['length_km'] = poly_len_km(r002['px'])
     r002['q_m3s'] = [round(45.0 + 395.0 * (i / max(1, len(r002['px']) - 1)), 1) for i in range(len(r002['px']))]
     r002['q_mouth'] = 440.0
     r002['to'] = {'sea': 'ocean', 'at_px': [243.0, 586.0]}
-    carve_fluvial_valley(En, whas2, EXT_MASK, r002_ext, [360.0] * len(r002_ext), target_beds=[b_start_002] + r002_ext_beds, belt_mult=0.75)
+    carve_fluvial_valley(En, whas2, EXT_MASK, r002_ext, [360.0] * len(r002_ext), target_beds=[b_start_002] + r002_ext_beds, belt_mult=0.80)
     En[585, 248] = 212.0  # preserve exact Farport headland height above Ling-Ma gorge
 
     # Fortified Y = 515 northern border river `r175` (`dStara cBruk`, ~136 km)
@@ -1278,6 +1283,36 @@ def main(argv=None):
     base_ids = [r['id'] for r in D['rivers']]
     new_ids = [rid for rid in sorted(k for k in rivers_by_id.keys() if isinstance(k, int) and k >= 9111) if rid not in base_ids]
     D['rivers'] = [rivers_by_id[rid] for rid in base_ids + new_ids]
+
+    # Guarantee monotonic bed_m & <= 15 m terrain climb along EVERY river touching EXT_MASK (3 passes so confluences converge!)
+    protected_pins = {(248, 585), (626, 140), (435, 259), (75, 679), (128, 660), (148, 1142)}
+    for _pass in range(3):
+        for rv in D['rivers']:
+            pts_r = rv.get('px') or []
+            beds_r = rv.get('bed_m') or []
+            if len(pts_r) < 2:
+                continue
+            if _pass == 0 and beds_r:
+                for k in range(1, len(beds_r)):
+                    if beds_r[k] > beds_r[k - 1]:
+                        beds_r[k] = beds_r[k - 1]
+                rv['source_m'] = beds_r[0]
+                if 'mouth_m' in rv:
+                    rv['mouth_m'] = beds_r[-1]
+            touches_ext = any(EXT_MASK[min(OH - 1, max(0, int(round(py)))), min(OW - 1, max(0, int(round(px))))] for px, py in pts_r)
+            if not touches_ext:
+                continue
+            m_e = None
+            for k_p, (px_k, py_k) in enumerate(pts_r):
+                ix, iy = min(OW - 1, max(0, int(round(px_k)))), min(OH - 1, max(0, int(round(py_k))))
+                if whas2[iy, ix]:
+                    continue
+                ev = float(En[iy, ix])
+                if m_e is None or ev < m_e:
+                    m_e = ev
+                elif ev - m_e > 12.0 and EXT_MASK[iy, ix] and (ix, iy) not in protected_pins:
+                    En[iy, ix] = m_e + 4.0
+                    m_e = min(m_e, float(En[iy, ix]))
 
     # =========================================================================
     # STEP 5: Climate,Hogback Rain-Shadow Loess Bowl (`420-620 mm/yr`) &

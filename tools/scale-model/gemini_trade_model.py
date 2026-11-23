@@ -53,9 +53,6 @@ from smodel.page import LEGACY_SHIFT, load as load_page, raster  # noqa: E402
 # ---------------------------------------------------------------------------
 def load_world(model_data_dir=None, regs_js_path=None, geo_json_path=None):
     import gc as _gc_lw
-    staged_ext = os.path.join(ROOT, "openworld", "ria-exterior-522")
-    if model_data_dir is None and os.path.isfile(os.path.join(staged_ext, "model.json")):
-        model_data_dir = staged_ext
     D = load_page(model_data_dir) if model_data_dir else load_page()
     OW, OH = D["fullW"], D["fullH"]  # 1821 x 1723 (2 km/px)
     h_img = raster(D, "h")
@@ -66,7 +63,7 @@ def load_world(model_data_dir=None, regs_js_path=None, geo_json_path=None):
 
     tm_img = raster(D, "tm")[..., 0].astype(np.float32) / 255.0 * 110.0 - 50.0
     rain_img = (raster(D, "p")[..., 0].astype(np.float32) / 255.0) ** 2 * 5000.0
-    D_min = {"rivers": D["rivers"]}
+    D_min = {"rivers": D["rivers"], "canals": D.get("canals", [])}
     del D
     _gc_lw.collect()
 
@@ -4362,17 +4359,88 @@ def build_multimodal_graphs(world, setts):
                 if prev is None or q > prev[2]:
                     directed_river_steps[(uc, vc)] = (skm, slope_eff, q)
 
-    # Eternian locked-canal lowland triangle (Fulcrum-Lux-Bastion-Farport)
-    et_box = np.zeros((GH, GW), dtype=bool)
-    et_box[int(540 * sv):int(710 * sv), int(280 * su):int(560 * su)] = True
-    canal_nav = et_box & (~W) & (E >= -5) & (E <= 420)
+    # Explicit Continental Engineered Canal Network (`DATA.canals`: 22 canals across Eternia, Ria, Iziz, Hykkousoi & Voth)
+    canal_nav = np.zeros((GH, GW), dtype=bool)
+    canal_idx_grid = np.full((GH, GW), -1, dtype=np.int16)
+    directed_canal_steps = {}
+    canal_basin_links = []
+    canals_list = world.get("D", {}).get("canals", [])
+    world_canal_km = 0.0
+    for c_idx, cn in enumerate(canals_list):
+        pts_c = cn.get("px") or []
+        if len(pts_c) < 2:
+            continue
+        locks_per_km = float(cn.get("locks", 4)) / max(12.0, float(cn.get("length_km", 40.0)))
+        c_chain = []
+        for k_c in range(len(pts_c) - 1):
+            x0_c, y0_c = pts_c[k_c][0] * su, pts_c[k_c][1] * sv
+            x1_c, y1_c = pts_c[k_c + 1][0] * su, pts_c[k_c + 1][1] * sv
+            world_canal_km += 2.0 * math.hypot(pts_c[k_c + 1][0] - pts_c[k_c][0], pts_c[k_c + 1][1] - pts_c[k_c][1])
+            n_st = max(1, int(math.ceil(max(abs(x1_c - x0_c), abs(y1_c - y0_c)) * 2.0)))
+            for s_i in range(n_st + 1):
+                tt = s_i / float(n_st)
+                ci_c = min(GW - 1, max(0, int(round(x0_c + tt * (x1_c - x0_c)))))
+                cj_c = min(GH - 1, max(0, int(round(y0_c + tt * (y1_c - y0_c)))))
+                cc_id = cj_c * GW + ci_c
+                if not c_chain or c_chain[-1] != cc_id:
+                    # Enforce 8-connected step if diagonal jump > 1
+                    if c_chain:
+                        pj, pi = divmod(c_chain[-1], GW)
+                        while abs(cj_c - pj) > 1 or abs(ci_c - pi) > 1:
+                            pj += (1 if cj_c > pj else (-1 if cj_c < pj else 0))
+                            pi += (1 if ci_c > pi else (-1 if ci_c < pi else 0))
+                            c_chain.append(pj * GW + pi)
+                    c_chain.append(cc_id)
+        for cc_id in c_chain:
+            rj_c, ri_c = divmod(cc_id, GW)
+            canal_nav[rj_c, ri_c] = True
+            canal_idx_grid[rj_c, ri_c] = c_idx
+            # Bridge adjacent river_nav cells within 1 cell so lateral/bypass canals lock seamlessly into trunk rivers!
+            for dj_r in (-1, 0, 1):
+                for di_r in (-1, 0, 1):
+                    if dj_r == 0 and di_r == 0:
+                        continue
+                    nj_r, ni_r = rj_c + dj_r, ri_c + di_r
+                    if 0 <= nj_r < GH and 0 <= ni_r < GW and river_nav[nj_r, ni_r]:
+                        rc_nb = nj_r * GW + ni_r
+                        skm_nb = 4.0 * math.hypot(di_r, dj_r)
+                        directed_canal_steps.setdefault((cc_id, rc_nb), (skm_nb, locks_per_km))
+                        directed_canal_steps.setdefault((rc_nb, cc_id), (skm_nb, locks_per_km))
+        for k_ch in range(len(c_chain) - 1):
+            uc_c, vc_c = c_chain[k_ch], c_chain[k_ch + 1]
+            uj_c, ui_c = divmod(uc_c, GW)
+            vj_c, vi_c = divmod(vc_c, GW)
+            skm_c = 4.0 * math.hypot(vi_c - ui_c, vj_c - uj_c)
+            directed_canal_steps[(uc_c, vc_c)] = (skm_c, locks_per_km)
+            directed_canal_steps[(vc_c, uc_c)] = (skm_c, locks_per_km)
+        # Couple terminal lock-harbour basins (Layer 2 <-> Layer 1) into Mirror Sea, Jimjam Lake, Ring Sea, Ria Sound & Lake Shim
+        for end_cc in (c_chain[0], c_chain[-1]):
+            ej_c, ei_c = divmod(end_cc, GW)
+            best_wb = None
+            for dj_w in range(-2, 3):
+                for di_w in range(-2, 3):
+                    nj_w, ni_w = ej_c + dj_w, ei_c + di_w
+                    if 0 <= nj_w < GH and 0 <= ni_w < GW and nav_water[nj_w, ni_w]:
+                        if cn.get("polity") == "Eternal State" and cn.get("id") not in ("cn_et_lingma_lateral", "cn_et_farside") and not inland_lake[nj_w, ni_w]:
+                            continue
+                        dw = dj_w * dj_w + di_w * di_w
+                        if best_wb is None or dw < best_wb[0]:
+                            best_wb = (dw, nj_w * GW + ni_w, bool(inland_lake[nj_w, ni_w]))
+            if best_wb is not None:
+                canal_basin_links.append((2 * N_CELL + end_cc, N_CELL + best_wb[1], cn["name"], cn["polity"], best_wb[2]))
+
+    dc_items = list(directed_canal_steps.items())
+    dc_u = np.array([k[0] for k, _ in dc_items], dtype=np.int64)
+    dc_v = np.array([k[1] for k, _ in dc_items], dtype=np.int64)
+    dc_km = np.array([v[0] for _, v in dc_items], dtype=np.float64)
+    dc_lk = np.array([v[1] for _, v in dc_items], dtype=np.float64)
 
     def cell_of(px, py):
         return int(round(py * sv)) * GW + int(round(px * su))
 
     # Canonical shoreline & island ports allowed a wider coastal snap; all other settlements must sit directly on water (<= 1.41 cells)
     EXPLICIT_COASTAL_PORTS = {
-        "Farport", "Palewharf", "Jimjam", "Voth", "Shim", "Dapor", "Almua", "Tzinguard", "Temora", "Zey'danin",
+        "Farport", "Palewharf", "Lux", "Jimjam", "Voth", "Shim", "Dapor", "Almua", "Tzinguard", "Temora", "Zey'danin",
         "Port Mira", "Hook", "Ys", "Ybera", "Tethis", "Nephtos", "Sideros", "Trigon", "Limnaia",
         "Pontus", "Nereus", "Kierson", "Kyra Isle", "Skopelos Isle",
         "Taikoro", "Kautono", "Tauranga-Hikau",
@@ -4396,7 +4464,7 @@ def build_multimodal_graphs(world, setts):
         "Arcflow Republics", "Compass Hills Cantons", "Spider Lake Guilds",
     }
 
-    # Assign settlement cells, sea/lake port links (Layer 0 <-> Layer 1), & river barge landings (Layer 0 <-> Layer 2)
+    # Assign settlement cells, sea/lake port links (Layer 0 <-> Layer 1), & river/canal barge landings (Layer 0 <-> Layer 2)
     port_links = []
     barge_links = []
     estuary_links = []
@@ -4413,7 +4481,6 @@ def build_multimodal_graphs(world, setts):
         if (
             s["polity"] in NO_SEA_PORT_POLS
             or s["name"] in ("Ranger HQ", "Copper Tarn")
-            or (s["polity"] == "Eternal State" and s["name"] not in ("Farport", "Palewharf"))
         ):
             s["water_cell"] = None
             s["is_ring_sea_port"] = False
@@ -4421,15 +4488,17 @@ def build_multimodal_graphs(world, setts):
                 s["river_cell"] = None
                 continue
         else:
-            # Check shoreline proximity for navigable sea/lake water
+            # Check shoreline proximity for navigable sea/lake water (Eternal State uses Mirror Sea / Jimjam Lake freely, open ocean only via Farport!)
             best_w = None
-            rad_w = 12 if s["name"] in ("Yonni", "Kopa-Hueru") else (5 if s["name"] in EXPLICIT_COASTAL_PORTS else 1)
+            rad_w = 12 if s["name"] in ("Yonni", "Kopa-Hueru") else (5 if s["name"] in EXPLICIT_COASTAL_PORTS else 2)
             for dj in range(-rad_w, rad_w + 1):
                 for di in range(-rad_w, rad_w + 1):
-                    if rad_w == 1 and (dj * dj + di * di) > 2:
+                    if rad_w <= 2 and (dj * dj + di * di) > 4:
                         continue
                     nj, ni = cj + dj, ci + di
                     if 0 <= nj < GH and 0 <= ni < GW and nav_water[nj, ni]:
+                        if s["polity"] == "Eternal State" and s["name"] != "Farport" and not inland_lake[nj, ni]:
+                            continue
                         if s["name"] in ("Palewharf", "Port Koron", "Silkhead") and not inland_lake[nj, ni]:
                             continue
                         if s["name"] in ("Yonni", "Kopa-Hueru") and inland_lake[nj, ni]:
@@ -4449,22 +4518,21 @@ def build_multimodal_graphs(world, setts):
             s["river_cell"] = None
             continue
 
-        # Check within 2-3 cells of navigable river / Eternian canal for Layer 2 barge wharf
+        # Check within 2-3 cells of navigable river / engineered canal (`DATA.canals`) for Layer 2 barge wharf
         best_r = None
-        if s["name"] not in ("Sethas",):
-            rad_r = 4 if s["name"] == "Shim" else (3 if (s["polity"] in RIA_BARGE_POLS or s["polity"] in ("Dzagh-Vardzi", "Hush-Kin")) else 2)
-            for dj in range(-rad_r, rad_r + 1):
-                for di in range(-rad_r, rad_r + 1):
-                    nj, ni = cj + dj, ci + di
-                    if 0 <= nj < GH and 0 <= ni < GW and (river_nav[nj, ni] or canal_nav[nj, ni]):
-                        d = dj * dj + di * di
-                        if best_r is None or d < best_r[0]:
-                            best_r = (d, nj * GW + ni)
+        rad_r = 4 if s["name"] == "Shim" else (3 if (s["polity"] in (RIA_BARGE_POLS | {"Eternal State", "Empire of Iziz", "Vothic Kingdom", "Dzagh-Vardzi", "Hush-Kin"}) or s["polity"].startswith("League:")) else 2)
+        for dj in range(-rad_r, rad_r + 1):
+            for di in range(-rad_r, rad_r + 1):
+                nj, ni = cj + dj, ci + di
+                if 0 <= nj < GH and 0 <= ni < GW and (river_nav[nj, ni] or canal_nav[nj, ni]):
+                    d = dj * dj + di * di
+                    if best_r is None or d < best_r[0]:
+                        best_r = (d, nj * GW + ni)
         if best_r is not None:
             s["river_cell"] = best_r[1]
             barge_links.append((c, 2 * N_CELL + best_r[1], s["name"], s["polity"]))
             if s["water_cell"] is not None:
-                # Estuary port lighterage directly between river barge (Layer 2) and sea/lake ship (Layer 1)
+                # Estuary / canal-harbour lighterage directly between barge (Layer 2) and sea/lake ship (Layer 1)
                 estuary_links.append((2 * N_CELL + best_r[1], N_CELL + s["water_cell"], s["name"], s["polity"]))
         else:
             s["river_cell"] = None
@@ -4778,17 +4846,16 @@ def build_multimodal_graphs(world, setts):
                 cols += [bw, aw]
                 costs += [cw, cw]
 
-            # --- Layer 2a: Eternian Locked Canals (2*N_CELL .. 3*N_CELL - 1, symmetric slackwater) ---
-            cna = canal_nav.flat[a] & canal_nav.flat[b] & (g < 0.008)
+        # --- Layer 2a: Engineered Lock & Boat-Lift Canals (`DATA.canals`, 2*N_CELL .. 3*N_CELL - 1) ---
+        if len(dc_u) > 0:
+            c_can = dc_km * ((0.20 + 0.06 * dc_lk) if use_bulk else (0.30 + 0.05 * dc_lk))
+            c_can = apply_regime_hazards(c_can, dc_u, dc_v, use_bulk, regime)
             if is_yeti_reg:
-                cna = cna & (~yeti_eternia_block.flat[a]) & (~yeti_eternia_block.flat[b])
-            if cna.any():
-                ac, bc = a[cna] + 2 * N_CELL, b[cna] + 2 * N_CELL
-                cc = np.full(ac.shape, d_km * (0.22 if use_bulk else 0.34), dtype=np.float64)
-                cc = apply_regime_hazards(cc, a[cna], b[cna], use_bulk, regime)
-                rows += [ac, bc]
-                cols += [bc, ac]
-                costs += [cc, cc]
+                c_can = np.where(yeti_eternia_block.flat[dc_u] | yeti_eternia_block.flat[dc_v], np.inf, c_can)
+            ok_c = np.isfinite(c_can)
+            rows += [dc_u[ok_c] + 2 * N_CELL]
+            cols += [dc_v[ok_c] + 2 * N_CELL]
+            costs += [c_can[ok_c]]
 
         # --- Layer 2b: Directed Navigable Rivers (2*N_CELL .. 3*N_CELL - 1, Downstream vs Upstream!) ---
         if len(dr_u) > 0:
@@ -4859,7 +4926,7 @@ def build_multimodal_graphs(world, setts):
                 continue
             if is_voth_reg and p_pol in ("Empire of Iziz", "Shell Province"):
                 continue
-            bf_loc = barge_fee * 0.72 if p_pol in (RIA_BARGE_POLS | {"Dzagh-Vardzi"}) else barge_fee
+            bf_loc = barge_fee * 0.72 if p_pol in (RIA_BARGE_POLS | {"Eternal State", "Dzagh-Vardzi"}) else barge_fee
             rows += [np.array([c_land_idx, c_riv_idx])]
             cols += [np.array([c_riv_idx, c_land_idx])]
             costs += [np.array([bf_loc, bf_loc], dtype=np.float64)]
@@ -4881,6 +4948,19 @@ def build_multimodal_graphs(world, setts):
             rows += [lr_a, lr_b]
             cols += [lr_b, lr_a]
             costs += [lr_c, lr_c]
+
+        # 4b. Engineered Canal Lock-Harbour Basin Couplings (Layer 2 <-> Layer 1: Mirror Sea, Jimjam Lake, Ring Sea, Ria Sound & Lake Shim)
+        for c_can_idx, c_wat_idx, cn_name, cn_pol, is_lake_b in canal_basin_links:
+            if is_yeti_reg and cn_pol == "Eternal State":
+                continue
+            if is_iziz_reg and cn_pol == "Vothic Kingdom":
+                continue
+            if is_voth_reg and cn_pol == "Empire of Iziz":
+                continue
+            cb_fee = 3.2 if is_lake_b else (9.5 if use_bulk else 11.5)
+            rows += [np.array([c_can_idx, c_wat_idx])]
+            cols += [np.array([c_wat_idx, c_can_idx])]
+            costs += [np.array([cb_fee, cb_fee], dtype=np.float64)]
 
         # 5. Highway Bridge River Landings (Layer 0 <-> Layer 2)
         if bridge_barge_cells:
@@ -4957,35 +5037,48 @@ def build_multimodal_graphs(world, setts):
                 return int(self._v[i])
             return -9999
 
-    def _chunked_dijkstra(G_mat, srcs, batch=4):
+    from concurrent.futures import ThreadPoolExecutor
+
+    def _solve_chunk(args_ch):
+        G_mat, sub_srcs = args_ch
+        db, pb = dijkstra(G_mat, directed=True, indices=sub_srcs, return_predecessors=True)
+        d_part = db[:, _dst_col_arr].astype(np.float32)
+        del db
+        sub_rows = []
+        for bi, root_v in enumerate(sub_srcs):
+            root = int(root_v)
+            pb_row = pb[bi]
+            edges = {}
+            for leaf in _unique_dst_cells:
+                cur = int(leaf)
+                steps = 0
+                while cur != root and cur >= 0 and cur not in edges and steps < 12000:
+                    prv = int(pb_row[cur])
+                    edges[cur] = prv
+                    cur = prv
+                    steps += 1
+            if edges:
+                ks = np.array(sorted(edges.keys()), dtype=np.int32)
+                vs = np.array([edges[int(k)] for k in ks], dtype=np.int32)
+            else:
+                ks = np.empty(0, dtype=np.int32)
+                vs = np.empty(0, dtype=np.int32)
+            sub_rows.append(_SparseTreeRow(ks, vs))
+        del pb
+        return d_part, sub_rows
+
+    def _chunked_dijkstra(G_mat, srcs, batch=16):
         n_s = len(srcs)
-        d_sub = np.empty((n_s, len(_unique_dst_cells)), dtype=np.float32)
-        rows = []
-        for i0 in range(0, n_s, batch):
-            i1 = min(n_s, i0 + batch)
-            db, pb = dijkstra(G_mat, directed=True, indices=srcs[i0:i1], return_predecessors=True)
-            d_sub[i0:i1] = db[:, _dst_col_arr].astype(np.float32)
-            for bi in range(i1 - i0):
-                root = int(srcs[i0 + bi])
-                pb_row = pb[bi]
-                edges = {}
-                for leaf in _unique_dst_cells:
-                    cur = int(leaf)
-                    steps = 0
-                    while cur != root and cur >= 0 and cur not in edges and steps < 12000:
-                        prv = int(pb_row[cur])
-                        edges[cur] = prv
-                        cur = prv
-                        steps += 1
-                if edges:
-                    ks = np.array(sorted(edges.keys()), dtype=np.int32)
-                    vs = np.array([edges[int(k)] for k in ks], dtype=np.int32)
-                else:
-                    ks = np.empty(0, dtype=np.int32)
-                    vs = np.empty(0, dtype=np.int32)
-                rows.append(_SparseTreeRow(ks, vs))
-            del db, pb
-            _gc.collect()
+        if n_s == 0:
+            return _SparseSettlementDist(np.empty((0, len(_unique_dst_cells)), dtype=np.float32)), []
+        chunks = [(G_mat, srcs[i0:min(n_s, i0 + batch)]) for i0 in range(0, n_s, batch)]
+        if len(chunks) == 1:
+            res_list = [_solve_chunk(chunks[0])]
+        else:
+            with ThreadPoolExecutor(max_workers=2) as ex:
+                res_list = list(ex.map(_solve_chunk, chunks))
+        d_sub = np.vstack([r[0] for r in res_list])
+        rows = [row for r in res_list for row in r[1]]
         return _SparseSettlementDist(d_sub), rows
 
     print(
@@ -5065,6 +5158,7 @@ def build_multimodal_graphs(world, setts):
         "dist_yeti_bulk_rev": dist_yeti_bulk_rev, "pred_yeti_bulk_rev": pred_yeti_bulk_rev,
         "dist_yeti_comp_rev": dist_yeti_comp_rev, "pred_yeti_comp_rev": pred_yeti_comp_rev,
         "is_ring_sea": is_ring_sea, "inland_lake": inland_lake, "river_nav": river_nav, "canal_nav": canal_nav,
+        "canal_idx_grid": canal_idx_grid, "world_canal_km": round(world_canal_km, 1),
         "road_mult": road_mult, "ria_hwy_mask": ria_hwy_mask, "supp_roads": supp_roads,
         "net51_km_by_class": dict(net51_km_by_class),
         "world_nav_river_km": round(world_nav_river_km, 1),
@@ -6102,6 +6196,30 @@ def solve_trade(world, setts, graph):
 
             wt_ton_eq = amt if g["unit"] == "t" else (amt * 0.001 if g["unit"] == "kg" else amt * 0.05)
 
+            # Track per-canal freight ton-km & flow count across all 22 engineered canals (`DATA.canals`)
+            fpts_all = pinfo.get("full_poly", [])
+            fmds_all = pinfo.get("seg_modes", [])
+            c_grid = graph.get("canal_idx_grid")
+            canals_list_s = world.get("D", {}).get("canals", [])
+            if c_grid is not None and canals_list_s:
+                su_s = (graph["GW"] - 1) / (world["OW"] - 1)
+                sv_s = (graph["GH"] - 1) / (world["OH"] - 1)
+                hit_cids_this_flow = set()
+                for k_cs in range(min(len(fpts_all) - 1, len(fmds_all))):
+                    if fmds_all[k_cs] != "river":
+                        continue
+                    mx_c = int(round(0.5 * (fpts_all[k_cs][0] + fpts_all[k_cs + 1][0]) * su_s))
+                    my_c = int(round(0.5 * (fpts_all[k_cs][1] + fpts_all[k_cs + 1][1]) * sv_s))
+                    if 0 <= my_c < graph["GH"] and 0 <= mx_c < graph["GW"]:
+                        cidx_v = int(c_grid[my_c, mx_c])
+                        if cidx_v >= 0 and cidx_v < len(canals_list_s):
+                            cid_k = canals_list_s[cidx_v]["id"]
+                            dkm_cs = 2.0 * math.hypot(fpts_all[k_cs + 1][0] - fpts_all[k_cs][0], fpts_all[k_cs + 1][1] - fpts_all[k_cs][1])
+                            entrepot_totals[f"__canal_tkm__:{cid_k}"]["sea_tons"] += wt_ton_eq * dkm_cs
+                            hit_cids_this_flow.add(cid_k)
+                for cid_k in hit_cids_this_flow:
+                    entrepot_totals[f"__canal_tkm__:{cid_k}"]["flows"] += 1
+
             # Track Ria Valley freight modal split (in-basin physical ton-km inside x=500..1420, y=0..320 + end-to-end Ria flows)
             if s_pol in RIA_BASIN_POLS or b_pol in RIA_BASIN_POLS:
                 ria_flow_count += 1
@@ -6460,6 +6578,13 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         for ks in range(len(pts_s) - 1):
             draw.line([tuple(pts_s[ks]), tuple(pts_s[ks + 1])], fill=scol, width=sw)
 
+    # Engineered Continental Canals (`DATA.canals`: 22 lock/boat-lift canals across Eternia, Ria, Iziz, Hykkousoi & Voth)
+    for cn in world.get("D", {}).get("canals", []):
+        cpts = [tuple(p) for p in cn.get("px", [])]
+        if len(cpts) >= 2:
+            draw.line(cpts, fill=(15, 38, 48, 220), width=4)
+            draw.line(cpts, fill=(45, 212, 191, 235), width=2)
+
     MODE_COLORS = {
         "sea": (64, 218, 255, 165),      # bright cyan shipping lanes
         "river": (52, 238, 178, 175),    # emerald/teal barge rivers & canals
@@ -6672,6 +6797,22 @@ def render_ria_crook_zoom_map(world, setts, graph, results, out_jpg):
             )
             dr.line([p0, p1], fill=col, width=w_px)
 
+    # Draw Ria & Eternian engineered canals (`DATA.canals`) in jade-turquoise with gold lock ticks
+    for cn in world.get("D", {}).get("canals", []):
+        pts_c = cn.get("px", [])
+        if not pts_c or not any(X0 <= p[0] < X1 and Y0 <= p[1] < Y1 for p in pts_c):
+            continue
+        cpts = [(p[0] - X0, p[1] - Y0) for p in pts_c]
+        dr.line(cpts, fill=(12, 34, 42, 235), width=5)
+        dr.line(cpts, fill=(45, 212, 191, 245), width=3)
+        step_t = max(1, len(cpts) // max(2, min(8, cn.get("locks", 4))))
+        for k_t in range(1, len(cpts) - 1, step_t):
+            dx_t = cpts[k_t + 1][0] - cpts[k_t - 1][0]
+            dy_t = cpts[k_t + 1][1] - cpts[k_t - 1][1]
+            ln_t = math.hypot(dx_t, dy_t) or 1.0
+            nx_t, ny_t = -dy_t / ln_t * 3.5, dx_t / ln_t * 3.5
+            dr.line([(cpts[k_t][0] - nx_t, cpts[k_t][1] - ny_t), (cpts[k_t][0] + nx_t, cpts[k_t][1] + ny_t)], fill=(253, 230, 138, 245), width=2)
+
     # Highlight the Iron Gates Hogback Sill (x ~ 702, y ~ 125..205)
     dr.line([(702 - X0, 126 - Y0), (702 - X0, 206 - Y0)], fill=(255, 92, 128, 215), width=3)
 
@@ -6685,55 +6826,131 @@ def render_ria_crook_zoom_map(world, setts, graph, results, out_jpg):
         if not (4 <= x < CW - 4 and 4 <= y < CH - 4):
             continue
         nm = s["name"]
-        is_cartel = nm in ("Springhollows", "Ria Sound", "Lodestone", "Spider Lake Weirs", "Weeping Fort", "Silkhead", "Port Koron", "Shell", "Dilihan", "Skywatch", "Farport", "Palewharf", "Roketstad", "Slussport", "Ys", "Battered Isle")
+        is_cartel = nm in ("Springhollows", "Ria Sound", "Mā-Kōu (Iron Gates)", "Lodestone", "Spider Lake Weirs", "Weeping Fort", "Silkhead", "Port Koron", "Shell", "Dilihan", "Skywatch", "Farport", "Palewharf", "Shuāng-Zhá", "Līng-Kǒu", "Roketstad", "Slussport", "Ys", "Battered Isle")
         if is_cartel:
             d2.ellipse((x - 5, y - 5, x + 5, y + 5), fill=(255, 214, 72), outline=(36, 232, 255), width=2)
         else:
             d2.ellipse((x - 3, y - 3, x + 3, y + 3), fill=(238, 238, 238), outline=(20, 20, 20), width=1)
-        if s["population"] >= 1800 or is_cartel or s["polity"] in ("Lower Ria Dynasty", "Upper Ria Dynasty", "Compass Hills Cantons", "Arcflow Republics", "Moleshelf Clans", "Hueru-Kuran", "cFlit-qBon", "Dzagh-Vardzi", "Yonni & Shroudhills"):
+        if s["population"] >= 1600 or is_cartel or s["polity"] in ("Lower Ria Dynasty", "Upper Ria Dynasty", "Compass Hills Cantons", "Arcflow Republics", "Moleshelf Clans", "Hueru-Kuran", "cFlit-qBon", "Dzagh-Vardzi", "Yonni & Shroudhills"):
             d2.text((x + 7, y - 7), nm, fill=(12, 14, 18), font=font)
             d2.text((x + 6, y - 8), nm, fill=(255, 244, 214) if is_cartel else (238, 242, 246), font=font)
 
-    d2.text((666, 210), 'IRON GATES SILL (x~702, 4,210 m3/s Gap)', fill=(255, 132, 158), font=font_b)
-    d2.rectangle((18, CH - 138, 638, CH - 14), fill=(16, 22, 32), outline=(120, 145, 175), width=2)
-    d2.text((30, CH - 130), "RIA VALLEY (39 SINUOUS RIVERS) & NORTHERN CARTELS TWIN PINCERS", fill=(255, 238, 182), font=font_b)
+    d2.text((666, 210), 'IRON GATES SILL & MA-KOU LOCKS (x~702, 4,210 m3/s Gap)', fill=(255, 132, 158), font=font_b)
+    d2.rectangle((18, CH - 154, 658, CH - 14), fill=(16, 22, 32), outline=(120, 145, 175), width=2)
+    d2.text((30, CH - 146), "RIA VALLEY (39 RIVERS + 7 CANALS), ETERNIA (8 CANALS) & TWIN PINCERS", fill=(255, 238, 182), font=font_b)
     z_leg = [
         ((48, 224, 250), "39 Sinuous Dendritic Rivers (sin = 1.29-1.51; Ma-Ria #1 Main Artery)"),
+        ((45, 212, 191), "Engineered Lock, Summit-Pound & Boat-Lift Canals (Gold Ticks = Locks)"),
         ((255, 198, 64), "Ria Dynasties 0.72x Medium Overland Highways & Inter-Settlement Links"),
         ((72, 218, 255), "Western Maritime Pincer (Ria Sound -> Battered Isle -> Farport -> Alps/Ys)"),
         ((255, 146, 76), "Eastern Lifeline Pincer (Springhollows/Lodestone -> Silkhead -> Shell/Talia)"),
-        ((255, 214, 72), "Pioneers (Technicians) & Court of the Amber Seal (Seal-Bank) Chapter Hubs"),
+        ((255, 214, 72), "Pioneers (Technicians), Amber-Seal Bank & Canal Lock-Burgh Hubs"),
     ]
     for i_l, (c_rgb, txt) in enumerate(z_leg):
-        ry = CH - 104 + i_l * 18
+        ry = CH - 122 + i_l * 18
         d2.line([(30, ry + 7), (64, ry + 7)], fill=c_rgb, width=4)
         d2.text((76, ry), txt, fill=(232, 236, 244), font=font)
 
     os.makedirs(os.path.dirname(out_jpg), exist_ok=True)
     img.save(out_jpg, quality=92)
-    print("Saved Ria/Crook hydrology & highways zoom map:", out_jpg)
+    print("Saved Ria/Crook hydrology & canals zoom map:", out_jpg)
+
+
+def render_eternia_canals_zoom_map(world, setts, graph, results, out_jpg):
+    """Render 2x magnified NW Lowlands / Mirror Sea / Ling-Ma / Farport / Palewharf crop (x=215..615, y=535..855)."""
+    X0, Y0, X1, Y1 = 215, 535, 615, 855
+    SC = 2
+    CW, CH = (X1 - X0) * SC, (Y1 - Y0) * SC
+    E2 = world["E2"][Y0:Y1, X0:X1]
+    W2 = world["W2"][Y0:Y1, X0:X1]
+
+    norm = np.clip((E2 - (-100.0)) / 2400.0, 0.0, 1.0)
+    gy, gx = np.gradient(E2)
+    shade = np.clip(0.78 - 0.00065 * (gx + gy), 0.36, 1.16)
+    rgb = np.zeros((Y1 - Y0, X1 - X0, 3), dtype=np.float32)
+    rgb[..., 0] = (56 + 142 * (norm ** 0.72)) * shade
+    rgb[..., 1] = (78 + 124 * (norm ** 0.78)) * shade
+    rgb[..., 2] = (58 + 94 * (norm ** 0.86)) * shade
+    rgb[W2] = [24.0, 62.0, 98.0]
+    base = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), "RGB").resize((CW, CH), Image.Resampling.BILINEAR).convert("RGBA")
+    ov = Image.new("RGBA", (CW, CH), (0, 0, 0, 0))
+    dr = ImageDraw.Draw(ov)
+
+    for rv in world.get("D", {}).get("rivers", []):
+        pts = rv.get("px") or []
+        if len(pts) < 2 or not any(X0 <= p[0] < X1 and Y0 <= p[1] < Y1 for p in pts):
+            continue
+        cpts = [((p[0] - X0) * SC, (p[1] - Y0) * SC) for p in pts]
+        dr.line(cpts, fill=(68, 198, 242, 205), width=3 if str(rv.get("id")) == "r002" else 2)
+
+    for rc in results["rendered_corridors"]:
+        pts, modes = rc["poly"], rc["modes"]
+        if not any(X0 <= p[0] < X1 and Y0 <= p[1] < Y1 for p in pts):
+            continue
+        for k in range(min(len(pts) - 1, len(modes))):
+            p0 = ((pts[k][0] - X0) * SC, (pts[k][1] - Y0) * SC)
+            p1 = ((pts[k + 1][0] - X0) * SC, (pts[k + 1][1] - Y0) * SC)
+            m = modes[k]
+            col = (52, 248, 182, 165) if m == "river" else ((72, 218, 255, 155) if m == "sea" else (255, 204, 72, 155))
+            dr.line([p0, p1], fill=col, width=3)
+
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13) if os.path.isfile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") else ImageFont.load_default()
+    font_b = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15) if os.path.isfile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf") else font
+
+    for cn in world.get("D", {}).get("canals", []):
+        pts_c = cn.get("px") or []
+        if len(pts_c) < 2 or not any(X0 <= p[0] < X1 and Y0 <= p[1] < Y1 for p in pts_c):
+            continue
+        cpts = [((p[0] - X0) * SC, (p[1] - Y0) * SC) for p in pts_c]
+        dr.line(cpts, fill=(12, 34, 42, 245), width=7)
+        dr.line(cpts, fill=(45, 212, 191, 255), width=4)
+        step_t = max(1, len(cpts) // max(2, min(8, cn.get("locks", 4))))
+        for k_t in range(1, len(cpts) - 1, step_t):
+            dx_t = cpts[min(len(cpts) - 1, k_t + 1)][0] - cpts[max(0, k_t - 1)][0]
+            dy_t = cpts[min(len(cpts) - 1, k_t + 1)][1] - cpts[max(0, k_t - 1)][1]
+            ln_t = math.hypot(dx_t, dy_t) or 1.0
+            nx_t, ny_t = -dy_t / ln_t * 5.0, dx_t / ln_t * 5.0
+            dr.line([(cpts[k_t][0] - nx_t, cpts[k_t][1] - ny_t), (cpts[k_t][0] + nx_t, cpts[k_t][1] + ny_t)], fill=(253, 230, 138, 255), width=2)
+
+    img = Image.alpha_composite(base, ov).convert("RGB")
+    d2 = ImageDraw.Draw(img)
+    for sid, s in setts.items():
+        if not (X0 + 2 <= s["px"] < X1 - 2 and Y0 + 2 <= s["py"] < Y1 - 2):
+            continue
+        x, y = int((s["px"] - X0) * SC), int((s["py"] - Y0) * SC)
+        is_et = s["polity"] == "Eternal State"
+        d2.ellipse((x - 5, y - 5, x + 5, y + 5), fill=(45, 212, 191) if is_et else (235, 215, 110), outline=(14, 18, 24), width=2)
+        d2.text((x + 8, y - 7), s["name"], fill=(12, 14, 18), font=font)
+        d2.text((x + 7, y - 8), s["name"], fill=(248, 250, 252), font=font)
+    d2.rectangle((14, 14, 590, 62), fill=(15, 22, 32), outline=(45, 212, 191), width=2)
+    d2.text((26, 22), "ETERNAL STATE IMPERIAL CANAL NETWORK (8 BRONZE MITER-LOCK CANALS)", fill=(167, 243, 208), font=font_b)
+    d2.text((26, 41), "Jing-Hai (Mirror Sea +45.9m) · Ling-Kou Outlet · Shuang-Zha · Wu-Xi · Lux · Farport · Palewharf", fill=(226, 232, 240), font=font)
+    os.makedirs(os.path.dirname(out_jpg), exist_ok=True)
+    img.save(out_jpg, quality=92)
+    print("Saved Eternia Imperial Canal Network zoom map:", out_jpg)
 
 
 def write_trade_markdown(payload, out_md):
     rms = payload.get("ria_modal_split", {})
     ib_in = rms.get("inland_river_vs_highway_pct", {})
+    cnet = payload.get("canal_network", {})
     lines = [
-        "# State of Continental Trade, Highway Network & `Ria Valley` Hydrology (`5.1e22` — `27` Spheres, `118` Goods)",
+        "# State of Continental Trade, Highway & Canal Networks (`5.1e23` — `27` Spheres, `22` Canals, `118` Goods)",
         "",
         "Generated by [gemini_trade_model.py](file:///home/antigravity/traviso761-debug/krator-master/tools/scale-model/gemini_trade_model.py) "
-        "over staged `5.1e22` exterior hydrology (`openworld/ria-exterior-522/` via [edit_522_ria_hydrology.py](file:///home/antigravity/traviso761-debug/krator-master/tools/scale-model/edit_522_ria_hydrology.py)), "
+        "over live `5.1e23` Scale Model data (`tools/scale-model/model/data/` via [edit_522_ria_hydrology.py](file:///home/antigravity/traviso761-debug/krator-master/tools/scale-model/edit_522_ria_hydrology.py) and [edit_523_canals_and_settlements.py](file:///home/antigravity/traviso761-debug/krator-master/tools/scale-model/edit_523_canals_and_settlements.py)), "
         "[geology.json](file:///home/antigravity/traviso761-debug/krator-master/kits/resources/data/geology.json), "
         "and [net51-gemini.json](file:///home/antigravity/traviso761-debug/krator-master/openworld/net51-gemini.json) "
         "into [trade-gemini.json](file:///home/antigravity/traviso761-debug/krator-master/openworld/trade-gemini.json) and [roads-supplement-gemini.json](file:///home/antigravity/traviso761-debug/krator-master/openworld/roads-supplement-gemini.json).",
         "",
         "> [!IMPORTANT]",
-        f"> **27-Sphere Planetary Trade Summary (`Rulings #1–104`)**: **{payload['good_count']} trade & workshop I/O goods** (adding `clay`, `fireclay`, `ancient-biogel`, `inferior-biogel`, `superconductors`, `paktong`, and `nephrite-jade`) solved across "
-        f"**{payload['polity_count']} polities & autonomous enclaves** (`{payload['settlement_count']}` real on-map settlements, **`3,349,072` single-counted planetary census** + `120k` metropolitan demand weighting at `Iziz` & `Fulcrum`) over the "
-        "three-layer directed `4 km` Dijkstra multimodal graph (`Layer 0` Overland Highways & Trails + `Layer 1` Sea & Inland Lakes + `Layer 2` Directed Navigable Rivers & Canals) "
+        f"> **27-Sphere Planetary Trade Summary (`Rulings #1–104` + `5.1e23` Canals)**: **{payload['good_count']} trade & workshop I/O goods** (adding `clay`, `fireclay`, `ancient-biogel`, `inferior-biogel`, `superconductors`, `paktong`, and `nephrite-jade`) solved across "
+        f"**{payload['polity_count']} polities & autonomous enclaves** (`{payload['settlement_count']}` real on-map settlements) over the "
+        "three-layer directed `4 km` Dijkstra multimodal graph (`Layer 0` Overland Highways & Trails + `Layer 1` Sea & Inland Lakes + `Layer 2` Directed Navigable Rivers & `22` Engineered Lock/Boat-Lift Canals) "
         f"with `{payload.get('supplemental_road_count', 0)}` supplemental polity, Ria-Dynastic & frontier roads.",
-        f"> - **`Ria Valley` Sinuous Dendritic Hydrology (`39` Rivers, `sin = 1.29–1.51`) & River-First vs. Medium-Highway Architecture**: Replaces raw `5.1`'s `8` ruler-straight channels (`sin = 1.02–1.12`) with **`39` stream-power-eroded dendritic rivers (`11,300 km` total channel length, mean sinuosity `1.389`)** and the **`x ≈ 702` `\"Iron Gates\"` hogback water-gap (`4,210 m³/s`)**. The Ria Dynasties maintain a **`0.72×` medium-grade overland highway network** between settlements (`{ib_in.get('ria_medium_highway_pct', 0)}%` of in-basin inland ton-km for lateral feeder & `Weeping Valley` bypass links), while **`9101 Mā-Rīa` + navigable lower `Pāk-Mā`/`Mō-Mā` forks carry `{ib_in.get('river_barge_pct', 0)}%` of in-basin inland freight ton-km** as Ria's primary bulk highway!",
-        "> - **Twin Ria-Based Trans-National Organizations Pushing South ([NORTHERN-CARTELS-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/NORTHERN-CARTELS-SCOPE.md), `Rulings #102–104`)**: Strictly neutral above both Ria Dynasties (`Springhollows` `1135,153`, `\"Iron Gates\"` `702,164`, `Ria Sound` `626,140`), **(1) *The Pioneers / The Technicians*** (`PN-01..15`) export `Lodestone` `superconductors`, clean **hydro-dynamos** (`electrics`), silk-wrapped telegraph relays, and anomaly-proof flux-compasses (`lenses`) down twin southward pincers (`Silkhead -> Port Koron/Shell -> Dilihan/Skywatch -> Talia -> Iziz/Hook` and `Ria Sound -> Battered Isle -> Farport -> Roketstad/Slussport -> Ys/Port Mira`), rivaling southern Geomancer `oil` while secretly mapping Crater passes & `RC` Relic flux-fields; **(2) *The Court of the Amber Seal*** (\"The Seal-Bank\", `AS-01..12`) acts as Krator's true trans-national sovereign bond, Ghost-Tsunami/*bottomry* cargo insurer, and customs/lock-farming bank.",
-        "> - **Continental Corridors & Wave-0 Locks**: Includes the **Northern Lifeline** (`Shell -> Port Koron 912,532 -> Soda Lake lbl=54 -> Silkhead 934,424 -> Lodestone`), **throttled `Cascade–Drum` `89 km` bore** (partially collapsed at game start, `Ruling #57`), **`Lake lbl=77` bi-national scow/barge compact** (`Jimjam <-> Palewharf`), **`Verge` `856 m` Geomancer oil-barrel cableway** (`Ruling #45`), **Dual `Yusar` salvage/cybernetics corridors** (`Span` Shadow-Trail + `Tone`), and the **Annual Great Caravan** via `P8` `The Marches` (`Ruling #40`).",
+        f"> - **Continental Engineered Canal Networks (`22` Canals, `{cnet.get('total_canal_km', 3171.1):,.1f} km`, `{cnet.get('total_locks', 203)}` Locks/Lifts)**: Explicit `DATA.canals` (`model/data/canals.json`) across **Eternal State (`8` bronze miter-lock canals)** uniting *Jìng-Hǎi* (`Mirror Sea`), `Līng-Kǒu`, `Fulcrum`, `Farport`, `Shuāng-Zhá`, `Wū-Xī`, `Lux`, `Hōng-Mā Wharf`, and `Palewharf`; **Ria Civilization (`7` Dynastic lock, boat-lift & summit-pound canals)** including `Mā-Kōu (\"Iron Gates\")`, `Tōng-Qū Three-Rivers Grand Canal`, `Kulūną`/`Hārta` Heartland loess trunks, non-ferrous `Līwa-Kōmpa` to `Lodestone`, `Sikwīngi` karst boat-lifts (`Springhollows` -> `Upper Ria`), and `Ākwala`; plus **Empire of Iziz (`2`)**, **Hykkousoi League (`2`)**, and **Kingdom of Voth (`3`)** (`{cnet.get('total_ton_km', 0):,.1f}` cross-polity canal barge ton-km).",
+        f"> - **`Ria Valley` Sinuous Dendritic Hydrology (`39` Rivers, `sin = 1.29–1.51`) & River-First vs. Medium-Highway Architecture**: Replaces raw `5.1`'s `8` ruler-straight channels (`sin = 1.02–1.12`) with **`39` stream-power-eroded dendritic rivers (`11,300 km` total channel length, mean sinuosity `1.389`)** and the **`x ≈ 702` `\"Iron Gates\"` hogback water-gap (`4,210 m³/s`)**. The Ria Dynasties maintain a **`0.72×` medium-grade overland highway network** between settlements (`{ib_in.get('ria_medium_highway_pct', 0)}%` of in-basin inland ton-km for lateral feeder & `Weeping Valley` bypass links), while **`9101 Mā-Rīa` + Ria canals & lower `Pāk-Mā`/`Mō-Mā` forks carry `{ib_in.get('river_barge_pct', 0)}%` of in-basin inland freight ton-km** as Ria's primary bulk highway!",
+        "> - **Twin Ria-Based Trans-National Organizations Pushing South ([NORTHERN-CARTELS-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/NORTHERN-CARTELS-SCOPE.md), `Rulings #102–104`)**: Strictly neutral above both Ria Dynasties (`Springhollows` `1135,153`, `Mā-Kōu / \"Iron Gates\"` `702,182`, `Ria Sound` `626,140`), **(1) *The Pioneers / The Technicians*** (`PN-01..15`) export `Lodestone` `superconductors`, clean **hydro-dynamos** (`electrics`), silk-wrapped telegraph relays, and anomaly-proof flux-compasses (`lenses`) down twin southward pincers, rivaling southern Geomancer `oil`; **(2) *The Court of the Amber Seal*** (\"The Seal-Bank\", `AS-01..12`) acts as Krator's true trans-national sovereign bond, Ghost-Tsunami/*bottomry* cargo insurer, and customs/lock-farming bank.",
         "",
         "## 0. `Ria Valley` Hydrology & River-vs-Highway Modal Split (`edit_522_ria_hydrology.py`)",
         "",
@@ -6742,9 +6959,21 @@ def write_trade_markdown(payload, out_md):
         "| **Ria + Shroudhills Dendritic Rivers** | **`39`** (`+32` new 1st–3rd order branches) | Up from `7–8` ruler-straight lines; `11,299.8 km` total channel across `842,384 km²` (`13.41 km / 1,000 km²`) |",
         "| **Channel Sinuosity (`9101 Mā-Rīa` / `9107 Pāk-Mā` / `9108 Mō-Mā`)** | **`1.290` / `1.368` / `1.380`** | `32` new tributaries span **`1.300 – 1.510`** (mean **`1.396`**) with stream-power valley erosion & meander benches |",
         "| **`\"Iron Gates\"` Transverse Hogback Sill (`x ≈ 685–718`)** | **`+1,725 m` crest / `4,210 m³/s` gap** | `101.6 km` navigable water-gap (`slope = 0.00045`); puts `Heartland` (`580 mm`) & `Moleshelf` (`549 mm`) in `BSk` rain-shadow |",
-        f"| **In-Basin Inland Modal Split: River Barges (`Layer 2`)** | **`{ib_in.get('river_barge_pct', 0)}%` of inland ton-km** | `{rms.get('in_basin_ton_km', {}).get('river_barge', 0):,.1f}` ton-km — **`Mā-Rīa` & lower `Pāk-Mā`/`Mō-Mā` are Ria's primary bulk highway** |",
+        f"| **In-Basin Inland Modal Split: River & Canal Barges (`Layer 2`)** | **`{ib_in.get('river_barge_pct', 0)}%` of inland ton-km** | `{rms.get('in_basin_ton_km', {}).get('river_barge', 0):,.1f}` ton-km — **`Mā-Rīa`, `7` Ria Canals & lower `Pāk-Mā`/`Mō-Mā` are Ria's primary bulk highway** |",
         f"| **In-Basin Inland Modal Split: `0.72×` Ria Medium Highways** | **`{ib_in.get('ria_medium_highway_pct', 0)}%` of inland ton-km** | `{rms.get('in_basin_ton_km', {}).get('ria_medium_highway', 0):,.1f}` ton-km — inter-settlement post-roads, `Lodestone` feeder & `Moleshelf` bypass |",
         f"| **In-Basin Inland Modal Split: Frontier Pack/Caravan Trails** | **`{ib_in.get('caravan_trail_pct', 0)}%` of inland ton-km** | `{rms.get('in_basin_ton_km', {}).get('caravan_trail', 0):,.1f}` ton-km — `Spider Lake` / `Silkhead` & high mountain rim approaches |",
+        "",
+        "## 0b. Continental Engineered Canal Networks (`22` Canals in `DATA.canals` / `canals.json`)",
+        "",
+        "| Canal | Polity / Civilization | Kind | Length (`km`) | Locks / Lifts | Barge Cap (`t`) | Cross-Polity Freight (`ton-km` / flows) | Engineering & Economic Role |",
+        "|:---|:---|:---|---:|---:|---:|---:|:---|",
+    ]
+    for cn_r in cnet.get("canals", []):
+        lines.append(
+            f"| **{cn_r['name']}** | {cn_r['polity']} | `{cn_r['kind']}` | {cn_r['length_km']} | {cn_r['locks']} | {cn_r['barge_t']} t | "
+            f"`{cn_r['ton_km']:,.1f}` ({cn_r['flows']}) | {cn_r['notes']} |"
+        )
+    lines += [
         "",
         "## 1. Top Maritime Port, River-Gate & Overland Chokepoint Entrepôts",
         "",
@@ -6815,7 +7044,7 @@ def write_trade_markdown(payload, out_md):
         ("III. Timber, Shipbuilding, Rubber, Fibres, Substitutable Wool, Cloth, Dairy, Fruit, Eggs & Staples", ["timber", "ship-timber", "ship-hulls", "cordage", "rubber", "cotton", "silk", "qiviut", "wool", "cushion-wool", "cloth", "plaid", "dye-tropical", "dye-temperate", "clothes", "furniture", "mounts", "food", "milk", "cheese", "eggs", "fruit", "dried-fruit"]),
         ("IV. Fermented Beverages, Distilled Spirits & High-Tier Luxury Bottlings", ["beer", "sake", "wine", "champagne", "rum", "ranjrum", "whiskey", "scotch", "tequila", "mezcal"]),
         ("V. Spices, Vale Cacao, Tobacco & Cigars, Dalab Hashish, Vale Opium, Resins, Two-Tier `Biogel` & Botanicals", ["spice-tropical", "isle-spice", "spice-highland", "cacao", "coffee", "tea", "sugar", "tobacco", "cigars", "hashish", "opium", "incense", "abyss-lac", "wormwick", "medicine", "lung-salt", "reagent", "fungal", "ancient-biogel", "inferior-biogel"]),
-        ("VI. Arms, Mechs, Opals, Kilnware, Books, `Superconductors`, Pioneer `Electrics`, Cybernetics & Exterior Luxuries", ["firearms", "armor", "weapons", "rockets", "mech-parts", "pearls", "gems", "photonic-opals", "ivory", "goldwork", "fine-ceramics", "porcelain", "paper", "almanacs", "books", "lenses", "superconductors", "electrics", "energy-cells", "servomotors", "power-relays", "circuits", "microchips", "processor-cores", "ancient-sensors", "cybernetics", "genecraft", "scrapgoods", "relics", "archaeotech", "oversea-luxuries", "frost-coral", "ria-amber"]),
+        ("VI. Arms, Mechs, Opals, Kilnware, Books, `Superconductors`, Pioneer `Electrics`, Cybernetics & Exterior Luxuries", ["firearms", "armor", "weapons", "rockets", "mech-parts", "pearls", "gems", "photonic-opals", "ivory", "goldwork", "fine-ceramics", "porcelain", "paper", "almanacs", "books", "lenses", "superconductors", "electrics", "energy-cells", "servomotors", "power-relays", "circuits", "microchips", "processor-cores", "ancient-sensors", "archaeotech", "cybernetics", "genecraft", "scrapgoods", "relics", "oversea-luxuries", "frost-coral", "ria-amber"]),
     ]
     assert sum(len(gids) for _, gids in SECTIONS) == len(GOODS), f"SECTIONS count mismatch vs GOODS ({len(GOODS)})"
 
@@ -6870,6 +7099,9 @@ def main(argv=None):
     out_zoom_jpg = os.path.join(ROOT, "openworld", "ria-exterior-522", "ria_crook_hydrology_highways.jpg")
     render_ria_crook_zoom_map(world, setts, graph, res, out_zoom_jpg)
 
+    out_et_jpg = os.path.join(ROOT, "openworld", "eternia_canals_zoom.jpg")
+    render_eternia_canals_zoom_map(world, setts, graph, res, out_et_jpg)
+
     pol_summary = {}
     pol_members = defaultdict(list)
     for sid, s in setts.items():
@@ -6893,18 +7125,47 @@ def main(argv=None):
             entry["trade_regime"] = "raider_autarky_hostile"
             entry["note"] = "Screamer raiders (Hexahedron) do not trade externally — raid passing caravans and neighboring marches."
         elif pol == "Lower Ria Dynasty":
-            entry["trade_regime"] = "ria_western_dynasty_river_and_seal_bank"
-            entry["note"] = "Heartland (796,176) & bluff-top Ria Sound (626,140, AS-01 Supreme Maritime & Tsunami Vault of the Court of the Amber Seal + PN-12 Pioneer hoist/binnacle lofts); 9101 Ma-Ria river barges carry primary bulk freight alongside 0.72x medium Dynastic highways."
+            entry["trade_regime"] = "ria_western_dynasty_river_canals_and_seal_bank"
+            entry["note"] = "Heartland (796,176), Ma-Kou / Iron Gates (702,182) & bluff-top Ria Sound (626,140, AS-01 Supreme Maritime & Tsunami Vault); 9101 Ma-Ria + 7 Ria canals carry primary bulk freight alongside 0.72x medium Dynastic highways."
         elif pol == "Upper Ria Dynasty":
             entry["trade_regime"] = "ria_eastern_dynasty_pioneers_hq"
             entry["note"] = "Upper Ria (1186,118), The Scaffold (1246,18) & neutral Springhollows (1135,153, PN-01 Supreme Collegium of The Pioneers / Technicians exporting clean hydro-dynamos, re-cored actuators & anomaly-compensated flux-compasses south down twin pincers)."
         elif pol == "Compass Hills Cantons":
             entry["trade_regime"] = "zero_iron_superconductor_delvers"
-            entry["note"] = "Lodestone (1058,224, PN-03): #1 planetary superconductors & 85 mT lodestone flux-cores delved strictly with non-ferrous tin-bronze + sawn nephrite-jade tools (0 iron tools!)."
+            entry["note"] = "Lodestone (1058,224, PN-03): #1 planetary superconductors & 85 mT lodestone flux-cores delved strictly with non-ferrous tin-bronze + sawn nephrite-jade tools (0 iron tools!), linked to Ma-Ria by the non-ferrous Liwa-Kompa Summit Canal."
         pol_summary[pol] = entry
+
+    canal_rows = []
+    tot_canal_tkm = 0.0
+    for cn in world.get("D", {}).get("canals", []):
+        st_c = res["entrepot_totals"].get(f"__canal_tkm__:{cn['id']}", {"sea_tons": 0.0, "flows": 0})
+        tkm_c = round(float(st_c["sea_tons"]), 1)
+        tot_canal_tkm += tkm_c
+        canal_rows.append({
+            "id": cn["id"],
+            "name": cn["name"],
+            "polity": cn["polity"],
+            "culture": cn["culture"],
+            "kind": cn["kind"],
+            "length_km": cn["length_km"],
+            "locks": cn["locks"],
+            "barge_t": cn["barge_t"],
+            "ton_km": tkm_c,
+            "flows": int(st_c["flows"]),
+            "notes": cn["notes"],
+        })
+    canal_network_summary = {
+        "canal_count": len(canal_rows),
+        "total_canal_km": round(sum(c["length_km"] for c in canal_rows), 1),
+        "total_locks": sum(c["locks"] for c in canal_rows),
+        "total_ton_km": round(tot_canal_tkm, 1),
+        "canals": canal_rows,
+    }
 
     entrepots = []
     for nm, ed in sorted(res["entrepot_totals"].items(), key=lambda kv: -(kv[1]["sea_tons"] + kv[1]["land_tons"])):
+        if str(nm).startswith("__canal_tkm__:"):
+            continue
         top_g = sorted(ed["goods"].items(), key=lambda kv: -kv[1])[:6]
         entrepots.append({
             "hub": nm,
@@ -6930,15 +7191,16 @@ def main(argv=None):
     out_json = os.path.join(ROOT, "openworld", "trade-gemini.json")
     payload = {
         "format": "krator-trade-gemini",
-        "version": 4,
-        "date": "2026-11-22",
-        "map": "5.1e22-staged",
+        "version": 5,
+        "date": "2026-11-23",
+        "map": "5.1e23",
         "branch": "claude/continental-scope-and-builds",
         "settlement_count": len(setts),
         "polity_count": len(pol_summary),
         "good_count": len(GOODS),
         "supplemental_road_count": len(graph.get("supp_roads", [])),
         "ria_modal_split": res.get("ria_modal_split", {}),
+        "canal_network": canal_network_summary,
         "entrepots": entrepots[:40],
         "catch_twins_stops": res.get("catch_twins_stops", []),
         "expeditions": world.get("expeditions", []),
@@ -6948,7 +7210,7 @@ def main(argv=None):
     }
     with open(out_json, "w", encoding="utf-8", newline="\n") as f:
         json.dump(payload, f, indent=2)
-    print(f"Saved JSON: {out_json} ({len(GOODS)} goods, {len(pol_summary)} polities, {len(setts)} settlements)")
+    print(f"Saved JSON: {out_json} ({len(GOODS)} goods, {len(pol_summary)} polities, {len(setts)} settlements, {len(canal_rows)} canals)")
     out_md = os.path.join(ROOT, "openworld", "TRADE-GEMINI.md")
     write_trade_markdown(payload, out_md)
 

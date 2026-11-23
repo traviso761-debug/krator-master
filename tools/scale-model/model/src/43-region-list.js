@@ -68,6 +68,60 @@
         og.restore();
       }
     }
+    // ---- Toggleable Engineered Canals & Lock Waterways ----
+    if(layerOn.canals && DATA.canals){
+      const canalBoxes=[];
+      DATA.canals.forEach(c=>{
+        if(!c.px||c.px.length<2) return;
+        og.save();
+        og.beginPath();
+        c.px.forEach((p,i)=>i?og.lineTo(p[0],p[1]):og.moveTo(p[0],p[1]));
+        og.lineCap='butt'; og.lineJoin='round';
+        og.strokeStyle='rgba(15,23,42,0.92)';
+        og.lineWidth=4.2;
+        og.stroke();
+        og.strokeStyle='#2dd4bf';
+        og.lineWidth=2.1;
+        og.stroke();
+        // Draw miter-lock / boat-lift crossbars at intervals proportional to lock count
+        const nLocks=c.locks==null?0:c.locks;
+        if(nLocks>0 && c.px.length>=4){
+          const step=Math.max(3, Math.floor(c.px.length/Math.min(8, Math.max(2, Math.round(nLocks/2)))));
+          og.strokeStyle='#fde68a'; og.lineWidth=1.5;
+          for(let i=step;i<c.px.length-2;i+=step){
+            const a=c.px[i-1], p=c.px[i], b=c.px[i+1];
+            const dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy)||1;
+            const nx=-dy/L*2.6, ny=dx/L*2.6;
+            og.beginPath(); og.moveTo(p[0]-nx,p[1]-ny); og.lineTo(p[0]+nx,p[1]+ny); og.stroke();
+          }
+        }
+        if(c.name && c.px.length>=3){
+          const idx=Math.floor(c.px.length*0.5);
+          const p1=c.px[idx], p2=c.px[Math.min(c.px.length-1,idx+2)];
+          const hw=c.name.length*3.4+8, hh=9;
+          const bx0=p1[0]-hw, bx1=p1[0]+hw, by0=p1[1]-hh, by1=p1[1]+hh;
+          let hit=false;
+          for(let k=0;k<canalBoxes.length;k++){
+            const b=canalBoxes[k];
+            if(bx0<b[1]&&bx1>b[0]&&by0<b[3]&&by1>b[2]){ hit=true; break; }
+          }
+          if(!hit){
+            canalBoxes.push([bx0,bx1,by0,by1]);
+            let ang=Math.atan2(p2[1]-p1[1],p2[0]-p1[0]);
+            if(ang>Math.PI/2) ang-=Math.PI;
+            if(ang<-Math.PI/2) ang+=Math.PI;
+            og.translate(p1[0],p1[1]); og.rotate(ang);
+            og.font='600 10px "IBM Plex Sans",sans-serif';
+            og.textAlign='center'; og.textBaseline='bottom';
+            og.lineWidth=3.0; og.strokeStyle='rgba(10,16,22,0.94)';
+            og.strokeText(c.name, 0, -3);
+            og.fillStyle='#99f6e4';
+            og.fillText(c.name, 0, -3);
+          }
+        }
+        og.restore();
+      });
+    }
     // ---- Toggleable Lava Tubes & Subterranean Cavern Networks ----
     if(layerOn.tubes && DATA.tubes){
       DATA.tubes.forEach(t=>{

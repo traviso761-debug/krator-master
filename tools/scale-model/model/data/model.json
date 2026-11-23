@@ -183,6 +183,10 @@
   {
    "key": "domes",
    "file": "domes.json"
+  },
+  {
+   "key": "canals",
+   "file": "canals.json"
   }
  ]
 }

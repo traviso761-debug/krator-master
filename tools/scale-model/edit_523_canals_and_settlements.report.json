@@ -1,0 +1,80 @@
+{
+  "edit": "5.1e23: 22-Canal Continental Network (Eternia, Ria, Iziz, Hykkousoi, Voth), 4 [D] Micro-Surgeries & [B] Pin Sync",
+  "version_tag": "5.1e23",
+  "canal_count": 22,
+  "total_canal_km": 3178.2,
+  "total_locks": 203,
+  "canals_by_culture": {
+    "eternian": [
+      "Līng-Kǒu Grand Outlet Canal",
+      "Lower Līng-Mā Lateral Canal",
+      "Farside Tsunami-Shelter Canal",
+      "Shuāng-Zhá Twin-Locks Canal",
+      "Wū-Xī Colliery & Carcosa Canal",
+      "Lux Dragon-Kiln Polder Canal",
+      "Hōng-Mā Valley Lock-Canal",
+      "Palewharf Split-Jetty Lock-Cut"
+    ],
+    "ria": [
+      "Mā-Kōu (\"Iron Gates\") Lock-Bypass Canal",
+      "Tōng-Qū Three-Rivers Grand Canal",
+      "Kulūną Southern Heartland Loess Canal",
+      "Hārta Northern Heartland Terrace Canal",
+      "Līwa-Kōmpa Summit Canal",
+      "Sikwīngi Karst Boat-Lift Canal",
+      "Ākwala Upper-Reach Basin Canal"
+    ],
+    "iziz": [
+      "Fosa Imperial de Iziz",
+      "Canal Costero de Atton"
+    ],
+    "ys": [
+      "Dioryx of Ys–Visas",
+      "Sideros–Tethis Ore Canal"
+    ],
+    "voth": [
+      "Grüt-Gracht (Voth–Torus Canal)",
+      "Shim–Sethas Chinampa Canal",
+      "Almua–Kowld Canton Canal"
+    ]
+  },
+  "micro_surgeries_pixels_changed": 105,
+  "pins_relocated": [
+    {
+      "id": "sshimrest01",
+      "px": 655,
+      "py": 1111
+    },
+    {
+      "id": "s5x27pj6hn",
+      "px": 792,
+      "py": 860
+    },
+    {
+      "id": "s427qb1kma",
+      "px": 411.4,
+      "py": 508.1
+    },
+    {
+      "id": "sn6y4sx8tr",
+      "px": 819,
+      "py": 552
+    },
+    {
+      "id": "sirb5um6cr",
+      "px": 671,
+      "py": 930
+    },
+    {
+      "id": "sy42jwlyk4",
+      "px": 777,
+      "py": 1003
+    },
+    {
+      "id": "sjau3958qz",
+      "px": 723,
+      "py": 885
+    }
+  ],
+  "pins_added_count": 13
+}

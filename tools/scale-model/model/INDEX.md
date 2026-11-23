@@ -22,16 +22,16 @@ variables, so a fragment can use what an earlier one declared.
 | `30-vents.js` | 53 | volcanic vents: lava floors, glow, smoke; vertical exaggeration |
 | `31-orbit.js` | 50 | orbit controls |
 | `32-fly.js` | 27 | WASD fly |
-| `33-hover.js` | 44 | picking, the hover readout (elevation, zone, air, rain, class, temperature, wind, river) |
+| `33-hover.js` | 59 | picking, the hover readout (elevation, zone, air, rain, class, temperature, wind, river, canal) |
 | `40-regions.js` | 8 | the region state |
-| `41-region-layers.js` | 27 | political / geographic / biome layers and tabs |
+| `41-region-layers.js` | 29 | political / geographic / biome / rivers / canals / tubes layers and tabs |
 | `42-labels.js` | 64 | region labels, straight or along a long region's spine |
-| `43-region-list.js` | 62 | areas, the overlay paint, handles, the list, selecting and editing a region |
+| `43-region-list.js` | 105 | areas, the overlay paint (regions, rivers, lock-canals, tubes), handles, the list, selecting and editing a region |
 | `44-region-draw.js` | 17 | drawing a region; Copy JSON |
 | `45-region-status.js` | 3 | the store's status line |
 | `50-measure.js` | 90 | the distance ruler and its profile |
 | `51-region-store.js` | 19 | regions in the shared store (`db`), with a per-browser fallback |
-| `60-settlements.js` | 195 | the settlements layer: glyphs, labels, list, add, import from (city) regions, Copy JSON, store |
+| `60-settlements.js` | 201 | the settlements layer: glyphs, labels, list, add, import from (city) regions, Copy JSON, store |
 | `90-ui.js` | 24 | map-mode buttons (`setMap`), resize, the animation loop; closes `start()` |
 | `99-tail.html` | 4 | `</script>` |
 
@@ -50,7 +50,8 @@ Each key of `DATA`, in the page's order (`model.json`). Grids (unified in `5.1`)
 | `c.png` | full | climate class index into `climate.json`'s `classes` |
 | `tm` `th` `tl` `tw` `tc` `.png` | full | °C + 90: mean, hottest afternoon, coldest night, warmest month, coldest month; 0 = airless |
 | `wd.png` | height | wind: R power, G speed (scales `wdmax`, `wdgam`, `wdvmax` in `model.json`), B > 127 airless |
-| `rivers.json` | | 885 rivers and dry valleys: course in map px, discharge and bed per vertex, width, depth, 5.1 `name` and 4.21/4.23 `old_name` |
+| `rivers.json` | | 947 rivers and dry valleys: course in map px, discharge and bed per vertex, width, depth, 5.1 `name` and 4.21/4.23 `old_name` |
+| `canals.json` | | 22 engineered lock, boat-lift, summit-pound and polder canals (`id`, `name`, `polity`, `culture`, `kind`, `width_m`, `barge_t`, `locks`, `length_km`, `px`, `notes`) across Eternia (`8`), Ria (`7`), Iziz (`2`), Hykkousoi (`2`) and Voth (`3`) |
 | `volc.json` | | the central Volcano (`Throne`) summit caldera coordinates, rim peak, and lava floor |
 | `tubes.json` | | 15 subterranean lava tube & cavern systems (`id`, `name`, `system`, `px`, `portals`, `width_m`, `height_m`) |
 | `basins.json`, `outlets.json`, `vents.json`, `palaeolakes.json`, `dams.json`, `floods.json` | | lakes, lake outlets, vents, the old dam lakes, dams, breach floods |
