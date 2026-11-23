@@ -15,24 +15,25 @@ the blueprint. Nothing is drawn or built yet.
 Marks used throughout: ***proposed*** is invented here and waits for the owner; **(est.)** is an estimate, with its basis beside it.
 Everything else is quoted from a source named in the line or in "Sources read" at the end.
 
-## 0. The owner's answers (2026-11-16)
+## 0. The owner's answers (2026-11-16 & 2026-11-19)
 
-These settle sections 3-5 where they differ; the blueprint session starts from them.
+These settle sections 3-6 where they differ; the blueprint session starts from them.
 
+- **Locked 50/50 Half-Dalab / Half-Tungang Arcology Split (`2026-11-19` — [`DALAB-SCOPE.md`](file:///home/antigravity/traviso761-debug/krator-master/core/region/DALAB-SCOPE.md), [`CONTINENTAL-SCOPE.md`](file:///home/antigravity/traviso761-debug/krator-master/core/region/CONTINENTAL-SCOPE.md)):**
+  - Like northern **`Shelf`** (`461, 1161`; `3,500` Dalab `ND3` + `3,500` Tungang `TU1` `Loj Tuu` = `7,000`), **`Ledge` (`437, 1330`, `10,000` total complex)** is a **50/50 dual-culture Dalab / Tungang arcology** (**`5,000` Dalabites/Giants/Fellgangs counted in `SD1` + `5,000` Tungangs of `Loj Fower` counted in `Tungang Union` `TU2`**; the remaining `5,000` Dalabites of `SD1` reside in `13` nearby lakeshore/terrace `KHAMLET`s, keeping `SD1 = 14,500` and `Tungang Union = 20,000` connected with `ΔPop = 0`):
+    - **Tungangs (`5,000` in `Loj Fower`, `kits/tungang`):** Inhabit the **interior of the Ancient arcology structure and the adjoining Rift-Line mountain tunnels** (maintaining subterranean water/ventilation conduits, deep mushroom/blind-fish galleries, ore/rail haulage adits, the working cliff-lifts, and structural stone/steel shoring).
+    - **Dalabites & Shore/Head Folk (`5,000` in `SD1`, `dalab_kit.py` + Fellgang quarters):** Inhabit a **surface terraced settlement surrounding the arcology base/apron (the harbour foot by the `+297 m` lake and the road-head on top) PLUS the 1–2 arcology levels closest to the main entrances**, operating **crop-to-`inferior-biogel` (`vat-biogel`) conversion vats**, irrigated hanging gardens, `#1` bronze foundries (importing `clay = 230` fireclay crucibles & potter's clay by boat from `Nulab`, since Ledge's cliff pin has `clay = 0`), customs courts, and **mixed Dalab–Tungang entrance bazaars** where surface crops & `vat-biogel` swap for Tungang iron, coal, fireclay crucibles, `rare-earth`s, and deep-vault **`ancient-biogel`**!
 - **The Line slopes down to Ledge** ("The Line must slope down to it"). It does not arrive level at the cliff top: the bore
   descends from the table-land (~3,480 m) to its station in the face, so question 4's spiral (or a long graded descent) is the
   shape, not a level arrival at the head.
 - **It is partly inhabited, and half ruined.** "The arcology is half ruined": the blueprint draws a shell with whole decks
   dead or fallen, not a full one.
-- **Who lives where:**
-  - **the Tungangs (Loj Fower) hold the middle decks, by the Line's station**, not the rock behind every deck;
-  - **sizeable Dalab and Fellgang settlements on the top and at the bottom**: the head on the table-land's edge, and the
-    foot on the shore and the terraces by the lake. Fellgangs live at Ledge, not only Dalabites.
+- **Who lives where (updated `2026-11-19`):**
+  - **the Tungangs (`Loj Fower`, `5,000`) hold the interior of the arcology structure (middle/inner decks by the Line's station) and the nearby mountain tunnels**;
+  - **Dalabites (and resident Fellgangs, `5,000`) hold the surface terraced settlements at top (the head) and bottom (the foot/harbour) PLUS the 1–2 arcology levels closest to the entrances** (settling question 12 and question 13's 50/50 split).
 - **The elevators still work, sized for vehicles**: each car takes several pack animals at once. They are the arcology's
-  own, running; the Tungangs' lever is that they work them and hold the decks the cars pass through.
-- So the levels of section 3 read: the **head** (Dalab and Fellgangs, on top), the **middle decks** (the Line's station
-  and Loj Fower), the **ruined decks** (dead or fallen, between), and the **foot** (Dalab and Fellgangs, the harbour and
-  the shore). How the 10,000 split between them is still question 11.
+  own, running; the Tungangs' lever is that they work them and hold the interior decks the cars pass through.
+- **Two-tier biogel & photosynthesis (`2026-11-19`):** Question 15 is settled (`0.92×` Dalabite caloric mult), and Ledge's lesser Hall of Reformation / Gene Bank uses scarce deep-vault **`ancient-biogel`** for masterwork gene-preservation while Dalab's entrance levels run **`dalab_biogel_vat`** fermentation courts converting `Nulab` grain/taro into **`inferior-biogel` (`vat-biogel`)** for routine healing and servitor/cold grafts.
 
 ## 1. What Ledge is
 
@@ -342,18 +343,23 @@ The scope's build order (W0-W6) and the valley spec's shapes (`50-region-valley.
 (est.):
 
 ```js
-// settlements (WR_TUNE, [G data]); the town at scale 50, the loj at 10, as the scope proposes
-{ id: 'ledge', name: 'Ledge', faction: 'dalab', people: 10000, scale: 50,
+// settlements (WR_TUNE, [G data] — locked 2026-11-19 50/50 split: 5,000 Dalab SD1 + 5,000 Tungang TU2 = 10,000)
+{ id: 'ledge', name: 'Ledge (Dalab Surface & Entrance Levels)', faction: 'dalab', people: 5000, scale: 50,
   works: [
-    { kind: 'fish',      site: 'foot', out: 'fish' },        // the census's 745, the lake's north shore
-    { kind: 'shore',     site: 'foot', out: 'lotus root, wild rice' },
-    { kind: 'terraces',  site: 'foot', out: 'mist tea, fruit, hashish' },
-    { kind: 'pasture',   site: 'slope', out: 'meat, hides' },
-    { kind: 'bronze',    site: 'decks', out: 'bronze' },     // copper 24 + tin by the Line from the north door
-    { kind: 'genecraft', site: 'decks', out: 'gene-craft, healing' },  // the census's 50
-    { kind: 'salvage',   site: 'decks', out: 'arcology scrap' } ] }
-{ id: 'loj-fower', name: 'Loj Fower', faction: 'tungang', people: 1500, scale: 10,
-  works: [ { kind: 'lifts' }, { kind: 'dark-beds', out: 'mash' }, { kind: 'line-upkeep' } ] }
+    { kind: 'fish',       site: 'foot',  out: 'fish' },        // the census's 745, the lake's north shore
+    { kind: 'shore',      site: 'foot',  out: 'lotus root, wild rice' },
+    { kind: 'terraces',   site: 'foot',  out: 'mist tea, fruit, hashish' },
+    { kind: 'pasture',    site: 'slope', out: 'meat, hides' },
+    { kind: 'biogel-vat', site: 'entrances', out: 'inferior-biogel' }, // Nulab crops + salt/sulfur/lime in clay tuns
+    { kind: 'bronze',     site: 'decks', out: 'bronze' },     // copper 24 + TU1 tin + Nulab fireclay crucibles (clay:0 on cliff)
+    { kind: 'genecraft',  site: 'decks', out: 'gene-craft, healing' }, // ancient-biogel masterworks + vat-biogel clinic
+    { kind: 'salvage',    site: 'decks', out: 'arcology scrap' } ] }
+{ id: 'loj-fower', name: 'Loj Fower (Arcology Interior & Tunnels)', faction: 'tungang', people: 5000, scale: 50,
+  works: [
+    { kind: 'lifts' },
+    { kind: 'dark-beds',    out: 'mash, blind-fish' },
+    { kind: 'line-upkeep' },
+    { kind: 'vault-salvage', out: 'ancient-biogel, rare-earth' } ] }
 
 // roads
 { from: 'ledge', to: 'ledge.foot', carriers: "Loj Fower's cages", cut: 'passage', closed: 'strike' }  // the lifts

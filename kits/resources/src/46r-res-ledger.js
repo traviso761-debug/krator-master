@@ -11,12 +11,12 @@
 //                reach: {kind: n} (the nodes its towns reach: their catchments summed, or its centroid's when it has no
 //                town), imports: [kinds no town of it reaches: it must buy them], exports: [kinds its towns reach `surplus`
 //                times the mean polity's, 3 at least], basics: {ok, missing: [{settlement, lack: [...]}]}}
-//     a settlement: {polity, px, py, catchment: {kind: n}, basics: {stone, wood, water, salt}, ok}
+//     a settlement: {polity, px, py, catchment: {kind: n}, basics: {stone, clay, wood, water, salt}, ok}
 //     audit: {ok, failures: [text]}: every polity's settlements have the basics within a day's travel; every polity has at
 //            least one kind it must import (no polity has everything: Anno's rule); a polity with no settlement is audited
 //            at its centroid
-//   RES_LEDGER.BASIC                 the basics and the rule for each (a family byte over a threshold in reach; salt also
-//                                    the sea, or any evaporite node in reach)
+//   RES_LEDGER.BASIC                 the basics and the rule for each (a family byte over a threshold in reach; clay also
+//                                    coal-seam fireclay; salt also the sea, or any evaporite node in reach)
 //   RES_LEDGER.items(kinds)          the goods (RES_ORE item names) of a list of kinds
 //   RES_LEDGER.tradeGoods(L, towns, also)  towns {settlement id: polity name}, also {settlement id: [its own goods: crops,
 //                                    wares]} -> {settlement id: [goods it may send]}, SIM.trade's `goods` (77-sim-6-trade.js,
@@ -24,7 +24,7 @@
 //   RES_LEDGER.wants(L, polity)      the goods the polity must import
 const RES_LEDGER=(function(){
  const B={dayKm:30,surplus:2,
-  basics:{stone:{family:'stone',min:120},wood:{family:'wood',min:80},water:{family:'water',min:80},
+  basics:{stone:{family:'stone',min:120},clay:{family:'clay',min:1,kinds:['coal']},wood:{family:'wood',min:80},water:{family:'water',min:80},
    salt:{family:'halite',min:1,sea:true,kinds:['halite','potash','alkali','gypsum']}}};
  function inPoly(P,x,y){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];
   if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;}
@@ -57,7 +57,7 @@ const RES_LEDGER=(function(){
    if(o.fields)for(const f of o.fields){const c=f.poly.reduce((a,p)=>[a[0]+p[0]/f.poly.length,a[1]+p[1]/f.poly.length],[0,0]);
     if(inPoly(P.points,c[0],c[1])){R.fields=R.fields||{};R.fields[f.kind]=(R.fields[f.kind]||0)+(f.cap||0);}}
    landCells+=cells;out.polities[P.name]=R;}
-  for(const S of D.settlements){let pol=null;for(const P of D.polities)if(inPoly(P.points,S.px,S.py)){pol=P.name;break;}
+  for(const S of D.settlements){if(S.stage==='ruin'||S.type==='ruin')continue;let pol=null;for(const P of D.polities)if(inPoly(P.points,S.px,S.py)){pol=P.name;break;}
    const r=dayKm*1000,gx=S.px*pm,gz=S.py*pm;
    const nodes=RES_GEO.nodesIn({x0:gx-r,z0:gz-r,x1:gx+r,z1:gz+r},{families:kinds}).filter(n=>Math.hypot(n.gx-gx,n.gz-gz)<=r);
    const cat={};for(const n of nodes)cat[n.kind]=(cat[n.kind]||0)+1;

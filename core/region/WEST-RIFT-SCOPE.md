@@ -353,28 +353,20 @@ the one surplus that has to feed both cities and Blakhed.
    - **The Tungang Union:** census 500, Gemini 18,760, the kit's 25-40k.
    - **The Fellgangs, the Travellers, the Kimr, Greenstep's countryside.**
    - **A rural ratio** for a frontier (1x proposed here).
-3. **Ledge's polity.** The repo says Dalab, with Loj Fower at the lifts; Gemini says Tungang. How does Ledge split between Dalab
-   and the loj?
+3. **Ledge's polity.** **Settled (the owner, 2026-11-19):** both `Shelf` (`461,1161`, `7,000` = `3.5k` Dalab + `3.5k` `TU1`) and `Ledge` (`437,1330`, `10,000` = `5k` Dalab + `5k` `TU2`) are **50/50 half-Dalab / half-Tungang arcologies**, with Tungangs inside the structure and adjoining tunnels and Dalabites in a settlement surrounding it plus the 1–2 levels closest to the entrances.
 4. **Loj Twenny.** The pin move to 445,1266 (station 3) is on its branch, not the map; its size is 165 drawn against 500 by type.
 5. **Salt.** Where does the West Rift's salt come from? Tallwalls (hostile), a new works on the unclaimed rock salt at 354,1347
    (a Fellgang works, beside the drovers and pass-keepers?), or Dalab's own? **Settled (the owner, 2026-11-16): the drovers are a
-   major salt source**, from the western fells' high salt basins. *The map's answer (4.4, item 1): the western
-   fells' high salt basins, 327-355 x 1335-1359, the nearest salt and the farthest from the Lizardmen; the owner to confirm.* And how does Shelf ship salt to Xanadu with the
-   Great Caravan if south Dalab is short?
-6. **The Great Caravan's path across the Rift.** riftrim's 2026-11-13 note (Gemini, "for the owner to review") runs it by the S-rim
-   footwall ramps past Cthonos and the Opal Valley relay. XAN_TUNE's legs are 52 days each; Gemini says 831 km in 90 days. Does it
-   cross Lizardmen country, and how does that square with "barely any trade"? Is the Union's 10% share canon?
-7. **Rare earths.** Dalab's ground, the Union's right. Does the Union work Nulab's and Ledge's under a Geomancer-style licence for
-   Dalab, or are they unworked?
-8. **The Ice-cutters' buyers.** "The Rift floor's towns" below the south wall are Cthonos (a ruin) and Lizardmen country. Who buys
-   the ice there?
+   major salt source**, from the western fells' high salt basins (`327-355 x 1335-1359`, ~`850 t/yr`).
+6. **The Great Caravan's path across the Rift & Xanadu Embassy.** **Settled (the owner, 2026-11-21):** the Annual Great Caravan **goes over the northern rim of the Rift through Xanadu's `The Marches` province (`P8`, `West Watch Fort` `818,1531`)** along the northern footwall benches above the Lizardman floor (staying north of ruined `Cthonos`) to `Blakhed` (`441,1400`) -> `Nulab` (`443,1359`) -> `Ledge` -> `Shelf` -> `Dalab`, and **Xanadu maintains its permanent embassy at `Nulab` (not `Dalab`) as a ground-up pure `kits/xanadu` Two Horns compound**.
+7. **Rare earths.** Dalab's ground, the Union's right. The Union works `55` bore-wall rare-earth veins along the Rift Line (`TU1`/`TU2`).
+8. **The Ice-cutters' buyers & `Cthonos`.** **Settled (the owner, 2026-11-21):** **`Cthonos` (`526,1503`) is completely ruined (`0` pop)**; the `Ice-cutters` (`470,1521`) deliver winter lake-ice commercially to `Blakhed`'s ice-houses, Tungang `Hearth Hold` (`525,1400`), and `Nulab` (with `492,1255` tagged `layer: 'subterranean'` hypogene nitre caverns).
 9. **The Union's shape.** How many lojes (the kit proposed about forty)? The Hearth hold's name, number and size? Which lojes keep
    which segment?
 10. **The bargain.** Does Dalab ship by the Line (Tungang trains, Tungang passage fees) or only by its own road? What are the
     terms: grain and medicine for passage?
 11. **Money.** Dalab's currency, Tungang barter or Izani Talents? (PLAN-MONEY.)
-12. **The Free Giants' trade.** They are escaped slaves of Voth and Dalab. Who buys their saltpeter (Gemini sends it to Roketstad,
-    Iziz and Cascade by Shim, which is Voth's lake), and do they trade into the Rift at all?
+12. **The Free Giants' (`Vrivolci`) trade.** **Settled (the owner, 2026-11-21):** they **boycott `Dalab` and `Voth`**, routing their `#1` map `saltpeter`, rock-`salt`, and `tin` **through `Shumar`, and through `Shumar` onward to the `Talovolci` (`84k`) as well as covertly down into `Shim` and points distant**.
 13. **Sites still to place:** the Dalab skarn hamlet (416,1377), the coppersmiths' exact site, and the pins for Blakhed, the
     Fowlers, the Ice-cutters, the drovers, the pass-keepers and the Hearth hold (none is on the model).
 14. **Names.** Every Rift name but Ledge, Arccube and Pluton is tentative. Span's barricade is also "the Line" (rename owed,

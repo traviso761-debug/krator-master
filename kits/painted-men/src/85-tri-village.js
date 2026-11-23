@@ -10,13 +10,13 @@
 // further than the ridge (Cx) and lift at the corners into horns (Hc); B raises the front eave over a centred
 // entrance into a tall arched brow. V = {x0,z0,X,Cx,Z,yE,A,F,Hc,B,Bs, mat, c (rib colour), trans:[s…], diag:[c…],
 // legs, nu, nv}. Returns {P(s,t), y(x,z)} for fitting walls, lenses and posts under it.
-function hnTRVault(G,V){
+function hnTRVault(G,V){const b0=V.B==null?0:V.B,bs=V.Bs==null?.3:V.Bs,nu=V.nu==null?48:V.nu,nv=V.nv==null?32:V.nv;
  const Y=(s,t)=>V.yE+V.A*Math.pow(Math.max(0,1-t*t),1.3)+V.F*Math.pow(Math.max(0,(Math.abs(t)-.8)/.2),2)
-  +V.Hc*Math.pow(Math.max(0,(Math.abs(s)-.72)/.28),2)*(.35+.65*t*t)+(V.B||0)*Math.exp(-Math.pow(s/(V.Bs||.3),2))*Math.pow(Math.max(0,t),1.5);
+  +V.Hc*Math.pow(Math.max(0,(Math.abs(s)-.72)/.28),2)*(.35+.65*t*t)+b0*Math.exp(-Math.pow(s/bs,2))*Math.pow(Math.max(0,t),1.5);
  const P=(s,t)=>[V.x0+s*(V.X+V.Cx*t*t),Y(s,t),V.z0+t*V.Z];
  const N=(s,t)=>{const e=.01;const a=P(s+e,t),b=P(s-e,t),c=P(s,t+e),d=P(s,t-e);const ds=[a[0]-b[0],a[1]-b[1],a[2]-b[2]],dt=[c[0]-d[0],c[1]-d[1],c[2]-d[2]];return hNorm(hCross(dt,ds));};
  const yAt=(x,z)=>{const t=clamp((z-V.z0)/V.Z,-1,1);return Y((x-V.x0)/(V.X+V.Cx*t*t),t);};
- const m=mesh(gridSurface((u,v)=>P(u*2-1,v*2-1),V.nu||48,V.nv||32,{uS:(2*V.X+V.Cx)/2,vS:V.Z*1.5}),V.mat,G);
+ const m=mesh(gridSurface((u,v)=>P(u*2-1,v*2-1),nu,nv,{uS:(2*V.X+V.Cx)/2,vS:V.Z*1.5}),V.mat,G);
  const c=V.c||hC(vPick(HPAL.tar));const off=(s,t,k)=>{const p=P(s,t),n=N(s,t);return[p[0]+n[0]*k,p[1]+n[1]*k,p[2]+n[2]*k];};
  const chain=(fn,n,w,k,cc)=>{let a=fn(0);for(let i=1;i<=n;i++){const b=fn(i/n);beam('vWood',a,b,w,w,cc||c);a=b;}};
  // eave and end fascias give the shell its thickness
@@ -54,7 +54,7 @@ function buildHlTriLonghouse(G,o){reseed(23201+(o.v|0));const P=3.2,Xw=12,Zw=8.5
  const lw=7.5;let lt=0;for(let x=-lw;x<=lw;x+=.5)lt=Math.max(lt,V.y(x,Zw+.3)-wt);
  hnTRGrid(G,(u,v)=>{const x=(u*2-1)*lw;const top=Math.max(wt+.02,V.y(x,Zw+.3)-.12);const y=lerp(wt-.05,top,v);return[x,y,Zw+.1,u,(y-wt+.05)/lt];},30,8,MAT.trFront);
  for(const s of[-1,1]){let gt=0;for(let z=-Zw;z<=Zw;z+=.5)gt=Math.max(gt,V.y(s*Xw,z)-wt);
-  hnTRGrid(G,(u,v)=>{const z=(u*2-1)*Zw;const top=Math.max(wt+.02,V.y(s*Xw,z)-.12);const y=lerp(wt-.05,top,v);return[s*(Xw+.1),y,z*-s,u,(y-wt+.05)/gt];},30,8,MAT.formA);
+  hnTRGrid(G,(u,v)=>{const z=(u*2-1)*Zw;const top=Math.max(wt+.02,V.y(s*Xw,z)-.12);const y=lerp(wt-.05,top,v);return[s*(Xw+.1),y,z*-s,u,(y-wt+.05)/gt];},30,8,MAT.pmFormA);
   vnDoor(s*Xw,P,0,s*Math.PI/2,1.6,2.6,'hPaint',blk,tar,false);hnForm('hFormA',s*(Xw+.02),P+3,0,s*Math.PI/2,5,2.5);}
  // the entrance: great doors between tall totem posts, a crest lintel
  hnRoom(0,P,Zw+.02,3.2,4.4,.1,0);for(const s of[-1,1])kput('vWood',[s*1.95,P+2.2,Zw+.7],qEuler(0,s*.5,0),[1.5,4.3,.14],tar);
@@ -74,7 +74,7 @@ function buildHlTriLonghouse(G,o){reseed(23201+(o.v|0));const P=3.2,Xw=12,Zw=8.5
  vPst('hTRDisc',0,yc+2.2,0,3.4,.22,rib);for(let k=0;k<20;k++){const a=k/20*TAU;vPst('vPost',Math.sin(a)*3.25,yc+2.4,Math.cos(a)*3.25,.05,.9,tar);}
  for(let k=0;k<20;k++){const a=k/20*TAU,b=(k+1)/20*TAU;beam('vWood',[Math.sin(a)*3.25,yc+3.3,Math.cos(a)*3.25],[Math.sin(b)*3.25,yc+3.3,Math.cos(b)*3.25],.09,.09,tar);}
  kput('hOctW',[0,yc+2.4,0],null,[2,1.5,2],rib);kput('hBulbSh',[0,yc+3.8,0],null,[2.3,2.5,2.3],roofC.clone().multiplyScalar(.85));
- vPst('vPost',0,yc+5.9,0,.08,1.6,tar);kput('hPaintBall',[0,yc+7.5,0],null,[.3,.36,.3],blk);for(const s of[-1,1])kput('hWing',[s*.9,yc+7.6,0],qEuler(0,0,s*-.15),[s*1.8,.9,1],null);
+ vPst('vPost',0,yc+5.9,0,.08,1.6,tar);kput('hPaintBall',[0,yc+7.5,0],null,[.3,.36,.3],blk);for(const s of[-1,1])kput('pmWing',[s*.9,yc+7.6,0],qEuler(0,0,s*-.15),[s*1.8,.9,1],null);
  kput('vConeI',[0,yc+7.5,.3],vQ(0,Math.PI/2,0),[.09,.4,.09],hC(HPAL.red));
  for(let k=0;k<4;k++){const a=k/4*TAU+Math.PI/4;kput('vCloth',[Math.sin(a)*3.45,yc+.8,Math.cos(a)*3.45],qEuler(0,a,0),[1,2.8,1],hC(0x4a7a3a));}
  // the wing-halls
@@ -84,7 +84,7 @@ function buildHlTriLonghouse(G,o){reseed(23201+(o.v|0));const P=3.2,Xw=12,Zw=8.5
   hnLogBox(x0,.5,0,11,w2-.5,9,0,tar);hnFrieze(x0,w2-.5,4.56,0,11,.45);
   vnDoor(x0,.5,4.5,0,1.2,2.2,'hPaint',blk,tar,false);for(const u of[-3.5,3.5])vnWin(x0+u,1.5,4.5,0,.9,1.1,'shut','hPaint',hC(HPAL.red));
   let gt=0;for(let z=-4.5;z<=4.5;z+=.5)gt=Math.max(gt,W2.y(x0+s*5.5,z)-w2);
-  hnTRGrid(G,(u,v)=>{const z=(u*2-1)*4.5;const top=Math.max(w2+.02,W2.y(x0+s*5.5,z)-.1);const y=lerp(w2-.05,top,v);return[x0+s*5.6,y,z*-s,u,(y-w2+.05)/gt];},20,6,MAT.formA);
+  hnTRGrid(G,(u,v)=>{const z=(u*2-1)*4.5;const top=Math.max(w2+.02,W2.y(x0+s*5.5,z)-.1);const y=lerp(w2-.05,top,v);return[x0+s*5.6,y,z*-s,u,(y-w2+.05)/gt];},20,6,MAT.pmFormA);
   hnForm('hFormW',x0+s*5.58,1.1,0,s*Math.PI/2,5,2.5);hnTRBrazier(x0,0,7.2,.8);}
  vnFolk(0,Z+run+4,4,4);hnTRFolk(-9,P,Z-2.5,2,1.5);hnTRFolk(9,P,Z-2.5,2,1.5);}
 
@@ -234,8 +234,8 @@ function buildHlTriGranary(G,o){reseed(23271+(o.v|0));const R=2.1,FL=1.9,H=2.4;
  kput('hTRBandCyl',[0,FL+1.2,0],null,[R+.06,.5,R+.06],null);
  for(const yy of[FL+.4,FL+2.2])kput('vHoop',[0,yy,0],qEuler(Math.PI/2,0,0),[R+.08,R+.08,1.4],bam);
  vnThatchCone(0,FL+.16+H,0,R+.35,3.9,th);vPst('vPost',0,FL+H+3.6,0,.06,.8,log);kput('hPaintBall',[0,FL+H+4.45,0],null,[.15,.18,.15],hC(HPAL.black));
- for(const s of[-1,1])kput('hWing',[s*.45,FL+H+4.5,0],qEuler(0,0,s*-.2),[s*.9,.45,1],null);
- vB('vWood',0,FL+.9,R+.02,.8,.9,.08,0,log);                                                              // hatch
+ for(const s of[-1,1])kput('pmWing',[s*.45,FL+H+4.5,0],qEuler(0,0,s*-.2),[s*.9,.45,1],null);
+ vB('vWood',0,FL+.9,R+.02,.8,.9,.08,0,log);                                                              /* hatch */
  vnLadder(0,0,R+1,0,FL+1,log);
  vPst('hTRDisc',4.2,-.02,1.5,2.2,.06,hC(0xb89a70));hnSacks(4,0,.6,4);kput('vPost',[5,.5,2.6],qEuler(0,0,.8),[.05,1.6,.05],log);
  FURNISH('hl_tri_grain_mortar',-3.2,0,2.05,0);vnFolk(3,4,1,1);}
@@ -249,7 +249,7 @@ function buildHlTriSmithy(G,o){reseed(23281+(o.v|0));const W=7,D=5.4,PH=2.6;
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',sx*W/2,0,sz*D/2,.16,PH,log);
  for(const sz of[-1,1])kput('hLogX',[0,PH,sz*D/2],null,[W+.6,.16,.16],log);
  hnGable(0,PH+.05,0,W,D,1.05,0,'vGableT',th,.6,null);
- kput('vSheet',[-1.6,PH+1.5,1.4],vQ(0,-Math.atan(1.05),0),[2.4,1.8,1],null);kput('vPlate',[1.8,PH+.9,-2.2],vQ(Math.PI,-Math.atan(1.05),0),[1.6,1.2,1],null);   // salvage patches
+ kput('vSheet',[-1.6,PH+1.5,1.4],vQ(0,-Math.atan(1.05),0),[2.4,1.8,1],null);kput('vPlate',[1.8,PH+.9,-2.2],vQ(Math.PI,-Math.atan(1.05),0),[1.6,1.2,1],null);   /* salvage patches */
  vB('hBMatB',0,0,-D/2,W,2.2,.08,0,bam);
  // the forge (hearth, embers, hood of rusted plate, piston bellows), the anvil and the quench tub are furniture from the
  // catalog (the embers drew 18 numbers); the salvage-pipe flue on up through the thatch is the shelter's own
@@ -257,12 +257,12 @@ function buildHlTriSmithy(G,o){reseed(23281+(o.v|0));const W=7,D=5.4,PH=2.6;
  FURNISH('hl_tri_scrap_anvil',.6,0,.6,0,{v:0});FURNISH('hl_tri_quench_tub',-2.2,0,.6,0,{v:0});
  // tools leaning on the back wall, the scrap pile
  for(let k=0;k<4;k++)kput('vPost',[1.6+k*.18,.5,-2.5],qEuler(.1,0,0),[.025,1.1,.025],hC(0x3a3430));
- hlRngSkip(95);FURNISH('hl_rep_scrap_heap',W/2+2,0,.5,0,{v:0});   // (the drawn pile drew 95 numbers)
+ hlRngSkip(95);FURNISH('hl_rep_scrap_heap',W/2+2,0,.5,0,{v:0});   /* (the drawn pile drew 95 numbers) */
  hnTotemPole(-W/2-.6,0,D/2+.4,.16,2.8,0,true);hnWoodpile(-W/2-1,0,-.6,Math.PI/2,3,1.1);vnFolk(0,2,1,.6);vnFolk(2,D/2+1.5,1,1);}
 
 HL.def({key:'hl_tri_longhouse',name:'Village longhouse',branch:'tribal',family:'Halls',tags:{type:['civic'],wealth:'civic',lit:false,landmark:true},w:66,d:40,h:26,build:buildHlTriLonghouse});
-HL.def({key:'hl_tri_warrior_hall',name:"Warrior's hall",branch:'tribal',family:'Halls',tags:{type:['military'],wealth:'civic',lit:false},w:40,d:38,h:13,build:buildHlTriWarriorHall});
-HL.def({key:'hl_tri_shaman',name:"Shaman's house",branch:'tribal',family:'Halls',tags:{type:['religious'],wealth:'middle',lit:false},w:20,d:20,h:13,build:buildHlTriShaman});
+HL.def({key:'hl_tri_warrior_hall',name:'Warrior hall',branch:'tribal',family:'Halls',tags:{type:['military'],wealth:'civic',lit:false},w:40,d:38,h:13,build:buildHlTriWarriorHall});
+HL.def({key:'hl_tri_shaman',name:'Shaman house',branch:'tribal',family:'Halls',tags:{type:['religious'],wealth:'middle',lit:false},w:20,d:20,h:13,build:buildHlTriShaman});
 HL.def({key:'hl_tri_stone_circle',name:'Stone circle',branch:'tribal',family:'Sacred',tags:{type:['religious'],wealth:'civic',lit:false},w:24,d:30,h:7,build:buildHlTriStoneCircle});
 HL.def({key:'hl_tri_farmhouse',name:'Tribal farmhouse',branch:'tribal',family:'Farms and crafts',tags:{type:['farm','single-family dwelling'],wealth:'poor',lit:false},w:24,d:16,h:9,build:buildHlTriFarmhouse});
 HL.def({key:'hl_tri_farm',name:'Terraced farm',branch:'tribal',family:'Farms and crafts',tags:{type:['farm'],wealth:'poor',lit:false},w:36,d:26,h:5,build:buildHlTriFarm});

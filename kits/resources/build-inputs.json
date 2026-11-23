@@ -70,20 +70,20 @@
     "kits/resources/KNOWN_ISSUES.md": "f855969998d3b79a2386061143610ec51c52e16a2de1fca9487dbec1959fbb27",
     "kits/resources/PORT.md": "b00aa19091be0d56e59856e15e27dd3e506fffeee2c1446e19ed4f7c66f9bc7d",
     "kits/resources/build.py": "fc1f8139f4ff04af83adc8da9d7922fb40439f335ca9c5831ec662c2fb9bd595",
-    "kits/resources/data/geology.json": "9006d548fb8283541df6dddfaa31ca77f8e0885aeba41b8c28dfb2cb24826b8c",
-    "kits/resources/data/ledger.json": "aeb61dd505d23f6fe4c02b0dec00122a7cad86eb2aafca336ee3959a64961efb",
+    "kits/resources/data/geology.json": "038a5682cd64dbdea46449c016482e7e52e6532287527693210e532e66816b32",
+    "kits/resources/data/ledger.json": "83f40aaf3b4a0dd53c6f7d8f3c56e3307277a4218cd10f4a9900457470903e36",
     "kits/resources/src/00-head.html": "6881b3d04acb3667ea877cc3480990284f27fc0f74e01197f1872ed461e906a7",
-    "kits/resources/src/26k-kit.js": "203422a91f613399fb07951a5a4cfcbb6df97382d318c37cf85b83db575a2226",
-    "kits/resources/src/42r-res-ore.js": "b90fca3f8c77f027527e9a312602ad8912c7018834c2752a2d77c284821e1e2f",
+    "kits/resources/src/26k-kit.js": "4773ba65ca03ed0d4032da1feaaddb935813922b20d721aee653a94d922e097a",
+    "kits/resources/src/42r-res-ore.js": "a07d772f7dc72bfde527cc3f4c8050685b4eab577e504b5c26a4913d61828b14",
     "kits/resources/src/42s-res-ore-mined.js": "f71bc12e2b75628f0f27414f88b122965c1d8cce019603394f0b051d9b2a396a",
     "kits/resources/src/43r-res-fields.js": "0a9325061c1d4526405b636391f26d9330012c3c6b36aa939e7ad461ec83a60f",
-    "kits/resources/src/44r-res-nodes.js": "4b52520d1539cc40dc01dac8a90142d7b10a08ba922dbd832518091ab10290a1",
-    "kits/resources/src/44s-res-nodes-metal.js": "c839980e55f62c03cd2f0a4b45f31b5291c34712f83e24ae49f703ca42a63a5c",
+    "kits/resources/src/44r-res-nodes.js": "c79138f7af41abcc96c581e667bf16a97bfa9e1d8675a30068633976620b67e8",
+    "kits/resources/src/44s-res-nodes-metal.js": "3e5d2086060091f749598b15c99718ea56a523e8c738c74cbbe241c9ee5821bd",
     "kits/resources/src/44t-res-nodes-gem.js": "f9463c3c3225dd050b836e67901e743d4cdb15fb15b2f6bf56c8fecdc845537a",
     "kits/resources/src/44u-res-nodes-ground.js": "51cab2917263616493cfa24d1f16f9713b379efc29db77e6b314df51d1ff9753",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
-    "kits/resources/src/46r-res-ledger.js": "2f6286fd49a1e32e46a8e404c2696d057145acce14ab676cb26bc73fa5614fff",
-    "kits/resources/src/89-rows.js": "f17e7e817c440cfdca957910432d40301f4a5a3594adf36508b60ca2a698a0a6",
+    "kits/resources/src/46r-res-ledger.js": "916d7bc18f70f15824a2316864e078cf61ea1a2100ab0df9111ce1ab8a20799f",
+    "kits/resources/src/89-rows.js": "ee3dc626f7c44096299cc702bae99ba808f42b8080d304b6e676fddaab12351a",
     "kits/resources/src/98r-host-geomap.js": "823435bb9740502393ad4ddd669d5da2f3dc2cebb359d34bc58e07e078562ab7",
     "kits/resources/tex/alabaster.albedo.webp": "c373b502508f3be975faab580e52699a82950b89a9e2b767b8c180d68b920a29",
     "kits/resources/tex/alabaster.normal.webp": "b8e78217b7b3fee3aa8928d0e5e0b8751880b03917774afa00f2fee7d1013c69",
@@ -121,7 +121,7 @@
     "kits/resources/tex/marble.albedo.webp": "f88ff2532ebf45b3ef69cf7ddbdf527c872573e9195e3f67cd71cc24fb89399c",
     "kits/resources/tex/marble.normal.webp": "99d47681af06d8d553c755b4e586be606511a94aca3a8ba0bdebeaffd12614af",
     "kits/resources/tex/marble.rough.webp": "ab7bc8bdece6afc4c0a6793409c0884f77134823541b588b65c3e6e9ac17bda4",
-    "kits/resources/tex/pack.json": "c041757f9030e53b21d5945ab07e0d9aaaf5f322504018eb669d55f9b86719d2",
+    "kits/resources/tex/pack.json": "f933f1fb19aa968385e0acdaec39dc8df1c9caa6bf00136c1ef0ccb599855164",
     "kits/resources/tex/peat.albedo.webp": "a14c1e2f5a515440f804e3676029d174d6068a2d7416ee9c13d246ee69632f57",
     "kits/resources/tex/peat.normal.webp": "cd8601c7db87d1051102ac517d1d94e6d1b33bb8c0e8fbbd3b0dac0b1047c143",
     "kits/resources/tex/peat.rough.webp": "a28ae521625f66ef70b5fe6dd3385465df70f845815bd50fa4c59d732bc48cee",
@@ -137,6 +137,9 @@
     "kits/resources/tex/quartz.albedo.webp": "6033a232c96cd1f8e2d490abb0312cc1390467491ad54831410fd6dee0cbbfa3",
     "kits/resources/tex/quartz.normal.webp": "efc2b32e62387000d33d4ed44650c7e6afb3878bcd40cd3a7d2e9cb7f610aca0",
     "kits/resources/tex/quartz.rough.webp": "1280b1dea94f07c7e9eddee0f76f93819f57fb7480d724f43d77e26509c593c3",
+    "kits/resources/tex/schistem.albedo.webp": "96fd337db97b348e5d9b6d702ee64cc14ebb2d6e79d138beeb7441f847d70fae",
+    "kits/resources/tex/schistem.normal.webp": "dc1dc6f7e4d344852f42923d98d69d9ae77f12ee5692e91ac3a349ff127ccaf4",
+    "kits/resources/tex/schistem.rough.webp": "a610a822c762518ed2487084763ac92b2f07b108b5fe8227a237d6d10db4e734",
     "kits/resources/tex/soda.albedo.webp": "b9fba38e3ac588fd662412990f384957e58e9656297748a0bf38cfbc78047091",
     "kits/resources/tex/soda.normal.webp": "d466f4d6f5feeb2d31039713cf6f3ce5fd90d3254e6a8c2482d569b5247f12f4",
     "kits/resources/tex/soda.rough.webp": "1d1e39789b33b9840f211f7361e2d7786b20354f11776392f39f2f25818d7cdb",
@@ -152,6 +155,9 @@
     "kits/resources/tex/tepui.albedo.webp": "2de71ecf093b9dd78cb868c376c95ab726abfec7039ae3d647c3c1f0443f4ace",
     "kits/resources/tex/tepui.normal.webp": "6c2e9bcd6926a0fd48c903ba23744975031c957a130c12c137583aa5049f7d1e",
     "kits/resources/tex/tepui.rough.webp": "a9fe65f0877257c6975316ce1079841baefe391e1510c362fa4cfe5efd83a549",
+    "kits/resources/tex/turq.albedo.webp": "6f6c8995c75eb449bb9fd1c4e02552e9c24e73d40e26872d549c8d06d751eda8",
+    "kits/resources/tex/turq.normal.webp": "6d5b80dab67a2a76e0b24b5782b0fcbd2f0bc13b578c37a865922b477f6be49c",
+    "kits/resources/tex/turq.rough.webp": "58286aef24abb5493ef106fff84c634ce4982a67ac9287dd55fd4c34971947cd",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
@@ -170,18 +176,18 @@
     "core/walk/box": "640d3e2f0368a531fc4c1f0be0fdca8de1f41b5e2f176112f6212377ea41494d",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/resources/src": "a3a64b26d7809491ec54e24fa6eb4aeb3617993c6caffdb3606d22a15305cae1",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "3dddf4cc1485975fa04f8ae3ecd4b11cf8303908ced5d46f4dcfc671861aec51",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/resources/build-manifest.json": "d0a30cfdc58c375fea24b4cf1eb7bf2bf9fea0af60b29aa9803a7a858eecf5ca",
-    "kits/resources/dist/resources.html": "db2369a69763d1f4aaeea369b121b2dc25da093aabfe4f494bc270c4d4aa61f5",
-    "kits/resources/dist/resources.tex.resources.js": "770aa722e43f711684e28510521da1dc6dab9bc673fa5041bfe2eada5196310e"
+    "kits/resources/build-manifest.json": "3887a2e00d0fdfbb54a675361d856797ba8216f8a05dad5b3d027649213ee564",
+    "kits/resources/dist/resources.html": "6da990e6f1018d858f7c0878a83299d33270c3aecdcfcba9928f79f7a5c19e0e",
+    "kits/resources/dist/resources.tex.resources.js": "ddd4552d259b5d7ba5857863245ef8ff7c2cb56266a074d04f865360f91ae2c2"
    },
    "outputs_raw": {
-    "kits/resources/build-manifest.json": "d0a30cfdc58c375fea24b4cf1eb7bf2bf9fea0af60b29aa9803a7a858eecf5ca",
-    "kits/resources/dist/resources.html": "db2369a69763d1f4aaeea369b121b2dc25da093aabfe4f494bc270c4d4aa61f5",
-    "kits/resources/dist/resources.tex.resources.js": "770aa722e43f711684e28510521da1dc6dab9bc673fa5041bfe2eada5196310e"
+    "kits/resources/build-manifest.json": "3887a2e00d0fdfbb54a675361d856797ba8216f8a05dad5b3d027649213ee564",
+    "kits/resources/dist/resources.html": "6da990e6f1018d858f7c0878a83299d33270c3aecdcfcba9928f79f7a5c19e0e",
+    "kits/resources/dist/resources.tex.resources.js": "ddd4552d259b5d7ba5857863245ef8ff7c2cb56266a074d04f865360f91ae2c2"
    }
   }
  }

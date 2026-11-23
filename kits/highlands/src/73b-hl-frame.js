@@ -40,22 +40,19 @@ TEX.hLattB=hlLatt((g,w,h)=>{const u=w/8,b=3;const L=(x0,y0,x1,y1)=>g.fillRect(Ma
 TEX.hLattC=hlLatt((g,w,h)=>{const b=3;g.fillRect(w*.25,h*.25,w*.5,b);g.fillRect(w*.25,h*.75-b,w*.5,b);g.fillRect(w*.25,h*.25,b,h*.5);g.fillRect(w*.75-b,h*.25,b,h*.5);   // lantern (denglong kuang)
  for(const [a,c] of[[.5,0],[.5,.75],[0,.5],[.75,.5]]){if(a===.5)g.fillRect(w*.5-b/2,h*c,b,h*.25);else g.fillRect(w*a,h*.5-b/2,w*.25,b);}
  for(const s of[.12,.88])for(const t of[.12,.88]){g.fillRect(w*s-6,h*t-b/2,12,b);g.fillRect(w*s-b/2,h*t-6,b,12);}});
-// caihua: the painted beam, stretched over one bay (plane UVs 0..1). Xuanzi whorl-flowers at both ends in teal and blue,
-// white and black outlines, a long red panel (fangxin) with ochre cloud scrolls in the middle, gold dots at the joints.
-TEX.hCaihua=canvasTex(512,64,(g,w,h)=>{const P={teal:'#2e9488',red:'#b3322a',white:'#efe7d6',black:'#201a18',blue:'#3a6aa8',green:'#3f7a4a',ochre:'#d19a3a'};
- g.fillStyle=P.blue;g.fillRect(0,0,w,h);g.fillStyle=P.green;g.fillRect(0,0,w,h*.14);g.fillRect(0,h*.86,w,h*.14);
- const whorl=(cx,cy,R)=>{for(const [r,c] of[[R,P.white],[R*.86,P.teal],[R*.62,P.white],[R*.5,P.blue],[R*.26,P.ochre]]){g.fillStyle=c;g.beginPath();g.arc(cx,cy,r,0,TAU);g.fill();}
-  g.strokeStyle=P.black;g.lineWidth=1.5;for(let k=0;k<8;k++){const a=k/8*TAU;g.beginPath();g.arc(cx+Math.cos(a)*R*.74,cy+Math.sin(a)*R*.74,R*.2,a+Math.PI*.5,a+Math.PI*1.5);g.stroke();}};
- for(const e of[0,1]){const x0=e?w*.78:0,x1=e?w:w*.22;g.fillStyle=P.teal;g.fillRect(x0,h*.14,x1-x0,h*.72);
-  whorl(e?w*.89:w*.11,h*.5,h*.3);for(const s of[-1,1])whorl((e?w*.89:w*.11)+s*w*.07,h*.5,h*.19);
+// Slavic rospis' architrave beam (plane UVs 0..1): 6-petal solar rozetki at both bay ends in saffron-ochre, birch-white &
+// Novgorod-blue, framing a vermilion cartouche with Khokhloma berry-and-leaf S-scrollwork.
+TEX.hCaihua=canvasTex(512,64,(g,w,h)=>{const P={teal:'#2f6d4c',red:'#b83224',white:'#f3ead8',black:'#221814',blue:'#2d5894',ochre:'#d89e32'};
+ g.fillStyle=P.blue;g.fillRect(0,0,w,h);g.fillStyle=P.ochre;g.fillRect(0,0,w,h*.12);g.fillRect(0,h*.88,w,h*.12);
+ for(const e of[0,1]){const x0=e?w*.78:0,x1=e?w:w*.22,cx=e?w*.89:w*.11;
+  g.fillStyle=P.teal;g.fillRect(x0,h*.12,x1-x0,h*.76);
+  hlRozetka(g,cx,h*.5,h*.36,6,P.red,P.ochre,P.white);
   g.fillStyle=P.white;g.fillRect(e?x0:x1-3,0,3,h);g.fillStyle=P.black;g.fillRect(e?x0+3:x1-5,0,2,h);}
- // the long panel (fangxin), pointed ends, red ground, ochre scrolls
- g.fillStyle=P.white;g.beginPath();g.moveTo(w*.25,h*.5);g.lineTo(w*.3,h*.1);g.lineTo(w*.7,h*.1);g.lineTo(w*.75,h*.5);g.lineTo(w*.7,h*.9);g.lineTo(w*.3,h*.9);g.closePath();g.fill();
- g.fillStyle=P.red;g.beginPath();g.moveTo(w*.26,h*.5);g.lineTo(w*.305,h*.16);g.lineTo(w*.695,h*.16);g.lineTo(w*.74,h*.5);g.lineTo(w*.695,h*.84);g.lineTo(w*.305,h*.84);g.closePath();g.fill();
- g.strokeStyle=P.ochre;g.lineWidth=3;for(let k=0;k<6;k++){const cx=w*(.33+k*.068),cy=h*(.5+(k%2?.1:-.1));g.beginPath();g.arc(cx,cy,h*.16,Math.PI*(k%2?0:1),Math.PI*(k%2?1:2));g.stroke();
-  g.beginPath();g.arc(cx+h*.1,cy,h*.07,0,TAU);g.stroke();}
- g.strokeStyle=P.black;g.lineWidth=1.5;g.strokeRect(1,1,w-2,h-2);
- g.fillStyle=P.ochre;for(const x of[w*.22,w*.25,w*.75,w*.78])for(const y of[h*.3,h*.7]){g.beginPath();g.arc(x,y,2.5,0,TAU);g.fill();}});
+ g.fillStyle=P.white;g.beginPath();g.moveTo(w*.24,h*.5);g.lineTo(w*.29,h*.1);g.lineTo(w*.71,h*.1);g.lineTo(w*.76,h*.5);g.lineTo(w*.71,h*.9);g.lineTo(w*.29,h*.9);g.closePath();g.fill();
+ g.fillStyle=P.red;g.beginPath();g.moveTo(w*.25,h*.5);g.lineTo(w*.296,h*.16);g.lineTo(w*.704,h*.16);g.lineTo(w*.75,h*.5);g.lineTo(w*.704,h*.84);g.lineTo(w*.296,h*.84);g.closePath();g.fill();
+ hlRospisVine(g,w*.3,h*.16,w*.4,h*.68);
+ hlRozetka(g,w*.5,h*.5,h*.28,8,P.ochre,P.white,P.blue);
+ g.strokeStyle=P.black;g.lineWidth=1.5;g.strokeRect(1,1,w-2,h-2);});
 MAT.hPlank=hStd({map:TEX.hPlank,roughness:.88});vWorldUV(MAT.hPlank,1);
 MAT.hLattA=hStd({map:TEX.hLattA,alphaTest:.5,roughness:.7});MAT.hLattB=hStd({map:TEX.hLattB,alphaTest:.5,roughness:.7});MAT.hLattC=hStd({map:TEX.hLattC,alphaTest:.5,roughness:.7});
 hWorldUV(MAT.hLattA,2,2);hWorldUV(MAT.hLattB,2,2);hWorldUV(MAT.hLattC,2,2);
@@ -160,10 +157,13 @@ hnFachBox=function(x,y,z,w,h,d,ry,wallC,beamC,kind){if(!hlFrameOn())return _hlFa
   else hnFrameFace(p[0],y,p[1],fr,w,h,beamC,-1,kind);}
  for(const s of[1,-1]){const p=loc(x,z,s*w/2,0,ry);hnFrameFace(p[0],y,p[1],ry+s*Math.PI/2,d,h,beamC,d>5?-1:[],kind);}};
 vnWin=function(x,y,z,ry,w,h,kind,frameItem,c,shutters){if(!hlFrameOn())return _hlVnWin0(x,y,z,ry,w,h,kind,frameItem,c,shutters);return hnLatWin(x,y,z,ry,w,h,kind,null);};
-// the nalichnik becomes a lattice window with a lacquered surround and a small bracketed hood board
-hnNal=function(x,y,z,ry,w,h,kind,trimC,o){if(!hlFrameOn())return _hlNal0(x,y,z,ry,w,h,kind,trimC,o);const F=hlFrameOf();hnLatWin(x,y,z,ry,w,h,kind||'glass',F.post);
- const hb=loc(x,z,0,.2,ry);vB('hPaint',hb[0],y+h+.44,hb[1],w+.6,.08,.42,ry,hC(HPAL.teal));
- for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.2),.2,ry);kput('hArm',[q[0],y+h+.3,q[1]],qEuler(0,ry,0).multiply(qEuler(0,Math.PI/2,0)),[.1,.26,.36],F.post);}};
+// the nalichnik on Republican frame faces: carved kokoshnik ogee crown, solar rozetka boss, and pierced sill podzor
+hnNal=function(x,y,z,ry,w,h,kind,trimC,o){if(!hlFrameOn())return _hlNal0(x,y,z,ry,w,h,kind,trimC,o);const F=hlFrameOf(),tc=trimC||hC(HPAL.white);
+ hnLatWin(x,y,z,ry,w,h,kind||'glass',F.post);
+ const hb=loc(x,z,0,.18,ry);kput('hKeelW',[hb[0],y+h+.14,hb[1]],qEuler(0,ry,0),[w+.64,.56,.1],tc);
+ const vl=loc(x,z,0,.15,ry);kput('hLaceV',[vl[0],y-.34,vl[1]],qEuler(0,ry,0),[w+.42,.34,1],tc);
+ if(KIT.defs.hM_d_sun){const rz=loc(x,z,0,.24,ry);kput('hM_d_sun',[rz[0],y+h+.34,rz[1]],qEuler(0,ry,0),[.28,.28,1],null);}
+ for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.2),.2,ry);kput('hArm',[q[0],y+h+.26,q[1]],qEuler(0,ry,0).multiply(qEuler(0,Math.PI/2,0)),[.1,.26,.34],F.post);}};
 
 // ---------------------------------------------------------------- the frame and the roof (round 7b)
 // Travis: "many buildings have brackets clipping through the slope of the roof ... where the slope of the roof comes
@@ -252,14 +252,15 @@ kdef('hDomeHG',HGDOME,MAT.hHarlG);kdef('hTentHR',HTENT,MAT.hHarlR);kdef('hTentHG
 // triskelion between small rings above and below, top and bottom rails. PAINTED: teal rings, red triskelion, ochre
 // stiles, dark outlines (the mural palette); CARVED: pale, tinted by the house's wood.
 function hlRailTex(painted){return canvasTex(128,160,(g,w,h)=>{g.clearRect(0,0,w,h);
- const P=painted?{stile:'#c8902e',ring:'#2e9488',tri:'#b3322a',rail:'#8a2e22',line:'#201a18'}:{stile:'#fff',ring:'#fff',tri:'#fff',rail:'#fff',line:'rgba(0,0,0,.45)'};
+ const P=painted?{stile:'#d89e32',ring:'#2f6d4c',tri:'#b83224',rail:'#8a2e22',line:'#221814',white:'#f3ead8'}:{stile:'#fff',ring:'#fff',tri:'#fff',rail:'#fff',line:'rgba(0,0,0,.45)',white:'#fff'};
  const bar=(x,y,ww,hh,c)=>{g.fillStyle=c;g.fillRect(x,y,ww,hh);};
  bar(0,0,w,10,P.rail);bar(0,h-10,w,10,P.rail);bar(6,0,7,h,P.stile);bar(w-13,0,7,h,P.stile);
  const cx=w/2,cy=h/2,R=34;const ring=(x,y,r,c,lw)=>{g.strokeStyle=P.line;g.lineWidth=lw+3;g.beginPath();g.arc(x,y,r,0,TAU);g.stroke();g.strokeStyle=c;g.lineWidth=lw;g.beginPath();g.arc(x,y,r,0,TAU);g.stroke();};
- bar(cx-3,10,6,h-20,P.stile);ring(cx,cy,R,P.ring,7);ring(cx,24,12,P.ring,5);ring(cx,h-24,12,P.ring,5);
- for(let k=0;k<3;k++){const a0=k*TAU/3;for(const [c,lw] of[[P.line,8],[P.tri,5]]){g.strokeStyle=c;g.lineWidth=lw;g.lineCap='round';g.beginPath();
-  for(let t=0;t<=1.001;t+=.05){const r=t*R*.82,a=a0+t*2.5,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;t?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}}
- g.fillStyle=P.tri;g.beginPath();g.arc(cx,cy,5,0,TAU);g.fill();});}
+ bar(cx-3,10,6,h-20,P.stile);ring(cx,cy,R,P.ring,7);ring(cx,24,11,P.stile,5);ring(cx,h-24,11,P.stile,5);
+ for(let k=0;k<6;k++){const a=k/6*TAU;g.save();g.translate(cx,cy);g.rotate(a);
+  g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(9,-R*.45,0,-R*.86);g.quadraticCurveTo(-9,-R*.45,0,0);
+  g.fillStyle=k%2?P.stile:P.tri;g.fill();g.lineWidth=1.8;g.strokeStyle=P.line;g.stroke();g.restore();}
+ g.fillStyle=P.white;g.beginPath();g.arc(cx,cy,6,0,TAU);g.fill();g.lineWidth=1.8;g.strokeStyle=P.line;g.stroke();});}
 TEX.hRailP=hlRailTex(true);TEX.hRailC=hlRailTex(false);
 MAT.hRailP=hStd({map:TEX.hRailP,alphaTest:.5,roughness:.7});MAT.hRailC=hStd({map:TEX.hRailC,alphaTest:.5,roughness:.8});
 hWorldUV(MAT.hRailP,2,1/.7);hWorldUV(MAT.hRailC,2,1/.7);
