@@ -71,7 +71,7 @@ def trailing(text):
     return coded >= 2 or (coded >= 1 and BRACE_END.search(t) is not None)
 
 
-def lint(text):
+def lint(text, relpath=''):
     """{rule: [line numbers]} for one file's text."""
     found = {}
 
@@ -79,6 +79,9 @@ def lint(text):
         found.setdefault(rule, []).append(line)
 
     hooks = 'onBeforeCompile' in text
+    check_voids = relpath.startswith('kits/marr/src/') and not relpath.endswith('69m-mar-mat.js')
+    void_lits = frozenset(("'vHole'", '"vHole"', "'vRoomB'", '"vRoomB"', "'maRoomB'", '"maRoomB"',
+                           "'maHalfD'", '"maHalfD"', "'maDiscD'", '"maDiscD"', "'vWinGlass'", '"vWinGlass"'))
     toks = list(jsscan.scan(text))
     for i, (kind, v, s, e, ln) in enumerate(toks):
         if kind == 'line_comment':
@@ -91,6 +94,8 @@ def lint(text):
                     and float_nonzero(nxt[1]):
                 hit('ORNUM', ln)
         elif kind == 'string' or kind == 'template':
+            if check_voids and v in void_lits:
+                hit('DARK_VOID', ln)
             if hooks:
                 if WORD_CAM.search(v):
                     hit('CAMPOS', ln)
@@ -129,7 +134,7 @@ def main(argv):
     for f in files:
         with open(os.path.join(ROOT, f), encoding='utf-8', errors='replace') as fh:
             text = fh.read().replace('\r\n', '\n')
-        for rule, lines in lint(text).items():
+        for rule, lines in lint(text, f).items():
             k = '%s: %s' % (f, rule)
             findings[k] = len(lines)
             detail[k] = ['line %d' % n for n in lines[:20]]

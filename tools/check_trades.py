@@ -56,6 +56,9 @@ def trades_check(build_dir, table=None, extra_src=()):
     with open(CENSUS, encoding='utf-8') as fh:
         census = [c['trade'] for c in json.load(fh)]
     text = ''
+    if not extra_src:
+        rel = os.path.relpath(os.path.abspath(build_dir), ROOT).replace(os.sep, '/')
+        extra_src = EXTRA_SRC.get(rel, ())
     srcs = [os.path.join(build_dir, 'src')] + [os.path.join(ROOT, e) if not os.path.isabs(e) else e for e in extra_src]
     for d in srcs:
         for f in glob.glob(os.path.join(d, '**', '*.js'), recursive=True):
@@ -109,6 +112,7 @@ EXTRA_SRC = {
     # Vernacular: the Voth embassy and the Order's chapterhouse (settlements/iziz/src/75-port-embassy.js, 76-port-chapterhouse.js;
     # MODULARITY-PLAN.md step 4: they move with the foreign-quarter sets)
     'kits/iziz-vernacular': ['settlements/iziz/src'],
+    'kits/marr': ['kits/iziz-vernacular/src', 'settlements/iziz/src'],
     # Locus's census (67-lo-trades.js) names the buildings that carry each trade, most of them in its two kits
     'settlements/locus': ['kits/locus/src', 'kits/eastern-abyssal/src', 'kits/yuni/src'],
     # Yuni's census (67-yu-trades.js) names its houses, compounds and civic buildings, in the Yuni kit (step 4b)

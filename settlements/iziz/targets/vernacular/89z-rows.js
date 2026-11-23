@@ -43,7 +43,9 @@ const TRADE_ROWS=[
  ['vern_apothecary','vern_tinker','vern_glassworks','vern_salvage_yard'],
  ['vern_mine','vern_quarry','vern_mill','vern_fungus_shed'],
  ['vern_farmhouse','vern_byre','vern_pens','vern_boatyard','vern_fish_landing'],
+ ['vern_quay','vern_pier','vern_crane_wharf','vern_ferry_slip'],
+ ['vern_port_warehouse','vern_customs_house','vern_harbour_light','vern_coastguard_berth','vern_ropewalk','vern_sailors_tavern'],
 ];
-ROWZ.push(1330,1400,1470,1545,1620);
+ROWZ.push(1330,1400,1470,1545,1620,1700,1785);
 TRADE_ROWS.forEach((row,i)=>{const ws=row.map(k=>VERN.defs[k].w+10);let x=-ws.reduce((a,b)=>a+b,0)/2;
  row.forEach((k,j)=>{SITES.push({key:k,x:x+ws[j]/2,z:ROWZ[18+i],ry:0,o:{v:0}});x+=ws[j];});});

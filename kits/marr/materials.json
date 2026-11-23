@@ -1,0 +1,89 @@
+{
+ "build": "marr",
+ "note": "Marr's own library families, bound onto its MAT keys by src/88ym-mar-matlib.js (KMAT.bindMat('marr')): maCantera (stone.sandstone.ashlar: carved ashlar stone for quoins, portals, arcades, bridges, and bastion walls; bespoke coquina/coral stone stone.coral.colonial requested in PROMPTS-NEEDED.md), maTile (roof.clay_roof_tiles: Spanish barrel clay roof tiles), maAzulejo (mosaic.trencadis: glazed broken-tile ceramic for domes, urns, and undulating benches, tinted per instance), maZellige (patterns/common/zellige-blue: full-colour cobalt-and-turquoise glazed star tile for fountain basins and dadoes; bespoke maritime azulejo patterns/marr/azulejo-maritime requested in PROMPTS-NEEDED.md), maYeseria (stone.stucco.yeseria: carved stucco relief for portal friezes and civic entablatures). The rest are the Iziz Vernacular's sets (settlements/iziz/materials.json).",
+ "size": 512,
+ "families": {
+  "maCantera": {
+   "lib": "stone.sandstone.ashlar",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.68
+   },
+   "metal": 0,
+   "roughLift": 0.25,
+   "specular": 0.35,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.12,
+    "cell": 6
+   }
+  },
+  "maTile": {
+   "lib": "roof.clay_roof_tiles",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "maAzulejo": {
+   "lib": "mosaic.trencadis",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.65
+   },
+   "metal": 0.05,
+   "roughLift": 0.05,
+   "specular": 0.6
+  },
+  "maZellige": {
+   "lib": "patterns/common/zellige-blue",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0.04,
+   "normalScale": 0.5,
+   "roughLift": 0.08,
+   "specular": 0.55
+  },
+  "maYeseria": {
+   "lib": "stone.stucco.yeseria",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0,
+   "normalScale": 0.85,
+   "roughLift": 0.2,
+   "specular": 0.35
+  }
+ }
+}
