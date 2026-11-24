@@ -93,7 +93,7 @@
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
-    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
     "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
@@ -102,11 +102,11 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
-    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
+    "core/water/20-core-water.js": "c515e4cdcd325d761b67f2d1be04594e3be934415a797663b922f45c1793abf3",
     "core/water/21-core-water-shore.js": "0489a8b5c9fe2fa3621ee909a735d424696c3340951de13d8cc350ad0b77f3f9",
-    "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
+    "core/water/22-core-water-flow.js": "1edbe647477b4cb0836b57dec39e1b8891cb20b190a6972f7ae29f2efd5a19c2",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
-    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/51-core-water-kinds.js": "549ea82cd960f7b78d0088c0a0059a1104eb360ccac82e916b48ec8cb29e0e57",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
@@ -456,8 +456,8 @@
     "settlements/xanadu/tex/xZel.normal.webp": "ed6303b74594d57b7503ca3d3b6ed1e018cd65f48224310c66265dbf5af02027",
     "settlements/xanadu/tex/xZel.rough.webp": "ac851819ff2a7cc5cc2ba114080d2125e068ab234ada8b3faf6b643d4cbcd4ee",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/scale-model/model/data/h.png": "5217b6c1deb0b7025c10084a2d8f7fe71dd43f522aa1e90e46cfac038bb19cc7",
-    "tools/scale-model/model/data/rivers.json": "aedf4a33a4003f2a6b485094b0438a2eeb6f609173fad523affaf1b0d4d84eae"
+    "tools/scale-model/model/data/h.png": "1b309bbdce5f10ff95a165909b0a03d0c249ffa39e9c6a87b6ffe7e41e6c26bc",
+    "tools/scale-model/model/data/rivers.json": "2369bb9935c5ebba4fafb2587a067349d7f55144df27c734c2e32a659ab07da8"
    },
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
@@ -484,23 +484,23 @@
     "settlements/xanadu/targets/erewhon": "c894247da904b4733485bc76d1b527b68cf8db53df276b8654370603b7c08ed3",
     "settlements/xanadu/targets/scrap": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
     "settlements/xanadu/targets/xanadu": "cb97764a5b46d2491c979e0a358d119b1e4ba420dc33c53a6fb81f995b773051",
-    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
     "tools/_inputs": "1dc3332b767b1b60ea953e5dfdd81df90bf3449d9c313c945bbdb29e78f45ff8",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "settlements/thalaba/build-manifest-pieces.json": "ab1223eaee8628ad83e8286616ce7a0f7bb9a0e12eabb9c77fb86e9ebdc781bc",
-    "settlements/thalaba/build-manifest-town.json": "5a325b20a41fa62a81e044923005a1d3d55ef7d35b7e7263764b6ecf7c989a98",
-    "settlements/thalaba/dist/thalaba-pieces.html": "e0419cf56c8df4b64f0d22aa8c0ef4297e49a2452bca35e3b61c08b4790db148",
-    "settlements/thalaba/dist/thalaba.html": "fa27738476fe27a890406176875ac69a26f393d1019cf75efd680548df2fc1a2",
+    "settlements/thalaba/build-manifest-pieces.json": "aad86def9342519e8597e31c25bf46ab8cc6258d12085971f920c5cff533ddf2",
+    "settlements/thalaba/build-manifest-town.json": "0d9f0dc57d81b886e27f8425f20a5ba03da0450cc52c37f6e9284870fe67ceb5",
+    "settlements/thalaba/dist/thalaba-pieces.html": "81363c23ec57a20123de4a8970fd698c1b4950d9cbfb81b5fabf8be9b0f9c637",
+    "settlements/thalaba/dist/thalaba.html": "75b3da68935211335ebd1ef3066e0d3f47200599a1c5aafaa743754c6843e830",
     "settlements/thalaba/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/thalaba/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/thalaba/build-manifest-pieces.json": "ab1223eaee8628ad83e8286616ce7a0f7bb9a0e12eabb9c77fb86e9ebdc781bc",
-    "settlements/thalaba/build-manifest-town.json": "5a325b20a41fa62a81e044923005a1d3d55ef7d35b7e7263764b6ecf7c989a98",
-    "settlements/thalaba/dist/thalaba-pieces.html": "e0419cf56c8df4b64f0d22aa8c0ef4297e49a2452bca35e3b61c08b4790db148",
-    "settlements/thalaba/dist/thalaba.html": "fa27738476fe27a890406176875ac69a26f393d1019cf75efd680548df2fc1a2",
+    "settlements/thalaba/build-manifest-pieces.json": "aad86def9342519e8597e31c25bf46ab8cc6258d12085971f920c5cff533ddf2",
+    "settlements/thalaba/build-manifest-town.json": "0d9f0dc57d81b886e27f8425f20a5ba03da0450cc52c37f6e9284870fe67ceb5",
+    "settlements/thalaba/dist/thalaba-pieces.html": "81363c23ec57a20123de4a8970fd698c1b4950d9cbfb81b5fabf8be9b0f9c637",
+    "settlements/thalaba/dist/thalaba.html": "75b3da68935211335ebd1ef3066e0d3f47200599a1c5aafaa743754c6843e830",
     "settlements/thalaba/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/thalaba/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    }

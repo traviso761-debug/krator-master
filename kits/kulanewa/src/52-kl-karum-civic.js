@@ -1,6 +1,6 @@
 // prefix: kl
 // ================================================================= KARUM LEDGER-SYNDICATES — CIVIC, BANKING & EXCHANGE HALLS (8101..8105)
-// Downstream & Confluence Ports (Pak-Ma & Tong-Ma):
+// Downstream & Confluence Ports (Suur-Neva & Mere-Upe):
 //   8101. kl_karum_grand_bank    — Grand Naruqqum Banking House, Kura Bullion Vault, Kiyomizu Trestle & Nickel-Hooped Strongtower
 //   8102. kl_karum_clearing_hall — Syndicate Bell-Hall & Amber-Envelope Remittance Clearing Court
 //   8103. kl_karum_treaty_factor — Ria-Treaty Extraterritorial Assay & Counting-House
@@ -262,7 +262,7 @@ defBuilding({
  build(){
   const yQuay=.55,yBridge=3.85,hGal=3.35,yRoof=yBridge+hGal;
 
-  /* Navigable Pak-Ma canal raceway [-4.2..4.2] flowing N-S beneath the covered mill-bridge */
+  /* Navigable Suur-Neva canal raceway [-4.2..4.2] flowing N-S beneath the covered mill-bridge */
   klWaterChannel(0,0,8.4,19.8,.32,.82,{river:{name:'karum-mill-race',axis:'z',speed:.68}});
 
   /* Twin undershot cedar & Arch-nickel forge/grain waterwheels flanking the cutwater piers! */

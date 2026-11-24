@@ -2,7 +2,7 @@
 
 ## 1. Purpose & Cultural Scope
 
-Builds the production architectural kit for **The Kulanewa Free-Towns** (`culture: 'kulanewa'`, `~125,000` souls across the `Arcflow` `Pāk-Mā` and `Tōng-Mā` river basin), uniting two distinct yet architecturally coherent branches across **42 `defBuilding`s** (`seeds 8101..8142`):
+Builds the production architectural kit for **The Kulanewa Free-Towns** (`culture: 'kulanewa'`, `~125,000` souls across the `Arcflow` `Suur-Neva`, `Mere-Upe`, `Musta-Jõgi`, and `Helme-Koski` river basin), uniting two distinct yet architecturally coherent branches across **42 `defBuilding`s** (`seeds 8101..8142`):
 
 1. **`style: 'karum'` (*Kārum* Ledger-Syndicates, 21 buildings, `8101..8121`):** Joint-stock merchant-banker ports (*naruqqum* venture-shares, 64-sign Amber-Envelope tablets, bark-paper remittance drafts, extraterritorial Ria clearing-wards, *kiyomizu* crane wharves, covered mill-bridges, and hired crossbow keeps).
 2. **`style: 'ikki'` (*Kūla-Nā* Covenant-Communes, 21 buildings, `8122..8142`):** Fortified egalitarian *Jinaimachi* temple- and foundry-towns of *The Uncrowned Bell*, governed by elected *Otona* lay-elders with zero-usury *Mujinzō* granaries, debtor sanctuary cloisters, dual-wheel `Arch`-nickel hydro-forges, bell foundries, twin drum-frustum moat gates, and commoner pavise/pike/crossbow arsenals.

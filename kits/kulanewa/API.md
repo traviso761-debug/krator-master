@@ -2,7 +2,7 @@
 
 ## Kit Identity, Trades & Settlement Bundle (`src/26k-kit.js`, `src/72-kl-trades.js`, `kit_bundle.py`)
 
-- `KIT`: `{ id: 'kulanewa', pack: 'kulanewa', culture: 'kulanewa', faction: 'The Kulanewa Free-Towns', band: 'Pak-Ma and Tong-Ma', frag: 'kits/kulanewa' }`
+- `KIT`: `{ id: 'kulanewa', pack: 'kulanewa', culture: 'kulanewa', faction: 'The Kulanewa Free-Towns', band: 'Suur-Neva and Mere-Upe', frag: 'kits/kulanewa' }`
 - `KL_FACTIONS`: `{ karum, ikki }` — political, economic, and emblematic metadata for the *Kārum* Ledger-Syndicates and *Kūla-Nā* Covenant-Communes.
 - `DEFS`: 42 `defBuilding` entries (`21` with `tags.style === 'karum'`, seeds `8101..8121`, and `21` with `tags.style === 'ikki'`, seeds `8122..8142`), covering all 6 `(poor | middle | rich) x (dwelling-single | dwelling-multi)` residential cells in both styles plus `military` and `infrastructure` rosters.
 - `KL_TRADES` / `klTradeDefs(style)` (`[G data]`): all 44 Voth census trades mapped to `karum` (`kl_karum_*`) and `ikki` (`kl_ikki_*`) building keys.

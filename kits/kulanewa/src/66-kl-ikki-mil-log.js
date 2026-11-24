@@ -16,7 +16,7 @@ defBuilding({
  build(){
   const yQuay=.56,yBridge=3.8,hGal=3.3,yRoof=yBridge+hGal;
 
-  /* Upland Tong-Ma weir channel [-4.0..4.0] + stone weir sill + undershot stamp-mill waterwheel! */
+  /* Upland Musta-Jogi weir channel [-4.0..4.0] + stone weir sill + undershot stamp-mill waterwheel! */
   klWaterChannel(0,0,8.0,19.6,.32,.8,{river:{name:'ikki-weir-stream',axis:'z',speed:.74}});
   klMillWheel(-3.4,1.48,4.8,0,1.95,.78);
   svNoWalk(()=>{

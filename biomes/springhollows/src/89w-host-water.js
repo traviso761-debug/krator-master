@@ -55,7 +55,7 @@ const MAIN_STILL=(function(){
   }
   upperPoly.push([-50,7.2*Math.sin(clamp(16/142,0,1)*TAU)],...upperS);
   const SU=WATER.still({
-   name:'Ching-Ma Upper Calm Dolomite Reach',
+   name:'Tlila-Wada Upper Calm Dolomite Reach',
    level:6.25,
    poly:upperPoly,
    gradient:{centre:0x1b5a68,rim:0x4ea89c,power:1.2,at:[-220,0],radius:190}
@@ -71,7 +71,7 @@ const MAIN_STILL=(function(){
   }
   lowerPoly.push(...lowerS);
   const SL=WATER.still({
-   name:'Ching-Ma Lower Shut-In Plunge Pool',
+   name:'Tlila-Wada Lower Shut-In Plunge Pool',
    level:0.20,
    poly:lowerPoly,
    fountain:[68,0],

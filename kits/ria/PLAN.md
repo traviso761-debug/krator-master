@@ -2,15 +2,15 @@
 
 ## 1. Scope & Dynastic Lore ("The Two Reaches")
 
-Across `Ria Valley` (`Mā-Rīa`), civilization cycles Egyptian-style between **Unions** (when one High-Monarch holds both `Heartland` and `Upper Ria` plus the `Weeping Valley` river-forts, often subduing `Arcflow`) and **Sunderings** (`CROOK-RIA-DECISIONS.md` §2.4, §2.6). At game start the valley stands divided into two above-ground monumental river-and-terrace sister courts sharing one 64-sign Amber-Seal syllabary and two spoken branches of *Proto-Ria*:
+Across `Ria Valley` (**`Rīwa-Wāta` / `Līwa-Wāda`**, *Ria River*), civilization cycles Egyptian-style between **Unions** (when one High-Monarch holds both `Heartland` and `Upper Ria` plus the `Weeping Valley` river-forts, often subduing `Arcflow`) and **Sunderings** (`CROOK-RIA-DECISIONS.md` §2.4, §2.6). At game start the valley stands divided into two above-ground monumental river-and-terrace sister courts sharing one 64-sign Amber-Seal syllabary and two spoken branches of *Proto-Ria*:
 
 1. **Lower Ria / Western Dynasty (`Heartland` `796, 176` & `Ria Sound` `626, 140` — Low-Ria *Rīwa-Tōka*, `style: 'lower-ria'`, 38 buildings):**
-   - **Linguistic shift:** Mississippian / Muskogean labial-preserving shift (`crown -> kulūną`, `stone -> sitōną`, `amber -> āmpala`, `palace-barge -> pālasi-bāča`, `weeping valley -> Wīpi-wāli`).
+   - **Linguistic shift:** Mississippian / Muskogean labial-preserving shift (`river -> Rīwa-Wāta`, `crown -> kulūną`, `stone -> sitōną`, `amber -> āmpala`, `palace-barge -> pālasi-bāča`, `weeping valley -> Wīpi-wāli`).
    - **Hereditary emblem:** **5-Headed Gilded *Uktena* River-Serpent** (`raNagaHead5`, `raNagaRail`).
    - **50/50 Fusion grammar:** Kiln-fired Babylonian polychrome glazed-brick Ishtar portals & battered pylons (`cobalt`-lapis, `emerald`-celadon, `saffron`-gold) + Persepolitan double-protome capitals + Classical fluted `travertine` round-arch arcades, Pantheon stepped saucer-rotundas, Minoan courts & crow-step merlons, balanced 50/50 with 3-to-7-tier Thai Rattanakosin *Prasat* & Burmese Konbaung *Pyatthat* glazed roofs, cruciform *Sala-Nam* water pavilions, glazed *Prangs*, and raised *Ruan-Thai* dark-`teak` halls.
 
-2. **Upper Ria / Eastern Dynasty (`Upper Ria` `1186, 118` & `Neo-Ozarks` `1135, 153` — High-Ria *Līwa-Tōga*, `style: 'upper-ria'`, 38 buildings):**
-   - **Linguistic shift:** Cherokee / Iroquoian bilabial-to-`kw/gw` and `r -> l` shift (`crown -> kwalūna`, `amber -> ākwala`, `upper ria -> Ākwala-Līwayi`, `palace-barge -> kwālasi-gwātsa`, `weeping valley -> Wīkwi-wāliyi`, `spring -> sikwīngi`).
+2. **Upper Ria / Eastern Dynasty (`Upper Ria` `1186, 118` & `Springhollows` `1135, 153` — High-Ria *Līwa-Tōga*, `style: 'upper-ria'`, 38 buildings):**
+   - **Linguistic shift:** Cherokee / Iroquoian bilabial-to-`kw/gw` and `r -> l` shift (`river -> Līwa-Wāda`, `shut-in river -> Tlīla-Wāda`, `crown -> kwalūna`, `amber -> ākwala`, `upper ria -> Ākwala-Līwayi`, `palace-barge -> kwālasi-gwātsa`, `weeping valley -> Wīkwi-wāliyi`, `spring -> sikwīngi`).
    - **Hereditary emblem:** **Silver-Bronze Crested Water-Swan (*Hongsa*)** (`raHongsaSculpt`, `raHongsaRail`, `raSwanFinial`).
    - **50/50 Fusion grammar:** Cut imperial `porphyry` & cream-white karst `dolomite` ashlar + flat-topped battered Egyptian cavetto pylons + green palm-frond capitals + Classical Greco-Roman rotunda-peristyles, market stoas, Pantheon domes & Pompeian-Minoan tapered-porphyry courts + **Compass-Hills `lodestone` obelisks** (`lodestone = 220`), balanced 50/50 with Khmer Angkor stone *Prangs*, Northern Lanna `alabaster` & `indigoslate` *Prasat* spires, patinated `copper` foundry roofs (`zinc = 90`), and karst counterweight boat-lifts.
 

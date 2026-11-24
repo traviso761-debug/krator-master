@@ -1,5 +1,5 @@
 // ================================================================= THE KIT: identity, library families, Finnic-Baltic + Rian loanword lexicon & palette ([G data])
-// The Kulanewa Free-Towns ("Kaks Kuluunat, Uks Raamat" / "Two Crowns, One Ledger", ~125,000 souls across the Arcflow Pak-Ma & Tong-Ma basin):
+// The Kulanewa Free-Towns ("Kaks Kuluunat, Uks Raamat" / "Two Crowns, One Ledger", ~125,000 souls across the Arcflow Suur-Neva & Mere-Upe basin):
 //   - Linguistic & cultural substrate: Finnic / Estonian / Baltic (Kulaneva-keel: Finnic kula "free-town/commune" + neva "broad river-reach",
 //     punning on Rian loanword kuluuna "crown") with extensive Rian loanwords (ampala-kiri, kaarum, kuluuna, sitoona, piliika, tooka)
 //     and reverse loans into Low-Ria & High-Ria (raha -> laha, valge-vask -> walaga-wasa, sampo -> sampo/sakwo, lotja -> loca/lotsa, maleva).
@@ -11,18 +11,18 @@
 //     governed by elected Vanemad parish lay-elders, running zero-usury Talku-Ait mutual-aid granary-vaults, pirtis steam-infirmaries,
 //     coal/iron/Arch-nickel sampo hydro-forges, and Maleva commoner pike/pavise/crossbow levies chanting antiphonal regilaul bell-hymns.
 const KIT={id:'kulanewa',title:'Kulanewa Free-Towns Architectural Kit',pack:'kulanewa',culture:'kulanewa',
- faction:'The Kulanewa Free-Towns',band:'Pak-Ma and Tong-Ma',frag:'kits/kulanewa',
+ faction:'The Kulanewa Free-Towns',band:'Suur-Neva and Mere-Upe',frag:'kits/kulanewa',
  ground:0x8e8a7e,groundProc:0x868276,fog:0xd8dedf,furnDetail:.62};
 const KL={DOOR_H:2.3,WALL:.4,SOCLE:.5,RISER:.18,BAY:3.4};
 const KL_FACTIONS={
  karum:{
-  style:'karum',name:'Kaarum-Linna Suurgild Syndicates',zone:'Downstream and Confluence Ports (Pak-Ma and Tong-Ma)',
+  style:'karum',name:'Kaarum-Linna Suurgild Syndicates',zone:'Downstream and Confluence Ports (Suur-Neva and Mere-Upe)',
   polity:'Joint-stock Suurgild merchant-banker brotherhoods (osakott venture-share sacks)',
   emblem:'Octagonal Cast-Bronze Kellakoda Syndicate Bell and Asymmetric Steelyard Balance',
   institutions:['osakott venture-share ledgers','64-sign ampala-kiri sealed tablets','Tooka-Hoov extraterritorial Ria clearing-wards','saunakoda steam-brokerage courts','raha credit-embargoes']
  },
  ikki:{
-  style:'ikki',name:'Ilma-Kuluuna Talku-Kula Communes',zone:'Upland Sampo Hydro-Forge and Maalinn Covenant Towns',
+  style:'ikki',name:'Ilma-Kuluuna Talku-Kula Communes',zone:'Upland Sampo Hydro-Forge and Maalinn Covenant Towns (Musta-Jogi and Helme-Koski)',
   polity:'Elected Vanemad parish lay-elder assemblies of Ilma-Kuluuna Kell (The Uncrowned Bell)',
   emblem:'The Uncrowned Cast-Bronze Kellakoda Bell and Valge-Vask Nickel Pavise Shield',
   institutions:['zero-usury Talku-Ait mutual-aid granaries','debtor sanctuary cloisters','sampo hydro-trip-hammer valge-vask forges','pirtis parish steam-infirmaries','Maleva pike-and-crossbow levies']
@@ -32,6 +32,12 @@ const KL_LEXICON={
  language:'Kulaneva-keel',
  substrate:'Finnic-Estonian-Baltic',
  etymology:'Finnic kula (free-town / commune) + neva (broad navigable river-reach), punning on Rian loan kuluuna (crown)',
+ rivers:{
+  'Suur-Neva':{id:9107,gloss:'Great Fen-Reach (740 km main trunk river of the Kulanewa Free-Towns; Rian Nola-Baca)'},
+  'Mere-Upe':{id:9103,gloss:'Sea-Tide River (780 km Baltic -upe northern Double Delta & Kaarum wharf channel)'},
+  'Musta-Jogi':{id:9108,gloss:'Black-Slate / Bog-Iron River (340 km upland hydro-forge tributary of the Suur-Neva)'},
+  'Helme-Koski':{id:9104,gloss:'Amber-Bead Rapids (310 km northern rim torrent feeding Mere-Upe)'}
+ },
  rianLoans:{
   'ampala-kiri':{from:'Low-Ria ampala',gloss:'notarized 64-sign amber-sealed promissory tablet (raw amber keeps Baltic-Finnic merevaik / gintar)'},
   'kaarumi-linna':{from:'Rian karum',gloss:'chartered merchant-banking and clearing port'},

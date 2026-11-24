@@ -45,7 +45,7 @@ const RA_TRADES=[
  {trade:'mushroom growers',voth:'mushroom farm',na:'sunlit subtropical river-plain and karst-terrace agriculture; no dark cavern fungus farms'},
  {trade:'envoys and embassy staff',voth:'embassy',lowerRia:['ra_west_mandarin_court','ra_west_chakri_chancellery','ra_west_pyatthat_hall','ra_west_prasat_palace'],upperRia:['ra_east_archon_residences','ra_east_archon_dicastery','ra_east_saffron_viharn','ra_east_swan_prasat']},
  {trade:'ferrymen',voth:'ferry, stop',lowerRia:['ra_west_crane_wharf','ra_west_water_gate'],upperRia:['ra_east_counterweight_wharf','ra_east_boatlift_hall','ra_east_skiff_boathouse']},
- {trade:'elephant bug handlers and station hands',voth:'bug station',na:'royal river-barges and mule caravans carry Ma-Ria trade; no elephant bugs'},
+ {trade:'elephant bug handlers and station hands',voth:'bug station',na:'royal river-barges and mule caravans carry Riwa-Wata and Liwa-Wada trade; no elephant bugs'},
  {trade:'monks and lay brothers',voth:'monastery',lowerRia:['ra_west_mondop_library','ra_west_celadon_prang_terrace','ra_west_prang_cloister'],upperRia:['ra_east_kinnara_dromos','ra_east_thepbidorn_pantheon','ra_east_mandala_cloister','ra_east_saffron_viharn']},
  {trade:'palace and canton staffs',voth:'the cantons',lowerRia:['ra_west_strategion_keep','ra_west_chakri_chancellery','ra_west_prasat_palace','ra_west_pyatthat_hall'],upperRia:['ra_east_acropolis_keep','ra_east_archon_dicastery','ra_east_swan_prasat','ra_east_lotus_dome']}
 ];

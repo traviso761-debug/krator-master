@@ -1,6 +1,6 @@
 # Ria Dynasty Architectural Kit (`kits/ria`)
 
-The full settlement-ready architectural kit of the **Ria Dynastic Continuum ("The Two Reaches")** along the `Mā-Rīa` river system (`CROOK-RIA-DECISIONS.md` §2.4, §2.6), built on `core/engine` with native vertical-stack graphics (`GRAPHICS-TERRAIN-PROPOSAL.md` Stages 1, 5 `M1`–`M4`, 7 `I1`–`I4`, §12d `K1`–`K4`).
+The full settlement-ready architectural kit of the **Ria Dynastic Continuum ("The Two Reaches")** along the **`Rīwa-Wāta` / `Līwa-Wāda` (*Ria River*)** system (`CROOK-RIA-DECISIONS.md` §2.4, §2.6), built on `core/engine` with native vertical-stack graphics (`GRAPHICS-TERRAIN-PROPOSAL.md` Stages 1, 5 `M1`–`M4`, 7 `I1`–`I4`, §12d `K1`–`K4`).
 
 Displays **76 complete `defBuilding` palaces, chancelleries, scripture mondops, royal pantheons, citadels, curtain bastions, naval boom-arsenals, crane wharves, caravan weigh-houses, aqueduct cisterns, courier relays, bazaars, thermae, craft works, and every class of poor, middle & rich single- and multi-family dwelling** (`38` Lower Ria + `38` Upper Ria) arranged across six rows, with full Voth census trade coverage (`RA_TRADES` in `src/72-ra-trades.js`) and a sealed settlement bundle (`kits/ria/kit_bundle.py` -> `RIK`):
 

@@ -42,7 +42,7 @@ const KL_TRADES=[
  {trade:'beetle herders',voth:'beetle ranch',na:'river barges, mules and Molu-che caravan trains haul Arcflow freight; no giant beetles'},
  {trade:'dairymen',voth:'dairy',karum:['kl_karum_kura_granary','kl_karum_caravanserai'],ikki:['kl_ikki_mujinzo_vault','kl_ikki_pack_depot']},
  {trade:'swineherds and duck keepers',voth:'sty, coop',karum:['kl_karum_trestle_cottage','kl_karum_porter_tenement'],ikki:['kl_ikki_smelter_hut','kl_ikki_commune_row']},
- {trade:'mushroom growers',voth:'mushroom farm',na:'temperate-subtropical Pak-Ma and Tong-Ma river-valley agriculture; no cavern fungus farms'},
+ {trade:'mushroom growers',voth:'mushroom farm',na:'temperate-subtropical Suur-Neva and Mere-Upe river-valley agriculture; no cavern fungus farms'},
  {trade:'envoys and embassy staff',voth:'embassy',karum:['kl_karum_treaty_factor','kl_karum_grand_bank','kl_karum_syndicate_court'],ikki:['kl_ikki_otona_hall','kl_ikki_elder_manor','kl_ikki_covenant_citadel']},
  {trade:'ferrymen',voth:'ferry, stop',karum:['kl_karum_crane_quay','kl_karum_mill_bridge','kl_karum_trestle_cottage'],ikki:['kl_ikki_covered_weir','kl_ikki_drum_gate']},
  {trade:'elephant bug handlers and station hands',voth:'bug station',na:'shallow-draft river barges and Moleshelf mule relays carry Kulanewa trade; no elephant bugs'},

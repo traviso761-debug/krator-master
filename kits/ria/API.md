@@ -2,7 +2,7 @@
 
 ## Kit Identity, Trades & Settlement Bundle (`src/26k-kit.js`, `src/72-ra-trades.js`, `kit_bundle.py`)
 
-- `KIT`: `{ id: 'ria', pack: 'ria', culture: 'ria', faction: 'Ria Dynasties of the Two Reaches', band: 'Ma-Ria', frag: 'kits/ria' }`
+- `KIT`: `{ id: 'ria', pack: 'ria', culture: 'ria', faction: 'Ria Dynasties of the Two Reaches', band: 'Riwa-Wata and Liwa-Wada', frag: 'kits/ria' }`
 - `RA_DYNASTIES`: `{ lowerRia, upperRia }` — canonical regional seats, linguistic shifts (*Rīwa-Tōka* vs *Līwa-Tōga*), cognates, and hereditary emblems.
 - `DEFS`: 76 `defBuilding` entries (`38` with `tags.style === 'lower-ria'` + `38` with `tags.style === 'upper-ria'`), covering `poor`, `middle`, and `rich` across both `dwelling-single` and `dwelling-multi`, plus full `military` (`6` per branch) and `infrastructure`/logistics (`7` per branch) rosters.
 - `RA_TRADES` / `raTradeDefs(style)` (`[G data]`): all 44 Voth census trades mapped to `lowerRia` (`ra_west_*`) and `upperRia` (`ra_east_*`) building keys.

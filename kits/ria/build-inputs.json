@@ -82,7 +82,7 @@
     "kits/ria/materials.json": "a8b484dc7f028765d377e3aabea077dbe09b7f4415801d29fcd6f42a7e15e726",
     "kits/ria/mip-variance.json": "b258b18b754fa5df377c8e4c3c44481c443a6831486d9941925797b9084cb234",
     "kits/ria/src/00-head.html": "3c295d492fdcb48ecde080c116b14aefc6f38b0d43aef98b718441cbaf22987e",
-    "kits/ria/src/26k-kit.js": "a10a1c0f3a3faad5a1b82952d77ec112223ecec2f38f32ef2cf8cd1cf05b51c4",
+    "kits/ria/src/26k-kit.js": "21134ee29b8aba33621b1169ddb799b01a29062e0bc6ec785a6f53661ecc0be3",
     "kits/ria/src/27v-ra-vstack.js": "9a795b953d3d36c986173b61b08dc41f3035b9d20ec1ecc257d111b4b65a86f0",
     "kits/ria/src/27z-ra-matfix.js": "f0121e24b729c1e0c6cbef7c3cb66fa2f04b3bad58f4ddfd03c8bac11156f149",
     "kits/ria/src/31-alt-takes.js": "2a4021867f9a5146c2b39290194f090441baaf2e5db9186821dcf3551f8be4a7",
@@ -104,7 +104,7 @@
     "kits/ria/src/69-ra-east-dwellings.js": "11638a54b15a7b27844e6558fe5fe3c36a1ca54a537bdd2456af1867ec9cb900",
     "kits/ria/src/69m-ra-east-mil-log.js": "ea71e969b31177558ebd1ae52ad4e3ee23d34646bc21539c20b5132f01fd1553",
     "kits/ria/src/70-ra-vocab.js": "04b069e8e6e18a6a88fe2475e82b64880f3bd054c493b6ce636ebecd30195d13",
-    "kits/ria/src/72-ra-trades.js": "13ba65fd757d16e59c58c3bb21cd63f84ae717e420616d8c5b0c7aaeb4c6c7bd",
+    "kits/ria/src/72-ra-trades.js": "6ccbf3d305b31bb229cc47579a09660bfc59e264a29765bf136e85cdbbcaf346",
     "kits/ria/src/89-rows.js": "dd980597586f22ef9c9a36eb80ba22e4cf1161bca30ab26bae804ee055a00928",
     "kits/ria/src/91r-ra-roomlight.js": "db53475ae4a77ba02e270a896fe8ff6f2019902126ff2e49f14b526564600495",
     "kits/ria/src/91z-ra-world.js": "d94783817bcb16c92b7e3d3c668cdcd481edfaace5d9c6c00b977642bfc6a90e",
@@ -300,14 +300,14 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "kits/ria/build-manifest.json": "444703129365ea24ce80ba806527a4a7078ce3ecd7049b6274c5a34aea44a01b",
-    "kits/ria/dist/ria.html": "fae3361a7d1aefa10d4e44aa821a70bff0c2f1ba321e814bbba980cb6a6c02f3",
+    "kits/ria/build-manifest.json": "c969f139ae5ac01e0bde1a90f370cd2bb3fc8a996847e9c70b71da67be904cc9",
+    "kits/ria/dist/ria.html": "ffea04b6ef28a50faa1bef3ab63f244db50279e5c0ddd4ffe8f081d582a8782c",
     "kits/ria/dist/ria.tex.ria-2.js": "d7380e623f7026035fe8c339bba094440bde12d578191addf38c6d256ec7b12b",
     "kits/ria/dist/ria.tex.ria.js": "a15750de0ce3993a2779bbb2cfce33c6772c7909b35622da5a7443ce01efcb8c"
    },
    "outputs_raw": {
-    "kits/ria/build-manifest.json": "444703129365ea24ce80ba806527a4a7078ce3ecd7049b6274c5a34aea44a01b",
-    "kits/ria/dist/ria.html": "fae3361a7d1aefa10d4e44aa821a70bff0c2f1ba321e814bbba980cb6a6c02f3",
+    "kits/ria/build-manifest.json": "c969f139ae5ac01e0bde1a90f370cd2bb3fc8a996847e9c70b71da67be904cc9",
+    "kits/ria/dist/ria.html": "ffea04b6ef28a50faa1bef3ab63f244db50279e5c0ddd4ffe8f081d582a8782c",
     "kits/ria/dist/ria.tex.ria-2.js": "d7380e623f7026035fe8c339bba094440bde12d578191addf38c6d256ec7b12b",
     "kits/ria/dist/ria.tex.ria.js": "a15750de0ce3993a2779bbb2cfce33c6772c7909b35622da5a7443ce01efcb8c"
    }

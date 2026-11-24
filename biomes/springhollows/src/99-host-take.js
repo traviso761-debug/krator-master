@@ -246,7 +246,7 @@ function hostNegatives(){
 const HINT=SKEY==='spring'
  ?'Cav Ozarks Resurgence (1144, 168, +996 m, 1.41 atm): 26 m3/s sapphire artesian mammoth-spring boiling out of a 24 m cherty-dolomite cave arch draped in twilight 495 nm cyan-jade tufabryum curtains, bald-cypress knees, and High-Ria cut-dolomite spring-gauge stelae.'
  :SKEY==='shutin'
- ?'Ching-Ma Red-Porphyry Shut-In Gorge (1224, 158, +1,480 m, 1.33 atm): flat cream carbonate-shelf dolostone sliced by a strike-aligned purple-red rhyolite porphyry dike, pinching the river into a foaming 16 m whitewater chute beside the reserved Eastern Dynasty counterweight boat-lift bench.'
+ ?'Tlila-Wada Red-Porphyry Shut-In Gorge (1224, 158, +1,480 m, 1.33 atm): flat cream carbonate-shelf dolostone sliced by a strike-aligned purple-red rhyolite porphyry dike, pinching the river into a foaming 16 m whitewater chute beside the reserved Eastern Dynasty counterweight boat-lift bench.'
  :SKEY==='fenestre'
  ?'Sinkhole Fern-Fenestre & Cathedral of the Red Porphyry Vein (1212, 174, +1,257 m, 1.37 atm): collapsed 18 m daylight skylight dropping via a walk-in breccia ramp into tube_ozarks_15, lined with 10-14 m pale-blue celestine megabeams, honey calcite druse, banded onyx, and zinc=90 galena ore.'
  :'Cherty-Dolomite & Red-Porphyry Glade (1176, 184, +1,107 m, 1.39 atm): sunny igneous glades, terraced High-Ria saffron & whorl-olive benches, suspended chert natural bridge over 20 m banded cave-onyx columns, and the western plateau Ancient defoliant bleach-belt scar.';

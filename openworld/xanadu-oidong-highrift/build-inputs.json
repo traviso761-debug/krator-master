@@ -188,8 +188,8 @@
     "kits/iziz-vernacular/src/69b-vern-mat.js": "706739ba81271b9c5962492c04c5f7fa3e500b5d0eafb1f0eef5d8d88abfdbba",
     "kits/iziz-vernacular/src/69c-vern-helpers.js": "29c11ba1c973f0ba8590e061d628ef88158a13cc87758501dcf36fd19c00ddd3",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
-    "kits/resources/data/geology.json": "2237276a4f84eb8c478cf33d5a5db613c1a8b9bd2617af4eae2ea2b8b100f157",
-    "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
+    "kits/resources/data/geology.json": "94ccef4b593bde0254fc8f6f157ec161d67b8579e780c0d7855ded7c757f484b",
+    "kits/resources/src/42r-res-ore.js": "a07d772f7dc72bfde527cc3f4c8050685b4eab577e504b5c26a4913d61828b14",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "kits/xanadu/src/70-xa-tex.js": "2efcc6922687bd9e374c03bdc8c3b75d5d2a1f06bf7da6656e4f95d0d32df02f",
     "kits/xanadu/src/71-xa-mat.js": "d08001da45495ca8d49b9df566d56c8c5b2567ee7d49b8e8b60c73deac436d41",
@@ -303,24 +303,24 @@
     "settlements/xanadu/tex/xWash.normal.webp": "57841d092925afa12258b073ca2acf360c9446d3889ed704cb95360cab61f56b",
     "settlements/xanadu/tex/xWash.rough.webp": "f35064c19cfa76777eefc2a14a1a56420c5adffa9f9e1d69e951550674808ad7",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/scale-model/model/data/landforms.json": "bd87f93a281a7311da333c83e057fed30710b83bca01494ae418532d0443f965"
+    "tools/scale-model/model/data/landforms.json": "498023fed7298845f074be8fe974dd128bf4276bb3861e8df355c9e32753608e"
    },
    "listings": {
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
     "kits/xanadu": "25f578ac1a833982cb6c6500e9dbc37febf0194959482d40192c7bfda9cd8754",
     "openworld/xanadu-oidong-highrift/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "openworld/xanadu-oidong-highrift/src": "c99889d340a3493548c958397281d77ab58db133b627cdab6a772400109cd30e",
-    "tools": "8f8a434506f0f5fcd749d4758afde15e9261c3d92121720aa1a42ad314e0a55c",
-    "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
+    "tools": "f800e267a4f84d022b480235d8cfa4e558b7c894ea514163297507b477d5b1c3",
+    "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "19803effcd6a4c8a4fac7f822b41384c2de43516b4948d340ae8c369a6ca09ef",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "67b845dece2cf67583fe95937941842628ef2a9144f5ef7926c57c608efb6440",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "c3269856e2c95ba86f6e187fafdf545be365b93d96a10e0ab80c93e013105321",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.twins.js": "f8ed6249b5789b72e2aadf52307ca14daac613fd17cabf995f9174647b4875de",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    },
    "outputs_raw": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "19803effcd6a4c8a4fac7f822b41384c2de43516b4948d340ae8c369a6ca09ef",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "67b845dece2cf67583fe95937941842628ef2a9144f5ef7926c57c608efb6440",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "c3269856e2c95ba86f6e187fafdf545be365b93d96a10e0ab80c93e013105321",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.twins.js": "f8ed6249b5789b72e2aadf52307ca14daac613fd17cabf995f9174647b4875de",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
