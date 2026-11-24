@@ -210,14 +210,13 @@ unused, and the same discipline holds for the escort cut, the pressure number an
 
 ## 7. Questions for the owner
 
-1. **Bāb al-Hawa's people.** Gemini's model says 320, which is more than Stair's 750 can be squared with for a camp in
-   a 3,590 m pass that grows nothing. *Proposed:* **120** — the keepers of the caravanserai, the shaft's winch crew and
-   the Brotherhood's or the Oasis Stations' hands — with the rest of Gemini's number being the caravans in residence on
-   any given night. And see question 4 of `PLAN.md`: whether the place exists at all is still open.
-2. **Ranger HQ.** It is Gemini's pin (2026-11-14), the same provenance as the two the owner dropped on 2026-11-16, and
-   it was never put to them. *Proposed:* **keep it** — it is the only counterparty the Stalkers have, it gives the Yuni
-   Emirate a presence on this map, and its 1,982 m valley is the one habitable spot in 255,000 km². Does the owner want
-   it, and is 350 right?
+1. **Bāb al-Hawa's people.** The place **stays** (the owner, 2026-11-24). Gemini's model says 320, which is hard to
+   square with Stair's 750 for a camp in a 3,590 m pass that grows nothing. *Proposed:* **120** — the keepers of the
+   caravanserai, the shaft's winch crew and the Oasis Stations' hands — with the rest of Gemini's number being the
+   caravans in residence on any given night, which the simulation already models as halts. (`PLAN.md` question C.)
+2. **Ranger HQ. ANSWERED (the owner, 2026-11-24: "Agree keep both"): it stays.** It is the only counterparty the
+   Stalkers have, it gives the Yuni Emirate a presence on this map, and its 1,982 m valley is the one habitable spot in
+   255,000 km². **Open:** whether Gemini's 350 is right (`PLAN.md` question D).
 3. **Hub 01's pressure.** Is a hidden, capped pressure number that the player can lower but never zero the right shape
    for the Stalkers' source? And should a player who reaches Hub 01 be able to change it — the owner's 2026-10-23 note
    says an Heir who used the Call there would be "either its master or its next subject".

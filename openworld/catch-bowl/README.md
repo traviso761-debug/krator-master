@@ -46,7 +46,14 @@ Blocking (`PLAN-TERRAIN.md` section 9): `biomes/catch`'s oasis records are **75 
 the two salt-works pins are **not on the map** (P5); `core/world` has **no hazard binding** (P3); the Stalkers have **no
 buried pose** (P12).
 
-Decisions: the **SE outer wall's cordillera rescale never landed** — 83 % of it is over 6,500 m against its plan's
-target of zero, although the pass and the tarns carved to the metre (P13); and **Gemini's three pins** — Bāb al-Hawa was
-dropped as having "no lore" six days *after* the seouterwall kit gave it a page of it, and Ranger HQ, the Stalkers' only
-counterparty, was never put to the owner at all (P6).
+## Settled by the owner, 2026-11-24
+
+*"Agree keep both and leave only east se outer wall high and airless."*
+
+- **Bāb al-Hawa stays** (the Vent-Shaft Caravanserai) and **Ranger HQ stays**; the **Twins fort drops**, as ruled on
+  2026-11-16 (P6).
+- **The SE outer wall's rescale** is applied to its **west**; the **east** stays high and airless, the Stalkers' transit
+  country (P13). Where the line falls is `PLAN.md` question A.
+
+The remaining questions are gathered in **`PLAN.md` section 10** (A to L, each with a recommendation), and the map edits
+this work owes the scale-model queue in **section 11**.

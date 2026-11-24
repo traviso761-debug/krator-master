@@ -312,7 +312,13 @@ supported: a scale-model edit that lands the pins, or `SITES.json` rows with `"m
 (as Lāiṭwāl, Gihon and Strongbow's foot are carried today). **Recommended: `model: false` rows now, the edit queued**, so
 the region does not wait on the map session.
 
-### P6 — the dropped pins, and the reason they were dropped *(decide before the cut; revised)*
+### P6 — the dropped pins *(SETTLED 2026-11-24: Bāb al-Hawa and Ranger HQ stay, the Twins fort drops)*
+
+**The owner, 2026-11-24: "Agree keep both."** `sbabalhawa01` (Bāb al-Hawa, the Vent-Shaft Caravanserai) and
+`sz85a8i5js` (Ranger HQ, Yuni's Stalker-watch) **stay**; `sthetwins01` (the Twins Pass Wardenry) **drops**, as ruled on
+2026-11-16. Bāb al-Hawa's pin wants moving onto the thalweg (P14); the three map edits are `PLAN.md` section 11.
+
+The question as it was put:
 
 The owner, 2026-11-16, dropped Gemini's Godsgate caravanserai and Twins fort, giving the reason **"Gemini's pin, with no
 lore"** (`PROPOSAL-CATCH.md` question 6). On 5.1 they were dropped as `gem_godsgate` and `gem_twins_pass` in
@@ -378,7 +384,15 @@ pose** (the lore's defining behaviour — lying in wait under a hand's depth of 
 thing that drags the quarry), and lopsided footprints. A Stalker ambush that cannot be drawn buried is a Stalker standing
 in the open. `PLAN-RAIDS.md`, step R3.
 
-### P13 — the SE outer wall's cordillera rescale never landed *(an owner call; shapes the whole province)*
+### P13 — the SE outer wall's cordillera rescale never landed *(SETTLED 2026-11-24: the west is rescaled, the east stays)*
+
+**The owner, 2026-11-24: "leave only east se outer wall high and airless."** Step 6.1 is applied to the **west**; the
+**east** keeps its 8-11 km cordillera, airless, as the Stalkers' transit country. **Where the line falls is still open**
+(`PLAN.md` question A): the data's natural break is at **x 1056** (the median jumps from 6,003 m to 7,281 m and the
+share over 8 km from 1 % to 33 %), but that leaves four of the five tarns in the airless half behind 6.0-6.4 km rims —
+hard at 0.44-0.47 atm, not lethal. The recommendation is the Godsgate's frame plus a ~25 km disc at each tarn.
+
+The question as it was put:
 
 Section 6a has the table. `biomes/seouterwall/PLAN.md` step 6.1 would compress the province into a **4,850 m median with
 zero cells over 6,500 m**, "eliminating the unbreathable 8-15 km Class O pancake while keeping dramatic 2,000-3,000 m
@@ -396,7 +410,7 @@ Three ways forward, and this is the single biggest decision the two new province
    Hub 01 airless, which is where the lore wants it anyway (the Stalkers transit the high snow-chutes).
 
 *Proposed:* **(3)**, and ask. It gives the player the explorable half, keeps the Stalkers' half forbidding, and is a
-smaller edit than (1).
+smaller edit than (1). — **The owner chose this shape on 2026-11-24**; only the line's place remains.
 
 ### P14 — Bāb al-Hawa's pin is 1,205 m up the corridor wall *(fix with the cut)*
 
@@ -449,14 +463,14 @@ a census it has no business having.
 | **P3** | yes | `core/world` has no hazard binding (but `core/hazard` and `core/atmos/fx` are both ready) |
 | **P4** | yes | `ROADS` fixes one grade and one width as module constants |
 | **P5** | yes | the two salt-works pins are not on the map |
-| P6 | decide | Gemini's three pins: Bāb al-Hawa (now with lore), the Twins fort, Ranger HQ (never put to the owner) |
+| P6 | **settled** | Gemini's three pins: Bāb al-Hawa **stays**, Ranger HQ **stays**, the Twins fort **drops** (the owner, 2026-11-24) |
 | P7 | withdrawn | there is no gap: it is the SE outer wall |
 | P8 | no | Jabal is a Bowl town, not on the Catch's rim |
 | P9 | decide | the Twins polygon overlaps region 2: the seam |
 | P10 | no | `biomes/gills` is a plan, not a kit: the Hermitage's pipe field waits |
 | P11 | no | `extract_region.py` wants scipy; GPU verifies want a lane |
 | P12 | no | the Stalkers have no buried pose and no harpoon line |
-| **P13** | decide | the SE outer wall's cordillera rescale never landed (83 % over 6,500 m against a target of zero) |
-| P14 | no | Bāb al-Hawa's pin is 1,205 m up the corridor wall |
+| **P13** | **settled, line open** | the rescale never landed; the owner rules the **west** rescaled and the **east** left high and airless (2026-11-24). Where the line falls is `PLAN.md` question A |
+| P14 | a map edit | Bāb al-Hawa's pin is 1,205 m up the corridor wall; now that the place stays, the pin moves to the thalweg (`PLAN.md` question B) |
 | P15 | no | the Tharn crater is 671 m out; outside this cut |
 | P16 | no | the Stalker Range has almost nothing to simulate, and should not be given a census |

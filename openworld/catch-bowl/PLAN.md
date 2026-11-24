@@ -1,6 +1,9 @@
 # The Catch, the Bowl, the SE outer wall and the Stalker Range in the open world: the plan
 
-**Revised 2026-11-24, second pass.** The owner: *"Include se outer wall and stalker range in the Sim as well."* The
+**Revised 2026-11-24, second pass.** The owner: *"Include se outer wall and stalker range in the Sim as well."*
+**Two questions answered the same day** (section 9, questions 4 and 5): *"Agree keep both and leave only east se outer
+wall high and airless."* So Bāb al-Hawa and Ranger HQ stay, the Twins fort drops as ruled, and the SE outer wall's
+rescale is applied to its western part only. The
 region grows from two provinces to four; the simulation side moves into its own file (`PLAN-SIM.md`); and two of the
 first pass's findings are corrected in `PLAN-TERRAIN.md`'s header — the Godsgate is a carved pass at a 1.1 % median
 grade, not a 5.3 km wall, and the Catch's storm machinery already exists in `core/atmos/fx`.
@@ -255,7 +258,11 @@ What this session leaves behind so a later one can pick any step up:
 3. **`biomes/catch`'s stale records** (P1, P2). Four of the kit's five oasis records are 75-209 km from their map pins,
    and the sand-sea and north-fan station sites now land on 4.9 km and 7.0 km of mountainside. Correct the kit's records
    and re-site those two stations against 5.1, or leave the station pages as they are and let the region differ?
-4. **Gemini's three pins, and the reason two were dropped** (P6, revised). On 2026-11-16 the owner dropped the Godsgate
+4. **Gemini's three pins. ANSWERED (the owner, 2026-11-24: "Agree keep both"):** **Bāb al-Hawa stays** and **Ranger HQ
+   stays**; the **Twins fort (`sthetwins01`) drops**, as ruled on 2026-11-16. Three map edits follow, in section 10. The
+   question as it was put:
+
+   On 2026-11-16 the owner dropped the Godsgate
    caravanserai and the Twins fort as *"Gemini's pin, with no lore"*. Since then:
    - **Bāb al-Hawa has a page of lore** — `biomes/seouterwall/PLAN.md` 3.3 (2026-11-10, six days *before* the drop)
      makes it the **Vent-Shaft Caravanserai**: a 40 m Ancient shaft collar still drafting +16 °C air from the collapsed
@@ -268,11 +275,13 @@ What this session leaves behind so a later one can pick any step up:
    Stalkers' only counterparty: `PLAN-SIM.md` 4a), drop the Twins fort as ruled, and reconcile the map. If the owner
    still wants Bāb al-Hawa gone, the Godsgate becomes a pass with no shelter and the north road's nights become losses —
    which is a coherent and harsher world, but the seouterwall kit's section 3.3 then wants rewriting.
-5. **The SE outer wall's cordillera rescale** (P13) — *the biggest decision the two new provinces raise.* Its plan's step
-   6.1 would bring the province to a 4,850 m median with **zero cells over 6,500 m**; the map still reads 7,962 m median
-   and 83 % over 6,500 m, although the Godsgate carve and all five tarns landed to the metre. *Proposed:* apply it to
-   the **western lobe only** (x 997-1150: the Godsgate's frame and tarns 1-3), leaving the eastern wall above Hub 01
-   airless where the lore wants it. The alternatives are to apply it whole or to leave it.
+5. **The SE outer wall's cordillera rescale** (P13). **ANSWERED (the owner, 2026-11-24: "leave only east se outer wall
+   high and airless"):** the rescale (its plan's step 6.1) is applied to the **west** and the **east stays as it is** —
+   high, airless, and the Stalkers' transit country. **Where the line falls is a follow-up question** (section 10,
+   question A), because the data puts the natural break at x 1056 and that leaves four of the five tarns in the airless
+   half. The question as it was put: its plan's step 6.1 would bring the province to a 4,850 m median with zero cells
+   over 6,500 m; the map still reads 7,962 m median and 83 % over 6,500 m, although the Godsgate carve and all five
+   tarns landed to the metre.
 6. **The Izani-Dasri village's name.** The map calls `sq11desertw7` (1042,1083) "Izani-Dasri village (to be named)".
    The session can propose names on the tongues' sound rules, as it did for the oases.
 7. **The Bowl's arcology.** `ANCIENT-NETWORK.md` 8.1 answer 3 has the owner's *"the rail line might even extend from
@@ -290,3 +299,118 @@ What this session leaves behind so a later one can pick any step up:
     cut and the flora) first, then the core changes of B3 and B5 as their own session, since region 2 is waiting on the
     same two. `PLAN-SIM.md`'s S1-S3 can run in parallel with either, because the tunes are node-tested data and need no
     ground.
+
+## 10. The questions still open (2026-11-24, after the owner's two answers)
+
+Questions 4 and 5 of section 9 are answered. These are the rest, consolidated from this file and `PLAN-SIM.md`, each
+with what hangs on it and a recommendation. **A, B and C follow from the two answers and are new.**
+
+### A. Where does the rescale's line fall, and do the eastern tarns keep a way in? *(new; blocks the map edit)*
+
+The province is already two halves, measured by x-band
+(`python3 openworld/catch-bowl/tools/survey.py seow`, and the band table below):
+
+| Band | Cells | Median | Over 6.5 km | Over 8 km |
+|---|---|---|---|---|
+| x 997-1026 | 2,264 | 6,314 m | 43 % | **1 %** |
+| x 1027-1056 | 2,786 | 6,003 m | 34 % | **1 %** |
+| x 1057-1086 | 3,489 | 7,281 m | 70 % | 33 % |
+| x 1087-1146 | 8,687 | 7,998-8,488 m | 88-90 % | 50-69 % |
+| x 1147-1266 | 15,054 | 8,049-8,293 m | 89-95 % | 51-56 % |
+| x 1267-1356 | 5,872 | 8,837-9,603 m | 88-100 % | 62-88 % |
+
+The break is at **x 1056**: the median jumps 1.3 km and the share over 8 km goes from 1 % to 33 %. West of it the
+province is *already* close to its plan's target; east of it, it never is.
+
+But the five tarns are at x **1016, 1064, 1134, 1208, 1288**, so a line at 1056 leaves **four of the five** in the
+airless half. Their lowest rims within 20 km are **4,608 / 6,377 / 6,021 / 6,202 / 6,424 m** — that is 0.44 to 0.47 atm,
+which `KHAZ`'s `thin-air` row makes *hard* (it ramps from .6 atm "a person tires") but not lethal (.06 atm). Tarn 5 in
+particular has a real way in from the Yuni side: over one 6,633 m lip and then a continuous descent (5,020, 4,677,
+4,342, 4,086, 4,025, 2,930, 933, 636 m into the Yuni valley), which is why its plan has the Geomancers' mine there.
+
+| | What it means |
+|---|---|
+| **A1. The line at x 1056** | the smallest edit; the Godsgate's frame and tarn 1 become breathable alpine, everything else stays as it is. Tarns 2-5 keep 6.0-6.4 km rims: findable by a well-equipped player, not by a caravan |
+| **A2. The line at x 1150** | tarns 2 and 3 come into breathable country too; a bigger edit, and it rescales 12,000 cells the lore wants airless |
+| **A3. The corridor plus five discs** *(recommended)* | rescale the Godsgate's frame (x 997-1056) **and a ~25 km disc at each tarn**, leaving the whole matrix between them untouched. Most literally what the owner said — only the east stays high and airless — while keeping all five tarns as the "rewards for off-road exploration" their plan calls them, each reached by its own hard approach |
+
+### B. Bāb al-Hawa's pin, now that it stays *(new; a map edit)*
+
+Its own plan puts the vent collar and the sunken caravanserai apron at **+3,590 m** just south of the 3,620 m saddle; the
+map's pin (1033,1258) reads **4,795 m**, 1,205 m up the corridor's east wall, while the thalweg at that row is at px
+**1027**. *Recommended:* **move the pin to about px 1027,1258** — the plan describes a sunken apron on the pass floor,
+not a perch. The alternative is to leave the pin and cut the caravanserai a `bench`, which contradicts "sunken".
+
+### C. Bāb al-Hawa's people *(new)*
+
+Gemini's model says **320**, which is hard to square with Stair's 750 for a camp at 3,590 m that grows nothing and
+carries every kilogram of fodder up 2,400 m. *Recommended:* **120** permanent — the caravanserai's keepers, the shaft's
+winch crew and the Oasis Stations' hands — with the rest of Gemini's number being the caravans in residence on a given
+night, which the simulation already models as halts rather than population.
+
+### D. Ranger HQ's people and its economy *(from `PLAN-SIM.md` 7.2 and 7.4)*
+
+Gemini says **350**. *Recommended:* keep 350, as a garrison town rather than a village: rangers, a watch, a smith, a
+surgeon, the families. And: is a **sworn escort with a cut of the cargo** the right economy for them — mirroring the
+Brotherhood's Split Tally over the Twins — or are they a government garrison paid from Yuni with no price on their
+service? *Recommended:* the cut, because it gives the player something to buy or refuse.
+
+### E. Hub 01's shape on the simulation *(`PLAN-SIM.md` 4b, 7.3)*
+
+Is a **hidden, capped pressure number** the right shape for the Stalkers' source — one the player can lower by killing
+triads but never drive to zero, and that is never named in any report they can read? And should an Heir who reaches Hub
+01 be able to change it (the owner, 2026-10-23: "either its master or its next subject")? *Recommended:* yes to the
+hidden capped number; leave the Heir's lever to the story and build no hook for it yet.
+
+### F. `biomes/catch`'s stale records *(section 9 question 3; P1 and P2, blocking)*
+
+Four of the kit's five `CATCH.OASES` records are **75 to 209 km** from their 5.1 pins (only Stair agrees), and the
+sand-sea and north-fan station sites now land on **4.9 km and 7.0 km** of mountainside. Correct the kit's records and
+re-site those two stations against 5.1, or leave the station pages and let the region differ? *Recommended:* correct the
+records (a `[G data]` edit, the names and tongues untouched) and re-site the two stations, because the region will
+otherwise advertise country the kit does not show.
+
+### G. The seam with `xanadu-oidong-highrift` *(section 9 question 2; P9)*
+
+*Recommended:* region 2 keeps the Twins and the descent as far as Catch-Lookout; this region keeps the floor, Stair and
+the White Gills Hermitage (which lies inside `the catch` polygon, not the Twins'); Lasso and Bitta are cut by both
+through `reach_km_by`. `PLAN-TWINS-CROSSING.md` W1 currently gives region 2 Stair's campground as well.
+
+### H. The Izani-Dasri village's name *(section 9 question 6)*
+
+The map calls `sq11desertw7` (1042,1083) "Izani-Dasri village (to be named)". *Recommended:* this session proposes
+names on the tongues' sound rules, as it did for the five oases, and the owner picks.
+
+### I. The Bowl's arcology *(section 9 question 7)*
+
+`ANCIENT-NETWORK.md` 8.1 answer 3 has the owner's *"the rail line might even extend from strongbow, to theodiga, to
+Stair, to an arcology TBD in the bowl"*. **Arcbeam** (1016,1058) is the Bowl's one arcology on the map and the north end
+of the collapsed Arcbeam-Stair base tunnel the Godsgate was built to serve. *Recommended:* Arcbeam is that arcology.
+
+### J. The Stalker Gate *(section 9 question 8; `PLAN-SIM.md` 7.5)*
+
+129,000 km², median 4,057 m, the pass network to Yuni, the Loom Chasms, the Slabfields and the Siphon Pits — and it
+holds Ranger HQ too, which this region now cuts. Not in this cut. A later region's, Yuni's, or added here?
+*Recommended:* a later region's, with Ranger HQ shared through `reach_km_by`.
+
+### K. One region or two *(section 9 question 1)*
+
+*Recommended:* one, with all four provinces (section 2). Still worth a yes before anything is cut, because it is the
+frame for every other answer.
+
+### L. How much to build, and in what order *(section 9 question 10)*
+
+*Recommended:* B0-B2 (the cut and the flora) first; then B3 and B5's core changes as their own session, since region 2
+waits on the same two; `PLAN-SIM.md`'s S1-S3 can run in parallel with either, because the tunes are node-tested data and
+need no ground.
+
+## 11. The map edits this work now owes the scale-model queue
+
+| # | Edit | From |
+|---|---|---|
+| 1 | **Drop `sthetwins01`** (the Twins Pass Wardenry, 1042,1525) | the owner, 2026-11-16, confirmed 2026-11-24 |
+| 2 | **Keep `sbabalhawa01`** and move its pin onto the Godsgate thalweg (~px 1027,1258, +3,590 m) | the owner, 2026-11-24; question B |
+| 3 | **Keep `sz85a8i5js`** (Ranger HQ) | the owner, 2026-11-24 |
+| 4 | **Apply `biomes/seouterwall/PLAN.md` step 6.1 to the western part only**, leaving the east high and airless | the owner, 2026-11-24; the line is question A |
+| 5 | **Land the two salt-works pins** (Ṣalṭ al-Bān `svhmyhf33w` 1080,1428; Solta `s0zgu7u6yb` 1169,1150), held in batch 5.1e10 | P5 |
+| 6 | **Move the four Catch oasis records** in `biomes/catch/src/50-biome-catch-species.js` onto their 5.1 pins (a kit edit, not a map edit) | P1; question F |
