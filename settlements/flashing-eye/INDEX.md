@@ -39,4 +39,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `cone` | `89z-rows.js`, `89zfe-site.js`, `90fe-world.js`, `90fg-build.js`, `90fh-vent.js`, `90fi-bridges.js`, `90fj-face.js`, `90fk-fe-interiors.js`, `90fl-fe-people.js`, `90fl-stair.js`, `91z-views.js` | 119 |
+| `cone` | `89z-rows.js`, `89zfe-site.js`, `90fe-world.js`, `90fg-build.js`, `90fh-vent.js`, `90fi-bridges.js`, `90fj-face.js`, `90fk-fe-interiors.js`, `90fl-stair.js`, `90fm-fe-people.js`, `91z-views.js` | 119 |

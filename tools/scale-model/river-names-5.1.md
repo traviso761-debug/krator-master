@@ -1,25 +1,26 @@
-# Rivers & Wadis of Krator — Scale Model 5.1 (All 27 Cultural Tongues & Dialects)
+# Rivers & Wadis of Krator — Scale Model 5.1 (All 35 Cultural Tongues & Dialects)
 
-Total named courses: **893** (`0` unnamed placeholders remaining).
+Total named courses: **920** (`0` unnamed placeholders remaining).
 
 ## Summary by Tongue
 
 | Tongue Code | Courses Named | Example Courses |
 | :--- | ---: | :--- |
-| `yuni` | 104 | `Vapora Riba` (343 km), `Ostrukh Riba` (300 km), `the Bigga` (242 km), `Solt Riba` (203 km) |
+| `yuni` | 104 | `Vapora Riba` (343 km), `Ostrukh Riba` (262 km), `the Bigga` (242 km), `Solt Riba` (203 km) |
 | `dasri` | 84 | `Wādī al-Layl` (313 km), `Wādī al-Kawkab` (228 km), `Wādī al-Ṣakhr` (221 km), `Rīfar al-Qaṣr` (211 km) |
 | `hum` | 83 | `Hām-Tsēk (Web-Cleaver River)` (890 km), `Hau-Gèl (Outland Gate River)` (680 km), `Tsēk-Gèl` (308 km), `Sām-Hām` (151 km) |
 | `dalab` | 73 | `Grin Riba` (219 km), `Gould Riba` (210 km), `Pan Riba` (180 km), `Brait Riba` (175 km) |
-| `eternian` | 72 | `Ria River (Mā-Rīa)` (2140 km), `Tōng-Mā (North Ria Distributary)` (780 km), `Pāk-Mā (North Ria Fork)` (740 km), `Līng-Mā` (393 km) |
-| `tungang` | 63 | `Kopa-Tarn Warra (Crook River)` (980 km), `Verdigris Beck` (540 km), `Shatter-Scarp Gill` (465 km), `Blek Warra` (410 km) |
+| `eternian` | 67 | `Līng-Mā` (393 km), `Hāk-Mā` (187 km), `Chī-Mā` (169 km), `Hōng-Mā` (161 km) |
 | `izani` | 62 | `Bruk Loña` (227 km), `Rrivar Blaca` (192 km), `Rrivar Loña` (165 km), `Guli rrija` (158 km) |
+| `tungang` | 61 | `Verdigris Beck` (540 km), `Shatter-Scarp Gill` (465 km), `Fell-Block Beck` (390 km), `Tlahn Warra` (341 km) |
 | `yusar` | 50 | `Waywater Fallhigh` (177 km), `Waywater Coldkeep` (176 km), `Waywater Windlow` (154 km), `Waywater Ironblack` (148 km) |
-| `farside` | 37 | `xMista qRiba` (82 km), `ɓRiba qRiba` (80 km), `qRidj qRiba` (75 km), `qBlaka qRiba` (69 km) |
 | `argot` | 36 | `Xipa Guli` (130 km), `Gete Guli` (125 km), `yardang Guli` (100 km), `katarak Guli` (98 km) |
+| `yonni` | 34 | `Kandē-Dānu` (82 km), `Tīgra-Dānu` (80 km), `Khōnna-Dānu` (75 km), `Sāva-Dānu` (69 km) |
+| `xanadui` | 34 | `Keb Riwā` (334 km), `Ālph` (138 km), `Nahr ash-Shalālāt` (134 km), `Āirã Siṭrīm` (124 km) |
 | `vothic` | 32 | `Drïm Rivrh` (207 km), `klir Rivrh` (205 km), `Sharf Rivrh` (137 km), `Kowld Rivrh` (131 km) |
-| `xanadui` | 32 | `Rīfar al-Jadwal` (334 km), `Nahr ash-Shalālāt` (134 km), `Rīfar al-Bihār` (95 km), `Bīruk al-Ghaym` (90 km) |
 | `riders` | 22 | `Na'ashǫ́'ii Baatar` (138 km), `Ch'il Baatar` (128 km), `Łizhin Baatar` (123 km), `Tsékooh Baatar` (122 km) |
 | `tabist` | 22 | `Rvr Fḍḍ` (93 km), `Rvr Ḥmm` (85 km), `Gl Ḏhb` (84 km), `Gl Šms` (80 km) |
+| `dzagh-vardzi` | 20 | `Khōpri-Tskhali (Crook River)` (1030 km), `Shāvi-Hūshi Tskhali` (410 km), `Chūmi-Kāri Tskhali` (198 km), `Tbīli-Tbā Tskhali` (192 km) |
 | `republic` | 19 | `Kaskejt Rivr` (244 km), `Dip Rivr` (80 km), `Frost Rivr` (72 km), `Frost Bruk` (70 km) |
 | `khaay` | 19 | `Ïsnoo Quli` (293 km), `Gïriin Quli` (127 km), `Lheek Quli` (117 km), `Khaay Quli` (100 km) |
 | `vrivolci` | 17 | `Dubnosriba` (211 km), `Ixosriba` (130 km), `Clodosriba` (112 km), `Rixosbruk` (94 km) |
@@ -28,39 +29,44 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `scyvoi` | 10 | `Cakmak Riviri` (150 km), `Kumun Gulusu` (80 km), `Kumun Buruku` (71 km), `Sivift Gulusu` (71 km) |
 | `screamer` | 6 | `Mirage Wash` (131 km), `Noon Wash` (80 km), `Red Wash` (67 km), `Lost Wash` (26 km) |
 | `heiland` | 6 | `Payar Kuri` (33 km), `Hay Kuri` (33 km), `San Kuri` (17 km), `Suno Kuri` (12 km) |
+| `hueru-kuran` | 5 | `Sīda-Gōji Kawa` (211 km), `Fjōdu-Mīst Kawa` (158 km), `Bāsaruto-Kawa` (131 km), `Hueru-Bēnchi Kawa` (83 km) |
 | `painted` | 4 | `Ràv Rìv` (105 km), `Àirn Rìv` (81 km), `Òk Rìv` (48 km), `Blùd Gèl` (39 km) |
+| `kulanewa` | 4 | `Mere-Upe (North Delta Reach)` (780 km), `Suur-Neva (Arcflow River)` (740 km), `Musta-Jõgi` (340 km), `Helme-Koski` (310 km) |
+| `farside` | 4 | `ɓSuna cBruk` (29 km), `xBrod qRiba` (26 km), `ɓSuna qRiba` (26 km), `qRidj cBruk` (25 km) |
 | `islander` | 3 | `Vai Toka` (66 km), `Vai Moana` (64 km), `Auwai Kura` (6 km) |
 | `talovolci` | 3 | `Vindos Rivros` (130 km), `Nemetos Brucos` (73 km), `Viros Brucos` (46 km) |
 | `zeijani` | 3 | `Palgu-Peṣû` (36 km), `Nāru-Dannu` (26 km), `Palgu-Šadû` (20 km) |
 | `islanderw` | 1 | `Vai Pou` (30 km) |
+| `low-ria` | 1 | `Rīwa-Wāta (Ria River)` (2140 km) |
+| `high-ria` | 1 | `Tlīla-Wāda` (320 km) |
 | `hykkousik` | 1 | `Stahr Rhyver` (95 km) |
 
 ## Major Rivers & Wadis (`>= 120 km` or Canon/Expansion)
 
 | ID | 4.21/4.23 Old Name | 5.1 New Name | Tongue | Kind | Length (km) | Source -> Mouth (m) | Drains To | Gloss |
 | ---: | :--- | :--- | :--- | :--- | ---: | :--- | :--- | :--- |
-| `9101` | `(5.1 expansion)` | **Ria River (Mā-Rīa)** | `eternian` | river | 2140 | `1412 -> 0` | sea | Ria River / Mā-Rīa ('River of Reeds & Ink') — 2,140 km sinuous Nile-style trunk river from the Eastern Highland Lake to the Great Double Delta |
-| `9105` | `(5.1 expansion)` | **Kopa-Tarn Warra (Crook River)** | `tungang` | river | 980 | `2380 -> 0` | sea | Kopa-Tarn Warra ('Copper-Tarn Water') — 980 km emerald-green glacial meltwater river draining the Copper Tarn northward through the Crook |
-| `9102` | `(5.1 expansion)` | **Hām-Tsēk (Web-Cleaver River)** | `hum` | river | 890 | `1460 -> 403` | Ria River (Mā-Rīa) | Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through the Northern Korona & Arachnoid Scenic Gorge into the Ria River |
-| `9103` | `(5.1 expansion)` | **Tōng-Mā (North Ria Distributary)** | `eternian` | river | 780 | `155 -> 0` | Ria River (Mā-Rīa) | Tōng-Mā ('Northern Reed-Channel') — 235 km northern distributary of the Great Double Delta |
-| `9107` | `(5.1 expansion)` | **Pāk-Mā (North Ria Fork)** | `eternian` | river | 740 | `1266 -> 0` | Ria River (Mā-Rīa) | Pāk-Mā ('White-Peak Water') — 560 km Blue-Nile-style northern tributary joining the lower Ria River |
-| `9106` | `(5.1 expansion)` | **Hau-Gèl (Outland Gate River)** | `hum` | river | 680 | `2310 -> 1397` | lake | Hau-Gèl ('Coyote-Gate River') — 360 km trans-boundary pass river linking the eastern Ria basin through the Outland Gate into northern Outland |
+| `9101` | `Ria River (Mā-Rīa)` | **Rīwa-Wāta (Ria River)** | `low-ria` | river | 2140 | `1412 -> 0` | sea | Rīwa-Wāta ('Sound-Reach Water'; High-Ria Līwa-Wāda, Kulanewa Riiava-Jõgi) — 2,140 km trunk river from Upper Ria past Weeping Valley and Heartland to Ria Sound & the Great Double Delta |
+| `9105` | `Kopa-Tarn Warra (Crook River)` | **Khōpri-Tskhali (Crook River)** | `dzagh-vardzi` | river | 1030 | `0 -> 0` | sea | Khōpri-Tskhali ('Copper-Water' in Dzagh-Vardzi; Hueru-Kuran Kōpa-Kawa at the mouth, Tungang Kopa-Tarn Warra at its Copper Tarn head) — 1,030 km emerald-green glacial meltwater trunk river of the Crook |
+| `9102` | `(5.1 expansion)` | **Hām-Tsēk (Web-Cleaver River)** | `hum` | river | 890 | `1460 -> 403` | Rīwa-Wāta (Ria River) | Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through Spider Lake & the Arachnoid Scenic Gorge into Rīwa-Wāta |
+| `9103` | `Tōng-Mā (North Ria Distributary)` | **Mere-Upe (North Delta Reach)** | `kulanewa` | river | 780 | `155 -> 0` | Rīwa-Wāta (Ria River) | Mere (sea-tide, Estonian) + Upe (river, Baltic; Low-Ria Hālā-Bāča) — 780 km northern Double Delta & Kārum wharf channel joining Rīwa-Wāta |
+| `9107` | `Pāk-Mā (North Ria Fork)` | **Suur-Neva (Arcflow River)** | `kulanewa` | river | 740 | `1266 -> 0` | Rīwa-Wāta (Ria River) | Suur (great, Estonian) + Neva (broad navigable fen-river, Finnic; Rian Nōła-Bāča, Mōlu-Dungu Fütra-Lüfü) — 740 km main trunk river of the Kulanewa Free-Towns joining Rīwa-Wāta above the Double Delta |
+| `9106` | `(5.1 expansion)` | **Hau-Gèl (Outland Gate River)** | `hum` | river | 680 | `2310 -> 1397` | lake | Hau-Gèl ('Coyote-Gate River') — 680 km trans-boundary pass river linking Spider Lake through the Outland Gate into northern Outland |
 | `r_hr_verdigris` | `Verdigris Run` | **Verdigris Beck** | `tungang` | river | 540 | `3582 -> 2380` | — | Verdigris Beck ('Copper-Ice Beck') — High Rift turquoise glacial meltwater stream |
 | `r_lab_chaos_s` | `(5.1 expansion)` | **Shatter-Scarp Gill** | `tungang` | river | 465 | `3235 -> 1199` | — | Shatter-Scarp Gill ('South Chaos Cross-Channel') — anastomosing meltwater channel threading the southern Chaos mesas |
-| `9110` | `(5.1 expansion)` | **Blek Warra** | `tungang` | river | 410 | `2074 -> 831` | Kopa-Tarn Warra (Crook River) | Blek (black-shale) + Warra (river) |
+| `9110` | `Blek Warra` | **Shāvi-Hūshi Tskhali** | `dzagh-vardzi` | river | 410 | `2074 -> 831` | Khōpri-Tskhali (Crook River) | Shāvi (black-shale) + Hūshi (Silent-Vale hush) + Tskhali (river) — 410 km black-shale & acoustic-shadow gorge river draining the Silent Vales to Flūmi-Brīdzi |
 | `r002` | `Farside river` | **Līng-Mā** | `eternian` | river | 393 | `54 -> 0` | ocean | Līng (lotus-bell) + Mā (river) — Farport's drowned estuary river |
 | `r_lab_chaos_n` | `(5.1 expansion)` | **Fell-Block Beck** | `tungang` | river | 390 | `2533 -> 1420` | — | Fell-Block Beck ('North Chaos Cross-Channel') — anastomosing meltwater channel threading the northern Chaos mesas |
 | `r_sg_vapora_bigga` | `Krikki Gorge Run` | **Vapora Riba** | `yuni` | river | 343 | `1910 -> 1863` | — | Vapora Riba ('Steam-Gate River') — geothermal headwater of the Bigga rising in the Stalker Gate |
-| `9108` | `(5.1 expansion)` | **Mō-Mā** | `eternian` | river | 340 | `2881 -> 210` | Pāk-Mā (North Ria Fork) | Mō (ink-stone) + Mā (river) |
-| `r107` | `Phols Siṭrīm` | **Rīfar al-Jadwal** | `xanadui` | river | 334 | `2045 -> -1655` | lake (-1,686 m) | aljadwal (terraced-rill) + Rīfar (river) |
 | `r_fb_central` | `(5.1 expansion)` | **Tlahn Warra** | `tungang` | river | 341 | `2280 -> 1980` | lake (1,980 m) | Tlahn (iron-clan) + Warra (river) |
-| `9109` | `(5.1 expansion)` | **Chīng-Mā** | `eternian` | river | 320 | `1290 -> 846` | Ria River (Mā-Rīa) | Chīng (clear-mirror) + Mā (river) |
+| `9108` | `Mō-Mā` | **Musta-Jõgi** | `kulanewa` | river | 340 | `2881 -> 210` | Suur-Neva (Arcflow River) | Musta (black-slate / bog-iron, Finnic-Estonian) + Jõgi (river, Estonian) — 340 km steep northern hydro-forge tributary of the Suur-Neva in upland Kulanewa |
+| `r107` | `Phols Siṭrīm` | **Keb Riwā** | `xanadui` | river | 334 | `2045 -> -1655` | lake (-1,686 m) | Keb (cave) + Riwā (river) |
+| `9109` | `Chīng-Mā` | **Tlīla-Wāda** | `high-ria` | river | 320 | `1290 -> 846` | Rīwa-Wāta (Ria River) | Tlīla (sapphire-clear / mirror) + Wāda (river, labial-free High-Ria Līwa-Tōga) — 320 km Springhollows karst-spring & red-porphyry shut-in tributary joining the upper Ria (Līwa-Wāda) |
 | `r417` | `Wādī al-Lonj` | **Wādī al-Layl** | `dasri` | wadi | 313 | `1620 -> -1766` | lake (-1,882 m) | al-Layl (star-night) + Wādī (wadi) |
-| `9104` | `(5.1 expansion)` | **Sī-Mā (South Ria Distributary)** | `eternian` | river | 310 | `5412 -> 0` | Tōng-Mā (North Ria Distributary) | Sī-Mā ('Southern Marsh-Channel') — 250 km southern distributary of the Great Double Delta |
+| `9104` | `Sī-Mā (South Ria Distributary)` | **Helme-Koski** | `kulanewa` | river | 310 | `5412 -> 0` | Mere-Upe (North Delta Reach) | Helme (amber-bead, Estonian helmes / Finnic helmi; Rian loanword kōlu-helme) + Koski (cataract / mill-rapids, Finnic) — 310 km northern rim torrent feeding Mere-Upe in the amber fens |
 | `r432` | `The Tiers wadi` | **Tsēk-Gèl** | `hum` | wadi | 308 | `1194 -> -468` | — | Tsēk (cleaver-stone) + Gèl (wadi) |
-| `r_mb_siphon_breach` | `Siphon-Breach Cascade` | **Ostrukh Riba** | `yuni` | river | 300 | `2022 -> 334` | — | Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh |
 | `r195` | `Yeti Valley stream` | **Ïsnoo Quli** | `khaay` | wadi | 293 | `6070 -> 1551` | lake (681 m, through) | Ïsnoo (drift-snow) + Quli (wadi) |
 | `r_hr_jokulhlaup` | `Fire-Ice Torrent` | **Brant-Fell Gill** | `tungang` | river | 271 | `4122 -> 2622` | — | Brant-Fell Gill ('Steep-Fell Jökulhlaup Gorge') — catastrophic glacial outburst gorge descending from the High Rift rim |
+| `r_mb_siphon_breach` | `Siphon-Breach Cascade` | **Ostrukh Riba** | `yuni` | river | 262 | `2036 -> 1850` | lake (1,850 m) | Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh |
 | `r004` | `Kaskejt Rivr` | **Kaskejt Rivr** | `republic` | river | 244 | `2382 -> 39` | lake (17 m) | Cascade River ('Kaskejt Rivr') — the stepped cataract river of Cascade |
 | `r019` | `the Bigga` | **the Bigga** | `yuni` | river | 242 | `3542 -> -2599` | lake (-2,400 m) | the Bigga ('the Bigger') — mother river of Yuni Valley |
 | `r451` | `Wādī al-Ṣan` | **Wādī al-Kawkab** | `dasri` | wadi | 228 | `725 -> -2033` | lake (-2,045 m) | al-Kawkab (falling-star) + Wādī (wadi) |
@@ -70,41 +76,53 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r_fb_east` | `(5.1 expansion)` | **Weyt Warra** | `tungang` | river | 218 | `1960 -> 1720` | lake (1,720 m) | Weyt (white-water) + Warra (river) |
 | `r011` | `Giant Country river 2` | **Dubnosriba** | `vrivolci` | river | 211 | `3154 -> 6` | lake (-9 m) | Dubnos (deep-hollow) + Riba (river) |
 | `r053` | `Rīfar al-Maḍar` | **Rīfar al-Qaṣr** | `dasri` | river | 211 | `3852 -> -1978` | lake (-2,331 m) | al-Qaṣr (butte-fortress) + Rīfar (river) |
+| `9113` | `(5.1 edit 20)` | **Sīda-Gōji Kawa** | `hueru-kuran` | river | 211 | `3855 -> 291` | Khōpri-Tskhali (Crook River) | Cedar-Gorge River: winding SE Crookshore torrent with big northward bend |
 | `r009` | `Kolriba` | **Gould Riba** | `dalab` | river | 210 | `2691 -> 2339` | lake (2,730 m, through) | Gould (gold) + Riba (river) |
 | `r058` | `Drïm Rivrh` | **Drïm Rivrh** | `vothic` | river | 207 | `5627 -> -1440` | Ring Sea | Drum river |
 | `r000` | `Vink Rivrh` | **klir Rivrh** | `vothic` | river | 205 | `15 -> -782` | Ring Sea | klir (clear) + Rivrh (river) |
 | `r067` | `Saltie Rivvo` | **Solt Riba** | `yuni` | river | 203 | `3864 -> -2323` | lake (-2,339 m) | Solt (Salt) + Riba (river) |
+| `9125` | `Hūsh-Pās Warra` | **Chūmi-Kāri Tskhali** | `dzagh-vardzi` | river | 198 | `8111 -> 1764` | Khōpri-Tskhali (Crook River) | Chūmi (hushed/silent) + Kāri (pass-gate) + Tskhali (river) — 198 km fluted-chimney pass river below the Silent Vales |
 | `r255` | `Istrim de Verge` | **Rrivar Blaca** | `izani` | river | 192 | `244 -> -2118` | lake (-2,339 m) | Blaca (black) + Rrivar (river) |
+| `9124` | `Hārth-Tān Warra` | **Tbīli-Tbā Tskhali** | `dzagh-vardzi` | river | 192 | `6394 -> 1534` | Khōpri-Tskhali (Crook River) | Tbīli (warm/hearth) + Tbā (tarn) + Tskhali (river) — 192 km Crookhead thermogenic melt-well & malachite river |
 | `r012` | `NW lowlands river` | **Hāk-Mā** | `eternian` | river | 187 | `2942 -> 73` | lake (46 m) | Hāk (black-ink) + Mā (river) |
 | `r422` | `Wādī al-Snāk` | **Wādī al-Bālm** | `dasri` | wadi | 184 | `1417 -> -1940` | lake (-1,980 m) | al-Bālm (date-palm) + Wādī (wadi) |
 | `r026` | `Pan Riba` | **Pan Riba** | `dalab` | river | 180 | `3567 -> 8` | lake (-9 m) | Span River ('Pan Riba') — the mountain gorge river bridged by Span |
 | `r423` | `Wādī al-Silfar` | **Wādī al-Sarāb** | `dasri` | wadi | 178 | `3047 -> -2303` | lake (-1,939 m) | al-Sarāb (mirage) + Wādī (wadi) |
 | `r424` | `Spindle Wash` | **Gould Guli** | `yuni` | wadi | 178 | `2045 -> 454` | lake (644 m) | Gould (Gold) + Guli (wadi) |
+| `9118` | `(5.1 edit 20)` | **Rōzi-Vārdzi Tskhali** | `dzagh-vardzi` | river | 178 | `6478 -> 824` | Khōpri-Tskhali (Crook River) | Rose-Ward Water: winding apricot-tuff gorge of K5 Rōzi-Vārdzi |
 | `r015` | `unnamed river` | **Waywater Fallhigh** | `yusar` | river | 177 | `3685 -> 52` | lake (17 m) | Fallhigh (high-fall) + Waywater (river) |
 | `r008` | `Ancient's Valley river 2` | **Waywater Coldkeep** | `yusar` | river | 176 | `3699 -> 35` | lake (17 m) | Coldkeep (keep-cold) + Waywater (river) |
+| `9119` | `(5.1 edit 20)` | **Dzēdi-Khrōsi Tskhali** | `dzagh-vardzi` | river | 176 | `7130 -> 1240` | Khōpri-Tskhali (Crook River) | Jade-Cross Water: S-hooked nephrite boulder river of K7 Dzēdi-Khrōsi |
 | `r158` | `SW lowlands stream 3` | **Brait Riba** | `dalab` | river | 175 | `3612 -> 92` | lake (-9 m) | Brait (bright) + Riba (river) |
 | `r007` | `Giant Country river` | **Bētun-Nārun** | `shumari` | river | 174 | `3332 -> 18` | lake (-9 m) | Bētun (hearth-house) + Nārun (river) |
 | `r024` | `Jimjam river` | **Mēkam-āṟu** | `jimjam` | river | 173 | `2389 -> -10` | lake (-60 m) | Mēkam (monsoon-cloud) + āṟu (river) |
+| `9115` | `(5.1 edit 20)` | **Khāi-Gēti Tskhali** | `dzagh-vardzi` | river | 173 | `2590 -> 424` | Khōpri-Tskhali (Crook River) | High-Gate Water: dogleg granite gorge river of K1 Khāi-Gēti |
+| `9117` | `(5.1 edit 20)` | **Tīn-Flītsi Tskhali** | `dzagh-vardzi` | river | 173 | `5684 -> 824` | Khōpri-Tskhali (Crook River) | Tin-Fleece Water: S-curving cassiterite & golden-fleece river of K3 Tīn-Flītsi |
 | `r016` | `NW lowlands river 3` | **Chī-Mā** | `eternian` | river | 169 | `2846 -> 76` | lake (46 m) | Chī (paper-scroll) + Mā (river) |
+| `r_fb_west` | `(5.1 expansion)` | **Yan Warra** | `tungang` | river | 169 | `2640 -> 2533` | Fell-Block Beck | Yan (First) + Warra (river) |
 | `r435` | `Wādī al-Kold` | **Wādī al-Raml** | `dasri` | wadi | 166 | `6483 -> 1598` | — | al-Raml (red-sand) + Wādī (wadi) |
+| `9116` | `(5.1 edit 20)` | **Rēd-Spāiri Tskhali** | `dzagh-vardzi` | river | 166 | `2332 -> 636` | Khōpri-Tskhali (Crook River) | Red-Spire Water: giant red-cypress flume gorge of K2 Rēd-Spāiri |
 | `r056` | `Rrivar Loña` | **Rrivar Loña** | `izani` | river | 165 | `2066 -> -1495` | lake (-1,499 m) | long river |
 | `r429` | `Halite Draw` | **Mista Guli** | `yuni` | wadi | 164 | `1694 -> 305` | basin (590 m) | Mista (Mist) + Guli (wadi) |
 | `r327` | `Longo Krikki` | **Klira Riba** | `yuni` | river | 162 | `3293 -> -2594` | the Bigga | Klira (Clear) + Riba (river) |
+| `9121` | `(5.1 edit 20)` | **Āirn-Dzāghi Tskhali** | `dzagh-vardzi` | river | 162 | `4414 -> 781` | Khōpri-Tskhali (Crook River) | Iron-Jag Water: winding skarn-magnetite gorge of K4 Āirn-Dzāghi |
 | `r014` | `NW lowlands river 2` | **Hōng-Mā** | `eternian` | river | 161 | `2293 -> 64` | lake (46 m) | Hōng (vermilion) + Mā (river) |
 | `r102` | `Rīfar Rīd` | **Rīfar al-Sarāb** | `dasri` | river | 161 | `755 -> -2136` | lake (-2,331 m) | al-Sarāb (mirage) + Rīfar (river) |
-| `r_fb_west` | `(5.1 expansion)` | **Yan Warra** | `tungang` | river | 169 | `2640 -> 2533` | Fell-Block Beck | Yan (First) + Warra (river) |
 | `r867` | `the catch stream` | **Rīfar al-Layl** | `dasri` | river | 159 | `3240 -> 308` | lake (368 m) | al-Layl (star-night) + Rīfar (river) |
 | `r359` | `Coldi Krikki` | **Blaka Riba** | `yuni` | river | 158 | `4392 -> -1968` | Braita Riba | Blaka (Black) + Riba (river) |
 | `r440` | `unnamed wadi 10` | **Guli rrija** | `izani` | wadi | 158 | `5614 -> -1083` | lake (-1,085 m) | rrija (ridge) + Guli (wadi) |
 | `r444` | `Siphon Melt` | **Silba Guli** | `yuni` | wadi | 158 | `1502 -> 258` | lake (620 m) | Silba (Silver) + Guli (wadi) |
 | `r504` | `Wādī al-Fāyar` | **Wādī al-Qaṣr** | `dasri` | wadi | 158 | `644 -> -257` | basin (-202 m) | al-Qaṣr (butte-fortress) + Wādī (wadi) |
+| `9112` | `(5.1 edit 20)` | **Fjōdu-Mīst Kawa** | `hueru-kuran` | river | 158 | `1738 -> 0` | sea | Fjord-Mist River: NNW-curving rainforest river into Cascade-Caldera |
 | `r433` | `Scarp Gorge Run` | **Dipa Guli** | `yuni` | wadi | 157 | `2610 -> 1842` | — | Dipa (Deep) + Guli (wadi) |
 | `r020` | `The Rift river 2` | **Kual Warra** | `tungang` | river | 156 | `4883 -> -1408` | lake (-1,435 m, through) | Kual (coal) + Warra (river) |
 | `r291` | `Ancient's Valley river 3` | **Waywater Windlow** | `yusar` | river | 154 | `3412 -> 337` | Waywater Coldkeep | Windlow (low-wind) + Waywater (river) |
 | `r116` | `Konbruk` | **Blak Riba** | `dalab` | river | 153 | `5152 -> 619` | Chimes Riba | Blak (black) + Riba (river) |
 | `r823` | `unnamed wadi 57` | **Klira Guli** | `yuni` | wadi | 152 | `1749 -> 314` | Mista Guli | Klira (Clear) + Guli (wadi) |
+| `9120` | `(5.1 edit 20)` | **Nōrt-Khrāgi Tskhali** | `dzagh-vardzi` | river | 152 | `2785 -> 556` | Khōpri-Tskhali (Crook River) | North-Crag Water: winding west-wall cascade stream |
 | `r098` | `unnamed stream 2` | **Sām-Hām** | `hum` | river | 151 | `3760 -> 677` | lake (705 m) | Sām (deep-notch) + Hām (river) |
 | `r179` | `Madır Kiriki` | **Cakmak Riviri** | `scyvoi` | river | 150 | `265 -> -1413` | Ring Sea | Cakmak (flint) + Riviri (river) |
+| `9122` | `(5.1 edit 20)` | **Mīst-Khōpri Tskhali** | `dzagh-vardzi` | river | 150 | `3090 -> 824` | Khōpri-Tskhali (Crook River) | Mist-Copper Water: fog-saddle & malachite-skarn river of K6 Mīst-Khōpri |
 | `r452` | `unnamed wadi 17` | **Sista Guli** | `yuni` | wadi | 149 | `562 -> 218` | lake (620 m) | Sista (Sister) + Guli (wadi) |
 | `r132` | `NW lowlands stream 5` | **Sīng-Mā** | `eternian` | river | 148 | `4071 -> 617` | lake (430 m) | Sīng (star-lantern) + Mā (river) |
 | `r274` | `Ancient's Valley river 4` | **Waywater Ironblack** | `yusar` | river | 148 | `4293 -> 69` | Dariba | Ironblack (black-iron) + Waywater (river) |
@@ -112,6 +130,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r094` | `Fallsi Krikki` | **Sista Riba** | `yuni` | river | 147 | `3962 -> -2317` | basin (-2,337 m) | Sista (Sister) + Riba (river) |
 | `r426` | `Shuttle Creek` | **Braita Guli** | `yuni` | wadi | 147 | `2292 -> 1488` | lake (620 m) | Braita (Bright) + Guli (wadi) |
 | `r251` | `Rīfar al-Thirst` | **Rīfar al-Bīr** | `dasri` | river | 141 | `2720 -> -2024` | lake (-2,088 m) | al-Bīr (cistern-well) + Rīfar (river) |
+| `r070` | `Ālph` | **Ālph** | `xanadui` | river | 138 | `-523 -> -1537` | Qiblai's lake (the Lower Xanadu Small Lake) | Ālph — the sacred river of Xanadu plunging into the sunless cavern sea |
 | `r068` | `Bį Baatar` | **Na'ashǫ́'ii Baatar** | `riders` | river | 138 | `526 -> -1481` | Ring Sea | Na'ashǫ́'ii (caiman) + Baatar (river) |
 | `r077` | `Yuni river` | **Waita Riba** | `yuni` | river | 138 | `1867 -> -793` | lake (-2,400 m) | Waita (White) + Riba (river) |
 | `r420` | `Vali Iston` | **Guli Rreda** | `izani` | wadi | 138 | `1471 -> 262` | — | Rreda (red) + Guli (wadi) |
@@ -126,7 +145,8 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r114` | `Rīfar al-Ṣolṭ` | **Rīfar al-Zulāl** | `dasri` | river | 131 | `3818 -> -1724` | lake (-1,797 m) | al-Zulāl (cool-oasis) + Rīfar (river) |
 | `r126` | `Volz Chhim` | **Kowld Rivrh** | `vothic` | river | 131 | `3350 -> -1426` | Ring Sea | Kowld (cold) + Rivrh (river) |
 | `r462` | `Hexahedron Gulch` | **Mirage Wash** | `screamer` | wadi | 131 | `-595 -> -1855` | ocean | Mirage (mirage) + Wash (wadi) |
-| `r023` | `Crag Men river` | **Vindos Rivros** | `talovolci` | river | 130 | `5123 -> -700` | Ring Sea | Vindos (white-mist) + Rivros (river) |
+| `9114` | `(5.1 edit 20)` | **Bāsaruto-Kawa** | `hueru-kuran` | river | 131 | `2678 -> 315` | Khōpri-Tskhali (Crook River) | Basalt-Creek: SSE-arcing columnar-basalt torrent |
+| `r023` | `Crag Men river` | **Vindos Rivros** | `talovolci` | river | 130 | `5123 -> -700` | Turm Rivrh | Vindos (white-mist) + Rivros (river) |
 | `r039` | `Giant Country river 7` | **Ixosriba** | `vrivolci` | river | 130 | `3255 -> 52` | lake (-9 m) | Ixos (ice-peak) + Riba (river) |
 | `r427` | `n semiarid wadi` | **Xipa Guli** | `argot` | wadi | 130 | `3288 -> 11` | lake (-81 m) | Xipa (ship-hull) + Guli (wadi) |
 | `r325` | `Araptar Baatar` | **Ch'il Baatar** | `riders` | river | 128 | `-221 -> -1490` | Ring Sea | Ch'il (vine) + Baatar (river) |
@@ -141,28 +161,74 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r117` | `Ruins of Nazar stream` | **Waywater Sleepdown** | `yusar` | river | 124 | `3383 -> 280` | lake (-9 m) | Sleepdown (down-sleep) + Waywater (river) |
 | `r261` | `Jimjam stream 4` | **Ciṉṉa-āṟu** | `jimjam` | river | 124 | `657 -> 442` | lake (430 m) | Ciṉṉa (little) + āṟu (river) |
 | `r508` | `Wādī al-Ōld` | **Wādī al-Milḥ** | `dasri` | wadi | 124 | `2665 -> -92` | — | al-Milḥ (salt-crust) + Wādī (wadi) |
+| `r_gh_spillway` | `—` | **Āirã Siṭrīm** | `xanadui` | river | 124 | `3640 -> 2549` | Solṭ Siṭrīm | Āirã (iron) + Siṭrīm (stream) |
 | `r170` | `Łii Baatar` | **Łizhin Baatar** | `riders` | river | 123 | `-390 -> -1480` | Ring Sea | Łizhin (black-water) + Baatar (river) |
+| `9123` | `(5.1 edit 20)` | **Sāut-Flūmi Tskhali** | `dzagh-vardzi` | river | 123 | `3741 -> 824` | Khōpri-Tskhali (Crook River) | South-Flume Water: NNE-arcing hanging-flume torrent |
 | `r033` | `Ered Baatar` | **Tsékooh Baatar** | `riders` | river | 122 | `192 -> -1512` | Ring Sea | Tsékooh (sinkhole-gorge) + Baatar (river) |
 | `r502` | `Wādī al-Bōn` | **Wādī al-Bīr** | `dasri` | wadi | 122 | `453 -> -12` | basin (92 m) | al-Bīr (cistern-well) + Wādī (wadi) |
+| `9133` | `Lāch-Mōrain Bruk` | **Lārtshi-Ghrūdi Tskhali** | `dzagh-vardzi` | river | 114 | `4063 -> 1509` | Khōpri-Tskhali (Crook River) | Lārtshi (larch) + Ghrūdi (moraine-ridge) + Tskhali (brook) — 114 km subalpine larch-moraine western tributary of Khōpri-Tskhali |
 | `r352` | `K'etsaal Baatar` | **K'etsaal Baatar** | `riders` | river | 113 | `-464 -> -1490` | Tsékooh Baatar | Quetzal Water (K'etsaal Baatar) — the Beast Riders' river 11 km from Pinnacle Rock |
 | `r005` | `Chimes Riba` | **Chimes Riba** | `dalab` | river | 110 | `299 -> -1796` | lake (-1,862 m, through) | Chimes River ('Chimes Riba') — the Great Lake outlet gorge plunging past Chimes into the Rift |
 | `r260` | `Rīfar al-Bālm` | **Rīfar al-Bālm** | `dasri` | river | 106 | `-457 -> -892` | lake (-1,427 m) | palm stream |
 | `r185` | `Korona / NE stream 2` | **Ràv Rìv** | `painted` | river | 105 | `1042 -> -850` | lake (-918 m) | Ràv (raven) + Rìv (river) — northern Danxia hogback river of the Painted Men |
 | `r028` | `Rrivar Falz` | **Rrivar Falz** | `izani` | river | 100 | `1003 -> -1488` | lake (-1,499 m) | falls river |
 | `r863` | `Dip Rivrh` | **Dip Rivrh** | `vothic` | river | 89 | `-1393 -> -1500` | Ring Sea | Deep River ('Dip Rivrh') — Almua's navigable harbour river |
+| `9130` | `(5.1 edit 20)` | **Hūsh-Rīmi Tskhali** | `dzagh-vardzi` | river | 89 | `6809 -> 2988` | Rōzi-Vārdzi Tskhali | Hush-Rim Fork: high eastern divide branch of Rōzi-Vārdzi Tskhali |
+| `9111` | `(5.1 edit 20)` | **Hueru-Bēnchi Kawa** | `hueru-kuran` | river | 83 | `1558 -> 0` | sea | Whale-Bench River: SSW-hooked coastal cedar stream into Whale-Haven |
+| `r021` | `Farside river 2` | **Kandē-Dānu** | `yonni` | river | 82 | `4618 -> 8` | ocean | Kandē (Spear-Queen / Kandake) + Dānu (river) — 82 km principal river of the Twin-Born Spear-Queens south of Yonni |
 | `r199` | `Korona / NE stream 3` | **Àirn Rìv** | `painted` | river | 81 | `-243 -> -439` | lake (-393 m, through) | Àirn (iron) + Rìv (river) — northwestern stream of the Painted Highlands |
+| `r044` | `Farside river 5` | **Tīgra-Dānu** | `yonni` | river | 80 | `4186 -> 7` | ocean | Tīgra (darting/spear-swift, Sarmatian *tigra) + Dānu (river) — 80 km swift gorge river NE of Yonni |
+| `9127` | `(5.1 edit 20)` | **Zēmo-Bēnihi Tskhali** | `dzagh-vardzi` | river | 80 | `2580 -> 1596` | Khāi-Gēti Tskhali | Upper-Cypress Fork: giant red-cypress headwater branch of Khāi-Gēti Tskhali |
+| `9126` | `(5.1 edit 20)` | **Nōrt-Fjōdu Kawa** | `hueru-kuran` | river | 79 | `1391 -> 887` | Sīda-Gōji Kawa | North-Fjord Fork: cloud-forest branch of Sīda-Gōji Kawa |
 | `r_lab_cat_sw` | `(5.1 expansion)` | **Graben-Tarn Gill** | `tungang` | river | 77 | `3662 -> 2840` | — | Graben-Tarn Gill ('Southern Catena Gill') — southwestern pit-crater meltwater stream of the Labyrinth |
+| `r041` | `Farside river 3` | **Khōnna-Dānu** | `yonni` | river | 75 | `4577 -> 9` | ocean | Khōnna (twin-sister) + Dānu (river) — 75 km twin-ridge river of northern Yonni |
+| `9128` | `(5.1 edit 20)` | **Khwēla-Spāiri Tskhali** | `dzagh-vardzi` | river | 74 | `2430 -> 1669` | Rēd-Spāiri Tskhali | Lower-Spire Fork: southern quartz-needle branch of Rēd-Spāiri Tskhali |
+| `9129` | `(5.1 edit 20)` | **Gōldi-Flītsi Tskhali** | `dzagh-vardzi` | river | 74 | `2662 -> 2511` | Tīn-Flītsi Tskhali | Gold-Fleece Fork: placer-gold headwater branch of Tīn-Flītsi Tskhali |
+| `9132` | `(5.1 edit 20)` | **Fōgi-Gēti Tskhali** | `dzagh-vardzi` | river | 73 | `3811 -> 1808` | Mīst-Khōpri Tskhali | Fog-Gate Fork: ocean-saddle branch of Mīst-Khōpri Tskhali |
 | `r496` | `Sivift Gulusu` | **Sivift Gulusu** | `scyvoi` | wadi | 71 | `275 -> -1557` | Ring Sea | swift dry valley |
+| `r334` | `Farside river 6` | **Sāva-Dānu** | `yonni` | river | 69 | `4660 -> 369` | Kandē-Dānu | Sāva (black-basalt, Sarmatian *syāva) + Dānu (river) — 69 km southern fork of Kandē-Dānu |
 | `r_lab_cat_nw` | `(5.1 expansion)` | **Siphon-Pit Beck** | `tungang` | river | 68 | `3728 -> 2832` | — | Siphon-Pit Beck ('Catena Meltwater Beck') — northwestern pit-crater meltwater stream of the Labyrinth |
 | `r166` | `Khon Baatar` | **Vai Toka** | `islander` | river | 66 | `-1321 -> -1465` | Ring Sea | Toka (coral-rock) + Vai (river) — Kautoa island river |
+| `9131` | `(5.1 edit 20)` | **Skhārn-Khrāgi Tskhali** | `dzagh-vardzi` | river | 66 | `4379 -> 2434` | Āirn-Dzāghi Tskhali | Skarn-Crag Fork: magnetite cliff branch of Āirn-Dzāghi Tskhali |
 | `r018` | `Gördar Baatar` | **Vai Moana** | `islander` | river | 64 | `-1309 -> -1483` | Ring Sea | Moana (deep-ocean) + Vai (river) — eastern Ring Isle stream |
-| `r070` | `Ālph` | **Ālph** | `xanadui` | river | 59 | `-520 -> -2025` | lake (-1,706 m) | Ālph — the sacred river of Xanadu plunging into the sunless cavern sea |
+| `r043` | `Farside river 4` | **Astāra-Dānu** | `yonni` | river | 63 | `3934 -> 8` | ocean | Astāra (star-beacon, Sarmatian *stāra) + Dānu (river) — 63 km raid-galley haven river south of Yonni |
 | `r072` | `Tors Rivrh` | **Tors Rivrh** | `vothic` | river | 55 | `1865 -> -908` | Ring Sea | Torus river |
+| `r074` | `Farside river 9` | **Yonni-Vēli** | `yonni` | river | 54 | `2701 -> 11` | ocean | Yonni (Twin-Citadel) + Vēli (river) — 54 km citadel river flowing past Yonni into the NWern Ocean |
+| `r093` | `Farside stream 3` | **Mēda-Khōra** | `yonni` | river | 49 | `4292 -> 11` | ocean | Mēda (mead-amber / dark-peat) + Khōra (brook) — steep coastal gorge stream |
 | `r208` | `Korona / NE stream 4` | **Òk Rìv** | `painted` | river | 48 | `-1013 -> -1589` | lake (-1,619 m, through) | Òk (ochre) + Rìv (river) — eastern Painted Canyon river draining toward Korona |
+| `r096` | `Farside stream 5` | **Sūrkha-Khōra** | `yonni` | river | 47 | `3207 -> 7` | ocean | Sūrkha (red-ochre / carnelian) + Khōra (brook) — red-scarp coastal torrent |
+| `r087` | `Farside river 13` | **Rōxna-Khōra** | `yonni` | river | 44 | `3200 -> 9` | ocean | Rōxna (shining/clear, Sarmatian *rauxšna) + Khōra (brook) — clear pebble-cove stream |
+| `r091` | `Farside stream 2` | **Vēta-Khōra** | `yonni` | river | 44 | `4441 -> 10` | ocean | Vēta (wind-swept, Sarmatian *vāta) + Khōra (brook) — gale-swept headland stream |
+| `9134` | `(5.1 edit 21)` | **Sfīra-Vēli** | `yonni` | river | 41 | `180 -> 0` | Mārka-Dānu | Sfīra (spear) + Vēli (river) — Spear-Queen coastal watch-fork joining Mārka-Dānu on the Y = 515 frontier |
+| `9135` | `(5.1 edit 21)` | **Hāi-Wān-Kē** | `eternian` | river | 40 | `180 -> 0` | Līng-Mā | Hāi (sea-kelp) + Wān (cove) + Kē (stream) — Farport headland tributary of Līng-Mā |
+| `r064` | `Farside river 8` | **Arzī-Vēli** | `yonni` | river | 40 | `3243 -> 10` | ocean | Arzī (silver-mist) + Vēli (river) — mist-veiled coastal river of northern Yonni |
+| `r083` | `Farside river 12` | **Sāla-Vēli** | `yonni` | river | 40 | `3167 -> 17` | ocean | Sāla (salt-spray) + Vēli (river) — wave-cut terrace river south of Yonni |
+| `r061` | `Farside river 7` | **Āsina-Dānu** | `yonni` | river | 39 | `3259 -> 9` | ocean | Āsina (iron-sand, Sarmatian *āsin) + Dānu (river) — iron-sand cove river of the southern Yonni coast |
+| `r075` | `Farside river 10` | **Tāmga-Vēli** | `yonni` | river | 39 | `3202 -> 11` | ocean | Tāmga (twin-spear clan brand) + Vēli (river) — coastal gorge river south of Yonni |
 | `r679` | `Bǫ Khol` | **Blùd Gèl** | `painted` | wadi | 39 | `-1079 -> -1461` | basin (-1,492 m) | Blùd (blood-ochre) + Gèl (wadi) — southern canyon wash of the Painted Men |
 | `r001` | `Dariba` | **Dariba** | `dalab` | river | 38 | `35 -> -5` | lake (-9 m) | da riba ('the river') — mother river of the Dalab basin |
 | `r595` | `Bitir Gulusu` | **Bitir Gulusu** | `scyvoi` | wadi | 38 | `84 -> -23` | — | bitter dry valley |
+| `r120` | `Farside stream 10` | **Vārda-Vēli** | `yonni` | river | 36 | `3454 -> 10` | ocean | Vārda (shield-watch) + Vēli (river) — southern Yonni raid-cove river |
+| `r360` | `Farside stream 13` | **Sārda-Khōra** | `yonni` | river | 35 | `3661 -> 1489` | Tīgra-Dānu | Sārda (cold-snowmelt, Sarmatian *sarda) + Khōra (brook) — highland tributary of Tīgra-Dānu |
+| `r155` | `Farside stream 17` | **Spēta-Vēli** | `yonni` | river | 34 | `1762 -> 11` | ocean | Spēta (white-foam, Sarmatian *spēta) + Vēli (river) — white-surf river north of Yonni |
+| `r184` | `Farside stream 21` | **Asānga-Khōra** | `yonni` | river | 34 | `2960 -> 11` | ocean | Asānga (sling-stone / boulder, Sarmatian *asanga) + Khōra (brook) — boulder-choked outer-wall torrent |
+| `r169` | `Farside stream 19` | **Mīsta-Khōra** | `yonni` | river | 32 | `3991 -> 12` | ocean | Mīsta (sea-shroud fog) + Khōra (brook) — fogbound coastal brook |
+| `r134` | `Farside stream 12` | **Tūra-Khōra** | `yonni` | river | 31 | `3141 -> 9` | ocean | Tūra (swift-wind, Sarmatian *tūra) + Khōra (brook) — wind-gap coastal torrent |
 | `r022` | `Reddum Ribarum` | **Vai Pou** | `islanderw` | river | 30 | `-1463 -> -1463` | lake (-1,302 m, through) | Pou (stone-pillar) + Vai (river) — western Ring Isle & Arch stream |
+| `r_pher_swit` | `(5.1 expansion)` | **Swīṭ Siṭrīm** | `xanadui` | river | 29 | `130 -> -520` | lake (-520 m) | Swīṭ (sweet) + Siṭrīm (stream): the fair town's fresh water |
+| `r095` | `Farside stream 4` | **Dēva-Khōra** | `yonni` | river | 29 | `2352 -> 10` | ocean | Dēva (deep-cleft) + Khōra (brook) — sea-cliff torrent of central Yonni |
+| `r100` | `Farside stream 6` | **Nābara-Khōra** | `yonni` | river | 29 | `4015 -> 13` | ocean | Nābara (electrum-gold, Meroitic *nabara) + Khōra (brook) — placer-gold coastal brook |
+| `r175` | `Farside stream 20` | **Mārka-Dānu** | `yonni` | river | 28 | `3812 -> 10` | ocean | Mārka (frontier-march) + Dānu (river) — fortified Y = 515 border river between the Spear-Queens of Yonni and Eternal State Farside (Farside: ɗStara cBruk) |
+| `r137` | `Farside stream 14` | **Kālla-Khōra** | `yonni` | river | 26 | `3436 -> 13` | ocean | Kālla (scarp-step) + Khōra (brook) — bench-falls coastal stream |
+| `r357` | `Farside stream 7` | **Fāla-Vēli** | `yonni` | river | 25 | `3030 -> 1345` | Khōnna-Dānu | Fāla (cataract-step) + Vēli (river) — stepped waterfall fork of Khōnna-Dānu |
+| `r374` | `Farside stream 23` | **Bārza-Khōra** | `yonni` | river | 25 | `2551 -> 71` | Āsina-Dānu | Bārza (high-ridge, Sarmatian *barz) + Khōra (brook) — ridge tributary of Āsina-Dānu |
+| `r147` | `Farside stream 15` | **Fāra-Khōra** | `yonni` | river | 23 | `3411 -> 11` | ocean | Fāra (watch-beacon) + Khōra (brook) — northern cape watch-stream |
+| `r221` | `Farside stream 26` | **Shrūda-Khōra** | `yonni` | river | 23 | `4067 -> 100` | ocean | Shrūda (shroud-mist) + Khōra (brook) — mist-draped western Shroudhills stream |
+| `r119` | `Farside stream 9` | **Kēda-Khōra** | `yonni` | river | 22 | `3440 -> 1556` | ocean | Kēda (cairn-shrine, Meroitic *kēda) + Khōra (brook) — Shroudhills cairn-cove stream |
+| `r157` | `unnamed stream 4` | **Amāni-Khōra** | `yonni` | river | 22 | `3575 -> 2068` | ocean | Amāni (sacred-cloud, Meroitic *Amani) + Khōra (brook) — northernmost Shroudhills cove stream |
+| `r210` | `Farside stream 24` | **Dārga-Khōra** | `yonni` | river | 22 | `3570 -> 1461` | ocean | Dārga (long-spear, Sarmatian *darga) + Khōra (brook) — Shroudhills cove stream |
+| `r196` | `Farside stream 22` | **Khāra-Khōra** | `yonni` | river | 20 | `2579 -> 12` | Mārka-Dānu | Khāra (black-shale) + Khōra (brook) — piedmont tributary of Mārka-Dānu |
+| `r234` | `Farside stream 27` | **Zārin-Khōra** | `yonni` | river | 20 | `2838 -> 11` | Mārka-Dānu | Zārin (golden-bronze, Sarmatian *zaranya) + Khōra (brook) — upper frontier tributary of Mārka-Dānu |
 | `r765` | `Filem Gulusu` | **Filem Gulusu** | `scyvoi` | wadi | 12 | `-1031 -> -1395` | Ring Sea | flame dry valley |
 | `r697` | `Borun Gulusu` | **Borun Gulusu** | `scyvoi` | wadi | 6 | `-1355 -> -1371` | Ring Sea | burn dry valley |
 | `r864` | `Diip Baatar` | **Auwai Kura** | `islander` | river | 6 | `-1505 -> -1505` | Ring Sea | Kura (red-feather) + Auwai (stream) — East Ring Isles stream |
@@ -192,15 +258,15 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r018` | `Gördar Baatar` | **Vai Moana** | `islander` | river | 64 | `-1309 -> -1483` | Ring Sea | Moana (deep-ocean) + Vai (river) — eastern Ring Isle stream |
 | `r019` | `the Bigga` | **the Bigga** | `yuni` | river | 242 | `3542 -> -2599` | lake (-2,400 m) | the Bigga ('the Bigger') — mother river of Yuni Valley |
 | `r020` | `The Rift river 2` | **Kual Warra** | `tungang` | river | 156 | `4883 -> -1408` | lake (-1,435 m, through) | Kual (coal) + Warra (river) |
-| `r021` | `Farside river 2` | **xMista qRiba** | `farside` | river | 82 | `4618 -> 8` | ocean | xMista (sea-fog) + qRiba (river) |
+| `r021` | `Farside river 2` | **Kandē-Dānu** | `yonni` | river | 82 | `4618 -> 8` | ocean | Kandē (Spear-Queen / Kandake) + Dānu (river) — 82 km principal river of the Twin-Born Spear-Queens south of Yonni |
 | `r022` | `Reddum Ribarum` | **Vai Pou** | `islanderw` | river | 30 | `-1463 -> -1463` | lake (-1,302 m, through) | Pou (stone-pillar) + Vai (river) — western Ring Isle & Arch stream |
-| `r023` | `Crag Men river` | **Vindos Rivros** | `talovolci` | river | 130 | `5123 -> -700` | Ring Sea | Vindos (white-mist) + Rivros (river) |
+| `r023` | `Crag Men river` | **Vindos Rivros** | `talovolci` | river | 130 | `5123 -> -700` | Turm Rivrh | Vindos (white-mist) + Rivros (river) |
 | `r024` | `Jimjam river` | **Mēkam-āṟu** | `jimjam` | river | 173 | `2389 -> -10` | lake (-60 m) | Mēkam (monsoon-cloud) + āṟu (river) |
 | `r025` | `Rrivar Salta` | **Rrivar Cistal** | `izani` | river | 126 | `2268 -> -1478` | Ring Sea | Cistal (crystal) + Rrivar (river) |
 | `r026` | `Pan Riba` | **Pan Riba** | `dalab` | river | 180 | `3567 -> 8` | lake (-9 m) | Span River ('Pan Riba') — the mountain gorge river bridged by Span |
 | `r027` | `NW lowlands river 5` | **Nīla-āṟu** | `jimjam` | river | 68 | `2445 -> 468` | lake (430 m) | Nīla (blue-lotus) + āṟu (river) |
 | `r028` | `Rrivar Falz` | **Rrivar Falz** | `izani` | river | 100 | `1003 -> -1488` | lake (-1,499 m) | falls river |
-| `r029` | `Vast Rivrh` | **Turm Rivrh** | `vothic` | river | 46 | `1582 -> -649` | Ring Sea | Turm (tower) + Rivrh (river) |
+| `r029` | `Vast Rivrh` | **Turm Rivrh** | `vothic` | river | 117 | `1582 -> -1500` | Ring Sea | Turm (tower) + Rivrh (river) |
 | `r030` | `Giant Country river 4` | **Clodosriba** | `vrivolci` | river | 112 | `3280 -> 78` | lake (-9 m) | Clodos (cloud-bench) + Riba (river) |
 | `r031` | `Rrivar Isguifta` | **Rrivar Isguifta** | `izani` | river | 132 | `345 -> -1467` | lake (-1,499 m) | swift river |
 | `r032` | `NW lowlands river 6` | **Periya-āṟu** | `jimjam` | river | 60 | `2300 -> 465` | lake (430 m) | Periya (great) + āṟu (river) |
@@ -212,10 +278,10 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r038` | `Jimjam river 2` | **Tāmarai-āṟu** | `jimjam` | river | 73 | `885 -> 471` | lake (430 m) | Tāmarai (lotus) + āṟu (river) |
 | `r039` | `Giant Country river 7` | **Ixosriba** | `vrivolci` | river | 130 | `3255 -> 52` | lake (-9 m) | Ixos (ice-peak) + Riba (river) |
 | `r040` | `Solt' Baatar` | **Kǫ' Baatar** | `riders` | river | 37 | `-299 -> -1241` | lake (-1,310 m, through) | Kǫ' (sun-fire) + Baatar (river) |
-| `r041` | `Farside river 3` | **qRidj qRiba** | `farside` | river | 75 | `4577 -> 9` | ocean | qRidj (terrace-ridge) + qRiba (river) |
+| `r041` | `Farside river 3` | **Khōnna-Dānu** | `yonni` | river | 75 | `4577 -> 9` | ocean | Khōnna (twin-sister) + Dānu (river) — 75 km twin-ridge river of northern Yonni |
 | `r042` | `Veladiga Rivvo` | **Braita Riba** | `yuni` | river | 124 | `1473 -> -2406` | lake (-2,339 m) | Braita (Bright) + Riba (river) |
-| `r043` | `Farside river 4` | **ɗStara qRiba** | `farside` | river | 63 | `3934 -> 8` | ocean | ɗStara (outer-star) + qRiba (river) |
-| `r044` | `Farside river 5` | **ɓRiba qRiba** | `farside` | river | 80 | `4186 -> 7` | ocean | ɓRiba (deep-implosive) + qRiba (river) |
+| `r043` | `Farside river 4` | **Astāra-Dānu** | `yonni` | river | 63 | `3934 -> 8` | ocean | Astāra (star-beacon, Sarmatian *stāra) + Dānu (river) — 63 km raid-galley haven river south of Yonni |
+| `r044` | `Farside river 5` | **Tīgra-Dānu** | `yonni` | river | 80 | `4186 -> 7` | ocean | Tīgra (darting/spear-swift, Sarmatian *tigra) + Dānu (river) — 80 km swift gorge river NE of Yonni |
 | `r045` | `Korona / NE river` | **Sīng-Hām** | `hum` | river | 119 | `489 -> -37` | lake (-60 m) | Sīng (night-star) + Hām (river) |
 | `r046` | `Tł'aa Baatar` | **Béesh Baatar** | `riders` | river | 98 | `-75 -> -1481` | Ring Sea | Béesh (obsidian) + Baatar (river) |
 | `r047` | `Blak Baatar` | **Tł'éé' Baatar** | `riders` | river | 91 | `18 -> -1483` | Ring Sea | Tł'éé' (night-jungle) + Baatar (river) |
@@ -232,21 +298,21 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r058` | `Drïm Rivrh` | **Drïm Rivrh** | `vothic` | river | 207 | `5627 -> -1440` | Ring Sea | Drum river |
 | `r059` | `Giant Country river 10` | **carnosriba** | `vrivolci` | river | 69 | `984 -> 44` | lake (-9 m) | carnos (cairn) + Riba (river) |
 | `r060` | `Giant Country river 11` | **Rixosbruk** | `vrivolci` | river | 94 | `902 -> 70` | lake (-9 m) | Rixos (king-stone) + Bruk (stream) |
-| `r061` | `Farside river 7` | **qAina qRiba** | `farside` | river | 39 | `3259 -> 9` | ocean | qAina (iron-sand) + qRiba (river) |
+| `r061` | `Farside river 7` | **Āsina-Dānu** | `yonni` | river | 39 | `3259 -> 9` | ocean | Āsina (iron-sand, Sarmatian *āsin) + Dānu (river) — iron-sand cove river of the southern Yonni coast |
 | `r062` | `Korona / NE river 2` | **Hōng-Hām** | `hum` | river | 35 | `335 -> 42` | lake (-60 m) | Hōng (red-sandstone) + Hām (river) |
 | `r063` | `Hyperjungle river 9` | **Rrivar brij** | `izani` | river | 63 | `-248 -> -1479` | Ring Sea | brij (bridge) + Rrivar (river) |
-| `r064` | `Farside river 8` | **xKlira qRiba** | `farside` | river | 40 | `3243 -> 10` | ocean | xKlira (clear-pebble) + qRiba (river) |
+| `r064` | `Farside river 8` | **Arzī-Vēli** | `yonni` | river | 40 | `3243 -> 10` | ocean | Arzī (silver-mist) + Vēli (river) — mist-veiled coastal river of northern Yonni |
 | `r065` | `Grin Rivrh` | **Shvarts Brük** | `vothic` | river | 63 | `239 -> -836` | Ring Sea | Shvarts (black) + Brük (stream) |
 | `r066` | `Lizardmen river 2` | **Garth Warra** | `tungang` | river | 67 | `272 -> -2601` | lake (-2,600 m) | Garth (garth-enclosure) + Warra (river) |
 | `r067` | `Saltie Rivvo` | **Solt Riba** | `yuni` | river | 203 | `3864 -> -2323` | lake (-2,339 m) | Solt (Salt) + Riba (river) |
 | `r068` | `Bį Baatar` | **Na'ashǫ́'ii Baatar** | `riders` | river | 138 | `526 -> -1481` | Ring Sea | Na'ashǫ́'ii (caiman) + Baatar (river) |
 | `r069` | `Giant Country river 13` | **Uarosriba** | `vrivolci` | river | 61 | `2856 -> 1189` | lake (1,067 m, through) | Uaros (high-crag) + Riba (river) |
-| `r070` | `Ālph` | **Ālph** | `xanadui` | river | 59 | `-520 -> -2025` | lake (-1,706 m) | Ālph — the sacred river of Xanadu plunging into the sunless cavern sea |
+| `r070` | `Ālph` | **Ālph** | `xanadui` | river | 138 | `-523 -> -1537` | Qiblai's lake (the Lower Xanadu Small Lake) | Ālph — the sacred river of Xanadu plunging into the sunless cavern sea |
 | `r071` | `Giant Country river 15` | **Spirlariba** | `vrivolci` | river | 67 | `961 -> 6` | lake (-9 m) | Spirla (spiral) + Riba (river) |
 | `r072` | `Tors Rivrh` | **Tors Rivrh** | `vothic` | river | 55 | `1865 -> -908` | Ring Sea | Torus river |
 | `r073` | `The Rift river 5` | **Laa Stuan Beck** | `tungang` | river | 23 | `5761 -> 3718` | lake (3,427 m, through) | Laa (low) + Stuan (stone) + Beck (stream) |
-| `r074` | `Farside river 9` | **cSolt cBruk** | `farside` | river | 54 | `2701 -> 11` | ocean | cSolt (salt-spray) + cBruk (stream) |
-| `r075` | `Farside river 10` | **ɗGould qRiba** | `farside` | river | 39 | `3202 -> 11` | ocean | ɗGould (gold-implosive) + qRiba (river) |
+| `r074` | `Farside river 9` | **Yonni-Vēli** | `yonni` | river | 54 | `2701 -> 11` | ocean | Yonni (Twin-Citadel) + Vēli (river) — 54 km citadel river flowing past Yonni into the NWern Ocean |
+| `r075` | `Farside river 10` | **Tāmga-Vēli** | `yonni` | river | 39 | `3202 -> 11` | ocean | Tāmga (twin-spear clan brand) + Vēli (river) — coastal gorge river south of Yonni |
 | `r076` | `Blaqqum Ribarum` | **Nāru-Dannu** | `zeijani` | river | 26 | `-1007 -> -1500` | Ring Sea | dannu (strong-wall) + Nāru (river) |
 | `r077` | `Yuni river` | **Waita Riba** | `yuni` | river | 138 | `1867 -> -793` | lake (-2,400 m) | Waita (White) + Riba (river) |
 | `r078` | `Farside river 11` | **Tōng-Sēk-Mā** | `eternian` | river | 31 | `3860 -> 11` | ocean | Tōng (east) + Sēk (stone-weir) + Mā (river) |
@@ -254,31 +320,31 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r080` | `Dagodriba` | **Star Riba** | `dalab` | river | 106 | `2083 -> 63` | lake (-9 m) | Star (star) + Riba (river) |
 | `r081` | `Daranchriba` | **Kould Riba** | `dalab` | river | 85 | `3668 -> 382` | lake (298 m, through) | Kould (cold) + Riba (river) |
 | `r082` | `Rrivar Qin` | **Rrivar pina** | `izani` | river | 96 | `542 -> -1495` | Rrivar coper | pina (pine) + Rrivar (river) |
-| `r083` | `Farside river 12` | **cSolt qRiba** | `farside` | river | 40 | `3167 -> 17` | ocean | cSolt (salt-spray) + qRiba (river) |
+| `r083` | `Farside river 12` | **Sāla-Vēli** | `yonni` | river | 40 | `3167 -> 17` | ocean | Sāla (salt-spray) + Vēli (river) — wave-cut terrace river south of Yonni |
 | `r084` | `Rrivar Emparar` | **Rrivar onda** | `izani` | river | 99 | `349 -> -1478` | lake (-1,499 m) | onda (wave) + Rrivar (river) |
 | `r085` | `Korona / NE river 3` | **Hau-Kē** | `hum` | river | 51 | `-8 -> -465` | lake (-614 m, through) | Hau (coyote-hound) + Kē (stream) |
 | `r086` | `Lizardmen river 3` | **Tyan Warra** | `tungang` | river | 56 | `-746 -> -2328` | lake (-2,600 m) | Tyan (Second) + Warra (river) |
-| `r087` | `Farside river 13` | **xKlira cBruk** | `farside` | river | 44 | `3200 -> 9` | ocean | xKlira (clear-pebble) + cBruk (stream) |
+| `r087` | `Farside river 13` | **Rōxna-Khōra** | `yonni` | river | 44 | `3200 -> 9` | ocean | Rōxna (shining/clear, Sarmatian *rauxšna) + Khōra (brook) — clear pebble-cove stream |
 | `r088` | `Lizardmen river 4` | **Kruk Warra** | `tungang` | river | 40 | `-794 -> -2540` | lake (-2,600 m) | Kruk (crook-bend) + Warra (river) |
 | `r089` | `Farside stream` | **xBrod qRiba** | `farside` | river | 26 | `3482 -> 11` | ocean | xBrod (broad-wash) + qRiba (river) |
 | `r090` | `n semiarid stream` | **Ankra Rivar** | `argot` | river | 89 | `1010 -> -235` | lake (0 m) | Ankra (anchor) + Rivar (river) |
-| `r091` | `Farside stream 2` | **cWaita cBruk** | `farside` | river | 44 | `4441 -> 10` | ocean | cWaita (white-foam) + cBruk (stream) |
+| `r091` | `Farside stream 2` | **Vēta-Khōra** | `yonni` | river | 44 | `4441 -> 10` | ocean | Vēta (wind-swept, Sarmatian *vāta) + Khōra (brook) — gale-swept headland stream |
 | `r092` | `Footfall Bek` | **Dip Rivr** | `republic` | river | 80 | `2975 -> 2809` | lake (2,400 m) | Dip (deep) + Rivr (river) |
-| `r093` | `Farside stream 3` | **qBlaka cBruk** | `farside` | river | 49 | `4292 -> 11` | ocean | qBlaka (black-shale) + cBruk (stream) |
+| `r093` | `Farside stream 3` | **Mēda-Khōra** | `yonni` | river | 49 | `4292 -> 11` | ocean | Mēda (mead-amber / dark-peat) + Khōra (brook) — steep coastal gorge stream |
 | `r094` | `Fallsi Krikki` | **Sista Riba** | `yuni` | river | 147 | `3962 -> -2317` | basin (-2,337 m) | Sista (Sister) + Riba (river) |
-| `r095` | `Farside stream 4` | **ɓRiba cBruk** | `farside` | river | 29 | `2352 -> 10` | ocean | ɓRiba (deep-implosive) + cBruk (stream) |
-| `r096` | `Farside stream 5` | **qAina cBruk** | `farside` | river | 47 | `3207 -> 7` | ocean | qAina (iron-sand) + cBruk (stream) |
+| `r095` | `Farside stream 4` | **Dēva-Khōra** | `yonni` | river | 29 | `2352 -> 10` | ocean | Dēva (deep-cleft) + Khōra (brook) — sea-cliff torrent of central Yonni |
+| `r096` | `Farside stream 5` | **Sūrkha-Khōra** | `yonni` | river | 47 | `3207 -> 7` | ocean | Sūrkha (red-ochre / carnelian) + Khōra (brook) — red-scarp coastal torrent |
 | `r097` | `Lizabruk` | **Wind Riba** | `dalab` | river | 57 | `720 -> 61` | lake (-9 m) | Wind (wind) + Riba (river) |
 | `r098` | `unnamed stream 2` | **Sām-Hām** | `hum` | river | 151 | `3760 -> 677` | lake (705 m) | Sām (deep-notch) + Hām (river) |
 | `r099` | `Isbipt' Baatar` | **Níłch'i Baatar** | `riders` | river | 99 | `298 -> -1416` | Ring Sea | Níłch'i (monsoon-wind) + Baatar (river) |
-| `r100` | `Farside stream 6` | **ɗGould cBruk** | `farside` | river | 29 | `4015 -> 13` | ocean | ɗGould (gold-implosive) + cBruk (stream) |
+| `r100` | `Farside stream 6` | **Nābara-Khōra** | `yonni` | river | 29 | `4015 -> 13` | ocean | Nābara (electrum-gold, Meroitic *nabara) + Khōra (brook) — placer-gold coastal brook |
 | `r101` | `Ancient's Valley stream` | **Waywater Turnback** | `yusar` | river | 104 | `1473 -> 40` | lake (17 m) | Turnback (back-turn) + Waywater (river) |
 | `r102` | `Rīfar Rīd` | **Rīfar al-Sarāb** | `dasri` | river | 161 | `755 -> -2136` | lake (-2,331 m) | al-Sarāb (mirage) + Rīfar (river) |
 | `r103` | `Grį Baatar` | **Dootł'izh Baatar** | `riders` | river | 109 | `-67 -> -1478` | Ring Sea | Dootł'izh (jade-green) + Baatar (river) |
 | `r104` | `Rit Chhim` | **mist Brük** | `vothic` | river | 87 | `1263 -> 55` | lake (-9 m) | mist (mist) + Brük (stream) |
-| `r105` | `Lõsõ-bi Siṭrīm` | **Bīruk al-Ghaym** | `xanadui` | river | 90 | `2437 -> 2000` | lake (2,000 m) | alghaym (cloud-veil) + Bīruk (stream) |
+| `r105` | `Lõsõ-bi Siṭrīm` | **Solṭ Riwā** | `xanadui` | river | 90 | `2437 -> 2000` | lake (2,000 m) | Solṭ (salt) + Riwā (river) |
 | `r106` | `Dalab Bruk` | **Wind Bruk** | `dalab` | river | 94 | `879 -> 9` | lake (-9 m) | Wind (wind) + Bruk (stream) |
-| `r107` | `Phols Siṭrīm` | **Rīfar al-Jadwal** | `xanadui` | river | 334 | `2045 -> -1655` | lake (-1,686 m) | aljadwal (terraced-rill) + Rīfar (river) |
+| `r107` | `Phols Siṭrīm` | **Keb Riwā** | `xanadui` | river | 334 | `2045 -> -1655` | lake (-1,686 m) | Keb (cave) + Riwā (river) |
 | `r108` | `Ancient's Valley stream 2` | **Runbrook Saltwhite** | `yusar` | river | 52 | `1204 -> 37` | lake (17 m) | Saltwhite (white-salt) + Runbrook (stream) |
 | `r109` | `Ancient's Valley stream 3` | **Runbrook Windlow** | `yusar` | river | 48 | `1387 -> 28` | lake (17 m) | Windlow (low-wind) + Runbrook (stream) |
 | `r110` | `n semiarid stream 2` | **Roda Rivar** | `argot` | river | 47 | `769 -> -40` | lake (-81 m) | Roda (portage-road) + Rivar (river) |
@@ -290,8 +356,8 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r116` | `Konbruk` | **Blak Riba** | `dalab` | river | 153 | `5152 -> 619` | Chimes Riba | Blak (black) + Riba (river) |
 | `r117` | `Ruins of Nazar stream` | **Waywater Sleepdown** | `yusar` | river | 124 | `3383 -> 280` | lake (-9 m) | Sleepdown (down-sleep) + Waywater (river) |
 | `r118` | `Istrim Istar` | **Rrivar Rreda** | `izani` | river | 99 | `399 -> -1495` | lake (-1,499 m) | Rreda (red) + Rrivar (river) |
-| `r119` | `Farside stream 9` | **cSaut ɓRiba cBruk** | `farside` | river | 22 | `3440 -> 1556` | ocean | cSaut (south) + ɓRiba (deep-implosive) + cBruk (stream) |
-| `r120` | `Farside stream 10` | **xBrod cBruk** | `farside` | river | 36 | `3454 -> 10` | ocean | xBrod (broad-wash) + cBruk (stream) |
+| `r119` | `Farside stream 9` | **Kēda-Khōra** | `yonni` | river | 22 | `3440 -> 1556` | ocean | Kēda (cairn-shrine, Meroitic *kēda) + Khōra (brook) — Shroudhills cairn-cove stream |
+| `r120` | `Farside stream 10` | **Vārda-Vēli** | `yonni` | river | 36 | `3454 -> 10` | ocean | Vārda (shield-watch) + Vēli (river) — southern Yonni raid-cove river |
 | `r121` | `The Tiers stream` | **Yūt-Hām** | `hum` | river | 59 | `1205 -> -151` | lake (-327 m) | Yūt (howling-moon) + Hām (river) |
 | `r122` | `NW lowlands stream 3` | **Ngān-Kē** | `eternian` | river | 57 | `1010 -> 138` | lake (46 m) | Ngān (silver-thread) + Kē (stream) |
 | `r123` | `Glaive Bek` | **Birč Bruk** | `republic` | river | 65 | `3040 -> 2520` | lake (2,400 m) | Birč (birch) + Bruk (stream) |
@@ -301,14 +367,14 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r127` | `Aribar n Aṣolṭ` | **Rvr Šms** | `tabist` | river | 65 | `-18 -> -1889` | lake (-1,907 m) | Šms (sun-furnace) + Rvr (river) |
 | `r128` | `Taagar Baatar` | **Tł'aai Baatar** | `riders` | river | 88 | `2744 -> -1503` | Ring Sea | Tł'aai (canopy) + Baatar (river) |
 | `r129` | `Lizardmen stream` | **Kowd Beck** | `tungang` | river | 43 | `-944 -> -1544` | lake (-1,591 m, through) | Kowd (cold) + Beck (stream) |
-| `r130` | `Farside stream 11` | **ɓSuna cBruk** | `farside` | river | 29 | `3475 -> 11` | ocean | ɓSuna (west-sun) + cBruk (stream) |
+| `r130` | `Farside stream 11` | **ɓSuna cBruk** | `farside` | river | 29 | `3475 -> 11` | xBrod qRiba | ɓSuna (west-sun) + cBruk (stream) |
 | `r131` | `Golt Chhim` | **brayt Rivrh** | `vothic` | river | 41 | `766 -> -1004` | Ring Sea | brayt (bright) + Rivrh (river) |
 | `r132` | `NW lowlands stream 5` | **Sīng-Mā** | `eternian` | river | 148 | `4071 -> 617` | lake (430 m) | Sīng (star-lantern) + Mā (river) |
 | `r133` | `Giant Country stream 4` | **Branosbruk** | `vrivolci` | river | 59 | `812 -> 69` | lake (-9 m) | Branos (raven) + Bruk (stream) |
-| `r134` | `Farside stream 12` | **xWinda cBruk** | `farside` | river | 31 | `3141 -> 9` | ocean | xWinda (wind-click) + cBruk (stream) |
+| `r134` | `Farside stream 12` | **Tūra-Khōra** | `yonni` | river | 31 | `3141 -> 9` | ocean | Tūra (swift-wind, Sarmatian *tūra) + Khōra (brook) — wind-gap coastal torrent |
 | `r135` | `Giant Country stream 5` | **Dubnosbruk** | `vrivolci` | river | 76 | `1010 -> 23` | lake (-9 m) | Dubnos (deep-hollow) + Bruk (stream) |
 | `r136` | `Ancient's Valley stream 7` | **Waywater Ashgrey** | `yusar` | river | 69 | `744 -> 47` | lake (17 m) | Ashgrey (grey-ash) + Waywater (river) |
-| `r137` | `Farside stream 14` | **cFols cBruk** | `farside` | river | 26 | `3436 -> 13` | ocean | cFols (bench-falls) + cBruk (stream) |
+| `r137` | `Farside stream 14` | **Kālla-Khōra** | `yonni` | river | 26 | `3436 -> 13` | ocean | Kālla (scarp-step) + Khōra (brook) — bench-falls coastal stream |
 | `r138` | `Giant Country stream 6` | **Stanosbruk** | `vrivolci` | river | 68 | `1338 -> 96` | lake (-9 m) | Stanos (standing-stone) + Bruk (stream) |
 | `r139` | `Ancient's Valley stream 8` | **Waywater Saltwhite** | `yusar` | river | 107 | `1395 -> 66` | lake (17 m) | Saltwhite (white-salt) + Waywater (river) |
 | `r140` | `The Rift stream 2` | **Pimp Beck** | `tungang` | river | 87 | `5581 -> -1625` | lake (-1,723 m) | Pimp (Fifth) + Beck (stream) |
@@ -318,17 +384,17 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r144` | `s highlands stream` | **Star Bruk** | `dalab` | river | 27 | `3597 -> 2878` | lake (2,878 m, through) | Star (star) + Bruk (stream) |
 | `r145` | `Lizardmen stream 3` | **Leet Beck** | `tungang` | river | 34 | `-567 -> -2585` | lake (-2,600 m) | Leet (light) + Beck (stream) |
 | `r146` | `NW lowlands stream 6` | **Barada Kriki** | `argot` | river | 57 | `1473 -> 463` | lake (430 m) | Barada (brother-crew) + Kriki (stream) |
-| `r147` | `Farside stream 15` | **ɓLikl ɗStara cBruk** | `farside` | river | 23 | `3411 -> 11` | ocean | ɓLikl (little) + ɗStara (outer-star) + cBruk (stream) |
-| `r148` | `Farside stream 16` | **qRidj cBruk** | `farside` | river | 25 | `3426 -> 10` | ocean | qRidj (terrace-ridge) + cBruk (stream) |
+| `r147` | `Farside stream 15` | **Fāra-Khōra** | `yonni` | river | 23 | `3411 -> 11` | ocean | Fāra (watch-beacon) + Khōra (brook) — northern cape watch-stream |
+| `r148` | `Farside stream 16` | **qRidj cBruk** | `farside` | river | 25 | `3426 -> 10` | xBrod qRiba | qRidj (terrace-ridge) + cBruk (stream) |
 | `r149` | `NW lowlands stream 8` | **Sēk-Mā** | `eternian` | river | 55 | `1020 -> 138` | lake (46 m) | Sēk (stone-weir) + Mā (river) |
 | `r150` | `Sunbruk` | **Stoun Riba** | `dalab` | river | 42 | `4098 -> 3039` | lake (2,730 m, through) | Stoun (stone) + Riba (river) |
 | `r151` | `The Bowl stream` | **Brk Qmr** | `tabist` | river | 60 | `-1042 -> -1154` | lake (-1,158 m) | Qmr (moon-pan) + Brk (stream) |
 | `r152` | `Ancient's Valley stream 11` | **Waywater Stonered** | `yusar` | river | 127 | `3604 -> 34` | lake (17 m) | Stonered (red-stone) + Waywater (river) |
 | `r153` | `NW lowlands stream 9` | **Ngān-Mā** | `eternian` | river | 98 | `1566 -> 58` | lake (46 m) | Ngān (silver-thread) + Mā (river) |
 | `r154` | `The Tiers stream 2` | **Kū-Kē** | `hum` | river | 25 | `1193 -> 143` | lake (104 m) | Kū (spider-web) + Kē (stream) |
-| `r155` | `Farside stream 17` | **cWaita qRiba** | `farside` | river | 34 | `1762 -> 11` | ocean | cWaita (white-foam) + qRiba (river) |
+| `r155` | `Farside stream 17` | **Spēta-Vēli** | `yonni` | river | 34 | `1762 -> 11` | ocean | Spēta (white-foam, Sarmatian *spēta) + Vēli (river) — white-surf river north of Yonni |
 | `r156` | `Lizardmen stream 4` | **Noth Leet Beck** | `tungang` | river | 23 | `2549 -> -1483` | lake (-1,591 m, through) | Noth (north) + Leet (light) + Beck (stream) |
-| `r157` | `unnamed stream 4` | **qLoua ɓSuna cBruk** | `farside` | river | 22 | `3575 -> 2068` | ocean | qLoua (lower) + ɓSuna (west-sun) + cBruk (stream) |
+| `r157` | `unnamed stream 4` | **Amāni-Khōra** | `yonni` | river | 22 | `3575 -> 2068` | ocean | Amāni (sacred-cloud, Meroitic *Amani) + Khōra (brook) — northernmost Shroudhills cove stream |
 | `r158` | `SW lowlands stream 3` | **Brait Riba** | `dalab` | river | 175 | `3612 -> 92` | lake (-9 m) | Brait (bright) + Riba (river) |
 | `r159` | `Phirh Chhim` | **Dip Brük** | `vothic` | river | 28 | `890 -> -976` | Ring Sea | Dip (deep) + Brük (stream) |
 | `r160` | `Solbruk` | **Sun Bruk** | `dalab` | river | 35 | `892 -> -1800` | lake (-1,862 m, through) | Sun (sun) + Bruk (stream) |
@@ -340,13 +406,13 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r166` | `Khon Baatar` | **Vai Toka** | `islander` | river | 66 | `-1321 -> -1465` | Ring Sea | Toka (coral-rock) + Vai (river) — Kautoa island river |
 | `r167` | `Giant Country stream 10` | **vindosbruk** | `vrivolci` | river | 44 | `485 -> 63` | lake (-9 m) | vindos (white-snow) + Bruk (stream) |
 | `r168` | `Bonbruk` | **Sun Riba** | `dalab` | river | 65 | `5186 -> 2903` | lake (2,730 m, through) | Sun (sun) + Riba (river) |
-| `r169` | `Farside stream 19` | **xMista cBruk** | `farside` | river | 32 | `3991 -> 12` | ocean | xMista (sea-fog) + cBruk (stream) |
+| `r169` | `Farside stream 19` | **Mīsta-Khōra** | `yonni` | river | 32 | `3991 -> 12` | ocean | Mīsta (sea-shroud fog) + Khōra (brook) — fogbound coastal brook |
 | `r170` | `Łii Baatar` | **Łizhin Baatar** | `riders` | river | 123 | `-390 -> -1480` | Ring Sea | Łizhin (black-water) + Baatar (river) |
 | `r171` | `Ruins of Nazar stream 4` | **Runbrook Watchstill** | `yusar` | river | 63 | `1370 -> 3` | lake (-9 m) | Watchstill (still-watch) + Runbrook (stream) |
 | `r172` | `The Bowl stream 2` | **Rvr Ḥdd** | `tabist` | river | 41 | `-982 -> -1146` | lake (-1,158 m) | Ḥdd (iron-oxide) + Rvr (river) |
 | `r173` | `Ruins of Nazar stream 5` | **Runbrook Fallhigh** | `yusar` | river | 54 | `1875 -> 127` | lake (-9 m) | Fallhigh (high-fall) + Runbrook (stream) |
 | `r174` | `Weavers' Run` | **Aina Bruk** | `yuni` | river | 59 | `2165 -> 1908` | lake (620 m) | Aina (Iron) + Bruk (stream) |
-| `r175` | `Farside stream 20` | **ɗStara cBruk** | `farside` | river | 28 | `3812 -> 10` | ocean | ɗStara (outer-star) + cBruk (stream) |
+| `r175` | `Farside stream 20` | **Mārka-Dānu** | `yonni` | river | 28 | `3812 -> 10` | ocean | Mārka (frontier-march) + Dānu (river) — fortified Y = 515 border river between the Spear-Queens of Yonni and Eternal State Farside (Farside: ɗStara cBruk) |
 | `r176` | `n semiarid stream 3` | **Pepa Rivar** | `argot` | river | 57 | `1134 -> 155` | lake (0 m) | Pepa (paper-treaty) + Rivar (river) |
 | `r177` | `Aiyanbruk` | **Wait Riba** | `dalab` | river | 88 | `3881 -> 330` | Chimes Riba | Wait (white) + Riba (river) |
 | `r178` | `NW lowlands stream 12` | **Sīng-Kē** | `eternian` | river | 74 | `824 -> 113` | lake (46 m) | Sīng (star-lantern) + Kē (stream) |
@@ -355,7 +421,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r181` | `Ancient's Valley stream 13` | **Runbrook Turnback** | `yusar` | river | 88 | `1036 -> 69` | lake (17 m) | Turnback (back-turn) + Runbrook (stream) |
 | `r182` | `Lizardmen stream 5` | **Tlahn Beck** | `tungang` | river | 38 | `-1275 -> -2599` | lake (-2,600 m) | Tlahn (iron-clan) + Beck (stream) |
 | `r183` | `Sneikbruk` | **Fols Riba** | `dalab` | river | 132 | `4300 -> 302` | lake (-9 m) | Fols (falls) + Riba (river) |
-| `r184` | `Farside stream 21` | **qStoun cBruk** | `farside` | river | 34 | `2960 -> 11` | ocean | qStoun (stone-click) + cBruk (stream) |
+| `r184` | `Farside stream 21` | **Asānga-Khōra** | `yonni` | river | 34 | `2960 -> 11` | ocean | Asānga (sling-stone / boulder, Sarmatian *asanga) + Khōra (brook) — boulder-choked outer-wall torrent |
 | `r185` | `Korona / NE stream 2` | **Ràv Rìv** | `painted` | river | 105 | `1042 -> -850` | lake (-918 m) | Ràv (raven) + Rìv (river) — northern Danxia hogback river of the Painted Men |
 | `r186` | `NW lowlands stream 13` | **Chūng-Kē** | `eternian` | river | 54 | `1816 -> 108` | lake (46 m) | Chūng (middle-dyke) + Kē (stream) |
 | `r187` | `NW lowlands stream 14` | **Hōng-Kē** | `eternian` | river | 49 | `802 -> 96` | lake (46 m) | Hōng (vermilion) + Kē (stream) |
@@ -367,7 +433,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r193` | `NW lowlands stream 15` | **Fūng-Kē** | `eternian` | river | 80 | `906 -> 70` | lake (46 m) | Fūng (north-wind) + Kē (stream) |
 | `r194` | `Istrim Guiñ` | **Rrivar Stona** | `izani` | river | 117 | `1013 -> -1493` | lake (-1,499 m) | Stona (stone) + Rrivar (river) |
 | `r195` | `Yeti Valley stream` | **Ïsnoo Quli** | `khaay` | wadi | 293 | `6070 -> 1551` | lake (681 m, through) | Ïsnoo (drift-snow) + Quli (wadi) |
-| `r196` | `Farside stream 22` | **ɗNort qBlaka cBruk** | `farside` | river | 20 | `2579 -> 12` | ocean | ɗNort (north) + qBlaka (black-shale) + cBruk (stream) |
+| `r196` | `Farside stream 22` | **Khāra-Khōra** | `yonni` | river | 20 | `2579 -> 12` | Mārka-Dānu | Khāra (black-shale) + Khōra (brook) — piedmont tributary of Mārka-Dānu |
 | `r197` | `Rīfar al-Ṣanḍ` | **Rīfar al-Milḥ** | `dasri` | river | 109 | `2922 -> -1923` | lake (-1,804 m) | al-Milḥ (salt-crust) + Rīfar (river) |
 | `r198` | `Olbruk` | **Wait Bruk** | `dalab` | river | 78 | `1972 -> 350` | lake (-9 m) | Wait (white) + Bruk (stream) |
 | `r199` | `Korona / NE stream 3` | **Àirn Rìv** | `painted` | river | 81 | `-243 -> -439` | lake (-393 m, through) | Àirn (iron) + Rìv (river) — northwestern stream of the Painted Highlands |
@@ -381,7 +447,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r207` | `Lizardmen stream 8` | **Stuan Warra** | `tungang` | river | 102 | `-1933 -> -2602` | lake (-2,600 m) | Stuan (stone) + Warra (river) |
 | `r208` | `Korona / NE stream 4` | **Òk Rìv** | `painted` | river | 48 | `-1013 -> -1589` | lake (-1,619 m, through) | Òk (ochre) + Rìv (river) — eastern Painted Canyon river draining toward Korona |
 | `r209` | `Kliabruk` | **Geit Bruk** | `dalab` | river | 54 | `714 -> 31` | lake (-9 m) | Geit (gate) + Bruk (stream) |
-| `r210` | `Farside stream 24` | **cApa xWinda cBruk** | `farside` | river | 22 | `3570 -> 1461` | ocean | cApa (upper) + xWinda (wind-click) + cBruk (stream) |
+| `r210` | `Farside stream 24` | **Dārga-Khōra** | `yonni` | river | 22 | `3570 -> 1461` | ocean | Dārga (long-spear, Sarmatian *darga) + Khōra (brook) — Shroudhills cove stream |
 | `r211` | `Lizardmen stream 9` | **Lile Stuan Beck** | `tungang` | river | 29 | `-1636 -> -2280` | lake (-2,600 m) | Lile (little) + Stuan (stone) + Beck (stream) |
 | `r212` | `Istrim Airon` | **Rrivar coper** | `izani` | river | 104 | `653 -> -1496` | lake (-1,499 m) | coper (copper) + Rrivar (river) |
 | `r213` | `NW lowlands stream 17` | **Sām-Kē** | `eternian` | river | 70 | `922 -> 126` | lake (46 m) | Sām (deep-pool) + Kē (stream) |
@@ -392,7 +458,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r218` | `Giant Country stream 13` | **Vrivolcibruk** | `vrivolci` | river | 62 | `916 -> 91` | lake (-9 m) | Vrivolci (free-clan) + Bruk (stream) |
 | `r219` | `Są Baatar` | **Yas Baatar** | `riders` | river | 50 | `-1540 -> -1604` | Ring Sea | Yas (cloud-mist) + Baatar (river) |
 | `r220` | `Dingo Krikki` | **Spindl Bruk** | `yuni` | river | 54 | `1355 -> -2325` | lake (-2,339 m) | Spindl (Spindle) + Bruk (stream) |
-| `r221` | `Farside stream 26` | **cSaut xBrod cBruk** | `farside` | river | 23 | `4067 -> 100` | ocean | cSaut (south) + xBrod (broad-wash) + cBruk (stream) |
+| `r221` | `Farside stream 26` | **Shrūda-Khōra** | `yonni` | river | 23 | `4067 -> 100` | ocean | Shrūda (shroud-mist) + Khōra (brook) — mist-draped western Shroudhills stream |
 | `r222` | `Jimjam stream 3` | **Kuḷir-ōṭai** | `jimjam` | river | 69 | `1640 -> 441` | lake (430 m) | Kuḷir (cool) + ōṭai (stream) |
 | `r223` | `Fayabruk` | **Solt Bruk** | `dalab` | river | 50 | `871 -> 21` | lake (-9 m) | Solt (salt) + Bruk (stream) |
 | `r224` | `n semiarid stream 5` | **Raida Kriki** | `argot` | river | 55 | `1153 -> 116` | lake (-81 m) | Raida (raider) + Kriki (stream) |
@@ -405,7 +471,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r231` | `Caelum Rill` | **Longa Bruk** | `yuni` | river | 84 | `5277 -> 4302` | lake (3,579 m) | Longa (Long) + Bruk (stream) |
 | `r232` | `Aribar n Awayl` | **Brk Ḏhb** | `tabist` | river | 30 | `567 -> -1164` | lake (-1,797 m) | Ḏhb (ochre-gold) + Brk (stream) |
 | `r233` | `n semiarid stream 6` | **Ankra Kriki** | `argot` | river | 90 | `1183 -> 75` | lake (-81 m) | Ankra (anchor) + Kriki (stream) |
-| `r234` | `Farside stream 27` | **cApa ɗGould cBruk** | `farside` | river | 20 | `2838 -> 11` | ocean | cApa (upper) + ɗGould (gold-implosive) + cBruk (stream) |
+| `r234` | `Farside stream 27` | **Zārin-Khōra** | `yonni` | river | 20 | `2838 -> 11` | Mārka-Dānu | Zārin (golden-bronze, Sarmatian *zaranya) + Khōra (brook) — upper frontier tributary of Mārka-Dānu |
 | `r235` | `Warp Gorge River` | **Stara Bruk** | `yuni` | river | 72 | `1361 -> 261` | lake (620 m) | Stara (Star) + Bruk (stream) |
 | `r236` | `NW lowlands stream 20` | **Pāk-Sām-Kē** | `eternian` | river | 22 | `480 -> 122` | lake (46 m) | Pāk (north) + Sām (deep-pool) + Kē (stream) |
 | `r237` | `Giant Country stream 17` | **Nemetos Brucos** | `talovolci` | river | 73 | `2889 -> 2360` | lake (2,281 m, through) | Nemetos (sacred-grove) + Brucos (stream) |
@@ -423,7 +489,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r249` | `Lizardmen stream 11` | **Blek Beck** | `tungang` | river | 40 | `-1796 -> -2601` | lake (-2,600 m) | Blek (black-shale) + Beck (stream) |
 | `r250` | `NW lowlands stream 23` | **Pepa Kriki** | `argot` | river | 49 | `991 -> 459` | lake (430 m) | Pepa (paper-treaty) + Kriki (stream) |
 | `r251` | `Rīfar al-Thirst` | **Rīfar al-Bīr** | `dasri` | river | 141 | `2720 -> -2024` | lake (-2,088 m) | al-Bīr (cistern-well) + Rīfar (river) |
-| `r252` | `Solṭ Siṭrīm` | **Bīruk al-Dhahab** | `xanadui` | river | 45 | `2429 -> 2040` | lake (2,000 m) | aldhahab (gold) + Bīruk (stream) |
+| `r252` | `Solṭ Siṭrīm` | **Balāk Siṭrīm** | `xanadui` | river | 45 | `2429 -> 2040` | lake (2,000 m) | Balāk (black) + Siṭrīm (stream) |
 | `r253` | `n semiarid stream 9` | **Timba Kriki** | `argot` | river | 55 | `1110 -> -3` | lake (0 m) | Timba (drift-timber) + Kriki (stream) |
 | `r254` | `n semiarid stream 10` | **Kamandar Kriki** | `argot` | river | 66 | `1152 -> 179` | lake (0 m) | Kamandar (commander) + Kriki (stream) |
 | `r255` | `Istrim de Verge` | **Rrivar Blaca** | `izani` | river | 192 | `244 -> -2118` | lake (-2,339 m) | Blaca (black) + Rrivar (river) |
@@ -443,7 +509,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r269` | `n semiarid stream 13` | **Gete Kriki** | `argot` | river | 31 | `647 -> 40` | lake (-81 m) | Gete (spillway-gate) + Kriki (stream) |
 | `r270` | `NW lowlands stream 29` | **Kebla Kriki** | `argot` | river | 49 | `964 -> 452` | lake (430 m) | Kebla (cable-chain) + Kriki (stream) |
 | `r271` | `Istrim Bidar` | **Bruk cedra** | `izani` | river | 94 | `1292 -> -1027` | lake (-1,068 m) | cedra (cedar) + Bruk (stream) |
-| `r272` | `Siwipṭ Siṭrīm` | **Bīruk al-Yāqūt** | `xanadui` | river | 43 | `1198 -> -315` | lake (-717 m) | alyāqūt (ruby) + Bīruk (stream) |
+| `r272` | `Siwipṭ Siṭrīm` | **Qol Siṭrīm** | `xanadui` | river | 55 | `1198 -> -579` | lake (-520 m) | Qol (cold) + Siṭrīm (stream) |
 | `r273` | `Blak Rivrh` | **Brant Rivrh** | `vothic` | river | 58 | `777 -> -520` | klir Rivrh | Brant (burnt) + Rivrh (river) |
 | `r274` | `Ancient's Valley river 4` | **Waywater Ironblack** | `yusar` | river | 148 | `4293 -> 69` | Dariba | Ironblack (black-iron) + Waywater (river) |
 | `r275` | `Farside stream 18` | **Sīu-Hāk-Kē** | `eternian` | river | 25 | `3535 -> 1888` | Līng-Mā | Sīu (little) + Hāk (black-ink) + Kē (stream) |
@@ -505,7 +571,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r331` | `The Rift stream` | **Gowd Warra** | `tungang` | river | 93 | `2907 -> 198` | Kual Warra | Gowd (gold) + Warra (river) |
 | `r332` | `The Rift stream 6` | **Tarn Beck** | `tungang` | river | 43 | `3752 -> 1912` | Kual Warra | Tarn (mountain-tarn) + Beck (stream) |
 | `r333` | `The Rift stream 4` | **Howe Beck** | `tungang` | river | 64 | `5242 -> 3934` | Kual Warra | Howe (howe-mound) + Beck (stream) |
-| `r334` | `Farside river 6` | **qBlaka qRiba** | `farside` | river | 69 | `4660 -> 369` | xMista qRiba | qBlaka (black-shale) + qRiba (river) |
+| `r334` | `Farside river 6` | **Sāva-Dānu** | `yonni` | river | 69 | `4660 -> 369` | Kandē-Dānu | Sāva (black-basalt, Sarmatian *syāva) + Dānu (river) — 69 km southern fork of Kandē-Dānu |
 | `r335` | `Khul Chhim` | **Vayt Brük** | `vothic` | river | 44 | `2494 -> -451` | Vindos Rivros | Vayt (white) + Brük (stream) |
 | `r336` | `Tzhon Chhim` | **Krown Brük** | `vothic` | river | 48 | `3120 -> -319` | Vindos Rivros | Krown (crown) + Brük (stream) |
 | `r337` | `Blït Chhim` | **Stil Rivrh** | `vothic` | river | 29 | `935 -> -44` | Vindos Rivros | Stil (still) + Rivrh (river) |
@@ -528,10 +594,10 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r354` | `Istrim Golda` | **Rrivar Mista** | `izani` | river | 70 | `745 -> -1153` | Rrivar Goulda | Mista (mist) + Rrivar (river) |
 | `r355` | `Istrim Son` | **Bruk Stona** | `izani` | river | 66 | `-65 -> -1302` | Rrivar Grin | Stona (stone) + Bruk (stream) |
 | `r356` | `Jimjam stream 2` | **Mēkam-ōṭai** | `jimjam` | river | 51 | `2654 -> 664` | Tāmarai-āṟu | Mēkam (monsoon-cloud) + ōṭai (stream) |
-| `r357` | `Farside stream 7` | **cFols qRiba** | `farside` | river | 25 | `3030 -> 1345` | qRidj qRiba | cFols (bench-falls) + qRiba (river) |
+| `r357` | `Farside stream 7` | **Fāla-Vēli** | `yonni` | river | 25 | `3030 -> 1345` | Khōnna-Dānu | Fāla (cataract-step) + Vēli (river) — stepped waterfall fork of Khōnna-Dānu |
 | `r358` | `Servo Krikki` | **Mista Riba** | `yuni` | river | 113 | `2558 -> -2353` | Braita Riba | Mista (Mist) + Riba (river) |
 | `r359` | `Coldi Krikki` | **Blaka Riba** | `yuni` | river | 158 | `4392 -> -1968` | Braita Riba | Blaka (Black) + Riba (river) |
-| `r360` | `Farside stream 13` | **cKould cBruk** | `farside` | river | 35 | `3661 -> 1489` | ɓRiba qRiba | cKould (cold-click) + cBruk (stream) |
+| `r360` | `Farside stream 13` | **Sārda-Khōra** | `yonni` | river | 35 | `3661 -> 1489` | Tīgra-Dānu | Sārda (cold-snowmelt, Sarmatian *sarda) + Khōra (brook) — highland tributary of Tīgra-Dānu |
 | `r361` | `Naat' Baatar` | **Dził Buruuk** | `riders` | river | 76 | `34 -> -1326` | Béesh Baatar | Dził (whaleback-ridge) + Buruuk (stream) |
 | `r362` | `Biist' Baatar` | **Jóhonaa'éí Buruuk** | `riders` | river | 50 | `-266 -> -1150` | Béesh Baatar | Jóhonaa'éí (sun) + Buruuk (stream) |
 | `r363` | `Mų Baatar` | **Kǫ' Buruuk** | `riders` | river | 64 | `-273 -> -1365` | Tł'éé' Baatar | Kǫ' (sun-fire) + Buruuk (stream) |
@@ -545,7 +611,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r371` | `Rīfar al-Isṭōn` | **al-Bīruk al-Ghubār** | `dasri` | river | 48 | `2638 -> 1757` | Rīfar al-Qaṣr | al-Ghubār (dust-plume) + al-Bīruk (stream) |
 | `r372` | `The Rift stream 3` | **Tkyoob Beck** | `tungang` | river | 81 | `5779 -> -110` | Fell Warra | Tkyoob (Cube) + Beck (stream) |
 | `r373` | `Istrim Bon` | **Bruk Goulda** | `izani` | river | 29 | `-177 -> -827` | Rrivar Loña | Goulda (gold) + Bruk (stream) |
-| `r374` | `Farside stream 23` | **xBiga qRidj cBruk** | `farside` | river | 25 | `2551 -> 71` | qAina qRiba | xBiga (great) + qRidj (terrace-ridge) + cBruk (stream) |
+| `r374` | `Farside stream 23` | **Bārza-Khōra** | `yonni` | river | 25 | `2551 -> 71` | Āsina-Dānu | Bārza (high-ridge, Sarmatian *barz) + Khōra (brook) — ridge tributary of Āsina-Dānu |
 | `r375` | `Woiti Krikki` | **Swifta Bruk** | `yuni` | river | 50 | `4822 -> 2601` | Solt Riba | Swifta (Swift) + Bruk (stream) |
 | `r376` | `Giant Country stream 12` | **Viros Brucos** | `talovolci` | river | 46 | `2334 -> 1374` | Uarosriba | Viros (giant-stride) + Brucos (stream) |
 | `r377` | `Giant Country stream 20` | **Gedosbruk** | `vrivolci` | river | 62 | `1103 -> 159` | Spirlariba | Gedos (spear-ridge) + Bruk (stream) |
@@ -588,7 +654,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r415` | `Istrim Guar` | **Bruk Guaita** | `izani` | river | 50 | `34 -> -966` | Rrivar stara | Guaita (white) + Bruk (stream) |
 | `r416` | `Ancient's Valley stream 25` | **Runbrook Wideway Sideout** | `yusar` | river | 35 | `1748 -> 1164` | Waywater Watchstill | Wideway (great) + Sideout (outside) + Runbrook (stream) |
 | `r417` | `Wādī al-Lonj` | **Wādī al-Layl** | `dasri` | wadi | 313 | `1620 -> -1766` | lake (-1,882 m) | al-Layl (star-night) + Wādī (wadi) |
-| `r418` | `Sekriḍ Ḍrāi` | **Gūlī al-Zumurrud** | `xanadui` | wadi | 64 | `2596 -> 2165` | — | alzumurrud (emerald) + Gūlī (wadi) |
+| `r418` | `Sekriḍ Ḍrāi` | **Satõ Ḍrāi** | `xanadui` | wadi | 64 | `2596 -> 2165` | — | Satõ (stone) + Ḍrāi (wadi) |
 | `r419` | `unnamed wadi` | **Mō-Gèl** | `hum` | wadi | 82 | `6110 -> 1284` | lake (705 m) | Mō (Dry-mist) + Gèl (wadi) |
 | `r420` | `Vali Iston` | **Guli Rreda** | `izani` | wadi | 138 | `1471 -> 262` | — | Rreda (red) + Guli (wadi) |
 | `r422` | `Wādī al-Snāk` | **Wādī al-Bālm** | `dasri` | wadi | 184 | `1417 -> -1940` | lake (-1,980 m) | al-Bālm (date-palm) + Wādī (wadi) |
@@ -611,7 +677,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r439` | `unnamed wadi 9` | **Sī-Chūng-Gèl** | `hum` | wadi | 57 | `6352 -> 3720` | lake (2,496 m) | Sī (west) + Chūng (middle-tier) + Gèl (wadi) |
 | `r440` | `unnamed wadi 10` | **Guli rrija** | `izani` | wadi | 158 | `5614 -> -1083` | lake (-1,085 m) | rrija (ridge) + Guli (wadi) |
 | `r441` | `unnamed wadi 11` | **Hā-Lōk-Gèl** | `hum` | wadi | 48 | `6492 -> 5898` | basin (5,955 m) | Hā (lower) + Lōk (step-bench) + Gèl (wadi) |
-| `r442` | `Reḍ Riwā` | **Rīfar al-Bihār** | `xanadui` | river | 95 | `5318 -> 1402` | Bīruk al-Yāqūt | albihār (incense) + Rīfar (river) |
+| `r442` | `Reḍ Riwā` | **Solṭ Siṭrīm** | `xanadui` | river | 95 | `5318 -> 1402` | Qol Siṭrīm | Solṭ (salt) + Siṭrīm (stream) |
 | `r443` | `unnamed wadi 12` | **Sīng-Gèl** | `hum` | wadi | 94 | `6363 -> 1772` | lake (1,522 m) | Sīng (night-star) + Gèl (wadi) |
 | `r444` | `Siphon Melt` | **Silba Guli** | `yuni` | wadi | 158 | `1502 -> 258` | lake (620 m) | Silba (Silver) + Guli (wadi) |
 | `r445` | `Lizardmen wadi` | **Gowd Gill** | `tungang` | wadi | 20 | `-1012 -> -1639` | — | Gowd (gold) + Gill (wadi) |
@@ -638,7 +704,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r466` | `Yeti Valley wadi 2` | **Musïq Quli** | `khaay` | wadi | 25 | `6128 -> 6020` | lake (5,680 m, through) | Musïq (musk-ox) + Quli (wadi) |
 | `r467` | `The Catch wadi 3` | **Wādī al-Rīḥ al-Gharb** | `dasri` | wadi | 77 | `5125 -> 426` | basin (402 m) | al-Gharb (west) + al-Rīḥ (simoom-wind) + Wādī (wadi) |
 | `r468` | `n semiarid wadi 2` | **Gete Guli** | `argot` | wadi | 125 | `4682 -> -37` | lake (-60 m) | Gete (spillway-gate) + Guli (wadi) |
-| `r469` | `Satõ Ḍrāi` | **Gūlī al-Jadwal** | `xanadui` | wadi | 32 | `741 -> -1454` | — | aljadwal (terraced-rill) + Gūlī (wadi) |
+| `r469` | `Satõ Ḍrāi` | **Sanõ Ḍrāi** | `xanadui` | wadi | 32 | `741 -> -1454` | — | Sanõ (snow) + Ḍrāi (wadi) |
 | `r470` | `unnamed wadi 25` | **Ista Stoun Guli** | `yuni` | wadi | 31 | `5979 -> 3912` | basin (3,889 m) | Ista (east) + Stoun (Stone) + Guli (wadi) |
 | `r472` | `unnamed wadi 26` | **bretša Guli** | `argot` | wadi | 95 | `4574 -> 150` | basin (-54 m) | bretša (breach-coulee) + Guli (wadi) |
 | `r473` | `unnamed wadi 27` | **Loua Aina Guli** | `yuni` | wadi | 74 | `1348 -> 321` | — | Loua (lower) + Aina (Iron) + Guli (wadi) |
@@ -655,11 +721,11 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r485` | `Wādī al-Frost` | **Wādī al-Raml al-Gharb** | `dasri` | wadi | 57 | `5188 -> 2957` | lake (2,587 m, through) | al-Gharb (west) + al-Raml (red-sand) + Wādī (wadi) |
 | `r486` | `Wādī al-Wāyṭ` | **Wādī al-Shams** | `dasri` | wadi | 108 | `6178 -> 2246` | — | al-Shams (sun-scorch) + Wādī (wadi) |
 | `r487` | `unnamed wadi 33` | **Winda Guli** | `yuni` | wadi | 95 | `338 -> 266` | lake (644 m) | Winda (Wind) + Guli (wadi) |
-| `r488` | `Rīḍ Ḍrāi` | **Gūlī al-Ṣafā** | `xanadui` | wadi | 43 | `1159 -> -516` | lake (-717 m) | alṣafā (clarity) + Gūlī (wadi) |
+| `r488` | `Rīḍ Ḍrāi` | **Sakāi Ḍrāi** | `xanadui` | wadi | 65 | `1159 -> -579` | lake (-520 m) | Sakāi (sky) + Ḍrāi (wadi) |
 | `r489` | `unnamed wadi 34` | **Kū-Gèl** | `hum` | wadi | 77 | `4042 -> 1007` | lake (705 m) | Kū (spider-web) + Gèl (wadi) |
 | `r490` | `e badlands wadi 6` | **Biga Kopa Guli** | `yuni` | wadi | 46 | `6168 -> 4431` | — | Biga (great) + Kopa (Copper) + Guli (wadi) |
 | `r491` | `unnamed wadi 35` | **Likl Reda Guli** | `yuni` | wadi | 16 | `3806 -> 3806` | basin (5,777 m) | Likl (little) + Reda (Red) + Guli (wadi) |
-| `r492` | `Wāiṭ Ḍrāi` | **Gūlī al-Ward** | `xanadui` | wadi | 80 | `5701 -> -512` | lake (-717 m) | alward (rose-garden) + Gūlī (wadi) |
+| `r492` | `Wāiṭ Ḍrāi` | **Bhon Ḍrāi** | `xanadui` | wadi | 95 | `5701 -> -585` | lake (-520 m) | Bhon (bone) + Ḍrāi (wadi) |
 | `r493` | `n semiarid wadi 4` | **Barada Guli** | `argot` | wadi | 62 | `1421 -> 77` | lake (-81 m) | Barada (brother-crew) + Guli (wadi) |
 | `r494` | `Awadi n Arid` | **Gl Ḏhb** | `tabist` | wadi | 84 | `299 -> -1974` | lake (-1,980 m) | Ḏhb (ochre-gold) + Gl (wadi) |
 | `r495` | `unnamed wadi 36` | **Wādī al-Ṣakhr al-Ṣaghīr** | `dasri` | wadi | 47 | `5424 -> 4325` | basin (4,280 m) | al-Ṣaghīr (little) + al-Ṣakhr (sandstone-mesa) + Wādī (wadi) |
@@ -687,7 +753,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r518` | `Vali Olda` | **Guli coper** | `izani` | wadi | 31 | `-800 -> -1249` | basin (-1,230 m) | coper (copper) + Guli (wadi) |
 | `r519` | `n semiarid wadi 5` | **yardang Guli** | `argot` | wadi | 100 | `4360 -> -48` | lake (-60 m) | yardang (wind-keel) + Guli (wadi) |
 | `r520` | `Ret Gulusu` | **Kumun Gulusu** | `scyvoi` | wadi | 80 | `-566 -> -1541` | ocean | Kumun (sand-sheet) + Gulusu (wadi) |
-| `r521` | `Jeḍ Ḍrāi` | **Gūlī al-Nūr** | `xanadui` | wadi | 30 | `2574 -> 2313` | lake (2,000 m) | alnūr (light) + Gūlī (wadi) |
+| `r521` | `Jeḍ Ḍrāi` | **Sã Ḍrāi** | `xanadui` | wadi | 30 | `2574 -> 2313` | lake (2,000 m) | Sã (sun) + Ḍrāi (wadi) |
 | `r522` | `n semiarid wadi 6` | **Topa Pepa Guli** | `argot` | wadi | 10 | `199 -> -47` | lake (-81 m) | Topa (upper) + Pepa (paper-treaty) + Guli (wadi) |
 | `r523` | `unnamed wadi 47` | **Likl Solt Guli** | `yuni` | wadi | 22 | `2236 -> 2236` | basin (5,551 m) | Likl (little) + Solt (Salt) + Guli (wadi) |
 | `r524` | `unnamed wadi 48` | **Norta Spindl Guli** | `yuni` | wadi | 6 | `4538 -> 4538` | basin (3,670 m) | Norta (north) + Spindl (Spindle) + Guli (wadi) |
@@ -698,7 +764,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r529` | `unnamed wadi 52` | **Wādī al-Jabal al-Taḥt** | `dasri` | wadi | 26 | `4932 -> 4200` | basin (4,280 m) | al-Taḥt (lower) + al-Jabal (escarpment) + Wādī (wadi) |
 | `r530` | `Howling Gulch` | **Noon Wash** | `screamer` | wadi | 80 | `-1049 -> -1887` | ocean | Noon (noon) + Wash (wadi) |
 | `r531` | `unnamed wadi 53` | **Likl Dipa Guli** | `yuni` | wadi | 32 | `631 -> 404` | lake (644 m) | Likl (little) + Dipa (Deep) + Guli (wadi) |
-| `r532` | `Ḍhom Ḍrāi` | **Gūlī al-Ghaym** | `xanadui` | wadi | 55 | `3506 -> 2120` | — | alghaym (cloud-veil) + Gūlī (wadi) |
+| `r532` | `Ḍhom Ḍrāi` | **Silwā Ḍrāi** | `xanadui` | wadi | 55 | `3506 -> 2120` | — | Silwā (silver) + Ḍrāi (wadi) |
 | `r533` | `e badlands wadi 9` | **Sēk-Gèl** | `hum` | wadi | 69 | `6364 -> 4494` | basin (4,321 m) | Sēk (chasm-wall) + Gèl (wadi) |
 | `r534` | `unnamed wadi 54` | **Lām-Gèl** | `hum` | wadi | 70 | `3543 -> 1870` | lake (2,345 m) | Lām (ring-dike) + Gèl (wadi) |
 | `r535` | `n semiarid wadi 7` | **Kebla Guli** | `argot` | wadi | 59 | `1153 -> 323` | — | Kebla (cable-chain) + Guli (wadi) |
@@ -724,7 +790,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r556` | `unnamed wadi 62` | **Pāk-Lōk-Gèl** | `hum` | wadi | 15 | `2231 -> 2231` | — | Pāk (north) + Lōk (step-bench) + Gèl (wadi) |
 | `r557` | `Lizardmen wadi 7` | **Tkyoob Gill** | `tungang` | wadi | 44 | `4345 -> -1733` | — | Tkyoob (Cube) + Gill (wadi) |
 | `r558` | `unnamed wadi 64` | **Wādī al-Ghubār al-Fawq** | `dasri` | wadi | 23 | `4736 -> 4378` | basin (4,280 m) | al-Fawq (upper) + al-Ghubār (dust-plume) + Wādī (wadi) |
-| `r559` | `Kĩ Ḍrāi` | **Gūlī al-Kahf** | `xanadui` | wadi | 31 | `2860 -> 2129` | basin (2,088 m) | alkahf (cavern) + Gūlī (wadi) |
+| `r559` | `Kĩ Ḍrāi` | **Mũ Ḍrāi** | `xanadui` | wadi | 31 | `2860 -> 2129` | basin (2,088 m) | Mũ (moon) + Ḍrāi (wadi) |
 | `r560` | `The Catch wadi 7` | **Wādī al-Rīḥ al-Kabīr** | `dasri` | wadi | 15 | `509 -> 352` | basin (336 m) | al-Kabīr (great) + al-Rīḥ (simoom-wind) + Wādī (wadi) |
 | `r561` | `Shrieking Gulch` | **Red Wash** | `screamer` | wadi | 67 | `-674 -> -1709` | ocean | Red (red) + Wash (wadi) |
 | `r562` | `Bonzo Gulli` | **Biga Sista Guli** | `yuni` | wadi | 51 | `5266 -> 4239` | lake (4,259 m, through) | Biga (great) + Sista (Sister) + Guli (wadi) |
@@ -735,7 +801,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r567` | `unnamed wadi 67` | **Fūng-Kū** | `eternian` | wadi | 95 | `4248 -> 565` | — | Fūng (north-wind) + Kū (wadi) |
 | `r568` | `Ancient's Valley wadi` | **Cutdry Walkcrook** | `yusar` | wadi | 23 | `1035 -> 797` | — | Walkcrook (crooked-walk) + Cutdry (wadi) |
 | `r569` | `unnamed wadi 68` | **Loua Stara Guli** | `yuni` | wadi | 25 | `4835 -> 4726` | basin (3,610 m) | Loua (lower) + Stara (Star) + Guli (wadi) |
-| `r570` | `Mũ Ḍrāi` | **Gūlī al-Ṣakhr** | `xanadui` | wadi | 33 | `3111 -> 2395` | lake (2,465 m, through) | alṣakhr (crag) + Gūlī (wadi) |
+| `r570` | `Mũ Ḍrāi` | **Balāk Ḍrāi** | `xanadui` | wadi | 33 | `3111 -> 2395` | lake (2,465 m, through) | Balāk (black) + Ḍrāi (wadi) |
 | `r571` | `unnamed wadi 69` | **Sīu-Sīng-Gèl** | `hum` | wadi | 58 | `5973 -> 1342` | basin (1,270 m) | Sīu (little) + Sīng (night-star) + Gèl (wadi) |
 | `r572` | `Korona / NE wadi 4` | **Pāk-Lām-Gèl** | `hum` | wadi | 39 | `5342 -> 4182` | basin (3,930 m) | Pāk (north) + Lām (ring-dike) + Gèl (wadi) |
 | `r573` | `n semiarid wadi 9` | **Roda Guli** | `argot` | wadi | 75 | `1817 -> 54` | lake (-81 m) | Roda (portage-road) + Guli (wadi) |
@@ -750,7 +816,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r582` | `Wādī al-Ījal` | **Wādī al-Kawkab al-Fawq** | `dasri` | wadi | 22 | `4337 -> 3836` | — | al-Fawq (upper) + al-Kawkab (falling-star) + Wādī (wadi) |
 | `r583` | `e badlands wadi 13` | **Wādī al-Nar al-Taḥt** | `dasri` | wadi | 55 | `4626 -> 277` | — | al-Taḥt (lower) + al-Nar (ember) + Wādī (wadi) |
 | `r584` | `Wailing Gulch` | **alkali Wash** | `screamer` | wadi | 15 | `-1845 -> -1939` | ocean | alkali (alkali) + Wash (wadi) |
-| `r585` | `Sanõ Ḍrāi` | **Gūlī al-Yāqūt** | `xanadui` | wadi | 84 | `4473 -> -1660` | lake (-1,686 m) | alyāqūt (ruby) + Gūlī (wadi) |
+| `r585` | `Sanõ Ḍrāi` | **Sekriḍ Ḍrāi** | `xanadui` | wadi | 84 | `4473 -> -1660` | lake (-1,686 m) | Sekriḍ (sacred) + Ḍrāi (wadi) |
 | `r586` | `The Rift wadi 5` | **Deyp Gill** | `tungang` | wadi | 16 | `5816 -> 3052` | lake (2,728 m, through) | Deyp (deep-gill) + Gill (wadi) |
 | `r587` | `unnamed wadi 80` | **Sīu-Wūn-Gèl** | `hum` | wadi | 35 | `1949 -> 690` | — | Sīu (little) + Wūn (cloud-ledge) + Gèl (wadi) |
 | `r588` | `Ancient's Valley wadi 2` | **Cutdry Turnback** | `yusar` | wadi | 34 | `542 -> 89` | — | Turnback (back-turn) + Cutdry (wadi) |
@@ -778,10 +844,10 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r610` | `NW boreal wadi 7` | **Noor Goold Quli** | `khaay` | wadi | 10 | `4255 -> 4116` | — | Noor (north) + Goold (gold-nugget) + Quli (wadi) |
 | `r611` | `The Tiers wadi 3` | **Sīu-Lōk-Gèl** | `hum` | wadi | 27 | `2244 -> 658` | basin (331 m) | Sīu (little) + Lōk (step-bench) + Gèl (wadi) |
 | `r612` | `The Rift wadi 7` | **Kopa Gill** | `tungang` | wadi | 56 | `5144 -> -708` | — | Kopa (copper-ice) + Gill (wadi) |
-| `r613` | `Sakāi Ḍrāi` | **Gūlī al-Bard** | `xanadui` | wadi | 71 | `5589 -> -285` | lake (-717 m) | albard (cold-snow) + Gūlī (wadi) |
+| `r613` | `Sakāi Ḍrāi` | **Girīn Ḍrāi** | `xanadui` | wadi | 110 | `5589 -> -592` | lake (-520 m) | Girīn (green) + Ḍrāi (wadi) |
 | `r614` | `Vali Igal` | **Guli airon** | `izani` | wadi | 14 | `-605 -> -788` | basin (-970 m) | airon (iron) + Guli (wadi) |
 | `r615` | `Ancient's Valley wadi 3` | **Cutdry Fallhigh** | `yusar` | wadi | 52 | `1133 -> 608` | — | Fallhigh (high-fall) + Cutdry (wadi) |
-| `r616` | `Ghol Ḍrāi` | **Gūlī al-Jawhar** | `xanadui` | wadi | 81 | `5209 -> -516` | lake (-717 m) | aljawhar (jewel) + Gūlī (wadi) |
+| `r616` | `Ghol Ḍrāi` | **Ḍhom Ḍrāi** | `xanadui` | wadi | 104 | `5209 -> -542` | Ālph | Ḍhom (dome) + Ḍrāi (wadi) |
 | `r617` | `e badlands wadi 16` | **Wādī al-Layl al-Gharb** | `dasri` | wadi | 67 | `6403 -> 3196` | — | al-Gharb (west) + al-Layl (star-night) + Wādī (wadi) |
 | `r618` | `Vali Rreivan` | **Guli taur** | `izani` | wadi | 12 | `-1061 -> -1071` | lake (-1,068 m) | taur (tower) + Guli (wadi) |
 | `r619` | `Vali Aul` | **Guli Falz** | `izani` | wadi | 40 | `-906 -> -1242` | basin (-1,216 m) | Falz (falls) + Guli (wadi) |
@@ -805,7 +871,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r637` | `e badlands wadi 17` | **Wādī al-Jabal** | `dasri` | wadi | 88 | `6674 -> -412` | — | al-Jabal (escarpment) + Wādī (wadi) |
 | `r638` | `unnamed wadi 99` | **Wādī al-Bālm al-Kabīr** | `dasri` | wadi | 8 | `4216 -> 4190` | basin (4,280 m) | al-Kabīr (great) + al-Bālm (date-palm) + Wādī (wadi) |
 | `r639` | `Korona / NE wadi 7` | **Hōng-Gèl** | `hum` | wadi | 65 | `418 -> -56` | lake (-60 m) | Hōng (red-sandstone) + Gèl (wadi) |
-| `r640` | `Sã Ḍrāi` | **Gūlī al-Barad** | `xanadui` | wadi | 10 | `-55 -> -1638` | lake (-759 m) | albarad (hail-ice) + Gūlī (wadi) |
+| `r640` | `Sã Ḍrāi` | **Wĩḍ Ḍrāi** | `xanadui` | wadi | 10 | `-55 -> -1638` | lake (-759 m) | Wĩḍ (wind) + Ḍrāi (wadi) |
 | `r641` | `Oiro Gulli` | **Loua Teris Guli** | `yuni` | wadi | 27 | `5832 -> 4211` | — | Loua (lower) + Teris (Terrace) + Guli (wadi) |
 | `r642` | `unnamed wadi 101` | **Tāi-Wūn-Gèl** | `hum` | wadi | 43 | `3925 -> 3822` | basin (3,879 m) | Tāi (great) + Wūn (cloud-ledge) + Gèl (wadi) |
 | `r643` | `unnamed wadi 103` | **Likl Swifta Guli** | `yuni` | wadi | 15 | `4360 -> 4360` | basin (3,537 m) | Likl (little) + Swifta (Swift) + Guli (wadi) |
@@ -814,7 +880,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r646` | `Chhong Drai` | **Brik Gülch** | `vothic` | wadi | 59 | `-137 -> -1065` | — | Brik (bridge) + Gülch (wadi) |
 | `r647` | `Vali Dir` | **Guli clifa** | `izani` | wadi | 61 | `757 -> -753` | — | clifa (cliff) + Guli (wadi) |
 | `r648` | `Vali Froga` | **Guli Goulda** | `izani` | wadi | 38 | `712 -> 264` | — | Goulda (gold) + Guli (wadi) |
-| `r649` | `Sitār Ḍrāi` | **Gūlī al-Bihār** | `xanadui` | wadi | 56 | `2758 -> 2000` | lake (2,000 m) | albihār (incense) + Gūlī (wadi) |
+| `r649` | `Sitār Ḍrāi` | **Solṭ Ḍrāi** | `xanadui` | wadi | 56 | `2758 -> 2000` | lake (2,000 m) | Solṭ (salt) + Ḍrāi (wadi) |
 | `r650` | `Chu Drai` | **Hafn Gülch** | `vothic` | wadi | 26 | `-512 -> -830` | — | Hafn (harbour) + Gülch (wadi) |
 | `r651` | `unnamed wadi 105` | **Likl Longa Guli** | `yuni` | wadi | 10 | `6608 -> 6339` | basin (5,777 m) | Likl (little) + Longa (Long) + Guli (wadi) |
 | `r652` | `NW lowlands wadi 4` | **Ngān-Kū** | `eternian` | wadi | 44 | `640 -> 80` | lake (46 m) | Ngān (silver-thread) + Kū (wadi) |
@@ -836,19 +902,19 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r668` | `NW lowlands wadi 7` | **Pāk-Kū** | `eternian` | wadi | 68 | `3141 -> 146` | lake (46 m) | Pāk (white-jade) + Kū (wadi) |
 | `r669` | `Oniguli` | **Dip Guli** | `dalab` | wadi | 27 | `4131 -> 1039` | — | Dip (deep) + Guli (wadi) |
 | `r670` | `unnamed wadi 114` | **Sīng-Kū** | `eternian` | wadi | 32 | `3315 -> 848` | — | Sīng (star-lantern) + Kū (wadi) |
-| `r671` | `Bhon Ḍrāi` | **Gūlī al-Layl** | `xanadui` | wadi | 39 | `2137 -> 2063` | — | allayl (night) + Gūlī (wadi) |
+| `r671` | `Bhon Ḍrāi` | **Ghol Ḍrāi** | `xanadui` | wadi | 39 | `2137 -> 2063` | — | Ghol (gold) + Ḍrāi (wadi) |
 | `r672` | `Ancient's Valley wadi 4` | **Cutdry Shadowlong** | `yusar` | wadi | 92 | `970 -> 70` | lake (17 m) | Shadowlong (long-shadow) + Cutdry (wadi) |
 | `r673` | `Vali Il` | **Guli brij** | `izani` | wadi | 14 | `-990 -> -1044` | — | brij (bridge) + Guli (wadi) |
 | `r674` | `The Bowl wadi 12` | **Gl Ǧbl** | `tabist` | wadi | 16 | `2410 -> 448` | — | Ǧbl (horsts) + Gl (wadi) |
 | `r675` | `The Catch wadi 11` | **Wādī al-Milḥ al-Ṣaghīr** | `dasri` | wadi | 21 | `434 -> 340` | lake (318 m) | al-Ṣaghīr (little) + al-Milḥ (salt-crust) + Wādī (wadi) |
-| `r676` | `Āirã Ḍrāi` | **Gūlī al-Rīḥ** | `xanadui` | wadi | 38 | `2365 -> 2000` | lake (2,003 m) | alrīḥ (mountain-wind) + Gūlī (wadi) |
+| `r676` | `Āirã Ḍrāi` | **Kilāuḍ Ḍrāi** | `xanadui` | wadi | 38 | `2365 -> 2000` | lake (2,003 m) | Kilāuḍ (cloud) + Ḍrāi (wadi) |
 | `r678` | `Blacko Gulli` | **Ista Dipa Guli** | `yuni` | wadi | 52 | `650 -> -2397` | — | Ista (east) + Dipa (Deep) + Guli (wadi) |
 | `r679` | `Bǫ Khol` | **Blùd Gèl** | `painted` | wadi | 39 | `-1079 -> -1461` | basin (-1,492 m) | Blùd (blood-ochre) + Gèl (wadi) — southern canyon wash of the Painted Men |
 | `r680` | `Korona / NE wadi 8` | **Sāng-Sīng-Gèl** | `hum` | wadi | 10 | `-995 -> -1041` | lake (-1,074 m) | Sāng (upper) + Sīng (night-star) + Gèl (wadi) |
 | `r681` | `Korona / NE wadi 9` | **Hā-Mō-Gèl** | `hum` | wadi | 39 | `4922 -> 4004` | basin (4,121 m) | Hā (lower) + Mō (Dry-mist) + Gèl (wadi) |
-| `r682` | `Girīn Ḍrāi` | **Gūlī Qubbah** | `xanadui` | river | 12 | `3978 -> -1685` | lake (2,520 m, through) | Qubbah (pleasure-dome) + Gūlī (wadi) |
-| `r683` | `Barāiṭ Ḍrāi` | **Gūlī al-Fiḍḍah** | `xanadui` | wadi | 16 | `-434 -> -2025` | lake (-759 m) | alfiḍḍah (silver) + Gūlī (wadi) |
-| `r684` | `Olḍ Ḍrāi` | **Gūlī al-Dhahab** | `xanadui` | wadi | 10 | `1895 -> 1851` | basin (1,851 m) | aldhahab (gold) + Gūlī (wadi) |
+| `r682` | `Girīn Ḍrāi` | **Sitār Ḍrāi** | `xanadui` | river | 12 | `3978 -> -1685` | lake (2,520 m, through) | Sitār (star) + Ḍrāi (wadi) |
+| `r683` | `Barāiṭ Ḍrāi` | **Āis Ḍrāi** | `xanadui` | wadi | 16 | `-434 -> -2025` | lake (-759 m) | Āis (ice) + Ḍrāi (wadi) |
+| `r684` | `Olḍ Ḍrāi` | **Ḍhīp Ḍrāi** | `xanadui` | wadi | 10 | `1895 -> 1851` | basin (1,851 m) | Ḍhīp (deep) + Ḍrāi (wadi) |
 | `r685` | `unnamed wadi 115` | **Sauta Sista Guli** | `yuni` | wadi | 41 | `261 -> 261` | basin (628 m) | Sauta (south) + Sista (Sister) + Guli (wadi) |
 | `r686` | `unnamed wadi 116` | **Tōng-Chūng-Gèl** | `hum` | wadi | 31 | `4204 -> 2422` | basin (3,870 m) | Tōng (east) + Chūng (middle-tier) + Gèl (wadi) |
 | `r687` | `NW lowlands wadi 8` | **Sī-Sī-Kū** | `eternian` | wadi | 17 | `705 -> 507` | lake (430 m) | Sī (west) + Sī (western-marsh) + Kū (wadi) |
@@ -875,7 +941,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r710` | `Bitrh Drai` | **klir Gülch** | `vothic` | wadi | 47 | `-960 -> -1470` | Ring Sea | klir (clear) + Gülch (wadi) |
 | `r711` | `e badlands wadi 22` | **Wādī al-Dhahab al-Ṣaghīr** | `dasri` | wadi | 44 | `5308 -> 3076` | — | al-Ṣaghīr (little) + al-Dhahab (gold-dust) + Wādī (wadi) |
 | `r712` | `Wādī al-Īl` | **Wādī al-Shams al-Sharq** | `dasri` | wadi | 44 | `268 -> 176` | basin (272 m) | al-Sharq (east) + al-Shams (sun-scorch) + Wādī (wadi) |
-| `r713` | `Reḍ Ḍrāi` | **Gūlī Qubbah al-Janūb** | `xanadui` | wadi | 4 | `-94 -> -2104` | lake (-1,686 m) | al-Janūb (south) + Qubbah (pleasure-dome) + Gūlī (wadi) |
+| `r713` | `Reḍ Ḍrāi` | **Āirã Ḍrāi** | `xanadui` | wadi | 4 | `-94 -> -2104` | lake (-1,686 m) | Āirã (iron) + Ḍrāi (wadi) |
 | `r714` | `NW lowlands wadi 9` | **Hāk-Kū** | `eternian` | wadi | 21 | `555 -> 162` | lake (46 m) | Hāk (black-ink) + Kū (wadi) |
 | `r715` | `unnamed wadi 129` | **Likl Brada Guli** | `yuni` | wadi | 28 | `5392 -> 4557` | basin (3,670 m) | Likl (little) + Brada (Brother) + Guli (wadi) |
 | `r716` | `unnamed wadi 130` | **Pāk-Hāk-Gèl** | `hum` | wadi | 19 | `6540 -> 6230` | basin (6,282 m) | Pāk (north) + Hāk (black-basalt) + Gèl (wadi) |
@@ -915,7 +981,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r750` | `Korona / NE wadi 12` | **Tōng-Lām-Gèl** | `hum` | wadi | 25 | `-646 -> -1813` | basin (-2,328 m) | Tōng (east) + Lām (ring-dike) + Gèl (wadi) |
 | `r751` | `Sando Gulli` | **Westa Waita Guli** | `yuni` | wadi | 29 | `441 -> -1867` | lake (-1,907 m) | Westa (west) + Waita (White) + Guli (wadi) |
 | `r752` | `Greeno Gulli` | **Apa Kopa Guli** | `yuni` | wadi | 17 | `-2367 -> -2382` | lake (-2,339 m) | Apa (upper) + Kopa (Copper) + Guli (wadi) |
-| `r753` | `Kilīā Ḍrāi` | **Gūlī al-Bard al-ṣaghīr** | `xanadui` | wadi | 4 | `-102 -> -329` | lake (-717 m) | al-Ṣaghīr (little) + albard (cold-snow) + Gūlī (wadi) |
+| `r753` | `Kilīā Ḍrāi` | **Barāiṭ Ḍrāi** | `xanadui` | wadi | 41 | `-102 -> -592` | lake (-520 m) | Barāiṭ (bright) + Ḍrāi (wadi) |
 | `r754` | `Lizardmen wadi 12` | **Neet Gill** | `tungang` | wadi | 17 | `-1917 -> -2194` | basin (-2,255 m) | Neet (night) + Gill (wadi) |
 | `r755` | `unnamed wadi 143` | **Sīu-Chūng-Gèl** | `hum` | wadi | 4 | `3943 -> 3239` | lake (2,132 m) | Sīu (little) + Chūng (middle-tier) + Gèl (wadi) |
 | `r756` | `The Rift wadi 8` | **Stuan Gill** | `tungang` | wadi | 34 | `1551 -> -650` | — | Stuan (stone) + Gill (wadi) |
@@ -932,7 +998,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r767` | `unnamed wadi 144` | **Stanosguli** | `vrivolci` | wadi | 38 | `1306 -> 1025` | — | Stanos (standing-stone) + Guli (wadi) |
 | `r768` | `Glasguli` | **Misti Guli** | `dalab` | wadi | 34 | `3863 -> 2934` | — | Misti (misty) + Guli (wadi) |
 | `r769` | `unnamed wadi 146` | **Hā-Fūng-Gèl** | `hum` | wadi | 23 | `2560 -> 1656` | lake (1,522 m) | Hā (lower) + Fūng (canyon-wind) + Gèl (wadi) |
-| `r770` | `Thin Ḍrāi` | **Gūlī al-Layl al-kabīr** | `xanadui` | wadi | 8 | `3796 -> 3583` | lake (3,658 m, through) | al-Kabīr (great) + allayl (night) + Gūlī (wadi) |
+| `r770` | `Thin Ḍrāi` | **Kilīā Ḍrāi** | `xanadui` | wadi | 8 | `3796 -> 3583` | lake (3,658 m, through) | Kilīā (clear) + Ḍrāi (wadi) |
 | `r771` | `Korona / NE wadi 13` | **Sīu-Tsēk-Gèl** | `hum` | wadi | 6 | `377 -> 377` | lake (295 m) | Sīu (little) + Tsēk (cleaver-stone) + Gèl (wadi) |
 | `r772` | `The Bowl wadi 17` | **Gl Bḥr** | `tabist` | wadi | 14 | `-1094 -> -1117` | lake (-1,158 m) | Bḥr (sunken-sea) + Gl (wadi) |
 | `r773` | `Lizardmen wadi 15` | **Tyan Gill** | `tungang` | wadi | 27 | `56 -> -1655` | — | Tyan (Second) + Gill (wadi) |
@@ -947,7 +1013,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r783` | `Shiilguli` | **Vali Guli** | `dalab` | wadi | 11 | `195 -> 39` | — | Vali (valley) + Guli (wadi) |
 | `r784` | `unnamed wadi 151` | **Sāng-Tsēk-Gèl** | `hum` | wadi | 4 | `7112 -> 7112` | basin (6,265 m) | Sāng (upper) + Tsēk (cleaver-stone) + Gèl (wadi) |
 | `r785` | `Jimjam wadi 5` | **Vēka-kāl** | `jimjam` | wadi | 8 | `329 -> -58` | lake (-60 m) | Vēka (swift) + kāl (wadi) |
-| `r786` | `Phāyar Ḍrāi` | **Gūlī al-Samā** | `xanadui` | wadi | 12 | `1460 -> -1655` | lake (-1,686 m) | alsamā (sky-mirror) + Gūlī (wadi) |
+| `r786` | `Phāyar Ḍrāi` | **Jeḍ Ḍrāi** | `xanadui` | wadi | 12 | `1460 -> -1655` | lake (-1,686 m) | Jeḍ (jade) + Ḍrāi (wadi) |
 | `r787` | `Sumok Gulusu` | **Akun Gulusu** | `scyvoi` | wadi | 4 | `-1174 -> -1262` | lake (-1,352 m) | Akun (white-salt) + Gulusu (wadi) |
 | `r788` | `Ancient's Valley wadi 6` | **Cutdry Glassblue** | `yusar` | wadi | 16 | `292 -> 70` | lake (17 m) | Glassblue (blue-glass) + Cutdry (wadi) |
 | `r789` | `unnamed wadi 153` | **Nām-Kām-Gèl** | `hum` | wadi | 8 | `6264 -> 6190` | lake (6,185 m, through) | Nām (south) + Kām (copper-gold) + Gèl (wadi) |
@@ -965,7 +1031,7 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r801` | `The Bowl wadi 20` | **Gl Nḥs** | `tabist` | wadi | 10 | `-1039 -> -1128` | lake (-1,158 m) | Nḥs (copper-brine) + Gl (wadi) |
 | `r802` | `unnamed wadi 155` | **Kurin Kuri** | `heiland` | wadi | 4 | `4432 -> 4402` | — | Kurin (green) + Kuri (wadi) |
 | `r803` | `unnamed wadi 157` | **Par Kuri** | `heiland` | wadi | 10 | `4044 -> 3649` | — | Par (far) + Kuri (wadi) |
-| `r804` | `Ḍhīp Ḍrāi` | **Gūlī al-Zumurrud al-aʿlā** | `xanadui` | wadi | 6 | `3217 -> 2802` | lake (2,465 m, through) | al-Aʿlā (upper) + alzumurrud (emerald) + Gūlī (wadi) |
+| `r804` | `Ḍhīp Ḍrāi` | **Wāiṭ Ḍrāi** | `xanadui` | wadi | 6 | `3217 -> 2802` | lake (2,465 m, through) | Wāiṭ (white) + Ḍrāi (wadi) |
 | `r805` | `Wādī al-Jūld` | **Wādī al-Dhahab** | `dasri` | wadi | 98 | `662 -> -49` | Wādī al-Layl | al-Dhahab (gold-dust) + Wādī (wadi) |
 | `r806` | `Wādī al-Mūn` | **Wādī al-Sarāb al-Kabīr** | `dasri` | wadi | 67 | `792 -> 257` | Wādī al-Layl | al-Kabīr (great) + al-Sarāb (mirage) + Wādī (wadi) |
 | `r807` | `Wādī al-Rayn` | **Wādī al-Naḥās al-Ṣaghīr** | `dasri` | wadi | 10 | `690 -> 423` | Wādī al-Layl | al-Ṣaghīr (little) + al-Naḥās (copper-stain) + Wādī (wadi) |
@@ -997,8 +1063,8 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r833` | `unnamed wadi 106` | **Hā-Yūt-Gèl** | `hum` | wadi | 16 | `4504 -> 3945` | Sī-Chūng-Gèl | Hā (lower) + Yūt (howling-moon) + Gèl (wadi) |
 | `r834` | `Vali Rrein` | **Guli Gran clifa** | `izani` | wadi | 6 | `-863 -> -902` | Guli rrija | Gran (great) + clifa (cliff) + Guli (wadi) |
 | `r835` | `unnamed wadi 102` | **Sīu-Tōng-Gèl** | `hum` | wadi | 12 | `6164 -> 5932` | Hā-Lōk-Gèl | Sīu (little) + Tōng (east-gate) + Gèl (wadi) |
-| `r836` | `Āis Ḍrāi` | **Gūlī al-Salsabīl** | `xanadui` | wadi | 37 | `4085 -> 1917` | Rīfar al-Bihār | alsalsabīl (nectar-spring) + Gūlī (wadi) |
-| `r837` | `Biṭā Ḍrāi` | **Gūlī al-Jadwal al-ṣaghīr** | `xanadui` | wadi | 6 | `3546 -> 3546` | Rīfar al-Bihār | al-Ṣaghīr (little) + aljadwal (terraced-rill) + Gūlī (wadi) |
+| `r836` | `Āis Ḍrāi` | **Reḍ Ḍrāi** | `xanadui` | wadi | 37 | `4085 -> 1917` | Solṭ Siṭrīm | Reḍ (red) + Ḍrāi (wadi) |
+| `r837` | `Biṭā Ḍrāi` | **Keb Ḍrāi** | `xanadui` | wadi | 6 | `3546 -> 3546` | Solṭ Siṭrīm | Keb (cave) + Ḍrāi (wadi) |
 | `r838` | `unnamed wadi 77` | **Tōng-Sēk-Gèl** | `hum` | wadi | 56 | `6373 -> 3097` | Sīng-Gèl | Tōng (east) + Sēk (chasm-wall) + Gèl (wadi) |
 | `r839` | `Korona / NE wadi 5` | **Sī-Sēk-Gèl** | `hum` | wadi | 27 | `671 -> 224` | Pāk-Gèl | Sī (west) + Sēk (chasm-wall) + Gèl (wadi) |
 | `r840` | `n semiarid wadi 17` | **Topa Golda Guli** | `argot` | wadi | 6 | `589 -> 494` | katarak Guli | Topa (upper) + Golda (gold) + Guli (wadi) |
@@ -1042,16 +1108,42 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r878` | `Farside wadi 5` | **Tōng-Līng-Kū** | `eternian` | wadi | 16 | `2809 -> 261` | — | Tōng (east) + Līng (lotus-bell) + Kū (wadi) |
 | `r879` | `the catch wadi 2` | **Wādī al-Rīḥ al-Ṣaghīr** | `dasri` | wadi | 69 | `3653 -> 1263` | Wādī al-Rīḥ | al-Ṣaghīr (little) + al-Rīḥ (simoom-wind) + Wādī (wadi) |
 | `r880` | `the catch wadi 3` | **Wādī al-Qaṣr al-Sharq** | `dasri` | wadi | 16 | `4646 -> 4458` | Wādī al-Naḥās | al-Sharq (east) + al-Qaṣr (butte-fortress) + Wādī (wadi) |
-| `9101` | `(5.1 expansion)` | **Ria River (Mā-Rīa)** | `eternian` | river | 2140 | `1412 -> 0` | sea | Ria River / Mā-Rīa ('River of Reeds & Ink') — 2,140 km sinuous Nile-style trunk river from the Eastern Highland Lake to the Great Double Delta |
-| `9102` | `(5.1 expansion)` | **Hām-Tsēk (Web-Cleaver River)** | `hum` | river | 890 | `1460 -> 403` | Ria River (Mā-Rīa) | Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through the Northern Korona & Arachnoid Scenic Gorge into the Ria River |
-| `9103` | `(5.1 expansion)` | **Tōng-Mā (North Ria Distributary)** | `eternian` | river | 780 | `155 -> 0` | Ria River (Mā-Rīa) | Tōng-Mā ('Northern Reed-Channel') — 235 km northern distributary of the Great Double Delta |
-| `9104` | `(5.1 expansion)` | **Sī-Mā (South Ria Distributary)** | `eternian` | river | 310 | `5412 -> 0` | Tōng-Mā (North Ria Distributary) | Sī-Mā ('Southern Marsh-Channel') — 250 km southern distributary of the Great Double Delta |
-| `9105` | `(5.1 expansion)` | **Kopa-Tarn Warra (Crook River)** | `tungang` | river | 980 | `2380 -> 0` | sea | Kopa-Tarn Warra ('Copper-Tarn Water') — 980 km emerald-green glacial meltwater river draining the Copper Tarn northward through the Crook |
-| `9106` | `(5.1 expansion)` | **Hau-Gèl (Outland Gate River)** | `hum` | river | 680 | `2310 -> 1397` | lake | Hau-Gèl ('Coyote-Gate River') — 360 km trans-boundary pass river linking the eastern Ria basin through the Outland Gate into northern Outland |
-| `9107` | `(5.1 expansion)` | **Pāk-Mā (North Ria Fork)** | `eternian` | river | 740 | `1266 -> 0` | Ria River (Mā-Rīa) | Pāk-Mā ('White-Peak Water') — 560 km Blue-Nile-style northern tributary joining the lower Ria River |
-| `9108` | `(5.1 expansion)` | **Mō-Mā** | `eternian` | river | 340 | `2881 -> 210` | Pāk-Mā (North Ria Fork) | Mō (ink-stone) + Mā (river) |
-| `9109` | `(5.1 expansion)` | **Chīng-Mā** | `eternian` | river | 320 | `1290 -> 846` | Ria River (Mā-Rīa) | Chīng (clear-mirror) + Mā (river) |
-| `9110` | `(5.1 expansion)` | **Blek Warra** | `tungang` | river | 410 | `2074 -> 831` | Kopa-Tarn Warra (Crook River) | Blek (black-shale) + Warra (river) |
+| `9101` | `Ria River (Mā-Rīa)` | **Rīwa-Wāta (Ria River)** | `low-ria` | river | 2140 | `1412 -> 0` | sea | Rīwa-Wāta ('Sound-Reach Water'; High-Ria Līwa-Wāda, Kulanewa Riiava-Jõgi) — 2,140 km trunk river from Upper Ria past Weeping Valley and Heartland to Ria Sound & the Great Double Delta |
+| `9102` | `(5.1 expansion)` | **Hām-Tsēk (Web-Cleaver River)** | `hum` | river | 890 | `1460 -> 403` | Rīwa-Wāta (Ria River) | Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through Spider Lake & the Arachnoid Scenic Gorge into Rīwa-Wāta |
+| `9103` | `Tōng-Mā (North Ria Distributary)` | **Mere-Upe (North Delta Reach)** | `kulanewa` | river | 780 | `155 -> 0` | Rīwa-Wāta (Ria River) | Mere (sea-tide, Estonian) + Upe (river, Baltic; Low-Ria Hālā-Bāča) — 780 km northern Double Delta & Kārum wharf channel joining Rīwa-Wāta |
+| `9104` | `Sī-Mā (South Ria Distributary)` | **Helme-Koski** | `kulanewa` | river | 310 | `5412 -> 0` | Mere-Upe (North Delta Reach) | Helme (amber-bead, Estonian helmes / Finnic helmi; Rian loanword kōlu-helme) + Koski (cataract / mill-rapids, Finnic) — 310 km northern rim torrent feeding Mere-Upe in the amber fens |
+| `9105` | `Kopa-Tarn Warra (Crook River)` | **Khōpri-Tskhali (Crook River)** | `dzagh-vardzi` | river | 1030 | `0 -> 0` | sea | Khōpri-Tskhali ('Copper-Water' in Dzagh-Vardzi; Hueru-Kuran Kōpa-Kawa at the mouth, Tungang Kopa-Tarn Warra at its Copper Tarn head) — 1,030 km emerald-green glacial meltwater trunk river of the Crook |
+| `9106` | `(5.1 expansion)` | **Hau-Gèl (Outland Gate River)** | `hum` | river | 680 | `2310 -> 1397` | lake | Hau-Gèl ('Coyote-Gate River') — 680 km trans-boundary pass river linking Spider Lake through the Outland Gate into northern Outland |
+| `9107` | `Pāk-Mā (North Ria Fork)` | **Suur-Neva (Arcflow River)** | `kulanewa` | river | 740 | `1266 -> 0` | Rīwa-Wāta (Ria River) | Suur (great, Estonian) + Neva (broad navigable fen-river, Finnic; Rian Nōła-Bāča, Mōlu-Dungu Fütra-Lüfü) — 740 km main trunk river of the Kulanewa Free-Towns joining Rīwa-Wāta above the Double Delta |
+| `9108` | `Mō-Mā` | **Musta-Jõgi** | `kulanewa` | river | 340 | `2881 -> 210` | Suur-Neva (Arcflow River) | Musta (black-slate / bog-iron, Finnic-Estonian) + Jõgi (river, Estonian) — 340 km steep northern hydro-forge tributary of the Suur-Neva in upland Kulanewa |
+| `9109` | `Chīng-Mā` | **Tlīla-Wāda** | `high-ria` | river | 320 | `1290 -> 846` | Rīwa-Wāta (Ria River) | Tlīla (sapphire-clear / mirror) + Wāda (river, labial-free High-Ria Līwa-Tōga) — 320 km Springhollows karst-spring & red-porphyry shut-in tributary joining the upper Ria (Līwa-Wāda) |
+| `9110` | `Blek Warra` | **Shāvi-Hūshi Tskhali** | `dzagh-vardzi` | river | 410 | `2074 -> 831` | Khōpri-Tskhali (Crook River) | Shāvi (black-shale) + Hūshi (Silent-Vale hush) + Tskhali (river) — 410 km black-shale & acoustic-shadow gorge river draining the Silent Vales to Flūmi-Brīdzi |
+| `9111` | `(5.1 edit 20)` | **Hueru-Bēnchi Kawa** | `hueru-kuran` | river | 83 | `1558 -> 0` | sea | Whale-Bench River: SSW-hooked coastal cedar stream into Whale-Haven |
+| `9112` | `(5.1 edit 20)` | **Fjōdu-Mīst Kawa** | `hueru-kuran` | river | 158 | `1738 -> 0` | sea | Fjord-Mist River: NNW-curving rainforest river into Cascade-Caldera |
+| `9113` | `(5.1 edit 20)` | **Sīda-Gōji Kawa** | `hueru-kuran` | river | 211 | `3855 -> 291` | Khōpri-Tskhali (Crook River) | Cedar-Gorge River: winding SE Crookshore torrent with big northward bend |
+| `9114` | `(5.1 edit 20)` | **Bāsaruto-Kawa** | `hueru-kuran` | river | 131 | `2678 -> 315` | Khōpri-Tskhali (Crook River) | Basalt-Creek: SSE-arcing columnar-basalt torrent |
+| `9115` | `(5.1 edit 20)` | **Khāi-Gēti Tskhali** | `dzagh-vardzi` | river | 173 | `2590 -> 424` | Khōpri-Tskhali (Crook River) | High-Gate Water: dogleg granite gorge river of K1 Khāi-Gēti |
+| `9116` | `(5.1 edit 20)` | **Rēd-Spāiri Tskhali** | `dzagh-vardzi` | river | 166 | `2332 -> 636` | Khōpri-Tskhali (Crook River) | Red-Spire Water: giant red-cypress flume gorge of K2 Rēd-Spāiri |
+| `9117` | `(5.1 edit 20)` | **Tīn-Flītsi Tskhali** | `dzagh-vardzi` | river | 173 | `5684 -> 824` | Khōpri-Tskhali (Crook River) | Tin-Fleece Water: S-curving cassiterite & golden-fleece river of K3 Tīn-Flītsi |
+| `9118` | `(5.1 edit 20)` | **Rōzi-Vārdzi Tskhali** | `dzagh-vardzi` | river | 178 | `6478 -> 824` | Khōpri-Tskhali (Crook River) | Rose-Ward Water: winding apricot-tuff gorge of K5 Rōzi-Vārdzi |
+| `9119` | `(5.1 edit 20)` | **Dzēdi-Khrōsi Tskhali** | `dzagh-vardzi` | river | 176 | `7130 -> 1240` | Khōpri-Tskhali (Crook River) | Jade-Cross Water: S-hooked nephrite boulder river of K7 Dzēdi-Khrōsi |
+| `9120` | `(5.1 edit 20)` | **Nōrt-Khrāgi Tskhali** | `dzagh-vardzi` | river | 152 | `2785 -> 556` | Khōpri-Tskhali (Crook River) | North-Crag Water: winding west-wall cascade stream |
+| `9121` | `(5.1 edit 20)` | **Āirn-Dzāghi Tskhali** | `dzagh-vardzi` | river | 162 | `4414 -> 781` | Khōpri-Tskhali (Crook River) | Iron-Jag Water: winding skarn-magnetite gorge of K4 Āirn-Dzāghi |
+| `9122` | `(5.1 edit 20)` | **Mīst-Khōpri Tskhali** | `dzagh-vardzi` | river | 150 | `3090 -> 824` | Khōpri-Tskhali (Crook River) | Mist-Copper Water: fog-saddle & malachite-skarn river of K6 Mīst-Khōpri |
+| `9123` | `(5.1 edit 20)` | **Sāut-Flūmi Tskhali** | `dzagh-vardzi` | river | 123 | `3741 -> 824` | Khōpri-Tskhali (Crook River) | South-Flume Water: NNE-arcing hanging-flume torrent |
+| `9124` | `Hārth-Tān Warra` | **Tbīli-Tbā Tskhali** | `dzagh-vardzi` | river | 192 | `6394 -> 1534` | Khōpri-Tskhali (Crook River) | Tbīli (warm/hearth) + Tbā (tarn) + Tskhali (river) — 192 km Crookhead thermogenic melt-well & malachite river |
+| `9125` | `Hūsh-Pās Warra` | **Chūmi-Kāri Tskhali** | `dzagh-vardzi` | river | 198 | `8111 -> 1764` | Khōpri-Tskhali (Crook River) | Chūmi (hushed/silent) + Kāri (pass-gate) + Tskhali (river) — 198 km fluted-chimney pass river below the Silent Vales |
+| `9126` | `(5.1 edit 20)` | **Nōrt-Fjōdu Kawa** | `hueru-kuran` | river | 79 | `1391 -> 887` | Sīda-Gōji Kawa | North-Fjord Fork: cloud-forest branch of Sīda-Gōji Kawa |
+| `9127` | `(5.1 edit 20)` | **Zēmo-Bēnihi Tskhali** | `dzagh-vardzi` | river | 80 | `2580 -> 1596` | Khāi-Gēti Tskhali | Upper-Cypress Fork: giant red-cypress headwater branch of Khāi-Gēti Tskhali |
+| `9128` | `(5.1 edit 20)` | **Khwēla-Spāiri Tskhali** | `dzagh-vardzi` | river | 74 | `2430 -> 1669` | Rēd-Spāiri Tskhali | Lower-Spire Fork: southern quartz-needle branch of Rēd-Spāiri Tskhali |
+| `9129` | `(5.1 edit 20)` | **Gōldi-Flītsi Tskhali** | `dzagh-vardzi` | river | 74 | `2662 -> 2511` | Tīn-Flītsi Tskhali | Gold-Fleece Fork: placer-gold headwater branch of Tīn-Flītsi Tskhali |
+| `9130` | `(5.1 edit 20)` | **Hūsh-Rīmi Tskhali** | `dzagh-vardzi` | river | 89 | `6809 -> 2988` | Rōzi-Vārdzi Tskhali | Hush-Rim Fork: high eastern divide branch of Rōzi-Vārdzi Tskhali |
+| `9131` | `(5.1 edit 20)` | **Skhārn-Khrāgi Tskhali** | `dzagh-vardzi` | river | 66 | `4379 -> 2434` | Āirn-Dzāghi Tskhali | Skarn-Crag Fork: magnetite cliff branch of Āirn-Dzāghi Tskhali |
+| `9132` | `(5.1 edit 20)` | **Fōgi-Gēti Tskhali** | `dzagh-vardzi` | river | 73 | `3811 -> 1808` | Mīst-Khōpri Tskhali | Fog-Gate Fork: ocean-saddle branch of Mīst-Khōpri Tskhali |
+| `9133` | `Lāch-Mōrain Bruk` | **Lārtshi-Ghrūdi Tskhali** | `dzagh-vardzi` | river | 114 | `4063 -> 1509` | Khōpri-Tskhali (Crook River) | Lārtshi (larch) + Ghrūdi (moraine-ridge) + Tskhali (brook) — 114 km subalpine larch-moraine western tributary of Khōpri-Tskhali |
+| `9134` | `(5.1 edit 21)` | **Sfīra-Vēli** | `yonni` | river | 41 | `180 -> 0` | Mārka-Dānu | Sfīra (spear) + Vēli (river) — Spear-Queen coastal watch-fork joining Mārka-Dānu on the Y = 515 frontier |
+| `9135` | `(5.1 edit 21)` | **Hāi-Wān-Kē** | `eternian` | river | 40 | `180 -> 0` | Līng-Mā | Hāi (sea-kelp) + Wān (cove) + Kē (stream) — Farport headland tributary of Līng-Mā |
+| `r_pher_swit` | `(5.1 expansion)` | **Swīṭ Siṭrīm** | `xanadui` | river | 29 | `130 -> -520` | lake (-520 m) | Swīṭ (sweet) + Siṭrīm (stream): the fair town's fresh water |
 | `r_lab_cat_sw` | `(5.1 expansion)` | **Graben-Tarn Gill** | `tungang` | river | 77 | `3662 -> 2840` | — | Graben-Tarn Gill ('Southern Catena Gill') — southwestern pit-crater meltwater stream of the Labyrinth |
 | `r_fb_east` | `(5.1 expansion)` | **Weyt Warra** | `tungang` | river | 218 | `1960 -> 1720` | lake (1,720 m) | Weyt (white-water) + Warra (river) |
 | `r_hr_jokulhlaup` | `Fire-Ice Torrent` | **Brant-Fell Gill** | `tungang` | river | 271 | `4122 -> 2622` | — | Brant-Fell Gill ('Steep-Fell Jökulhlaup Gorge') — catastrophic glacial outburst gorge descending from the High Rift rim |
@@ -1059,8 +1151,9 @@ Total named courses: **893** (`0` unnamed placeholders remaining).
 | `r_fb_central` | `(5.1 expansion)` | **Tlahn Warra** | `tungang` | river | 341 | `2280 -> 1980` | lake (1,980 m) | Tlahn (iron-clan) + Warra (river) |
 | `r_fb_west` | `(5.1 expansion)` | **Yan Warra** | `tungang` | river | 169 | `2640 -> 2533` | Fell-Block Beck | Yan (First) + Warra (river) |
 | `r_xanadu_low_cataracts` | `(5.1 expansion)` | **Nahr ash-Shalālāt** | `xanadui` | river | 134 | `-1670 -> -2600` | — | Nahr ash-Shalālāt ('River of the Stepped Cataracts') — outflow river descending a series of low cataracts from the Lower Xanadu Lake to the Lizardman Rift Sea |
-| `r_mb_siphon_breach` | `Siphon-Breach Cascade` | **Ostrukh Riba** | `yuni` | river | 300 | `2022 -> 334` | — | Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh |
+| `r_mb_siphon_breach` | `Siphon-Breach Cascade` | **Ostrukh Riba** | `yuni` | river | 262 | `2036 -> 1850` | lake (1,850 m) | Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh |
 | `r_hr_verdigris` | `Verdigris Run` | **Verdigris Beck** | `tungang` | river | 540 | `3582 -> 2380` | — | Verdigris Beck ('Copper-Ice Beck') — High Rift turquoise glacial meltwater stream |
 | `r_lab_cat_nw` | `(5.1 expansion)` | **Siphon-Pit Beck** | `tungang` | river | 68 | `3728 -> 2832` | — | Siphon-Pit Beck ('Catena Meltwater Beck') — northwestern pit-crater meltwater stream of the Labyrinth |
+| `r_gh_spillway` | `—` | **Āirã Siṭrīm** | `xanadui` | river | 124 | `3640 -> 2549` | Solṭ Siṭrīm | Āirã (iron) + Siṭrīm (stream) |
 | `r_lab_chaos_s` | `(5.1 expansion)` | **Shatter-Scarp Gill** | `tungang` | river | 465 | `3235 -> 1199` | — | Shatter-Scarp Gill ('South Chaos Cross-Channel') — anastomosing meltwater channel threading the southern Chaos mesas |
 | `r_sg_vapora_bigga` | `Krikki Gorge Run` | **Vapora Riba** | `yuni` | river | 343 | `1910 -> 1863` | — | Vapora Riba ('Steam-Gate River') — geothermal headwater of the Bigga rising in the Stalker Gate |

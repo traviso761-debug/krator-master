@@ -1,7 +1,7 @@
 // ================================================================= HOST — stage: 4-station karst & porphyry terrain, KSPACE, KHAZ & BIO.init ([web])
 // Implements all four surveyed Scale-Model 5.1 Springhollows (Sikwingi-Khaloyi) stations (PLAN.md section 3):
 //   spring   (default, dist/springhollows.html):          Cav Ozarks Resurgence 24 m cave mouth, sapphire boil & cypress gallery
-//   shutin   (dist/springhollows-shutin.html):            Ching-Ma purple-red rhyolite porphyry shut-in gorge & boat-lift bypass
+//   shutin   (dist/springhollows-shutin.html):            Tlila-Wada purple-red rhyolite porphyry shut-in gorge & boat-lift bypass
 //   fenestre (dist/springhollows-fenestre.html):          18 m collapsed sinkhole skylight & walk-in KSPELEO.CALCITE crystal hall
 //   glade    (dist/springhollows-glade.html):             Cherty-dolomite & porphyry glade, saffron terraces, onyx hollow & bleach-scar
 const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,fbm,qEuler,qFacing,qUp}=BIO.fn;
@@ -107,7 +107,7 @@ const FLOW_LINES=(function(){
    const z=x<-66?6*Math.sin((x+66)*0.012):(x<=76?7.2*Math.sin(clamp((x+66)/142,0,1)*TAU):5*Math.sin((x-76)*0.012));
    pts.push([x,z]);
   }
-  return[{name:'9109 Ching-Ma Red-Porphyry Shut-In Whitewater Chute (195 m3/s)',pts:pts,w:9.2,depth:1.25,speed:5.2,levelTop:6.24,drop:6.07}];
+  return[{name:'9109 Tlila-Wada Red-Porphyry Shut-In Whitewater Chute (195 m3/s)',pts:pts,w:9.2,depth:1.25,speed:5.2,levelTop:6.24,drop:6.07}];
  }
  return[];
 })();
@@ -165,7 +165,7 @@ function landSpring(x,z){
 }
 
 function landShutin(x,z){
- // Strike-aligned purple-red rhyolite porphyry ridge at x ~ 0 (halfWidthM = 64 m) sliced by Ching-Ma river corridor along z ~ 0
+ // Strike-aligned purple-red rhyolite porphyry ridge at x ~ 0 (halfWidthM = 64 m) sliced by Tlila-Wada river corridor along z ~ 0
  const dk=HOLLOW_PHYS.porphyryDikeAt(x,z,SITE);
  const dikeLift=smooth(24,-22,dk.signedDistM);
  const zRiver=x<-66?6*Math.sin((x+66)*0.012):(x<=76?7.2*Math.sin(clamp((x+66)/142,0,1)*TAU):5*Math.sin((x-76)*0.012));

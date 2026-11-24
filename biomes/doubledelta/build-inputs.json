@@ -8,9 +8,9 @@
     "biomes/doubledelta/build.py": "ba05294c03dfb07099bce81e661d1a359a936d93c97f36fc373df28aa39ff576",
     "biomes/doubledelta/src/00-head.html": "88c6d9cb5da225a21e549e3bbef6dd9b6ef973f6dd9c3c01674e044525cae463",
     "biomes/doubledelta/src/28-vstack-mipvar.js": "278b8ff77126de573bbedbbb61460d46da4287fb36672cb1ec6970d7a6d78910",
-    "biomes/doubledelta/src/40-biome-ddelta-phys.js": "cfc3c311d83c77c56e9f3176fe620fb52baca1f8c0a5c82778efa07d27db4dd8",
+    "biomes/doubledelta/src/40-biome-ddelta-phys.js": "6a173d7622ff9d1bf6c2a4de8f6ee13224a8d377c7d30178c7bdff3b9d943d42",
     "biomes/doubledelta/src/41-biome-ddelta-sites.js": "cf3c38ef9840809ed12c4c5924a2f284abb1d63547c549d21ff484830b045bbf",
-    "biomes/doubledelta/src/45-host-stage.js": "98312dfba1ad4298832b4de0078eaf8d82a2e29ceded49f2a5c9237a4b7e0dcc",
+    "biomes/doubledelta/src/45-host-stage.js": "7adc4b7e529c6bee360403277cc60678878245532a0ceba312c1ee11eb02f972",
     "biomes/doubledelta/src/46-vstack.js": "75bc39ea5112e9d78369e740ad1ab3f750618415bf43791a20390250a2c0d55d",
     "biomes/doubledelta/src/50-biome-ddelta-species.js": "f214f49cbe732293bfa0f22095d9e9a38e56e8ce937bf29e3fc8a31ae7fc2e00",
     "biomes/doubledelta/src/60-biome-ddelta-place.js": "4d7686f0b4901bf3a415cd8e79d1be1230cb98b9fd7074b2cbf55d1664d78c8f",
@@ -21,10 +21,10 @@
     "biomes/doubledelta/src/88-host-place.js": "30c1c5558d0fcf0f99f087a632384f966e53d167ff659aec3c7dc9db6260f364",
     "biomes/doubledelta/src/89-host-sky.js": "588c2e761adf1de143800fbad8343db3ec5570a40c0125183467e8d916619c41",
     "biomes/doubledelta/src/89a-host-atmos.js": "ccddefbf8a711c5d78694579d50d0ec1541c9172da646f8748d400952a2ff93a",
-    "biomes/doubledelta/src/89w-host-water.js": "b1d92116075605ba2f85e1a3ed820070b4a91dfc1bbe670a5ef2ea7f58bea245",
+    "biomes/doubledelta/src/89w-host-water.js": "4914a54a9dc3040e8d8ecaf9fe6a8efb36e62216c7dd1426b81531521be75901",
     "biomes/doubledelta/src/89z-host-build.js": "6d32415dcb68f8d5ef36b612e3e6906c37be3d49ee3da4fcaaa86da0fdcb21a7",
     "biomes/doubledelta/src/89z9-vstack-post.js": "4bae943909d01d2e70a9da5fb6b966d08ec0f56174e18a4c86cfc2e4dda0e07c",
-    "biomes/doubledelta/src/99-host-take.js": "642e6d154fcf1495f29f39e06232bfb37729572fb829c3f4b3d9400bce002a16",
+    "biomes/doubledelta/src/99-host-take.js": "a1627de7f86ed4f9b114cd3b9bf507086930928f10ec49198338e15f13e64998",
     "biomes/doubledelta/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
     "biomes/doubledelta/tex/amber.albedo.webp": "30315bbef980ac8e13bed4b78f2a6d5893448e5b9a847f36ec29e4958349a7f7",
     "biomes/doubledelta/tex/amber.normal.webp": "9b45e868afe76eda3f6ffd3ad18d05cc371c625e7372138dbe05b543986b7efa",
@@ -190,10 +190,10 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/doubledelta/dist/doubledelta.html": "335ee606fcf190627a956f9a9a1ea3cd20013c6b886c87657e164a75a6cd0157"
+    "biomes/doubledelta/dist/doubledelta.html": "9142831154703de98dfaf2fc207b52fc5213b8de21586f93355c566feafe7f73"
    },
    "outputs_raw": {
-    "biomes/doubledelta/dist/doubledelta.html": "335ee606fcf190627a956f9a9a1ea3cd20013c6b886c87657e164a75a6cd0157"
+    "biomes/doubledelta/dist/doubledelta.html": "9142831154703de98dfaf2fc207b52fc5213b8de21586f93355c566feafe7f73"
    }
   },
   "build.py --station bitumen": {
@@ -203,9 +203,9 @@
     "biomes/doubledelta/build.py": "ba05294c03dfb07099bce81e661d1a359a936d93c97f36fc373df28aa39ff576",
     "biomes/doubledelta/src/00-head.html": "88c6d9cb5da225a21e549e3bbef6dd9b6ef973f6dd9c3c01674e044525cae463",
     "biomes/doubledelta/src/28-vstack-mipvar.js": "278b8ff77126de573bbedbbb61460d46da4287fb36672cb1ec6970d7a6d78910",
-    "biomes/doubledelta/src/40-biome-ddelta-phys.js": "cfc3c311d83c77c56e9f3176fe620fb52baca1f8c0a5c82778efa07d27db4dd8",
+    "biomes/doubledelta/src/40-biome-ddelta-phys.js": "6a173d7622ff9d1bf6c2a4de8f6ee13224a8d377c7d30178c7bdff3b9d943d42",
     "biomes/doubledelta/src/41-biome-ddelta-sites.js": "cf3c38ef9840809ed12c4c5924a2f284abb1d63547c549d21ff484830b045bbf",
-    "biomes/doubledelta/src/45-host-stage.js": "98312dfba1ad4298832b4de0078eaf8d82a2e29ceded49f2a5c9237a4b7e0dcc",
+    "biomes/doubledelta/src/45-host-stage.js": "7adc4b7e529c6bee360403277cc60678878245532a0ceba312c1ee11eb02f972",
     "biomes/doubledelta/src/46-vstack.js": "75bc39ea5112e9d78369e740ad1ab3f750618415bf43791a20390250a2c0d55d",
     "biomes/doubledelta/src/50-biome-ddelta-species.js": "f214f49cbe732293bfa0f22095d9e9a38e56e8ce937bf29e3fc8a31ae7fc2e00",
     "biomes/doubledelta/src/60-biome-ddelta-place.js": "4d7686f0b4901bf3a415cd8e79d1be1230cb98b9fd7074b2cbf55d1664d78c8f",
@@ -216,10 +216,10 @@
     "biomes/doubledelta/src/88-host-place.js": "30c1c5558d0fcf0f99f087a632384f966e53d167ff659aec3c7dc9db6260f364",
     "biomes/doubledelta/src/89-host-sky.js": "588c2e761adf1de143800fbad8343db3ec5570a40c0125183467e8d916619c41",
     "biomes/doubledelta/src/89a-host-atmos.js": "ccddefbf8a711c5d78694579d50d0ec1541c9172da646f8748d400952a2ff93a",
-    "biomes/doubledelta/src/89w-host-water.js": "b1d92116075605ba2f85e1a3ed820070b4a91dfc1bbe670a5ef2ea7f58bea245",
+    "biomes/doubledelta/src/89w-host-water.js": "4914a54a9dc3040e8d8ecaf9fe6a8efb36e62216c7dd1426b81531521be75901",
     "biomes/doubledelta/src/89z-host-build.js": "6d32415dcb68f8d5ef36b612e3e6906c37be3d49ee3da4fcaaa86da0fdcb21a7",
     "biomes/doubledelta/src/89z9-vstack-post.js": "4bae943909d01d2e70a9da5fb6b966d08ec0f56174e18a4c86cfc2e4dda0e07c",
-    "biomes/doubledelta/src/99-host-take.js": "642e6d154fcf1495f29f39e06232bfb37729572fb829c3f4b3d9400bce002a16",
+    "biomes/doubledelta/src/99-host-take.js": "a1627de7f86ed4f9b114cd3b9bf507086930928f10ec49198338e15f13e64998",
     "biomes/doubledelta/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
     "biomes/doubledelta/stations/bitumen/44z-host-site.js": "ca527db90886d8213d174af5e312dd60e617e98e73fa5961c19407fd788fdb23",
     "biomes/doubledelta/stations/bitumen/station.json": "c04ba42e5ea5fa91021d45a13b0219d058d5e5e4104db2476ca9b0aea273ff02",
@@ -387,10 +387,10 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/doubledelta/dist/doubledelta-bitumen.html": "6a9e32d5f85ecd8380330bb597ce6cea84871abde6a67aa61674dce1d31d2ae5"
+    "biomes/doubledelta/dist/doubledelta-bitumen.html": "05d1a200ed305d48e4c7bff1597d64c082d8011e6390160bf567162737dbcd6b"
    },
    "outputs_raw": {
-    "biomes/doubledelta/dist/doubledelta-bitumen.html": "6a9e32d5f85ecd8380330bb597ce6cea84871abde6a67aa61674dce1d31d2ae5"
+    "biomes/doubledelta/dist/doubledelta-bitumen.html": "05d1a200ed305d48e4c7bff1597d64c082d8011e6390160bf567162737dbcd6b"
    }
   },
   "build.py --station throat": {
@@ -400,9 +400,9 @@
     "biomes/doubledelta/build.py": "ba05294c03dfb07099bce81e661d1a359a936d93c97f36fc373df28aa39ff576",
     "biomes/doubledelta/src/00-head.html": "88c6d9cb5da225a21e549e3bbef6dd9b6ef973f6dd9c3c01674e044525cae463",
     "biomes/doubledelta/src/28-vstack-mipvar.js": "278b8ff77126de573bbedbbb61460d46da4287fb36672cb1ec6970d7a6d78910",
-    "biomes/doubledelta/src/40-biome-ddelta-phys.js": "cfc3c311d83c77c56e9f3176fe620fb52baca1f8c0a5c82778efa07d27db4dd8",
+    "biomes/doubledelta/src/40-biome-ddelta-phys.js": "6a173d7622ff9d1bf6c2a4de8f6ee13224a8d377c7d30178c7bdff3b9d943d42",
     "biomes/doubledelta/src/41-biome-ddelta-sites.js": "cf3c38ef9840809ed12c4c5924a2f284abb1d63547c549d21ff484830b045bbf",
-    "biomes/doubledelta/src/45-host-stage.js": "98312dfba1ad4298832b4de0078eaf8d82a2e29ceded49f2a5c9237a4b7e0dcc",
+    "biomes/doubledelta/src/45-host-stage.js": "7adc4b7e529c6bee360403277cc60678878245532a0ceba312c1ee11eb02f972",
     "biomes/doubledelta/src/46-vstack.js": "75bc39ea5112e9d78369e740ad1ab3f750618415bf43791a20390250a2c0d55d",
     "biomes/doubledelta/src/50-biome-ddelta-species.js": "f214f49cbe732293bfa0f22095d9e9a38e56e8ce937bf29e3fc8a31ae7fc2e00",
     "biomes/doubledelta/src/60-biome-ddelta-place.js": "4d7686f0b4901bf3a415cd8e79d1be1230cb98b9fd7074b2cbf55d1664d78c8f",
@@ -413,10 +413,10 @@
     "biomes/doubledelta/src/88-host-place.js": "30c1c5558d0fcf0f99f087a632384f966e53d167ff659aec3c7dc9db6260f364",
     "biomes/doubledelta/src/89-host-sky.js": "588c2e761adf1de143800fbad8343db3ec5570a40c0125183467e8d916619c41",
     "biomes/doubledelta/src/89a-host-atmos.js": "ccddefbf8a711c5d78694579d50d0ec1541c9172da646f8748d400952a2ff93a",
-    "biomes/doubledelta/src/89w-host-water.js": "b1d92116075605ba2f85e1a3ed820070b4a91dfc1bbe670a5ef2ea7f58bea245",
+    "biomes/doubledelta/src/89w-host-water.js": "4914a54a9dc3040e8d8ecaf9fe6a8efb36e62216c7dd1426b81531521be75901",
     "biomes/doubledelta/src/89z-host-build.js": "6d32415dcb68f8d5ef36b612e3e6906c37be3d49ee3da4fcaaa86da0fdcb21a7",
     "biomes/doubledelta/src/89z9-vstack-post.js": "4bae943909d01d2e70a9da5fb6b966d08ec0f56174e18a4c86cfc2e4dda0e07c",
-    "biomes/doubledelta/src/99-host-take.js": "642e6d154fcf1495f29f39e06232bfb37729572fb829c3f4b3d9400bce002a16",
+    "biomes/doubledelta/src/99-host-take.js": "a1627de7f86ed4f9b114cd3b9bf507086930928f10ec49198338e15f13e64998",
     "biomes/doubledelta/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
     "biomes/doubledelta/stations/throat/44z-host-site.js": "605d1dd4bd4c2496bbcee3ef4d450034f59945d45224fc05324262da1cfe8794",
     "biomes/doubledelta/stations/throat/station.json": "e1cfb5e3cf866eb4d3e5c96f7726d0e9e906fd830fac506ed50967b213ef3c4f",
@@ -584,10 +584,10 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/doubledelta/dist/doubledelta-throat.html": "71dbeccfb62034316b9fe4a2f63da8da05deec6ed3cf2d7f1c45342f012a210b"
+    "biomes/doubledelta/dist/doubledelta-throat.html": "c991ecac61d820186e38cb675bb87dd32245f959ca0160c8a189ea64b01cfd05"
    },
    "outputs_raw": {
-    "biomes/doubledelta/dist/doubledelta-throat.html": "71dbeccfb62034316b9fe4a2f63da8da05deec6ed3cf2d7f1c45342f012a210b"
+    "biomes/doubledelta/dist/doubledelta-throat.html": "c991ecac61d820186e38cb675bb87dd32245f959ca0160c8a189ea64b01cfd05"
    }
   }
  }

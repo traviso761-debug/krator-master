@@ -37,7 +37,7 @@ const WORKS=(function(){
   if(SKEY==='spring'){
    regHaz('springhollows:sump','Cav Ozarks Resurgence Artesian Throat Sump',-62,-5.8,0,22,8,HOLLOW_PHYS.hazardSpec('sump'));
   }else if(SKEY==='shutin'){
-   regHaz('springhollows:shutin','Ching-Ma Red-Porphyry Shut-In Whitewater Chute',0,2.5,0,46,12,HOLLOW_PHYS.hazardSpec('shutin'));
+   regHaz('springhollows:shutin','Tlila-Wada Red-Porphyry Shut-In Whitewater Chute',0,2.5,0,46,12,HOLLOW_PHYS.hazardSpec('shutin'));
   }else if(SKEY==='fenestre'){
    regHaz('springhollows:fenestre','18 m Sinkhole Fern-Fenestre Skylight Drop Lip',10,2.2,8,14,32,HOLLOW_PHYS.hazardSpec('fenestre'));
    regHaz('springhollows:sump','Spider Lake Sub-Escarpment Phreatic Sump Pool',38,-25.4,24,18,6,HOLLOW_PHYS.hazardSpec('sump'));

@@ -95,7 +95,7 @@ var DDELTA_PHYS = (function () {
     /* Back-marsh evaporation vs channel flushing */
     var marshHold = ss(40, 450, chanM) * 0.14 * (1 - 0.5 * monsoon);
     var psu = cl(34.5 * cl(marineFrac + marshHold, 0, 1), 0.2, 34.5);
-    /* Biogenic orthosilicic acid H4SiO4 (18-28 mg/L in Ma-Ria & Tong-Ma river load, consumed gradually toward 34 PSU sea) */
+    /* Biogenic orthosilicic acid H4SiO4 (18-28 mg/L in Riwa-Wata & Mere-Upe river load, consumed gradually toward 34 PSU sea) */
     var riverFrac = 1 - psu / 34.5;
     var silicaMgL = cl(3.5 + 23.5 * Math.pow(riverFrac, 0.65) * (0.82 + 0.18 * ss(600, 3000, q)), 2.5, 28.0);
     var carbonateAlk = cl(1.9 + 1.4 * riverFrac, 1.8, 3.4);

@@ -1,6 +1,6 @@
 // ================================================================= SPRINGHOLLOWS — karst, shut-in, MVT crystal & scar physics ([G data])
 // Pure engine-neutral functions of purple-red rhyolite porphyry dike intrusions across flat cream cherty-dolomite
-// (carbonate-shelf), Ching-Ma shut-in hydraulics & counterweight boat-lift triggers, first-magnitude artesian mammoth-springs,
+// (carbonate-shelf), Tlila-Wada shut-in hydraulics & counterweight boat-lift triggers, first-magnitude artesian mammoth-springs,
 // 0.75 g Mississippi-Valley-Type (MVT) celestine/calcite crystal halls along tube_ozarks_15, twilight calcifying tufabryum
 // bioluminescence, Ancient defoliant bleach-belt scars, and surveyed Scale-Model 5.1 sites (PLAN.md sections 1-6).
 // Zero THREE, zero DOM, zero Math.random, zero .opt || <nonzero>; deterministic on core/rand (KRAND).
@@ -16,7 +16,7 @@ var HOLLOW_PHYS=(function(root){
   ENDONYM:'Sikwingi-Khaloyi',
   TUBE_ID:'tube_ozarks_15',
   TRUNK_ID:9109,
-  TRUNK_NAME:'Ching-Ma',
+  TRUNK_NAME:'Tlila-Wada',
   AREA_KM2:56684.0,
   P0_ATM:1.60,
   SCALE_H_M:8000.0,
@@ -69,7 +69,7 @@ var HOLLOW_PHYS=(function(root){
   };
  }
 
- // 2. Ching-Ma continuity & Manning/Froude shut-in constriction hydraulics (PLAN.md section 1.2 #2)
+ // 2. Tlila-Wada continuity & Manning/Froude shut-in constriction hydraulics (PLAN.md section 1.2 #2)
  function shutInFlowAt(o){
   o=o||{};
   var qM3s=clamp(nz(o.qM3s,185.0),8.0,900.0);
@@ -234,7 +234,7 @@ var HOLLOW_PHYS=(function(root){
    return{
     kind:'crush',effect:'bleed',danger:0.78,dose:0.45,falloff:'smooth',
     move:{speed:0.35,sink:0,slip:0.35},
-    tell:{colour:'#d85c68',fx:'spray',sound:'roar',sign:'Ching-Ma Porphyry Shut-In Whitewater Chute'}
+    tell:{colour:'#d85c68',fx:'spray',sound:'roar',sign:'Tlila-Wada Porphyry Shut-In Whitewater Chute'}
    };
   }
   if(key==='fenestre'||key==='springhollows:fenestre'){
@@ -317,7 +317,7 @@ var HOLLOW_SITES=(function(){
    id:'shutin',
    out:'springhollows-shutin.html',
    name:'Purple-Red Rhyolite Porphyry Shut-In Gorge & Boat-Lift Bypass',
-   region:'Sikwingi-Khaloyi / Ching-Ma Five Shut-Ins',
+   region:'Sikwingi-Khaloyi / Tlila-Wada Five Shut-Ins',
    px:[1224,158],
    sky:[952,-172],
    baseElevM:1480.0,

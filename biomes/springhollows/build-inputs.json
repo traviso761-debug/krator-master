@@ -7,23 +7,23 @@
     "biomes/springhollows/PORT.md": "ae52412c5cc1e8e1bac2433b16c80e2cbedcfe1df7866d89a8a141070ba591f9",
     "biomes/springhollows/build.py": "530a3269e08de2927176c4d8c04d913252f141ff0b311083c7da4f6de81ceb84",
     "biomes/springhollows/src/00-head.html": "eb032e942fbd61a4b5cf56498826fedbd0519471c60f76afa24a81e9c4f96d5a",
-    "biomes/springhollows/src/15-springhollows-phys.js": "10e131c26905359a19a5933f514810bafbbcede10a7ca65af995d624abae69dd",
+    "biomes/springhollows/src/15-springhollows-phys.js": "28a49e07eb9cca79a613c0033f533d0b043882183dcdb6239aacfd26f523027c",
     "biomes/springhollows/src/22-springhollows-crops.js": "2870986ba12211f844184f904a7a2a003244a9623fd328ec46c5d035bbca2639",
     "biomes/springhollows/src/24-springhollows-fauna.js": "94c27661b4f55821a6559f1ebd9e789cfcdb33d07fa564c831c1cd55da7ae6fa",
-    "biomes/springhollows/src/45-host-stage.js": "62fe126dca049b21872085d1164a4ca7f87dc4baedcea900d9e81d9f2bd5a0be",
+    "biomes/springhollows/src/45-host-stage.js": "338fb4f636272bd27ad7d86e02367ef8080ced263293ab3019c92a78969725e0",
     "biomes/springhollows/src/46-sh-vstack.js": "9de7bbd24c1fbd7e3b35462ea365f27a51a5bc4affd25d7f51d595a4133981cc",
     "biomes/springhollows/src/50-springhollows-species.js": "56b630eb613e4500c508513b2b10ef6e7b08436fb153ebb4c27176195cad0d4a",
     "biomes/springhollows/src/60-springhollows-place.js": "e058148b46f74ec4a842121b8ed61bb0f9463309a13a45677cdf0b4ded705293",
     "biomes/springhollows/src/70-springhollows.js": "a01701989b822fa85b25d11bfc4e31abbbbea5dcc2f848ecde1a057eae65d706",
     "biomes/springhollows/src/84-host-ground.js": "b8be55c2d6c95ff24ea8e980a2a7316e4631c7c88415fed2ff1762f9081770ab",
     "biomes/springhollows/src/85-host-far.js": "df15c57c3d816c063f8be86e3e76803e4ad2e35763863431deb3f29d402fb8c6",
-    "biomes/springhollows/src/86-host-works.js": "100261ca60bfef6fd46525eac0fe1d1167212ab47bbbf192062f95a98b632351",
+    "biomes/springhollows/src/86-host-works.js": "1ce14bf96104713673081f9660dcd54f8920185f59da649b4ba1e0cda9913d15",
     "biomes/springhollows/src/88-host-place.js": "15a00e3eb458b50f8bfa47f93147f34a135c12e8462b30c81499e67ed7de9ebe",
     "biomes/springhollows/src/89-host-sky.js": "63aea6b00e50ccf5abd0b410fe16bba4add6ee4073327d3dc136526c6d3d2260",
     "biomes/springhollows/src/89a-host-atmos.js": "6a0e4d76bb94644f076aac34da9ca5d80cb2316371e42352505b74103a0c4757",
-    "biomes/springhollows/src/89w-host-water.js": "1e7617739dd45a3b07cb03ed1d0c3e541705acb5b393348724923b457da3a5c0",
+    "biomes/springhollows/src/89w-host-water.js": "687663a41365183c26bf9d232435512fa89bd27a1e8c20c753a2f019b2f1c001",
     "biomes/springhollows/src/89z-host-build.js": "8108232f537277ca38efe267cd18ee13c4e73cfca9f162df662cf23ddb81a728",
-    "biomes/springhollows/src/99-host-take.js": "51cdfbc1dcee3670acacbac63fa7fbfc06351cdceac024d3314df0b5362a4bb6",
+    "biomes/springhollows/src/99-host-take.js": "b467e4f378be9ccd91b85cd7c2afa18ec6bfb437d63ff77135d5021384d43fea",
     "biomes/springhollows/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/springhollows/stations/spring/44z-host-site.js": "c8e0e442f9e0709eb6a349dd3a94532bbaeac10a3facbae5395268a75d32cef1",
     "biomes/springhollows/stations/spring/station.json": "5be2e376fcb4b7e7ad9f27155ac51d1096620f283e08bc9b2bb89f3e73e45c31",
@@ -183,6 +183,7 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/springhollows": "714f3fb00236ac84db9375dbca454677b1f1ac3fefea2aed17d0c91d3cae51a2",
     "biomes/springhollows/src": "496de0bac0b05de5c50ac2cf730bdcf76bc5124a108c9f555755bf3328b039c4",
     "biomes/springhollows/stations/spring": "1e8160c9f3a849bbc442ea36cf8a091726ff4a18a2c2e99d5db785829afc44fd",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
@@ -190,11 +191,11 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/springhollows/dist/springhollows.html": "9d63085b0dd9aa62818a40a1ca5faad74b0ab528eae512ce7817cd1e305e98cd",
+    "biomes/springhollows/dist/springhollows.html": "4a9d382c8abe5256b5292b1027802977dc84074650117515f7a2b7ba36ca7de6",
     "biomes/springhollows/dist/springhollows.tex.springhollows.js": "73d4e41d6c17fcefe7d09eea551b0f9733f79525eec82c23d6b9605bd2611f06"
    },
    "outputs_raw": {
-    "biomes/springhollows/dist/springhollows.html": "9d63085b0dd9aa62818a40a1ca5faad74b0ab528eae512ce7817cd1e305e98cd",
+    "biomes/springhollows/dist/springhollows.html": "4a9d382c8abe5256b5292b1027802977dc84074650117515f7a2b7ba36ca7de6",
     "biomes/springhollows/dist/springhollows.tex.springhollows.js": "73d4e41d6c17fcefe7d09eea551b0f9733f79525eec82c23d6b9605bd2611f06"
    }
   },
@@ -204,23 +205,23 @@
     "biomes/springhollows/PORT.md": "ae52412c5cc1e8e1bac2433b16c80e2cbedcfe1df7866d89a8a141070ba591f9",
     "biomes/springhollows/build.py": "530a3269e08de2927176c4d8c04d913252f141ff0b311083c7da4f6de81ceb84",
     "biomes/springhollows/src/00-head.html": "eb032e942fbd61a4b5cf56498826fedbd0519471c60f76afa24a81e9c4f96d5a",
-    "biomes/springhollows/src/15-springhollows-phys.js": "10e131c26905359a19a5933f514810bafbbcede10a7ca65af995d624abae69dd",
+    "biomes/springhollows/src/15-springhollows-phys.js": "28a49e07eb9cca79a613c0033f533d0b043882183dcdb6239aacfd26f523027c",
     "biomes/springhollows/src/22-springhollows-crops.js": "2870986ba12211f844184f904a7a2a003244a9623fd328ec46c5d035bbca2639",
     "biomes/springhollows/src/24-springhollows-fauna.js": "94c27661b4f55821a6559f1ebd9e789cfcdb33d07fa564c831c1cd55da7ae6fa",
-    "biomes/springhollows/src/45-host-stage.js": "62fe126dca049b21872085d1164a4ca7f87dc4baedcea900d9e81d9f2bd5a0be",
+    "biomes/springhollows/src/45-host-stage.js": "338fb4f636272bd27ad7d86e02367ef8080ced263293ab3019c92a78969725e0",
     "biomes/springhollows/src/46-sh-vstack.js": "9de7bbd24c1fbd7e3b35462ea365f27a51a5bc4affd25d7f51d595a4133981cc",
     "biomes/springhollows/src/50-springhollows-species.js": "56b630eb613e4500c508513b2b10ef6e7b08436fb153ebb4c27176195cad0d4a",
     "biomes/springhollows/src/60-springhollows-place.js": "e058148b46f74ec4a842121b8ed61bb0f9463309a13a45677cdf0b4ded705293",
     "biomes/springhollows/src/70-springhollows.js": "a01701989b822fa85b25d11bfc4e31abbbbea5dcc2f848ecde1a057eae65d706",
     "biomes/springhollows/src/84-host-ground.js": "b8be55c2d6c95ff24ea8e980a2a7316e4631c7c88415fed2ff1762f9081770ab",
     "biomes/springhollows/src/85-host-far.js": "df15c57c3d816c063f8be86e3e76803e4ad2e35763863431deb3f29d402fb8c6",
-    "biomes/springhollows/src/86-host-works.js": "100261ca60bfef6fd46525eac0fe1d1167212ab47bbbf192062f95a98b632351",
+    "biomes/springhollows/src/86-host-works.js": "1ce14bf96104713673081f9660dcd54f8920185f59da649b4ba1e0cda9913d15",
     "biomes/springhollows/src/88-host-place.js": "15a00e3eb458b50f8bfa47f93147f34a135c12e8462b30c81499e67ed7de9ebe",
     "biomes/springhollows/src/89-host-sky.js": "63aea6b00e50ccf5abd0b410fe16bba4add6ee4073327d3dc136526c6d3d2260",
     "biomes/springhollows/src/89a-host-atmos.js": "6a0e4d76bb94644f076aac34da9ca5d80cb2316371e42352505b74103a0c4757",
-    "biomes/springhollows/src/89w-host-water.js": "1e7617739dd45a3b07cb03ed1d0c3e541705acb5b393348724923b457da3a5c0",
+    "biomes/springhollows/src/89w-host-water.js": "687663a41365183c26bf9d232435512fa89bd27a1e8c20c753a2f019b2f1c001",
     "biomes/springhollows/src/89z-host-build.js": "8108232f537277ca38efe267cd18ee13c4e73cfca9f162df662cf23ddb81a728",
-    "biomes/springhollows/src/99-host-take.js": "51cdfbc1dcee3670acacbac63fa7fbfc06351cdceac024d3314df0b5362a4bb6",
+    "biomes/springhollows/src/99-host-take.js": "b467e4f378be9ccd91b85cd7c2afa18ec6bfb437d63ff77135d5021384d43fea",
     "biomes/springhollows/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/springhollows/stations/fenestre/44z-host-site.js": "07fcd439e5a61caa42ccca40e0ab12e677ef1cbcb0b8c28107466fd695908e0e",
     "biomes/springhollows/stations/fenestre/station.json": "21d047e2762681a5ce9822953ae01af07511731024271021dc29547f8ddaa691",
@@ -387,11 +388,11 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/springhollows/dist/springhollows-fenestre.html": "730bd22e35e0188c67cfd9f9e79bd2b6cd99a28bebcd45d2ee9c21bdebc75573",
+    "biomes/springhollows/dist/springhollows-fenestre.html": "80c6c0924a4f0f078c85eea83a15dd8e4337642962f57d2916bd28734fc26806",
     "biomes/springhollows/dist/springhollows.tex.springhollows.js": "73d4e41d6c17fcefe7d09eea551b0f9733f79525eec82c23d6b9605bd2611f06"
    },
    "outputs_raw": {
-    "biomes/springhollows/dist/springhollows-fenestre.html": "730bd22e35e0188c67cfd9f9e79bd2b6cd99a28bebcd45d2ee9c21bdebc75573",
+    "biomes/springhollows/dist/springhollows-fenestre.html": "80c6c0924a4f0f078c85eea83a15dd8e4337642962f57d2916bd28734fc26806",
     "biomes/springhollows/dist/springhollows.tex.springhollows.js": "73d4e41d6c17fcefe7d09eea551b0f9733f79525eec82c23d6b9605bd2611f06"
    }
   },
@@ -401,23 +402,23 @@
     "biomes/springhollows/PORT.md": "ae52412c5cc1e8e1bac2433b16c80e2cbedcfe1df7866d89a8a141070ba591f9",
     "biomes/springhollows/build.py": "530a3269e08de2927176c4d8c04d913252f141ff0b311083c7da4f6de81ceb84",
     "biomes/springhollows/src/00-head.html": "eb032e942fbd61a4b5cf56498826fedbd0519471c60f76afa24a81e9c4f96d5a",
-    "biomes/springhollows/src/15-springhollows-phys.js": "10e131c26905359a19a5933f514810bafbbcede10a7ca65af995d624abae69dd",
+    "biomes/springhollows/src/15-springhollows-phys.js": "28a49e07eb9cca79a613c0033f533d0b043882183dcdb6239aacfd26f523027c",
     "biomes/springhollows/src/22-springhollows-crops.js": "2870986ba12211f844184f904a7a2a003244a9623fd328ec46c5d035bbca2639",
     "biomes/springhollows/src/24-springhollows-fauna.js": "94c27661b4f55821a6559f1ebd9e789cfcdb33d07fa564c831c1cd55da7ae6fa",
-    "biomes/springhollows/src/45-host-stage.js": "62fe126dca049b21872085d1164a4ca7f87dc4baedcea900d9e81d9f2bd5a0be",
+    "biomes/springhollows/src/45-host-stage.js": "338fb4f636272bd27ad7d86e02367ef8080ced263293ab3019c92a78969725e0",
     "biomes/springhollows/src/46-sh-vstack.js": "9de7bbd24c1fbd7e3b35462ea365f27a51a5bc4affd25d7f51d595a4133981cc",
     "biomes/springhollows/src/50-springhollows-species.js": "56b630eb613e4500c508513b2b10ef6e7b08436fb153ebb4c27176195cad0d4a",
     "biomes/springhollows/src/60-springhollows-place.js": "e058148b46f74ec4a842121b8ed61bb0f9463309a13a45677cdf0b4ded705293",
     "biomes/springhollows/src/70-springhollows.js": "a01701989b822fa85b25d11bfc4e31abbbbea5dcc2f848ecde1a057eae65d706",
     "biomes/springhollows/src/84-host-ground.js": "b8be55c2d6c95ff24ea8e980a2a7316e4631c7c88415fed2ff1762f9081770ab",
     "biomes/springhollows/src/85-host-far.js": "df15c57c3d816c063f8be86e3e76803e4ad2e35763863431deb3f29d402fb8c6",
-    "biomes/springhollows/src/86-host-works.js": "100261ca60bfef6fd46525eac0fe1d1167212ab47bbbf192062f95a98b632351",
+    "biomes/springhollows/src/86-host-works.js": "1ce14bf96104713673081f9660dcd54f8920185f59da649b4ba1e0cda9913d15",
     "biomes/springhollows/src/88-host-place.js": "15a00e3eb458b50f8bfa47f93147f34a135c12e8462b30c81499e67ed7de9ebe",
     "biomes/springhollows/src/89-host-sky.js": "63aea6b00e50ccf5abd0b410fe16bba4add6ee4073327d3dc136526c6d3d2260",
     "biomes/springhollows/src/89a-host-atmos.js": "6a0e4d76bb94644f076aac34da9ca5d80cb2316371e42352505b74103a0c4757",
-    "biomes/springhollows/src/89w-host-water.js": "1e7617739dd45a3b07cb03ed1d0c3e541705acb5b393348724923b457da3a5c0",
+    "biomes/springhollows/src/89w-host-water.js": "687663a41365183c26bf9d232435512fa89bd27a1e8c20c753a2f019b2f1c001",
     "biomes/springhollows/src/89z-host-build.js": "8108232f537277ca38efe267cd18ee13c4e73cfca9f162df662cf23ddb81a728",
-    "biomes/springhollows/src/99-host-take.js": "51cdfbc1dcee3670acacbac63fa7fbfc06351cdceac024d3314df0b5362a4bb6",
+    "biomes/springhollows/src/99-host-take.js": "b467e4f378be9ccd91b85cd7c2afa18ec6bfb437d63ff77135d5021384d43fea",
     "biomes/springhollows/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
     "biomes/springhollows/stations/glade/44z-host-site.js": "1398cb84987e0fb4b39c9bb2bf9688fe7888fe3083e8d2366904858de85e350c",
     "biomes/springhollows/stations/glade/station.json": "82f82f2a835ce07cf73da558d5504d79bed620c039f1c2d19de3cfabf81d0c23",
@@ -584,11 +585,11 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/springhollows/dist/springhollows-glade.html": "69441be2fb4bc0eb4567be72d0e06073459c6ea4df4cc740d1eefb5b8f34c20b",
+    "biomes/springhollows/dist/springhollows-glade.html": "aeb2d29d4414349dc3fcc594f57b06260378f646c770571ae3b142561a149a19",
     "biomes/springhollows/dist/springhollows.tex.springhollows.js": "73d4e41d6c17fcefe7d09eea551b0f9733f79525eec82c23d6b9605bd2611f06"
    },
    "outputs_raw": {
-    "biomes/springhollows/dist/springhollows-glade.html": "69441be2fb4bc0eb4567be72d0e06073459c6ea4df4cc740d1eefb5b8f34c20b",
+    "biomes/springhollows/dist/springhollows-glade.html": "aeb2d29d4414349dc3fcc594f57b06260378f646c770571ae3b142561a149a19",
     "biomes/springhollows/dist/springhollows.tex.springhollows.js": "73d4e41d6c17fcefe7d09eea551b0f9733f79525eec82c23d6b9605bd2611f06"
    }
   },
@@ -598,25 +599,25 @@
     "biomes/springhollows/PORT.md": "ae52412c5cc1e8e1bac2433b16c80e2cbedcfe1df7866d89a8a141070ba591f9",
     "biomes/springhollows/build.py": "530a3269e08de2927176c4d8c04d913252f141ff0b311083c7da4f6de81ceb84",
     "biomes/springhollows/src/00-head.html": "eb032e942fbd61a4b5cf56498826fedbd0519471c60f76afa24a81e9c4f96d5a",
-    "biomes/springhollows/src/15-springhollows-phys.js": "10e131c26905359a19a5933f514810bafbbcede10a7ca65af995d624abae69dd",
+    "biomes/springhollows/src/15-springhollows-phys.js": "28a49e07eb9cca79a613c0033f533d0b043882183dcdb6239aacfd26f523027c",
     "biomes/springhollows/src/22-springhollows-crops.js": "2870986ba12211f844184f904a7a2a003244a9623fd328ec46c5d035bbca2639",
     "biomes/springhollows/src/24-springhollows-fauna.js": "94c27661b4f55821a6559f1ebd9e789cfcdb33d07fa564c831c1cd55da7ae6fa",
-    "biomes/springhollows/src/45-host-stage.js": "62fe126dca049b21872085d1164a4ca7f87dc4baedcea900d9e81d9f2bd5a0be",
+    "biomes/springhollows/src/45-host-stage.js": "338fb4f636272bd27ad7d86e02367ef8080ced263293ab3019c92a78969725e0",
     "biomes/springhollows/src/46-sh-vstack.js": "9de7bbd24c1fbd7e3b35462ea365f27a51a5bc4affd25d7f51d595a4133981cc",
     "biomes/springhollows/src/50-springhollows-species.js": "56b630eb613e4500c508513b2b10ef6e7b08436fb153ebb4c27176195cad0d4a",
     "biomes/springhollows/src/60-springhollows-place.js": "e058148b46f74ec4a842121b8ed61bb0f9463309a13a45677cdf0b4ded705293",
     "biomes/springhollows/src/70-springhollows.js": "a01701989b822fa85b25d11bfc4e31abbbbea5dcc2f848ecde1a057eae65d706",
     "biomes/springhollows/src/84-host-ground.js": "b8be55c2d6c95ff24ea8e980a2a7316e4631c7c88415fed2ff1762f9081770ab",
     "biomes/springhollows/src/85-host-far.js": "df15c57c3d816c063f8be86e3e76803e4ad2e35763863431deb3f29d402fb8c6",
-    "biomes/springhollows/src/86-host-works.js": "100261ca60bfef6fd46525eac0fe1d1167212ab47bbbf192062f95a98b632351",
+    "biomes/springhollows/src/86-host-works.js": "1ce14bf96104713673081f9660dcd54f8920185f59da649b4ba1e0cda9913d15",
     "biomes/springhollows/src/88-host-place.js": "15a00e3eb458b50f8bfa47f93147f34a135c12e8462b30c81499e67ed7de9ebe",
     "biomes/springhollows/src/89-host-sky.js": "63aea6b00e50ccf5abd0b410fe16bba4add6ee4073327d3dc136526c6d3d2260",
     "biomes/springhollows/src/89a-host-atmos.js": "6a0e4d76bb94644f076aac34da9ca5d80cb2316371e42352505b74103a0c4757",
-    "biomes/springhollows/src/89w-host-water.js": "1e7617739dd45a3b07cb03ed1d0c3e541705acb5b393348724923b457da3a5c0",
+    "biomes/springhollows/src/89w-host-water.js": "687663a41365183c26bf9d232435512fa89bd27a1e8c20c753a2f019b2f1c001",
     "biomes/springhollows/src/89z-host-build.js": "8108232f537277ca38efe267cd18ee13c4e73cfca9f162df662cf23ddb81a728",
-    "biomes/springhollows/src/99-host-take.js": "51cdfbc1dcee3670acacbac63fa7fbfc06351cdceac024d3314df0b5362a4bb6",
+    "biomes/springhollows/src/99-host-take.js": "b467e4f378be9ccd91b85cd7c2afa18ec6bfb437d63ff77135d5021384d43fea",
     "biomes/springhollows/src/99-tail.html": "dfa29581341684f741f611c9a3055640e844a59a563e3d1d350318d5813dec76",
-    "biomes/springhollows/stations/shutin/44z-host-site.js": "738ccd0f03f273c9bbcacf922aff5499ec9614efc73513b62dbb08db10ca52bf",
+    "biomes/springhollows/stations/shutin/44z-host-site.js": "0ecdd91e3491ba68460becb9a929a463074a904a728cf4d4bb6fb43bae2e7357",
     "biomes/springhollows/stations/shutin/station.json": "cdc0f80046f0f1c8b91ef25f48278b5fbda94087b1bfc8ed469c7e9b7e4d1639",
     "biomes/springhollows/tex/bark.cypress.albedo.webp": "150129373d0335b6c4de4bc9464e1a658785a8ef88aedefb4d7b92c669e657df",
     "biomes/springhollows/tex/bark.oak.albedo.webp": "571244fe7167622eb25d68692ce12e512899ac7ce413b76f4c05d20520510599",
@@ -781,11 +782,11 @@
     "tools/textures": "f4c83899af343d36f69b562b5e36b8a640189c9cc4b0a98d739cb05e0260eef6"
    },
    "outputs": {
-    "biomes/springhollows/dist/springhollows-shutin.html": "85f908e03e1050a8e95b819e4d68fce2e414a4237ee2014b5e0d04209a809a43",
+    "biomes/springhollows/dist/springhollows-shutin.html": "32d60e45ce898208ede8711a0a16a0fbaf4cee00696e1dab6a515922457c71f3",
     "biomes/springhollows/dist/springhollows.tex.springhollows.js": "73d4e41d6c17fcefe7d09eea551b0f9733f79525eec82c23d6b9605bd2611f06"
    },
    "outputs_raw": {
-    "biomes/springhollows/dist/springhollows-shutin.html": "85f908e03e1050a8e95b819e4d68fce2e414a4237ee2014b5e0d04209a809a43",
+    "biomes/springhollows/dist/springhollows-shutin.html": "32d60e45ce898208ede8711a0a16a0fbaf4cee00696e1dab6a515922457c71f3",
     "biomes/springhollows/dist/springhollows.tex.springhollows.js": "73d4e41d6c17fcefe7d09eea551b0f9733f79525eec82c23d6b9605bd2611f06"
    }
   }

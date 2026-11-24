@@ -30,7 +30,7 @@ const { HOLLOW_PHYS: PHYS, HOLLOW_SITES: SITES } = require('../src/15-springholl
 const SH_CROPS = require('../src/22-springhollows-crops.js');
 const SH_FAUNA = require('../src/24-springhollows-fauna.js');
 
-// 1. Porphyry dike intrusion & Ching-Ma shut-in hydraulic pinch (PLAN.md section 7.3 #1)
+// 1. Porphyry dike intrusion & Tlila-Wada shut-in hydraulic pinch (PLAN.md section 7.3 #1)
 {
   const site = SITES.shutin;
   const inDike = PHYS.porphyryDikeAt(0, 0, site);
@@ -41,7 +41,7 @@ const SH_FAUNA = require('../src/24-springhollows-fauna.js');
   T.ok('purple-red rhyolite porphyry dike sets strataKind = porphyry-dike (hardness 0.96) vs carbonate-shelf (0.42)',
     inDike.inDike === true && inDike.strataKind === 'porphyry-dike' && inDike.rockHardness01 >= 0.94 &&
     inDolomite.inDike === false && inDolomite.strataKind === 'carbonate-shelf' && inDolomite.rockHardness01 <= 0.45);
-  T.ok('Ching-Ma pinches from >= 65 m subcritical dolomite pool (Fr < 0.35) to <= 24 m supercritical porphyry chute (Fr > 1.15, whitewater > 0.85, liftBypassReq)',
+  T.ok('Tlila-Wada pinches from >= 65 m subcritical dolomite pool (Fr < 0.35) to <= 24 m supercritical porphyry chute (Fr > 1.15, whitewater > 0.85, liftBypassReq)',
     flowOpen.channelWidthM >= 65.0 && flowOpen.froude < 0.35 && flowOpen.liftBypassReq === false &&
     flowChute.channelWidthM <= 24.0 && flowChute.froude > 1.15 && flowChute.whitewater01 > 0.85 && flowChute.liftBypassReq === true);
   T.neg('counterweight boat-lift bypass requires supercritical porphyry shut-in constriction',

@@ -299,7 +299,7 @@ const L=(function(){
    const lv=s=>lerp(1.2,0.0,clamp(s/Math.max(1,mouthS),0,1));
    return Object.assign({F,off,lv,mouthS},c);
   });
-  /* Bluff foot line curves organically along x ~ +240 m, indented by the southern Ma-Ria throat water-gap (z > 320) */
+  /* Bluff foot line curves organically along x ~ +240 m, indented by the southern Riwa-Wata throat water-gap (z > 320) */
   const bluffFootX=z=>S.bluffX0+110*Math.sin(z*0.0013-0.4)+75*n2(200,z,0.0025,51)+520*smooth(220,540,z)*smooth(1080,680,z);
   function chanDist(x,z){
    let best=1e9;

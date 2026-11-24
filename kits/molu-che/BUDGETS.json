@@ -1,0 +1,14 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls, bytes, samplers and vram_mb; GRAPHICS-TERRAIN-PROPOSAL.md Stage 1). A raise needs a new why.",
+ "pages": {
+  "molu-che.html": {
+   "tris": 3200000,
+   "calls": 220,
+   "bytes": 16777216,
+   "samplers": 15,
+   "vram_mb": 320,
+   "why": "38 Molu-Che Fossorial Clan and Bonded Strong-Vault buildings (19 dikengyuan sunken loess clan courtyards and tuber/Talpathere works + 19 bonduwe subterranean bullion/grain strong-vaults, Weeping Valley bypass relays and steppe redoubts) across four rows with furnished yaodong interiors, Stage 5 M1-M4 materials and Stage 7 KROOMLIGHT",
+   "raised": "2026-11-24"
+  }
+ }
+}
