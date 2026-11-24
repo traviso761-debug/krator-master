@@ -248,10 +248,43 @@ function landGlade(x,z){
  return h+0.6*n2(x,z,0.028,408);
 }
 
+function landPorphyryRelict(x,z){
+ // High +2,570 m NE Ozark purple-red rhyolite porphyry sky-island knob around (12, 8) rising +34 m above chinkapin-oak dolomite hollows
+ const dk=HOLLOW_PHYS.porphyryDikeAt(x,z,SITE);
+ const rKnob=Math.hypot((x-12)*0.82,(z-8)*0.95);
+ const knobDome=smooth(28,-26,dk.signedDistM)*Math.pow(smooth(148,18,rKnob),1.15);
+ let h=4.2+31.5*knobDome+12.5*smooth(125,360,Math.hypot(x,z))+2.8*n2(x,z,0.011,451);
+ if(knobDome>0.25){
+  h+=3.6*knobDome*Math.max(0,n2(x,z,0.036,452));
+ }
+ // Inert ecof_mist_pylon hollow bench around (-62, 24)
+ const dPylon=Math.hypot(x+62,z-24);
+ if(dPylon<32){
+  h=mix(h,4.4+0.18*n2(x,z,0.04,453),smooth(32,12,dPylon)*0.84);
+ }
+ // Clear dolomite-margin spring tarn basin at (-88, -24)
+ const dTarn=Math.hypot(x+88,z+24);
+ if(dTarn<20){
+  h=mix(h,0.45,smooth(19,9,dTarn));
+ }
+ if(SITE.terraces){
+  for(let i=0;i<SITE.terraces.length;i++){
+   const tr=SITE.terraces[i],td=Math.hypot(x-tr.x,z-tr.z);
+   if(td<tr.r*1.25){
+    const stepY=9.5+Math.floor(clamp((1-td/tr.r)*3,0,2))*2.4;
+    h=mix(h,stepY,smooth(tr.r*1.22,tr.r*0.76,td)*0.84);
+   }
+  }
+ }
+ h=flattenReserve(h,SITE.reserves,x,z,8.6,470);
+ return h+0.55*n2(x,z,0.028,458);
+}
+
 function rawTerrainH(x,z){
  if(SKEY==='spring')return landSpring(x,z);
  if(SKEY==='shutin')return landShutin(x,z);
  if(SKEY==='fenestre')return landFenestre(x,z);
+ if(SKEY==='porphyryrelict')return landPorphyryRelict(x,z);
  return landGlade(x,z);
 }
 
@@ -288,6 +321,10 @@ function waterH(x,z){
  }
  if(SKEY==='fenestre'){
   if(Math.hypot(x-38,z-24)<18.0)return -25.35;
+  return -1e9;
+ }
+ if(SKEY==='porphyryrelict'){
+  if(Math.hypot(x+88,z+24)<16.5)return 1.85;
   return -1e9;
  }
  if(Math.hypot(x+38,z+6)<14.0)return -13.85;

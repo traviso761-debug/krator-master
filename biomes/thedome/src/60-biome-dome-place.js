@@ -17,13 +17,14 @@
   const C=THEDOME.C,PAL=THEDOME.PAL;
   const counts={
    gnammamoss:0,panbonsai:0,cloudgarlandpine:0,crownrosette:0,
-   moatpitcher:0,cleftfilmyfern:0,ringlichen:0,moatcedar:0,spall:0
+   moatpitcher:0,cleftfilmyfern:0,ringlichen:0,moatcedar:0,spall:0,
+   carnelianSkyIsland:0,bleachSkeletons:0
   };
   THEDOME.PLACED.length=0;
   THEDOME.TREE_RECS.length=0;
 
   const G=(typeof DRAWN_H==='function')?DRAWN_H:BIO.host.terrainH;
-  const clearSpace=(x,z,r)=>!SPACE.some(x,z,r+2.5,o=>o.kind==='reserve'||o.kind==='sheetwash-rill'||o.kind==='gnamma-water');
+  const clearSpace=(x,z,r)=>!SPACE.some(x,z,r+2.5,o=>o.kind==='reserve'||o.kind==='sheetwash-rill'||o.kind==='gnamma-water'||o.kind==='ecof_mist_pylon');
   const inReserve=(x,z,pad)=>{
    if(!SITE.reserves)return false;
    for(let i=0;i<SITE.reserves.length;i++){
@@ -41,7 +42,7 @@
    return false;
   };
 
-  /* 1. Gnamma solution-pan gardens: concentric gnammamoss rims + island/rim panbonsai (Stations 1 & 3) */
+  /* 1. Gnamma solution-pan gardens: concentric gnammamoss rims + island/rim panbonsai (Stations 1, 3 & 5) */
   if(SITE.gnammas&&SITE.gnammas.length){
    for(let pi=0;pi<SITE.gnammas.length;pi++){
     const P=SITE.gnammas[pi];
@@ -101,6 +102,11 @@
     if(inReserve(x,z,8)||inATent(x,z,6)||inFlowChannel(x,z,5.5))continue;
     if(SKEY==='cleft'&&Math.abs(z)<24)continue;
     if(SKEY==='moat'&&z<SITE.apronToeZ+16)continue;
+    if(SKEY==='eastflank'){
+     if(SITE.mistPylon&&Math.hypot(x-SITE.mistPylon.x,z-SITE.mistPylon.z)<16.0)continue;
+     const ef=DOME_PHYS.eastFlankFrontierAt(x,z,G(x,z),SITE);
+     if(ef.biosphere!=='earth')continue;
+    }
 
     const sh=DOME_PHYS.shellAt(x,z,SITE);
     const gn=DOME_PHYS.gnammaAt(x,z,DOME_STATE.hydroperiod01,SITE);
@@ -140,6 +146,55 @@
      THEDOME.PLACED.push(['panbonsai',x,y,z,g.H,'apron_bench',{shellStep01:sh.shellStep01}]);
     }
    }
+  }
+
+  /* 2b. Station 5 (eastflank): Unbroken Carnelian Sky-Island upslope of Perimeter Kill-Line + Bleach skeletons & Blood-Strangler seam! */
+  if(SKEY==='eastflank'&&typeof KFRONTIER!=='undefined'){
+   const kfCfg={bucket:'td_chitin',skelBucket:'td_skel',prefix:'td_kf',sunAzimuthRad:-0.58};
+   const cell=14.5,R=360,N=Math.ceil(R/cell);
+   for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){
+    const h=KRAND.hash(seed,i,j,0x277);
+    const x=(i+0.15+0.70*H(h,1,0,1))*cell,z=(j+0.15+0.70*H(h,2,0,2))*cell;
+    if(Math.hypot(x,z)>R||!clearSpace(x,z,2.8))continue;
+    const y=G(x,z);
+    const ef=DOME_PHYS.eastFlankFrontierAt(x,z,y,SITE);
+    if(ef.strangler01>0.34&&H(h,2,0,2)<0.68*q){
+     KFRONTIER.putBloodStrangler(BIO,'td_kf',x,y,z,h,0.85+0.55*H(h,3,0,3));
+     counts.carnelianSkyIsland++;
+     continue;
+    }
+    if(ef.biosphere==='bleach'){
+     if(ef.skeletonProb01>0.28&&H(h,4,0,4)<0.38*q){
+      KFRONTIER.growOrganPipe(BIO,kfCfg,x,y,z,h,0.68+0.32*H(h,5,0,5),{petrified:true});
+      counts.bleachSkeletons++;
+     }
+     continue;
+    }
+    if(ef.biosphere==='carnelian'){
+     if(H(h,6,0,6)>0.68*q)continue;
+     const sc=0.80+0.38*H(h,7,0,7);
+     const roll=H(h,8,0,8);
+     if(roll<0.38){
+      KFRONTIER.growOrganPipe(BIO,kfCfg,x,y,z,h,sc,{});
+      if(THEDOME.PLACED.length<3000)THEDOME.PLACED.push(['ringlichen',x,y,z,sc*5.2,'apron_bench',{biosphere:'carnelian',clade:'carnelian-organpipe'}]);
+     }else if(roll<0.74){
+      KFRONTIER.growErythraVeil(BIO,kfCfg,x,y,z,h,sc);
+      if(THEDOME.PLACED.length<3000)THEDOME.PLACED.push(['ringlichen',x,y,z,sc*2.6,'apron_bench',{biosphere:'carnelian',clade:'erythra-veil'}]);
+     }else{
+      KFRONTIER.putAgateWindow(BIO,'td_kf',x,y,z,h,sc*1.15,false);
+      if(THEDOME.PLACED.length<3000)THEDOME.PLACED.push(['ringlichen',x,y,z,sc,'apron_bench',{biosphere:'carnelian',clade:'agate-window'}]);
+     }
+     SPACE.insert({kind:'carnelian',id:'ck-'+i+'-'+j},x,z,2.6);
+     counts.carnelianSkyIsland++;
+    }
+   }
+   REGISTER({
+    tagId:'thedome:eastflank-carnelian-sky-island',
+    name:'East Dome Flank Carnelian Erythrophyll Sky-Island Refuge',
+    tagClass:'flora',
+    x:-72,y:G(-72,8),z:8,r:64,h:18,
+    tags:{biome:'thedome',biosphere:'carnelian',role:'sky-island'}
+   });
   }
 
   /* 3. Station 3 (crown): Silver Crown-Chalice (crownrosette) cushions across +2,720..+2,925 m cap-cloud benches */

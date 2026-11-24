@@ -496,6 +496,200 @@
     ]
   },
   {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "agate_window",
+    "name": "Chalcedony Window-Dome (Fenestraria carneliana)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Clear biogenic chalcedony skylight lenses polished into assay loupes; cooling gel salve treats caustic tufa burns.",
+      "fruit": "reagent",
+      "reagent": "reagent"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "bladder_tether",
+    "name": "Pneumatophore Ruby Tether-Vine (Physophora rubra)",
+    "harvest": {
+      "wood": "cordage",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Cured ruby float-bladders serve as waterproof net-buoys and lantern shades; sinewy tendons make bowstrings.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "bioluminescence",
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "carnelian_organpipe",
+    "name": "Sanguine Flute-Colony (Sanguinitubus ophioliticus)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Calcined nickel-rich silica-chitin tubes ground into refractory crucible grog and nickel bio-ore indicator.",
+      "fruit": "reagent",
+      "reagent": "reagent"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "cloudberryfen",
+    "name": "Amber-Cloudberry Sphagnum Hummock (Rubus chamaemorus)",
+    "harvest": {
+      "wood": "none",
+      "edible": "['amber cloudberry']",
+      "medicinal": true,
+      "notes": "Antiscorbutic golden berry; dry sphagnum moss harvested as antiseptic surgical dressing and cabin chinking.",
+      "fruit": "berry",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "erythra_veil",
+    "name": "Pleated Carnelian Lattice-Fan (Erythrophyllum flabellatum)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Ashed Erythrophyll fan lattice yields brilliant carnelian-cobalt ceramic glaze pigment and prospecting tell.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "dyes_pigments",
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "klintlinden",
+    "name": "Escarpment Honey-Linden (Tilia baltica)",
+    "harvest": {
+      "wood": "timber, carving",
+      "edible": "['blossom honey']",
+      "medicinal": true,
+      "notes": "Strong inner bast fiber plaited into lotja tow-cordage; fragrant blossoms feed Kulanewa mead-apiaries.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "textiles_cordage",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "klintspruce",
+    "name": "Klint Gorge Spire-Spruce (Picea klintensis)",
+    "harvest": {
+      "wood": "timber, resin",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Straight resonant mast, mill-bridge trestle, and nail-less shingle timber; pitch resin waterproofs lotja barges.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "mustaalder",
+    "name": "Bog-Iron Black Alder (Alnus ferrifera)",
+    "harvest": {
+      "wood": "timber, charcoal",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Rot-proof submerged wharf piling timber and clean low-sulfur charcoal for sampo nickel-steel smelting.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arcflow",
+    "file": "biomes/arcflow/src/50-arcflow-species.js",
+    "key": "nevabirch",
+    "name": "Kulaneva Silver-Birch (Betula kulanevensis)",
+    "harvest": {
+      "wood": "timber, fuel",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Peeling white bark yields Kulanewa tohu-kiri remittance-draft scroll paper and waterproof birch-tar caulk.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "weaving_thatch_paper",
+      "woodcraft_weapons"
+    ]
+  },
+  {
     "biome": "arch",
     "file": "biomes/arch/src/50-biome-arch-species.js",
     "key": "acidfelt",

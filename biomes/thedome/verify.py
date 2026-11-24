@@ -17,10 +17,11 @@ from harness import parse_views, check_profile, verify_page, Abort  # noqa: E402
 EXPORT_BOX = [-130, -110, 130, 130]
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 STATIONS = [
-    ('apron', 'thedome.html'),
-    ('moat',  'thedome-moat.html'),
-    ('crown', 'thedome-crown.html'),
-    ('cleft', 'thedome-cleft.html'),
+    ('apron',     'thedome.html'),
+    ('moat',      'thedome-moat.html'),
+    ('crown',     'thedome-crown.html'),
+    ('cleft',     'thedome-cleft.html'),
+    ('eastflank', 'thedome-eastflank.html'),
 ]
 
 try:

@@ -44,6 +44,26 @@
    "bytes": 5052644,
    "sha256": "17012443bc9f0a7e13c1ea5a28a61f4c1f09b84baf6b9e4060a904ef06ed4d42"
   },
+  "biomes/arcflow/dist/arcflow-auger.html": {
+   "bytes": 1596359,
+   "sha256": "312d422feadc70f59b58e2cf8f0c5bd88ee679686593c08347a526e7530d8302"
+  },
+  "biomes/arcflow/dist/arcflow-koski.html": {
+   "bytes": 1596360,
+   "sha256": "44704754360213847048f552bd3527f5daa6d87dc438992106ae649cfeb03254"
+  },
+  "biomes/arcflow/dist/arcflow-neva.html": {
+   "bytes": 1596367,
+   "sha256": "75d2912492dfb5db815b6eed7b749b499aa842e85ee73e6854abbfffd3571910"
+  },
+  "biomes/arcflow/dist/arcflow-seep.html": {
+   "bytes": 1596361,
+   "sha256": "c3b0674f91f36f8f9ea90c6d9d68ec243ba8df42d3b555f7392275d26a54dc19"
+  },
+  "biomes/arcflow/dist/arcflow.html": {
+   "bytes": 1596367,
+   "sha256": "9c204387fe009a2cb74c8c19f6046978e19481ef5badd4a46665c321d4ed7f03"
+  },
   "biomes/arch/dist/arch-barrens.html": {
    "bytes": 2895290,
    "sha256": "e1fc15310ea2a00d522e456183a0050800f8646c4916bfb5055cf7a89daf5b12"
@@ -756,6 +776,54 @@
    "bytes": 5509779,
    "sha256": "0d3000d74b5d64f32f34bc31a7debe8fad1f814df16ab7146a4c85a50a855bf0"
   },
+  "biomes/spiderlake/dist/spiderlake-dolomite.html": {
+   "bytes": 6628938,
+   "sha256": "f43886a801cbd89a80f9c206d1e673b895c8c980eeb495af9e6adb956b16228c"
+  },
+  "biomes/spiderlake/dist/spiderlake-fen.html": {
+   "bytes": 6628924,
+   "sha256": "385eb4464c8ec552759311095ea7417c52743b1f355ebff4fc5d0c3cb382a50d"
+  },
+  "biomes/spiderlake/dist/spiderlake-haugel.html": {
+   "bytes": 6628891,
+   "sha256": "0208b7dad424a0dd49c7183c22542fd1898ebad930e3e371a3d9bdd4f6a2ab94"
+  },
+  "biomes/spiderlake/dist/spiderlake-narrows.html": {
+   "bytes": 6628931,
+   "sha256": "e1cdb4942a2adfa706056db43d77b8c6bed0fffa0581197f75716f3fe6df38ea"
+  },
+  "biomes/spiderlake/dist/spiderlake-pavilion.html": {
+   "bytes": 6628933,
+   "sha256": "c4ce6ddad489f7587716f2fccf7c26d8b4354f23d59bbf18584b836e5186b1c3"
+  },
+  "biomes/spiderlake/dist/spiderlake-rampart.html": {
+   "bytes": 6628931,
+   "sha256": "1e4c131734d1d4e67f6e88040403c2f4e9a4309deb2b9953fdccd25e80d5d0a7"
+  },
+  "biomes/spiderlake/dist/spiderlake.html": {
+   "bytes": 6628949,
+   "sha256": "466cd33cfd3075009636f7b477f0b0566b891ce62c763e6dc45836b9ce8e29e0"
+  },
+  "biomes/springhollows/dist/springhollows-fenestre.html": {
+   "bytes": 1706011,
+   "sha256": "4ea6227d766119f9e1ff15081cb3f6a9ca89e06a8dd5eb49eb1f87555ac7d838"
+  },
+  "biomes/springhollows/dist/springhollows-glade.html": {
+   "bytes": 1706013,
+   "sha256": "aafcdbb317ccfeaa47accd1d265e713daf0e796a920b742e17236f2924c3f74b"
+  },
+  "biomes/springhollows/dist/springhollows-porphyryrelict.html": {
+   "bytes": 1706010,
+   "sha256": "ffe84b962cef016bad6d0b02b96ba2cc165bb9ac4c38e42482cabfc6559fd0ac"
+  },
+  "biomes/springhollows/dist/springhollows-shutin.html": {
+   "bytes": 1706002,
+   "sha256": "2857eb3adb35d175ed66530c8a03fde36972016d589bd7a85cb71f4b7fe8bb7f"
+  },
+  "biomes/springhollows/dist/springhollows.html": {
+   "bytes": 1705999,
+   "sha256": "194fd93797da30a33945514a90fbeb9abe7eef46882cce5144a5b24acb3245d2"
+  },
   "biomes/swbay/dist/swbay-skarn.html": {
    "bytes": 7184109,
    "sha256": "7528a250a84ee75c40e278d58e7055acee2b1f0c12c040acbb18ba305f3e0851"
@@ -807,6 +875,26 @@
   "biomes/swlowlands/dist/swlowlands.html": {
    "bytes": 1889390,
    "sha256": "114d3f73c55f2fc20996c430e7e44794cfbfd631d2d34cbfded50308aa9ebfa2"
+  },
+  "biomes/thedome/dist/thedome-cleft.html": {
+   "bytes": 1795064,
+   "sha256": "ee77267e727fd3957dc8ac9a57d4ef3848299a7d55f592c4495e74f80a6bb490"
+  },
+  "biomes/thedome/dist/thedome-crown.html": {
+   "bytes": 1795064,
+   "sha256": "e37390c87d1d0f5c70bd6487aecb63d588c0dd494ede42e57ad08299ca089b0e"
+  },
+  "biomes/thedome/dist/thedome-eastflank.html": {
+   "bytes": 1827633,
+   "sha256": "996064fcfbb20bb2dbce901d64acedaedcbc3335f39e13b0ac68c60c48755a99"
+  },
+  "biomes/thedome/dist/thedome-moat.html": {
+   "bytes": 1922957,
+   "sha256": "12fe9e76c1f9b824b21f81ec5d231575ad647410fde7b9e61e59e2fa65ecb30f"
+  },
+  "biomes/thedome/dist/thedome.html": {
+   "bytes": 1922948,
+   "sha256": "69b3d231f1f134401a311ae9cefd6249171d3510dd3f36e4281f209611741e8f"
   },
   "biomes/throne/dist/throne-ash.html": {
    "bytes": 1042633,

@@ -304,7 +304,66 @@ var DOME_SITES = (function () {
       gnammas: [],
       reserves: [],
       geology: { stone: 214, iron: 40, copper: 10, clay: 28, smokyQuartz: 1 }
-    }
+    },
+
+    eastflank: (function () {
+      var efTents = [
+        { id: 'ef-atent-1', x: 104.0, z: 46.0, spanM: 19.0, lengthM: 15.0, gapM: 1.75, thickM: 0.96, ry: -0.18 }
+      ];
+      var efHeroPans = [
+        { id: 'ef-mirror-1', x: 74.0, z: -62.0, r: 6.2, depth: 0.52, islandR: 1.55, islandDx: 0.15, islandDz: -0.1, sillY: null },
+        { id: 'ef-mirror-2', x: 118.0, z: -12.0, r: 5.8, depth: 0.48, islandR: 0, islandDx: 0, islandDz: 0, sillY: null }
+      ];
+      var efGnammas = makeGnammas(6510, 22, 320, function (x, z, r) {
+        /* Keep strictly downslope of the Kill-Line (x > 46), clear of the active Mist-Pylon (62, -18), A-tent & risers! */
+        if (x < 46 + r) return true;
+        if (Math.hypot(x - 62.0, z + 18.0) < r + 24.0) return true;
+        if (Math.hypot(x - 104.0, z - 46.0) < r + 20.0) return true;
+        var d0 = Math.hypot(x + 880.0, z - 140.0);
+        var frac = (d0 / 52.0) - Math.floor(d0 / 52.0);
+        if (Math.min(frac, 1.0 - frac) * 52.0 < r + 6.5) return true;
+        return false;
+      }, efHeroPans);
+      return {
+        id: 'eastflank',
+        out: 'thedome-eastflank.html',
+        name: 'East Flank Carnelian Sky-Island, Perimeter Kill-Line & Active Mist-Pylon',
+        region: 'The Dome, East Frontier Shoulder',
+        px: [1384, 142],
+        skyOffset: [1112, -188],
+        domeApexPx: [1328, 150],
+        inDomeVerified: true,
+        ownDmVerified: true,
+        elevM: 2361.1,
+        baseElevM: 2361.1,
+        pAtm: 1.19,
+        koppen: 'Cfa',
+        rainMmYr: 1067,
+        tempMeanC: 15.0,
+        wind: [3.4, -1.8],
+        seed: 6501,
+        strataStack: 'laccolith-shell',
+        strataRange: [-110, 210],
+        domeCenterLocal: [-880, 140],
+        shellSpacingM: 52.0,
+        riserBandM: 5.2,
+        riserHeightM: 2.05,
+        shellThicknessM: 1.15,
+        baseSlopeDeg: 11.2,
+        killLine: {
+          x0: 8.0, z0: 0.0, dx: 0.20, dz: 0.98, halfWidthM: 24.0, vanguardWidthM: 18.0, lengthM: 1600.0, mode: 'kill-line'
+        },
+        mistPylon: {
+          x: 62.0, z: -18.0, poolElevM: -14.0, bandM: 18.0, reachM: 680.0, hazardRadiusM: 24.0, state: 'active'
+        },
+        kin: ['swlowlands'],
+        modes: ['Vernal-Brim', 'Sun-Baked Dry', 'Crown-Mist'],
+        aTents: efTents,
+        gnammas: efGnammas,
+        reserves: [],
+        geology: { stone: 208, iron: 44, copper: 14, clay: 24 }
+      };
+    })()
   };
 
   SITES.registerStrata = registerStrata;
