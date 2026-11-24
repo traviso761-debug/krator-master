@@ -319,3 +319,25 @@ python settlements/xanadu/xs0/xs0_report.py settlements/xanadu/XS0-MEASURE.json 
 
 On the GPU a page takes 7 to 160 s at six views (Oidong-Highrift is the longest). The full set of runs took about an hour,
 most of it waiting for a lane.
+
+## 10. The supplement: phase A's pages built after XS0 (2026-11-23)
+
+Six pages built after this run (BUILD-PLAN A6, A7, A8, A11; Gihon merged since), measured the same way on the Arc lane
+(`xs0_measure.py` with `PAGE_QUERY` for the lake towns' page: Wībhar, the largest town with works, with and without its rooms),
+the same six views. Raw results are not folded into `XS0-MEASURE.json` (its families pass was not rerun); the numbers:
+
+| Page | Linked samplers (max) | VRAM estimate | Page of 16 MiB | Largest sidecar of 16 MiB |
+|---|---|---|---|---|
+| `settlements/xanadu-lake` (`?town=weaver`) | 5 | 280 MB | 70.0 % | 88.1 % (`xanadu.tex.xanadu.js`) |
+| the same, `&interiors=1` | 5 | 666 MB | 70.0 % | 88.1 % |
+| `settlements/opal-ford` | 5 | 390 MB | **87.6 %** | 86.6 % |
+| `settlements/marches` | 3 | 122 MB | 52.2 % | 86.6 % |
+| `settlements/xanadu-works` | 3 | 197 MB | 55.0 % | 86.6 % |
+| `settlements/gihon` | **9** | **943 MB** | 83.8 % | 86.6 % |
+
+- **No new page at risk on samplers.** Gihon is the highest at 9, Kirstabal's and Nulab's line (section 3): 10 with a
+  shadow, 12 with KHORIZON. The lake towns, Ōpal-Phōrḍ, the Marches and the works sheet stay at 3 to 5.
+- **Video memory:** Gihon at 943 MB is the second largest after Blakhed's 1.10 GB. The lake towns' rooms (`?interiors=1`)
+  more than double the page's estimate (280 to 666 MB): the furnished batches of 459 buildings.
+- **Bytes:** Ōpal-Phōrḍ's page is at 87.6 % of the cap, beside Thalaba's 86 %; every one of these pages carries the kit's
+  shared texture sidecar at 86.6 to 88.1 %. Nothing over; Ōpal-Phōrḍ joins the near-cap list for Stage 8's packing.

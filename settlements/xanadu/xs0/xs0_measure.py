@@ -43,12 +43,21 @@ PAGES = {
     'azure-dream-east-end': ('settlements/azure-dream/dist/azure-dream-east-end.html', 'settlements/azure-dream', 'kit'),
     'nulab': ('settlements/nulab/dist/nulab.html', 'settlements/nulab', 'kit'),
     'blakhed': ('settlements/blakhed/dist/blakhed.html', 'settlements/blakhed', 'kit'),
+    # phase A's pages built after XS0 (BUILD-PLAN A6, A7, A8, A11; Gihon merged since): the XS0 supplement, 2026-11-23
+    'xanadu-lake': ('settlements/xanadu-lake/dist/xanadu-lake.html', 'settlements/xanadu-lake', 'kit'),
+    'xanadu-lake-ix': ('settlements/xanadu-lake/dist/xanadu-lake.html', 'settlements/xanadu-lake', 'kit'),
+    'opal-ford': ('settlements/opal-ford/dist/opal-ford.html', 'settlements/opal-ford', 'kit'),
+    'marches': ('settlements/marches/dist/marches.html', 'settlements/marches', 'kit'),
+    'xanadu-works': ('settlements/xanadu-works/dist/xanadu-works.html', 'settlements/xanadu-works', 'kit'),
+    'gihon': ('settlements/gihon/dist/gihon.html', 'settlements/gihon', 'kit'),
     'xanadu-lake-shore': ('openworld/xanadu-lake-shore/dist/xanadu-lake-shore.html', 'openworld/xanadu-lake-shore', 'world'),
     'xanadu-north-shore': ('openworld/xanadu-north-shore/dist/xanadu-north-shore.html', 'openworld/xanadu-north-shore', 'world'),
     'xanadu-oidong-highrift': ('openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html', 'openworld/xanadu-oidong-highrift', 'world'),
 }
 MAX_VIEWS = int(os.environ.get('XS0_VIEWS', '8'))
 QUERY = os.environ.get('XS0_QUERY', '')
+# a page's own query (the lake towns' page is one page a town: Wibhar, the largest with works, with and without its rooms)
+PAGE_QUERY = {'xanadu-lake': '?town=weaver', 'xanadu-lake-ix': '?town=weaver&interiors=1'}
 # XS0_FORCE_SHADOW=1: after the compile read, turn a shadow on by hand (the renderer's shadow map, the first directional
 # light casting, every mesh receiving and casting), relink, read again. For the kit pages, which do not carry KSHADOW
 # yet, so ?shadow=1 does nothing there: this is the count S2's shadow will meet, measured rather than projected.
@@ -128,7 +137,8 @@ async def measure(browser, pid):
     rel, here, kind = PAGES[pid]
     html = os.path.join(ROOT, rel)
     t0 = time.time()
-    rec = {'query': QUERY, 'id': pid, 'page': rel, 'kind': kind, 'bytes': os.path.getsize(html),
+    q = QUERY or PAGE_QUERY.get(pid, '')
+    rec = {'query': q, 'id': pid, 'page': rel, 'kind': kind, 'bytes': os.path.getsize(html),
            'sidecars': {os.path.relpath(p, ROOT): os.path.getsize(p) for p in sidecars(html)}, 'reads': [], 'views': []}
     with H.serve(os.path.dirname(html)) as port:
         # open_page with our image tracker added before the page's scripts
@@ -141,7 +151,7 @@ async def measure(browser, pid):
         await pg.add_init_script(H.IMG_HOOK_JS)
         await pg.add_init_script(IMG_TRACK_JS)
         await H.route_three(pg, os.path.dirname(html), os.path.join(ROOT, here))
-        await pg.goto('http://127.0.0.1:%d/%s%s' % (port, os.path.basename(html), QUERY), timeout=H.LOAD_MS)
+        await pg.goto('http://127.0.0.1:%d/%s%s' % (port, os.path.basename(html), q), timeout=H.LOAD_MS)
         ready = True
         try:
             await pg.wait_for_function(WORLD_READY if kind == 'world' else H.READY_JS, timeout=900000, polling=1000)
