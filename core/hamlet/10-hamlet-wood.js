@@ -11,14 +11,14 @@ KHAMLET.WOOD_USES = ['timber', 'fuel', 'poles', 'thatch', 'fibre', 'craft', 'oth
 
 /* each rule: a use and the words that mean it (matched as whole-word stems, lower case). First match wins per phrase. */
 KHAMLET.WOOD_RULES = [
-  ['fuel',   ['fuel', 'firewood', 'charcoal', 'torch resin']],
+  ['fuel',   ['fuel', 'firewood', 'charcoal', 'torch resin', 'dead spike']],
   ['timber', ['timber', 'beam', 'ship knee', 'knees', 'boat rib', 'canoe', 'dugout', 'trunks', 'hollow', 'piles', 'hull']],
-  ['poles',  ['pole', 'post', 'fenc', 'fence', 'culm', 'cane', 'withies', 'ribs', 'walls', 'hedg']],
+  ['poles',  ['pole', 'post', 'fenc', 'fence', 'culm', 'cane', 'withies', 'ribs', 'walls', 'hedg', 'scaffold']],
   ['thatch', ['thatch', 'straw', 'frond', 'roofing', 'bark sheet', 'mats', 'matting', 'reed']],
-  ['fibre',  ['fibre', 'coir', 'awns', 'stuffing', 'the down', 'cordage', 'cord', 'rope', 'basketry', 'weaving', 'wrapping']],
-  ['craft',  ['carving', 'turnery', 'tool handle', 'arrow shaft', 'furniture', 'chest', 'cogs', 'pipes', 'whetstone', 'cork', 'incense',
+  ['fibre',  ['fibre', 'fiber', 'bast', 'padding', 'spinning', 'textile', 'coir', 'awns', 'stuffing', 'the down', 'cordage', 'cord', 'rope', 'basketry', 'weaving', 'wrapping']],
+  ['craft',  ['carving', 'turnery', 'tool handle', 'arrow shaft', 'furniture', 'chest', 'cogs', 'pipes', 'whetstone', 'cork', 'incense', 'instrument',
               'dye', 'gum', 'pitch', 'resin', 'silicified', 'wood', 'paper', 'tanbark', 'tannin', 'tar', 'sawdust', 'shavings']],
-  ['other',  ['shade', 'fodder', 'hay', 'grazing']]
+  ['other',  ['shade', 'fodder', 'hay', 'grazing', 'fertilis', 'fertiliz', 'mulch', 'bitter', 'berries']]
 ];
 
 /* A tag reads 'use (note), use (note)' (a ';' parts uses as a ',' does: 'hay; grazing'): the bracketed words are notes on the use before them ('poles (light,
