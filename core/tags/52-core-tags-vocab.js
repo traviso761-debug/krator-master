@@ -16,7 +16,7 @@
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
    'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian',
-   'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia'];
+   'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia', 'shumari'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -42,10 +42,18 @@
    'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi',
    'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads', 'eternian': 'Eternians',
    'jimjam': 'Jimjam', 'dalab': 'Dalab', 'khaayken': 'Khaayken', 'tungang': 'Tungangs', 'fellgang': 'Fellgangs',
-   'talovolci': 'Talovolci', 'pylon': 'Pylon', 'talia': 'Talia'
+   'talovolci': 'Talovolci', 'pylon': 'Pylon', 'talia': 'Talia',
+   // Stage 8 (D14, 2026-11-24): the cultures the kits had added to their own pages at load, folded in here; Shumari has a catalog
+   // culture file (its name is FURN_CULTURE's), the rest have none yet (NO_CATALOG)
+   'shumari': 'Shumari', 'glazier': 'Glaziers', 'kimr': 'Kimr', 'dasri': 'Dasri', 'ria': 'Ria Dynasty', 'yonni': 'Yonni Spear-Queens',
+   'dzagh-vardzi': 'Petty Gorge-Kingdoms of Dzagh-Vardzi', 'molu-che': 'Molu-Che Fossorial Clans of Moleshelf',
+   'kulanewa': 'The Kulanewa Free-Towns', 'coyote': 'Coyote', 'qiblai': 'Qiblai', 'hueru-kuran': 'Hueru-Kuran Whale Clans',
+   'spider-lake': 'The Silk Principality of Spider Lake', 'marr': 'Marr'
  };
  // cultures of a settlement with no catalog furniture set (yet): not in FURN_CULTURES, so test-tags.js does not look for them there
- var NO_CATALOG = [];   // Jimjam and Dalab have their culture files since 2026-11-03
+ // (Jimjam and Dalab have their culture files since 2026-11-03; a kit's own FURN pieces without a kits/catalog culture file count as none)
+ var NO_CATALOG = ['glazier', 'kimr', 'dasri', 'ria', 'yonni', 'dzagh-vardzi', 'molu-che', 'kulanewa', 'coyote', 'qiblai', 'hueru-kuran',
+   'spider-lake', 'marr'];
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
  var CULTURE_ALIAS = {

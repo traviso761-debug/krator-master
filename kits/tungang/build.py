@@ -13,7 +13,6 @@ The page is one <script> made of, in filename order:
   core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/rand             08-core-rand.js (KRAND: every seed; core/tags' uid is its hash)
   core/space            20-core-space.js (KSPACE: core/hamlet's overlap index)
-  core/tags/glazier     52g-tags-glazier.js (the culture id `glazier`, opt-in: no other page changes)
   core/terrain          39-core-cavern.js (KCAVERN), host/39e (drawRock), host/39h (the rock cut): the Glaziers' rock on the sheet
   core/pueblo           10, 20, 30 (KPUEBLO: Wildcat's plans, the scrap pueblo's room cells, terraces, ladders, kivas)
   core/hamlet           10, 20, 30 (KHAMLET: the sheet's sample village) and fellgang/22-hamlet-fellgang.js (the opt-in
@@ -85,9 +84,9 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand
 # core/hamlet/fellgang/README.md), and the one core/city fragment the village generator reads (KCITY.prim)
 CORE_FILES = ['core/hamlet/10-hamlet-wood.js', 'core/hamlet/20-hamlet-cultures.js', 'core/hamlet/fellgang/22-hamlet-fellgang.js',
               'core/hamlet/30-hamlet-village.js', 'core/city/33-city-strategies.js',
-              # the Glaziers' set: their culture id, opt-in (core/tags/glazier/README.md); the cavern the sheet carves their rock in
+              # the Glaziers' set (their culture id is in core/tags' vocabulary since Stage 8): the cavern the sheet carves their rock in
               # (KCAVERN), its draw and its rock cut (the cut-away opens every void over its own floor)
-              'core/tags/glazier/52g-tags-glazier.js', 'core/terrain/39-core-cavern.js', 'core/terrain/host/39e-core-cavern-draw.js',
+              'core/terrain/39-core-cavern.js', 'core/terrain/host/39e-core-cavern-draw.js',
               'core/terrain/host/39h-core-cavern-cut.js',
               # its rock dressed in the library's rock face (KCAVERN.rockMaterial) through core/terrain's ground shader (KGROUND)
               'core/terrain/43-core-ground.js', 'core/terrain/host/39i-core-cavern-rock.js',

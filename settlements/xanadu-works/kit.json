@@ -5,7 +5,6 @@
  "external": [
   "settlements/xanadu-works/gen/69w-works-core.js",
   "settlements/xanadu-works/gen/69w2-tungang-bundle.js",
-  "core/tags/glazier/52g-tags-glazier.js",
   "core/terrain/37c-core-rubble.js",
   "kits/xanadu/src/80f-xa-fort-data.js",
   "kits/xanadu/src/80g-xa-fort.js",
@@ -16,7 +15,6 @@
  "scoped": [
   "69w-works-core.js",
   "69w2-tungang-bundle.js",
-  "52g-tags-glazier.js",
   "37c-core-rubble.js"
  ],
  "files": {
@@ -32,7 +30,6 @@
  "deterministic": [
   "69w-works-core.js",
   "69w2-tungang-bundle.js",
-  "52g-tags-glazier.js",
   "37c-core-rubble.js",
   "88d-xa-lakecraft.js",
   "89zw-works-site.js",
