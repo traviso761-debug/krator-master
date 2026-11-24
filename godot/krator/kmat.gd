@@ -234,14 +234,7 @@ static func vram_mode() -> String:
 static func _tex(path: String, cache: Dictionary, role := "albedo") -> Texture2D:
 	if cache.has(path):
 		return cache[path]
-	var img := Image.new()
-	var bytes := FileAccess.get_file_as_bytes(path)
-	var err := img.load_webp_from_buffer(bytes) if path.ends_with(".webp") else img.load_png_from_buffer(bytes)
-	var t: Texture2D = null
-	if err == OK:
-		img.generate_mipmaps()
-		vram(img, role)
-		t = ImageTexture.create_from_image(img)
+	var t: Texture2D = KratorCook.texture_file(path, role)   # decoded, mipmapped and compressed once (krator/cook.gd)
 	cache[path] = t
 	return t
 

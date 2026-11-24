@@ -100,14 +100,13 @@ static func build(path: String) -> Node3D:
 	if not meshes:
 		report["counts"]["glb"] = "none: the case has no items and no buckets"
 	elif FileAccess.file_exists(gp):
-		KratorGltf._register_instancing()
-		var doc := GLTFDocument.new()
-		var state := GLTFState.new()
-		var err := doc.append_from_file(gp, state)
-		if err != OK:
-			report["gaps"]["load"] = "GLTFDocument.append_from_file failed on %s: %d" % [gp, err]
+		# parsed once and kept with its levels of detail and shadow meshes where the cook is on (krator/cook.gd)
+		var cooked := {}
+		scene = KratorCook.scene(gp, cooked)
+		if scene == null:
+			report["gaps"]["load"] = "GLTFDocument.append_from_file failed on %s: %d" % [gp, int(cooked.get("error", FAILED))]
 			return root
-		scene = doc.generate_scene(state)
+		report["cook"] = cooked.get("cook", {})
 	else:
 		report["gaps"]["load"] = "no %s: this importer reads the split form (tools/harness.py export without --json)" % gp
 		return root
@@ -793,15 +792,8 @@ static func _library(dir: String, t: Dictionary, packs: Dictionary) -> Texture2D
 	var file = fam.get("files", {}).get(t["slot"])
 	if file == null:
 		return null
-	var bytes := FileAccess.get_file_as_bytes(dir + "/tex/" + str(file))
-	var img := Image.new()
-	var err := img.load_webp_from_buffer(bytes) if str(file).ends_with(".webp") else img.load_png_from_buffer(bytes)
-	if err != OK:
-		return null
 	var role := "normal" if t.get("slot") == "normalMap" else ("data" if t.get("slot") == "roughnessMap" else "albedo")
-	img.generate_mipmaps()
-	KratorKmat.vram(img, role)
-	return ImageTexture.create_from_image(img)
+	return KratorCook.texture_file(dir + "/tex/" + str(file), role)   # decoded, mipmapped and compressed once (krator/cook.gd)
 
 
 # a LOD-chunked mesh: visibility measured from the chunk's centre, as KratorBiome places it (the node moves to the

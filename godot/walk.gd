@@ -58,6 +58,8 @@ var _last_places_n := -1
 
 # 3D overlays (Pin beacon + Polygon/Measure immediate mesh)
 var _overlays: Node3D
+var air: KratorAir
+var decals: KratorDecals
 var _pin_node: Node3D
 var _has_pin := false
 var _pin_reg := Vector3.ZERO
@@ -106,6 +108,10 @@ func _ready() -> void:
 	KratorLook.apply(look, env_res, sun, get_viewport())
 	KratorLook.apply_sky(look, sky_node)
 	print(KratorLook.describe(look))
+	air = KratorAir.make(look)   # the air's layers (GODOT-LOOK-PLAN.md section 7): updated after the sky each frame
+	add_child(air)
+	decals = KratorDecals.make(look)   # ruts, puddles and worn patches from the road records (M11)
+	add_child(decals)
 
 	ui = KratorHostUI.new()
 	ui.name = "HostUI"
@@ -908,6 +914,14 @@ func _update_sun_and_ambience(dt: float, snap: bool) -> void:
 		sky_node.preset["clouds"]["height"] = maxf(1800.0, base_y + 1650.0)
 		sky_node.preset["clouds"]["cirrusHeight"] = maxf(9000.0, base_y + 7200.0)
 		sky_node._update()
+		if air != null:
+			var atm_w = get_node_or_null("/root/Atmos")
+			var wx: Dictionary = atm_w.W if atm_w != null and "weather_on" in atm_w and atm_w.weather_on else sky_node.weather
+			air.indoors = _indoors or _in_vault
+			air.update(env_res, sun, sky_node.state, hr, wx, W.stream if W != null else null, cr, dt)
+			if decals != null and W != null:
+				decals.wet = air.wet
+				decals.update(W.stream, cr, dt)
 		if W != null and sky_node.mat != null:
 			sky_node.mat.set_shader_parameter("uCamPos", Vector3(fmod(cr.x, 260000.0), cr.y, fmod(cr.z, 260000.0)))
 		# Stage 7 I1: Indoor faces mask directional sun in library_interior.gdshader, so outdoor sun stays full-bright for views out windows!

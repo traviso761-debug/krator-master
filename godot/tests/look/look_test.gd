@@ -60,7 +60,20 @@ func _initialize() -> void:
 	ok(sun.shadow_enabled and sun.directional_shadow_mode == DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS and sun.directional_shadow_max_distance == 400.0
 		and absf(sun.directional_shadow_split_1 - 0.05) < 1e-6 and sun.directional_shadow_blend_splits, "high: the sun's shadow covers 400 m in four blended splits from 0.05")
 	ok(env.tonemap_mode == Environment.TONE_MAPPER_AGX and env.ssao_enabled and env.ssil_enabled and env.glow_enabled and not env.sdfgi_enabled
-		and not env.volumetric_fog_enabled, "high: AgX, SSAO, SSIL and glow on; SDFGI and volumetric fog wait for their switches")
+		and env.volumetric_fog_enabled and env.volumetric_fog_sky_affect == 0.0 and absf(env.fog_aerial_perspective - 0.5) < 1e-6,
+		"high: AgX, SSAO, SSIL, glow and the air (volumetric fog that leaves the sky alone, aerial perspective) on; SDFGI waits for its switch")
+	var bare := KratorLook.from_args(PackedStringArray(["--look=high", "--no-air", "--no-dress"]))
+	var env2 := Environment.new()
+	KratorLook.apply(bare, env2, sun, root)
+	ok(not env2.volumetric_fog_enabled and env2.fog_aerial_perspective == 0.0 and float(bare["mist"]) == 0.0 and int(bare["emitters"]) == 0 and int(bare["leaves"]) == 0
+		and not bool(bare["fog_volumes"]) and not bool(bare["dress"]) and int(bare["decals"]) == 0,
+		"negative: --no-air and --no-dress leave the one distance fog and the bare sward")
+	var lg := KratorLook.tier("legacy")
+	ok(float(lg["mist"]) == 0.0 and float(lg["aerial"]) == 0.0 and not bool(lg["vfog"]) and not bool(lg["dress"]) and int(lg["decals"]) == 0 and not bool(KratorLook.tier("low")["vfog"]) and not bool(KratorLook.tier("low")["fog_volumes"]),
+		"negative: the legacy tier has no air and no dressing, and the low tier no volumetric fog")
+	var sw := KratorLook.from_args(PackedStringArray(["--look=low", "--mist=0.5", "--lod-px=3", "--no-particles", "--ssr", "--no-decals"]))
+	ok(float(sw["mist"]) == 0.5 and float(sw["lod_px"]) == 3.0 and int(sw["emitters"]) == 0 and int(sw["leaves"]) == 0 and bool(sw["ssr"]) and int(sw["decals"]) == 0 and bool(sw["dress"]),
+		"--mist, --lod-px, --no-particles, --ssr and --no-decals land on the spec")
 	ok(root.msaa_3d == Viewport.MSAA_4X and root.scaling_3d_scale == 1.0 and root.anisotropic_filtering_level == Viewport.ANISOTROPY_16X and root.use_debanding,
 		"high: 4x MSAA at native scale, 16 taps, debanding")
 	ok(root.use_occlusion_culling, "high: occlusion culling on, against the ground's occluders")

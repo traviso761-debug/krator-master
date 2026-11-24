@@ -8,6 +8,16 @@ class_name KratorWorldGrass
 extends Node3D
 
 const GRASS_SHADER := preload("res://shaders/grass_sward.gdshader")
+const UNDER_SHADER := preload("res://shaders/underfoot.gdshader")
+const KRand := preload("res://tests/rand/krand.gd")
+
+# The dressing (GODOT-LOOK-PLAN.md P7, P8; KratorLook's `dress`). Off, the sward is placed as it was before step 7.
+#   P8  the sward clumps harder and leaves bare patches (a lawn is not a carpet)
+#   P7  what lies underfoot: stones, twigs, leaf litter and flowers within UNDER_R of the camera
+static var dress := false
+const UNDER_R := 11.5
+const UNDER_STEP := 0.62
+const UNDER_KINDS := ["stone", "twig", "litter", "flower"]
 
 const NEAR_R := 34.0
 const NEAR_STEP := 0.44
@@ -24,6 +34,7 @@ var _near_mat: ShaderMaterial
 var _mid_mat: ShaderMaterial
 var _plume_mat: ShaderMaterial
 
+var under := {}              # kind -> MultiMeshInstance3D (P7)
 var _last_cam := Vector3(1e9, 1e9, 1e9)
 var _last_origin := Vector3(1e9, 1e9, 1e9)
 var enabled := true
@@ -61,6 +72,83 @@ func _init() -> void:
 	add_child(near_mmi)
 	add_child(mid_mmi)
 	add_child(plume_mmi)
+	for kind in UNDER_KINDS:
+		var um := ShaderMaterial.new()
+		um.shader = UNDER_SHADER
+		um.set_shader_parameter("fade_start", UNDER_R - 3.5)
+		um.set_shader_parameter("fade_end", UNDER_R)
+		um.set_shader_parameter("rough", 0.6 if kind == "stone" else 0.9)
+		under[kind] = _make_mmi("Under_" + kind, under_mesh(kind), um)
+		add_child(under[kind])
+
+
+# every ring this draws (the stream shifts their rows on a rebase)
+func rings() -> Array:
+	return [near_mmi, mid_mmi, plume_mmi] + under.values()
+
+
+# the small meshes of P7: a stone (a squashed, faceted lump), a twig (a bent three-sided stick), leaf litter (three
+# leaves lying nearly flat) and a flower (a stem and five petals; COLOR.r marks the petals)
+static func under_mesh(kind: String) -> ArrayMesh:
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	if kind == "stone":
+		var ring := 6
+		var top := Vector3(0.02, 0.07, -0.01)
+		var pts := []
+		for i in ring:
+			var a := TAU * i / ring
+			var r := 0.085 + 0.03 * sin(a * 2.0 + 0.7)
+			pts.append([Vector3(cos(a) * r, 0.035 + 0.012 * cos(a * 3.0), sin(a) * r), Vector3(cos(a) * r * 1.08, -0.02, sin(a) * r * 1.08)])
+		for i in ring:
+			var j := (i + 1) % ring
+			_tri(st, top, pts[j][0], pts[i][0], 0.0)
+			_tri(st, pts[i][0], pts[j][0], pts[j][1], 0.0)
+			_tri(st, pts[i][0], pts[j][1], pts[i][1], 0.0)
+	elif kind == "twig":
+		var path := [Vector3(-0.16, 0.012, 0.0), Vector3(-0.03, 0.022, 0.02), Vector3(0.09, 0.014, -0.015), Vector3(0.18, 0.02, 0.03)]
+		for i in path.size() - 1:
+			var a: Vector3 = path[i]
+			var b: Vector3 = path[i + 1]
+			var w := 0.009 * (1.0 - 0.2 * i)
+			var offs := [Vector3(0, w, 0), Vector3(0, -w * 0.5, w), Vector3(0, -w * 0.5, -w)]
+			for k in 3:
+				var o0: Vector3 = offs[k]
+				var o1: Vector3 = offs[(k + 1) % 3]
+				_tri(st, a + o0, b + o0, b + o1, 0.0)
+				_tri(st, a + o0, b + o1, a + o1, 0.0)
+	elif kind == "litter":
+		for l in 3:
+			var a := TAU * l / 3.0 + 0.5
+			var c := Vector3(cos(a) * 0.07, 0.006 + 0.004 * l, sin(a) * 0.07)
+			var d := Vector3(cos(a + 1.1), 0.0, sin(a + 1.1))
+			var sdir := Vector3(-d.z, 0.0, d.x)
+			var tip := c + d * 0.06 + Vector3(0, 0.012, 0)
+			var tail := c - d * 0.06
+			_tri(st, tail, c + sdir * 0.028, tip, 0.0)
+			_tri(st, tail, tip, c - sdir * 0.028, 0.0)
+	else:
+		var top := Vector3(0.01, 0.2, 0.0)
+		for k in 3:
+			var a := TAU * k / 3.0
+			var a2 := TAU * (k + 1) / 3.0
+			var p0 := Vector3(cos(a) * 0.004, 0.0, sin(a) * 0.004)
+			var p1 := Vector3(cos(a2) * 0.004, 0.0, sin(a2) * 0.004)
+			_tri(st, p0, p1, top, 0.0)
+		for k in 5:
+			var a := TAU * k / 5.0
+			var d := Vector3(cos(a), 0.25, sin(a)).normalized()
+			var sdir := Vector3(-d.z, 0.0, d.x).normalized()
+			_tri(st, top, top + d * 0.035 + sdir * 0.014, top + d * 0.05, 1.0)
+			_tri(st, top, top + d * 0.05, top + d * 0.035 - sdir * 0.014, 1.0)
+	st.generate_normals()
+	return st.commit()
+
+
+static func _tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, petal: float) -> void:
+	for v in [a, b, c]:
+		st.set_color(Color(petal, 0.0, 0.0))
+		st.add_vertex(v)
 
 
 static func _make_mmi(nm: String, mesh: ArrayMesh, mat: ShaderMaterial) -> MultiMeshInstance3D:
@@ -216,7 +304,7 @@ func sync_origin(org: Array) -> void:
 
 
 func clear_all() -> void:
-	for mmi in [near_mmi, mid_mmi, plume_mmi]:
+	for mmi in rings():
 		if mmi != null and mmi.multimesh != null:
 			mmi.multimesh.instance_count = 0
 			mmi.visible = false
@@ -263,9 +351,15 @@ func update_at(stream: Node, cam_reg: Vector3, force := false) -> Dictionary:
 	_apply_buf(near_mmi, near_buf, near_n)
 	_apply_buf(mid_mmi, mid_buf, mid_n)
 	_apply_buf(plume_mmi, plume_buf, plume_n)
+	var under_n := _populate_under(stream, cam_reg, ox, oy, oz) if dress else {}
+	for kind in UNDER_KINDS:
+		if not under_n.has(kind):
+			_apply_buf(under[kind], PackedFloat32Array(), 0)
 
 	last_build_ms = float(Time.get_ticks_usec() - t0) / 1000.0
 	last_counts = {"near": near_n, "mid": mid_n, "plume": plume_n, "ms": snappedf(last_build_ms, 0.01)}
+	for kind in under_n:
+		last_counts["under_" + kind] = under_n[kind]
 	return last_counts
 
 
@@ -317,6 +411,9 @@ static func _populate_ring(stream: Node, cam_reg: Vector3, ox: float, oy: float,
 				dens *= 1.0 - smoothstep(3450.0, 4150.0, gy)
 			if is_plume:
 				dens *= 0.42 * smoothstep(0.32, 0.78, patch)
+			elif dress:   # P8: clumps, and bare patches a couple of metres across where nothing grows
+				var bare := _gpatch(rx, rz, 3.4, salt + 71) * 0.65 + _gpatch(rx, rz, 1.1, salt + 73) * 0.35
+				dens *= (0.42 + 0.58 * smoothstep(0.2, 0.7, patch)) * smoothstep(0.27, 0.4, bare)
 			else:
 				dens *= 0.72 + 0.28 * patch
 			if _gu01(_ghash(ix, iz, salt + 23)) > dens:
@@ -360,3 +457,77 @@ static func _populate_ring(stream: Node, cam_reg: Vector3, ox: float, oy: float,
 			out.append(col.x); out.append(col.y); out.append(col.z); out.append(packed_a)
 			cnt += 1
 	return cnt
+
+
+# P7: what lies underfoot within UNDER_R of the camera. A cell of UNDER_STEP holds at most one thing, which one by the
+# ground there (stones where rock shows, flowers in the lush clumps, litter and twigs between) and a hash of the cell
+# (core/rand): the same ground wears the same things every visit. Returns {kind: count}.
+func _populate_under(stream: Node, cam_reg: Vector3, ox: float, oy: float, oz: float) -> Dictionary:
+	var bufs := {}
+	var r2 := UNDER_R * UNDER_R
+	var ix0 := int(floor((cam_reg.x - UNDER_R) / UNDER_STEP))
+	var ix1 := int(floor((cam_reg.x + UNDER_R) / UNDER_STEP))
+	var iz0 := int(floor((cam_reg.z - UNDER_R) / UNDER_STEP))
+	var iz1 := int(floor((cam_reg.z + UNDER_R) / UNDER_STEP))
+	for iz in range(iz0, iz1 + 1):
+		for ix in range(ix0, ix1 + 1):
+			var h := KRand.cell(5311, ix, iz)
+			var u0 := KRand.unit(h)
+			if u0 > 0.34:   # two cells in three hold nothing
+				continue
+			var u1 := KRand.unit(KRand.mix32(h + 1))
+			var u2 := KRand.unit(KRand.mix32(h + 2))
+			var u3 := KRand.unit(KRand.mix32(h + 3))
+			var rx := (float(ix) + 0.1 + 0.8 * u1) * UNDER_STEP
+			var rz := (float(iz) + 0.1 + 0.8 * u2) * UNDER_STEP
+			var dx := rx - cam_reg.x
+			var dz := rz - cam_reg.z
+			if dx * dx + dz * dz > r2:
+				continue
+			var gs: Dictionary = stream.sample_grass_ground(rx, rz)
+			if gs.is_empty():
+				continue
+			if float(gs["wet"]) >= 0.95 or float(gs["pave"]) > 0.25 or float(gs["slope"]) > 0.5:
+				continue
+			if not stream._is_clear_for_undergrowth(rx, rz, 0.2):
+				continue
+			var rock: float = gs["rock"]
+			var lush := _gpatch(rx, rz, 12.5, 7103 + 17)
+			var kind := "litter"
+			if u3 < 0.18 + 0.6 * rock:
+				kind = "stone"
+			elif u3 > 0.86 and lush > 0.55 and rock < 0.3:
+				kind = "flower"
+			elif u3 > 0.62:
+				kind = "twig"
+			var col: Vector3 = gs["col"]
+			var tint := Vector3(0.36, 0.34, 0.31) * (0.7 + 0.6 * u1)
+			if kind == "twig":
+				tint = Vector3(0.20, 0.15, 0.10) * (0.7 + 0.5 * u1)
+			elif kind == "litter":
+				tint = Vector3(0.30, 0.22, 0.10).lerp(Vector3(0.20, 0.24, 0.08), u1)
+			elif kind == "flower":
+				var pal := [Vector3(0.85, 0.80, 0.30), Vector3(0.80, 0.82, 0.86), Vector3(0.62, 0.30, 0.62), Vector3(0.85, 0.42, 0.36)]
+				tint = pal[int(u1 * 3.999)]
+			else:
+				tint = tint.lerp(col * 1.4, 0.5)
+			var nrm: Vector3 = gs["nrm"]
+			var yaw := u2 * TAU
+			var sc := (0.6 + 1.3 * u1 * u1) * (1.6 if kind == "stone" and u2 > 0.8 else 1.0)
+			var up := Vector3.UP.lerp(nrm, 0.9 if kind != "flower" else 0.3).normalized()
+			var fwd0 := Vector3(sin(yaw), 0.0, cos(yaw))
+			var rgt := up.cross(fwd0)
+			rgt = Vector3.RIGHT if rgt.length_squared() < 1e-5 else rgt.normalized()
+			var fwd := rgt.cross(up).normalized()
+			if not bufs.has(kind):
+				bufs[kind] = PackedFloat32Array()
+			var row := PackedFloat32Array([rgt.x * sc, up.x * sc, fwd.x * sc, rx - ox, rgt.y * sc, up.y * sc, fwd.y * sc, float(gs["y"]) - oy, rgt.z * sc, up.z * sc, fwd.z * sc, rz - oz, tint.x, tint.y, tint.z, u3])
+			var grown: PackedFloat32Array = bufs[kind]   # a packed array read from a Dictionary is a copy: put it back
+			grown.append_array(row)
+			bufs[kind] = grown
+	var out := {}
+	for kind in bufs:
+		var n: int = (bufs[kind] as PackedFloat32Array).size() / 16
+		_apply_buf(under[kind], bufs[kind], n)
+		out[kind] = n
+	return out

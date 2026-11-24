@@ -11,11 +11,14 @@
 # and density and the exposure by the hour; the indoor mask and the lamp pool are krator/kinteriors_light.gd's.
 # Every feature has a switch, as VISUAL-BAR.md asks of any fix:
 #   --no-ssao --no-ssil --gi --no-gi --no-glow --pcss --no-pcss --vfog --no-vfog --aerial=<0..1> --no-deband
+#   --no-dress --no-decals                                                                   (the dressing: step 7)
+#   --no-air --no-mist --mist=<0..2> --no-fog-volumes --no-particles --ssr --no-ssr          (the air: krator/kair.gd)
 #   --shadow=<metres> --atlas=<px> --msaa=0|2|4|8 --aa=none|fxaa|smaa|taa|fsr2 --scale=<0.25..2> --fsr1 --aniso=<1..16>
-#   --cells --no-cells --cull-px=<pixels> --casters=all --casters=outdoor --sky-half --no-sky-half --occlusion --no-occlusion
+#   --cells --no-cells --cull-px=<pixels> --lod-px=<pixels> --casters=all --casters=outdoor --sky-half --no-sky-half --occlusion --no-occlusion
 #   --no-weather --weather=<0..1.5> --wet=<0..1> --no-detail --detail=<0..1.5> --tangents --no-tangents
 #   --room-ambient --no-room-ambient --auto-exposure
-# Volumetric fog and aerial perspective belong to the plan's step 6: the tiers carry their values, off until then.
+# The air (the plan's step 6) is krator/kair.gd's: the tiers carry its settings (aerial, mist, vfog*, fog_volumes,
+# emitters, leaves, ssr) and a host hands them to a KratorAir node, which sets the amounts by the hour.
 # Values are starting points to tune on the lanes (the plan's section 12 caps are what they are held to).
 class_name KratorLook
 extends RefCounted
@@ -50,7 +53,8 @@ const TIERS := {
 		"ssil": false, "ssil_quality": RenderingServer.ENV_SSIL_QUALITY_LOW,
 		"sdfgi": false, "sdfgi_cascades": 4, "sdfgi_min_cell": 0.4, "sdfgi_half": true,
 		"glow": false, "glow_intensity": 0.3, "glow_bloom": 0.04, "glow_threshold": 1.1,
-		"vfog": false, "vfog_density": 0.0006, "vfog_length": 200.0, "vfog_anisotropy": 0.7, "vfog_sun_energy": 1.0, "vfog_volume": 48, "aerial": 0.0,
+		"vfog": false, "vfog_density": 0.0006, "vfog_length": 200.0, "vfog_anisotropy": 0.7, "vfog_sun_energy": 1.0, "vfog_volume": 48, "vfog_sky": 0.0, "aerial": 0.5,
+		"mist": 1.0, "fog_volumes": false, "fog_volume_max": 0, "emitters": 2, "emitter_amount": 24, "leaves": 60, "ssr": false, "dress": true, "decals": 8,
 		"tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": true,
 		"msaa": 2, "aa": "none", "scale": 0.77, "upscale": "fsr1", "aniso": 8, "lod_px": 2.0, "weather": 1.0, "wet": 0.0, "detail": 0.5, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": true, "cells": true, "cull_px": 6.0,
 	},
@@ -61,7 +65,8 @@ const TIERS := {
 		"ssil": true, "ssil_quality": RenderingServer.ENV_SSIL_QUALITY_MEDIUM,
 		"sdfgi": false, "sdfgi_cascades": 4, "sdfgi_min_cell": 0.4, "sdfgi_half": true,
 		"glow": true, "glow_intensity": 0.35, "glow_bloom": 0.05, "glow_threshold": 1.1,
-		"vfog": false, "vfog_density": 0.0006, "vfog_length": 300.0, "vfog_anisotropy": 0.75, "vfog_sun_energy": 1.0, "vfog_volume": 64, "aerial": 0.0,
+		"vfog": true, "vfog_density": 0.0006, "vfog_length": 300.0, "vfog_anisotropy": 0.75, "vfog_sun_energy": 1.0, "vfog_volume": 64, "vfog_sky": 0.0, "aerial": 0.5,
+		"mist": 1.0, "fog_volumes": true, "fog_volume_max": 16, "emitters": 6, "emitter_amount": 48, "leaves": 160, "ssr": true, "dress": true, "decals": 20,
 		"tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": false,
 		"msaa": 4, "aa": "none", "scale": 1.0, "upscale": "bilinear", "aniso": 16, "lod_px": 1.0, "weather": 1.0, "wet": 0.0, "detail": 0.6, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": true, "cells": true, "cull_px": 4.0,
 	},
@@ -72,7 +77,8 @@ const TIERS := {
 		"ssil": true, "ssil_quality": RenderingServer.ENV_SSIL_QUALITY_HIGH,
 		"sdfgi": true, "sdfgi_cascades": 6, "sdfgi_min_cell": 0.4, "sdfgi_half": false,
 		"glow": true, "glow_intensity": 0.35, "glow_bloom": 0.05, "glow_threshold": 1.1,
-		"vfog": true, "vfog_density": 0.0006, "vfog_length": 300.0, "vfog_anisotropy": 0.75, "vfog_sun_energy": 1.0, "vfog_volume": 96, "aerial": 0.45,
+		"vfog": true, "vfog_density": 0.0006, "vfog_length": 300.0, "vfog_anisotropy": 0.75, "vfog_sun_energy": 1.0, "vfog_volume": 96, "vfog_sky": 0.0, "aerial": 0.5,
+		"mist": 1.0, "fog_volumes": true, "fog_volume_max": 24, "emitters": 8, "emitter_amount": 64, "leaves": 240, "ssr": true, "dress": true, "decals": 32,
 		"tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": false,
 		"msaa": 4, "aa": "smaa", "scale": 1.0, "upscale": "bilinear", "aniso": 16, "lod_px": 0.5, "weather": 1.0, "wet": 0.0, "detail": 0.7, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": false, "cells": true, "cull_px": 2.0,
 	},
@@ -84,7 +90,8 @@ const TIERS := {
 		"ssil": false, "ssil_quality": RenderingServer.ENV_SSIL_QUALITY_MEDIUM,
 		"sdfgi": false, "sdfgi_cascades": 4, "sdfgi_min_cell": 0.2, "sdfgi_half": false,
 		"glow": false, "glow_intensity": 0.3, "glow_bloom": 0.0, "glow_threshold": 1.0,
-		"vfog": false, "vfog_density": 0.0, "vfog_length": 64.0, "vfog_anisotropy": 0.2, "vfog_sun_energy": 1.0, "vfog_volume": 64, "aerial": 0.0,
+		"vfog": false, "vfog_density": 0.0, "vfog_length": 64.0, "vfog_anisotropy": 0.2, "vfog_sun_energy": 1.0, "vfog_volume": 64, "vfog_sky": 0.0, "aerial": 0.0,
+		"mist": 0.0, "fog_volumes": false, "fog_volume_max": 0, "emitters": 0, "emitter_amount": 0, "leaves": 0, "ssr": false, "dress": false, "decals": 0,
 		"tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": false, "sky_half": false,
 		"msaa": 4, "aa": "none", "scale": 1.0, "upscale": "bilinear", "aniso": 4, "lod_px": 1.0, "weather": 0.0, "wet": 0.0, "detail": 0.0, "tangents": false, "room_ambient": false, "auto_exposure": false, "occlusion": false, "cells": false, "cull_px": 4.0,
 	},
@@ -153,6 +160,32 @@ static func from_args(args: PackedStringArray, default_tier := "auto") -> Dictio
 			s["upscale"] = "fsr1"
 		elif a.begins_with("--aerial="):
 			s["aerial"] = clampf(float(a.trim_prefix("--aerial=")), 0.0, 1.0)
+		elif a == "--no-mist":
+			s["mist"] = 0.0
+		elif a.begins_with("--mist="):   # the valley mist's strength; 1 is the hour's own
+			s["mist"] = clampf(float(a.trim_prefix("--mist=")), 0.0, 2.0)
+		elif a == "--no-fog-volumes":
+			s["fog_volumes"] = false
+		elif a == "--no-particles":
+			s["emitters"] = 0
+			s["leaves"] = 0
+		elif a == "--ssr":
+			s["ssr"] = true
+		elif a == "--no-ssr":
+			s["ssr"] = false
+		elif a == "--no-dress":   # step 7's dressing off: no underfoot ring, the sward as it was, no decals
+			s["dress"] = false
+			s["decals"] = 0
+		elif a == "--no-decals":
+			s["decals"] = 0
+		elif a == "--no-air":   # every layer of krator/kair.gd off: the one distance fog, as before step 6
+			s["aerial"] = 0.0
+			s["mist"] = 0.0
+			s["vfog"] = false
+			s["fog_volumes"] = false
+			s["emitters"] = 0
+			s["leaves"] = 0
+			s["ssr"] = false
 		elif a.begins_with("--shadow="):
 			s["shadow_max"] = maxf(10.0, float(a.trim_prefix("--shadow=")))
 		elif a.begins_with("--atlas="):
@@ -203,6 +236,8 @@ static func from_args(args: PackedStringArray, default_tier := "auto") -> Dictio
 			s["cells"] = true
 		elif a.begins_with("--cull-px="):
 			s["cull_px"] = clampf(float(a.trim_prefix("--cull-px=")), 0.25, 32.0)
+		elif a.begins_with("--lod-px="):   # the mesh levels of detail's threshold; 0 draws every mesh at its full detail
+			s["lod_px"] = clampf(float(a.trim_prefix("--lod-px=")), 0.0, 16.0)
 	return s
 
 
@@ -233,6 +268,8 @@ static func apply_stream(spec: Dictionary, stream: KratorWorldStream) -> void:
 	if stream == null:
 		return
 	stream.cells = bool(spec.get("cells", true)) and OS.get_environment("KRATOR_CELLS") != "0"
+	KratorWorldGrass.dress = bool(spec.get("dress", false))   # P7, P8 (krator/world_grass.gd)
+	stream.flora_lod_px = float(spec.get("lod_px", 0.0)) if stream.cells else 0.0   # the wild forest's pools by distance band
 	stream.cells_px = float(spec.get("cull_px", 4.0))
 	stream.room_ambient = bool(spec.get("room_ambient", false))
 	stream.occluders = bool(spec.get("occlusion", false)) and OS.get_environment("KRATOR_OCCLUDERS") != "0"
@@ -337,9 +374,12 @@ static func apply(spec: Dictionary, env: Environment, sun: DirectionalLight3D, v
 			env.volumetric_fog_density = float(spec["vfog_density"])
 			env.volumetric_fog_length = float(spec["vfog_length"])
 			env.volumetric_fog_anisotropy = float(spec["vfog_anisotropy"])
-			env.volumetric_fog_ambient_inject = 0.5
+			env.volumetric_fog_ambient_inject = 0.3
 			# SDFGI lights the fog as well: at the default inject of 1 the air washed the frame out (the plan's appendix A)
 			env.volumetric_fog_gi_inject = 0.3 if env.sdfgi_enabled else 1.0
+			# the sky draws its own haze (the distance fog leaves it alone too): at 1 the fog whitened a third of the sky
+			# toward the sun (the plan's appendix A)
+			env.volumetric_fog_sky_affect = float(spec.get("vfog_sky", 0.0))
 		env.fog_aerial_perspective = float(spec["aerial"])
 		for k in ["ssao_enabled", "ssil_enabled", "sdfgi_enabled", "glow_enabled", "volumetric_fog_enabled", "tonemap_mode", "fog_aerial_perspective"]:
 			S["env." + k] = env.get(k)
@@ -378,10 +418,11 @@ static func apply(spec: Dictionary, env: Environment, sun: DirectionalLight3D, v
 # one line for a log or a HUD
 static func describe(spec: Dictionary) -> String:
 	var tx := shadow_texels(spec)
-	return "look %s: shadow %d m on %d (texel %.1f cm), msaa %dx, aa %s, scale %.2f, ssao %s, ssil %s, gi %s, glow %s, vfog %s; cells %s, occlusion %s, weather %.1f, detail %.1f, tangents %s" % [
+	return "look %s: shadow %d m on %d (texel %.1f cm), msaa %dx, aa %s, scale %.2f, ssao %s, ssil %s, gi %s, glow %s; air: aerial %.2f, mist %.1f, vfog %s, volumes %s, emitters %d, leaves %d; cells %s, occlusion %s, lod %.1f px, weather %.1f, detail %.1f, tangents %s" % [
 		str(spec.get("tier", "?")), int(spec["shadow_max"]), int(spec["shadow_atlas"]), float(tx[0]) * 100.0, int(spec["msaa"]), str(spec["aa"]),
-		float(spec["scale"]), _on(spec["ssao"]), _on(spec["ssil"]), _on(spec["sdfgi"]), _on(spec["glow"]), _on(spec["vfog"]),
-		_on(spec.get("cells", false)), _on(spec.get("occlusion", false)), float(spec.get("weather", 0.0)), float(spec.get("detail", 0.0)), _on(spec.get("tangents", false))]
+		float(spec["scale"]), _on(spec["ssao"]), _on(spec["ssil"]), _on(spec["sdfgi"]), _on(spec["glow"]),
+		float(spec.get("aerial", 0.0)), float(spec.get("mist", 0.0)), _on(spec["vfog"]), _on(spec.get("fog_volumes", false)), int(spec.get("emitters", 0)), int(spec.get("leaves", 0)),
+		_on(spec.get("cells", false)), _on(spec.get("occlusion", false)), float(spec.get("lod_px", 1.0)), float(spec.get("weather", 0.0)), float(spec.get("detail", 0.0)), _on(spec.get("tangents", false))]
 
 
 static func _on(v) -> String:

@@ -245,6 +245,8 @@ func _run() -> void:
 
 	var S := KratorWorldStream.open(case_index)
 	KratorLook.apply_stream(look, S)
+	var air := KratorAir.make(look)
+	root.add_child(air)
 	S.collide = false
 	S.threaded = false
 	S.auto_places = true
@@ -298,6 +300,7 @@ func _run() -> void:
 			if sky_node.mat != null:
 				sky_node.mat.set_shader_parameter("uCamPos", Vector3(fmod(eye.x, 260000.0), eye.y, fmod(eye.z, 260000.0)))
 			sun.light_energy = clampf(sun.light_energy * 0.68, 0.0, 1.45)
+			air.update(e, sun, sky_node.state, hr, sky_node.weather, S, eye, 1.0)   # the air's layers by the hour (krator/kair.gd)
 
 			var ft := PackedFloat32Array()
 			var gt := PackedFloat32Array()
