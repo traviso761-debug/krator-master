@@ -99,7 +99,9 @@ var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, ent
 '''
 
 ISK_TAIL = r'''
-reportErr = function (m) { ISK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('ISK: ' + m); };
+/* logged with console.warn, never console.error: the engine's 10-core.js wraps console.error and hands a message that names a
+   shader back to reportErr, which logged it again with console.error, round and round until the stack overflowed (T21) */
+reportErr = function (m) { ISK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.warn('ISK: ' + m); };
 /* the material records for the export (core/materials/record), as the kit's own page registers them (93-anim.js, which the
    bundle skips): every MAT key as one record on the page's KMAT; core/export's materials section reads every adapter */
 (function () { var recs = {}; for (var k in MAT) { var fam = SV_LIB[k], L = fam && KMAT.mode === 'lib' ? KMAT.packed(KIT.pack, fam) : null;
@@ -171,7 +173,8 @@ var scene = new THREE.Group(), renderer = { capabilities: { getMaxAnisotropy: fu
 '''
 
 IZV_TAIL = r'''
-reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('IZV: ' + m); };
+/* console.warn, as ISK's: a console.error naming a shader would pass through ISK's wrapper (core/engine 10-core.js) into ISK.errors (T21) */
+reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.warn('IZV: ' + m); };
 /* IZV.proto(key, v, w): the def built once at the origin on flat ground into a new group, its kit items baked. The kit's
    items are emptied before and after (30-kit.js kbake bakes every item put so far and keeps them: without this each piece
    carried every piece built before it, so a piece depended on the order the page built them in; fixed 2026-10-20) */
@@ -255,7 +258,7 @@ HYK_SHIM = r'''
 if (typeof portSkiff === 'undefined') var portSkiff = function () {};
 '''
 HYK_TAIL = r'''
-reportErr = function (m) { HYKB_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('HYKB: ' + m); };
+reportErr = function (m) { HYKB_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.warn('HYKB: ' + m); };   /* as IZV's (T21) */
 /* HYKB.proto(key, v): a free-standing def built once at the origin on flat ground into a new group, its kit items baked
    (as IZV's: the kit's items emptied before and after, so a piece never carries another's) */
 function hykKitClear() { KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }

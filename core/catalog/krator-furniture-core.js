@@ -1318,3 +1318,25 @@ function measureInstance(g) {
   return { empty: false, meshes: meshes, tris: Math.round(tris), w: size.x, d: size.z, h: size.y, box: box, min: box.min.clone(), max: box.max.clone() };
 }
 
+/* ---------------------------------------------------------- the lamp cap (S3-72)
+   Every lamp a piece holds (F.lamp) is a live PointLight, and a page of them overflows a lit material's shader
+   (MAX_FRAGMENT_UNIFORM_VECTORS 1024 on both GPU lanes: the catalog sheet once the Tungang and Fellgang lamps came in,
+   2026-11-11; the Beast Riders' sheet with 185, 2026-11-12). furnLampCap(root, max) gathers the PointLights under root
+   (they stand still) and keeps at most max of them on (FURN_LAMP_MAX, 24, by default): pick(p) turns on the nearest p (the
+   camera) and turns off the rest, always exactly max, so the programs never recompile as the camera moves. A host calls
+   pick at the start and again every half second or so; under max lights it changes nothing. */
+const FURN_LAMP_MAX = 24;
+function furnLampCap(root, max) {
+  max = max == null ? FURN_LAMP_MAX : max;
+  const L = [], w = new THREE.Vector3();
+  root.updateMatrixWorld(true);
+  root.traverse(function (o) { if (o.isPointLight) { o.getWorldPosition(w); L.push({ l: o, p: w.clone() }); } });
+  return { total: L.length, max: max, lights: L,
+    pick: function (p) {
+      if (L.length <= max) return L.length;
+      L.sort(function (a, b) { return a.p.distanceToSquared(p) - b.p.distanceToSquared(p); });
+      L.forEach(function (q, i) { q.l.visible = i < max; });
+      return max;
+    } };
+}
+

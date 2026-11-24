@@ -291,7 +291,12 @@ function psurf(mk,f,nu,nv,col,o){o=o||{};const P=[];for(let j=0;j<=nv;j++)for(le
  for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const p=P[id(i,j)];pos.push(p[0],p[1],p[2]);
   const du=sub(P[id(Math.min(nu,i+1),j)],P[id(Math.max(0,i-1),j)]),dv=sub(P[id(i,Math.min(nv,j+1))],P[id(i,Math.max(0,j-1))]);
   let n=[du[1]*dv[2]-du[2]*dv[1],du[2]*dv[0]-du[0]*dv[2],du[0]*dv[1]-du[1]*dv[0]];let L=len(n);
-  if(L<1e-9){const dv2=sub(P[id(i,Math.min(nv,j+2))],P[id(i,Math.max(0,j-2))]),du2=sub(P[id(Math.min(nu,i+2),j)],P[id(Math.max(0,i-2),j)]);n=[du2[1]*dv2[2]-du2[2]*dv2[1],du2[2]*dv2[0]-du2[0]*dv2[2],du2[0]*dv2[1]-du2[1]*dv2[0]];L=len(n)||1;}
+  if(L<1e-9){const dv2=sub(P[id(i,Math.min(nv,j+2))],P[id(i,Math.max(0,j-2))]),du2=sub(P[id(Math.min(nu,i+2),j)],P[id(Math.max(0,i-2),j)]);n=[du2[1]*dv2[2]-du2[2]*dv2[1],du2[2]*dv2[0]-du2[0]*dv2[2],du2[0]*dv2[1]-du2[1]*dv2[0]];L=len(n);
+   /* a row that has shrunk to one point (a lathe's pole: S3-84a) has no normal of its own, and a zero one shaded the cap black:
+      take o.pole, the axis, turned to the side the next row's grid normal faces */
+   if(L<1e-9&&o.pole){const jn=j===0?Math.min(nv,1):j-1,a=sub(P[id(Math.min(nu,i+1),jn)],P[id(Math.max(0,i-1),jn)]),c=sub(P[id(i,Math.min(nv,jn+1))],P[id(i,Math.max(0,jn-1))]);
+    const s=o.pole[0]*(a[1]*c[2]-a[2]*c[1])+o.pole[1]*(a[2]*c[0]-a[0]*c[2])+o.pole[2]*(a[0]*c[1]-a[1]*c[0]);if(s!==0){n=s>0?o.pole.slice():o.pole.map(x=>-x);L=len(n);}}
+   L=L||1;}
   if(o.flip)L=-L;if(o.up&&n[1]/L<0)L=-L;nor.push(n[0]/L,n[1]/L,n[2]/L);
   if(o.uvf){const q=o.uvf(i/nu,j/nv);uv.push(q[0]/tl,q[1]/tl);}else uv.push(U[id(i,j)]/tl,V[id(i,j)]/tl);
   if(cl){const c=o.colf(i/nu,j/nv);cl.push(c.r,c.g,c.b);}}
@@ -315,7 +320,7 @@ function lathe(mk,cx,cz,prof,seg,col,o){o=o||{};const a0=o.a0||0,a1=o.a1===undef
   const rBase=top?r0:rn,sBase=Lt+(top?rn:r0)*Lt/Math.max(.01,Math.abs(r0-rn)),k=Math.min(1,rBase/Math.max(.01,sBase)),off=(top?rn:r0)*Lt/Math.max(.01,Math.abs(r0-rn));
   uvf=(u,v)=>{const s0=sAt(v)+off,a=(a1-a0)*u;return [s0*Math.cos(k*a),s0*Math.sin(k*a)];};}
  psurf(mk,(u,v)=>{const a=a0+(a1-a0)*u;const t=v*(n-1),j=Math.min(n-2,Math.floor(t)),f=t-j;const r=prof[j][0]+(prof[j+1][0]-prof[j][0])*f,y=prof[j][1]+(prof[j+1][1]-prof[j][1])*f;
-  return [cx+Math.cos(a)*r,y,cz+Math.sin(a)*r];},seg,(n-1)*(o.sub||1),col,{colf:o.colf,flip:o.flip?!flip:flip,uvf});
+  return [cx+Math.cos(a)*r,y,cz+Math.sin(a)*r];},seg,(n-1)*(o.sub||1),col,{colf:o.colf,flip:o.flip?!flip:flip,uvf,pole:[0,1,0]});
  return {rmax,len:sv[n-1]};}
 /* TUBE: a skin along a centre curve. c(t) -> [x,y,z], t in 0..1; rad(t) -> [half-width, half-height]; the section is an
    ellipse in the plane across the curve, with the curve's up as close to +y as the curve allows. Caps close the ends

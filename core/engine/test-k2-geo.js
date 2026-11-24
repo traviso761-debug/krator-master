@@ -1,6 +1,8 @@
 // node core/engine/test-k2-geo.js: K2's engine half (GRAPHICS-TERRAIN-PROPOSAL.md 12d): the plot-base grounding baked into
 // the vertex colours by box(), cyl() and a vertical beam() standing on their plot, and boxBevel(), the chamfered box.
 // Runs 30-geo.js on the pinned three.js r128 with the few globals it reads from 10-core.js and 27-mat.js stubbed.
+// Also (Stage 8 B6): lathe()'s pole normal (S3-84a), 27-mat.js's flutter uniform uAnimWind (S2-C23) and 10-core.js's
+// console.error re-entry guard (T21), each in its own context.
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const T = require('../../tools/ktest.js')(__filename);
 const THREE = require(path.join(__dirname, '..', '..', 'kits', 'ancients', 'three.min.js'));
@@ -101,5 +103,49 @@ T.ok('a grounded bevelled pier keeps its ramp, cut at the band', Math.abs(footC(
 T.neg('the budget stops the bevels (BEVEL_BUDGET spent: plain boxes after)',
   R => R.tris === 12, (() => { run('BEVEL_BUDGET=1e9'); return draw('box("stoneP",0,1,0,1.2,.6,.8,0xffffff)', 'stoneP', 'null'); })(),
   (() => { run('BEVEL_BUDGET=0'); const r = draw('box("stoneP",0,1,0,1.2,.6,.8,0xffffff)', 'stoneP', 'null'); run('BEVEL_BUDGET=60000'); return r; })());
+/* 6. lathe(): a profile that closes on the axis (S3-84a). The pole row is one point, so the grid gives it no normal; a zero one
+   shaded the cap black, worst with a long last segment. It takes the axis, turned to the surface's side */
+function latheV(src){ const R = draw(src, 'wall', 'null'), N = R.b.n;
+  return R.v.map((q, i) => ({ x: q.x, y: q.y, z: q.z, nx: N[i * 3], ny: N[i * 3 + 1], nz: N[i * 3 + 2] })); }
+const poleFaces = sgn => V => V.every(q => Math.abs(Math.hypot(q.nx, q.ny, q.nz) - 1) < 1e-5) &&
+  V.some(q => Math.hypot(q.x, q.z) < 1e-9) && V.filter(q => Math.hypot(q.x, q.z) < 1e-9).every(q => Math.abs(q.ny - sgn) < 1e-5);
+const dome = latheV('lathe("wall",0,0,[[1,0],[1,1],[0,2.5]],12,0xffffff)');
+T.neg('a dome closing on the axis: every normal is unit, the pole\'s straight up (a zero pole normal is the black cap)',
+  poleFaces(1), dome.map(q => Math.hypot(q.x, q.z) < 1e-9 ? Object.assign({}, q, { nx: 0, ny: 0, nz: 0 }) : q), dome);
+T.ok('a cone pointing down (the pole at the bottom): the pole faces down', poleFaces(-1)(latheV('lathe("wall",0,0,[[0,0],[1,1.5],[1,2]],12,0xffffff)')));
+T.ok('a lining (o.inward) of the dome: the pole faces down, into the room', poleFaces(-1)(latheV('lathe("wall",0,0,[[1,0],[1,1],[0,2.5]],12,0xffffff,{inward:true})')));
+T.ok('a part sweep (a door gap) closing on the axis: the pole still faces up', poleFaces(1)(latheV('lathe("wall",0,0,[[1,0],[1,1],[0,2.5]],12,0xffffff,{a0:.3,a1:5.5})')));
 T.ok('no error was reported', run('ERRS').length === 0, run('ERRS').join('; '));
+
+/* 7. 27-mat.js: the cloth flutter's scale is uAnimWind (S2-C23). It was `uniform float uWind`, and a host's sky puts
+   `uniform vec2 uWind` (core/atmos's cloud shading) in every scene material: "Types of uniform 'uWind' differ" */
+const mctx = { THREE, Math, console };
+vm.createContext(mctx);
+vm.runInContext('const clamp=(v,lo,hi)=>v<lo?lo:v>hi?hi:v;function rr(a,b){return (a+b)/2;}const SV_LIB={},SV_TILE0={},SV_CLOTH={flag:1},SV_CUT={},' +
+  'KIT={pack:"t"},KIT_FALLBACK=[],KMAT={mode:"proc"};', mctx);
+vm.runInContext(fs.readFileSync(path.join(__dirname, '27-mat.js'), 'utf8'), mctx, { filename: '27-mat.js' });
+const flutSh = { uniforms: {}, vertexShader: '#include <common>\nvoid main(){\n#include <begin_vertex>\n#include <project_vertex>\n}', fragmentShader: 'void main() {\n}' };
+vm.runInContext('MAT.flag.onBeforeCompile', mctx)(flutSh);
+/* one program's uniforms by name: a name declared with two types is the clash */
+const skyDecl = 'uniform vec2 uWind;uniform float uTime;';
+const clashes = text => { const D = {}, bad = []; for(const m of (text + skyDecl).matchAll(/uniform\s+(\w+)\s+(\w+)\s*;/g)){ if(D[m[2]] && D[m[2]] !== m[1]) bad.push(m[2]); D[m[2]] = m[1]; } return bad; };
+T.neg('the flutter\'s uniforms meet the sky\'s in one program without a clash (the old float uWind against the sky\'s vec2)',
+  text => clashes(text).length === 0, 'uniform float uTime;uniform float uWind;attribute vec3 aFlut;\n', flutSh.vertexShader + flutSh.fragmentShader);
+T.ok('the flutter reads ANIMU.uAnimWind, and ANIMU has no uWind', flutSh.uniforms.uAnimWind === vm.runInContext('ANIMU.uAnimWind', mctx) &&
+  !('uWind' in flutSh.uniforms) && vm.runInContext('!("uWind" in ANIMU)', mctx) && /\*s\*uAnimWind;/.test(flutSh.vertexShader));
+
+/* 8. 10-core.js: the console.error wrapper's re-entry guard (T21). A bundle's reportErr that logs with console.error (the isle
+   demo's ISK did) came back through the wrapper, which matched the shader in it again: round and round to a stack overflow */
+function errLoop(src){
+  const logged = [], c = { THREE, Math, Float64Array, document: { getElementById: () => ({ style: {}, textContent: '' }) },
+    window: { addEventListener(){} }, console: { error(){ logged.push([].join.call(arguments, ' ')); }, log(){}, warn(){} } };
+  vm.createContext(c);
+  vm.runInContext(src + '\nvar BUNDLE_ERRS=[];reportErr=function(m){BUNDLE_ERRS.push(m);console.error("ISK: "+m);};', c, { filename: '10-core.js' });
+  vm.runInContext('console.error("THREE.WebGLProgram: shader error: 0 35715 false")', c);
+  vm.runInContext('console.error("a plain error")', c);
+  return { pushed: vm.runInContext('BUNDLE_ERRS.length', c), logged: logged.length };
+}
+const coreSrc = fs.readFileSync(path.join(__dirname, '10-core.js'), 'utf8');
+T.neg('a shader error is forwarded to a bundle\'s reportErr once, and logged twice (its own line and the bundle\'s; a plain error once), not looped',
+  R => R.pushed === 1 && R.logged === 3, errLoop(coreSrc.replace('if(!inErr){', 'if(true){')), errLoop(coreSrc));
 T.done();
