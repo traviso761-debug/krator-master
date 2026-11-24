@@ -1,7 +1,7 @@
 // ================================================================= ISLE DEMO — the isles' fields: the climate classes as weights, the coast
 // [G data] The fields the Ring Sea isles kit reads (biomes/ringisles/BIOME-API.md, "The fields a host binds") that the
 // open world (openworld/little-demo/src/41-world-fields.js) does not make. Added to WORLD.FIELDS before the host binds
-// the biome core (45-world-host.js builds its field functions from that list), and filled in by wrapping WORLD.at and
+// the biome core (45-world-host.js builds its field functions from that list), and filled in by wrapping WORLD.atShared (WORLD.at copies it) and
 // WORLD.fieldsFrom, so every sample (a full one, a terrain chunk's) carries them. Plain maths of (x, z) and the rasters.
 //   koppen:<class>  the scale model's climate class at the point as soft weights over the seven isle classes (XA, Af, Am,
 //                   Aw, XV, BSh, XS): the map pixels round a warped point, so a class boundary blends over ~2 km rather
@@ -58,8 +58,8 @@ function add(A){const x=A.x,z=A.z,d=A.depth,above=-d,slope=A.slope,land=d<0?1:0;
  let fl=0;for(const [vx,vz] of VENTS){const r=Math.hypot(x-vx,z-vz);if(r<900)fl=Math.max(fl,1-smooth(420,700,r));}A.floor=fl;
  A.dry=dry;
  return A;}
-const at0=W.at,from0=W.fieldsFrom;
-W.at=(x,z)=>add(at0(x,z));
+const at0=W.atShared,from0=W.fieldsFrom;
+W.atShared=(x,z)=>add(at0(x,z));   /* WORLD.at copies it (core/world 41) */
 W.fieldsFrom=(x,z,h,tanS,P,out)=>add(from0(x,z,h,tanS,P,out));
 // ---------------------------------------------------------------- the ground's colour (WORLD.ground, wrapped)
 // The world colours the ground from the scale model's biome overlays; here the isles all lie under the Ring Sea's water

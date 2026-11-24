@@ -68,7 +68,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
     boundary fault's wall rising behind it (Opal Valley grows no kit here yet: KNOWN_ISSUES.md). The negative reads it 40 km out
     in the lake's middle */
  {const S=(M.sites||[]).find(s=>s.id==='slaitwal0001');if(!S)R.push({name:'Lāiṭwāl on its bench under the wall, the lake at its feet',ok:false,detail:'no site slaitwal0001'});
-  else{const x=S.x,z=S.z+(neg==='site'?14000:0),dry=WORLD.at(x,z).depth<0,h=WORLD.H(x,z);   /* WORLD.at's record is shared: read it at once */let lake=null;for(let d=500;d<=8000&&lake==null;d+=250){const B=WORLD.at(x,z+d);if(B.depth>0)lake=d;}
+  else{const x=S.x,z=S.z+(neg==='site'?14000:0),dry=WORLD.at(x,z).depth<0,h=WORLD.H(x,z);let lake=null;for(let d=500;d<=8000&&lake==null;d+=250){const B=WORLD.at(x,z+d);if(B.depth>0)lake=d;}
    const wall=Math.max(...[3000,6000,9000].map(d=>WORLD.H(x,z-d)))-h;
    R.push({name:'Lāiṭwāl on its bench under the wall, the lake at its feet',ok:S.px===1028&&S.py===1653&&dry&&lake!=null&&wall>1500,
     detail:'px '+S.px+','+S.py+', ground '+Math.round(h)+' m'+(dry?' (dry)':' (in water)')+', the lake '+(lake==null?'not within 8 km south':(lake/1000).toFixed(2)+' km south')+', the wall '+Math.round(wall)+' m higher within 9 km north'});}}
@@ -338,6 +338,7 @@ async def run(a):
                 if need and not has[need]:
                     print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
                 if say(r): fails.append(r['name'])
+            await VW.negatives(pg, has, fails)   # the world's negatives, each must fail (core/world verify_world.py; S3-26)
             print('--- the region ---')
             for neg in (None, 'site', 'landforms'):
                 for r in await pg.evaluate(REGION, neg):

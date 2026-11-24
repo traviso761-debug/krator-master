@@ -117,10 +117,9 @@ def script(region):
         if j[-1] == '41-world-fields.js' and LANDFORMS_JS in open(os.path.join(base, 'build.py'), encoding='utf-8').read():
             parts.append('\n// ---- core/world/%s\n' % LANDFORMS_JS + open(os.path.join(HERE, LANDFORMS_JS), encoding='utf-8').read())
         # the towns' own ground (core/world/bake_towns.py: openworld/SITES.json's region row "towns", opt-in): the records
-        # the page carries in WORLD_DATA.towns and 41t, so the plan is made on the town's ground as the page draws it
+        # the page carries in WORLD_DATA.towns (41 takes the ground and the water), so the plan is made on the town's ground as the page draws it
         if j[-1] == '41-world-fields.js' and region_towns(region):
             parts.append('\nWORLD_DATA.towns=' + json.dumps(towns_data(region), separators=(',', ':'), ensure_ascii=False) + ';\n')
-            parts.append('\n// ---- core/world/41t-world-town-water.js\n' + open(os.path.join(HERE, '41t-world-town-water.js'), encoding='utf-8').read())
     parts.append(WD.net_fragment(os.path.join(base, 'src', '48-world-site.js')))   # the network routes the region's links follow
     # the region's site data (src/NN-site-*.js, before its spec: a village its own page laid, 48s laidVillage; Gihon's Landing)
     for f in sorted(f for f in os.listdir(os.path.join(base, 'src')) if re.match(r'^\d\d[a-z]?-site-.+\.js$', f)):

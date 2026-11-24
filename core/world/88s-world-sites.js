@@ -74,6 +74,9 @@ for(const E of PLAN.sites.flatMap(St=>(St.hamlets||[]).map(V=>({St,V}))).concat(
   tags:{culture:V.culture,types:E.stop?['inn']:['dwelling-multi','farm'],role:E.stop?'waystation':'village'},note:E.stop?'core/world 48s stops: '+V.census.pop+' keepers':'core/hamlet ('+V.focus+'): '+V.census.pop+' people, '+V.census.households+' households'});
  const VKit=vkit(V.culture),VD=VK[VKit]?VK[VKit].dims:{};
  const B=V.records.map(r=>{const K=VD[r.key],kit=!!K&&!r.pending,fw=kit&&K.fw?K.fw:r.w,fd=kit&&K.fd?K.fd:r.d,c=Math.cos(r.ry),s=Math.sin(r.ry);
+  /* a key the kit lacks that its row does not declare pending (core/hamlet: a pending record is a stand-in by design) is a
+     gap, not a stand-in: it fails "every piece the kit's" (2026-11-24, Stage 8 B7, S3-60: it drew a massing box and passed) */
+  if(!K&&!r.pending&&S.missing.indexOf(r.key)<0)S.missing.push(r.key);
   const hs=[[-1,-1],[1,-1],[1,1],[-1,1],[0,0]].map(([u,w])=>H(r.x+u*fw/2*c+w*fd/2*s,r.z-u*fw/2*s+w*fd/2*c)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
   const nv=kit?Math.max(1,Math.min(3,K.variants|0)):1;
   /* a laid village's record on the water (48s laidVillage): its deck over the village's water level, a pier's run or light on a

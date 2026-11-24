@@ -17,7 +17,7 @@ page that reads it came out byte-identical after the move.
 | `43m-world-micro.js`, `wmicro.gd`, `test-micro.js`, `PLAN-MICRO.md` | [G data] | `WMICRO`: the land a DEM shows below ~1 km (the owner, 2026-11-16, with the World Menagerie's DEM builds as the bar): hills by style (`hill`, gradient noise), the drainage (the erosion filter in six octaves 800 m to 25 m, replacing `WRELIEF.erode` in a relief region, flat floors), the grain by the slope. A relief region takes it by listing it after `43-world-relief.js` (`relief.micro: false` turns it off) |
 | `wrelief.gd`, `wsmooth.gd`, `wstreams.gd`, `wland.gd`, `wrelief_test.gd` | GDScript | the twins of `43-world-relief.js`, `40-world-smooth.js`, `44-world-streams.js` and `43b-world-landforms.js` (on `core/terrain/kstacks.gd`) (`PLAN-RELIEF.md` P15), every key of `golden-relief.json` checked in Godot 4.7.2: copies in `godot/tests/relief/` (`godot/tools/sync_core.py`), `godot --headless --path godot --script res://tests/relief/wrelief_test.gd` |
 | `41-world-fields.js` | [G data] | `WORLD`: the region's rasters decoded into the land. It holds:<ul><li>`WORLD.H(x, z, minWave)`: the model's heights, synthesized relief, scarps, river channels and `landHook`;</li><li>the water (`water`, `lakeWater`, `riverWater`);</li><li>the fields every kit reads (`at`, `fieldsFrom`);</li><li>`townW`, `clearHook`, the climate's colour.</li></ul> |
-| `41t-world-town-water.js` | [G data] | `WTOWN`: a town's own water with its ground (WORLD_DATA.towns, `bake_towns.py`): inside its footprint the town's water mask decides the water (`lakeWater`, `waterBodyAt`), its water joins the model's body at its level (one body, the mask taking it in), its river is served by `riverWater`, the model river it joins is cut outside the band and led in by a carved link; `drawn: false` keeps 41 from sinking the ground 3 m. `WTOWN.check()`: the shore against the page's trace, the river, one body. Listed right after 41 |
+| (`41-world-fields.js`, its end: 41t until 2026-11-24) | [G data] | `WTOWN`: a town's own water with its ground (WORLD_DATA.towns, `bake_towns.py`): inside its footprint the town's water mask decides the water (`lakeWater`, `waterBodyAt`), its water joins the model's body at its level (one body, the mask taking it in), its river is served by `riverWater`, the model river it joins is cut outside the band and led in by a carved link; `drawn: false` keeps 41 from sinking the ground 3 m. `WTOWN.check()`: the shore against the page's trace, the river, one body. Folded into 41 at Stage 8 B7 (T24): every page that reads 41 has it; it acts only on a town with `water`, and `W.water` reads its wrapped calls (41t's own `W.water` dropped the streams and tarns) |
 | `41l-world-landforms.js` | [G data] | `WLAND`: the scale model's landform records under a cell (`DATA.landforms`, carried by `extract_region.py` into region.json) stamped at 1:1 through the land hook: island, islet, stack, shoal; water (edit_513's forms page, narrows and strait as one field: the bed set to the record's profile, the coarse wet cells beside closed to its width; river left to 41's named river) and shelf (the page's bed for the water it names); bench (a level terrace cut into a slope: w_m by l_m at `rotation`, level at level_m, the uphill side cut and the downhill filled within a batter, `batter_deg` or `batter_run_m`, its toe blended over `skirt_m`); `WLAND.check()` (a bench's level, batter, toe and its cut and fill, max and mean) |
 | `42-world-roads.js` | [G data] | `ROADS`: least-cost routing on the land at a held grade; the carriageway shaped into the ground |
 | `44c-world-coast.js` | [G data] | the coasts on core/coast (`KCOAST`, `core/coast/README.md`): at init each water body gets a coast field, `landHook` is chained (the coast's profile, sign-safe, then the region's own hook), each body's mask is redrawn from the field, the fields `coast`, `coastC`, `coast:<class>` join `WORLD.FIELDS`, `WORLD.ground` takes the coast's colour bands; a town's ground and a region's `WORLD.coastKeeps()` keep their coast; the region's sub-cell `landforms` (region.json, from the scale model's `model/data/landforms.json`) are stamped as islands by the body they stand in. `WORLD.coast` {list, at, stats, check}. Listed after the region's `43-*`, with core/mask (25, 27) and core/coast (30) before 41 |
@@ -98,18 +98,18 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
   shore trace is where the ground crosses the level, the stream is the town's river. Its record carries `rot` and `y0`
   (41 buildTowns takes a fixed lift: the page's heights over its water at 0);
 - a town's river marked **`over`** (2026-11-16: Phēr's Swīṭ Siṭrīm, down its wall) runs above the town's water at its own
-  height: 41t sets its water 0.6 m over the world's ground at each point (never climbing downstream), serves it in its
+  height: WTOWN sets its water 0.6 m over the world's ground at each point (never climbing downstream), serves it in its
   channel (`riverWater`, its half-widths) and draws it as its own line (`riverLines`, or on down the link when joined).
   A join needs the model river's water at the cut over the stream's head: where it is not, `WTOWN.check` counts the link
   a climb and fails. An over-level river's link holds its water just over the band's eased ground (41 eases the band after the
   link's carve) and falls to the town's stream at its end, a cascade into its gorge. A town's `linkOut` (default 300 m) moves the cut further out than R + band: Phēr's 2,300 m, where
   the model's 2 km cells have not yet begun its stream's fall to the wall's lip;
-- a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41t` (and `41l`) after
-  `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body. A region that names its towns
+- a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41l` after
+  `41`; 41 takes the ground (`buildTowns`, `townAt`) and, in WTOWN at its end, the water, river and body. A region that names its towns
   in `openworld/SITES.json` (its row's `"towns"`) has them in `core/world/bake_sites.py`'s plan too (`towns_data`), so the
   villages and roads are planned on the town's ground as the page draws it (opt-in, as `41l` is: a build that lists it);
-- `node core/world/test-town-water.js` tests 41t and 41l on a made-up region (with negatives); `node core/world/test-landforms-41l.js`
-  tests 41l's bench kind (named apart from the relief's `test-landforms.js`, which tests 43b's WLAND) (level inside, the batter, far ground untouched, the other kinds unmoved);
+- `node core/world/test-town-water.js` tests WTOWN and 41l on a made-up region (with negatives), and 41's sample (`WORLD.at` a copy, `WORLD.atShared` one shared record for hot loops) and a kit on a list of overlays; `node core/world/test-landforms-41l.js`
+  tests 41l's bench and pancake_dome kinds (named apart from the relief's `test-landforms.js`, which tests 43b's WLAND) (level inside, the batter, far ground untouched, the other kinds unmoved);
 - `python3 core/world/town_view.py voth [--shots] [--reach-km 30] [--model <another checkout's model/data>]` cuts a scratch region round the pin, runs `WTOWN.check()` and
   `WLAND.check()` on the real town in node, builds a viewing page, and with `--shots` takes the same views on the town's
   page and in the world side by side (GPU, under the harness's lock). It writes nothing in the repo.
@@ -127,8 +127,7 @@ the worked example: it bakes at build into its `gen/`, skipping the node run (~3
 A town with no tile (`drawn: false`) is kept by `98-world-start.js` when the tiles cannot be fetched, and `88-world-towns.js`
 draws only the towns that have one (2026-11-12).
 
-41t and 41l are new fragments so that 41's reach (eight builds) is untouched; folding them into 41 waits for the next
-all-builds rebuild (`TODO.md`).
+41l is a fragment of its own (opt-in: a build that lists it); 41t was folded into 41 at Stage 8 B7 (2026-11-24, T24).
 
 **Bridges** (2026-11-11; `42b` plans, `88b` draws; `tools/tests/test_bridges.py`). A region opts in with
 `SITE_SPEC.bridges` (`true` or the planner's options: `{culture, clear, approach, ...}`). Every road and link it lays is

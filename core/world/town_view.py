@@ -8,7 +8,7 @@
    cut_site.py cuts a region (extract_region.py with the model's own regions and settlements), into DIR/data. No
    openworld/SITES.json entry: the real region is step V3's (openworld/voth).
 2. check: the region's land (core/world 41), the town's ground (WORLD_DATA.towns: bake_towns.record), its water, river
-   and body (41t) and the landform stamps (41l) in node; WTOWN.check() and WLAND.check(), printed and written to
+   and body (41's WTOWN) and the landform stamps (41l) in node; WTOWN.check() and WLAND.check(), printed and written to
    DIR/check.json. Exit 1 when a check fails.
 3. page: DIR/<town>-world.html, core/world with no kits (the land, the water, the sky; the town's views in "Go to").
 4. --shots: under the GPU lock (tools/harness.py), each view on the town's own page (its dist page, from LFS) and in the
@@ -84,7 +84,7 @@ def check(key, data, out):
     for rel in ('core/rand/08-core-rand.js', 'core/terrain/38-core-relief.js'):
         parts.append(open(os.path.join(ROOT, rel), encoding='utf-8').read())
     parts.append(WD.fragment(data, 'var WORLD_KITS=[];\n', 'town_view', 'core/world/town_view.py', extra=towns_extra(key, data)))
-    for f in ('41-world-fields.js', '41t-world-town-water.js', '41l-world-landforms.js'):
+    for f in ('41-world-fields.js', '41l-world-landforms.js'):
         parts.append(open(os.path.join(HERE, f), encoding='utf-8').read())
     parts.append(r'''
 WORLD.init(WORLD_R);
@@ -142,7 +142,7 @@ def page(key, data, out):
            'const at=(p)=>{const t=WORLD.towns&&WORLD.towns[0],y=t?t.y0:0;return[T.x+p[0],y+p[1],T.z+p[2]];};\n'
            'const views=[{label:\'Overview: the scratch region from 40 km up\',pos:[T.x,40000,T.z+30000],look:[T.x,0,T.z]}];\n'
            'V.forEach(v=>views.push({label:v.label,get pos(){return at(v.town[0]);},get look(){return at(v.town[1]);}}));\n'
-           'return{built:{[T.name]:\'its own ground (core/world/bake_towns.py, 41t)\'},goOrder:[T.name],goViews:views,\n'
+           'return{built:{[T.name]:\'its own ground (core/world/bake_towns.py, 41)\'},goOrder:[T.name],goViews:views,\n'
            ' start:{view:[T.x+2600,T.z+1300,700,.9,-.3],look:[T.x,T.z,0]}};})();\n') % json.dumps(views)
     order = ([('ld', '00-head.html'), ('gen', None), ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
               ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js')]
@@ -155,7 +155,7 @@ def page(key, data, out):
                 ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
                 ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
                 ('core/materials/record', '26-matlib-bind.js'), ('biomes/sedesert/src', '35-core-strata.js'),
-                ('ld', '41-world-fields.js'), ('ld', '41t-world-town-water.js'), ('ld', '41l-world-landforms.js'), ('ld', '42-world-roads.js'),
+                ('ld', '41-world-fields.js'), ('ld', '41l-world-landforms.js'), ('ld', '42-world-roads.js'),
                 ('ld', '45-world-host.js'), ('cfg', None)]
              + [('ld', f) for f in ('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
                                     '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '90-world-camera.js',

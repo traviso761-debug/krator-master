@@ -71,7 +71,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,O=M.frame.origin_px,fx=(px,py)
  /* the lake towns (settlements/xanadu-lake, step L3 on: openworld/SITES.json's towns for this region): each its own ground in
     the world, as xanadu-north-shore checks its own (core/world 41t WTOWN.check: the page's shore where the world's water meets
     its ground, its stream the page's own, one lake) */
- {const C=typeof WTOWN!=='undefined'?(WTOWN.check()||[]):[],TS=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[];   /* no WTOWN on the page: every town fails (the region must take 41t) */
+ {const C=typeof WTOWN!=='undefined'?(WTOWN.check()||[]):[],TS=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[];   /* no WTOWN on the page: every town fails (core/world 41 carries it) */
   if(!TS.length)R.push({name:'the lake towns stand in the world (WTOWN.check)',ok:false,detail:'the region carries no town'});
   for(const t of TS){const c=C.find(q=>q.town===t.name),det=c?JSON.stringify({shore:c.shore,river:c.river&&(c.river.ok?{ok:true}:{inTown:c.river.inTown}),body:c.body&&{one:c.body.one}}).slice(0,400):'no town '+t.name;
    R.push({name:t.name+' stands in the world: its shore, its stream and its lake (WTOWN.check)',ok:!!c&&c.ok,detail:det});}}
@@ -119,6 +119,7 @@ async def run(a):
                 if need and not has[need]:
                     print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
                 if say(r): fails.append(r['name'])
+            await VW.negatives(pg, has, fails)   # the world's negatives, each must fail (core/world verify_world.py; S3-26)
             print('--- the region ---')
             for neg in (None, 'site', 'shore', 'landforms'):
                 for r in await pg.evaluate(REGION, neg):
