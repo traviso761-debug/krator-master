@@ -470,4 +470,10 @@ func look(P: Dictionary, s: Dictionary, w = null) -> Dictionary:
 	L["fogC"] = _mix(L["hor"], L["sunHor"], 0.18)
 	L["fogD"] = P["fogDensity"] * L["fog"] * (p / 1.6) * (1.0 + 6.0 * w.get("fog", 0.0))
 	L["cover"] = clampf(P["clouds"]["cover"] + w.get("cover", 0.0), 0.0, 1.0)
+	# a page's night fill (preset nightFill {k, colour, ground}; off unless set): the hemisphere's sky and ground colours toward a cool fill and a dark soil at night
+	if P.has("nightFill") and float(P["nightFill"].get("k", 0.0)) > 0.0:
+		var nf: Dictionary = P["nightFill"]
+		L["hemiS"] = _mix(L["hemiS"], nf.get("colour", [0.365, 0.443, 0.58]), float(nf["k"]) * L["night"])
+		if nf.has("ground"):
+			L["hemiG"] = _mix(L["hemiG"], nf["ground"], float(nf["k"]) * L["night"])
 	return L

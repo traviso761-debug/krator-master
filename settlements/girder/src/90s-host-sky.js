@@ -23,7 +23,8 @@ var GSKY_RIDGES = [
   { base:0.30, amp:0.30, cycles:34, octaves:3, seed:72, peaks:0, peakAmp:0, win:null, floor:0.05, dist:5000, haze:.35,
     snowH:99999, forestH:99999, rock:[.30,.34,.30], forest:[.14,.26,.23], snow:[.92,.94,.97] } ];
 GSKY = ATMOS.sky(ATMOS.skyPreset('standard', { site:GSKY_SITE, air:{ pressure:SKY.pressureAtm, humidity:.8 },
-  clouds:{ cover:.45 }, fogDensity:PAL.fogDensity, ridges:GSKY_RIDGES, landmarks:[GSKY_VOLC] }),
+  clouds:{ cover:.45 }, fogDensity:PAL.fogDensity, ridges:GSKY_RIDGES, landmarks:[GSKY_VOLC],
+  nightFill:{ k:.75, colour:[.365,.443,.580], ground:[.22,.19,.18] } }),   /* the owner (2026-11-24): "raise fill partway": toward the old page's cool night fill and warm soil (about 60% of it), the giantshine key kept */
   { renderer:renderer, camera:camera, scene:scene, sun:sun, hemi:hemiLight, clock:GSKY_CLOCK, fog:true });
 var skyScene = GSKY.scene;
 updateSky();

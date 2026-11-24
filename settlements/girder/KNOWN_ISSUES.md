@@ -189,8 +189,10 @@ The look changes, for the owner to judge (SKY-PLAN.md section 8: each page's lig
 - [ ] **The sky**: the real sky (sun, giant, ring, moons, station, cluster, stars, procedural cumulus) replaces the painted
       haze. By day a blue sky with cumulus over the towers; at night the stars where the old page had a blue night.
 - [ ] **The light is the model's**: by day the towers' shaded faces are darker (the sky's hemisphere is dimmer than the old
-      tuned fill); at night the city is darker outside its lamps (the old page's planetshine fill and night floors are gone;
-      the ambient floor, 0.035, stays). If the night reads too black, the fill to tune is the sky preset's, not a page law.
+      tuned fill). At night (the owner, 2026-11-24, on the pairs: "raise fill partway") the preset's `nightFill` (core/atmos
+      skyLook, JS and Godot) leans the hemisphere toward the old page's cool fill and warm soil by 0.75 at night: about 60% of
+      the old night fill, the giantshine key kept, the lamps still the brightest thing. From above the canopy and the town read;
+      from the brook the towers' south faces (turned from the giant) read mostly by their lamps.
 - [ ] **The volcano is gone from view**: the old dome painted the Throne in the north-west. On the model it is 390 km to the
       WNW (azimuth 280) and its 10.9 km summit is below Girder's horizon (Krator's radius, 4,800 km, drops it about 14 km at
       that distance). Its plume's top is drawn as a sky landmark (`GSKY_VOLC`), a degree or two up, and in this air it does
