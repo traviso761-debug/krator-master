@@ -88,7 +88,7 @@ built**: with it off `box()` and `emit()` do what they did, and `fingerprint.py`
 - `chamfer`: `box()` draws the chamfered box (`gboxCh`): the box's own 24 vertices, each moved a bevel in along its face, with
   twelve edge strips and eight corner triangles: 44 triangles, no new vertex, the faces' normals kept. A box thinner than
   four bevels stays plain. Widths by class are the caller's (8 to 12 mm furniture, 15 to 25 mm sawn timber, 20 to 40 mm
-  dressed stone, 50 mm and up adobe). `beam()` and a kit's own boxes are not chamfered yet.
+  dressed stone, 50 mm and up adobe). A square `beam()` is chamfered the same way; a kit's own boxes are not yet.
 - `jitter`: a building out of true: a batter of half a degree to a degree and a half and a lean off plumb, from a hash of
   where it stands (`core/rand`), applied to vertices as they are emitted. The placement record and its box are taken from
   the true positions, so no record, walk box or door moves. Ridge sag and bowed beams are not done.

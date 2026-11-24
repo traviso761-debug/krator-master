@@ -12,7 +12,7 @@ function engine() {
   vm.runInContext(`const clamp=(v,lo,hi)=>v<lo?lo:v>hi?hi:v, lerp=(lo,hi,t)=>lo+(hi-lo)*t, TAU=Math.PI*2, PI=Math.PI;
     const TILE={}, MAT={}, SV_CLOTH={}, SV_CUT={}, hc=h=>new THREE.Color(h); const errs=[]; function reportErr(m){errs.push(m);}`, ctx);
   vm.runInContext(fs.readFileSync(path.join(ROOT, 'core/engine/30-geo.js'), 'utf8') +
-    '\nthis.API={box,setForm,formMarks,smokeAt,smokes:()=>SMOKES,formRoot,formRootEnd,gboxCh,pushM,popM,TF,FORM,buckets:()=>GB,reset:()=>{GB={};GTARGET=GB;resetCM();},errs};', ctx, { filename: '30-geo.js' });
+    '\nthis.API={box,beam,setForm,formMarks,smokeAt,smokes:()=>SMOKES,formRoot,formRootEnd,gboxCh,pushM,popM,TF,FORM,buckets:()=>GB,reset:()=>{GB={};GTARGET=GB;resetCM();},errs};', ctx, { filename: '30-geo.js' });
   return ctx.API;
 }
 const outward = (P, I, c) => { let bad = 0; for (let t = 0; t < I.length; t += 3) { const a = I[t] * 3, b = I[t + 1] * 3, d = I[t + 2] * 3;
@@ -44,6 +44,12 @@ T.ok('on its own face\'s axis every vertex is where the plain box has it, to the
 T.ok('its normals are the faces\' own (the strips shade as a rounded edge)', (() => { const n = b.n; for (let i = 0; i < 24; i++) { const a = [Math.abs(n[i * 3]), Math.abs(n[i * 3 + 1]), Math.abs(n[i * 3 + 2])].sort(); if (a[2] < 0.999 || a[1] > 1e-6) return false; } return true; })());
 T.neg('the plain twelve triangles on the moved vertices would leave the edges open', I => closed(first.p, I), first.i.slice(0, 36), first.i);
 T.ok('negative: a key with no bevel, and a slab thinner than four bevels, stay plain boxes', A.buckets().glass.p.length === 72 && b.i.length - 132 === 36);
+
+// 2b. a square beam is chamfered the same way; a round one is not a box
+{ const E = engine(); E.setForm({ chamfer: 0.02 }); E.beam('timber', [0, 0, 0], [0, 3, 0], 0.2); E.beam('timber', [5, 0, 0], [5, 3, 0], 0.2, undefined, true);
+  const P0 = engine(); P0.beam('timber', [0, 0, 0], [0, 3, 0], 0.2);
+  const bb = E.buckets().timber, pb = P0.buckets().timber;
+  T.ok('a square beam is chamfered on its own 24 vertices (44 triangles); a round one keeps its cylinder', bb.i.slice(0, 132).length === 132 && bb.p.length / 3 > 24 && pb.i.length === 36 && pb.p.length === 72 && closed(bb.p.slice(0, 72), bb.i.slice(0, 132)), bb.i.length + ' ' + bb.p.length); }
 
 // 3. out of true, and the height field
 const building = (form) => { const E = engine(); if (form) E.setForm(form); E.pushM(E.TF(100, 20, -50, 0.7)); const keep = E.formRoot();

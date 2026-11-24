@@ -153,7 +153,9 @@ function beamQ(dir){const q=new THREE.Quaternion();
 function beam(mk,a,b,w,col,round,seg,w2){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.hypot(dx,dy,dz);if(L<1e-6)return;
  const dir=new THREE.Vector3(dx/L,dy/L,dz/L);const q=beamQ(dir);const m=new THREE.Matrix4();
  if(round){m.compose(new THREE.Vector3(a[0],a[1],a[2]),q,new THREE.Vector3(w,L,w));emit(mk,w2!==undefined&&w2!==w?gfrus(seg||8,w2/w):gcyl(seg||8),m,col);}
- else{m.compose(new THREE.Vector3((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),q,new THREE.Vector3(w,L,w2===undefined?w:w2));emit(mk,gbox(),m,col);}}
+ else{m.compose(new THREE.Vector3((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),q,new THREE.Vector3(w,L,w2===undefined?w:w2));
+  const d2=w2===undefined?w:w2,bv=FORM.chamfer?+FORM.chamfer(mk):0;   /* a square beam takes the export form's chamfer as a box does */
+  emit(mk,bv>0&&Math.min(w,L,d2)>=bv*4?gboxCh(w,L,d2,bv):gbox(),m,col);}}
 function pole(mk,a,b,r,col,seg){beam(mk,a,b,r,col,true,seg||8);}
 // a sheet spanning two edges: p0->p1 one edge, p0->p2 the other; thickness th along the normal
 function plane4(mk,p0,p1,p2,th,col){
