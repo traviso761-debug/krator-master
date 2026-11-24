@@ -55,7 +55,7 @@ fragments no station overrides, so every page takes it the same way; each piece 
   pools are graded by heat, bluer the hotter, and brine's ramp (red-brown to turquoise) would replace that look (the owner's call).
 - **Life**: seasons, KFIRE and mounds on the savanna (its burn is its own, and moving onto KFIRE re-lights the fires); `BIO.fung` for the caps, the cap tubes
   and the bladders (`TODO.md`: shapes move and want the owner's eye).
-- **Exchanges** (`EXCHANGES.md`): ringisles' strand pandanus on the isle's beaches is not read in place yet (ringisles is pair 8 and reads this kit).
+- **Exchanges: taken 2026-11-24** (`EXCHANGES.md`, ringisles -> throne): the Ring Sea isles' strand pandanus on the geyser isle's beaches. `stations/isle/station.json` reads ringisles' species, look and trees in place (`kits`: 48p1-48p3; its 70 would build the whole kit, so `48p9-host-ri-close.js` closes its registry) and only the two maps the pandanus draws (`packs`: `{dir, keep}`, a new form in `build.py`: `bark3`, `strap`; a 0.34 MB sidecar); `88p-host-pandan.js` plants it with `RINGISLES.treeAt` after the kit, per 14 m cell (core/rand), on the strand 1.3-3.4 m above the sea, leaning down the slope, clear of the Throne's trees, the camp, the path and the canoes: 298 trees; the check 'the strand pandanus at the high-tide line' with a negative; the view 'Strand pandanus on the beach'. `?pandan=0` none.
 
 **Map 5.1** (`biomes/STATIONS-MAP-5.1.md`): station 3 re-surveyed and its flank refitted (`stations/frontier/45-host-stage.js`); the caldera checked
 against the model (`stations/caldera`, `KNOWN_ISSUES.md`); station 11 is `tube_hot_05` (`stations/tube/station.json`).

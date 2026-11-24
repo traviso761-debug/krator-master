@@ -260,7 +260,7 @@
   the page's lava lake lies in a pit of 28 m. Deepening it changes the station's main view; not done.
 - [ ] **The Zeijani's tubes round the kipuka** (map 5.1, `tubes.json`): `tube_dhelv_01`'s West Kipuka Portal (a cliff portal in old-growth kipuka forest, a
   rolling stone door 2 km in) and its neighbours `tube_surpu_02`, `_qarnu_03`, `_nuru_04` give station 2 a real route; the page draws none of them.
-- [ ] **ringisles' strand pandanus** (`EXCHANGES.md`, ringisles ↔ throne) is not on the isle's beaches: ringisles reads this kit in place and has its turn in
+- [x] **ringisles' strand pandanus (taken 2026-11-24: `stations/isle/88p-host-pandan.js`, `PLAN.md` "Dropped or owed")** was not on the isle's beaches: ringisles reads this kit in place and has its turn in
   pair 8; read it in place there, or here after it.
 
 ## Open
