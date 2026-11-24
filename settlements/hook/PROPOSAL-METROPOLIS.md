@@ -191,3 +191,23 @@ as the city's gross form:
 
 A sketch of this reading on the ground as it was: `shots/hook-alexandria-reading.png` (gitignored; made by this session's
 scratch map). Sections 2 to 4 above stand where they do not contradict this one; the phases (section 7) keep their order.
+
+## 10. The owner's own site plan (2026-11-24, later still): the redo
+
+The owner sent a rough site plan of their own and said much of the above may be redone from scratch. **The proposal for it
+is `plan/hook-site-plan.html`** (published to the owner as an Artifact, "Hook Site Plan"): the plan read back, the Ancient
+city beside today's on two maps, a zone-by-zone comparison, thirteen hamlets, camps and posts in the environs, the plan
+fitted onto the 5.1 ground (two placements, measured), what carries over, phases S0 to S6 and seven questions.
+
+The plan in brief: **Port Hook** (the waterfront) was the port district of an Ancient city about 10 km across; the
+**downtown** stood close to it, ringed by an **elevated freeway**; half the downtown **sank** (towers in shallow water,
+mangroves); height and density **fade with distance from the downtown**; the freeway's standing south arc is the **one
+clear approach** from the south; a **city wall** runs from the harbour to the freeway and closes the peninsula (the port,
+its hamlets, ground cleared or reclaimed, ruin half decaying) off from the mainland; a **Hykkousoi fishing village in a
+drowned tower** is the coast's smuggling haven.
+
+Recommended placement: **B**, the plan turned 34 degrees so its waterfront lies on today's quays (Port Hook kept as built;
+the wall on the spit's east end; the drowned downtown on today's lagoon). Open: the placement, the north ridge (it runs into
+water 130 to 150 m deep), who built the wall, whether the freeway's west arc stands, the Drowned Spire's tower, the bay as
+the harbour, the names. **Nothing is built for it yet**; the Alexandria landforms of section 9 (plain, strait, shelf) are
+to be dropped when the redo starts, and M1's records redone on its field.
