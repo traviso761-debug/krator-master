@@ -1,6 +1,7 @@
 # Hook as the living third of a drowned Ancient city: a reblueprint proposal
 
-*Proposal, 2026-11-24, for the owner's decision. Nothing here is built. The owner asked for "a proposal for rebuilding /
+*Proposal, 2026-11-24; **the owner's answers are in section 8** (the city is Huka; lagoon and scarp; salvagers, stilt
+villages and pods; a gradient of wildness; two pages; M1 starts now). Nothing here is built. The owner asked for "a proposal for rebuilding /
 reblueprinting the settlement using the Ancient Transit and metropolis kit (as well as current Ancient kit material) to
 make Hook a port settlement making up about 1/3 of [a] larger ruined city overgrown with jungle". Paths are from the repo
 root; "today" means `claude/unruffled-greider-5cf58d` at the port onto the integration line.*
@@ -146,14 +147,20 @@ that page. Proposed:
 
 Each phase is a session of its own; M1 first, since everything else reads its records.
 
-## 8. Questions for the owner
+## 8. The owner's answers (2026-11-24)
 
-1. Is Hook the harbour third of a larger Ancient city, and what was that city called?
-2. The ruin's two thirds: the lagoon (drowned) and the scarp (upper), as proposed; or somewhere else (along the coast
-   east, a scale-model edit)?
-3. Who lives in or uses the ruin, and how far into it does the living port reach (salvage camps, stilt villages among the
-   stumps)?
-4. How wild: canopy to the crowns everywhere, or a gradient from picked-clean near the port to untouched far out?
-5. One page or two: the port page drawing the ruin from afar, and a ruin page (or stations) for close up?
-6. The new pieces in other kits: a causeway form in `kits/ancient-transit`, a placer and `KRUINS.watch` for
-   `kits/metropolis`, the Ancient grid lifted out of the valley. Built from this plan, or by those kits' sessions?
+1. **Yes: Hook is the harbour third of the Ancient city, and the whole city is *Huka*** (the Hukoa's name for the port
+   stands for all of it; the port is Huka's harbour). LORE.md's Hook entry to say so.
+2. **The lagoon and the scarp**, as proposed: the Sunk City in the lagoon south of the spit, the Scarp City up the
+   plateau's faces. No scale-model edit beyond the spit.
+3. **The ruin's people: salvagers' camps, Hukoa stilt villages among the drowned stumps, and Hykkousoi pods on the
+   towers that still stand.** Not shunned. (The Izani patrol its edge; the far ruin is the jungle's.)
+4. **A gradient**: picked clean with paths near the port, wilder with distance, jungle to the crowns in the far lagoon
+   and up the scarp.
+5. **Two pages, one record set**: the port page draws Huka's ruin from afar (shells, impostors); a ruin page draws it up
+   close with the port far.
+6. **Built from Hook's plan**: the causeway form in `kits/ancient-transit`, the tower placer and `KRUINS.watch` for
+   `kits/metropolis`, and the Ancient grid lifted out of the valley are made by Hook's phases, following each kit's
+   rules (rebuild and verify what each change reaches).
+7. **Start now, M1 only**: the ruin's records (no drawing) in a session of its own on the integration line, merged
+   after Stage 8.
