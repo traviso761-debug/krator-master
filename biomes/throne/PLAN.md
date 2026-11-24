@@ -42,8 +42,18 @@ fragments no station overrides, so every page takes it the same way; each piece 
   Sites (5.1 px): station 1 859,863; ash desert 869,856; blast 859,805; caldera 847,834; cloud forest 820,834; delta 900,858; frontier 795,860; glacier
   834,821 (the model's flank on its bearing reaches 5.3 km, not the page's 6 km); isle 769,834; kipuka 815,843; penitentes 866,839; savanna 847,870;
   vents 880,846.
-- **The row's terrain**: `tibasalt` strata on the caldera's wall, pit chains and lava steps, rilles on the kipuka, KLAVA on the vents, kipuka, tube and
-  caldera. Each moves a page's ground and every placement on it; the flow model (`46`) is the kit's own mosaic history. Owed for the owner's look pass.
+- **The row's terrain: begun 2026-11-24** (the owner's yes). Each moves a page's ground and every placement on it.
+  **Taken:** the caldera's wall in KSTRATA's `tibasalt` (thin black flows, orange and black glass-bead horizons) and the blast's scar in
+  `obsidian-pancake` (the 5.1 dome strata note: glassy flow-banded sheets, pumice between, perlitic breccia), each station's `STRATA` in its 47: the
+  ledge pass on the wall's ground (`S.ledge`: hard beds steep, soft beds benched where it shows rock) and each bed's colour on the steep under the
+  snow (`shared/84s-host-strata-band.js`: the stratigraphic height a vertex attribute, `S.colorAt` one band texture; one texture unit, as each
+  ground reads fifteen: KSTRATA's core shader takes five). `?strata=0` the walls as before. The vents' four-year fissure flow frozen by
+  core/terrain's lava-flow module (`shared/46k-host-klava-flows.js`, `THRONE_KLAVA_FLOWS`: a flow given `klava` is run by `KLAVA.bake` over the
+  ground the older flows left, four vents along the fissure's middle, 1.0 Mm3, and laid into the kit's mosaic; 1.9 s at load; a check that it
+  froze whole, with a negative). `?klava=0` the kit's sheet.
+  **Owed:** KLAVA on the kipuka (five flows of ~16 Mm3 each, 5 km long: too slow to bake at load, so a build-time bake as the Godthrone flank's
+  `bake-flows.js`; and the kipuka's tube, spine and views read the flows' paths, which a KLAVA deposit has not), the caldera's floor and the tube's
+  surface; rilles and pit chains on the kipuka (KRELIEF.rille, KRELIEF.tube, KRELIEF.tubeRille over the kipuka's tube); lava steps.
 - **The row's ground kinds: taken 2026-11-03** (KGROUND's layer kinds, procedural, no texture unit; each after the page's own layers at a
   `/*KGROUND*/` marker; `?kinds=0` none): `clast` on the caldera's walls (the old flows' basalt, scoria and ash beds as blocks in an ash matrix,
   on the cliff layer's weight), `sand` on the ash desert's dunes (ripples across the plume's wind; no glints: they read `cameraPosition`, which

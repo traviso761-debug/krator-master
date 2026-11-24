@@ -36,6 +36,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/99-host-tz-core.js` | 3.0 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the environmental fields' checks (BIO.envCheck, WATER.edgeAudit) added to window._api's hostChecks: host only (2026-11-02) |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `shared/44r-host-breach.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Rheoliths' breach as a pure height function on the local ground (vents, caldera) |
+| `shared/46k-host-klava-flows.js` | 3.4 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the KLAVA flows laid into the kit's mosaic (Godot: klava.gd's bake, the same overlay on the mosaic's lattice) |
+| `shared/84s-host-strata-band.js` | 2.3 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | a wall's beds by the stratigraphic height and a band texture (Godot: kstrata.gd's colorAt into a gradient, the height a custom vertex attribute) |
 | `shared/83r-host-breach-ground.js` | 2.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | the breach's fine ground mesh (Godot: a finer terrain chunk over the breach) |
 
 ## Notes

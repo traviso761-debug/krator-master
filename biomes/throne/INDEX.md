@@ -54,6 +54,8 @@ Fragments only some stations take, each listed in that station's `station.json` 
 | Fragment | KB | What |
 |---|---|---|
 | `44r-host-breach.js` | 1 | `THRONE_BREACH`: the Rheoliths' breached throat cut into a station's ground (the kit's own profile, from the local ground); vents and caldera |
+| `46k-host-klava-flows.js` | 3 | `THRONE_KLAVA_FLOWS`: the kit's flow mosaic with the flows marked `klava` frozen by `KLAVA.bake` instead of the kit's sheet; vents |
+| `84s-host-strata-band.js` | 2 | `THRONE_STRATA_BAND`, `_HOOK`, `_ATTR`: a wall's KSTRATA beds on a station's ground in one texture unit; caldera, blast |
 | `83r-host-breach-ground.js` | 2 | the breach's ground eight times finer than the 6.5 m mesh, its coarse cells left out (`THRONE_BREACH_CELLS`, `breachSkip`, `THRONE_BREACH_MESH`); vents and caldera |
 
 ## stations/

@@ -12,5 +12,11 @@
   "89-atmos-a-waves.js",
   "89-atmos-b-skylight.js"
  ],
- "hazard": true
+ "hazard": true,
+ "terrain": [
+  "35-core-strata.js"
+ ],
+ "kits": {
+  "84s-host-strata-band.js": "../throne/shared/84s-host-strata-band.js"
+ }
 }
