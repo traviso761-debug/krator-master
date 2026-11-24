@@ -101,6 +101,12 @@ const FE_ROOMS=(function(){
   {levels:[['dormitory','dormitory'],['dormitory','dormitory']],names:[['Pilgrims\' Hostel'],['Pilgrims\' Hostel']]},
   {levels:[['stable','workshop'],['store','store']],names:[['Mule Stables','Harness room'],['Stores']]},
   {levels:[['kitchen','hall'],['dormitory','bedroom']],names:[['Kitchen','the hostel\'s hall'],['The Hosteller and the muleteers']],rows:[ROWS_TABLES]}],.4,{sheet:'F'});
+ /* the Rest House (sheet F; qb_fe_rest): the house across the back of its yard, 14 x 8 on a 0.5 m plinth, two storeys of 3.6 m,
+    its door (the record's) in the middle of its front to the yard: the pilgrims' hall (a table with its benches) and the tea
+    kitchen below, the dormitory and the keeper's room over them */
+ BL.push({id:'resthouse',name:'The Rest House',part:'resthouse',sheet:'F',shell:{x:0,z:-5.4,w:14,d:8,y:.5,hs:[3.6,3.6]},door:'drawn',
+  levels:[['hall','kitchen'],['dormitory','bedroom']],names:[['The pilgrims\' hall','The tea kitchen'],['The pilgrims\' dormitory','The keeper']],wealth:.3,
+  want:['xanadu_common_reader_seat'],rows:[ROWS_TABLES]});
  /* the towers (sheet T): the Mirror Tower (four lifts of 6 m tapering from 10 m; planned inside the top lift, its doorway run
     through the base) and the Labrang Tower (one 11 m block, 26 m: six storeys, one a bay) */
  BL.push({id:'tw.mirror',name:'The Mirror Tower',part:'tw.mirror',sheet:'T',shell:{x:0,z:0,w:8,d:8,y:.6,hs:[6,6,6,6]},door:'drawn',body:{hw:5,hd:5},

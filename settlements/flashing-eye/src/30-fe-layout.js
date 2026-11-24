@@ -26,10 +26,11 @@ const FE_LAYOUT = (function () {
 
   /* the cliff band: the front of the cone's last lava flow (a coulee of columnar basalt), authored on the page. The Lip is the
      band's top edge: u = lipK v^2 (it curves back at its ends, so the face turns from about 163 to 197 degrees); the face falls
-     `h` m with a batter of `batter` m; a talus leans on its foot; the apron eases into the model's flank `merge` m out. Its height
-     tapers to nothing over the last `taper` m of each end */
+     `h` m with a batter of `batter` m; a talus leans on its foot; the apron eases back into the model's flank between `merge` m out
+     from the Lip (fixed 2026-11-23: the cut ran on down the spur's sides to the Foot House). Its height tapers to nothing over
+     the last `taper` m of each end */
   const band = {
-    halfLen: 750, lipK: 0.0002, h: 200, batter: 30, talusH: 45, talusRun: 70, apronGrade: 0.04, taper: 160,
+    halfLen: 750, lipK: 0.0002, h: 200, batter: 30, talusH: 45, talusRun: 70, apronGrade: 0.04, taper: 160, merge: [600, 1200],
     face: [163, 197], stone: 'rock.columnar',
     note: 'the owner\'s 100-300 m; 200 m recommended (question 4). Section 3.4: the band takes the model\'s 196 m a km of fall in one face'
   };
@@ -162,7 +163,8 @@ const FE_LAYOUT = (function () {
     P(62, 'cave.e', 'Meditation Cave (east)', 'cave', 'band', [6, 14, 330, 342], { level: -1, decor: 1, sheets: ['E0', 'S'], y: -95 }),
     /* ---- the apron, the spur and the foot */
     P(70, 'stairhead', 'Chorten at the Stair\'s Head', 'chorten', 'apron', [361, 369, -189, -181], { circ: true, decor: 2, sheets: ['E0'], note: 'where the Stair of the Eye reaches the apron: the mules go west round the band, the pilgrims and the professed up the Way of Shrines' }),
-    P(71, 'resthouse', 'The Rest House', 'shelter', 'spur', [2790, 2810, 20, 40], { decor: 1, sheets: ['F'], note: 'at about 1,080 m on the Stair' }),
+    P(71, 'resthouse', 'The Rest House', 'rest_house', 'spur', [2789, 2811, 18, 38], { storeys: 2, decor: 1, sheets: ['F'], front: 'west', beds: { pilgrims: 24 },
+      note: 'at about 1,080 m on the Stair, the road turning at its gate: the pilgrims\' hall and the tea kitchen, the dormitory (24 beds) and the keeper\'s room, the mules\' shed and trough round its yard; kept by two of the Foot House\'s muleteers in turn (their beds are the Foot House\'s)' }),
     P(72, 'foothouse', 'The Foot House', 'foot_house', 'foot', [6370, 6430, -40, 40], { storeys: 2, decor: 2, sheets: ['F'], sleeps: { foot: 40 }, beds: { pilgrims: 120 }, note: 'the Hosteller, the muleteers of the Stair, the storemen, the terraces\' hands; the pilgrims\' hostel (120 beds), the stores, the mule stables (about 40 mules), the gate chorten' }),
     P(73, 'footterr', 'Lower Terraces', 'terrace', 'foot', [6440, 6590, -380, 380], { decor: 0, sheets: ['F'], ha: 3.7 })]
     .concat(bridgeway.stacks.map((S, i) => P(80 + i, 'shrine.' + (i + 1), S.shrine.replace(/^the /, 'The '), 'shrine', S.u < 60 ? 'band' : 'apron', [S.u - 3, S.u + 3, S.v - 3, S.v + 3],
@@ -174,14 +176,70 @@ const FE_LAYOUT = (function () {
     for (let i = 1; i < pts.length; i++) { L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); s.push(L); }
     return pts.map((p, i) => [p[0], p[1], Math.round((y0 + (y1 - y0) * s[i] / L) * 10) / 10]);
   };
-  /* switchbacks down a slope: legs across it (+-amp of v) each `du` further down, from (u0, v0) to (u1, v1) */
-  const zig = (u0, v0, u1, v1, du, amp) => { const out = [[u0, v0]]; let u = u0, k = 0; while (u < u1 - 1e-6) { u = Math.min(u1, u + du); out.push([u, (k++ % 2 ? -amp : amp) + v0]); } out[out.length - 1][1] = v1; return out; };
+  /* the Stair of the Eye (PLAN.md sections 2.6 and 3.4; drawn by targets/cone/90fl-stair.js): a mule road in switchbacks on the
+     spur's broad crest, its corners `A` m either side of it, each leg falling at `grade` or less on the page's ground under it.
+     The ground is `ground`: FLASHING_EYE.ground over the scale model, sampled on the page every 200 m down the spur and 100 m
+     across its crest (2026-11-23; verify.py's stair-ground checks the page still agrees). Two pieces: from the band's foot (the
+     Stair's Head) down to the Rest House's gate, and on to the Foot House's north gate; the last corner before the Rest House and
+     the first after it are on the west, so the road turns at the gate and never crosses the yard (the house stands east of it) */
+  const stair = {
+    A: 160, grade: 0.09, w: 3.5, hairpin: 7, head: [365, -185], rest: [2800, 14], foot: [6436, -46], chortenEvery: 3, chortenOut: 12,
+    smooth: { u: [400, 6500], ramp: 100, halfW: 200, skirt: 80 },
+    note: 'smooth: the page smooths the crest under the Stair to this table (FLASHING_EYE.stairGround), so the legs keep their grade on the drawn ground. foot: the Foot House\'s south-west corner, past its west range from the north (its gate is in its south range, to the roads); the page links the road to each house\'s gate',
+    ground: { u0: 400, du: 200, v0: -200, dv: 100, h: [
+      [-224, -212, -212, -212, -224], [-237, -220, -220, -220, -236], [-233, -218, -217, -220, -236], [-237, -231, -233, -231, -237],
+      [-268, -270, -271, -273, -270], [-302, -303, -304, -308, -306], [-332, -335, -334, -334, -330], [-369, -373, -376, -376, -375],
+      [-417, -415, -419, -424, -428], [-461, -460, -459, -465, -475], [-491, -492, -497, -498, -497], [-528, -534, -536, -539, -536],
+      [-573, -575, -575, -576, -575], [-606, -607, -608, -608, -607], [-648, -653, -657, -662, -656], [-684, -701, -707, -709, -710],
+      [-719, -724, -731, -750, -757], [-764, -771, -776, -779, -782], [-800, -817, -823, -829, -827], [-842, -844, -848, -850, -853],
+      [-895, -902, -902, -904, -907], [-919, -937, -963, -965, -970], [-971, -983, -986, -992, -1010], [-1015, -1031, -1044, -1044, -1047],
+      [-1045, -1051, -1057, -1080, -1089], [-1083, -1086, -1094, -1101, -1106], [-1110, -1114, -1123, -1123, -1128], [-1143, -1146, -1152, -1157, -1158],
+      [-1167, -1172, -1175, -1178, -1180], [-1191, -1191, -1193, -1198, -1206], [-1214, -1219, -1217, -1222, -1226]] }
+  };
+  /* the crest's ground as the Stair is laid on it (and as the page smooths it, FLASHING_EYE.stairGround): each row of the table a
+     level and a cross-slope fitted to its samples (least squares), the levels eased along the spur ([1, 2, 1]), both interpolated
+     between the rows: a ruled surface without the model's hundred-metre bumps */
+  const crest = (() => { const G = stair.ground, vs = G.h[0].map((_, j) => G.v0 + j * G.dv), vm = vs.reduce((s, v) => s + v, 0) / vs.length, vv = vs.reduce((s, v) => s + (v - vm) * (v - vm), 0);
+    const lv = G.h.map(r => r.reduce((s, y) => s + y, 0) / r.length), sl = G.h.map((r, i) => r.reduce((s, y, j) => s + (vs[j] - vm) * (y - lv[i]), 0) / vv);
+    return { vm, sl, lv: lv.map((y, i) => i === 0 || i === lv.length - 1 ? y : (lv[i - 1] + 2 * y + lv[i + 1]) / 4) }; })();
+  const stairY = (u, v) => { const G = stair.ground, n = G.h.length - 1, f = Math.max(0, Math.min(n, (u - G.u0) / G.du)), i = Math.min(n - 1, Math.floor(f)), a = f - i;
+    return crest.lv[i] + (crest.lv[i + 1] - crest.lv[i]) * a + (crest.sl[i] + (crest.sl[i + 1] - crest.sl[i]) * a) * (v - crest.vm); };
+  /* switchbacks from P down to Q: corners alternating side0, -side0, ... at A either side of the crest, each as far down as the
+     leg keeps `grade` over every 20 m of it on the table (where the crest's own cross-fall is steeper than that, the leg angles
+     back up the spur, never past the last corner on its side and `gap` m); done when Q is in reach so (and the last corner is on
+     lastSide, when given). last: the furthest corner down on each side so far, shared by the two pieces */
+  const last = { '-1': stair.head[0], '1': -Infinity }, gap = 40;
+  const steepest = (a, b) => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(L / 20)); let m = 0;
+    for (let k = 1; k <= n; k++) { const p = [a[0] + (b[0] - a[0]) * (k - 1) / n, a[1] + (b[1] - a[1]) * (k - 1) / n], q = [a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n];
+      m = Math.max(m, Math.abs(stairY(p[0], p[1]) - stairY(q[0], q[1])) / (L / n)); }
+    return m; };
+  const switchbacks = (P, Q, side0, lastSide) => {
+    const out = [P];
+    let c = P, side = side0;
+    for (let n = 0; n < 80; n++) {
+      if (out.length > 1 && steepest(c, Q) <= stair.grade && (lastSide == null || Math.sign(c[1]) === lastSide)) break;
+      const v = side * stair.A, u0 = Math.max(last[side] + gap, c[0] - 150);
+      let best = null, least = [Infinity, u0];
+      for (let u = u0; u <= Q[0] - 30; u += 5) { const g = steepest(c, [u, v]); if (g <= stair.grade && stairY(u, v) <= stairY(c[0], c[1])) best = u; if (g < least[0]) least = [g, u]; }
+      c = [best == null ? least[1] : best, v]; last[side] = c[0]; out.push(c); side = -side;
+    }
+    return out.concat([Q]);
+  };
+  const stairRoute = switchbacks(stair.head, stair.rest, 1, -1).concat(switchbacks(stair.rest, stair.foot, -1, -1).slice(1)).reverse()
+    .map(p => [p[0], p[1], Math.round(stairY(p[0], p[1]) * 10) / 10]);
+  /* the way chortens: on the outside of every chortenEvery-th hairpin, chortenOut m beyond its corner */
+  const stairChortens = [];
+  stairRoute.forEach((b, i, R) => { if (i === 0 || i === R.length - 1 || i % stair.chortenEvery || (b[0] === stair.rest[0] && b[1] === stair.rest[1])) return;
+    const a = R[i - 1], c = R[i + 1], la = Math.hypot(a[0] - b[0], a[1] - b[1]), lc = Math.hypot(c[0] - b[0], c[1] - b[1]);
+    const m = [(a[0] - b[0]) / la + (c[0] - b[0]) / lc, (a[1] - b[1]) / la + (c[1] - b[1]) / lc], lm = Math.hypot(m[0], m[1]);
+    if (lm < 0.2) return;
+    stairChortens.push([Math.round(b[0] - m[0] / lm * stair.chortenOut), Math.round(b[1] - m[1] / lm * stair.chortenOut)]); });
   const ways = [
     { id: 'breath', name: 'the Way of Breath (the bench to the rim)', pilgrims: 'threshold', pts: lin([[-145, 0], [-400, 30], [-560, -40], [-700, 30], [-860, -40], [-1000, 30], [-1160, -40], [-1300, 30], [-1460, -40], [-1600, 30], [-1760, -30], [-1864, 0]], 0, 152) },
     { id: 'bridges', name: 'the Way of Shrines (up the stacks and over the rope bridges to the Gate of the Rift)', steep: true,
       pts: [[365, -185, -210]].concat(...bridgeway.stacks.map(S => (S.landing == null ? [] : [[S.u, S.v, S.landing]]).concat([[S.u, S.v, S.top]])), [[-3, -80, 0]]) },
     { id: 'mule', name: 'the mule road (round the band\'s west end to the Mule Gate)', pts: lin([[365, -185], [410, -270], [330, -340], [150, -480], [190, -860], [120, -960], [30, -870], [-40, -980], [-110, -860], [-150, -700], [-100, -520], [-170, -400], [-110, -260], [-160, -160], [-87, -100], [-87, -91]], -210, 4) },
-    { id: 'stair', name: 'the Stair of the Eye (the Foot House up to the band\'s foot, in switchbacks)', pts: lin(zig(365, -185, 6370, 0, 255, 260).reverse(), -1200, -210) },
+    { id: 'stair', name: 'the Stair of the Eye (the Foot House up to the band\'s foot, in switchbacks, by the Rest House)', rest: 'resthouse', pts: stairRoute },
     { id: 'kora.lower', name: 'the lower kora (round the monastery, eyes lowered: walked clockwise, against the order of its points, down the Kora Stairs on the east and up them on the west)', pilgrims: 'all', steep: 'its four stairs',
       pts: [[-115.5, 0, 9], [-115.5, -28, 9], [-114, -28, 9], [-98.6, -28, 4], [-46, -28, 4], [-32.6, -28, 0], [-16, -28, 0], [-16, 28, 0], [-32.6, 28, 0], [-46, 28, 4], [-98.6, 28, 4], [-114, 28, 9], [-115.5, 28, 9], [-115.5, 0, 9]] },
     { id: 'kora.open', name: 'the Open Kora (the crater\'s rim, three times with eyes open)', professed: true, loop: true,
@@ -240,6 +298,7 @@ const FE_LAYOUT = (function () {
   const benchGroups = ['prismarch', 'chapter', 'school', 'novices', 'lay'], footGroups = ['foot'];
   const rota = { watch: 24, perWatch: 4, watches: 6, note: 'the Rim Watch: 24 of the chapter in six watches of four, each keeping the rim a week in turn (the hut\'s four bunks hold one watch; 40-fe-watch.js), two awake at a time (their bunks at the bench count, the hut\'s do not)' };
 
-  return { frame, crater, band, lipU, terraces, bridgeway, zones, walls, gates, links, parts, ways, sights, line, water, census, benchGroups, footGroups, rota };
+  return { frame, crater, band, lipU, terraces, bridgeway, zones, walls, gates, links, parts, ways, sights, line, water, census, benchGroups, footGroups, rota,
+    stair, stairY, stairW: stair.w, stairHairpin: stair.hairpin, stairChortens };
 })();
 if (typeof module !== 'undefined') module.exports = FE_LAYOUT;

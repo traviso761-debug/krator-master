@@ -264,6 +264,29 @@ const FLASHING_EYE = (function () {
       if (!sh || Math.hypot(centre(sh.box)[0] - from[0], centre(sh.box)[1] - from[1]) > 30) out.push('the Way of Shrines does not start by the Stair of the Eye\'s head');
       return out;
     },
+    'the Stair of the Eye: 9 to 16 km of switchbacks on the spur\'s crest, uncrossed, turning at the Rest House\'s gate at about 1,080 m, laid on the page\'s ground': L => {
+      const w = L.ways.find(x => x.id === 'stair'), R = L.parts.find(p => p.id === 'resthouse'), out = [];
+      if (!w || !R) return [w ? 'no Rest House' : 'no Stair of the Eye'];
+      const P = w.pts, len = wayLen(P), S = L.stair || {}, A = S.A == null ? 200 : S.A, b = R.box, gate = [(b[0] + b[1]) / 2, b[2]];
+      if (len < 9000 || len > 16000) out.push('the Stair is ' + (len / 1000).toFixed(1) + ' km');
+      let dg = Infinity, through = false;
+      for (let i = 1; i < P.length; i++) {
+        dg = Math.min(dg, segDist(gate, P[i - 1], P[i]));
+        const n = Math.ceil(Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+        for (let k = 0; k <= n; k++) if (inBox([P[i - 1][0] + (P[i][0] - P[i - 1][0]) * k / n, P[i - 1][1] + (P[i][1] - P[i - 1][1]) * k / n], b, 0)) through = true;
+      }
+      if (dg > 8) out.push('the Stair passes ' + dg.toFixed(0) + ' m from the Rest House\'s gate');
+      if (through) out.push('the Stair runs through the Rest House');
+      if (L.stairY) { const y = L.frame.ground + L.stairY(...centre(b)); if (y < 1040 || y > 1120) out.push('the Rest House stands at ' + y.toFixed(0) + ' m'); }
+      P.forEach((p, i) => { if (i > 0 && i < P.length - 1 && Math.abs(p[1]) > A + 1 && !near(p, gate, 8)) out.push('corner ' + i + ' stands ' + Math.abs(p[1]).toFixed(0) + ' m off the crest');
+        if (L.stairY && Math.abs(p[2] - L.stairY(p[0], p[1])) > 0.5) out.push('corner ' + i + ' is ' + (p[2] - L.stairY(p[0], p[1])).toFixed(1) + ' m off the ground'); });
+      for (let i = 1; i < P.length; i++) for (let j = i + 2; j < P.length; j++) if (segX(P[i - 1], P[i], P[j - 1], P[j])) out.push('legs ' + i + ' and ' + j + ' cross');
+      /* every 20 m of every leg at 10 % or less on the crest's surface (the page smooths the crest to it: stairGround) */
+      if (L.stairY) for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], r = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(r / 20));
+        for (let k = 1; k <= n; k++) { const g = Math.abs(L.stairY(a[0] + (b[0] - a[0]) * (k - 1) / n, a[1] + (b[1] - a[1]) * (k - 1) / n) - L.stairY(a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n)) / (r / n);
+          if (g > 0.1 + 1e-9) { out.push('leg ' + i + ' climbs ' + (g * 100).toFixed(1) + ' % over 20 m on the crest'); break; } } }
+      return out.slice(0, 6);
+    },
     'the band is the owner\'s 100-300 m high, about 1.5 km long, facing the Rift': L => {
       const B = L.band, out = [];
       if (B.h < 100 || B.h > 300) out.push('the band is ' + B.h + ' m high');
@@ -301,9 +324,11 @@ const FLASHING_EYE = (function () {
     if (u <= lu && y > tY) y += (tY - y) * wP;
     /* the band: in front of the Lip, the face, the talus leaning on it and the apron easing out (lower only) */
     if (u > lu) {
-      const t = 1 - sm(B.halfLen - B.taper, B.halfLen, Math.abs(v));
+      /* the cut fades back into the model between merge[0] and merge[1] m out from the Lip, so the apron rejoins the flank: without
+         it the face's 200 m and the apron's slow fall ran on down the spur's sides to the Foot House, a trench either side of the crest */
+      const d = u - lu, t = (1 - sm(B.halfLen - B.taper, B.halfLen, Math.abs(v))) * (B.merge ? 1 - sm(B.merge[0], B.merge[1], d) : 1);
       if (t > 0) {
-        const top = m < 0 ? m + (0 - m) * (1 - sm(160, 360, Math.abs(v))) : m, d = u - lu, foot = top - B.h, d0 = B.batter + B.talusRun;
+        const top = m < 0 ? m + (0 - m) * (1 - sm(160, 360, Math.abs(v))) : m, foot = top - B.h, d0 = B.batter + B.talusRun;
         const F = top - B.h * d / B.batter, G = foot + B.talusH - B.talusH * (d - B.batter) / B.talusRun, A = foot - B.apronGrade * Math.max(0, d - d0);
         const T = Math.max(F, G, A);
         if (d < 2) y = Math.max(y, top);   /* the Lip's own edge stands at the bench's top */
@@ -324,6 +349,16 @@ const FLASHING_EYE = (function () {
     return y;
   }
 
-  return { RULES, checks, reach, area, water, toPx, ground, lipU, terraceY, bridges, spine, spurY, segDist, inPoly, wayLen };
+  /* the Stair's corridor: the spur's crest under the Stair smoothed to the layout's ground table (L.stairY, bilinear on
+     stair.ground), so the legs keep on the drawn ground the grade they were laid at; faded back to y over stair.smooth.skirt m
+     beyond halfW either side of the crest and over `ramp` m at its ends. The model's own detail (bumps of 10-30 m a hundred
+     metres apart) stays outside it */
+  function stairGround(L, u, v, y) {
+    const S = L.stair, Z = S && S.smooth; if (!Z || !L.stairY) return y;
+    const w = sm(Z.u[0], Z.u[0] + Z.ramp, u) * (1 - sm(Z.u[1] - Z.ramp, Z.u[1], u)) * (1 - sm(Z.halfW, Z.halfW + Z.skirt, Math.abs(v)));
+    return w > 0 ? y + (L.stairY(u, v) - y) * w : y;
+  }
+
+  return { RULES, checks, reach, area, water, toPx, ground, stairGround, lipU, terraceY, bridges, spine, spurY, segDist, inPoly, wayLen };
 })();
 if (typeof module !== 'undefined') module.exports = FLASHING_EYE;

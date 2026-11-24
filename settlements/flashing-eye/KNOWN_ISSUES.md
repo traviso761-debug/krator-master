@@ -54,7 +54,8 @@
   the Porters' loft over the Mule Gate, the Veil Room over the Gate of Breath), the Watch's hut and the six shrines of the Way of
   Shrines. *Fixed 2026-11-23*: the four corner towers (the precinct's walls ran on to each tower's centre; they stop at its faces
   now, 89zfe, and each tower's watch room and loft are entered by an open doorway from the bench): 47 buildings, 181 rooms, about
-  1,600 pieces. Still owed: the Watchers' Chapel on the Assembly Hall's roof (sheet MR), and the Rest House (not drawn yet).
+  1,600 pieces. *Fixed 2026-11-23*: the Rest House (its hall and tea kitchen, its dormitory and the keeper's room; see below).
+  Still owed: the Watchers' Chapel on the Assembly Hall's roof (sheet MR).
 - **The interiors' compromises** (2026-11-23):
   - The rooms are kits/interiors' planner's, not the sheets' drawn plans: each storey is cut into the programme's room kinds by
     area, the first kind at the door, so the order of the rooms along the range is the planner's; the sheets' stair rooms are the
@@ -88,8 +89,35 @@
   - No electric light (`prog.bulbs` false) and no light of their own: the catalog's lamps and butter lamps glow (their flames are
     lit materials) but cast no light into the rooms at night; a light per lamp would be some hundreds of lights.
 - *Fixed 2026-11-23*: **the Foot House** stands on its own ground at the spur's foot (`FE_FOOT`, 1.2 x 0.8 km at 8 m, the far
-  ground cut away under it): its ranges round the loading court and its gate chorten. Still owed: **the Rest House** (about 1,080 m
-  on the Stair) and **the Stair of the Eye** between them, drawn only to the apron; the Foot House's lower terraces and mule yard.
+  ground cut away under it): its ranges round the loading court and its gate chorten. Still owed: the Foot House's lower terraces
+  and mule yard, and the west and east roads south of its gate.
+- *Fixed 2026-11-23*: **the Stair of the Eye and the Rest House.** The Stair is layout data (`src/30-fe-layout.js` `stair`: switchbacks
+  on the spur's broad crest, 160 m either side of it, every 20 m of each leg at 9 % or less on the crest's surface: a table of the
+  page's ground sampled every 200 m down the spur and 100 m across it, each row fitted to a level and a cross-slope, the levels
+  eased; about 14 km in 39 legs), with its rule (`src/31-fe-rules.js`: 9-16 km, uncrossed, on the crest, turning at the Rest House's
+  gate at 1,040-1,120 m, its corners on the surface, every 20 m of it at 10 % or less) and six negatives in `test-flashing-eye.js`.
+  The page smooths the crest under it to that surface (`FLASHING_EYE.stairGround`: 200 m either side of the crest from the apron to
+  the Foot House, faded out over 80 m; it moves the ground by up to 15 m, the model's hundred-metre bumps, which would otherwise put
+  stretches of 30-70 % in the road). The page draws it on its own ground
+  (`FE_STAIRG`, 10 m cells from the coarse box to the Foot House's, holed out of the far ground; `targets/cone/90fl-stair.js`): its
+  corners rounded into hairpins of 7 m, a cobbled deck 3.5 m wide laid 0.15 m over the drawn ground (the highest of terrainH and
+  KDRAWN across it) and eased along it, dry-stone revetments down both edges, a kerb on the downhill edge, a ramp from the deck to
+  each house's gate; every leg in core/tags before it is drawn, the deck in core/walk (a strip every 4 m). The Rest House
+  (`qb_fe_rest`, seed 34501: a walled yard with its gateway to the road's hairpin, the house across the back, the mules' shed and
+  trough, a chorten, the cistern's head) stands on its pad on its own ground (`FE_REST`, 4 m cells) at about 1,085 m; its rooms are
+  `src/32-fe-rooms.js`'s, planned, furnished and walked in by `90fk` like the others. Way chortens (twelve) stand outside every third
+  hairpin. `verify.py`'s `stair`, `stair-ground` and `rest-house`.
+  - *Fixed on the way*: **the band's cut ran on down the spur.** `FLASHING_EYE.ground` lowered the ground in front of the Lip by the
+    band's height and the apron's slow fall wherever the band's ends had not tapered (|v| under 750 m), as far as the Foot House: a
+    trench 200 to 450 m deep either side of the crest, hidden only because the far ground (400 m cells) read the model, not the
+    ground (the Foot House's own ground showed it). The cut now fades back into the model between 600 and 1,200 m from the Lip
+    (`band.merge`; the test's "the band's cut fades into the model down the spur" and its negative).
+  - The deck is the least height over the drawn ground whose grade nowhere passes 10 %: round each hairpin (whose apex runs down
+    the fall line) it is built up on its revetments by a metre or two rather than cut in, and the ground is never cut for it
+    (`verify.py` fails any 20 m over 12 %). No steps are drawn.
+  - The crest's smoothing is a ruled surface between rows 200 m apart: it reads as long even slopes, not the model's broken ground.
+  - The spur's ground carries no flora: the biome's mask stops at the coarse box (the Foot House's ground has none either).
+  - The walls of the Rest House's yard are not walls to core/walk (the walker can step through them); its gateway is open, no leaf.
 - *Fixed 2026-11-23*: **the people, the pilgrims and the Station's night.** `src/41-fe-people.js` (`FE_PEOPLE`, `[G data]`,
   `test-people.js` 16 checks) places the census (320: the chapter, the Prismarch's household, the school, the novices, the lay
   brothers, the Foot House) and the day's pilgrims (20-40; 420-500 on a Station's day) as pure functions of the clock on

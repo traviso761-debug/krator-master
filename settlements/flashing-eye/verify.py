@@ -19,6 +19,11 @@ checks of tools/checks_optin.json), with the page's own:
   hazards        the vent's hazards on core/hazard (in core/tags): the lava on in a burst and at its base between, none on the bench
   plume-fog      the fog thickens in the plume's column and stays the haze on the bench
   fires          the house's two lights (the Ember's window, the fire basket) hung; no oil lamp anywhere
+  stair          the Stair of the Eye drawn from the Foot House to the Stair's Head (9 km or more), every leg in core/tags, its
+                 deck over the drawn ground everywhere, a core/walk floor every 20 m, no 20 m of it steeper than 12 % (the deck built up where the ground is steeper), the links
+                 to the Rest House's and the Foot House's gates
+  stair-ground   the crest under the Stair smoothed to the layout's surface (stair.ground fitted, L.stairY) within 0.5 m
+  rest-house     the Rest House at 1,040-1,120 m on its pad, on its own ground (FE_REST), the way chortens placed
   interiors-furnished  every building of src/32-fe-rooms.js (the Lip Range's four houses, the Hall of the Ember, the Ember
                  Tower's shaft, the Eye Post) planned with every storey of its sheet and furnished; the Lip Range's doors on L0;
                  the Order's pieces in their rooms (the lecterns, the Ember's hearth); the heliograph and the fire basket on the
@@ -50,7 +55,7 @@ _spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing r
 
 PAGE_JS = r"""
 {const Z=window._flashing||{},K=Z.byKind||{},P=typeof FE_PLACE!=='undefined'?FE_PLACE:[],has=id=>P.some(p=>p.id===id),L=FE_LAYOUT;
- const need=['lip-range','red-monastery','ember','g.rift','g.mule','g.breath','post','hut','chapter','novices','school','granary','kitchen','foothouse'];
+ const need=['lip-range','red-monastery','ember','g.rift','g.mule','g.breath','post','hut','chapter','novices','school','granary','kitchen','foothouse','resthouse'];
  const mon=P.find(p=>p.id==='red-monastery');
  R.push({name:'eye-laid',ok:Z.placed>=30&&need.every(has)&&(K.wall||0)>=6&&Z.talus>=10&&mon&&mon.o.v===0,
   detail:Z.placed+' placed ('+JSON.stringify(K)+'), '+Z.chunks+' chunks, '+Z.talus+' talus heaps; missing: '+need.filter(id=>!has(id)).join(',')});
@@ -93,7 +98,28 @@ PAGE_JS = r"""
  const gb=gs.bearing*Math.PI/180,g0=FE_GLINTS[0].position,onB=feBeam(g0.x,g0.z,g0.x+Math.sin(gb)*5000,g0.z-Math.cos(gb)*5000,gs.bearing),offB=feBeam(g0.x,g0.z,g0.x-Math.sin(gb)*5000,g0.z+Math.cos(gb)*5000,gs.bearing),sideB=feBeam(g0.x,g0.z,g0.x+Math.sin(gb+.35)*5000,g0.z-Math.cos(gb+.35)*5000,gs.bearing);
  R.push({name:'glints',ok:FE_GLINTS.length===2&&gs.mode==='mirror'&&gs.shutter===true&&onB>.99&&offB<.01&&sideB<.05,detail:FE_GLINTS.length+' glints (the Eye Post, the Mirror Tower); on the hour the day line '+gs.mode+' to '+gs.station+', shutter '+(gs.shutter?'open':'shut')+'; aimed: the flash '+onB.toFixed(2)+' on the line at '+gs.bearing+' degrees, '+sideB.toFixed(3)+' 20 degrees off it, '+offB.toFixed(3)+' behind'});
  const LA=typeof FE_LAMPS!=='undefined'?FE_LAMPS:[];
- R.push({name:'fires',ok:LA.length===2&&LA.some(l=>l[3]==='ember')&&LA.some(l=>l[3]==='fire')&&!LA.some(l=>l[3]==='oil'),detail:LA.length+' lights: '+LA.map(l=>l[3]+' ('+l[4]+')').join(', ')});}
+ R.push({name:'fires',ok:LA.length===2&&LA.some(l=>l[3]==='ember')&&LA.some(l=>l[3]==='fire')&&!LA.some(l=>l[3]==='oil'),detail:LA.length+' lights: '+LA.map(l=>l[3]+' ('+l[4]+')').join(', ')});
+ /* the Stair of the Eye (90fl) and the Rest House */
+ {const ST2=typeof FE_STAIR!=='undefined'?FE_STAIR:null,SG=L.stair&&L.stair.ground;
+  if(!ST2)R.push({name:'stair',ok:false,detail:'NO Stair of the Eye on the page'});else{const S=ST2.S,G=ST2.G,W2=ST2.W,K=typeof KWALK!=='undefined'?KWALK:null;
+   let under=0,worst=0,nofloor=0,steep=0,mx=0;
+   for(let i=0;i<S.length;i++){const p=S[i];for(const o of[-W2/2,0,W2/2]){const d=G(p.x+p.nx*o,p.z+p.nz*o)-p.y;if(d>worst)worst=d;if(d>.02)under++;}
+    if(i%10===0&&K){const f=K.floorBelow(p.x,p.z,p.y+.3,.6);if(!f||Math.abs(f[0]-p.y)>.6)nofloor++;}
+    if(i>=10){const g=Math.abs(p.y-S[i-10].y)/(p.s-S[i-10].s);if(g>mx)mx=g;if(g>.12)steep++;}}
+   const head=FE_P(...feC(fePart('stairhead').box)),foot=P.find(p=>p.id==='foothouse'),s0=S[0],s1=S[S.length-1];
+   const ends=foot&&Math.hypot(s0.x-foot.x,s0.z-foot.z)<70&&Math.hypot(s1.x-head[0],s1.z-head[1])<10;
+   const legs=REG.filter(r=>r.key==='fe_stair').length,gates=ST2.links.map(k=>k.id+' '+k.len.toFixed(0)+' m');
+   R.push({name:'stair',ok:ST2.L>9000&&ends&&under===0&&nofloor===0&&legs===ST2.corners.length-1&&ST2.links.length===2&&mx<=.12,
+    detail:(ST2.L/1000).toFixed(2)+' km from the Foot House to the Stair\'s Head ('+(ends?'joined':'NOT joined')+'), '+ST2.pins+' hairpins, '+legs+' legs in core/tags; the deck '+(under?'UNDER the drawn ground at '+under+' points (by '+worst.toFixed(2)+' m)':'over the drawn ground everywhere')+
+     '; '+(nofloor?nofloor+' points with NO floor':'a core/walk floor every 20 m')+'; drawn grade over 20 m at most '+(mx*100).toFixed(1)+' % ('+steep+' stretches over 12 %); links to the gates: '+gates.join(', ')+'; '+ST2.kerb+' kerb stones'});
+   /* the crest under the Stair smoothed to the layout's surface (FLASHING_EYE.stairGround on L.stairY) at the table's points past the
+      apron's ramp; and how far that surface lies from the ground the table was sampled from (the model's bumps it smooths away) */
+   let gd=0,gw='',fit=0;if(SG)for(let i=0;i<SG.h.length;i++)for(let j=0;j<SG.h[i].length;j++){const u=SG.u0+i*SG.du,v=SG.v0+j*SG.dv;fit=Math.max(fit,Math.abs(SG.h[i][j]-L.stairY(u,v)));
+    if(u<L.stair.smooth.u[0]+L.stair.smooth.ramp||u>L.stair.smooth.u[1]-L.stair.smooth.ramp||fePadAt(v,u))continue;const e=Math.abs(terrainH(v,u)-L.stairY(u,v));if(e>gd){gd=e;gw=u+','+v;}}
+   R.push({name:'stair-ground',ok:!!SG&&gd<=.5,detail:SG?'the crest under the Stair within '+gd.toFixed(2)+' m of the layout\'s surface at the table\'s points (worst at '+gw+'); the surface within '+fit.toFixed(1)+' m of the ground it was sampled from':'no ground table in the layout'});}}
+ {const RH=P.find(p=>p.id==='resthouse'),RP=RH&&RH.pad,inR=RH&&RH.x>FE_REST.x0&&RH.x<FE_REST.x1&&RH.z>FE_REST.z0&&RH.z<FE_REST.z1,dg=RH?Math.abs(terrainH(RH.x,RH.z)-RH.o.y):9;
+  R.push({name:'rest-house',ok:!!RH&&!!RP&&inR&&dg<.3&&RH.o.y+FE.BENCH>1040&&RH.o.y+FE.BENCH<1120&&(FE_PLACE.filter(p=>/^stair-chorten/.test(p.id)).length===(L.stairChortens||[]).length),
+   detail:RH?'the Rest House at '+(RH.o.y+FE.BENCH).toFixed(0)+' m on its pad (the ground under it within '+dg.toFixed(2)+' m), on its own ground ('+(inR?'FE_REST, 4 m cells':'NOT on FE_REST')+'); '+FE_PLACE.filter(p=>/^stair-chorten/.test(p.id)).length+' way chortens':'NO Rest House'});}}
 /* the interiors (targets/cone/90fk-fe-interiors.js on src/32-fe-rooms.js) */
 {if(typeof FE_IX!=='undefined'&&FE_IX.buildAll)FE_IX.buildAll();   /* the buildings built as the camera comes to them, all of them now */
  const X=window._feIx||{buildings:[],placed:{}},want=typeof FE_ROOMS!=='undefined'?FE_ROOMS.buildings:[],by=id=>X.buildings.find(b=>b.id===id);

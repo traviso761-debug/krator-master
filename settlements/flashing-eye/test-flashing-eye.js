@@ -9,7 +9,8 @@ const F = require('./src/31-fe-rules.js');
 const clone = () => JSON.parse(JSON.stringify(L));
 const part = (M, id) => M.parts.find(p => p.id === id);
 const WAY = 'the Way of Shrines: a shrine on every stack, each step 30 m up, every bridge short and gentle enough, the last at the Gate of the Rift';
-const rule = name => M =>F.RULES[name](Object.assign({}, M, { lipU: L.lipU })).length === 0;
+const STAIR = 'the Stair of the Eye: 9 to 16 km of switchbacks on the spur\'s crest, uncrossed, turning at the Rest House\'s gate at about 1,080 m, laid on the page\'s ground';
+const rule = name => M =>F.RULES[name](Object.assign({}, M, { lipU: L.lipU, stairY: L.stairY })).length === 0;
 
 /* ---- every rule on the layout */
 F.checks(L).forEach(c => T.ok(c.name, c.pass, c.detail));
@@ -51,6 +52,12 @@ const NEG = [
   [WAY, M => { M.bridgeway.stacks[4].u = 220; M.bridgeway.stacks[4].v = -260; part(M, 'shrine.5').box = [217, 223, -263, -257]; }],
   [WAY, M => { M.bridgeway.end.at = [-3, -60]; }],
   [WAY, M => { M.bridgeway.stacks[5].u = 20; part(M, 'shrine.6').box = [17, 23, -113, -107]; }],
+  [STAIR, M => { part(M, 'resthouse').box = [2789, 2811, 118, 138]; }],
+  [STAIR, M => { part(M, 'resthouse').box = [2789, 2811, 4, 24]; }],
+  [STAIR, M => { const w = M.ways.find(x => x.id === 'stair'); w.pts = [w.pts[0], w.pts[w.pts.length - 1]]; }],
+  [STAIR, M => { const w = M.ways.find(x => x.id === 'stair'); w.pts[6][1] = 420; }],
+  [STAIR, M => { const w = M.ways.find(x => x.id === 'stair'); w.pts[6][2] += 12; }],
+  [STAIR, M => { const w = M.ways.find(x => x.id === 'stair'), p = w.pts[6]; p[0] += 400; p[2] = L.stairY(p[0], p[1]); }],
   ['the band is the owner\'s 100-300 m high, about 1.5 km long, facing the Rift', M => { M.band.h = 400; }],
   ['the band is the owner\'s 100-300 m high, about 1.5 km long, facing the Rift', M => { M.band.lipK = 0.0006; }]];
 NEG.forEach(([name, brk], i) => {
@@ -97,6 +104,17 @@ T.ok('the precinct is level at the bench\'s height where the cap rises above it 
 T.neg('a bench only filled, never cut, is caught', S => level(S).length === 0, (u, v) => Math.max(F.ground(L, u, v, steep(u, v)), steep(u, v)), (u, v) => F.ground(L, u, v, steep(u, v)));
 T.ok('the ground meets the model away from the band and the bench', [[-500, 0], [1400, 0], [300, 900], [-200, 600]].every(([u, v]) => Math.abs(g(u, v) - model(u, v)) < 0.5),
   [[-500, 0], [1400, 0], [300, 900], [-200, 600]].map(([u, v]) => (g(u, v) - model(u, v)).toFixed(2)).join(', '));
+/* the band's cut fades back into the model past the apron (band.merge), so the spur's sides under the Stair are the model's, not a
+   trench 200 m deep down to the Foot House */
+const SIDES = [[1400, 300], [3000, -400], [6000, 500], [2800, 200]];
+const sides = M => SIDES.every(([u, v]) => Math.abs(F.ground(M, u, v, model(u, v)) - model(u, v)) < 0.5);
+T.ok('the band\'s cut fades into the model down the spur (its sides at 1.4 to 6 km)', sides(L), SIDES.map(([u, v]) => (g(u, v) - model(u, v)).toFixed(1)).join(', '));
+T.neg('a band cut that never fades (no merge) is caught', sides, (() => { const M = clone(); delete M.band.merge; return M; })(), clone());
+/* the crest under the Stair: smoothed to the layout's surface between the apron and the Foot House, the ground beyond untouched */
+const smooth = M => { const s = (u, v, y) => F.stairGround(Object.assign({}, M, { stairY: L.stairY }), u, v, y);
+  return [[3000, 100], [1500, -180], [5200, 0]].every(([u, v]) => Math.abs(s(u, v, -5000) - L.stairY(u, v)) < 1e-6) && [[3000, 400], [300, 0], [6800, 0]].every(([u, v]) => s(u, v, -5000) === -5000); };
+T.ok('the crest under the Stair is smoothed to the layout\'s surface, the ground beyond it untouched', smooth(L));
+T.neg('a Stair laid on a crest the page does not smooth is caught', smooth, (() => { const M = clone(); delete M.stair.smooth; return M; })(), clone());
 const fl = F.ground(L, L.crater.centre[0], 0, model(L.crater.centre[0], 0)), rim = F.ground(L, L.crater.centre[0] + L.crater.r, 0, model(L.crater.centre[0] + L.crater.r, 0));
 T.ok('the crater is a bowl about its depth below its rampart', rim - fl > L.crater.depth * 0.8, (rim - fl).toFixed(1));
 /* ---- the spur (the owner, 2026-11-23: the stacks "a natural extension of the terrain and cliff face"): its crest carries every landing,
