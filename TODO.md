@@ -21,6 +21,30 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
+## The Catch and the Bowl in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
+
+The owner's eight-item brief, scoped into five plans and a reproducible survey (`openworld/catch-bowl/README.md`).
+Nothing is cut and nothing is built. Four things block it, and each is small:
+
+- **A `trail` way kind** in `ROADS` [G data]. `core/world/42-world-roads.js` fixes `const G=.08, HW=4` (the ruling grade
+  and the half-carriageway) as module constants. Every way the Catch wants is a trail: the north road over a 5.3 km
+  saddle, the floor's track between the oases, the Twins' Route B. `openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`
+  W2 is waiting on the same change, so it belongs in core, not in either region.
+- **A hazard binding for a region page** [G data] + [web]. `core/hazard` is built and rich (`KHAZ.front`, `KHAZ.crust`,
+  `KHAZ.night`), and **no fragment of `core/world` mentions it**. Proposed: `48h`/`88h` on the shape `48w`/`88s` set for
+  `KWCAMPS` (`openworld/catch-bowl/PLAN-HAZARDS.md` section 5). Region 2's guides' traps want it too.
+- **A fixture binding** [G data] + [web]: one authored thing in one authored place on streamed ground, registered,
+  seated on the drawn mesh, streaming with its tile. Proposed `48f`/`88f` (`PLAN-SETPIECES.md` section 1). This is what
+  `PLAN-TWINS-CROSSING.md` means by "the Hall's cistern and the guides' torch brackets as fixtures".
+- **`biomes/catch`'s stale records** [G data]: four of the kit's five `CATCH.OASES` records are **75 to 209 km** from
+  their 5.1 pins, and the sand-sea and north-fan station sites now land on 4.9 km and 7.0 km of mountainside
+  (`PLAN-TERRAIN.md` P1, P2). Rides along with any work on that kit.
+
+Also parked here: the two salt-works pins (Ṣalṭ al-Bān, Solta) are still held off the map (P5); `sbabalhawa01` and
+`sthetwins01` are still live although the owner dropped both on 2026-11-16 (P6); the Stalkers have no buried pose and no
+line on the harpoon (P12, `kits/mechs/KNOWN_ISSUES.md`); `SIM.outlaws` and `SIM.bounty` are approved in
+`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built.
+
 ## The Audio Lab's numeric defaults *(2026-11-10, the second integration pass)*
 
 - **`|| <number>` in core/audio** (check_source ORNUM, 147 findings, recorded in `tools/check_source_baseline.json` when
