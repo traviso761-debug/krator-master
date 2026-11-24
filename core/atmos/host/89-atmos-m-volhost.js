@@ -72,7 +72,7 @@
    march:()=>{rr.setRenderTarget(cur);rr.render(pMarch.sc,ocam);},
    resolve:()=>{const out=ping?hA:hB,hist=ping?hB:hA;ping=!ping;L.uCur.value=cur.texture;L.uHist.value=hist.texture;L.uPrevVP.value.copy(prevVP);L.uHistOk.value=histOk?1:0;
     rr.setRenderTarget(out);rr.render(pRes.sc,ocam);L.uVol.value=out.texture;histOk=true;prevVP.copy(vp);}};
-  const guard=fn=>{const prevT=rr.getRenderTarget(),ac=rr.autoClear,info=rr.info.autoReset,calls=rr.info.render.calls,tris=rr.info.render.triangles;rr.info.autoReset=false;rr.autoClear=true;
+  const guard=fn=>{const prevT=rr.getRenderTarget(),ac=rr.autoClear,info=rr.info.autoReset,calls=rr.info.render.calls,tris=rr.info.render.triangles;rr.info.autoReset=false;rr.autoClear=false;   /* each pass's quad covers its whole target: no clear (a float target's clear cost ~0.1 ms on the Arc) */
    try{fn();}finally{rr.setRenderTarget(prevT);rr.autoClear=ac;rr.info.render.calls=calls;rr.info.render.triangles=tris;rr.info.autoReset=info;}};
   V.passes=function(){setU();
    const timing=ext&&V.auto&&V.frame%8===0&&!query;let t0=0;if(timing){query=gl.createQuery();gl.beginQuery(ext.TIME_ELAPSED_EXT,query);}

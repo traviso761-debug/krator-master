@@ -81,9 +81,9 @@ async def run(a):
                     await pg.evaluate('(r)=>{_api.tier("volumes");_api.cfg({res:r});}', res)
                     await pg.evaluate('(n)=>_api.frames(n)', 20)
                     row['clouds-res%d' % res] = await pg.evaluate('()=>_api.gpuMs("clouds",40)')
-                    if res == 2:
+                    if res in (2, 4):
                         for ps in ['mask', 'march', 'resolve', 'composite']:
-                            row['%s-res2' % ps] = await pg.evaluate('(w)=>_api.gpuMs(w,30)', ps)
+                            row['%s-res%d' % (ps, res)] = await pg.evaluate('(w)=>_api.gpuMs(w,30)', ps)
                 await pg.evaluate('()=>_api.cfg({res:2})')
                 timing[v] = row
                 print('timing %s: %s' % (v, json.dumps(row)))

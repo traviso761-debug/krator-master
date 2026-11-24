@@ -133,7 +133,7 @@
    ' vec4 ua=atmVU(a),ub=atmVU(b),uc=atmVU(c),ud=atmVU(d);vec4 r=mix(mix(ua,ub,t.x),mix(uc,ud,t.x),t.y);',
    ' float wa=ua.a*(1.0-t.x)*(1.0-t.y),wb=ub.a*t.x*(1.0-t.y),wc=uc.a*(1.0-t.x)*t.y,wd=ud.a*t.x*t.y;z=(atmVZ(a)*wa+atmVZ(b)*wb+atmVZ(c)*wc+atmVZ(d)*wd)/max(wa+wb+wc+wd,1e-6);return r;}',
    'void main(){ivec2 p=ivec2(gl_FragCoord.xy);ivec2 m=textureSize(uCur,0)-1;vec4 c0=texelFetch(uCur,p,0);vec4 c=atmVU(c0);float z=atmVZ(c0);',
-   ' vec4 mn=c,mx=c;for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){if(i==0&&j==0)continue;vec4 n=atmVU(texelFetch(uCur,clamp(p+ivec2(i,j),ivec2(0),m),0));mn=min(mn,n);mx=max(mx,n);}',
+   ' vec4 mn=c,mx=c;for(int k=0;k<4;k++){ivec2 o=k==0?ivec2(1,0):k==1?ivec2(-1,0):k==2?ivec2(0,1):ivec2(0,-1);vec4 n=atmVU(texelFetch(uCur,clamp(p+o,ivec2(0),m),0));mn=min(mn,n);mx=max(mx,n);}',
    ' vec4 o=c;float zo=z;',
    ' if(uHistOk>0.5){vec4 cc=uInvProj*vec4(vUv*2.0-1.0,1.0,1.0);vec3 d=normalize((uCamRot*vec4(cc.xyz/cc.w,0.0)).xyz);float zz=c.a>0.002?z:20000.0;',
    '  vec4 pc=uPrevVP*vec4(uCamPos+d*zz,1.0);vec2 puv=pc.xy/pc.w*0.5+0.5;',
