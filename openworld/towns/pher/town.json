@@ -1553,7 +1553,7 @@
    "settlements/pher/gen/89zf-ph-far.js",
    "settlements/pher/targets/town/89zp-ph-site.js"
   ],
-  "hash": "159689937c5e03d5",
+  "hash": "3349daf8eda9f2d4",
   "by": "core/world/bake_towns.py"
  }
 }
