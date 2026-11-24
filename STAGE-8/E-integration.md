@@ -15,7 +15,10 @@
    claude/roomlight-fixes 02b9afc2, claude/citadel-room-graph 4067d5d3, claude/citadel-furnishing-cb5e01 f348edf53.
 3. Before Stage 8: claude/xanadu-packs a8d7e7c18 (--page-packs off by default); XS0 files only from claude/xs0-measure-local
    02716be9b (settlements/xanadu/XS0-MEASURE.md, .json, xs0/); lake towns A1 e15d66e4f (or claude/xanadu-plans-ad6ef4 if done).
-4. **Before step 29's verify (the scale-model session, via the coordinator, 2026-11-23):** on every heavy open-world page the GPU
+4. **Done 2026-11-24 (ab4eb8f07, claude/agitated-lalande-bbb361):** the stall was two universal asserts, leaf-stems walking every
+   far-terrain triangle and water-mouths reading vertices 26-52 km off; both fixed, the five heavy pages' universal asserts now 0.2-4.5 s.
+   Now that water-mouths reads the right vertices it reports streams unfaded into the Ring Sea (lake-shore 1726 m and 1140 m,
+   north-shore 1126 m, oidong-highrift 1840 m): reports today, failures once D28 turns water-mouths on everywhere. The original item: **Before step 29's verify (the scale-model session, via the coordinator, 2026-11-23):** on every heavy open-world page the GPU
    verify stalls in the harness's universal asserts after the region's own checks have printed. Pinnacle took 24.8 min on the rtx
    lane, at the edge of the 25-min watchdog; xanadu-lake-shore and xanadu-oidong-highrift were killed there (the lake-shore
    death after its resources panel, in the known failures below, may be the same thing). Left alone, the 484-job verify loses its
