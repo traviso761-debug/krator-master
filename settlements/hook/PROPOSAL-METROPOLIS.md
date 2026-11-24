@@ -206,8 +206,17 @@ clear approach** from the south; a **city wall** runs from the harbour to the fr
 its hamlets, ground cleared or reclaimed, ruin half decaying) off from the mainland; a **Hykkousoi fishing village in a
 drowned tower** is the coast's smuggling haven.
 
-Recommended placement: **B**, the plan turned 34 degrees so its waterfront lies on today's quays (Port Hook kept as built;
-the wall on the spit's east end; the drowned downtown on today's lagoon). Open: the placement, the north ridge (it runs into
-water 130 to 150 m deep), who built the wall, whether the freeway's west arc stands, the Drowned Spire's tower, the bay as
-the harbour, the names. **Nothing is built for it yet**; the Alexandria landforms of section 9 (plain, strait, shelf) are
-to be dropped when the redo starts, and M1's records redone on its field.
+**The owner's answers (2026-11-24):**
+1. **Placement B**: the plan turned 34 degrees so its waterfront lies on today's quays. Port Hook is kept as built; the
+   wall stands on the spit's east end; the drowned downtown on today's lagoon.
+2. **The north ridge as drawn**, the full length into water 130 to 150 m deep, its flanks steep; the hill and Lantern
+   Point on it.
+3. **The wall is the Pirate Emperors'**: raised from Ancient rubble against raids from the jungle side, repaired by Voth,
+   held by the Izani now.
+4. **The freeway's west arc is fallen**: the south ramp and the east arc to the Freeway Gate are the one clear approach.
+5. **The Drowned Spire is one Spindle** standing to its crown: the village in its upper floors, pods on the crown.
+6. Not asked again, the proposal's defaults: the bay between the ridge and the mainland is Port Hook's harbour (the Hook
+   breakwater kept as built); the places keep working names until the tongues give real ones.
+
+The redo starts with S1 (the ground); the Alexandria landforms of section 9 (plain, strait, shelf) are dropped, and M1's
+records are redone on the plan's field in S2.

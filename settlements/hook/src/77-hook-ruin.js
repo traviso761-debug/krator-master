@@ -214,11 +214,12 @@ HOOK_RUIN_PLAN.PARAMS={
  causeway:{maxDepth:6,gap:.6}};
 /* the page's plan: on Hook's ground (75d), the spit's benches (core/world 41l, the site's landforms) and the site's grid */
 const HOOK_RUIN=(function(){
- const SPIT=WLAND.benches.filter(b=>/^lf_hook_/.test(b.id));
- /* 41l's distance to a bench's rectangle (0 inside it) */
- const bD=(b,x,z)=>{const dx=x-b.x,dz=z-b.z,u=Math.abs(dx*b.c+dz*b.s)-b.a,v=Math.abs(-dx*b.s+dz*b.c)-b.b;
-  return u<=0&&v<=0?0:Math.hypot(Math.max(u,0),Math.max(v,0));};
- const spit=(x,z)=>{const w=HOOK_WORLD.toWorld(x,z);let best=null;for(const b of SPIT)if(bD(b,w[0],w[1])===0){if(b.id==='lf_hook_spit')return 'spit';best='wall';}return best;};
+ /* the walled peninsula: the spit's record (world/landforms.json, the owner's site plan, placement B), by 41l's own distance
+    (0 on its ground, its outline as it wanders). The shank and barb are gone (drowned), so nothing is 'wall' any more; S2
+    redoes this plan on the site plan's field (PROPOSAL-METROPOLIS.md section 10) */
+ const SPIT=WLAND.benches.filter(b=>b.id==='lf_hook_spit');
+ const bD=(b,x,z)=>WLAND.benchD(b,x,z);
+ const spit=(x,z)=>{const w=HOOK_WORLD.toWorld(x,z);for(const b of SPIT)if(bD(b,w[0],w[1])===0)return 'spit';return null;};
  const main=SPIT.find(b=>b.id==='lf_hook_spit');
  const portD=(x,z)=>{const w=HOOK_WORLD.toWorld(x,z);return main?bD(main,w[0],w[1]):Math.hypot(x,z);};
  return HOOK_RUIN_PLAN({natH:HOOK_WORLD.natH,spit,portD,grid:HOOK_SITE.grid});})();

@@ -6,9 +6,16 @@ from a Hook task.
 
 ## Huka's ruin (M1, 2026-11-24)
 
-- [ ] **M1's layout is the first one.** The owner's Alexandria plan (`PROPOSAL-METROPOLIS.md` section 9) moves the old
-      city onto a raised coastal plain, makes the spit an island on a causeway and sinks two quarters (the Nekropolis's
-      place in the lagoon and a peninsula to the north-east); M1's extents and thirds are redone for it next.
+- [ ] **M1's layout is the first one.** The owner's own site plan (`plan/hook-site-plan.html`, `PROPOSAL-METROPOLIS.md`
+      section 10) replaced both it and the Alexandria plan. S1 (the ground) is in; M1's records still lay the first
+      layout (a Sunk City and a Scarp City by the old thirds, the old axis as a spine) on the new ground until S2 redoes
+      them on the plan's field (the downtown's rings, the freeway with its fallen west arc, the wall, the thirteen places).
+- [ ] **The plateau's own north coast is straight.** East of the wall the plateau's north foot runs straight for some
+      4 km: the scale model's 2 km cells, not Hook's records (the mainland strip only raises the water before it).
+      `core/coast` would curve it in the open world; on Hook's page it is the model's line.
+- [ ] **Lightwall was not rebuilt with this 41l.** Its ground bake fails before 41l is read (`core/hamlet/xanadu/
+      23-hamlet-xanadu-row.js is not loaded`, the region's sites), so its committed page still carries the 41l before
+      the outlined benches. It takes none of them, so it renders the same; rebuild it when its build is fixed.
 
 - [ ] **The Ancient grid is Hook's own, not lifted.** The owner's answer 6 has the grid lifted out of the valley
       (`AV.plan`'s lattice and ruin field) by Hook's phases; M1 writes Hook's plan on its own fragment

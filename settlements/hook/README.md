@@ -145,6 +145,18 @@ Hook's own:
 
 ## The ground
 
+**The site plan's ground (S1, 2026-11-24).** The owner's site plan (`plan/hook-site-plan.html`, placement B: the plan
+turned 34 degrees so its waterfront lies on today's quays) is drawn into the ground by Hook's own landform records
+(`world/landforms.json`, `core/world` 41l's outlined benches), made from the owner's sketch, in stamping order:
+`lf_hook_sunk` the drowned downtown (cut only, its floor at least 3 m down, the lagoon's deeper water kept),
+`lf_hook_spit` the walled peninsula with the north ridge running about 3 km into deep water (5 m over the sea, its
+quay edge held straight on today's line, its east edge the wall's), `lf_hook_mainland` the coastal strips east and
+south of the wall (fill only, 2.5 m, so the plateau stands as it is; past the city limits they narrow to points over the
+water instead of ending square), and two domed hills (`lf_hook_ridge_hill`, Signal Hill, about 45 m; `lf_hook_crown_hill`,
+the Crown's, about 28 m). The old shank and barb are gone: the drowned downtown and the model's flat take their place.
+The frame is unchanged (the same origin, bearing and stations), so the town stands where it did.
+`python3 world/cut.py --landforms` writes the records into the cut's region.json without re-cutting the model.
+
 Hook stands on the **Krator Scale Model's ground at 1:1** (the owner, 2026-10-19: built in place on the model, so its
 terrain never has to be reconciled with the open world). The land is the open world's own, read in place:
 `core/world/41-world-fields.js` (`WORLD.H`: the model's heights by Catmull-Rom, the style's detail per biome overlay, the

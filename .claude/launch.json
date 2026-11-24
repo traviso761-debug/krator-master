@@ -48,6 +48,16 @@
             "port": 8811
         },
         {
+            "name": "hook-site",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "settlements/hook/serve.py",
+                "8814"
+            ],
+            "port": 8814,
+            "autoPort": false
+        },
+        {
             "name": "isle-demo",
             "runtimeExecutable": "python",
             "runtimeArgs": [

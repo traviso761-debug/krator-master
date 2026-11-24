@@ -71,8 +71,8 @@ const clearOfSpine = bs => bs.every(b => Math.abs(b.x - P.spineX) - b.w / 2 >= P
 T.ok('no block stands in the spine\'s swathe', clearOfSpine(R.blocks), 'spine x ' + P.spineX);
 T.neg('a block on the spine fails the swathe check', clearOfSpine, R.blocks.concat([Object.assign({}, R.blocks[0], { x: P.spineX + 10 })]), R.blocks);
 const SPIT = WLAND.benches.find(b => b.id === 'lf_hook_spit');
-const bD = (b, x, z) => { const dx = x - b.x, dz = z - b.z, u = Math.abs(dx * b.c + dz * b.s) - b.a, v = Math.abs(-dx * b.s + dz * b.c) - b.b;
-  return u <= 0 && v <= 0 ? 0 : Math.hypot(Math.max(u, 0), Math.max(v, 0)); };
+/* 41l's own distance off a bench's ground (its outline as it wanders) */
+const bD = (b, x, z) => WLAND.benchD(b, x, z);
 const offSpit = bs => bs.every(b => { const w = W.toWorld(b.x, b.z); return bD(SPIT, w[0], w[1]) > 0; });
 T.ok('no block stands on the living port\'s spit (the port third is the town\'s)', offSpit(R.blocks), '');
 T.neg('a block moved onto the spit fails the check', offSpit, R.blocks.concat([Object.assign({}, R.blocks[0], { x: 0, z: -900 })]), R.blocks);
@@ -122,8 +122,8 @@ T.neg('a camp in the far lagoon fails the check', campOk, R.camps.concat([Object
 
 /* ---- the spine */
 const sp = R.spine.stretches;
-T.ok('the spine runs on across the lagoon from the town\'s axis, causeway near the port, broken further out',
-  sp.length > 8 && sp.every(s => Math.abs(s.z0 - s.z1 - PITCH) < 1e-9) && sp.some(s => s.kind === 'causeway') && sp.some(s => s.kind === 'gap'), R.report.spine);
+T.ok('the spine runs on across the lagoon from the town\'s axis, causeway near the port, broken or drowned further out',
+  sp.length > 8 && sp.every(s => Math.abs(s.z0 - s.z1 - PITCH) < 1e-9) && sp[0].kind === 'causeway' && sp.some(s => s.kind === 'gap' || s.kind === 'drowned'), R.report.spine);
 
 /* ---- records stable by id, the same in any order */
 const ids = [].concat(R.blocks, R.towers, R.heaps, R.pods, R.villages, R.camps).map(r => r.id);
