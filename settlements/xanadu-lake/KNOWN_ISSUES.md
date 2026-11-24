@@ -113,4 +113,21 @@
   on a bent shore: Ālph-Hēḍ's drying floors reached a row); a landmark above the shore road clears the road at each of its
   corners, not only at its middle (Malbari's han). `tests/test-xl-towns.js` judges a bridge by its corners, not its middle over
   the stream's bed (Māuṭh's, where the bed meets the lake).
+- **Seven south-shore towns re-tuned to the vale ring's moved shore** (2026-11-24, after the map session moved twelve; the owner's
+  go-ahead). `tools/fit_lake_town.py` takes three new settings in a town's `world`, each off unless set: `islet` (m: a crossing
+  counts as the shore only where the land runs dry that far inland, so the low banks and islets the new model put in the
+  shallows are passed), `brg` (the frame's bearing, where the plane's fall points at a bay or a corner of the shore) and `at`
+  ([dx, dz] world metres from the pin where the march to the water starts: a landing on a straight stretch beside the pin's).
+  Boṭ-Yārḍ lands 700 m east of the shore's corner, facing north, R 2200; Saphran (`islet` 500) and Gārḍan (150) on their
+  straight shores behind the banks, Saphran's lots allowed to a slope of 0.4 (`layout.maxSlope`: the wall behind it now rises a
+  third; the planner's default stays 0.3); Ōrcharḍ faces east (90, was 45) on the kilometre of straight shore between a bay and
+  a headland, its waterfront 420 m (was 520), its core 540, its benches deeper and 440 long; Phīsh-Mārkiṭ faces north (0, was 45)
+  past its sandbar; Siṭāq lands on the east-west stretch of the stack's new arm, 1.4 km east of its pin, facing north (0, was
+  45), R 2600 on a 12.5 m grid (the arm west of the pin, 50-100 m wide, stays open to the lake). **Siṭāq's landing is no longer in
+  the stack's lee** (its plan's idea): the stack (lf_west_stack) stands 6.6 km north-east; a lee landing waits for the plan to
+  be redrawn on the new arm. The site test's two negatives now dig a pit 5 m under the level wherever they dig and tilt a
+  bench's band 5 % (a cliff shore and a plateau had made them prove nothing).
+- **Pāṭari is held on its row from before the move** (STALE). On the re-run's model every landing within 2.5 km either side
+  of its new pin is a cliff: the ground rises 33-76 m in the first 100 m from the water (it rose 7 before), 174-481 m at 430 m.
+  The town lays 28 houses of 273 there. Owed, as for Qōqō, Hāibh and Nēṭ: a site with a foreshore (the map's).
 

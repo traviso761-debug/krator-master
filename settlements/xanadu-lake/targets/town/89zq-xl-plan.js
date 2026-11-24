@@ -44,7 +44,9 @@ function xlPools(S){const W=xlWealth(S),a=S.andean,P={};
   if(q.role==='market')XL.HOUSES.shops.forEach(k=>pool.push([k,.12]));
   P[q.id]=pool.map(([k,v])=>[k,+v.toFixed(4)]);}
  return P;}
-const xlTune=half=>({cell:2.5,rasterHalf:half,maxSlope:.3,exact:true,
+/* maxSlope: core/city's steepest lot, 0.3 unless the town's layout sets its own (layout.maxSlope: Saphran's steeper wall on the
+   re-run's model, 2026-11-24) */
+const xlTune=(half,ms)=>({cell:2.5,rasterHalf:half,maxSlope:ms==null?.3:ms,exact:true,
  width:{avenue:10,main:8,side:5.5,alley:3,highway:10,lane:4.5},lot:{side:1.6,setback:1.4,rear:3,inset:1,step:3},
  classes:{rich:[['xa_rich_a',0]],middle:[['xa_mid_a',0],['xa_mid_c',0]],poor:[['xa_poor_c',0]]},fallback:{rich:'middle',middle:'poor',poor:null},
  civic:[],civicSpacing:120,voidMax:40,voidIters:0,voidBatch:0,sideSpacing:48,sideMax:200,alleyFrac:.25,blindMax:90,interiorDepth:9,interiorRounds:0,
@@ -299,7 +301,7 @@ function xlRun(key){const S=XL.SPECS[key];if(!S)throw new Error('xanadu-lake: no
  let T=null,best=null,marginQ={};
  for(let attempt=0;attempt<4;attempt++){
  T={key,seed:XL.seed(key),L,civic:[],blocks:[],fields:xlFields(key),marginQ:Object.assign({},marginQ)};
- const C=KCITY.create({name:'xanadu-lake:'+key,tune:xlTune(Math.ceil(Math.max(Lay.half+260,G.stream?G.stream.x+220:0,(Lay.rows[Lay.rows.length-1]+400)))/10*10),seed:T.seed,ground:{h:L.h},kit:{dims:xlDims},
+ const C=KCITY.create({name:'xanadu-lake:'+key,tune:xlTune(Math.ceil(Math.max(Lay.half+260,G.stream?G.stream.x+220:0,(Lay.rows[Lay.rows.length-1]+400)))/10*10,Lay.maxSlope),seed:T.seed,ground:{h:L.h},kit:{dims:xlDims},
   rand:'krand',index:{order:'insertion'},steps:xlSteps(key,T)});
  T.C=C;T.plan=C.run();
  const got={};for(const l of T.plan.lots){if(l.died!=null||l.civic||!l.court)continue;const b=T.blocks.find(b=>b.id===l.court);if(b)got[b.quarter]=(got[b.quarter]||0)+1;}
