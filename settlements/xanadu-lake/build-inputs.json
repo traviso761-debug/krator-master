@@ -107,7 +107,7 @@
     "core/minimap/88-core-minimap.js": "34298e883feac23b71ea2c77593d7359c93f1f46a6bbb231f09f6028e59ff50c",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
-    "core/region/data/xan-tune.js": "73bd8768fed225b370db2ba10151b198377ce2ec7e89837a9599b41903801e9a",
+    "core/region/data/xan-tune.js": "7d7b8548323a38998753a468d4c0ff1db6e946bd49e843ea7ef6f3be3a14304c",
     "core/ruins/20-core-ruins.js": "6f04bcc47c08c41ffcfe160fe9b21aa33a0f543ee27284153ce4af3cfac73005",
     "core/ruins/21-core-ruins-host.js": "016c618d09cd8fff1fb1666cf6c01f3f4e76cdad4cb0d956cb2bf3f928d302dc",
     "core/shader/06-core-khook.js": "6e4ee748eb8928c4dd19c937d0229e0a90366627f8c98b200f08d926aa9b801e",
@@ -279,20 +279,19 @@
     "kits/xanadu/src/88l-xa-mine-works.js": "2114c6f512ce66255579d30bfbe3c50cb1f195a9fa28e276590efebf3561754d",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/xanadu.py": "5eb40aa7b0bb7624f547d0b26ec2787cc7a6925b0b554812beb987ddac8e086c",
-    "settlements/xanadu-lake/KNOWN_ISSUES.md": "7c016532ffa5fbfbf71a27da1686edc2e14487eef65d2f62a351e7138e98fbe1",
+    "settlements/xanadu-lake/KNOWN_ISSUES.md": "12be21ef0d1d3da2d7fec83bb02bf0f5d99eb6c7b17632adea1992a6e2875204",
     "settlements/xanadu-lake/PORT.md": "869d627544393a932acad3df30f2d72cfbceceddff4684c7ec70eab99c3a12ae",
     "settlements/xanadu-lake/build.py": "12ddd7b5eb4396163e22fd33da8c31e81464fae665b2c95c0ea9948eaf79c357",
     "settlements/xanadu-lake/gen/69p-kcity-bundle.js": "e05aea6e11cd3a60705ef7ef6705fd261a4ed648cc4c18ca828cfe794fc33a27",
     "settlements/xanadu-lake/gen/86-bio-31b-core-leafset.js": "5dac9c3450924e1c65a5273e4dd8b498d2a32ffec14f8a8372588c8de2f30f9b",
     "settlements/xanadu-lake/gen/89zc-crops-bundle.js": "f001df501427c26138ca04b69d5ba0e402468e6d42d50f44d9214b44de086e39",
-    "settlements/xanadu-lake/gen/89zk-xl-tune.js": "57dd269bf64eac14737c286ba00dbf12408eacd4c462d4e3520451d9b236fbb9",
     "settlements/xanadu-lake/kit.json": "9a632da69bec695d6c2aa2ada65c6a6904120116abf15cddf06ca1df288a9a66",
     "settlements/xanadu-lake/targets/town/89z-rows.js": "37c569aea3be7ef886b9f7fb61d80f2b778bcd2aa7f416a93f0ceb5a485e3a87",
-    "settlements/xanadu-lake/targets/town/89zl-xl-specs.js": "627cb431a28994ffe83fd396e92d4597fbcdd50bdd21b7207edf7d7339d32c10",
-    "settlements/xanadu-lake/targets/town/89zm-xl-fit.js": "23f333b025b4bec9d025e3cea4a4e24b7706a83b473788f375584096444a7607",
+    "settlements/xanadu-lake/targets/town/89zl-xl-specs.js": "9fa8ed0981565c186720dd2640b51d254cdd134db3eead32e9ffa62bfd462812",
+    "settlements/xanadu-lake/targets/town/89zm-xl-fit.js": "94a6f9949b98495876bad815e2ec21facd535a34cc001438e234aeea2d116c58",
     "settlements/xanadu-lake/targets/town/89zn-xl-days.js": "603aa7e477d2f6f427a87b2cb32dba6540c24f9c566579239c750dd60fbfca56",
     "settlements/xanadu-lake/targets/town/89zp-xl-site.js": "218f92f892bfb2938a1456fcfc8ad9da7d19d260bce4574d968575a067a7f146",
-    "settlements/xanadu-lake/targets/town/89zq-xl-plan.js": "e627a91abfb79808df2c761941135b5b62e4eee700fba810ad7e29485805f77f",
+    "settlements/xanadu-lake/targets/town/89zq-xl-plan.js": "57797b6bd7dc9957d15ddc61b70441e5a1c8ff1b83bd3a3fa9aa39e2824b2b51",
     "settlements/xanadu-lake/targets/town/89zu-xl-people.js": "c568fdd9b3bf6c4c85076b63e1e0ba871ce5ffbaeda1b8fb638b3e2165a40979",
     "settlements/xanadu-lake/targets/town/90q-xl-world.js": "baccb1621d652e79087c6f0c9e38a8f12300e12efdee78c2d95210a3dc190df2",
     "settlements/xanadu-lake/targets/town/90r-xl-build.js": "32f8bc8bdb29ac23c008daded5ba78c404c7164b4e3fcfe0c75d5b3054c33ed4",
@@ -510,16 +509,18 @@
    },
    "listed_by": "code",
    "outputs": {
-    "settlements/xanadu-lake/build-manifest-town.json": "dee337d2d96df73ef86f802585ad8079c00014e034c52fa692822235fac6bab9",
-    "settlements/xanadu-lake/dist/xanadu-lake.html": "75449a299bd28f6ba2adea9d4d5e1f9a981fab26e095ff9aeb6fdeb19703a578",
+    "settlements/xanadu-lake/build-manifest-town.json": "64fe678c1a5415c19f6a3a99ac7d25e89a290806c10736a79616bd14ec88900a",
+    "settlements/xanadu-lake/dist/xanadu-lake.html": "b272085865f1a4b50f9adbe44ef5662fad8e3179f7587b13996f4c936f7041ea",
     "settlements/xanadu-lake/dist/xanadu.tex.xanadu-2.js": "521b0e41d7f3065f190b36e5614bb752b7ef192a7df75ae2141d4af52c696d89",
-    "settlements/xanadu-lake/dist/xanadu.tex.xanadu.js": "607a41c3d665833ecca1e59125de7d188d4c00e5b76e2fcabc5eabde7dba39d0"
+    "settlements/xanadu-lake/dist/xanadu.tex.xanadu.js": "607a41c3d665833ecca1e59125de7d188d4c00e5b76e2fcabc5eabde7dba39d0",
+    "settlements/xanadu-lake/gen/89zk-xl-tune.js": "e314a71a1daaa05221ee2d02ff284e9ee50cfa0038751b3c62c73e1def08c87a"
    },
    "outputs_raw": {
-    "settlements/xanadu-lake/build-manifest-town.json": "3acf58b6bbf40c1fc2b28fdb0a9d0ada139fa03e95ddb6a61637733a5fdace33",
-    "settlements/xanadu-lake/dist/xanadu-lake.html": "75449a299bd28f6ba2adea9d4d5e1f9a981fab26e095ff9aeb6fdeb19703a578",
+    "settlements/xanadu-lake/build-manifest-town.json": "26122f1bf62db9460f97d521b807ace7b227be58881ad7155637e270032b94ec",
+    "settlements/xanadu-lake/dist/xanadu-lake.html": "b272085865f1a4b50f9adbe44ef5662fad8e3179f7587b13996f4c936f7041ea",
     "settlements/xanadu-lake/dist/xanadu.tex.xanadu-2.js": "521b0e41d7f3065f190b36e5614bb752b7ef192a7df75ae2141d4af52c696d89",
-    "settlements/xanadu-lake/dist/xanadu.tex.xanadu.js": "607a41c3d665833ecca1e59125de7d188d4c00e5b76e2fcabc5eabde7dba39d0"
+    "settlements/xanadu-lake/dist/xanadu.tex.xanadu.js": "607a41c3d665833ecca1e59125de7d188d4c00e5b76e2fcabc5eabde7dba39d0",
+    "settlements/xanadu-lake/gen/89zk-xl-tune.js": "e314a71a1daaa05221ee2d02ff284e9ee50cfa0038751b3c62c73e1def08c87a"
    }
   }
  }
