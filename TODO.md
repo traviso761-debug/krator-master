@@ -388,11 +388,6 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `core/tags/glazier/52g-tags-glazier.js`, which only the Tungang kit loads. Move `'glazier': 'Glaziers'` into `CULTURE_NAMES` in
   `core/tags/52-core-tags-vocab.js` (and `NO_CATALOG` until a Glazier catalog culture file exists), delete `core/tags/glazier/`,
   and drop it from `kits/tungang/build.py`. It moves every page that takes core/tags.
-- **`WATER.drawFlow`'s program cache key leaves out its colours** (2026-11-12, found by `biomes/arch`): `core/water/51-core-water-kinds.js`
-  bakes `o.shallow` and `o.deep` into the fragment shader text but builds `customProgramCacheKey` from the common chunk and the flags only, so
-  every flow on a page after the first draws the first one's colours (three.js reuses the program). Add the two colours (and `o.color`) to the
-  key. `biomes/arch/src/89w-host-water.js` works round it by extending the key itself; drop that once core has it. It moves every page that
-  draws a flow (147 build commands, `python3 tools/reach.py core/water/51-core-water-kinds.js`).
 
 - **Owed from the merge of `ccr-a96f22b6-0hy616` into main (2026-11-18)**, each checked against this line before the merge (a
   worktree at a4ac64ebc builds the same findings), so none is the merge's own; the ratcheted lints' new keys baselined with this entry:
