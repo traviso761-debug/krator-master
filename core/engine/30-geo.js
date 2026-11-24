@@ -50,7 +50,7 @@ let GSTAT={tris:0};
               any building), 1 (a place for baked occlusion, which nothing here bakes yet), and 1 on a chamfered box's
               vertices, 0 elsewhere (they sit on an arris) */
 const FORM={chamfer:null,jitter:0,fields:false};let FORM_ROOT=null;
-function setForm(o){o=o||{};FORM.chamfer=typeof o.chamfer==='number'?(()=>o.chamfer):(o.chamfer||null);FORM.jitter=o.jitter==null?0:+o.jitter;FORM.fields=!!o.fields;return FORM;}
+function setForm(o){o=o||{};FORM.chamfer=typeof o.chamfer==='number'?(()=>o.chamfer):typeof o.chamfer==='function'?o.chamfer:null;FORM.jitter=o.jitter==null?0:+o.jitter;FORM.fields=!!o.fields;return FORM;}
 /* place() calls these round a building it draws at the top level: the frame the height and the lean are measured in */
 function formRoot(){if(!(FORM.jitter||FORM.fields))return null;const keep=FORM_ROOT;const e=CM.elements;
  const h=KRAND.hash(0x0f0a,Math.round(e[12]*4),Math.round(e[13]*4),Math.round(e[14]*4));

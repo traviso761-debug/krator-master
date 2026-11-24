@@ -37,6 +37,8 @@ const KF_API = (function () {
   API.has = function (key) { return !!FURN_BY_KEY[key]; };
   /* round primitives' detail for everything built after the call (1 = the catalog page's; 0.5 halves the
      segments of cylinders, cones, domes, balls and rods: a settlement's furniture is about half the triangles) */
+  /* the export form (krator-furniture-core.js, "THE EXPORT FORM"): {chamfer: metres or family -> metres, grain: true} */
+  API.setForm = function (o) { return kfSetForm(o); };
   API.setDetail = function (k) { _LOD = Math.max(0.25, Math.min(1, +k || 1)); return _LOD; };
   API.cultures = function () { return FURN_CULTURES.slice(); };
 
@@ -99,6 +101,7 @@ const KF_API = (function () {
     if (this.buckets[k]) return this.buckets[k];
     const b = this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) };
     if (this.indexed) b.idx = new Buf(Uint32Array);
+    if (this.indexed && _FORM.grain) b.grn = new Buf(Float32Array);   /* the export form: the grain's way, a vertex */
     return b;
   };
   Batch.prototype.absorb = function (g) {
@@ -127,6 +130,11 @@ const KF_API = (function () {
           b.pos.push3(_v.x, _v.y, _v.z);
           if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); b.nor.push3(_w.x, _w.y, _w.z); } else b.nor.push3(0, 1, 0);
           b.col.push3(cr, cg, cb);
+        }
+        if (b.grn) {
+          const gr = o.userData.grain;
+          if (gr) _w.set(gr[0], gr[1], gr[2]).transformDirection(_m); else _w.set(0, 0, 0);
+          for (let j = 0; j < nv; j++) b.grn.push3(_w.x, _w.y, _w.z);
         }
         if (idx) for (let i = 0; i < n; i++) b.idx.push1(base + idx.getX(i));
         else for (let i = 0; i < n; i++) b.idx.push1(base + i);
@@ -163,6 +171,7 @@ const KF_API = (function () {
       geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
       geo.setAttribute('normal', new THREE.BufferAttribute(b.nor.view().slice(), 3));
       geo.setAttribute('color', new THREE.BufferAttribute(b.col.view().slice(), 3, true));   /* uint8, normalised */
+      if (b.grn && b.grn.n === b.pos.n) geo.setAttribute('aGrain', new THREE.BufferAttribute(b.grn.view().slice(), 3));
       if (b.idx) geo.setIndex(indexAttr(b.idx.view().slice(), b.pos.n / 3));
       let mt;
       if (f === 'glow') mt = new THREE.MeshBasicMaterial({ vertexColors: true });
