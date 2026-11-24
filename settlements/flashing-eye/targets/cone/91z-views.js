@@ -22,6 +22,9 @@ const VIEWS=(function(){
  {const E=FE_PLACE.find(p=>p.id==='ember'),y=E.o.y+.9;V['In the sanctum of the Ember']=[E.x+4.4,y+1.75,E.z-5.9,E.x-3,y+1.2,E.z-8.6];}
  {const L=(window._feIx||{}).ladder,B=FE_ROOMS.buildings.find(b=>b.id==='post'),y=P.o.y+B.shell.y+.06+B.shell.hs[0]+B.shell.hs[1];if(L){const cx=L.at[0]+L.n[0]*2.4+L.t[0]*.9,cz=L.at[1]+L.n[1]*2.4+L.t[1]*.9;V['The ladder in the Mirror Room']=[P.x+cx,y+1.6,P.z+cz,P.x+L.at[0],y+2.1,P.z+L.at[1]];}}   /* in front of the ladder, in its room */
  V['On the platform of the Eye Post']=[P.x+1.9,P.o.y+12.5+1.7,P.z+1.9,P.x-1.6,P.o.y+12.9,P.z-.6];
+ /* the people (90fl): the chapter debating in the Monastery Court and the novices at lessons in their yard (the morning's) */
+ V['The Monastery Court']=[-12,6,-14,2,1.5,-26];
+ V['The novices at lessons']=[64,7.5,-83.5,66,5,-92];
  return V;})();
 BUDGET.showcase={tris:16000000,calls:2400};BUDGET.cls.city=16000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';
 if(window._api)Object.assign(window._api,FE_API);

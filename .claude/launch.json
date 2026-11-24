@@ -2,6 +2,18 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "flashing-eye",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8834",
+        "--directory",
+        "settlements/flashing-eye/dist"
+      ],
+      "port": 8834
+    },
+    {
       "name": "edit-queue",
       "runtimeExecutable": "python",
       "runtimeArgs": [

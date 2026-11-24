@@ -59,6 +59,8 @@ for(const [id,v,st] of[['granary',1,2],['infirmary',1,2],['kitchen',1,2],['refec
 {const c=feAt('founders');fePut('qb_chorten',c.u,c.v,0,{v:0,y:c.y},'sacred','founders');}
 // the stairs between the terraces, on the axis: each from the upper terrace's edge down into the lower (the kit's terrace stair)
 for(const id of['st.lower','st.upper']){const P=fePart(id);fePut('qb_terrace_stair',P.box[0],0,0,{v:0,rise:P.rise,w:6,every:6,y:feTY(P.box[0]-1)},'way',id);}
+/* the lower kora's four stairs (its people, 2026-11-23), each at its box's middle; the walk's strips are 90fl's (FE_LIFE) */
+for(const id of['st.kora.lw','st.kora.le','st.kora.uw','st.kora.ue']){const P=fePart(id);fePut('qb_terrace_stair',P.box[0],(P.box[2]+P.box[3])/2,0,{v:0,rise:P.rise,w:P.w,every:6,y:feTY(P.box[0]-1)},'way',id);}
 // the terraces as pads, so the retaining faces between them are drawn (90fg); the Lip terrace is the bench's own level
 for(const T of FE.L.terraces)if(T.y)fePad('terrace:'+T.id,-90,T.u0,90,T.u1,T.y,.5);
 // the cap (on pads), the rim and the apron

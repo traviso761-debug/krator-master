@@ -17,16 +17,18 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `layout_dump.js` | <1 |  |
 | `test-flashing-eye.js` | 12 |  |
+| `test-people.js` | 9 |  |
 | `test-watch.js` | 8 |  |
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `30-fe-layout.js` | 27 | THE FLASHING EYE: the Order's head house on the  (1) |
+| `30-fe-layout.js` | 28 | THE FLASHING EYE: the Order's head house on the  (1) |
 | `31-fe-rules.js` | 23 | THE FLASHING EYE: the rules its layout keeps, an (1) |
 | `32-fe-rooms.js` | 19 |  |
 | `40-fe-watch.js` | 8 | THE FLASHING EYE: the vent, the Rim Watch and th (1) |
+| `41-fe-people.js` | 36 **big** | THE FLASHING EYE: its people, as data  [G data] (1) |
 | `89q0w-fe-mats.js` | 1 |  |
 | `89qe-fe-roofs.js` | 10 | the hip roof with upturned eaves: a unit shape p (10); the towers (47) |
 | `89qf-fe-buildings.js` | 16 | a range sized to its layout box (the bench's les (28); a court: four ranges round a yard (the novices'  (47); the Lip Range (sheet L) (58); the Red Monastery: the Order's temple on the kit (76); the Ember Tower (sheet H): the Hall of the Ember (99); the towers (the references): o.style 'round' (th (116); the Eye Post (sheet P): the first reference's to (125); the Watch's hut, a gate, a shrine (131) |
@@ -37,4 +39,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `cone` | `89z-rows.js`, `89zfe-site.js`, `90fe-world.js`, `90fg-build.js`, `90fh-vent.js`, `90fi-bridges.js`, `90fj-face.js`, `90fk-fe-interiors.js`, `91z-views.js` | 90 |
+| `cone` | `89z-rows.js`, `89zfe-site.js`, `90fe-world.js`, `90fg-build.js`, `90fh-vent.js`, `90fi-bridges.js`, `90fj-face.js`, `90fk-fe-interiors.js`, `90fl-fe-people.js`, `91z-views.js` | 105 |

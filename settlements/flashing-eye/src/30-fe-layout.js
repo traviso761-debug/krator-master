@@ -114,6 +114,13 @@ const FE_LAYOUT = (function () {
     P(5, 'court', 'Monastery Court', 'court', 'bench', [-36, -16, -26, 26], { note: 'before the monastery\'s stair; the great cistern under it (1,000 m3)' }),
     P(42, 'st.lower', 'Stair of the Court (the middle terrace down to the Lip terrace)', 'stair_way', 'bench', [-46, -36, -5, 5], { rise: 4 }),
     P(43, 'st.upper', 'Stair of the Ember (the upper terrace down to the middle)', 'stair_way', 'bench', [-114, -102, -5, 5], { rise: 5 }),
+    /* the lower kora's four stairs (2026-11-23, its people: the kora crossed both terraces' faces, and its north leg the Stair of
+       the Ember's flight, with no way down). Each the kit's terrace stair (kits/qiblai qnStairPlan: 13.4 m long for 4 m, 15.4 m
+       for 5 m), 2.4 m wide, its head on the upper terrace's edge; the north leg runs on the upper terrace before the Ember */
+    P(44, 'st.kora.lw', 'Kora Stair (the Lip terrace, west)', 'stair_way', 'bench', [-46, -32.6, -29.8, -26.2], { rise: 4, w: 2.4 }),
+    P(45, 'st.kora.le', 'Kora Stair (the Lip terrace, east)', 'stair_way', 'bench', [-46, -32.6, 26.2, 29.8], { rise: 4, w: 2.4 }),
+    P(46, 'st.kora.uw', 'Kora Stair (the upper terrace, west)', 'stair_way', 'bench', [-114, -98.6, -29.8, -26.2], { rise: 5, w: 2.4 }),
+    P(47, 'st.kora.ue', 'Kora Stair (the upper terrace, east)', 'stair_way', 'bench', [-114, -98.6, 26.2, 29.8], { rise: 5, w: 2.4 }),
     P(6, 'monastery', 'The Red Monastery (the great monastery, the Order\'s temple)', 'hosted', 'bench', [-100, -48, -26, 26], { storeys: 2, decor: 4, gold: 'crown', sheets: ['E1', 'M1', 'M2', 'MR'], host: { kit: 'settlements/flashing-eye', key: 'qb_fe_temple', v: 0, centre: [-74, 0], front: 'south' }, sleeps: { chapter: 100 }, note: 'the Qiblai kit\'s great-monastery plan (52 x 52 m) built in the revamp\'s style: white ranges under red tiled roofs round the court, the Assembly Hall under a two-tiered roof with the gilt crown, its gate tower facing south to the Rift' }),
     P(7, 'ember', 'The Ember Tower (the Hall of the Ember)', 'ember_hall', 'bench', [-136, -116, -8, 8], { storeys: 6, h: 42, decor: 4, gold: 'sanctum', fire: 'ember', sheets: ['E1', 'H'], sleeps: { lay: 2 }, note: 'on the axis north of the monastery, toward the crater, the tallest roof of the house: a white tower under three red tiers over the hall; the fire lit from the vent burns in its sanctum; its north window frames the plume; its two tenders' }),
     P(8, 'granary', 'Granary', 'store', 'bench', [-138, -118, -84, -64], { storeys: 2, decor: 0, sleeps: { lay: 10 }, note: 'a winter\'s grain (about 25 t); the tea, the salt, the sulfur for the halls\' fumigation' }),
@@ -175,7 +182,8 @@ const FE_LAYOUT = (function () {
       pts: [[365, -185, -210]].concat(...bridgeway.stacks.map(S => (S.landing == null ? [] : [[S.u, S.v, S.landing]]).concat([[S.u, S.v, S.top]])), [[-3, -80, 0]]) },
     { id: 'mule', name: 'the mule road (round the band\'s west end to the Mule Gate)', pts: lin([[365, -185], [410, -270], [330, -340], [150, -480], [190, -860], [120, -960], [30, -870], [-40, -980], [-110, -860], [-150, -700], [-100, -520], [-170, -400], [-110, -260], [-160, -160], [-87, -100], [-87, -91]], -210, 4) },
     { id: 'stair', name: 'the Stair of the Eye (the Foot House up to the band\'s foot, in switchbacks)', pts: lin(zig(365, -185, 6370, 0, 255, 260).reverse(), -1200, -210) },
-    { id: 'kora.lower', name: 'the lower kora (round the monastery, eyes lowered)', pilgrims: 'all', pts: [[-106, 0, 0], [-106, -29, 0], [-16, -29, 0], [-16, 29, 0], [-106, 29, 0], [-106, 0, 0]] },
+    { id: 'kora.lower', name: 'the lower kora (round the monastery, eyes lowered: walked clockwise, against the order of its points, down the Kora Stairs on the east and up them on the west)', pilgrims: 'all', steep: 'its four stairs',
+      pts: [[-115.5, 0, 9], [-115.5, -28, 9], [-114, -28, 9], [-98.6, -28, 4], [-46, -28, 4], [-32.6, -28, 0], [-16, -28, 0], [-16, 28, 0], [-32.6, 28, 0], [-46, 28, 4], [-98.6, 28, 4], [-114, 28, 9], [-115.5, 28, 9], [-115.5, 0, 9]] },
     { id: 'kora.open', name: 'the Open Kora (the crater\'s rim, three times with eyes open)', professed: true, loop: true,
       pts: Array.from({ length: 25 }, (_, i) => { const a = i / 24 * Math.PI * 2; return [Math.round(crater.centre[0] + Math.cos(a) * (crater.r + 12)), Math.round(crater.centre[1] + Math.sin(a) * (crater.r + 12)), crater.rimY]; }) }];
 

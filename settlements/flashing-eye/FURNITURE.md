@@ -56,6 +56,10 @@ The owner (2026-11-16): a cliffside house on the cone, facing the Rift; about 32
 | 5 | Monastery Court | court | plain | 1040 | xanadu_common_bench x13, xanadu_common_planter x35, xanadu_common_well x1 |
 | 42 | Stair of the Court (the middle terrace down to the Lip terrace) | stair way | plain | 100 | xanadu_common_hanging x1, xanadu_common_lamp x2 |
 | 43 | Stair of the Ember (the upper terrace down to the middle) | stair way | plain | 120 | xanadu_common_banner x1, xanadu_common_hanging x1, xanadu_common_lamp x2 |
+| 44 | Kora Stair (the Lip terrace, west) | stair way | plain | 48 | xanadu_common_lamp x1 |
+| 45 | Kora Stair (the Lip terrace, east) | stair way | plain | 48 | xanadu_common_lamp x1 |
+| 46 | Kora Stair (the upper terrace, west) | stair way | plain | 55 | xanadu_common_lamp x1 |
+| 47 | Kora Stair (the upper terrace, east) | stair way | plain | 55 | xanadu_common_lamp x1 |
 | 6 | The Red Monastery (sheets M1, M2, MR) | see | sumptuous | 2704 |  |
 | 7 | The Ember Tower (sheet H) | see | sumptuous | 320 |  |
 | 8 | Granary | store | bare | 400 | xanadu_common_ladder x1, xanadu_common_lamp x4, xanadu_common_store x16, xanadu_common_wall_shelves x7, xanadu_trade_bin x10 |
@@ -293,8 +297,8 @@ Where the west road from Ti-Teras and the east road from the Eye's Ghat meet, at
 |---|---|---|
 | xanadu_common_bed | 649 |  |
 | xanadu_common_meditation_cushion | 455 |  |
+| xanadu_common_lamp | 435 |  |
 | xanadu_common_chest | 433 |  |
-| xanadu_common_lamp | 431 |  |
 | xanadu_common_bench | 303 |  |
 | xanadu_common_planter | 251 |  |
 | xanadu_common_candle | 187 |  |

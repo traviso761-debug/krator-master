@@ -27,6 +27,16 @@ checks of tools/checks_optin.json), with the page's own:
   interiors-walk-in    each building's door shut blocks it, open clears it, and a walker from outside reaches every floor and
                  stair (the Lip Range's houses from the bench, all four storeys; the Eye Post up its ladder onto the platform);
                  the balcony is a floor walled by its parapet
+  people-dressed every look of the house's people baked from core/charactermodels (the Order's robes, the novices', the lay
+                 brothers' and the pilgrims' dress, both bodies), the 320 residents in core/tags and the pilgrims' set, the bench's
+                 six stairs in core/walk
+  people-placed  at 09:30 everyone drawn near the bench is at FE_PEOPLE's pose (read back from the instances), on a floor of
+                 core/walk or on the ground, in no building; some walk, some stand, some sit; a figure moved 2 m is caught
+  people-watch   FE_WATCH's awake pair of the Rim Watch: one on the Eye Post's platform, one walking the rim; four of the
+                 Rift Watch on the Mirror Hall's balcony
+  people-station on the next Station's night at 21:00 (FE_WATCH's kora flag) the Rift Watch at its post, 100 or more of the professed on the rim's circle,
+                 eight novices at their vigil, 50 or more pilgrims at the Threshold Chorten and none past it; none on the rim the
+                 night before
 
     KRATOR_GL=gpu python3 verify.py dist/flashing-eye.html --assert --views "Overview,The band from the apron"
 """
@@ -103,9 +113,37 @@ R.push({name:'interiors-furnished',ok:!!X.on&&want.length>=7&&!miss.length&&!lev
  const WI=typeof FE_IX!=='undefined'&&FE_IX.walkIn?FE_IX.walkIn():[],bad=WI.filter(q=>!q.ok);
  R.push({name:'interiors-walk-in',ok:!!X.on&&WI.length===want.length&&!bad.length&&X.walked===want.length&&!!X.balcony&&X.parapet>0&&!!X.ladder,
   detail:X.walked+' of '+want.length+' interiors in core/walk; walked in: '+WI.map(q=>q.id+' '+(q.ok?q.floors+' floors':'FAILED'+(q.why?' ('+q.why+')':' (shut '+q.shut+', open '+q.open+', unreached '+(q.unreached||[]).slice(0,4).join(' ')+')'))).join('; ')+(X.balcony?'; the balcony a floor, its parapet '+X.parapet+' blocks':'; NO balcony')+(X.ladder?'; the ladder to the platform of the Eye Post in '+X.ladder.room.split('.').slice(-1)[0]:'; NO ladder to the platform')});}
+/* the people (src/41-fe-people.js, targets/cone/90fl-fe-people.js): placed by FLASHING_EYE's clock, drawn from core/charactermodels */
+{const LF=typeof FE_LIFE!=='undefined'?FE_LIFE:null,S=window._fePeople||{looks:[],errors:['no people on the page']};if(LF)await LF.ready(150000);
+ const K=KTAGS.page,lifeR=K?K.query({class:'life'}):[],reg=lifeR.filter(r=>/^fe\./.test(r.id)).length,set=lifeR.find(r=>r.key==='fe_pilgrim'&&r.set);
+ R.push({name:'people-dressed',ok:!!LF&&S.looks.length>=12&&S.ready===S.looks.length&&!S.errors.length&&reg===FE_PEOPLE.people.length&&reg===320&&!!set&&S.stairs>=24,
+  detail:S.ready+' of '+S.looks.length+' looks baked from core/charactermodels ('+S.loads+' pieces, '+S.bakeMs+' ms, '+S.tris+' triangles in all)'+(S.errors.length?'; ERRORS '+S.errors.slice(0,3).join('; '):'')+'; '+reg+' residents in core/tags and the pilgrims\' set '+(set?set.id:'MISSING')+'; '+S.stairs+' stair pieces of the bench in core/walk'});
+ if(LF){const keep=FE_CLOCK.set,D0=FE_SKY.day,P=FE_PLACE.find(p=>p.id==='post'),HUT=FE_PEOPLE.HUT,THR=FE_PEOPLE.THR,CR=FE.L.crater;
+  const SOLID=FE.L.parts.filter(p=>p.zone==='bench'&&['court','stair_way','chorten','terrace','gatehouse','novices'].indexOf(p.kind)<0);
+  /* every drawn instance read back from its mesh: at its pose (5 cm), on a floor of core/walk or on the ground (a plinth's 0.6 m at most), never inside a building */
+  const drawn=(t,cam,far,fault)=>{const D=LF.place(t,cam,far).slice(),poses=new Map(FE_PEOPLE.at(t,FE_ENV).map(([q,o])=>[q.id,o])),bad=[];let n=0;
+   D.forEach((r,i)=>{const o=poses.get(r[0]),m=LF.drawnAt(r[1],r[2],r[3]);if(!o||o.hidden||!m){bad.push(r[0]+' not posed');return;}if(fault&&i===0)m[0]+=2;n++;
+    const w=LF.world(o,{});if(Math.hypot(m[0]-w.x,m[1]-w.y,m[2]-w.z)>.05)bad.push(r[0]+' drawn '+Math.hypot(m[0]-w.x,m[1]-w.y,m[2]-w.z).toFixed(2)+' m off its pose');
+    const tH=terrainH(m[0],m[2]),fl=KWALK.floorsAt(m[0],m[2]).some(f=>Math.abs(f[0]-m[1])<.05);if(!fl&&(m[1]<tH-.05||m[1]>tH+.6))bad.push(r[0]+' '+(m[1]-tH).toFixed(2)+' m off the ground');
+    if(!fl&&SOLID.some(p=>m[2]>p.box[0]+.5&&m[2]<p.box[1]-.5&&m[0]>p.box[2]+.5&&m[0]<p.box[3]-.5))bad.push(r[0]+' inside a building');});
+   return{D,n,bad};};
+  const tD=D0*86400+9.5*3600,bench=drawn(tD,{x:0,z:-60},400),neg=drawn(tD,{x:0,z:-60},400,true),acts={};bench.D.forEach(r=>{acts[r[8]]=(acts[r[8]]||0)+1;});
+  R.push({name:'people-placed',ok:bench.n>=60&&!bench.bad.length&&neg.bad.length>0&&(acts.walk|0)>0&&(acts.stand|0)>0&&(acts.sit|0)>0,detail:'at 09:30 '+bench.n+' drawn on the bench ('+JSON.stringify(acts)+'), each at FE_PEOPLE\'s pose, on a floor or the ground and in no building'+(bench.bad.length?'; WRONG: '+bench.bad.slice(0,4).join('; '):'')+'; negative (one moved 2 m) '+(neg.bad.length?'caught':'MISSED')});
+  const Wt=FE_WATCH.watch(tD/86400),rimP=drawn(tD,{x:P.x,z:P.z},300),on=rimP.D.filter(r=>FE_PEOPLE.people.find(q=>q.id===r[0]&&q.office==='rimwatch'&&Wt.awake.indexOf(q.j)>=0));
+  const plat=on.filter(r=>r[5]>P.o.y+11&&Math.hypot(r[4]-P.x,r[6]-P.z)<6),walker=on.filter(r=>r[5]<P.o.y+3&&Math.hypot(r[4]-P.x,r[6]-P.z)<160);
+  const riftOf=D=>D.filter(r=>r[6]>1&&FE_PEOPLE.people.some(q=>q.id===r[0]&&q.office==='riftwatch')).length,riftD=riftOf(bench.D);
+  R.push({name:'people-watch',ok:plat.length===1&&walker.length===1&&!rimP.bad.length&&riftD===4,detail:'the Rift Watch: '+riftD+' on the Mirror Hall\'s balcony at 09:30; the Rim Watch\'s watch '+Wt.watch+' (FE_WATCH.watch), awake '+Wt.awake.join(',')+': '+plat.length+' on the Eye Post\'s platform, '+walker.length+' walking the rim'+(rimP.bad.length?'; WRONG: '+rimP.bad.slice(0,3).join('; '):'')});
+  const tS=LF.nextStation(21),tN=tS-86400,e=FE_ENV,cr={x:FE_CR[0],z:FE_CR[1]},ringOf=r=>Math.abs(Math.hypot(r[4]-FE_CR[0],r[6]-FE_CR[1])-(CR.r+12))<3;
+  const st=drawn(tS,cr,420),stN=drawn(tN,cr,420),ids=new Map(FE_PEOPLE.people.map(q=>[q.id,q])),prof=st.D.filter(r=>ids.has(r[0])&&ids.get(r[0]).professed&&ringOf(r)).length;
+  const pil=st.D.filter(r=>r[7]==='pilgrim'),atT=pil.filter(r=>Math.hypot(r[6]-THR[0],r[4]-THR[1])<14).length,past=pil.filter(r=>r[6]<THR[0]-14).length,vig=st.D.filter(r=>r[7]==='novices'&&Math.hypot(r[6]-THR[0],r[4]-THR[1])<12).length;
+  const riftN=riftOf(drawn(tS,{x:0,z:-60},200).D),ok=riftN===4&&FE_WATCH.state(tS,e).kora&&!FE_WATCH.state(tN,e).kora&&prof>=100&&atT>=50&&!past&&vig===8&&stN.D.filter(ringOf).length===0&&!st.bad.length;
+  R.push({name:'people-station',ok,detail:'the Station\'s night of day '+FE_PEOPLE.dayOf(tS)+' at 21:00 (FE_WATCH\'s kora '+FE_WATCH.state(tS,e).kora+'): the Rift Watch '+riftN+' on the balcony; '+prof+' of the professed on the rim\'s circle, '+vig+' novices at their vigil, '+atT+' pilgrims at the Threshold Chorten and '+past+' past it; the night before (kora '+FE_WATCH.state(tN,e).kora+') '+stN.D.filter(ringOf).length+' on the rim'+(st.bad.length?'; WRONG: '+st.bad.slice(0,3).join('; '):'')});
+  FE_CLOCK.set=keep;LF.place(feNow(),camera.position,220);}}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + PAGE_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
+assert xv.ASSERT_JS.lstrip().startswith('()=>{'), 'settlements/xanadu/verify.py ASSERT_JS no longer starts ()=>{'
+xv.ASSERT_JS = 'async ' + xv.ASSERT_JS.lstrip()   # the people's looks bake after the page is up: their checks wait for them
 xv._voth_trades = lambda: {'name': 'voth-trades', 'ok': True, 'detail': 'the Xanadu kit\'s table (kits/xanadu): checked on its own sheet'}
 
 if __name__ == '__main__':

@@ -90,8 +90,33 @@
 - *Fixed 2026-11-23*: **the Foot House** stands on its own ground at the spur's foot (`FE_FOOT`, 1.2 x 0.8 km at 8 m, the far
   ground cut away under it): its ranges round the loading court and its gate chorten. Still owed: **the Rest House** (about 1,080 m
   on the Stair) and **the Stair of the Eye** between them, drawn only to the apron; the Foot House's lower terraces and mule yard.
-- **No people, no pilgrims, no Station's night** on the page: `FE_WATCH.state` has the kora flag and the rota; the page does
-  not draw them.
+- *Fixed 2026-11-23*: **the people, the pilgrims and the Station's night.** `src/41-fe-people.js` (`FE_PEOPLE`, `[G data]`,
+  `test-people.js` 16 checks) places the census (320: the chapter, the Prismarch's household, the school, the novices, the lay
+  brothers, the Foot House) and the day's pilgrims (20-40; 420-500 on a Station's day) as pure functions of the clock on
+  `FE_WATCH`: the offices and the meals, the readers on the Mirror Hall's balcony at the line's slots, the Rift Watch there in
+  turns by day and night (the Master of the Rift's office, the owner's lore of 2026-11-23: it keeps its post on a Station's night;
+  its watchers at the Readers' Gallery's windows and in the Lip's two towers are indoors, so not drawn), debates in the Monastery
+  Court, the novices' lessons in their yard, the lay brothers on the cap, the mule train, the Rim Watch at the Eye Post on its
+  rota (the platform in the line's and the basket's slots, the rim walked by day, the hut), the pilgrims up the Way of Shrines,
+  three times round the lower kora and up the Way of Breath to the Threshold Chorten and no further; on a Station's night
+  (one in eight, *proposed*: `FE_ENV.station`, so `FE_WATCH.state`'s kora flag is on) the professed walk the rim three times in
+  procession, eight novices keep the vigil at the chorten, the pilgrims fill the Pilgrims' Court and the chorten's ring.
+  `targets/cone/90fl-fe-people.js` draws them from core/charactermodels (twelve looks baked by `KCharCrowd`: standing, four
+  frames of the walk, sitting), each resident in core/tags, the pilgrims as a set; `verify.py`'s `people-*`. The lower kora
+  crossed both terraces' faces and the Stair of the Ember's flight with no way down: it has four stairs of its own now (parts
+  44-47, in core/walk with the axis's two) and its north leg runs on the upper terrace before the Ember.
+  Still owed:
+  - The figures are the crowd's still bakes, near and far: no near figures animated in full (Longsong's `KCharFigure` slots),
+    no faces of their own, one record per look; the walk is four frames. The pilgrims' eyes are not lowered (no head pitch).
+  - The Order's robes are the Historians' (Longsong) dyed crimson; the novices' shirt and skirt ochre and crimson. A robe of the
+    Order's own (and the veil of dread on the rim) wants a garment in `core/charactermodels` (`prompt-clothes.md`). The women of
+    the Xanadu dress go bareheaded: `xan_f_town_cap` has no built piece (the sidecars come from Longsong's `dist/kchar`, built
+    pieces are not in Git; `core/charactermodels/tools/kchar_page.py`).
+  - Indoors they are hidden: no one sits in the Assembly Hall's rows at the offices or at the refectory's tables.
+  - The day is the clock's alone: no `core/simulation` actors (the page does not take the sim); the Station's nights are FE_PEOPLE's
+    rule, not the sky model's Station (`core/atmos` sky: not on this page).
+  - Only the Foot House's own day is drawn there; the Stair of the Eye and the Rest House are walked by the mule train over the
+    model's ground (the Stair is not drawn: see the house, above).
 - *Fixed 2026-11-23*: **the mirrors flash.** A glint at the Eye Post's and the Mirror Tower's lanterns whenever the day line's
   shutter is open (`FE_WATCH.state`: the Opening at sunrise, the station slots on the hour), on the page only (`90fh-vent.js`),
   not a core/atmos module; `_api.signal(k)` sets the clock into the k-th station's slot. *Fixed 2026-11-23*: the flash is aimed:

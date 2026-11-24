@@ -76,7 +76,7 @@ const feFogAt=(x,y,z)=>{const d=FE_PLUME&&FE_PLUME.fog?Math.min(1.5,FE_PLUME.fog
 // ---------------------------------------------------------------- the house's fires by night
 const feEmberL=new THREE.PointLight(0xff7a30,0,40,2),feFireL=new THREE.PointLight(0xff8a3a,0,60,2);scene.add(feEmberL);scene.add(feFireL);
 {const e=FE_LAMPS.find(l=>l[3]==='ember'),f=FE_LAMPS.find(l=>l[3]==='fire');if(e)feEmberL.position.set(e[0],e[1],e[2]);if(f)feFireL.position.set(f[0],f[1]+1,f[2]);}
-const FE_ENV={day:t=>{const h=((t%86400)+86400)%86400/3600;return h>=6.2&&h<18.4;}};
+const FE_ENV={day:t=>{const h=((t%86400)+86400)%86400/3600;return h>=6.2&&h<18.4;},station:t=>FE_PEOPLE.stationAt(t)};   /* the Station's nights: FE_PEOPLE's (src/41) */
 // ---------------------------------------------------------------- the mirrors by day: a glint at each lantern while the day line's
 // shutter is open (FE_WATCH.state: the Opening at sunrise, the station slots on the hour), the sun's colour, seen from kilometres
 const feGlintTex=(function(){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),r=g.createRadialGradient(32,32,0,32,32,32);
