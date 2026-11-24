@@ -234,6 +234,8 @@ BIO.c2=null;function _c2now(){if(BIO.c2==null)return[0,0,0];const S=BIO._scratch
      z  spare
    BIO.wind = [stiffness, phase] overrides both for what a builder draws while it is set. */
 BIO.FORM={wind:false};BIO.setForm=function(o){o=o||{};BIO.FORM.wind=!!o.wind;return BIO.FORM;};
+/* a page opened with ?form=1 (or ?form=wind) builds in the form: for an export a game engine reads (as core/engine's does) */
+if(typeof location!=='undefined'&&location&&/[?&]form=(1|[a-z,]*wind)/.test(location.search||''))BIO.setForm({wind:true});
 BIO.wind=null;const WIND_STIFF_R=.22;
 function _wdPhase(x,y,z){return KRAND.unit(KRAND.hash(0x77d1,Math.floor(x*2),Math.floor(y*2),Math.floor(z*2)));}
 function _wd(K,p,stiff,phase){if(BIO.wind)K.wd.push(BIO.wind[0],BIO.wind[1],0);else K.wd.push(stiff,phase==null?_wdPhase(p[0],p[1],p[2]):phase,0);}

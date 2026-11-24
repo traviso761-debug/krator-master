@@ -63,7 +63,7 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test
                # cells, the ground's occluders, the library surface's three shaders, the weathering stack, detail normals
                'res://tests/look/look_test.gd', 'res://tests/cells/cells_test.gd', 'res://tests/occluders/occluders_test.gd', 'res://tests/cook/cook_test.gd',
                # steps 4, 6 and 7: the cooks (above), the air and the dressing
-               'res://tests/air/air_test.gd', 'res://tests/dress/dress_test.gd', 'res://tests/export/eternian_form_test.gd',
+               'res://tests/air/air_test.gd', 'res://tests/dress/dress_test.gd', 'res://tests/export/eternian_form_test.gd', 'res://tests/export/sedesert_wind_test.gd',
                'res://tests/shaders/library_faces_test.gd', 'res://tests/materials/kweather_test.gd', 'res://tests/materials/kdetail_test.gd']
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.

@@ -7,6 +7,7 @@
 #  2. a cooked mesh draws fewer triangles far off (C7), and all of them with the threshold at 0
 #  3. the valley mist (shaders/air_mist.gdshader, F2): the ground near the camera stays clear and the ground far off
 #     goes to the mist's colour; from above the layer the floor is veiled; the sky is left alone
+#  5. bark exported with the wind fields moves with the clock, and stands still with them unread
 #  4. the wet ground (shaders/terrain.gdshader, F6): level ground darkens and holds standing water; a slope holds none
 # Each has a negative.
 extends SceneTree
@@ -232,5 +233,50 @@ func _run() -> void:
 		for x in range(0, SIZE.x, 3):
 			m2 += 1 if _lum(slope.get_pixel(x, y)) < _lum(slope_dry.get_pixel(x, y)) * 0.6 else 0
 	ok(m2 < mirror / 4, "negative: on a slope of 14 degrees no water stands (%d%%)" % [m2 * 100 / n])
+	# 5. the wind fields on bark (core/biome's aWind through the glb's second UV set; shaders/bark.gdshader)
+	var wcase := "res://data/world-sedesert-wind/world.json"
+	if FileAccess.file_exists(wcase):
+		ground.visible = false
+		env.background_color = Color(0.6, 0.7, 0.9)
+		var ww := KratorWorld.build(wcase)
+		host.add_child(ww)
+		await process_frame
+		var bark: MeshInstance3D = null
+		for nb in ww.get_node("Buckets").get_children():
+			var bm := (nb as MeshInstance3D).material_override as ShaderMaterial
+			if bm != null and bm.get_shader_parameter("wind_uv2") == true:
+				bark = nb
+		for it in ww.get_node("Items").get_children():
+			(it as Node3D).visible = false
+		ok(bark != null, "a bucket exported with the wind fields draws on the bark shader's twin that reads them")
+		if bark != null:
+			var arr := bark.mesh.surface_get_arrays(0)
+			var BP: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+			var BU: PackedVector2Array = arr[Mesh.ARRAY_TEX_UV2]
+			var best := 0
+			for i in BP.size():
+				if absf(BU[i].x - 0.3) < absf(BU[best].x - 0.3):
+					best = i
+			var at: Vector3 = bark.global_transform * BP[best]
+			cam.fov = 30.0
+			cam.look_at_from_position(at + Vector3(1.2, 0.3, 2.5), at, Vector3.UP)
+			var atm = root.get_node_or_null("/root/Atmos")
+			if atm != null:
+				atm.set_process(false)
+			var frames := {}
+			for cfg in [["on0", 0.0, true], ["on1", 0.9, true], ["off0", 0.0, false], ["off1", 0.9, false]]:
+				RenderingServer.global_shader_parameter_set("atm_time", cfg[1])
+				(bark.material_override as ShaderMaterial).set_shader_parameter("wind_uv2", cfg[2])
+				frames[cfg[0]] = await _shot(3)
+			var moved := [0, 0]
+			var drawn := 0
+			for y in range(0, SIZE.y, 2):
+				for x in range(0, SIZE.x, 2):
+					drawn += 1 if absf((frames["on0"] as Image).get_pixel(x, y).r - 0.6) > 0.05 else 0
+					moved[0] += 1 if absf((frames["on0"] as Image).get_pixel(x, y).r - (frames["on1"] as Image).get_pixel(x, y).r) > 0.03 else 0
+					moved[1] += 1 if absf((frames["off0"] as Image).get_pixel(x, y).r - (frames["off1"] as Image).get_pixel(x, y).r) > 0.03 else 0
+			ok(drawn > 200 and moved[0] > 50, "a branch a third stiff moves between two clock times (%d of %d sampled pixels change)" % [moved[0], SIZE.x * SIZE.y / 4])
+			ok(moved[1] == 0, "negative: with the fields unread the bark stands still, as it always has")
+		ww.free()
 	print("all passed" if fails == 0 else "%d FAILED" % fails)
 	quit(1 if fails else 0)

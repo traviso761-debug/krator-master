@@ -186,6 +186,7 @@ static func build(path: String) -> Node3D:
 		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false, has_vcol, has_tan)
 		_closed(node, b, report)
 		_form(node, b, report)
+		_wind(node, b, report)
 		_faces(node, report)
 		_lod(node, b, report)
 		if b.get("lod") is Dictionary and _lod_shader(node):
@@ -605,6 +606,22 @@ static func _form(mi: MeshInstance3D, rec: Dictionary, report: Dictionary) -> vo
 		sm.set_meta("krator_form", t)
 	mi.material_override = sm.get_meta("krator_form")
 	report["form_buckets"] = int(report.get("form_buckets", 0)) + 1
+
+
+# a biome bucket exported with the wind fields (its record's `wind`, the glb's second UV set): its bark material's twin
+# with wind_uv2 on (shaders/bark.gdshader: a twig gives, a trunk stands)
+static func _wind(mi: MeshInstance3D, rec: Dictionary, report: Dictionary) -> void:
+	if not rec.has("wind") or mi.mesh == null or mi.mesh.get_surface_count() == 0:
+		return
+	var sm := mi.material_override as ShaderMaterial
+	if sm == null or KratorCells.source_shader(sm.shader) != KratorBiome.BARK or (int((mi.mesh as ArrayMesh).surface_get_format(0)) & Mesh.ARRAY_FORMAT_TEX_UV2) == 0:
+		return
+	if not sm.has_meta("krator_wind"):
+		var t := sm.duplicate() as ShaderMaterial
+		t.set_shader_parameter("wind_uv2", true)
+		sm.set_meta("krator_wind", t)
+	mi.material_override = sm.get_meta("krator_wind")
+	report["wind_buckets"] = int(report.get("wind_buckets", 0)) + 1
 
 
 static func _faces(gi: GeometryInstance3D, report: Dictionary) -> void:

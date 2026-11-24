@@ -441,6 +441,8 @@ function glb(w){
   /* the export form's fields (core/engine 30-geo.js aForm: height above the base, occlusion, arris) as a second UV set:
      u the height in metres (-1: outside any building), v the arris flag. A reader that knows no form ignores TEXCOORD_1 */
   if(g.form){ const F = unpack(g.form), U2 = new Float32Array(nv * 2); for(let i = 0; i < nv; i++){ U2[i * 2] = F[i * 3]; U2[i * 2 + 1] = F[i * 3 + 2]; } at.TEXCOORD_1 = acc(U2, 2); }
+  /* a biome bucket's wind fields (core/biome 20-core-kit.js aWind): u the stiffness, v the phase. A mesh has one or the other */
+  else if(g.wind){ const F = unpack(g.wind), U2 = new Float32Array(nv * 2); for(let i = 0; i < nv; i++){ U2[i * 2] = F[i * 3]; U2[i * 2 + 1] = F[i * 3 + 1]; } at.TEXCOORD_1 = acc(U2, 2); }
   const p = { attributes: at, mode: 4 };
   if(g.index){ let I = unpack(g.index); if(I.constructor === Uint16Array && nv >= 65535) I = Uint32Array.from(I); p.indices = acc(I, 1); }
   if(matIx.has(matId)) p.material = matIx.get(matId);
@@ -448,6 +450,7 @@ function glb(w){
  const strip = (r, k, kind, node) => { const o = {}; for(const key in r) if(['geometry', 'matrices', 'colours', 'extras', 'motion'].indexOf(key) < 0) o[key] = r[key];
   if(r.motion) o.motion = r.motion.error ? r.motion : { channels: r.motion.channels, stride: r.motion.stride };
   if(r.geometry && r.geometry.form) o.form = 'uv2: height above the base (m; -1 outside a building), arris';
+  else if(r.geometry && r.geometry.wind) o.wind = 'uv2: stiffness 0..1, phase 0..1';
   o.glb = node; return o; };
  const items = (w.items || []).map((it, k) => {
   const n = it.count, M = unpack(it.matrices), T = new Float32Array(n * 3), R = new Float32Array(n * 4), S = new Float32Array(n * 3);
