@@ -762,8 +762,17 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
   const x=P.x+off[0],y=P.y+off[1],z=P.z+off[2],s=Math.max(Math.abs(S3.x),Math.abs(S3.y),Math.abs(S3.z)),up=y-ground(x,z);out.samples++;
   if(!(up>=minUp)||up<=.75*s+PAD)continue;   /* low, or a card that reaches the ground: it stands on the ground */
   smp.push({x,y,z,tol:twig?STOL:(stem?KS0:K)*s+PAD,twig,m,i,onLeaf:!!(df&&df.onLeaf)});}}
- const cf=v=>Math.floor(v/CELL),key=(a,b)=>a*1048576+b,want=new Set();
- for(const p of smp){const r=Math.ceil(p.tol/CELL),cx=cf(p.x),cz=cf(p.z);for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)want.add(key(cx+a,cz+b));}
+ /* nothing to audit (no card stands off the ground, or the page draws none: the open world's flora): the structure is not walked.
+    2026-11-24, Stage 8: pinnacle's far terrain (triangles 22 km across) made the walk below 1.6e11 cell lookups for no card at all */
+ if(!smp.length)return out;
+ const cf=v=>Math.floor(v/CELL),key=(a,b)=>a*1048576+b,want=new Set(),wl=[];let wa0=1/0,wa1=-1/0,wb0=1/0,wb1=-1/0;
+ const wantAdd=(a,b)=>{const k=key(a,b);if(want.has(k))return;want.add(k);wl.push(a,b);if(a<wa0)wa0=a;if(a>wa1)wa1=a;if(b<wb0)wb0=b;if(b>wb1)wb1=b;};
+ for(const p of smp){const r=Math.ceil(p.tol/CELL),cx=cf(p.x),cz=cf(p.z);for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)wantAdd(cx+a,cz+b);}
+ /* does any wanted cell lie in cells a0..a1 x b0..b1: the box is first cut to the wanted cells' own box, then whichever is smaller is
+    walked, its cells or the wanted cells (the same answer: a huge triangle no longer walks its every empty cell) */
+ const wantIn=(a0,a1,b0,b1)=>{if(a1<wa0||a0>wa1||b1<wb0||b0>wb1)return false;if(a0<wa0)a0=wa0;if(a1>wa1)a1=wa1;if(b0<wb0)b0=wb0;if(b1>wb1)b1=wb1;
+  if((a1-a0+1)*(b1-b0+1)>wl.length/2){for(let i=0;i<wl.length;i+=2){const a=wl[i],b=wl[i+1];if(a>=a0&&a<=a1&&b>=b0&&b<=b1)return true;}return false;}
+  for(let a=a0;a<=a1;a++)for(let b=b0;b<=b1;b++)if(want.has(key(a,b)))return true;return false;};
  /* the samples are the index and each piece of structure updates the samples near it as it is met: a list of the points was 3.5 GB
     live on swlowlands, and an audit past V8's 4 GB limit killed the renderer at random (HANDOFF-REBUILD.md, core-crashes). The distance
     is to the surface as drawn (2026-11-02): each triangle's nearest point, and an instanced item's axis less its radius, which also
@@ -788,7 +797,7 @@ BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,
    const W=m.matrixWorld,id=W.equals(new T.Matrix4()),ix=geo.index,nt=Math.floor((ix?ix.count:pa.count)/3),Vt=[A,B,new T.Vector3()],vi=[0,0,0];
    for(let t=0;t<nt;t++){for(let k=0;k<3;k++){vi[k]=ix?ix.getX(t*3+k):t*3+k;Vt[k].fromBufferAttribute(pa,vi[k]);if(!id)Vt[k].applyMatrix4(W);}
     const x0=Math.min(A.x,B.x,Vt[2].x),x1=Math.max(A.x,B.x,Vt[2].x),z0=Math.min(A.z,B.z,Vt[2].z),z1=Math.max(A.z,B.z,Vt[2].z);
-    let hit=false;for(let a=cf(x0),a1=cf(x1);a<=a1&&!hit;a++)for(let b=cf(z0),b1=cf(z1);b<=b1;b++)if(want.has(key(a,b))){hit=true;break;}
+    const hit=wantIn(cf(x0),cf(x1),cf(z0),cf(z1));
     if(!hit)continue;SP.query((x0+x1)/2,(z0+z1)/2,Math.max(x1-x0,z1-z0)/2,near);if(!near.length)continue;const lod=lodOf(m,vi[0],true);
     for(const p of near)meet(p,BIO.triDist(p.x,p.y,p.z,A,B,Vt[2]),lod);}}}
  /* an item defined {onLeaf:true} (a flower in a bush) is also held inside the body of a leaf card that is not onLeaf itself; that card
