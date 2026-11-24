@@ -80,6 +80,9 @@ BIO.init({
  eye: function(){ return [camera.position.x, camera.position.y, camera.position.z]; },
  lod: { hero: 250, mid: 650, far: 2400, floor: [240, 560] }
 });
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun(SUN_POS);
 BIO.host.shroudhills = {
  wind: STAGE.wind || [0.7071, 0.7071],

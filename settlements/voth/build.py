@@ -13,6 +13,9 @@ toy on a plain, was the method's test bed; the toy is retired and its machinery 
 Voth's on 2026-10-14.) src/ is Voth's source library: the first Voth's fragments (that page is retired, in
 archive/voth-first), which this build runs whole or lifts by name (vothlift.py), never copies.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, json, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))

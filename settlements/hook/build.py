@@ -22,6 +22,9 @@ over them (SITE_TARGETS below).
 Usage:  python3 build.py [--target hook|hook-site] [--no-checks] [--inline-packs]
         python3 build.py --vendor-check     (every src/ file that shadows a kits/port/src fragment)
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import contextlib, hashlib, importlib.util, io, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.

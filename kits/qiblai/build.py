@@ -12,6 +12,9 @@ core/water) through Xanadu's build; CORE_TAKEN names them for tools/check_core_u
     python3 build.py --no-checks     # skip the lint and the build rules
     python3 verify.py dist/qiblai.html --assert --views "Overview,Mixed street"
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))

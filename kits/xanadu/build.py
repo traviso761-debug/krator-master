@@ -14,6 +14,9 @@ set kits/interiors/sets/xanadu-citadel.js, bundled alone as 69d-interiors-bundle
 is placed on the sheet). No settlement is read; Xanadu's `xanadu` target stays (README.md, "Its own sheet"). kit_bundle.py (XAK,
 for another world's page) is a separate product and does not change.
 Core modules taken: core/rand, core/tags, core/walk, core/door, core/host, core/atmos (placeholder), core/materials."""
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))

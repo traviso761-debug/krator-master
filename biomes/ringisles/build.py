@@ -30,6 +30,9 @@ forbidden names so a kit fragment cannot quietly grow a dependency on one world'
   python3 build.py --station <name>  dist/ringisles-<name>.html: stations/<name>/ added to src/ (PLAN-STATIONS.md); its
                                    station.json may name more core ("core": {fragment: path}) as oidong's do
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.

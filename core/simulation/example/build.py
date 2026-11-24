@@ -12,6 +12,9 @@ core/simulation/77-sim-*.js, and this folder's own (the world declaration, the d
 To start a settlement's life layer on SIM: copy 40-world.js's order (SCHEMA.md, "How a world is declared"), replace the
 streets and places with what the build placed, and move WORLD into the settlement's world/*.json.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__)); CORE = os.path.dirname(os.path.dirname(HERE))
