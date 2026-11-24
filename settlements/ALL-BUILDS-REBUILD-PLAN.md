@@ -1,6 +1,6 @@
-# Krator All-51 Settlements (`60`-Target) Master Audit: Scale Model `5.1` Terrain Fit, Pin Relocations, Map Surgery & Continental-Scope Rebuild Blueprint (`Rulings #1–104`)
+# Krator All-51 Settlements (`60`-Target) Master Audit: Scale Model `5.1` Terrain Fit, Pin Relocations, Map Surgery & Continental-Scope Rebuild Blueprint (`Rulings #1–114`)
 
-> **Machine-Measured Baseline:** Audited directly against `tools/scale-model/model/data/` (`5.1e21`, `1821 × 1723` at `2.0 km/px`, `lo = -2,600 m`, `hi = +27,000 m`), `rivers.json` (`896` courses), `basins.json` (`178` lakes), `landforms.json`, `tubes.json`, `springs.json`, `vents.json`, `60-settlements.js` (`242` active pins incl. `5.1e20` & `5.1e21`), `51-region-store.js` (`158` polygons), `openworld/SITES.json`, `kits/resources/data/geology.json` (`911 × 862` at `4.0 km/cell`, `39` resource/rock/ledger layers), and all locked rulings (`Rulings #1–101`) across `core/region/*-SCOPE.md`.
+> **Machine-Measured Baseline:** Audited directly against `tools/scale-model/model/data/` (`5.1e21`–`5.1e23`, `1821 × 1723` at `2.0 km/px`, `lo = -2,600 m`, `hi = +27,000 m`), `rivers.json` (`896`+`32` Ria courses), `canals.json` (`22` lock/barge canals), `basins.json` (`178` lakes), `landforms.json`, `tubes.json`, `springs.json`, `vents.json`, `60-settlements.js`, `51-region-store.js`, `openworld/SITES.json`, `kits/resources/data/geology.json` (`911 × 862` at `4.0 km/cell`, `39` resource/rock/ledger layers), and all locked rulings (`Rulings #1–114`) across `core/region/*-SCOPE.md` (including Scopes `#7` [CONVOY-LOGISTICS-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CONVOY-LOGISTICS-SCOPE.md), `#3` [CONTRABAND-LAW-PENAL-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CONTRABAND-LAW-PENAL-SCOPE.md), and `#2` [ESPIONAGE-DIPLOMACY-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/ESPIONAGE-DIPLOMACY-SCOPE.md)).
 > **Raw Machine Dataset:** `scratch/settlements_audit_raw.json`
 
 ---
@@ -117,7 +117,7 @@
 
   - **Northern Cartels Eastern Terminus (`NORTHERN-CARTELS-SCOPE`, `Rulings #102–103`):** **`PN-11` Pioneer / Technician Admiralty Flux-Binnacle & Servo-Coil Yard** (selling anomaly-compensated marine compasses & `superconductor` Walker relays) + **`AS-07` Court of the Amber Seal ("Seal-Bank") Countinghouse** (underwriting Imperial war bonds & maritime *bottomry*)
   - Imperial Veterans' *Colonia* & Settler Passage Bureau (`SETTLEMENT-MIGRATION-SCOPE` §2, `Rulings #95–98`) + Grand Architectural Folio & Blueprint Registry (`KRATOR_KITS` `styleBooks`: `iziz-vernacular`, `pylon`, `talia`, `Rulings #99–101`)
-  - Harbour-Ward Underworld Fence & Contraband Cellars (trafficking untaxed `opal`, Ring Sea prize goods, and forged *handu* quarantine seals, `Ruling #91`)
+  - **Scopes `#7/#3/#2` Venues (`Rulings #105–114`):** **Imperial Embassy Quarter** (`Ys`, `Republic`, `Dalab`, `Yuni`, `Xanadu`, `Jimjam`, `Kautoa`, `Talovolci` + **shuttered `Voth` Embassy under `Ys` Protecting-Power caretaker**, `Ruling #111`); **`Fosa Imperial de Iziz` (`60 t`, `8`-lock) Customs Lock-House, Bonded Arsenal Warehouses & Penal Canal-Dredging Barge Camp**; **Imperial Watch Magistrate Tribunal & Central Gaol**; and **`BT-06b` *Black-Tally / Weeping-Lotus* Harbour Undercroft** + Thieves' Guild contraband cellars (`Ruling #108`)
 #### `A` Pylon (Kit Target on Iziz Build) — `settlements/iziz` (target `pylon`)
 - **Canonical 5.1 Pin & Lineage:** `(869, 1002)` · `id`: `sxoqgjn7y0` (defSetts:(869,1002)) · **Polygons:** Political `Empire of Iziz` | Biome `se savannah rim` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-862.4 m`** (cell `-862.4 m`, `wet = False`, `wlev = None`) · Cell slope **`1.35%`** (`0.78°`, upslope `227°`) · Relief: `3×3` `75 m` (dry `75 m`), `5×5` `166 m`, `20 km` `464 m` · Nearest water: **`29.53 km`** (`sea` at `[876, 989]`, surf `-1500.2 m`, `+637.8 m` rel) · Nearest river: **`29.46 km`** (`r635` *Guli onda*, `5.3 m³/s`, width `55.0 m`; max within `6 km` = **`0.0 m³/s`**, within `20 km` = `0.0 m³/s`).
@@ -126,8 +126,8 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 WORLD.H Fit + KCITY Rebuild Blueprint** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(871, 995)` (`14.6 km` off: slope=0.1%, 3x3_relief=12m, q6=0.0m3/s, d_wat=15.6km); `(873, 995)` (`16.1 km` off: slope=0.3%, 3x3_relief=15m, q6=0.0m3/s, d_wat=13.4km).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `no_city_page_yet_needs_kcity` · Sealed kits: `pylon, iziz-vernacular` -> Currently kit sheet only on settlements/iziz/build.py --kit; build city site on WORLD.H + KCITY + KRATOR_KITS (pylon + iziz-vernacular) round Monolith arcology (Tier 1 Relic sub-vault).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Salvagers' Guild Hall & Blueprint Folio Desk (Ruling #100 permanent Pylon ferrocrete schematics)
-  - Watch Garrison & Crater Free-Company Muster Yard (MC-02 veterans) + Tier 2/3 Bounty Post
+  - Salvagers' Guild Hall & Blueprint Folio Vault (`Rulings #100 & #113` permanent `pylon` ferrocrete schematics — prime `#2` blueprint heist target!)
+  - Watch Garrison, **Vassal Magistrate Court / Gaol & Monolith Slag-Pit Penal Labor Camp** (`MC-02` veterans, Tier 2/3 Bounty Post & convict slag-breakers, `Ruling #110`)
   - Workshop I/O: clockwork-and-optics-bench, breakers-floor (Monolith veins), nonferrous-foundry (fed by 875,1015 tin outpost; imports clay/bricks from Iziz)
 
 #### `A` Talia (Kit Target on Iziz Build) — `settlements/iziz` (target `talia`)
@@ -140,12 +140,10 @@
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-10 "Keepwell" Field Operative Command & Northern Radio Switchboard (priority quest:voth_lost_radio hub!)
   - Mercenary Bourse #4: East-Gate Caravanserai Bourse (MC-02, MC-03, MC-07 via Girder, MC-08) + Tier 3 Bounty Board (Salt-Thirsters BF-05)
-  - University Architectural Folio Scriptorium (Ruling #100) + Imperial Forgemasters shallow seep yard (oil=116) + Foothill Longcrawler-to-Mule Transfer Yard (Ruling #29)
+  - University Architectural Folio Scriptorium (Ruling #100) + Imperial Forgemasters shallow seep yard (oil=116) + **`1.55 atm` Foothill `Longcrawler`-to-Mule Transshipment Caravanserai, `lung-salt` Depot & Bonded East-Gate Customs House (`Rulings #29, #105–106`)**
   - Workshop I/O: nitre-works & gunpowder-mill, hydro-sawmill/stampmill on pass gorges, pottery/crucible transshipment to clay=0 Tiguantin
-
-  - **Northern Cartels Foothill Hub (`Rulings #102–103`):** **`PN-10` Pioneer Geodetic Survey & Pass-Telegraph Lodge** (secretly logging Crater pass gradients in rivalry with `HM-10` *Keepwell* History Monks!) + **`AS-06` Amber-Seal Letter-of-Credit & Caravan Bond House**
-  - Frontier *Lokator* & Foothill Homestead Charter Hall (`SETTLEMENT-MIGRATION-SCOPE` §2.2, `Rulings #96–97`) + `styleBooks` Blueprint Stalls (`talia`, `iziz-vernacular`)
-  - High-Margin Bootleg `spirits` Smuggler Cellars & Pack-Mule Cache Yards (smuggling distilled `spirits` up the eastern passes into prohibition-dry `Guari` & `Tiguantin`, `Rulings #71 & #91`!)
+  - **Northern Cartels Foothill Hub (`Rulings #102–103`):** **`PN-10` Pioneer Geodetic Survey & Pass-Telegraph Lodge** (secretly logging Crater pass gradients in rivalry with `HM-10` *Keepwell* History Monks!) + **`AS-06` Amber-Seal Letter-of-Credit & Bonded Caravan Warehouse**
+  - Frontier *Lokator* & Foothill Homestead Charter Hall (`SETTLEMENT-MIGRATION-SCOPE` §2.2, `Rulings #96–97`) + **Frontier Consular Row (`Beast Rider` & `Tiguantin` envoys), Pass Magistrate Court / Gaol (`Rulings #110–111`)**, and **`BT-06a` *Black-Tally* Safe-House & Bootleg `spirits` Mule-Cellar** (smuggling `spirits` into prohibition-dry `Tiguantin` & selling forged tallies, `Rulings #71 & #108`!)
 #### `A` Hook — `settlements/hook` (target `hook`)
 - **Canonical 5.1 Pin & Lineage:** `(809, 923)` · `id`: `sm3ft5vrof` (defSetts:(809,923)) · **Polygons:** Political `Empire of Iziz` | Biome `None` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-1502.9 m`** (cell `-1502.9 m`, `wet = True`, `wlev = -1500.2`) · Cell slope **`1.53%`** (`0.87°`, upslope `148°`) · Relief: `3×3` `96 m` (dry `0 m`), `5×5` `608 m`, `20 km` `1176 m` · Nearest water: **`0.00 km`** (`sea` at `[809, 923]`, surf `-1500.2 m`, `-2.7 m` rel) · Nearest river: **`54.78 km`** (`r065` *Shvarts Brük*, `64.6 m³/s`, width `36.0 m`; max within `6 km` = **`0.0 m³/s`**, within `20 km` = `0.0 m³/s`).
@@ -154,13 +152,12 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 WORLD.H Fit + KCITY Multi-Kit Rebuild Blueprint** (Frame turn: `-9.2°`) · Auto-scanner nearby comparison: `(811, 904)` (`38.2 km` off: d_sea=2.0km (brg 0deg), slope=5.6%, +23m over sea); `(810, 924)` (`2.8 km` off: d_sea=2.0km (brg 270deg), slope=4.9%, +-3m over sea).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `p0_port_kit_needs_kcity_multikit` · Sealed kits: `iziz-vernacular, voth, islanders, hykkousoi` -> Merge Hook P1-P3 onto core/world WORLD.H + KCITY + KRATOR_KITS 6-culture cosmopolitan wards (iziz-vernacular, voth, islanders, hykkousoi, desert-nomads, post-apoc container freedmen towers) over kits/port waterfront.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Admiralty Prize Court, Letter-of-Marque Desk & Tier 3 Pacification Bounty Office (live game-start Conquest Surge case: orderliness plunged -0.50 after retaking from Voth, Ruling #94; PF-01 Hooked-Sun privateers!)
-  - Customs Quarantine Gate (Ruling #76) + Freedmen Emancipation Hall (Ruling #78/98) + Tier 1 Lighthouse Relic Sub-Vault (RC-5)
+  - **Admiralty Prize Court, Military Pacification Magistrate Tribunal, Fortress Gaol & Penal Sapper Quay Cohort** (live game-start Conquest Surge case: `orderliness` plunged `-0.50` after retaking from Voth, `Rulings #94, #110 & #112`; `PF-01` *Hooked-Sun* privateers!)
+  - **Customs Quarantine Lock-Gate, Bonded Reconstruction Warehouses & `Ys` Neutral Consular House** (`Rulings #76, #109 & #111`) + Freedmen Emancipation Hall (`Ruling #78/98`) + Tier 1 Lighthouse Relic Sub-Vault (`RC-5`)
   - Workshop I/O: ship-timber mast-spar & pitch/bitumen naval dockyard (Ruling #77), coastguard_berth, fish/salt curing wharves
-
   - **`AS-07b` Court of the Amber Seal Dock-Reconstruction Lien Office (`Ruling #103`):** holds bonded `15%` dock-dues lien financing Hook's post-reconquest quay rebuild (with **Pioneer** eddy-current crane brakes stipulated under the bond!)
   - Freedmen *Colonia* Land-Grant & Settler Passage Desk (`SETTLEMENT-MIGRATION-SCOPE` §2.3, `Ruling #98`) + Cosmopolitan Shipwright & Ward Blueprint Broker (`styleBooks`: `iziz-vernacular`, `voth`, `islanders`, `hykkousoi`, `post-apoc`)
-  - Conquest-Surge Wreckers' & Thieves' Guild Dockside Fence Den (thriving on Hook's `-0.50` post-reconquest orderliness plunge, fencing `PF-01` Hooked-Sun plunder & untaxed salvage, `Ruling #94`)
+  - Conquest-Surge Wreckers' & Thieves' Guild Dockside Fence Cellars (thriving on Hook's `-0.50` post-reconquest `orderliness` plunge, fencing `PF-01` *Hooked-Sun* plunder & untaxed salvage, `Rulings #94 & #109`)
 #### `C` Verge (Upper & Lower) — `settlements/verge`
 - **Canonical 5.1 Pin & Lineage:** `(1268, 949)` · `id`: `sduqx62i09` (defSetts:(1268,949) -> MOVED@5.1e6:(1268, 949)->(1268,949)) · **Polygons:** Political `None (water/unclaimed)` | Biome `None` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-1684.9 m`** (cell `-1684.9 m`, `wet = False`, `wlev = None`) · Cell slope **`7.83%`** (`4.48°`, upslope `273°`) · Relief: `3×3` `295 m` (dry `295 m`), `5×5` `541 m`, `20 km` `1818 m` · Nearest water: **`14.00 km`** (`lake` at `[1275, 949]`, surf `-2338.9 m`, `+654.0 m` rel) · Nearest river: **`1.68 km`** (`r255` *Rrivar Blaca*, `14.7 m³/s`, width `17.0 m`; max within `6 km` = **`14.7 m³/s`**, within `20 km` = `14.7 m³/s`).
@@ -169,9 +166,9 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[C] Sub-Pixel Escarpment/Canyon Stamp + -10 deg Frame Turn on KCITY** (Frame turn: `-10°`) · Auto-scanner nearby comparison: `(1265, 947)` (`7.2 km` off: q6=14.7m3/s, 5x5_relief=1190m, slope=7.1%); `(1268, 945)` (`8.0 km` off: q6=14.7m3/s, 5x5_relief=1405m, slope=5.9%).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity_dual_level_needs_world_rot_and_cableway` · Sealed kits: `iziz-vernacular, yuni, eastern-abyssal, locus` -> Already on dual-level KCITY (Upper Iziz + Lower Yuni/Abyssal); wire KRATOR_KITS (iziz-vernacular, yuni, eastern-abyssal, locus) + join river to r255 in new east-rim region.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - GH-03 Geomancer 856 m Naphtha-Winched Oil-Barrel Drum Cableway & Hoist House (Ruling #45, linking Lower Verge -1,685 m to Upper Verge)
+  - **GH-03 Geomancer `856 m` `naphtha`-Winched Oil-Barrel Drum Cableway, Dual-Level Break-of-Bulk Caravanserai & Iziz/Yuni Scarp Customs House** (`Rulings #45, #105–106`; repairable `KCONS` sabotage chokepoint `Ruling #113`!)
   - Order of Historians HM-09 Verge Chapterhouse (Eastern Deserts & East Abyss seat, Ruling #83, w/ upper-rim Whisper Cell radio aerial)
-  - Mercenary Bourse #5: Scarp & Abyss Hiring Yard (MC-03 Yuni Rifle-Banners, MC-08 Dasri Camel-Lances for WC-01 Solta rigs) + Tier 3 Bounty Board (BF-05/BF-06)
+  - Mercenary Bourse #5: Scarp & Abyss Hiring Yard (MC-03 Yuni Rifle-Banners, MC-08 Dasri Camel-Lances for WC-01 Solta rigs) + Tier 3 Bounty Board (BF-05/BF-06) + **Scarp Magistrate Brig & Cataract Under-Hoist Smuggler Cache**
   - Workshop I/O: fireclay crucible/retort depot (clay=255, coal=199), rare-earth acid-leaching transfer yard (RE=160), cold-chain/salt caravan staging
 
 #### `A` Dilihan — `settlements/dilihan`
@@ -184,7 +181,8 @@
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-13 Dilihan Chapterhouse (dil_library_courtyard w/ hidden Cut-relay Whisper Cell radio to Jimjam/Skywatch, Ruling #83/89)
   - Mercenary Bourse #9: Northern Basin Muster Hall (MC-02, MC-06, MC-10 for WC-03 Port Visas & WC-05 Cut Salt Lake diapir rigs) + Tier 3 Bounty Board (BF-02 Broken-Count)
-  - Lower-Town Quarantine & Lipp-Seizure Assay Gate (Ruling #76) + Cut Signal-Lantern Optical Relay Tower (Ruling #81)
+  - **Lower-Town Foreign Legations (`dl_hykkousoi_legation` + `Jimjam` & `Ardent` trade lodges, `Ruling #111`), *"Quiet-Copy"* Customs Assay Tribunal & Gaol (`Rulings #76, #109 & #113`)**, and Cut Signal-Lantern Optical Relay Tower (`Ruling #81`)
+  - **`-1,608 m` `Cut Salt Lake` (`D2`) Penal `Potash`/`Halite` Pans & NE Skarn Convict Adits (`Ruling #110`)** + **`BT-05` *Black-Tally* Lower-Town Wine-Vault Fence (`Ruling #108`)**
   - Workshop I/O: nonferrous-foundry (skarn tin=200 + iron=255 bronze), potash/halite salt-pan works, brickworks (paddy/basin clay)
   - **Northern Cartels Cut Hub (`Rulings #102–103`):** **`PN-08` Pioneer Spring-Drop Hydro-Dynamo & Warp-Field Compass Station** (competing with `HM-13` Monks for `Cut` eigenweapon anomaly readings!) + **`AS-05` Amber-Seal Salt-Pan Bond Countinghouse**
   - Cut-Basin *Handu* Charter & Sponsored Settler Expedition Registry (`SETTLEMENT-MIGRATION-SCOPE` §2.2, `Rulings #96–97`) + Multi-Style Mason's Guild Folio Desk (`styleBooks`: `dilihan`, `iziz-vernacular`, `highlands-rustic`)
@@ -201,12 +199,12 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `reference_kcity_and_sim_needs_multikit_and_v2_bake` · Sealed kits: `voth` -> Reference KCITY + SIM city; wire KRATOR_KITS (voth + cosmopolitan dock/captive wards) and bake V2 openworld/voth region (with Torus & LC-04 Geomancer oil enclave at 726,1003).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Tzintzun's Royal Artificer Reverse-Engineering Vault (Sun Pyramid / Ordinator Citadel) housing the captured HM-19 Lost Voth Chapter Radio (Ruling #89 quest:voth_lost_radio!) + Clandestine HM-19 Safe-House Cellar
-  - Vothic Ordinator Warrant & Quarantine Chancery (Tier 3/4 ideological bounties vs BF-10 "The Inverted" & Order operatives) + Silver-Monometallic Royal Exchequer Bourse (Ruling #14/68)
+  - **Vothic Ordinator Inquisition Tribunal, Sun-Pyramid `21`-Day Condemned Cells, Crown Ashlar Penal Quarries & `Grüt-Gracht` (`14`-lock) Customs Lock-House + Penal Dredge-Scows** (`Rulings #105 & #110`; Tier 3/4 ideological bounties vs `BF-10` *The Inverted* & Order operatives) + Silver-Monometallic Royal Exchequer & Bonded Warehouses (`Rulings #14, #68 & #109`)
+  - **Foreign Canton Embassies (`Ruling #111`):** `Hykkousoi` (`Ys`), `Iron Republic`, `Jimjam`, `Dalab`, `Yuni` + **shuttered `Iziz` Embassy under *Court of the Amber Seal* Protecting-Power caretaker** (*`0` Order — purged!*)
   - Licensed Geomancer Royalty Office (managing LC-04 726,1003 derrick enclave, Ruling #19)
   - Workshop I/O: amphorae potter & ballast brickworks (#1 Ring Sea exporter, clay=255), crucible-works (fireclay), chinampa_bed, ship-timber chitin-bireme arsenal, cold-chain salt-fish stores
-
   - Royal Canal-Colony & *Mitma* Resettlement Chancery (`SETTLEMENT-MIGRATION-SCOPE` §2.1) + Royal Master-Builders' Archive (`styleBooks`: `voth` canal/stepped masonry)
-  - Submerged Canal-Vault Smuggler & *Inverted* (`BF-10`) Fence Cellars (evading Ordinator ideological censors, moving black-market `ancient-relics` & untaxed `silver`, `Rulings #89–93`)
+  - **`BT-11b` *Black-Tally* Submerged Canal-Vault & *Inverted* (`BF-10`) Fence Cellars** (evading Ordinator ideological censors, moving black-market `ancient-relics`, `weeping-sap`, & untaxed `silver`, `Rulings #89–93 & #108`)
 #### `D` Almua — `settlements/almua`
 - **Canonical 5.1 Pin & Lineage:** `(718, 883)` · `id`: `sjau3958qz` (defSetts:(718,883)) · **Polygons:** Political `Vothic Kingdom` | Biome `SW Bay` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-2013.3 m`** (cell `-2013.3 m`, `wet = True`, `wlev = -1500.2`) · Cell slope **`2.36%`** (`1.35°`, upslope `160°`) · Relief: `3×3` `149 m` (dry `0 m`), `5×5` `406 m`, `20 km` `890 m` · Nearest water: **`0.00 km`** (`sea` at `[718, 883]`, surf `-1500.2 m`, `-513.1 m` rel) · Nearest river: **`40.50 km`** (`r217` *Kowld Brük*, `19.8 m³/s`, width `20.0 m`; max within `6 km` = **`0.0 m³/s`**, within `20 km` = `0.0 m³/s`).
@@ -216,8 +214,8 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[D] Targeted 5.1 Map Surgery + Shore Snap to (723, 885) (or [B] Relocate to (699, 890))** -> **Recommended Pin: `(723, 885)` (alt `(699, 890)`)** · Auto-scanner top hits: `(711, 879)` (`16.1 km` off: d_sea=2.0km, q6=0.0m3/s, slope=2.3%, +29m over sea); `(713, 876)` (`17.2 km` off: d_sea=2.0km, q6=0.0m3/s, slope=2.3%, +28m over sea).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `voth, ringsea` -> Build from scratch on WORLD.H + KCITY (4 canal-islanded waterfront cantons + planned Clan Town w/ 33% KCONS/camp empty lots) + KRATOR_KITS (voth + surviving islanders white-moon shrine).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Northern Ordinator Admiralty, Prize Court & Tier 3 Anti-Pirate Bounty Board (hunting PF-03 Hykkousoi Night-Boarders & PF-05 Chain-Breakers)
-  - Port Quarantine & Customs Gatehouse (watching League of Amphitriton 48 km N & Kautono Rumah 749,894)
+  - **Northern Ordinator Admiralty Prize Court, Canton Magistrate Gaol & Letter-of-Marque Desk** (`Rulings #110 & #112`; Tier 3 Anti-Pirate Bounty Board hunting `PF-03` Hykkousoi Night-Boarders & `PF-05` Chain-Breakers)
+  - **`Almua–Kowld` Canton Canal (`2`-lock `40 t`, `cn_vo_almua_canton`) Customs Lock-House, Harbour Quarantine Gate & Bonded Fleet Warehouses** (`Rulings #105 & #109`, watching League of Amphitriton `48 km` N & Kautono Rumah `749,894`)
   - Workshop I/O: chitin-bireme shipwright slips, ship-timber & cordage ropewalk, amphorae/brick kilns (clay=255), salted-fish & beetle-meat fleet stores
 
 #### `B` Drum — `settlements/drum`
@@ -229,11 +227,10 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `voth` -> Build on WORLD.H + KCITY + KRATOR_KITS (voth + scyvoi/talovolci camp rings + post-apoc salvage) round kits/ancients Drum arcology (Tier 1 Relic sub-vault).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Mercenary Bourse #7: Under-Drum Grand Arena & Auxiliary Bourse (MC-04 Talovolci, MC-08 Scyvoi, MC-11 Frogmen, MC-12 Yusar brokers; Ruling #79 spectator circuit!) + Tier 3 Bounty Board (BF-10 The Inverted)
-  - Partially Collapsed 89 km Cascade<->Drum Karst Bore Eastern Portal & Re-Excavation Syndicate Yard (Ruling #57/72 gunpowder blasting sink; RC-3 regulator target!)
-  - Under-Bourse Black-Market Fixer Den (WC-07 rock-oil bootlegging & covert Vothic quartz/rare-earth bids for Tzintzun's radio lab, Ruling #89)
+  - **Partially Collapsed `89 km` `Cascade<->Drum` Karst Bore Eastern Portal, Break-of-Bulk Caravanserai & Penal Bore-Clearing Convict Camp** (`Rulings #57, #72, #106 & #110` gunpowder blasting sink; `RC-3` regulator target!) + **Salvage Magistrate Court & Arena Brig**
+  - **`BT-11a` *Black-Tally* Under-Bourse Fixer Vault** (`WC-07` rock-oil bootlegging, `BF-10` *Inverted* safe-conducts, & covert Vothic `quartz`/`rare-earth` bids for *Tzintzun*'s radio lab, `Rulings #89 & #108`)
   - Workshop I/O: breakers-floor & blast-furnace (1:1 scrap-to-iron), crucible-works (fireclay), gunpowder-mill magazine
-
-  - Arcology-Fringe Settler Claim & Reclamation Office (`SETTLEMENT-MIGRATION-SCOPE` §2) + Black-Market Relic & *Inverted* (`BF-10`) Fence Undercroft (`BANDITS-PIRATES-BOUNTIES-SCOPE`)
+  - Arcology-Fringe Settler Claim & Reclamation Office (`SETTLEMENT-MIGRATION-SCOPE` §2)
 #### `B` Shim — `settlements/shim`
 - **Canonical 5.1 Pin & Lineage:** `(654, 1118)` · `id`: `sshimrest01` (defSetts:(654,1118)) · **Polygons:** Political `Vothic Kingdom` | Biome `SW lowlands` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-461.4 m`** (cell `-461.4 m`, `wet = True`, `wlev = -9.2`) · Cell slope **`3.73%`** (`2.14°`, upslope `35°`) · Relief: `3×3` `208 m` (dry `0 m`), `5×5` `454 m`, `20 km` `892 m` · Nearest water: **`0.00 km`** (`lake` at `[654, 1118]`, surf `-9.2 m`, `-452.1 m` rel) · Nearest river: **`17.83 km`** (`r000` *klir Rivrh*, `5601.1 m³/s`, width `341.0 m`; max within `6 km` = **`0.0 m³/s`**, within `20 km` = `5601.1 m³/s`).
@@ -242,8 +239,8 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[B] Relocate Pin 7.1 px N out of Deep Lake to (655, 1111) + KCITY Rebuild Blueprint** -> **Recommended Pin: `(655, 1111)` (alt `(654, 1110)`)** · Auto-scanner top hits: `(654, 1111)` (`14.0 km` off: q6=5601.1m3/s, d_lake=2.0km, slope=0.5%, 5x5_relief=86m); `(652, 1110)` (`16.5 km` off: q6=5601.1m3/s, d_lake=2.0km, slope=2.0%, 5x5_relief=214m).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `voth` -> Build on WORLD.H + KCITY + KRATOR_KITS (100% weathered Shim Vothic tune per Ruling #16 + Ancient Iziz rehab temple square; Shumari minority crafts) + chinampa shore & slave plantations.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Clandestine HM-19 History Monk Safe-House & Smuggler Dock (receiving covert Vrivolci saltpeter/tin via Shumar, Ruling #41)
-  - Ordinator Manhunter & Plantation Fugitive Warrant Post (Ruling #78 vs Vrivolci/PF-05 abolitionist raids)
+  - **Clandestine `HM-19` History Monk Safe-House & Covert `Vrivolci` Smuggler Cellar/Dock** (receiving embargo-bypassing `Vrivolci` `saltpeter`/`tin` via `Shumar`, `Rulings #41 & #109`)
+  - **`Shim–Sethas` Chinampa Canal (`4`-lock `50 t`, `cn_vo_shim_chinampa`) Customs Lock-House, Ordinator Assize Court / Brig & Penal Chinampa-Dike Labor Stockade** (`Rulings #78, #105 & #110` vs `Vrivolci`/`PF-05` abolitionist raids)
   - Workshop I/O: Blitrit purple dyeworks + Sunboll cotton + rattlepod coffee plantations (Ruling #18), chinampa_bed, amphorae potter (clay=255), river_quay scows
 
 #### `B` Torus — `settlements/torus`
@@ -254,9 +251,9 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[B] Relocate Pin 4.9 px NNE onto Tors Rivrh at (777, 1003) + KCITY Rebuild Blueprint** -> **Recommended Pin: `(777, 1003)` (alt `(776, 1004)`)** · Auto-scanner top hits: `(769, 1020)` (`27.9 km` off: q6=289.4m3/s, d_lake=198.1km, slope=0.2%, 5x5_relief=271m); `(762, 1020)` (`35.4 km` off: q6=289.4m3/s, d_lake=194.6km, slope=0.3%, 5x5_relief=250m).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `voth` -> Build on WORLD.H + KCITY + KRATOR_KITS (voth + talovolci auxiliary ward) round kits/ancients Forest Ring arcology (Tier 1 Relic sub-vault; second site of openworld/voth).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Talovolci Gaesatai Muster Compound (MC-04, Ruling #35) + Agropolitan Caravan Broker Yard (Ruling #15)
+  - Talovolci Gaesatai Muster Compound (`MC-04`, `Ruling #35`), **`Grüt-Gracht` Eastern Terminus Lock-Basin & Grain-Tithe Customs House (`cn_vo_grut_gracht`, `45 t` sheltered wartime barges, `Ruling #105`)**, and Agropolitan Caravan Broker Yard (`Ruling #15`)
   - Workshop I/O: boutique cacao orchards & fermentaries (Ruling #63!), granary/watermill, brickworks & potter (14 good clay cells)
-  - **Rinkvolk *Tenders* Sacred Botanical & Forest-Ring Sanctuary (`Ruling #104`):** upper wild Ancient forest torus + cultivar seed-terraces tended exclusively by Torus's **Tenders** (kept `100%` distinct from northern `Weeping Valley`'s Pioneer *Sap-Breakers*, who only dismantle defoliant machines & harvest dielectric coil-varnish)
+  - **Rinkvolk *Tenders* Sacred Botanical & Forest-Ring Sanctuary (`Ruling #104`):** upper wild Ancient forest torus + cultivar seed-terraces tended exclusively by Torus's **Tenders** (kept `100%` distinct from northern `Weeping Valley`'s Pioneer *Sap-Breakers* and *Black-Tally* `weeping-sap` poisoners!)
 
 ### 3. League of Amphitriton, The Throne & Ring Isles (`Spheres 5–7`)
 
@@ -269,10 +266,10 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `bespoke_88_city_place_needs_kcity_multikit` · Sealed kits: `hykkousoi, voth, islanders, iziz-vernacular` -> Port targets/city from bespoke 87-city-layout.js / 88-city-place.js onto KCITY + KRATOR_KITS (hykkousoi + exiled West Rumah Hetanini quarter Ruling #24 + voth/iziz trade houses).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-17 Reef-Scriptorium & Hidden RF Direction-Finding Watch (listening across Ring Sea for rogue carrier pings from Tzintzun's lost Voth radio, Ruling #89!)
-  - Neutral League Clearing-Bourse & Letter-of-Marque Admiralty (Ruling #68/69 neutral wartime arbitrage; tacit haven for PF-05 Chain-Breaker Privateers; MC-05 Vrivolci & MC-10 Corsair hiring)
+  - **Foreign Quarter Embassies (`port_voth_embassy`, `Iziz`, `Iron Republic`, `Dilihan`, `Kautoa`, exiled `Hetānini` + Neutral Protecting-Power Chancery, `Ruling #111`)**
+  - **Neutral League Clearing-Bourse, Prytaneion Maritime & Prize Court, `Dioryx of Ys–Visas` (`4`-lock `50 t`, `cn_hyk_dioryx_ys`) Customs Lock-House & Bonded Free-Port Warehouses** (`Rulings #68/69, #105, #110 & #112`; tacit haven & karst sea-cave smuggler berth for `PF-03`/`PF-05`; `MC-05` & `MC-10` hiring)
   - Quadrennial Amphitriton Truce Pilgrim Hostels (Ruling #79) + Tier 1 Reef Transponder Relic Sub-Vault (RC-5)
   - Workshop I/O: dressed karst limestone mason_yard (clay=0 on Ys rock-isle -> imports Sideros 744,784 clay/amphorae & iron, Ruling #2/#13!), ship-timber trireme arsenal, kava halls
-
   - **Northern Cartels Western Ring-Sea Hub (`Rulings #102–103`):** **`PN-15` Pioneer Anomaly-Compensated Marine Binnacle Loft** + **`AS-11` Court of the Amber Seal Neutral-Flag *Bottomry* & Maritime Insurance Bank** (underwriting wartime arbitrage voyages under `Ruling #69`!)
   - League *Apoikia* Prytaneion & Maritime Colonization Crier (`SETTLEMENT-MIGRATION-SCOPE` §2.2, `Rulings #95–97`: founding overseas *apoikiai* via chartered ship convoys) + Classical/Maritime `styleBooks` Folio Hall (`ys`, `islanders`)
 #### `C` Dhelv — `settlements/dhelv`
@@ -284,7 +281,7 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[C] Sub-Pixel Kipuka & Lava-Tube Stamp (KCAVERN) + +90 deg Frame Turn** (Frame turn: `+90°`) · Auto-scanner nearby comparison: `(849, 774)` (`18.4 km` off: slope=0.3%, 3x3_relief=19m, q6=0.0m3/s, d_wat=10.0km); `(841, 776)` (`2.0 km` off: slope=0.1%, 3x3_relief=141m, q6=0.0m3/s, d_wat=13.4km).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `kcavern_kipuka_finished` · Sealed kits: `zeijani` -> Finished KCAVERN + SIM + Godot build (P0-P8); keep bespoke rock-cut braid & wire surface/outpost lots to KRATOR_KITS (zeijani) inside openworld/north-shore.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Corsair & Slave-Market Factor Desk at West-Foot Outpost (MC-10 Zeijani hulls, Ruling #78; hunted by PF-05 Chain-Breakers)
+  - **Corsair & Slave-Market Factor Desk + Penal Volcanic Tuff-Cistern Cutters & Rock-Cut Brig** at West-Foot Outpost (`MC-10` Zeijani hulls, `Rulings #78 & #110`; hunted at sea by `PF-05` *Chain-Breakers*)
   - Workshop I/O: mushroom_farm (alecap/glow-mushroom in dark tubes), baked clay-tablets/amphorae import depot (coastal Zeijani clay=230 vs interior clay=0, Ruling #2)
 
 #### `C` Noah's Regret — `settlements/noahs-regret`
@@ -299,8 +296,7 @@
   - Pirate Capital HQ of Bloody Ruephus: Black-Market Prize Fence, Smuggler Berth & Pirate Cove Dispatch Board (PF-01..05, fenced into Port Mira 865,895, Ruling #20)
   - Tier 2 Flooded Medical Hold Salvage Vault (scarce ancient-biogel & RC-4 biomatrix source! Frogman MC-11 dive hook)
   - Workshop I/O: shipwright careening & hull-scrap breakers-floor, ranjrum/contraband vaults, cold-chain salt/ice biogel lockers
-
-  - *Bloody Ruephus* Freebooter Prize-Fence Vaults, Black-Market Letter-of-Marque Brokers & Smuggler Careening Docks (`BANDITS-PIRATES-BOUNTIES-SCOPE`, `Rulings #91–94`)
+  - *Bloody Ruephus* Freebooter Prize-Fence Vaults, **Pirate Ransom Brig Cages**, Black-Market Letter-of-Marque Brokers & **`BT-10b` *Black-Tally / Weeping-Lotus* Poison & Contraband Hold** (`Rulings #91–94, #108 & #110`)
 #### `B` Zey'danin — `settlements/zeydanin`
 - **Canonical 5.1 Pin & Lineage:** `(795, 860)` · `id`: `s5x27pj6hn` (defSetts:(795,860)) · **Polygons:** Political `Vothic Kingdom` | Biome `Ring Sea, Throne/Volcano` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-1180.0 m`** (cell `-1180.0 m`, `wet = False`, `wlev = None`) · Cell slope **`4.20%`** (`2.40°`, upslope `63°`) · Relief: `3×3` `226 m` (dry `226 m`), `5×5` `467 m`, `20 km` `1021 m` · Nearest water: **`7.21 km`** (`sea` at `[792, 862]`, surf `-1500.2 m`, `+320.2 m` rel) · Nearest river: **`62.50 km`** (`r245` *Palgu-Šadû*, `12.5 m³/s`, width `18.0 m`; max within `6 km` = **`0.0 m³/s`**, within `20 km` = `0.0 m³/s`).
@@ -309,8 +305,8 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[B] Relocate Pin 3.0 px W to Coastline (792, 860) (or (793, 855)) + 5-Layer KCITY Blueprint** -> **Recommended Pin: `(792, 860)` (alt `(793, 855)`)** · Auto-scanner top hits: `(803, 877)` (`37.6 km` off: d_sea=2.0km (brg 270deg), slope=0.4%, +16m over sea); `(788, 847)` (`29.5 km` off: d_sea=2.0km (brg 270deg), slope=1.2%, +9m over sea).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_5_layer_renovation_kcity` · Sealed kits: `zeijani, islanders, iziz-vernacular, hykkousoi, voth` -> Premier showcase for KCITY + KRATOR_KITS 5-layer architectural renovation (zeijani carved stack -> islanders West rumah -> iziz-vernacular -> hykkousoi barnacle pods -> voth garrison/harbour + renovation dress deltas).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Vothic S2 Spice/Coffee Customs & Gold-Earning Re-Export Bourse (Ruling #14) + Ordinator Watch Post at Hykkousoi Mole Root
-  - Tier 3 Maritime Bounty & Anti-Smuggling Berth (facing free *Tauranga-Hikau* 848,897 & PF-05 Chain-Breakers)
+  - **Vothic `S2` Bonded Spice/Coffee Re-Export Warehouses, Sea-Mole Customs House & Provincial Magistrate Tribunal / Gaol** (`Rulings #14, #109 & #110`) + Ordinator Watch Post at Hykkousoi Mole Root
+  - Tier 3 Maritime Bounty & Anti-Smuggling Berth + **West-Pile Smuggler Cellars** (trading covertly with free *Tauranga-Hikau* `848,897` & `PF-05` Chain-Breakers)
   - Workshop I/O: struggling Ranj spice -> coffee & sugar-mill conversions, copper/clay=230 coastal kilns (supplying clay=0 interior Throne), chitin-bireme & rumah dockyards
 
 #### `A` Kautoa — `settlements/isle-demo` (target `kautoa`)
@@ -323,9 +319,8 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity_needs_5.1_recut_and_multikit` · Sealed kits: `islanders, iziz-vernacular, beast-riders` -> Already on KCITY + SIM + KCONS (Kautoa + Izanitown + Ridertown); migrate bespoke multi-kit shims to canonical KRATOR_KITS (islanders, iziz-vernacular, beast-riders).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-12 Kautoa Chapterhouse (Sumba spire scriptorium w/ spire-mast Whisper Cell radio; oversees Beast Rider Region 87 radio-free chroniclers, Ruling #83!)
-  - Mercenary Bourse #7-East /Beast-Rider Maritime Liaison (MC-07 Sky-Lances & Raptor scouts; PF-02 Kautoan Sea-Rovers charts)
+  - **Foreign Envoys' Compound (`Iziz` & `Beast Rider` legations, `Ruling #111`), Harbour Customs House, Royal Kava Court / Brig & Thieves' Guild Tavern (`47c`)** (`Rulings #109–110`) + Mercenary Liaison (`MC-07`; `PF-02` charts)
   - Workshop I/O: pandan/reed mat & sailcloth weavers, earthenware potter (9 good clay cells -> exports to clay=0 coral cays), kava halls, boatyard
-
   - Ring-Isle Canoe-Voyager *Apoikia* Crier Platform (`SETTLEMENT-MIGRATION-SCOPE` §2) + Master Carpenter's `islanders` (`kautoa` & `west`) Pattern-Stick Loft (`Rulings #99–101`)
 #### `A` Valapo — `settlements/isle-demo` (target `valapo`)
 - **Canonical 5.1 Pin & Lineage:** `(942, 782)` · `id`: `sg3doyt783` (defSetts:(942,782)) · **Polygons:** Political `isle demo, Kautoa` | Biome `Ring Sea` | Openworld Region: `pending cut`
@@ -336,7 +331,7 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 WORLD.H Fit (Recut on 5.1 with Isle-Demo + Wire KRATOR_KITS)** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(946, 785)` (`10.0 km` off: d_sea=2.0km (brg 180deg), slope=2.1%, +2m over sea); `(948, 783)` (`12.2 km` off: d_sea=2.0km (brg 180deg), slope=3.5%, +-0m over sea).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity_needs_5.1_recut_and_multikit` · Sealed kits: `islanders` -> Keep on KCITY + SIM; switch drawing host to KRATOR_KITS (islanders) when isle-demo recuts onto 5.1.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Coastguard & Anti-Pirate Lookout Berth + Sea-Trade Warehouse (isle-demo SIM benchmark)
+  - Coastguard & Anti-Pirate Lookout Berth + Sea-Trade Warehouse (`isle-demo` `SIM.convoy` & `47c` Thieves' Guild benchmark)
   - Workshop I/O: dried-salted-fish curing racks, copra/taro/sugar processing, outrigger boatyard
 
 #### `A` Nephtos — `settlements/isle-demo` (target `nephtos`)
@@ -348,7 +343,7 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 WORLD.H Fit + Multi-Kit Cleruchy Blueprint** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(916, 766)` (`10.0 km` off: d_sea=2.0km (brg 270deg), slope=5.2%, +-59m over sea); `(907, 753)` (`30.0 km` off: d_sea=2.0km (brg 180deg), slope=4.0%, +26m over sea).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity_needs_5.1_recut_and_multikit` · Sealed kits: `hykkousoi, islanders` -> Third isle-demo town (League of Tethis cleruchy, 6.5k w/ Kierson); build directly on WORLD.H + KCITY + KRATOR_KITS (hykkousoi + islanders, named in MULTI-KIT-SCOPE §1!).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Neutral League Transshipment Quay & Currency Clearing Desk (wartime Iziz-Voth embargo arbitrage, Ruling #68/69)
+  - **Neutral League Bonded Arbitrage Warehouses, Cleruchy Customs Quay & Prytaneion Magistrate Desk** (wartime `Iziz–Voth` embargo rerouting valve, `Rulings #68/69 & #112`)
   - Workshop I/O: limestone/coral lime-kiln, amphorae wine/oil stores, hyk-galley slipway
 
 ### 4. Free Beast Rider Confederacy (`Region 87`) & Screamers (`Spheres 8–9`)
@@ -361,11 +356,10 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 WORLD.H Fit + KCITY Palisade Terrace Blueprint** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(1039, 868)` (`2.0 km` off: slope=0.3%, 3x3_relief=22m, q6=143.4m3/s, d_wat=24.0km); `(1038, 871)` (`4.5 km` off: slope=0.2%, 3x3_relief=43m, q6=143.9m3/s, d_wat=22.0km).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `legacy_bespoke_needs_kcity` · Sealed kits: `beast-riders` -> Port from legacy Yuni-fork engine onto openworld/iziz-cluster WORLD.H + KCITY + KRATOR_KITS (beast-riders + iziz-vernacular treaty-road factors; ZERO Geomancer oil rigs allowed per Ruling #30!).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Dense-Air (>=1.60 atm) Foothill Caravan Transfer Gate & Longcrawler Guild Station (Ruling #28/29: lowland millipede freight hands off to highland lung-breathers toward Talia!)
-  - Beast Rider Mercenary Liaison Post (MC-07 Sky-Lances & Raptor bands) + Quetzal Oil-Exclusion Watchpost (enforcing 0 rigs on oil=178 shelf, Ruling #30)
+  - **`1.90 atm` Dense-Air Foothill Transshipment Gate & `Longcrawler` Guild Station (`Rulings #28–29, #106`:** lowland millipede freight hands off to highland lung-breathers toward `Talia`!) + **External Treaty-Road Envoy Post (`Iziz`/`Talia` & `Kautoa` factors outside palisade, `Ruling #111`)**
+  - Beast Rider Mercenary Liaison Post (`MC-07` Sky-Lances & Raptor bands) + Quetzal Oil-Exclusion Watchpost (enforcing `0` rigs on `oil=178` shelf, `Ruling #30`) + Scrap-Frame Blueprint Broker (`styleBooks`: `girder`, `beast-riders`)
   - Workshop I/O: raptor/threehorn/flyer mounts & tack, levee earthenware potter (11 good clay cells), ship-timber tall-spar logging camp
 
-  - Outrider Free-Company & Caravan-Guard Muster Coral (`MC-07` Crawler crews & `beast-riders` escorts) + Scrap-Frame Blueprint Broker (`styleBooks`: `girder`, `beast-riders`)
 #### `A` Mav's Refuge — `settlements/mavs-refuge`
 - **Canonical 5.1 Pin & Lineage:** `(1049, 841)` · `id`: `skukf2qmmq` (defSetts:(1049,841) -> MOVED@5.1e6:(1049, 841)->(1049,841)) · **Polygons:** Political `Region 87` | Biome `savage hyperjungle` | Openworld Region: `iziz-cluster`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-1462.7 m`** (cell `-1462.7 m`, `wet = False`, `wlev = None`) · Cell slope **`0.43%`** (`0.25°`, upslope `313°`) · Relief: `3×3` `50 m` (dry `50 m`), `5×5` `130 m`, `20 km` `327 m` · Nearest water: **`12.00 km`** (`lake` at `[1043, 841]`, surf `-1500.2 m`, `+37.5 m` rel) · Nearest river: **`0.80 km`** (`r046` *Béesh Baatar*, `89.5 m³/s`, width `43.0 m`; max within `6 km` = **`90.0 m³/s`**, within `20 km` = `90.2 m³/s`).
@@ -375,8 +369,8 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `legacy_yuni_fork_needs_kcity` · Sealed kits: `beast-riders, locus` -> Port from legacy Yuni-fork engine onto openworld/iziz-cluster WORLD.H + KCITY + KRATOR_KITS (beast-riders w/ 13 tribe visual trademarks Ruling #27 + Flyer elevator-tree rigging Ruling #26 + external walled kits/locus enclave).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - LC-01 Walled Licensed Yuni Geomancer Oil Refinery Compound 1-3 km Outside Canopy (oil=173, ~95 crew, 0 electric lamps inside Beast Rider trees! Ruling #30)
-  - Free-Soil Sanctuary Reception Clearing (welcoming runaway Shell Province debt-peons & BF-03 Chain-Snappers, Ruling #78/98)
-  - Single-Megatree Counterweight Flyer Elevator-Towers (Ruling #26) + Longcrawler Caravan Moot Staging (toward 1053,836)
+  - **`Free-Soil` Sanctuary Moot Court & Warrant-Nullification Clearing (`Rulings #78, #98, #110`:** nullifies `Shell PL-08` debt-peonage & foreign slavery warrants for escaped convicts & `BF-03` *Chain-Snappers*!)
+  - Single-Megatree Counterweight Flyer Elevator-Towers (`Ruling #26`) + **`1.92 atm` `Longcrawler` Caravan Moot & Transshipment Staging (`Ruling #106`, toward `1053,836`)**
   - Workshop I/O: geomancer-refinery (kerosene/naphtha/bitumen, fireclay=255), spinner-cord & resin rigging, trapped feral arena-beast cages
 
 #### `C` Pinnacle Rock — `settlements/pinnacle-rock`
@@ -388,7 +382,7 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity_plus_kstacks_needs_1007_686_recut` · Sealed kits: `beast-riders, locus` -> Already uses KCITY (54-pr-town.js) + KCAVERN (Deep Root) + KCAMP (18 band grounds); wire KRATOR_KITS (beast-riders + external kits/locus compound).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - LC-02 Dual Walled Yuni Geomancer Oil (oil=128) & Eastern-Spur Rare-Earth (1021,685 RE=160) Compound 1-3 km off Mesa (serviced from Shell Northern HQ, Ruling #30/82!)
-  - Order of Historians Radio-Free Field Chronicler Hostel (under Kautoa HM-12 jurisdiction, Ruling #83) + Dasri Caravan Yard (trading NE to Wahat al-Shamal 1165,652, Ruling #59)
+  - Order of Historians Radio-Free Field Chronicler Hostel (under Kautoa HM-12 jurisdiction, Ruling #83) + **`1.88 atm` `Longcrawler`-to-`Dasri` Transshipment Caravan Yard (`Rulings #59, #106`:** trading NE to Wahat al-Shamal `1165,652`)
   - Workshop I/O: stoneware-lined rare-earth acid-leaching vats (8 good clay cells), flyer rookery & saddle-tack works, vertical lift counterweights
 
 #### `A` Hexahedron (Screamers) — `settlements/screamers` (target `screamers`)
@@ -413,10 +407,10 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[C] Sub-Pixel 4-Pound Stepped Canal & Aqueduct Cut on 5.1 KCITY (Already Built)** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(450, 778)` (`8.1 km` off: d_lake=2.0km, +25m over lake, slope=4.3%, q6=212.4m3/s); `(449, 782)` (`3.0 km` off: d_lake=2.0km, +41m over lake, slope=3.2%, q6=379.5m3/s).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity` · Sealed kits: `eternian` -> Already on KCITY + KCANAL + SIM! Wire KRATOR_KITS (eternian) for blueprint export & multi-kit compatibility (interior Eternia forbids foreign mercenaries per Ruling #86 & Order houses outside Lux per Ruling #83).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Eternian *Feiqian* Paper-Scrip & Canal Tonnage Clearinghouse (Ruling #68) + Censorate Warden Watchhouse (high orderliness ~0.92, Ruling #94)
-  - Workshop I/O: kaolin porcelain-kiln (tableware + high-voltage insulators, 99.5% world share!) & fireclay saggar/crucible works, canal boatyard, state granaries
+  - **4-Pound Stepped Bronze Miter-Lock Customs Lock-House (`KCANAL` queue/toll + `KCONS` sabotage hook, `Rulings #105, #109, #113`; STRICTLY `0` foreign legations inside Eternia per `Ruling #111`!)** + Eternian *Feiqian* Paper-Scrip & Canal Tonnage Clearinghouse (`Ruling #68`)
+  - **Censorate Docket Magistrate Court, Brig & `PL-04` `Līng-Mā` Penal Canal-Dredging & Kaolin-Pit Corvée Camp (`Rulings #94, #110`; high `orderliness ~0.92`)** + `reformation-sanctum` Ascetic Ward (`Ruling #63`)
+  - Workshop I/O: kaolin porcelain-kiln (tableware + high-voltage insulators, 99.5% world share!) & fireclay saggar/crucible works (`Ruling #113` capital monopoly!), canal boatyard, state granaries
 
-  - Eternian Canal-Corvée & Border-Garrison Resettlement Registry + `reformation-sanctum` Ascetic Ward (`CONTINENTAL-SCOPE` §2.1B, `Ruling #63`)
 #### `A` Roketstad — `settlements/highlands` (target `roketstad`)
 - **Canonical 5.1 Pin & Lineage:** `(632, 716)` · `id`: `s28hf1s9ab` (defSetts:(632,716) -> MOVED@5.1e6:(632, 716)->(632,716)) · **Polygons:** Political `Iron Republic` | Biome `n highlands` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`2949.6 m`** (cell `2949.6 m`, `wet = False`, `wlev = None`) · Cell slope **`8.45%`** (`4.83°`, upslope `42°`) · Relief: `3×3` `414 m` (dry `414 m`), `5×5` `1644 m`, `20 km` `2362 m` · Nearest water: **`4.47 km`** (`lake` at `[630, 717]`, surf `2860.2 m`, `+89.4 m` rel) · Nearest river: **`1.56 km`** (`r201` *Snou Bruk*, `19.5 m³/s`, width `21.0 m`; max within `6 km` = **`21.9 m³/s`**, within `20 km` = `21.9 m³/s`).
@@ -425,13 +419,13 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 WORLD.H Fit (edit_520 Applied!) + KCITY Slavic & Hydropower Rebuild** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(638, 704)` (`26.8 km` off: slope=0.0%, 3x3_relief=0m, q6=0.0m3/s, d_wat=30.0km); `(636, 702)` (`29.1 km` off: slope=0.0%, 3x3_relief=0m, q6=0.0m3/s, d_wat=31.1km).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `legacy_bespoke_needs_kcity` · Sealed kits: `highlands-republican, highlands-rustic` -> Execute ROKETSTAD-BLUEPRINT.md: port targets/roketstad onto WORLD.H + KCITY + KRATOR_KITS (Slavic-ornamented highlands-republican + highlands-rustic per Ruling #7; Tlingit stripped to kits/painted-men; Vrivolci Giant clearance ward!).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
+  - **Cantonal Diplomatic Row (`Ys`, `Dalab`, `Iziz`, `Jimjam`, `Ardent`, and `Vrivolci` Giant Legations + `diplomatic_pouch` Chanceries, `Ruling #111`; Vothic coal/timber agents run under commercial cover)**
+  - ***Ting Embargo* Customs House, Bonded Guild Warehouses, `1.11 atm` `L1 Roketsjö` `Nauen`-to-Alpine-Mule Transshipment Yard (`Rulings #106, #109, #112`)** & **Cantonal Magistrate Court, Town Gaol & `PL-05` Western `Cascade–Drum` Bore Term-Convict Dispatch (`Ruling #110`)**
   - Mercenary Bourse #2: Bonded Republican *Mercenary Kontor* (MC-01 Frikompanier, MC-05 Vrivolci 4A Giants, MC-11 Kradz; refuses slaver/Shell peon contracts! Ruling #78/85) + Tier 3 Bounty Board
   - Order of Historians HM-15 High-Alpine Chapterhouse (+2,950 m line-of-sight Whisper Cell radio relay bridging Jimjam, Lux tight-beam bursts & Dalab/Ys, Ruling #83/89!)
-  - Engineering Guildhall Blueprint Desk (Ruling #100 permanent hydro-mill & clockwork folios) + Ancient Pad 5 Tier 1 Relic Sub-Vault (RC-5)
+  - **Northern Cartels Alpine Strategic Alliance (`Rulings #6, #102–103`):** **`PN-14` Pioneer / Technician Alpine `5,574 MW` Hydro-Dynamo Hall** (`KCONS` sabotage target `Ruling #113`!) + **`AS-10` Amber-Seal `Cascade–Drum` Bore & Lock Bond Syndicate**
+  - Engineering Guildhall Blueprint Vault (`Rulings #100, #113`: permanent hydro-mill & clockwork folios) + Free-Soil Guild *Lokator* Hall (`Rulings #95–97`) + Ancient Pad 5 Tier 1 Relic Sub-Vault (RC-5)
   - Workshop I/O: Snou Bruk hydro-forge / trompe finery (50-65% coal cut, Ruling #6!), hydro-stampmill, hydro-sawmill, clockwork-and-optics-bench (imports fireclay crucibles while Cascade-Drum bore is collapsed, Ruling #57)
-
-  - **Northern Cartels Alpine Strategic Alliance (`Rulings #6, #102–103`):** **`PN-14` Pioneer / Technician Alpine `5,574 MW` Hydro-Dynamo Hall** (bolting superconductor dynamos onto `Snou Bruk` waterfalls to break the Republic's `0`-coal / Geomancer-oil bottleneck!) + **`AS-10` Amber-Seal `Cascade–Drum` Bore & Lock Bond Syndicate**
-  - Free-Soil Guild *Lokator* & Alpine Mill-Colony Charter Hall (`SETTLEMENT-MIGRATION-SCOPE` §2.2, `Rulings #95–97`: recruiting journeymen & sponsoring frontier mill-towns) + Polytechnic Blueprint Press (`styleBooks`: `highlands-republican`, `highlands-rustic`, `highlands-slavic`, `Rulings #99–101`)
 #### `A` Snou Bruk Iron Millstream — `settlements/iron-millstream`
 - **Canonical 5.1 Pin & Lineage:** `(632.5, 716.6)` · `id`: `UNPINNED` (iron-millstream/PLAN.md (r201 E of Roketstad)) · **Polygons:** Political `Iron Republic` | Biome `n highlands` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`3034.4 m`** (cell `2956.9 m`, `wet = False`, `wlev = None`) · Cell slope **`3.12%`** (`1.79°`, upslope `50°`) · Relief: `3×3` `412 m` (dry `268 m`), `5×5` `1520 m`, `20 km` `2362 m` · Nearest water: **`4.10 km`** (`lake` at `[631, 718]`, surf `2860.2 m`, `+174.2 m` rel) · Nearest river: **`0.00 km`** (`r201` *Snou Bruk*, `19.5 m³/s`, width `21.0 m`; max within `6 km` = **`21.9 m³/s`**, within `20 km` = `21.9 m³/s`).
@@ -450,8 +444,8 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[B] Relocate Pin 11.3 px W onto Mekam-aru Stream at (819, 552) + KCITY Slavic Rustic Blueprint** -> **Recommended Pin: `(819, 552)` (alt `(830, 535)`)** · Auto-scanner top hits: `(841, 559)` (`25.1 km` off: slope=0.2%, 3x3_relief=33m, q6=0.0m3/s, d_wat=114.6km); `(842, 561)` (`28.8 km` off: slope=0.2%, 3x3_relief=30m, q6=0.0m3/s, d_wat=113.8km).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `highlands-rustic` -> Build 8,000-pop Clanthing capital (Ruling #54) on WORLD.H + KCITY + KRATOR_KITS (full-trade Slavic-carved highlands-rustic w/ KMAT bronze tune; Dilihan envoy lodge).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Clanthing Standing-Stone Ring & Law-Speaker's Mound + Free-Clan *Bronze-Train* Muster Yard (MC-06 cast-bronze field guns & abolitionist raiders, Ruling #78/85)
-  - Free-Soil Sanctuary & Runaway Shell Debt-Peon Refuge Hall (Ruling #78/93)
+  - Clanthing Standing-Stone Ring, **Clanthing `Free-Soil` Law-Rock Court (`Ruling #110`)** & Free-Clan *Bronze-Train* Muster Yard (`MC-06` cast-bronze field guns & abolitionist raiders, Ruling #78/85)
+  - **`Posolsky dvor` Foreign Envoy Lodge (`hl_rus_envoy_lodge` hosting `Dilihan` & `Iron Republic` legations + `diplomatic_pouch` desk, `Ruling #111`)** + Free-Soil Sanctuary & Runaway Shell Debt-Peon Refuge Hall (`Rulings #78, #93`)
   - Workshop I/O: nonferrous-foundry (bronze bells/guns/fittings — imports Jimjam pottery & fireclay crucibles because Ardent has clay=0 good cells, Ruling #2!), hydro-gristmill
 
 #### `A` Jimjam — `settlements/jimjam`
@@ -463,11 +457,11 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `kit_only_city_blueprint_ready_for_kcity` · Sealed kits: `dilihan` -> Keep targets/kit (`jimjam-kit.html`) intact and add `targets/city` (`jimjam.html`) for the 22,000-pop capital (Ruling #54) on WORLD.H + KCITY + KRATOR_KITS (dilihan/jimjam + eternian barge factors + highlands-rustic Ardent traders).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-13 Jimjam Chapterhouse (`jj_library` w/ hidden Whisper Cell radio bridging Dilihan, Skywatch, Roketstad & tight-beam Lake lbl=77 bursts to Eternian Lux! Ruling #83/89)
-  - Bi-National Lake lbl=77 Open-Navigation Wharf & Seasonal Drawdown Granary Futures Exchange (`8-9 m` wide-beam stone/grain scows to Palewharf/Barada-Quay, Rulings #66 & #74)
-  - Royal Warrant & Tax-Heresy Watchhouse (hunting BF-02 "The Broken-Count" calendar-heretics & garrisoning Serai 826,478, Ruling #62)
+  - **Bi-National `Lake lbl=77` Bonded Scow Warehouses, Drawdown Customs Quay (`Rulings #66, #74, #105, #109`) & Foreign Legations (`Iron Republic` Embassy, `Dilihan` & `Ardent` Consulates, `Ruling #111`)**
+  - **`jj_court` Royal Magistrate Tribunal, Gaol & Tax-Heresy Watchhouse (`Ruling #110`; hunting `BF-02` *"The Broken-Count"* calendar-heretics & garrisoning Serai `826,478`, `Ruling #62`)**
+  - Painted-Woods Bootleg `spirits` & River-Fence Boathouses (buying *Matok* & `BF-01` *Boatmurder* illicit stills output and smuggling north toward dry `Qoold Lheek` & `Leng`, `Rulings #71, #91, #109`!)
   - Workshop I/O: NW quadrant's sole alabaster & marble mason_yard, paddy-silt brickworks & earthenware potter (exporting to clay=0 Ardent), drawdown rice fields
 
-  - Painted-Woods Bootleg `spirits` & River-Fence Boathouses (buying *Matok* & `BF-01` *Boatmurder* illicit stills output and smuggling north toward dry `Qoold Lheek` & `Leng`, `Rulings #71 & #91`!)
 #### `A` Skywatch — `settlements/skywatch`
 - **Canonical 5.1 Pin & Lineage:** `(776, 470)` · `id`: `s8921htcjy` (defSetts:(776,470) -> ADDED@5.1e11:(776,470)) · **Polygons:** Political `Jimjam` | Biome `n semiarid` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`3745.5 m`** (cell `3745.5 m`, `wet = False`, `wlev = None`) · Cell slope **`1.21%`** (`0.69°`, upslope `285°`) · Relief: `3×3` `59 m` (dry `59 m`), `5×5` `112 m`, `20 km` `295 m` · Nearest water: **`75.60 km`** (`lake` at `[753, 500]`, surf `429.8 m`, `+3315.7 m` rel) · Nearest river: **`40.26 km`** (`r055` *Gete Rivar*, `13.0 m³/s`, width `40.0 m`; max within `6 km` = **`0.0 m³/s`**, within `20 km` = `0.0 m³/s`).
@@ -476,13 +470,11 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 WORLD.H Fit (Already Built on 5.1 KCITY — Wire Sim & Order Relay)** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(774, 490)` (`40.2 km` off: local_prom=+68m, 5x5_relief=1296m, slope=13.4%); `(784, 468)` (`16.5 km` off: local_prom=+0m, 5x5_relief=923m, slope=6.6%).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity_and_khamlet` · Sealed kits: `highlands-rustic, dilihan` -> Already on KCITY + KHAMLET + KCAMP (75% Slavic rustic, 25% Jimjam)! Wire KRATOR_KITS sidecar compatibility & live SIM pass/barter schedules.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - HM-13 Long-Count Astronomical Desk & Optical Beacon Relay (`sw_beacon_tower` 3x courier speed to Jimjam, Ruling #81/83)
-  - Tier V NE Escarpment Silent-Barter Moot (sole peaceful equinox trade interface with strictly isolationist Sasquatch 1.70x kcal, Ruling #61!)
-  - Pass Gate Bounty & Anti-Smuggling Post (BF-01 Boatmurder spirit bootleggers & BF-02 Broken-Count)
+  - HM-13 Long-Count Astronomical Desk & Optical Beacon Relay (`sw_beacon_tower` 3x courier speed to Jimjam, Ruling #81/83) + **`PN-09` Pioneer High-Pass Wired Telegraph & Barometric Station (`Ruling #102`)**
+  - **`1.00 atm` High-Pass Yak/Pony Draft-Switch Caravanserai & `lung-salt` Acclimatization Depot (`Ruling #106`)** + Tier V NE Escarpment Silent-Barter Moot (`Ruling #61`)
+  - **Pass Customs Gate, Smuggler-Interdiction Cellar & Garrison Brig (`Rulings #71, #109–110`: seizing `BF-01` *Boatmurder* bootleg `spirits` & `BF-02` *Broken-Count* contraband)** + High-Pass Frontier Homestead Crier (`SETTLEMENT-MIGRATION-SCOPE` §2)
   - Workshop I/O: katabatic wind-furnace calamine brass works (`Cu+Zn`), precision astrolabe/lens bench (clay_max=10 -> stone/larch substitution)
 
-  - **`PN-09` Pioneer High-Pass Wired Telegraph & Barometric Station (`Ruling #102`):** silk-wrapped copper telegraph repeater linking `Silkhead` toward `Jimjam`/`Dilihan`
-  - High-Pass Frontier Homestead Crier & Caravan-Teamster Hiring Post (`SETTLEMENT-MIGRATION-SCOPE` §2) + Smuggler-Interdiction Customs Cellar (seizing bootleg `spirits` bound for prohibition-dry `Qoold Lheek` / `Leng`, `Ruling #71`)
 #### `B` Qoold Lheek — `settlements/qoold-lheek`
 - **Canonical 5.1 Pin & Lineage:** `(410, 506)` · `id`: `s427qb1kma` (defSetts:(410,506) -> ADDED@5.1e11:(410,506)) · **Polygons:** Political `Yeti Kingdom` | Biome `NW outer wall` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`6030.0 m`** (cell `6030.0 m`, `wet = False`, `wlev = None`) · Cell slope **`0.28%`** (`0.16°`, upslope `313°`) · Relief: `3×3` `21 m` (dry `21 m`), `5×5` `439 m`, `20 km` `589 m` · Nearest water: **`5.66 km`** (`lake` at `[412, 508]`, surf `5680.4 m`, `+349.6 m` rel) · Nearest river: **`3.73 km`** (`r466` *Musïq Quli*, `0.4 m³/s`, width `73.0 m`; max within `6 km` = **`0.4 m³/s`**, within `20 km` = `0.4 m³/s`).
@@ -491,10 +483,9 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[B] Snap 60-settlements Pin 2.5 px SE from Rim (410, 506) to Coulee Fan (411.4, 508.1) + Build 3D Page** -> **Recommended Pin: `(411.4, 508.1)` (alt `(411, 508)`)** · Auto-scanner top hits: `(395, 521)` (`42.4 km` off: d_lake=2.0km, +-16m over lake, slope=7.7%, q6=0.9m3/s); `(393, 524)` (`49.5 km` off: d_lake=2.8km, +101m over lake, slope=0.9%, q6=0.9m3/s).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity_covered_data_no_3d_page_yet` · Sealed kits: `yeti, eternian` -> [G data] layout (`KCITY.covered` 91 winter tunnels, 40/40 tests passing) is ready! Add build.py + 3D host on WORLD.H + KRATOR_KITS (yeti 1.15x stature + looted eternian bronze heads).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Quunsul Dry-Law Enforcement & Anti-Bootlegging Sled Gate (`alcohol: prohibited` per Ruling #71 — intercepts Matok MC-09 & BF-01 Boatmurder spirit smugglers!)
+  - **`0.79 atm` Hypoxic Yak/Sledge Customs Gate, Quunsul Dry-Law Court & Frost-Brig (`alcohol: prohibited` per `Rulings #71, #106, #109–110` — intercepts *Matok* `MC-09` & `BF-01` *Boatmurder* bootleggers!)** + Clandestine Ice-Tunnel Bootleg `spirits` Cache
   - Underdog Relic Charter Court (`charter_underdog` counterparty in RELICS-SCOPE §4.2)
   - Workshop I/O: pycrete & dry-stone mass-heater domes, coulee gold/tin placer sluices, meteoritic/impactite bloomery, nitre scraping pans, cold-chain lake-ice quarry
-  - Strict Dry-Law & Frost-Watch Wardens' Post (`alcohol: prohibited`, `Ruling #71`) + Clandestine Ice-Tunnel Bootleg `spirits` Cache (smuggled up from `Jimjam`/`Matok`)
 
 ### 6. Eastern Spine: Free Dasri, Yuni Emirate, Locus Geomancers & `+900 m` East Abyss (`Spheres 19–20`)
 
@@ -506,8 +497,8 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[C] Sub-Pixel 214 m Sunken Oasis & Slot-Canyon Carve Stamp on 5.1 (1085, 683)** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(1086, 683)` (`2.0 km` off: slope=0.2%, 3x3_relief=56m, q6=2.7m3/s, d_wat=68.0km); `(1089, 681)` (`8.9 km` off: slope=0.2%, 3x3_relief=76m, q6=0.0m3/s, d_wat=74.0km).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `rock_cut_oasis_basin_with_sim` · Sealed kits: `desert-nomads, coyote` -> Keep bespoke rock-cut KCARVE basin + wire surface/rim pueblo & nomad camp-grounds to KCITY/KCAMP + KRATOR_KITS (coyote/pueblo + desert-nomads) in openworld/east-rim.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Dasri Camel-Lance Seasonal Mercenary & Caravan Safe-Conduct Moot (MC-08, Ruling #59 alongside Wahat al-Shamal 1165,652)
-  - Dense-Air Foothill Transfer Corral (1.68 atm: Beast Rider Longcrawlers swap loads to Dasri camel trains!) + Order Chronicler Relay Stop (to Verge HM-09)
+  - Dasri Camel-Lance Seasonal Mercenary & Caravan Safe-Conduct Moot (`MC-08`, Ruling #59 alongside Wahat al-Shamal `1165,652`)
+  - **`1.68 atm` Dense-Air Foothill Transshipment Khan (`Rulings #29, #106`:** Beast Rider `Longcrawlers` hand off loads to Dasri camel trains!) + Order Chronicler Relay Stop (to Verge HM-09)
   - Workshop I/O: evaporative *zeer* water-cooling jars & pottery/crucible transshipment up to clay=0 Tiguantin (Ruling #2), brain/alum hide tannery
 
 #### `C` Yuni — `settlements/yuni`
@@ -519,12 +510,11 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `legacy_yuni_engine_needs_kcity_with_owner_signoff` · Sealed kits: `yuni, locus, qiblai` -> Consult owner per KNOWN_ISSUES.md, then port from legacy Yuni engine onto WORLD.H + KCITY + KRATOR_KITS (yuni + locus + qiblai/order ward) in openworld/east-rim.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-08 "The Ear" Pointable Dish, Skywave Timing Anchor & Six Sealed Doors Co-Guard (Tier 4 Forbidden Vault, Rulings #73/83/89; dry-law Order ward Ruling #71!)
-  - *A'yan* Yuni Merchants' Guild Patrician *Hawala* Clearinghouse (elects the Emir & balances Geomancers, Rulings #47 & #68!)
-  - Yuni Rifle-Banner Muster Hall (MC-03 anti-Stalker / wildcat-rig sharpshooters) + Tier 3 Bounty Board (hunting BF-06 "The Glass-Eaters" rogue alchemists)
+  - *A'yan* Yuni Merchants' Guild Patrician *Hawala* Clearinghouse (elects the Emir & balances Geomancers, Rulings #47 & #68!) + ***Aʿyān* Diwan Foreign Legations (`Iziz`, `Xanadu`, `Jabal`, `Dasri`, and `Voth` Oil Attaché + `diplomatic_pouch` Chanceries, `Ruling #111`)**
+  - **Bonded Oasis Caravanserai, Emirate Qadi Court & Gaol (`Rulings #109–110`)** + Yuni Rifle-Banner Muster Hall (MC-03 anti-Stalker / wildcat-rig sharpshooters) + Tier 3 Bounty Board (hunting BF-06 "The Glass-Eaters" rogue alchemists)
+  - Emirate Oasis-Waqf Colonization & Qanat-Charter Diwan (`SETTLEMENT-MIGRATION-SCOPE` §2) + `styleBooks` Geometric-Vault Scriptorium (`yuni`, `eastern-abyssal`) + Souk Under-Cistern Fence Network (fencing unlicensed `BF-06` *Glass-Eaters* `fireclay` retorts, stolen Geomancer `naphtha`, and desert-caravan contraband, `Rulings #44, #91, #109`)
   - Workshop I/O: acid-proof stoneware carboys & fireclay retorts (clay=236 + granite), precision brass Burners, Grand Vault geothermal power-house
 
-  - Emirate Oasis-Waqf Colonization & Qanat-Charter Diwan (`SETTLEMENT-MIGRATION-SCOPE` §2) + `styleBooks` Geometric-Vault Scriptorium (`yuni`, `eastern-abyssal`)
-  - Souk Under-Cistern Fence Network (fencing unlicensed `BF-06` *Glass-Eaters* `fireclay` retorts, stolen Geomancer `naphtha`, and desert-caravan contraband, `Rulings #44 & #91`)
 #### `D` Locus — `settlements/locus`
 - **Canonical 5.1 Pin & Lineage:** `(1267, 1043)` · `id`: `sx4srhrf5g` (defSetts:(1267,1043)) · **Polygons:** Political `Yuni Emirate` | Biome `e abysss` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-2402.6 m`** (cell `-2402.6 m`, `wet = False`, `wlev = None`) · Cell slope **`26.54%`** (`14.86°`, upslope `124°`) · Relief: `3×3` `1135 m` (dry `1135 m`), `5×5` `1386 m`, `20 km` `2014 m` · Nearest water: **`2.00 km`** (`lake` at `[1266, 1043]`, surf `-2399.9 m`, `-2.7 m` rel) · Nearest river: **`40.43 km`** (`r019` *the Bigga*, `162.6 m³/s`, width `63.0 m`; max within `6 km` = **`0.0 m³/s`**, within `20 km` = `0.0 m³/s`).
@@ -533,11 +523,10 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[D] Minor 5.1 River Addition (`r_locus_delta`) at (1267, 1043) + KCITY Technate HQ Rebuild** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(1284, 1031)` (`41.6 km` off: slope=0.0%, 3x3_relief=4m, q6=162.6m3/s, d_wat=20.1km); `(1286, 1031)` (`44.9 km` off: slope=0.0%, 3x3_relief=0m, q6=162.6m3/s, d_wat=24.1km).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `legacy_yuni_engine_needs_kcity` · Sealed kits: `locus, eastern-abyssal, yuni` -> Port from legacy Yuni-fork engine onto openworld/east-rim WORLD.H + KCITY + KRATOR_KITS (locus + eastern-abyssal + yuni).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - GH-01 Primary Geomancer Technate HQ: Master Dome, `Starfish` Rotary Carbide Drill-String Vault & Wildcat Venture Charter Desk (spawns `KCAMP` `geomancer_wildcat` rigs for WC-01..12 -> `SIM.found` boomtowns, Ruling #82!)
-  - Engineering Blueprint & Cartel Embargo Registry (Rulings #70 & #100) + HM-08 Locus Order Liaison Desk
+  - GH-01 Primary Geomancer Technate HQ: Master Dome, **High-Security `Starfish` Rotary Carbide Die & Rig Blueprint Vault (`Ruling #113` Tier 4 espionage target!)**, and Wildcat Venture Charter Desk (`Ruling #82`)
+  - **`2.16 atm` Hyper-Dense Sump Tank-Train Staging Yard (`Ruling #106`: heat-cooled arthropod/motorized tank convoys)** + **Technate Concession & Royalty Tribunal (`Rulings #44–46, #110`)** + Cartel Embargo Registry (`Rulings #70, #100, #112`) + HM-08 Locus Order Liaison Desk
   - Workshop I/O: master `geomancer-refinery` fractional cracking stills (45% kerosene, 25% naphtha, 20% bitumen, 10% lubricant), `crucible-works` (`fireclay` retorts, clay=255 + coal=182), `rare-earth-separator` (RE=160 + Stalker Gate H2SO4)
 
-  - GH-01 Primary Geomancer Supreme Conclave HQ, Indenture & Concession Charter Registry (`GEOMANCER-SCOPE`, `Rulings #44–46`) + Industrial Rig Blueprint Office (`styleBooks`: `locus`)
 #### `C` Mungo — `settlements/mungo`
 - **Canonical 5.1 Pin & Lineage:** `(1322, 828)` · `id`: `s4xb8r0vmy` (defSetts:(1322,828) -> MOVED@5.1e6:(1322, 828)->(1322,828)) · **Polygons:** Political `None (water/unclaimed)` | Biome `e abysss` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-1432.9 m`** (cell `-1432.9 m`, `wet = False`, `wlev = None`) · Cell slope **`2.26%`** (`1.30°`, upslope `122°`) · Relief: `3×3` `102 m` (dry `102 m`), `5×5` `297 m`, `20 km` `505 m` · Nearest water: **`4.00 km`** (`lake` at `[1320, 828]`, surf `-1451.9 m`, `+19.0 m` rel) · Nearest river: **`1.84 km`** (`r775` *Gl Ṣḫr*, `9.9 m³/s`, width `48.0 m`; max within `6 km` = **`9.9 m³/s`**, within `20 km` = `22.5 m³/s`).
@@ -546,7 +535,7 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[C] Sub-Pixel Floating Reed Lagoon & River-Mouth Stamp on +900 m-Lifted 5.1 (1322, 828)** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(1320, 846)` (`36.2 km` off: d_lake=2.0km, +35m over lake, slope=1.4%, q6=18.3m3/s); `(1322, 843)` (`30.0 km` off: d_lake=2.0km, +44m over lake, slope=1.1%, q6=18.3m3/s).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `legacy_locus_reed_fork_needs_kcity_multikit` · Sealed kits: `eastern-abyssal, locus, yuni` -> Unify dual Locus + Reedlake engines onto openworld/east-rim WORLD.H + KCITY + KRATOR_KITS tri-ward treaty layout (eastern-abyssal Tabisti market + locus chapterhouse + floating reedlake fishers, Ruling #46).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - GH-05 Autonomous Tri-Ward Geomancer Tar-Shale Still & Fuel Depot (~85 crew, Ruling #46)
+  - GH-05 Autonomous Tri-Ward Geomancer Tar-Shale Still & Fuel Depot (~85 crew, Ruling #46) + **Tri-Ward Treaty Bonded Customs Wharf & Floating-Reed Smuggler Cache (`Rulings #109, #112`)**
   - Mercenary Bourse #5-East: Abyss Hiring Yard (MC-03 & MC-08 guards for East Abyss & wildcat rigs) + Verge HM-09 Field Chronicler Boat-Landing
   - Workshop I/O: tar-shale/bitumen caulking still, fireclay/stoneware works (clay=255, coal=171), salted/smoked abyssal lake fishery
 
@@ -572,11 +561,11 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `legacy_bespoke_needs_kcity` · Sealed kits: `iziz-vernacular, highlands-rustic` -> Execute `settlements/dalab/PLAN.md`: replace Sep/Oct flat plane & bespoke 87-city-layout.js with WORLD.H + KCITY (+45 deg NE turn, `minDoorH: 4.2` Giant clearance) + KRATOR_KITS (`dalab_kit.py` + KHAMLET `ND1` Dadem-Ring; NO Xanadu embassy here per Ruling #39!).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-17 Dalab Chapterhouse (`dalab_chapterhouse` w/ hidden Whisper Cell radio running nightly RF direction-finding watch for Tzintzun's lost Voth radio, Ruling #89!)
-  - *The God* Sub-Core & Halls of Reformation (`reformation-sanctum` Tier 4 Vault: elevates 2A->4A Temple Giants & masterwork `genecraft` strictly from scarce `ancient-biogel`, Rulings #3 & #36!) + Pilgrim Supplicant Hostels (Ruling #79)
-  - Sunken Glazed-Clay `dalab-biogel-vat` Fermentation Courts (converting 15-20% of Dalab's crop harvest + salt/sulfur/lime into `inferior-biogel` for servitors & clinics, Ruling #3!)
-  - All 12 Missing Voth-Census `DALAB_TRADES` Buildings (`bakery`, `butcher`, `brewery`, `tannery`, `boatyard`, `guildhall`, `ossuary`, `fishdock`, `minehead`, `quarry`, `dairy`, `livestock_yard` + `river_quay`/`customs`/`chinampa_bed`; glassworks silica=150 & fireclay crucibles)
+  - **Capital Embassy Row (`dalab_embassy_iziz`, `dalab_embassy_voth`, `dalab_embassy_republic`, `dalab_embassy_yuni` + `diplomatic_pouch` Chanceries; STRICTLY `0` `Xanadu` embassy — Two Horns legation sits at `Nulab` per `Rulings #39 & #111`!)**
+  - *The God* Sub-Core & Halls of Reformation (`reformation-sanctum` Tier 4 Vault: elevates 2A->4A Temple Giants & masterwork `genecraft` strictly from scarce `ancient-biogel`, Rulings #3 & #36!) + **Genepriest Reformation Tribunal, `14`-Day Prep Ward (player capital commutation / prison-break hook) & `PL-06` `Kleibruk` Clay-Pit / `biogel`-Mash Penal Yards (`Ruling #110`)** + Pilgrim Supplicant Hostels (Ruling #79)
+  - Sunken Glazed-Clay `dalab-biogel-vat` Fermentation Courts (converting 15-20% of Dalab's crop harvest + salt/sulfur/lime into `inferior-biogel`, `Ruling #3`; `weeping-sap` sabotage target `Ruling #113`!) + **Great Caravan Lizard-Yard & Bonded Lake Customs (`Rulings #106, #109`)**
+  - All 12 Missing Voth-Census `DALAB_TRADES` Buildings (`bakery`, `butcher`, `brewery`, `tannery`, `boatyard`, `guildhall`, `ossuary`, `fishdock`, `minehead`, `quarry`, `dairy`, `livestock_yard` + `river_quay`/`customs`/`chinampa_bed`; glassworks silica=150 & fireclay crucibles) + Western Rift Settler & Giant-Symbiosis Charter Hall (`SETTLEMENT-MIGRATION-SCOPE` §2, `styleBooks`: `dalab`, `highlands-rustic`)
 
-  - Bio-Vat (`dalab-biogel-vat`) Guild Sanctuary (`ancient-biogel` / `inferior-biogel` synthesis, `CONTINENTAL-SCOPE` §2.1B) + Western Rift Settler & Giant-Symbiosis Charter Hall (`SETTLEMENT-MIGRATION-SCOPE` §2, `styleBooks`: `dalab`, `highlands-rustic`)
 #### `C` Span — `settlements/span`
 - **Canonical 5.1 Pin & Lineage:** `(554, 1010)` · `id`: `seed01` (defSetts:(554,1010)) · **Polygons:** Political `Realm of Dalab` | Biome `sw highlands` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`2545.4 m`** (cell `2545.4 m`, `wet = False`, `wlev = None`) · Cell slope **`8.22%`** (`4.70°`, upslope `109°`) · Relief: `3×3` `368 m` (dry `368 m`), `5×5` `420 m`, `20 km` `585 m` · Nearest water: **`100.08 km`** (`lake` at `[552, 960]`, surf `2877.8 m`, `-332.4 m` rel) · Nearest river: **`2.15 km`** (`r026` *Pan Riba*, `42.0 m³/s`, width `56.0 m`; max within `6 km` = **`47.3 m³/s`**, within `20 km` = `51.2 m³/s`).
@@ -586,7 +575,7 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `bespoke_canyon_arcology` · Sealed kits: `iziz-vernacular, tungang` -> Replace stand-in `SPAN.groundAt` with `swhighlands` station 4 carve + WORLD.H in `openworld/southwest`, keeping bespoke canyon arcology + Dalab fort/market records.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - The Thunderdome Arena (voluntary independent Frogman braves fighting for salt/iron prizes, Ruling #37!) + `MC-11` Frogman Sump-Diver & `MC-12` Yusar Hazard-Rigger Hiring Post (`Grrmp-Sump` 554,955 flooded bore)
-  - "Priests' Cut" Covert Contraband & Quarantine Gate (receiving `Yusar` / `Wheel` Cyberlich `ancient-biogel` & `cybernetics` down the Eastern Rim Shadow-Trail, Rulings #53 & #76!)
+  - **`BT-12a` *Black-Tally* `"Priests' Cut"` Undercroft & Quarantine Customs Gate (`Rulings #53, #76, #108–109`:** smuggling `Yusar` / `Wheel` Cyberlich `ancient-biogel`, `cybernetics`, and `forged_tally` seals down the Eastern Rim Shadow-Trail!) + **Bore-to-Lizard Transshipment Yard & Garrison Court/Brig (`Rulings #106, #110`)**
   - Workshop I/O: `breakers-floor` (Tier 2 Relic sub-veins, RC-3/RC-4), glazed Dalab `brush-oil` & pottery barter depot for clay=0 Frogmen (Ruling #2)
 
 #### `C` Ledge (SD1 / Loj Fower) — `settlements/ledge`
@@ -597,8 +586,8 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[C] Sub-Pixel 1,265 m Cantilevered Cliff-Arcology & Lift Stamp on 5.1 (437, 1330)** (Frame turn: `+180°`) · Auto-scanner nearby comparison: `(442, 1334)` (`12.8 km` off: d_lake=2.0km, +-3m over lake, 5x5_relief=1672m); `(421, 1332)` (`32.2 km` off: d_lake=2.0km, +221m over lake, 5x5_relief=1453m).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `tungang, iziz-vernacular` -> Build 10,000-pop 50/50 Dual-Culture Arcology (Ruling #4: 5,000 Dalab `SD1` surface terraces + 1-2 entrance levels on KCITY + 5,000 Tungang `TU2` `Loj Fower` subterranean interior & Rift Line bores on KCAVERN) with KRATOR_KITS (`tungang` + `dalab_kit`).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - `Loj Fower` Cliff-Lift Machine Rooms & Gear Shrine (`tg_lift_head` — Tungang strike lever `closed: "strike"`, Tier 1/2 `RC-3` regulator Relic hook!) + Dalab Rim Gene-Bank & `dalab-biogel-vat` Entrance Courts
-  - Mixed Dalab–Tungang Entrance Bazaar & Great Caravan Staging Post (Ruling #40) + WC-08 Rift-Head Oil/RE Liaison
+  - **`Loj Fower` `1,265 m` Cliff-Lift Machine Rooms & `Rift Line` Bore Customs Gate (`tg_lift_head` — Tungang strike lever `closed: "strike"` + `KCONS` sabotage hook, `Rulings #105–106, #113`; Tier 1/2 `RC-3` regulator Relic hook!)** + Dalab Rim Gene-Bank & `dalab-biogel-vat` Entrance Courts
+  - Mixed Dalab–Tungang Break-of-Bulk Entrance Bazaar & Great Caravan Staging Post (`Rulings #40, #106`) + WC-08 Rift-Head Oil/RE Liaison
   - Workshop I/O: #1 continental `nonferrous-foundry` (`27 t/yr` bronze, importing Nulab/Kleibruk `fireclay` crucibles!), `rare-earth-separator` (RE=190 within 5 km of Tungang bore!), lake fishery
 
 #### `A` Nulab — `settlements/nulab`
@@ -609,12 +598,12 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 WORLD.H Fit on Great Lake South Shore (443, 1359) + KCITY Rebuild Blueprint** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(444, 1359)` (`2.0 km` off: d_lake=2.0km, +19m over lake, slope=1.2%, q6=944.7m3/s); `(443, 1357)` (`4.0 km` off: d_lake=2.0km, +28m over lake, slope=1.7%, q6=943.1m3/s).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `iziz-vernacular, xanadu, tungang` -> Build 10,000-pop South Dalab breadbasket city (`nulab/PLAN.md`) on WORLD.H + KCITY + KRATOR_KITS (`dalab_kit`, pure `xanadu` embassy compound, `tungang` Line station).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Permanent Pure-`kits/xanadu` (`XAK`) Two Horns Embassy & Great Caravan Clearing Compound (Ruling #39 & #40 — NO Xanadu embassy at capital Dalab; also stages WC-08 Geomancer Rift-head oil/RE attachés!)
+  - **Permanent Pure-`kits/xanadu` (`XAK`) Two Horns Embassy, `diplomatic_pouch` Chancery & Bonded Great Caravan Customs Compound (`Rulings #39–40, #109, #111` — NO Xanadu embassy at capital Dalab; also stages WC-08 Geomancer Rift-head oil/RE attachés!)**
+  - **South-Dalab Magistrate Court & Gaol (`Ruling #110`)** + **`AS-12` Court of the Amber Seal Great-Caravan Underwriting Desk (`Rulings #103, #107`)** + Pioneer cliff-lift eddy-brake factor for `Ledge`/`Shelf`
   - Second-Largest Dalab `reformation-sanctum` & `dalab-biogel-vat` Courts (`80` genecraft/yr, `minDoorH: 4.2` 4A/2A Giant patrols) + Rift-Grain Strategic Granaries (Dalab's food lever over Tungang Union)
   - Rift-Rim Mercenary Escort Yard (hiring human/Fellgang `MC-11`/`MC-03` caravan guards per Ruling #86)
   - Workshop I/O: `crucible-works` (`clay=230` `fireclay` crucibles shipped to `clay=0` Ledge & Tungang, Ruling #2!), `nonferrous-foundry` (`17 t/yr` bronze), `chinampa_bed`, lotus-silk & mist-tea estates
 
-  - **`AS-12` Court of the Amber Seal Great-Caravan Underwriting Desk (`Ruling #103`):** writes bottomry/caravan-share bonds alongside the pure `kits/xanadu` Two Horns Embassy (`Ruling #39`) + Pioneer cliff-lift eddy-brake factor for `Ledge`/`Shelf`
 #### `A` Blakhed — `settlements/blakhed`
 - **Canonical 5.1 Pin & Lineage:** `(441, 1400)` · `id`: `UNPINNED` (blakhed/PLAN.md + WEST-RIFT-SCOPE.md) · **Polygons:** Political `Fellgangs, Realm of Dalab` | Biome `w rift highland, rift rim S` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`3652.9 m`** (cell `3652.9 m`, `wet = False`, `wlev = None`) · Cell slope **`3.38%`** (`1.93°`, upslope `216°`) · Relief: `3×3` `189 m` (dry `189 m`), `5×5` `374 m`, `20 km` `678 m` · Nearest water: **`70.26 km`** (`lake` at `[476, 1403]`, surf `-1862.0 m`, `+5514.9 m` rel) · Nearest river: **`1.89 km`** (`r116` *Blak Riba*, `30.9 m³/s`, width `29.0 m`; max within `6 km` = **`36.0 m³/s`**, within `20 km` = `39.4 m³/s`).
@@ -625,7 +614,7 @@
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-18 Southwest Frontier Chapterhouse (stone-&-ice-house rim priory w/ +2,180..3,653 m Whisper Cell radio terminus overseeing West Rift, Cthonos, Labyrinth & The Crook; field teams go radio-dark beyond Blakhed, Ruling #83/89!)
   - Mercenary Bourse #8: Travellers' Fair Rim-Bourse (`MC-11` Fellgang *Kradz* shaft-pioneers, `MC-03`, `MC-05`) + Tier 3 Bounty & Safe-Conduct Post (`BF-08` Wildcat's Pack & `BF-09` Scalded Brotherhood below Cthonos)
-  - Dalab Gorge-Stair Toll House & Peace-Stone Court + Annual Great Caravan Summer Fairground (Ruling #40)
+  - **`1.01 atm` Thin-Air Great Caravan Draft-Switch & Cold-Chain Caravanserai (`Rulings #40, #75, #106`)**, Dalab Gorge-Stair Toll House & **Peace-Stone Court (`Ruling #110`)**, and **`BT-12b` *Black-Tally* Rim Ice-Cellar (`Ruling #108`: smuggling cryo-packed `ancient-biogel` & *Cthonos* relics)**
   - Workshop I/O: **cold-chain `ice-houses`** (storing `470,1521` Ice-cutters' glacial blocks & pond ice for Nulab/Hearth Hold, Rulings #42 & #75!), gorge-stair `cordage` ropewalk, `fg-eggstore` ash-bedded egg/honey vaults
   - High-Rift Free-Miner & Homestead *Lokator* Crier Post (`SETTLEMENT-MIGRATION-SCOPE` §2.2: primary western launchpad for player-sponsored mining/ranching expeditions)
 
@@ -641,10 +630,10 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `legacy_broken_hill_layout_needs_kcity_at_841_1517` · Sealed kits: `xanadu, qiblai` -> Port `targets/erewhon` (25,000 pop) from broken bespoke `87-er-layout.js` onto WORLD.H + KCITY + KRATOR_KITS (`xanadu` + `qiblai` shrines + Dalab/Iziz envoys) while keeping `xanadu.html` as kit host.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Two Horns Caravan Guild Head House (staging the Annual Great Caravan W via P8 *The Marches* over N Rift rim to Blakhed -> Nulab Embassy -> Dalab, Ruling #40!) + Sultanate *Qud* Treasury
-  - Xanadu Minor Pilgrim Circuit Lotus Shrines & Ferry Quays (Ruling #79) + Citadel Assay/Court
+  - **Caldera Envoys' Terrace (`Iziz`, `Yuni`, `Order of Historians`, and `Dalab` Foreign Legations + `diplomatic_pouch` Chanceries, `Ruling #111`), Bonded Caldera Warehouses & Citadel Divan/Qadi Court & Gaol (`Rulings #109–110`)**
+  - Xanadu Minor Pilgrim Circuit Lotus Shrines & Ferry Quays (Ruling #79) + Sultanate Land-Grant Diwan & Royal *Kora* Pilgrim Chancery (`SETTLEMENT-MIGRATION-SCOPE` §2) + Court Architect's `styleBooks` Pavilion (`xanadu`, `qiblai`)
   - Workshop I/O: battered stone/timber mason_yard (**`clay = 0` within 20 km of Erehwon -> must barge bricks, roof-tiles, celadon & `fireclay` crucibles across Lake Xanadu from Theodiga, Kirstabal & Lightwall, Ruling #2!**), silk brocade looms, cacao/tea/opium court stores
 
-  - Sultanate Land-Grant Diwan & Royal *Kora* Pilgrim Chancery (`SETTLEMENT-MIGRATION-SCOPE` §2, `Ruling #79`) + Court Architect's `styleBooks` Pavilion (`xanadu`, `qiblai`)
 #### `C` Phēr — `settlements/pher` (target `town`)
 - **Canonical 5.1 Pin & Lineage:** `(843, 1491)` · `id`: `spher0north1` (defSetts:(843,1491) -> ADDED@5.1e13:(843,1491)) · **Polygons:** Political `Xanadu Sultanate` | Biome `xanadu` | Openworld Region: `xanadu-north-shore`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-446.9 m`** (cell `-446.9 m`, `wet = False`, `wlev = None`) · Cell slope **`10.07%`** (`5.75°`, upslope `23°`) · Relief: `3×3` `619 m` (dry `510 m`), `5×5` `863 m`, `20 km` `1507 m` · Nearest water: **`2.83 km`** (`lake` at `[842, 1492]`, surf `-520.1 m`, `+73.2 m` rel) · Nearest river: **`1.60 km`** (`r_pher_swit` *Swīṭ Siṭrīm*, `1.9 m³/s`, width `8.0 m`; max within `6 km` = **`2.0 m³/s`**, within `20 km` = `2.0 m³/s`).
@@ -654,10 +643,9 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[C] Sub-Pixel Headland & Cove Stamp (`lf_pher_*` Already in landforms.json; Built on 5.1 KCITY)** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(843, 1492)` (`2.0 km` off: d_lake=2.0km, +20m over lake, 5x5_relief=1058m); `(841, 1491)` (`4.0 km` off: d_lake=2.0km, +20m over lake, 5x5_relief=1032m).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity` · Sealed kits: `xanadu` -> Already on KCITY (`openworld/xanadu-north-shore` town `pher`)! Wire KRATOR_KITS (`xanadu` + `qiblai`) & live lake-ferry / Qol-road caravan SIM.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Heir's North-Shore Customs Harbour, Rim Fairground & Qol-Valley Caravan Caravanserai (staging Thalaba/Godshearth & Pilgrim Circuit traffic, Ruling #79)
+  - **Heir's North-Shore Bonded Customs Harbour, Rim Fairground & Qol-Valley Break-of-Bulk Caravanserai (`Rulings #79, #106, #109`)**
+  - Caldera-Shore Wine/Spirits Cellars & Lake-Smuggler Boathouses (quietly supplying fermented drink around dry monastic spokes on Upper Xanadu Lake, `Rulings #71, #109`)
   - Workshop I/O: lake boatyard, silk/mulberry & cacao shore trade warehouses, salted/smoked lake-fish curing
-
-  - Caldera-Shore Wine/Spirits Cellars & Lake-Smuggler Boathouses (quietly supplying fermented drink around dry monastic spokes on Upper Xanadu Lake, `Ruling #71`)
 #### `C` Grēṭ-Āil (Azure Dream Monastery) — `settlements/azure-dream` (target `isle`)
 - **Canonical 5.1 Pin & Lineage:** `(846.075, 1508.49)` · `id`: `UNPINNED` (targets/isle/89z-rows.js + edit_517_azure (lk.great-isle)) · **Polygons:** Political `Xanadu Sultanate` | Biome `xanadu` | Openworld Region: `pending cut`
 - **5.1 Measured Terrain & Hydrology:** Elev **`-458.3 m`** (cell `-330.4 m`, `wet = False`, `wlev = None`) · Cell slope **`7.82%`** (`4.47°`, upslope `8°`) · Relief: `3×3` `340 m` (dry `70 m`), `5×5` `463 m`, `20 km` `1219 m` · Nearest water: **`1.03 km`** (`lake` at `[846, 1509]`, surf `-520.1 m`, `+61.8 m` rel) · Nearest river: **`34.74 km`** (`r_pher_swit` *Swīṭ Siṭrīm*, `2.0 m³/s`, width `8.0 m`; max within `6 km` = **`0.0 m³/s`**, within `20 km` = `0.0 m³/s`).
@@ -777,6 +765,7 @@
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Order of Historians HM-03 Saffron Spoke Monastery (`qb.order`, 300 monks, 1/8 Prismatic Council seat + hidden spire-finial transceiver relaying to White Gills HM-05 & Longsong HM-01, Rulings #83/89!)
   - LC-06 Licensed Yuni Geomancer Oilfield Compound (`925,1598`, `oil=110`, 400 t/yr pumped, 100 crew, tank-wagoned across Catch to Locus; guarded against BF-07 Tin-Skulls!)
+  - **`2.02 atm` Catch Tank-Wagon & Camel Transshipment Caravanserai (`Ruling #106`) + Prismatic Council Magistrate Tribunal (`Ruling #110`)**
   - Mercenary Bourse #6-South: Two Horns Muster Court (`MC-02` & `MC-03` musketeers) + Xanadu Pilgrim Circuit Grand Kora Hostels (Ruling #79)
   - Workshop I/O: `paper-mill` & woodblock printing, `nonferrous-foundry` (gilt brass/bronze crowns, `clay=230` `fireclay`), rock-salt & potash stores, `ship-timber` hills
 
@@ -789,7 +778,7 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `xanadu, qiblai` -> Build 8,500-pop Scarp garrison & Mint town on `WORLD.H` + `KCITY.grid` irregular square w/ inner walled Forbidden City (`XFORT`) + `KRATOR_KITS` (`xanadu` + `qiblai` White & Violet daughter monasteries).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Forbidden City Sultanate Mint (`qud` coinage from Strongwall bullion, Ruling #68!), Fifth-Opal Tax Assessors' Hall & **Golden Tears Head House** (moved from Strongwall per `gihon/PLAN.md`!)
-  - Northern Musketeer Garrison & Lower-Lake Barge Customs Quay
+  - **Mint Magistrate Tribunal, Bonded Bullion Vaults & Lower-Lake Barge Customs House (`Rulings #109–110`; dispatches mint/opal convicts to `Strongwall PL-07`)** + Northern Musketeer Garrison
   - Workshop I/O: gold-and-opal bullion minting & lapidary, rice/cacao granaries, lake barge `river_quay`
 
 #### `A` The Landing (Alph Mouth) — `settlements/gihon` (target `landing`)
@@ -800,7 +789,7 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 `WORLD.H` Fit at Alph Mouth (932, 1600) + Monumental-Pier `KCITY` Blueprint** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(933, 1599)` (`2.8 km` off: d_lake=2.0km, q6=1080.0m3/s, 5x5_relief=61m, slope=1.0%); `(933, 1601)` (`2.8 km` off: d_lake=2.0km, q6=1080.0m3/s, 5x5_relief=62m, slope=1.2%).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `planned_not_built` · Sealed kits: `xanadu` -> Promote `ll.landing` from 600-pop hamlet to 2,500-pop `KCITY` portage town along monumental twin-bank stone piers + 3-4 `KHAMLET` villages along the 28 km Alph portage road to Theodiga.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Monumental Twin-Bank Stone Barge Piers, Portage Teamster Caravanserai & Pilgrim Ferry Station
+  - **Monumental Twin-Bank Stone Barge Piers & `28-km` Alph-Portage Break-of-Bulk Transshipment Caravanserai (`Rulings #105–106`)** + Pilgrim Ferry Station
   - Workshop I/O: `river_quay` barge maintenance, cordage & pitch stores
 
 #### `A` Misṭ-Gārḍan (Order of Viridian Thought) — `settlements/viridian` (target `estate`)
@@ -821,7 +810,7 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[A] Direct 1:1 `WORLD.H` Fit at Lower Lake Head (989, 1600) (Already Built on `KCITY`)** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(988, 1600)` (`2.0 km` off: d_lake=2.0km, +26m over lake, slope=1.8%, q6=780.0m3/s); `(986, 1602)` (`7.2 km` off: d_lake=2.0km, +34m over lake, slope=1.5%, q6=0.0m3/s).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity` · Sealed kits: `xanadu` -> Already on `KCITY.grid` irregular square (`dist/kirstabal.html`) + 4 ring villages; wire `KRATOR_KITS` (`xanadu`) & bake K6 Lower Lake villages into `openworld/xanadu-oidong-highrift`.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Strongbow-Lift Staging Caravanserai, Barge Customs House & White Monastery Latex House (`T.whiteHouse`)
+  - **Strongbow-Lift Break-of-Bulk Staging Caravanserai, Bonded Barge Customs House (`Rulings #105–106, #109`)** & White Monastery Latex House (`T.whiteHouse`)
   - Workshop I/O: `brickworks`, `potter` & `fireclay` kilns (`clay=230` -> shipped to Erehwon!), rubber/latex curing, `boatyard` lake scows
 
 #### `A` Strongwall — `settlements/strongwall` (target `fort`)
@@ -833,6 +822,7 @@
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `bespoke_fort_on_5.1_ground` · Sealed kits: `xanadu` -> Built as `XFORT` target (`dist/strongwall-fort.html`) + `tempest/` blueprint (`886,1619`); update `XAN_TUNE` role per `gihon/PLAN.md` (Golden Tears court & bullion assay stay here; Mint & Tears HQ move to Gihon!).
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
   - Master of Mines Bullion Assay & Smelting Furnace + Golden Tears Forward Lizard-Country Court + Hired Northern Musketeer Barracks (`MC-02` Izani & `MC-03` Yuni riflemen, `LORE.md:626`)
+  - **`PL-07` Scarp Penal Gold/Copper Adits & Lizard-March Rampart Corvée Stockade + Provost Court (`Ruling #110`)** (receiving Sultanate bullion/opal/mint-fraud convicts from `Erehwon` & `Gihon`)
   - G1–G3 / R1–R3 Optical Beacon Watch-Line Relay (linking to The Beacon `853,1540`, Ruling #81)
   - Workshop I/O: gold & copper smelting (`clay=0` locally -> imports Qiblai/Gihon `fireclay` crucibles, Ruling #2!)
 
@@ -844,7 +834,7 @@
 - **Verdict & Candidate Pin Search (`<= 50 km`):** **[C] Sub-Pixel Fault-Wall Glazier Cavern Tiers (`KCAVERN`) + `KCITY` Bench on 5.1 (1028, 1653)** (Frame turn: `+0°`) · Auto-scanner nearby comparison: `(1034, 1654)` (`12.2 km` off: d_lake=2.0km, +9m over lake, 5x5_relief=460m); `(1029, 1654)` (`2.8 km` off: d_lake=2.0km, +7m over lake, 5x5_relief=368m).
 - **`KCITY` & `KRATOR_KITS` (`Rulings #99–101`) Architecture:** `on_kcity_plus_kcavern` · Sealed kits: `xanadu, tungang, qiblai` -> Already built on `KCITY` + `KCAVERN` (`dist/lightwall.html`)! Wire `KRATOR_KITS` (`xanadu`, `tungang` Glazier branch, `qiblai` Turquoise daughter house) & `openworld/xanadu-oidong-highrift` site.
 - **Continental Scope Systemic Buildings & Workshop I/O to Add:**
-  - Great Potch Line Fifth-Opal Royal Customs & Xanadu Pilgrim Circuit Moonglass Grottoes (Ruling #79)
+  - **Great Potch Line Fifth-Opal Royal Customs Assay Gate (`Ruling #109`) & Sealed Glazier `moonglass` Guild Vault (`Ruling #113` Tier 3 schematic burglary target)** + Xanadu Pilgrim Circuit Moonglass Grottoes (`Ruling #79`)
   - Iridescent Order Daughter Monastery (Turquoise spoke, paired w/ head monastery at 1016,1655)
   - Workshop I/O: **`moonglass-furnace` & optical `lenses`** (`opal` potch + borax + **`clay=253` refractory `fireclay` glass-pots & crucibles** exported to Erehwon, Ruling #2!)
 
@@ -898,36 +888,52 @@
 - **`settlements/pinnacle-rock`:** Recut `region/` from `(1027, 681)` to **`(1007, 686)`**, re-derive `KSTACKS` mesa foot, and stamp mesa into `openworld/pinnacle`.
 - **`settlements/longsong`:** Recut `region/` from `4.21` `(954, 1296)` onto `5.1` **`(1228.88, 1621.23)`** (`+28.6°` frame turn).
 - **Frame-Turn Updates (`WORLD_DATA.towns` `rot`):** `Verge` (`-10°`), `Noah's Regret` (`+90°`), `Dhelv` (`+90°`), `Ys` (`-55°`), `Dalab` (`+45°`), `Hook` (`-9.2°`), `Ledge` (`180°` S-facing arcology target).
+
+### Queue 3 — Master Scopes `#7`, `#3` & `#2` Architectural Venue Assignment Matrix (`Rulings #105–114`)
+
+Every settlement touched in the all-builds pass wires its assigned systemic venues from [`CONVOY-LOGISTICS-SCOPE.md`](../core/region/CONVOY-LOGISTICS-SCOPE.md), [`CONTRABAND-LAW-PENAL-SCOPE.md`](../core/region/CONTRABAND-LAW-PENAL-SCOPE.md), and [`ESPIONAGE-DIPLOMACY-SCOPE.md`](../core/region/ESPIONAGE-DIPLOMACY-SCOPE.md) through `SIM.place` + `KRATOR_KITS` / `KCANAL`:
+
+| Venue Archetype (`SIM.place` Kind) | Kit / Engine Pieces | Assigned Built Settlements (`settlements/<name>/`) | Assigned Appendix Hubs (`openworld` / `5.1e22`) |
+|---|---|---|---|
+| **1. Customs Lock-Houses & Quarantine Gates** (`customs_lock_house`) | `KCANAL` lock-keeper pavilion + RF/rad assay arch + chain boom (`KCONS` sabotage hook, `Ruling #113`) | `Iziz` (*Fosa Imperial*), `Almua` (`Almua–Kowld`), `Shim` (`Shim–Sethas`), `Ys` (*Dioryx*), `Shuāng-Zhá` (4-pound bronze miter lock), `Skywatch`, `Qoold Lheek`, `Span`, `Ledge` (`tg_lift_head`), `Lāiṭwāl` (Potch Line) | `Mā-Kōu` (10-lock *paktong*), `Slussport` (`Nauen`), `Palewharf` (`5.2 m` Split-Jetty), `Farport` (`+212 m` hoist), `Saltwhite Gate`, `Bastion`, `Strongbow` |
+| **2. Bonded Warehouses & Treaty-Port *Fondacos*** (`bonded_warehouse` / `fondaco`) | Walled multi-kit courtyard warehouse + *Amber-Seal* escrow desk (`Rulings #107, #109, #111–112`) | `Iziz`, `Hook`, `Verge`, `Dilihan`, `Voth`, `Almua`, `Ys`, `Noah's Regret`, `Zey'danin`, `Valapo`, `Nephtos`, `Roketstad`, `Jimjam`, `Mungo`, `Yuni`, `Dalab`, `Nulab`, `Erehwon`, `Phēr`, `Gihon`, `Kirstabal` | `Farport`, `Palewharf`, `Bastion` (*Eternian Dejima Fondacos*), `Port Mira`, `Port Koron`, `Silkhead`, `Ria Sound`, `Battered Isle` |
+| **3. Atmospheric & Modal Transshipment Caravanserais** (`transshipment_yard`) | Draft-beast switch corrals (`>=1.60 atm` arthropod gate, `<=1.05 atm` yak/`lung-salt` switch, `85 mT` `0`-iron gate) + crane quays (`Rulings #105–106`) | `Talia` (`1.60 atm` `Longcrawler` ceiling), `Girder` (`1.90 atm`), `Mav's Refuge`, `Pinnacle Rock`, `Verge` (`1.62 atm`), `Dilihan`, `Drum`, `Torus` (`1.96 atm` heat corral), `Roketstad` (`1.11 atm`), `Skywatch` (`1.00 atm`), `Shade` (`1.68 atm`), `Locus` (`2.16 atm`), `Span`, `Ledge`, `Blakhed` (`1.01 atm` ice-pack), `Qiblai` (`2.02 atm`), `The Landing`, `Kirstabal` | `Port Koron`, `Silkhead`, `Mantis`, `Palewharf`, `Slussport`, `Lodestone` (`0`-iron bronze/jade sledge transfer) |
+| **4. Foreign Legations, Envoys & Protecting-Power Chanceries** (`foreign_legation` / `caretaker_embassy`) | Host-foreign kit embassy (`port_voth_embassy`, `dl_hykkousoi_legation`, `hl_rus_envoy_lodge`, `dalab_embassy_*`, pure-`XAK` `Nulab`) + `diplomatic_pouch` room (`Ruling #111`) | `Iziz` (3 active + *Ys* caretaker over Voth), `Dilihan` (`Hykkousoi`, `Iziz`, `Jimjam`, `Ardent`), `Voth` (`Republic`, `Dalab`, `Locus` + *Ys* caretaker over Iziz), `Ys` (6-polity Diplomatic Row), `Zey'danin`, `Kautoa`, `Girder` (external treaty post), `Roketstad` (6-legation row), `Ardent` (`Posolsky dvor`), `Jimjam`, `Yuni`, `Dalab` (`Iziz`/`Voth`/`Republic`/`Yuni`; **`0` `Xanadu`**), `Nulab` (**pure-`XAK` `Xanadu` Embassy**, `Ruling #39`), `Erehwon` | `Port Mira` (50-km Truce Consulates), `Silkhead` (Caravan Consulates), `Mā-Kōu` (*Amber-Seal* River-Peace Legations), `Farport` / `Palewharf` / `Bastion` (*Fondaco* Consuls; `0` interior Eternian legations) |
+| **5. Magistrate Courts, Tribunals & Town Gaols** (`magistrate_court` / `gaol`) | 4-tier court hall + warrant docket + holding cells + *Amber-Seal* bail/ransom desk (`Ruling #110`) | `Iziz` (*Audiencia*), `Pylon`, `Talia`, `Verge`, `Dilihan`, `Voth` (Admiralty/Guild), `Almua`, `Drum`, `Shim`, `Torus`, `Ys` (*Heliaia* Prize Court), `Zey'danin`, `Kautoa`, `Mav's Refuge` (`Free-Soil` moot), `Shuāng-Zhá` (Censorate), `Roketstad`, `Ardent` (`Free-Soil` Law-Rock), `Jimjam` (`jj_court`), `Qoold Lheek` (Quunsul), `Yuni` (Qadi), `Locus` (Concession Tribunal), `Dalab` (Genepriest Tribunal + `14`-day Prep Ward), `Nulab`, `Blakhed` (Peace-Stone), `Erehwon` (Divan), `Qiblai`, `Gihon` (Mint Tribunal), `Strongwall` | `Port Mira` (Neutral Prize Court), `Shell` (Indenture Court), `Mā-Kōu` (*Amber-Seal* Arbitration Court) |
+| **6. Physical Penal Labor Sites** (`penal_labor_site`) | Guarded quarry/mine/dredge/vat compound + chain-gang barracks + prison-break / work-off triggers (`Ruling #110`) | `Talia` (**`PL-01`** skarn/silver shafts), `Drum` & `Roketstad` (**`PL-02` / `PL-05`** `Cascade–Drum` bore faces), `Dhelv` (**`PL-03`** salt/lime convict quarry), `Shuāng-Zhá` (**`PL-04`** `Līng-Mā` canal dredging & kaolin pits), `Dalab` (**`PL-06`** `Kleibruk` clay pits & `biogel`-mash vats), `Strongwall` (**`PL-07`** scarp gold/copper adits & rampart corvée) | `Shell` (**`PL-08`** hyperjungle debt-peonage plantations), `Saltwhite Gate` (**`PL-09`** frontier road/salt corvée), `Heartland` / `Upper Ria` (**`PL-10`** loess canal-dredging barges) |
+| **7. Smuggler Cellars & *Black-Tally* Syndicate Dens** (`smuggler_cellar` / `black_tally_den`) | False-bottom cellar / sea-cave landing / `BT-01..12` apothecary-fence (`Rulings #108–109`) | `Iziz` (`BT-11a` *Puerto Hundido*), `Verge` (`BT-05`), `Dilihan` (`BT-04b`), `Voth` (`BT-11b`), `Almua` (`PF-04` cove), `Ys` (`BT-10b`), `Noah's Regret` (`PF-03` relic cove), `Kautoa` (`PF-01`), `Jimjam` & `Qoold Lheek` (bootleg `spirits` caches), `Yuni` (souk under-cistern), `Mungo` (reed cache), `Span` (`BT-12a` *"Priests' Cut"*), `Blakhed` (`BT-12b` ice-cellar), `Phēr` (lake-smuggler boathouses) | `Weeping Fort` (**`BT-01` HQ**), `Ria Sound` (`BT-02` `forged_tally` engravers), `Silkhead` (`BT-03`), `Port Koron` / `Shell` (`BT-04`), `Battered Isle` (`BT-07`), `Farport` (`BT-08`), `Slussport` (`BT-09`), `Port Mira` (`BT-10a`) |
+
 ---
 
 ## Companion Appendix — Key Continental-Scope & `Sphere 27` Hubs Without Standalone `settlements/<name>/` Folders Yet
 
-To ensure **zero systemic mechanics fall between the cracks** during the all-builds pass and open-world `KCITY`/`KHAMLET` region bakes, the `25` strategic continental hubs below (locked across `CONTINENTAL-SCOPE.md`, `CROOK-RIA-SCOPE.md`, `NORTHERN-CARTELS-SCOPE.md`, `MERCENARIES-SCOPE.md`, `MONASTERY-NETWORK-SCOPE.md`, `GEOMANCER-SCOPE.md`, `BANDITS-PIRATES-BOUNTIES-SCOPE.md`, and `SETTLEMENT-MIGRATION-SCOPE.md`) are catalogued with their canonical `5.1e22` coordinates, multi-kit assignments (`KRATOR_KITS`), and systemic buildings:
+To ensure **zero systemic mechanics fall between the cracks** during the all-builds pass and open-world `KCITY`/`KHAMLET` region bakes, the `25` strategic continental hubs below (locked across `CONTINENTAL-SCOPE.md`, `CROOK-RIA-SCOPE.md`, `NORTHERN-CARTELS-SCOPE.md`, `MERCENARIES-SCOPE.md`, `MONASTERY-NETWORK-SCOPE.md`, `GEOMANCER-SCOPE.md`, `BANDITS-PIRATES-BOUNTIES-SCOPE.md`, `SETTLEMENT-MIGRATION-SCOPE.md`, `CONVOY-LOGISTICS-SCOPE.md`, `CONTRABAND-LAW-PENAL-SCOPE.md`, and `ESPIONAGE-DIPLOMACY-SCOPE.md`) are catalogued with their canonical `5.1e22` coordinates, multi-kit assignments (`KRATOR_KITS`), and systemic buildings:
 
-| Hub Name | Sphere / Polity | `5.1e22` Pin `(px, py)` | Recommended Kits (`KRATOR_KITS`) | Locked Systemic Buildings, Northern Cartels (`PN`/`AS`), Guilds & Workshop I/O |
+| Hub Name | Sphere / Polity | `5.1e22` Pin `(px, py)` | Recommended Kits (`KRATOR_KITS`) | Locked Systemic Buildings, Northern Cartels (`PN`/`AS`/`BT`), Guilds & Workshop I/O |
 |---|---|---:|---|---|
-| **`Port Mira`** | Free Ring-Sea Entrepôt (`Sphere 6`) | `(865, 895)` | `ys`, `iziz-vernacular`, `voth`, `islanders` | **Mercenary Bourse #3**, **`AS-11b` Amber-Seal `50-km` Truce Marine-Insurance & Ransom-Escrow Bank**, **`PN-15b` Pioneer Binnacle Loft**, Neutral Prize Court, Smuggler Free-Port Warehouses |
-| **`Shell`** | Exclave Iziz (`Sphere 2`) | `(902, 659)` | `iziz-vernacular`, `locus`, `dilihan` | **`GH-10` Secondary Geomancer HQ** vs. **`PN-07b` Pioneer Dynamo Depot** (direct oil-vs-dynamo rivalry!), **`AS-04` Amber-Seal Planter Indenture-Paper Desk**, Debt-Peonage Hall, **Mercenary Bourse #9-East** |
-| **`Port Koron`** | Exclave Iziz Lake-Head (`Sphere 3/18` seam) | `(912, 532)` | `iziz-vernacular`, `dilihan`, `talia` | **Northern Lifeline `lbl=54` Lake-Tongue Terminus** (`Ruling #56`), **`PN-07a` Pioneer Lock-Brake & Dynamo Station**, **`AS-04a` Bonded Lake-Customs Quay** |
-| **`Silkhead`** | Northern Caravan Gate (`Sphere 18/27` seam) | `(934, 424)` | `talia`, `xanadu`, `iziz-vernacular`, `ria` | **`sl_caravanserai_silkhead`**, **`PN-06` Pioneer Eastern-Pincer Gateway Workshop**, **`AS-03` Amber-Seal Caravan Bond & Bullion Bourse**, **Order `HM-14` Large HQ**, **Mercenary Bourse #10** |
-| **`Mantis`** | SE Savannah / Iziz–Yuni Corridor (`Sphere 2`) | `(1113, 1164)` | `iziz-vernacular`, `yuni`, `jabal` | **`Getmastarz` & `Goldanda` Joint Caravan Guild-Houses** (`Ruling #60`), `WC-01` Fueling Relay, Tier 2 Anti-Raider Bounty Post |
-| **`Lux`** | Eternal State (`Sphere 12`) | `(498, 644)` | `eternian`, `highlands-republican` | **Order `HM-16` Covert Chapterhouse** (concealed Whisper-Cell radio), **`reformation-sanctum`**, State Granary & Canal Lock-Keep |
-| **`Bastion`** | Eternal State Border (`Sphere 12`) | `(536, 627)` | `eternian`, `highlands-slavic` | **Eternian Land Quarantine-Gateway** (`Ruling #49`), **Mercenary Bourse #8**, Foreign Merchant Compound |
-| **`Palewharf`** | Eternal State Coast (`Sphere 12`) | `(565, 604)` | `eternian`, `ys` | **Split-Jetty `Lake lbl=77` Break-of-Bulk Basin** (`Ruling #66`), **`AS-09b` Bonded Dejima *Fondaco***, **`reformation-sanctum`**, State Salt/Porcelain Customshouse |
-| **`Saltwhite Gate`** | Eternal State SE Pass (`Sphere 12`) | `(486, 837)` | `eternian` | **SE Pass Customshouse & Quarantine Lock** above `Babel` (`Ruling #49`), Caravan Stamp-Tax Yard |
-| **`Farport`** | Farside Seaward Foreland (`Sphere 12/27`) | `(248, 585)` | `eternian`, `hueru-kuran`, `islanders` | **`+212 m` Tsunami-Safe 3-Way Creole Dejima Port**, **`PN-13` Pioneer Cliff-Hoist Eddy-Brake & Coil Factory** (feeding `Fulcrum`/`Yusar`), **`AS-09` Amber-Seal Treaty-Port *Fondaco*** |
-| **`Urverkstad`** | Iron Republic Alps (`Sphere 14`) | `(591, 801)` | `highlands-republican`, `highlands-rustic` | **Order `HM-12` Alpine Chapterhouse**, **`PN-14b` Pioneer Precision Horology & Hydro-Dynamo Atelier**, `clockwork-and-optics-bench`, `hydro-forge` |
-| **`Slussport`** | Iron Republic Lake Chain (`Sphere 14`) | `(576, 693)` | `highlands-republican`, `highlands-slavic` | **`L1–L7` `Nauen` Lock-Barge Entrepôt**, **`AS-10b` Amber-Seal Lock-Toll & Bore-Bond House**, **Mercenary Bourse #2** (`MC-04`), `ship-timber` yard |
-| **`Sideros`** | League Mining Deme (`Sphere 5`) | `(744, 784)` | `ys`, `highlands-rustic` | **Hykkousoi Mainland Iron & Colliery Deme** (`Ruling #13`, `Fe=180, Coal=132, Clay=255`), `fireclay` blast-furnace & naval ironworks |
-| **`Daranch`** | Greater Dalab Ranchlands (`Sphere 21`) | `(527, 1149)` | `dalab`, `beast-riders`, `highlands-rustic` | **Standalone Giant Cohort & Pack-Lizard Breeding Seat** (`Ruling #38`), `4A` Reformation Cryo-Vat, `cold-chain` Smoked-Meat Works |
-| **`Shelf`** | Dalab–Tungang Cliff Seam (`Sphere 21/22`) | `(461, 1161)` | `dalab`, `tungang` | **50/50 Dalab–Tungang Vertical Cliff Arcology** (`Ruling #4`), Biogel-to-Moonglass Exchange, Pioneer Eddy-Braked Cliff Hoist |
-| **`Strongbow`** | Xanadu–Oidong Lift-Head (`Sphere 23/24`) | `(1001, 1596)` | `xanadu`, `qiblai`, `talia` | **Mercenary Bourse #6**, Great Counterweight Lift-Head Customshouse, Tier 3 Bounty Post (`BF-07` *Tin-Skulls*) |
+| **`Port Mira`** | Free Ring-Sea Entrepôt (`Sphere 6`) | `(865, 895)` | `ys`, `iziz-vernacular`, `voth`, `islanders` | **Mercenary Bourse #3**, **`AS-11b` Amber-Seal `50-km` Truce Marine-Insurance & Ransom-Escrow Bank**, **`PN-15b` Pioneer Binnacle Loft**, **`BT-10a` *Black-Tally* Neutral Fence Vault**, **50-km Truce Consulates** (`Iziz`, `Voth`, `Ys`, `Kautoa`, `Ruling #111`), Neutral Prize Court, Bonded Embargo-Reroute Warehouses (`Ruling #112`) |
+| **`Shell`** | Exclave Iziz (`Sphere 2`) | `(902, 659)` | `iziz-vernacular`, `locus`, `dilihan` | **`GH-10` Secondary Geomancer HQ** vs. **`PN-07b` Pioneer Dynamo Depot**, **`AS-04` Amber-Seal Planter Indenture-Paper Desk**, **`BT-04` *Black-Tally* Swamp Narcotics/Defoliant Depot**, **`PL-08` Penal Debt-Peonage Swamp Plantations & Indenture Court** (`Ruling #110`), **Mercenary Bourse #9-East** |
+| **`Port Koron`** | Exclave Iziz Lake-Head (`Sphere 3/18` seam) | `(912, 532)` | `iziz-vernacular`, `dilihan`, `talia` | **Northern Lifeline `lbl=54` Lake-Tongue Terminus & Break-of-Bulk Yard** (`Rulings #56, #106`), **`PN-07a` Pioneer Lock-Brake & Dynamo Station**, **`AS-04a` Bonded Lake-Customs Quay**, **`BT-04a` *Black-Tally* False-Bilge Barge Slip** |
+| **`Silkhead`** | Northern Caravan Gate (`Sphere 18/27` seam) | `(934, 424)` | `talia`, `xanadu`, `iziz-vernacular`, `ria` | **`sl_caravanserai_silkhead` Draft-Switch Yard**, **`PN-06` Pioneer Eastern-Pincer Gateway Workshop**, **`AS-03` Amber-Seal Caravan Bond & Bullion Bourse**, **`BT-03` *Black-Tally* Silk-Bale Smuggling Loft**, **Northern Caravan Consulates** (`Ruling #111`), **Order `HM-14` Large HQ**, **Mercenary Bourse #10** |
+| **`Mantis`** | SE Savannah / Iziz–Yuni Corridor (`Sphere 2`) | `(1113, 1164)` | `iziz-vernacular`, `yuni`, `jabal` | **`Getmastarz` & `Goldanda` Joint Caravan Guild-Houses & Camel-to-Mule Staging** (`Rulings #60, #106`), `WC-01` Fueling Relay, Tier 2 Anti-Raider Bounty & Customs Post |
+| **`Lux`** | Eternal State (`Sphere 12`) | `(498, 644)` | `eternian`, `highlands-republican` | **Order `HM-16` Covert Chapterhouse** (concealed Whisper-Cell radio, capital Censorate risk `Rulings #89, #109`), **`reformation-sanctum`**, **Censorate Grand Tribunal**, `Lux` Canal Lock-Keep |
+| **`Bastion`** | Eternal State Border (`Sphere 12`) | `(536, 627)` | `eternian`, `highlands-slavic` | **Eternian Land Quarantine-Gateway & Customs Assay Arch** (`Rulings #49, #109`), **Walled Treaty-Port Foreign *Fondaco* & Consular Compound** (`Ruling #111`), **Mercenary Bourse #8** |
+| **`Palewharf`** | Eternal State Coast (`Sphere 12`) | `(565, 604)` | `eternian`, `ys` | **`5.2 m` Split-Jetty `Lake lbl=77` Break-of-Bulk Customs Lock-House** (`Rulings #66, #106, #109`), **`AS-09b` Walled Foreign Dejima *Fondaco* & Consular Quarter** (`Ruling #111`), **`reformation-sanctum`**, State Salt/Porcelain Customshouse |
+| **`Saltwhite Gate`** | Eternal State SE Pass (`Sphere 12`) | `(486, 837)` | `eternian` | **SE Pass Censorate Customshouse, RF/Relic Quarantine Lock & Stamp-Tax Yard** above `Babel` (`Rulings #49, #109`), **`PL-09` Frontier Salt-Pan & Mountain-Road Penal Corvée Camp** (`Ruling #110`) |
+| **`Farport`** | Farside Seaward Foreland (`Sphere 12/27`) | `(248, 585)` | `eternian`, `hueru-kuran`, `islanders` | **`+212 m` Tsunami-Safe 3-Way Creole Dejima *Fondaco* & Consular Compound** (`Ruling #111`), **`PN-13` Pioneer Cliff-Hoist Eddy-Brake & Coil Factory** (`KCONS` sabotage hook, `Ruling #113`), **`AS-09` Amber-Seal *Fondaco* Bank**, **`BT-08` *Black-Tally* Cliff-Cave Smuggler Landing** |
+| **`Urverkstad`** | Iron Republic Alps (`Sphere 14`) | `(591, 801)` | `highlands-republican`, `highlands-rustic` | **Order `HM-12` Alpine Chapterhouse**, **`PN-14b` Pioneer Precision Horology & Hydro-Dynamo Atelier**, **Locked Ordinance/Clockwork Guild Schematic Vault** (`Ruling #113`), `clockwork-and-optics-bench`, `hydro-forge` |
+| **`Slussport`** | Iron Republic Lake Chain (`Sphere 14`) | `(576, 693)` | `highlands-republican`, `highlands-slavic` | **`L1–L7` `Nauen` Customs Lock-House & Break-of-Bulk Entrepôt** (`Rulings #105, #109`), **`AS-10b` Amber-Seal Lock-Toll & Bore-Bond House**, **`BT-09` *Black-Tally* Timber-Raft Contraband Yard**, **Mercenary Bourse #2** (`MC-04`), `ship-timber` yard |
+| **`Sideros`** | League Mining Deme (`Sphere 5`) | `(744, 784)` | `ys`, `highlands-rustic` | **Hykkousoi Mainland Iron & Colliery Deme** (`Ruling #13`, `Fe=180, Coal=132, Clay=255`), `Sideros–Tethis` Barge-Canal Customs Lock, `fireclay` blast-furnace & naval ironworks |
+| **`Daranch`** | Greater Dalab Ranchlands (`Sphere 21`) | `(527, 1149)` | `dalab`, `beast-riders`, `highlands-rustic` | **Standalone Giant Cohort & Pack-Lizard Breeding Seat** (`Rulings #38, #106`: supplies Great Caravan draft lizards), `4A` Reformation Cryo-Vat, `cold-chain` Smoked-Meat Works |
+| **`Shelf`** | Dalab–Tungang Cliff Seam (`Sphere 21/22`) | `(461, 1161)` | `dalab`, `tungang` | **50/50 Dalab–Tungang Vertical Cliff Arcology** (`Ruling #4`), Biogel-to-Moonglass Customs Exchange, Pioneer Eddy-Braked Cliff Hoist (`KCONS` strike/sabotage hook, `Ruling #113`) |
+| **`Strongbow`** | Xanadu–Oidong Lift-Head (`Sphere 23/24`) | `(1001, 1596)` | `xanadu`, `qiblai`, `talia` | **Mercenary Bourse #6**, **Great Counterweight Lift-Head Customshouse & Break-of-Bulk Yard** (`KCONS` sabotage hook, `Rulings #106, #113`), Tier 3 Bounty Post (`BF-07` *Tin-Skulls*) |
 | **`White Gills`** | High-Rift / Twins Seam (`Sphere 24`) | `(1015, 1430)` | `qiblai`, `xanadu` | **Order `HM-05` White Spoke Monastery** (primary Whisper-Cell radio repeater between `Longsong HM-01` & `Qiblai HM-03`), Gill-Cave Apothecary |
-| **`Springhollows`** | Neutral Enclave in Upper Ria (`Sphere 27`) | `(1135, 153)` | `ria` *(High-Ria)*, `ancients` | **`PN-01` Supreme Collegium of *The Pioneers / Technicians*** (`Ruling #102`: Grand Artifact-Engineering, Hydro-Dynamo & Geodetic Atlas HQ!), Karst Boat-Lift |
-| **`Mā-Kōu` ("Iron Gates")** | Neutral Ria Hinge Sill (`Sphere 27`) | `(702, 164)` | `ria` *(Low+High)*, `eternian` | **`PN-02` Lock-Chain & Flux-Calibration Tower** + **`AS-02` Supreme River-Peace Clearinghouse of *The Court of the Amber Seal*** (`Ruling #103`) on `4,210 m³/s` `Mā-Rīa` gap |
-| **`Ria Sound`** | Lower Ria Bluff Port (`Sphere 27`) | `(626, 140)` | `ria` *(Low-Ria)*, `eternian` | **`AS-01` Supreme Maritime, Bullion & Ghost-Tsunami Underwriting Vault** (`+78 m` bluff above `0`-pop `Double Delta`), **`PN-12` 90-s Cliff-Hoist Brake Loft** |
-| **`Heartland` & `Upper Ria`** | Dual Dynastic Capitals (`Sphere 27`) | `(796,176)` / `(1186,118)` | `ria` *(Low / High)* | **Western (*Uktena* Palace-Barge) & Eastern (Silver-Swan Palace-Barge) Dynastic Capitals**, `0.72×` Dynastic Highway Post-Hubs, River-Tribute Granaries |
-| **`Lodestone`** | Compass Hills Cantons (`Sphere 27`) | `(1058, 224)` | `compass-hills`, `tungang`, `ria` | **`PN-03` Zero-Iron `superconductor-delve` & `85 mT` Flux Foundry** (**STRICT `0`-IRON RULE:** `tin-bronze` + `nephrite-jade` tools only!), Amber-Seal Ore Assay |
-| **`Spider Lake` (`Hām-Tsēk`)** | *Hum*–Ria Silk Principality (`Sphere 18/27`) | `(1288, 220)` | `spider-lake` | **`PN-04` Dielectric `Golden Cable` Silk Coil-Winding Lofts**, Alkaline Hot-Spring Sericin Degumming Pools, Amber-Seal Silk Factor |
-| **`Weeping Fort`** | Contested Weeping Valley (`Sphere 27`) | `(996, 156)` | `ria` *(fortified ruin)* | **`PN-05` Pioneer *Sap-Breakers* Containment Yard** (dismantling rogue defoliant machines & harvesting dielectric sap-varnish; `0` overlap w/ `Torus` *Tenders* `Ruling #104`!) |
-| **`Battered Isle` & `Kōpa-Hueru`** | Offshore Exiles & Crookshore (`Sphere 27`) | `(435,259)` / `(75,679)` | `eternian` / `hueru-kuran` | **`AS-08` Offshore Bullion & Coaster Vault** (`Battered Isle` `+115 m`), *Santa Cristina* Ghost-Tsunami Float-Chime Wells & `nephrite-wire-saw` (`Crookshore`) |
+| **`Springhollows`** | Neutral Enclave in Upper Ria (`Sphere 27`) | `(1135, 153)` | `ria` *(High-Ria)*, `ancients` | **`PN-01` Supreme Collegium of *The Pioneers / Technicians*** (`Ruling #102`: Grand Artifact-Engineering, Hydro-Dynamo & Geodetic Atlas Master Vault, `Ruling #113`!), `Sikwīngi` Karst Boat-Lift |
+| **`Mā-Kōu` ("Iron Gates")** | Neutral Ria Hinge Sill (`Sphere 27`) | `(702, 164)` | `ria` *(Low+High)*, `eternian` | **`PN-02` `10`-Lock *Paktong* Customs Lock-House & Flux-Calibration Tower** + **`AS-02` Supreme River-Peace Clearinghouse, Arbitration Court & Dual-Dynasty Legations** (`Rulings #103, #105, #111`) on `4,210 m³/s` `Mā-Rīa` gap |
+| **`Ria Sound`** | Lower Ria Bluff Port (`Sphere 27`) | `(626, 140)` | `ria` *(Low-Ria)*, `eternian` | **`AS-01` Supreme Maritime, Bullion & Ghost-Tsunami Underwriting Vault** (`+78 m` bluff above `0`-pop `Double Delta`), **`PN-12` 90-s Cliff-Hoist Brake Loft**, **`BT-02` *Black-Tally* `forged_tally` Intaglio Cellar** (`Ruling #108`) |
+| **`Heartland` & `Upper Ria`** | Dual Dynastic Capitals (`Sphere 27`) | `(796,176)` / `(1186,118)` | `ria` *(Low / High)* | **Western (*Uktena* Palace-Barge) & Eastern (Silver-Swan Palace-Barge) Dynastic Capitals & Envoy Moorings** (`Ruling #111`), `0.72×` Dynastic Highway Post-Hubs, **`PL-10` Loess Canal-Dredging Penal Barges** (`Ruling #110`) |
+| **`Lodestone`** | Compass Hills Cantons (`Sphere 27`) | `(1058, 224)` | `compass-hills`, `tungang`, `ria` | **`PN-03` Zero-Iron `superconductor-delve` & `85 mT` Flux Foundry** (**STRICT `0`-IRON CONVOY & CUSTOMS GATE:** `tin-bronze` + `nephrite-jade` sledges/tools only, `Rulings #106, #109`!), Amber-Seal Ore Assay |
+| **`Spider Lake` (`Hām-Tsēk`)** | *Hum*–Ria Silk Principality (`Sphere 18/27`) | `(1288, 220)` | `spider-lake` | **`PN-04` Dielectric `Golden Cable` Silk Coil-Winding Lofts**, Alkaline Hot-Spring Sericin Degumming Pools, Amber-Seal Silk Factor & Egg-Export Quarantine Gate (`Ruling #109`) |
+| **`Weeping Fort`** | Contested Weeping Valley (`Sphere 27`) | `(996, 156)` | `ria` *(fortified ruin)* | **`PN-05` Pioneer *Sap-Breakers* Containment Yard** (`0` overlap w/ `Torus` *Tenders* `Ruling #104`!) vs. **Covert `BT-01` Supreme HQ of *The Black-Tally / Weeping-Lotus Syndicate*** (illicit `weeping-sap` defoliant & `lotus-resin` extraction, `Ruling #108`) |
+| **`Battered Isle` & `Kōpa-Hueru`** | Offshore Exiles & Crookshore (`Sphere 27`) | `(435,259)` / `(75,679)` | `eternian` / `hueru-kuran` | **`AS-08` Offshore Bullion & Coaster Vault** + **`BT-07` Western-Pincer Contraband Transshipment Coves** (`Battered Isle` `+115 m`, `Rulings #108, #112`), *Santa Cristina* Ghost-Tsunami Float-Chime Wells & `nephrite-wire-saw` (`Crookshore`) |
+
