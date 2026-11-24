@@ -127,9 +127,43 @@ died twice with the app. **Each build times it at its adoption turn, on its own 
   bump's runaway on those steep near faces (black pixels) is capped by `KGROUND.clampBump`; ebadlands fades its bed bump out inside the
   patch (the bed bump's height steps at each contact and drew a dashed line along it). `biomes/ebadlands/KNOWN_ISSUES.md` has the numbers.
 
+## The texture array (2026-11-24: the owner, "put blakhed shader in core terrain")
+
+`KGROUND.hook(mat, {..., array: true})` (or `{size: [w, h]}`) puts every layer's map (a kind's too; a map two layers share is one
+layer) in ONE `DataTexture2DArray` (r128's name; `DataArrayTexture` from r138), uniform `sampler2DArray uKGA`, and samples it by
+layer index through the same code: `kgSampleA` / `kgHexA` / `kgTSA` are `glsl(o)`'s `kgSample` / `kgHex` / `kgTS` rewritten onto
+`textureGrad(arr, vec3(uv, layer), dx, dy)` (`KG_GRADA`, `KG_LODA`), so the hex tiling, the distance scale and the triplanar sides
+are unchanged. N map layers take one texture unit instead of N. The array is filled when every map's image has landed (a 1-texel
+grey stand-in until then, counted in `window._texPending`), at the largest map's size (a smaller map is resampled and said:
+`console.warn` and `mat.userData.kgroundArray.resampled`), each map turned as the GPU reads it (`flipY`), mipmapped, with the first
+map's wrap and encoding (r128 uploads RGBA8, not sRGB8, so the shader decodes as it does a plain sampler). WebGL2 only: on WebGL1
+the hook draws the plain samplers. Off, the shader text and the program key are byte for byte the old ones (`test-ground.js`:
+FROZEN, and a negative on the option's own paths); on, the key ends `-A<maps>`. `?kgarray=0` turns it off on any page,
+`?kgarray=1` on where the page did not say.
+
+Two layer fields came with it, for drawing a page's ground as its own shader did: `lin: 'srgb'` (three's exact sRGB curve,
+`sRGBToLinear`, instead of pow 2.2) and `turn: {m, scale, off, mix}` (the same map sampled again turned and scaled, the decoded
+colours mixed: a page's own break-up of a repeat; on the plane only, refused with `o.tri`).
+
+**Blakhed** (`settlements/blakhed/targets/town/90b-bk-world.js`) is the first: its hand-written ground (8 library sets, 3 masks, the
+tint) is now KGROUND's eight layers with `hex: false, far: false, blend: 0, lin: 'srgb'` and the ruts' `turn`, under the array
+(`BK_KGARRAY`). Measured on the Arc (linked programs, `getActiveUniform`): each of the three ground programs 12 samplers before
+(`tTurf`..`tShin`, `tMA`..`tMC`, `map`), 12 on KGROUND with the plain samplers, **5** on the array (`uKGA`, the three masks, `map`);
+the page's worst program 12 to 5. The array and the plain samplers draw the same pixels (the ground in the shot pair: no pixel
+differs by more than 8 of 255); against the page before the port the mean colour is the same to 0.01 and only the grain's phase
+moves (KGROUND writes a tile scale to four places: 1/3 is 0.3333).
+
 ## Godot
 
 `ground.gdshader` takes the same: the height blend already exists; the bump is Godot's built-in `NORMAL` from `dFdx/dFdy` of the
 height (or a `NORMAL_MAP` from a baked height), the cavity occlusion goes on `AO` (which Godot applies to ambient only, as here) and a
 `DIFFUSE_LIGHT` scale for the `direct` share. `aKGAO` is exported per vertex as `CUSTOM0.x` from `KGROUND.cavity` (pure arrays). The
 bed relief is `strata.gdshaderinc`'s bed lookup with the same three lines as `ksRelief`.
+
+The texture array: `terrain.gdshader` already samples its library layers from global `sampler2DArray`s (`kgd_albedo_arr`, S4's hex
+tiling), so the array path is that shader's model. `ground.gdshader` (a page's ground, the world-uv layers) has four `sampler2D`
+slots; a KGROUND page on it would take `uniform sampler2DArray layer_arr : filter_linear_mipmap_anisotropic, repeat_enable` (no
+`source_color`: the bytes are decoded in the shader, as three does), `texture(layer_arr, vec3(uv, float(i)))` in `layer_sample`, a
+`Texture2DArray` built by the importer from the layers' images (`Texture2DArray.create_from_images`: one size and format, the same
+resample rule), and the KGROUND layer records (weights, order, scale, `lin`, `turn`) in the export's `EXPORT.groundLayers`. Not a
+one-line change, so `godot/` is untouched; Blakhed has no Godot export yet (its KNOWN_ISSUES.md).

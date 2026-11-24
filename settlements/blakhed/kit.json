@@ -51,6 +51,12 @@
     ]
    ],
    [
+    "core/terrain",
+    [
+     "43-core-ground.js"
+    ]
+   ],
+   [
     "core/simulation",
     [
      "77-sim-0-core.js",
@@ -115,6 +121,7 @@
   "50-core-water-draw.js",
   "51-core-water-kinds.js",
   "10-core-drawn.js",
+  "43-core-ground.js",
   "69d-dalab-mat.js",
   "69e-dalab-helpers.js",
   "69bk2-tg-bundle.js",
