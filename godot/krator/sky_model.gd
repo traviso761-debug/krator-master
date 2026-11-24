@@ -10,12 +10,71 @@ extends RefCounted
 const D := PI / 180.0
 var S: Dictionary
 var presets: Dictionary
+var volclouds: Dictionary   # PRESETS.volclouds (the volumetric clouds, W6); empty when the export has none
+
+const KRand := preload("res://tests/rand/krand.gd")
 
 
 func _init(path := "res://data/sky/sky.json") -> void:
 	var j: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
 	S = j["sky"]
 	presets = j["presets"]
+	volclouds = j["volclouds"] if j.get("volclouds") != null else {}
+
+
+# ---- the volumes' detail (core/atmos/sky/89-atmos-m-volclouds.js, ATMOS.skyDetailVolume): inverted Worley at 3, 5 and 8 cells a
+# period in R, G, B, the feature points from KRand, tiling. Shipped at 32^3 as data/sky/detail32.bin; the test bakes 8^3 here
+func detail_volume(n: int) -> PackedByteArray:
+	var F := [3, 5, 8]
+	var pts := []
+	for c in 3:
+		var f: int = F[c]
+		var P := PackedFloat64Array()
+		P.resize(f * f * f * 3)
+		for k in f:
+			for j in f:
+				for i in f:
+					var h := KRand.hash_ints(7001 + c, [i, j, k])
+					var q := ((k * f + j) * f + i) * 3
+					P[q] = i + KRand.unit(KRand.hash_ints(h, [1]))
+					P[q + 1] = j + KRand.unit(KRand.hash_ints(h, [2]))
+					P[q + 2] = k + KRand.unit(KRand.hash_ints(h, [3]))
+		pts.append(P)
+	var out := PackedByteArray()
+	out.resize(n * n * n * 4)
+	for z in n:
+		for y in n:
+			for x in n:
+				var o := ((z * n + y) * n + x) * 4
+				for c in 3:
+					var f: int = F[c]
+					var P: PackedFloat64Array = pts[c]
+					var px := (x + 0.5) / n * f
+					var py := (y + 0.5) / n * f
+					var pz := (z + 0.5) / n * f
+					var ci := floori(px)
+					var cj := floori(py)
+					var ck := floori(pz)
+					var best := 9.0
+					for dk in range(-1, 2):
+						for dj in range(-1, 2):
+							for di in range(-1, 2):
+								var i := ci + di
+								var j := cj + dj
+								var k := ck + dk
+								var wi := posmod(i, f)
+								var wj := posmod(j, f)
+								var wk := posmod(k, f)
+								var q := ((wk * f + wj) * f + wi) * 3
+								var ex := P[q] + (i - wi) - px
+								var ey := P[q + 1] + (j - wj) - py
+								var ez := P[q + 2] + (k - wk) - pz
+								var d := ex * ex + ey * ey + ez * ez
+								if d < best:
+									best = d
+					out[o + c] = roundi(255.0 * maxf(0.0, 1.0 - sqrt(best) / 0.866))
+				out[o + 3] = 255
+	return out
 
 
 # ---- the hash (lowbias32: the same bits as Math.imul in the JavaScript and uint in the shader)
