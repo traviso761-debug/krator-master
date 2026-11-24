@@ -1,10 +1,9 @@
-// ================================================================= XANADU — the lake's trades' interiors (the set `xanadu-lake`)
-// Opt-in, as 87k-xa-lake-trades.js is (2026-11-16; settlements/kirstabal/PLAN.md K5): read in place by name (settlements/kirstabal
-// kit.json "external"), so no other page changes. The interior set items of the 87k pieces that hold rooms, written as
-// kits/interiors/sets/xanadu.js writes the kit's (sets/README.md; the same local frame: origin at the plot centre on the
-// ground, +z the front), and added as a set of its own (KratorInteriors.sets.add) when the page carries the interiors core.
-// It belongs in kits/interiors/sets/ (as xanadu-lake.js); it moves there with the next rebuild of the interiors sheet, which
-// inlines every set (TODO.md, the ride-along list).
+/* ======================== Interior set: Xanadu, the lake's trades (kits/xanadu 87k) ========================
+   The interior set items of the lake's trades (kits/xanadu/src/87k-xa-lake-trades.js) that hold rooms, registered as the set
+   'xanadu-lake' beside the kit's own ('xanadu', sets/xanadu.js), written as that file writes the kit's (sets/README.md; the
+   same local frame: origin at the plot centre on the ground, +z the front). Until Stage 8 B9 (2026-11-24; T13) this was
+   kits/xanadu/src/87k1-xa-lake-rooms.js, read in place by name; a page now takes it by name through the interiors bundle
+   (kit_bundle.bundle([..., 'xanadu-lake']): settlements/kirstabal and settlements/xanadu-lake, kit.json "interiorSets"). */
 //   xa_serai        the four ranges, two storeys each: the gate hall through the front range (the street to the court), the
 //                   common room and the kitchen beside it; the stores and the shops at the back; the stables on the sides; the
 //                   travellers' dormitories and rooms above. The corner towers stay solid (each range's rooms stop short of them)

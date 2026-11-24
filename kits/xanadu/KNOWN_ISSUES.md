@@ -69,8 +69,10 @@ What reaches over, by kind:
 | `xa_temple_palopo` | Palopó paint | 34 x 32 | x -20.82..20.82, z -7.75..19.68 (v2) | 3.82 | vRope 3.82 |
 | `xa_house_turk_a_palopo` | Palopó paint | 22 x 20 | x -9.20..9.20, z -7.05..10.79 (v0) | 0.79 | vDoorLeaf 0.79, vStone 0.70 |
 | `xa_shop_turk_b_palopo` | Palopó paint | 20 x 18 | x -6.75..9.25, z -6.25..9.28 (v0) | 0.28 | vRope 0.28 |
-| `xa_grand_temple_gold` | Gihon (extra/88h) | 60 x 64 | x -26.00..26.00, z -24.00..34.11 (v0) | 2.11 | vStone 2.11, xDomeG 1.78, xWashB 1.48, xPaint 0.79 (the Grand Temple's own) |
-| `xa_monastery_violet` | Gihon (extra/88h) | 50 x 50 | x -26.69..26.69, z -21.82..23.47 (v0) | 1.69 | vRope 1.69 (the monastery's own) |
+| `xa_grand_temple_gold` | Gihon (src/88h) | 60 x 64 | x -26.00..26.00, z -24.00..34.11 (v0) | 2.11 | vStone 2.11, xDomeG 1.78, xWashB 1.48, xPaint 0.79 (the Grand Temple's own) |
+| `xa_monastery_violet` | Gihon (src/88h) | 50 x 50 | x -26.69..26.69, z -21.82..23.47 (v0) | 1.69 | vRope 1.69 (the monastery's own) |
+| `xa_serai` | Lake trades (src/87k; measured 2026-11-24, Stage 8 B9) | 46 x 46 | x -20.30..20.30, z -20.36..23.27 (v0) | 0.27 | vIron 0.27 |
+| `xa_fish_racks` | Lake trades (src/87k; measured 2026-11-24, Stage 8 B9) | 16 x 11 | x -4.56..9.00, z -3.04..2.41 (v0) | 1.00 | vPost 1.00 |
 
 `xa_lighthouse` throws in `XAK` (`FRAME_HOOKS`, the lamp's turn hook, is a page global the sheet and Erewhon carry): the test
 skips it (`BUILD_FAILS`); measured on the page it is unchecked.

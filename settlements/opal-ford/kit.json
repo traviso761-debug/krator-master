@@ -6,14 +6,7 @@
   "settlements/opal-ford/gen/69p-kcity-bundle.js",
   "settlements/opal-ford/gen/69m-of-tune.js",
   "settlements/opal-ford/gen/86-bio-31b-core-leafset.js",
-  "kits/xanadu/extra/69dz-ix-xanadu-extra.js",
-  "kits/xanadu/extra/88c-xa-caravanserai.js",
-  "kits/xanadu/extra/88d-xa-lakecraft.js",
-  "kits/xanadu/extra/88e-xa-stall.js",
-  "kits/xanadu/extra/88f-xa-harbour.js",
-  "kits/xanadu/extra/88g-xa-works.js",
   "kits/xanadu/extra/88j-xa-crossing.js",
-  "kits/xanadu/src/87k-xa-lake-trades.js",
   "core/drawn/10-core-drawn.js"
  ],
  "scoped": [
@@ -26,7 +19,6 @@
   "89zp-of-site.js",
   "90q-of-world.js",
   "90r-of-build.js",
-  "69dz-ix-xanadu-extra.js",
   "89q0-qb-helpers.js",
   "89q0x-qb-xanadui.js",
   "89q0y-qb-script.js",

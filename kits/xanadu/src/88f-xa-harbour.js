@@ -1,5 +1,5 @@
 // ================================================================= XANADU — the lake harbour: the quay, the mole, the warehouse, the drydock, the slip, the river bridge, the white dress
-// OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces"; 2026-11-17, settlements/kirstabal
+// In src/ and FILES since Stage 8 B9 (2026-11-24); before that OPT-IN in extra/ (kits/xanadu/README.md, "Opt-in pieces"; 2026-11-17, settlements/kirstabal
 // KNOWN_ISSUES.md, the stand-ins the town owed the kit; the owner: "make a real quay model and fill the other stand-ins with a
 // proper model"): settlements/kirstabal takes it through its kit.json "external". Each
 // piece is drawn in its own frame, front +z, its deck or waterline at local y 0 unless noted, opening with its own reseed.
@@ -20,9 +20,9 @@
 //                     arcade along its front
 //   xa_drydock        the graving dock (its rim at y 0, 2.4 m over the lake: the town sets it so): stepped side walls, the head
 //                     wall's stair, mitre gates at the lake end standing open with their balance beams, the pump house's
-//                     treadwheel, sheerlegs; drawn flooded with a cargo barge (extra/88d's xa_lake_barge, when the page has
+//                     treadwheel, sheerlegs; drawn flooded with a cargo barge (88d's xa_lake_barge, when the page has
 //                     it) afloat in it under scaffolds (the lake's water is one plane: a dry basin needs core/water to mask it)
-// The lake craft are extra/88d-xa-lakecraft.js's (the dugout, the launch, the cargo barge), tagged as vessels there.
+// The lake craft are 88d-xa-lakecraft.js's (the dugout, the launch, the cargo barge), tagged as vessels there.
 //   xa_garden_wall    a garden square's low wall (o.len long, default 8): coped, a pier at each end; v 1 a gate where a rill axis
 //                     meets the edge: two taller piers and an arched head over the opening
 //   <house>_badgir    wind-catchers (the plan's heat: 31-33 C on the lake): twins of the common houses (XH_BADGIR) running the

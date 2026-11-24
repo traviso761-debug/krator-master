@@ -1,5 +1,5 @@
 /* ================================================================= XANADU — the lake town's landing stair and its governor's house
-   OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces"; settlements/xanadu-lake/PLAN.md section
+   In src/ and FILES since Stage 8 B9 (2026-11-24); before that OPT-IN in extra/ (kits/xanadu/README.md, "Opt-in pieces"; settlements/xanadu-lake/PLAN.md section
    5, the two pieces every lake town wants that the kit lacked; step L0, Māuṭh): a page takes it through its kit.json "external",
    so no other page changes. Each piece is drawn in its own frame, front +z, opening with its own reseed, on the kit's
    vocabulary (xnWall, xnStack, xnFlatRoof, xnTibWin, xnShrine, xnFlagpole, vnDoor ...). Seeds 34801-34899.

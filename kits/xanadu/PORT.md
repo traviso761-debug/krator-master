@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 319 (53%) | 0 (0%) | 0 (0%) | 38 (6%) | 249 (41%) |
+| KB | 425 (54%) | 0 (0%) | 0 (0%) | 40 (5%) | 317 (41%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,7 +15,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/70-xa-tex.js` | 10.1 | [draw] | 0 | 13 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/71-xa-mat.js` | 11.3 | [draw] | 16 | 0 | 0 | 0 | 0 | 30 | 2 | 0 | 0 | 0 | 0 |  |
 | `src/71c-xa-openings.js` | 3.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | real doors and glass: leaves registered in KDOOR (core/door) through IZDOOR.leaf (69e5), panes and room cards as kit items; stable door ids |
-| `src/72-xa-helpers.js` | 33.4 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/72-xa-helpers.js` | 33.7 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74-xa-dwell.js` | 25.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/75-xa-trade.js` | 8.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/76-xa-farm.js` | 18.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -26,13 +26,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/78c-xa-dome-plan.js` | 12.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Pleasure Dome's plan: rooms, openings, and the walls worked out from them (xdomePlan); no three.js, no geometry, no DOM |
 | `src/78d-xa-dome-in.js` | 28.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | draws 78c's plan through 78b's helpers; writes core/walk (KWALK) and core/door (IZDOOR.leaf) records as it draws |
 | `src/78l-xa-moorish-data.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | XMOOR: the citadel's arch outlines, muqarnas cells, star ceilings, barrel section as plain numbers (Godot builds from them) |
-| `src/78m-xa-moorish.js` | 18.3 | [draw] | 12 | 0 | 0 | 0 | 0 | 15 | 2 | 0 | 0 | 0 | 0 | the Moorish and Mughal materials, geometry items and helpers (arch heads, muqarnas, star ceilings, vaults, jali, iwan, water) |
-| `src/78n-xa-citadel.js` | 38.0 | [web] | 0 | 0 | 1 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | the citadel's builders: walls, floors, doors and stairs drawn from the interior set's rooms (sets/xanadu-citadel.js); window._citadel |
+| `src/78m-xa-moorish.js` | 21.8 | [draw] | 12 | 0 | 0 | 0 | 0 | 17 | 2 | 0 | 0 | 0 | 0 | the Moorish and Mughal materials, geometry items and helpers (arch heads, muqarnas, star ceilings, vaults, jali, iwan, water) |
+| `src/78n-xa-citadel.js` | 39.4 | [web] | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the citadel's builders: walls, floors, doors and stairs drawn from the interior set's rooms (sets/xanadu-citadel.js); window._citadel |
 | `src/78o-xa-golden-way.js` | 24.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/79-xa-guild.js` | 17.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/80-xa-military.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/80f-xa-fort-data.js` | 20.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | XFORT: the fort plan as records and its rules; no three.js, no DOM (node-tested: tests/test-fort.js; "box" is its own word, not geometry) |
-| `src/80g-xa-fort.js` | 26.0 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | draws XFORT's plan; heaps through KRUBBLE |
+| `src/80f-xa-fort-data.js` | 31.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | XFORT: the fort plan as records and its rules; no three.js, no DOM (node-tested: tests/test-fort.js; "box" is its own word, not geometry) |
+| `src/80g-xa-fort.js` | 51.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | draws XFORT's plan; heaps through KRUBBLE |
 | `src/81-xa-public.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-xa-hill.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/83-xa-turk.js` | 23.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -44,12 +44,21 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-xa-spicer.js` | 9.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/87b-xa-andean.js` | 12.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/87c-xa-erewhon.js` | 24.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/87k-xa-lake-trades.js` | 10.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/87k-xa-lake-trades.js` | 10.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/87k2-xa-slate-wall.js` | 6.8 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87s-xs-mat.js` | 3.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu (opt-in, xanadu.py SCRAP): kit items over core/materials; the one-sheet panel UVs and the I-girder |
 | `src/87t-xs-helpers.js` | 13.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu: the xnXS* vocabulary (kput records only); per-panel variation from KRAND.hash |
 | `src/87u-xs-build.js` | 31.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu: the fifteen xa_scrap_* defs |
 | `src/87v-xs-poor.js` | 19.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu: the poor tier and the farm (tanks, silos, hull vaults, bottle walls, glint cones; kput records only) |
 | `src/88-xa-dress.js` | 11.9 | [draw] | 4 | 6 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
+| `src/88c-xa-caravanserai.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88d-xa-lakecraft.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88e-xa-stall.js` | 1.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88f-xa-harbour.js` | 25.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88g-xa-works.js` | 51.8 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/88h-xa-gihon.js` | 9.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88k-xa-landing.js` | 18.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88l-xa-mine-works.js` | 9.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89-xa-trades.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: plain data |
 | `targets/sheet/88y-xasheet-matlib.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sheet/89z-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

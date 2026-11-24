@@ -1,5 +1,5 @@
 // ================================================================= XANADU — Gihon's pieces: the Mint, the assessors, the treasury, the gold-and-opal dress, the violet dress
-// OPT-IN (kits/xanadu/extra: a page reads it in place through its kit.json "external", so no other page changes; it folds into
+// In src/ and FILES since Stage 8 B9 (2026-11-24); before that OPT-IN (kits/xanadu/extra: a page reads it in place through its kit.json "external", so no other page changes; it folds into
 // the kit's src at the next all-builds rebuild, TODO.md "Ride along"). For settlements/gihon (PLAN.md sections 3 and 8; the owner,
 // 2026-11-17: "the garrison fortress, which doubles as the headquarters of the Sultan's Mint and tax assessors ... its temple is
 // spectacularly decorated with both [gold and opals]. the White and Violet orders have monasteries here"). Every piece is drawn

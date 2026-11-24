@@ -1,5 +1,5 @@
 /* ================================================================= XANADU — the mines' works: the stamp mill and the sorting shed
-   OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces"; settlements/xanadu/WORKS-PLAN.md step
+   In src/ and FILES since Stage 8 B9 (2026-11-24); before that OPT-IN in extra/ (kits/xanadu/README.md, "Opt-in pieces"; settlements/xanadu/WORKS-PLAN.md step
    W1, 2026-11-23): the two pieces the plan named missing for Kōlḍ-Lōḍ's mill camp and Opal Valley Mines' diggings. A page takes
    it through its kit.json "external" (settlements/xanadu-works), so no other page changes; it joins src/ with the ride-along
    rebuild. core/hamlet's Xanadu row names these keys (core/hamlet/xanadu/23-hamlet-xanadu-row.js: the `mill` and `diggings`

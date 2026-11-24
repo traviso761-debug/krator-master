@@ -26,6 +26,9 @@ KratorVehicles.STATES                      // ['intact', 'weathered', 'burnt', '
 KratorVehicles.WRECK_FORMS                 // ['crushed', 'overturned', 'torn', 'crashed', 'tboned', 'exploded', 'onside',
                                            //  'skidded', 'nosedived', 'broken', 'piled', 'gutted' (the last five, and overturned: the airframes')
 KratorVehicles.ruinOf(state, seed, key)    // the ruin record a build(key, { state, seed }) takes (a copy; data, no drawing)
+KratorVehicles.record(key, { at, ry, name }) -> a core/tags record: class 'vehicle', tags { culture, types, drive, seats, fuel },
+                                           // size [w, d, h] (Stage 8 T9, 2026-11-24: the defs carry no class tag since)
+KratorVehicles.register(T, key, o)        // T.add(record(key, o)): a host registers each vehicle it places (KTAGS.page)
 KratorVehicles.roll(group, metres)         // spins every wheel by metres / r (+ = forward); call with the distance moved
 KratorVehicles.steer(group, radians)       // turns the steered wheels; clamped to data.maxSteer; returns the angle used
                                            // (each steered wheel turns by angle x its steerRatio; maxSteer 0: skid steer, nothing turns)
@@ -133,7 +136,7 @@ aerial's tip (the cage top is 1.8 m: `data.cageH`). Built size 2.05 x 3.02 x 3.5
 | 1 | Crew | 4 | 60 kg | oil black with a brass stripe, brown cage, a second seat row under a longer cage, tarp and packs |
 | 2 | Drill rig | 2 | 320 kg | sand and brown, a folded auger mast on the rack (gear head on a rear A-frame, brass ram), a bed of drill pipe |
 
-`tags`: `{ class:'motor vehicle', type:['vehicle','transport'], drive:'wheeled', seats:2, fuel:'refined oil',
+`tags`: `{ type:['vehicle','transport'], drive:'wheeled', seats:2, fuel:'refined oil',
 terrain:['sand','salt flat','track'], setting:'outdoor', guild:'Geomancers' }`.
 
 `data` (variant 0; units m, m/s, m/s^2, kg, L, km, rad): `speed 22, accel 2.8, turnRadius 5.2, maxSteer 0.45,
@@ -154,7 +157,7 @@ x 9.07 (Hauler 10.75 long). 13 676 / 14 056 triangles, ten meshes; `budget.tris`
 | 0 | Survey | 4 000 kg | cream bowl, the solar lid open 25 degrees on an A-frame and two rams |
 | 1 | Hauler | 9 000 kg | ochre bowl, the lid shut, crates, drums and a lashed canvas roped on it |
 
-`tags`: `{ class:'motor vehicle', type:['vehicle','transport','survey'], drive:'wheeled', seats:6, fuel:'battery',
+`tags`: `{ type:['vehicle','transport','survey'], drive:'wheeled', seats:6, fuel:'battery',
 terrain:['sand','salt flat','rock'], setting:'outdoor', guild:'Salvagers' }`. `data`: `speed 4.5, accel 0.3,
 turnRadius 12, maxSteer 0.3, seats 6, cargo 4000, mass 38000, tank 0, battery 900 (kWh), solar, range 400, wheelbase
 7.8, track 5.0, clearance 1.0`. Wheels r 1.2, w 0.66, x +-2.5, axles z 3.9, 1.3, -1.3, -3.9: `wheel_fl/fr` steer
@@ -171,7 +174,7 @@ tealGlass ...). Box 2.8 x 6.7 m, 3.6 m to the rockets' tips (the cab roof 2.6). 
 | 0 | Lancer | 4 | orange, a four-tube rocket rack on a turntable, reload crates in the bay |
 | 1 | Courier | 6 | cream with an orange stripe, a striped awning over the bay, the palace orb on a mast, crates |
 
-`tags`: `{ class:'motor vehicle', type:['vehicle','patrol','transport'], drive:'wheeled', seats:4, fuel:'refined oil',
+`tags`: `{ type:['vehicle','patrol','transport'], drive:'wheeled', seats:4, fuel:'refined oil',
 terrain:['road','track','sand','rock'], setting:'outdoor', guild:'Forgemasters' }`. `data`: `speed 20, accel 1.6,
 turnRadius 7.5, maxSteer 0.5, cargo 600, mass 11200, tank 300, range 600, wheelbase 4.3, track 2.24, clearance 0.5,
 armament 'four-tube rocket rack'` (Courier: seats 6, cargo 1400, armament 'none'). Wheels r 0.62, w 0.46, x +-1.12,
@@ -187,7 +190,7 @@ shades (the cab roof 3.05). Built size 3.06 x 7.28 x 4.88. 6 544 / 6 928 triangl
 | 0 | Caravan | sand paint, tarps in teal, mint, pink, peach and yellow bands, an orange canopy with a red drape, a yellow parasol |
 | 1 | Headman's | teal paint, lacquer-red and gold tarps, a lacquer canopy with gilded horns, tin-mirror cladding on the cab, gold rims |
 
-`tags`: `{ class:'motor vehicle', type:['vehicle','transport','cargo'], drive:'wheeled', seats:3, fuel:'crude oil',
+`tags`: `{ type:['vehicle','transport','cargo'], drive:'wheeled', seats:3, fuel:'crude oil',
 terrain:['sand','salt flat','mud','track'], setting:'outdoor' }`. `data`: `speed 14, accel 1.0, turnRadius 8, maxSteer
 0.5, seats 3, berths 4, cargo 2500, mass 7800, tank 240, range 500, wheelbase 4.2, track 2.44, clearance 0.55, lamps
 'oil lanterns'`. Wheels r 0.78, w 0.62, x +-1.22, z 2.15 (steered) and -2.05; all driven.
@@ -203,7 +206,7 @@ Key `pa_crawler_hab`, name `Post-Apoc crawler hab`, culture `post-apoc`. Box 4.6
 | 0 | Hab | khaki cab, rust hab with patch plates, rust-brown and rust containers, spare drums on the roof |
 | 1 | Trader | faded-teal cab and hab, teal and mustard containers, a mustard and red awning over the balcony, crates on the cab deck |
 
-`tags`: `{ class:'motor vehicle', type:['vehicle','transport','cargo'], drive:'tracked', seats:4, fuel:'crude oil',
+`tags`: `{ type:['vehicle','transport','cargo'], drive:'tracked', seats:4, fuel:'crude oil',
 terrain:['sand','salt flat','mud','rock','snow'], setting:'outdoor' }`. `data`: `speed 6, accel 0.4, turnRadius 0,
 maxSteer 0, steering 'skid', seats 4, berths 8, cargo 6000, mass 34000, tank 1800, range 900, wheelbase 6.3 (bogie
 centres), track 3.4, clearance 0.55, belt 0.08`. Four bogies at x +-1.7, z 3.2 and -3.1, three road wheels each
@@ -262,7 +265,7 @@ box). The sheet lays every vehicle in at least three slots (seeds 1, 2, 3), so a
 When the glass is gone (every ruin state), the frames stay and `ancGlass` / `ancPaneShards` leave shards of dark glass
 (`shard`, a key the ruin pass neither rusts nor drops) standing in them.
 
-`tags`: all `class: 'motor vehicle'`, `drive: 'wheeled'`, `fuel: 'battery'`, `setting: 'outdoor'`; `type`
+`tags`: all `drive: 'wheeled'`, `fuel: 'battery'`, `setting: 'outdoor'`; `type`
 `['vehicle', 'transport']` (pod, saloon, tram), `['vehicle', 'cargo', 'transport']` (van, hauler), `['vehicle',
 'utility', 'patrol']` (utility). `data` (variant 0; m, m/s, m/s^2, kg, kWh, km, rad): pod `speed 25, accel 3.0,
 turnRadius 4.2, maxSteer 0.38, cargo 80, mass 760, battery 40, range 300, wheelbase 1.9, track 1.32`; saloon `38, 3.5,

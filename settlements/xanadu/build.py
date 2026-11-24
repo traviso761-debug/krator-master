@@ -117,13 +117,16 @@ FURN_CULTURES = ['xanadu', 'iziz', 'generic', 'scrap']
 VIRTUAL = {'69d-furniture-bundle.js'}
 
 
-def virtual_bodies():
+def virtual_bodies(more_sets=()):
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
     # tex: the library's detail maps on every piece (2026-11-10); decals: the delivered pictures of the citadel's hangings
-    # (kits/catalog/materials.json "decals", core/materials/PROMPTS-NEEDED.md section 57), the painted stand-ins until then
-    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True, decals=True) + kit_bundle.bundle(['xanadu', 'xanadu-citadel'])}
+    # (kits/catalog/materials.json "decals", core/materials/PROMPTS-NEEDED.md section 57), the painted stand-ins until then.
+    # more_sets: a --kit page with no interiors of its own adds its kit.json "interiorSets" here (Stage 8 B9, 2026-11-24:
+    # Kirstabal's 'xanadu-lake', which was kits/xanadu/src/87k1 read in place). Without them the bundle is what it was
+    sets = ['xanadu', 'xanadu-citadel'] + [s for s in more_sets if s not in ('xanadu', 'xanadu-citadel')]
+    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True, decals=True) + kit_bundle.bundle(sets)}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -376,7 +379,8 @@ def build_one(target, do_checks):
     # does not take Xanadu's (69d) too: two KratorFurniture bundles on one page put the Qiblai city over its cap. Xanadu's glue
     # (89y, which 99-start.js reads) stays and runs on the kit's bundle, which comes first in the order
     own_ix = bool(KIT and target in KIT.get('interiors', []))
-    vb = {} if own_ix else virtual_bodies()
+    # a kit with no interiors of its own at all ("interiors": [] or none) puts its "interiorSets" into Xanadu's bundle (69d)
+    vb = {} if own_ix else virtual_bodies((KIT.get('interiorSets') or []) if (KIT and not KIT.get('interiors')) else ())
     order = sorted(list(paths) + list(vb))
 
     bodies = dict(vb)

@@ -76,18 +76,18 @@ function faFmHoofed(A, B) {
   const coat = B.coat, mir = a => a.map(p => [-p[0], p[1], p[2]]), F0 = B.fam || 'coat';
   const FB = B.bodyFam || F0, FH = B.headFam || F0, FL = B.legFam || F0, FE = B.earFam || FH;
   /* the barrel */
-  const bc = faFmTube(A, FB, PP(B.body.map(b => [0, b[1], b[0]])), RR(B.body.map(b => [b[2], b[3]])), B.bodyNt || 16, B.bodyNs || 14,
+  const bc = faFmTube(A, FB, PP(B.body.map(b => [0, b[1], b[0]])), RR(B.body.map(b => [b[2], b[3]])), B.bodyNt == null ? 16 : B.bodyNt, B.bodyNs == null ? 14 : B.bodyNs,
     (p, t, a, q) => coat(p[0] + Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
   if (B.extraBody) B.extraBody(P, bc);
   /* the head with the neck */
   A.part('head', P(B.neckPivot), () => {
-    const nc = faFmTube(A, B.neckFam || FB, PP(B.neck.pts), RR(B.neck.rad), B.neck.nt || 6, 12, (p, t, a, q) => coat(p[0] + Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
-    faFmTube(A, FH, PP(B.head.pts), RR(B.head.rad), B.head.nt || 9, 12, (p, t, a, q) => B.head.col ? B.head.col(p, t, a) : coat(p[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
+    const nc = faFmTube(A, B.neckFam || FB, PP(B.neck.pts), RR(B.neck.rad), B.neck.nt == null ? 6 : B.neck.nt, 12, (p, t, a, q) => coat(p[0] + Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
+    faFmTube(A, FH, PP(B.head.pts), RR(B.head.rad), B.head.nt == null ? 9 : B.head.nt, 12, (p, t, a, q) => B.head.col ? B.head.col(p, t, a) : coat(p[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
     if (B.eyes) for (const s of [-1, 1]) { const e = B.eyes;
       A.ellip('eye', s * e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[3] * K * 0.85, e[3] * K, 0x2a1a0e, { seg: 8 });
       A.ellip('eye', s * (e[0] + e[3] * 0.45) * K, e[1] * K, (e[2] + e[3] * 0.3) * K, e[3] * 0.5 * K, e[3] * 0.55 * K, e[3] * 0.4 * K, 0x050403, { seg: 6 }); }
     if (B.horn) for (const s of [-1, 1]) { const h = B.horn;
-      faFmTube(A, 'horn', PP(s > 0 ? h.pts : mir(h.pts)), RR(h.rad), h.nt || 12, 8, (p, t) => h.colf ? h.colf(t) : (t > 0.82 ? h.tip : h.col), true); }
+      faFmTube(A, 'horn', PP(s > 0 ? h.pts : mir(h.pts)), RR(h.rad), h.nt == null ? 12 : h.nt, 8, (p, t) => h.colf ? h.colf(t) : (t > 0.82 ? h.tip : h.col), true); }
     if (B.extraHead) B.extraHead(P, nc);
   });
   if (B.ears) for (const s of [-1, 1]) { const e = B.ears;
@@ -108,11 +108,11 @@ function faFmHoofed(A, B) {
   /* the tail */
   if (B.tail) A.part('tail', P(B.tail.pts[0]), () => {
     const T = B.tail, tp = PP(T.pts);
-    if (T.curly || T.smooth) faFmTube(A, T.fam || FB, tp, RR(T.rad), T.nt || 8, T.ns || 7, (p, t) => T.colf ? T.colf(t) : T.col, true); else faFmChain(A, T.fam || FB, tp, RR(T.rad), 7, (p, t) => T.colf ? T.colf(t) : T.col);
+    if (T.curly || T.smooth) faFmTube(A, T.fam || FB, tp, RR(T.rad), T.nt == null ? 8 : T.nt, T.ns == null ? 7 : T.ns, (p, t) => T.colf ? T.colf(t) : T.col, true); else faFmChain(A, T.fam || FB, tp, RR(T.rad), 7, (p, t) => T.colf ? T.colf(t) : T.col);
     if (T.tuft) { const lk = [], e = tp[tp.length - 1], e0 = tp[Math.max(0, tp.length - 2)];
       for (let k = 0; k < T.tuft.n; k++) { const f = A.rnd() * (T.tuft.spread == null ? 0.5 : T.tuft.spread), sa = A.rnd() * TAU;   /* the hair rises from the last stretch of the tail, each strip turned its own way */
         lk.push({ at: [e[0] + (e0[0] - e[0]) * f + A.rr(-0.012, 0.012) * K, e[1] + (e0[1] - e[1]) * f, e[2] + (e0[2] - e[2]) * f], dir: T.tuft.dir || [A.rr(-0.25, 0.25), -1, A.rr(-0.3, 0.1)], side: [Math.cos(sa), 0, Math.sin(sa)],
-          len: T.tuft.len * K * A.rr(0.75, 1.15), w: T.tuft.w * K, col: T.tuft.col, curl: T.tuft.curl || 0.1 }); }
+          len: T.tuft.len * K * A.rr(0.75, 1.15), w: T.tuft.w * K, col: T.tuft.col, curl: T.tuft.curl == null ? 0.1 : T.tuft.curl }); }
       A.locks('hair', lk); }
   });
 }
@@ -632,7 +632,7 @@ function faFmBird(A, B) {
     faFmChain(A, 'feather', B.neck.pts.map(P), B.neck.rad.map(q => [q[0] * K, q[1] * K]), 10, (p) => B.neckCol ? B.neckCol(p) : B.coat(p[0], p[1], p[2]), false);
     const h = B.head; A.ellip('feather', h[0] * K, h[1] * K, h[2] * K, h[3] * K, h[4] * K, h[5] * K, null, { seg: 12, colf: (x, y, z) => B.headCol ? B.headCol(x, y, z) : B.coat(h[0] * K + x, h[1] * K + y, h[2] * K + z) });
     for (const s of [-1, 1]) { const e = B.eyes;
-      A.ellip('eye', s * e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[3] * K, e[3] * K, B.eyeCol || 0x2a1a0e, { seg: 8 });
+      A.ellip('eye', s * e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[3] * K, e[3] * K, B.eyeCol == null ? 0x2a1a0e : B.eyeCol, { seg: 8 });
       A.ellip('eye', s * (e[0] + e[3] * 0.5) * K, e[1] * K, e[2] * K, e[3] * 0.5 * K, e[3] * 0.5 * K, e[3] * 0.5 * K, 0x050403, { seg: 6 }); }
     B.extraHead(P);
   });

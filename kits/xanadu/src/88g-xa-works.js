@@ -1,5 +1,5 @@
 /* ================================================================= XANADU — the works: the lake towns' trades, the mines, the wayside shrine
-   OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces"; settlements/xanadu/BUILD-OUT.md section
+   In src/ and FILES since Stage 8 B9 (2026-11-24); before that OPT-IN in extra/ (kits/xanadu/README.md, "Opt-in pieces"; settlements/xanadu/BUILD-OUT.md section
    4a, the pieces the lake towns' trades want; wave 0.1): a page takes it through its kit.json "external", so no other page changes;
    it joins src/ with the ride-along rebuild. core/hamlet's focus records name these keys (BUILD-OUT.md 4b): keep them. Each piece
    is drawn in its own frame, front +z, its ground at local y 0 unless noted, opening with its own reseed, on the kit's vocabulary
@@ -28,7 +28,7 @@
                         quay), v 1 a road's toll house with its toll bar
      xa_fishponds       Bē-Āil's: stone-walled pens in the shallows (v 0 six, v 1 four and a feeding deck), a sluice in each, the
                         grilles, the bank and the keeper's hut; THE LAKE'S SURFACE AT LOCAL Y 0 (the town sets o.y to the water)
-     xa_slipway         Boṭ-Yārḍ's: xa_slip (extra/88f) is already the slipway (the ramp, the ways, a hull on its cradle), so this
+     xa_slipway         Boṭ-Yārḍ's: xa_slip (88f) is already the slipway (the ramp, the ways, a hull on its cradle), so this
                         is its twin, as the wind-catchers are: the same builder, then the timber stacks, the steam box, the saw
                         pit (v 1 a rack of frames for the plank stack). Needs 88f on the page
      xa_mine_head       the gold mines' and the opal mines' (v 1): the adit in the hill, its timber sets, the rails and cart, the
@@ -390,7 +390,7 @@ function buildXaFishponds(G,o){reseed(34701+(o.v|0));const V=xV(o),rub=xC(xPick(
  xnFolk(0,.6,-10.5,3,6);}
 XA.def({key:'xa_fishponds',name:'Fishponds',family:'Works',tags:{type:['farm','fishing'],wealth:'poor',lit:false},w:30,d:26,h:4,fw:28,fd:24,nv:2,build:buildXaFishponds});
 
-/* ---------------------------------------------------------------- the slipway: xa_slip's shipyard (extra/88f), on a 24 m lot
+/* ---------------------------------------------------------------- the slipway: xa_slip's shipyard (88f), on a 24 m lot
    xa_slip already is the slipway (the ramp into the lake, the ways, the capstan, a barge's hull in frame on its cradle), so this is
    its twin, as the wind-catcher twins are (88f): xa_slip's builder and seed, then the timber yard on its banks (y 0, z < 2): the
    squared logs stacked on the east, a plank stack (v 1 a rack of curved frames); the steam box on its trestles with its copper and

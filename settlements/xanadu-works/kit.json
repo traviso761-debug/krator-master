@@ -7,10 +7,7 @@
   "settlements/xanadu-works/gen/69w2-tungang-bundle.js",
   "core/terrain/37c-core-rubble.js",
   "kits/xanadu/src/80f-xa-fort-data.js",
-  "kits/xanadu/src/80g-xa-fort.js",
-  "kits/xanadu/extra/88d-xa-lakecraft.js",
-  "kits/xanadu/extra/88g-xa-works.js",
-  "kits/xanadu/extra/88l-xa-mine-works.js"
+  "kits/xanadu/src/80g-xa-fort.js"
  ],
  "scoped": [
   "69w-works-core.js",

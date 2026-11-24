@@ -60,7 +60,7 @@ const KM_API = (function () {
     if (!T || !m) return;
     m.map = T.map;
     const P = M._prof, dMix = P ? (P.mix == null ? 1 : P.mix) : 1;
-    const tile = (P && P.tile ? P.tile : 1) / (T.scale || 1), gain = 1 / Math.max(0.05, Math.pow(T.mean || 0.5, 2.2)), bump = (T.bump == null ? LOOK[b][2] : T.bump) * dMix;
+    const tile = (P && P.tile ? P.tile : 1) / (T.scale == null ? 1 : T.scale), gain = 1 / Math.max(0.05, Math.pow(T.mean == null ? 0.5 : T.mean, 2.2)), bump = (T.bump == null ? LOOK[b][2] : T.bump) * dMix;
     const chip = T.chip;   /* livery: where the paint has chipped (dark in the map) the vertex colour gives way to bare steel */
     m.onBeforeCompile = function (sh) {
       sh.uniforms.uDetTile = { value: tile }; sh.uniforms.uDetGain = { value: gain }; sh.uniforms.uDetMix = { value: dMix }; sh.uniforms.uDetBump = { value: bump * 0.01 };   /* metres of relief per unit of detail brightness */
@@ -107,12 +107,12 @@ const KM_API = (function () {
     o = o || {};
     for (const b of DETAIL) {
       if (!o[b]) continue;
-      TEX[b] = { map: loadTex(o[b].src || o[b].map), scale: o[b].scale || 1, mean: o[b].mean || 0.5, bump: o[b].bump,
+      TEX[b] = { map: loadTex(o[b].src || o[b].map), scale: o[b].scale == null ? 1 : o[b].scale, mean: o[b].mean == null ? 0.5 : o[b].mean, bump: o[b].bump,
         chip: o[b].chip || (b === 'livery' ? [0.42, 0.62, 0x6a6862] : null) };
       for (const id in MATSETS) attachDetail(b, MATSETS[id]);
     }
-    if (o.banner) TEX.banner = { src: o.banner.src || o.banner.map, cell: o.banner.cell || 0.9 };
-    if (o.sunbanner) { const z = o.sunbanner.size || o.sunbanner.scale || 2; TEX.sunbanner = { src: o.sunbanner.src || o.sunbanner.map, size: Array.isArray(z) ? z : [z, z] }; }
+    if (o.banner) TEX.banner = { src: o.banner.src || o.banner.map, cell: o.banner.cell == null ? 0.9 : o.banner.cell };
+    if (o.sunbanner) { const z = o.sunbanner.size || (o.sunbanner.scale == null ? 2 : o.sunbanner.scale); TEX.sunbanner = { src: o.sunbanner.src || o.sunbanner.map, size: Array.isArray(z) ? z : [z, z] }; }
     return Object.keys(TEX);
   };
 
@@ -146,7 +146,7 @@ const KM_API = (function () {
         const n = P.stripes.length;
         for (let i = 0; i < n * 3; i++) { g.fillStyle = css(P.stripes[i % n]); g.fillRect(0, i * H / (n * 3), W, H / (n * 3) + 1); }
       }
-      const R0 = Math.min(W, H) * 0.34, cx = W / 2, cy = P.sym === 'numeral' ? H * 0.36 : H * (P.symY || 0.45);
+      const R0 = Math.min(W, H) * 0.34, cx = W / 2, cy = P.sym === 'numeral' ? H * 0.36 : H * (P.symY == null ? 0.45 : P.symY);
       const ink = css(P.ink != null ? P.ink : 0xf1dba6), ink2 = css(P.ink2 != null ? P.ink2 : P.field);
       if (P.sym === 'sun' || P.sym === 'numeral') {
         /* the Iziz sun (core/sockets/38-symbols.js) inside a ring of rays */
@@ -256,7 +256,7 @@ const KM_API = (function () {
     o = o || {};
     const A = MECH_BY_KEY[key];
     if (!A) return null;
-    const F = mechFrame({ seed: o.seed || 1, variant: o.variant | 0 });
+    const F = mechFrame({ seed: o.seed == null ? 1 : o.seed, variant: o.variant | 0 });
     F.asset = A; F.data = mechData(A, o.variant | 0);
     const R = mechRig(), prev = _target;
     try { A.build(F, R); } finally { _target = prev; }
@@ -274,7 +274,7 @@ const KM_API = (function () {
     o = o || {};
     const A = MECH_BY_KEY[key];
     if (!A) { console.error('KratorMechs: no such mech', key); return null; }
-    const v = Math.max(0, Math.min(A.variants - 1, o.variant | 0)), seed = o.seed || 1, linear = o.linear !== false;
+    const v = Math.max(0, Math.min(A.variants - 1, o.variant | 0)), seed = o.seed == null ? 1 : o.seed, linear = o.linear !== false;
     const data = mechData(A, v);
     const F = mechFrame({ seed: seed, variant: v });
     F.asset = A; F.data = data;
@@ -328,7 +328,7 @@ const KM_API = (function () {
     const st = { A: A, variant: v, attack: mechAttack(A, v), key: key, bones: bones, by: by, rest: rest, legs: legs, legBone: legBone, dang: dang, dangle: dangle,
       spins: spins, spin: spin, cloth: cloth, points: R.points, glow: glow, t: 0, mode: 'idle', resume: 'idle', walkW: 0,
       phase: 0, atk: -1, atkW: 0, vel: new V3(), last: null, gq: new Q(), reach: 0, events: [], planted: false,
-      gait: A.gait, mass: data.mass || 10 };
+      gait: A.gait, mass: data.mass == null ? 10 : data.mass };
     g.userData = { key: key, name: A.name, culture: A.culture, role: A.role || '', origin: A.origin || '',
       tags: mechTags(A, v), kind: 'mech', variant: v, variantName: A.variantNames[v] || '', seed: seed,
       w: A.w, d: A.d, h: A.h, tris: Math.round(tris), bones: bones.map(function (b) { return b.name; }),
@@ -459,7 +459,7 @@ const KM_API = (function () {
         }
         else if (!swinging) {
           restWorld(g, L, _T);
-          if (Math.hypot(_T.x - L.plant.x, _T.z - L.plant.z) > (G.settle || 0.12)) { go = true; swinging++; }
+          if (Math.hypot(_T.x - L.plant.x, _T.z - L.plant.z) > (G.settle == null ? 0.12 : G.settle)) { go = true; swinging++; }
         }
         if (go) { L.swing = true; L.u = walking && !late ? clamp((p - G.duty) / (1 - G.duty), 0, 0.5) : 0; L.from.copy(L.plant); }
       }
@@ -478,7 +478,7 @@ const KM_API = (function () {
       if (L.swing) {
         const u = L.u, hu = smooth(Math.min(1, u / 0.85));
         _T.copy(L.from).lerp(L.to, hu);
-        _T.y += (G.lift || 0.3) * Math.pow(Math.sin(Math.PI * u), u < 0.5 ? 0.7 : 1.5);
+        _T.y += (G.lift == null ? 0.3 : G.lift) * Math.pow(Math.sin(Math.PI * u), u < 0.5 ? 0.7 : 1.5);
         pitch = L.def.toe * (0.6 * (1 - u) * (1 - u) - 0.5 * Math.sin(Math.PI * u) * u);
       } else {
         _T.copy(L.plant);
@@ -530,7 +530,7 @@ const KM_API = (function () {
   function stepCloth(g, st) {
     const t = st.t, sp = st.vel.length();
     for (const C of st.cloth) {
-      const B = C.def, m = C.mesh, p = m.geometry.attributes.position, A = (B.flutter || 0.05) + 0.035 * Math.min(sp, 2);
+      const B = C.def, m = C.mesh, p = m.geometry.attributes.position, A = (B.flutter == null ? 0.05 : B.flutter) + 0.035 * Math.min(sp, 2);
       /* the wind of walking, in the cloth's frame: a hanging banner billows away from where it is going */
       m.matrixWorld.decompose(_S, _q1, _gv);
       const vl = _a.copy(st.vel).applyQuaternion(_q1.invert());

@@ -7,17 +7,8 @@
   "settlements/xanadu-lake/gen/86-bio-31b-core-leafset.js",
   "settlements/xanadu-lake/gen/89zc-crops-bundle.js",
   "settlements/xanadu-lake/gen/89zk-xl-tune.js",
-  "kits/xanadu/src/87k-xa-lake-trades.js",
-  "kits/xanadu/extra/69dz-ix-xanadu-extra.js",
-  "kits/xanadu/extra/88c-xa-caravanserai.js",
-  "kits/xanadu/extra/88d-xa-lakecraft.js",
-  "kits/xanadu/extra/88e-xa-stall.js",
-  "kits/xanadu/extra/88f-xa-harbour.js",
-  "kits/xanadu/extra/88g-xa-works.js",
-  "kits/xanadu/extra/88k-xa-landing.js",
   "kits/xanadu/extra/88i-xa-timber-yard.js",
-  "kits/xanadu/extra/69dy-ix-lake-works.js",
-  "kits/xanadu/src/87k1-xa-lake-rooms.js"
+  "kits/xanadu/extra/69dy-ix-lake-works.js"
  ],
  "scoped": [
   "69p-kcity-bundle.js",
@@ -88,7 +79,6 @@
   "90q-xl-world.js",
   "90r-xl-build.js",
   "90s-xl-boats.js",
-  "69dz-ix-xanadu-extra.js",
   "87k-xa-lake-trades.js",
   "88f-xa-harbour.js",
   "88g-xa-works.js",
@@ -119,8 +109,7 @@
   "89zn-xl-days.js",
   "89zu-xl-people.js",
   "90t-xl-life.js",
-  "69dy-ix-lake-works.js",
-  "87k1-xa-lake-rooms.js"
+  "69dy-ix-lake-works.js"
  ],
  "interiors": [
   "town"
@@ -135,6 +124,7 @@
  "furnitureTex": true,
  "interiorSets": [
   "xanadu",
-  "xanadu-citadel"
+  "xanadu-citadel",
+  "xanadu-lake"
  ]
 }

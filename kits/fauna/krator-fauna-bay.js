@@ -102,7 +102,7 @@ function faByBird(A, o) {
       { caps: true, colf: t => t > 0.85 ? faByShade(o.beak, 0.7) : o.beak });
     const ke = K(0.7);
     for (const s of [-1, 1]) {
-      faByE(A, 'eye', X([s * ke[2] * 0.8 * S, y0 + (ke[1] + ke[3] * 0.38) * S, ke[0] * S]), [0.016 * S, 0.016 * S, 0.016 * S], o.eye || 0x0c0a08, { seg: 8 });
+      faByE(A, 'eye', X([s * ke[2] * 0.8 * S, y0 + (ke[1] + ke[3] * 0.38) * S, ke[0] * S]), [0.016 * S, 0.016 * S, 0.016 * S], o.eye == null ? 0x0c0a08 : o.eye, { seg: 8 });
       faByE(A, 'eye', X([s * ke[2] * 0.93 * S, y0 + (ke[1] + ke[3] * 0.42) * S, (ke[0] + 0.006) * S]), [0.005 * S, 0.006 * S, 0.005 * S], 0x020202, { seg: 6 });
     }
   });

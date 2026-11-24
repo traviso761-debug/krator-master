@@ -1,7 +1,7 @@
 // ================================================================= XANADU — the market stall (the fairs of the lake towns)
 // A trestle stall under a cloth awning on four poles, its goods laid out by trade: v0 cloth and dyed silk, v1 cacao, fruit and
 // honey, v2 pots and baskets, v3 fish and salt. 4 x 3 m. Phēr's fair ground fills with them (settlements/pher). Seeds
-// 32950-32959. OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces").
+// 32950-32959. In src/ and FILES since Stage 8 B9 (2026-11-24); before that OPT-IN in extra/ (kits/xanadu/README.md, "Opt-in pieces").
 function buildXaStall(G,o){reseed(32951+(o.v|0));const V=xV(o)%4,W=3.6,D=2.4,cloth=xC(xPick(XPAL.cloth)),wood=xC(xPick(XPAL.timber)),dark=xC(0x5a4632);
  vnReg('Market stall',0,0,2.5,3);
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',sx*(W/2-.1),0,sz*(D/2-.1),.05,2.5,dark);

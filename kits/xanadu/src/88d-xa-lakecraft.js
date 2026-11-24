@@ -10,7 +10,7 @@
 // Painted in the lake towns' colours (the market boats' blues, reds and greens). Seeds 32960-32989.
 // Vessels (2026-11-17, the owner: "make sure boats are properly tagged as ships, see ring sea vessels"): cls 'vessel' and the
 // Ring Sea's tags (kits/ringsea/API.md; core/tags' vessel class: types, propulsion, hull, wealth, crew, role).
-// OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces"): settlements/pher takes it.
+// In src/ and FILES since Stage 8 B9 (2026-11-24); before that OPT-IN in extra/ (kits/xanadu/README.md, "Opt-in pieces"): settlements/pher takes it.
 const XLAKE_PAINT=[0x2a5aa8,0xc9442a,0x2f7a4a,0xe8a030,0x1d8a8a,0x8a3aa8,0xf4efe4];
 function buildXaDugout(G,o){reseed(32961+(o.v|0));const V=xV(o),L=7,W=.9,c=xC(xPick(XLAKE_PAINT)),wood=xC(0x6a4a2a),beach=V===2,lean=beach?.08:0;
  vnReg('Dugout',0,0,4,1.5);

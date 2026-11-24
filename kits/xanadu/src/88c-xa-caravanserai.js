@@ -7,8 +7,8 @@
 //   - four corner towers, a storey higher, gilt finials;
 //   - the court: a fountain and its trough, yaks and mules, bales, sacks and crates, the caravaneers.
 // v0 the north shore's (Phēr: wash and gold), v1 the road's (earth wash, plainer, a second well). Seeds 32990-32999.
-// Its rooms: kits/xanadu/extra/69dz-ix-xanadu-extra.js (the set 'xanadu-extra', an item per range).
-// OPT-IN until the kit's next all-builds rebuild (kits/xanadu/README.md, "Opt-in pieces"): a page takes it through its
+// Its rooms: kits/interiors/sets/xanadu.js (xa_caravanserai, an item per range; until Stage 8 B9 extra/69dz's set 'xanadu-extra').
+// In src/ and FILES since Stage 8 B9 (2026-11-24); before that OPT-IN in extra/ (kits/xanadu/README.md, "Opt-in pieces"): a page takes it through its
 // kit.json "external" (settlements/pher), so no other page changes; it joins src/ with the ride-along rebuild.
 function buildXaCaravanserai(G,o){reseed(32991+(o.v|0));const V=xV(o),W=48,D=48,Dr=7,P=.6,hr=[3.8,3.2],GW=12;
  const wash=xC(xPick(V===1?XPAL.earth:XPAL.wash)),stone=xC(xPick(XPAL.stone)),tim=xC(xPick(XPAL.timber)),timD=xC(0x5a4632),trim=xC(xPick(XPAL.trim)),lit=xLit();
