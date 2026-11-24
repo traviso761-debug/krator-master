@@ -136,6 +136,29 @@ If it narrows past the lore, the lever is the fodder price at Bāb al-Hawa, not 
 Bowl's own halite and gypsum. **Its calendar**: the pans in the cool months (as the Catch's), the monsoon in Mantis's
 pocket (1,553 mm), the floor unworkable at +47 °C in high summer.
 
+### 3a. The census `BOWL_TUNE` starts from, and two conflicts in it
+
+`openworld/populations-gemini.json` already carries a number for every Bowl place but one, so S2 need invent almost
+nothing. The owner has overridden three of them since, and **two more disagree with this region's own site plans** —
+those are for the owner, not for the tune to settle quietly.
+
+| Place | Gemini | On screen | What else we hold | Verdict |
+|---|---|---|---|---|
+| **Jabal** | **15,000** | 14,151 | "a city", the Sheikhdom's seat | **use 15,000**: it is the only number anyone has, and a city of 15,000 fits `kits/dasri`'s urban register |
+| **Arcbeam** | **10,000** | 3,369 | `PLAN-SIM.md` had it as "an Iziz arcology and a stop on the north road"; `PLAN-SITES.md` as "a marker, massing out to 30 km" | **CONFLICT (a)**: 10,000 people is not a marker. It would be the **largest place on the north road** — bigger than Stair's 750 and Mantis's — and a real market the caravans would trade at, not pass. Either the number comes down or Arcbeam gets a site plan and a market on the tune |
+| **Mantis** | **300** | 584 | `PLAN-SITES.md` §4: an oasis **town**, an Iziz holding taken over by Izani merchant houses, three fabrics on one street, a merchant tower with its wind-catcher, a domed shrine, walled date and fig gardens, the frankincense trade; reach 25 km; the Bowl mantis named after it | **CONFLICT (b)**: 300 people cannot carry that programme. The owner's own lore makes Mantis the Bowl's one town; Gemini's 300 makes it a village |
+| **Parabola** | 450 | 202 | the Bowl arcology, an inhabited ruin, the rail head and mustering ground | **use 450**: an inhabited ruin of 450 is exactly what it reads as |
+| **Solta** | 400 | 377 | `PLAN-SITES.md` §8: "~100-150 seasonal" | *proposed:* **400**, of whom ~150 are the Train's seasonal rakers and the rest the works' own households. Gemini's is the fuller count |
+| **Ṣalṭ al-Bān** | 350, polity **"Nomad Country"** | 325 | `CATCH_TUNE` already declares it: **120**, faction `train` | **`CATCH_TUNE` wins** — it is the owner-reviewed tune, and the Train of Jabal works the pans (the owner, 2026-11-16), not Nomad Country |
+| **Stair** | 250 | 540 | **750** (the owner, 2026-11-16, in place of "a couple of hundred") | **the owner's 750**; Gemini's 250 is the superseded figure, and `PROPOSAL-CATCH.md` §0 already lists it as such |
+| **Bāb al-Hawa** | 320 | **120** | **120** permanent (S1, the owner's answer C) | **120**, and Gemini's on-screen count is 120 to the person — independent corroboration that the other 200 are caravans in residence |
+| **Ranger HQ** | 350 | 129 | **500** (the owner, 2026-11-24) | **the owner's 500** |
+| **Esper** | *absent* | - | a village of the Empire of Iziz at 895 m | *proposed:* **220**, the size of the Catch's two largest oases together — the Bowl's one farming village, feeding itself and selling a little up the road |
+
+So `BOWL_TUNE` can be written from real numbers for Jabal, Parabola, Solta and Esper, and **conflicts (a) and (b) are
+questions for the owner** before Arcbeam and Mantis go on the books: *is Arcbeam a 10,000-strong inhabited arcology with
+a market, or a ruin to pass?* and *is Mantis the town its lore describes, or a village of 300?*
+
 **The one structural change**: the Train of Jabal stops being a gateway pool and becomes a company with a home, two
 works and two rounds (Solta > Jabal, and Jabal > Ṣalṭ al-Bān > Stair > the Twins > Strongbow). This is the biggest edit
 to books that currently balance, and `test-catch.js`'s 29 checks must pass before the Bowl's are added to them.
