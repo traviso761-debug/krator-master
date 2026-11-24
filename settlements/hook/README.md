@@ -317,6 +317,21 @@ nine draw calls and 30k triangles a hero. View: `The Crown up close`. `verify.py
 point by the Crown: built without an error, every hero on its seat, its massing hidden). KNOWN_ISSUES.md: no shell tier
 between, wild looks drawn plain, the clip in the host, the build on the frame thread.
 
+**The mangroves and the jungle (S4, `src/90e-hook-flora.js`, `src/77k-hook-paint.js`):** the Ring Sea isles kit
+(`biomes/ringisles`, the Ring Sea's own flora) with the two kits it borrows its forest and mangal from (the Throne: lehua,
+tree fern, the palms, the mangrove; the East Abyss: the stilt and knee trees), sealed with core/biome in one closure
+(`HK_FLORA`, `77h-hkf-bundle.js`, `build.py` `hkf_bundle`; their library packs as sidecars, `dist/hook.tex.ringisles.js`,
+`.throne.js`, `.eastabyss.js`), grown over a 5.2 km square on the ruin's heart and bound to the drawn ground. The kit's
+zones read fields rasterized every 20 m: slope and rock (its cliffs, where it plants nothing), wet and upland (its
+abyssal rainforest, low and wet), the strand, the mangal (the site plan's swamp bands and the shallows round them and the
+drowned downtown) and the gardens (the walled peninsula's clearings and the Glebe's fields). The mask keeps it out of Port
+Hook's zone, the clearings and deep water, and thins it on the walled ground's picked-clean blocks; every drawn footprint
+(the towers, along a long or fallen one), the heaps, the piers and standing decks, the wall and its gates and the
+thirteen places are kept clear. About 23,000 trees in 6 s, the undergrowth round the downtown's heart only. The ground
+under them is painted by `77k` through the Port kit's `PORT.paint` (kits/port 71): mud on the swamp bands, the forest
+floor in patches on the low ground the jungle has. View: `The mangroves`. `verify.py`: `hook-flora` (planted, mangroves
+standing in the water, none in the town, on a clearing, on a cliff, inside a footprint or over the ground).
+
 `node tests/test-hook-ruin.js` (31 checks) proves the grid is the town's, every footprint inside its block, the town's
 zone left alone, each block on its ground, the height and density falling from the downtown, each ground's character,
 the freeway's arcs and ramp, the wall and its gates, the Crown and the Spire, the thirteen places on their ground and
@@ -324,6 +339,7 @@ the right side of the wall, the ids stable in any order and core/tags' audit, ea
 
 ## Next
 
-The site plan's S3 (the downtown, the freeway and the wall drawn: `plan/hook-site-plan.html`, "Phases") reads these records. P3's remainder (`KNOWN_ISSUES.md`, "The landmarks"): the pieces the kits lack (the Temple pyramid on the pad, the
+The site plan's S5 (the thirteen hamlets and camps drawn: the Islanders kit for the Hukoa, the Ys kit for the Hykkousoi)
+reads the places' records and the ground S4 keeps clear for them. P3's remainder (`KNOWN_ISSUES.md`, "The landmarks"): the pieces the kits lack (the Temple pyramid on the pad, the
 Ordinator fortress's wall and its breach, the necropolis's tombs, the Kautoan palace court, the toppled statues, the
 war-walkers), then P4: the harbour's life.

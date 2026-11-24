@@ -106,6 +106,19 @@ const R=[];
    detail:JSON.stringify({stats:st,records:rec,blackInstances:black})});
   R.push({name:'hook-ruin-seated',ok:!!D.ready&&n>0&&floating===0&&wetBad===0,
    detail:n+' towers and '+(D.piers||[]).length+' piers: '+floating+' floating'+(firstFloat?' (first '+JSON.stringify(firstFloat)+')':'')+'; '+wetBad+' drowned towers not footed under the water'+(firstWet?' (first '+JSON.stringify(firstWet)+')':'')}); }
+// S4: the mangroves and the jungle (90e, the Ring Sea isles kit): planted, the mangroves in the water, and none in Port
+// Hook's zone, on a walled clearing, on a cliff (the kit's own cliff weight), inside a drawn footprint or over the ground
+{ const HF=typeof HOOK_FLORA!=='undefined'?HOOK_FLORA:null,T=HF&&HF.trees||[],bad={town:[],clearing:[],cliff:[],inside:[],floating:[]};let wet=0;
+  if(HF&&HF.on){const RI=HK_FLORA.kits.ringisles,mh=HOOK_RUIN_DRAW.meshH,O=HF.obstacles;
+    for(const t of T){const k=HF.kindAt(t.x,t.z),h=mh(t.x,t.z),p=[Math.round(t.x),Math.round(t.z)];if(h<0)wet++;
+      if(k===3)bad.town.push(p);if(k===2)bad.clearing.push(p);
+      if(RI.zones(t.x,t.z).cliff>.5)bad.cliff.push(p);
+      if(t.y!=null&&t.y>h+.05)bad.floating.push(p.concat([+(t.y-h).toFixed(2)]));
+      for(const q of O)if(Math.abs(q.x-t.x)<q.r&&Math.abs(q.z-t.z)<q.r&&Math.hypot(q.x-t.x,q.z-t.z)<q.r-.5){bad.inside.push(p);break;}}}
+  const n=k=>bad[k].length,all=n('town')+n('clearing')+n('cliff')+n('inside')+n('floating');
+  R.push({name:'hook-flora',ok:!!HF&&HF.on&&T.length>2000&&wet>50&&all===0,
+   detail:(HF?(HF.on?T.length+' trees ('+wet+' standing in the water) in '+HF.ms+' ms; '+JSON.stringify(HF.stats&&{trees:HF.stats.trees,heroes:HF.stats.heroes,far:HF.stats.far,borrowed:HF.stats.borrowed}):'off: '+JSON.stringify(window._hookFlora)):'no flora')+
+    '; bad '+JSON.stringify({town:n('town'),clearing:n('clearing'),cliff:n('cliff'),inside:n('inside'),floating:n('floating')})+(all?' first '+JSON.stringify(Object.keys(bad).filter(k=>n(k)).map(k=>[k,bad[k][0]])):'')}); }
 // S3 up close: the kit's heroes round a point by the Crown (90d): built without an error, each standing on its seat (its
 // lowest point at or under the drawn ground's lowest node along its footprint, never far under it), its massing hidden
 { const RH=window._ruinHeroes||{},C=typeof HOOK_RUIN!=='undefined'&&HOOK_RUIN.crown;let H=null,bad=[],shown=0;

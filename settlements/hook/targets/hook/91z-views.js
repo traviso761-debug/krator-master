@@ -44,6 +44,8 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
   const aps=HOOK_RUIN.spans.filter(s=>s.arc==='approach'),ap=aps[aps.length-1];   /* the approach's far end, by the ramp */
   if(ap&&G)V['The road in']=[ap.x,ap.y+4,ap.z,G.x,G.y+10,G.z];
   /* up close (90d): beside the Crown, its neighbours drawn as the kit's heroes */
-  V['The Crown up close']=[C.x+160,C.y+70,C.z+160,C.x,C.y+90,C.z];}
+  V['The Crown up close']=[C.x+160,C.y+70,C.z+160,C.x,C.y+90,C.z];
+  /* S4 (90e): over the south-west swamp's mangroves toward the drowned downtown */
+  V['The mangroves']=[-1700,22,-2050,-1954,2,-2245];}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();

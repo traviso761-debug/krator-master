@@ -25,7 +25,10 @@ const HOOK_RUIN_DRAW={stats:{},towers:[],piers:[],heaps:[],slot:{}};
   for(let a=0;a<=nw;a++){const u=-hw+a*w/nw;p(u,-hd);p(u,hd);}
   for(let a=0;a<=nd;a++){const b=-hd+a*d/nd;p(-hw,b);p(hw,b);}
   return m;}
- HOOK_RUIN_DRAW.meshMin=meshMin;HOOK_RUIN_DRAW.seat=seat;
+ /* the drawn ground's height at a point: the cell's triangle (kits/port 71: a cell a,b,c,d split on its b-c diagonal) */
+ const meshH=(x,z)=>{const i=bs(GR.xs,x),j=bs(GR.zs,z),n=GR.nx,H=GR.H,k=j*n+i,u=Math.max(0,Math.min(1,(x-GR.xs[i])/(GR.xs[i+1]-GR.xs[i]))),v=Math.max(0,Math.min(1,(z-GR.zs[j])/(GR.zs[j+1]-GR.zs[j])));
+  const a=H[k],b=H[k+1],c=H[k+n],d=H[k+n+1];return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v);};
+ HOOK_RUIN_DRAW.meshMin=meshMin;HOOK_RUIN_DRAW.seat=seat;HOOK_RUIN_DRAW.meshH=meshH;
  /* ---- the pieces */
  const ROUND={spindle:1,stalk:1,telescope:1,swell:1,terrarium:1,cupola:1,watertower:1,spiral:1};
  const STAND={intact:t=>t.tip,gutted:t=>t.roof,crown:t=>t.roof*.96,broken:t=>t.roof*.55,stump:t=>t.roof*.25,skeleton:t=>t.roof*.7};

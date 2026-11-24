@@ -20,6 +20,12 @@ from a Hook task.
       (KSHELL) exist for the Spindle and the Ledger only (the other designs wait on the kit's shell review), so the
       middle distance is massing and a tower changes from a box to its hero at the switch (at the same height: the
       massing stands to the kit's own `MP.ruin` top).
+- [ ] **The jungle stops at its square.** The flora grows over a 5.2 km square on the ruin's heart (90e `HOOK_FLORA.R`:
+      the downtown, the Crown, the drowned downtown and the inner mainland); the outer city's mainland and the plateau
+      beyond have the painted forest floor but no trees. A wider square costs about 1 s a km of radius at load.
+- [ ] **The flora's detail is static.** The kit's LOD is set at placement by the distance from a spine of eight points
+      through the ruin (hero 180 m, mid 520 m, the far impostors beyond); away from the spine a close camera sees the
+      mid and far trees. The undergrowth stands within 900 m of the centre only (over the square it cost 16 s).
 - [ ] **A wild look draws its plain state up close.** The kit's overgrowth (`59e-mp-overgrow.js`, `MP.overgrowDress`) and
       flora dress (`59d`) need the biome core's leaf sets, which the Port page does not load; the massing's green tint is
       the jungle's only sign on the ruin until S4.
@@ -33,6 +39,8 @@ from a Hook task.
       straight in before the page has idled still stutters. A worker cannot build them (three.js geometry).
 - [ ] **The hunters' camp moved.** The sketch put it on the plateau's edge where, under placement B and the coastal
       plain on the low ground only, there is water; it stands on the nearest dry ground, the plateau's north foot.
+- [ ] **The flora's texture count is shared by design.** The kits' library cards count on `window._texPending` as the
+      material library does; the closure forwards it to the page's, and `check_assembly` lists the two writers as a clash.
 - [ ] **The places are records only.** The thirteen hamlets, camps and posts carry their culture, people and work;
       drawing them on `core/hamlet` and `core/camp` (and their people in the simulation) is S5.
 - [ ] **The plateau's own north coast is straight.** East of the wall the plateau's north foot runs straight for some

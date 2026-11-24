@@ -229,5 +229,7 @@ Then (the owner, mid-S3: "the surrounding terrain could use a bit of levelling o
 swamp") the mainland's fill strip became a coastal plain at 4 m on the plan's low ground and a mangrove swamp at its water
 edges, and S3's far tier drew the whole city as instanced massing (towers by state, reefs, heaps, pods, the freeway,
 the wall), every base seated on the drawn ground; then the heroes up close (90d: the ten towers nearest the camera as
-the kit's heroes, their massing hidden; the kit sealed in the page as `KMP`). Next: a shell or impostor tier between, S4's
-mangroves and jungle.
+the kit's heroes, their massing hidden; the kit sealed in the page as `KMP`). Then S4 (90e: the Ring Sea isles kit's
+mangroves and rainforest, about 23,000 trees on the ruin's heart, kept off the town, the walled clearings and the cliffs and
+clear of every drawn footprint; 77k: mangrove mud and the forest floor painted through the Port kit's `PORT.paint`). Next:
+S5, the hamlets and camps drawn; a shell or impostor tier between the heroes and the massing.
