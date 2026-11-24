@@ -16,6 +16,7 @@ func ok(c: bool, m: String) -> void:
 class StubStream extends Node3D:
 	var index := {}
 	var origin := [0.0, 0.0, 0.0]
+	var places_open := {}
 	func height_at(_x: float, _z: float) -> float:
 		return 5.0
 	func local(x: float, y: float, z: float) -> Vector3:
@@ -103,6 +104,31 @@ func _initialize() -> void:
 	dec.add("soot", at + Vector3(2, 3, 0), 0.0, Vector3(1, 0.5, 2))
 	dec.add("nonsense", at, 0.0, Vector3.ONE)
 	ok(dec.marks.size() == 1, "add() takes a mark of a known kind from a record, and no other")
+	# leaks under the sills an export marks (core/export's marks section, read from a world's meta)
+	var world := Node3D.new()
+	var recs := []
+	for i in 60:
+		recs.append({"kind": "sill", "at": [350.0 + i * 0.5, 7.0, 3.0], "yaw": 0.4, "w": 0.9, "key": "house"})
+	recs.append({"kind": "smoke", "at": [350.0, 12.0, 3.0], "r": 0.3, "source": "chimney"})
+	world.set_meta("marks", recs)
+	S.add_child(world)
+	var sills := KratorAir.marks_of(S, "sill")
+	var leaks := D.sill_marks(sills)
+	var lk_ok := leaks.size() > 8 and leaks.size() < 35
+	for l in leaks:
+		lk_ok = lk_ok and l["kind"] == "leak" and bool(l["wall"]) and (l["at"] as Vector3).y < 7.0 and absf((l["size"] as Vector3).x - 0.9) < 1e-5 and (l["size"] as Vector3).z <= 1.2
+	ok(sills.size() == 60 and lk_ok and JSON.stringify(leaks) == JSON.stringify(D.sill_marks(sills)), "about one sill in three stains (%d of 60), the same ones each time, a streak hung below the sill on the wall" % leaks.size())
+	ok(KratorAir.marks_of(S, "smoke").size() == 1 and D.sill_marks(KratorAir.marks_of(S, "smoke")).size() <= 1 and KratorAir.marks_of(S, "soot").is_empty(), "negative: marks are read by kind")
+	S.places_open = {"p": true}
+	dec._since = 1e9
+	dec.max_decals = 60
+	dec.update(S, Vector3(355.0, 6.0, 3.0), 1.0)
+	var on_wall := 0
+	for c in dec.get_children():
+		var dc := c as Decal
+		if dc.visible and absf(dc.basis.y.y) < 0.01 and absf(dc.basis.z.y + 1.0) < 0.01:
+			on_wall += 1
+	ok(on_wall > 0, "a leak's decal projects along the wall's normal and runs down it (%d near)" % on_wall)
 	var none := D.make({"decals": 0})
 	root.add_child(none)
 	none.update(S, at, 1.0)

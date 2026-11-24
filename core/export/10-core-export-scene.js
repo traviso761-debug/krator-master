@@ -27,22 +27,7 @@ const E = root.EXPORT;
 if (!E) return;
 const hex = c => '#' + c.getHexString();
 const lodCopy = o => { for (let p = o; p; p = p.parent) if (p.userData && p.userData.lodCopy) return true; return false; };
-/* Is an indexed triangle list a closed solid: every edge, by where its ends are (welded to a tenth of a millimetre), met by
-   exactly two triangles that run it in opposite directions. A reader may then cull the back faces of a double-sided
-   material on it and lose nothing (GODOT-LOOK-PLAN.md section 13). pos: xyz a vertex; idx: three a triangle, or null */
-function closed(pos, idx){
- const n = idx ? idx.length : pos.length / 3; if (n < 12 || n % 3) return false;
- const key = new Map(), vid = new Int32Array(pos.length / 3);
- for (let i = 0; i < vid.length; i++) { const k = Math.round(pos[i * 3] * 1e4) + ',' + Math.round(pos[i * 3 + 1] * 1e4) + ',' + Math.round(pos[i * 3 + 2] * 1e4);
-  let j = key.get(k); if (j === undefined) { j = key.size; key.set(k, j); } vid[i] = j; }
- const E2 = new Map(), V = key.size;
- for (let t = 0; t < n; t += 3) for (let s = 0; s < 3; s++) {
-  const a = vid[idx ? idx[t + s] : t + s], b = vid[idx ? idx[t + (s + 1) % 3] : t + (s + 1) % 3];
-  if (a === b) return false;
-  const k = a * V + b; if (E2.has(k)) return false; E2.set(k, 1); }
- for (const k of E2.keys()) { const a = Math.floor(k / V), b = k - a * V; if (!E2.has(b * V + a)) return false; }
- return true;
-}
+const closed = E.closed;   /* 07-core-export.js: is a triangle list a closed solid */
 function geo(g){
  const P = a => E.pack(a);
  const out = {}, A = (a, n) => { if (!a) return null; if (a.isInterleavedBufferAttribute || !(a.array instanceof Float32Array)) {

@@ -112,6 +112,15 @@ func _initialize() -> void:
 			pond_at = s["at"]
 	ok(pond_at.distance_to(Vector3(1010.0, 2055.0, 3020.0)) < 0.01, "a source stands in region metres: the node's place plus the stream's origin")
 	ok(int(kinds.get("still", 0)) == 1, "negative: a pool under 3 m across is not one")
+	var marked := Node3D.new()
+	marked.set_meta("marks", [{"kind": "smoke", "at": [1005.0, 2062.0, 3010.0], "r": 0.3, "source": "chimney"}, {"kind": "sill", "at": [1005.0, 2058.0, 3010.0], "yaw": 0.0, "w": 0.8}])
+	S.add_child(marked)
+	var src2 := A.sources_of(S)
+	var smokes := 0
+	for s in src2:
+		smokes += 1 if s["kind"] == "smoke" and (s["at"] as Vector3).distance_to(Vector3(1005.0, 2062.0, 3010.0)) < 0.01 else 0
+	ok(smokes == 1 and src2.size() == src.size() + 1, "a chimney an export marks is a source of smoke; a sill is not")
+	marked.free()
 
 	# 4. update(): the environment, the mist pass, the pool
 	var air := A.make(hi)

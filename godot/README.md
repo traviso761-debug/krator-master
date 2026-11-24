@@ -58,6 +58,7 @@ godot --headless --path godot --script res://tests/materials/kdetail_test.gd    
 xvfb-run -a godot --path godot --rendering-method forward_plus --rendering-driver vulkan --script res://tests/shaders/look_gpu_check.gd   # all of the above drawn and read back from pixels (also: gl_compatibility, opengl3)
 godot --headless --path godot --script res://tests/cook/cook_test.gd            # the cooks (krator/cook.gd): the map and mesh caches, levels of detail, shadow meshes, far twins
 godot --headless --path godot --script res://tests/air/air_test.gd              # the air (krator/kair.gd): the keys by the hour and the weather, the floor, the sources, what update sets
+godot --headless --path godot --script res://tests/export/eternian_form_test.gd  # the export form through to Godot: the Eternian tile exported with ?form=1 (chamfer, the height field)
 godot --headless --path godot --script res://tests/dress/dress_test.gd          # the dressing: the roads' decals, what lies underfoot, the sward's switch
 xvfb-run -a godot --path godot --rendering-method forward_plus --rendering-driver vulkan --script res://tests/shaders/cook_air_gpu_check.gd   # the shadow mesh in use, levels of detail, the mist, the wet ground, read back from a renderer
 godot --headless --path godot --script res://tools/cook.gd -- res://data/world-oidong-highrift   # cook a case ahead of time (KRATOR_COOK_DIR; -- --stat, -- --clear)

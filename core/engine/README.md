@@ -97,5 +97,10 @@ built**: with it off `box()` and `emit()` do what they did, and `fingerprint.py`
   writes it as a bucket's `geometry.form`.
 - `formMarks(REG, SMOKES)`: where smoke rises (`smokeAt`) and every window's sill (`windowAt`) as plain records.
 
-`node core/engine/test-form.js` checks each. **Not done**: no page or exporter calls `setForm` yet, the fields have no
-reader in Godot, and occlusion and the arris of anything but a box are not computed.
+`node core/engine/test-form.js` checks each. A page opened with **`?form=1`** builds in the form (`90-scene.js`: chamfer
+widths by the material key's kind, `formWidth`; `?form=chamfer`, `jitter` or `fields` for one at a time), and a kit's
+exporter writes the fields (`kits/eternian/src/93e-et-export.js`; `godot/data/world-eternian-form` is the case).
+Rendered walls (plaster, render, lime) are not chamfered: they are drawn as panels that abut in one plane, and a chamfer
+on each cut a groove across the wall. A building's frame is its own; a street, a canal and furniture have none.
+**Not done**: occlusion and the arris of anything but a box are not computed, and a slab lying in the terrain's plane
+flickers against it once chamfered.

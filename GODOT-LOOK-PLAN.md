@@ -616,14 +616,25 @@ All are `[G data]`: plain numbers on vertices and records. The web pages ignore 
 | `closed: true` | buckets and items; Godot culls the back faces of a double-sided material on a closed solid (`KratorKmat.onesided`) | measured on no real export yet: none carries the field |
 | The chamfered box | `core/engine/30-geo.js` `gboxCh`, behind `setForm({chamfer})`: 44 triangles on 24 vertices, closed, outward; and `core/catalog`'s `mkBox` and `mkBeam`, behind `KF.setForm({chamfer})` (the generic set: 76,482 triangles to 105,218 on the same 98,428 vertices) | the engine's `beam()` and kits' own boxes; the widths by class |
 | Out-of-true jitter | the engine: batter and lean by a hash of the place, after the record is taken | ridge sag, bowed beams, wandering courses; the catalog |
-| Three per-vertex fields | one of three: height above the building's base (`aForm.x`, exported as `geometry.form`) | **baked occlusion** (nothing bakes it) and **edge** on anything but a chamfered box; a reader in Godot's weathering |
-| Where smoke rises, where a wall stains | `formMarks(REG, SMOKES)` in the engine: smoke sources and window sills as plain records | an exporter that writes them to the registry, and Godot's emitters and decals reading them |
+| Three per-vertex fields | one of three: height above the building's base (`aForm.x`, exported as `geometry.form`, in the glb the second UV set), read by the weathering's foot band | **baked occlusion** (nothing bakes it) and **edge** on anything but a chamfered box |
+| Where smoke rises, where a wall stains | `formMarks(REG, SMOKES)` in the engine; `core/export`'s optional `marks` section; the Eternian exporter writes it; `KratorAir.marks_of`, the smoke source and `KratorDecals.sill_marks` read it | a real export that holds any: seen only in tests |
 | An opening's mark on the wall | the sill's place only (above) | a mark on the wall's own vertices (`36o-open.js`) |
 | A grain axis a furniture piece | `core/catalog`: a box and a beam name their grain's way, and an indexed batch writes it a vertex as `aGrain` (`KF.setForm({grain})`; `kits/catalog/tests/test-form.js`) | turned parts have none; a reader in Godot's detail projection (M12) |
 | Wind stiffness and phase a vertex | `core/biome/20-core-kit.js`, behind `BIO.setForm({wind})`: buckets bake `aWind` (stiffness from a tube's own radius, one phase a branch), exported as `geometry.wind` (`test-wind.js`) | instanced cards and leaves (they are items, not buckets); `lib/foliage.gdshaderinc` reading it (P4) |
 | Godot packs with colour kept | `tools/textures/pack.py` already has `packFormat: 2` | making the packs and pointing `export_spike.py` at them |
 
-No page or exporter calls any `setForm` yet, so nothing in `godot/data` changes until a case is exported with it. The pages
+**One case carries it (2026-11-24).** A page on the building-kit engine opened with `?form=1` builds in the export form
+(`core/engine/90-scene.js`; widths by the material key's kind), and the Eternian sheet's exporter writes the height field,
+`closed` and a `marks` section (a new optional section of the container). `godot/data/world-eternian-form` is that tile:
+44,417 triangles to the plain tile's 32,103, on 60,968 vertices to 60,570. Godot reads the height as the mesh's second UV
+set and draws the wall's foot band from it (`kw_foot`), reads the marks into the air's emitters (smoke) and the decals
+(a leak under one sill in three), and `tests/export/eternian_form_test.gd` checks the case.
+What the pair of frames showed, and what was changed for it: a chamfer on rendered walls cut a groove wherever two wall
+panels abut in one plane, so plaster, render and limewash stay square; the foot band darkened paving, so it is walls
+only; and a street was taken for one building, so every house leaned toward the street's centre: each building now has
+its own frame, and a street, a canal and furniture have none. **Still wrong in that case**: a ground slab that lies in
+the terrain's plane flickers against it once it is chamfered (its vertices take another path through the arithmetic).
+And the tile holds no chimney and no recorded window, so the marks were read only from made-up records in tests. The pages
 that take `core/engine`, `core/export`, `core/catalog` and `core/biome` (most of the repo: `core/biome/20-core-kit.js`
 alone reaches 540 pages) are behind their sources until the all-builds rebuild (`check_stale` says
 which). Proof that the form is inert when off: `kits/scyvoi`, rebuilt on the new engine, reads `same` in

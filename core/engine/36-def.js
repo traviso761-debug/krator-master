@@ -42,7 +42,9 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  CURKEY=key;CURREC=rec;DOORS_CUR=[];WINDOWS_CUR=[];if(keep.rec)keep.rec.children.push(rec);
  if(d.cut)CUTC=[org.x,org.z,org.y,1];
  const bb=sbBegin();const t0=GSTAT.tris;
- const formKeep=keep.rec?undefined:formRoot();   /* the export form's frame: a building at the top level (30-geo.js) */
+ /* the export form's frame (30-geo.js): one a building, the outermost when one stands in another. A street, a canal or
+    a piece of furniture is no building: it leans with nothing and takes no height of its own */
+ const formKeep=(d.cls!=='feature'&&d.cls!=='furniture'&&!FORM_ROOT)?formRoot():undefined;
  reseed(d.seed+(o.v|0)*7);
  /* the gable sheets' two takes (owner, 2026-10-14: "alternative versions for variety"): a building takes one or the other by
     a hash of its seed, variant and place, drawing nothing from the stream (30-geo.js emit swaps the key) */

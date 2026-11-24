@@ -185,6 +185,7 @@ static func build(path: String) -> Node3D:
 		var has_tan: bool = node.mesh != null and node.mesh.get_surface_count() > 0 and (int(node.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_TANGENT) != 0
 		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false, has_vcol, has_tan)
 		_closed(node, b, report)
+		_form(node, b, report)
 		_faces(node, report)
 		_lod(node, b, report)
 		if b.get("lod") is Dictionary and _lod_shader(node):
@@ -287,12 +288,17 @@ static func build(path: String) -> Node3D:
 		report["gaps"]["hazard state"] = "the hazards are Area3Ds with their records (core/hazard/GODOT.md); KHazard (state, dose, the walker's status) and the overlay are not ported yet"
 	if d.get("stage") is Dictionary:
 		root.set_meta("stage", d["stage"])
+	# where smoke rises and where a wall stains (core/export's marks section), in the page's frame: krator/kair.gd's emitters
+	# and krator/kdecals.gd's leaks read them from this meta
+	if d.get("marks") is Dictionary and d["marks"].get("format") == "krator-marks" and d["marks"].get("records") is Array:
+		root.set_meta("marks", d["marks"]["records"])
+		report["marks"] = (d["marks"]["records"] as Array).size()
 	# a city's buildings, fixtures and furniture slots as nodes (the KRATOR_EXPORT shape)
 	if d.get("fixtures") is Dictionary or d.get("furniture") is Dictionary or d.get("interiors") is Dictionary:
 		report["records"] = records(frame, d, by_id)
 	var meta := {}
 	for k in d:
-		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water", "hazards"]):
+		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water", "hazards", "marks"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
 	KratorBiome.cell = KratorBiome.policy_cell(d["convention"])   # the export contract's LOD cell (convention.lod)
@@ -577,6 +583,28 @@ static func _closed(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary)
 		return
 	gi.material_override = KratorKmat.onesided(sm)
 	report["closed_culled"] = int(report.get("closed_culled", 0)) + 1
+
+
+# a bucket exported with the form's fields (core/export: its record's `form`, the glb's second UV set): its material's
+# twin with form_uv2 on, so the weathering draws the foot band from the height (shaders/lib/weather.gdshaderinc kw_foot)
+static func _form(mi: MeshInstance3D, rec: Dictionary, report: Dictionary) -> void:
+	if not rec.has("form") or mi.mesh == null or mi.mesh.get_surface_count() == 0:
+		return
+	if (int((mi.mesh as ArrayMesh).surface_get_format(0)) & Mesh.ARRAY_FORMAT_TEX_UV2) == 0:
+		_gap_once(report, "form", "a bucket says it carries the form's fields and its mesh has no second UV set")
+		return
+	var sm := mi.material_override as ShaderMaterial
+	if sm == null or not KratorKmat.is_lib(sm.shader):
+		return
+	if not sm.has_meta("krator_form"):
+		var t := sm.duplicate() as ShaderMaterial
+		t.set_shader_parameter("form_uv2", true)
+		for k in ["krator_twosided", "krator_onesided"]:
+			if t.has_meta(k):
+				t.remove_meta(k)
+		sm.set_meta("krator_form", t)
+	mi.material_override = sm.get_meta("krator_form")
+	report["form_buckets"] = int(report.get("form_buckets", 0)) + 1
 
 
 static func _faces(gi: GeometryInstance3D, report: Dictionary) -> void:

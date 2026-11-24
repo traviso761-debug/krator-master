@@ -173,6 +173,9 @@ static func sources_of(stream: Node) -> Array:
 			if is_finite(h):
 				out.append({"kind": "vent", "at": Vector3(x, h, z), "r": clampf(float(v[2]) * 0.06 if (v as Array).size() > 2 else 12.0, 8.0, 40.0), "h": 60.0})
 	var org := Vector3(float(stream.origin[0]), float(stream.origin[1]), float(stream.origin[2]))
+	# a chimney or a hearth an export marks (core/export's marks section; a world keeps them in its meta, in its own frame)
+	for wm in marks_of(stream, "smoke"):
+		out.append({"kind": "smoke", "at": wm["at"], "r": clampf(float(wm.get("r", 0.25)) * 2.0, 0.4, 2.0), "h": 8.0})
 	for wn in stream.find_children("Water", "Node3D", true, false):
 		for mi in wn.find_children("*", "MeshInstance3D", true, false):
 			var kr = mi.get_meta("krator", null)
@@ -192,6 +195,25 @@ static func sources_of(stream: Node) -> Array:
 				for p in _along((mi as MeshInstance3D).mesh, STREAM_STEP):
 					var q: Vector3 = xf * p + org
 					out.append({"kind": "stream", "at": q, "r": STREAM_STEP * 0.6, "h": 2.5})
+	return out
+
+
+# the marks of one kind that the worlds under a stream carry, each with `at` as a Vector3. A world's marks are in its page's
+# frame, which for a streamed place is the region's (its meta "origin" moves only what is drawn)
+static func marks_of(stream: Node, kind: String) -> Array:
+	var out := []
+	var stack: Array[Node] = [stream]
+	while not stack.is_empty():
+		var n: Node = stack.pop_back()
+		if n.has_meta("marks"):
+			for m in n.get_meta("marks"):
+				if m is Dictionary and str(m.get("kind", "")) == kind and m.get("at") is Array:
+					var q: Dictionary = (m as Dictionary).duplicate()
+					q["at"] = Vector3(float(m["at"][0]), float(m["at"][1]), float(m["at"][2]))
+					out.append(q)
+			continue   # a world's own children hold no further worlds
+		for c in n.get_children():
+			stack.append(c)
 	return out
 
 
@@ -274,7 +296,11 @@ func _place(env: Environment, stream: Node, cam_region: Vector3) -> void:
 		var at: Vector3 = s["at"]
 		fv.position = stream.local(at.x, at.y + h * (0.5 if kind != "vent" else 0.45), at.z)
 		fv.size = Vector3(r * 2.0, h * (1.0 if kind == "vent" else 2.0), r * 2.0)
-		if kind == "vent":      # steam: always there, whiter than the air
+		if kind == "smoke":     # a thin grey column over a chimney
+			fm.density = 0.3
+			fm.albedo = Color(0.45, 0.44, 0.43)
+			fm.height_falloff = 0.0
+		elif kind == "vent":    # steam: always there, whiter than the air
 			fm.density = 0.5
 			fm.albedo = Color(0.95, 0.95, 0.95)
 			fm.height_falloff = 0.0
@@ -294,7 +320,7 @@ func _place(env: Environment, stream: Node, cam_region: Vector3) -> void:
 	for e in near:
 		var si: int = e[1]
 		var s: Dictionary = sources[si]
-		if n_em >= em_max or not (str(s["kind"]) in ["vent", "fall"]):
+		if n_em >= em_max or not (str(s["kind"]) in ["vent", "fall", "smoke"]):
 			continue
 		n_em += 1
 		keep[si] = true
@@ -340,7 +366,7 @@ func _emitter(kind: String, r: float, h: float) -> GPUParticles3D:
 	if _card == null:
 		_card = _soft_card()
 	var p := GPUParticles3D.new()
-	var vent := kind == "vent"
+	var vent := kind == "vent" or kind == "smoke"   # a chimney's smoke rises as a vent's steam does, thinner and greyer
 	p.amount = int(spec.get("emitter_amount", 48))
 	p.lifetime = 9.0 if vent else 2.6
 	p.preprocess = p.lifetime
@@ -381,7 +407,7 @@ func _emitter(kind: String, r: float, h: float) -> GPUParticles3D:
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 	m.diffuse_mode = BaseMaterial3D.DIFFUSE_LAMBERT_WRAP
 	m.albedo_texture = _card
-	m.albedo_color = Color(0.93, 0.94, 0.96, 0.55)
+	m.albedo_color = Color(0.42, 0.41, 0.40, 0.5) if kind == "smoke" else Color(0.93, 0.94, 0.96, 0.55)
 	m.vertex_color_use_as_albedo = true
 	m.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	m.billboard_keep_scale = true

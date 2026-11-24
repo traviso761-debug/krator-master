@@ -20,6 +20,8 @@ var max_decals := 16
 var wet := 0.0            # 0..1: puddles stand only in a wet world (krator/kair.gd's number)
 var marks: Array = []     # [{kind, at (region metres), yaw, size: Vector3 (across, depth, along)}] added by hand or from records
 var _road_marks: Array = []
+var _sills: Array = []
+var _sill_n := -1
 var _road_key := ""
 var _pool: Array[Decal] = []
 var _since := 1e9
@@ -136,6 +138,20 @@ static func road_marks(roads: Array, at: Vector3, reach: float) -> Array:
 	return out
 
 
+# A leak under each sill: one in three sills stains (by a hash of where it is, core/rand), a streak as wide as the
+# window and up to 1.2 m down the wall, projected along the wall's own normal. sills: KratorAir.marks_of(stream, "sill")
+static func sill_marks(sills: Array) -> Array:
+	var out := []
+	for s in sills:
+		var at: Vector3 = s["at"]
+		var h := KRand.hash_ints(4421, [int(floor(at.x * 4.0)), int(floor(at.y * 4.0)), int(floor(at.z * 4.0))])
+		if KRand.unit(h) > 0.34:
+			continue
+		var drop := 0.5 + 0.7 * KRand.unit(KRand.mix32(h + 5))
+		out.append({"kind": "leak", "at": at - Vector3(0.0, drop * 0.5, 0.0), "yaw": float(s.get("yaw", 0.0)), "size": Vector3(maxf(0.3, float(s.get("w", 0.6))), 0.4, drop), "wall": true})
+	return out
+
+
 # each frame: which marks the pool is on. cam_region in region metres.
 func update(stream: Node, cam_region: Vector3, dt: float) -> void:
 	_since += dt
@@ -146,9 +162,12 @@ func update(stream: Node, cam_region: Vector3, dt: float) -> void:
 	if key != _road_key:
 		_road_key = key
 		_road_marks = road_marks(stream.index.get("roads", []), cam_region, 100.0)
+	if stream.places_open.size() != _sill_n:   # a leak under each sill an export marks (core/export's marks section)
+		_sill_n = stream.places_open.size()
+		_sills = sill_marks(KratorAir.marks_of(stream, "sill"))
 	var reach := FADE_AT + FADE_LEN
 	var near := []
-	for src in [_road_marks, marks]:
+	for src in [_road_marks, marks, _sills]:
 		for m in src:
 			if str(m["kind"]) == "puddle" and wet < 0.2:
 				continue
@@ -182,5 +201,8 @@ func update(stream: Node, cam_region: Vector3, dt: float) -> void:
 		var gh: float = stream.height_at(at.x, at.z)   # the ground as drawn, not the road record's own height
 		dc.size = m["size"]
 		dc.position = stream.local(at.x, gh if is_finite(gh) else at.y, at.z)
-		dc.rotation = Vector3(0.0, float(m["yaw"]), 0.0)
-	stats = {"marks": _road_marks.size() + marks.size(), "drawn": n}
+		if bool(m.get("wall", false)):   # on a wall: the decal's own up is the way out of the wall, its length runs down it
+			dc.basis = Basis(Vector3.UP, float(m["yaw"])) * Basis(Vector3.RIGHT, PI * 0.5)
+		else:
+			dc.rotation = Vector3(0.0, float(m["yaw"]), 0.0)
+	stats = {"marks": _road_marks.size() + marks.size() + _sills.size(), "drawn": n}

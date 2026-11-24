@@ -49,6 +49,7 @@ uniform float tri_gain = 1.0;
 // the weathering stack's amounts for this surface's class (krator/kweather.gd): drift, run-off and under, moss, top.
 // The stack itself is off until a look turns it on (the global k_weather.x; lib/weather.gdshaderinc)
 uniform vec4 weather_k = vec4(0.6, 0.4, 0.15, 0.3);
+uniform bool form_uv2 = false;   // the mesh's second UV set is the export form's fields: u the height above the building's base (krator/world_import.gd _form)
 // detail at arm's length (M9; lib/detail.gdshaderinc): this surface's layer of the shared detail-normal array (under 0:
 // none) and how many detail tiles one tile of its own uv holds
 uniform float detail_layer = -1.0;
@@ -62,6 +63,7 @@ varying vec2 v_uv;
 varying vec3 v_op;
 varying vec3 v_on;
 varying vec3 v_wn;
+varying vec2 v_form;
 
 vec3 m1_decode_normal(vec2 rg01, int enc) {
 	if (enc == 1) {
@@ -90,6 +92,7 @@ void vertex() {
 	v_op = VERTEX;
 	v_on = NORMAL;
 	v_wn = (MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz;
+	v_form = form_uv2 ? UV2 : vec2(-1.0, 0.0);
 	v_uv = UV * uv_scale.xy + uv_offset.xy;
 	if (world_uv) {
 		v_uv = wuv_box(UV, NORMAL, wuv_instance_scale(MODEL_MATRIX), 1.0 / tile_m) + (world_uv_offset ? wuv_box_offset(MODEL_MATRIX[3].xz) : vec2(0.0));
@@ -190,6 +193,7 @@ void fragment() {
 	if (!unlit) {
 		float r_w = ROUGHNESS;
 		kw_weather(v_wp, normalize(v_wn), weather_k, c, r_w);
+		kw_foot(v_form.x, v_wp, normalize(v_wn), weather_k, c, r_w);
 		ALBEDO = k_albedo(c);
 		ROUGHNESS = r_w;
 	}

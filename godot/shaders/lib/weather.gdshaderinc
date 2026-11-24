@@ -85,4 +85,23 @@ void kw_weather(vec3 wp, vec3 wn, vec4 amt, inout vec3 c, inout float rough) {
 	rough *= 1.0 - 0.5 * wet;
 }
 
+// The foot of a wall (M7's foot band, on the export form's height field: GODOT-LOOK-PLAN.md section 13). h: the point's
+// height above its building's base, metres; -1 where the mesh is no building's. Splashed earth to about knee height,
+// ragged by the noise, heavier on what streaks (amt.y): darker, earthier, rougher; and darker still when the world is wet.
+void kw_foot(float h, vec3 wp, vec3 wn, vec4 amt, inout vec3 c, inout float rough) {
+	float k = k_weather.x;
+	if (k <= 0.0 || h < 0.0) {
+		return;
+	}
+	float wall = 1.0 - smoothstep(0.45, 0.8, abs(wn.y));   // a wall's foot, not the paving beside it nor a step's tread
+	vec3 p = wp + k_world_origin;
+	float n = texture(k_weather_noise, vec2(dot(p, KW_A), dot(p, KW_B)) / 8.0).g;
+	float top = 0.25 + 0.5 * n;                                  // where the splash gives out: 25 to 75 cm
+	float band = (1.0 - smoothstep(0.03, top, h)) * (0.35 + 0.65 * amt.y) * min(k, 1.0) * wall;
+	vec3 earth = vec3(0.105, 0.085, 0.062);
+	c = mix(c, c * 0.72 + earth * 0.28, band);
+	rough = mix(rough, 0.95, band * 0.8);
+	c *= 1.0 - 0.18 * band * clamp(k_weather.y, 0.0, 1.0);
+}
+
 #endif

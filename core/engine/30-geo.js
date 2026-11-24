@@ -112,8 +112,10 @@ function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk
   if(uvm&&Ua){b.u.push(Ua.getX(i)*uvm.su,Ua.getY(i)*uvm.sv);}
   else{const ax=Math.abs(_n.x),ay=Math.abs(_n.y),az=Math.abs(_n.z);if(ay>=ax&&ay>=az)b.u.push(_v.x*ts,_v.z*ts);else if(ax>az)b.u.push(_v.z*ts,_v.y*ts);else b.u.push(_v.x*ts,_v.y*ts);}
   if(FORM_ROOT){_fv.copy(_v).applyMatrix4(FORM_ROOT.inv);if(b.x)b.x.push(_fv.y,1,geo.userData&&geo.userData.arris?1:0);
-   if(FORM.jitter){const hy=Math.max(0,_fv.y);_fv.x+=-_fv.x*Math.min(.2,FORM_ROOT.batter*hy/Math.max(1,Math.abs(_fv.x)))+FORM_ROOT.leanX*hy;_fv.z+=-_fv.z*Math.min(.2,FORM_ROOT.batter*hy/Math.max(1,Math.abs(_fv.z)))+FORM_ROOT.leanZ*hy;
-    _fv.applyMatrix4(FORM_ROOT.m);const q=b.p.length-3;b.p[q]=_fv.x;b.p[q+1]=_fv.y;b.p[q+2]=_fv.z;}}
+   if(FORM.jitter){const hy=Math.max(0,_fv.y);
+    const jx=-_fv.x*Math.min(.2,FORM_ROOT.batter*hy/Math.max(1,Math.abs(_fv.x)))+FORM_ROOT.leanX*hy,jz=-_fv.z*Math.min(.2,FORM_ROOT.batter*hy/Math.max(1,Math.abs(_fv.z)))+FORM_ROOT.leanZ*hy;
+    /* under a tenth of a millimetre a vertex is left as it was, to the bit: what lies on the ground keeps its place against the ground */
+    if(Math.abs(jx)+Math.abs(jz)>1e-4){_fv.x+=jx;_fv.z+=jz;_fv.applyMatrix4(FORM_ROOT.m);const q=b.p.length-3;b.p[q]=_fv.x;b.p[q+1]=_fv.y;b.p[q+2]=_fv.z;}}}
   else if(b.x)b.x.push(-1,1,geo.userData&&geo.userData.arris?1:0);
   if(SB){if(_v.x<SB.mn[0])SB.mn[0]=_v.x;if(_v.y<SB.mn[1])SB.mn[1]=_v.y;if(_v.z<SB.mn[2])SB.mn[2]=_v.z;if(_v.x>SB.mx[0])SB.mx[0]=_v.x;if(_v.y>SB.mx[1])SB.mx[1]=_v.y;if(_v.z>SB.mx[2])SB.mx[2]=_v.z;}}
  if(I){for(let i=0;i<I.count;i++)b.i.push(base+I.getX(i));GSTAT.tris+=I.count/3;}else{for(let i=0;i<Pa.count;i++)b.i.push(base+i);GSTAT.tris+=Pa.count/3;}
