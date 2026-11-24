@@ -8,4 +8,8 @@
 - **The Glaziers' houses stand on blocks of rock.** On the sheet a Glazier house is its front (`TG.gz.draw`, `facade: true`)
   on a block of the potch line's outcrop the size of its rooms; at the diggings proper they are cut into the outcrop (core/terrain's
   cavern, as Lāiṭwāl cuts them).
-- **Run on SwiftShader so far** (2026-11-23: this machine has no GPU lane). The GPU verify is owed (the commit's report).
+- **Verified on the GPU** (the Arc, 2026-11-23, by the Xanadu plans session: OK, a stale pass then; rebuilt since).
+- **Four name clashes on the page, accepted** (`tools/check_assembly_baseline.json`, as other pages carry them): `KMAT` and
+  `_texPending` are each set twice inside core/materials/record's own fragments (`var` and `window.`), `_registered` is core/host's
+  probe and the page's count (Phēr's and the lake towns' pages carry the same), `onerror` is core/drawn's and the Scyvoi engine's
+  error panel (the camps' tents draw on it; the later one is the panel shown).
