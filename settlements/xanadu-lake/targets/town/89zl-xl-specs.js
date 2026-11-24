@@ -222,7 +222,9 @@ XL.SPECS={
   notes:'A small, well-to-do town on a narrow shore under a wall that rises 770 m in 7 km: the saffron houses in a row on the first bench, the crocus terraces above them, the factor\'s strong house by the landing.'},
  /* the potters' town (pottery/PLAN.md): the kiln yards (each with its clay pit and sherd heap: 88g) up the ravine above the
     town, the long stair down to the landing; no dugouts (lk.pottery.store) */
- pottery:{key:'pottery',bearing:315,shore:'shingle',wall:{rise:350,benches:2},
+ /* bearing 0, was 315: moved along the shore to the lake's east end (2026-11-24, the owner: "Move along the shore"), the
+    water due north there (fitted 0.8) */
+ pottery:{key:'pottery',bearing:0,shore:'shingle',wall:{rise:350,benches:2},
   world:{region:'xanadu-lake-shore',site:'sxanlkpottery01',R:3000,band:600},
   quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'kilns',role:'industry',share:.25,at:'stream'},
    {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'market',role:'market',share:.10,at:'slope'},{id:'upper',role:'residential',share:.10,at:'bench'}],
