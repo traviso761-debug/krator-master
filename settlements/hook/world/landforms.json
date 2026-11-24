@@ -1,0 +1,49 @@
+{
+ "format": "krator-landforms",
+ "version": 1,
+ "note": "Hook's own landform records, in the scale model's format (tools/scale-model/model/data/landforms.json: px, py on the 5.1 canvas, heights absolute; the Ring Sea at -1500.19 m). The model's 2 km cells hold no land at Hook's pin (sm3ft5vrof, px 809,923): it is a wet cell on a drowned flat, -10 to +5 m for some 8 km, under the plateau 1.5 km east. The records say Hook stands on a peninsula and a spit (populations-gemini.json 'Hook peninsula', GEOLOGY-SANITY-CHECK.md 'Hook spit', a carbonate shelf; every net51 trunk out of Hook starts with a causeway), so the spit is drawn here as core/world 41l benches: the peninsula's body off the plateau's west face, the hook's shank running south at its west end and the barb curling back east. settlements/hook/world/cut.py adds each record to the cut's region.json unless the model already carries its id; the same records are written up for the scale model's edit queue (the coordinator), after which the model carries them and this file can go. The Heights and the hill behind are the town's, not the map's: they stay the Port kit's stamps in src/76-hook-ground.js.",
+ "landforms": [
+  {
+   "id": "lf_hook_spit",
+   "kind": "bench",
+   "px": 809.025,
+   "py": 923.175,
+   "l_m": 4700,
+   "w_m": 1900,
+   "rotation": 0,
+   "level_m": -1495.2,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 900,
+   "note": "Hook's peninsula: 4.7 km east-west by 1.9 km, 5 m over the Ring Sea, its east end cut into the plateau's north-west foot (its root), the deep sea off its north shore (the waterfront), the drowned bay behind it to the south (the lagoon). settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_shank",
+   "kind": "bench",
+   "px": 807.675,
+   "py": 923.75,
+   "l_m": 2400,
+   "w_m": 900,
+   "rotation": 90,
+   "level_m": -1495.2,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 900,
+   "note": "The hook's shank: the spit running 2.4 km south off the peninsula's west end, 900 m across, closing the lagoon's west side. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_barb",
+   "kind": "bench",
+   "px": 808.0,
+   "py": 924.35,
+   "l_m": 1200,
+   "w_m": 500,
+   "rotation": -20,
+   "level_m": -1495.2,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 700,
+   "note": "The hook's barb: the shank's tip curling back east-north-east into the lagoon, 5 m over the sea like the rest of the chain. settlements/hook/world/landforms.json"
+  }
+ ]
+}

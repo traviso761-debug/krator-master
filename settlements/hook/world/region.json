@@ -1,0 +1,769 @@
+{
+ "format": "krator-openworld-region",
+ "version": 1,
+ "source": "Krator Scale Model ?",
+ "region": {
+  "name": "Hook cut",
+  "doc": "cut-hook",
+  "points_px": [
+   [
+    799,
+    913
+   ],
+   [
+    819,
+    913
+   ],
+   [
+    819,
+    933
+   ],
+   [
+    799,
+    933
+   ]
+  ],
+  "points_m": [
+   [
+    -20000.0,
+    -20000.0
+   ],
+   [
+    20000.0,
+    -20000.0
+   ],
+   [
+    20000.0,
+    20000.0
+   ],
+   [
+    -20000.0,
+    20000.0
+   ]
+  ],
+  "area_km2": 1600,
+  "union_km2": 1764,
+  "added": []
+ },
+ "frame": {
+  "units": "m",
+  "x": "east",
+  "z": "south",
+  "m_per_px": 2000.0,
+  "origin_px": [
+   809,
+   923
+  ],
+  "box_px": [
+   788,
+   902,
+   830,
+   944
+  ],
+  "size_px": [
+   43,
+   43
+  ]
+ },
+ "heights": {
+  "grid": [
+   185,
+   185
+  ],
+  "origin_cell": [
+   3144,
+   3600
+  ],
+  "su": 4.0,
+  "sv": 4.0,
+  "lo": -2600.0,
+  "hi": 27000.0,
+  "cell_m": 500.0,
+  "upsample": 4.0,
+  "option_c_synth": true,
+  "note": "cell (i,j) sits at full px ((i+i0)/su, (j+j0)/sv); elev.png and wlev.png are this grid"
+ },
+ "rain": {
+  "scale_mm": 15.686274509803921
+ },
+ "temp": {
+  "offset": -90
+ },
+ "pressure": {
+  "atm0": 1.6,
+  "scale_m": 8000
+ },
+ "classes": [
+  {
+   "code": "Af",
+   "name": "tropical rainforest",
+   "color": "#0000ff",
+   "group": "A"
+  },
+  {
+   "code": "Am",
+   "name": "tropical monsoon",
+   "color": "#0078ff",
+   "group": "A"
+  },
+  {
+   "code": "Aw",
+   "name": "tropical savanna",
+   "color": "#46aafa",
+   "group": "A"
+  },
+  {
+   "code": "BWh",
+   "name": "hot desert",
+   "color": "#ff0000",
+   "group": "B"
+  },
+  {
+   "code": "BWk",
+   "name": "cold desert",
+   "color": "#ff9696",
+   "group": "B"
+  },
+  {
+   "code": "BSh",
+   "name": "hot steppe",
+   "color": "#f5a500",
+   "group": "B"
+  },
+  {
+   "code": "BSk",
+   "name": "cold steppe",
+   "color": "#ffdc64",
+   "group": "B"
+  },
+  {
+   "code": "Csa",
+   "name": "hot-summer Mediterranean",
+   "color": "#ffff00",
+   "group": "C"
+  },
+  {
+   "code": "Csb",
+   "name": "warm-summer Mediterranean",
+   "color": "#c8c800",
+   "group": "C"
+  },
+  {
+   "code": "Csc",
+   "name": "cold-summer Mediterranean",
+   "color": "#969600",
+   "group": "C"
+  },
+  {
+   "code": "Cwa",
+   "name": "monsoon subtropical",
+   "color": "#96ff96",
+   "group": "C"
+  },
+  {
+   "code": "Cwb",
+   "name": "subtropical highland",
+   "color": "#64c864",
+   "group": "C"
+  },
+  {
+   "code": "Cwc",
+   "name": "cold subtropical highland",
+   "color": "#329632",
+   "group": "C"
+  },
+  {
+   "code": "Cfa",
+   "name": "humid subtropical",
+   "color": "#c8ff50",
+   "group": "C"
+  },
+  {
+   "code": "Cfb",
+   "name": "oceanic",
+   "color": "#64ff50",
+   "group": "C"
+  },
+  {
+   "code": "Cfc",
+   "name": "subpolar oceanic",
+   "color": "#32c800",
+   "group": "C"
+  },
+  {
+   "code": "Dsa",
+   "name": "dry-summer hot continental",
+   "color": "#ff00ff",
+   "group": "D"
+  },
+  {
+   "code": "Dsb",
+   "name": "dry-summer warm continental",
+   "color": "#c800c8",
+   "group": "D"
+  },
+  {
+   "code": "Dsc",
+   "name": "dry-summer subarctic",
+   "color": "#963296",
+   "group": "D"
+  },
+  {
+   "code": "Dwa",
+   "name": "dry-winter hot continental",
+   "color": "#aaafff",
+   "group": "D"
+  },
+  {
+   "code": "Dwb",
+   "name": "dry-winter warm continental",
+   "color": "#5a78dc",
+   "group": "D"
+  },
+  {
+   "code": "Dwc",
+   "name": "dry-winter subarctic",
+   "color": "#4b50b4",
+   "group": "D"
+  },
+  {
+   "code": "Dfa",
+   "name": "hot-summer continental",
+   "color": "#00ffff",
+   "group": "D"
+  },
+  {
+   "code": "Dfb",
+   "name": "warm-summer continental",
+   "color": "#37c8ff",
+   "group": "D"
+  },
+  {
+   "code": "Dfc",
+   "name": "subarctic (boreal)",
+   "color": "#007d7d",
+   "group": "D"
+  },
+  {
+   "code": "Dfd",
+   "name": "extreme subarctic",
+   "color": "#00465f",
+   "group": "D"
+  },
+  {
+   "code": "ET",
+   "name": "tundra",
+   "color": "#b2b2b2",
+   "group": "E"
+  },
+  {
+   "code": "EF",
+   "name": "ice cap",
+   "color": "#666666",
+   "group": "E"
+  },
+  {
+   "code": "XA",
+   "name": "hypertropic jungle (abyssal, >1.85 atm)",
+   "color": "#3d0070",
+   "group": "X"
+  },
+  {
+   "code": "XV",
+   "name": "abyssal savanna",
+   "color": "#8a3ca8",
+   "group": "X"
+  },
+  {
+   "code": "XS",
+   "name": "abyssal salt steppe",
+   "color": "#b8542a",
+   "group": "X"
+  },
+  {
+   "code": "XW",
+   "name": "abyssal desert",
+   "color": "#5c0000",
+   "group": "X"
+  },
+  {
+   "code": "HT",
+   "name": "hyperalpine tundra (<0.6 atm)",
+   "color": "#d8dbe8",
+   "group": "H"
+  },
+  {
+   "code": "HF",
+   "name": "hyperalpine ice",
+   "color": "#eef0f7",
+   "group": "H"
+  },
+  {
+   "code": "O",
+   "name": "airless rim",
+   "color": "#f6f3ec",
+   "group": "O"
+  },
+  {
+   "code": "WS",
+   "name": "sea / lake",
+   "color": "#3b6fb0",
+   "group": "W"
+  },
+  {
+   "code": "WX",
+   "name": "abyssal salt lake",
+   "color": "#8c6a3a",
+   "group": "W"
+  },
+  {
+   "code": "WH",
+   "name": "highland lake",
+   "color": "#5c9ea8",
+   "group": "W"
+  }
+ ],
+ "biomes": [
+  {
+   "id": 0,
+   "name": "Ring Sea",
+   "doc": "rmuql5r2ryukf",
+   "kind": "biome",
+   "colour": "#d9c14a",
+   "kit": null,
+   "water": true,
+   "drawn_px": 692,
+   "notes": "",
+   "px": 711,
+   "px_in_region": 200,
+   "dist_band": 0
+  },
+  {
+   "id": 1,
+   "name": "SW Bay",
+   "doc": "rmuqlcsh77jkf",
+   "kind": "biome",
+   "colour": "#d9c14a",
+   "kit": "swbay",
+   "water": false,
+   "drawn_px": 969,
+   "notes": "",
+   "px": 1039,
+   "px_in_region": 241,
+   "dist_band": 1
+  },
+  {
+   "id": 2,
+   "name": "Throne/Volcano",
+   "doc": "rmuqlbqhl6ozk",
+   "kind": "biome",
+   "colour": "#c95a6a",
+   "kit": "throne",
+   "water": false,
+   "drawn_px": 46,
+   "notes": "",
+   "px": 46,
+   "px_in_region": 0,
+   "dist_band": 2
+  },
+  {
+   "id": 3,
+   "name": "s highlands",
+   "doc": "rmvk9dowcuhbl",
+   "kind": "biome",
+   "colour": "#7c8a5e",
+   "kit": "shighlands",
+   "water": false,
+   "drawn_px": 12,
+   "notes": "",
+   "px": 12,
+   "px_in_region": 0,
+   "dist_band": 3
+  },
+  {
+   "id": 4,
+   "name": "crater drylands S",
+   "doc": "rmuqlgonah5tp",
+   "kind": "biome",
+   "colour": "#8a6fc9",
+   "kit": "crater-drylands",
+   "water": false,
+   "drawn_px": 41,
+   "notes": "",
+   "px": 41,
+   "px_in_region": 0,
+   "dist_band": 4
+  }
+ ],
+ "biome_fill_px": 200,
+ "dist": {
+  "file": "dist.png",
+  "bands": 5,
+  "band_px": [
+   43,
+   43
+  ],
+  "encoding": "R<<16 | G<<8 | B",
+  "value": "squared distance in map pixels to the biome's drawn polygon (pixel centres; 0 inside)",
+  "pad_px": 128,
+  "note": "exact up to pad_px; metres = sqrt(value) * m_per_px (core/mask KMASK.distance)"
+ },
+ "drainage": {
+  "min_accum": 30000.0,
+  "lines": [
+   [
+    [
+     -34000.0,
+     30000.0,
+     38318.0,
+     -621.0
+    ],
+    [
+     -36000.0,
+     30000.0,
+     38929.0,
+     -683.9
+    ],
+    [
+     -38000.0,
+     30000.0,
+     46494.0,
+     -730.1
+    ],
+    [
+     -40000.0,
+     30000.0,
+     50812.0,
+     -761.2
+    ],
+    [
+     -42000.0,
+     30000.0,
+     54906.0,
+     -793.3
+    ],
+    [
+     -44000.0,
+     30000.0,
+     55514.0,
+     -860.8
+    ],
+    [
+     -46000.0,
+     30000.0,
+     62576.0,
+     -1023.6
+    ]
+   ],
+   [
+    [
+     -2000.0,
+     14000.0,
+     31722.0,
+     -692.3
+    ],
+    [
+     -4000.0,
+     12000.0,
+     44267.0,
+     -762.2
+    ],
+    [
+     -4000.0,
+     10000.0,
+     45071.0,
+     -984.8
+    ],
+    [
+     -4000.0,
+     8000.0,
+     45071.0,
+     -1502.4
+    ]
+   ],
+   [
+    [
+     -6000.0,
+     12000.0,
+     33180.0,
+     -752.8
+    ],
+    [
+     -6000.0,
+     10000.0,
+     34349.0,
+     -972.2
+    ],
+    [
+     -6000.0,
+     8000.0,
+     34349.0,
+     -1502.0
+    ]
+   ],
+   [
+    [
+     12000.0,
+     8000.0,
+     33196.0,
+     -904.4
+    ],
+    [
+     14000.0,
+     6000.0,
+     33588.0,
+     -913.6
+    ],
+    [
+     16000.0,
+     4000.0,
+     36133.0,
+     -1041.0
+    ],
+    [
+     18000.0,
+     2000.0,
+     36682.0,
+     -982.6
+    ],
+    [
+     18000.0,
+     0.0,
+     36682.0,
+     -1502.9
+    ]
+   ]
+  ]
+ },
+ "rivers": [],
+ "valleys": [],
+ "water": {
+  "spilled_cells": 0,
+  "note": "lake levels above their lowest shore cell were lowered to it"
+ },
+ "settlements": [
+  {
+   "name": "Hook",
+   "type": "city",
+   "doc": "sm3ft5vrof",
+   "px": 809,
+   "py": 923,
+   "x": 0.0,
+   "z": 0.0,
+   "biome": "Ring Sea",
+   "notes": "moved to the 1:1 shoreline 2026-10-19 (was py 596: 592 m up, 6.7 km inland of the shore the open world's rule gives)"
+  }
+ ],
+ "canyon_candidates": {},
+ "volcano": {
+  "px": [
+   846.98,
+   834.22
+  ],
+  "peak": 10916.0,
+  "floor": 10260.0
+ },
+ "vents": [
+  {
+   "px": [
+    805.0,
+    905.0
+   ],
+   "floor": -567.751484055247,
+   "scale": 0.1,
+   "radius": 0.9,
+   "kind": "geyser"
+  }
+ ],
+ "tubes": [
+  {
+   "id": "tube_qarnu_03",
+   "name": "Qarnu-Tūbu (Horn-Well) Southern Shoulder Tube",
+   "region": "rmuqlbqhl6ozk",
+   "culture": "zeijani",
+   "state": "habitable",
+   "rock": "tuff_and_basalt",
+   "width_m": 20.0,
+   "height_m": 13.0,
+   "depth_m": 32.0,
+   "km": 88,
+   "px": [
+    [
+     841.5,
+     856.0
+    ],
+    [
+     839.0,
+     865.0
+    ],
+    [
+     836.5,
+     874.0
+    ],
+    [
+     834.0,
+     882.0
+    ],
+    [
+     830.5,
+     893.0
+    ],
+    [
+     826.0,
+     904.0
+    ]
+   ],
+   "branches": [
+    {
+     "name": "Savanna Lahar-Fan Stepwell Branch",
+     "state": "habitable",
+     "width_m": 11.0,
+     "px": [
+      [
+       836.5,
+       874.0
+      ],
+      [
+       844.0,
+       879.5
+      ],
+      [
+       851.0,
+       886.0
+      ]
+     ],
+     "m": [
+      [
+       55000.0,
+       -98000.0
+      ],
+      [
+       70000.0,
+       -87000.0
+      ],
+      [
+       84000.0,
+       -74000.0
+      ]
+     ]
+    }
+   ],
+   "caverns": [
+    {
+     "id": "cav_qarnu_vil",
+     "name": "Qarnu-Tūbu (Horn-Well Village)",
+     "kind": "skylight_well",
+     "settlement_id": "szjqarnu02",
+     "px": [
+      834.0,
+      882.0
+     ],
+     "span_m": [
+      175,
+      140
+     ],
+     "height_m": 42,
+     "skylight_m": 65,
+     "notes": "Second canonical Zeijani cave/tuff village: Moray-style terraced collapse pits and a Chand Baori stepwell cistern trading with the southern Ash Nomads.",
+     "m": [
+      50000.0,
+      -82000.0
+     ]
+    }
+   ],
+   "m": [
+    [
+     65000.0,
+     -134000.0
+    ],
+    [
+     60000.0,
+     -116000.0
+    ],
+    [
+     55000.0,
+     -98000.0
+    ],
+    [
+     50000.0,
+     -82000.0
+    ],
+    [
+     43000.0,
+     -60000.0
+    ],
+    [
+     34000.0,
+     -38000.0
+    ]
+   ]
+  }
+ ],
+ "landforms": [
+  {
+   "id": "lf_hook_spit",
+   "kind": "bench",
+   "px": 809.025,
+   "py": 923.175,
+   "l_m": 4700,
+   "w_m": 1900,
+   "rotation": 0,
+   "level_m": -1495.2,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 900,
+   "note": "Hook's peninsula: 4.7 km east-west by 1.9 km, 5 m over the Ring Sea, its east end cut into the plateau's north-west foot (its root), the deep sea off its north shore (the waterfront), the drowned bay behind it to the south (the lagoon). settlements/hook/world/landforms.json",
+   "x": 50.0,
+   "z": 350.0,
+   "source": "settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_shank",
+   "kind": "bench",
+   "px": 807.675,
+   "py": 923.75,
+   "l_m": 2400,
+   "w_m": 900,
+   "rotation": 90,
+   "level_m": -1495.2,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 900,
+   "note": "The hook's shank: the spit running 2.4 km south off the peninsula's west end, 900 m across, closing the lagoon's west side. settlements/hook/world/landforms.json",
+   "x": -2650.0,
+   "z": 1500.0,
+   "source": "settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_barb",
+   "kind": "bench",
+   "px": 808.0,
+   "py": 924.35,
+   "l_m": 1200,
+   "w_m": 500,
+   "rotation": -20,
+   "level_m": -1495.2,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 700,
+   "note": "The hook's barb: the shank's tip curling back east-north-east into the lagoon, 5 m over the sea like the rest of the chain. settlements/hook/world/landforms.json",
+   "x": -2000.0,
+   "z": 2700.0,
+   "source": "settlements/hook/world/landforms.json"
+  }
+ ],
+ "cut": {
+  "by": "settlements/hook/world/cut.py",
+  "pin": "sm3ft5vrof",
+  "px": [
+   809,
+   923
+  ],
+  "box_px": 10,
+  "own_landforms": [
+   "lf_hook_spit",
+   "lf_hook_shank",
+   "lf_hook_barb"
+  ]
+ }
+}

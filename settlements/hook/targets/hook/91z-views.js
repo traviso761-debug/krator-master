@@ -23,5 +23,18 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  if(heli){V['The Sun Canton']=portCam(heli.gx,D,heli.gz-60,.5,.38,320);}
  const stack=L.items.find(it=>it.key==='chStack');
  if(stack){const S=portRegOf('chStack');V['The Stacks']=[stack.gx-30,D+1.7,stack.gz-S.LAND/2,stack.gx+40,D+8,stack.gz-S.LAND/2-10];}
+ // P1: the Heights from the sea side (the ridge behind the Customs, the hosts on the grid), the Ancient town from the
+ // ridge looking down over the roofs to the Hook, and the hill behind the site
+ // (the heights are read from the ground itself: the scale model's slope stands where the plan's ridge was)
+ if(typeof HOOK_GROUND!=='undefined'){const r=HOOK_GROUND.ridge,c=HOOK_GROUND.hill,rx=(r.x0+r.x1)/2,g=(x,z)=>terrainH(x,z);
+  V['The Heights']=portCam(rx,g(rx,r.z1+40)+4,r.z1+40,.1,.28,900);
+  V['The Ancient town']=[rx+300,g(rx+300,r.z0+60)+60,r.z0+60,rx-100,D,120];
+  /* from the hill's crest, back over the whole town to the harbour and the Hook (on the spit the hill is the kit's ramp,
+     the only height behind the waterfront: the view the 4.21 slope gave from below no longer shows anything) */
+  const hz=(c.z0+c.z1)/2;V['The hill behind']=[120,g(120,hz)+22,hz,-100,D,-150];}
+ // P3: the governor's palace at the head of the Hook's axis, and the Stacks' slave market from its cages
+ if(typeof HOOK_SITE!=='undefined'){const mk=id=>(HOOK_SITE.markers||[]).find(m=>m.id===id);const B=mk('B'),E=mk('E');
+  if(B)V['The palace']=[B.x+60,terrainH(B.x,B.z)+45,B.z+170,B.x,terrainH(B.x,B.z)+14,B.z];
+  if(E)V['The slave market']=[E.x-80,terrainH(E.x,E.z)+22,E.z+70,E.x,terrainH(E.x,E.z)+4,E.z];}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();
