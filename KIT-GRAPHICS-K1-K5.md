@@ -149,3 +149,47 @@ joints), Highlands dwellings and temple (programs 56 -> 35 and 59 -> 35, triangl
 the masks and parallax barely show), girder's tower cross-section at 21:00 (programs 188 -> 259, 60 -> 53 fps: the room
 light's hook gives each hooked material a program of its own: the cost to weigh), Mav's apartment at 21:00 (programs 81 -> 115,
 43 -> 45 fps) and hold cross-section at 13:00 (78 -> 112, 46 -> 49 fps).
+
+## The room light's cost cut (the owner: "Cut the cost first", 2026-11-23)
+
+Two causes, two fixes:
+
+- **Programs.** wirePage hooked materials after their first compile, so each one got a second program (Girder 188 -> 259).
+  The room light now rides in KNLV's own hook (`KNLV.create({roomLight:true})`, 4acd6e783): every material the page hooks
+  carries it from its first compile, under the hook's one key, with the room table in shared uniforms (`NLV.rl.U`, which
+  wirePage fills). wirePage hooks only a lit material the page's hook does not reach, once, keyed by its kind (`|rla`).
+  In attribute mode, instanced, skinned and morphed programs are left alone: Girder's flyers went over WebGL's 16 attributes
+  and failed to link.
+- **Frame time.** The programs came back to 189, but Girder still drew 52-56 fps at 21:00. Probing found the cause.
+  Zeroing the masks did not help; deleting the attributes brought back 60. The cost was vertex-attribute bandwidth:
+  13.4M tagged vertices at 8 bytes each (`aRlU` and `aRlIn` as Float32 on every scanned mesh). Now one normalized Uint16,
+  `aRl`, holds 0 outdoors or the table column + 1 (`uRlW` is the table's width). Only a mesh with a vertex in a room
+  carries it. The texels are fetched in the vertex stage, behind the room test.
+  - A mesh without the attribute reads the generic value. A value past the table's width is read as outdoors, so a
+    ShaderMaterial's generic 1 can't light it.
+  - `core/engine/91i-interiors.js` passes the width (`RT.width`).
+
+**Arc lane, 21:00 unless noted** (`renderer.info.programs`; fps over 3 s, capped at 60 and uncapped
+`--disable-frame-rate-limit --disable-gpu-vsync`; the line pages are this branch's base pages, shot in the same run):
+
+| View | line | before the cut | after |
+|---|---|---|---|
+| Girder, tower cross-section | 188 programs, 60 fps (uncapped 73, 68) | 259, 53 | 189, 60 / 60 (uncapped 70, 69; `?roomlight=0` 64, 65) |
+| Mav's, inside an apartment | 81, 32-41 | 115, 45 | 82, 36-38 |
+| Mav's, hold cross-section, 13:00 | 78, 38 | 112, 49 | 79, 35 |
+| Locus, caravanserai `?interiors=1` | 121, 49-54 (uncapped 49) | | 126, 40-51 (uncapped 46-47) |
+| Yuni, hub plaza | 109, 60 | | 109, 59 (uncapped 67) |
+
+Mav's and Locus swing ±6 fps from one run of the same page to the next.
+
+Locus's five extra programs come from 15 materials its night hook does not light: vehicle detail, plain Lambert,
+iridescent bark and water, one program per kind. 68 materials share the page's.
+
+**The look is unchanged.** Pixel diff against the lit shots from before the cut (`shots5/v2`, or `shots4/after`):
+
+- Girder: 0.27-0.30% of pixels move by more than 8 levels. Its own run-to-run noise is 0.24%.
+- Yuni: 0.7%, against 0.4% noise.
+- Locus: 2.1%, against 1.5% noise.
+- Mav's apartment: 0.03-0.10%.
+- Mav's hold at 13:00: 3.5-4.2%. The line page against itself in two runs moves 14.7%. The moved pixels are the canopy's
+  sway, the walkers and the clock (14:04 against 14:06); the building faces do not move.

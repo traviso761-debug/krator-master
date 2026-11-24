@@ -206,7 +206,7 @@ function WINPANE(x,y,z,nx,nz,w,h,cool,open){ nlWinAdd(x,y,z,nx,nz,w,h,cool,open)
    bytes as the copy that stood here. This build keeps its numbers, its lists and the names its fragments call. */
 var NLV = KNLV.create({ res:NLV_RES, ext:NLV_EXT, ns:NLV_NS, cols:NLV_COLS, rows:NLV_ROWS, y0:NLV_Y0, dy:NLV_DY, max:NLV_MAX,
   lampGain:NLV_LAMP_GAIN, winGain:NLV_WIN_GAIN, coolGain:NLV_COOL_GAIN, winAmp:NLV_WIN_AMP, winRad:NLV_WIN_RAD,
-  lamps:NL_LAMPS, windows:NL_WINDOWS, flame:function(){ return PAL.flame; } });
+  lamps:NL_LAMPS, windows:NL_WINDOWS, roomLight:true, flame:function(){ return PAL.flame; } });
 var nlvTex = NLV.tex, NLV_U = NLV.U;
 function nlvBake(){ return NLV.bake(); }
 function applyNightGlow(sh, wpName){ NLV.hook(sh, wpName); }
