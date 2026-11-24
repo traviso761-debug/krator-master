@@ -181,7 +181,7 @@
         var sc=d(o.sinks&&o.sinks.cell,160),sp2=d(o.sinks&&o.sinks.p,.5),inN={};inN[S.id]=1;here[S.id]=S;
         for(var sj=Math.floor(B[1]/sc);sj*sc<B[3];sj++)for(var si=Math.floor(B[0]/sc);si*sc<B[2];si++){if(K.unit(K.hash(W,lv,si,sj,0x4c01))>=sp2)continue;
           var sx=(si+.15+.7*K.unit(K.hash(W,lv,si,sj,0x4c02)))*sc,sz=(sj+.15+.7*K.unit(K.hash(W,lv,si,sj,0x4c03)))*sc;if(sx<B[0]||sx>B[2]||sz<B[1]||sz>B[3])continue;
-          var n=nearestNode(G,sx,sz);if(!n||inN[n.id])continue;var start=n,steps=0;sinks.push({id:'sink:'+si+','+sj,x:n.x,z:n.z,node:n.id,level:lv});
+          var n=nearestNode(G,sx,sz);if(!n||inN[n.id])continue;var start=n,steps=0;sinks.push({id:'sink:'+lv+':'+si+','+sj,x:n.x,z:n.z,node:n.id,level:lv});
           while(!inN[n.id]&&steps++<500){var opts=[[1,0],[-1,0],[0,1],[0,-1]].map(function(dv){return G.nodes[G.key(n.i+dv[0],n.j+dv[1])];}).filter(Boolean);
             opts.sort(function(a,b){return Math.hypot(a.x-S.x,a.z-S.z)-Math.hypot(b.x-S.x,b.z-S.z)||(a.id<b.id?-1:1);});
             var pick=opts.length>1&&G.u(n.i,n.j,5)<.25&&Math.hypot(opts[1].x-S.x,opts[1].z-S.z)<Math.hypot(n.x-S.x,n.z-S.z)?opts[1]:opts[0];
