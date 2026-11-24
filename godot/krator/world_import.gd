@@ -132,6 +132,7 @@ static func build(path: String) -> Node3D:
 		var has_vcol: bool = node.multimesh.mesh != null and node.multimesh.mesh.get_surface_count() > 0 and (int(node.multimesh.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_COLOR) != 0
 		var has_tan: bool = node.multimesh.mesh != null and node.multimesh.mesh.get_surface_count() > 0 and (int(node.multimesh.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_TANGENT) != 0
 		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report, true, has_vcol, has_tan)
+		_closed(node, it, report)
 		_faces(node, report)
 		node.visible = bool(it.get("visible", true))
 		if it.get("owners") is Array and (it["owners"] as Array).size() == n:   # a city's: per instance the record it stands in
@@ -183,6 +184,7 @@ static func build(path: String) -> Node3D:
 		var has_vcol: bool = node.mesh != null and node.mesh.get_surface_count() > 0 and (int(node.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_COLOR) != 0
 		var has_tan: bool = node.mesh != null and node.mesh.get_surface_count() > 0 and (int(node.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_TANGENT) != 0
 		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false, has_vcol, has_tan)
+		_closed(node, b, report)
 		_faces(node, report)
 		_lod(node, b, report)
 		if b.get("lod") is Dictionary and _lod_shader(node):
@@ -488,7 +490,10 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 	# one of the library surface's three shaders (KratorKmat.variant): the cut-out only for an alpha test with a map, both
 	# faces where three draws both (a record without the field is drawn on both, as every record was before 2026-11-23)
 	var at_rec = rec.get("alphaTest")
-	sm.shader = KratorKmat.variant(bool(rec.get("doubleSided", true)), float(at_rec) if (at_rec is int or at_rec is float) else 0.0, img != null)
+	# a record three draws from inside only (side "back": section 13) is drawn on both faces here, and the report says so
+	if str(rec.get("side", "")) == "back":
+		_gap_once(report, "back side", "a material three draws from inside only (side: back) is drawn on both faces: no library shader culls the front")
+	sm.shader = KratorKmat.variant(bool(rec.get("doubleSided", true)) or str(rec.get("side", "")) == "back", float(at_rec) if (at_rec is int or at_rec is float) else 0.0, img != null)
 	sm.set_shader_parameter("colour", Vector3(col.r, col.g, col.b))
 	sm.set_shader_parameter("has_albedo", img != null)
 	if img:
@@ -562,6 +567,18 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 # Which of the library surface's shaders a node ended on, counted in report["faces"] {culled, two_sided, cutout,
 # moved: [why, ...]}: KratorKmat.fit moves a back-culled node to the two-sided twin when its instances are mirrored or
 # its triangles wind against their normals (the export bakes a mirrored mesh's matrix and keeps its index order).
+# an item or a bucket the export marks `closed` (a closed solid, GODOT-LOOK-PLAN.md section 13): a double-sided material
+# on it culls its back faces, which nothing can see. _faces, next, puts it back on both if its instances are mirrored.
+static func _closed(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary) -> void:
+	if not bool(rec.get("closed", false)):
+		return
+	var sm := gi.material_override as ShaderMaterial
+	if sm == null or sm.shader != KratorKmat.LIB_TWOSIDED:
+		return
+	gi.material_override = KratorKmat.onesided(sm)
+	report["closed_culled"] = int(report.get("closed_culled", 0)) + 1
+
+
 static func _faces(gi: GeometryInstance3D, report: Dictionary) -> void:
 	var sm := gi.material_override as ShaderMaterial
 	if sm == null or not KratorKmat.is_lib(sm.shader):

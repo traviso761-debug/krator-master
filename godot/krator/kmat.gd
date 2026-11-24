@@ -47,6 +47,27 @@ static func twosided(m: Material) -> Material:
 	return t
 
 
+# A two-sided material's culled twin: the same parameters on LIB. For a mesh the export marks `closed` (a closed solid:
+# GODOT-LOOK-PLAN.md section 13), whose back faces nothing can see. Kept on the material (meta krator_onesided).
+static func onesided(m: Material) -> Material:
+	var sm := m as ShaderMaterial
+	if sm == null or sm.shader != LIB_TWOSIDED:
+		return m
+	if sm.has_meta("krator_onesided"):
+		return sm.get_meta("krator_onesided")
+	var t := sm.duplicate() as ShaderMaterial
+	t.shader = LIB
+	if t.has_meta("krator_twosided"):
+		t.remove_meta("krator_twosided")
+	if t.has_meta("krator") and t.get_meta("krator") is Dictionary:
+		var km: Dictionary = (t.get_meta("krator") as Dictionary).duplicate()
+		km["shader"] = "library.gdshader"
+		t.set_meta("krator", km)
+	t.set_meta("krator_twosided", sm)   # fit() puts a node back on both faces through this
+	sm.set_meta("krator_onesided", t)
+	return t
+
+
 # does any instance of a MultiMesh mirror its mesh (a negative determinant)? Neither three nor Godot flips the winding of
 # one instance, but the scene export bakes a mirrored InstancedMesh's own matrix into every instance (core/export
 # 10-core-export-scene.js), where three had flipped the whole mesh

@@ -172,6 +172,38 @@ func _initialize() -> void:
 		"a record's doubleSided and alphaTest pick its shader, and its meta names the file")
 	ok(r_old.shader == K.LIB_TWOSIDED and r_nomap.shader == K.LIB, "negative: a record without the field is drawn on both faces, as before; an alpha test with no image is opaque")
 
+	# 7b. what the export says of sides and solid_cs (GODOT-LOOK-PLAN.md section 13): side back, and closed
+	var rep_b := {"gaps": {}}
+	var r_back := KratorWorld._standard({"id": "w:f", "kind": "standard", "colour": "#888888", "doubleSided": false, "side": "back"}, {}, {}, false, rep_b) as ShaderMaterial
+	var r_front := KratorWorld._standard({"id": "w:g", "kind": "standard", "colour": "#888888", "doubleSided": false, "side": "front"}, {}, {}, false, rep) as ShaderMaterial
+	ok(r_back.shader == K.LIB_TWOSIDED and (rep_b["gaps"] as Dictionary).has("back side") and r_front.shader == K.LIB and not (rep["gaps"] as Dictionary).has("back side"),
+		"a record three draws from inside only is drawn on both faces, not culled away, and the report says so; a front one is culled as before")
+	var solid_c := MeshInstance3D.new()
+	solid_c.mesh = _box()
+	solid_c.material_override = r_double
+	var rep_c := {"gaps": {}}
+	KratorWorld._closed(solid_c, {"closed": true}, rep_c)
+	var culled := solid_c.material_override as ShaderMaterial
+	ok(culled.shader == K.LIB and culled != r_double and int(rep_c.get("closed_culled", 0)) == 1 and K.onesided(r_double) == culled and K.fit(solid_c) == "",
+		"a closed solid on a double-sided material culls its back faces, on a twin made once")
+	var sheet_c := MeshInstance3D.new()
+	sheet_c.mesh = _box()
+	sheet_c.material_override = r_double
+	KratorWorld._closed(sheet_c, {"closed": false}, rep_c)
+	var cutm := MeshInstance3D.new()
+	cutm.mesh = _box()
+	cutm.material_override = r_cut
+	KratorWorld._closed(cutm, {"closed": true}, rep_c)
+	ok(sheet_c.material_override == r_double and cutm.material_override == r_cut and int(rep_c["closed_culled"]) == 1, "negative: one not marked closed, and a cut-out, keep their shaders")
+	var mirr_c := MultiMeshInstance3D.new()
+	mirr_c.multimesh = _mm([Basis.from_scale(Vector3(-1, 1, 1))])
+	mirr_c.material_override = r_double
+	KratorWorld._closed(mirr_c, {"closed": true}, rep_c)
+	var why_f := K.fit(mirr_c)
+	ok(why_f != "" and (mirr_c.material_override as ShaderMaterial).shader == K.LIB_TWOSIDED, "negative: a closed solid whose instances are mirrored is put back on both faces (%s)" % why_f)
+	for n in [solid_c, sheet_c, cutm, mirr_c]:
+		n.free()
+
 	# 8. a real export: Longsong's lower town, every library node counted, none moved
 	if not FileAccess.file_exists(CASE):
 		ok(false, "no case at %s" % CASE)
