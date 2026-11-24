@@ -1371,6 +1371,28 @@ Checks: `tests/test_smodel.py` and `node settlements/hook/tests/test-hook-world.
 bytes: the scale model's page, `settlements/lightwall`, `biomes/godshearth` (and its `prismbasin` station),
 `openworld/xanadu-oidong-highrift` (`tools/reach.py`).
 
+## The northern and north-western rivers in their local tongues (2026-11-24, Crook/Ria's c54909f2e re-run)
+
+Crook/Ria's renaming (origin/crook-ria-kits-biomes-checks c54909f2e; its tools `smodel/river_names.py`,
+`smodel/frozen_river_names.json` and `river-names-5.1.md` came onto the line with Integration 2's merge 5c8e4f3a2, its
+model data did not) replayed on this model by river id, its names only, none of its geometry (`length_km`, `mouth_m`,
+`source_m`, `to.at_px`, `kind` stay this model's):
+- 44 rivers renamed, 25 more re-glossed or given a tongue: Low-Ria / High-Ria (9101 Rīwa-Wāta (Ria River), 9109
+  Tlīla-Wāda), Külaneva (9103 Mere-Upe, 9104 Helme-Koski, 9107 Suur-Neva, 9108 Musta-Jõgi), Dzagh-Vardzi (9105
+  Khōpri-Tskhali (Crook River), 9110, 9124, 9125, 9133), and 33 northern Farside courses (Y <= 515) in Yonni-Zāg
+  (-Dānu, -Vēli, -Khōra). 9103 and 9104 had continental-scope's subtitles here ("North Delta River", "North Headland
+  Fork"), not the branch parent's: the branch's names replace them whole.
+- Every `to` naming a renamed river (49), seven tributaries' glosses naming their trunk by its old name, the note of
+  `lf_crook_cascade_caldera`, and the notes of settlements `sdv8flumibridzi` and `shk2kaskedi` (found by id: their
+  reconcile key here is not the branch's).
+- Checked: the tool, run on this model in memory (as `tests/test_smodel.py` section 7 runs it), names all 44 as here.
+  It would also re-coin continental-scope's eleven Hajlandsk Alps rivers and the Locus delta and give 9102 the Hām
+  tongue: not this renaming's, left as they are. `tests/test_smodel.py` 396 pass.
+- Re-baked where the names reach: the pages that read `rivers.json` (`tools/reach.py`: Blakhed, Strongwall, Tempest,
+  Thalaba, Labyrinth, Godshearth), and by name only, by id, the three files with no generator here: `biomes/wouterwall`'s
+  region cut (9105, 9110; page rebuilt), `openworld/resources-settlements.json` (r074) and the globe's
+  `gallery/krator-globe/globe_data.json` (38; not republished).
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

@@ -98,7 +98,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
-    "kits/catalog/krator-master-furniture-xanadu.js": "7d6442f9ca046bf4a49ecad5075733e110ba341b0701c9768849d5536e8c4e05",
+    "kits/catalog/krator-master-furniture-xanadu.js": "526e8278c59e3730e8e7f71656fb2aede141470affbb81c2420676e6e7b38845",
     "kits/catalog/tex/abalone.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/abaloneSoft.albedo.webp": "0862814768d6644cb86159bc018f874eb8d17b3d037f59e50e5977d51e080ea1",
     "kits/catalog/tex/ash.albedo.webp": "3432cd6a581584b157c3595d58468caf4eb114f8a184dde8d3afc1a7c931db4d",
@@ -423,7 +423,7 @@
     "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/scale-model/model/data/h.png": "ea3fb29a40a48d835d57dd53b1e190ef54ce464a88d4d4136f42ab2c6671134b",
-    "tools/scale-model/model/data/rivers.json": "5b34c2d465c85cd44668d87f7d9ec937e9ea02160611fc8caf33ee298c4850cc",
+    "tools/scale-model/model/data/rivers.json": "ecb4e42c652ca1ae10fbb03605b7f920f52be7740170b236deb449ca5a62423e",
     "tools/textures/matlib_pack.py": "1b52c8d572be81c62d6615f168922754b262e233694b207ae266d678bd4212c8"
    },
    "listings": {
@@ -450,15 +450,15 @@
    },
    "listed_by": "code",
    "outputs": {
-    "settlements/strongwall/build-manifest-fort.json": "a705816a9979cfc30dab51fd53bb80704509217049ba87584f61fe3aa54592b5",
-    "settlements/strongwall/dist/strongwall.html": "2ad554f62f21293eeaf3140f021e70f27e976b987506843614595471a778ae1f",
+    "settlements/strongwall/build-manifest-fort.json": "a87f76b648d58d96f859144f4a82d9b1f2bff84cfb67c76e11f83a0c32e889ff",
+    "settlements/strongwall/dist/strongwall.html": "df447a7e061eed3bf1886ee40d2f12f778c697fa2071e730b7fab8c6b45efb91",
     "settlements/strongwall/dist/xanadu.tex.xanadu-2.js": "521b0e41d7f3065f190b36e5614bb752b7ef192a7df75ae2141d4af52c696d89",
     "settlements/strongwall/dist/xanadu.tex.xanadu.js": "607a41c3d665833ecca1e59125de7d188d4c00e5b76e2fcabc5eabde7dba39d0",
     "settlements/strongwall/gen/69w-sw-ground.js": "1aaeaebee7da5576b84dd6b601c2d532b703bda024af8d250fc522dd3ed4d76d"
    },
    "outputs_raw": {
-    "settlements/strongwall/build-manifest-fort.json": "07a1c2aa7d8dc601b539077d1a579bdd51d41c812113a7628d51ca8785f9650f",
-    "settlements/strongwall/dist/strongwall.html": "2ad554f62f21293eeaf3140f021e70f27e976b987506843614595471a778ae1f",
+    "settlements/strongwall/build-manifest-fort.json": "61e98530fde38d984a1aa8b6d0ff041fabb3f30e3efb3c76ee237d70c6d60a4c",
+    "settlements/strongwall/dist/strongwall.html": "df447a7e061eed3bf1886ee40d2f12f778c697fa2071e730b7fab8c6b45efb91",
     "settlements/strongwall/dist/xanadu.tex.xanadu-2.js": "521b0e41d7f3065f190b36e5614bb752b7ef192a7df75ae2141d4af52c696d89",
     "settlements/strongwall/dist/xanadu.tex.xanadu.js": "607a41c3d665833ecca1e59125de7d188d4c00e5b76e2fcabc5eabde7dba39d0",
     "settlements/strongwall/gen/69w-sw-ground.js": "1aaeaebee7da5576b84dd6b601c2d532b703bda024af8d250fc522dd3ed4d76d"
