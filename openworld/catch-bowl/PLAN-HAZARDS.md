@@ -222,8 +222,9 @@ As hazards, they are unlike every other hazard here, and the design has to respe
   two are the real work of item 2's third clause and belong in `kits/mechs`, not here. `PLAN-RAIDS.md` step R3.
 - **They are not on the Bowl.** The Stalkers are the Catch's, the Stalker Range's and now the **SE outer wall's eastern
   half**: its plan's section 2.5 has pairs and triads using the high snow-chutes and dry wadis of the eastern wall
-  (`Loua Waita Guli`, `Waita Guli`, `Wādī al-Zulāl`) to transit between Hub 01, the Catch and the collapsed northern half
-  of the Arcbeam-Stair tunnel. The Bowl's predator is the Bowl mantis (owed to `kits/fauna`) and its danger is bandits.
+  (`Loua Waita Guli`, `Waita Guli`, `Wādī al-Zulāl`) to transit between Hub 01, the Catch and the Godsgate. (Its text
+  says "the collapsed northern half of the Arcbeam-Stair tunnel"; there is no such tunnel — `PLAN.md` question M.) The
+  Bowl's predator is the Bowl mantis (owed to `kits/fauna`) and its danger is bandits.
 - **The whiteout is their weapon, and the maths for it is already written.** Its plan, 2.5: *"in the whiteout rime-fog,
   a white-hulled Harpooner crouching motionless among white quartz-breccia boulders is virtually invisible until its
   pneumatic harpoon hisses."* That is `KHAZ.aim` exactly — Koschmieder's contrast at distance, judged by the worst sight
@@ -252,7 +253,7 @@ This region's own register, beyond sections 2, 3 and 6:
 | A dry well | *not a hazard record* | it is the simulation's: `CATCH_TUNE` runs Arfwai's well down to 30 % in late summer (C5, done) |
 | The Theodiga bore's Stair mouth | `22-core-hazard-bore.js` presets: `rockburst`, `inrush`, `seal` | the divers' prospect; the fragment exists and is opt-in |
 | The Hub 01 road | `hunter`, danger 1 | 44 km of Ancient tunnel east, the one way in; nobody who has taken it has come back. A hazard that is a warning, not a fight |
-| The Bāb al-Hawa shaft | `22-core-hazard-bore.js`: `crush`, `inrush`, `seal` | 1,400 m down to the collapsed Arcbeam-Stair tunnel, plugged 180 m down, still drafting +16 °C air. The divers winch into it |
+| The Bāb al-Hawa shaft | `22-core-hazard-bore.js`: `crush`, `inrush`, `seal` | 1,400 m into the rock, plugged 180 m down, still drafting +16 °C air. The divers winch into it. (What it is a shaft *to* is `PLAN.md` question M: there is no Arcbeam-Stair tunnel) |
 | The felsenmeer and scree aprons | `slip` | the SE outer wall's 4,200-5,400 m benches: ground that clatters and shifts underfoot (its plan, 2.4) |
 | The noon rockfall chutes | `crush` on a cycle | the same province's steep couloirs, discharging as the sun melts the ice cement (section 3e) |
 | The Stalker Range above 8,000 m | `thin-air` + `cold`, ambient, with `nav.avoid` | 47 % of 255,000 km²: drawn ground nobody may stand on. The hazard, not a missing mesh, is what keeps them out |

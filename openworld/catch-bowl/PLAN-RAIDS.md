@@ -104,8 +104,8 @@ weather into a loop. `PLAN-SIM.md` section 4 has the design; what matters for ra
   issuer in this region rather than a generic one.
 - **The triads' seeding gains a second weight**: distance from Hub 01, beside the leg's traffic. They also transit the
   **SE outer wall's eastern half** — its plan's 2.5 has pairs and triads using the high snow-chutes and dry wadis
-  (`Loua Waita Guli`, `Waita Guli`, `Wādī al-Zulāl`) between Hub 01, the Catch and the collapsed northern half of the
-  Arcbeam-Stair tunnel — so the Godsgate's eastern approaches are hunted ground, not just the floor.
+  (`Loua Waita Guli`, `Waita Guli`, `Wādī al-Zulāl`) between Hub 01, the Catch and the Godsgate — so the Godsgate's
+  eastern approaches are hunted ground, not just the floor.
 - **The whiteout changes the fight, with no new code.** `KHAZ.aim` already gives what a shot is worth through a given
   sight range; a 57 m storm wall or a sub-12 m rime whiteout therefore makes a Stalker ambush a different encounter from
   the same ambush in clear air (`PLAN-HAZARDS.md` section 6).

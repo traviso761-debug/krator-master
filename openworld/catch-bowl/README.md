@@ -1,4 +1,4 @@
-# openworld/catch-bowl: the Catch, the Bowl, the SE outer wall and the Stalker Range in the open world
+# openworld/catch-bowl: the Catch, the Bowl, the SE outer wall, the Stalker Range and the Stalker Gate
 
 **Plans only — nothing is cut and nothing is built.** Scoped 2026-11-24 to the owner's eight-item brief (assess the
 terrain and find the pitfalls; implement the hazards; plan the sites and get them on the simulation; make setpieces for
@@ -48,12 +48,29 @@ buried pose** (P12).
 
 ## Settled by the owner, 2026-11-24
 
-*"Agree keep both and leave only east se outer wall high and airless."*
+Every question is answered; **`PLAN.md` section 12** has each one with what it changed, and **section 11** the nine map
+and kit edits this work now owes. In short:
 
-- **Bāb al-Hawa stays** (the Vent-Shaft Caravanserai) and **Ranger HQ stays**; the **Twins fort drops**, as ruled on
-  2026-11-16 (P6).
-- **The SE outer wall's rescale** is applied to its **west**; the **east** stays high and airless, the Stalkers' transit
-  country (P13). Where the line falls is `PLAN.md` question A.
+- **Five provinces, one region.** The **Stalker Gate** joins (*"i guess add it here. We'll want a network of waystations
+  marking the trail through it"*): 708,000 km² filled, a 1,280 x 946 km box, origin px 1233,1280. `PLAN.md` section 2a
+  lays the network through its four-way graben pass, Ranger HQ as the anchor and Lake Vapora as the hub.
+- **The 16 MB page cap is lifted** — *"this place will be godot native and go into a godot ported version of the host"*.
+  Section 4a says what that demands in return, which is the larger half: `[G data]` from the first line, GDScript twins
+  and golden vectors landing with each new core module, and `core/export` as the acceptance test.
+- **Bāb al-Hawa and Ranger HQ stay**; the Twins fort drops. Bāb al-Hawa's pin moves onto the Godsgate's thalweg and it
+  keeps **120** permanent people. **Ranger HQ has 500**, on a **salary from the Yuni Emirate and a cut of expeditions'
+  profits** — of expeditions, not of passing cargo, which points the Rangers at the Stalker Range rather than at the
+  road.
+- **The SE outer wall's rescale** takes the Godsgate's frame and a ~25 km disc at each of the five tarns; everything
+  else stays high and airless.
+- **Hub 01 is not immortal.** Its pressure resists attrition but can be ended — by an Heir or a Yusar at risk to
+  themselves, or by a powerful PC with relics, an army and explosives — and the logistics of reaching it are part of the
+  lock.
+- **Parabola is the Bowl arcology, and there is no Arcbeam-Stair tunnel, only a highway.** That reversal was already
+  ruled on 2026-11-11 and never written up; these plans inherited the tunnel and are corrected (**P17**), and the canon
+  rewrite it owes `LORE.md` §4, `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` is question N.
+- **`biomes/catch`'s stale records are to be corrected**, and the Bowl's unnamed village is **Esper**.
 
-The remaining questions are gathered in **`PLAN.md` section 10** (A to L, each with a recommendation), and the map edits
-this work owes the scale-model queue in **section 11**.
+Three questions remain, all raised by those answers: **M** what Bāb al-Hawa's shaft is a shaft *to*, now that the
+tunnel is gone (recommended: an Ancient deep geothermal tap); **N** whether to do the canon rewrite; **O** whether the
+Stalker Gate gets a biome kit of its own.

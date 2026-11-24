@@ -21,7 +21,7 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
-## The Catch, the Bowl, the SE outer wall and the Stalker Range in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
+## The Catch, the Bowl, the SE outer wall, the Stalker Range and the Stalker Gate in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
 
 The owner's eight-item brief plus *"Include se outer wall and stalker range in the Sim as well"*, scoped into six plans
 and a reproducible survey (`openworld/catch-bowl/README.md`). Nothing is cut and nothing is built. Four things block it,
@@ -45,7 +45,24 @@ and each is small:
   their 5.1 pins, and the sand-sea and north-fan station sites now land on 4.9 km and 7.0 km of mountainside
   (`PLAN-TERRAIN.md` P1, P2). Rides along with any work on that kit.
 
-Two decisions for the owner, both measured:
+**The owner answered every question on 2026-11-24** (`openworld/catch-bowl/PLAN.md` section 12): five provinces in one
+region (the Stalker Gate added, with a waystation network through its four-way graben pass); the **16 MB page cap
+lifted**, because the region is to be Godot-native; Bab al-Hawa and Ranger HQ kept and the Twins fort dropped; the SE
+outer wall rescaled at the Godsgate's frame and a disc at each tarn, the rest left high and airless; Ranger HQ at 500 on
+a salary and a cut of expeditions; Hub 01 endable by a real expedition but not by attrition; `biomes/catch`'s stale
+records to be corrected; and the Bowl's unnamed village named **Esper**. Nine map and kit edits follow (that plan's
+section 11), and three questions remain (M, N, O).
+
+**A canon rewrite is owed, and it predates this session.** `openworld/ANCIENT-NETWORK.md` section 8.8 (the owner,
+2026-11-11) dropped the Arcbeam-Stair tunnel outright — *"There is no Ancient tunnel from Arcbeam to Stair at all"* —
+and names the files it breaks without rewriting them: **`LORE.md` §4** (the Catch's "tunnel to Stair ... sealed halfway"
+and the divers' prospect that hung on it), **`biomes/catch/PLAN.md`** and **`biomes/seouterwall/PLAN.md`** (the base
+tunnel and Bab al-Hawa's vent shaft). The owner restated it 2026-11-24: *"There is no tunnel ti arcbeam but there is a
+highway."* The catch-bowl plans are corrected (P17); those three files are not. The Theodiga-Stair bore stands and
+already gives Stair's divers their prospect, so nothing in the story is lost — but Bab al-Hawa's warm updraft now needs
+a source (question M; recommended: an Ancient deep geothermal tap).
+
+The earlier background, both measured:
 
 - **The SE outer wall's cordillera rescale never landed.** Its `PLAN.md` step 6.1 would give the province a 4,850 m
   median with **zero cells over 6,500 m**; the map reads **7,962 m median, 83 % over 6,500 m, max 11,707 m** — while

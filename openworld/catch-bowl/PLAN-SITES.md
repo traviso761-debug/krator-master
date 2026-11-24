@@ -198,9 +198,9 @@ simulation's own carriers.
 
 | Site | What it is | The plan |
 |---|---|---|
-| **Arcbeam** (`skz25tuq0w`, 1016,1058, 2,119 m) | an **arcology** of the Empire of Iziz on gentle upland (slope med 11 m/km); on the Iziz road to the Catch (`PROPOSAL-CATCH.md`: Iziz to Stair "by Arcbeam, Parabola and the Godsgate"), and the Ancients' road to Stair ran from it (`ANCIENT-ROADS.md`) | `kits/ancients`'s **arcbeam** target already exists. *Proposed:* a marker, massing out to 30 km, the Ancient road's head as a setpiece, and its own page left for later. **Question 5** asks whether Arcbeam is the Bowl arcology the owner's rail line was to reach |
-| **Parabola** (`scyeauyek7`, 970,1186, 1,716 m) | an **inhabited ruin** of the Empire of Iziz, the north road's gateway; the last Izani place before the Godsgate | `kits/ancients`'s **parabola** target exists. The ground is severe (slope **median 169 m/km**, -714 to 4,713 m within 16 km): it stands on the wall's flank and wants a `bench` as the Hermitage does. A marker, massing, the trail's head, the caravanserai as a `KWCAMPS` halt |
-| **The Izani-Dasri village** (`sq11desertw7`, 1042,1083, 895 m) | a **village** of the Empire of Iziz the map calls "(to be named)" | the `dasri` row with `IZV` beside it — the name says the mix. **Question 6**: the session can propose names on the tongues' sound rules, as it did for the oases |
+| **Arcbeam** (`skz25tuq0w`, 1016,1058, 2,119 m) | an **arcology** of the Empire of Iziz on gentle upland (slope med 11 m/km); a stop on the Iziz road to the Catch (`PROPOSAL-CATCH.md`: Iziz to Stair "by Arcbeam, Parabola and the Godsgate"). **It is not the Bowl arcology and no tunnel runs from it** (the owner, 2026-11-24) | `kits/ancients`'s **arcbeam** target already exists. *Proposed:* a marker, massing out to 30 km, the Ancient highway running past it, and its own page left for later |
+| **Parabola** (`scyeauyek7`, 970,1186, 1,716 m) | **the Bowl arcology** (the owner, 2026-11-11: *"the Bowl arcology goes at 970,1186: the Bowl's most temperate ground near the Godsgate"*, and 2026-11-24: *"parabola is the arcology now"*) — the end of the Ancient rail line's possible extension from Strongbow by Theodiga and Stair, an inhabited ruin of the Empire of Iziz, and the north road's gateway and mustering ground | `kits/ancients`'s **parabola** target exists. The ground is severe (slope **median 169 m/km**, -714 to 4,713 m within 16 km): it stands on the wall's flank and wants a `bench` as the Hermitage does. Its reach grows to 20 km now that it is the arcology. A marker, massing, the rail head and the Ancient highway's start as setpieces, the caravanserai as a `KWCAMPS` halt |
+| **Esper** (`sq11desertw7`, 1042,1083, 895 m) | a **village** of the Empire of Iziz, **named by the owner 2026-11-24**; the map still reads "Izani-Dasri village (to be named)" (a map edit, `PLAN.md` section 11) | the `dasri` row with `IZV` beside it — the fabric says the mix the old label described |
 
 ## 8. The two salt works
 
@@ -217,25 +217,27 @@ are carried), the map edit queued. `CATCH_TUNE` already declares Ṣalṭ al-Bā
 
 ## 9. Bāb al-Hawa, the Vent-Shaft Caravanserai (the SE outer wall)
 
-**What it is** (`biomes/seouterwall/PLAN.md` section 3.3): just south of the Godsgate's 3,620 m saddle divide stands a
-colossal **40 m Ancient ventilation and access shaft collar** of seamed white metal and bronze ring-bands, sunk 1,400 m
-to the mid-point of the Arcbeam-Stair base tunnel. The shaft is plugged by fallen megabreccia 180 m down, *but warm dry
-air at +16 °C still drafts gently upward through the rubble from the geothermally heated tunnel below.* Yuni, Izani,
+**What it is** (`biomes/seouterwall/PLAN.md` section 3.3, **its tunnel framing corrected by the owner's ruling: see
+`PLAN.md` question M**): just south of the Godsgate's 3,620 m saddle divide stands a colossal **40 m Ancient shaft
+collar** of seamed white metal and bronze ring-bands, sunk 1,400 m into the rock. The shaft is plugged by fallen
+megabreccia 180 m down, *but warm dry air at +16 °C still drafts gently upward through the rubble from whatever is
+still warm down there.* Yuni, Izani,
 Dasrī and Xanadui caravaneers have turned the sunken concrete apron inside its **cyclopean wind-baffle crescent** into
 **the pass's only safe overnight camp**: a roofless stone-and-salvage caravanserai where beasts are tethered out of the
 100 km/h nocturnal God-Bore, prayer wheels spin beside Izani milestones and Yuni stencil signs, and desperate arcology
 divers now and then winch down the choked shaft toward the sealed mid-tunnel wreck.
 
-**Why it exists at all**: the Ancients graded a **30 m surface construction highway** through the Godsgate at a 4 %
-ruling grade — board-formed cyclopean concrete cuttings and monolithic parabolic wind-baffle walls — to build and
-ventilate that tunnel and to haul reactors and crawlers too big for its bore. When the Cataclysm collapsed the tunnel
-halfway, **the surface road became the sole surviving artery between the Crater and the south**, and the vent shaft
-became the inn.
+**Why the pass exists at all**: the Ancients graded a **30 m surface highway** through the Godsgate at a 4 % ruling
+grade — board-formed cyclopean concrete cuttings and monolithic parabolic wind-baffle walls — as **the** road between
+the Crater and the south. **There is no Arcbeam-Stair tunnel** (the owner, ruled 2026-11-11 in `ANCIENT-NETWORK.md`
+section 8.8 and restated 2026-11-24: *"There is no tunnel to arcbeam but there is a highway"*), so the highway is not a
+construction road that outlived its bore: it is the artery itself, and the shaft beside it is something else (question
+M). What is certain is that the shaft is warm, and that the caravaneers made its lee into the inn.
 
 **The plan.** Not a village: a **fixture set** (`PLAN-SETPIECES.md` section 1), because everything here is one authored
 thing in one authored place —
 1. the **shaft collar** (`kits/ancients`: seamed white metal, bronze ring-bands, 40 m across), its mouth fenced, warm
-   air visible as a shimmer in the cold;
+   air visible as a shimmer in the cold — *what it is a shaft to* is question M;
 2. the **wind-baffle crescent**, parabolic, cyclopean, the only thing standing between a train and the God-Bore;
 3. the **sunken apron** inside it: tether rings worn bright, a thousand fire scars, salvage walls built up course by
    course by whoever wintered here;

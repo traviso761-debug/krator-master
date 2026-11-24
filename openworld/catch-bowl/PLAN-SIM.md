@@ -39,10 +39,17 @@ the Catch crossing's hardest three stages and its five tarns are finds, not plac
 stops on the north road, where its legs can share the Catch's calendar and its carriers. Making it a tune would give it
 books it cannot fill.
 
-**Why the Stalker Range *is* its own tune.** Not because it has an economy — it has almost none — but because what it
-emits (Stalkers) crosses into every other province, and because its one settlement answers to **Yuni**, a polity no
-other tune here speaks for. A tune of four or five records is cheap; a faction's worth of predation buried inside
-`CATCH_TUNE` is not.
+**Why the Stalker Range *is* its own tune**, and why it grew. Not because the Range has an economy — it has almost none
+— but because what it emits (Stalkers) crosses into every other province, and because its settlement answers to **Yuni**,
+a polity no other tune here speaks for. The owner's decision to add the **Stalker Gate** (2026-11-24) gave that tune a
+second province with breathable graben floors, a waystation network and a 500-strong garrison, so it now carries:
+
+- **Ranger HQ** at 500, on a salary and a cut of expeditions (section 4a);
+- **the waystation network** through the four-way pass, as stops with their own keep and upkeep (`PLAN.md` 2a);
+- **the expeditions themselves**, which is the mechanism the owner's answer to Hub 01 implies: ventures with a backer, a
+  share and a chance of not returning, which `SIM.found` and the bounty board already half-support;
+- **Hub 01** (section 4b);
+- **the convoy that feeds all of it** up 180 km of pass from the Yuni valley.
 
 ## 2. The Godsgate on the Catch's tune
 
@@ -96,9 +103,9 @@ If it narrows past the lore, the lever is the fodder price at Bāb al-Hawa, not 
 | **Jabal** | `sa5o6dvjdv` | 1225,1149 | a city (census from its page) | the Jabal Sheikhdom's seat; **the Train of Jabal's home**, in place of the off-map pool `gate.dasri`. Its works: the salt warehouses (*wakala*), the two caravanserais (*funduq*), the *birka* cisterns, the souq |
 | **Mantis** | `slw9dufqfs` | 1113,1164 | a town | an Iziz holding under Izani merchant houses: frankincense and resin, dates and figs from the walled gardens, the lake's shrimp-and-brine take, and **the grievance** — it buys its salt from the Train at Solta |
 | **Solta** | `s0zgu7u6yb` | 1169,1150 | ~100-150 seasonal | the Train's Bowl works: rock salt 234, gypsum 253, 7 km from the lake, 112 km from Jabal |
-| **Arcbeam** | `skz25tuq0w` | 1016,1058 | an arcology (question 5) | the Iziz road's last Imperial place before Parabola; the **north end of the collapsed Arcbeam-Stair base tunnel**, which is why the Godsgate exists |
-| **Parabola** | `scyeauyek7` | 970,1186 | an inhabited ruin | the north road's mustering ground: where a train forms up, waters, and reads the water board before the pass |
-| **The Izani-Dasri village** | `sq11desertw7` | 1042,1083 | a village | the Bowl's one farming place (question 6: it has no name) |
+| **Arcbeam** | `skz25tuq0w` | 1016,1058 | an arcology | an Iziz arcology and a stop on the north road. **Not** the Bowl arcology, and **no tunnel runs from it** (the owner, 2026-11-24) |
+| **Parabola** | `scyeauyek7` | 970,1186 | an inhabited ruin, **the Bowl arcology** | the north road's mustering ground, where a train forms up, waters and reads the water board before the pass — and the end of the Ancient rail line's possible extension (the owner, 2026-11-11 and 2026-11-24) |
+| **Esper** | `sq11desertw7` | 1042,1083 | a village | the Bowl's one farming place; named by the owner, 2026-11-24 |
 
 **Its goods**, beyond what `CATCH_TUNE` already names: dates, figs, frankincense, resin, hides, brine shrimp, and the
 Bowl's own halite and gypsum. **Its calendar**: the pans in the cool months (as the Catch's), the monsoon in Mantis's
@@ -124,12 +131,21 @@ On the sim, *proposed*:
 | | |
 |---|---|
 | **Faction** | `yuni` (the Emirate, not the Merchants' Guild and not the Geomancers — a fourth Yuni interest on this map, and the only one that is a government) |
-| **People** | 350: a garrison, the rangers themselves, a smith, a surgeon, and the families |
-| **What it eats** | everything, carried up the Stalker Gate from the Yuni valley: it farms nothing at 1,982 m in a 0 mm province |
-| **What it sells** | **escort**. This is its whole economy, and the sim already has the pattern: the Brotherhood of the Two Horns sells guiding over the Twins and takes the Split Tally in two halves. The Rangers sell a sworn escort across the Stalker Gate and take a cut of what lands |
-| **What it also sells** | **Stalker salvage** — the one place a hull, a harpoon mechanism or a power cell comes to market with a provenance. Buyers: the Geomancers, Yuni's Guild, the Yusar, Xanadu's engine-keepers (the same list `biomes/catch/PLAN.md` 6a gives for Stair's divers) |
-| **What it buys** | arms, explosives (the owner's 2026-10-23 answer: a wise caravan carries them), grain, charcoal, medicine |
+| **People** | **500** (the owner, 2026-11-24): a garrison, the rangers themselves, a smith, a surgeon, the quartermaster's staff and the families. A fort with a village inside the wall, not an outpost |
+| **What it eats** | everything, carried up the Stalker Gate from the Yuni valley: it farms nothing at 1,982 m in a 0 mm province. **This is the fact that sets its whole shape** — 500 people fed over 180 km of graben pass is a standing convoy, which is why the waystation network exists (`PLAN.md` 2a) |
+| **Its income, 1: a salary** | the owner, 2026-11-24: the Rangers *"get paid a salary"* — a transfer from the Yuni Emirate, on `SIM.transfer`, which the sim already has (`77-sim-6-transfer.js`, as Xanadu's grants of fealty and esteem run). **This is what makes 500 people possible**: a garrison in a 0 mm province cannot live on fees, and a salary is also a lever the Emirate can cut |
+| **Its income, 2: a cut of expeditions** | the owner: *"and also a small cut of an expeditions profits."* **Of expeditions, not of passing cargo** — which is the interesting distinction and not the Brotherhood's Split Tally. The Rangers do not toll the road; they take a share of what a venture into the Stalker Range brings back. So their income rises with **salvage**, not with traffic, and a rich season for the divers is a rich season for them |
+| **What it also sells** | **Stalker salvage** of its own — the one place a hull, a harpoon mechanism or a power cell comes to market with a provenance. Buyers: the Geomancers, Yuni's Guild, the Yusar, Xanadu's engine-keepers (the same list `biomes/catch/PLAN.md` 6a gives for Stair's divers) |
+| **What it buys** | arms, explosives (the owner's 2026-10-23 answer: a wise caravan carries them), grain, charcoal, medicine, timber |
 | **Its bounty** | `SIM.bounty` (`PLAN-RAIDS.md` R1): the Rangers post and pay the only standing bounty on Stalkers in the world |
+| **The waystations** | theirs to keep: the network's bothies, water tanks and fodder bins are a cost on their books, and the reason the salary has to cover more than wages |
+
+**Why "a cut of expeditions" is the better design.** A toll on traffic would make the Rangers richer the more caravans
+pass, which points them at the road. A cut of expeditions points them at **the Stalker Range** — they profit when
+someone goes in and comes out heavier, so they outfit, guide and insure ventures rather than taxing trade. That puts them
+on the same side as the player and on the opposite side from Hub 01, which is exactly where an antagonist's counterparty
+belongs. It also gives `SIM.found` and the bounty board something to feed: an expedition is a thing with a backer, a
+share and a chance of not returning.
 
 **Why this is worth having.** It gives the Stalkers a **counterparty**. Until now they were weather: a loss rate on a
 leg, with nobody on the other side of it. With Ranger HQ there is a faction whose income rises when the Stalkers are
@@ -142,7 +158,7 @@ That is the difference between a hazard and an antagonist.
 no goods and no trade**, run by a mad AI. The owner, 2026-10-23: **no human has reached it since the Cataclysm and lived
 to tell the tale**, and *in the world nobody knows the Stalkers come from it*.
 
-On the sim it is a **`SIM.site` with one output: pressure.** *Proposed*:
+On the sim it is a **`SIM.site` with one output: pressure.**
 
 - a **faction `hub01`** with no settlement the player can trade with, hostile to everyone, allied to nothing;
 - a **pressure number** (0..1) that sets how many Stalker triads are abroad, and where. It rises slowly and falls when
@@ -150,7 +166,21 @@ On the sim it is a **`SIM.site` with one output: pressure.** *Proposed*:
   — which is the loop that makes the whole province matter;
 - **no visibility**: the pressure number is never named in any report the player can read. What they can read is the
   Rangers' board and the caravaneers' talk. The design shows it, never says it;
-- **a cap**: the pressure cannot be driven to zero. Hub 01 rebuilds. Nobody has reached it and lived.
+- **it resists attrition but it can be ended** (the owner, 2026-11-24): *"In theory an Heir or Yusar could change it, but
+  could still be dangerous for them. A powerful PC with many relics and a large army with explosives could in theory
+  take them down, if they figure out a way to get one way the hell out there."* So:
+
+| | |
+|---|---|
+| **Attrition alone cannot finish it** | killing triads lowers the pressure; it recovers. A floor the player can push down and hold down with effort, never clear by grinding. Hub 01 rebuilds |
+| **Route 1: the Call** | an **Heir or a Yusar** can *change* it — not merely destroy it — and it is **dangerous to them**. The owner's 2026-10-23 note is the shape: whoever reached it and used the Call "would be either its master or its next subject". So the outcome is a roll the player can load but not guarantee, and mastery is a live outcome: the pressure could be **redirected**, not only stopped |
+| **Route 2: force** | a **powerful PC with many relics, a large army and explosives** can take it down. Not a raid: a campaign, with the three requirements named |
+| **Route 3 does not exist** | there is no cheap way. The lock is partly the thing itself and partly **the logistics** — the owner: *"if they figure out a way to get one way the hell out there"*. Hub 01 is 255 km east of Stair across 255,000 km² at 0 mm of rain, -22 °C and 47 % over 8,000 m. **Getting an army there is the puzzle**, and the Stalker Gate's waystation network and Ranger HQ are the only infrastructure that could stage one |
+| **What it means for the books** | `STALKER_TUNE` needs a `hub01` state with more than a number: `{pressure, state: 'active' \| 'mastered' \| 'dead', bywhom}`. A dead Hub 01 ends the Stalker losses on every leg in the region — which is a **permanent change to the Catch's economy**, and the single largest thing a player can do to these books. The Catch stops being the barrier it was built to be, and that should be felt: cheaper salt in Xanadu, and the Brotherhood and the Rangers both poorer |
+
+**The design note that matters.** Because route 3 does not exist, the pressure number can stay hidden for the whole of
+normal play and only becomes legible when a player is already mounting the expedition that could end it. That is the
+right time for the world to admit what it has been doing.
 
 ### 4c. The Stalkers themselves
 
@@ -165,9 +195,9 @@ they go**, which `PLAN-RAIDS.md` R2 turns into ambushes:
   livestock losses, not as theft. No tune has modelled that before, and it is what makes them read differently from
   bandits.
 
-### 4d. What the province does *not* get
+### 4d. What the provinces do *not* get
 
-No census beyond Ranger HQ's 350. No farms. No works except the abandoned Geomancer copper-and-rare-earth mine at the
+No census beyond Ranger HQ's 500 and the waystations' keepers. No farms. No works except the abandoned Geomancer copper-and-rare-earth mine at the
 Copper-Vein Tarn (`PLAN-SITES.md`: a find, with a wrecked Harpooner frozen in the aufeis beside an unlooted winch — a
 ruin, not a producing site). No roads except the Stalker Gate's, which belong to a later region. No markets.
 
@@ -195,7 +225,7 @@ and relations. The three new tunes join the same way.
 |---|---|---|
 | **S1** | `CATCH_TUNE` gains the Godsgate's three stops, its four legs and its three seasons (section 2) | the 29 existing checks pass unchanged; a train that misses Bāb al-Hawa loses beasts and one that reaches it does not |
 | **S2** | `BOWL_TUNE` (section 3), joined to `CATCH_TUNE`; the Train's home moves from the pool to Jabal | salt leaves Solta and Ṣalṭ al-Bān and reaches Strongbow and Qiblai; Mantis buys its salt from the Train; `test-sim.js`, Voth's stocks proof and the baseline unchanged |
-| **S3** | `STALKER_TUNE` (section 4): Ranger HQ, Hub 01's pressure, the escort cut and the bounty | the escort's cut lands at Ranger HQ; destroying triads lowers the floor's losses; the pressure number appears in **no** player-readable report |
+| **S3** | `STALKER_TUNE` (section 4): Ranger HQ's 500 on its salary and its cut of expeditions, the waystation network's upkeep, Hub 01's pressure and state, the bounty | the salary lands and a cut of it does not depend on traffic; an expedition's share reaches Ranger HQ; destroying triads lowers the floor's losses and the pressure recovers; the pressure appears in **no** player-readable report; a `dead` Hub 01 ends the Stalker losses region-wide and the Brotherhood and the Rangers both lose income |
 | **S4** | **C6**: all three into `EAST_RIFT` with Xanadu and Longsong | **one ledger** over five tunes; Xanadu's salt shortfall narrows but does not close; every tune's own tests still pass |
 | **S5** | The census across the four provinces, for `openworld/PLAN-SETTLEMENTS.md` | the region's population agrees with the map's pins and Gemini's where the owner has not overridden them |
 
@@ -208,7 +238,10 @@ frame.
 baseline unchanged unless it is meant to move them. Every trade-code change C1 and C2 needed was made inert where
 unused, and the same discipline holds for the escort cut, the pressure number and `SIM.outlaws`.
 
-## 7. Questions for the owner
+## 7. Questions for the owner — all answered 2026-11-24
+
+Every one of these was answered on the day (`PLAN.md` section 12). Kept with its answer, since the reasoning behind each
+is what the tunes have to encode.
 
 1. **Bāb al-Hawa's people.** The place **stays** (the owner, 2026-11-24). Gemini's model says 320, which is hard to
    square with Stair's 750 for a camp in a 3,590 m pass that grows nothing. *Proposed:* **120** — the keepers of the
@@ -217,11 +250,13 @@ unused, and the same discipline holds for the escort cut, the pressure number an
 2. **Ranger HQ. ANSWERED (the owner, 2026-11-24: "Agree keep both"): it stays.** It is the only counterparty the
    Stalkers have, it gives the Yuni Emirate a presence on this map, and its 1,982 m valley is the one habitable spot in
    255,000 km². **Open:** whether Gemini's 350 is right (`PLAN.md` question D).
-3. **Hub 01's pressure.** Is a hidden, capped pressure number that the player can lower but never zero the right shape
-   for the Stalkers' source? And should a player who reaches Hub 01 be able to change it — the owner's 2026-10-23 note
-   says an Heir who used the Call there would be "either its master or its next subject".
-4. **The Rangers' escort.** Is a sworn escort with a cut of the cargo the right economy for them, mirroring the
-   Brotherhood's Split Tally on the Twins? Or are they a government garrison paid from Yuni, with no price on their
-   service?
-5. **The Stalker Gate.** It is not in this cut. It holds Ranger HQ too, and it is the pass network to Yuni, the Loom
-   Chasms, the Slabfields and the Siphon Pits. Should its tune be this session's, a later region's, or Yuni's?
+3. **Hub 01's pressure. ANSWERED (the owner, 2026-11-24): hidden, attrition-proof, but not immortal.** An Heir or a
+   Yusar can change it at risk to themselves; a powerful PC with many relics, a large army and explosives can bring it
+   down; and the logistics of reaching it are part of the lock. Section 4b.
+4. **The Rangers' escort. ANSWERED (the owner, 2026-11-24): both, and neither is a toll.** *"They get paid a salary and
+   also a small cut of an expeditions profits."* A transfer from the Emirate **and** a share of what ventures bring out
+   of the Stalker Range — not a cut of passing cargo. Section 4a says why that points them at the Range rather than at
+   the road, and puts them on the player's side. Their people: **500**, not 350.
+5. **The Stalker Gate. ANSWERED (the owner, 2026-11-24): add it here**, with *"a network of waystations marking the
+   trail through it"*. It joins `STALKER_TUNE` rather than becoming a sixth tune, because its one settlement is Ranger
+   HQ and its traffic is the Rangers' own. `PLAN.md` section 2a lays the network.

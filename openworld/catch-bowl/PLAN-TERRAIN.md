@@ -146,13 +146,13 @@ So the Godsgate is **a road, not a wall**: a 100 km trans-cordilleran trench flo
 than the Catch floor's own tracks. The first pass's 5,282 m was a column maximum across a band — the wrong test entirely
 (see the header). A `ROADS` route at 8 % will follow this thalweg almost as it lies.
 
-**Its own plan gives it everything else too** (`biomes/seouterwall/PLAN.md` section 3): the Ancients' **30 m surface
-construction highway** at a 4 % ruling grade with board-formed cyclopean cuttings and parabolic wind-baffle walls, built
-to haul what the Arcbeam-Stair base tunnel could not fit, and **the sole surviving artery between the Crater and the
-south** once the Cataclysm collapsed that tunnel; the **Twin Gate-Horns** (Ilmenite Horn west, Shatter-Crown east); the
+**Its own plan gives it everything else too** (`biomes/seouterwall/PLAN.md` section 3, **with its tunnel framing
+corrected: see P17**): the Ancients' **30 m surface highway** at a 4 % ruling grade with board-formed cyclopean cuttings
+and parabolic wind-baffle walls — **the** Ancient road between the Crater and the south, not a construction road for a
+tunnel; the **Twin Gate-Horns** (Ilmenite Horn west, Shatter-Crown east); the
 drainage divide at 1031,1252 where meltwater parts between `Guli rrija` north to the Bowl and `Wādī al-Qamar al-Kabīr`
-south to the Catch; and **Bāb al-Hawa**, the 40 m Ancient ventilation shaft collar whose rubble plug still drafts +16 °C
-air upward, with the pass's only safe overnight camp in the lee of its wind-baffle crescent. Names in all five tongues.
+south to the Catch; and **Bāb al-Hawa**, the 40 m Ancient shaft collar whose rubble plug still drafts +16 °C air upward,
+with the pass's only safe overnight camp in the lee of its wind-baffle crescent. Names in all five tongues.
 
 ## 5. The ways in and out
 
@@ -327,8 +327,9 @@ lore"** (`PROPOSAL-CATCH.md` question 6). On 5.1 they were dropped as `gem_godsg
 
 **The reason has since stopped being true, and the owner may not know.** Six days before the drop,
 `biomes/seouterwall/PLAN.md` section 3.3 (2026-11-10) gave Bāb al-Hawa a page of lore: *the Vent-Shaft Caravanserai*, a
-40 m Ancient ventilation and access shaft collar of seamed white metal and bronze ring-bands sunk 1,400 m to the
-mid-point of the Arcbeam-Stair tunnel, plugged by megabreccia 180 m down but still drafting +16 °C air upward, with the
+40 m Ancient shaft collar of seamed white metal and bronze ring-bands sunk 1,400 m (its text says to the mid-point of
+the Arcbeam-Stair tunnel: **P17 corrects that**), plugged by megabreccia 180 m down but still drafting +16 °C air
+upward, with the
 sunken concrete apron inside its cyclopean wind-baffle crescent turned into **the pass's only safe overnight camp** — a
 roofless stone-and-salvage caravanserai where beasts are tethered out of the 100 km/h God-Bore, prayer wheels spin
 beside Izani milestones and Yuni stencil signs, and divers winch down the choked shaft. The owner **also accepted** the
@@ -435,6 +436,30 @@ its own**. The simulation value of the province is three things and no more: **R
 source emits. `PLAN-SIM.md` section 4 designs exactly that and nothing else. The mistake to avoid is giving the province
 a census it has no business having.
 
+### P17 — the plans inherited a tunnel the owner had already dropped *(my error; a canon rewrite is owed)*
+
+`biomes/seouterwall/PLAN.md` section 3.3 explains the Godsgate as a **surface construction highway** built to serve a
+**180 km Arcbeam-Stair base tunnel**, with Bāb al-Hawa as that tunnel's **1,400 m ventilation shaft**. The first and
+second passes of these plans took that framing as read.
+
+**It is stale, and it was stale before this session started.** `openworld/ANCIENT-NETWORK.md` section 8.8 (the owner's
+follow-up answers, **2026-11-11**) says: *"'No tunnel to Arcbeam' means: drop the Stair tunnel. There is no Ancient
+tunnel from Arcbeam to Stair at all. Stair is reached by the Rift line's possible leg from Strongbow, and by the surface
+trunks."* The same entry notes what it breaks and that the work was not done: *"This changes canon in `LORE.md` §4 (the
+Catch: 'the Ancients' tunnel to Stair ... sealed halfway', the divers' prospect), `biomes/catch/PLAN.md` and
+`biomes/seouterwall/PLAN.md` (the base tunnel and Bab al-Hawa). I have not rewritten those yet."* The owner restated it
+on 2026-11-24: *"There is no tunnel ti arcbeam but there is a highway."*
+
+So three things are true at once and the files disagree: **the Godsgate highway stands** (and the owner has now made it
+*the* road rather than a construction road), **the Theodiga-Stair bore stands** (kept by the owner 2026-11-16, and it is
+the divers' prospect at Stair), and **the Arcbeam-Stair tunnel does not exist**.
+
+What this region's plans now say, corrected in this pass: the highway is the artery, Arcbeam is an Iziz arcology on the
+road with no tunnel, **Parabola is the Bowl arcology** (the owner, 2026-11-11, "the Bowl arcology goes at 970,1186", and
+2026-11-24, "parabola is the arcology now"), and Bāb al-Hawa's shaft is 1,400 m into the rock to *something still warm*
+— **question M** asks what. The wider rewrite (`LORE.md` §4, `biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md`) is
+canon work beyond this region and is **question N**.
+
 ## 8. What the survey did *not* find
 
 - **No dune, salt or oasis field is missing from `core/world`**: all three are in `WORLD.FIELDS` already, and all four
@@ -474,3 +499,4 @@ a census it has no business having.
 | P14 | a map edit | Bāb al-Hawa's pin is 1,205 m up the corridor wall; now that the place stays, the pin moves to the thalweg (`PLAN.md` question B) |
 | P15 | no | the Tharn crater is 671 m out; outside this cut |
 | P16 | no | the Stalker Range has almost nothing to simulate, and should not be given a census |
+| **P17** | **a rewrite is owed** | these plans inherited the Arcbeam-Stair tunnel, which the owner dropped on 2026-11-11; corrected here, but `LORE.md` §4, `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` still carry it (questions M and N) |
