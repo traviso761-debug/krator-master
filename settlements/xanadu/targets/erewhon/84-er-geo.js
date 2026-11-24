@@ -85,7 +85,10 @@ const ISLAND=(function(){const raw=terrainBase,S=4,N=45,land=(i,j)=>raw(ISLAND_C
 // this page's ground into the world (a town grid) would give it. The Pleasure Dome's island (ISLAND_C) is the scale
 // model's landform lf_pleasure_dome_isle (tools/scale-model/model/data/landforms.json), stamped into the world by
 // openworld/xanadu-oidong-highrift: verify.py --assert checks the two stand on one spot.
-const ER_WORLD={px:805,py:1516,turn:0,lake:-520,mPerPx:2000,island:'lf_pleasure_dome_isle'};
+// Re-seated 2026-11-23 on the pin as it stands now, 841,1507.9 (the vale ring moved it to 841,1507.64 with its lake,
+// 2026-11-17; on the 11-23 re-run that point lay 11.6 m under the lake at 1:1, so the pin went 520 m south to the
+// nearest dry ground with the lake 613 m north for the island; ER_WORLD had stayed at 805,1516 till now)
+const ER_WORLD={px:841,py:1507.9,turn:0,lake:-520,mPerPx:2000,island:'lf_pleasure_dome_isle'};
 function erWorldPx(x,z){return[ER_WORLD.px+x/ER_WORLD.mPerPx,ER_WORLD.py+z/ER_WORLD.mPerPx];}
 if(ISLAND){const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(h>=ISLAND_LEVEL)return h;const e=ISLAND.edge(x,z);if(e<=0)return h;return h+(ISLAND_LEVEL-h)*smoothstep(0,ISLAND_RAMP,e);};}
 // ---------------------------------------------------------------- the west flank, under the citadel (the owner, 2026-11-12)

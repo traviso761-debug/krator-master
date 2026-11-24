@@ -7,7 +7,7 @@
 On the GPU (KRATOR_GL=gpu, under tools/harness.py lock --lane auto) the harness's universal asserts name the renderer.
 The checks, each with a negative:
   - the world's own (core/world/91-world-probe.js, round Erehwon's first village);
-  - the region: Erehwon where the cut put it (px 841,1507.64, the vale ring's bench), on dry land, the Xanadu kit growing there; the negative reads
+  - the region: Erehwon where the cut put it (px 841,1507.9: the vale ring's bench 841,1507.64 lay under the lake on the 11-23 re-run, re-seated 520 m south), on dry land, the Xanadu kit growing there; the negative reads
     it 8 km north, out on the lake, in the water;
   - the shore towns and isles: each of the sixteen where SITES.json put it, inside the cut, on dry land or with dry land
     within 1 km (a shore cell of the model; an isle is one cell of it); the negative reads Ālph-Hēḍ in the lake's middle;
@@ -40,7 +40,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,O=M.frame.origin_px,fx=(px,py)
  /* Erehwon: where the cut put it, on dry land, the Xanadu kit growing there */
  {const bad=[],lines=[],S=(M.sites||[]).find(s=>s.id==='s57bkv9741');
   if(!S)bad.push('no site s57bkv9741');else{let x=S.x,z=S.z;if(neg==='site')z=S.z-8000;   /* the negative: Erehwon read 8 km north, on the lake */
-   if(S.px!==841||Math.abs(S.py-1507.64)>0.01)bad.push('Erehwon at px '+S.px+','+S.py);   /* the vale ring's bench (2026-11-17) */
+   if(S.px!==841||Math.abs(S.py-1507.9)>0.01)bad.push('Erehwon at px '+S.px+','+S.py);   /* re-seated on the re-run's dry shore (2026-11-23) */
    if(!WORLD.inside(x,z))bad.push('Erehwon outside the cut');else{const A=WORLD.at(x,z),b=WORLD.biomeAt(x,z);
     if(!(A.depth<0))bad.push('Erehwon in water');
     const k=WORLD_KITS.findIndex(q=>q.name==='xanadu'),w=WORLD.kitW(k,x,z);if(!(w>.5))bad.push('Erehwon: the xanadu kit weighs '+w.toFixed(2));
