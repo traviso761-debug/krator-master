@@ -14,6 +14,14 @@
    claude/roomlight-fixes 02b9afc2, claude/citadel-room-graph 4067d5d3, claude/citadel-furnishing-cb5e01 f348edf53.
 3. Before Stage 8: claude/xanadu-packs a8d7e7c18 (--page-packs off by default); XS0 files only from claude/xs0-measure-local
    02716be9b (settlements/xanadu/XS0-MEASURE.md, .json, xs0/); lake towns A1 e15d66e4f (or claude/xanadu-plans-ad6ef4 if done).
+4. **Before step 29's verify (the scale-model session, via the coordinator, 2026-11-23):** on every heavy open-world page the GPU
+   verify stalls in the harness's universal asserts after the region's own checks have printed. Pinnacle took 24.8 min on the rtx
+   lane, at the edge of the 25-min watchdog; xanadu-lake-shore and xanadu-oidong-highrift were killed there (the lake-shore
+   death after its resources panel, in the known failures below, may be the same thing). Left alone, the 484-job verify loses its
+   open-world pages to the watchdog. Do one of these, in this order of preference: find which universal assert is slow on a
+   large scene (time each in `tools/harness.py` on pinnacle) and fix it; or tier it in `verify_all.py` (main view only, or that
+   assert off, for the heavy pages); or have `verify_all.py` give the heavy pages `KRATOR_GPU_STALL_MIN=60`. The scale-model
+   session is re-running the three with `KRATOR_GPU_STALL_MIN=60`: its times say how much headroom the third option needs.
 
 ## The line's known test failures (test_all --no-build) and what Stage 8 does with each
 | Step | Failure | Cause | Stage 8 action |

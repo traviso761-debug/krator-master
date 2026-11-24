@@ -271,7 +271,7 @@ Codex resolves hook commands from the repo root). Each in its build's turn of Ph
 29. **GPU verify** of every rebuilt page, driven by `tools/verify_all.py` (D5; merged 3b8dc2b83: `--all` takes every
     `port_baseline` page plus the 14 targets `--all` skips, 484 jobs; `--dry-run` shows each command and its source; `--resume`,
     `--retry-failed`, `--detach`; its report checks D30's carried rows one by one; fill `verify_all.json` "no_look" once a no-look
-    item's proof has run, to turn tiering on; `kits/sw-arcology` has no `verify.py`: write one or keep it skipped). Each page: `KRATOR_GL=gpu verify.py <page> --assert` (biomes and stations `--all-views`; Erewhon
+    item's proof has run, to turn tiering on; `kits/sw-arcology` has no `verify.py`: write one or keep it skipped; first the open-world pages' universal-assert stall at the 25-min watchdog, E-integration.md "Still to land" item 4). Each page: `KRATOR_GL=gpu verify.py <page> --assert` (biomes and stations `--all-views`; Erewhon
     `--interiors`; `kits/interiors --sets`; the Xanadu pages' own `--views`), lane `auto`, longest first (voth-city about 40 min,
     the isle demo, Erewhon `--interiors` 882 s, the biggest `--all-views`), one local verify per lane, no build while a verify
     runs, through the verify cache; per D5. A `STALE PASS` or a run without the renderer line does not count.
