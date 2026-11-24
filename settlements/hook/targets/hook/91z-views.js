@@ -36,5 +36,12 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  if(typeof HOOK_SITE!=='undefined'){const mk=id=>(HOOK_SITE.markers||[]).find(m=>m.id===id);const B=mk('B'),E=mk('E');
   if(B)V['The palace']=[B.x+60,terrainH(B.x,B.z)+45,B.z+170,B.x,terrainH(B.x,B.z)+14,B.z];
   if(E)V['The slave market']=[E.x-80,terrainH(E.x,E.z)+22,E.z+70,E.x,terrainH(E.x,E.z)+4,E.z];}
+ // S3: the Ancient city round the port (77-hook-ruin.js, 90c): from high over the harbour to the downtown and the Crown;
+ // low over the drowned downtown from beside the Drowned Spire; on the freeway's approach, looking up the deck to the gate
+ if(typeof HOOK_RUIN!=='undefined'&&HOOK_RUIN.crown){const C=HOOK_RUIN.crown,S=HOOK_RUIN.spire,G=HOOK_RUIN.gates[1],ctr=HOOK_RUIN.spans.reduce((a,s)=>[a[0]+s.x/HOOK_RUIN.spans.length,a[1]+s.z/HOOK_RUIN.spans.length],[0,0]);
+  V['The Ancient city']=[cx+(cx-ctr[0])*.6,1900,cz+(cz-ctr[1])*.6,ctr[0],0,ctr[1]];
+  if(S)V['The drowned downtown']=[S.x+(S.x-C.x)*.12,30,S.z+(S.z-C.z)*.12,C.x,C.y+60,C.z];
+  const aps=HOOK_RUIN.spans.filter(s=>s.arc==='approach'),ap=aps[aps.length-1];   /* the approach's far end, by the ramp */
+  if(ap&&G)V['The road in']=[ap.x,ap.y+4,ap.z,G.x,G.y+10,G.z];}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();

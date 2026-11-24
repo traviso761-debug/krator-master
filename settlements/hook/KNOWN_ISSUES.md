@@ -10,6 +10,11 @@ from a Hook task.
       188 m are gone with it; S2 lays the site plan (`README.md`, "The Ancient city").
 - [ ] **The plan costs about 1.8 s at load.** 2,022 blocks over a 10 km square, each reading the ground five times;
       records only, nothing drawn yet. Bake the records at build time (they are deterministic) before S3 adds drawing.
+- [ ] **The city is drawn as massing only.** S3's far tier (90c) stands every tower as its footprint raised to what
+      stands; the heroes and shells up close (`kits/metropolis`: shells exist for the Spindle and the Ledger only, the
+      other fourteen designs wait on the kit's shell review) are the next step, and the page's budget decides how many.
+- [ ] **The hunters' camp moved.** The sketch put it on the plateau's edge where, under placement B and the coastal
+      plain on the low ground only, there is water; it stands on the nearest dry ground, the plateau's north foot.
 - [ ] **The places are records only.** The thirteen hamlets, camps and posts carry their culture, people and work;
       drawing them on `core/hamlet` and `core/camp` (and their people in the simulation) is S5.
 - [ ] **The plateau's own north coast is straight.** East of the wall the plateau's north foot runs straight for some

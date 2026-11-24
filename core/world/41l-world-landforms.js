@@ -154,6 +154,7 @@ function benchD(B,x,z){return benchQ(B,x,z,BQ).d;}
 // offset from the level is drawn into it by a smooth minimum of k (B.k: the toe rounded over about skirt_m), whose two
 // weights sum to 1, so the face's slope is never steeper than the batter's or the ground's own
 let benchOff=false;   /* WLAND.check reads the ground without the benches */
+let benchUpTo=1e9;    /* ...and with only the benches up to the one it judges (their order is the records') */
 function benchStamp(B,x,z,h){if(benchOff||x<B.box[0]||x>B.box[2]||z<B.box[1]||z>B.box[3])return h;
  benchQ(B,x,z,BQ);const d=BQ.d;if(d>=B.reach)return h;
  if(B.fill)return Math.max(h,benchCut(B,d,h));   /* fill_only: a drowned shelf raises the bed and cuts nothing (an islet on it stays) */
@@ -226,7 +227,7 @@ W.init=function(R){build();
  if(api.list.length||api.waters.length||api.benches.length){const prev=W.landHook;
   // the benches last: a terrace is level whatever the water and the islands did under it
   W.landHook=(x,z,h,mw)=>{if(prev)h=prev(x,z,h,mw);if(api.waters.length)h=waterStamp(x,z,h);const L=find(x,z);if(L)h=stamp(L,x,z,h);
-   for(let i=0;i<api.benches.length;i++)h=benchStamp(api.benches[i],x,z,h);return h;};}
+   for(let i=0;i<api.benches.length&&i<=benchUpTo;i++)h=benchStamp(api.benches[i],x,z,h);return h;};}
  base(R);};
 api.at=(x,z)=>find(x,z);
 api.benchAt=(x,z)=>benchFind(x,z);
@@ -265,19 +266,23 @@ function waterCheck(R){let n=0,wet=0,banks=0,dryBanks=0,firstBad=null;
 const deg=t=>+(Math.atan(t)*180/Math.PI).toFixed(1);
 function slopeAt(x,z){const e=1;return Math.hypot(W.Hbare(x+e,z)-W.Hbare(x-e,z),W.Hbare(x,z+e)-W.Hbare(x,z-e))/(2*e);}
 function benchCheck(B,o){const st=(o&&o.step)||Math.max(4,(B.a+B.b)/24),U=B.a+B.reach,V=B.b+B.reach,cut={max:0,sum:0,n:0},fill={max:0,sum:0,n:0};
- let inside=0,faces=0,steep=0,over=0,toeOut=0,firstBad=null,steepAt=null;const later=api.benches.slice(api.benches.indexOf(B)+1);
- const was=benchOff;
+ let inside=0,faces=0,steep=0,over=0,toeOut=0,firstBad=null,steepAt=null;const earlier=api.benches.slice(0,api.benches.indexOf(B));
+ /* judged on the ground as it stood once this bench was stamped: the benches up to it and none after (a later one
+    stamps over it there, rightly, and is judged on its own ground) */
+ const was=benchOff,upto=benchUpTo;benchUpTo=api.benches.indexOf(B);
+ try{
  for(let u=-U;u<=U+1e-9;u+=st)for(let v=-V;v<=V+1e-9;v+=st){const x=B.x+u*B.c-v*B.s,z=B.z+u*B.s+v*B.c,d=benchD(B,x,z),top=benchTop(B,BQ.in);if(d>=B.reach||!W.inside(x,z))continue;
   const h=W.Hbare(x,z);benchOff=true;const n=W.Hbare(x,z);benchOff=was;
-  /* inside: the departure from the bench's own top, where no later bench reaches (a later one stamps over it, rightly) */
-  if(d<=0&&later.some(C=>x>=C.box[0]&&x<=C.box[2]&&z>=C.box[1]&&z<=C.box[3]&&benchD(C,x,z)<C.reach))continue;
   if(d<=0){inside=Math.max(inside,B.fill?Math.max(0,top-h):B.cut?Math.max(0,h-top):Math.abs(h-top));if(inside>1e-6)firstBad=firstBad||['inside',Math.round(x),Math.round(z),+h.toFixed(2)];}   /* fill_only: nothing under the level; what stood over it stays */
   const dh=n-h;if(dh>.01){cut.max=Math.max(cut.max,dh);cut.sum+=dh;cut.n++;}else if(dh<-.01){fill.max=Math.max(fill.max,-dh);fill.sum-=dh;fill.n++;}
   if(d<=0||Math.abs(dh)<=.01)continue;
   if(d>B.reach-B.skirt){toeOut++;firstBad=firstBad||['toe',Math.round(x),Math.round(z),+dh.toFixed(2)];}
   faces++;const s=slopeAt(x,z);benchOff=true;const sn=slopeAt(x,z);benchOff=was;
-  if(sn<B.tan)steep=Math.max(steep,s);
-  if(s>Math.max(B.tan,sn)*1.02+.01){over++;firstBad=firstBad||['steep',Math.round(x),Math.round(z),deg(s)];steepAt=steepAt||[Math.round(x),Math.round(z),deg(s),deg(sn)];}}
+  /* the batter allowed here: this bench's, or an earlier bench's that reaches the point (that face is its own) */
+  let tan=B.tan;for(const C of earlier)if(C.tan>tan&&x>=C.box[0]&&x<=C.box[2]&&z>=C.box[1]&&z<=C.box[3]&&benchD(C,x,z)<C.reach)tan=C.tan;
+  if(sn<tan)steep=Math.max(steep,s);
+  if(s>Math.max(tan,sn)*1.02+.01){over++;firstBad=firstBad||['steep',Math.round(x),Math.round(z),deg(s)];steepAt=steepAt||[Math.round(x),Math.round(z),deg(s),deg(sn)];}}
+ }finally{benchUpTo=upto;}
  const ew=c=>({max:+c.max.toFixed(2),mean:c.n?+(c.sum/c.n).toFixed(2):0,area_m2:Math.round(c.n*st*st)});
  return{id:B.id,kind:'bench',level:B.level,inside:+inside.toFixed(6),batter:{asked:deg(B.tan),steepest:deg(steep),over,faces},toeOut,
   cut:ew(cut),fill:ew(fill),inTown:inTown(B.x,B.z),firstBad,steepAt,ok:inside<=1e-6&&over===0&&toeOut===0};}

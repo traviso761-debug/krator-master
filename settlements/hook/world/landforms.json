@@ -1,7 +1,7 @@
 {
  "format": "krator-landforms",
  "version": 1,
- "note": "Hook's own landform records, in the scale model's format (tools/scale-model/model/data/landforms.json: px, py on the 5.1 canvas, heights absolute; the Ring Sea at -1500.19 m). The model's 2 km cells hold no land at Hook's pin (sm3ft5vrof, px 809,923): it is a wet cell on a drowned flat, -10 to +5 m for some 8 km, under the plateau 1.5 km east. The records say Hook stands on a peninsula and a spit (populations-gemini.json 'Hook peninsula', GEOLOGY-SANITY-CHECK.md 'Hook spit', a carbonate shelf; every net51 trunk out of Hook starts with a causeway), so the ground is drawn here as core/world 41l outlined benches (the owner's site plan of 2026-11-24, placement B: plan/hook-site-plan.html): the drowned downtown (cut only), the walled peninsula with the north ridge (the spit's id, its quay edge held), the mainland's coastal strips (fill only, tapering to points past the city limits), and two domed hills. px, py, l_m and w_m are the outline's box, for a reader that takes rectangles only. settlements/hook/world/cut.py adds each record to the cut's region.json unless the model already carries its id (cut.py --landforms rewrites only these records); the same records are written up for the scale model's edit queue (the coordinator), after which the model carries them and this file can go. The Heights and the hill behind are the town's, not the map's: they stay the Port kit's stamps in src/76-hook-ground.js.",
+ "note": "Hook's own landform records, in the scale model's format (tools/scale-model/model/data/landforms.json: px, py on the 5.1 canvas, heights absolute; the Ring Sea at -1500.19 m). The model's 2 km cells hold no land at Hook's pin (sm3ft5vrof, px 809,923): it is a wet cell on a drowned flat, -10 to +5 m for some 8 km, under the plateau 1.5 km east. The records say Hook stands on a peninsula and a spit (populations-gemini.json 'Hook peninsula', GEOLOGY-SANITY-CHECK.md 'Hook spit', a carbonate shelf; every net51 trunk out of Hook starts with a causeway), so the ground is drawn here as core/world 41l outlined benches (the owner's site plan of 2026-11-24, placement B: plan/hook-site-plan.html): the drowned downtown (cut only), the walled peninsula with the north ridge (the spit's id, its quay edge held), the coastal plain outside the wall (4 m, cut and filled, tapering to points past the city limits) and its mangrove swamp at the water (0.6 m), and two domed hills. px, py, l_m and w_m are the outline's box, for a reader that takes rectangles only. settlements/hook/world/cut.py adds each record to the cut's region.json unless the model already carries its id (cut.py --landforms rewrites only these records); the same records are written up for the scale model's edit queue (the coordinator), after which the model carries them and this file can go. The Heights and the hill behind are the town's, not the map's: they stay the Port kit's stamps in src/76-hook-ground.js.",
  "landforms": [
   {
    "id": "lf_hook_sunk",
@@ -222,6 +222,407 @@
    "note": "The drowned downtown (the owner's site plan, 2026-11-24, placement B): the half of the Ancient downtown that sank, its floor at least 3 m under the sea; it only lowers the ground, so the lagoon keeps its own deeper water. Today's shank and the spit's south-west lie in it. settlements/hook/world/landforms.json"
   },
   {
+   "id": "lf_hook_plain",
+   "kind": "bench",
+   "px": 810.4258,
+   "py": 923.0177,
+   "l_m": 2762,
+   "w_m": 5863,
+   "rotation": 0,
+   "outline_px": [
+    [
+     810.6284,
+     921.622
+    ],
+    [
+     811.1164,
+     921.5518
+    ],
+    [
+     811.0036,
+     922.1603
+    ],
+    [
+     810.8406,
+     922.3762
+    ],
+    [
+     810.6756,
+     922.4967
+    ],
+    [
+     810.37,
+     922.5636
+    ],
+    [
+     810.2112,
+     922.6672
+    ],
+    [
+     810.0928,
+     922.8796
+    ],
+    [
+     810.0393,
+     923.0465
+    ],
+    [
+     810.0583,
+     923.1651
+    ],
+    [
+     810.1408,
+     923.2853
+    ],
+    [
+     810.4399,
+     923.3275
+    ],
+    [
+     810.5581,
+     923.3756
+    ],
+    [
+     810.6865,
+     923.4566
+    ],
+    [
+     810.7853,
+     923.6186
+    ],
+    [
+     810.6438,
+     923.6739
+    ],
+    [
+     810.5267,
+     923.761
+    ],
+    [
+     810.2476,
+     924.1973
+    ],
+    [
+     810.0526,
+     924.4308
+    ],
+    [
+     809.971,
+     924.4834
+    ],
+    [
+     809.9848,
+     924.3692
+    ],
+    [
+     810.131,
+     924.0533
+    ],
+    [
+     810.1177,
+     923.9834
+    ],
+    [
+     810.0333,
+     923.8644
+    ],
+    [
+     809.8664,
+     923.8002
+    ],
+    [
+     809.7352,
+     923.7123
+    ],
+    [
+     809.8444,
+     922.7033
+    ],
+    [
+     809.828,
+     922.6354
+    ],
+    [
+     809.9054,
+     922.4704
+    ],
+    [
+     810.3979,
+     921.9601
+    ]
+   ],
+   "wobble_m": 35,
+   "level_m": -1496.19,
+   "batter_deg": 35,
+   "skirt_m": 60,
+   "reach_m": 800,
+   "note": "The coastal plain (the owner, 2026-11-24: \"levelling out into a coastal plain / mangrove swamp\"): the low ground outside the wall in the owner's site plan where the model's own ground is under 30 m (along the bay's east shore and down the plateau's west foot), levelled to 4 m over the sea, cut and filled; it meets the plateau at the plateau's own foot on a short steep rise (35 degrees: the plateau's slopes are steeper than a gentler batter could meet), and its water edges lie under the swamp. Past the city limits it narrows to a point over the water. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_plain_2",
+   "kind": "bench",
+   "px": 809.3055,
+   "py": 925.3423,
+   "l_m": 1384,
+   "w_m": 2385,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.3262,
+     924.8919
+    ],
+    [
+     809.4628,
+     924.8339
+    ],
+    [
+     809.5707,
+     924.746
+    ],
+    [
+     809.6516,
+     924.7657
+    ],
+    [
+     809.6244,
+     924.985
+    ],
+    [
+     809.5619,
+     925.1544
+    ],
+    [
+     809.5802,
+     925.3005
+    ],
+    [
+     809.554,
+     925.4455
+    ],
+    [
+     809.3259,
+     925.8398
+    ],
+    [
+     809.1552,
+     925.9387
+    ],
+    [
+     809.0463,
+     925.8679
+    ],
+    [
+     808.9594,
+     925.7595
+    ],
+    [
+     809.0127,
+     925.4002
+    ],
+    [
+     809.0839,
+     925.2123
+    ],
+    [
+     809.2939,
+     925.0803
+    ]
+   ],
+   "wobble_m": 35,
+   "level_m": -1496.19,
+   "batter_deg": 35,
+   "skirt_m": 60,
+   "reach_m": 800,
+   "note": "The coastal plain (the owner, 2026-11-24: \"levelling out into a coastal plain / mangrove swamp\"): the low ground outside the wall in the owner's site plan where the model's own ground is under 30 m (along the bay's east shore and down the plateau's west foot), levelled to 4 m over the sea, cut and filled; it meets the plateau at the plateau's own foot on a short steep rise (35 degrees: the plateau's slopes are steeper than a gentler batter could meet), and its water edges lie under the swamp. Past the city limits it narrows to a point over the water. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_swamp",
+   "kind": "bench",
+   "px": 810.2719,
+   "py": 922.2273,
+   "l_m": 1779,
+   "w_m": 2400,
+   "rotation": 0,
+   "outline_px": [
+    [
+     810.6264,
+     921.6322
+    ],
+    [
+     810.6604,
+     921.6272
+    ],
+    [
+     810.7166,
+     921.7212
+    ],
+    [
+     810.6939,
+     921.8129
+    ],
+    [
+     810.4816,
+     922.0992
+    ],
+    [
+     809.9946,
+     922.6046
+    ],
+    [
+     809.9013,
+     922.8198
+    ],
+    [
+     809.845,
+     922.8273
+    ],
+    [
+     809.8273,
+     922.6425
+    ],
+    [
+     809.9013,
+     922.4773
+    ],
+    [
+     810.3978,
+     921.96
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_swamp_2",
+   "kind": "bench",
+   "px": 809.2691,
+   "py": 925.279,
+   "l_m": 1179,
+   "w_m": 1952,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.3329,
+     924.8887
+    ],
+    [
+     809.5305,
+     924.7911
+    ],
+    [
+     809.5639,
+     924.8065
+    ],
+    [
+     809.5208,
+     924.9739
+    ],
+    [
+     809.4339,
+     925.0276
+    ],
+    [
+     809.3774,
+     925.2192
+    ],
+    [
+     809.1645,
+     925.3599
+    ],
+    [
+     809.0851,
+     925.7277
+    ],
+    [
+     809.0313,
+     925.7654
+    ],
+    [
+     808.9745,
+     925.7669
+    ],
+    [
+     809.0133,
+     925.3998
+    ],
+    [
+     809.0456,
+     925.2862
+    ],
+    [
+     809.0905,
+     925.2088
+    ],
+    [
+     809.2887,
+     925.0856
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_swamp_3",
+   "kind": "bench",
+   "px": 809.9835,
+   "py": 923.8037,
+   "l_m": 951,
+   "w_m": 710,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.7456,
+     923.6263
+    ],
+    [
+     809.8868,
+     923.6379
+    ],
+    [
+     810.1666,
+     923.7758
+    ],
+    [
+     810.2214,
+     923.862
+    ],
+    [
+     810.1587,
+     923.9713
+    ],
+    [
+     810.1209,
+     923.9812
+    ],
+    [
+     810.0073,
+     923.8466
+    ],
+    [
+     809.8595,
+     923.7961
+    ],
+    [
+     809.7467,
+     923.7223
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json"
+  },
+  {
    "id": "lf_hook_spit",
    "kind": "bench",
    "px": 808.4864,
@@ -432,144 +833,6 @@
    "skirt_m": 60,
    "reach_m": 1700,
    "note": "The walled peninsula (the owner's site plan, placement B): Port Hook's ground, 5 m over the sea, with the north ridge running about 3 km out into deep water and the downtown's dry half; its first edge is the quay line (world x -1700 to +1750 m at z -600), held straight; its east edge is the wall's line. The id is the spit's, which the frame and the town read. settlements/hook/world/landforms.json"
-  },
-  {
-   "id": "lf_hook_mainland",
-   "kind": "bench",
-   "px": 810.4462,
-   "py": 923.7309,
-   "l_m": 5947,
-   "w_m": 8820,
-   "rotation": 0,
-   "outline_px": [
-    [
-     810.6284,
-     921.622
-    ],
-    [
-     811.221,
-     921.526
-    ],
-    [
-     811.2861,
-     921.5792
-    ],
-    [
-     811.4434,
-     921.816
-    ],
-    [
-     811.6673,
-     922.3149
-    ],
-    [
-     811.933,
-     923.309
-    ],
-    [
-     811.7624,
-     923.6521
-    ],
-    [
-     811.4575,
-     924.1214
-    ],
-    [
-     810.8917,
-     924.732
-    ],
-    [
-     809.7933,
-     925.5422
-    ],
-    [
-     809.3621,
-     925.8285
-    ],
-    [
-     809.1445,
-     925.9358
-    ],
-    [
-     809.0463,
-     925.8679
-    ],
-    [
-     808.9594,
-     925.7595
-    ],
-    [
-     809.0135,
-     925.396
-    ],
-    [
-     809.0752,
-     925.2255
-    ],
-    [
-     809.2893,
-     925.0866
-    ],
-    [
-     809.3316,
-     924.8869
-    ],
-    [
-     809.4628,
-     924.8339
-    ],
-    [
-     809.5707,
-     924.746
-    ],
-    [
-     809.695,
-     924.7487
-    ],
-    [
-     809.9003,
-     924.5835
-    ],
-    [
-     810.129,
-     924.0846
-    ],
-    [
-     810.1208,
-     923.99
-    ],
-    [
-     810.039,
-     923.8693
-    ],
-    [
-     809.8664,
-     923.8002
-    ],
-    [
-     809.7352,
-     923.7123
-    ],
-    [
-     809.8413,
-     922.5846
-    ],
-    [
-     809.9104,
-     922.4647
-    ],
-    [
-     810.4271,
-     921.9249
-    ]
-   ],
-   "fill_only": true,
-   "wobble_m": 80,
-   "level_m": -1497.69,
-   "batter_deg": 8,
-   "skirt_m": 80,
-   "reach_m": 500,
-   "note": "The mainland's coastal strips east and south of the wall (the owner's site plan, placement B): low ground 2.5 m over the sea along the bay's east shore and the plateau's west foot. It only raises what lies lower, so the plateau stands as it is, and past the city limits it narrows to a point over water instead of ending square. settlements/hook/world/landforms.json"
   },
   {
    "id": "lf_hook_ridge_hill",

@@ -85,6 +85,27 @@ const R=[];
 { const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,H=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null;
   const all=H?[].concat(H.blocks,H.towers,H.heaps,H.pods,H.spans,[H.ramp,H.wall],H.gates,H.roads,H.places):[],miss=T?all.filter(r=>!T.get(r.id)):all;
   R.push({name:'hook-ruin-records',ok:!!H&&!!T&&all.length>1500&&miss.length===0&&H.places.length===13,detail:H?(all.length+' records, '+miss.length+' not registered; '+JSON.stringify(H.report)):'no HOOK_RUIN'}); }
+// S3: the Ancient city drawn at range (90c): one piece a record; nothing floats (every tower's and pier's base at or
+// under the DRAWN ground, the terrain grid's lowest node, along its footprint's edge, read again here); every drowned
+// tower's foot under the water line, and those that still stand rising out of it
+{ const D=window._ruinDraw||{},G=typeof PORT_ST!=='undefined'?PORT_ST.grid:null,H=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null;
+  let floating=0,firstFloat=null,wetBad=0,firstWet=null,n=0;
+  if(D.ready&&G&&H){const bs=(a,v)=>{let lo=0,hi=a.length-1;if(v<=a[0])return 0;if(v>=a[hi])return hi-1;while(hi-lo>1){const m=(lo+hi)>>1;if(a[m]<=v)lo=m;else hi=m;}return lo;};
+   const mm=(x,z)=>{const i=bs(G.xs,x),j=bs(G.zs,z),k=j*G.nx+i;return Math.min(G.H[k],G.H[k+1],G.H[k+G.nx],G.H[k+G.nx+1]);};
+   for(const t of D.towers){n++;const c=Math.cos(t.yaw),s=Math.sin(t.yaw);let m=mm(t.x,t.z);
+    for(const [u,b] of [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5],[0,-.5],[0,.5],[-.5,0],[.5,0]])m=Math.min(m,mm(t.x+u*t.w*c+b*t.d*s,t.z-u*t.w*s+b*t.d*c));
+    if(t.base>m+1e-3){floating++;firstFloat=firstFloat||[t.id,+t.base.toFixed(2),+m.toFixed(2)];}
+    if(t.wet&&t.state!=='fallen'){const stands=t.state==='intact'||t.state==='gutted'||t.state==='crown';
+     if(!(t.base<0)||(stands&&!(t.top>0))){wetBad++;firstWet=firstWet||[t.id,t.state,+t.base.toFixed(2),+t.top.toFixed(2)];}}}
+   for(const p of D.piers){if(p.base>mm(p.x,p.z)+1e-3){floating++;firstFloat=firstFloat||['pier',+p.base.toFixed(2)];}}}
+  const rec=D.records||{},st=D.stats||{};
+  /* and lit in their colours: no drawn instance black (r128's colour buffer made at count 0 drew every tower black) */
+  let black=0;const grp=typeof HOOK_RUIN_DRAW!=='undefined'&&HOOK_RUIN_DRAW.group;
+  if(grp)for(const m of grp.children){const c=m.instanceColor;if(!c)continue;for(let i=0;i<m.count;i++)if(c.getX(i)+c.getY(i)+c.getZ(i)<.05)black++;}
+  R.push({name:'hook-ruin-drawn',ok:!!D.ready&&st.towers===rec.towers&&st.heaps===rec.heaps&&st.pods===rec.pods&&st.decks===rec.spans+1&&black===0,
+   detail:JSON.stringify({stats:st,records:rec,blackInstances:black})});
+  R.push({name:'hook-ruin-seated',ok:!!D.ready&&n>0&&floating===0&&wetBad===0,
+   detail:n+' towers and '+(D.piers||[]).length+' piers: '+floating+' floating'+(firstFloat?' (first '+JSON.stringify(firstFloat)+')':'')+'; '+wetBad+' drowned towers not footed under the water'+(firstWet?' (first '+JSON.stringify(firstWet)+')':'')}); }
 // P2: the town's lots (steps 6-12): some hundreds of them, of every culture the quarters name
 { const C=window._city||{},recs=C.recs||[],L=C.log||{};const cults=Object.keys(L.byCulture||{});
   R.push({name:'hook-lots',ok:recs.length>=300&&cults.length>=5,detail:recs.length+' lots: '+JSON.stringify(L.byCulture)+' classes '+JSON.stringify(L.byClass)+'; salvage '+L.salvage+', host lots '+L.hostLots+'; ways '+JSON.stringify(L.ways)}); }

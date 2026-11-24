@@ -185,4 +185,16 @@ const domed = S => S.pts.every(p => p.h >= levelO - 1e-6 && p.h <= exact(p.sd) +
   S.pts.filter(p => -p.sd > 180).every(p => p.h > levelO + 24);
 T.neg('dome_m: the ground inside rises toward 30 m, round and no higher than its profile (a flat bench does not rise)', domed, Fcut, Fd);
 T.ok('...and WLAND.check holds the dome to its own height (inside 0)', !!Fd.check && Fd.check.inside < 1e-6, JSON.stringify(Fd.check && { inside: Fd.check.inside, over: Fd.check.batter.over }));
+
+// ---------------------------------------------------------------- 7. each bench judged on its own ground (the records' order)
+// a bench stamped over by a later one (here a higher outlined terrace laid across the rectangle's middle) is judged on the
+// ground as it stood once it was stamped: level inside, its own batter; the later one is judged on the ground it made
+{ const over = outlined({ id: 'lf_t_later', x: BX, z: BZ, outline_px: [[-60, -60], [60, -60], [60, 60], [-60, 60]].map(p => [C + (BX + p[0]) / 2000, C + (BZ + p[1]) / 2000]),
+    level_m: level + 12, wobble_m: 0, batter_deg: 30 });
+  const wd = world(OLD.concat([bench({ level_m: level }), over])), chk = wd.WL.check();
+  const first = chk.find(c => c.id === 'lf_t_bench'), later = chk.find(c => c.id === 'lf_t_later');
+  const raised = wd.W.Hbare(BX, BZ) === level + 12;
+  T.ok('a bench stamped over by a later one is judged on its own ground (level inside, no face over its batter); the later one on its',
+    raised && first.inside === 0 && first.batter.over === 0 && later.inside === 0 && later.batter.over === 0,
+    JSON.stringify({ raised, first: { inside: first.inside, over: first.batter.over }, later: { inside: later.inside, over: later.batter.over } })); }
 T.done();

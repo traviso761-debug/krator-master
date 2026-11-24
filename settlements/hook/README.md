@@ -150,9 +150,11 @@ turned 34 degrees so its waterfront lies on today's quays) is drawn into the gro
 (`world/landforms.json`, `core/world` 41l's outlined benches), made from the owner's sketch, in stamping order:
 `lf_hook_sunk` the drowned downtown (cut only, its floor at least 3 m down, the lagoon's deeper water kept),
 `lf_hook_spit` the walled peninsula with the north ridge running about 3 km into deep water (5 m over the sea, its
-quay edge held straight on today's line, its east edge the wall's), `lf_hook_mainland` the coastal strips east and
-south of the wall (fill only, 2.5 m, so the plateau stands as it is; past the city limits they narrow to points over the
-water instead of ending square), and two domed hills (`lf_hook_ridge_hill`, Signal Hill, about 45 m; `lf_hook_crown_hill`,
+quay edge held straight on today's line, its east edge the wall's), `lf_hook_plain` the coastal plain outside the wall
+(the owner, 2026-11-24: "levelling out into a coastal plain / mangrove swamp": the plan's low ground where the model's
+own ground is under 30 m, levelled to 4 m, cut and filled, meeting the plateau at its own foot; past the city limits it
+narrows to points over the water instead of ending square), `lf_hook_swamp` the mangrove swamp along its water edges
+(0.6 m, on ground under 6 m), and two domed hills (`lf_hook_ridge_hill`, Signal Hill, about 45 m; `lf_hook_crown_hill`,
 the Crown's, about 28 m). The old shank and barb are gone: the drowned downtown and the model's flat take their place.
 The frame is unchanged (the same origin, bearing and stations), so the town stands where it did.
 `python3 world/cut.py --landforms` writes the records into the cut's region.json without re-cutting the model.
@@ -290,6 +292,16 @@ limits (about 10 km across), the Crown and the thirteen places.
   the ring (KRAND by (seed, i, j, salt)), and goes into the page's core/tags registry with the town's hosts
   (`89z-rows.js`; `verify.py` `hook-ruin-records`). At this seed: 2,022 blocks (walled 14.8 km2, drowned 12.0, mainland
   17.2), 890 towers, 315 heaps, 17 pods, 120 spans.
+
+**Drawn at range (S3's far tier, `src/90c-hook-ruin-draw.js`):** every record as instanced massing, eight draw calls
+for the whole city: a tower's footprint raised to what still stands of it by its state (round for the round designs,
+leaning where it leans, green where the jungle has it), a fallen one lying from its foot as a reef, rubble heaps
+(islands where the water covers the bed), the pods, the freeway's decks and piers (the fallen west arc's spans lying in
+the water) and the south ramp, the wall in 40 m courses with a tower every 160 m and its two gates. Every base is seated
+on the drawn ground (the terrain grid's lowest node along its footprint's edge, a 2 m foundation), so nothing floats and
+a drowned tower's foot stands on the bed under the water. Views: `The Ancient city`, `The drowned downtown`, `The road
+in`. `verify.py`: `hook-ruin-drawn` (a piece a record) and `hook-ruin-seated` (nothing floating, the drowned footed under
+the water). The heroes and shells up close (`kits/metropolis`) come next.
 
 `node tests/test-hook-ruin.js` (31 checks) proves the grid is the town's, every footprint inside its block, the town's
 zone left alone, each block on its ground, the height and density falling from the downtown, each ground's character,

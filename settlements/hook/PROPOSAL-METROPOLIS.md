@@ -225,4 +225,7 @@ records are redone on the plan's field in S2.
 ridge, the mainland's strips tapering past the city limits, two domed hills; README "The ground"), and S2, the records
 (`src/77-hook-ruin.js`: the blocks and towers by ground and zone, the Crown, the Drowned Spire, the ring freeway span by
 span with its fallen west arc, the wall and its gates, the south road, the thirteen places; README "The Ancient city").
-Next is S3: the downtown, the freeway and the wall drawn.
+Then (the owner, mid-S3: "the surrounding terrain could use a bit of levelling out into a coastal plain / mangrove
+swamp") the mainland's fill strip became a coastal plain at 4 m on the plan's low ground and a mangrove swamp at its water
+edges, and S3's far tier drew the whole city as instanced massing (towers by state, reefs, heaps, pods, the freeway,
+the wall), every base seated on the drawn ground. Next: the heroes and shells up close.
