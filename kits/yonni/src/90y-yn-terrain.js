@@ -62,7 +62,8 @@ terrainH=function(x,z){
   a.push(hi,lerp(hi,H,.45),H);
   return a;
  };
- const xs=axisPts(-96,96,56),zs=axisPts(Math.min(-390,(YN_TERRAIN.shoreZ||0)-22),36,128);
+ const halfX=Math.max(96,(YN_TERRAIN.cliffW||0)*.60);
+ const xs=axisPts(-halfX,halfX,64),zs=axisPts(Math.min(-390,(YN_TERRAIN.shoreZ||0)-22),36,144);
  const NX=xs.length-1,NZ=zs.length-1;
  const g=new THREE.PlaneGeometry(GROUND_SIZE,GROUND_SIZE,NX,NZ);
  g.rotateX(-PI/2);

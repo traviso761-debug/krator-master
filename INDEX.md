@@ -74,7 +74,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/tungang`](kits/tungang/INDEX.md) | 22 | 229 | 27 |  |
 | [`kits/xanadu`](kits/xanadu/INDEX.md) | 37 | 554 | 38 |  |
 | [`kits/yeti`](kits/yeti/INDEX.md) | 31 | 183 | 21 | The Yeti kit (catalog and tags culture khaayken): the Khaayken of the High Country on the north-western Outer Wall, Inuit-derived catenary domes of pycrete or dry slab stone, half-sunk, joined by half-buried tunnels, austere outside and rich inside (PLAN.md; section 4 the heat, air and cold rules). So far Y1 to Y4 (the state, trades, stores, stock and war added): the Scyvoi engine vendored (10-core.js on core/rand); the toolkit (catenary and corbelled shells, spiral courses, ribs, the slump, the cold-trap entry, the wall layers and the frost rule); the mass heater; the pycrete dome, the travel dome and the stone house in three seasons; the family cluster; the tunnels in three sections and a covered-way network on core/city (KCITY.covered); the sheet's ground holed for sunk floors. Verified: build.py, verify.py --assert. Read PLAN.md |
-| [`kits/yonni`](kits/yonni/INDEX.md) | 27 | 239 | 31 |  |
+| [`kits/yonni`](kits/yonni/INDEX.md) | 30 | 309 | 31 |  |
 | [`kits/yuni`](kits/yuni/INDEX.md) | 8 | 229 | 64 |  |
 | [`kits/zeijani`](kits/zeijani/INDEX.md) | 31 | 257 | 27 | The Zeijani building kit (finished, P0 to P8): carved and built dwellings, galleries, estates, shops, the temple, council, kiva, cistern, portal, works and the outpost, each carved by the cavern module (core/terrain/39-core-cavern.js) from the void plans in kits/interiors/sets/zeijani.js. |
 | [`biomes/abyssal-savannah`](biomes/abyssal-savannah/INDEX.md) | 14 | 101 | 23 | Biome kit: see `biomes/README.md`. |

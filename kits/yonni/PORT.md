@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 27 (13%) | 11 (6%) | 0 (0%) | 1 (1%) | 169 (81%) |
+| KB | 28 (10%) | 12 (4%) | 0 (0%) | 1 (0%) | 237 (85%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -29,13 +29,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/57-yn-forts.js` | 20.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 70 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/58-yn-trades.js` | 14.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/59-yn-works.js` | 14.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/60-yn-monuments.js` | 30.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/61-yn-quarters.js` | 29.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 44 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-yn-harbour.js` | 7.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/64-yn-cliff.js` | 11.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/64b-yn-cliff-grand.js` | 9.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/65-yn-borderfort.js` | 12.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 31 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/66-yn-flora.js` | 2.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/68-yn-census.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/89-rows.js` | 2.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |  |
-| `src/90y-yn-terrain.js` | 7.1 | [draw] | 12 | 0 | 0 | 0 | 0 | 2 | 7 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/68-yn-census.js` | 5.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/89-rows.js` | 3.1 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |  |
+| `src/90y-yn-terrain.js` | 7.2 | [draw] | 12 | 0 | 0 | 0 | 0 | 2 | 7 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/91f2-yn-texguard.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-ms-audit.js` | 9.4 | [draw] | 8 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 |  |
 

@@ -1492,6 +1492,10 @@
    "bytes": 1065402,
    "sha256": "c59a54aa67de7995f7412b7917e0af952f18a3f274103fe762859f17b10b47eb"
   },
+  "kits/yonni/dist/yonni.html": {
+   "bytes": 1837200,
+   "sha256": "58a2f08755b26649c05d29059577565d82f1d95bece6755bd1289f00ace77f23"
+  },
   "kits/yuni/dist/yuni.html": {
    "bytes": 635161,
    "sha256": "78b510c295c5f5fcca07a24fa9f98a34d51bf717519c9b43da542454316724ed"
