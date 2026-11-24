@@ -68,3 +68,22 @@ weather still starts `clear` on every page, so verify views and their asserts st
    cost passes are measured on the Arc 140T against the 1 ms rule (SKY-PLAN section 10), with a per-preset quality tier
    (off, layers, volumes) so a page over budget steps down. Which pages take volumes at which tier is settled on the pairs.
 4. **The settlements move onto the shared sky with tier 2 (W7)**, Voth last, each sky judged on its page.
+
+## 5. The owner's answers on the W6 pairs (2026-11-24)
+
+The pairs (`core/atmos/pairs/pairs.py`; shots of the outer wall, shighlands and Throne station 1 at layers and volumes, cover
+0.6 on both, on the Arc) were judged on their page. "These look mostly good", with one defect to fix first:
+
+1. **The pixelated look** (a diagonal dither on thin cloud edges at the march's texel size, worst on the outer wall's sky):
+   fixed. The march's jitter pattern now moves each frame (interleaved gradient noise at the pixel offset by 5.588238 a
+   frame), and the resolve filters the new frame with a 3x3 tent and clips the history to its neighbourhood's mean +- 1.25
+   sigma, instead of blending the raw texel into a min-max box.
+2. **The outer walls take volumes**: `89-atmos-m-volclouds.js` and `89-atmos-m-volhost.js` are listed in wouterwall,
+   nwouterwall, neouterwall and seouterwall (every station). The budget's step-down holds them on the Arc.
+3. **Shighlands takes volumes with the layer above the cloud sea**: listed, and its cloud base raised from the sky's 1600 m
+   to 2600 m (`clouds.height`), 1350 m clear of the deck's top (`CLOUD_Y`, 1250 m), so the cumulus stands round the rim's
+   eye level instead of sitting on the sea. The flat layer and the cloud shadows move with it.
+4. **The Throne keeps layers**: station 1 and its stations do not list the volumes (no triangles to spare at its ceiling,
+   and its eye at 2.8 km puts the whole layer below it).
+
+The pages rebuild in tier 2's own pass after Stage 8 (section 4, answer 2); their committed pages are unchanged here.

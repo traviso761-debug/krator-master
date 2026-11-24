@@ -161,6 +161,7 @@ for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=J('core','atmos',f)
 for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js']: PATH[f]=J('core','atmos','host',f)
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']: PATH[f]=J('core','atmos','sky',f)
+PATH['89-atmos-m-volclouds.js']=J('core','atmos','sky','89-atmos-m-volclouds.js'); PATH['89-atmos-m-volhost.js']=J('core','atmos','host','89-atmos-m-volhost.js')   # W6, the volumetric clouds (STAGE-8/G-weather.md; the owner's pairs, 2026-11-24: the outer walls take volumes)
 PATH['89-atmos-fx-snowcover.js']=J('core','atmos','fx','89-atmos-fx-snowcover.js')
 # the final rebuild's air (BACKPORT.md's universal set, "Sky and air"): height fog (R1: the sky's fog chunk and its host), the rain occlusion map (R10), lightning
 PATH['89-atmos-j-fog.js']=J('core','atmos','sky','89-atmos-j-fog.js')
