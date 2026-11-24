@@ -7,6 +7,7 @@ reseed(424304);
 const CITY_T0 = performance.now();
 const CITYSKY = { hour: 16.2, day: 200, dens: 1.35 };
 
+const COBBLE_SEED = KRAND.child(424304, 'marr-cobble');   /* the cobble tile's stones: a named seed, never draw order */
 function makeCobbleNormalAndRough() {
  const S = 256;
  const nc = document.createElement('canvas'); nc.width = nc.height = S;
@@ -22,8 +23,7 @@ function makeCobbleNormalAndRough() {
   const shift = (rIdx & 1) ? 0.5 : 0.0;
   for (let x = 0; x < S; x++) {
    const uf = ((x / S) * cols + shift) % cols, cIdx = Math.floor(uf), lu = uf - cIdx;
-   const hHash = Math.sin(rIdx * 127.1 + cIdx * 311.7) * 43758.5453;
-   const hVar = (hHash - Math.floor(hHash)) * 0.25;
+   const hVar = KRAND.unit(KRAND.hash(COBBLE_SEED, rIdx, cIdx)) * 0.25;   /* core/rand: one value per stone, from its course and column */
    const du = Math.abs(lu - 0.5) * 2.0, dv = Math.abs(lv - 0.5) * 2.0;
    const edge = Math.max(du, dv);
    // Deep mortar joint around each stone + domed cobblestone crown

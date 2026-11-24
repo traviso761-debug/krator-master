@@ -7,11 +7,25 @@ dist/marr.html and sidecar textures into settlements/marr/dist/.
     python3 settlements/marr/build.py
     python3 settlements/marr/verify.py settlements/marr/dist/marr.html --assert
 """
-import os, subprocess, sys
+import json, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 KIT_DIR = os.path.join(ROOT, 'kits', 'marr')
 
+# the settlement's page (dist/marr.html, the kit's city target) takes core/rand and core/tags, and Iziz's 91t-iziz-tags.js
+# registers its buildings (REG) into core/tags; kits/marr/build.py checks every page, this checks the one mirrored here
+CORE_TAKEN = ('rand', 'tags')
+
 rc = subprocess.call([sys.executable, os.path.join(KIT_DIR, 'build.py')] + sys.argv[1:], cwd=KIT_DIR)
+if not rc and '--list-sources' not in sys.argv:
+    need = ['91t-iziz-tags.js']
+    for mod in CORE_TAKEN:
+        mdir = os.path.join(ROOT, 'core', mod)
+        need += sorted(f for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js'))
+    with open(os.path.join(KIT_DIR, 'build-manifest-city.json'), encoding='utf-8') as fh:
+        listed = json.load(fh)
+    missing = [f for f in need if f not in listed]
+    if missing:
+        sys.exit('build.py: marr.html does not take %s' % ', '.join(missing))
 sys.exit(rc)
