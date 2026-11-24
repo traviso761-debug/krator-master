@@ -95,10 +95,10 @@ const FRAG=['uniform sampler2D uAtlas;','uniform sampler2D uNorm;','uniform floa
 IMP.GLSL={fn:GLSL_FN,vertex:VERT,fragment:FRAG};
 
 // the scene's lights, as the impostors' uniforms (refreshed every frame by a tick, once any impostor exists)
-const LU={uSun:{value:null},uSunCol:{value:null},uAmb:{value:null},uSky:{value:null},uGround:{value:null},uImpGain:{value:1},uImpWrap:{value:0}};
-// BIO.impostorLook({gain, wrap}): every impostor's light, page-wide. wrap (0) lets the sun reach the crown's far side as a leaf shader's
-// soft light does (0.5: half way round), gain (1) scales the result. The defaults are the plain Lambert term the impostors always had;
-// nhighlands (the owner's look pass, 2026-10-26) matched its near crowns with a wrap and a gain (the far canopy read darker than the trees)
+const LU={uSun:{value:null},uSunCol:{value:null},uAmb:{value:null},uSky:{value:null},uGround:{value:null},uImpGain:{value:3.6},uImpWrap:{value:1}};
+// BIO.impostorLook({gain, wrap}): every impostor's light, page-wide. wrap lets the sun reach the crown's far side as a leaf shader's
+// soft light does (0.5: half way round, 1: all the way), gain scales the result. The default is gain 3.6, wrap 1 (Stage 8, S3-46): the
+// plain Lambert term (gain 1, wrap 0) drew the far canopy darker than the trees, and nhighlands' look pass (2026-10-26) had to set its own
 BIO.impostorLook=function(o){o=o||{};if(o.gain!=null)LU.uImpGain.value=+o.gain;if(o.wrap!=null)LU.uImpWrap.value=+o.wrap;return{gain:LU.uImpGain.value,wrap:LU.uImpWrap.value};};
 function readLights(){const TH=T(),sc=BIO.host.scene;if(!LU.uSun.value){LU.uSun.value=new TH.Vector3(0,1,0);LU.uSunCol.value=new TH.Color(0);LU.uAmb.value=new TH.Color(0);LU.uSky.value=new TH.Color(0);LU.uGround.value=new TH.Color(0);}
  if(!sc)return;let sun=null;const amb=LU.uAmb.value.setRGB(0,0,0),sky=LU.uSky.value.setRGB(0,0,0),gr=LU.uGround.value.setRGB(0,0,0);
@@ -122,6 +122,9 @@ BIO.impostorSet=function(key,opt){opt=opt||{};const TH=T(),N=opt.grid==null?IMP.
  const set={key,N,px,max,mat,recs:[],K:1,label:opt.label||key};
  mat.userData.bio={kind:'impostor',key:BIO.kitKey(key),opts:{grid:N,cell:px,slots:[]}};
  if(!ticking&&BIO.host.ticks){ticking=true;BIO.tick(readLights);}
+ /* with no host ticks the lights read at bake are the page's before it lit its scene (the far trees drew black, S3-46): read them again
+    when the set is first drawn (a KHOOK layer: its material's first compile, whichever mesh draws it); a ticking page reads every frame */
+ else if(!BIO.host.ticks&&typeof KHOOK!=='undefined')KHOOK.add(mat,'impostor-lights',function(){readLights();},{key:'impostor-lights'});
  return set;};
 // a species to bake: returns {key, set, slot, mat, ready, radius, centre}
 BIO.impostor=function(key,build,opt){opt=opt||{};
