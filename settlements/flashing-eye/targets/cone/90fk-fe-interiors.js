@@ -1,7 +1,7 @@
 // ================================================================= THE FLASHING EYE — the interiors (sheets L, H, P, T, M1-M2, E1-E2, F)
 // Every building FE_ROOMS lists (src/32-fe-rooms.js: the Lip Range's four houses, the Hall of the Ember and the Ember Tower's shaft,
 // the Eye Post at load; the bench's ranges, the Mirror School, the novices' court, the Foot House, the Mirror and Labrang towers
-// the Red Monastery, the gatehouses, the Watch's hut and the shrines of the Way of Shrines as the camera comes within 90 m of them)
+// the Red Monastery, the gatehouses, the corner towers, the Watch's hut and the shrines of the Way of Shrines as the camera comes within 90 m of them)
 // is planned on its shell, drawn and furnished from the catalog by kits/qiblai's interiors (89q5s qnIxType:
 // kits/interiors' planBuilding with the blueprint's programme storey by storey, the linings, stairs and slabs in the Xanadu kit's
 // textured items, qnFurnishRooms through the page's furniture bundle), as the Beacon's B8 does (settlements/beacon targets/house

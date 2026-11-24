@@ -25,7 +25,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 |---|---|---|
 | `30-fe-layout.js` | 27 | THE FLASHING EYE: the Order's head house on the  (1) |
 | `31-fe-rules.js` | 23 | THE FLASHING EYE: the rules its layout keeps, an (1) |
-| `32-fe-rooms.js` | 18 |  |
+| `32-fe-rooms.js` | 19 |  |
 | `40-fe-watch.js` | 8 | THE FLASHING EYE: the vent, the Rim Watch and th (1) |
 | `89q0w-fe-mats.js` | 1 |  |
 | `89qe-fe-roofs.js` | 10 | the hip roof with upturned eaves: a unit shape p (10); the towers (47) |
@@ -37,4 +37,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `cone` | `89z-rows.js`, `89zfe-site.js`, `90fe-world.js`, `90fg-build.js`, `90fh-vent.js`, `90fi-bridges.js`, `90fj-face.js`, `90fk-fe-interiors.js`, `91z-views.js` | 84 |
+| `cone` | `89z-rows.js`, `89zfe-site.js`, `90fe-world.js`, `90fg-build.js`, `90fh-vent.js`, `90fi-bridges.js`, `90fj-face.js`, `90fk-fe-interiors.js`, `91z-views.js` | 86 |

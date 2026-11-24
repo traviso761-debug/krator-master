@@ -14,6 +14,7 @@ checks of tools/checks_optin.json), with the page's own:
   sights-near    from the Mirror Hall's balcony (14 m over the bench) the lines to the Beacon (245), Erehwon (284) and the
                  Tears' camp (197) clear the drawn ground by 2 m or more for their first 2 km (the far field is tools/sights.py)
   no-trees       the flora's mask is empty on the band's face, on the rim within 120 m of the crater and in the crater
+  glints         the day line's flash at the two lanterns, aimed: full on the line to the station it sends to, none 20 degrees off
   fires          the house's two lights (the Ember's window, the fire basket) hung; no oil lamp anywhere
   interiors-furnished  every building of src/32-fe-rooms.js (the Lip Range's four houses, the Hall of the Ember, the Ember
                  Tower's shaft, the Eye Post) planned with every storey of its sheet and furnished; the Lip Range's doors on L0;
@@ -68,7 +69,8 @@ PAGE_JS = r"""
   SB.forEach(B=>{const m=B.pts[24];if(!fl(m[0],m[2],m[1]))miss.push('the bridge from '+B.from);});}
  R.push({name:'way-walk',ok:!!W&&miss.length===0,detail:W?(miss.length?'no floor at '+miss.join(', '):'a floor at every top, landing and bridge\'s middle; '+JSON.stringify(typeof FE_WALKS!=='undefined'?FE_WALKS:{})):'no core/walk on the page'});
  const t0=FE_CLOCK.set,ts=FE_API.signal(1),gs=FE_WATCH.state(ts,FE_ENV);FE_CLOCK.set=t0;
- R.push({name:'glints',ok:FE_GLINTS.length===2&&gs.mode==='mirror'&&gs.shutter===true,detail:FE_GLINTS.length+' glints (the Eye Post, the Mirror Tower); on the hour the day line '+gs.mode+' to '+gs.station+', shutter '+(gs.shutter?'open':'shut')});
+ const gb=gs.bearing*Math.PI/180,g0=FE_GLINTS[0].position,onB=feBeam(g0.x,g0.z,g0.x+Math.sin(gb)*5000,g0.z-Math.cos(gb)*5000,gs.bearing),offB=feBeam(g0.x,g0.z,g0.x-Math.sin(gb)*5000,g0.z+Math.cos(gb)*5000,gs.bearing),sideB=feBeam(g0.x,g0.z,g0.x+Math.sin(gb+.35)*5000,g0.z-Math.cos(gb+.35)*5000,gs.bearing);
+ R.push({name:'glints',ok:FE_GLINTS.length===2&&gs.mode==='mirror'&&gs.shutter===true&&onB>.99&&offB<.01&&sideB<.05,detail:FE_GLINTS.length+' glints (the Eye Post, the Mirror Tower); on the hour the day line '+gs.mode+' to '+gs.station+', shutter '+(gs.shutter?'open':'shut')+'; aimed: the flash '+onB.toFixed(2)+' on the line at '+gs.bearing+' degrees, '+sideB.toFixed(3)+' 20 degrees off it, '+offB.toFixed(3)+' behind'});
  const LA=typeof FE_LAMPS!=='undefined'?FE_LAMPS:[];
  R.push({name:'fires',ok:LA.length===2&&LA.some(l=>l[3]==='ember')&&LA.some(l=>l[3]==='fire')&&!LA.some(l=>l[3]==='oil'),detail:LA.length+' lights: '+LA.map(l=>l[3]+' ('+l[4]+')').join(', ')});}
 /* the interiors (targets/cone/90fk-fe-interiors.js on src/32-fe-rooms.js) */

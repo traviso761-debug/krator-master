@@ -73,7 +73,11 @@ for(const id of['ch.breath1','ch.breath2','ch.breath3','threshold','stairhead'])
 // the walls: the layout's, with a gap at each gate (on the bench, y 0)
 const FE_WALLS=[];
 for(const W of FE.L.walls){const g=FE.L.gates.filter(G=>G.wall===W.id),L=Math.hypot(W.b[0]-W.a[0],W.b[1]-W.a[1]),dir=[(W.b[0]-W.a[0])/L,(W.b[1]-W.a[1])/L];
- const cuts=g.map(G=>{const t=(G.at[0]-W.a[0])*dir[0]+(G.at[1]-W.a[1])*dir[1],hw=(G.id==='gate.rift'?8:10)/2;return[t-hw,t+hw];}).sort((a,b)=>a[0]-b[0]);
+ const cuts=g.map(G=>{const t=(G.at[0]-W.a[0])*dir[0]+(G.at[1]-W.a[1])*dir[1],hw=(G.id==='gate.rift'?8:10)/2;return[t-hw,t+hw];});
+ /* and at each corner tower the wall runs into: it stops at the tower's faces (its 8 m shaft), so the tower's rooms are clear */
+ for(const P of FE.L.parts){if(P.kind!=='corner_tower')continue;const c=[(P.box[0]+P.box[1])/2,(P.box[2]+P.box[3])/2],t=(c[0]-W.a[0])*dir[0]+(c[1]-W.a[1])*dir[1];
+  if(t<-4||t>L+4||Math.abs((c[0]-W.a[0])*dir[1]-(c[1]-W.a[1])*dir[0])>1)continue;cuts.push([t-4,t+4]);}
+ cuts.sort((a,b)=>a[0]-b[0]);
  let t0=0;const segs=[];for(const [c0,c1] of cuts){if(c0>t0+.5)segs.push([t0,c0]);t0=c1;}if(L>t0+.5)segs.push([t0,L]);
  /* a wall along u steps with the terraces: cut it at each terrace's edge, each piece on its own level */
  const cutsT=[];for(const T of FE.L.terraces)for(const e of[T.u0,T.u1]){if(Math.abs(dir[0])<.5)continue;const t=(e-W.a[0])/dir[0];if(t>.5&&t<L-.5)cutsT.push(t);}

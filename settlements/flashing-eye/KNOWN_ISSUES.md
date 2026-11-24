@@ -49,9 +49,9 @@
   with views (sheets L, H, P) are built at load (2 s); the other 26 as the camera comes within 90 m of them, one every six frames
   (about 3.8 s in all; `FE_IX.buildAll()` builds them for the checks). *Fixed 2026-11-23*: the three gatehouses (their passages;
   the Porters' loft over the Mule Gate, the Veil Room over the Gate of Breath), the Watch's hut and the six shrines of the Way of
-  Shrines: 43 buildings, 169 rooms, about 1,540 pieces. Still owed: **the four corner towers** (the precinct's walls run on to
-  each tower's centre, so a room planned in one would be cut by two walls: the walls should stop at the towers' faces first), the
-  Watchers' Chapel on the Assembly Hall's roof (sheet MR), and the Rest House (not drawn yet).
+  Shrines. *Fixed 2026-11-23*: the four corner towers (the precinct's walls ran on to each tower's centre; they stop at its faces
+  now, 89zfe, and each tower's watch room and loft are entered by an open doorway from the bench): 47 buildings, 181 rooms, about
+  1,600 pieces. Still owed: the Watchers' Chapel on the Assembly Hall's roof (sheet MR), and the Rest House (not drawn yet).
 - **The interiors' compromises** (2026-11-23):
   - The rooms are kits/interiors' planner's, not the sheets' drawn plans: each storey is cut into the programme's room kinds by
     area, the first kind at the door, so the order of the rooms along the range is the planner's; the sheets' stair rooms are the
@@ -87,8 +87,12 @@
   not draw them.
 - *Fixed 2026-11-23*: **the mirrors flash.** A glint at the Eye Post's and the Mirror Tower's lanterns whenever the day line's
   shutter is open (`FE_WATCH.state`: the Opening at sunrise, the station slots on the hour), on the page only (`90fh-vent.js`),
-  not a core/atmos module; `_api.signal(k)` sets the clock into the k-th station's slot. The glint does not yet follow the sun's
-  actual reflection angle (the plan's question about a core/atmos effect still stands).
+  not a core/atmos module; `_api.signal(k)` sets the clock into the k-th station's slot. *Fixed 2026-11-23*: the flash is aimed:
+  the sun is thrown along the line to the station the mirror sends to (`FE_WATCH.state`'s bearing), so a viewer within a few
+  degrees of that line sees the full flash (`feBeam`: a half at 5 degrees) and anyone else only the mirror's face catching the
+  light (`verify.py`'s `glints` checks it on the line, 20 degrees off and behind). Still: the beam is horizontal (no tilt down to a
+  lower station), the sun's own place is not used (the second mirror turns it when it stands behind), and it is the page's
+  sprite, not a core/atmos effect (the plan's question about one still stands).
 
 ## The vent
 

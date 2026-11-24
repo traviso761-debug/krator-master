@@ -129,8 +129,11 @@ const FE_ROOMS=(function(){
  for(const [id,name,up] of[['g.rift','The Gate of the Rift',null],['g.mule','Mule Gate','Porters\' loft (the Mule Gate)'],['g.breath','Gate of Breath','The Veil Room (over the Gate of Breath)']])
   BL.push({id,name,part:id,sheet:'E1, E2',shell:GATE,door:'drawn',more:[{level:0,n:[0,-1]}],levels:up?[['lobby'],['guard','store']]:[['lobby']],
    names:up?[['the passage'],[up]]:[['the passage']],wealth:id==='g.breath'?.6:.45,want:id==='g.breath'?['xanadu_veil_rack','xanadu_crimson_banner']:[]});
- /* the corner towers have no rooms: the precinct's walls run on to the towers' centres (each wall ends in the middle of its
-    tower, 89zfe), so a room in one would be cut by two walls; owed (KNOWN_ISSUES) */
+ /* the corner towers (E1: two storeys of 6 m in an 8 m shaft under two red tiers, no door drawn; the precinct's walls stop at
+    their faces, 89zfe): an open doorway on the side toward the bench (the north ones face south, the two on the Lip north) */
+ for(const [id,n] of[['tw.nw',[0,1]],['tw.ne',[0,1]],['tw.sw',[0,-1]],['tw.se',[0,-1]]])
+  BL.push({id,name:{'tw.nw':'North-west Tower','tw.ne':'North-east Tower','tw.sw':'South-west Tower (on the Lip)','tw.se':'South-east Tower (on the Lip)'}[id],part:id,sheet:'E1',
+   shell:{x:0,z:0,w:8,d:8,y:.5,hs:[6,6]},door:{n,t:0,w:1.2,h:2.4},levels:[['guard'],['guard','store']],names:[['the watch room'],['the watch\'s loft']],wealth:.4,stair:FE_TOWER_STAIR});
  /* the Watch's hut on the rim (sheet P: four bunks, the Rim Watch on duty sleeping in turns) and the six shrines of the Way of
     Shrines (one room each, its door to the bridge that arrives) */
  BL.push({id:'hut',name:'The Watch\'s Hut',part:'hut',sheet:'E0, P',shell:{x:0,z:0,w:8,d:8,y:.4,hs:[3.2]},door:'drawn',levels:[['dormitory','kitchen']],

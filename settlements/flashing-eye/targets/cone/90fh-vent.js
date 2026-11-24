@@ -59,6 +59,11 @@ const feGlintTex=(function(){const c=document.createElement('canvas');c.width=c.
 const FE_GLINTS=[['post',14.2,3.9],['tw.mirror',28.7,4.6]].map(([id,dy,dz])=>{const p=FE_PLACE.find(q=>q.id===id);if(!p)return null;
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:feGlintTex,color:0xfff4d0,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,fog:false}));
  s.position.set(p.x,p.o.y+dy,p.z+dz);   /* at the lantern's open front, where the mirrors stand */s.scale.set(7,7,1);s.visible=false;s.name='the mirror\'s glint ('+id+')';s.userData.probeSkip=true;scene.add(s);return s;}).filter(Boolean);
+/* how much of a mirror's flash a viewer at (cx, cz) catches: the sun is thrown along the line to the station it sends to (its
+   bearing, degrees: +x east, +z south), so the full flash only within a few degrees of that line (1 on it, a half at 5 degrees);
+   anyone else sees only the mirror's face catching the light (the sprite's floor, 90fh's hook) */
+const feBeam=(gx,gz,cx,cz,bearing)=>{const b=(bearing==null?245:bearing)*Math.PI/180,dx=cx-gx,dz=cz-gz,dl=Math.hypot(dx,dz)||1;
+ const ang=Math.acos(Math.max(-1,Math.min(1,(dx*Math.sin(b)-dz*Math.cos(b))/dl)))*180/Math.PI;return Math.exp(-Math.pow(ang/6,2));};
 let feLast=null;
 FRAME_HOOKS.push(()=>{const t=feNow(),v=FE_WATCH.vent(t),night=1-(FE_SKY.dayF==null?1:FE_SKY.dayF),st=FE_WATCH.state(t,FE_ENV);
  const glow=.35+.65*v.amp;feThroat.material.color.setRGB(1,.25+.25*v.amp,.06).multiplyScalar(.6+.9*glow);
@@ -66,7 +71,11 @@ FRAME_HOOKS.push(()=>{const t=feNow(),v=FE_WATCH.vent(t),night=1-(FE_SKY.dayF==n
  const nb=feBombsAt(v);
  MAT.feEmber.emissiveIntensity=.2+2.4*night;feEmberL.intensity=night*1.4;
  const open=st.mode==='basket'?(st.shutter?1:.08):st.mode==='watch'&&night>.5?.08:0;MAT.feFire.emissiveIntensity=.15+3*night*open;feFireL.intensity=night*2.2*open;
- const glint=(st.mode==='mirror'||st.mode==='opening')&&st.shutter;for(const g of FE_GLINTS){g.visible=glint;if(glint)g.material.opacity=.85+.15*Math.sin(t*9);}
+ /* the glint is the sun thrown along the line: a viewer in the beam toward the station the mirror sends to (st.bearing; +x east,
+    +z south) sees the full flash, within a few degrees of it; anyone else only the mirror's face catching the light */
+ const glint=(st.mode==='mirror'||st.mode==='opening')&&st.shutter;
+ for(const g of FE_GLINTS){g.visible=glint;if(!glint)continue;const beam=feBeam(g.position.x,g.position.z,camera.position.x,camera.position.z,st.bearing);
+  g.material.opacity=(.14+.86*beam)*(.85+.15*Math.sin(t*9));const sc=2.2+6.8*beam;g.scale.set(sc,sc,1);g.userData.beam=+beam.toFixed(3);}
  feLast={t,vent:{amp:+v.amp.toFixed(3),on:v.on,index:v.index,next:+v.next.toFixed(1)},bombs:nb,mode:st.mode,station:st.station,shutter:st.shutter,watch:st.watch.watch,glint};});
 /* the page's hooks (91z puts them on _api, which Xanadu's host makes after this fragment): set the clock, jump to a burst */
 const FE_API={setTime:t=>{FE_CLOCK.set=t;},burst:(k,s)=>{const b=FE_WATCH.bursts(FE_CLOCK.t0,FE_CLOCK.t0+3*3600)[k==null?0:k];FE_CLOCK.set=b+(s==null?1.5:s);return b;},vent:()=>feLast,
