@@ -100,7 +100,7 @@ const R=W.riverLines(40),R0=K.uncut(()=>W.riverLines(40));
 let upMoved=0,rises=0,ptsChecked=0,otherMoved=0,lipW=0,caulW=1e9;
 for(let r=0;r<R.length;r++){
  const L=R[r],L0=R0[r];
- if(L.name.indexOf('Jadwal')>=0){
+ if(L.name.indexOf('Jadwal')>=0||L.name.indexOf('Keb Riw')>=0){   /* r107: Keb Riwā in the model's Xanadu names (since c00221ca9) */
   for(let i=0;i<L.pts.length;i++){
    const p=L.pts[i],p0=L0.pts[i];
    if(p[0]>-609950&&Math.abs(p[2]-p0[2])>1e-4)upMoved++;
@@ -112,7 +112,7 @@ for(let r=0;r<R.length;r++){
  }else{
   for(let i=0;i<L.pts.length;i++)if(Math.abs(L.pts[i][2]-L0.pts[i][2])>1e-4)otherMoved++;}}
 C.canGuard=0;
-const Rneg=W.riverLines(40).find(l=>l.name.indexOf('Jadwal')>=0);
+const Rneg=W.riverLines(40).find(l=>l.name.indexOf('Jadwal')>=0||l.name.indexOf('Keb Riw')>=0);
 let negRises=0;
 for(let i=1;i<Rneg.pts.length;i++)if(Rneg.pts[i][0]>=-624000&&Rneg.pts[i][0]<=-609000&&Rneg.pts[i][2]>Rneg.pts[i-1][2]+.05)negRises++;
 C.canGuard=1;

@@ -6,9 +6,9 @@
   "area_km2": 155968,
   "step_m": 4000,
   "provinces": {
-   "crystalline": 59312,
+   "crystalline": 59328,
    "granite": 34048,
-   "sedimentary": 47056,
+   "sedimentary": 47040,
    "volcanic": 6240,
    "rift": 4896,
    "water": 4304,
@@ -17,29 +17,29 @@
   },
   "families": {
    "iron": {
-    "mean": 131.4,
-    "good_km2": 123136,
+    "mean": 131.5,
+    "good_km2": 123152,
     "rich_km2": 29776,
     "peak": {
      "byte": 255,
      "x": -326000,
      "z": -94000
     },
-    "nodes": 8932
+    "nodes": 8934
    },
    "copper": {
     "mean": 46.8,
-    "good_km2": 13232,
+    "good_km2": 13264,
     "rich_km2": 6304,
     "peak": {
      "byte": 240,
      "x": -558000,
      "z": -98000
     },
-    "nodes": 1788
+    "nodes": 1789
    },
    "tin": {
-    "mean": 68.8,
+    "mean": 68.9,
     "good_km2": 34048,
     "rich_km2": 34048,
     "peak": {
@@ -62,7 +62,7 @@
    },
    "gold": {
     "mean": 74.3,
-    "good_km2": 99600,
+    "good_km2": 99616,
     "rich_km2": 0,
     "peak": {
      "byte": 140,
@@ -73,7 +73,7 @@
    },
    "silver": {
     "mean": 74.4,
-    "good_km2": 99600,
+    "good_km2": 99616,
     "rich_km2": 0,
     "peak": {
      "byte": 150,
@@ -84,7 +84,7 @@
    },
    "rare-earth": {
     "mean": 80.1,
-    "good_km2": 98256,
+    "good_km2": 98272,
     "rich_km2": 4896,
     "peak": {
      "byte": 190,
@@ -128,7 +128,7 @@
    },
    "saltpeter": {
     "mean": 126.9,
-    "good_km2": 111888,
+    "good_km2": 111856,
     "rich_km2": 51632,
     "peak": {
      "byte": 200,
@@ -138,7 +138,7 @@
     "nodes": 4852
    },
    "halite": {
-    "mean": 5.5,
+    "mean": 5.4,
     "good_km2": 0,
     "rich_km2": 0,
     "peak": {
@@ -146,7 +146,7 @@
      "x": -326000,
      "z": -26000
     },
-    "nodes": 534
+    "nodes": 533
    },
    "gypsum": {
     "mean": 0,
@@ -193,9 +193,9 @@
     "nodes": 48
    },
    "stone": {
-    "mean": 212.8,
-    "good_km2": 140672,
-    "rich_km2": 119840,
+    "mean": 212.9,
+    "good_km2": 140768,
+    "rich_km2": 119920,
     "peak": {
      "byte": 255,
      "x": -318000,
@@ -227,7 +227,7 @@
    },
    "water": {
     "mean": 57.1,
-    "good_km2": 38512,
+    "good_km2": 38368,
     "rich_km2": 21664,
     "peak": {
      "byte": 255,
@@ -281,9 +281,9 @@
     "nodes": 0
    },
    "skarn": {
-    "mean": 2.6,
-    "good_km2": 2064,
-    "rich_km2": 2064,
+    "mean": 2.7,
+    "good_km2": 2096,
+    "rich_km2": 2096,
     "peak": {
      "byte": 200,
      "x": -558000,
@@ -306,7 +306,7 @@
   "farm": {
    "mean": 0.073,
    "good_km2": 10016,
-   "best_km2": 6656,
+   "best_km2": 6640,
    "peak": {
     "score": 0.997,
     "x": -478000,
