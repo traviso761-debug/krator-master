@@ -6,12 +6,10 @@
 // THE ROCK IN SECTION (the final rebuild, pair 10, 2026-11-04; kits/resources/ROCK-PROPOSAL.md, "Where the biomes must change" 1): the geology bake
 // (kits/resources/data/geology.json, 5.1) puts this lip in the `impact` province (impactite 255 at px 427,302; granite begins ~6 km inside), so what the
 // sphere sawed through here is the crater wall's MEGABRECCIA, not level beds: KSTRATA's `megabreccia` recipe (swhighlands' `crest`, nhighlands' crags)
-// at the face's scale, unweathered (no wash, no dust: nothing has had time to weather it), every block sawn flat and polished like a breccia slab;
+// at the face's scale (core's `cut-face-breccia`: 22 m blocks nesting 2.6 m), unweathered (no wash, no dust: nothing has had time to weather it), every block sawn flat and polished like a breccia slab;
 // the library's rock.megabreccia.polished (delivered 2026-11-10; rock.megabreccia, the weathered face, before it) is the slab's grain. ?strata=0: the level beds of the first build (rock.cut.polished) (a look decision for the owner: KNOWN_ISSUES.md)
 const FACE_BRECCIA=(function(){if(new URLSearchParams(location.search).get('strata')==='0'||typeof KSTRATA==='undefined'||!BIO.strata)return null;
- try{const R0=KSTRATA.recipe('megabreccia');if(R0&&!KSTRATA.RECIPES['cut-face-breccia'])KSTRATA.add(Object.assign({},R0,{name:'cut-face-breccia',fx:Object.assign({},R0.fx,{wash:false}),
-   blocks:Object.assign({},R0.blocks,{size:22,nest:{kind:'fine',size:2.6}})}));
-  return BIO.strata({recipe:KSTRATA.RECIPES['cut-face-breccia']?'cut-face-breccia':'megabreccia',seed:CUT.SEED+48,range:[-600,1400],dip:[.6,.8,.004],warp:[5,1.5],wash:false,regolith:0,res:.25,private:true});}
+ try{return BIO.strata({recipe:'cut-face-breccia',seed:CUT.SEED+48,range:[-600,1400],dip:[.6,.8,.004],warp:[5,1.5],wash:false,regolith:0,res:.25,private:true});}
  catch(e){reportErr('face strata: '+e.stack);return null;}})();
 const FACE_MESH=(function(){const g=GROUND.mesh.geometry,p=g.attributes.position,ix=g.index.array,pos=[],uv=[],col=[];
  const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('cut','ground.face'):null,T=1/12;   /* 12 m a tile: the beds read as bands metres thick */

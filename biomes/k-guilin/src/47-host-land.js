@@ -127,12 +127,7 @@ const ROCK_GEOS=[];
 // nwbay's recipe, the same limestone province as the bay's drowned stacks (one landscape: the owner, 2026-10-26): a massive grey limestone in thick
 // beds, darker and paler by bed, thin marl partings and iron-stained bands, near level. One stack for the map, so a bed runs from tower to tower and
 // through the stone forest's blades; drawn on the walls and the blades as a tint about the beds' mean, under the library's grain, the rain's streaks
-// and the soil's green (the vertex colours). The tops keep their soil and moss. ?strata=0 without it
-if(typeof KSTRATA!=='undefined'&&!KSTRATA.RECIPES['kguilin-karst'])KSTRATA.add({name:'kguilin-karst',main:'lime',kinds:{
- lime:{p:.5,th:[4,16],col:[0xc4bfb5,0xbab5aa,0xcdc8bd],hard:.95,xbed:0,varnish:.2},
- dark:{p:.24,th:[2,8],col:[0x9a978f,0x8e8b84,0xa39f96],hard:.9,xbed:0,varnish:.2},
- marl:{p:.14,th:[.3,1.4],col:[0xa69a84,0x9c907a],hard:.3,xbed:0,varnish:0,between:true},
- iron:{p:.12,th:[.3,1.2],col:[0xb8946c,0xae8a62],hard:.6,xbed:0,varnish:0,between:true}},fx:{xbed:0,varnish:.2}});
+// and the soil's green (the vertex colours). The tops keep their soil and moss. The recipe is core's `kguilin-karst`. ?strata=0 without it
 const ROCK_STRATA=new URLSearchParams(location.search).get('strata')!=='0'&&typeof KSTRATA!=='undefined'&&BIO.strata?(function(){let lo=1e9,hi=-1e9;ROCK.forEach(B=>{lo=Math.min(lo,B.y0);hi=Math.max(hi,B.top);});
  return BIO.strata({recipe:'kguilin-karst',seed:8117,range:[Math.floor(lo-20),Math.ceil(hi+20)],dip:[.8,-.6,.03],warp:[5,1.6],res:.25,private:true});})():null;
 // strataColor is linear; the tint is the bed's colour over the lime's mean (.47), held to [.45, 1.7] and taken at half strength (korona's)

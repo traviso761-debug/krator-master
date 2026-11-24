@@ -1,6 +1,6 @@
 // ================================================================= HOST — the ground (PLAN.md section 6)
 // One ground mesh painted from the chemistry and the heat (45: L.APRON, L.ACIDG; 48: HEAT_AT), on KGROUND (43-core-ground.js) with four library layers,
-// each on its documented mask, and every steep face in the band's own rock (KSTRATA: two recipes the kit adds, `arch-serpentinite` under
+// each on its documented mask, and every steep face in the band's own rock (KSTRATA: two of core's recipes, `arch-serpentinite` under
 // `arch-laterite`). Started from biomes/highrift's ground.
 //   aGL.x  TRAVERTINE  ground.travertine.white: the springs' aprons, the terraces' ridges, the pool's rim, the alkaline bank (pH over 9.5)
 //   aGL.y  ACID        ground.travertine.acid: the acid stream's banks, the solfatara's bleached ground, the right bank and the mixed water's
@@ -12,18 +12,7 @@ const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined
 /* KGROUND's relief (core/terrain/GROUND.md): the bump from the layers' height and the ground mesh's hollows (KGROUND.cavityMesh); ?kgrelief=0 */
 const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 /* THE BAND'S ROCK (PLAN.md section 6): serpentinite (green-black, white veins, buff peridotite rind, dunite) under the laterite (red, mottled, a green
-   garnierite seam at its base, an iron crust); KSTRATA.add puts the two recipes in the table for this page (core is unchanged: PLAN.md section 13) */
-if(typeof KSTRATA!=='undefined'&&KSTRATA.add){
- KSTRATA.add({name:'arch-serpentinite',main:'serp',kinds:{
-  serp:{p:.55,th:[2,12],col:[0x1e2a22,0x2c3a2e,0x3e5040,0x2a3428],hard:.7,xbed:0,varnish:0},
-  rind:{p:.15,th:[.5,3],col:[0xa07040,0xb8864e,0x8a6438],hard:.5,xbed:0,varnish:0},
-  dunite:{p:.18,th:[1,5],col:[0x4a5a32,0x3a4628,0x56663a],hard:.75,xbed:0,varnish:0},
-  vein:{p:.12,th:[.05,.35],col:[0xe8e6dc,0xdcd8cc],hard:.6,xbed:0,varnish:0,between:true}},fx:{}});
- KSTRATA.add({name:'arch-laterite',main:'red',kinds:{
-  red:{p:.58,th:[1,4],col:[0x9a3a1e,0xa84426,0x8a321a],hard:.3,xbed:0,varnish:0},
-  mottled:{p:.2,th:[.5,2],col:[0xb86a3a,0xc87a48,0xa45e32],hard:.25,xbed:0,varnish:0},
-  garnierite:{p:.08,th:[.2,.8],col:[0x6a9a6a,0x5a8a5a],hard:.3,xbed:0,varnish:0,between:true},
-  crust:{p:.14,th:[.3,1.2],col:[0x5a2414,0x6a2c18],hard:.8,xbed:0,varnish:0}},fx:{}});}
+   garnierite seam at its base, an iron crust): core's recipes `arch-serpentinite` and `arch-laterite` (core/terrain/35-core-strata.js) */
 const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:4300,range:[SITE.base-400,SITE.base+600],
  formations:[{recipe:'arch-serpentinite',base:SITE.base-400,top:SITE.base-12},{recipe:'arch-laterite',base:SITE.base-12,top:SITE.base+600}],dip:[.7,.7,.02],warp:[6,2]});
 const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:0x8a5a3a}):null;

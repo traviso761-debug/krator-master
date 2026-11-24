@@ -8,34 +8,6 @@ const GQ=new URLSearchParams(location.search);
 const USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
 const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 
-if(typeof KSTRATA!=='undefined'&&KSTRATA.add){
- KSTRATA.add({
-  name:'delta-amber-bed',main:'blueclay',
-  kinds:{
-   blueclay:{p:0.52,th:[0.8,3.2],col:[0x3b5264,0x466074,0x344858,0x4f6a7e],hard:0.28,xbed:0,varnish:0},
-   lignite:{p:0.26,th:[0.3,1.4],col:[0x1c1a18,0x262320,0x161412],hard:0.55,xbed:0,varnish:0},
-   peat:{p:0.16,th:[0.4,1.6],col:[0x3c2e22,0x4a3828],hard:0.22,xbed:0,varnish:0},
-   amberseam:{p:0.06,th:[0.08,0.28],col:[0xc88424,0xb46e1c],hard:0.35,xbed:0,varnish:0,between:true}
-  },fx:{}
- });
- KSTRATA.add({
-  name:'ria-carbonate-bluff',main:'limestone',
-  kinds:{
-   limestone:{p:0.58,th:[1.8,7.5],col:[0xd6d0c0,0xc8c0ae,0xe0dacb,0xbcb4a2],hard:0.82,xbed:0,varnish:0},
-   chert:{p:0.12,th:[0.15,0.6],col:[0x6e6a62,0x5c5850],hard:0.92,xbed:0,varnish:0,between:true},
-   marl:{p:0.18,th:[0.6,2.4],col:[0xa8a494,0x989484],hard:0.48,xbed:0,varnish:0},
-   oysternotch:{p:0.12,th:[0.3,1.1],col:[0xe4e6df,0xd4d8d0],hard:0.75,xbed:0,varnish:0}
-  },fx:{}
- });
- KSTRATA.add({
-  name:'ria-loess-cap',main:'loess',
-  kinds:{
-   loess:{p:0.74,th:[2.5,9.0],col:[0xc6a874,0xb89a66,0xd2b480],hard:0.36,xbed:0,varnish:0},
-   paleosol:{p:0.26,th:[0.4,1.5],col:[0x8e6c48,0x7e5e3e],hard:0.42,xbed:0,varnish:0}
-  },fx:{}
- });
-}
-
 const STRATA=(function(){
  if(GQ.get('strata')==='0'||typeof KSTRATA==='undefined')return null;
  if(SKEY==='throat'){
