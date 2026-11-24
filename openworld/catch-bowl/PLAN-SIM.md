@@ -30,7 +30,7 @@ Godsgate and the Stalker Range.
 | Tune | Province | Scale (people an actor) | Status |
 |---|---|---|---|
 | `CATCH_TUNE` (`catch-tune.js`) | the Catch floor and the Twins | 10 | **done**; gains the Godsgate's stops |
-| **`BOWL_TUNE`** (`bowl-tune.js`, new) | the Bowl | 25 *proposed* (Jabal is a city) | to write |
+| **`BOWL_TUNE`** (`bowl-tune.js`) | the Bowl | 25 *proposed* (Jabal is a city) | **its first half is built** (2026-11-24): `core/region/data/bowl-tune.js` declares the six places and `core/region/tests/test-bowl.js` runs them a year, 14 checks. `join` (the rounds) is still to write |
 | **`STALKER_TUNE`** (`stalker-tune.js`, new) | the Stalker Range | 10 *proposed* | to write; the smallest tune in the repo by design |
 | `EAST_RIFT` (`east-rift.js`) | all of it, with Xanadu and Longsong | per tune | gains three joins |
 
@@ -162,6 +162,34 @@ a market, or a ruin to pass?* and *is Mantis the town its lore describes, or a v
 **The one structural change**: the Train of Jabal stops being a gateway pool and becomes a company with a home, two
 works and two rounds (Solta > Jabal, and Jabal > Ṣalṭ al-Bān > Stair > the Twins > Strongbow). This is the biggest edit
 to books that currently balance, and `test-catch.js`'s 29 checks must pass before the Bowl's are added to them.
+
+### 3b. What is built (2026-11-24)
+
+**`core/region/data/bowl-tune.js`** declares the six places in **Xanadu's frame** (`BOWL_TUNE.px` measures from px
+1191,1569, as `CATCH_TUNE.px` does, so the two join the same way and `EAST_RIFT` can take both at C6), with:
+
+- the goods, in two rows: the ones `CATCH_TUNE` also declares — restated so the tune stands alone in node, since the
+  join merges the tables with `Object.assign` where a duplicate costs nothing — and the Bowl's own (dates, figs,
+  frankincense, resin, hides, shrimp, fish, brick, timber, coffee, cloth);
+- a diet by kind (`city`, `town`, `works`, `village`, `ruin`), everyone drinking hard because the floor reaches +47 °C
+  at 1.83 atm, and salt the one thing nobody here lacks;
+- a calendar of three windows: `pans` in the cool months as the Catch's, `monsoon` for Mantis's pocket, and
+  **`deadheat`** — the floor's high summer, too hot to work at all, which no other tune in the repo has had to say;
+- Jabal's **caravanserai wells and fodder yards**, because the Train's rounds have to set out from somewhere that can
+  water them, and `kits/dasri`'s urban register gives Jabal two *funduqs*;
+- the Train and Mantis's Izani houses **wary**, which is the salt grievance the owner's 2026-11-16 "Solta too" created;
+- **`BOWL_TUNE.conflicts`**: the two census rows of section 3a, each carried at Gemini's number with a `pending` flag on
+  the place, so the tune runs and the question stays visible in the data rather than only in a plan.
+
+**`core/region/tests/test-bowl.js`**: a year of the Bowl (6 settlements, 26,370 people at one actor to 25, about 60 s),
+**14 checks, every one with a working negative** — the six places declared and run; nobody short on their own make and a
+400-day start; Jabal making a city's goods, Solta raking salt and gypsum, Mantis tapping frankincense and resin; the
+pans worked only in the cool months and the dates only in the monsoon while a city's kilns run all year; Jabal's
+caravanserais watered; the salt grievance wary; and **the two conflicts still flagged**, so nobody can quietly forget
+them.
+
+Left for S2's second half: `BOWL_TUNE.join` — the Train's rounds, Mantis buying its salt at Solta, and the north road's
+stops at Arcbeam, Parabola and Esper.
 
 ## 4. The Stalker Range: `STALKER_TUNE`
 
