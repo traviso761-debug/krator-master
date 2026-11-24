@@ -18,6 +18,7 @@ cd settlements/hook
 python3 build.py                                   # dist/hook.html and dist/hook-site.html (+ dist/hook*.tex.*.js, the kits' texture packs)
 python3 world/cut.py                               # recut the model round Hook (tools/scale-model/model/data) and add world/landforms.json
 node tests/test-hook-world.js                      # the ground and the frame in node (core/world 41 and 41l on the cut)
+node tests/test-hook-strokes.js                    # the editor's ground strokes on the page, against the editor's own replay
 python3 verify.py dist/hook.html --assert --views "Overview;The Ancient town" --out shots/x
 python3 verify.py dist/hook-site.html --assert --out shots/site      # the site editor's own checks
 python3 build.py --vendor-check                    # every src/ file that shadows a kit fragment, against the kit's copy
@@ -60,6 +61,7 @@ editor), so both pages are about 3.9 MB.
 |---|---|
 | `src/75d-hook-world.js` | `[G data]` the scale model's ground under Hook: `WORLD.init` on the cut in `world/` (with Hook's spit, `world/landforms.json`, stamped by 41l), the kit's frame laid on the nearest straight real coast to the pin and turned to its bearing, `PORT.natH` set ("The ground" below) |
 | `src/76-hook-ground.js` | `[G data]` the Heights (a ramp 31 to 46 m, the quays at 6) and the hill behind (70 to 95 m over z -1180 to -1400) as the kit's own layout stamps, kept only where the model has no such relief (on the 5.1 cut with the spit at +5 m: both kept); `hookGroundH` for what stands on them |
+| `src/76b-hook-strokes.js` | `[G data]` the site editor's ground strokes (`site/hook-site.json` `terrain`) replayed with the editor's own arithmetic onto a delta grid and added to `PORT.natH`, so the page stands on the edited ground; left to the editor's live grid on its own page (`HOOK_EDITOR`). `tests/test-hook-strokes.js` |
 | `src/79-hook-ancient.js` | `[draw]` the five host types registered as Port segments (`anFacet`, `anBastion`, `anArcades`, `anStalks`, `anBell`: a land block the width of the podium, a flat pad at the ground's height, the kit's builder run in a group at the pad with the group transform on, cut at a storey through the kit's Ys hook) |
 | `targets/hook/89z-rows.js` | `[G data]` the P0 run, then the ground stamps and the hosts: the site's named hosts, then one per free block of the Ancient grid by `KRAND` (seeded from the stretch, row and column; the type by the site's weights, the decay and the cut by the quarter's ruin level; a block near an avenue, on the Heights' front slope or over a Port footprint stays free); every host and quarter in `core/tags` before anything draws |
 | `src/88-hook-programme.js` | `[G data]` the town's programme (P2): each culture's kit and its lot classes (`culture:class`, the kits' own keys), the fallback chain, the quarters' wealth bias, the salvage draw, the host reach |
@@ -123,8 +125,8 @@ Not Voth's ground (`20-site-cantons.js`, `50-site-scene.js`). Hook's own fragmen
 quarters, nine markers, three avenues, eight hosts and the grid; every item selects and draws its marks; a marker,
 a host and a quarter's corner move; the tools add a quarter, two markers, a host and an avenue, undo and redo, a
 raise stroke moves the ground and undoes; and a save round-trips (`SITE.clean(JSON.parse(SITE.json()))` is the site
-again, hosts and grid included). It shots the map and city views. The ground strokes are saved but not yet applied
-by `build.py` (`KNOWN_ISSUES.md`).
+again, hosts and grid included). It shots the map and city views. The ground strokes are saved and the base page
+stands on them (`src/76b-hook-strokes.js`).
 
 `verify.py` is on `tools/harness.py` and runs the kit's invariants (`kits/port/verify.py`, imported) plus
 Hook's own:

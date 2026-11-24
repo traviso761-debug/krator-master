@@ -11,7 +11,7 @@
 // stamps) and the Ancient town's ruin hosts (79-hook-ancient.js) on its grid: the site's named hosts
 // (site/hook-site.json `hosts`), then a host per free block by KRAND, seeded from (HOOK_SEED, stretch, row, column),
 // never from how many came before. Each host is registered in core/tags before anything draws it.
-const TITLE='Krator — Hook, the waterfront and the Ancient town (P1)';
+const TITLE='Krator — Hook, the port city on its spit (P3)';
 const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
  // the coast, west to east: [key, decay, set-back]. Set-backs keep neighbours within 40 m of each other.
  const plan=[
@@ -93,7 +93,7 @@ const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
  // the rest of the grid: a host per free block by hash. A block near an avenue stays free (the avenues are laid at
  // step 3 and would knock a host out); a block under the Heights' front slope stays free (the stair and the funicular,
  // P3); the type by the site's weights, the decay by the quarter's ruin level, the cut by the quarter too.
- const G=SITE.grid||{},rows=G.rows||[],z1=G.z1==null?-150:G.z1,B=G.block==null?110:G.block,S=G.street==null?20:G.street,W=G.weights||{anArcades:1};
+ const G=SITE.grid||{},rows=G.rows||[],z1=G.z1==null?-150:G.z1,B=Math.min(400,Math.max(20,G.block==null?110:G.block)),S=Math.min(60,Math.max(4,G.street==null?20:G.street)),W=G.weights||{anArcades:1};   /* the editor's clamps (SITE.cleanGrid): a hand-edited 0 would loop forever */
  const keys=Object.keys(W).filter(k=>HOOK_HOSTS[k]),wsum=keys.reduce((s,k)=>s+W[k],0);
  const quarters=(SITE.districts||[]).filter(d=>d.type==='quarter');
  const quarterAt=(x,z)=>quarters.find(q=>KL.inPoly([x,z],q.poly))||null;

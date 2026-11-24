@@ -19,12 +19,19 @@ HOOK_DRAW.denorm=function(a){if(!a.normalized)return 1;const r=a.array;
  return r instanceof Uint8Array||r instanceof Uint8ClampedArray?1/255:r instanceof Uint16Array?1/65535:r instanceof Int8Array?1/127:r instanceof Int16Array?1/32767:1;};
 /* a material by its properties: the kits make a fresh material per build even when nothing differs, so every material
    with the same fingerprint is drawn as the first one seen (one mesh per material in the near set, not one per build) */
+/* The base COLOUR is not in the fingerprint: it goes into the parts' vertex colours (flatten, below), so pieces that differ
+   only in colour share one material and one draw call (2026-11-24: 612 distinct looks among the Heights view's 659 near
+   meshes, which put it over the 900-call budget). The canonical material is whitened once, its own colour kept in
+   userData._hookCol for any later piece that still holds it (HOOK_DRAW.baseColour). */
 HOOK_DRAW.canon={};
+HOOK_DRAW.baseColour=M=>{const c=(M.userData&&M.userData._hookCol)||M.color;return c?[c.r,c.g,c.b]:[1,1,1];};
 HOOK_DRAW.material=function(M){const t=x=>x?x.uuid:'',c=x=>x?x.getHexString():'',U=M.userData||{};
- const fp=[M.type,c(M.color),t(M.map),t(M.normalMap),t(M.roughnessMap),t(M.emissiveMap),t(M.alphaMap),c(M.emissive),M.emissiveIntensity,M.roughness,M.metalness,
+ const fp=[M.type,t(M.map),t(M.normalMap),t(M.roughnessMap),t(M.emissiveMap),t(M.alphaMap),c(M.emissive),M.emissiveIntensity,M.roughness,M.metalness,
   M.transparent?1:0,M.opacity,M.side,M.vertexColors?1:0,M.flatShading?1:0,M.alphaTest,M.depthWrite?1:0,M.wireframe?1:0,M.onBeforeCompile?String(M.onBeforeCompile).length:0,
-  M.customProgramCacheKey?String(M.customProgramCacheKey()):'',U.family||'',U.set||'',U.fam||'',M.name||''].join('|');
- return HOOK_DRAW.canon[fp]||(HOOK_DRAW.canon[fp]=M);};
+  M.customProgramCacheKey?String(M.customProgramCacheKey()):'',U.family||'',U.set||'',U.fam||'',M.name||'',M.color?'c':'-'].join('|');
+ let C=HOOK_DRAW.canon[fp];
+ if(!C){C=HOOK_DRAW.canon[fp]=M;if(M.color){M.userData=M.userData||{};if(!M.userData._hookCol)M.userData._hookCol=M.color.clone();M.color.setRGB(1,1,1);}}
+ return C;};
 /* one geometry per material from a built group (meshes and instanced meshes alike), in the group's frame */
 /* A kit's instanced detail carries a colour PER INSTANCE (the kit's kput colour: the Islanders' patterned walls, the
    thatch, the Vernacular's timber): a flatten that copied only the geometry and the matrix drew every such piece in
@@ -32,11 +39,12 @@ HOOK_DRAW.material=function(M){const t=x=>x?x.uuid:'',c=x=>x?x.getHexString():''
    has the same omission). Every flattened part therefore gets a vertex-colour attribute: the source's, times the
    instance's colour, white where it has neither; and every canonical material reads vertex colours. */
 HOOK_DRAW.flatten=function(G){G.updateMatrixWorld(true);const groups={},IM=new THREE.Matrix4(),IC=new THREE.Color();
- G.traverse(o=>{if(!o.isMesh||!o.geometry||!o.geometry.attributes.position)return;const mat=Array.isArray(o.material)?null:HOOK_DRAW.material(o.material);if(!mat)return;
+ G.traverse(o=>{if(!o.isMesh||!o.geometry||!o.geometry.attributes.position||Array.isArray(o.material))return;
+  const mc=HOOK_DRAW.baseColour(o.material),mat=HOOK_DRAW.material(o.material);if(!mat)return;   /* the colour first: canonicalising may whiten it */
   const g=o.geometry,sig=mat.uuid+'|'+Object.keys(g.attributes).filter(n=>n!=='color').sort().join(','),list=groups[sig]||(groups[sig]={mat,parts:[]});
-  if(o.isInstancedMesh)for(let i=0;i<o.count;i++){o.getMatrixAt(i,IM);let ic=null;if(o.instanceColor){o.getColorAt(i,IC);ic=[IC.r,IC.g,IC.b];}
+  if(o.isInstancedMesh)for(let i=0;i<o.count;i++){o.getMatrixAt(i,IM);let ic=mc;if(o.instanceColor){o.getColorAt(i,IC);ic=[IC.r*mc[0],IC.g*mc[1],IC.b*mc[2]];}
    list.parts.push({g,m:new THREE.Matrix4().multiplyMatrices(o.matrixWorld,IM),ic});}
-  else list.parts.push({g,m:o.matrixWorld.clone(),ic:null});});
+  else list.parts.push({g,m:o.matrixWorld.clone(),ic:mc});});
  const out=[];
  for(const s in groups){const Q=groups[s],g0=Q.parts[0].g,names=Object.keys(g0.attributes).filter(n=>n!=='color').concat(['color']);let total=0,itotal=0;
   Q.parts.forEach(p=>{total+=p.g.attributes.position.count;itotal+=p.g.index?p.g.index.count:p.g.attributes.position.count;});
@@ -63,9 +71,12 @@ HOOK_DRAW.flatten=function(G){G.updateMatrixWorld(true);const groups={},IM=new T
    map's family tone (plaster), not white */
 HOOK_DRAW.tones=function(parts,h){const acc=[[0,0,0,0],[0,0,0,0]],c=new THREE.Color(),v=new THREE.Vector3();
  for(const pt of parts){const g=pt.geo,M=pt.mat,col=g.attributes.color,pos=g.attributes.position,n=pos.count;if(!n)continue;
-  const mc=M.color?M.color.clone():new THREE.Color(0xffffff);if(M.map&&mc.r>.95&&mc.g>.95&&mc.b>.95)mc.setHex(0xcfc4b0);
+  /* the material's own colour is in the vertex colours now (HOOK_DRAW.material whitens the canonical one), so a part is
+     "white with a map" when its vertex colour is white */
+  const mc=M.color?M.color.clone():new THREE.Color(0xffffff);
   const step=Math.max(1,Math.floor(n/400));
   for(let i=0;i<n;i+=step){v.fromBufferAttribute(pos,i);const top=v.y>h*.66?1:0;c.copy(mc);if(col){c.multiply(new THREE.Color(col.getX(i),col.getY(i),col.getZ(i)));}
+   if(M.map&&c.r>.95&&c.g>.95&&c.b>.95)c.setHex(0xcfc4b0);
    const w=pt.tris/n*step;const a=acc[top];a[0]+=c.r*w;a[1]+=c.g*w;a[2]+=c.b*w;a[3]+=w;}}
  return acc.map(a=>a[3]?new THREE.Color(a[0]/a[3],a[1]/a[3],a[2]/a[3]):null);};
 HOOK_DRAW.proto=function(L){const id=L.kit==='hykpod'?'hykpod:'+L.id:L.kit+':'+L.key+'#'+(L.v|0);if(HOOK_DRAW.protos[id]!==undefined)return HOOK_DRAW.protos[id];

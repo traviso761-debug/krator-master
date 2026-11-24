@@ -48,7 +48,7 @@ SITE.clean = function (o) {
     if (d.type === 'quarter') {
       d.layer = SITE.LAYERS[s.layer] ? s.layer : null; d.ruin = s.ruin == null ? null : SITE.num(s.ruin, .5, 0, 1);
       d.cultures = SITE.cleanCultures(s.cultures); d.holder = String(s.holder || ''); d.mood = String(s.mood || '');
-    } else if (d.type === 'field') { d.kind = String(s.kind || 'damage'); d.v = SITE.num(s.v, 1, 0, 1); }
+    } else if (d.type === 'field') { d.kind = String(s.kind || 'damage'); d.v = SITE.num(s.v, 1, 0, 1); d.soft = SITE.num(s.soft, 0, 0, 1000); }
   });
   out.hosts = (o.hosts || []).filter(function (h) { return h && h.key && isFinite(h.x) && isFinite(h.z); }).map(function (h, i) {
     return { id: String(h.id || ('h' + (i + 1))), key: String(h.key), name: String(h.name || h.key), x: +(+h.x).toFixed(1), z: +(+h.z).toFixed(1),
@@ -279,7 +279,7 @@ TOOL.editor = function () {
       '<label>holder <input id="e-holder" value="' + esc(it.holder || '') + '" placeholder="who holds it at game start"></label>' +
       '<label>mood <input id="e-mood" list="moods" value="' + esc(it.mood || '') + '"><datalist id="moods">' + SITE.MOODS.map(function (m) { return '<option value="' + m + '">'; }).join('') + '</datalist></label>';
   } else if (it.type === 'field') {
-    h = '<label>kind <input id="e-kind" value="' + esc(it.kind || 'damage') + '"></label><label>strength <input id="e-v" type="number" min="0" max="1" step="0.05" value="' + (it.v == null ? 1 : it.v) + '"></label>';
+    h = '<label>kind <input id="e-kind" value="' + esc(it.kind || 'damage') + '"></label><label>strength <input id="e-v" type="number" min="0" max="1" step="0.05" value="' + (it.v == null ? 1 : it.v) + '"></label><label>falloff m <input id="e-soft" type="number" min="0" max="1000" step="10" value="' + (it.soft == null ? 0 : it.soft) + '"></label>';
   }
   if (h) del.insertAdjacentHTML('beforebegin', h);
   if ($('e-layer')) $('e-layer').onchange = function () { TOOL.set('layer', this.value || null); };
@@ -289,6 +289,7 @@ TOOL.editor = function () {
   if ($('e-mood')) $('e-mood').onchange = function () { TOOL.set('mood', this.value); };
   if ($('e-kind')) $('e-kind').onchange = function () { TOOL.set('kind', this.value || 'damage'); };
   if ($('e-v')) $('e-v').onchange = function () { TOOL.set('v', SITE.num(this.value, 1, 0, 1)); };
+  if ($('e-soft')) $('e-soft').onchange = function () { TOOL.set('soft', SITE.num(this.value, 0, 0, 1000)); };
 };
 /* import, draft restore and clear replace the hosts and the grid too */
 TOOL.replaceAll = function (o) {

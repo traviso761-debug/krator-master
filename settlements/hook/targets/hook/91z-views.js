@@ -29,7 +29,9 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  if(typeof HOOK_GROUND!=='undefined'){const r=HOOK_GROUND.ridge,c=HOOK_GROUND.hill,rx=(r.x0+r.x1)/2,g=(x,z)=>terrainH(x,z);
   V['The Heights']=portCam(rx,g(rx,r.z1+40)+4,r.z1+40,.1,.28,900);
   V['The Ancient town']=[rx+300,g(rx+300,r.z0+60)+60,r.z0+60,rx-100,D,120];
-  V['The hill behind']=[0,g(0,r.z0-40)+30,r.z0-40,0,g(0,c.z0)+10,c.z0];}
+  /* from the hill's crest, back over the whole town to the harbour and the Hook (on the spit the hill is the kit's ramp,
+     the only height behind the waterfront: the view the 4.21 slope gave from below no longer shows anything) */
+  const hz=(c.z0+c.z1)/2;V['The hill behind']=[120,g(120,hz)+22,hz,-100,D,-150];}
  // P3: the governor's palace at the head of the Hook's axis, and the Stacks' slave market from its cages
  if(typeof HOOK_SITE!=='undefined'){const mk=id=>(HOOK_SITE.markers||[]).find(m=>m.id===id);const B=mk('B'),E=mk('E');
   if(B)V['The palace']=[B.x+60,terrainH(B.x,B.z)+45,B.z+170,B.x,terrainH(B.x,B.z)+14,B.z];

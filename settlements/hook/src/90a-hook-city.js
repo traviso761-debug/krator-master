@@ -57,7 +57,7 @@ const HOOK_CITY=(()=>{
   {name:'districts',run(){const P=KL.plan();
    P.districts=P.site.filter(d=>d.role==='quarter').map(d=>({kind:'quarter',id:d.id,name:d.name,poly:d.poly,born:2,art:[],
     cultures:d.cultures||null,holder:d.holder||null,mood:d.mood||null,layer:d.layer||null,ruin:d.ruin==null?null:d.ruin}));
-   P.fields=P.site.filter(d=>d.role==='field').map(d=>({poly:d.poly,kind:d.kind||d.name,v:d.v==null?1:d.v}));
+   P.fields=P.site.filter(d=>d.role==='field').map(d=>({poly:d.poly,kind:d.kind||d.name,v:d.v==null?1:d.v,soft:d.soft==null?0:d.soft}));
    log.districts=P.districts.length;log.fields=P.fields.length;}},
   {name:'avenues',run(){const r=KCITY.site.avenues((SITE.avenues||[]).map(a=>({name:a.name,pts:a.pts,width:a.width})),3,{snap:tune.avenueSnap});
    log.avenues=r.made;log.joins=r.joins;KL.SL.note(3,r.made+' avenues drawn, '+r.joins+' ends joined');}},
@@ -77,7 +77,12 @@ const HOOK_CITY=(()=>{
     lot's id), never from how many came before */
  const recs=[],by={culture:{},cls:{}},landmarks=[],pods=[];
  if(P){const hosts=P.landmarks.filter(L=>L.ancient),salv=KRAND.child(HOOK_SEED,'salvage');
-  const damageAt=p=>{let v=0;for(const F of (P.fields||[]))if(F.kind==='damage'&&KL.inPoly(p,F.poly))v=Math.max(v,F.v);return v;};
+  /* a damage field's strength: v inside its polygon; beyond its edge, when the field has a falloff (soft, m: the editor's
+    'falloff'), v eased to nothing over soft metres, so the reconquest's damage grades from rubble through scorched into the
+    town behind the harbour instead of stopping at a painted line (KNOWN_ISSUES.md, 'The damage field') */
+ const damageAt=p=>{let v=0;for(const F of (P.fields||[])){if(F.kind!=='damage')continue;if(KL.inPoly(p,F.poly)){v=Math.max(v,F.v);continue;}
+  if(!(F.soft>0))continue;let d=1e9;for(let i=0;i<F.poly.length;i++)d=Math.min(d,KL.segDist(p,F.poly[i],F.poly[(i+1)%F.poly.length]));
+  if(d<F.soft){const t=d/F.soft;v=Math.max(v,F.v*(1-t*t*(3-2*t)));}}return v;};
   for(const L of P.lots){if(L.died!=null||L.cls==='landmark'||!L.bo)continue;const D=HOOK_DIMS[L.key];if(!D)continue;
    const civic=L.cls==='civic',culture=civic?PROG.cultureOfKey(L.key):PROG.cultureOf(L.cls),cls=civic?'civic':PROG.classOf(L.cls),q=quarterAt([L.x,L.z]);
    const u=KRAND.unit(KRAND.hash(salv,L.id)),ps=civic?0:(PROG.salvage[cls]||0),salvage=u<ps;

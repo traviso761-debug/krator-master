@@ -427,7 +427,7 @@
    "id": "f-damage",
    "type": "field",
    "name": "damage",
-   "note": "the reconquest's fresh damage: the eastern harbour (PLAN.md section 6, question 5)",
+   "note": "the reconquest's fresh damage: the eastern harbour (PLAN.md section 6, question 5); its falloff (soft, 220 m) grades the damage beyond its edge into the town behind (2026-11-24)",
    "poly": [
     [
      150,
@@ -447,7 +447,8 @@
     ]
    ],
    "kind": "damage",
-   "v": 0.8
+   "v": 0.8,
+   "soft": 220
   }
  ],
  "markers": [

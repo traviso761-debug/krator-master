@@ -6,7 +6,7 @@
    Checks: the frame is a rotation (unit, orthogonal axes; toLocal undoes toWorld), its origin stands at the 1:1 shoreline
    with the sea on the kit's +z and land on its -z, the coast's stations lie near the fitted line, PORT.natH is the
    model's ground, and the frame is the same on a second run. Each placement check has a negative: a frame turned the
-   wrong way, and an origin moved 2 km inland, both fail.
+   wrong way, and an origin moved 2 km out to sea, both fail; the chain's toe is read on a ring past every bench's reach.
 
    node settlements/hook/tests/test-hook-world.js */
 'use strict';
@@ -82,13 +82,21 @@ T.ok('each bench is level inside and no face is steeper than its batter (41l\'s 
   JSON.stringify(chk.map(c => ({ id: c.id, inside: c.inside, batter: c.batter, toeOut: c.toeOut, fill: c.fill }))));
 /* the chain's toe: on a ring 1.2 km outside the three rectangles' union, the ground is the model's (no bench reaches it) */
 const BARE = load(true).WORLD;
-let moved = 0, ring = 0;
-for (let a = 0; a < 360; a += 5) { const t = a * Math.PI / 180, x = -900 + Math.cos(t) * 4700, z = 1100 + Math.sin(t) * 3600; ring++;
-  if (Math.abs(WORLD.H(x, z, 0) - BARE.H(x, z, 0)) > 1e-6) moved++; }
-T.neg('the ring check sees a bench that reaches it', w => { let n = 0; for (let a = 0; a < 360; a += 5) { const t = a * Math.PI / 180;
-  if (Math.abs(w.H(-900 + Math.cos(t) * 4700, 1100 + Math.sin(t) * 3600, 0) - BARE.H(-900 + Math.cos(t) * 4700, 1100 + Math.sin(t) * 3600, 0)) > 1e-6) n++; } return n === 0; },
-  { H: (x, z, m) => WORLD.H(x, z, m) + (x < -5000 ? 2 : 0) }, WORLD);
-T.ok('outside the spit\'s reach the ground is the model\'s own', moved === 0 && ring > 0, moved + ' of ' + ring + ' ring points moved');
+/* the ring: points just past every bench's reach (41l's own distance, benchD: 0 inside the rectangle, Euclidean round its
+   corners), on a circle round each bench, kept only where they lie beyond EVERY bench's reach, so nothing that reaches them
+   is left out of the check by the sampling */
+const BEN = WLAND.benches.filter(B => want.includes(B.id));
+const bD = (B, x, z) => { const dx = x - B.x, dz = z - B.z, u = Math.abs(dx * B.c + dz * B.s) - B.a, v = Math.abs(-dx * B.s + dz * B.c) - B.b;
+  return u <= 0 && v <= 0 ? 0 : Math.hypot(Math.max(u, 0), Math.max(v, 0)); };
+const RING = [];
+for (const B of BEN) for (let a = 0; a < 360; a += 4) { const t = a * Math.PI / 180, r = Math.hypot(B.a, B.b) + B.reach + 40, x = B.x + Math.cos(t) * r, z = B.z + Math.sin(t) * r;
+  if (BEN.every(C => bD(C, x, z) >= C.reach + 20)) RING.push([x, z]); }
+const ringMoved = w => RING.filter(p => Math.abs(w.H(p[0], p[1], 0) - BARE.H(p[0], p[1], 0)) > 1e-6).length;
+const moved = ringMoved(WORLD);
+T.neg('the ring check sees a bench that reaches it', w => ringMoved(w) === 0,
+  { H: (x, z, m) => WORLD.H(x, z, m) + (x < -2000 ? 2 : 0) }, WORLD);
+const ring = RING.length;
+T.ok('outside the spit\'s reach the ground is the model\'s own', moved === 0 && ring >= 60, moved + ' of ' + ring + ' ring points moved');
 const onSpit = w => { const B = WLAND.benchAt(w[0], w[1]); return !!B && B.id === 'lf_hook_spit' && WORLD.H(w[0], w[1], 0) - W.SEA > 3; };
 T.ok('the waterfront stands on the peninsula (300 m inland of the origin is the spit\'s ground)', onSpit(W.toWorld(0, -300)), 'origin ' + JSON.stringify(R.origin_m));
 

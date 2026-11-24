@@ -57,7 +57,9 @@ const HOOK_WORLD=(()=>{
  let tx=1/Math.hypot(1,slope),tz=slope/Math.hypot(1,slope);
  let nx=tz,nz=-tx;if(hs(x0+nx*800,zc+nz*800)>hs(x0-nx*800,zc-nz*800)){nx=-nx;nz=-nz;}
  /* the kit's axes: +z to the sea, +x along the coast on the kit's right-handed side */
- const ez=[nx,nz],ex=[nz,-nx],O=[x0,zc];
+ /* the origin on the shoreline found at x0 (the middle station), not on the fitted line, which may stand up to STRAIGHT
+    m off it; the fit gives the bearing */
+ const ez=[nx,nz],ex=[nz,-nx],O=[x0,st[2][1]];
  const toWorld=(x,z)=>[O[0]+x*ex[0]+z*ez[0],O[1]+x*ex[1]+z*ez[1]];
  const toLocal=(wx,wz)=>{const dx=wx-O[0],dz=wz-O[1];return [dx*ex[0]+dz*ex[1],dx*ez[0]+dz*ez[1]];};
  const modelH=(x,z)=>{const w=toWorld(x,z);return WORLD.H(w[0],w[1],0);};

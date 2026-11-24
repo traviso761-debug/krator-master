@@ -117,6 +117,22 @@ const R=[];
 return R;}"""
 
 
+def marr_families():
+    """{MAT key: library set} from kits/marr/materials.json: what Marr's own pack (88ym-mar-matlib.js) binds"""
+    with open(os.path.join(ROOT, 'kits', 'marr', 'materials.json'), encoding='utf-8') as fh:
+        return {k: v['lib'] for k, v in json.load(fh)['families'].items()}
+
+
+# Marr's materials in the IZV closure carry Marr's own library sets (kits/marr/materials.json), not the Iziz sets their
+# clones came from: Marr's files must load before Iziz's bind (build.py izv_marr_bundle), or a clone of a bound material
+# keeps Iziz's userData.lib and KMAT.bindMat skips it. With ?mat=proc (no library) the check reports and passes.
+MARR_MAT_JS = r"""(fam)=>{const M=typeof IZV!=='undefined'&&IZV.MAT;if(!M)return [{name:'hook-marr-materials',ok:false,detail:'no IZV.MAT'}];
+ if(typeof KMAT==='undefined'||!KMAT.bindMat)return [{name:'hook-marr-materials',ok:true,detail:'no material library on this page'}];
+ const bad=[],ok=[];for(const k in fam){const m=M[k];if(!m){bad.push(k+' missing');continue;}const lib=m.userData&&m.userData.lib;
+  if(lib===fam[k])ok.push(k);else bad.push(k+': '+(lib||'unbound')+' (want '+fam[k]+')');}
+ return [{name:'hook-marr-materials',ok:!bad.length,detail:bad.length?bad.join('; '):ok.length+' Marr materials on their own sets: '+ok.join(', ')}];}"""
+
+
 # The site editor (dist/hook-site.html): the page opened the current site, every quarter, marker, avenue and named host
 # can be selected and moved (through the tools, on a scratch copy), the tools round-trip (add, undo, redo, raise, undo),
 # and a save round-trips: SITE.clean(JSON.parse(SITE.json())) is the site again, with the quarters' fields, the hosts and
@@ -229,6 +245,7 @@ async def run(a):
             print("\n--- invariants ---")
             results = await pg.evaluate(assert_js)
             results += await pg.evaluate(HOOK_ASSERT_JS)
+            results += await pg.evaluate(MARR_MAT_JS, marr_families())
             for r in results:
                 soft = r.get("budget") and not a.strict_budget
                 tag = "  PASS  " if r["ok"] else ("  OVER  " if soft else "  FAIL  ")

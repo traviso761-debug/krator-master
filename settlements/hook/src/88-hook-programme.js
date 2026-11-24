@@ -104,7 +104,7 @@ const HOOK_PROG={
  damage:{rubble:.7,scorch:.3}};
 /* the culture a kit key belongs to (a civic piece has no culture:class) */
 HOOK_PROG.cultureOfKey=function(key){const D=typeof HOOK_DIMS!=='undefined'&&HOOK_DIMS[key],kit=D&&D.kit;
- if(kit==='isk')return /^(ie|ip)-/.test(key)?'kautoa':'hukoa';return {hyk:'tethys',izv:'iziz',vcat:'voth',apoc:'salvage'}[kit]||null;};
+ if(kit==='isk')return /^(ie|ip)-/.test(key)?'kautoa':'hukoa';if(kit==='izv'&&/^mar_/.test(key))return 'marr';return {hyk:'tethys',izv:'iziz',vcat:'voth',apoc:'salvage'}[kit]||null;};
 /* core/city's TUNE.classes: {culture:class: [[key, v], ...]} and TUNE.fallback over the same names */
 HOOK_PROG.classes=function(){const out={};for(const c in this.cultures){const C=this.cultures[c].classes;
  for(const cls in C)out[c+':'+cls]=C[cls].map(k=>Array.isArray(k)?[k[0],k[1]]:[k,0]);}return out;};

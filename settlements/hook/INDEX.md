@@ -4,7 +4,7 @@
 
 Hook: the Ancient port city of the Ring Sea's south-western shore, the Izani Empire's premier port, retaken from Voth a few months before game start (LORE.md 6.2; PLAN.md). Built on the Ancient Port kit (kits/port), read in place: P0 is the waterfront, every Port segment and vessel placed at least once in one coastal run with the Customs' and the Sun Canton's land blocks behind and the hooked L of sea platforms off the great pier.
 
-Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
+Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `PROPOSAL-METROPOLIS.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/hook-site.html`, `dist/hook.html`
 
@@ -19,10 +19,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 |---|---|---|
 | `75d-hook-world.js` | 7 | HOOK: THE GROUND FROM THE SCALE MODEL ([G data]) (1) |
 | `76-hook-ground.js` | 4 | HOOK: THE GROUND BEHIND THE PORT ([G data]) (1) |
+| `76b-hook-strokes.js` | 3 | HOOK: THE EDITOR'S GROUND STROKES ON THE PAGE ([ (1) |
 | `79-hook-ancient.js` | 6 | HOOK: THE ANCIENT TOWN'S RUIN HOSTS (1) |
 | `88-hook-programme.js` | 9 | HOOK: THE TOWN'S PROGRAMME ([G data]) (1) |
 | `90a-hook-city.js` | 11 | HOOK: THE TOWN ON core/city, STEPS 0-12 ([G data (1) |
-| `90b-hook-city-draw.js` | 17 | HOOK: DRAWING THE TOWN ([web]) (1) |
+| `90b-hook-city-draw.js` | 18 | HOOK: DRAWING THE TOWN ([web]) (1) |
 
 ## targets/
 
@@ -31,4 +32,4 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `hook` | `89z-rows.js`, `91z-views.js` | 13 |
-| `hook-site` | `94-hook-site-adapter.js`, `96-hook-site-model.js`, `98-hook-site-start.js` | 38 |
+| `hook-site` | `94-hook-site-adapter.js`, `96-hook-site-model.js`, `98-hook-site-start.js` | 39 |

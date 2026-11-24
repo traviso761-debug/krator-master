@@ -32,6 +32,18 @@ from a Hook task.
       the Vernacular (`build.py` `izv_marr_bundle`), `marr` is a culture of the programme, and the Customs, the Heights,
       the Arsenal and the Stacks take shares of it (`site/hook-site.json`). Its civic pieces (the Navigators' Guild, the
       sea-temple, the aduana, the governor's palace) are not landmarks of Hook's: none of the plan's set pieces is Marr's.
+- [x] **Marr's buildings wore Iziz's textures** (found in review, 2026-11-24). Marr's files followed Iziz's library bind
+      (`88y-iziz-matlib.js`) in the IZV closure, so `69m` cloned already-bound materials and Marr's own pack bound nothing.
+      They now load before it (`build.py` `izv_marr_bundle`, as Iziz's page orders them), and `verify.py` checks every
+      family of `kits/marr/materials.json` on its own set (`hook-marr-materials`). A Marr key is now Marr's in
+      `HOOK_PROG.cultureOfKey`, not Iziz's.
+- [x] **A black band under the horizon** in the views that look inland over the lagoon. The Port kit's sky dome
+      (`kits/port/src/90-scene.js`) took `pow(h, .55)` of a height it clamps to -0.05, undefined below the horizon in
+      GLSL (black on the GPU); the kit's own sheets never saw it, their ground covers it. Fixed in the kit
+      (`pow(max(h,0.),.55)`); the kit and the Dam Basins rebuilt.
+- [x] **The grid's block and street are clamped** as the editor clamps them (`SITE.cleanGrid`): a hand-edited 0 in
+      `site/hook-site.json` looped the host grid forever (`targets/hook/89z-rows.js`). The frame's origin stands on the
+      shoreline found at its station, not on the fitted line (up to 250 m off it).
 
 ## The site and the Ancient town (P1)
 
@@ -42,11 +54,12 @@ from a Hook task.
       site target, `SITE_TARGETS`) and `targets/hook-site/94-hook-site-adapter.js` gives every one of those on the Port
       kit's ground; `96-hook-site-model.js` adds the quarters' fields, the hosts and the grid to the saved file;
       `serve.py` takes `POST /save/hook-site`. README.md, "The site editor". What is left of it:
-- [ ] **The editor's ground strokes are not applied by the build.** The brushes (`R`/`L`/`M`) edit the editor's
-      `TERR` delta grid, the Port's terrain chunks follow and the strokes are saved in `site/hook-site.json` `terrain`,
-      but `build.py` and `90a-hook-city.js` read `terrainH` only: `dist/hook.html` stands on the model's ground ("The ground" in README.md) without them. A
-      layout stamp made from the strokes (the kit's `ramp`/`flat` stamps, or a `core/terrain` carve) is the next
-      step; until then a ground edit is a note to the owner, not a change to the page.
+- [x] **The editor's ground strokes are applied by the build** (2026-11-24). `src/76b-hook-strokes.js` replays the saved
+      strokes (`site/hook-site.json` `terrain`) with the editor's own arithmetic onto a delta grid and adds it to
+      `PORT.natH`, so every stamp, pad and lot stands on the edited ground; the editor's page leaves them to its live grid
+      (`HOOK_EDITOR`). `tests/test-hook-strokes.js` checks raise, lower and smooth and that the page's ground is the
+      editor's to a millimetre. One difference: the editor's smooth reads the ground with the kit's stamps, the page's the
+      natural ground under them. The site has no strokes yet.
 - [ ] **The editor keeps Voth's page conventions where they do no harm.** Voth's panel strings that name Voth
       (the ferry and elephant-bug modes, causeways, "add Voth's current districts") are hidden, not removed: the
       tools (`55-site-tools.js`, read in place) still bind them. A quarter's label in the editor is its name only; the
@@ -64,10 +77,9 @@ from a Hook task.
       seaward of the pixel. The cells north and west of the old pixel are still FLAGGED sea in the model while their
       ground lies above the sea's level (53 of the cut's 328 water cells): the model page draws them as sea, the 1:1
       rule does not; a model edit if that ever matters.
-- [ ] **A 10 % slope under the whole site.** Every land block's flat stamp and every host pad cuts a bank into the
-      slope (a 110 m block: an 11 m bank at its back); the kit's soft rings blend them. The waterfront reads well
-      (the P0 run's verify passes); the town behind will want its streets terraced by `core/city` (P2) rather than
-      pads cut one by one.
+- [x] **A 10 % slope under the whole site** (the 4.21 cut). Gone on 5.1: the spit is level at +5 m, and the only slopes
+      left are the Heights' and the hill's own ramps (the kit's stamps), where the pads and the lots' plinths still meet
+      them (the items below).
 - [x] **The Point is at the world's east end.** The kit's frame turned to put the sea north is a half turn (a
       rotation, never a mirror), so the kit's −x end (the Point, the Strand) lies at the world's east and the Stacks at
       the west. The owner keeps the run as it is (2026-10-19): Iziz's segments east, Voth's west; `PLAN.md` section 1
@@ -120,8 +132,9 @@ from a Hook task.
       the painted-over diamonds. Each is a record with its own drawing to write.
 - [ ] **The damage field marks lots; it dresses nothing yet.** A rubble lot is a dark heap over its footprint; a
       scorched lot keeps its building with a tag. The breach, the holed pen roof, the cut summit and the scorch and
-      scaffold dressing are records still to draw. At this seed the field (0.8 over the whole eastern harbour) makes
-      every lot in it rubble and none scorched; a painted gradient (the editor's fields) would grade it.
+      scaffold dressing are records still to draw. A field now has a falloff beyond its edge (`soft`, m; the editor's
+      "falloff"; 2026-11-24), and the eastern harbour's takes 220 m: 52 rubble lots and 149 scorched at this seed, where
+      the hard edge made 12 and none.
 - [ ] **Pods on two hosts only, in the Tethyan quarter.** The Bell Hall and the Capsule Stalks take Hykkousoi pods
       through the Ys kit's `HYK.placeOn` on the kit's host spec; the pods record nothing on their host (Ys's
       `ysHostInhabit` is stubbed) and cut no way-in through its skin (no `ysWallHole`), so a pod stands against the
@@ -144,17 +157,17 @@ from a Hook task.
       crane-cab towers on the other kits' pieces are builder variants the kits do not have. Named in PLAN.md section 3;
       the kits' work.
 - [ ] **No civic buildings, no side streets.** Step 6 places nothing (`tune.civic` is empty: the landmarks are P3),
-      and at this seed step 10 made no side streets (the 51 ways are 3 avenues, 5 main streets and 43 alleys): the
-      blocks are filled by the alleys and the infill. The Customs' and the Heights' lots stand on the alleys more than
+      and at this seed step 10 made no side streets (on the 5.1 spit the 170 ways are 3 avenues, 67 main streets and
+      100 alleys; on 4.21, 51): the blocks are filled by the alleys and the infill. The Customs' and the Heights' lots stand on the alleys more than
       on streets; P3's landmarks and a side-street pass with the quarters' own spacing are the next step.
 - [ ] **The quarters' mixes are the site file's, not the plan's totals.** PLAN.md section 3 gives the city's shares
-      (hukoa 30 %, iziz 27 %...); at this seed the lots are iziz 258, voth 159, hukoa 130, salvage 58, tethys 39,
-      kautoa 27 of 671, because the Customs and the Heights hold most of the buildable ground and the Point and the
-      Strand little. The owner tunes the quarters' `cultures` in the site file (the editor saves them).
+      (hukoa 30 %, iziz 27 %...); on the 5.1 spit the lots are iziz 554, voth 378, hukoa 291, salvage 144, tethys 131,
+      marr 123, kautoa 95 of 1,716 (iziz 34 %, hukoa 17 %), because the Customs and the Heights hold most of the
+      buildable ground and the Point and the Strand little. The owner tunes the quarters' `cultures` in the site file (the editor saves them).
 - [ ] **The kits' pieces stand on the slope with a plinth, not terraced.** Every lot takes the hillside stance
-      (its floor at its highest corner, a stone footing down to the lowest: `stance: 'high'`, `maxDrop` 7); a
-      terrace per block (the plan's streets stepped by `core/city`) is the 10 % slope's proper answer (the P1 item
-      above).
+      (its floor at its highest corner, a stone footing down to the lowest: `stance: 'high'`, `maxDrop` 7). On the
+      5.1 spit that matters only on the Heights' and the hill's ramps; a terrace per block (the streets stepped by
+      `core/city`) is still the proper answer there.
 - [x] **The town read pale** (the owner, 2026-10-19: "did all our textures and colours come through?"). The textures
       did (every kit's maps bound, sRGB, 512 px); the colours did not: a kit draws its detail as instanced meshes with
       a colour PER INSTANCE (the Islanders' patterned walls and thatch, the Vernacular's timber), and the flatten
@@ -168,8 +181,9 @@ from a Hook task.
 - [ ] **The far town is massing.** Beyond `HOOK_DRAW.nearR` (400 m) of the camera's target a lot is a body and a
       roof in its kit's tone; within it the piece is built once per key and variant by its kit's closure and drawn
       merged, one mesh per material (the kits make a fresh material per build, so materials are canonicalised by
-      their properties: `HOOK_DRAW.material`). The Port's showcase budget (900 draw calls) is met at most presets;
-      a preset on the Heights looking over the whole core may still run over (a soft OVER in the verify). This is
+      their properties: `HOOK_DRAW.material`). Since 2026-11-24 a material's base colour is not in its fingerprint: it
+      goes into the parts' vertex colours, so pieces that differ only in colour share one draw call (the Heights view
+      from 946 calls to 423, its near town from 659 meshes to 133; every preset is under the Port's 900). This is
       the isle demo's drawing rule (`settlements/isle-demo/src/60-isle-draw.js`) copied; one shared copy, in
       `core/city` beside `52-city-host-buildings.js`, is a follow-up for the city-layout module's owner.
 - [ ] **The kits are sealed with stubs.** The Hykkousoi and the post-apoc closures stand in for the furniture and the
