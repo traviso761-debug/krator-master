@@ -7,7 +7,7 @@
 On the GPU (KRATOR_GL=gpu, under tools/harness.py lock --lane auto) the harness's universal asserts name the renderer.
 The checks, each with a negative:
   - the world's own (core/world/91-world-probe.js, round Erehwon's first village);
-  - the region: Erehwon where the cut put it (px 841,1517), on dry land, the Xanadu kit growing there; the negative reads
+  - the region: Erehwon where the cut put it (px 841,1507.64, the vale ring's bench), on dry land, the Xanadu kit growing there; the negative reads
     it 8 km north, out on the lake, in the water;
   - the shore towns and isles: each of the sixteen where SITES.json put it, inside the cut, on dry land or with dry land
     within 1 km (a shore cell of the model; an isle is one cell of it); the negative reads Ālph-Hēḍ in the lake's middle;
@@ -40,7 +40,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,O=M.frame.origin_px,fx=(px,py)
  /* Erehwon: where the cut put it, on dry land, the Xanadu kit growing there */
  {const bad=[],lines=[],S=(M.sites||[]).find(s=>s.id==='s57bkv9741');
   if(!S)bad.push('no site s57bkv9741');else{let x=S.x,z=S.z;if(neg==='site')z=S.z-8000;   /* the negative: Erehwon read 8 km north, on the lake */
-   if(S.px!==841||S.py!==1517)bad.push('Erehwon at px '+S.px+','+S.py);
+   if(S.px!==841||Math.abs(S.py-1507.64)>0.01)bad.push('Erehwon at px '+S.px+','+S.py);   /* the vale ring's bench (2026-11-17) */
    if(!WORLD.inside(x,z))bad.push('Erehwon outside the cut');else{const A=WORLD.at(x,z),b=WORLD.biomeAt(x,z);
     if(!(A.depth<0))bad.push('Erehwon in water');
     const k=WORLD_KITS.findIndex(q=>q.name==='xanadu'),w=WORLD.kitW(k,x,z);if(!(w>.5))bad.push('Erehwon: the xanadu kit weighs '+w.toFixed(2));
@@ -50,7 +50,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,O=M.frame.origin_px,fx=(px,py)
  {const bad=[],lines=[],T=(M.sites||[]).filter(s=>/^sxanlk/.test(s.id));
   if(T.length!==16)bad.push(T.length+' of 16 shore towns and isles in the cut');
   const dry=(x,z)=>WORLD.inside(x,z)&&WORLD.at(x,z).depth<0;
-  for(const S of T){let x=S.x,z=S.z;if(neg==='shore'&&S.id==='sxanlkalph01'){const p=fx(850,1511);x=p[0];z=p[1];}   /* the negative: Ālph-Hēḍ read in the open lake */
+  for(const S of T){let x=S.x,z=S.z;if(neg==='shore'&&S.id==='sxanlkalph01'){const p=fx(835,1500);x=p[0];z=p[1];}   /* the negative: Ālph-Hēḍ read in the open lake (835,1500 since the vale ring narrowed it: 850,1511 is Erehwon's shore now) */
    if(!WORLD.inside(x,z)){bad.push(S.name+' outside the cut');continue;}
    let d=dry(x,z)?0:null;
    for(const r of [500,1000])for(let a=0;a<8&&d==null;a++)if(dry(x+r*Math.cos(a*Math.PI/4),z+r*Math.sin(a*Math.PI/4)))d=r;
@@ -63,7 +63,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,O=M.frame.origin_px,fx=(px,py)
   if(WLAND.skipped.length)bad.push('skipped: '+JSON.stringify(WLAND.skipped));
   const C=WLAND.check(),byId={};C.forEach(c=>byId[c.id]=c);
   const joined=c=>c&&Math.abs(c.top-c.crest)<.2*(c.crest+520)+3&&c.waterline.filter(w=>w!=null&&w>.7&&w<1.35).length>=3;
-  const open=fx(850,1511);
+  const open=fx(835,1500);   /* the open lake since the vale ring narrowed it */
   for(const L of LS){let c=byId[L.id];if(c)c=Object.assign({},c,{ok:c.ok||joined(c)});
    if(neg==='landforms'){const top=WORLD.Hbare(open[0],open[1]);c={id:L.id,ok:top>L.water,top};}
    if(!c||!c.ok)bad.push(L.id+' '+JSON.stringify(c));else l2.push(L.id+' top '+c.top+' m (crest '+L.crest+')');}
