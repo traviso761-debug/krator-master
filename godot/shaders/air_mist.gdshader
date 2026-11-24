@@ -9,6 +9,8 @@
 shader_type spatial;
 render_mode unshaded, depth_test_disabled, depth_draw_never, cull_disabled, blend_mix, fog_disabled, shadows_disabled;
 
+#include "res://shaders/kcolour.gdshaderinc"
+
 uniform sampler2D depth_tex : hint_depth_texture, filter_nearest, repeat_disable;
 uniform vec4 mist = vec4(0.0, 0.0, 40.0, 0.9);   // x: density at the floor, 1/m (0: off); y: the floor's height (this scene's y); z: scale height, m; w: the most it hides
 uniform vec3 mist_colour : source_color = vec3(0.6, 0.65, 0.7);   // the distance fog's colour (the colour script's)
@@ -24,11 +26,10 @@ void fragment() {
 	float depth = texture(depth_tex, SCREEN_UV).x;
 #if CURRENT_RENDERER == RENDERER_COMPATIBILITY
 	vec3 ndc = vec3(SCREEN_UV, depth) * 2.0 - 1.0;
-	bool is_sky = depth >= 1.0;
 #else
 	vec3 ndc = vec3(SCREEN_UV * 2.0 - 1.0, depth);
-	bool is_sky = depth <= 0.0;
 #endif
+	bool is_sky = depth <= 0.000001;   // the far plane: the depth runs from 1 at the camera to 0 there in every renderer
 	vec4 vp = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
 	vec3 view_pos = vp.xyz / vp.w;
 	float amount = 0.0;
@@ -50,6 +51,6 @@ void fragment() {
 		float fwd = pow(max(dot(ray, normalize(sun.xyz)), 0.0), 6.0);
 		colour = mix(mist_colour, sun_colour, clamp(fwd * sun.w, 0.0, 1.0));
 	}
-	ALBEDO = colour;
+	ALBEDO = k_albedo(colour);
 	ALPHA = amount;
 }
