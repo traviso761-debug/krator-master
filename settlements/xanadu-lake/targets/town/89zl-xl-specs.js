@@ -109,7 +109,9 @@ XL.SPECS={
    fields:{rows:9,orchard:true,crop:'cacao',colour:'green',plot:0}},
   notes:'The cacao town on the bend: the fermentaries and the fishers\' racks along the beach, the drying floors a row up, the market and the temple above them, the cacao groves under their shade trees on the two benches.'},
  /* the net-makers' town on its point (net/PLAN.md): the net lofts and their frames along the beach, the racks on the point */
- net:{key:'net',bearing:225,shore:'shingle',wall:{rise:532,benches:2},
+ /* bearing 180, was 225: moved along the shore to the strand between Malbari and Phēr (2026-11-24, the owner: "Move along the
+    shore"), the water due south there (fitted 170.5) */
+ net:{key:'net',bearing:180,shore:'shingle',wall:{rise:532,benches:2},
   world:{region:'xanadu-north-shore',site:'sxanlknet01',R:1400,band:600,smooth:35},   /* its point between two bays: a tight line */
   quarters:[{id:'point',role:'harbour',share:.20,at:'shore'},{id:'lofts',role:'industry',share:.20,at:'shore'},
    {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'market',role:'market',share:.10,at:'slope'},{id:'bench',role:'farm',share:.05,at:'bench'}],
