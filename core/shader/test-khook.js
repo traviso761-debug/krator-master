@@ -63,6 +63,15 @@ const at=(s,t)=>s.indexOf(t+';');
  ok('a clone has no layers until KHOOK.copy (r128\'s copy drops hooks), and has them after',!/A;/.test(R.compile(c).fs)&&(K.copy(m,c),/B;[\s\S]*A;/.test(R.compile(c).fs)),false);
  ok('has / names',K.has(m,'a')&&!K.has(m,'zz')&&K.names(m).join()==='a,b',K.has(m,'zz'));}
 
+// 6b. a composed hook handed to another material (c.onBeforeCompile=m.onBeforeCompile, about 40 sites' clone habit; T16): it is m's page and
+// m's layers, copied by name, never a page of its own, so nothing runs twice; on a fresh clone and on a material with layers of its own
+{const n=(s,t)=>(s.match(new RegExp(t+';','g'))||[]).length,once=(s,ts)=>ts.every(t=>n(s,t)===1);
+ const m=new T.MeshLambertMaterial();m.onBeforeCompile=L('T16PG');K.add(m,'a',L('T16A'));K.add(m,'b',L('T16B'));
+ const c=m.clone();c.onBeforeCompile=m.onBeforeCompile;K.add(c,'d',L('T16D'));const fc=R.compile(c).fs;
+ const c2=new T.MeshLambertMaterial();K.add(c2,'z',L('T16Z'));c2.onBeforeCompile=m.onBeforeCompile;const f2=R.compile(c2).fs;
+ ok('a clone handed another material\'s composed hook runs its page and each layer once, then its own (T16)',once(fc,['T16PG','T16A','T16B','T16D'])&&once(f2,['T16PG','T16A','T16B','T16Z'])&&K.names(c).join()==='a,b,d',
+  !once(R.compile(m).fs,['T16PG','T16A','T16B']));}
+
 // 7. checkPrograms: the programs three could not link, with their materials; the anchors missed; [] when clean
 {const m=new T.MeshLambertMaterial({name:'broken'}),ok2=new T.MeshLambertMaterial(),prog={name:'MeshLambertMaterial',cacheKey:'k',diagnostics:{runnable:false,programLog:'',vertexShader:{log:''},fragmentShader:{log:'ERROR: 0:12: x undeclared'}}};
  const good={name:'MeshBasicMaterial',cacheKey:'g'};const props=new Map([[m,{program:prog}],[ok2,{program:good}]]);
