@@ -2,7 +2,8 @@
    every Xanadu materials.json classed, the names checked against the library, every class DERIVED from the family's
    values (the packed roughness in m1-measured.json, kept current against tex/pack.json; specular; lit or not; a library
    card; the kits' alphaTest definitions) with only the owner's declared exceptions differing (the drift test, after XS0),
-   and the field proven byte-neutral for today's pack.py (tools/textures/mclass.py --prove).
+   and the field proven to reach tools/textures/pack.py only through the table (tools/textures/mclass.py --prove; Stage 8
+   B11 wired it: glazed packs 8-bit web normals, the other classes as an unclassed family).
      node core/materials/classes/test-class.js */
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process');
@@ -59,7 +60,8 @@ function staleOf(P, M) {
     if (!e.files.roughnessMap) continue;
     const m = M[f];
     if (!m) out.push(f + ': not measured');
-    else if (m.source !== e.source.roughness || m.roughLift !== (e.roughLift == null ? 0 : e.roughLift)) out.push(f + ': re-packed since');
+    else if (m.source !== e.source.roughness || m.roughLift !== (e.roughLift == null ? 0 : e.roughLift) ||
+      (m.roughScale == null ? 1 : m.roughScale) !== (e.roughScale == null ? 1 : e.roughScale)) out.push(f + ': re-packed since');
   }
   return out;
 }
@@ -81,8 +83,9 @@ const WANT = {   // the rule (on the packed roughness) against the classes: only
   'settlements/nulab':        null,   /* on the integration line, not here yet: classed when it merges (the test then demands it) */
   'settlements/blakhed':      null,
 };
-// after XS0: section 5's glazed list as the rule takes it on the packed maps, and xTiles (the owner's exception)
-const GLAZED_PLAN = ['xTiles', 'xZel', 'xHaft', 'xMuqT', 'xBTile', 'xPietra', 'xMarW', 'xMarK'];
+// after XS0: section 5's glazed list as the rule takes it on the packed maps, and xTiles (the owner's exception); Stage 8
+// B11 glazed the five pattern sheets (their roughScale takes the packed roughness under 0.35: the owner, "Glaze at Stage 8")
+const GLAZED_PLAN = ['xTiles', 'xZel', 'xHaft', 'xMuqT', 'xBTile', 'xPietra', 'xMarW', 'xMarK', 'xMosC', 'xMosD', 'xBandC', 'xGiltC', 'xBandR'];
 const present = b => fs.existsSync(path.join(ROOT, b, 'materials.json'));
 for (const b of Object.keys(WANT).filter(b => WANT[b] === null)) {
   const cfg = present(b) ? read(b) : null, L = cfg ? libs(cfg) : {};
@@ -208,19 +211,25 @@ T.neg('the cut-out scan sees alphaTest 0 as no cut-out', s => cutoutErrors({ fam
   T.neg('a measured row goes stale when the pack moves on (a new roughLift or source)', M => staleOf(P, M).length === 0,
     { s: { roughMean: 0.5, source: 'abc', roughLift: 0.0 } }, { s: { roughMean: 0.5, source: 'abc', roughLift: 0.1 } });
   T.neg('a packed family with no measured row is caught', M => staleOf(P, M).length === 0, {}, { s: { roughMean: 0.5, source: 'abc', roughLift: 0.1 } });
+  const PS = { s: { files: { roughnessMap: 's.rough.webp' }, source: { roughness: 'abc' }, roughLift: 0, roughScale: 0.7 } };
+  T.neg('a measured row goes stale when the pack scales its roughness (roughScale, B11)', M => staleOf(PS, M).length === 0,
+    { s: { roughMean: 0.42, source: 'abc', roughLift: 0 } }, { s: { roughMean: 0.30, source: 'abc', roughLift: 0, roughScale: 0.7 } });
 }
 
-/* ---- byte-neutral: today's pack.py reads no "class" (and the proof sees a reader that would) ---- */
+/* ---- pack.py reads "class" only through mclass.settings, so only the table moves a pack (Stage 8 B11; before it, not at
+   all), and the proof sees a reader that would go round it ---- */
 const PY = path.join(ROOT, 'tools', 'textures', 'mclass.py');
 const proveSrc = src => JSON.parse(cp.execFileSync('python3', ['-c',
   'import sys,json; sys.path.insert(0, sys.argv[1]); import mclass; print(json.dumps(mclass.prove(sys.stdin.read())))',
   path.dirname(PY)], { input: src, encoding: 'utf8' })).neutral;
 let r0 = null;
 try { cp.execFileSync('python3', [PY, '--prove'], { encoding: 'utf8' }); r0 = true; } catch (e) { r0 = false; }
-T.ok('tools/textures/pack.py reads no "class": the classes are byte-neutral today', r0 === true);
+T.ok('tools/textures/pack.py reads "class" only through mclass.settings, and only glazed moves a web pack (mclass.py --prove)', r0 === true);
 const base = 'def process(fam, cfg, size):\n    lib = cfg["lib"]\n    s = cfg.get("size", size)\n';
 T.neg('the proof catches a packer that reads "class"', proveSrc, base + '    c = cfg.get("class")\n', base);
 T.neg('the proof catches a packer that walks the whole entry', proveSrc, base + '    for k in cfg:\n        pass\n', base);
+T.neg('the proof follows a family handed to mclass.settings, and no other function', proveSrc,
+  base + '    S = other.settings(cfg)\n', base + '    S = mclass.settings(cfg, none_ok=True)\n');
 T.neg('the proof follows a loop over named keys and no further', proveSrc,
   base + '    for k in ("stems", "class"):\n        x = cfg.get(k)\n', base + '    for k in ("stems", "rise"):\n        x = cfg.get(k)\n');
 

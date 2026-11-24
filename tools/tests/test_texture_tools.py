@@ -5,6 +5,8 @@ temporary folder (no library image is read):
     and has no normal.jpg still fails, as it should;
   - pack.py names every LFS pointer its families read, with the family and one pull, and never reads a set no family
     names (a pointer there no longer aborts the pack);
+  - pack.py reads the M1 classes (Stage 8 B11): a glazed family's web normal at 8 bits, an unclassed, flat or relief one
+    byte for byte as before; a cut-out class never takes a height in its alpha (Gate 1); roughScale scales the roughness;
   - check_prompts.py fails a block that runs into the next heading, an odd fence count and a count line that is off, and
     passes a file that holds together.
 
@@ -108,6 +110,52 @@ def test_pack(tmp):
         pack.LIB = old
 
 
+def test_class(tmp):
+    """Stage 8 B11: process() reads the family's M1 class through tools/textures/mclass.py. The made-up set's normal is flat
+    (128, 128, 255; the JPEG keeps red at 128): kept to 6 bits every channel value is the middle of its step (128 -> 130),
+    at 8 bits red stays 128."""
+    lib = os.path.join(tmp, 'library-class')
+    surface(os.path.join(lib, 'set.lit'), 'set.lit')
+    old = pack.LIB
+    pack.LIB = lib
+    try:
+        def run(fc, fmt=1):
+            try:
+                return pack.process('f', dict({'lib': 'set.lit'}, **fc), 32, pack_format=fmt)
+            except ValueError as e:
+                return 'refused: %s' % e
+        def normal(r):
+            return np.asarray(Image.open(io.BytesIO(r[1]['f.normal.webp'])).convert('RGB'))
+        base = run({})
+        ok('an unclassed family packs its web normal at 6 bits, as before B11', (normal(base) % 4 == 2).all())
+        for cls in ('flat', 'relief'):
+            r = run({'class': cls})
+            ok('a %s family packs byte for byte as an unclassed one (its class settings are today\'s)' % cls,
+               r[1] == base[1] and json.dumps(r[0], sort_keys=True) == json.dumps(base[0], sort_keys=True))
+        g = run({'class': 'glazed'})
+        ok('a glazed family packs its web normal at 8 bits (xy8, D4), and its entry says so',
+           (normal(g)[..., 0] == 128).all() and not (normal(g) % 4 == 2).all() and g[0].get('normalBits') == 8)
+        ok('...its colour and roughness maps as an unclassed family\'s',
+           g[1]['f.albedo.webp'] == base[1]['f.albedo.webp'] and g[1]['f.rough.webp'] == base[1]['f.rough.webp'])
+        ok('a cut-out family asked for a parallax height is refused (Gate 1: alphaTest reads that alpha)',
+           str(run({'class': 'cutout', 'cutout': True, 'pom': 0.02})).startswith('refused') and 'Gate 1' in str(run({'class': 'cutout', 'cutout': True, 'pom': 0.02})))
+        ok('negative control: the same family classed relief takes the height into its alpha',
+           not isinstance(run({'class': 'relief', 'pom': 0.02}), str)
+           and Image.open(io.BytesIO(run({'class': 'relief', 'pom': 0.02})[1]['f.albedo.webp'])).mode == 'RGBA')
+        c2, f2 = run({'class': 'cutout', 'cutout': True}, 2), run({'class': 'flat'}, 2)
+        ok('packFormat 2: a cut-out family packs alphaMode none (no height in its alpha, Gate 1)',
+           not isinstance(c2, str) and c2[0]['alphaMode'] == 'none')
+        ok('negative control: packFormat 2 puts the Poisson height in a flat family\'s alpha',
+           not isinstance(f2, str) and f2[0]['alphaMode'] == 'height')
+        ok('an unknown class is refused, not packed as unclassed', str(run({'class': 'shiny'})).startswith('refused'))
+        s = run({'roughScale': 0.5})
+        rough = lambda r: float(np.asarray(Image.open(io.BytesIO(r[1]['f.rough.webp'])).convert('L')).mean())
+        ok('roughScale scales the packed roughness (200 -> 100) and the entry records it',
+           abs(rough(s) - 100) < 2 and abs(rough(base) - 200) < 2 and s[0].get('roughScale') == 0.5 and 'roughScale' not in base[0])
+    finally:
+        pack.LIB = old
+
+
 GOOD = """# Prompts
 **Count: 3 prompts** (any prose here)
 
@@ -144,6 +192,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         test_preview(tmp)
         test_pack(tmp)
+        test_class(tmp)
     test_prompts()
     bad = 0
     for name, good in checks:

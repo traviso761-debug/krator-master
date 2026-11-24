@@ -1,28 +1,35 @@
 #!/usr/bin/env python3
 """The M1 material classes for the packer (settlements/xanadu/STACK-PLAN.md section 5; core/materials/classes/m1-classes.json).
 
-A build's materials.json names a class per family ("class": "glazed" | "relief" | "flat" | "card"). Stage 8's
-tools/textures/pack.py reads it here, so the table stays in one place:
+A build's materials.json names a class per family ("class": "glazed" | "relief" | "flat" | "cutout" | "card").
+tools/textures/pack.py's process() reads it here (Stage 8 B11), so the table stays in one place:
 
     import mclass
-    S = mclass.settings(fc)          # {cls, flat, web: {normal}, godot: {normal, mipVariance}, height, pom, cavity}
-    flat = fc.get('flat') or S['flat']                     # Gate 1: a flat family demands no height range
-    enc = S['web']['normal'] or nenc                       # the web pack: xy8 for glazed, xy6 for the rest
-    # (a card: alpha cut-out, no normal, never a height in its alpha; pack.py's assert_pack_physics already refuses one)
+    S = mclass.settings(fc, none_ok=True)   # {cls, flat, web: {normal}, godot: {normal, mipVariance}, height, pom, cavity},
+                                             # None for a family with no class yet: packed exactly as before
+    flat = fc.get('flat') or S['flat']                     # Gate 1 (packFormat 2): a flat family demands no height range
+    bits = 8 if S['web']['normal'] == 'xy8' else 6         # the web pack: xy8 for glazed, xy6 for the rest (D4)
+    # height 'never' (card, cutout): never a height in the colour map's alpha (Gate 1): packFormat 2 packs alphaMode none,
+    # packFormat 1 refuses a "height" or "pom" on one
 
 The checks on the names (every family classed, a card is a card, glazed only where a lit normal exists, the stack's rule
 `specular >= 0.45, roughness < 0.35` disagreeing by name) are core/materials/classes/10-mat-class.js (node:
 core/materials/classes/test-class.js).
 
-    python3 tools/textures/mclass.py --prove                 # today's pack.py reads no "class": the field is byte-neutral
-    python3 tools/textures/mclass.py --prove --ref origin/claude/vertical-stack   # and the stack's pack.py, at that ref
+    python3 tools/textures/mclass.py --prove                 # pack.py reads "class" only through settings(), and only
+                                                             # glazed moves a web pack (xy8); the rest pack as unclassed
+    python3 tools/textures/mclass.py --prove --ref <ref>     # pack.py at that ref (before B11: "class" not read at all)
     python3 tools/textures/mclass.py kits/xanadu             # one build's families with their class and Stage 8 settings
     python3 tools/textures/mclass.py --measure               # core/materials/classes/m1-measured.json from the committed tex/
                                                              # (the packed roughness the classes are derived from; rerun after a re-pack)
 
 The proof reads pack.py's syntax tree: every key it takes from a family's entry or the build's config (`cfg`, `fc`) must be
 a string it names (or a loop over named strings); any other use of the dict (iterated, dumped, passed on whole except to a
-function of pack.py that takes it as cfg or fc, whose reads are walked too) fails the proof, since that could carry an unknown field into the pack.
+function of pack.py that takes it as cfg or fc, whose reads are walked too, or to mclass.settings, whose reads are walked
+here) fails the proof, since that could carry an unknown field into the pack. "class" read by pack.py itself fails it too:
+the class reaches the pack only through the table, and table_effect() says which classes then differ from an unclassed
+family (glazed alone: its 8-bit web normals). The bytes are proven on the builds themselves by packing in memory before and
+after (STAGE-8 B11's report).
 """
 import ast, io, json, os, subprocess, sys
 
@@ -36,11 +43,14 @@ def table():
         return json.load(fh)
 
 
-def settings(fc, tab=None):
-    tab = tab or table()
+def settings(fc, tab=None, none_ok=False):
+    """One family's class settings. A family with no class raises, or with none_ok gives None (pack.py packs it as before)."""
     c = fc.get('class')
     if c is None:
+        if none_ok:
+            return None
         raise ValueError('the family has no class (%s)' % fc.get('lib'))
+    tab = tab or table()
     d = tab['classes'].get(c)
     if d is None:
         raise ValueError('unknown class %s (one of %s)' % (c, ', '.join(sorted(tab['classes']))))
@@ -59,9 +69,24 @@ def _loop_values(tree):
     return out
 
 
-def keys_read(src):
-    """(keys, faults): every key pack.py reads from cfg/fc, and every use of them the proof cannot follow."""
+def _settings_reads():
+    """The keys settings() above reads from the family it is handed (walked by the same proof: 'class' and 'lib')."""
+    with io.open(os.path.abspath(__file__), encoding='utf-8') as fh:
+        src = fh.read()
+    fn = next(n for n in ast.parse(src).body if isinstance(n, ast.FunctionDef) and n.name == 'settings')
+    keys, faults = keys_read(ast.get_source_segment(src, fn), _via=False)
+    if faults:
+        raise AssertionError('mclass.settings: the proof cannot follow its own reads: %s' % faults)
+    return keys
+
+
+def keys_read(src, _via=True, detail=False):
+    """(keys, faults): every key pack.py reads from cfg/fc, and every use of them the proof cannot follow. A family handed
+    whole to mclass.settings (the class table) counts as that function's reads; with detail, (keys, faults, direct, via):
+    the keys read in pack.py itself and those read through mclass.settings."""
     tree = ast.parse(src)
+    via_keys = _settings_reads() if _via else set()
+    direct, via = set(), set()
     loops = _loop_values(tree)
     # a family's entry may be handed whole only to a function of this file that takes it as cfg or fc (its reads are
     # walked with the rest of the file)
@@ -88,7 +113,7 @@ def keys_read(src):
             if k is None:
                 faults.append('line %d: %s[...] with a key the proof cannot name' % (n.lineno, n.id))
             else:
-                keys |= k
+                direct |= k
             continue
         if isinstance(p, ast.Attribute) and p.value is n and p.attr == 'get':
             call = parent.get(p)
@@ -96,19 +121,45 @@ def keys_read(src):
             if k is None:
                 faults.append('line %d: %s.get(...) with a key the proof cannot name' % (n.lineno, n.id))
             else:
-                keys |= k
+                direct |= k
             continue
         if isinstance(p, ast.Call) and n in p.args and isinstance(p.func, ast.Name) and p.func.id in pass_on:
+            continue
+        if (_via and isinstance(p, ast.Call) and p.args and p.args[0] is n and isinstance(p.func, ast.Attribute)
+                and p.func.attr == 'settings' and isinstance(p.func.value, ast.Name) and p.func.value.id == 'mclass'):
+            via |= via_keys      # the class table's reader: its own reads, walked by this proof (_settings_reads)
             continue
         if isinstance(p, ast.Assign) and isinstance(p.targets[0], ast.Name) and p.targets[0].id in DICTS:
             continue          # fc = cfg['families'][fam] style rebinding is a Subscript above; a bare alias is followed by name
         faults.append('line %d: %s used whole (%s)' % (n.lineno, n.id, type(p).__name__))
-    return keys, faults
+    keys = direct | via
+    return (keys, faults, direct, via) if detail else (keys, faults)
+
+
+# what today's pack.py did with every family before it read the classes (the web normals at 6 bits, xy6): a class whose web
+# settings equal these packs byte for byte as an unclassed family; only the others move a pack (D4: glazed alone, xy8)
+TODAY_WEB = {'normal': 'xy6'}
+
+
+def table_effect(tab=None):
+    """{class: what it changes in a web pack against TODAY_WEB}, empty for a class that packs as before. A card has no normal
+    (web null: pack.py never writes one for a card, so that is today's too); a class whose height is 'never' changes no
+    pack that holds no height and refuses one that would (Gate 1)."""
+    tab = tab or table()
+    out = {}
+    for c, d in sorted(tab['classes'].items()):
+        w = d['web'].get('normal')
+        if w is not None and w != TODAY_WEB['normal']:
+            out[c] = 'web normals %s (were %s)' % (w, TODAY_WEB['normal'])
+    return out
 
 
 def prove(src, field='class'):
-    keys, faults = keys_read(src)
-    return {'keys': sorted(keys), 'faults': faults, 'reads': field in keys, 'neutral': not faults and field not in keys}
+    """The class reaches pack.py only through mclass.settings (the table), every other key named; `neutral` keeps its old
+    name: no family's bytes can move but by the table (and only for the classes table_effect names)."""
+    keys, faults, direct, via = keys_read(src, detail=True)
+    return {'keys': sorted(keys), 'faults': faults, 'reads': field in keys, 'direct': field in direct,
+            'via': field in via, 'neutral': not faults and field not in direct}
 
 
 def _src(ref):
@@ -152,6 +203,8 @@ def measure(builds):
             r = np.asarray(Image.open(p).convert('L')).astype(np.float64) / 255.0
             rows[fam] = {'roughMean': round(float(r.mean()), 4), 'source': e['source'].get('roughness'),
                          'roughLift': e.get('roughLift', 0.0)}
+            if e.get('roughScale') is not None:   # B11: the glazed pattern sheets' roughness scaled down (pack.py roughScale)
+                rows[fam]['roughScale'] = e['roughScale']
         out[b] = rows
     return out
 
@@ -175,8 +228,20 @@ def main(argv):
         print('pack.py%s reads from a family: %s' % (' at ' + ref if ref else '', ', '.join(r['keys'])))
         for f in r['faults']:
             print('  cannot follow: ' + f)
-        print('"class" is %s' % ('NOT read: the field is byte-neutral' if r['neutral'] else 'READ or unprovable: not neutral'))
-        return 0 if r['neutral'] else 1
+        if r['direct']:
+            print('"class" is READ by pack.py itself, not through mclass.settings: not provable')
+        elif r['via']:
+            print('"class" is read only through mclass.settings (core/materials/classes/m1-classes.json)')
+        else:
+            print('"class" is NOT read: the field is byte-neutral')
+        eff = table_effect()
+        for c, what in sorted(eff.items()):
+            print('  class %s moves a web pack: %s' % (c, what))
+        same = sorted(c for c in table()['classes'] if c not in eff)
+        print('  classes that pack as an unclassed family: %s' % ', '.join(same))
+        ok = r['neutral'] and (not r['via'] or sorted(eff) == ['glazed'])   # D4: glazed families only
+        print('proof %s' % ('holds' if ok else 'FAILS'))
+        return 0 if ok else 1
     tab = table()
     for b in [a for a in argv if not a.startswith('--')]:
         with io.open(os.path.join(ROOT, b, 'materials.json'), encoding='utf-8') as fh:
