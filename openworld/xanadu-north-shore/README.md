@@ -22,6 +22,10 @@ On map 5.1 with edit 7 re-run (5f659c054) and Phēr's polish (`tools/scale-model
   east of it) inside their footprints, the band easing back to the region's.
 - **The sites** (`src/48-world-site.js`, baked by `core/world/bake_sites.py` to `plan/sites.json`):
   - Phēr's ring: six farming villages on the rim plain, on core/hamlet's `xanadu` row, drawn with the Xanadu kit (XAK).
+  - **The countryside sample** (`core/world/48v-world-sample.js`, `88r-world-sample.js`; `WORLD_SAMPLE` in `src/48-world-site.js`;
+    settlements/xanadu/HAMLETS-PLAN.md section 3, step H2): the province's bulk villages laid at load near nothing named, one at
+    most to a 6 km cell kept with the chance of its farmland, refused on the places, the roads and the water; drawn and checked
+    by 88s as the plan's own; never counted by the sim (`window._sample`; verify "the countryside sample").
   - The Thalaba road up the Qol valley: 104.8 km, with a han every 25 km, bridged where it crosses a named river.
 
 ## Build and verify

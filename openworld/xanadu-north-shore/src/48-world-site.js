@@ -30,3 +30,8 @@ var SITE_SPEC={region:'xanadu-north-shore',world:8431491,bridges:{culture:'xanad
  links:[['spher0north1','shvo49k0y2',{hw:3,r:1500,keep:true,stops:XNS_STOPS,culture:'xanadu',guide:[[843.60,1489.29],[838,1487.2],
    [833,1485.6],[828,1483.6],[824.3,1481.2],[823,1479.6],[822.7,1477.6],[823.2,1475.6],[822.9,1473.6],[822.9,1471.6],
    [823.4,1469.6],[824.7,1467.6],[826.2,1465.6],[827,1463.8],[830,1463.6],[833.5,1463.6],[837,1463.3],[840,1463]]}]]};
+// THE COUNTRYSIDE SAMPLE (core/world 48v and 88r; settlements/xanadu/HAMLETS-PLAN.md section 3, BUILD-PLAN A9): the province's
+// bulk villages (p7, Nōrth-Shor: the rim plain's grain and mulberry farms, the herds toward the hills) laid near nothing named, one at most to a 6 km cell, kept with the chance of its
+// farmland; never counted by the sim. The foci are core/hamlet's Xanadu row's: orchard and silk villages are farming ones until
+// the row's own foci come with the all-builds rebuild (TODO.md, "core/hamlet's Xanadu row passed by name folds into the row")
+var WORLD_SAMPLE={prov:'p7',culture:'xanadu',bulk:25000,cell:6000,foci:[['farming',4],['ranch',1]],pop:[120,300],minFarm:.3,keep:1.4,clear:{site:4000,village:2200,road:250}};

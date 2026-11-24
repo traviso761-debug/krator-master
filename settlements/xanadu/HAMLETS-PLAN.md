@@ -40,10 +40,11 @@ households) is the shared row's: an isle of 400 is laid as **two villages** at i
 an isle of 300 as one village at `popMax: 300`, Lāiṭ-Hāus at `popMax: 200`. `test-hamlet.js`'s census check holds each to
 the tune's people.
 
-**Built and held (2026-11-23, step H1).** Wesṭ-Āil's two villages stand in `xanadu-lake-shore`'s spec on the region's fishers'
-row. **Lāiṭ-Hāus and Bē-Āil are held**: at 1:1 each isle is too small for core/hamlet's village at its people (the bake could
-not place 18 and 23 of their houses). Owed: a denser isle layout (core/hamlet's lanes packed to the shore, or the isle laid on
-core/city as the lake towns are), then their villages; the light, the customs house and the fishponds with them.
+**Built (2026-11-23, step H1).** Wesṭ-Āil's two villages stand in `xanadu-lake-shore`'s spec on the region's fishers' row.
+Lāiṭ-Hāus and Bē-Āil were held a turn (one village at their people did not fit the isle at 1:1: 18 and 23 houses unplaced) and
+now stand the way Wesṭ-Āil does, **two villages each at the isle's two ends, half its people each** (*proposed*: 100 and 100;
+160 and 140), every house placed. Owed with them: the light, the customs house and the fishponds (opt-in pieces the region's
+kit bundle lacks until the all-builds rebuild).
 
 **Pins and landforms** (the queue, listed only): three records-only village pins (`sxanlkwestisle01`, `sxanlkbayisle01`,
 `sxanlkeastisle01`, their SITES.json ids), type `village`. **Lāiṭ-Hāus's reef**: *proposed* an `islet` landform record on the
@@ -182,7 +183,7 @@ orchard focus and its han's halt (with the rebuild); the guard in core/hamlet fo
 | Step | What | When |
 |---|---|---|
 | **H1** | The three isles in `xanadu-lake-shore`'s site spec; re-bake; Lāiṭ-Hāus's reef record | with the lake towns' L3 or L4 (the same region) |
-| **H2** | The countryside sample's module, opt-in; on `xanadu-lake-shore` and `xanadu-north-shore` | after L4; before the stack's Xanadu slice, so the slice's numbers include it |
+| **H2** (**built** 2026-11-23, BUILD-PLAN A9) | The countryside sample's module, opt-in (`core/world/48v-world-sample.js`, `88r-world-sample.js`, `WORLD_SAMPLE` in a region's `src/48-world-site.js`); on `xanadu-lake-shore` and `xanadu-north-shore` | after L4; before the stack's Xanadu slice, so the slice's numbers include it |
 | **H3** | Theodiga's ring in the Bhēl region's spec; the tune's `T.ringSites` row | after the stack cuts Bhēl (BUILD-PLAN.md phase B) |
 | **H4** | The samples on the six province regions | with H3 |
 | **H5** | Klāuḍ-Ṭī and Skāi-Pāpi (section 3b), Ṭeras-Hil and Gōṭ-Mesā (3c) in the Bhēl region's spec, with Theodiga's ring; their tune rows | with H3 |
