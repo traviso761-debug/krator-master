@@ -56,6 +56,20 @@
 | godot pinnacle_world_test (2026-11-23) | fails on Windows: it writes into "/tmp" (no such directory), then an index out of bounds at line 160; the same on both sides of the graphics-quality merge | a Linux path in the test | write to `user://` or `OS.get_cache_dir()` |
 | water-mouths on the open world (the verify session, 2026-11-24, after ab4eb8f07) | with the check now reading the right vertices, streams run unfaded into the Ring Sea: xanadu-lake-shore 1726 m and 1140 m, xanadu-north-shore 1126 m, oidong-highrift 1840 m. Reports today (those pages do not opt in); failures once D28 turns water-mouths on everywhere in step 33 | the regions' stream mouths do not fade into the sea | fade each mouth into the sea in the region's stream bake (core/world bake_streams / 83-world-water) before step 33, or carry them on purpose in verify_all.json's known list with the D28 switch |
 
+**The red baseline** (Stage 8 step 2: `python tools/test_all.py` in `C:\Users\travi\Documents\krator-stage8` at 8336b72b5, the line
+before Phase B; 2026-11-24, 15789 s): 369 steps, 347 passed, **22 failed**. Against the table above:
+- Since fixed in Phase B (expect them green in Phase F): builds take the core modules (Marr, 6826528f1), botany census
+  (c30779e81), stations have views (44b077379), test-hamlet (8ddd11502).
+- As the table says: dependencies run one way (kits/marr's page an LFS pointer), test_bridges, test-audio, test-slab, drum, torus,
+  sw-arcology (pages 0 KB), test-outposts, nwbay test-geology, check_stale, test-east-rift and test-xan-economy (timing only: 582 s,
+  665 s).
+- **Not in the table before:** "godot vendored core in step" (core changed since `godot/tools/sync_core.py` last ran: rerun it in
+  Phase E with the Godot exports); `tools/tests/test_kit_pack.py` (the kit manifest: Phase C step 20's `kit_pack.py --manifest`);
+  `core/city/test-host-multikit.js` (D8's multi-kit host: its agent is on it); `core/materials/classes/test-class.js` (7 known
+  drifts in PLAN.md 318, plus B11's four until Phase C re-packs); `kits/interiors/tests/test-fixtures.js` (needs the built
+  `interiors-core.js`: the rebuild); `kits/shumari/tests/test-sm-kit.js` (it builds the kit, which stops on `kits/shumari/tex/*` LFS pointers in a skip-smudge
+  tree: `lfs_needs.py kits/shumari --pull` in the rebuild tree).
+
 Fixed on the line this session (do not redo): Tungang bundle replay (94ff6cf69), 16 ORNUM defaults (94ff6cf69, fccf87423).
 
 ## Known page and build facts
