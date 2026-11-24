@@ -79,6 +79,18 @@ if(SVIX&&SVIX.on){
   g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map)svfDetail(m.material);}});
   /* the room light (K2, I1-I4): the planned rooms' daylight table over their doorways (KROOMLIGHT through kits/interiors) */
   if(KratorInteriors.roomLight)SVIX.lightTable=KratorInteriors.roomLight(SVIX.lightRooms,SVIX.lightPlans);
+  /* and the rooms LIT from it (I1-I3, core/interiors/20-core-roomlight-host.js KRLHOST): every vertex inside a planned room
+     takes its column of the table and the indoor mask, so a room's walls and furniture are lit by its portal daylight and lamp
+     ambience instead of the sky (the outside of a wall keeps the sky); the sun's share follows the night; a pool of 4 point
+     lights moves to the eye's room's lamps and windows each frame */
+  if(typeof KRLHOST!=='undefined'&&SVIX.lightTable&&SVIX.lightRooms.length){const RT=SVIX.rlTex=KRLHOST.texture(SVIX.lightTable),meshes=[];
+   WORLD.traverse(o=>{if(o.isMesh&&!o.isInstancedMesh)meshes.push(o);});SVIX.rlTag=KRLHOST.tagRooms(meshes,SVIX.lightRooms,RT.uById);
+   const U=SVIX.rlU=KRLHOST.uniforms({tex:RT.tex}),seen=new Set();
+   for(const m of meshes){const mt=m.material;if(!mt||Array.isArray(mt)||seen.has(mt)||!(mt.isMeshStandardMaterial||mt.isMeshLambertMaterial))continue;seen.add(mt);
+    if(mt.userData.hooks)matHook(mt,'rl',sh=>KRLHOST.hook(sh,U,!!mt.isMeshLambertMaterial,true));else KRLHOST.apply(mt,{tex:RT.tex,attr:true});}
+   SVIX.rlPool=KRLHOST.lightPool(scene,4);
+   FRAME_HOOKS.push(()=>{U.uRlSun.value=NIGHT.on?0:1;U.uRlLamp.value=NIGHT.on?1.6:1;
+    const c=camera.position,pool=svixLightPool([c.x,c.y,c.z],{sunUp:NIGHT.on?0:1,count:4,heroShadows:0});SVIX.rlPool.set(pool,NIGHT.on?1.4:.7);});}
   SVIX.missing=Object.keys(R.missing||{}).length;SVIX.ms=Math.round(performance.now()-t0);
   if(typeof nightRebuild==='function')nightRebuild();
   return W0;};

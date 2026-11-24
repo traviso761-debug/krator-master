@@ -103,6 +103,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '98-start.js'}        # the take (KHOST.take)
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('56r-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
 DETERMINISTIC.add('27-matlib-m1.js')   # core/materials/record's M1 packing (Stage 5; plain functions, no rnd())
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 DETERMINISTIC |= set(CORE_WATER) | {'90w-brook-water.js'}   # core/water: IIFE-scoped, its own PRNG, nothing placed

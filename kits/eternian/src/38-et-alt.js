@@ -15,3 +15,6 @@ place=function(key,x,z,ry,o){const keep=ET_ALT,d=DEFS[key];
 /* the take an instance would draw for a key, for the probe and the tests */
 function etAltOf(key,mk,x,z,v){const d=DEFS[key],L=ET_ALTS[mk];if(!d||!L)return mk;
  return L[((KRAND.hash(0xe7a1,d.seed|0,v|0,Math.round(x*4),Math.round(z*4))>>>1)|1)%L.length];}
+
+/* the hero masonry's chamfers (core/engine 30-geo.js BEVEL_KEYS, M4): relief block, buff brick, cut stone, flagstones */
+BEVEL_KEYS.block=.03;BEVEL_KEYS.brick=.015;BEVEL_KEYS.stone=.03;BEVEL_KEYS.paving=.02;

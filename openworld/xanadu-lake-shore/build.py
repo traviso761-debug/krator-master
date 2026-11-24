@@ -51,7 +51,7 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 def _fams(path):
     pj = os.path.join(path, 'tex', 'pack.json')
     return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
-_DROP = lambda k: k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
+_DROP = lambda k: k.startswith('tower') or k.startswith('jetty')   # the ground sets stay: the near ground's S4 layers (core/world/81-world-terrain.js)
 PACK_EXCL = {k: [f for f in _fams(os.path.join(ROOT, 'biomes', k)) if _DROP(f)] for k in PACK_KITS}
 # the Xanadu building kit's library pack (still settlements/xanadu's), only the families the village buildings draw
 # (settlements/longsong/build.py XA_FAMS, the same villages)
@@ -72,7 +72,7 @@ ORDER = (
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
      ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
      ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
-     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js')]
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js'), ('core/terrain', '43-core-ground.js')]
     + [('core/biome', f) for f in CORE_BIOME]
     + [('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'), ('core/biome', '41-core-env.js'),
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
@@ -97,13 +97,14 @@ ORDER = (
        ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
-       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), (XOH, '49-world-xanadu.js'),
+       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('ld', '48v-world-sample.js'),   # 48v: the countryside sample (HAMLETS-PLAN 3, A9)
+        (XOH, '49-world-xanadu.js'),
        # the pitched camps (settlements/xanadu/WORKS-PLAN.md W2): core/camp, the Tents kit's boxes, the tune, read in place; the
        # planner and the drawer are xanadu-oidong-highrift's (48t, 88t)
        ('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'), ('core/camp', '50-camp-tents.js'),
        ('kits/tents/src', '33-tn-table.js'), ('core/region/data', 'xan-tune.js'), (XOH, '48t-world-camps.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js') + [(XOH, '88t-world-camps.js')]
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88r-world-sample.js', '88s-world-sites.js', '88b-world-bridges.js') + [(XOH, '88t-world-camps.js')]
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )

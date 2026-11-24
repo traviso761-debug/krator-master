@@ -15,7 +15,7 @@ run('MAT.wall=new THREE.MeshStandardMaterial();MAT.glass=new THREE.MeshStandardM
 
 /* draw into a fresh bucket set and read one key back: [{y, c}] per vertex, and the triangle count */
 function draw(src, mk, plotY){
-  run('GB={};GTARGET=GB;resetCM();PLOT_Y=' + (plotY === undefined ? 0 : plotY) + ';' + src + ';PLOT_Y=null;');
+  run('GB={};GTARGET=GB;resetCM();SLABS=[];PLOT_Y=' + (plotY === undefined ? 0 : plotY) + ';' + src + ';PLOT_Y=null;');
   const b = run('GB')[mk || 'wall']; if(!b) return { v: [], tris: 0, b: null };
   const v = []; for(let i = 0; i < b.p.length / 3; i++) v.push({ x: b.p[i * 3], y: b.p[i * 3 + 1], z: b.p[i * 3 + 2], c: b.c[i * 3] });
   return { v, tris: b.i.length / 3, b };
@@ -82,5 +82,24 @@ T.neg('its triangles face out: positive volume just under the box\'s (a flipped 
 T.ok('a bevel larger than the piece is clamped (0.45 of the smallest side), still closed', (() => { const r = draw('boxBevel("wall",0,0,0,.2,.2,.2,1,0xffffff)', 'wall', 'null'); return r.tris === 44 && solid(r).closed; })());
 T.ok('a bevel of 0 is a plain box', draw('boxBevel("wall",0,0,0,1,1,1,0,0xffffff)', 'wall', 'null').tris === 12);
 T.ok('a low grounded bevelled plinth ramps to its top', (() => { const r = draw('boxBevel("wall",0,0,0,1,.3,1,.05,0xffffff)'); return Math.abs(footC(r) - 0.72) < 1e-6; })());
+/* 4. joints: a wall standing on a slab the building drew (a floor, a deck) darkens at that joint */
+const onDeck = draw('box("wall",0,0,0,6,.4,6,0xffffff);box("wall",0,.4,0,4,2.6,.3,0xffffff)');
+T.neg('a wall on a deck darkens at the deck (its joint), not only on the ground',
+  R => R.v.some(q => Math.abs(q.y - 0.4) < 1e-6 && Math.abs(q.c - 0.72) < 1e-6) && darkAbove(R, 0.7) === 0,
+  draw('box("wall",0,.4,0,4,2.6,.3,0xffffff)'), onDeck);
+T.ok('the deck itself (a flat slab) stays as it was', onDeck.v.filter(q => q.y < 0.41 && Math.abs(q.x) > 2.5).every(q => q.c === 1));
+T.ok('a slab registers only inside its plot (off a plot nothing changes)', draw('box("wall",0,0,0,6,.4,6,0xffffff);box("wall",0,.4,0,4,2.6,.3,0xffffff)', 'wall', 'null').v.every(q => q.c === 1));
+
+/* 5. the kit's bevel table: box() bevels its hero keys, within the budget */
+run('MAT.stoneP=new THREE.MeshStandardMaterial();BEVEL_KEYS.stoneP=.05;BEVEL_STAT.boxes=BEVEL_STAT.extra=BEVEL_STAT.skipped=0;');
+const bev = draw('box("stoneP",0,1,0,1.2,.6,.8,0xffffff)', 'stoneP', 'null');
+T.ok('a box of a BEVEL_KEYS key is drawn bevelled (44 triangles) and counted', bev.tris === 44 && run('BEVEL_STAT.boxes') === 1 && run('BEVEL_STAT.extra') === 32);
+T.ok('a box thinner than 2.5 chamfers stays a box', draw('box("stoneP",0,1,0,1.2,.1,.8,0xffffff)', 'stoneP', 'null').tris === 12);
+T.ok('a key not in the table stays a box', draw('box("wall",0,1,0,1.2,.6,.8,0xffffff)', 'wall', 'null').tris === 12);
+const gb = draw('box("stoneP",0,0,0,1,2,1,0xffffff)', 'stoneP');
+T.ok('a grounded bevelled pier keeps its ramp, cut at the band', Math.abs(footC(gb) - 0.72) < 1e-6 && darkAbove(gb, 0.3) === 0 && gb.tris > 44 && solid(gb).closed);
+T.neg('the budget stops the bevels (BEVEL_BUDGET spent: plain boxes after)',
+  R => R.tris === 12, (() => { run('BEVEL_BUDGET=1e9'); return draw('box("stoneP",0,1,0,1.2,.6,.8,0xffffff)', 'stoneP', 'null'); })(),
+  (() => { run('BEVEL_BUDGET=0'); const r = draw('box("stoneP",0,1,0,1.2,.6,.8,0xffffff)', 'stoneP', 'null'); run('BEVEL_BUDGET=60000'); return r; })());
 T.ok('no error was reported', run('ERRS').length === 0, run('ERRS').join('; '));
 T.done();

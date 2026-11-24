@@ -82,6 +82,14 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
+  `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
+  `kits/xanadu/src/87k1-xa-lake-rooms.js` join `kits/interiors/sets/xanadu.js` when their pieces join the kit's src/; every page
+  that takes the Xanadu interiors gains them (only `settlements/xanadu-lake` and `settlements/kirstabal` read them in place now).
+- **The countryside sample to the other Xanadu regions** (2026-11-23, BUILD-PLAN A9, HAMLETS-PLAN H2): `core/world/48v` and `88r`
+  are opt-in (`WORLD_SAMPLE` in a region's `src/48-world-site.js`); only `xanadu-lake-shore` and `xanadu-north-shore` set it. The
+  other province regions (HAMLETS-PLAN section 3's table) set theirs at the rebuild, and their pages then lay their samples.
+
 - **The balanced basket into Voth, Mungo and Dhelv** (2026-11-12, `core/simulation/77-sim-6-items.js`, branch
   `claude/sim-s4-s7-fdaeba`). The change reaches `settlements/voth` (city and site), `settlements/mungo` and
   `settlements/dhelv`. Their committed pages were built on 2026-11-08, before core/biome's e983ec13d and e6543a3a9. Rebuilt

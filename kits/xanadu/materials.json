@@ -42,6 +42,8 @@
    }
   },
   "stone": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "stone.cut",
    "class": "relief",
    "scale": [
@@ -61,6 +63,7 @@
    }
   },
   "plaster": {
+   "m4": true,
    "lib": "plaster",
    "class": "flat",
    "scale": [
@@ -238,6 +241,8 @@
    }
   },
   "brick": {
+   "m4": true,
+   "pom": 0.015,
    "lib": "brick.red",
    "class": "relief",
    "scale": [

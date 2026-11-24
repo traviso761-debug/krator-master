@@ -75,6 +75,11 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,O=M.frame.origin_px,fx=(px,py)
   if(!TS.length)R.push({name:'the lake towns stand in the world (WTOWN.check)',ok:false,detail:'the region carries no town'});
   for(const t of TS){const c=C.find(q=>q.town===t.name),det=c?JSON.stringify({shore:c.shore,river:c.river&&(c.river.ok?{ok:true}:{inTown:c.river.inTown}),body:c.body&&{one:c.body.one}}).slice(0,400):'no town '+t.name;
    R.push({name:t.name+' stands in the world: its shore, its stream and its lake (WTOWN.check)',ok:!!c&&c.ok,detail:det});}}
+ /* the countryside sample (core/world 48v, 88r; HAMLETS-PLAN section 3, A9): laid, every village whole and off the region's
+    places and roads, its people under the province's bulk; its negative: a village moved onto a site is caught */
+ {const S=window._sample,c=S&&S.check?S.check():null,n=S&&S.check?S.check(true):null;
+  R.push({name:'the countryside sample: villages laid off the places and roads, under the province\'s bulk',ok:!!c&&c.ok,detail:c?c.detail:'no window._sample (core/world 88r)'});
+  R.push({name:' negative (sample) the countryside sample: a village on a site is caught',ok:!!n&&!n.ok,detail:n?n.detail.slice(0,200):'-'});}
  return R;}"""
 
 

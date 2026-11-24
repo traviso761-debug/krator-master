@@ -40,6 +40,8 @@
    }
   },
   "stone": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "stone.cut",
    "scale": [
     2.0,
@@ -226,6 +228,8 @@
    }
   },
   "brick": {
+   "m4": true,
+   "pom": 0.015,
    "lib": "brick.red",
    "scale": [
     1.2,

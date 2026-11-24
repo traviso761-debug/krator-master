@@ -37,7 +37,7 @@ CORE_DIRS = ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', '
 HOST = ['94-host-polytool.js', '92k-host-keys.js']
 # a kit with interiors takes the host's cut-away too, and the bundle's globals must not clash with its own names
 INTERIORS_HOST = ['99-host-cutaway.js']
-INTERIORS_GLOBALS = ('KratorInteriors', 'ROOM', 'furnishRoom', 'KIT_INTERIORS')
+INTERIORS_GLOBALS = ('KratorInteriors', 'ROOM', 'furnishRoom', 'KIT_INTERIORS', 'KNLV', 'KRLHOST')
 INTERIORS_FRAGMENT = '39i-interiors-bundle.js'
 
 
@@ -48,7 +48,12 @@ def interiors(sets):
     import sys
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'kits', 'interiors'))
     import kit_bundle
+    # the room light's web host (KRLHOST: the room table as a texture, the rooms tagged per vertex, the light pool; 91i lights
+    # the planned rooms with it), read in place from core/interiors
+    with open(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '20-core-roomlight-host.js'), encoding='utf-8') as fh:
+        host = kit_bundle.safe(fh.read())
     return {INTERIORS_FRAGMENT: kit_bundle.bundle(list(sets)) +
+            '/* ---- core/interiors/20-core-roomlight-host.js ---- */\n' + host + '\n' +
             '/* core/engine/engine.py interiors(): the sets this kit\'s buildings are planned from (91i-interiors.js) */\n'
             'const KIT_INTERIORS = { sets: [%s] };\n' % ', '.join("'%s'" % n for n in sets)}
 

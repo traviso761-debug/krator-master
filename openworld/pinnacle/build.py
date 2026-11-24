@@ -56,7 +56,7 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 def _fams(kit):
     pj = os.path.join(ROOT, 'biomes', kit, 'tex', 'pack.json')
     return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
-_DROP = lambda k: k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
+_DROP = lambda k: k.startswith('tower') or k.startswith('jetty')   # the ground sets stay: the near ground's S4 layers (core/world/81-world-terrain.js)
 PACK_EXCL = {k: [f for f in _fams(k) if _DROP(f)] for k in PACK_KITS}
 LDF = lambda *fs: [('ld', f) for f in fs]
 # the biome core as the savannah's own page takes it (its leafsets, joints, variants, fire, lean, the env)
@@ -73,7 +73,7 @@ ORDER = (
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
      ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
      ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
-     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js')]
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js'), ('core/terrain', '43-core-ground.js')]
     + [('core/biome', f) for f in CORE_BIOME]
     + [('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'), ('core/biome', '41-core-env.js'),
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),

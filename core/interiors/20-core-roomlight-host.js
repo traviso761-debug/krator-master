@@ -168,32 +168,138 @@ var KRLHOST = (function(){
      accumulated indirect before its BRDF). x PI: three's Lambert BRDF divides by it, Godot's EMISSION does not. */
   var GLSL_ROOM = 'vec4 _rl0 = texture2D(uRlTex, vec2(uRlU, 0.25)); vec4 _rl1 = texture2D(uRlTex, vec2(uRlU, 0.75));\n' +
     'vec3 _rIrr = (_rl0.rgb * uRlSun * (0.88 + 0.12 * clamp(_rlN.y, -1.0, 1.0)) + _rl0.a * uRlLamp * _rl1.rgb) * PI;\n';
+  /* the shader text, for a material the page hooks its own way (core/engine's matHook): u = the uniforms (uniforms()), lambert
+     its kind, attr: the room and the indoor mask come per vertex (aRlU, aRlIn: wire() sets them) instead of uRlU/uRlIndoor */
+  function uniforms(o){
+    return { uRlTex:{ value:o.tex }, uRlU:{ value:o.u == null ? 0 : o.u }, uRlIndoor:{ value:o.indoor == null ? 1 : o.indoor },
+             uRlSun:{ value:o.sunDay == null ? 1 : o.sunDay }, uRlLamp:{ value:o.lampAmb == null ? 1 : o.lampAmb } };
+  }
+  function hook(sh, u, lambert, attr){
+    for(var k in u) sh.uniforms[k] = u[k];
+    var decl = '#include <common>\nuniform sampler2D uRlTex;\nuniform float uRlU;\nuniform float uRlIndoor;\nuniform float uRlSun;\nuniform float uRlLamp;' +
+      (attr ? '\nvarying float vRlU;\nvarying float vRlIn;' : '');
+    var room = attr ? 'float _rlU = vRlU, _rlIn = vRlIn;\n' : 'float _rlU = uRlU, _rlIn = uRlIndoor;\n';
+    var glsl = room + GLSL_ROOM.split('uRlU').join('_rlU');
+    if(attr) sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float aRlU;\nattribute float aRlIn;\nvarying float vRlU;\nvarying float vRlIn;')
+      .replace('#include <project_vertex>', 'vRlU = aRlU; vRlIn = aRlIn;\n#include <project_vertex>');
+    if(lambert){
+      sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vRlN;')
+        .replace('#include <project_vertex>', 'vRlN = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);\n#include <project_vertex>');
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', decl + '\nvarying vec3 vRlN;')
+        .replace('#include <lightmap_fragment>', '#include <lightmap_fragment>\n{ vec3 _rlN = vRlN;\n' + glsl +
+                 'reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, _rIrr, _rlIn * uRlIndoor); }');
+    } else {
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', decl)
+        .replace('#include <lights_fragment_end>', '{ vec3 _rlN = inverseTransformDirection(geometry.normal, viewMatrix);\n' + glsl +
+                 'irradiance = mix(irradiance, _rIrr, _rlIn * uRlIndoor); }\n#include <lights_fragment_end>');
+    }
+  }
   function apply(mat, o){
-    var u = { uRlTex:{ value:o.tex }, uRlU:{ value:o.u == null ? 0 : o.u }, uRlIndoor:{ value:o.indoor == null ? 1 : o.indoor },
-              uRlSun:{ value:o.sunDay == null ? 1 : o.sunDay }, uRlLamp:{ value:o.lampAmb == null ? 1 : o.lampAmb } };
-    var prev = mat.onBeforeCompile, lambert = !!mat.isMeshLambertMaterial;
+    var u = uniforms(o), prev = mat.onBeforeCompile, lambert = !!mat.isMeshLambertMaterial, attr = !!o.attr;
     mat.userData.roomLight = u;
-    mat.onBeforeCompile = function(sh, r){
-      if(prev) prev.call(this, sh, r);
-      for(var k in u) sh.uniforms[k] = u[k];
-      var decl = '#include <common>\nuniform sampler2D uRlTex;\nuniform float uRlU;\nuniform float uRlIndoor;\nuniform float uRlSun;\nuniform float uRlLamp;';
-      if(lambert){
-        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vRlN;')
-          .replace('#include <project_vertex>', 'vRlN = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);\n#include <project_vertex>');
-        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', decl + '\nvarying vec3 vRlN;')
-          .replace('#include <lightmap_fragment>', '#include <lightmap_fragment>\n{ vec3 _rlN = vRlN;\n' + GLSL_ROOM +
-                   'reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, _rIrr, uRlIndoor); }');
-      } else {
-        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', decl)
-          .replace('#include <lights_fragment_end>', '{ vec3 _rlN = inverseTransformDirection(geometry.normal, viewMatrix);\n' + GLSL_ROOM +
-                   'irradiance = mix(irradiance, _rIrr, uRlIndoor); }\n#include <lights_fragment_end>');
-      }
-    };
+    mat.onBeforeCompile = function(sh, r){ if(prev) prev.call(this, sh, r); hook(sh, u, lambert, attr); };
     var pk = mat.customProgramCacheKey && mat.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? mat.customProgramCacheKey() : '';
-    mat.customProgramCacheKey = function(){ return pk + '|rl'; };
+    mat.customProgramCacheKey = function(){ return pk + (attr ? '|rla' : '|rl'); };
     mat.needsUpdate = true;
     return mat;
   }
-  return { texData:texData, texture:texture, apply:apply };
+  /* WIRING A PAGE (I1-I2 on merged geometry): every vertex of the meshes that lies in a room (inside its polygon and between its
+     floor and ceiling, or on its boundary with its face turned in) takes that room's column (aRlU) and the indoor mask (aRlIn
+     1); every other vertex 0, so the outside of a wall keeps the sky. rooms: ROOM() records in world terms (kits/interiors:
+     id, poly [[x,z]...], y, h). Meshes in world space or with a matrixWorld; instanced meshes are left alone. -> {vertices, indoor} */
+  function inPoly(P, x, z){ var inn = false; for(var i = 0, j = P.length - 1; i < P.length; j = i++){ var a = P[i], b = P[j];
+    if((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) inn = !inn; } return inn; }
+  function edgeDist(P, x, z){ var d = 1e9; for(var i = 0, j = P.length - 1; i < P.length; j = i++){ var a = P[j], b = P[i], dx = b[0] - a[0], dz = b[1] - a[1],
+    l2 = dx * dx + dz * dz, t = l2 > 0 ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / l2)) : 0, ex = a[0] + dx * t - x, ez = a[1] + dz * t - z;
+    d = Math.min(d, ex * ex + ez * ez); } return Math.sqrt(d); }
+  function tagRooms(meshes, rooms, uById, o){
+    o = o || {};
+    var tol = o.tol == null ? 0.06 : o.tol, CELL = 8, grid = {}, out = { vertices:0, indoor:0, meshes:0 };
+    rooms.forEach(function(R){ var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9, cx = 0, cz = 0;
+      R.poly.forEach(function(p){ x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); cx += p[0]; cz += p[1]; });
+      R._rl = { cx:cx / R.poly.length, cz:cz / R.poly.length, u:uById[R.id] };
+      if(R._rl.u == null) return;
+      for(var gx = Math.floor((x0 - tol) / CELL); gx <= Math.floor((x1 + tol) / CELL); gx++)
+        for(var gz = Math.floor((z0 - tol) / CELL); gz <= Math.floor((z1 + tol) / CELL); gz++){ var k = gx + ',' + gz; (grid[k] = grid[k] || []).push(R); } });
+    var v = new THREE.Vector3(), n = new THREE.Vector3(), nm = new THREE.Matrix3();
+    meshes.forEach(function(m){
+      if(!m || !m.isMesh || m.isInstancedMesh || !m.geometry || !m.geometry.attributes.position) return;
+      m.updateMatrixWorld(true); nm.getNormalMatrix(m.matrixWorld);
+      var g = m.geometry, P = g.attributes.position, N = g.attributes.normal, cnt = P.count, U = new Float32Array(cnt), I = new Float32Array(cnt), any = 0;
+      for(var i = 0; i < cnt; i++){
+        v.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld);
+        var L = grid[Math.floor(v.x / CELL) + ',' + Math.floor(v.z / CELL)]; if(!L) continue;
+        if(N) n.fromBufferAttribute(N, i).applyMatrix3(nm).normalize();
+        for(var r = 0; r < L.length; r++){ var R = L[r];
+          if(v.y < R.y - tol || v.y > R.y + R.h + tol) continue;
+          var inside = inPoly(R.poly, v.x, v.z), edge = !inside && edgeDist(R.poly, v.x, v.z) <= tol;
+          if(!inside && !edge) continue;
+          if(edge && N && n.x * (R._rl.cx - v.x) + n.z * (R._rl.cz - v.z) <= 0) continue;   /* on the wall line, facing out */
+          U[i] = R._rl.u; I[i] = 1; any++; break; }
+      }
+      g.setAttribute('aRlU', new THREE.BufferAttribute(U, 1)); g.setAttribute('aRlIn', new THREE.BufferAttribute(I, 1));
+      out.meshes++; out.vertices += cnt; out.indoor += any;
+    });
+    return out;
+  }
+  /* the room-gated light pool (I3) on the web: a fixed number of point lights (the count never changes, so no material
+     recompiles) moved each frame to KROOMLIGHT.pickPool's picks for the eye's room; the rest dark */
+  function lightPool(scene, n){
+    var L = [];
+    for(var i = 0; i < n; i++){ var p = new THREE.PointLight(0xffffff, 0, 8, 2); p.name = 'roomlight:pool' + i; scene.add(p); L.push(p); }
+    return { lights:L, set:function(pool, gain){ gain = gain == null ? 1 : gain;
+      for(var i = 0; i < L.length; i++){ var q = pool && pool[i];
+        if(!q){ L[i].intensity = 0; continue; }
+        L[i].position.set(q.at[0], q.at[1], q.at[2]); L[i].color.setRGB(q.color[0], q.color[1], q.color[2]);
+        L[i].intensity = q.amp * gain; L[i].distance = q.range; } } };
+  }
+  /* A PAGE THAT GROWS ITS ROOMS (girder, locus, yuni, mavs-refuge: rooms planned at load or built lazily as the camera nears):
+     wirePage({ scene, rooms() -> [{id, poly, y, h, doors?, windows?, lamps?, vault?}], table?(rooms) -> KROOMLIGHT table
+     (default: each room one exterior door, its windows and lamps if it has them), sunUp?() -> 0..1, every? ms (1000),
+     capacity? (8192 rooms) }). Each tick: when the rooms grew, the table is rebuilt into a fixed-width texture (a room keeps its
+     column) and the meshes near the new rooms are tagged again; a mesh with new geometry (a furniture batch that grew) is
+     tagged; every lit material of a tagged mesh takes the hook once. ?roomlight=0 leaves the page as it was. -> state */
+  function wirePage(o){
+    var st = { rooms:0, tagged:0, indoor:0, materials:0, on:!(typeof location !== 'undefined' && /[?&]roomlight=0\b/.test(location.search)) };
+    if(!st.on || typeof KROOMLIGHT === 'undefined') return st;
+    var cap = (o.capacity==null?8192:o.capacity), D = new Float32Array((cap + 1) * 2 * 4), tex = new THREE.DataTexture(D, cap + 1, 2, THREE.RGBAFormat, THREE.FloatType);
+    tex.minFilter = tex.magFilter = THREE.NearestFilter; tex.generateMipmaps = false; tex.flipY = false; tex.needsUpdate = true;
+    var U = uniforms({ tex:tex }), uById = {}, geo = new WeakMap(), hooked = new WeakSet(), list = [];
+    st.tex = tex; st.U = U;
+    function rec(R){ var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9; R.poly.forEach(function(p){ x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); });
+      return { id:R.id, box:[x0, R.y, z0, x1, R.y + R.h, z1], doors:R.doors || [{ out:true, w:1 }], windows:R.windows || [], lamps:R.lamps || [], vault:!!R.vault }; }
+    function retable(){
+      var T = o.table ? o.table(list) : KROOMLIGHT.buildTable({ rooms:list.map(rec) }), d = texData(T), w = cap + 1;
+      for(var i = 0; i < T.order.length && i < cap; i++){ var src = i * 4, s1 = (d.width + i) * 4;
+        for(var c = 0; c < 4; c++){ D[i * 4 + c] = d.data[src + c]; D[(w + i) * 4 + c] = d.data[s1 + c]; }
+        uById[T.order[i]] = (i + 0.5) / w; }
+      tex.needsUpdate = true; st.table = T;
+    }
+    function hookMat(m){ var mt = m.material; if(!mt || Array.isArray(mt) || hooked.has(mt)) return;
+      if(!(mt.isMeshStandardMaterial || mt.isMeshLambertMaterial || mt.isMeshPhongMaterial)) return;
+      hooked.add(mt); st.materials++;
+      var prev = mt.onBeforeCompile, lam = !mt.isMeshStandardMaterial;
+      mt.onBeforeCompile = function(sh, r){ if(prev) prev.call(this, sh, r); hook(sh, U, lam, true); };
+      var pk = mt.customProgramCacheKey && mt.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? mt.customProgramCacheKey() : '';
+      mt.customProgramCacheKey = function(){ return pk + '|rla'; }; mt.needsUpdate = true; }
+    function tick(){
+      var rooms = o.rooms() || [], fresh = rooms.length !== list.length ? rooms.slice(list.length) : [];
+      if(fresh.length){ list = rooms.slice(); retable(); st.rooms = list.length; }
+      var meshes = [], near = [];
+      o.scene.traverse(function(m){ if(!m.isMesh || m.isInstancedMesh || !m.geometry || !m.geometry.attributes.position) return;
+        var g = m.geometry, seen = geo.get(m);
+        if(!seen || seen.g !== g || seen.n !== g.attributes.position.count) meshes.push(m); else if(fresh.length) near.push(m); });
+      var again = fresh.length ? near.filter(function(m){ if(!m.geometry.boundingSphere) m.geometry.computeBoundingSphere();
+        var c = m.geometry.boundingSphere.center.clone().applyMatrix4(m.matrixWorld), r = m.geometry.boundingSphere.radius * m.matrixWorld.getMaxScaleOnAxis();
+        return fresh.some(function(R){ var b = rec(R).box; return c.x + r >= b[0] && c.x - r <= b[3] && c.z + r >= b[2] && c.z - r <= b[5] && c.y + r >= b[1] && c.y - r <= b[4]; }); }) : [];
+      var todo = meshes.concat(again);
+      if(todo.length && list.length){ var t = tagRooms(todo, list, uById); st.tagged += t.meshes; st.indoor += t.indoor; }
+      todo.forEach(function(m){ geo.set(m, { g:m.geometry, n:m.geometry.attributes.position.count }); hookMat(m); });
+      if(o.sunUp){ var s = o.sunUp(); U.uRlSun.value = s; U.uRlLamp.value = 1 + 0.6 * (1 - s); }
+    }
+    st.tick = tick; tick(); if(o.every !== 0 && typeof setInterval === 'function') st.timer = setInterval(tick, (o.every==null?1000:o.every));   /* every 0: the page ticks it itself */
+    return st;
+  }
+  return { texData:texData, texture:texture, uniforms:uniforms, hook:hook, apply:apply, tagRooms:tagRooms, lightPool:lightPool, wirePage:wirePage };
 })();
 if(typeof module !== 'undefined' && module.exports) module.exports = { KNLV:KNLV, KRLHOST:KRLHOST };

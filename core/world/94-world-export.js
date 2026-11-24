@@ -476,7 +476,7 @@ E.register('terrain',ctx=>{if(!ctx.box)return null;origin_(ctx);const st=WORLD_E
   const hasRd=typeof WORLD.roadCover==='function',rdW=Math.max(st,6);
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=G.x0+i*st,z=G.z0+j*st,o=(j*nx+i)*4;
    const h=WORLD.Hp(x,z,0,_P),hx=(WORLD.H(x+e,z)-WORLD.H(x-e,z))/(2*e),hz=(WORLD.H(x,z+e)-WORLD.H(x,z-e))/(2*e),nl=Math.hypot(hx,1,hz);
-   const F=WORLD.fieldsFrom(x,z,h,Math.hypot(hx,hz),_P,_F);WORLD.ground(x,z,F,_C);
+   const F=WORLD.fieldsFrom(x,z,h,Math.hypot(hx,hz),_P,_F);F.gx=hx;F.gz=hz;WORLD.ground(x,z,F,_C);
    const rd=hasRd?WORLD.roadCover(x,z,rdW):0;
    const r=_C[0]+(ROAD_LIN[0]-_C[0])*rd,g=_C[1]+(ROAD_LIN[1]-_C[1])*rd,b=_C[2]+(ROAD_LIN[2]-_C[2])*rd,rk=_C[3]*(1-rd);
    ar[o]=l2s8(r);ar[o+1]=l2s8(g);ar[o+2]=l2s8(b);ar[o+3]=u8(rk);

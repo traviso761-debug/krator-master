@@ -105,6 +105,10 @@
     /* the corner AO's room box (the polygon's bounds, floor to ceiling); the walls' material then reads the vertex colour */
     const AO = opt.cornerAO !== false && root.KROOMLIGHT ? { box: [room.bbox[0], y0, room.bbox[1], room.bbox[2], top, room.bbox[3]], reach: opt.aoReach == null ? 0.85 : opt.aoReach } : null;
     if (AO) mats.wall.vertexColors = true;
+    /* the room light (I1-I2): opt.roomLight = { tex, uById } (core/interiors 20-core-roomlight-host.js KRLHOST.texture over
+       IX.roomLight()): the shell's surfaces are lit by the room's portal daylight and lamp ambience, not the sky */
+    if (opt.roomLight && root.KRLHOST && opt.roomLight.uById[room.id] != null)
+      ['wall', 'floor', 'roof', 'trim'].forEach(function (k) { root.KRLHOST.apply(mats[k], { tex: opt.roomLight.tex, u: opt.roomLight.uById[room.id], sunDay: opt.roomLight.sunDay, lampAmb: opt.roomLight.lampAmb }); });
     const outer = G.offset(room.poly, thick);
     const floor = slab(outer, y0 - 0.25, y0, mats.floor);
     floor.userData.room = room.id; floor.userData.part = 'floor';

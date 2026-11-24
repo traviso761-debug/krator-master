@@ -25,12 +25,14 @@
 | test_bridges | "a region with no bridges asked plans as before: xanadu-oidong-highrift" | the region's plan hash moved | after the re-run's recut, refresh the expected hash |
 | test-audio | 2 checks: clips without a source page and creator, unknown category | catalogue data | fix core/audio's catalogue records |
 | test-hamlet | harvest.wood unparseable: labyrinth "a bitter", "the berries" | biome species tags | fix biomes/labyrinth's harvest.wood strings |
-| test-slab (seen at step 4) | golden-slab.json is not the module's output | golden stale | node core/terrain/test-slab.js --write after checking the diff is intended |
+| test-slab (seen at step 4) | golden-slab.json is not the module's output | not stale: cross-machine floats (2026-11-23: the parsed values are equal, a few floats differ in the last digit, about 1 ulp, and the test fails at the golden's own commit ec642bf43 on this machine's node v24.20.0) | a `--write` here would only move the failure to the machine that wrote it: round the golden's floats (or compare within a tolerance) in test-slab.js, then rewrite it; check test-lava and test-scarp for the same cause |
 | drum, torus, sw-arcology tests | dist/*.html 0 KB | pages never built here | build them in the rebuild |
 | test-outposts | 8 places moved since the cut | model 5.1 moved pins | update after the re-run |
 | nwbay test-geology | page's nodes not the field's | page older than the geology re-bake | rebuild after the re-run |
 | check_stale | viridian and others behind their sources | expected | the rebuild |
 | test-east-rift, test-xan-economy | only the "under four minutes" timing (309-979 s under load) | machine load | owner: relax or run alone |
+| xanadu-lake-shore GPU verify (xanadu-plans session, 2026-11-23) | hangs after its resources panel: the renderer dies and the 25-min watchdog kills it, with or without WORLD_SAMPLE (the re-run tree's run of the line's page went silent at the same point, resources.png 18:03). The region's own asserts all print before it; the one failing assert is lf_pleasure_dome_isle (waterline ratio 1.36 against 1.35, WLAND v2) | likely the stack's (B0 sync); a dying renderer may be V8's 4 GB heap limit (check the event log and minidumps) | find what the page draws after the resources panel; the lf_pleasure_dome_isle ratio is the landforms' WLAND v2 rule (relax to 1.36 or fix the isle) |
+| xanadu-north-shore "baked plan is the plan made here" (same) | fails in the browser (fc78d62e against node 9f94105e), with or without the sample: only road spher0north1/road/2's deck (1 cm) and one bridge pier's base (0.3 m) differ | the browser re-plans on ground it has already shaped (the stack's B0 sync) | plan on the unshaped ground in the browser as in node, or compare within a tolerance; then re-bake |
 
 Fixed on the line this session (do not redo): Tungang bundle replay (94ff6cf69), 16 ORNUM defaults (94ff6cf69, fccf87423).
 

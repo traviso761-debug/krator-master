@@ -101,13 +101,47 @@ const hooked = (Mat) => { const m = new Mat(), lib = Mat === H.THREE.MeshLambert
   RL.apply(m, { tex: tx.tex, u: tx.uById.store });
   const sh = { uniforms: {}, vertexShader: lib.vertexShader, fragmentShader: lib.fragmentShader }; m.onBeforeCompile(sh); return { m, sh }; };
 const hs = hooked(H.THREE.MeshStandardMaterial), hl = hooked(H.THREE.MeshLambertMaterial);
-T.ok('apply() on a Standard material: the room light replaces the ambient irradiance where indoor', /irradiance = mix\(irradiance, _rIrr, uRlIndoor\)/.test(hs.sh.fragmentShader) &&
+T.ok('apply() on a Standard material: the room light replaces the ambient irradiance where indoor', /irradiance = mix\(irradiance, _rIrr, _rlIn \* uRlIndoor\)/.test(hs.sh.fragmentShader) &&
   hs.sh.fragmentShader.indexOf('uniform sampler2D uRlTex') > 0 && hs.sh.uniforms.uRlU.value === tx.uById.store);
-T.ok('apply() on a Lambert material: the accumulated indirect, before its BRDF', /reflectedLight\.indirectDiffuse = mix\(reflectedLight\.indirectDiffuse, _rIrr, uRlIndoor\)/.test(hl.sh.fragmentShader) &&
+T.ok('apply() on a Lambert material: the accumulated indirect, before its BRDF', /reflectedLight\.indirectDiffuse = mix\(reflectedLight\.indirectDiffuse, _rIrr, _rlIn \* uRlIndoor\)/.test(hl.sh.fragmentShader) &&
   /varying vec3 vRlN;/.test(hl.sh.vertexShader) && hl.sh.fragmentShader.indexOf('#include <lightmap_fragment>') < hl.sh.fragmentShader.indexOf('_rIrr'));
 T.ok('the hooked program has its own key', hs.m.customProgramCacheKey() === '|rl');
 T.ok('every include the hooks replace is in r128\'s shaders (a missed replace would leave the room light out)',
   ['#include <lights_fragment_end>', '#include <common>'].every(s => H.THREE.ShaderLib.standard.fragmentShader.includes(s)) &&
   ['#include <lightmap_fragment>', '#include <common>'].every(s => H.THREE.ShaderLib.lambert.fragmentShader.includes(s)) &&
   ['#include <project_vertex>', '#include <common>'].every(s => H.THREE.ShaderLib.lambert.vertexShader.includes(s)));
+/* tagRooms: a room's own vertices take its column and the indoor mask; the outside of its wall and the street stay 0 */
+const TR = (() => { const T3 = H.THREE, room = { id: 'store', poly: [[0, 0], [4, 0], [4, 4], [0, 4]], y: 0, h: 3 };
+  const wall = new T3.Mesh(new T3.BoxGeometry(4, 3, 0.2), new T3.MeshStandardMaterial()); wall.position.set(2, 1.5, -0.1);   /* its inner face on z = 0 */
+  const floor = new T3.Mesh(new T3.PlaneGeometry(3, 3).rotateX(-Math.PI / 2), new T3.MeshStandardMaterial()); floor.position.set(2, 0.01, 2);
+  const street = new T3.Mesh(new T3.PlaneGeometry(3, 3).rotateX(-Math.PI / 2), new T3.MeshStandardMaterial()); street.position.set(9, 0, 9);
+  const st = RL.tagRooms([wall, floor, street], [room], { store: 0.375 });
+  const at = (m, f) => { const P = m.geometry.attributes.position, N = m.geometry.attributes.normal, U = m.geometry.attributes.aRlU, I = m.geometry.attributes.aRlIn, out = [];
+    for (let i = 0; i < P.count; i++) if (f(P.getZ(i), N.getZ(i))) out.push([U.getX(i), I.getX(i)]); return out; };
+  return { st, inner: at(wall, (z, nz) => nz > 0.9), outer: at(wall, (z, nz) => nz < -0.9), floor: at(floor, () => true), street: at(street, () => true) }; })();
+T.ok('tagRooms: the floor inside the room is indoor, its column the room\'s', TR.floor.length && TR.floor.every(q => q[1] === 1 && q[0] === 0.375));
+T.ok('tagRooms: the wall\'s inner face (on the room\'s edge, turned in) is indoor', TR.inner.length && TR.inner.every(q => q[1] === 1));
+T.neg('tagRooms: the wall\'s outer face and the street keep the sky (mask 0)',
+  R => R.outer.every(q => q[1] === 0) && R.street.every(q => q[1] === 0),
+  Object.assign({}, TR, { outer: TR.outer.map(q => [q[0], 1]) }), TR);
+const ha = (() => { const m = new H.THREE.MeshStandardMaterial(); RL.apply(m, { tex: tx.tex, attr: true }); const lib = H.THREE.ShaderLib.standard;
+  const sh = { uniforms: {}, vertexShader: lib.vertexShader, fragmentShader: lib.fragmentShader }; m.onBeforeCompile(sh); return { m, sh }; })();
+T.ok('attribute mode: the room and the mask come per vertex (aRlU, aRlIn), its own program key', /attribute float aRlU;/.test(ha.sh.vertexShader) && /vRlIn = aRlIn;/.test(ha.sh.vertexShader) &&
+  /float _rlU = vRlU, _rlIn = vRlIn;/.test(ha.sh.fragmentShader) && ha.m.customProgramCacheKey() === '|rla');
+const pool = RL.lightPool({ add() {} }, 3); pool.set([{ at: [1, 2, 3], color: [1, .5, .2], amp: 2, range: 9 }], 0.5);
+T.ok('lightPool: a fixed count of lights, the picks set, the rest dark', pool.lights.length === 3 && pool.lights[0].intensity === 1 && pool.lights[0].distance === 9 && pool.lights[1].intensity === 0);
+/* wirePage: rooms that arrive later are tabled in a fixed column and the meshes near them tagged; new geometry tagged too */
+const WP = (() => { const T3 = H.THREE, scene = new T3.Scene(), rooms = [{ id: 'a', poly: [[0, 0], [4, 0], [4, 4], [0, 4]], y: 0, h: 3 }];
+  const fa = new T3.Mesh(new T3.PlaneGeometry(3, 3).rotateX(-Math.PI / 2), new T3.MeshStandardMaterial()); fa.position.set(2, 0.01, 2); scene.add(fa);
+  const fb = new T3.Mesh(new T3.PlaneGeometry(3, 3).rotateX(-Math.PI / 2), new T3.MeshLambertMaterial()); fb.position.set(12, 0.01, 2); scene.add(fb);
+  H.KROOMLIGHT = KR; vm.runInContext('var KROOMLIGHT = this.KROOMLIGHT;', H);
+  const st = RL.wirePage({ scene, rooms: () => rooms, sunUp: () => 0.25, every: 0 });
+  const uA = fa.geometry.attributes.aRlU.getX(0), inB0 = fb.geometry.attributes.aRlIn.getX(0);
+  rooms.push({ id: 'b', poly: [[10, 0], [14, 0], [14, 4], [10, 4]], y: 0, h: 3 }); st.tick();
+  const grown = new T3.Mesh(new T3.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), new T3.MeshStandardMaterial()); grown.position.set(2, 0.02, 2); scene.add(grown); st.tick();
+  return { st, uA, uA2: fa.geometry.attributes.aRlU.getX(0), inB0, inB1: fb.geometry.attributes.aRlIn.getX(0), grown: grown.geometry.attributes.aRlIn && grown.geometry.attributes.aRlIn.getX(0),
+    hooked: [fa, fb, grown].every(m => /\|rla$/.test(m.material.customProgramCacheKey())) }; })();
+T.ok('wirePage: a room\'s column stays put as rooms arrive (fixed-width table)', WP.uA > 0 && WP.uA === WP.uA2 && WP.st.rooms === 2);
+T.neg('wirePage: a room that arrives later tags the meshes in it (re-tag near new rooms)', r => r.inB1 === 1, Object.assign({}, WP, { inB1: WP.inB0 }), WP);
+T.ok('wirePage: new geometry is tagged and every lit material hooked once; the sun follows the page', WP.grown === 1 && WP.hooked && WP.st.U.uRlSun.value === 0.25);
 T.done();

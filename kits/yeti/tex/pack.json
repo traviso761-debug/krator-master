@@ -215,6 +215,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "course.cw.webp",
     "map": "course.albedo.webp",
     "normalMap": "course.normal.webp",
     "roughnessMap": "course.rough.webp"
@@ -222,6 +223,7 @@
    "lib": "masonry.pycrete.course",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.1,
    "scale": [
     2,
@@ -949,6 +951,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "flag.cw.webp",
     "map": "flag.albedo.webp",
     "normalMap": "flag.normal.webp",
     "roughnessMap": "flag.rough.webp"
@@ -956,6 +959,7 @@
    "lib": "paving.flagstone",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.0,
    "scale": [
     2,
@@ -1399,6 +1403,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "slab.cw.webp",
     "map": "slab.albedo.webp",
     "normalMap": "slab.normal.webp",
     "roughnessMap": "slab.rough.webp"
@@ -1406,6 +1411,7 @@
    "lib": "stone.corbel.slab",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.0,
    "scale": [
     2,

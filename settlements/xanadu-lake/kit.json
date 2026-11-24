@@ -14,7 +14,10 @@
   "kits/xanadu/extra/88e-xa-stall.js",
   "kits/xanadu/extra/88f-xa-harbour.js",
   "kits/xanadu/extra/88g-xa-works.js",
-  "kits/xanadu/extra/88h-xa-landing.js", "kits/xanadu/extra/88i-xa-timber-yard.js"
+  "kits/xanadu/extra/88h-xa-landing.js",
+  "kits/xanadu/extra/88i-xa-timber-yard.js",
+  "kits/xanadu/extra/69dy-ix-lake-works.js",
+  "kits/xanadu/src/87k1-xa-lake-rooms.js"
  ],
  "scoped": [
   "69p-kcity-bundle.js",
@@ -59,6 +62,19 @@
      "20-core-ruins.js",
      "21-core-ruins-host.js"
     ]
+   ],
+   [
+    "core/simulation",
+    [
+     "77-sim-0-core.js",
+     "77-sim-1-world.js",
+     "77-sim-2-places.js",
+     "77-sim-3-actors.js",
+     "77-sim-4-nav.js",
+     "77-sim-5-motion.js",
+     "77-sim-5r-routes.js",
+     "77-sim-6-season.js"
+    ]
    ]
   ]
  },
@@ -91,7 +107,20 @@
   "10-core-drawn.js",
   "89zc-crops-bundle.js",
   "20-core-ruins.js",
-  "21-core-ruins-host.js"
+  "21-core-ruins-host.js",
+  "77-sim-0-core.js",
+  "77-sim-1-world.js",
+  "77-sim-2-places.js",
+  "77-sim-3-actors.js",
+  "77-sim-4-nav.js",
+  "77-sim-5-motion.js",
+  "77-sim-5r-routes.js",
+  "77-sim-6-season.js",
+  "89zn-xl-days.js",
+  "89zu-xl-people.js",
+  "90t-xl-life.js",
+  "69dy-ix-lake-works.js",
+  "87k1-xa-lake-rooms.js"
  ],
  "interiors": [
   "town"

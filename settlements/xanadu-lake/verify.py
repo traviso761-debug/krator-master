@@ -60,7 +60,17 @@ CITY_JS = r"""
   R.push({name:'xl-world',ok:worst<=tol&&F.check.ring.length>=48,detail:'the ground at the footprint\'s edge and the band within '+worst.toFixed(2)+' m of the region\'s ('+F.check.ring.length+' points; worst at '+JSON.stringify(at)+')'});
   const W=window._xlWater||{};R.push({name:'xl-water',ok:!!W.lake&&(!W.hasStream||!!W.stream),detail:'the lake '+(W.lake?'drawn':'MISSING')+', the stream '+(!W.hasStream?'none (the town has none)':W.stream?'drawn ('+W.streamPts+' points)':'MISSING')});
   const ru=P.filter(p=>p.ruin);if(S.ruins||ru.length){const want=S.ruins?S.ruins.houses:0,n=P.filter(p=>p.kind==='ruin').length;
-   R.push({name:'xl-ruins',ok:Math.abs(n-want)<=want*.1&&Q.ruinsWatched>0&&typeof KRUINS!=='undefined',detail:n+' ruined houses (the spec\'s '+want+'), '+ru.filter(p=>p.kind!=='ruin').length+' ruined landmarks, '+(Q.ruinsWatched||0)+' chunks watched by core/ruins'});}}}
+   R.push({name:'xl-ruins',ok:Math.abs(n-want)<=want*.1&&Q.ruinsWatched>0&&typeof KRUINS!=='undefined',detail:n+' ruined houses (the spec\'s '+want+'), '+ru.filter(p=>p.kind!=='ruin').length+' ruined landmarks, '+(Q.ruinsWatched||0)+' chunks watched by core/ruins'});}
+  /* the day (89zn XL_DAYS): the second stall row and the round's barge only on the market day, the loop's launch away only on a fair day */
+  {const Dy=(Q.dayNow?Q.dayNow():Q.today)||{},sh=Q.dayShown?Q.dayShown():{},pl=sh.marketStallsPlanned||0;
+   const okD=!!Q.today&&sh.day===Dy.day&&(Dy.market?(sh.round===1&&sh.marketStalls===pl):(sh.round===0&&sh.marketStalls===0))&&sh.launchesAway===(Dy.fairAway&&c.launches>0?1:0);
+   R.push({name:'xl-days',ok:okD,detail:'day '+Dy.day+' (weekday '+Dy.weekday+(Dy.fair?', a fair day':'')+'), the market on weekday '+Dy.marketDay+' ('+(Dy.round||'no round')+')'+
+    (Dy.market?': today':'')+'; the market row '+(sh.marketStalls||0)+' of '+pl+' stalls drawn, the round\'s barge '+(sh.round||0)+', launches away '+(sh.launchesAway||0)+(Dy.loop?' ('+Dy.loop+')':'')});}
+  /* the people (89zu, 90t): every resident an actor on core/simulation, the town's houses x XL.HH and the governor's, no problem in the declaration, few without a task */
+  {const Lf=window._life||{},want=Math.round(C.houses*XL.HH)+(P.some(p=>p.key==='xa_governor')?8:0);
+   R.push({name:'xl-life',ok:!!(Lf.on&&Lf.actors===Lf.people&&Lf.people===want&&Lf.problems===0&&Lf.stuck<=.02*Lf.actors),
+    detail:Lf.on?(Lf.actors+' actors of '+Lf.people+' (the houses\' '+want+'), '+Lf.places+' places, '+Lf.nodes+' walk nodes; '+Lf.problems+' problems'+(Lf.problems?' ('+JSON.stringify(Lf.firstProblems)+')':'')+
+     ', '+Lf.stuck+' without a task, '+Lf.moving+' walking, '+Lf.indoors+' indoors, '+Lf.shown+' drawn; '+JSON.stringify(Lf.roles)+'; declared in '+Lf.ms+' ms'):('the simulation did not start'+(Lf.err?': '+Lf.err:''))});}}}
 return R;}"""
 xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + CITY_JS
 assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'

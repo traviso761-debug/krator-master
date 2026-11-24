@@ -6,7 +6,7 @@
 reseed((XL.seed(XLK)>>>8)+2);const XL_B0=performance.now();
 const xlD=(v,d)=>v==null?d:v;
 const XL_CHUNK=160,XL_CHUNKS={},XL_FAILS=[];
-for(const p of XLT.place){const k=p.ruin?'ruin:'+Math.floor(p.x/XL_CHUNK)+','+Math.floor(p.z/XL_CHUNK):p.kind==='civic'||p.kind==='work'?'civic':p.kind==='stall'?'stall':Math.floor(p.x/XL_CHUNK)+','+Math.floor(p.z/XL_CHUNK);(XL_CHUNKS[k]=XL_CHUNKS[k]||[]).push(p);}
+for(const p of XLT.place){const k=p.ruin?'ruin:'+Math.floor(p.x/XL_CHUNK)+','+Math.floor(p.z/XL_CHUNK):p.kind==='civic'||p.kind==='work'?'civic':p.kind==='stall'?(p.id.indexOf(':stall:1:')>0?'stall:market':'stall'):Math.floor(p.x/XL_CHUNK)+','+Math.floor(p.z/XL_CHUNK);(XL_CHUNKS[k]=XL_CHUNKS[k]||[]).push(p);}
 const XL_GROUPS=[];let XL_INST=0;
 function xlBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;scene.add(G);let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9,y0=1e9,y1=-1e9;
  for(const p of list){
@@ -26,7 +26,7 @@ window._instances=XL_INST;
 // the runtime LOD: a chunk is drawn while it is in the view and within its range
 const xlFr=new THREE.Frustum(),xlPm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();xlPm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);xlFr.setFromProjectionMatrix(xlPm);const P=camera.position;let shown=0;
- for(const e of XL_GROUPS){const d=P.distanceTo(e.sphere.center)-e.sphere.radius;const v=d<e.range&&xlFr.intersectsSphere(e.sphere);e.G.visible=v;if(v)shown++;}window._chunksShown=shown;});
+ for(const e of XL_GROUPS){const d=P.distanceTo(e.sphere.center)-e.sphere.radius;const v=d<e.range&&xlFr.intersectsSphere(e.sphere)&&(e.key!=='stall:market'||XL_TODAY.market);e.G.visible=v;if(v)shown++;}window._chunksShown=shown;});
 // the flora: the Vale of Xanadu biome over the town's mask (89zq: the ravine, the slope's grass, a tree in a yard), then
 // baked with the builders' own plants; its LOD ticks with the chunks'
 if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.52]);

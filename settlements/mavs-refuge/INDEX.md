@@ -41,6 +41,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `56-levels.js` | 72 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (148); GOAL B: THE GATE TREES (607) |
 | `57a-interiors.js` | 30 **big** | 13c. INTERIORS (DATA): rooms people live and wor (1) |
 | `57c-interiors-draw.js` | 27 | 13c. INTERIORS (DRAWING): the rooms near the cam (1) |
+| `57r-roomlight.js` | 1 | ROOM LIGHT (core/interiors/20-core-roomlight-hos (1) |
 | `60-trees.js` | 40 **big** | 14. TREES (1) |
 | `62-jungle.js` | 45 **big** | 15. JUNGLE (1) |
 | `63-trails.js` | 3 | 16b. GROUND TRAILS (1) |

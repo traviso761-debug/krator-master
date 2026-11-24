@@ -100,6 +100,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '85-probe.js', '86-inspect.js', '69z-locus-flora.js', '84-life.js', '76-locus-anim.js', '69b-locus-biohost.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html', '66-locus-furnish.js', '67-lo-trades.js'}
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('66r-locus-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
 DETERMINISTIC |= {'25-core-mask.js', '26-core-mask-xform.js', '27-core-mask-distance.js'}   # core/mask (no rnd())
 DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js', '95-locus-doors.js'}   # core/door and its binding (no rnd())

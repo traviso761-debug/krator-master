@@ -29,6 +29,8 @@
    "metal": 0
   },
   "course": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "masonry.pycrete.course",
    "scale": [
     2,
@@ -42,6 +44,8 @@
    "roughLift": 0.1
   },
   "slab": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "stone.corbel.slab",
    "scale": [
     2,
@@ -210,6 +214,8 @@
    "metal": 0
   },
   "flag": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "paving.flagstone",
    "scale": [
     2,
