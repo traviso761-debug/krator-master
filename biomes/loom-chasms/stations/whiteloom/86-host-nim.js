@@ -68,7 +68,7 @@ const NIM=(function(){const S=STATION,W=99520;
   V['Across the playa to Lake Nim']=look(S.shoreX+900,200,1.8,S.shoreX-3000,0,0);
   if(big){V['A brine pool and its mats']=look(big.x+big.r*2.6,big.z+big.r*1.2,1.8,big.x,big.z,0);
    const s=SIFT[0];if(s)V['The halite sifters at the pool']=look(s.x+(s.x-big.x)*.9+8,s.z+(s.z-big.z)*.9,2,s.x,s.z,.8);}
-  V['The salt-cutters\' camp']=look(C.x+70,C.z+55,2,C.x,C.z,1);
+  V['The salt-cutters camp']=look(C.x+70,C.z+55,2,C.x,C.z,1);
   V['The scarp east']=look(0,0,2,30000,0,300);
   V['Mount Caelum far west']=look(400,600,2.5,-150000,-20000,4000);
   V['From afar']=look(2600,2600,380,-400,0,0);

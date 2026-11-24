@@ -92,11 +92,11 @@ const STEP=(function(){const S=STATION,P=S.PAD,W=99250;
   const V={};
   V['The waystation from the road']=look(gw[0]-60*Math.cos(ry),gw[1]+60*Math.sin(ry),1.8,gate[0],gate[1],4);
   V['Up the benches (their riser faces)']=look(1300,-250,2.5,-1200,-200,60);   /* from below, looking up the fall line: the risers face the camera */
-  if(hd)V['A box canyon\'s head']=look(hd.x-(hd.dir?Math.cos(hd.dir):1)*60,hd.z-(hd.dir?Math.sin(hd.dir):0)*60,2,mid[0],mid[1],0);
-  else V['A box canyon\'s head']=look(tr[0][0]-80,tr[0][1],2,mid[0],mid[1],0);
+  if(hd)V['A box canyon head']=look(hd.x-(hd.dir?Math.cos(hd.dir):1)*60,hd.z-(hd.dir?Math.sin(hd.dir):0)*60,2,mid[0],mid[1],0);
+  else V['A box canyon head']=look(tr[0][0]-80,tr[0][1],2,mid[0],mid[1],0);
   V['Along the road east']=look(-1300,230,2.2,900,-430,2);
   V['Over the chasms']=look(300,-260,3,40000,-6000,-900);   /* from the step's middle, high over the fall to the east */
-  V['The Cradle\'s fans from the step']=look(-1600,600,2.5,-40000,-26000,800);
+  V['The Cradle fans from the step']=look(-1600,600,2.5,-40000,-26000,800);
   V['From afar']=look(-2600,2600,480,300,-200,0);
   return V;}
  return{R,build,hazards,checks,negatives,views,occupied};})();

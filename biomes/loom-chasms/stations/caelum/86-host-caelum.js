@@ -59,7 +59,7 @@ const CAELUM=(function(){const S=STATION;
   V['The parent colony across the north-east rift']=[m.x+m.nx*(NE.lipOff+10),solidH(m.x+m.nx*(NE.lipOff+10),m.z+m.nz*(NE.lipOff+10))+1.7,m.z+m.nz*(NE.lipOff+10),m.x-m.nx*(NE.lipOff)+m.ux*90,NE.rimY(m)-25,m.z-m.nz*(NE.lipOff)+m.uz*90];
   if(sh&&sh.S){const top=KSPAN.low(sh.S).p,c=NE.at(sh.s);V['Pioneer shoots over the rift']=look(c.x+c.nx*(NE.lipOff+40)-c.ux*80,c.z+c.nz*(NE.lipOff+40)-c.uz*80,2,top[0],top[2],top[1]-solidH(top[0],top[2]));}
   V['The chasm net below (east)']=look(2200,-300,2.5,60000,-4000,-2400);
-  V['The Cradle\'s fans (west)']=look(-2200,200,2.5,-60000,-26000,-2000);
+  V['The Cradle fans (west)']=look(-2200,200,2.5,-60000,-26000,-2000);
   V['From afar']=look(2600,2600,500,0,0,-40);
   return V;}
  return{build,hazards,checks,negatives,views,NE,SW};})();
