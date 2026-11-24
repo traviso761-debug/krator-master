@@ -151,7 +151,7 @@ function klkDims() {
 
 return {
   proto: klkProto, dims: klkDims, DEFS: DEFS, MAT: MAT, KIT: KIT,
-  trades: KL_TRADES, tradeDefs: klTradeDefs, factions: KL_FACTIONS,
+  trades: KL_TRADES, tradeDefs: klTradeDefs, factions: KL_FACTIONS, lexicon: KL_LEXICON,
   errors: KLK_ERRS, ANIMU: ANIMU, FRAME_HOOKS: FRAME_HOOKS
 };
 '''

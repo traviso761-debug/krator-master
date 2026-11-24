@@ -7,10 +7,10 @@
 //   8125. kl_ikki_otona_hall       — Otona Elected Lay-Elder Assembly & Woodblock Tract Press
 //   8126. kl_ikki_infirmary_bath   — Parish Herbal Infirmary & Hot-Cistern Bathhouse
 
-/* 22. Moated Jinaimachi Great Hall of The Uncrowned Bell */
+/* 22. Moated Maalinn Great Hall of Ilma-Kuluuna Kell (The Uncrowned Bell) */
 defBuilding({
  key:'kl_ikki_covenant_citadel',
- name:'Moated Jinaimachi Great Hall of The Uncrowned Bell',
+ name:'Moated Maalinn Great Hall of Ilma-Kuluuna Kell',
  seed:8122,w:34,d:28,h:24.2,budget:138000,cut:true,
  front:{x:0,z:13.2,yaw:0},
  tags:{style:'ikki',wealth:'rich',types:['religious','civic','military'],role:'covenant-citadel',job:'worship'},
@@ -109,10 +109,10 @@ defBuilding({
  }
 });
 
-/* 23. Mujinzo Mutual-Aid Granary and Zero-Usury Parish Chest */
+/* 23. Talku-Ait Mutual-Aid Granary and Zero-Usury Parish Chest */
 defBuilding({
  key:'kl_ikki_mujinzo_vault',
- name:'Mujinzo Mutual-Aid Granary and Zero-Usury Parish Chest',
+ name:'Talku-Ait Mutual-Aid Granary and Zero-Usury Parish Chest',
  seed:8123,w:26,d:20,h:17.4,budget:108000,cut:true,
  front:{x:0,z:8.8,yaw:0},
  tags:{style:'ikki',wealth:'middle',types:['infrastructure','civic','farm'],role:'granary',job:'warehousing'},
@@ -246,10 +246,10 @@ defBuilding({
  }
 });
 
-/* 25. Otona Elected Lay-Elder Assembly and Woodblock Tract Press */
+/* 25. Vanemad Elected Lay-Elder Assembly and Regilaul Tract Press */
 defBuilding({
  key:'kl_ikki_otona_hall',
- name:'Otona Elected Lay-Elder Assembly and Woodblock Tract Press',
+ name:'Vanemad Elected Lay-Elder Assembly and Regilaul Tract Press',
  seed:8125,w:24,d:20,h:18.2,budget:106000,cut:true,
  front:{x:0,z:8.8,yaw:0},
  tags:{style:'ikki',wealth:'middle',types:['civic'],role:'assembly-hall',job:'scribing'},
@@ -310,10 +310,10 @@ defBuilding({
  }
 });
 
-/* 26. Parish Herbal Infirmary and Hot-Cistern Bathhouse */
+/* 26. Parish Pirtis Steam-Infirmary and Herbal Cistern */
 defBuilding({
  key:'kl_ikki_infirmary_bath',
- name:'Parish Herbal Infirmary and Hot-Cistern Bathhouse',
+ name:'Parish Pirtis Steam-Infirmary and Herbal Cistern',
  seed:8126,w:24,d:20,h:15.6,budget:100000,cut:true,
  front:{x:0,z:8.8,yaw:0},
  tags:{style:'ikki',wealth:'middle',types:['civic'],role:'infirmary',job:'healing'},

@@ -7,10 +7,10 @@
 //   8104. kl_karum_mill_bridge   — Two-Storey Covered Karum Market & Undershot Mill-Bridge
 //   8105. kl_karum_guild_thermae — Syndicate Steam-Bath & Tea-Brokerage Court
 
-/* 1. Grand Naruqqum Banking House, Kura Bullion Vault & Nickel-Hooped Strongtower */
+/* 1. Grand Suurgild Kaarum Banking House, Kivi-Ait Vault & Hooped Strongtower */
 defBuilding({
  key:'kl_karum_grand_bank',
- name:'Grand Naruqqum Banking House and Hooped Strongtower',
+ name:'Grand Suurgild Kaarum Banking House and Hooped Strongtower',
  seed:8101,w:30,d:24,h:21.5,budget:130000,cut:true,
  front:{x:2.4,z:10.6,yaw:0},
  tags:{style:'karum',wealth:'rich',types:['civic','market'],role:'bank',job:'trading'},
@@ -252,10 +252,10 @@ defBuilding({
  }
 });
 
-/* 4. Two-Storey Covered Karum Market and Undershot Mill-Bridge */
+/* 4. Two-Storey Covered Kaarum Market and Sampo Mill-Bridge */
 defBuilding({
  key:'kl_karum_mill_bridge',
- name:'Two-Storey Covered Karum Market and Undershot Mill-Bridge',
+ name:'Two-Storey Covered Kaarum Market and Sampo Mill-Bridge',
  seed:8104,w:28,d:22,h:17.4,budget:122000,cut:true,
  front:{x:-9.2,z:9.4,yaw:0},
  tags:{style:'karum',wealth:'middle',types:['market','infrastructure'],role:'mill-bridge',job:'milling'},
@@ -327,10 +327,10 @@ defBuilding({
  }
 });
 
-/* 5. Syndicate Steam-Bath and Tea-Brokerage Court */
+/* 5. Suurgild Saunakoda Steam-Bath and Raha Brokerage Court */
 defBuilding({
  key:'kl_karum_guild_thermae',
- name:'Syndicate Steam-Bath and Tea-Brokerage Court',
+ name:'Suurgild Saunakoda Steam-Bath and Raha Brokerage Court',
  seed:8105,w:24,d:20,h:15.8,budget:104000,cut:true,
  front:{x:0,z:8.8,yaw:0},
  tags:{style:'karum',wealth:'rich',types:['civic','tavern'],role:'thermae',job:'healing'},

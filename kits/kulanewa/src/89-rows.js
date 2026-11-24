@@ -2,7 +2,7 @@
 // Row names are preset view names (core/engine/90-scene.js autoViews): zero apostrophes, zero colons, zero slashes.
 const TITLE=KIT.title;
 const FAMILIES=[
- {name:'Karum Banking Halls Exchanges and Trade Works - Syndicate Ports',keys:[
+ {name:'Kaarum Suurgild Banking Halls Exchanges and Trade Works - Syndicate Ports',keys:[
   'kl_karum_grand_bank',
   'kl_karum_clearing_hall',
   'kl_karum_treaty_factor',
@@ -14,7 +14,7 @@ const FAMILIES=[
   'kl_karum_kura_granary',
   'kl_karum_glaze_pottery'
  ]},
- {name:'Karum Quays Fortifications and All Dwellings - Syndicate Ports',keys:[
+ {name:'Kaarum Quays Fortifications and All Dwellings - Syndicate Ports',keys:[
   'kl_karum_crane_quay',
   'kl_karum_caravanserai',
   'kl_karum_chain_boom',
@@ -27,7 +27,7 @@ const FAMILIES=[
   'kl_karum_trestle_cottage',
   'kl_karum_porter_tenement'
  ]},
- {name:'Ikki Covenant Citadels Hydro-Forges and Parish Halls - Jinaimachi Towns',keys:[
+ {name:'Ilma-Kuluuna Covenant Citadels Sampo Forges and Parish Halls - Talku-Kula Towns',keys:[
   'kl_ikki_covenant_citadel',
   'kl_ikki_mujinzo_vault',
   'kl_ikki_debtor_cloister',
@@ -39,7 +39,7 @@ const FAMILIES=[
   'kl_ikki_timber_sawmill',
   'kl_ikki_quarry_mason'
  ]},
- {name:'Ikki Militia Gates Logistics and All Dwellings - Jinaimachi Towns',keys:[
+ {name:'Maleva Militia Gates Logistics and All Dwellings - Talku-Kula Towns',keys:[
   'kl_ikki_covered_weir',
   'kl_ikki_pack_depot',
   'kl_ikki_drum_gate',

@@ -26,17 +26,24 @@ for (const rel of [
 
 const KIT = vm.runInContext('KIT', ctx);
 const KL_FACTIONS = vm.runInContext('KL_FACTIONS', ctx);
+const KL_LEXICON = vm.runInContext('KL_LEXICON', ctx);
 const SV_CLOTH = vm.runInContext('SV_CLOTH', ctx);
 const KL_TRADES = vm.runInContext('KL_TRADES', ctx);
 const klTradeDefs = vm.runInContext('klTradeDefs', ctx);
 const FAMILIES = vm.runInContext('FAMILIES', ctx);
 
-/* 1. Kit identity & faction metadata (26k-kit.js) */
-T.ok('kit identity is kulanewa with Karum Syndicate and Kula-Na Ikki faction metadata',
+/* 1. Kit identity, Finnic-Baltic + Rian loanword lexicon & faction metadata (26k-kit.js) */
+T.ok('kit identity is kulanewa with Finnic-Baltic substrate, bidirectional Rian loanwords, and Suurgild/Talku-Kula faction metadata',
   KIT.id === 'kulanewa' && KIT.culture === 'kulanewa' &&
   KIT.faction === 'The Kulanewa Free-Towns' &&
   KL_FACTIONS.karum.style === 'karum' &&
-  KL_FACTIONS.ikki.style === 'ikki');
+  KL_FACTIONS.ikki.style === 'ikki' &&
+  KL_LEXICON.language === 'Kulaneva-keel' &&
+  KL_LEXICON.substrate === 'Finnic-Estonian-Baltic' &&
+  !!(KL_LEXICON.rianLoans['ampala-kiri'] && KL_LEXICON.rianLoans.kuluuna && KL_LEXICON.rianLoans.piliika) &&
+  KL_LEXICON.reverseLoansToRia.raha.lowRia === 'laha' &&
+  KL_LEXICON.reverseLoansToRia.sampo.highRia === 'sakwo' &&
+  KL_LEXICON.reverseLoansToRia['valge-vask'].lowRia === 'walaga-wasa');
 
 T.ok('all cloth banner and silk material keys join SV_CLOTH',
   ['silk', 'brocade', 'flag'].every(k => SV_CLOTH[k] === 1));

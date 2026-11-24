@@ -1,29 +1,62 @@
-// ================================================================= THE KIT: identity, library families, faction metadata & palette ([G data])
-// The Kulanewa Free-Towns ("Two Crowns, One Ledger", ~125,000 souls across the Arcflow Pak-Ma & Tong-Ma river basin):
-//   - Karum Ledger-Syndicates (Downstream & Confluence Ports, style 'karum', 21 buildings, seeds 8101..8121):
-//     Old Assyrian Karum joint-stock merchant-bankers (naruqqum capital-sack shares) + Kathmandu Newar brick-and-cedar urban
-//     leagues + Sakai Egoshu fireproof kura-vault syndicates; issue 64-sign Amber-Envelope promissory tablets & bark-paper
-//     remittance drafts, run extraterritorial clearing-wards in both Ria capitals, and prevent Ria reunification via credit & embargoes.
-//   - Kula-Na Covenant-Communes (Upland & Foundry Jinaimachi Towns, style 'ikki', 21 buildings, seeds 8122..8142):
-//     Liberated during the Last Dynastic Fallback by smelter-hands, boatmen & commoners rallying to The Uncrowned Bell (Kula-Na);
-//     governed by elected Otona lay-elders from wet-moated temple-citadels, running zero-usury Mujinzo mutual-aid granaries,
-//     sheltering runaway debtors, working coal/iron/Arch-nickel hydro-forges, and fielding Arcflow's pike/pavise/crossbow militia.
+// ================================================================= THE KIT: identity, library families, Finnic-Baltic + Rian loanword lexicon & palette ([G data])
+// The Kulanewa Free-Towns ("Kaks Kuluunat, Uks Raamat" / "Two Crowns, One Ledger", ~125,000 souls across the Arcflow Pak-Ma & Tong-Ma basin):
+//   - Linguistic & cultural substrate: Finnic / Estonian / Baltic (Kulaneva-keel: Finnic kula "free-town/commune" + neva "broad river-reach",
+//     punning on Rian loanword kuluuna "crown") with extensive Rian loanwords (ampala-kiri, kaarum, kuluuna, sitoona, piliika, tooka)
+//     and reverse loans into Low-Ria & High-Ria (raha -> laha, valge-vask -> walaga-wasa, sampo -> sampo/sakwo, lotja -> loca/lotsa, maleva).
+//   - Kaarum-Linna Suurgild Syndicates (Downstream & Confluence Ports, style 'karum', 21 buildings, seeds 8101..8121):
+//     Joint-stock Suurgild merchant-banker syndicates (osakott venture-share sacks), kivi-ait lime bullion vaults, saunakoda steam-brokerage
+//     courts, 64-sign ampala-kiri tablets, raha bark-paper drafts, and Tooka-Hoov extraterritorial clearing-wards in both Ria capitals.
+//   - Talku-Kula Covenant-Communes (Upland & Foundry Towns of Ilma-Kuluuna Kell, style 'ikki', 21 buildings, seeds 8122..8142):
+//     Liberated during the Last Dynastic Fallback by smelter-hands, lotja boatmen & commoners rallying to Ilma-Kuluuna Kell (The Uncrowned Bell);
+//     governed by elected Vanemad parish lay-elders, running zero-usury Talku-Ait mutual-aid granary-vaults, pirtis steam-infirmaries,
+//     coal/iron/Arch-nickel sampo hydro-forges, and Maleva commoner pike/pavise/crossbow levies chanting antiphonal regilaul bell-hymns.
 const KIT={id:'kulanewa',title:'Kulanewa Free-Towns Architectural Kit',pack:'kulanewa',culture:'kulanewa',
  faction:'The Kulanewa Free-Towns',band:'Pak-Ma and Tong-Ma',frag:'kits/kulanewa',
  ground:0x8e8a7e,groundProc:0x868276,fog:0xd8dedf,furnDetail:.62};
 const KL={DOOR_H:2.3,WALL:.4,SOCLE:.5,RISER:.18,BAY:3.4};
 const KL_FACTIONS={
  karum:{
-  style:'karum',name:'Karum Ledger-Syndicates',zone:'Downstream and Confluence Ports (Pak-Ma and Tong-Ma)',
-  polity:'Joint-stock merchant-banker syndicates (naruqqum share-bags and Egoshu elders)',
-  emblem:'Octagonal Cast-Bronze Syndicate Bell and Asymmetric Steelyard Balance',
-  institutions:['naruqqum share-ledgers','64-sign Amber-Envelope tablets','extraterritorial Ria clearing-wards','nis alim credit-embargoes']
+  style:'karum',name:'Kaarum-Linna Suurgild Syndicates',zone:'Downstream and Confluence Ports (Pak-Ma and Tong-Ma)',
+  polity:'Joint-stock Suurgild merchant-banker brotherhoods (osakott venture-share sacks)',
+  emblem:'Octagonal Cast-Bronze Kellakoda Syndicate Bell and Asymmetric Steelyard Balance',
+  institutions:['osakott venture-share ledgers','64-sign ampala-kiri sealed tablets','Tooka-Hoov extraterritorial Ria clearing-wards','saunakoda steam-brokerage courts','raha credit-embargoes']
  },
  ikki:{
-  style:'ikki',name:'Kula-Na Covenant-Communes',zone:'Upland Hydro-Forge and Mill Jinaimachi Towns',
-  polity:'Elected Otona lay-elder covenant assemblies of The Uncrowned Bell (Kula-Na)',
-  emblem:'The Uncrowned Cast-Bronze Covenant Bell and Arch-Nickel Pavise Shield',
-  institutions:['zero-usury Mujinzo mutual-aid granaries','debtor sanctuary cloisters','hydro-trip-hammer nickel forges','parish pike-and-crossbow militias']
+  style:'ikki',name:'Ilma-Kuluuna Talku-Kula Communes',zone:'Upland Sampo Hydro-Forge and Maalinn Covenant Towns',
+  polity:'Elected Vanemad parish lay-elder assemblies of Ilma-Kuluuna Kell (The Uncrowned Bell)',
+  emblem:'The Uncrowned Cast-Bronze Kellakoda Bell and Valge-Vask Nickel Pavise Shield',
+  institutions:['zero-usury Talku-Ait mutual-aid granaries','debtor sanctuary cloisters','sampo hydro-trip-hammer valge-vask forges','pirtis parish steam-infirmaries','Maleva pike-and-crossbow levies']
+ }
+};
+const KL_LEXICON={
+ language:'Kulaneva-keel',
+ substrate:'Finnic-Estonian-Baltic',
+ etymology:'Finnic kula (free-town / commune) + neva (broad navigable river-reach), punning on Rian loan kuluuna (crown)',
+ rianLoans:{
+  'ampala-kiri':{from:'Low-Ria ampala',gloss:'notarized 64-sign amber-sealed promissory tablet (raw amber keeps Baltic-Finnic merevaik / gintar)'},
+  'kaarumi-linna':{from:'Rian karum',gloss:'chartered merchant-banking and clearing port'},
+  'kuluuna':{from:'Low-Ria kuluna',gloss:'royal crown (whence Ilma-Kuluuna Kell, The Uncrowned Bell)'},
+  'sitoona':{from:'Low-Ria sitona',gloss:'dressed ashlar vault stone'},
+  'piliika':{from:'Low-Ria bilika',gloss:'Rian cobalt or celadon glazed-tile dado frieze'},
+  'tooka-hoov':{from:'Rian toka / toga',gloss:'diplomatic treaty-charter and extraterritorial clearing courtyard'}
+ },
+ reverseLoansToRia:{
+  'raha':{lowRia:'laha',highRia:'laha',gloss:'clearing-scrip, bank-draft, promissory note'},
+  'valge-vask':{lowRia:'walaga-wasa',highRia:'walaga-wasa',gloss:'white-copper (Arch-nickel + Upper Ria zinc paktong coinage and stave-tower hoops)'},
+  'sampo':{lowRia:'sampo',highRia:'sakwo',gloss:'undershot waterwheel trip-hammer forge-mill (Cherokee mp -> kw in High-Ria)'},
+  'lotja':{lowRia:'loca',highRia:'lotsa',gloss:'flat-bottomed river cargo barge'},
+  'maleva':{lowRia:'malewa',highRia:'walewa',gloss:'commoner pike, pavise and crossbow levy host'},
+  'talku-ait':{lowRia:'talaka-ganali',highRia:'talaka-ganali',gloss:'communal zero-usury mutual-aid granary-vault'}
+ },
+ civicTerms:{
+  suurgild:'great shareholding merchant-banker syndicate',
+  osakott:'paid-in venture-capital share sack',
+  'kivi-ait':'battered chalk-white lime-plastered fireproof stone/brick vault',
+  kellakoda:'open octagonal cast-bronze roof bell-loggia',
+  saunakoda:'vaulted guild steam-sauna and contract court',
+  pirtis:'Baltic-Finnic parish steam-bath and herbal infirmary',
+  vanemad:'elected parish lay-elders of the Covenant-Towns',
+  regilaul:'alliterative antiphonal runo bell-chants'
  }
 };
 const SV_LIB={

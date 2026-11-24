@@ -8,10 +8,10 @@
 //   8141. kl_ikki_smelter_hut      — poor,   dwelling-single: Stone-&-Cedar Collier Cottage
 //   8142. kl_ikki_foundry_tenement — poor,   dwelling-multi:  2-Storey Mill-Hand Gallery Tenement
 
-/* 37. Otona Steward House and Parish Bell-Court (rich, dwelling-single) */
+/* 37. Vanema Steward House and Parish Bell-Court (rich, dwelling-single) */
 defBuilding({
  key:'kl_ikki_elder_manor',
- name:'Otona Steward House and Parish Bell-Court',
+ name:'Vanema Steward House and Parish Bell-Court',
  seed:8137,w:26,d:22,h:17.6,budget:112000,cut:true,
  front:{x:0,z:9.8,yaw:0},
  tags:{style:'ikki',wealth:'rich',types:['dwelling-single'],role:'manor'},
@@ -79,10 +79,10 @@ defBuilding({
  }
 });
 
-/* 38. Master-Smith and Preacher Multi-Household Jinaimachi Court (rich, dwelling-multi) */
+/* 38. Master-Smith and Regilaul Preacher Talku-Kula Court (rich, dwelling-multi) */
 defBuilding({
  key:'kl_ikki_brotherhood_hall',
- name:'Master-Smith and Preacher Multi-Household Jinaimachi Court',
+ name:'Master-Smith and Regilaul Preacher Talku-Kula Court',
  seed:8138,w:28,d:24,h:17.8,budget:118000,cut:true,
  front:{x:0,z:10.8,yaw:0},
  tags:{style:'ikki',wealth:'rich',types:['dwelling-multi'],role:'jinaimachi-court'},
