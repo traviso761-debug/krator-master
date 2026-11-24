@@ -70,6 +70,12 @@ before Phase B; 2026-11-24, 15789 s): 369 steps, 347 passed, **22 failed**. Agai
   `interiors-core.js`: the rebuild); `kits/shumari/tests/test-sm-kit.js` (it builds the kit, which stops on `kits/shumari/tex/*` LFS pointers in a skip-smudge
   tree: `lfs_needs.py kits/shumari --pull` in the rebuild tree).
 
+**After Phase B** (`test_all.py --no-build` in the stage8 tree at c07c2d7b1, 2026-11-24, 8624 s): 383 steps, **15 failed**. Gone since
+the red baseline: core modules, botany, views, test-hamlet, test_kit_pack, test-host-multikit, test-slab. Left, each as above:
+dependencies (kits/marr's page a pointer), godot vendored core, test_bridges, test-audio, test-class (B11's drift until the
+re-pack), east-rift and xan-economy (timing only: 262 s, 394 s), drum, torus, sw-arcology, interiors test-fixtures, shumari
+(pointers), test-outposts, nwbay test-geology, check_stale.
+
 Fixed on the line this session (do not redo): Tungang bundle replay (94ff6cf69), 16 ORNUM defaults (94ff6cf69, fccf87423).
 
 ## Known page and build facts
