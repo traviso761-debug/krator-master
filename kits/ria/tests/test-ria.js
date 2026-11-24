@@ -40,15 +40,15 @@ T.ok('kit identity is ria with Lower Ria and Upper Ria dynastic metadata',
 T.ok('all cloth banner and silk material keys join SV_CLOTH',
   ['silk', 'brocade', 'flag'].every(k => SV_CLOTH[k] === 1));
 
-/* 2. Sheet rows & 44 building keys (89-rows.js) */
+/* 2. Sheet rows & 76 building keys (89-rows.js) */
 const allKeys = FAMILIES.flatMap(f => f.keys);
 const uniqKeys = new Set(allKeys);
 const westKeys = allKeys.filter(k => k.startsWith('ra_west_'));
 const eastKeys = allKeys.filter(k => k.startsWith('ra_east_'));
 
-T.ok('four dynastic sheet rows hold 44 unique buildings (22 lower-ria + 22 upper-ria)',
-  FAMILIES.length === 4 && allKeys.length === 44 && uniqKeys.size === 44 &&
-  westKeys.length === 22 && eastKeys.length === 22);
+T.ok('six dynastic sheet rows hold 76 unique buildings (38 lower-ria + 38 upper-ria)',
+  FAMILIES.length === 6 && allKeys.length === 76 && uniqKeys.size === 76 &&
+  westKeys.length === 38 && eastKeys.length === 38);
 
 const viewSafe = name => typeof name === 'string' && name.length > 0 && !/[':\\/*?"<>|]/.test(name);
 T.neg('row names reject apostrophes, colons and slashes for check_views',
@@ -161,15 +161,23 @@ for (const coreRel of [
 vm.runInContext(pyBundle, bCtx, { filename: 'rik_bundle.js' });
 const RIK = bCtx.RIK;
 const dims = RIK.dims();
-const pWest = RIK.proto('ra_west_chakri_chancellery', 0);
-const pEast = RIK.proto('ra_east_thepbidorn_pantheon', 0);
+const pWest = RIK.proto('ra_west_strategion_keep', 0);
+const pEast = RIK.proto('ra_east_acropolis_keep', 0);
 const allProtosOk = allKeys.every(k => {
   const g = RIK.proto(k, 0);
   return !!(g && g.userData.tris > 500);
 });
+const fullMatrixOk = ['lower-ria', 'upper-ria'].every(st => {
+  const ds = Object.values(dims).filter(d => d.style === st);
+  const dwellOk = ['poor', 'middle', 'rich'].every(w =>
+    ['dwelling-single', 'dwelling-multi'].every(t => ds.some(d => d.wealth === w && (d.types || []).includes(t))));
+  const milN = ds.filter(d => (d.types || []).includes('military')).length;
+  const infN = ds.filter(d => (d.types || []).includes('infrastructure')).length;
+  return dwellOk && milN >= 6 && infN >= 6;
+});
 
-T.ok('RIK settlement bundle exports all 44 dims and builds all 44 Lower & Upper Ria THREE.Group prototypes with zero errors',
-  Object.keys(dims).length === 44 && allProtosOk && RIK.errors.length === 0 &&
+T.ok('RIK settlement bundle exports all 76 dims, full dwelling/military/logistics matrix, and builds all 76 prototypes with zero errors',
+  Object.keys(dims).length === 76 && allProtosOk && fullMatrixOk && RIK.errors.length === 0 &&
   !!(pWest && pWest.userData.tris > 1500 && pWest.userData.doors >= 3) &&
   !!(pEast && pEast.userData.tris > 1500 && pEast.userData.doors >= 3));
 

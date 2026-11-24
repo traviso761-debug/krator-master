@@ -4,12 +4,12 @@ settlements/isle-demo/bundles.py seals ISK and kits/xanadu/kit_bundle.py seals X
 REG, TAU, clamp, terrainH, ...) meet neither the page's nor another kit's:
 
     bundle(key='RIK') -> (js, files)   var RIK = (function(){ ... })(): core/engine's geometry & building registry,
-                                       Stage 5 KMAT_M1, the Ria vertical-stack shader hooks, helpers, crowns, all 44
+                                       Stage 5 KMAT_M1, the Ria vertical-stack shader hooks, helpers, crowns, all 76
                                        Lower Ria & Upper Ria defBuildings, and RA_TRADES.
 
     RIK.proto(key, v)   the def built once at the origin (y=0, front +z) into a new THREE.Group, its material buckets
                         flushed, userData = {key, v, tris, w, d, h, style, doors, fixtures}; null for an unknown key
-    RIK.dims()          {key: {cls, name, w, d, h, fw, fd, style, wealth, types, role, job, cut, variants}} for all 44 defs
+    RIK.dims()          {key: {cls, name, w, d, h, fw, fd, style, wealth, types, role, job, cut, variants}} for all 76 defs
     RIK.trades          RA_TRADES (all 44 Voth census trades mapped to lowerRia and upperRia)
     RIK.tradeDefs(st)   raTradeDefs(style) -> {trade: [keys...]}
     RIK.dynasties       RA_DYNASTIES
