@@ -180,7 +180,7 @@ sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures
 import matlib_pack as _mp
 SIDE={}
 INLINE='--inline-packs' in sys.argv
-def matlib_pack(pname='throne',tex_dir=None):
+def matlib_pack(pname='throne',tex_dir=None,keep=None):
     """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the committed
     tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same).
     pname/tex_dir: another kit's pack (a station's 'packs'), the same way. Unless --inline-packs, the maps go into SIDE
@@ -191,6 +191,7 @@ def matlib_pack(pname='throne',tex_dir=None):
     if not os.path.isfile(pj): return "/* no tex/pack.json: the kit runs on its procedural textures */\nKMAT.pack('%s', {});\n"%pname
     pack=json.load(open(pj,encoding='utf-8'));out=[]
     for fam in sorted(pack['families']):
+        if keep is not None and fam not in keep: continue   # a station's pack cut to the maps it draws ('packs': {name: {dir, keep}})
         e=pack['families'][fam]
         f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
            'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
@@ -209,7 +210,9 @@ VIRTUAL={'44-host-matlib-pack.js':matlib_pack()}
 # a station's other kits' packs (station.json 'packs': {pack name: that kit's folder, from this one}), inlined the same way
 if STATION:
     for _pn,_pd in STN.get('packs',{}).items():
-        VIRTUAL['44b-host-matlib-pack-%s.js'%_pn]=matlib_pack(_pn,os.path.join(os.path.normpath(os.path.join(HERE,_pd)),'tex'))
+        _pk=None
+        if isinstance(_pd,dict): _pk=set(_pd.get('keep',[])) if 'keep' in _pd else None; _pd=_pd['dir']   # {dir, keep}: only those families (2026-11-24: the isle's ringisles pandanus)
+        VIRTUAL['44b-host-matlib-pack-%s.js'%_pn]=matlib_pack(_pn,os.path.join(os.path.normpath(os.path.join(HERE,_pd)),'tex'),_pk)
 # THE PAGE'S REGION (2026-11-23): the scale model's heights round the station's site (tools/sites51.py --bake: stations/<name>/region.json, station 1's
 # region.json beside this file), inlined as REGION_DATA and read by the Godthrone's REGION (its src/45a5, read in place) for the far country (85)
 _rj=os.path.join(STN_DIR if STATION else HERE,'region.json')

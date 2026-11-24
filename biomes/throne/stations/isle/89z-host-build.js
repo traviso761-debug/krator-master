@@ -11,6 +11,8 @@ window._biome=null;
  try{window._biome=THRONE.build({R:TERR.R-150,quality:q,shallows:true,understory:true});}catch(e){reportErr('throne: '+e.stack);}
  _mark('throne');
  try{ISLE.tap();}catch(e){reportErr('tapping: '+e.stack);}
+ try{plantPandan();}catch(e){reportErr('pandanus: '+e.stack);}   /* the Ring Sea isles' strand pandanus on the beaches (88p) */
+ _mark('pandan');
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
  _mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
