@@ -55,6 +55,24 @@ const FE_HAZ=[
  {id:'eye.vent.gas',kind:'gas',shape:{type:'circle',x:FE_VENT.x,z:FE_VENT.z,r:FE.L.crater.r*.6},cycle:{period:900,base:.3},note:'fumes between the bursts: the veil of dread is for this'},
  {id:'eye.floor.heat',kind:'heat',shape:{type:'circle',x:FE_VENT.x,z:FE_VENT.z,r:FE.L.crater.r*.45}},
  {id:'eye.rim.bombs',kind:'heat',shape:{type:'ring',x:FE_VENT.x,z:FE_VENT.z,r0:FE.L.crater.r-40,r1:FE.L.crater.r+20},danger:.3,note:'a bomb now and then reaches the rim: the professed only'}];
+/* and on core/hazard (KHAZ, its clock KTRAPS: kit.json): each registered in core/tags (KTAGS.page) as a feature carrying
+   tags.hazard, so KHAZ.at / KTAGS.hazardAt answer what hurts a walker here and now. The lava, the gas and the bombs run on the
+   vent's own bursts (KHAZ.STATES['FE_WATCH.vent']: on while a burst throws, k its amplitude, never below the record's base); the
+   crater floor's heat is steady. Shapes are cylinders from the vent's level (core/hazard has no ring: the bombs' reach is the
+   whole crater out past the rim) */
+const FE_HAZREC=(function(){if(typeof KHAZ==='undefined'||typeof KTAGS==='undefined')return null;
+ KHAZ.STATES['FE_WATCH.vent']=(rec,h,t)=>{const v=FE_WATCH.vent(t),b=(h.cycle&&h.cycle.base)||0;return{state:v.on?'on':'idle',k:Math.max(b,v.on?v.amp:0),on:v.on};};
+ const T=KTAGS.page||(KTAGS.page=KTAGS.create({build:'xanadu'})),out=[];
+ for(const H of FE_HAZ){const S=H.shape,r=S.r!=null?S.r:S.r1,burst=H.kind!=='heat'||H.id==='eye.rim.bombs';
+  const hz={kind:H.kind,shape:{type:'cyl',r,h:H.kind==='gas'?140:80,y0:-30},stateFn:burst?'FE_WATCH.vent':null,
+   cycle:burst?{period:900,warn:0,ramp:2,on:30,after:0,afterK:.3,offset:0,base:H.cycle?H.cycle.base:0}:null};
+  if(H.danger!=null)hz.danger=H.danger;KHAZ.make(hz);   /* checked now, not at a walker's first question */
+  out.push(T.add({prefix:'hz','class':'feature',kind:'hazard',name:H.note||H.id,at:[S.x,FE_VENT.y,S.z],tags:{hazard:hz},frag:'90fh-vent.js'}));}
+ return out;})();
+/* the fog in the plume: the page's fog (90fe: FogExp2 .000035) thickened by the plume record's density where the camera stands
+   (ATMOS.ashPlume's fog: 1 in a column's core, about 250 m of sight there) and greyed toward the ash; the frame hook sets it */
+const FE_FOG0=.000035,FE_ASHC=new THREE.Color(0x8a8580);
+const feFogAt=(x,y,z)=>{const d=FE_PLUME&&FE_PLUME.fog?Math.min(1.5,FE_PLUME.fog(x,y,z)):0;return{density:FE_FOG0+.004*d,grey:Math.min(.85,d)};};
 // ---------------------------------------------------------------- the house's fires by night
 const feEmberL=new THREE.PointLight(0xff7a30,0,40,2),feFireL=new THREE.PointLight(0xff8a3a,0,60,2);scene.add(feEmberL);scene.add(feFireL);
 {const e=FE_LAMPS.find(l=>l[3]==='ember'),f=FE_LAMPS.find(l=>l[3]==='fire');if(e)feEmberL.position.set(e[0],e[1],e[2]);if(f)feFireL.position.set(f[0],f[1]+1,f[2]);}
@@ -81,6 +99,7 @@ FRAME_HOOKS.push(()=>{const t=feNow(),v=FE_WATCH.vent(t),night=1-(FE_SKY.dayF==n
  const open=st.mode==='basket'?(st.shutter?1:.08):st.mode==='watch'&&night>.5?.08:0;MAT.feFire.emissiveIntensity=.15+3*night*open;feFireL.intensity=night*2.2*open;
  /* the glint is the sun thrown along the line: a viewer in the beam toward the station the mirror sends to (st.bearing; +x east,
     +z south) sees the full flash, within a few degrees of it; anyone else only the mirror's face catching the light */
+ {const F=feFogAt(camera.position.x,camera.position.y,camera.position.z);scene.fog.density=F.density;if(F.grey>.001)scene.fog.color.lerp(FE_ASHC,F.grey);}
  const glint=(st.mode==='mirror'||st.mode==='opening')&&st.shutter;
  for(const g of FE_GLINTS){g.visible=glint;if(!glint)continue;const beam=feBeam(g.position.x,g.position.z,camera.position.x,camera.position.z,st.bearing);
   g.material.opacity=(.14+.86*beam)*(.85+.15*Math.sin(t*9));const sc=2.2+6.8*beam;g.scale.set(sc,sc,1);g.userData.beam=+beam.toFixed(3);}

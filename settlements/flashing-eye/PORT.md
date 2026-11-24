@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 94 (49%) | 0 (0%) | 0 (0%) | 56 (29%) | 43 (22%) |
+| KB | 94 (48%) | 0 (0%) | 0 (0%) | 58 (30%) | 43 (22%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -21,9 +21,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89qf-fe-buildings.js` | 15.7 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/cone/89z-rows.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/cone/89zfe-site.js` | 15.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/cone/90fe-world.js` | 12.3 | [web] | 12 | 3 | 0 | 0 | 2 | 5 | 6 | 0 | 0 | 0 | 0 |  |
+| `targets/cone/90fe-world.js` | 12.5 | [web] | 12 | 3 | 0 | 0 | 2 | 5 | 6 | 0 | 0 | 0 | 0 |  |
 | `targets/cone/90fg-build.js` | 5.4 | [web] | 5 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/cone/90fh-vent.js` | 11.1 | [web] | 11 | 3 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/cone/90fh-vent.js` | 13.2 | [web] | 12 | 3 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/cone/90fi-bridges.js` | 12.9 | [draw] | 23 | 0 | 0 | 0 | 0 | 11 | 0 | 4 | 0 | 0 | 0 |  |
 | `targets/cone/90fj-face.js` | 3.4 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/cone/90fk-fe-interiors.js` | 24.0 | [web] | 3 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |

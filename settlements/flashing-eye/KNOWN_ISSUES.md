@@ -8,11 +8,14 @@
 - **The bench is cut as well as filled**, in three terraces. The region cut at 1:1 rises behind the Lip faster than the 2 km
   grid, so behind the north, west and east walls the cap is cut back in a bank. *Fixed 2026-11-23*: the banks are terraced with
   dry-stone walls along their contours every 1.5 m (`90fg-build.js`, about 150 pieces), open at the Gate of Breath and the Mule
-  Gate; the ground itself is still a smooth slope under them.
+  Gate; the ground itself is still a smooth slope under them. Stepping it (flats and 1.5 m risers at the walls) is a change to
+  `terrainH` the near ground mesh cannot show: its cells are 4 m, so a riser shorter than a cell smears back into a slope. It
+  waits on a finer mesh over the banks (or the banks as their own patch).
 - **The face.** The band is a heightfield wearing the colonnade's texture. *Fixed 2026-11-23*: the columns themselves stand in
   relief on it (`90fj-face.js`: about 280 hexagonal columns in jointed drums along the face's lean and the Lip's curve, some snapped
-  below the top; 69k triangles). Still no overhangs: a `core/terrain` carve patch would give them. The spur's flanks that face east
-  or west take the columnar map stretched along the slope (the ground shader projects it on x or z, not triplanar).
+  below the top; 69k triangles). Still no overhangs: a `core/terrain` carve patch would give them (`CORE_TERRAIN`, 36-core-carve:
+  opt-in, with its own test; not started). *Fixed 2026-11-23*: the spur's flanks no longer take the columnar map stretched: the
+  ground shader blends its x and z projections by the face's normal (triplanar on the sides).
 - **The far field.** The far ground is the region cut only (52 x 44 km): the Beacon, Erehwon and the Tears' camp are beyond
   it, so the sights past 2 km are `tools/sights.py`'s on the scale model, not the page's.
 
@@ -94,9 +97,10 @@
   not a core/atmos module; `_api.signal(k)` sets the clock into the k-th station's slot. *Fixed 2026-11-23*: the flash is aimed:
   the sun is thrown along the line to the station the mirror sends to (`FE_WATCH.state`'s bearing), so a viewer within a few
   degrees of that line sees the full flash (`feBeam`: a half at 5 degrees) and anyone else only the mirror's face catching the
-  light (`verify.py`'s `glints` checks it on the line, 20 degrees off and behind). Still: the beam is horizontal (no tilt down to a
-  lower station), the sun's own place is not used (the second mirror turns it when it stands behind), and it is the page's
-  sprite, not a core/atmos effect (the plan's question about one still stands).
+  light (`verify.py`'s `glints` checks it on the line, 20 degrees off and behind). The beam is horizontal: the stations lie
+  60 to 210 km off and a few hundred metres lower, under half a degree down, inside the beam's spread, so no tilt is drawn. The
+  sun's own place is not used (the second mirror turns it when it stands behind), and it is the page's sprite, not a core/atmos
+  effect: the plan's question about one is the owner's.
 
 ## The vent
 
@@ -104,6 +108,12 @@
   widened for this page); *fixed 2026-11-23* for the ground: the ash plume record's fall (`ATMOS.ashPlume`'s `under`) is baked
   into the three near ground meshes and the ground's shader lays the ash set by it (`verify.py`'s `ash-fall`: downwind, none on
   the bench). Its deposit peaks about 6 km downwind, past the near ground, so only its edge falls on the cone (shown six times
-  over); the far ground (400 m cells) and the fog do not read it yet.
-- The hazards are records only (`FE_HAZ`): the page does not take core/hazard's host.
+  over); the far ground (400 m cells) does not read it. *Fixed 2026-11-23* for the fog: the page's fog thickens by the plume
+  record's density where the camera stands (about 250 m of sight in a column's core) and greys toward the ash (`feFogAt`;
+  `verify.py`'s `plume-fog`).
+- *Fixed 2026-11-23*: **the hazards are on core/hazard** (`20-core-hazard.js` and its clock `37-core-traps.js` through
+  kit.json): the vent's lava, its gas, the bombs' reach and the floor's heat are core/tags records carrying `tags.hazard`, so
+  `KHAZ.at` and `KTAGS.hazardAt` answer what hurts a walker here and now; the lava, the gas and the bombs run on the vent's own
+  bursts (`KHAZ.STATES['FE_WATCH.vent']`), the heat is steady (`verify.py`'s `hazards`). core/hazard has no ring shape, so the
+  bombs' record is the whole crater out past the rim; the page draws no overlay for them (the Xanadu host has no hazard layer).
 - The bombs are CPU points (90 a burst); a burst's glow lights the bowl through one point light.

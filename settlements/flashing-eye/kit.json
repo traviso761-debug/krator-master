@@ -45,6 +45,18 @@
     [
      "10-core-drawn.js"
     ]
+   ],
+   [
+    "core/biome",
+    [
+     "37-core-traps.js"
+    ]
+   ],
+   [
+    "core/hazard",
+    [
+     "20-core-hazard.js"
+    ]
    ]
   ]
  },
@@ -53,6 +65,8 @@
  "deterministic": [
   "20-core-walk.js",
   "20-core-sched.js",
+  "20-core-hazard.js",
+  "37-core-traps.js",
   "30-fe-layout.js",
   "31-fe-rules.js",
   "32-fe-rooms.js",

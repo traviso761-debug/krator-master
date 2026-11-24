@@ -58,7 +58,8 @@ function feGroundMat(masked,key){
     /* the talus under the band's face (between the face's foot and the talus's toe, by the Lip's curve): cinder */
     'float dl=w.y+'+FE.L.band.lipK.toFixed(6)+'*w.x*w.x;float ta=smoothstep(10.0,30.0,dl)*smoothstep(150.0,105.0,dl)*smoothstep('+FE.L.band.halfLen.toFixed(1)+',' +(FE.L.band.halfLen-FE.L.band.taper).toFixed(1)+',abs(w.x))*smoothstep(0.99,0.9,n.y);c=mix(c,feT(tCin,w*kB.z),ta*0.85);',
     /* the faces: the colonnade, projected on the face (east-west and up) */
-    'float st=smoothstep(0.62,0.42,n.y);vec2 fp=abs(n.x)>abs(n.z)?vec2(w.y,y):vec2(w.x,y);c=mix(c,feT(tCol,fp*kB.w),st);',
+    /* the two side projections blended by the face's normal (triplanar on x and z), so a flank facing between them is not stretched */
+    'float st=smoothstep(0.62,0.42,n.y);vec2 bw=pow(abs(n.xz),vec2(4.0));bw/=max(1e-4,bw.x+bw.y);c=mix(c,feT(tCol,vec2(w.y,y)*kB.w)*bw.x+feT(tCol,vec2(w.x,y)*kB.w)*bw.y,st);',
     masked?'vec2 mu=(w-uBox.xy)/uBox.zw;if(mu.x>0.0&&mu.x<1.0&&mu.y>0.0&&mu.y<1.0){vec4 m=feM(vec2(mu.x,1.0-mu.y));c=mix(c,feT(tDirt,w*kA.y),m.b*(1.0-st));c=mix(c,feT(tCobble,w*kA.z),m.r*(1.0-st));c=mix(c,feT(tFlag,w*kA.w),m.g*(1.0-st));}':'',
     'diffuseColor.rgb*=c;'].join('\n'));};
  mat.customProgramCacheKey=()=>'flashing-eye-ground-'+key;return mat;}

@@ -16,6 +16,8 @@ checks of tools/checks_optin.json), with the page's own:
   no-trees       the flora's mask is empty on the band's face, on the rim within 120 m of the crater and in the crater
   glints         the day line's flash at the two lanterns, aimed: full on the line to the station it sends to, none 20 degrees off
   ash-fall       the plume record's ash fall laid on the ground downwind of the vent, none on the bench
+  hazards        the vent's hazards on core/hazard (in core/tags): the lava on in a burst and at its base between, none on the bench
+  plume-fog      the fog thickens in the plume's column and stays the haze on the bench
   fires          the house's two lights (the Ember's window, the fire basket) hung; no oil lamp anywhere
   interiors-furnished  every building of src/32-fe-rooms.js (the Lip Range's four houses, the Hall of the Ember, the Ember
                  Tower's shaft, the Eye Post) planned with every storey of its sheet and furnished; the Lip Range's doors on L0;
@@ -60,6 +62,12 @@ PAGE_JS = r"""
  for(let a=0;a<12;a++){const x=FE_CR[0]+Math.sin(a*.52)*(C.r+60),z=FE_CR[1]+Math.cos(a*.52)*(C.r+60);if(feBioMask(x,z)>0)bad.push('rim '+a);if(feBioMask(FE_CR[0]+Math.sin(a*.52)*C.r*.5,FE_CR[1]+Math.cos(a*.52)*C.r*.5)>0)bad.push('crater '+a);}
  {const AF=(window._feVent||{}).ashfall,b=FE_PLUME?FE_PLUME.under(0,-60):1,dw=FE_PLUME?FE_PLUME.under(FE_VENT.x+Math.sin(1.2)*1500,FE_VENT.z-Math.cos(1.2)*1500):0;
   R.push({name:'ash-fall',ok:!!AF&&AF.vertices>0&&b<.05&&dw>.05,detail:AF?'the plume\'s ash fall laid on '+AF.vertices+' ground vertices (peak '+AF.peak+'); 1.5 km downwind '+dw.toFixed(2)+', on the bench '+b.toFixed(3):'NO ash fall on the ground'});}
+ {const V=FE_VENT,b=FE_WATCH.bursts(FE_CLOCK.t0,FE_CLOCK.t0+3*3600)[0],at=(x,z,y,t)=>typeof KHAZ!=='undefined'?(KHAZ.at(x,z,t,y)||[]):[];
+  const on=at(V.x,V.z,V.y+2,b+1.5),idle=at(V.x,V.z,V.y+2,b+300),bench=at(0,-60,0,b+1.5),lava=L=>L.find(h=>h.kind==='lava');
+  const ok=!!lava(on)&&lava(on).state.on&&!!lava(idle)&&!lava(idle).state.on&&bench.length===0&&KHAZ.list().length>=4;
+  R.push({name:'hazards',ok,detail:(typeof KHAZ==='undefined'?'NO core/hazard on the page; ':'')+KHAZ.list().length+' hazard records in core/tags; at the vent in a burst '+on.map(h=>h.kind+' '+h.state.state).join(', ')+'; between bursts '+idle.map(h=>h.kind+' '+h.state.state).join(', ')+'; on the bench '+(bench.length?bench.map(h=>h.kind).join(', '):'none')});
+  const fv=feFogAt(V.x,V.y+300,V.z),fb=feFogAt(0,2,-60);
+  R.push({name:'plume-fog',ok:fv.density>fb.density*20&&fb.density<=.00004,detail:'the fog 300 m up the plume\'s column '+fv.density.toFixed(5)+' (grey '+fv.grey.toFixed(2)+'), on the bench '+fb.density.toFixed(6)});}
  R.push({name:'no-trees',ok:bad.length===0,detail:bad.length?bad.slice(0,6).join('; '):'the mask is empty on the face (33 points), the rim and the crater (24)'});
  const SB=typeof FE_BRIDGES!=='undefined'?FE_BRIDGES:[],ST=typeof FE_STACKS!=='undefined'?FE_STACKS:[],low=[];
  SB.forEach(B=>B.pts.forEach((p,k)=>{if(k>2&&k<B.pts.length-3&&p[1]-terrainH(p[0],p[2])<3)low.push(B.from+':'+k);}));
