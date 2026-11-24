@@ -78,4 +78,37 @@
   A.rainCoverPatch=patch;
   A.rec('raincover',{size,box,step,every,lift,depth,margin:P.margin,note:'sheltered = the top-down depth map\'s height over the point minus the point\'s height past margin (m); re-rendered when the eye moves step m'});
   A.raincover=R;return R;};
+ // SPLASHES (W5, WEATHER-RESEARCH.md item 9): one instanced set of small crowns round the camera, each living `life` s and
+ // reborn elsewhere in the box (its place a hash of its slot and its cycle: stateless, no CPU loop over them), as many as
+ // the rain is heavy (W.rain through A.U.rain). They land on the ground (a small height grid of the host's ground round the
+ // camera, redrawn every `step` m) or, where the rain occlusion map says there is cover over it, on the cover's top (a
+ // roof, a crown, a ledge), so none splash on the floor under a roof. 1 draw. ATMOS.rainSplashes(o {n}) -> the mesh
+ A.PRESETS.splash=A.PRESETS.splash||{n:2400,box:40,life:.42,size:[.10,.26],grid:24,step:3,alpha:.5,color:[.84,.88,.92],fade:[14,26]};
+ A.rainSplashes=function(o){o=o||{};if(A.splashMesh)return A.splashMesh;const T=A.T,P=A.PRESETS.splash,F=A.glf,N=o.n||P.n,G=P.grid,GB=P.box*1.25;
+  const gd=new Float32Array(G*G*4),gt=new T.DataTexture(gd,G,G,T.RGBAFormat,T.FloatType);gt.minFilter=gt.magFilter=T.LinearFilter;gt.wrapS=gt.wrapT=T.ClampToEdgeWrapping;gt.generateMipmaps=false;
+  const gBox={value:new T.Vector4(0,0,GB,0)};let gx=null,gz=null;
+  A.hook(()=>{if(A.U.rain.value<.01&&gx!=null)return;const c=A.h.camera.position;if(gx!=null&&Math.abs(c.x-gx)<P.step&&Math.abs(c.z-gz)<P.step)return;
+   gx=Math.round(c.x/P.step)*P.step;gz=Math.round(c.z/P.step)*P.step;
+   for(let j=0;j<G;j++)for(let i=0;i<G;i++){const x=gx+((i+.5)/G-.5)*GB,z=gz+((j+.5)/G-.5)*GB;gd[(j*G+i)*4]=A.h.ground?A.h.ground(x,z):0;}
+   gt.needsUpdate=true;gBox.value.set(gx,gz,GB,1);});
+  const pos=[],pp=[];for(let i=0;i<N;i++){pos.push(0,0,0);pp.push(A.rnd(),(i+.5)/N,A.rnd(),A.rr(P.size[0],P.size[1]));}
+  const occ=!!(A.rainCoverGLSL&&A.U&&A.U.rainOcc);   /* the occlusion map on: list and call ATMOS.rainCover first */
+  const u={time:A.U.time,px:A.U.px,light:A.U.light,rain:A.U.rain,gTex:{value:gt},gBox};if(occ)A.rainCoverUniforms(u);
+  const m=new T.ShaderMaterial({uniforms:u,transparent:true,depthWrite:false,fog:false,
+   vertexShader:(occ?A.rainCoverGLSL()+'\n':'')+`uniform float time;uniform float rain;uniform sampler2D gTex;uniform vec4 gBox;attribute vec4 pp;varying float vA;varying float vPh;
+    ${A.GLSL_QUAD}
+    uint atmSpH(uint x){x^=x>>16u;x*=2146121005u;x^=x>>15u;x*=2221713035u;x^=x>>16u;return x;}
+    void main(){float cyc=time/${F(P.life)}+pp.x,ph=fract(cyc);uint h=atmSpH(uint(int(floor(cyc))+1048576)*747796405u+uint(pp.y*65536.0)*2891336453u);
+     vec2 xz=gBox.xy+(vec2(float(h&65535u),float(h>>16u))/65535.0-0.5)*gBox.z*0.8;
+     float y=texture(gTex,(xz-gBox.xy)/gBox.z+0.5).r;${occ?'if(atmRainOccBox.w>0.5){float oy=atmRainOccY(xz);if(oy>y+0.3&&oy<y+60.0)y=oy;}':''}
+     vec4 mv=modelViewMatrix*vec4(xz.x,y+pp.w*0.35,xz.y,1.0);float dd=max(-mv.z,0.3);vPh=ph;
+     vA=step(fract(pp.z*7.31),rain)*gBox.w*(1.0-smoothstep(${F(P.fade[0])},${F(P.fade[1])},dd))*(1.0-ph);
+     gl_Position=atmQuad(mv,clamp(pp.w*(0.5+0.9*ph)*px/dd,1.0,40.0));}`,
+   fragmentShader:`uniform float light;varying float vA;varying float vPh;varying vec2 vUv;
+    void main(){if(vA<0.004)discard;vec2 q=(vUv-vec2(0.5,0.3))*vec2(2.0,5.0);float r=length(q);float ring=smoothstep(0.45,0.8,r)*smoothstep(1.05,0.85,r)*step(vUv.y,0.42);
+     vec2 d1=vUv-vec2(0.36,0.32+0.4*vPh),d2=vUv-vec2(0.64,0.34+0.36*vPh);float drop=smoothstep(0.07,0.03,length(d1))+smoothstep(0.06,0.025,length(d2));
+     float a=max(ring,drop*(1.0-vPh));if(a<0.02)discard;gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.3+0.7*light),a*vA*${F(P.alpha)});}`});
+  A.splashMesh=A.sprites('splashes',{ipos:[3,pos],pp:[4,pp]},m,5);A.stats.splashes=N;
+  A.rec('splashes',{preset:'splash',n:N,note:'a crown per slot, reborn each life s at a hash of (slot, cycle) in the box round the camera, on the ground grid or the rain cover\'s top; shown as W.rain'});
+  return A.splashMesh;};
 })();

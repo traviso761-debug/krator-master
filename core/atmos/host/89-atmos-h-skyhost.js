@@ -33,6 +33,8 @@
   if(!A.skyNoiseTex){const n=64,t=new T.DataTexture3D(A.skyNoiseVolume(n),n,n,n);t.format=T.RGBAFormat;t.type=T.UnsignedByteType;
    t.wrapS=t.wrapT=t.wrapR=T.RepeatWrapping;t.minFilter=t.magFilter=T.LinearFilter;t.generateMipmaps=false;t.unpackAlignment=1;t.needsUpdate=true;A.skyNoiseTex=t;}
   U.uNoise={value:A.skyNoiseTex};
+  // the weather cells' coverage map (wx/89-atmos-wx-cells.js, on a page that lists it): shared objects, set by the cells' host
+  if(A.wxOn){A.U.wxMap=A.U.wxMap||{value:null};A.U.wxBox=A.U.wxBox||{value:new T.Vector4()};A.U.wxMean=A.U.wxMean||{value:new T.Vector4()};U.uWxMap=A.U.wxMap;U.uWxBox=A.U.wxBox;U.uWxMean=A.U.wxMean;}
   // the clouds' mood (sky/89-atmos-g-sky.js): a preset that asks for it (clouds.dark / tint / turbulence / glow, or clouds.mood) gets
   // the chunk with its lines, written here before the material compiles; every other page's chunk is the text it was
   if(A.skyMoodWanted(P)&&!A.skyMoodOn){A.skyMoodOn=true;T.ShaderChunk.atmos_sky=A.skyGLSL();}
@@ -43,7 +45,7 @@
   const mesh=new T.Mesh(new T.SphereGeometry(100,48,24),mat);mesh.frustumCulled=false;mesh.userData.probeSkip=true;mesh.name='atmos:sky';
   const sscene=new T.Scene();sscene.add(mesh);const scam=new T.PerspectiveCamera(50,1,1,1000);
   const shine=o.shine||(()=>{const l=new T.DirectionalLight(0x9cbad6,0);l.name='atmos:giantshine';scene.add(l);scene.add(l.target);return l;})();
-  const S={scene:sscene,mesh,uniforms:U,clock,preset:P,state:null,look:null,shine};
+  const S={scene:sscene,mesh,uniforms:U,clock,preset:P,state:null,look:null,shine};A.skyCur=S;   /* the page's sky (the weather cells read its cloud base) */
   // what this sky drives each frame (ATMOS.bindWeather reads it live, so either may bind first): the fog, and the sun and the
   // hemisphere. A page that passes o.weather composes the weather into the colour script itself; otherwise the binding's look
   // (A.wxLook: grey, cover, wet) goes in and its fog law (A.wxFog) runs on the hour's fog
@@ -155,7 +157,7 @@
  // Call it after ATMOS.sky; on a page with no shared sky it does nothing. Any order with wetGround, snowOn, heightFog.
  A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;const por=o.porosity==null?1:o.porosity;
   const K=A.KH();return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
-   for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'].concat(A.skyMoodOn?['uCloudX','uCloudY','uCloudZ']:[]))sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};   /* the shade's field reads uCloudY (the kind, the ripple's epicentre) */
+   for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'].concat(A.skyMoodOn?['uCloudX','uCloudY','uCloudZ']:[],A.wxOn?['uWxMap','uWxBox','uWxMean']:[]))sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};   /* the shade's field reads uCloudY (the kind, the ripple's epicentre) */
    const occ=A.rainCoverGLSL&&A.U&&A.U.rainOcc?A.rainCoverGLSL():null;if(occ)A.rainCoverUniforms(sh.uniforms);
    const head=A.cloudShadeGLSL()+'\nuniform float uPorosity;\n',wp='vec4 atmWP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmWP=instanceMatrix*atmWP;\n#endif\natmWP=modelMatrix*atmWP;\n';
    const shade='directLight.color*=atmCloudShade(atmWPos,normalize((vec4(directLight.direction,0.0)*viewMatrix).xyz));';
