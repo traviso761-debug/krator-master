@@ -98,9 +98,10 @@ ORDER = (
        ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
-       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), (XOH, '49-world-xanadu.js')]
+       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('ld', '48v-world-sample.js'),   # 48v: the countryside sample (HAMLETS-PLAN 3, A9)
+        (XOH, '49-world-xanadu.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js')
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88r-world-sample.js', '88s-world-sites.js', '88b-world-bridges.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )

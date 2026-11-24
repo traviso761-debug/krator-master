@@ -91,6 +91,11 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[],O=M.frame.orig
  const L=(WORLD_DATA.sites.links||[]).find(l=>l.id==='spher0north1/link/shvo49k0y2'),len=L?L.length_m*(neg==='road'?.65:1):0;
  R.push({name:'the Thalaba road goes up the Qol valley, about 105 km with its hans',ok:!!L&&len>95000&&len<115000&&(L.stops||[]).length>=4,
   detail:L?(len/1000).toFixed(1)+' km, '+(L.stops||[]).length+' stops, max grade '+L.maxGrade:'no link'});
+ /* the countryside sample (core/world 48v, 88r; HAMLETS-PLAN section 3, A9): laid, every village whole and off the region's
+    places and roads, its people under the province's bulk; its negative: a village moved onto a site is caught */
+ {const S=window._sample,c=S&&S.check?S.check():null,n=S&&S.check?S.check(true):null;
+  R.push({name:'the countryside sample: villages laid off the places and roads, under the province\'s bulk',ok:!!c&&c.ok,detail:c?c.detail:'no window._sample (core/world 88r)'});
+  R.push({name:' negative (sample) the countryside sample: a village on a site is caught',ok:!!n&&!n.ok,detail:n?n.detail.slice(0,200):'-'});}
  return R;}"""
 
 

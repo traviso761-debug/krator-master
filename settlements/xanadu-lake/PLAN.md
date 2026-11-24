@@ -220,7 +220,7 @@ step L6.
 | **L2** | The north-west round: Qōqō, Nēṭ, Malbari, Hāibh; their four sites and corridors added to `openworld/SITES.json` (region `xanadu-north-shore`) and the region re-cut | the region holds seven lake towns and Phēr |
 | **L3** | Erehwon's south-east round: Boṭ-Yārḍ, Wībhar, Saphran, Pāṭari, Ṭī-Ṭeras, Hoṭ-Bāṭh, Ālph-Hēḍ | each verified; `xanadu-lake-shore` draws them |
 | **L4** | Erehwon's west round: Gārḍan, Qorī, Ōrcharḍ, Lōṭas, Phish-Mārkiṭ, Siṭāq | each verified; the region draws all thirteen |
-| **L5** | Life and interiors: the crowds by the tune's census, the market days, the trades' rooms | the life checks as Phēr's |
+| **L5** (**built** 2026-11-23: the week `89zn`, the people `89zu` and `90t`, the trades' rooms `kits/xanadu/extra/69dy` and `87k1`; KNOWN_ISSUES.md) | Life and interiors: the crowds by the tune's census, the market days, the trades' rooms | the life checks as Phēr's |
 | **L6** | **The open-world step: the regions draw what the town pages leave to them.** First Malbari's Qol bridge (the owner, 2026-11-23, section 9): `xanadu-north-shore` draws an `xa_river_span` on the road's crossing of the Qol Siṭrīm once the scale-model re-run carries the bridge as a map feature, seated on the region's banks; then whatever else a town's page leaves outside its footprint (Hoṭ-Bāṭh's crossing of the Ālph's outflow on the shore road, 3 km north-east of the town: *proposed*, the same way) | a region check that the road meets the deck on both banks, every bridge of this step |
 
 L1 to L4 are a session each (est.); each town's plan says what is its own. The missing pieces (section 5) land in L0 to

@@ -35,10 +35,14 @@ var SITE_SPEC={region:'xanadu-lake-shore',world:1191569,bridges:{culture:'xanadu
   sxanlkwestisle01:{culture:'xanadu',hamlets:[
    {id:'west-isle-n',name:'Wesṭ-Āil',culture:'xanadu-fishing',focus:'fishing',near:[0,-900],look:1500,pop:240},
    {id:'west-isle-s',name:'Wesṭ-Āil (south landing)',culture:'xanadu-fishing',focus:'fishing',near:[0,900],look:1500,pop:160}]},
-  /* HELD (2026-11-23): Lāiṭ-Hāus (200) and Bē-Āil (300) are too small at 1:1 for core/hamlet's village at their people (the
-     bake could not place 18 and 23 houses); they wait for a denser isle layout (HAMLETS-PLAN.md section 1) */
-  sxanlkeastisle01:{culture:'xanadu'},
-  sxanlkbayisle01:{culture:'xanadu'},
+  /* Lāiṭ-Hāus (200) and Bē-Āil (300) (2026-11-23, after their hold: one village at their people did not fit the isle at 1:1, the
+     bake leaving 18 and 23 houses unplaced): each two villages at its two ends, as Wesṭ-Āil is, half its people each (PROPOSED) */
+  sxanlkeastisle01:{culture:'xanadu',hamlets:[
+   {id:'east-isle-n',name:'Lāiṭ-Hāus',culture:'xanadu-fishing',focus:'fishing',near:[0,-500],look:900,pop:100},
+   {id:'east-isle-s',name:'Lāiṭ-Hāus (the light landing)',culture:'xanadu-fishing',focus:'fishing',near:[0,500],look:900,pop:100}]},
+  sxanlkbayisle01:{culture:'xanadu',hamlets:[
+   {id:'bay-isle-n',name:'Bē-Āil',culture:'xanadu-fishing',focus:'fishing',near:[0,-500],look:900,pop:160},
+   {id:'bay-isle-s',name:'Bē-Āil (the ponds landing)',culture:'xanadu-fishing',focus:'fishing',near:[0,500],look:900,pop:140}]},
   /* west of Phīsh-Mārkiṭ (settlements/xanadu/HAMLETS-PLAN.md section 3d, step H6; the owner, 2026-11-23): the rim plain's farm
      village and the west road's hill village, each the heart of its site (near [0, 0]). The survey (2026-11-23) found the ground
      good over both squares (dry, slopes under 0.11 at the 90th centile); what refused the houses was the frame: a village at its
@@ -70,3 +74,8 @@ var WORLD_CAMPS={world:1191569,camps:[
  {id:'s57bkv9741/camp/great-caravan',kind:'halt',name:'The Annual Great Caravan\'s halt (Dalab)',site:'s57bkv9741',near:[0,2200],look:1500,way:[0,-1],
   culture:'dalab',wagons:40,formation:'laager',season:{days:[[311,325],[107,121]]},
   escort:{name:'The Golden Tears\' escort',culture:'xanadu',people:24,off:160,program:{sleeping:3,chief:true,supply:0,guard:2,mess:1,stable:1,latrine:1}}}]};
+// THE COUNTRYSIDE SAMPLE (core/world 48v and 88r; settlements/xanadu/HAMLETS-PLAN.md section 3, BUILD-PLAN A9): the province's
+// bulk villages (p1, Lēk-Shor: the farms and orchards on the rim plain and round the lake, the herders on the uplands) laid near nothing named, one at most to a 6 km cell, kept with the chance of its
+// farmland; never counted by the sim. The foci are core/hamlet's Xanadu row's: orchard and silk villages are farming ones until
+// the row's own foci come with the all-builds rebuild (TODO.md, "core/hamlet's Xanadu row passed by name folds into the row")
+var WORLD_SAMPLE={prov:'p1',culture:'xanadu',cell:6000,foci:[['farming',3],['ranch',1]],pop:[120,300],minFarm:.3,keep:1.4,clear:{site:4000,village:2200,road:250}};

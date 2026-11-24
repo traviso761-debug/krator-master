@@ -138,17 +138,20 @@ def fit(key):
     if not tune:
         sys.exit('fit_lake_town: %r is not a XAN_TUNE.lake key' % key)
     W = sp['world']
-    S = sample(W['region'], {'site': W['site'], 'px': [tune['px'], tune['py']], 'level': -520, 'GX': GX, 'GZ0': GZ0, 'GZ1': GZ1, 'GS': GS, 'MW': MINWAVE})
+    # a town's own grids (XL.SPECS[key].world.gs, .resStep): finer where the region's shore has an inlet narrower than the
+    # default rest step (Hot-Bath's, 2026-11-23); the page reads the step from the row (89zp xlRes)
+    GS_, RS_ = W.get('gs') or GS, W.get('resStep') or RES_STEP
+    S = sample(W['region'], {'site': W['site'], 'px': [tune['px'], tune['py']], 'level': -520, 'GX': GX, 'GZ0': GZ0, 'GZ1': GZ1, 'GS': GS_, 'MW': MINWAVE})
     nx, nz = S['nx'], S['nz']
     G = np.array(S['G'], dtype=np.float64).reshape(nz, nx)
     G2 = np.array(S['G2'], dtype=np.float64).reshape(nz, nx)
-    xs = -GX + np.arange(nx) * GS
-    zs = GZ0 + np.arange(nz) * GS
+    xs = -GX + np.arange(nx) * GS_
+    zs = GZ0 + np.arange(nz) * GS_
 
     def at(x, z, Gr=None):   # bilinear on the grid (page metres), clamped; Gr the full land (G) or its broad form (G2, the default)
         Gr = G2 if Gr is None else Gr
-        u = np.clip((np.asarray(x, float) + GX) / GS, 0, nx - 1.0001)
-        v = np.clip((np.asarray(z, float) - GZ0) / GS, 0, nz - 1.0001)
+        u = np.clip((np.asarray(x, float) + GX) / GS_, 0, nx - 1.0001)
+        v = np.clip((np.asarray(z, float) - GZ0) / GS_, 0, nz - 1.0001)
         i, j = u.astype(int), v.astype(int)
         fu, fv = u - i, v - j
         return (Gr[j, i] * (1 - fu) + Gr[j, i + 1] * fu) * (1 - fv) + (Gr[j + 1, i] * (1 - fu) + Gr[j + 1, i + 1] * fu) * fv
@@ -164,12 +167,12 @@ def fit(key):
     # ---- the raw shore: every grid column, the first crossing of the level marching inland from the lake (a slot or a
     # hollow behind the shore is not the shore)
     raw = np.full(nx, np.nan)
-    j0 = int(round((-1500 - GZ0) / GS))
+    j0 = int(round((-1500 - GZ0) / GS_))
     for i in range(nx):
         col = G[:, i]
         for j in range(nz - 1, max(j0, 1) - 1, -1):
             if col[j - 1] >= 0 and col[j] < 0:
-                raw[i] = zs[j - 1] + GS * col[j - 1] / (col[j - 1] - col[j])
+                raw[i] = zs[j - 1] + GS_ * col[j - 1] / (col[j - 1] - col[j])
                 break
     ok = ~np.isnan(raw)
     if ok.sum() < nx * .5:
@@ -213,8 +216,8 @@ def fit(key):
         return np.where(d < K[0], prof[0] + lo * (d - K[0]), np.where(d > K[-1], prof[-1] + hi * (d - K[-1]), y))
     # ---- the rest, every RES_STEP m in the page's own (x, z): the region's height less the profile at its depth there (laid in
     # (x, z), not in (x, d), so a bend in the shore shears nothing)
-    rx = np.arange(-GX, GX + 1, RES_STEP)
-    rz = np.arange(GZ0, GZ1 + 1, RES_STEP)
+    rx = np.arange(-GX, GX + 1, RS_)
+    rz = np.arange(GZ0, GZ1 + 1, RS_)
     res = np.zeros((len(rz), len(rx)))
     for a, z in enumerate(rz):
         res[a] = at(rx, np.full(len(rx), float(z))) - pf(shoreAt(rx) - z)
@@ -227,7 +230,7 @@ def fit(key):
     chk_shore = []
     for x in np.arange(-GX, GX + 1, 50.0):
         z = float(np.interp(x, xs, raw_f))
-        if math.hypot(x - centre[0], z - centre[1]) <= R and ok[int(round((x + GX) / GS))]:
+        if math.hypot(x - centre[0], z - centre[1]) <= R and ok[int(round((x + GX) / GS_))]:
             chk_shore.append([r1(x, 0), r1(z)])
     rings = []
     for rr in (R, R + band):
@@ -241,7 +244,7 @@ def fit(key):
            'centre': [r1(centre[0]), r1(centre[1])], 'coast': S['coast'],
            'shore': {'x0': -GX, 'step': 50, 'z': [r1(v) for v in shore]},
            'prof': {'d': KNOTS, 'y': [r1(v, 2) for v in prof]},
-           'res': {'x0': int(rx[0]), 'z0': int(rz[0]), 'step': RES_STEP, 'nx': len(rx), 'nz': len(rz), 'v': [int(round(v * 10)) for v in res.ravel()]},
+           'res': {'x0': int(rx[0]), 'z0': int(rz[0]), 'step': int(RS_), 'nx': len(rx), 'nz': len(rz), 'v': [int(round(v * 10)) for v in res.ravel()]},
            'check': {'shore': chk_shore, 'ring': rings}}
     # how the fit stands: the smoothed shore against the raw within the footprint, the profile's own error at the band
     inR = [p for p in chk_shore]

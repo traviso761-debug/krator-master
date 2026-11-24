@@ -9,6 +9,11 @@
 const XL_T0=performance.now();reseed(XL.seed(XL.KEY)>>>8);
 for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 const XLK=XL.KEY,XLT=XL_TOWN||{place:[],ways:[],fields:[],greens:[],geo:xlGeo(XLK)},XLG=XLT.geo;
+/* the day (89zn): the page's day and the clock's days after it, as the people's sim counts them (89zu: SIM's day); the market row
+   and the round's barge on the market day, the loop's launch away on a fair day. Re-read each frame: a new day turns them over */
+let XL_TODAY=XL_DAYS.at(XLK,XL_DAYS.DAY);
+function xlDayTick(){const C=typeof KHOST!=='undefined'&&KHOST.host&&KHOST.host.clock,d=XL_DAYS.DAY+((C&&C.day)||0);if(d!==XL_TODAY.day)XL_TODAY=XL_DAYS.at(XLK,d);return XL_TODAY;}
+FRAME_HOOKS.push(xlDayTick);
 camera.near=.5;camera.far=40000;camera.updateProjectionMatrix();
 // ---------------------------------------------------------------- the sky and its light (KratorSky, as Phēr's)
 const XL_SKY={hour:9.4,day:120,dens:1.1};

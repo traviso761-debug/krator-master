@@ -798,7 +798,7 @@
    "settlements/xanadu-lake/targets/town/89zm-xl-fit.js",
    "settlements/xanadu-lake/targets/town/89zp-xl-site.js"
   ],
-  "hash": "2aa93bfea5c0880a",
+  "hash": "e1c76c6807405c02",
   "by": "core/world/bake_towns.py"
  }
 }

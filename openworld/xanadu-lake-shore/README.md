@@ -23,7 +23,13 @@ On map 5.1 with edit 7 re-run (5f659c054), at 1:1 on `core/world`:
 - **The sites** (`src/48-world-site.js`, baked by `core/world/bake_sites.py` to `plan/sites.json`):
   - Erehwon's ring: five farming villages and a ranch on core/hamlet's `xanadu` row, drawn with the Xanadu kit (XAK).
     The spec is xanadu-oidong-highrift's, copied (not moved), planned with that region's world seed.
-  - The shore towns and isles: sites with no hamlets yet. Their towns go on `core/city` later.
+  - The shore towns: sites with no hamlets; their towns' own ground is `settlements/xanadu-lake`'s (`SITES.json`'s `towns`,
+    `core/world/bake_towns.py`), Hoṭ-Bāṭh among them since 2026-11-23.
+  - The isles: Wesṭ-Āil, Lāiṭ-Hāus and Bē-Āil, each two fishing villages at its two ends (core/hamlet, the fishers' row).
+  - **The countryside sample** (`core/world/48v-world-sample.js`, `88r-world-sample.js`; `WORLD_SAMPLE` in `src/48-world-site.js`;
+    settlements/xanadu/HAMLETS-PLAN.md section 3, step H2): the province's bulk villages laid at load near nothing named, one at
+    most to a 6 km cell kept with the chance of its farmland, refused on the places, the roads and the water; drawn and checked
+    by 88s as the plan's own; never counted by the sim (`window._sample`; verify "the countryside sample").
 
 ## Build and verify
 
