@@ -27,7 +27,8 @@ import build_sources as BSRC                      # noqa: E402  (--list-sources:
 CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/door', 'core/atmos', 'core/city', 'core/space', 'core/region', 'core/drawn')
 
 # core/city in one closure (settlements/pher/build.py's kcity_bundle): its globals stay inside, and so does core/space
-CITY_JS = sorted(f for f in os.listdir(os.path.join(ROOT, 'core', 'city')) if f[:2].isdigit() and f.endswith('.js') and '-host-' not in f)
+CITY_JS = sorted(f for f in os.listdir(os.path.join(ROOT, 'core', 'city')) if f[:2].isdigit() and f.endswith('.js') and ('-host-' not in f or f == '53-city-host-multikit.js'))
+CITY_JS.insert(CITY_JS.index('42-city-multikit.js'), '../kits/10-core-kits.js')   # with 53, the multi-kit host (Stage 8 D8): inert until called
 SPACE = 'core/space/20-core-space.js'
 TUNE = 'core/region/data/xan-tune.js'
 GEN = os.path.join(HERE, 'gen')

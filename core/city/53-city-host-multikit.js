@@ -15,6 +15,12 @@
   'use strict';
   var K = (typeof KCITY !== 'undefined') ? KCITY : (typeof window !== 'undefined' ? (window.KCITY = window.KCITY || {}) : {});
 
+  /* KRATOR_KITS: a global, or on the window of the closure a settlement seals core/kits and core/city in (2026-11-24, Stage 8 D8) */
+  function kitsOf() {
+    if (typeof KRATOR_KITS !== 'undefined') return KRATOR_KITS;
+    return (typeof window !== 'undefined' && window.KRATOR_KITS) || null;
+  }
+
   function denormScale(attr) {
     if (!attr || !attr.normalized) return 1;
     var r = attr.array;
@@ -584,7 +590,7 @@
   function createBrowserLoader(opt) {
     opt = opt || {};
     var baseUrl = String(opt.baseUrl == null ? 'kits' : opt.baseUrl).replace(/\/+$/, '');
-    var KK = opt.kits || (typeof KRATOR_KITS !== 'undefined' ? KRATOR_KITS : null);
+    var KK = opt.kits || kitsOf();
     var loadTex = opt.loadTextures !== false;
     var loadedPacks = {}, pendingPacks = {}, pendingKits = {};
 
@@ -646,7 +652,7 @@
 
   function createHost(opt) {
     opt = opt || {};
-    var KK = opt.kits || (typeof KRATOR_KITS !== 'undefined' ? KRATOR_KITS : null);
+    var KK = opt.kits || kitsOf();
     if (!KK) throw new Error('KCITY.hostMultikit.create: load core/kits/10-core-kits.js first');
     var defaultKit = opt.defaultKit || 'islanders';
     var group = opt.group || new THREE.Group();

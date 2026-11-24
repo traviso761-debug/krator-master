@@ -29,7 +29,8 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
 # core/city in one closure (settlements/qiblai/build.py's kcity_bundle, the nested-squares file left out: the bench is laid by
 # this town's own site steps). Raster and OCC go out on KCITY.lib with SL, PLAN and KSPACE
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 SPACE = 'core/space/20-core-space.js'
 GEN = os.path.join(HERE, 'gen')
 DIST = os.path.join(HERE, 'dist')

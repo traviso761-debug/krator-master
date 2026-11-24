@@ -80,6 +80,7 @@ def kcity_bundle():
         '10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js',
         '25-city-site.js', '31-city-steps-b.js', '32-city-steps-c.js', '33-city-strategies.js',
         '34-city-radial.js', '40-city-kcity.js',
+        '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js',   # the multi-kit host (Stage 8 D8): inert until called
     ]
     parts = [
         '/* KCITY: core/city in one closure (settlements/drum/build.py). GENERATED: edit core/city/*.js. */\n',

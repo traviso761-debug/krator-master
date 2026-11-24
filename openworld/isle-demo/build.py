@@ -78,7 +78,9 @@ LDF = lambda *fs: [('ld', f) for f in fs]
 # the city page's [G data] half, as settlements/isle-demo/build.py lists it (CITY_DATA_JS)
 ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js', 'core/region/00-region-core.js', '39-isle-region.js',
                 'core/region/40-region-sim.js', 'core/region/41-region-nav.js', 'core/region/42-region-people.js', 'core/region/43-region-items.js', 'core/region/44-region-economy.js', 'core/region/45-region-sim-checks.js',
-                'core/region/46-region-stocks.js', '47-isle-trade.js', 'core/region/47b-region-build.js', 'core/region/47c-region-crime.js', 'core/region/47f-region-found.js', 'core/region/47h-region-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', 'core/region/47n-region-herders.js', 'core/region/47m-region-money.js', 'core/region/47u-region-unrest.js', 'core/region/47r-region-refugees.js', 'core/region/48-region-week.js', 'core/region/49-region-govern.js', '50-isle-export.js']
+                'core/region/46-region-stocks.js', '47-isle-trade.js', 'core/region/47b-region-build.js', 'core/region/47c-region-crime.js', 'core/region/47f-region-found.js', 'core/region/47h-region-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', 'core/region/47n-region-herders.js', 'core/region/47m-region-money.js', 'core/region/47u-region-unrest.js', 'core/region/47r-region-refugees.js',
+                'core/region/47s-region-styles.js',   # the multi-kit styles (Stage 8 D8): inert until RH.simStyles is called
+                'core/region/48-region-week.js', 'core/region/49-region-govern.js', '50-isle-export.js']
 def _isle_build():
     """settlements/isle-demo/build.py as a module (its data fragments: dims, trades, site), loaded once"""
     import importlib.util
@@ -103,11 +105,11 @@ ORDER = (
      ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
      ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
-     ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
-     ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
      # the weather (Stage 8 V9, G-weather W2): core/world's HOST.weather() binds it; the region starts clear, ?weather=<mode>
      ('core/atmos', '89-atmos-4-weather.js'), ('core/atmos', '89-atmos-9-host.js'), ('core/atmos/host', '89-atmos-e-weatherhost.js'),
      ('core/atmos/fx', '89-atmos-fx-raincover.js'),
+     ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
+     ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
      ('core/water/ext', '56-core-water-breakup.js'),
      ('core/water/geyser', '52-core-water-geyser.js'), ('core/water/geyser', '52b-core-water-geyser-draw.js'),
      ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),

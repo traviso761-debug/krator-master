@@ -34,7 +34,8 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
               'core/atmos', 'core/water', 'core/drawn', 'core/biome', 'core/materials', 'core/door', 'core/furnish', 'core/walk', 'core/lod')   # through Xanadu's build, kit.json and gen/
 
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 HAMLET_JS = ['10-hamlet-wood.js', '12-hamlet-gather.js', '14-hamlet-farmland.js', '16-hamlet-names.js', '18-hamlet-names.js',
              '20-hamlet-cultures.js', 'fellgang/22-hamlet-fellgang.js', '30-hamlet-village.js']
 CAMP_JS = ['10-camp-cultures.js', '20-camp-census.js', '30-camp-pitch.js', 'fellgang/52-camp-fellgang.js']

@@ -115,7 +115,8 @@ WORLD_FRAG = '75b-hook-world-data.js'
 # core/city in one closure, as Verge takes it (settlements/verge/build.py kcity_bundle): its globals (SL, PLAN, TUNE, V,
 # clamp, CG...) stay inside, where they cannot clash with the Port page's; Hook reads KCITY and KCITY.lib
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js', '50-city-host-streets.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js', '../kits/10-core-kits.js', '42-city-multikit.js',
+           '50-city-host-streets.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 KCITY_FRAG = '76-kcity-bundle.js'
 SITE_FRAG = '76-hook-site-data.js'
 SITE_JSON = os.path.join(HERE, 'site', 'hook-site.json')
