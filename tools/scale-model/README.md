@@ -1351,6 +1351,26 @@ The owner chose "change the world" for Lāiṭwāl (`settlements/lightwall/PLAN.
 - The lake a cell south of the pin, the wall 1,220 m over it a cell north (`tests/test_smodel.py` section 26). The page's
   `lwPending` and `LW_PEND` come out after the region's re-cut (held with the others).
 
+## Hook's spit (2026-11-24): three landform records, no raster changed
+
+The owner chose "a spit at the pin" for Hook (`settlements/hook`; the Hook port session's note
+`hook-map-edit-spit-2026-11-24.md`). Hook's pin `sm3ft5vrof` (809,923) was a wet cell 6 m under the Ring Sea on a drowned
+flat; the continental records describe a peninsula and a spit (a carbonate shelf), which 2 km cells cannot hold. So it is
+sub-cell: three `bench` records (core/world 41l) appended to `model/data/landforms.json` exactly as
+`settlements/hook/world/landforms.json` has them, chained (41l stamps benches in order, so they union), each 5 m over the
+sea (-1,495.2 m), batter 15 degrees:
+- `lf_hook_spit` (809.025, 923.175; 4.7 by 1.9 km, east-west): the peninsula, its east end cut into the plateau's foot,
+  its north shore the waterfront;
+- `lf_hook_shank` (807.675, 923.75; 2.4 by 0.9 km, north-south): south off the west end, closing the lagoon;
+- `lf_hook_barb` (808.0, 924.35; 1.2 by 0.5 km, turned -20 degrees): the tip curling back east-north-east.
+About 10.6 km2 of fill at a mean 12 m. The pin stays at 809,923, on the spit 631 m south of the waterfront. No
+`openworld/` region reaches Hook yet; a cut that does takes the three from here, and Hook's own `world/cut.py` already
+skips a record the model has. 41l's `WLAND.check()` reports `toeOut` on each, since it reads each bench with the others off;
+`settlements/hook/tests/test-hook-world.js` checks the chain's toe on a ring outside it instead (a 41l follow-up).
+Checks: `tests/test_smodel.py` and `node settlements/hook/tests/test-hook-world.js` (15 pass). Rebuilt for the file's
+bytes: the scale model's page, `settlements/lightwall`, `biomes/godshearth` (and its `prismbasin` station),
+`openworld/xanadu-oidong-highrift` (`tools/reach.py`).
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and
