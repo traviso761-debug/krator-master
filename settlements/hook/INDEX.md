@@ -6,7 +6,7 @@ Hook: the Ancient port city of the Ring Sea's south-western shore, the Izani Emp
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/hook.html`
+Built output (never open it; edit `src/` and rebuild): `dist/hook-site.html`, `dist/hook.html`
 
 Build: `cd settlements/hook && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -17,6 +17,12 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
+| `75d-hook-world.js` | 7 | HOOK: THE GROUND FROM THE SCALE MODEL ([G data]) (1) |
+| `76-hook-ground.js` | 4 | HOOK: THE GROUND BEHIND THE PORT ([G data]) (1) |
+| `79-hook-ancient.js` | 6 | HOOK: THE ANCIENT TOWN'S RUIN HOSTS (1) |
+| `88-hook-programme.js` | 9 | HOOK: THE TOWN'S PROGRAMME ([G data]) (1) |
+| `90a-hook-city.js` | 11 | HOOK: THE TOWN ON core/city, STEPS 0-12 ([G data (1) |
+| `90b-hook-city-draw.js` | 17 | HOOK: DRAWING THE TOWN ([web]) (1) |
 
 ## targets/
 
@@ -24,4 +30,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `hook` | `89z-rows.js`, `91z-views.js` | 7 |
+| `hook` | `89z-rows.js`, `91z-views.js` | 13 |
+| `hook-site` | `94-hook-site-adapter.js`, `96-hook-site-model.js`, `98-hook-site-start.js` | 38 |
