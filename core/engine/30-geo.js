@@ -36,6 +36,58 @@ function haloAt(x,y,z,hex,big){if(GTARGET!==GB)return;const p=new THREE.Vector3(
  const c=hc(hex||0xffb060);HALOS.push({x:p.x,y:p.y,z:p.z,r:c.r,g:c.g,b:c.b,big:!!big});}
 function halosReset(){HALOS=[];HALOKEY=new Set();}
 let GSTAT={tris:0};
+/* THE EXPORT FORM (GODOT-LOOK-PLAN.md section 13; README.md, "The export form"). Geometry a game engine wants and a page
+   does not: off unless a host calls setForm() before the world is built, so no page's geometry moves and the fingerprint
+   stays as it was. With it on:
+     chamfer  box() draws the chamfered box: its own 24 vertices, each moved a bevel's width in along its face, with twelve
+              edge strips and eight corner triangles stitched between them: 44 triangles and no new vertex. The strips keep
+              the faces' normals, so they shade as a rounded edge. chamfer(mk) -> the bevel in metres for a material key
+              (0: a plain box); a box thinner than four bevels on any side stays plain
+     jitter   0..1: a building out of true. Its walls lean in (a batter of half a degree to a degree and a half) and the
+              whole stands a little off plumb, by a hash of where it stands (core/rand). Applied to the vertices as they
+              are emitted, after the record and its box are taken, so no record, walk box or door moves
+     fields   every bucket carries aForm, three numbers a vertex: its height above the building's base (metres; -1 outside
+              any building), 1 (a place for baked occlusion, which nothing here bakes yet), and 1 on a chamfered box's
+              vertices, 0 elsewhere (they sit on an arris) */
+const FORM={chamfer:null,jitter:0,fields:false};let FORM_ROOT=null;
+function setForm(o){o=o||{};FORM.chamfer=typeof o.chamfer==='number'?(()=>o.chamfer):(o.chamfer||null);FORM.jitter=o.jitter==null?0:+o.jitter;FORM.fields=!!o.fields;return FORM;}
+/* place() calls these round a building it draws at the top level: the frame the height and the lean are measured in */
+function formRoot(){if(!(FORM.jitter||FORM.fields))return null;const keep=FORM_ROOT;const e=CM.elements;
+ const h=KRAND.hash(0x0f0a,Math.round(e[12]*4),Math.round(e[13]*4),Math.round(e[14]*4));
+ const u=k=>KRAND.unit(KRAND.hash(0x0f0b,h,k));
+ FORM_ROOT={inv:new THREE.Matrix4().copy(CM).invert(),m:new THREE.Matrix4().copy(CM),
+  batter:Math.tan((.5+u(1))*PI/180)*FORM.jitter,leanX:(u(2)-.5)*.012*FORM.jitter,leanZ:(u(3)-.5)*.012*FORM.jitter};return keep;}
+function formRootEnd(keep){FORM_ROOT=keep;}
+/* where smoke rises and where a wall stains, as plain records for an exporter (section 13): the smoke sources smokeAt()
+   noted and the sill of every window a placement record holds (36-def.js windowAt). reg: REG; smokes: SMOKES.
+   -> [{kind:'smoke', at:[x,y,z], r, source} | {kind:'sill', at:[x,y,z], yaw, w, key}] */
+function formMarks(reg,smokes){const out=[];
+ for(const s of smokes||[])out.push({kind:'smoke',at:[s.x,s.y,s.z],r:s.r,source:s.kind});
+ for(const r of reg||[])for(const w of r.windows||[])out.push({kind:'sill',at:[w.wx,w.wy+(w.sill||0),w.wz],yaw:w.yaw,w:w.w,key:r.key});
+ return out;}
+const _fv=new THREE.Vector3();
+/* the chamfered box, w by h by d metres about its centre, bevel bv: BoxGeometry's 24 vertices in its order, moved in along
+   their faces; 12 face triangles, 24 of edge strips, 8 corners. Cached by size to the millimetre */
+const _GCH={};
+function gboxCh(w,h,d,bv){const key=Math.round(w*1e3)+'_'+Math.round(h*1e3)+'_'+Math.round(d*1e3)+'_'+Math.round(bv*1e4);if(_GCH[key])return _GCH[key];
+ const src=new THREE.BoxGeometry(w,h,d),P=src.attributes.position.array.slice(),N=src.attributes.normal.array,n=24,hs=[w/2,h/2,d/2];
+ const corner=new Int8Array(n*3);   /* which corner a vertex is (the signs of its place), before it moves */
+ for(let i=0;i<n;i++)for(let k=0;k<3;k++){const sg=P[i*3+k]>0?1:-1;corner[i*3+k]=sg;if(Math.abs(N[i*3+k])<.5)P[i*3+k]-=sg*bv;}
+ const idx=Array.from(src.index.array);
+ const at=(sx,sy,sz,axis)=>{for(let i=0;i<n;i++)if(corner[i*3]===sx&&corner[i*3+1]===sy&&corner[i*3+2]===sz&&Math.abs(N[i*3+axis])>.5)return i;return -1;};
+ const tri=(a,b,c,ox,oy,oz)=>{   /* wound so that it faces away from the centre, toward (ox, oy, oz) */
+  const ux=P[b*3]-P[a*3],uy=P[b*3+1]-P[a*3+1],uz=P[b*3+2]-P[a*3+2],vx=P[c*3]-P[a*3],vy=P[c*3+1]-P[a*3+1],vz=P[c*3+2]-P[a*3+2];
+  const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;if(nx*ox+ny*oy+nz*oz>=0)idx.push(a,b,c);else idx.push(a,c,b);};
+ const S=[-1,1];
+ /* an edge runs along one axis, where two faces meet: a strip between the two faces' vertices at its two ends */
+ for(let ax=0;ax<3;ax++){const b1=(ax+1)%3,b2=(ax+2)%3;for(const s1 of S)for(const s2 of S){
+  const sg=t=>{const q=[0,0,0];q[ax]=t;q[b1]=s1;q[b2]=s2;return q;};
+  const a0=at(...sg(-1),b1),a1=at(...sg(1),b1),c0=at(...sg(-1),b2),c1=at(...sg(1),b2);const o=[0,0,0];o[b1]=s1;o[b2]=s2;
+  tri(a0,a1,c1,o[0],o[1],o[2]);tri(a0,c1,c0,o[0],o[1],o[2]);}}
+ for(const sx of S)for(const sy of S)for(const sz of S)tri(at(sx,sy,sz,0),at(sx,sy,sz,1),at(sx,sy,sz,2),sx,sy,sz);
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N.slice(),3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(src.attributes.uv.array.slice(),2));g.setIndex(idx);g.userData.arris=1;
+ return _GCH[key]=g;}
 /* emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs
    scaled. A geometry with its own `color` attribute multiplies the tint per vertex (the salamanders' markings). */
 /* a building's alternative takes, set per building by place() (36-def.js) from a hash of its seed, variant and place, so
@@ -48,7 +100,7 @@ let MAT_ALT=0;const MAT_VAR={};
 function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk];if(MAT_ALT&&MAT_VAR[mk]&&MAT[MAT_VAR[mk][1]]){const v=MAT_VAR[mk];mk=v[MAT_ALT%v.length];}_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
- if(!b.f&&SV_CLOTH[mk])b.f=[];if(!b.k&&SV_CUT[mk])b.k=[];if(!b.w&&mk==='glow')b.w=[];if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);
+ if(!b.f&&SV_CLOTH[mk])b.f=[];if(!b.k&&SV_CUT[mk])b.k=[];if(!b.w&&mk==='glow')b.w=[];if(!b.x&&FORM.fields){b.x=[];for(let q=b.p.length/3;q>0;q--)b.x.push(-1,1,0);}if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);
  const Pa=geo.attributes.position,Na=geo.attributes.normal,Ua=geo.attributes.uv,Ca=geo.attributes.color,I=geo.index;const base=b.p.length/3;_nm.getNormalMatrix(_mm);
  const c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
  for(let i=0;i<Pa.count;i++){_v.fromBufferAttribute(Pa,i).applyMatrix4(_mm);_n.fromBufferAttribute(Na,i).applyMatrix3(_nm).normalize();
@@ -59,6 +111,10 @@ function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk
   if(b.w)b.w.push(a1);
   if(uvm&&Ua){b.u.push(Ua.getX(i)*uvm.su,Ua.getY(i)*uvm.sv);}
   else{const ax=Math.abs(_n.x),ay=Math.abs(_n.y),az=Math.abs(_n.z);if(ay>=ax&&ay>=az)b.u.push(_v.x*ts,_v.z*ts);else if(ax>az)b.u.push(_v.z*ts,_v.y*ts);else b.u.push(_v.x*ts,_v.y*ts);}
+  if(FORM_ROOT){_fv.copy(_v).applyMatrix4(FORM_ROOT.inv);if(b.x)b.x.push(_fv.y,1,geo.userData&&geo.userData.arris?1:0);
+   if(FORM.jitter){const hy=Math.max(0,_fv.y);_fv.x+=-_fv.x*Math.min(.2,FORM_ROOT.batter*hy/Math.max(1,Math.abs(_fv.x)))+FORM_ROOT.leanX*hy;_fv.z+=-_fv.z*Math.min(.2,FORM_ROOT.batter*hy/Math.max(1,Math.abs(_fv.z)))+FORM_ROOT.leanZ*hy;
+    _fv.applyMatrix4(FORM_ROOT.m);const q=b.p.length-3;b.p[q]=_fv.x;b.p[q+1]=_fv.y;b.p[q+2]=_fv.z;}}
+  else if(b.x)b.x.push(-1,1,geo.userData&&geo.userData.arris?1:0);
   if(SB){if(_v.x<SB.mn[0])SB.mn[0]=_v.x;if(_v.y<SB.mn[1])SB.mn[1]=_v.y;if(_v.z<SB.mn[2])SB.mn[2]=_v.z;if(_v.x>SB.mx[0])SB.mx[0]=_v.x;if(_v.y>SB.mx[1])SB.mx[1]=_v.y;if(_v.z>SB.mx[2])SB.mx[2]=_v.z;}}
  if(I){for(let i=0;i<I.count;i++)b.i.push(base+I.getX(i));GSTAT.tris+=I.count/3;}else{for(let i=0;i<Pa.count;i++)b.i.push(base+i);GSTAT.tris+=Pa.count/3;}
  if(!isFinite(_v.x+_v.y+_v.z))reportErr('NaN vertex in bucket '+mk);}
@@ -72,7 +128,9 @@ function gsph(seg){const k='sph'+(seg||12);return _G[k]||(_G[k]=new THREE.Sphere
 function gtor(R,t,rs,ts){const k='tor'+R.toFixed(3)+'_'+t.toFixed(3)+'_'+(rs||6)+'_'+(ts||14);return _G[k]||(_G[k]=(()=>{const g=new THREE.TorusGeometry(R,t,rs||6,ts||14);g.rotateX(PI/2);return g;})());}
 function gplane(){return _G.pl||(_G.pl=new THREE.PlaneGeometry(1,1));}
 // ---- primitives. Boxes and cylinders are BASE-anchored: (x,y,z) is the middle of the underside.
-function box(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,d));emit(mk,gbox(),m,col);}
+function box(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);
+ const bv=FORM.chamfer?+FORM.chamfer(mk):0;if(bv>0&&Math.min(w,h,d)>=bv*4){emit(mk,gboxCh(w,h,d,bv),m,col);return;}   /* the export form's chamfered box */
+ m.scale(new THREE.Vector3(w,h,d));emit(mk,gbox(),m,col);}
 // cyl(mat, x,y,z, r,h, colour, seg, rTop, wrap): vertical, base at y. wrap: own UVs (u round, v up) so a pattern follows the surface
 function cyl(mk,x,y,z,r,h,col,seg,rt,wrap){seg=seg||14;const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));const tl=TILE[mk]||1;const uv=wrap?{su:TAU*r/tl,sv:h/tl}:undefined;
  if(rt!==undefined&&rt!==null&&rt!==r)emit(mk,gfrus(seg,rt/r),m,col,uv);else emit(mk,gcyl(seg),m,col,uv);}
@@ -192,6 +250,7 @@ function sagRope(mk,a,b,sag,r,col,n){n=n||8;const P=[];for(let i=0;i<=n;i++){con
 // ---- flush: turn buckets into meshes
 function flushBuckets(buckets,parent,shadow){const out=[];for(const mk in buckets){const b=buckets[mk];if(!b.i.length)continue;const m=MAT[mk];if(!m){reportErr('no material for bucket '+mk);continue;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(b.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(b.u,2));g.setAttribute('color',new THREE.Float32BufferAttribute(b.c,3));
+ if(b.x)g.setAttribute('aForm',new THREE.Float32BufferAttribute(b.x,3));
  if(b.f)g.setAttribute('aFlut',new THREE.Float32BufferAttribute(b.f,3));if(b.k)g.setAttribute('aCut',new THREE.Float32BufferAttribute(b.k,4));if(b.w)g.setAttribute('aFlk',new THREE.Float32BufferAttribute(b.w,1));
  g.setIndex(b.p.length/3>65535?new THREE.Uint32BufferAttribute(b.i,1):new THREE.Uint16BufferAttribute(b.i,1));g.computeBoundingSphere();
  const mesh=new THREE.Mesh(g,m);mesh.userData.mk=mk;const pane=!!(m.userData.kglass&&m.transparent);if(mk==='glass'||mk==='water'||pane)mesh.renderOrder=2;   /* pane: core/door's glass (36o-open.js) */

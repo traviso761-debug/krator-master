@@ -24,6 +24,8 @@ add(new THREE.BoxGeometry(1, 2, 3), mirrorM, o => { o.position.set(30, 1, 0); o.
 const inst = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), front, 2);
 inst.setMatrixAt(0, new THREE.Matrix4().makeTranslation(0, 5, 0)); inst.setMatrixAt(1, new THREE.Matrix4().makeTranslation(3, 5, 0));
 scene.add(inst); inst.updateMatrixWorld(true);
+const formed = new THREE.BoxGeometry(1, 1, 1); formed.setAttribute('aForm', new THREE.Float32BufferAttribute(Array.from({ length: 24 }, (_, i) => [i * 0.5, 1, 1]).flat(), 3));
+const formM = new THREE.MeshStandardMaterial({ color: 0x00aa00 }); add(formed, formM, o => o.position.set(40, 1, 0));
 const card = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), both, 1); card.setMatrixAt(0, new THREE.Matrix4().makeTranslation(6, 5, 0)); scene.add(card);
 
 const box = [-100, -100, 100, 100];
@@ -66,4 +68,8 @@ T.neg('nor one with a triangle wound the other way', I => E.sceneClosed(cube.att
 T.ok('two boxes in one bucket are still closed (each edge has its pair)', (() => { const a = new THREE.BoxGeometry(1, 1, 1), b = new THREE.BoxGeometry(1, 1, 1); b.translate(5, 0, 0);
   const P = Float32Array.from([...a.attributes.position.array, ...b.attributes.position.array]), n = a.attributes.position.count;
   return E.sceneClosed(P, [...a.index.array, ...Array.from(b.index.array).map(i => i + n)]); })());
+// 4. the export form's fields ride along where a mesh has them
+const fb = bucketOf(formM), ff = fb.geometry.form ? E.unpack(fb.geometry.form) : null;
+T.ok('a bucket whose mesh carries aForm exports it, three numbers a vertex', !!ff && ff.length === 72 && Math.abs(Array.from({ length: 24 }, (_, i) => ff[i * 3]).reduce((a, v) => a + v, 0) - 138) < 1e-6 && Array.from({ length: 24 }, (_, i) => ff[i * 3 + 1] + ff[i * 3 + 2]).every(v => v === 2));
+T.ok('negative: a bucket without it has no such array', plain.geometry.form === undefined);
 T.done();

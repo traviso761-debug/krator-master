@@ -77,3 +77,25 @@ Pylon, Reed Lake, Yuni, Locus, the Eastern Abyssal, the Beast Riders on the cata
 **Changing it.** Every kit above draws through it. Rebuild them all and run `python3 core/engine/fingerprint.py`, which
 compares what each page draws (the registry's records and every mesh's vertex data and material key) with
 `fingerprint.json`: a refactor must leave every page's fingerprint the same.
+
+The export form (2026-11-24; `GODOT-LOOK-PLAN.md` section 13)
+--------------------------------------------------------------
+Geometry a game engine wants and a page does not, in `30-geo.js`, **off unless a host calls `setForm()` before the world is
+built**: with it off `box()` and `emit()` do what they did, and `fingerprint.py` reads every page `same`.
+
+    setForm({ chamfer: mk => metres, jitter: 0..1, fields: true })
+
+- `chamfer`: `box()` draws the chamfered box (`gboxCh`): the box's own 24 vertices, each moved a bevel in along its face, with
+  twelve edge strips and eight corner triangles: 44 triangles, no new vertex, the faces' normals kept. A box thinner than
+  four bevels stays plain. Widths by class are the caller's (8 to 12 mm furniture, 15 to 25 mm sawn timber, 20 to 40 mm
+  dressed stone, 50 mm and up adobe). `beam()` and a kit's own boxes are not chamfered yet.
+- `jitter`: a building out of true: a batter of half a degree to a degree and a half and a lean off plumb, from a hash of
+  where it stands (`core/rand`), applied to vertices as they are emitted. The placement record and its box are taken from
+  the true positions, so no record, walk box or door moves. Ridge sag and bowed beams are not done.
+- `fields`: every bucket carries `aForm`, three numbers a vertex: height above its building's base (-1 outside any), 1 (a
+  place for baked occlusion: nothing bakes it yet), and 1 on a chamfered box's vertices. `core/export`'s scene reader
+  writes it as a bucket's `geometry.form`.
+- `formMarks(REG, SMOKES)`: where smoke rises (`smokeAt`) and every window's sill (`windowAt`) as plain records.
+
+`node core/engine/test-form.js` checks each. **Not done**: no page or exporter calls `setForm` yet, the fields have no
+reader in Godot, and occlusion and the arris of anything but a box are not computed.
