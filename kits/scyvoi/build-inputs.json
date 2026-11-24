@@ -38,14 +38,13 @@
     "core/engine/36s-stair.js": "f254687a185b86dc7a3f6ee1d82289527e93ae76c46fc75bd7c97825a5c8af9f",
     "core/engine/37-wk-rec.js": "bf39a3a82cfd8b9f24d528aeacd44d332d3d23751f4ff2a14b21b72f4b95ea91",
     "core/engine/90-scene.js": "8135c00a296f861362517b9b59ddc7edb9681e12e728ffd4b2b9084638df0d9c",
-    "core/engine/91f-furnish.js": "dd6d2dea6c59deaa39a3c1587f21b52270df4c1645b889e69fa0a99890192fb2",
+    "core/engine/91f-furnish.js": "18efac3c46e960839ae311237e5409181ca02fe0111de5b9121ab63925cb8f7d",
     "core/engine/91i-interiors.js": "56b200586cf46d538cca893732808b28e576b3c9219581004bd9171aa1781ba0",
     "core/engine/91n-night.js": "e15b022c24cc9c55ce8f774db3b55ec304c147cfded0a4dc4890a5216cb474b5",
     "core/engine/92-world.js": "4eef4a2cfc61a81e442f6729b351fcd6dce0ec3663dc9f2c4980d0476b0e1be2",
     "core/engine/93-anim.js": "a55c92af37244e4be8a691d465ae7bae010d2ff21be66a9bc91fa3dce78d73bb",
     "core/engine/99-host-take.js": "545a2bf1d19dea2343b961e7f60bd60e5a30674507a464edf4180237386bd37e",
     "core/engine/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "core/engine/engine.py": "e7171c4bd5340d190a3e0f88957dae827c55b8a9980da7570924b81f20a9a326",
     "core/furnish/50-core-furnish.js": "2c81c2c24d3f2c26a5d67cfcbe2ff1398a0884ab0032dd3596d589c2bd15756b",
     "core/furnish/52-core-furnish-draw.js": "e87c79babef49dedde3f5dc4fa0daae11aaae6a3976955d6c51cabd49ca92146",
     "core/furnish/53-core-furnish-host.js": "81927a949cd6d0e5b9da71bfb6b6f4c1d7e6add5e1606b08b0b8a199d5633aea",
@@ -303,14 +302,14 @@
    },
    "listed_by": "code",
    "outputs": {
-    "kits/scyvoi/build-manifest.json": "7fad4f7cbbaa1a218592739a040955e4bded6a2dc45906236da29efa81e1ac04",
-    "kits/scyvoi/dist/scyvoi.html": "8b4aa0aefe84656986be571d1e92ad5a785c5ac4877430f5e0dece780bdbb9f9",
+    "kits/scyvoi/build-manifest.json": "8d6847a50281c536466b9e41d30eace9eeacc88b05dd1f7855f10a40536e697d",
+    "kits/scyvoi/dist/scyvoi.html": "20f3f71d6cca4ba785b7637b8309e17c11d23968b9cb651cc3c6aa95db34cd73",
     "kits/scyvoi/dist/scyvoi.tex.scyvoi-2.js": "0df102a828fd20299c96eb2a8556637345724fe01e5d109bce5e1297cb93e653",
     "kits/scyvoi/dist/scyvoi.tex.scyvoi.js": "8ea7ecfdf4ae897c38ed3b17e554b111cb243b513cce06839e87c4e1bdb32feb"
    },
    "outputs_raw": {
-    "kits/scyvoi/build-manifest.json": "7fad4f7cbbaa1a218592739a040955e4bded6a2dc45906236da29efa81e1ac04",
-    "kits/scyvoi/dist/scyvoi.html": "8b4aa0aefe84656986be571d1e92ad5a785c5ac4877430f5e0dece780bdbb9f9",
+    "kits/scyvoi/build-manifest.json": "8d6847a50281c536466b9e41d30eace9eeacc88b05dd1f7855f10a40536e697d",
+    "kits/scyvoi/dist/scyvoi.html": "20f3f71d6cca4ba785b7637b8309e17c11d23968b9cb651cc3c6aa95db34cd73",
     "kits/scyvoi/dist/scyvoi.tex.scyvoi-2.js": "0df102a828fd20299c96eb2a8556637345724fe01e5d109bce5e1297cb93e653",
     "kits/scyvoi/dist/scyvoi.tex.scyvoi.js": "8ea7ecfdf4ae897c38ed3b17e554b111cb243b513cce06839e87c4e1bdb32feb"
    }

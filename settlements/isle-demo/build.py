@@ -374,7 +374,7 @@ def city_page():
                                                        read(os.path.join(ROOT, *f.split('/')) if '/' in f else os.path.join(HERE, 'src', f)), NL) for f in L)
     kc = bundles.kcity_bundle()
     cat, _ = bundles.cat_bundle(side)      # the towns' maps beside the page (isle-city.tex.brtowns.js)
-    isk, _ = bundles.isk_bundle()
+    isk, _ = bundles.isk_bundle(furniture=True)   # each piece furnished as the kit's sheet furnishes it (S2-C24)
     izv, _ = bundles.izv_bundle()
     rs, _ = bundles.ringsea_fragment()
     sc = lambda s: '<script>' + NL + s + '</script>' + NL

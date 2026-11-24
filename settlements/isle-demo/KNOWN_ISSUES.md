@@ -107,8 +107,10 @@
       of Mav's Refuge's shrine and roost). The
       Islanders have no caravanserai (the guest house stands in), no bloomery for Valapo's smelter (the smithy), and no
       cooperage or rope walk for the works quarter.
-- [ ] **City page: no furniture, no crop stands.** FURNISH places nothing on this page (P6b's export profile brings the
-      furniture); the farmland is drawn as tinted ground and simple orchard trees, not kits/crops' stands.
+- [ ] **City page: no crop stands.** The farmland is drawn as tinted ground and simple orchard trees, not kits/crops'
+      stands. (The Islanders' pieces are furnished since 2026-11-24, S2-C24: `bundles.py isk_bundle(furniture=True)` flushes
+      the engine's dry queue into each ISK.proto, so the near set draws their furniture, about 28% more triangles over the
+      kit's own; the Vernacular's and the Beast Riders' pieces are still bare.)
 - [ ] **City page: the white sand beaches** are tinted, not widened: the terrain edit (the strand's sand recoloured white)
       is still to do.
 - [ ] **City page: the Vernacular's file list** is Verge's (`settlements/verge/build.py izv_files`) plus the fragments Iziz

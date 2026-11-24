@@ -11,8 +11,10 @@ own so its globals (MAT, REG, TAU, clamp, terrainH, WORLD, KIT...) meet neither 
     ringsea_fragment() RINGSEA: the Ring Sea watercraft (kits/ringsea) through settlements/voth/ringsea.py, read in
                        place, with the isle demo's own vessel list (PLAN.md section 8a)
 
-A kit's furniture is left out of the city page: FURNISH places nothing (the city is drawn from outside; interiors and
-their catalog pieces come with the export profile, P6b). The files are read live at build time, never copied."""
+isk_bundle(furniture=True) (the city page's, S2-C24) furnishes each ISK.proto piece as the kit's sheet does: the catalog's
+pieces sealed in, the engine's dry queue (core/engine/91f-furnish.js svfDryBegin, svfDryFlush) flushed into the piece.
+Without it (the default: Hook, the open world, the Construction kit) FURNISH places nothing, as before. The files are read
+live at build time, never copied."""
 import glob, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -68,12 +70,14 @@ ISK_SKIP = ('00-head.html', '81-sky.js', '90-scene.js', '90h-is-shore.js', '91-p
             '92-camera.js', '92-world.js', '93-anim.js', '99-host-take.js', '99-tail.html')
 
 
-def isk_files():
-    # the engine from core/engine (MODULARITY-PLAN.md step 2), the kit's own src/ winning, as kits/islanders/build.py takes them
+def isk_files(furniture=False):
+    # the engine from core/engine (MODULARITY-PLAN.md step 2), the kit's own src/ winning, as kits/islanders/build.py takes them;
+    # furniture=True takes the engine's furniture adapter too (91f-furnish.js: the dry queue, S2-C24)
     sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
     import engine as kengine
-    fs = {f: p for f, p in kengine.paths().items() if f.endswith('.js') and f not in ISK_SKIP}
-    fs.update({f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in ISK_SKIP})
+    skip = tuple(f for f in ISK_SKIP if not (furniture and f == '91f-furnish.js'))
+    fs = {f: p for f, p in kengine.paths().items() if f.endswith('.js') and f not in skip}
+    fs.update({f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in skip})
     for f in ('42r-res-ore.js', '44r-res-nodes.js'):      # kits/resources, read in place (kits/islanders/build.py RESOURCES)
         fs[f] = os.path.join(ROOT, 'kits', 'resources', 'src', f)
     return [fs[f] for f in sorted(fs)]
@@ -88,7 +92,8 @@ var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) {
 var buildWorld = function () { return null; }, WORLD = null;
 /* the harbour defs' water (kits/islanders/src/90h-is-shore.js, its sheet's shore): the waterline 0.9 m under the land */
 var IS_SEA = { level: -0.9, floor: -3.8, shoreZ: null, beach: 5, slope: 9 };
-/* no furniture on the city page (bundles.py): the builders' FURNISH calls place nothing */
+'''
+ISK_STUB_FURN = r'''/* no furniture on the city page (bundles.py): the builders' FURNISH calls place nothing */
 var SVF = { WEALTH: {}, missing: {}, placed: [] };
 function svfNewBatch() {}
 function FURNISH() { return null; }
@@ -143,14 +148,43 @@ return { proto: iskProto, dims: isDims, DEFS: DEFS, MAT: MAT, KIT: KIT, IS_TRADE
 '''
 
 
-def isk_bundle():
+# isk_bundle(furniture=True) (S2-C24): the catalog's pieces sealed in (the kit's own FURN_CULTURES, read from
+# kits/islanders/build.py) with core/furnish and the engine's 91f-furnish.js, and ISK.proto opens the engine's dry queue
+# round its draw and flushes it into the piece's group, so each piece is furnished as the kit's sheet furnishes it
+# (G.userData.furniture: the pieces placed; their lamps and fires join its fixtures' lamps). Off: the stubs above, byte for byte.
+ISK_DRY_BEGIN = ('  var dry = PLACE_DRY; PLACE_DRY = 1; var rec = null;',
+                 '  svfDryBegin(); var dry = PLACE_DRY; PLACE_DRY = 1; var rec = null;')
+ISK_DRY_FLUSH = ("  if (typeof saFlush === 'function') saFlush(G);" + NL,
+                 "  if (typeof saFlush === 'function') saFlush(G);" + NL + '  var FUR = svfDryFlush(G);' + NL)
+ISK_DRY_COUNT = ('fixtures: iskFixtures(rec) };', 'fixtures: iskFixtures(rec), furniture: FUR.placed };')
+
+
+def isk_furn_cultures():
+    import ast, re
+    m = re.search(r'^FURN_CULTURES = (\[[^\]]*\])', rd(os.path.join(ROOT, 'kits', 'islanders', 'build.py')), re.M)
+    if not m:
+        raise SystemExit('bundles.py: kits/islanders/build.py has no FURN_CULTURES list')
+    return ast.literal_eval(m.group(1))
+
+
+def isk_bundle(furniture=False):
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'fauna'))
     import fauna_bundle
-    fs = isk_files()
+    fs = isk_files(furniture)
+    tail, extra = ISK_TAIL, []
+    if furniture:
+        import engine as kengine   # core/engine (isk_files put it on the path)
+        furn, extra = kengine.host_furniture(isk_furn_cultures())
+        for a, b in (ISK_DRY_BEGIN, ISK_DRY_FLUSH, ISK_DRY_COUNT):
+            if tail.count(a) != 1:
+                raise SystemExit('bundles.py: ISK_TAIL no longer reads %r exactly once: fix isk_bundle(furniture=True)' % a)
+            tail = tail.replace(a, b)
+    else:
+        furn = ISK_STUB_FURN
     return safe('/* ISK: the Islanders kit in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/islanders/src, '
-                'kits/resources/src or kits/fauna. */' + NL + 'var ISK = (function(){' + NL + ISK_HEAD +
+                'kits/resources/src or kits/fauna. */' + NL + 'var ISK = (function(){' + NL + ISK_HEAD + furn +
                 '/* ---- kits/fauna (fauna_bundle.py: the farm animals) ---- */' + NL + fauna_bundle.bundle(['farm']) + NL +
-                body(fs) + ISK_TAIL + '})();' + NL), [rel(f) for f in fs] + ['kits/fauna (farm)']
+                body(fs) + tail + '})();' + NL), [rel(f) for f in fs] + ['kits/fauna (farm)'] + extra
 
 
 # ---------------------------------------------------------------- the Iziz Vernacular

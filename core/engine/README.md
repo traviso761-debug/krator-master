@@ -55,6 +55,17 @@ after the owner has seen the shots.
 counts the lit, reached and dark rooms), `svixLightPool(eye)` the eye's room's light pool and `svixExport()` interiors.json v2
 (kits/interiors API.md, "Room light").
 
+**Furniture in a host's dry draw** (S2-C24, 2026-11-24). A host that draws the kit's buildings itself places them dry
+(`PLACE_DRY`), and a dry `FURNISH` places nothing. A host that wants them furnished opens the engine's queue round its draw:
+`svfDryBegin()`, then the dry `place()`, then `svfDryFlush(group)`, which draws the queued pieces into the group through a
+fresh indexed batch (`-> {placed, tris, missing, records, group}`). Each record is the one the kit's own page makes (the same
+world frame, seed and wealth; nothing registered in core/tags), the meshes are finished as `buildWorld` finishes the page's
+(shadows, linear colours, detail maps, halos), and every flush shares one material per family (`SVF_DRYMATS`). Without
+`svfDryBegin` nothing changes. A bundle takes the catalog and `core/furnish` with `engine.host_furniture(cultures)` and keeps
+`91f-furnish.js` in place of its FURNISH stub (`settlements/isle-demo/bundles.py` `isk_bundle(furniture=True)`, the city
+page's). `node core/engine/test-furnish-dry.js`. Tungang's bundle (`kits/tungang/tungang_bundle.py` `FURN_HEAD`) keeps its
+own queue: it places with the catalog's default seed and no wealth, so moving it onto this one would change its pieces.
+
 **Taken by:** kits scyvoi, ash-nomads, desert-nomads, eternian, islanders, lizardmen, yeti, resources. `settlements/isle-demo`
 bundles it with the Islanders kit (`bundles.py` `isk_files`). Not yet: `kits/zeijani` and `settlements/noahs-regret` run
 their own forks of it (most files differ); porting them is a later step.
