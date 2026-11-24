@@ -102,7 +102,7 @@ CLOSED |= set(CORE_HOST)   # core/host: each file one closure (KHOST), its names
 SIDE = {}   # the hyperjungle's library maps, written beside the page (dist/dhelv.tex.js: tools/textures/matlib_pack.py)
 VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
+FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods', 'arms']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods; arms: the guardroom's weapon rack (Stage 8 D27, O5)
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js', '46y-throne-matlib-pack.js', '46z-bio-matlib-pack.js', '47-hyperjungle.js', '47t-throne.js'}
 BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom')
 INTERIOR_SETS = ['zeijani']   # kits/interiors/sets/zeijani.js: the defs' rooms, and the carved defs' void plans

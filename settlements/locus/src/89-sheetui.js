@@ -29,7 +29,7 @@ var sheetFocus = null;
   vh.appendChild(btn('◀ Prev', function(){ focus(cur-1); })); vh.appendChild(btn('Next ▶', function(){ focus(cur+1); }));
   vh.appendChild(btn('Front', function(){ focus(cur,0); })); vh.appendChild(btn('Back', function(){ focus(cur,1); })); vh.appendChild(btn('Plan', function(){ focus(cur,2); }));
   var whole=function(){ setView(0, 1300, -CITY_EXT-900, 0, 0, -CITY_EXT*0.35); }; VIEWS.push(['Whole sheet',whole]); vh.appendChild(btn('Whole sheet', whole));
-  addEventListener('keydown', function(e){ if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return; if(e.key==='ArrowRight'||e.key==='n') focus(cur+1); if(e.key==='ArrowLeft'||e.key==='p') focus(cur-1); });
+  addEventListener('keydown', function(e){ if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return; if(e.key==='ArrowRight'||e.key==='n') focus(cur+1); if(e.key==='ArrowLeft') focus(cur-1); });   /* not P: P is Marks on every page (core/host/92k-host-keys.js), as on the Yuni kit's sheet */
   document.getElementById('hint').innerHTML += '<br><b>Left / Right arrows</b> step through the assets. Inspector on = hover for name + key. The blue tab on a footprint marks its FRONT (street side).';
   window._sheetui = { focus:focus, n:SHEET_ITEMS.length };
   setTimeout(function(){ focus(0); }, 0);

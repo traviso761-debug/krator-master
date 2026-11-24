@@ -88,7 +88,7 @@ CORE_HOST = khost.SHELL + kengine.HOST + kengine.INTERIORS_HOST   # the polygon 
 INTERIOR_SETS = ['eternian']   # kits/interiors/sets/eternian.js: core/engine plans and furnishes them (91i-interiors.js; ?interiors=1, U)
 VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['eternian', 'generic', 'generic-goods', 'jobs', 'scrap']   # the Eternians' pieces, the shared goods, the trades, scrap
+FURN_CULTURES = ['eternian', 'generic', 'generic-goods', 'jobs', 'scrap', 'arms']   # the Eternians' pieces, the shared goods, the trades, scrap; arms: the fort's armour stands (61-et-defence.js; Stage 8 D27, O5)
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', kengine.INTERIORS_FRAGMENT}
 BUNDLE_GLOBALS = ('KratorFurniture',) + kengine.INTERIORS_GLOBALS
 

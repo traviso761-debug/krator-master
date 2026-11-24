@@ -224,7 +224,7 @@ SCOPED_PREFIXES = ('86-bio-',)
 # KratorFurniture) and the interiors core with this kit's interior set (kits/interiors/kit_bundle.py:
 # KratorInteriors, ROOM, furnishRoom). Inserted at build time between the vernacular helpers and the
 # Highlands vocabulary; never written to src/. 89y-hl-furnish.js is the glue (after 73-hl-carve's own VERN.place, before the scene) (FURNISH, the interiors hook).
-FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc']
+FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc', 'arms']   # arms: the garrison's weapon racks and armour stands for the barracks and the armoury (Stage 8 D27, O5)
 VIRTUAL = {'69d-furniture-bundle.js'}
 
 

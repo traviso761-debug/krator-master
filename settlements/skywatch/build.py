@@ -311,7 +311,7 @@ for d in (('kits', 'catalog'), ('kits', 'interiors'), ('tools', 'textures')):
     sys.path.insert(0, os.path.join(ROOT, *d))
 import furniture_bundle, kit_bundle, matlib_pack  # noqa: E402
 
-FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc']
+FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc', 'arms']   # arms: the garrison's racks and stands (Stage 8 D27, O5)
 SIDE = {}
 BUNDLES = {
     '24-sw-kcity-bundle.js': kcity_bundle,

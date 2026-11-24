@@ -35,7 +35,7 @@ FURNISH_FILES = ['50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furni
 VERN = os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')
 VERNACULAR = ['69b-vern-mat.js', '69c-vern-helpers.js', '69e5-iziz-openings.js']   # what the kit draws through, read in place
 # the catalog cultures the kit's furniture comes from, as Highlands' page bundles them (settlements/highlands/build.py FURN_CULTURES)
-FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc']
+FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc', 'arms']   # arms: the garrison's racks and stands (Stage 8 D27, O5)
 FURN_BUNDLE = '69d-furniture-bundle.js'
 
 

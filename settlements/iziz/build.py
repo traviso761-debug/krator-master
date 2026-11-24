@@ -131,7 +131,7 @@ MATLIB_PACK = '69d-matlib-pack.js'
 FURN_BUNDLE = '88z-iziz-furniture-bundle.js'
 APOC_BUNDLE = '88z5-kit-apoc-bundle.js'   # GENERATED for a kit with "postApoc" in kit.json (build_one): the Post-Apoc closure
 INTERIOR_TARGETS = {'vernacular', 'palace', 'city', 'ixtest'}   # the city since 2026-10-19: every building hollow, the civic and Ancient ones furnished (95i)
-FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs']   # not generic-fruit: it laid figs on a scribe's counter
+FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs', 'arms']   # not generic-fruit: it laid figs on a scribe's counter; arms: the garrison's racks and stands (Stage 8 D27, O5)
 INTERIOR_SETS = ['iziz', 'iziz-ancient']   # iziz-ancient: the city's Ancient civic buildings (the temple, the arena...)
 # the palace page (targets/palace, 2026-10-19): Talia's (the vassal university city's: its envoys' rooms, the libraries and
 # the schoolroom), and the palace's own pieces besides (kits/catalog -izpalace.js, the court's;

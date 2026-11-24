@@ -299,7 +299,10 @@ def keymap():
     for r in roles_court: m['voth_court_' + r] = 'iziz_court_' + r
     for r in roles_common: m['voth_common_' + r] = 'iziz_common_' + r
     m.update({
-      'voth_court_armour_stand': 'generic_trade_armour_stand', 'voth_planter': 'iziz_planter', 'voth_bench': 'iziz_bench', 'voth_statue': 'iziz_statue',
+      # the garrison's arms (kits/catalog/krator-master-furniture-arms.js, rooms pal_armoury and pal_guard; Stage 8 D27, O5): the
+      # legions' own rack and stand, not the smith's wares (generic_trade_*), in the armoury, the guard rooms and the barracks
+      'voth_court_armour_stand': 'iziz_common_armour_stand', 'generic_trade_weapon_rack': 'iziz_common_weapon_rack',
+      'voth_planter': 'iziz_planter', 'voth_bench': 'iziz_bench', 'voth_statue': 'iziz_statue',
       'voth_street_brazier': 'iziz_common_fire', 'voth_canoe': None, 'voth_craft_brewer': 'generic_trade_still', 'voth_loom_display': 'iziz_common_loom',
       'voth_common_ash_niche': 'iziz_court_bust_niche', 'voth_bread_oven': 'iziz_common_hearth', 'voth_cell_grate': 'iziz_common_cell_grate', 'hl_rep_roofed_well': 'iziz_fountain',
       'voth_court_sun_throne': 'iziz_court_imperial_throne', 'voth_court_judge_dais': None, 'voth_court_wall_fountain': 'iziz_court_wall_fountain',

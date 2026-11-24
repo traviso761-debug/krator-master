@@ -231,7 +231,7 @@
       { id: 'west', poly: rect(8, 25, -16, 1.5), y: 0, levels: [{ h: 3.4 }, { h: 3 }], wall: 0.45, roof: 'gable', pitch: pt(1.1),
         doors: [{ at: [-12, -5.8], w: 1.4 }, { at: [-12, 8.8], w: 1.4 }], program: [['barracks', 'barracks', 'store'], ['barracks', 'barracks']] },
       { id: 'armoury', poly: rect(8, 5, 7, -4), y: 0, levels: [{ h: 3.4 }], wall: 0.45, roof: 'hip', pitch: pt(1),
-        doors: [{ at: [3, -4], w: 1.6 }], program: ['store'] }],
+        doors: [{ at: [3, -4], w: 1.6 }], program: ['armoury'] }],   /* armoury (was a store): the garrison's racks and stands, 'arms' (Stage 8 D27, O5) */
     note: 'the three blocks round the drill yard and the armoury (its iron door on the -x face); the gatehouse guard room over the arch has no stair drawn' });
   add({ key: 'hl_rep_muster', name: 'Mustering ground', types: ['military'], lot: [52, 34],
     skip: 'open drill field inside a low wall; the tribune is an open stand on posts' });

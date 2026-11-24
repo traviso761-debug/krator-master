@@ -590,7 +590,10 @@ BIO.def('cone',G.cone(),M.solid,{label:'Knees and spines'});
 BIO.def('rod',BIO.geo.rod(6),M.solid,{label:'Roots and stems'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(SWLOW.FIBRETEX),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(SWLOW.SMOOTHTEX),{label:'Small trunks (smooth)'});
-BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+/* the bracket fungus on core/biome's fungoid parts (BIO.fung.bracket, as eastabyss, the hyperjungle and the Rift: Stage 8 D27, O6);
+   65's bracket() turns the shelf out of its wall. ?fung=0 (or no BIO.fung on the page) keeps the old dome */
+SWLOW.FUNG=!!(BIO.fung&&BIO.fung.bracket)&&!(typeof location!=='undefined'&&new URLSearchParams(location.search).get('fung')==='0');
+BIO.def('fungus',SWLOW.FUNG?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.32,droop:.18,wav:3,wavA:.07,lump:.08,seed:5109}):new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(SWLOW.ROCKTEX),{label:'Boulders (small)'});
 /* the delta's salt marsh (60-floor, buildMarsh; 2026-10-26): cordgrass swards and glasswort, one core/tags item set of kind 'saltmarsh' (last, so the other items keep their order) */
 BIO.def('marsh',G.tuft(),M.grass,{label:'Salt marsh (cordgrass, glasswort)',kind:'saltmarsh',

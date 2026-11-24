@@ -1,0 +1,10 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls and bytes; CORE-IMPROVEMENTS.md 3d). A raise needs a new why.",
+ "pages": {
+  "xanadu.html": {
+   "tris": 7000000,
+   "why": "the Xanadu Building Kit sheet lays out every variant of every family at once (a showcase of the whole kit, not a page a player walks) and measured 6.71 M triangles against its 6 M showcase budget (S3-35); the owner raised it to 7 M rather than split the rows (Stage 8 D17), and targets/sheet/89z-rows.js SHEET.budget.showcase holds the same 7 M",
+   "raised": "2026-11-24"
+  }
+ }
+}

@@ -477,7 +477,7 @@ for d in (('kits', 'catalog'), ('kits', 'interiors'), ('tools', 'textures')):
     sys.path.insert(0, os.path.join(ROOT, *d))
 import furniture_bundle, kit_bundle, matlib_pack  # noqa: E402
 
-FURN_CULTURES = ['iziz', 'hykkousoi', 'republican', 'generic', 'generic-goods', 'scrap', 'jobs']
+FURN_CULTURES = ['iziz', 'hykkousoi', 'republican', 'generic', 'generic-goods', 'scrap', 'jobs', 'arms']   # arms: the garrison's racks and stands (Stage 8 D27, O5)
 CUT_DIR = os.path.join(ROOT, 'biomes', 'cut')
 CUT_PACK_JSON = os.path.join(CUT_DIR, 'tex', 'pack.json')
 CUT_EXCLUDE = [k for k in (json.load(io.open(CUT_PACK_JSON, encoding='utf-8')).get('families', {}) if os.path.isfile(CUT_PACK_JSON) else {})

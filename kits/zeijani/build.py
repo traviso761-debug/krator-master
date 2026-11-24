@@ -88,7 +88,7 @@ import placeholder as psky   # the placeholder sky (KratorSky), read in place: M
 CORE_HOST = khost.SHELL + khost.KEYS + ['94-host-polytool.js']   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
+FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods', 'arms']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods; arms: the guardroom's weapon rack (Stage 8 D27, O5)
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js'}
 BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom')
 INTERIOR_SETS = ['zeijani']   # kits/interiors/sets/zeijani.js: the defs' rooms, and the carved defs' void plans
