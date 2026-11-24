@@ -231,10 +231,10 @@
     "openworld/xanadu-north-shore/data/scarpw.png": "791bcdf26ee8d92448a120834253124c81d09ef9891774dc2d29594268b50a0a",
     "openworld/xanadu-north-shore/data/temp.png": "e306731abfb9936797dd96eecfcb7b997e407238c0c300daf3a7c9e53288d11a",
     "openworld/xanadu-north-shore/data/wlev.png": "dbbda846eff47583e75fdebbaa221c896a17a0f3f8ba5420f74a47e761bae0ac",
-    "openworld/xanadu-north-shore/plan/sites.json": "74ea0c144a31a8c9a73883f221d3cf28b2016d55765c7f86d1da2986ab1827de",
+    "openworld/xanadu-north-shore/plan/sites.json": "b816de1bd615b3e53e7ec0ec51be3d57a791edffdb4eab80290ecbdfb62b9db7",
     "openworld/xanadu-north-shore/src/46-world-config.js": "3dc4d0ae985b22e67f3d08ef02ab19af93c59e37f268aab6ee57e583ec3d78e4",
     "openworld/xanadu-north-shore/src/47-world-kits.js": "859057ac4d4e8acc698e27efb064310a5d497b82fd5e304e97d968b92c646d32",
-    "openworld/xanadu-north-shore/src/48-world-site.js": "6839a03555ae8f941e92513d055dac10fe0a108946b88c96fe1766bcf1d44553",
+    "openworld/xanadu-north-shore/src/48-world-site.js": "f00c0014db9dcfde2d005c4e8446068829cd9ca8636820bc396d1e45f3c2b35d",
     "openworld/xanadu-oidong-highrift/src/43-world-xoh.js": "516868f08a23ec2515291f2d565a15d58c97fd034799b8c354f906821f1fe0d4",
     "openworld/xanadu-oidong-highrift/src/49-world-xanadu.js": "4e2176fa79328240b3c57a7aba4c741e262441807972076c0ad7f089dfe1f903",
     "settlements/isle-demo/src/58-isle-protos.js": "d36369e7f45d2423e857278cbc2505604f5cd611ddc6ba4043e57f01a6d3d0fc",
@@ -320,11 +320,11 @@
    },
    "listed_by": "code",
    "outputs": {
-    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "ef8394f1bc31b3f8e5f0d0050afc28351ee20b51fc67bcc0242e3fd108b8fc16",
+    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "884bca9505530a227596f22a174b7c9e87c1b1972801dc902b89d4d6234977fe",
     "openworld/xanadu-north-shore/dist/xanadu-north-shore.tex.xanadu.js": "b7eeafa735baa0ba24c0fc867b0b4f107bbefc6ecada45921d21263ad058151d"
    },
    "outputs_raw": {
-    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "ef8394f1bc31b3f8e5f0d0050afc28351ee20b51fc67bcc0242e3fd108b8fc16",
+    "openworld/xanadu-north-shore/dist/xanadu-north-shore.html": "884bca9505530a227596f22a174b7c9e87c1b1972801dc902b89d4d6234977fe",
     "openworld/xanadu-north-shore/dist/xanadu-north-shore.tex.xanadu.js": "b7eeafa735baa0ba24c0fc867b0b4f107bbefc6ecada45921d21263ad058151d"
    }
   }

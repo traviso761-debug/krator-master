@@ -20,11 +20,16 @@ var XNS_STOPS={every:25000,inn:'xa_house_turk_a',rest:'xa_teahouse',culture:'xan
 var SITE_SPEC={region:'xanadu-north-shore',world:8431491,bridges:{culture:'xanadu'},
  sites:{
   spher0north1:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
-   {id:'farm-1',focus:'farming',bearing:295,km:8,pop:260},{id:'farm-2',focus:'farming',bearing:325,km:11,pop:260},
+   /* farm-2 at 335 degrees, not 325: on the re-run's land its road down to farm-1 ran 20 m beside the Thalaba road's
+      climb and 32 m above it, and the land between could lie on neither (2026-11-23) */
+   {id:'farm-1',focus:'farming',bearing:295,km:8,pop:260},{id:'farm-2',focus:'farming',bearing:335,km:11,pop:260},
    {id:'farm-3',focus:'farming',bearing:15,km:10,pop:260},{id:'farm-4',focus:'farming',bearing:45,km:9,pop:260},
    {id:'farm-5',focus:'farming',bearing:345,km:14.5,pop:240},{id:'farm-6',focus:'farming',bearing:70,km:12,pop:240}]},
   /* Thalaba at the mouth of Godshearth: the road's end; its countryside is its own plan's (settlements/thalaba/PLAN.md) */
-  shvo49k0y2:{culture:'xanadu'}},
+  shvo49k0y2:{culture:'xanadu'},
+  /* Malbari and Hāibh, the shore road's two ends (their ground is their town pages', settlements/xanadu-lake): sites here
+     only so the link below can name them */
+  sxanlkmulberry01:{culture:'xanadu'},sxanlkhive01:{culture:'xanadu'}},
  /* the link's first guide point is the top of Phēr's own road (settlements/pher 89zp PH.THALABA_GUIDE: its hairpins up the
     town's spur, east of the Swīṭ Siṭrīm's gorge; P8, the owner: "the switchback road does need to connect in back") */
  links:[['spher0north1','shvo49k0y2',{hw:3,r:1500,keep:true,stops:XNS_STOPS,culture:'xanadu',guide:[[843.60,1489.29],[838,1487.2],
@@ -33,7 +38,9 @@ var SITE_SPEC={region:'xanadu-north-shore',world:8431491,bridges:{culture:'xanad
   /* the shore road west from Malbari (825,1488) over the Qol Siṭrīm to Hāibh (817,1490): it crosses the river on the Qol
      bridge (SITES.json sxanqolbridge01, r272 at 823.57,1487.23; the owner, 2026-11-23: "place bridge on map at open world
      step"), which `bridges` above builds where the road meets the named river */
-  ['sxanlkmulberry01','sxanlkhive01',{hw:2,r:1000,keep:true,culture:'xanadu',guide:[[825,1488],[824.3,1487.5],[823.57,1487.23],
+  /* via 2000: the guide is resampled every `via` m (8 km by default kept one point of it, and the road met the Qol 2.5 km
+     below the bridge site, at its mouth; 1 km put a hop point where no route starts). The span stands 47 m from the site */
+  ['sxanlkmulberry01','sxanlkhive01',{hw:2,r:1000,via:2000,keep:true,culture:'xanadu',guide:[[825,1488],[824.3,1487.5],[823.57,1487.23],
    [822.8,1487.3],[820.5,1488.4],[817,1490]]}]]};
 // THE COUNTRYSIDE SAMPLE (core/world 48v and 88r; settlements/xanadu/HAMLETS-PLAN.md section 3, BUILD-PLAN A9): the province's
 // bulk villages (p7, Nōrth-Shor: the rim plain's grain and mulberry farms, the herds toward the hills) laid near nothing named, one at most to a 6 km cell, kept with the chance of its
