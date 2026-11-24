@@ -1,11 +1,14 @@
-# The Catch and the Bowl: the site plans, and the simulation (plan, 2026-11-24)
+# The site plans across the four provinces (plan, revised 2026-11-24)
 
 Item 3 of the owner's brief: *"Make site plans for Jabal, Mantis, Stair, white gill monastery, minor settlements and the
-oases and get them on the Simulation. Mantis can use a combo of the Dasri kit and Iziz vernacular."* Everything is
+oases and get them on the Simulation. Mantis can use a combo of the Dasri kit and Iziz vernacular."* Revised for the
+owner's second ask (*"Include se outer wall and stalker range in the Sim as well"*): **the sites gain Bāb al-Hawa and
+Ranger HQ, Hub 01 as a marker, and the five highland tarns as finds.** The simulation half of item 3 has moved to
+`PLAN-SIM.md`. Everything is
 *proposed* unless it quotes the owner or a settled plan. Pixels are scale model 5.1; every height and slope is measured
 (`tools/survey.py`, and the per-site samples quoted below).
 
-## 0. The thirteen sites, and what each is waiting on
+## 0. The sixteen sites, and what each is waiting on
 
 | Site | Px | Pin elev | Ground within 12-20 km | Kit | Page or laid? | Blocked by |
 |---|---|---|---|---|---|---|
@@ -22,6 +25,10 @@ oases and get them on the Simulation. Mantis can use a combo of the Dasri kit an
 | **Lasso** | 1083,1474 | 1,509 m | 845-2,122 m | `kits/dasri` + `kits/yuni` | `core/hamlet` row | the seam (`PLAN.md` 3) |
 | **Ṣalṭ al-Bān** | 1080,1428 | 458 m | 329-585 m, **slope med 9 m/km**, a pan 11 km | `kits/dasri` pan sheds | `core/hamlet` row | the pin (P5) |
 | **Solta** | 1169,1150 | -1,115 m | -1,230 to -920 m, the lake 7 km | `kits/dasri` pan sheds | `core/hamlet` row | the pin (P5) |
+| **Bāb al-Hawa** | 1028,1246 (wants the thalweg) | 3,661 m at the pin; **+3,590 m** in its plan | the Godsgate's floor at px 1027, 1,205 m below the plan's own shaft pixel | `kits/ancients` + salvage | a fixture set, not a village | question 4; P14 |
+| **Ranger HQ** | 1420,1242 | **1,982 m** | a river valley, water 2 km, the one habitable spot in 255,000 km² | `kits/yuni` (the Emirate's) | `core/hamlet` row or its own page | question 4 |
+| **Hub 01** | 1344,1409 | 4,351 m | 4.4-6 km valley ringed by 12-15 km peaks | `kits/ancients` | **a marker and a far silhouette only** | nothing: by design |
+| **The five tarns** | 1016,1236 / 1064,1272 / 1134,1218 / 1208,1254 / 1288,1184 | 3,680-4,380 m | each carved and filled **to the metre** | `biomes/seouterwall` + `kits/ancients` | fixtures (section 11) | - |
 
 **"Laid", not planned here.** `openworld/PLAN-SITES.md` step 3 (the generic town steps lifted out of `ISLE`) is not done,
 so no region plans a town of its own yet. The pattern that *does* work is **Gihon's**: the town's own page lays it on
@@ -208,25 +215,98 @@ The owner, 2026-11-16: the Train of Jabal works **both**. They are the reason th
 *Proposed:* `SITES.json` rows with `"model": false` and their own `px`, `py` now (as Lāiṭwāl, Gihon and Strongbow's foot
 are carried), the map edit queued. `CATCH_TUNE` already declares Ṣalṭ al-Bān, so the simulation is ahead of the map.
 
-## 9. What item 3 adds to the simulation
+## 9. Bāb al-Hawa, the Vent-Shaft Caravanserai (the SE outer wall)
 
-The crossing is already on it (`PROPOSAL-CATCH.md` C0-C5 done: 16 places, 7 factions, the rounds with per-leg times and
-provisioning, the Split Tally, the seasons; `test-catch.js`, 29 checks). What these site plans add:
+**What it is** (`biomes/seouterwall/PLAN.md` section 3.3): just south of the Godsgate's 3,620 m saddle divide stands a
+colossal **40 m Ancient ventilation and access shaft collar** of seamed white metal and bronze ring-bands, sunk 1,400 m
+to the mid-point of the Arcbeam-Stair base tunnel. The shaft is plugged by fallen megabreccia 180 m down, *but warm dry
+air at +16 °C still drafts gently upward through the rubble from the geothermally heated tunnel below.* Yuni, Izani,
+Dasrī and Xanadui caravaneers have turned the sunken concrete apron inside its **cyclopean wind-baffle crescent** into
+**the pass's only safe overnight camp**: a roofless stone-and-salvage caravanserai where beasts are tethered out of the
+100 km/h nocturnal God-Bore, prayer wheels spin beside Izani milestones and Yuni stencil signs, and desperate arcology
+divers now and then winch down the choked shaft toward the sealed mid-tunnel wreck.
 
-| Addition | Where |
-|---|---|
-| **Jabal** as a town with a census, in place of the off-map pool `gate.dasri`; the Train's round starting there | `BOWL_TUNE` (new) |
-| **Mantis** as an Iziz town: its merchant houses, frankincense, resin, dates, figs, the lake's take, and its salt grievance | `BOWL_TUNE` |
-| **Solta** as a second works of the Train, with Mantis buying its salt there | `BOWL_TUNE`, and a road to Jabal |
-| **Arcbeam**, **Parabola** and the Izani-Dasri village as stops on the north road, so the Iziz houses' round goes stop by stop instead of by one long leg | `BOWL_TUNE` + `CATCH_TUNE` legs |
-| The **`dasri-salt`** villages' make (salt, soda, potash, saltpeter, gypsum) feeding `CATCH_TUNE`'s existing goods | the rows |
-| The **White Gills** already declared (~15 monks); the lung salt as a good the monks sell and the caravans need | `CATCH_TUNE` (a good to add) |
-| Everything joined to Xanadu and Longsong in **`EAST_RIFT`** | `PLAN.md` section 6, C6 |
+**Why it exists at all**: the Ancients graded a **30 m surface construction highway** through the Godsgate at a 4 %
+ruling grade — board-formed cyclopean concrete cuttings and monolithic parabolic wind-baffle walls — to build and
+ventilate that tunnel and to haul reactors and crawlers too big for its bore. When the Cataclysm collapsed the tunnel
+halfway, **the surface road became the sole surviving artery between the Crater and the south**, and the vent shaft
+became the inn.
 
-**The rule:** every one of these is additive. `test-sim.js`, Voth's stocks proof and the baseline must come out
-unchanged (CLAUDE.md), and `test-catch.js`'s 29 checks must still pass before the Bowl's are added to them.
+**The plan.** Not a village: a **fixture set** (`PLAN-SETPIECES.md` section 1), because everything here is one authored
+thing in one authored place —
+1. the **shaft collar** (`kits/ancients`: seamed white metal, bronze ring-bands, 40 m across), its mouth fenced, warm
+   air visible as a shimmer in the cold;
+2. the **wind-baffle crescent**, parabolic, cyclopean, the only thing standing between a train and the God-Bore;
+3. the **sunken apron** inside it: tether rings worn bright, a thousand fire scars, salvage walls built up course by
+   course by whoever wintered here;
+4. the **shrines in four tongues**: prayer wheels, Izani milestones, Yuni stencils, a Dasri horn sign;
+5. the **divers' winch** over the shaft, and the tally of who went down.
 
-## 10. Checks (`verify.py --assert`, each with a negative)
+**Where exactly**: its plan puts the collar at **+3,590 m**; the map's pin (1033,1258) reads 4,795 m, 1,205 m up the
+corridor's east wall, while the thalweg at that row is at px 1027 (P14). *Proposed:* **move the pin onto the thalweg** —
+the plan describes a *sunken* apron on the pass floor, not a perch.
+
+**On the simulation**: `PLAN-SIM.md` section 2a. It sells **nights**, not water, and that asymmetry is the economy of
+the whole pass.
+
+## 10. Ranger HQ, and Hub 01 (the Stalker Range)
+
+### Ranger HQ
+
+**What it is**: `sz85a8i5js` at px 1420,1242, a *"fortified Yuni Stalker-watch outpost supporting caravans through the
+Stalker Gate"*, polity **Yuni Emirate**, Gemini's population 350. It is Gemini's pin of 2026-11-14 and has never been
+put to the owner (question 4).
+
+**The ground makes the case for it.** It stands at **1,982 m with water 2 km away** in a province whose median is
+7,794 m with 0 mm of rain: a river valley on the eastern edge, where the Stalker Range meets the Stalker Gate. It is the
+**one habitable spot in 255,000 km²**, and it happens to sit astride the only pass network between Yuni and the east.
+
+**The plan.** A fort, not a town: `kits/yuni` read in place (the Emirate's own fabric, and the kit exists) —
+1. a **walled compound** on the valley's shoulder, with a gate facing the Stalker Gate road;
+2. the **watch towers** with sightlines east and south, which is the whole point of the place;
+3. the **rangers' hall**, a smithy, a surgeon's room, a charcoal store, the families' quarters;
+4. the **bounty board** at the gate, and the **salvage yard** — the one place in the world where a Stalker hull, a
+   harpoon mechanism or a power cell comes to market with a provenance;
+5. the **caravan yard** outside the wall, where a train waits for an escort (`KWCAMPS` halt).
+
+**On the simulation**: `PLAN-SIM.md` section 4a. It farms nothing and eats everything carried up from the Yuni valley;
+it sells **escort** (on the Brotherhood's Split-Tally pattern) and **Stalker salvage**; it buys arms, explosives, grain,
+charcoal and medicine; and it posts the only standing bounty on Stalkers in the world.
+
+### Hub 01
+
+`sodpa02bfv` at px 1344,1409, **4,351 m** (its plan's figure to the metre): a ruined arcology in a 4.4-6 km high valley
+ringed by 12-15 km peaks, run by a mad AI, with **no polity, no people, no goods and no trade**. The owner, 2026-10-23:
+**no human has reached it since the Cataclysm and lived to tell the tale**, and in the world nobody knows the Stalkers
+come from it.
+
+**The plan is restraint.** A marker in "Go to", a far silhouette on the horizon from the Catch floor and the SE outer
+wall's eastern benches, the head of the Ancient road east as a setpiece (`PLAN-SETPIECES.md` section 4) — **and no site
+plan, no streets, no interior and no approach**. If a later session builds it, it is a dungeon, not a settlement, and it
+needs the owner's word on what is inside. Drawing it at a distance and never letting the player in is the design working
+(*"the game shows it, never says it"*).
+
+## 11. The five highland tarns: finds, not settlements
+
+`biomes/seouterwall/PLAN.md` section 4 gives five hidden highland lake oases as *"rewards for off-road exploration"*,
+each in a distinct structural trap that shields it from the katabatic wind and buffers it **+5 to +14 °C** above the
+surrounding fellfield. **All five are carved and filled on 5.1 to the metre** (`PLAN-TERRAIN.md` 6a). The region draws
+them; none carries a census (`PLAN-SIM.md` section 5).
+
+| Tarn | Px | Level | Its trap | Its exploration hook, as a fixture |
+|---|---|---|---|---|
+| **Gate-Bell** (*Kolli-Tarn*, *Birkat al-Jaras*) | 1016,1236 | 3,680 m | a hanging glacial cirque 260 m above the Godsgate's west wall, dammed by black Ti-basalt moraine | a toppled **Ancient acoustic fog-horn** that once guided blind crawlers through the pass, with a hermit Historian's observation cache in its dry bronze housing, overlooking the whole Godsgate |
+| **Amber-Sinter** (*Chashma-yi Zard*) | 1064,1272 | 3,940 m | a fault-wedge canyon where a Godthrone feeder dike intrudes the megabreccia; a 25 m travertine sinter terrace dams it; subaqueous fumaroles 55-72 °C keep it ice-free | a band of **free Talovolci prospectors and Dalab runaway mods** wintering in the warm sinter caves behind the waterfall, mining orange titanium glass and alkali sinter *without descending into the Catch*; dwarf Hearth-trees spreading 10 m black radiator umbrellas |
+| **Mirror-Slump** (*Lago de Specula*) | 1134,1218 | 4,120 m | a back-tilted listric slump sag pond 2,400 m above the Bowl, behind a 300 m **pseudotachylite friction-glass** mirror wall that focuses noon sun onto the lake | an intact **Ancient geodetic survey and laser-relay bunker** cantilevered into the black mirror-scarp, still holding unplundered optical lenses, with a panoramic sightline across the Bowl to Mantis |
+| **Jade-Karst Polje** (*Birkat al-Zumurrud*) | 1208,1254 | 4,380 m | a rafted reef-limestone megablock dissolved into an alpine karst polje 450 m below the felsenmeer; a sub-permafrost karst spring at +9 °C | a karst cavern (`KCAVERN`, `cav_sewall_jade`) connecting at depth to a fractured **Ancient seismographic vault** with alloy stock and **a sealed records cylinder detailing the Cataclysm-era seismic wave that collapsed the Stair tunnel and drove Hub 01 mad** |
+| **Copper-Vein** (*Waita-Kopa*, *The Stalker's Mirror*) | 1288,1184 | 3,820 m | a glacial rock basin cut through a malachite-azurite-chalcopyrite skarn vein, staining the shallows peacock-blue | the **Geomancers' abandoned high copper-and-rare-earth mine**, given up to Stalker incursions from Hub 01 225 km SSE; a **wrecked Harpooner frozen in the aufeis** beside an unlooted battery-charging winch — and a live Stalker pair on the upper moraine at dusk |
+
+The Jade-Karst records cylinder is worth flagging on its own: it is the one object in the region that **answers the
+author's open question** (what drove Hub 01 mad), and the owner has deliberately left that open to all three causes
+(contamination, a virus, reprogramming). So the cylinder should say what the *wave* did and not what it *caused* — or
+the plan loses the owner's ambiguity.
+
+## 12. Checks (`verify.py --assert`, each with a negative)
 
 - **Each site at its pixel**, on dry land, inside its overlay, within a band of the height this plan quotes; the negative
   reads a point 14 km off.
@@ -243,5 +323,16 @@ unchanged (CLAUDE.md), and `test-catch.js`'s 29 checks must still pass before th
 - **Jabal**: the citadel on the rock in `o.cliff` mode with its skirt on the ground, the two caravanserais on the salt
   road, the *birka* at the bottom of the catchment.
 - **The works**: the pans flat (under 20 m/km), the sheds beside them, the trail to Stair at its grade.
+- **Bāb al-Hawa**: the collar on the thalweg (not 1,205 m above it), the crescent upwind of the apron, the apron below
+  the crescent's lip, the winch over the shaft; a walker on the apron in the God-Bore takes less `cold` than one outside
+  it. Negative: the apron placed outside the crescent must fail that comparison.
+- **Ranger HQ**: the compound walled and gated toward the Stalker Gate, each tower's sightline clear east and south
+  (ray-marched, as `KCAMP.lookout` scores), the caravan yard's halt pitched outside the wall. Negative: a tower with the
+  valley wall across its line must fail.
+- **Hub 01**: a marker and a silhouette, and **nothing enterable** — no lanes, no lots, no interior. The check is an
+  inverse: the registry holds no building records at Hub 01's site.
+- **The five tarns**: each water body at its planned level to within a metre (3,680 / 3,940 / 4,120 / 4,380 / 3,820 m),
+  each fixture on its own ground, the Amber-Sinter grove warmer than the fellfield round it. Negative: each level read
+  2 km off its pixel.
 - **The baked plan is the plan made again in the browser** (the region's standing check), and `bake_sites.py --check`
   fails on a stale bake.

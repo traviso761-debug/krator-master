@@ -1,4 +1,13 @@
-# The Catch and the Bowl: the terrain survey and the pitfall register (2026-11-24)
+# The Catch, the Bowl, the SE outer wall and the Stalker Range: the terrain survey and the pitfall register
+
+**Revised 2026-11-24, second pass** (the owner: *"Include se outer wall and stalker range in the Sim as well"*). The
+first pass covered `the catch` and `the bowl` only, and two of its figures were wrong. Both are corrected below and the
+wrong readings are kept beside the right ones, so nobody re-derives them:
+
+| First pass said | It is actually | Why it was wrong |
+|---|---|---|
+| "the lowest crossing of the Catch's north wall is **5,282 m** at px 1029,1300" | the **Godsgate's carved corridor** runs **2,284 to 3,739 m**, median grade 1.1 %, p95 3.5 % (section 5a) | it measured the lowest *column maximum* across a band. That answers "how high is the wall", not "how high must a road climb": a meandering carved corridor has a thalweg, and the thalweg is the road's answer |
+| "**no dust weather**: `core/atmos` has no dust, so a `DUST_MODES` family is proposed" | `core/atmos/fx/89-atmos-fx-airload.js` was written **for the Catch's black storms by name** (the owner, 2026-10-26), with `ATMOS.dustSeason` and `ATMOS.gale` beside it, feeding `KHAZ.provide` | the first pass read `core/atmos`'s weather **modes** and stopped there; the storms live in its opt-in `fx/` layer (`PLAN-HAZARDS.md` is rewritten round this) |
 
 Item 1 of the owner's brief: *"Assess terrain for conversion and make sure there aren't any pitfalls."* Everything below
 is measured on **scale model 5.1** by `openworld/catch-bowl/tools/survey.py` (read-only on
@@ -9,15 +18,32 @@ Nothing here is *proposed*: it is what the map holds today. The judgements that 
 
 ## 1. The polygons as they stand
 
-| Polygon | Id | Kind | Box (px) | Box (km) | Inside | Elev min / med / max | Rain med | Temp med | Water |
-|---|---|---|---|---|---|---|---|---|---|
-| `the catch` | `rmvka7icdn1dq` | biome | 959-1241 x 1288-1517 | 566 x 460 | 126,000 km² | -72 / 3,542 / 8,790 | 110 mm | +4 °C | 1.7 % |
-| `the bowl` | `rmvka5413efyi` | biome | 913-1255 x 1042-1193 | 686 x 304 | 121,000 km² | -1,284 / -754 / 4,347 | 298 mm | +27 °C | 8.0 % |
-| `twins` | `rmw536m06wlyf` | biome | 935-1095 x 1419-1570 | 322 x 304 | 49,000 km² | 2,713 / 4,166 / 6,922 | 267 mm | +1 °C | 0 % |
-| `stalker range` | `rmvkknh1am4fw` | biome | 1195-1476 x 1153-1483 | 564 x 662 | 255,000 km² | 1,895 / 7,794 / 15,041 | 0 mm | -22 °C | 0.1 % |
+The region's four provinces, and the two the seam touches:
 
-Also on the map: `Stalker Peaks` (`rmwstalkerpks`, geographic, the owner's note names Hub 01 and the 12-15 km peaks),
-`The Catch` and `The Bowl` as older *geographic* regions, `godthrone`, `godstep valley`, `Stalker Gate`, `sedesert`.
+| Polygon | Id | Kind | Box (px) | Box (km) | Inside | Elev min / med / max | Rain med | Temp med | Water | Over 8 km |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `the catch` | `rmvka7icdn1dq` | biome | 959-1241 x 1288-1517 | 566 x 460 | 126,000 km² | -72 / 3,542 / 8,790 | 110 mm | +4 °C | 1.7 % | 0 % |
+| `the bowl` | `rmvka5413efyi` | biome | 913-1255 x 1042-1193 | 686 x 304 | 121,000 km² | -1,284 / -754 / 4,347 | 298 mm | +27 °C | 8.0 % | 0 % |
+| **`SE outer wall`** | `rmw4xy4tp9b29` | biome | 997-1356 x 1136-1352 | 720 x 434 | **153,000 km²** | 3,086 / **7,962** / 11,707 | 141 mm | **-21 °C** | 0.1 % | **49 %** |
+| **`stalker range`** | `rmvkknh1am4fw` | biome | 1195-1476 x 1153-1483 | 564 x 662 | **255,000 km²** | 1,895 / **7,794** / 15,041 | **0 mm** | **-22 °C** | 0.1 % | **47 %** |
+| `twins` (region 2's) | `rmw536m06wlyf` | biome | 935-1095 x 1419-1570 | 322 x 304 | 49,000 km² | 2,713 / 4,166 / 6,922 | 267 mm | +1 °C | 0 % | 0 % |
+| `Stalker Gate` (a later region's) | `rmvstalkergate` | biome | 1333-1554 x 1093-1422 | 444 x 660 | 129,000 km² | 1,783 / 4,057 / 9,837 | 251 mm | +3 °C | 0.4 % | 3 % |
+
+Also on the map: `Stalker Peaks` (`rmwstalkerpks`, geographic, 90,000 km², median 8,396 m, 15 % over 12 km — the owner's
+note names Hub 01 and the 12-15 km peaks), `The Catch` and `The Bowl` as older *geographic* regions, `godthrone`,
+`godstep valley`, `sedesert`, `Loom Chasms`, `The Slabfields`, `Siphon Pits`.
+
+**`SE outer wall` is the wall between the Bowl and the Catch** — the 188 km the first pass called "the gap" and proposed
+to bridge with a corridor. There is no gap: there is a province, with a **built kit of six stations**
+(`biomes/seouterwall`, `dist/seouterwall.html` plus `gatetarn`, `ambertarn`, `jadecrest`, `mirrorscarp`, `coppertarn`)
+and a 434-line plan whose subject is **the Godsgate**, the pass this whole crossing depends on. The owner's brief for it:
+*"relatively inhospitable, the kind of place most would not want to stay for long, but might contain a handful of tiny
+highland lake oases an enterprising player might find exploring. In the west, the Godsgate, the great pass to the Catch
+and Xanadu runs."*
+
+**`stalker range` is where the Stalkers come from.** 255,000 km² with **0 mm of median rain**, a median of 7,794 m and
+47 % of it over 8,000 m: the least habitable province in the region by a wide margin, and the only one whose simulation
+value is not economic (section 6a).
 
 **Good news first.** Every one of these overlays already has a land style and a palette in `core/world`
 (`41-world-fields.js` `BIOME_GROUND`): `the catch` draws on the **`desert`** style with a **`catch`** palette, `the bowl`
@@ -26,15 +52,32 @@ carries `dune: 1` (full dune seas) and `terr`/`gully` for the lake beds, and `WO
 `oasis`, `salt`, `cold`, `mist`** — the exact fields the Catch and Bowl kits read. There is no missing land style, no
 missing palette and no missing field for this region. That was the largest risk and it is not a risk.
 
-## 2. Scale: is one region feasible?
+## 2. Scale: is one region still feasible with four provinces?
 
-The union of `the catch` and `the bowl` is **61,799 px = 247,000 km² of filled cells** in a bounding box of px
-913-1256 x 1042-1518 = **686 x 952 km (653,000 km²)**.
+| The cut | Filled | Bounding box | Centre px |
+|---|---|---|---|
+| catch + bowl (the first pass) | 247,000 km² | px 913-1254 x 1043-1516 = 682 x 946 km = 645,000 km² | 1084,1280 |
+| + SE outer wall | 400,000 km² | px 913-1355 x 1043-1516 = 884 x 946 km = 836,000 km² | 1134,1280 |
+| **+ stalker range (the owner's ask)** | **649,000 km²** | px 913-1475 x 1043-1516 = **1,124 x 946 km = 1,063,000 km²** | **1194,1280** |
+| + Stalker Gate (not asked for) | 708,000 km² | px 913-1553 x 1043-1516 = 1,280 x 946 km = 1,211,000 km² | 1233,1280 |
+| *reference:* `xanadu-oidong-highrift` | ~295,000 km² | 1,037,000 km² at 1 km cells | a 7.6 MB page |
 
-The precedent settles it. `xanadu-oidong-highrift` fills about **295,000 km²** (73,650 px of polygon) inside a
-**1,037,000 km²** box at 1 km cells, and its page is about 7.6 MB against a 16 MB cap. The Catch and the Bowl together
-are **smaller on both counts**. One region at 1 km cells is within proven ground; two regions would be a choice about
-seams and sessions, not about size. (`openworld/catch-bowl/PLAN.md` section 2 proposes the cut.)
+The four provinces fill **2.2 times what region 2 fills**, in a bounding box the **same size** as region 2's. That
+reads alarming and is not, for one reason: **what the two new provinces add is empty.**
+
+- The rasters are cut to the **box**, and the box is region 2's size. That cost is already paid.
+- The **content** scales with what grows and what is built. `stalker range` has 0 mm of median rain, 78 % of it over
+  5,000 m and **two settlements**; `SE outer wall` is 83 % over 6,500 m with **one**. Between them, 408,000 km² of new
+  polygon carries about a dozen drawn places (the Godsgate, five tarns, Ranger HQ, Hub 01) and almost no flora.
+- The one genuinely new cost is the **far horizon**: four provinces mean four sets of ridges, and the 12-15 km peaks of
+  the Stalker Peaks now stand *inside* the box rather than beyond it (section 4).
+
+So: one region, four polygons, 1 km cells, origin pinned at **px [1194, 1280]**. `Stalker Gate` is left out — the owner
+did not ask for it, it overlaps `stalker range` by 70,000 km², and it belongs with Yuni, the Loom Chasms and the
+Slabfields in a later region (`PLAN.md` section 3a).
+
+**Overlaps** (`extract_region.py` gives the overlap to the *smaller* polygon, as `PLAN-BOWL.md` intends): `the catch`
+takes its 6,000 km² shared with `stalker range`, and its 26 px shared with `SE outer wall`; nothing else matters.
 
 ## 3. The Catch is closed, and the floor is small
 
@@ -61,23 +104,62 @@ under 600 m (px 1009-1126 x 1370-1451). *Judgement:* the dunes, lake beds and sa
 **three quarters of the catch polygon is wall, not floor** (74.5 % of it is over 1,600 m, 61 % over 3,000 m). A region
 that treats the whole polygon as basin will grow dunes up a mountainside.
 
-## 4. The walls: the 10-17 km crests are outside the polygon
+## 4. The walls: now inside the cut, not beyond it
 
 Inside `the catch` the highest ground is **8,790 m**, and only 15 % of it is over 5,000 m. The lore's 10-17 km walls are
-the **`stalker range`** east (median 7,794 m, **max 15,041 m, 47 % of it over 8,000 m**) and the Godthrone north-west.
+the **`SE outer wall`** north (median 7,962 m, max 11,707 m, 49 % over 8,000 m), the **`stalker range`** east (median
+7,794 m, **max 15,041 m, 47 % over 8,000 m**) and the Godthrone north-west.
 
-*Judgement:* the Catch's defining view — "10-17 km walls on every horizon" — cannot be drawn from cells the cut holds if
-the cut is the two biome polygons. It has to come from `core/world/bake_horizon.py` (the far horizon baked from the
-model beyond the box) and the sky's ridges, exactly as the kit's station pages do it. **Budget for the horizon bake as a
-first-class step, not a trim.** The alternative (growing the box east over 255,000 km² of 8-15 km rock to draw it as
-ground) is how a region gets too big.
+**The owner's ask changes this from a horizon problem into a terrain problem.** The first pass proposed drawing the walls
+through `core/world/bake_horizon.py` because the 10-17 km rock lay outside a two-polygon cut. With the SE outer wall and
+the Stalker Range *in* the cut, **408,000 km² of 6.5-15 km rock becomes streamed ground**, and three things follow:
+
+1. **It is almost all unenterable, and that is the design.** Above about 8,000 m the air is `Class O` in the kit's own
+   terms (0.40-0.44 atm at the Tharn ring walls) — `KHAZ`'s `thin-air` row runs from .6 atm "a person tires" to .06 atm
+   "the blood boils". So the right treatment is **ground that is drawn and hazard that forbids**, not ground that is
+   missing. `KHAZ.zones` already feeds `KWALK` and Godot's enter costs with `avoid`.
+2. **The far horizon still matters**, for the Godthrone (25 km, west of the box) and the crater beyond. Keep the horizon
+   bake; it is now carrying less.
+3. **The vertical range grows.** The box now spans about -1,284 m (the Bowl floor) to 15,041 m (the Stalker Peaks):
+   **16,325 m**, against region 2's 18,143 m, which it draws. Still inside proven ground.
+
+*Judgement:* budget the horizon bake, and budget a **pass over what the 8 km ground costs to stream** — 83 % of the SE
+outer wall and 47 % of the Stalker Range are ground no walker will ever stand on, and `minWave` (`WORLD.H`'s detail
+cutoff) is the lever. A chunk no one can reach does not need 2 m vertices.
+
+## 5a. The Godsgate: the corrected finding
+
+**`biomes/seouterwall/PLAN.md` section 6.2 carved a pass, and the carve landed.** Following the corridor's own thalweg
+(for each row, the lowest cell between px 1005 and 1058, which is the test a road takes):
+
+| | |
+|---|---|
+| The thalweg's floor | **2,284 m to 3,739 m** |
+| Its line | px **1026 to 1039**, meandering, over py 1195 to 1315 |
+| Length, climb, descent | 413 km of polyline, 2,378 m of climb, 1,972 m of descent |
+| Grade | **median 1.1 %, p95 3.5 %** |
+| The saddle crest | **3,620 m at px 1031,1252** — the plan's figure, to the metre |
+| The north sill | 3,595 m at 1026,1224 (planned 3,380) |
+| The southern narrows | 3,886 m at 1035,1292 (planned 3,480) |
+
+So the Godsgate is **a road, not a wall**: a 100 km trans-cordilleran trench floored at 3.4-3.7 km, at a gentler grade
+than the Catch floor's own tracks. The first pass's 5,282 m was a column maximum across a band — the wrong test entirely
+(see the header). A `ROADS` route at 8 % will follow this thalweg almost as it lies.
+
+**Its own plan gives it everything else too** (`biomes/seouterwall/PLAN.md` section 3): the Ancients' **30 m surface
+construction highway** at a 4 % ruling grade with board-formed cyclopean cuttings and parabolic wind-baffle walls, built
+to haul what the Arcbeam-Stair base tunnel could not fit, and **the sole surviving artery between the Crater and the
+south** once the Cataclysm collapsed that tunnel; the **Twin Gate-Horns** (Ilmenite Horn west, Shatter-Crown east); the
+drainage divide at 1031,1252 where meltwater parts between `Guli rrija` north to the Bowl and `Wādī al-Qamar al-Kabīr`
+south to the Catch; and **Bāb al-Hawa**, the 40 m Ancient ventilation shaft collar whose rubble plug still drafts +16 °C
+air upward, with the pass's only safe overnight camp in the lee of its wind-baffle crescent. Names in all five tongues.
 
 ## 5. The ways in and out
 
 | Route | km | z start..end | Max | Climb | Grade med / p95 / max |
 |---|---|---|---|---|---|
 | Jabal > Parabola | 516 | -1,206..1,716 | 1,716 | 5,372 | 0.9 % / 4.4 % / 21.5 % |
-| Parabola > Godsgate > Kolli | 416 | 1,716..1,446 | **6,918** | 14,145 | 3.6 % / 22.3 % / 47.3 % |
+| Parabola > the Godsgate > Kolli (straight hops: **the wrong tool**, see 5a) | 416 | 1,716..1,446 | 6,918 | 14,145 | 3.6 % / 22.3 % / 47.3 % |
 | Kolli > Arfwai > Stair | 190 | 1,446..1,379 | 1,739 | 3,757 | 1.1 % / 16.0 % / 29.7 % |
 | Stair > Bitta > Lasso | 84 | 1,379..1,509 | 1,799 | 1,572 | 2.1 % / 12.9 % / 15.5 % |
 | Lasso > Catch-Lookout | 59 | 1,509..3,690 | 3,690 | 2,471 | 2.3 % / 16.6 % / 35.6 % |
@@ -91,12 +173,11 @@ and gentler. Three readings matter.
 1. **The crossing's length is right.** Godsgate to Catch-Lookout measures 582 km of straight hops; routed, that is the
    lore's ~700 km crossing (`biomes/catch/PLAN.md` section 4). The sim's leg times (`CATCH_TUNE`) were set on these
    distances and need no revision.
-2. **The north road is the hard part, and it is harder than the plan says.** The lowest crossing of the Catch's north
-   wall between px 990 and 1180 is **5,282 m at px 1029,1300**. The Bab al-Hawa pin (1028,1246) stands at 3,661 m on the
-   *outside* of that wall and the Ancient network's shaft (1033,1258) at 4,795 m. The plan's "6.2 km notch" is the
-   notch's **altitude**, and 5.1's own lowest saddle is kinder than it — but a caravan still crosses a 5.3 km pass, and a
-   `ROADS` route held to 8 % will switchback a long way to do it. *Judgement:* lay the north road as a **trail** (section
-   7, pitfall P4) and expect its laid length to be well over the 249 km the straight hop measures.
+2. **The north road is the easy part — corrected.** Section 5a: the Godsgate's carved thalweg tops out at 3,739 m at a
+   median 1.1 % grade. The straight-hop row above reads 6,918 m only because a straight line leaves a meandering
+   corridor. The plan's "6.2 km notch" was the notch's **altitude** before the carve; the carve replaced it with a
+   3,620 m saddle. *Judgement:* the north road still wants the **trail** kind (pitfall P4) for its width and finish, not
+   for its grade, and its laid line should be routed **along the thalweg**, not from pin to pin.
 3. **The Bowl is flat.** Mantis to Solta to Jabal is 227 km at a median 0.9 % with a 7.1 % worst step: the Bowl's roads
    and the salt trains are easy ground. Jabal to Parabola climbs 2,900 m over 516 km, also easy.
 4. **The south wall** between the floor and the Twins has its lowest crossing at **4,245 m (px 1079,1505)**, but the
@@ -108,8 +189,8 @@ and gentler. Three readings matter.
 | Place | Px | Elev | Rain | Temp | Note |
 |---|---|---|---|---|---|
 | Parabola | 970,1186 | 1,716 m | 314 mm | +15 °C | the north gateway, outside both polygons |
-| Bab al-Hawa (Godsgate pin) | 1028,1246 | 3,661 m | 282 mm | +4 °C | the pin the owner dropped; still on the map (P6) |
-| Bab al-Hawa shaft | 1033,1258 | 4,795 m | 251 mm | -2 °C | the Ancient network's shaft (`ANCIENT-NETWORK.md` 8.1 q7) |
+| Bab al-Hawa (the pin) | 1028,1246 | 3,661 m | 282 mm | +4 °C | 41 m above the thalweg beside it; the pin the owner dropped, still on the map (P6) |
+| Bab al-Hawa (the plan's shaft, 1033,1258) | 1033,1258 | **4,795 m** | 251 mm | -2 °C | its plan puts the vent collar and caravanserai at **+3,590 m**: the pin is **1,205 m up the corridor's east wall** (P14) |
 | Kolli | 1058,1367 | 1,446 m | 47 mm | +15 °C | first water down from the Godsgate |
 | Arfwai | 1090,1387 | 1,074 m | 31 mm | +18 °C | the driest oasis; the Train's well by the pans |
 | Ṣalṭ al-Bān | 1080,1428 | 458 m | 16 mm | +19 °C | the salt works; **pin not on the map** (P5) |
@@ -122,8 +203,45 @@ and gentler. Three readings matter.
 | the Bowl salt lake | 1147,1141 | -1,079 m (level -1,158) | 408 mm | +29 °C | 3,129 km², spill -990 m, closed |
 | Solta | 1169,1150 | -1,115 m | 659 mm | +29 °C | the Bowl's salt works; **pin not on the map** (P5) |
 | Jabal | 1225,1149 | **-1,206 m** | 533 mm | +29 °C | on the **Bowl floor**, not on the Catch's rim (P8) |
-| Hub 01 | 1344,1409 | 4,351 m | 157 mm | -2 °C | in `stalker range`, 255 km east of Stair |
+| Hub 01 | 1344,1409 | **4,351 m** | 157 mm | -2 °C | its plan's figure to the metre; in `stalker range`, 255 km east of Stair |
+| **Ranger HQ** | 1420,1242 | **1,982 m** | - | - | Yuni's Stalker-watch outpost, water 2 km off: the lowest, wettest ground in the Stalker Range, and the only habitable place in it (P16) |
+| Arcbeam | 1016,1058 | 2,119 m | - | - | the Bowl's arcology, gentle upland |
+| the Izani-Dasri village | 1042,1083 | 895 m | - | - | the Bowl's unnamed village |
 | Strongbow | 1001,1596 | 1,400 m | 800 mm | +14 °C | region 2's, at the seam |
+
+## 6a. The two new provinces, measured against their own plans
+
+**The SE outer wall: the carve landed, the rescale did not.** `biomes/seouterwall/PLAN.md` section 6 is a two-step
+terrain blueprint — step 1 rescales the cordillera (a 4,850 m median, **zero cells over 6,500 m**), step 2 carves the
+Godsgate corridor, step 3 carves and fills the five tarns. Steps 2 and 3 are **on the map, to the metre**; step 1 is
+**not applied at all**:
+
+| Feature | Its plan | 5.1 | Delta |
+|---|---|---|---|
+| Godsgate saddle crest (1031,1252) | 3,620 m | **3,620 m** | 0 |
+| Tarn 1 Gate-Bell (1016,1236) | 3,680 m | **3,680 m**, water 4 km | 0 |
+| Tarn 2 Amber-Sinter (1064,1272) | 3,940 m | **3,940 m**, water 2 km | 0 |
+| Tarn 3 Mirror-Slump (1134,1218) | 4,120 m | **4,120 m**, water 2 km | 0 |
+| Tarn 4 Jade-Karst Polje (1208,1254) | 4,380 m | **4,380 m**, water 2 km | 0 |
+| Tarn 5 Copper-Vein (1288,1184) | 3,820 m | **3,820 m**, water 2 km | 0 |
+| Hub 01 (1344,1409) | 4,351 m | **4,351 m** | 0 |
+| **the province's median** | **4,850 m** | **7,962 m** | **+3,112** |
+| **cells over 6,500 m** | **zero** | **31,490 of 38,152 (83 %)** | - |
+| Ilmenite Horn (1008,1248) | 5,480 m | 6,527 m | +1,047 |
+| Shatter-Crown (1056,1244) | 5,760 m | 6,903 m | +1,143 |
+| Bab al-Hawa shaft (1033,1258) | 3,590 m | 4,795 m | +1,205 |
+| Tharn crater floor (1375,1525) | 6,185 m | 6,856 m, with a lake at **6,910 m** | +671 |
+
+*Judgement:* every **named place** is where its plan puts it, because each was carved or filled individually; the
+**matrix between them** is the untouched 8-11 km cordillera. That is a coherent and playable state — the pass works, the
+tarns work — but it is not what the kit's six stations were designed to stand in, and the two Gate-Horns that frame the
+Godsgate read 1,000 m too high. P13.
+
+**The Stalker Range: nothing to simulate except its fringe.** 0 mm of median rain, a -22 °C median, 78 % over 5,000 m,
+47 % over 8,000 m, 3 % over **12,000 m**, and two settlements in 255,000 km²: **Hub 01** (a ruined arcology with no
+polity and no people, whose mad AI is the author's secret) and **Ranger HQ** at 1420,1242, which sits at **1,982 m with
+water 2 km away** — a river valley on the province's eastern edge, where it overlaps the Stalker Gate. Everything
+simulable in this province is at Ranger HQ or is a Stalker. P16, and `PLAN-SIM.md` section 4.
 
 ## 7. The pitfall register
 
@@ -164,10 +282,18 @@ Catch (`PLAN.md`, question 3).
 
 ### P3 — `core/world` has no hazard binding *(core work; blocking for item 2)*
 
-`core/hazard` is built and rich (`KHAZ`, plus the opt-in `flow`, `env`, `bore` and `tunnel` fragments: `KHAZ.front` for a
-travelling front, `KHAZ.crust` for ground that breaks underfoot, `KHAZ.night` for air that pools, `KHAZ.bindWind`). **No
-fragment of `core/world` mentions it.** Hazards reach pages today through `core/biome`'s station hosts and `core/host`'s
-inspector, neither of which a region page lists. See `PLAN-HAZARDS.md` for the two fragments proposed.
+`core/hazard` is built and **much richer than the first pass credited**: `KHAZ` with the opt-in `flow`, `env`, `bore` and
+`tunnel` fragments (`KHAZ.front` for a travelling front, `KHAZ.crust` for ground that breaks underfoot, `KHAZ.night` for
+air that pools, `KHAZ.bindWind`), **and an ambient bridge** — `KHAZ.provide(field, fn)` with `VOCAB.ambientKinds` already
+carrying `thin-air`, `cold`, `hot`, `dust`, `ash` and **`caustic-dust` described as "for the Catch's black storms off its
+dry soda lakes"**, plus `KHAZ.sight`, `KHAZ.seen` and `KHAZ.aim` on real aerosol optics. `core/atmos/fx/` supplies those
+fields (`ATMOS.airLoad`, named for the Catch's black storms; `ATMOS.dustSeason`; `ATMOS.gale`, built 2026-11-10 for the
+SE outer wall's God-Bore).
+
+**What is missing is only the binding.** No fragment of `core/world` mentions `KHAZ`: hazards reach pages through
+`core/biome`'s station hosts and `core/host`'s inspector, and a region page lists neither. So item 2 is mostly
+**wiring two finished modules together**, which is a much better position than the first pass described.
+`PLAN-HAZARDS.md` is rewritten round this.
 
 ### P4 — `ROADS` has one hard-coded grade and one width *(core work; blocking for items 4 and 6)*
 
@@ -186,22 +312,34 @@ supported: a scale-model edit that lands the pins, or `SITES.json` rows with `"m
 (as Lāiṭwāl, Gihon and Strongbow's foot are carried today). **Recommended: `model: false` rows now, the edit queued**, so
 the region does not wait on the map session.
 
-### P6 — two pins the owner dropped are still on the map *(decide before the cut)*
+### P6 — the dropped pins, and the reason they were dropped *(decide before the cut; revised)*
 
-The owner, 2026-11-16, dropped Gemini's Godsgate caravanserai and Twins fort (`PROPOSAL-CATCH.md` question 6). On 5.1
-they were dropped as `gem_godsgate` and `gem_twins_pass` in `SETT_DROPPED['5.1e14']` and **re-added in the same batch
-under new ids**: `sbabalhawa01` "Bab al-Hawa (Godsgate)" at 1028,1246 and `sthetwins01` "Twins Pass Wardenry" at
-1042,1525. Both are live. A cut that lists the region's sites by name will pick them up, and the sim does not know them.
-There is a real tension to resolve, not just a stale record: the owner **accepted** the Bab al-Hawa *shaft* and the
-surviving Godsgate highway in the Ancient network the same month (`ANCIENT-NETWORK.md` 8.1, answer 7), so the place
-exists even though the *caravanserai settlement* was dropped. `PLAN.md`, question 4.
+The owner, 2026-11-16, dropped Gemini's Godsgate caravanserai and Twins fort, giving the reason **"Gemini's pin, with no
+lore"** (`PROPOSAL-CATCH.md` question 6). On 5.1 they were dropped as `gem_godsgate` and `gem_twins_pass` in
+`SETT_DROPPED['5.1e14']` and **re-added in the same batch under new ids**: `sbabalhawa01` "Bab al-Hawa (Godsgate)" at
+1028,1246 and `sthetwins01` "Twins Pass Wardenry" at 1042,1525. Both are live.
 
-### P7 — the gap between the polygons *(a corridor, not a problem)*
+**The reason has since stopped being true, and the owner may not know.** Six days before the drop,
+`biomes/seouterwall/PLAN.md` section 3.3 (2026-11-10) gave Bāb al-Hawa a page of lore: *the Vent-Shaft Caravanserai*, a
+40 m Ancient ventilation and access shaft collar of seamed white metal and bronze ring-bands sunk 1,400 m to the
+mid-point of the Arcbeam-Stair tunnel, plugged by megabreccia 180 m down but still drafting +16 °C air upward, with the
+sunken concrete apron inside its cyclopean wind-baffle crescent turned into **the pass's only safe overnight camp** — a
+roofless stone-and-salvage caravanserai where beasts are tethered out of the 100 km/h God-Bore, prayer wheels spin
+beside Izani milestones and Yuni stencil signs, and divers winch down the choked shaft. The owner **also accepted** the
+Bab al-Hawa shaft and the surviving Godsgate highway in the Ancient network on 2026-11-11 (`ANCIENT-NETWORK.md` 8.1,
+answer 7). And **Ranger HQ** (`sz85a8i5js`) is a third pin of the same provenance — Gemini's trade model, 2026-11-14 —
+that was never put to the owner at all.
 
-`the bowl` ends at py 1193 and `the catch` begins at py 1288: **188 km of unclaimed ground** that the north road crosses,
-holding Parabola (970,1186) and the Godsgate. `cut_site.py` corridors (`{from, to, width_km}`) exist for exactly this.
-Proposed in `PLAN.md` section 2: a 20 km corridor Parabola to Kolli, wide enough to hold the 5.3 km saddle and its
-switchbacks.
+So the question is not "is this a stale record" but **which of Gemini's three pins the owner now wants**, given that one
+of them has acquired a kit's worth of lore and another has a Yuni garrison's job. `PLAN.md`, question 4.
+
+### P7 — the gap between the polygons *(withdrawn: there is no gap)*
+
+The first pass found 188 km of unclaimed ground between `the bowl` (ends py 1193) and `the catch` (begins py 1288), and
+proposed a 20 km `cut_site.py` corridor across it. **That ground is the `SE outer wall` polygon** (997-1356 x
+1136-1352), which the owner has now asked for. No corridor is needed: the north road lies inside a province for its
+whole length. Parabola (970,1186) is inside `the bowl`, Kolli (1058,1367) inside `the catch`, and everything between
+them inside the SE outer wall.
 
 ### P8 — Jabal is a Bowl town *(a wording fix, carried into the plans)*
 
@@ -240,11 +378,85 @@ pose** (the lore's defining behaviour — lying in wait under a hand's depth of 
 thing that drags the quarry), and lopsided footprints. A Stalker ambush that cannot be drawn buried is a Stalker standing
 in the open. `PLAN-RAIDS.md`, step R3.
 
+### P13 — the SE outer wall's cordillera rescale never landed *(an owner call; shapes the whole province)*
+
+Section 6a has the table. `biomes/seouterwall/PLAN.md` step 6.1 would compress the province into a **4,850 m median with
+zero cells over 6,500 m**, "eliminating the unbreathable 8-15 km Class O pancake while keeping dramatic 2,000-3,000 m
+local relief"; the map still reads **7,962 m median, 83 % over 6,500 m, max 11,707 m**. Steps 6.2 (the Godsgate) and 6.3
+(the five tarns) did land, so the province is a working pass and five working tarns set in an un-rescaled wall.
+
+Three ways forward, and this is the single biggest decision the two new provinces raise:
+1. **Apply step 6.1** (a scale-model edit: it is written as deterministic numpy, and the kit's six station bases assume
+   it). The whole province becomes enterable alpine country, the two Gate-Horns come down to 5.5-5.8 km, and the kit's
+   stations stand in what they were designed for.
+2. **Leave it.** The pass and the tarns work; the matrix is wall. Cheapest, and the region can be cut tomorrow — but the
+   kit's stations are then 1-3 km lower than their surroundings and the "handful of tiny highland lake oases an
+   enterprising player might find exploring" are reachable only along the carved corridors.
+3. **Apply it to the western lobe only** (x 997-1150, the Godsgate's frame and tarns 1-3), leaving the eastern wall above
+   Hub 01 airless, which is where the lore wants it anyway (the Stalkers transit the high snow-chutes).
+
+*Proposed:* **(3)**, and ask. It gives the player the explorable half, keeps the Stalkers' half forbidding, and is a
+smaller edit than (1).
+
+### P14 — Bāb al-Hawa's pin is 1,205 m up the corridor wall *(fix with the cut)*
+
+Its own plan puts the vent-shaft collar and the caravanserai at **+3,590 m** just south of the 3,620 m saddle. The map's
+pin (1033,1258) reads **4,795 m**; the corridor's floor at that row is at px **1027**. Either the pin moves ~12 km west
+onto the thalweg, or the caravanserai stands on a bench the region cuts (`WLAND`'s `bench` record). *Proposed:* move the
+pin — the plan describes a **sunken** concrete apron on the pass floor, not a perch.
+
+### P15 — the Tharn crater is 671 m out and holds a lake *(leave it; a later session's)*
+
+Station 12 (`biomes/seouterwall/PLAN.md` 7.2) wants a +6,185 m impact-melt floor with a +6,180 m cryo-fumarole tarn at
+px 1375,1525. The map reads **6,856 m with a lake at 6,910 m**. It is outside both the SE outer wall and the Stalker
+Range polygons (it lies across the Tharn/Stalker massif), so **this region does not cut it** and the discrepancy is the
+kit's to resolve. Noted so nobody plans a site there.
+
+### P16 — the Stalker Range has almost nothing to simulate *(a design answer, not a blocker)*
+
+255,000 km², **0 mm of median rain**, -22 °C median, 47 % over 8,000 m, two settlements. There is no economy here, no
+flora to speak of (its ground style is `highland`/`outlands`, so `biomes/outlands` reads in place), and **no biome kit of
+its own**. The simulation value of the province is three things and no more: **Ranger HQ** (Yuni's Stalker-watch at
+1,982 m, Gemini's population 350), **Hub 01** as a source with no economy, and **the Stalkers** as the predation that
+source emits. `PLAN-SIM.md` section 4 designs exactly that and nothing else. The mistake to avoid is giving the province
+a census it has no business having.
+
 ## 8. What the survey did *not* find
 
-- **No dune, salt or oasis field is missing from `core/world`**: all three are in `WORLD.FIELDS` already.
-- **No vertical-range problem.** The Catch's box spans 17,299 m of relief; `xanadu-oidong-highrift`'s spans 18,143 m and
-  draws it. The logarithmic depth buffer and the chunk quadtree handle it.
+- **No dune, salt or oasis field is missing from `core/world`**: all three are in `WORLD.FIELDS` already, and all four
+  provinces have a style and a palette in `BIOME_GROUND`: `the catch` -> `desert`/`catch`, `the bowl` ->
+  `desert`/`desert`, **`se outer wall` -> `alpine`/`seouterwall`** (its own palette) and `stalker range` ->
+  `highland`/`outlands`. Nothing to add there.
+- **No vertical-range problem**, even with the Stalker Peaks inside the box: 16,325 m against region 2's 18,143 m.
 - **No rain problem.** The 4.22 correction has landed: the floor reads 16-47 mm (Ṣalṭ al-Bān 16, Stair 47) against the
   4.21 survey's ten-times-generous figures. `biomes/catch/PLAN.md` sections 2 and 3 are satisfied by the map.
 - **No water-tint gap.** `WORLD.waterBodies()` already carries how salt each body is, and `41` has a `SALT` colour.
+- **No storm machinery missing** (corrected): `ATMOS.airLoad` carries the Catch's karaburan by name, with a storm field
+  carried from upwind, `stormH` giving a wall a few hundred metres to a kilometre high, and `KHAZ.sight` turning it into
+  a 57 m visibility on Chepil and Woodruff's curve. `ATMOS.gale` carries the God-Bore. `ATMOS.dustSeason` ties the lift
+  to `KCLOCK.season(...).dry`.
+- **No thin-air kind missing** (corrected): `VOCAB.ambientKinds` has `thin-air` from .6 atm to .06 atm, which is exactly
+  what 408,000 km² of 6.5-15 km rock needs.
+- **No Godsgate problem** (corrected): section 5a.
+- **No gap between the Bowl and the Catch** (withdrawn): P7.
+
+## 9. The register at a glance
+
+| | Blocking | What |
+|---|---|---|
+| **P1** | yes | `biomes/catch`'s oasis records 75-209 km off their pins; its station 1 and 4 sites on mountainside (P2) |
+| P2 | no | two of four Catch station sites now on 4.9 and 7.0 km of wall |
+| **P3** | yes | `core/world` has no hazard binding (but `core/hazard` and `core/atmos/fx` are both ready) |
+| **P4** | yes | `ROADS` fixes one grade and one width as module constants |
+| **P5** | yes | the two salt-works pins are not on the map |
+| P6 | decide | Gemini's three pins: Bāb al-Hawa (now with lore), the Twins fort, Ranger HQ (never put to the owner) |
+| P7 | withdrawn | there is no gap: it is the SE outer wall |
+| P8 | no | Jabal is a Bowl town, not on the Catch's rim |
+| P9 | decide | the Twins polygon overlaps region 2: the seam |
+| P10 | no | `biomes/gills` is a plan, not a kit: the Hermitage's pipe field waits |
+| P11 | no | `extract_region.py` wants scipy; GPU verifies want a lane |
+| P12 | no | the Stalkers have no buried pose and no harpoon line |
+| **P13** | decide | the SE outer wall's cordillera rescale never landed (83 % over 6,500 m against a target of zero) |
+| P14 | no | Bāb al-Hawa's pin is 1,205 m up the corridor wall |
+| P15 | no | the Tharn crater is 671 m out; outside this cut |
+| P16 | no | the Stalker Range has almost nothing to simulate, and should not be given a census |

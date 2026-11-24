@@ -92,6 +92,26 @@ Three items from the kit's own `KNOWN_ISSUES.md`, and they are item 5's real art
 3. **The lopsided footprints**, so a triad's oriented boxes file correctly in `core/space` and the ambush's placement
    stops being wrong by a metre.
 
+### R3a — the Stalkers' home, now that it is in the cut
+
+The owner's second ask puts **Hub 01** and the **Stalker Range** inside the region, which changes the Stalkers from
+weather into a loop. `PLAN-SIM.md` section 4 has the design; what matters for raids:
+
+- **Hub 01 is a faction with no economy and one output**: a hidden, capped **pressure** number (0..1) that sets how many
+  triads are abroad and where. It rises slowly, falls when triads are destroyed, and **cannot be driven to zero**.
+- **Ranger HQ is the counterparty**: Yuni's Stalker-watch at 1,982 m, which sells escort across the Stalker Gate, buys
+  Stalker salvage, and **posts the only standing bounty on Stalkers in the world**. So `SIM.bounty` (R1) has a real
+  issuer in this region rather than a generic one.
+- **The triads' seeding gains a second weight**: distance from Hub 01, beside the leg's traffic. They also transit the
+  **SE outer wall's eastern half** — its plan's 2.5 has pairs and triads using the high snow-chutes and dry wadis
+  (`Loua Waita Guli`, `Waita Guli`, `Wādī al-Zulāl`) between Hub 01, the Catch and the collapsed northern half of the
+  Arcbeam-Stair tunnel — so the Godsgate's eastern approaches are hunted ground, not just the floor.
+- **The whiteout changes the fight, with no new code.** `KHAZ.aim` already gives what a shot is worth through a given
+  sight range; a 57 m storm wall or a sub-12 m rime whiteout therefore makes a Stalker ambush a different encounter from
+  the same ambush in clear air (`PLAN-HAZARDS.md` section 6).
+- **Clearing triads must actually help.** The loop is: bounty paid -> pressure falls -> the floor's loss rate falls ->
+  the caravans' books improve. If that loop does not close, the province is decoration.
+
 ### R4 — the camps on the ground (this region)
 
 `KCAMP.outlawCamp` lays a hidden band camp and `KCAMP.lookout` ranks a lookout by `sees x (1 - seen)` over the real
@@ -105,6 +125,8 @@ go on:
 | BF-05's HQ, the collapsed culvert | east of Mantis (1113,1164) | an Ancient culvert in the Bowl's silt; the Mantis-Solta road its prey |
 | BF-05's sub | Solta (1169,1150) | the salt-pan debtors' own works, which is why they know the shifts |
 | BF-06's sub | the Jabal desert tracks | naphtha against the Train's salt trains |
+| **No bandit camp in the Godsgate** | - | deliberate: at 3,590 m in a 100 km/h nightly gale, with one shelter and no cover, a gang would freeze before it robbed anyone. The pass's danger is the pass |
+| **No bandit camp in the Stalker Range** | - | also deliberate: 0 mm of rain, -22 °C, and the real Stalkers would take them first. BF-07's Tin-Skulls *imitate* Stalkers on the Catch rim precisely because they cannot live where the Stalkers do |
 
 Each camp is pitched **out of line of sight of the road** with two or three ray-marched lookouts that see it, by the
 module's own score — which means the region's roads have to be laid first, and that a camp moves when a road moves.

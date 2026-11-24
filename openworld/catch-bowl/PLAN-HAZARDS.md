@@ -1,85 +1,151 @@
-# The Catch and the Bowl: the hazards (plan, 2026-11-24)
+# The Catch, the Bowl, the Godsgate and the Stalker Range: the hazards (plan, revised 2026-11-24)
 
-Item 2 of the owner's brief: *"Implement hazards (eg temperature, caustic storms, stalkers)"*. Everything here is
-*proposed* unless it quotes the owner or a settled plan. Read `core/hazard/README.md` first: it has the record shape,
-the kinds table and the functions.
+Item 2 of the owner's brief: *"Implement hazards (eg temperature, caustic storms, stalkers)"*, now over four provinces
+(the owner: *"Include se outer wall and stalker range in the Sim as well"*).
 
-## 1. What is already in hand, and the one thing that is missing
+> **Revised, second pass.** The first pass proposed a `thin` hazard kind and a `DUST_MODES` weather family. **Both
+> already exist**, and better than proposed: `core/hazard`'s `VOCAB.ambientKinds` carries `thin-air`, `cold`, `hot`,
+> `dust`, `ash` and **`caustic-dust` whose row says, in the module, "for the Catch's black storms off its dry soda
+> lakes"**; and `core/atmos/fx/89-atmos-fx-airload.js` was written to the owner's 2026-10-26 word *"provide KHAZ's dust,
+> ash, alkali and visibility fields from its dust weather, the Throne's ash and the Catch's black storms"*. The first
+> pass read `core/atmos`'s weather **modes** and stopped; the storms live in its opt-in `fx/` layer. Sections 1 to 4 are
+> rewritten. **Item 2 is mostly wiring two finished modules together, not building.**
 
-`core/hazard` is built and is a better fit than the brief assumes:
+Everything is *proposed* unless it quotes the owner or a settled plan. Read `core/hazard/README.md` (the record shape,
+the kinds table, the ambient bridge) and `biomes/seouterwall/PLAN.md` section 2 (which designs five hazards in detail).
 
-| Need | What `core/hazard` already has |
+## 1. What is already in hand
+
+### 1a. `core/hazard`: records, and an ambient bridge
+
+| Need | What exists |
 |---|---|
-| The floor's heat, the passes' cold | the kinds `heat` and `cold`, with `dose`, `falloff`, `radiant` and `soak` |
-| The caustic alkali dust | the kind **`acid`**, effect **`corrode`** |
-| A storm that travels and passes | **`KHAZ.front`** (`22-core-hazard-env.js`): a hazard that runs a path with a head, a width and a speed |
-| A salt crust that breaks underfoot | **`KHAZ.crust`** and **`KHAZ.under`**: intact until a load breaks it, then broken, with brine or `sink` beneath |
+| The floor's heat, the passes' cold | the **ambient** rows `hot` (burn, 45 to 70 °C) and `cold` (freeze, 0 to -40 °C), as *fields*, not placed shapes |
+| **Thin air** over 408,000 km² of 6.5-15 km rock | the ambient row **`thin-air`** (suffocate, .6 atm "a person tires" to .06 atm "the blood boils"; the Godthrone's rim is .07) |
+| The caustic alkali dust | the ambient row **`caustic-dust`** (corrode): `alkali` (.05 to .5 of the dust that is caustic salt) times `dust` (1 to 25 mg/m³), **named for the Catch's black storms**, which also choke on the `dust` row and blind through `sight` |
+| What a storm does to cargo | the same row: *"it etches what lies open: a cargo system takes its corrode dose"* |
+| How far one sees in it | **`KHAZ.sight`** (Chepil and Woodruff 1957: 2,000 mg/m³ ≈ 57 m, 12 ≈ 6 km), and **`KHAZ.seen`** / **`KHAZ.aim`** (Koschmieder) for a shot or a spotting in it |
+| A storm that travels and passes | **`KHAZ.front`** (`22-core-hazard-env.js`) |
+| A salt crust that breaks underfoot | **`KHAZ.crust`** and **`KHAZ.under`** |
 | The cold that pools in the hollows at night | **`KHAZ.night`** with `shape.pool`, on `KHAZ.bindClock` and `KHAZ.bindWind` |
 | The Stalkers | the kind **`hunter`**, with `trigger {by: near}`, `move`, `cycle` and `tell` |
-| Navigation that avoids them | `KHAZ.zones` -> `KWALK.export().zones` -> Godot's travel and enter costs |
-| The Godot twin | `core/hazard/GODOT.md` (the Area3D, navigation and status mapping) |
+| A bore's rockburst, inrush and seal | **`22-core-hazard-bore.js`** and **`-tunnel.js`** (for the Theodiga bore and the Bab al-Hawa shaft) |
+| Navigation that avoids them | `KHAZ.zones` -> `KWALK.export().zones` -> Godot's travel and enter costs, with `avoid` |
+| Everything summed at a point | **`KHAZ.here(x, y, z, t, T, {guard})`** -> `{records, ambient, doses, sight}`; `guard` is what a mask or a suit keeps out |
+| The Godot twin | `core/hazard/GODOT.md` |
 
-**The missing piece is the binding.** No fragment of `core/world` mentions `KHAZ` (pitfall P3). Hazards reach pages today
-through `core/biome`'s station hosts and `core/host`'s inspector, and a region page lists neither. Two new core
-fragments are proposed in section 5, on the pattern `48w`/`88s` set for the pitched camps a fortnight ago.
+### 1b. `core/atmos/fx`: the fields that feed it
 
-Two smaller gaps:
+Every one of these is opt-in, listed by path, and already built:
 
-- **No thin-air kind.** `VOCAB.hazardKinds` has `heat cold gas acid poison fall pit thorn grab drown sink slip crush
-  hunter lava fire luck trap time mine`. The Catch's passes are 0.64-0.76 atm and the lore already answers them (the
-  White Gills' **lung salt**, *Lãg Solṭ*, "cut against thin-air sickness on the pass"), so thin air is a mechanic the
-  world is waiting for. *Proposed:* a kind **`thin`**, effect `suffocate`, added the way the tunnel fragment adds
-  `rockburst`, `inrush` and `seal` (rows added to the vocabulary at first use), so no existing page changes.
-- **No dust weather.** `core/atmos` has `A.MODES=['auto','clear','rain','storm','fog']` plus the opt-in `ASH_MODES` and
-  `SNOW_MODES`. There is no dust. Section 4.
+| Fragment | What it gives |
+|---|---|
+| **`89-atmos-fx-airload.js`** (`ATMOS.airLoad`) | dust, ash and **caustic alkali** in mg/m³ at any point and time, and the page's fog driven by the same numbers "so a 57 m sight in `KHAZ.sight` is a 57 m wall on screen". It has a **storm** term by name — *the Catch's karaburan, a black storm* — carried from upwind over bare ground, `stormFloor` of it over anything else, thinning over `stormH` ("a wall a few hundred metres to a km high") |
+| **`89-atmos-fx-dustseason.js`** (`ATMOS.dustSeason`) | `KCLOCK.season(...).dry` scales what the wind lifts, so the storms are the dry season's |
+| **`89-atmos-fx-gale.js`** (`ATMOS.gale`) | **the God-Bore**: built 2026-11-10 *for `biomes/seouterwall`'s PLAN.md section 2.1*. Turns the page's base wind toward the gale by night and back by day, 80-130 km/h, and raises the gusts with it, so the foliage, smoke, rain, snow and cloth all follow |
+| `89-atmos-fx-katabatic.js`, `-acid.js`, `-gustsheen.js`, `-airload.js` | Godshearth's night drainage, acid rain, the gust's sheen over crops, the air's load |
 
-## 2. Temperature
+**So the whole chain exists**: `ATMOS.airLoad` -> `KHAZ.provide('dust'|'alkali'|'visibility', fn)` -> `KHAZ.ambient` ->
+`KHAZ.here(...).doses` and `.sight` -> the walker, the NPCs, the cargo and the port's fog.
 
-Three hazards, each read from the ground rather than placed by hand, so the region's whole floor and every pass carry
-them without a record per kilometre.
+### 1c. The one thing missing: the binding in `core/world`
 
-| Hazard | Kind | Where it lies | *Proposed* numbers |
-|---|---|---|---|
-| **The floor's furnace** | `heat` | the Bowl under -500 m and the Catch under 1,000 m, by `WORLD.at()`'s height, `salt` and `dune` | `danger` rising from .15 at the edge to **.55** on the Bowl floor (47 °C extreme at 1.83 atm, `PLAN-BOWL.md` section 1) and **.45** on the Catch's lake bed; `radiant` by the hour on the world clock, worst 12.00-16.00; `soak` so shade and night relieve it |
-| **The passes' cold** | `cold` | over 3,500 m by height, worst over 4,500 m | `danger` .3 at 3,500 m to **.7** at 5,300 m (the north wall's saddle); on the clock, worst before dawn; a gale multiplier through `KHAZ.bindWind` |
-| **Night cold in the hollows** | `cold`, `stateFn 'KHAZ.night'`, `shape.pool` | the oases' hollows, the terminal lake's pan, the Hall of the Tally-Marks | pools below the hollow's lip in still air after 22.00, gone by 09.00; the reason a caravan camps inside the corral wall |
-| **Thin air** | **`thin`** (new), effect `suffocate` | over 3,000 m, by height | `danger` .1 at 3,000 m to **.5** at 5,300 m; relieved by lung salt (an item effect, not a hazard field); the Twins' col and the north wall are the only ground over 4,000 m a caravan crosses |
+**No fragment of `core/world` mentions `KHAZ`** (pitfall P3). Hazards reach pages through `core/biome`'s station hosts
+and `core/host`'s inspector, and a region page lists neither. Section 5 proposes the two fragments.
 
-The Bowl's heat already has its look built (`biomes/sedesert` B3: the heat shimmer and the inferior mirage, by the hour,
-gone at dawn and dusk). The region takes the shimmer from the kit rather than writing another.
+## 2. Temperature, air and the four provinces
 
-## 3. The caustic storms
+All of it ambient: fields, not records, because every one varies with height and hour over hundreds of thousands of
+square kilometres. The region provides `pressure` and `temperature` (from `core/atmos` by height and from the model's
+`tm` raster), and `KHAZ` turns them into doses on the rows above.
 
-The owner, 2026-11-16: **the Catch floor closes in the spring's black dust storms**. `CATCH_TUNE` already carries the
-season as data (year days **70-112**, through the valley host's `losses` and `siteSeasons`: C5 is done). What is missing
-is the storm on the ground. Three layers, each doing one job:
+| Province | `thin-air` | `cold` | `hot` | Notes |
+|---|---|---|---|---|
+| **the Bowl** (-1,284 to 4,347 m, +27 °C median) | none: 1.83 atm on the floor | nothing | **the hardest `hot` in the region**: the floor reaches +47 °C, into the row's 45-70 °C ramp | the lore's "hottest ground in the east". `biomes/sedesert` already draws the shimmer and the mirage |
+| **the Catch** (-72 to 8,790 m, +4 °C median) | on its walls only | the passes, and `KHAZ.night` pools in the oases' hollows | the floor: +21 °C mean at the terminal lake, "a furnace" by day | both ends of the ramp in one province |
+| **the SE outer wall** (3,086 to 11,707 m, **-21 °C median**) | **83 % of it is over 6,500 m**: thin-air from mild at the pass to lethal on the crest | **the dominant hazard**: summer afternoons +6 to +14 °C plunging to -10 to -22 °C before dawn (its plan, 2.2) | nothing | the Godsgate itself is the exception: 0.99-1.05 atm at 3,350-3,750 m, breathable and mild |
+| **the Stalker Range** (1,895 to 15,041 m, **-22 °C median**, 3 % over 12,000 m) | **lethal over most of it** | lethal | nothing | Ranger HQ's valley at 1,982 m is the one place in the province where neither bites |
 
-1. **The season.** Already on the simulation. The caravans wait it out at Stair and Kolli; the region needs no new data,
-   only to read `CATCH_TUNE.calendar` so a page's clock and the simulation agree about which days are storm days.
-2. **The standing hazard.** A region-wide `acid` zone over the dry lake beds and the pans (the alkali's source: Owens
-   Lake is the model, `biomes/catch/PLAN.md` section 6a), `danger` **.1** outside the window and **.6** inside, falloff
-   `smooth` off the pans' edges, `tell` the white haze. This is what burns the eyes and lungs of anyone on the floor in
-   the season even between storms.
-3. **The storm itself, as a front.** `KHAZ.front` with kind `acid`: a path across the floor from the north-west
-   (the prevailing wind off the Godthrone), a head, a width of tens of kilometres and a speed; `danger` **.85** in the
-   head, falling behind it; it blinds, it scours and it fills tracks (the plan's "no tracks that last"). A caravan
-   caught in the open loses beasts; one that reaches a yardang field shelters (`biomes/catch/PLAN.md` section 7:
-   "shelter for a caravan in a storm, and nowhere to live"), which is the one piece of terrain that answers a hazard.
+*Judgement:* with these two provinces in the cut, **`thin-air` stops being a flavour hazard and becomes the thing that
+defines where the player may go**. It is the right mechanism for it: `KHAZ.zones` gives `avoid` to the navigation
+layers, so an NPC, a caravan and Godot's pathfinder all refuse the 8 km ground without anyone drawing a wall.
 
-**The Bowl's own storms** are ochre, not white: its floor is a playa of red clay and halite, not soda. Same machinery,
-a different palette and a lower danger (**.4** in the head: hot and blinding, not caustic).
+## 3. The storms, the gales and the whiteouts
 
-## 4. The dust weather family (core, `core/atmos`)
+Five, and the first three are already designed in `biomes/seouterwall/PLAN.md` section 2.
 
-*Proposed:* `A.DUST_MODES = ['dusthaze', 'duststorm']`, offered only to a host that asks (`o.dust`), exactly as
-`ASH_MODES` and `SNOW_MODES` are. It rides the ash machinery (`A.PRESETS.ash` -> `A.PRESETS.dust`: `stormFog`,
-`ashfall`, the wind preset), so `weatherTarget` and `weatherStep` gain two cases and nothing else changes. The palette
-comes from the overlay: the Catch's alkali white-grey, the Bowl's ochre. `core/world/45-world-host.js`'s
-`HOST.weather()` asks for it where a region's kits are dry and salt (`WORLD.at().salt`), and `?weather=duststorm` opens
-a page in it for a shot and a check.
+### 3a. The Catch's black storms (the karaburan)
 
-`core/atmos`'s ground dust (`89-atmos-3d-dust.js`) is already taken by `biomes/catch` for the dust off bare dry ground.
-That is the still-day haze and the dust devil; the storm is the mode above. Both, not one.
+The owner, 2026-11-16: **the Catch floor closes in the spring's black dust storms**. Already on the simulation as a
+window (`CATCH_TUNE`, year days 70-112, C5 done). On the ground, three layers:
+
+1. **The season**: `ATMOS.dustSeason` on `KCLOCK.season(...).dry`, reading `CATCH_TUNE.calendar` so the page's clock and
+   the books agree about which days are storm days.
+2. **The standing load**: `ATMOS.airLoad`'s dust over the dry lake beds and the pans, with `alkali` at .05 outside the
+   window and up to .5 inside — which is what burns the eyes and lungs of anyone on the floor in the season, and etches
+   open cargo, even between storms.
+3. **The storm**: `airLoad`'s **storm** term (its own word for it: the Catch's karaburan), set by the page, carried from
+   upwind, `stormH` high; and, where the player should see one arrive and pass, a `KHAZ.front` with kind `acid` on top.
+   `KHAZ.sight` then gives the 57 m wall, and `KHAZ.aim` gives what a shot through it is worth.
+
+The one piece of terrain that answers it is the **yardang fields** (`biomes/catch/PLAN.md` section 7: "shelter for a
+caravan in a storm, and nowhere to live"), which is why they are a setpiece (`PLAN-SETPIECES.md` section 4).
+
+### 3b. The Bowl's own storms
+
+Ochre, not white: a playa of red clay and halite, not soda. The same `airLoad` machinery, a different palette, `alkali`
+near zero and a lower danger — hot and blinding, not caustic.
+
+### 3c. The God-Bore and the Salt-Draught (the SE outer wall)
+
+Its plan's section 2.1 is a two-way barometric engine between the Bowl at 1.83 atm and the Catch at 1.35-1.55 atm, with
+the Godthrone shedding hyper-chilled air down its eastern flank:
+
+- **By afternoon, the anabatic *Salt-Draught***: 45-75 km/h upslope, carrying the Catch's stinging alkali dust and the
+  Bowl's ochre salt-haze up to the 4,500 m benches. So the SE outer wall gets the Catch's `caustic-dust` **without
+  having a soda lake** — the dust is advected. `airLoad` carries dust from upwind already (`fetch`), which is exactly
+  this.
+- **By night, the katabatic *God-Bore***: 80-130 km/h down every couloir, funnelling through the Godsgate "like a jet
+  engine", from two hours after sunset until after dawn. `ATMOS.gale` is built for it. As a hazard it is **`cold` times
+  wind**: in ~1.0 atm at -15 °C, convective hypothermia unless sheltered behind a wind-baffle or inside a cirque tarn
+  hollow. `KHAZ.bindWind` is how the `cold` row learns about it.
+
+This pair is the reason Bāb al-Hawa sells nights rather than water (`PLAN-SIM.md` section 2a).
+
+### 3d. The rime-ice whiteouts
+
+Its plan's 2.3: moist air off the Bowl's lake-effect plumes forced up the northern listric scarps meets freezing air off
+the crest and condenses instantly. **Visibility 80 km to under 12 m in minutes**, and 30-80 cm horizontal rime-ice
+feathers (*anemousite*) on every cairn, boulder and harness. On the sim it is a **closure with a warning**
+(`PLAN-SIM.md` 2c); on the ground it is a `visibility` field provided straight to `KHAZ.provide` — the README's own case:
+*"a page that knows its fog or smoke outright provides `visibility` (m)"*.
+
+### 3e. Rockfall
+
+Its plan's 2.4: crossing 0 °C twice a day, the megabreccia pries loose blocks from fist-sized to 20 tons; the
+4,200-5,400 m slopes are felsenmeer and scree aprons (`KRELIEF.talus`), and steep couloirs discharge **noon** rockfalls
+as the sun melts the ice cement. A `crush` record with a **cycle** whose `on` is at midday and whose `warn` is the
+clatter — the one hazard here that is a placed shape rather than a field, because a chute is a place.
+
+## 4. What the region must *provide*, and nothing more
+
+The whole of sections 2 and 3 reduces to a short list of `KHAZ.provide` calls the region makes once, plus two placed
+kinds. That is the actual work of item 2:
+
+| Field | From | For |
+|---|---|---|
+| `pressure` | `core/atmos` by height | `thin-air` over four provinces |
+| `temperature` | the model's `tm` raster, plus height, hour and `KHAZ.night` | `cold`, `hot` |
+| `dust`, `alkali` | `ATMOS.airLoad` + `ATMOS.dustSeason` | `dust`, `caustic-dust`, and the cargo's corrode dose |
+| `visibility` | the whiteout and the storm wall | `KHAZ.sight`, `KHAZ.seen`, `KHAZ.aim` |
+| *the wind* | `ATMOS.gale`, through `KHAZ.bindWind` | the God-Bore's bite on `cold`, and `KHAZ.night` |
+| *the clock* | the world's `core/clock`, through `KHAZ.bindClock` | every cycle, and the night pools |
+
+Placed, not provided: **`crust`** (the salt pans), **`crush`** (the rockfall chutes), **`hunter`** (the Stalkers),
+`fall` and `heat` (the Twins' traps, region 2's), and the bore hazards at the two Ancient shafts.
+
+**Nothing new is proposed for `core/hazard` or `core/atmos`.** The first pass's `thin` kind and `DUST_MODES` family are
+both withdrawn.
 
 ## 5. The core binding (*proposed*)
 
@@ -108,8 +174,13 @@ so node, the page and Godot give the same hazards.
 
 - Registers each planned hazard in `core/tags` **before it is drawn** (the house rule), through `KHAZ.make` so an
   unknown kind, shape or falloff fails loudly.
-- Binds `KHAZ.bindClock` to the world's clock (`core/clock`) and `KHAZ.bindWind` to `ATMOS`'s wind, which `KHAZ.night`
-  and the fronts both need and which no page has done yet.
+- **Makes the `KHAZ.provide` calls of section 4**, which is the larger half of the job and the one no page does yet:
+  `pressure` and `temperature` from the world's own fields, `dust`, `alkali` and `visibility` from `ATMOS.airLoad` and
+  `ATMOS.dustSeason` where the region lists them. A region that lists no `fx` fragment provides nothing and the ambient
+  hits are simply absent, which is `KHAZ`'s own documented behaviour.
+- Binds `KHAZ.bindClock` to the world's clock (`core/clock`) and `KHAZ.bindWind` to `ATMOS`'s wind (`ATMOS.gale`'s, where
+  the region takes it), which `KHAZ.night`, the fronts and the God-Bore's bite on `cold` all need and which no page has
+  done yet.
 - Draws the tells: the haze, the storm's wall, the crust's hollow sheen, the pool's shimmer — and nothing at all for the
   Stalkers (section 6).
 - Adds the hazard line to the region's inspector. `core/host`'s `93-host-inspect.js` has `KHOST.hazardNote`, but a region
@@ -149,8 +220,19 @@ As hazards, they are unlike every other hazard here, and the design has to respe
 - **They are drawn from `kits/mechs`** (culture `stalker`, `st_harpooner` and `st_blade`) — and **they cannot yet be
   drawn buried** (pitfall P12, `kits/mechs/KNOWN_ISSUES.md`): no buried or dormant pose, no line on the harpoon. Those
   two are the real work of item 2's third clause and belong in `kits/mechs`, not here. `PLAN-RAIDS.md` step R3.
-- **They are not on the Bowl.** The Stalkers are the Catch's and the Stalker Peaks' (`biomes/catch/PLAN.md` section 6c).
-  The Bowl's predator is the Bowl mantis (owed to `kits/fauna`) and its danger is bandits.
+- **They are not on the Bowl.** The Stalkers are the Catch's, the Stalker Range's and now the **SE outer wall's eastern
+  half**: its plan's section 2.5 has pairs and triads using the high snow-chutes and dry wadis of the eastern wall
+  (`Loua Waita Guli`, `Waita Guli`, `Wādī al-Zulāl`) to transit between Hub 01, the Catch and the collapsed northern half
+  of the Arcbeam-Stair tunnel. The Bowl's predator is the Bowl mantis (owed to `kits/fauna`) and its danger is bandits.
+- **The whiteout is their weapon, and the maths for it is already written.** Its plan, 2.5: *"in the whiteout rime-fog,
+  a white-hulled Harpooner crouching motionless among white quartz-breccia boulders is virtually invisible until its
+  pneumatic harpoon hisses."* That is `KHAZ.aim` exactly — Koschmieder's contrast at distance, judged by the worst sight
+  at the shooter, the line's middle or the target. A Stalker ambush in a 57 m whiteout and the same ambush in clear air
+  are two different fights **without a line of special-case code**, because the sight field already drives both.
+- **Where they come from is now on the map.** `PLAN-SIM.md` section 4b makes Hub 01 a source with a hidden, capped
+  pressure number that sets how many triads are abroad. The hazard records are seeded from it, weighted by distance from
+  Hub 01 and by the leg's traffic — so clearing triads genuinely lowers the danger, and the province is a loop rather
+  than a backdrop.
 
 ## 7. The guides' traps, and the rest of the register
 
@@ -170,17 +252,33 @@ This region's own register, beyond sections 2, 3 and 6:
 | A dry well | *not a hazard record* | it is the simulation's: `CATCH_TUNE` runs Arfwai's well down to 30 % in late summer (C5, done) |
 | The Theodiga bore's Stair mouth | `22-core-hazard-bore.js` presets: `rockburst`, `inrush`, `seal` | the divers' prospect; the fragment exists and is opt-in |
 | The Hub 01 road | `hunter`, danger 1 | 44 km of Ancient tunnel east, the one way in; nobody who has taken it has come back. A hazard that is a warning, not a fight |
+| The Bāb al-Hawa shaft | `22-core-hazard-bore.js`: `crush`, `inrush`, `seal` | 1,400 m down to the collapsed Arcbeam-Stair tunnel, plugged 180 m down, still drafting +16 °C air. The divers winch into it |
+| The felsenmeer and scree aprons | `slip` | the SE outer wall's 4,200-5,400 m benches: ground that clatters and shifts underfoot (its plan, 2.4) |
+| The noon rockfall chutes | `crush` on a cycle | the same province's steep couloirs, discharging as the sun melts the ice cement (section 3e) |
+| The Stalker Range above 8,000 m | `thin-air` + `cold`, ambient, with `nav.avoid` | 47 % of 255,000 km²: drawn ground nobody may stand on. The hazard, not a missing mesh, is what keeps them out |
+| The Tharn massif's ring walls | the same | 0.40-0.44 atm, `Class O` in the kit's own term; outside this cut but on its horizon |
 
 ## 8. Checks (each with a negative, as the house rule asks)
 
-- **The fields**: the floor's heat over .4 at the terminal lake and under .2 at Kolli; the cold over .5 at the north
-  wall's saddle and under .2 at Stair; the thin air over .3 at the Twins' col. Negatives: the same reads at the
-  opposite place.
+- **The ambient fields** (`KHAZ.here(...).ambient`, worst first): `hot` biting on the Bowl floor and nothing at Ranger
+  HQ; `cold` biting on the SE outer wall's crest at 04.00 and nothing at Mantis; `thin-air` k over .8 at 12,000 m in the
+  Stalker Range, mild at the Godsgate's 3,620 m saddle (0.99-1.05 atm) and absent on the Catch floor. Negatives: each
+  read at the opposite place. With no field provided, **no ambient hits and no `ambient` key in the export** (the
+  module's own test does this, so the region's check mirrors it).
+- **`KHAZ.sight`**: clean air over the Catch floor gives hundreds of km; the storm's wall gives about 57 m; the SE outer
+  wall's whiteout gives under 12 m. `KHAZ.aim` at 100 m through the wall keeps nothing and at 20 m keeps about a
+  quarter. Negative: the same calls outside the window.
+- **`nav.avoid`** on the ground over 8,000 m: `KWALK.export().zones` lists it, and a route asked across the Stalker
+  Range refuses. Negative: the same route through the Godsgate succeeds.
 - **The night pool**: cold at 03.00 inside the hollow's lip and nothing at 14.00, nothing in a gale (`KHAZ.bindWind`).
 - **The crust**: a 60 kg load holds, a beast's load breaks it, and it stays broken (`KHAZ.load`, `heal: null`); the
   brine below reads `held` while it holds. Negative: the same on gravel reg.
-- **The storm**: inside its window the front crosses the floor, the ways it covers are closed to `KTRAVEL`, and a shot in
-  `?weather=duststorm` shows it; outside the window the floor is clear. Negative: the same day a year on.
+- **The storm**: inside its window `ATMOS.airLoad`'s storm term raises the dust, `KHAZ.sight` falls to the wall's range,
+  the ways it covers are closed to `KTRAVEL`, open cargo takes a corrode dose, and a shot of it shows the wall the sight
+  range promises; outside the window the floor is clear. Negative: the same day a year on.
+- **The God-Bore**: `ATMOS.gale` turns the base wind after dusk and back by dawn; `cold`'s dose on the Godsgate's floor
+  is worse at 02.00 than at 14.00 by the wind's factor; a walker behind a wind-baffle takes less. Negative: the same at
+  noon, and the same with the gale fragment not listed (the page must draw as it drew).
 - **The Stalkers**: a triad's record is in the registry, is **not** on the minimap overlay, and the inspector does not
   name it before it moves; `KHAZ.at` gives danger 1 inside and 0 a stage away. Negative: the overlay with `hunter`
   allowed must fail the check.

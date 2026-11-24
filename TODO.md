@@ -21,18 +21,23 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
-## The Catch and the Bowl in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
+## The Catch, the Bowl, the SE outer wall and the Stalker Range in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
 
-The owner's eight-item brief, scoped into five plans and a reproducible survey (`openworld/catch-bowl/README.md`).
-Nothing is cut and nothing is built. Four things block it, and each is small:
+The owner's eight-item brief plus *"Include se outer wall and stalker range in the Sim as well"*, scoped into six plans
+and a reproducible survey (`openworld/catch-bowl/README.md`). Nothing is cut and nothing is built. Four things block it,
+and each is small:
 
 - **A `trail` way kind** in `ROADS` [G data]. `core/world/42-world-roads.js` fixes `const G=.08, HW=4` (the ruling grade
   and the half-carriageway) as module constants. Every way the Catch wants is a trail: the north road over a 5.3 km
   saddle, the floor's track between the oases, the Twins' Route B. `openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`
   W2 is waiting on the same change, so it belongs in core, not in either region.
-- **A hazard binding for a region page** [G data] + [web]. `core/hazard` is built and rich (`KHAZ.front`, `KHAZ.crust`,
-  `KHAZ.night`), and **no fragment of `core/world` mentions it**. Proposed: `48h`/`88h` on the shape `48w`/`88s` set for
-  `KWCAMPS` (`openworld/catch-bowl/PLAN-HAZARDS.md` section 5). Region 2's guides' traps want it too.
+- **A hazard binding for a region page** [G data] + [web]. `core/hazard` is built and rich — records (`KHAZ.front`,
+  `KHAZ.crust`, `KHAZ.night`) **and an ambient bridge** (`KHAZ.provide`, with `VOCAB.ambientKinds` carrying `thin-air`,
+  `cold`, `hot`, `dust` and `caustic-dust` whose row names the Catch's black storms, plus `KHAZ.sight` / `seen` / `aim`
+  on real aerosol optics) — and `core/atmos/fx` already supplies its fields (`ATMOS.airLoad`, named for the karaburan;
+  `ATMOS.gale`, built for the SE outer wall's God-Bore; `ATMOS.dustSeason`). **No fragment of `core/world` mentions
+  `KHAZ`.** Proposed: `48h`/`88h` on the shape `48w`/`88s` set for `KWCAMPS`, including the `KHAZ.provide` calls
+  (`openworld/catch-bowl/PLAN-HAZARDS.md` sections 4 and 5). Region 2's guides' traps want it too.
 - **A fixture binding** [G data] + [web]: one authored thing in one authored place on streamed ground, registered,
   seated on the drawn mesh, streaming with its tile. Proposed `48f`/`88f` (`PLAN-SETPIECES.md` section 1). This is what
   `PLAN-TWINS-CROSSING.md` means by "the Hall's cistern and the guides' torch brackets as fixtures".
@@ -40,10 +45,26 @@ Nothing is cut and nothing is built. Four things block it, and each is small:
   their 5.1 pins, and the sand-sea and north-fan station sites now land on 4.9 km and 7.0 km of mountainside
   (`PLAN-TERRAIN.md` P1, P2). Rides along with any work on that kit.
 
-Also parked here: the two salt-works pins (Ṣalṭ al-Bān, Solta) are still held off the map (P5); `sbabalhawa01` and
-`sthetwins01` are still live although the owner dropped both on 2026-11-16 (P6); the Stalkers have no buried pose and no
-line on the harpoon (P12, `kits/mechs/KNOWN_ISSUES.md`); `SIM.outlaws` and `SIM.bounty` are approved in
-`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built.
+Two decisions for the owner, both measured:
+
+- **The SE outer wall's cordillera rescale never landed.** Its `PLAN.md` step 6.1 would give the province a 4,850 m
+  median with **zero cells over 6,500 m**; the map reads **7,962 m median, 83 % over 6,500 m, max 11,707 m** — while
+  step 6.2's Godsgate corridor and step 6.3's five tarns landed **to the metre** (the thalweg runs 2,284-3,739 m at a
+  1.1 % median grade; the saddle is 3,620 m exactly). So the pass works and the matrix is an un-rescaled 8-11 km wall
+  that the kit's six stations were not designed to stand in. P13; proposed: apply it to the western lobe only.
+- **Gemini's three pins.** The owner dropped the Godsgate caravanserai and the Twins fort on 2026-11-16 as "Gemini's
+  pin, with no lore" — but `biomes/seouterwall/PLAN.md` 3.3 had given **Bāb al-Hawa** a page of lore on 2026-11-10 (the
+  Vent-Shaft Caravanserai: a 40 m Ancient shaft collar still drafting +16 °C air from the collapsed Arcbeam-Stair
+  tunnel, the pass's only safe overnight camp), and the owner **accepted** that shaft in the Ancient network on
+  2026-11-11. **Ranger HQ** (Yuni's Stalker-watch, the Stalkers' only counterparty) is the same provenance and was
+  never put to the owner at all. P6.
+
+Also parked here: the two salt-works pins (Ṣalṭ al-Bān, Solta) are still held off the map (P5); Bāb al-Hawa's pin is
+1,205 m up the Godsgate's east wall, 12 km off its own plan's floor (P14); the Tharn crater reads 671 m above its plan
+and holds a 6,910 m lake (P15); the Stalkers have no buried pose and no line on the harpoon (P12,
+`kits/mechs/KNOWN_ISSUES.md`); `SIM.outlaws` and `SIM.bounty` are approved in
+`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built; and `BOWL_TUNE`, `STALKER_TUNE` and the `EAST_RIFT` join
+(C6) are designed in `PLAN-SIM.md` and not written.
 
 ## The Audio Lab's numeric defaults *(2026-11-10, the second integration pass)*
 

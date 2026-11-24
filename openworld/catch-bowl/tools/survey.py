@@ -2,7 +2,8 @@
 """The Catch and the Bowl on scale model 5.1: the survey behind openworld/catch-bowl/PLAN-TERRAIN.md.
 
     python3 openworld/catch-bowl/tools/survey.py            # every section
-    python3 openworld/catch-bowl/tools/survey.py pins        # one section: pins | polygons | floor | basins | routes | walls | drift
+    python3 openworld/catch-bowl/tools/survey.py pins        # one section: pins | polygons | floor | basins |
+                                                             # routes | walls | seow | union | drift
 
 Read-only on tools/scale-model/model/data (the 5.1 canvas, never a saved page). Every number PLAN-TERRAIN.md quotes
 comes out of a section here, so a later map edit can be re-measured against the plan by rerunning it. It needs numpy and
@@ -66,9 +67,27 @@ PINS = [
     ('Jabal', 1225, 1149), ('Solta (held pin)', 1169, 1150), ('Mantis', 1113, 1164), ('the Bowl salt lake', 1147, 1141),
     ('White Gills Hermitage', 1015, 1430), ('Catch-Lookout', 1056, 1462), ('the Brazier', 1016, 1479),
     ('Sinter-Gate', 996, 1504), ('Twins Pass pin', 1042, 1525), ('Strongbow', 1001, 1596),
+    ('Ranger HQ', 1420, 1242), ('Arcbeam', 1016, 1058), ('the Izani-Dasri village', 1042, 1083),
 ]
 POLYS = [('the catch', 'rmvka7icdn1dq'), ('the bowl', 'rmvka5413efyi'),
-         ('twins', 'rmw536m06wlyf'), ('stalker range', 'rmvkknh1am4fw')]
+         ('SE outer wall', 'rmw4xy4tp9b29'), ('stalker range', 'rmvkknh1am4fw'),
+         ('twins', 'rmw536m06wlyf'), ('Stalker Gate', 'rmvstalkergate'),
+         ('Stalker Peaks (geographic)', 'rmwstalkerpks')]
+# the region's own four, in cut order, and the neighbour a later region may take
+REGION = ['rmvka7icdn1dq', 'rmvka5413efyi', 'rmw4xy4tp9b29', 'rmvkknh1am4fw']
+NEIGHBOUR = ('Stalker Gate', 'rmvstalkergate')
+# biomes/seouterwall/PLAN.md's own features, with the height its plan gives them
+SEOW = [('Godsgate north sill', 1026, 1224, 3380), ('Godsgate saddle crest', 1031, 1252, 3620),
+        ('Bab al-Hawa vent shaft', 1033, 1258, 3590), ('Godsgate southern narrows', 1035, 1292, 3480),
+        ('North gorge (Guli rrija)', 1024, 1206, 2850),
+        ('Ilmenite Horn', 1008, 1248, 5480), ('Shatter-Crown', 1056, 1244, 5760),
+        ('Tarn 1 Gate-Bell', 1016, 1236, 3680), ('Tarn 2 Amber-Sinter', 1064, 1272, 3940),
+        ('Tarn 3 Mirror-Slump', 1134, 1218, 4120), ('Tarn 4 Jade-Karst Polje', 1208, 1254, 4380),
+        ('Tarn 5 Copper-Vein', 1288, 1184, 3820),
+        ('Tharn crater floor (station 12)', 1375, 1525, 6185),
+        ('Ranger HQ (Yuni Stalker-watch)', 1420, 1242, None), ('Hub 01', 1344, 1409, 4351)]
+# the Godsgate corridor, as biomes/seouterwall/PLAN.md section 6.2 carves it
+GODSGATE = (1005, 1059, 1195, 1320)
 # the Catch kit's five oasis records (biomes/catch/src/50-biome-catch-species.js, the 4.21 canvas) against 5.1's pins
 KIT_OASES = [('Kolli', (738, 944), (1058, 1367)), ('Arfwai', (792, 1030), (1090, 1387)),
              ('Stair', (834, 1112), (1106, 1442)), ('Bitta', (806, 1180), (1088, 1455)),
@@ -78,7 +97,9 @@ KIT_STATIONS = [('1 the sand sea', (800, 1010), 350), ('2 Stair\'s oasis', (834,
                 ('3 the lake and lake beds', (763, 1062), 318), ('4 the north fan', (738, 944), 1400)]
 ROUTES = [
     ('Jabal > Parabola', [(1225, 1149), (1100, 1170), (1000, 1180), (970, 1186)]),
-    ('Parabola > Godsgate > Kolli', [(970, 1186), (1028, 1246), (1058, 1367)]),
+    # the north road end to end as straight hops: the WRONG tool over a meandering corridor (see the walls section,
+    # which follows the Godsgate's own thalweg), kept because the legs outside the corridor are measured right
+    ('Parabola > the Godsgate > Kolli (hops)', [(970, 1186), (1028, 1246), (1058, 1367)]),
     ('Kolli > Arfwai > Stair', [(1058, 1367), (1090, 1387), (1106, 1442)]),
     ('Stair > Bitta > Lasso', [(1106, 1442), (1088, 1455), (1083, 1474)]),
     ('Lasso > Catch-Lookout', [(1083, 1474), (1056, 1462)]),
@@ -169,13 +190,101 @@ def sec_routes(S):
 
 def sec_walls(S):
     M, E, WHAS, WLEV, RAIN, TEMP = S
-    print('\n== the lowest crossing of each wall (the highest point of each column of the band) ==')
-    for lab, (x0, x1, y0, y1) in (('the north wall', (990, 1181, 1240, 1331)),
+    print('\n== the walls, and the Godsgate corridor through the north one ==')
+    print('  NOTE. A column maximum over a band answers "how high is the wall here", NOT "how high must a road climb":')
+    print('  a meandering carved corridor has a THALWEG (its own lowest continuous line), which is the road\'s answer.')
+    for lab, (x0, x1, y0, y1) in (('the north wall (SE outer wall)', (990, 1181, 1240, 1331)),
                                   ('the south wall toward the Twins', (1000, 1121, 1455, 1531))):
         best = sorted((E[y0:y1, x].max(), x, y0 + int(E[y0:y1, x].argmax())) for x in range(x0, x1))
-        print('  -- %s (x %d-%d, y %d-%d) --' % (lab, x0, x1 - 1, y0, y1 - 1))
-        for v, x, y in best[:5]:
-            print('     crest %6.0f m at px %d,%d' % (v, x, y))
+        print('  -- %s: lowest column maximum (x %d-%d, y %d-%d) --' % (lab, x0, x1 - 1, y0, y1 - 1))
+        for v, x, y in best[:3]:
+            print('     %6.0f m at px %d,%d' % (v, x, y))
+    gx0, gx1, gy0, gy1 = GODSGATE
+    print('  -- the Godsgate corridor THALWEG (x %d-%d), as seouterwall PLAN.md 6.2 carves it --' % (gx0, gx1 - 1))
+    print('     %6s %9s %7s %9s' % ('py', 'floor m', 'at px', 'median m'))
+    lo, hi = 1e9, -1e9
+    for y in range(gy0, gy1, 5):
+        col = E[y, gx0:gx1]
+        i = int(col.argmin())
+        lo, hi = min(lo, col.min()), max(hi, col.min())
+        print('     %6d %9.0f %7d %9.0f' % (y, col.min(), gx0 + i, np.median(col)))
+    # the thalweg as a polyline (one point per row: the x of that row's lowest cell), and the road it implies
+    pts = []
+    for y in range(gy0, gy1):
+        col = E[y, gx0:gx1]
+        pts.append((gx0 + int(col.argmin()), y, float(col.min())))
+    d = sum(np.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts[:-1], pts[1:])) * M_PER_PX
+    up = sum(max(0.0, b[2] - a[2]) for a, b in zip(pts[:-1], pts[1:]))
+    dn = sum(max(0.0, a[2] - b[2]) for a, b in zip(pts[:-1], pts[1:]))
+    g = [abs(b[2] - a[2]) / max(1.0, np.hypot(b[0] - a[0], b[1] - a[1]) * M_PER_PX) for a, b in zip(pts[:-1], pts[1:])]
+    print('     the thalweg runs %.0f..%.0f m over %.0f km: climb %.0f m, descent %.0f m, grade med %.1f %% p95 %.1f %%'
+          % (lo, hi, d / 1000, up, dn, 100 * np.median(g), 100 * np.percentile(g, 95)))
+    print('     so a road over the Godsgate tops out at about %.0f m, not at the column maxima above' % hi)
+
+
+def sec_seow(S):
+    M, E, WHAS, WLEV, RAIN, TEMP = S
+    e = lambda x, y: E[int(round(y)), int(round(x))]
+    print('\n== biomes/seouterwall/PLAN.md features against 5.1 (its carve landed; its rescale did not) ==')
+    print('  %-32s %-11s %9s %9s %8s  %s' % ('feature', 'px', 'planned', '5.1', 'delta', 'water'))
+    for n, x, y, want in SEOW:
+        v = e(x, y)
+        w = 'LAKE %.0f m' % WLEV[y, x] if WHAS[y, x] else ''
+        if not w:
+            sub = WHAS[max(0, y - 8):y + 9, max(0, x - 8):x + 9]
+            if sub.any():
+                ys, xs = np.nonzero(sub)
+                w = 'water %.0f km' % (np.hypot(ys - 8, xs - 8).min() * 2)
+        print('  %-32s %4d,%-6d %9s %9.0f %8s  %s' % (
+            n, x, y, want if want else '-', v, ('%+.0f' % (v - want)) if want else '-', w))
+    r = regions()['rmw4xy4tp9b29']
+    m, (x0, y0, x1, y1) = poly_mask(r['points'])
+    v = E[y0:y1, x0:x1][m]
+    print('  -- the rescale (PLAN.md 6.1: a 4,850 m median and ZERO cells over 6,500 m) --')
+    print('     median %.0f m; %d of %d px over 6,500 m (%.0f %%); max %.0f m: NOT APPLIED'
+          % (np.median(v), (v > 6500).sum(), m.sum(), 100 * (v > 6500).mean(), v.max()))
+
+
+def sec_union(S):
+    """the region's scale, polygon by polygon and as the union, against xanadu-oidong-highrift"""
+    R = regions()
+    allp = [R[i]['points'] for i in REGION] + [R[NEIGHBOUR[1]]['points']]
+    bb = lambda p: (min(q[0] for q in p), max(q[0] for q in p), min(q[1] for q in p), max(q[1] for q in p))
+    X0 = int(min(bb(p)[0] for p in allp)); X1 = int(max(bb(p)[1] for p in allp)) + 1
+    Y0 = int(min(bb(p)[2] for p in allp)); Y1 = int(max(bb(p)[3] for p in allp)) + 1
+    yy, xx = np.mgrid[Y0:Y1, X0:X1]
+
+    def mk(pts):
+        ins = np.zeros(xx.shape, bool)
+        n = len(pts)
+        for k in range(n):
+            ax, ay = pts[k]; bx, by = pts[(k + 1) % n]
+            ins ^= ((ay > yy) != (by > yy)) & (xx < (bx - ax) * (yy - ay) / ((by - ay) or 1e-9) + ax)
+        return ins
+
+    names = [R[i]['name'] for i in REGION] + [NEIGHBOUR[0]]
+    masks = dict(zip(names, (mk(p) for p in allp)))
+    print('\n== the region\'s scale ==')
+    for n in names:
+        print('  %-16s %6d px = %4.0f thousand km2' % (n, masks[n].sum(), masks[n].sum() * 4 / 1000))
+    steps = [(names[:2], 'catch + bowl'), (names[:3], '+ SE outer wall'),
+             (names[:4], '+ stalker range'), (names, '+ Stalker Gate (a later region\'s)')]
+    for sel, lab in steps:
+        u = np.zeros(xx.shape, bool)
+        for s in sel:
+            u |= masks[s]
+        ys, xs = np.nonzero(u)
+        bx0, bx1, by0, by1 = X0 + xs.min(), X0 + xs.max(), Y0 + ys.min(), Y0 + ys.max()
+        print('  %-36s filled %4.0f kkm2;  box px %d-%d x %d-%d = %.0f x %.0f km = %.0f kkm2;  centre px %.0f,%.0f'
+              % (lab, u.sum() * 4 / 1000, bx0, bx1, by0, by1, (bx1 - bx0) * 2, (by1 - by0) * 2,
+                 (bx1 - bx0) * (by1 - by0) * 4 / 1000, (bx0 + bx1) / 2, (by0 + by1) / 2))
+    print('  reference: xanadu-oidong-highrift fills ~295 kkm2 in a 1,037 kkm2 box at 1 km cells (a 7.6 MB page)')
+    print('  overlaps (extract_region.py gives the SMALLER polygon the overlap):')
+    import itertools
+    for a, b in itertools.combinations(names, 2):
+        o = int((masks[a] & masks[b]).sum())
+        if o:
+            print('     %-16s / %-16s %5d px = %.0f kkm2' % (a, b, o, o * 4 / 1000))
 
 
 def sec_drift(S):
@@ -196,7 +305,7 @@ def sec_drift(S):
 
 
 SECTIONS = {'pins': sec_pins, 'polygons': sec_polygons, 'floor': sec_floor, 'basins': sec_basins,
-            'routes': sec_routes, 'walls': sec_walls, 'drift': sec_drift}
+            'routes': sec_routes, 'walls': sec_walls, 'seow': sec_seow, 'union': sec_union, 'drift': sec_drift}
 
 if __name__ == '__main__':
     want = sys.argv[1:] or list(SECTIONS)
