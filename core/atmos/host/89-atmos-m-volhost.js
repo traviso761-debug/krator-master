@@ -39,16 +39,16 @@
   const V4=()=>({value:new T.Vector4()}),M4=()=>({value:new T.Matrix4()});
   const L={uMaskBox:V4(),uVolT:V4(),uVolS:V4(),uVolP:V4(),uBolt:V4(),uInvProj:M4(),uCamRot:M4(),uPrevVP:M4(),uVP:M4(),uBlend:{value:cfg.blend},uHistOk:{value:0},
    uDetail:{value:A.skyDetailTex},uMask:{value:maskRT.texture},uCur:{value:null},uHist:{value:null},uVol:{value:null},uLogFC:{value:0},uVolC:V4(),
-   uFlash:A.U.flash,uFlashC:{value:new T.Color(.82,.86,1)}};
+   uFlash:A.U.flash,uFlashC:{value:new T.Color(.82,.86,1)},uVolF:{value:0}};
   const share=(names)=>{const u={};for(const k of names)u[k]=U[k]||L[k];return u;};
   const quad=new T.PlaneGeometry(2,2),ocam=new T.OrthographicCamera(-1,1,1,-1,0,1);
   const pass=(name,frag,names,extra)=>{const m=new T.ShaderMaterial(Object.assign({uniforms:share(names),vertexShader:G.vertex(),fragmentShader:frag,depthTest:false,depthWrite:false},extra||{}));
    const mesh=new T.Mesh(quad,m);mesh.frustumCulled=false;const sc=new T.Scene();sc.add(mesh);return{name,m,sc,mesh};};
   const FIELD=['uNoise','uCloud','uCloudH','uWind','uTime','uMaskBox'].concat(A.wxOn?['uWxMap','uWxBox','uWxMean']:[],A.skyMoodOn?['uCloudX','uCloudY','uCloudZ']:[]);
   const pMask=pass('mask',G.mask(),FIELD);
-  const pMarch=pass('march',G.march(),['uNoise','uDetail','uMask','uCloudH','uWind','uTime','uCamPos','uSunDir','uGiantDir','uMaskBox','uVolT','uVolS','uVolP','uBolt','uInvProj','uCamRot','uRidgeTex','uRidgeN','uRidge']);
+  const pMarch=pass('march',G.march(),['uNoise','uDetail','uMask','uCloudH','uWind','uTime','uCamPos','uSunDir','uGiantDir','uMaskBox','uVolT','uVolS','uVolP','uBolt','uInvProj','uCamRot','uRidgeTex','uRidgeN','uRidge','uVolF']);
   const pRes=pass('resolve',G.resolve(),['uCur','uHist','uPrevVP','uInvProj','uCamRot','uCamPos','uBlend','uHistOk']);
-  const pComp=pass('composite',G.composite(),['uVol','uInvProj','uCamRot','uVP','uCamPos','uLogFC','uSunDir','uGiantDir','uSunC','uZen','uHor','uShineC','uFogC','uFlashC','uSunI','uEclipse','uShineI','uFlash','uVolC'],
+  const pComp=pass('composite',G.composite(),['uVol','uInvProj','uCamRot','uVP','uCamPos','uLogFC','uSunDir','uGiantDir','uSunC','uZen','uHor','uShineC','uFogC','uFlashC','uSunI','uEclipse','uShineI','uFlash','uVolC'].concat(A.skyMoodOn?['uNoise','uCloud','uCloudH','uWind','uTime','uNight','uCloudX','uCloudY','uCloudZ','uCloudTint','uCloudGlow','uCloudGlowP','uCloudGlowQ','uCloudBeam','uCloudBeamP','uPixAng']:[]),
    {transparent:true,depthTest:true,depthWrite:false,blending:T.CustomBlending,blendSrc:T.OneFactor,blendDst:T.OneMinusSrcAlphaFactor,blendSrcAlpha:T.OneFactor,blendDstAlpha:T.OneMinusSrcAlphaFactor});
   pMask.m.uniforms.uMaskBox=L.uMaskBox;   /* the mask's box is the volumes' own, not on the sky's uniforms */
   // THE GPU TIMER (the budget's step-down)
@@ -62,7 +62,7 @@
   let maskAt=null,maskFrame=-1e9;
   const setU=()=>{const cam=S.camera;size();cam.updateMatrixWorld();
    L.uVolT.value.set(cfg.thin,cfg.thick,cfg.storm,cfg.density);L.uVolS.value.set(cfg.base,cfg.detail,cfg.erode,cfg.steps+100*cfg.lightSteps);
-   L.uVolP.value.set(cfg.maxDist,(V.frame*.6180339887)%1,cfg.ambient,cfg.forward);L.uVolC.value.set(cfg.key,cfg.amb,cfg.haze,cfg.maxDist);
+   L.uVolP.value.set(cfg.maxDist,(V.frame*.6180339887)%1,cfg.ambient,cfg.forward);L.uVolF.value=V.frame%64;L.uVolC.value.set(cfg.key,cfg.amb,cfg.haze,cfg.maxDist);
    L.uInvProj.value.copy(cam.projectionMatrixInverse);L.uCamRot.value.copy(cam.matrixWorld);vp.multiplyMatrices(cam.projectionMatrix,cam.matrixWorldInverse);L.uVP.value.copy(vp);
    L.uLogFC.value=rr.capabilities.logarithmicDepthBuffer?2/(Math.log(cam.far+1)/Math.LN2):0;
    const st=A.wxState&&A.wxState.last;if(st&&A.W&&A.W.flash>.01)L.uBolt.value.set(st.x,st.z,1800,1);else L.uBolt.value.w=0;

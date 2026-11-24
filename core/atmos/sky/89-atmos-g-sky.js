@@ -119,6 +119,8 @@
  // the noise and the cloud field alone, for the volumetric clouds' passes (sky/89-atmos-m-volclouds.js): the same text the sky
  // and the shade compile, so the volume's footprint is the field the ground's shadows read
  A.skyFieldGLSL=function(){return (A.skyMoodOn?MOODU:[]).concat(NOISE,CLOUDF()).join('\n');};
+ // the mood on a cloud's colour alone (atmCloudMood), for a pass that draws clouds outside the sky's chunk: the volumes' composite
+ A.skyMoodGLSL=function(){return MOODC.join('\n');};
  A.skyNoiseGLSL=function(){return NOISE.join('\n');};
  A.skyGLSL=function(){const f=A.glf,S=A.SKY,G=S.giant,NR=A.SKY_MAX_RIDGES,NS=S.stars.length,NL=A.SKY_MAX_LANDMARKS;
   const rg=Math.sin(G.diaDeg/2*Math.PI/180),cosG=Math.cos(G.diaDeg/2*Math.PI/180);

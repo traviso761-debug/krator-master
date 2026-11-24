@@ -17,7 +17,7 @@
 //   ATMOS.weatherCells({seed, climate (bindWeather's), biome (kits/crops' CROPS.BIOMES name: the warmth, aridity and air
 //                       axes), axes, weights, wind, mode, shafts (false: none), splashes (false: none), reduceMotion}) -> S
 //   ATMOS.wx            the system (plain data: ATMOS.export's 'wxcells' record); ATMOS.wxState {live, strikes, last, map}
-// Needs ATMOS.init, 89-atmos-4-weather.js, core/rand (KRAND) and wx/89-atmos-wx-cells.js before it; the shared sky for the map.
+// The shafts write logarithmic depth where the renderer has it (the open world). Needs ATMOS.init, 89-atmos-4-weather.js, core/rand (KRAND) and wx/89-atmos-wx-cells.js before it; the shared sky for the map.
 (function(){const A=ATMOS;
  A.PRESETS.wxshafts=A.PRESETS.wxshafts||{segs:20,alpha:.62,grey:.62,snow:.86,lean:.35,streaks:46,fall:.012,base:.12,virga:[.3,.72]};
  A.weatherCells=function(o){o=o||{};const T=A.T,W=A.W;if(!W){A.err('weatherCells needs ATMOS.weather (ATMOS.bindWeather) first');return null;}
@@ -61,17 +61,23 @@
    const U=Object.assign(T.UniformsUtils.clone(T.UniformsLib.fog),{time:A.U.time,wind:A.U.wind,light:A.U.light});
    const mat=new T.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,fog:true,side:T.FrontSide,
     vertexShader:`uniform float time;uniform vec2 wind;attribute vec4 iA;attribute vec4 iB;varying vec2 vUv;varying float vK;varying float vEdge;varying float vNear;varying vec2 vKind;
+     #include <common>
+     #include <logdepthbuf_pars_vertex>
      #include <fog_pars_vertex>
      void main(){vec3 p=position;float y=mix(iB.y,iB.x,p.y);vec2 lean=wind/max(length(wind),1e-3)*(1.0-p.y)*(iB.x-iB.y)*${F(P.lean)};
       vec3 w=vec3(iA.x+p.x*iA.z+lean.x,y,iA.y+p.z*iA.z+lean.y);vec4 mvPosition=viewMatrix*vec4(w,1.0);
       vec3 V=normalize(cameraPosition-w);vEdge=abs(dot(normalize(vec3(p.x,0.0,p.z)),V));vUv=vec2(uv.x,p.y);vK=iA.w;vKind=iB.zw;
       vNear=(length(cameraPosition.xz-iA.xy)-iA.z)*(1.0-smoothstep(iB.x-150.0,iB.x+50.0,cameraPosition.y));   /* above the cloud base the cloud hides it */gl_Position=projectionMatrix*mvPosition;
+      #include <logdepthbuf_vertex>
       #include <fog_vertex>
      }`,
     fragmentShader:`uniform float time;uniform float light;varying vec2 vUv;varying float vK;varying float vEdge;varying float vNear;varying vec2 vKind;
+     #include <logdepthbuf_pars_fragment>
      #include <fog_pars_fragment>
      float atmShH(float x){uint h=uint(int(floor(x))+1000000)*2654435761u;h^=h>>15u;h*=2246822519u;h^=h>>13u;return float(h&65535u)/65535.0;}
-     void main(){float u=vUv.x*${F(P.streaks)},fu=fract(u),s0=atmShH(u),s1=atmShH(u+1.0);float streak=mix(s0,s1,fu*fu*(3.0-2.0*fu));
+     void main(){
+      #include <logdepthbuf_fragment>
+      float u=vUv.x*${F(P.streaks)},fu=fract(u),s0=atmShH(u),s1=atmShH(u+1.0);float streak=mix(s0,s1,fu*fu*(3.0-2.0*fu));
       float fall=fract(vUv.y*5.0+time*${F(P.fall)}+s0*7.0);streak=0.55+0.45*streak*(0.75+0.25*smoothstep(0.0,0.6,fall)*smoothstep(1.0,0.6,fall));
       float a=vK*pow(vEdge,1.3)*streak*smoothstep(0.0,${F(P.base)},1.0-vUv.y);
       a*=vKind.x>0.5?smoothstep(${F(P.virga[0])},${F(P.virga[1])},vUv.y):smoothstep(0.0,0.04,vUv.y);

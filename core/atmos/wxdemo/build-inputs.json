@@ -8,16 +8,16 @@
     "core/atmos/89-atmos-4-weather.js": "bb900fc3dd362a0b83a89c236a9f9412e75bfa6f977aa006df56e237531cb9e8",
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/fx/89-atmos-fx-lightning.js": "f242336fa9c9f901b95c133effec3f209c15d8bbfe07d19ac5bcfcb4fff11bbf",
-    "core/atmos/fx/89-atmos-fx-raincover.js": "f99f077f56eb1b4486f38373b897a0c9b6ced42e885c8f99c6faa49cabf9363c",
+    "core/atmos/fx/89-atmos-fx-raincover.js": "3be3e647fad60a39ff8e555f5378e26b341d26f0a8e7d563d0238bf387c3be82",
     "core/atmos/host/89-atmos-e-weatherhost.js": "ad8f6c63439b4098a9d24f49caacc0515cc51ca43f698718bf43c0d550fb0525",
     "core/atmos/host/89-atmos-h-skyhost.js": "33a640683cc2a59130731cbc82e19ca0075ab0747b27d6f336cafa305fc7ebb9",
-    "core/atmos/host/89-atmos-m-volhost.js": "bdc12d29064bcaefd39a32bc3f2be861a49a6b939d7495f2d5f94234941a5ac3",
+    "core/atmos/host/89-atmos-m-volhost.js": "512b5f26ad05c794dded69474ab3ff9add8299ebdd324bdf79a399bcfb352294",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
     "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
-    "core/atmos/sky/89-atmos-g-sky.js": "6fab6df0c32397d5d73e784e52c2c4d676ed6ace527210cd9f134260035494d8",
-    "core/atmos/sky/89-atmos-m-volclouds.js": "581ea3fc85697cafe6fc8ebdcd2304e93814b39d8a72dd294ff16a01cd0808f8",
+    "core/atmos/sky/89-atmos-g-sky.js": "792dc3d85d04f4d52dda3541ae1e5c3c1310e32b76e33745f960227d27fbe3af",
+    "core/atmos/sky/89-atmos-m-volclouds.js": "2a910fdbe9e33856c0abf5f01fcf253e0b84f19909865a2e9de202c3fa0cb6f5",
     "core/atmos/wx/89-atmos-wx-cells.js": "8ca8438ab0e0945828491c09aea3526ac2ce49198d5bf5ca1232cb310bb11346",
-    "core/atmos/wx/89-atmos-wx-host.js": "bf043812bb5ac6e8dffe3dd73741115867dbaed4bc349faabc928e3fda5a5807",
+    "core/atmos/wx/89-atmos-wx-host.js": "91a68a440753ec7a518f8ed303e7ef32f800fb1eef37ad3def030a333c125c25",
     "core/atmos/wxdemo/build.py": "7810a578d7b6be37af7e847689f1e955a789ff49ee48df95b6a9ca84141b2a07",
     "core/atmos/wxdemo/src/00-head.html": "36487f513931cb015b58e8fd873aa98368bbea244572d6672a6a4b91f55fd2d9",
     "core/atmos/wxdemo/src/10-demo.js": "a41e811aebf7de183a4c80377ec548d4181fb832f85a2828f349acc747b71bc1",
@@ -33,10 +33,10 @@
    "listings": {},
    "listed_by": "code",
    "outputs": {
-    "core/atmos/wxdemo/dist/wx-demo.html": "498299d6577fd8b9080d0163cb039d826dc94ed570d8207b9453e71510d2fca2"
+    "core/atmos/wxdemo/dist/wx-demo.html": "09d6c3eef1d107c13c56b3f2f687dc78ba9aac372d919ad5671358e18c89e5be"
    },
    "outputs_raw": {
-    "core/atmos/wxdemo/dist/wx-demo.html": "498299d6577fd8b9080d0163cb039d826dc94ed570d8207b9453e71510d2fca2"
+    "core/atmos/wxdemo/dist/wx-demo.html": "09d6c3eef1d107c13c56b3f2f687dc78ba9aac372d919ad5671358e18c89e5be"
    }
   }
  }

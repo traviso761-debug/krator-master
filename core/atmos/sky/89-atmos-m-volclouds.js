@@ -107,11 +107,13 @@
   march:()=>{const NR=A.SKY_MAX_RIDGES;return['uniform highp sampler3D uNoise;uniform highp sampler3D uDetail;uniform sampler2D uMask;',
    'uniform vec4 uCloudH;uniform vec2 uWind;uniform float uTime;uniform vec3 uCamPos;uniform vec3 uSunDir;uniform vec3 uGiantDir;',
    'uniform vec4 uMaskBox;uniform vec4 uVolT;uniform vec4 uVolS;uniform vec4 uVolP;uniform vec4 uBolt;uniform mat4 uInvProj;uniform mat4 uCamRot;',
-   'uniform sampler2D uRidgeTex;uniform int uRidgeN;uniform vec4 uRidge['+NR+'];','varying vec2 vUv;',
+   'uniform sampler2D uRidgeTex;uniform int uRidgeN;uniform vec4 uRidge['+NR+'];uniform float uVolF;','varying vec2 vUv;',
    // the mask at xz; beyond its edge the mean cover with no shape (uMaskBox.w)
    'vec4 atmVM(vec2 xz){vec2 uv=(xz-uMaskBox.xy)/uMaskBox.z+0.5;float e=max(abs(uv.x-0.5),abs(uv.y-0.5));return mix(textureLod(uMask,uv,0.0),vec4(uMaskBox.w,0.0,0.0,0.5),smoothstep(0.45,0.5,e));}'].concat(CORE('atmVM'),[
    'void main(){vec4 c=uInvProj*vec4(vUv*2.0-1.0,1.0,1.0);vec3 d=normalize((uCamRot*vec4(c.xyz/c.w,0.0)).xyz);',
-   ' float Z;vec4 v=atmVMarch(uCamPos,d,fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(0.06711056,0.00583715)))+uVolP.y),Z);',
+      // the jitter: interleaved gradient noise whose PATTERN moves each frame (the pixel offset 5.588238 a frame, 64 frames a cycle):
+   // with only its value shifted, the same diagonal pattern stood in every frame and the history kept it (a pixelated dither)
+   ' vec2 jp=gl_FragCoord.xy+5.588238*uVolF;float Z;vec4 v=atmVMarch(uCamPos,d,fract(52.9829189*fract(dot(jp,vec2(0.06711056,0.00583715)))),Z);',
    ' gl_FragColor=v.a<0.002?vec4(0.0):vec4(v.rgb,floor(Z/8.0)+min(v.a,0.999));}']).join('\n');},
   // THE SKY'S OWN PASS (Godot: a sky shader's quarter-res pass, godot/tools/atmos_volclouds.js): the same march with the mask
   // computed in place from the field (no mask pass, no history, the sky behind everything), lit and hazed as the composite
@@ -133,15 +135,23 @@
    ' vec4 ua=atmVU(a),ub=atmVU(b),uc=atmVU(c),ud=atmVU(d);vec4 r=mix(mix(ua,ub,t.x),mix(uc,ud,t.x),t.y);',
    ' float wa=ua.a*(1.0-t.x)*(1.0-t.y),wb=ub.a*t.x*(1.0-t.y),wc=uc.a*(1.0-t.x)*t.y,wd=ud.a*t.x*t.y;z=(atmVZ(a)*wa+atmVZ(b)*wb+atmVZ(c)*wc+atmVZ(d)*wd)/max(wa+wb+wc+wd,1e-6);return r;}',
    'void main(){ivec2 p=ivec2(gl_FragCoord.xy);ivec2 m=textureSize(uCur,0)-1;vec4 c0=texelFetch(uCur,p,0);vec4 c=atmVU(c0);float z=atmVZ(c0);',
-   ' vec4 mn=c,mx=c;for(int k=0;k<4;k++){ivec2 o=k==0?ivec2(1,0):k==1?ivec2(-1,0):k==2?ivec2(0,1):ivec2(0,-1);vec4 n=atmVU(texelFetch(uCur,clamp(p+o,ivec2(0),m),0));mn=min(mn,n);mx=max(mx,n);}',
+   // the new frame through a 3x3 tent (the march's jitter is noise at the texel scale: blended raw, it shows as a dither), and the
+   // history clipped to the neighbourhood's mean +- 1.25 sigma (a min-max box passes the noise's extremes)
+   ' vec4 cf=vec4(0.0),m1=vec4(0.0),m2=vec4(0.0);float zw=0.0,zs=0.0;for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){vec4 r=texelFetch(uCur,clamp(p+ivec2(i,j),ivec2(0),m),0);vec4 n=atmVU(r);',
+   '  float w=(i==0?2.0:1.0)*(j==0?2.0:1.0);cf+=n*w;m1+=n;m2+=n*n;if(n.a>0.002){zs+=atmVZ(r)*n.a*w;zw+=n.a*w;}}',
+   ' cf/=16.0;m1/=9.0;vec4 sd=sqrt(max(m2/9.0-m1*m1,vec4(0.0)));vec4 mn=min(m1-1.25*sd,cf),mx=max(m1+1.25*sd,cf);c=cf;if(c.a>0.002&&zw>0.0&&!(c0.a>=1.0))z=zs/zw;',
    ' vec4 o=c;float zo=z;',
    ' if(uHistOk>0.5){vec4 cc=uInvProj*vec4(vUv*2.0-1.0,1.0,1.0);vec3 d=normalize((uCamRot*vec4(cc.xyz/cc.w,0.0)).xyz);float zz=c.a>0.002?z:20000.0;',
    '  vec4 pc=uPrevVP*vec4(uCamPos+d*zz,1.0);vec2 puv=pc.xy/pc.w*0.5+0.5;',
    '  if(pc.w>0.0&&puv.x>0.0&&puv.y>0.0&&puv.x<1.0&&puv.y<1.0){float zh;vec4 h=clamp(atmVHist(puv,zh),mn,mx);o=mix(h,c,uBlend);zo=c.a>0.002?z:zh;}}',
    ' gl_FragColor=o.a<0.002?vec4(0.0):vec4(o.rgb,floor(zo/8.0)+min(o.a,0.999));}'].join('\n'),
   // 4 THE COMPOSITE, over the world at full resolution: the light from the sky's uniforms, the haze, the cloud's depth
+  // With the clouds' mood (A.skyMoodOn: Ancient's Valley) each pixel's cloud takes the mood the flat cumulus took: its place from
+  // the march's depth, the dark, the tint (and the sheets' tint by the field's walk there), the glow at night; shaded by the
+  // march's lit fraction, as thick as its opacity. The turbulence already shaped the footprint (the mask reads the same field)
   composite:()=>['uniform highp sampler2D uVol;uniform mat4 uInvProj;uniform mat4 uCamRot;uniform mat4 uVP;uniform vec3 uCamPos;uniform float uLogFC;',
-   'uniform vec3 uSunDir,uGiantDir,uSunC,uZen,uHor,uShineC,uFogC,uFlashC;uniform float uSunI,uEclipse,uShineI,uFlash;uniform vec4 uVolC;varying vec2 vUv;',
+   'uniform vec3 uSunDir,uGiantDir,uSunC,uZen,uHor,uShineC,uFogC,uFlashC;uniform float uSunI,uEclipse,uShineI,uFlash;uniform vec4 uVolC;varying vec2 vUv;'].concat(
+   A.skyMoodOn?['uniform highp sampler3D uNoise;uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;uniform float uTime;uniform float uNight;uniform float uPixAng;',A.skyFieldGLSL(),A.skyMoodGLSL()]:[],[
    'vec4 atmVU(vec4 c){float z=floor(c.a);return vec4(c.rgb,c.a-z);}',
    'void main(){vec2 sz=vec2(textureSize(uVol,0));vec2 f=vUv*sz-0.5;ivec2 i=ivec2(floor(f));vec2 t=fract(f);ivec2 m=ivec2(sz)-1;',
    ' vec4 a=texelFetch(uVol,clamp(i,ivec2(0),m),0),b=texelFetch(uVol,clamp(i+ivec2(1,0),ivec2(0),m),0),c=texelFetch(uVol,clamp(i+ivec2(0,1),ivec2(0),m),0),e=texelFetch(uVol,clamp(i+ivec2(1,1),ivec2(0),m),0);',
@@ -151,8 +161,9 @@
    ' vec4 cc=uInvProj*vec4(vUv*2.0-1.0,1.0,1.0);vec3 d=normalize((uCamRot*vec4(cc.xyz/cc.w,0.0)).xyz);',
    ' float kd=smoothstep(-0.08,0.02,uSunDir.y);vec3 key=uSunC*uSunI*(1.0-uEclipse)*kd+uShineC*uShineI*0.8*(1.0-kd);vec3 amb=mix(uZen,uHor,0.55);',
    ' vec3 col=key*(uVolC.x*v.r)+amb*(uVolC.y*v.g)+uFlashC*(uFlash*v.b*2.5);',
+   A.skyMoodOn?' {vec2 cx=uCamPos.xz+d.xz*z;vec2 sw=vec2(0.0);if(uCloudZ.x>0.0){atmCloudField(cx,1);sw=atmSheetW;}float ia=1.0/max(v.a,1e-3);col=atmCloudMood(col*ia,clamp(v.r*ia,0.0,1.0),v.a,cx,sw)*v.a;}':'',
    ' vec3 air=mix(uFogC,uZen,smoothstep(0.0,0.45,d.y));col=mix(col,air*v.a,1.0-exp(-z/uVolC.z));',
    ' float fd=1.0-smoothstep(0.75*uVolC.w,uVolC.w,z);gl_FragColor=vec4(col*fd,v.a*fd);',
-   ' vec4 cp=uVP*vec4(uCamPos+d*z,1.0);gl_FragDepth=uLogFC>0.0?log2(max(1.0+cp.w,1e-6))*uLogFC*0.5:clamp(cp.z/cp.w*0.5+0.5,0.0,1.0);}'].join('\n')};
+   ' vec4 cp=uVP*vec4(uCamPos+d*z,1.0);gl_FragDepth=uLogFC>0.0?log2(max(1.0+cp.w,1e-6))*uLogFC*0.5:clamp(cp.z/cp.w*0.5+0.5,0.0,1.0);}']).join('\n')};
  A.volOn=true;   /* read by the sky's chunk and its host: the flat cumulus's switch (uVolOn) and the shadows' height (uVolMidH) compile in */
 })();

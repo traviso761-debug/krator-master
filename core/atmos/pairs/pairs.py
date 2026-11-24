@@ -22,7 +22,7 @@ in each dist/ (untracked) to open; shots are not committed (.gitignore).
 The open world (core/world) draws its own SKY and never calls ATMOS.sky, so no open-world pair can be made until it is moved
 onto the shared sky (reported, not done here).
 """
-import argparse, asyncio, json, os, subprocess, sys
+import argparse, asyncio, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ATMOS = os.path.dirname(HERE)
@@ -39,6 +39,12 @@ PAGES = {
     'throne': ('biomes/throne', [], 'throne.html',                       # station 1, at its triangle ceiling
                ['The plume', 'The rift from above', 'The new cone, steaming']),
     'wouterwall': ('biomes/wouterwall', [], 'wouterwall.html', None),    # an outer wall: high ground, the cloud's base near
+    # Ancient's Valley: its clouds' mood held (an ATMOS hook after the mood's own step, as the page's own panel holds it): a
+    # ghostly purple tint, the dark, the ordered turbulence by day; the glow at night (#hour=22)
+    'ancientsvalley': ('biomes/ancientsvalley', [], 'ancientsvalley.html', None, {
+        'hold': "()=>{const C=()=>ATMOS.skyCur&&ATMOS.skyCur.preset.clouds;ATMOS.hook(t=>{const c=C();if(!c)return;c.tint=[.52,.44,.66];c.tintK=.8;c.dark=.4;"
+                "c.turbKind='ordered';c.turbulence=.7;c.glow=1;c.glowColour=[1,.55,.2];c.glowLocus=[0,0,4000,.6];});}",
+        'times': [('', ''), ('night', '#hour=22')]}),
 }
 HOSTS = ['89-atmos-h-skyhost.js', '89-atmos-i-skybiome.js', '89-atmos-e-weatherhost.js', '89-atmos-j-heightfog.js', '89-atmos-c-hostbind.js']
 X = lambda *p: os.path.join(ATMOS, *p)
@@ -84,15 +90,11 @@ def splice(page_text):
     if end < 0:
         raise RuntimeError('none of the atmos host files is inlined verbatim: is the page built from this checkout?')
     add = []
-    for s in SPLICE:
-        if isinstance(s, tuple):
-            t = read(s[1])
-            if t.strip().splitlines()[0] in page_text:
-                continue
-            s = s[1]
-        add.append(read(s).strip())
-    if 'A.volOn=true' in page_text or 'A.wxOn=true' in page_text:
-        raise RuntimeError('the page already lists the volumes or the cells')
+    for s in SPLICE:   # only what the page does not list already (a page that takes the volumes gets the cells alone)
+        f = s[1] if isinstance(s, tuple) else s
+        if read(f).strip().splitlines()[0] in page_text:
+            continue
+        add.append(read(f).strip())
     return page_text[:end] + '\n' + '\n'.join(add) + '\n' + CELLS_ON + page_text[end:]
 
 
@@ -104,7 +106,7 @@ STATS = """()=>{const V=typeof ATMOS!=='undefined'?ATMOS.vol:null,r=KHOST.host.r
  cover:ATMOS.skyCur?+ATMOS.skyCur.uniforms.uCloud.value.x.toFixed(3):null,wx:ATMOS.W?{mode:ATMOS.W.mode,rain:+(ATMOS.W.rain||0).toFixed(3),fog:+(ATMOS.W.fog||0).toFixed(3)}:null}}"""
 
 
-async def shoot(name, html, here, want, a, R):
+async def shoot(name, html, here, want, a, R, extra=None):
     """Per tier: each view as the page frames it, then turned up at the sky; the cover set to --cover on both tiers (the
     page's own is often a clear sky, which shows no cloud either way); no GPU timing here: on these 19-21 M triangle pages
     the Arc's timer queries stall the page (a forced frame loop hung the Throne, a passes-only loop shighlands), and the whole
@@ -113,8 +115,11 @@ async def shoot(name, html, here, want, a, R):
     out = os.path.join(a.out, name)
     os.makedirs(out, exist_ok=True)
     rec = {}
-    for tier, weather in (('layers', 'clear'), ('volumes', 'clear'), ('volumes', 'live')):
-        q = '?clouds=%s&weather=%s' % (tier, weather)
+    extra = extra or {}
+    runs = [(tier, weather, tt, th) for tt, th in extra.get('times', [('', '')]) for tier, weather in
+            (('layers', 'clear'), ('volumes', 'clear'), ('volumes', 'live')) if not (tt and weather == 'live')]
+    for tier, weather, ttag, thash in runs:
+        q = '?clouds=%s&weather=%s%s' % (tier, weather, thash)
         async with _h.verify_page(html, here=here, query=q) as V:
             pg = V.page
             have = await pg.evaluate("()=>typeof KHOST!=='undefined'&&KHOST.host?Object.keys(KHOST.host.views):[]")
@@ -126,9 +131,11 @@ async def shoot(name, html, here, want, a, R):
             R.append(('%s %s/%s: the error panel is empty' % (name, tier, weather), not err, (err or '')[:300]))
             # the tier held by a budget out of reach: the volumes' own timer runs (it runs only with the step-down on), nothing steps
             await pg.evaluate("()=>{if(ATMOS.vol)ATMOS.vol.cfg.budget=1e9;}")
+            if extra.get('hold'):
+                await pg.evaluate(extra['hold'])
             if a.cover is not None and weather == 'clear':
                 await pg.evaluate("(c)=>{if(ATMOS.skyCur)ATMOS.skyCur.preset.clouds.cover=c;}", a.cover)
-            tag = tier if weather == 'clear' else 'volumes-live'
+            tag = (ttag + '-' if ttag else '') + (tier if weather == 'clear' else 'volumes-live')
             for v in views:
                 for pose in ('view', 'sky'):
                     if pose == 'view':
@@ -136,7 +143,7 @@ async def shoot(name, html, here, want, a, R):
                     else:
                         await pg.evaluate(SKY_POSE, v)
                     await pg.wait_for_timeout(a.settle)
-                    fn = '%s%s-%s.png' % (v.replace(' ', '_').replace('/', '-').replace(',', ''), '-sky' if pose == 'sky' else '', tag)
+                    fn = '%s%s-%s.png' % (re.sub(r'[^A-Za-z0-9]+', '_', v).strip('_'), '-sky' if pose == 'sky' else '', tag)   # a view name may hold ':' or '/'
                     await V.shot(os.path.join(out, fn), view='%s %s %s' % (v, pose, tag))
                     st = await pg.evaluate(STATS)
                     rec['%s|%s|%s' % (v, pose, tag)] = st
@@ -156,7 +163,8 @@ async def run(a):
     made = []
     try:
         for n in names:
-            folder, args, page, want = PAGES[n]
+            folder, args, page, want = PAGES[n][:4]
+            extra = PAGES[n][4] if len(PAGES[n]) > 4 else {}
             dist = os.path.join(ROOT, folder, 'dist')
             copy = os.path.join(dist, page[:-5] + '.wx.html')
             if not a.no_build:
@@ -173,7 +181,7 @@ async def run(a):
             with open(copy, 'w', encoding='utf-8', newline='\n') as f:
                 f.write(splice(text))
             made.append(copy)
-            J[n] = await shoot(n, copy, os.path.join(ROOT, folder), want, a, R)
+            J[n] = await shoot(n, copy, os.path.join(ROOT, folder), want, a, R, extra)
     finally:
         if not a.keep:
             for c in made:
