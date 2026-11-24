@@ -10,13 +10,23 @@ function coneAt(x,z){let h=0,k=0;for(const C of CONES){const d=Math.hypot(x-C.x,
 const wallP=t=>clamp(t+.085*Math.sin(t*TAU*2.5),0,1);
 // THE RHEOLITHS' BREACH (89y; src/44r): the throat in the lake's hot ring on the side toward the rim, at the kit's own size, cut into the ground last. ?rheo=0 none
 const BREACH=new URLSearchParams(location.search).get('rheo')==='0'?null:(function(){const ul=Math.hypot(LAKE.x,LAKE.z)||1,R1=LAKE.r*1.22;return{x:LAKE.x-LAKE.x/ul*R1,z:LAKE.z-LAKE.z/ul*R1,r:26,throatR:7.4,floor:-21,rim:3.6};})();
+// THE WALL'S BEDS (core/terrain KSTRATA, the tibasalt recipe; PLAN.md "the row's terrain", 2026-11-24): the shield's thin flows stacked in the
+// 450 m wall, glass-bead horizons between them, laid open by the collapse. The ledge pass (S.ledge) stands the hard flows steep and eases the soft
+// beds into benches where the wall shows rock (|grad h| over .45); 84 draws each bed's colour on the steep (STRATA.colorAt by the stratigraphic
+// height, one band texture). Fresh beds: the recipe's palagonite line is at 8,500 m, far below. ?strata=0 the wall as before
+const STRATA=new URLSearchParams(location.search).get('strata')==='0'||typeof KSTRATA==='undefined'?null:
+ KSTRATA.create({seed:KRAND.hash(571,514,0x57A7),formations:[{recipe:'tibasalt'}],range:[CAL.floor-300,CAL.rim+300],dip:[1,0,0],warp:[6,1.6],regolith:.35,dust:0x8a8580});
+const STRATA_LEDGE={k:.55,bench:2};
+function wallH(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a);if(r>=cr)return CAL.rim+peakH(a);const t=clamp((cr-r)/(cr-CAL.foot),0,1),p=Math.pow(wallP(t),.85);
+ return mix(CAL.rim+peakH(a),CAL.floor,p)+(1-p)*p*60*(ridged(a*9,r*.02,116)-.5)+3*(fbm(x*.03,z*.03,117,2)-.5);}
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 function terrainH0(x,z){return THRONE_BREACH(BREACH,terrainH0u(x,z),x,z);}
 function terrainH0u(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a),pk=peakH(a),n=fbm(x*.002,z*.002,113,3)-.5;let h;
  if(r>=cr){const e=r-cr;h=CAL.rim+pk*Math.exp(-Math.pow(e/150,2))+30*ridged(x*.008,z*.008,114)*Math.exp(-Math.pow(e/260,2))-e*.07+22*n+5*(fbm(x*.02,z*.02,115,2)-.5);}
- else{const t=clamp((cr-r)/(cr-CAL.foot),0,1),p=Math.pow(wallP(t),.85);
-  h=mix(CAL.rim+pk,CAL.floor,p)+(1-p)*p*60*(ridged(a*9,r*.02,116)-.5)+3*(fbm(x*.03,z*.03,117,2)-.5);
+ else{h=wallH(x,z);
+  /* the beds' ledges on the wall itself (not the floor's cones): the slope by differences of the wall alone */
+  if(STRATA&&r>CAL.foot-20){const e=2,gx=(wallH(x+e,z)-wallH(x-e,z))/(2*e),gz=(wallH(x,z+e)-wallH(x,z-e))/(2*e);h=STRATA.ledge(x,z,h,Math.sqrt(gx*gx+gz*gz),STRATA_LEDGE);}
   if(r<CAL.foot+20){h+=coneAt(x,z).h+5*(fbm(x*.01,z*.01,118,2)-.5)*smooth(CAL.foot,CAL.foot-200,r);}}
  // the lake's pit: steep walls down to the lava, a spatter lip round it
  const dl=LAKE.de(x,z);if(dl<LAKE.r*1.35){h+=3.5*Math.exp(-Math.pow((dl-LAKE.r*1.12)/(LAKE.r*.06),2));h=mix(h,LAKE.level-5,smooth(LAKE.r*1.07,LAKE.r*.99,dl));}

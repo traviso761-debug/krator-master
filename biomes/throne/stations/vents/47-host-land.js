@@ -5,10 +5,12 @@
 // Then the fumaroles (the 'vent' field), the fields the kit reads (cached), BIO.init.
 function landH0(x,z){return flankH(x,z)-grabenAt(x,z).drop+fissAt(x,z).h+coneAt(x,z).h;}
 const FLOW_SRC=(function(){const S=(key,name,p,o)=>Object.assign({key,name,x:p[0],z:p[1]},o);
- return[S('fissure','The fissure\'s flow (four years old)',fissPt(1020),{age:4,len:1500,w:[90,220],th:[3,6],veer:0,wander:.35,seed:9801}),
+ /* the fissure's flow: frozen by core/terrain's lava-flow module (shared/46k, KLAVA.bake), four vents along the fissure's middle, ~1 Mm3 */
+ return[S('fissure','The fissure\'s flow (four years old)',fissPt(1020),{age:4,len:1500,w:[90,220],th:[3,6],veer:0,wander:.35,seed:9801,
+   klava:{cell:10,pad:900,vents:[700,950,1200,1450].map(u=>{const p=fissPt(u);return{x:p[0],z:p[1],r:22,Q:8,duration:31250,T:1420};})}}),
   S('east','An old flow on the east shoulder',upAt(2650,760),{age:700,len:4800,w:[240,420],th:[5,8],veer:.1,wander:.4,seed:9802}),
   S('west','An ancient flow on the west shoulder',upAt(2650,-2050),{age:2600,len:5200,w:[260,460],th:[5,8],veer:-.1,wander:.4,seed:9803})];})();
-_mark('stage');const FLOWS=THRONE.flowHistory({R:TERR.R+260,cell:8,baseH:landH0,flows:FLOW_SRC,old:THRONE.OLD});
+_mark('stage');const FLOWS=THRONE_KLAVA_FLOWS({R:TERR.R+260,cell:8,baseH:landH0,flows:FLOW_SRC,old:THRONE.OLD});window._klava=FLOWS.klava;
 const ageLabel=a=>a<1.5?Math.round(a*12)+' months':a<THRONE.OLD?Math.round(a)+' years':'no flow in the record';
 _mark('flows');
 
