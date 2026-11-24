@@ -82,6 +82,13 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **The Iziz Vernacular's hamlet pieces into its src/** (2026-11-24, settlements/hook S5): `kits/iziz-vernacular/extra/75-vern-hamlet-extra.js`
+  (`vern_shrine`, the village shrine core/hamlet's iziz row has as pending; `vern_sawpit`, the settlers' timber works) joins
+  `src/72-vern-civic.js` and `src/73b-vern-works.js` and `vernacular.py`'s FILES, and `core/hamlet/21-hamlet-iziz.js` drops the shrine
+  from `pending` and takes the lumber works (`vern_sawpit`) settlements/hook's `77m` row adds (`SETTLERS`). Only Hook reads the file now
+  (`build.py` IZV_EXTRA). Every page that takes the Vernacular gains the two pieces.
+- **core/hamlet: a resource on the village point** (2026-11-24, settlements/hook KNOWN_ISSUES.md): `KHAMLET.village` faces its works from the
+  point to the resource, and with the two equal the works' box is zero (later houses overlap it). Guard it in `30-hamlet-village.js`.
 - **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
   `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
   `kits/xanadu/src/87k1-xa-lake-rooms.js` join `kits/interiors/sets/xanadu.js` when their pieces join the kit's src/; every page

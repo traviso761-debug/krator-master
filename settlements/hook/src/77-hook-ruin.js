@@ -37,13 +37,24 @@ function HOOK_RUIN_PLAN(o){
   if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
  const local=p=>o.toLocal(p[0],p[1]);
  const CTR=SITE.centre,RR=SITE.ringR,LIM=SITE.limits,ZONE=o.zone||null;
+ /* THE TOWN the ruin leaves alone is its quarters (o.quarters: the site's quarter polygons, where Port Hook builds) and
+    P.townMargin round them; the build zone's reserve beyond them (its south, where nothing is built yet) is the ruin's,
+    so the port meets the city (the owner, 2026-11-24). With no quarters given, the zone. townD: metres off the town (0 in it) */
+ const QS=o.quarters&&o.quarters.length?o.quarters:(ZONE?[ZONE]:[]);
+ const polyD=(x,z,Q)=>{let d=1e9;for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[j],b=Q[i],dx=b[0]-a[0],dz=b[1]-a[1],l2=Math.max(1e-9,dx*dx+dz*dz),
+  t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[1])*dz)/l2));d=Math.min(d,Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z));}return d;};
+ const townD=(x,z)=>{let d=1e9;for(const Q of QS){if(inPoly(x,z,Q))return 0;d=Math.min(d,polyD(x,z,Q));}return d;};
+ const townAt=(x,z)=>QS.length>0&&townD(x,z)<=(o.quarters&&o.quarters.length?P.townMargin:0);
+ /* THE BAND (the owner, 2026-11-24: "skyscraper stumps and medium sized ones so the port looks continuous with the city"):
+    the walled ground within P.band.r of the town, where the port meets the ruin */
+ const inBand=(x,z)=>QS.length>0&&townD(x,z)<=P.band.r;
  /* ---- the field */
  function zoneOf(r){const q=r/RR;return q<P.zones.core?'core':q<1?'downtown':q<P.zones.inner?'inner':'outer';}
  function field(x,z){
   const w=o.toWorld(x,z),r=Math.hypot(w[0]-CTR[0],w[1]-CTR[1]),zone=zoneOf(r);
   const out={ground:null,zone,r,h:0,wild:0,salvage:0};
   if(!inPoly(w[0],w[1],LIM))return out;
-  if(ZONE&&inPoly(x,z,ZONE)){out.ground='town';return out;}
+  if(townAt(x,z)){out.ground='town';return out;}
   const h=natH(x,z);out.h=h;
   if(o.onSpit(w[0],w[1]))out.ground='walled';
   else if(o.onSunk(w[0],w[1]))out.ground='sunk';
@@ -58,7 +69,8 @@ function HOOK_RUIN_PLAN(o){
   const hb=B/2;let lo=1e9,hi=-1e9,sum=0;
   for(const p of [[0,0],[-hb,-hb],[hb,-hb],[-hb,hb],[hb,hb]]){const v=natH(x+p[0],z+p[1]);lo=Math.min(lo,v);hi=Math.max(hi,v);sum+=v;}
   const slope=(hi-lo)/B;
-  if(f.ground!=='sunk'&&slope>P.maxSlope)return null;
+  /* too steep for a block, but in the band a hill takes its ruins (the Crown's hill, the ridge): single blocks, stumps */
+  if(f.ground!=='sunk'&&slope>P.maxSlope&&!(f.ground==='walled'&&slope<=P.band.maxSlope&&inBand(x,z)))return null;
   return {i,j,x,z,f,lo,hi,mean:sum/5,slope};}
  /* ---- blocks: a 2 x 2 tile is four blocks, two long ones or one square, by the tile's hash and its zone's shares, only
     where all four cells stand on one ground in one zone (a pure function of the tile) */
@@ -70,9 +82,20 @@ function HOOK_RUIN_PLAN(o){
    (c[0].f.ground==='sunk'||Math.max(...c.map(q=>q.hi))-Math.min(...c.map(q=>q.lo))<=P.maxSlope*(2*B+S))){
    const u=U(I,J,1),sh=P.merge[c[0].f.zone];kind=u<sh.square?'square':u<sh.square+sh.long?'long':'four';}
   const pt={kind,c};tiles.set(key,pt);return pt;}
+ /* a quarried clearing keeps its building's foundations (the owner, 2026-11-24: no complete gap between the port and the
+    ruins): the footprint's outline as broken wall stubs, each side in three pieces kept by hash, 0.6 to 3.6 m high, and
+    half of them a small heap of the rubble left over; plain records, each wall [x0, z0, x1, z1, h] */
+ function foundation(blk,i,j){const w=blk.w,d=blk.d,fw=w*(.45+.35*U(i,j,21)),fd=d*(.45+.35*U(i,j,22));
+  const fx=blk.x+(w-fw)*(U(i,j,23)-.5)*.6,fz=blk.z+(d-fd)*(U(i,j,24)-.5)*.6,C=[[fx-fw/2,fz-fd/2],[fx+fw/2,fz-fd/2],[fx+fw/2,fz+fd/2],[fx-fw/2,fz+fd/2]],walls=[];
+  for(let sd=0;sd<4;sd++){const A=C[sd],Bp=C[(sd+1)%4];for(let k=0;k<3;k++){const q=30+sd*3+k;if(U(i,j,q)<.38)continue;
+   const f=.55+.4*U(i,j,q+20),t0=(k+.5)/3-f/6,t1=(k+.5)/3+f/6,h=.6+3*Math.pow(U(i,j,q+40),2);
+   walls.push([+(A[0]+(Bp[0]-A[0])*t0).toFixed(2),+(A[1]+(Bp[1]-A[1])*t0).toFixed(2),+(A[0]+(Bp[0]-A[0])*t1).toFixed(2),+(A[1]+(Bp[1]-A[1])*t1).toFixed(2),+h.toFixed(2)]);}}
+  blk.found={id:'huka.f.'+i+'.'+j,kind:'foundation',parent:blk.id,x:+fx.toFixed(2),z:+fz.toFixed(2),y:blk.pad==null?blk.y:blk.pad,w:+fw.toFixed(2),d:+fd.toFixed(2),walls};
+  if(U(i,j,25)<.5){const c=C[Math.floor(U(i,j,26)*4)%4],hx=fx+(c[0]-fx)*.55,hz=fz+(c[1]-fz)*.55;
+   blk.heap={id:'huka.h.'+i+'.'+j,kind:'heap',parent:blk.id,x:+hx.toFixed(2),z:+hz.toFixed(2),y:blk.y,r:+(Math.min(w,d)*(.07+.05*U(i,j,27))).toFixed(2),wet:false,wild:blk.wild,left:true};}}
  const DES=HOOK_RUIN_PLAN.DESIGNS;
  function pick(list,u){let s=0;for(const k in list)s+=list[k];let v=u*s,last=null;for(const k in list){last=k;v-=list[k];if(v<=0)return k;}return last;}
- function stateOf(i,j,ground){const u=U(i,j,4),sh=P.shares[ground];let acc=0;
+ function stateOf(i,j,ground,band){const u=U(i,j,4),sh=band?P.band.shares:P.shares[ground];let acc=0;
   for(let k=0;k<P.STATES.length;k++){acc+=sh[k];if(u<acc)return P.STATES[k];}return P.STATES[P.STATES.length-1];}
  const GLEBE=SITE.places.find(p=>p.id==='H2'),glebe=GLEBE?local(GLEBE.at):null;
  function cell(i,j){
@@ -92,20 +115,28 @@ function HOOK_RUIN_PLAN(o){
   if(ground!=='sunk')blk.pad=+hi.toFixed(3);   /* the pad a dry block's building stands on: its highest corner */
   /* inside the wall the ground is cleared or reclaimed: a block may be cleared (its rubble quarried), and round the Glebe
      cleared into fields */
-  if(ground==='walled'&&U(i,j,10)<P.cleared){blk.use=glebe&&Math.hypot(x-glebe[0],z-glebe[1])<P.glebeR?'field':'cleared';return blk;}
+  const band=ground==='walled'&&inBand(x,z),hill=band&&parts.some(q=>q.slope>P.maxSlope);if(band)blk.band=true;if(hill)blk.hill=true;
   const span=si===2&&sj===2?'square':si===2?'long':'single';
-  if(U(i,j,2)>=P.tower[zone]){
+  if(ground==='walled'&&U(i,j,10)<P.cleared*(band?P.band.cleared:1)){blk.use=glebe&&Math.hypot(x-glebe[0],z-glebe[1])<P.glebeR?'field':'cleared';
+   if(blk.use==='cleared')foundation(blk,i,j);
+   /* in the band a field keeps a skyscraper's stump standing in it now and then */
+   else if(band&&span==='single'&&U(i,j,12)<P.band.fieldStump){const fam=pick(P.band.stumpFamilies,U(i,j,3));makeTower(blk,i,j,fam,'stump',false,span,f);}
+   return blk;}
+  if(U(i,j,2)>=(band?P.band.tower:P.tower[zone])){
    if(U(i,j,3)<P.heap[ground])blk.heap={id:'huka.h.'+i+'.'+j,kind:'heap',parent:id,x,z,y:blk.y,r:+(Math.min(w,d)*(.3+.15*U(i,j,9))).toFixed(2),
     wet:ground==='sunk',wild:blk.wild};
    return blk;}
-  const fam=pick(P.families[zone][span],U(i,j,3)),D=DES[fam];
-  const state=stateOf(i,j,ground),wildLook=state!=='intact'&&U(i,j,5)<f.wild;
+  const fam=pick(band?P.band.families[span]:P.families[zone][span],U(i,j,3));
+  makeTower(blk,i,j,fam,stateOf(i,j,ground,band),band,span,f);
+  return blk;}
+ function makeTower(blk,i,j,fam,state,band,span,f){const D=DES[fam],id=blk.id,ground=blk.ground,zone=blk.zone,x=blk.x,z=blk.z;
+  const wildLook=state!=='intact'&&U(i,j,5)<f.wild;
   const q=Math.floor(U(i,j,6)*4),yaw=span==='long'?(q&1)*Math.PI:q*Math.PI/2;
   const lean=(state==='intact'||state==='gutted'||state==='fallen')?0:+((state==='skeleton'?2:state==='stump'?3:5)*U(i,j,8)).toFixed(3);
   blk.tower={id:'huka.t.'+i+'.'+j,kind:'tower',parent:id,family:fam,state,look:state+(wildLook?'.wild':''),key:fam+'.'+state+(wildLook?'.wild':''),
    x,z,y:ground==='sunk'?blk.y:blk.pad,yaw:+yaw.toFixed(6),lean,leanDir:+(U(i,j,7)*Math.PI*2).toFixed(4),
    w:D.w,d:D.d,roof:D.roof,tip:D.tip,design:D.kind,wet:ground==='sunk',ground,zone};
-  return blk;}
+  if(blk.band)blk.tower.band=true;}
  /* ---- every cell of the city limits' lattice */
  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of LIM){const q=local(p);x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);z0=Math.min(z0,q[1]);z1=Math.max(z1,q[1]);}
  const iA=Math.floor((x0-X0)/PITCH)-1,iB=Math.ceil((x1-X0)/PITCH)+1,jA=Math.floor((CZ0-z1)/PITCH)-1,jB=Math.ceil((CZ0-z0)/PITCH)+1;
@@ -124,7 +155,7 @@ function HOOK_RUIN_PLAN(o){
  const crownB=nearest(SITE.crown,'walled'),SPIRE=SITE.places.find(p=>p.id==='C1'),spireB=SPIRE?nearest(SPIRE.at,'sunk'):null;
  const crown=crownB?setTower(crownB,P.crown.family,P.crown.state,{landmark:true,name:'The Crown'}):null;
  const spire=spireB?setTower(spireB,P.spire.family,P.spire.state,{landmark:true,name:'The Drowned Spire',reclaimed:true}):null;
- const towersAll=blocks.filter(b=>b.tower).map(b=>b.tower),heapsAll=blocks.filter(b=>b.heap).map(b=>b.heap);
+ const towersAll=blocks.filter(b=>b.tower).map(b=>b.tower),heapsAll=blocks.filter(b=>b.heap).map(b=>b.heap),foundAll=blocks.filter(b=>b.found).map(b=>b.found);
  /* ---- Hykkousoi pods: a ring of them on the Spire's crown, and now and then on another tower standing in the water */
  const STANDING={intact:1,gutted:1,crown:1};
  const pods=[];
@@ -170,6 +201,8 @@ function HOOK_RUIN_PLAN(o){
    size:[b.w,b.d,1],tags:{culture:'ancient',state:b.use?'salvage':'ruined',district:b.zone,quarter:b.ground},note:(b.use||'')+' wild '+b.wild});
   for(const t of towersAll)add({id:t.id,class:t.landmark?'landmark':'building',kind:'ruin',key:t.key,parent:t.parent,name:t.name||(DES[t.family].name+' ('+t.look+')'),
    at:[t.x,t.y,t.z],ry:t.yaw,size:[t.w,t.d,t.tip],tags:{culture:'ancient',state:tagState(t),family:t.family,variant:t.look,district:t.zone,quarter:t.ground,landmark:!!t.landmark}});
+  for(const f of foundAll)add({id:f.id,class:'feature',kind:'foundation',key:'cleared',parent:f.parent,name:'Ancient foundations',at:[f.x,f.y,f.z],
+   size:[f.w,f.d,Math.max(...f.walls.map(q=>q[4]),.5)],tags:{culture:'ancient',state:'salvage'},note:f.walls.length+' wall stubs'});
   for(const h of heapsAll)add({id:h.id,class:'feature',kind:'heap',key:h.wet?'island':'heap',parent:h.parent,name:h.wet?'Rubble island':'Rubble heap',at:[h.x,h.y,h.z],r:h.r,h:4,
    tags:{culture:'ancient',state:'toppled'}});
   for(const p of pods)add({id:p.id,class:'building',kind:'pod',key:'hyk-pod',parent:p.parent,name:'Hykkousoi pod',at:[p.x,p.y,p.z],ry:p.a,size:[12,12,10],
@@ -191,10 +224,10 @@ function HOOK_RUIN_PLAN(o){
  const cell2=PITCH*PITCH/1e6,count=(arr,k)=>{const c={};for(const x of arr)c[x[k]]=(c[x[k]]||0)+1;return c;};
  const km2={};for(const b of blocks)km2[b.ground]=+((km2[b.ground]||0)+b.si*b.sj*cell2).toFixed(2);
  const roof={};for(const z of ['core','downtown','inner','outer']){const t=towersAll.filter(q=>q.zone===z);roof[z]=t.length?Math.round(t.reduce((s,q)=>s+q.roof,0)/t.length):0;}
- const report={lattice:{X0,CZ0,pitch:PITCH,i:[iA,iB],j:[jA,jB]},km2,blocks:blocks.length,towers:towersAll.length,heaps:heapsAll.length,pods:pods.length,
+ const report={lattice:{X0,CZ0,pitch:PITCH,i:[iA,iB],j:[jA,jB]},km2,blocks:blocks.length,towers:towersAll.length,heaps:heapsAll.length,foundations:foundAll.length,pods:pods.length,
   byGround:count(blocks,'ground'),byZone:count(towersAll,'zone'),meanRoof:roof,states:count(towersAll,'state'),
   cleared:blocks.filter(b=>b.use).length,spans:count(spans,'state'),places:places.length,crown:crown?crown.id:null,spire:spire?spire.id:null};
- return {field,cell,blocks,towers:towersAll,heaps:heapsAll,pods,spans,ramp,wall,gates,roads,places,crown,spire,register,report,cx,cz,PITCH};}
+ return {townAt,townD,field,cell,blocks,towers:towersAll,heaps:heapsAll,foundations:foundAll,pods,spans,ramp,wall,gates,roads,places,crown,spire,register,report,cx,cz,PITCH};}
 /* the designs the ruin stands (kits/metropolis: 46-mp-designs.js MP.DESIGNS, 40-mp-records.js MP.FAMILY for the Spindle and
    the Ledger, 46f-mp-farm.js for the Soleri farms): footprint (w along the record's x, d along its z), roof and tip, kind.
    Copied because Hook's page does not load the kit; tests/test-hook-ruin.js checks every row against the kit's records */
@@ -213,7 +246,13 @@ HOOK_RUIN_PLAN.DESIGNS={
 /* the plan's numbers (the owner's site plan and answers, 2026-11-24; plan/hook-site-plan.html) */
 HOOK_RUIN_PLAN.PARAMS={
  seed:0x48554b41,
- zones:{core:.55,inner:2.1},maxSlope:.45,
+ zones:{core:.55,inner:2.1},maxSlope:.45,townMargin:60,
+ /* the band where the port meets the ruin (the owner, 2026-11-24): the walled ground within r m of the town's zone; its
+    hills taken up to maxSlope; a block cleared at `cleared` of the walled share, a building on `tower` of them, skyscraper
+    stumps and broken towers among gutted mid-rises (`families`, `shares` in STATES' order), a field's stump at fieldStump */
+ band:{r:900,maxSlope:1.2,cleared:.3,tower:.9,fieldStump:.3,shares:[0,.3,.04,.18,.38,.1,0],
+  families:{single:{spindle:2,organ:1,reed:2,wedge:1,swell:1,telescope:1,terrarium:2,cupola:1,spiral:1},long:{yoke:1,ledger:2,crescent:2,pods:2},square:{terrace:2}},
+  stumpFamilies:{spindle:2,reed:2,wedge:1,swell:1,organ:1,telescope:1}},
  STATES:['intact','gutted','crown','broken','stump','skeleton','fallen'],
  /* the states' shares by ground: inside the wall picked clean (the tops taken, the shells stripped); drowned (cut down to
     the water, a few standing clear); the mainland as the valley's far ruin (AV.RUIN_CUTS, the owner's "further still") */
@@ -243,4 +282,4 @@ const HOOK_RUIN=(function(){
  const on=b=>(x,z)=>!!b&&WLAND.benchD(b,x,z)===0;
  const Z=(HOOK_SITE.districts||[]).find(d=>d.type==='zone');
  return HOOK_RUIN_PLAN({natH:HOOK_WORLD.natH,toWorld:HOOK_WORLD.toWorld,toLocal:HOOK_WORLD.toLocal,onSpit:on(SPIT),onSunk:on(SUNK),
-  zone:Z?Z.poly:null,grid:HOOK_SITE.grid});})();
+  zone:Z?Z.poly:null,quarters:(HOOK_SITE.districts||[]).filter(d=>d.type==='quarter').map(d=>d.poly),grid:HOOK_SITE.grid});})();

@@ -7,7 +7,8 @@
      - the ruin's grid is the town's; every footprint inside its block; the living town's zone left to the town
      - the grounds: walled blocks on the peninsula's record, drowned ones in the drowned downtown's record or water, mainland
        ones dry and outside the wall; all inside the city limits
-     - height and density fall with the distance from the downtown (core, downtown, inner, outer)
+     - height and density fall with the distance from the downtown (core, downtown, inner, outer), outside the band by the town
+     - the band where the port meets the ruin: buildings on most of its blocks, skyscraper stumps among them
      - each ground's character: cleared and picked inside the wall, cut down in the water, wild on the mainland
      - the freeway: its spans close the ring, the west arc fallen, the approach standing, the ramp from the ring to the land
      - the wall from the quays to the freeway, its two gates
@@ -71,8 +72,11 @@ const fits = ts => ts.every(t => { const b = byId[t.parent]; return corners(t).e
 T.ok('every tower\'s footprint, turned by its yaw, lies inside its block', R.towers.length > 500 && fits(R.towers), R.towers.length + ' towers');
 T.neg('a Long Curve (180 m) on a single block fails the fit', fits, R.towers.map(t => byId[t.parent].si === 1 ? Object.assign({}, t, { w: 180, d: 60, yaw: 0 }) : t), R.towers);
 const ZONE = SITE.districts.find(d => d.type === 'zone').poly;
-const offTown = bs => bs.every(b => !inPoly(b.x, b.z, ZONE));
-T.ok('no block stands in the living town\'s zone (Port Hook is the town\'s)', offTown(R.blocks), '');
+const QUARTERS = SITE.districts.filter(d => d.type === 'quarter').map(d => d.poly);
+/* the town is its quarters (and 60 m round them): the build zone's empty reserve is the ruin's (the owner, 2026-11-24) */
+const offTown = bs => bs.every(b => !QUARTERS.some(Q => inPoly(b.x, b.z, Q)) && R.townD(b.x, b.z) > 0);
+T.ok('no block stands in the living town (its quarters: Port Hook is the town\'s), and the zone\'s empty reserve is the ruin\'s',
+  offTown(R.blocks) && R.blocks.some(b => inPoly(b.x, b.z, ZONE)), R.blocks.filter(b => inPoly(b.x, b.z, ZONE)).length + ' blocks in the zone\'s reserve');
 T.neg('a block moved into the town fails the check', offTown, R.blocks.concat([Object.assign({}, R.blocks[0], { x: 0, z: -300 })]), R.blocks);
 
 /* ---- the grounds */
@@ -90,14 +94,24 @@ const ZONES = ['core', 'downtown', 'inner', 'outer'];
 const stats = (ts, bs) => ZONES.map(z => { const t = ts.filter(q => q.zone === z), b = bs.filter(q => q.zone === z && !q.use);
   return { z, roof: t.reduce((s, q) => s + q.roof, 0) / Math.max(1, t.length), dens: t.length / Math.max(1, b.length), n: t.length }; });
 const falls = st => st.every(s => s.n > 5) && st.every((s, k) => k === 0 || (s.roof < st[k - 1].roof && s.dens < st[k - 1].dens));
-const st = stats(R.towers, R.blocks.map(b => Object.assign({}, b, { zone: b.tower ? b.tower.zone : b.zone })));
+/* outside the band, where the port meets the ruin (its skyscraper stumps stand by the town on purpose: PARAMS.band) */
+const st = stats(R.towers.filter(t => !t.band), R.blocks.filter(b => !b.band).map(b => Object.assign({}, b, { zone: b.tower ? b.tower.zone : b.zone })));
 T.ok('height and density fall from the core to the outer city', falls(st), st.map(s => s.z + ' ' + Math.round(s.roof) + ' m ' + s.dens.toFixed(2) + ' (' + s.n + ')').join(', '));
 T.neg('the zones swapped (the outer city standing as tall as the core) fails it', falls, st.map((s, k) => k === 3 ? Object.assign({}, s, { roof: st[0].roof }) : s), st);
+
+/* ---- the band where the port meets the ruin: few clearings, a building on most blocks, skyscraper stumps and broken towers
+   standing among gutted mid-rises (the owner, 2026-11-24); a hill steeper than PARAMS.maxSlope taken too */
+const shareB = (ts, f) => ts.filter(f).length / Math.max(1, ts.length);
+const bandB = R.blocks.filter(b => b.band), bandT = R.towers.filter(t => t.band && !t.landmark);
+const bandOk = (bs, ts) => bs.length > 60 && shareB(bs, b => !!b.tower) > .6 && shareB(ts, t => t.design === 'skyscraper' && /^(stump|broken)$/.test(t.state)) > .2;
+T.ok('the band by the town: a building on most blocks, skyscraper stumps and broken towers among them', bandOk(bandB, bandT),
+  bandB.length + ' blocks, ' + shareB(bandB, b => !!b.tower).toFixed(2) + ' built, ' + shareB(bandT, t => t.design === 'skyscraper' && /^(stump|broken)$/.test(t.state)).toFixed(2) + ' skyscraper stumps, ' + bandB.filter(b => b.hill).length + ' on hills');
+T.neg('a band cleared like the rest of the wall fails it', bs => bandOk(bs, bandT), bandB.map(b => Object.assign({}, b, { tower: null })), bandB);
 
 /* ---- each ground's character */
 const share = (ts, f) => ts.filter(f).length / Math.max(1, ts.length);
 const tw = g => R.towers.filter(t => t.ground === g && !t.landmark);
-const walledB = by('walled'), cleared = share(walledB, b => !!b.use), picked = share(tw('walled'), t => t.state === 'gutted' || t.state === 'stump');
+const walledB = by('walled'), cleared = share(walledB.filter(b => !b.band), b => !!b.use), picked = share(tw('walled'), t => t.state === 'gutted' || t.state === 'stump');
 const drowned = share(tw('sunk'), t => /^(broken|stump|skeleton|fallen)$/.test(t.state));
 const wildM = ts => share(ts, t => /\.wild$/.test(t.look));
 T.ok('inside the wall the ground is cleared or picked clean; in the water the towers are cut down; on the mainland the jungle has them',
@@ -143,7 +157,7 @@ T.ok('the thirteen places stand on their ground, the right side of the wall (the
 T.neg('a place moved to the wrong side of the wall fails it', placesOk, R.places.map(p => p.code === 'H2' ? Object.assign({}, p, { inside: false }) : p), R.places);
 
 /* ---- records stable by id, the same in any order */
-const ids = [].concat(R.blocks, R.towers, R.heaps, R.pods, R.spans, [R.ramp, R.wall], R.gates, R.roads, R.places).map(r => r.id);
+const ids = [].concat(R.blocks, R.towers, R.heaps, R.foundations, R.pods, R.spans, [R.ramp, R.wall], R.gates, R.roads, R.places).map(r => r.id);
 T.ok('every record\'s id is unique', new Set(ids).size === ids.length, ids.length + ' records');
 const cells = R.blocks.map(b => [b.i, b.j]);
 for (let k = cells.length - 1; k > 0; k--) { const m = (k * 7919 + 13) % (k + 1); const t = cells[k]; cells[k] = cells[m]; cells[m] = t; }

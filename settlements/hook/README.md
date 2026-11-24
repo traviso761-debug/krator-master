@@ -333,17 +333,43 @@ under them is painted by `77k` through the Port kit's `PORT.paint` (kits/port 71
 floor in patches on the low ground the jungle has. View: `The mangroves`. `verify.py`: `hook-flora` (planted, mangroves
 standing in the water, none in the town, on a clearing, on a cliff, inside a footprint or over the ground).
 
-**The hamlets and camps (S5, `src/77m-hook-places.js`, `[G data]`):** eleven of the site plan's thirteen places laid out
+**The hamlets and camps (S5, `src/77m-hook-places.js`, `[G data]`):** the site plan's thirteen places. Eleven laid out
 by core/hamlet (`KHAMLET.village`; the camps through its work-camp option, `core/hamlet/camp/26`), read in place
 (`build.py` CORE_PLACE, `77j*`): the Hukoa's on the Islanders' row (Lantern Point's fishing hamlet with its quay, the salt
 pans, the mangrove camp, the charcoal burners), the Iziz settlers' on the Iziz Vernacular's (the Glebe's farms, the
-Freeway Gate's way station, the posts, the timber and hunters' camps), the salvagers' (Breakers' Yard) on a row of the
-post-apoc kit's pieces (`HOOK_PLACES.SALVAGE`). A building stands on dry, not steep ground, outside Port Hook's zone and
+Freeway Gate's way station, the posts, the timber and hunters' camps: `HOOK_PLACES.SETTLERS`, core/hamlet's row with the
+works these want on the Vernacular's rest stop, toll house, guard tower and pens, and two pieces built for them in
+`kits/iziz-vernacular/extra/75-vern-hamlet-extra.js`: the village shrine and the saw pit, opt-in, read by this page only
+until they fold into the kit), the salvagers' (Breakers' Yard) on a row of the post-apoc kit's pieces
+(`HOOK_PLACES.SALVAGE`). The Drowned Spire's Hykkousoi village is 18 of the Ys kit's grown pods (with the plan's six)
+spiralling up the Spire from above the water to under its broken crown, on the Spindle's own surface (the metropolis kit's
+`MP.spindleR`, read when a pod is drawn); the deck camp is the salvagers' shacks along both edges of its standing freeway
+span, on the deck. A building stands on dry, not steep ground, outside Port Hook's zone and
 clear of every ruin footprint; a place whose point is in the water or too cramped for its houses moves to the roomiest
 dry ground within 1.5 km (the mangrove camp 937 m, the salt pans 433 m). 243 buildings, drawn by 90b as the town's lots
 are (in full near the camera, massing beyond; a piece no kit has yet, the Iziz shrine, stays its massing), registered in
-core/tags by 89z; 90e keeps the jungle off them. Views: `Lantern Point`, `The Glebe`. `verify.py`: `hook-places`;
-`node tests/test-hook-places.js` (8 checks: laid, on good ground, apart, each culture on its kit, the same on a second run).
+core/tags by 89z; 90e keeps the jungle off them. **The roads** (77m, drawn by `src/90f-hook-roads.js`): core/hamlet's lanes
+(cut back to their last dry, clear point) and each hamlet's link to the road net (the plan's south road, the town's edge,
+the links before it), routed along the Ancient city's own streets (a shortest path over the lattice's crossings, the climb
+weighed, a street passable where the ground is dry, out of the town, clear of every tower, heap, pier, foundation and
+building, and crossing the wall only at a gate); the salt pans, cut off by water, are served from their quay. One ribbon
+mesh on the drawn ground. Views: `Lantern Point`, `The Glebe`, `The Spire village`, `The deck camp`. `verify.py`:
+`hook-places`; `node tests/test-hook-places.js` (10 checks: laid, on good ground, apart, linked, each culture on its kit,
+the same on a second run).
+
+**The gap between the port and the ruins** (the owner, 2026-11-24: "skyscraper stumps and medium sized ones so the port
+looks continuous with the city"): the town the ruin leaves alone is now Port Hook's quarters and 60 m round them
+(`PARAMS.townMargin`, the site's quarter polygons), not its whole build zone: the zone's empty reserve to the south (420 m
+deep, nothing built in it yet) is the ruin's, 71 blocks more. The plan's band (`PARAMS.band`), the walled ground within
+900 m of the town, is
+cleared at under a third of the wall's share, has a building on nine blocks in ten, and stands skyscraper stumps and broken
+towers among gutted mid-rises (283 blocks, 83% built, 40% of them skyscraper stumps or broken); a field there keeps a
+skyscraper's stump now and then; a hill too steep for a block elsewhere takes its ruins in the band. Outside it the
+peninsula keeps its picked-clean character, and the height gradient is judged outside it. And a quarried clearing on the walled peninsula keeps its
+building's foundations (77 `foundations`: the footprint's outline as broken wall stubs, 0.6 to 3.6 m, and half of them a
+heap of left rubble; drawn by 90c, 2,002 stubs on 268 clearings); the jungle grows on the walled ground's standing blocks at
+.38 at least and on the clearings at .3 (the Glebe's fields stay clear), and into Port Hook's zone's outer 220 m clear of
+every lot, street and stamp of the town; the walled ground's floor is painted green in sparser patches.
 
 `node tests/test-hook-ruin.js` (31 checks) proves the grid is the town's, every footprint inside its block, the town's
 zone left alone, each block on its ground, the height and density falling from the downtown, each ground's character,

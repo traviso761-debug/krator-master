@@ -132,7 +132,7 @@ SKY_FRAG = '78-sky-helpers.js'   # the skyscraper helpers the hosts call (skyPli
 ANCIENTS_SRC = os.path.join(ROOT, 'kits', 'ancients', 'src')
 P1_DETERMINISTIC = {n for n, _ in CORE_PLACE} | {KCITY_FRAG, SITE_FRAG, SKY_FRAG, WORLD_FRAG, '78a-host-0-lib.js', '75d-hook-world.js', '76-hook-ground.js',
                                                  '76b-hook-strokes.js', '77-hook-ruin.js', '90a-hook-city.js', '90b-hook-city-draw.js',
-                                                 '90c-hook-ruin-draw.js', '90d-hook-ruin-heroes.js', '90e-hook-flora.js', '77k-hook-paint.js', '77m-hook-places.js'}
+                                                 '90c-hook-ruin-draw.js', '90d-hook-ruin-heroes.js', '90e-hook-flora.js', '77k-hook-paint.js', '77m-hook-places.js', '90f-hook-roads.js'}
 
 
 # ---------------------------------------------------------------- P2: the kits the town draws with, each sealed in a closure
@@ -293,7 +293,7 @@ def dims_fragment():
             if re.search(r"cls\s*:\s*'(life|flora)'", b) or not num(b, 'w'):
                 continue
             out[m.group(1)] = rec(b, 'isk')
-    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', '7*-vern-*.js'))):
+    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', '7*-vern-*.js'))) + IZV_EXTRA:
         for m in re.finditer(r"VERN\.def\(\{key:'([^']+)'(.*?)build:", rd(f)):
             out[m.group(1)] = rec(m.group(2), 'izv', 8)
     for f in marr_files():   # Marr's vassal kit (VERN.def records, written over several lines), drawn in the IZV closure
@@ -331,6 +331,11 @@ def marr_files():
     return [os.path.join(MARR_SRC, f) for f in sorted(os.listdir(MARR_SRC)) if f[0].isdigit() and f.endswith('.js')]
 
 
+# the Iziz Vernacular's opt-in pieces the settlers' hamlets want (S5, 77m: the village shrine, the saw pit), from the kit's
+# extra/ folder, which its own FILES do not list: only this page takes them until they fold into the kit's src/
+IZV_EXTRA = [os.path.join(ROOT, 'kits', 'iziz-vernacular', 'extra', '75-vern-hamlet-extra.js')]
+
+
 def izv_marr_bundle(bundles):
     """IZV: the isle demo's Vernacular closure (settlements/isle-demo/bundles.py: its head, files and tail, so izvProto and
     the door hand-out are the same code) with Marr's vassal kit after the Vernacular's files, inside the same closure:
@@ -341,7 +346,7 @@ def izv_marr_bundle(bundles):
     # Iziz's page (build.py --kit) merges them in filename order, where 69m comes before 88y the same way
     base = bundles.izv_files()
     assert os.path.basename(base[-1]) == '88y-iziz-matlib.js', 'izv_files() no longer ends with Iziz\'s library bind: ' + base[-1]
-    fs = base[:-1] + marr_files() + base[-1:]
+    fs = base[:-1] + marr_files() + IZV_EXTRA + base[-1:]   # the Vernacular's opt-in hamlet pieces (IZV_EXTRA) with them
     return bundles.safe('/* IZV: the Iziz Vernacular, its Ancients core and Marr\'s vassal kit (kits/marr) in one closure (settlements/hook/build.py on '
                         'settlements/isle-demo/bundles.py). GENERATED: edit kits/iziz-vernacular, kits/marr or core/materials. */\n'
                         'var IZV = (function(){\n' + bundles.IZV_HEAD + bundles.body(fs) + bundles.IZV_TAIL + '})();\n')

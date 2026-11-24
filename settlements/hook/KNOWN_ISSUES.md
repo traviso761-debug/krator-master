@@ -20,8 +20,8 @@ from a Hook task.
       (KSHELL) exist for the Spindle and the Ledger only (the other designs wait on the kit's shell review), so the
       middle distance is massing and a tower changes from a box to its hero at the switch (at the same height: the
       massing stands to the kit's own `MP.ruin` top).
-- [ ] **The jungle costs 13.6 s at load.** About 52,000 trees over the whole ruin (a 9.6 km square, the outer city at a
-      fifth of the heart's density: 90e `HOOK_FLORA`); placing them is 7 s and baking 4.6 s. The plateau beyond the square
+- [ ] **The jungle costs about 23 s at load.** About 63,000 trees over the whole ruin and into the gap by the town (a 9.6 km square, the outer city at a
+      fifth of the heart's density: 90e `HOOK_FLORA`); placing them is 9 s and baking 12 s. The plateau beyond the square
       has the painted ground only. Baking the placement (its records are deterministic) or growing the outer city's far
       trees as impostors only would cut it.
 - [ ] **The flora's detail is static.** The kit's LOD is set at placement by the distance from a spine of eight points
@@ -42,18 +42,28 @@ from a Hook task.
       plain on the low ground only, there is water; it stands on the nearest dry ground, the plateau's north foot.
 - [ ] **The flora's texture count is shared by design.** The kits' library cards count on `window._texPending` as the
       material library does; the closure forwards it to the page's, and `check_assembly` lists the two writers as a clash.
-- [ ] **Two places are not laid.** The Drowned Spire's Hykkousoi village (C1: its pods are 77's records, drawn as 90c's
-      massing; the Ys kit's grown pods want the Spire hero's surface) and the deck camp (C3: on a standing freeway span,
-      14 m up). Their people are in the simulation by neither yet.
+- [x] **Two places were not laid** (fixed 2026-11-24): the Drowned Spire's village is 18 grown pods on the Spindle's
+      surface, the deck camp its shacks on the deck (77m). Their people, and every place's, are in the simulation by
+      neither yet.
+- [ ] **The Spire's pods are drawn far as massing inside the Spire's.** A pod's record stands at its host's middle (as the
+      town's pods do, 90b); near the camera it is grown on the surface, beyond it hidden in the Spire's massing.
+- [ ] **The salt pans have no road.** Their ground is cut off from the streets by water; they are served from their quay.
 - [ ] **Two places moved.** The mangrove stilt camp's point (C2) is in the open bay and the salt pans' ground (C6) too
       cramped for its houses: each stands at the roomiest dry ground within 1.5 km (937 m and 433 m off). The Islanders'
       row has no stilt houses for a camp standing in the water.
-- [ ] **The settlers' timber camp has no works.** The Iziz Vernacular's row (core/hamlet 21) has farming and ranch works
-      only: the timber camp (C7) is its bunkhouses and services. The salvagers' row is Hook's own (77m `SALVAGE`), on the
-      post-apoc kit's pieces, until core/hamlet carries one.
+- [ ] **The settlers' and salvagers' rows are Hook's own.** 77m `SETTLERS` is core/hamlet's iziz row with lumber, way
+      station, post and hunting works (on the Vernacular's pieces and the opt-in saw pit and shrine,
+      `kits/iziz-vernacular/extra`); `SALVAGE` is the post-apoc kit's pieces. Both fold into core/hamlet with the kit's
+      extra pieces at the next all-builds rebuild (TODO.md, "Ride along").
 - [ ] **core/hamlet: a resource on the village point leaves its works no facing.** `KHAMLET.village` faces a works
       building from the point to the resource; with the two equal its box is zero and later houses overlap it. Hook puts a
-      works village's resource 150 m out (77m `outward`); the guard belongs in core/hamlet 30 (a shared change: 56 pages).
+      works village's resource 150 m out (77m `outward`); the guard belongs in core/hamlet 30 (a shared change: 56 pages;
+      TODO.md, "Ride along").
+- [ ] **The ruin stands in the town's reserve.** The plan leaves only the quarters (and 60 m) to the town; the build zone's
+      reserve south of them is ruin now. A quarter the town grows into later (the site editor) takes its ground back on
+      the next build: the ruin's blocks follow the quarters, not the other way round.
+- [ ] **The roads are lattice roads.** A link runs on the Ancient city's street grid (its corners square); outside the
+      city limits the grid is the same lattice. A road's own curve (KCITY's) is a later pass.
 - [ ] **The plateau's own north coast is straight.** East of the wall the plateau's north foot runs straight for some
       4 km: the scale model's 2 km cells, not Hook's records (the mainland strip only raises the water before it).
       `core/coast` would curve it in the open world; on Hook's page it is the model's line.

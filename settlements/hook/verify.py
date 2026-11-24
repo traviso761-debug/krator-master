@@ -106,19 +106,20 @@ const R=[];
    detail:JSON.stringify({stats:st,records:rec,blackInstances:black})});
   R.push({name:'hook-ruin-seated',ok:!!D.ready&&n>0&&floating===0&&wetBad===0,
    detail:n+' towers and '+(D.piers||[]).length+' piers: '+floating+' floating'+(firstFloat?' (first '+JSON.stringify(firstFloat)+')':'')+'; '+wetBad+' drowned towers not footed under the water'+(firstWet?' (first '+JSON.stringify(firstWet)+')':'')}); }
-// S5: the environs' hamlets and camps (77m, core/hamlet): eleven of the thirteen places laid (the Spire's pods and the deck
-// camp are not), every building on dry ground (a landing at the water's edge), outside Port Hook's zone and off every ruin footprint, none overlapping another
+// S5: the environs' hamlets and camps (77m, core/hamlet): the thirteen places laid (the Spire's pods and the deck camp's
+// shacks aloft, off the ground rules), each core/hamlet place linked to the road net (90f draws them), every building on dry ground (a landing at the water's edge), outside Port Hook's zone and off every ruin footprint, none overlapping another
 { const P=typeof HOOK_PLACES!=='undefined'?HOOK_PLACES:null,L=P?P.lots:[],bad={wet:[],town:[],ruin:[],overlap:[]};
   if(P){const Z=((HOOK_SITE.districts||[]).find(d=>d.type==='zone')||{}).poly,KL=KCITY.lib;
     const box=l=>({c:[l.x,l.z],u:[Math.cos(l.ry),-Math.sin(l.ry)],v:[Math.sin(l.ry),Math.cos(l.ry)],hw:l.w/2,hd:l.d/2,r:Math.hypot(l.w,l.d)/2});
-    const B=L.map(box),proj=(b,ax)=>{const cx=b.c[0]*ax[0]+b.c[1]*ax[1],e=Math.abs((b.u[0]*ax[0]+b.u[1]*ax[1])*b.hw)+Math.abs((b.v[0]*ax[0]+b.v[1]*ax[1])*b.hd);return [cx-e,cx+e];};
+    const LL=L.filter(l=>!l.aloft),B=LL.map(box),proj=(b,ax)=>{const cx=b.c[0]*ax[0]+b.c[1]*ax[1],e=Math.abs((b.u[0]*ax[0]+b.u[1]*ax[1])*b.hw)+Math.abs((b.v[0]*ax[0]+b.v[1]*ax[1])*b.hd);return [cx-e,cx+e];};
     const sep=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const p=proj(a,ax),q=proj(b,ax);if(p[1]<q[0]+.1||q[1]<p[0]+.1)return true;}return false;};
-    L.forEach((l,i)=>{if(!l.landing&&!(HOOK_WORLD.natH(l.x,l.z)>.3))bad.wet.push(l.id);if(Z&&KL.inPoly([l.x,l.z],Z))bad.town.push(l.id);
+    LL.forEach((l,i)=>{if(!l.landing&&!(HOOK_WORLD.natH(l.x,l.z)>.3))bad.wet.push(l.id);if(HOOK_RUIN.townAt(l.x,l.z))bad.town.push(l.id);
       if(P.ruinAt(l.x,l.z))bad.ruin.push(l.id);   /* a landing stands at the water's edge (core/hamlet's quay), never on a ruin */
-      for(let j=i+1;j<L.length;j++){const a=B[i],b=B[j];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>a.r+b.r)continue;if(!sep(a,b))bad.overlap.push([l.id,L[j].id]);}});}
+      for(let j=i+1;j<LL.length;j++){const a=B[i],b=B[j];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>a.r+b.r)continue;if(!sep(a,b))bad.overlap.push([l.id,LL[j].id]);}});}
   const n=k=>bad[k].length,places=P?P.report.places:0;
-  R.push({name:'hook-places',ok:!!P&&places>=11&&L.length>=150&&!n('wet')&&!n('town')&&!n('ruin')&&!n('overlap'),
-   detail:P?JSON.stringify(P.report)+'; by place '+JSON.stringify(Object.fromEntries(Object.keys(P.villages).map(k=>[k,(P.villages[k].records||[]).filter(Boolean).length])))+
+  const RD=window._hookRoads||{};
+  R.push({name:'hook-places',ok:!!P&&places>=13&&!P.skipped.length&&!P.unlinked.length&&RD.ready&&L.length>=150&&!n('wet')&&!n('town')&&!n('ruin')&&!n('overlap'),
+   detail:P?JSON.stringify(P.report)+'; roads '+JSON.stringify(RD.stats||null)+'; by place '+JSON.stringify(Object.fromEntries(Object.keys(P.villages).map(k=>[k,(P.villages[k].records||[]).filter(Boolean).length])))+
     '; bad '+JSON.stringify({wet:n('wet'),town:n('town'),ruin:n('ruin'),overlap:n('overlap')})+(n('wet')+n('town')+n('ruin')+n('overlap')?' first '+JSON.stringify([bad.wet[0],bad.town[0],bad.ruin[0],bad.overlap[0]]):'')+
     '; skipped '+JSON.stringify(P.skipped):'no places'}); }
 // S4: the mangroves and the jungle (90e, the Ring Sea isles kit): planted, the mangroves in the water, and none in Port
@@ -126,7 +127,7 @@ const R=[];
 { const HF=typeof HOOK_FLORA!=='undefined'?HOOK_FLORA:null,T=HF&&HF.trees||[],bad={town:[],clearing:[],cliff:[],inside:[],floating:[]};let wet=0;
   if(HF&&HF.on){const RI=HK_FLORA.kits.ringisles,mh=HOOK_RUIN_DRAW.meshH,O=HF.obstacles;
     for(const t of T){const k=HF.kindAt(t.x,t.z),h=mh(t.x,t.z),p=[Math.round(t.x),Math.round(t.z)];if(h<0)wet++;
-      if(k===3)bad.town.push(p);if(k===2)bad.clearing.push(p);
+      if(k===3&&(HF.zoneD(t.x,t.z)>HF.fringe+20||HF.townHit(t.x,t.z)))bad.town.push(p);if(k===2)bad.clearing.push(p);   /* the town: its fringe only, clear of lots and streets; the fields */
       if(RI.zones(t.x,t.z).cliff>.5)bad.cliff.push(p);
       if(t.y!=null&&t.y>h+.05)bad.floating.push(p.concat([+(t.y-h).toFixed(2)]));
       for(const q of O)if(Math.abs(q.x-t.x)<q.r&&Math.abs(q.z-t.z)<q.r&&Math.hypot(q.x-t.x,q.z-t.z)<q.r-.5){bad.inside.push(p);break;}}}

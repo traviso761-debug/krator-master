@@ -74,11 +74,20 @@ const HOOK_RUIN_DRAW={stats:{},towers:[],piers:[],heaps:[],slot:{}};
  for(const h of R.heaps){const s0=meshMin(h.x,h.z),hh=h.wet?Math.max(4,-s0+2.5):Math.max(3,h.r*.35),base=s0-1;
   q.setFromAxisAngle(Y,(h.x*7+h.z*3)%6.28);mHeap.setMatrixAt(mHeap.count++,mat4(h.x,base,h.z,q,h.r*2,hh+1,h.r*2));
   HOOK_RUIN_DRAW.heaps.push({id:h.id,base,top:base+hh+1,wet:h.wet});}
+ /* ---- the quarried clearings' foundations (77 foundation): each wall stub a box from the drawn ground's lowest point
+    along it (half a metre under) to its height over the higher end, a stone tone a stub */
+ const FD=R.foundations||[],nW=FD.reduce((a,f)=>a+f.walls.length,0),mFound=inst(box,lam(),nW,'ruin foundations');HOOK_RUIN_DRAW.walls=[];
+ for(const f of FD)for(let k=0;k<f.walls.length;k++){const w=f.walls[k],dx=w[2]-w[0],dz=w[3]-w[1],L=Math.max(.5,Math.hypot(dx,dz)),yaw=Math.atan2(dx,dz),mx=(w[0]+w[2])/2,mz=(w[1]+w[3])/2;
+  const base=seat(mx,mz,1.2,L,yaw)-.5,top=Math.max(meshH(w[0],w[1]),meshH(w[2],w[3]))+w[4];q.setFromAxisAngle(Y,yaw);
+  mFound.setMatrixAt(mFound.count,mat4(mx,base,mz,q,1.2,top-base,L));col.setHex(0x9a9282).multiplyScalar(.86+.22*(((f.x*13+k*7)%10+10)%10)/10);
+  mFound.setColorAt(mFound.count++,col);HOOK_RUIN_DRAW.walls.push({id:f.id,x:mx,z:mz,len:L,yaw,base,top});}
  /* ---- the pods on their towers */
  const sph=new THREE.SphereGeometry(.5,10,8);sph.translate(0,.5,0);
  const mPod=inst(sph,lam(0xd9dcd3),R.pods.length,'ruin pods'),tOf={};for(const t of T)tOf[t.id]=t;
- for(const p of R.pods){const t=tOf[p.parent],r=t?Math.max(t.w,t.d)/2+5:10;q.identity();
-  mPod.setMatrixAt(mPod.count++,mat4(p.x+Math.cos(p.a)*r,p.y,p.z+Math.sin(p.a)*r,q,12,9,12));}
+ /* the Drowned Spire's pods are the Hykkousoi village's (77m C1: grown pods on the Spire's surface, 90b): here a point */
+ const spireVillage=typeof HOOK_PLACES!=='undefined'&&HOOK_PLACES&&HOOK_PLACES.villages&&Object.values(HOOK_PLACES.villages).some(v=>v&&v.own==='spire');
+ for(const p of R.pods){const t=tOf[p.parent],r=t?Math.max(t.w,t.d)/2+5:10;q.identity();const sc=spireVillage&&R.spire&&p.parent===R.spire.id?.001:1;
+  mPod.setMatrixAt(mPod.count++,mat4(p.x+Math.cos(p.a)*r,p.y,p.z+Math.sin(p.a)*r,q,12*sc,9*sc,12*sc));}
  /* ---- the freeway: a deck a span (standing; broken shorter and tipped; fallen lying in the water), a pier at each
     span's start, and the south ramp */
  const mDeck=inst(box,lam(0xa7a399),R.spans.length+4,'ruin freeway decks'),mPier=inst(cyl,lam(0x99958b),R.spans.length+Math.ceil(Math.hypot(R.ramp.p1[0]-R.ramp.p0[0],R.ramp.p1[1]-R.ramp.p0[1])/70)+2,'ruin freeway piers');
@@ -105,9 +114,9 @@ const HOOK_RUIN_DRAW={stats:{},towers:[],piers:[],heaps:[],slot:{}};
   q.setFromAxisAngle(Y,wyaw);mWall.setMatrixAt(mWall.count,mat4(x,base,z,q,14,top-base,14));mWall.setColorAt(mWall.count++,col.setHex(0x857d6b));}
  for(const g of R.gates){const base=seat(g.x,g.z,30,20,wyaw)-FOUND,top=Math.max(terrainH(g.x,g.z),0)+16;
   q.setFromAxisAngle(Y,wyaw);mWall.setMatrixAt(mWall.count,mat4(g.x,base,g.z,q,30,top-base,20));mWall.setColorAt(mWall.count++,col.setHex(0x6f6758));}
- for(const m of [mBox,mCyl,mHeap,mPod,mDeck,mPier,mWall]){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere&&m.computeBoundingSphere();}
+ for(const m of [mBox,mCyl,mHeap,mFound,mPod,mDeck,mPier,mWall]){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere&&m.computeBoundingSphere();}
  HOOK_RUIN_DRAW.group=group;
- HOOK_RUIN_DRAW.stats={towers:mBox.count+mCyl.count,round:mCyl.count,heaps:mHeap.count,pods:mPod.count,decks:mDeck.count,piers:mPier.count,wall:mWall.count,
+ HOOK_RUIN_DRAW.stats={towers:mBox.count+mCyl.count,round:mCyl.count,heaps:mHeap.count,foundations:mFound.count,pods:mPod.count,decks:mDeck.count,piers:mPier.count,wall:mWall.count,
   calls:group.children.length};
  window._ruinDraw={ready:true,stats:HOOK_RUIN_DRAW.stats,towers:HOOK_RUIN_DRAW.towers,piers:HOOK_RUIN_DRAW.piers,heaps:HOOK_RUIN_DRAW.heaps,wall:HOOK_RUIN_DRAW.wall,
   records:{towers:R.towers.length,heaps:R.heaps.length,pods:R.pods.length,spans:R.spans.length}};})();

@@ -52,6 +52,10 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
     let x=0,z=0,y=0;for(const l of L){x+=l.x;z+=l.z;y=Math.max(y,l.y);}return [x/L.length,y,z/L.length];};
    const a=mid('huka.h1'),b=mid('huka.h2');
    if(a)V['Lantern Point']=[a[0]+110,a[1]+45,a[2]+110,a[0],a[1]+2,a[2]];
-   if(b)V['The Glebe']=[b[0]-120,b[1]+55,b[2]+120,b[0],b[1]+2,b[2]];}}
+   if(b)V['The Glebe']=[b[0]-120,b[1]+55,b[2]+120,b[0],b[1]+2,b[2]];
+   /* the Drowned Spire's village (its pods up the Spire) and the deck camp on its freeway span */
+   const sv=HOOK_PLACES.villages['huka.c1'],dv=HOOK_PLACES.villages['huka.c3'];
+   if(sv&&S)V['The Spire village']=[S.x+150,70,S.z+150,S.x,95,S.z];
+   if(dv){const L=HOOK_PLACES.lots.find(l=>l.place==='huka.c3');if(L)V['The deck camp']=[dv.site.x+70,L.y+28,dv.site.z+70,dv.site.x,L.y+2,dv.site.z];}}}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();
