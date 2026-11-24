@@ -69,7 +69,10 @@
    const q=upwind(160);return{t,pos:[q[0],null,q[1]],look:[p[0],0,p[1]],pitch:.08,name:'a storm arriving, 7 km upwind'};},
   under:()=>{const t=find(t=>A.weatherAt(0,0,t,SY).rain>.6);return{t,pos:[0,null,60],look:[0,0,-200],pitch:-.05,name:'in the rain at the village'};},
   village:()=>{const t=find(t=>A.weatherAt(0,0,t,SY).rain>.7);return{t,pos:[14,null,26],look:[0,0,0],pitch:-.25,name:'splashes on the roofs and the ground'};},
-  aerial:()=>{const p=upwind(4000),t=find(t=>A.weatherAt(p[0],p[1],t,SY).cover>.5);return{t,pos:[0,2600,0],look:[p[0],0,p[1]],pitch:-.55,name:'the cells and their shadows from 2.6 km up'};}};
+  aerial:()=>{const p=upwind(4000),t=find(t=>A.weatherAt(p[0],p[1],t,SY).cover>.5);return{t,pos:[0,2600,0],look:[p[0],0,p[1]],pitch:-.55,name:'the cells and their shadows from 2.6 km up'};},
+  above:()=>{const p=upwind(6000),t=find(t=>A.weatherAt(p[0],p[1],t,SY).cover>.6);return{t,pos:[0,4300,0],look:[p[0],0,p[1]],pitch:-.22,name:'above the clouds at 4.3 km'};},
+  fly:()=>{const p=upwind(2500),t=find(t=>A.weatherAt(p[0],p[1],t,SY).cover>.55);return{t,pos:[-SY.dx*800,2100,-SY.dz*800],look:[p[0],0,p[1]],pitch:0,name:'flying into a cloud at 2.1 km'};},
+  noon:()=>({t:null,pos:[0,null,0],look:[0,0,-1000],pitch:.55,name:'the sky overhead at the village'})};
  const setView=k=>{const V=VIEWS[k]&&VIEWS[k]();if(!V)return null;if(V.t!=null){A.clock.t=V.t;if(A.clock.fixed!=null)A.clock.fixed=V.t;}
   const y=V.pos[1]==null?ground(V.pos[0],V.pos[2])+1.7:V.pos[1];camera.position.set(V.pos[0],y,V.pos[2]);face(V.look[0],V.look[2]);pitch=V.pitch;return V;};
  // ---- the panel
@@ -78,6 +81,7 @@
  $('speed').onchange=e=>{A.clock.scale=+e.target.value;};$('hold').onchange=e=>{A.clock.fixed=e.target.checked?A.clock.t:null;};
  $('skip').onclick=()=>{A.clock.t+=600;if(A.clock.fixed!=null)A.clock.fixed=A.clock.t;};
  $('hour').oninput=e=>clock.set(+e.target.value);
+ if(A.vol){$('tier').value=A.vol.tier;$('tier').onchange=e=>A.vol.setTier(e.target.value);}else $('tier').disabled=true;
  for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>{const v=setView(k);$('vname').textContent=v?v.name+(v.t==null?' (not found)':''):'';};$('views').appendChild(b);}
  // the minimap: the cells round the camera (64 km), cover white, a storm's dark red, the precipitation blue, fog grey; the wind's arrow
  const mm=$('map'),mc=mm.getContext('2d'),MN=64,MS=64000,mbuf=new Float32Array(MN*MN*4),img=mc.createImageData(MN,MN);let mT=-1e9;
@@ -93,11 +97,25 @@
  const readout=()=>{const L=W.live,st=A.wxState;$('info').textContent='clock '+mmss(A.clock.t)+' (x'+A.clock.scale+(A.clock.fixed!=null?', held':'')+')  mode '+W.mode+
   '\nrain '+f2(W.rain)+'  storm '+f2(W.storm)+'  fog '+f2(W.fog)+'  wet '+f2(W.wet)+'\nsnow '+f2(W.snow)+'  ash '+f2(W.ash)+'  dust '+f2(W.dust)+'  wind '+f2(W.wind)+
   (L?'\ncover here '+f2(L.cover)+'  dark '+f2(L.dark):'')+'\nstrikes '+st.strikes+(st.last?' (last '+Math.round(Math.hypot(st.last.x-camera.position.x,st.last.z-camera.position.z))+' m)':'')+
-  '  thunder queued '+A.thunder.length+'\nshafts '+(A.stats.wxshafts||0)+'  map redrawn '+st.map.draws+'\nweights '+A.WX_KINDS.map(k=>k+' '+f2(SY.weights[k])).join(', ')+', clear '+f2(SY.weights.clear);};
+  '  thunder queued '+A.thunder.length+'\nclouds '+(A.vol?A.vol.tier+(A.vol.ms!=null?' '+A.vol.ms.toFixed(2)+' GPU ms':'')+(A.vol.compileMs!=null?', compile '+A.vol.compileMs+' ms':'')+(A.vol.log.length?' ['+A.vol.log.join('; ')+']':''):'flat')+
+  '\nshafts '+(A.stats.wxshafts||0)+'  map redrawn '+st.map.draws+'\nweights '+A.WX_KINDS.map(k=>k+' '+f2(SY.weights[k])).join(', ')+', clear '+f2(SY.weights.clear);};
  // ---- the API the verify script drives
+ window.scene=scene;window.camera=camera;   /* the harness's universal checks (the eye on the ground) */
  window._api={views:Object.keys(VIEWS),setView:k=>{const v=setView(k);return v?{t:v.t,name:v.name}:null;},W:()=>Object.assign({},W,{live:null,MODES:null}),
   hold:t=>{A.clock.fixed=t==null?A.clock.t:t;A.clock.t=A.clock.fixed;},run:()=>{A.clock.fixed=null;},state:()=>({strikes:A.wxState.strikes,map:A.wxState.map,shafts:A.stats.wxshafts||0,splashes:A.stats.splashes||0}),
-  at:(x,z,t)=>A.weatherAt(x,z,t,SY),cam:()=>camera.position.toArray()};
+  at:(x,z,t)=>A.weatherAt(x,z,t,SY),cam:()=>camera.position.toArray(),tier:t=>A.vol&&A.vol.setTier(t),
+  /* GPU ms by EXT_disjoint_timer_query_webgl2, the minimum and the median over n frames: 'frame' times the whole S.render (the
+     cloud passes, the sky, the world, the composite), 'clouds' the cloud passes and the composite alone */
+  gpuMs:async(what,n)=>{const gl=renderer.getContext(),ext=gl.getExtension('EXT_disjoint_timer_query_webgl2');if(!ext)return null;const all=[];
+   for(let i=0,tries=0;all.length<(n||30)&&tries<(n||30)*4;tries++){gl.getParameter(ext.GPU_DISJOINT_EXT);const q=gl.createQuery();camera.rotation.set(pitch,yaw,0);
+    const V=A.vol&&A.vol.tier==='volumes'?A.vol:null,fn=what==='frame'||!V?()=>S.render():what==='clouds'?()=>{V.passes();V.composite();}:what==='composite'?()=>V.composite():()=>V.pass(what);
+    gl.beginQuery(ext.TIME_ELAPSED_EXT,q);fn();gl.endQuery(ext.TIME_ELAPSED_EXT);
+    for(let t=0;t<300&&!gl.getQueryParameter(q,gl.QUERY_RESULT_AVAILABLE);t++)await new Promise(r=>requestAnimationFrame(r));
+    if(gl.getQueryParameter(q,gl.QUERY_RESULT_AVAILABLE)&&!gl.getParameter(ext.GPU_DISJOINT_EXT))all.push(gl.getQueryParameter(q,gl.QUERY_RESULT)/1e6);gl.deleteQuery(q);}
+   if(!all.length)return null;const s=all.slice().sort((a,b)=>a-b);return{min:s[0],med:s[s.length>>1],n:s.length};},
+  frames:async n=>{for(let i=0;i<n;i++)await new Promise(r=>requestAnimationFrame(r));return A.vol?A.vol.frame:0;},
+  cfg:o=>{if(A.vol){Object.assign(A.vol.cfg,o);A.vol.setTier(A.vol.tier);}},
+  vol:()=>A.vol?{tier:A.vol.tier,ms:A.vol.ms,compileMs:A.vol.compileMs,log:A.vol.log.slice(),cfg:Object.assign({},A.vol.cfg)}:null};
  // ---- the URL
  if(Q.has('speed'))A.clock.scale=+Q.get('speed');$('speed').value=String(A.clock.scale);
  if(Q.has('t'))A.clock.t=+Q.get('t');

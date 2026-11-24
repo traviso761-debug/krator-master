@@ -31,7 +31,9 @@ FRAGMENTS = [
     X('sky', '89-atmos-e-skymodel.js'),
     X('sky', '89-atmos-f-skypresets.js'),
     X('sky', '89-atmos-g-sky.js'),
+    X('sky', '89-atmos-m-volclouds.js'),    # the volumetric clouds (W6): their passes' shaders
     X('host', '89-atmos-h-skyhost.js'),
+    X('host', '89-atmos-m-volhost.js'),     # ...and their host (wraps ATMOS.sky: S.render runs the passes)
     X('host', '89-atmos-e-weatherhost.js'),
     X('fx', '89-atmos-fx-lightning.js'),
     X('fx', '89-atmos-fx-raincover.js'),
