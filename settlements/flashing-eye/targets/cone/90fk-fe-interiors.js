@@ -1,7 +1,8 @@
 // ================================================================= THE FLASHING EYE — the interiors (sheets L, H, P, T, M1-M2, E1-E2, F)
 // Every building FE_ROOMS lists (src/32-fe-rooms.js: the Lip Range's four houses, the Hall of the Ember and the Ember Tower's shaft,
 // the Eye Post at load; the bench's ranges, the Mirror School, the novices' court, the Foot House, the Mirror and Labrang towers
-// and the Red Monastery as the camera comes within 90 m of them) is planned on its shell, drawn and furnished from the catalog by kits/qiblai's interiors (89q5s qnIxType:
+// the Red Monastery, the gatehouses, the Watch's hut and the shrines of the Way of Shrines as the camera comes within 90 m of them)
+// is planned on its shell, drawn and furnished from the catalog by kits/qiblai's interiors (89q5s qnIxType:
 // kits/interiors' planBuilding with the blueprint's programme storey by storey, the linings, stairs and slabs in the Xanadu kit's
 // textured items, qnFurnishRooms through the page's furniture bundle), as the Beacon's B8 does (settlements/beacon targets/house
 // 90w-bc-interiors.js). The Order's pieces are offered first where FE_ROOMS wants them and kept out of every other building; the
@@ -14,7 +15,7 @@
 // doors unlocked, its floors, walls and stairs put into core/walk (qnIxWalk) with a flight in at each upper door; the balcony in
 // front of the range is a floor. window._feIx reports; FE_IX.walkIn() is verify.py's walk-in check. [web]: three.js.
 const FE_IX=(function(){const S={on:false,buildings:[],rooms:0,pieces:0,fails:[],ms:0,placed:{},walked:0,platform:null,balcony:false,T:{},entry:{}};
- const report=()=>{window._feIx={on:S.on,buildings:S.buildings.map(b=>({id:b.id,levels:b.levels,rooms:b.rooms,kinds:b.kinds,pieces:b.pieces,keys:b.keys,fails:b.fails,door:b.door,more:b.more,walk:b.walk,entries:b.entries})),
+ const report=()=>{window._feIx={on:S.on,buildings:S.buildings.map(b=>({id:b.id,levels:b.levels,rooms:b.rooms,kinds:b.kinds,pieces:b.pieces,keys:b.keys,fails:b.fails,door:b.door,more:b.more,walk:b.walk,entries:b.entries,rows:b.rows|0})),
   rooms:S.rooms,pieces:S.pieces,fails:S.fails.slice(0,10),ms:S.ms,built:S.buildings.length,lazy:S.lazy|0,placed:S.placed,walked:S.walked,platform:S.platform,balcony:S.balcony,parapet:S.parapet|0,ladder:S.ladder||null};};
  if(typeof qnIxType!=='function'||typeof KratorInteriors==='undefined'||typeof KratorFurniture==='undefined'){S.fails.push('no interiors on the page');report();return S;}
  S.on=true;const IX=KratorInteriors,W=typeof KWALK!=='undefined'?KWALK:null,T0=KTAGS.page||(KTAGS.page=KTAGS.create({build:'xanadu'})),R2=v=>Math.round(v*100)/100;
@@ -78,6 +79,33 @@ const FE_IX=(function(){const S={on:false,buildings:[],rooms:0,pieces:0,fails:[]
   B.more=(T.more||[]).map(M=>({level:M.level,n:M.n,room:M.room}));B.fails=B.fails.concat((T.F.fails||[]).slice(0,4));S.rooms+=B.rooms;
   for(const q of T.F.placed||[]){const w=loc(pose.x,pose.z,q.x,q.z,pose.ry);B.pieces++;S.pieces++;S.placed[q.key]=(S.placed[q.key]|0)+1;if(FE_ROOMS.OWN.indexOf(q.key)>=0)B.keys[q.key]=(B.keys[q.key]|0)+1;
    T0.add({prefix:'ixf','class':'furniture',kind:q.kind,key:q.key,name:q.name,at:[w[0],pose.y+q.y,w[1]],ry:q.ry+pose.ry,size:q.size,tags:Object.assign({},q.tags,{building:Bd.id}),frag:'90fk-fe-interiors.js'});}
+  /* a hall's seats in rows (Bd.rows): kits/interiors stops a room at about nine pieces whatever its size, so a dukhang's rows of
+     low seats are laid after it, every dx along and dz deep with an aisle down the middle, facing the storey's shrine (or away
+     from the room's door), each clear of the room's walls by `margin`, of every piece and fixture already there and of its doors */
+  for(const Rw of Bd.rows||[]){const Lv=T.plan.levels[Rw.level],R=Lv&&T.plan.rooms.find(r=>r.level===Rw.level&&r.kind===Rw.kind),E=KratorFurniture.FURN_BY_KEY[Rw.key];if(!R||!E)continue;
+   const cen=P=>{let x=0,z=0;for(const q of P){x+=q[0];z+=q[1];}return[x/P.length,z/P.length];},c0=cen(R.poly),Sh=T.plan.rooms.find(r=>r.level===Rw.level&&r.kind==='shrine');
+   let f=Sh?(c=>[c[0]-c0[0],c[1]-c0[1]])(cen(Sh.poly)):R.doors.length?[c0[0]-R.doors[0].at[0],c0[1]-R.doors[0].at[1]]:[0,-1];
+   const c2=Math.cos(sry),s2=Math.sin(sry),fu=f[0]*c2-f[1]*s2,fv=f[0]*s2+f[1]*c2;   /* snapped to the shell's axes */
+   const ax=Math.abs(fu)>Math.abs(fv)?[Math.sign(fu),0]:[0,Math.sign(fv)];f=[ax[0]*c2+ax[1]*s2,-ax[0]*s2+ax[1]*c2];const gt=[f[1],-f[0]],ry=Math.atan2(f[0],f[1]);
+   const pts=(cx,cz,r,w,d)=>{const c=Math.cos(r),s=Math.sin(r);return[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*c+b*d/2*s,cz-a*w/2*s+b*d/2*c]);};
+   const sep=(A,B)=>{for(const P of[A,B])for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4],n=[b[1]-a[1],a[0]-b[0]];
+     const pa=A.map(q=>q[0]*n[0]+q[1]*n[1]),pb=B.map(q=>q[0]*n[0]+q[1]*n[1]);if(Math.max(...pa)<Math.min(...pb)||Math.max(...pb)<Math.min(...pa))return true;}return false;};
+   const inP=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+   const block=(T.F.placed||[]).filter(q=>q.y>=Lv.y-.1&&q.y<Lv.y+Lv.h).map(q=>pts(q.x,q.z,q.ry||0,(q.size||[.8,.8])[0]+.5,(q.size||[.8,.8])[1]+.5))
+    .concat(R.fixtures.map(x=>pts(x.x,x.z,x.ry,x.w+.5,x.d+1)));
+   const us=R.poly.map(q=>(q[0]-c0[0])*gt[0]+(q[1]-c0[1])*gt[1]),vs=R.poly.map(q=>(q[0]-c0[0])*f[0]+(q[1]-c0[1])*f[1]);
+   const b=KratorFurniture.batch({indexed:true});let n=0;
+   for(let v=Math.max(...vs)-Rw.margin-E.d/2-(Rw.back==null?1.2:Rw.back);v>Math.min(...vs)+Rw.margin;v-=Rw.dz)for(const sgn of[-1,1])for(let k=0;;k++){
+    const u=sgn*(.7+E.w/2+k*Rw.dx);if(u<Math.min(...us)||u>Math.max(...us))break;
+    const x=c0[0]+gt[0]*u+f[0]*v,z=c0[1]+gt[1]*u+f[1]*v,me=pts(x,z,ry,E.w,E.d),big=pts(x,z,ry,E.w+2*Rw.margin,E.d+2*Rw.margin);
+    if(!big.every(q=>inP(R.poly,q[0],q[1])))continue;if(block.some(B2=>!sep(me,B2)))continue;
+    if(R.doors.some(d=>Math.hypot(d.at[0]-x,d.at[1]-z)<d.w/2+E.w/2+1.2))continue;
+    const w=loc(pose.x,pose.z,x,z,pose.ry);
+    T0.add({prefix:'ixf','class':'furniture',kind:E.type||null,key:Rw.key,name:E.name||null,at:[w[0],pose.y+Lv.y,w[1]],ry:ry+pose.ry,size:[E.w,E.d,E.h],
+     tags:{setting:'room',culture:'xanadu',tier:E.tier||null,room:R.id,building:Bd.id},frag:'90fk-fe-interiors.js'});
+    b.place(Rw.key,x,Lv.y,z,ry,{variant:0,setting:'indoor',building:Bd.id,room:R.id});block.push(pts(x,z,ry,E.w+.2,E.d+.6));n++;B.pieces++;S.pieces++;S.placed[Rw.key]=(S.placed[Rw.key]|0)+1;}
+   if(n){const gr=new THREE.Group();gr.name='rows:'+Bd.id+'.'+Rw.level;b.flush(gr);gr.traverse(o=>{if(o.isMesh)o.renderOrder=-2;});g.add(gr);g.updateMatrixWorld(true);}
+   B.rows=(B.rows|0)+n;}
   /* the way in the walk-in check takes: the record's door from the bench (the Lip Range's houses), else the street door */
   const ent=mores.find(M=>M.n[1]===-1&&M.D)||(dr.D?dr:null),cw=toW([sh.x,sh.z]),f0=pose.y+T.plan.levels[0].y;
   if(ent)S.entry[Bd.id]={D:ent.D,x:cw[0],z:cw[1]};

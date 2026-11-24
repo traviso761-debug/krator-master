@@ -47,9 +47,11 @@
   refectory, the bath house, the wood store, the chapter range), **the Mirror School** (the mirror bench in its workshop), the
   novices' court, the Halfway Shelter and **the Foot House** (sheet F): 33 buildings, 154 rooms, about 1,440 pieces. The seven
   with views (sheets L, H, P) are built at load (2 s); the other 26 as the camera comes within 90 m of them, one every six frames
-  (about 3.8 s in all; `FE_IX.buildAll()` builds them for the checks). Still owed: the four corner towers, the three gatehouses
-  (the Porters' loft, the Veil Room over the Gate of Breath), the Watch's hut, the Watchers' Chapel on the Assembly Hall's roof
-  (sheet MR), and the Rest House (not drawn yet).
+  (about 3.8 s in all; `FE_IX.buildAll()` builds them for the checks). *Fixed 2026-11-23*: the three gatehouses (their passages;
+  the Porters' loft over the Mule Gate, the Veil Room over the Gate of Breath), the Watch's hut and the six shrines of the Way of
+  Shrines: 43 buildings, 169 rooms, about 1,540 pieces. Still owed: **the four corner towers** (the precinct's walls run on to
+  each tower's centre, so a room planned in one would be cut by two walls: the walls should stop at the towers' faces first), the
+  Watchers' Chapel on the Assembly Hall's roof (sheet MR), and the Rest House (not drawn yet).
 - **The interiors' compromises** (2026-11-23):
   - The rooms are kits/interiors' planner's, not the sheets' drawn plans: each storey is cut into the programme's room kinds by
     area, the first kind at the door, so the order of the rooms along the range is the planner's; the sheets' stair rooms are the
@@ -72,7 +74,11 @@
     records did not draw (a doorway's jambs, threshold and portal, no leaf); the monastery's gate tower has an open doorway to the
     court the same way. The Assembly Hall is two planned storeys (the hall and the Masters' Gallery over it), not a double-height
     hall with a gallery round it. A big room is furnished thinly: kits/interiors' `gallery` and `hall` kinds stop at about nine
-    pieces whatever the room's size (the Assembly Hall's 214 m2 has nine), so the dukhang's rows of seats are not there.
+    pieces whatever the room's size. *Fixed 2026-11-23* for the halls of monks: the Assembly Hall and its gallery, and the Ember
+    Tower's belvedere, have their rows of seats laid after the room is furnished (FE_ROOMS `rows`: the catalog's rows of
+    meditation cushions with an aisle down the middle, facing the shrine, clear of every piece, fixture and door; 20 rows in
+    the hall (214 m2) and its gallery, one in the belvedere beside its stairwell). The other big rooms (the Lip Range's halls, the refectories, the
+    guest hall) are still the programmes' few pieces; the fix that reaches every page is a size-scaled cap in kits/interiors.
   - No electric light (`prog.bulbs` false) and no light of their own: the catalog's lamps are not lit at night yet.
 - *Fixed 2026-11-23*: **the Foot House** stands on its own ground at the spur's foot (`FE_FOOT`, 1.2 x 0.8 km at 8 m, the far
   ground cut away under it): its ranges round the loading court and its gate chorten. Still owed: **the Rest House** (about 1,080 m

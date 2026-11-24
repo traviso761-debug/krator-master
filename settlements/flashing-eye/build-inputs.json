@@ -231,8 +231,8 @@
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/xanadu.py": "6e7562ab022acc1e2aeadfa55a0222b7ed8a4994a4e70ff5e1982ddce617cf46",
-    "settlements/flashing-eye/KNOWN_ISSUES.md": "a892c23987c2303ec18b439fa6e25b4719e249e3dac71b8d6b14af18c24f9947",
-    "settlements/flashing-eye/PORT.md": "dce5ac912829eed7ea30c0a851af5d3c0b7a945b4c8a4eefff10045d351f2d1e",
+    "settlements/flashing-eye/KNOWN_ISSUES.md": "ed9f1a4e64bde8745c50a10e88348098ab472b76f4a314ad5f693fa1c757a670",
+    "settlements/flashing-eye/PORT.md": "474b195537621276b72402a41bc1251180170cceed2928dcbd475212b8e4ec07",
     "settlements/flashing-eye/build.py": "d0512376e2fc38952485a381e6e8ffbb9c86af1a7e08a5f5a403e780bcdbfc6b",
     "settlements/flashing-eye/gen/39fe-world-data.js": "8feeeb65fcbb2054f5e40d70e41ef10a2a73bf7135d937c92b7f3ba01d97e3f8",
     "settlements/flashing-eye/kit.json": "78585a298e1157040813a83c1bf95c80e67ab0b6e637bcc8727c8f00789eb458",
@@ -249,7 +249,7 @@
     "settlements/flashing-eye/region/data/wlev.png": "7e0c14826ac46f7ddf9235d9b7f666a59e598023ee67c622545e84bbc95a1be5",
     "settlements/flashing-eye/src/30-fe-layout.js": "8aeae2e959dc681ff30ceba6a262276618f05b7c4a6500996788dbbc5fa03d19",
     "settlements/flashing-eye/src/31-fe-rules.js": "0b5577f3ebd47e3f72ab9597c86bc1b7a095029923aabd9fbffd86f790fd2ce7",
-    "settlements/flashing-eye/src/32-fe-rooms.js": "b6529f84df290c28bc351cef82e52690f1a9973c94ef8416c6ce401a6c278559",
+    "settlements/flashing-eye/src/32-fe-rooms.js": "9afb5acb50c9ab508013b8c3da15105479706f2688c0c43a936dced97ef3a3a9",
     "settlements/flashing-eye/src/40-fe-watch.js": "027833e9b54981b80ed07b6273846a18dd2aa9f42d36ba296d0e218c61aa0384",
     "settlements/flashing-eye/src/89q0w-fe-mats.js": "737a1231758fe81f9ec24451aeaf688e602bb3c4e093181625201ea2d1942ab8",
     "settlements/flashing-eye/src/89qe-fe-roofs.js": "67b317f4c83e87b19884abf749772fb46b835d04fb07800974f8339de7d5685c",
@@ -261,7 +261,7 @@
     "settlements/flashing-eye/targets/cone/90fh-vent.js": "9b39ccf5ab700905eb2925bb52bea0c70a1c4988cb00d33363764b1f7c824334",
     "settlements/flashing-eye/targets/cone/90fi-bridges.js": "f39715262563e4b126f90ff830d0ce60579abaec7e35e06d2247823cdbd3ed07",
     "settlements/flashing-eye/targets/cone/90fj-face.js": "6e0cfcd470d568101e2ded67f756f16e4f915fae16efd080256c51478d9fccce",
-    "settlements/flashing-eye/targets/cone/90fk-fe-interiors.js": "514fa60af9c670425c0922332583fc61293829a466442cf74a9bee688fd8ba0a",
+    "settlements/flashing-eye/targets/cone/90fk-fe-interiors.js": "e9a0f8ba4fb8e1110b2449999f83edb3624769c36912462a314984e8038166b0",
     "settlements/flashing-eye/targets/cone/91z-views.js": "9097083c289d2708c70db7224fa31d3875590553503b58b2cc4a460a474fc545",
     "settlements/flashing-eye/tex/feAsh.albedo.webp": "5cb882bab363c0036cf023916af89d8ba45bee1bd5ca89185ab9478051265f1a",
     "settlements/flashing-eye/tex/feAsh.normal.webp": "35dc6fa6a12b8974993ccf564d045bb827b009aad05fbed8b227fe7eb813868f",
@@ -526,15 +526,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/flashing-eye/build-manifest-cone.json": "1fd7b9b43d3478e9719df7cd556e051b6a1892c8bc53896e798256ad0a1a04c6",
-    "settlements/flashing-eye/dist/flashing-eye.html": "e02618e06b2310043701aefe1eb44e58d8b497a3dc8c58fe6996e1e4b095e3b5",
+    "settlements/flashing-eye/build-manifest-cone.json": "ef5ef89c25bd88f2993d0f24cfe272d469005f7528f742ff92044a8281c781da",
+    "settlements/flashing-eye/dist/flashing-eye.html": "ce7016bfb78bc19592d51fcf0b04fa0d6f3e673256b06a8c37ea3b1018073793",
     "settlements/flashing-eye/dist/xanadu.tex.qiblai.js": "abf0cf9e3d1a7902bb686e9b519cf9c4e09284b7e7f0531b58f7053a05eeaa44",
     "settlements/flashing-eye/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/flashing-eye/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
-    "settlements/flashing-eye/build-manifest-cone.json": "41ea43e50c1555889e695ca39a576d9dc38e5a3f682ec7809525d7bcb67b44fd",
-    "settlements/flashing-eye/dist/flashing-eye.html": "e02618e06b2310043701aefe1eb44e58d8b497a3dc8c58fe6996e1e4b095e3b5",
+    "settlements/flashing-eye/build-manifest-cone.json": "76f889225fd7613fd9fcb55e08b517bc41fee77aeb291d78a6f5fcde096777ef",
+    "settlements/flashing-eye/dist/flashing-eye.html": "ce7016bfb78bc19592d51fcf0b04fa0d6f3e673256b06a8c37ea3b1018073793",
     "settlements/flashing-eye/dist/xanadu.tex.qiblai.js": "abf0cf9e3d1a7902bb686e9b519cf9c4e09284b7e7f0531b58f7053a05eeaa44",
     "settlements/flashing-eye/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/flashing-eye/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"

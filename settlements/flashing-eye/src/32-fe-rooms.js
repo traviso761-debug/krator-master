@@ -16,6 +16,9 @@
 //            through it)
 //   levels   each storey's room kinds, the first taking the door (or the stair's top); names, the sheet's rooms they are
 //   stair    kits/interiors' stair for its flights (a tower's steep one), else the planner's
+//   rows     [{level, kind, key, dx, dz, margin, back}]: a hall's seats laid in rows after the room is furnished (kits/interiors stops a
+//            room at about nine pieces whatever its size): rows of `key` every dx along and dz deep, facing the storey's shrine
+//            (or the room's far side from its door), clear of what stands there, its fixtures and its doors
 //   want     the Order's pieces (kits/catalog, xanadu) offered first in this building; only: the only Xanadu pieces of their type
 //            it is offered (kits/interiors shuffles its candidates, so being first is not enough); block: other culture|type
 //            pairs kept out. Every other Order piece (OWN) is kept out of it
@@ -51,6 +54,7 @@ const FE_ROOMS=(function(){
   levels:[['hall']],names:[['The Hall']],wealth:.75,want:['xanadu_crimson_banner','xanadu_common_reader_seat'],only:[]});
  BL.push({id:'ember.shaft',name:'The Ember Tower\'s shaft',part:'ember',sheet:'H, T',shell:{x:0,z:-7.25,w:11,d:4.5,y:.9,hs:[6,6,6,6,5]},door:'drawn',
   levels:[['shrine'],['bedroom'],['library'],['hall'],['gallery']],names:[['The Sanctum of the Ember'],['The tenders\' room'],['The Book of the Ember'],['The bell of the Opening'],['The belvedere under the tiers']],wealth:.8,
+  rows:[{level:4,kind:'gallery',key:'xanadu_common_meditation_cushion',dx:3.5,dz:1.3,margin:.3,back:.2}],
   want:['xanadu_ember_hearth','xanadu_common_hour_drum','xanadu_book_lectern','xanadu_crimson_banner'],only:['xanadu_ember_hearth','xanadu_book_lectern'],block:['xanadu|shrine'],stair:FE_TOWER_STAIR});
  /* the Eye Post (sheet P): three storeys, one in each lift of its tapering shaft (planned inside the top lift, its narrowest; the
     band over them is solid), the door run through the thick base; the platform's heliograph and fire basket stand on the lantern's floor (platform). The Book of Breaths
@@ -117,7 +121,22 @@ const FE_ROOMS=(function(){
  MR('n','The Red Monastery\'s back range',{x:0,z:-22.5,w:52,d:7,y:MP,hs:MH,ry:Math.PI},[['dormitory','dormitory','store'],['bedroom','study','dormitory']],[['Chapter cells (north)'],['Prior','Chant-master','Chapter cells (back range)']]);
  BL.push({id:'mon.hall',name:'The Assembly Hall',part:'red-monastery',sheet:'M1, M2',shell:{x:0,z:-8.5,w:24,d:17,y:MP,hs:[5,4.2]},door:'drawn',
   levels:[['gallery','shrine'],['gallery','study']],names:[['Assembly Hall','Shrine of the Eye'],['Masters\' Gallery','the hall\'s store of texts']],wealth:.85,
+  rows:[{level:0,kind:'gallery',key:'xanadu_common_meditation_cushion',dx:3.6,dz:1.7,margin:1.1},{level:1,kind:'gallery',key:'xanadu_common_meditation_cushion',dx:3.6,dz:1.8,margin:1.2}],
   want:['xanadu_crimson_banner','xanadu_common_hour_drum'],block:['xanadu|shrine']});
+ /* the gatehouses (E1, E2: qb_fe_gate, a 0.4 m plinth, a passage front to back through the ground storey, the record's doors on
+    both faces): the passage, and over the Mule Gate the porters' loft, over the Gate of Breath the Veil Room */
+ const GATE=o=>({x:0,z:0,w:o.w==null?10:o.w,d:o.d==null?8:o.d,y:.4,hs:(o.st==null?2:o.st)>1?[4,3.6]:[4.2]});
+ for(const [id,name,up] of[['g.rift','The Gate of the Rift',null],['g.mule','Mule Gate','Porters\' loft (the Mule Gate)'],['g.breath','Gate of Breath','The Veil Room (over the Gate of Breath)']])
+  BL.push({id,name,part:id,sheet:'E1, E2',shell:GATE,door:'drawn',more:[{level:0,n:[0,-1]}],levels:up?[['lobby'],['guard','store']]:[['lobby']],
+   names:up?[['the passage'],[up]]:[['the passage']],wealth:id==='g.breath'?.6:.45,want:id==='g.breath'?['xanadu_veil_rack','xanadu_crimson_banner']:[]});
+ /* the corner towers have no rooms: the precinct's walls run on to the towers' centres (each wall ends in the middle of its
+    tower, 89zfe), so a room in one would be cut by two walls; owed (KNOWN_ISSUES) */
+ /* the Watch's hut on the rim (sheet P: four bunks, the Rim Watch on duty sleeping in turns) and the six shrines of the Way of
+    Shrines (one room each, its door to the bridge that arrives) */
+ BL.push({id:'hut',name:'The Watch\'s Hut',part:'hut',sheet:'E0, P',shell:{x:0,z:0,w:8,d:8,y:.4,hs:[3.2]},door:'drawn',levels:[['dormitory','kitchen']],
+  names:[['the bunks','the hearth']],wealth:.3,want:['xanadu_veil_rack']});
+ for(let i=1;i<=6;i++)BL.push({id:'shrine.'+i,name:'Shrine '+i+' of the Way of Shrines',part:'shrine.'+i,sheet:'E0',shell:{x:0,z:0,w:5,d:5,y:.4,hs:[3.2]},door:'drawn',
+  levels:[['shrine']],names:[['the shrine']],wealth:.7,want:['xanadu_crimson_banner']});
  /* the lantern's floor: y over the record's base (the shaft 9.5 m on its 0.6 m plinth, the band and cornice 2.15, the floor 0.25),
     the lantern's width (the band's 6.65 x 0.92), the coals' place (the record's feFireB), the line's bearing from the post (the
     Beacon at 245 degrees: +z is south, +x east) */

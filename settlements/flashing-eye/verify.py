@@ -18,7 +18,8 @@ checks of tools/checks_optin.json), with the page's own:
   interiors-furnished  every building of src/32-fe-rooms.js (the Lip Range's four houses, the Hall of the Ember, the Ember
                  Tower's shaft, the Eye Post) planned with every storey of its sheet and furnished; the Lip Range's doors on L0;
                  the Order's pieces in their rooms (the lecterns, the Ember's hearth); the heliograph and the fire basket on the
-                 Eye Post's platform; none of the Beacon's pieces; no electric light
+                 Eye Post's platform; none of the Beacon's pieces; no electric light; rows of seats in the Assembly Hall (10 or
+                 more) and the Ember Tower's belvedere
   interiors-walk-in    each building's door shut blocks it, open clears it, and a walker from outside reaches every floor and
                  stair (the Lip Range's houses from the bench, all four storeys; the Eye Post up its ladder onto the platform);
                  the balcony is a floor walled by its parapet
@@ -81,10 +82,11 @@ PAGE_JS = r"""
  const PF=X.platform||{pieces:[]},plat=['xanadu_eye_heliograph','xanadu_fire_basket'].filter(k=>!PF.pieces.some(q=>q.key===k&&!q.error));
  const beacon=['xanadu_court_gold_banner','xanadu_court_relic_lamp','xanadu_lamp_switchboard','xanadu_cable_drum','xanadu_generator_set','xanadu_lens_bench','xanadu_register_of_lights'].filter(k=>X.placed[k]);
  const bulbs=Object.values(typeof FE_IX!=='undefined'?FE_IX.T:{}).reduce((a,T)=>a+(T.bulbs||[]).length,0);
- R.push({name:'interiors-furnished',ok:!!X.on&&want.length>=7&&!miss.length&&!lev.length&&!more.length&&!own.length&&!plat.length&&!beacon.length&&!bulbs,
+  const rows=((by('mon.hall')||{}).rows|0),rowsB=((by('ember.shaft')||{}).rows|0);
+R.push({name:'interiors-furnished',ok:!!X.on&&want.length>=7&&!miss.length&&!lev.length&&!more.length&&!own.length&&!plat.length&&!beacon.length&&!bulbs&&rows>=10&&rowsB>=1,
   detail:(X.on?'':'interiors OFF; ')+(want.length-miss.length)+' of '+want.length+' buildings planned and furnished ('+X.rooms+' rooms, '+X.pieces+' pieces, '+X.ms+' ms)'+(miss.length?'; NOT '+miss.join(', '):'')+
    (lev.length?'; storeys OFF: '+lev.join(', '):'; every storey of the sheets')+(more.length?'; upper doors MISSING: '+more.join(', '):'')+(own.length?'; the Order\'s pieces NOT placed: '+own.join(', '):'; the Order\'s pieces in their rooms')+
-   (plat.length?'; the platform LACKS '+plat.join(', '):'; the heliograph and the fire basket on the Eye Post\'s platform')+(beacon.length?'; the Beacon\'s pieces HERE: '+beacon.join(', '):'')+(bulbs?'; '+bulbs+' electric bulbs':'; no electric light')});
+   (plat.length?'; the platform LACKS '+plat.join(', '):'; the heliograph and the fire basket on the Eye Post\'s platform')+(beacon.length?'; the Beacon\'s pieces HERE: '+beacon.join(', '):'')+(bulbs?'; '+bulbs+' electric bulbs':'; no electric light')+'; rows of seats: '+rows+' in the Assembly Hall, '+rowsB+' in the belvedere'});
  const WI=typeof FE_IX!=='undefined'&&FE_IX.walkIn?FE_IX.walkIn():[],bad=WI.filter(q=>!q.ok);
  R.push({name:'interiors-walk-in',ok:!!X.on&&WI.length===want.length&&!bad.length&&X.walked===want.length&&!!X.balcony&&X.parapet>0&&!!X.ladder,
   detail:X.walked+' of '+want.length+' interiors in core/walk; walked in: '+WI.map(q=>q.id+' '+(q.ok?q.floors+' floors':'FAILED'+(q.why?' ('+q.why+')':' (shut '+q.shut+', open '+q.open+', unreached '+(q.unreached||[]).slice(0,4).join(' ')+')'))).join('; ')+(X.balcony?'; the balcony a floor, its parapet '+X.parapet+' blocks':'; NO balcony')+(X.ladder?'; the ladder to the platform of the Eye Post in '+X.ladder.room.split('.').slice(-1)[0]:'; NO ladder to the platform')});}
