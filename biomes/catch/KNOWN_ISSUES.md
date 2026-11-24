@@ -29,7 +29,23 @@
 - [ ] **The tunnel's portal is a placeholder** (station 2): a plain concrete frame and a dark mouth, until the Stair build
       draws it from `kits/ancients`. Stair itself (the Hill arcology, the merchants, the divers) is its own build: the Hill's
       slope is left empty here, a `site.stair` record.
-- [ ] **The oases' names and places are proposed** (PLAN.md section 8, 2026-10-26): the owner asked for proposals.
+- [x] **`CATCH.OASES` carried the 4.21 canvas** (fixed 2026-11-24). Four of the five records stood 75 to 209 km from the
+      pins the owner's scale-model edit 5 set: Kolli 209 km out, Lasso 203, Bitta 112, Arfwai 75; only Stair agreed. They
+      now carry the **5.1** pixels, every oasis is marked lived-in with its people and its keeper (the owner, 2026-11-16:
+      each is kept by one caravan group's hands, ~100 or less), and Stair's note says 750 in place of "a couple of
+      hundred". `openworld/catch-bowl/PLAN-TERRAIN.md` P1 has the measurement and `tools/survey.py drift` reproduces it.
+      The records are read only by this kit's own checks, so no placement moved; the four pages were rebuilt and the hash
+      baseline updated all the same, since the fragment rides in the page.
+- [ ] **Stations 1 and 4 stand at 4.21 pixels** (`openworld/catch-bowl/PLAN-TERRAIN.md` P2). Shifted into 5.1, the sand
+      sea's point (1072,1340) now reads **4,901 m** and the north fan's (1010,1274) **7,037 m**: both are mountainside.
+      Each station's *local ground is synthetic*, authored in its own `45b-host-stage.js`, so neither page is wrong — but
+      `STAGE.site` (the sky's place) and `STAGE.ridges` (the walls, "painted from the survey's distances") were surveyed
+      at those pixels. Measured candidates: station 1 at **px 1055,1386** (448 m, a 6 m/km slope, the floor's heart
+      between Arfwai and the terminal lake) and station 4 at **px 1056,1366** (~1,400 m, Kolli in the frame, the wall
+      3,530 m close on the north). Re-siting means re-surveying each station's ridge distances on every bearing and
+      rebuilding both pages; a session was spun off for it on 2026-11-24.
+- [ ] **The oases' names are proposed** (PLAN.md section 8, 2026-10-26): the owner asked for proposals. Their *places*
+      are no longer proposed — they are the model's own pins (above).
 - [ ] **No fauna.** The sedesert kit's deer and coyotes are not read (the floor is too hot); the Catch has none of its own
       yet (brine flies at the lake, a wading bird on the brine, the caravans' beasts: for `kits/fauna`).
 - [ ] **The dune shrub has no library card.** It is drawn as procedural geometry (green jointed twigs, red fruit), which

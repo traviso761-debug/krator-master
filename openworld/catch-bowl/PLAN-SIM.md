@@ -56,6 +56,31 @@ second province with breathable graben floors, a waystation network and a 500-st
 The north road today runs from each group's off-map pool to Kolli in one long leg. With the SE outer wall cut, it
 becomes stages on real ground (`PLAN-TERRAIN.md` section 5a: a carved thalweg, 2,284 to 3,739 m, median grade 1.1 %).
 
+> **S1 is being implemented in this session (2026-11-24).** Four decisions the code makes, recorded here because they
+> are judgements and not transcriptions:
+>
+> 1. **One new place, not three.** Bāb al-Hawa becomes a `CATCH_TUNE` place; **the North Threshold Sill and the Southern
+>    Narrows do not.** An unpeopled stop buys nothing, sells nothing and makes nothing, so on the simulation it is only a
+>    place to cut a leg — and the pass needs **one** cut, at the shelter. The Sill and the Narrows stay **drawn** halts
+>    (`KWCAMPS`, the region's work, `PLAN.md` 2a), which is what they are: ground a train sleeps on when it mistimes the
+>    pass.
+> 2. **`forHalts` gains `fodder`.** It carried `grain`, `tea` and `tools` — the things a halt eats and the far town is
+>    fed from behind. Bāb al-Hawa is the first stop in the region that **cannot cut fodder at all** (nothing grows at
+>    3,590 m), so fodder has to ride for the halts or the caravanserai cannot water and feed anyone's beasts. That one
+>    word is the mechanical expression of "every kilogram came up 2,400 m", and it is why the pass is dear.
+> 3. **The whiteouts are a loss, not a closure.** Closing the Godsgate for its whole winter window would shut the
+>    crater's only road to Xanadu for a third of the year, on top of the storms closing the floor — a swing in every book
+>    that depends on the crossing, and more than the lore says. The rime-fog banks are **sudden**, not seasonal (80 km of
+>    visibility to under 12 m in minutes), so they are a loss rate inside a window, and the crossing keeps its two real
+>    closures: the floor's storms and the Twins' col.
+> 4. **The God-Bore's rate is low *because the shelter is there*.** A nightly 80-130 km/h katabatic gale would cost a
+>    train dearly in the open; what the leg's rate models is a train that reaches Bāb al-Hawa. A train that cannot is the
+>    region's event, not a leg's average — the asymmetry the pass's whole economy rests on.
+>
+> Also: the four groups' home legs shorten by the 283 km from the pass to Kolli, so section 1c's recorded totals (Iziz to
+> Stair about 1,232 km, Yuni about 1,415) are unchanged — the distance moves from one long leg into two. **The Train of
+> Jabal does not cross the Godsgate**: it comes out of Jabal to Arfwai, so its round is untouched.
+
 ### 2a. The stops it adds to `CATCH_TUNE.places`
 
 | Stop | Px | Elev | People | Kind | What it sells |
