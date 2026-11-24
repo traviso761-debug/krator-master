@@ -834,6 +834,36 @@ SH=o.share==null?.5:+o.share,MT=o.maxTris==null?200000:o.maxTris,out=[];
    if(E.y/a<-.3){const x=(A.x+B.x+C.x)/3,y=(A.y+B.y+C.y)/3,z=(A.z+B.z+C.z)/3;if(y>ground(x,z)+.05)down+=a;}}
   const area=tot*st/2;if(area>2&&down/tot>SH)out.push({name:m.name||u.inspectLabel||m.type,share:+(down/tot).toFixed(2),area:+area.toFixed(1)});}
  return out;};
+// T29d (D10), the two guards the geyser/Godthrone looks session proposed (2026-11-15, TODO.md). BIO.sootItems(o): every lit baked item drawn
+// with no map and no emissive whose colour (the material's x its brightest instance's x its mean vertex colour, the stored values read as
+// sRGB) is under o.lum (.02) linear luminance: a tint that draws as a black cut-out (the geyser Stills' sails, 0x161618). [{name, lum}];
+// o.meshes in place of the scene: the negative's.
+BIO.sootItems=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,LIM=o.lum==null?.02:+o.lum,out=[];if(!T)return out;
+ const lin=c=>c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4),lum=(r,g,b)=>.2126*lin(r)+.7152*lin(g)+.0722*lin(b);
+ const list=o.meshes||[];if(!o.meshes&&scene)scene.traverse(m=>{if(m.isMesh&&m.visible)list.push(m);});
+ for(const m of list){const mt=m.material;if(!mt||Array.isArray(mt)||!(mt.userData&&mt.userData.bio))continue;
+  if(!(mt.isMeshLambertMaterial||mt.isMeshPhongMaterial||mt.isMeshStandardMaterial||mt.isMeshToonMaterial)||mt.map||mt.emissiveMap)continue;
+  if(mt.emissive&&mt.emissive.r+mt.emissive.g+mt.emissive.b>0)continue;
+  const c=mt.color||{r:1,g:1,b:1};let kr=1,kg=1,kb=1;
+  if(m.isInstancedMesh&&m.instanceColor){const a=m.instanceColor.array,n=Math.min(m.count,a.length/3),st=Math.max(1,Math.ceil(n/2000));let best=-1;
+   for(let i=0;i<n;i+=st){const l=lum(c.r*a[i*3],c.g*a[i*3+1],c.b*a[i*3+2]);if(l>best){best=l;kr=a[i*3];kg=a[i*3+1];kb=a[i*3+2];}}}
+  const ca=mt.vertexColors&&m.geometry&&m.geometry.attributes&&m.geometry.attributes.color;
+  if(ca){let sr=0,sg=0,sb=0,k=0;const st=Math.max(1,Math.ceil(ca.count/4000));for(let i=0;i<ca.count;i+=st){sr+=ca.getX(i);sg+=ca.getY(i);sb+=ca.getZ(i);k++;}if(k){kr*=sr/k;kg*=sg/k;kb*=sb/k;}}
+  const l=lum(c.r*kr,c.g*kg,c.b*kb);if(l<LIM)out.push({name:m.name||(m.userData&&m.userData.inspectLabel)||mt.userData.bio.key||m.type,lum:+l.toFixed(4)});}
+ return out;};
+// BIO.packUnsampled(o): every family the page's library pack adds (KMAT.packs) none of whose maps a live material samples, by a map
+// property or a shader uniform (or that KMAT.image handed to a build composing an atlas): a texture packed for nothing (Godthrone
+// station 9's rockColumns, packed while its lamp ShaderMaterial took a flat uniform). [{build, fam}]; o.packs and o.meshes: the negative's.
+BIO.packUnsampled=function(o){o=o||{};const P=o.packs||(typeof KMAT!=='undefined'&&KMAT.packs)||null,scene=BIO.host.scene,out=[];if(!P)return out;
+ const used=new Set(o.packs?[]:(typeof KMAT!=='undefined'&&KMAT.imaged)||[]),add=t=>{const s=t&&t.isTexture&&t.image&&(t.image.currentSrc||t.image.src);if(s)used.add(s);};
+ const list=o.meshes||[];if(!o.meshes&&scene)scene.traverse(m=>{if(m.material)list.push(m);});
+ for(const m of list)for(const mt of(Array.isArray(m.material)?m.material:[m.material])){if(!mt)continue;
+  for(const k in mt){const v=mt[k];if(v&&v.isTexture)add(v);}
+  if(mt.uniforms)for(const k in mt.uniforms){const v=mt.uniforms[k]&&mt.uniforms[k].value;if(v&&v.isTexture)add(v);else if(Array.isArray(v))v.forEach(add);}}
+ const isSrc=s=>typeof s==='string'&&(s.indexOf('data:')===0||/\.(webp|jpe?g|png|ktx2?)$/i.test(s)),
+ hit=s=>{if(used.has(s))return true;if(s.indexOf('data:')===0)return false;for(const u of used)if(u.endsWith('/'+s)||u.endsWith(s))return true;return false;};
+ for(const b in P){const F=P[b]||{};for(const f in F){const L=F[f]||{},srcs=Object.keys(L).map(k=>L[k]).filter(isSrc);if(srcs.length&&!srcs.some(hit))out.push({build:b,fam:f});}}
+ return out;};
 // The guards as the host's checks (core/host/95-host-probe.js appends them to every build's hostChecks and hostNegatives):
 // the card guard, the attachment audit and the tree's one LOD key, each with a negative control that must fail.
 // o.maxShare (.01): the share of audited cards that may float, or switch apart from their structure.
@@ -845,6 +875,10 @@ BIO.guardChecks=function(o){o=o||{};const mx=o.maxShare==null?.01:+o.maxShare,R=
    ': the build\'s pack writer drops the fields (use tools/textures/matlib_pack.py) or tex/pack.json predates them (rerun tools/textures/pack.py)':'every library card says what it is'});
  if(o.ground){const io=BIO.insideOut(o);R.push({name:'no mesh drawn inside out (faces wound toward the ground)',ok:!io.length,
   detail:io.length?io.slice(0,6).map(e=>e.name+' ('+Math.round(100*e.share)+'% of '+e.area+' m2 faces down above the ground)').join('; ')+': its profile or winding is reversed; from above it shows its unlit underside through a culled near side':'none'});}
+ {const so=BIO.sootItems(o);R.push({name:'no lit item drawn under soot (an unmapped tint under 2% linear albedo)',ok:!so.length,
+  detail:so.length?so.slice(0,6).map(e=>e.name+' ('+(100*e.lum).toFixed(2)+'%)').join('; ')+': it draws as a black cut-out; lift its tint or give it a map':'none'});}
+ {const pu=BIO.packUnsampled(o);R.push({name:'every packed texture family is sampled (no texture packed for nothing)',ok:!pu.length,
+  detail:pu.length?pu.slice(0,8).map(e=>e.build+'/'+e.fam).join(', ')+': the pack adds it but no live material\'s map or uniform takes it':'none'});}
  const a=BIO.attachAudit(o),fmt=x=>(100*x).toFixed(2)+'%',top=k=>Object.entries(a.byItem).filter(e=>e[1][k]).sort((x,y)=>y[1][k]-x[1][k]).slice(0,4).map(e=>e[0]+' '+e[1][k]+'/'+e[1].n).join(', ');
  if(a.note)R.push({name:'foliage held by its structure (core attach audit)',ok:true,detail:'not audited: '+a.note});
  else{R.push({name:'foliage held by its structure (core attach audit)',ok:a.share<=mx,
@@ -860,6 +894,9 @@ BIO.guardNegatives=function(o){o=o||{};const mx=o.maxShare==null?.01:+o.maxShare
  R.push({name:'a one-plant card cut into a sheet\'s cells',failed:!!cardWhy({userData:{card:{kind:'clump'},cells:true}},{lib:'card.broadleaf',plants:1,anchor:'center'}),detail:'the card guard on a made-up slot'});
  {const T=BIO.host.THREE;if(T&&o.ground){const g=new T.PlaneGeometry(4,4);g.rotateX(Math.PI/2);const fk=new T.Mesh(g,new T.MeshLambertMaterial());fk.position.set(0,o.ground(0,0)+2,0);
   R.push({name:'a made-up disc 2 m up, wound toward the ground',failed:BIO.insideOut({ground:o.ground,meshes:[fk]}).length===1,detail:'the inside-out probe'});}}
+ {const T=BIO.host.THREE;if(T){const sm=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshLambertMaterial({color:0x161618}));sm.material.userData.bio={kind:'item',key:'sail'};
+  R.push({name:'a made-up sail tinted 0x161618, unmapped',failed:BIO.sootItems({meshes:[sm]}).length===1,detail:'the soot guard'});}}
+ R.push({name:'a made-up packed family nothing samples',failed:BIO.packUnsampled({packs:{neg:{rockColumns:{lib:'rock.x',map:'tex/neg.albedo.webp'}}},meshes:[]}).length===1,detail:'the unsampled-pack guard'});
  const a=BIO.attachAudit(Object.assign({},o,{offset:[0,6,0]}));
  if(!a.note)R.push({name:'every card lifted 6 m off its branch',failed:a.share>mx,detail:a.floating+' of '+a.audited+' float'});
  if(!a.note&&a.stemmed){const s=BIO.attachAudit(Object.assign({},o,{offset:[0,.4,0]}));
