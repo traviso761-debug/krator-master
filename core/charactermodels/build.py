@@ -134,11 +134,20 @@ def main():
     for old in ('characters.html', 'characters.artifact.html'):              # the single page before the split
         if os.path.exists(os.path.join(DIST, old)):
             os.remove(os.path.join(DIST, old))
+    startup_glb = {}
+    for k in ('mpfb_male/base', 'mpfb_male/short02', 'mpfb_male/wdg_scruffy_beard',
+              'mpfb_male/mindfront_kimono', 'mpfb_male/toigo_harem_pants', 'mpfb_male/culturalibre_hero_boots_1'):
+        tp = os.path.join(DIST, 'pieces', k + '.txt')
+        if os.path.isfile(tp):
+            tx = read(tp)
+            nl = tx.find('\n')
+            startup_glb[k] = tx[:nl] if nl >= 0 else tx
     wholes = {}
     for page, (headf, own) in sorted(PAGES.items()):
         head, t = read(os.path.join(SRC, headf)), read(os.path.join(SRC, own))
         inputs['src/' + headf], inputs['src/' + own] = head.encode(), t.encode()
-        pjs = js + ['/* src/%s */\n%s' % (own, t)]
+        extra = ['var KCHAR_GLB = ' + json.dumps(startup_glb, separators=(',', ':')) + ';'] if (page == 'cosmetic-lab' and startup_glb) else []
+        pjs = extra + js + ['/* src/%s */\n%s' % (own, t)]
         body = head + '<script>\n' + '\n'.join(pjs) + '\n</script>\n'
         whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \
                 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \

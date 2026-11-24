@@ -18,7 +18,7 @@
   var SLOT_LABEL = { head:'Headgear', implant:'Cybernetic implants', torso:'Torso & arms', gloves:'Gloves & gauntlets', back:'Backpacks & gear', legs:'Legs', feet:'Feet' };
   var BASE_HEIGHT = { male:1.75, female:1.68, mpfb_male:1.78, mpfb_female:1.66 };
   var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'Man', mpfb_female:'Woman', mpfb_giant:'Giant' };
-  var rec, fig, renderer, scene, camera, clock = new THREE.Clock(), body = 'male';
+  var rec, fig, renderer, scene, camera, clock, hv, body = 'male';
   var start = {
     male:   { body:'male', head:'base_m', hair:'hair_m_long', beard:null, armour:{ torso:'bronze', legs:'scout', feet:'bone' }, sliders:{}, dye:{} },
     female: { body:'female', head:'base_f', hair:'hair_f_braids', beard:null, armour:{ torso:'f_hide', legs:'f_scout', feet:'f_bone' }, sliders:{}, dye:{} }
@@ -80,6 +80,10 @@
   var texts = {}, raws = {};
   function fetchPiece(key){
     if(raws[key]) return raws[key];
+    if(typeof KCHAR_GLB !== 'undefined' && KCHAR_GLB[key]){
+      raws[key] = gunzip(b64(KCHAR_GLB[key]));
+      return raws[key];
+    }
     var base = key.replace(/\.morph$/, ''), line = base === key ? 0 : 1;
     if(!texts[base]){
       texts[base] = fetchRel('pieces/' + base + '.txt').then(function(r){ return r.text(); }).then(function(t){
@@ -99,9 +103,7 @@
   var cache = {};
   function load(key){
     if(!cache[key]){
-      var bytes = (typeof KCHAR_GLB !== 'undefined' && KCHAR_GLB[key]) ? Promise.resolve(b64(KCHAR_GLB[key])) :
-        fetchPiece(key);
-      cache[key] = bytes.then(function(buf){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(buf, '', ok, no); }); });
+      cache[key] = fetchPiece(key).then(function(buf){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(buf, '', ok, no); }); });
     }
     return cache[key];
   }
@@ -150,6 +152,8 @@
   /* ---- stage ---- */
   var cam = { yaw:0.35, pitch:0.1, dist:4.5, ty:0.68, want:{ dist:4.5, ty:0.68, pitch:0.1 }, spin:false, face:false };
   function boot(){
+    clock = new THREE.Clock();
+    hv = new THREE.Vector3();
     var stage = $('stage');
     renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, preserveDrawingBuffer:true });
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
@@ -206,7 +210,6 @@
     camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
   }
 
-  var hv = new THREE.Vector3();
   function frame(){
     var dt = Math.min(0.05, clock.getDelta());
     if(fig && !(window._kchar && window._kchar.still)) fig.update(dt);   // still: tools/shots.py steps the figure itself
@@ -1759,6 +1762,7 @@
   function apply(){
     syncPanel();
     return fig.apply(rec).then(function(){
+      $('loading').hidden = true;
       var h = rec.hold || {};
       fig.hold({ R:h.R || null, L:h.L || null });
       var p = fig.pose, n = Object.keys(fig.live).filter(function(k){ return fig.live[k].visible; }).length;
@@ -1770,7 +1774,10 @@
       var cm = Math.round(BASE_HEIGHT[body] * p.root * 100 + p.lift * 100 * p.root);
       $('stats').innerHTML = 'Height <b>' + cm + ' cm</b> · Leg lift <b>' + (p.lift >= 0 ? '+' : '−') + Math.abs(p.lift * 100).toFixed(1) + ' cm</b><br>' +
         'Pieces <b>' + n + '</b> (base body, head, hair, armour)';
-    }).catch(function(e){ note('A piece failed to load: ' + e.message); });
+    }).catch(function(e){
+      $('loading').hidden = true;
+      note('A piece failed to load: ' + e.message);
+    });
   }
 
   window.__KCHAR_STAGE = {
@@ -1786,5 +1793,22 @@
     loadComments: loadComments,
     saveComments: saveComments
   };
-  boot();
+  function waitAndBoot(tries){
+    if(typeof THREE !== 'undefined' && THREE.GLTFLoader){ boot(); return; }
+    if(tries === 25 && typeof document !== 'undefined'){
+      var s1 = document.createElement('script'); s1.src = 'http://127.0.0.1:8123/three.min.js';
+      s1.onload = function(){
+        var s2 = document.createElement('script'); s2.src = 'http://127.0.0.1:8123/GLTFLoader.js';
+        document.head.appendChild(s2);
+      };
+      document.head.appendChild(s1);
+    }
+    if(tries > 120){
+      var ld = $('loading');
+      if(ld) ld.textContent = 'Three.js failed to load.';
+      return;
+    }
+    setTimeout(function(){ waitAndBoot((tries || 0) + 1); }, 50);
+  }
+  waitAndBoot(0);
 })();

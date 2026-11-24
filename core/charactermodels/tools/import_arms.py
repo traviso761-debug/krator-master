@@ -1183,104 +1183,104 @@ def import_all():
         entry_by_id[pid] = e
         return e
 
-    # 1. Process all 21 Two-Column Tripo Culture Sheets (5 weapons + sheaths + arrows/darts + 5 shields per sheet)
-    print("=== 1. Dissecting & Splicing 21 Two-Column Tripo Culture Sheets ===")
-    tripo_sheath_count = 0
-    tripo_proj_count = 0
-    for fname, pref, people, clabel, subset, w_specs, s_labels in TRIPO_SHEETS:
-        fpath = os.path.join(DL, fname)
-        r = glbio.read_mesh(fpath)
+    # 1. Multi-item Tripo sheets are skipped by default (pass --include-tripo-sets to include them)
+    if '--include-tripo-sets' in sys.argv:
+        print("=== 1. Dissecting & Splicing 21 Two-Column Tripo Culture Sheets ===")
+        tripo_sheath_count = 0
+        tripo_proj_count = 0
+        for fname, pref, people, clabel, subset, w_specs, s_labels in TRIPO_SHEETS:
+            fpath = os.path.join(DL, fname)
+            r = glbio.read_mesh(fpath)
+            tex_blobs = encode_textures_from_rig(r)
+            P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
+
+            # 5 Weapons (+ matching row sheaths/scabbards/quivers)
+            weapons, sheaths = extract_weapons_and_sheaths(fname, P, N, UV, T, w_specs)
+            for i, ((Pw, Nw, UVw, Tw), P_sheath, spec) in enumerate(zip(weapons, sheaths, w_specs)):
+                w_kind, w_len, w_label = spec[0], spec[1], spec[2]
+                pid = f"{pref}_w{i+1}_{w_kind}"
+                s_pid = f"{pref}_w{i+1}_sheath" if P_sheath is not None else None
+                add_item(pid, w_label, w_kind, w_len, Pw, Nw, UVw, Tw, tex_blobs, people, clabel, subset, fname, sheath_id=s_pid)
+                if P_sheath is not None:
+                    Ps_sh, Ns_sh, UVs_sh, Ts_sh = P_sheath
+                    s_len = 0.58 if w_kind == 'bow' else (0.50 if 'Blowgun' in w_label else round(w_len * 0.78, 2))
+                    s_KindLabel = 'Quiver' if w_kind == 'bow' else ('Dart Case' if 'Blowgun' in w_label else 'Sheath')
+                    add_item(s_pid, f"{w_label} {s_KindLabel}", 'sheath', s_len, Ps_sh, Ns_sh, UVs_sh, Ts_sh, tex_blobs, people, clabel, subset, fname, for_weapon=pid)
+                    tripo_sheath_count += 1
+
+            # Separated Arrows & Blowgun Darts from this Tripo sheet
+            for p_pid, p_label, p_kind, p_len, Pp, Np, UVp, Tp, w_pid in extract_tripo_projectiles(fname, P, N, UV, T):
+                add_item(p_pid, p_label, p_kind, p_len, Pp, Np, UVp, Tp, tex_blobs, people, clabel, subset, fname, for_weapon=w_pid)
+                if w_pid in entry_by_id:
+                    if p_kind == 'arrow':
+                        entry_by_id[w_pid]['arrow'] = p_pid
+                    elif p_kind == 'dart':
+                        entry_by_id[w_pid]['dart'] = p_pid
+                tripo_proj_count += 1
+
+            # 5 Shields with spliced rear handles
+            splits = find_row_splits(P, T)
+            tc = P[T].mean(axis=1)
+            for i, s_label in enumerate(s_labels):
+                y_hi = 1e9 if i == 0 else splits[i - 1]
+                y_lo = -1e9 if i == 4 else splits[i]
+                rmask = (tc[:, 0] >= 0.06) & (tc[:, 1] <= y_hi) & (tc[:, 1] > y_lo)
+                Ps, Ns, UVs, Ts = extract_shield_for_row(fname, i, P, N, UV, T, rmask)
+                pid = f"{pref}_s{i+1}_shield"
+                add_item(pid, s_label, 'shield', 0.85, Ps, Ns, UVs, Ts, tex_blobs, people, clabel, subset, fname, is_spliced_shield=True)
+            print(f"  {fname:24s} -> 5 weapons + 5 shields ({pref}_*)")
+        print(f"  Extracted {tripo_sheath_count} sheaths/quivers and {tripo_proj_count} arrows/darts from Tripo sheets")
+
+        # 2a. obsidian.glb (6 front-facing obsidian weapons)
+        r = glbio.read_mesh(os.path.join(DL, 'obsidian.glb'))
         tex_blobs = encode_textures_from_rig(r)
         P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
-
-        # 5 Weapons (+ matching row sheaths/scabbards/quivers)
-        weapons, sheaths = extract_weapons_and_sheaths(fname, P, N, UV, T, w_specs)
-        for i, ((Pw, Nw, UVw, Tw), P_sheath, spec) in enumerate(zip(weapons, sheaths, w_specs)):
-            w_kind, w_len, w_label = spec[0], spec[1], spec[2]
-            pid = f"{pref}_w{i+1}_{w_kind}"
-            s_pid = f"{pref}_w{i+1}_sheath" if P_sheath is not None else None
-            add_item(pid, w_label, w_kind, w_len, Pw, Nw, UVw, Tw, tex_blobs, people, clabel, subset, fname, sheath_id=s_pid)
-            if P_sheath is not None:
-                Ps_sh, Ns_sh, UVs_sh, Ts_sh = P_sheath
-                s_len = 0.58 if w_kind == 'bow' else (0.50 if 'Blowgun' in w_label else round(w_len * 0.78, 2))
-                s_KindLabel = 'Quiver' if w_kind == 'bow' else ('Dart Case' if 'Blowgun' in w_label else 'Sheath')
-                add_item(s_pid, f"{w_label} {s_KindLabel}", 'sheath', s_len, Ps_sh, Ns_sh, UVs_sh, Ts_sh, tex_blobs, people, clabel, subset, fname, for_weapon=pid)
-                tripo_sheath_count += 1
-
-        #Separated Arrows & Blowgun Darts from this Tripo sheet
-        for p_pid, p_label, p_kind, p_len, Pp, Np, UVp, Tp, w_pid in extract_tripo_projectiles(fname, P, N, UV, T):
-            add_item(p_pid, p_label, p_kind, p_len, Pp, Np, UVp, Tp, tex_blobs, people, clabel, subset, fname, for_weapon=w_pid)
-            if w_pid in entry_by_id:
-                if p_kind == 'arrow':
-                    entry_by_id[w_pid]['arrow'] = p_pid
-                elif p_kind == 'dart':
-                    entry_by_id[w_pid]['dart'] = p_pid
-            tripo_proj_count += 1
-
-        # 5 Shields with spliced rear handles
-        splits = find_row_splits(P, T)
         tc = P[T].mean(axis=1)
-        for i, s_label in enumerate(s_labels):
-            y_hi = 1e9 if i == 0 else splits[i - 1]
-            y_lo = -1e9 if i == 4 else splits[i]
-            rmask = (tc[:, 0] >= 0.06) & (tc[:, 1] <= y_hi) & (tc[:, 1] > y_lo)
-            Ps, Ns, UVs, Ts = extract_shield_for_row(fname, i, P, N, UV, T, rmask)
-            pid = f"{pref}_s{i+1}_shield"
-            add_item(pid, s_label, 'shield', 0.85, Ps, Ns, UVs, Ts, tex_blobs, people, clabel, subset, fname, is_spliced_shield=True)
-        print(f"  {fname:24s} -> 5 weapons + 5 shields ({pref}_*)")
-    print(f"  Extracted {tripo_sheath_count} sheaths/quivers and {tripo_proj_count} arrows/darts from Tripo sheets")
+        obs_specs = [
+            ('voth_obs_macuahuitl', 'Obsidian Feathered Macuahuitl', 'sword', 1.00, tc[:, 0] < -0.395),
+            ('voth_obs_club', 'Obsidian Spiked War Club', 'mace', 0.90, (tc[:, 0] >= -0.30) & (tc[:, 0] < -0.205)),
+            ('voth_obs_dagger', 'Obsidian Sacrificial Dagger', 'dagger', 0.48, (tc[:, 0] >= -0.145) & (tc[:, 0] < -0.06)),
+            ('voth_obs_axe', 'Obsidian Crescent Battle Axe', 'axe', 0.95, (tc[:, 0] >= 0.005) & (tc[:, 0] < 0.105)),
+            ('voth_obs_spear', 'Obsidian Twin-Prong Spear', 'spear', 1.85, (tc[:, 0] >= 0.19) & (tc[:, 0] < 0.305)),
+            ('voth_obs_knife', 'Obsidian Curved Flaying Knife', 'dagger', 0.48, (tc[:, 0] >= 0.375) & (tc[:, 0] < 0.45)),
+        ]
+        for pid, label, kind, length, mask in obs_specs:
+            Pi, Ni, UVi, Ti = submesh(P, N, UV, T, mask)
+            add_item(pid, label, kind, length, Pi, Ni, UVi, Ti, tex_blobs, 'chichani', 'Chichani (Voth)', 'Obsidian', 'obsidian.glb')
 
-    # 2. Process the 14 Standalone GLBs in Downloads (26 items; flying bat & duplicate andaru 2 ignored)
-    print("=== 2. Processing 14 Standalone GLBs from Downloads (26 items) ===")
-    # 2a. obsidian.glb (6 front-facing obsidian weapons)
-    r = glbio.read_mesh(os.path.join(DL, 'obsidian.glb'))
-    tex_blobs = encode_textures_from_rig(r)
-    P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
-    tc = P[T].mean(axis=1)
-    obs_specs = [
-        ('voth_obs_macuahuitl', 'Obsidian Feathered Macuahuitl', 'sword', 1.00, tc[:, 0] < -0.395),
-        ('voth_obs_club', 'Obsidian Spiked War Club', 'mace', 0.90, (tc[:, 0] >= -0.30) & (tc[:, 0] < -0.205)),
-        ('voth_obs_dagger', 'Obsidian Sacrificial Dagger', 'dagger', 0.48, (tc[:, 0] >= -0.145) & (tc[:, 0] < -0.06)),
-        ('voth_obs_axe', 'Obsidian Crescent Battle Axe', 'axe', 0.95, (tc[:, 0] >= 0.005) & (tc[:, 0] < 0.105)),
-        ('voth_obs_spear', 'Obsidian Twin-Prong Spear', 'spear', 1.85, (tc[:, 0] >= 0.19) & (tc[:, 0] < 0.305)),
-        ('voth_obs_knife', 'Obsidian Curved Flaying Knife', 'dagger', 0.48, (tc[:, 0] >= 0.375) & (tc[:, 0] < 0.45)),
-    ]
-    for pid, label, kind, length, mask in obs_specs:
-        Pi, Ni, UVi, Ti = submesh(P, N, UV, T, mask)
-        add_item(pid, label, kind, length, Pi, Ni, UVi, Ti, tex_blobs, 'chichani', 'Chichani (Voth)', 'Obsidian', 'obsidian.glb')
+        # 2b. macahuitl.glb (3 front-facing macahuitl swords)
+        r = glbio.read_mesh(os.path.join(DL, 'macahuitl.glb'))
+        tex_blobs = encode_textures_from_rig(r)
+        P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
+        tc = P[T].mean(axis=1)
+        mac_specs = [
+            ('voth_mac_broadblade', 'Macahuitl Broadblade I', 'sword', 1.00, tc[:, 0] < -0.33),
+            ('voth_mac_greatblade', 'Macahuitl Greatblade II', 'sword', 1.08, (tc[:, 0] > -0.18) & (tc[:, 0] < 0.05)),
+            ('voth_mac_sawblade', 'Macahuitl Sawblade III', 'sword', 1.02, (tc[:, 0] > 0.20) & (tc[:, 0] < 0.41)),
+        ]
+        for pid, label, kind, length, mask in mac_specs:
+            Pi, Ni, UVi, Ti = submesh(P, N, UV, T, mask)
+            add_item(pid, label, kind, length, Pi, Ni, UVi, Ti, tex_blobs, 'chichani', 'Chichani (Voth)', 'Macahuitl', 'macahuitl.glb')
 
-    # 2b. macahuitl.glb (3 front-facing macahuitl swords)
-    r = glbio.read_mesh(os.path.join(DL, 'macahuitl.glb'))
-    tex_blobs = encode_textures_from_rig(r)
-    P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
-    tc = P[T].mean(axis=1)
-    mac_specs = [
-        ('voth_mac_broadblade', 'Macahuitl Broadblade I', 'sword', 1.00, tc[:, 0] < -0.33),
-        ('voth_mac_greatblade', 'Macahuitl Greatblade II', 'sword', 1.08, (tc[:, 0] > -0.18) & (tc[:, 0] < 0.05)),
-        ('voth_mac_sawblade', 'Macahuitl Sawblade III', 'sword', 1.02, (tc[:, 0] > 0.20) & (tc[:, 0] < 0.41)),
-    ]
-    for pid, label, kind, length, mask in mac_specs:
-        Pi, Ni, UVi, Ti = submesh(P, N, UV, T, mask)
-        add_item(pid, label, kind, length, Pi, Ni, UVi, Ti, tex_blobs, 'chichani', 'Chichani (Voth)', 'Macahuitl', 'macahuitl.glb')
-
-    # 2c. ancient masks 3d model.glb (6 visage buckler shields in 2x3 grid)
-    r = glbio.read_mesh(os.path.join(DL, 'ancient masks 3d model.glb'))
-    tex_blobs = encode_textures_from_rig(r)
-    P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
-    tc = P[T].mean(axis=1)
-    mask_specs = [
-        ('voth_mask_shield_1', 'Ancient Sun-God Visage Buckler', (tc[:, 0] < 0) & (tc[:, 1] > 0.67)),
-        ('voth_mask_shield_2', 'Ancient Tlaloc Visage Buckler', (tc[:, 0] >= 0) & (tc[:, 1] > 0.67)),
-        ('voth_mask_shield_3', 'Ancient Jade-Fret Visage Buckler', (tc[:, 0] < 0) & (tc[:, 1] > 0.33) & (tc[:, 1] <= 0.67)),
-        ('voth_mask_shield_4', 'Ancient Feathered-Serpent Buckler', (tc[:, 0] >= 0) & (tc[:, 1] > 0.33) & (tc[:, 1] <= 0.67)),
-        ('voth_mask_shield_5', 'Ancient Bat-Lord Visage Buckler', (tc[:, 0] < 0) & (tc[:, 1] <= 0.33)),
-        ('voth_mask_shield_6', 'Ancient Skull-Crown Visage Buckler', (tc[:, 0] >= 0) & (tc[:, 1] <= 0.33)),
-    ]
-    for pid, label, mask in mask_specs:
-        Pi, Ni, UVi, Ti = submesh(P, N, UV, T, mask)
-        add_item(pid, label, 'shield', 0.68, Pi, Ni, UVi, Ti, tex_blobs, 'chichani', 'Chichani (Voth)', 'Ancient Masks', 'ancient masks 3d model.glb')
+        # 2c. ancient masks 3d model.glb (6 visage buckler shields in 2x3 grid)
+        r = glbio.read_mesh(os.path.join(DL, 'ancient masks 3d model.glb'))
+        tex_blobs = encode_textures_from_rig(r)
+        P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
+        tc = P[T].mean(axis=1)
+        mask_specs = [
+            ('voth_mask_shield_1', 'Ancient Sun-God Visage Buckler', (tc[:, 0] < 0) & (tc[:, 1] > 0.67)),
+            ('voth_mask_shield_2', 'Ancient Tlaloc Visage Buckler', (tc[:, 0] >= 0) & (tc[:, 1] > 0.67)),
+            ('voth_mask_shield_3', 'Ancient Jade-Fret Visage Buckler', (tc[:, 0] < 0) & (tc[:, 1] > 0.33) & (tc[:, 1] <= 0.67)),
+            ('voth_mask_shield_4', 'Ancient Feathered-Serpent Buckler', (tc[:, 0] >= 0) & (tc[:, 1] > 0.33) & (tc[:, 1] <= 0.67)),
+            ('voth_mask_shield_5', 'Ancient Bat-Lord Visage Buckler', (tc[:, 0] < 0) & (tc[:, 1] <= 0.33)),
+            ('voth_mask_shield_6', 'Ancient Skull-Crown Visage Buckler', (tc[:, 0] >= 0) & (tc[:, 1] <= 0.33)),
+        ]
+        for pid, label, mask in mask_specs:
+            Pi, Ni, UVi, Ti = submesh(P, N, UV, T, mask)
+            add_item(pid, label, 'shield', 0.68, Pi, Ni, UVi, Ti, tex_blobs, 'chichani', 'Chichani (Voth)', 'Ancient Masks', 'ancient masks 3d model.glb')
 
     # 2d. 11 Single-item standalone GLBs
+    print("=== Processing 11 Single-Item Standalone GLBs from Downloads ===")
     single_glbs = [
         ('iziz sword.glb', 'iziz_ornate_sword', 'Iziz Ornate Gladius Sword', 'sword', 0.95, 'izani', 'Izani (Iziz)', 'Iziz Ornate'),
         ('iziz - ornate.glb', 'iziz_ornate_shield', 'Iziz Ornate Imperial Scutum', 'shield', 1.02, 'izani', 'Izani (Iziz)', 'Iziz Ornate'),
