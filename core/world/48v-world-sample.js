@@ -35,7 +35,7 @@ function why(S,c){if(!WORLD.inside(c.x,c.z))return'outside';if(WORLD.water(c.x,c
  for(const R of S.roads)if(segD(R,c.x,c.z)<S.clear.road)return'a road';
  return null;}
 /* the region's box in its local metres: the frame's box_px round its origin_px (2 km a pixel) */
-function regionBox(){const F=WORLD_DATA.meta.frame,o=F.origin_px,b=F.box_px,m=F.m_per_px||2000;return[(b[0]-o[0])*m,(b[1]-o[1])*m,(b[2]-o[0])*m,(b[3]-o[1])*m];}
+function regionBox(){const F=WORLD_DATA.meta.frame,o=F.origin_px,b=F.box_px,m=(F.m_per_px==null?2000:F.m_per_px);return[(b[0]-o[0])*m,(b[1]-o[1])*m,(b[2]-o[0])*m,(b[3]-o[1])*m];}
 function all(S,box){const B=box||regionBox(),out=[];
  for(let i=Math.floor(B[0]/S.cell);i<=Math.floor(B[2]/S.cell);i++)for(let j=Math.floor(B[1]/S.cell);j<=Math.floor(B[3]/S.cell);j++){const c=at(S,i,j);if(c&&!why(S,c))out.push(c);}
  return out;}
