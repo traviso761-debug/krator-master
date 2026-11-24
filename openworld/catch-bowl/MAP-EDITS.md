@@ -40,9 +40,11 @@ The region's `SITES.json` row and `BUDGETS.json` are written, and `python3 tools
   (448 m, a 6 m/km slope, 86 m of relief in 12 km, 16 mm of rain — the floor's heart between Arfwai and the terminal
   lake) and **station 4 at px 1056,1366** (about 1,400 m, Kolli in the frame, the wall 3,530 m close on the north).
   Re-siting means re-surveying each station's ridge distances on every bearing and rebuilding both pages.
-- **A GPU `--assert` verify** of the four rebuilt Catch pages. This session rebuilt them and verified `dist/catch.html`
-  headless on SwiftShader (every universal assert PASS, exit 0); a lane run is owed
-  (`python3 tools/harness.py lock --lane auto -- python3 verify.py <page> --assert --all-views`, with `KRATOR_GL=gpu`).
+- **A GPU `--assert` verify** of the four rebuilt Catch pages. **All four verify headless on SwiftShader** (2026-11-24;
+  no lane was reachable from that container): `catch.html`, `catch-oasis.html`, `catch-lake.html` and `catch-fan.html`
+  each came back **13 PASS, 0 FAIL, verdict OK, exit 0**. So do not spend time re-running them headless; what is owed is
+  a **lane run**, which you may as well take with your own rebuilds:
+  `python3 tools/harness.py lock --lane auto -- python3 verify.py <page> --assert --all-views`, with `KRATOR_GL=gpu`.
 - **Region 2's recut** without the 1,424 px of the `twins` polygon its site squares hold, and its
   `src/48k-world-tubes.js` retired to a pointer once the spec has moved here (`PLAN.md` section 3).
 - **Two biome kits**, in a session of their own since 2026-11-24: `biomes/stalker-gate` (new) and `biomes/gills`
