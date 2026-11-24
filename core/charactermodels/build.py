@@ -105,18 +105,29 @@ def main():
             print('build.py: no pieces/%s here: the page is built, its pieces are not' % b)
             continue
         os.makedirs(out_dir, exist_ok=True)
+        repack = '--repack' in sys.argv
+        want_names = {f[:-10] if f.endswith('.morph.bin') else f[:-4]
+                      for f in os.listdir(src_dir) if f.endswith(('.glb', '.morph.bin'))}
         for f in os.listdir(out_dir):
-            os.remove(os.path.join(out_dir, f))
+            if repack or not f.endswith('.txt') or f[:-4] not in want_names:
+                os.remove(os.path.join(out_dir, f))
         # one file per piece: its GLB, and on a second line its morph deltas (make_mpfb.py), each gzipped (the page
         # unzips them) as base64: one fetch, and half the files (a published artifact holds at most 512)
-        lines = {}
+        lines, dirty = {}, set()
         for f in sorted(os.listdir(src_dir)):
             if f.endswith('.glb') or f.endswith('.morph.bin'):
-                raw = read(os.path.join(src_dir, f), 'rb')
+                src_p = os.path.join(src_dir, f)
+                raw = read(src_p, 'rb')
                 inputs['pieces/%s/%s' % (b, f)] = raw
                 name, k = (f[:-10], 1) if f.endswith('.morph.bin') else (f[:-4], 0)
-                lines.setdefault(name, ['', ''])[k] = base64.b64encode(gzip.compress(raw, 9, mtime=0)).decode()
-        for name, (glb, morph) in lines.items():
+                lines.setdefault(name, [None, None])[k] = raw
+                out_p = os.path.join(out_dir, name + '.txt')
+                if repack or not os.path.isfile(out_p) or os.path.getmtime(src_p) > os.path.getmtime(out_p):
+                    dirty.add(name)
+        for name in sorted(dirty):
+            glb_raw, morph_raw = lines[name]
+            glb = base64.b64encode(gzip.compress(glb_raw, 9, mtime=0)).decode() if glb_raw else ''
+            morph = base64.b64encode(gzip.compress(morph_raw, 9, mtime=0)).decode() if morph_raw else ''
             with open(os.path.join(out_dir, name + '.txt'), 'w', encoding='utf-8', newline='\n') as o:
                 o.write(glb + ('\n' + morph if morph else ''))
     os.makedirs(DIST, exist_ok=True)
@@ -182,7 +193,8 @@ def pack_thumbs(size=128, cols=16):
             im = Image.open(os.path.join(root, body, n + '.png')).convert('RGBA').resize((size, size), Image.LANCZOS)
             atlas.paste(im, ((i % cols) * size, (i // cols) * size))
         atlas_path = os.path.join(root, body + '.png')
-        atlas.save(atlas_path, optimize=True)
+        q_atlas = atlas.quantize(colors=256, method=Image.Quantize.FASTOCTREE)
+        q_atlas.save(atlas_path, optimize=True)
         ver = hashlib.sha1(open(atlas_path, 'rb').read()).hexdigest()[:10]
         json.dump({'cols': cols, 'rows': rows, 'v': ver, 'keys': {n: i for i, n in enumerate(names)}}, open(os.path.join(root, body + '.json'), 'w', encoding='utf-8', newline='\n'),
                   separators=(',', ':'))

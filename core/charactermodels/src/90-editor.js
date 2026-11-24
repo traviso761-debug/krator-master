@@ -64,17 +64,37 @@
     if(u[0] !== 0x1f || u[1] !== 0x8b) return Promise.resolve(buf);
     return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
+  function fetchRel(rel, opts){
+    return fetch(rel, opts).then(function(r){
+      if(!r.ok) throw new Error(rel + ': ' + r.status);
+      return r;
+    }).catch(function(){
+      return fetch('http://127.0.0.1:8123/' + rel, opts).then(function(r){
+        if(!r.ok) throw new Error(rel + ': ' + r.status);
+        r._fallbackBase = 'http://127.0.0.1:8123/';
+        return r;
+      });
+    });
+  }
   // a piece's file: its GLB, and on a second line its morph deltas (build.py); key + '.morph' asks for the second
-  var texts = {};
+  var texts = {}, raws = {};
   function fetchPiece(key){
+    if(raws[key]) return raws[key];
     var base = key.replace(/\.morph$/, ''), line = base === key ? 0 : 1;
-    if(!texts[base]) texts[base] = fetch('pieces/' + base + '.txt').then(function(r){ if(!r.ok) throw new Error(base + ': ' + r.status); return r.text(); });
-    return texts[base].then(function(t){
-      var s = t.split('\n')[line];
+    if(!texts[base]){
+      texts[base] = fetchRel('pieces/' + base + '.txt').then(function(r){ return r.text(); }).then(function(t){
+        var nl = t.indexOf('\n');
+        return nl < 0 ? [t, ''] : [t.slice(0, nl), t.slice(nl + 1)];
+      });
+    }
+    raws[key] = texts[base].then(function(parts){
+      var s = parts[line];
+      parts[line] = '';
       if(s) return gunzip(b64(s));
       // a piece published before the two were one file: its deltas in a file of their own
-      return fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+      return fetchRel('pieces/' + key + '.txt').then(function(r){ return r.text(); }).then(b64).then(gunzip);
     });
+    return raws[key];
   }
   var cache = {};
   function load(key){
@@ -89,21 +109,42 @@
     return fetchPiece(key);
   };
   /* a chip's picture: its cell of the body's thumbnail atlas (build.py pack_thumbs: thumbs/<body>.png and .json). The
-     index is fetched the first time a body's chip asks, and the panel is drawn again when it comes */
+     index is fetched the first time a body's chip asks, and applied in-place when it arrives */
   var THUMBS = (typeof KCHAR_THUMBS !== 'undefined' && KCHAR_THUMBS) ? KCHAR_THUMBS : {};
-  function thumb(key, mesh){
-    var body = key.split('/')[0], name = key.slice(body.length + 1) + '__' + mesh, t = THUMBS[body];
-    if(t === undefined){
-      THUMBS[body] = null;
-      fetch('thumbs/' + body + '.json', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : false; })
-        .then(function(j){ THUMBS[body] = j || false; if(j && rec) buildPanel(); }, function(){ THUMBS[body] = false; });
-      return null;
-    }
-    if(!t || t.keys[name] === undefined) return null;
+  function thumbStyleFor(t, body, name){
+    if(!t || !t.keys || t.keys[name] === undefined) return null;
     var i = t.keys[name], c = i % t.cols, r = Math.floor(i / t.cols);
     var q = t.v ? '?v=' + t.v : '';
-    return { atlas:(t._base || '') + 'thumbs/' + body + '.png' + q, size:t.cols * 100 + '% ' + t.rows * 100 + '%',
+    return { body:body, name:name, atlas:(t._base || '') + 'thumbs/' + body + '.png' + q, size:t.cols * 100 + '% ' + t.rows * 100 + '%',
              at:(t.cols > 1 ? c / (t.cols - 1) * 100 : 0) + '% ' + (t.rows > 1 ? r / (t.rows - 1) * 100 : 0) + '%' };
+  }
+  function applyLoadedThumbs(b){
+    var t = THUMBS[b];
+    if(!t) return;
+    Array.prototype.forEach.call(document.querySelectorAll('i.th[data-th-body="' + b + '"]'), function(el){
+      var st = thumbStyleFor(t, b, el.getAttribute('data-th-name'));
+      if(st){
+        el.style.backgroundImage = 'url(' + st.atlas + ')';
+        el.style.backgroundSize = st.size;
+        el.style.backgroundPosition = st.at;
+      }
+    });
+  }
+  function thumb(key, mesh){
+    var b = key.split('/')[0], name = key.slice(b.length + 1) + '__' + mesh, t = THUMBS[b];
+    if(t === undefined){
+      THUMBS[b] = null;
+      fetchRel('thumbs/' + b + '.json').then(function(r){
+        var fb = r._fallbackBase || '';
+        return r.json().then(function(j){ if(j && fb) j._base = fb; return j; });
+      }).then(function(j){
+        THUMBS[b] = j || false;
+        if(j) applyLoadedThumbs(b);
+      }, function(){ THUMBS[b] = false; });
+      return { body:b, name:name, pending:true };
+    }
+    if(t === null) return { body:b, name:name, pending:true };
+    return thumbStyleFor(t, b, name);
   }
 
   /* ---- stage ---- */
@@ -144,11 +185,12 @@
     if(!saved[b] && LIZARD_START) lizard(rec, D.bodies[b].kit);
     if(!saved[b] && FROG_START) frog(rec, D.bodies[b].kit);
     Object.keys(D.bodies).forEach(function(x){ $('body-' + x).setAttribute('aria-pressed', x === b); });
-    buildPanel();
     view(cam.face);                 // a giant's camera stands further back
     var clip = document.querySelector('[data-clip][aria-pressed="true"]');
     $('loading').hidden = false;
-    var done = apply().then(function(){
+    var applied = apply();
+    buildPanel();
+    var done = applied.then(function(){
       $('loading').hidden = true;
       return fig.play(clip ? clip.dataset.clip || null : 'idle');
     });
@@ -211,8 +253,15 @@
       if(it.comment) b.title = '💬 ' + it.comment;
       else if(it.title) b.title = it.title;
       b.setAttribute('aria-pressed', it.id === current);
-      b.innerHTML = (it.img ? '<i class="th" style="background-image:url(' + it.img.atlas + ');background-size:' + it.img.size +
-                     ';background-position:' + it.img.at + '"></i>' : compact ? '' : '<span class="none"></span>') + '<span>' + it.name + '</span>';
+      var icon = '';
+      if(it.img){
+        var attr = it.img.body ? ' data-th-body="' + it.img.body + '" data-th-name="' + it.img.name + '"' : '';
+        var st = it.img.atlas ? ' style="background-image:url(' + it.img.atlas + ');background-size:' + it.img.size + ';background-position:' + it.img.at + '"' : '';
+        icon = '<i class="th"' + attr + st + '></i>';
+      } else if(!compact){
+        icon = '<span class="none"></span>';
+      }
+      b.innerHTML = icon + '<span>' + it.name + '</span>';
       b.addEventListener('click', function(){ onPick(it.id); });
       grid.appendChild(b);
     });
@@ -234,12 +283,16 @@
     box.appendChild(row);
   }
 
-  var sliderEls = {};
+  var sliderEls = {}, sliderBody = null;
+  function ensureSliders(){
+    if(sliderBody !== body){ sliderBody = body; buildSliders(); }
+    else syncPanel();
+  }
   function buildPanel(){
     var kit = D.bodies[body].kit;
     var gear = $('page-gear'), headp = $('page-head');
     gear.innerHTML = ''; headp.innerHTML = '';
-    if(kit.style === 'mpfb'){ buildMpfb(kit, gear, headp); buildSliders(); return; }
+    if(kit.style === 'mpfb'){ buildMpfb(kit, gear, headp); ensureSliders(); return; }
     ['torso', 'legs', 'feet'].forEach(function(slot){
       var a = kit.armour.filter(function(x){ return x.slots[slot]; });
       var cur = rec.armour[slot] || null, it = a.filter(function(x){ return x.id === cur; })[0];
@@ -274,7 +327,7 @@
       if(kind === 'hair') dyeRow(s, 'hair');
     });
 
-    buildSliders();
+    ensureSliders();
   }
 
   /* a MakeHuman body: library items per slot, MPFB's own fitting; the head is the base's, shaped by the morphs */
@@ -470,6 +523,20 @@
       } catch(e){}
     }, 80);
   }
+  function kitById(kit){
+    if(!kit) return {};
+    if(!kit._byId){
+      var m = {};
+      (kit.items || []).forEach(function(it){ m[it.id] = it; });
+      kit._byId = m;
+    }
+    return kit._byId;
+  }
+  function kitHas(kit, id){
+    return !!(id && kitById(kit)[id]);
+  }
+  var _commentIdx = null;
+  function _invalidateCommentIdx(){ _commentIdx = null; }
   function _initPersist(){
     if(MEM_COMMENTS !== null && MEM_BAKED !== null) return;
     var wn = _readWinName();
@@ -481,34 +548,40 @@
     ['dalab_heliophant', 'hykk_hierophant', 'hykk_heliarch'].forEach(function(id){
       if(MEM_BAKED[id] && MEM_BAKED[id].people !== 'izani') MEM_BAKED[id].people = 'izani';
     });
+    _invalidateCommentIdx();
     _writeWinName();
-    try {
-      fetch(STATE_SYNC_URL, { mode:'cors', cache:'no-store' })
-        .then(function(r){ return r.ok ? r.json() : null; })
-        .then(function(st){
-          if(!st || typeof st !== 'object') return;
-          var changed = false;
-          if(st.comments && typeof st.comments === 'object'){
-            Object.keys(st.comments).forEach(function(k){
-              if(!MEM_COMMENTS[k] || (st.comments[k].updated && (!MEM_COMMENTS[k].updated || st.comments[k].updated > MEM_COMMENTS[k].updated))){
-                MEM_COMMENTS[k] = st.comments[k];
-                changed = true;
-              }
-            });
-          }
-          if(st.baked && typeof st.baked === 'object'){
-            Object.keys(st.baked).forEach(function(k){
-              if(!MEM_BAKED[k]){ MEM_BAKED[k] = st.baked[k]; changed = true; }
-            });
-          }
-          if(changed){
-            _writeWinName();
-            try { localStorage.setItem(COMMENTS_KEY, JSON.stringify(MEM_COMMENTS)); } catch(e){}
-            try { localStorage.setItem(NAMED_KEY, JSON.stringify(MEM_BAKED)); } catch(e){}
-            if(rec) buildPanel();
-          }
-        }).catch(function(){});
-    } catch(e){}
+    setTimeout(function(){
+      try {
+        var ac = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        var tm = ac ? setTimeout(function(){ ac.abort(); }, 350) : null;
+        fetch(STATE_SYNC_URL, { mode:'cors', cache:'no-store', signal:ac ? ac.signal : undefined })
+          .then(function(r){ if(tm) clearTimeout(tm); return r.ok ? r.json() : null; })
+          .then(function(st){
+            if(!st || typeof st !== 'object') return;
+            var changed = false;
+            if(st.comments && typeof st.comments === 'object'){
+              Object.keys(st.comments).forEach(function(k){
+                if(!MEM_COMMENTS[k] || (st.comments[k].updated && (!MEM_COMMENTS[k].updated || st.comments[k].updated > MEM_COMMENTS[k].updated))){
+                  MEM_COMMENTS[k] = st.comments[k];
+                  changed = true;
+                }
+              });
+            }
+            if(st.baked && typeof st.baked === 'object'){
+              Object.keys(st.baked).forEach(function(k){
+                if(!MEM_BAKED[k]){ MEM_BAKED[k] = st.baked[k]; changed = true; }
+              });
+            }
+            if(changed){
+              _invalidateCommentIdx();
+              _writeWinName();
+              try { localStorage.setItem(COMMENTS_KEY, JSON.stringify(MEM_COMMENTS)); } catch(e){}
+              try { localStorage.setItem(NAMED_KEY, JSON.stringify(MEM_BAKED)); } catch(e){}
+              if(rec) buildPanel();
+            }
+          }).catch(function(){ if(tm) clearTimeout(tm); });
+      } catch(e){}
+    }, 1500);
   }
   function loadComments(){
     _initPersist();
@@ -517,60 +590,81 @@
   function saveComments(map){
     _initPersist();
     MEM_COMMENTS = map || {};
+    _invalidateCommentIdx();
     _writeWinName();
     try { localStorage.setItem(COMMENTS_KEY, JSON.stringify(MEM_COMMENTS)); } catch(e){}
     _syncToDisk();
   }
   function commentList(comments){
     var map = comments || loadComments();
+    if(!comments && _commentIdx) return _commentIdx.list;
     return Object.keys(map).map(function(k){
       var v = map[k];
       if(typeof v === 'string') return { key:k, text:v, label:k };
       return v && v.text ? Object.assign({ key:k }, v) : null;
     }).filter(Boolean);
   }
+  function _getCommentIndex(comments){
+    var map = comments || loadComments();
+    if(!comments && _commentIdx) return _commentIdx;
+    var list = Object.keys(map).map(function(k){
+      var v = map[k];
+      if(typeof v === 'string') return { key:k, text:v, label:k };
+      return v && v.text ? Object.assign({ key:k }, v) : null;
+    }).filter(Boolean);
+    var byNamed = {}, byOutfit = {}, byTorso = {}, bySlotItem = {};
+    for(var i = 0; i < list.length; i++){
+      var c = list[i];
+      if(c.namedId && !byNamed[c.namedId]) byNamed[c.namedId] = c;
+      if(c.outfitId && !byOutfit[c.outfitId]) byOutfit[c.outfitId] = c;
+      if(c.torso && !byTorso[c.torso]) byTorso[c.torso] = c;
+      if(c.record){
+        if(c.record.armour){
+          Object.keys(c.record.armour).forEach(function(sl){
+            var id = c.record.armour[sl];
+            if(id && !bySlotItem[sl + ':' + id]) bySlotItem[sl + ':' + id] = c;
+          });
+        }
+        ['hair', 'beard'].forEach(function(sl){
+          var id = c.record[sl];
+          if(id && !bySlotItem[sl + ':' + id]) bySlotItem[sl + ':' + id] = c;
+        });
+      }
+    }
+    var idx = { map:map, list:list, byNamed:byNamed, byOutfit:byOutfit, byTorso:byTorso, bySlotItem:bySlotItem };
+    if(!comments) _commentIdx = idx;
+    return idx;
+  }
   function getCommentForNamed(m, comments){
     if(!m) return null;
-    var map = comments || loadComments();
+    var idx = _getCommentIndex(comments), map = idx.map;
     if(m.id && map['named:' + m.id] && map['named:' + m.id].text) return map['named:' + m.id];
     if(m.outfit_id && map['outfit:' + m.outfit_id] && map['outfit:' + m.outfit_id].text) return map['outfit:' + m.outfit_id];
     var torso = m.armour && m.armour.torso;
     if(torso && map['torso:' + torso] && map['torso:' + torso].text) return map['torso:' + torso];
-    var list = commentList(map);
-    for(var i = 0; i < list.length; i++){
-      var c = list[i];
-      if(m.id && c.namedId === m.id) return c;
-      if(m.outfit_id && c.outfitId === m.outfit_id) return c;
-      if(torso && c.torso === torso) return c;
-    }
+    if(m.id && idx.byNamed[m.id]) return idx.byNamed[m.id];
+    if(m.outfit_id && idx.byOutfit[m.outfit_id]) return idx.byOutfit[m.outfit_id];
+    if(torso && idx.byTorso[torso]) return idx.byTorso[torso];
     return null;
   }
   function getCommentForOutfit(x, comments){
     if(!x) return null;
-    var map = comments || loadComments();
+    var idx = _getCommentIndex(comments), map = idx.map;
     if(x.id && map['outfit:' + x.id] && map['outfit:' + x.id].text) return map['outfit:' + x.id];
     var torso = x.set && x.set.torso;
     if(torso && map['torso:' + torso] && map['torso:' + torso].text) return map['torso:' + torso];
-    var list = commentList(map);
-    for(var i = 0; i < list.length; i++){
-      var c = list[i];
-      if(x.id && c.outfitId === x.id) return c;
-      if(torso && c.torso === torso) return c;
-    }
+    if(x.id && idx.byOutfit[x.id]) return idx.byOutfit[x.id];
+    if(torso && idx.byTorso[torso]) return idx.byTorso[torso];
     return null;
   }
   function getCommentForItem(it, comments){
     if(!it || !it.id) return null;
-    var map = comments || loadComments();
-    if(it.slot === 'torso' && map['torso:' + it.id] && map['torso:' + it.id].text) return map['torso:' + it.id];
-    var list = commentList(map);
-    for(var i = 0; i < list.length; i++){
-      var c = list[i];
-      if(it.slot === 'torso' && c.torso === it.id) return c;
-      if(c.record && c.record.armour && c.record.armour[it.slot] === it.id) return c;
-      if(c.record && (it.slot === 'hair' || it.slot === 'beard') && c.record[it.slot] === it.id) return c;
+    var idx = _getCommentIndex(comments), map = idx.map;
+    if(it.slot === 'torso'){
+      if(map['torso:' + it.id] && map['torso:' + it.id].text) return map['torso:' + it.id];
+      if(idx.byTorso[it.id]) return idx.byTorso[it.id];
     }
-    return null;
+    return idx.bySlotItem[it.slot + ':' + it.id] || null;
   }
   function inWardrobe(x){
     if(filterComments === 'commented') return !!getCommentForItem(x);
@@ -633,19 +727,33 @@
   /* what the hands hold (data/props.json, fig.hold): a prop per hand, kept in the record as hold {R, L}. A named
      character's own props (props.json owner: Tzintzun's weapons, tools/import_props.py) come first when it is that
      character; the Animation Lab picks props by clip instead (data/clips.json hold) */
-  var HAND_LABEL = { R:'Right hand', L:'Left hand' };
+  var HAND_LABEL = { R:'Right hand', L:'Left hand' }, showAllProps = false;
   function handChips(gear){
     var all = D.props || [];
     if(!all.length) return;
     var hold = rec.hold || {};
     ['R', 'L'].forEach(function(side){
-      var list = all.filter(function(p){ return p.hand === side; }).slice();
-      list.sort(function(a, b){ return (b.owner === rec.id ? 1 : 0) - (a.owner === rec.id ? 1 : 0); });
-      var cur = list.filter(function(p){ return p.id === hold[side]; })[0];
+      var full = all.filter(function(p){ return p.hand === side && p.kind !== 'sheath'; });
+      var list = full;
+      var canCollapse = !showAllProps && !wardrobe && full.length > 32;
+      if(wardrobe && wardrobe !== 'library'){
+        list = full.filter(function(p){ return !p.src || p.people === wardrobe || p.owner === rec.id || p.id === hold[side]; });
+      } else if(canCollapse){
+        list = full.filter(function(p){ return !p.src || p.owner === rec.id || p.id === hold[side]; });
+      }
+      list = list.slice().sort(function(a, b){ return (b.owner === rec.id ? 1 : 0) - (a.owner === rec.id ? 1 : 0); });
+      var cur = full.filter(function(p){ return p.id === hold[side]; })[0];
       var s = section(gear, HAND_LABEL[side], cur ? cur.label : 'Empty');
-      chips(s, [{ id:null, name:'Empty', domId:'chip-hold-' + side + '-none' }].concat(list.map(function(p){
+      var items = [{ id:null, name:'Empty', domId:'chip-hold-' + side + '-none' }].concat(list.map(function(p){
         return { id:p.id, name:p.label, domId:'chip-hold-' + side + '-' + p.id, title:p.owner ? 'Made for ' + p.owner : '' };
-      })), hold[side] || null, function(id){ rec.hold = rec.hold || {}; rec.hold[side] = id; apply(); buildPanel(); }, true);
+      }));
+      if(canCollapse && list.length < full.length){
+        items.push({ id:'__expand__', name:'+' + (full.length - list.length) + ' cultural arms…', domId:'chip-hold-' + side + '-more' });
+      }
+      chips(s, items, hold[side] || null, function(id){
+        if(id === '__expand__'){ showAllProps = true; buildPanel(); return; }
+        rec.hold = rec.hold || {}; rec.hold[side] = id; apply(); buildPanel();
+      }, true);
     });
   }
   /* body mods (tools/mods.py): a genetic or cybernetic second pair of arms, rib gills; on or off, one pair of arms at
@@ -893,7 +1001,7 @@
                 (D.geomancers && D.geomancers.outfits && D.geomancers.outfits[sex] && D.geomancers.outfits[sex][def.tier]);
       if(!set) return;
       var r = KCHAR.stranger(def.seed * 7919 + 31, k, p || null, 0.25);
-      var has = function(id){ return k.items.some(function(it){ return it.id === id; }); };
+      var has = function(id){ return kitHas(k, id); };
       r.mods = ((p && p.mods) || []).concat(set.mods || []).filter(has);
       ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'].forEach(function(sl){
         r.armour[sl] = set[sl] && has(set[sl]) ? set[sl] : null;
@@ -909,10 +1017,12 @@
       seen[def.id] = 1;
       out.push(r);
     });
+    _defaultNamedCache = out;
     return out;
   }
+  var _defaultNamedCache = null, _allOutfitsCache = {};
   function getNamedModels(){
-    var base = buildDefaultNamedModels(), baked = loadBakedModels(), byId = {}, list = [];
+    var base = _defaultNamedCache || buildDefaultNamedModels(), baked = loadBakedModels(), byId = {}, list = [];
     base.forEach(function(m){ byId[m.id] = m; list.push(m); });
     Object.keys(baked).forEach(function(id){
       var m = baked[id];
@@ -929,6 +1039,7 @@
   }
   function getAllOutfits(kit, applyFilters){
     var curBody = (kit && kit.body) || body;
+    if(!applyFilters && _allOutfitsCache[curBody]) return _allOutfitsCache[curBody];
     var sex = curBody.replace(/^mpfb_/, ''), list = [], seenKey = {};
     var cOrder = {}; CLASS_LIST.forEach(function(c, i){ cOrder[c.id] = i; });
     var rOrder = {}; ROLE_LIST.forEach(function(r, i){ rOrder[r.id] = i; });
@@ -993,12 +1104,13 @@
         return a.name.localeCompare(b.name);
       });
     }
+    if(!applyFilters) _allOutfitsCache[curBody] = list;
     return list;
   }
   function findActiveOutfit(kit, r){
     var target = r || rec;
     var allOutfits = getAllOutfits(kit, false);
-    var has = function(id){ return kit.items.some(function(it){ return it.id === id; }); };
+    var has = function(id){ return kitHas(kit, id); };
     var OUTFIT_SLOTS = ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'];
     return allOutfits.filter(function(x){
       return OUTFIT_SLOTS.every(function(sl){
@@ -1263,7 +1375,7 @@
       return;
     }
     var comments = loadComments();
-    var has = function(id){ return kit.items.some(function(it){ return it.id === id; }); };
+    var has = function(id){ return kitHas(kit, id); };
     var OUTFIT_SLOTS = ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'];
     var cur = list.filter(function(x){ return OUTFIT_SLOTS.every(function(sl){
       if(sl === 'implant' && !x.set.implant) return true;

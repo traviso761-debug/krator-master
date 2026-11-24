@@ -44,11 +44,15 @@ function KCharFigure(body, sliders, load){
   this.clips = {};
   this.action = null;
   this.pose = KCHAR.pose(skel, sliders, {});
-  var ready = load((kit.anims || kit.body) + '/anims').then(function(g){ g.animations.forEach(function(c){
-    // the hips' position track comes out of the clip and update() applies it (hipsTrack)
-    var k = c.tracks.findIndex(function(t){ return t.name === 'Hips.position'; });
-    if(k >= 0){ c.hipsTrack = c.tracks[k]; c.tracks.splice(k, 1); }
-    self.clips[c.name] = c; }); });
+  var ready = null;
+  function ensureAnims(){
+    if(!ready) ready = load((kit.anims || kit.body) + '/anims').then(function(g){ g.animations.forEach(function(c){
+      // the hips' position track comes out of the clip and update() applies it (hipsTrack)
+      var k = c.tracks.findIndex(function(t){ return t.name === 'Hips.position'; });
+      if(k >= 0){ c.hipsTrack = c.tracks[k]; c.tracks.splice(k, 1); }
+      self.clips[c.name] = c; }); });
+    return ready;
+  }
   // a giant (kit.scale, tools/giant.py) is the man's body made big: his clips play slower by the square root of the
   // scale (a pendulum's pace: a stride takes as long as a leg twice as long swings), so he walks like something heavy
   var SCALE = kit.scale || 1, CADENCE = 1 / Math.sqrt(SCALE);
@@ -974,23 +978,32 @@ function KCharFigure(body, sliders, load){
     var fill = cnt.slice(), list = new Int32Array(n);
     for(i=0;i<n;i++) list[fill[src[i]]++] = i;
     var targets = e.targets.map(function(tg){
-      var vs = [], ds = [];
-      for(var k=0;k<tg.idx.length;k++){
-        var v = tg.idx[k]; if(v > max) continue;
-        for(var j=cnt[v];j<cnt[v + 1];j++){ vs.push(list[j]); ds.push(tg.d[3*k] * 1e-4, tg.d[3*k+1] * 1e-4, tg.d[3*k+2] * 1e-4); }
+      var idx = tg.idx, td = tg.d, nk = idx.length, total = 0;
+      for(var k=0;k<nk;k++){ var v = idx[k]; if(v <= max) total += cnt[v + 1] - cnt[v]; }
+      var vs = new Int32Array(total), ds = new Float32Array(3 * total), p = 0;
+      for(k=0;k<nk;k++){
+        var v = idx[k]; if(v > max) continue;
+        var dx = td[3*k] * 1e-4, dy = td[3*k+1] * 1e-4, dz = td[3*k+2] * 1e-4;
+        for(var j=cnt[v], je=cnt[v + 1];j<je;j++){
+          vs[p] = list[j]; var p3 = 3 * p++; ds[p3] = dx; ds[p3+1] = dy; ds[p3+2] = dz;
+        }
       }
-      return { t:tg.t, v:new Int32Array(vs), d:new Float32Array(ds) };
+      return { t:tg.t, v:vs, d:ds };
     });
     return { pos0:g.attributes.position.array.slice(), nrm0:g.attributes.normal ? g.attributes.normal.array.slice() : null,
-             src:src, nsrc:max + 1, targets:targets, key:'' };
+             src:src, nsrc:max + 1, targets:targets, key:'', dirty:false };
   }
   function morphMesh(m, w, wkey){
     var M = m.userData.morph; if(!M || M.key === wkey) return;
     M.key = wkey;
-    var g = m.geometry, P = g.attributes.position.array, any = false;
+    var any = false;
+    for(var ti=0;ti<M.targets.length;ti++) if(w[M.targets[ti].t]){ any = true; break; }
+    if(!any && !M.dirty) return;
+    M.dirty = any;
+    var g = m.geometry, P = g.attributes.position.array;
     P.set(M.pos0);
-    M.targets.forEach(function(tg){
-      var x = w[tg.t]; if(!x) return; any = true;
+    if(any) M.targets.forEach(function(tg){
+      var x = w[tg.t]; if(!x) return;
       var v = tg.v, d = tg.d;
       for(var k=0;k<v.length;k++){ var i = 3 * v[k]; P[i] += x * d[3*k]; P[i+1] += x * d[3*k+1]; P[i+2] += x * d[3*k+2]; }
     });
@@ -1098,16 +1111,22 @@ function KCharFigure(body, sliders, load){
   var token = 0;
   this.apply = function(rec){
     var my = ++token, parts = KCHAR.parts(rec, kit), mpfb = kit.style === 'mpfb' && kit.morph && kit.morph.targets;
+    var w = mpfb ? KCHAR.morphWeights(rec, kit) : null, anyMorph = false;
+    if(w) for(var wi=0;wi<w.length;wi++) if(w[wi]){ anyMorph = true; break; }
+    var anyDirty = Object.keys(live).some(function(k){ return live[k].userData.morph && live[k].userData.morph.dirty; });
+    var waitMorph = !!(mpfb && (anyMorph || anyDirty || rec.coat));
     function needMorph(k){
       if(!mpfb || !load.raw) return Promise.resolve(null);
       if(!morphs[k]) morphs[k] = load.raw(k + '.morph').then(parseMorph, function(){ return null; });
       return morphs[k];
     }
-    return Promise.all([ready].concat(parts.map(function(p){ return need(p.key); }), parts.map(function(p){ return needMorph(p.key); }))).then(function(){
+    var jobs = parts.map(function(p){ return need(p.key); });
+    if(waitMorph) jobs = jobs.concat(parts.map(function(p){ return needMorph(p.key); }));
+    return Promise.all(jobs).then(function(){
       if(my !== token) return;              // a newer record came while this one loaded
       self.record = rec;
       var want = {};
-      return Promise.all(parts.map(function(p){ return Promise.all([need(p.key), needMorph(p.key)]).then(function(r){
+      return Promise.all(parts.map(function(p){ return Promise.all([need(p.key), waitMorph ? needMorph(p.key) : Promise.resolve(null)]).then(function(r){
           meshes(p, r[0]).forEach(function(m){
             want[m.name] = m;
             if(r[1] && m.userData.morph === undefined) m.userData.morph = morphSetup(m, r[1]);
@@ -1146,18 +1165,22 @@ function KCharFigure(body, sliders, load){
             if(u && u.base){ u.value = u.base + (pt.slot === 'torso' && legs && legs.loose ? PAD_SKIRT : 0); u.over.value = pt.slot === 'torso' && ((legs && !legs.loose) || (feet && top && top.long)) ? PAD_OVER : 0; u.hem.value = hemLow; } });
           var p = self.pose = KCHAR.pose(skel, sliders, kit.style === 'mpfb' ? {} : rec.sliders, head && head.face), mj = null;
           if(mpfb){
-            var w = KCHAR.morphWeights(rec, kit), wkey = Array.prototype.join.call(w, ',');
+            var wkey = Array.prototype.join.call(w, ',');
             mj = KCHAR.morphJoints(skel, kit, w);
             p.t = mj.t;
-            Object.keys(want).forEach(function(k){ morphMesh(want[k], w, wkey); });
+            if(waitMorph) Object.keys(want).forEach(function(k){ morphMesh(want[k], w, wkey); });
             var base = Object.keys(want).filter(function(k){ return want[k].userData.part.role === 'base' && want[k].userData.srcMaterial === kit.base_material; })[0];
             if(base){
-              var m0 = want[base].userData.morph;
-              if(m0 && m0.low0 === undefined){ var P = m0.pos0, y = Infinity; for(var i=1;i<P.length;i+=3) if(P[i] < y) y = P[i]; m0.low0 = y; }
-              p.ground = m0 ? m0.low0 - lowest(want[base]) : 0;
-              var PP = want[base].geometry.attributes.position.array, top = -Infinity;
-              for(var q=1;q<PP.length;q+=3) if(PP[q] > top) top = PP[q];
-              p.stature = top - lowest(want[base]);
+              var bm = want[base], m0 = bm.userData.morph;
+              if(bm.userData.low0 === undefined){
+                var P0 = m0 ? m0.pos0 : bm.geometry.attributes.position.array, y0 = Infinity;
+                for(var i=1;i<P0.length;i+=3) if(P0[i] < y0) y0 = P0[i];
+                bm.userData.low0 = y0;
+              }
+              if(m0 && m0.low0 === undefined) m0.low0 = bm.userData.low0;
+              var curLow = lowest(bm);
+              p.ground = bm.userData.low0 - curLow;
+              p.stature = highest(bm) - curLow;
             }
           }
           // a legs item's fur lies between the top of the boots and the lowest hem of the top (furShells kfF)
@@ -1216,8 +1239,9 @@ function KCharFigure(body, sliders, load){
               m.material.color.set(dye || '#ffffff');
             }
           });
-          clothRest(want, mpfb ? KCHAR.morphWeights(rec, kit) : null);
+          clothRest(want, w);
           if(!self.action) self.restPose();
+          setTimeout(ensureAnims, 10);
         });
     });
   };
@@ -3039,7 +3063,7 @@ function KCharFigure(body, sliders, load){
   }
 
   this.play = function(name){
-    return ready.then(function(){
+    return ensureAnims().then(function(){
       var c = name && self.clips[name];
       twoY = 0;
       if(self.action) self.action.fadeOut(0.25);
