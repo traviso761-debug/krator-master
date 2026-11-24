@@ -129,7 +129,7 @@ XL.SPECS={
     river's quarter (the reeling houses, the watermills) and the road's (the han, the market) stand on the town's west edge,
     toward it (layout.side); the mulberry plots and the rearing houses on the benches */
  mulberry:{key:'mulberry',bearing:180,shore:'marsh',wall:{rise:495,benches:2},
-  world:{region:'xanadu-north-shore',site:'sxanlkmulberry01',R:1400,band:600,smooth:70},
+  world:{region:'xanadu-north-shore',site:'sxanlkmulberry01',R:2000,band:600,smooth:70},
   quarters:[{id:'river',role:'industry',share:.20,at:'stream'},{id:'landing',role:'harbour',share:.10,at:'shore'},
    {id:'town',role:'residential',share:.40,at:'slope',rest:true},{id:'groves',role:'farm',share:.20,at:'bench'},{id:'road',role:'market',share:.10,at:'stream'}],
   landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
@@ -141,7 +141,7 @@ XL.SPECS={
   wealth:[.50,.38,.12],andean:.25,ruins:null,
   layout:{half:700,road:30,rows:[30,106,182,258,334,410,486],stairs:[-420,-140,140,420],side:'west',
    market:{x:-560,w:100,d:48,d0:118},
-   benches:[[580,700],[780,900]],benchHalf:760,stream:null,
+   benches:[[580,700],[780,900]],benchHalf:640,stream:null,   /* 640 (was 760): the re-run's shore bends 57 degrees at x -700, past where a bench's works and plots can stand (2026-11-24) */
    core:{x:900,d:960,lake:180,fade:300},
    fields:{rows:9,orchard:true,crop:'mulberry',colour:'green',plot:1}},
   notes:'The north-west\'s largest town, on the flattest shore: the reeling houses, the watermills, the han and the market on its west edge toward the Qol Siṭrīm, the town up the gentle slope, the mulberry plots and the rearing houses on the benches.'},
