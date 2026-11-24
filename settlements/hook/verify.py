@@ -80,10 +80,11 @@ const R=[];
 // P1: every Ancient host and quarter has a core/tags record before it was drawn
 { const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,a=T?T.audit():null,n=PORT_LAYOUT.items.filter(it=>it.ancient&&it.tag).length;
   R.push({name:'hook-tags',ok:!!a&&n===PORT_LAYOUT.items.filter(it=>it.ancient).length,detail:a?(a.records+' records, '+n+' hosts tagged; unknown vocabulary '+a.unknown):'no registry'}); }
-// M1: Huka's ruin as records (77-hook-ruin.js): every block, tower, heap and the ruin's people in the page's registry, nothing drawn
+// S2: the Ancient city as records (77-hook-ruin.js, the owner's site plan): every block, tower, heap, pod, freeway span, the
+// wall and its gates, the roads and the thirteen places in the page's registry, nothing drawn
 { const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,H=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null;
-  const all=H?[].concat(H.blocks,H.towers,H.heaps,H.pods,H.villages,H.camps,[H.spine]):[],miss=T?all.filter(r=>!T.get(r.id)):all;
-  R.push({name:'hook-ruin-records',ok:!!H&&!!T&&all.length>400&&miss.length===0,detail:H?(all.length+' records, '+miss.length+' not registered; '+JSON.stringify(H.report)):'no HOOK_RUIN'}); }
+  const all=H?[].concat(H.blocks,H.towers,H.heaps,H.pods,H.spans,[H.ramp,H.wall],H.gates,H.roads,H.places):[],miss=T?all.filter(r=>!T.get(r.id)):all;
+  R.push({name:'hook-ruin-records',ok:!!H&&!!T&&all.length>1500&&miss.length===0&&H.places.length===13,detail:H?(all.length+' records, '+miss.length+' not registered; '+JSON.stringify(H.report)):'no HOOK_RUIN'}); }
 // P2: the town's lots (steps 6-12): some hundreds of them, of every culture the quarters name
 { const C=window._city||{},recs=C.recs||[],L=C.log||{};const cults=Object.keys(L.byCulture||{});
   R.push({name:'hook-lots',ok:recs.length>=300&&cults.length>=5,detail:recs.length+' lots: '+JSON.stringify(L.byCulture)+' classes '+JSON.stringify(L.byClass)+'; salvage '+L.salvage+', host lots '+L.hostLots+'; ways '+JSON.stringify(L.ways)}); }

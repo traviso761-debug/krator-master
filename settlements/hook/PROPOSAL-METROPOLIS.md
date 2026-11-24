@@ -220,3 +220,9 @@ drowned tower** is the coast's smuggling haven.
 
 The redo starts with S1 (the ground); the Alexandria landforms of section 9 (plain, strait, shelf) are dropped, and M1's
 records are redone on the plan's field in S2.
+
+**Done (2026-11-24):** S1, the ground (`world/landforms.json`: the drowned downtown, the walled peninsula with the north
+ridge, the mainland's strips tapering past the city limits, two domed hills; README "The ground"), and S2, the records
+(`src/77-hook-ruin.js`: the blocks and towers by ground and zone, the Crown, the Drowned Spire, the ring freeway span by
+span with its fallen west arc, the wall and its gates, the south road, the thirteen places; README "The Ancient city").
+Next is S3: the downtown, the freeway and the wall drawn.

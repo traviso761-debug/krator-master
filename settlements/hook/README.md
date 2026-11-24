@@ -251,44 +251,53 @@ and the Capsule Stalks) by the Ys kit's own `HYK.placeOn` on the host's radius f
 under its host. The other layers' additions and the Ancient Iziz markets hung from the towers are still to come
 (`KNOWN_ISSUES.md`, "The landmarks").
 
-## Huka's ruin (M1: the records, nothing drawn)
+## The Ancient city (S2: the records, nothing drawn)
 
-The whole Ancient city is still called Hook (*Huka* to the Hukoa); the living town is Port Hook (`PROPOSAL-METROPOLIS.md`,
-the owner's answers of 2026-11-24). **The layout below is M1's first one and is being redone to the owner's Alexandria
-plan** (the old city on a raised coastal plain on the mainland, the spit an island joined by a causeway, two sunken
-quarters: `PROPOSAL-METROPOLIS.md` section 9). `src/77-hook-ruin.js` (`[G data]`) lays the other two thirds as records: the **Sunk City** in the lagoon
-south of the spit (from the plateau's west foot to the hook's shank, which stands in it as the old sea wall) and the
-**Scarp City** up the plateau's north and west faces to the 420 m contour. Both are on the town's own grid (the site's
-`grid`: 110 m blocks on 20 m streets, the core stretch's columns, rows from `z1`), so the town's streets run on into
-the ruin; the Hook's axis runs on south as **the spine** (an Ancient avenue 40 m wide: causeway near the port, then
-gapped, then drowned under the deeper lagoon).
+Port Hook was the port district of a far larger Ancient city; the whole is still called Hook (*Huka* to the Hukoa).
+The owner's site plan (`plan/hook-site-plan.html`, `PROPOSAL-METROPOLIS.md` section 10, placement B) is laid as records
+by `src/77-hook-ruin.js` (`[G data]`), on the town's own grid (the site's `grid`: 110 m blocks on 20 m streets, the core
+stretch's columns, rows from `z1`), so the town's streets run on into the ruin. The plan's geometry
+(`HOOK_RUIN_PLAN.SITE`, the cut's world metres) is generated from the owner's sketch under placement B: the downtown's
+centre and the ring freeway's radius (1.8 km), its points every 3 degrees, the wall, the ramp, the south road, the city
+limits (about 10 km across), the Crown and the thirteen places.
 
-- **The field** (`HOOK_RUIN.field(x, z)`): the third by the ground (the spit is the port's; water or the shank in the
-  extent the Sunk City's; dry ground under the crest the Scarp City's), `wild` rising with the distance from the spit
-  (and with height on the scarp, plus core/rand noise), `salvage` falling with it.
-- **Blocks**: a 2 x 2 tile of lattice cells is four blocks, two long ones or (on the scarp) one square, by the tile's
-  hash, only where the four stand in one third; a scarp block steeper than 0.45 is no block (a cliff), its pad its
-  highest corner. **Towers**: a block takes one by hash (0.66 in the lagoon, 0.58 on the scarp) of a
-  `kits/metropolis` design that fits it (`HOOK_RUIN_PLAN.DESIGNS`, checked against the kit's records; the Sunk City's
-  Reeds, Stalks, Organs, Spindles and Long Curves, the Scarp City's Terraces, Terrariums, Spirals, Cupolas, Pods and
-  the Soleri farms); its state by shares blended from the salvagers' near the port (gutted, stumps) to the valley's far
-  off (`AV.RUIN_CUTS`), its look `.wild` by the field. A block without one may hold a **heap** (a rubble island in
-  the lagoon). **The crest's landmark**: the scarp's highest single pad stands a Spindle to its crown.
-- **The ruin's people** (placed, drawn later): Hykkousoi **pods** on the towers that still stand in the water, Hukoa
-  **stilt villages** among the low stumps in 0.5 to 6 m of water at middle distance, **salvagers' camps** on dry
-  ground at the near edge; one village or camp per 750 m sector at most.
-- Every record has a stable id from its anchor cell (`huka.b.<i>.<j>` a block, `huka.t` its tower, `huka.h` its
-  heap, `huka.p.<i>.<j>.<k>` a pod, `huka.v` a village, `huka.c` a camp, `huka.spine`), each a pure function of its
-  cell and the fields (KRAND by (seed, i, j, salt)), and goes into the page's core/tags registry with the town's hosts
-  (`89z-rows.js`; `verify.py` `hook-ruin-records`). At this seed: 477 blocks (Sunk 5.4 km2, Scarp 4.0 km2), 290
-  towers, 90 heaps, 30 pods, 6 villages, 9 camps.
+- **The field** (`HOOK_RUIN.field(x, z)`): the ground by S1's landforms (`walled` on the peninsula's record, `sunk` in
+  the drowned downtown's, `mainland` dry outside the wall; the living town's zone and the open sea are left out) and the
+  zone by the distance from the downtown's centre over the ring's radius (`core` under 0.55, `downtown` under 1, `inner`
+  under 2.1, `outer` to the limits). The zone picks the designs and the density (0.92, 0.8, 0.55, 0.22), so the height
+  falls with the distance (mean roofs 197, 183, 37, 29 m at this seed); the ground picks the states (picked clean inside
+  the wall, cut down in the water, the valley's far ruin on the mainland) and the wildness (jungle to the crowns on the
+  mainland).
+- **Blocks and towers**: a 2 x 2 tile of cells is four blocks, two long ones or a square, by its hash and its zone's
+  shares, where all four stand on one ground in one zone; a dry block steeper than 0.45 is a cliff (no block), its pad
+  its highest corner. Inside the wall 45 % of the blocks are cleared (round the Glebe, fields). A block's tower is a
+  `kits/metropolis` design that fits it (`HOOK_RUIN_PLAN.DESIGNS`, checked against the kit); one without may hold a
+  heap (a rubble island in the water).
+- **The Crown**: the Spindle on the downtown's hill, gutted, still standing, the port's landmark. **The Drowned Spire**:
+  one Spindle standing to its crown in the water, six Hykkousoi pods on its crown, the village in it; a few other
+  towers standing in the water carry a pod or two.
+- **The ring freeway**: 120 spans, one every 3 degrees of the sketch's angle, the deck 14 m over the ground or the water;
+  the west arc fallen, the south-east arc (the approach) standing, the dry arc standing or broken by hash; the south
+  ramp from the ring down to the South Ramp post. **The wall** (the Pirate Emperors') from the quays' east end to the
+  freeway, the harbour bastion and the Freeway Gate at its ends. **The south road** from the ramp's foot south-west
+  and south-east.
+- **The places**: the thirteen hamlets, camps and posts of the plan (Lantern Point, the Glebe, Breakers' Yard, the
+  Freeway Gate, Signal Hill inside the wall; the Drowned Spire, the mangrove stilts, the deck camp, the South Ramp post,
+  the charcoal burners, the salt pans, the timber camp, the hunters' camp outside), records with their culture, people
+  and work, to be drawn on `core/hamlet` and `core/camp` (S5).
+- Every record has a stable id (`huka.b.<i>.<j>` a block, `huka.t` its tower, `huka.h` its heap, `huka.p` a pod,
+  `huka.fw.<angle>` a span, `huka.wall`, `huka.road.<k>`, `huka.<place>`), a pure function of its cell or its index on
+  the ring (KRAND by (seed, i, j, salt)), and goes into the page's core/tags registry with the town's hosts
+  (`89z-rows.js`; `verify.py` `hook-ruin-records`). At this seed: 2,022 blocks (walled 14.8 km2, drowned 12.0, mainland
+  17.2), 890 towers, 315 heaps, 17 pods, 120 spans.
 
-`node tests/test-hook-ruin.js` checks the grid against the town's, every footprint inside its block, the spine's
-swathe and the spit kept clear, the thirds by the ground, the gradient, the people's places, the ids stable in any
-order (alone, shuffled, on a second run, registered in reverse) and core/tags' audit, each with a negative.
+`node tests/test-hook-ruin.js` (31 checks) proves the grid is the town's, every footprint inside its block, the town's
+zone left alone, each block on its ground, the height and density falling from the downtown, each ground's character,
+the freeway's arcs and ramp, the wall and its gates, the Crown and the Spire, the thirteen places on their ground and
+the right side of the wall, the ids stable in any order and core/tags' audit, each with a negative.
 
 ## Next
 
-Huka's M2 (the Sunk City drawn: `PROPOSAL-METROPOLIS.md` section 7) reads these records. P3's remainder (`KNOWN_ISSUES.md`, "The landmarks"): the pieces the kits lack (the Temple pyramid on the pad, the
+The site plan's S3 (the downtown, the freeway and the wall drawn: `plan/hook-site-plan.html`, "Phases") reads these records. P3's remainder (`KNOWN_ISSUES.md`, "The landmarks"): the pieces the kits lack (the Temple pyramid on the pad, the
 Ordinator fortress's wall and its breach, the necropolis's tombs, the Kautoan palace court, the toppled statues, the
 war-walkers), then P4: the harbour's life.

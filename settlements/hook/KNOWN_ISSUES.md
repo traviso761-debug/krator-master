@@ -4,33 +4,27 @@ Open items start with `- [ ]` (build.py prints them after every build). The Port
 `kits/port/KNOWN_ISSUES.md`; shared-fragment problems found from Hook are recorded here, not fixed in the kit
 from a Hook task.
 
-## Huka's ruin (M1, 2026-11-24)
+## The Ancient city (the owner's site plan: S1 the ground, S2 the records, 2026-11-24)
 
-- [ ] **M1's layout is the first one.** The owner's own site plan (`plan/hook-site-plan.html`, `PROPOSAL-METROPOLIS.md`
-      section 10) replaced both it and the Alexandria plan. S1 (the ground) is in; M1's records still lay the first
-      layout (a Sunk City and a Scarp City by the old thirds, the old axis as a spine) on the new ground until S2 redoes
-      them on the plan's field (the downtown's rings, the freeway with its fallen west arc, the wall, the thirteen places).
+- [x] **M1's first layout is replaced.** The Sunk City and Scarp City thirds, the old axis as a spine and the crest at
+      188 m are gone with it; S2 lays the site plan (`README.md`, "The Ancient city").
+- [ ] **The plan costs about 1.8 s at load.** 2,022 blocks over a 10 km square, each reading the ground five times;
+      records only, nothing drawn yet. Bake the records at build time (they are deterministic) before S3 adds drawing.
+- [ ] **The places are records only.** The thirteen hamlets, camps and posts carry their culture, people and work;
+      drawing them on `core/hamlet` and `core/camp` (and their people in the simulation) is S5.
 - [ ] **The plateau's own north coast is straight.** East of the wall the plateau's north foot runs straight for some
       4 km: the scale model's 2 km cells, not Hook's records (the mainland strip only raises the water before it).
       `core/coast` would curve it in the open world; on Hook's page it is the model's line.
 - [ ] **Lightwall was not rebuilt with this 41l.** Its ground bake fails before 41l is read (`core/hamlet/xanadu/
       23-hamlet-xanadu-row.js is not loaded`, the region's sites), so its committed page still carries the 41l before
       the outlined benches. It takes none of them, so it renders the same; rebuild it when its build is fixed.
-
 - [ ] **The Ancient grid is Hook's own, not lifted.** The owner's answer 6 has the grid lifted out of the valley
-      (`AV.plan`'s lattice and ruin field) by Hook's phases; M1 writes Hook's plan on its own fragment
-      (`src/77-hook-ruin.js`), borrowing the valley's ruin states and far shares as numbers. Lifting both into one
-      shared step (core/city's Ancient-grid step, or a placer in `kits/metropolis`) is the owner's call on where it
-      lives, and then the valley's pages are rebuilt and verified.
+      (`AV.plan`'s lattice and ruin field) by Hook's phases; Hook's plan is still its own fragment, borrowing the
+      valley's far ruin shares as numbers. Lifting both into one shared step is the owner's call on where it lives.
 - [ ] **The design table is a copy.** Hook's page does not load `kits/metropolis`, so `HOOK_RUIN_PLAN.DESIGNS` copies
       footprints, roofs and tips; `tests/test-hook-ruin.js` fails when the kit's records move.
-- [ ] **The spine is mostly drowned.** At x -225 the lagoon is 6 to 12 m deep past the first kilometre, so the axis is
-      causeway for four rows and then gaps and drowned stretches (`report.spine`), "the avenue's line under water,
-      marked by tower rows" as the proposal has it; the causeway form is M4's.
-- [ ] **The crest stands at 188 m.** The extent is trimmed to about 4 km2 a third, so the Scarp City climbs to its
-      188 m pad, not to the plateau's 400 m rim; widen `PARAMS.extent` south-east if the landmark should stand on the rim.
-- [ ] **The three Ancient roads out of Hook are not laid.** Their first kilometres (net51's causeways and the highway
-      up the scarp) are M4's, with the viaduct.
+- [ ] **The three Ancient roads out of Hook are not laid.** The south road is the plan's; net51's routes beyond the
+      city limits (to Pylon, Torus, Spirladunon) are not yet joined to it.
 
 ## The ground on 5.1 (the port onto the integration line, 2026-11-24)
 

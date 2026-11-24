@@ -20,7 +20,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `75d-hook-world.js` | 7 | HOOK: THE GROUND FROM THE SCALE MODEL ([G data]) (1) |
 | `76-hook-ground.js` | 4 | HOOK: THE GROUND BEHIND THE PORT ([G data]) (1) |
 | `76b-hook-strokes.js` | 3 | HOOK: THE EDITOR'S GROUND STROKES ON THE PAGE ([ (1) |
-| `77-hook-ruin.js` | 20 | HUKA: THE RUIN'S RECORDS ([G data]) (1) |
+| `77-hook-ruin.js` | 27 | HOOK: THE ANCIENT CITY'S RECORDS ([G data]) (1) |
 | `79-hook-ancient.js` | 6 | HOOK: THE ANCIENT TOWN'S RUIN HOSTS (1) |
 | `88-hook-programme.js` | 9 | HOOK: THE TOWN'S PROGRAMME ([G data]) (1) |
 | `90a-hook-city.js` | 11 | HOOK: THE TOWN ON core/city, STEPS 0-12 ([G data (1) |
