@@ -2,7 +2,8 @@
 
 **Written:** 2026-11-23, on `claude/krator-graphics-quality-k24ni6` (the same commit as `claude/vertical-stack`, b2f50948).
 **Status:** steps 1 to 3 of section 14 are built on this branch (2026-11-23: `godot/README.md`, "The look", and
-`godot/CHECKLIST.md` section 8); the rest is a proposal.
+`godot/CHECKLIST.md` section 8), and steps 4, 6, 7 and 9 as section 14.4 says (2026-11-24; `CHECKLIST.md` section 9).
+Steps 5, 8 and 10 are a proposal.
 
 **Correction, 2026-11-23.** The counts this plan first gave for instanced items cut into cells (2.4 M, 10.0 M and
 10.3 M primitives; sections 1, 3.2 and 5, appendix A) are withdrawn. The trial that produced them grouped instances with
@@ -680,6 +681,32 @@ under a shader that culls back faces (0 pixels as built, 696 with culling off, f
 Not checked in this pass: any time, on any GPU. The walk was not walked: the frames are from fixed poses at the avenue
 and the east village and from the look lab. Interiors were judged by Gate 5's probes and four stills, not by eye across
 the monastery. The weathering's amounts were set by reading two lab frames, not against reference photographs.
+
+### 14.4 Steps 4, 6, 7 and 9 as built (2026-11-24)
+
+Godot-side only, as steps 1 to 3 were; the same container, renderer and caveat: **no frame was timed**. The counts are
+of the high tier's rig at 2x MSAA, 1280 by 720, shadow to 400 m, occlusion culling settled, the air and dressing off.
+
+| Item | Built | What it measured | Left |
+|---|---|---|---|
+| N3 | `krator/cook.gd`: a map decoded, mipmapped and compressed once, kept as the bytes the GPU takes, found by the file's MD5 | Longsong's town and monastery, headless (a container, with a render running beside it: read the ratio): a place opens in 47.4 s without the cook (37.8 s of it compressing 137 maps), 50.3 s on the first cook, **7.4 s** from the cache | the cache is 247 MB for that place and has no size limit: `tools/cook.gd -- --clear` empties it. On 4.8, mip streaming on top |
+| N2 | the same file: a `world.glb` parsed once and kept as one binary resource; `world_import.gd`, `kmat.gd`, `kground_layers.gd` load through it; `tools/cook.gd` cooks a case ahead of time | the importer alone: the town 17.2 s to 1.4 s, the monastery 25.7 s to 1.3 s. A cooked surface keeps its own bytes: with the levels of detail unused the cooked place's frame is the parsed place's **to the bit** | the cut into cells still runs when a place opens (0.7 s of GDScript here) and still reads each item's rows back from the GPU; the ground's occluders are made at open too |
+| C4 | a shadow mesh a mesh: positions welded, each welded vertex the bytes of the first vertex at its place (nearly every surface is in the engine's compressed layout, where encoding again would move a position by a step and the depth passes would miss) | 27 % of the town's vertices and 35 % of the monastery's are left. The opaque library shader's shadow pass draws it and the two-sided twin's does not (`cook_air_gpu_check.gd`, with a shadow mesh that lies about the shape) | it saves vertex work, not primitives: only a timing shows it. Leaves and bark move their vertices, so they never use one |
+| C7 | levels of detail from `ImporterMesh.generate_lods` in the cook (417 of 456 of the town's meshes and 620 of 911 of the monastery's take any); the tier's `lod_px` | avenue **30.40 M to 11.82 M** at 1 px (11.18 M at 2 px); east village **37.19 M to 13.47 M** (12.43 M); the village frame at 1 px against full detail: 0.08 % of its pixels differ by more than 8 of 255 (0.39 % at 2 px) | canopies were judged in two views, not walked |
+| C8 | the wild forest's pools by distance band, each on its mesh's far twin (`KratorCook.far_mesh`, `world_stream.gd`) | the outlying villages stand in 26 to 30 M triangles of pooled trees that the engine drew at full detail whatever the distance. Tsomo: **52.82 M to 5.24 M**, the frame differing in 0.08 % of its pixels | the merged low mesh a block of a town, and tree impostors (P6, N4): step 8's. The far trees do not simplify well (a canopy is loose cards) |
+| The caps | | high (20 M): 11.82, 13.47 and 5.24 M: **under at all three**. Low as it runs (10 M; 250 m, 2 px): 10.82, 11.92 and 4.98 M | the low tier is over at the avenue and the east village by a tenth to a fifth |
+| F1, F3 | aerial perspective 0.5 (low, high); volumetric fog on in `high`, its density and the sun's share of it by the hour (`KratorAir.keys`), the sky left alone | the first values put a grey veil over midday (everything past the fog's 300 m takes all of it); thinned to a fifth by day with the sun's energy raised | **shafts were not seen**: no frame here looks at the sun through trees or the galleries. Untimed |
+| F2 | `shaders/air_mist.gdshader`: an exponential layer over the lowest ground within 1.2 km, integrated along the view ray, one full-screen pass | the engine's `fog_height` is a function of height alone (**measured**: the ground 3 m away and at the horizon take the same fog), so the plan's F2 row could not be built on it. In the mist the ground at the feet gains 0.02 and at 100 m 0.31; from 400 m above, the floor is veiled by the layer's whole depth, as worked out | what blends (water) is fogged by the depth of what is behind it |
+| F4, F5 | fog volumes and emitters on the still water, streams, falls and vents a place records, pooled round the camera; leaves where trees stand within 30 m | Longsong has 151 sources; 16 volumes stand near the overlook | not judged by eye. No smoke: no export says where a chimney is (section 13) |
+| F6 | one wetness (`KratorAir.wet`) for the weathering stack and `terrain.gdshader`, which darkens, glosses and stands water on ground up to 5 degrees; SSR in `high` while wet | the avenue court and a village road at `--wet=1` hold mirroring pools | how much water is a number to tune (`fill`) |
+| M11 | `krator/kdecals.gd`: a pool of `Decal`s on the nearest marks, gone by 40 m; ruts, puddles and worn patches along the roads by the road's id and the mark's index | 30 marks within reach at the east village | soot and leaks have maps and no places (section 13); the marks follow the road record's line |
+| P7, P8 | `world_grass.gd`: stones, twigs, litter and flowers within 11.5 m (318 at the east village), and a sward that clumps and leaves bare patches; no ring casts a shadow | the east village's lawn, before and after, in one pose: the sward as full as before, with twigs, litter and stones on it and faint ruts on the road. A first try that thinned the sward between its bare patches left the lawn barer than without the dressing, and was withdrawn; the stones' tint was lowered after the last frame and not shot again | `VISUAL-BAR.md`'s bare-ground gate is the owner's eye; a specular lobe and back light were already in `grass_sward.gdshader` |
+| Step 9 | `KratorLook.newer`: 4.8's contact shadows and multi-bounce AO found by name, off in every tier | on 4.7.2 it finds none, as it should | **4.8 was not run**: the download of the beta was refused by this session's permissions. The words it looks for were not read from a 4.8 build. Every test and the route on 4.8 are `CHECKLIST.md` section 9's last item |
+
+Not checked in this pass: any time; the walk; emitters and fog volumes by eye; shafts; anything on 4.8. Two of this
+pass's own first numbers were wrong and were caught by re-running like for like: a village frame "with levels of
+detail" that differed by a third of its pixels had been taken a different number of frames into the wind's sway, and a
+second had picked up the new sward half way through the pair.
 
 ## 15. For the owner to decide
 

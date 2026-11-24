@@ -12,7 +12,8 @@ const UNDER_SHADER := preload("res://shaders/underfoot.gdshader")
 const KRand := preload("res://tests/rand/krand.gd")
 
 # The dressing (GODOT-LOOK-PLAN.md P7, P8; KratorLook's `dress`). Off, the sward is placed as it was before step 7.
-#   P8  the sward clumps harder and leaves bare patches (a lawn is not a carpet)
+#   P8  the sward leaves bare patches a metre or two across, a few per cent of the ground (a first try that also
+#       thinned it between the patches left the lawn barer than before: withdrawn)
 #   P7  what lies underfoot: stones, twigs, leaf litter and flowers within UNDER_R of the camera
 static var dress := false
 const UNDER_R := 11.5
@@ -413,7 +414,7 @@ static func _populate_ring(stream: Node, cam_reg: Vector3, ox: float, oy: float,
 				dens *= 0.42 * smoothstep(0.32, 0.78, patch)
 			elif dress:   # P8: clumps, and bare patches a couple of metres across where nothing grows
 				var bare := _gpatch(rx, rz, 3.4, salt + 71) * 0.65 + _gpatch(rx, rz, 1.1, salt + 73) * 0.35
-				dens *= (0.42 + 0.58 * smoothstep(0.2, 0.7, patch)) * smoothstep(0.27, 0.4, bare)
+				dens *= (0.72 + 0.28 * patch) * smoothstep(0.17, 0.25, bare)   # as it was, less a few per cent of the ground in patches
 			else:
 				dens *= 0.72 + 0.28 * patch
 			if _gu01(_ghash(ix, iz, salt + 23)) > dens:
@@ -473,7 +474,7 @@ func _populate_under(stream: Node, cam_reg: Vector3, ox: float, oy: float, oz: f
 		for ix in range(ix0, ix1 + 1):
 			var h := KRand.cell(5311, ix, iz)
 			var u0 := KRand.unit(h)
-			if u0 > 0.34:   # two cells in three hold nothing
+			if u0 > 0.5:   # every other cell holds nothing
 				continue
 			var u1 := KRand.unit(KRand.mix32(h + 1))
 			var u2 := KRand.unit(KRand.mix32(h + 2))
@@ -501,7 +502,7 @@ func _populate_under(stream: Node, cam_reg: Vector3, ox: float, oy: float, oz: f
 			elif u3 > 0.62:
 				kind = "twig"
 			var col: Vector3 = gs["col"]
-			var tint := Vector3(0.36, 0.34, 0.31) * (0.7 + 0.6 * u1)
+			var tint := Vector3(0.25, 0.24, 0.22) * (0.7 + 0.6 * u1)
 			if kind == "twig":
 				tint = Vector3(0.20, 0.15, 0.10) * (0.7 + 0.5 * u1)
 			elif kind == "litter":
@@ -510,10 +511,10 @@ func _populate_under(stream: Node, cam_reg: Vector3, ox: float, oy: float, oz: f
 				var pal := [Vector3(0.85, 0.80, 0.30), Vector3(0.80, 0.82, 0.86), Vector3(0.62, 0.30, 0.62), Vector3(0.85, 0.42, 0.36)]
 				tint = pal[int(u1 * 3.999)]
 			else:
-				tint = tint.lerp(col * 1.4, 0.5)
+				tint = tint.lerp(col * 1.1, 0.5)
 			var nrm: Vector3 = gs["nrm"]
 			var yaw := u2 * TAU
-			var sc := (0.6 + 1.3 * u1 * u1) * (1.6 if kind == "stone" and u2 > 0.8 else 1.0)
+			var sc := (1.0 + 1.6 * u1 * u1) * (1.8 if kind == "stone" and u2 > 0.8 else 1.0)
 			var up := Vector3.UP.lerp(nrm, 0.9 if kind != "flower" else 0.3).normalized()
 			var fwd0 := Vector3(sin(yaw), 0.0, cos(yaw))
 			var rgt := up.cross(fwd0)

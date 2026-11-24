@@ -577,6 +577,7 @@ func _attach(kind: String, id: String, w: Node3D) -> void:
 			return
 		get_node("Places").add_child(w)
 		places_open[id] = w
+		KratorCook.flush()
 		if w.has_meta("place_flora"):
 			_place_flora[id] = w.get_meta("place_flora")
 		if w.has_meta("krator_cells"):
@@ -682,6 +683,7 @@ func open_place(id: String) -> Node3D:
 	_seat(w)
 	get_node("Places").add_child(w)
 	places_open[id] = w
+	KratorCook.flush()   # the cook's stat index, if this place put anything new in it
 	if w.has_meta("place_flora"):
 		_place_flora[id] = w.get_meta("place_flora")
 	return w
