@@ -15,13 +15,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `43-world-xoh.js` | 3 |  |
+| `43-world-xoh.js` | 2 |  |
 | `44-world-landforms.js` | 3 |  |
 | `46-world-config.js` | 2 |  |
 | `47-world-kits.js` | 1 |  |
 | `47g-site-gihon-landing.js` | 219 **big** |  |
-| `48-world-site.js` | 21 |  |
+| `48-world-site.js` | 22 |  |
+| `48c-camps-xanadu.js` | 1 |  |
 | `48k-world-tubes.js` | 5 |  |
-| `48t-world-camps.js` | 10 |  |
 | `49-world-xanadu.js` | 4 |  |
-| `88t-world-camps.js` | 13 |  |

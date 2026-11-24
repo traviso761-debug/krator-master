@@ -82,5 +82,8 @@ parts, forms, roles and defs in one closure (`var TNK = ...`), as `XAK` seals th
 core/materials/record, core/tags and core/door first. `TNK.proto(key, {dress, role, trade, wear, world, cell, index, v})` builds the
 def at the origin, dry (the host registers its tent with core/tags: `TNK.tags(role, trade, TNK.dress(culture), form)`); no gear,
 no interior and plain-cloth pennants (no catalog, no canvas in the closure). `TNK.dims()`, `TNK.KEYS`, `TNK.DRESS`, `TNK.dress`,
-`TNK.roleOf`, `TNK.spec`, `TNK.errors`. Tested by `tests/test-bundle.js`. The dress is the host's choice: a caravan of a people
+`TNK.roleOf`, `TNK.spec`, `TNK.errors`. `TNK.box(key)` is the table's `tnDims(key)` itself (unrounded, where `TNK.dims()` holds
+the defs' centimetre-rounded boxes): core/world's pitched camps (`core/world/48w-world-camps.js`, KWCAMPS, Stage 8 T26) take their
+boxes from it when a page carries the bundle, so the page and `core/world/bake_sites.py` (which reads the table) lay one camp, and
+88s draws each tent with `TNK.proto`. Tested by `tests/test-bundle.js`. The dress is the host's choice: a caravan of a people
 the kit has no dress for (the Dalab's Great Caravan) pitches in `generic` until one is drawn.

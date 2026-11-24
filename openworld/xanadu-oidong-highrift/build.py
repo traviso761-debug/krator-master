@@ -65,7 +65,10 @@ XA = os.path.join(ROOT, 'settlements', 'xanadu')
 XA_FAMS = ('cloth', 'clothR', 'corrugate', 'plaster', 'stone', 'tarp', 'thatch', 'white', 'wood', 'woodV', 'xBandC', 'xEarth', 'xMosC',
            'xMosD', 'xPenbey', 'xRubble', 'xSun', 'xTiles', 'xValance', 'xWash')
 LDF = lambda *fs: [('ld', f) for f in fs]
-CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
+# the pitched camps' registrations on core/world's KWCAMPS and what they read (from the repo root): the page's list and
+# core/world/bake_sites.py (camps_js) both take this constant, so the bake and the page plan the camps on one set of files
+CAMPS_JS = ['core/region/data/xan-tune.js', 'openworld/xanadu-oidong-highrift/src/48c-camps-xanadu.js']
+CORE_BIOME =['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
               '32-core-variants.js', '33-core-fungoid.js', '34-core-impostor.js', '35-core-anim.js', '36-core-walker.js', '38-core-fire.js',
               '39-core-lean.js']
 # the region's resources (core/world/world_data.py: the geology cropped to the box; kits/resources' field, read in place)
@@ -108,12 +111,13 @@ ORDER = (
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
        ('ld', '48s-world-sites.js'), ('src', '47g-site-gihon-landing.js'), ('src', '48-world-site.js'), ('src', '48k-world-tubes.js'), ('src', '49-world-xanadu.js'),
-       # the pitched camps (settlements/xanadu/WORKS-PLAN.md W2): core/camp, the Tents kit's boxes, the tune, read in place
+       # the pitched camps (settlements/xanadu/WORKS-PLAN.md W2): core/camp, the Tents kit's boxes, core/world's KWCAMPS (48w,
+       # Stage 8 T26) and the Sultanate's registrations on it (CAMPS_JS, which core/world/bake_sites.py reads too); 88s draws them
        ('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'), ('core/camp', '50-camp-tents.js'),
-       ('kits/tents/src', '33-tn-table.js'), ('core/region/data', 'xan-tune.js'), ('src', '48t-world-camps.js')]
+       ('kits/tents/src', '33-tn-table.js'), ('ld', '48w-world-camps.js')] + [tuple(p.rsplit('/', 1)) for p in CAMPS_JS]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '83s-world-streams.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js',
-          '88k-world-caverns.js', '88l-world-landforms.js') + [('src', '88t-world-camps.js')]   # the pitched camps drawn (W2)
+          '88k-world-caverns.js', '88l-world-landforms.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )

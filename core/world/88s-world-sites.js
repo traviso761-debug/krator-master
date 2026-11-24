@@ -26,7 +26,7 @@ const X=[];
 for(const St of PLAN.sites){S.roads+=St.roads.length;
  const site=TAGS.add({class:'landmark',kind:'settlement',key:St.id,name:St.name,at:[St.x,H(St.x,St.z),St.z],r:600,h:40,
   tags:{culture:'beast-rider',types:['civic'],role:'site'},note:'a site of the scale model ('+St.type+'): '+St.camps.length+' camps planned on the world\'s ground'});
- for(const c of St.camps){
+ for(const c of St.camps){if(c.kind)continue;   /* a pitched tent camp (48w KWCAMPS): drawn below, "the pitched tent camps" */
   const base=TAGS.child(site.id,{class:'landmark',kind:'camp',key:c.id,name:c.name,at:[c.site.x,H(c.site.x,c.site.z),c.site.z],r:c.R+40,h:12,
    tags:{culture:'beast-rider',types:['civic'],role:'camp'},note:c.census.pop+' people, '+c.census.mounts+' mounts, '+c.census.households+' households'});
   const recs=c.records.map(r=>Object.assign({},r,{y:H(r.x,r.z)-.12}));
@@ -96,16 +96,51 @@ function onVillage(x,z){for(const W of VIL){if(x<W.bb[0]||x>W.bb[2]||z<W.bb[1]||
   for(const l of W.V.lanes)for(let i=1;i<l.pts.length;i++){const a=l.pts[i-1],q=l.pts[i],ex=q[0]-a[0],ez=q[1]-a[1],L2=ex*ex+ez*ez||1,t=Math.max(0,Math.min(1,((x-a[0])*ex+(z-a[1])*ez)/L2));
    if(Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t)<l.w/2+1)return true;}}
  return false;}
+const TCD=[];   /* the pitched tent camps' discs kept clear: [x, z, r] (filled below) */
 const prevClear=WORLD.clearHook;
 /* off: the ground rule as the plan read it (WORLD.townW counts what the clear hook keeps clear, so with the camps' own
    clearing on, every tent would stand on cleared ground) */
 let off=false;
 WORLD.clearHook=(x,z)=>{if(prevClear&&prevClear(x,z))return true;if(off)return false;
+ for(const d of TCD)if(Math.abs(x-d[0])<d[2]&&Math.abs(z-d[1])<d[2]&&Math.hypot(x-d[0],z-d[1])<d[2])return true;
  if(VIL.length&&onVillage(x,z))return true;
  for(const C of X){if(x<C.bb[0]-3||x>C.bb[2]+3||z<C.bb[1]-3||z>C.bb[3]+3)continue;if(KCAMP.inPoly(C.P,x,z))return true;
   for(let i=0;i<C.P.length;i++){const a=C.P[i],b=C.P[(i+1)%C.P.length],ex=b[0]-a[0],ez=b[1]-a[1],L2=ex*ex+ez*ez,t=Math.max(0,Math.min(1,((x-a[0])*ex+(z-a[1])*ez)/L2));
    if(Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t)<3)return true;}}
  return false;};
+/* ---------------------------------------------------------------- the pitched tent camps (core/world 48w KWCAMPS; Stage 8 T26)
+   From the baked plan (version 2: a site's camps with a kind, the region's `camps`, its `uncut`). A page whose bake predates its
+   camps (version 1) and that carries the region's WORLD_CAMPS plans them here at load, as xanadu-oidong-highrift's 88t did
+   (the villages' clearing on, the camps' own not yet). Every tent, hedge and work is registered in core/tags (build
+   '<region>:camps': each camp a landmark, its tents its children, its hedge infrastructure, its works industry) before it is
+   drawn, and the world's flora and floor are kept off a disc round each camp (TCD, in the clear hook above). The drawing is
+   below ("the pitched tent camps drawn"). */
+const TCS={camps:0,records:0,works:0,drawn:0,kit:0,pending:0,uncut:[],errors:[],from:'none',ms:0},TCG=[];
+let TPLAN={camps:[],uncut:[],errors:[]};
+if(typeof KWCAMPS!=='undefined'){const t1=performance.now();
+ if(PLAN.version>=2){const O=KWCAMPS.of(PLAN);TPLAN={camps:O.camps,uncut:O.uncut,errors:[]};TCS.from='the baked plan';}
+ else if(typeof WORLD_CAMPS!=='undefined'&&WORLD_CAMPS){TPLAN=KWCAMPS.plan(WORLD_CAMPS,{inside:(x,z)=>WORLD.inside(x,z)});TCS.from='planned at load (the bake predates its camps)';}
+ TCS.camps=TPLAN.camps.length;TCS.uncut=TPLAN.uncut.map(u=>u.id+': '+u.why);TCS.errors=TPLAN.errors.slice();
+ const CT=KTAGS.create({build:((WORLD_DATA.meta.cut||{}).region||PLAN.region||'region')+':camps'});
+ const CULT=c=>KTAGS.VOCAB.cultures.indexOf(c)>=0?c:'generic';
+ /* a tent's types by its role and trade, the Tents kit's (TN_ROLES, TN_TRADES: its table, read in place or in the bundle) */
+ const RT=(typeof TNK!=='undefined'&&TNK&&TNK.ROLES)||(typeof TN_ROLES!=='undefined'?TN_ROLES:{}),TTR=(typeof TNK!=='undefined'&&TNK&&TNK.TRADES)||(typeof TN_TRADES!=='undefined'?TN_TRADES:{});
+ const typesOf=r=>(r.trade&&TTR[r.trade]&&TTR[r.trade].types)||(RT[r.role]&&RT[r.role].types)||['dwelling-single'];
+ /* the ground a camp keeps clear: a disc out past its farthest tent */
+ const reach=(C,pad)=>C.records.reduce((m,r)=>Math.max(m,Math.hypot(r.x-C.site.x,r.z-C.site.z)+Math.hypot(r.w,r.d)/2),C.R==null?60:C.R)+pad;
+ const tagCamp=C=>{const cult=CULT(C.culture),s=C.season||{};
+  const base=CT.add({class:'landmark',kind:'camp',key:C.id,name:C.name||C.id,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],r:(C.R==null?60:C.R)+40,h:10,
+   tags:{culture:cult,types:['civic'],role:'camp'},note:(C.people?C.people+' people, ':'')+C.records.length+' tents ('+C.kind+'); '+
+    (s.days?'pitched '+s.days.map(d=>d.join('-')).join(', ')+' (year days)':'pitched by its rule '+s.rule)});
+  for(const r of C.records){TCS.records++;if(r.pending)TCS.pending++;const mk=(C.marks||[]).find(m=>r[m]);
+   CT.child(base.id,{class:'building',key:r.def||r.key,at:[r.x,H(r.x,r.z),r.z],ry:r.ry,size:[r.w,r.d,r.h],
+    tags:{culture:cult,types:mk?['industry']:typesOf(r),role:mk||r.role||undefined},note:r.pending?'no kit has its box yet: a pending box':undefined});}
+  if(C.hedge)CT.child(base.id,{class:'infrastructure',kind:'hedge',key:C.hedge.key,at:[C.site.x,H(C.site.x,C.site.z),C.site.z],size:[C.R*2,C.R*2,2],tags:{culture:cult}});
+  for(const w of C.works||[]){TCS.works++;CT.child(base.id,{class:'building',key:w.key,at:[w.x,H(w.x,w.z),w.z],ry:w.ry,size:[w.w,w.d,w.h],tags:{culture:cult,types:['industry'],role:w.kind}});}
+  return base;};
+ for(const C of TPLAN.camps){tagCamp(C);if(C.escort)tagCamp(Object.assign({season:C.season,works:[],kind:'ring'},C.escort));
+  TCD.push([C.site.x,C.site.z,reach(C,30)]);if(C.escort)TCD.push([C.escort.site.x,C.escort.site.z,reach(C.escort,25)]);}
+ TCS.tags=()=>CT.audit();TCS.ms=Math.round(performance.now()-t1);}
 /* ---------------------------------------------------------------- the pieces: full near, massing far
    Three tiers by the camera's distance to a camp (on the ground's plane, its height counting half):
      within FULL      the kit's own pieces; but a thorn run (br_hedge_thorn, ~9,700 triangles: 240 cut branches with their
@@ -195,8 +230,83 @@ function villageFull(W){const G=new THREE.Group(),copies=[],boxes=[],ox=W.V.site
 function villageMass(W){const im=new THREE.InstancedMesh(boxG,wallM,Math.max(1,W.B.length)),ox=W.V.site.x,oz=W.V.site.z;
  W.B.forEach((b,i)=>{const r=b.r;im.setMatrixAt(i,m4.compose(v3.set(r.x-ox,b.base,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)),new THREE.Vector3(r.w*.9,r.h,r.d*.9)));});
  im.count=W.B.length;const G=new THREE.Group();G.add(im);G.position.set(ox,0,oz);G.name='village massing '+W.V.id;scene.add(G);return G;}
+/* ---------------------------------------------------------------- the pitched tent camps drawn
+   Each camp is drawn PITCHED and STRUCK (the hedge's low ring and the works its spec names stay), and the world clock's year day
+   picks one (KWCAMPS.inSeason). Pitched: within FULL of the camera the Tents kit's own tents (TNK.proto, when the page carries
+   kits/tents/tents_bundle.py: each (def, dress, role, trade) built once and instanced), else each tent its form's mass at its
+   box in its dress's colours (a drum and cone for the round forms, walls and a hip roof for the long ones, a sheet on poles for
+   a fly, a wagon on its wheels); a pending box (no kit had it) and a key TNK lacks are plain boxes; the hedge a ring of thorn
+   clumps with its ditch, one gap a gate; the works stand-ins at their pending boxes. */
+const TG={drum:new THREE.CylinderGeometry(1,1,1,14),cone:new THREE.ConeGeometry(1,1,14),box:new THREE.BoxGeometry(1,1,1),hip:new THREE.ConeGeometry(Math.SQRT1_2,1,4),
+ clump:new THREE.DodecahedronGeometry(1,0),disc:new THREE.CylinderGeometry(1,1,1,10),mound:new THREE.SphereGeometry(1,10,6,0,Math.PI*2,0,Math.PI/2)};
+TG.hip.rotateY(Math.PI/4);
+/* the dresses' colours (kits/tents/src/41-tn-dress.js names them; a dress not here takes the generic undyed canvas) */
+const TDRESS={xanadu:{wall:0xeee6d4,roof:0xd89a2a,trim:0x7a2430},generic:{wall:0xcbbfa5,roof:0xb0a184,trim:0x6a5a48},scyvoi:{wall:0xd8ccb0,roof:0x8a6a48,trim:0x5a3020},
+ desert:{wall:0x3a322c,roof:0x2a2420,trim:0x8a5a30},republican:{wall:0xc8c0a0,roof:0x9a9070,trim:0x3a4a6a}};
+const tdress=r=>TDRESS[r.dress]||TDRESS.generic;
+function TBatch(){const by={};return{add(g,c,x,y,z,sx,sy,sz,ry){const k=g+':'+c;(by[k]=by[k]||{g,c,m:[]}).m.push([x,y,z,sx,sy,sz,ry==null?0:ry]);},
+ build(name){const G=new THREE.Group();G.name=name;const m4=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),v=new THREE.Vector3(),s=new THREE.Vector3();
+  for(const k in by){const B=by[k],M=new THREE.InstancedMesh(TG[B.g],new THREE.MeshStandardMaterial({color:new THREE.Color(B.c).convertSRGBToLinear(),roughness:.9,metalness:0}),B.m.length);
+   B.m.forEach((a,i)=>{q.setFromEuler(e.set(0,a[6],0));m4.compose(v.set(a[0],a[1],a[2]),q,s.set(a[3],a[4],a[5]));M.setMatrixAt(i,m4);});
+   M.instanceMatrix.needsUpdate=true;M.castShadow=M.receiveShadow=true;M.name=name+':'+k;
+   M.userData.probePoints=[].concat(...B.m.map(a=>[a[0],a[1],a[2]]));G.add(M);}
+  scene.add(G);return G;}};}
+const TROUND={bell:1,cone:1,yurt:1};
+function tentMass(B,r){const f=(/^tn-([a-z]+)-/.exec(r.def||'')||[])[1]||'ridge',D=tdress(r),y=H(r.x,r.z),h=r.h==null?3:r.h,c=Math.cos(r.ry),s=Math.sin(r.ry);
+ if(r.pending){B.add('box',D.wall,r.x,y+h/2,r.z,r.w*.9,h,r.d*.9,r.ry);return;}
+ /* the tent's own box (KCAMP.tentDims grew it by the role's yard): the mass stands in the box less its yard */
+ const yd=KCAMP.TENTS.YARD[r.role]==null?0:KCAMP.TENTS.YARD[r.role],w=Math.max(1.6,r.w-yd),d=Math.max(1.6,r.d-yd),mk=r.goldRoom||r.role==='chief';
+ if(TROUND[f]){const R=Math.min(w,d)/2*.92;B.add('drum',D.wall,r.x,y+h*.22,r.z,R,h*.44,R);B.add('cone',mk?D.trim:D.roof,r.x,y+h*.44+h*.28,r.z,R*1.05,h*.56,R*1.05);}
+ else if(f==='fly'||f==='awning'){B.add('box',D.roof,r.x,y+h*.85,r.z,w*.95,.08,d*.95,r.ry);for(const a of[-1,1])for(const b of[-1,1])B.add('box',0x5a4632,r.x+c*a*w*.42+s*b*d*.42,y+h*.42,r.z-s*a*w*.42+c*b*d*.42,.1,h*.85,.1);}
+ else if(f==='screen'){B.add('box',D.wall,r.x,y+.9,r.z,w*.9,1.8,.08,r.ry);}
+ else if(f==='wagon'){B.add('box',0x6a5038,r.x,y+.8,r.z,w*.8,.9,d*.9,r.ry);B.add('hip',D.wall,r.x,y+1.25+.6,r.z,w*.82,1.2,d*.9,r.ry);
+  for(const a of[-1,1])for(const b of[-1,1])B.add('disc',0x3a2e22,r.x+c*a*w*.45+s*b*d*.32,y+.45,r.z-s*a*w*.45+c*b*d*.32,.45,.12,.45,r.ry+Math.PI/2);}
+ else{B.add('box',D.wall,r.x,y+h*.25,r.z,w*.92,h*.5,d*.92,r.ry);B.add('hip',mk?D.trim:D.roof,r.x,y+h*.5+h*.25,r.z,w*.98,h*.5,d*.98,r.ry);}}
+function thornRing(B,L,site,low){if(!L)return 0;let n=0,acc=0;const P=L.pts,GAP=7,step=low?5:2.6;
+ for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],seg=Math.hypot(b[0]-a[0],b[1]-a[1]);
+  for(let t=0;t<seg;t+=step){const d=acc+t;if(L.gates.some(g=>Math.abs(g-d)<GAP/2))continue;const x=a[0]+(b[0]-a[0])*t/seg,z=a[1]+(b[1]-a[1])*t/seg,
+    k=KRAND.unit(KRAND.hash(7123,Math.round(x*10),Math.round(z*10))),sc=(low?.5:1)*(1.1+.5*k);
+   B.add('clump',low?0x6a5a40:0x4f4230,x,H(x,z)+sc*.45,z,sc*1.3,sc*.85,sc*1.3,k*6);n++;
+   /* the ditch outside the hedge */
+   if(!low){const ox=x-site.x,oz=z-site.z,o=Math.max(1e-6,Math.hypot(ox,oz));B.add('box',0x3e352a,x+ox/o*3.2,H(x+ox/o*3.2,z+oz/o*3.2)+.02,z+oz/o*3.2,2.2,.06,step+.2,Math.atan2(ox,oz)+Math.PI/2);}}
+  acc+=seg;}
+ return n;}
+function worksMass(B,C,only){for(const w of C.works||[]){if(only&&only.indexOf(w.kind)<0)continue;const y=H(w.x,w.z);
+  if(w.kind==='sluice'){B.add('box',0x8a7458,w.x,y+.6,w.z,w.w*.25,1.2,w.d*.9,w.ry);B.add('box',0x4a7f8a,w.x,y+1.22,w.z,w.w*.18,.05,w.d*.85,w.ry);}
+  else if(w.kind==='pit'){B.add('disc',0x3a3026,w.x,y+.03,w.z,w.w/2,.06,w.d/2,w.ry);B.add('mound',0x8a7e68,w.x+2.6,y,w.z+1.2,2.2,1.0,1.8);}
+  else if(w.kind==='heap')B.add('mound',0x9a907c,w.x,y,w.z,w.w/2,w.h,w.d/2);
+  else B.add('box',0x8a7e6a,w.x,y+w.h/2,w.z,w.w,w.h,w.d,w.ry);}}
+/* the kit's own tents: TNK.proto once per (def, dress, role, trade), its meshes instanced at every record that takes it */
+const TKIT=typeof TNK!=='undefined'&&TNK&&typeof TNK.proto==='function'?TNK:null,TKP={};
+const kitOk=r=>!!TKIT&&!r.pending&&!!r.def&&(!TKIT.KEYS||TKIT.KEYS.indexOf(r.def)>=0);
+function tnkParts(r){const k=r.def+'|'+r.dress+'|'+(r.role||'')+'|'+(r.trade||'')+'|'+(r.v|0);if(k in TKP)return TKP[k];let parts=null;
+ try{const G=TKIT.proto(r.def,{dress:r.dress,role:r.role,trade:r.trade,world:PLAN.world==null?0:PLAN.world,cell:0,index:0,v:r.v|0});
+  if(G){G.updateMatrixWorld(true);parts=[];G.traverse(o=>{if(o.isMesh)parts.push({geo:o.geometry,mat:o.material,m:o.matrixWorld.clone()});});}}
+ catch(e){TCS.errors.push('TNK.proto '+r.def+': '+(e&&e.message||e));}
+ return(TKP[k]=parts&&parts.length?parts:null);}
+function kitGroup(E){const g=new THREE.Group(),by=new Map(),ox=E.C.site.x,oz=E.C.site.z,q4=new THREE.Quaternion(),e4=new THREE.Euler(),one=new THREE.Vector3(1,1,1);
+ for(const r of E.kitRecs){const P=tnkParts(r);if(!P)continue;TCS.kit++;
+  const M=new THREE.Matrix4().compose(new THREE.Vector3(r.x-ox,H(r.x,r.z),r.z-oz),q4.setFromEuler(e4.set(0,r.ry,0)),one);
+  for(const p of P){const key=p.geo.uuid+'|'+(Array.isArray(p.mat)?p.mat.map(m=>m.uuid).join(','):p.mat.uuid);let L=by.get(key);if(!L)by.set(key,L={p,M:[]});L.M.push(new THREE.Matrix4().multiplyMatrices(M,p.m));}}
+ for(const L of by.values()){const im=new THREE.InstancedMesh(L.p.geo,L.p.mat,L.M.length);L.M.forEach((m,i)=>im.setMatrixAt(i,m));im.castShadow=im.receiveShadow=true;g.add(im);}
+ g.position.set(ox,0,oz);g.name='camp kit '+E.C.id;if(HOST.shadow)HOST.shadow.cast(g);scene.add(g);return g;}
+for(const C of TPLAN.camps){const all=C.records.concat(C.escort?C.escort.records:[]),kitRecs=all.filter(kitOk);
+ const pB=TBatch(),mB=TBatch(),sB=TBatch();
+ for(const r of all){tentMass(kitOk(r)?mB:pB,r);TCS.drawn++;}
+ const nh=thornRing(pB,C.hedge,C.site,false);if(C.escort&&C.escort.hedge)thornRing(pB,C.escort.hedge,C.escort.site,false);
+ worksMass(pB,C);
+ if(C.struck&&C.struck.hedge)thornRing(sB,C.hedge,C.site,true);worksMass(sB,C,C.struck?C.struck.works:[]);
+ TCG.push({C,kitRecs,pitched:pB.build('camp:'+C.id+':pitched'),mass:mB.build('camp:'+C.id+':tents'),struck:sB.build('camp:'+C.id+':struck'),kit:null,hedge:nh});}
+const today=()=>KWCAMPS.yearDay(HOST.clock?HOST.clock.day:0);
+function campSeason(P){const d=today();
+ for(const E of TCG){const on=KWCAMPS.inSeason(E.C,d),near=!!P&&E.kitRecs.length>0&&Math.hypot(P.x-E.C.site.x,P.z-E.C.site.z)<FULL+(E.C.R==null?60:E.C.R);
+  if(on&&near&&!E.kit)E.kit=kitGroup(E);
+  E.pitched.visible=on;E.mass.visible=on&&!(near&&E.kit);if(E.kit)E.kit.visible=on&&near;E.struck.visible=!on;}
+ return d;}
+if(TCG.length)campSeason(null);
 const FULL_V=4000;
 function update(){const P=camera.position;let nf=0;S.near=0;
+ if(TCG.length)campSeason(P);
  for(const W of VIL){const d=Math.hypot(P.x-W.V.site.x,P.z-W.V.site.z),want=d<FULL_V?'full':d<FAR?'mass':'none';
   if(want==='full'&&!W.group)W.group=villageFull(W);if(want==='mass'&&!W.massG)W.massG=villageMass(W);
   if(W.group)W.group.visible=want==='full';if(W.massG)W.massG.visible=want==='mass';if(want==='full')nf++;}
@@ -229,10 +339,41 @@ function checks(neg){const R=[];
    for(const p of C.runs)if(!(typeof isleProto==='function'&&isleProto('cat',p.key,p.v,CACHE))&&S.missing.indexOf(p.key)<0)S.missing.push(p.key);}
   for(const C of X){const pts=C.recs.map(r=>[r.x,r.z]).concat(C.c.pasture?C.c.pasture.pts:[]),kept=pts.filter(p=>!(clr&&clr(p[0],p[1]))).length;if(kept)bad.push(C.c.id+': '+kept+' places not clear');}
   for(const W of VIL){const pts=W.V.records.map(r=>[r.x,r.z]).concat(...W.V.lanes.map(l=>l.pts.slice(1).map((p,i)=>[(p[0]+l.pts[i][0])/2,(p[1]+l.pts[i][1])/2]))),kept=pts.filter(p=>!(clr&&clr(p[0],p[1]))).length;if(kept)bad.push(W.V.id+': '+kept+' places not clear');}
+  /* the pitched tent camps (48w): every tent's place cleared, its tags known */
+  for(const E of TCG){const pts=E.C.records.concat(E.C.escort?E.C.escort.records:[]).map(r=>[r.x,r.z]),kept=pts.filter(p=>!(clr&&clr(p[0],p[1]))).length;if(kept)bad.push(E.C.id+': '+kept+' places not clear');}
   const A=TAGS.audit();if(A.unknown)bad.push(A.unknown+' unknown tag values');
+  const A2=TCS.tags?TCS.tags():null;if(A2&&A2.unknown)bad.push(A2.unknown+' unknown tag values in the tent camps');
   if(S.missing.length&&!neg)bad.push('no piece for '+S.missing.join(', '));
-  R.push({name:'the sites drawn: cleared of flora, tagged, every piece the kit\'s',ok:!bad.length&&(X.length+VIL.length)>0,detail:bad.length?bad.join('; '):X.length+' camps, '+VIL.length+' villages, '+S.records+' buildings, tents and pens, '+S.pieces+' hedge and rail pieces, '+S.roads+' roads'});}
+  R.push({name:'the sites drawn: cleared of flora, tagged, every piece the kit\'s',ok:!bad.length&&(X.length+VIL.length+TCG.length)>0,detail:bad.length?bad.join('; '):X.length+' camps, '+VIL.length+' villages, '+TCG.length+' tent camps, '+S.records+' buildings, tents and pens, '+S.pieces+' hedge and rail pieces, '+S.roads+' roads'});}
  return R;}
+/* the pitched tent camps' checks (verify.py reads them as window._worldCamps.checks; each with its negative: 'plan' lays one
+   tent on another, 'season' reads the season backwards): whole on the world's ground, its form (its formation's check, its marks
+   each on one tent, its bed works laid, its people about its census), pitched in its season and struck out of it */
+function campChecks(neg){off=true;try{return campChecks0(neg);}finally{off=false;}}
+function campChecks0(neg){const R=[],P=neg==='plan'?JSON.parse(JSON.stringify(TPLAN)):TPLAN,ok=KSITES.groundOk,dNow=today();
+ if(neg==='plan'&&P.camps[0]&&P.camps[0].records[1]){P.camps[0].records[0].x=P.camps[0].records[1].x;P.camps[0].records[0].z=P.camps[0].records[1].z;}
+ for(const C of P.camps){const all=C.records.concat(C.escort?C.escort.records:[]),short=C.short.concat(C.escort?C.escort.short:[]);let ov=0,offg=0;
+  for(let i=0;i<all.length;i++){for(let j=i+1;j<all.length;j++)if(KCAMP.overlaps(all[i],all[j],.5))ov++;
+   if(!KCAMP.box(all[i],0).every(q=>ok(q[0],q[1])))offg++;}
+  R.push({name:'the camp '+C.id+': pitched whole on the world\'s ground, no two tents within half a metre',ok:!ov&&!offg&&!short.length&&all.length>0,
+   detail:all.length+' tents, '+ov+' overlapping, '+offg+' off good ground, '+short.length+' not pitched'+(C.boxes?' (boxes: '+C.boxes+')':'')});
+  const F=KWCAMPS.check(C),marks=(C.marks||[]).map(m=>[m,C.records.filter(r=>r[m]).length]),beds=(C.worksAsked||[]).filter(w=>w.rule==='bed'),
+   bedOk=beds.every(w=>C.works.filter(x=>x.kind===w.kind).length>=Math.min(2,w.n)),pop=C.census?C.census.pop:null,
+   ppl=C.people==null||pop==null||Math.abs(pop-C.people)<=C.people*.25;
+  R.push({name:'the camp '+C.id+': its form ('+C.kind+'), its marks, its works and its people',ok:F.ok&&marks.every(m=>m[1]===1)&&bedOk&&ppl,
+   detail:F.detail+(marks.length?', marks '+marks.map(m=>m[0]+' '+m[1]).join(', '):'')+(C.works.length?', works '+C.works.length:'')+
+    (beds.length?' ('+beds.map(w=>w.kind+' in the bed: '+C.works.filter(x=>x.kind===w.kind).length).join(', ')+')':'')+(C.people!=null?', people '+pop+' / '+C.people:'')});
+  /* the season: pitched on a day of its window, struck on the first day after it that is out (the negative reads it backwards) */
+  const f=neg==='season'?(d=>!KWCAMPS.inSeason(C,d)):(d=>KWCAMPS.inSeason(C,d)),s=C.season||{};let inD=null,outD=null;
+  if(s.days&&s.days.length){inD=s.days[0][0];for(let k=1;k<=365&&outD==null;k++){const d=(s.days[0][1]+k)%365;if(!KWCAMPS.inSeason(C,d))outD=d;}}
+  else for(let d=0;d<365;d++){if(inD==null&&KWCAMPS.inSeason(C,d))inD=d;if(outD==null&&!KWCAMPS.inSeason(C,d))outD=d;}
+  R.push({name:'the camp '+C.id+': pitched in its season (year day '+inD+'), struck out of it ('+(outD==null?'never: pitched all year':'year day '+outD)+')',
+   ok:inD!=null&&f(inD)&&(outD==null||!f(outD)),detail:(s.days?'window '+s.days.map(d=>d.join('-')).join(', '):'rule '+s.rule)+(s.name?' ('+s.name+')':'')+'; today year day '+dNow});}
+ for(const u of P.uncut)R.push({name:'the camp '+u.id+': awaiting the region\'s recut (not drawn)',ok:true,na:true,detail:u.why});
+ R.push({name:'the pitched camps: planned with no error, every one drawn in its season\'s state',ok:!P.errors.length&&TCG.every(E=>E.pitched.visible===KWCAMPS.inSeason(E.C,dNow)&&E.struck.visible!==E.pitched.visible),
+  detail:P.camps.length+' camps drawn ('+TCS.from+')'+(P.uncut.length?', '+P.uncut.length+' awaiting the recut':'')+(P.errors.length?'; errors: '+P.errors.join('; '):'')});
+ return R;}
+if(typeof KWCAMPS!=='undefined')window._worldCamps={plan:TPLAN,stats:TCS,checks:campChecks,season:()=>campSeason(camera.position),today};
 /* the negative for the ground check: one camp's first tent moved 500 m off (into the open, onto whatever is there) */
 function shifted(P){const Q=JSON.parse(JSON.stringify(P)),S0=Q.sites[0],C=S0&&(S0.camps[0]||(S0.hamlets||[])[0]);if(C){C.records[0].x=C.records[1].x;C.records[0].z=C.records[1].z;}return Q;}
 const siteDims=(k,v)=>{const A=CATK[k];if(!A){const X2=KD[k];return X2?{w:X2.w,d:X2.d,h:X2.h}:null;}const qd=A.variantDims&&A.variantDims[v];return qd?{w:qd.w,d:qd.d,h:qd.h}:{w:A.w,d:A.d,h:A.h};};

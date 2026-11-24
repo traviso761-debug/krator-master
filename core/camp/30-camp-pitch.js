@@ -21,6 +21,8 @@
        A record's ry turns its +z (its door) to face the hearth; pts are closed loops (the last point is not repeated),
        gates distances along them, for the kit to cut into pieces (BR_RUN).
      KCAMP.box(r, pad) -> its four corners     KCAMP.overlaps(a, b, gap) -> true when the boxes come within gap
+     KCAMP.onGround(r, ok) -> its corners, edges' middles and centre all ok   KCAMP.hull(pts) -> the convex hull (a loop)
+     KCAMP.rayHit(loop, c, u) -> the distance along the loop where a ray from c in direction u leaves it (a gate's place)
      KCAMP.check(camp, ground) -> {overlaps, offGround, outside}: the counts a test or a page's verify reads */
 (function () {
   'use strict';
@@ -85,6 +87,10 @@
   KCAMP.box = box;
   KCAMP.overlaps = overlaps;
   KCAMP.inPoly = inPoly;
+  /* the pitch's own tests for another layout rule (core/world 48w KWCAMPS: a formation of its own) */
+  KCAMP.onGround = onGround;
+  KCAMP.hull = hull;
+  KCAMP.rayHit = rayHit;
   KCAMP.pitch = function (o) {
     var C = KCAMP.CULTURES[o.culture];
     if (!C) return {error: 'no culture row ' + o.culture, records: [], short: []};

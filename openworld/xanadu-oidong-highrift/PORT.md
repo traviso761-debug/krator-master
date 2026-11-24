@@ -19,9 +19,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/47g-site-gihon-landing.js` | 219.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/48-world-site.js` | 20.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/48k-world-tubes.js` | 4.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/48t-world-camps.js` | 10.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/48c-camps-xanadu.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Sultanate's registrations on core/world's KWCAMPS (48w): the Tears' people, the tune's windows; no three.js, no DOM |
 | `src/49-world-xanadu.js` | 4.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/88t-world-camps.js` | 12.7 | [web] | 0 | 0 | 0 | 0 | 2 | 14 | 0 | 1 | 0 | 0 | 0 |  |
 
 ## Notes
 

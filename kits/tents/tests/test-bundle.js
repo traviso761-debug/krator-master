@@ -42,6 +42,9 @@ const TNK = C.TNK;
 const dims = TNK.dims(), keys = Object.keys(dims);
 const boxOk = keys.every(k => { const s = TNK.spec(k); return s && dims[k].w > 0 && dims[k].d > 0 && dims[k].h > 0 && dims[k].form === s.form; });
 T.ok('TNK.dims(): the 25 defs, each with its declared box and form', keys.length === 25 && keys.length === TNK.KEYS.length && boxOk, keys.length + ' defs');
+/* TNK.box: the table's own box (core/world 48w's camps take it, as the bake reads the table), the defs' to the centimetre */
+T.ok('TNK.box(key): the table\'s box for every def (the defs\' rounded to the centimetre), null for a key the kit lacks',
+  keys.every(k => { const b = TNK.box(k); return b && ['w', 'd', 'h'].every(a => Math.abs(b[a] - dims[k][a]) <= 0.005 + 1e-9); }) && TNK.box('tn-castle-m') === null);
 
 /* 2. every def in three dresses */
 const fails = [];

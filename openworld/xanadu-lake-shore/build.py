@@ -103,11 +103,11 @@ ORDER = (
        ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('ld', '48v-world-sample.js'),   # 48v: the countryside sample (HAMLETS-PLAN 3, A9)
         (XOH, '49-world-xanadu.js'),
        # the pitched camps (settlements/xanadu/WORKS-PLAN.md W2): core/camp, the Tents kit's boxes, the tune, read in place; the
-       # planner and the drawer are xanadu-oidong-highrift's (48t, 88t)
+       # planner is core/world's (48w KWCAMPS, Stage 8 T26) with xanadu-oidong-highrift's registrations (48c); 88s draws them
        ('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'), ('core/camp', '50-camp-tents.js'),
-       ('kits/tents/src', '33-tn-table.js'), ('core/region/data', 'xan-tune.js'), (XOH, '48t-world-camps.js')]
+       ('kits/tents/src', '33-tn-table.js'), ('core/region/data', 'xan-tune.js'), ('ld', '48w-world-camps.js'), (XOH, '48c-camps-xanadu.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88r-world-sample.js', '88s-world-sites.js', '88b-world-bridges.js') + [(XOH, '88t-world-camps.js')]
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88r-world-sample.js', '88s-world-sites.js', '88b-world-bridges.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )

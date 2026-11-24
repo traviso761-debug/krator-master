@@ -20,7 +20,7 @@ The checks, each with a negative:
     negative changes the world seed), every village whole, its buildings apart and on good ground, every road at its lane
     end (the negative stacks two buildings), every village cleared of flora, tagged and drawn with the kit's pieces (the
     negative reads the world without the villages' clearing).
-  - the pitched camps (src/48t, 88t; settlements/xanadu/WORKS-PLAN.md W2: _worldCamps.checks): each camp pitched whole on the
+  - the pitched camps (core/world 48w KWCAMPS, 88s; settlements/xanadu/WORKS-PLAN.md W2: _worldCamps.checks): each camp pitched whole on the
     world's ground, its form (the Tears' ring: one gate, the gold room, the sluices in the bed; the caravan's laager: its wagons and
     the escort's ring), pitched in its season and struck out of it, with the negatives `plan` and `season`; a camp whose site the
     cut does not hold yet is n/a (awaiting the region's recut);
@@ -353,8 +353,8 @@ async def run(a):
             for neg, key in (('plan', 'the baked plan'), ('ground', "on the world's ground"), ('clear', 'cleared of flora')):
                 r = [x for x in await pg.evaluate('_sites.checks(%r)' % neg) if key in x['name']][0]
                 if say(r, neg): fails.append('negative ' + neg)
-            # the pitched camps (src/48t, 88t; settlements/xanadu/WORKS-PLAN.md W2): planned at load, each with its negatives
-            print('--- the pitched camps (src/48t-world-camps.js, 88t: core/camp) ---')
+            # the pitched camps (core/world 48w KWCAMPS, 88s; settlements/xanadu/WORKS-PLAN.md W2): baked or planned at load, each with its negatives
+            print('--- the pitched camps (core/world 48w KWCAMPS, 88s: core/camp) ---')
             for r in await pg.evaluate('_worldCamps.checks()'):
                 if r.get('na'):
                     print('  n/a   ' + r['name'] + ' : ' + r['detail']); continue

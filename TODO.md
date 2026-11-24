@@ -301,14 +301,6 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `KHAMLET.village` (`spec.camp`: the row's overrides; `spec.share`: one record over several camps; a spec with neither goes to the
   old functions bit for bit), tested by `core/hamlet/test-hamlet-camp.js` (run by `test-hamlet.js`); `settlements/xanadu-works`
   takes it. At the next all-builds rebuild fold it into `30-hamlet-village.js`, pass `camp` through 48s, drop `xanadu-camp`.
-- **core/world: a generic tent camp in the site planner** (2026-11-23, WORKS-PLAN.md W2): `KSITES.plan` (48s) pitches only the
-  Beast Riders' camps (`kit.programs(tribe)`, culture `beast-rider`), so the Golden Tears' camp (`stearscamp01`) and the Great
-  Caravan's halt at Erehwon are planned region-locally at load (`openworld/xanadu-oidong-highrift/src/48t-world-camps.js`, drawn by
-  88t; the Lake Shore reads both in place) and are not in `plan/sites.json`. Fold `KWCAMPS` into 48s/88s (a SITE_SPEC `camps` entry
-  with `kind: 'ring' | 'halt'`), bake them, and draw them with the Tents kit once it is sealed for another world (next item).
-- **The Tents kit for another world** (2026-11-23): no `tents_bundle.py` yet, so the regions draw the tents as their forms' massing
-  in their dress's colours (88t). Seal it as `XAK` is (`kits/xanadu/kit_bundle.py`) and let 88t draw the kit's own pieces near.
-  The kit has no Dalab dress: the Great Caravan's tents fall back to `generic` (the record says so).
 
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?

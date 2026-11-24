@@ -13,7 +13,9 @@ terrainH, ...) meet neither the page's nor another kit's:
                         (the host registers its tent with core/tags, tnTags below), no gear or interior is furnished (no
                         catalog in the closure), and the pennants are plain cloth (88-tn-emblem.js draws on a canvas: [web])
     TNK.dims()          {key: {name, w, d, h, form, size, role, cls, variants}} for the 25 defs: the declared box, guys and
-                        stakes counted (tnDims, what core/camp pitches)
+                        stakes counted (tnDims, what core/camp pitches; rounded to the centimetre as the defs are)
+    TNK.box(key)        tnDims(key) itself, unrounded: {w, d, h} | null, the numbers core/world/bake_sites.py reads from the
+                        kit's table, so a page carrying the bundle pitches a camp (core/world 48w KWCAMPS) exactly as its bake
     TNK.KEYS, TNK.DRESS, TNK.DRESS_ORDER, TNK.FORMS, TNK.ROLES, TNK.TRADES
     TNK.dress(culture)  tnDress: the dress a culture pitches in (a fallback to 'generic' is marked .fallback)
     TNK.tags(role, trade, dress, form)   tnTags: the core/tags record's tags for a pitched tent (the host passes its people's culture)
@@ -125,7 +127,7 @@ function tnkDims() {
 }
 
 return {
-  proto: tnkProto, dims: tnkDims, KEYS: TN_KEYS, DRESS: TN_DRESS, DRESS_ORDER: TN_DRESS_ORDER, FORMS: TN_FORMS,
+  proto: tnkProto, dims: tnkDims, box: tnDims, KEYS: TN_KEYS, DRESS: TN_DRESS, DRESS_ORDER: TN_DRESS_ORDER, FORMS: TN_FORMS,
   ROLES: TN_ROLES, TRADES: TN_TRADES, dress: tnDress, tags: tnTags, roleOf: tnRoleOf, spec: tnSpec,
   DEFS: DEFS, MAT: MAT, KIT: KIT, errors: TNK_ERRS
 };
