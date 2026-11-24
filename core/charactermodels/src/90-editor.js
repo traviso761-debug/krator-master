@@ -115,9 +115,21 @@
   var THUMBS = (typeof KCHAR_THUMBS !== 'undefined' && KCHAR_THUMBS) ? KCHAR_THUMBS : {};
   function thumbStyleFor(t, body, name){
     if(!t || !t.keys || t.keys[name] === undefined) return null;
+    if(!t._url && !t._probed && typeof Image !== 'undefined'){
+      t._probed = true;
+      var probe = new Image();
+      probe.onerror = function(){
+        if(t._base !== 'http://127.0.0.1:8123/'){
+          t._base = 'http://127.0.0.1:8123/';
+          applyLoadedThumbs(body);
+        }
+      };
+      probe.src = (t._base || '') + 'thumbs/' + body + '.png' + (t.v ? '?v=' + t.v : '');
+    }
     var i = t.keys[name], c = i % t.cols, r = Math.floor(i / t.cols);
     var q = t.v ? '?v=' + t.v : '';
-    return { body:body, name:name, atlas:(t._base || '') + 'thumbs/' + body + '.png' + q, size:t.cols * 100 + '% ' + t.rows * 100 + '%',
+    var url = t._url || ((t._base || '') + 'thumbs/' + body + '.png' + q);
+    return { body:body, name:name, atlas:url, size:t.cols * 100 + '% ' + t.rows * 100 + '%',
              at:(t.cols > 1 ? c / (t.cols - 1) * 100 : 0) + '% ' + (t.rows > 1 ? r / (t.rows - 1) * 100 : 0) + '%' };
   }
   function applyLoadedThumbs(b){

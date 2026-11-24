@@ -134,6 +134,17 @@ def main():
     for old in ('characters.html', 'characters.artifact.html'):              # the single page before the split
         if os.path.exists(os.path.join(DIST, old)):
             os.remove(os.path.join(DIST, old))
+    if '--thumbs' in sys.argv or not os.path.isdir(os.path.join(DIST, 'thumbs')):
+        if subprocess.call(['node', os.path.join(HERE, 'tools', 'thumbs.mjs'), HERE]) != 0:
+            print('build.py: thumbs.mjs failed; the chips show names only')
+    pack_thumbs()
+    three_p = os.path.join(ROOT, 'settlements', 'ys', 'three.min.js')
+    loader_p = os.path.join(HERE, 'tools', 'vendor', 'GLTFLoader.r128.js')
+    vendor_js = []
+    if os.path.isfile(three_p):
+        vendor_js.append('if(typeof THREE === "undefined"){\n' + read(three_p) + '\n}')
+    if os.path.isfile(loader_p):
+        vendor_js.append('if(typeof THREE !== "undefined" && !THREE.GLTFLoader){\n' + read(loader_p) + '\n}')
     startup_glb = {}
     for k in ('mpfb_male/base', 'mpfb_male/short02', 'mpfb_male/wdg_scruffy_beard',
               'mpfb_male/mindfront_kimono', 'mpfb_male/toigo_harem_pants', 'mpfb_male/culturalibre_hero_boots_1'):
@@ -142,11 +153,24 @@ def main():
             tx = read(tp)
             nl = tx.find('\n')
             startup_glb[k] = tx[:nl] if nl >= 0 else tx
+    inline_thumbs = {}
+    for b in BODIES:
+        tj = os.path.join(DIST, 'thumbs', b + '.json')
+        tp = os.path.join(DIST, 'thumbs', b + '.png')
+        if os.path.isfile(tj) and os.path.isfile(tp):
+            td = json.loads(read(tj))
+            td['_url'] = 'data:image/png;base64,' + base64.b64encode(read(tp, 'rb')).decode()
+            inline_thumbs[b] = td
     wholes = {}
     for page, (headf, own) in sorted(PAGES.items()):
         head, t = read(os.path.join(SRC, headf)), read(os.path.join(SRC, own))
         inputs['src/' + headf], inputs['src/' + own] = head.encode(), t.encode()
-        extra = ['var KCHAR_GLB = ' + json.dumps(startup_glb, separators=(',', ':')) + ';'] if (page == 'cosmetic-lab' and startup_glb) else []
+        extra = list(vendor_js)
+        if page == 'cosmetic-lab':
+            if startup_glb:
+                extra.append('var KCHAR_GLB = ' + json.dumps(startup_glb, separators=(',', ':')) + ';')
+            if inline_thumbs:
+                extra.append('var KCHAR_THUMBS = ' + json.dumps(inline_thumbs, separators=(',', ':')) + ';')
         pjs = extra + js + ['/* src/%s */\n%s' % (own, t)]
         body = head + '<script>\n' + '\n'.join(pjs) + '\n</script>\n'
         whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \
@@ -164,10 +188,6 @@ def main():
             os.remove(script)
             if rc:
                 sys.exit('build.py: %s: the inline script does not parse' % page)
-    if '--thumbs' in sys.argv or not os.path.isdir(os.path.join(DIST, 'thumbs')):
-        if subprocess.call(['node', os.path.join(HERE, 'tools', 'thumbs.mjs'), HERE]) != 0:
-            print('build.py: thumbs.mjs failed; the chips show names only')
-    pack_thumbs()
     man = {k: hashlib.sha1(v).hexdigest() for k, v in sorted(inputs.items())}
     # the pieces this checkout does not have keep the hashes the last whole build wrote (they did not change here)
     old = os.path.join(HERE, 'build-manifest.json')

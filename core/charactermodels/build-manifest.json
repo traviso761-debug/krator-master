@@ -12,9 +12,9 @@
  "data/posture.json": "f6ce6fd87b4fd31d0b214acf3cc761dae0de402e",
  "data/props.json": "7139b161f25a7a76bb96ec48ae3eead67bf481b1",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/animation-lab.html": "5a5eed74ba795942d8faf79b0403faf0aaf8435b",
- "dist/arms-lab.html": "c6a936ba902dd1cb25a430ceeab0d325616a5892",
- "dist/cosmetic-lab.html": "d193156403a337e9fa11e0ba9beb93a7a6025ccf",
+ "dist/animation-lab.html": "c0022cb8db415c50ba35560c409edcde92f1ac0d",
+ "dist/arms-lab.html": "0fa86587c8a6042b55d552fcc4aef9656c992cec",
+ "dist/cosmetic-lab.html": "841ae3fcc91e714387c5ef70cc49d7ef7dbf1bec",
  "pieces/mpfb_female/AfroPonytail.glb": "3e6a0780360d599c60ece6054a5922bed113df9a",
  "pieces/mpfb_female/AfroPonytail.morph.bin": "33fe464644e615b0bfa8c5643d5453743dcfe519",
  "pieces/mpfb_female/Afro_Ponytail_-_Slick_Down.glb": "ecfcff68b8916247255a061f896fb814646704d8",
@@ -3600,7 +3600,7 @@
  "src/10-rig.js": "8db8eef1121bab009abdc85110aca6eb877ad3ef",
  "src/50-figure.js": "bf5b97699b3a1b15b34aad775f7dbea838a47ba2",
  "src/60-crowd.js": "f36f494b37be32e3d2d02c36945b602a4be82654",
- "src/90-editor.js": "0041df85e0a1b64c47e76f681a6b8f1dccf2e099",
+ "src/90-editor.js": "a8efcec8dd291dc269f101e2945c76f037c59993",
  "src/92-animlab.js": "a7816a986b8d375564604f5274254bda1f11709c",
  "src/93-armslab.js": "8823df3a127357bd4e66a324feb4ff77d887d549"
 }
