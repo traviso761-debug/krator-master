@@ -10,6 +10,7 @@ item was checked against the line's code, not taken from the docs it came from; 
 | [C-bugs.md](C-bugs.md) | Survey 3's 91 bugs and survey 2's, deduplicated and verified, grouped by the file they touch | ~100 open |
 | [D-perbuild.md](D-perbuild.md) | What every build's own docs ask of the rebuild, per build; Godot; the known failures to carry | ~160 builds |
 | [E-integration.md](E-integration.md) | What the integration line knows: what still lands first, the line's test failures and what to do with each | |
+| [F-session-notes.md](F-session-notes.md) | What the sessions that fed the line found (biome and kit graphics, Xanadu plans, verify_all): bugs F1-F20 with their step, what to rebuild together, verify and cost-measuring tips, coding pitfalls | |
 
 Ids below (T5, S3-54, C4 ...) point into those appendices, where each has its file, lines, reach and evidence.
 
