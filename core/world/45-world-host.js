@@ -85,7 +85,45 @@ const shadow=(typeof KSHADOW!=='undefined'&&KSHADOW&&KSHADOW.attach)?KSHADOW.att
  size:2048,min:90,max:450,reach:900,button:false,
  ground:(x,z)=>(typeof TERRAIN!=='undefined'&&TERRAIN?TERRAIN.heightDrawn(x,z):WORLD.H(x,z))}):null;
 
-return{renderer,scene,camera,sun,hemi,fill,HAZE,SUN_DIR,TICKS,SRC,clock:CLOCK,hour:hourNow,sunAt,shadow,
+// ---------------------------------------------------------------- the weather (Stage 8 V9: STAGE-8/G-weather.md W2, D33)
+// core/atmos's weather bound to the open world ONCE: HOST.weather(), which 98-world-start.js calls when the LATE modules are laid
+// out (ATMOS.init is 83-world-water.js's; the terrain's material is made). Only where the build lists it (core/atmos 89-atmos-4-weather.js
+// and host/89-atmos-e-weatherhost.js; 89-atmos-9-host.js puts the selector in the bar, fx/89-atmos-fx-raincover.js the rain cover round
+// the camera): a page without them is unchanged, and HOST.weather() is null there.
+// THE CLIMATE is the region's kits' (WX_KIT_CLIMATE: what each kit's own page binds; a kit's WORLD_KITS entry .climate, or the region's
+// WORLD_CONFIG.climate, says otherwise): cold or ash if any kit is, dry only if every kit is. It STARTS CLEAR (the views and the verify
+// asserts stay what they were); ?weather=<mode> opens in another mode the region offers (an unknown one: clear). The binding eases the
+// fog, the sun and the sky light (it follows what sunAt and 98's haze write each frame) and wets the terrain (WATER.wetGround).
+// HOST.shade(material, {porosity}) asks for the sky's cloud shadows and rain darkening (ATMOS.cloudShade) on a ground or plant
+// material: given when the weather binds, or at once after. Only with the shared sky's clouds on the page (ATMOS.skyUniforms.uCloud,
+// core/atmos/sky): this world's own sky (80) has none, so until a region takes the shared sky it shades nothing.
+const WX_KIT_CLIMATE={ringisles:{wet:true},'abyssal-savannah':{wet:true},eastabyss:{wet:true},hyperjungle:{wet:true},oidong:{cold:true},highrift:{cold:true},
+ xanadu:{wet:true},throne:{wet:true,ash:true},swbay:{wet:true},sedesert:{dry:true},geyser:{wet:true}};
+const WX={W:null,off:false,climate:null,mode:null,cover:null,queue:[],shaded:0};
+function wxClimate(){const own=typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG&&WORLD_CONFIG.climate;if(own)return Object.assign({},own);
+ const L=(typeof WORLD_KITS!=='undefined'&&WORLD_KITS?WORLD_KITS:[]).map(k=>k.climate||WX_KIT_CLIMATE[k.name]||{}),dry=L.length>0&&L.every(c=>!!c.dry);
+ const C={wet:!dry&&(L.length===0||L.some(c=>c.wet!==false&&!c.dry)),cold:L.some(c=>!!c.cold),ash:L.some(c=>!!c.ash),frozen:L.length>0&&L.every(c=>!!c.frozen),dry};
+ const dust=L.find(c=>c.dust);if(dry&&dust)C.dust=dust.dust;return C;}
+const wxReady=()=>typeof ATMOS!=='undefined'&&typeof ATMOS.bindWeather==='function'&&typeof ATMOS.weather==='function'&&!!ATMOS.h;
+const wxClouds=()=>typeof ATMOS!=='undefined'&&typeof ATMOS.cloudShade==='function'&&typeof ATMOS.cloudShadeGLSL==='function'&&!!(ATMOS.skyUniforms&&ATMOS.skyUniforms.uCloud);
+/* a material that has the shade already (a kit's own, or the biome core's maker, carried by worldMat's clone) is not shaded twice */
+const hasShade=m=>{const S=m.onBeforeCompile&&m.onBeforeCompile.__khst,N=[].concat(typeof KHOOK!=='undefined'&&KHOOK&&KHOOK.names?KHOOK.names(m):[],
+ m.userData&&m.userData.atmHooks||[],S&&S.names||[]);return N.some(n=>/^atmos-cloudshade-/.test(n));};   /* its own layers, a clone's copied names, a composed hook it was handed */
+function shadeNow(m,o){if(!wxClouds()||hasShade(m))return;try{ATMOS.cloudShade(m,o);WX.shaded++;}catch(e){reportErr('weather: cloudShade: '+(e.stack||e));}}
+function shade(m,o){if(!m||WX.off)return m;if(!(m.isMeshLambertMaterial||m.isMeshPhongMaterial||m.isMeshStandardMaterial))return m;
+ o=o||{};if(WX.W)shadeNow(m,o);else WX.queue.push([m,o]);return m;}
+function weather(){if(WX.W||WX.off)return WX.W;
+ if(!wxReady()){WX.off=true;WX.queue.length=0;return null;}
+ const A=ATMOS,C=WX.climate=wxClimate(),q=typeof location!=='undefined'&&location.search?new URLSearchParams(location.search).get('weather'):null;
+ const modes=A.MODES.concat(C.ash&&A.ASH_MODES?A.ASH_MODES:[],C.cold&&A.SNOW_MODES?A.SNOW_MODES:[]),mode=WX.mode=q&&modes.indexOf(q)>=0?q:'clear';
+ if(typeof A.rainCover==='function'&&!A.raincover){try{WX.cover=A.rainCover({renderer});}catch(e){reportErr('weather: rain cover: '+(e.stack||e));}}
+ const bar=typeof document!=='undefined'&&document.querySelector?document.querySelector('#ui .bar'):null;
+ const grounds=typeof TERRAIN!=='undefined'&&TERRAIN&&TERRAIN.MAT?[TERRAIN.MAT]:[];
+ WX.W=A.bindWeather(Object.assign({climate:C,sun,hemi,fog:scene.fog,grounds,mode},bar?{ui:bar}:{}));
+ for(const [m,o] of WX.queue)shadeNow(m,o);WX.queue.length=0;
+ return WX.W;}
+
+return{renderer,scene,camera,sun,hemi,fill,HAZE,SUN_DIR,TICKS,SRC,clock:CLOCK,hour:hourNow,sunAt,shadow,weather,shade,wx:WX,
  // the nursery: flat ground at the origin with a fixed profile; origin is the LOD spine the builders measure from
  nursery(profile,origin){SRC.mode='nursery';SRC.profile=profile;BIO.host.origin=[origin||[0,0]];BIO.host.center=origin||[0,0];lx=NaN;},
  world(){SRC.mode='world';SRC.profile=null;BIO.host.origin=[[0,0]];BIO.host.center=[0,0];lx=NaN;},
