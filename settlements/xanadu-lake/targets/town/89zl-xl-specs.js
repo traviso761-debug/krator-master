@@ -149,7 +149,7 @@ XL.SPECS={
   notes:'The north-west\'s largest town, on the flattest shore: the reeling houses, the watermills, the han and the market on its west edge toward the Qol Siṭrīm, the town up the gentle slope, the mulberry plots and the rearing houses on the benches.'},
  /* the honey town at the lake's north-west end (hive/PLAN.md): the apiaries in rows on the benches, the honey houses by the landing */
  hive:{key:'hive',bearing:180,shore:'shingle',wall:{rise:495,benches:2},
-  world:{region:'xanadu-north-shore',site:'sxanlkhive01',R:1400,band:600},
+  world:{region:'xanadu-north-shore',site:'sxanlkhive01',R:1400,band:600,brg:180,at:[-500,0],islet:150},
   quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'town',role:'residential',share:.50,at:'slope',rest:true},
    {id:'hives',role:'farm',share:.20,at:'bench'},{id:'market',role:'market',share:.10,at:'shore'},{id:'fishers',role:'residential',share:.10,at:'shore'}],
   landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
@@ -158,10 +158,10 @@ XL.SPECS={
    {key:'xa_apiary',n:12,at:'bench'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
   craft:{dugouts:40,launches:2,barges:1},stalls:10,
   wealth:[.55,.35,.10],andean:.30,ruins:null,
-  layout:{half:500,road:30,rows:[30,96,162,228,294,360],stairs:[-250,0,250],
+  layout:{half:500,road:36,rows:[36,102,168,234,300,366],stairs:[-250,0,250],   /* road 36 (was 30): the second move's beach is flat, its works stand further up it (2026-11-24) */
    market:{x:-160,w:100,d:48},
-   benches:[[440,560],[640,760]],benchHalf:580,stream:null,
-   core:{x:740,d:820,lake:180,fade:300},
+   benches:[[440,560],[640,760]],benchHalf:560,stream:null,
+   core:{x:600,d:820,lake:180,fade:200},   /* 600, fade 200 (was 740, 300): inside the waterfront and its 120 m (the second move, 2026-11-24) */
    fields:{rows:9}},
   notes:'A low, sunny town on a gentle shore: the honey houses and the racks by the landing, the market with the temple and the governor\'s house, the apiaries in rows on the benches.'},
  /* step L3, Erehwon's south-east round (BUILD-PLAN A4), on openworld/xanadu-lake-shore: the south shore under the caldera's
