@@ -102,5 +102,5 @@ widths by the material key's kind, `formWidth`; `?form=chamfer`, `jitter` or `fi
 exporter writes the fields (`kits/eternian/src/93e-et-export.js`; `godot/data/world-eternian-form` is the case).
 Rendered walls (plaster, render, lime) are not chamfered: they are drawn as panels that abut in one plane, and a chamfer
 on each cut a groove across the wall. A building's frame is its own; a street, a canal and furniture have none.
-**Not done**: occlusion and the arris of anything but a box are not computed, and a slab lying in the terrain's plane
-flickers against it once chamfered.
+The chamfered box is a unit box drawn through the plain box's own scaled matrix, so each face lands where the plain
+box's does, to the bit. **Not done**: occlusion and the arris of anything but a box are not computed.

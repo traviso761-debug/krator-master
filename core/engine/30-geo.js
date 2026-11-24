@@ -66,13 +66,17 @@ function formMarks(reg,smokes){const out=[];
  for(const r of reg||[])for(const w of r.windows||[])out.push({kind:'sill',at:[w.wx,w.wy+(w.sill||0),w.wz],yaw:w.yaw,w:w.w,key:r.key});
  return out;}
 const _fv=new THREE.Vector3();
-/* the chamfered box, w by h by d metres about its centre, bevel bv: BoxGeometry's 24 vertices in its order, moved in along
-   their faces; 12 face triangles, 24 of edge strips, 8 corners. Cached by size to the millimetre */
+/* the chamfered box, w by h by d metres, bevel bv, as a UNIT box to be drawn through the plain box's own scaled matrix:
+   BoxGeometry's 24 vertices in its order, each moved in along its face by the bevel's share of that side; 12 face
+   triangles, 24 of edge strips, 8 corners. On its face's own axis a vertex keeps the plain box's coordinate (half a unit)
+   and goes through the same matrix, so a face lands where the plain box's does, to the bit: a slab that lay in the
+   ground's plane still does (a chamfered box built in metres took another path through the arithmetic and flickered
+   against the terrain: seen in Godot, 2026-11-24). Cached by the three shares */
 const _GCH={};
-function gboxCh(w,h,d,bv){const key=Math.round(w*1e3)+'_'+Math.round(h*1e3)+'_'+Math.round(d*1e3)+'_'+Math.round(bv*1e4);if(_GCH[key])return _GCH[key];
- const src=new THREE.BoxGeometry(w,h,d),P=src.attributes.position.array.slice(),N=src.attributes.normal.array,n=24,hs=[w/2,h/2,d/2];
+function gboxCh(w,h,d,bv){const fr=[bv/w,bv/h,bv/d],key=fr.map(v=>Math.round(v*1e5)).join('_');if(_GCH[key])return _GCH[key];
+ const src=new THREE.BoxGeometry(1,1,1),P=src.attributes.position.array.slice(),N=src.attributes.normal.array,n=24;
  const corner=new Int8Array(n*3);   /* which corner a vertex is (the signs of its place), before it moves */
- for(let i=0;i<n;i++)for(let k=0;k<3;k++){const sg=P[i*3+k]>0?1:-1;corner[i*3+k]=sg;if(Math.abs(N[i*3+k])<.5)P[i*3+k]-=sg*bv;}
+ for(let i=0;i<n;i++)for(let k=0;k<3;k++){const sg=P[i*3+k]>0?1:-1;corner[i*3+k]=sg;if(Math.abs(N[i*3+k])<.5)P[i*3+k]-=sg*fr[k];}
  const idx=Array.from(src.index.array);
  const at=(sx,sy,sz,axis)=>{for(let i=0;i<n;i++)if(corner[i*3]===sx&&corner[i*3+1]===sy&&corner[i*3+2]===sz&&Math.abs(N[i*3+axis])>.5)return i;return -1;};
  const tri=(a,b,c,ox,oy,oz)=>{   /* wound so that it faces away from the centre, toward (ox, oy, oz) */
@@ -131,8 +135,8 @@ function gtor(R,t,rs,ts){const k='tor'+R.toFixed(3)+'_'+t.toFixed(3)+'_'+(rs||6)
 function gplane(){return _G.pl||(_G.pl=new THREE.PlaneGeometry(1,1));}
 // ---- primitives. Boxes and cylinders are BASE-anchored: (x,y,z) is the middle of the underside.
 function box(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);
- const bv=FORM.chamfer?+FORM.chamfer(mk):0;if(bv>0&&Math.min(w,h,d)>=bv*4){emit(mk,gboxCh(w,h,d,bv),m,col);return;}   /* the export form's chamfered box */
- m.scale(new THREE.Vector3(w,h,d));emit(mk,gbox(),m,col);}
+ const bv=FORM.chamfer?+FORM.chamfer(mk):0;m.scale(new THREE.Vector3(w,h,d));
+ emit(mk,bv>0&&Math.min(w,h,d)>=bv*4?gboxCh(w,h,d,bv):gbox(),m,col);}   /* the export form's chamfered box goes through the plain box's matrix */
 // cyl(mat, x,y,z, r,h, colour, seg, rTop, wrap): vertical, base at y. wrap: own UVs (u round, v up) so a pattern follows the surface
 function cyl(mk,x,y,z,r,h,col,seg,rt,wrap){seg=seg||14;const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));const tl=TILE[mk]||1;const uv=wrap?{su:TAU*r/tl,sv:h/tl}:undefined;
  if(rt!==undefined&&rt!==null&&rt!==r)emit(mk,gfrus(seg,rt/r),m,col,uv);else emit(mk,gcyl(seg),m,col,uv);}

@@ -66,6 +66,25 @@ func _initialize() -> void:
 	var inc := FileAccess.get_file_as_string("res://shaders/lib/weather.gdshaderinc")
 	ok(body.contains("uniform bool form_uv2 = false") and body.count("kw_foot(") == 1 and inc.contains("void kw_foot(float h, vec3 wp, vec3 wn"),
 		"the library surface reads the height only where its material says the mesh has it, and the foot band is the weathering's")
+	# real marks: the kiln and the tile works, exported the same way from another tile of the sheet
+	#   ... --out godot/data/world-eternian-kiln --box=-60,-595,-5,-565 --query '?form=1'
+	var kiln := "res://data/world-eternian-kiln/world.json"
+	if FileAccess.file_exists(kiln):
+		var holder := Node3D.new()
+		var wk := KratorWorld.build(kiln)
+		holder.add_child(wk)
+		var kd: Dictionary = KData.read_json(kiln)
+		var smokes := KratorAir.marks_of(holder, "smoke")
+		var inside := true
+		for m in smokes:
+			var at: Vector3 = m["at"]
+			inside = inside and at.x >= -60.0 and at.x < -5.0 and at.z >= -595.0 and at.z < -565.0 and at.y > 5.0 and at.y < 20.0
+		ok(str(kd["sections"]["marks"]["status"]) == "ok" and int(wk.get_meta("report").get("marks", 0)) == 4 and smokes.size() == 4 and inside,
+			"the kiln tile's export marks its four chimneys, and the air finds them as smoke, each inside the tile and up at a chimney's top")
+		ok(KratorAir.marks_of(holder, "sill").is_empty() and not d.has("marks") and not wf.has_meta("marks"), "negative: no window is recorded on this sheet, and the canal tile, which has no chimney, carries no marks section at all")
+		holder.free()
+	else:
+		ok(false, "no kiln case: see this file's header")
 	wf.free()
 	wp.free()
 	print("all passed" if fails == 0 else "%d FAILED" % fails)

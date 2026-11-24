@@ -632,9 +632,15 @@ set and draws the wall's foot band from it (`kw_foot`), reads the marks into the
 What the pair of frames showed, and what was changed for it: a chamfer on rendered walls cut a groove wherever two wall
 panels abut in one plane, so plaster, render and limewash stay square; the foot band darkened paving, so it is walls
 only; and a street was taken for one building, so every house leaned toward the street's centre: each building now has
-its own frame, and a street, a canal and furniture have none. **Still wrong in that case**: a ground slab that lies in
-the terrain's plane flickers against it once it is chamfered (its vertices take another path through the arithmetic).
-And the tile holds no chimney and no recorded window, so the marks were read only from made-up records in tests. The pages
+its own frame, and a street, a canal and furniture have none. **Withdrawn**: this note first said a ground slab flickered against the terrain once chamfered. Measured, it does not:
+the formed tile holds a quay slab the plain tile crops away (a tile keeps a triangle by its centroid, and that one's
+lies 0.3 m from the tile's edge), and the specks on it are the weathering's moss. The chamfered box was all the same
+changed to go through the plain box's own scaled matrix, so each face lands where the plain box's does, to the bit.
+**Real marks**: `godot/data/world-eternian-kiln` is another tile of the sheet, with the kiln's three chimneys and the
+tile works' one: four smoke marks, which the air turns into four emitters and four fog volumes. Seen for the first time
+there, the emitter drew specks (cards of 30 cm sent up at 5 to 8 m/s) and was retuned until it read as a plume; it
+has still been judged in one frame only. The sheet records no window (`windowAt`), so a sill's leak is still read only
+from made-up records. The pages
 that take `core/engine`, `core/export`, `core/catalog` and `core/biome` (most of the repo: `core/biome/20-core-kit.js`
 alone reaches 540 pages) are behind their sources until the all-builds rebuild (`check_stale` says
 which). Proof that the form is inert when off: `kits/scyvoi`, rebuilt on the new engine, reads `same` in

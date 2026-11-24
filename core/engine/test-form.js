@@ -40,6 +40,7 @@ T.ok('every triangle faces outward and the solid is closed', outward(first.p, fi
 let moved = 0, far = 0; for (let i = 0; i < 24; i++) { const d = Math.hypot(first.p[i * 3] - plainP[i * 3], first.p[i * 3 + 1] - plainP[i * 3 + 1], first.p[i * 3 + 2] - plainP[i * 3 + 2]);
   if (d > 1e-9) moved++; if (Math.abs(d - 0.03 * Math.SQRT2) > 1e-6) far++; }
 T.ok('each vertex moved a bevel in along both edges of its face, and no further', moved === 24 && far === 0);
+T.ok('on its own face\'s axis every vertex is where the plain box has it, to the bit (a slab in the ground\'s plane stays in it)', (() => { for (let i = 0; i < 24; i++) for (let k = 0; k < 3; k++) if (Math.abs(b.n[i * 3 + k]) > 0.5 && first.p[i * 3 + k] !== plainP[i * 3 + k]) return false; return true; })());
 T.ok('its normals are the faces\' own (the strips shade as a rounded edge)', (() => { const n = b.n; for (let i = 0; i < 24; i++) { const a = [Math.abs(n[i * 3]), Math.abs(n[i * 3 + 1]), Math.abs(n[i * 3 + 2])].sort(); if (a[2] < 0.999 || a[1] > 1e-6) return false; } return true; })());
 T.neg('the plain twelve triangles on the moved vertices would leave the edges open', I => closed(first.p, I), first.i.slice(0, 36), first.i);
 T.ok('negative: a key with no bevel, and a slab thinner than four bevels, stay plain boxes', A.buckets().glass.p.length === 72 && b.i.length - 132 === 36);

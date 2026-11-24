@@ -367,7 +367,7 @@ func _emitter(kind: String, r: float, h: float) -> GPUParticles3D:
 		_card = _soft_card()
 	var p := GPUParticles3D.new()
 	var vent := kind == "vent" or kind == "smoke"   # a chimney's smoke rises as a vent's steam does, thinner and greyer
-	p.amount = int(spec.get("emitter_amount", 48))
+	p.amount = int(spec.get("emitter_amount", 48)) * (2 if vent else 1)   # a plume is nine seconds of cards: twice a spray's
 	p.lifetime = 9.0 if vent else 2.6
 	p.preprocess = p.lifetime
 	p.randomness = 0.6
@@ -379,22 +379,25 @@ func _emitter(kind: String, r: float, h: float) -> GPUParticles3D:
 	pm.emission_sphere_radius = r * (0.35 if vent else 0.8)
 	pm.direction = Vector3(0.25, 1.0, 0.1) if vent else Vector3(0.0, 1.0, 0.0)
 	pm.spread = 14.0 if vent else 70.0
-	pm.initial_velocity_min = (h / 11.0) if vent else 1.2
-	pm.initial_velocity_max = (h / 7.0) if vent else 3.4
-	pm.gravity = Vector3(0.6, 0.35, 0.2) if vent else Vector3(0.0, -2.2, 0.0)
+	# a plume climbs at walking pace and leans with the air (the first values sent it up at 5 to 8 m/s as specks: seen on
+	# the kiln's chimneys, 2026-11-24)
+	var smoke := kind == "smoke"
+	pm.initial_velocity_min = (0.7 if smoke else 1.4) if vent else 1.2
+	pm.initial_velocity_max = (1.3 if smoke else 2.6) if vent else 3.4
+	pm.gravity = Vector3(0.45, 0.12, 0.18) if vent else Vector3(0.0, -2.2, 0.0)
 	pm.damping_min = 0.15
 	pm.damping_max = 0.4
-	pm.scale_min = r * (0.5 if vent else 0.35)
-	pm.scale_max = r * (1.1 if vent else 0.8)
+	pm.scale_min = r * (1.6 if vent else 0.35)
+	pm.scale_max = r * (3.0 if vent else 0.8)
 	var grow := Curve.new()
-	grow.add_point(Vector2(0.0, 0.35))
-	grow.add_point(Vector2(1.0, 1.9 if vent else 1.3))
+	grow.add_point(Vector2(0.0, 0.9 if vent else 0.35))
+	grow.add_point(Vector2(1.0, 3.2 if vent else 1.3))
 	var gt := CurveTexture.new()
 	gt.curve = grow
 	pm.scale_curve = gt
 	var fade := Gradient.new()
 	fade.set_color(0, Color(1, 1, 1, 0.0))
-	fade.add_point(0.15, Color(1, 1, 1, 0.5 if vent else 0.36))
+	fade.add_point(0.15, Color(1, 1, 1, 0.75 if vent else 0.36))
 	fade.set_color(fade.get_point_count() - 1, Color(1, 1, 1, 0.0))
 	var ft := GradientTexture1D.new()
 	ft.gradient = fade
