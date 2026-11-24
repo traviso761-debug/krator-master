@@ -4,6 +4,27 @@ Open items start with `- [ ]` (build.py prints them after every build). The Port
 `kits/port/KNOWN_ISSUES.md`; shared-fragment problems found from Hook are recorded here, not fixed in the kit
 from a Hook task.
 
+## Huka's ruin (M1, 2026-11-24)
+
+- [ ] **M1's layout is the first one.** The owner's Alexandria plan (`PROPOSAL-METROPOLIS.md` section 9) moves the old
+      city onto a raised coastal plain, makes the spit an island on a causeway and sinks two quarters (the Nekropolis's
+      place in the lagoon and a peninsula to the north-east); M1's extents and thirds are redone for it next.
+
+- [ ] **The Ancient grid is Hook's own, not lifted.** The owner's answer 6 has the grid lifted out of the valley
+      (`AV.plan`'s lattice and ruin field) by Hook's phases; M1 writes Hook's plan on its own fragment
+      (`src/77-hook-ruin.js`), borrowing the valley's ruin states and far shares as numbers. Lifting both into one
+      shared step (core/city's Ancient-grid step, or a placer in `kits/metropolis`) is the owner's call on where it
+      lives, and then the valley's pages are rebuilt and verified.
+- [ ] **The design table is a copy.** Hook's page does not load `kits/metropolis`, so `HOOK_RUIN_PLAN.DESIGNS` copies
+      footprints, roofs and tips; `tests/test-hook-ruin.js` fails when the kit's records move.
+- [ ] **The spine is mostly drowned.** At x -225 the lagoon is 6 to 12 m deep past the first kilometre, so the axis is
+      causeway for four rows and then gaps and drowned stretches (`report.spine`), "the avenue's line under water,
+      marked by tower rows" as the proposal has it; the causeway form is M4's.
+- [ ] **The crest stands at 188 m.** The extent is trimmed to about 4 km2 a third, so the Scarp City climbs to its
+      188 m pad, not to the plateau's 400 m rim; widen `PARAMS.extent` south-east if the landmark should stand on the rim.
+- [ ] **The three Ancient roads out of Hook are not laid.** Their first kilometres (net51's causeways and the highway
+      up the scarp) are M4's, with the viaduct.
+
 ## The ground on 5.1 (the port onto the integration line, 2026-11-24)
 
 - [x] **`KLAND` retired.** The branch's lift of the old open world's land rule (`core/terrain/40-core-land.js`, from

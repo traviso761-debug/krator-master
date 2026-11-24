@@ -138,7 +138,7 @@ that page. Proposed:
 | Phase | What | Done when |
 |---|---|---|
 | **M0** | The owner's answers to section 1 and section 8; the city's name in LORE.md | the questions closed |
-| **M1** | `HOOK_RUIN`: the Ancient grid over the lagoon and the scarp, the avenues continued, the ruin-state field, every block and tower a `core/tags` record; node test with negatives | records stable by id, the same in any order |
+| **M1** (done 2026-11-24: `src/77-hook-ruin.js`, `tests/test-hook-ruin.js`; README.md "Huka's ruin") | `HOOK_RUIN`: the Ancient grid over the lagoon and the scarp, the avenues continued, the ruin-state field, every block and tower a `core/tags` record; node test with negatives | records stable by id, the same in any order |
 | **M2** | The Sunk City drawn: metropolis wild ruins standing in the water, fallen towers, KRUBBLE islands, `KRUINS.watch` | verify: nothing floats, every wreck seated, towers' feet under the water line |
 | **M3** | The Scarp City: terraces and towers on pads, the crest landmark, the funicular stump | verify on the GPU; the scarp's pads within their batter |
 | **M4** | The transit: the viaduct across the lagoon (ruin shares by distance), the highway up the scarp, the causeways (the kit's new form), cars in the water | the three routes' first kilometres laid; spans' states as planned |
@@ -164,3 +164,30 @@ Each phase is a session of its own; M1 first, since everything else reads its re
    rules (rebuild and verify what each change reaches).
 7. **Start now, M1 only**: the ruin's records (no drawing) in a session of its own on the integration line, merged
    after Stage 8.
+
+## 9. The layout redone: Alexandria in gross form (the owner, 2026-11-24, later the same day)
+
+After M1's first layout (section 3: a Sunk City in the lagoon, a Scarp City up the plateau's faces) and a look at the
+spit from above (three rectangles: blocky), the owner gave the plan of ancient Alexandria (Mahmud-Bey's, Wagner & Debes)
+as the city's gross form:
+
+1. **Names.** The whole city is still glossed as **Hook** (*Huka* is the Hukoa's word for it); the living town is
+   **Port Hook**. It stands where Alexandria's **Island of Pharos and the Eunostos harbour** are: the spit and its harbour.
+2. **The old city**, ruined and gone to jungle, is where **Bruchium and Rhakotis** are: on the mainland behind the
+   harbours, one grid.
+3. **A sunken peninsula** trails off from the intact part to the east and north-east: it once closed the **Great Harbour**
+   into a lagoon. The islets the scale model already has off the spit's east end lie along it.
+4. **A second sunken quarter** roughly where the **Nekropolis** is: south-west of the old city's western quarter, in the
+   lagoon behind the spit.
+5. **The land is reshaped to fit**, more than the spit (the owner: "we might need to do some more extensive land
+   reshaping"). The answers to this session's questions:
+   - **A raised coastal plain** for the old city: a low plain 2 to 3 km deep, 5 to 20 m over the sea, between the
+     harbours and the plateau, the scarp pushed back; the plateau the city's hill behind it.
+   - **Pharos an island**, cut off from the plateau at its east end and joined to the mainland by a built Ancient
+     causeway (the Heptastadium); the Great Harbour and the lagoon meet through its arches.
+   - **As Hook's own landform records** (core/world 41l benches with an outline: the spit's natural outline, 2026-11-24),
+     so the page and the ruin's records build on them now; the same records go to the scale model's edit queue.
+   - **M1 committed as the base**, its extents and quarters redone for this layout in the next change.
+
+A sketch of this reading on the ground as it was: `shots/hook-alexandria-reading.png` (gitignored; made by this session's
+scratch map). Sections 2 to 4 above stand where they do not contradict this one; the phases (section 7) keep their order.
