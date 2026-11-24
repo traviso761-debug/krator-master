@@ -176,3 +176,27 @@ The owner: "remove all dark voids and make all windows, doors and portals actual
 - [ ] A few store windows (55-arch.js, `winAt(f,..,y+2.7,'f',0.8,0.45)`) rise above a shabby store's low lid wall (H 2.5 to 3.1 m), so they cannot be cut and stand before a card on nothing above the wall; they did before (as a dark plate). Lower them or skip them on a lid.
 - [ ] The leaves turn on the instance's world-UV map, so the plank grain slides a little as a leaf swings. The room cards and lit panes take no night light volume.
 - [x] kits/beast-riders sealed 55-arch.js in a closure without 54-openings.js and core/door, its leaves drawn shut and ring walls whole through shims at the top of 55-arch.js's IIFE. Closed 2026-11-09: towns.py seals 54-openings.js and core/door (KDOOR, KGLASS on the closure's own root) with it, the kit draws the panes as 81-glow.js does and its doors open (kits/beast-riders/README.md); the shims are gone (`gaLeaf`/`gaSectorWins` are `goLeaf`/`goSectorWins`).
+
+## The shared sky (W7, 2026-11-24)
+
+Girder's sky moved onto core/atmos's shared sky (STAGE-8/G-weather.md W7; core/atmos/SKY-PLAN.md section 9): `90s-host-sky.js`
+draws `ATMOS.sky` at Girder's place on the scale model (map 5.1 px 1039, 869; the sky's site frame 767, 539), 1.9 atm and
+humid, and sets the sun, the hemisphere, the fog and the exposure from the colour script, with its own giantshine light.
+`21-sky.js` keeps the clock, `SKY` and `SKY_STATE` (filled from the shared sky each frame); `82-daynight.js` keeps the lamps'
+night factor and the ambient fill; `20-stage.js` lost the baked dome, its eruption cycle and the sun and moon sprites.
+`verify.py --assert` passes on the arc lane. Before and after: `shots-before-10/21`, `shots-after-10/21` (four views each).
+The look changes, for the owner to judge (SKY-PLAN.md section 8: each page's light is the model's at its site):
+- [ ] **The sky**: the real sky (sun, giant, ring, moons, station, cluster, stars, procedural cumulus) replaces the painted
+      haze. By day a blue sky with cumulus over the towers; at night the stars where the old page had a blue night.
+- [ ] **The light is the model's**: by day the towers' shaded faces are darker (the sky's hemisphere is dimmer than the old
+      tuned fill); at night the city is darker outside its lamps (the old page's planetshine fill and night floors are gone;
+      the ambient floor, 0.035, stays). If the night reads too black, the fill to tune is the sky preset's, not a page law.
+- [ ] **The volcano is gone from view**: the old dome painted the Throne in the north-west. On the model it is 390 km to the
+      WNW (azimuth 280) and its 10.9 km summit is below Girder's horizon (Krator's radius, 4,800 km, drops it about 14 km at
+      that distance). Its plume's top is drawn as a sky landmark (`GSKY_VOLC`), a degree or two up, and in this air it does
+      not read. The flyers' sortie "toward the volcano" (84a) still flies north-west.
+- [ ] **The far land**: two low forest bands all round (ridge profiles) stand in for the dome's painted canopy strips.
+- [ ] **The page opens at 06:00** (SKY-PLAN.md 2.1: every page opens at sunrise; it opened at 10:00).
+- [x] **One clock**: on the shared sky the host shows an hour too; it mirrors Girder's (98-start's girderFrame), its slider sets
+      Girder's hour and its run / hold drives Girder's pause.
+- [ ] **The Sky panel is gone** (the old dome's debug panel: pressure, forced eclipse, rings): the shared sky has no page panel.
