@@ -248,6 +248,22 @@ const KM_API = (function () {
   API.has = function (key) { return !!MECH_BY_KEY[key]; };
   API.get = function (key) { return MECH_BY_KEY[key] || null; };
   API.tagsOf = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechTags(A, v) : null; };
+  /* the core/tags record of a placed mech (Stage 8 T9, 2026-11-24, the owner: make new tags): class 'vehicle', kind 'mech'
+     (core/tags/52-core-tags-vocab.js), so a query for vehicles finds the walkers and kind tells them apart; the variant's tags in
+     core/tags' keys (culture; types from type; drive, crew, pilot, weapon, role, setting, guild; the kit's own class 'mech' left
+     out: the class is the record's), the box its size. The culture is the kit's: core/tags' cultureAlias maps 'stalker' to
+     'ancient'. o: {at: [x, y, z] (or x, y, z), ry, name, variant}. A host registers what it places, before it is drawn:
+     KratorMechs.register(KTAGS.page, key, o) -> the stored record (an id veh_*) */
+  API.record = function (key, o) {
+    const A = MECH_BY_KEY[key]; if (!A) return null; o = o || {};
+    const v = o.variant == null ? 0 : o.variant, T = mechTags(A, v), tags = { culture: A.culture };
+    const at = o.at ? o.at.slice() : [o.x == null ? 0 : o.x, o.y == null ? 0 : o.y, o.z == null ? 0 : o.z];
+    for (const k in T) if (k !== 'class' && k !== 'type' && T[k] !== undefined) tags[k] = T[k];
+    if (T.type) tags.types = [].concat(T.type);
+    const name = o.name || (A.variants > 1 && A.variantNames[v] ? A.name + ' (' + A.variantNames[v] + ')' : A.name);
+    return { 'class': 'vehicle', kind: 'mech', key: A.key, name: name, at: at, ry: o.ry == null ? 0 : o.ry, size: [A.w, A.d, A.h], tags: tags };
+  };
+  API.register = function (T, key, o) { const r = API.record(key, o); return r && T ? T.add(r) : null; };
   API.dataOf = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechData(A, v) : null; };
   /* a variant's attack clip (variantAttack[v] or the entry's own) */
   API.clip = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechAttack(A, v) : null; };

@@ -14,6 +14,9 @@ Origin at the footprint centre on the ground. **+z is forward**, y up, x across:
 ```js
 KratorMechs.list()            // -> [{ key, name, culture, role, origin, lore, tags, variantTags, variants, variantNames, w, d, h, data }]
 KratorMechs.tagsOf(key, v)    // the variant's tags (list() carries variant 0's, plus variantTags[v] for each)
+KratorMechs.record(key, { at, ry, name, variant })   // its core/tags record: class 'vehicle', kind 'mech', size [w, d, h], the variant's tags
+                              //   in core/tags' keys (culture; types; drive, crew, pilot, weapon, role, setting, guild; no class tag)
+KratorMechs.register(T, key, o) // T.add(record(key, o)): a host registers what it places before it is drawn (KTAGS.page); an id veh_*
 KratorMechs.roleOf(key, v)    // 'keeper' | 'hunter' | 'feigner' (tags.role, per variant; the Ancients), null where a culture declares none
 KratorMechs.dataOf(key, v)    // data (with speed, gait, attack { kind, dur })
 KratorMechs.build(key, { variant, seed, linear, bare }) -> THREE.Group, posed standing (bare: the chassis alone, no rider, no feathers, standards, numerals or banners: the Ancient's Valley's keepers)
