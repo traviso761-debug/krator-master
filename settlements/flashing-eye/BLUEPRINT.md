@@ -12,6 +12,9 @@ Order, the people, the signals and the economy are in `PLAN.md`.
   through the Beacon's **Rim Post** (856,1532).
 - The crimson monastery's dress is the Qiblai kit's `QSPOKE[0]` (crimson walls, saffron trim, the oxblood band). The holy
   crown is the monasteries' (`kits/qiblai/PLAN.md` section 4). The Decree forbids war-making by its clergy.
+- The owner, 2026-11-23: **the Order are scouts**, monitoring the Lizardmen's movements in the Rift (`LORE.md` §6.20): the
+  house's watch over the Rift (the Readers' Gallery's windows in the face, the towers on the Lip) is the Rift Watch's
+  (`PLAN.md` 1.3, *proposed*).
 
 ## What is here
 

@@ -40,6 +40,10 @@ Sources:
   Rim Post, Eye, Erehwon. Section 3's "+40 m" from the lamp was read on the lowered rim and no longer holds once the knoll is
   restored. The Beacon's layout carries the Rim Post (`claude/beacon-monastery-d509f5`, 8a4b5ae99).
 
+- **The Order are scouts on the Rift** (the owner, 2026-11-23: "the flashing eyes function as scouts monitoring lizardmen
+  movements in the rift"). The house faces the Rift for this as well as for its doctrine: its watchers keep the Lizardmen's
+  movements on the Rift floor (`LORE.md` §6.20). What follows from it is *proposed* (section 1.3, the Rift Watch).
+
 ## 1. The Order of the Flashing Eye
 
 ### 1.1 What is written
@@ -55,6 +59,8 @@ Sources:
 - **Each great house takes a tenth** of the council's income: the council keeps a fifth, and each of the eight takes an
   eighth of the rest (`settlements/kirstabal/PLAN.md`, section 4; not yet in the tune, where the History Monks' house
   still takes 1/8).
+- **The Order's monks are scouts**: they monitor the Lizardmen's movements in the Rift (the owner, 2026-11-23; `LORE.md`
+  §6.13, §6.20).
 - Nothing else is written: no doctrine, no head house, no size.
 
 ### 1.2 The doctrine (*proposed*)
@@ -111,6 +117,7 @@ times with eyes lowered (`kits/qiblai/PLAN.md` 2a). The Order reads them as a **
 | **The crimson Prismarch** | the Order's abbot. He lives on the mountain and **sits on the council by mirror**: his words go to Qiblai by the day line, read aloud in the crimson spoke by his reader. He goes down to Qiblai once a year, for the grant of fealty |
 | **The Prior** | keeps the house |
 | **The Master of the Eye** | keeps the crater, the Rim Watch and the Book of Breaths |
+| **The Master of the Rift** | keeps **the Rift Watch** (the owner, 2026-11-23: the Order are scouts on the Lizardmen; the office is *proposed*): watchers by day and night at the Readers' Gallery's windows in the band's face (L-1) and in the two towers on the Lip (the south-west and south-east towers), glasses on the Rift floor; what they see is written in the Book of the Rift and goes up the mirror line with the day's flashes |
 | **The Master of Mirrors** | keeps the Eye Post, the Mirror Hall, the signal readers, the Mirror School and the Book of Flashes |
 | **The Keeper of the Ember** | keeps the Hall of the Ember and lights the house's fires |
 | **The Hosteller** | keeps the Foot House and the pilgrims |

@@ -3,7 +3,8 @@
 The head house of the Order of the Flashing Eye, Qiblai's crimson monastery (`LORE.md` 6.13), on the east volcano of
 Erewhon's lake: three terraces on the cone's south spur (the Lip at scale-model px 881,1527.1, 1,660 m), white ranges and towers
 under red tiled roofs, facing the Rift over a 200 m band of columnar basalt, the Way of Shrines climbing to them over rope bridges, with the crater 2.2 km north where the Rim Watch keeps the Eye Post and the vent flashes red
-at night. About 320 (280 on the bench, 40 at the Foot House). `PLAN.md` is the design and the owner's answers; `BLUEPRINT.md`
+at night. Its monks are scouts as well, watching the Lizardmen's movements on the Rift floor (the owner, 2026-11-23). About 320
+(280 on the bench, 40 at the Foot House). `PLAN.md` is the design and the owner's answers; `BLUEPRINT.md`
 explains the sheets in `floors/`; `FURNITURE.md` is the manifest; `KNOWN_ISSUES.md` lists what is still owed.
 
 ## Build and verify
