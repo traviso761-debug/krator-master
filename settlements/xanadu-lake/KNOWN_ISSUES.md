@@ -47,19 +47,37 @@
   (the node test: within .12 a class), not on it: the rich houses (26-32 m) find fewer plots.
 - **The quarters' margins are found by re-running the plan.** A quarter short of its households after a run takes more blocks
   (the rest quarter short: the others take fewer) and the plan runs again, at most four times, the least short run kept.
-- **No market boat runs and no fair launches.** The boats are moored, drawn up or fishing; the north-east round's barge and
-  the fair's east loop (`T.rounds`, `T.loops`) are not drawn on their courses yet.
-- **The towns' rooms are not planned.** The page takes the furniture bundle and the interiors core as Phēr's does, but the
-  lake towns' trades' rooms (`87k1-xa-lake-rooms.js`) and the governor's house's are step L5's.
+- **The week** (step L5, 2026-11-23: `targets/town/89zn-xl-days.js`). `?day=N` (else 122, Phēr's default) is the clock's first
+  day: on the town's market day the second stall row stands and the round's barge lies at the quay; on a fair day a loop town's
+  first launch is away. The day is the page's day plus the clock's (`90q` xlDayTick, every frame), the same day the people's sim
+  counts, so past midnight the stalls, the boats and the people turn over together. **Proposed** (the tune leaves them to the page): a round leaves its hub on weekday 0 and calls a town a day in its order;
+  Phēr's rounds call on the days between its fairs.
+- **The market boats and the fair's launches are not drawn on their courses.** The round's barge is at the quay on the market
+  day and nowhere on the others; the fair's launch is gone on the fair's days. Their runs on the lake (`T.rounds`, `T.loops`) are
+  the regions' to draw (`openworld/xanadu-north-shore`, `xanadu-lake-shore`), with the sim's transport records.
+- **The people are placeholder figures** (a robe and a head, coloured by role: `90t-xl-life.js`, as Thalaba's), not
+  `core/charactermodels`' lake Xanadui. Every resident is an actor (`89zu-xl-people.js`): the houses x 5.5 and the governor's
+  eight; the crews the tune's (`xan-tune.js` lakeTown: fishers half the crew where the town fishes, the terraces two fifths), a
+  keeper a stall, four priests. **Proposed**: the works' hands where the tune names no good for the town (eight a works
+  building: Māuṭh, Nēṭ and the rest), the schedules, a fifth of a loop town's households at the fair on its days, the market
+  square's crowd (a quarter of the town at once). The fishers out on the lake are hidden at the landing (their dugouts are the
+  drawn ones out fishing, not tied to them); nobody rides a boat.
+- **The trades' rooms** (step L5, 2026-11-23). `?interiors=1` plans and furnishes every building the kit's interior sets
+  cover, as Phēr's, and now the lake's own: the governor's house and its office wing, the dye store, the loom hall, the saffron
+  house's sorting floor, the honey house and the net loft's laying-up room (`kits/xanadu/extra/69dy-ix-lake-works.js`, the set
+  `xanadu-lake-works`), and the tea factory's floor (`kits/xanadu/src/87k1-xa-lake-rooms.js`, now on this page). Their rooms are
+  the planner's from a programme, not drawn rooms of a plan. Left open or solid on purpose (the set's skips): the kiln yard's
+  wheel shed, the reeling house, the mat shed, the sulfur works' melting shed, the quarry's tool hut; the saffron loft and the net
+  loft's loft are open to the air. `69dy` joins `kits/interiors/sets/xanadu.js` with the all-builds rebuild (TODO.md).
 - **The biome core is Xanadu's older copy** (as Phēr's: `settlements/pher/KNOWN_ISSUES.md`): `31b-core-leafset.js` is read
   from core into `gen/` at every build; its MINSET finding (`34-core-impostor.js`) and the `_registered` clash with core/host's
   probe are baselined in `tools/check_assembly_baseline.json`, as Phēr's are.
-- **Hoṭ-Bāṭh is held back from step L3** (2026-11-23). Its spec row stands, but it has no fit and no region tile: the region's
-  raw shore 800 m west of its landing has an inlet about 50 m wide (the Ālph's outflow coast), narrower than the fit's 40 m rest
-  grid (`tools/fit_lake_town.py` RES_STEP), so inside the footprint the page's waterline there is 100 m off the region's
-  (`test-xl-site.js`, "the shore within 50 m"). Tried: R 2400, a tighter smoothing (40 m: 1,584 hollow cells), a waterfront
-  of 500 to 700 m. Owed: a finer rest grid along the shore in the fit tool (or a footprint that leaves the inlet to the region,
-  which the town's 1.4 km from its pin does not allow), then `python3 tools/fit_lake_town.py hot-bath` and the step's checks.
+- **Hoṭ-Bāṭh's core is narrower than the others'** (2026-11-23; held from step L3 until then). The region's shore 800 m west of
+  its landing has an inlet about 50 m wide. The finer rest grid the hold asked for was not the cure (at 20 m and at 10 m the
+  page's waterline there stayed 68 and 72 m off the region's): the inlet stood inside the core's fade (core.x 620, fade 300),
+  where the page keeps its own profile. Its core is now 520 m with a 200 m fade (the waterfront is 500 m), so at x -800 the
+  ground is the region's own and the shore within 50 m (`test-xl-site.js`). The fit tool takes a town's own grid
+  (`world.gs`, `world.resStep`; 25 and 40 m by default) should a narrower feature need it; no town sets one.
 - **The south-east round's footprints are larger where the pin stands far inland.** Pāṭari's pin is 1.9 km above its landing
   (R 3000 m), Hoṭ-Bāṭh's 1.4 km (R 2400 m), Ālph-Hēḍ's on a point (R 2100 m): the footprint is round the pin, so it has to reach
   the whole town. Their band rings lose the points over the lake, so `test-xl-site.js` asks a third of the 144, not 100.

@@ -270,7 +270,7 @@ XL.SPECS={
   layout:{half:500,road:36,rows:[36,102,168,234,300,366,432,498],stairs:[-250,0,250],   /* half 500: the waterfront ends 120 m short of the inlet at x -800, so the waterline eases into the region's own before it */
    market:{x:-150,w:100,d:48},
    benches:[[590,700],[780,890]],benchHalf:560,stream:null,
-   core:{x:620,d:960,lake:180,fade:300},
+   core:{x:520,d:960,lake:180,fade:200},   /* the core's edge 520 m, faded by 720 m: the region's own ground (its inlet) in full at x -800 */
    fields:{rows:9}},
   notes:'A spa town for Erewhon\'s court and its merchants: the bath house over the spring by the water, the inns and teahouses along the shore road, the sulfur works up on the bench where the crust forms, apart and downwind.'},
  /* the Vale's granary on the lake (alph-head/PLAN.md): the grain quay and its granaries, the threshing floors and the windmills

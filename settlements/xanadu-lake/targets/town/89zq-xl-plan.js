@@ -264,6 +264,9 @@ function xlBoats(key,T){const S=XL.SPECS[key],c=S.craft,B={moored:[],out:[]},st=
  const deep=(x,z0)=>{let z=z0;while(xlH(key,x,z)>-.9&&z<z0+200)z+=2;return z;};   /* out from the quay's face to 0.9 m of water */
  for(let i=0;i<c.launches;i++){const x=qx-10+i*9;B.moored.push({id:'launch:'+i,key:'xa_launch',v:1,x,z:deep(x,zs(x)+12),ry:Math.PI/2,beached:false});}
  for(let i=0;i<c.barges;i++){const x=qx+12+i*16;B.moored.push({id:'barge:'+i,key:'xa_lake_barge',v:1,x,z:deep(x,zs(x)+14)+4,ry:Math.PI/2,beached:false});}
+ /* the market boat of the town's round (XAN_TUNE T.rounds; 89zn XL_DAYS), its berth past the town's own barges: 90s draws it
+    on the town's market day only. Its own field, so the craft the spec asks (xl-boats) stay the town's */
+ if(typeof XL_DAYS!=='undefined'&&XL_DAYS.ROUND[key]){const x=qx+12+c.barges*16+4;B.round={id:'barge:round',key:'xa_lake_barge',v:1,x,z:deep(x,zs(x)+14)+4,ry:Math.PI/2,beached:false,round:XL_DAYS.ROUND[key].id};}
  // half the dugouts drawn up: on the ghat's lower steps and along the beach east of the racks, bows to the lake
  const ashore=Math.floor(c.dugouts/2),onGhat=Math.min(6,ashore);
  for(let i=0;i<onGhat;i++){const x=gx-8.5+i*3.4;B.moored.push({id:'dugout:ghat:'+i,key:'xa_dugout',v:2,x,z:zs(x)-.6+(i%2)*.8,ry:(st.next()-.5)*.2,beached:true,ghat:true});}
