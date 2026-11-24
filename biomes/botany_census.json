@@ -7559,6 +7559,425 @@
     "misc_domains": []
   },
   {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "cottongrass",
+    "name": "Cottongrass",
+    "harvest": {
+      "wood": "the down (wicks, padding)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Eriophorum: white heads on the cold west's wet ground.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "cushion",
+    "name": "Cushion plants (Krator's cold lineage)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Tight green domes, a hand to a pace across, on the cold rock and the pit rims: the native margin.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "dung",
+    "name": "Dung",
+    "harvest": {
+      "wood": "fuel (the Kimr's dung-cake walls)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "The herds' pats in the grass: the people stack them for fuel (PLAN.md section 3).",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "dwarfbirch",
+    "name": "Dwarf birch",
+    "harvest": {
+      "wood": "bark tar",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Betula nana: knee-high heath on the pit chains and the bastions' feet, torn up where the herds pass.",
+      "fruit": "birch-tar",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "feathergrass",
+    "name": "Feather grass",
+    "harvest": {
+      "wood": "awns (stuffing)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Stipa: silky awns combing the wind over the dry floors.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "forbs",
+    "name": "Steppe flowers",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "The summer's colour, cropped round the herds: sage and larkspur in violet spikes, yellow composites, saxifrage and pinks.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "gallerywillow",
+    "name": "Gallery willow",
+    "harvest": {
+      "wood": "withies (baskets, fish traps, the hide boats' frames)",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Salix alba and S. viminalis: many stems from one foot, arching, grey-green; on every bank. Its bark is the Kimr's fever remedy.",
+      "fruit": "willow-bark",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "tannins_leather",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "juniper",
+    "name": "Juniper",
+    "harvest": {
+      "wood": "fuel; the berries (flavour)",
+      "edible": "['juniper berries']",
+      "medicinal": true,
+      "notes": "Juniperus communis: dark prostrate mats and low cones on the dry rock and the bastions' feet.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "lichen",
+    "name": "Rock lichens",
+    "harvest": {
+      "wood": "dye (orange, yellow)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Plates and rosettes on the boulders, the rock and the ruin (orange, sulphur, grey); reindeer lichen in sponges on the cold ground.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "dyes_pigments"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "moss",
+    "name": "Moss",
+    "harvest": null,
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "scrubwillow",
+    "name": "Scrub willow",
+    "harvest": {
+      "wood": "withies",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Salix lanata and S. glauca: grey-felted, knee to waist high on the wet ground of the cold west.",
+      "fruit": "woolly-willow",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "sedge",
+    "name": "Sedge tussocks",
+    "harvest": {
+      "wood": "thatch; matting",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Carex in tussocks on the wet meadows, the lakes' margins and the tarns.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "textiles_cordage",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "silverbirch",
+    "name": "Silver birch",
+    "harvest": {
+      "wood": "firewood; bark for boxes and roofing; tar from the bark",
+      "edible": "['sap (spring)']",
+      "medicinal": true,
+      "notes": "Betula pendula: white stems in clumps of two to four, pendant twigs. The parkland's stands; its bark tar glues the Kimr's spear hafts.",
+      "fruit": "birch-tar",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "adhesives_resins",
+      "weaving_thatch_paper",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "steppegrass",
+    "name": "Steppe grasses (fescue, wheatgrass)",
+    "harvest": {
+      "wood": "hay; the herds' grazing",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Festuca and Agropyron: the grazing ground. Tall and rank in the wet grabens, short and cropped on the chaos floors.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "steppelarch",
+    "name": "Steppe larch",
+    "harvest": {
+      "wood": "timber (the Kimr's roof beams and ladders); the bark for tanning",
+      "edible": "['larch gum (chewed)']",
+      "medicinal": false,
+      "notes": "Larix sibirica: an open cone of soft needles in tufts, the woods of the cold west and a scatter through the parkland. The giant elk and the mammoths strip it to their reach.",
+      "fruit": "larch-bark",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "tannins_leather",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "steppepoplar",
+    "name": "Steppe poplar",
+    "harvest": {
+      "wood": "soft timber (dugouts, bowls)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Populus laurifolia and the aspen (P. tremula): the gallery woods along the streams and the lakes' margins, tall and round-crowned, trembling. The mammoths browse it flat underneath.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "stones",
+    "name": "Stones and boulders",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Banded gneiss off the dome's walls, lichened on top.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "tarnlily",
+    "name": "Tarn lily (a pit-tarn native)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Krator's iridescent water plants, kept in the cold pit tarns: round pads that turn every colour at a slant.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "tarnreed",
+    "name": "Glass reed (a pit-tarn native)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "An iridescent reed in the pit tarns' shallows, Krator's native refuge in the Earth preserve.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "wildmelon",
+    "name": "Wild melon (\"the sweet fall\")",
+    "harvest": {
+      "wood": "none",
+      "edible": "['the melons (eaten fresh; brewed where they ferment)','the seeds (roasted)']",
+      "medicinal": false,
+      "notes": "The Labyrinth's one invented plant: a giant gourd vine trailing over the warm floors and the sun traps, its melons up to a metre across, ripening late in the dry season and fermenting where they fall. The herds and the Kimr both come for them (PLAN.md sections 4 and 5).",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "labyrinth",
+    "file": "biomes/labyrinth/src/50-biome-labyrinth-species.js",
+    "key": "wormwood",
+    "name": "Wormwood",
+    "harvest": {
+      "wood": "fuel; a bitter",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Artemisia: grey aromatic tufts, the steppe's smell; the herds leave it.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
     "biome": "necanyons",
     "file": "biomes/necanyons/src/50-biome-necanyons-species.js",
     "key": "clapjaw",
@@ -14313,6 +14732,101 @@
     "misc_domains": [
       "textiles_cordage"
     ]
+  },
+  {
+    "biome": "seouterwall",
+    "file": "biomes/seouterwall/src/50-biome-seow-species.js",
+    "key": "goldpoppy",
+    "name": "Gold poppy",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Golden alpine poppies on the puna's gravel and the moraines in the short summer.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "seouterwall",
+    "file": "biomes/seouterwall/src/50-biome-seow-species.js",
+    "key": "goldroot",
+    "name": "Goldroot",
+    "harvest": {
+      "wood": "none",
+      "edible": "['the root (dried: smells of roses)']",
+      "medicinal": true,
+      "notes": "Roseroot (Rhodiola rosea), the thin-air stamina herb (PLAN.md section 4): fleshy rosettes in the scree under the crags.",
+      "fruit": "goldroot",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "seouterwall",
+    "file": "biomes/seouterwall/src/50-biome-seow-species.js",
+    "key": "guyedstalk",
+    "name": "Red guyed stalk",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Krator's own (biomes/godstep): a red fan-crowned stalk held up by its guy-roots in the wet seep gravel by the brooks, on the fans and the tarns' strands.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "seouterwall",
+    "file": "biomes/seouterwall/src/50-biome-seow-species.js",
+    "key": "puya",
+    "name": "Puya (the cordillera's giant bromeliad)",
+    "harvest": {
+      "wood": "the dead spike (firewood where nothing else burns)",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Puya raimondii of the puna: a rosette of saw-edged silver-blue leaves a man's height across; after decades a spike of 4-9 m and thousands of flowers, then it dies and the spike stands for years. A few to a hillside, on the sunny slopes and the scree.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "seouterwall",
+    "file": "biomes/seouterwall/src/50-biome-seow-species.js",
+    "key": "skypoppy",
+    "name": "Sky poppy",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Meconopsis: nodding blue-violet poppies on the moraines' turf and the col after the melt; seed capsules by autumn.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
   },
   {
     "biome": "shighlands",
