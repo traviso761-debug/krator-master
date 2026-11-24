@@ -84,10 +84,10 @@ if(SVIX&&SVIX.on){
      ambience instead of the sky (the outside of a wall keeps the sky); the sun's share follows the night; a pool of 4 point
      lights moves to the eye's room's lamps and windows each frame */
   if(typeof KRLHOST!=='undefined'&&SVIX.lightTable&&SVIX.lightRooms.length){const RT=SVIX.rlTex=KRLHOST.texture(SVIX.lightTable),meshes=[];
-   WORLD.traverse(o=>{if(o.isMesh&&!o.isInstancedMesh)meshes.push(o);});SVIX.rlTag=KRLHOST.tagRooms(meshes,SVIX.lightRooms,RT.uById);
-   const U=SVIX.rlU=KRLHOST.uniforms({tex:RT.tex}),seen=new Set();
+   WORLD.traverse(o=>{if(o.isMesh&&!o.isInstancedMesh)meshes.push(o);});SVIX.rlTag=KRLHOST.tagRooms(meshes,SVIX.lightRooms,RT.uById,{width:RT.width});
+   const U=SVIX.rlU=KRLHOST.uniforms({tex:RT.tex,width:RT.width}),seen=new Set();
    for(const m of meshes){const mt=m.material;if(!mt||Array.isArray(mt)||seen.has(mt)||!(mt.isMeshStandardMaterial||mt.isMeshLambertMaterial))continue;seen.add(mt);
-    if(mt.userData.hooks)matHook(mt,'rl',sh=>KRLHOST.hook(sh,U,!!mt.isMeshLambertMaterial,true));else KRLHOST.apply(mt,{tex:RT.tex,attr:true});}
+    if(mt.userData.hooks)matHook(mt,'rl',sh=>KRLHOST.hook(sh,U,!!mt.isMeshLambertMaterial,true));else KRLHOST.apply(mt,{tex:RT.tex,width:RT.width,attr:true});}
    SVIX.rlPool=KRLHOST.lightPool(scene,4);
    FRAME_HOOKS.push(()=>{U.uRlSun.value=NIGHT.on?0:1;U.uRlLamp.value=NIGHT.on?1.6:1;
     const c=camera.position,pool=svixLightPool([c.x,c.y,c.z],{sunUp:NIGHT.on?0:1,count:4,heroShadows:0});SVIX.rlPool.set(pool,NIGHT.on?1.4:.7);});}

@@ -215,7 +215,7 @@
  "core/host/93-host-inspect.js: ORNUM": 10,
  "core/host/93-host-stocks.js: ORNUM": 1,
  "core/host/97-host-minimap.js: ORNUM": 2,
- "core/interiors/20-core-roomlight-host.js: RAWTEX": 3,
+ "core/interiors/20-core-roomlight-host.js: RAWTEX": 4,
  "core/lod/09-lod.js: ORNUM": 2,
  "core/materials/record/25-matlib-host.js: ORNUM": 1,
  "core/materials/record/25-matlib-host.js: RAWTEX": 6,

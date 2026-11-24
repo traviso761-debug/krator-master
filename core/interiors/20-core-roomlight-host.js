@@ -37,8 +37,8 @@ var KNLV = (function(){
     }
     var V = { cfg:c, tex:tex, U:U, acc:null };
     /* cfg.roomLight: the room light (KRLHOST, below) rides in this hook, so every material the page hooks carries it from its
-       first compile: one program per material kind, never a second one when the rooms arrive; the room comes per vertex (aRlU,
-       aRlIn: 0 outside any room, where it changes nothing) and the table in V.rl.U, which KRLHOST.wirePage fills (o.U) */
+       first compile: one program per material kind, never a second one when the rooms arrive; the room comes per vertex (aRl,
+       0 outside any room, where it changes nothing, and absent on a mesh with no room) and the table in V.rl.U, which KRLHOST.wirePage fills (o.U) */
     if(c.roomLight){ var ph = new THREE.DataTexture(new Float32Array(16), 2, 2, THREE.RGBAFormat, THREE.FloatType); ph.needsUpdate = true;
       V.rl = { U:KRLHOST.uniforms({ tex:ph }) }; }
     V.splat = function(ch, x,y,z, amp, rad){
@@ -176,19 +176,43 @@ var KRLHOST = (function(){
   var GLSL_ROOM = 'vec4 _rl0 = texture2D(uRlTex, vec2(uRlU, 0.25)); vec4 _rl1 = texture2D(uRlTex, vec2(uRlU, 0.75));\n' +
     'vec3 _rIrr = (_rl0.rgb * uRlSun * (0.88 + 0.12 * clamp(_rlN.y, -1.0, 1.0)) + _rl0.a * uRlLamp * _rl1.rgb) * PI;\n';
   /* the shader text, for a material the page hooks its own way (core/engine's matHook): u = the uniforms (uniforms()), lambert
-     its kind, attr: the room and the indoor mask come per vertex (aRlU, aRlIn: wire() sets them) instead of uRlU/uRlIndoor */
+     its kind, attr: the room and the indoor mask come per vertex (aRl: tagRooms sets it) instead of uRlU/uRlIndoor;
+     u.uRlW the table's width */
   function uniforms(o){
     return { uRlTex:{ value:o.tex }, uRlU:{ value:o.u == null ? 0 : o.u }, uRlIndoor:{ value:o.indoor == null ? 1 : o.indoor },
-             uRlSun:{ value:o.sunDay == null ? 1 : o.sunDay }, uRlLamp:{ value:o.lampAmb == null ? 1 : o.lampAmb } };
+             uRlSun:{ value:o.sunDay == null ? 1 : o.sunDay }, uRlLamp:{ value:o.lampAmb == null ? 1 : o.lampAmb },
+             uRlW:{ value:o.width == null ? 1 : o.width } };
   }
   function hook(sh, u, lambert, attr){
+    /* per-vertex rooms only reach plain meshes (tagRooms leaves instanced ones alone): an instanced, skinned or morphing program
+       keeps its attribute slots (Girder's flyers were over WebGL's 16 with the two room attributes, and failed to link) */
+    if(attr && (sh.instancing || sh.skinning || sh.morphTargets)) return;
     for(var k in u) sh.uniforms[k] = u[k];
-    var decl = '#include <common>\nuniform sampler2D uRlTex;\nuniform float uRlU;\nuniform float uRlIndoor;\nuniform float uRlSun;\nuniform float uRlLamp;' +
-      (attr ? '\nvarying float vRlU;\nvarying float vRlIn;' : '');
-    var room = attr ? 'float _rlU = vRlU, _rlIn = vRlIn;\n' : 'float _rlU = uRlU, _rlIn = uRlIndoor;\n';
-    var glsl = room + GLSL_ROOM.split('uRlU').join('_rlU');
-    if(attr) sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float aRlU;\nattribute float aRlIn;\nvarying float vRlU;\nvarying float vRlIn;')
-      .replace('#include <project_vertex>', 'vRlU = aRlU; vRlIn = aRlIn;\n#include <project_vertex>');
+    if(attr){
+      /* the room per vertex (aRl: one normalized Uint16, 0 outdoors, the column + 1 in a room): its two texels are fetched in the VERTEX
+         stage, only for a vertex in a room, and reach the fragment as varyings; a fragment outside every room does nothing.
+         (Fetched per fragment, every lit pixel of the page paid two float-texture reads, indoors or not: Girder lost 6 fps.) */
+      var calc = 'vec3 _rIrr = (vRl0.rgb * uRlSun * (0.88 + 0.12 * clamp(_rlN.y, -1.0, 1.0)) + vRl0.a * uRlLamp * vRl1) * PI;\n';
+      var declA = '#include <common>\nuniform float uRlIndoor;\nuniform float uRlSun;\nuniform float uRlLamp;\nvarying vec4 vRl0;\nvarying vec3 vRl1;\nvarying float vRlIn;';
+      sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float aRl;\nuniform sampler2D uRlTex;\nuniform float uRlW;\nvarying vec4 vRl0;\nvarying vec3 vRl1;\nvarying float vRlIn;')
+        .replace('#include <project_vertex>', 'float _rlR = floor(aRl * 65535.0 + 0.5); _rlR = _rlR < uRlW + 0.5 ? _rlR : 0.0; vRlIn = _rlR > 0.5 ? 1.0 : 0.0; vRl0 = vec4(0.0); vRl1 = vec3(0.0);\n' +
+                 'if(_rlR > 0.5){ float _rlU = (_rlR - 0.5) / uRlW; vRl0 = texture2D(uRlTex, vec2(_rlU, 0.25)); vRl1 = texture2D(uRlTex, vec2(_rlU, 0.75)).rgb; }\n#include <project_vertex>');
+      if(lambert){
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vRlN;')
+          .replace('#include <project_vertex>', 'vRlN = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);\n#include <project_vertex>');
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', declA + '\nvarying vec3 vRlN;')
+          .replace('#include <lightmap_fragment>', '#include <lightmap_fragment>\nif(vRlIn > 0.0){ vec3 _rlN = vRlN;\n' + calc +
+                   'reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, _rIrr, vRlIn * uRlIndoor); }');
+      } else {
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', declA)
+          .replace('#include <lights_fragment_end>', 'if(vRlIn > 0.0){ vec3 _rlN = inverseTransformDirection(geometry.normal, viewMatrix);\n' + calc +
+                   'irradiance = mix(irradiance, _rIrr, vRlIn * uRlIndoor); }\n#include <lights_fragment_end>');
+      }
+      return;
+    }
+    /* one room a material (apply): the room's column in a uniform */
+    var decl = '#include <common>\nuniform sampler2D uRlTex;\nuniform float uRlU;\nuniform float uRlIndoor;\nuniform float uRlSun;\nuniform float uRlLamp;';
+    var glsl = 'float _rlU = uRlU, _rlIn = uRlIndoor;\n' + GLSL_ROOM.split('uRlU').join('_rlU');
     if(lambert){
       sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vRlN;')
         .replace('#include <project_vertex>', 'vRlN = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);\n#include <project_vertex>');
@@ -211,8 +235,11 @@ var KRLHOST = (function(){
     return mat;
   }
   /* WIRING A PAGE (I1-I2 on merged geometry): every vertex of the meshes that lies in a room (inside its polygon and between its
-     floor and ceiling, or on its boundary with its face turned in) takes that room's column (aRlU) and the indoor mask (aRlIn
-     1); every other vertex 0, so the outside of a wall keeps the sky. rooms: ROOM() records in world terms (kits/interiors:
+     floor and ceiling, or on its boundary with its face turned in) takes that room's column + 1 in aRl (one normalized
+     Uint16, o.width the table's width); every other vertex 0, so the outside of a wall keeps the sky. Only a mesh with a vertex
+     in a room carries aRl: the attribute costs every frame it is drawn (Girder's 13.4M tagged vertices at 8 bytes cost 4 fps);
+     a mesh without it reads the generic value, 0, and a value past the table's width (a generic 1 a ShaderMaterial left) is
+     read as outdoors. rooms: ROOM() records in world terms (kits/interiors:
      id, poly [[x,z]...], y, h). Meshes in world space or with a matrixWorld; instanced meshes are left alone. -> {vertices, indoor} */
   function inPoly(P, x, z){ var inn = false; for(var i = 0, j = P.length - 1; i < P.length; j = i++){ var a = P[i], b = P[j];
     if((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) inn = !inn; } return inn; }
@@ -221,19 +248,23 @@ var KRLHOST = (function(){
     d = Math.min(d, ex * ex + ez * ez); } return Math.sqrt(d); }
   function tagRooms(meshes, rooms, uById, o){
     o = o || {};
-    var tol = o.tol == null ? 0.06 : o.tol, CELL = 8, grid = {}, out = { vertices:0, indoor:0, meshes:0 };
+    var tol = o.tol == null ? 0.06 : o.tol, W = o.width == null ? 1 : o.width, CELL = 8, grid = {}, out = { vertices:0, indoor:0, meshes:0 };
     rooms.forEach(function(R){ var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9, cx = 0, cz = 0;
       R.poly.forEach(function(p){ x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); cx += p[0]; cz += p[1]; });
-      R._rl = { cx:cx / R.poly.length, cz:cz / R.poly.length, u:uById[R.id] };
-      if(R._rl.u == null) return;
+      var u = uById[R.id];
+      R._rl = { cx:cx / R.poly.length, cz:cz / R.poly.length, u:u, k:u == null ? 0 : Math.round(u * W - 0.5) + 1 };
+      if(u == null) return;
       for(var gx = Math.floor((x0 - tol) / CELL); gx <= Math.floor((x1 + tol) / CELL); gx++)
         for(var gz = Math.floor((z0 - tol) / CELL); gz <= Math.floor((z1 + tol) / CELL); gz++){ var k = gx + ',' + gz; (grid[k] = grid[k] || []).push(R); } });
     var v = new THREE.Vector3(), n = new THREE.Vector3(), nm = new THREE.Matrix3();
     meshes.forEach(function(m){
       if(!m || !m.isMesh || m.isInstancedMesh || !m.geometry || !m.geometry.attributes.position) return;
       m.updateMatrixWorld(true); nm.getNormalMatrix(m.matrixWorld);
-      var g = m.geometry, P = g.attributes.position, N = g.attributes.normal, cnt = P.count, U = new Float32Array(cnt), I = new Float32Array(cnt), any = 0;
-      for(var i = 0; i < cnt; i++){
+      var g = m.geometry, P = g.attributes.position, N = g.attributes.normal, cnt = P.count, A = new Uint16Array(cnt), any = 0;
+      /* o.keep: the mesh's tags from before (a geometry that only grew: its first kp.n vertices are the same): copy them, tag the rest */
+      var kp = o.keep && o.keep.get(m), from = 0;
+      if(kp && kp.n <= cnt){ if(kp.A) A.set(kp.A.subarray(0, kp.n)); from = kp.n; any = kp.any || 0; }
+      for(var i = from; i < cnt; i++){
         v.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld);
         var L = grid[Math.floor(v.x / CELL) + ',' + Math.floor(v.z / CELL)]; if(!L) continue;
         if(N) n.fromBufferAttribute(N, i).applyMatrix3(nm).normalize();
@@ -242,9 +273,11 @@ var KRLHOST = (function(){
           var inside = inPoly(R.poly, v.x, v.z), edge = !inside && edgeDist(R.poly, v.x, v.z) <= tol;
           if(!inside && !edge) continue;
           if(edge && N && n.x * (R._rl.cx - v.x) + n.z * (R._rl.cz - v.z) <= 0) continue;   /* on the wall line, facing out */
-          U[i] = R._rl.u; I[i] = 1; any++; break; }
+          A[i] = R._rl.k; any++; break; }
       }
-      g.setAttribute('aRlU', new THREE.BufferAttribute(U, 1)); g.setAttribute('aRlIn', new THREE.BufferAttribute(I, 1));
+      /* only a mesh with a vertex in a room carries the attribute: every other one reads 0 (outdoors) and costs nothing */
+      if(any) g.setAttribute('aRl', new THREE.BufferAttribute(A, 1, true)); else if(g.attributes.aRl) g.deleteAttribute('aRl');
+      if(o.keep) o.keep.set(m, { n:cnt, A:any ? A : null, any:any });
       out.meshes++; out.vertices += cnt; out.indoor += any;
     });
     return out;
@@ -273,8 +306,9 @@ var KRLHOST = (function(){
     tex.minFilter = tex.magFilter = THREE.NearestFilter; tex.generateMipmaps = false; tex.flipY = false; tex.needsUpdate = true;
     /* o.U: the uniforms a page's own hook already carries (KNLV cfg.roomLight): the table goes into them, and a material whose
        program has them (o.renderer's properties) is not hooked a second time */
-    var U = o.U || uniforms({ tex:tex }), uById = {}, geo = new WeakMap(), hooked = new WeakSet(), list = [];
+    var U = o.U || uniforms({ tex:tex }), uById = {}, geo = new WeakMap(), keep = new WeakMap(), hooked = new WeakSet(), list = [];
     if(o.U) o.U.uRlTex.value = tex;
+    U.uRlW.value = cap + 1;
     st.tex = tex; st.U = U;
     function rec(R){ var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9; R.poly.forEach(function(p){ x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); });
       return { id:R.id, box:[x0, R.y, z0, x1, R.y + R.h, z1], doors:R.doors || [{ out:true, w:1 }], windows:R.windows || [], lamps:R.lamps || [], vault:!!R.vault }; }
@@ -312,11 +346,19 @@ var KRLHOST = (function(){
       o.scene.traverse(function(m){ if(!m.isMesh || m.isInstancedMesh || !m.geometry || !m.geometry.attributes.position) return;
         var g = m.geometry, seen = geo.get(m);
         if(!seen || seen.g !== g || seen.n !== g.attributes.position.count) meshes.push(m); else if(fresh.length) near.push(m); });
+      /* a mesh whose new geometry starts with the old one's vertices (an accumulator that grew: Girder's furniture) keeps its tags */
+      meshes.forEach(function(m){ var seen = geo.get(m), kp = keep.get(m); if(!seen || !kp || fresh.length) { keep.delete(m); return; }
+        var P = m.geometry.attributes.position, n = Math.min(kp.n, P.count), ok = n > 0 && kp.n <= P.count && kp.s;
+        for(var k = 0; ok && k < kp.s.length; k++){ var j = kp.s[k][0]; ok = j < n && P.getX(j) === kp.s[k][1] && P.getY(j) === kp.s[k][2] && P.getZ(j) === kp.s[k][3]; }
+        if(!ok) keep.delete(m); });
       var again = fresh.length ? near.filter(function(m){ if(!m.geometry.boundingSphere) m.geometry.computeBoundingSphere();
         var c = m.geometry.boundingSphere.center.clone().applyMatrix4(m.matrixWorld), r = m.geometry.boundingSphere.radius * m.matrixWorld.getMaxScaleOnAxis();
         return fresh.some(function(R){ var b = rec(R).box; return c.x + r >= b[0] && c.x - r <= b[3] && c.z + r >= b[2] && c.z - r <= b[5] && c.y + r >= b[1] && c.y - r <= b[4]; }); }) : [];
+      again.forEach(function(m){ keep.delete(m); });   /* new rooms: tag these again in full */
       var todo = meshes.concat(again);
-      if(todo.length && list.length){ var t = tagRooms(todo, list, uById); st.tagged += t.meshes; st.indoor += t.indoor; }
+      if(todo.length && list.length){ var t = tagRooms(todo, list, uById, { keep:keep, width:cap + 1 }); st.tagged += t.meshes; st.indoor += t.indoor;
+        todo.forEach(function(m){ var kp = keep.get(m), P = m.geometry.attributes.position; if(!kp) return;   /* a few vertices to check a later growth against */
+          kp.s = [0, kp.n >> 1, kp.n - 1].map(function(j){ return [j, P.getX(j), P.getY(j), P.getZ(j)]; }); }); }
       todo.forEach(function(m){ geo.set(m, { g:m.geometry, n:m.geometry.attributes.position.count }); hookMat(m); });
       if(o.U && o.renderer && st.pending.length) settle();
       if(o.sunUp){ var s = o.sunUp(); U.uRlSun.value = s; U.uRlLamp.value = 1 + 0.6 * (1 - s); }
