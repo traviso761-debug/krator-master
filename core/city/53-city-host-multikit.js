@@ -8,7 +8,7 @@
                                                 by canonical core/materials/library/<setId> key, capped at maxVramMB (350)
      KCITY.bakeProxy(parts, step)             vertex-clustered flat-shaded HLOD proxy mesh for mid-distance rings
      KCITY.boundedInstanced(im)               per-InstancedMesh world bounding sphere sharing prototype attribute buffers
-     KCITY.hostMultikit.createBrowserLoader   lazy <script> sidecar loader (<pack>.tex.js once per pack + <kitId>.bundle.js)
+     KCITY.hostMultikit.createBrowserLoader   lazy script-tag sidecar loader (<pack>.tex.js once per pack + <kitId>.bundle.js)
      KCITY.hostMultikit.create(opt)           3-ring HLOD host (FULL atlas, MID baked, FAR massing + KCITY.constructMesh
                                                 triangle-by-triangle construction) with hlodCheck() exact-once audit */
 (function () {

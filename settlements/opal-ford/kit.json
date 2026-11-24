@@ -52,6 +52,7 @@
   "jobs"
  ],
  "furnitureTex": true,
+ "sidePacks": true,
  "interiorSets": [
   "xanadu"
  ],

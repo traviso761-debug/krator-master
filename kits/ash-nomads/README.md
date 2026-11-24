@@ -19,7 +19,7 @@ the Scyvoi kit on 2026-10-07 to the owner's style guide (the `ashnomad` referenc
   vardo, no Baelu:** what the Scyvoi load on a cart goes on a beetle's back or a millipede's.
 
 ```
-cd kits/ash-nomads && python3 build.py                      # dist/ash-nomads.html
+cd kits/ash-nomads && python3 build.py                      # dist/ash-nomads.html and its library pack beside it, dist/ash-nomads.tex.ash-nomads*.js (--inline-packs: in the page)
 python3 build.py --vendor-check                             # the engine against kits/scyvoi/src (must read OK)
 python3 verify.py dist/ash-nomads.html --assert             # invariants (headless Chromium, about a minute)
 python3 verify.py dist/ash-nomads.html --cut --views "Assembly and mess hall - inside (cut-away)"

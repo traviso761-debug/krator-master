@@ -12,6 +12,10 @@ python3 serve.py                                   # serve both pages; the edito
 
 Serve the folder (`python3 serve.py`, port 8813) and open `/dist/voth-site.html` or `/dist/voth-city.html`.
 
+The city plan's library maps (`SL_TEX`) are in `dist/voth-city.tex.voth.js` beside its page, loaded by a `<script src>` ahead
+of the page's scripts (Stage 8 B10, 2026-11-24: the page was 19.0 MB, now 9.6 MB and the pack 9.5 MB, each under the
+gallery's 16 MB a file). Commit and publish the two together; `build.py --inline-packs` puts the maps back in the page.
+
 This build grew in `settlements/streetlab`, which began as a street-placement toy on a plain, the test bed for the
 method. The toy is retired: its machinery is `core/city`, and its own steps 0-5 (a triangle of landmarks, a noisy wall,
 ring avenues) are in the history. On 2026-10-14 (the owner: "Rename the folder to voth") Streetlab became
