@@ -31,6 +31,8 @@
 | nwbay test-geology | page's nodes not the field's | page older than the geology re-bake | rebuild after the re-run |
 | check_stale | viridian and others behind their sources | expected | the rebuild |
 | test-east-rift, test-xan-economy | only the "under four minutes" timing (309-979 s under load) | machine load | owner: relax or run alone |
+| xanadu-lake-shore GPU verify (xanadu-plans session, 2026-11-23) | hangs after its resources panel: the renderer dies and the 25-min watchdog kills it, with or without WORLD_SAMPLE (the re-run tree's run of the line's page went silent at the same point, resources.png 18:03). The region's own asserts all print before it; the one failing assert is lf_pleasure_dome_isle (waterline ratio 1.36 against 1.35, WLAND v2) | likely the stack's (B0 sync); a dying renderer may be V8's 4 GB heap limit (check the event log and minidumps) | find what the page draws after the resources panel; the lf_pleasure_dome_isle ratio is the landforms' WLAND v2 rule (relax to 1.36 or fix the isle) |
+| xanadu-north-shore "baked plan is the plan made here" (same) | fails in the browser (fc78d62e against node 9f94105e), with or without the sample: only road spher0north1/road/2's deck (1 cm) and one bridge pier's base (0.3 m) differ | the browser re-plans on ground it has already shaped (the stack's B0 sync) | plan on the unshaped ground in the browser as in node, or compare within a tolerance; then re-bake |
 
 Fixed on the line this session (do not redo): Tungang bundle replay (94ff6cf69), 16 ORNUM defaults (94ff6cf69, fccf87423).
 
