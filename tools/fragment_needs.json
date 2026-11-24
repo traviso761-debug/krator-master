@@ -56,6 +56,9 @@
   "core/water/ext/61-core-water-plume.js": {"needs": ["core/water/20-core-water.js", "core/water/50-core-water-draw.js"]},
   "core/city/42-city-multikit.js": {"needs": ["core/city/40-city-kcity.js"], "after": ["core/kits/10-core-kits.js"]},
   "core/city/53-city-host-multikit.js": {"needs": ["core/city/40-city-kcity.js"], "after": ["core/kits/10-core-kits.js"]},
-  "core/region/47s-region-styles.js": {"needs": ["core/region/00-region-core.js"], "after": ["core/kits/10-core-kits.js"]}
+  "core/region/47s-region-styles.js": {"needs": ["core/region/00-region-core.js"], "after": ["core/kits/10-core-kits.js"]},
+  "core/terrain/35f-core-strata-arcflow.js": {"needs": ["core/rand/08-core-rand.js", "core/terrain/35-core-strata.js"]},
+  "core/frontier/18-core-frontier.js": {"needs": ["core/rand/08-core-rand.js"]},
+  "core/frontier/52-core-frontier-draw.js": {"needs": ["core/rand/08-core-rand.js", "core/frontier/18-core-frontier.js"]}
  }
 }

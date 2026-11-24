@@ -89,17 +89,19 @@ const SITES = require('../src/41-biome-spider-sites.js');
   if (taboo.tabooViolated !== true) throw new Error('expected tabooViolated on strikingBrood');
 }
 
-// 5. Hydrological divide, single SW outlet & thermal degumming pool separation (PLAN.md section 7.2 #3 & #4)
+// 5. Hydrological divide, single SW outlet & thermal degumming pool separation (PLAN.md section 7.2 #3 & #4 + Station 7 haugel)
 {
-  const stationKeys = ['spillway', 'narrows', 'pavilion', 'fen', 'dolomite', 'rampart'];
+  const stationKeys = ['spillway', 'narrows', 'pavilion', 'fen', 'dolomite', 'rampart', 'haugel'];
   const outlets = stationKeys.filter(k => (SITES[k].outflowM3s || 0) > 0);
   const fenPools = SITES.fen.thermalPools;
   const allFenAboveLake = fenPools.every(p => p.level >= SITES.fen.lakeLevelLocal + 0.10);
+  const haugelPoolsAboveLake = SITES.haugel.thermalPools.every(p => p.level >= SITES.haugel.lakeLevelLocal + 0.10);
   const brineApron = PHYS.mvtBrineAt({ventDistM: 10.0, depthBelowRimM: 28.0, zincByte: 190, limestoneByte: 255});
 
-  T.ok('Spider Lake exits via a single unbifurcated 380 m3/s SW breach at (1272, 193) while North Rampart has 0 surface outflow',
+  T.ok('Spider Lake exits via a single unbifurcated 380 m3/s SW breach at (1272, 193) while North Rampart and Hau-Gel inflow have 0 outflow',
     outlets.length === 1 && outlets[0] === 'spillway' && SITES.spillway.outflowM3s === 380.0 &&
-    SITES.rampart.hasOpenLake === false && SITES.rampart.outflowM3s === 0.0);
+    SITES.rampart.hasOpenLake === false && SITES.rampart.outflowM3s === 0.0 &&
+    SITES.haugel.inflowM3s === 585.0 && SITES.haugel.carnelianWalls === true && haugelPoolsAboveLake);
   T.ok('all Station 4 fen thermal degumming spring planes sit >= +0.10 m above +1,460.0 m WATER.open lake datum',
     fenPools.length >= 4 && allFenAboveLake);
   T.ok('alkaline carbonate seep apron (+38-41 C, pH > 8.1) degums sericin safely and saturates celestine/calcite in tube_ozarks_15',

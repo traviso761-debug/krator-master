@@ -1,0 +1,20 @@
+{
+ "id": "haugel",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Spider Lake — 9106 Hau-Gel Inflow Gorge, Scalding Sinter Terrace & Carnelian Ejecta Cliffs",
+ "out": "spiderlake-haugel.html",
+ "px": [1354, 238],
+ "sky": [1082, -92],
+ "elevM": 1505.2,
+ "pAtm": 1.33,
+ "koppen": "Cfa",
+ "rainMmYr": 1584,
+ "riverId": 9106,
+ "riverName": "Hau-Gel",
+ "dischargeM3s": 585.0,
+ "strataStack": "secondary-ejecta+carbonate-shelf",
+ "reserves": [
+  { "id": "site:haugel-sinter-ford", "x": -165, "z": -135, "r": 46 }
+ ],
+ "modes": ["Dawn Fog", "Dusk Lake-Smoke", "Smudge Harvest", "Midday Clear"]
+}

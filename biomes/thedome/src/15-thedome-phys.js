@@ -326,6 +326,49 @@ var DOME_PHYS = (function () {
     return sh.shellStep01 >= 0.55;
   }
 
+  /* 5. Station 5 (eastflank): Carnelian Sky-Island upslope of Ancient Perimeter Kill-Line + downslope Mist-Pylon */
+  function eastFlankFrontierAt(x, z, elevRelM, site) {
+    var s = site || {};
+    if (!s.killLine) {
+      return { biosphere: 'earth', bleach01: 0, upslopeRed01: 0, strangler01: 0, skeletonProb01: 0, mistPool01: 0 };
+    }
+    var KF = (typeof window !== 'undefined' ? window : globalThis).KFRONTIER;
+    var el = def(elevRelM, 0);
+    if (KF && typeof KF.bleachSwathAt === 'function') {
+      var sw = KF.bleachSwathAt(x, z, s.killLine);
+      var mp = s.mistPylon && typeof KF.mistInversionAt === 'function' ? KF.mistInversionAt(x, z, el, s.mistPylon) : { mistPool01: 0 };
+      var bio = sw.bleach01 >= 0.48 ? 'bleach' : (sw.signedDistM > def(s.killLine.halfWidthM, 24.0) * 0.65 ? 'carnelian' : 'earth');
+      return {
+        biosphere: bio,
+        bleach01: +sw.bleach01.toFixed(4),
+        upslopeRed01: +sw.upslopeRed01.toFixed(4),
+        strangler01: +sw.strangler01.toFixed(4),
+        skeletonProb01: +sw.skeletonProb01.toFixed(4),
+        mistPool01: +def(mp.mistPool01, 0).toFixed(4)
+      };
+    }
+    var kl = s.killLine;
+    var rx = x - def(kl.x0, 8.0), rz = z - def(kl.z0, 0.0);
+    var dx = def(kl.dx, 0.20), dz = def(kl.dz, 0.98);
+    var dl = Math.hypot(dx, dz);
+    dx /= dl; dz /= dl;
+    var signedDistM = -rx * dz + rz * dx;
+    var hw = def(kl.halfWidthM, 24.0);
+    var ad = Math.abs(signedDistM);
+    var bleach01 = 1.0 - smooth(hw * 0.72, hw * 1.06, ad);
+    var upRed = smooth(hw * 0.65, hw * 1.55, signedDistM);
+    var edgeT = clamp(1.0 - Math.abs(ad - hw) / 15.0, 0, 1);
+    var edgeBell = edgeT * edgeT * (3.0 - 2.0 * edgeT);
+    return {
+      biosphere: bleach01 >= 0.48 ? 'bleach' : (signedDistM > hw * 0.65 ? 'carnelian' : 'earth'),
+      bleach01: +bleach01.toFixed(4),
+      upslopeRed01: +upRed.toFixed(4),
+      strangler01: +(signedDistM > 0 ? edgeBell : edgeBell * 0.35).toFixed(4),
+      skeletonProb01: +(bleach01 * 0.65).toFixed(4),
+      mistPool01: 0
+    };
+  }
+
   return {
     CONST: CONST,
     pressureAt: pressureAt,
@@ -335,7 +378,8 @@ var DOME_PHYS = (function () {
     gnammaAt: gnammaAt,
     barometricAt: barometricAt,
     acousticsAt: acousticsAt,
-    canRootFullTree: canRootFullTree
+    canRootFullTree: canRootFullTree,
+    eastFlankFrontierAt: eastFlankFrontierAt
   };
 })();
 

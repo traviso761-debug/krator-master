@@ -46,7 +46,7 @@ def find_node():
     return None
 
 
-STATIONS = ['apron', 'moat', 'crown', 'cleft']
+STATIONS = ['apron', 'moat', 'crown', 'cleft', 'eastflank']
 BSRC.variants([['--station', _s] for _s in STATIONS[1:]])
 if '--stations' in sys.argv or '--all' in sys.argv:
     _rest = [a for a in sys.argv[1:] if a not in ('--stations', '--all')]
@@ -79,12 +79,15 @@ for f in sorted(os.listdir(_sd)):
     if re.match(r'\d', f):
         PATH[f] = os.path.join(_sd, f)
 
-# 1. core/shader, core/export, core/rand, core/drawn, core/shadow, core/space, core/hazard, core/mask, core/tags
+# 1. core/shader, core/export, core/rand, core/drawn, core/shadow, core/space, core/hazard, core/mask, core/tags (+ core/frontier on eastflank)
 PATH.setdefault('06-core-khook.js', P('core', 'shader', '06-core-khook.js'))
 PATH.setdefault('06b-core-kcolor.js', P('core', 'shader', '06b-core-kcolor.js'))
 for f in ('07-core-export.js', '09-core-export-adapters.js'):
     PATH.setdefault(f, P('core', 'export', f))
 PATH.setdefault('08-core-rand.js', P('core', 'rand', '08-core-rand.js'))
+if STATION == 'eastflank':
+    PATH.setdefault('18-core-frontier.js', P('core', 'frontier', '18-core-frontier.js'))
+    PATH.setdefault('48-core-frontier-draw.js', P('core', 'frontier', '52-core-frontier-draw.js'))
 PATH.setdefault('10-core-drawn.js', P('core', 'drawn', '10-core-drawn.js'))
 PATH.setdefault('10-core-shadow.js', P('core', 'shadow', '10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js', P('core', 'shadow', 'host', '12-core-shadow-host.js'))
