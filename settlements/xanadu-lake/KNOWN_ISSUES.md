@@ -130,4 +130,11 @@
 - **Pāṭari is held on its row from before the move** (STALE). On the re-run's model every landing within 2.5 km either side
   of its new pin is a cliff: the ground rises 33-76 m in the first 100 m from the water (it rose 7 before), 174-481 m at 430 m.
   The town lays 28 houses of 273 there. Owed, as for Qōqō, Hāibh and Nēṭ: a site with a foreshore (the map's).
+- **Hāibh re-tuned at its second-move pin** (2026-11-24; the map session moved it 4 km west to a gentle foreshore). The pin
+  stands beside a narrow channel (about 100 m wide) running north from the lake, 300 m east of it; the fitted bearing (146) put the
+  landing at the channel's mouth. Its frame now faces south (180, its plan's), landing 500 m west of the pin (`world.at`) so the
+  waterfront stays west of the channel, past the shallows' flats (`islet` 150); its core 600 m with a 200 m fade (was 740, 300),
+  benches 560 long, its shore road and rows 6 m further up (road 36) on the flat new beach. The plan (`89zq` xlBeachFit): a beach
+  work's front stands as far up the beach as it takes to be 0.3 m over the level (4 m at least, 10 at most): Hāibh's beach is
+  0.13 m up at 4 m, and its honey houses' fronts stood in the lake.
 

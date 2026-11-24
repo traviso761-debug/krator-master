@@ -80,10 +80,13 @@ const xlMain=Lay=>Lay.stairs.reduce((a,b)=>Math.abs(b)<Math.abs(a)?b:a,Lay.stair
 // its lowest front corner stands 4 m up the beach; the first whose back corners stay 5 m clear of the road; else 6 m further
 // along (dir), at most six tries. {x, z, ry} or null
 function xlBeachFit(key,D,x,dir){const R0=XL.SPECS[key].layout.road;
+ /* the front's depth up the beach: 4 m, or as far as the beach takes to stand 0.3 m over the level (at most 10 m: Haibh's flat
+    beach on the second move, 2026-11-24, is 0.13 m up at 4 m) */
+ const PF=xlFit(key);let dfr=4;while(dfr<10&&xlProf(PF,dfr)<.3)dfr+=.5;
  for(let t=0;t<6;t++,x+=6*dir){const hw=D.w/2+10,sl=(xlShoreZ(key,x+hw)-xlShoreZ(key,x-hw))/(2*hw),rt=Math.max(-.35,Math.min(.35,Math.atan2(-sl,1)));
   for(const ry of[rt,rt/2,0]){const c=Math.cos(ry),s=Math.sin(ry),pt=(lx,lz)=>[x+lx*c+lz*s,-lx*s+lz*c];
    const fr=[pt(-D.w/2,D.d/2),pt(D.w/2,D.d/2),pt(0,D.d/2)],bk=[pt(-D.w/2,-D.d/2),pt(D.w/2,-D.d/2),pt(0,-D.d/2)];
-   const z=Math.min(...fr.map(q=>xlShoreZ(key,q[0])-4-q[1]));   /* every front corner 4 m or more up the beach */
+   const z=Math.min(...fr.map(q=>xlShoreZ(key,q[0])-dfr-q[1]));   /* every front corner dfr m or more up the beach */
    if(Math.max(...bk.map(q=>xlShoreZ(key,q[0])-(q[1]+z)))<=R0-5)return{x,z,ry};}}
  return null;}
 function xlCivicSpec(key){const S=XL.SPECS[key],G=xlGeo(key),L=S.layout,out=[],R=L.road,mk=L.market,main=xlMain(L);
