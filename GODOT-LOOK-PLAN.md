@@ -603,6 +603,7 @@ the all-builds rebuild. These are small, and they are what the Godot side cannot
 | A material's `side` (front, back or double), where it now carries only `doubleSided` | `core/export/10-core-export-scene.js` | C5: a record three draws from inside only (`BackSide`: Erewhon's ice shell is one) arrives as single-sided and would be culled. None is in the cases exported so far |
 | A mirrored mesh's triangles turned over when its matrix is baked into a bucket | the same, where it applies `matrixWorld` | C5: three flips the winding of a mesh with a negative determinant, the bake does not. The importer now catches it (`KratorKmat.fit`) and draws that bucket on both faces; turned over at export it could be culled |
 | `closed: true` on a bucket or an item whose mesh is a closed solid | the same | C5: 60 of the town's 70 materials are double-sided, and 99.8 % of their triangles wind with their normals. A closed solid can cull its back faces whatever the record says; only the export can say cheaply that it is closed |
+| Where smoke rises and where a wall stains: a chimney's or a hearth's outlet (`smokeAt` on the kits that have it) and an opening's sill, as records in the world's registry | `core/export`, from `core/engine`'s `smokeAt` and `36o-open.js` | F4, F5 and M11 (added 2026-11-24): the air's emitters and the soot and leak decals are built and have nowhere to stand; Longsong's export carries neither |
 
 All are `[G data]`: plain numbers on vertices and records. The web pages ignore them.
 
