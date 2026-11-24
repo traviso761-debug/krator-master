@@ -87,8 +87,10 @@ for (const key of KEYS) {
   const H = hollows(h, F, S), Cw = coreWet(h, key, G);
   T.ok(N + ': dry above the level: no hollow under -520 m apart from the lake, the core dry from the waterline in', H.bad === 0 && Cw.bad === 0,
     H.bad + ' hollow cells' + (H.first ? ' (first ' + H.first + ')' : '') + ', ' + Cw.bad + ' wet in the core' + (Cw.first ? ' (first ' + Cw.first + ')' : ''));
+  /* the pit goes 5 m under the level wherever it is dug (a fixed 60 m left it dry on a cliff shore: Patari on the re-run's model) */
+  const pz = xlShoreZ(key, 100) - 200, pitTo = h(100, pz) + 5;
   T.neg(N + ': ...its negative: a pit dug inland is caught', g => hollows(g, F, S).bad === 0,
-    (x, z) => h(x, z) - (Math.hypot(x - 100, z - (xlShoreZ(key, 100) - 200)) < 40 ? 60 : 0), h);
+    (x, z) => h(x, z) - (Math.hypot(x - 100, z - pz) < 40 ? pitTo : 0), h);
   // 2. the shore
   const E = shoreErr(h, F);
   T.ok(N + ': the shore within 50 m of the region\'s (' + F.check.shore.length + ' crossings inside the footprint)', E.worst <= 50 && E.miss === 0 && F.check.shore.length > 20,
@@ -99,7 +101,8 @@ for (const key of KEYS) {
   T.ok(N + ': ' + G.benches.length + ' benches (the spec\'s ' + S.wall.benches + '), each level within 0.5 m', G.benches.length === S.wall.benches && sp.every(s => s <= .5),
     sp.map(s => s.toFixed(3)).join(', ') + ' m; levels ' + G.benches.map(B => B.y).join(', ') + ' m');
   T.neg(N + ': ...its negative: a bench left on the slope is caught', g => benchSpread(g, key, G.benches[0]) <= .5,
-    (x, z) => { const d = xlShoreZ(key, x) - z, B = G.benches[0]; return d > B.d0 && d < B.d1 && x > B.x0 && x < B.x1 ? xlProf(F, d) : h(x, z); }, h);
+    /* the bench's band as a slope: the profile, and a 5 % grade on it (Phish-Markit's first bench lies on a plateau on the re-run's model) */
+    (x, z) => { const d = xlShoreZ(key, x) - z, B = G.benches[0]; return d > B.d0 && d < B.d1 && x > B.x0 && x < B.x1 ? xlProf(F, d) + .05 * (d - B.d0) : h(x, z); }, h);
   // 4. the band
   const BE = bandErr(h, F), tol = .015 * S.world.band;
   T.ok(N + ': no step at the band: the ground at the footprint\'s edge (R ' + S.world.R + ' m) and the band\'s (+' + S.world.band + ' m) within ' + tol.toFixed(1) + ' m of the region\'s', BE.worst <= tol && F.check.ring.length >= 48,   /* a third of the 144 points at least: a town whose pin stands far inland of its landing (Pāṭari, Hoṭ-Bāṭh) has much of its ring over the lake, which the fit leaves out */

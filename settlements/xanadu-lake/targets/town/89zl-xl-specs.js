@@ -167,7 +167,7 @@ XL.SPECS={
  /* the shipwrights' town (boatyard/PLAN.md): the slipways, the dry dock and the boat sheds along the beach, the timber yards
     up the slope (kits/xanadu/extra/88i), the rope walk's shed; no dugouts in the tune (lk.boatyard.store) */
  boatyard:{key:'boatyard',bearing:0,shore:'sand',wall:{rise:730,benches:2},
-  world:{region:'xanadu-lake-shore',site:'sxanlkboatyard01',R:1400,band:600},
+  world:{region:'xanadu-lake-shore',site:'sxanlkboatyard01',R:2200,band:600,brg:0,at:[700,0]},
   quarters:[{id:'yards',role:'industry',share:.30,at:'shore'},{id:'timber',role:'industry',share:.10,at:'slope'},
    {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'market',role:'market',share:.10,at:'shore'},{id:'bench',role:'farm',share:.05,at:'bench'}],
   landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
@@ -202,7 +202,7 @@ XL.SPECS={
  /* the saffron town under the highest wall (saffron/PLAN.md): the saffron houses on the first bench, the crocus terraces
     above, the factor's strong house by the landing */
  saffron:{key:'saffron',bearing:0,shore:'shelf',wall:{rise:769,benches:2},
-  world:{region:'xanadu-lake-shore',site:'sxanlksaffron01',R:1400,band:600},
+  world:{region:'xanadu-lake-shore',site:'sxanlksaffron01',R:1400,band:600,islet:500},
   quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'town',role:'residential',share:.45,at:'slope',rest:true},
    {id:'houses',role:'industry',share:.15,at:'slope'},{id:'fields',role:'farm',share:.20,at:'bench'},{id:'temple',role:'civic',share:.10,at:'slope'}],
   landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
@@ -211,7 +211,8 @@ XL.SPECS={
    {key:'xa_wayside_shrine',n:2,at:'bench'}],
   craft:{dugouts:50,launches:2,barges:1},stalls:10,
   wealth:[.45,.40,.15],andean:.25,ruins:null,
-  layout:{half:580,road:36,rows:[36,102,168,234,300,366,432],stairs:[-290,0,290],
+  layout:{maxSlope:.4,   /* the re-run's wall behind the town rises a third (2026-11-24) */
+   half:580,road:36,rows:[36,102,168,234,300,366,432],stairs:[-290,0,290],
    market:{x:-150,w:96,d:46},
    benches:[[520,630],[710,820]],benchHalf:640,stream:null,
    core:{x:780,d:880,lake:180,fade:300},
@@ -299,7 +300,7 @@ XL.SPECS={
  /* the Sultan's gardens' town (garden/PLAN.md): walled orchards up the benches (the kit's orchard plots, fruit), the rill
     gardens of the merchants' summer houses on the slope, the fruit market and stores by the landing */
  garden:{key:'garden',bearing:0,shore:'shingle',wall:{rise:796,benches:2},
-  world:{region:'xanadu-lake-shore',site:'sxanlkgarden01',R:1400,band:600},
+  world:{region:'xanadu-lake-shore',site:'sxanlkgarden01',R:1400,band:600,islet:150},
   quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'town',role:'residential',share:.45,at:'slope',rest:true},
    {id:'orchards',role:'farm',share:.20,at:'bench'},{id:'villas',role:'residential',share:.15,at:'slope'},{id:'temple',role:'civic',share:.10,at:'slope'}],
   landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
@@ -334,8 +335,9 @@ XL.SPECS={
   notes:'A white town at the foot of the steepest wall: the stone slips at the water, the masons\' yards up the slope where the blocks are dressed, a town of good ashlar for its size.'},
  /* the orchard town of the south-west shore (orchard/PLAN.md): open orchards on the benches (fruit), the hives at their edge,
     the fermentary and the packing sheds */
- orchard:{key:'orchard',bearing:45,shore:'shingle',wall:{rise:682,benches:2},
-  world:{region:'xanadu-lake-shore',site:'sxanlkorchard01',R:1400,band:600},
+ orchard:{key:'orchard',bearing:90,   /* 90 (was 45): the re-run's shore runs north-south a kilometre east of the pin (2026-11-24; world.brg) */
+ shore:'shingle',wall:{rise:682,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkorchard01',R:2000,band:600,brg:90,at:[0,-100],smooth:40},
   quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'town',role:'residential',share:.50,at:'slope',rest:true},
    {id:'orchards',role:'farm',share:.25,at:'bench'},{id:'market',role:'market',share:.10,at:'shore'},{id:'hives',role:'farm',share:.05,at:'slope'}],
   landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
@@ -344,10 +346,10 @@ XL.SPECS={
    {key:'xa_warehouse',n:3,at:'slope'},{key:'xa_apiary',n:4,at:'slope'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
   craft:{dugouts:45,launches:2,barges:2},stalls:10,
   wealth:[.55,.35,.10],andean:.30,ruins:null,
-  layout:{half:520,road:36,rows:[36,102,168,234,300,366],stairs:[-260,0,260],
+  layout:{half:420,road:36,rows:[36,102,168,234,300,366],stairs:[-260,0,260],   /* half 420 (was 520): the re-run's straight shore here is 1 km long between a bay and a bulge (2026-11-24) */
    market:{x:-160,w:100,d:48},
-   benches:[[460,570],[650,760]],benchHalf:480,stream:null,
-   core:{x:640,d:820,lake:180,fade:300},
+   benches:[[440,580],[650,790]],benchHalf:440,stream:null,
+   core:{x:540,d:820,lake:180,fade:200},
    fields:{rows:9,orchard:true,crop:'pomegranate',colour:'green',plot:2}},
   notes:'Gārḍan\'s working cousin: open orchards on broad benches where the wall eases, the hives along their edges, the fermentary and the packing sheds by the landing.'},
  /* the reed and lotus town (lotus/PLAN.md): the town on its knoll, the mat sheds and reed racks along the shallows' edge; the
@@ -370,8 +372,9 @@ XL.SPECS={
   notes:'Two towns, one on the knoll and one on the water: the houses up the knoll, the mat sheds and reed racks at the shallows\' edge, the dugouts threading the channels.'},
  /* the west shore's market town and the lake's fish market (fish-market/PLAN.md): the largest fleet, the racks and
     smokehouses along the beach, the market streets and the caravanserai where the west road comes in */
- 'fish-market':{key:'fish-market',bearing:45,shore:'sand',wall:{rise:510,benches:2},
-  world:{region:'xanadu-lake-shore',site:'sxanlkfish01',R:1800,band:600,smooth:60},
+ 'fish-market':{key:'fish-market',bearing:0,   /* 0 (was 45): the re-run's shore runs east-west here (2026-11-24; world.brg) */
+ shore:'sand',wall:{rise:510,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkfish01',R:1800,band:600,smooth:60,islet:150,brg:0},
   quarters:[{id:'harbour',role:'harbour',share:.15,at:'shore'},{id:'market',role:'market',share:.15,at:'shore'},
    {id:'old',role:'residential',share:.40,at:'slope',rest:true},{id:'merchants',role:'residential',share:.15,at:'slope'},
    {id:'bench',role:'farm',share:.10,at:'bench'},{id:'temple',role:'civic',share:.05,at:'slope'}],
@@ -389,8 +392,9 @@ XL.SPECS={
   notes:'Panajachel and Santiago Atitlán\'s market crowded together: the largest fleet\'s racks and smokehouses along the beach, the market streets and stalls, the merchants\' houses and the caravanserai up the slope where the west road comes in.'},
  /* the fishing village under the stack (stack/PLAN.md): a tight village up the slope between two wadis' fans, the landing in
     the stack's lee, the terraces on the fans; the stack itself waits for its landform record */
- stack:{key:'stack',bearing:45,shore:'cliff',wall:{rise:457,benches:2},
-  world:{region:'xanadu-lake-shore',site:'sxanlkstack01',R:2200,band:600,smooth:60},
+ stack:{key:'stack',bearing:0,   /* 0 (was 45): the re-run's ring put its shore east-west on the stack's arm; the landing on that stretch 1.4 km east of the pin (2026-11-24; world.brg, world.at) */
+ shore:'cliff',wall:{rise:457,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkstack01',R:2600,band:600,smooth:60,brg:0,at:[1400,0],gs:12.5,resStep:20},
   quarters:[{id:'landing',role:'harbour',share:.15,at:'shore'},{id:'village',role:'residential',share:.60,at:'slope',rest:true},
    {id:'fans',role:'farm',share:.15,at:'bench'},{id:'temple',role:'civic',share:.10,at:'slope'}],
   landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'slope',q:'temple'}],
