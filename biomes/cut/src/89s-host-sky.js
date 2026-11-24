@@ -22,6 +22,4 @@ const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);
  /* the echoes: faint at dusk and dawn (the sun from +6 to -8 degrees, strongest just after it sets), nothing by day or by night */
  const a=SKY.state.sunAlt;if(CUT.echoLight)CUT.echoLight(.55*Math.max(0,1-Math.abs(a+1)/7));}
-{const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-  if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
-  ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
+ATMOS.cloudShadeScene(scene,{leave:null});   /* the clouds' shadows on every lit material, once (the core's pass, Stage 8 V8, 2026-11-24; the fauna too, as before) */

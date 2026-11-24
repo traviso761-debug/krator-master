@@ -153,8 +153,11 @@
  // update a frame moves every shadow. porosity: how much the wet darkens it (soil 1, rock 0.6, leaves 0.4, metal 0).
  // Under cover (the rain occlusion map, fx/89-atmos-fx-raincover.js, when the page takes it) the ground stays dry.
  // Call it after ATMOS.sky; on a page with no shared sky it does nothing. Any order with wetGround, snowOn, heightFog.
+ // Once a material: a second call is a no-op, whatever its porosity (the first caller's stands; V8, 2026-11-24: the biome
+ // core's makers and a page's scene pass both reach a plant's material, and two porosities were two layers, the shade twice).
  A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;const por=o.porosity==null?1:o.porosity;
-  const K=A.KH();return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
+  const K=A.KH();if(K.names(mat).some(n=>n.indexOf('atmos-cloudshade-')===0))return mat;
+  return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
    for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'].concat(A.skyMoodOn?['uCloudX','uCloudY','uCloudZ']:[]))sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};   /* the shade's field reads uCloudY (the kind, the ripple's epicentre) */
    const occ=A.rainCoverGLSL&&A.U&&A.U.rainOcc?A.rainCoverGLSL():null;if(occ)A.rainCoverUniforms(sh.uniforms);
    const head=A.cloudShadeGLSL()+'\nuniform float uPorosity;\n',wp='vec4 atmWP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmWP=instanceMatrix*atmWP;\n#endif\natmWP=modelMatrix*atmWP;\n';
@@ -177,4 +180,23 @@
    const wet=wetHere+'\ndiffuseColor.rgb*=1.0-0.38*atmWetHere*uPorosity;';
    sh.fragmentShader=(/uniform float uWet;/.test(sh.fragmentShader)?'':'uniform float uWet;\nuniform float uPorosity;\n')+(occ?(lambert?'varying vec3 atmWPosF;\n':'')+occ+'\n':'')
     +K.inject(sh.fragmentShader,{at:'map_fragment',after:wet,fallback:{at:'alphamap_fragment',before:wet}});});};
+ // ATMOS.cloudShadeScene(scene, o): the clouds' shadows and the rain's darkening on every lit material in the scene, once
+ // (SKY-PLAN.md 11.1). ATMOS.skyBiome runs it (o.shade false: not); a page on ATMOS.sky calls it itself, after its build. Plants
+ // (userData.biome) take porosity o.biome (default BIO.CLOUD.porosity, .4), structures (userData.host) o.host (.6), the rest
+ // o.other (1). The animated fauna are left out (their place comes from their own pose, not the instance matrix): the program
+ // keys o.leave matches (/^biofauna|^bioanim/; null leaves none out). o.skip(mesh, material) -> true leaves one out (a water).
+ // It also turns on the biome core's own call (V8, G-weather W1, 2026-11-24): every material core/biome's makers made, before
+ // this or after it, in the scene or not (the sward, a swapped LOD), takes ATMOS.cloudShade once at o.biome
+ // (core/biome/30-core-foliage.js, BIO.cloudShade). Moved here from host/89-atmos-i-skybiome.js so a page on ATMOS.sky has it.
+ const bioOf=()=>{try{return typeof BIO!=='undefined'&&BIO?BIO:null;}catch(e){return null;}};   /* BIO's const may come later in the script */
+ A.cloudShadeScene=function(scene,o){o=o||{};const T=A.T,seen=new Set(),B=bioOf();
+  const pb=o.biome!=null?+o.biome:B&&B.CLOUD&&B.CLOUD.porosity!=null?B.CLOUD.porosity:.4,ph=o.host==null?.6:+o.host,po=o.other==null?1:+o.other;
+  const lv=o.leave===undefined?/^biofauna|^bioanim/:o.leave;
+  scene.traverse(ob=>{if(!ob.isMesh||!ob.material)return;
+   for(const m of(Array.isArray(ob.material)?ob.material:[ob.material])){
+    if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
+    if(o.skip&&o.skip(ob,m))continue;
+    if(lv){const k=m.customProgramCacheKey!==T.Material.prototype.customProgramCacheKey?String(m.customProgramCacheKey()):'';if(lv.test(k))continue;}
+    A.cloudShade(m,{porosity:ob.userData.biome?pb:ob.userData.host?ph:po});}});
+  A.skyShadeOn=true;if(B&&B.cloudShadeFlush)B.cloudShadeFlush(pb);};
 })();

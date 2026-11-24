@@ -7,7 +7,8 @@
 //   o.preset   overrides merged into PRESETS.sky.standard (air, clouds, fogDensity, keys ...)
 //   o.hemi     the page's HemisphereLight (default: the first in the scene); o.fills: DirectionalLights that keep their
 //              share of the day and go out at night (default: every other DirectionalLight in the scene)
-//   o.shade    false: no cloud shadows on the page's materials (default: every lit material, once, via ATMOS.cloudShade)
+//   o.shade    false: no cloud shadows on the page's materials (default: every lit material, once, via ATMOS.cloudShade; and the
+//              biome core's materials made after it, ATMOS.cloudShadeScene); an object: cloudShadeScene's options ({biome, host, ...})
 // The page's clock is the host's (core/host 91-host-loop.js makes it in KHOST.take, after this runs): the sky reads it
 // through S.clock, so the page opens at 06:00 on game start's day (the owner) and #hour=, #day=, #time=run move it.
 // Returns S (ATMOS.sky's) plus S.view(dt): the per-frame update to subscribe with KHOST.on(S.view,'view'); S.draw for
@@ -62,7 +63,7 @@
    const m=modeAt(S.state.sunAlt);if(m===curMode)return;curMode=m;
    if(modes.set)modes.set(m);for(const f of(modes.hooks||[])){try{f(m);}catch(e){console.warn('light hook: '+((e&&e.stack)||e));}}};
   const v0=S.view;S.view=function(dt){v0(dt);modeTick();};
-  if(o.shade!==false)A.cloudShadeScene(scene);
+  if(o.shade!==false)A.cloudShadeScene(scene,o.shade&&typeof o.shade==='object'?o.shade:null);
   // old night code tints the dome's material and checks its lightness (necanyons' NIGHT, guilin's and necanyons' night check):
   // the shader ignores it, but it is there to be tinted and read
   if(!S.mesh.material.color)S.mesh.material.color=new T.Color(1,1,1);
@@ -70,12 +71,6 @@
   const ge=new T.Object3D(),re=new T.Object3D();ge.userData.probeSkip=re.userData.probeSkip=true;
   S.legacy={sky:st,giant:ge,giantRing:re,giantDir:new T.Vector3(0,0,-1),GIANT_DIST:6000,wallSky:new T.Object3D()};   /* giantDir, GIANT_DIST: where an old water fragment placed its giant clone */
   return S;};
- // ATMOS.cloudShadeScene(scene): the clouds' shadows and the rain's darkening on every lit material in the scene, once
- // (SKY-PLAN.md 11.1). Plants (userData.biome) take porosity 0.4, structures (userData.host) 0.6, the rest 1; the animated
- // fauna are left out (their place comes from their own pose, not the instance matrix)
- A.cloudShadeScene=function(scene){const T=A.T,seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;
-  for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-   if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
-   const k=m.customProgramCacheKey!==T.Material.prototype.customProgramCacheKey?String(m.customProgramCacheKey()):'';if(/^biofauna|^bioanim/.test(k))continue;
-   A.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});};
+ // ATMOS.cloudShadeScene(scene, o) is in host/89-atmos-h-skyhost.js (V8, 2026-11-24: a page on ATMOS.sky calls it too, and it
+ // turns on the biome core's own call)
 })();

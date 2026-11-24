@@ -73,7 +73,28 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
   ok('snowOn under a hook that replaced <project_vertex> still sets its varyings (a leaf card takes the snow)',/vAtmSnP=/.test(s5.vertexShader)&&s5.vertexShader.indexOf('vAtmSnP=')<s5.vertexShader.indexOf('#include <fog_vertex>')&&/atmSnN=aN/.test(s5.vertexShader),!/vAtmSnP=/.test(s5.vertexShader));
   ok('...and on a plain material it stays right after <project_vertex>',s6.vertexShader.indexOf('#include <project_vertex>\nvec4 atmSnWp')>=0,false);}
  const m4=new Material();A.cloudShade(m4,{porosity:1});A.cloudShade(m4,{porosity:1});const s4=compile(m4);
- ok('a layer added twice runs once',(s4.vertexShader.match(/CLOUD/g)||[]).length===1,(s4.vertexShader.match(/CLOUD/g)||[]).length!==1);}
+ ok('a layer added twice runs once',(s4.vertexShader.match(/CLOUD/g)||[]).length===1,(s4.vertexShader.match(/CLOUD/g)||[]).length!==1);
+ // V8 (Stage 8, G-weather W1, 2026-11-24): the biome core's makers and a page's scene pass both reach a plant's material, at two
+ // porosities; that was two layers (the shade and the wet twice). Now one, the first caller's
+ const m7=new Material();A.cloudShade(m7,{porosity:.4});A.cloudShade(m7,{porosity:1});const s7=compile(m7),L7=m7.userData.atmHooks.filter(n=>/^atmos-cloudshade-/.test(n));
+ ok('cloudShade at two porosities is one layer, the first one\'s',(s7.vertexShader.match(/CLOUD/g)||[]).length===1&&L7.length===1&&L7[0]==='atmos-cloudshade-0.4'&&s7.uniforms.uPorosity.value===.4,L7.length!==1);}
+// ATMOS.cloudShadeScene(scene, o) (V8, 2026-11-24: in host/89-atmos-h-skyhost.js, so a page on ATMOS.sky has it; the 14 kits that wired
+// their own pass call it): every lit material once, by its mesh (plants o.biome, works o.host, the rest o.other), the fauna left out
+// unless o.leave is null, o.skip's left out; it turns the page's shading on and hands the biome core its queue (BIO.cloudShadeFlush)
+{let flushed=null;const keepB=global.BIO;global.BIO={CLOUD:{porosity:.4},cloudShadeFlush:p=>{flushed=p;}};
+ const lam=()=>{const m=new Material();m.isMeshLambertMaterial=true;return m;},mesh=(m,ud)=>({isMesh:true,material:m,userData:ud||{}});
+ const sc=L=>({traverse:fn=>L.forEach(fn)});let err=null;
+ try{const g=lam(),p=lam(),h=lam(),fa=lam(),w=lam(),b=new Material();fa.customProgramCacheKey=()=>'bioanim|x';
+  A.skyShadeOn=false;A.cloudShadeScene(sc([mesh(g),mesh(p,{biome:true}),mesh(h,{host:true}),mesh(fa,{biome:true}),mesh(w,{water:true}),mesh(b)]),{biome:.44,host:.68,skip:o=>!!o.userData.water});
+  const n=m=>(m.userData.atmHooks||[]).filter(x=>/^atmos-cloudshade-/.test(x));
+  ok('cloudShadeScene: the ground at 1, a plant at o.biome, a work at o.host; the fauna, an o.skip and an unlit material left out',
+   n(g)[0]==='atmos-cloudshade-1'&&n(p)[0]==='atmos-cloudshade-0.44'&&n(h)[0]==='atmos-cloudshade-0.68'&&!n(fa).length&&!n(w).length&&!n(b).length,!!n(w).length||!!n(fa).length);
+  ok('...turns the page\'s shading on and hands the biome core its plants\' porosity',A.skyShadeOn===true&&flushed===.44,flushed===null);
+  const fb=lam();fb.customProgramCacheKey=()=>'biofauna|y';A.cloudShadeScene(sc([mesh(fb,{biome:true})]),{leave:null});
+  ok('...o.leave null shades the fauna too (the kits that did), at BIO.CLOUD.porosity by default',n(fb)[0]==='atmos-cloudshade-0.4',!n(fb).length);}
+ catch(e){err=e;}
+ ok('cloudShadeScene is in the sky\'s host file (it ran)',!err,!!err);if(err)console.log('     '+err.message);
+ global.BIO=keepB;A.skyShadeOn=false;}
 // the real WATER.wetGround through ATMOS.shaderHook (HANDOFF-REBUILD.md's open request, 2026-10-26): a page hook set after
 // cloudShade and wetGround replaces neither. The negative is the same sequence with shaderHook hidden (wetGround's own
 // accessor, the old way): the page's hook then replaces cloudShade, the bug the request named
