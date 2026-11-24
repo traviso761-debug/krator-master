@@ -140,7 +140,17 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
  const patchSrc=fs.readFileSync(path.join(D,'fx/89-atmos-fx-raincover.js'),'utf8');ok('the rain streaks fade under cover (the patch\'s pattern matches 4-weather\'s shader end)',
   /vA\*=1\.0-atmRainCover\(p\)/.test(patchSrc)&&/gl_Position=projectionMatrix\*mv;\}`/.test(fs.readFileSync(path.join(D,'89-atmos-4-weather.js'),'utf8')),false);
  const sg=A.snowGLSL();ok('the snow that lies reads the cover (fresh snow only) and the lee',/atmRainCover\(wp\)/.test(sg)&&/atmSnowLee/.test(sg),false);A.U.rainOcc=null;
- ok('...and without the map it carries no cover',!/atmRainCover/.test(A.snowGLSL()),false);}
+ ok('...and without the map it carries no cover',!/atmRainCover/.test(A.snowGLSL()),false);
+ /* log depth (2026-11-24, Stage 8 V9): the open world's renderer has logarithmicDepthBuffer, so the weather's ShaderMaterials take the
+    chunks (A.logDepth), and the rain cover's pattern must still find the shader's end past the include. The negative: the old pattern */
+ {const o=A.logDepth({vertexShader:rm.vertexShader,fragmentShader:'uniform float light;void main(){gl_FragColor=vec4(1.0);}'});
+  const re=eval(patchSrc.match(/A\.KH\(\)\.rep\(m\.vertexShader,(\/.*?\/),'vA\*=/)[1]),old=/(gl_Position=(projectionMatrix\*mv|atmQuad\(mv,ps\));\s*\}\s*)$/;
+  const pat=r=>o.vertexShader.replace(r,'vA*=1.0-atmRainCover(p);$1');
+  ok('log depth: the weather\'s four shaders take the chunks, and the rain cover still patches them',
+   /^#include <common>\n#include <logdepthbuf_pars_vertex>/.test(o.vertexShader)&&/gl_Position=projectionMatrix\*mv;\n#include <logdepthbuf_vertex>\}$/.test(o.vertexShader)&&
+   /^#include <logdepthbuf_pars_fragment>\nuniform float light;void main\(\)\{\n#include <logdepthbuf_fragment>\n/.test(o.fragmentShader)&&
+   /vA\*=1\.0-atmRainCover\(p\);gl_Position/.test(pat(re))&&(fs.readFileSync(path.join(D,'89-atmos-4-weather.js'),'utf8').match(/new T\.ShaderMaterial\(A\.logDepth\(\{/g)||[]).length===4,
+   /vA\*=/.test(pat(old)));}}
 {const u={};A.windUniforms(u);const g=A.windGLSL();ok('the gust field for leaf shaders: atmWindV, atmGustAmp, atmTime, atmGust/atmWind',u.atmWindV===A.U.wind&&u.atmGustAmp===A.U.gustAmp&&u.atmTime===A.U.time&&/float atmGust\(/.test(g)&&/uniform vec2 atmWindV/.test(g),!u.atmWindV);
  // the GLSL gust is the JS gust
  const t=12.5,x=40,z=-30,w=A.U.wind.value,j=A.gust(t,x,z);ok('...and atmGust in GLSL is ATMOS.gust in JS (the same sum)',g.indexOf(A.GLSL_WIND.slice(0,40))>=0&&isFinite(j),false);}
