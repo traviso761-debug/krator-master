@@ -47,9 +47,10 @@ ok('KGROUND.layer is null without the library',G.layer('nhighlands','ground.mulc
 
 // ---- the defaults are frozen: with no kind asked, the library, the layer code and the hooked shaders are byte for byte
 // what they were before the kinds (2026-10-26, the hashes of 43-core-ground.js at 71bed9f4d; code, codePlain, fs and key
-// re-frozen 2026-11-17 for the zero-weight guard on map layers, GRAPHICS-TERRAIN-PROPOSAL.md A0: same pixels, new text)
+// re-frozen 2026-11-17 for the zero-weight guard on map layers, GRAPHICS-TERRAIN-PROPOSAL.md A0: same pixels, new text;
+// re-frozen 2026-11-24, Stage 8 B3: the locals kgV1..3 / kgR1..3 (r128's env-map defines) and one kEye(): same maths, new text)
 const crypto=require('crypto'),sha=x=>crypto.createHash('sha1').update(x).digest('hex').slice(0,16);
-const FROZEN={glsl:'c8172f17c7a34804',glslNoHex:'a9e67aa4ceb6fedc',code:'d7fbff18edc1c026',codePlain:'e2fb6d74289e7e57',fs:'ef615dea0a821e77',vs:'5fecc5c7883e02f0',key:'|kground-k-2-849'};
+const FROZEN={glsl:'60b5d5ac9673dec1',glslNoHex:'44647c4572879eac',code:'9b475745eab6453d',codePlain:'8d53afc414db58e4',fs:'dc7c926efc1352cd',vs:'5fecc5c7883e02f0',key:'|kground-k-2-816'};
 const freeze=(layers)=>{const F1={map:{id:1},k:1/3,w:'vGL.x',amt:.7,gain:1.25,tint:'diffuse',name:'mulch'},F2={map:{id:2},k:1/3.2,w:'vGL.y',amt:.75,name:'meadow',h:{from:'a'},lin:false};
   const LL=layers||[F1,F2],m={userData:{},customProgramCacheKey:proto.customProgramCacheKey,onBeforeCompile:null};G.hook(m,{layers:LL,key:'k'});const s=fake();m.onBeforeCompile(s);
   return {glsl:sha(G.glsl()),glslNoHex:sha(G.glsl({hex:false})),code:sha(G.code({},LL)),codePlain:sha(G.code({blend:0,far:false},[LL[0]])),fs:sha(s.fragmentShader),vs:sha(s.vertexShader),key:m.customProgramCacheKey()};};

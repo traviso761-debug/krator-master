@@ -97,16 +97,18 @@
     return ['#if __VERSION__ >= 300',
       '#define KG_GRAD(t,p,dx,dy) textureGrad(t,p,dx,dy)','#define KG_LOD(t,p,l) textureLod(t,p,l)',
       '#else','#define KG_GRAD(t,p,dx,dy) texture2D(t,p)','#define KG_LOD(t,p,l) vec4(0.5)','#endif',
+      /* the eye, once (KHOOK.EYE's text and guard: whichever comes first defines it), for the glint and the far blend */
+      '#ifndef KHOOK_EYE','#define KHOOK_EYE','vec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}','#endif',
       'vec2 kgHash(vec2 p){vec3 p3=fract(vec3(p.xyx)*vec3(0.1031,0.1030,0.0973));p3+=dot(p3,p3.yzx+33.33);return fract((p3.xx+p3.yz)*p3.zy);}',
-      'void kgTri(vec2 st,out vec3 w,out vec2 v1,out vec2 v2,out vec2 v3){st*=3.4641016;vec2 sk=vec2(st.x-0.57735027*st.y,1.15470054*st.y);',
+      'void kgTri(vec2 st,out vec3 w,out vec2 kgV1,out vec2 kgV2,out vec2 kgV3){st*=3.4641016;vec2 sk=vec2(st.x-0.57735027*st.y,1.15470054*st.y);',
       ' vec2 b=floor(sk);vec3 t=vec3(fract(sk),0.0);t.z=1.0-t.x-t.y;float s=step(0.0,-t.z),s2=2.0*s-1.0;',
-      ' w=vec3(-t.z*s2,s-t.y*s2,s-t.x*s2);v1=b+vec2(s,s);v2=b+vec2(s,1.0-s);v3=b+vec2(1.0-s,s);}',
+      ' w=vec3(-t.z*s2,s-t.y*s2,s-t.x*s2);kgV1=b+vec2(s,s);kgV2=b+vec2(s,1.0-s);kgV3=b+vec2(1.0-s,s);}',
       /* the turn of a hex cell, from its integer vertex (no sine hash): Mikkelsen's LoadRot2x2 */
       'mat2 kgRot(vec2 v){float a=abs(v.x*v.y)+abs(v.x+v.y)+3.14159265;a=mod(a,6.2831853);if(a>3.14159265)a-=6.2831853;a*='+f(rot)+';float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}',
       'vec2 kgCen(vec2 v){return vec2(v.x+0.5*v.y,v.y*0.8660254)/3.4641016;}',
       'vec4 kgHex(sampler2D t,vec2 st,vec2 dx,vec2 dy){'+(hx?
-        'vec3 w;vec2 v1,v2,v3;kgTri(st,w,v1,v2,v3);mat2 r1=kgRot(v1),r2=kgRot(v2),r3=kgRot(v3);vec2 c1=kgCen(v1),c2=kgCen(v2),c3=kgCen(v3);'+
-        'vec4 a=KG_GRAD(t,r1*(st-c1)+c1+kgHash(v1),r1*dx,r1*dy),b=KG_GRAD(t,r2*(st-c2)+c2+kgHash(v2),r2*dx,r2*dy),c=KG_GRAD(t,r3*(st-c3)+c3+kgHash(v3),r3*dx,r3*dy);'+
+        'vec3 w;vec2 kgV1,kgV2,kgV3;kgTri(st,w,kgV1,kgV2,kgV3);mat2 kgR1=kgRot(kgV1),kgR2=kgRot(kgV2),kgR3=kgRot(kgV3);vec2 c1=kgCen(kgV1),c2=kgCen(kgV2),c3=kgCen(kgV3);'+
+        'vec4 a=KG_GRAD(t,kgR1*(st-c1)+c1+kgHash(kgV1),kgR1*dx,kgR1*dy),b=KG_GRAD(t,kgR2*(st-c2)+c2+kgHash(kgV2),kgR2*dx,kgR2*dy),c=KG_GRAD(t,kgR3*(st-c3)+c3+kgHash(kgV3),kgR3*dx,kgR3*dy);'+
         'vec3 L=vec3(0.299,0.587,0.114),D=mix(vec3(1.0),vec3(dot(a.rgb,L),dot(b.rgb,L),dot(c.rgb,L)),'+f(con)+');vec3 W=D*pow(max(w,vec3(0.0)),vec3('+f(ex)+'));W/=max(W.x+W.y+W.z,1e-5);'+
         'return W.x*a+W.y*b+W.z*c;}':'return KG_GRAD(t,st,dx,dy);}'),
       /* the distance scale: lv the continuous level (KGROUND.fn.lod); two scales cross-faded */
@@ -116,14 +118,14 @@
       'float kgLum(vec3 c){return dot(c,vec3(0.299,0.587,0.114));}'].join('\n')+'\n';}
   // the kinds' GLSL (KGROUND.fn's hash3, vor2, vor3, vnoise, ripple), added only when a layer has a kind
   function kindsGlsl(){return ['vec3 kgHash3(vec3 p){p=fract(p*vec3(0.1031,0.1030,0.0973));p+=dot(p,p.yxz+33.33);return fract((p.xxy+p.yxx)*p.zyx);}',
-    'vec2 kgVor2(vec2 x,float jit,float sd,out vec2 cid,out vec2 rel){vec2 n=floor(x),f=x-n,r1=vec2(0.0),r2=vec2(1.0,0.0);float d1=8.0,d2=8.0;cid=n;',
+    'vec2 kgVor2(vec2 x,float jit,float sd,out vec2 cid,out vec2 rel){vec2 n=floor(x),f=x-n,kgR1=vec2(0.0),kgR2=vec2(1.0,0.0);float d1=8.0,d2=8.0;cid=n;',
     ' for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){vec2 g=vec2(float(i),float(j));vec2 r=g+0.5+jit*(kgHash3(vec3(n+g,sd)).xy-0.5)-f;float d=dot(r,r);',
-    '  if(d<d1){d2=d1;r2=r1;d1=d;r1=r;cid=n+g;}else if(d<d2){d2=d;r2=r;}}',
-    ' rel=r1;vec2 u=r2-r1;return vec2(sqrt(d1),dot(0.5*(r1+r2),u)/max(length(u),1e-6));}',
-    'vec2 kgVor3(vec3 x,float jit,float sd,out vec3 cid,out vec3 rel){vec3 n=floor(x),f=x-n,r1=vec3(0.0),r2=vec3(1.0,0.0,0.0),s=sd*vec3(1.0,1.7,2.3);float d1=8.0,d2=8.0;cid=n;',
+    '  if(d<d1){d2=d1;kgR2=kgR1;d1=d;kgR1=r;cid=n+g;}else if(d<d2){d2=d;kgR2=r;}}',
+    ' rel=kgR1;vec2 u=kgR2-kgR1;return vec2(sqrt(d1),dot(0.5*(kgR1+kgR2),u)/max(length(u),1e-6));}',
+    'vec2 kgVor3(vec3 x,float jit,float sd,out vec3 cid,out vec3 rel){vec3 n=floor(x),f=x-n,kgR1=vec3(0.0),kgR2=vec3(1.0,0.0,0.0),s=sd*vec3(1.0,1.7,2.3);float d1=8.0,d2=8.0;cid=n;',
     ' for(int k=-1;k<=1;k++)for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){vec3 g=vec3(float(i),float(j),float(k));vec3 r=g+0.5+jit*(kgHash3(n+g+s)-0.5)-f;float d=dot(r,r);',
-    '  if(d<d1){d2=d1;r2=r1;d1=d;r1=r;cid=n+g;}else if(d<d2){d2=d;r2=r;}}',
-    ' rel=r1;vec3 u=r2-r1;return vec2(sqrt(d1),dot(0.5*(r1+r2),u)/max(length(u),1e-6));}',
+    '  if(d<d1){d2=d1;kgR2=kgR1;d1=d;kgR1=r;cid=n+g;}else if(d<d2){d2=d;kgR2=r;}}',
+    ' rel=kgR1;vec3 u=kgR2-kgR1;return vec2(sqrt(d1),dot(0.5*(kgR1+kgR2),u)/max(length(u),1e-6));}',
     'float kgVN(vec2 p,float sd){vec2 i=floor(p),f=p-i,u=f*f*(3.0-2.0*f);float a=kgHash3(vec3(i,sd)).x,b=kgHash3(vec3(i+vec2(1.0,0.0),sd)).x,c=kgHash3(vec3(i+vec2(0.0,1.0),sd)).x,d=kgHash3(vec3(i+1.0,sd)).x;',
     ' return a+(b-a)*u.x+(c-a)*u.y+(a-b-c+d)*u.x*u.y;}',
     'float kgRipple(float u,float a){float f=fract(u);return f<a?f/a:(1.0-f)/(1.0-a);}'].join('\n')+'\n';}
@@ -197,7 +199,7 @@
           'kgH=clamp(kgH+(kgRh-0.5)*0.3*kgRf,0.02,1.0);}');}
       if(gs>0)s.push('{vec2 kgGc=kgWP.xz/'+f(gs)+';vec2 kgGi=floor(kgGc);vec3 kgGh=kgHash3(vec3(kgGi,'+sd+'+3.7)),kgGh2=kgHash3(vec3(kgGi.yx,'+sd+'+8.9));'+
           'float kgGd=length(fract(kgGc)-0.25-0.5*kgGh.xy);vec3 kgGn=normalize(vec3((kgGh2.x-0.5)*'+f(L.spread==null?2:L.spread)+',1.0,(kgGh2.y-0.5)*'+f(L.spread==null?2:L.spread)+'));'+
-          'float kgGl=pow(max(dot(reflect(-normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-kgWP),kgGn),kgSun),0.0),'+f(L.sharp==null?150:L.sharp)+');'+
+          'float kgGl=pow(max(dot(reflect(-normalize(kEye()-kgWP),kgGn),kgSun),0.0),'+f(L.sharp==null?150:L.sharp)+');'+
           'kgC+='+lin3(L.glintColor==null?0xffffff:L.glintColor)+'*kgGl*'+f(L.sparkle==null?4:L.sparkle)+'*step(kgGh.z,'+f(L.glintDensity==null?.2:L.glintDensity)+')*(1.0-smoothstep(0.15,0.3,kgGd))*(1.0-smoothstep('+f(.5*gs)+','+f(1.5*gs)+',kgFp));}');}
     else{
       // polygons on the plane (sand-wedge and ice-wedge polygons, patterned ground, a mare's pressure plates): Voronoi cells of
@@ -221,7 +223,7 @@
   // ---------------------------------------------------------------- the hook
   function code(o,LY){var far=o.far===false?null:(o.far||{}),d0=far?(far.d==null?60:far.d):0,lv=far?(far.levels==null?3:far.levels):0,bl=o.blend==null?.18:o.blend,f=function(v){return (+v).toFixed(4);};
     var tri=triOf(o),rl=reliefOf(o);
-    var s=['{vec3 kgDx=dFdx(kgWP),kgDy=dFdy(kgWP);float kgD=length(kgWP-(-(viewMatrix[3].xyz*mat3(viewMatrix))));',
+    var s=['{vec3 kgDx=dFdx(kgWP),kgDy=dFdy(kgWP);float kgD=length(kgWP-kEye());',
       ' float kgLv='+(far?'min('+f(lv)+',max(0.0,log2(max(kgD/'+f(d0)+',1.0))))':'0.0')+';float kgHc='+(o.baseH||'0.5')+';'];
     if(tri)s.push(' vec3 kgN=normalize(kgWN);float kgSt=smoothstep('+f(tri.from)+','+f(tri.to)+',1.0-abs(kgN.y))*(1.0-smoothstep('+f(tri.far*.7)+','+f(tri.far)+',kgD));');
     var smp=function(i,k){return tri?'kgTS(uKG'+i+',kgWP,kgDx,kgDy,kgN,'+k+',kgLv,kgSt)':'kgSample(uKG'+i+',kgWP.xz*'+k+',kgDx.xz*'+k+',kgDy.xz*'+k+',kgLv)';};
@@ -269,8 +271,8 @@
    ' return (bi.b-0.5)*(0.3+0.7*nose)+0.04*sin(yy*5.1+w1*31.0);}'].join('\n')+'\n';
   // the normal bumped by the relief's height (Mikkelsen 2010, "Bump Mapping Unparametrized Surfaces on the GPU": the height's screen
   // derivatives on the surface's own), in view space; no texture unit, so a page at its sampler limit can take it
-  var BUMP_GLSL='vec3 kgBump(vec3 vp,vec3 n,float h){vec3 px=dFdx(vp),py=dFdy(vp),r1=cross(py,n),r2=cross(n,px);float dt=dot(px,r1);'+
-    'vec3 g=sign(dt)*(dFdx(h)*r1+dFdy(h)*r2);return normalize(abs(dt)*n-g);}\n';
+  var BUMP_GLSL='vec3 kgBump(vec3 vp,vec3 n,float h){vec3 px=dFdx(vp),py=dFdy(vp),kgR1=cross(py,n),kgR2=cross(n,px);float dt=dot(px,kgR1);'+
+    'vec3 g=sign(dt)*(dFdx(h)*kgR1+dFdy(h)*kgR2);return normalize(abs(dt)*n-g);}\n';
   function reliefFrag(sh,rl,K){var fs=sh.fragmentShader,std=fs.indexOf('#include <normal_fragment_maps>')>=0,
       vp='(viewMatrix*vec4(kgWP,1.0)).xyz';
     /* MeshStandard (and Phong): the lit normal is bumped. Lambert (r128 lights per vertex): the sun's share is scaled by the bumped

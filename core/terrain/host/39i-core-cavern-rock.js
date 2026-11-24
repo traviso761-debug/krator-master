@@ -21,12 +21,8 @@
     var tile=(o.tile==null?4:o.tile)*(o.scale==null?2.2:o.scale);
     G.hook(mat,{layers:[{map:map,k:1/tile,w:'1.0',lin:true,name:o.name||'the carved rock'}],
       tri:o.tri||{from:.3,to:.65,far:900},far:o.far||{d:90,levels:6},key:o.key||'kcavern-rock'});
-    /* three r128's environment map (cube_uv_reflection_fragment, whenever the scene or the material has one) #defines r0..r6,
-       v0..v6 and m0..m6 as numbers, and the ground shader's hex tiling names its locals v1, v2, v3, r1, r2, r3: on a page with a
-       skylight the fragment does not compile ("'0.276' : syntax error", kits/tungang 2026-11-17). Undefined just before the
-       ground's functions (nothing after them uses three's), so this material compiles either way. The lasting fix is renaming
-       those locals in core/terrain/43-core-ground.js, which reaches about 200 builds: TODO.md, the next all-builds rebuild */
-    var R=root.KHOOK;if(R&&R.add)R.add(mat,'kcavern-rock-undef',function(sh){var a='vec2 kgHash(';if(sh.fragmentShader.indexOf(a)<0)return;var u='';
-      for(var i=0;i<=6;i++)u+='#undef r'+i+'\n#undef v'+i+'\n#undef m'+i+'\n';sh.fragmentShader=sh.fragmentShader.replace(a,u+a);},{key:'kcavern-rock-undef'});
+    /* the ground shader's locals are kgV1..kgV3 and kgR1..kgR3 since Stage 8 (core/terrain/43-core-ground.js): three r128's
+       environment map #defines r0..r6, v0..v6 and m0..m6 as numbers, which broke this material on a page with a skylight
+       (kits/tungang 2026-11-17) until then, and an #undef guard stood here */
     return mat;};
 })(typeof window!=='undefined'?window:globalThis);
