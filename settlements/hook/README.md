@@ -157,7 +157,8 @@ narrows to points over the water instead of ending square), `lf_hook_swamp` the 
 (0.6 m, on ground under 6 m), and two domed hills (`lf_hook_ridge_hill`, Signal Hill, about 45 m; `lf_hook_crown_hill`,
 the Crown's, about 28 m). The old shank and barb are gone: the drowned downtown and the model's flat take their place.
 The frame is unchanged (the same origin, bearing and stations), so the town stands where it did.
-`python3 world/cut.py --landforms` writes the records into the cut's region.json without re-cutting the model.
+`python3 world/cut.py --landforms` writes the records into the cut's region.json without re-cutting the model, each wandering
+bench with its noise's sample stated (`wg_n`, `core/world/landform_wg.js`), so the page does not take it at load.
 
 Hook stands on the **Krator Scale Model's ground at 1:1** (the owner, 2026-10-19: built in place on the model, so its
 terrain never has to be reconciled with the open world). The land is the open world's own, read in place:
@@ -305,7 +306,8 @@ the water).
 
 **Up close (`src/90d-hook-ruin-heroes.js`):** the ten standing towers nearest the camera (within 700 m of the camera,
 measured to the tower's column) are drawn as the metropolis kit draws them, `MP.hero` on the record's family and state,
-and their massing is hidden while they stand; the set is chosen again when the camera moves 30 m. The kit is read in
+and their massing is hidden while they stand; the set is chosen again when the camera moves 30 m, and while the page is
+idle the keys within 1.8 km are built ahead. The kit is read in
 place and sealed in one closure, `KMP` (`77g-kmp-bundle.js`, `build.py` `kmp_bundle`: its records, plans and designs, the
 hero kit and builders, the ruin states and rubble, with the interiors kits its plans read; KRUBBLE from core/terrain),
 its library pack a sidecar (`dist/hook.tex.metropolis.js`). A hero is built once a key at the origin and placed as a copy

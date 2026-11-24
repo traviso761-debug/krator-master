@@ -195,10 +195,13 @@ function outlineRec(r,px,skirt,tan){const poly=r.outline_px.map(px),n=poly.lengt
   for(let j=0;j<gnz;j++)for(let i=0;i<gnx;i++){let s=0;for(let t=-r;t<=r;t++){const jj=Math.min(gnz-1,Math.max(0,j+t));s+=T[jj*gnx+i]*K[t+r];}A[j*gnx+i]=s/ks;}
   B.dd=A;}
  /* the wander's gradient bound: wob w^2 n, |grad| <= wob (|grad n| + 2 |grad w|) with |grad w| <= 1.5 / (KEEP_F1 - KEEP_F0)
-    (a smoothstep's steepest); |grad n| sampled over a WG_SPAN square of the record's own noise round its middle, a sixth over */
- if(wob>0){let G=0;for(let x=B.x-WG_SPAN/2;x<=B.x+WG_SPAN/2;x+=WG_STEP)for(let z=B.z-WG_SPAN/2;z<=B.z+WG_SPAN/2;z+=WG_STEP){const e=wobN(B,x,z);G=Math.max(G,Math.hypot(wobN(B,x+1,z)-e,wobN(B,x,z+1)-e));}
-  B.wg=wob*(G*1.15+3/(KEEP_F1-KEEP_F0));}
+    (a smoothstep's steepest); |grad n| sampled over a WG_SPAN square of the record's own noise round its middle (wgSample), a
+    sixth over. A record may state the sample (wg_n: core/world/landform_wg.js writes it, so a page does not sample 23k points
+    a record at load); WLAND.check samples it again and fails a stated value that differs */
+ if(wob>0){const G=r.wg_n!=null?r.wg_n:wgSample(B);B.wgN=G;B.wgStated=r.wg_n!=null;B.wg=wob*(G*1.15+3/(KEEP_F1-KEEP_F0));}
  return B;}
+function wgSample(B){let G=0;for(let x=B.x-WG_SPAN/2;x<=B.x+WG_SPAN/2;x+=WG_STEP)for(let z=B.z-WG_SPAN/2;z<=B.z+WG_SPAN/2;z+=WG_STEP){const e=wobN(B,x,z);G=Math.max(G,Math.hypot(wobN(B,x+1,z)-e,wobN(B,x,z+1)-e));}
+ return G;}
 
 // built before 41's init (the hook must be in place when 41 lifts its towns), so the pixels are read on the region's frame
 // here, not through WORLD.fromPx: x = (px - cx) * 2 km, z = (py - cy) * 2 km
@@ -230,6 +233,7 @@ W.init=function(R){build();
    for(let i=0;i<api.benches.length&&i<=benchUpTo;i++)h=benchStamp(api.benches[i],x,z,h);return h;};}
  base(R);};
 api.at=(x,z)=>find(x,z);
+api.wgSample=B=>wgSample(B);   /* a wandering bench's |grad n|, sampled (core/world/landform_wg.js states it in the record) */
 api.benchAt=(x,z)=>benchFind(x,z);
 api.benchD=(B,x,z)=>benchD(B,x,z);   /* m off bench B's level ground (0 on it): its rectangle, or its outline as it wanders */
 api.waterAt=(x,z)=>{const F=wField(x,z);return F?{s:F.s,id:F.id}:null;};
@@ -284,7 +288,9 @@ function benchCheck(B,o){const st=(o&&o.step)||Math.max(4,(B.a+B.b)/24),U=B.a+B.
   if(s>Math.max(tan,sn)*1.02+.01){over++;firstBad=firstBad||['steep',Math.round(x),Math.round(z),deg(s)];steepAt=steepAt||[Math.round(x),Math.round(z),deg(s),deg(sn)];}}
  }finally{benchUpTo=upto;}
  const ew=c=>({max:+c.max.toFixed(2),mean:c.n?+(c.sum/c.n).toFixed(2):0,area_m2:Math.round(c.n*st*st)});
+ /* a stated wander sample (wg_n) must be the record's own: sampled again here */
+ const wgBad=B.wgStated&&wgSample(B)!==B.wgN;if(wgBad)firstBad=firstBad||['wg_n',B.wgN];
  return{id:B.id,kind:'bench',level:B.level,inside:+inside.toFixed(6),batter:{asked:deg(B.tan),steepest:deg(steep),over,faces},toeOut,
-  cut:ew(cut),fill:ew(fill),inTown:inTown(B.x,B.z),firstBad,steepAt,ok:inside<=1e-6&&over===0&&toeOut===0};}
+  cut:ew(cut),fill:ew(fill),inTown:inTown(B.x,B.z),firstBad,steepAt,wgStated:!!B.wgStated,ok:inside<=1e-6&&over===0&&toeOut===0&&!wgBad};}
 api.check=(o)=>api.list.map(islandCheck).concat(api.waters.map(waterCheck),api.benches.map(B=>benchCheck(B,o)));
 return api;})();

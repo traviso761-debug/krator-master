@@ -7,7 +7,9 @@
    - A hero is built once a key (family.state) at the origin and placed as a copy sharing its geometry, at the tower's seat
      (90c's: the drawn ground's lowest node along the footprint's edge, so nothing floats; a drowned tower stands on the
      bed under the water), turned by the record's yaw and lean. New keys are built while a frame has frameMs left (at
-     least one), so the set fills in over a few frames instead of stalling one.
+     least one), so the set fills in over a few frames instead of stalling one; and while the page is idle the keys of
+     the towers within warmR of the camera are built ahead (nearest first, one an idle period, warmMax at most), so a
+     flight into the downtown finds most of them built.
    - A wild look draws its plain state (the kit's overgrowth, 59e, needs the biome core's leaf sets; not on this page).
    - The design families' crown, broken and stump heroes stand at their full height in the kit (MP.ruinDesign cuts their
      glass and floors, not their frame; the Ancient's Valley clips them at the record's top in its host, 70-host-city.js
@@ -71,6 +73,15 @@ const HOOK_HEROES={R:700,max:10,moveFor:30,frameMs:40,cache:{},live:[],failed:{}
    at:(x,y,z)=>{choose(x,y,z,true);return window._ruinHeroes;}};}
  publish();
  HOOK_HEROES.choose=choose;HOOK_HEROES.group=group;
+ /* ---- ahead of the camera: the key of the nearest standing tower within warmR not built yet, one an idle period (at most
+    warmMax), so flying in finds the downtown's keys built; a quiet second's wait when there is none */
+ HOOK_HEROES.warmR=1800;HOOK_HEROES.warmMax=24;HOOK_HEROES.warmed=0;
+ const idle=f=>typeof requestIdleCallback==='function'?requestIdleCallback(f,{timeout:2000}):setTimeout(f,200);
+ function warm(){if(HOOK_HEROES.warmed>=HOOK_HEROES.warmMax)return;const c=camera.position;let best=null,bd=1e18;
+  for(const sl of SL){const t=sl.rec;if((t.family+'.'+t.state) in HOOK_HEROES.cache)continue;const d=Math.hypot(t.x-c.x,t.z-c.z);if(d<HOOK_HEROES.warmR&&d<bd){bd=d;best=t;}}
+  if(!best){setTimeout(()=>idle(warm),1000);return;}
+  heroOf(best.family,best.state);HOOK_HEROES.warmed++;HOOK_HEROES.stats.warmed=HOOK_HEROES.warmed;idle(warm);}
+ idle(warm);
  PORT_FRAME.push(()=>{const c=camera.position,a=HOOK_HEROES.at;
   if(!HOOK_HEROES.pending&&a&&Math.hypot(c.x-a[0],c.y-a[1],c.z-a[2])<HOOK_HEROES.moveFor)return;
   choose(c.x,c.y,c.z,false);});})();

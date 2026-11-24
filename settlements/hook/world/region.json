@@ -919,7 +919,8 @@
    "note": "The drowned downtown (the owner's site plan, 2026-11-24, placement B): the half of the Ancient downtown that sank, its floor at least 3 m under the sea; it only lowers the ground, so the lagoon keeps its own deeper water. Today's shank and the spit's south-west lie in it. settlements/hook/world/landforms.json",
    "x": -424.6,
    "z": 3034.6,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.008417434511167577
   },
   {
    "id": "lf_hook_plain",
@@ -1059,7 +1060,8 @@
    "note": "The coastal plain (the owner, 2026-11-24: \"levelling out into a coastal plain / mangrove swamp\"): the low ground outside the wall in the owner's site plan where the model's own ground is under 30 m (along the bay's east shore and down the plateau's west foot), levelled to 4 m over the sea, cut and filled; it meets the plateau at the plateau's own foot on a short steep rise (35 degrees: the plateau's slopes are steeper than a gentler batter could meet), and its water edges lie under the swamp. Past the city limits it narrows to a point over the water. settlements/hook/world/landforms.json",
    "x": 2851.6,
    "z": 35.4,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.008243996363655316
   },
   {
    "id": "lf_hook_plain_2",
@@ -1139,7 +1141,8 @@
    "note": "The coastal plain (the owner, 2026-11-24: \"levelling out into a coastal plain / mangrove swamp\"): the low ground outside the wall in the owner's site plan where the model's own ground is under 30 m (along the bay's east shore and down the plateau's west foot), levelled to 4 m over the sea, cut and filled; it meets the plateau at the plateau's own foot on a short steep rise (35 degrees: the plateau's slopes are steeper than a gentler batter could meet), and its water edges lie under the swamp. Past the city limits it narrows to a point over the water. settlements/hook/world/landforms.json",
    "x": 611.0,
    "z": 4684.6,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007692430597082009
   },
   {
    "id": "lf_hook_swamp",
@@ -1203,7 +1206,8 @@
    "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json",
    "x": 2543.8,
    "z": -1545.4,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007261431570905299
   },
   {
    "id": "lf_hook_swamp_2",
@@ -1279,7 +1283,8 @@
    "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json",
    "x": 538.2,
    "z": 4558.0,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007956561227009445
   },
   {
    "id": "lf_hook_swamp_3",
@@ -1335,7 +1340,8 @@
    "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json",
    "x": 1967.0,
    "z": 1607.4,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007587836488702335
   },
   {
    "id": "lf_hook_spit",
@@ -1550,7 +1556,8 @@
    "note": "The walled peninsula (the owner's site plan, placement B): Port Hook's ground, 5 m over the sea, with the north ridge running about 3 km out into deep water and the downtown's dry half; its first edge is the quay line (world x -1700 to +1750 m at z -600), held straight; its east edge is the wall's line. The id is the spit's, which the frame and the town read. settlements/hook/world/landforms.json",
    "x": -1027.2,
    "z": -681.8,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.006886301470628488
   },
   {
    "id": "lf_hook_ridge_hill",
@@ -1637,7 +1644,8 @@
    "note": "The north ridge's hill (Signal Hill): rising about 45 m over the ridge, domed, not terraced. settlements/hook/world/landforms.json",
    "x": -2590.0,
    "z": -493.4,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007685965542998733
   },
   {
    "id": "lf_hook_crown_hill",
@@ -1736,7 +1744,8 @@
    "note": "The downtown's hill, where the Crown stands: rising about 28 m over the dry half of the downtown, domed. settlements/hook/world/landforms.json",
    "x": -444.6,
    "z": 666.8,
-   "source": "settlements/hook/world/landforms.json"
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.006751597298945116
   }
  ],
  "cut": {

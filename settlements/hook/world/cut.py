@@ -49,14 +49,37 @@ def own_landforms(M):
     return added
 
 
+def wander_samples(rp, M, ids):
+    """each wandering bench's noise sample (core/world/landform_wg.js: 41l's own wgSample) stated in its record as wg_n, so
+    the page does not sample it at load; WLAND.check samples it again and fails one that differs"""
+    import shutil
+    node = os.environ.get('NODE') or shutil.which('node') or r'C:\Program Files\nodejs\node.exe'
+    out = subprocess.run([node, os.path.join(ROOT, 'core', 'world', 'landform_wg.js'), rp] + list(ids), capture_output=True, text=True, encoding='utf-8')
+    if out.returncode:
+        sys.exit('cut.py: core/world/landform_wg.js failed:\n' + out.stderr[-2000:])
+    wg = json.loads(out.stdout)
+    for r in M['landforms']:
+        if r.get('id') in wg:
+            r['wg_n'] = wg[r['id']]
+    print('wander samples stated: %s' % (', '.join(sorted(wg)) or 'none'))
+
+
+def write_region(rp, M, added):
+    with open(rp, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(M, fh, ensure_ascii=False, indent=1)
+    if added:   # the records as written, then their samples (the tool reads region.json)
+        wander_samples(rp, M, added)
+        with open(rp, 'w', encoding='utf-8', newline='\n') as fh:
+            json.dump(M, fh, ensure_ascii=False, indent=1)
+
+
 def main():
     if '--landforms' in sys.argv:
         # only Hook's own records, on the cut as it is (no re-cut of the model's rasters)
         rp = os.path.join(HERE, 'region.json')
         M = json.load(open(rp, encoding='utf-8'))
         M['cut']['own_landforms'] = own_landforms(M)
-        with open(rp, 'w', encoding='utf-8', newline='\n') as fh:
-            json.dump(M, fh, ensure_ascii=False, indent=1)
+        write_region(rp, M, M['cut']['own_landforms'])
         return 0
     sys.path.insert(0, SM)
     import extract_region as XR
@@ -84,8 +107,7 @@ def main():
     M = json.load(open(rp, encoding='utf-8'))
     added = own_landforms(M)
     M['cut'] ={'by': 'settlements/hook/world/cut.py', 'pin': HOOK_ID, 'px': [x, y], 'box_px': BOX_PX, 'own_landforms': added}
-    with open(rp, 'w', encoding='utf-8', newline='\n') as fh:
-        json.dump(M, fh, ensure_ascii=False, indent=1)
+    write_region(rp, M, added)
     print('cut Hook: origin px %s, box px %s, heights %s' % (M['frame']['origin_px'], M['frame']['box_px'], M['heights']['grid']))
     return 0
 

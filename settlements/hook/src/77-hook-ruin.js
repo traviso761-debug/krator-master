@@ -22,6 +22,9 @@
                            onSunk(wx, wz) (41l's records), zone (the town's zone polygon, kit frame), grid, seed, params, site
      .field .cell .blocks .towers .heaps .pods .places .spans .ramp .wall .gates .roads .crown .spire .register(T) .report */
 function HOOK_RUIN_PLAN(o){
+ /* the ground read once a point: a block's middle is read by its field, its corners' pass and its record (a third of the
+    plan's reads, each a full WORLD.H); the same numbers, memoized by the exact point */
+ const NAT=new Map(),natH=(x,z)=>{const k=x+','+z;let v=NAT.get(k);if(v===undefined){v=o.natH(x,z);NAT.set(k,v);}return v;};
  const P=o.params||HOOK_RUIN_PLAN.PARAMS,SITE=o.site||HOOK_RUIN_PLAN.SITE,G=o.grid||{},seed=(o.seed==null?P.seed:o.seed)>>>0;
  const B=G.block==null?110:G.block,S=G.street==null?20:G.street,PITCH=B+S,Z1=G.z1==null?-150:G.z1;
  /* the column phase: the core stretch's (the rows entry with the most rows), as the town's hosts are laid (89z-rows.js) */
@@ -41,7 +44,7 @@ function HOOK_RUIN_PLAN(o){
   const out={ground:null,zone,r,h:0,wild:0,salvage:0};
   if(!inPoly(w[0],w[1],LIM))return out;
   if(ZONE&&inPoly(x,z,ZONE)){out.ground='town';return out;}
-  const h=o.natH(x,z);out.h=h;
+  const h=natH(x,z);out.h=h;
   if(o.onSpit(w[0],w[1]))out.ground='walled';
   else if(o.onSunk(w[0],w[1]))out.ground='sunk';
   else if(h>=0)out.ground='mainland';
@@ -53,7 +56,7 @@ function HOOK_RUIN_PLAN(o){
  function base(i,j){
   const x=cx(i),z=cz(j),f=field(x,z);if(!f.ground||f.ground==='town')return null;
   const hb=B/2;let lo=1e9,hi=-1e9,sum=0;
-  for(const p of [[0,0],[-hb,-hb],[hb,-hb],[-hb,hb],[hb,hb]]){const v=o.natH(x+p[0],z+p[1]);lo=Math.min(lo,v);hi=Math.max(hi,v);sum+=v;}
+  for(const p of [[0,0],[-hb,-hb],[hb,-hb],[-hb,hb],[hb,hb]]){const v=natH(x+p[0],z+p[1]);lo=Math.min(lo,v);hi=Math.max(hi,v);sum+=v;}
   const slope=(hi-lo)/B;
   if(f.ground!=='sunk'&&slope>P.maxSlope)return null;
   return {i,j,x,z,f,lo,hi,mean:sum/5,slope};}
@@ -82,7 +85,7 @@ function HOOK_RUIN_PLAN(o){
   const x=cx(i)+(si-1)*PITCH/2,z=cz(j)-(sj-1)*PITCH/2,w=si*B+(si-1)*S,d=sj*B+(sj-1)*S;
   const f=own.f,ground=f.ground,zone=f.zone;
   const lo=Math.min(...parts.map(q=>q.lo)),hi=Math.max(...parts.map(q=>q.hi)),mean=parts.reduce((s,q)=>s+q.mean,0)/parts.length;
-  const id='huka.b.'+i+'.'+j,y=+o.natH(x,z).toFixed(3);
+  const id='huka.b.'+i+'.'+j,y=+natH(x,z).toFixed(3);
   const blk={id,kind:'block',i,j,si,sj,ground,zone,x,z,w,d,y,lo:+lo.toFixed(3),hi:+hi.toFixed(3),
    depth:ground==='sunk'?+Math.max(0,-mean).toFixed(3):0,slope:+((hi-lo)/Math.max(w,d)).toFixed(4),
    wild:+f.wild.toFixed(4),salvage:+f.salvage.toFixed(4),r:Math.round(f.r)};
@@ -135,24 +138,24 @@ function HOOK_RUIN_PLAN(o){
     94 m); fallen over the west arc, standing over the south-east arc (the approach), standing or broken by hash over the
     dry arc; the deck DECK m over the ground or the water under it */
  const inArc=(a,r)=>r[0]<=r[1]?a>=r[0]&&a<r[1]:a>=r[0]||a<r[1];
- const deckY=(x,z)=>+(Math.max(0,o.natH(x,z))+P.deck).toFixed(2);
+ const deckY=(x,z)=>+(Math.max(0,natH(x,z))+P.deck).toFixed(2);
  const spans=[];
  for(let k=0;k<SITE.ring.length;k++){const a=SITE.ring[k],b=SITE.ring[(k+1)%SITE.ring.length],am=a[2]+1.5;
   const p0=local(a),p1=local(b),mx=(p0[0]+p1[0])/2,mz=(p0[1]+p1[1])/2;
   const arc=inArc(am,SITE.arcs.fallen)?'fallen':inArc(am,SITE.arcs.approach)?'approach':'dry';
   const state=arc==='fallen'?'fallen':arc==='approach'?'standing':(U(9000,k,21)<P.dryBroken?'broken':'standing');
   spans.push({id:'huka.fw.'+a[2],kind:'span',arc,state,p0,p1,x:mx,z:mz,y:deckY(mx,mz),len:+Math.hypot(p1[0]-p0[0],p1[1]-p0[1]).toFixed(1),
-   yaw:+Math.atan2(p1[0]-p0[0],p1[1]-p0[1]).toFixed(5),wet:o.natH(mx,mz)<0});}
+   yaw:+Math.atan2(p1[0]-p0[0],p1[1]-p0[1]).toFixed(5),wet:natH(mx,mz)<0});}
  const r0=local(SITE.ramp[0]),r1=local(SITE.ramp[1]);
- const ramp={id:'huka.fw.ramp',kind:'ramp',p0:r0,p1:r1,y0:deckY(r0[0],r0[1]),y1:+Math.max(0,o.natH(r1[0],r1[1])).toFixed(2),state:'standing'};
+ const ramp={id:'huka.fw.ramp',kind:'ramp',p0:r0,p1:r1,y0:deckY(r0[0],r0[1]),y1:+Math.max(0,natH(r1[0],r1[1])).toFixed(2),state:'standing'};
  /* ---- the wall (the Pirate Emperors', of Ancient rubble, repaired by Voth, held by the Izani) and its gates */
  const w0=local(SITE.wall[0]),w1=local(SITE.wall[1]);
  const wall={id:'huka.wall',kind:'wall',p0:w0,p1:w1,len:+Math.hypot(w1[0]-w0[0],w1[1]-w0[1]).toFixed(1),h:P.wallH};
- const gates=[{id:'huka.wall.harbour',kind:'gate',name:'the harbour bastion',parent:wall.id,x:w0[0],z:w0[1],y:+Math.max(0,o.natH(w0[0],w0[1])).toFixed(2)},
-  {id:'huka.wall.freeway',kind:'gate',name:'the Freeway Gate',parent:wall.id,x:w1[0],z:w1[1],y:+Math.max(0,o.natH(w1[0],w1[1])).toFixed(2)}];
+ const gates=[{id:'huka.wall.harbour',kind:'gate',name:'the harbour bastion',parent:wall.id,x:w0[0],z:w0[1],y:+Math.max(0,natH(w0[0],w0[1])).toFixed(2)},
+  {id:'huka.wall.freeway',kind:'gate',name:'the Freeway Gate',parent:wall.id,x:w1[0],z:w1[1],y:+Math.max(0,natH(w1[0],w1[1])).toFixed(2)}];
  const roads=SITE.road.map((pl,k)=>({id:'huka.road.'+k,kind:'road',pts:pl.map(local)}));
  /* ---- the places of the environs (records here; drawn later on core/hamlet and core/camp) */
- const places=SITE.places.map(p=>{const q=local(p.at),h=o.natH(q[0],q[1]);
+ const places=SITE.places.map(p=>{const q=local(p.at),h=natH(q[0],q[1]);
   const pl={id:'huka.'+p.id.toLowerCase(),code:p.id,name:p.name,kind:p.kind,x:q[0],z:q[1],y:+Math.max(0,h).toFixed(2),ground:h<0?'water':'land',
    inside:!!o.onSpit(p.at[0],p.at[1]),culture:p.culture,people:p.people,work:p.work};
   if(p.id==='C1'&&spire){pl.parent=spire.id;pl.y=+(spire.y+spire.roof*.7).toFixed(2);}

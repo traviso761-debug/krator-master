@@ -117,6 +117,21 @@ T.ok('...and nothing is skipped', S1.skipped.length === 0 && S0.skipped.length =
 T.neg('a bench without l_m or level_m is skipped by name, not stamped', S => S.benches === 0 && S.skipped.length === 1 && /bench/.test(S.skipped[0].kind),
   { benches: 1, skipped: [] }, Sbad);
 
+// ---------------------------------------------------------------- 5b. a stated wander sample (wg_n: core/world/landform_wg.js)
+// A record may state its noise's sample so a page does not take it at load; the ground is the same bit for bit, and the check
+// samples it again (a wrong one fails). Run after section 5's definitions (below, through stated()).
+function stated() {
+  const rec = o => outlined(Object.assign({ level_m: levelO, wobble_m: 40, keep_edges: [0] }, o));
+  const w0 = world(OLD.concat([rec({})])), B0 = w0.WL.benches.find(b => b.id === 'lf_t_outline'), G = B0.wgN;
+  const heights = wd => { const out = []; for (let x = OX - 420; x <= OX + 420; x += 14) for (let z = OZ - 340; z <= OZ + 340; z += 14) out.push(wd.W.Hbare(x, z)); return out; };
+  const S = g => { const wd = world(OLD.concat([rec({ wg_n: g })])), B = wd.WL.benches.find(b => b.id === 'lf_t_outline');
+    return { stated: B.wgStated, wgN: B.wgN, h: heights(wd), check: wd.WL.check().find(c => c.id === 'lf_t_outline') }; };
+  const H0 = heights(w0), Sok = S(G), Sbad = S(G * 0.5);
+  const same = s => s.stated && s.wgN === G && s.h.every((h, i) => h === H0[i]) && s.check.ok;
+  T.ok('a stated wg_n (the sample itself) is taken as stated: the same ground bit for bit, and WLAND.check passes it', same(Sok),
+    'wg_n ' + G + ', check ' + JSON.stringify(Sok.check && { ok: Sok.check.ok, firstBad: Sok.check.firstBad }));
+  T.neg('...and a stated wg_n that is not the record\'s sample fails the check (half of it: the faces could run steep)', same, Sbad, Sok);
+}
 // ---------------------------------------------------------------- 5. an outlined bench (outline_px, wobble_m, keep_edges)
 // Hook's spit (settlements/hook/world/landforms.json): a polygon instead of a rectangle, its edge wandering by up to wobble_m
 // except along a kept edge. On the slope at x 4 km, z 4 km: a hexagon about 650 by 480 m, its first edge (the south one,
@@ -156,6 +171,7 @@ T.ok('...and the kept edge\'s fade calms it (the same bench with its south edge 
 console.log('      outlined bench: the edge wanders up to ' + wander(Onk).toFixed(1) + ' m off the drawn outline (wobble_m 40)');
 const keptStraight = S => S.kept.every(p => Math.abs(p.dB - p.off) < 1e-6);
 T.neg('a kept edge stays as drawn: off its middle the distance is the outline\'s exactly (not kept, it wanders)', keptStraight, Onk, O1);
+stated();
 
 // ---------------------------------------------------------------- 6. fill_only and dome_m on an outlined bench
 // fill_only: a shelf at a level under part of the ground raises what is lower and leaves what stands higher; dome_m: the

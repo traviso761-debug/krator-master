@@ -47,9 +47,18 @@ def land_chain(region):
     """the region's land fragments from 41 to 45, in its build.py's order: [(label, path)]"""
     base = os.path.join(ROOT, 'openworld', region)
     txt = io.open(os.path.join(base, 'build.py'), encoding='utf-8').read()
-    a, b = txt.index("'41-world-fields.js'"), txt.index("'45-world-host.js'")
+    # from the region's first ground file (40-world-smooth.js where the relief is smoothed first, else 41) to its host; the
+    # core/terrain files it lists between them by folder ('core/terrain', '37-core-stacks.js': the relief's stacks)
+    a = min(txt.index(n) for n in ("'40-world-smooth.js'", "'41-world-fields.js'") if n in txt)
+    b = txt.index("'45-world-host.js'")
     out = []
-    for f in re.findall(r"'(4\d[a-z]?-world-[a-z0-9-]+\.js)'", txt[a:b]):
+    for m in re.finditer(r"\('core/terrain',\s*'(3\d[a-z]?-core-[a-z0-9-]+\.js)'\)|'(4\d[a-z]?-world-[a-z0-9-]+\.js)'", txt[a:b]):
+        if m.group(1):
+            p = os.path.join(ROOT, 'core', 'terrain', m.group(1))
+            if m.group(1) not in SKIP and os.path.isfile(p) and not any(o[1] == p for o in out):
+                out.append(('core/terrain/' + m.group(1), p))
+            continue
+        f = m.group(2)
         if f in SKIP or any(o[0].endswith('/' + f) for o in out):
             continue
         for d in (os.path.join(base, 'src'), HERE):
@@ -80,12 +89,18 @@ def extras(region):
     return out
 
 
+def site_data(region):
+    """the region's site data its spec reads, in filename order: src/47*-site-*.js (the laid villages, GENERATED [G data])"""
+    src = os.path.join(ROOT, 'openworld', region, 'src')
+    return [os.path.join(src, f) for f in sorted(os.listdir(src)) if re.match(r'^47[a-z]?-site-.*\.js$', f)] if os.path.isdir(src) else []
+
+
 def inputs(region):
     """every file the bake reads (its cache key)"""
     base = os.path.join(ROOT, 'openworld', region)
     files = [os.path.join(ROOT, *j) for j in HEAD] + [p for _, p in land_chain(region)]
     files += [os.path.join(base, 'build.py'), os.path.join(base, 'src', '48-world-site.js'), os.path.join(base, 'plan', 'sites.json'),
-              LANDFORMS, os.path.abspath(__file__), os.path.join(HERE, 'world_data.py'), WD.GEOLOGY]
+              LANDFORMS, os.path.abspath(__file__), os.path.join(HERE, 'world_data.py'), WD.GEOLOGY] + site_data(region)
     files += [os.path.join(ROOT, w, f) for w, f in WD.RES_FRAGS]
     data = os.path.join(base, 'data')
     files += sorted(os.path.join(data, f) for f in os.listdir(data))
@@ -139,6 +154,11 @@ def script(region, site_id, levels, probes):
     if os.path.isfile(spec):   # the region's SITE_SPEC: the coasts kept round its sites' hamlets (44c keeps)
         parts.append(WD.net_fragment(spec))
         parts.append('var KHAMLET={CULTURES:new Proxy({},{get:(t,k)=>k in t?t[k]:{}})};   /* the spec tunes core/hamlet\'s cultures; the ground does not read them */\n')
+        # a spec may build a row by name (KHAMLET.xanaduRow: the Gihon work's 48-world-site.js, 2026-11-23); the row reads its
+        # culture's tables, which the bake does not load, and the ground reads no row: a stub row, so the spec runs
+        parts.append('KHAMLET.xanaduRow=function(){return {};};\n')
+        for p in site_data(region):   # the laid villages the spec reads (47g-site-gihon-landing.js: GH_LANDING_LAID)
+            parts.append('\n// ---- openworld/%s/src/%s\n' % (region, os.path.basename(p)) + io.open(p, encoding='utf-8').read())
         parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + io.open(spec, encoding='utf-8').read())
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))   # the coasts' classes read the provinces (44c rockAt)
     for where, f in WD.RES_FRAGS:
