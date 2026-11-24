@@ -2535,7 +2535,7 @@ def _verify_routed(script, args, cacheable):
                 if not is_cloud_lane(got):
                     return _run_child(script, args, cacheable)
                 print("harness: on the %s lane (the cloud machine)" % got, flush=True)
-                code, info = cl.run_job(got, script, args, cwd=os.getcwd(), run_watched=run_watched)
+                code, info = cl.run_job(got, script, args, cwd=os.getcwd(), run_watched=run_watched, stall_min=STALL_MIN)
         except GpuLockTimeout as e:
             print("FAILED: " + str(e), flush=True)
             return 3
