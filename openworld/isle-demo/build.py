@@ -105,6 +105,9 @@ ORDER = (
      ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
      ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
      ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
+     # the weather (Stage 8 V9, G-weather W2): core/world's HOST.weather() binds it; the region starts clear, ?weather=<mode>
+     ('core/atmos', '89-atmos-4-weather.js'), ('core/atmos', '89-atmos-9-host.js'), ('core/atmos/host', '89-atmos-e-weatherhost.js'),
+     ('core/atmos/fx', '89-atmos-fx-raincover.js'),
      ('core/water/ext', '56-core-water-breakup.js'),
      ('core/water/geyser', '52-core-water-geyser.js'), ('core/water/geyser', '52b-core-water-geyser-draw.js'),
      ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
