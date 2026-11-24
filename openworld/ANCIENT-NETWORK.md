@@ -632,10 +632,20 @@ swhighlands' Drum and Cascade.
 - **The Bowl arcology** goes at **970,1186**: the Bowl's most temperate ground near the Godsgate (15 degC mean, 1,716 m,
   314 mm of rain).
 - **"No tunnel to Arcbeam" means: drop the Stair tunnel.** There is no Ancient tunnel from Arcbeam to Stair at all.
-  - Stair is reached by the Rift line's possible leg from Strongbow, and by the surface trunks.
-  - This changes canon in `LORE.md` §4 (the Catch: "the Ancients' tunnel to Stair ... sealed halfway", the divers'
-    prospect), `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` (the base tunnel and Bab al-Hawa). I have not
-    rewritten those yet (follow-up question 1 below).
+  - **Narrowed 2026-11-24 (the owner): "there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."**
+    So there IS a bore to Stair; its north end is **Parabola** (970,1186), which the same answers of 2026-11-11 had
+    already made the Bowl arcology, and the owner confirmed on 2026-11-24 ("parabola is the arcology now"). Proposed id:
+    `rift.bowl.parabola-stair`, beside the kept `rift.bowl.theodiga-stair`. It is **ruined**, not shut by design: 580 km,
+    its line straight down the Godsgate corridor, 115 km of it under the SE outer wall with up to 6.6 km of rock over it,
+    and sealed halfway — Yuni stripped the northern half long ago, the southern half from Stair is the divers' prospect.
+    Bab al-Hawa's 40 m shaft (1033,1258) is its ventilation and access shaft, 1,400 m down to the bore's summit section
+    near +2,190 m. **Nothing runs under Arcbeam**, which the highway merely passes.
+    `openworld/catch-bowl/PLAN-TERRAIN.md` P17 has the measurements; `PLAN.md` answers M and N.
+  - Stair is reached by that bore, by the Rift line's possible leg from Strongbow, and by the surface trunks.
+  - ~~This changes canon in `LORE.md` §4 ... I have not rewritten those yet~~ **Done 2026-11-24**, as a rename rather
+    than a demolition, now that the Parabola bore stands: `LORE.md` §4, `biomes/catch/PLAN.md` section 6 and
+    `biomes/seouterwall/PLAN.md` section 3.3 carry Parabola's name, and §4's oldest passage (sealed halfway, the northern
+    half stripped by Yuni, the southern the divers' prospect) is true again word for word.
 - **Quintagon** goes at **1349,830** (2,320 m, 14 degC, 376 mm, 289 km from Verge).
 - **The Outland Gate highway** runs from the Outlands (Trickster's House) north through the Gate to the Ria valley. It
   splits at the Gate, and the branch runs south-west through the Tiers to the Korona site.

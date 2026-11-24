@@ -155,6 +155,15 @@ On the `5.1` height grid, we carve **The Godsgate** as a meandering, domain-warp
 - **Southern Mouth (`px 1028..1045, py 1278..1305`):** The pass narrows through **The Southern Narrows (`+3,480 m` at `1035, 1292`)** before plunging down the coalescing gravel bajada fan into the northern Catch toward **Kolli / al-Kōl** (Oasis #1, `"the cold one"`, `biomes/catch/PLAN.md` §8) and southwestward along the high volcanic bench toward **Godshearth** (`rmw4wou2y1hhc`) and **Xanadu** (`rmvkkmitffbjk`).
 
 ### 3.3 Ancient Engineering & Caravan Infrastructure in the Godsgate
+
+> **Renamed 2026-11-24 (the owner): the bore's north end is PARABOLA, not Arcbeam.** *"There is no tunnel ti arcbeam but
+> there is a highway"*, and *"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."* Everything in
+> this section stands — the base tunnel, the 30 m surface highway, the 1,400 m vent shaft, the 180 m plug, the +16 °C
+> updraft, the caravanserai — with **Parabola (970,1186, the Bowl arcology)** in place of Arcbeam throughout. Measured
+> afterwards: the Parabola-Stair line is 580 km and runs straight down this corridor (at 45 % and 50 % of its length it
+> stands at px 1031,1301 and 1038,1314), 115 km of it inside this polygon with 4,506-8,154 m of rock over it, so the
+> shaft reaches a bore standing near +2,190 m from the 3,590 m apron — 1,400 m, the figure this section already gives.
+> `openworld/catch-bowl/PLAN-TERRAIN.md` P17 and `PLAN.md` answers M and N.
 How does the Godsgate relate to the **sealed Arcbeam–Stair tunnel** (`biomes/catch/PLAN.md` §6, `openworld/ANCIENT-ROADS.md` §4b)?
 1. **The Deep Tunnel Below vs. The Surface Service Highway Above:**
    - During the Ancients' era, the primary high-speed maglev/guideway trunk between **Arcbeam** (`px 1016, 1058`, `2,119 m`) and **Stair** (`px 1106, 1442`, `1,379 m`) bored straight underneath the eastern shoulder of the Godsgate in a deep base-tunnel.

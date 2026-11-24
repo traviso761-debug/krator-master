@@ -69,20 +69,20 @@
    "sha256": "8ddcf3ce51978195dcd39e3739bca0ec5393f1b43460a361b4f6e68079ec7523"
   },
   "biomes/catch/dist/catch-fan.html": {
-   "bytes": 9612324,
-   "sha256": "d60d1747b4b2ed568acee4f962c55e4231f6949f84fc52bbc3f4ae7a6977de43"
+   "bytes": 9778781,
+   "sha256": "10bbcd798b522817372b70c7e57df766a619b1481404abe3de457fc8cfd5e053"
   },
   "biomes/catch/dist/catch-lake.html": {
-   "bytes": 9616198,
-   "sha256": "86f21afdb897dadbc3301246d1051942f151932d325935ffe821932ba741ab83"
+   "bytes": 9782655,
+   "sha256": "aeb18fb509df8795d6b1c8d285522007b7590fc6e18e7bf5e54afefbd715f50b"
   },
   "biomes/catch/dist/catch-oasis.html": {
-   "bytes": 9617363,
-   "sha256": "cec18e1cc5fdffc5a3ee357064b753d4309d56863d8ebf1f5cb5a58e2f5d62c7"
+   "bytes": 9784121,
+   "sha256": "6c295d561e9886d015b97f8382c0b30f4df6d7913fb52a7d6da99005d405103c"
   },
   "biomes/catch/dist/catch.html": {
-   "bytes": 9615500,
-   "sha256": "b325a6d45ecc5d6f67e7eaa73eb410a18596fd00972afae5cff0911cd19773e7"
+   "bytes": 9781957,
+   "sha256": "52b18251d5ca35feb91b47689189e034a40b51c30ab2ee1b7dacfe605466c4bf"
   },
   "biomes/clivobredos/dist/clivobredos-bells.html": {
    "bytes": 8633673,
