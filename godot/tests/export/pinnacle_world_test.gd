@@ -272,7 +272,7 @@ func _run() -> void:
 	b_cut.name = "bucket_1"
 	b_cut.mesh = quad
 	var sm_cut_b := ShaderMaterial.new()
-	sm_cut_b.shader = KratorKmat.shader_for(0.42)
+	sm_cut_b.shader = KratorKmat.LIB_CUTOUT
 	sm_cut_b.set_shader_parameter("alpha_test", 0.42)
 	b_cut.material_override = sm_cut_b
 	mock_bk.add_child(b_cut)

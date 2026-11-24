@@ -119,6 +119,26 @@ atm_sky_noise={
 "type": "sampler3D",
 "value": ""
 }
+k_weather={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+k_weather_noise={
+"type": "sampler2D",
+"value": ""
+}
+k_world_origin={
+"type": "vec3",
+"value": Vector3(0, 0, 0)
+}
+k_surface={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+k_detail_arr={
+"type": "sampler2DArray",
+"value": ""
+}
 khz_tex0={
 "type": "sampler2D",
 "value": ""

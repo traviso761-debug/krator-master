@@ -6,13 +6,9 @@
 // glTF texture transform, uv_scale and uv_offset), except on instances with `world_uv` (below). The break-up and the
 // world-unit tiling are the shader library's (shaders/lib/breakup.gdshaderinc, lib/world-uv.gdshaderinc: hooks
 // 'breakup' and 'world-uv').
-// Opaque: the body never writes ALPHA here (K5; library_cutout.gdshader for alpha_test > 0).
+// The opaque variant: back faces culled and ALPHA never written, so it draws in the opaque pass with a depth prepass
+// (library_body.gdshaderinc says which shader a record takes).
 shader_type spatial;
-render_mode cull_disabled;
+render_mode cull_back;
 
-#include "res://shaders/kcolour.gdshaderinc"   // three draws most library surfaces front-only; a few are double-sided, and glTF carries the flag per material
-#include "res://shaders/lib/breakup.gdshaderinc"
-#include "res://shaders/lib/world-uv.gdshaderinc"
-#include "res://shaders/lib/triplanar.gdshaderinc"
-
-#include "res://shaders/lib/library_body.gdshaderinc"
+#include "res://shaders/library_body.gdshaderinc"

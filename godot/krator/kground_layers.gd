@@ -52,12 +52,11 @@ static func ensure_s4() -> bool:
 	layer_means.clear()
 	s4_vram_bytes = 0
 	for lrec in doc["layers"]:
-		var ia := _load_webp_image(base_dir + "/" + str(lrec["albedo"]), true)
-		var inr := _load_webp_image(base_dir + "/" + str(lrec["normal_rough"]), true)
+		# decoded to RGBA8, mipmapped and compressed once (krator/cook.gd)
+		var ia := KratorCook.image_file(base_dir + "/" + str(lrec["albedo"]), "albedo", true)
+		var inr := KratorCook.image_file(base_dir + "/" + str(lrec["normal_rough"]), "data", true)
 		if ia == null or inr == null:
 			return false
-		KratorKmat.vram(ia, "albedo")
-		KratorKmat.vram(inr, "data")
 		s4_vram_bytes += ia.get_data().size() + inr.get_data().size()
 		alb_imgs.append(ia)
 		nr_imgs.append(inr)
@@ -70,9 +69,8 @@ static func ensure_s4() -> bool:
 	nr_arr.create_from_images(nr_imgs)
 
 	if doc.has("plume_card"):
-		var ip := _load_webp_image(base_dir + "/" + str(doc["plume_card"]), true)
+		var ip := KratorCook.image_file(base_dir + "/" + str(doc["plume_card"]), "albedo", true)
 		if ip != null:
-			KratorKmat.vram(ip, "albedo")
 			s4_vram_bytes += ip.get_data().size()
 			plume_tex = ImageTexture.create_from_image(ip)
 

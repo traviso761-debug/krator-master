@@ -77,6 +77,8 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 		var it := MultiMeshInstance3D.new()
 		it.multimesh = mm
 		it.name = gltf_node.resource_name
+		if KratorCook.enabled():   # the rows for the cook's record (krator/cook.gd), which drops this with the parsed scene
+			it.set_meta("krator_buf", buf)
 		it.set_meta("krator_instances", n)
 		it.set_meta("krator_item", ex["krator_item"])
 		for k in ["_AP0", "_AP1"]:   # a fauna path (biomes/GODOT.md): packed above for the anim shader, and kept as data

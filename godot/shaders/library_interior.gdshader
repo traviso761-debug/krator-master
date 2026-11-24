@@ -129,7 +129,20 @@ void fragment() {
 	float ao_comb = v_corner_ao * cav;
 	AO = ao_comb;
 	AO_LIGHT_AFFECT = 0.45;
+#ifdef K_ROOM_AMBIENT
+	// L4 (GODOT-LOOK-PLAN.md 6.4; krator/kinteriors_light.gd ambient_shader makes this variant, with the render mode
+	// above taken off): the room's light is the surface's own diffuse ambient, in place of the sky's. The engine then
+	// multiplies it by the albedo and AO as it does outdoors, so SSAO reaches indoors. Alpha 1: none of the sky's comes in.
+	// The specular half is held back: a room table is one colour, and one colour as the whole environment lays a grey
+	// veil over every rough surface (tried 2026-11-23: the assembly hall's mean value rose from 38 to 66 of 255 and its
+	// reds went pink). Only metals take it, tinted by their own colour, where they took a quarter of the diffuse term
+	// before; a probe a room cluster (the plan's L3) is what the rest wait for
+	IRRADIANCE = vec4(room_irr, 1.0);
+	RADIANCE = vec4(unlit ? vec3(0.0) : room_irr * metal * 0.6, 1.0);
+	EMISSION = unlit ? c : emission;
+#else
 	EMISSION = unlit ? c : (emission + alb * room_irr * ao_comb * (1.0 - metal * 0.75));
+#endif
 
 	METALLIC = metal;
 	SPECULAR = specular_k;

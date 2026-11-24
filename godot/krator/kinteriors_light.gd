@@ -8,6 +8,9 @@
 extends RefCounted
 
 const INTERIOR_SHADER := preload("res://shaders/library_interior.gdshader")
+# L4 (GODOT-LOOK-PLAN.md 6.4): the line the ambient variant is made without (ambient_shader)
+const AMBIENT_OFF_LINE := "render_mode ambient_light_disabled;"
+static var _ambient_shader: Shader = null
 const CELL_M := 16.0
 const INDOOR_LAYER := 2
 # a skylight's pool light this far over the eye at most (KROOMLIGHT.pickPool's o.skyFill default)
@@ -612,6 +615,36 @@ static func setup_monastery(mon: Node3D, imeta: Dictionary) -> Dictionary:
 	}
 	mon.set_meta("stage7_interiors", st)
 	return st
+
+
+# L4: the indoor shader with the room's light as the surface's own ambient (IRRADIANCE and RADIANCE) in place of
+# emission: the same text with its ambient_light_disabled line replaced by the define its fragment() reads. Made once.
+static func ambient_shader() -> Shader:
+	if _ambient_shader == null:
+		var code := INTERIOR_SHADER.code
+		if code.contains(AMBIENT_OFF_LINE) and code.contains("#ifdef K_ROOM_AMBIENT"):
+			_ambient_shader = Shader.new()
+			_ambient_shader.code = code.replace(AMBIENT_OFF_LINE, "#define K_ROOM_AMBIENT")
+		else:
+			_ambient_shader = INTERIOR_SHADER
+	return _ambient_shader
+
+
+# every indoor material of a monastery onto the ambient variant, or back (krator/look.gd's room_ambient, through the
+# stream). Returns how many it set
+static func set_room_ambient(mon: Node3D, on: bool) -> int:
+	if mon == null or not mon.has_meta("stage7_interiors"):
+		return 0
+	var st: Dictionary = mon.get_meta("stage7_interiors")
+	var sh := ambient_shader() if on else INTERIOR_SHADER
+	var n := 0
+	for m in st.get("materials", []):
+		var sm := m as ShaderMaterial
+		if sm != null and (sm.shader == INTERIOR_SHADER or sm.shader == _ambient_shader):
+			sm.shader = sh
+			n += 1
+	st["room_ambient"] = on
+	return n
 
 
 static func update_uniforms(mon: Node3D, sun_day_factor: float, lamp_amb_scale: float, mask_sun := true, use_corner_ao := true) -> void:

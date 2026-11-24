@@ -11,6 +11,14 @@ const skyScene=new THREE.Scene(),skyCam=new THREE.PerspectiveCamera(50,innerWidt
 KratorSky.attach(skyScene,4200);
 const SKY={hour:10.5,day:200,dens:1.6,night:false};
 const qs=new URLSearchParams(location.search);if(qs.get('hour'))SKY.hour=+qs.get('hour');
+/* ?form=1: the export form (30-geo.js setForm), for an export a game engine reads: chamfered boxes by the material's kind,
+   buildings out of true and the height field. A page opened without it draws as it always did. ?form=chamfer|jitter|fields
+   (joined by commas) turns on one at a time */
+/* a rendered wall is drawn as panels that abut in one plane, and a chamfer on each cuts a groove across the wall where two
+   meet (seen in Godot, 2026-11-24): plaster, render and limewash stay square */
+const FORM_W=[[/glass|water|glow|pane|room|cloth|canvas|rope|thatch|leaf|plaster|render|lime|wash|stucco|wall/i,0],[/iron|bronze|brass|metal|gold|copper|steel/i,.006],[/wood|timber|plank|beam|bamboo|lacquer/i,.02],[/adobe|mud|earth|rammed|cob|rough/i,.05],[/stone|marble|granite|brick|tile|slate|concrete/i,.03]];
+function formWidth(mk){for(const [re,w] of FORM_W)if(re.test(mk))return w;return .02;}
+if(qs.get('form')){const f=qs.get('form'),all=f==='1',has=k=>all||f.split(',').indexOf(k)>=0;setForm({chamfer:has('chamfer')?formWidth:null,jitter:has('jitter')?1:0,fields:has('fields')});}
 const hemi=new THREE.HemisphereLight(0xffe6c8,0x7a5a3e,.75);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xfff0dc,1.7);scene.add(sun);scene.add(sun.target);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);{const c=sun.shadow.camera;c.left=-60;c.right=60;c.top=60;c.bottom=-60;c.near=10;c.far=700;}sun.shadow.bias=-.0005;sun.shadow.normalBias=.3;

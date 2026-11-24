@@ -432,6 +432,22 @@ func _run_synthetic_and_negatives(space: PhysicsDirectSpaceState3D) -> void:
 	var n_rds := KratorWorldAudit.audit_roads(S)
 	ok(not bool(n_rds["ok"]) and int(n_rds["buried"]) > 0, "negative [roads]: catches buried RoadRibbon carriageway")
 	rmi.position.y = 0.0
+	# 19b. Negative [roads]: the ribbon wound the other way faces down, and its shader culls back faces (so it was until 2026-11-23)
+	var r_keep := rmi.mesh
+	var r_arr := r_keep.surface_get_arrays(0)
+	var r_idx: PackedInt32Array = r_arr[Mesh.ARRAY_INDEX]
+	for r_t in r_idx.size() / 3:
+		var r_sw := r_idx[r_t * 3 + 1]
+		r_idx[r_t * 3 + 1] = r_idx[r_t * 3 + 2]
+		r_idx[r_t * 3 + 2] = r_sw
+	r_arr[Mesh.ARRAY_INDEX] = r_idx
+	var r_flip := ArrayMesh.new()
+	r_flip.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, r_arr)
+	rmi.mesh = r_flip
+	var n_fd := KratorWorldAudit.audit_roads(S)
+	rmi.mesh = r_keep
+	ok(not bool(n_fd["ok"]) and int(n_fd["face_down"]) == 1 and int(KratorWorldAudit.audit_roads(S)["face_down"]) == 0,
+		"negative [roads]: catches a RoadRibbon wound face down (none is, as built)")
 
 	# 20. Negative [stream flora]: attach lod_y instance uniform onto active StreamFlora MultiMeshInstance3D
 	S.refresh_flora_at(Vector3(64.0, 14.0, 64.0), 240.0, 2600.0)
