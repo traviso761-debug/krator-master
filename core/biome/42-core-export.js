@@ -126,6 +126,7 @@ function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=b
     normalMap:texId(m.normalMap||null),roughnessMap:texId(m.roughnessMap||null)});}
   mats.set(m,r);return id;};
  const geoRec=g=>{const r={};for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)r[k]=pack(a.array);}
+  if(g.attributes.aWind)r.wind=pack(g.attributes.aWind.array);   /* the export form's wind fields (20-core-kit.js): stiffness, phase, spare */
   if(g.index)r.index=pack(g.index.array);return r;};
  const LM=new Map();(BIO.lodMeshes||[]).forEach(e=>LM.set(e.mesh,e));
  for(const m of BIO.baked){const kit=m.userData.kit||'';if(opt.kit!=null&&kit!==opt.kit)continue;

@@ -614,17 +614,18 @@ All are `[G data]`: plain numbers on vertices and records. The web pages ignore 
 | A material's `side` | `core/export/10-core-export-scene.js`, read in `godot/krator/world_import.gd` (a back-side record is drawn on both faces and reported) | a front-culling shader, if a back-side shell ever matters |
 | Mirrored triangles turned over at the bake | the same file (`mirrored` counts them); `test-export-scene.js` | the Godot side's own check (`KratorKmat.winds_against`) stays as the safety |
 | `closed: true` | buckets and items; Godot culls the back faces of a double-sided material on a closed solid (`KratorKmat.onesided`) | measured on no real export yet: none carries the field |
-| The chamfered box | `core/engine/30-geo.js` `gboxCh`, behind `setForm({chamfer})`: 44 triangles on 24 vertices, closed, outward | `beam()`, kits' own boxes and **`core/catalog`'s** `F.box`; the widths by class |
+| The chamfered box | `core/engine/30-geo.js` `gboxCh`, behind `setForm({chamfer})`: 44 triangles on 24 vertices, closed, outward; and `core/catalog`'s `mkBox` and `mkBeam`, behind `KF.setForm({chamfer})` (the generic set: 76,482 triangles to 105,218 on the same 98,428 vertices) | the engine's `beam()` and kits' own boxes; the widths by class |
 | Out-of-true jitter | the engine: batter and lean by a hash of the place, after the record is taken | ridge sag, bowed beams, wandering courses; the catalog |
 | Three per-vertex fields | one of three: height above the building's base (`aForm.x`, exported as `geometry.form`) | **baked occlusion** (nothing bakes it) and **edge** on anything but a chamfered box; a reader in Godot's weathering |
 | Where smoke rises, where a wall stains | `formMarks(REG, SMOKES)` in the engine: smoke sources and window sills as plain records | an exporter that writes them to the registry, and Godot's emitters and decals reading them |
 | An opening's mark on the wall | the sill's place only (above) | a mark on the wall's own vertices (`36o-open.js`) |
-| A grain axis a furniture piece | | all of it (`core/catalog`) |
-| Wind stiffness and phase a vertex | | all of it (`core/biome/20-core-kit.js`) |
+| A grain axis a furniture piece | `core/catalog`: a box and a beam name their grain's way, and an indexed batch writes it a vertex as `aGrain` (`KF.setForm({grain})`; `kits/catalog/tests/test-form.js`) | turned parts have none; a reader in Godot's detail projection (M12) |
+| Wind stiffness and phase a vertex | `core/biome/20-core-kit.js`, behind `BIO.setForm({wind})`: buckets bake `aWind` (stiffness from a tube's own radius, one phase a branch), exported as `geometry.wind` (`test-wind.js`) | instanced cards and leaves (they are items, not buckets); `lib/foliage.gdshaderinc` reading it (P4) |
 | Godot packs with colour kept | `tools/textures/pack.py` already has `packFormat: 2` | making the packs and pointing `export_spike.py` at them |
 
-No page or exporter calls `setForm` yet, so nothing in `godot/data` changes until a case is exported with it. The pages
-that take `core/engine` and `core/export` are behind their sources until the all-builds rebuild (`check_stale` says
+No page or exporter calls any `setForm` yet, so nothing in `godot/data` changes until a case is exported with it. The pages
+that take `core/engine`, `core/export`, `core/catalog` and `core/biome` (most of the repo: `core/biome/20-core-kit.js`
+alone reaches 540 pages) are behind their sources until the all-builds rebuild (`check_stale` says
 which). Proof that the form is inert when off: `kits/scyvoi`, rebuilt on the new engine, reads `same` in
 `core/engine/fingerprint.py`.
 
