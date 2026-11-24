@@ -44,14 +44,15 @@ function feGroundMat(masked,key){
   uCr:{value:new THREE.Vector3(FE_CR[0],FE_CR[1],FE.L.crater.r)},uBox:{value:new THREE.Vector4(FEG.x0,FEG.z0,FEG_W,FEG_H)}};
  const mat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.97,metalness:0});
  mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;')
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;attribute float feAF;varying float vFeAF;')
    .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nvFeN=normalize((modelMatrix*vec4(objectNormal,0.0)).xyz);')
-   .replace('#include <begin_vertex>','#include <begin_vertex>\nvFeW=(modelMatrix*vec4(transformed,1.0)).xyz;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;uniform sampler2D tGrass,tDirt,tCobble,tFlag,tAsh,tSco,tCin,tCol,tMask;uniform vec4 kA,kB,uBox;uniform vec3 uCr;\nvec3 feT(sampler2D t,vec2 p){return sRGBToLinear(texture2D(t,p)).rgb;}\nvec4 feM(vec2 p){return texture2D(tMask,p);}')   /* feM: the zone mask, linear data, not a colour (the coarse mesh never reads it) */
+   .replace('#include <begin_vertex>','#include <begin_vertex>\nvFeW=(modelMatrix*vec4(transformed,1.0)).xyz;vFeAF=feAF;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;varying float vFeAF;uniform sampler2D tGrass,tDirt,tCobble,tFlag,tAsh,tSco,tCin,tCol,tMask;uniform vec4 kA,kB,uBox;uniform vec3 uCr;\nvec3 feT(sampler2D t,vec2 p){return sRGBToLinear(texture2D(t,p)).rgb;}\nvec4 feM(vec2 p){return texture2D(tMask,p);}')   /* feM: the zone mask, linear data, not a colour (the coarse mesh never reads it) */
    .replace('#include <map_fragment>',['#include <map_fragment>','vec2 w=vFeW.xz;float y=vFeW.y;vec3 n=normalize(vFeN);float dc=length(w-uCr.xy);',
     'vec3 c=feT(tGrass,w*kA.x)*vec3(.68,.72,.56);',   /* an upland meadow at 1,700 m, not the lowland Af grass the set was made for */
     /* the cap's ash: rising with the height toward the rim, all of it within 250 m of the crater */
-    'float ash=max(smoothstep(30.0,150.0,y)*0.85,smoothstep(uCr.z+260.0,uCr.z+60.0,dc));c=mix(c,feT(tAsh,w*kB.x),ash);',
+    /* and the plume's ash fall downwind (90fh: ATMOS.ashPlume's under() baked into each vertex, feAF; 0 where a mesh has none) */
+    'float ash=max(max(smoothstep(30.0,150.0,y)*0.85,smoothstep(uCr.z+260.0,uCr.z+60.0,dc)),vFeAF);c=mix(c,feT(tAsh,w*kB.x),ash);',
     /* the crater: scoria on its walls and rampart, cinder on its floor */
     'float cr=smoothstep(uCr.z+60.0,uCr.z-10.0,dc);c=mix(c,feT(tSco,w*kB.y),cr);c=mix(c,feT(tCin,w*kB.z),smoothstep(uCr.z*0.55,uCr.z*0.3,dc));',
     /* the talus under the band's face (between the face's foot and the talus's toe, by the Lip's curve): cinder */

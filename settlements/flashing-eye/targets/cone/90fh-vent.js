@@ -41,6 +41,14 @@ function feBombsAt(v){const s=v.since,on=s<14;feBombs.visible=on;if(!on)return 0
 window._feHouseSmoke=FE_SMOKES.length?ATMOS.smoke(FE_SMOKES):null;
 /* the same plume as a record (core/atmos fx/ashplume): drifting east-north-east on the Vale's west wind, ~800 m tall */
 const FE_PLUME=ATMOS.ashPlume?ATMOS.ashPlume({vents:[{id:'eye.vent',x:FE_VENT.x,z:FE_VENT.z,y:FE_VENT.y,top:800,rate:1}],azimuth:1.2,speed:8,world:'flashing-eye'}):null;
+/* its ash fall on the ground: under(x, z) at every vertex of the three near ground meshes, an attribute the ground's shader lays
+   the ash set by (90fe: feAF, up to .85); the far ground keeps none (its cells are 400 m). The deposit peaks some 6 km downwind,
+   past the near ground, so its edge over the cone is shown six times over (about half the ash set at its strongest there) */
+const FE_ASHFALL=(function(){if(!FE_PLUME||!FE_PLUME.under)return null;let n=0,mx=0;const v=new THREE.Vector3();
+ for(const m of[groundM,feCoarse,feFootG]){const g=m.geometry,p=g.attributes.position,a=new Float32Array(p.count);m.updateMatrixWorld(true);
+  for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(m.matrixWorld);const u=Math.min(.85,FE_PLUME.under(v.x,v.z)*6);a[i]=u;if(u>.05)n++;if(u>mx)mx=u;}
+  g.setAttribute('feAF',new THREE.BufferAttribute(a,1));}
+ return{vertices:n,peak:+mx.toFixed(2)};})();
 // ---------------------------------------------------------------- the hazards, as records (core/hazard's kinds: gas, heat, lava; cycle.base)
 const FE_HAZ=[
  {id:'eye.vent.lava',kind:'lava',shape:{type:'circle',x:FE_VENT.x,z:FE_VENT.z,r:FE.L.crater.ventR},cycle:{period:900,base:.7}},
@@ -81,5 +89,5 @@ FRAME_HOOKS.push(()=>{const t=feNow(),v=FE_WATCH.vent(t),night=1-(FE_SKY.dayF==n
 const FE_API={setTime:t=>{FE_CLOCK.set=t;},burst:(k,s)=>{const b=FE_WATCH.bursts(FE_CLOCK.t0,FE_CLOCK.t0+3*3600)[k==null?0:k];FE_CLOCK.set=b+(s==null?1.5:s);return b;},vent:()=>feLast,
  /* the clock 1.25 s into the k-th station's slot of the day line, at the next hour that is day (a flash of its call sign) */
  signal:k=>{let h=Math.floor(FE_CLOCK.t0/3600)+1;while(!FE_ENV.day(h*3600+60))h++;FE_CLOCK.set=h*3600+(k==null?0:k)*FE_WATCH.SLOT+1.25;return FE_CLOCK.set;}};
-window._feVent={x:+FE_VENT.x.toFixed(1),z:+FE_VENT.z.toFixed(1),y:+FE_VENT.y.toFixed(1),hazards:FE_HAZ.length,plume:!!FE_PLUME,sprites:!!window._fePlumeSprites,
+window._feVent={ashfall:FE_ASHFALL,x:+FE_VENT.x.toFixed(1),z:+FE_VENT.z.toFixed(1),y:+FE_VENT.y.toFixed(1),hazards:FE_HAZ.length,plume:!!FE_PLUME,sprites:!!window._fePlumeSprites,
  rim:+terrainH(FE_CR[0],FE_CR[1]+FE.L.crater.r).toFixed(1),bursts3h:FE_WATCH.bursts(FE_CLOCK.t0,FE_CLOCK.t0+3*3600).length};

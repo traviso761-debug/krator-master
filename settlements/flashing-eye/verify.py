@@ -15,12 +15,13 @@ checks of tools/checks_optin.json), with the page's own:
                  Tears' camp (197) clear the drawn ground by 2 m or more for their first 2 km (the far field is tools/sights.py)
   no-trees       the flora's mask is empty on the band's face, on the rim within 120 m of the crater and in the crater
   glints         the day line's flash at the two lanterns, aimed: full on the line to the station it sends to, none 20 degrees off
+  ash-fall       the plume record's ash fall laid on the ground downwind of the vent, none on the bench
   fires          the house's two lights (the Ember's window, the fire basket) hung; no oil lamp anywhere
   interiors-furnished  every building of src/32-fe-rooms.js (the Lip Range's four houses, the Hall of the Ember, the Ember
                  Tower's shaft, the Eye Post) planned with every storey of its sheet and furnished; the Lip Range's doors on L0;
                  the Order's pieces in their rooms (the lecterns, the Ember's hearth); the heliograph and the fire basket on the
                  Eye Post's platform; none of the Beacon's pieces; no electric light; rows of seats in the Assembly Hall (10 or
-                 more) and the Ember Tower's belvedere
+                 more) and the Ember Tower's belvedere; 100 or more rows of seats or tables in nine buildings
   interiors-walk-in    each building's door shut blocks it, open clears it, and a walker from outside reaches every floor and
                  stair (the Lip Range's houses from the bench, all four storeys; the Eye Post up its ladder onto the platform);
                  the balcony is a floor walled by its parapet
@@ -57,6 +58,8 @@ PAGE_JS = r"""
  R.push({name:'sights-near',ok:ss.every(s=>s[1]>=2),detail:ss.map(s=>s[0]+' clear by '+s[1].toFixed(1)+' m').join(', ')+' (the first 2 km on the drawn ground)'});
  const bad=[];for(let v=-500;v<=500;v+=50){const lu=FLASHING_EYE.lipU(L,v);for(const d of[6,14,22])if(feBioMask(v,lu+d)>0)bad.push('face '+v+','+d);}
  for(let a=0;a<12;a++){const x=FE_CR[0]+Math.sin(a*.52)*(C.r+60),z=FE_CR[1]+Math.cos(a*.52)*(C.r+60);if(feBioMask(x,z)>0)bad.push('rim '+a);if(feBioMask(FE_CR[0]+Math.sin(a*.52)*C.r*.5,FE_CR[1]+Math.cos(a*.52)*C.r*.5)>0)bad.push('crater '+a);}
+ {const AF=(window._feVent||{}).ashfall,b=FE_PLUME?FE_PLUME.under(0,-60):1,dw=FE_PLUME?FE_PLUME.under(FE_VENT.x+Math.sin(1.2)*1500,FE_VENT.z-Math.cos(1.2)*1500):0;
+  R.push({name:'ash-fall',ok:!!AF&&AF.vertices>0&&b<.05&&dw>.05,detail:AF?'the plume\'s ash fall laid on '+AF.vertices+' ground vertices (peak '+AF.peak+'); 1.5 km downwind '+dw.toFixed(2)+', on the bench '+b.toFixed(3):'NO ash fall on the ground'});}
  R.push({name:'no-trees',ok:bad.length===0,detail:bad.length?bad.slice(0,6).join('; '):'the mask is empty on the face (33 points), the rim and the crater (24)'});
  const SB=typeof FE_BRIDGES!=='undefined'?FE_BRIDGES:[],ST=typeof FE_STACKS!=='undefined'?FE_STACKS:[],low=[];
  SB.forEach(B=>B.pts.forEach((p,k)=>{if(k>2&&k<B.pts.length-3&&p[1]-terrainH(p[0],p[2])<3)low.push(B.from+':'+k);}));
@@ -84,11 +87,11 @@ PAGE_JS = r"""
  const PF=X.platform||{pieces:[]},plat=['xanadu_eye_heliograph','xanadu_fire_basket'].filter(k=>!PF.pieces.some(q=>q.key===k&&!q.error));
  const beacon=['xanadu_court_gold_banner','xanadu_court_relic_lamp','xanadu_lamp_switchboard','xanadu_cable_drum','xanadu_generator_set','xanadu_lens_bench','xanadu_register_of_lights'].filter(k=>X.placed[k]);
  const bulbs=Object.values(typeof FE_IX!=='undefined'?FE_IX.T:{}).reduce((a,T)=>a+(T.bulbs||[]).length,0);
-  const rows=((by('mon.hall')||{}).rows|0),rowsB=((by('ember.shaft')||{}).rows|0);
-R.push({name:'interiors-furnished',ok:!!X.on&&want.length>=7&&!miss.length&&!lev.length&&!more.length&&!own.length&&!plat.length&&!beacon.length&&!bulbs&&rows>=10&&rowsB>=1,
+  const rows=((by('mon.hall')||{}).rows|0),rowsB=((by('ember.shaft')||{}).rows|0),rowsAll=X.buildings.reduce((a,b)=>a+(b.rows|0),0),rowsN=X.buildings.filter(b=>b.rows).length;
+R.push({name:'interiors-furnished',ok:!!X.on&&want.length>=7&&!miss.length&&!lev.length&&!more.length&&!own.length&&!plat.length&&!beacon.length&&!bulbs&&rows>=10&&rowsB>=1&&rowsAll>=100&&rowsN>=9,
   detail:(X.on?'':'interiors OFF; ')+(want.length-miss.length)+' of '+want.length+' buildings planned and furnished ('+X.rooms+' rooms, '+X.pieces+' pieces, '+X.ms+' ms)'+(miss.length?'; NOT '+miss.join(', '):'')+
    (lev.length?'; storeys OFF: '+lev.join(', '):'; every storey of the sheets')+(more.length?'; upper doors MISSING: '+more.join(', '):'')+(own.length?'; the Order\'s pieces NOT placed: '+own.join(', '):'; the Order\'s pieces in their rooms')+
-   (plat.length?'; the platform LACKS '+plat.join(', '):'; the heliograph and the fire basket on the Eye Post\'s platform')+(beacon.length?'; the Beacon\'s pieces HERE: '+beacon.join(', '):'')+(bulbs?'; '+bulbs+' electric bulbs':'; no electric light')+'; rows of seats: '+rows+' in the Assembly Hall, '+rowsB+' in the belvedere'});
+   (plat.length?'; the platform LACKS '+plat.join(', '):'; the heliograph and the fire basket on the Eye Post\'s platform')+(beacon.length?'; the Beacon\'s pieces HERE: '+beacon.join(', '):'')+(bulbs?'; '+bulbs+' electric bulbs':'; no electric light')+'; rows of seats: '+rows+' in the Assembly Hall, '+rowsB+' in the belvedere, '+rowsAll+' in '+rowsN+' buildings'});
  const WI=typeof FE_IX!=='undefined'&&FE_IX.walkIn?FE_IX.walkIn():[],bad=WI.filter(q=>!q.ok);
  R.push({name:'interiors-walk-in',ok:!!X.on&&WI.length===want.length&&!bad.length&&X.walked===want.length&&!!X.balcony&&X.parapet>0&&!!X.ladder,
   detail:X.walked+' of '+want.length+' interiors in core/walk; walked in: '+WI.map(q=>q.id+' '+(q.ok?q.floors+' floors':'FAILED'+(q.why?' ('+q.why+')':' (shut '+q.shut+', open '+q.open+', unreached '+(q.unreached||[]).slice(0,4).join(' ')+')'))).join('; ')+(X.balcony?'; the balcony a floor, its parapet '+X.parapet+' blocks':'; NO balcony')+(X.ladder?'; the ladder to the platform of the Eye Post in '+X.ladder.room.split('.').slice(-1)[0]:'; NO ladder to the platform')});}

@@ -80,32 +80,45 @@ const FE_IX=(function(){const S={on:false,buildings:[],rooms:0,pieces:0,fails:[]
   for(const q of T.F.placed||[]){const w=loc(pose.x,pose.z,q.x,q.z,pose.ry);B.pieces++;S.pieces++;S.placed[q.key]=(S.placed[q.key]|0)+1;if(FE_ROOMS.OWN.indexOf(q.key)>=0)B.keys[q.key]=(B.keys[q.key]|0)+1;
    T0.add({prefix:'ixf','class':'furniture',kind:q.kind,key:q.key,name:q.name,at:[w[0],pose.y+q.y,w[1]],ry:q.ry+pose.ry,size:q.size,tags:Object.assign({},q.tags,{building:Bd.id}),frag:'90fk-fe-interiors.js'});}
   /* a hall's seats in rows (Bd.rows): kits/interiors stops a room at about nine pieces whatever its size, so a dukhang's rows of
-     low seats are laid after it, every dx along and dz deep with an aisle down the middle, facing the storey's shrine (or away
-     from the room's door), each clear of the room's walls by `margin`, of every piece and fixture already there and of its doors */
-  for(const Rw of Bd.rows||[]){const Lv=T.plan.levels[Rw.level],R=Lv&&T.plan.rooms.find(r=>r.level===Rw.level&&r.kind===Rw.kind),E=KratorFurniture.FURN_BY_KEY[Rw.key];if(!R||!E)continue;
-   const cen=P=>{let x=0,z=0;for(const q of P){x+=q[0];z+=q[1];}return[x/P.length,z/P.length];},c0=cen(R.poly),Sh=T.plan.rooms.find(r=>r.level===Rw.level&&r.kind==='shrine');
-   let f=Sh?(c=>[c[0]-c0[0],c[1]-c0[1]])(cen(Sh.poly)):R.doors.length?[c0[0]-R.doors[0].at[0],c0[1]-R.doors[0].at[1]]:[0,-1];
-   const c2=Math.cos(sry),s2=Math.sin(sry),fu=f[0]*c2-f[1]*s2,fv=f[0]*s2+f[1]*c2;   /* snapped to the shell's axes */
-   const ax=Math.abs(fu)>Math.abs(fv)?[Math.sign(fu),0]:[0,Math.sign(fv)];f=[ax[0]*c2+ax[1]*s2,-ax[0]*s2+ax[1]*c2];const gt=[f[1],-f[0]],ry=Math.atan2(f[0],f[1]);
-   const pts=(cx,cz,r,w,d)=>{const c=Math.cos(r),s=Math.sin(r);return[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*c+b*d/2*s,cz-a*w/2*s+b*d/2*c]);};
-   const sep=(A,B)=>{for(const P of[A,B])for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4],n=[b[1]-a[1],a[0]-b[0]];
-     const pa=A.map(q=>q[0]*n[0]+q[1]*n[1]),pb=B.map(q=>q[0]*n[0]+q[1]*n[1]);if(Math.max(...pa)<Math.min(...pb)||Math.max(...pb)<Math.min(...pa))return true;}return false;};
-   const inP=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
-   const block=(T.F.placed||[]).filter(q=>q.y>=Lv.y-.1&&q.y<Lv.y+Lv.h).map(q=>pts(q.x,q.z,q.ry||0,(q.size||[.8,.8])[0]+.5,(q.size||[.8,.8])[1]+.5))
-    .concat(R.fixtures.map(x=>pts(x.x,x.z,x.ry,x.w+.5,x.d+1)));
-   const us=R.poly.map(q=>(q[0]-c0[0])*gt[0]+(q[1]-c0[1])*gt[1]),vs=R.poly.map(q=>(q[0]-c0[0])*f[0]+(q[1]-c0[1])*f[1]);
-   const b=KratorFurniture.batch({indexed:true});let n=0;
-   for(let v=Math.max(...vs)-Rw.margin-E.d/2-(Rw.back==null?1.2:Rw.back);v>Math.min(...vs)+Rw.margin;v-=Rw.dz)for(const sgn of[-1,1])for(let k=0;;k++){
-    const u=sgn*(.7+E.w/2+k*Rw.dx);if(u<Math.min(...us)||u>Math.max(...us))break;
-    const x=c0[0]+gt[0]*u+f[0]*v,z=c0[1]+gt[1]*u+f[1]*v,me=pts(x,z,ry,E.w,E.d),big=pts(x,z,ry,E.w+2*Rw.margin,E.d+2*Rw.margin);
-    if(!big.every(q=>inP(R.poly,q[0],q[1])))continue;if(block.some(B2=>!sep(me,B2)))continue;
-    if(R.doors.some(d=>Math.hypot(d.at[0]-x,d.at[1]-z)<d.w/2+E.w/2+1.2))continue;
-    const w=loc(pose.x,pose.z,x,z,pose.ry);
-    T0.add({prefix:'ixf','class':'furniture',kind:E.type||null,key:Rw.key,name:E.name||null,at:[w[0],pose.y+Lv.y,w[1]],ry:ry+pose.ry,size:[E.w,E.d,E.h],
-     tags:{setting:'room',culture:'xanadu',tier:E.tier||null,room:R.id,building:Bd.id},frag:'90fk-fe-interiors.js'});
-    b.place(Rw.key,x,Lv.y,z,ry,{variant:0,setting:'indoor',building:Bd.id,room:R.id});block.push(pts(x,z,ry,E.w+.2,E.d+.6));n++;B.pieces++;S.pieces++;S.placed[Rw.key]=(S.placed[Rw.key]|0)+1;}
-   if(n){const gr=new THREE.Group();gr.name='rows:'+Bd.id+'.'+Rw.level;b.flush(gr);gr.traverse(o=>{if(o.isMesh)o.renderOrder=-2;});g.add(gr);g.updateMatrixWorld(true);}
-   B.rows=(B.rows|0)+n;}
+     low seats, or a refectory's tables with their benches, are laid after it in every room of the kind on that storey: a unit
+     (Rw.key alone, or Rw.unit 'table': the table with a bench either side, facing it) every dx along and dz deep with an aisle down
+     the middle, facing the storey's shrine (or away from the room's door), each clear of the room's walls by `margin`, of every
+     piece and fixture already there and of its doors */
+  const pts=(cx,cz,r,w,d)=>{const c=Math.cos(r),s=Math.sin(r);return[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*c+b*d/2*s,cz-a*w/2*s+b*d/2*c]);};
+  const sep=(A,B2)=>{for(const P of[A,B2])for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4],n=[b[1]-a[1],a[0]-b[0]];
+    const pa=A.map(q=>q[0]*n[0]+q[1]*n[1]),pb=B2.map(q=>q[0]*n[0]+q[1]*n[1]);if(Math.max(...pa)<Math.min(...pb)||Math.max(...pb)<Math.min(...pa))return true;}return false;};
+  const inP=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+  const cen=P=>{let x=0,z=0;for(const q of P){x+=q[0];z+=q[1];}return[x/P.length,z/P.length];};
+  for(const Rw of Bd.rows||[]){const Lv=T.plan.levels[Rw.level];if(!Lv)continue;const FB=KratorFurniture.FURN_BY_KEY;
+   /* the unit: its pieces along the facing (dv) and turned (rt), its width and depth */
+   let parts;if(Rw.unit==='table'){const Tb=FB[Rw.key],Bn=FB[Rw.bench||'xanadu_common_bench'];if(!Tb||!Bn)continue;const o=Tb.d/2+Bn.d/2+.08;
+     parts=[{k:Rw.key,E:Tb,dv:0,rt:0},{k:Rw.bench||'xanadu_common_bench',E:Bn,dv:o,rt:Math.PI},{k:Rw.bench||'xanadu_common_bench',E:Bn,dv:-o,rt:0}];}
+   else{const E=FB[Rw.key];if(!E)continue;parts=[{k:Rw.key,E,dv:0,rt:0}];}
+   const uw=Math.max(...parts.map(q=>q.E.w)),ud=Math.max(...parts.map(q=>Math.abs(q.dv)+q.E.d/2))*2;
+   const DX=Rw.dx==null?uw+1:Rw.dx,DZ=Rw.dz==null?ud+1:Rw.dz;   /* the spacing: the unit's own size and a metre's aisle, unless given */
+   const Sh=T.plan.rooms.find(r=>r.level===Rw.level&&r.kind==='shrine');
+   for(const R of T.plan.rooms.filter(r=>r.level===Rw.level&&r.kind===Rw.kind)){const c0=cen(R.poly);
+    let f=Sh?(c=>[c[0]-c0[0],c[1]-c0[1]])(cen(Sh.poly)):R.doors.length?[c0[0]-R.doors[0].at[0],c0[1]-R.doors[0].at[1]]:[0,-1];
+    const c2=Math.cos(sry),s2=Math.sin(sry),fu=f[0]*c2-f[1]*s2,fv=f[0]*s2+f[1]*c2;   /* snapped to the shell's axes */
+    const ax=Math.abs(fu)>Math.abs(fv)?[Math.sign(fu),0]:[0,Math.sign(fv)];f=[ax[0]*c2+ax[1]*s2,-ax[0]*s2+ax[1]*c2];const gt=[f[1],-f[0]],ry=Math.atan2(f[0],f[1]);
+    const block=(T.F.placed||[]).filter(q=>q.y>=Lv.y-.1&&q.y<Lv.y+Lv.h).map(q=>pts(q.x,q.z,q.ry||0,(q.size||[.8,.8])[0]+.5,(q.size||[.8,.8])[1]+.5))
+     .concat(R.fixtures.map(x=>pts(x.x,x.z,x.ry,x.w+.5,x.d+1)));
+    const us=R.poly.map(q=>(q[0]-c0[0])*gt[0]+(q[1]-c0[1])*gt[1]),vs=R.poly.map(q=>(q[0]-c0[0])*f[0]+(q[1]-c0[1])*f[1]);
+    const b=KratorFurniture.batch({indexed:true});let n=0;
+    /* a hall too narrow for two files either side of an aisle takes one file down its middle */
+    const single=Math.max(...us)-Math.min(...us)<2*(.7+uw)+2*Rw.margin,files=single?[[0,0]]:[[-1,0],[1,0]];
+    for(let v=Math.max(...vs)-Rw.margin-ud/2-(Rw.back==null?1.2:Rw.back);v>Math.min(...vs)+Rw.margin;v-=DZ)for(const [sgn] of files)for(let k=0;;k++){
+     const u=single?(k?1e9:(Math.max(...us)+Math.min(...us))/2):sgn*(.7+uw/2+k*DX);if(u<Math.min(...us)||u>Math.max(...us))break;
+     const x=c0[0]+gt[0]*u+f[0]*v,z=c0[1]+gt[1]*u+f[1]*v,me=pts(x,z,ry,uw,ud),big=pts(x,z,ry,uw+2*Rw.margin,ud+2*Rw.margin);
+     if(!big.every(q=>inP(R.poly,q[0],q[1])))continue;if(block.some(B2=>!sep(me,B2)))continue;
+     if(R.doors.some(d=>Math.hypot(d.at[0]-x,d.at[1]-z)<d.w/2+uw/2+1.2))continue;
+     for(const q of parts){const px=x+f[0]*q.dv,pz=z+f[1]*q.dv,pr=ry+q.rt,w=loc(pose.x,pose.z,px,pz,pose.ry);
+      T0.add({prefix:'ixf','class':'furniture',kind:q.E.type||null,key:q.k,name:q.E.name||null,at:[w[0],pose.y+Lv.y,w[1]],ry:pr+pose.ry,size:[q.E.w,q.E.d,q.E.h],
+       tags:{setting:'room',culture:'xanadu',tier:q.E.tier||null,room:R.id,building:Bd.id},frag:'90fk-fe-interiors.js'});
+      b.place(q.k,px,Lv.y,pz,pr,{variant:0,setting:'indoor',building:Bd.id,room:R.id});B.pieces++;S.pieces++;S.placed[q.k]=(S.placed[q.k]|0)+1;}
+     block.push(pts(x,z,ry,uw+.2,ud+.6));n++;}
+    if(n){const gr=new THREE.Group();gr.name='rows:'+R.id;b.flush(gr);gr.traverse(o=>{if(o.isMesh)o.renderOrder=-2;});g.add(gr);g.updateMatrixWorld(true);}
+    B.rows=(B.rows|0)+n;}}
   /* the way in the walk-in check takes: the record's door from the bench (the Lip Range's houses), else the street door */
   const ent=mores.find(M=>M.n[1]===-1&&M.D)||(dr.D?dr:null),cw=toW([sh.x,sh.z]),f0=pose.y+T.plan.levels[0].y;
   if(ent)S.entry[Bd.id]={D:ent.D,x:cw[0],z:cw[1]};

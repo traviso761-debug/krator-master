@@ -77,9 +77,13 @@
     pieces whatever the room's size. *Fixed 2026-11-23* for the halls of monks: the Assembly Hall and its gallery, and the Ember
     Tower's belvedere, have their rows of seats laid after the room is furnished (FE_ROOMS `rows`: the catalog's rows of
     meditation cushions with an aisle down the middle, facing the shrine, clear of every piece, fixture and door; 20 rows in
-    the hall (214 m2) and its gallery, one in the belvedere beside its stairwell). The other big rooms (the Lip Range's halls, the refectories, the
-    guest hall) are still the programmes' few pieces; the fix that reaches every page is a size-scaled cap in kits/interiors.
-  - No electric light (`prog.bulbs` false) and no light of their own: the catalog's lamps are not lit at night yet.
+    the hall (214 m2) and its gallery, one in the belvedere beside its stairwell). *Fixed 2026-11-23* for the other big halls:
+    the Mirror Hall's benches (31 rows), the guest hall's and the three refectories' tables with a bench either side (`unit:
+    'table'`; a hall 6 m across takes one file down its middle), the audience hall's cushions and the Hall of the Ember's
+    benches: 127 rows in nine buildings. Every other room is still its programme's few pieces; the fix that reaches every
+    page is a size-scaled cap in kits/interiors.
+  - No electric light (`prog.bulbs` false) and no light of their own: the catalog's lamps and butter lamps glow (their flames are
+    lit materials) but cast no light into the rooms at night; a light per lamp would be some hundreds of lights.
 - *Fixed 2026-11-23*: **the Foot House** stands on its own ground at the spur's foot (`FE_FOOT`, 1.2 x 0.8 km at 8 m, the far
   ground cut away under it): its ranges round the loading court and its gate chorten. Still owed: **the Rest House** (about 1,080 m
   on the Stair) and **the Stair of the Eye** between them, drawn only to the apron; the Foot House's lower terraces and mule yard.
@@ -97,6 +101,9 @@
 ## The vent
 
 - The plume is core/atmos's smoke with a page preset (`ATMOS.PRESETS.smoke.vent`, and the smoke's `distFade` and `pxMax`
-  widened for this page); the ash plume record (`ATMOS.ashPlume`) is not yet read by the fog or the ground.
+  widened for this page); *fixed 2026-11-23* for the ground: the ash plume record's fall (`ATMOS.ashPlume`'s `under`) is baked
+  into the three near ground meshes and the ground's shader lays the ash set by it (`verify.py`'s `ash-fall`: downwind, none on
+  the bench). Its deposit peaks about 6 km downwind, past the near ground, so only its edge falls on the cone (shown six times
+  over); the far ground (400 m cells) and the fog do not read it yet.
 - The hazards are records only (`FE_HAZ`): the page does not take core/hazard's host.
 - The bombs are CPU points (90 a burst); a burst's glow lights the bowl through one point light.

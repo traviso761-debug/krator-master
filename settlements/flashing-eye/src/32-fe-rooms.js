@@ -16,9 +16,10 @@
 //            through it)
 //   levels   each storey's room kinds, the first taking the door (or the stair's top); names, the sheet's rooms they are
 //   stair    kits/interiors' stair for its flights (a tower's steep one), else the planner's
-//   rows     [{level, kind, key, dx, dz, margin, back}]: a hall's seats laid in rows after the room is furnished (kits/interiors stops a
+//   rows     [{level, kind, key, unit, bench, dx, dz, margin, back}]: a hall's seats laid in rows after the room is furnished (kits/interiors stops a
 //            room at about nine pieces whatever its size): rows of `key` every dx along and dz deep, facing the storey's shrine
-//            (or the room's far side from its door), clear of what stands there, its fixtures and its doors
+//            (or the room's far side from its door), clear of what stands there, its fixtures and its doors; unit 'table': the
+//            table (key) with a bench either side facing it (a refectory's); dx and dz default to the unit's size and a metre
 //   want     the Order's pieces (kits/catalog, xanadu) offered first in this building; only: the only Xanadu pieces of their type
 //            it is offered (kits/interiors shuffles its candidates, so being first is not enough); block: other culture|type
 //            pairs kept out. Every other Order piece (OWN) is kept out of it
@@ -26,6 +27,9 @@
 const FE_ROOMS=(function(){
  /* a tower's stair: steep, a ladder-stair as Tibetan towers have, so its run fits a narrow storey (prog.stair) */
  const FE_TOWER_STAIR={w:.9,riser:.27,tread:.2};
+ /* a refectory's rows (rows): a table with a bench either side, in every ground-storey hall; benches in rows; cushions in rows */
+ const ROWS_TABLES={level:0,kind:'hall',unit:'table',key:'xanadu_common_table',margin:.7,back:.4};
+ const rowsOf=(level,kind,key,o)=>Object.assign({level,kind,key,margin:.8,back:1.2},o||{});
  const ST=4.2,LIP=[['mirror','The Mirror Hall\'s house',-45],['books','The Book House',-15],['guests','The guest house',15],['labrang','The Prismarch\'s hall',45]];
  /* the Lip Range (sheet L): four houses side by side along its 120 m, each four storeys: L-2 and L-1 cut into the band's top
     (their windows in the face), L0 at the bench, L1 above. The street door of the plan is a shut door at the back of L-2 (the
@@ -33,16 +37,16 @@ const FE_ROOMS=(function(){
  const LIPL={
   mirror:{levels:[['store','store'],['signals','study'],['signals','gallery'],['study','school']],
    names:[['Mirror store'],['Readers\' Gallery (L-1)'],['The Mirror Hall'],['The Master of Mirrors']],wealth:.75,
-   want:['xanadu_signal_lectern','xanadu_common_signal_mirror','xanadu_crimson_banner'],only:['xanadu_signal_lectern']},
+   want:['xanadu_signal_lectern','xanadu_common_signal_mirror','xanadu_crimson_banner'],only:['xanadu_signal_lectern'],rows:[rowsOf(2,'gallery','xanadu_common_bench',{back:.8})]},
   books:{levels:[['library','store'],['library','library'],['library','library'],['library','study']],
    names:[['The Vault of Breaths'],['Stacks'],['Reading Room'],['Scriptorium']],wealth:.75,
    want:['xanadu_book_lectern'],only:['xanadu_book_lectern']},
   guests:{levels:[['store','store'],['dormitory','dormitory'],['hall','hall'],['bedroom','bedroom','bedroom']],
    names:[['Guests\' stores and the tank\'s head'],['Guests\' dormitory'],['Guest Hall'],['Guest chambers']],wealth:.6,
-   want:['xanadu_crimson_banner','xanadu_common_reader_seat'],only:[]},
+   want:['xanadu_crimson_banner','xanadu_common_reader_seat'],only:[],rows:[Object.assign({},ROWS_TABLES,{level:2})]},
   labrang:{levels:[['magazine','store'],['dormitory','dormitory'],['audience','antechamber'],['cell','signals','shrine']],
    names:[['The Labrang\'s treasury'],['The household'],['Audience Hall'],['The Prismarch\'s cell','His mirror room','His oratory']],wealth:.85,
-   want:['xanadu_crimson_banner','xanadu_signal_lectern','xanadu_common_signal_mirror'],only:['xanadu_signal_lectern']}};
+   want:['xanadu_crimson_banner','xanadu_signal_lectern','xanadu_common_signal_mirror'],only:['xanadu_signal_lectern'],rows:[rowsOf(2,'audience','xanadu_common_meditation_cushion',{back:2})]}};
  const BL=[];
  for(const [k,name,x] of LIP)BL.push(Object.assign({id:'lip.'+k,name,part:'lip-range',sheet:'L',
   shell:{x,z:0,w:30,d:14,y:-2*ST,hs:[ST,ST,ST,ST]},door:{n:[0,-1],t:0,w:1.1,h:2.1,leaf:true},more:[{level:2,n:[0,-1]},{level:2,n:[0,1]}]},LIPL[k]));
@@ -51,7 +55,7 @@ const FE_ROOMS=(function(){
     Ember, the bell of the Opening, the belvedere under the tiers (the tower's five drawn storeys). The shaft is planned in the
     4.5 m of the tower clear of the hall's body and roof */
  BL.push({id:'ember.hall',name:'The Hall of the Ember',part:'ember',sheet:'H',shell:{x:0,z:5.75,w:16,d:8.5,y:.9,hs:[5.2]},door:'drawn',
-  levels:[['hall']],names:[['The Hall']],wealth:.75,want:['xanadu_crimson_banner','xanadu_common_reader_seat'],only:[]});
+  levels:[['hall']],names:[['The Hall']],wealth:.75,want:['xanadu_crimson_banner','xanadu_common_reader_seat'],only:[],rows:[rowsOf(0,'hall','xanadu_common_bench')]});
  BL.push({id:'ember.shaft',name:'The Ember Tower\'s shaft',part:'ember',sheet:'H, T',shell:{x:0,z:-7.25,w:11,d:4.5,y:.9,hs:[6,6,6,6,5]},door:'drawn',
   levels:[['shrine'],['bedroom'],['library'],['hall'],['gallery']],names:[['The Sanctum of the Ember'],['The tenders\' room'],['The Book of the Ember'],['The bell of the Opening'],['The belvedere under the tiers']],wealth:.8,
   rows:[{level:4,kind:'gallery',key:'xanadu_common_meditation_cushion',dx:3.5,dz:1.3,margin:.3,back:.2}],
@@ -70,7 +74,7 @@ const FE_ROOMS=(function(){
   granary:{levels:[['store','store'],['dormitory','store']],names:[['Granary'],['Lay Brothers\' Dormitory','Upper Granary']],wealth:.3},
   infirmary:{levels:[['dormitory','kitchen','store'],['dormitory','study']],names:[['Infirmary'],['Infirmary, upper ward']],wealth:.55},
   kitchen:{levels:[['kitchen','store'],['dormitory']],names:[['Great Kitchen'],['Cooks\' Dormitory']],wealth:.4},
-  refectory:{levels:[['hall','kitchen']],names:[['Refectory']],wealth:.5,want:['xanadu_common_reader_seat']},
+  refectory:{levels:[['hall','kitchen']],names:[['Refectory']],wealth:.5,want:['xanadu_common_reader_seat'],rows:[ROWS_TABLES]},
   bath:{levels:[['bath','store']],names:[['Bath House']],wealth:.45},
   woodstore:{levels:[['store','store']],names:[['Juniper and Wood Store']],wealth:.2},
   chapter:{levels:[['study','dormitory','dormitory'],['dormitory','dormitory'],['dormitory','dormitory','store']],names:[['the Master of Novices\' room','Chapter cells'],['Chapter cells (first floor)'],['Chapter cells']],wealth:.4},
@@ -89,14 +93,14 @@ const FE_ROOMS=(function(){
     door:k==='front'?'drawn':{n:[0,-1],t:0,w:1.2,h:2.3},more:k==='front'?[{level:0,n:[0,-1]}]:[]},r));});};
  court('novices','novices','The Novices\' Court',7,[
   {levels:[['lobby','school'],['school','study']],names:[['the gate passage','Novices\' School'],['Novices\' School','Master of Novices']]},
-  {levels:[['hall','kitchen']].concat([['dormitory','dormitory']]),names:[['the refectory'],['Novices\' Dormitory']],want:['xanadu_common_reader_seat']},
+  {levels:[['hall','kitchen']].concat([['dormitory','dormitory']]),names:[['the refectory'],['Novices\' Dormitory']],want:['xanadu_common_reader_seat'],rows:[ROWS_TABLES]},
   {levels:[['dormitory','store'],['dormitory','dormitory']],names:[['Novices\' Dormitory'],['Novices\' Dormitory']]},
   {levels:[['shrine','school'],['dormitory','dormitory']],names:[['the novices\' chapel','Novices\' School'],['Novices\' Dormitory']]}],.4,{sheet:'E1, E2'});
  court('foot','foothouse','The Foot House',7,[
   {levels:[['lobby','store'],['dormitory']],names:[['Gate','Stores'],['the muleteers']]},
   {levels:[['dormitory','dormitory'],['dormitory','dormitory']],names:[['Pilgrims\' Hostel'],['Pilgrims\' Hostel']]},
   {levels:[['stable','workshop'],['store','store']],names:[['Mule Stables','Harness room'],['Stores']]},
-  {levels:[['kitchen','hall'],['dormitory','bedroom']],names:[['Kitchen','the hostel\'s hall'],['The Hosteller and the muleteers']]}],.4,{sheet:'F'});
+  {levels:[['kitchen','hall'],['dormitory','bedroom']],names:[['Kitchen','the hostel\'s hall'],['The Hosteller and the muleteers']],rows:[ROWS_TABLES]}],.4,{sheet:'F'});
  /* the towers (sheet T): the Mirror Tower (four lifts of 6 m tapering from 10 m; planned inside the top lift, its doorway run
     through the base) and the Labrang Tower (one 11 m block, 26 m: six storeys, one a bay) */
  BL.push({id:'tw.mirror',name:'The Mirror Tower',part:'tw.mirror',sheet:'T',shell:{x:0,z:0,w:8,d:8,y:.6,hs:[6,6,6,6]},door:'drawn',body:{hw:5,hd:5},
