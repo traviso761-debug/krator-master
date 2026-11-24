@@ -34,6 +34,7 @@
    t.wrapS=t.wrapT=t.wrapR=T.RepeatWrapping;t.minFilter=t.magFilter=T.LinearFilter;t.generateMipmaps=false;t.unpackAlignment=1;t.needsUpdate=true;A.skyNoiseTex=t;}
   U.uNoise={value:A.skyNoiseTex};
   // the weather cells' coverage map (wx/89-atmos-wx-cells.js, on a page that lists it): shared objects, set by the cells' host
+  if(A.wxOn||A.volOn)A.U=A.U||{};   /* a page may draw its sky before ATMOS.init (skyBiome first): init keeps these */
   if(A.wxOn){A.U.wxMap=A.U.wxMap||{value:null};A.U.wxBox=A.U.wxBox||{value:new T.Vector4()};A.U.wxMean=A.U.wxMean||{value:new T.Vector4()};U.uWxMap=A.U.wxMap;U.uWxBox=A.U.wxBox;U.uWxMean=A.U.wxMean;}
   // the volumetric clouds (sky/89-atmos-m-volclouds.js, on a page that lists it): the flat cumulus steps aside while they draw
   // (uVolOn), and the ground's shadows meet the field at the layer's middle (uVolMidH); set by the volumes' host each frame

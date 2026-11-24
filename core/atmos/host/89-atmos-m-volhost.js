@@ -35,6 +35,7 @@
   // the detail volume, baked once a page
   if(!A.skyDetailTex){const n=32,t=new T.DataTexture3D(A.skyDetailVolume(n),n,n,n);t.format=T.RGBAFormat;t.type=T.UnsignedByteType;
    t.wrapS=t.wrapT=t.wrapR=T.RepeatWrapping;t.minFilter=t.magFilter=T.LinearFilter;t.generateMipmaps=false;t.unpackAlignment=1;t.needsUpdate=true;A.skyDetailTex=t;}
+  A.U=A.U||{};A.U.flash=A.U.flash||{value:0};   /* before ATMOS.init on a page that draws its sky first: init keeps it */
   const V4=()=>({value:new T.Vector4()}),M4=()=>({value:new T.Matrix4()});
   const L={uMaskBox:V4(),uVolT:V4(),uVolS:V4(),uVolP:V4(),uBolt:V4(),uInvProj:M4(),uCamRot:M4(),uPrevVP:M4(),uVP:M4(),uBlend:{value:cfg.blend},uHistOk:{value:0},
    uDetail:{value:A.skyDetailTex},uMask:{value:maskRT.texture},uCur:{value:null},uHist:{value:null},uVol:{value:null},uLogFC:{value:0},uVolC:V4(),
@@ -85,7 +86,8 @@
    V.frame++;};
   // one pass alone (the timer: wxdemo's _api.gpuMs): 'mask', 'march', 'resolve'; the composite is V.composite
   V.pass=function(name){setU();guard(run[name]);};
-  V.composite=function(){const ac=rr.autoClear;rr.autoClear=false;rr.render(pComp.sc,ocam);rr.autoClear=ac;};
+  V.composite=function(){const ac=rr.autoClear,I=rr.info,ia=I.autoReset,calls=I.render.calls,tris=I.render.triangles;rr.autoClear=false;I.autoReset=false;   /* the page's counts stay the world's (its stats panel, verify's budgets) */
+   try{rr.render(pComp.sc,ocam);}finally{rr.autoClear=ac;I.render.calls=calls;I.render.triangles=tris;I.autoReset=ia;}};
   V.setTier=t=>{if(A.volTiers.indexOf(t)<0)return;V.tier=t;histOk=false;};
   // S.render with the volumes; S.renderSky alone (a page's own post pass) keeps the flat layer
   const render0=S.render,renderSky0=S.renderSky;let inRender=false;
