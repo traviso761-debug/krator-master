@@ -41,11 +41,11 @@ function feBombsAt(v){const s=v.since,on=s<14;feBombs.visible=on;if(!on)return 0
 window._feHouseSmoke=FE_SMOKES.length?ATMOS.smoke(FE_SMOKES):null;
 /* the same plume as a record (core/atmos fx/ashplume): drifting east-north-east on the Vale's west wind, ~800 m tall */
 const FE_PLUME=ATMOS.ashPlume?ATMOS.ashPlume({vents:[{id:'eye.vent',x:FE_VENT.x,z:FE_VENT.z,y:FE_VENT.y,top:800,rate:1}],azimuth:1.2,speed:8,world:'flashing-eye'}):null;
-/* its ash fall on the ground: under(x, z) at every vertex of the three near ground meshes, an attribute the ground's shader lays
+/* its ash fall on the ground: under(x, z) at every vertex of the near ground meshes (with the Foot House's, the Stair's, the Rest House's), an attribute the ground's shader lays
    the ash set by (90fe: feAF, up to .85); the far ground keeps none (its cells are 400 m). The deposit peaks some 6 km downwind,
    past the near ground, so its edge over the cone is shown six times over (about half the ash set at its strongest there) */
 const FE_ASHFALL=(function(){if(!FE_PLUME||!FE_PLUME.under)return null;let n=0,mx=0;const v=new THREE.Vector3();
- for(const m of[groundM,feCoarse,feFootG]){const g=m.geometry,p=g.attributes.position,a=new Float32Array(p.count);m.updateMatrixWorld(true);
+ for(const m of[groundM,feCoarse,feFootG,feStairG,feRestG]){const g=m.geometry,p=g.attributes.position,a=new Float32Array(p.count);m.updateMatrixWorld(true);
   for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(m.matrixWorld);const u=Math.min(.85,FE_PLUME.under(v.x,v.z)*6);a[i]=u;if(u>.05)n++;if(u>mx)mx=u;}
   g.setAttribute('feAF',new THREE.BufferAttribute(a,1));}
  return{vertices:n,peak:+mx.toFixed(2)};})();

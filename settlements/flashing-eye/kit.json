@@ -97,7 +97,8 @@
   "90fh-vent.js",
   "90fi-bridges.js",
   "90fj-face.js",
-  "90fk-fe-interiors.js"
+  "90fk-fe-interiors.js",
+  "90fl-stair.js"
  ],
  "interiorSets": []
 }

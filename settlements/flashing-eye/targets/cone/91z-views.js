@@ -17,6 +17,9 @@ const VIEWS=(function(){
  V['The house from the Rift']=[260,40,420,0,10,-60];
  V['The terraces and the Ember Tower']=[70,22,-30,0,20,-126];
  {const F=FE_PLACE.find(p=>p.id==='foothouse');V['The Foot House']=[F.x+90,F.o.y+40,F.z+110,F.x,F.o.y+5,F.z];}
+ /* the Stair of the Eye (90fl): down its switchbacks from over a hairpin, and the Rest House at its gate */
+ {const S=FE_STAIR.S,a=S[Math.floor(S.length*.62)],b=S[Math.floor(S.length*.45)];V['The Stair of the Eye']=[a.x+140,a.y+70,a.z+60,b.x,b.y,b.z];}
+ {const R=FE_PLACE.find(p=>p.id==='resthouse');V['The Rest House']=[R.x-60,R.o.y+26,R.z-40,R.x,R.o.y+4,R.z];}
  /* the interiors (90fk): the Mirror Hall on L0 of the range's west house, the Ember's sanctum, the Eye Post's platform */
  V['In the Mirror Hall']=[R.x-58,1.75,R.z+4.5,R.x-40,1.3,R.z-4];
  {const E=FE_PLACE.find(p=>p.id==='ember'),y=E.o.y+.9;V['In the sanctum of the Ember']=[E.x+4.4,y+1.75,E.z-5.9,E.x-3,y+1.2,E.z-8.6];}

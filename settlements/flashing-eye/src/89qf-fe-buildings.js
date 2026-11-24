@@ -5,7 +5,7 @@
 // upturned eaves, tiers, the round cap, the towers of the owner's references, 2026-11-23). White-washed walls, a teal frieze, the
 // Order's crimson in its cornices and bands (QSPOKE[0]); gilt only on the temple's crown and the Ember's sanctum. Seeds 34400-34599
 // (*proposed*): the range 34401, the Lip Range 34411, the Ember 34421, the post 34431, the hut 34441, the gate 34451, the temple
-// 34461, the towers 34471, the shrine 34481. Local frame as the kit's: origin at the plot's centre on the ground, +z the front.
+// 34461, the towers 34471, the shrine 34481, the Rest House 34501. Local frame as the kit's: origin at the plot's centre on the ground, +z the front.
 const FE_SP=QSPOKE[0],FE_ST=4.2;
 // the Ember's glow (the tower's north window) and the fire basket's: their own items, so 90fh can set their light by the hour
 MAT.feEmber=new THREE.MeshStandardMaterial({color:0x3a1a10,emissive:0xff6a20,emissiveIntensity:.25,roughness:.6,metalness:0});
@@ -147,4 +147,33 @@ function buildFeShrine(G,o){reseed(34481+(o.v|0));const wash=feWash();vnReg(o.na
  qnDoor(0,.4,2.5,0,1.3,2.3,{c:xC(XPAL.red),valC:feCrimson()});feFrieze(0,S.y-.7,0,S.w,S.d,0,.45,false);
  feTiers(0,S.y,0,S.w,S.d,0,2,{ov:1.1,step:.7,drum:1.4,wash,finialH:1.8});
  vPst('vPost',2.9,.4,-2.9,.05,5.5,xC(0x5a4632));qnFlags([2.9,5.6,-2.9],[-2.9,.6,2.9]);}
+// ---------------------------------------------------------------- the Rest House (sheet F): on the Stair of the Eye at about 1,080 m
+// 22 x 20 m, its front (+z) to the road: a walled yard entered by an open gateway under a red roof (a chorten, the prayer-flag pole
+// and the cistern's head in it), the house across the back (two storeys: the pilgrims' hall and the tea kitchen, the dormitory
+// and the keeper's room over them; the kitchen's chimney, its hearth lit from the Ember's coals carried down), the mules' shed
+// along the west wall with its trough. Seed 34501
+function buildFeRest(G,o){reseed(34501);const W=22,D=20,P=.5,T=.6,WH=2.2,wall=xC(0x6e675f),dark=feCol(FE_DARK),red=feCrimson();
+ vnReg(o.name==null?'The Rest House':o.name,0,0,Math.hypot(W,D)/2,P+7.2+5);
+ qnPlinth(0,0,W,D,P,0,xC(xPick(QSTONE)));vB('qAshB',0,P-.02,2.4,W-2*T,.05,D-8.8-T,0,xC(0x8c8984));
+ /* the house: 14 x 8 across the back, its door to the yard, the chimney over the kitchen's end */
+ const hs=[3.6,3.6],eave=P+7.2,top=feBlock(0,-5.4,14,8,0,hs,{y:P,skip:[[-1.8,1.8]]});
+ qnDoor(0,P,-1.4,0,1.6,2.5,{c:xC(XPAL.red),valC:red});
+ qnCube(4.6,eave-1,-7.4,1.2,top-eave+2.6,1.2,0,feWash(),'wash');vB('xPaint',4.6,top+1.6,-7.4,1.6,.25,1.6,0,dark);feSmoke(4.6,top+1.9,-7.4,'chimney');
+ /* the yard's wall, dry stone with a crimson coping; the gateway in the front, 3.2 m, under its own red roof */
+ const seg=(x,z,w,d)=>{vB('qAshB',x,P,z,w,WH,d,0,wall);vB('xPaint',x,P+WH,z,w+.1,.14,d+.1,0,red);};
+ seg(-(W/2-T/2),0,T,D);seg(W/2-T/2,0,T,D);seg(0,-(D/2-T/2),W-2*T,T);
+ const gw=3.2,fl=(W-gw)/2;for(const s of[-1,1])seg(s*(gw/2+fl/2),D/2-T/2,fl,T);
+ for(const s of[-1,1])qnCube(s*(gw/2+.35),P,D/2-T/2,.7,3.4,.9,0,feWash(),'wash');
+ vB('xPaint',0,P+3.4,D/2-T/2,gw+1.4,.35,1,0,red);feRoof(0,P+3.75,D/2-T/2,gw+2.4,2.2,0,.9);
+ /* the mules' shed along the west wall: posts on the yard side, a plank lean-to falling to the wall, the trough, the hay rack */
+ const sx0=-(W/2-T),sx1=sx0+3.6,sz0=-.6,sz1=D/2-T-.6;
+ for(let z=sz0;z<=sz1+1e-6;z+=(sz1-sz0)/3)vPst('vPost',sx1,P,z,.1,2.6,xC(0x5a4632));
+ vB('qPlankB',(sx0+sx1)/2,P+2.55,(sz0+sz1)/2,sx1-sx0+.6,.12,sz1-sz0+.6,0,xC(0x6a5038));
+ vB('qAshB',sx0+.5,P,(sz0+sz1)/2,.7,.75,sz1-sz0-1,0,xC(0x5a5550));vB('xPaint',sx0+.5,P+.7,(sz0+sz1)/2,.5,.06,sz1-sz0-1.2,0,xC(0x2e3a3e));
+ vB('qPlankB',sx0+.2,P+1.5,(sz0+sz1)/2,.3,.8,sz1-sz0-2,0,xC(0x8a6a48));
+ /* the yard: a small chorten, the prayer-flag pole to the house's eave, the cistern's head (the roofs' water under the yard) */
+ qnChorten(4.5,P,4.2,.32);
+ vPst('vPost',-2.6,P,6.8,.06,6,xC(0x5a4632));qnFlags([-2.6,P+5.8,6.8],[-6.5,eave-.3,-1.4]);
+ vB('qAshB',3.4,P,-.2,1.6,.5,1.6,0,xC(0x5a5550));vB('qPlankB',3.4,P+.5,-.2,1.3,.08,1.3,0,xC(0x6a4a32));}
+QB.def({key:'qb_fe_rest',name:'The Rest House',family:'The Flashing Eye',tags:QTAG('civic',['religious','infrastructure'],{note:'halfway up the Stair of the Eye: the pilgrims\' hall and dormitory, the tea kitchen, the mules\' shed and trough'}),w:22,d:20,h:14,nv:1,build:buildFeRest});
 QB.def({key:'qb_fe_shrine',name:'A shrine of the Way of Shrines',family:'The Flashing Eye',tags:QTAG('civic',['religious']),w:7,d:7,h:9,nv:6,build:buildFeShrine});
