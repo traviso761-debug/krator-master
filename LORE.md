@@ -575,7 +575,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     **Order of the Azure Dream**, whose head monastery is **Grēṭ-Āil**, the long isle in the middle of Erewhon's lake
     (px 845,1504, 900 people with its fishing villages) [the owner, 2026-11-16]. Each Order keeps its spoke in Qiblai as its
     town house on the council. The crimson monastery is the **Order of the Flashing Eye**; Sekriḍ, a village on Kirstabal's
-    lake, is its own (`settlements/kirstabal/PLAN.md`). The white monastery is the **Order of the White Lily**, known for its
+    lake, is its own (`settlements/kirstabal/PLAN.md`). **Its monks are the Sultanate's scouts on the Rift**: from their head
+    house on the east volcano of Erewhon's lake, which faces the Rift, they watch the Lizardmen's movements on the Rift floor
+    [the owner, 2026-11-23] (§6.20; `settlements/flashing-eye`). The white monastery is the **Order of the White Lily**, known for its
     knowledge of medicine and healing; unlike the other great Orders, its complex in the city is its head house, and doubles
     as the city's hospital [the owner, 2026-11-16]. It also runs **the latex house at Kirstabal**, where the Scarp's poppy
     latex is dried to opium; it keeps a share and the seat pays it a small fee [the owner, 2026-11-16: "The White Monastery
@@ -1002,6 +1004,10 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   The army was destroyed and Rishtowar killed. The eastern Rift floor was not won back for 200 years, when his
   great-great-great-grandson took it with ex-Izani legionaries. **Today Xanadu's vigilance is waning**, and raids reach as
   far as the Vale, for livestock, tools and valuables (§6.13).
+- **Who watches them** [the owner, 2026-11-23]: **the Order of the Flashing Eye**, the crimson monastery of Qiblai's council
+  (§6.13), whose monks are scouts monitoring the Lizardmen's movements in the Rift, from their head house on the east volcano
+  of Erewhon's lake, over the Rift (`settlements/flashing-eye`). *Proposed*: what they see goes up the council's mirror line,
+  which the Order keeps, the same day.
 - **The tunnel wars** [the owner, 2026-10-23]. The Ancients' Rift line once ran the length of the Rift, worked by the
   crews who became the Tungangs (§6.1). When the Lizardmen came, the Tungangs east of Chimes were wiped out in **vicious
   tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**

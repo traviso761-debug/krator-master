@@ -9,12 +9,22 @@
   "core/terrain/37c-core-rubble.js",
   "core/terrain/38-core-relief.js",
   "core/world/41-world-fields.js",
-  "settlements/flashing-eye/gen/39fe-world-data.js"
+  "settlements/flashing-eye/gen/39fe-world-data.js",
+  "core/charactermodels/src/10-rig.js",
+  "core/charactermodels/src/50-figure.js",
+  "core/charactermodels/src/60-crowd.js",
+  "settlements/flashing-eye/gen/47j-fe-kchar-gltf.js",
+  "settlements/flashing-eye/gen/47n-fe-kchar-data.js"
  ],
  "scoped": [
   "37c-core-rubble.js",
   "41-world-fields.js",
-  "39fe-world-data.js"
+  "39fe-world-data.js",
+  "10-rig.js",
+  "50-figure.js",
+  "60-crowd.js",
+  "47j-fe-kchar-gltf.js",
+  "47n-fe-kchar-data.js"
  ],
  "files": {
   "cone": [
@@ -45,6 +55,18 @@
     [
      "10-core-drawn.js"
     ]
+   ],
+   [
+    "core/biome",
+    [
+     "37-core-traps.js"
+    ]
+   ],
+   [
+    "core/hazard",
+    [
+     "20-core-hazard.js"
+    ]
    ]
   ]
  },
@@ -53,12 +75,21 @@
  "deterministic": [
   "20-core-walk.js",
   "20-core-sched.js",
+  "20-core-hazard.js",
+  "37-core-traps.js",
   "30-fe-layout.js",
   "31-fe-rules.js",
+  "32-fe-rooms.js",
   "37c-core-rubble.js",
   "38-core-relief.js",
   "39fe-world-data.js",
   "40-fe-watch.js",
+  "41-fe-people.js",
+  "10-rig.js",
+  "50-figure.js",
+  "60-crowd.js",
+  "47j-fe-kchar-gltf.js",
+  "47n-fe-kchar-data.js",
   "41-world-fields.js",
   "89q0-qb-helpers.js",
   "89q0w-fe-mats.js",
@@ -81,7 +112,9 @@
   "89qe-fe-roofs.js",
   "90fh-vent.js",
   "90fi-bridges.js",
-  "90fj-face.js"
+  "90fj-face.js",
+  "90fk-fe-interiors.js",
+  "90fl-fe-people.js"
  ],
  "interiorSets": []
 }

@@ -323,6 +323,7 @@
  "settlements/dhelv/dist/dhelv.html: MISSING BIO.impostorSet": 2,
  "settlements/dhelv/dist/dhelv.html: MISSING BIO.leafOn": 1,
  "settlements/dhelv/dist/dhelv.html: MISSING BIO.leafQ": 1,
+ "settlements/flashing-eye/dist/flashing-eye.html: CLASH _instances": 1,
  "settlements/gihon/dist/gihon.html: CLASH _registered": 1,
  "settlements/highlands/dist/roketstad.html: CLASH _registered": 1,
  "settlements/highlands/dist/roketstad.html: MISSING BIO.impostorItem": 1,

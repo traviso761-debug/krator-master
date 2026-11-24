@@ -26,7 +26,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `89q4-qb-temple.js` | 19 | the great temple (9); the Hall of the Decree (42); the treasury: the faith's gold behind blank wall (62); the great wheel house (the Temple Mountain's) (76); the walls (each ring walled; a full wall on the  (99); the terrace stair (PLAN.md Q7a; the owner, 2026- (136); the Temple Mountain, whole (Q7a): ring 0's one l (154) |
 | `89q5-qb-interiors.js` | 26 | the sanctum of the Rainbow Temple (57); the assembly hall (a great monastery's dukhang) (97); the council chamber of the Hall of the Decree (120); the pilgrims' hostel dormitory (144); a great monastery's gate hall (153); a gate's passage (a city gate, the caravanserai' (176); a gate's guard room (194); the treasury's strong room (207) |
 | `89q5f-qb-furnish.js` | 5 |  |
-| `89q5s-qb-shells.js` | 18 |  |
+| `89q5s-qb-shells.js` | 21 |  |
 | `89q9-qb-street.js` | 6 |  |
 
 ## targets/
