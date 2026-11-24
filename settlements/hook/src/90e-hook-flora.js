@@ -19,7 +19,7 @@
      floor (grass, undergrowth) within floorR of the centre only.
    The ground under them is painted by 77k (mangrove mud, the forest floor).
    window._hookFlora holds what verify.py reads. */
-const HOOK_FLORA={on:false,stats:null,ms:0,FS:20,R:2600,centre:[-200,-2300],q:.7,floorR:900};
+const HOOK_FLORA={on:false,stats:null,ms:0,FS:20,R:4800,centre:[-150,-2200],q:.5,floorR:900,inner:2600,outer:.2};
 (()=>{const F=typeof HK_FLORA!=='undefined'?HK_FLORA:null,R=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null,D=typeof HOOK_RUIN_DRAW!=='undefined'?HOOK_RUIN_DRAW:null;
  if(!F||!R||!D||!D.meshH){window._hookFlora={on:false,why:!F?'no HK_FLORA':!R?'no ruin':'no drawing'};return;}
  const t0=performance.now(),B=F.BIO,RI=F.kits.ringisles,meshH=D.meshH,HF=HOOK_FLORA;
@@ -55,7 +55,10 @@ const HOOK_FLORA={on:false,stats:null,ms:0,FS:20,R:2600,centre:[-200,-2300],q:.7
  const MANGAL_DEEP=-1.2;
  const mask=(x,z)=>{const k=kindAt(x,z);if(k===3||k===2)return 0;const h=meshH(x,z);if(h<MANGAL_DEEP)return 0;
   if(h<.15&&at(RM,x,z)<.3)return 0;   /* in the water only where the mangal stands */
-  if(k===1){const b=blockAt(x,z);return b?Math.max(.1,b.wild):.3;}return 1;};
+  /* the outer city thinner: the inner square's density, falling to `outer` of it toward the edge (the load: about a third
+     of the trees, and the bake, for the outer two thirds of the ground) */
+  const ro=Math.max(Math.abs(x-C[0]),Math.abs(z-C[1])),th=ro<HF.inner?1:1-(1-HF.outer)*Math.min(1,(ro-HF.inner)/800);
+  if(k===1){const b=blockAt(x,z);return (b?Math.max(.1,b.wild):.3)*th;}return th;};
  /* ---- the obstacles: every drawn footprint, the freeway, the wall, the places */
  const OB=[];const line=(x0,z0,x1,z1,r,step)=>{const L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/step));for(let a=0;a<=n;a++)OB.push({x:x0+(x1-x0)*a/n,z:z0+(z1-z0)*a/n,r});};
  for(const t of D.towers){const s=Math.min(t.w,t.d),L=Math.max(t.w,t.d),r=s/2*1.15+3,ax=t.w>=t.d?[Math.cos(t.yaw),-Math.sin(t.yaw)]:[Math.sin(t.yaw),Math.cos(t.yaw)],h=Math.max(0,(L-s)/2);
@@ -65,7 +68,9 @@ const HOOK_FLORA={on:false,stats:null,ms:0,FS:20,R:2600,centre:[-200,-2300],q:.7
  for(const s of R.spans)if(s.state!=='fallen')line(s.p0[0],s.p0[1],s.p1[0],s.p1[1],15,10);
  line(R.ramp.p0[0],R.ramp.p0[1],R.ramp.p1[0],R.ramp.p1[1],13,10);
  line(R.wall.p0[0],R.wall.p0[1],R.wall.p1[0],R.wall.p1[1],8,8);for(const g of R.gates)OB.push({x:g.x,z:g.z,r:22});
- for(const p of R.places)OB.push({x:p.x,z:p.z,r:p.kind==='hamlet'?70:p.kind==='camp'?40:25});
+ for(const p of R.places)OB.push({x:p.x,z:p.z,r:p.kind==='hamlet'?40:p.kind==='camp'?25:15});
+ /* the hamlets' and camps' buildings as laid (77m, S5), a yard round each */
+ if(typeof HOOK_PLACES!=='undefined'&&HOOK_PLACES)for(const L of HOOK_PLACES.lots)OB.push({x:L.x,z:L.z,r:Math.hypot(L.w,L.d)/2+3});
  /* ---- the LOD spine: the town's edge, the Crown, the Drowned Spire, the road in, the downtown's ring, the mainland */
  const SPINE=[[0,-400],[R.crown.x,R.crown.z],[R.spire.x,R.spire.z],[-1500,-2500],[1500,-2300],[-600,-4300],[2200,-900],[-2400,-800]];
  const group=new THREE.Group();group.name='hook-flora';scene.add(group);
@@ -73,7 +78,7 @@ const HOOK_FLORA={on:false,stats:null,ms:0,FS:20,R:2600,centre:[-200,-2300],q:.7
   B.init({tags:'ringisles',THREE,scene:group,terrainH:(x,z)=>meshH(x,z),waterH:()=>0,mask,obstacles:OB,
    ticks:fn=>{let tt=0;PORT_FRAME.push(dt=>{const d=dt==null?.016:Math.min(.1,dt);tt+=d;fn(d,tt);});},
    seed:4171,origin:SPINE,center:C,fields:FIELDS,err:m=>console.warn('hook flora: '+m),
-   eye:()=>[camera.position.x,camera.position.y,camera.position.z],lod:{hero:180,mid:520,far:RR*1.5,floor:[120,320]}});
+   eye:()=>[camera.position.x,camera.position.y,camera.position.z],lod:{hero:160,mid:380,far:RR*1.5,floor:[120,320]}});
   if(B.setSun)B.setSun([-.5,.76,.52]);
   F.reseed(4172);const TM=HF.times={raster:Math.round(performance.now()-t0)};let tk=performance.now();const lap=n=>{const t=performance.now();TM[n]=Math.round(t-tk);tk=t;};
   /* the kit's build in its parts (RINGISLES.build orders them so), each timed */

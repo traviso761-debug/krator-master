@@ -92,7 +92,14 @@ def own_src():
 
 # ---------------------------------------------------------------- P1: the placement core, the city builder, the site, the hosts
 # core/rand, core/space and core/tags, read in place under their own names (each one global: KRAND, KSPACE, KTAGS)
-CORE_PLACE = [('08-core-rand.js', 'core/rand/08-core-rand.js'), ('20-core-space.js', 'core/space/20-core-space.js'),
+CORE_PLACE = [('08-core-rand.js', 'core/rand/08-core-rand.js'),
+              # core/hamlet (S5: the environs' hamlets and camps, 77m-hook-places.js), read in place after core/city's closure (76)
+              # and the kits' boxes (77f): its fragments in its own order, the work camp (camp/26) after 30
+              ('77j0-hamlet-wood.js', 'core/hamlet/10-hamlet-wood.js'), ('77j1-hamlet-gather.js', 'core/hamlet/12-hamlet-gather.js'),
+              ('77j2-hamlet-farmland.js', 'core/hamlet/14-hamlet-farmland.js'), ('77j3-hamlet-names.js', 'core/hamlet/16-hamlet-names.js'),
+              ('77j4-hamlet-names.js', 'core/hamlet/18-hamlet-names.js'), ('77j5-hamlet-cultures.js', 'core/hamlet/20-hamlet-cultures.js'),
+              ('77j6-hamlet-iziz.js', 'core/hamlet/21-hamlet-iziz.js'), ('77j7-hamlet-village.js', 'core/hamlet/30-hamlet-village.js'),
+              ('77j8-hamlet-camp.js', 'core/hamlet/camp/26-hamlet-camp.js'), ('20-core-space.js', 'core/space/20-core-space.js'),
               ('50-core-tags.js', 'core/tags/50-core-tags.js'), ('52-core-tags-vocab.js', 'core/tags/52-core-tags-vocab.js'),
               # the ground: core/terrain's relief noise (KRELIEF, which 41 grows its detail from) and core/world's fields
               # (41-world-fields.js: WORLD, the open world's land at 1:1), read in place as settlements/pinnacle-rock reads
@@ -125,7 +132,7 @@ SKY_FRAG = '78-sky-helpers.js'   # the skyscraper helpers the hosts call (skyPli
 ANCIENTS_SRC = os.path.join(ROOT, 'kits', 'ancients', 'src')
 P1_DETERMINISTIC = {n for n, _ in CORE_PLACE} | {KCITY_FRAG, SITE_FRAG, SKY_FRAG, WORLD_FRAG, '78a-host-0-lib.js', '75d-hook-world.js', '76-hook-ground.js',
                                                  '76b-hook-strokes.js', '77-hook-ruin.js', '90a-hook-city.js', '90b-hook-city-draw.js',
-                                                 '90c-hook-ruin-draw.js', '90d-hook-ruin-heroes.js', '90e-hook-flora.js', '77k-hook-paint.js'}
+                                                 '90c-hook-ruin-draw.js', '90d-hook-ruin-heroes.js', '90e-hook-flora.js', '77k-hook-paint.js', '77m-hook-places.js'}
 
 
 # ---------------------------------------------------------------- P2: the kits the town draws with, each sealed in a closure

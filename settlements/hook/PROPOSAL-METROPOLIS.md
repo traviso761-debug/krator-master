@@ -231,5 +231,7 @@ edges, and S3's far tier drew the whole city as instanced massing (towers by sta
 the wall), every base seated on the drawn ground; then the heroes up close (90d: the ten towers nearest the camera as
 the kit's heroes, their massing hidden; the kit sealed in the page as `KMP`). Then S4 (90e: the Ring Sea isles kit's
 mangroves and rainforest, about 23,000 trees on the ruin's heart, kept off the town, the walled clearings and the cliffs and
-clear of every drawn footprint; 77k: mangrove mud and the forest floor painted through the Port kit's `PORT.paint`). Next:
-S5, the hamlets and camps drawn; a shell or impostor tier between the heroes and the massing.
+clear of every drawn footprint; 77k: mangrove mud and the forest floor painted through the Port kit's `PORT.paint`). Then the jungle over the
+whole ruin, and S5 (77m: eleven of the thirteen places laid out by core/hamlet on the Islanders', the Iziz Vernacular's and
+a post-apoc salvagers' row, 243 buildings drawn as the town's lots are). Next: S5's remainder (the Spire's pods, the deck
+camp), S6's tiers and pages; a shell or impostor tier between the heroes and the massing.

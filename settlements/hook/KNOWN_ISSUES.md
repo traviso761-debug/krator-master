@@ -20,9 +20,10 @@ from a Hook task.
       (KSHELL) exist for the Spindle and the Ledger only (the other designs wait on the kit's shell review), so the
       middle distance is massing and a tower changes from a box to its hero at the switch (at the same height: the
       massing stands to the kit's own `MP.ruin` top).
-- [ ] **The jungle stops at its square.** The flora grows over a 5.2 km square on the ruin's heart (90e `HOOK_FLORA.R`:
-      the downtown, the Crown, the drowned downtown and the inner mainland); the outer city's mainland and the plateau
-      beyond have the painted forest floor but no trees. A wider square costs about 1 s a km of radius at load.
+- [ ] **The jungle costs 13.6 s at load.** About 52,000 trees over the whole ruin (a 9.6 km square, the outer city at a
+      fifth of the heart's density: 90e `HOOK_FLORA`); placing them is 7 s and baking 4.6 s. The plateau beyond the square
+      has the painted ground only. Baking the placement (its records are deterministic) or growing the outer city's far
+      trees as impostors only would cut it.
 - [ ] **The flora's detail is static.** The kit's LOD is set at placement by the distance from a spine of eight points
       through the ruin (hero 180 m, mid 520 m, the far impostors beyond); away from the spine a close camera sees the
       mid and far trees. The undergrowth stands within 900 m of the centre only (over the square it cost 16 s).
@@ -41,8 +42,18 @@ from a Hook task.
       plain on the low ground only, there is water; it stands on the nearest dry ground, the plateau's north foot.
 - [ ] **The flora's texture count is shared by design.** The kits' library cards count on `window._texPending` as the
       material library does; the closure forwards it to the page's, and `check_assembly` lists the two writers as a clash.
-- [ ] **The places are records only.** The thirteen hamlets, camps and posts carry their culture, people and work;
-      drawing them on `core/hamlet` and `core/camp` (and their people in the simulation) is S5.
+- [ ] **Two places are not laid.** The Drowned Spire's Hykkousoi village (C1: its pods are 77's records, drawn as 90c's
+      massing; the Ys kit's grown pods want the Spire hero's surface) and the deck camp (C3: on a standing freeway span,
+      14 m up). Their people are in the simulation by neither yet.
+- [ ] **Two places moved.** The mangrove stilt camp's point (C2) is in the open bay and the salt pans' ground (C6) too
+      cramped for its houses: each stands at the roomiest dry ground within 1.5 km (937 m and 433 m off). The Islanders'
+      row has no stilt houses for a camp standing in the water.
+- [ ] **The settlers' timber camp has no works.** The Iziz Vernacular's row (core/hamlet 21) has farming and ranch works
+      only: the timber camp (C7) is its bunkhouses and services. The salvagers' row is Hook's own (77m `SALVAGE`), on the
+      post-apoc kit's pieces, until core/hamlet carries one.
+- [ ] **core/hamlet: a resource on the village point leaves its works no facing.** `KHAMLET.village` faces a works
+      building from the point to the resource; with the two equal its box is zero and later houses overlap it. Hook puts a
+      works village's resource 150 m out (77m `outward`); the guard belongs in core/hamlet 30 (a shared change: 56 pages).
 - [ ] **The plateau's own north coast is straight.** East of the wall the plateau's north foot runs straight for some
       4 km: the scale model's 2 km cells, not Hook's records (the mainland strip only raises the water before it).
       `core/coast` would curve it in the open world; on Hook's page it is the model's line.

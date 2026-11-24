@@ -46,6 +46,12 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
   /* up close (90d): beside the Crown, its neighbours drawn as the kit's heroes */
   V['The Crown up close']=[C.x+160,C.y+70,C.z+160,C.x,C.y+90,C.z];
   /* S4 (90e): over the south-west swamp's mangroves toward the drowned downtown */
-  V['The mangroves']=[-1700,22,-2050,-1954,2,-2245];}
+  V['The mangroves']=[-1700,22,-2050,-1954,2,-2245];
+  /* S5 (77m): over Lantern Point, the Hukoa's fishing hamlet, and the Glebe, the settlers' farms */
+  if(typeof HOOK_PLACES!=='undefined'&&HOOK_PLACES){const mid=id=>{const L=HOOK_PLACES.lots.filter(l=>l.place===id);if(!L.length)return null;
+    let x=0,z=0,y=0;for(const l of L){x+=l.x;z+=l.z;y=Math.max(y,l.y);}return [x/L.length,y,z/L.length];};
+   const a=mid('huka.h1'),b=mid('huka.h2');
+   if(a)V['Lantern Point']=[a[0]+110,a[1]+45,a[2]+110,a[0],a[1]+2,a[2]];
+   if(b)V['The Glebe']=[b[0]-120,b[1]+55,b[2]+120,b[0],b[1]+2,b[2]];}}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();
