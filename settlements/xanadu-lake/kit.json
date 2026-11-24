@@ -14,7 +14,7 @@
   "kits/xanadu/extra/88e-xa-stall.js",
   "kits/xanadu/extra/88f-xa-harbour.js",
   "kits/xanadu/extra/88g-xa-works.js",
-  "kits/xanadu/extra/88h-xa-landing.js",
+  "kits/xanadu/extra/88k-xa-landing.js",
   "kits/xanadu/extra/88i-xa-timber-yard.js",
   "kits/xanadu/extra/69dy-ix-lake-works.js",
   "kits/xanadu/src/87k1-xa-lake-rooms.js"
@@ -92,7 +92,7 @@
   "87k-xa-lake-trades.js",
   "88f-xa-harbour.js",
   "88g-xa-works.js",
-  "88h-xa-landing.js",
+  "88k-xa-landing.js",
   "88i-xa-timber-yard.js",
   "89-atmos-0-core.js",
   "89-atmos-0p-presets.js",

@@ -68,7 +68,7 @@
     'xa_mat_shed': {w: 18, d: 12, h: 5, what: 'a mat shed and its reed racks'},
     'xa_fishponds': {w: 30, d: 24, h: 1.2, what: 'fishponds: stone-walled pens in the shallows'},
     'xa_fish_racks': {w: 16, d: 11, h: 3.6, what: 'fish racks and a smokehouse'},
-    /* kits/xanadu/extra/88h-xa-mine-works.js (2026-11-23, WORKS-PLAN.md W1): the kit's own boxes win on a page that loads it */
+    /* kits/xanadu/extra/88l-xa-mine-works.js (2026-11-23, WORKS-PLAN.md W1): the kit's own boxes win on a page that loads it */
     'xa_stamp_mill': {w: 24, d: 22, h: 13, what: 'a stamp mill: batteries of stamps on a water wheel, the ore bins above, the tables below'},
     'xa_sorting_shed': {w: 30, d: 11, h: 5.5, what: 'a sorting shed: long and open-sided, the benches under it'},
     /* the watch line's post (kits/xanadu 80g: its box is XFORT.post()'s 12 x 11 m and 6 m of yard, read here for a host without the kit) */

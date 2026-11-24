@@ -129,7 +129,7 @@
   three times round the lower kora and up the Way of Breath to the Threshold Chorten and no further; on a Station's night
   (one in eight, *proposed*: `FE_ENV.station`, so `FE_WATCH.state`'s kora flag is on) the professed walk the rim three times in
   procession, eight novices keep the vigil at the chorten, the pilgrims fill the Pilgrims' Court and the chorten's ring.
-  `targets/cone/90fl-fe-people.js` draws them from core/charactermodels (twelve looks baked by `KCharCrowd`: standing, four
+  `targets/cone/90fm-fe-people.js` draws them from core/charactermodels (twelve looks baked by `KCharCrowd`: standing, four
   frames of the walk, sitting), each resident in core/tags, the pilgrims as a set; `verify.py`'s `people-*`. The lower kora
   crossed both terraces' faces and the Stair of the Ember's flight with no way down: it has four stairs of its own now (parts
   44-47, in core/walk with the axis's two) and its north leg runs on the upper terrace before the Ember.

@@ -139,7 +139,7 @@ R.push({name:'interiors-furnished',ok:!!X.on&&want.length>=7&&!miss.length&&!lev
  const WI=typeof FE_IX!=='undefined'&&FE_IX.walkIn?FE_IX.walkIn():[],bad=WI.filter(q=>!q.ok);
  R.push({name:'interiors-walk-in',ok:!!X.on&&WI.length===want.length&&!bad.length&&X.walked===want.length&&!!X.balcony&&X.parapet>0&&!!X.ladder,
   detail:X.walked+' of '+want.length+' interiors in core/walk; walked in: '+WI.map(q=>q.id+' '+(q.ok?q.floors+' floors':'FAILED'+(q.why?' ('+q.why+')':' (shut '+q.shut+', open '+q.open+', unreached '+(q.unreached||[]).slice(0,4).join(' ')+')'))).join('; ')+(X.balcony?'; the balcony a floor, its parapet '+X.parapet+' blocks':'; NO balcony')+(X.ladder?'; the ladder to the platform of the Eye Post in '+X.ladder.room.split('.').slice(-1)[0]:'; NO ladder to the platform')});}
-/* the people (src/41-fe-people.js, targets/cone/90fl-fe-people.js): placed by FLASHING_EYE's clock, drawn from core/charactermodels */
+/* the people (src/41-fe-people.js, targets/cone/90fm-fe-people.js): placed by FLASHING_EYE's clock, drawn from core/charactermodels */
 {const LF=typeof FE_LIFE!=='undefined'?FE_LIFE:null,S=window._fePeople||{looks:[],errors:['no people on the page']};if(LF)await LF.ready(150000);
  const K=KTAGS.page,lifeR=K?K.query({class:'life'}):[],reg=lifeR.filter(r=>/^fe\./.test(r.id)).length,set=lifeR.find(r=>r.key==='fe_pilgrim'&&r.set);
  R.push({name:'people-dressed',ok:!!LF&&S.looks.length>=12&&S.ready===S.looks.length&&!S.errors.length&&reg===FE_PEOPLE.people.length&&reg===320&&!!set&&S.stairs>=24,

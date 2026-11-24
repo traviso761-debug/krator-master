@@ -1,7 +1,7 @@
 # settlements/xanadu-lake: known issues
 
 - **`stone.ghat.wet` is owed** (`core/materials/PROMPTS-NEEDED.md` section 69; 59 on the Xanadu plans branch). The landing stair's wet steps, its weed line
-  and the washing slabs (`xa_ghat`, `kits/xanadu/extra/88h-xa-landing.js`) are the library's `stone.cut` (the kit's `vStone`)
+  and the washing slabs (`xa_ghat`, `kits/xanadu/extra/88k-xa-landing.js`) are the library's `stone.cut` (the kit's `vStone`)
   darkened to 55 %, a stand-in until the set lands; then the wet steps take it (a slot in `kits/xanadu/materials.json`).
 - **The shore is sand, not the plan's shingle.** Māuṭh's plan proposed `shingle` at the landing; the region's coast field
   reads `sand` there (`tools/fit_lake_town.py`, `XL.FIT.mouth.coast`), and the plan says to keep the region's.

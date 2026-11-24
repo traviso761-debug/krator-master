@@ -35,7 +35,7 @@ REGION = os.path.join(HERE, 'region')
 WORLD_KITS = "var WORLD_KITS=[{name:'xanadu',global:'XANADU',overlay:'xanadu'}];\n"
 
 
-# the people (targets/cone/90fl-fe-people.js): core/charactermodels read in place (kit.json "external": KCHAR, KCharFigure,
+# the people (targets/cone/90fm-fe-people.js): core/charactermodels read in place (kit.json "external": KCHAR, KCharFigure,
 # KCharCrowd), its GLTF loader under a numbered name here (gen/47j), its data cut to the two peoples the house draws (the Order's
 # robes from the Historians', dyed crimson; Xanadu's dress for the lay brothers and the pilgrims: gen/47n, FE_KCHAR) and the pieces
 # as sidecars beside the page (dist/kchar, from core/charactermodels' own pieces when built here, else Longsong's: the same files)
