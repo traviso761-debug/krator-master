@@ -149,8 +149,11 @@ TUBE_WALK = r"""(o)=>{const TB=_tubes,T=TB.plan.tubes.find(t=>t.id===o.tube),GD=
  let steps=0,kinds='',maxDy=0,inRock=0,lastY=p.y,s=0,best=0,since=0,maxOff=0,next=0;const samples=[];
  try{while(steps<o.max){const q=proj();s=q.s;maxOff=Math.max(maxOff,q.off);if(s>=LEN-3)break;if(s>best+.5){best=s;since=0;}else if(++since>60)break;
    /* near either end and each portal the terrain streams round the walker, as the frame loop would (the ground it steps onto is
-      the drawn one) */
+      the drawn one); between them the terrain alone, every 100 steps (220 m), so the ground read over the tube is drawn round the
+      walker, not a far, coarse chunk left from the last settle (2026-11-23: on the re-run's ground such a chunk dipped under the
+      feeder's floor about 600 m short of the Hall, and the walker stepped up onto it, 54 m, and walked the rest on the ground) */
    if((s<300||s>LEN-300||ps.some(c=>Math.abs(c-s)<300))&&steps%15===0)_api.settle(20000);
+   else if(steps%100===0)for(let k=0;k<60&&(k<2||TERRAIN.pending());k++)TERRAIN.update(60);
    const t=at(s+8);CAM.st.yaw=Math.atan2(-(t[0]-p.x),-(t[1]-p.z));CAM.st.pitch=0;CAM.update(o.dt);steps++;
    const gy=GD(p.x,p.z),k=TB.stats().walk.last;if(k&&kinds.slice(-1)!==k[0])kinds+=k[0];maxDy=Math.max(maxDy,Math.abs(p.y-lastY));lastY=p.y;
    if(p.y-1.7<gy-2&&TB.voidAt(p.x,p.y,p.z)>=0)inRock++;

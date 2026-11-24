@@ -5,8 +5,9 @@
       are laid at the plan's pixels as asked; the plan's kilometres read as if a pixel were ~0.8 km. Either the line or the text
       wants the owner's word before the recut.
 - [ ] **The tubes' portals lie on the uncarved ground.** The Twins' sculpt is not on the map, so the mouths open wherever the
-      model's ground is at the spec's points: the feeder's Strongbow portal is a ramp down into flat ground (a pit mouth), its SE
-      Twin gasp climbs a steep flank as an open trench. The floors are laid at a depth, so they follow the sculpt;
+      model's ground is at the spec's points: the feeder's Strongbow portal is a ramp down into flat ground (a pit mouth). Its SE
+      Twin gasp climbed a steep flank as an open trench until the 2026-11-23 re-run's ground brought the ramp out on the flank
+      below the mouth; it now stands 1 km south (px 1028,1506.5), where the ramp holds the flank. The floors are laid at a depth, so they follow the sculpt;
       the portals' points may want moving to the sculpted brows (the spec's `at`), data only.
 - [ ] **Up to 630 m of rock over a tube.** The floor keeps its 8 % grade under the uncarved ridges, so A1 and A2 run deep
       under the Godthrone's shield ramp in places; skylights are only drawn where the cover is under 60 m.

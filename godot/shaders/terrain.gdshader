@@ -4,6 +4,7 @@
 //   - S4: Mikkelsen (2022) Real-Time Hex-Tiling over 6 PBR library Texture2DArray layers (lush grass, forest moss,
 //         native alpine turf, gravel/scree, granite tor, flagstone paving) with tangent-space normal maps & roughness
 //   - S5: Drifting core/atmos cloud shadows (atmCloudShade) attenuating direct directional sunlight in void light()
+//   - F6: a wet world (the global atm_wet): darker, glossier ground and standing water on the level
 shader_type spatial;
 render_mode cull_disabled;
 
@@ -396,8 +397,23 @@ void fragment() {
 	float bounce_k = (1.0 - sky_vis) * clamp(atm_sun_dir.y * 2.2, 0.0, 1.0) * 0.16;
 	c += c * vec3(1.18, 0.96, 0.74) * bounce_k;
 
-	ROUGHNESS = clamp(mix(rough_dry, 0.22, wet * (1.0 - snow_w)), 0.14, 0.98);
-	SPECULAR = mix(mix(0.26, 0.52, snow_w), 0.56, wet * (1.0 - snow_w));
+	// F6 (GODOT-LOOK-PLAN.md section 7; krator/kair.gd sets atm_wet): a wet world. What the rain reaches goes darker and
+	// glossier, earth more than rock; on level ground water stands in the hollows, more of it the wetter, and mirrors the sky.
+	float rain_w = clamp(atm_wet, 0.0, 1.0) * (1.0 - snow_w);
+	float puddle = 0.0;
+	if (rain_w > 0.002) {
+		float level = 1.0 - smoothstep(0.004, 0.02, steepness);   // full to 5 degrees, none past 11
+		float pool_n = 0.6 * kg_vn(rot_p1(v_detail_xz) * 0.21, 23.0) + 0.4 * kg_vn(rot_p2(v_detail_xz) * 0.55, 29.0);
+		float fill = 0.16 + 0.22 * rain_w + 0.10 * hollow;   // the share of level ground under water
+		puddle = level * (1.0 - smoothstep(fill - 0.03, fill + 0.02, pool_n)) * smoothstep(0.2, 0.55, rain_w) * (1.0 - smoothstep(70.0, 160.0, dist));
+		c *= mix(1.0, mix(0.64, 0.80, rock_w), rain_w);
+		c = mix(c, c * 0.55, puddle);
+		rough_dry = mix(rough_dry, 0.36, 0.7 * rain_w);
+		wn = normalize(mix(wn, vec3(0.0, 1.0, 0.0), 0.97 * puddle));
+	}
+
+	ROUGHNESS = mix(clamp(mix(rough_dry, 0.22, wet * (1.0 - snow_w)), 0.14, 0.98), 0.04, puddle);
+	SPECULAR = mix(mix(mix(0.26, 0.52, snow_w), 0.56, max(wet * (1.0 - snow_w), 0.6 * rain_w)), 0.5, puddle);
 	METALLIC = 0.0;
 	ALBEDO = k_albedo(c);
 	NORMAL = normalize((VIEW_MATRIX * vec4(wn, 0.0)).xyz);

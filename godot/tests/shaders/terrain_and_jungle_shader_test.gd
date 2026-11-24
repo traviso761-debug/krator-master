@@ -218,44 +218,46 @@ func _initialize() -> void:
 	ok(not (ao_inner >= ao_outer),
 		"negative: crown interior is never brighter in AO than outer crown tips")
 
-	# 6. library.gdshader alpha_test cutout, srgb_vcol GLTF COLOR_0 decode & world_import.gd Bucket sway guards
-	var lib_code := FileAccess.get_file_as_string("res://shaders/library.gdshader")
-	var rep_std := {}
-	var sm_cut := KratorWorld._standard(
-		{"id": "world:leafcard", "kind": "standard", "colour": "#447733", "alphaTest": 0.42},
-		{}, {}, true, rep_std) as ShaderMaterial
-	var sm_opq := KratorWorld._standard(
-		{"id": "world:wall", "kind": "standard", "colour": "#888888", "alphaTest": null},
-		{}, {}, false, rep_std) as ShaderMaterial
-	# K5: library.gdshader is opaque (no ALPHA write: Godot keeps its depth prepass); the cut-out twin scissors
-	var body_code := FileAccess.get_file_as_string("res://shaders/lib/library_body.gdshaderinc")
+	# 6. the library surface's alpha_test cutout (its cut-out variant: shaders/library_cutout.gdshader, the body's
+	#    K_LIB_CUTOUT block; GODOT-LOOK-PLAN.md C5), srgb_vcol GLTF COLOR_0 decode & world_import.gd Bucket sway guards
+	var lib_code := FileAccess.get_file_as_string("res://shaders/library_body.gdshaderinc")
 	var cut_code := FileAccess.get_file_as_string("res://shaders/library_cutout.gdshader")
+	var opq_code := FileAccess.get_file_as_string("res://shaders/library.gdshader")
+	var rep_std := {}
+	var card_img := Image.create(4, 4, false, Image.FORMAT_RGBA8)
+	var card_tex := ImageTexture.create_from_image(card_img)
+	var sm_cut := KratorWorld._standard(
+		{"id": "world:leafcard", "kind": "standard", "colour": "#447733", "alphaTest": 0.42, "map": "tex:card", "doubleSided": true},
+		{"tex:card": card_tex}, {}, true, rep_std) as ShaderMaterial
+	var sm_opq := KratorWorld._standard(
+		{"id": "world:wall", "kind": "standard", "colour": "#888888", "alphaTest": null, "doubleSided": false},
+		{}, {}, false, rep_std) as ShaderMaterial
 	ok(sm_cut != null and sm_cut.shader == KratorKmat.LIB_CUTOUT and is_equal_approx(float(sm_cut.get_shader_parameter("alpha_test")), 0.42)
-		and cut_code.find("#define KLIB_CUTOUT") >= 0 and body_code.find("ALPHA_SCISSOR_THRESHOLD = alpha_test") >= 0,
-		"KratorWorld._standard puts alphaTest=0.42 on library_cutout.gdshader (KLIB_CUTOUT: ALPHA_SCISSOR_THRESHOLD)")
-	ok(sm_opq != null and sm_opq.shader == KratorKmat.LIB and is_equal_approx(float(sm_opq.get_shader_parameter("alpha_test")), 0.0),
-		"negative: opaque/null alphaTest records stay on library.gdshader with alpha_test=0.0 so city walls never discard fragments")
-	# the opaque shader writes no ALPHA at all: every ALPHA line of the body sits inside #ifdef KLIB_CUTOUT
+		and lib_code.find("ALPHA_SCISSOR_THRESHOLD") > lib_code.find("#ifdef K_LIB_CUTOUT") and lib_code.find("#ifdef K_LIB_CUTOUT") >= 0
+		and cut_code.find("#define K_LIB_CUTOUT") >= 0,
+		"KratorWorld._standard wires alphaTest=0.42 with a map onto the cut-out variant, whose K_LIB_CUTOUT block sets ALPHA_SCISSOR_THRESHOLD")
+	ok(sm_opq != null and sm_opq.shader == KratorKmat.LIB and is_equal_approx(float(sm_opq.get_shader_parameter("alpha_test")), 0.0)
+		and opq_code.find("K_LIB_CUTOUT") < 0 and opq_code.find("cull_back") >= 0,
+		"negative: opaque/null alphaTest records keep alpha_test=0.0 on the opaque shader, which never writes ALPHA, so city walls never discard fragments")
+	# kept from the K5 test (2026-11-23 merge): the opaque and two-sided shaders write no ALPHA at all; every ALPHA line of
+	# the body sits inside #ifdef K_LIB_CUTOUT
 	var in_cut := false
 	var stray := 0
-	for line in body_code.split("\n"):
+	for line in lib_code.split("\n"):
 		var s := line.strip_edges()
-		if s.begins_with("#ifdef KLIB_CUTOUT"):
+		if s.begins_with("#ifdef K_LIB_CUTOUT"):
 			in_cut = true
 		elif s.begins_with("#endif"):
 			in_cut = false
 		elif not in_cut and (s.begins_with("ALPHA") or s.find(" ALPHA") >= 0) and not s.begins_with("//"):
 			stray += 1
-	ok(stray == 0 and lib_code.find("KLIB_CUTOUT") < 0 and lib_code.find("library_body.gdshaderinc") >= 0,
-		"library.gdshader is opaque: no ALPHA or ALPHA_SCISSOR_THRESHOLD outside the cut-out block (%d stray)" % stray)
-	ok(KratorKmat.shader_for(0.0) == KratorKmat.LIB and KratorKmat.shader_for(0.5) == KratorKmat.LIB_CUTOUT
-		and KratorKmat.is_library(KratorKmat.LIB) and KratorKmat.is_library(KratorKmat.LIB_CUTOUT) and not KratorKmat.is_library(KratorBiome.FOLIAGE),
-		"KratorKmat.shader_for picks by alpha_test; is_library knows both")
-	# both compile: a shader with an error has no uniforms to list
+	ok(stray == 0, "the library body writes no ALPHA outside its K_LIB_CUTOUT block (%d stray)" % stray)
+	# all three compile: a shader with an error has no uniforms to list
 	var u_opq := KratorKmat.LIB.get_shader_uniform_list()
+	var u_two := KratorKmat.LIB_TWOSIDED.get_shader_uniform_list()
 	var u_cut := KratorKmat.LIB_CUTOUT.get_shader_uniform_list()
-	ok(u_opq.size() > 20 and u_opq.size() == u_cut.size(),
-		"library.gdshader and library_cutout.gdshader compile with the same %d uniforms (%d)" % [u_opq.size(), u_cut.size()])
+	ok(u_opq.size() > 20 and u_opq.size() == u_cut.size() and u_opq.size() == u_two.size(),
+		"the three library shaders compile with the same uniforms (%d, %d, %d)" % [u_opq.size(), u_two.size(), u_cut.size()])
 
 	var mats_dict := {
 		"m_leaf": {

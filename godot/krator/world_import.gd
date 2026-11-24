@@ -100,14 +100,13 @@ static func build(path: String) -> Node3D:
 	if not meshes:
 		report["counts"]["glb"] = "none: the case has no items and no buckets"
 	elif FileAccess.file_exists(gp):
-		KratorGltf._register_instancing()
-		var doc := GLTFDocument.new()
-		var state := GLTFState.new()
-		var err := doc.append_from_file(gp, state)
-		if err != OK:
-			report["gaps"]["load"] = "GLTFDocument.append_from_file failed on %s: %d" % [gp, err]
+		# parsed once and kept with its levels of detail and shadow meshes where the cook is on (krator/cook.gd)
+		var cooked := {}
+		scene = KratorCook.scene(gp, cooked)
+		if scene == null:
+			report["gaps"]["load"] = "GLTFDocument.append_from_file failed on %s: %d" % [gp, int(cooked.get("error", FAILED))]
 			return root
-		scene = doc.generate_scene(state)
+		report["cook"] = cooked.get("cook", {})
 	else:
 		report["gaps"]["load"] = "no %s: this importer reads the split form (tools/harness.py export without --json)" % gp
 		return root
@@ -131,7 +130,10 @@ static func build(path: String) -> Node3D:
 		items.add_child(node)
 		var n: int = node.multimesh.instance_count
 		var has_vcol: bool = node.multimesh.mesh != null and node.multimesh.mesh.get_surface_count() > 0 and (int(node.multimesh.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_COLOR) != 0
-		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report, true, has_vcol)
+		var has_tan: bool = node.multimesh.mesh != null and node.multimesh.mesh.get_surface_count() > 0 and (int(node.multimesh.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_TANGENT) != 0
+		node.material_override = _mat(it["material"], mats, tex, texrec, mat_cache, ids, report, true, has_vcol, has_tan)
+		_closed(node, it, report)
+		_faces(node, report)
 		node.visible = bool(it.get("visible", true))
 		if it.get("owners") is Array and (it["owners"] as Array).size() == n:   # a city's: per instance the record it stands in
 			node.set_meta("krator_owners", it["owners"])
@@ -180,7 +182,12 @@ static func build(path: String) -> Node3D:
 		node.name = "bucket_%d" % k
 		buckets.add_child(node)
 		var has_vcol: bool = node.mesh != null and node.mesh.get_surface_count() > 0 and (int(node.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_COLOR) != 0
-		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false, has_vcol)
+		var has_tan: bool = node.mesh != null and node.mesh.get_surface_count() > 0 and (int(node.mesh.surface_get_format(0)) & Mesh.ARRAY_FORMAT_TANGENT) != 0
+		node.material_override = _mat(b["material"], mats, tex, texrec, mat_cache, ids, report, false, has_vcol, has_tan)
+		_closed(node, b, report)
+		_form(node, b, report)
+		_wind(node, b, report)
+		_faces(node, report)
 		_lod(node, b, report)
 		if b.get("lod") is Dictionary and _lod_shader(node):
 			node.set_meta("krator_rows", [{"item": k, "id": b["id"], "from": 0, "count": 1, "range": float(b["lod"]["range"])}])
@@ -282,12 +289,17 @@ static func build(path: String) -> Node3D:
 		report["gaps"]["hazard state"] = "the hazards are Area3Ds with their records (core/hazard/GODOT.md); KHazard (state, dose, the walker's status) and the overlay are not ported yet"
 	if d.get("stage") is Dictionary:
 		root.set_meta("stage", d["stage"])
+	# where smoke rises and where a wall stains (core/export's marks section), in the page's frame: krator/kair.gd's emitters
+	# and krator/kdecals.gd's leaks read them from this meta
+	if d.get("marks") is Dictionary and d["marks"].get("format") == "krator-marks" and d["marks"].get("records") is Array:
+		root.set_meta("marks", d["marks"]["records"])
+		report["marks"] = (d["marks"]["records"] as Array).size()
 	# a city's buildings, fixtures and furniture slots as nodes (the KRATOR_EXPORT shape)
 	if d.get("fixtures") is Dictionary or d.get("furniture") is Dictionary or d.get("interiors") is Dictionary:
 		report["records"] = records(frame, d, by_id)
 	var meta := {}
 	for k in d:
-		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water", "hazards"]):
+		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water", "hazards", "marks"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
 	KratorBiome.cell = KratorBiome.policy_cell(d["convention"])   # the export contract's LOD cell (convention.lod)
@@ -384,8 +396,8 @@ static func ground_layers(g: Node3D, rec: Dictionary, tex: Dictionary, texrec: D
 # a material by id, built once (KratorBiome._material: the foliage and bark shaders, the kits' kinds; a city's three.js
 # material records, kind 'standard' or 'basic', on the library shader: _standard). instanced: the mesh is a MultiMesh
 # (a world-uv record tiles an instance by its scale, a plain mesh keeps its uv)
-static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Dictionary, cache: Dictionary, ids: Dictionary, report: Dictionary, instanced := true, has_vcol := false) -> Material:
-	var key := "%s|%s|%s" % [id, instanced, has_vcol]
+static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Dictionary, cache: Dictionary, ids: Dictionary, report: Dictionary, instanced := true, has_vcol := false, has_tan := false) -> Material:
+	var key := "%s|%s|%s|%s" % [id, instanced, has_vcol, has_tan]
 	if cache.has(key):
 		ids["materials_resolved"] += 1
 		return cache[key]
@@ -399,7 +411,7 @@ static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Diction
 	if m != null:
 		pass
 	elif rec.get("kind") in ["standard", "basic", "shader"]:
-		m = _standard(rec, tex, texrec, instanced, report)
+		m = _standard(rec, tex, texrec, instanced, report, has_tan)
 	else:
 		var bm := KratorBiome._material(rec, tex, texrec, instanced, report)
 		if bm != null:
@@ -420,11 +432,12 @@ static func _mat(id: Variant, mats: Dictionary, tex: Dictionary, texrec: Diction
 
 
 # a three.js MeshStandardMaterial or MeshBasicMaterial record (a city's: core/export/README.md, "Iziz") as Godot draws it.
-# Opaque ones on shaders/library.gdshader, its hooks resolved by name (krator/khooks.gd: world-uv, breakup; glass has no
+# Opaque ones on the library surface (shaders/library.gdshader, or its two-sided or cut-out variant: KratorKmat.variant),
+# its hooks resolved by name (krator/khooks.gd: world-uv, breakup; glass has no
 # include of its own yet and draws as the plain surface), the maps by texture id; a transparent one (glass with an opacity,
 # the moat) as a StandardMaterial3D with alpha blending. Returns the material; its meta "krator" names the record and the
 # hooks it drew.
-static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, instanced: bool, report: Dictionary) -> Material:
+static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, instanced: bool, report: Dictionary, has_tan := false) -> Material:
 	var hk := KHooks.resolve(rec.get("hook"))
 	var col := KData.colour(rec.get("colour", "#ffffff"), false)   # linear already (convention.colours.materials)
 	var map_id = rec.get("map")
@@ -481,9 +494,13 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 		s.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "StandardMaterial3D (alpha)"})
 		return s
 	var sm := ShaderMaterial.new()
-	var at_val = rec.get("alphaTest")
-	var at_f := clampf(float(at_val) if (at_val is int or at_val is float) else 0.0, 0.0, 1.0)
-	sm.shader = KratorKmat.shader_for(at_f)   # K5: opaque on library.gdshader, alpha_test > 0 on library_cutout.gdshader
+	# one of the library surface's three shaders (KratorKmat.variant): the cut-out only for an alpha test with a map, both
+	# faces where three draws both (a record without the field is drawn on both, as every record was before 2026-11-23)
+	var at_rec = rec.get("alphaTest")
+	# a record three draws from inside only (side "back": section 13) is drawn on both faces here, and the report says so
+	if str(rec.get("side", "")) == "back":
+		_gap_once(report, "back side", "a material three draws from inside only (side: back) is drawn on both faces: no library shader culls the front")
+	sm.shader = KratorKmat.variant(bool(rec.get("doubleSided", true)) or str(rec.get("side", "")) == "back", float(at_rec) if (at_rec is int or at_rec is float) else 0.0, img != null)
 	sm.set_shader_parameter("colour", Vector3(col.r, col.g, col.b))
 	sm.set_shader_parameter("has_albedo", img != null)
 	if img:
@@ -503,7 +520,21 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 	sm.set_shader_parameter("specular_k", clampf(float(rec.get("specular", 0.5)), 0.0, 1.0))
 	sm.set_shader_parameter("tint", bool(rec.get("tint", true)))
 	sm.set_shader_parameter("unlit", bool(rec.get("unlit", false)))
-	sm.set_shader_parameter("alpha_test", at_f)
+	# M7, M9, M10: the weathering amounts and the detail layer by the surface's class; the mesh's tangents where it has them
+	var w_cls := KratorWeather.class_of(rec.get("lib"), str(rec.get("family", "")))
+	var w_amt := KratorWeather.amounts(rec.get("lib"), str(rec.get("family", "")))
+	if sm.shader == KratorKmat.LIB_CUTOUT:   # a plant card, a grille, a fringe: it drifts in colour, and takes no run-off, moss or dust
+		w_amt = Vector4(minf(w_amt.x, 0.4), 0.0, 0.0, 0.0)
+	sm.set_shader_parameter("weather_k", w_amt)
+	var d_tile := Vector2(2.0, 2.0)   # the metres one tile of the surface's uv covers: 1 / K of a world-uv record, else its scale
+	if rec.get("worldUV") is Dictionary and float((rec["worldUV"] as Dictionary).get("K", 0.0)) > 0.0:
+		d_tile = Vector2.ONE / float(rec["worldUV"]["K"])
+	elif rec.get("scale") is Array and (rec["scale"] as Array).size() >= 2:
+		d_tile = Vector2(float(rec["scale"][0]), float(rec["scale"][1]))
+	KratorDetail.set_on(sm, w_cls if img != null else "", d_tile)   # a surface with no map has no uv worth tiling by
+	sm.set_shader_parameter("mesh_tangents", has_tan)
+	var at_val = rec.get("alphaTest")
+	sm.set_shader_parameter("alpha_test", clampf(float(at_val) if (at_val is int or at_val is float) else 0.0, 0.0, 1.0))
 	if rec.get("emissive") != null:
 		var e := KData.colour(rec["emissive"], false) * float(rec.get("emissiveIntensity", 1.0))
 		sm.set_shader_parameter("emission", Vector3(e.r, e.g, e.b))
@@ -536,8 +567,81 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 		sm.set_shader_parameter("has_rough", false)
 	if "glass" in hk["ids"]:
 		_gap_once(report, "hook glass", "records with hook 'glass' draw as the library surface: lib/glass.gdshaderinc's Fresnel is not wired into library.gdshader yet")
-	sm.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "library.gdshader", "world_uv": "world-uv" in hk["ids"] and instanced})
+	sm.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": sm.shader.resource_path.get_file(), "world_uv": "world-uv" in hk["ids"] and instanced})
 	return sm
+
+
+# Which of the library surface's shaders a node ended on, counted in report["faces"] {culled, two_sided, cutout,
+# moved: [why, ...]}: KratorKmat.fit moves a back-culled node to the two-sided twin when its instances are mirrored or
+# its triangles wind against their normals (the export bakes a mirrored mesh's matrix and keeps its index order).
+# an item or a bucket the export marks `closed` (a closed solid, GODOT-LOOK-PLAN.md section 13): a double-sided material
+# on it culls its back faces, which nothing can see. _faces, next, puts it back on both if its instances are mirrored.
+static func _closed(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary) -> void:
+	if not bool(rec.get("closed", false)):
+		return
+	var sm := gi.material_override as ShaderMaterial
+	if sm == null or sm.shader != KratorKmat.LIB_TWOSIDED:
+		return
+	gi.material_override = KratorKmat.onesided(sm)
+	report["closed_culled"] = int(report.get("closed_culled", 0)) + 1
+
+
+# a bucket exported with the form's fields (core/export: its record's `form`, the glb's second UV set): its material's
+# twin with form_uv2 on, so the weathering draws the foot band from the height (shaders/lib/weather.gdshaderinc kw_foot)
+static func _form(mi: MeshInstance3D, rec: Dictionary, report: Dictionary) -> void:
+	if not rec.has("form") or mi.mesh == null or mi.mesh.get_surface_count() == 0:
+		return
+	if (int((mi.mesh as ArrayMesh).surface_get_format(0)) & Mesh.ARRAY_FORMAT_TEX_UV2) == 0:
+		_gap_once(report, "form", "a bucket says it carries the form's fields and its mesh has no second UV set")
+		return
+	var sm := mi.material_override as ShaderMaterial
+	if sm == null or not KratorKmat.is_lib(sm.shader):
+		return
+	if not sm.has_meta("krator_form"):
+		var t := sm.duplicate() as ShaderMaterial
+		t.set_shader_parameter("form_uv2", true)
+		for k in ["krator_twosided", "krator_onesided"]:
+			if t.has_meta(k):
+				t.remove_meta(k)
+		sm.set_meta("krator_form", t)
+	mi.material_override = sm.get_meta("krator_form")
+	report["form_buckets"] = int(report.get("form_buckets", 0)) + 1
+
+
+# a biome bucket exported with the wind fields (its record's `wind`, the glb's second UV set): its bark material's twin
+# with wind_uv2 on (shaders/bark.gdshader: a twig gives, a trunk stands)
+static func _wind(mi: MeshInstance3D, rec: Dictionary, report: Dictionary) -> void:
+	if not rec.has("wind") or mi.mesh == null or mi.mesh.get_surface_count() == 0:
+		return
+	var sm := mi.material_override as ShaderMaterial
+	if sm == null or KratorCells.source_shader(sm.shader) != KratorBiome.BARK or (int((mi.mesh as ArrayMesh).surface_get_format(0)) & Mesh.ARRAY_FORMAT_TEX_UV2) == 0:
+		return
+	if not sm.has_meta("krator_wind"):
+		var t := sm.duplicate() as ShaderMaterial
+		t.set_shader_parameter("wind_uv2", true)
+		sm.set_meta("krator_wind", t)
+	mi.material_override = sm.get_meta("krator_wind")
+	report["wind_buckets"] = int(report.get("wind_buckets", 0)) + 1
+
+
+static func _faces(gi: GeometryInstance3D, report: Dictionary) -> void:
+	var sm := gi.material_override as ShaderMaterial
+	if sm == null or not KratorKmat.is_lib(sm.shader):
+		return
+	if not report.has("faces"):
+		report["faces"] = {"culled": 0, "two_sided": 0, "cutout": 0, "moved": []}
+	var f: Dictionary = report["faces"]
+	var why := KratorKmat.fit(gi)
+	if why != "":
+		if (f["moved"] as Array).size() < 24:
+			(f["moved"] as Array).append("%s: %s" % [gi.name, why])
+		f["two_sided"] += 1
+	elif sm.shader == KratorKmat.LIB:
+		f["culled"] += 1
+	elif sm.shader == KratorKmat.LIB_CUTOUT:
+		f["cutout"] += 1
+	else:
+		f["two_sided"] += 1
 
 
 static func _gap_once(report: Dictionary, k: String, msg: String) -> void:
@@ -750,15 +854,8 @@ static func _library(dir: String, t: Dictionary, packs: Dictionary) -> Texture2D
 	var file = fam.get("files", {}).get(t["slot"])
 	if file == null:
 		return null
-	var bytes := FileAccess.get_file_as_bytes(dir + "/tex/" + str(file))
-	var img := Image.new()
-	var err := img.load_webp_from_buffer(bytes) if str(file).ends_with(".webp") else img.load_png_from_buffer(bytes)
-	if err != OK:
-		return null
 	var role := "normal" if t.get("slot") == "normalMap" else ("data" if t.get("slot") == "roughnessMap" else "albedo")
-	img.generate_mipmaps()
-	KratorKmat.vram(img, role)
-	return ImageTexture.create_from_image(img)
+	return KratorCook.texture_file(dir + "/tex/" + str(file), role)   # decoded, mipmapped and compressed once (krator/cook.gd)
 
 
 # a LOD-chunked mesh: visibility measured from the chunk's centre, as KratorBiome places it (the node moves to the

@@ -26,6 +26,21 @@ var rebases := 0
 const REBASE := 4000.0
 var collide := false
 var auto_places := false
+# A place's items cut into cells when it opens (krator/cells.gd; GODOT-LOOK-PLAN.md C1): on unless KRATOR_CELLS=0 (an A/B).
+# cells_px is the size in pixels an item with no range of its own is culled at (the light rig's tier sets it);
+# cells_max_nodes the new nodes each of a place's item lists may make (heaviest items first)
+var cells := OS.get_environment("KRATOR_CELLS") != "0"
+var cells_px := 4.0
+var cells_max_nodes := KratorCells.MAX_NODES
+var cell_stats := {}      # place id -> {place | monastery | arcology: KratorCells.split_items' report}, while it is open
+# The ground's occluders (krator/occluders.gd; GODOT-LOOK-PLAN.md C6): a conservative one under each chunk's and place's
+# terrain, made when it is built, for a viewport with occlusion culling on. Off unless the look has occlusion culling
+# on (krator/look.gd apply_stream: the low and high tiers) or KRATOR_OCCLUDERS=1; KRATOR_OCCLUDERS=0 leaves them out
+# whatever the look says
+var occluders := OS.get_environment("KRATOR_OCCLUDERS") == "1"
+# L4: indoor surfaces take the room's light as their own ambient (krator/kinteriors_light.gd set_room_ambient), by the look
+var room_ambient := false
+var occluder_stats := {"nodes": 0, "tris": 0}
 var places_open := {}     # id -> Node3D
 signal rebased(delta: Vector3)
 
@@ -38,6 +53,17 @@ var _place_flora := {}        # pid -> {"origin": Array, "keys": Array, "data": 
 var _stream_flora_root: Node3D = null
 var _stream_flora_pools := {} # pkey -> Array[MultiMeshInstance3D]
 var _last_flora_cam := Vector3(INF, INF, INF)
+var trees_near := 0           # trees of 4 m and over within 30 m of the camera at the last flora refresh (krator/kair.gd: leaves fall there)
+# The wild forest's pools by distance (GODOT-LOOK-PLAN.md C7, C8). A pool is one node a prototype's part, and its trees
+# stand all round the camera, so the engine's own choice of a level of detail (by the distance to the node's box) is
+# always the full mesh: 26 to 30 M triangles at the outlying villages. With flora_lod_px over 0 a prototype's trees are
+# split by distance into bands, and each band's pool draws the mesh's far twin (KratorCook.far_mesh): the coarsest level
+# of detail whose error is under flora_lod_px pixels at the band's near edge. The levels are the cook's (krator/cook.gd);
+# without them a far twin is the mesh itself. KratorLook.apply_stream sets it from the tier's lod_px.
+var flora_lod_px := 0.0
+var flora_band_stats := {"pools": 0, "nodes": 0, "bands": {}}
+const FLORA_BANDS := [60.0, 140.0]      # metres: where a hero tree's pool changes band
+const FLORA_PX_M := 0.00107             # metres a pixel covers per metre of distance: 2 tan(30 deg) / 1080
 var _road_hash_ready := false
 var _road_hash := {}          # cell_key -> Array of [ax, az, bx, bz, clear_r2]
 var _built_hash_n := -1
@@ -60,6 +86,7 @@ static func open(path: String) -> KratorWorldStream:
 	s.set_meta("log", s.log)
 	KratorGroundLayers.ensure_s4()
 	KratorGroundLayers.bind_horizon(s.dir, s.index)
+	KratorWeather.set_origin(s.origin)
 	var p := Node3D.new()
 	p.name = "Places"
 	s.add_child(p)
@@ -98,6 +125,7 @@ func _seat(w: Node3D) -> void:
 func rebase(x: float, z: float) -> void:
 	var was: Array = origin.duplicate()
 	origin = [roundf(x), 0.0, roundf(z)]
+	KratorWeather.set_origin(origin)   # world-space noise stays on the world (shaders/lib/weather.gdshaderinc)
 	var delta := Vector3(float(was[0]) - origin[0], float(was[1]) - origin[1], float(was[2]) - origin[2])
 	for id in chunks:
 		_seat(chunks[id])
@@ -119,7 +147,7 @@ func rebase(x: float, z: float) -> void:
 		for mi in mms:
 			(mi as MultiMeshInstance3D).multimesh.buffer = buf
 	if _grass != null:
-		for gmmi_v in [_grass.near_mmi, _grass.mid_mmi, _grass.plume_mmi]:
+		for gmmi_v in _grass.rings():
 			var gmmi := gmmi_v as MultiMeshInstance3D
 			if gmmi != null and gmmi.multimesh != null and gmmi.multimesh.instance_count > 0:
 				var gmm := gmmi.multimesh
@@ -173,6 +201,7 @@ func update(at: Vector2, load_r: float, keep_r: float) -> Dictionary:
 					var n: Node3D = places_open[pid]
 					places_open.erase(pid)
 					_place_flora.erase(pid)
+					cell_stats.erase(pid)
 					n.get_parent().remove_child(n)
 					n.free()
 					unloaded.append(pid)
@@ -328,6 +357,7 @@ func _build_chunk(id: String) -> Node3D:
 		w.set_meta("chunk_flora", ft)
 	if collide:
 		collide_case(w)
+	_occlude(w)
 	return w
 
 
@@ -351,6 +381,10 @@ func _build_place(id: String) -> Node3D:
 			w.add_child(arcology(p, w))
 	if mon_node != null:
 		w.add_child(mon_node)
+	if cells:
+		w.set_meta("krator_cells", _cut_cells(w))   # _attach files it under cell_stats on the main thread
+	for wn in ["", "Monastery", "Arcology"]:   # after the grounds were stitched, blended and holed
+		_occlude(w if wn == "" else w.get_node_or_null(wn))
 	var pg := (w.get_meta("ground", null) if w.has_meta("ground") else null) as MeshInstance3D
 	var po: Array = w.get_meta("origin", [0.0, 0.0, 0.0])
 	var ft := _load_flora_table(dir + "/" + pcase + "/flora.json", p["box"], pg, po)
@@ -363,6 +397,44 @@ func _build_place(id: String) -> Node3D:
 		if w.get_node_or_null("Monastery"):
 			collide_case(w.get_node("Monastery"))
 	return w
+
+
+# a world's ground gets its occluder (krator/occluders.gd)
+func _occlude(w: Node) -> void:
+	if not occluders or w == null:
+		return
+	var r := KratorOccluders.terrain(KratorOccluders.ground_of(w))
+	if r["node"] != null:
+		occluder_stats["nodes"] += 1
+		occluder_stats["tris"] += int(r["tris"])
+
+
+# A place's items, and its monastery's and arcology's, cut into cells (krator/cells.gd): each then culls by the frustum,
+# by its own range and by each of the sun's shadow splits. The monastery's cells are slabs a storey high, and those on
+# the indoor layer join the interior state's node list, so the sun mask still finds them. Returns a report a world.
+func _cut_cells(w: Node3D) -> Dictionary:
+	var out := {}
+	for wn in ["", "Monastery", "Arcology"]:
+		var sub: Node = w if wn == "" else w.get_node_or_null(wn)
+		if sub == null:
+			continue
+		var items := sub.get_node_or_null("Items")
+		if items == null:
+			continue
+		var opts := {"px": cells_px, "max_nodes": cells_max_nodes}
+		if wn == "Monastery":
+			opts["y_cell"] = 12.0
+		var rep := KratorCells.split_items(items, opts)
+		if wn == "Monastery" and sub.has_meta("stage7_interiors"):
+			var st: Dictionary = sub.get_meta("stage7_interiors")
+			var known: Array = st.get("nodes", [])
+			for nd in rep["new_nodes"]:
+				if (nd as VisualInstance3D).layers == KInteriorsLight.INDOOR_LAYER:
+					known.append(nd)
+			st["nodes"] = known
+		rep.erase("new_nodes")
+		out["place" if wn == "" else wn.to_lower()] = rep
+	return out
 
 
 # Exact triangle height on a KData._grid Terrain MeshInstance3D (matching cell diagonal (0,0)-(1,0)-(0,1) vs (1,0)-(1,1)-(0,1))
@@ -505,8 +577,11 @@ func _attach(kind: String, id: String, w: Node3D) -> void:
 			return
 		get_node("Places").add_child(w)
 		places_open[id] = w
+		KratorCook.flush()
 		if w.has_meta("place_flora"):
 			_place_flora[id] = w.get_meta("place_flora")
+		if w.has_meta("krator_cells"):
+			cell_stats[id] = w.get_meta("krator_cells")
 
 
 func _case(id: String) -> String:
@@ -608,6 +683,7 @@ func open_place(id: String) -> Node3D:
 	_seat(w)
 	get_node("Places").add_child(w)
 	places_open[id] = w
+	KratorCook.flush()   # the cook's stat index, if this place put anything new in it
 	if w.has_meta("place_flora"):
 		_place_flora[id] = w.get_meta("place_flora")
 	return w
@@ -835,8 +911,10 @@ func _build_roads(w: Node3D, box: Array, is_place: bool) -> void:
 				for c in 4:
 					var a := base_v + i * 5 + c
 					var b := a + 5
-					# Clockwise seen from above (+Y): Godot front face
-					indices.append_array([a, a + 1, b, a + 1, b + 1, b])
+					# Clockwise seen from above (+Y), Godot's front face: the row's lateral axis runs to the left of travel.
+					# Until 2026-11-23 the order was [a, a+1, b, a+1, b+1, b], which faces down: road.gdshader culls
+					# back faces, so no ribbon was drawn from above (KratorWorldAudit.audit_roads now counts face_down)
+					indices.append_array([a, b, a + 1, a + 1, b, b + 1])
 			total_rows += nr
 			run_count += 1
 
@@ -868,7 +946,7 @@ static func _is_foliage_bucket(b: MeshInstance3D) -> bool:
 		return false
 	if sm.shader == KratorBiome.FOLIAGE:
 		return true
-	if KratorKmat.is_library(sm.shader):
+	if KratorKmat.is_lib(sm.shader):
 		var at_p = sm.get_shader_parameter("alpha_test")
 		if (at_p is int or at_p is float) and float(at_p) > 0.0:
 			var rids: PackedStringArray = b.get_meta("krator_record_ids", PackedStringArray())
@@ -970,6 +1048,7 @@ func monastery(p: Dictionary, w: Node3D) -> Node3D:
 						fmmi.set_meta("furn_pts", pts)
 	if m.has_meta("interiors_meta"):
 		KInteriorsLight.setup_monastery(m, m.get_meta("interiors_meta") as Dictionary)
+		KInteriorsLight.set_room_ambient(m, room_ambient)
 
 	# Blend the outer 28 m skirt of Monastery's ground mesh smoothly into Place_sq80bzd7ep's 8 m terrain, and open Deep Stair shaft
 	var pg := (w.get_meta("ground") if w.has_meta("ground") else null) as MeshInstance3D
@@ -1294,9 +1373,13 @@ func _ensure_flora_lib() -> void:
 	lib_w.free()
 
 
-func _ensure_flora_pool(pkey: String) -> Array:
-	if _stream_flora_pools.has(pkey):
-		return _stream_flora_pools[pkey]
+# the nodes of a pool: one a part of the prototype. A band's pool is keyed "<prototype>@<band>" (0, 1, 2 a hero tree's by
+# FLORA_BANDS; m the trees past the hero radius) and draws the part's far twin for that band
+func _ensure_flora_pool(ckey: String) -> Array:
+	if _stream_flora_pools.has(ckey):
+		return _stream_flora_pools[ckey]
+	var pkey := ckey.get_slice("@", 0)
+	var band_err := _flora_band_error(ckey.get_slice("@", 1)) if ckey.contains("@") else 0.0
 	var proto: Dictionary = _flora_protos.get(pkey, {})
 	var parts: Array = proto.get("parts", [])
 	var nodes := []
@@ -1306,12 +1389,12 @@ func _ensure_flora_pool(pkey: String) -> Array:
 	for pi in parts.size():
 		var pt: Dictionary = parts[pi]
 		var mmi := MultiMeshInstance3D.new()
-		mmi.name = ("Flora_%s_%d" % [pkey.replace("|", "_"), pi]).validate_node_name()
+		mmi.name = ("Flora_%s_%d" % [ckey.replace("|", "_"), pi]).validate_node_name()
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_3D
 		mm.use_colors = bool(pt.get("use_colors", false))
 		mm.use_custom_data = false
-		mm.mesh = pt["mesh"]
+		mm.mesh = KratorCook.far_mesh(pt["mesh"], band_err) if band_err > 0.0 and pt["mesh"] is ArrayMesh else pt["mesh"]
 		mm.instance_count = 0
 		mmi.multimesh = mm
 		mmi.material_override = pt["material"]
@@ -1322,8 +1405,41 @@ func _ensure_flora_pool(pkey: String) -> Array:
 		mmi.set_meta("krator", pt.get("krator", {}))
 		_stream_flora_root.add_child(mmi)
 		nodes.append(mmi)
-	_stream_flora_pools[pkey] = nodes
+	_stream_flora_pools[ckey] = nodes
 	return nodes
+
+
+# the error, in metres, a tree in a band may be drawn with: flora_lod_px pixels at the band's near edge
+func _flora_band_error(band: String) -> float:
+	if band == "m":
+		return flora_lod_px * 420.0 * FLORA_PX_M
+	var bi := int(band)
+	return 0.0 if bi <= 0 else flora_lod_px * float(FLORA_BANDS[mini(bi, FLORA_BANDS.size()) - 1]) * FLORA_PX_M
+
+
+func _fill_flora_pool(ckey: String, raw12: PackedFloat32Array, n_inst: int) -> bool:
+	var nodes := _ensure_flora_pool(ckey)
+	if nodes.is_empty():
+		return false
+	var cbuf := PackedFloat32Array()
+	for mi in nodes:
+		var mmi := mi as MultiMeshInstance3D
+		var mm := mmi.multimesh
+		mm.instance_count = n_inst
+		if mm.use_colors:
+			if cbuf.is_empty():
+				cbuf.resize(n_inst * 16)
+				for j in n_inst:
+					var s0 := j * 12
+					var d0 := j * 16
+					for q in 12:
+						cbuf[d0 + q] = raw12[s0 + q]
+					cbuf[d0 + 12] = 1.0; cbuf[d0 + 13] = 1.0; cbuf[d0 + 14] = 1.0; cbuf[d0 + 15] = 1.0
+			mm.buffer = cbuf
+		else:
+			mm.buffer = raw12
+		mmi.visible = n_inst > 0 and flora_enabled
+	return n_inst > 0
 
 
 func set_flora_visible(on: bool) -> void:
@@ -1942,6 +2058,11 @@ func _append_wild_forest(cam_reg: Vector3, hero_r: float, mid_r: float, bufs: Di
 	return Vector2i(add_hero, add_mid)
 
 
+# how many trees stand within 30 m of the camera (as of the last refresh_flora_at)
+func flora_near(_cam_reg: Vector3) -> float:
+	return float(trees_near) if flora_enabled else 0.0
+
+
 func refresh_flora_at(cam_reg: Vector3, hero_r := 420.0, mid_r := 2800.0) -> Dictionary:
 	_last_flora_cam = cam_reg
 	if not flora_enabled or _stream_flora_root == null:
@@ -1962,6 +2083,7 @@ func refresh_flora_at(cam_reg: Vector3, hero_r := 420.0, mid_r := 2800.0) -> Dic
 	var cnts := {}   # pkey -> int
 	var hero_n := 0
 	var mid_n := 0
+	var near_trees := 0
 	var mid_r2 := mid_r * mid_r
 
 	var sources := []
@@ -2034,6 +2156,8 @@ func refresh_flora_at(cam_reg: Vector3, hero_r := 420.0, mid_r := 2800.0) -> Dic
 					continue
 				var d := sqrt(d2)
 				var ht_row := D[o6 + 4]
+				if d2 < 900.0 and ht_row >= 4.0:
+					near_trees += 1
 				if d > 1050.0:
 					if ht_row < 13.0:
 						continue
@@ -2083,42 +2207,64 @@ func refresh_flora_at(cam_reg: Vector3, hero_r := 420.0, mid_r := 2800.0) -> Dic
 				else:
 					mid_n += 1
 
+	trees_near = near_trees
 	var wf := _append_wild_forest(cam_reg, hero_r, mid_r, bufs, cnts)
 	hero_n += wf.x
 	mid_n += wf.y
 	var ug_n := _append_undergrowth(cam_reg, bufs, cnts)
 
-	for pkey in _stream_flora_pools:
-		if not cnts.has(pkey):
-			for mi in _stream_flora_pools[pkey]:
-				(mi as MultiMeshInstance3D).multimesh.instance_count = 0
-				(mi as MultiMeshInstance3D).visible = false
 	var active_pools := 0
+	var used := {}
+	var band_n := {}
 	for pkey in cnts:
 		var n_inst: int = int(cnts[pkey])
-		var nodes := _ensure_flora_pool(pkey)
-		if nodes.is_empty():
-			continue
 		var raw12 := PackedFloat32Array(bufs[pkey] as Array)
-		for mi in nodes:
-			var mmi := mi as MultiMeshInstance3D
-			var mm := mmi.multimesh
-			mm.instance_count = n_inst
-			if mm.use_colors:
-				var cbuf := PackedFloat32Array()
-				cbuf.resize(n_inst * 16)
-				for j in n_inst:
-					var s0 := j * 12
-					var d0 := j * 16
-					for q in 12:
-						cbuf[d0 + q] = raw12[s0 + q]
-					cbuf[d0 + 12] = 1.0; cbuf[d0 + 13] = 1.0; cbuf[d0 + 14] = 1.0; cbuf[d0 + 15] = 1.0
-				mm.buffer = cbuf
-			else:
-				mm.buffer = raw12
-			mmi.visible = n_inst > 0 and flora_enabled
-		if n_inst > 0:
-			active_pools += 1
+		var is_tree := flora_lod_px > 0.0 and not str(pkey).begins_with("ug|")
+		if not is_tree or n_inst <= 0:
+			used[pkey] = true
+			if _fill_flora_pool(pkey, raw12, n_inst):
+				active_pools += 1
+			continue
+		if not (str(pkey).ends_with("|2") or str(pkey).ends_with("|s")):   # past the hero radius: one band
+			var mk := str(pkey) + "@m"
+			used[mk] = true
+			if _fill_flora_pool(mk, raw12, n_inst):
+				active_pools += 1
+				band_n["m"] = int(band_n.get("m", 0)) + n_inst
+			continue
+		# a hero prototype's trees by their distance from the camera
+		var by_band := [[], [], []]
+		for j in n_inst:
+			var ddx := raw12[j * 12 + 3] + ox_s - cx_cam
+			var ddy := raw12[j * 12 + 7] + oy_s - cy_cam
+			var ddz := raw12[j * 12 + 11] + oz_s - cz_cam
+			var dd := sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
+			(by_band[0 if dd < float(FLORA_BANDS[0]) else (1 if dd < float(FLORA_BANDS[1]) else 2)] as Array).append(j)
+		for bi in 3:
+			var idx: Array = by_band[bi]
+			if idx.is_empty():
+				continue
+			var sub := PackedFloat32Array()
+			sub.resize(idx.size() * 12)
+			for k in idx.size():
+				var s0 := int(idx[k]) * 12
+				for q in 12:
+					sub[k * 12 + q] = raw12[s0 + q]
+			var bk := "%s@%d" % [pkey, bi]
+			used[bk] = true
+			_fill_flora_pool(bk, sub, idx.size())
+			band_n[str(bi)] = int(band_n.get(str(bi), 0)) + idx.size()
+		active_pools += 1
+	# what this refresh did not fill is emptied and kept: the camera will be back in that band
+	var n_nodes := 0
+	for ckey in _stream_flora_pools:
+		if used.has(ckey):
+			n_nodes += (_stream_flora_pools[ckey] as Array).size()
+			continue
+		for mi in _stream_flora_pools[ckey]:
+			(mi as MultiMeshInstance3D).multimesh.instance_count = 0
+			(mi as MultiMeshInstance3D).visible = false
+	flora_band_stats = {"pools": active_pools, "nodes": n_nodes, "bands": band_n}
 	return {
 		"hero": hero_n,
 		"mid": mid_n,

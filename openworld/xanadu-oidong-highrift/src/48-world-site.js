@@ -119,9 +119,11 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
      THE LANDING (settlements/gihon G3; the owner, 2026-11-17: "a village of 2.5k, built along monumental stone piers on either
      side of the river mouth"; 2026-11-22: "Keep at the outlet") is laid by Gihon's page on core/city (src/47g-site-gihon-landing.js,
      settlements/gihon/bake_landing.js) and put here as it is (core/world 48s laidVillage): its two banks and their piers at the
-     outlet's model cell (px 933.4,1598.2), turned 27 degrees and moved 360 m north-west onto the world's shore. The world's shore
+     outlet's model cell (px 933.4,1598.2), turned 25 degrees and moved 274 m north-west onto the world's shore (re-fit 2026-11-23 on the 11-23 re-run's model, where
+     the old fit, 27 degrees and 360 m, left the north pier's light over 0.8 m of water). The world's shore
      runs north-south there and the Landing's own frame meets the lake on the river's line, 22 degrees off: the turn and the shift
-     are the fit that puts 410 of its 411 lots on dry ground and both piers out into the lake (KNOWN_ISSUES.md: the world's
+     are the fit that puts 409 of its lots on dry ground (six records dropped) and both piers out into the lake, each light over
+     1.5 m of water or more (KNOWN_ISSUES.md: the world's
      Nahr ash-Shalālāt starts 2.8 km inland, so the river between the banks is dry ground here, and the barges' berths and the
      ferry, which want it, are left out). THE ALPH'S FIVE (T.alph; settlements/gihon PLAN.md section 7) at the tune's places on
      the Xanadu row by name: the lower three tithe to the Landing, the upper two to Theodiga, which is no site of this region, so
@@ -135,7 +137,7 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
    {id:'phishari',name:'Phisharī',culture:'xanadu-fishing',focus:'fishing',near:[-30000,-24000],look:4000,pop:500},
    {id:'kako-bagh',name:'Kāko-Bāgh',culture:'xanadu-fishing',focus:'fishing',near:[-54000,-26000],look:4000,pop:500},
    {id:'rid',name:'Rīḍ',culture:'xanadu-fishing',focus:'fishing',near:[-80000,-20000],look:4000,pop:500},
-   {id:'landing',name:'The Landing',focus:'landing',laid:GH_LANDING_LAID,px:GH_LANDING_LAID.px,shift:[-246,-260],turn:-27},
+   {id:'landing',name:'The Landing',focus:'landing',laid:GH_LANDING_LAID,px:GH_LANDING_LAID.px,shift:[-206,-180],turn:-25},
    {id:'timbar',name:'Ṭimbar',culture:'xanadu-fishing',focus:'fishing',near:[-100000,10000],look:4000,pop:500},
    {id:'rais-teras',name:'Rāis-Ṭeras',culture:'xanadu-fishing',focus:'fishing',near:[-44000,10000],look:4000,pop:500},
    {id:'kattal',name:'Kaṭal',culture:'xanadu-fishing',focus:'fishing',near:[-20000,8000],look:4000,pop:500},

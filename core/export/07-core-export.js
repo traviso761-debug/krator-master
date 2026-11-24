@@ -37,15 +37,16 @@
 var EXPORT = (function(root){
 'use strict';
 const FORMAT = 'krator-world', VERSION = 1;
-const SECTIONS = ['items', 'buckets', 'materials', 'textures', 'registry', 'hazards', 'terrain', 'stage', 'atmos', 'water',
+const SECTIONS = ['items', 'buckets', 'materials', 'textures', 'registry', 'hazards', 'marks', 'terrain', 'stage', 'atmos', 'water',
                   'fixtures', 'interiors', 'furniture', 'sim', 'city'];
 const LIST = { items: 1, buckets: 1, materials: 1, textures: 1 };
 // sections no module fills yet: their contract is written (README.md, "Stubs") so the first contributor has a shape to meet
 const STUB = { fixtures: 1, interiors: 1, furniture: 1, sim: 1, city: 1 };
 // sections a container carries only when they fill (or fail): a page without them exports what it exported before they
 // existed, key for key (hazards, 2026-10-26)
-const OPTIONAL = { hazards: 1 };
+const OPTIONAL = { hazards: 1, marks: 1 };
 const CONTRACTS = {
+ marks: 'OPTIONAL (absent when a page gives none; 2026-11-24, GODOT-LOOK-PLAN.md section 13). Where smoke rises and where a wall stains, for a reader\'s emitters and decals: {format: "krator-marks", version: 1, records: [{kind: "smoke", at: [x, y, z], r, source} | {kind: "sill", at: [x, y, z], yaw, w, key}]}, in the page\'s frame.',
  items: 'instanced meshes: {id, name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras, record, recordClass, recordKey, records, recordIndex, motion (the baked track of a moving item: biomes/GODOT.md, "Motion"; world.glb carries it in the node extras.krator_motion)}',
  buckets: 'merged meshes: {id, name, kit, label, material, lod, triangles, geometry (compacted to the tile), records, recordIds, pieces}',
  materials: 'one vocabulary (core/materials/record KMAT fields: family, colour, map, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib) plus the source module\'s own (a biome material\'s kind, key, options, sway); hook names the Godot library shader(s), joined by + (godot/README.md, "The shader library"); a ground\'s layers (EXPORT.groundLayers: hook world-uv, role ground, layers {terms [{maps [{map, scale, offset}], gain, amount, weight}]}, weights {x0, z0, step, nx, nz, names, values})',
@@ -222,6 +223,22 @@ function terrain(box, b){
 // ---------------------------------------------------------------- compaction (ROADMAP.md finding 10)
 // arrays: {name: [TypedArray, itemSize]} over the same vertices; index: the tile's triangles. Returns the vertices the
 // index uses, in first-use order, and the index renumbered (Uint16 when they fit under 65535, the glTF reserved value)
+/* Is an indexed triangle list a closed solid: every edge, by where its ends are (welded to a tenth of a millimetre), met by
+   exactly two triangles that run it in opposite directions. A reader may then cull the back faces of a double-sided
+   material on it and lose nothing (GODOT-LOOK-PLAN.md section 13). pos: xyz a vertex; idx: three a triangle, or null */
+function closed(pos, idx){
+ const n = idx ? idx.length : pos.length / 3; if (n < 12 || n % 3) return false;
+ const key = new Map(), vid = new Int32Array(pos.length / 3);
+ for (let i = 0; i < vid.length; i++) { const k = Math.round(pos[i * 3] * 1e4) + ',' + Math.round(pos[i * 3 + 1] * 1e4) + ',' + Math.round(pos[i * 3 + 2] * 1e4);
+  let j = key.get(k); if (j === undefined) { j = key.size; key.set(k, j); } vid[i] = j; }
+ const E2 = new Map(), V = key.size;
+ for (let t = 0; t < n; t += 3) for (let s = 0; s < 3; s++) {
+  const a = vid[idx ? idx[t + s] : t + s], b = vid[idx ? idx[t + (s + 1) % 3] : t + (s + 1) % 3];
+  if (a === b) return false;
+  const k = a * V + b; if (E2.has(k)) return false; E2.set(k, 1); }
+ for (const k of E2.keys()) { const a = Math.floor(k / V), b = k - a * V; if (!E2.has(b * V + a)) return false; }
+ return true;
+}
 function compact(arrays, index){
  const names = Object.keys(arrays);
  if(!names.length) throw new Error('EXPORT.compact: no arrays');
@@ -421,12 +438,19 @@ function glb(w){
   if(g.normal) at.NORMAL = acc(unpack(g.normal), 3);
   if(g.uv) at.TEXCOORD_0 = acc(unpack(g.uv), 2);
   if(g.color){ const C = unpack(g.color); at.COLOR_0 = acc(C, C.length / nv === 4 ? 4 : 3); }
+  /* the export form's fields (core/engine 30-geo.js aForm: height above the base, occlusion, arris) as a second UV set:
+     u the height in metres (-1: outside any building), v the arris flag. A reader that knows no form ignores TEXCOORD_1 */
+  if(g.form){ const F = unpack(g.form), U2 = new Float32Array(nv * 2); for(let i = 0; i < nv; i++){ U2[i * 2] = F[i * 3]; U2[i * 2 + 1] = F[i * 3 + 2]; } at.TEXCOORD_1 = acc(U2, 2); }
+  /* a biome bucket's wind fields (core/biome 20-core-kit.js aWind): u the stiffness, v the phase. A mesh has one or the other */
+  else if(g.wind){ const F = unpack(g.wind), U2 = new Float32Array(nv * 2); for(let i = 0; i < nv; i++){ U2[i * 2] = F[i * 3]; U2[i * 2 + 1] = F[i * 3 + 1]; } at.TEXCOORD_1 = acc(U2, 2); }
   const p = { attributes: at, mode: 4 };
   if(g.index){ let I = unpack(g.index); if(I.constructor === Uint16Array && nv >= 65535) I = Uint32Array.from(I); p.indices = acc(I, 1); }
   if(matIx.has(matId)) p.material = matIx.get(matId);
   J.meshes.push({ name, primitives: [p] }); return J.meshes.length - 1; };
  const strip = (r, k, kind, node) => { const o = {}; for(const key in r) if(['geometry', 'matrices', 'colours', 'extras', 'motion'].indexOf(key) < 0) o[key] = r[key];
   if(r.motion) o.motion = r.motion.error ? r.motion : { channels: r.motion.channels, stride: r.motion.stride };
+  if(r.geometry && r.geometry.form) o.form = 'uv2: height above the base (m; -1 outside a building), arris';
+  else if(r.geometry && r.geometry.wind) o.wind = 'uv2: stiffness 0..1, phase 0..1';
   o.glb = node; return o; };
  const items = (w.items || []).map((it, k) => {
   const n = it.count, M = unpack(it.matrices), T = new Float32Array(n * 3), R = new Float32Array(n * 4), S = new Float32Array(n * 3);
@@ -466,7 +490,7 @@ function glb(w){
  return { json, glb: out, stats: { bytes: total, nodes: J.nodes.length, meshes: J.meshes.length, instances: instanced, trsMaxError: trsErr } };
 }
 
-const api = { FORMAT, VERSION, SECTIONS, OPTIONAL, CONTRACTS, CONVENTION, register, contributors, world, check, glb, compact, pack, unpack, terrain };
+const api = { FORMAT, VERSION, SECTIONS, OPTIONAL, CONTRACTS, CONVENTION, register, contributors, world, check, glb, compact, closed, pack, unpack, terrain };
 // modules that load before this file queue their contributors: (root.EXPORT_QUEUE = root.EXPORT_QUEUE || []).push([section, fn, opt])
 const Q = root.EXPORT_QUEUE;
 if(Array.isArray(Q)) Q.splice(0).forEach(a => register(a[0], a[1], a[2]));

@@ -27,6 +27,7 @@ const E = root.EXPORT;
 if (!E) return;
 const hex = c => '#' + c.getHexString();
 const lodCopy = o => { for (let p = o; p; p = p.parent) if (p.userData && p.userData.lodCopy) return true; return false; };
+const closed = E.closed;   /* 07-core-export.js: is a triangle list a closed solid */
 function geo(g){
  const P = a => E.pack(a);
  const out = {}, A = (a, n) => { if (!a) return null; if (a.isInterleavedBufferAttribute || !(a.array instanceof Float32Array)) {
@@ -86,7 +87,7 @@ E.sceneReader = function(o){
     colour: m.color ? hex(m.color) : '#ffffff', roughness: m.roughness == null ? 1 : m.roughness, metal: m.metalness || 0,
     specular: lib && lib.L.specular != null ? lib.L.specular : .5,
     emissive: m.emissive && m.emissiveIntensity > 0 && m.emissive.getHex() ? hex(m.emissive) : null, emissiveIntensity: m.emissiveIntensity == null ? 0 : m.emissiveIntensity,
-    doubleSided: m.side === THREE.DoubleSide, transparent: !!m.transparent, opacity: m.opacity == null ? 1 : m.opacity, alphaTest: m.alphaTest || 0,
+    doubleSided: m.side === THREE.DoubleSide, side: m.side === THREE.DoubleSide ? 'double' : m.side === THREE.BackSide ? 'back' : 'front', transparent: !!m.transparent, opacity: m.opacity == null ? 1 : m.opacity, alphaTest: m.alphaTest || 0,
     vertexColours: !!m.vertexColors, tint: !(tri && !tri.detail), unlit: !!m.isMeshBasicMaterial, hook: hook.length ? hook.join('+') : null,
     triplanar: tri ? { tile: tri.tile, detail: tri.detail, gain: tri.gain, note: 'the map projected from three sides in the mesh\'s own frame, one tile per `tile` metres; detail: multiplied into the vertex colour times gain, else the map is the surface (95i COURT_TRI)' } : null,
     worldUV: K ? { K, note: 'an instance: uv * (the two instance-scale axes its face spans) * K; a plain mesh: uv as it is (vWorldUV, core/materials/opt/69a-world-uv.js)' } : null,
@@ -126,6 +127,7 @@ E.sceneReader = function(o){
    const name = kit || (m.name || 'instanced') + '~' + k;
    const it = { id: NAME + '/' + name, name, kit: o.itemKit ? o.itemKit(kit) : kit ? NAME : null, label: kit || m.name || null,
     material: C.matOf(m.material, kit && o.itemMat ? o.itemMat(kit) : null), lod: null, count: n, dynamic: false, visible: m.visible !== false,
+    closed: !m.geometry.attributes.position.isInterleavedBufferAttribute && closed(m.geometry.attributes.position.array, m.geometry.index ? m.geometry.index.array : null),
     geometry: geo(m.geometry), matrices: P(mats), colours: col ? P(col) : null, extras: {} };
    const sid = kit && o.itemSet ? o.itemSet(kit) : null;
    if (sid && T && T.isSet(sid)) { const S = T.get(sid);
@@ -148,31 +150,37 @@ E.sceneReader = function(o){
    const bb = g.boundingBox.clone().applyMatrix4(m.matrixWorld);
    if (box && (bb.max.x < box[0] || bb.min.x >= box[2] || bb.max.z < box[1] || bb.min.z >= box[3])) continue;
    const W0 = m.matrixWorld; nm.getNormalMatrix(W0);
+   const flip = W0.determinant() < 0;   /* a mirrored mesh: three turns its winding over when it draws; so does the bake */
    const tris = I ? I.count / 3 : Pp.count / 3, vi = t => I ? I.getX(t) : t, kept = [];
    for (let t = 0; t < tris; t++) { a.fromBufferAttribute(Pp, vi(t * 3)).applyMatrix4(W0); b.fromBufferAttribute(Pp, vi(t * 3 + 1)).applyMatrix4(W0); c.fromBufferAttribute(Pp, vi(t * 3 + 2)).applyMatrix4(W0);
     if (inBox((a.x + b.x + c.x) / 3, (a.z + b.z + c.z) / 3)) kept.push(t, (a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3, (a.z + b.z + c.z) / 3); }
    if (!kept.length) continue;
    const mid = C.matOf(m.material, null);
-   const G = groups.get(mid) || (groups.set(mid, { pos: [], nor: [], uv: [], col: [], idx: [], hasUv: false, hasCol: false, meshes: 0, owners: new Map(), names: new Set() }).get(mid));
+   const G = groups.get(mid) || (groups.set(mid, { pos: [], nor: [], uv: [], col: [], idx: [], form: [], hasForm: false, hasUv: false, hasCol: false, meshes: 0, flipped: 0, owners: new Map(), names: new Set() }).get(mid));
    G.meshes++; G.names.add((m.name || '').replace(/[0-9]+/g, '#') || m.parent && m.parent.name || '?');
-   const map = new Map(), N = g.attributes.normal, U = g.attributes.uv, Cc = g.attributes.color;
-   if (U) G.hasUv = true; if (Cc) G.hasCol = true;
+   const tri3 = [0, 0, 0], map = new Map(), N = g.attributes.normal, U = g.attributes.uv, Cc = g.attributes.color;
+   const Fm = g.attributes.aForm || null;   /* the export form's fields (core/engine 30-geo.js): height above the base, occlusion, arris */
+   if (U) G.hasUv = true; if (Cc) G.hasCol = true; if (Fm) G.hasForm = true;
    for (let q = 0; q < kept.length; q += 4) {
     const t = kept[q], id = own(kept[q + 1], kept[q + 2], kept[q + 3]);
     if (id) G.owners.set(id, (G.owners.get(id) || 0) + 1);
     for (let s = 0; s < 3; s++) { const iv = vi(t * 3 + s); let j = map.get(iv);
      if (j === undefined) { j = G.pos.length / 3; map.set(iv, j); a.fromBufferAttribute(Pp, iv).applyMatrix4(W0); G.pos.push(a.x - ox, a.y - oy, a.z - oz);
       if (N) { nv.fromBufferAttribute(N, iv).applyMatrix3(nm).normalize(); G.nor.push(nv.x, nv.y, nv.z); } else G.nor.push(0, 1, 0);
-      G.uv.push(U ? U.getX(iv) : 0, U ? U.getY(iv) : 0); G.col.push(Cc ? Cc.getX(iv) : 1, Cc ? Cc.getY(iv) : 1, Cc ? Cc.getZ(iv) : 1); }
-     G.idx.push(j); } }
+      G.uv.push(U ? U.getX(iv) : 0, U ? U.getY(iv) : 0); G.col.push(Cc ? Cc.getX(iv) : 1, Cc ? Cc.getY(iv) : 1, Cc ? Cc.getZ(iv) : 1);
+      G.form.push(Fm ? Fm.getX(iv) : -1, Fm ? Fm.getY(iv) : 1, Fm ? Fm.getZ(iv) : 0); }
+     tri3[s] = j; }
+    if (flip) G.idx.push(tri3[0], tri3[2], tri3[1]); else G.idx.push(tri3[0], tri3[1], tri3[2]);
+    if (flip) G.flipped++; }
   }
   const pre = new RegExp('^' + NAME + ':');
   for (const [mid, G] of groups) {
    const nvx = G.pos.length / 3, ids = Array.from(G.owners.keys()).sort();
    const gg = { position: P(new Float32Array(G.pos)), normal: P(new Float32Array(G.nor)), index: P(nvx < 65535 ? Uint16Array.from(G.idx) : Uint32Array.from(G.idx)) };
    if (G.hasUv) gg.uv = P(new Float32Array(G.uv)); if (G.hasCol) gg.color = P(new Float32Array(G.col));
+   if (G.hasForm) gg.form = P(new Float32Array(G.form));
    out.buckets.push({ id: NAME + '/bucket:' + mid.replace(pre, ''), name: mid.replace(pre, ''), kit: NAME, label: Array.from(G.names).slice(0, 8).join(', '),
-    material: mid, lod: null, triangles: G.idx.length / 3, geometry: gg, recordIds: ids, records: ids.map(id => T.get(id).uid),
+    material: mid, lod: null, triangles: G.idx.length / 3, closed: closed(G.pos, G.idx), mirrored: G.flipped, geometry: gg, recordIds: ids, records: ids.map(id => T.get(id).uid),
     pieces: { meshes: G.meshes, rule: 'a triangle by its centroid (x0 <= x < x1, z0 <= z < z1); recordIds the volumes the centroids stand in', byRecord: Object.fromEntries(G.owners) } });
   }
   out.materials = C.mats; out.textures = C.texs; out.dropped = C.dropped;
@@ -181,4 +189,5 @@ E.sceneReader = function(o){
  return { collect, assemble, geo };
 };
 E.sceneGeo = geo;
+E.sceneClosed = closed;
 })(typeof window !== 'undefined' ? window : globalThis);

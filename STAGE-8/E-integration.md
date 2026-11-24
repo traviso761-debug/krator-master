@@ -1,7 +1,8 @@
 # E. What the integration line itself knows (claude/integration-4 at cf7e849a2, 2026-11-23)
 
 ## Still to land before Stage 8 (in order)
-1. The single scale-model re-run (scale-model session, its worktree off cf7e849a2). It replays: from freeze/continental-scope-1123
+1. **Done 2026-11-23:** the re-run and the six regions' cuts are on the line (eba6fe089, claude/region-cuts-1123 at 8b1a48af0;
+   Gihon's pier-light re-fit on top, b28186237). What it carried is in the known failures below. The original item: The single scale-model re-run (scale-model session, its worktree off cf7e849a2). It replays: from freeze/continental-scope-1123
    edits 520_republic_alps, 521_wave0_hygiene, 522_ria_hydrology, 523_canals_and_settlements (+ canals.json, trade v5); from
    freeze/crook-ria-1123 edits 520_crook, 521_farside; on the line already: Shumar's edit_519_slabfields.py and
    edit_520_amaro_gorge.py, edit_517_vale_ring (63769fb09), Pher's rim (3c3139b33), edit_517_pher_rim.py, Azure Dream's
@@ -22,6 +23,10 @@
    large scene (time each in `tools/harness.py` on pinnacle) and fix it; or tier it in `verify_all.py` (main view only, or that
    assert off, for the heavy pages); or have `verify_all.py` give the heavy pages `KRATOR_GPU_STALL_MIN=60`. The scale-model
    session is re-running the three with `KRATOR_GPU_STALL_MIN=60`: its times say how much headroom the third option needs.
+5. **The Godot look (merged 456bc3250, claude/krator-graphics-quality-k24ni6):** `GODOT-LOOK-HANDOFF.md` says what this rebuild
+   must do for it (the export form's readers, `?form=1`, the pages that take the export additions); read it before the core wave.
+   Its Godot side changed how library surfaces draw: `library.gdshader` now culls back faces, and `KratorKmat.fit()` moves
+   mirrored or inside-out meshes to the two-sided twin, so a Godot export that shows holes after Stage 8 is that rule's first suspect.
 
 ## The line's known test failures (test_all --no-build) and what Stage 8 does with each
 | Step | Failure | Cause | Stage 8 action |
@@ -39,8 +44,12 @@
 | nwbay test-geology | page's nodes not the field's | page older than the geology re-bake | rebuild after the re-run |
 | check_stale | viridian and others behind their sources | expected | the rebuild |
 | test-east-rift, test-xan-economy | only the "under four minutes" timing (309-979 s under load) | machine load | owner: relax or run alone |
-| xanadu-lake-shore GPU verify (xanadu-plans session, 2026-11-23) | hangs after its resources panel: the renderer dies and the 25-min watchdog kills it, with or without WORLD_SAMPLE (the re-run tree's run of the line's page went silent at the same point, resources.png 18:03). The region's own asserts all print before it; the one failing assert is lf_pleasure_dome_isle (waterline ratio 1.36 against 1.35, WLAND v2) | likely the stack's (B0 sync); a dying renderer may be V8's 4 GB heap limit (check the event log and minidumps) | find what the page draws after the resources panel; the lf_pleasure_dome_isle ratio is the landforms' WLAND v2 rule (relax to 1.36 or fix the isle) |
-| xanadu-north-shore "baked plan is the plan made here" (same) | fails in the browser (fc78d62e against node 9f94105e), with or without the sample: only road spher0north1/road/2's deck (1 cm) and one bridge pier's base (0.3 m) differ | the browser re-plans on ground it has already shaped (the stack's B0 sync) | plan on the unshaped ground in the browser as in node, or compare within a tolerance; then re-bake |
+| xanadu-lake-shore GPU verify (xanadu-plans session, 2026-11-23) | **narrowed by the region cuts (eba6fe089):** lf_pleasure_dome_isle passes on the re-cut; every region check prints and passes, then the page hangs in `run_universal` (after view 6 where views run, else after the resources panel). The JS heap is 339 MB of 4.4 GB, so not V8's limit | the same stall as "Still to land" item 4 | item 4 (find the slow universal assert, tier it, or raise the stall limit; `harness.py` now passes `KRATOR_GPU_STALL_MIN` to cloud jobs, d07ff9bd5) |
+| xanadu-north-shore "baked plan is the plan made here" | **fixed by the region cuts (eba6fe089):** a stale bake; the rebake matches the browser. The cuts also laid the Malbari-Haibh shore road and moved Pher's farm-2 off the Thalaba climb | - | none |
+| iziz-cluster highways (region cuts, 2026-11-23) | 0.42 m and 31.4 % at -37000,-50606: the Mav's Refuge-Girder link crosses newly standing water, and `ROADS.route`'s 2 m water floor (`42-world-roads.js` lb, e=max(hi,lb)) beats the grade (a 1.8 m step in 5.7 m). Passed before b8ae0593e | core/world roads with the stack's water | ease the floor into the grade (or bridge the crossing) in 42-world-roads.js; re-bake iziz-cluster |
+| oidong-highrift trees (same) | 3 of 4737 trees inside a stronger tree's keep-clear | core/world flora | the flora placement's keep-clear pass |
+| xanadu-oidong-highrift (same) | Erehwon's bench pin 841,1507.64 falls in the lake on the re-run's model; the Pleasure Dome isle is 367 m off the page's island. **Fixed:** the A-feeder tube (the SE Twin's gasp moved, 4c3910794), the walker's eye in rock (the walk streams its ground, 4c3910794), Gihon's north pier light (b28186237). The page is 14.6 MB, 91% of its cap | the re-run moved the ground under them | Erewhon's page refit (the fit-erewhon session); move the isle's landform onto the island; plan the page's split before it grows |
+| godot pinnacle_world_test (2026-11-23) | fails on Windows: it writes into "/tmp" (no such directory), then an index out of bounds at line 160; the same on both sides of the graphics-quality merge | a Linux path in the test | write to `user://` or `OS.get_cache_dir()` |
 
 Fixed on the line this session (do not redo): Tungang bundle replay (94ff6cf69), 16 ORNUM defaults (94ff6cf69, fccf87423).
 
