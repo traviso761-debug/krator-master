@@ -11,6 +11,7 @@
 # and density and the exposure by the hour; the indoor mask and the lamp pool are krator/kinteriors_light.gd's.
 # Every feature has a switch, as VISUAL-BAR.md asks of any fix:
 #   --no-ssao --no-ssil --gi --no-gi --no-glow --pcss --no-pcss --vfog --no-vfog --aerial=<0..1> --no-deband
+#   --contact-shadows --ao-multibounce                                   (Godot 4.8's, where the engine has them: newer())
 #   --no-dress --no-decals                                                                   (the dressing: step 7)
 #   --no-air --no-mist --mist=<0..2> --no-fog-volumes --no-particles --ssr --no-ssr          (the air: krator/kair.gd)
 #   --shadow=<metres> --atlas=<px> --msaa=0|2|4|8 --aa=none|fxaa|smaa|taa|fsr2 --scale=<0.25..2> --fsr1 --aniso=<1..16>
@@ -55,7 +56,7 @@ const TIERS := {
 		"glow": false, "glow_intensity": 0.3, "glow_bloom": 0.04, "glow_threshold": 1.1,
 		"vfog": false, "vfog_density": 0.0006, "vfog_length": 200.0, "vfog_anisotropy": 0.7, "vfog_sun_energy": 1.0, "vfog_volume": 48, "vfog_sky": 0.0, "aerial": 0.5,
 		"mist": 1.0, "fog_volumes": false, "fog_volume_max": 0, "emitters": 2, "emitter_amount": 24, "leaves": 60, "ssr": false, "dress": true, "decals": 8,
-		"tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": true,
+		"contact_shadows": false, "ao_multibounce": false, "tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": true,
 		"msaa": 2, "aa": "none", "scale": 0.77, "upscale": "fsr1", "aniso": 8, "lod_px": 2.0, "weather": 1.0, "wet": 0.0, "detail": 0.5, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": true, "cells": true, "cull_px": 6.0,
 	},
 	"high": {
@@ -67,7 +68,7 @@ const TIERS := {
 		"glow": true, "glow_intensity": 0.35, "glow_bloom": 0.05, "glow_threshold": 1.1,
 		"vfog": true, "vfog_density": 0.0006, "vfog_length": 300.0, "vfog_anisotropy": 0.75, "vfog_sun_energy": 1.0, "vfog_volume": 64, "vfog_sky": 0.0, "aerial": 0.5,
 		"mist": 1.0, "fog_volumes": true, "fog_volume_max": 16, "emitters": 6, "emitter_amount": 48, "leaves": 160, "ssr": true, "dress": true, "decals": 20,
-		"tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": false,
+		"contact_shadows": false, "ao_multibounce": false, "tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": false,
 		"msaa": 4, "aa": "none", "scale": 1.0, "upscale": "bilinear", "aniso": 16, "lod_px": 1.0, "weather": 1.0, "wet": 0.0, "detail": 0.6, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": true, "cells": true, "cull_px": 4.0,
 	},
 	"photo": {
@@ -79,7 +80,7 @@ const TIERS := {
 		"glow": true, "glow_intensity": 0.35, "glow_bloom": 0.05, "glow_threshold": 1.1,
 		"vfog": true, "vfog_density": 0.0006, "vfog_length": 300.0, "vfog_anisotropy": 0.75, "vfog_sun_energy": 1.0, "vfog_volume": 96, "vfog_sky": 0.0, "aerial": 0.5,
 		"mist": 1.0, "fog_volumes": true, "fog_volume_max": 24, "emitters": 8, "emitter_amount": 64, "leaves": 240, "ssr": true, "dress": true, "decals": 32,
-		"tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": false,
+		"contact_shadows": false, "ao_multibounce": false, "tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": false,
 		"msaa": 4, "aa": "smaa", "scale": 1.0, "upscale": "bilinear", "aniso": 16, "lod_px": 0.5, "weather": 1.0, "wet": 0.0, "detail": 0.7, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": false, "cells": true, "cull_px": 2.0,
 	},
 	# the rig as walk.gd and the route harness set it until 2026-11-23 (GODOT-LOOK-PLAN.md 3.2): the project's 4x MSAA
@@ -92,7 +93,7 @@ const TIERS := {
 		"glow": false, "glow_intensity": 0.3, "glow_bloom": 0.0, "glow_threshold": 1.0,
 		"vfog": false, "vfog_density": 0.0, "vfog_length": 64.0, "vfog_anisotropy": 0.2, "vfog_sun_energy": 1.0, "vfog_volume": 64, "vfog_sky": 0.0, "aerial": 0.0,
 		"mist": 0.0, "fog_volumes": false, "fog_volume_max": 0, "emitters": 0, "emitter_amount": 0, "leaves": 0, "ssr": false, "dress": false, "decals": 0,
-		"tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": false, "sky_half": false,
+		"contact_shadows": false, "ao_multibounce": false, "tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": false, "sky_half": false,
 		"msaa": 4, "aa": "none", "scale": 1.0, "upscale": "bilinear", "aniso": 4, "lod_px": 1.0, "weather": 0.0, "wet": 0.0, "detail": 0.0, "tangents": false, "room_ambient": false, "auto_exposure": false, "occlusion": false, "cells": false, "cull_px": 4.0,
 	},
 }
@@ -173,6 +174,10 @@ static func from_args(args: PackedStringArray, default_tier := "auto") -> Dictio
 			s["ssr"] = true
 		elif a == "--no-ssr":
 			s["ssr"] = false
+		elif a == "--contact-shadows":   # Godot 4.8's (newer()): nothing on 4.7
+			s["contact_shadows"] = true
+		elif a == "--ao-multibounce":
+			s["ao_multibounce"] = true
 		elif a == "--no-dress":   # step 7's dressing off: no underfoot ring, the sward as it was, no decals
 			s["dress"] = false
 			s["decals"] = 0
@@ -320,8 +325,40 @@ static func shadow_texels(spec: Dictionary, fov_deg := 58.0, aspect := 16.0 / 9.
 
 # Write a spec to the scene. env and sun come from krator/sky.gd (or any rig); vp is the viewport that draws the world.
 # Returns {tier, set: {property: value}, texels: [m a split], warning?}. Safe headless: the server calls do nothing there.
+# What a newer engine offers that this rig can use (the plan's step 9: Godot 4.8 adds screen-space contact shadows, on
+# the environment and the directional light, and multi-bounce ambient occlusion). Found by name on the objects
+# themselves, so the same script runs on 4.7.2, where the lists come back empty, and on 4.8. The names were not read
+# from a 4.8 build (none could be run where this was written): a property counts when it is a bool or a number whose
+# name holds one of the words below. {contact_shadows: [[object, name]...], ao_multibounce: [...]}
+const NEWER_WORDS := {"contact_shadows": ["contact_shadow", "sscs"], "ao_multibounce": ["multibounce", "multi_bounce"]}
+
+static func newer(env: Environment, sun: DirectionalLight3D) -> Dictionary:
+	var out := {"contact_shadows": [], "ao_multibounce": []}
+	for obj in [env, sun]:
+		if obj == null:
+			continue
+		for p in (obj as Object).get_property_list():
+			if not (int(p["type"]) in [TYPE_BOOL, TYPE_FLOAT, TYPE_INT]) or (int(p["usage"]) & PROPERTY_USAGE_STORAGE) == 0:
+				continue
+			var nm := str(p["name"]).to_lower()
+			for k in NEWER_WORDS:
+				for w in NEWER_WORDS[k]:
+					if nm.contains(w) and (nm.ends_with("enabled") or int(p["type"]) == TYPE_BOOL):
+						(out[k] as Array).append([obj, str(p["name"])])
+						break
+	return out
+
+
 static func apply(spec: Dictionary, env: Environment, sun: DirectionalLight3D, vp: Viewport) -> Dictionary:
 	var rep := {"tier": str(spec.get("tier", "?")), "set": {}, "texels": shadow_texels(spec)}
+	var nw := newer(env, sun)
+	rep["newer"] = {}
+	for k in nw:
+		var names := []
+		for pr in nw[k]:
+			(pr[0] as Object).set(str(pr[1]), bool(spec.get(k, false)))
+			names.append(str(pr[1]))
+		rep["newer"][k] = names
 	if spec.has("warning"):
 		rep["warning"] = spec["warning"]
 	var S: Dictionary = rep["set"]

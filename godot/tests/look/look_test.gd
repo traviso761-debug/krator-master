@@ -62,6 +62,16 @@ func _initialize() -> void:
 	ok(env.tonemap_mode == Environment.TONE_MAPPER_AGX and env.ssao_enabled and env.ssil_enabled and env.glow_enabled and not env.sdfgi_enabled
 		and env.volumetric_fog_enabled and env.volumetric_fog_sky_affect == 0.0 and absf(env.fog_aerial_perspective - 0.5) < 1e-6,
 		"high: AgX, SSAO, SSIL, glow and the air (volumetric fog that leaves the sky alone, aerial perspective) on; SDFGI waits for its switch")
+	# step 9: what a newer engine offers is found by name, and is off until its switch
+	var nw := KratorLook.newer(env, sun)
+	var v := Engine.get_version_info()
+	var is47: bool = int(v["major"]) == 4 and int(v["minor"]) <= 7
+	ok(nw.has("contact_shadows") and nw.has("ao_multibounce") and (not is47 or ((nw["contact_shadows"] as Array).is_empty() and (nw["ao_multibounce"] as Array).is_empty()))
+		and (rep["newer"] as Dictionary).has("contact_shadows"),
+		"Godot %d.%d: %d contact-shadow and %d multi-bounce properties found on the environment and the sun%s" % [v["major"], v["minor"], (nw["contact_shadows"] as Array).size(), (nw["ao_multibounce"] as Array).size(), " (none before 4.8)" if is47 else ""])
+	var asked := KratorLook.from_args(PackedStringArray(["--look=high", "--contact-shadows", "--ao-multibounce"]))
+	ok(bool(asked["contact_shadows"]) and bool(asked["ao_multibounce"]) and not bool(KratorLook.tier("high")["contact_shadows"]) and not bool(KratorLook.tier("photo")["ao_multibounce"]),
+		"negative: no tier turns them on; --contact-shadows and --ao-multibounce do")
 	var bare := KratorLook.from_args(PackedStringArray(["--look=high", "--no-air", "--no-dress"]))
 	var env2 := Environment.new()
 	KratorLook.apply(bare, env2, sun, root)

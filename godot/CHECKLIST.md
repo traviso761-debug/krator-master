@@ -128,3 +128,41 @@ no time is. `README.md`, "The look", says what each piece is. In order:
 - [ ] **AA** (the plan's L6): MSAA against `--aa=taa`, `--aa=fsr2` and `--aa=smaa` on swaying cards and thin rails.
 - [ ] `xvfb-run` is not needed on a real machine: `godot --path godot --script res://tests/shaders/look_gpu_check.gd`
       should print `all passed` on both lanes (it reads every shader change back from pixels).
+
+## 9. The look, steps 4, 6, 7 and 9 (2026-11-24): what only a real GPU can say
+
+Built and tested as section 8's were: a cloud container, a software renderer. Counts and pictures are real; no time is.
+`README.md`, "The look", has what each piece is; `GODOT-LOOK-PLAN.md` section 14.4 what was measured.
+
+- [ ] **Cook the case first**, once a machine: `godot --headless --path godot --script res://tools/cook.gd -- res://data/world-oidong-highrift`
+      (about a minute a place the first time; `-- --stat` says what the folder holds, about 250 MB for Longsong's town
+      and monastery). Then time a place opening in the walk, cooked against `KRATOR_COOK=0`: `stream_build_ms` in the
+      route's JSON. Headless here: 47 s without, 7 s from the cache.
+- [ ] **The same frame.** At `--lod-px=0` a cooked place drew the parsed place's frame to the bit here. On the GPU, look
+      once for shadow acne or flicker on plain walls (a shadow mesh that did not land on its surface's depth would show
+      there), with `KRATOR_SHADOW_MESH=0` for the A/B (it cooks a second entry).
+- [ ] **Levels of detail by eye.** Walk the avenue, the east village and one forest village (Tsomo) at the tier's own
+      threshold and at `--lod-px=0`: watch tree crowns and roof edges for a pop as you approach, and thin canopies far
+      off. Here the frames differed by under a tenth of a per cent of their pixels. The low tier's 2 px is the one to
+      judge.
+- [ ] **What it buys in time**: the route's GPU column with `--lod-px=0` against the tier's. Shadow meshes cut vertex
+      work in the depth and shadow passes, not primitives: only a timing shows them.
+- [ ] **The air by the hour**, in the walk: dawn (hour 4 at Longsong), noon, 16:20, dusk (20.5), from the overlook, the
+      avenue and under the trees. Is the dawn mist a layer in the low ground, and gone from your feet? Does noon keep
+      its contrast (the volumetric fog is thin by day on purpose)? **Shafts were not seen here**: look toward the sun
+      through the avenue's galleries and through trees at 16:20 and at dawn, and raise `vfog_sun_energy` or the day's
+      share of `vfog_density` (`KratorAir.keys`) until they read. `--no-air`, `--no-mist`, `--no-vfog` for the A/Bs.
+- [ ] **Volumetric fog's cost** (high tier only): the GPU column with and without `--no-vfog`. And the mist pass's
+      (one full-screen pass with a depth read): with and without `--no-mist` at dawn.
+- [ ] **Fog volumes and emitters**: the Garden of Held Water at dawn (mist on the ponds), the stream by the town, a
+      vent on the High Rift (steam). Emitters were not judged by eye here at all.
+- [ ] **A wet world**: `--wet=1` (or the weather's rain): the avenue court and a village road. Is the standing water
+      too much or too little (`fill` in `terrain.gdshader`), does it mirror, does SSR (high tier, wet only) pay for
+      itself? Puddle decals on the roads stand only when wet.
+- [ ] **The dressing**: the east village's lawn and road with and without `--no-dress`. Do the bare patches read as
+      wear or as holes; are the stones and litter the right size and number; do the ruts sit on the road (they follow
+      the road record's line, and the drawn ribbon may not)? `VISUAL-BAR.md`'s bare-ground gate is the owner's to call.
+- [ ] **Godot 4.8**: install it beside 4.7.2 and run every test (`python3 tools/test_all.py --nightly` with it on the
+      path), then the route with `--contact-shadows --ao-multibounce` against without. `look_test` prints which
+      properties `KratorLook.newer` found: if it names none on 4.8, the words in `NEWER_WORDS` are wrong (they were not
+      read from a 4.8 build) and want the real names from the class reference.

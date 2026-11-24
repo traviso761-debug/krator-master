@@ -56,6 +56,11 @@ godot --headless --path godot --script res://tests/shaders/library_faces_test.gd
 godot --headless --path godot --script res://tests/materials/kweather_test.gd   # the weathering stack's classes, noise and wiring (krator/kweather.gd)
 godot --headless --path godot --script res://tests/materials/kdetail_test.gd    # detail normals and the tangent switch (krator/kdetail.gd)
 xvfb-run -a godot --path godot --rendering-method forward_plus --rendering-driver vulkan --script res://tests/shaders/look_gpu_check.gd   # all of the above drawn and read back from pixels (also: gl_compatibility, opengl3)
+godot --headless --path godot --script res://tests/cook/cook_test.gd            # the cooks (krator/cook.gd): the map and mesh caches, levels of detail, shadow meshes, far twins
+godot --headless --path godot --script res://tests/air/air_test.gd              # the air (krator/kair.gd): the keys by the hour and the weather, the floor, the sources, what update sets
+godot --headless --path godot --script res://tests/dress/dress_test.gd          # the dressing: the roads' decals, what lies underfoot, the sward's switch
+xvfb-run -a godot --path godot --rendering-method forward_plus --rendering-driver vulkan --script res://tests/shaders/cook_air_gpu_check.gd   # the shadow mesh in use, levels of detail, the mist, the wet ground, read back from a renderer
+godot --headless --path godot --script res://tools/cook.gd -- res://data/world-oidong-highrift   # cook a case ahead of time (KRATOR_COOK_DIR; -- --stat, -- --clear)
 godot --path godot res://look_lab.tscn -- --look=high                           # the look lab: swatches of a case's heaviest surfaces under the rig (look_lab.gd's header has the keys)
 godot --path godot --script res://tests/perf/route_harness.gd -- --look=high --out=res://PERF-route.json --md=res://PERF-route.md   # the route: GPU and CPU time, primitives against the tier's cap
 ```
@@ -148,6 +153,7 @@ SwiftShader; both 1600 x 900):
 | `krator/stage.gd` | the export's `stage` (or `data/<case>/stage.json`): tonemapping, exposure, sky panorama, sun and fill lights, ambient, fog, matched to the page (`biomes/GODOT.md`, "The stage") |
 | `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep; and which of the library surface's three shaders a record takes (`variant`, `fit`, `is_lib`) |
 | `krator/look.gd`, `cells.gd`, `occluders.gd`, `kweather.gd`, `kdetail.gd`; `look_lab.tscn` | **the look** (below, "The look"): the light rig by tier, a place's items cut into cells, the ground's occluders, the weathering stack and the detail normals, and the lab where they are judged |
+| `krator/cook.gd`, `kair.gd`, `kdecals.gd`; `tools/cook.gd` | the look's cooks (a cache of compressed maps and parsed meshes with levels of detail and shadow meshes), the air (mist, fog, volumes, wetness) and the decals |
 | `krator/khooks.gd` | `KHooks`: the shader library's hook table (below), `resolve(hook)` (aliases, `+` lists; an unknown name reported) and `survey(materials)` for an importer's report |
 | `krator/water.gd` | `KWater`: core/water's open surface in GDScript, rebuilt from core/export's `water` section (the twins: `tro_d`, `tro_nj`, `rest`, `surface_at`, `height_at`, `normal_at`, `foam_at`, the bed's depth), and `uniforms()` for `lib/water.gdshaderinc` |
 | `krator/water_import.gd` | `KratorWater`: the `water` section's open surfaces drawn (a grid in world space on `shaders/water.gdshader`), and `check_probes` (the page's own heights against KWater) |
@@ -224,7 +230,7 @@ and pre-compiling the library at load.
 
 ## The look: the light rig, the cost, the surfaces
 
-`GODOT-LOOK-PLAN.md` is the plan; its steps 1 to 3 are in (2026-11-23). Everything here is Godot-side: no page and no
+`GODOT-LOOK-PLAN.md` is the plan; its steps 1 to 3 are in (2026-11-23), and 4, 6, 7 and 9 as its section 14.4 says (2026-11-24). Everything here is Godot-side: no page and no
 export changed. One switchboard, `krator/look.gd` (`KratorLook`): a tier is a Dictionary, `from_args` reads
 `--look=low|high|photo|legacy` and a switch a feature, `apply` writes it to the Environment, the sun, the Viewport and
 the globals below, `apply_stream` and `apply_sky` to the stream and the sky. `walk.gd`, the route harness and the look lab
@@ -246,10 +252,19 @@ values are starting points, and `tests/perf/route_harness.gd` is how the lanes t
 | Interiors | `krator/kinteriors_light.gd` `ambient_shader`, `set_room_ambient` | the room's light as the surface's own `IRRADIANCE` in place of emission, so SSAO reaches indoors; Gate 5's probes pass with it in both renderers |
 | The look lab | `look_lab.tscn`, `look_lab.gd` | swatches (a wall, a ledge, a pitched slab, a ball) of a case's heaviest library surfaces under the rig, with every switch; `--shot=` for stills |
 | The route | `tests/perf/route_harness.gd` | `--look=`, the viewport's measured GPU and CPU time, primitives against the tier's cap (`KratorLook.CAPS`), what was cut into cells |
+| The cooks (step 4) | `krator/cook.gd` (`KratorCook`), `tools/cook.gd` | a cache, not a build step: under `user://krator-cook` (or `KRATOR_COOK_DIR`), on wherever a window is drawn and off headless unless `KRATOR_COOK=1`. A map is decoded, mipmapped and compressed once (BC7 was three quarters of a place's load); a `world.glb` is parsed once and kept as one binary resource with every mesh's **levels of detail** (`ImporterMesh.generate_lods`; the tier's `lod_px`, `--lod-px=`, 0 for none) and a **shadow mesh** (positions welded: 27 to 35 % of the vertices). An entry is found by what it was made from (the file's MD5 through a stat index, the settings, the engine's version), so a changed export is cooked again and a lost folder costs one slow load. A cooked surface keeps its own bytes: at `--lod-px=0` a cooked place draws the parsed place's frame to the bit. `godot --headless --path godot --script res://tools/cook.gd -- res://data/<case>` cooks a case ahead of time; `-- --stat`, `-- --clear` |
+| The wild forest by distance | `world_stream.gd` `flora_lod_px`, `_flora_band_error`; `KratorCook.far_mesh` | the stream's flora pools stand all round the camera, so the engine's own choice of a level (by the distance to a node's box) is always the full mesh. A hero prototype's trees are split into three bands (to 60 m, to 140 m, beyond) and the trees past the hero radius are a fourth, each band's pool on the far twin of its mesh: the coarsest level whose error is under `lod_px` pixels at the band's near edge |
+| The air (step 6) | `krator/kair.gd` (`KratorAir`), `shaders/air_mist.gdshader` | layers, their amounts by the sun's height and the weather (`KratorAir.keys`): aerial perspective; a **valley mist** integrated along the view ray over the floor of the country round the camera (the engine's own height fog is a function of height alone: with the camera 2 m up, the ground 3 m away and the ground at the horizon take the same fog); volumetric fog (high tier), thin by day with a bright sun in it; `FogVolume`s and emitters on the still water, streams, falls and vents a place already records; leaves where trees stand within 30 m; and one **wetness** for the weathering stack and the ground (`atm_wet`: `shaders/terrain.gdshader` darkens, glosses and stands water on the level). A host makes one and calls `update()` after the sky's own each frame |
+| The dressing (step 7) | `krator/kdecals.gd` (`KratorDecals`); `krator/world_grass.gd` `dress`, `shaders/underfoot.gdshader` | decals from a pool on the marks nearest the camera, gone by 40 m: ruts, puddles (a wet world only) and worn patches along the roads, which mark where by the road's id and the mark's index (`core/rand`); soot and leaks have maps and `add()` and wait for an export that says where a chimney and a sill are. Underfoot within 11.5 m: stones, twigs, leaf litter and flowers, one a cell by the ground there and a hash of the cell. The sward clumps and leaves bare patches. All behind the look's `dress` and `decals` |
+| Godot 4.8 (step 9) | `look.gd` `newer` | screen-space contact shadows and multi-bounce AO are found by name on the environment and the sun, so the script runs on 4.7.2 (where nothing is found) and on 4.8; off in every tier until the route has been shot on 4.8 (`--contact-shadows`, `--ao-multibounce`) |
 
 The globals (`project.godot`, `[shader_globals]`), all zero by default, so a scene that never set a look draws as it did:
 `k_weather` (x strength, y wet), `k_weather_noise`, `k_world_origin`, `k_surface` (x detail strength, y mesh tangents),
 `k_detail_arr`.
+
+What a second check reads from a renderer, `tests/shaders/cook_air_gpu_check.gd`: that the opaque library shader's
+shadow pass draws the shadow mesh (and the two-sided twin does not), that a cooked mesh draws fewer triangles far off,
+the mist near, far, from above and against the sky, and the wet ground with and without a slope.
 
 What a test reads from pixels: `tests/shaders/look_gpu_check.gd` (the three shaders' culling and cut-out, the weathering
 on and off and across a rebase, the rowless twins, the half-resolution sky, detail and the tangent frame against the
