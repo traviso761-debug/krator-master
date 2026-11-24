@@ -50,7 +50,8 @@ function feApron(x,z,w,d,ry,drop,c){const k=Math.max(1,Math.round(drop/10)),h=dr
 function feTowerRound(o){const W=o.W,H=o.H,wash=xC(xPick(XPAL.wash)),red=feCol(0xa8302a),dark=feCol(FE_DARK),L=o.lantern==null?2.6:o.lantern;
  if(o.drop)feApron(0,0,W+1.2,W+1.2,0,o.drop,wash.clone().multiplyScalar(.92));
  qnPlinth(0,0,W+1.2,W+1.2,.6,0,xC(xPick(QSTONE)));let y=.6,w=W;
- for(let i=0;i<4;i++){const h=H/4,w1=w*.94;qnCube(0,y,0,w,h,w,0,wash,'wash');y+=h;w=w1;}
+ /* o.lifts (4): the shaft's lifts, each a storey of its interior (a lift's underside would be a false ceiling in a taller room) */
+ const nl=o.lifts==null?4:o.lifts;for(let i=0;i<nl;i++){const h=H/nl,w1=w*.94;qnCube(0,y,0,w,h,w,0,wash,'wash');y+=h;w=w1;}
  vB('xPaint',0,.6+H*.18,W/2-.02-H*.012,.8,H*.62,.14,0,dark);   /* the slit of windows */
  for(let i=1;i<6;i++)vB('xPaint',0,.6+H*.18+i*H*.62/6,W/2+.02-H*.012,1.1,.14,.2,0,wash);
  qnDoor(0,.6,W/2,0,1.5,2.4,{c:xC(XPAL.red),valC:red});

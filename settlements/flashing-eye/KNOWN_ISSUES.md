@@ -41,24 +41,38 @@
   Ember Tower's shaft and the Eye Post are planned, drawn and furnished at load (`src/32-fe-rooms.js` the programmes,
   `targets/cone/90fk-fe-interiors.js` on kits/qiblai's `qnIxType`): 7 buildings, 45 rooms, about 380 pieces, 2 s; every piece
   in core/tags, every floor and stair in core/walk, the doors unlocked (`verify.py`'s `interiors-furnished`, `interiors-walk-in`).
-  Still owed, on the same data: **the Red Monastery** (sheets M1-MR), **the Mirror Tower and the Labrang Tower** (sheet T), the
-  ranges, the novices' court, the Mirror School (where the mirror bench goes), the gates and the Foot House (sheet F).
+  *Fixed 2026-11-23*, on the same data: **the Red Monastery** (sheets M1-M2: the Gate of the Open Eye, its two front ranges, the
+  side ranges and the back range round the Court of the Drum, the Assembly Hall with the Shrine of the Eye), **the Mirror Tower
+  and the Labrang Tower** (sheet T), the bench's ranges (sheets E1-E2: the granary, the infirmary, the Great Kitchen, the
+  refectory, the bath house, the wood store, the chapter range), **the Mirror School** (the mirror bench in its workshop), the
+  novices' court, the Halfway Shelter and **the Foot House** (sheet F): 33 buildings, 154 rooms, about 1,440 pieces. The seven
+  with views (sheets L, H, P) are built at load (2 s); the other 26 as the camera comes within 90 m of them, one every six frames
+  (about 3.8 s in all; `FE_IX.buildAll()` builds them for the checks). Still owed: the four corner towers, the three gatehouses
+  (the Porters' loft, the Veil Room over the Gate of Breath), the Watch's hut, the Watchers' Chapel on the Assembly Hall's roof
+  (sheet MR), and the Rest House (not drawn yet).
 - **The interiors' compromises** (2026-11-23):
   - The rooms are kits/interiors' planner's, not the sheets' drawn plans: each storey is cut into the programme's room kinds by
     area, the first kind at the door, so the order of the rooms along the range is the planner's; the sheets' stair rooms are the
     planner's stairs. The furniture is the room kinds' (`kits/interiors/src/30-programs.js`), lighter than the manifest's counts.
   - The planner's street door is always on the lowest storey, so each Lip Range house's is a shut plank door into the rock at the
     back of L-2; the ways in are the record's two doors on L0 (from the bench, out onto the balcony), kits/qiblai's new
-    `prog.doors`. The balcony is a core/walk floor; nothing yet stops a walker at its parapet but the parapet's height.
+    `prog.doors`. The balcony is a core/walk floor; *fixed 2026-11-23*, its parapet is a wall to the walker (60 blocks of 2 m).
   - The Ember's sanctum is in the tower's back 4.5 m (the hall's body and its roof fill the tower's front half), entered by its own
     door on the tower's east face, not from the hall; its five storeys are 4.5 x 11 m (the sanctum about 40 m2, the sheet's 60).
     Its stairs are steep ladder-stairs (`prog.stair`), as are the Eye Post's.
-  - The Eye Post's storeys are planned inside its band (6 m, the narrowest part of the taper): about 29 m2 a floor, not the sheet's
-    48; the Book of Breaths takes its whole storey (its signal store is not planned). Nothing yet climbs from the Mirror Room to the
-    platform; the heliograph and the fire basket stand on it, the fire basket round the record's coals (`feFireB`, lit by the hour).
+  - The Eye Post's three storeys are its shaft's three lifts (the record draws it in three since 2026-11-23, so no lift's underside
+    is a false ceiling in a room), planned inside the top lift (6.8 m): about 38 m2 a floor, not the sheet's 48; the Book of Breaths takes its whole storey (its signal store is not planned). *Fixed 2026-11-23*: an iron ladder climbs from
+    the Mirror Room to the platform through a hatch (placed against a wall the room's pieces leave clear; in core/walk as rungs and
+    the lantern's floor, so the walk-in check climbs it); the hatch is drawn shut on both sides and the walker passes it. The
+    heliograph and the fire basket stand on the platform, the fire basket round the record's coals (`feFireB`, lit by the hour).
   - Kits/interiors offers a building's catalog once for all its rooms, so a piece kept alone of its type is so in every room of
     that building: every Xanadu desk in the Mirror Hall's house and the Labrang is the signal lectern, every reading desk in the
     Book House the Book's lectern (its studies take another culture's desk).
+  - The court ranges (the novices', the Foot House's, the Red Monastery's) are entered by open doorways from their courts that the
+    records did not draw (a doorway's jambs, threshold and portal, no leaf); the monastery's gate tower has an open doorway to the
+    court the same way. The Assembly Hall is two planned storeys (the hall and the Masters' Gallery over it), not a double-height
+    hall with a gallery round it. A big room is furnished thinly: kits/interiors' `gallery` and `hall` kinds stop at about nine
+    pieces whatever the room's size (the Assembly Hall's 214 m2 has nine), so the dukhang's rows of seats are not there.
   - No electric light (`prog.bulbs` false) and no light of their own: the catalog's lamps are not lit at night yet.
 - *Fixed 2026-11-23*: **the Foot House** stands on its own ground at the spur's foot (`FE_FOOT`, 1.2 x 0.8 km at 8 m, the far
   ground cut away under it): its ranges round the loading court and its gate chorten. Still owed: **the Rest House** (about 1,080 m

@@ -125,7 +125,7 @@ QB.def({key:'qb_fe_tower',name:'A tower of the Flashing Eye',family:'The Flashin
 // ---------------------------------------------------------------- the Eye Post (sheet P): the first reference's tower on the rim
 // 8 x 8 m and 12 m to its lantern: the watch room, the Book's room and the mirror room in the shaft; in the lantern under the round
 // red cap the 60 cm speculum (to the south-west: the Beacon, Erehwon, the Tears) and the shuttered fire basket
-function buildFeEyePost(G,o){reseed(34431);vnReg('The Eye Post',0,0,6,20);feTowerRound({W:8,H:9.5,basket:true,lantern:2.6});}   /* its heliograph is the catalog's (90fk) */
+function buildFeEyePost(G,o){reseed(34431);vnReg('The Eye Post',0,0,6,20);feTowerRound({W:8,H:9.5,lifts:3,basket:true,lantern:2.6});}   /* its heliograph is the catalog's (90fk); a lift a storey */
 QB.def({key:'qb_fe_post',name:'The Eye Post',family:'The Flashing Eye',tags:QTAG('civic',['religious'],{note:'the Rim Watch\'s tower on the crater\'s rim: the heliograph and the fire basket'}),w:9,d:9,h:20,fw:9,fd:9,nv:1,build:buildFeEyePost});
 
 // ---------------------------------------------------------------- the Watch's hut, a gate, a shrine
