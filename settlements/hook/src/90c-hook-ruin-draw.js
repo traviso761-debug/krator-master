@@ -6,12 +6,13 @@
    foot's ground as a reef; a leaning one leans; rubble heaps (islands where the water covers the bed); the Hykkousoi pods
    on their towers; the freeway's decks and piers (the fallen west arc's spans lie broken in the water); the south ramp;
    the Pirate Emperors' wall in 40 m courses with towers every 160 m and its two gates. The heroes and shells up close
-   (kits/metropolis) are the next step; the town's own drawing (90b) is untouched.
+   (kits/metropolis) are 90d's, which hides a tower's massing where its hero stands (HOOK_RUIN_DRAW.slot: each standing
+   tower's instance, its matrix and its seat); the town's own drawing (90b) is untouched.
    Nothing floats: a base is seated on the DRAWN ground, the lowest node of the terrain grid's cells under its footprint's
    edge and middle (PORT_ST.grid: a cell's triangles lie between its nodes, so nothing of the drawn ground under the
    footprint is lower than its edge's lowest node bar the cells inside, and a foundation 2 m deep covers them). A drowned
    tower's base is on the bed, so its foot stands under the water line. window._ruinDraw holds what verify.py reads. */
-const HOOK_RUIN_DRAW={stats:{},towers:[],piers:[],heaps:[]};
+const HOOK_RUIN_DRAW={stats:{},towers:[],piers:[],heaps:[],slot:{}};
 (()=>{const R=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null,GR=PORT_ST.grid;
  if(!R||!GR){window._ruinDraw={ready:false};return;}
  /* ---- the drawn ground */
@@ -28,6 +29,11 @@ const HOOK_RUIN_DRAW={stats:{},towers:[],piers:[],heaps:[]};
  /* ---- the pieces */
  const ROUND={spindle:1,stalk:1,telescope:1,swell:1,terrarium:1,cupola:1,watertower:1,spiral:1};
  const STAND={intact:t=>t.tip,gutted:t=>t.roof,crown:t=>t.roof*.96,broken:t=>t.roof*.55,stump:t=>t.roof*.25,skeleton:t=>t.roof*.7};
+ /* the kit's own measure where the page has it (KMP, 77g: MP.ruin's top, what the hero up close stands to), so a tower does
+    not change height at the switch; STAND where it has not */
+ const KTOP={},ktop=t=>{const k=t.family+'.'+t.state;if(k in KTOP)return KTOP[k];let v=null;
+  try{const MP=typeof KMP!=='undefined'?KMP.MP:null,F=MP&&MP.FAMILY[t.family];if(F){const r=MP.ruin(F,t.state);v=t.state==='intact'?F.height.tip:(r&&r.top!=null?r.top:null);}}catch(e){v=null;}
+  return KTOP[k]=v;};
  const FOUND=2;   /* the foundation's depth under the seat */
  const col=new THREE.Color(),cg=new THREE.Color(0x4f7446),Y=new THREE.Vector3(0,1,0),q=new THREE.Quaternion(),ql=new THREE.Quaternion(),ax=new THREE.Vector3();
  const mat4=(x,y,z,quat,sx,sy,sz)=>new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),quat,new THREE.Vector3(sx,sy,sz));
@@ -51,12 +57,13 @@ const HOOK_RUIN_DRAW={stats:{},towers:[],piers:[],heaps:[]};
    const base=seat(cx,cz,wd,L,dir)-th*.3;q.setFromAxisAngle(Y,dir);
    mBox.setMatrixAt(mBox.count,mat4(cx,base,cz,q,wd,th,L));mBox.setColorAt(mBox.count++,col.setHex(SC.fallen));
    HOOK_RUIN_DRAW.towers.push({id:t.id,x:cx,z:cz,w:wd,d:L,yaw:dir,base,top:base+th,wet:t.wet,state:t.state});continue;}
-  const s0=seat(t.x,t.z,t.w,t.d,t.yaw),base=s0-FOUND,top=t.y+STAND[t.state](t),h=Math.max(4,top-base);
+  const s0=seat(t.x,t.z,t.w,t.d,t.yaw),base=s0-FOUND,kt=ktop(t),top=kt!=null?s0+kt:t.y+STAND[t.state](t),h=Math.max(4,top-base);
   q.setFromAxisAngle(Y,t.yaw);
   if(t.lean){ax.set(Math.cos(t.leanDir),0,-Math.sin(t.leanDir));ql.setFromAxisAngle(ax,t.lean*Math.PI/180);q.premultiply(ql);}
   col.setHex(SC[t.state]);if(/\.wild$/.test(t.look))col.lerp(cg,.55);if(t.state==='skeleton')col.multiplyScalar(.9);
   const M=mat4(t.x,base,t.z,q,t.w,h,t.d);
-  if(ROUND[t.family]){mCyl.setMatrixAt(mCyl.count,M);mCyl.setColorAt(mCyl.count++,col);}else{mBox.setMatrixAt(mBox.count,M);mBox.setColorAt(mBox.count++,col);}
+  const mi=ROUND[t.family]?mCyl:mBox;HOOK_RUIN_DRAW.slot[t.id]={m:mi,k:mi.count,M,rec:t,seat:s0,q:q.clone()};
+  mi.setMatrixAt(mi.count,M);mi.setColorAt(mi.count++,col);
   HOOK_RUIN_DRAW.towers.push({id:t.id,x:t.x,z:t.z,w:t.w,d:t.d,yaw:t.yaw,base,top:base+h,wet:t.wet,state:t.state});}
  /* ---- rubble: heaps, and islands where the water covers the bed */
  const dod=new THREE.DodecahedronGeometry(.5,0);dod.translate(0,.5,0);

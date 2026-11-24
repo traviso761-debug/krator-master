@@ -301,7 +301,19 @@ the water) and the south ramp, the wall in 40 m courses with a tower every 160 m
 on the drawn ground (the terrain grid's lowest node along its footprint's edge, a 2 m foundation), so nothing floats and
 a drowned tower's foot stands on the bed under the water. Views: `The Ancient city`, `The drowned downtown`, `The road
 in`. `verify.py`: `hook-ruin-drawn` (a piece a record) and `hook-ruin-seated` (nothing floating, the drowned footed under
-the water). The heroes and shells up close (`kits/metropolis`) come next.
+the water).
+
+**Up close (`src/90d-hook-ruin-heroes.js`):** the ten standing towers nearest the camera (within 700 m of the camera,
+measured to the tower's column) are drawn as the metropolis kit draws them, `MP.hero` on the record's family and state,
+and their massing is hidden while they stand; the set is chosen again when the camera moves 30 m. The kit is read in
+place and sealed in one closure, `KMP` (`77g-kmp-bundle.js`, `build.py` `kmp_bundle`: its records, plans and designs, the
+hero kit and builders, the ruin states and rubble, with the interiors kits its plans read; KRUBBLE from core/terrain),
+its library pack a sidecar (`dist/hook.tex.metropolis.js`). A hero is built once a key at the origin and placed as a copy
+sharing its geometry, at the tower's seat (90c's), turned by its yaw and lean; a design's crown, broken or stump hero is
+cut at the kit's `MP.ruin` top, and the massing stands to that same top, so nothing changes height at the switch. About
+nine draw calls and 30k triangles a hero. View: `The Crown up close`. `verify.py`: `hook-ruin-heroes` (the set round a
+point by the Crown: built without an error, every hero on its seat, its massing hidden). KNOWN_ISSUES.md: no shell tier
+between, wild looks drawn plain, the clip in the host, the build on the frame thread.
 
 `node tests/test-hook-ruin.js` (31 checks) proves the grid is the town's, every footprint inside its block, the town's
 zone left alone, each block on its ground, the height and density falling from the downtown, each ground's character,

@@ -106,6 +106,16 @@ const R=[];
    detail:JSON.stringify({stats:st,records:rec,blackInstances:black})});
   R.push({name:'hook-ruin-seated',ok:!!D.ready&&n>0&&floating===0&&wetBad===0,
    detail:n+' towers and '+(D.piers||[]).length+' piers: '+floating+' floating'+(firstFloat?' (first '+JSON.stringify(firstFloat)+')':'')+'; '+wetBad+' drowned towers not footed under the water'+(firstWet?' (first '+JSON.stringify(firstWet)+')':'')}); }
+// S3 up close: the kit's heroes round a point by the Crown (90d): built without an error, each standing on its seat (its
+// lowest point at or under the drawn ground's lowest node along its footprint, never far under it), its massing hidden
+{ const RH=window._ruinHeroes||{},C=typeof HOOK_RUIN!=='undefined'&&HOOK_RUIN.crown;let H=null,bad=[],shown=0;
+  if(RH.ready&&C){H=RH.at(C.x+160,C.y+70,C.z+160);
+    for(const L of HOOK_HEROES.live){const e=L.sl.M.elements,m=new THREE.Matrix4();L.sl.m.getMatrixAt(L.sl.k,m);if(Math.abs(m.elements[5])<1e-6)shown++;
+      if(!(L.lo<=L.seat+.5&&L.lo>=L.seat-40&&L.hi>L.seat+5))bad.push([L.id,L.key,+L.seat.toFixed(1),+L.lo.toFixed(1),+L.hi.toFixed(1)]);}}
+  const live=H?H.live:[],failed=H?Object.keys(H.failed||{}):['no heroes: '+(RH.why||'not ready')];
+  R.push({name:'hook-ruin-heroes',ok:!!H&&live.length>=3&&!failed.length&&!bad.length&&shown===live.length,
+   detail:live.length+' heroes ('+live.map(l=>l.key).join(', ')+'), '+(H?H.calls:0)+' calls, '+(H?H.tris:0)+' triangles, built '+(H?H.stats.built:0)+' in '+(H?Math.round(H.stats.ms):0)+' ms; massing hidden '+shown+
+    (failed.length?'; FAILED '+JSON.stringify(H?H.failed:failed):'')+(bad.length?'; not seated '+JSON.stringify(bad.slice(0,4)):'')}); }
 // P2: the town's lots (steps 6-12): some hundreds of them, of every culture the quarters name
 { const C=window._city||{},recs=C.recs||[],L=C.log||{};const cults=Object.keys(L.byCulture||{});
   R.push({name:'hook-lots',ok:recs.length>=300&&cults.length>=5,detail:recs.length+' lots: '+JSON.stringify(L.byCulture)+' classes '+JSON.stringify(L.byClass)+'; salvage '+L.salvage+', host lots '+L.hostLots+'; ways '+JSON.stringify(L.ways)}); }

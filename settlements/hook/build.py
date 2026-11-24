@@ -125,7 +125,7 @@ SKY_FRAG = '78-sky-helpers.js'   # the skyscraper helpers the hosts call (skyPli
 ANCIENTS_SRC = os.path.join(ROOT, 'kits', 'ancients', 'src')
 P1_DETERMINISTIC = {n for n, _ in CORE_PLACE} | {KCITY_FRAG, SITE_FRAG, SKY_FRAG, WORLD_FRAG, '78a-host-0-lib.js', '75d-hook-world.js', '76-hook-ground.js',
                                                  '76b-hook-strokes.js', '77-hook-ruin.js', '90a-hook-city.js', '90b-hook-city-draw.js',
-                                                 '90c-hook-ruin-draw.js'}
+                                                 '90c-hook-ruin-draw.js', '90d-hook-ruin-heroes.js'}
 
 
 # ---------------------------------------------------------------- P2: the kits the town draws with, each sealed in a closure
@@ -138,7 +138,18 @@ P1_DETERMINISTIC = {n for n, _ in CORE_PLACE} | {KCITY_FRAG, SITE_FRAG, SKY_FRAG
 # the Islanders and the Vernacular bind come first (77-hook-packs.js), beside the page as sidecars.
 PACKS_FRAG = '77-hook-packs.js'
 DIMS_FRAG = '77f-hook-dims.js'
-BUNDLE_FRAGS = {'77a-isk-bundle.js': 'isk', '77b-izv-bundle.js': 'izv', '77c-vcat-bundle.js': 'vcat', '77d-hyk-bundle.js': 'hyk', '77e-apoc-bundle.js': 'apoc'}
+BUNDLE_FRAGS = {'77a-isk-bundle.js': 'isk', '77b-izv-bundle.js': 'izv', '77c-vcat-bundle.js': 'vcat', '77d-hyk-bundle.js': 'hyk', '77e-apoc-bundle.js': 'apoc',
+                '77g-kmp-bundle.js': 'kmp'}
+# KMP: the metropolis kit's heroes (kits/metropolis, read in place as the Ancient's Valley reads them: its records, plans and designs
+# [G data], the hero kit and the hero builders, the ruin states and the rubble), for the Ancient city's towers near the camera
+# (90d-hook-ruin-heroes.js). Its plans draw their storeys from the interiors kits (kits/interiors, kits/ancients-interiors, each
+# by its own bundle), sealed in the same closure; KRUBBLE (core/terrain 37c) is a core module and stays global. Not the kit's
+# stage, land, sky, shells, impostors, interiors' drawing, flora or overgrowth: a wild look draws its plain state.
+MP_DIR = os.path.join(ROOT, 'kits', 'metropolis')
+MP_FRAGS = ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js', '46-mp-designs.js', '46c-mp-planned.js',
+            '46d-mp-gridplan.js', '46f-mp-farm.js', '50-mp-kit.js', '52-mp-hero-spindle.js', '53-mp-hero-ledger.js', '54-mp-hero-designs.js',
+            '54f-mp-hero-farm.js', '57-mp-debris.js', '59-mp-floors.js', '59b-mp-ruin-design.js']
+MP_PACK_EXCLUDE = ['pave']   # the kit's stage ground; no hero draws it
 VOTH_CAT = os.path.join(ROOT, 'settlements', 'voth', 'catalog', 'registry')
 VCAT_FILES = [os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-core.js'), os.path.join(ROOT, 'kits', 'catalog', 'krator-master-buildings-voth.js')] + \
              [os.path.join(VOTH_CAT, f) for f in ('voth-housing.js', 'voth-manors.js', 'voth-shops.js', 'voth-taverns.js', 'voth-warehouses.js', 'voth-civic.js', 'voth-military.js')]
@@ -282,6 +293,19 @@ def izv_marr_bundle(bundles):
                         'var IZV = (function(){\n' + bundles.IZV_HEAD + bundles.body(fs) + bundles.IZV_TAIL + '})();\n')
 
 
+def kmp_bundle():
+    def load(name, path):
+        spec = importlib.util.spec_from_file_location(name, path); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
+    ib = load('hook_ix_bundle', os.path.join(ROOT, 'kits', 'interiors', 'kit_bundle.py'))
+    ab = load('hook_ai_bundle', os.path.join(ROOT, 'kits', 'ancients-interiors', 'kit_bundle.py'))
+    rub = os.path.join(ROOT, 'core', 'terrain', '37c-core-rubble.js')
+    body = ''.join('/* ---- %s ---- */\n%s\n;\n' % ('kits/metropolis/src/' + f, rd(os.path.join(MP_DIR, 'src', f))) for f in MP_FRAGS)
+    return ('/* KRUBBLE (core/terrain/37c-core-rubble.js), a core module: global. GENERATED: edit core/terrain. */\n' + rd(rub) + '\n;\n'
+            '/* KMP: the metropolis kit\'s heroes and the interiors kits their plans read, one closure (settlements/hook/build.py). GENERATED: edit kits/metropolis, kits/interiors or kits/ancients-interiors. */\n'
+            'var KMP = (function(){\n' + ib.bundle(['noahs-regret']) + '\n;\n' + ab.bundle() + '\n;\n' + body +
+            'return { MP: MP, hero: function (family, look, lite) { return MP.hero(family, look, lite); } };\n})();\n')
+
+
 def p2_bodies(bodies, side):
     sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
@@ -290,12 +314,14 @@ def p2_bodies(bodies, side):
     izfams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
     bodies[PACKS_FRAG] = (matlib_pack.fragment(os.path.join(ROOT, 'kits', 'islanders'), 'islanders', side=side) +
                           matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith(('fauna', 'city'))], side=side) +
-                          matlib_pack.fragment(os.path.join(ROOT, 'kits', 'marr'), 'marr', side=side))
+                          matlib_pack.fragment(os.path.join(ROOT, 'kits', 'marr'), 'marr', side=side) +
+                          matlib_pack.fragment(MP_DIR, 'metropolis', exclude=MP_PACK_EXCLUDE, side=side))
     bodies['77a-isk-bundle.js'] = closure(bundles.isk_bundle()[0])
     bodies['77b-izv-bundle.js'] = closure(izv_marr_bundle(bundles))
     bodies['77c-vcat-bundle.js'] = closure(vcat_bundle())
     bodies['77d-hyk-bundle.js'] = closure(hyk_bundle())
     bodies['77e-apoc-bundle.js'] = closure(apoc_bundle())
+    bodies['77g-kmp-bundle.js'] = closure(kmp_bundle())
     bodies[DIMS_FRAG] = dims_fragment()
 
 

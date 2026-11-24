@@ -228,4 +228,6 @@ span with its fallen west arc, the wall and its gates, the south road, the thirt
 Then (the owner, mid-S3: "the surrounding terrain could use a bit of levelling out into a coastal plain / mangrove
 swamp") the mainland's fill strip became a coastal plain at 4 m on the plan's low ground and a mangrove swamp at its water
 edges, and S3's far tier drew the whole city as instanced massing (towers by state, reefs, heaps, pods, the freeway,
-the wall), every base seated on the drawn ground. Next: the heroes and shells up close.
+the wall), every base seated on the drawn ground; then the heroes up close (90d: the ten towers nearest the camera as
+the kit's heroes, their massing hidden; the kit sealed in the page as `KMP`). Next: a shell or impostor tier between, S4's
+mangroves and jungle.

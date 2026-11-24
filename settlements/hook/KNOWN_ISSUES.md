@@ -10,9 +10,21 @@ from a Hook task.
       188 m are gone with it; S2 lays the site plan (`README.md`, "The Ancient city").
 - [ ] **The plan costs about 1.8 s at load.** 2,022 blocks over a 10 km square, each reading the ground five times;
       records only, nothing drawn yet. Bake the records at build time (they are deterministic) before S3 adds drawing.
-- [ ] **The city is drawn as massing only.** S3's far tier (90c) stands every tower as its footprint raised to what
-      stands; the heroes and shells up close (`kits/metropolis`: shells exist for the Spindle and the Ledger only, the
-      other fourteen designs wait on the kit's shell review) are the next step, and the page's budget decides how many.
+- [ ] **Heroes up close, massing beyond: no shell or impostor tier between.** 90d draws the ten standing towers nearest
+      the camera (within 700 m) as the kit's heroes and 90c's massing stands for every other; the kit's shells
+      (KSHELL) exist for the Spindle and the Ledger only (the other designs wait on the kit's shell review), so the
+      middle distance is massing and a tower changes from a box to its hero at the switch (at the same height: the
+      massing stands to the kit's own `MP.ruin` top).
+- [ ] **A wild look draws its plain state up close.** The kit's overgrowth (`59e-mp-overgrow.js`, `MP.overgrowDress`) and
+      flora dress (`59d`) need the biome core's leaf sets, which the Port page does not load; the massing's green tint is
+      the jungle's only sign on the ruin until S4.
+- [ ] **The design families' ruin heroes are clipped in the host.** `MP.ruinDesign` (kits/metropolis 59b) cuts a design's
+      glass and floors but not its frame, so a crown, broken or stump hero stands at full height; the Ancient's Valley
+      clips it at `MP.ruin`'s top in its host (`70-host-city.js`, `avClipHero`) and Hook does the same in 90d (by triangle
+      and by panel, without the valley's floater pass). The cut belongs in the kit, once, for both.
+- [ ] **A hero is built on the frame thread.** About 80 ms a new key (family and state) the first time, as many as
+      fit in 40 ms of a frame (at least one); flying into the downtown stutters while the set fills. Building them in a worker (the records are plain data) or
+      at idle is the fix.
 - [ ] **The hunters' camp moved.** The sketch put it on the plateau's edge where, under placement B and the coastal
       plain on the low ground only, there is water; it stands on the nearest dry ground, the plateau's north foot.
 - [ ] **The places are records only.** The thirteen hamlets, camps and posts carry their culture, people and work;

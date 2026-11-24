@@ -25,7 +25,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `88-hook-programme.js` | 9 | HOOK: THE TOWN'S PROGRAMME ([G data]) (1) |
 | `90a-hook-city.js` | 11 | HOOK: THE TOWN ON core/city, STEPS 0-12 ([G data (1) |
 | `90b-hook-city-draw.js` | 18 | HOOK: DRAWING THE TOWN ([web]) (1) |
-| `90c-hook-ruin-draw.js` | 10 | HOOK: DRAWING THE ANCIENT CITY AT RANGE ([web]) (1) |
+| `90c-hook-ruin-draw.js` | 11 | HOOK: DRAWING THE ANCIENT CITY AT RANGE ([web]) (1) |
+| `90d-hook-ruin-heroes.js` | 7 | HOOK: THE ANCIENT CITY UP CLOSE, THE HEROES ([we (1) |
 
 ## targets/
 

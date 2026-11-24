@@ -42,6 +42,8 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
   V['The Ancient city']=[cx+(cx-ctr[0])*.6,1900,cz+(cz-ctr[1])*.6,ctr[0],0,ctr[1]];
   if(S)V['The drowned downtown']=[S.x+(S.x-C.x)*.12,30,S.z+(S.z-C.z)*.12,C.x,C.y+60,C.z];
   const aps=HOOK_RUIN.spans.filter(s=>s.arc==='approach'),ap=aps[aps.length-1];   /* the approach's far end, by the ramp */
-  if(ap&&G)V['The road in']=[ap.x,ap.y+4,ap.z,G.x,G.y+10,G.z];}
+  if(ap&&G)V['The road in']=[ap.x,ap.y+4,ap.z,G.x,G.y+10,G.z];
+  /* up close (90d): beside the Crown, its neighbours drawn as the kit's heroes */
+  V['The Crown up close']=[C.x+160,C.y+70,C.z+160,C.x,C.y+90,C.z];}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();
