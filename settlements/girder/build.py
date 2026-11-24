@@ -101,6 +101,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '44-core-ports.js',   # core/ports: the buildings' marks (no rnd())
                  '90-atmos-host.js',   # binds core/atmos
                  '90s-host-sky.js',    # the shared sky (W7: ATMOS.sky, no rnd())
+                 '89r-host-far.js',    # the far land's data (W7: region/far.json)
                  '98-start.js'}        # the take (KHOST.take)
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
@@ -117,7 +118,7 @@ DETERMINISTIC |= {'89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmo
 # do not apply to them. The furniture cultures: beast-rider and its fallback chain (IX.CULTURE_FAMILY).
 FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic', 'generic-goods', 'generic-fruit']   # generic-fruit: the fruit-seller stalls (55-arch.js); generic-goods holds the fruit colours (FPAL generic)
 INTERIOR_SETS = ['beast-rider']
-VIRTUAL = {'51-furniture-bundle.js', '46-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+VIRTUAL = {'51-furniture-bundle.js', '46-matlib-pack.js', khost.EDITS_JS, '89r-host-far.js'}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py); 89r: region/far.json as GIRDER_FAR (W7)
 
 
 def virtual_bodies():
@@ -126,7 +127,10 @@ def virtual_bodies():
     import furniture_bundle, kit_bundle
     return {'51-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS),
             '46-matlib-pack.js': matlib_pack(),
-            khost.EDITS_JS: khost.edits_js(HERE, 'girder')}
+            khost.EDITS_JS: khost.edits_js(HERE, 'girder'),
+            # the far land, cast from the scale model at Girder's pixel (region/far.py; the owner: "real terrain only")
+            '89r-host-far.js': '/* ==================== the far land, cast from the scale model (region/far.py) */\nconst GIRDER_FAR=' +
+                               open(os.path.join(HERE, 'region', 'far.json'), encoding='utf-8').read().strip() + ';\n'}
 
 
 # the library pack beside the page (<build>.tex.<key>.js); --inline-packs puts it back in the page (2026-10-14: the

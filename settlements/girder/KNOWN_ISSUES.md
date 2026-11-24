@@ -193,11 +193,12 @@ The look changes, for the owner to judge (SKY-PLAN.md section 8: each page's lig
       skyLook, JS and Godot) leans the hemisphere toward the old page's cool fill and warm soil by 0.75 at night: about 60% of
       the old night fill, the giantshine key kept, the lamps still the brightest thing. From above the canopy and the town read;
       from the brook the towers' south faces (turned from the giant) read mostly by their lamps.
-- [ ] **The volcano is gone from view**: the old dome painted the Throne in the north-west. On the model it is 390 km to the
-      WNW (azimuth 280) and its 10.9 km summit is below Girder's horizon (Krator's radius, 4,800 km, drops it about 14 km at
-      that distance). Its plume's top is drawn as a sky landmark (`GSKY_VOLC`), a degree or two up, and in this air it does
-      not read. The flyers' sortie "toward the volcano" (84a) still flies north-west.
-- [ ] **The far land**: two low forest bands all round (ridge profiles) stand in for the dome's painted canopy strips.
+- [x] **The far land is the model's own ground** (the owner, 2026-11-24: "no painted volcano, real terrain only"):
+      `region/far.py` casts three bands (4-20, 20-80 and 80-450 km) from the scale model at Girder's pixel, the water's surface
+      where there is water, with the planet's curve and the thick air's refraction; build.py embeds `region/far.json` as
+      `89r-host-far.js`. Girder sits at -1,386 m: the near land lies about the horizon, the far land rises to 1.75 degrees in
+      the ENE. The old dome's painted volcano is gone: the Throne is 390 km WNW and below the horizon on the model, and nothing
+      stands in for it. Rerun `far.py` when the model moves. The flyers' sortie "toward the volcano" (84a) still flies north-west.
 - [ ] **The page opens at 06:00** (SKY-PLAN.md 2.1: every page opens at sunrise; it opened at 10:00).
 - [x] **One clock**: on the shared sky the host shows an hour too; it mirrors Girder's (98-start's girderFrame), its slider sets
       Girder's hour and its run / hold drives Girder's pause.

@@ -5,25 +5,21 @@
    cluster and the clouds at the page clock's hour and day (21-sky.js), and sets the sun, the hemisphere, the fog and the
    exposure from the colour script, with its own giantshine light. Made here, after ATMOS.init (90-atmos-host.js).
    The air: the hypertropic lee shore, 1.9 atm and humid (SKY.pressureAtm).
-   THE FAR LAND: two low bands of forest all round (the canopy the old dome painted), as ridge profiles.
-   THE VOLCANO: the old dome painted the Throne in the north-west. On the model it stands 390 km to the WNW (azimuth 280),
-   and at Krator's radius (4,800 km) the horizon there falls about 14 km (with the thick air's refraction): its 10.9 km
-   summit is below it. Only the top of its plume shows, low over the WNW horizon, drifting east on the westerlies.
+   THE FAR LAND: the scale model's own ground round Girder, nothing painted (the owner, 2026-11-24: "no painted volcano, real
+   terrain only"): region/far.py casts three bands (4-20, 20-80 and 80-450 km) of the model's ground or water surface at 1024
+   azimuths from the eye, with the planet's curve, embedded as GIRDER_FAR (89r-host-far.js). Girder sits at -1,386 m in its
+   basin: the near bands lie about the horizon, the far one rises to 1.75 deg in the ENE. The Throne (390 km WNW, the old
+   dome's painted volcano) is below the horizon on the model, so it is not in Girder's sky.
    THE SKYLIGHT: the library materials' reflections capture this sky's scene (moved from 90-atmos-host.js). */
 var GSKY_CLOCK = { get hour(){ return skyHour(); }, get day(){ return skyDayOfYear() - 80; }, get t(){ return SKY_T; } };
 var GSKY_SITE = { px:1039-272, py:869-330 };
-/* the plume's top, 390 km off: a point h km up at d km sits (h - dip)/d radians over the horizon (dip 14 km at 390 km) */
-var GSKY_VOLC = (function(){ var d = 390, dip = 14, el = function(h){ return (h - dip)/d*180/Math.PI; };
-  return { kind:'plume', from:[280.3, el(17)], via:[282.5, el(27)], to:[296, el(31)], width:[1.2, 4.2],
-           lit:[.86,.84,.82], belly:[.46,.46,.50], alpha:.42, haze:.62, drift:.25 }; })();
-/* the canopy all round: a near band and a paler one behind it, low (the old dome's two canopy strips) */
-var GSKY_RIDGES = [
-  { base:0.55, amp:0.35, cycles:18, octaves:3, seed:71, peaks:0, peakAmp:0, win:null, floor:0.15, dist:14000, haze:.55,
-    snowH:99999, forestH:99999, rock:[.36,.40,.38], forest:[.23,.36,.34], snow:[.92,.94,.97] },
-  { base:0.30, amp:0.30, cycles:34, octaves:3, seed:72, peaks:0, peakAmp:0, win:null, floor:0.05, dist:5000, haze:.35,
-    snowH:99999, forestH:99999, rock:[.30,.34,.30], forest:[.14,.26,.23], snow:[.92,.94,.97] } ];
+/* the far land's bands, far to near (hazier with distance); forest below the hyperjungle's treeline (3,000 m), snow over 4,500 m:
+   both as heights over the eye (Girder's eye stands at -1,356 m) */
+var GSKY_RIDGES = GIRDER_FAR.ridges.slice().reverse().map(function(b, i){ var eye = GIRDER_FAR.site.base + GIRDER_FAR.site.eye;
+  return { profile:b.profile.slice(), dist:b.dist, haze:[.7,.55,.4][i], forestH:3000 - eye, snowH:4500 - eye,
+           rock:[.44,.42,.40], forest:[.18,.29,.25], snow:[.92,.94,.97] }; });
 GSKY = ATMOS.sky(ATMOS.skyPreset('standard', { site:GSKY_SITE, air:{ pressure:SKY.pressureAtm, humidity:.8 },
-  clouds:{ cover:.45 }, fogDensity:PAL.fogDensity, ridges:GSKY_RIDGES, landmarks:[GSKY_VOLC],
+  clouds:{ cover:.45 }, fogDensity:PAL.fogDensity, ridges:GSKY_RIDGES,
   nightFill:{ k:.75, colour:[.365,.443,.580], ground:[.22,.19,.18] } }),   /* the owner (2026-11-24): "raise fill partway": toward the old page's cool night fill and warm soil (about 60% of it), the giantshine key kept */
   { renderer:renderer, camera:camera, scene:scene, sun:sun, hemi:hemiLight, clock:GSKY_CLOCK, fog:true });
 var skyScene = GSKY.scene;
