@@ -85,5 +85,9 @@ The pairs (`core/atmos/pairs/pairs.py`; shots of the outer wall, shighlands and 
    eye level instead of sitting on the sea. The flat layer and the cloud shadows move with it.
 4. **The Throne keeps layers**: station 1 and its stations do not list the volumes (no triangles to spare at its ceiling,
    and its eye at 2.8 km puts the whole layer below it).
+5. **Ancient's Valley takes volumes, with its clouds' mood carried into them** (asked after the pairs: the mood's tint, dark
+   and glow lived on the flat cumulus, which the volumes replace). The volumes' composite now applies the mood at each
+   pixel's cloud (`ATMOS.skyMoodGLSL`); judged on a copy with the mood held, day and 22:00. Listed in the valley's build
+   (every station). Godot's sky has no mood yet: the twin follows when it does.
 
 The pages rebuild in tier 2's own pass after Stage 8 (section 4, answer 2); their committed pages are unchanged here.

@@ -178,6 +178,7 @@ for f in ['89-atmos-fx-rainwall.js','89-atmos-fx-acid.js','89-atmos-fx-radiation
     PATH[f]=os.path.join(CORE,'atmos','fx',f)
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-k-cloudmood.js']:   # k: the clouds' mood (2026-11-09)
     PATH[f]=os.path.join(CORE,'atmos','sky',f)
+PATH['89-atmos-m-volclouds.js']=os.path.join(CORE,'atmos','sky','89-atmos-m-volclouds.js'); PATH['89-atmos-m-volhost.js']=os.path.join(CORE,'atmos','host','89-atmos-m-volhost.js')   # W6, the volumetric clouds, the mood carried into them (STAGE-8/G-weather.md; the owner, 2026-11-24)
 # the host shell from core/host (core/host/README.md). src/99-host-take.js hands it the page (KHOST.take)
 sys.path.insert(0,os.path.join(CORE,'host'))
 import host as khost
