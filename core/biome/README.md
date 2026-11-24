@@ -288,6 +288,17 @@ Adopting it: list `'33-core-fungoid.js'` after `30-core-foliage.js` in `CORE_BIO
 `rng()` draws), so nothing placed after it moves; a new pass can use the layouts. nhighlands' mushroom and disc stalk are the
 first (2026-10-26: `G.mushroom`, `G.disc` in its `50`); the rest of `TODO.md`'s list follows in the final rebuild.
 
+Two options added 2026-11-24 (the owner's choices for the two kits the fungoid pass skipped), both off by default; with
+neither, every part is the same byte for byte (`test-fungoid.js` hashes 18 parts and every literal `BIO.fung` call the kits
+made that day, `test-fungoid-calls.json`):
+- **Ring colours** (`cap`, `bracket`): `o.ringCol [[r, [R,G,B]], ...]` root to rim, `r` a fraction of the radius. The top is
+  resampled at each ring's radius and each vertex's colour is the rings' RGB blended linearly by radius, in place of its grey
+  shade; `bracket`'s `o.underCol [R,G,B]` colours its underside. Oidong's rainbow brackets (`G.bracket`) are the first.
+- **Halves** (`cap`): `o.only 'top'` or `'under'` draws one half of the same cap (the underside: gills or pores, and the stem),
+  and `o.gillRoof` closes the gills' roof along their top edges, facing down (`roofK`). A kit that skins the top and colours
+  the gills apart defs the two halves from one `o`, so the gills hang below the top everywhere: the Throne's parasols
+  (`G.disc`, `G.gills`).
+
 ## Bamboo parts (`33b-core-bamboo.js`, `BIO.bamboo`; opt-in)
 
 The giant-bamboo parts, written once before the kits that need them (`biomes/hyperjungle/PLAN-LANDS.md` section 11, H5,

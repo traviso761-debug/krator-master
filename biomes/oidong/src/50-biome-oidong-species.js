@@ -484,9 +484,14 @@ G.mooncap=function(){const M=Mesh(),o={pos:[],nor:[],uv:[],col:[]};vadd(o,new T3
  const g=M.out(false),p=Array.from(g.attributes.position.array),nn=Array.from(g.attributes.normal.array),c=Array.from(g.attributes.color.array),u=Array.from(g.attributes.uv.array);
  return mk(p.concat(o.pos),nn.concat(o.nor),u.concat(o.uv),c.concat(o.col));};
 // a BRACKET: a half-disc shelf fungus, banded in rings (vertex colours: the rings take turns from the instance colour and
-// its shades); it stands out from a trunk along +z with its flat face down. Unit radius.
-G.bracket=function(){const M=Mesh(),n=14,rings=[0,.3,.5,.66,.8,.9,1.0],lift=[.0,.1,.15,.17,.17,.15,.1];
- const rc=[[.7,.6,.4],[1,1,1],[.5,.7,.9],[1.1,.9,.5],[.6,.9,.8],[1,1,1],[1.1,1.05,.95]];
+// its shades); it stands out from a trunk along +z, its underside one pale colour. Unit radius, .9 deep.
+// 2026-11-24 (the owner: "add ring colours"): on core/biome's BIO.fung.bracket (the shelf's profile, a wave on its lip)
+// with o.ringCol, the same ring tints root to rim blended ring to ring, and o.underCol the same underside; the old
+// geometry's flat plate is gone, the rainbow kept
+// A page without core/biome/33 (a reader of this file that lists no 33-core-fungoid.js: Longsong) keeps the old plate.
+G.bracket=function(){const rings=[0,.3,.5,.66,.8,.9,1.0],rc=[[.7,.6,.4],[1,1,1],[.5,.7,.9],[1.1,.9,.5],[.6,.9,.8],[1,1,1],[1.1,1.05,.95]];
+ if(BIO.fung)return BIO.fung.bracket({seg:14,thick:.22,droop:.04,wav:3,wavA:.025,seed:7,ringCol:rings.map((r,i)=>[r,rc[i]]),underCol:[.95,.9,.8]}).scale(1,1,.9);
+ const M=Mesh(),n=14,lift=[.0,.1,.15,.17,.17,.15,.1];
  const P=rings.map((R,r)=>{const row=[];for(let s=0;s<=n;s++){const a=s/n*Math.PI;row.push([Math.cos(a)*R,lift[r]*(1-.3*Math.abs(Math.cos(a))),Math.sin(a)*R*.9]);}return row;});
  for(let r=0;r<rings.length-1;r++)for(let s=0;s<n;s++){const a=P[r][s],b=P[r+1][s],c=P[r+1][s+1],d=P[r][s+1];M.quad(a,d,c,b,rc[r],rc[r],rc[r+1],rc[r+1]);
   M.quad([a[0],-.03,a[2]],[b[0],-.03,b[2]],[c[0],-.03,c[2]],[d[0],-.03,d[2]],[.95,.9,.8],[.95,.9,.8],[.95,.9,.8],[.95,.9,.8]);}

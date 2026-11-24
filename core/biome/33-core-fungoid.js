@@ -24,9 +24,16 @@
 //              o.under 'gills' (default: o.gillN plates, o.gillD deep, shaded gillK .55), 'pores' (a closed underside,
 //              poreK .6) or 'none'; o.stem null or {h (.6), r (.12), r1 (r*.8), seg (5), k (1.5)}: the cap on a stem,
 //              the origin at the stem's foot; o.uv 'planar' (the uv from above, the centre at .5, .5; else u round, v along).
-//              Radius 1.
+//              o.only 'top' or 'under' draws one half (the top; or the underside and stem), o.gillRoof the plates' closed
+//              roof along their top edges, facing down (shaded roofK, gillK's): a skinned top and its coloured gills as two
+//              items from one o (the Throne's parasols). o.ringCol colours the top by ring (below). Radius 1.
 //   bracket(o) a shelf on a wall: the wall at z 0, the shelf out along +z, o.arc (PI), o.seg (8), o.thick (.3), o.droop
 //              (.15: the lip below the root), o.wav/o.wavA, o.lump; the top shaded 1, the underside poreK, the lip lipK 1.15.
+//              o.ringCol colours the top by ring; o.underCol [R,G,B] colours the whole underside (Oidong's rainbow brackets).
+//   RING COLOURS (cap, bracket): o.ringCol [[r, [R,G,B]], ...] root to rim, r a fraction of the radius. The top is
+//              resampled at each ring's radius (and its own points) and each vertex's colour is the rings' RGB blended
+//              linearly by radius, in place of its grey shade (ribs still multiply it). Without it every part is the
+//              same, byte for byte (test-fungoid.js, the kits' calls hashed in test-fungoid-calls.json).
 //   bladder(o) a lathe body: o.swell (.5: 0 a spindle, 1 a ball), o.neck (.25: the top's radius), o.pleats (8) and
 //              o.pleatA (.08), o.seg (12), o.rings (6). Radius 1 at the belly, height o.h (1.4).
 //   pod(o)     a teardrop: o.tip (.35: how pointed), o.h (1.6), o.seg (8), o.rings (5); o.hang turns it to hang from
@@ -69,7 +76,7 @@ function grid(out,P,C,U,V,flip){const nk=P.length,nj=P[0].length,N=[];
   const ja=Math.max(0,j-1),jb=Math.min(nj-1,j+1),ka=Math.max(0,k-1),kb=Math.min(nk-1,k+1);
   let da=sub(P[k][jb],P[k][ja]);if(Math.hypot(da[0],da[1],da[2])<1e-9){const k2=k<nk-1?k+1:k-1;da=sub(P[k2][jb],P[k2][ja]);}
   let n=norm(cross(da,sub(P[kb][j],P[ka][j])));if(flip)n=[-n[0],-n[1],-n[2]];N[k][j]=n;}}
- const put=(k,j)=>{const p=P[k][j],n=N[k][j],c=C[k][j];out.pos.push(p[0],p[1],p[2]);out.nor.push(n[0],n[1],n[2]);out.uv.push(U[j],V[k]);out.col.push(c,c,c);};
+ const put=(k,j)=>{const p=P[k][j],n=N[k][j],c=C[k][j];out.pos.push(p[0],p[1],p[2]);out.nor.push(n[0],n[1],n[2]);out.uv.push(U[j],V[k]);if(Array.isArray(c))out.col.push(c[0],c[1],c[2]);else out.col.push(c,c,c);};
  const tri=(a,b,c)=>{const pa=P[a[0]][a[1]],pb=P[b[0]][b[1]],pc=P[c[0]][c[1]],g=cross(sub(pb,pa),sub(pc,pa));
   if(Math.hypot(g[0],g[1],g[2])<1e-12)return;const nm=N[a[0]][a[1]],s=dot(g,[nm[0]+N[b[0]][b[1]][0]+N[c[0]][c[1]][0],nm[1]+N[b[0]][b[1]][1]+N[c[0]][c[1]][1],nm[2]+N[b[0]][b[1]][2]+N[c[0]][c[1]][2]]);
   if(s>=0){put(...a);put(...b);put(...c);}else{put(...a);put(...c);put(...b);}};
@@ -82,8 +89,21 @@ function lathe(out,prof,o){const seg=nz(o.seg,8),arc=nz(o.arc,TAU),a0=nz(o.a0,0)
  for(let j=0;j<=seg;j++)U.push(j/seg*nz(o.rep,1));
  for(let k=0;k<prof.length;k++){const [r,y,c]=prof[k];P[k]=[];C[k]=[];V.push(nz(prof[k][3],k/(prof.length-1)));
   for(let j=0;j<=seg;j++){const a=a0+arc*j/seg,f=o.rad?o.rad(a,k,j):1,d=o.dy?o.dy(a,k,j):0,sh=o.shade?o.shade(a,k,j):1;
-   P[k][j]=[Math.cos(a)*r*f,y+d,Math.sin(a)*r*f];C[k][j]=c*sh;}}
+   P[k][j]=[Math.cos(a)*r*f,y+d,Math.sin(a)*r*f];C[k][j]=Array.isArray(c)?[c[0]*sh,c[1]*sh,c[2]*sh]:c*sh;}}
  return grid(out,P,C,U,V,o.flip);}
+// RING COLOURS (o.ringCol, 2026-11-24: Oidong's rainbow brackets): a profile [[r, y, shade], ...] (r rising) resampled at
+// its own points and at every ring's radius, each point's colour the rings' RGB blended linearly by radius (the shade
+// the part gave is replaced: the ring's colour is the vertex colour), [3] the v along (as the plain profile's) and [4]
+// the point's fractional index in the plain profile, so the waves, lumps and ribs fall where they did. rc [[r, [R,G,B]],
+// ...] root to rim; outside the first and last ring the end colour holds.
+function ringed(prof,rc){const rs=prof.map(q=>q[0]),n=prof.length,lo=rs[0],hi=rs[n-1],R=[];
+ for(const r of rs.concat(rc.map(q=>q[0])))if(r>=lo&&r<=hi&&R.indexOf(r)<0)R.push(r);R.sort((a,b)=>a-b);
+ const rgb=r=>{if(r<=rc[0][0])return rc[0][1].slice();for(let i=0;i<rc.length-1;i++)if(r<=rc[i+1][0]){const t=(r-rc[i][0])/Math.max(1e-12,rc[i+1][0]-rc[i][0]),a=rc[i][1],b=rc[i+1][1];return[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];}
+  return rc[rc.length-1][1].slice();};
+ return R.map(r=>{let i=0;while(i<n-2&&r>rs[i+1])i++;const t=(r-rs[i])/Math.max(1e-12,rs[i+1]-rs[i]),kf=i+t;
+  return[r,lerp(prof[i][1],prof[i+1][1],t),rgb(r),kf/(n-1),kf];});}
+// the fractional index of a profile's point k (ringed: its [4]; plain: k itself)
+const kOf=(prof,k)=>prof[k].length>4?prof[k][4]:k;
 function make(out){return BIO.geo._make(out.pos,out.nor,out.uv,out.col);}
 
 const F=BIO.fung={};
@@ -102,18 +122,25 @@ F.cap=function(o){o=o||{};const form=o.form||'dome',h=nz(o.h,.35),seg=nz(o.seg,1
  const rimY=top[rings][1];
  const waveAt=a=>(wav?Math.sin(a*wav+seed*.37)*wavA:0),ribAt=j=>ribs?(Math.floor(j*ribs/seg)%2):0;
  const rad=(a,k)=>1+(lump?lump*wob(seed,a,k)*(k/rings):0);
- lathe(out,top,{seg,rad,dy:(a,k,j)=>(waveAt(a)+(ribs&&k?ribAt(j)*h*.12:0))*(k/rings),shade:(a,k,j)=>ribs&&k?(ribAt(j)?ribK:1):1});
+ /* o.ringCol: the top's colours by ring (ringed, above); o.only 'top' or 'under' draws one half (a kit that skins the top and
+    colours its gills apart defs them as two items from the same o, so they fit) */
+ const tp=o.ringCol?ringed(top,o.ringCol):top,K=k=>kOf(tp,k);
+ if(o.only!=='under')lathe(out,tp,{seg,rad:(a,k)=>rad(a,K(k)),dy:(a,k,j)=>(waveAt(a)+(ribs&&K(k)?ribAt(j)*h*.12:0))*(K(k)/rings),shade:(a,k,j)=>ribs&&K(k)?(ribAt(j)?ribK:1):1});
  // the underside, from the rim in to the stem
  const ru=rimY-h*.12;
- if(under==='pores'){const poreK=nz(o.poreK,.6),pr=[[1,rimY,poreK],[.55,ru,poreK*.9],[rs,ru-h*.04,poreK*.8]];
+ if(o.only==='top'){}
+ else if(under==='pores'){const poreK=nz(o.poreK,.6),pr=[[1,rimY,poreK],[.55,ru,poreK*.9],[rs,ru-h*.04,poreK*.8]];
   lathe(out,pr,{seg,rad:(a,k)=>k?1:rad(a,rings),dy:(a,k)=>k?0:waveAt(a)});}
  else if(under==='gills'){const n=nz(o.gillN,Math.max(8,seg*2)),gd=nz(o.gillD,.14),gk=nz(o.gillK,.55),P=[],C=[],V=[0,1],U=[];
   for(let g=0;g<n;g++){const a=g/n*TAU,c=Math.cos(a),s=Math.sin(a),R=rad(a,rings)*.97,w=waveAt(a);
    const q=[[[rs*c,ru,rs*s],[R*c,rimY+w-.01,R*s]],[[rs*c,ru-gd,rs*s],[R*c,rimY+w-gd*.25,R*s]]];
    /* one plate: two triangles, both faces (a gill is seen from either side) */
-   for(const fl of [false,true])grid(out,q,[[gk,gk],[gk*.8,gk*.8]],[0,1],V,fl);}}
+   for(const fl of [false,true])grid(out,q,[[gk,gk],[gk*.8,gk*.8]],[0,1],V,fl);}
+  /* o.gillRoof: the closed roof the plates hang from, along their top edges, facing down (shaded roofK, gillK's), so a cap
+     whose top is one sheet shows its gills' dark roof between them from below and not the top's back */
+  if(o.gillRoof){const rk=nz(o.roofK,gk);lathe(out,[[.97,rimY-.01,rk],[rs,ru,rk]],{seg,rad:(a,k)=>k?1:rad(a,rings),dy:(a,k)=>k?0:waveAt(a)});}}
  /* the stem, from under the cap down to the foot (the lathe rule: a profile that runs down faces out) */
- if(st)lathe(out,[[st.r1,ru-h*.02,st.k],[lerp(st.r,st.r1,.5),y0*.5,st.k*.95],[st.r,0,st.k*.85]],{seg:st.seg});
+ if(st&&o.only!=='top')lathe(out,[[st.r1,ru-h*.02,st.k],[lerp(st.r,st.r1,.5),y0*.5,st.k*.95],[st.r,0,st.k*.85]],{seg:st.seg});
  /* o.uv 'planar': the uv from above (x, z over the radius: .5 at the centre), for a cap texture whose pattern radiates from its middle */
  if(o.uv==='planar')for(let i=0,j=0;i<out.pos.length;i+=3,j+=2){out.uv[j]=out.pos[i]*.5+.5;out.uv[j+1]=out.pos[i+2]*.5+.5;}
  return make(out);};
@@ -123,9 +150,12 @@ F.bracket=function(o){o=o||{};const arc=nz(o.arc,Math.PI),seg=nz(o.seg,8),th=nz(
  wav=nz(o.wav,0),wavA=nz(o.wavA,.05),lump=nz(o.lump,0),poreK=nz(o.poreK,.6),lipK=nz(o.lipK,1.15),out=W();
  /* the shelf is a half-lathe about the wall's vertical line: a0 so the arc's middle points +z */
  const a0=Math.PI*.5-arc*.5,rad=(a,k)=>1+(lump?lump*wob(seed,a,k):0),dy=a=>wav?Math.sin(a*wav+seed*.41)*wavA:0;
- const top=[[0,th,1],[.45,th*.85-dr*.3,1],[.85,th*.45-dr*.8,1.05],[1,th*.1-dr,lipK]];
- lathe(out,top,{seg,arc,a0,rad,dy:(a,k)=>dy(a)*k/3});
+ let top=[[0,th,1],[.45,th*.85-dr*.3,1],[.85,th*.45-dr*.8,1.05],[1,th*.1-dr,lipK]];
+ /* o.ringCol: the top's colours by ring, root to rim (ringed, above); o.underCol [R,G,B]: the underside one colour */
+ if(o.ringCol)top=ringed(top,o.ringCol);const K=k=>kOf(top,k);
+ lathe(out,top,{seg,arc,a0,rad:(a,k)=>rad(a,K(k)),dy:(a,k)=>dy(a)*K(k)/3});
  const und=[[1,th*.1-dr,lipK],[.8,-dr*.75,poreK],[.35,-dr*.2,poreK*.9],[0,0,poreK*.8]];
+ if(o.underCol)for(const q of und)q[2]=o.underCol.slice();
  lathe(out,und,{seg,arc,a0,rad:(a,k)=>rad(a,3-k),dy:(a,k)=>dy(a)*(3-k)/3});
  return make(out);};
 

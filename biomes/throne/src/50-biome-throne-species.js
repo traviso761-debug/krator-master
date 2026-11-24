@@ -406,8 +406,19 @@ G.lathe=function(prof,seg,o){o=o||{};const pos=[],nor=[],uv=[],col=[],n=prof.len
 const L=G.lathe;
 // a GILLED DISC (the gill-parasol's and the stilt parasol's caps, ref 10, 11): a low dome over flat radial gills; unit
 // radius, origin at the stalk's top; the instance colour is the cap's, the gills a darker band of it
-G.disc=()=>L([[-.02,.06,.55],[-.06,.5,[.75,.62,.55]],[-.04,.92,[.9,.8,.7]],[0,1.0,1.0],[.07,.86,1.05],[.13,.55,1.12],[.16,.0,1.15]],28,{gillN:40,gillA:.0,wavN:7,wavA:.025,planar:true});
-G.gills=()=>L([[-.05,.07,.45],[-.055,.55,.62],[-.03,.97,.8]],56,{gillN:56,gillA:.55});
+// 2026-11-24 (the owner: "convert to BIO.fung cap"): the parasol is core/biome's BIO.fung.cap, its two items the two
+// halves of one o (o.only), so they fit: the skinned top (a dome .16 high, the old disc's shading kept as ring greys, the
+// wave growing to the rim, the uv from above) and the gills, 40 radial plates and their dark roof hung below it. The old
+// gill lathe ran inside the disc's own underside and drew only as two dark rings; the old disc's wave was largest at its
+// pole, which stood the centre's triangles on edge and smeared the skin there. gillD .06: the chalice's glowing gills
+// (G.glowgill) stay under its plates
+const PARASOL={form:'dome',h:.16,seg:28,rings:4,wav:7,wavA:.025,under:'gills',gillN:40,gillD:.06,gillK:.75,roofK:.45,rIn:.06,gillRoof:true,uv:'planar',
+ ringCol:[0,1,2,3,4].map(k=>{const r=Math.sin(k/4*Math.PI*.5),g=r<=.55?1.15-r/.55*.03:r<=.86?1.12-(r-.55)/.31*.07:1.05-(r-.86)/.14*.05;return[r,[g,g,g]];})};
+// the old parasol disc: the medusa-cap's dome still (its own skin; not converted), and with the old gill lathe the parasol
+// of a page without core/biome/33 (a reader of this file that lists no 33-core-fungoid.js: Dhelv, the isle demo)
+G.discLathe=()=>L([[-.02,.06,.55],[-.06,.5,[.75,.62,.55]],[-.04,.92,[.9,.8,.7]],[0,1.0,1.0],[.07,.86,1.05],[.13,.55,1.12],[.16,.0,1.15]],28,{gillN:40,gillA:.0,wavN:7,wavA:.025,planar:true});
+G.disc=()=>BIO.fung?BIO.fung.cap(Object.assign({only:'top'},PARASOL)):G.discLathe();
+G.gills=()=>BIO.fung?BIO.fung.cap(Object.assign({only:'under'},PARASOL)):L([[-.05,.07,.45],[-.055,.55,.62],[-.03,.97,.8]],56,{gillN:56,gillA:.55});
 // a BELL (the bone bell, ref 1): a tall dome, a little waisted at the rim, a hollow underside; unit radius and height
 G.bell=()=>L([[.0,.82,.72],[.04,1.0,.9],[.25,.98,1.0],[.55,.86,1.04],[.8,.6,1.08],[.95,.3,1.1],[1.0,0,1.12]],24,{wavN:5,wavA:.03,wavE:0,bumpA:.03,planar:true});
 // a FUNNEL with a frilled rim: the trumpet tree's (ref: the Rift), the drizzle trumpet's pitcher (ref 19), the soot cup
@@ -845,7 +856,7 @@ BIO.def('glowgill',G.glowgill(),M.glowgill,{label:'Glowing gills'});
 BIO.def('cagebulb',G.cagebulb(),M.cagebulb,{label:'Cage-lantern bulbs'});
 BIO.def('lacefan',G.lacefan(),M.lacefan,{label:'Lace fans'});
 // with the owner's textures: the medusa cap's own dome (the parasol disc in its skin), the blades' and the fans' cards
-if(M.medusaT)BIO.def('medusadome',G.disc(),M.medusaT,{label:'Medusa-cap domes'});
+if(M.medusaT)BIO.def('medusadome',G.discLathe(),M.medusaT,{label:'Medusa-cap domes'});
 THRONE.LIB.cardsOf('pyreblade').forEach(k=>BIO.def(k,G.leafquad(),M[k],{label:'Pyre-thistle blades'}));
 THRONE.LIB.cardsOf('lacecard').forEach(k=>BIO.def(k,G.leafquad(),M[k],{label:'Lace fans'}));
 })();
