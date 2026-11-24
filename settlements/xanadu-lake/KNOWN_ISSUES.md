@@ -100,3 +100,17 @@
   lake town's sources, so refitting one town marks all nineteen stale though their own rows are unchanged: re-bake them all
   and rebuild both lake regions after any refit (`bake_towns.py <key> --check` says which). Owed: hash each town's own row.
 - **GPU.** The page was first verified on SwiftShader in a cloud session with no GPU lane; the `KRATOR_GL=gpu` run is owed (the north shore's seven by the master session; the south-east round's six from step L3).
+- **Qōqō, Hāibh and Nēṭ stand on their old fits** (2026-11-24, the Stage 8 refit). On the re-run's model their shores are cliffs:
+  the land rises 127 m (Qōqō), 280 m (Hāibh) and 257 m (Nēṭ) in the first 430 m from the water, where it rose 17-32 m before,
+  and each pin stands 170-510 m above the lake, a kilometre or more from it. A lake town's terraces cannot stand on that
+  (refitted, Hāibh lays 47 houses of 218, Nēṭ 18 of 255; landmarks in the lake, benches 190 m out of level), so their rows stay
+  the line's and read STALE (`tools/fit_lake_town.py <key> --check`). Owed, a choice for the map: a gentle foreshore kept at the
+  three towns (the model's relief spared under their footprints), or the towns moved along the shore to where one is.
+- **Māuṭh, Ālph-Hēḍ and Malbari refitted on the re-run's model** (2026-11-24). Malbari's pin now stands 951 m inland of its
+  landing, so its footprint is R 2000 (was 1400; the rest no longer fades in at its west waterfront), and its benches stop at
+  x ±640 (was 760: the shore bends 57 degrees at x -700, past where a bench's works and plots can stand). The plan
+  (`89zq`): a host in a block and a bench's works and plots turn fully with the contour rows (the 20-degree cap held them askew
+  on a bent shore: Ālph-Hēḍ's drying floors reached a row); a landmark above the shore road clears the road at each of its
+  corners, not only at its middle (Malbari's han). `tests/test-xl-towns.js` judges a bridge by its corners, not its middle over
+  the stream's bed (Māuṭh's, where the bed meets the lake).
+
