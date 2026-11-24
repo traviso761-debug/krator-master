@@ -27,6 +27,14 @@ M.label(500,0,'Voth');ok('labels are never picked',M.pick(500,0)===null,false);
 const W=KWALK.create();W.floor({rect:[0,100,0,100],y:0,name:'Hall'});W.floor({rect:[20,40,20,40],y:16,name:'Gallery'});
 const M2=KMAP.create({frame:[0,100,0,100]});M2.fromWalk(W,y=>y>8?'#68a':'#887');
 ok('walk floors come in, the upper one on top',M2.pick(30,30).name==='Gallery'&&M2.pick(80,80).name==='Hall',M2.pick(30,30).name==='Hall');
+// a carved room (KCAVERN) is a KWALK poly floor: fromWalk draws it as its polygon (S2-C19: it threw)
+{const Wc=KWALK.create();Wc.poly({pts:[[0,0,-12],[40,0,-12],[0,40,-12]],name:'Carved room'});Wc.floor({rect:[60,80,60,80],y:0,name:'Yard'});
+ const Mc=KMAP.create({frame:[0,100,0,100]});let err=null,got=null;try{got=Mc.fromWalk(Wc,y=>y<0?'#557':'#887');}catch(e){err=e;}
+ ok('a poly floor comes in without throwing, as a poly at its height',!err&&got&&got.length===2&&got[0].kind==='poly'&&got[0].y===-12&&got[0].col==='#557',!!err);
+ ok('a poly is picked inside its outline and not in its bounding box\'s empty corner',!err&&Mc.pick(10,10)&&Mc.pick(10,10).name==='Carved room'&&Mc.pick(35,35)===null,!err&&Mc.pick(35,35)!==null);
+ const gc=[];const gg=new Proxy({},{get:(t,k)=>k in t?t[k]:(...a)=>{gc.push(k);},set:(t,k,v)=>{t[k]=v;return true;}});if(!err)Mc.paint(gg);
+ ok('a poly is painted as a closed path',gc.includes('closePath')&&gc.includes('fill'),!!err);
+ const ec=err?null:Mc.export();ok('a poly exports its outline as plain points',!!ec&&ec.records.some(r=>r.kind==='poly'&&r.pts.length===3&&r.pts[1].join()==='40,0'),!ec);}
 
 // relief: a hill west, water east
 const R=M2.relief((x,z)=>50-x,{cell:10,water:0});

@@ -35,11 +35,10 @@ KHAMLET.CULTURES['xanadu-fishing']=Object.assign({},KHAMLET.CULTURES.xanadu,{
  focusJobs:Object.assign({},KHAMLET.CULTURES.xanadu.focusJobs,{fishing:90}),reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{fishing:260}),
  pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{xh_fish_racks:{w:16,d:11,h:3.6,what:'fish racks and a smokehouse'}})});
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-fishing']={culture:'xanadu'};
-/* the Xanadu row by name (core/hamlet/xanadu/23, KHAMLET.xanaduRow: the shared row with the orchard and tea foci and a wayside
-   shrine in each village), as Gihon's page lays its ring and the Alph's hamlets (settlements/gihon/src/42-gh-ring.js). Its works
-   keys the kit's src lacks (the shrine, the apiary) are its pending boxes here: this page loads the kit's extra/88d and 88f, not
-   88g, which would size them on the page and not in the bake */
-if(!KHAMLET.xanaduRow)throw new Error('the region\'s sites: core/hamlet/xanadu/23-hamlet-xanadu-row.js is not loaded');
+/* the Xanadu row by name (core/hamlet/20's KHAMLET.xanaduRow since Stage 8 B8, D11: the shared row with the orchard and tea foci
+   and a wayside shrine in each village), as Gihon's page lays its ring and the Alph's hamlets (settlements/gihon/src/42-gh-ring.js).
+   88d, 88f and 88g are in the kit's src since Stage 8 B9; a works key the bake's kit dims lack is still a pending box */
+if(!KHAMLET.xanaduRow)throw new Error('the region\'s sites: core/hamlet/20-hamlet-cultures.js (KHAMLET.xanaduRow) is not loaded');
 KHAMLET.CULTURES['xanadu-row']=KHAMLET.xanaduRow({});
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-row']={culture:'xanadu'};
 // bridges (core/world/42b-world-bridges.js; 2026-11-16, for Thalaba's Briḍj): every road and link this region lays is bridged

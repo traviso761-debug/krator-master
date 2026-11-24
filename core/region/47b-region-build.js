@@ -43,7 +43,7 @@ RH.simBuild = function () {
       var P = SIM.R.place[Lt.id];
       if (P.tags && P.tags.road) { P.name = P.name.replace(', building', ''); delete P.activities.WORK; if (SIM.placesChanged) SIM.placesChanged(); if (RH.roadBuilt) RH.roadBuilt(P); return; }   /* a founded hamlet's highway (47f) */
       var K = T.kinds[P.tags.key], hh = P.tags.hh || RH.households(P.tags.key), beds = hh * T.home.per;
-      P.kind = K ? K[0] : 'home'; P.name = (ISLE_DIMS[P.tags.key] && ISLE_DIMS[P.tags.key].role) || P.tags.key; delete P.activities.WORK;
+      P.kind = K ? K[0] : 'home'; P.name = (typeof ISLE_DIMS !== 'undefined' && ISLE_DIMS && ISLE_DIMS[P.tags.key] || {}).role || P.tags.key; delete P.activities.WORK;
       T.home.acts.forEach(function (a) { P.activities[a] = beds; }); P.indoor = true; P.tags.vacant = false; P.tags.built = Pj.m1;
       if (SIM.placesChanged) SIM.placesChanged(); SIM.buildChanged(P.settlement);
       var L = RH.SIM.lotRecs && RH.SIM.lotRecs[Lt.id]; if (L) L.built = true;

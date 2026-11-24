@@ -64,8 +64,17 @@ const H = KHOST.take({
   api: {hostChecks, hostNegatives, get totals() {...}, biome: () => ...},   // the build's own window._api fields
 });
 // H = {clock, camera, renderer, scene, ctl, cam, setView, go, err, on}
-KHOST.on((dt, clock) => {...});          // a new subscriber: phase 'tick' (default), 'view' (after the camera), 'after'
+KHOST.on((dt, clock) => {...});          // a new subscriber: phase 'tick' (default), 'view' (after the camera), 'after',
+                                         // 'restore' (once when a lost WebGL context comes back)
 ```
+
+**WebGL context loss** (S3-76a). three r128 prevents the default on `webglcontextlost`, skips `render()` while the context is
+gone and rebuilds every program and texture from the scene on `webglcontextrestored`. The loop (91) pauses while it is gone (no
+tick runs against a dead context) and resumes on restore, after the `'restore'` subscribers: a page that rendered into a render
+target once (an impostor atlas, a baked map) re-bakes there, since that target comes back empty. `H.contextLost`, `H.glLost`,
+`H.glRestored` say what happened. Check it in a browser with `KHOST.host.renderer.forceContextLoss()`, then, a second later,
+`KHOST.host.renderer.forceContextRestore()`: the frame count stops, then moves again and the scene draws as before. `node core/host/test-loop.js`
+checks the loop's side.
 
 A build without a piece of data loses only that feature: no `views`, no view select; no `registry`, the inspector names the
 mesh and the probe has no volumes; no `sky.hour`, no hour slider; no `exporters`, no export row.
@@ -338,6 +347,17 @@ take that lists the probe must sort after `95-host-probe.js`, which is why the t
 `verify.py --assert` unchanged, chrome-hidden shots identical to the old pages' (bar the night's flicker and Islanders'
 animated sea), the hash baseline moved for those seven pages only. What the engine had and the host lacks:
 `kits/scyvoi/KNOWN_ISSUES.md`, "Host port".
+
+**Naming a kit's own host files** (S3-84b, Stage 8). Fragments run in filename order, and `KHOST.take` (from the take,
+`99-host-take.js`) makes `window._api` afresh (`95-host-probe.js`: `root._api = api`): whatever a kit put on `window._api`
+before the take is gone. So:
+- `99-host-take.js` is the last of the host's own files, and a kit never names a file `99-host-<kit>.js`: it sorts before the
+  take whenever the kit's name sorts before `take` (`99-host-dasri.js`, `99-host-kimr.js`), and its probe fields are lost.
+- What the take reads, or what must stand before it (a kit's own panel, map or controls), goes in a `98x-` file:
+  `98r-host-geomap.js` (`kits/resources`).
+- A kit's probe fields (`verify.py --assert`), added onto `window._api`, go in a file that sorts after the take:
+  `99-host-tz-<kit>.js` (`kits/hueru-kuran`, `kulanewa`, `molu-che`, `ria`, `spider-lake`, `dasri`, `coyote`; the Throne's
+  `99-host-tz-core.js`). Such a file adds onto the take's `window._api`, never replaces it.
 
 **Voth's city plan** (2026-10-15 and 2026-10-16, steps 6a and 6b) takes the whole interface, its tools included: the
 cantons and the lot buildings in view in the cutaway, its own ray picks in the inspector (`o.inspectRay`), its painted

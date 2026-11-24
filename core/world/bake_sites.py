@@ -39,8 +39,6 @@ JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.j
       ('core', 'city', '33-city-strategies.js'), ('core', 'hamlet', '10-hamlet-wood.js'), ('core', 'hamlet', '12-hamlet-gather.js'),
       ('core', 'hamlet', '14-hamlet-farmland.js'), ('core', 'hamlet', '16-hamlet-names.js'), ('core', 'hamlet', '18-hamlet-names.js'),
       ('core', 'hamlet', '20-hamlet-cultures.js'), ('core', 'hamlet', '21-hamlet-iziz.js'), ('core', 'hamlet', '30-hamlet-village.js'),
-      # the Xanadu row by name (opt-in: it registers nothing, a region's spec passes KHAMLET.xanaduRow() as a row)
-      ('core', 'hamlet', 'xanadu', '23-hamlet-xanadu-row.js'),
       ('core', 'world', '48s-world-sites.js')]
 
 LANDFORMS_JS = '41l-world-landforms.js'   # opt-in: a region whose build.py lists it (script())

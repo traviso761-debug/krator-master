@@ -75,6 +75,13 @@ const expectVoyages=(legs,mins)=>{let m=60+STAY,i=0,n=0;while(m<=mins){n++;m+=le
  T.ok('C2: a dry oasis costs a caravan: at a dry Bitta its beasts go unwatered, half the unwatered die, and it remounts at home',lost(RD),
   RD?'died '+RD.died+', remounted '+RD.remounted+', short at Bitta '+Math.round(((RD.dry.scatchbitta01||{}).water||0)/1000)+' m3':'no route');
  T.neg('a caravan that loses no beasts at a dry oasis is caught',lost,R,RD);}
+/* S3-87a: a loss with `every: 0` is read as every passage (1), so `spare` still holds: `every: 0, spare: 1` spares every passage.
+   It was (n - 1) % 0 = NaN, never under `spare`, so every passage killed */
+{const lossRun=o=>run(30,caravan({provision:CATCH_TUNE.caravan,losses:[Object.assign({legs:[0,1,2,3],share:.1,why:'test'},o)]})),
+  dead=C=>(C.S.losses['test.caravan']||[]).length;
+ const Z=lossRun({every:0,spare:1}),K=lossRun({every:1,spare:0});
+ T.ok('a loss with every 0 and spare 1 spares every passage: no beasts lost in 30 days',dead(Z)===0,dead(Z)+' losses');
+ T.neg('the loss count tells a spared caravan from one losing beasts on every passage',C=>dead(C)===0,K,Z);}
 
 // ---- C3-C5: the crossing joined to Xanadu (CATCH_TUNE.join): the groups' caravans in place of Xanadu's four Catch
 //      gateways, the Twins' routes and tally, the seasons and hazards. A year, every departure recorded by the hour

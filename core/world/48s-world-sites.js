@@ -82,7 +82,7 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
       heart points its lane down its road, not at its own green) */
    const lk=Hs.link?{x:S.x+Hs.link[0],z:S.z+Hs.link[1]}:{x:S.x,z:S.z};
    const v=KHAMLET.village({id,world:spec.world,culture:Hs.culture||SP.culture,focus:Hs.focus,site:at,link:lk,dims:kit.dims,
-    ground:{ok:groundOk},popMax:Hs.pop});
+    ground:{ok:groundOk},popMax:Hs.pop,camp:Hs.camp});
    if(v.error)out.errors.push(id+': '+v.error);
    const main=(v.lanes||[]).find(l=>l.main)||(v.lanes||[])[0],end=main?main.pts[main.pts.length-1]:[v.site.x,v.site.z];
    site.hamlets.push({id,name:Hs.name||(Hs.focus+' village'),focus:Hs.focus,culture:Hs.culture||SP.culture,site:{x:r2(v.site.x),z:r2(v.site.z)},

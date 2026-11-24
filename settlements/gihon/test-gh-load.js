@@ -9,7 +9,6 @@ const load=f=>vm.runInThisContext(fs.readFileSync(path.join(ROOT,f),'utf8'),{fil
 ['core/rand/08-core-rand.js','core/space/20-core-space.js'].forEach(load);
 fs.readdirSync(path.join(ROOT,'core','city')).filter(f=>/^\d\d-city-.*\.js$/.test(f)&&!/host|squares|radial|covered/.test(f)).sort().forEach(f=>load('core/city/'+f));
 fs.readdirSync(path.join(ROOT,'core','hamlet')).filter(f=>/^(10|12|14|16|18|20|30)-hamlet-.*\.js$/.test(f)).sort().forEach(f=>load('core/hamlet/'+f));
-load('core/hamlet/xanadu/23-hamlet-xanadu-row.js');
 KCITY.lib={SL,plan:()=>PLAN,tune:()=>TUNE,KSPACE,Raster,OCC,obb,obbCorners,segDist,polySegDist,resample,clamp,inPoly,cg:()=>CG};
 load('kits/xanadu/src/80f-xa-fort-data.js');
 ['39g-gh-model.js','40-gh-ground.js','41-gh-town.js','42-gh-ring.js','43-gh-landing.js'].forEach(f=>load('settlements/gihon/src/'+f));
@@ -19,7 +18,7 @@ for(const F of KITF('src').concat(KITF('extra'))){const s=fs.readFileSync(F,'utf
  for(const m of s.matchAll(/key:'(xa_[a-z0-9_]+)'/g)){const seg=s.slice(m.index,m.index+900),g=k=>{const q=seg.match(new RegExp('[,{]'+k+':([0-9.]+)'));return q?+q[1]:null;};
   if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8,fw:g('fw')||g('w'),fd:g('fd')||g('d')};}
  for(const m of s.matchAll(/xa(?:Garden|Water)Def\('(xa_[a-z0-9_]+)'/g))if(!DIMS[m[1]])DIMS[m[1]]={w:8,d:8,h:5,fw:8,fd:8};}
-{const m=fs.readFileSync(path.join(ROOT,'kits','xanadu','extra','88f-xa-harbour.js'),'utf8').match(/const XH_BADGIR=\[([^\]]*)\]/);if(m)for(const k of m[1].match(/xa_[a-z0-9_]+/g))if(DIMS[k])DIMS[k+'_badgir']=Object.assign({},DIMS[k],{h:DIMS[k].h+2});}
+{const m=fs.readFileSync(path.join(ROOT,'kits','xanadu','src','88f-xa-harbour.js'),'utf8').match(/const XH_BADGIR=\[([^\]]*)\]/);if(m)for(const k of m[1].match(/xa_[a-z0-9_]+/g))if(DIMS[k])DIMS[k+'_badgir']=Object.assign({},DIMS[k],{h:DIMS[k].h+2});}
 for(const F of KITF('src').concat(KITF('extra')))for(const m of fs.readFileSync(F,'utf8').matchAll(/key:'(xa_[a-z0-9_]+)',baseKey:'(xa_[a-z0-9_]+)'/g))if(DIMS[m[2]])DIMS[m[1]]=DIMS[m[2]];
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].fw,fd:DIMS[k].fd}:null;
 module.exports={ROOT,DIMS,dims,load};

@@ -202,22 +202,20 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `hamlet/14-hamlet-farmland.js` | 12.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/16-hamlet-names.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/18-hamlet-names.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `hamlet/20-hamlet-cultures.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `hamlet/20-hamlet-cultures.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the culture rows; KHAMLET.xanaduRow(opts) folded in from xanadu/23 (Stage 8 B8) |
 | `hamlet/21-hamlet-iziz.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/22-hamlet-coyote.js` | 8.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/22-hamlet-marr.js` | 9.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `hamlet/30-hamlet-village.js` | 25.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the village generator: plain records; its "geom" hits are its own box and rectangle maths, no three.js |
+| `hamlet/30-hamlet-village.js` | 25.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the village generator: plain records; its "geom" hits are its own box and rectangle maths, no three.js; the work camp census folded in from camp/26 (Stage 8 B8) |
 | `hamlet/32-hamlet-platform.js` | 35.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `hamlet/34-hamlet-trade.js` | 14.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/36-hamlet-terrace.js` | 16.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/40-hamlet-felling.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `hamlet/camp/26-hamlet-camp.js` | 5.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/dalab/23-hamlet-dalab.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/ext/21-hamlet-yuni.js` | 3.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/fellgang/22-hamlet-fellgang.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/lizardmen/23-hamlet-lizardmen.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/shumari/25-hamlet-shumari.js` | 12.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `hamlet/xanadu/23-hamlet-xanadu-row.js` | 13.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAMLET.xanaduRow(opts), the Xanadu row passed by name (fishing, the new foci, the shrine, the camp); test-hamlet-xanadu-row.js |
 | `hazard/20-core-hazard.js` | 48.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hazard/21-core-hazard-flow.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.moveAt, drift, poolK: a hazard's move read (move.pull toward its core) and gas pooled on a band's floor (shape.pool); test-hazard-flow.js; core/hazard/GODOT.md "Moving and pooling" |
 | `hazard/22-core-hazard-env.js` | 28.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.crust/under, KHAZ.night (bindClock, bindWind), KHAZ.front (flood, charge, bindHerd), KHAZ.ENV builders; test-hazard-env.js; GODOT.md "Crusts, night and fronts" |

@@ -150,7 +150,7 @@ T.ghRing=[['gh.ring.padi','Paḍī (the paddies)',952.6,1608.2,'farming',240,44]
  ['gh.ring.bulak','Bulak (the bullocks)',958.2,1609.7,'ranch',145,26]];
 /* THE ALPH'S HAMLETS (the owner, 2026-11-17: "at least a few hamlets or something along the river going towards theodiga"): five
    on the Alph's valley from its mouth on the Lower Lake (942,1593) up to Theodiga, on core/hamlet's Xanadu row by name
-   (core/hamlet/xanadu/23-hamlet-xanadu-row.js); the lower three in the Scarp tithing to the Landing, the upper two in the Vale
+   (core/hamlet/20-hamlet-cultures.js, KHAMLET.xanaduRow); the lower three in the Scarp tithing to the Landing, the upper two in the Vale
    (P2) tithing to Theodiga, the start of Theodiga's ring. [id, name, px, py, focus, people, households, seat, province, make kg] */
 T.alph=[['alph.weyar','Wēyar (the weir)',936.5,1585.5,'farming',240,44,'ll.landing','p5'],['alph.medo','Mēḍō (the meadow)',929.5,1573.5,'ranch',145,26,'ll.landing','p5'],
  ['alph.gorj','Gōrj-Phuṭ (the gorge\'s foot)',919,1565,'orchard',240,44,'ll.landing','p5',30000],['alph.hil-ti','Hil-Ṭī (the hill tea)',916,1552,'tea',240,44,'s4zvgepuru','p2',8000],
