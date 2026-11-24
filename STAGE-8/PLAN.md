@@ -10,6 +10,7 @@ item was checked against the line's code, not taken from the docs it came from; 
 | [C-bugs.md](C-bugs.md) | Survey 3's 91 bugs and survey 2's, deduplicated and verified, grouped by the file they touch | ~100 open |
 | [D-perbuild.md](D-perbuild.md) | What every build's own docs ask of the rebuild, per build; Godot; the known failures to carry | ~160 builds |
 | [E-integration.md](E-integration.md) | What the integration line knows: what still lands first, the line's test failures and what to do with each | |
+| [G-weather.md](G-weather.md) | Atmospheric clouds and dynamic weather (draft, the owner's choices open): what exists, tier 1 wiring that can ride Stage 8, tier 2 new systems (weather cells, volumetric clouds, the settlements' skies) | |
 | [F-session-notes.md](F-session-notes.md) | What the sessions that fed the line found (biome and kit graphics, Xanadu plans, verify_all): bugs F1-F20 with their step, what to rebuild together, verify and cost-measuring tips, coding pitfalls | |
 
 Ids below (T5, S3-54, C4 ...) point into those appendices, where each has its file, lines, reach and evidence.
@@ -39,6 +40,7 @@ D32. Where the answer differs from the recommendation, this plan now does what t
 | D27 | **Both passes**: fungoid and arms | B14: the fungoid pass on BIO.fung, and the arms: `'arms'` in each garrison build's `FURN_CULTURES`, military rooms in `kits/interiors/sets/highlands.js`, `iziz.js`, `zeijani.js`, the Iziz palace, `kits/eternian/src/61-et-defence.js` (O5) |
 | D30 | **Fix the small known failures** | B14: Locus's `one-key-map` (the small fix that exists), the golden files (`core/terrain/test-slab.js`, `test-lava.js`, `test-scarp.js` after reading each diff; `core/water/test-gaps.js` "neutral by default"); carry the rest of section 5 |
 | D31 | **The garment branch's 112 outfit pieces are published: use them** | Phase C step 20: pull the published pieces before `tools/build.py core/charactermodels`, so Longsong's "people dressed" check can pass |
+| D33 | **Clouds and weather (2026-11-23, G-weather.md)**: tier 1 rides Stage 8; tier 2 comes after it, with true volumetric clouds; the settlements move onto the shared sky with tier 2 | ride-alongs V8-V11 in the core wave (cloud shadows and rain darkening on every biome kit, weather in the open world, one wind field, the weather bugs); one W1 pair per sky family and one open-world pair for the owner before the core wave. Not in Stage 8: weather cells (W5), volumetric clouds (W6), the settlements' skies (W7) |
 | Q5 | **World-tile streams on** the relief regions | step 16: `relief.world_tiles: true` and `bake_streams.py <r> --world-tiles` on pinnacle, oidong-highrift, xanadu-oidong-highrift |
 
 ---
