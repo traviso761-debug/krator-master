@@ -19,7 +19,6 @@ if(SKEY==='polynya'){const LV=SITE.lake.level,R1=TERR.R*1.1,W_P={};
  W_P.ice=[];if(SHORE_ICE){SHORE_ICE.polys.forEach((P0,k)=>{const P=clip(P0,R1);if(P.length<3)return;
   const I=WATER.ice({name:'The shore ice (a fringe in the shallows, '+(k+1)+')',poly:P,level:LV+.04,seed:9890+k,colours:{ice:'#7e939b',crack:'#dfe8ec',snow:'#edf2f4'},
    cracks:{cell:9,jitter:.8,width:.06},drifts:{wind:-15,spacing:7,chance:.3,len:[2,6],wid:[.8,2],depth:[.02,.06]}});
-  I.levelAt=()=>I.level;   /* core/water ext/60 (WATER.fields) reads a surface's levelAt; ext/54's ice has none (KNOWN_ISSUES.md) */
   const DI=WATER.drawIce(I,{cell:1.5,pick:true});DI.mesh.userData.inspectLabel='Shore ice: a fringe on the shallows at the coldest dawn (the bay itself stays open)';
   W_P.ice.push({pts:P.length,drifts:I.drifts.length});});
   W_P.leads=SHORE_ICE.leads;}

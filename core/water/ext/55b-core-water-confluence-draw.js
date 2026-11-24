@@ -21,7 +21,7 @@
   for(const D of draws){const m=D.material||D,opaque=!m.transparent,line=opaque?'if('+t+'<0.5)discard;':'diffuseColor.a*='+t+';';
    W.KH().add(m,'wtr-cf:'+W.hashStr(line),sh=>{W.fs(sh,'wtr-fadeRibbons',['#include <color_fragment>','#include <color_fragment>\n'+line]);},{key:'cf:'+W.hashStr(line)});}
   return t;};
- W.drawConfluence=(C,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.flow,per=W.period(),M=C.mesh(),g=new T.BufferGeometry();
+ W.drawConfluence=(C,o)=>{o=o||{};const A=W.atmosBound('WATER.drawConfluence'),T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.flow,per=W.period(),M=C.mesh(),g=new T.BufferGeometry();
   const rap=o.rapids||(C.flows[0]&&C.flows[0].rapids)||null;
   g.setAttribute('position',new T.Float32BufferAttribute(M.pos,3));g.setAttribute('wtrFlow',new T.Float32BufferAttribute(M.flow,2));g.setAttribute('wtrSlope',new T.Float32BufferAttribute(M.slope,1));
   g.setAttribute('wtrBank',new T.Float32BufferAttribute(M.bank,1));g.setAttribute('wtrFade',new T.Float32BufferAttribute(M.fade,1));g.setAttribute('wtrMeet',new T.Float32BufferAttribute(M.meet,1));

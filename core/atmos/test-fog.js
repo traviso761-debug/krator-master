@@ -189,6 +189,22 @@ const rampW=(x,z)=>3000+.4*x,rampL=(x,z)=>3000-.4*x;
  ok('ATMOS.heightFog({mist:{field}}): its texture is the field\'s halves (64 x 64 over 8 km), 5 samples, the hook binds it, the record keeps the grid',HF.field.texture.image.data===HF.field.half&&HF.field.texture.type===T.HalfFloatType&&A.U.fogMistK.value.x===64&&A.U.fogMistK.value.y===5&&near(A.U.fogMistE.value.z,1/8000,1e-15)&&sh.uniforms.atmFogMistT===A.U.fogMistT&&/atmFogMistField/.test(sh.fragmentShader)&&rec.mist.field.res===64&&!rec.mist.field.at&&typeof HF.field.at==='function'&&near(HF.field.at(1500,0),ramp(1500,0),1e-2),!sh.uniforms.atmFogMistT);   /* 1e-2: the bilinear's error between nodes 127 m apart on a 1.6 km ramp */
  A.fogMistFieldOn=false;}
 
+// ---------------------------------------------------------------- the mist's own colour (2026-11-24, T41: the Siphon Pits' amber deck tinted the fog colour
+// each frame, since the chunk's mist took the fog's colour, cM = fc): mist.colour and mist.mix, on a page that asks
+{const F0={density:0,colour:[.6,.65,.7],falloff:1/900,ref:0,shape:'exp2'},mist={density:.004,y:30,depth:40,noise:0},ro=[0,10,0],P=[3000,10,0];
+ const plain=A.fogAt(ro,P,Object.assign({},F0,{mist})).colour,amber=A.fogAt(ro,P,Object.assign({},F0,{mist:Object.assign({},mist,{colour:[.83,.64,.35]})})).colour,
+  half=A.fogAt(ro,P,Object.assign({},F0,{mist:Object.assign({},mist,{colour:[.83,.64,.35],mix:.5})})).colour;
+ ok('the twin: a ray through the mist alone takes the mist\'s colour ('+amber.map(v=>v.toFixed(2))+'), mix .5 half way from the fog\'s; without one the fog\'s colour ('+plain.map(v=>v.toFixed(2))+')',
+  amber.every((v,i)=>near(v,[.83,.64,.35][i],1e-12))&&half.every((v,i)=>near(v,(F0.colour[i]+[.83,.64,.35][i])/2,1e-12))&&plain.every((v,i)=>near(v,F0.colour[i],1e-12)),plain.every((v,i)=>near(v,amber[i],1e-6)));
+ A.fogMistColOn=false;const g0=A.fogGLSL();A.fogMistColOn=true;const g1=A.fogGLSL();A.fogMistColOn=false;
+ ok('the chunk without a mist colour is the chunk it was (cM = fc); with one cM mixes toward atmFogMistC by its w',g0===A.fogGLSL()&&!/atmFogMistC/.test(g0)&&/vec3 cM=fc;/.test(g0)&&/uniform vec4 atmFogMistC;/.test(g1)&&/vec3 cM=mix\(fc,atmFogMistC\.rgb,atmFogMistC\.w\);/.test(g1)&&!/vec3 cM=fc;/.test(g1),!/vec3 cM=fc;/.test(g0));
+ const HF=A.heightFog({mist:{density:.004,y:30,depth:40,noise:0,colour:[.83,.64,.35],mix:.85}});A._frame(.1);
+ const m=new Material();A.heightFogOn(m);const sh=compile(m),rec=A.fx.filter(r=>r.type==='heightfog').pop(),u=A.U.fogMistC&&A.U.fogMistC.value;
+ ok('ATMOS.heightFog({mist:{colour, mix}}): the uniform holds them, the hook binds it and compiles the colour\'s line, the record keeps the colour',
+  u&&near(u.x,.83,1e-12)&&near(u.z,.35,1e-12)&&u.w===.85&&sh.uniforms.atmFogMistC===A.U.fogMistC&&/cM=mix\(fc,atmFogMistC/.test(sh.fragmentShader)&&rec.mist.colour.join()==='0.83,0.64,0.35',!sh.uniforms.atmFogMistC);
+ A.fogMistColOn=false;A.heightFog({mist:{density:.004,y:30,depth:40,noise:0}});const s0=compile((()=>{const q=new Material();A.heightFogOn(q);return q;})());
+ ok('...a page whose mist has no colour compiles the old line and binds no colour',!s0.uniforms.atmFogMistC&&/vec3 cM=fc;/.test(s0.fragmentShader),/atmFogMistC/.test(s0.fragmentShader));}
+
 // ---------------------------------------------------------------- the SW highlands' rain wall (fx/89-atmos-fx-rainwall.js)
 const rw=(x,z)=>1000+.4*x,rl=(x,z)=>1000-.4*x;
 {const R=A.rainWallMake({y0:1700,y1:2600,windward:[-1,0]});

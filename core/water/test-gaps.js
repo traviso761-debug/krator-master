@@ -92,6 +92,8 @@ const snap=SNAP();
 if(FROM){console.log(JSON.stringify(snap,null,1));process.exit(0);}
 
 // ---------------------------------------------------------------- the golden (taken from the fragments as of 2026-10-20, before the gaps)
+// 2026-11-24 (Stage 8 B5, T37): draw.flow and draw.flow2 moved on purpose: drawFlow's program key now carries its shallow, deep and color
+// (two flows of different colours shared one program); the shader text and the meshes are unchanged, only the key's tail
 const GOLDEN=require('./test-gaps.golden.json');
 let bad=0;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-9);

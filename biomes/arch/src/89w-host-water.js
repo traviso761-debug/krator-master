@@ -14,9 +14,6 @@ function spring(key,name,x,z,r,level,temp,mineral,o){const S=WATER.spring(Object
  const d=WATER.drawSpring(S,{THREE,scene,fog:scene.fog,mats:SPRING_MATS,renderOrder:1});d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel=name;return S;}
 function ribbon(name,pts,width,speed,shallow,deep,rapids){const F=WATER.flow({name,pts,width,speed,rapids:rapids||[.01,.04]});
  const D=WATER.drawFlow(F,{shallow:lin(shallow),deep:lin(deep),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:6,across:4,margin:.6,depthBias:1.5,renderOrder:2,pick:true});
- /* core/water's drawFlow bakes the colours into the shader text but not into the program's cache key (51-core-water-kinds.js), so three.js reused the
-    first flow's program and every stream drew the alkaline blue (seen 2026-11-12). The colours join the key here; the core fix is parked in TODO.md */
- {const m=D.mesh.material,k0=m.customProgramCacheKey;m.customProgramCacheKey=()=>(k0?k0.call(m):'')+'|arch:'+shallow+','+deep;m.needsUpdate=true;}
  D.mesh.userData.inspectLabel=name;return F;}
 let BIGW=null,BIG_DRAW=null;const W_OUT={};
 if(SITE.springs){const S=SITE;
