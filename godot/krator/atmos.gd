@@ -114,6 +114,12 @@ func weather_target(m: String, h: float) -> Dictionary:
 
 
 func weather_step(S: Dictionary, h: float, dt: float) -> Dictionary:
+	# live: the weather cells' sample at the eye (atmos_cells.gd weather_at, set as S["live"] before the step) taken as it is
+	if S["mode"] == "live" and S.get("live") != null:
+		var L: Dictionary = S["live"]
+		for k in ["rain", "fog", "wet", "wind", "ash", "snow", "dust", "storm"]:
+			S[k] = L[k]
+		return S
 	var g := weather_target(S["mode"], h)
 	S["rain"] = S["rain"] + (g["rain"] - S["rain"]) * minf(1.0, dt * 1.5)
 	S["fog"] = S["fog"] + (g["fog"] - S["fog"]) * minf(1.0, dt * 0.8)
