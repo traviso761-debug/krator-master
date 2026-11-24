@@ -147,10 +147,15 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
   const re=eval(patchSrc.match(/A\.KH\(\)\.rep\(m\.vertexShader,(\/.*?\/),'vA\*=/)[1]),old=/(gl_Position=(projectionMatrix\*mv|atmQuad\(mv,ps\));\s*\}\s*)$/;
   const pat=r=>o.vertexShader.replace(r,'vA*=1.0-atmRainCover(p);$1');
   ok('log depth: the weather\'s four shaders take the chunks, and the rain cover still patches them',
-   /^#include <common>\n#include <logdepthbuf_pars_vertex>/.test(o.vertexShader)&&/gl_Position=projectionMatrix\*mv;\n#include <logdepthbuf_vertex>\}$/.test(o.vertexShader)&&
+   /^#include <common>\n#include <logdepthbuf_pars_vertex>/.test(o.vertexShader)&&/gl_Position=projectionMatrix\*mv;\n#include <logdepthbuf_vertex>\n\}$/.test(o.vertexShader)&&
    /^#include <logdepthbuf_pars_fragment>\nuniform float light;void main\(\)\{\n#include <logdepthbuf_fragment>\n/.test(o.fragmentShader)&&
    /vA\*=1\.0-atmRainCover\(p\);gl_Position/.test(pat(re))&&(fs.readFileSync(path.join(D,'89-atmos-4-weather.js'),'utf8').match(/new T\.ShaderMaterial\(A\.logDepth\(\{/g)||[]).length===4,
-   /vA\*=/.test(pat(old)));}}
+   /vA\*=/.test(pat(old)));
+  /* each #include on a line of its own (2026-11-24): the first cut left '#include <logdepthbuf_vertex>}', which expands to '#endif}'
+     and the snow and ash flecks did not compile (Oidong's and the Throne's verify). The negative: that text */
+  const inc=/#include <[^>]+>[^\n]/;
+  ok('log depth: every #include stands on its own line (an #endif} does not compile)',!inc.test(o.vertexShader)&&!inc.test(o.fragmentShader)&&!inc.test(pat(re)),
+   !inc.test(o.vertexShader.replace('<logdepthbuf_vertex>\n}','<logdepthbuf_vertex>}')));}}
 {const u={};A.windUniforms(u);const g=A.windGLSL();ok('the gust field for leaf shaders: atmWindV, atmGustAmp, atmTime, atmGust/atmWind',u.atmWindV===A.U.wind&&u.atmGustAmp===A.U.gustAmp&&u.atmTime===A.U.time&&/float atmGust\(/.test(g)&&/uniform vec2 atmWindV/.test(g),!u.atmWindV);
  // the GLSL gust is the JS gust
  const t=12.5,x=40,z=-30,w=A.U.wind.value,j=A.gust(t,x,z);ok('...and atmGust in GLSL is ATMOS.gust in JS (the same sum)',g.indexOf(A.GLSL_WIND.slice(0,40))>=0&&isFinite(j),false);}

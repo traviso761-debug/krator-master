@@ -64,7 +64,7 @@
  // LOG DEPTH (2026-11-24, Stage 8 V9): the weather's own ShaderMaterials take three's log-depth chunks, so on a renderer with
  // logarithmicDepthBuffer (the open world's) the rain, flecks, streaks and veils are hidden behind the ground as they should be, not
  // drawn only against the sky. On a page without it the chunks are empty. A.logDepth(o) rewrites o's two shaders and returns o
- A.logDepth=o=>{o.vertexShader='#include <common>\n#include <logdepthbuf_pars_vertex>\n'+o.vertexShader.replace(/(gl_Position=[^;]*;)(\s*\}\s*)$/,'$1\n#include <logdepthbuf_vertex>$2');
+ A.logDepth=o=>{o.vertexShader='#include <common>\n#include <logdepthbuf_pars_vertex>\n'+o.vertexShader.replace(/(gl_Position=[^;]*;)(\s*\}\s*)$/,'$1\n#include <logdepthbuf_vertex>\n$2');
   o.fragmentShader='#include <logdepthbuf_pars_fragment>\n'+o.fragmentShader.replace(/void main\(\)\{/,'void main(){\n#include <logdepthbuf_fragment>\n');return o;};
  // THE FLAKES' drawing (the ash's, o.ash, and the snow's, o.snow; key 'ash' or 'snow', each its own preset and uniform):
  // the flecks, a box of tumbling specks riding the camera, slow to fall and driven downwind by the module's wind (which the
