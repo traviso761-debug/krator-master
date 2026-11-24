@@ -18,7 +18,9 @@ var SITE_SPEC={region:'xanadu-lake-shore',world:1191569,bridges:{culture:'xanadu
   s57bkv9741:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
    /* the caldera lake is north of the town (edit 5.1-512): the farms along the south shore east and west and up the
       slopes toward the volcanoes, the ranch on the uplands between them */
-   {id:'farm-1',focus:'farming',bearing:70,km:8,pop:300},{id:'farm-2',focus:'farming',bearing:110,km:9,pop:300},
+   /* farm-1 at the spot xanadu-oidong-highrift's search finds for its bearing 70, 8 km: this region's narrower lake leaves no
+      ground within the search of that bearing since Erehwon's re-seat (841,1507.9, 2026-11-23) */
+   {id:'farm-1',focus:'farming',near:[6900,1700],look:1500,pop:300},{id:'farm-2',focus:'farming',bearing:110,km:9,pop:300},
    {id:'farm-3',focus:'farming',bearing:165,km:7,pop:300},{id:'farm-4',focus:'farming',bearing:215,km:7.5,pop:300},
    {id:'farm-5',focus:'farming',bearing:265,km:8.5,pop:300},{id:'ranch-1',focus:'ranch',bearing:190,km:14,pop:200}]},
   /* the shore towns (T.lake, prov p1), Ālph-Hēḍ round to Siṭāq */

@@ -14127,19 +14127,19 @@
 "points": [
 [
 826.0,
-1492.64
+1492.9
 ],
 [
 856.0,
-1492.64
+1492.9
 ],
 [
 856.0,
-1522.64
+1522.9
 ],
 [
 826.0,
-1522.64
+1522.9
 ]
 ],
 "notes": "openworld/SITES.json xanadu-oidong-highrift: site Erehwon (s57bkv9741) (tools/scale-model/cut_site.py)"

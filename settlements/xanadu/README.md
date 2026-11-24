@@ -44,7 +44,8 @@ gardens of the kit page too. The city's budget is 25 M triangles; buildings bake
 culled by range and view each frame (the runtime LOD), the biome's own chunk LOD beside them.
 
 **Its place in the open world** (the owner, 2026-11-11, after scale-model edit 5.1-512 moved Erehwon onto its caldera
-lake's south shore): the page faces as the world does, with the lake north. It stands with its centre on the pin 805,1516,
+lake's south shore): the page faces as the world does, with the lake north. It stands with its centre on Erehwon's pin,
+841,1507.9 since 2026-11-23 (805,1516 till the vale ring moved the lake; re-seated on the 11-23 re-run's dry shore),
 unturned, and its lake is the world's -520 m (`ER_WORLD`, `targets/erewhon/84-er-geo.js`). Its island (`ISLAND_C`) is
 the scale model's landform `lf_pleasure_dome_isle`, which `openworld/xanadu-oidong-highrift` stamps at 1:1.
 `verify.py --assert` checks that the two stand within 10 m. Its negative turns the page a quarter turn, which puts the

@@ -8,37 +8,37 @@
   "points_px": [
    [
     826.0,
-    1492.64
+    1492.9
    ],
    [
     856.0,
-    1492.64
+    1492.9
    ],
    [
     856.0,
-    1522.64
+    1522.9
    ],
    [
     826.0,
-    1522.64
+    1522.9
    ]
   ],
   "points_m": [
    [
     -36000.0,
-    -38719.999999999796
+    -38199.99999999982
    ],
    [
     24000.0,
-    -38719.999999999796
+    -38199.99999999982
    ],
    [
     24000.0,
-    21280.0000000002
+    21800.000000000182
    ],
    [
     -36000.0,
-    21280.0000000002
+    21800.000000000182
    ]
   ],
   "area_km2": 3600,
@@ -708,45 +708,45 @@
     "name": "corridor Erehwon - Gārḍan",
     "points_px": [
      [
-      838.7949007095808,
-      1506.4620623448616
+      838.8089520702375,
+      1506.6961275111196
      ],
      [
-      833.7949007095808,
-      1515.8220623448615
+      833.8089520702375,
+      1515.7961275111195
      ],
      [
-      838.2050992904192,
-      1518.1779376551385
+      838.1910479297625,
+      1518.2038724888805
      ],
      [
-      843.2050992904192,
-      1508.8179376551386
+      843.1910479297625,
+      1509.1038724888806
      ]
     ],
-    "area_km2": 212
+    "area_km2": 208
    },
    {
     "name": "corridor Erehwon - Boṭ-Yārḍ",
     "points_px": [
      [
-      838.7118312368228,
-      1508.6471165330886
+      838.7205806335232,
+      1508.926765480395
      ],
      [
-      843.7118312368228,
-      1520.0071165330885
+      843.7205806335232,
+      1520.026765480395
      ],
      [
-      848.2881687631772,
-      1517.9928834669115
+      848.2794193664768,
+      1517.973234519605
      ],
      [
-      843.2881687631772,
-      1506.6328834669116
+      843.2794193664768,
+      1506.8732345196051
      ]
     ],
-    "area_km2": 248
+    "area_km2": 243
    },
    {
     "name": "corridor Phish-Mārkiṭ - Rim-Phārm",
@@ -2707,7 +2707,7 @@
      -6000.0,
      -4000.0,
      30224.0,
-     -280.9
+     -281.3
     ],
     [
      -6000.0,
@@ -3503,11 +3503,11 @@
    "type": "city",
    "doc": "s57bkv9741",
    "px": 841,
-   "py": 1507.64,
+   "py": 1507.9,
    "x": -6000.0,
-   "z": -8719.9999999998,
+   "z": -8199.999999999818,
    "biome": "xanadu",
-   "notes": "Pearl of Xanadu, 20,000 on its mountain lake (LORE.md 6.13; settlements/xanadu, target erewhon). Moved 2026-11-11 with edit 5.1-512, which remade its lake as an Atitlan-like caldera (121 x 66 km at -520 m, three volcanoes set back from the south shore, four islands; the Pleasure Dome of the Bay on its own small isle, landforms.json). The old pin 800,1503 is under the new lake. 805,1516 is a south-shore bench (-497 m): the town climbs to -415 m, a 90 m grey cliff to the palace plateau at -305 m, the mountainside behind, between the west and middle volcanoes 14 and 20 px back. Moved 2026-11-16 with its lake (the owner: \"can we make the lake a little narrower and move it more toward the center of the valley? settlements can move with it\") from 805,1516 to the same bench on the new south shore, 841,1517 (scale model 5.1 edit 7)."
+   "notes": "Pearl of Xanadu, 20,000 on its mountain lake (LORE.md 6.13; settlements/xanadu, target erewhon). Moved 2026-11-11 with edit 5.1-512, which remade its lake as an Atitlan-like caldera (121 x 66 km at -520 m, three volcanoes set back from the south shore, four islands; the Pleasure Dome of the Bay on its own small isle, landforms.json). The old pin 800,1503 is under the new lake. 805,1516 is a south-shore bench (-497 m): the town climbs to -415 m, a 90 m grey cliff to the palace plateau at -305 m, the mountainside behind, between the west and middle volcanoes 14 and 20 px back. Moved 2026-11-16 with its lake (the owner: \"can we make the lake a little narrower and move it more toward the center of the valley? settlements can move with it\") from 805,1516 to the same bench on the new south shore, 841,1517 (scale model 5.1 edit 7). Moved 2026-11-23 from 841,1507.64 to 841,1507.9 (520 m south, the same model cell): on the 11-23 re-run the vale ring's bench point stood 11.6 m under the lake at 1:1; 841,1507.9 is the nearest point 2 m or more over the water with the lake 613 m north for the Pleasure Dome's isle (the Erewhon page's island)."
   }
  ],
  "canyon_candidates": {},
@@ -3524,16 +3524,16 @@
   {
    "id": "lf_pleasure_dome_isle",
    "kind": "island",
-   "px": 840.886,
-   "py": 1507.441,
+   "px": 841.035,
+   "py": 1507.5935,
    "r_m": 80.0,
    "rx_m": 110.0,
    "rz_m": 55.0,
    "crest_m": -506.0,
    "water_m": -520.0,
-   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay: the Erewhon page's island (settlements/xanadu, target erewhon, ISLAND_C at 70,-613 m from the page's centre, which stands on Erehwon's pin 805,1516 unturned), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore (the owner, 2026-11-11: keep the page, move the record; it stays off the quays, about 0.6 km). No shoal: its rounded cell is the shore bench. Stamped at 1:1 by openworld/xanadu-oidong-highrift/src/44-world-landforms.js. edit_517 (first run as edit_512 on claude/openworld-sites, 2026-11-11).",
-   "x": -6228.0,
-   "z": -9118.0
+   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay: the Erewhon page's island (settlements/xanadu, target erewhon, ISLAND_C at 70,-613 m from the page's centre, which stands on Erehwon's pin, unturned: 841,1507.9 since 2026-11-23, so the isle at 841.035,1507.5935), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore (the owner, 2026-11-11: keep the page, move the record; it stays off the quays, about 0.6 km). No shoal: its rounded cell is the shore bench. Stamped at 1:1 by openworld/xanadu-oidong-highrift/src/44-world-landforms.js. edit_517 (first run as edit_512 on claude/openworld-sites, 2026-11-11).",
+   "x": -5930.0,
+   "z": -8813.0
   },
   {
    "id": "lf_west_stack",
@@ -3591,9 +3591,9 @@
    "type": "city",
    "culture": "xanadu",
    "px": 841,
-   "py": 1507.64,
+   "py": 1507.9,
    "x": -6000.0,
-   "z": -8719.9999999998,
+   "z": -8199.999999999818,
    "reach_km": 30,
    "page": "settlements/xanadu"
   },
