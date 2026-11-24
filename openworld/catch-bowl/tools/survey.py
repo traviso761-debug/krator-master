@@ -74,8 +74,8 @@ POLYS = [('the catch', 'rmvka7icdn1dq'), ('the bowl', 'rmvka5413efyi'),
          ('twins', 'rmw536m06wlyf'), ('Stalker Gate', 'rmvstalkergate'),
          ('Stalker Peaks (geographic)', 'rmwstalkerpks')]
 # the region's own four, in cut order, and the neighbour a later region may take
-REGION = ['rmvka7icdn1dq', 'rmvka5413efyi', 'rmw4xy4tp9b29', 'rmvkknh1am4fw', 'rmvstalkergate']
-NEIGHBOUR = ('twins (region 2\'s)', 'rmw536m06wlyf')
+REGION = ['rmvka7icdn1dq', 'rmvka5413efyi', 'rmw4xy4tp9b29', 'rmvkknh1am4fw', 'rmvstalkergate', 'rmw536m06wlyf']
+NEIGHBOUR = ('Xanadu Sultanate (region 2\'s)', 'rmufcgvtxatfx')
 # biomes/seouterwall/PLAN.md's own features, with the height its plan gives them
 SEOW = [('Godsgate north sill', 1026, 1224, 3380), ('Godsgate saddle crest', 1031, 1252, 3620),
         ('Bab al-Hawa vent shaft', 1033, 1258, 3590), ('Godsgate southern narrows', 1035, 1292, 3480),
@@ -268,8 +268,9 @@ def sec_union(S):
     for n in names:
         print('  %-16s %6d px = %4.0f thousand km2' % (n, masks[n].sum(), masks[n].sum() * 4 / 1000))
     steps = [(names[:2], 'catch + bowl'), (names[:3], '+ SE outer wall'), (names[:4], '+ stalker range'),
-             (names[:5], '+ Stalker Gate (the region, settled 2026-11-24)'),
-             (names, '+ twins (region 2\'s: NOT cut here)')]
+             (names[:5], '+ Stalker Gate'),
+             (names[:6], '+ twins (THE REGION, settled 2026-11-24)'),
+             (names, '+ Xanadu Sultanate (region 2\'s: NOT cut here)')]
     for sel, lab in steps:
         u = np.zeros(xx.shape, bool)
         for s in sel:

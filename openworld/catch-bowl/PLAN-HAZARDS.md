@@ -239,9 +239,13 @@ As hazards, they are unlike every other hazard here, and the design has to respe
 
 `PLAN-TWINS-CROSSING.md` section 4 already lists the Twins' traps as `core/hazard` records: the frozen box vales F1
 (968,1442) and F2 (1068,1528) as `cold` and `fall`, the decoy lava pools L1 (992,1465) and L2 (1035,1493) as `heat` and
-`gas`, and the Red Cistern and the Iron Shroud as station pages whose records the region places. They are **region 2's**
-by the seam (`PLAN.md` section 3) and they need the same binding, which is why the binding is core and not this
-region's.
+`gas`, and the Red Cistern and the Iron Shroud as station pages whose records the region places. **All four traps are
+inside the `twins` polygon, and the owner's no-split rule brought that polygon here** (`PLAN.md` section 3), so they are
+**this region's** and they land in B5 with everything else. The binding is still core, because region 2's own hazards
+will want it.
+
+The Twins' own air belongs with them: the col at 4,680 m is 0.6 atm or below, so `thin-air` bites on Route B where it
+does not inside Route A's tubes (+8 to +16 °C and full pressure), which is the mechanical reason the tube road exists.
 
 This region's own register, beyond sections 2, 3 and 6:
 
@@ -251,7 +255,7 @@ This region's own register, beyond sections 2, 3 and 6:
 | The soda lake's brine | `acid` + `sink` | the lake itself: alkaline enough to burn, soft enough to swallow a beast |
 | The yardang fields | **no hazard: shelter** | the one terrain that answers the storm; it must therefore be drawn well (`PLAN-SETPIECES.md`) |
 | A dry well | *not a hazard record* | it is the simulation's: `CATCH_TUNE` runs Arfwai's well down to 30 % in late summer (C5, done) |
-| The Theodiga bore's Stair mouth | `22-core-hazard-bore.js` presets: `rockburst`, `inrush`, `seal` | the divers' prospect; the fragment exists and is opt-in |
+| **Stair's two bore mouths** | `22-core-hazard-bore.js` presets: `rockburst`, `inrush`, `seal` | the **Theodiga** bore south under the Twins (438 km, kept 2026-11-16) and the **Parabola** bore north under the SE outer wall (ruined, the owner 2026-11-24). Both are the divers' prospects; the fragment exists and is opt-in |
 | The Hub 01 road | `hunter`, danger 1 | 44 km of Ancient tunnel east, the one way in; nobody who has taken it has come back. A hazard that is a warning, not a fight |
 | The Bāb al-Hawa shaft | `22-core-hazard-bore.js`: `crush`, `inrush`, `seal` | 1,400 m into the rock, plugged 180 m down, still drafting +16 °C air. The divers winch into it. (What it is a shaft *to* is `PLAN.md` question M: there is no Arcbeam-Stair tunnel) |
 | The felsenmeer and scree aprons | `slip` | the SE outer wall's 4,200-5,400 m benches: ground that clatters and shifts underfoot (its plan, 2.4) |

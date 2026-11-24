@@ -21,7 +21,7 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
-## The Catch, the Bowl, the SE outer wall, the Stalker Range and the Stalker Gate in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
+## One arid-and-mountain region of six provinces in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
 
 The owner's eight-item brief plus *"Include se outer wall and stalker range in the Sim as well"*, scoped into six plans
 and a reproducible survey (`openworld/catch-bowl/README.md`). Nothing is cut and nothing is built. Four things block it,
@@ -45,22 +45,30 @@ and each is small:
   their 5.1 pins, and the sand-sea and north-fan station sites now land on 4.9 km and 7.0 km of mountainside
   (`PLAN-TERRAIN.md` P1, P2). Rides along with any work on that kit.
 
-**The owner answered every question on 2026-11-24** (`openworld/catch-bowl/PLAN.md` section 12): five provinces in one
-region (the Stalker Gate added, with a waystation network through its four-way graben pass); the **16 MB page cap
-lifted**, because the region is to be Godot-native; Bab al-Hawa and Ranger HQ kept and the Twins fort dropped; the SE
+**The owner answered every question on 2026-11-24** (`openworld/catch-bowl/PLAN.md` section 12): **six provinces in one
+region** — the Catch, the Bowl, the SE outer wall, the Stalker Range, the Stalker Gate and the **Twins** — 751,000 km²
+filled in a 1,280 x 1,052 km box, on the rule *"keep from splitting biome polygons between open world builds as much as
+we can help it"*, to be perfected as one build **before** it joins XOH. Consequences: `PLAN-TWINS-CROSSING.md` W1-W6
+move out of region 2 and into this region, **region 2's built tube spec (`src/48k-world-tubes.js`) migrates with the
+polygon** (its own README admits only A1's first 15 km were inside its cut) and region 2 is recut without the 1,424 px of
+`twins` its site squares hold, so its baked hash changes. Also: the **16 MB page cap lifted**, because the region is to
+be Godot-native; Bab al-Hawa and Ranger HQ kept and the Twins fort dropped; the SE
 outer wall rescaled at the Godsgate's frame and a disc at each tarn, the rest left high and airless; Ranger HQ at 500 on
-a salary and a cut of expeditions; Hub 01 endable by a real expedition but not by attrition; `biomes/catch`'s stale
-records to be corrected; and the Bowl's unnamed village named **Esper**. Nine map and kit edits follow (that plan's
-section 11), and three questions remain (M, N, O).
+a salary and a cut of expeditions; **no trail toward Hub 01** and its function a Ranger surmise rather than anyone's
+knowledge; Hub 01 endable by a real expedition but not by attrition; `biomes/catch`'s stale records to be corrected; the
+Bowl's unnamed village named **Esper**; and **two biome kits owed**, `biomes/stalker-gate` (new) and `biomes/gills`
+(which has one source fragment and no build). Eleven map and kit edits follow (that plan's section 11). **No questions
+remain open.**
 
-**A canon rewrite is owed, and it predates this session.** `openworld/ANCIENT-NETWORK.md` section 8.8 (the owner,
-2026-11-11) dropped the Arcbeam-Stair tunnel outright — *"There is no Ancient tunnel from Arcbeam to Stair at all"* —
-and names the files it breaks without rewriting them: **`LORE.md` §4** (the Catch's "tunnel to Stair ... sealed halfway"
-and the divers' prospect that hung on it), **`biomes/catch/PLAN.md`** and **`biomes/seouterwall/PLAN.md`** (the base
-tunnel and Bab al-Hawa's vent shaft). The owner restated it 2026-11-24: *"There is no tunnel ti arcbeam but there is a
-highway."* The catch-bowl plans are corrected (P17); those three files are not. The Theodiga-Stair bore stands and
-already gives Stair's divers their prospect, so nothing in the story is lost — but Bab al-Hawa's warm updraft now needs
-a source (question M; recommended: an Ancient deep geothermal tap).
+**A canon rename is owed, and it predates this session.** `openworld/ANCIENT-NETWORK.md` section 8.8 (the owner,
+2026-11-11) dropped the Arcbeam-Stair tunnel outright and named the files it breaks without rewriting them. On
+2026-11-24 the owner **gave a ruined bore from Stair to Parabola in its place**, which turns a demolition into a rename
+and restores `LORE.md` §4's oldest Catch passage word for word (sealed halfway, the northern half stripped by Yuni, the
+southern the divers' prospect). The bore's line runs straight down the Godsgate corridor with up to 6.6 km of rock over
+it, and Bab al-Hawa's 1,400 m shaft reaches its summit section exactly. **To rename:** `LORE.md` §4,
+`biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md` §3.3, `ANCIENT-NETWORK.md` §8.8 and `ANCIENT-ROADS.md`. `LORE.md`
+§4 also wants one narrowing: nobody has **reached** Hub 01 and returned, but foolhardy rangers got near enough to see an
+Ancient facility and come home, and that it is the Stalkers' source is their **surmise**.
 
 The earlier background, both measured:
 

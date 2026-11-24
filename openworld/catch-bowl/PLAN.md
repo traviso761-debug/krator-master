@@ -1,8 +1,10 @@
-# The Catch, the Bowl, the SE outer wall and the Stalker Range in the open world: the plan
+# One region: the Catch, the Bowl, the SE outer wall, the Stalker Range, the Stalker Gate and the Twins
 
 **Revised 2026-11-24, second pass.** The owner: *"Include se outer wall and stalker range in the Sim as well."*
-**The owner answered the whole question set the same day** (sections 9, 10 and 12). Settled: five provinces, not four
-(the Stalker Gate joins, with a waystation network through it); Bāb al-Hawa and Ranger HQ stay and the Twins fort drops;
+**The owner answered the whole question set the same day** (sections 9, 10 and 12). Settled: **six provinces** — the
+Stalker Gate joins, with a waystation network through it, and **the Twins come here too**, because the rule is now *"keep
+from splitting biome polygons between open world builds as much as we can help it"*, and this is to be **one huge
+arid-and-mountain region, tweaked and perfected before it is joined to the XOH region**; Bāb al-Hawa and Ranger HQ stay and the Twins fort drops;
 the SE outer wall's rescale takes the Godsgate's frame and a disc at each tarn, the east left high and airless; **the
 16 MB page cap is lifted** (*"this place will be godot native and go into a godot ported version of the host"*);
 **Parabola is the Bowl arcology and there is no Arcbeam-Stair tunnel, only a highway**; Ranger HQ has 500 people on a
@@ -83,19 +85,26 @@ new land style.**
 
 ## 2. The region (*proposed*)
 
-**One region, `openworld/catch-bowl`, cut from five biome polygons** (settled by the owner, 2026-11-24) — `the catch`,
-`the bowl`, `SE outer wall`, `stalker range` and **`Stalker Gate`** — with **no corridor** (the first pass's corridor is
-withdrawn: the ground it was to bridge is the SE outer wall, pitfall P7).
+**One region, `openworld/catch-bowl`, cut from six whole biome polygons** (settled by the owner, 2026-11-24) — `the
+catch`, `the bowl`, `SE outer wall`, `stalker range`, `Stalker Gate` and **`twins`** — with **no corridor** (the first
+pass's corridor is withdrawn: the ground it was to bridge is the SE outer wall, pitfall P7).
 
 | The cut | Filled | Box | Centre |
 |---|---|---|---|
 | catch + bowl (the first pass) | 247,000 km² | 682 x 946 km | px 1084,1280 |
 | + SE outer wall + stalker range | 649,000 km² | 1,124 x 946 km | px 1194,1280 |
-| **all five (settled)** | **708,000 km²** | px 913-1553 x 1043-1516 = **1,280 x 946 km = 1,211,000 km²** | **px 1233,1280** |
+| + Stalker Gate | 708,000 km² | 1,280 x 946 km | px 1233,1280 |
+| **all six, with the Twins (settled)** | **751,000 km²** | px 913-1553 x 1043-1569 = **1,280 x 1,052 km = 1,347,000 km²** | **px 1233,1306** |
 | *reference:* `xanadu-oidong-highrift` | ~295,000 km² | 1,037,000 km² at 1 km cells | a 7.6 MB page |
 
-Its vertical range is **-1,284 m to 15,041 m (16,325 m)**, against region 2's 18,143 m; 28 % of the filled cells are over
-8,000 m; 1.8 % is water.
+Its vertical range is **-1,284 m to 15,041 m (16,325 m)**, against region 2's 18,143 m; **26 %** of the filled cells are
+over 8,000 m; 1.8 % is water. It fills **2.5 times** what region 2 fills, in a box 30 % larger — which the lifted page
+cap and the emptiness of four of the six provinces between them pay for (below, and section 4a).
+
+**The rule that settled the shape** (the owner, 2026-11-24): *"let's try and keep from splitting biome polygons between
+open world builds as much as we can help it."* So a province is cut **whole, by one region**. That is why the Twins are
+here and not region 2's, and it is the standing test for any later boundary: if a cut would leave half a polygon to
+someone else, move the polygon, not the line.
 
 - **Why four is affordable although it fills 2.2x region 2.** The rasters are cut to the **box**, and the box is region
   2's size — that cost is paid either way. The content scales with what grows and what is built, and the two new
@@ -106,7 +115,7 @@ Its vertical range is **-1,284 m to 15,041 m (16,325 m)**, against region 2's 18
   salt works in two of them, the north road runs Jabal - Mantis - Parabola - the Godsgate - Kolli through three, and the
   Stalkers cross all four. Splitting them puts the only trunk road across a seam.
 - **Cell size:** 1 km (`upsample: "auto"`, as region 2's sub-continental cut), `smooth: true`, `relief: 1`.
-- **Frame:** `origin_px` pinned at **[1233, 1280]**, the box's centre pixel, so later recuts keep every baked coordinate
+- **Frame:** `origin_px` pinned at **[1233, 1306]**, the box's centre pixel, so later recuts keep every baked coordinate
   (region 2 and Pinnacle learned this the hard way).
 - **The new cost to budget**: the far horizon now has four provinces' ridges to carry, and the Stalker Peaks' 12-15 km
   crests stand *inside* the box. `PLAN-TERRAIN.md` section 4 says what to do, including using `minWave` on ground no
@@ -167,7 +176,36 @@ than any straight line:
 | **North-east** | Ranger HQ | the Loom Chasms' edge | laid to the cut's edge, `short` |
 | **South-east** | Ranger HQ | the Slabfields' edge | ditto |
 | **South** | Ranger HQ | the Siphon Pits' edge, by Lake Vapora | ditto; Lake Vapora is the hub, not a terminus |
-| **The Stalker Range spur** | Ranger HQ | west toward Hub 01 | **laid and then abandoned**: it ends at a last waystation and a cairn. Nobody who went further came back |
+| ~~A spur toward Hub 01~~ | - | - | **There is none** (the owner, 2026-11-24: *"There is no trail towards hub 01. People who go that way tend not to come back."*). The network's westernmost waystation is the last built thing; beyond it the ground is unmarked. See section 2b |
+
+### 2b. What the Rangers know about Hub 01, and what the region may show
+
+The owner, 2026-11-24: *"There is no trail towards hub 01. People who go that way tend not to come back. Foolhardy
+rangers have brought back reports of an ancient facility there, but its function as stalker HQ is surmised, not
+confirmed for them."*
+
+That sets **three tiers of knowledge**, and the region and the simulation must each respect their own tier:
+
+| Who | What they have |
+|---|---|
+| **The caravaneers** | the Stalkers come out of the peaks to the east and go back into them. That is all, and it is how the peaks got their name |
+| **The Rangers** | **reports** — some of their own have gone that way and come back, and say there is an **Ancient facility** out there. That the Stalkers come from it is **their surmise**, not a thing they know. Nobody has reached it and returned |
+| **The truth** | it is Hub 01, and a mad AI runs it. **No one in the world holds this** |
+
+What follows for the build:
+
+- **No trail, no waystation, no road** toward Hub 01 — the network stops where the Rangers' country does. The region
+  draws nothing on that ground but the land itself.
+- **The reports are modelled as rumour, not data.** The Rangers' board at Ranger HQ carries them with a confidence, and
+  the words are a ranger's: a white shape seen moving on a scree slope, a tower that is not rock, lights that were not
+  stars. Never a dossier.
+- **The one built thing is where they turned back**: a last cairn with other people's gear on it, far out, with no road
+  to it (`PLAN-SETPIECES.md` section 4). It is a setpiece, reached only by someone who goes without a road.
+- **The player's hook is a surmise to confirm**, which is better than a secret to find: the world offers them a theory
+  it cannot test, and the test is the expedition of `PLAN-SIM.md` 4b.
+- **It narrows the lore, and `LORE.md` wants the narrowing** (question N): §4 currently reads *"No human has reached Hub
+  01 since the Cataclysm and lived to tell the tale."* That stays true of **reaching** it; what is now also true is that
+  some got near enough to see a facility and came home. The two are not the same sentence.
 
 **A waystation** is a fixture set (`PLAN-SETPIECES.md` section 1), not a village: a relay shelter in a 300 m-wide basalt
 slot — a drystone bothy out of the venturi gale, a water tank, a fodder bin, a brazier, a tally board, and the Rangers'
@@ -179,10 +217,16 @@ shelters from, and `KHAZ`'s `slip` and `crush` rows carry them (`PLAN-HAZARDS.md
 (`highland`/`outlands`), so `biomes/outlands` reads in place and Lake Vapora's steam comes from `core/atmos` and
 `core/water`. A kit for it is a later session's (question N).
 
-## 3. The seam with `xanadu-oidong-highrift` (*proposed*)
+## 3. The seam with `xanadu-oidong-highrift`, and the no-split rule (settled 2026-11-24)
 
-**What region 2 actually cuts** (the owner asked, 2026-11-24). `openworld/SITES.json`'s `xanadu-oidong-highrift` row
-names **three polygons**, plus eleven site squares and two corridors:
+**The owner's rule:** *"let's try and keep from splitting biome polygons between open world builds as much as we can help
+it. We'll combine twins and catch to these other regions to tweak and perfect this one, huge, arid/mountain region prior
+to joining to the XOH region."*
+
+### What region 2 actually cuts (the owner asked)
+
+`openworld/SITES.json`'s `xanadu-oidong-highrift` row names **three polygons**, plus eleven site squares and two
+corridors:
 
 | Id | Name | Kind | Px |
 |---|---|---|---|
@@ -190,29 +234,54 @@ names **three polygons**, plus eleven site squares and two corridors:
 | `rmuklrcae6jb5` | **Oidong Valley** | biome | 997-1307 x 1564-1680 |
 | `rmvhighrift100` | **High Rift** | biome | 1294-1626 x 1610-1704 |
 
-Two things follow that matter here.
+Two things follow.
 
 - **The first is political, not a biome.** The cut writes the model's own region list into `source/regions.json`, so the
   biome overlays inside the Sultanate's political outline are the model's (`xanadu`, 31,975 px inside region 2's box),
   which is how the Xanadu kit grows there. Its README's list of "overlays inside the region" (xanadu 31,114 px, High
   Rift 21,261, Oidong Valley 17,607, twins 1,424, opal valley 1,377, godthrone 608, rift rim 259) is what the **box**
   holds, not what the cut fills.
-- **Its box holds a great deal it does not cut.** Inside px 746-1637 x 1424-1715 lie parts of `the catch` (10,874 px),
-  `twins` (12,125), `stalker range` (10,005), `Stalker Peaks` (8,894), `Siphon Pits` (22,456), `The Rift` (53,363) and
-  more. **None of those is cut**, so none of them is this region's rival today. The seam is only about what each region
-  *cuts*, and the one live conflict is `PLAN-TWINS-CROSSING.md`'s grow-north, below.
+- **Its box holds a great deal it does not cut**: parts of `the catch` (10,874 px), `twins` (12,125), `stalker range`
+  (10,005), `Stalker Peaks` (8,894), `Siphon Pits` (22,456), `The Rift` (53,363). Holding is not cutting, so none of
+  those is a split.
 
-`PLAN-TWINS-CROSSING.md` W1 would grow region 2 north over the whole Twins massif **and the Catch's south toe (Lasso,
-Bitta, Stair's campground)**. That overlaps this region. The seam proposed:
+### The one real split, and the owner's answer to it
 
-- **Region 2 keeps the Twins**: both routes, the five geothermal oases, the Hall of the Tally-Marks, Route A's tubes,
-  the Catch descent as far as its top at Catch-Lookout and the arch (1038,1452). Its grow-north stops there.
-- **This region keeps the floor**: Stair, the four Catch oases, the salt works, the terminal lake, the White Gills
-  Hermitage (which lies inside `the catch`, so the hermitage is **this** region's site, not region 2's).
-- **Lasso and Bitta are in both**, through `reach_km_by` (`SITES.json` already supports a site with a square in two
-  regions). They are where the caravans change from the floor's trail to the pass's.
-- **Catch-Lookout** (1056,1462) also lies inside `the catch`. *Proposed:* it stays region 2's waystation (its station
-  page is `biomes/twins`'s `catchlookout`) and this region draws nothing there, so the oasis is modelled once.
+Region 2's cut **does** hold **1,424 px of the `twins` polygon** — not from a polygon it names, but from its site
+squares round Strongbow and its corridors. And `PLAN-TWINS-CROSSING.md` W1 would have grown it north to take the whole
+massif and the Catch's south toe. That is the split the rule forbids.
+
+**So the Twins come here, whole.** Measured, the fit is almost perfect: **every stop, trap, tube, summit and waystation
+of the Twins crossing lies inside `twins` or `the catch`**, with exactly two exceptions, both at the far end:
+
+| In `twins` or `the catch` (this region) | In the Xanadu Sultanate (region 2) |
+|---|---|
+| A1's end and the First Skylight Break (978,1468), A2 (1002,1469), A3 and the Hall of the Tally-Marks (1014,1464), A4 and the 18 m arch (1038,1452); the south feeder's Strongbow portal (1010,1517), its gasp (1028,1506) and the Saddle dike conduit (1024,1485); Sinter-Gate (996,1504), Mud-Kettle (1005,1489), the Brazier (1016,1479), Brimstone-Tarn (1031,1473), Catch-Lookout (1056,1462); both summits (988,1458 and 1042,1498); all four traps (968,1442, 1068,1528, 992,1465, 1035,1493); the White Gills Hermitage (1015,1430) | **Route A's Vale portal** (938,1496) and **Strongbow** (1001,1596) |
+
+So this region holds the crossing and lays its two ways to the cut's edge at those two points, marked `short` — the
+pattern Thalaba's expedition road already uses. Strongbow stays region 2's town and the Sultan's toll stays on region
+2's books; the trail arriving from the col is this region's.
+
+### The migration this costs
+
+Region 2 **has already built Route A's tubes** (`PLAN-TWINS-CROSSING.md` W3 landed 2026-11-16:
+`openworld/xanadu-oidong-highrift/src/48k-world-tubes.js`, 244 km of Route A and 131 km of the south feeder, 10 portals,
+17 skylights, 14 chokes of 3.5 m, drawn by `core/world` 42k/88k, with a walker test and cavern checks in its verify).
+Its own README says the uncomfortable part out loud: *"All of it lies inside the present box; only A1's first ~15 km are
+inside the cut's polygons."* **94 % of a built, verified feature is planned on ground its cut does not hold** — which is
+the clearest possible argument for the owner's rule.
+
+*Proposed:* **the tube spec moves here with the polygon.** `48k-world-tubes.js` is re-expressed in this region's frame
+(origin px 1233,1306 instead of 1191,1569 — a pure offset), its cavern checks and walk test move with it, and region 2
+retires its copy to a pointer. A1's head stops at the cut's edge by the Vale portal. The costs to name: region 2 must be
+recut and re-verified, and **its baked hash changes**; and this region's B-steps gain W3's caverns, which are already
+written and tested, so the work is a move rather than a rebuild.
+
+### When the two regions join
+
+**Not now.** The owner: *"prior to joining to the XOH region."* So the `EAST_RIFT` join (`PLAN-SIM.md` S4, C6) is the
+**last** step, after this region is cut, grown, laid, hazarded, sited and verified. Until then the two regions share
+nothing but the two edge points above and the sites `reach_km_by` lets both cut.
 
 ## 3a. The Stalker Gate seam
 
@@ -234,8 +303,8 @@ Loom-Chasms, the Slabfields, and Siphon Pits around Lake Vapora."* It is **not**
 | `core/camp` + `core/world/48w` (`KWCAMPS`) | the caravan halts at the oases (`halt` formation), the divers' camp at Stair, the bandits' camps (`KCAMP.outlawCamp`) |
 | `core/city` | its primitives only (`KCITY.prim`) for the villages; Jabal's and Mantis's own pages take the rest |
 | `core/hazard` | the heat, the cold, the storms, the crusts, the Stalkers (`PLAN-HAZARDS.md`) |
-| `core/biome` | `biomes/catch`, `biomes/sedesert` (the Bowl's passes), **`biomes/seouterwall`** and **`biomes/outlands`** (the Stalker Range's `highland`/`outlands` ground style has no kit of its own) read in place; `biomes/twins` is region 2's |
-| `core/terrain` | the relief under `WORLD.H`; `KSTACKS` for the White Dragon Mounds; `KSTRATA`'s `evaporite-strand` on the strandlines (both plans' 2026-11-13 binding) |
+| `core/biome` | six provinces' kits read in place: `biomes/catch`, `biomes/sedesert` (the Bowl's passes), `biomes/seouterwall`, **`biomes/twins`**, and `biomes/outlands` on the Stalker Range and, until its own kit lands, the Stalker Gate. **Two kits are owed** (answer O): `biomes/stalker-gate` (new) and `biomes/gills` (one fragment, no build) |
+| `core/terrain` | the relief under `WORLD.H`; `KSTACKS` for the White Dragon Mounds and the arête gendarmes; `KSTRATA`'s `evaporite-strand` on the strandlines and `contact-marble` at tarns 4 and 5; `KFROST`'s patterned ground and rock glaciers; **`KCAVERN`** for Route A's tubes, through `core/world` 42k/88k |
 | `core/atmos` | the sky and the air (1.83 atm on the Bowl floor, ~1.0 atm in the Godsgate, 0.40 atm on the Tharn walls), the weather, and its opt-in `fx/`: **`ATMOS.gale`** (the God-Bore), **`ATMOS.airLoad`** (the dust, ash and caustic alkali), **`ATMOS.dustSeason`** |
 | `core/water` | the soda lake with its salinity tint, the Bowl's lake, the oases' pools and seeps |
 | `core/materials` | the library through `materials.json` and `tools/textures/pack.py`; the kits' own packs carried as sidecars |
@@ -281,17 +350,19 @@ Each step ends with something checkable. The owner's items are in the right-hand
 
 | Step | What | Check | Item |
 |---|---|---|---|
-| **B0** | **The owner's answers** (section 9); the two salt-works pins as `model: false` rows or a map edit (P5); the dropped-pin ruling (P6) | the row in `SITES.json` is complete and `cut_site.py --dry` prints the polygons | 1 |
+| **B0** | **The eleven map and kit edits** of section 11 queued or applied; the two salt-works pins as `model: false` rows meanwhile (P5) | the row in `SITES.json` is complete and `cut_site.py --dry` prints the six polygons | 1 |
 | **B1** | **The cut.** `cut_site.py catch-bowl`; `region.json`, the rasters, the horizon bake | the region builds; every site on dry land within a band of its surveyed height; the soda lake and the Bowl's lake at their `basins.json` levels | 1 |
-| **B2** | **The flora.** `biomes/catch` on `the catch`, `biomes/sedesert` on `the bowl`, **`biomes/seouterwall` on the SE outer wall** (its own `alpine`/`seouterwall` style) and **`biomes/outlands` on the Stalker Range**, each read in place with its texture pack as a sidecar | no white plants; the probe's three orders give one scene; nothing on a road or in a village; nothing at all on the ground over 6,500 m | 1 |
+| **B2** | **The flora**, six provinces: `biomes/catch` on `the catch`, `biomes/sedesert` on `the bowl`, `biomes/seouterwall` on the SE outer wall (`alpine`/`seouterwall`), **`biomes/twins` on the twins**, and `biomes/outlands` read in place on the Stalker Range **and the Stalker Gate until its own kit lands** (answer O), each with its texture pack as a sidecar | no white plants; the probe's three orders give one scene; nothing on a road or in a village; nothing at all on the ground over 6,500 m | 1 |
 | **B3** | **The trail kind** in `ROADS` and `KSITES` (core, shared with region 2's W2), then the north road **routed along the Godsgate's thalweg** (Parabola - the North Sill - Bāb al-Hawa - the Southern Narrows - Kolli), the floor's track oasis to oasis, and the Bowl's shore road Mantis - Solta - Jabal | each way on the land within 0.3 m, inside its own grade limit, with a negative control; nothing grows on a trail bed; the Godsgate's laid line stays on the thalweg (its grade under 8 % without switchbacks) | 4, 6 |
-| **B4** | **The oases and the minor settlements** (`core/hamlet`, the Dasri rows): Kolli, Arfwai, Bitta, Lasso, the Izani-Dasri village, and the caravan halts (`KWCAMPS`) at each | every village whole, apart, on good ground, tagged, cleared of flora, its lane end on a way | 3, 6 |
+| **B4** | **The oases, Esper and the Stalker Gate's waystations** (`core/hamlet`'s Dasri rows, `KSITES` `stops`): Kolli, Arfwai, Bitta, Lasso, Esper, the Brotherhood's five on the col, and the caravan halts (`KWCAMPS`) at each | every village whole, apart, on good ground, tagged, cleared of flora, its lane end on a way | 3, 6 |
 | **B5** | **The hazards** (`PLAN-HAZARDS.md`): the `KHAZ.provide` wiring (pressure, temperature, dust, alkali, visibility, the wind, the clock), then the placed kinds — the salt crusts, the rockfall chutes, the Stalkers | each ambient row biting where it should and not where it should not, with negatives; `KHAZ.sight` 57 m in the storm and under 12 m in a whiteout; `nav.avoid` refusing the 8 km ground; a walker on the crust breaks through and on the gravel does not | 2 |
 | **B6** | **The big sites**: Stair, Jabal, Mantis, the White Gills Hermitage, **Bāb al-Hawa**, **Ranger HQ**, Arcbeam, Parabola, the two salt works, and the five tarns as finds (`PLAN-SITES.md`) | each site drawn with its kit's own pieces near, massing boxes out to 30 km; `verify.py --assert` per site with a negative; Hub 01 drawn and never entered | 3, 6 |
-| **B7** | **The setpieces** (`PLAN-SETPIECES.md`), region 2's Twins trails among them (W2-W4) | every setpiece where its record puts it, on the ground, nothing floating (`KRUINS.watch` on the wrecks) | 4 |
+| **B6a** | **The Twins crossing** (`PLAN-TWINS-CROSSING.md` W2-W6, now this region's: section 7): Route B's trail and five oases, Route A's tube spec migrated from region 2 and re-framed, the Hall, the Catch descents, the four traps | the tubes' own checks pass in this frame (a walker goes portal to portal, the ground opens only where the spec opens it); the trail's grade under its limit; both ways end `short` at the Vale portal and Strongbow | 4, 6 |
+| **B7** | **The setpieces** (`PLAN-SETPIECES.md`): Route B's five stops, Route A's insides with the Hall of the Tally-Marks first, the Catch's eight, and the Rangers' last cairn | every setpiece where its record puts it, on the ground, nothing floating (`KRUINS.watch` on the wrecks); nineteen shots with their frame times | 4 |
 | **B8** | **The bandits and the Stalkers** (`PLAN-RAIDS.md`): `SIM.outlaws`, `SIM.bounty`, BF-05 and BF-07 on the map, the Stalkers' buried pose and harpoon line | a caravan loses what the simulation says it loses; an ambush is drawn where the simulation put it | 5 |
-| **B9** | **The simulation** (`PLAN-SIM.md` section 6, steps S1-S5): the Godsgate's stops on `CATCH_TUNE`, then `BOWL_TUNE`, then `STALKER_TUNE`, then C6 into `EAST_RIFT`, then the census | one ledger over five tunes; Xanadu's salt shortfall narrows but does not close; Hub 01's pressure in no player-readable report; every existing tune's books unchanged | 3, 7 |
+| **B9** | **The simulation** (`PLAN-SIM.md` section 6): S1 the Godsgate's stops on `CATCH_TUNE`, S2 `BOWL_TUNE`, S3 `STALKER_TUNE`, S5 the census. **S4 (C6, the `EAST_RIFT` join) is held back to the end**, at the owner's word: this region is perfected first | each tune balanced on its own; Hub 01's pressure in no player-readable report; every existing tune's books unchanged | 3 |
 | **B10** | **The handoff** (section 8): `KNOWN_ISSUES.md`, `PORT.md`, `INDEX.md`, the checks in `tools/checks_optin.json`, the baseline, the gallery call | `python3 tools/test_all.py` green; `port_baseline.py` clean | 8 |
+| **B11** | **The join to XOH** (`PLAN-SIM.md` S4, C6) — *last* | one ledger over five tunes; Xanadu's salt shortfall narrows but does not close; both regions' own tests still pass | 7 |
 
 **B3, B5 and B7 carry core changes.** Each is small and each is shared with region 2, so none of them should be written
 inside this region: a `trail` kind, a hazard binding and a setpiece binding belong in `core/world`, and
@@ -313,17 +384,27 @@ tunes and a join, and it had outgrown a section here. In short:
 - **C6** joins all of it to Xanadu and Longsong in `EAST_RIFT`, by the offset trick it already uses for Longsong, with
   **Lasso and Bitta** as the shared sites.
 
-## 7. Where the Twins' trails belong (item 4)
+## 7. The Twins' trails are this region's (item 4)
 
-Item 4 asks for setpieces on "the individual Twins pathways through the two divergent trails ... individual ones for each
-named stop". Those trails are **region 2's ground** (`PLAN-TWINS-CROSSING.md` W2-W4, nothing built). The honest split:
+The first two passes put the Twins' setpieces in region 2 and the machinery in core. **Section 3 settles it the other
+way**: the Twins polygon is cut here, so Route B's five oases, Route A's four tubes and three sprints, the Hall of the
+Tally-Marks, the guides' traps, both summits and the Catch descent are **all this region's work**, with only Route A's
+Vale portal and Strongbow left at the seam.
 
-- the **setpiece machinery** is core and is written once (`PLAN-SETPIECES.md`);
-- the **Twins' setpieces** are laid in `xanadu-oidong-highrift`, in its grow-north;
-- the **Catch's own setpieces** — the arch's mouth, the divers' camp, the Theodiga bore's Stair portal, the wandering
-  lake's strandlines, the Hub 01 road's head — are laid here.
+So `openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`'s **W1 to W6 move here**, and three of its six steps are
+already done or nearly:
 
-Both need the `trail` kind of B3 first. `PLAN-SETPIECES.md` lists every stop, both trails, and what each setpiece holds.
+| Its step | What | Where it now stands |
+|---|---|---|
+| W1 | the recut, with the waystations, the Hall and the Hermitage as sites | **this region's B1**; its grow-north is dropped |
+| W2 | Route B, the feeder's surface and the Catch descents as trails; the waystations drawn | **B3 and B7** here; it wants the `trail` kind |
+| W3 | the caverns in the open world: Route A's tubes, skylights, portals, the Hall | **built** (2026-11-16), and the spec migrates with the polygon (section 3) |
+| W4 | the White Gills Hermitage and its pipe field | **B6** here; blocked on the gills kit (P10, and the owner has now asked for one) |
+| W5 | the traps and hazards; the life read in place | **B5 and B7** here; all four traps are inside `twins` |
+| W6 | the sim's caravans drawn at the waystations | **B8** here, on `KWCAMPS` |
+
+`PLAN-SETPIECES.md` lists every stop and what each setpiece holds; its "region 2's" attributions are superseded by this
+section.
 
 ## 8. Groundwork for later sessions (item 8)
 
@@ -513,6 +594,8 @@ need no ground.
 | 7 | **Rename `sq11desertw7` to Esper** | the owner, 2026-11-24 |
 | 8 | **Type Parabola (`scyeauyek7`) as the Bowl arcology** and drop any Arcbeam-Stair tunnel from the network layer | the owner, 2026-11-24; P17 |
 | 9 | **Raise this region's page cap** in `openworld/catch-bowl/BUDGETS.json` (`bytes` past 16 MB, the owner's sentence as its `why`, `raised: 2026-11-24`) | the owner, 2026-11-24, answer D |
+| 10 | **Add the ruined Stair-Parabola bore to the network layer**, and drop every trace of an Arcbeam-Stair one | the owner, 2026-11-24, answer M |
+| 11 | **Region 2's recut**, without the 1,424 px of the `twins` polygon its site squares hold, and its `48k-world-tubes.js` retired to a pointer | the owner's no-split rule; section 3 |
 
 ## 12. The owner's answers (2026-11-24), and the two questions they raise
 
@@ -528,12 +611,44 @@ Every question of sections 9 and 10 is answered. Recorded here with what each on
 | **F** (`biomes/catch`'s stale records) | **correct them** | the four drifted `CATCH.OASES` records move onto their 5.1 pins and the sand-sea and north-fan stations are re-sited. Edit 6 |
 | **G** (Ranger HQ) | **500**, *"paid a salary and also a small cut of an expeditions profits"* | 500 people. Its economy is **two incomes, not one**: a salary from the Yuni Emirate (so the place survives a bad year, which a 500-strong garrison at 1,982 m in a 0 mm province must) and **a small cut of an expedition's profits** — of expeditions, not of passing cargo. `PLAN-SIM.md` 4a is rewritten round that distinction |
 | **H** (Hub 01) | *"In theory an Heir or Yusar could change it, but could still be dangerous for them. A powerful PC with many relics and a large army with explosives could in theory take them down, if they figure out a way to get one way the hell out there"* | the pressure number is **not permanently capped**: it resists attrition but can be **ended** by a real expedition. Two routes, both late-game — the Call (an Heir or a Yusar, at risk to themselves) and force (relics, an army, explosives). **The logistics are part of the lock**: Hub 01 is 255 km east of Stair across the Stalker Range. `PLAN-SIM.md` 4b |
-| **I** (the Stalker Gate) | *"i guess add it here. We'll want a network of waystations marking the trail through it"* | a **fifth polygon**: 708,000 km² filled, box 1,280 x 946 km, origin px 1233,1280. Its four-way graben network gets a `trail` with waystations, Ranger HQ as the anchor and Lake Vapora as the hub. **Section 2a** |
+| **I** (the Stalker Gate) | *"i guess add it here. We'll want a network of waystations marking the trail through it"* | a **fifth polygon**. Its four-way graben network gets a `trail` with waystations, Ranger HQ as the anchor and Lake Vapora as the hub. **Section 2a** |
+| **P** (no trail to Hub 01) | *"There is no trail towards hub 01. People who go that way tend not to come back. Foolhardy rangers have brought back reports of an ancient facility there, but its function as stalker HQ is surmised, not confirmed for them"* | the network's westernmost waystation is the last built thing; **no road, no spur, no waystation** beyond it. And three tiers of knowledge the build must keep apart — the caravaneers' "they come out of the peaks", the Rangers' **reports of an Ancient facility with its function surmised**, and the truth nobody holds. **Section 2b** |
+| **Q** (the Twins, and the no-split rule) | *"let's try and keep from splitting biome polygons between open world builds as much as we can help it. We'll combine twins and catch to these other regions to tweak and perfect this one, huge, arid/mountain region prior to joining to the XOH region"* | a **sixth polygon**: **751,000 km² filled, box 1,280 x 1,052 km, origin px 1233,1306**. The whole Twins crossing becomes this region's (every stop, trap, tube and summit is inside `twins` or `the catch` but for Route A's Vale portal and Strongbow); `PLAN-TWINS-CROSSING.md` W1-W6 move here; region 2's built tube spec migrates; and the `EAST_RIFT` join becomes the **last** step, not a parallel one. **Sections 3 and 7** |
 | **J** (the Bowl arcology) | *"parabola is the arcology now. There is no tunnel ti arcbeam but there is a highway"* | **Parabola** is the Bowl arcology (consistent with the owner's 2026-11-11 placement at 970,1186); **Arcbeam** is an Iziz arcology on the road with no tunnel; the Godsgate highway is **the** artery, not a construction road. The tunnel framing is corrected across these plans — **pitfall P17**, and it raises questions M and N |
 | **K** (the village's name) | **Esper** | `sq11desertw7` is **Esper**. The map still reads "Izani-Dasri village (to be named)": map edit 7 |
 | **L** (build order) | **agree** | B0-B2 first; B3 and B5's core changes as their own session; `PLAN-SIM.md`'s S1-S3 in parallel |
 
-### M. What is Bāb al-Hawa's shaft a shaft *to*? *(new, and it blocks the site)*
+### M. ANSWERED (the owner, 2026-11-24): a ruined bore from Stair to **Parabola**
+
+*"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."* That answers M by substitution and the
+geothermal-tap proposal is withdrawn — the shaft is a **ventilation and access shaft** again, over a bore that exists.
+And the geometry is better than the old one was:
+
+- **The line goes where it has to.** Parabola (970,1186) to Stair (1106,1442) is **580 km straight, and it passes
+  straight down the Godsgate corridor** — at 45 % and 50 % of its length the line stands at px 1031,1301 and 1038,1314,
+  inside the carved trench. The Ancients bored under the pass they also graded a road over, which is exactly why both
+  exist.
+- **115 km of it lies under the SE outer wall**, with **4,506 to 8,154 m of rock over it** (median 6,693 m). A bore
+  between portals at 1,716 m and 1,379 m would carry up to **6.6 km of cover** — which is why a base tunnel was worth
+  building and why a 30 m surface highway was built as well, for what would not fit the bore and for when the bore was
+  shut.
+- **The 1,400 m shaft now makes arithmetic sense.** Bāb al-Hawa's apron is at +3,590 m; a bore graded up toward its
+  summit section under the divide stands near **+2,190 m** there, which is 1,400 m straight down. The original text's
+  figure survives untouched — only the name at the far end changes.
+- **Stair becomes a junction of the Ancient network**, with two bores: the **Theodiga** bore south under the Twins (438
+  km, kept by the owner 2026-11-16) and the **Parabola** bore north under the SE outer wall. Both are the divers'
+  prospects, which is what Stair's divers were always for.
+- **And the Catch's oldest lore comes back.** `LORE.md` §4's original passage — the tunnel *"sealed halfway: both halves
+  are open from their own ends, and both offer salvage; **Yuni stripped the northern half bare a long time ago**; the
+  southern half, entered from Stair, is the divers' prospect"* — was killed by the 2026-11-11 drop. With a ruined
+  Parabola-Stair bore it is true again, word for word, with Parabola in place of Arcbeam: Yuni reaches the northern half
+  through the Bowl, and Stair's divers have the southern. Nothing has to be invented to replace it.
+
+*Proposed* for the records: **"the Stair bore"** or **"the Parabola bore"**, as `rift.bowl.parabola-stair` beside the
+existing `rift.bowl.theodiga-stair`; **ruined, not sealed by design** — the owner's word is "(ruined)", so it is a bore
+the Cataclysm broke rather than one anybody shut.
+
+### ~~M as it was put~~: what is Bāb al-Hawa's shaft a shaft *to*?
 
 With no Arcbeam-Stair tunnel, the 40 m collar has nothing beneath it in the current text — and the place depends on
 what is down there, because **the warm +16 °C updraft through the rubble is why caravaneers camp in its lee at 3,590 m**.
@@ -549,7 +664,19 @@ Three answers, and the first keeps everything that is good about the site:
 3. **Drop the shaft.** Bāb al-Hawa becomes the wind-baffle crescent and the apron alone, with no updraft and no divers.
    Cheapest, and it loses the best detail on the pass.
 
-### N. Does this session rewrite the canon the dropped tunnel broke? *(new; it touches `LORE.md`)*
+### N. ANSWERED (the owner, 2026-11-24): the rewrite happens, and it is now smaller
+
+With a ruined Stair-Parabola bore in place, the canon rewrite is mostly a **rename**, not a demolition:
+
+| File | What changes |
+|---|---|
+| `LORE.md` §4 | "the Ancients' tunnel to Stair" becomes the **Parabola** bore, not Arcbeam's; the "sealed halfway", the northern half stripped by Yuni and the southern half as the divers' prospect **all stand**. Separately, §4's *"No human has reached Hub 01 ... and lived to tell the tale"* gains the Rangers' distinction (section 2b): nobody has **reached** it; some got near enough to see a facility and came home, and that it is the Stalkers' source is their **surmise** |
+| `biomes/catch/PLAN.md` | the same rename in section 6 and in station 2's portal note; it already carries the Theodiga bore correctly |
+| `biomes/seouterwall/PLAN.md` §3.3 | Arcbeam becomes Parabola throughout; the 180 km base tunnel, the 1,400 m shaft, the 180 m plug and the +16 °C updraft all stand. Its "surface construction highway" framing stands too |
+| `openworld/ANCIENT-NETWORK.md` | its §8.8 drop is narrowed: no Arcbeam-Stair tunnel, **a ruined Parabola-Stair bore**; `rift.bowl.parabola-stair` joins the route list, and Parabola is typed as the Bowl arcology |
+| `openworld/ANCIENT-ROADS.md` | the "Arcbeam to Stair" entry is renamed |
+
+### ~~N as it was put~~: does this session rewrite the canon the dropped tunnel broke?
 
 The owner's 2026-11-11 entry names the work and says it was not done: the dropped tunnel changes **`LORE.md` §4** (the
 Catch's "the Ancients' tunnel to Stair ... sealed halfway", and the divers' prospect that hung on it),
@@ -560,7 +687,21 @@ It is a contained edit — the Theodiga bore already gives Stair's divers their 
 but it edits `LORE.md`, which I will not do unasked. *Recommended:* yes, and in the same pass as question F's kit
 correction, since both touch `biomes/catch`.
 
-### O. A kit for the Stalker Gate? *(new, and not blocking)*
+### O. ANSWERED (the owner, 2026-11-24): both the Stalker Gate and the gills need kits
+
+*"Yeah needs kit, as does gills i guess."* So **two biome kits are owed** before this region can draw everything it
+holds:
+
+| Kit | Why, and what it is for |
+|---|---|
+| **`biomes/stalker-gate`** (new) | Region 102 in the sound brief: breathable 1.08-1.30 atm graben floors at 1,680-2,450 m, 300 m basalt slot defiles with venturi gales, +6,000 m jagged horsts, foehn-warmed eastern descents, and the **Lake Vapora geothermal caldera at +2,180 m** under perpetual steam. The waystation network will be walked end to end, so this is the one new province whose flora a player sees close up |
+| **`biomes/gills`** (finish it) | it exists as `PLAN.md`, `BIOME-API.md`, `materials.json`, `tex/` and **one source fragment**, with no `build.py` and no station (P10). The White Gills Hermitage's pipe field needs it: `KSTACKS.chimney` breath pipes of 15-35 m in bone-white brucite, the saltcups, the candles, and the daily rings the monks count |
+
+*Proposed order:* cut and lay this region with `biomes/outlands` read in place on the Stalker Gate (so the trail and the
+waystations can be built and verified now), and take the two kits as their own sessions — the gills first, because the
+Hermitage is a site of this region's B6 and the Stalker Gate's flora is not.
+
+### ~~O as it was put~~: a kit for the Stalker Gate?
 
 The Stalker Gate has **no biome kit** (`biomes/NEW-BIOMES-SOUND-DESIGN-BRIEF.md` has its sound design as Region 102, and
 nothing else). Its ground style is the Stalker Range's `highland`/`outlands`, so `biomes/outlands` can read in place and

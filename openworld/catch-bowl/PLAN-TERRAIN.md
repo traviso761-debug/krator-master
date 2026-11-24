@@ -77,7 +77,13 @@ did not ask for it, it overlaps `stalker range` by 70,000 km², and it belongs w
 Slabfields in a later region (`PLAN.md` section 3a).
 
 **Overlaps** (`extract_region.py` gives the overlap to the *smaller* polygon, as `PLAN-BOWL.md` intends): `the catch`
-takes its 6,000 km² shared with `stalker range`, and its 26 px shared with `SE outer wall`; nothing else matters.
+takes its 6,000 km² shared with `stalker range`, its 5,000 km² shared with `twins` and its 26 px shared with
+`SE outer wall`; `stalker range` and `Stalker Gate` share 70,000 km², which one region now cuts either way.
+
+**The one overlap the no-split rule cannot resolve**: `twins` overlaps region 2's **`Xanadu Sultanate`** polygon by
+992 px (4,000 km²), because a biome polygon and a political one are allowed to cross. No polygon can be moved to fix
+that. The tie-break already handles it: `twins` is the smaller, so those cells read as twins in **both** cuts, and the
+two regions agree about what grows there.
 
 ## 3. The Catch is closed, and the floor is small
 
@@ -356,12 +362,25 @@ floor**, 516 km from Parabola and 227 km from Mantis by way of Solta, with `the 
 so, and `kits/dasri` was written for a Bowl town (its urban register is Sana'a and Shibam, its `ds_vil_*` register names
 Arfwai, Solta and Salt al-Ban).
 
-### P9 — the Twins polygon overlaps region 2 *(a seam to agree)*
+### P9 — the Twins polygon *(SETTLED 2026-11-24: the Twins are cut here)*
 
-`xanadu-oidong-highrift` already holds 1,424 px of `twins` as bare ground, and its `PLAN-TWINS-CROSSING.md` W1 would grow
-it north to take the whole massif **and the Catch's south toe (Lasso, Bitta, Stair's campground)**. If this region also
-takes them, two regions plan the same villages. `SITES.json` has `reach_km_by` (a site in two regions, each its own
-square) for the shared stops. `PLAN.md` section 3 proposes the seam.
+**The owner, 2026-11-24: "let's try and keep from splitting biome polygons between open world builds as much as we can
+help it. We'll combine twins and catch to these other regions to tweak and perfect this one, huge, arid/mountain region
+prior to joining to the XOH region."**
+
+So `twins` is this region's, whole, and `PLAN-TWINS-CROSSING.md`'s grow-north is dropped. Measured, the fit is almost
+exact: of twenty-two points of the Twins crossing — every oasis, trap, tube end, summit and waystation — **twenty lie
+inside `twins` or `the catch`**, and the two that do not are **Route A's Vale portal** (938,1496) and **Strongbow**
+(1001,1596), both in region 2's Xanadu Sultanate polygon. The two ways end there, marked `short`.
+
+What it costs: region 2's **built and verified** tube spec (`src/48k-world-tubes.js`, W3, 2026-11-16) migrates here —
+its own README admits *"only A1's first ~15 km are inside the cut's polygons"*, so 94 % of it was already planned on
+ground region 2 does not hold. Region 2 is recut without the 1,424 px of `twins` its site squares held, and its baked
+hash changes. `PLAN.md` sections 3 and 7.
+
+**The one overlap no rule can fix**: `twins` crosses region 2's **political** `Xanadu Sultanate` polygon by 992 px
+(4,000 km²). A biome polygon and a political one may cross, and no polygon can be moved to prevent it; the tie-break
+settles it the same way in both cuts (the smaller polygon takes the overlap, which is `twins`).
 
 ### P10 — `biomes/gills` is a plan, not a kit *(blocking for the White Gills site)*
 
@@ -454,11 +473,25 @@ So three things are true at once and the files disagree: **the Godsgate highway 
 *the* road rather than a construction road), **the Theodiga-Stair bore stands** (kept by the owner 2026-11-16, and it is
 the divers' prospect at Stair), and **the Arcbeam-Stair tunnel does not exist**.
 
-What this region's plans now say, corrected in this pass: the highway is the artery, Arcbeam is an Iziz arcology on the
-road with no tunnel, **Parabola is the Bowl arcology** (the owner, 2026-11-11, "the Bowl arcology goes at 970,1186", and
-2026-11-24, "parabola is the arcology now"), and Bāb al-Hawa's shaft is 1,400 m into the rock to *something still warm*
-— **question M** asks what. The wider rewrite (`LORE.md` §4, `biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md`) is
-canon work beyond this region and is **question N**.
+**The owner settled it on 2026-11-24:** *"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."*
+So the bore comes back with Parabola at its north end, and the geometry is better than the old one:
+
+- Parabola (970,1186) to Stair (1106,1442) is **580 km**, and the line **runs straight down the Godsgate corridor** (at
+  45 % and 50 % of its length it stands at px 1031,1301 and 1038,1314, inside the carved trench).
+- **115 km of it lies under the SE outer wall**, with **4,506 to 8,154 m of rock over it** (median 6,693 m); a bore
+  between portals at 1,716 m and 1,379 m carries up to **6.6 km of cover**. That is why a base tunnel was worth boring
+  *and* why a 30 m surface highway was graded over the top.
+- **Bāb al-Hawa's 1,400 m now works arithmetically**: from the 3,590 m apron down to a bore standing near +2,190 m at
+  its summit section under the divide. The original figure survives; only the name at the far end changes.
+- **Stair becomes an Ancient junction** with two bores, Theodiga south and Parabola north, which is what its divers were
+  always for.
+- **And `LORE.md` §4's oldest Catch passage becomes true again, word for word** — "sealed halfway ... Yuni stripped the
+  northern half bare a long time ago ... the southern half, entered from Stair, is the divers' prospect" — with Parabola
+  in place of Arcbeam. Nothing has to be invented to replace what the 2026-11-11 drop killed.
+
+The rename is owed in `LORE.md` §4, `biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md`, `ANCIENT-NETWORK.md` and
+`ANCIENT-ROADS.md` (answer N), together with §4's other narrowing: nobody has **reached** Hub 01 and returned, but some
+rangers got near enough to see a facility and come home, and its function is their **surmise** (`PLAN.md` section 2b).
 
 ## 8. What the survey did *not* find
 
@@ -491,7 +524,7 @@ canon work beyond this region and is **question N**.
 | P6 | **settled** | Gemini's three pins: Bāb al-Hawa **stays**, Ranger HQ **stays**, the Twins fort **drops** (the owner, 2026-11-24) |
 | P7 | withdrawn | there is no gap: it is the SE outer wall |
 | P8 | no | Jabal is a Bowl town, not on the Catch's rim |
-| P9 | decide | the Twins polygon overlaps region 2: the seam |
+| P9 | **settled** | the Twins are cut **here**, whole (the owner's no-split rule, 2026-11-24); region 2's tube spec migrates and it is recut |
 | P10 | no | `biomes/gills` is a plan, not a kit: the Hermitage's pipe field waits |
 | P11 | no | `extract_region.py` wants scipy; GPU verifies want a lane |
 | P12 | no | the Stalkers have no buried pose and no harpoon line |
@@ -499,4 +532,4 @@ canon work beyond this region and is **question N**.
 | P14 | a map edit | Bāb al-Hawa's pin is 1,205 m up the corridor wall; now that the place stays, the pin moves to the thalweg (`PLAN.md` question B) |
 | P15 | no | the Tharn crater is 671 m out; outside this cut |
 | P16 | no | the Stalker Range has almost nothing to simulate, and should not be given a census |
-| **P17** | **a rewrite is owed** | these plans inherited the Arcbeam-Stair tunnel, which the owner dropped on 2026-11-11; corrected here, but `LORE.md` §4, `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` still carry it (questions M and N) |
+| **P17** | **settled; a rename is owed** | the Arcbeam-Stair tunnel is gone, but the owner has given a **ruined Parabola-Stair bore** in its place (2026-11-24), which restores the Catch's oldest lore word for word. `LORE.md` §4, `biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md`, `ANCIENT-NETWORK.md` and `ANCIENT-ROADS.md` need the rename (answers M and N) |

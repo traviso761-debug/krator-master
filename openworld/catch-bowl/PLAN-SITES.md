@@ -199,7 +199,7 @@ simulation's own carriers.
 | Site | What it is | The plan |
 |---|---|---|
 | **Arcbeam** (`skz25tuq0w`, 1016,1058, 2,119 m) | an **arcology** of the Empire of Iziz on gentle upland (slope med 11 m/km); a stop on the Iziz road to the Catch (`PROPOSAL-CATCH.md`: Iziz to Stair "by Arcbeam, Parabola and the Godsgate"). **It is not the Bowl arcology and no tunnel runs from it** (the owner, 2026-11-24) | `kits/ancients`'s **arcbeam** target already exists. *Proposed:* a marker, massing out to 30 km, the Ancient highway running past it, and its own page left for later |
-| **Parabola** (`scyeauyek7`, 970,1186, 1,716 m) | **the Bowl arcology** (the owner, 2026-11-11: *"the Bowl arcology goes at 970,1186: the Bowl's most temperate ground near the Godsgate"*, and 2026-11-24: *"parabola is the arcology now"*) — the end of the Ancient rail line's possible extension from Strongbow by Theodiga and Stair, an inhabited ruin of the Empire of Iziz, and the north road's gateway and mustering ground | `kits/ancients`'s **parabola** target exists. The ground is severe (slope **median 169 m/km**, -714 to 4,713 m within 16 km): it stands on the wall's flank and wants a `bench` as the Hermitage does. Its reach grows to 20 km now that it is the arcology. A marker, massing, the rail head and the Ancient highway's start as setpieces, the caravanserai as a `KWCAMPS` halt |
+| **Parabola** (`scyeauyek7`, 970,1186, 1,716 m) | **the Bowl arcology** (the owner, 2026-11-11: *"the Bowl arcology goes at 970,1186: the Bowl's most temperate ground near the Godsgate"*, and 2026-11-24: *"parabola is the arcology now"*) — the end of the Ancient rail line's possible extension from Strongbow by Theodiga and Stair, **the north portal of the ruined Parabola-Stair bore**, an inhabited ruin of the Empire of Iziz, and the north road's gateway and mustering ground | `kits/ancients`'s **parabola** target exists. The ground is severe (slope **median 169 m/km**, -714 to 4,713 m within 16 km): it stands on the wall's flank and wants a `bench` as the Hermitage does. Its reach grows to 20 km now that it is the arcology. A marker, massing, the rail head and the Ancient highway's start as setpieces, the caravanserai as a `KWCAMPS` halt |
 | **Esper** (`sq11desertw7`, 1042,1083, 895 m) | a **village** of the Empire of Iziz, **named by the owner 2026-11-24**; the map still reads "Izani-Dasri village (to be named)" (a map edit, `PLAN.md` section 11) | the `dasri` row with `IZV` beside it — the fabric says the mix the old label described |
 
 ## 8. The two salt works
@@ -217,22 +217,27 @@ are carried), the map edit queued. `CATCH_TUNE` already declares Ṣalṭ al-Bā
 
 ## 9. Bāb al-Hawa, the Vent-Shaft Caravanserai (the SE outer wall)
 
-**What it is** (`biomes/seouterwall/PLAN.md` section 3.3, **its tunnel framing corrected by the owner's ruling: see
-`PLAN.md` question M**): just south of the Godsgate's 3,620 m saddle divide stands a colossal **40 m Ancient shaft
-collar** of seamed white metal and bronze ring-bands, sunk 1,400 m into the rock. The shaft is plugged by fallen
-megabreccia 180 m down, *but warm dry air at +16 °C still drafts gently upward through the rubble from whatever is
-still warm down there.* Yuni, Izani,
+**What it is** (`biomes/seouterwall/PLAN.md` section 3.3, with **Parabola in place of Arcbeam**: the owner, 2026-11-24,
+*"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam"*): just south of the Godsgate's 3,620 m
+saddle divide stands a colossal **40 m Ancient ventilation and access shaft collar** of seamed white metal and bronze
+ring-bands, sunk **1,400 m to the summit section of the Parabola-Stair bore**. The shaft is plugged by fallen
+megabreccia 180 m down, *but warm dry air at +16 °C still drafts gently upward through the rubble from the
+geothermally heated bore below.* Yuni, Izani,
 Dasrī and Xanadui caravaneers have turned the sunken concrete apron inside its **cyclopean wind-baffle crescent** into
 **the pass's only safe overnight camp**: a roofless stone-and-salvage caravanserai where beasts are tethered out of the
 100 km/h nocturnal God-Bore, prayer wheels spin beside Izani milestones and Yuni stencil signs, and desperate arcology
 divers now and then winch down the choked shaft toward the sealed mid-tunnel wreck.
 
-**Why the pass exists at all**: the Ancients graded a **30 m surface highway** through the Godsgate at a 4 % ruling
-grade — board-formed cyclopean concrete cuttings and monolithic parabolic wind-baffle walls — as **the** road between
-the Crater and the south. **There is no Arcbeam-Stair tunnel** (the owner, ruled 2026-11-11 in `ANCIENT-NETWORK.md`
-section 8.8 and restated 2026-11-24: *"There is no tunnel to arcbeam but there is a highway"*), so the highway is not a
-construction road that outlived its bore: it is the artery itself, and the shaft beside it is something else (question
-M). What is certain is that the shaft is warm, and that the caravaneers made its lee into the inn.
+**Why the pass exists at all, and the shaft with it.** The Ancients bored a base tunnel from **Parabola** (970,1186) to
+**Stair** (1106,1442) — 580 km, of which **115 km lies under the SE outer wall with 4,506 to 8,154 m of rock over it** —
+and the line of it runs **straight down the Godsgate corridor** (at 45 % and 50 % of its length it stands at px
+1031,1301 and 1038,1314, inside the carved trench). Above it they graded a **30 m surface highway** at a 4 % ruling
+grade, board-formed cyclopean cuttings and monolithic parabolic wind-baffle walls, for what would not fit the bore and
+for when the bore was shut. Beside the divide they sank this shaft to the bore's summit section — **1,400 m exactly,
+from the 3,590 m apron to a bore standing near +2,190 m under the pass**.
+
+The bore is **ruined** (the owner's word) and the surface highway is what survived. **There is no Arcbeam-Stair tunnel**:
+Arcbeam is an Iziz arcology on the road and nothing runs beneath it (`PLAN.md` answers J and M, pitfall P17).
 
 **The plan.** Not a village: a **fixture set** (`PLAN-SETPIECES.md` section 1), because everything here is one authored
 thing in one authored place —
@@ -278,15 +283,24 @@ charcoal and medicine; and it posts the only standing bounty on Stalkers in the 
 ### Hub 01
 
 `sodpa02bfv` at px 1344,1409, **4,351 m** (its plan's figure to the metre): a ruined arcology in a 4.4-6 km high valley
-ringed by 12-15 km peaks, run by a mad AI, with **no polity, no people, no goods and no trade**. The owner, 2026-10-23:
-**no human has reached it since the Cataclysm and lived to tell the tale**, and in the world nobody knows the Stalkers
-come from it.
+ringed by 12-15 km peaks, run by a mad AI, with **no polity, no people, no goods and no trade**.
 
-**The plan is restraint.** A marker in "Go to", a far silhouette on the horizon from the Catch floor and the SE outer
-wall's eastern benches, the head of the Ancient road east as a setpiece (`PLAN-SETPIECES.md` section 4) — **and no site
-plan, no streets, no interior and no approach**. If a later session builds it, it is a dungeon, not a settlement, and it
-needs the owner's word on what is inside. Drawing it at a distance and never letting the player in is the design working
-(*"the game shows it, never says it"*).
+**The plan is restraint, and the owner's 2026-11-24 ruling sharpens it.** *"There is no trail towards hub 01. People who
+go that way tend not to come back. Foolhardy rangers have brought back reports of an ancient facility there, but its
+function as stalker HQ is surmised, not confirmed for them."* So:
+
+- **No road, no trail, no waystation, no spur.** The Stalker Gate's network stops at its westernmost waystation; beyond
+  it the region draws nothing but land (`PLAN.md` section 2b).
+- **A marker in "Go to" and a far silhouette** on the horizon from the Catch floor and the SE outer wall's eastern
+  benches — which is what the rangers' reports describe: *a tower that is not rock*.
+- **One built thing, and it is not at Hub 01**: the **Rangers' last cairn**, far out on unmarked ground, with other
+  people's gear piled on it, where the foolhardy turned back (`PLAN-SETPIECES.md` section 4). It is reached only by
+  someone who goes without a road.
+- **No site plan, no streets, no interior, no approach.** If a later session builds it, it is the object of the
+  expedition in `PLAN-SIM.md` 4b, and it needs the owner's word on what is inside.
+
+Drawing it at a distance, letting the Rangers be wrong about it in a way that happens to be right, and never confirming
+it until somebody goes — that is the design working (*"the game shows it, never says it"*).
 
 ## 11. The five highland tarns: finds, not settlements
 

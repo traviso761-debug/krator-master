@@ -8,10 +8,11 @@ The owner is right, and the reason is worth writing down: every stop on the Twin
 is taken here, a tally falls due there, a caravan washes its eyes before the descent — and a seeded placement cannot
 express a job. What the region can do procedurally is the *ground* and the *flora*; the stops have to be authored.
 
-**Where they belong.** The Twins are `xanadu-oidong-highrift`'s ground by the seam (`PLAN.md` section 3), and
-`PLAN-TWINS-CROSSING.md` W2-W4 is the step that lays them. So this file splits in two: **the machinery** (core, written
-once, used by both regions) and **the setpieces** (region 2's for the Twins, this region's for the Catch). Neither can
-start before the `trail` kind of `PLAN.md` B3.
+**Where they belong — settled 2026-11-24.** The owner's no-split rule brought the **`twins` polygon into this region**
+(`PLAN.md` section 3), so **every setpiece in this file is this region's**: Route B's five stops, Route A's insides, the
+Catch's own eight and the Rangers' last cairn. Only Route A's Vale portal (938,1496) and Strongbow (1001,1596) lie in
+region 2's polygon, and the two ways end there marked `short`. The machinery (section 1) is still core, written once,
+because region 2's own fixtures will want it. Nothing here can start before the `trail` kind of `PLAN.md` B3.
 
 ## 1. The machinery: fixtures in a streamed region (core, *proposed*)
 
@@ -58,7 +59,7 @@ no lanes, no frontage and no city plan. Putting them through `core/hamlet` would
 (which is what the roads' inns do today, and it shows); putting them through a settlement page would give each its own
 build, bake and verify for a hundred triangles.
 
-## 2. Route B, the Steaming-Stone Dash (region 2)
+## 2. Route B, the Steaming-Stone Dash
 
 Outdoors over the col, a day between oases, for wagons and big herds that cannot pass the tubes' 3.5 m chokes. The
 Brotherhood of the Two Horns guides it and takes the Split Tally. Each stop is a fixture set, not a village: the
@@ -76,7 +77,7 @@ Route B's trail between them is `ROADS` with the `trail` kind (*proposed:* 4 m w
 `PLAN-TWINS-CROSSING.md` section 3). Measured, Lookout to Sinter-Gate is 152 km at a median 1.7 %, so the trail is not
 the hard part; the col's cold and the winter closure are (`PLAN-HAZARDS.md`).
 
-## 3. Route A, the Dark-Tube Road (region 2)
+## 3. Route A, the Dark-Tube Road
 
 Four drained lava tubes and three open sprints, pack mules and yaks only, +8 to +16 °C inside. The tubes themselves are
 **built** (`PLAN-TWINS-CROSSING.md` W3 landed 2026-11-16: `src/48k-world-tubes.js`, 244 km of Route A, the south feeder's
@@ -91,7 +92,7 @@ hold is **the furniture of a road that people use**, which is what fixtures are 
 | **The Hall of the Tally-Marks** | 1014,1464, inside A3 | The overnight camp and **Route A's pay point**. Its **cistern** (the plan's own word): a cut basin fed by the roof crack's drip, with the water's level marked in a thousand years of scratches; **the tally marks** themselves over every wall, each train that passed; the **guides' torch brackets** at an interval down the tube; sleeping ledges cut in the wall; the smoke stain on the roof. This is the single best setpiece on the crossing and it should be built first |
 | **The roof crack** | the Hall | The reason the Hall is here: a crack to the surface, the drip, a shaft of light at noon on the basin |
 | **The chokes** | 14 of them, 3.5 m | Each a squeeze: the rock polished shoulder-high by a thousand loads, loads cut from a pack that did not fit, a scratched measure on the wall |
-| **The 18 m basalt arch** | 1038,1452 | Route A's north mouth, onto the fan 65 km south-west of Stair. An arch you can see from the floor, the trail switchbacking down out of it, and a last cairn. Half of this setpiece is **this region's** (section 4) because the arch opens onto the Catch |
+| **The 18 m basalt arch** | 1038,1452 | Route A's north mouth, onto the fan 65 km south-west of Stair. An arch you can see from the floor, the trail switchbacking down out of it, and a last cairn. It stands inside **`the catch`** polygon, so arch and descent are one setpiece now |
 | **The south feeder's gasp** | 1028,1506.5 | Where the Strongbow branch climbs onto Route B under the SE Twin: a hands-and-knees rise with cut steps, a rope anchor, and the point where a mule has to be unloaded and loaded again |
 | **Strongbow's portal** | 1010,1517 | The feeder's lower end near Strongbow, with the Sultan's lift above and the Brotherhood's Strongbow guild house (300) behind |
 
@@ -104,9 +105,10 @@ hold is **the furniture of a road that people use**, which is what fixtures are 
 | **The Godsgate** | the saddle, 1029,1300 (5,282 m) | The owner accepted the **surviving Ancient surface highway** and the **Bab al-Hawa shaft** (`ANCIENT-NETWORK.md` 8.1, answer 7). The setpiece: a stretch of the Ancients' 30 m way with its two guideways still down the middle, broken and drifted over, the caravans' own track wandering off it and back; the shaft's mouth at 1033,1258 fenced with slabs; and nothing alive. **No caravanserai** (question 4) |
 | **The White Dragon Mounds** | the lake beds, round 1035,1392 | The wind-carved lake beds as a place, not a texture: yardang fields and castellated mesas (`KSTACKS`, `KSTRATA`'s `evaporite-strand`), and — because `biomes/catch/PLAN.md` says so — **the one shelter from a storm**: a slot between two mounds with a hundred caravans' fire scars in it, wall-stacked wind-breaks, and names cut in the soft silt |
 | **The wandering lake's strandlines** | the terminal lake, 318 m | The old lake's benches stepping down, each a different decade's shore; a boat of some long-dead expedition a kilometre from any water; the four small pans (`basins.json`, 368-400 m) with their crusts |
-| **The Hub 01 road's head** | east of the floor | The Ancient road east into the Stalker Peaks, 44 km of it in tunnel, the one way in. A portal, a cairn of other people's gear, and a line of tally marks that stops. **Nothing beyond it is drawn**: no human has reached Hub 01 since the Cataclysm and lived, and the design shows it, never says it (the owner, 2026-10-23) |
+| **The Rangers' last cairn** | far east on unmarked ground, beyond the Stalker Gate network's westernmost waystation | **There is no road** (the owner, 2026-11-24): *"There is no trail towards hub 01. People who go that way tend not to come back."* What there is, is where the foolhardy turned back — a cairn with other people's gear piled on it, a tally of names that stops, and a sightline east to **a tower that is not rock**. Reached only by someone who goes without a road. Nothing beyond it is drawn, and nothing names what the tower is: the rangers' reports call it an Ancient facility and **surmise** the rest |
 | **A Stalker ambush, dressed** | seeded, a stage out from an oasis | Not an authored place — the Stalkers' positions are seeded from the traffic (`PLAN-HAZARDS.md` section 6) — but the **aftermath** is a fixture: a wagon on its side, a harpoon line still in the sand, a beast's bones picked clean by nothing, half-covered. Drawn where the simulation recorded a loss, which is the thing procedural generation genuinely does better |
-| **Parabola's and Arcbeam's road heads** | 970,1186 and 1016,1058 | Where the Ancients' road to Stair begins, and where the Izani caravans form up: a mustering ground, a water board with the oases' states chalked on it, and the last green thing on the road north |
+| **Parabola's bore portal and mustering ground** | 970,1186 | The **north portal of the ruined Parabola-Stair bore** (the owner, 2026-11-24) where the Ancients' highway over the Godsgate also begins: the portal's mouth with Yuni's old workings round it (they stripped the northern half long ago), the guideways' stubs, and beside it where the Izani caravans form up — a mustering ground, a water board with the oases' states chalked on it, and the last green thing on the road north |
+| **Arcbeam's road head** | 1016,1058 | An Iziz arcology the highway passes; **no tunnel** runs from it (P17). A marker, the highway's cutting, and a caravanserai's halt |
 
 ## 5. The order, and the checks
 

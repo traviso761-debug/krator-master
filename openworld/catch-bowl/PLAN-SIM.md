@@ -155,8 +155,22 @@ That is the difference between a hazard and an antagonist.
 ### 4b. Hub 01 — a source with no economy
 
 `sodpa02bfv`, px 1344,1409, **4,351 m** (its plan's figure to the metre). A ruined arcology with **no polity, no people,
-no goods and no trade**, run by a mad AI. The owner, 2026-10-23: **no human has reached it since the Cataclysm and lived
-to tell the tale**, and *in the world nobody knows the Stalkers come from it*.
+no goods and no trade**, run by a mad AI.
+
+**What the world knows** (the owner, 2026-11-24): *"There is no trail towards hub 01. People who go that way tend not to
+come back. Foolhardy rangers have brought back reports of an ancient facility there, but its function as stalker HQ is
+surmised, not confirmed for them."* Three tiers, which the simulation must keep apart as carefully as the region does
+(`PLAN.md` section 2b):
+
+| Tier | Held by | Content |
+|---|---|---|
+| Rumour | the caravaneers | the Stalkers come out of the eastern peaks and go back into them |
+| **A surmise** | the Rangers | **reports** of an **Ancient facility** out east, brought back by their own foolhardy; that the Stalkers come from it is their guess |
+| Fact | nobody | it is Hub 01, and a mad AI runs it |
+
+So `STALKER_TUNE` carries the Rangers' reports as a **rumour record with a confidence**, not a fact — the thing a player
+can buy at the board, argue with, and set out to test. No tune, report or panel anywhere names Hub 01 as the source. The
+owner's 2026-10-23 line still holds of **reaching** it: nobody has reached it and returned.
 
 On the sim it is a **`SIM.site` with one output: pressure.**
 
