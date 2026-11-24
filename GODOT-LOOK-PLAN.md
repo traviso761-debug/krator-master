@@ -607,6 +607,27 @@ the all-builds rebuild. These are small, and they are what the Godot side cannot
 
 All are `[G data]`: plain numbers on vertices and records. The web pages ignore them.
 
+**Where each stands (2026-11-24; source and tests first, by the owner's choice: no page was rebuilt).**
+
+| Addition | Built | Left |
+|---|---|---|
+| A material's `side` | `core/export/10-core-export-scene.js`, read in `godot/krator/world_import.gd` (a back-side record is drawn on both faces and reported) | a front-culling shader, if a back-side shell ever matters |
+| Mirrored triangles turned over at the bake | the same file (`mirrored` counts them); `test-export-scene.js` | the Godot side's own check (`KratorKmat.winds_against`) stays as the safety |
+| `closed: true` | buckets and items; Godot culls the back faces of a double-sided material on a closed solid (`KratorKmat.onesided`) | measured on no real export yet: none carries the field |
+| The chamfered box | `core/engine/30-geo.js` `gboxCh`, behind `setForm({chamfer})`: 44 triangles on 24 vertices, closed, outward | `beam()`, kits' own boxes and **`core/catalog`'s** `F.box`; the widths by class |
+| Out-of-true jitter | the engine: batter and lean by a hash of the place, after the record is taken | ridge sag, bowed beams, wandering courses; the catalog |
+| Three per-vertex fields | one of three: height above the building's base (`aForm.x`, exported as `geometry.form`) | **baked occlusion** (nothing bakes it) and **edge** on anything but a chamfered box; a reader in Godot's weathering |
+| Where smoke rises, where a wall stains | `formMarks(REG, SMOKES)` in the engine: smoke sources and window sills as plain records | an exporter that writes them to the registry, and Godot's emitters and decals reading them |
+| An opening's mark on the wall | the sill's place only (above) | a mark on the wall's own vertices (`36o-open.js`) |
+| A grain axis a furniture piece | | all of it (`core/catalog`) |
+| Wind stiffness and phase a vertex | | all of it (`core/biome/20-core-kit.js`) |
+| Godot packs with colour kept | `tools/textures/pack.py` already has `packFormat: 2` | making the packs and pointing `export_spike.py` at them |
+
+No page or exporter calls `setForm` yet, so nothing in `godot/data` changes until a case is exported with it. The pages
+that take `core/engine` and `core/export` are behind their sources until the all-builds rebuild (`check_stale` says
+which). Proof that the form is inert when off: `kits/scyvoi`, rebuilt on the new engine, reads `same` in
+`core/engine/fingerprint.py`.
+
 ## 14. Order of work
 
 One place first, as section 12b of the proposal did for the vertical stack: Longsong's avenue, its east village, the
