@@ -24,8 +24,19 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 ## One arid-and-mountain region of six provinces in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
 
 The owner's eight-item brief plus *"Include se outer wall and stalker range in the Sim as well"*, scoped into six plans
-and a reproducible survey (`openworld/catch-bowl/README.md`). Nothing is cut and nothing is built. Four things block it,
-and each is small:
+and a reproducible survey (`openworld/catch-bowl/README.md`). Nothing is cut and nothing is drawn.
+
+> **A NEW SCALE MODEL IS BEING MADE** (the owner, 2026-11-25: *"i am having gemini make a new model"*), and it changes
+> the order of this work: **do not cut the region, and do not apply the map-edit queue, until it lands.** Every
+> measurement below and in these plans is against model 5.1. `openworld/catch-bowl/PLAN.md` **section 13** is the full
+> account — what does not depend on the model (every census and sim ruling, the hazards, the setpieces, the raids, the
+> kit assignments, the lore corrections), what must be re-measured (thirteen rows), that the **reissued pin ids are the
+> sharper risk than the heights** and break loudly at `load()` rather than drifting, the four commands that re-measure
+> it all in one run each, which of the seventeen pitfalls can move and which cannot. **Ask Gemini for a rename table
+> from old pin id to new**: `SITES.json`, both region tunes and both region tests key on 5.1 ids, and a mapping turns
+> the migration into a single pass. `openworld/catch-bowl/MAP-EDITS.md` carries the same warning, edit by edit.
+
+Four things block the build, and each is small:
 
 - **A `trail` way kind** in `ROADS` [G data]. `core/world/42-world-roads.js` fixes `const G=.08, HW=4` (the ruling grade
   and the half-carriageway) as module constants. Every way the Catch wants is a trail: the north road over a 5.3 km
@@ -41,9 +52,10 @@ and each is small:
 - **A fixture binding** [G data] + [web]: one authored thing in one authored place on streamed ground, registered,
   seated on the drawn mesh, streaming with its tile. Proposed `48f`/`88f` (`PLAN-SETPIECES.md` section 1). This is what
   `PLAN-TWINS-CROSSING.md` means by "the Hall's cistern and the guides' torch brackets as fixtures".
-- **`biomes/catch`'s stale records** [G data]: four of the kit's five `CATCH.OASES` records are **75 to 209 km** from
-  their 5.1 pins, and the sand-sea and north-fan station sites now land on 4.9 km and 7.0 km of mountainside
-  (`PLAN-TERRAIN.md` P1, P2). Rides along with any work on that kit.
+- ~~**`biomes/catch`'s stale records**~~ **DONE (2026-11-24)**: all five `CATCH.OASES` records are on their 5.1 pins
+  with `people` and `keeper` each, four pages rebuilt and verified headless, the baseline updated. The sand-sea and
+  north-fan station sites standing on 4.9 km and 7.0 km of mountainside (`PLAN-TERRAIN.md` P1, P2) are the map
+  session's, and wait on the new model like the rest of the queue.
 
 **The owner answered every question on 2026-11-24** (`openworld/catch-bowl/PLAN.md` section 12): **six provinces in one
 region** — the Catch, the Bowl, the SE outer wall, the Stalker Range, the Stalker Gate and the **Twins** — 751,000 km²
@@ -60,7 +72,10 @@ Bowl's unnamed village named **Esper**; and **two biome kits owed**, `biomes/sta
 (which has one source fragment and no build). Eleven map and kit edits follow (that plan's section 11). **No questions
 remain open.**
 
-**A canon rename is owed, and it predates this session.** `openworld/ANCIENT-NETWORK.md` section 8.8 (the owner,
+**The canon rename is DONE (2026-11-24)** — `LORE.md` §4 (including Hub 01's three tiers of knowledge),
+`biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md` §3.3, `ANCIENT-NETWORK.md` §8.8 (with `rift.bowl.parabola-stair`
+joining the route list) and `ANCIENT-ROADS.md`. The background, kept because it is the reason the files disagreed:
+`openworld/ANCIENT-NETWORK.md` section 8.8 (the owner,
 2026-11-11) dropped the Arcbeam-Stair tunnel outright and named the files it breaks without rewriting them. On
 2026-11-24 the owner **gave a ruined bore from Stair to Parabola in its place**, which turns a demolition into a rename
 and restores `LORE.md` §4's oldest Catch passage word for word (sealed halfway, the northern half stripped by Yuni, the
@@ -88,8 +103,27 @@ Also parked here: the two salt-works pins (Ṣalṭ al-Bān, Solta) are still he
 1,205 m up the Godsgate's east wall, 12 km off its own plan's floor (P14); the Tharn crater reads 671 m above its plan
 and holds a 6,910 m lake (P15); the Stalkers have no buried pose and no line on the harpoon (P12,
 `kits/mechs/KNOWN_ISSUES.md`); `SIM.outlaws` and `SIM.bounty` are approved in
-`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built; and `BOWL_TUNE`, `STALKER_TUNE` and the `EAST_RIFT` join
-(C6) are designed in `PLAN-SIM.md` and not written.
+`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built; and `STALKER_TUNE` and the `EAST_RIFT` join (C6) are
+designed in `PLAN-SIM.md` and not written (**`BOWL_TUNE` is written**: `core/region/data/bowl-tune.js`,
+`core/region/tests/test-bowl.js`, 18 passed, six places and two hinterlands, 56,070 people in about 100 s; its `join`
+is S2's second half and is next).
+
+**What this session owes, as of 2026-11-25:**
+
+- **A GPU-lane `verify.py --assert` on the owner's machine** for the four rebuilt `biomes/catch` pages and for the
+  fourteen builds rebuilt when `core/simulation/77-sim-6-trade.js` gained `offset`. This container has no lane, so the
+  pages are proven *reproducible* (deterministic builds, baseline updated) and not proven *right*: no render check has
+  been run on any of them. Those fourteen were **already** behind `core/` before that change — Mungo's page by 1.17 MB,
+  Shade's by 714 KB, and Drum demonstrably so — which is the 2026-10-08 failure mode recurring.
+- **Arcbeam has moved** (the owner, 2026-11-25) to px 1120,190 in the arachnoid canyons, 10 km off the
+  Shell-Silkhead-Ria route: 332 m of trench at its own 4 km span with rims level to 1-9 m on all four axes, the best
+  bridge-city site on the planet. Its carve, its 70 m of deepening (or a drop of its rims from 400 m to 330), the
+  road's 10 km dog-leg and its re-dress for a wet canyon are **deferred**, and they belong to whichever region holds
+  that pin, not to this one. px 1016,1058 keeps the settlement as *"an arcology TBD of about 10k + hinterlands"* —
+  only its **name** is unknown. `PLAN-SITES.md` section 7c (SETTLED).
+- **`test-xan-economy.js`'s performance budget** reads 623 s against its 240 s line (393,159 people, 1,299 actors), but
+  it was measured against three concurrent node runs and fourteen python builds. To be re-timed on a quiet machine
+  before anything is concluded; the other 73 checks pass.
 
 ## The Audio Lab's numeric defaults *(2026-11-10, the second integration pass)*
 
