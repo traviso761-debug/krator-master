@@ -1360,6 +1360,10 @@
    "bytes": 1220864,
    "sha256": "b3ed09afe1ec34207fc92228aaeb54e8354e9b0a9a80ca1fb69604503dcec6db"
   },
+  "kits/hayrant/dist/hayrant.html": {
+   "bytes": 1574918,
+   "sha256": "50e0fb7966d944fc1672f82a7936269463f79178ac3e5fd85b24766e753d0cd3"
+  },
   "kits/highlands/dist/highlands.html": {
    "bytes": 1974534,
    "sha256": "8e24dd7d7f258c04ecad98689eb858130e5c9d2353c1c687e81fe21f68a68dad"
@@ -1947,6 +1951,10 @@
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9185813,
    "sha256": "925fcc5b5c8a758db54db2e2e7705325e0bfb0e2340bf68a388af71b3b6d9cae"
+  },
+  "settlements/mirabilis/dist/mirabilis.html": {
+   "bytes": 3461511,
+   "sha256": "cb9fb2ac05af00fd9b10ea0173146873d611e5ad2562c586f97a9654b3a242d2"
   },
   "settlements/mungo/dist/mungo.html": {
    "bytes": 5327426,
