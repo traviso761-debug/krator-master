@@ -230,6 +230,19 @@ for a day. `openworld/catch-bowl/PLAN-SIM.md` section 2y has the probe that sett
 Two things follow for any new stop: give it both numbers, and when a trade route goes quiet, check the stops' shortfalls
 before the carriers' schedules.
 
+**A footnote on how that was found, because the second lesson is the more useful one.** The quiet route turned out *not*
+to be caused by the hungry serai — it was caused by the two rival houses sharing one pool and leaving on the same
+minute, and the `offset` written to stagger them was **silently dropped by `core/region/50-region-valley.js`**, which
+builds each `SIM.trade` call from an explicit field list that carried `stagger` but not `offset`. The tune wrote
+`offset: 24018`, a probe read it straight back off the road spec, and the sim was handed `offset: undefined`. So the
+output was byte-identical before and after the stagger, and that was read as "the stagger is not the lever" when it
+meant "the stagger never arrived".
+
+**When a change produces byte-identical output, check that the change arrived before concluding it does not matter.** A
+spec field that a loader forwards by name is exactly where one gets lost, and `50-region-valley.js`'s own doc comment
+did not list `offset` either, so nothing contradicted the wrong reading. Both are fixed; the fodder rule above is real
+and was a second bug found on the way.
+
 ## The books (the accounting contract; PLAN-ECONOMY.md Phase 0)
 
 `77-sim-7-ledger.js`: read only, on the existing books; it adds no counter. `SIM.ledgerSnap()` takes a snapshot of plain data, `SIM.ledger(a, b)`

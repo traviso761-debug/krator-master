@@ -105,13 +105,31 @@ second, which was one grep away. A spec field that a loader has to forward by na
 and the loader's own doc comment did not list `offset` either, so nothing contradicted me.
 
 **Fixed:** `50-region-valley.js` forwards `offset`, and its spec comment names it. Only `settlements/shumar` and
-`settlements/urundashi` embed that file; both are rebuilt. `test-catch.js` is re-running with the offset actually
-applied, so **2z's diagnosis is back in play and untested**: the stagger may fix Goldanda after all, and the barns may
-turn out to have been an unrelated (real) bug fixed on the way.
+`settlements/urundashi` embed that file; both are rebuilt.
 
-**What is settled either way:** the serai's 321,624 kg fodder shortfall was real and is fixed on its own merits, and the
-rule in 2y's last paragraph stands — a settlement on a caravan's road is a place the beasts eat, whether or not it
-trades.
+### SETTLED (2026-11-25): with the offset actually applied, both checks pass
+
+```
+PASS  C3: both Iziz houses land at Strongbow, and the Train brings the Catch's salt, soda and potash up from its pans
+PASS  C4: the Brotherhood's Split Tally lands at both points, the gate (Sinter-Gate) and the shrine, and its outbound half at Stair
+```
+
+**So 2z had it right from the start, and the owner's instinct with it.** The two rival houses *were* contending for one
+pool at one instant; staggering their departures *is* the fix; and the two things that made it look otherwise were both
+mine — a field the region loader silently dropped, and my reading "identical output" as "wrong lever" instead of
+"nothing arrived".
+
+**The barns stay, as an unrelated real bug fixed on the way.** Bāb al-Hawa genuinely ran 321,624 kg of fodder short in a
+simulated year, and a stop on a caravan road genuinely is a place the beasts eat whether or not it trades (2y's rule,
+which stands). It simply was not what starved Goldanda. Worth keeping the two apart, because a fix that lands beside the
+real one is the easiest thing in the world to mistake for it — which is exactly the mistake 2y made in the other
+direction.
+
+**What the whole episode cost and bought.** Three diagnoses, two of them wrong, one dropped field, two 29-minute test
+runs and a probe. What it bought: the stagger (the owner's, and right), the serai's barns (real), `offset` plumbed
+through `core/region` where it was missing, `SCHEMA.md`'s rule about stops feeding beasts, and one habit worth more than
+any of them — **when a change produces byte-identical output, check that the change arrived before concluding it does
+not matter.**
 
 ### 2y. The serai had no fodder: a real bug, but not this one (2026-11-25)
 
