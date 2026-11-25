@@ -833,8 +833,8 @@
    "sha256": "52bda071d1bccf9c621e868cb6301c51cee722f2eb567eeb1aaab04c8c75bd3f"
   },
   "biomes/throne/dist/throne-glacier.html": {
-   "bytes": 1321765,
-   "sha256": "9454e2560fa90b2e94e82e79a7a98861a8b0346d6f8866ae30148278c8abb7e0"
+   "bytes": 1335255,
+   "sha256": "0ade4650cae013ecb4e5d457dfad65bbacb1058565f451289f7b9d7af781b54b"
   },
   "biomes/throne/dist/throne-isle.html": {
    "bytes": 1412051,
@@ -857,8 +857,8 @@
    "sha256": "7c87b4f0e4ed15503491c71aaf2a2c3ed1265ba3cfa0d3fe504efcc0976a90a5"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 1531755,
-   "sha256": "d9b7a5c4badafd0384d277377eeb56dcc65fa04069d73e6ef67d8a21578d6dc3"
+   "bytes": 1564313,
+   "sha256": "4d1ef295db5da8c7d7613a7276be7c5bc437b34ac54ebe088c8b9ed9d483d55f"
   },
   "biomes/throne/dist/throne.html": {
    "bytes": 1292415,

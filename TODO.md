@@ -92,8 +92,9 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
     from the ground at the trunk (`biomes/hyperjungle/src/60-biome-hyperjungle-floor.js`, the hero boles' moss). Seat each skirt on the ground
     under it instead, then drop the exemption (`stations/kipuka/99-host-take.js`, `HCHK.onButtress`). Changes every page that reads the
     hyperjungle kit.
-  - **The owner's calls, still open:** `brine` in the vents' pools (would replace the pools' heat-graded blues) and `WATER.ice` on the
-    glacier's lake (would freeze the lake its icebergs float in) (`biomes/throne/PLAN.md`, "The row's water kinds").
+  - **core/water: `WATER.fields` and the ice.** `WATER.fields` (ext/60) reads every surface's `levelAt`, which a `WATER.ice` record has not:
+    the Throne's glacier gives its ice the lake's level by hand (`stations/glacier/89w-host-water.js`). Give ice (and the pan) a `levelAt` in
+    ext/54, or let `fields` skip them, with a test; then drop the glacier's line.
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
   `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.

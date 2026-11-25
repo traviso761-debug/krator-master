@@ -1823,11 +1823,11 @@
     "biomes/throne/stations/glacier/86-host-glacier.js": "a0fd8d94c9334f73549568201bb82af0ba50d7ef56cb3fb8aed71d898c4f7261",
     "biomes/throne/stations/glacier/89-host-atmos.js": "4ff0cd9513384aa03697c3fd9f102d0ed0d9fb958aefcc5ac668773fefe7a26f",
     "biomes/throne/stations/glacier/89-host-sky.js": "56bfcdbb0b27a2f3da5db039b8c957d21823cb27d913f73dc9d4a9da3a9d833a",
-    "biomes/throne/stations/glacier/89w-host-water.js": "f7182ec390f51d90ed3e2db8225844d6127ad6c582f0e1586a9128856228c346",
+    "biomes/throne/stations/glacier/89w-host-water.js": "605cc6235c4a8a89926b217150b796ad6cc663cb16e35a70247ed927202ce30b",
     "biomes/throne/stations/glacier/89z-host-build.js": "40f740b400731a3ef6b77642bf15ef21ab2652943ce5492622d0e71c55199a31",
-    "biomes/throne/stations/glacier/99-host-take.js": "30ab3131b7b0d4edb0837eccef8d08b735357e444a86ef949a8c584f14fb859d",
+    "biomes/throne/stations/glacier/99-host-take.js": "051f436797f04948b0b3a3da09c02c3bda4722bc79708ca2343b47a1340b80d7",
     "biomes/throne/stations/glacier/region.json": "60163ea4d41f4ccbc7f579256af8c082466f672c0fec64054b5438f2f957972e",
-    "biomes/throne/stations/glacier/station.json": "59623c773c51abcc069450b306ffc7c7d60b4c8c84d8dedd0b839f189ade6c69",
+    "biomes/throne/stations/glacier/station.json": "c8eea6022bb93f9b3576bf496bbdb208fc17b3e45d0b40c76d7a6bb9c78c9f3f",
     "biomes/throne/tex/bark.armored.albedo.webp": "96289b2dd259c262955a7a422bc2ca69263c06070735b945ec10bb8f2f36391e",
     "biomes/throne/tex/bark.bracket.albedo.webp": "a6492b1f636abfb36e2ff0692dabbdef08e6ee3ac34df19bebb71af23d16e913",
     "biomes/throne/tex/bark.brimstone.albedo.webp": "5a1255049c5640ae3833b611175db7d1f7300f0499768d925db0258f5b8e9f6d",
@@ -2021,6 +2021,7 @@
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/54-core-water-kinds-ext.js": "a7b5d500a917cb481a1d61d73e88c8236c57288bfad4726a9ae9635c49e2dcdf",
+    "core/water/ext/54b-core-water-kinds-ext-draw.js": "e5c69d41f55e2aaf3b285876491858e379d42f377ff37b0a70a7288ba7004b42",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -2039,12 +2040,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/throne/dist/throne-glacier.html": "9454e2560fa90b2e94e82e79a7a98861a8b0346d6f8866ae30148278c8abb7e0",
+    "biomes/throne/dist/throne-glacier.html": "0ade4650cae013ecb4e5d457dfad65bbacb1058565f451289f7b9d7af781b54b",
     "biomes/throne/dist/throne.tex.throne-2.js": "0b33ea45dd0e7fcba0f9eaae4dbf0bbf1e6a5b39aff7baa63e6ac6c7b5e1c798",
     "biomes/throne/dist/throne.tex.throne.js": "9d67bfeb890067b2372ae341d3e9e1c43cc481cde64847d2853c88d05c93ce87"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-glacier.html": "9454e2560fa90b2e94e82e79a7a98861a8b0346d6f8866ae30148278c8abb7e0",
+    "biomes/throne/dist/throne-glacier.html": "0ade4650cae013ecb4e5d457dfad65bbacb1058565f451289f7b9d7af781b54b",
     "biomes/throne/dist/throne.tex.throne-2.js": "0b33ea45dd0e7fcba0f9eaae4dbf0bbf1e6a5b39aff7baa63e6ac6c7b5e1c798",
     "biomes/throne/dist/throne.tex.throne.js": "9d67bfeb890067b2372ae341d3e9e1c43cc481cde64847d2853c88d05c93ce87"
    }
@@ -3381,16 +3382,16 @@
     "biomes/throne/stations/vents/47-host-land.js": "ca737307628a04b0f39446480ed16a7c43123315fe39fddf36d2c87771f08e21",
     "biomes/throne/stations/vents/82-host-sky.js": "5ca49ccf778cd0e18cefb38b2ff8a7bb53c1458a7fa77c841b4660646a4a0e2d",
     "biomes/throne/stations/vents/84-host-ground.js": "4eea13bd8b68f851e34d58d319eab7d2d07ae26ac1484c14f12dd45ef01becb1",
-    "biomes/throne/stations/vents/86-host-vents.js": "97eca3d82b002d6b25b25c50f806f2032070d73c66b769263b6565de745ee97f",
+    "biomes/throne/stations/vents/86-host-vents.js": "7a75ca40778779afcd5f527a4e23291c893fadd855c060ad25e727663847945d",
     "biomes/throne/stations/vents/87g-host-bismuth.js": "f3f7413fd028442d53e95a3a32d13d1acc670c14f9f2b05fef5e061c3b1ab1ef",
     "biomes/throne/stations/vents/89-host-atmos.js": "e898d4b733e6059379d570959b9405cdabbcd4c63a0479b6566cde33757313b3",
     "biomes/throne/stations/vents/89-host-sky.js": "ecc54af6e76dab52e5b825a612a825a4d0c97ac16743821c49d38530c4b14083",
     "biomes/throne/stations/vents/89w-host-water.js": "61d11e6689328e4a3c0797d1a57e3e81731da754fc571142fc789ef4c52feb04",
     "biomes/throne/stations/vents/89y-host-rheo.js": "922dc70cdc4825dd381bc78a16cf9b89bdd128149da4e0069a802ba56c3a9b9a",
     "biomes/throne/stations/vents/89z-host-build.js": "989a914b3f1c9bf873af974ec91e50915a141f38a861e49464a9d19687761310",
-    "biomes/throne/stations/vents/99-host-take.js": "969cff75444c57bcb0e9972195a6bab1ea681625a440249c00d9d9e1a5da2768",
+    "biomes/throne/stations/vents/99-host-take.js": "f2ef8fc431cbbe7e3c428f81b6911a10981e077ff64de5eb917484b4141a7d2e",
     "biomes/throne/stations/vents/region.json": "1d6d04f1dfa3eb29c357aef4b53b55f9e0418513587b25e10faf2c13b244751a",
-    "biomes/throne/stations/vents/station.json": "41860610e8e7431fbaebe09a5965bec3a5fb15ce80cfdbd60ec958558407f572",
+    "biomes/throne/stations/vents/station.json": "b3f1a13ea9499207264c5c64b4fe63aad4636f56a9d66d7a90b5e2154306237b",
     "biomes/throne/tex/bark.armored.albedo.webp": "96289b2dd259c262955a7a422bc2ca69263c06070735b945ec10bb8f2f36391e",
     "biomes/throne/tex/bark.bracket.albedo.webp": "a6492b1f636abfb36e2ff0692dabbdef08e6ee3ac34df19bebb71af23d16e913",
     "biomes/throne/tex/bark.brimstone.albedo.webp": "5a1255049c5640ae3833b611175db7d1f7300f0499768d925db0258f5b8e9f6d",
@@ -3587,6 +3588,7 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/ext/54-core-water-kinds-ext.js": "a7b5d500a917cb481a1d61d73e88c8236c57288bfad4726a9ae9635c49e2dcdf",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
@@ -3607,12 +3609,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/throne/dist/throne-vents.html": "d9b7a5c4badafd0384d277377eeb56dcc65fa04069d73e6ef67d8a21578d6dc3",
+    "biomes/throne/dist/throne-vents.html": "4d1ef295db5da8c7d7613a7276be7c5bc437b34ac54ebe088c8b9ed9d483d55f",
     "biomes/throne/dist/throne.tex.throne-2.js": "0b33ea45dd0e7fcba0f9eaae4dbf0bbf1e6a5b39aff7baa63e6ac6c7b5e1c798",
     "biomes/throne/dist/throne.tex.throne.js": "9d67bfeb890067b2372ae341d3e9e1c43cc481cde64847d2853c88d05c93ce87"
    },
    "outputs_raw": {
-    "biomes/throne/dist/throne-vents.html": "d9b7a5c4badafd0384d277377eeb56dcc65fa04069d73e6ef67d8a21578d6dc3",
+    "biomes/throne/dist/throne-vents.html": "4d1ef295db5da8c7d7613a7276be7c5bc437b34ac54ebe088c8b9ed9d483d55f",
     "biomes/throne/dist/throne.tex.throne-2.js": "0b33ea45dd0e7fcba0f9eaae4dbf0bbf1e6a5b39aff7baa63e6ac6c7b5e1c798",
     "biomes/throne/dist/throne.tex.throne.js": "9d67bfeb890067b2372ae341d3e9e1c43cc481cde64847d2853c88d05c93ce87"
    }

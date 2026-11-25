@@ -127,6 +127,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing lives on the fissure or its cones',HCHK.hot(THRONE.TREES,P));
  add('sulphur rosettes in the marsh',HCHK.marsh(P));
  add('vent coral and brain caps round the hot pools',HCHK.pools(P));
+ add('the hot pools are brine',(function(L){const n=L.filter(S=>S.look&&S.look.preset==='brine').length;return{ok:n===POOLS.length,detail:n+' of '+POOLS.length+' pools brine (core/water ext/54)'};})(HOT_SPRINGS));
  add('the sulphur life: reeds, acid pads, gas bladders',HCHK.sulphur(P));
  add('the acid fog and the ash (core/atmos) are here',HCHK.weather(ATMOS.W,ATMOS.U));
  add('every species of vent country placed',HCHK.placed(counts(THRONE.TREES)));
@@ -142,6 +143,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a marsh with no rosettes',HCHK.marsh([]));
  {const c=fissPt(1200);add('a plant on the fissure',HCHK.hot(THRONE.TREES,[[c[0],terrainH(c[0],c[1]),c[1],'biome:fern']]));}
  add('pools with nothing round them',HCHK.pools([]));
+ add('a pool still blue',(function(L){const n=L.filter(S=>S.look&&S.look.preset==='brine').length;return{ok:n===POOLS.length,detail:n+' of '+POOLS.length+' pools brine (core/water ext/54)'};})(HOT_SPRINGS.slice(1).concat([{}])));
  add('no sulphur life',HCHK.sulphur([]));
  add('a weather without the ash',HCHK.weather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES.filter(m=>m!=='fog')}),ATMOS.U));
  {const C=counts(THRONE.TREES);C[SPK('brimstone')]=0;add('a species never placed',HCHK.placed(C));}
