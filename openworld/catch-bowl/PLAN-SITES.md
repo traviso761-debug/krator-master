@@ -198,9 +198,68 @@ simulation's own carriers.
 
 | Site | What it is | The plan |
 |---|---|---|
-| **Arcbeam** (`skz25tuq0w`, 1016,1058, 2,119 m) | an **arcology** of the Empire of Iziz on gentle upland (slope med 11 m/km); a stop on the Iziz road to the Catch (`PROPOSAL-CATCH.md`: Iziz to Stair "by Arcbeam, Parabola and the Godsgate"). **It is not the Bowl arcology and no tunnel runs from it** (the owner, 2026-11-24) | `kits/ancients`'s **arcbeam** target already exists. *Proposed:* a marker, massing out to 30 km, the Ancient highway running past it, and its own page left for later |
+| **Arcbeam** (`skz25tuq0w`, pin 1016,1058, **its site open**) | **the bridge city**: an arcology of the Empire of Iziz of **10,000 with 6,000 in its hinterland** (the owner, 2026-11-24: *"arcbeam can be 10k + hinterlands"*), on the Iziz road to the Catch. **Not** the Bowl arcology, and no tunnel runs from it. So it is **not a marker to pass** but the largest place on the north road after Jabal, and a market the caravans trade at | `kits/ancients`'s **arcbeam** target exists and **brings its own site: a 3,400 m gorge with a plateau on both rims**. There is no such canyon inside this region's cut — **section 7a** has the survey, the three ways out and why the gorge must wait on B3's road before it is carved. Its present pin is 2,119 m of gentle upland, the opposite of its own site |
 | **Parabola** (`scyeauyek7`, 970,1186, 1,716 m) | **the Bowl arcology** (the owner, 2026-11-11: *"the Bowl arcology goes at 970,1186: the Bowl's most temperate ground near the Godsgate"*, and 2026-11-24: *"parabola is the arcology now"*) — the end of the Ancient rail line's possible extension from Strongbow by Theodiga and Stair, **the north portal of the ruined Parabola-Stair bore**, an inhabited ruin of the Empire of Iziz, and the north road's gateway and mustering ground | `kits/ancients`'s **parabola** target exists. The ground is severe (slope **median 169 m/km**, -714 to 4,713 m within 16 km): it stands on the wall's flank and wants a `bench` as the Hermitage does. Its reach grows to 20 km now that it is the arcology. A marker, massing, the rail head and the Ancient highway's start as setpieces, the caravanserai as a `KWCAMPS` halt |
 | **Esper** (`sq11desertw7`, 1042,1083, 895 m) | a **village** of the Empire of Iziz, **named by the owner 2026-11-24**; the map still reads "Izani-Dasri village (to be named)" (a map edit, `PLAN.md` section 11) | the `dasri` row with `IZV` beside it — the fabric says the mix the old label described |
+
+## 7a. Arcbeam's canyon: the siting survey, and why the model has no site for it (2026-11-24)
+
+The owner, 2026-11-24: *"arcbeam can be 10k + hinterlands - we need to site it in an actual canyon that fits the
+arcology model, preferably someplace it is actually helpful as a bridge. we may need to tweak its dimensions in order to
+do this."*
+
+**What the model asks for.** `kits/ancients/targets/arcbeam/89z-rows.js` says it in its first lines: Arcbeam *"brings
+its own site: a 3,400 m gorge, a plateau on both rims and a graded skirt down to the plain"*, with **gorge floor y = 0
+and rim y = 400** — so a **3.4 km span across a 400 m trench**, the built work reaching ±600 m from its axis and the
+plateau skirt running to 1,600 m. It is a 700,000-triangle megastructure, and **the gorge is the larger part of the
+site**: the city itself is only 1.2 km across.
+
+**The first thing the survey settled: the scale model cannot carry that gorge at all.** At 2 km a pixel a 3,400 m gorge
+is **1.7 cells**. Sub-cell trenches are not the model's job — they are the open world's, where `extract_region.py`
+carves river channels below the cell (`carve_subcell_rivers`) and `WORLD.H` hands the kits a `canyon` field. So the
+question is not "where is a 3.4 km gorge on the model" but **"where does a named river cross a road in a trench the
+open world will carve, with level ground on both rims"**.
+
+**Asked that way, the answer inside this region's cut is: nowhere.** Measured
+(`openworld/catch-bowl/tools/survey.py` and the scans of 2026-11-24):
+
+| Test | Result |
+|---|---|
+| Named rivers crossing the Iziz–Arcbeam–Parabola–Godsgate corridor | twelve, including Rrivar Cistal, Goulda, Loña and pina |
+| Any of them running **two consecutive cells** in a trench ≥250 m below level rims | **none** |
+| Cross-sections anywhere on those rivers with rims within 50 m of each other **and** ≥150 m of depth | four, all **single cells** |
+| The best of them (Rrivar Cistal, px 936,1061: 4.0 km wide, rims 43 m apart) | an **artefact**: the river is plunging off an escarpment, and two cells on its "rims" read 300–800 m apart. It also lies in `godstep valley`, **outside this region's cut**, 160 km from Arcbeam's pin |
+| V-notches on the roads where a span would save real climbing | **one**, at px 990,1227 — 329 m deep, 5.0 km wide, rims 15 m apart. Also an artefact: it is on the *straight line* Parabola–Kolli at 5.3 km altitude, i.e. across the wall, where no road goes. The carved Godsgate corridor beside it runs at 2,284–3,739 m |
+| Dips on Iziz–Arcbeam, Arcbeam–Parabola, Iziz–Parabola or Mantis–Jabal | **none at all**: those roads are monotonic climbs and descents |
+
+**Why there is nothing, and it is not an accident.** The Bowl is a basin ringed by escarpments and the Catch is a sealed
+floor: their roads climb out of an abyss (Iziz stands at **-1,428 m**) and over walls. A bridge city belongs to
+**dissected plateau** — country cut into blocks by trenches — and there is none of that here. Arcbeam's present pin
+(1016,1058) is the opposite of its own site: 2,119 m of **gentle upland**, median slope 11 m/km.
+
+### The three ways out
+
+| | What it means | Cost |
+|---|---|---|
+| **1. Carve the gorge** *(recommended, with 3)* | The repo's established move: the Godsgate's 100 km corridor and all five highland tarns were carved into the model by edit scripts and landed to the metre. A gorge for Arcbeam is the same kind of edit, and it should be carved **where a bridge earns its keep** — a tributary trench the north road has to cross, so the highway *is* the bridge | a scale-model edit, and it must wait on the road: see below |
+| **2. Move Arcbeam to real canyon country** | The planet has plenty — `Loom Chasms` (warp chasms), `greatchasm`, `labyrinth`, `necanyons`, `the Cut`, `outlandgate`. All are far from the Bowl, and Arcbeam stops being the Iziz road's arcology, which is the whole of its present role | it leaves this region, and the north road loses its only Imperial place between Iziz and Parabola |
+| **3. Tweak its dimensions** *(the owner's own suggestion; recommended with 1)* | The **city** is 1.2 km across; only the **gorge** is 3.4 km. Dropping the span to about **2 km** and the rims to **250 m** halves the carve and leaves the megastructure's own geometry untouched — `AB_SITE`'s builders derive every face from the gorge's numbers, so the city rescales with it rather than being redrawn | the target's `89z-rows.js` numbers change, and its comparison shot's camera distances with them |
+
+### What this means for the order of work
+
+**The gorge cannot be sited until the north road is routed.** A bridge is only useful where the road crosses it, and the
+road's line is `PLAN.md` B3's (`ROADS` on the `trail` kind, routed along the Godsgate's thalweg). So:
+
+1. **B3 lays the north road** — Parabola, the Godsgate, Kolli — and reports where it crosses tributary ground.
+2. **Then the gorge is carved** at the best of those crossings, to the dimensions of option 3, and Arcbeam's pin moves
+   onto its rim. That is a scale-model edit, queued in `MAP-EDITS.md`.
+3. **Until then Arcbeam keeps its present pin** and its census (10,000 plus 6,000 in its ring), which do not depend on
+   where it stands: `core/region/data/bowl-tune.js` marks it `site: 'open'` so nobody mistakes the pin for a decision.
+
+**One thing worth the owner's eye.** A bridge city that *creates* its route is a stronger piece of world than one that
+happens to stand by a road: if the gorge is carved across the north road's line, then Arcbeam is **why the road goes
+that way**, and the Ancients' 30 m highway over the Godsgate has a reason to pass through it. That is the version worth
+building, and it is the reason to wait for B3 rather than pick a pixel now.
 
 ## 8. The two salt works
 

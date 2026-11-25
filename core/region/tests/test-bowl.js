@@ -22,11 +22,12 @@ console.log('a year of the Bowl in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+Y.
 
 // ---- the places
 const ID={jabal:'sa5o6dvjdv',mantis:'slw9dufqfs',solta:'s0zgu7u6yb',arcbeam:'skz25tuq0w',parabola:'scyeauyek7',esper:'sq11desertw7'};
-{const want=Object.values(ID),got=Y.S.order.slice().sort(),good=want.every(x=>got.indexOf(x)>=0);
- T.ok('S2: the Bowl\'s six places are declared and run -- Jabal, Mantis, Solta, Arcbeam, Parabola and Esper',good&&Y.S.order.length===6,
+{const want=Object.values(ID).concat(['slw9dufqfs.ring','skz25tuq0w.ring']),got=Y.S.order.slice().sort();
+ const good=want.every(x=>got.indexOf(x)>=0);
+ T.ok('S2: the Bowl\'s six places run, and Mantis\'s and Arcbeam\'s hinterlands with them -- eight settlements',good&&Y.S.order.length===8,
   Y.V.settlements.map(s=>s.id.replace(/^s/,'')+' '+s.people).join(', '));
  T.neg('a tune missing a place does not pass for the whole Bowl',
-  x=>x.length===6,Object.values(ID).slice(1),Object.values(ID));}
+  x=>x.length===8,want.slice(1),want);}
 // every place keeps its people fed off its own make and its stocked start: nobody starves in a year
 {const hungry=Object.keys(B).filter(id=>{const b=B[id];return b&&b.short&&Object.keys(b.short).length>0;});
  T.ok('S2: a year on its own make and a 400-day start leaves no Bowl place short',hungry.length===0,
@@ -60,11 +61,21 @@ const ID={jabal:'sa5o6dvjdv',mantis:'slw9dufqfs',solta:'s0zgu7u6yb',arcbeam:'skz
  T.ok('S2: the Train of Jabal and the Izani houses of Mantis are wary (the Train holds both salt works)',!!r&&r.stance==='wary',
   r?r.a+' / '+r.b+': '+r.stance:'no relation');
  T.neg('a friendly pair is not the salt grievance',x=>!!x&&x.stance==='wary',{a:'train',b:'mantishouses',stance:'friendly'},r);}
-// ---- the two census rows the owner has still to rule on stay flagged, so nobody quietly forgets them
-{const C=BOWL_TUNE.conflicts,flagged=C.every(c=>{const P=BOWL_TUNE.places.find(p=>p.id===c.id);return P&&P.pending===c.ref;});
- T.ok('S2: Arcbeam\'s 10,000 and Mantis\'s 300 are still flagged as the owner\'s to rule on (PLAN-SIM.md 3a)',C.length===2&&flagged,
-  C.map(c=>c.ref+' '+c.id+' = '+c.gemini+' vs "'+c.plans+'"').join('; '));
- T.neg('a census row with its flag dropped is not still a question',
-  x=>x.every(c=>{const P=BOWL_TUNE.places.find(p=>p.id===c.id);return P&&P.pending===c.ref;}),
-  C.map(c=>Object.assign({},c,{ref:'(z)'})),C);}
+// ---- the two census rows that were open are ruled (the owner, 2026-11-24), and nothing carries a pending flag any more
+{const Rl=BOWL_TUNE.ruled,P=id=>BOWL_TUNE.places.find(q=>q.id===id);
+ const matched=Rl.every(c=>{const q=P(c.id);return q&&q.people===c.now&&(c.ring?(q.ring&&q.ring.people===c.ring):true);});
+ const noFlags=BOWL_TUNE.places.every(q=>q.pending===undefined);
+ T.ok('S2: Mantis is 15,000 and Arcbeam 10,000, each with its hinterland, and no census row is pending any more',Rl.length===2&&matched&&noFlags,
+  Rl.map(c=>c.ref+' '+c.id+': '+c.was+' -> '+c.now+' + '+c.ring+' in its ring').join('; '));
+ T.neg('a place still carrying a pending flag is not a ruled census',
+  x=>x.every(q=>q.pending===undefined),
+  BOWL_TUNE.places.map(q=>q.id==='slw9dufqfs'?Object.assign({},q,{pending:'(b)'}):q),BOWL_TUNE.places);}
+// ---- the hinterlands: each ring is a settlement of its own at a coarser scale, sending its make down to its town
+{const ring=id=>Y.V.settlements.find(s=>s.id===id+'.ring'),lane=id=>Y.V.roads.find(r=>r.id==='lane.'+id);
+ const M=ring('slwl')||ring('slw9dufqfs'),A=ring('skz25tuq0w');
+ const good=!!M&&!!A&&M.scale===200&&A.scale===200&&!!lane('slw9dufqfs')&&!!lane('skz25tuq0w')
+  &&M.works.some(w=>w.out[0]==='dates')&&A.works.some(w=>w.out[0]==='grain');
+ T.ok('S2: Mantis and Arcbeam each have a countryside of their own at 200 people an actor, with a lane carrying its make down to the town',good,
+  (M?'Mantis ring '+M.people+' ('+M.works.length+' works)':'no Mantis ring')+'; '+(A?'Arcbeam ring '+A.people+' ('+A.works.length+' works)':'no Arcbeam ring'));
+ T.neg('a town with no countryside has no lane to one',x=>!!x,lane('sa5o6dvjdv'),lane('slw9dufqfs'));}
 T.done();

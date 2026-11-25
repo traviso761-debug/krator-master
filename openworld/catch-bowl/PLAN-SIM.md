@@ -126,9 +126,9 @@ If it narrows past the lore, the lever is the fodder price at Bāb al-Hawa, not 
 | Place | Id | Px | People | What it is on the sim |
 |---|---|---|---|---|
 | **Jabal** | `sa5o6dvjdv` | 1225,1149 | a city (census from its page) | the Jabal Sheikhdom's seat; **the Train of Jabal's home**, in place of the off-map pool `gate.dasri`. Its works: the salt warehouses (*wakala*), the two caravanserais (*funduq*), the *birka* cisterns, the souq |
-| **Mantis** | `slw9dufqfs` | 1113,1164 | a town | an Iziz holding under Izani merchant houses: frankincense and resin, dates and figs from the walled gardens, the lake's shrimp-and-brine take, and **the grievance** — it buys its salt from the Train at Solta |
+| **Mantis** | `slw9dufqfs` | 1113,1164 | **15,000 + 9,000 in its ring** (the owner, 2026-11-24) | the Bowl's **second city**, an Iziz holding under Izani merchant houses: frankincense and resin, dates and figs from the walled gardens, the lake's shrimp-and-brine take, cloth and tools, its own caravanserai, and **the grievance** — it buys its salt from the Train at Solta |
 | **Solta** | `s0zgu7u6yb` | 1169,1150 | ~100-150 seasonal | the Train's Bowl works: rock salt 234, gypsum 253, 7 km from the lake, 112 km from Jabal |
-| **Arcbeam** | `skz25tuq0w` | 1016,1058 | an arcology | an Iziz arcology and a stop on the north road. **Not** the Bowl arcology, and **no tunnel runs from it** (the owner, 2026-11-24) |
+| **Arcbeam** | `skz25tuq0w` | pin 1016,1058, **site open** | **10,000 + 6,000 in its ring** (the owner, 2026-11-24) | **the bridge city**, and so the largest place on the north road after Jabal and a market the caravans trade at — not a marker to pass. **Not** the Bowl arcology, and **no tunnel runs from it**. Its canyon is to be carved once B3 routes the road: `PLAN-SITES.md` section 7a |
 | **Parabola** | `scyeauyek7` | 970,1186 | an inhabited ruin, **the Bowl arcology** | the north road's mustering ground, where a train forms up, waters and reads the water board before the pass — and the end of the Ancient rail line's possible extension (the owner, 2026-11-11 and 2026-11-24) |
 | **Esper** | `sq11desertw7` | 1042,1083 | a village | the Bowl's one farming place; named by the owner, 2026-11-24 |
 
@@ -155,9 +155,19 @@ those are for the owner, not for the tune to settle quietly.
 | **Ranger HQ** | 350 | 129 | **500** (the owner, 2026-11-24) | **the owner's 500** |
 | **Esper** | *absent* | - | a village of the Empire of Iziz at 895 m | *proposed:* **220**, the size of the Catch's two largest oases together — the Bowl's one farming village, feeding itself and selling a little up the road |
 
-So `BOWL_TUNE` can be written from real numbers for Jabal, Parabola, Solta and Esper, and **conflicts (a) and (b) are
-questions for the owner** before Arcbeam and Mantis go on the books: *is Arcbeam a 10,000-strong inhabited arcology with
-a market, or a ruin to pass?* and *is Mantis the town its lore describes, or a village of 300?*
+**Both conflicts were ruled the same day** (the owner, 2026-11-24): *"mantis should be a lot bigger than 300, maybe
+15000 + hinterlands. arcbeam can be 10k + hinterlands."* So:
+
+- **Mantis is 15,000 in the town and 9,000 in the green pocket's gardens round it** — the Bowl's second city, which is
+  what its programme needed. `kind: 'city'`, with its own caravanserai and repairs.
+- **Arcbeam is 10,000 and 6,000 in its ring**, which makes it the largest place on the north road after Jabal and a
+  market rather than a marker; `PLAN-SITES.md`'s "a marker, massing out to 30 km" is superseded. **Its site stays open**
+  (`site: 'open'` in the tune): the owner wants it in a real canyon as a bridge, and there is none inside the cut, so the
+  gorge is carved once B3 routes the road (`PLAN-SITES.md` section 7a).
+- **The hinterlands are settlements of their own** at 200 people an actor, as `XAN_TUNE`'s countrysides are, each with a
+  lane carrying its make down to its town and the town feeding back what the ring does not grow.
+- `BOWL_TUNE.ruled` records both, with the owner's words, and the test asserts no place carries a `pending` flag any
+  more — so nobody re-opens them from Gemini's file.
 
 **The one structural change**: the Train of Jabal stops being a gateway pool and becomes a company with a home, two
 works and two rounds (Solta > Jabal, and Jabal > Ṣalṭ al-Bān > Stair > the Twins > Strongbow). This is the biggest edit
@@ -181,12 +191,13 @@ to books that currently balance, and `test-catch.js`'s 29 checks must pass befor
 - **`BOWL_TUNE.conflicts`**: the two census rows of section 3a, each carried at Gemini's number with a `pending` flag on
   the place, so the tune runs and the question stays visible in the data rather than only in a plan.
 
-**`core/region/tests/test-bowl.js`**: a year of the Bowl (6 settlements, 26,370 people at one actor to 25, about 60 s),
-**14 checks, every one with a working negative** — the six places declared and run; nobody short on their own make and a
+**`core/region/tests/test-bowl.js`**: a year of the Bowl (**8 settlements, 56,070 people** at one actor to 25 — the six
+places and Mantis's and Arcbeam's hinterlands — about 100 s), **16 checks, every one with a working negative** — the six places declared and run; nobody short on their own make and a
 400-day start; Jabal making a city's goods, Solta raking salt and gypsum, Mantis tapping frankincense and resin; the
 pans worked only in the cool months and the dates only in the monsoon while a city's kilns run all year; Jabal's
-caravanserais watered; the salt grievance wary; and **the two conflicts still flagged**, so nobody can quietly forget
-them.
+caravanserais watered; the salt grievance wary; **both census rows ruled with no `pending` flag left**; and **each
+hinterland a settlement at 200 people an actor with its lane down to its town**. Nobody goes short even at 56,070
+people.
 
 Left for S2's second half: `BOWL_TUNE.join` — the Train's rounds, Mantis buying its salt at Solta, and the north road's
 stops at Arcbeam, Parabola and Esper.

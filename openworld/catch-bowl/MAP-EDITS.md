@@ -18,6 +18,18 @@ The region's `SITES.json` row and `BUDGETS.json` are written, and `python3 tools
 | **6** | **Rename `sq11desertw7`** from "Izani-Dasri village (to be named)" to **Esper** | The owner, 2026-11-24 | no |
 | **7** | **Type `scyeauyek7` (Parabola) as the Bowl arcology**, add the ruined **Parabola-Stair bore** to the network layer (proposed id `rift.bowl.parabola-stair`), and drop every trace of an Arcbeam-Stair one | The owner, 2026-11-24: *"parabola is the arcology now. There is no tunnel ti arcbeam but there is a highway"*, and *"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."* The docs are already renamed (below) | no |
 
+## Queued later, and NOT yet ready: Arcbeam's gorge
+
+**Do not site this one yet.** The owner, 2026-11-24: Arcbeam wants *"an actual canyon that fits the arcology model,
+preferably someplace it is actually helpful as a bridge"*, and the survey found **no such canyon inside this region's
+cut** (`PLAN-SITES.md` section 7a: no named river on these roads runs two consecutive cells in a trench 250 m below
+level rims, and the roads themselves are monotonic climbs with no V-notch to span). So the gorge is to be **carved**, as
+the Godsgate's corridor and the five tarns were — but **it cannot be sited until `PLAN.md` B3 routes the north road**,
+because a bridge is only useful where the road crosses it. The sequence is: B3 lays the road and reports its tributary
+crossings; then one edit carves the gorge at the best of them and moves Arcbeam's pin onto its rim; its dimensions drop
+to about a **2 km span and 250 m rims** (the owner: *"we may need to tweak its dimensions"*), which leaves the
+megastructure's own geometry untouched because `AB_SITE` derives every face from the gorge's numbers.
+
 ## What this session already did, so the queue need not
 
 - **`openworld/SITES.json`**: the `catch-bowl` region row (six polygons, sixteen sites, `origin_px` [1233,1306]) and
