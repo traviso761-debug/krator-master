@@ -19,16 +19,16 @@
  "class_O_let_go": 2609,
  "reclimate": {
   "cells": 5584,
-  "class_changed": 3677,
+  "class_changed": 3676,
   "rain_mean_before_mm": 613.0,
   "rain_mean_after_mm": 1156.0,
   "classes_now": {
    "BSk": 1,
    "Cfa": 15,
-   "Dsc": 19,
+   "Dsc": 21,
    "Dfb": 240,
-   "Dfc": 1638,
-   "ET": 2010,
+   "Dfc": 1635,
+   "ET": 2011,
    "EF": 701,
    "HT": 430,
    "HF": 530

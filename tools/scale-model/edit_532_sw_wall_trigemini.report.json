@@ -4,15 +4,34 @@
  "trigemini": {
   "tarn_cells": 37,
   "tarn_level_m": 5680.0,
-  "cols_m": {
-   "NE": 6350,
-   "S": 6250,
-   "W": 6450
-  },
-  "ends_m": {
-   "NE (Dalab)": 4867,
-   "S (w rift highland)": 4635,
-   "W (copper glacier)": 5131
+  "arms": {
+   "NE": {
+    "col_m": 6352,
+    "col_px": [
+     340.0,
+     1087.8
+    ],
+    "km": 234,
+    "end_m": 4867
+   },
+   "S": {
+    "col_m": 6236,
+    "col_px": [
+     280.0,
+     1170.8
+    ],
+    "km": 204,
+    "end_m": 4635
+   },
+   "W": {
+    "col_m": 6476,
+    "col_px": [
+     258.3,
+     1116.0
+    ],
+    "km": 223,
+    "end_m": 5131
+   }
   }
  },
  "vales": [
@@ -57,31 +76,31 @@
   }
  ],
  "rivers_kept_downhill": [],
- "land_moved_cells": 3904,
- "lowered_m_max": 7485,
+ "land_moved_cells": 4391,
+ "lowered_m_max": 7666,
  "raised_cells": 0,
  "reclimate": {
-  "cells": 3246,
-  "class_changed": 1980,
-  "rain_mean_before_mm": 283.0,
-  "rain_mean_after_mm": 500.0,
+  "cells": 3526,
+  "class_changed": 2220,
+  "rain_mean_before_mm": 260.0,
+  "rain_mean_after_mm": 495.0,
   "classes_now": {
-   "BSk": 19,
+   "BSk": 18,
    "Dsc": 1,
-   "Dfc": 133,
-   "ET": 863,
-   "EF": 1113,
-   "HT": 704,
-   "HF": 413
+   "Dfc": 138,
+   "ET": 827,
+   "EF": 1313,
+   "HT": 789,
+   "HF": 440
   },
-  "airless_cells_given_air": 2754,
-  "class_O_let_go": 1544
+  "airless_cells_given_air": 3318,
+  "class_O_let_go": 1845
  },
  "floor_classes": {
-  "BSk": 7,
-  "Dfc": 74,
+  "BSk": 13,
+  "Dfc": 79,
   "ET": 500,
-  "EF": 548,
-  "HT": 160
+  "EF": 685,
+  "HT": 241
  }
 }

@@ -3,14 +3,22 @@
  "date": "2026-11-25",
  "matron_new_land_cells": 8003,
  "matron_new_land_km2": 32012,
+ "matron_new_land_m": [
+  5,
+  98,
+  863,
+  1371
+ ],
+ "matron_old_strip_raised_cells": 2284,
  "arkerum": {
-  "floor_m": 60,
-  "rim_m": 490,
-  "apron_base_m": 47,
+  "floor_m": 520,
+  "rim_m": 1219,
+  "apron_base_m": 920,
   "breach_toward": [
    -0.89,
    -0.45
-  ]
+  ],
+  "sea_px": 4.5
  },
  "white_pass": {
   "summit_m": 5400,
@@ -58,12 +66,12 @@
   "r221",
   9232
  ],
- "land_moved_cells": 11504,
+ "land_moved_cells": 13777,
  "lowered_cells": 3490,
- "raised_cells": 8014,
+ "raised_cells": 10287,
  "pins": {
   "Arkerum": {
-   "m": 60,
+   "m": 520,
    "water": false
   },
   "Whitelake": {
@@ -74,27 +82,30 @@
  "airless_cells_given_air": 1390,
  "class_O_let_go": 622,
  "reclimate": {
-  "cells": 11139,
-  "class_changed": 8377,
-  "rain_mean_before_mm": 2107.0,
+  "cells": 13937,
+  "class_changed": 10823,
+  "rain_mean_before_mm": 2288.0,
   "rain_mean_after_mm": 2077.0,
   "classes_now": {
-   "Af": 3138,
-   "Am": 1831,
+   "Af": 4187,
+   "Am": 3417,
+   "Aw": 2,
    "BWk": 11,
-   "BSk": 419,
-   "Cfa": 1609,
-   "Cfb": 23,
+   "BSk": 441,
+   "Cwa": 326,
+   "Cwb": 18,
+   "Cfa": 1818,
+   "Cfb": 34,
    "Dsb": 192,
-   "Dsc": 450,
-   "Dwb": 19,
+   "Dsc": 510,
+   "Dwb": 20,
    "Dfb": 30,
-   "Dfc": 154,
-   "ET": 524,
-   "EF": 690,
+   "Dfc": 72,
+   "ET": 525,
+   "EF": 689,
    "HT": 378,
    "HF": 295,
-   "WS": 1376
+   "WS": 972
   }
  }
 }

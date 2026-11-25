@@ -7,12 +7,17 @@ off the finished volcano.
 
 `the dome` (rmweubdnyts8y): "a large shield volcano, much lower than the Throne, yet high enough (+1,440 to +2,925 m) to
 push its region into a cool, wet tropical/subtropical highland climate (Cfa/Cfb)". The land in its polygon held those
-heights as an uneven upland with no shield. Here, inside the polygon (its water left alone): a broad convex shield
-round the polygon's centre, from 1,440 m at its edge to 2,925 m at the summit (h = base + rise (1 - (r/R)^2)^1.6, R the
-polygon's mean radius), a summit caldera 8 km across and 140 m deep, radial lava-flow ribbing (a few tens of metres), a
-quarter of the land's own fine texture kept; eased into the land round it over 8 px past the polygon. Temperatures
+heights as an uneven upland with no shield. The first cut set it 1,440-2,925 m, under the 1.7-2.5 km highland round it,
+so it read as a hollow (the owner: "it should stand out / rise immediately from surrounding highlands"). Now, inside
+the polygon (its water left alone), a broad convex shield replaces the upland:
+- It rises 1,450 m over its own foot (h = foot + 1450 (1 - (r/R)^1.7)^1.25, R the polygon's mean radius). The foot is
+  the land's height 3-10 px outside, by bearing, merging to one summit toward the centre.
+- A ~220 m step of lava-flow fronts stands at its edge.
+- At the top, a summit caldera 8 km across and 160 m deep.
+- Radial lava-flow ribbing (a few tens of metres), and a quarter of the land's own fine texture kept.
+It fades into the land over 3 px past the polygon and never cuts it there. Temperatures
 lapsed, rain, class and zone re-derived where the land moved, the paint relit and tinted for the new heights. Refuses to
-run twice (the summit at 2,925 m with its caldera).
+run twice (the centre standing 1 km over the ring round the polygon).
 """
 import json, math, os, sys
 import numpy as np
@@ -23,7 +28,7 @@ sys.path[:0] = [HERE, os.path.join(HERE, 'history')]
 import smodel.page as P, smodel.paint as PA, smodel.climate as C, smodel.geom as G   # noqa: E402
 
 RID = 'rmweubdnyts8y'
-BASE, TOP = 1440.0, 2925.0
+RISE = 1450.0          # the record's +1,440 to +2,925 m read as the shield's own rise, over the highland it stands on
 
 
 def main():
@@ -39,22 +44,38 @@ def main():
     poly = G.poly([tuple(p) for p in pts], 1.0, 1.0, sh)
     cy, cx = [float(v.mean()) for v in np.nonzero(poly)]
     R = float(np.mean(np.hypot(pts[:, 0] - cx, pts[:, 1] - cy)))
-    if abs(E0[int(cy), int(cx)] - (TOP - 140)) < 30:
-        sys.exit('edit_528a has run already (the caldera floor is at the summit)')
+    ring0 = nd.binary_dilation(poly, iterations=2) & ~poly
+    if E0[int(cy), int(cx)] > np.median(E0[ring0]) + 1000:
+        sys.exit('edit_528a has run already (the shield stands over its ring)')
     r = np.hypot(XX - cx, YY - cy)
     th = np.arctan2(YY - cy, XX - cx)
     u = np.clip(r / R, 0, 1.2)
-    shield = BASE + (TOP - BASE) * np.clip(1 - u ** 2, 0, 1) ** 1.6
-    rib = (18.0 * np.sin(th * 23 + 3 * np.sin(r / 7.0)) + 10.0 * np.sin(th * 41 + 1.3)) * np.clip(u * 3, 0, 1) * (1 - np.clip(u, 0, 1))
-    calderar = 2.0
-    cald = np.where(r < calderar, -140.0 * (1 - (r / calderar) ** 4), 0.0)
-    fine = E0 - nd.gaussian_filter(E0, 3.0)
-    target = shield + rib + cald + 0.25 * fine
-    # eased in: full inside the polygon, fading over 8 px past it
     dout = nd.distance_transform_edt(~poly)
-    w = np.clip(1 - dout / 8.0, 0, 1) * ~whas0
-    w = nd.gaussian_filter(w, 1.0) * ~whas0
-    En = E0 * (1 - w) + target * w
+    # the shield stands on the highland round it (the owner, 2026-11-25: "it should stand out / rise immediately from
+    # surrounding highlands"): its foot is the land's own height in a ring 3-10 px outside the polygon, by bearing
+    # (a median per 10 degrees, smoothed round the circle), and it rises RISE over that to the summit
+    ring = (dout > 3) & (dout <= 10) & ~whas0
+    nb = 36
+    bins = ((th + np.pi) / (2 * np.pi) * nb).astype(int) % nb
+    foot = np.array([np.median(E0[ring & (bins == b)]) if (ring & (bins == b)).any() else np.nan for b in range(nb)])
+    foot = np.where(np.isnan(foot), np.nanmedian(foot), foot)
+    foot = nd.gaussian_filter1d(np.r_[foot, foot, foot], 1.5)[nb:2 * nb]
+    thc = (th + np.pi) / (2 * np.pi) * nb - 0.5
+    base = np.interp(thc, np.arange(-1, nb + 1), np.r_[foot[-1], foot, foot[0]])
+    base = foot.mean() + (base - foot.mean()) * G.sstep(0.0, 1.0, u)     # one summit: the bearing's foot only on the flanks
+    shield = base + RISE * np.clip(1 - u ** 1.7, 0, 1) ** 1.25
+    # the foot: lava-flow fronts, a step of ~220 m at the polygon's edge, gone a few px out
+    toe = 220.0 * (1 - G.sstep(0.88, 1.12, u))
+    rib = (22.0 * np.sin(th * 23 + 3 * np.sin(r / 7.0)) + 12.0 * np.sin(th * 41 + 1.3)) * np.clip(u * 3, 0, 1) * (1 - np.clip(u, 0, 1))
+    calderar = 2.0
+    cald = np.where(r < calderar, -160.0 * (1 - (r / calderar) ** 4), 0.0)
+    fine = E0 - nd.gaussian_filter(E0, 3.0)
+    target = shield + toe + rib + cald + 0.25 * fine
+    # full inside the polygon, fading over 3 px past it; never below the land there (the caldera aside)
+    w = np.clip(1 - dout / 3.0, 0, 1) * ~whas0
+    w = nd.gaussian_filter(w, 0.7) * ~whas0
+    # inside the polygon the shield replaces the upland (its old knobs too); past it, the foot never cuts the land
+    En = E0 * (1 - w) + np.where(poly, target, np.maximum(target, E0)) * w
     # the shores kept: no land beside water below its level plus a metre
     dw, (wy, wx) = nd.distance_transform_edt(~whas0, return_indices=True)
     wl_near = np.nan_to_num(wlev0, nan=-9e9)[wy, wx]
@@ -62,7 +83,9 @@ def main():
     En[near] = np.maximum(En[near], wl_near[near] + 1.0)
     moved = np.abs(En - E0) > 1
     rep = {'edit': '5.1 edit 28a: the Dome as a shield volcano', 'date': '2026-11-25', 'centre': [round(cx, 1), round(cy, 1)],
-           'radius_km': round(R * 2), 'summit_m': round(float(En[int(cy), int(cx) + 3])), 'caldera_floor_m': round(float(En[int(cy), int(cx)])),
+           'radius_km': round(R * 2), 'foot_m_by_bearing': [round(float(foot.min())), round(float(foot.max()))],
+           'summit_m': round(float(En[(r > 2.4) & (r < 3.6)].max())), 'caldera_floor_m': round(float(En[int(cy), int(cx)])),
+           'old_upland_max_m': round(float(E0[poly].max())), 'ring_outside_median_m': round(float(np.median(E0[(dout > 3) & (dout <= 10) & ~whas0]))),
            'edge_m_median': round(float(np.median(En[poly & (nd.distance_transform_edt(poly) <= 1.5)]))),
            'moved_cells': int(moved.sum()), 'raised': int((En > E0 + 1).sum()), 'lowered': int((En < E0 - 1).sum())}
     print(json.dumps(rep, ensure_ascii=False, indent=1))

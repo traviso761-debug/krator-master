@@ -2,8 +2,40 @@
  "edit": "5.1 edit 28: the Ria basin as one river system",
  "date": "2026-11-24",
  "rivers": 30,
- "grooves_filled_cells": 8735,
- "grooves_filled_m_median": 26.2,
+ "grooves_filled_cells": 8695,
+ "grooves_filled_m_median": 25.7,
+ "sources_moved_on_the_dome": {
+  "9204": {
+   "was": [
+    1376.0,
+    134.0
+   ],
+   "now": [
+    1332.35,
+    129.54
+   ]
+  },
+  "9205": {
+   "was": [
+    1364.0,
+    174.0
+   ],
+   "now": [
+    1326.99,
+    151.45
+   ]
+  }
+ },
+ "gorges_locked": {
+  "9102": [
+   [
+    1235.6,
+    225.7,
+    1078.3,
+    254.9
+   ]
+  ]
+ },
  "joined_elsewhere": [
   {
    "river": "9225",
@@ -94,11 +126,11 @@
    ]
   }
  ],
- "deep_grooves_filled_cells": 2451,
- "land_moved_cells": 22750,
- "lowered_cells": 12439,
- "raised_cells": 10311,
- "lowered_m_median": 27.9,
+ "deep_grooves_filled_cells": 2484,
+ "land_moved_cells": 22498,
+ "lowered_cells": 12272,
+ "raised_cells": 10226,
+ "lowered_m_median": 21.9,
  "lowered_m_max": 673.0,
  "fixed_points": [
   {
@@ -229,12 +261,30 @@
   },
   {
    "river": "9102",
+   "what": "gorge head",
+   "px": [
+    1235.6,
+    225.7
+   ],
+   "from_new_course_px": 0.11
+  },
+  {
+   "river": "9102",
+   "what": "gorge foot",
+   "px": [
+    1078.3,
+    254.9
+   ],
+   "from_new_course_px": 0.07
+  },
+  {
+   "river": "9102",
    "what": "Lodestone",
    "px": [
     1058.0,
     224.0
    ],
-   "from_new_course_px": 0.27
+   "from_new_course_px": 0.4
   },
   {
    "river": "9102",
@@ -243,7 +293,7 @@
     1055.0,
     219.0
    ],
-   "from_new_course_px": 0.44
+   "from_new_course_px": 0.64
   },
   {
    "river": "9109",
@@ -279,7 +329,7 @@
     1055.0,
     219.0
    ],
-   "from_new_course_px": 0.44
+   "from_new_course_px": 0.64
   }
  ],
  "junctions_px_off": 0.0,
@@ -293,8 +343,8 @@
   },
   "9102": {
    "name": "Hām-Tsēk (Web-Cleaver River)",
-   "km": 934,
-   "sinuosity": 1.45,
+   "km": 988,
+   "sinuosity": 1.54,
    "q": 1650
   },
   "9109": {
@@ -311,26 +361,26 @@
   },
   "9202": {
    "name": "Sēk-Līwa",
-   "km": 104,
-   "sinuosity": 1.07,
+   "km": 105,
+   "sinuosity": 1.09,
    "q": 68
   },
   "9203": {
    "name": "Ākwala-Gēla",
-   "km": 134,
-   "sinuosity": 1.09,
+   "km": 130,
+   "sinuosity": 1.05,
    "q": 115
   },
   "9204": {
    "name": "Dōma-Nōrta",
-   "km": 165,
-   "sinuosity": 1.11,
+   "km": 83,
+   "sinuosity": 1.05,
    "q": 130
   },
   "9205": {
    "name": "Dōma-Sūtha",
-   "km": 154,
-   "sinuosity": 1.31,
+   "km": 48,
+   "sinuosity": 1.06,
    "q": 110
   },
   "9206": {
@@ -341,92 +391,92 @@
   },
   "9207": {
    "name": "Līwa-Wēsta",
-   "km": 39,
-   "sinuosity": 1.03,
+   "km": 40,
+   "sinuosity": 1.05,
    "q": 54
   },
   "9208": {
    "name": "Khālō-Sīkwa",
-   "km": 85,
-   "sinuosity": 1.06,
+   "km": 84,
+   "sinuosity": 1.04,
    "q": 82
   },
   "9209": {
    "name": "Sikwīngi-Mēna",
-   "km": 67,
-   "sinuosity": 1.04,
+   "km": 71,
+   "sinuosity": 1.06,
    "q": 145
   },
   "9210": {
    "name": "Khālōyi-Sprīng",
-   "km": 42,
-   "sinuosity": 1.03,
+   "km": 44,
+   "sinuosity": 1.02,
    "q": 62
   },
   "9211": {
    "name": "Dōlō-Gēla",
-   "km": 101,
-   "sinuosity": 1.05,
+   "km": 104,
+   "sinuosity": 1.08,
    "q": 120
   },
   "9212": {
    "name": "Kwīna-Rīla",
-   "km": 19,
-   "sinuosity": 1.12,
+   "km": 17,
+   "sinuosity": 1.1,
    "q": 48
   },
   "9213": {
    "name": "Sīlva-Swāna",
-   "km": 73,
-   "sinuosity": 1.04,
+   "km": 75,
+   "sinuosity": 1.06,
    "q": 142
   },
   "9214": {
    "name": "Tūfa-Krīka",
-   "km": 9,
-   "sinuosity": 1.04,
+   "km": 14,
+   "sinuosity": 1.11,
    "q": 58
   },
   "9215": {
    "name": "Mōlu-Gūli",
    "km": 132,
-   "sinuosity": 1.07,
+   "sinuosity": 1.06,
    "q": 96
   },
   "9216": {
    "name": "Sāpa-Rīwa",
-   "km": 232,
-   "sinuosity": 1.18,
+   "km": 229,
+   "sinuosity": 1.17,
    "q": 118
   },
   "9217": {
    "name": "Yādü-Chē",
-   "km": 131,
-   "sinuosity": 1.11,
+   "km": 127,
+   "sinuosity": 1.08,
    "q": 46
   },
   "9218": {
    "name": "Lōda-Māgna",
    "km": 3,
-   "sinuosity": 1.09,
+   "sinuosity": 1.0,
    "q": 112
   },
   "9219": {
    "name": "Kōmpa-Wēsta",
-   "km": 86,
-   "sinuosity": 1.03,
+   "km": 89,
+   "sinuosity": 1.04,
    "q": 104
   },
   "9220": {
    "name": "Kōmpa-Ēsta",
-   "km": 4,
-   "sinuosity": 1.04,
+   "km": 8,
+   "sinuosity": 1.42,
    "q": 76
   },
   "9221": {
    "name": "Wēpi-Fōrka",
    "km": 3,
-   "sinuosity": 1.48,
+   "sinuosity": 1.38,
    "q": 42
   },
   "9222": {
@@ -438,7 +488,7 @@
   "9223": {
    "name": "Glāsa-Fōrka",
    "km": 77,
-   "sinuosity": 1.11,
+   "sinuosity": 1.12,
    "q": 68
   },
   "9224": {
@@ -449,50 +499,50 @@
   },
   "9225": {
    "name": "Āmpala-Krīk",
-   "km": 119,
-   "sinuosity": 1.04,
+   "km": 120,
+   "sinuosity": 1.05,
    "q": 125
   },
   "9226": {
    "name": "Dīpü-Wāsha",
-   "km": 227,
-   "sinuosity": 1.1,
+   "km": 234,
+   "sinuosity": 1.13,
    "q": 78
   },
   "9227": {
    "name": "Hārta-Nōrta",
-   "km": 76,
-   "sinuosity": 1.1,
+   "km": 80,
+   "sinuosity": 1.16,
    "q": 64
   }
  },
  "reclimate": {
-  "cells": 23717,
-  "class_changed": 2306,
-  "rain_mean_before_mm": 1071.0,
-  "rain_mean_after_mm": 1074.0,
+  "cells": 22810,
+  "class_changed": 2239,
+  "rain_mean_before_mm": 1070.0,
+  "rain_mean_after_mm": 1072.0,
   "classes_now": {
    "Am": 37,
    "Aw": 1,
-   "BSk": 292,
-   "Csa": 4960,
-   "Csb": 61,
-   "Cfa": 17375,
-   "Cfb": 96,
-   "Dsc": 33,
-   "Dfb": 82,
-   "Dfc": 383,
-   "ET": 259,
+   "BSk": 279,
+   "Csa": 4842,
+   "Csb": 65,
+   "Cfa": 16389,
+   "Cfb": 118,
+   "Dsc": 29,
+   "Dfb": 98,
+   "Dfc": 546,
+   "ET": 268,
    "EF": 113,
    "HT": 25
   }
  },
  "threads_removed_px": {
-  "st": 2109,
-  "t": 4355
+  "st": 2092,
+  "t": 4306
  },
  "threads_removed_px_28b": {
-  "st": 4618,
-  "t": 8053
+  "st": 4516,
+  "t": 7844
  }
 }

@@ -9,11 +9,13 @@ dredged out of the sea; farside has also been re adjusted"; the pass ~5.4 km; Fa
     python tools/scale-model/edit_530_white_pass.py [--dry]
 
 The polygons and the pin are the live map's (edit_530_live.json). At the model's 2 km cells, never raising the wall:
-1. **Matron's Coast** raised from the sea inside its polygon (its sea cells, smoothed): a coastal plain rising ~11 m a px
-   from the new shore with low hills, joining the coast it had; temperate rainforest, Cfb with ~2,800 mm, its paint a dark
-   rainforest green.
-2. **Arkerum's crater** at the pin (459,340): an ejecta crater 10 km across inside a raised rim (+430 m over its floor at
-   60 m), its apron fading out by 18 km; one narrow breach on the seaward side to 25 m, the city's harbour gate.
+1. **Matron's Coast** raised from the sea inside its polygon (its sea cells, smoothed). It slopes from its high points
+   to the new shore (the owner's second look, 2026-11-25): a harmonic surface between the land round it and the open
+   sea, flattened toward the sea, with low hills that grow with the height. The old coastal strip within 8 px is graded
+   into it (only raised). Temperate rainforest, Cfb with ~2,800 mm, painted a dark rainforest green.
+2. **Arkerum's crater** at the pin (459,340): an ejecta crater 10 km across. Its floor is 400 m under the sloping plain
+   round it (60 m at the least), its raised rim 300 m over it, and its apron fades out by 18 km. One breach on the
+   seaward side, a valley falling from the floor to the shore: the city's harbour gate.
 3. **White Pass** along its polygon: a U-trough on the polygon's centre line whose floor is the land or a tent rising
    from both ends to a 5,400 m summit on the crest, whichever is lower; the walls rise 2,000 m across the polygon's half
    width (never above the land).
@@ -76,17 +78,38 @@ def main():
     still_sea = sea & ~newland
     dsea = nd.distance_transform_edt(~still_sea)
     old_land = ~whas0
-    dold, (oy, ox) = nd.distance_transform_edt(~old_land, return_indices=True)
-    hold = np.clip(E0[oy, ox], 3.0, 200.0)                  # the old shore's own height, so its rivers run on downhill
-    frac = dsea / (dsea + dold + 1e-9)
-    hills = nd.gaussian_filter(rng.standard_normal(sh), 4.0); hills /= hills.std() + 1e-9
-    mid = np.clip(np.minimum(dsea, dold) / 6.0, 0, 1)
-    h_new = 3.0 + (hold - 3.0) * frac + 45.0 * np.clip(hills, -1.0, 2.0) * mid
-    h_new = np.clip(h_new, 2.0, 400.0)
+    # the coast slopes from its high points to the sea (the owner, 2026-11-25: "make matron's coast slope naturally from
+    # its high points"; a first cut held the new land to the old shore's own 3-200 m, a flat plain against the hills):
+    # the new land and the old coastal strip (old land of the polygon within 8 px of it) take a harmonic surface (each
+    # cell the mean of its four neighbours) between the land round them at its own height and the open sea at 0 m.
+    # It is flattened toward the sea (a coastal plain under the hills' foot), and low hills grow with the height.
+    # The old strip is only raised, never cut.
+    dnew = nd.distance_transform_edt(~newland)
+    strip = Mpoly & old_land & (dnew <= 8)
+    dom = newland | strip
+    ys_, xs_ = np.nonzero(nd.binary_dilation(dom, iterations=2))
+    y0_, y1_, x0_, x1_ = ys_.min(), ys_.max() + 1, xs_.min(), xs_.max() + 1
+    S = np.where(still_sea, 0.0, E0)[y0_:y1_, x0_:x1_].astype(float)
+    dm = dom[y0_:y1_, x0_:x1_]
+    S[dm] = 0.0
+    fixed_v = S.copy()
+    for it in range(6000):
+        Sp = np.pad(S, 1, mode='edge')
+        avg = 0.25 * (Sp[:-2, 1:-1] + Sp[2:, 1:-1] + Sp[1:-1, :-2] + Sp[1:-1, 2:])
+        S = np.where(dm, avg, fixed_v)
+    Sf = np.zeros(sh); Sf[y0_:y1_, x0_:x1_] = S
+    Sf = Sf * (0.45 + 0.55 * np.clip(Sf / 700.0, 0, 1))               # flatter toward the sea
+    hills = nd.gaussian_filter(rng.standard_normal(sh), 3.0); hills /= hills.std() + 1e-9
+    dsea_m = np.clip(dsea / 4.0, 0, 1)
+    h_new = 2.0 + Sf + (15.0 + 0.07 * Sf) * np.clip(hills, -1.0, 2.0) * dsea_m
+    h_new = np.maximum(h_new, 2.0)
     En[newland] = h_new[newland]
+    En[strip] = np.maximum(E0[strip], h_new[strip])
     whas[newland] = False; wlev[newland] = np.nan; W1[newland] = False
     rep['matron_new_land_cells'] = int(newland.sum())
     rep['matron_new_land_km2'] = int(newland.sum() * 4)
+    rep['matron_new_land_m'] = [round(float(v)) for v in np.percentile(En[newland], [10, 50, 90, 99])]
+    rep['matron_old_strip_raised_cells'] = int((En[strip] > E0[strip] + 1).sum())
 
     # ---- 2. Arkerum's crater
     ax, ay = float(ARK['px']), float(ARK['py'])
@@ -94,24 +117,29 @@ def main():
     near = r <= 9.5
     ground = np.where(near, En, np.nan)
     base = float(np.nanmedian(np.where((r > 7) & (r <= 9.5) & ~whas, En, np.nan)))
-    rim_top = 60.0 + 430.0
-    prof = np.where(r <= 3.6, 60.0 + 8.0 * (r / 3.6) ** 2,
-           np.where(r <= 5.0, 68.0 + (rim_top - 68.0) * G.sstep(3.6, 5.0, r),
+    # the floor 400 m under the sloping plain round it (60 m at the least), the rim 300 m over it
+    FL = max(60.0, base - 400.0)
+    rim_top = max(FL + 430.0, base + 300.0)
+    prof = np.where(r <= 3.6, FL + 8.0 * (r / 3.6) ** 2,
+           np.where(r <= 5.0, FL + 8.0 + (rim_top - FL - 8.0) * G.sstep(3.6, 5.0, r),
            rim_top - (rim_top - base) * G.sstep(5.0, 9.0, r)))
-    # the breach toward the nearest open sea
+    # the breach toward the nearest open sea: a gap in the rim, then a valley falling from the floor to the shore
     sd, (sy, sx) = nd.distance_transform_edt(~still_sea, return_indices=True)
     tx, ty = sx[int(ay), int(ax)] - ax, sy[int(ay), int(ax)] - ay
-    nrm = math.hypot(tx, ty) or 1.0; ux, uy = tx / nrm, ty / nrm
+    dist_sea = math.hypot(tx, ty)
+    nrm = dist_sea or 1.0; ux, uy = tx / nrm, ty / nrm
     along = (XX - ax) * ux + (YY - ay) * uy; across = np.abs(-(XX - ax) * uy + (YY - ay) * ux)
-    gate = (along > 2.5) & (along < 9.0) & (across < 0.9)
-    prof = np.where(gate, np.minimum(prof, 25.0), prof)
+    gate = (along > 2.5) & (along < dist_sea + 1.0) & (across < 0.9 + 0.08 * np.clip(along, 0, None))
+    gfloor = FL - (FL - 3.0) * np.clip((along - 2.5) / max(dist_sea - 2.5, 1.0), 0, 1)
     crater = near & ~still_sea
     inner = crater & (r <= 5.0)
     En[inner] = prof[inner]                                   # the bowl and rim as made
     apron = crater & (r > 5.0)
-    En[apron] = np.maximum(En[apron], prof[apron]) if True else En[apron]   # the apron raised over the plain, not cut
-    En[crater & gate] = np.minimum(En[crater & gate], 25.0)
-    rep['arkerum'] = {'floor_m': 60, 'rim_m': int(rim_top), 'apron_base_m': round(base), 'breach_toward': [round(ux, 2), round(uy, 2)]}
+    En[apron] = np.maximum(En[apron], prof[apron])            # the apron raised over the plain, not cut
+    g_ = gate & ~still_sea
+    En[g_] = np.minimum(En[g_], gfloor[g_] + 30.0 * (across[g_] / 1.5) ** 2)
+    rep['arkerum'] = {'floor_m': round(FL), 'rim_m': int(rim_top), 'apron_base_m': round(base), 'breach_toward': [round(ux, 2), round(uy, 2)],
+                      'sea_px': round(dist_sea, 1)}
 
     # ---- 3. White Pass
     Ppoly = mask(REG['White Pass']['points'], sh)
@@ -219,13 +247,13 @@ def main():
             continue
         P_ = np.round(np.array(p, float), 2)
         jj = np.clip(np.round(P_[:, 1]).astype(int), 0, sh[0] - 1); ii = np.clip(np.round(P_[:, 0]).astype(int), 0, sh[1] - 1)
-        if not newland[jj, ii].any():
+        if not dom[jj, ii].any():
             continue
         cur = np.inf
         for k_, (j_, i_) in enumerate(zip(jj, ii)):
             if not whas[j_, i_]:
                 cur = min(cur, En[j_, i_])
-                if newland[j_, i_]:
+                if dom[j_, i_]:                     # the new land and the raised old strip: channels cut to the running low
                     En[j_, i_] = min(En[j_, i_], cur)
     rep['rivers_extended_to_the_new_coast'] = extended
     moved = np.abs(En - E0) > 1
