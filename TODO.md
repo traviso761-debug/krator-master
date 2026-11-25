@@ -131,6 +131,17 @@ people with no hinterland** — should Jabal have one, or does it eat Xanadu's b
 - **`test-xan-economy.js`'s performance budget** reads 623 s against its 240 s line (393,159 people, 1,299 actors), but
   it was measured against three concurrent node runs and fourteen python builds. To be re-timed on a quiet machine
   before anything is concluded; the other 73 checks pass.
+- **Jimjam is 8.2 km from where the model now puts it** (`openworld/north-basin/data/region.json`, measured 2026-11-25).
+  The region was cut with Jimjam at px 474,220; the model has since moved it 4 px north, to 745,546 (473,216 after
+  `legacy_shift`). It is **the only live drift of this kind**: of the five paired places in the two live regions
+  (`isle-demo`, `north-basin`), Jimjam is the one that moved. Not corrected here, because moving a settlement 8.2 km in
+  another region's cut is that region's call — either `north-basin` is re-cut, or its `region.json` takes the model's
+  pixel. `openworld/outposts/tests/test-outposts.js` now names it and nothing else.
+  - **Why it was invisible**: that check measured all three regions' drift together against a one-in-ten tolerance and
+    failed at nine of thirty-two — but **eight of the nine are `archive/little-demo`'s**, where the drift runs to 496 km
+    (Shade) and means nothing, since nothing is built from `archive/`. The archive is now reported beside the check
+    rather than counted in it, so the one finding that matters is legible. A ratio was never the right test for five
+    pairs anyway: one in ten of five demands zero.
 
 ## The Audio Lab's numeric defaults *(2026-11-10, the second integration pass)*
 
