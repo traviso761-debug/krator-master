@@ -43,7 +43,8 @@ SEED = 52801
 TRUNK = '9101'
 EXCL = {'9107', '9103', '9104'}
 WIN = (585, 0, 1425, 306)          # x0, y0, x1, y1: the routing window (map px)
-EVERY = 70.0                        # px between the old course's guide points
+GORGE_RIVERS = {'9102'}              # rivers kept in the gorges carved for them (9102 Hām-Tsēk, the Web-Cleaver Gorge)
+EVERY = 70.0                       # px between the old course's guide points
 STEP = 0.6                          # px between the new course's points
 RIVER_RGB = (63, 111, 134)
 
@@ -220,9 +221,56 @@ def main():
         canal_ends += [tuple(cp[0]), tuple(cp[-1])] if cp else []
     fixed_all = [(s['px'], s['py'], 'pin', s['name']) for s in S] + [(p[0], p[1], 'canal', 'canal end') for p in canal_ends]
     WP, FIXED = {}, {}
+    # the old courses ran over the upland the Dome's shield now stands on (edit 28a, run first): their guide points on
+    # it are dropped, so a river finds its own way off the shield instead of being led over the summit
+    dome_r = next((r_ for r_ in P.regions() if r_.get('id') == 'rmweubdnyts8y'), None)
+    on_dome = (nd.binary_dilation(G.poly([tuple(p) for p in dome_r['points']], 1.0, 1.0, E0.shape), iterations=3)
+               if dome_r else np.zeros(E0.shape, bool))
+    # the gorges a river was carved into keep it (the owner, 2026-11-25: "ham tsek river fell out of the canyon carved
+    # for it"; the Web-Cleaver Gorge, 1.2-1.85 km deep, is 9102's): where the old course runs over 300 m under the land
+    # round it (a grey closing over 21 px) for 8 points or more, that stretch is LOCKED: its ends become fixed points of
+    # the route and the stretch itself is spliced back into the new course as it was, unmeandered
+    Ec21 = nd.grey_closing(E0, size=(21, 21))
+    LOCK = {}
+    # a river rising on the shield rises on its flank facing the way it goes (its old mouth), halfway up, so it runs
+    # down off the volcano instead of across it (its old source, on the far flank, left it crossing the summit)
+    SRC = {}
+    if dome_r:
+        dpoly = G.poly([tuple(p) for p in dome_r['points']], 1.0, 1.0, E0.shape)
+        dcy, dcx = [float(v.mean()) for v in np.nonzero(dpoly)]
+        dpts = np.array(dome_r['points'], float)
+        dR = float(np.mean(np.hypot(dpts[:, 0] - dcx, dpts[:, 1] - dcy)))
+        for k in B:
+            s0 = old[k][0]
+            if dpoly[int(round(s0[1])), int(round(s0[0]))]:
+                mo = old[k][-1]
+                ux_, uy_ = mo[0] - dcx, mo[1] - dcy
+                nn = math.hypot(ux_, uy_) or 1.0
+                SRC[k] = (round(dcx + 0.5 * dR * ux_ / nn, 2), round(dcy + 0.5 * dR * uy_ / nn, 2))
+    rep['sources_moved_on_the_dome'] = {k: {'was': list(old[k][0]), 'now': list(v)} for k, v in SRC.items()}
+    for k in B:
+        o = np.array(old[k])
+        jo = np.clip(np.round(o[:, 1]).astype(int), 0, E0.shape[0] - 1); io = np.clip(np.round(o[:, 0]).astype(int), 0, E0.shape[1] - 1)
+        if k not in GORGE_RIVERS:
+            continue
+        g_ = (Ec21[jo, io] - E0[jo, io] > 300) & ~whas0[jo, io]
+        g_ = nd.binary_closing(np.r_[False, g_, False], structure=np.ones(7))[1:-1]
+        lab_, n_ = nd.label(g_)
+        segs = []
+        for l_ in range(1, n_ + 1):
+            ix_ = np.nonzero(lab_ == l_)[0]
+            if len(ix_) >= 8 and ix_[0] > 1 and ix_[-1] < len(o) - 2:
+                segs.append((int(ix_[0]), int(ix_[-1])))
+        if segs:
+            LOCK[k] = segs
+    rep['gorges_locked'] = {k: [[round(float(old[k][a][0]), 1), round(float(old[k][a][1]), 1), round(float(old[k][b][0]), 1), round(float(old[k][b][1]), 1)]
+                                for a, b in v] for k, v in LOCK.items()}
     for k in B:
         o = np.array(old[k]); so = np.r_[0, np.cumsum(np.hypot(*np.diff(o, axis=0).T))]
         cand = []
+        for a_, b_ in LOCK.get(k, []):
+            cand.append((so[a_], (float(o[a_, 0]), float(o[a_, 1])), True, 'gorge head'))
+            cand.append((so[b_], (float(o[b_, 0]), float(o[b_, 1])), True, 'gorge foot'))
         for (x, y, kind, nm) in fixed_all:
             d = np.hypot(o[:, 0] - x, o[:, 1] - y); i = int(d.argmin())
             lim = 4.0 if kind == 'pin' else 3.0
@@ -231,6 +279,8 @@ def main():
         every = EVERY if (by[k].get('q_mouth_m3s') or 0) >= 400 else 2 * EVERY
         for t in np.arange(every, so[-1] - every * .5, every):
             i = int(np.searchsorted(so, t))
+            if on_dome[int(round(o[i, 1])), int(round(o[i, 0]))]:
+                continue
             if all(abs(t - c[0]) > EVERY * .4 for c in cand if c[2]):
                 cand.append((t, (float(o[i, 0]), float(o[i, 1])), False, None))
         cand.sort()
@@ -249,7 +299,7 @@ def main():
     rep['joined_elsewhere'] = []; rep['fixed_skipped'] = []
     for k in order:
         r = by[k]
-        src = tuple(old[k][0])
+        src = SRC.get(k, tuple(old[k][0]))
         # every course laid so far stops a route (a stream meeting a river joins it; it never crosses one)
         R_ = np.zeros((router.ny, router.nx), bool)
         for o_ in new.values():
@@ -361,6 +411,14 @@ def main():
                 break
         if scale != 1.0:
             rep.setdefault('meander_reduced', []).append({'river': k, 'scale': scale})
+        # the locked gorges spliced back in as they were
+        for a_, b_ in LOCK.get(k, []):
+            o = np.array(old[k])
+            ia = int(np.hypot(mp[:, 0] - o[a_, 0], mp[:, 1] - o[a_, 1]).argmin())
+            ib = int(np.hypot(mp[:, 0] - o[b_, 0], mp[:, 1] - o[b_, 1]).argmin())
+            if ib > ia:
+                mp = resample(np.vstack([mp[:ia], o[a_:b_ + 1], mp[ib + 1:]]), STEP)
+                mp[0] = src; mp[-1] = end_pt
         new[k] = {'pts': [tuple(p) for p in mp], 'q': q, 'A0': A0, 'pulled': new_pull, 'parent': parent}
 
     # ---- the old courses' deep grooves (over 120 m: left for the routing in case a new course took one) filled where no
