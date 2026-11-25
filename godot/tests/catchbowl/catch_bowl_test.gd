@@ -184,7 +184,10 @@ func _init() -> void:
 	for k in V:
 		var e: Vector3 = V[k]["eye"]
 		var t: Vector3 = V[k]["at"]
-		if e.distance_to(t) < 4.0:
+		# 1 px is 2 km. The threshold was 4 px, written when every vantage was a long view over the region; a
+		# close one (kolli, 1.7 px = 3.4 km from the seep it looks at) is a legitimate vantage and not an eye
+		# sitting on its own target, which is what this is guarding against.
+		if e.distance_to(t) < 1.0:
 			good = false
 		for q in [e, t]:
 			if q.x < float(bx[0]) or q.x > float(bx[2]) or q.y < float(bx[1]) or q.y > float(bx[3]):
@@ -273,8 +276,54 @@ func _init() -> void:
 		on_mip and sht.find("layer_mean") < 0 and sht.find("kh_tame") >= 0,
 		not (sht.find("layer_mean") >= 0), "textureLod normalisation %s" % ("present" if on_mip else "MISSING"))
 
+	# 18: the flora follows the kit's own rule, not an even scatter. biomes/catch's species header: what grows lives
+	#     on GROUNDWATER -- the tugai at the springs, the halophytes on the salt, the broom on the sand -- and the
+	#     poplar's harvest note says it "dies standing when the water falls. Its dead stand a century."
+	var FL := load("res://krator/catch_bowl_flora.gd")
+	var fsrc := FileAccess.open("res://krator/catch_bowl_flora.gd", FileAccess.READ)
+	var ftxt := fsrc.get_as_text() if fsrc else ""
+	if fsrc:
+		fsrc.close()
+	var fl = FL.new()
+	var at_spring: String = fl._species_for(600.0, 0.01, 2.0, 0.95)       # beside water
+	var on_channel: String = fl._species_for(600.0, 0.01, 20.0, 0.95)     # a dead channel, 20 km off
+	var on_salt: String = fl._species_for(-1100.0, 0.01, 90.0, 0.99)      # the Bowl's pan
+	var on_scarp: String = fl._species_for(600.0, 0.40, 2.0, 0.99)        # a cliff beside the water
+	fl.free()
+	var right := at_spring == "poplar_live" and on_channel == "poplar_dead" \
+		and (on_salt == "brinelamp" or on_salt == "saltbush") and on_scarp == ""
+	ok("the flora follows the kit's rule: living tugai at a spring, dead snags on a dead channel, halophytes on the salt, nothing on a scarp",
+		right and ftxt.find("KRand.cell(SEED") >= 0,
+		not (at_spring == on_channel),
+		"at a spring %s, 20 km off %s, on the salt %s, on a scarp %s" % [at_spring, on_channel, on_salt,
+			"nothing" if on_scarp == "" else on_scarp])
+
+	# 19: the blown sand is its own layer, on in any wind over sand, not a weather kind
+	var gsrc := FileAccess.open("res://krator/grit_fx.gd", FileAccess.READ)
+	var gtxt := gsrc.get_as_text() if gsrc else ""
+	if gsrc:
+		gsrc.close()
+	ok("blown sand is a layer of its own, hugging the ground and following the wind in any weather",
+		gtxt.find("_salt_tick") >= 0 and gtxt.find("saltation") >= 0 and not KratorGritFx.GRIT.has("clear"),
+		not KratorGritFx.GRIT.has("clear"),
+		"saltation %s, and it is not a weather kind" % ("present" if gtxt.find("_salt_tick") >= 0 else "MISSING"))
+
+	# 20: the colour grade is a CURVE from black to white, not a multiplier. Setting both ends near 1.0 maps every
+	#     input to white, which is exactly what the first pass rendered.
+	var gr := Gradient.new()
+	var warm := 0.75
+	gr.set_color(0, Color(0.0, 0.012 * warm, 0.045 * warm))
+	gr.set_color(1, Color(1.0, 1.0 - 0.035 * warm, 1.0 - 0.10 * warm))
+	var dark: Color = gr.sample(0.0)
+	var light: Color = gr.sample(1.0)
+	ok("the grade's colour correction runs black to white, so it is a curve and not a multiplier",
+		dark.r < 0.1 and light.r > 0.9 and dark.b > dark.r and light.b < light.r
+			and KratorAtmosFx.GRADE.size() == KratorAtmosFx.KINDS.size(),
+		not (dark.r > 0.9), "dark %s, light %s, %d kinds graded" % [str(dark), str(light), KratorAtmosFx.GRADE.size()])
+
 	print("catch_bowl_test: " + ("all passed" if fails == 0 else str(fails) + " failed"))
 	quit(1 if fails > 0 else 0)
+
 
 
 

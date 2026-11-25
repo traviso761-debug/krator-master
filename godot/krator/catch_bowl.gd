@@ -26,6 +26,7 @@ var meta := {}
 var fx: KratorAtmosFx
 var grit: KratorGritFx
 var rocks: KratorCatchBowlRocks
+var flora: KratorCatchBowlFlora
 var cam: Camera3D
 var env: WorldEnvironment
 var sun: DirectionalLight3D
@@ -71,13 +72,17 @@ func _ready() -> void:
 	grit = KratorGritFx.new()
 	grit.name = "Grit"
 	add_child(grit)
-	grit.bind(cam, fx)
+	grit.bind(cam, fx, self)
 	# rocks where the sand is not: the other half of the near-field layer (krator/catch_bowl_rocks.gd)
 	if _arg("plain", "") == "":
 		rocks = KratorCatchBowlRocks.new()
 		rocks.name = "Rocks"
 		add_child(rocks)
 		rocks.bind(self, cam)
+		flora = KratorCatchBowlFlora.new()
+		flora.name = "Flora"
+		add_child(flora)
+		flora.bind(self, cam)
 	var w := _arg("weather", "")
 	if w != "":
 		fx.set_kind(w)
@@ -313,6 +318,8 @@ const VIEWS := {
 		"note": "south from inside the crater over the gap all four trunks cross"},
 	"bowl": {"eye": Vector3(1160.0, 1210.0, 0.0), "at": Vector3(1225.0, 1149.0, 0.0), "up": 11000.0,
 		"note": "across the Bowl's salt toward Jabal, from the south-west rim"},
+	"kolli": {"eye": Vector3(1058.6, 1368.6, 0.0), "at": Vector3(1058.0, 1367.0, 0.0), "up": 60.0,
+		"note": "south over Kolli's seep: the tugai on the flat below the fan, which is the only green in the Catch"},
 	"salt": {"eye": Vector3(1206.0, 1163.0, 0.0), "at": Vector3(1240.0, 1142.0, 0.0), "up": 220.0,
 		"note": "down on the Bowl's salt itself, below sea level, looking along the dunes toward Jabal"},
 	"catch": {"eye": Vector3(1040.0, 1500.0, 0.0), "at": Vector3(1080.0, 1400.0, 0.0), "up": 9000.0,
@@ -567,7 +574,10 @@ func _cull_pins() -> void:
 	for c in _pins.get_children():
 		var n := c as Node3D
 		if n:
-			n.visible = eye.distance_to(n.global_position) <= reach
+			var d := eye.distance_to(n.global_position)
+			# and a pin is hidden when you are ON it: a 4.5 km spire seen from 300 m away fills the frame and hides
+			# the place it is marking, which is the one moment you least want it
+			n.visible = d <= reach and d > 5200.0
 
 
 func _process(_d: float) -> void:

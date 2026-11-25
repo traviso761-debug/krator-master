@@ -22,6 +22,14 @@ var _pm: ParticleProcessMaterial
 var _mat: StandardMaterial3D
 var _box := 300.0
 var _rng := RandomNumberGenerator.new()
+# SALTATION: the sand that is always moving. Separate from the storm grit, because it is not weather -- a dune field
+# in clear air is never still, it is a sheet of grains hopping downwind a few centimetres off the surface, and that
+# low streaming is most of what tells you the wind is blowing at all. It hugs the ground, so it only emits when the
+# camera is low enough to be in it, and its speed and density follow the kind's wind.
+var _salt: GPUParticles3D
+var _salt_pm: ParticleProcessMaterial
+var _salt_mat: StandardMaterial3D
+var host: Node3D
 
 # grit by kind: how much is in the air, what size a mote is, and what colour. The numbers follow the kinds' own
 # visibilities and winds in atmos_fx.gd rather than being chosen to look nice.
@@ -74,6 +82,35 @@ func _ready() -> void:
 	_p.emitting = false
 	add_child(_p)
 
+	_salt = GPUParticles3D.new()
+	_salt.amount = 5000
+	_salt.lifetime = 1.6
+	_salt.preprocess = 1.6
+	_salt.local_coords = false
+	_salt.visibility_aabb = AABB(Vector3(-160.0, -30.0, -160.0), Vector3(320.0, 90.0, 320.0))
+	_salt_pm = ParticleProcessMaterial.new()
+	_salt_pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	_salt_pm.emission_box_extents = Vector3(150.0, 1.2, 150.0)   # a sheet, not a volume: saltation is centimetres deep
+	_salt_pm.direction = Vector3(1, 0.06, 0)
+	_salt_pm.spread = 8.0
+	_salt_pm.gravity = Vector3(0, -0.6, 0)
+	_salt_pm.initial_velocity_min = 9.0
+	_salt_pm.initial_velocity_max = 20.0
+	_salt_pm.particle_flag_align_y = true
+	_salt.process_material = _salt_pm
+	var sq := QuadMesh.new()
+	sq.size = Vector2(0.09, 1.5)                                  # a streak, because a hopping grain is a streak
+	_salt_mat = StandardMaterial3D.new()
+	_salt_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_salt_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_salt_mat.billboard_mode = BaseMaterial3D.BILLBOARD_FIXED_Y
+	_salt_mat.billboard_keep_scale = true
+	_salt_mat.albedo_color = Color(0.86, 0.76, 0.56, 0.3)
+	sq.material = _salt_mat
+	_salt.draw_pass_1 = sq
+	_salt.emitting = false
+	add_child(_salt)
+
 
 # a round, soft-edged mote: alpha 1 at the centre falling to 0 at the rim, squared so the edge is gentle
 static func _puff(n := 64) -> ImageTexture:
@@ -87,9 +124,10 @@ static func _puff(n := 64) -> ImageTexture:
 	return ImageTexture.create_from_image(img)
 
 
-func bind(c: Camera3D, f: KratorAtmosFx) -> void:
+func bind(c: Camera3D, f: KratorAtmosFx, h: Node3D = null) -> void:
 	cam = c
 	fx = f
+	host = h
 
 
 # the grit the current kind puts in the air, mid-ease like everything else atmos_fx reports
@@ -102,6 +140,7 @@ func row() -> Dictionary:
 func _process(_d: float) -> void:
 	if cam == null or fx == null:
 		return
+	_salt_tick()
 	_p.global_position = cam.global_position
 	var g: Dictionary = row()
 	if g.is_empty():
@@ -136,3 +175,35 @@ func _process(_d: float) -> void:
 	var sz: float = float(g["size"]) * clampf(_box / 300.0, 0.6, 3.0)
 	if absf(qm.size.x - sz) > 0.01:
 		qm.size = Vector2(sz, sz)
+
+
+# The blown sand, which is on in any weather with wind over ground the sand lies on. It is drawn as a sheet riding
+# the camera at ground level: above about eighty metres you are over it rather than in it, and it fades out, because
+# from up there the drift is the dune field's own shape moving, not grains.
+func _salt_tick() -> void:
+	var c := cam.global_position
+	var g: float = 0.0
+	if host and host.has_method("height_at"):
+		g = host.height_at(c.x, c.z)
+	var up: float = c.y - g
+	var low: float = 1.0 - clampf((up - 18.0) / 70.0, 0.0, 1.0)
+	var n: Dictionary = fx._now()
+	var wind: float = float(n.get("wind", 1.0))
+	# nothing drifts off the high rock, and a wet monsoon pins the sand down
+	var sandy: float = clampf(1.0 - (g - 2300.0) / 900.0, 0.0, 1.0) * (1.0 - float(n.get("rain", 0.0)))
+	var amt: float = low * sandy * clampf(wind * 0.55, 0.0, 1.0)
+	_salt.emitting = amt > 0.02
+	if not _salt.emitting:
+		return
+	_salt.global_position = Vector3(c.x, g + 0.9, c.z)
+	_salt.amount_ratio = amt
+	var w := Vector2(1.0, 0.25)
+	var A := get_node_or_null("/root/Atmos")
+	if A and A.has_method("wind_now"):
+		w = A.wind_now()
+	_salt_pm.direction = Vector3(w.x, 0.05, w.y).normalized()
+	_salt_pm.initial_velocity_min = 7.0 * wind
+	_salt_pm.initial_velocity_max = 17.0 * wind
+	var tint: Color = n.get("colour", Color(0.86, 0.76, 0.56))
+	var dim: float = 0.5 + 0.5 * clampf(float(n.get("sun", 1.0)), 0.0, 1.5)
+	_salt_mat.albedo_color = Color(0.86 * dim, 0.76 * dim, 0.56 * dim, 0.16 + 0.2 * amt)

@@ -82,6 +82,22 @@ const GROUND_BOTTOM := Color(0.42, 0.36, 0.29)
 # black storm and the whiteout saturate well before it and the gale and the dust season sit part way up.
 const SKY_MURK_FULL := 0.0008
 
+# THE GRADE, per kind: contrast, saturation, brightness, and how warm the ramp runs. Until now the host rendered
+# whatever the tonemapper gave it, which is accurate and characterless -- the thing that makes an arid world read as
+# one is as much the grade as the ground. A high desert at 1.23 atm under a hard sun is CONTRASTY and not very
+# saturated: the colour is in the hour, not in the pigment. Each kind gets its own, because a black storm and a dead
+# heat are not the same picture.
+#   [contrast, saturation, brightness, warmth]  warmth: 0 neutral, 1 shadows cool and highlights warm
+const GRADE := {
+	"clear": [1.14, 0.90, 1.0, 0.75],
+	"dust": [0.92, 0.72, 1.02, 0.30],          # a storm flattens everything; the colour is the dust's, not the sun's
+	"gale": [1.18, 0.86, 1.0, 0.60],           # clear air, hard light, the wind does not change what you see
+	"whiteout": [0.80, 0.42, 1.05, 0.10],      # near-monochrome, which is what a whiteout is
+	"duststorm_season": [1.02, 0.80, 1.0, 0.55],
+	"deadheat": [1.22, 0.72, 1.04, 0.90],      # bleached and glaring: the saturation goes, the contrast stays
+	"monsoon": [1.04, 0.95, 0.96, 0.15],       # the one wet kind: cooler, and the only one that gains saturation
+}
+
 # the order the panel shows them in: clear first, then the three the plans call hazards, then the seasons
 static func order() -> Array:
 	return ["clear", "dust", "gale", "whiteout", "duststorm_season", "deadheat", "monsoon"]
@@ -104,6 +120,7 @@ func set_kind(k: String) -> void:
 	if not KINDS.has(k) or k == kind:
 		return
 	_from = _now()
+	_from["_kind"] = kind
 	kind = k
 	_blend = 0.0
 	if Engine.has_singleton("Atmos"):
@@ -157,6 +174,7 @@ func _apply(_t: float) -> void:
 		e.ambient_light_energy = float(n["sky"])
 		e.ambient_light_color = Color(0.62, 0.66, 0.74).lerp(n["colour"], 0.6)
 		_paint_sky(e, n)
+		_grade(e)
 	if sun:
 		sun.light_energy = _sun0 * float(n["sun"])
 		sun.light_color = Color(1.0, 1.0, 1.0).lerp(n["colour"], 0.55 * (1.0 - float(n["sun"])))
@@ -190,3 +208,33 @@ func _paint_sky(e: Environment, n: Dictionary) -> void:
 	# a sun disc the storm swallows and the dead heat opens out
 	m.sun_angle_max = lerpf(1.2, 18.0, murk)
 	m.sun_curve = lerpf(0.12, 0.6, murk)
+
+
+# The colour grade. Godot's adjustments take a 1D ramp for colour correction, so the warmth is a ramp built once:
+# dark end a little cool, bright end a little warm, which is the oldest trick in outdoor grading and still the one
+# that makes sun read as sun. The three scalars ease with the weather like everything else.
+var _ramp: GradientTexture1D
+var _ramp_warm := -1.0
+
+
+func _grade(e: Environment) -> void:
+	var a: Array = GRADE.get(kind, GRADE["clear"])
+	var b: Array = GRADE.get(String(_from.get("_kind", kind)), a)
+	var t: float = clampf(_blend, 0.0, 1.0)
+	e.adjustment_enabled = true
+	e.adjustment_contrast = lerpf(float(b[0]), float(a[0]), t)
+	e.adjustment_saturation = lerpf(float(b[1]), float(a[1]), t)
+	e.adjustment_brightness = lerpf(float(b[2]), float(a[2]), t)
+	var warm: float = lerpf(float(b[3]), float(a[3]), t)
+	if absf(warm - _ramp_warm) > 0.02 or _ramp == null:
+		_ramp_warm = warm
+		var gr := Gradient.new()
+		# A CURVE, NOT A MULTIPLIER. adjustment_color_correction maps input to output per channel, so the ramp has
+		# to run from black to white with the tint carried along it. The first pass set both ends near 1.0 -- a
+		# multiplier's idea of neutral -- which mapped every input to white and the whole region rendered blown out.
+		gr.set_color(0, Color(0.0, 0.012 * warm, 0.045 * warm))                           # shadows toward blue
+		gr.set_color(1, Color(1.0, 1.0 - 0.035 * warm, 1.0 - 0.10 * warm))                # highlights toward amber
+		_ramp = GradientTexture1D.new()
+		_ramp.gradient = gr
+		_ramp.width = 256
+	e.adjustment_color_correction = _ramp
