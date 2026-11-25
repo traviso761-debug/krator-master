@@ -11,6 +11,11 @@
 //   SIM.trade({ id, stops:[{settlement, place}, ...] (two or more; the round goes 0, 1, ... and back to 0),
 //               cap (units a carrier holds), carriers? (1), minutes? (a passage between landings: the timer),
 //               mins? (the stay at a landing: 120), stagger? (minutes between the carriers' first sailings: 0),
+//               offset? (minutes before the FIRST carrier's first sailing: 0): two rounds that load at the same
+//               settlement leave in turn rather than in lockstep. Without it they depart on the same minute and
+//               contend for the same cargo, and which one loads is down to iteration order (the two Iziz houses of
+//               core/region/data/catch-tune.js did exactly that: openworld/catch-bowl/PLAN-SIM.md 2z). Absent, it is
+//               0 and a round departs exactly as before,
 //               line? (a SIM.transport id: carrier k is its vehicle k, docked while the vehicle stands at a stop's
 //               place; a passage then takes the vehicle's own time), goods?: {settlement: [goods it may send]} (else
 //               every good both economies know), keep? (days of its own want a sender keeps: its economy's
@@ -65,7 +70,7 @@
     var T=SIM.TRADE||(SIM.TRADE={ routes:{}, order:[] });
     if(T.routes[o.id]) throw new Error('SIM.trade '+o.id+': made already');
     var R={ id:o.id, stops:o.stops.map(function(s){ return { settlement:s.settlement, place:s.place }; }), cap:o.cap, carriers:[],
-            minutes:o.minutes, mins:o.mins==null ? 120 : o.mins, stagger:o.stagger==null ? 0 : o.stagger, line:o.line==null ? null : o.line,
+            minutes:o.minutes, mins:o.mins==null ? 120 : o.mins, stagger:o.stagger==null ? 0 : o.stagger, offset:o.offset==null ? 0 : o.offset, line:o.line==null ? null : o.line,
             goods:o.goods||null, keep:o.keep, want:o.want, most:o.most==null ? o.cap : o.most, expect:o.expect||null, shipped:{}, landed:{}, voyages:0, refused:0, empty:0 };
     if(o.share){ R.share=o.share; R.tithed={}; R.owed={}; R.mark={}; }   /* a tithe road (S3): see the header */
     if(o.legs!=null) R.legs=o.legs.slice();   /* C1: a passage per leg */
@@ -193,7 +198,8 @@
 
   /* ---------------------------------------------------------------- the step */
   function stepTimer(R, C, minute){
-    if(C.phase==null){ C.at=C.k % R.stops.length; C.phase='docked'; C.departs=minute+R.mins+C.k*R.stagger; }
+    if(C.phase==null){ C.at=C.k % R.stops.length; C.phase='docked';
+      C.departs=minute+R.mins+(R.offset==null?0:R.offset)+C.k*R.stagger; }
     for(var guard=0; guard<64; guard++){   /* a jump: voyage after voyage, each at its own minute */
       if(C.phase==='docked' && minute>=C.departs){ var i=C.at;
         if(R.closed && closedNow(R, i, C.departs)){ R.waited++; C.departs+=60; continue; }   /* C5: the leg is shut; wait an hour */

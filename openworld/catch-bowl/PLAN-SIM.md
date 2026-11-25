@@ -104,7 +104,24 @@ the phase enough for one house to take everything.
 has the two houses *competing* for the same south-bound loads (`PROPOSAL-CATCH.md` section 2, "The rivalries"), which is
 right; total starvation of one is not, and two rival houses would not in any case leave on the same hour.
 
-**I have not patched it**, because the fix is a design choice and not a literal:
+**ANSWERED (the owner, 2026-11-25): "can we stagger house departures so they don't step on each other like that."**
+Option (a), and it is built:
+
+- **`SIM.trade` gains `offset`** (`core/simulation/77-sim-6-trade.js`): minutes before the *first* carrier's first
+  sailing, beside the existing `stagger` between carriers. `R.offset == null ? 0 : R.offset`, so **a round without it
+  departs exactly as before** — `node core/simulation/test-sim.js` passes unchanged, which is the house rule for any
+  `core/simulation` edit.
+- **`CATCH_TUNE` spreads the groups that share a pool** through one stagger: the i-th of n leaves i/n of the way
+  through it. Only `gate.iziz` has two, so Getmastarz keeps offset 0 and **Goldanda takes 17 days of their 33-day
+  stagger**; the Train, Yuni's Guild and the Geomancers are alone on their pools and are unshifted. Their arrivals at
+  Strongbow now interleave — 67, 100, 133, 167 against 83, 117, 150, 183 — instead of landing on the same minute.
+- **Two checks** cover it: the houses leave half a stagger apart while a group alone on its pool is unshifted, and
+  **both houses land iron at Strongbow**, neither starved by the other. Each with a negative.
+
+It is also the better world: rivals who leave on alternate schedules read as rivals, and lockstep departure was never
+anything but an artefact.
+
+The question as it was put, and the options weighed:
 
 | | What it would mean |
 |---|---|

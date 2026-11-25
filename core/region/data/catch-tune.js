@@ -198,6 +198,14 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   s.start=Object.assign({},s.start,{water:lDay*3,fodder:fDay*10});});
  const legKm=(a,b)=>{const A=S(a),B=S(b);return Math.hypot(A.x-B.x,A.z-B.z)/1000*T.winding;},mins=km=>Math.max(240,Math.round(km/T.speed*1440));
  const peopled=id=>{const s=S(id);return s&&s.people>0&&!/^gate\./.test(id);};
+ /* THE RIVALS LEAVE IN TURN (the owner, 2026-11-25: "can we stagger house departures so they don't step on each
+    other like that"). Two groups that load at the same off-map pool -- the two Iziz houses, both out of gate.iziz --
+    had identical rounds and identical first sailings, so they reached the warehouse on the same minute and contended
+    for the same cargo; which of them loaded was down to iteration order, and in a year one could take everything
+    (openworld/catch-bowl/PLAN-SIM.md 2z). So the groups sharing a pool are spread evenly through one stagger: the
+    i-th of n leaves i/n of the way through it. One group on a pool is unaffected (phase 0), as the Train, Yuni's
+    Guild and the Geomancers are. */
+ const poolOf={};T.groups.forEach(g=>{(poolOf[g.pool]=poolOf[g.pool]||[]).push(g.id);});
  T.groups.forEach(g=>{const GW=G(g.pool),south=g.north.concat(['s2o8f4p123','scatchbitta01',g.lasso||'scatchlasso01'],g.route==='A'?[]:['twins.lookout'],T.twins[g.route]);
   const yuni=g.end==='skm4jjo2vl',out=[g.pool].concat(south,['sfgtxw10kr'],yuni?['skm4jjo2vl']:[]),back=out.slice(1,-1).reverse();
   const stops=out.concat(back),n=stops.length,endIdx=out.length-1;
@@ -208,7 +216,9 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   const goods={[g.pool]:GW.in.concat(['grain','tea','tools']),[g.end]:GW.out.slice()};
   stops.forEach(s=>{if(!goods[s])goods[s]=[];});
   const expect={[g.pool]:exp,[g.end]:{iron:30*g.share,arms:.5*g.share,pearls:.06,wine:3,oil:2}};
-  const Rd={id:'caravan.'+g.id,stops,legs,mins:720,cap:g.cap,carriers:g.carriers,stagger:Math.round(legs.reduce((a,b)=>a+b,0)/g.carriers),keep:20,want:Math.max(90,Math.round(legs.reduce((a,b)=>a+b,0)/1440)),
+  const share=poolOf[g.pool],stagger=Math.round(legs.reduce((a,b)=>a+b,0)/g.carriers);
+  const Rd={id:'caravan.'+g.id,stops,legs,mins:720,cap:g.cap,carriers:g.carriers,stagger,
+   offset:Math.round(stagger*share.indexOf(g.id)/share.length),keep:20,want:Math.max(90,Math.round(legs.reduce((a,b)=>a+b,0)/1440)),
    goods,expect,halts,sells,forHalts:['grain','tea','tools','fodder'],provision:{beasts:Math.round(g.cap/T.kgPerBeast),eat:T.caravan.eat,loss:T.caravan.loss,maxDays:T.caravan.maxDays,home:0},_group:g,_stops:{end:endIdx}};
   /* the cuts: the Sultan's toll on what the caravan lands inside Xanadu (at the Strongbow lift; for the Qiblai caravans,
      on what they land at Qiblai having come up it); the tally's two halves on the same landings, and its outbound half at

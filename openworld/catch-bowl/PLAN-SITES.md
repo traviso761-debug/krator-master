@@ -334,6 +334,89 @@ Imperial place between Iziz and Parabola. If it leaves:
 3. **If it moves, does it leave this region's cut entirely?** px 1664,803 is 1,300 km east of the Bowl and in no
    polygon this region takes, so Arcbeam would become another region's site and `BOWL_TUNE` would lose it.
 
+## 7c. The Shell-Arachnoid-Ria route, and the best site on the planet (2026-11-25)
+
+The owner, 2026-11-25: *"actually having it be a useful stop somewhere on the shell-to-arachnoid-to-ria trade route
+would be nice."* **That is a better answer than section 7b's, and the search backs it.** Three things fell out.
+
+### 1. The route is real, and already recorded in four places
+
+| Where | What it says |
+|---|---|
+| `core/region/RING-SEA-SCOPE.md` | *"**`Shell -> Silkhead` Tentative Imperial Highway** (2026-11-18): poorly maintained **541-582 km** frontier highway due north from **Shell** (902,659) via **Nortolda** (903,606) and western Korona to **Silkhead** (932,425)"* |
+| `core/region/GEOMANCER-SCOPE.md` | *"**The Northern Lifeline** (`Shell -> Port Koron -> Silkhead -> Compass Hills`)"*: Shell's distillates haul overland to **Port Koron** (912,532), ship 220 km up the dredged Soda Lake trough to **Silkhead** (934,424), and strike into the **Compass Hills** (1057,232) for lodestone, rare earths and spider-silk at **Ham-Tsek** (1055,219). It calls Shell's a *"northern lifeline independent of Yuni and the Ring Sea core"* |
+| `openworld/TRADE-GEMINI.md` | the planet's **first source of lodestone**, delved at **Lodestone** (1058,224), exported *"via **Ria Sound** -> Battered Isle -> Farport"* **and** *"via **Ham-Tsek -> Silkhead -> Port Koron -> Shell** -> Iziz/Yuni"* |
+| `core/region/MERCENARIES-SCOPE.md` | **`Silkhead -> Ria Valley`** parties want hiring escorts, twice over; MC-09's Wreck-Riders are *"prime escorts for northern Silkhead -> Ria Valley"* |
+
+So this is not a notional road: it is a **lifeline** carrying the planet's only lodestone, with a highway, a lake haul,
+a silk post and mercenaries who make their living escorting it.
+
+### 2. It already has a canyon in its lore — and the model does not carry it
+
+The river is **`Ham-Tsēk (Web-Cleaver River)`**, id **9102**: **1,095 km, q 1,650 m³/s**, falling 1,442 m to 384 m, and it
+joins the **`Rīwa-Wāta (Ria River)`** at px 899.5,175. `TRADE-SCOPE.md` calls it *"890 km canyon river carving through the
+Northern Korona & **Arachnoid Scenic Gorge** into the Ria River"*, and `GEOLOGY-SANITY-CHECK.md` has it *"**saw[ing]
+through the Arachnoid ring-dikes**"*. Its name means **Web-Cleaver**.
+
+**But its heightfield carries no gorge: 0 of 189 of its course points show a 200 m trench with level rims at a 4-8 km
+span.** The Arachnoid Scenic Gorge is design intent the model has not been given — which is the same finding as
+everywhere else (a gorge is sub-cell at 2 km a pixel), and it means a carve here would be **deepening lore that already
+exists** rather than inventing a reason, which is strictly better than the Godsgate option of section 7a.
+
+### 3. The best site on the planet is 10 km off that road: **px 1120,190**
+
+| | |
+|---|---|
+| Depth at **Arcbeam's own 4 km span** | **332 m**, rims **1 m apart** (E-W) |
+| And on every other axis at 4 km | N-S 330 m (rims 3 m), NE-SW 332 m (9 m), NW-SE 327 m (6 m) |
+| Held further out | E-W 340 / 327 m at 8 and 12 km; N-S 329 / 330 m |
+| Bed / plateau | 671 m floor under a ~1,000 m plateau |
+| Climate | 1,255 mm, 25 °C — green, not badland |
+| Region | `Springhollows`; **`arachnoid canyons`** |
+| Off the Silkhead-Upper Ria line | **10 km** |
+| To Silkhead / Upper Ria | 598 km / **195 km** |
+| Nearest places | **Springhollows (an arcology) 80 km**, **Lodestone (an arcology) 141 km** |
+
+**Depth on all four axes with level rims is not a valley.** A valley is deep across and flat along. This is a floor
+330 m below a plateau that surrounds it *on every side* — a **web of canyons**, mesas and slots interleaved. Which is
+precisely what a radial dike swarm called the **Arachnoid** should look like, and what a river called the
+**Web-Cleaver** should be cutting. The terrain, the river's name and the region's name agree.
+
+### The recommendation
+
+**Put Arcbeam at px 1120,190 and let the road bend 10 km to cross at it.** Measured, the Silkhead-Upper Ria line has
+**no level-rim cross-section deeper than 0 m anywhere along its whole 793 km** — the model's straight line is
+flat-floored throughout. So there is nothing to bridge *on* the road, and a perfect thing to bridge 10 km beside it.
+Ten kilometres of bend on a 793 km haul is nothing, and it makes Arcbeam **why the road goes that way** — the stronger
+version of the idea, the one section 7a was holding out for.
+
+What it would take:
+
+1. **Arcbeam's rims drop from 400 m to about 330 m**, or the carve deepens the floor by 70 m. The owner already offered
+   the dimensions (*"we may need to tweak its dimensions"*), and 332 against 400 is within a sixth. Either is trivial,
+   and `AB_SITE` derives every face from the gorge's numbers so the city rescales with it.
+2. **The carve itself**: a sub-cell gorge on the Web-Cleaver's line through the site, which the lore already describes.
+3. **The road's bend**, as a 10 km dog-leg on the Silkhead-Upper Ria leg.
+4. **Arcbeam leaves this region entirely.** px 1120,190 is in `Springhollows` / `arachnoid canyons`, 2,000 km from the
+   Bowl — so it becomes another region's site, `BOWL_TUNE` loses it, and whatever arcology takes px 1016,1058 inherits
+   its 10,000 + 6,000 and its market on the Iziz road (section 7b's last part still applies).
+
+### How this compares with section 7b
+
+| | S Outlands plateau (7b) | **px 1120,190 (this section)** |
+|---|---|---|
+| Depth at 4 km span | 389 m, 224 such cells | 332 m, level on **all four axes** |
+| Rims level to | 1-19 m | **1-9 m** |
+| On a trade route | **no** — 205 km to the nearest town | **yes** — 10 km off a recorded lifeline |
+| Lore already wanting a gorge | no | **yes** — the Web-Cleaver, the Arachnoid Scenic Gorge |
+| Near other arcologies | Trickster's House, 417 km | **Springhollows 80 km, Lodestone 141 km, Upper Ria 195 km** |
+| Climate | 63 mm, true badlands | 1,255 mm, green canyon country |
+| Carve needed | none (it already fits) | 70 m of deepening, or drop Arcbeam's rims |
+
+The S Outlands wins on raw geometry and on being desert; **1120,190 wins on everything that makes a bridge city mean
+something.** If the owner wants Arcbeam in the badlands for its own sake, 7b stands; if they want it to be *a useful
+stop on the Shell-Arachnoid-Ria route*, this is the place.
+
 ## 8. The two salt works
 
 The owner, 2026-11-16: the Train of Jabal works **both**. They are the reason the Catch matters to anyone.

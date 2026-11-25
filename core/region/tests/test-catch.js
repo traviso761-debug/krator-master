@@ -210,4 +210,21 @@ const BAH='godsgate.babalhawa';
  const Q=runJoined(365,{hazards:false});
  T.neg('with the hazards off the Godsgate costs nothing',
   x=>GROUPS.reduce((a,id)=>a+((x.losses[id]||[]).filter(y=>/God-Bore|whiteout/.test(y.why)).length),0)>0,Q,J);}
+// ---- the rivals leave in turn (the owner, 2026-11-25: "can we stagger house departures so they don't step on each
+//      other like that"). Two groups out of one pool had identical first sailings and contended for the same cargo on
+//      the same minute; SIM.trade gained `offset` and the groups sharing a pool are now spread through one stagger.
+{const G1=road('caravan.getmastarz'),G2=road('caravan.goldanda');
+ const solo=['caravan.train','caravan.yuniguild','caravan.geomancer'].map(road).filter(Boolean);
+ const apart=Math.abs((G2.offset||0)-(G1.offset||0));
+ const good=apart>0&&Math.abs(apart-G1.stagger/2)<=1&&solo.every(r=>(r.offset||0)===0);
+ T.ok('the two Iziz houses out of one pool leave in turn, half a stagger apart, and a group alone on its pool is unshifted',good,
+  'Getmastarz offset '+Math.round((G1.offset||0)/1440)+' d, Goldanda '+Math.round((G2.offset||0)/1440)+' d of a '
+  +Math.round(G1.stagger/1440)+' d stagger; the Train, the Guild and the Geomancers '+solo.map(r=>Math.round((r.offset||0)/1440)).join('/')+' d');
+ T.neg('two rounds that leave on the same minute are not staggered',
+  x=>x.a>0&&Math.abs(x.a-x.s/2)<=1,{a:0,s:G1.stagger},{a:Math.round(G1.stagger/2),s:G1.stagger});}
+// and the point of it: both houses now land iron at Strongbow, neither starved by the other
+{const g=landedAt(J.trade,['caravan.getmastarz'],'sfgtxw10kr'),d=landedAt(J.trade,['caravan.goldanda'],'sfgtxw10kr');
+ T.ok('with the houses staggered, BOTH land iron at Strongbow: neither rival is starved of the pool by the other',(g.iron||0)>0&&(d.iron||0)>0,
+  'Getmastarz iron '+t(g.iron||0)+', Goldanda iron '+t(d.iron||0));
+ T.neg('a house that lands nothing has been starved',x=>(x.a||0)>0&&(x.b||0)>0,{a:4000,b:0},{a:4000,b:1500});}
 T.done();
