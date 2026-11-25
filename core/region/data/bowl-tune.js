@@ -50,14 +50,18 @@ T.px=(px,py)=>({x:(px-1191)*2000,z:(py-1569)*2000});
 T.goods={grain:{unit:'kg'},salt:{unit:'kg'},tea:{unit:'kg'},tools:{unit:'kg'},water:{unit:'l'},fodder:{unit:'kg'},
  gypsum:{unit:'kg'},alloy:{unit:'kg'},cells:{unit:'cell'},
  dates:{unit:'kg'},figs:{unit:'kg'},frankincense:{unit:'kg'},resin:{unit:'kg'},hides:{unit:'kg'},
- shrimp:{unit:'kg'},fish:{unit:'kg'},brick:{unit:'kg'},timber:{unit:'kg'},coffee:{unit:'kg'},cloth:{unit:'m'}};
+ shrimp:{unit:'kg'},fish:{unit:'kg'},brick:{unit:'kg'},timber:{unit:'kg'},coffee:{unit:'kg'},cloth:{unit:'m'},
+ /* the herds' goods (the owner, 2026-11-25: Jabal "should have a hinterland and be supported by Dasri bowl nomads") */
+ meat:{unit:'kg'},dairy:{unit:'kg'},beasts:{unit:'ea'},wool:{unit:'kg'}};
 /* a person's day. The floor is hot and salt: everyone drinks hard (the Bowl's extreme is +47 degC at 1.83 atm,
    biomes/sedesert/PLAN-BOWL.md section 1), and salt is the one thing nobody here lacks */
-T.diet={city:{grain:200*D,salt:8*D,tea:2*D,tools:1.5*D,cloth:.4*D,water:18},
- town:{grain:190*D,salt:8*D,tea:1.5*D,tools:.8*D,cloth:.3*D,water:16},
- works:{grain:200*D,salt:8*D,tea:1*D,tools:1.5*D,water:20},        /* the rakers: the hardest work on the floor */
- village:{grain:175*D,salt:7*D,tea:1*D,tools:.5*D,water:14},
- ruin:{grain:180*D,salt:7*D,tea:1*D,tools:.8*D,water:14}};
+T.diet={city:{grain:200*D,salt:8*D,tea:2*D,tools:1.5*D,cloth:.4*D,meat:44*D,dairy:55*D,water:18},
+ town:{grain:190*D,salt:8*D,tea:1.5*D,tools:.8*D,cloth:.3*D,meat:36*D,dairy:44*D,water:16},
+ works:{grain:200*D,salt:8*D,tea:1*D,tools:1.5*D,meat:36*D,water:20},        /* the rakers: the hardest work on the floor */
+ village:{grain:175*D,salt:7*D,tea:1*D,tools:.5*D,meat:30*D,dairy:40*D,water:14},
+ ruin:{grain:180*D,salt:7*D,tea:1*D,tools:.8*D,water:14},
+ /* a band's day on the move: it eats its own herd's meat and milk and buys its bread, which is the trade with Jabal */
+ band:{grain:150*D,salt:9*D,tea:1*D,meat:80*D,dairy:70*D,water:16}};
 /* the year (year day 0 is Xanadu's clock's 259, as CATCH_TUNE's): the pans are raked in the cool months, as the Catch's
    are; Mantis's pocket takes the monsoon (1,553 mm, the one wet place on a hot-desert shore); and the floor's high
    summer is too hot to work at all, which no other tune in the repo has had to say */
@@ -66,17 +70,24 @@ T.yearDay0=259;
 /* THE PLACES. id (the map's pin), name, faction, px, py, people, kind (its diet), wells: [l a day the aquifer gives,
    days it stores], and what it makes a year. `pending` marks a census the owner has still to rule on (above). */
 T.places=[
+ /* JABAL HAS A HINTERLAND (the owner, 2026-11-25: it "should have a hinterland and be supported by Dasri bowl nomads",
+    answering PLAN-SIM.md 3c's question). Before this it was 15,000 people with no countryside and no grain source in the
+    province, which is what made the Bowl 15 % short of its own bread. Its ring is the Sheikhdom's irrigated land on the
+    wadi fans above the salt, at the same 200 people an actor as Mantis's and the arcology's, and it is the biggest of
+    the three because Jabal is the Bowl's capital and has the most mouths. The nomads are the other half of the answer:
+    T.nomads below. */
  {id:'sa5o6dvjdv',name:'Jabal, the Sheikhdom\'s seat and the Train of Jabal\'s home',faction:'jabal',px:1225,py:1149,people:15000,kind:'city',
-  well:[3000000,30],make:{brick:900000,cloth:120000,tools:220000,coffee:40000},serai:[400000,60000],repairs:true},
+  well:[3000000,30],make:{brick:900000,cloth:120000,tools:220000,coffee:40000},serai:[400000,60000],repairs:true,
+  ring:{people:9500,scale:200,make:{grain:5700000,dates:1100000,hides:150000,meat:995000,dairy:1258000,wool:95000,timber:60000}}},
  {id:'slw9dufqfs',name:'Mantis, the Bowl\'s second city in its green pocket (an Iziz holding under Izani merchant houses)',faction:'mantishouses',px:1113,py:1164,people:15000,kind:'city',
   well:[2200000,25],make:{frankincense:70000,resin:55000,dates:900000,figs:400000,fish:300000,shrimp:140000,cloth:70000,tools:90000},season:{dates:'monsoon'},
   serai:[200000,30000],repairs:true,
-  ring:{people:9000,scale:200,make:{grain:5400000,dates:1600000,figs:700000,hides:160000,timber:90000},season:{dates:'monsoon'}}},
+  ring:{people:9000,scale:200,make:{grain:5400000,dates:1600000,figs:700000,hides:160000,meat:942000,dairy:1192000,wool:90000,timber:90000},season:{dates:'monsoon'}}},
  {id:'s0zgu7u6yb',name:'Solta, the Train of Jabal\'s Bowl salt works by the great salt lake',faction:'train',px:1169,py:1150,people:400,kind:'works',
   well:[60000,20],pans:{salt:900000,gypsum:400000}},
  {id:'skz25tuq0w',name:'An arcology TBD: the Iziz arcology on the north road (Arcbeam moved to the arachnoid canyons, 2026-11-25)',faction:'iziz',px:1016,py:1058,people:10000,kind:'city',tbd:true,
   well:[1500000,30],make:{alloy:30000,cells:1200,tools:260000,brick:400000,cloth:50000},salvageYears:80,repairs:true,serai:[250000,40000],
-  ring:{people:6000,scale:200,make:{grain:3600000,hides:140000,timber:120000}}},
+  ring:{people:6000,scale:200,make:{grain:3600000,hides:140000,meat:628000,dairy:794000,wool:60000,timber:120000}}},
  {id:'scyeauyek7',name:'Parabola, the Bowl arcology and the north road\'s mustering ground',faction:'iziz',px:970,py:1186,people:450,kind:'ruin',
   well:[200000,25],make:{alloy:9000,cells:400},salvageYears:60,repairs:true},
  {id:'sq11desertw7',name:'Esper, the Bowl\'s farming village',faction:'iziz',px:1042,py:1083,people:220,kind:'village',
@@ -93,6 +104,44 @@ T.factions=[{id:'jabal',name:'The Jabal Sheikhdom (the Dasri\'s Bowl capital)'},
  {id:'iziz',name:'The Empire of Iziz (Arcbeam, Parabola and Esper)'}];
 /* the Train sells salt to all comers and holds both works, which the Izani houses -- who once had Solta's salt --
    resent (the owner, 2026-11-16: "Solta too"); everyone else friendly */
+/* ================================================================= THE DASRI BOWL NOMADS
+   The owner, 2026-11-25: Jabal "should have a hinterland and be supported by Dasri bowl nomads." The hinterland is
+   Jabal's `ring` above; these are the other half, and they are a different kind of thing -- not a settlement with a
+   census but BANDS THAT MOVE, on `core/camp` (KCAMP), as Pinnacle Rock's eighteen Beast Rider bands are
+   (`settlements/pinnacle-rock/src/15-pr-tune.js` T.bands). Four bands of 40-70 range the wadi fans and the grazing
+   margins above the salt, and each is a settlement of its own in the valley so that core/camp's hand-over has somewhere
+   to land its stock.
+
+   WHAT THEY ARE FOR, and it is not bulk food. Four bands of about sixty cannot feed a city of 15,000: the rings carry
+   the province's meat and milk, and the bands' distinctive trade is BEASTS -- the pack animals the Train of Jabal runs
+   on. That is the connection worth having: the Dasri capital's caravan arm is mounted on beasts its own nomads breed,
+   so a bad year in the grazing is a bad year for the salt road, and `T.rivals`' quarrel between the Train and Mantis's
+   houses has a supply side as well as a price side. Beside the beasts they sell hides, wool and the herds' surplus, and
+   they buy their bread, salt and tea at Jabal, which is the trade.
+
+   THE TENTS are the Tents kit's `desert` dress through `KCAMP.tentProgram` -- black goat-hair tents, the chief's large,
+   a council marquee, a smith's and a tanner's workshop -- so no new culture row was written for them.
+   ONE THING IS HONESTLY WRONG AND RECORDED RATHER THAN PAPERED OVER: the generic program's `assign` deals a
+   FORAGER'S role mix (about fourteen hunters and eight gatherers to one herder in a band of sixty), which is the Beast
+   Riders' shape, not a herding people's. The economy below therefore sizes its crews off the band's ADULTS rather than
+   off `role === 'herder'`, and a Dasri herder row in `core/camp` (as `11-camp-coyote.js` is for the coyote-herders) is
+   owed. The census's pop, adults, children, elders and mounts are all sound and are what the economy uses. */
+T.nomads={culture:'desert',n:4,households:7,trades:['smith','tanner'],council:true,
+ /* where each band's home ground is: the wadi fans and grazing margins round Jabal, 40-120 km out */
+ at:[[1198,1120],[1252,1176],[1210,1190],[1268,1128]],
+ names:['the Bani Ghubar','the Bani Sabkha','the Bani Rakhm','the Bani Thalj'],
+ keep:30,want:45,
+ /* a band's herd, per head of its people: the Bowl's margins carry goats, and the Dasri breed the pack beasts */
+ herdPer:14,            /* head of stock a person */
+ offtake:{meat:15,dairy:80,hides:2,wool:1.8},   /* kg a head of stock a year */
+ breedPer:50,           /* one beast a year sold off every 50 head: the Train's remounts */
+ graze:1.4};            /* kg of fodder a head of stock a day the margins give back */
+/* the four bands by core/camp's census, ids as a page would write them. Needs KCAMP (core/rand, core/space, core/camp
+   loaded by the host); without it the valley runs without bands and says so in `_noBands`. */
+T.bands=function(world){if(typeof KCAMP==='undefined')return null;
+ const N=T.nomads,P=KCAMP.tentProgram({culture:N.culture,households:N.households,trades:N.trades,council:N.council});
+ return N.at.map((px,i)=>{const id='sa5o6dvjdv:dasri:'+(i+1);
+  return{id,i,name:N.names[i],px,census:KCAMP.census({id,world,culture:P.culture,program:P.program})};});};
 T.rivals=[['train','mantishouses']];
 T.speed=30;      /* km a day on a Bowl track, as CATCH_TUNE's: the same beasts on the same kind of road */
 T.winding=1.25;  /* road over straight line */
@@ -169,10 +218,30 @@ T.valley=function(o){o=o||{};const K=o.scale==null?25:o.scale,yr=365,days=o.days
  const TR=T.trade.map(R=>({id:R.id,from:R.a,to:R.b,minutes:mins(legKm(R.a,R.b)),cap:R.cap,carriers:R.carriers,
   want:R.want,keep:20,goods:{[R.a]:R.out.filter(g=>T.goods[g]),[R.b]:R.back.filter(g=>T.goods[g])},
   stagger:Math.round(mins(legKm(R.a,R.b))*2/R.carriers)}));
+/* THE BANDS AS SETTLEMENTS (Pinnacle Rock's pattern): each is a settlement so core/camp's hand-over has somewhere to
+   land its stock, with a `home.<band>` road to Jabal carrying the herds' make down and its bread and salt back. The
+   crews are sized off the band's ADULTS, not off role === 'herder': see T.nomads' note on the generic role mix. */
+ const BANDS=[],BR=[],world=o.world==null?20261125:o.world,bands=o.bands===false?null:T.bands(world);
+ (bands||[]).forEach(b=>{const c=b.census,p=T.px(b.px[0],b.px[1]),N=T.nomads,diet=T.diet.band;
+  const stock=Math.round(c.pop*N.herdPer),hands=Math.max(3,c.adults-4);   /* less the chief, the smith, the tanner and the quartermaster */
+  const works=[{id:b.id+'.stores',kind:'tent-store',name:'the band\'s stores',crew:0,out:[],rate:0}];
+  works.push({id:b.id+'.herd',kind:'herd',name:'the herds\' offtake',crew:hands,out:['meat','dairy','hides','wool'],
+   rate:rate(stock*(N.offtake.meat+N.offtake.dairy+N.offtake.hides+N.offtake.wool),hands)});
+  works.push({id:b.id+'.pasture',kind:'pasture',name:'the margins\' grazing',crew:Math.max(2,Math.round(hands*.3)),out:['fodder'],
+   rate:rate(stock*N.graze*365,Math.max(2,Math.round(hands*.3)))});
+  works.push({id:b.id+'.breed',kind:'breaking-pen',name:'the young beasts broken for the Train',crew:2,out:['beasts'],
+   rate:rate(Math.round(stock/N.breedPer),2)});
+  const start={};Object.keys(diet).forEach(g=>{start[g]=Math.ceil(c.pop*diet[g]*days);});
+  BANDS.push({id:b.id,name:b.name+' (a Dasri band of the Bowl)',faction:'jabal',parent:'sa5o6dvjdv',people:c.pop,
+   x:p.x,z:p.z,scale:K,eats:Object.assign({},diet),keepDays:N.keep,start,works,band:b,
+   reserve:{grain:Math.round(c.pop*diet.grain*(N.keep+5)),salt:Math.round(c.pop*diet.salt*(N.keep+5))}});
+  BR.push({id:'home.'+b.id,from:b.id,to:'sa5o6dvjdv',minutes:Math.max(240,Math.round(Math.hypot(p.x-T.px(1225,1149).x,p.z-T.px(1225,1149).z)/1000*T.winding/T.speed*1440)),
+   cap:60000,want:N.want,keep:N.keep,goods:{[b.id]:['meat','dairy','hides','wool','beasts'],'sa5o6dvjdv':['grain','salt','tea','tools','cloth']}});});
  const F=T.factions.map(f=>f.id),wary=(a,b)=>T.rivals.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a));
  return{seed:20261124,scale:K,start:0,calendar:T.calendar,goods:T.goods,factions:T.factions,
   relations:[].concat(...F.map(a=>F.filter(b=>b!==a).map(b=>({a,b,stance:wary(a,b)?'wary':'friendly'})))),
-  settlements:S.concat(RINGS),roads:RR.concat(TR),transfers:[]};};
+  settlements:S.concat(RINGS).concat(BANDS),roads:RR.concat(TR).concat(BR),transfers:[],
+  bands:bands||undefined,_noBands:bands?undefined:'core/camp (KCAMP) is not loaded, so the Dasri bands are absent'};};
 
 /* ================================================================= THE JOIN (S2, PLAN-SIM.md section 6)
    `CV` is the Catch-joined valley -- `CATCH_TUNE.join(XAN_TUNE.valley())` -- so this is the third plan into the frame,

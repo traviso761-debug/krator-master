@@ -11,6 +11,10 @@ const ROOT=path.join(__dirname,'..','..','..'),rd=p=>fs.readFileSync(path.join(R
 const load=()=>{(0,eval)(rd('core/clock/20-core-clock.js'));
  fs.readdirSync(path.join(ROOT,'core','simulation')).filter(f=>/^77-sim-.*\.js$/.test(f)).sort().forEach(f=>(0,eval)(rd('core/simulation/'+f)));
  (0,eval)(rd('core/region/00-region-core.js'));const H={TUNE:{sim:{}}};KREGION.use(H);(0,eval)(rd('core/region/50-region-valley.js'));
+ /* core/rand, core/space and core/camp, because the Dasri bands are KCAMP's (BOWL_TUNE.nomads) */
+ (0,eval)(rd('core/rand/08-core-rand.js'));
+ fs.readdirSync(path.join(ROOT,'core','space')).filter(f=>/^\d.*\.js$/.test(f)).sort().forEach(f=>(0,eval)(rd('core/space/'+f)));
+ fs.readdirSync(path.join(ROOT,'core','camp')).filter(f=>/^\d/.test(f)).sort().forEach(f=>(0,eval)(rd('core/camp/'+f)));
  (0,eval)(rd('core/region/data/bowl-tune.js'));return H;};
 const t=n=>(n/1000).toFixed(1)+' t';
 function run(days,edit){const H=load(),V=BOWL_TUNE.valley({});if(edit)edit(V);const S=H.simValley(V);
@@ -26,12 +30,45 @@ console.log('a year of the Bowl in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+Y.
    TBD of about 10k + hinterlands" on the north road. The id is Arcbeam's old one, standing in until the new model
    issues one (core/region/data/bowl-tune.js, its header) */
 const ID={jabal:'sa5o6dvjdv',mantis:'slw9dufqfs',solta:'s0zgu7u6yb',arco:'skz25tuq0w',parabola:'scyeauyek7',esper:'sq11desertw7'};
-{const want=Object.values(ID).concat(['slw9dufqfs.ring','skz25tuq0w.ring']),got=Y.S.order.slice().sort();
- const good=want.every(x=>got.indexOf(x)>=0);
- T.ok('S2: the Bowl\'s six places run, and Mantis\'s and the north road\'s arcology\'s hinterlands with them -- eight settlements',good&&Y.S.order.length===8,
-  Y.V.settlements.map(s=>s.id.replace(/^s/,'')+' '+s.people).join(', '));
+/* thirteen settlements since 2026-11-25: the six places, THREE hinterlands (Jabal's was added with the owner's answer
+   to PLAN-SIM 3c) and the FOUR DASRI BANDS, which are settlements of their own so core/camp's hand-over has somewhere
+   to land their stock */
+{const rings=['sa5o6dvjdv.ring','slw9dufqfs.ring','skz25tuq0w.ring'];
+ const bands=(Y.V.bands||[]).map(b=>b.id);
+ const want=Object.values(ID).concat(rings).concat(bands),got=Y.S.order.slice().sort();
+ const good=want.every(x=>got.indexOf(x)>=0)&&bands.length===4&&!Y.V._noBands;
+ T.ok('S2: the Bowl\'s six places run, its three hinterlands with them, and the four Dasri bands -- thirteen settlements',good&&Y.S.order.length===13,
+  Y.S.order.length+' settlements: '+rings.length+' hinterlands, '+bands.length+' bands'+(Y.V._noBands?' -- '+Y.V._noBands:''));
  T.neg('a tune missing a place does not pass for the whole Bowl',
-  x=>x.length===8,want.slice(1),want);}
+  x=>x.length===13,want.slice(1),want);}
+/* JABAL'S HINTERLAND AND THE DASRI NOMADS (the owner, 2026-11-25: Jabal "should have a hinterland and be supported by
+   Dasri bowl nomads", answering PLAN-SIM 3c). Both halves, and the arithmetic that was 15 % short before them. */
+{const J=BOWL_TUNE.places.find(P=>P.id===ID.jabal),N=BOWL_TUNE.nomads;
+ const D=1/365,diet=BOWL_TUNE.diet,bandPop=(Y.V.bands||[]).reduce((n,b)=>n+b.census.pop,0);
+ const eats=g=>BOWL_TUNE.places.reduce((n,P)=>n+((diet[P.kind]||{})[g]||0)*P.people*365,0)
+  +BOWL_TUNE.places.filter(P=>P.ring).reduce((n,P)=>n+((diet.village||{})[g]||0)*P.ring.people*365,0)
+  +(diet.band[g]||0)*bandPop*365;
+ const grows=g=>BOWL_TUNE.places.reduce((n,P)=>n+((P.make||{})[g]||0)+((P.pans||{})[g]||0)+(P.ring?((P.ring.make||{})[g]||0):0),0)
+  +(N.offtake[g]||0)*Math.round(bandPop*N.herdPer);
+ const grain={e:eats('grain'),g:grows('grain')},meat={e:eats('meat'),g:grows('meat')},dairy={e:eats('dairy'),g:grows('dairy')};
+ const good=!!J.ring&&J.ring.people===9500&&grain.g>=grain.e&&meat.g>=meat.e&&dairy.g>=dairy.e;
+ T.ok('S2: Jabal has a hinterland of 9,500 and the Bowl now grows its own bread, meat and milk',good,
+  'Jabal\'s ring '+(J.ring?J.ring.people:0)+'; grain '+t(grain.g)+' for '+t(grain.e)+', meat '+t(meat.g)+' for '+t(meat.e)
+  +', dairy '+t(dairy.g)+' for '+t(dairy.e));
+ T.neg('a Jabal with no hinterland leaves the Bowl short of bread, as it was before 2026-11-25',
+  x=>!!x.ring,Object.assign({},J,{ring:undefined}),J);}
+// the nomads' own trade: beasts for the Train, and a road home to Jabal for each band
+{const N=BOWL_TUNE.nomads,bands=Y.V.bands||[],stock=Math.round(bands.reduce((n,b)=>n+b.census.pop,0)*N.herdPer);
+ const bred=Math.round(stock/N.breedPer);
+ const homes=Y.V.roads.filter(r=>/^home\./.test(r.id));
+ const sellsBeasts=homes.length===4&&homes.every(r=>(r.goods[r.from]||[]).indexOf('beasts')>=0);
+ const breeds=bands.every(b=>{const s=Y.V.settlements.find(q=>q.id===b.id);return s&&s.works.some(w=>(w.out||[]).indexOf('beasts')>=0);});
+ T.ok('S2: the Dasri bands breed the Train\'s pack beasts and each has a road home to Jabal',sellsBeasts&&breeds&&bred>=40,
+  bands.length+' bands, '+bands.reduce((n,b)=>n+b.census.pop,0)+' people, '+stock+' head of stock, '+bred
+  +' beasts a year for the Train; '+homes.map(r=>Math.round(r.minutes/1440)+'d').join('/')+' from Jabal');
+ T.neg('a band that sells no beasts is not the Train\'s remount yard',
+  x=>x.every(r=>(r.goods[r.from]||[]).indexOf('beasts')>=0),
+  homes.map(r=>Object.assign({},r,{goods:Object.assign({},r.goods,{[r.from]:['meat']})})),homes);}
 // every place keeps its people fed off its own make and its stocked start: nobody starves in a year
 {const hungry=Object.keys(B).filter(id=>{const b=B[id];return b&&b.short&&Object.keys(b.short).length>0;});
  T.ok('S2: a year on its own make and a 400-day start leaves no Bowl place short',hungry.length===0,
@@ -44,8 +81,8 @@ const ID={jabal:'sa5o6dvjdv',mantis:'slw9dufqfs',solta:'s0zgu7u6yb',arco:'skz25t
    pair in BOWL_TUNE.rivals). */
 const RD=id=>Y.V.roads.find(r=>r.id===id),TR=BOWL_TUNE.trade.map(r=>r.id);
 {const got=TR.filter(id=>!!RD(id)),lanes=Y.V.roads.filter(r=>/^lane\./.test(r.id));
- T.ok('S2: the Bowl\'s five trade roads are declared beside the two hinterland lanes, each measured off its own places',
-  got.length===5&&lanes.length===2&&TR.every(id=>(RD(id)||{}).minutes>0),
+ T.ok('S2: the Bowl\'s five trade roads are declared beside the three hinterland lanes, each measured off its own places',
+  got.length===5&&lanes.length===3&&TR.every(id=>(RD(id)||{}).minutes>0),
   got.map(id=>id.replace('trade.','')+' '+Math.round(RD(id).minutes/1440)+' d').join(', '));
  T.neg('a road with no passage time is not a measured road',
   x=>x.every(r=>r.minutes>0),TR.map(id=>Object.assign({},RD(id),{minutes:0})),TR.map(id=>RD(id)));}
@@ -56,25 +93,25 @@ const RD=id=>Y.V.roads.find(r=>r.id===id),TR=BOWL_TUNE.trade.map(r=>r.id);
   'Esper to the arcology '+km+' km by road ('+Math.round(E.minutes/1440)+' d); its record says 72 km straight');
  T.neg('a road of 486 km is not the 72 km the record gives',
   x=>x>=70&&x<=110,486,km);}
-/* THE BOWL CANNOT FEED ITSELF, and that is the point of S2 rather than a fault in it. Measured off the tune: the six
-   places and two hinterlands eat more grain than the two rings grow, and NOBODY IN THE BOWL GROWS TEA AT ALL. Jabal is
-   the sharp case -- 15,000 people, no hinterland of its own (the owner ruled rings for Mantis and the arcology, not for
-   Jabal) and no grain source anywhere in the province. Its bread comes up the Dasri road from Xanadu, which is exactly
-   why the Train of Jabal's home mattering is what S2 is about. PLAN-SIM.md section 3c. */
-{const D=1/365,diet=BOWL_TUNE.diet;
- const eats=g=>BOWL_TUNE.places.reduce((n,P)=>n+(diet[P.kind][g]||0)*P.people*365,0)
-  +BOWL_TUNE.places.filter(P=>P.ring).reduce((n,P)=>n+(diet.village[g]||0)*P.ring.people*365,0);
+/* WHAT THE BOWL STILL CANNOT GROW, now that it can grow its bread. Until 2026-11-25 this check recorded the opposite:
+   the province was ~15 % short of grain and Jabal had 15,000 people with no hinterland and no source in the province,
+   which was the whole point of S2 -- a Dasri capital that cannot feed itself is why the Train exists. The owner then
+   answered PLAN-SIM 3c -- Jabal "should have a hinterland and be supported by Dasri bowl nomads" -- and the gap closed.
+   WHAT REMAINS IS TEA: nobody in the Bowl grows a leaf of it, and that is still the join's job and still a real
+   dependency on Xanadu. The grain and herd arithmetic is asserted above, with Jabal's ring. */
+{const diet=BOWL_TUNE.diet,bandPop=(Y.V.bands||[]).reduce((n,b)=>n+b.census.pop,0);
+ const eats=g=>BOWL_TUNE.places.reduce((n,P)=>n+((diet[P.kind]||{})[g]||0)*P.people*365,0)
+  +BOWL_TUNE.places.filter(P=>P.ring).reduce((n,P)=>n+((diet.village||{})[g]||0)*P.ring.people*365,0)
+  +((diet.band||{})[g]||0)*bandPop*365;
  const grows=g=>BOWL_TUNE.places.reduce((n,P)=>n+((P.make||{})[g]||0)+((P.pans||{})[g]||0)
-  +(P.ring?((P.ring.make||{})[g]||0):0),0);
- const grain={eat:eats('grain'),grow:grows('grain')},tea={eat:eats('tea'),grow:grows('tea')};
- const jabalGrain=(diet.city.grain||0)*15000*365;
- T.ok('S2: the Bowl is short of its own bread and grows no tea at all, so the join has to feed it',
-  grain.grow<grain.eat&&tea.grow===0&&jabalGrain>0,
-  'grain: grows '+t(grain.grow)+' a year, eats '+t(grain.eat)+' -- short '+t(grain.eat-grain.grow)
-  +' ('+Math.round(100*(grain.eat-grain.grow)/grain.eat)+' %); tea: grows '+t(tea.grow)+', eats '+t(tea.eat)
-  +'; Jabal alone eats '+t(jabalGrain)+' with no hinterland and no Bowl source');
- T.neg('a province that grows more bread than it eats is not short of it',
-  x=>x.grow<x.eat,{grow:grain.eat*1.2,eat:grain.eat},grain);}
+  +(P.ring?((P.ring.make||{})[g]||0):0),0)+((BOWL_TUNE.nomads.offtake||{})[g]||0)*Math.round(bandPop*BOWL_TUNE.nomads.herdPer);
+ const tea={eat:eats('tea'),grow:grows('tea')},grain={eat:eats('grain'),grow:grows('grain')};
+ T.ok('S2: the Bowl grows no tea at all and never will, so the join still has to bring it -- but its bread it now grows',
+  tea.grow===0&&tea.eat>0&&grain.grow>=grain.eat,
+  'tea: grows '+t(tea.grow)+', eats '+t(tea.eat)+' a year, all of it Xanadu\'s; grain: grows '+t(grain.grow)
+  +' for '+t(grain.eat)+' ('+Math.round(100*grain.grow/grain.eat)+' %)');
+ T.neg('a Bowl that grew its own tea would not need the join for it',
+  x=>x.grow===0&&x.eat>0,{grow:tea.eat,eat:tea.eat},tea);}
 /* ...and so the standalone valley's roads run EMPTY, which is right and not a bug: every place is stocked for 400 days
    (`T.valley`'s `days`), so inside a year nobody wants anything and no carrier loads. Run past the start and the salt
    moves. This is the check that proves the five roads carry goods and not just a declaration. */
@@ -135,13 +172,21 @@ T.ok('S2: the Bowl\'s year balances with its roads running, every settlement and
   x=>x.every(q=>q.pending===undefined),
   BOWL_TUNE.places.map(q=>q.id==='slw9dufqfs'?Object.assign({},q,{pending:'(b)'}):q),BOWL_TUNE.places);}
 // ---- the hinterlands: each ring is a settlement of its own at a coarser scale, sending its make down to its town
+/* THREE rings since 2026-11-25: Jabal gained one with the owner's answer to PLAN-SIM 3c, and it is the largest, being
+   the capital's. Solta, Parabola and Esper have none and want none -- a salt works, a ruin and a village of 220. */
 {const ring=id=>Y.V.settlements.find(s=>s.id===id+'.ring'),lane=id=>Y.V.roads.find(r=>r.id==='lane.'+id);
- const M=ring('slw9dufqfs'),A=ring('skz25tuq0w');
- const good=!!M&&!!A&&M.scale===200&&A.scale===200&&!!lane('slw9dufqfs')&&!!lane('skz25tuq0w')
-  &&M.works.some(w=>w.out[0]==='dates')&&A.works.some(w=>w.out[0]==='grain');
- T.ok('S2: Mantis and the north road\'s arcology each have a countryside of their own at 200 people an actor, with a lane carrying its make down to the town',good,
-  (M?'Mantis ring '+M.people+' ('+M.works.length+' works)':'no Mantis ring')+'; '+(A?'the arcology\'s ring '+A.people+' ('+A.works.length+' works)':'no arcology ring'));
- T.neg('a town with no countryside has no lane to one',x=>!!x,lane('sa5o6dvjdv'),lane('slw9dufqfs'));}
+ const J=ring('sa5o6dvjdv'),M=ring('slw9dufqfs'),A=ring('skz25tuq0w');
+ const good=!!J&&!!M&&!!A&&[J,M,A].every(r=>r.scale===200)
+  &&!!lane('sa5o6dvjdv')&&!!lane('slw9dufqfs')&&!!lane('skz25tuq0w')
+  &&J.people===9500&&J.works.some(w=>(w.out||[])[0]==='grain')
+  &&M.works.some(w=>w.out[0]==='dates')&&A.works.some(w=>w.out[0]==='grain')
+  &&!ring('s0zgu7u6yb')&&!ring('scyeauyek7')&&!ring('sq11desertw7');
+ T.ok('S2: Jabal, Mantis and the north road\'s arcology each have a countryside of their own at 200 people an actor, with a lane carrying its make down to the town -- and the salt works, the ruin and the village have none',good,
+  'Jabal\'s ring '+(J?J.people:0)+', Mantis\'s '+(M?M.people:0)+', the arcology\'s '+(A?A.people:0)
+  +'; lanes '+['sa5o6dvjdv','slw9dufqfs','skz25tuq0w'].filter(id=>!!lane(id)).length+' of 3');
+ /* the faulty input has to be a town that genuinely has no countryside: it used to be Jabal, and Jabal having one is
+    what this change is. Solta's salt works is the honest example now. */
+ T.neg('a place with no countryside has no lane to one',x=>!!x,lane('s0zgu7u6yb'),lane('sa5o6dvjdv'));}
 // ---- the north road's arcology is a place whose NAME is unknown, not a place whose site is unknown: Arcbeam left on
 //      2026-11-25 and its census, its market and its road stayed behind (bowl-tune.js's header)
 {const A=BOWL_TUNE.places.find(p=>p.id==='skz25tuq0w');

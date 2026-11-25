@@ -370,10 +370,39 @@ no grain source anywhere in the province** — its 3,000 t a year has to come fr
 That is not a fault in S2; it *is* S2. A Dasri capital on the Bowl's floor that cannot feed itself is why the Train of
 Jabal exists, why its home mattering is the step's point, and why the Bowl had to be joined rather than run on its own.
 `test-bowl.js` asserts the shortfall with its numbers, so the day someone balances the Bowl by accident, the check says
-so. **One question for the owner: should Jabal have a hinterland too?** Mantis and the arcology got theirs because the
-owner named them; Jabal's was never put. If it should, the shape is already written (`T.places[].ring`) and the Bowl's
-grain gap closes; if it should not, Jabal eats Xanadu's bread for good, which is a sharper dependency and arguably the
-better story.
+so. **ANSWERED (the owner, 2026-11-25): "jabal should have a hinterland and be supported by Dasri bowl nomads."** Both
+halves are built, and they are different kinds of thing.
+
+**Jabal's hinterland** is a `ring` of **9,500** at 200 people an actor, like Mantis's and the arcology's and the largest
+of the three because Jabal is the capital: the Sheikhdom's irrigated land on the wadi fans above the salt, growing
+grain, dates, hides, meat, dairy, wool and timber. With it the province's grain arithmetic closes — **14,700 t grown
+against 12,523 t eaten**, where before it was 15 % short — and the three rings' herds now cover the Bowl's meat and
+milk, which the diets gained with them (a Dasri capital eats its nomads' meat, so `city`, `town`, `works` and `village`
+all carry `meat` and `dairy` now, and `meat`, `dairy`, `beasts` and `wool` are goods).
+
+**The Dasri Bowl nomads are not a settlement with a census; they are bands that move**, on `core/camp` (`KCAMP`), as
+Pinnacle Rock's eighteen Beast Rider bands are. **Four bands of 58 to 67** — the Bani Ghubar, Sabkha, Rakhm and Thalj,
+**249 people** — range the wadi fans and grazing margins 40 to 120 km out, each a settlement of its own in the valley so
+that core/camp's hand-over has somewhere to land its stock, and each with a `home.<band>` road three or four days in to
+Jabal. Their tents are the Tents kit's **`desert` dress** through `KCAMP.tentProgram` (black goat-hair, the chief's
+large, a council marquee, a smith's and a tanner's), so no new culture row was written.
+
+**What they are for is not bulk food, and that is the good part.** Four bands of sixty cannot feed a city of 15,000: the
+rings carry the province's meat and milk. The bands' distinctive trade is **BEASTS** — 3,360 head of stock and **67
+pack beasts a year**, which is what the Train of Jabal runs on. So the Dasri capital's caravan arm is mounted on beasts
+its own nomads breed, a bad year in the grazing is a bad year on the salt road, and `T.rivals`' quarrel between the
+Train and Mantis's houses gains a supply side as well as a price side. Beside the beasts they sell hides, wool and the
+herds' surplus, and they buy their bread, salt and tea at Jabal, which is the trade.
+
+**One thing is honestly wrong and recorded rather than papered over.** `KCAMP.tentProgram`'s generic `assign` deals a
+**forager's** role mix — about fourteen hunters and eight gatherers to one herder in a band of sixty — which is the
+Beast Riders' shape, not a herding people's. The bands' economy therefore sizes its crews off the band's **adults**
+rather than off `role === 'herder'`, and **a Dasri herder row in `core/camp` is owed**, as `11-camp-coyote.js` is for
+the coyote-herders. The census's pop, adults, children, elders and mounts are all sound and are what the economy uses.
+
+**What the Bowl still cannot grow is tea** — not a leaf of it, for 106 t a year eaten — and that stays Xanadu's to
+bring. `test-bowl.js`'s check that used to record the grain gap now records this one, which is the dependency that is
+real rather than the one the owner has just closed.
 
 **Five trade roads inside the Bowl** (`BOWL_TUNE.trade`), each between two places the tune declares, so they run in the
 standalone valley as well as in the join, and each measured off the places' own positions at 30 km a day and 1.25 of
@@ -597,6 +626,29 @@ frame.
 **The rule, as ever** (CLAUDE.md): a change to `core/simulation` keeps Voth's stocks proof, `test-sim.js` and the
 baseline unchanged unless it is meant to move them. Every trade-code change C1 and C2 needed was made inert where
 unused, and the same discipline holds for the escort cut, the pressure number and `SIM.outlaws`.
+
+### 6b. The salt: a plan expectation that turned out backwards (2026-11-25)
+
+Section 6's table said S4 would show *"Xanadu's salt shortfall narrows but does not close"*. **Measured, it does
+neither.** Over 120 days the Sultanate alone is short **nothing at all**, and with the three tunes joined it is short
+**10.1 t** — about **3 %** of the 336 t it eats in that time — spread over 116 settlements.
+
+**The reason is worth more than the expectation was.** `CATCH_TUNE.join` **removes Xanadu's four Catch gateway roads**
+(`trade.gate.iziz` and its three siblings) and puts the five groups' **caravan rounds** in their place. A gateway road
+delivered continuously; a caravan round of 133 days arrives in batches. So the far ends of Xanadu's own distribution run
+dry between arrivals, and the shortfall is **locatable rather than diffuse**: the worst single one is **Strongbow
+itself at 2.81 t**, the gateway where the Catch's salt lands, and the rest are ring villages and hamlets of 145 to 290
+people at the end of long chains (`ks.ring.kanal`, `ks.ring.mil`, `geo.oilfield`, Qiblai's farm hamlets) at 0.07 to
+0.14 t each.
+
+That is the join trading a convenient fiction for a lumpy truth, and it is the right trade: caravans *do* arrive in
+batches. The check now asserts the shape of the real answer — joined, the shortfall is **under 5 % of the Sultanate's
+appetite and concentrated at the gateway** — and a second one that Strongbow still imports several times what it lacks,
+so the supply is working and only its timing is coarse.
+
+**If the owner wants it smoothed**, the lever is the caravans' stagger rather than their number: five groups' rounds
+arriving on five different phases would flatten the gaps without inventing a continuous road. That is a tuning
+question, not a bug, and it is not done.
 
 ### 6a. What S4 found, and the one line of code it needed (2026-11-25)
 

@@ -14,6 +14,9 @@ const ROOT=path.join(__dirname,'..','..','..'),rd=p=>fs.readFileSync(path.join(R
 const load=()=>{(0,eval)(rd('core/clock/20-core-clock.js'));
  fs.readdirSync(path.join(ROOT,'core','simulation')).filter(f=>/^77-sim-.*\.js$/.test(f)).sort().forEach(f=>(0,eval)(rd('core/simulation/'+f)));
  (0,eval)(rd('core/region/00-region-core.js'));const H={TUNE:{sim:{}}};KREGION.use(H);(0,eval)(rd('core/region/50-region-valley.js'));
+ (0,eval)(rd('core/rand/08-core-rand.js'));
+ fs.readdirSync(path.join(ROOT,'core','space')).filter(f=>/^\d.*\.js$/.test(f)).sort().forEach(f=>(0,eval)(rd('core/space/'+f)));
+ fs.readdirSync(path.join(ROOT,'core','camp')).filter(f=>/^\d/.test(f)).sort().forEach(f=>(0,eval)(rd('core/camp/'+f)));
  (0,eval)(rd('core/region/data/catch-tune.js'));(0,eval)(rd('core/region/data/bowl-tune.js'));return H;};
 const PLAN=JSON.parse(rd('openworld/xanadu-oidong-highrift/plan/sites.json'));
 const t=n=>(n/1000).toFixed(1)+' t';
