@@ -1292,6 +1292,10 @@
    "bytes": 2624105,
    "sha256": "1c4d9927d492e58f312055ecad5ed97d3753670a0cfb04802981d1f661d03ff6"
   },
+  "kits/arcoforte/dist/arcoforte.html": {
+   "bytes": 2428126,
+   "sha256": "1e4b356c2040cf207d2cfcbf93f5c49186324d846bfc82f22c6422d8895b4ef7"
+  },
   "kits/ash-nomads/dist/ash-nomads.html": {
    "bytes": 19035333,
    "sha256": "7ee92af99c76cfad101519a3e72e968a1e497d1e24dff056419fbfa3999730f2"
