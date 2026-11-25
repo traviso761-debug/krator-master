@@ -261,6 +261,79 @@ happens to stand by a road: if the gorge is carved across the north road's line,
 that way**, and the Ancients' 30 m highway over the Godsgate has a reason to pass through it. That is the version worth
 building, and it is the reason to wait for B3 rather than pick a pixel now.
 
+## 7b. The planet-wide search: where Arcbeam *does* fit (2026-11-25)
+
+The owner, 2026-11-25: *"is there a good site somewhere in the desert, badlands, or any other region where arcbeam would
+fit? i might well decide to move it where it fits the terrain and place a different arcology in its current spot."*
+
+Searched with **`openworld/catch-bowl/tools/bridge_sites.py`** (read-only, numpy and PIL only): every cell of the 5.1
+canvas, four axes, three half-widths, scored for **fit rather than size** — depth near 400 m, span near 3.4 km, rims
+level with each other, plateau beyond — then re-ranked by how far the trench **runs**, because a bridge only earns its
+keep where going round costs real distance. Rerun it for any region: `--region "e badlands"`.
+
+### The one thing the search settled first
+
+**Almost every "400 m trench with level rims" on the planet is a 12-16 km valley, not a gorge.** The acid test is to
+re-measure each candidate at **Arcbeam's own 4 km span**, and nearly all of them collapse:
+
+| Candidate | Region | At 12-16 km | **At 4 km** |
+|---|---|---|---|
+| px 1221,844 | sedesert / Nomad Country | 443-489 m, rims 25-35 m apart | **1-84 m** |
+| px 466,797 | NW lowlands / Eternal State | 430 m, rims **2 m** apart, 58 km of trench | 126 m |
+| px 937,418 | Korona / NE, 13 km from Silkhead | 396 m, 54 km of trench | 19-76 m |
+| px 1189,726 | sedesert, 66 km of trench | 320-427 m, rims **0 m** apart | 5-39 m |
+| px 1359,940 | **e badlands**, 10 km from Quintagon | 392-413 m, rims **5 m** apart, 38 km of trench | **12-43 m** |
+
+That is not bad luck, it is arithmetic: a cell is 2 km, so a trench that reads 400 m deep at **±1 cell** has to be a real
+step in the land at the model's own resolution. Read 6 or 8 cells out and you are measuring the flank of a wide valley,
+not a canyon. **Only one kind of country passes at ±1 cell: a plateau cut by canyons** — which is what badlands *are*.
+
+### The answer: the S Outlands' dissected plateau, on the great chasm's western rim
+
+**px 1630-1698 × 760-829 — 136 × 138 km of it.**
+
+| | |
+|---|---|
+| Cells carrying Arcbeam's cross-section at its own 4 km span | **224** |
+| Their depth | 302 to 595 m, **median 398 m** — against the target's 400 |
+| Rims level to | 1-19 m at the best of them (px 1656,802: 390 m, rims 1 m apart; px 1664,803: 389 m, 19 m apart) |
+| It holds across widths | px 1664,803 reads **389 / 384 / 376 m at 4, 8 and 12 km**, rims 19 / 33 / 7 m apart — a flat-floored gorge in a plateau, which is exactly the target's "gorge floor, a plateau on both rims" |
+| The plateau | 2,703 m median, rising to 7,066 m at its edges |
+| Climate | **63 mm of rain** — true badlands, the driest of every candidate |
+| Regions | **`S Outlands`**, partly **`great chasm`**; the kits `biomes/outlands` and `biomes/greatchasm` both exist |
+
+**Its one cost: it is empty.** The nearest place is **Peak Coyote Plume-Camp (a town) 205 km** away, then Trickster's
+House — itself **a ruined arcology** — 417 km. So a bridge there bridges nothing anyone currently uses.
+
+*Judgement:* that cost may be the point. The owner is willing to **put a different arcology in Arcbeam's present spot**,
+which frees Arcbeam to go somewhere remote; the Outlands already carry a ruined arcology, so arcologies out there are
+canon; and **a bridge city standing alone on the rim of the great chasm, in 63 mm of rain, is a stronger image than one
+beside a road** — the Ancients built it because the gorge was there, and whatever route it served is gone. If the owner
+would rather it still served someone, the honest second choice is **Korona / NE (px 937,418)**, 13 km from Silkhead and
+32 km from a Korona village, whose own lore is "a crazy quilt of small plateau, depressions and microclimates" — but its
+gorge would have to be **carved**, because at 4 km span it is only 19-76 m deep.
+
+### What moving it costs this region, and what the replacement inherits
+
+Arcbeam currently carries **10,000 people and 6,000 in its hinterland** on `BOWL_TUNE`, and it is the Iziz road's one
+Imperial place between Iziz and Parabola. If it leaves:
+
+- **the census and the role stay** — they belong to the *place on the road*, not to the name, so whatever arcology takes
+  px 1016,1058 inherits 10,000 + 6,000, the market the caravans trade at, and the highway running past;
+- **the terrain there suits a different kind of arcology**: 2,119 m of gentle upland at 11 m/km, which is a plateau city
+  or one of the Soleri dam cities' kin (`LORE.md` §3.1 lists the arcology types), **not** a bridge;
+- **`kits/ancients`** has targets for several (`arcube`, `arcpile`, `arcoindian`, `lozenge`, `quintagon`, `ring`,
+  `wheel`, `spire`, `crescent`, `hexahedron`), so the swap needs no new kit — only a choice;
+- **`bowl-tune.js` needs one edit**: the place's name and `site` field. Its numbers do not move.
+
+### The three questions this leaves
+
+1. **Does Arcbeam move to the S Outlands' plateau** (terrain-perfect, empty, 205 km from anyone) — or to Korona
+   (people, but the gorge is carved) — or stay and have its gorge carved on the north road (`section 7a`)?
+2. **If it moves, which arcology takes px 1016,1058?** It inherits 10,000 + 6,000 and a market on the Iziz road.
+3. **If it moves, does it leave this region's cut entirely?** px 1664,803 is 1,300 km east of the Bowl and in no
+   polygon this region takes, so Arcbeam would become another region's site and `BOWL_TUNE` would lose it.
+
 ## 8. The two salt works
 
 The owner, 2026-11-16: the Train of Jabal works **both**. They are the reason the Catch matters to anyone.
