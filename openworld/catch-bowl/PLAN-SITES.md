@@ -417,6 +417,30 @@ The S Outlands wins on raw geometry and on being desert; **1120,190 wins on ever
 something.** If the owner wants Arcbeam in the badlands for its own sake, 7b stands; if they want it to be *a useful
 stop on the Shell-Arachnoid-Ria route*, this is the place.
 
+### SETTLED, 2026-11-25
+
+The owner: *"sound great i agree. we can record this decision and flesh out arcbeams new details later; for now i am
+having gemini make a new model and we can treat the model as having an arcology TBD of about 10k + hinterlands."*
+
+So, decided:
+
+1. **Arcbeam moves to px 1120,190**, in the arachnoid canyons 10 km off the Shell-Silkhead-Ria lifeline, and the road
+   bends to cross at it. Section 7b (the S Outlands plateau) is **not taken**; it stays on the page as the runner-up.
+2. **Its details are deferred.** The gorge's carve, the 70 m of deepening (or the drop of Arcbeam's rims from 400 m to
+   about 330 m), the road's dog-leg, the city's own re-dress for a wet canyon instead of a dry one, and its place in
+   whichever region holds px 1120,190 are all **later sessions' work**. Nothing here commits a number beyond the site.
+3. **Arcbeam leaves this region.** It is 2,000 km from the Bowl, so it is out of `BOWL_TUNE`, out of this region's cut,
+   and out of `MAP-EDITS.md`'s queue. `kits/ancients/targets/arcbeam` is untouched: the kit does not care where it stands.
+4. **px 1016,1058 keeps the settlement**, as *an arcology TBD of about 10k + hinterlands*. The census (10,000 with 6,000
+   in its ring), the market the caravans trade at, and its role as the largest place on the north road after Jabal all
+   belong to the **place**, not to the name, so they stay exactly as they were. Only the name is unknown, and the owner
+   is having a new model made that will give it one. `BOWL_TUNE` marks it `tbd:true`; the id `skz25tuq0w` is Arcbeam's
+   old one, standing in until the new model issues one.
+
+**One thing the new model changes for everything else on this page**: every elevation, span, grade and rim-level figure
+in these plans — this section's 332 m, section 7a's survey, `PLAN-TERRAIN.md`'s seventeen pitfalls, and all eleven
+queued map edits — was measured against **scale model 5.1**. A new model is a new ground. See `PLAN.md` section 13.
+
 ## 8. The two salt works
 
 The owner, 2026-11-16: the Train of Jabal works **both**. They are the reason the Catch matters to anyone.

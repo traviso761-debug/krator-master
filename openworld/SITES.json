@@ -1181,14 +1181,14 @@
    "notes": "The Bowl's oasis town on the south-west shore of its salt lake, in the one green pocket of monsoon forest on a hot-desert shore (-978 m, 1,553 mm). An Iziz holding that grew under Yuni's influence and was taken over by Izani merchant houses, so three fabrics on one street: kits/dasri's village register, kits/yuni, and the Iziz Vernacular (the owner, 2026-11-24: 'a combo of the Dasri kit and Iziz vernacular'). biomes/sedesert's mantis station already draws its edge."
   },
   "skz25tuq0w": {
-   "name": "Arcbeam",
+   "name": "An arcology TBD (the north road)",
    "type": "arcology",
    "region": "catch-bowl",
    "reach_km": 20,
    "culture": "iziz",
    "page": null,
    "state": "planned",
-   "notes": "An Iziz arcology on the north road at 2,119 m on gentle upland. NOT the Bowl arcology, and no Ancient tunnel runs from it (the owner, 2026-11-24: 'There is no tunnel ti arcbeam but there is a highway'). A marker and massing; kits/ancients has an arcbeam target."
+   "notes": "The Iziz arcology on the north road at 2,119 m on gentle upland, 10,000 people with 6,000 in its hinterland. NOT the Bowl arcology (Parabola is), and no Ancient tunnel runs from it (the owner, 2026-11-24: 'There is no tunnel ti arcbeam but there is a highway'). This was ARCBEAM until 2026-11-25, when the owner moved Arcbeam to a real gorge at px 1120,190 off the Shell-Arachnoid-Ria route (openworld/catch-bowl/PLAN-SITES.md section 7c) and ruled: 'we can treat the model as having an arcology TBD of about 10k + hinterlands'. The census, the market and the road's role stay with the place; only the name waits on the new scale model, which will also reissue this id. kits/ancients still has an arcbeam target, for the gorge Arcbeam went to."
   },
   "scyeauyek7": {
    "name": "Parabola",

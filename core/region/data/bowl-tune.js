@@ -25,13 +25,18 @@
 //     15,000 in the town with 9,000 more in the green pocket's gardens round it, it can carry the programme the owner's
 //     lore gives it -- three fabrics on one street, a merchant tower, a domed shrine, the walled date and fig gardens and
 //     the frankincense trade (openworld/catch-bowl/PLAN-SITES.md section 4).
-//   ARCBEAM is "10k + hinterlands", so Gemini's number stands with a countryside added. It is therefore NOT a marker to
-//     pass: at 10,000 with 6,000 round it, it is the largest place on the north road after Jabal and a market the
-//     caravans trade at, and PLAN-SITES.md's "a marker, massing out to 30 km" is superseded.
-//   Its SITE, though, is still open: the owner wants Arcbeam "in an actual canyon that fits the arcology model,
-//     preferably someplace it is actually helpful as a bridge", and there is no such canyon inside this region's cut --
-//     openworld/catch-bowl/PLAN-SITES.md section 7a has the survey and the three ways out. The census below does not
-//     depend on where it stands, so the tune runs either way; `site:'open'` marks it.
+//   THE ARCOLOGY ON THE NORTH ROAD is "10k + hinterlands", so Gemini's number stands with a countryside added. It is
+//     therefore NOT a marker to pass: at 10,000 with 6,000 round it, it is the largest place on the north road after
+//     Jabal and a market the caravans trade at, and PLAN-SITES.md's "a marker, massing out to 30 km" is superseded.
+//   ARCBEAM ITSELF HAS MOVED (the owner, 2026-11-25: "sound great i agree"). It goes to px 1120,190, in the arachnoid
+//     canyons 10 km off the Shell-Silkhead-Ria lifeline, where the model gives 332 m of trench at Arcbeam's own 4 km
+//     span with rims 1 m apart on all four axes -- the best bridge-city site on the planet, and the one place where the
+//     lore already wants a gorge (the Web-Cleaver River saws through the Arachnoid ring-dikes). The survey is
+//     openworld/catch-bowl/PLAN-SITES.md section 7c. That is 2,000 km from the Bowl, so Arcbeam leaves this tune.
+//   WHAT STANDS AT px 1016,1058 INSTEAD is "an arcology TBD of about 10k + hinterlands" (the owner, 2026-11-25), who is
+//     having a new model made. The census, the market and the road's role belong to THE PLACE rather than to the name,
+//     so they stay exactly as they were and only the name is unknown. `tbd:true` marks it, and the id below is
+//     Arcbeam's old one standing in until the new model issues one for whoever is there.
 // THE HINTERLANDS. A town's countryside is a settlement of its own at a coarser scale, as XAN_TUNE's countrysides are
 // (its towns at 50 people an actor, its countrysides at 200): `ring` on a place makes `<id>.ring`, which farms and sends
 // its make down to the town, and the town feeds it what it does not grow. Only Mantis and Arcbeam have one; Jabal's is
@@ -69,7 +74,7 @@ T.places=[
   ring:{people:9000,scale:200,make:{grain:5400000,dates:1600000,figs:700000,hides:160000,timber:90000},season:{dates:'monsoon'}}},
  {id:'s0zgu7u6yb',name:'Solta, the Train of Jabal\'s Bowl salt works by the great salt lake',faction:'train',px:1169,py:1150,people:400,kind:'works',
   well:[60000,20],pans:{salt:900000,gypsum:400000}},
- {id:'skz25tuq0w',name:'Arcbeam, the bridge city: the Iziz arcology on the north road (its canyon site is open)',faction:'iziz',px:1016,py:1058,people:10000,kind:'city',site:'open',
+ {id:'skz25tuq0w',name:'An arcology TBD: the Iziz arcology on the north road (Arcbeam moved to the arachnoid canyons, 2026-11-25)',faction:'iziz',px:1016,py:1058,people:10000,kind:'city',tbd:true,
   well:[1500000,30],make:{alloy:30000,cells:1200,tools:260000,brick:400000,cloth:50000},salvageYears:80,repairs:true,serai:[250000,40000],
   ring:{people:6000,scale:200,make:{grain:3600000,hides:140000,timber:120000}}},
  {id:'scyeauyek7',name:'Parabola, the Bowl arcology and the north road\'s mustering ground',faction:'iziz',px:970,py:1186,people:450,kind:'ruin',
@@ -79,7 +84,7 @@ T.places=[
 /* the two census rows that were open, with the owner's ruling of 2026-11-24, so a test can see that they were settled
    and how (and so nobody re-opens them from Gemini's file) */
 T.ruled=[{ref:'(a)',id:'skz25tuq0w',was:10000,now:10000,ring:6000,
-  owner:'"arcbeam can be 10k + hinterlands"; its canyon site stays open (T.places site:\'open\')'},
+  owner:'"arcbeam can be 10k + hinterlands"; then 2026-11-25, Arcbeam moved to px 1120,190 on the Shell-Arachnoid-Ria route and "we can treat the model as having an arcology TBD of about 10k + hinterlands" here (T.places tbd:true)'},
  {ref:'(b)',id:'slw9dufqfs',was:300,now:15000,ring:9000,
   owner:'"mantis should be a lot bigger than 300, maybe 15000 + hinterlands"'}];
 T.factions=[{id:'jabal',name:'The Jabal Sheikhdom (the Dasri\'s Bowl capital)'},

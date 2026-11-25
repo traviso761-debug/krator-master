@@ -127,7 +127,7 @@ someone else, move the polygon, not the line.
 |---|---|---|---|---|---|---|
 | Jabal | `sa5o6dvjdv` | 1225,1149 | the Bowl | city | 30 km | the Dasri's Bowl capital, -1,206 m |
 | Mantis | `slw9dufqfs` | 1113,1164 | the Bowl | town | 25 km | the green pocket, an Iziz holding |
-| Arcbeam | `skz25tuq0w` | 1016,1058 | the Bowl | arcology | 20 km | an Iziz arcology on the north road; **not** the Bowl arcology, and no tunnel runs from it |
+| An arcology TBD | `skz25tuq0w` | 1016,1058 | the Bowl | arcology | 20 km | the Iziz arcology on the north road, 10,000 + 6,000: **Arcbeam moved out** on 2026-11-25 (`PLAN-SITES.md` section 7c, SETTLED) and only the **name** is unknown. **Not** the Bowl arcology, and no tunnel runs from it |
 | **Parabola** | `scyeauyek7` | 970,1186 | the Bowl | inhabited ruin / **the Bowl arcology** | 20 km | **the Bowl arcology the Ancient rail line reaches** (the owner, 2026-11-11 and 2026-11-24), and the north road's mustering ground |
 | **Esper** | `sq11desertw7` | 1042,1083 | the Bowl | village | 15 km | named by the owner, 2026-11-24 (the map still says "Izani-Dasri village (to be named)": a map edit) |
 | Solta | `s0zgu7u6yb` | 1169,1150 | the Bowl | works | 10 km | `"model": false` until the pin lands (P5) |
@@ -356,7 +356,7 @@ Each step ends with something checkable. The owner's items are in the right-hand
 | **B3** | **The trail kind** in `ROADS` and `KSITES` (core, shared with region 2's W2), then the north road **routed along the Godsgate's thalweg** (Parabola - the North Sill - Bāb al-Hawa - the Southern Narrows - Kolli), the floor's track oasis to oasis, and the Bowl's shore road Mantis - Solta - Jabal | each way on the land within 0.3 m, inside its own grade limit, with a negative control; nothing grows on a trail bed; the Godsgate's laid line stays on the thalweg (its grade under 8 % without switchbacks) | 4, 6 |
 | **B4** | **The oases, Esper and the Stalker Gate's waystations** (`core/hamlet`'s Dasri rows, `KSITES` `stops`): Kolli, Arfwai, Bitta, Lasso, Esper, the Brotherhood's five on the col, and the caravan halts (`KWCAMPS`) at each | every village whole, apart, on good ground, tagged, cleared of flora, its lane end on a way | 3, 6 |
 | **B5** | **The hazards** (`PLAN-HAZARDS.md`): the `KHAZ.provide` wiring (pressure, temperature, dust, alkali, visibility, the wind, the clock), then the placed kinds — the salt crusts, the rockfall chutes, the Stalkers | each ambient row biting where it should and not where it should not, with negatives; `KHAZ.sight` 57 m in the storm and under 12 m in a whiteout; `nav.avoid` refusing the 8 km ground; a walker on the crust breaks through and on the gravel does not | 2 |
-| **B6** | **The big sites**: Stair, Jabal, Mantis, the White Gills Hermitage, **Bāb al-Hawa**, **Ranger HQ**, Arcbeam, Parabola, the two salt works, and the five tarns as finds (`PLAN-SITES.md`) | each site drawn with its kit's own pieces near, massing boxes out to 30 km; `verify.py --assert` per site with a negative; Hub 01 drawn and never entered | 3, 6 |
+| **B6** | **The big sites**: Stair, Jabal, Mantis, the White Gills Hermitage, **Bāb al-Hawa**, **Ranger HQ**, the north road's arcology, Parabola, the two salt works, and the five tarns as finds (`PLAN-SITES.md`) | each site drawn with its kit's own pieces near, massing boxes out to 30 km; `verify.py --assert` per site with a negative; Hub 01 drawn and never entered | 3, 6 |
 | **B6a** | **The Twins crossing** (`PLAN-TWINS-CROSSING.md` W2-W6, now this region's: section 7): Route B's trail and five oases, Route A's tube spec migrated from region 2 and re-framed, the Hall, the Catch descents, the four traps | the tubes' own checks pass in this frame (a walker goes portal to portal, the ground opens only where the spec opens it); the trail's grade under its limit; both ways end `short` at the Vale portal and Strongbow | 4, 6 |
 | **B7** | **The setpieces** (`PLAN-SETPIECES.md`): Route B's five stops, Route A's insides with the Hall of the Tally-Marks first, the Catch's eight, and the Rangers' last cairn | every setpiece where its record puts it, on the ground, nothing floating (`KRUINS.watch` on the wrecks); nineteen shots with their frame times | 4 |
 | **B8** | **The bandits and the Stalkers** (`PLAN-RAIDS.md`): `SIM.outlaws`, `SIM.bounty`, BF-05 and BF-07 on the map, the Stalkers' buried pose and harpoon line | a caravan loses what the simulation says it loses; an ambush is drawn where the simulation put it | 5 |
@@ -376,7 +376,7 @@ tunes and a join, and it had outgrown a section here. In short:
 - `CATCH_TUNE` **runs today** (C0-C5 done, 16 places, 7 factions, the rounds, the tallies, the seasons, 29 checks).
 - It **gains the Godsgate's three stops** and the north road's four legs, where a caravanserai sells *survivable nights*
   rather than water — the one asymmetry that makes the pass an economy.
-- **`BOWL_TUNE`** brings Jabal (so the Train of Jabal stops being an off-map pool), Mantis, Solta, Arcbeam, Parabola and
+- **`BOWL_TUNE`** brings Jabal (so the Train of Jabal stops being an off-map pool), Mantis, Solta, the north road's arcology, Parabola and
   the unnamed village.
 - **`STALKER_TUNE`** is deliberately tiny: **Ranger HQ** (Yuni's Stalker-watch, which sells escort and Stalker salvage
   and posts the only bounty), **Hub 01** as a faction with no economy and one output — a hidden, capped pressure number
@@ -709,3 +709,80 @@ the region will draw *something* — but a province with breathable 1.08-1.30 at
 perpetual steam, 300 m basalt slots and foehn-warmed eastern descents is a kit's worth of country, and the waystation
 network will be walked. *Recommended:* cut and lay the trail now with `biomes/outlands` read in place, and note the kit
 as owed (as the Lāiṭwāl villages stand on bare ground until Opal Valley grows one).
+
+---
+
+## 13. A new scale model is being made (2026-11-25): what it touches, and what it does not
+
+The owner, 2026-11-25: *"for now i am having gemini make a new model and we can treat the model as having an arcology
+TBD of about 10k + hinterlands."* Every number in these plans was measured against **scale model 5.1** — its `h.png`,
+`wl.png`, `p.png` and `tm.png` on an 1821 x 1723 canvas at 2 km/px, its pin ids, and its `legacy_shift` (dx 272,
+dy 330). A new model is a new ground, so this section says plainly which of this work survives it untouched, which must
+be re-measured, and how.
+
+### What does NOT depend on the model
+
+Most of the session's output, as it happens. None of this is a measurement:
+
+- **Every census and sim ruling**: Mantis 15,000 + 9,000, the north road's arcology 10,000 + 6,000, Ranger HQ's 500 on
+  a salary and a cut, Bāb al-Hawa's 120 as a `serai`, the diet rows, the five caravan groups and their staggered
+  departures, the God-Bore and whiteout loss rules, `BOWL_TUNE`'s and `CATCH_TUNE`'s goods and recipes. These are
+  people, trade and calendar, not terrain. `core/region/tests/test-bowl.js` and `test-catch.js` keep passing on a new
+  model unless a *pin moves out of its biome*.
+- **The hazard design** (`PLAN-HAZARDS.md`): `KHAZ.provide`'s ambient kinds, `ATMOS.airLoad`, `ATMOS.gale`, the sight
+  and aim curves, the crust and night rules. Driven by fields and records, not by a particular height.
+- **The setpieces** (`PLAN-SETPIECES.md`): the Twins' two trails, every named stop's scene, the waystation network
+  through the Stalker Gate, Hub 01's three tiers of knowledge. These are authored places; they get *re-sited*, not
+  re-invented.
+- **The raids** (`PLAN-RAIDS.md`), the kit assignments (Mantis on the Dasri kit plus the Iziz Vernacular, Kimr, the
+  Gills), the lore corrections (the Parabola bore, Arcbeam's absent tunnel, the oases' keepers), the no-split-a-polygon
+  rule, the Godot-native decision and the lifted page cap.
+- **The decision to move Arcbeam** to a real gorge on the Shell-Silkhead-Ria route near Springhollows. The *reasoning*
+  stands on the lore (the Web-Cleaver saws through the Arachnoid ring-dikes) and on the route being recorded in four
+  places. Only **the px** is a 5.1 reading — see below.
+
+### What must be re-measured
+
+| What | Where it is written | Why the model moves it |
+|---|---|---|
+| The Catch's floor, its five sub-basins and the soda lake's 6,159 m spill | `PLAN-TERRAIN.md` §2-3 | straight off `h.png` |
+| The Godsgate's thalweg (2,284-3,739 m, median grade 1.1 %, saddle 3,620 m) and the two first-pass figures kept beside it | `PLAN-TERRAIN.md` header, §5 | a corridor reading, cell by cell |
+| The SE outer wall's 7,962 m median and 83 % over 6,500 m, and the x 1056 line where 5.1's data breaks | `PLAN-TERRAIN.md` §7, `MAP-EDITS.md` 4 | the whole case for the western rescale |
+| The five tarns' levels and Bāb al-Hawa's corrected px 1027,1258 at +3,590 m | `PLAN-TERRAIN.md` §7, `MAP-EDITS.md` 2 | both are thalweg/level readings |
+| Every route's grade, crossing and monotonic-climb finding | `PLAN-TERRAIN.md` §6, `PLAN-SITES.md` §7a | `survey.py` section `routes` |
+| **px 1120,190**: 332 m at a 4 km span, rims level to 1-9 m | `PLAN-SITES.md` §7c | the *site* of Arcbeam's gorge |
+| The S Outlands runner-up (389 m, 224 cells) | `PLAN-SITES.md` §7b | same search |
+| The region's box (1,280 x 1,052 km), its 751,000 km², `origin_px` [1233,1306] and the six polygons' vertices | `PLAN.md` §1, §3 | canvas and polygon geometry |
+| Sixteen site rows' px, and `reach_km_by` for the three sites two regions share | `openworld/SITES.json` | pins |
+| The oasis pins I corrected onto 5.1 (four were 75-209 km off) | `biomes/catch/src/50-biome-catch-species.js` | pins |
+| All eleven queued map edits | `MAP-EDITS.md`, `PLAN.md` §11 | see that file's own warning |
+
+**The ids are the sharper risk, not the heights.** `SITES.json`, both tunes and both tests key on 5.1 ids
+(`sa5o6dvjdv`, `slw9dufqfs`, `skz25tuq0w`, `scyeauyek7`, `sq11desertw7`, …). If the new model reissues them, those keys
+break at `load()` rather than drifting quietly, which is the good failure: `test-bowl.js` and `test-catch.js` name the
+missing id. A rename table from old id to new would make the migration a single pass; **worth asking for one** when the
+model lands.
+
+### How to re-measure: one run each
+
+Both survey tools read whatever the model's `data/` holds, which is why they were written as tools and not as a column
+of numbers in a document:
+
+```
+python3 openworld/catch-bowl/tools/survey.py              # pins, polygons, floor, basins, routes, walls, seow, union, drift
+python3 openworld/catch-bowl/tools/bridge_sites.py --top 20   # the planet-wide bridge-site search, re-ranked by trench run
+python3 tools/scale-model/cut_site.py catch-bowl --dry    # does the region still cut?
+node core/region/tests/test-bowl.js                       # do the six places still load? (~100 s)
+```
+
+Then: read `survey.py`'s output against `PLAN-TERRAIN.md`'s tables, correct what moved, re-check the seventeen pitfalls
+(**P1-P4, P8, P11, P13-P16 are terrain findings and may change; P5-P7, P9, P10, P12 and P17 are structural and will
+not**), re-rank `bridge_sites.py` for Arcbeam's px, and walk `MAP-EDITS.md` edit by edit.
+
+### The order this implies
+
+**Do not cut the region until the new model lands.** The cut is already blocked on three map edits (1, 2 and 4), and
+cutting against 5.1 and re-cutting against the new model is the whole of B0 done twice. Everything else can go on:
+the two spun-off sessions (the Gills and Stalker Gate kits; the re-siting work, which should now wait for the new model
+before applying its queue), the sim work (S2's `BOWL_TUNE.join`, S3-S5), the setpieces, the hazards, and the kits for
+Mantis. Those are the bulk of B1-B11, and none of them reads a height.

@@ -21,10 +21,13 @@ console.log('a year of the Bowl in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+Y.
  +Y.V.settlements.reduce((n,s)=>n+s.people,0)+' people at 1 actor to '+Y.V.scale);
 
 // ---- the places
-const ID={jabal:'sa5o6dvjdv',mantis:'slw9dufqfs',solta:'s0zgu7u6yb',arcbeam:'skz25tuq0w',parabola:'scyeauyek7',esper:'sq11desertw7'};
+/* `arco` was Arcbeam until 2026-11-25, when the owner moved Arcbeam to the arachnoid canyons and left "an arcology
+   TBD of about 10k + hinterlands" on the north road. The id is Arcbeam's old one, standing in until the new model
+   issues one (core/region/data/bowl-tune.js, its header) */
+const ID={jabal:'sa5o6dvjdv',mantis:'slw9dufqfs',solta:'s0zgu7u6yb',arco:'skz25tuq0w',parabola:'scyeauyek7',esper:'sq11desertw7'};
 {const want=Object.values(ID).concat(['slw9dufqfs.ring','skz25tuq0w.ring']),got=Y.S.order.slice().sort();
  const good=want.every(x=>got.indexOf(x)>=0);
- T.ok('S2: the Bowl\'s six places run, and Mantis\'s and Arcbeam\'s hinterlands with them -- eight settlements',good&&Y.S.order.length===8,
+ T.ok('S2: the Bowl\'s six places run, and Mantis\'s and the north road\'s arcology\'s hinterlands with them -- eight settlements',good&&Y.S.order.length===8,
   Y.V.settlements.map(s=>s.id.replace(/^s/,'')+' '+s.people).join(', '));
  T.neg('a tune missing a place does not pass for the whole Bowl',
   x=>x.length===8,want.slice(1),want);}
@@ -65,17 +68,25 @@ const ID={jabal:'sa5o6dvjdv',mantis:'slw9dufqfs',solta:'s0zgu7u6yb',arcbeam:'skz
 {const Rl=BOWL_TUNE.ruled,P=id=>BOWL_TUNE.places.find(q=>q.id===id);
  const matched=Rl.every(c=>{const q=P(c.id);return q&&q.people===c.now&&(c.ring?(q.ring&&q.ring.people===c.ring):true);});
  const noFlags=BOWL_TUNE.places.every(q=>q.pending===undefined);
- T.ok('S2: Mantis is 15,000 and Arcbeam 10,000, each with its hinterland, and no census row is pending any more',Rl.length===2&&matched&&noFlags,
+ T.ok('S2: Mantis is 15,000 and the north road\'s arcology 10,000, each with its hinterland, and no census row is pending any more',Rl.length===2&&matched&&noFlags,
   Rl.map(c=>c.ref+' '+c.id+': '+c.was+' -> '+c.now+' + '+c.ring+' in its ring').join('; '));
  T.neg('a place still carrying a pending flag is not a ruled census',
   x=>x.every(q=>q.pending===undefined),
   BOWL_TUNE.places.map(q=>q.id==='slw9dufqfs'?Object.assign({},q,{pending:'(b)'}):q),BOWL_TUNE.places);}
 // ---- the hinterlands: each ring is a settlement of its own at a coarser scale, sending its make down to its town
 {const ring=id=>Y.V.settlements.find(s=>s.id===id+'.ring'),lane=id=>Y.V.roads.find(r=>r.id==='lane.'+id);
- const M=ring('slwl')||ring('slw9dufqfs'),A=ring('skz25tuq0w');
+ const M=ring('slw9dufqfs'),A=ring('skz25tuq0w');
  const good=!!M&&!!A&&M.scale===200&&A.scale===200&&!!lane('slw9dufqfs')&&!!lane('skz25tuq0w')
   &&M.works.some(w=>w.out[0]==='dates')&&A.works.some(w=>w.out[0]==='grain');
- T.ok('S2: Mantis and Arcbeam each have a countryside of their own at 200 people an actor, with a lane carrying its make down to the town',good,
-  (M?'Mantis ring '+M.people+' ('+M.works.length+' works)':'no Mantis ring')+'; '+(A?'Arcbeam ring '+A.people+' ('+A.works.length+' works)':'no Arcbeam ring'));
+ T.ok('S2: Mantis and the north road\'s arcology each have a countryside of their own at 200 people an actor, with a lane carrying its make down to the town',good,
+  (M?'Mantis ring '+M.people+' ('+M.works.length+' works)':'no Mantis ring')+'; '+(A?'the arcology\'s ring '+A.people+' ('+A.works.length+' works)':'no arcology ring'));
  T.neg('a town with no countryside has no lane to one',x=>!!x,lane('sa5o6dvjdv'),lane('slw9dufqfs'));}
+// ---- the north road's arcology is a place whose NAME is unknown, not a place whose site is unknown: Arcbeam left on
+//      2026-11-25 and its census, its market and its road stayed behind (bowl-tune.js's header)
+{const A=BOWL_TUNE.places.find(p=>p.id==='skz25tuq0w');
+ const good=!!A&&A.tbd===true&&A.people===10000&&A.px===1016&&A.py===1058&&!!A.ring&&A.site===undefined;
+ T.ok('S2: the north road keeps its arcology\'s 10,000 and 6,000 at px 1016,1058 with only its name to be given',good,
+  A?'"'+A.name.split(':')[0]+'", '+A.people+' + '+A.ring.people+' at px '+A.px+','+A.py+', tbd '+A.tbd:'missing');
+ T.neg('a place still marked as having an open SITE is not one merely waiting for a name',
+  x=>x.tbd===true&&x.site===undefined,Object.assign({},A,{site:'open'}),A);}
 T.done();

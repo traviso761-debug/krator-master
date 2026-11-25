@@ -8,6 +8,22 @@ The region's `SITES.json` row and `BUDGETS.json` are written, and `python3 tools
 --dry` accepts all sixteen sites and all six polygons. So **the cut is blocked on edits 1, 2 and 4 only** — 3, 5, 6 and
 7 can ride later, and 5's two pins are carried as `"model": false` rows meanwhile.
 
+> ## Read this before applying any of them: a new model is being made (2026-11-25)
+>
+> The owner: *"i am having gemini make a new model."* **Every edit below is written against scale model 5.1** — its
+> pins, its ids, its heights, its 1821 x 1723 canvas and its `legacy_shift`. A new model may move a pin, reissue an id,
+> or already have done what an edit here asks for.
+>
+> So, when the new model lands: **re-check this queue against it before applying anything**, edit by edit. Each one
+> says what it is *for*, so the intent survives even where the numbers do not. Specifically — 1 may already be absent;
+> 2's corrected px (1027,1258) is a thalweg reading that must be re-measured; 4's x 1056 line is where *5.1's* data
+> breaks; 5's two pins may have landed; 6's and 7's are renames and types, which carry over as they are.
+>
+> The measurements themselves are re-runnable rather than re-derivable by hand: `openworld/catch-bowl/tools/survey.py`
+> (nine sections: pins, polygons, floor, basins, routes, walls, seow, union, drift) and `tools/bridge_sites.py` both
+> read whatever the model's `data/` holds, so they give the new figures in one run each. `PLAN.md` section 13 is the
+> full account of what the new model touches.
+
 | # | Edit | Why | Blocks the cut? |
 |---|---|---|---|
 | **1** | **Drop `sthetwins01`** ("The Twins", a fort at 1042,1525, polity "Twins Pass Wardenry") | Gemini's pin, dropped by the owner 2026-11-16 and confirmed 2026-11-24. It was dropped as `gem_twins_pass` in `SETT_DROPPED['5.1e14']` and re-added under the new id in the same batch | **yes**: the twins polygon is cut here, so the cut would place it |
@@ -18,17 +34,19 @@ The region's `SITES.json` row and `BUDGETS.json` are written, and `python3 tools
 | **6** | **Rename `sq11desertw7`** from "Izani-Dasri village (to be named)" to **Esper** | The owner, 2026-11-24 | no |
 | **7** | **Type `scyeauyek7` (Parabola) as the Bowl arcology**, add the ruined **Parabola-Stair bore** to the network layer (proposed id `rift.bowl.parabola-stair`), and drop every trace of an Arcbeam-Stair one | The owner, 2026-11-24: *"parabola is the arcology now. There is no tunnel ti arcbeam but there is a highway"*, and *"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."* The docs are already renamed (below) | no |
 
-## Queued later, and NOT yet ready: Arcbeam's gorge
+## WITHDRAWN from this queue: Arcbeam's gorge (2026-11-25)
 
-**Do not site this one yet.** The owner, 2026-11-24: Arcbeam wants *"an actual canyon that fits the arcology model,
-preferably someplace it is actually helpful as a bridge"*, and the survey found **no such canyon inside this region's
-cut** (`PLAN-SITES.md` section 7a: no named river on these roads runs two consecutive cells in a trench 250 m below
-level rims, and the roads themselves are monotonic climbs with no V-notch to span). So the gorge is to be **carved**, as
-the Godsgate's corridor and the five tarns were — but **it cannot be sited until `PLAN.md` B3 routes the north road**,
-because a bridge is only useful where the road crosses it. The sequence is: B3 lays the road and reports its tributary
-crossings; then one edit carves the gorge at the best of them and moves Arcbeam's pin onto its rim; its dimensions drop
-to about a **2 km span and 250 m rims** (the owner: *"we may need to tweak its dimensions"*), which leaves the
-megastructure's own geometry untouched because `AB_SITE` derives every face from the gorge's numbers.
+**This region no longer owes the model a gorge.** The owner moved Arcbeam out: *"sound great i agree"* to px
+**1120,190**, in the arachnoid canyons 10 km off the Shell-Silkhead-Ria lifeline, 2,000 km from the Bowl. That site
+already carries 332 m of trench at Arcbeam's own 4 km span with its rims level to 1-9 m on all four axes, so it needs
+no carve of the kind this entry was queueing — only about 70 m of deepening, or a drop of Arcbeam's rims from 400 m to
+330 m, and a 10 km bend in the road. `PLAN-SITES.md` section 7c (SETTLED) has the survey and the decision; the details
+are deferred to a later session, and they belong to whichever region holds px 1120,190, not to this one.
+
+**px 1016,1058 keeps its settlement**, as *"an arcology TBD of about 10k + hinterlands"* (the owner, same message). The
+only thing the model owes it is a **name**, and the new model is expected to give one. Until then `SITES.json` reads
+"An arcology TBD (the north road)" on Arcbeam's old id and `BOWL_TUNE` marks it `tbd:true`, with its 10,000 + 6,000, its
+market and its place on the north road unchanged — those belong to the place, not to the name.
 
 ## What this session already did, so the queue need not
 
