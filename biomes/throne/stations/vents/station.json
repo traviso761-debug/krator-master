@@ -21,7 +21,8 @@
   "50-core-water-draw.js",
   "51-core-water-kinds.js",
   "geyser/52-core-water-geyser.js",
-  "geyser/52b-core-water-geyser-draw.js"
+  "geyser/52b-core-water-geyser-draw.js",
+  "ext/54-core-water-kinds-ext.js"
  ],
  "terrain": [
   "39-core-cavern.js",

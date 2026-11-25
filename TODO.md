@@ -99,8 +99,10 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
     from the ground at the trunk (`biomes/hyperjungle/src/60-biome-hyperjungle-floor.js`, the hero boles' moss). Seat each skirt on the ground
     under it instead, then drop the exemption (`stations/kipuka/99-host-take.js`, `HCHK.onButtress`). Changes every page that reads the
     hyperjungle kit.
-  - **The owner's calls, answered yes (2026-11-24: "both decisions seem good to me"; the Throne session builds them):** `brine` in the vents' pools (would replace the pools' heat-graded blues) and `WATER.ice` on the
-    glacier's lake (would freeze the lake its icebergs float in) (`biomes/throne/PLAN.md`, "The row's water kinds").
+  - **core/water: the pan's `levelAt`, and the glacier's hand-set line.** `WATER.fields` (ext/60) reads every surface's `levelAt`.
+    Ice has had one in core since Stage 8 B5 (91f152c34, `ext/54`: `S.levelAt=()=>S.level`), so the Throne's glacier no longer needs to
+    set it by hand (`stations/glacier/89w-host-water.js`): drop that line. The pan still has none (its water is only its film): give it one,
+    or let `fields` skip it, with a test.
 - **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
   `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
   `kits/xanadu/src/87k1-xa-lake-rooms.js` join `kits/interiors/sets/xanadu.js` when their pieces join the kit's src/; every page
