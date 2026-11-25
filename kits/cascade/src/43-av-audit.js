@@ -33,26 +33,51 @@ var AV = typeof AV !== 'undefined' ? AV : {};
       });
     });
 
-    // 3. Portals: 3 tailrace canal portals + 5 street portals + 1 elevated headrace aqueduct portal
+    // 3. Portals: 3 tailrace/basin canal portals + 5 street portals (+ 1 elevated headrace aqueduct portal in refurbished)
+    var isRep = P.state === 'refurbished';
     var canalP = (P.portals || []).filter(function (q) { return q.kind === 'canal'; });
     var aqP = (P.portals || []).filter(function (q) { return q.kind === 'aqueduct'; });
     if (canalP.length !== 3) fails.push('expected 3 canal portals (E, S, W), got ' + canalP.length);
-    if (aqP.length !== 1) fails.push('expected 1 elevated south aqueduct portal, got ' + aqP.length);
+    if (isRep && aqP.length !== 1) fails.push('expected 1 elevated south aqueduct portal in refurbished, got ' + aqP.length);
+    if (!isRep && aqP.length !== 0) fails.push('unexpected aqueduct portal on non-refurbished state ' + P.state);
 
-    // 3b. Hydropowered Central Industrial Hall machinery & hydraulic head audit
-    var HH = P.hydroHall;
-    if (!HH || !HH.aqueduct) {
-      fails.push('missing hydroHall or elevated headrace aqueduct');
+    // 3b. Ancient Prime Toroidal Dynamo & Superconducting Power-Spine Relics (all 3 states)
+    var AR = P.ancientRelics;
+    if (!AR || !AR.primeDynamo) {
+      fails.push('missing ancientRelics or primeDynamo');
     } else {
-      if (!(HH.aqueduct.yWater >= 24.0 && HH.aqueduct.yWater <= 45.0)) {
-        fails.push('aqueduct water head ' + HH.aqueduct.yWater + ' outside 24..45 m');
+      var pd = AR.primeDynamo;
+      if (!(pd.torusR >= 5.0 && pd.yTop <= 32.0)) fails.push('ancient primeDynamo dimensions out of bounds');
+      if (!AR.busTrunks || AR.busTrunks.length !== 4) fails.push('expected 4 ancient column-tower busTrunks');
+      if (!AR.capacitors || AR.capacitors.length !== 6) fails.push('expected 6 ancient harmonic capacitor monoliths');
+      if (isRep && (!pd.stabilized || !AR.statorCradle)) fails.push('refurbished state must stabilize failed Ancient dynamo and cradle unbolted stator arc');
+    }
+
+    // 3c. Hydropower Replacement Setup (present in refurbished to replace the failed Ancient dynamo; absent in intact/ruined)
+    var HH = P.hydroHall;
+    if (isRep) {
+      if (!HH || !HH.aqueduct) {
+        fails.push('missing hydroHall or elevated headrace aqueduct in refurbished state');
+      } else {
+        if (!(HH.aqueduct.yWater >= 24.0 && HH.aqueduct.yWater <= 45.0)) {
+          fails.push('aqueduct water head ' + HH.aqueduct.yWater + ' outside 24..45 m');
+        }
+        if (HH.replacesRelic !== 'av.relic.prime_dynamo') fails.push('hydroHall must reference replaced Ancient prime_dynamo');
+        if (!HH.cataracts || HH.cataracts.length < 3) fails.push('expected 3 central cataracts/chutes');
+        if (!HH.wheels || HH.wheels.length < 4) fails.push('expected 4 overshot waterwheels in central hall');
+        if (!HH.gearTowers || HH.gearTowers.length < 4) fails.push('expected 4 bevel-gear drive-shaft towers');
+        if (!HH.dynamos || HH.dynamos.length < 4) fails.push('expected 4 scroll-case hydro-dynamos');
+        if (!HH.tripHammers || HH.tripHammers.length < 2) fails.push('expected 2 water-powered trip-hammers');
+        if (!HH.cupolas || HH.cupolas.length < 2) fails.push('expected 2 blast cupola smelting furnaces');
+        /* Verify overhead north line-shaft clears the Failed Ancient Prime Dynamo envelope (|z - pd.z| >= 6.0 m) */
+        (HH.lineShafts || []).forEach(function (ls) {
+          if (ls.axis === 'x' && AR && AR.primeDynamo && Math.abs(ls.z - AR.primeDynamo.z) < 6.0) {
+            fails.push(ls.id + ' collides with Ancient Prime Dynamo at z=' + AR.primeDynamo.z);
+          }
+        });
       }
-      if (!HH.cataracts || HH.cataracts.length < 3) fails.push('expected 3 central cataracts/chutes');
-      if (!HH.wheels || HH.wheels.length < 4) fails.push('expected 4 overshot waterwheels in central hall');
-      if (!HH.gearTowers || HH.gearTowers.length < 4) fails.push('expected 4 bevel-gear drive-shaft towers');
-      if (!HH.dynamos || HH.dynamos.length < 4) fails.push('expected 4 scroll-case hydro-dynamos');
-      if (!HH.tripHammers || HH.tripHammers.length < 2) fails.push('expected 2 water-powered trip-hammers');
-      if (!HH.cupolas || HH.cupolas.length < 2) fails.push('expected 2 blast cupola smelting furnaces');
+    } else if (HH !== null) {
+      fails.push('non-refurbished state ' + P.state + ' should not carry Republican hydroHall retrofit');
     }
 
     // 4. Interior decks & rooms (when AI is available)
@@ -75,8 +100,8 @@ var AV = typeof AV !== 'undefined' ? AV : {};
             if (dk.k >= 1 && dk.k <= 10 && Math.abs(c[0]) < D.WELL_HALF - 4.0 && Math.abs(c[1]) < D.WELL_HALF - 4.0) {
               fails.push(R.id + ': intrudes into central industrial cataract / light well');
             }
-            // South Headrace Aqueduct clearance on decks L1..L3 (y = 6..38 m, |x| < 9.5 m, z > 16 m)
-            if (dk.k >= 1 && dk.k <= 3 && Math.abs(c[0]) < 9.5 && c[1] > 16.0) {
+            // South Headrace Aqueduct clearance on decks L1..L3 in refurbished state (y = 6..38 m, |x| < 9.5 m, z > 16 m)
+            if (isRep && dk.k >= 1 && dk.k <= 3 && Math.abs(c[0]) < 9.5 && c[1] > 16.0) {
               fails.push(R.id + ': blocks South Headrace Aqueduct corridor');
             }
           }

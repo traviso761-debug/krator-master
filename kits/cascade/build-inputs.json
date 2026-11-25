@@ -94,20 +94,20 @@
     "kits/cascade/PORT.md": "7419852032d50fadc1dee1544b2b60597bc72ed935817234990a57818f90892f",
     "kits/cascade/build.py": "a72ca8193c22f04b647edaa2de3d0cc7162bc5c7650d7bec297934a3a8439cab",
     "kits/cascade/src/00-head.html": "478e96745a8b56e90971653f992acc63d5422295f6d525e9d390836b31e26e00",
-    "kits/cascade/src/40-av-records.js": "c7b605f938f33fc3de6f773df3cfb493be699b30f6afafb66e2aacb5e9751ed8",
-    "kits/cascade/src/41-av-plans.js": "e64e22031ce9b2883925e0fc8b56a1edc758d70973ecae1e43d0791ec7b0959b",
+    "kits/cascade/src/40-av-records.js": "873cb71e1679ed4f43dd755d751e8de526201144e41a0369b1ff1ad54a658502",
+    "kits/cascade/src/41-av-plans.js": "6da1e2b5a5de01ab8f325dfeb4549a0cc278e9bddb32168474ef0baa10f142b8",
     "kits/cascade/src/42-av-facade.js": "580b589eaaca7a2327fcff0e598d7779068c7cec82ce7681484574a9e6f89a33",
-    "kits/cascade/src/43-av-audit.js": "fca487787202af8d490d042bbc10b36d26435ae2343426c873342a73916d87dd",
+    "kits/cascade/src/43-av-audit.js": "2bf16d89e4f818d6a5f80c255ef8ed85820f015a2e41f583008986f682096243",
     "kits/cascade/src/44-av-site.js": "f3e2dfcdace507562f41b7f7a31cb86173349716aecd24997b6b335b8701a4b1",
     "kits/cascade/src/45-host-stage.js": "27221bfcefb6c6a2b81dbc7a8f1bde8efd5bfca2cd97a0a6ae7bc3354dc3552f",
     "kits/cascade/src/50-av-kit.js": "eaa068b665be72c5ff52ab5bd564dee6e1e58810476dd7a057b2b3fc32f34bb5",
-    "kits/cascade/src/52-av-hero.js": "031d5c24464aa12b83d1927f744f9f69c44f9eb596f0f5b273175186d10bdaab",
+    "kits/cascade/src/52-av-hero.js": "bd4853350ce1da2b8360834ea5f932f59b8b4e8c9ee3f0bb451b6ca7b15253bf",
     "kits/cascade/src/55-av-site-draw.js": "9f7e1fed592af49e462d6a1457ab312e021cee16c981605160634cb97bfff17a",
-    "kits/cascade/src/56-av-interiors.js": "414139259f4f23d82685099580b26a7ba9bf20e6f10b884121383b4a1f3c0754",
-    "kits/cascade/src/70-av-stage.js": "0587d9c34eeb0c6d1d77ede64eb2e20d3202dd96209fa3df756da173b292155c",
+    "kits/cascade/src/56-av-interiors.js": "66d032367eaefea0c4b2bb0863b2cc34a4c22aa8ae2a91fa939d58b3f5caccf4",
+    "kits/cascade/src/70-av-stage.js": "79c633570874dd71ef220d8608037ba3e385be190f4ac7c4c33af0fbc4897313",
     "kits/cascade/src/89-host-sky.js": "a2a5781d98cbd8bbb46608ed2c847c78b88c63b3baff55a985ae4889c41a5d5b",
     "kits/cascade/src/89w-host-water.js": "e4ba6f9be4bc5a688c6d32327831c60606790df0b6d8ba850b5b791f66b24dcc",
-    "kits/cascade/src/99-host-take.js": "839cd669c9dde2c104e05c61d7733e734026810c5d18b496e5858e8cb03cab0b",
+    "kits/cascade/src/99-host-take.js": "61550162ba7971627cbbcfc8991f1386b3262c1eceaecae1fd063a93a1df2deb",
     "kits/cascade/src/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
     "kits/cascade/tex/bronze.albedo.webp": "eeb626313e5bd2824d1b26d5d13a4804dc1c797d837616621769d0bd2c85325a",
     "kits/cascade/tex/bronze.normal.webp": "8b3da6f34ee8ec4560c09f727701c2468481ba662c2c000547bef9e9fb0e7c18",
@@ -149,7 +149,6 @@
     "kits/cascade/tex/white.albedo.webp": "854775aa39b90dc00ea1fd3f4945b1f946b016473954ee362681ff2c29b0c9ca",
     "kits/cascade/tex/white.normal.webp": "0c94c866ae0bbf1a5dec883120515fbe93a58787035ce660fb28b28d6e00fa3b",
     "kits/cascade/tex/white.rough.webp": "6a4775fa662523129ef7a0d2c226e1ed29e9d69013add6a15b6a4bdd47bc6e11",
-    "kits/catalog/furniture_bundle.py": "d90a6e8ea6d8abdbf05b827ac5aec6b4eea76ee8412013ffc82f8fa138827a5b",
     "kits/catalog/krator-master-furniture-arms.js": "5d1f2ee60bcfc1db0bc4d7ad69bdcc1d66c157e7dd2171521207e139cbe71ab3",
     "kits/catalog/krator-master-furniture-generic-fruit.js": "858ded98e076a6c6f96b5350718a514da4ecf5b161bcaed0805b837999b5dba5",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
@@ -242,7 +241,6 @@
     "kits/crops/src/22-crop-material.js": "c9e37782d292335fc40e5de6a9895f3f5e384ab522dd92defc9010b41546df85",
     "kits/crops/src/40-crop-query.js": "6ac613b37a7349e69889e223fa3476febb5d3f42bb7130c4f825406d3f8a6201",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
-    "kits/interiors/kit_bundle.py": "7c5d0b463783851d47ef2e3857d8341b421bb4235e75eaea8e297819aecd4384",
     "kits/interiors/sets/highlands.js": "761efd95b6b120199235f5992b3003d17a5d569277df48a0417ab7d5b969e7aa",
     "kits/interiors/sets/noahs-regret.js": "8a03f4ee8cc7705cde0b04aa330fd21ebe5d64992dd3efea3e2477953ae68b62",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
@@ -256,8 +254,7 @@
     "kits/interiors/src/48b-sets.js": "9da457a25bc3e0fd5732c13b569f63ccd0138ac50d84ddc02c47e005709e8889",
     "kits/interiors/src/49-exports.js": "7e82aa654402da6427f41635f0f59a0146aa19e19773a7c389ea2b6bd7ea12cf",
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "1b52c8d572be81c62d6615f168922754b262e233694b207ae266d678bd4212c8"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "kits/ancients-interiors/src": "909eb0c4a1cb98caa84bc495cc9410b3ecd5c2a0ca2e36d4b1e59d7447d9f89d",
@@ -269,11 +266,11 @@
    },
    "listed_by": "code",
    "outputs": {
-    "kits/cascade/dist/cascade.html": "5838dd88037815fe14aec6f0d9eb448ff592adc6fc324716573d9bc2bf6f85e1",
+    "kits/cascade/dist/cascade.html": "f582d5589f3f5e32a287281ae5c6d49ce9882a9d299013f0f02b496a74774af2",
     "kits/cascade/dist/cascade.tex.cascade.js": "524798df40e29146996170397611687e2f2a3ccd4335d4d336b1e05d3ef76cb5"
    },
    "outputs_raw": {
-    "kits/cascade/dist/cascade.html": "5838dd88037815fe14aec6f0d9eb448ff592adc6fc324716573d9bc2bf6f85e1",
+    "kits/cascade/dist/cascade.html": "f582d5589f3f5e32a287281ae5c6d49ce9882a9d299013f0f02b496a74774af2",
     "kits/cascade/dist/cascade.tex.cascade.js": "524798df40e29146996170397611687e2f2a3ccd4335d4d336b1e05d3ef76cb5"
    }
   }

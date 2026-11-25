@@ -6,12 +6,13 @@
 const VIEWS = {
   'Vista from south-east': { v: [430, 178, 440, 0, 88, -10], mode: 'day' },
   'Ground aqueduct and tailrace canal': { v: [22.0, 4.2, 432, 0, 92, 20], mode: 'day' },
-  'Central Industrial Hall cataract': { v: [-3.5, 14.8, -21.5, 0.5, 15.8, 9.5], mode: 'day' },
-  'Central foundry trip-hammers and cupolas': { v: [0.0, 13.6, -3.5, 0.0, 8.2, -32.0], mode: 'day' },
+  'Failed ancient dynamo and busbar splice': { v: [16.5, 16.2, -2.5, -8.5, 13.4, -16.5], mode: 'day' },
+  'Central Industrial Hall cataract': { v: [-16.2, 17.5, -6.8, 1.5, 13.8, 9.8], mode: 'day' },
+  'Central foundry trip-hammers and cupolas': { v: [12.8, 14.2, -12.5, -1.5, 9.2, -33.5], mode: 'day' },
   'Cross-section refurbished': { v: [0, 118, 360, 0, 96, 0], mode: 'day', section: 'refurbished' },
   'Twin circular gardens and barge dock': { v: [320, 138, 255, 225, 6, -8], mode: 'day' },
   'Deck 0 Tailrace turbine vaults': { v: [48, 72, 118, 18, 1.5, 48], mode: 'day', cut: ['refurbished', 0] },
-  'Deck 1 Central Industrial Hall foundry': { v: [52, 74, 112, 0, 7.2, -8], mode: 'day', cut: ['refurbished', 1] },
+  'Deck 1 Central Industrial Hall foundry': { v: [52, 74, 112, 0, 7.2, -12], mode: 'day', cut: ['refurbished', 1] },
   'Deck 2 Line-shaft machine galleries': { v: [56, 82, 118, 0, 17.5, -10], mode: 'day', cut: ['refurbished', 2] },
   'Deck 4 Civic market and belvederes': { v: [66, 108, 142, 0, 52.5, 18], mode: 'day', cut: ['refurbished', 4] },
   'Deck 5 Steam bathhouse and drill hall': { v: [58, 122, 126, 0, 67.5, 32], mode: 'day', cut: ['refurbished', 5] },
@@ -127,7 +128,7 @@ function hostChecks() {
   const R = [];
   function add(name, ok, detail) { R.push({ name: name, ok: !!ok, detail: detail || '' }); }
 
-  add('stage ready', AV.STAGE.ready, '3 hydropowered arcology states + aqueduct + twin circular gardens');
+  add('stage ready', AV.STAGE.ready, '3 arcology states + failed Ancient dynamo + hydropower replacement');
   if (!AV.STAGE.ready) return R;
 
   ['refurbished', 'intact', 'ruined'].forEach(function (sk) {
@@ -140,9 +141,19 @@ function hostChecks() {
       hd.tris + ' tris, ' + hd.calls + ' calls');
   });
 
-  // Hydropowered Central Industrial Hall, Elevated Aqueduct, Cataracts, Sluices & Barges
+  // Failed Ancient Prime Dynamo relics + careful Hydropower replacement & busbar splices
+  const AR = AV.SITES.refurbished.plan.ancientRelics;
+  const ARInt = AV.SITES.intact.plan.ancientRelics;
   const HH = AV.SITES.refurbished.plan.hydroHall;
   const sUD = AV.STAGE.siteGroup && AV.STAGE.siteGroup.userData ? AV.STAGE.siteGroup.userData : {};
+  add('failed ancient dynamo stabilized, stator cradle rigged & 4 hydro-to-ancient busbar splices active',
+    !!AR && AR.primeDynamo.status === 'failed-stabilized' && !!AR.statorCradle &&
+    AR.busTrunks.length === 4 && AR.capacitors.length === 6 &&
+    !!ARInt && ARInt.primeDynamo.status === 'online' && AV.SITES.intact.plan.hydroHall === null &&
+    !!AV.SITES.refurbished.hallProps && AV.SITES.refurbished.hallProps.userData.count >= 14,
+    'primeDynamo=' + AR.primeDynamo.status + ', ' + AR.busTrunks.length + ' spliced trunks, ' +
+    AR.capacitors.length + ' monoliths, ' + AV.SITES.refurbished.hallProps.userData.count + ' hall floor fixtures');
+
   add('hydropower aqueduct, 3 cataracts, wheels, dynamos, trip-hammers, cupolas, sluices & barges active',
     !!HH && AV_WATER.falls.length === 3 && AV_WATER.flows.length === 8 &&
     HH.wheels.length === 4 && HH.dynamos.length === 4 && HH.tripHammers.length === 2 && HH.cupolas.length === 2 &&
@@ -167,7 +178,7 @@ function hostChecks() {
 
   // Camera-independent KTAGS registration check
   const ta = TAGS.audit();
-  add('buildings, aqueduct, sluices, barges, gardens & interior rooms registered in KTAGS', ta.records >= 1000,
+  add('buildings, relics, aqueduct, sluices, barges, gardens & interior rooms registered in KTAGS', ta.records >= 1000,
     ta.records + ' KTAGS records ' + JSON.stringify(ta.byClass));
 
   // Ruin stability audit (KRUINS.report + KRUINS.selfTest)
@@ -207,13 +218,21 @@ function hostNegatives() {
     bad.hydroHall.aqueduct = Object.assign({}, bad.hydroHall.aqueduct, { yWater: 6.0 });
     R.push({ name: 'headrace aqueduct without hydraulic drop fails audit', failed: !AV.audit(bad, KratorAncientsInteriors).ok });
   }
-  // 4. Rubble mound dumped inside central water basin
+  // 4. Overhead line-shaft colliding with Failed Ancient Prime Dynamo
+  {
+    const bad = AV.plan({ state: 'refurbished', culture: 'republican', seed: 19690 });
+    bad.hydroHall.lineShafts = bad.hydroHall.lineShafts.map(function (ls) {
+      return ls.axis === 'x' ? Object.assign({}, ls, { z: -15.8 }) : ls;
+    });
+    R.push({ name: 'line-shaft colliding with failed ancient dynamo fails audit', failed: !AV.audit(bad, KratorAncientsInteriors).ok });
+  }
+  // 5. Rubble mound dumped inside central water basin
   {
     const bad = AV.plan({ state: 'ruined', culture: 'ancient', seed: 19690 });
     bad.debris = bad.debris.concat([{ id: 'bad.debris', x: 0, z: 0, rx: 12, rz: 12, h: 6 }]);
     R.push({ name: 'debris inside central water basin fails audit', failed: !AV.audit(bad, KratorAncientsInteriors).ok });
   }
-  // 5. Unknown edit id skipped cleanly
+  // 6. Unknown edit id skipped cleanly
   {
     const p = AV.plan({ state: 'refurbished', culture: 'republican', seed: 19690 });
     const res = AV.applyEdits(p, { set: { 'nonexistent.id.999': { x: 10 } } });
@@ -231,7 +250,7 @@ KHOST.on(SKY.view, 'view');
 const HOSTED = KHOST.take({
   build: 'cascade',
   title: 'Krator — Cascade Hydropowered Industrial Arcology (Refurbished, Intact & Ruin)',
-  hint: 'Cascade — Iron Republic hydropowered industrial arcology (inspired by Paolo Soleri Arcvillage I: 220 m, elevated 32 m headrace aqueduct, roaring central waterfall cataract, 4 overshot hydro-wheels, bevel-gear line-shafts, 4 scroll-case dynamos, trip-hammers, blast cupolas, 8 carved apses, 12 column-towers, twin circular crop gardens & cargo barges). Press X ([ ]) for deck cut-aways; C for live hatched cross-section; F to walk; N for night.',
+  hint: 'Cascade — Iron Republic hydropowered arcology engineered around a failed Ancient Prime Toroidal Dynamo (elevated 32 m headrace aqueduct, central waterfall cataracts, 4 overshot hydro-wheels, bevel-gear line-shafts routed around the iron-shored Ancient core, 4 scroll-case hydro-dynamos spliced into severed Ancient power trunks, trip-hammers & blast cupolas). Press X ([ ]) for deck cut-aways; C for live hatched cross-section; F to walk; N for night.',
   scene: scene,
   camera: camera,
   renderer: renderer,

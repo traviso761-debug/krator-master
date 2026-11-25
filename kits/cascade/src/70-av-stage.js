@@ -42,8 +42,15 @@
     analyse: { touch: 0.65, held: 0.65, lift: 0.35, sink: 1.0, wreckH: 25.0 }
   });
 
-  // 4. Camera-independent interior record pass for the refurbished centerpiece
+  // 4. Camera-independent interior record pass + always-visible Assembly Hall relic & millwright floor fixtures
   AV.ensureRecords('refurbished');
+  ['refurbished', 'intact'].forEach(function (sk) {
+    var hpGroup = AV.buildHallFloorProps(sk);
+    if (hpGroup) {
+      scene.add(hpGroup);
+      AV.SITES[sk].hallProps = hpGroup;
+    }
+  });
   AV.walkSync();
 
   // 5. Optional sun shadow map (off by default per repo rule; ?shadow=1 or panel toggle turns it on)

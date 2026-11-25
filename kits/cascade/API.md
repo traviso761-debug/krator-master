@@ -10,12 +10,13 @@ Builds a deterministic arcology record:
 - `opts.culture`: `'republican'` (default for `'refurbished'`) | `'ancient'`
 - `opts.seed`: integer world seed (default `19690`)
 
-Returns `{ id, name, state, culture, seed, dim, footprint, apses, portals, towers, bridges, collarStruts, crownTiers, lantern, decks, hydroHall, republican, debris }`:
+Returns `{ id, name, state, culture, seed, dim, footprint, apses, portals, towers, bridges, collarStruts, crownTiers, lantern, decks, ancientRelics, hydroHall, republican, debris }`:
 - `P.footprint`: 8-vertex counter-clockwise `[x, z]` chamfered-square polygon (`12.16 ha`, `372 × 372 m`).
-- `P.apses`: 8 radial stepped amphitheater apses (`aqueduct: true` and `aqueductNotch` on South Apse `k === 2`).
-- `P.towers`: 12 cylindrical skyscraper column-towers (`4` inner with lift/stair shafts and `busbar: true`, `8` outer).
+- `P.apses`: 8 radial stepped amphitheater apses (`aqueduct: true` and `aqueductNotch` on South Apse `k === 2` when `state === 'refurbished'`).
+- `P.towers`: 12 cylindrical skyscraper column-towers (`4` inner with lift/stair shafts and superconducting/spliced power trunks, `8` outer).
 - `P.decks`: 14 deck definitions (`L0..L13`, `0.4 .. 201.6 m`), each tagged with `categories` (`'work' | 'civic' | 'living' | 'rec'`).
-- `P.hydroHall`: complete hydropowered Central Industrial Hall machinery record (`aqueduct`, `3` `cataracts`, `4` `wheels`, `4` `gearTowers`, `5` `lineShafts`, `2` `penstocks`, `4` `dynamos`, `2` `tripHammers`, `2` `cupolas`, `bridgeCrane`).
+- `P.ancientRelics`: present across all 3 states (`primeDynamo` `'online' | 'shattered' | 'failed-stabilized'`, `statorCradle`, `coolantRing`, `4` `busTrunks`, `6` `capacitors`, and `hallProps` catalog fixtures).
+- `P.hydroHall`: present when `state === 'refurbished'` (`replacesRelic: 'av.relic.prime_dynamo'`, `aqueduct`, `3` `cataracts`, `4` `wheels`, `4` `gearTowers`, `5` `lineShafts` routed clear of the Ancient dynamo, `2` `penstocks`, `4` `dynamos` spliced into `P.ancientRelics.busTrunks`, `2` `tripHammers`, `2` `cupolas`, `bridgeCrane`, `salvageHoist`); `null` on `intact` and `ruined`.
 
 ### `AV.storey(P, deckIdx, AI) -> StoreyRecord`
 Generates the complete room polygon, doorway, corridor, and furniture-recipe layout for deck `0..13`. `AI` is optional (`KratorAncientsInteriors`; when passed, attaches hall recipes dressed via `AV.DRESS[P.culture]`).

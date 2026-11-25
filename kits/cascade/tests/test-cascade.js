@@ -58,6 +58,23 @@ const ROOT = path.join(HERE, '..', '..');
   T.neg('audit catches invalid headrace aqueduct hydraulic head',
     hy => { const P = ctx.AV.plan({ state: 'refurbished' }); P.hydroHall.aqueduct.yWater = hy; return ctx.AV.audit(P, ctx.KratorAncientsInteriors).ok; },
     4.0, 31.8);
+  T.neg('audit catches line-shaft colliding with failed Ancient Prime Dynamo',
+    lz => {
+      const P = ctx.AV.plan({ state: 'refurbished' });
+      P.hydroHall.lineShafts.forEach(ls => { if (ls.axis === 'x') ls.z = lz; });
+      return ctx.AV.audit(P, ctx.KratorAncientsInteriors).ok;
+    },
+    -15.8, -25.2);
+
+  // Ancient Prime Dynamo progression (online -> shattered -> failed-stabilized + spliced into hydroHall)
+  const pInt = ctx.AV.plan({ state: 'intact', seed: 19690 });
+  const pRui = ctx.AV.plan({ state: 'ruined', seed: 19690 });
+  T.ok('ancientRelics transitions cleanly from online Ancient Prime Dynamo to failed-stabilized relic spliced into hydroHall',
+    pInt.ancientRelics.primeDynamo.status === 'online' && pInt.hydroHall === null && pInt.portals.length === 8 &&
+    pRui.ancientRelics.primeDynamo.status === 'shattered' && pRui.hydroHall === null &&
+    pRef1.ancientRelics.primeDynamo.status === 'failed-stabilized' && !!pRef1.ancientRelics.statorCradle &&
+    pRef1.ancientRelics.busTrunks.length === 4 && pRef1.ancientRelics.busTrunks.every(t => t.spliced) &&
+    pRef1.hydroHall.replacesRelic === 'av.relic.prime_dynamo');
 
   // Settlement SIM slots, portals (8 ground/tailrace + 1 elevated aqueduct = 9), and hydroHall machinery
   const slots = ctx.AV.settlementSlots(pRef1, ctx.KratorAncientsInteriors);

@@ -188,43 +188,36 @@
         B.box('concrete', px - 1.6, px + 1.6, -3.3, topCol, pz - 1.6, pz + 1.6, stOpt);
       });
     });
-    tagPart('av.hydro.hall', 'Great Central Hydropower Industrial Hall', 0, D.FORUM_Y, -8, fr * 2, fr * 2, 42.0, 'industry');
+    tagPart('av.central.hall', isRep ? 'Great Central Assembly and Hydropower Hall' : 'Great Central Ancient Dynamo Hall', 0, D.FORUM_Y, -8, fr * 2, fr * 2, 42.0, 'industry');
 
-    // Internal Elevated Headrace Aqueduct Viaduct (z = 186.0 .. 16.5 m, y_bed = 29.6 m, y_water = 31.8 m)
-    var HY = D.HYDRO;
-    for (var az = 24.0; az <= 180.0; az += 26.0) {
-      var pierBroken = isRuin && az > 72.0 && az < 126.0;
-      var pyTop = pierBroken ? 12.0 : HY.aqueductBedY + 0.4;
-      [-8.4, 8.4].forEach(function (ax) {
-        B.box('stone', ax - 1.6, ax + 1.6, -0.45, pyTop, az - 2.0, az + 2.0, stOpt);
-      });
-      if (!pierBroken) {
+    // Internal Elevated Headrace Aqueduct Viaduct (refurbished hydropower replacement only: z = 186.0 .. 16.5 m, y_water = 31.8 m)
+    if (P.hydroHall) {
+      var HY = D.HYDRO;
+      for (var az = 24.0; az <= 180.0; az += 26.0) {
+        [-8.4, 8.4].forEach(function (ax) {
+          B.box('stone', ax - 1.6, ax + 1.6, -0.45, HY.aqueductBedY + 0.4, az - 2.0, az + 2.0, stOpt);
+        });
         B.box('stone', -10.0, 10.0, HY.aqueductBedY - 2.2, HY.aqueductBedY + 0.2, az - 2.2, az + 2.2, stOpt);
       }
-    }
-    // Continuous riveted-iron & stone Headrace Flume Trough (split in ruined state where middle span collapsed)
-    var aqSpans = isRuin ? [[16.5, 76.0], [126.0, 186.5]] : [[16.5, 186.5]];
-    aqSpans.forEach(function (sp) {
-      B.box('stone', -7.6, 7.6, HY.aqueductBedY - 0.9, HY.aqueductBedY + 0.1, sp[0], sp[1], stOpt);
-      B.box(trimMat, -7.8, -5.9, HY.aqueductBedY, HY.aqueductY + 1.5, sp[0], sp[1], stOpt);
-      B.box(trimMat, 5.9, 7.8, HY.aqueductBedY, HY.aqueductY + 1.5, sp[0], sp[1], stOpt);
-    });
-    // Central Bifurcated Surge Headbox & Cataract Sluice Flume at z = 15.0 .. 24.5 m (grounded by 4 heavy steel legs to y = -3.3 m)
-    [-20.5, 20.5].forEach(function (hx) {
-      [15.8, 23.8].forEach(function (hz) {
-        B.box('concrete', hx - 1.6, hx + 1.6, -3.3, HY.aqueductBedY + 0.4, hz - 1.6, hz + 1.6, stOpt);
+      B.box('stone', -7.6, 7.6, HY.aqueductBedY - 0.9, HY.aqueductBedY + 0.1, 16.5, 186.5, stOpt);
+      B.box(trimMat, -7.8, -5.9, HY.aqueductBedY, HY.aqueductY + 1.5, 16.5, 186.5, stOpt);
+      B.box(trimMat, 5.9, 7.8, HY.aqueductBedY, HY.aqueductY + 1.5, 16.5, 186.5, stOpt);
+
+      // Central Bifurcated Surge Headbox & Cataract Sluice Flume at z = 15.0 .. 24.5 m (grounded by 4 heavy steel legs to y = -3.3 m)
+      [-20.5, 20.5].forEach(function (hx) {
+        [15.8, 23.8].forEach(function (hz) {
+          B.box('concrete', hx - 1.6, hx + 1.6, -3.3, HY.aqueductBedY + 0.4, hz - 1.6, hz + 1.6, stOpt);
+        });
       });
-    });
-    B.box('stone', -22.0, 22.0, HY.aqueductBedY - 1.2, HY.aqueductBedY + 0.1, 15.2, 24.8, stOpt);
-    B.box(trimMat, -22.2, 22.2, HY.aqueductBedY, HY.aqueductY + 1.8, 23.4, 25.0, stOpt);
-    B.box(trimMat, -22.2, -20.4, HY.aqueductBedY, HY.aqueductY + 1.8, 15.2, 25.0, stOpt);
-    B.box(trimMat, 20.4, 22.2, HY.aqueductBedY, HY.aqueductY + 1.8, 15.2, 25.0, stOpt);
-    // North face of Surge Headbox with 3 open cataract sluice mouths (main x = -4.8..4.8, chutes x = +-11.8..+-15.0)
-    B.box(trimMat, -20.6, -15.2, HY.aqueductBedY, HY.aqueductY + 1.8, 15.0, 16.6, stOpt);
-    B.box(trimMat, -11.6, -5.0, HY.aqueductBedY, HY.aqueductY + 1.8, 15.0, 16.6, stOpt);
-    B.box(trimMat, 5.0, 11.6, HY.aqueductBedY, HY.aqueductY + 1.8, 15.0, 16.6, stOpt);
-    B.box(trimMat, 15.2, 20.6, HY.aqueductBedY, HY.aqueductY + 1.8, 15.0, 16.6, stOpt);
-    if (!isRuin) {
+      B.box('stone', -22.0, 22.0, HY.aqueductBedY - 1.2, HY.aqueductBedY + 0.1, 15.2, 24.8, stOpt);
+      B.box(trimMat, -22.2, 22.2, HY.aqueductBedY, HY.aqueductY + 1.8, 23.4, 25.0, stOpt);
+      B.box(trimMat, -22.2, -20.4, HY.aqueductBedY, HY.aqueductY + 1.8, 15.2, 25.0, stOpt);
+      B.box(trimMat, 20.4, 22.2, HY.aqueductBedY, HY.aqueductY + 1.8, 15.2, 25.0, stOpt);
+      // North face of Surge Headbox with 3 open cataract sluice mouths (main x = -4.8..4.8, chutes x = +-11.8..+-15.0)
+      B.box(trimMat, -20.6, -15.2, HY.aqueductBedY, HY.aqueductY + 1.8, 15.0, 16.6, stOpt);
+      B.box(trimMat, -11.6, -5.0, HY.aqueductBedY, HY.aqueductY + 1.8, 15.0, 16.6, stOpt);
+      B.box(trimMat, 5.0, 11.6, HY.aqueductBedY, HY.aqueductY + 1.8, 15.0, 16.6, stOpt);
+      B.box(trimMat, 15.2, 20.6, HY.aqueductBedY, HY.aqueductY + 1.8, 15.0, 16.6, stOpt);
       B.box('iron', -16.5, 16.5, HY.aqueductY + 2.8, HY.aqueductY + 3.6, 15.2, 16.4, stOpt);
     }
 
@@ -569,13 +562,292 @@
     }
     tagPart('av.crown', 'Stepped Faceted Pyramidal Crown and Summit Lantern', 0, 196.0, 0, CR.rBase * 2, CR.rBase * 2, D.H_TOTAL - CR.y0, 'crown');
 
-    // ---- 9. Hydropowered Central Industrial Hall Machinery & Iron Republic Exterior Additions ----
+    // ---- 8b. Ancient Prime Toroidal Dynamo, Severed/Spliced Power Trunks & Harmonic Relics ----
     var kineticGroup = new THREE.Group();
     kineticGroup.name = P.id + '.kinetics';
     var spinX = [], spinY = [], spinZ = [], hammers = [];
     var arcMat = isRuin ? 'cyanDead' : isRep ? 'repArc' : 'cyan';
     var bucketMat = isRep ? 'timber' : 'bronze';
+    var relicGlow = isIntact ? 'cyan' : 'cyanDead';
+    var ancOpt = isRuin ? stOpt : { col: [0.97, 0.97, 0.96] };
 
+    function octAt(cx, cz, R, rot) {
+      return AV.regOctPoly(R, rot).map(function (q) { return [q[0] + cx, q[1] + cz]; });
+    }
+
+    if (P.ancientRelics) {
+      var AR = P.ancientRelics;
+
+      // 8b.1 Submerged/Emergent Ancient Octagonal Cryo-Coolant Ring in the Central Basin (y = -3.3 .. +1.05 m)
+      if (AR.coolantRing) {
+        var cr = AR.coolantRing;
+        B.ringSlab('white', octAt(cr.x, cr.z, cr.r + 1.15), octAt(cr.x, cr.z, cr.r - 1.15), -3.3, 0.85, ancOpt);
+        B.ringSlab('relief', octAt(cr.x, cr.z, cr.r + 0.75), octAt(cr.x, cr.z, cr.r - 0.75), 0.80, 1.12, ancOpt);
+        B.ringSlab(relicGlow, octAt(cr.x, cr.z, cr.r + 0.28), octAt(cr.x, cr.z, cr.r - 0.28), 0.92, 1.18, {});
+        for (var cbi = 0; cbi < 8; cbi++) {
+          var cba = (cbi / 8) * TAU;
+          B.obox('bronze', cr.x + Math.cos(cba) * cr.r, -1.0, cr.z + Math.sin(cba) * cr.r, cba, 2.8, 4.4, 0.85, ancOpt);
+        }
+        /* In refurbished state, bolted bronze/iron adapter saddles seat the masonry waterwheel pits onto the Ancient ring */
+        if (isRep) {
+          [-1, 1].forEach(function (sgn) {
+            B.box('bronze', sgn * 10.6 - 1.1, sgn * 10.6 + 1.1, 0.65, 1.95, 4.8, 8.2, stOpt);
+            B.box('iron', sgn * 13.4 - 2.8, sgn * 13.4 + 2.8, 0.65, 1.65, 5.4, 7.6, stOpt);
+          });
+        }
+        tagPart(cr.id, 'Ancient Basin Cryo-Coolant Ring', cr.x, -0.5, cr.z, cr.r * 2.3, cr.r * 2.3, 4.5, 'infrastructure');
+      }
+
+      // 8b.2 Monumental Ancient Prime Toroidal Dynamo (online in intact; shattered in ruined; stabilized & bypassed in refurbished!)
+      if (AR.primeDynamo) {
+        var pd = AR.primeDynamo;
+        // Grounded octagonal Ancient ceramic & geometric-relief containment plinth (y = -3.3 .. 7.52 m)
+        B.ringSlab('white', octAt(pd.x, pd.z, pd.plinthR + 0.4), octAt(pd.x, pd.z, 2.2), -3.3, 6.55, ancOpt);
+        B.ringSlab('relief', octAt(pd.x, pd.z, pd.plinthR - 0.25), octAt(pd.x, pd.z, 2.0), 6.45, 7.18, ancOpt);
+        B.ringSlab('bronze', octAt(pd.x, pd.z, pd.plinthR - 0.95), octAt(pd.x, pd.z, 1.8), 7.12, 7.52, ancOpt);
+        B.cyl('white', pd.x, pd.z, -3.3, 7.54, 5.2, 4.8, 16, ancOpt);
+        for (var rbi = 0; rbi < 8; rbi++) {
+          var rba = (rbi / 8) * TAU;
+          B.obox(relicGlow, pd.x + Math.cos(rba) * 4.4, 7.42, pd.z + Math.sin(rba) * 4.4, rba, 3.2, 0.28, 0.36, {});
+        }
+        // South Crescent Ancient Control Dais overlooking the central basin (z = -10.6 .. -7.5 m, y = 5.5 .. 6.46 m)
+        B.box('white', pd.x - 6.6, pd.x + 6.6, 5.5, 6.46, -10.8, -7.5, ancOpt);
+        B.box('bronze', pd.x - 6.75, pd.x + 6.75, 6.32, 6.52, -7.65, -7.35, ancOpt);
+        B.box(relicGlow, pd.x - 5.4, pd.x + 5.4, 6.40, 6.54, -8.1, -7.85, {});
+
+        // Four Monumental Ancient White-Ceramic & Bronze Containment Yoke Pylons (y = 5.5 .. 27.4 m)
+        [-1, 1].forEach(function (sx) {
+          [-1, 1].forEach(function (sz) {
+            var pxY = pd.x + sx * 7.15, pzY = pd.z + sz * 2.55;
+            var pyTop = (isRuin && sx > 0 && sz < 0) ? 19.4 : pd.yTop;
+            B.box('white', pxY - 0.95, pxY + 0.95, 5.5, pyTop, pzY - 0.85, pzY + 0.85, ancOpt);
+            B.box('relief', pxY - 1.08, pxY + 1.08, 8.8, 14.8, pzY - 0.65, pzY + 0.65, ancOpt);
+            B.box('bronze', pxY - 1.18, pxY + 1.18, 11.1, 12.1, pzY - 0.98, pzY + 0.98, ancOpt);
+            if (pyTop > 22.0) {
+              B.box('bronze', pxY - 1.15, pxY + 1.15, 21.4, 22.2, pzY - 0.95, pzY + 0.95, ancOpt);
+            }
+          });
+          // Heavy Ancient torus-cradle yoke bridge tying the West/East pylon pairs directly into the Toroidal Stator Ring
+          B.box('white', pd.x + sx * 5.3 - 0.9, pd.x + sx * 5.3 + 0.9, pd.torusY - 1.1, pd.torusY + 1.1, pd.z - 3.3, pd.z + 3.3, ancOpt);
+          B.box('bronze', pd.x + sx * 6.3 - 1.15, pd.x + sx * 6.3 + 1.15, pd.torusY - 1.35, pd.torusY + 1.35, pd.z - 3.45, pd.z + 3.45, ancOpt);
+        });
+        // Upper Ancient Harmonic Crown Ring at y = 26.2 .. 27.4 m (broken NE quadrant in ruined state)
+        if (!isRuin) {
+          B.ringSlab('white', octAt(pd.x, pd.z, 7.6), octAt(pd.x, pd.z, 5.6), pd.yTop - 1.2, pd.yTop, ancOpt);
+          B.ringSlab('bronze', octAt(pd.x, pd.z, 7.75), octAt(pd.x, pd.z, 7.35), pd.yTop - 0.35, pd.yTop + 0.15, ancOpt);
+        } else {
+          B.box('white', pd.x - 7.8, pd.x + 1.2, pd.yTop - 1.2, pd.yTop, pd.z - 3.4, pd.z + 3.4, ancOpt);
+          B.box('white', pd.x - 1.2, pd.x + 7.8, pd.yTop - 1.2, pd.yTop, pd.z + 1.2, pd.z + 3.4, ancOpt);
+        }
+
+        // Grounded Central Vertical Containment Stalk & Lower Torus Cradle (y = 7.2 .. 17.0 m -> 0 floaters in KRUINS!)
+        B.cyl('white', pd.x, pd.z, 7.2, pd.torusY - 1.4, 1.35, 0.88, 12, ancOpt);
+        B.cyl('bronze', pd.x, pd.z, 9.4, 11.4, 2.25, 1.85, 12, ancOpt);
+        B.box('bronze', pd.x - 2.1, pd.x + 2.1, 7.2, 11.2, pd.z - 1.65, pd.z + 1.65, ancOpt);
+
+        // Central Singularity / Magneto-Plasma Core at (pd.x, pd.torusY, pd.z)
+        if (isIntact) {
+          B.cyl('cyan', pd.x, pd.z, pd.torusY - 2.2, pd.torusY, 0.45, 2.15, 8, {});
+          B.cyl('cyan', pd.x, pd.z, pd.torusY, pd.torusY + 2.2, 2.15, 0.45, 8, {});
+          // Counter-rotating Ancient bronze & cyan gimballed harmonic rings in intact state!
+          var agY = new THREE.Group();
+          agY.position.set(pd.x, pd.torusY, pd.z);
+          var AB1 = AV.builder();
+          AB1.ringSlab('bronze', AV.regOctPoly(3.85), AV.regOctPoly(3.35), -0.32, 0.32, {});
+          AB1.ringSlab('cyan', AV.regOctPoly(3.38), AV.regOctPoly(3.12), -0.18, 0.18, {});
+          var am1 = AB1.finish(pd.id + '.gimbalY');
+          am1.traverse(function (m) { if (m.isMesh) m.userData.decor = true; });
+          agY.add(am1);
+          kineticGroup.add(agY);
+          spinY.push({ g: agY, rate: 0.95 });
+        } else {
+          /* Quenched, cracked, cold Ancient Singularity Core (cyanDead) wrapped in scorched bronze containment ribs */
+          B.cyl('cyanDead', pd.x, pd.z, pd.torusY - 2.1, pd.torusY + 0.1, 0.55, 2.05, 8, {});
+          B.cyl('cyanDead', pd.x, pd.z, pd.torusY - 0.1, pd.torusY + 1.95, 2.05, 0.50, 8, {});
+          B.obox('bronze', pd.x, pd.torusY, pd.z, 0.28, 4.35, 0.52, 0.68, stOpt);
+          B.obox('bronze', pd.x, pd.torusY, pd.z, -0.52, 0.68, 3.85, 0.52, stOpt);
+        }
+
+        // Colossal 12.8 m Vertical Ancient Toroidal Stator Ring in the X-Y plane (20 segments; upper-east arc ruptured when !isIntact)
+        var nTor = 20;
+        for (var ti = 0; ti < nTor; ti++) {
+          if (pd.missingSegs && pd.missingSegs.indexOf(ti) >= 0) continue;
+          var ta0 = (ti / nTor) * TAU, ta1 = ((ti + 1) / nTor) * TAU, tam = (ta0 + ta1) * 0.5;
+          var tx0 = pd.x + Math.cos(ta0) * pd.torusR, ty0 = pd.torusY + Math.sin(ta0) * pd.torusR;
+          var tx1 = pd.x + Math.cos(ta1) * pd.torusR, ty1 = pd.torusY + Math.sin(ta1) * pd.torusR;
+          var txI0 = pd.x + Math.cos(ta0) * (pd.torusR - 1.05), tyI0 = pd.torusY + Math.sin(ta0) * (pd.torusR - 1.05);
+          var txI1 = pd.x + Math.cos(ta1) * (pd.torusR - 1.05), tyI1 = pd.torusY + Math.sin(ta1) * (pd.torusR - 1.05);
+          B.beam('white', [tx0, ty0, pd.z], [tx1, ty1, pd.z], 2.15, 2.45, ancOpt);
+          B.beam(relicGlow, [txI0, tyI0, pd.z], [txI1, tyI1, pd.z], 0.55, 1.35, {});
+          if (ti % 2 === 0) {
+            var cxT = pd.x + Math.cos(tam) * pd.torusR, cyT = pd.torusY + Math.sin(tam) * pd.torusR;
+            B.beam('bronze', [cxT - Math.sin(tam) * 0.28, cyT + Math.cos(tam) * 0.28, pd.z],
+              [cxT + Math.sin(tam) * 0.28, cyT - Math.cos(tam) * 0.28, pd.z], 2.55, 2.85, ancOpt);
+          }
+        }
+        // Sheared bronze & dark crystal coil stubs jutting out of the two ruptured torus faces (!isIntact)
+        if (!isIntact) {
+          [2 / nTor * TAU, 6 / nTor * TAU].forEach(function (ba, biS) {
+            var dirS = biS === 0 ? 1 : -1;
+            var bx0 = pd.x + Math.cos(ba) * pd.torusR, by0 = pd.torusY + Math.sin(ba) * pd.torusR;
+            var bx1 = bx0 - Math.sin(ba) * dirS * 0.95, by1 = by0 + Math.cos(ba) * dirS * 0.95;
+            B.beam('bronze', [bx0, by0, pd.z], [bx1, by1, pd.z], 1.45, 1.65, stOpt);
+            B.beam('cyanDead', [bx0, by0, pd.z], [bx1 - Math.sin(ba) * dirS * 0.35, by1 + Math.cos(ba) * dirS * 0.35, pd.z], 0.72, 0.72, {});
+          });
+        }
+
+        // Careful Iron Republic Shoring Collars, Raking Box-Shores & Two-Tier Engineer Catwalk around the Failed Ancient Dynamo!
+        if (isRep) {
+          var gapA = [pd.x + Math.cos(2 / nTor * TAU) * pd.torusR, pd.torusY + Math.sin(2 / nTor * TAU) * pd.torusR, pd.z];
+          var gapB = [pd.x + Math.cos(6 / nTor * TAU) * pd.torusR, pd.torusY + Math.sin(6 / nTor * TAU) * pd.torusR, pd.z];
+          // Bolted forged-iron clamping collars around both fractured torus ends + twin turnbuckle tie-bars across the blown-out gap!
+          B.obox('iron', gapA[0], gapA[1], gapA[2], -0.4, 2.95, 2.95, 2.95, stOpt);
+          B.obox('iron', gapB[0], gapB[1], gapB[2], 0.3, 2.95, 2.95, 2.95, stOpt);
+          B.beam('iron', [gapA[0], gapA[1] + 0.55, pd.z - 0.95], [gapB[0], gapB[1] + 0.55, pd.z - 0.95], 0.32, 0.32, stOpt);
+          B.beam('iron', [gapA[0], gapA[1] + 0.55, pd.z + 0.95], [gapB[0], gapB[1] + 0.55, pd.z + 0.95], 0.32, 0.32, stOpt);
+          B.beam('bronze', [(gapA[0] + gapB[0]) * 0.5 - 0.6, (gapA[1] + gapB[1]) * 0.5 + 0.55, pd.z - 0.95],
+            [(gapA[0] + gapB[0]) * 0.5 + 0.6, (gapA[1] + gapB[1]) * 0.5 + 0.55, pd.z - 0.95], 0.52, 0.52, stOpt);
+          // Heavy raking steel box-shores bracing the fractured torus & dead core down onto the octagonal plinth
+          B.beam('iron', [pd.x + 5.6, 7.35, pd.z - 2.1], [gapA[0], gapA[1] - 0.4, pd.z - 1.1], 0.58, 0.58, stOpt);
+          B.beam('iron', [pd.x + 5.6, 7.35, pd.z + 2.1], [gapA[0], gapA[1] - 0.4, pd.z + 1.1], 0.58, 0.58, stOpt);
+          B.beam('iron', [pd.x - 4.4, 7.35, pd.z - 2.1], [gapB[0], gapB[1] - 0.4, pd.z - 1.1], 0.55, 0.55, stOpt);
+          B.beam('iron', [pd.x - 2.8, 7.35, pd.z - 1.8], [pd.x - 0.8, pd.torusY - 1.2, pd.z - 0.9], 0.42, 0.42, stOpt);
+          B.beam('iron', [pd.x + 2.8, 7.35, pd.z + 1.8], [pd.x + 0.8, pd.torusY - 1.2, pd.z + 0.9], 0.42, 0.42, stOpt);
+
+          // Neat Timber-and-Iron Surveyor & Millwright Inspection Catwalk wrapping the Ancient plinth at y = 9.2 m
+          B.box('timber', pd.x - 8.6, pd.x + 8.6, 9.05, 9.35, pd.z - 5.4, pd.z - 3.6, stOpt);
+          B.box('timber', pd.x - 8.6, pd.x - 6.8, 9.05, 9.35, pd.z - 3.6, pd.z + 4.6, stOpt);
+          B.box('timber', pd.x + 6.8, pd.x + 8.6, 9.05, 9.35, pd.z - 3.6, pd.z + 4.6, stOpt);
+          [-8.4, -4.2, 0.0, 4.2, 8.4].forEach(function (cxS) {
+            B.box('iron', pd.x + cxS - 0.18, pd.x + cxS + 0.18, 5.6, 10.35, pd.z - 5.35, pd.z - 5.0, stOpt);
+          });
+          [-8.4, 8.4].forEach(function (sxS) {
+            B.box('iron', pd.x + sxS - 0.18, pd.x + sxS + 0.18, 5.6, 10.35, pd.z + 4.15, pd.z + 4.5, stOpt);
+            B.box('iron', pd.x + sxS - 0.14, pd.x + sxS + 0.14, 10.15, 10.38, pd.z - 5.35, pd.z + 4.5, stOpt);
+            B.box('repGlow', pd.x + sxS - 0.28, pd.x + sxS + 0.28, 10.4, 10.95, pd.z + 4.15, pd.z + 4.55, {});
+          });
+          B.box('iron', pd.x - 8.5, pd.x + 8.5, 10.15, 10.38, pd.z - 5.4, pd.z - 5.15, stOpt);
+          B.box('repGlow', pd.x - 4.2 - 0.28, pd.x - 4.2 + 0.28, 10.4, 10.95, pd.z - 5.45, pd.z - 5.05, {});
+          B.box('repGlow', pd.x + 4.2 - 0.28, pd.x + 4.2 + 0.28, 10.4, 10.95, pd.z - 5.45, pd.z - 5.05, {});
+          // Timber inspection stair from L1 floor (y = 6.0 m) up to the West catwalk (y = 9.2 m)
+          B.beam('timber', [pd.x - 7.7, 5.85, pd.z + 7.2], [pd.x - 7.7, 9.25, pd.z + 4.4], 1.45, 0.32, stOpt);
+        }
+
+        tagPart(pd.id, isRep ? 'Failed Ancient Prime Toroidal Dynamo (Stabilized Relic)' : 'Ancient Prime Toroidal Dynamo',
+          pd.x, pd.torusY, pd.z, 17.5, 10.5, pd.yTop - 5.5, isRep ? 'monument' : 'industry');
+      }
+
+      // 8b.3 Unbolted Ancient Stator Arc Lowered Carefully onto Timber Cribbing Cradle (refurbished only!)
+      if (isRep && AR.statorCradle) {
+        var sc = AR.statorCradle;
+        // Cross-stacked squared timber cribbing sleepers on L1 floor (y = 5.6 .. 7.25 m)
+        [-1.6, 0.0, 1.6].forEach(function (dzC) {
+          B.obox('timber', sc.x, 6.28, sc.z + dzC, sc.yaw, 5.2, 0.55, 0.55, stOpt);
+        });
+        [-1.8, -0.6, 0.6, 1.8].forEach(function (dxC) {
+          B.obox('timber', sc.x + dxC * Math.cos(sc.yaw), 6.82, sc.z + dxC * Math.sin(sc.yaw), sc.yaw + Math.PI * 0.5, 4.0, 0.55, 0.52, stOpt);
+        });
+        // Curved 4-segment ruptured Ancient white-ceramic, bronze & cyanDead stator arc cradled concave-up on the cribbing!
+        for (var as = 0; as < 4; as++) {
+          var aa0 = -2.35 + as * 0.38, aa1 = -2.35 + (as + 1) * 0.38;
+          var rArc = 5.4, cyArc = 12.65;
+          var u0x = Math.cos(aa0) * rArc, u0y = cyArc + Math.sin(aa0) * rArc;
+          var u1x = Math.cos(aa1) * rArc, u1y = cyArc + Math.sin(aa1) * rArc;
+          var pA0 = [sc.x + u0x * Math.cos(sc.yaw), u0y, sc.z + u0x * Math.sin(sc.yaw)];
+          var pA1 = [sc.x + u1x * Math.cos(sc.yaw), u1y, sc.z + u1x * Math.sin(sc.yaw)];
+          B.beam('white', pA0, pA1, 1.95, 2.15, ancOpt);
+          B.beam('cyanDead', [pA0[0], pA0[1] + 0.65, pA0[2]], [pA1[0], pA1[1] + 0.65, pA1[2]], 0.52, 0.85, {});
+          if (as === 1 || as === 2) {
+            B.beam('bronze', pA0, [pA0[0] + (pA1[0] - pA0[0]) * 0.35, pA0[1] + (pA1[1] - pA0[1]) * 0.35, pA0[2] + (pA1[2] - pA0[2]) * 0.35], 2.25, 2.45, stOpt);
+          }
+        }
+        // Forged-iron portable A-frame salvage gantry & chain-fall tackle astride the cribbing cradle (y = 5.6 .. 12.4 m)
+        [-2.4, 2.4].forEach(function (gxS) {
+          var bxG = sc.x + gxS * Math.cos(sc.yaw), bzG = sc.z + gxS * Math.sin(sc.yaw);
+          B.beam('iron', [bxG - Math.sin(sc.yaw) * 1.85, 5.6, bzG + Math.cos(sc.yaw) * 1.85], [bxG, 12.2, bzG], 0.34, 0.34, stOpt);
+          B.beam('iron', [bxG + Math.sin(sc.yaw) * 1.85, 5.6, bzG - Math.cos(sc.yaw) * 1.85], [bxG, 12.2, bzG], 0.34, 0.34, stOpt);
+        });
+        B.beam('iron', [sc.x - 2.6 * Math.cos(sc.yaw), 12.2, sc.z - 2.6 * Math.sin(sc.yaw)],
+          [sc.x + 2.6 * Math.cos(sc.yaw), 12.2, sc.z + 2.6 * Math.sin(sc.yaw)], 0.42, 0.52, stOpt);
+        B.box('bronze', sc.x - 0.45, sc.x + 0.45, 11.2, 12.0, sc.z - 0.45, sc.z + 0.45, stOpt);
+        B.box('iron', sc.x - 0.12, sc.x + 0.12, 8.2, 11.3, sc.z - 0.12, sc.z + 0.12, stOpt);
+        B.box('repGlow', sc.x + 2.2 * Math.cos(sc.yaw) - 0.25, sc.x + 2.2 * Math.cos(sc.yaw) + 0.25, 11.4, 11.95, sc.z + 2.2 * Math.sin(sc.yaw) - 0.25, sc.z + 2.2 * Math.sin(sc.yaw) + 0.25, {});
+        tagPart(sc.id, 'Unbolted Ancient Stator Arc on Timber Cribbing', sc.x, 8.8, sc.z, 5.8, 4.6, 6.8, 'monument');
+      }
+
+      // 8b.4 Four Overhead Ancient Power-Spine Trunks & Republican Hydro-Dynamo Busbar Splice Collars!
+      var pdZ = AR.primeDynamo ? AR.primeDynamo.z : -15.8;
+      // Severed inner East/West stubs attached to the Ancient Prime Dynamo (continuous in intact; capped & isolated in refurbished!)
+      [-1, 1].forEach(function (sx) {
+        var stubEnd = isIntact ? sx * 34.8 : (isRep ? sx * 15.6 : sx * 14.4);
+        var xA = Math.min(sx * 6.8, stubEnd), xB = Math.max(sx * 6.8, stubEnd);
+        B.box('white', xA, xB, 10.85, 12.35, pdZ - 0.88, pdZ + 0.88, ancOpt);
+        B.box('bronze', xA, xB, 12.28, 12.55, pdZ - 0.98, pdZ + 0.98, ancOpt);
+        B.box(relicGlow, xA, xB, 11.35, 11.85, pdZ - 0.95, pdZ + 0.95, {});
+        // Grounded Ancient ceramic-and-bronze support T-pylon under the stub end (guarantees 0 floaters in KRUINS!)
+        var pxSt = stubEnd - sx * 1.1;
+        B.box('white', pxSt - 0.68, pxSt + 0.68, 5.5, 11.0, pdZ - 0.72, pdZ + 0.72, ancOpt);
+        B.box('bronze', pxSt - 0.88, pxSt + 0.88, 10.5, 11.05, pdZ - 1.15, pdZ + 1.15, ancOpt);
+        if (isRep) {
+          /* Heavy bolted forged-iron blanking flange capping off the dead Ancient dynamo trunk! */
+          B.box('iron', stubEnd - 0.38, stubEnd + 0.38, 10.55, 12.75, pdZ - 1.25, pdZ + 1.25, stOpt);
+          B.box('bronze', stubEnd - 0.48, stubEnd + 0.48, 11.25, 11.95, pdZ - 0.65, pdZ + 0.65, stOpt);
+        }
+        if (isIntact) {
+          /* In intact Ancient state, north-south manifold links (-16.5..-6.5) bridge cleanly at x = +-34.8 */
+          B.box('white', sx * 34.8 - 0.85, sx * 34.8 + 0.85, 10.85, 12.35, -17.2, -5.8, ancOpt);
+          B.box('cyan', sx * 34.8 - 0.92, sx * 34.8 + 0.92, 11.35, 11.85, -17.0, -6.0, {});
+        }
+      });
+
+      (AR.busTrunks || []).forEach(function (tr) {
+        var outerGlow = isRuin ? 'cyanDead' : (isRep ? 'repArc' : 'cyan');
+        // Grounded Ancient white-ceramic T-pylon at the splice junction (tr.spliceX, tr.spliceZ)
+        B.box('white', tr.spliceX - 0.75, tr.spliceX + 0.75, 5.5, 11.1, tr.spliceZ - 0.75, tr.spliceZ + 0.75, ancOpt);
+        B.box('bronze', tr.spliceX - 1.05, tr.spliceX + 1.05, 10.6, 11.15, tr.spliceZ - 1.05, tr.spliceZ + 1.05, ancOpt);
+        // Outer Ancient hexagonal/box power trunk running from (tr.spliceX, 11.6, tr.spliceZ) into the Inner Column-Tower (tr.towerX, 11.6, tr.towerZ)!
+        B.beam('white', [tr.spliceX, tr.y, tr.spliceZ], [tr.towerX, tr.y, tr.towerZ], 1.65, 1.55, ancOpt);
+        B.beam(outerGlow, [tr.spliceX, tr.y, tr.spliceZ], [tr.towerX, tr.y, tr.towerZ], 1.78, 0.48, {});
+        // Vertical Ancient power-spine riser climbing up the hall-facing skin of the Inner Column-Tower (y = 5.5 .. 46.0 m)!
+        var vxT = tr.sgnX * 37.6, vzT = tr.sgnZ * 37.6;
+        B.box('white', vxT - 0.85, vxT + 0.85, 5.5, 46.0, vzT - 0.85, vzT + 0.85, ancOpt);
+        B.box(outerGlow, vxT - 0.94, vxT + 0.94, 6.2, 45.6, vzT - 0.42, vzT + 0.42, {});
+
+        // In refurbished state, clamp a heavy Forged-Iron & Copper Busbar Splice Collar onto the severed Ancient trunk,
+        // fed directly by triple copper busbars from the adjacent water-driven Scroll-Case Hydro-Dynamo (x = +-29.0)!
+        if (isRep) {
+          B.box('iron', tr.spliceX - 1.35, tr.spliceX + 1.35, 10.45, 12.85, tr.spliceZ - 1.35, tr.spliceZ + 1.35, stOpt);
+          B.box('bronze', tr.spliceX - 1.48, tr.spliceX + 1.48, 11.1, 12.2, tr.spliceZ - 0.95, tr.spliceZ + 0.95, stOpt);
+          // Triple heavy copper busbars & glowing electric arc conductors bridging from Hydro-Dynamo switchgear (x = sgnX * 33.4, y = 9.2)
+          [-0.75, 0.0, 0.75].forEach(function (dzB) {
+            B.beam('bronze', [tr.sgnX * 33.2, 9.1, tr.spliceZ + dzB], [tr.spliceX, 11.65, tr.spliceZ + dzB], 0.26, 0.32, stOpt);
+          });
+          B.beam('repArc', [tr.sgnX * 33.3, 9.35, tr.spliceZ], [tr.spliceX, 11.75, tr.spliceZ], 0.85, 0.36, {});
+          tagPart(tr.id + '.splice', 'Hydro-Dynamo to Ancient Trunk Busbar Splice (' + tr.corner + ')',
+            tr.spliceX, 10.8, tr.spliceZ, 3.6, 3.2, 5.2, 'infrastructure');
+        }
+      });
+
+      // 8b.5 Six Peripheral Ancient Harmonic Capacitor / Field-Regulator Monoliths (repurposed with iron collar straps in refurbished)
+      (AR.capacitors || []).forEach(function (cpM) {
+        B.cyl('white', cpM.x, cpM.z, 5.5, 6.0 + cpM.h, cpM.r, cpM.r * 0.72, 8, ancOpt);
+        B.cyl('relief', cpM.x, cpM.z, 6.2, 7.6, cpM.r + 0.14, cpM.r + 0.08, 8, ancOpt);
+        B.cyl('bronze', cpM.x, cpM.z, 5.8 + cpM.h, 6.35 + cpM.h, cpM.r * 0.84, cpM.r * 0.42, 8, ancOpt);
+        B.box(relicGlow, cpM.x - cpM.r * 0.88, cpM.x + cpM.r * 0.88, 7.8, 5.4 + cpM.h, cpM.z - 0.22, cpM.z + 0.22, {});
+        B.box(relicGlow, cpM.x - 0.22, cpM.x + 0.22, 7.8, 5.4 + cpM.h, cpM.z - cpM.r * 0.88, cpM.z + cpM.r * 0.88, {});
+        if (isRep) {
+          /* Non-destructive strapped iron collar bands mounting Republican pressure gauges, knife-switches & cage-lamps */
+          B.cyl('iron', cpM.x, cpM.z, 8.1, 8.45, cpM.r + 0.16, cpM.r + 0.16, 8, stOpt);
+          B.cyl('iron', cpM.x, cpM.z, 10.4, 10.75, cpM.r * 0.96, cpM.r * 0.96, 8, stOpt);
+          B.box('bronze', cpM.x - 0.75, cpM.x + 0.75, 7.6, 9.1, cpM.z + cpM.r * 0.75, cpM.z + cpM.r * 1.08, stOpt);
+          B.box('repGlow', cpM.x - 0.28, cpM.x + 0.28, 9.15, 9.65, cpM.z + cpM.r * 0.82, cpM.z + cpM.r * 1.12, {});
+        }
+        tagPart(cpM.id, isRep ? 'Ancient Harmonic Monolith (Retrofitted ' + cpM.retrofit + ')' : 'Ancient Harmonic Capacitor Monolith',
+          cpM.x, 6.0 + cpM.h * 0.5, cpM.z, cpM.r * 2.4, cpM.r * 2.4, cpM.h + 0.6, 'monument');
+      });
+    }
+
+    // ---- 9. Iron Republic Hydropower Replacement Machinery & Exterior Additions ----
     if (P.hydroHall) {
       var HH = P.hydroHall;
 
@@ -674,7 +946,7 @@
 
       // 9d. Overhead Belt-and-Pulley Line-Shafts, Hangers, Drive Belts & Machine Beds (!isRuin)
       if (!isRuin) {
-        HH.lineShafts.forEach(function (ls, li) {
+        HH.lineShafts.forEach(function (ls) {
           var sg = new THREE.Group();
           var SB = AV.builder();
           if (ls.axis === 'z') {
@@ -683,19 +955,15 @@
             SB.beam(trimMat, [0, 0, ls.z0 - zm], [0, 0, ls.z1 - zm], 0.34, 0.34, {});
             ls.pulleys.forEach(function (pz, pi) {
               var lz = pz - zm;
-              // Spoked pulley wheel in X-Y plane
               for (var ps = 0; ps < 8; ps++) {
                 var pa = (ps / 8) * TAU, pa1 = ((ps + 1) / 8) * TAU;
                 SB.beam('bronze', [Math.cos(pa) * 1.18, Math.sin(pa) * 1.18, lz], [Math.cos(pa1) * 1.18, Math.sin(pa1) * 1.18, lz], 0.18, 0.42, {});
                 if (ps % 2 === 0) SB.beam(trimMat, [0, 0, lz], [Math.cos(pa) * 1.12, Math.sin(pa) * 1.12, lz], 0.14, 0.18, {});
               }
-              // Grounded hanger stanchion & heavy belt-driven lathe/planer bed on L1 floor below!
-              if (ls.y < 16.0 && pz < -7.0) {
+              if (ls.y < 16.0 && pz < -7.0 && Math.abs(pz - (-25.2)) > 2.5) {
                 B.box(trimMat, ls.x - 0.25, ls.x + 0.25, 5.6, ls.y + 0.55, pz - 1.35, pz - 0.95, stOpt);
-                // Vertical twin leather/woven belt loop from overhead pulley down to machine headstock
                 B.box('dark', ls.x - 1.18, ls.x - 1.02, 7.6, ls.y + 0.1, pz - 0.18, pz + 0.18, {});
                 B.box('dark', ls.x + 1.02, ls.x + 1.18, 7.6, ls.y + 0.1, pz - 0.18, pz + 0.18, {});
-                // Heavy cast-iron machine-tool bed & headstock seated on L1 floor (y = 5.6 .. 8.1 m)
                 var mOff = (pi % 2 === 0 ? 1 : -1) * 2.2;
                 B.box(trimMat, ls.x - 1.6, ls.x + 1.6 + mOff, 5.6, 7.2, pz - 1.2, pz + 1.2, stOpt);
                 B.box('bronze', ls.x - 0.9, ls.x + 0.9, 7.1, 8.2, pz - 0.7, pz + 0.7, stOpt);
@@ -728,25 +996,16 @@
       }
 
       // 9e. Twin Diagonal Riveted-Iron Penstocks & Grounded Cradle Piers
-      HH.penstocks.forEach(function (ps, pi) {
+      HH.penstocks.forEach(function (ps) {
         var sgn = ps.a[0] < 0 ? -1 : 1;
-        if (isRuin && pi === 0) {
-          // Ruptured penstock in ruined state, upper stub anchored to Surge Headbox & lower stub on L1 floor
-          var midA = [ps.a[0] + (ps.b[0] - ps.a[0]) * 0.35, ps.a[1] + (ps.b[1] - ps.a[1]) * 0.35, ps.a[2] + (ps.b[2] - ps.a[2]) * 0.35];
-          var midB = [ps.a[0] + (ps.b[0] - ps.a[0]) * 0.68, ps.a[1] + (ps.b[1] - ps.a[1]) * 0.68, ps.a[2] + (ps.b[2] - ps.a[2]) * 0.68];
-          B.beam(trimMat, ps.a, midA, ps.r * 2, ps.r * 2, stOpt);
-          B.beam(trimMat, midB, ps.b, ps.r * 2, ps.r * 2, stOpt);
-          B.box('concrete', midB[0] - 1.5, midB[0] + 1.5, 5.5, midB[1] + 0.4, midB[2] - 1.5, midB[2] + 1.5, stOpt);
-        } else {
-          B.beam(trimMat, ps.a, ps.b, ps.r * 2, ps.r * 2, stOpt);
-          for (var cf = 1; cf <= 4; cf++) {
-            var tf = cf / 5;
-            var cxP = ps.a[0] + (ps.b[0] - ps.a[0]) * tf, cyP = ps.a[1] + (ps.b[1] - ps.a[1]) * tf, czP = ps.a[2] + (ps.b[2] - ps.a[2]) * tf;
-            B.beam('bronze', [cxP - (ps.b[0] - ps.a[0]) * 0.03, cyP - (ps.b[1] - ps.a[1]) * 0.03, czP - (ps.b[2] - ps.a[2]) * 0.03],
-              [cxP + (ps.b[0] - ps.a[0]) * 0.03, cyP + (ps.b[1] - ps.a[1]) * 0.03, czP + (ps.b[2] - ps.a[2]) * 0.03], ps.r * 2.32, ps.r * 2.32, stOpt);
-            if (cf === 2 || cf === 4) {
-              B.box('concrete', cxP - 1.4, cxP + 1.4, 5.5, cyP - ps.r * 0.5, czP - 1.4, czP + 1.4, stOpt);
-            }
+        B.beam(trimMat, ps.a, ps.b, ps.r * 2, ps.r * 2, stOpt);
+        for (var cf = 1; cf <= 4; cf++) {
+          var tf = cf / 5;
+          var cxP = ps.a[0] + (ps.b[0] - ps.a[0]) * tf, cyP = ps.a[1] + (ps.b[1] - ps.a[1]) * tf, czP = ps.a[2] + (ps.b[2] - ps.a[2]) * tf;
+          B.beam('bronze', [cxP - (ps.b[0] - ps.a[0]) * 0.03, cyP - (ps.b[1] - ps.a[1]) * 0.03, czP - (ps.b[2] - ps.a[2]) * 0.03],
+            [cxP + (ps.b[0] - ps.a[0]) * 0.03, cyP + (ps.b[1] - ps.a[1]) * 0.03, czP + (ps.b[2] - ps.a[2]) * 0.03], ps.r * 2.32, ps.r * 2.32, stOpt);
+          if (cf === 2 || cf === 4) {
+            B.box('concrete', cxP - 1.4, cxP + 1.4, 5.5, cyP - ps.r * 0.5, czP - 1.4, czP + 1.4, stOpt);
           }
         }
         // Horizontal distributor header feeding both scroll-case dynamos on each side (seated on L1 at y = 5.5 .. 8.8 m)
@@ -755,100 +1014,86 @@
         tagPart(ps.id, 'High-Pressure Hydro Penstock (' + (sgn < 0 ? 'West' : 'East') + ')', (ps.a[0] + ps.b[0]) * 0.5, 19.0, (ps.a[2] + ps.b[2]) * 0.5, 6.0, 24.0, 24.0, 'infrastructure');
       });
 
-      // 9f. Four Scroll-Case Hydro-Dynamos & Glowing Copper Busbar Feeders
+      // 9f. Four Scroll-Case Hydro-Dynamos & Exciter Switchgear Feeding the Ancient Trunk Splices!
       HH.dynamos.forEach(function (dy, di) {
         var sgn = dy.x < 0 ? -1 : 1;
-        // Concrete foundation pad + spiral scroll-case turbine shell + generator stator
         B.box('concrete', dy.x - 3.6, dy.x + 3.6, 5.5, 6.6, dy.z - 3.4, dy.z + 3.4, stOpt);
         B.cyl(trimMat, dy.x - sgn * 0.8, dy.z, 6.5, 10.2, 2.85, 2.45, 16, stOpt);
         B.box('bronze', dy.x + sgn * 0.6, dy.x + sgn * 3.4, 6.5, 9.8, dy.z - 2.1, dy.z + 2.1, stOpt);
-        // Exciter switchgear cabinet + busbar bridge out toward the inner column-tower busbars!
         B.box(trimMat, dy.x + sgn * 3.6, dy.x + sgn * 5.0, 6.4, 10.6, dy.z - 1.8, dy.z + 1.8, stOpt);
         B.box(arcMat, dy.x + sgn * 3.5, dy.x + sgn * 5.1, 8.2, 9.6, dy.z - 1.2, dy.z + 1.2, {});
-        tagPart(dy.id, 'Scroll-Case Hydro-Dynamo (' + dy.mw + ' MW)', dy.x, 8.2, dy.z, 7.5, 7.0, 4.8, 'industry');
+        tagPart(dy.id, 'Scroll-Case Hydro-Dynamo (' + dy.mw + ' MW, spliced to ' + dy.spliceTo + ')', dy.x, 8.2, dy.z, 7.5, 7.0, 4.8, 'industry');
 
-        if (!isRuin) {
-          var dg = new THREE.Group();
-          dg.position.set(dy.x + sgn * 1.9, 8.2, dy.z);
-          var DB = AV.builder();
-          DB.beam('bronze', [-1.8, 0, 0], [1.8, 0, 0], 1.45, 1.45, {});
-          DB.beam(arcMat, [-1.95, 0, 0], [1.95, 0, 0], 0.85, 0.85, {});
-          var dm = DB.finish(dy.id + '.rotor');
-          dm.traverse(function (m) { if (m.isMesh) m.userData.decor = true; });
-          dg.add(dm);
-          kineticGroup.add(dg);
-          spinX.push({ g: dg, rate: (di % 2 === 0 ? 4.8 : -4.8) });
-        }
+        var dg = new THREE.Group();
+        dg.position.set(dy.x + sgn * 1.9, 8.2, dy.z);
+        var DB = AV.builder();
+        DB.beam('bronze', [-1.8, 0, 0], [1.8, 0, 0], 1.45, 1.45, {});
+        DB.beam(arcMat, [-1.95, 0, 0], [1.95, 0, 0], 0.85, 0.85, {});
+        var dm = DB.finish(dy.id + '.rotor');
+        dm.traverse(function (m) { if (m.isMesh) m.userData.decor = true; });
+        dg.add(dm);
+        kineticGroup.add(dg);
+        spinX.push({ g: dg, rate: (di % 2 === 0 ? 4.8 : -4.8) });
       });
 
-      // 9g. Two Water-Powered Cam Trip-Hammers & Glowing Forge Billet Anvils (North Foundry Floor, z = -28 m)
-      HH.tripHammers.forEach(function (th, hi) {
+      // 9g. Two Water-Powered Cam Trip-Hammers & Glowing Forge Billet Anvils (North Foundry Floor, z = -30.5 m)
+      HH.tripHammers.forEach(function (th) {
         var sgn = th.x < 0 ? -1 : 1;
-        // Stepped stone & cast-iron anvil block at (th.x, th.z), fulcrum standards at x + sgn * 3.6, cam pier at x + sgn * 5.8
         B.box('stone', th.x - 2.1, th.x + 2.1, 5.5, 6.8, th.z - 2.1, th.z + 2.1, stOpt);
         B.box(trimMat, th.x - 1.25, th.x + 1.25, 6.7, 8.1, th.z - 1.25, th.z + 1.25, stOpt);
-        // Glowing white-hot / orange steel billet on the anvil!
         B.box(glowMat, th.x - 0.85, th.x + 0.85, 8.08, 8.62, th.z - 0.55, th.z + 0.55, {});
-        // Heavy A-frame fulcrum standards & cam-wheel pillow piers seated into L1 floor
         var fxP = th.x + sgn * 3.8, cxW = th.x + sgn * 5.8;
         B.box(trimMat, Math.min(th.x - sgn * 0.5, cxW + sgn * 1.2), Math.max(th.x - sgn * 0.5, cxW + sgn * 1.2), 5.5, 6.4, th.z - 2.2, th.z + 2.2, stOpt);
         B.box(trimMat, fxP - 0.65, fxP + 0.65, 6.3, 10.6, th.z - 1.75, th.z - 0.95, stOpt);
         B.box(trimMat, fxP - 0.65, fxP + 0.65, 6.3, 10.6, th.z + 0.95, th.z + 1.75, stOpt);
         B.box(trimMat, cxW - 0.65, cxW + 0.65, 6.3, 9.8, th.z - 1.65, th.z - 0.95, stOpt);
         B.box(trimMat, cxW - 0.65, cxW + 0.65, 6.3, 9.8, th.z + 0.95, th.z + 1.65, stOpt);
+        // Slanted heavy leather drive belt linking longitudinal line-shaft (x = +-19.2, y = 13.2) down to trip-cam axle (cxW, 8.4, th.z)!
+        B.beam('dark', [sgn * 19.2, 13.2, th.z - 0.25], [cxW, 8.4, th.z - 0.25], 0.16, 0.52, {});
+        B.beam('dark', [sgn * 19.2, 13.2, th.z + 0.25], [cxW, 8.4, th.z + 0.25], 0.16, 0.52, {});
         tagPart(th.id, 'Water-Powered Forge Trip-Hammer (' + (sgn < 0 ? 'West' : 'East') + ')', th.x + sgn * 2.2, 8.5, th.z, 9.0, 4.8, 6.0, 'industry');
 
-        if (!isRuin) {
-          // Spinning 4-lobed trip-cam wheel at (cxW, 8.4, th.z)
-          var cg = new THREE.Group();
-          cg.position.set(cxW, 8.4, th.z);
-          var CB = AV.builder();
-          CB.beam(trimMat, [0, 0, -1.5], [0, 0, 1.5], 0.55, 0.55, {});
-          CB.cyl('bronze', 0, 0, -0.45, 0.45, 1.35, 1.35, 12, {});
-          /* Rotate cylinder into X-Y plane by building 4 radial cam-dogs around Z */
-          for (var cd = 0; cd < 4; cd++) {
-            var ca = (cd / 4) * TAU;
-            CB.beam(trimMat, [0, 0, 0], [Math.cos(ca) * 1.85, Math.sin(ca) * 1.85, 0], 0.45, 0.65, {});
-          }
-          var cm = CB.finish(th.id + '.cam');
-          cm.traverse(function (m) { if (m.isMesh) m.userData.decor = true; });
-          cg.add(cm);
-          kineticGroup.add(cg);
-          spinZ.push({ g: cg, rate: sgn * 1.9 });
-
-          // Pivoting timber-and-iron helve arm + heavy forging tup at fulcrum (fxP, 9.6, th.z)
-          var hg = new THREE.Group();
-          hg.position.set(fxP, 9.6, th.z);
-          var HB = AV.builder();
-          // Helve beam reaches from tail (+sgn * 1.8) across fulcrum (0) to anvil nose (-sgn * 3.8)
-          HB.beam(bucketMat, [sgn * 1.9, 0, 0], [-sgn * 4.1, 0, 0], 0.72, 0.82, {});
-          HB.obox(trimMat, -sgn * 3.8, -0.58, 0, 0, 1.35, 1.55, 1.25, {});
-          HB.obox(trimMat, 0, 0, 0, 0, 0.95, 1.05, 2.4, {});
-          var hm = HB.finish(th.id + '.helve');
-          hm.traverse(function (m) { if (m.isMesh) m.userData.decor = true; });
-          hg.add(hm);
-          /* Set initial screenshot pose from th.phase so one hammer is raised and one is striking! */
-          var u0 = ((th.phase / (Math.PI * 0.5)) % 1 + 1) % 1;
-          var lift0 = u0 < 0.76 ? (u0 / 0.76) : Math.max(0, 1.0 - (u0 - 0.76) / 0.24);
-          hg.rotation.z = sgn * (0.04 - 0.30 * lift0);
-          kineticGroup.add(hg);
-          hammers.push({ g: hg, sgn: sgn, phase: th.phase, t: 0 });
+        var cg = new THREE.Group();
+        cg.position.set(cxW, 8.4, th.z);
+        var CB = AV.builder();
+        CB.beam(trimMat, [0, 0, -1.5], [0, 0, 1.5], 0.55, 0.55, {});
+        CB.cyl('bronze', 0, 0, -0.45, 0.45, 1.35, 1.35, 12, {});
+        for (var cd = 0; cd < 4; cd++) {
+          var ca = (cd / 4) * TAU;
+          CB.beam(trimMat, [0, 0, 0], [Math.cos(ca) * 1.85, Math.sin(ca) * 1.85, 0], 0.45, 0.65, {});
         }
+        var cm = CB.finish(th.id + '.cam');
+        cm.traverse(function (m) { if (m.isMesh) m.userData.decor = true; });
+        cg.add(cm);
+        kineticGroup.add(cg);
+        spinZ.push({ g: cg, rate: sgn * 1.9 });
+
+        var hg = new THREE.Group();
+        hg.position.set(fxP, 9.6, th.z);
+        var HB = AV.builder();
+        HB.beam(bucketMat, [sgn * 1.9, 0, 0], [-sgn * 4.1, 0, 0], 0.72, 0.82, {});
+        HB.obox(trimMat, -sgn * 3.8, -0.58, 0, 0, 1.35, 1.55, 1.25, {});
+        HB.obox(trimMat, 0, 0, 0, 0, 0.95, 1.05, 2.4, {});
+        var hm = HB.finish(th.id + '.helve');
+        hm.traverse(function (m) { if (m.isMesh) m.userData.decor = true; });
+        hg.add(hm);
+        var u0 = ((th.phase / (Math.PI * 0.5)) % 1 + 1) % 1;
+        var lift0 = u0 < 0.76 ? (u0 / 0.76) : Math.max(0, 1.0 - (u0 - 0.76) / 0.24);
+        hg.rotation.z = sgn * (0.04 - 0.30 * lift0);
+        kineticGroup.add(hg);
+        hammers.push({ g: hg, sgn: sgn, phase: th.phase, t: 0 });
       });
 
-      // 9h. Two Towering Blast Cupola Smelting Furnaces & Molten Tapping Launders (z = -38.0 m, h = 19.5 m)
+      // 9h. Two Towering Blast Cupola Smelting Furnaces & Molten Tapping Launders (z = -39.0 m, h = 19.5 m)
       HH.cupolas.forEach(function (cp) {
         var sgn = cp.x < 0 ? -1 : 1;
-        // Stone hearth plinth + firebrick/iron-banded cupola shaft + top spark-arrestor hood
         B.cyl('stone', cp.x, cp.z, 5.5, 10.4, cp.r + 0.95, cp.r + 0.45, 16, stOpt);
         B.cyl(trimMat, cp.x, cp.z, 10.2, 6.0 + cp.h, cp.r, cp.r * 0.74, 16, stOpt);
         B.cyl('bronze', cp.x, cp.z, 5.8 + cp.h, 8.2 + cp.h, cp.r * 0.96, cp.r * 0.45, 12, stOpt);
         for (var bhY = 12.0; bhY <= 5.0 + cp.h; bhY += 3.6) {
           B.cyl('bronze', cp.x, cp.z, bhY - 0.22, bhY + 0.22, cp.r + 0.18, cp.r + 0.18, 16, stOpt);
         }
-        // Charging bridge tying cupola at y = 16.2 m into the L2 mezzanine gallery!
         B.box(trimMat, Math.min(cp.x, sgn * 35.0), Math.max(cp.x, sgn * 35.0), 15.6, 16.3, cp.z - 2.0, cp.z + 2.0, stOpt);
-        // Glowing tuyere ring, molten tapping spout & pig-iron casting bed on the south (+z) side facing the hall!
         B.cyl(glowMat, cp.x, cp.z, 8.1, 8.75, cp.r + 0.52, cp.r + 0.52, 16, {});
         B.box('stone', cp.x - 2.6, cp.x + 2.6, 5.6, 6.45, cp.z + cp.r + 0.2, cp.z + cp.r + 5.8, stOpt);
         B.box(glowMat, cp.x - 0.55, cp.x + 0.55, 6.42, 7.65, cp.z + cp.r - 0.2, cp.z + cp.r + 2.2, {});
@@ -856,26 +1101,33 @@
         tagPart(cp.id, 'Blast Cupola Smelting Furnace (' + (sgn < 0 ? 'West' : 'East') + ')', cp.x, 6.0 + cp.h * 0.5, cp.z, cp.r * 2.5, cp.r * 2.5, cp.h + 2.5, 'industry');
       });
 
-      // 9i. Overhead Travelling Bridge Gantry Crane & Molten Pouring Ladle (y = 40.5 m, !isRuin)
-      if (!isRuin && HH.bridgeCrane) {
+      // 9i. Overhead Travelling Foundry Ladle Crane (z = -29.0 m) + Precision Ancient-Dynamo Rigging Bridge (z = -15.8 m)
+      if (HH.bridgeCrane) {
         var bc = HH.bridgeCrane;
-        // Longitudinal runway box-girders anchored between the grounded NW/SW and NE/SE inner column-towers!
         [-41.5, 41.5].forEach(function (rx) {
           B.box(trimMat, rx - 0.75, rx + 0.75, bc.y - 1.4, bc.y - 0.1, -46.0, 46.0, stOpt);
         });
-        // Twin transverse travelling bridge girders spanning x = -42.5 .. +42.5 m at z = bc.z +- 1.6 m
         B.box(trimMat, -42.5, 42.5, bc.y - 0.2, bc.y + 1.45, bc.z - 2.1, bc.z - 1.1, stOpt);
         B.box(trimMat, -42.5, 42.5, bc.y - 0.2, bc.y + 1.45, bc.z + 1.1, bc.z + 2.1, stOpt);
-        // Rolling crab winch trolley at x = bc.ladleX
         var lxC = bc.ladleX;
         B.box('bronze', lxC - 2.4, lxC + 2.4, bc.y + 1.35, bc.y + 3.1, bc.z - 2.2, bc.z + 2.2, stOpt);
-        // Twin steel hoist cables & suspended Foundry Pouring Ladle with glowing molten steel at y = 14.8 .. 18.2 m!
         B.box(trimMat, lxC - 1.15, lxC - 0.85, 17.6, bc.y + 1.4, bc.z - 0.18, bc.z + 0.18, stOpt);
         B.box(trimMat, lxC + 0.85, lxC + 1.15, 17.6, bc.y + 1.4, bc.z - 0.18, bc.z + 0.18, stOpt);
         B.box(trimMat, lxC - 2.45, lxC + 2.45, 17.4, 18.1, bc.z - 0.35, bc.z + 0.35, stOpt);
         B.cyl(trimMat, lxC, bc.z, 14.5, 17.6, 1.85, 2.25, 16, stOpt);
         B.cyl(glowMat, lxC, bc.z, 17.35, 17.68, 2.05, 2.05, 16, {});
         tagPart(bc.id, 'Overhead Foundry Bridge Crane and Molten Ladle', 0, bc.y, bc.z, 85.0, 6.0, 26.0, 'infrastructure');
+      }
+      if (HH.salvageHoist) {
+        var sh = HH.salvageHoist;
+        B.box(trimMat, -42.5, 42.5, sh.y - 0.1, sh.y + 1.15, sh.z - 1.4, sh.z - 0.65, stOpt);
+        B.box(trimMat, -42.5, 42.5, sh.y - 0.1, sh.y + 1.15, sh.z + 0.65, sh.z + 1.4, stOpt);
+        B.box('bronze', sh.hoistX - 2.1, sh.hoistX + 2.1, sh.y + 1.05, sh.y + 2.45, sh.z - 1.55, sh.z + 1.55, stOpt);
+        // Locked steel rigging cables holding the upper stabilization yoke of the Failed Ancient Prime Dynamo!
+        [-2.2, 2.2].forEach(function (hxR) {
+          B.beam('iron', [sh.hoistX + hxR * 0.5, sh.y + 1.1, sh.z], [hxR * 2.4, 27.3, sh.z], 0.16, 0.16, stOpt);
+        });
+        tagPart(sh.id, 'Ancient Dynamo Stabilization Rigging Bridge', 0, sh.y, sh.z, 85.0, 4.0, 14.0, 'infrastructure');
       }
     }
 
