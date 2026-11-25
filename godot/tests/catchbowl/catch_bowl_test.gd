@@ -244,8 +244,38 @@ func _init() -> void:
 		by_cell and no_rng and a1 == a2 and a1 != a3 and RK != null,
 		not (a1 == a3), "cell(412,-88) gives %d twice; cell(413,-88) gives %d" % [a1, a3])
 
+	# 16: the ground-layer set is packed, six layers in terrain.gdshader's own roles, so it drops into the 1:1
+	#     shader when the region is cut rather than being repacked
+	var lf := FileAccess.open("res://data/ground_layers/catch-bowl/layers.json", FileAccess.READ)
+	var ldoc: Dictionary = JSON.parse_string(lf.get_as_text()) if lf else {}
+	if lf:
+		lf.close()
+	var lrows: Array = ldoc.get("layers", [])
+	var all_there := lrows.size() == 6
+	var lnames := []
+	for r in lrows:
+		lnames.append(String(r.get("name", "?")))
+		if not FileAccess.file_exists("res://data/ground_layers/catch-bowl/" + String(r.get("albedo", ""))):
+			all_there = false
+		if not FileAccess.file_exists("res://data/ground_layers/catch-bowl/" + String(r.get("normal_rough", ""))):
+			all_there = false
+		if float(r.get("tile_m", 0.0)) <= 0.0:
+			all_there = false
+	ok("the ground-layer set is packed: six desert layers with their maps and tile sizes",
+		all_there and String(ldoc.get("set", "")) == "catch-bowl",
+		lrows.size() != 0, "%d layers: %s" % [lrows.size(), ", ".join(lnames)])
+
+	# 17: the shader normalises the grain on the texture's OWN mip rather than a passed-in mean. The mean in
+	#     layers.json is linear and whether the sampler hands back linear or sRGB is the thing not to assume: with
+	#     the wrong one a mid grey divides to 2.4, every clamp saturates and the ground renders blown white.
+	var on_mip := sht.find("textureLod(gl_albedo") >= 0 and sht.find("9.0") >= 0
+	ok("the grain is normalised on the texture's own top mip, not on a mean in an assumed colour space",
+		on_mip and sht.find("layer_mean") < 0 and sht.find("kh_tame") >= 0,
+		not (sht.find("layer_mean") >= 0), "textureLod normalisation %s" % ("present" if on_mip else "MISSING"))
+
 	print("catch_bowl_test: " + ("all passed" if fails == 0 else str(fails) + " failed"))
 	quit(1 if fails > 0 else 0)
+
 
 
 

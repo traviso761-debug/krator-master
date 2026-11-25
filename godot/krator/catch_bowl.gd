@@ -147,8 +147,23 @@ func _build_sky() -> void:
 	# raised with it so the away-facing slopes keep their colour instead of going black.
 	sun.rotation_degrees = Vector3(-34, 38, 0)
 	sun.light_energy = 1.1
-	# no shadows: a directional shadow over 1,282 km of terrain is a few metres of texel and shows nothing but acne
-	sun.shadow_enabled = false
+	# SHADOWS, over a box 1,282 km across. They were off, and the note said a directional shadow here is a few metres
+	# of texel and shows nothing but acne. That is true of ONE orthogonal map stretched over the whole box. Godot's
+	# directional shadows are parallel split maps (PSSM): with four splits and a max distance of a few kilometres the
+	# near cascade covers what the camera is actually looking at, at a texel the boulders and the dune slipfaces can
+	# use, and everything past it is unshadowed -- which at that distance the aerial perspective hides anyway.
+	# The split bias has to be tuned to the scene's scale or the seams between cascades show; these are for metres.
+	sun.shadow_enabled = _arg("noshadow", "") == ""
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
+	sun.directional_shadow_max_distance = float(_arg("shadow_km", "7")) * 1000.0
+	sun.directional_shadow_split_1 = 0.04       # ~280 m: the boulders and the near dune faces
+	sun.directional_shadow_split_2 = 0.13       # ~900 m
+	sun.directional_shadow_split_3 = 0.42       # ~2.9 km
+	sun.directional_shadow_fade_start = 0.85
+	sun.directional_shadow_blend_splits = true
+	sun.shadow_bias = 0.09
+	sun.shadow_normal_bias = 1.6
+	sun.shadow_opacity = 0.92
 	add_child(sun)
 
 
@@ -199,6 +214,7 @@ func _build_terrain() -> void:
 		sh.set_shader_parameter("dune_spacing", float(_arg("dunes", "260")))
 		sh.set_shader_parameter("dune_height", 7.0)
 		sh.set_shader_parameter("sand_top", 2600.0)
+		_bind_layers(sh)
 		terrain.material_override = sh
 	add_child(terrain)
 	var aabb := terrain.get_aabb()
@@ -369,6 +385,54 @@ func _vis_limit() -> float:
 	if w == "" or not KratorAtmosFx.KINDS.has(w):
 		return 1.0e9
 	return maxf(600.0, float(KratorAtmosFx.KINDS[w]["visibility_km"]) * 1000.0 * 0.5)
+
+
+# THE GROUND LAYERS, packed by godot/tools/pack_ground_layers.py --set catch-bowl out of core/materials/library.
+# Two Texture2DArrays, albedo and (normal.xy, roughness, luminance detail), and the tile size each layer wants.
+# The preview binds them to the shader's own samplers rather than the global kgd_* uniforms, because those belong to
+# the open world's chunk pipeline and this host is not on it (the exporter's own note: catch-bowl is not cut).
+const LAYERS_JSON := "res://data/ground_layers/catch-bowl/layers.json"
+
+
+func _bind_layers(sh: ShaderMaterial) -> void:
+	var f := FileAccess.open(LAYERS_JSON, FileAccess.READ)
+	if f == null:
+		print("  ground layers: none (run python3 godot/tools/pack_ground_layers.py --set catch-bowl)")
+		return
+	var doc: Dictionary = JSON.parse_string(f.get_as_text())
+	f.close()
+	var rows: Array = doc.get("layers", [])
+	if rows.is_empty():
+		return
+	var alb: Array[Image] = []
+	var nr: Array[Image] = []
+	var tiles := PackedFloat32Array()
+	var base := LAYERS_JSON.get_base_dir() + "/"
+	for r in rows:
+		var ia := Image.load_from_file(base + String(r["albedo"]))
+		var inr := Image.load_from_file(base + String(r["normal_rough"]))
+		if ia == null or inr == null:
+			print("  ground layers: %s will not load" % str(r.get("name")))
+			return
+		# the albedo is colour and wants mips; the packed nr is data and wants them too, or a slope a kilometre off
+		# shimmers. Both must be the same size and format or the array will not build.
+		ia.convert(Image.FORMAT_RGB8)
+		ia.generate_mipmaps()
+		inr.convert(Image.FORMAT_RGBA8)
+		inr.generate_mipmaps()
+		alb.append(ia)
+		nr.append(inr)
+		tiles.append(float(r.get("tile_m", 2.0)))
+	var ta := Texture2DArray.new()
+	var tn := Texture2DArray.new()
+	if ta.create_from_images(alb) != OK or tn.create_from_images(nr) != OK:
+		print("  ground layers: the arrays will not build")
+		return
+	sh.set_shader_parameter("gl_albedo", ta)
+	sh.set_shader_parameter("gl_nr", tn)
+	sh.set_shader_parameter("tile_m", tiles)
+	sh.set_shader_parameter("has_layers", true)
+	print("  ground layers: %d from %s, tiles %s m" % [rows.size(), doc.get("set", "?"), str(tiles)])
 
 
 # a model pixel to a metre in the mesh's frame (the box's corner is the mesh's origin)

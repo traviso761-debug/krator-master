@@ -1,0 +1,86 @@
+{
+  "format": "krator-ground-layers",
+  "version": 1,
+  "size": 512,
+  "layers": [
+    {
+      "index": 0,
+      "name": "sand_dune",
+      "library": "ground.sand.dune",
+      "tile_m": 2.4,
+      "mean_linear": [
+        0.51501,
+        0.41218,
+        0.28719
+      ],
+      "albedo": "tex/layer_0_sand_dune.albedo.webp",
+      "normal_rough": "tex/layer_0_sand_dune.nr.webp"
+    },
+    {
+      "index": 1,
+      "name": "salt_crust",
+      "library": "ground.salt",
+      "tile_m": 3.0,
+      "mean_linear": [
+        0.48146,
+        0.40775,
+        0.31109
+      ],
+      "albedo": "tex/layer_1_salt_crust.albedo.webp",
+      "normal_rough": "tex/layer_1_salt_crust.nr.webp"
+    },
+    {
+      "index": 2,
+      "name": "ironstone",
+      "library": "ground.ironstone",
+      "tile_m": 2.8,
+      "mean_linear": [
+        0.31516,
+        0.09818,
+        0.06352
+      ],
+      "albedo": "tex/layer_2_ironstone.albedo.webp",
+      "normal_rough": "tex/layer_2_ironstone.nr.webp"
+    },
+    {
+      "index": 3,
+      "name": "reg_gravel",
+      "library": "ground.gravelly_sand",
+      "tile_m": 1.9,
+      "mean_linear": [
+        0.29018,
+        0.15986,
+        0.07432
+      ],
+      "albedo": "tex/layer_3_reg_gravel.albedo.webp",
+      "normal_rough": "tex/layer_3_reg_gravel.nr.webp"
+    },
+    {
+      "index": 4,
+      "name": "slickrock",
+      "library": "ground.slickrock",
+      "tile_m": 4.2,
+      "mean_linear": [
+        0.48596,
+        0.22012,
+        0.10759
+      ],
+      "albedo": "tex/layer_4_slickrock.albedo.webp",
+      "normal_rough": "tex/layer_4_slickrock.nr.webp"
+    },
+    {
+      "index": 5,
+      "name": "scree",
+      "library": "ground.gravel019",
+      "tile_m": 1.4,
+      "mean_linear": [
+        0.24633,
+        0.21667,
+        0.16349
+      ],
+      "albedo": "tex/layer_5_scree.albedo.webp",
+      "normal_rough": "tex/layer_5_scree.nr.webp"
+    }
+  ],
+  "set": "catch-bowl"
+}

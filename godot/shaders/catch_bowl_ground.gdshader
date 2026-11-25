@@ -18,6 +18,18 @@
 shader_type spatial;
 
 #include "res://shaders/lib/breakup.gdshaderinc"
+#include "res://shaders/lib/hextile.gdshaderinc"
+
+// THE GROUND'S OWN TEXTURE, hex-tiled (Mikkelsen 2022) out of core/materials/library through
+// godot/tools/pack_ground_layers.py --set catch-bowl. Six layers in the roles terrain.gdshader gives the indices,
+// so the set drops into the 1:1 shader when the region is cut. Two are sampled a fragment -- a base chosen by the
+// province, and the rock -- and blended by slope: six taps, where blending all six would be eighteen.
+uniform sampler2DArray gl_albedo : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2DArray gl_nr : filter_linear_mipmap_anisotropic, repeat_enable;
+uniform bool has_layers = false;
+uniform float tile_m[6];     // metres a tile per layer, set from layers.json (a uniform array cannot carry defaults)
+uniform float tex_fade_m = 2600.0;   // the texture's own fade: 2.4 m grain is noise past this
+uniform float tex_strength = 1.0;
 
 uniform vec2 wind_dir = vec2(0.94, 0.34);   // unit, the prevailing wind the dunes lie across
 uniform float dune_spacing = 260.0;         // metres crest to crest
@@ -36,6 +48,12 @@ uniform float scree_from = 0.10;            // the slope below which there is no
 uniform float breakup = 0.16;               // how much the flat tint bands are allowed to vary
 uniform float province = 1.0;               // the erg/reg mosaic, 0..1
 uniform float detail = 1.0;                 // the whole near-field layer, 0..1
+
+// a detail ratio made safe: mostly value, a third of the hue, and never more than a half stop either way
+vec3 kh_tame(vec3 d) {
+	float l = dot(d, vec3(0.3333));
+	return clamp(mix(vec3(l), d, 0.34), vec3(0.62), vec3(1.55));
+}
 
 varying vec3 v_wpos;
 varying vec3 v_wnorm;
@@ -148,6 +166,70 @@ void fragment() {
 			n = normalize(n + vec3(sx, 0.0, sz) * 2.4 * scree);
 			col *= 1.0 - 0.10 * scree;
 			rough = min(1.0, rough + 0.04 * scree);
+		}
+	}
+
+	// --- THE GRAIN. Everything above is shape; this is what the ground is made of, and it is the difference
+	// between a shaded surface and a surface. The derivatives are taken here, outside any branch, so the mips are
+	// right whichever layers the fragment ends up sampling.
+	if (has_layers) {
+		float tnear = 1.0 - smoothstep(tex_fade_m * 0.45, tex_fade_m, dist);
+		if (tnear > 0.002) {
+			vec2 dpx = dFdx(wp.xz);
+			vec2 dpy = dFdy(wp.xz);
+			// the base layer the province asks for: sand in an erg, gravel on a reg, salt on the pan, ironstone up high
+			float salty = (1.0 - smoothstep(-900.0, -300.0, wp.y)) * (1.0 - smoothstep(0.02, 0.06, slope));
+			float highy = smoothstep(sand_top, sand_top + 1200.0, wp.y) * (1.0 - smoothstep(0.10, 0.22, slope));
+			float base_fl = 0.0;
+			float best = max(erg, 0.08);
+			if (reg > best) { best = reg; base_fl = 3.0; }
+			if (salty > best) { best = salty; base_fl = 1.0; }
+			if (highy > best) { best = highy; base_fl = 2.0; }
+			float rock_fl = slope > scree_from * 2.2 ? 4.0 : 5.0;
+			float rockw = smoothstep(scree_from * 0.8, scree_from * 2.4, slope);
+
+			int bi = int(base_fl);
+			int ri = int(rock_fl);
+			vec3 ab; vec4 nb;
+			kh_sample(gl_albedo, gl_nr, base_fl, wp.xz / tile_m[bi], dpx / tile_m[bi], dpy / tile_m[bi], ab, nb);
+			vec3 ar; vec4 nr2;
+			kh_sample(gl_albedo, gl_nr, rock_fl, wp.xz / tile_m[ri], dpx / tile_m[ri], dpy / tile_m[ri], ar, nr2);
+			// THE DEVIATION FROM ITS OWN MEAN, not the colour. A library set carries its own cast -- ironstone's
+			// mean is [0.32, 0.10, 0.06], because desert varnish really is that red -- and multiplying the
+			// region's tint by the sample turned every upland pink, losing the height bands and the provinces
+			// that say where you are. What a detail texture should add is grain, mottle and small shadows, with
+			// the cast divided out.
+			//
+			// THE MEAN IS THE TEXTURE'S TOP MIP, not a number passed in. layers.json records mean_linear and I
+			// used it, and the ground came back blown white: the mean is linear, and whether the sampler hands
+			// back linear or sRGB is exactly the thing not to assume -- get it wrong and a mid grey divides to
+			// 2.4 and every clamp saturates. A 512 px map at lod 9 IS its mean, in whatever space the sampler
+			// is working in, so the ratio is right either way and costs one tap.
+			vec3 mb = textureLod(gl_albedo, vec3(0.5, 0.5, base_fl), 9.0).rgb;
+			vec3 mr = textureLod(gl_albedo, vec3(0.5, 0.5, rock_fl), 9.0).rgb;
+			vec3 ab_d = kh_tame(ab / max(mb, vec3(0.02)));
+			vec3 ar_d = kh_tame(ar / max(mr, vec3(0.02)));
+			vec3 grain = mix(ab_d, ar_d, rockw);
+			vec4 gnr = mix(nb, nr2, rockw);
+
+			// the texture multiplies the tint rather than replacing it: the height bands and the provinces are the
+			// region's own colour and the grain is what it is made of. Normalised by the layer's own mean so a dark
+			// set does not darken the country.
+			// THE GRAIN IS A MODULATION, NOT A REPLACEMENT. Taking 0.45 of the layer's hue made the whole upland
+			// pink, because ironstone's mean is [0.32, 0.10, 0.06] -- desert varnish really is that red, but the
+			// region's own height bands and provinces are what say where you are, and a texture that overrides
+			// them loses the country. 0.22 lets the material show through the colour instead of replacing it.
+			// grain is now a ratio around 1.0, so this is a modulation and nothing else
+			vec3 tinted = col * mix(vec3(1.0), grain, 0.80);
+			col = mix(col, tinted, tnear * tex_strength);
+			// its normal, in world terms: the maps are tangent-space on a ground plane, so xy maps to xz
+			vec2 tn = (gnr.rg * 2.0 - 1.0) * tnear * tex_strength;
+			n = normalize(n + vec3(tn.x, 0.0, tn.y) * 0.5);
+			// THE DESERT STAYS ROUGH. Taking the packed roughness straight made the ground glossy and the whole
+			// near field washed out to cream: a library roughness map is authored for the material in a lit scene,
+			// not for sand under a 1.23 atm sun, and a sand sheet is about as rough as a surface gets. The map's
+			// variation is kept and its absolute level is not.
+			rough = clamp(mix(rough, 0.82 + 0.16 * gnr.b, tnear * 0.7 * tex_strength), 0.78, 1.0);
 		}
 	}
 
