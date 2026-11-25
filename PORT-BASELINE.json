@@ -1256,6 +1256,10 @@
    "bytes": 857715,
    "sha256": "b755e0c6acc415f0ec1aec5bdc357495427fb676bcfafb7e1fd4a7b8e7b28d72"
   },
+  "kits/ancients/dist/tethis.html": {
+   "bytes": 723954,
+   "sha256": "4c304ccd0219e4a5a0325c99c487e56cd99bd4e7406f1dbb2a39dfe9a5e33060"
+  },
   "kits/ancients/dist/theodiga-today.html": {
    "bytes": 3466583,
    "sha256": "580ea84e82a998ab0d360dd198d18a919ae2ff4a8de05191a35e626ed8df4724"
