@@ -51,9 +51,18 @@ fragments no station overrides, so every page takes it the same way; each piece 
   core/terrain's lava-flow module (`shared/46k-host-klava-flows.js`, `THRONE_KLAVA_FLOWS`: a flow given `klava` is run by `KLAVA.bake` over the
   ground the older flows left, four vents along the fissure's middle, 1.0 Mm3, and laid into the kit's mosaic; 1.9 s at load; a check that it
   froze whole, with a negative). `?klava=0` the kit's sheet.
-  **Owed:** KLAVA on the kipuka (five flows of ~16 Mm3 each, 5 km long: too slow to bake at load, so a build-time bake as the Godthrone flank's
-  `bake-flows.js`; and the kipuka's tube, spine and views read the flows' paths, which a KLAVA deposit has not), the caldera's floor and the tube's
-  surface; rilles and pit chains on the kipuka (KRELIEF.rille, KRELIEF.tube, KRELIEF.tubeRille over the kipuka's tube); lava steps.
+  **The kipuka's five flows** (2026-11-24): frozen by KLAVA at build time (`stations/kipuka/bake-flows.js`, `station.json` `bake`, the Godthrone's
+  way, now in this build.py: re-run when its inputs' hash changes; `kipuka-flows.json` inlined as `KIPUKA_FLOWS`). A windward flow is tube-fed, so
+  each is baked as breakouts every 480 m along the kit's own path, each in its own box on one 20 m lattice over the ground the older ones left:
+  60 Mm3 in 2 s of node, under 1% drained off the map's edge; the hills part the lobes, so the kipukas are what the lava went round. The paths stay
+  the kit's (the tube, the streams' lines, the views). A KLAVA film under .35 m is not laid (the mosaic would call its ground still old). The
+  kipuka's 'nothing rooted under the water' check skips a moss skirt on a hyperjungle giant's buttress (on bark, not rooted: a 200 m tree's
+  buttresses reach over a stream's bank). **The rille** (KRELIEF.tube and KRELIEF.tubeRille, `38`/`38b` in `terrain`): over the tube's middle and
+  lower reach (52-70% of its length) its roof has fallen, a trench down to its floor between the skylights (the pit chain); the view 'The rille
+  (the tube's fallen roof)'; `?rille=0` none. **The caldera's floor:** the lake's overflow, eleven years old, 1.5 Mm3 from its far lip (away from
+  the breach), the pit walled off for the bake; 1.7 s at load; a check with a negative.
+  **Left, and why:** the tube's surface (station 11 is underground: its surface shows only through the skylights, and a flow over it would move the
+  skylights' rims and every check on them for nothing seen); lava steps (KRELIEF has no step form yet: a core addition).
 - **The row's ground kinds: taken 2026-11-03** (KGROUND's layer kinds, procedural, no texture unit; each after the page's own layers at a
   `/*KGROUND*/` marker; `?kinds=0` none): `clast` on the caldera's walls (the old flows' basalt, scoria and ash beds as blocks in an ash matrix,
   on the cliff layer's weight), `sand` on the ash desert's dunes (ripples across the plume's wind; no glints: they read `cameraPosition`, which

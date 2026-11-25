@@ -33,6 +33,7 @@ const sun=new THREE.DirectionalLight(0xffe2b8,1.2);sun.position.set(...SUN_POS);
 const fill=new THREE.DirectionalLight(0xb8c8d0,.26);fill.position.set(900,400,900);scene.add(fill);
 
 // ---------------------------------------------------------------- the land before the lava
+/*FLOWS-INPUT-BEGIN (bake-flows.js reads from here to the END marker: the land the flows run over; plain maths on BIO.fn) */
 const TERR={R:2600};
 const UP=[.97,-.24],DN=[-.97,.24],PERP=[.24,.97];   // toward the summit (east), down the flank (west), across
 function slopeH(x,z){const u=x*UP[0]+z*UP[1];
@@ -42,6 +43,7 @@ const HILLS=[{x:-250,z:-950,r:470,h:34,s:1.3},{x:750,z:350,r:400,h:30,s:2.2},{x:
  {x:-1950,z:-1650,r:330,h:24,s:5.9},{x:150,z:1650,r:380,h:26,s:6.4}];
 function hillH(x,z){let h=0;for(const H of HILLS){const dx=x-H.x,dz=z-H.z,D=Math.hypot(dx,dz);if(D>H.r*1.5)continue;
  const a=Math.atan2(dz,dx),d=D/(H.r*(1+.12*Math.sin(3*a+H.s)+.07*Math.sin(5*a+2*H.s)));h=Math.max(h,H.h*Math.pow(smooth(1.25,0,d),1.6));}return h;}
+/*FLOWS-INPUT-END*/
 // THE STREAMS: perennial, meandering west across the flank; each a centre line along the fall line (P0 a point on it).
 // Their lines are CHOSEN after the lava (47: the lines through the most old ground) and cut after it: a stream valley cut
 // before the flows would only have led the lava down it and buried it

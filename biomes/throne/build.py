@@ -96,7 +96,7 @@ if STATION:
     # src/89w-host-water.js is station 1's water (core/water, 2026-10-26): a station draws its own water in its own 89w (or none)
     PATH.pop('89w-host-water.js',None)
     for f in os.listdir(STN_DIR):
-        if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
+        if (f.endswith('.js') or f.endswith('.html')) and re.match(r'\d',f): PATH[f]=os.path.join(STN_DIR,f)   # numbered fragments only (a station's bake script is not one)
     for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
     # core/terrain fragments a station takes by path (station.json "terrain"; 2026-11-03: the glacier's KGLACIER, 44g and host/44h)
     for f in STN.get('terrain',[]): PATH[os.path.basename(f)]=os.path.join(CORE_T,os.path.normpath(f))
@@ -216,6 +216,22 @@ if os.path.isfile(_rj):
     VIRTUAL['45a3-host-region-data.js']='/* GENERATED from %s (tools/sites51.py; do not edit) */\nconst REGION_DATA=%s;\n'%(
         os.path.relpath(_rj,HERE).replace(os.sep,'/'),open(_rj,encoding='utf-8').read().strip())
     PATH['45a5-host-region.js']=os.path.normpath(os.path.join(HERE,'..','godthrone','src','45a5-host-region.js'))
+# A STATION'S BAKE (2026-11-24, the Godthrone's way: its build.py; station.json "bake": {"script", "out", "name", "slot", "inputs": [paths from the
+# repo root]}): a deterministic node bake (the kipuka's frozen flows: KLAVA.bake) whose result is committed beside the station and inlined as a
+# generated fragment; re-run only when the hash of its inputs (the files it reads, the script itself) changes
+if STATION and STN.get('bake'):
+    import hashlib, json as _json
+    _bk=STN['bake']; _outp=os.path.join(STN_DIR,_bk['out']); _hh=hashlib.sha256()
+    _root=os.path.normpath(os.path.join(HERE,'..','..'))
+    for _f in _bk.get('inputs',[]): _hh.update(open(os.path.join(_root,*_f.split('/')),'rb').read().replace(b'\r\n',b'\n'))
+    _hx=_hh.hexdigest()[:16]
+    _cur=_json.load(open(_outp,encoding='utf-8')).get('hash') if os.path.isfile(_outp) else None
+    if _cur!=_hx:
+        _node=find_node()
+        if not _node: sys.exit('build.py: %s is stale (or missing) and there is no node to bake it'%_bk['out'])
+        print('baking %s (its inputs changed) ...'%_bk['out'])
+        if subprocess.call([_node,os.path.join(STN_DIR,_bk['script']),_outp,_hx])!=0: sys.exit('build.py: the bake failed')
+    VIRTUAL[_bk.get('slot','45a2-host-bake-data.js')]='/* GENERATED from %s (do not edit) */\nconst %s=%s;\n'%(_bk['out'],_bk['name'],open(_outp,encoding='utf-8').read().strip())
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]
