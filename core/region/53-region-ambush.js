@@ -63,21 +63,27 @@ KREGION.part('53-region-ambush', function (H) {
        no cargo at all, so `wants` is not read for it */
     var takeCargo = function (Cr, Pt, share, A, rid) {
       var got = {}; if (Pt.kind === 'stalker') return got;
+      /* BOOK IT, ROW BY ROW. Reaching into a hold mid-leg takes the load out of the at-sea pool, and a leg's
+         identity is `at sea + shipped - landed = at sea`: without this the ambush year's ledger failed with `0 at
+         sea + 90 shipped - 24 landed`. It is a loss, not a landing -- the leg's receiver never sees it -- so it
+         goes on the route's `lost` tally, and `land()` below books the cache's side as an import from abroad.
+         PER ROW, because on a road with halts one carrier holds loads for several stops and each row is on its own
+         leg: booking the carrier's own from/to for all of them balanced nothing. */
       (Pt.wants || []).forEach(function (g) {
         (Cr.cargo || []).forEach(function (row) { if (row.good !== g || row.n <= 0) return;
-          var n = Math.floor(row.n * share); if (n <= 0) return; row.n -= n; got[g] = (got[g] || 0) + n; }); });
-      /* BOOK IT. Reaching into a hold mid-leg takes the load out of the at-sea pool, and the leg's identity is
-         `at sea + shipped - landed = at sea`: without this the ambush year's ledger failed with `0 at sea + 90
-         shipped - 24 landed`. It is a loss, not a landing -- the leg's receiver never sees it -- so it goes on the
-         route's `lost` tally (SIM.tradeLose), and `land()` below books the cache's side as an import from abroad. */
-      Object.keys(got).forEach(function (g) { A.took[g] = (A.took[g] || 0) + got[g];
-        if (SIM.tradeLose) SIM.tradeLose(rid, Cr, g, got[g]); });
+          var n = Math.floor(row.n * share); if (n <= 0) return; row.n -= n; got[g] = (got[g] || 0) + n;
+          if (SIM.tradeLose) SIM.tradeLose(rid, Cr, row, n); }); });
+      Object.keys(got).forEach(function (g) { A.took[g] = (A.took[g] || 0) + got[g]; });
       return got;
     };
+    /* Where the take goes. economyLand puts it in the warehouse; economyBook('imported') is what tells the books it
+       came from outside, and without it the cache held goods out of nowhere -- the ambush year closed every leg and
+       then failed on `svhmyhf33w iron: 0 + 0 made + 0 in ... is not the 1975 held`. The route booked the loss as
+       off the map, so this is the other end of it: an import from abroad, which the ledger's abroadIn allows. */
     var land = function (Pt, got) { if (!Pt.cache || !spec[Pt.cache]) return;
       Object.keys(got).forEach(function (g) { if (got[g] <= 0) return;
         SIM.withEcon(Pt.cache, function () { var w = Pt.store && spec[Pt.cache].works.some(function (x) { return x.id === Pt.store; })
-          ? Pt.store : spec[Pt.cache].works[0].id; SIM.economyLand(g, got[g], w); }); }); };
+          ? Pt.store : spec[Pt.cache].works[0].id; SIM.economyLand(g, got[g], w); SIM.economyBook('imported', g, got[g]); }); }); };
     SIM.stepHooks.push(function (minute) {
       P.forEach(function (Pt) {
         var A = S.ambushes[Pt.id];

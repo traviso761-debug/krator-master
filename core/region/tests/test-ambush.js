@@ -35,13 +35,22 @@ function run(days,edit){const H=load(),V=CATCH_TUNE.join(XAN_TUNE.valley(PX,{}),
  T.ok('R2: the ladder reads as a ladder -- an unguarded train is broken by either, a guarded one is passed or tolled by the bandits and passed or mauled by the Stalkers, and explosives pass them both',good,
   'unguarded: Tin-Skulls '+JSON.stringify(unguardedTS)+'; guarded(6): '+JSON.stringify(guardedTS)+' and Stalkers '
   +JSON.stringify(guardedST)+'; with explosives: '+JSON.stringify(kitted));
+ /* THE FAULT IS A LADDER WITH NO RUNGS LEFT: every attempt on a guarded train breaks it. The probe used to be
+    strength 11 against a guard of 6, because that is what the FIRST THRESHOLDS did; with the rungs as they now
+    stand 11 tolls four times in twenty and mauls the rest, so the old probe no longer produces the fault it is
+    named for and the negative passed on it. 23 against 6 is where the present ladder runs out of rungs. */
  T.neg('a ladder that breaks a guarded train every time is the one the first numbers gave',
-  x=>!x.broken,tally('outlaw',11,6),guardedTS);}
+  x=>!x.broken,tally('outlaw',23,6),guardedTS);}
 
 /* ---- THE TWO DANGERS MUST NOT BLUR (PLAN-RAIDS.md section 4), and it is the rule that enforces it, not the numbers:
    a Stalker party has no `tolled` rung at all. */
 {const H=load();
- const ladder=kind=>Array.from({length:40},(_,i)=>H.ambushOutcome({kind,strength:7,guard:3,roll:i/40}));
+ /* ACROSS STRENGTHS, not at one ratio. The probe was a single strength of 7 against a guard of 3, and at that
+    advantage (1.75) an outlaw always mauls and so does a Stalker: both sets came out {mauled} and the check could
+    not see the difference it exists to see. That is the ladder behaving correctly -- tolling is what a gang too
+    weak to take properly does, and 1.75 is not weak -- so the probe has to sweep the strengths a party can have. */
+ const ladder=kind=>{const out=[];for(let st=1;st<=14;st++)for(let i=0;i<40;i++)
+  out.push(H.ambushOutcome({kind,strength:st,guard:3,roll:i/40}));return out;};
  const ol=new Set(ladder('outlaw')),st=new Set(ladder('stalker'));
  const good=ol.has('tolled')&&!st.has('tolled');
  T.ok('R2: a bandit party can toll a train and a Stalker party never can -- the two kinds do not share a ladder',good,

@@ -50,7 +50,7 @@
 //   SIM.tradeReport(id?) -> {id: {stops, carriers:[{k, phase, at, to, cargo, eta}], shipped:{'a>b': {good: n}},
 //               landed:{'a>b': {good: n}}, lost:{'a>b': {good: n}}, tithed:{'a>b': {good: n}}, owed:{'a:good': n},
 //               voyages, refused, empty}}
-//   SIM.tradeLose(routeId, carrier, good, n)  cargo taken OFF a carrier in flight, booked so the ledger still closes.
+//   SIM.tradeLose(routeId, carrier, cargoRow, n)  cargo taken OFF a carrier in flight, booked so the ledger closes.
 //     A leg's identity is `at sea before + shipped - landed = at sea after`; anything that reaches into a carrier's
 //     hold mid-leg and removes a load breaks it, because the at-sea pool falls with no landing to answer for it. That
 //     is what an ambush does (core/region/53-region-ambush.js), and before this call existed the ambush year's ledger
@@ -113,12 +113,19 @@
       var s=R.stops[end==='to' ? (C.dest!=null ? C.dest : C.to) : (C.orig!=null ? C.orig : C.from)];
       if(!s || s.settlement!==key) return; C.cargo.forEach(function(c){ if(c.good===g) n+=c.n; }); }); });
     return n; }
-  /* cargo off a carrier in flight: the leg it is on, and the tally the ledger reads. `n` is what was actually taken. */
-  SIM.tradeLose = function(rid, C, g, n){ var T=SIM.TRADE, R=T && T.routes[rid]; if(!R || !(n>0) || !C) return 0;
-    var a = C.orig!=null ? C.orig : C.from, b = C.to!=null ? C.to : C.dest;
-    if(a==null || b==null || !R.stops[a] || !R.stops[b]) return 0;
-    var key = R.stops[a].settlement+'>'+R.stops[b].settlement, o = R.lost[key] || (R.lost[key]={});
-    o[g] = (o[g]||0) + n; return n; };
+  /* Cargo off a carrier in flight, onto the leg the LOAD is on. The leg is the load's, not the carrier's: on a road
+     with halts (`forHalts`) one carrier holds loads for several stops at once, and 77-sim-7-ledger.js's at-sea
+     snapshot keys each row by `orig > (row.at or dest)`. Keying the loss by the carrier's own from/to put every
+     good on one leg, which balanced nothing -- the first fix here did exactly that and the ambush year still
+     failed. This mirrors the snapshot line for line. */
+  SIM.tradeLeg = function(R, C, row){
+    if(C.orig!=null) return R.stops[C.orig] && R.stops[row && row.at!=null ? row.at : C.dest]
+      ? R.stops[C.orig].settlement+'>'+R.stops[row && row.at!=null ? row.at : C.dest].settlement : null;
+    return C.from!=null && C.to!=null && R.stops[C.from] && R.stops[C.to]
+      ? R.stops[C.from].settlement+'>'+R.stops[C.to].settlement : null; };
+  SIM.tradeLose = function(rid, C, row, n){ var T=SIM.TRADE, R=T && T.routes[rid]; if(!R || !(n>0) || !C || !row) return 0;
+    var key = SIM.tradeLeg(R, C, row); if(!key) return 0;
+    var o = R.lost[key] || (R.lost[key]={}); o[row.good] = (o[row.good]||0) + n; return n; };
   SIM.tradeInbound = function(g, s){ if(!SIM.TRADE) return 0; var k=s!=null ? s : SIM.ECON && SIM.ECON.settlement; return k==null ? 0 : atSea(g, k, 'to'); };
   SIM.tradeOutbound = function(g, s){ if(!SIM.TRADE) return 0; var k=s!=null ? s : SIM.ECON && SIM.ECON.settlement; return k==null ? 0 : atSea(g, k, 'from'); };
 
