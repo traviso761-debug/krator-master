@@ -920,3 +920,11 @@ bore) and muddy flood colours. The clock is `wtrFloodT`: the page's `o.uniforms.
   register `F.hazardRecord()` in core/tags (with core/hazard's `KHAZ.front` loaded) so the walker's danger and the water are one record.
 - A gorge's own river stays a `WATER.flow`; the flood lies over it while it runs and `WATER.at(x, z, t)` / `heightAt` answer the higher water.
 - **Not judged by eye yet:** no page lists these files; the drawing is built on a three.js stub and its law checked as text, never compiled on a GPU.
+
+## Tides from the scale model: `KTIDE` (2026-11-25: tide/23; `node core/water/tide/test-tide.js`)
+
+`tide/23-core-water-tide.js` reads the record the scale model's tidal calculator bakes (`tools/scale-model/model/data/tides.json`,
+`tools/scale-model/tides/bake_tides.py`): per 6 km cell of each sea basin the D1 and D2 amplitude and phase, the peak current and the
+depth. `KTIDE.load(data, {origin}).site({x, z}, {range, lag})` gives a place's `level(t)`, `rate(t)`, `state(t)`, range, highs and lows;
+`KTIDE.bindWater(WATER, site)` drives `WATER.seaLevel` from it in place of the single sinusoid of `WATER.tide`. A build inlines only its
+region (`tide/tide.py --box`). Read `tide/README.md`.
