@@ -310,6 +310,205 @@ const ADG_HEX = (function(){
   return specs;
  }
 
+ /* ================================================================ Hexagonal Harbour Mole (Z6_WHARF)
+    The mole is one big flat-Z hexagon (ADG_SITE.MOLE_HEX, face 5 flush on the shore). Inside it: a quay ring avenue
+    (apothem ringR * sqrt3/2), and a honeycomb of flat-Z street cells (cellR) clipped to that ring, on the same lattice
+    orientation as the cantonment. Full cells take a block recipe (godown, twin sheds, three-sided court, customs, lift
+    foot); cells cut by the ring take one pulled-in piece; the five water faces carry the quay pieces facing the sea and
+    the shore face carries sheds facing inward, clear of the girder-lift pad and the harbour road. Every ry is a
+    multiple of 60 deg (ryForFace). Plain records: no THREE, no DOM. */
+ let _moleNet = null;
+ function buildMoleNet(){
+  if (_moleNet) return _moleNet;
+  const M = ADG_SITE.MOLE_HEX;
+  const cx = M.cx, cz = M.cz;
+  const apMole = M.R * SQRT3 * 0.5;
+  const apRing = M.ringR * SQRT3 * 0.5;
+  const Rs = M.cellR, apCell = Rs * SQRT3 * 0.5;
+  const STREET_HALF = 3.5;
+  const apBlock = apCell - STREET_HALF;
+  const N = [];
+  for (let k = 0; k < 6; k++) N.push([Math.cos(faceAngle(k)), Math.sin(faceAngle(k))]);
+  function dotMax(dx, dz){
+   let m = -1e9;
+   for (let k = 0; k < 6; k++) { const d = dx * N[k][0] + dz * N[k][1]; if (d > m) m = d; }
+   return m;
+  }
+  /* Liang-Barsky clip of segment a-b to the ring hexagon (all six half-planes n_k . (p - c) <= apRing) */
+  function clipToRing(a, b){
+   let t0 = 0, t1 = 1;
+   const ax = a[0] - cx, az = a[1] - cz, dx = b[0] - a[0], dz = b[1] - a[1];
+   for (let k = 0; k < 6; k++) {
+    const den = dx * N[k][0] + dz * N[k][1];
+    const num = apRing - (ax * N[k][0] + az * N[k][1]);
+    if (Math.abs(den) < 1e-9) { if (num < 0) return null; continue; }
+    const t = num / den;
+    if (den > 0) { if (t < t1) t1 = t; } else { if (t > t0) t0 = t; }
+    if (t0 > t1) return null;
+   }
+   return [[a[0] + dx * t0, a[1] + dz * t0], [a[0] + dx * t1, a[1] + dz * t1]];
+  }
+  const ways = [];
+  const edgeMap = new Map();
+  const rank = { avenue: 4, main: 3, side: 2 };
+  function r2(p){ return [+p[0].toFixed(2), +p[1].toFixed(2)]; }
+  function addEdge(a, b, kind, tag){
+   const c = clipToRing(a, b);
+   if (!c || Math.hypot(c[1][0] - c[0][0], c[1][1] - c[0][1]) < 3.0) return;
+   const ka = Math.round(c[0][0] * 10) + ',' + Math.round(c[0][1] * 10);
+   const kb = Math.round(c[1][0] * 10) + ',' + Math.round(c[1][1] * 10);
+   const ek = ka < kb ? ka + '|' + kb : kb + '|' + ka;
+   const prev = edgeMap.get(ek);
+   if (!prev || rank[kind] > rank[prev.kind]) edgeMap.set(ek, { kind: kind, pts: [r2(c[0]), r2(c[1])], tag: tag });
+  }
+  /* Quay ring avenue */
+  const ringV = hexVerts(cx, cz, M.ringR);
+  for (let k = 0; k < 6; k++) ways.push({ kind: 'avenue', pts: [r2(ringV[k]), r2(ringV[(k + 1) % 6])], tag: 'Mole Hexagonal Quay Ring Avenue ' + k });
+  /* Honeycomb street cells */
+  const cells = [];
+  for (let q = -4; q <= 4; q++) {
+   for (let r = -4; r <= 4; r++) {
+    const ox = 1.5 * Rs * q, oz = SQRT3 * Rs * (r + 0.5 * q);
+    const dm = dotMax(ox, oz);
+    if (dm > apRing + apCell) continue;
+    const ring = Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r));
+    cells.push({ q: q, r: r, x: cx + ox, z: cz + oz, ox: ox, oz: oz, dm: dm, ring: ring,
+     full: dm + apBlock <= apRing - STREET_HALF });
+    const V = hexVerts(cx + ox, cz + oz, Rs);
+    for (let k = 0; k < 6; k++) addEdge(V[k], V[(k + 1) % 6], ring === 0 ? 'main' : 'side', 'Mole Honeycomb Street');
+   }
+  }
+  edgeMap.forEach(function(v){ ways.push(v); });
+  /* Lift-foot spur: ring face 5 straight out (330 deg) to the girder-lift lower station */
+  const lift = ADG_SITE.HOISTS.filter(function(h){ return h.id === 'et_girder_lift'; })[0];
+  if (lift) {
+   const n5 = N[5];
+   const fx = lift.foot[0] - cx, fz = lift.foot[1] - cz;
+   const along = fx * n5[0] + fz * n5[1];
+   const px = lift.foot[0] - n5[0] * (along - apRing), pz = lift.foot[1] - n5[1] * (along - apRing);
+   ways.push({ kind: 'main', pts: [r2([px, pz]), r2([lift.foot[0] - n5[0] * 6.0, lift.foot[1] - n5[1] * 6.0])], tag: 'Mole Girder-Lift Foot Spur' });
+  }
+
+  /* ---- Lots ---- */
+  const specs = [];
+  function push(key, x, z, ry, v, role){
+   specs.push({ key: 'eternian:' + key, x: +x.toFixed(2), z: +z.toFixed(2), ry: +ry.toFixed(4), v: v == null ? 0 : v, zone: 'Z6_WHARF', role: role });
+  }
+  /* A piece of depth d whose inner edge sits e from the cell centre, fronting face k */
+  function face(C, k, e, key, d, v, role){
+   const dn = e + d * 0.5;
+   push(key, C.x + N[k][0] * dn, C.z + N[k][1] * dn, ryForFace(k), v, role);
+  }
+  const lx = lift ? lift.foot[0] : 1e9, lz = lift ? lift.foot[1] : 1e9;
+  let liftCell = null, bestLift = 1e9;
+  for (let i = 0; i < cells.length; i++) {
+   const C = cells[i];
+   if (!C.full || C.ring === 0) continue;
+   const dl = Math.hypot(C.x - lx, C.z - lz);
+   if (dl < bestLift) { bestLift = dl; liftCell = C; }
+  }
+  const TWINS = [
+   ['et_wood_transit_shed', 11, 'et_wood_coaling_bunker', 12],
+   ['et_wood_transit_shed', 11, 'et_wood_transit_shed', 11],
+   ['et_wood_coaling_bunker', 12, 'et_wood_net_loft', 10],
+   ['et_wood_net_loft', 10, 'et_wood_chandlery', 10]
+  ];
+  const TRI = [['et_wood_chandlery', 10, 0], ['et_wood_net_loft', 10, 0], ['et_wood_chandlery', 10, 1]];
+  for (let i = 0; i < cells.length; i++) {
+   const C = cells[i];
+   const tag = ' (mole cell ' + C.q + ',' + C.r + ')';
+   if (C.full) {
+    if (C.ring === 0) {
+     push('et_customs_house', C.x, C.z, ryForFace(1), 0, 'Superintendency Mole Weighbridge & Customs House' + tag);
+     face(C, 1, 7.0, 'et_wood_tally_kiosk', 9, 0, 'Weighbridge South Hexagonal Timber Tally Kiosk' + tag);
+     face(C, 4, 7.0, 'et_wood_tally_kiosk', 9, 1, 'Weighbridge North Hexagonal Timber Tally Kiosk' + tag);
+     continue;
+    }
+    if (C === liftCell) {
+     push('et_tube_station', C.x, C.z, ryForFace(1), 0, 'Girder-Lift Foot Pneumatic Dispatch Hex Kiosk' + tag);
+     face(C, 1, 5.3, 'et_wood_transit_shed', 11, 0, 'Girder-Lift South Rapid-Sling Timber Shed' + tag);
+     face(C, 4, 5.3, 'et_wood_transit_shed', 11, 1, 'Girder-Lift North Rapid-Sling Timber Shed' + tag);
+     continue;
+    }
+    const pick = Math.floor(hashU(C.q + 40, C.r + 40, 71) * 10);
+    const kk = Math.floor(hashU(C.q + 40, C.r + 40, 72) * 3) % 3;
+    if (pick < 3) {
+     /* Godown block: timber hex warehouse with two street-front lofts */
+     push('et_wood_hex_warehouse', C.x, C.z, 0.0, C.ring & 1, 'Timber Hexagonal Bonded Godown' + tag);
+     face(C, 1, 7.3, 'et_wood_chandlery', 10, 0, 'Godown Ship-Stores Timber Chandlery' + tag);
+     face(C, 4, 7.3, pick === 0 ? 'et_wood_net_loft' : 'et_wood_chandlery', 10, 1, 'Godown Cordage & Net Loft' + tag);
+    } else if (pick < 7) {
+     /* Twin-shed block: two long sheds back to back across the cell, fronting opposite streets */
+     const T = TWINS[(pick + C.q * 3 + C.r * 7 + 64) % TWINS.length];
+     face(C, kk, 1.0, T[0], T[1], 0, 'Back-to-Back Timber Freight Shed' + tag);
+     face(C, kk + 3, 1.0, T[2], T[3], 1, 'Back-to-Back Timber Freight Shed' + tag);
+    } else {
+     /* Three-sided court: three lofts on alternate faces round a hexagonal tally kiosk */
+     const k0 = kk & 1;
+     push('et_wood_tally_kiosk', C.x, C.z, 0.0, 0, 'Court Hexagonal Timber Tally Kiosk' + tag);
+     for (let m = 0; m < 3; m++) {
+      const P = TRI[(m + pick) % TRI.length];
+      face(C, k0 + m * 2, 6.6, P[0], P[1], P[2], 'Hex-Court Timber Loft' + tag);
+     }
+    }
+   } else {
+    /* Ring-cut cell: one piece, pulled in off the ring avenue */
+    const room = apRing - STREET_HALF - 1.5 - C.dm;
+    if (room < 3.5) continue;
+    let kmax = 0, dBest = -1e9;
+    for (let k = 0; k < 6; k++) { const d = C.ox * N[k][0] + C.oz * N[k][1]; if (d > dBest) { dBest = d; kmax = k; } }
+    if (room + 3.0 >= 9.6) {
+     const sh = Math.max(0, 9.6 - room);
+     push('et_wood_hex_warehouse', C.x - N[kmax][0] * sh, C.z - N[kmax][1] * sh, 0.0, (C.q + C.r) & 1, 'Ring-Street Timber Hexagonal Store' + tag);
+    } else if (room + 3.0 >= 6.2) {
+     const sh = Math.max(0, 6.2 - room);
+     push('et_wood_tally_kiosk', C.x - N[kmax][0] * sh, C.z - N[kmax][1] * sh, 0.0, 1, 'Ring-Street Hexagonal Timber Tally Kiosk' + tag);
+    }
+   }
+  }
+  /* Quay strip between the ring avenue and the sea wall: pieces front the water (face k), laid along the face tangent */
+  const QUAY = {
+   0: [['et_wood_coaling_bunker', 18, 12, 0], ['et_wood_crane_stage', 12, 10, 0], ['et_quay', 32, 14, 1], ['et_wood_crane_stage', 12, 10, 1], ['et_wood_coaling_bunker', 18, 12, 1], ['et_fish_landing', 14, 16, 0]],
+   1: [['et_wood_net_loft', 16, 10, 0], ['et_quay', 32, 14, 0], ['et_wood_crane_stage', 12, 10, 0], ['et_wood_coaling_bunker', 18, 12, 0], ['et_wood_crane_stage', 12, 10, 1], ['et_quay', 32, 14, 1]],
+   2: [['et_wood_boat_shed', 14, 18, 0], ['et_wood_boat_shed', 14, 18, 1], ['et_ferry_landing', 12, 16, 0], ['et_canal_landing', 12, 12, 0], ['et_wood_boat_shed', 14, 18, 0], ['et_wood_net_loft', 16, 10, 1]],
+   3: [['et_wood_crane_stage', 12, 10, 0], ['et_wood_transit_shed', 20, 11, 0], ['et_wood_net_loft', 16, 10, 0], ['et_wood_crane_stage', 12, 10, 1], ['et_wood_chandlery', 12, 10, 1]],
+   4: [['et_wood_crane_stage', 12, 10, 0], ['et_wood_transit_shed', 20, 11, 0], ['et_wood_crane_stage', 12, 10, 1], ['et_wood_transit_shed', 20, 11, 1], ['et_wood_boat_shed', 14, 18, 1], ['et_wood_net_loft', 16, 10, 0]]
+  };
+  const QUAY_NAME = ['South-East Farport Coaling Berth', 'South Junk & Mast Quay', 'South-West Slipway & Ferry Front', 'West Breakwater Front', 'North Tailrace Lighter Quay'];
+  const GAP = 2.5, T_LIM = 70.0;
+  for (let k = 0; k < 5; k++) {
+   const list = QUAY[k];
+   let tot = 0;
+   for (let i = 0; i < list.length; i++) tot += list[i][1] + (i ? GAP : 0);
+   let t = -Math.min(tot, 2 * T_LIM) * 0.5;
+   const tx = -N[k][1], tz = N[k][0];
+   for (let i = 0; i < list.length; i++) {
+    const P = list[i];
+    const tc = t + P[1] * 0.5;
+    t += P[1] + GAP;
+    if (Math.abs(tc) + P[1] * 0.5 > T_LIM) continue;
+    const dn = apMole - 1.6 - P[2] * 0.5;
+    push(P[0], cx + N[k][0] * dn + tx * tc, cz + N[k][1] * dn + tz * tc, ryForFace(k), P[3], QUAY_NAME[k] + ' ' + P[0].replace('et_wood_', 'timber ').replace('et_', '').replace(/_/g, ' '));
+   }
+  }
+  /* Breakwater storm-lantern on the west vertex, between faces 2 and 3 */
+  push('et_lighthouse', cx - M.R + 12.0, cz, 0.0, 0, 'Dam-Lee Breakwater Hexagonal Bronze Storm-Lantern Tower');
+  /* Shore face 5: sheds fronting the ring avenue (face 2 points inward), clear of the lift pad and the harbour road */
+  {
+   const k = 5, tx = -N[k][1], tz = N[k][0];
+   const lt = lift ? (lx - cx) * tx + (lz - cz) * tz : 1e9;
+   const SH = [[-56, 'et_wood_transit_shed', 20, 11, 0], [-33, 'et_wood_chandlery', 12, 10, 1], [lt + 34, 'et_wood_coaling_bunker', 18, 12, 1]];
+   for (let i = 0; i < SH.length; i++) {
+    const P = SH[i];
+    if (Math.abs(P[0] - lt) < 22 + P[2] * 0.5 || P[0] + P[2] * 0.5 > 50) continue;
+    const dn = apMole - 1.6 - P[3] * 0.5;
+    push(P[1], cx + N[k][0] * dn + tx * P[0], cz + N[k][1] * dn + tz * P[0], ryForFace(2), P[4], 'Shore-Root ' + P[1].replace('et_wood_', 'timber ').replace(/_/g, ' '));
+   }
+  }
+  _moleNet = { ways: ways, specs: specs, cells: cells, plazas: [] };
+  return _moleNet;
+ }
+
  /* Mathematical audit proving Z6 Eternian hexagonal buildings align to 60-degree lattice multiples & tile densely */
  function auditHexAlignment(lots){
   const z6Et = (lots || []).filter(function(l){ return l.zone === 'Z6' && l.kit === 'eternian'; });
@@ -345,7 +544,8 @@ const ADG_HEX = (function(){
   hexVerts: hexVerts,
   buildHexWaysAndPlazas: buildHexWaysAndPlazas,
   buildHexSpecs: buildHexSpecs,
-  auditHexAlignment: auditHexAlignment
+  auditHexAlignment: auditHexAlignment,
+  buildMoleNet: buildMoleNet
  };
 })();
 if (typeof module !== 'undefined' && module.exports) module.exports = ADG_HEX;

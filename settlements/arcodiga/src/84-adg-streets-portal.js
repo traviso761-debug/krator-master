@@ -446,12 +446,18 @@ const ADG_STREETS_PORTAL = (function(){
     }
    }
 
-   /* 3B. Dressed Basalt Mole Sea-Walls, Coping Kerbs, Timber Fender Piles & Bronze Mooring Bollards (West, North & South faces; East border flush to shore!) */
-   const moleEdges = [
-    [[664, 322], [340, 322],  0, -1],
-    [[340, 322], [340, 526], -1,  0],
-    [[340, 526], [732, 526],  0,  1]
-   ];
+   /* 3B. Dressed Basalt Mole Sea-Walls, Coping Kerbs, Timber Fender Piles & Bronze Mooring Bollards on the hexagonal mole's
+      five water faces (face k runs vertex k+1 -> vertex k... outward normal at 30 + 60k deg); face 5 lies flush on the shore */
+   const moleEdges = [];
+   {
+    const MV = ADG_SITE.LEE_WHARF_POLY, MH = ADG_SITE.MOLE_HEX;
+    for (let k = 0; k < 6; k++) {
+     if (k === MH.shoreFace) continue;
+     const a = MV[k], b = MV[(k + 1) % 6];
+     const ang = Math.PI / 6 + k * Math.PI / 3;
+     moleEdges.push([a, b, Math.cos(ang), Math.sin(ang)]);
+    }
+   }
    for (let e = 0; e < moleEdges.length; e++) {
     const p0 = moleEdges[e][0], p1 = moleEdges[e][1];
     const nx = moleEdges[e][2], nz = moleEdges[e][3];

@@ -22,6 +22,7 @@ const VIEWS = {};
  defView('eternian-fort-and-clock',    [ 955, 295,  335], [1195, 174,  545]);
  defView('dam-lee-coaling-quay',       [ 265,  58,  635], [ 525,  14,  425]);
  defView('mole-hoist-and-road',        [ 705, 284,  825], [ 702, 105,  277]);
+defView('mole-hex-grid',              [ 552, 330,  760], [ 556,   8,  492]);
 })();
 
 function setCharterMode(mode){

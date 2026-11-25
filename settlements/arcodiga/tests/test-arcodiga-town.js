@@ -127,16 +127,28 @@ const {
   nwBreach <= -35.0 && leeWharf >= 5.0 && leeWharf <= 12.0,
   'nwBreach=' + nwBreach.toFixed(1) + ' m, leeWharf=' + leeWharf.toFixed(1) + ' m');
 
- /* Verify the entire eastern border of the SE Harbour Mole sits 100% flush to the rising basalt shoreline (zero water moat!) */
+ /* The hexagonal mole stands dry everywhere (+5.5 m or more), and its face 5 runs flush into the basalt shore:
+    a sweep from 20 m inside face 5 to 40 m past it, along its whole length, never dips into water */
  let minMoleToShoreY = Infinity;
- for (const zz of [332, 375, 415, 465, 515]) {
-  for (let xx = 348; xx <= 760; xx += 8) {
+ for (let xx = 380; xx <= 760; xx += 4) {
+  for (let zz = 320; zz <= 660; zz += 4) {
+   if (!ADG_SITE.inPoly(xx, zz, ADG_SITE.LEE_WHARF_POLY) && !ADG_SITE.inPoly(xx, zz, ADG_SITE.MOLE_ROOT_POLY)) continue;
    const yy = ADG_SITE.bareGround(xx, zz);
    if (yy < minMoleToShoreY) minMoleToShoreY = yy;
   }
  }
+ {
+  const MH = ADG_SITE.MOLE_HEX, ap = MH.R * Math.sqrt(3) * 0.5;
+  const ang = Math.PI / 6 + MH.shoreFace * Math.PI / 3, nx = Math.cos(ang), nz = Math.sin(ang);
+  for (let t = -0.45 * MH.R; t <= 0.45 * MH.R; t += 5) {
+   for (let sOff = -20; sOff <= 40; sOff += 2) {
+    const yy = ADG_SITE.bareGround(MH.cx + nx * (ap + sOff) - nz * t, MH.cz + nz * (ap + sOff) + nx * t);
+    if (yy < minMoleToShoreY) minMoleToShoreY = yy;
+   }
+  }
+ }
  const etLift = ADG_SITE.HOISTS.find(function(h){ return h.id === 'et_girder_lift'; });
- T.ok('SE harbour mole sits 100% flush to shoreline (min y >= +5.5 m across x=348..760), cargo hoist anchors at shore root, and graded Harbour Road descends cleanly',
+ T.ok('SE hexagonal harbour mole stands dry (min y >= +5.5 m inside it and across its shore face into the cliff), cargo hoist anchors at shore root, and graded Harbour Road descends cleanly',
   minMoleToShoreY >= 5.5 &&
   etLift && etLift.foot[0] >= 670 && (etLift.head[0] - etLift.foot[0]) <= 195 &&
   ADG_SITE.HARBOUR_ROAD && ADG_SITE.HARBOUR_ROAD.length >= 8 &&
@@ -194,6 +206,36 @@ const plans = ADG_CITY.buildPlans({ fresh: true });
  T.ok('SE harbour mole densely deploys all 8 wooden disposable Eternian harbour building types with zero permanent dwellings',
   moleLots.length >= 45 && woodMoleLots.length >= 32 && woodKinds.size === 8,
   'moleLots=' + moleLots.length + ', woodMoleLots=' + woodMoleLots.length + ', woodKinds=' + woodKinds.size);
+
+ /* The mole is a regular hexagon on the Eternian lattice, and every mole street runs on it (multiples of 30 deg) */
+ function moleOnLattice(poly, ways){
+  const MH = ADG_SITE.MOLE_HEX;
+  for (let i = 0; i < 6; i++) {
+   const a = Math.atan2(poly[i][1] - MH.cz, poly[i][0] - MH.cx);
+   const r = Math.hypot(poly[i][0] - MH.cx, poly[i][1] - MH.cz);
+   const da = Math.abs(a - Math.round(a / (Math.PI / 3)) * (Math.PI / 3));
+   if (Math.abs(r - MH.R) > 0.05 || da > 1e-3) return false;
+  }
+  let n = 0;
+  for (let i = 0; i < ways.length; i++) {
+   const P = ways[i].pts;
+   if (!P || P.length < 2 || !ADG_SITE.inPoly(P[0][0], P[0][1], poly) || !ADG_SITE.inPoly(P[P.length - 1][0], P[P.length - 1][1], poly)) continue;
+   for (let j = 0; j + 1 < P.length; j++) {
+    const a = Math.atan2(P[j + 1][1] - P[j][1], P[j + 1][0] - P[j][0]);
+    const step = Math.PI / 6;
+    if (Math.abs(a - Math.round(a / step) * step) > 0.004) return false;
+   }
+   n++;
+  }
+  return n >= 60;
+ }
+ T.ok('SE harbour mole is a regular Eternian hexagon with a hexagonal street grid (ring avenue + honeycomb, all on the 30-degree lattice)',
+  moleOnLattice(ADG_SITE.LEE_WHARF_POLY, plans.ways),
+  'moleWays=' + plans.ways.filter(function(w){ return w.pts && ADG_SITE.inPoly(w.pts[0][0], w.pts[0][1], ADG_SITE.LEE_WHARF_POLY); }).length);
+ T.neg('mole lattice check catches a skewed street across the mole',
+  function(ws){ return moleOnLattice(ADG_SITE.LEE_WHARF_POLY, ws); },
+  plans.ways.concat([{ inst: 'cove_works', kind: 'side', w: 5, pts: [[500, 450], [560, 470]] }]),
+  plans.ways);
 
  T.ok('zero streets and zero buildings clip through Arcodiga dam-arch or x<=1022 East Stiffening Wing',
   arcClear.ok && arcClear.lotHits === 0 && arcClear.wayHits === 0,

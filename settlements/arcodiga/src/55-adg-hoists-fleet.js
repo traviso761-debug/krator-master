@@ -510,9 +510,9 @@ const ADG_FLEET = (function(){
    { id: 'cflit_dive_tug',  kind: 'salvageTug',     rsKey: 'salvage_tug',  culture: 'cflit-qbon',  name: 'Turbine-Vault Paktong Dive-Tender',          x:   28, z:   92, ry: -0.35, L: 16.5, B:  5.4, H:  9.0 },
 
    /* Z6 Sheltered SE Dam-Lee Farport Junk Coaling & Mast Quay */
-   { id: 'et_junk_farport1',kind: 'vothJunk',       rsKey: 'voth_junk',    culture: 'eternian',    name: 'Eternal State Supply Junk Farport-Tribute',  x:  472, z:  556, ry:  0.05, L: 28.0, B:  7.8, H: 19.0 },
-   { id: 'et_junk_farport2',kind: 'vothJunk',       rsKey: 'voth_junk',    culture: 'eternian',    name: 'Eternal State Timber & Coal Coaster Lux-III',x:  538, z:  562, ry: -0.08, L: 28.0, B:  7.8, H: 19.0 },
-   { id: 'et_lee_tug',      kind: 'salvageTug',     rsKey: 'salvage_tug',  culture: 'eternian',    name: 'Superintendency Relic & Coal Harbor Tug',    x:  396, z:  552, ry:  0.42, L: 16.5, B:  5.4, H:  9.0 }
+   { id: 'et_junk_farport1',kind: 'vothJunk',       rsKey: 'voth_junk',    culture: 'eternian',    name: 'Eternal State Supply Junk Farport-Tribute',  x:  518, z:  641, ry:  0.00, L: 28.0, B:  7.8, H: 19.0 },
+   { id: 'et_junk_farport2',kind: 'vothJunk',       rsKey: 'voth_junk',    culture: 'eternian',    name: 'Eternal State Timber & Coal Coaster Lux-III',x:  586, z:  641, ry:  0.00, L: 28.0, B:  7.8, H: 19.0 },
+   { id: 'et_lee_tug',      kind: 'salvageTug',     rsKey: 'salvage_tug',  culture: 'eternian',    name: 'Superintendency Relic & Coal Harbor Tug',    x:  420, z:  569, ry: -1.0472, L: 16.5, B:  5.4, H:  9.0 }
   ];
 
   const rsKeys = (typeof RINGSEA !== 'undefined' && RINGSEA.keys) ? RINGSEA.keys : [];

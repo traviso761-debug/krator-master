@@ -68,14 +68,22 @@ const ADG_SITE = (function(){
   }
  ];
 
- /* Sheltered SE Dam-Lee Coaling & Timber Mole — eastern border seated 100% flush against the rising basalt cliff shoreline */
- const LEE_WHARF_POLY = [
-  [340, 322],
-  [672, 322],
-  [698, 415],
-  [744, 526],
-  [340, 526]
- ];
+ /* Sheltered SE Dam-Lee Coaling & Timber Mole: a regular flat-Z hexagon on the Eternian lattice (vertices at multiples of
+    60 deg, as etHex(R) and ADG_HEX). Its face 5 (outward normal 330 deg, ENE) lies along the surveyed shoreline
+    (n . p = 372 between z = 380 and z = 540; the shore runs 7.7 deg off it), and MOLE_ROOT_POLY fills that wedge to the cliff toe.
+    ringR is the quay ring avenue, cellR the honeycomb of mole streets inside it (ADG_HEX.buildMoleNet). */
+ const MOLE_HEX = { cx: 552.0, cz: 489.3, R: 160.0, ringR: 131.64, cellR: 24.0, shoreFace: 5 };
+ function flatHex(cx, cz, R){
+  const out = [];
+  for (let i = 0; i < 6; i++) {
+   const a = i * Math.PI / 3;
+   out.push([+(cx + R * Math.cos(a)).toFixed(2), +(cz + R * Math.sin(a)).toFixed(2)]);
+  }
+  return out;
+ }
+ const LEE_WHARF_POLY = flatHex(MOLE_HEX.cx, MOLE_HEX.cz, MOLE_HEX.R);
+ /* Shore-root apron: mole face 5 (vertex 5 -> vertex 0) out to the basalt cliff toe, +12..+20 m past the waterline */
+ const MOLE_ROOT_POLY = [LEE_WHARF_POLY[5], [678, 338], [728, 492], LEE_WHARF_POLY[0]];
 
  /* Graded Cliff-Side Switchback Harbour Viaduct Road (3D [x, z, y] centerline standing proud on the sunlit cliff face from Z6 +160 m down to Mole +11 m) */
  const HARBOUR_ROAD = [
@@ -87,7 +95,7 @@ const ADG_SITE = (function(){
   [730, 362,  58.0],
   [716, 415,  39.0],
   [708, 474,  20.0],
-  [688, 495,  11.0]
+  [MOLE_HEX.cx + MOLE_HEX.ringR, MOLE_HEX.cz, 11.0]
  ];
 
  /* NW Ocean Breach wave-splitter bench (part of Z1 coastal defence, 0 dwellings) */
@@ -199,7 +207,7 @@ const ADG_SITE = (function(){
  }
 
  function zoneAt(x, z){
-  if (inPoly(x, z, LEE_WHARF_POLY)) return ZONES[5];
+  if (inPoly(x, z, LEE_WHARF_POLY) || inPoly(x, z, MOLE_ROOT_POLY)) return ZONES[5];
   for (let i = ZONES.length - 1; i >= 0; i--) {
    if (inPoly(x, z, ZONES[i].poly)) return ZONES[i];
   }
@@ -207,7 +215,7 @@ const ADG_SITE = (function(){
  }
 
  function townDist(x, z){
-  const polys = [ZONES[0].poly, ZONES[3].poly, ZONES[4].poly, ZONES[5].poly, LEE_WHARF_POLY, NW_BREACH_BENCH];
+  const polys = [ZONES[0].poly, ZONES[3].poly, ZONES[4].poly, ZONES[5].poly, LEE_WHARF_POLY, MOLE_ROOT_POLY, NW_BREACH_BENCH];
   let best = 1e9;
   for (let i = 0; i < polys.length; i++) {
    const d = polyDist(x, z, polys[i]);
@@ -307,7 +315,7 @@ const ADG_SITE = (function(){
 
   /* 5. Z6 Sheltered SE Dam-Lee Coaling & Timber Mole (+5.8..+11.0 m seated 100% flush into the eastern basalt shoreline, zero water gap!) */
   {
-   const dWharf = polyDist(x, z, LEE_WHARF_POLY);
+   const dWharf = Math.min(polyDist(x, z, LEE_WHARF_POLY), polyDist(x, z, MOLE_ROOT_POLY));
    const whK = 1.0 - smooth(0, 26, dWharf);
    if (whK > 0) {
     const whY = 5.8 + 5.0 * smooth(348, 695, x) + n2 * 0.16;
@@ -450,6 +458,9 @@ const ADG_SITE = (function(){
   MICRO_STYLE: MICRO_STYLE,
   ZONES: ZONES,
   LEE_WHARF_POLY: LEE_WHARF_POLY,
+  MOLE_HEX: MOLE_HEX,
+  MOLE_ROOT_POLY: MOLE_ROOT_POLY,
+  flatHex: flatHex,
   HARBOUR_ROAD: HARBOUR_ROAD,
   NW_BREACH_BENCH: NW_BREACH_BENCH,
   HOISTS: HOISTS,
