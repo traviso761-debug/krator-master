@@ -1092,6 +1092,14 @@
    "bytes": 2630474,
    "sha256": "9aba34cd7de4423ecb6529e959f5a6a752f2c84d53393a5c16dae16e59a26d4c"
   },
+  "kits/ancients/dist/arckibuz.html": {
+   "bytes": 2127102,
+   "sha256": "37f20f960e48eede5c50e69a28a9546fe2090984647bd30f4cc221e9c38f723f"
+  },
+  "kits/ancients/dist/arcodiga.html": {
+   "bytes": 2043816,
+   "sha256": "4bff7919a40a6ca832801faa3c622e65fe8bc094ea0e65ceb7d60274bdbf9d22"
+  },
   "kits/ancients/dist/arcoindian.html": {
    "bytes": 2632472,
    "sha256": "19a82e118352d6c233900e7f1acf7582665bceb440efdbdde044d708ccd35a73"
