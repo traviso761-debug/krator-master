@@ -118,7 +118,7 @@ const R=[];
       for(let j=i+1;j<LL.length;j++){const a=B[i],b=B[j];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>a.r+b.r)continue;if(!sep(a,b))bad.overlap.push([l.id,LL[j].id]);}});}
   const n=k=>bad[k].length,places=P?P.report.places:0;
   const RD=window._hookRoads||{};
-  R.push({name:'hook-places',ok:!!P&&places>=13&&!P.skipped.length&&!P.unlinked.length&&RD.ready&&L.length>=150&&!n('wet')&&!n('town')&&!n('ruin')&&!n('overlap'),
+  R.push({name:'hook-places',ok:!!P&&places>=13&&!P.skipped.length&&!P.unlinked.length&&(P.trunks||[]).length===3&&RD.ready&&L.length>=150&&!n('wet')&&!n('town')&&!n('ruin')&&!n('overlap'),
    detail:P?JSON.stringify(P.report)+'; roads '+JSON.stringify(RD.stats||null)+'; by place '+JSON.stringify(Object.fromEntries(Object.keys(P.villages).map(k=>[k,(P.villages[k].records||[]).filter(Boolean).length])))+
     '; bad '+JSON.stringify({wet:n('wet'),town:n('town'),ruin:n('ruin'),overlap:n('overlap')})+(n('wet')+n('town')+n('ruin')+n('overlap')?' first '+JSON.stringify([bad.wet[0],bad.town[0],bad.ruin[0],bad.overlap[0]]):'')+
     '; skipped '+JSON.stringify(P.skipped):'no places'}); }

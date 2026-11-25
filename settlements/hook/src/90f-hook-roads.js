@@ -8,7 +8,7 @@ const HOOK_ROADS={stats:null};
 (()=>{const P=typeof HOOK_PLACES!=='undefined'?HOOK_PLACES:null,R=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null,D=typeof HOOK_RUIN_DRAW!=='undefined'?HOOK_RUIN_DRAW:null;
  if(!P||!D||!D.meshH){window._hookRoads={ready:false};return;}
  const meshH=D.meshH,LIFT=.12,STEP=4,list=[];
- for(const r of P.roads)list.push({pts:r.pts,w:r.w,c:r.kind==='lane'?0x93805f:0x87714f});
+ for(const r of P.roads)list.push({pts:r.pts,w:r.w,c:r.kind==='lane'?0x93805f:r.kind==='trunk'?0x7d7466:0x87714f});   /* the roads out (net51's trunks) the old road's grey */
  for(const r of (R&&R.roads)||[])list.push({pts:r.pts,w:8,c:0x7d7466});
  const pos=[],col=[],idx=[],c=new THREE.Color();let n=0,len=0;
  for(const r of list){c.setHex(r.c);const P2=[];

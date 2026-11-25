@@ -31,7 +31,7 @@ const FRAG = py(['import importlib.util, sys',
 /* build.py as a module (its main is not run on import): the core/city closure and the kits' boxes the page carries */
 const BUILD = JSON.parse(py(['import importlib.util, json, sys', "sys.argv = ['build.py']",
   "s = importlib.util.spec_from_file_location('hb', 'build.py'); m = importlib.util.module_from_spec(s); s.loader.exec_module(m)",
-  "sys.stdout.write(json.dumps({'kcity': m.kcity_bundle(), 'dims': m.dims_fragment()}))"].join('\n')).replace(/^[^{]*/, ''));
+  "sys.stdout.write(json.dumps({'kcity': m.kcity_bundle(), 'dims': m.dims_fragment(), 'net': m.net_fragment()}))"].join('\n')).replace(/^[^{]*/, ''));
 const SITE = JSON.parse(rd(path.join(HOOK, 'site', 'hook-site.json')));
 const ctxBase = () => vm.createContext({ atob: s => Buffer.from(s, 'base64').toString('binary'), console, Math, Float32Array, Uint8Array, Int32Array,
   Uint16Array, Int8Array, Float64Array, Uint32Array, Array, Object, JSON, Number, String, Error, Map, Set, Infinity, NaN, isFinite, parseInt, parseFloat });
@@ -39,7 +39,7 @@ function load() {
   const H = f => rd(path.join(ROOT, f));
   const src = [H('core/rand/08-core-rand.js'), H('core/terrain/38-core-relief.js'), FRAG, H('core/world/41-world-fields.js'), H('core/world/41l-world-landforms.js'),
     'var PORT = {};', rd(path.join(HOOK, 'src', '75d-hook-world.js')), H('core/space/20-core-space.js'), H('core/tags/50-core-tags.js'), H('core/tags/52-core-tags-vocab.js'),
-    'var HOOK_SITE = ' + JSON.stringify(SITE) + ';', BUILD.kcity, rd(path.join(HOOK, 'src', '77-hook-ruin.js')), BUILD.dims]
+    'var HOOK_SITE = ' + JSON.stringify(SITE) + ';', BUILD.kcity, rd(path.join(HOOK, 'src', '77-hook-ruin.js')), BUILD.dims, BUILD.net]
     .concat(['10-hamlet-wood', '12-hamlet-gather', '14-hamlet-farmland', '16-hamlet-names', '18-hamlet-names', '20-hamlet-cultures', '21-hamlet-iziz', '30-hamlet-village']
       .map(f => H('core/hamlet/' + f + '.js')))
     .concat([H('core/hamlet/camp/26-hamlet-camp.js'), rd(path.join(HOOK, 'src', '77m-hook-places.js')),
@@ -76,11 +76,13 @@ T.neg('a building laid over its neighbour fails it', apart, L.map((l, k) => k ==
 
 /* ---- the roads: every place core/hamlet lays linked to the net; no link on the water, in the town or on a ruin (among its
    own hamlet's buildings it may run, as its lane does) */
-const roadsOk = rs => rs.every(r => { if (r.kind !== 'link') return true; for (let i = 1; i < r.pts.length; i++) { const a = r.pts[i - 1], b = r.pts[i], n = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 10));
+const roadsOk = rs => rs.every(r => { if (r.kind !== 'link' && r.kind !== 'trunk') return true; for (let i = 1; i < r.pts.length; i++) { const a = r.pts[i - 1], b = r.pts[i], n = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 10));
   for (let k = 0; k <= n; k++) { const x = a[0] + (b[0] - a[0]) * k / n, z = a[1] + (b[1] - a[1]) * k / n; if (!P.roadOk(x, z, r.place)) return false; } } return true; });
 const links = P.roads.filter(r => r.kind === 'link');
 T.ok('every place core/hamlet lays is linked to the road net (the salt pans by boat, from their quay), and no link runs on the water, in the town or on a ruin',
   !P.unlinked.length && links.length >= 10 && roadsOk(P.roads), links.length + ' links, ' + P.roads.length + ' roads; unlinked ' + JSON.stringify(P.unlinked));
+T.ok('the three roads out (net51: the trunks to Pylon and Torus, the Izani highway to Spirladunon) routed from the city edge to the road net',
+  P.trunks.length === 3 && !P.unrouted.length && ['Pylon', 'Torus', 'Spirladunon'].every(t => P.trunks.some(r => r.to === t)), JSON.stringify(P.trunks.map(t => [t.to, t.pts.length])) + '; unrouted ' + JSON.stringify(P.unrouted));
 T.neg('a link bent through a standing tower fails it', roadsOk, P.roads.map(r => r === links[0] ? Object.assign({}, r, { pts: [r.pts[0], [tw.x, tw.z], r.pts[r.pts.length - 1]] }) : r), P.roads);
 
 /* ---- each culture on its kit */

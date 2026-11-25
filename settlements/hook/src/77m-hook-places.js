@@ -148,6 +148,22 @@ const HOOK_PLACES=(function(){
   /* straight runs as one segment */
   const o=[pts[0]];for(let i=1;i<pts.length-1;i++){const a=o[o.length-1],b=pts[i],c=pts[i+1],cr=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]);if(Math.abs(cr)>1)o.push(b);}o.push(pts[pts.length-1]);
   return {pts:o.map(q=>[+q[0].toFixed(2),+q[1].toFixed(2)]),visited:n};}
+ /* ---- THE ROADS OUT: the map's network out of Hook (openworld/network-proposal/net51.json: the trunks to Pylon and Torus,
+    the Izani highway to Spirladunon; HOOK_NET, build.py net_fragment), each from where it leaves Hook's ground (its first
+    point TRUNK_R m from the port, walked back along it to the first dry, clear point a street crossing reaches) to the road
+    net along the streets, 8 m wide; the hamlets' links may join them */
+ const TRUNK_R=4600,trunks=[],unrouted=[];
+ if(typeof HOOK_NET!=='undefined'&&typeof WORLD_DATA!=='undefined'){const O=WORLD_DATA.meta.frame.origin_px,pk=p=>W.toLocal((p[0]-O[0])*2000,(p[1]-O[1])*2000);
+  for(const t of HOOK_NET){const P=(t.from==='Hook'?t.px:t.px.slice().reverse()).map(pk),S=dens(P,20);let k=S.findIndex(q=>Math.hypot(q[0],q[1])>TRUNK_R);if(k<0)k=S.length-1;
+   /* back toward the port for the first dry, clear point a crossing reaches; none (the trunks cross the drowned flat as a
+      causeway: net51's first leg) and outward instead, to where the trunk comes ashore (within 3 km) */
+   let js=-1;for(let j=k;j>=0;j--){const q=S[j];if(roadOk(q[0],q[1])&&near(q[0],q[1]).length){js=j;break;}}
+   if(js<0)for(let j=k;j<S.length&&j<k+150;j++){const q=S[j];if(roadOk(q[0],q[1])&&near(q[0],q[1]).length){js=j;break;}}
+   const r=js>=0?route(S[js],null):null;if(!r||!r.pts){unrouted.push(t.id);continue;}
+   /* and 300 m on along its own line, heading out, where that is dry and clear */
+   const out=[];for(let j=Math.max(js,k);j<S.length&&j<=Math.max(js,k)+15;j++){const q=S[j];if(!roadOk(q[0],q[1]))break;out.push([+q[0].toFixed(2),+q[1].toFixed(2)]);}
+   const pts=out.reverse().concat(r.pts);
+   const T={id:'huka.road.'+t.id,kind:'trunk',name:t.name,to:t.to,w:8,pts};trunks.push(T);roads.push(T);for(const q of dens(pts,20))NET.push(q);}}
  const unlinked=[];
  for(const id of Object.keys(villages)){const V=villages[id];if(!V||!V.records)continue;
   /* a lane runs out to its last dry, clear point (core/hamlet runs the main one up to 200 m toward the link, which may be
@@ -184,7 +200,7 @@ const HOOK_PLACES=(function(){
   for(const L of deck)lots.push(L);villages[C3.id]={records:deck,site:{x:s.x,z:s.z},own:'deck',span:s.id};}}
  function register(T){let n=0;for(const L of lots){T.add({id:L.id,class:'building',kind:L.role==='house'?'house':L.role==='pod'?'pod':'hamlet',key:L.key,parent:L.place,
   name:L.key+' ('+L.place+')',at:[L.x,L.y,L.z],ry:L.ry,size:[L.w,L.d,L.h],tags:{culture:L.culture==='ancients-salvage'?'post-apoc':L.culture,state:'intact'}});n++;}return n;}
- return {lots,villages,skipped,register,SALVAGE,SETTLERS,ground,ruinAt,roads,unlinked,roadOk,
+ return {lots,villages,skipped,register,SALVAGE,SETTLERS,ground,ruinAt,roads,unlinked,roadOk,trunks,unrouted,
   report:{places:Object.keys(villages).length,lots:lots.length,pending:lots.filter(L=>L.pending).length,skipped:skipped.map(s=>s.id),
-   roads:{lanes:roads.filter(r=>r.kind==='lane').length,links:roads.filter(r=>r.kind==='link').length,unlinked},
+   roads:{lanes:roads.filter(r=>r.kind==='lane').length,links:roads.filter(r=>r.kind==='link').length,trunks:trunks.map(t=>t.to),unlinked,unrouted},
    moved:Object.fromEntries(Object.keys(villages).filter(k=>villages[k]&&villages[k].moved).map(k=>[k,villages[k].moved]))}};})();

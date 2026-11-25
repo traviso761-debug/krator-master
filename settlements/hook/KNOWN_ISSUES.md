@@ -80,7 +80,8 @@ from a Hook task.
 - [ ] **The design table is a copy.** The plan (77, `[G data]`) runs before the kit's closure (77g, which the heroes
       use) and stays free of the kit and its interiors, so `HOOK_RUIN_PLAN.DESIGNS` copies footprints, roofs and tips;
       `tests/test-hook-ruin.js` fails when the kit's records move. A baked plan (above) would take them from the kit.
-- [ ] **The three Ancient roads out of Hook are not laid.** The south road is the plan's; net51's routes beyond the
+- [x] **The three Ancient roads out of Hook are laid** (2026-11-24, 77m): each from where it comes ashore to the road net.
+      Their causeways over the drowned flat (net51's first leg) are not drawn. Was: the south road is the plan's; net51's routes beyond the
       city limits (to Pylon, Torus, Spirladunon) are not yet joined to it.
 
 ## The ground on 5.1 (the port onto the integration line, 2026-11-24)

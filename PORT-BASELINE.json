@@ -1773,12 +1773,12 @@
    "sha256": "8b9a4a3002019ea218307d457f5f3971df4d015277cda17430fc6b1f13c2881c"
   },
   "settlements/hook/dist/hook-site.html": {
-   "bytes": 7822645,
-   "sha256": "e226719980dd2a262388c9d792a76b8a9cd41b97b52c68e2050f029a4e34484c"
+   "bytes": 7827430,
+   "sha256": "46e256f9ac172af442101e42d62b0eca86b5476ce7d1ecfad7eb1fe0bc64f77c"
   },
   "settlements/hook/dist/hook.html": {
-   "bytes": 7715545,
-   "sha256": "dd0dad060f723d7fc2c8dc5f9dc5fedd2662b53ff7ecc58f3e1d1a2959db69fb"
+   "bytes": 7720330,
+   "sha256": "f37fda3187e4315f6f7e466931fad90f7ad8cd2a4a138e41107be4d88997faf0"
   },
   "settlements/iguana/dist/iguana.html": {
    "bytes": 8317657,

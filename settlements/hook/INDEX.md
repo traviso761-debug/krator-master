@@ -22,7 +22,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76b-hook-strokes.js` | 3 | HOOK: THE EDITOR'S GROUND STROKES ON THE PAGE ([ (1) |
 | `77-hook-ruin.js` | 32 **big** | HOOK: THE ANCIENT CITY'S RECORDS ([G data]) (1) |
 | `77k-hook-paint.js` | 3 | HOOK: THE GROUND UNDER THE JUNGLE AND THE MANGRO (1) |
-| `77m-hook-places.js` | 21 | HOOK: THE HAMLETS AND CAMPS OF THE ENVIRONS (S5, (1) |
+| `77m-hook-places.js` | 22 | HOOK: THE HAMLETS AND CAMPS OF THE ENVIRONS (S5, (1) |
 | `79-hook-ancient.js` | 6 | HOOK: THE ANCIENT TOWN'S RUIN HOSTS (1) |
 | `88-hook-programme.js` | 9 | HOOK: THE TOWN'S PROGRAMME ([G data]) (1) |
 | `90a-hook-city.js` | 11 | HOOK: THE TOWN ON core/city, STEPS 0-12 ([G data (1) |
