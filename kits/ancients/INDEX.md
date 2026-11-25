@@ -207,6 +207,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
 | `span` | `89z-rows.js`, `8as0-span-parts.js`, `91z-views.js` | 30 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 4 |
+| `stonebow` | `89z-rows.js`, `8av0-stonebow-plan.js`, `8av1-stonebow-interiors.js`, `8av2-stonebow-water.js`, `8av3-stonebow-draw.js`, `8zz3-stonebow-int-host.js`, `90w-stonebow-water.js`, `91z-views.js`, `92z1-stonebow-api.js` | 86 |
 | `strongbow` | `89z-rows.js`, `8aw0-strongbow-plan.js`, `8aw1-strongbow-parts.js`, `8aw2-strongbow-draw.js`, `8aw3-strongbow-foot.js`, `91z-views.js` | 85 |
 | `strongbow-today` | `89z-rows.js`, `91z-views.js` | 6 |
 | `theodiga` | `77-dam.js`, `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `77c-theodiga-water.js`, `89z-rows.js`, `90w-theodiga-water.js`, `91z-views.js` | 45 |

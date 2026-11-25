@@ -1248,6 +1248,10 @@
    "bytes": 331680,
    "sha256": "2640e7a1f50a00cc7bc0e3f4313421905e97832f8e0071c43cbde9b5d63692ff"
   },
+  "kits/ancients/dist/stonebow.html": {
+   "bytes": 2028974,
+   "sha256": "01c074ebcf74aa4e6649c3485a286ac424c21c6a8044a41c757bf5023f1c1071"
+  },
   "kits/ancients/dist/strongbow-today.html": {
    "bytes": 2027445,
    "sha256": "aa7b9ba0bcc3230c2d2777c8872259b12ab93237450491d3187f76c369efc131"

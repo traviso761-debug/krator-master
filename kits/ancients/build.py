@@ -109,7 +109,7 @@ CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/
 # A target listed here gets the GENERATED 8zy-interiors-bundle.js (the catalog's Ancient furniture, kits/interiors'
 # core with the arcology's set, kits/ancients-interiors' core) and the shared core/rand, core/tags and core/furnish;
 # every other target builds exactly as before (the interior fragments do nothing without the bundle).
-INTERIOR_TARGETS = {'interiors', 'theodiga-today'}   # theodiga-today: the arcology's inhabited levels (settlements/theodiga T-arc-1)
+INTERIOR_TARGETS = {'interiors', 'theodiga-today', 'stonebow'}   # theodiga-today: the arcology's inhabited levels; stonebow: Soleri's canyon-bridge arcology
 INTERIOR_BUNDLE = '8zy-interiors-bundle.js'
 CORE_RAND = os.path.join(ROOT, 'core', 'rand')
 CORE_TAGS = os.path.join(ROOT, 'core', 'tags')
@@ -119,7 +119,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc', 'parabola'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc', 'parabola', 'stonebow'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
@@ -206,7 +206,12 @@ TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-e
                 'gatearc': [(os.path.join(ROOT, 'core', 'terrain'), '37-core-stacks.js')],
                 # Parabola (2026-11-11): its rain lake is core/water still water, on core/atmos's clock and skylight, read in place
                 # as Xanadu's kit page reads them (settlements/xanadu/build.py TARGET_FILES; targets/parabola/90p-parabola-lake.js)
-                'parabola': [(os.path.join(ROOT, 'core', 'atmos'), f) for f in PB_ATMOS] + [(os.path.join(ROOT, 'core', 'water'), f) for f in PB_WATER]}
+                'parabola': [(os.path.join(ROOT, 'core', 'atmos'), f) for f in PB_ATMOS] + [(os.path.join(ROOT, 'core', 'water'), f) for f in PB_WATER],
+                # Stonebow (targets/stonebow): stratified porphyry/dolomite canyon on core/terrain's KSTRATA, river & cataract on core/water + core/atmos, ruin watched by core/ruins
+                'stonebow': [(os.path.join(ROOT, 'core', 'terrain'), '35-core-strata.js'),
+                             (os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                            + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                            + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')]}
 # THEODIGA TODAY (settlements/theodiga, T-town-2, 2026-11-16): the ruined dam, its Dome and its water as the theodiga target
 # draws them (its fragments read in place from targets/theodiga), and the town on the east rim: its drawer from the settlement
 # (src/8ay1-th-town.js) and the isle demo's flattener (58-isle-protos.js), read in place; and three generated bodies, the first
@@ -262,7 +267,8 @@ def th_xak():
 INTERIOR_FURN = ['generic-goods']
 # a target's own furniture cultures beside them: Theodiga's inhabited levels are furnished as Xanadu's clergy would (T-arc-1)
 INTERIOR_SETS_TARGET = {'theodiga-today': ['xanadu-scrap']}   # kits/interiors sets a target's own buildings take (theodiga-today: the town, T-town-7)
-INTERIOR_FURN_TARGET = {'theodiga-today': ['xanadu', 'generic', 'eastabyss', 'scrap']}   # the arcology's and the town's (T-town-7) furniture
+INTERIOR_FURN_TARGET = {'theodiga-today': ['xanadu', 'generic', 'eastabyss', 'scrap'],
+                        'stonebow': ['post-apoc', 'generic', 'scrap']}   # stonebow: ancient + generic-goods + scrap + post-apoc/generic socket options
 
 
 def interior_bundle(target=None):
@@ -347,6 +353,7 @@ TARGET_OUT = {
     'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
     'quintagon': 'quintagon.html',             # the pentagonal star arcology (src/8au-quintagon.js, targets/quintagon)
     'gatearc': 'gatearc.html',                 # the Hall of Heroes at the Labyrinth's mouth and its five stacks (targets/gatearc)
+    'stonebow': 'stonebow.html',               # Soleri's 21. Stonebow canyon-bridge arcology in the Ching-Ma Shut-In (targets/stonebow)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -381,6 +388,8 @@ DETERMINISTIC = {
     '8av0-gatearc-plan.js', '8av2-gatestacks-plan.js', # targets/gatearc: KRAND-hashed records, no rng()
     '37-core-stacks.js',                               # core/terrain's KSTACKS (gatearc): KRAND-hashed, no rng()
     '77c-theodiga-water.js', '90w-theodiga-water.js',           # targets/theodiga: the water's records and their drawing (core/water)
+    '8av0-stonebow-plan.js', '8av1-stonebow-interiors.js', '8av2-stonebow-water.js',
+    '8zz3-stonebow-int-host.js', '90w-stonebow-water.js', '92z1-stonebow-api.js', '35-core-strata.js',   # targets/stonebow (KRAND, no rng())
     '89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js',   # core/atmos (IIFE, no rnd())
     '20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js',      # core/water (IIFE, no rnd())
     '8ay1-th-town.js', '58-isle-protos.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js',   # theodiga-today: the town drawn from core/city's records (KRAND), the flattener, the packs
