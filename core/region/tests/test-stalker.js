@@ -10,14 +10,19 @@ const fs=require('fs'),path=require('path');
 const T=require('../../../tools/ktest.js')(__filename);
 global.window=global;
 const ROOT=path.join(__dirname,'..','..','..'),rd=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
-const load=()=>{(0,eval)(rd('core/clock/20-core-clock.js'));
- fs.readdirSync(path.join(ROOT,'core','simulation')).filter(f=>/^77-sim-.*\.js$/.test(f)).sort().forEach(f=>(0,eval)(rd('core/simulation/'+f)));
- (0,eval)(rd('core/region/00-region-core.js'));const H={TUNE:{sim:{}}};KREGION.use(H);(0,eval)(rd('core/region/50-region-valley.js'));
- (0,eval)(rd('core/region/data/stalker-tune.js'));return H;};
+const vm=require('vm');
+const load=()=>{vm.runInThisContext(rd('core/clock/20-core-clock.js'));
+ fs.readdirSync(path.join(ROOT,'core','simulation')).filter(f=>/^77-sim-.*\.js$/.test(f)).sort().forEach(f=>vm.runInThisContext(rd('core/simulation/'+f)));
+ vm.runInThisContext(rd('core/region/00-region-core.js'));const H={TUNE:{sim:{}}};KREGION.use(H);
+ vm.runInThisContext(rd('core/region/50-region-valley.js'));
+ vm.runInThisContext(rd('core/region/53-region-ambush.js'));
+ vm.runInThisContext(rd('core/region/54-region-outlaws.js'));
+ vm.runInThisContext(rd('core/region/data/stalker-tune.js'));return H;};
 const t=n=>(n/1000).toFixed(1)+' t';
 function run(days,edit){const H=load(),V=STALKER_TUNE.valley({});if(edit)edit(V);const S=H.simValley(V);
  const a=SIM.ledgerSnap();H.valleyRun(days*1440,60);const b=SIM.ledgerSnap();
  return{H,V,S,B:H.valleyBooks().towns,trade:SIM.tradeReport()||{},xfer:SIM.transfersReport?SIM.transfersReport():{},
+  bounty:SIM.bountyReport?SIM.bountyReport():null,outlaws:SIM.outlawsReport?SIM.outlawsReport():null,
   ledger:SIM.ledger(a,b,{tol:1})};}
 const t0=Date.now(),Y=run(365),B=Y.B;
 console.log('a year of the Stalker Range in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+Y.S.order.length+' settlements, '
@@ -128,4 +133,70 @@ T.ok('S3: the province\'s year balances, every settlement, road and good',Y.ledg
  T.ok('S3: run past the stocked start and the patrols reach their posts, carrying the upkeep the salary pays for',fed.length>=4,
   '520 days: '+fed.length+' of '+posts.length+' posts landed goods ('+(fed.slice(0,4).join(', ')||'none')+')');
  T.neg('a province where no post is ever reached has no upkeep to pay for',x=>x>=4,0,fed.length);}
+
+// ---- 8 (S3 Part 2): Range salvage expeditions pay Ranger HQ its 15% cut, independent of passing road traffic
+{const E=Y.S.expeditions||{};
+ const alloyGross=(E.grossSalvage&&E.grossSalvage.alloy)||0,alloyCut=(E.rangerCut&&E.rangerCut.alloy)||0;
+ const ratio=alloyGross>0?alloyCut/alloyGross:0;
+ T.ok('S3 Part 2: Range salvage expeditions stage from Ranger HQ and pay Ranger HQ its 15% cut of expedition profits, balancing every book',
+  E.runs>=10&&alloyCut>0&&Math.abs(ratio-0.15)<0.03&&Y.ledger.ok,
+  E.runs+' expeditions: gross alloy '+alloyGross+', Ranger HQ cut '+alloyCut+' ('+Math.round(ratio*100)+'%)');
+ const zeroTraffic=run(120,V=>{V.roads=[];});
+ T.neg('S3 Part 2: expeditions still pay Ranger HQ its cut when passing road traffic is zero (an expedition config with 0% cut pays nothing)',
+  cutAlloy=>cutAlloy>0&&zeroTraffic.ledger.ok,0,(zeroTraffic.S.expeditions&&zeroTraffic.S.expeditions.rangerCut.alloy)||0);}
+
+// ---- 9 (S3 Part 2, owner ruling 2026-11-25): Standing Stalker bounty as a high exchange price for pneumatic guns & Ancient-alloy blades
+{const ws=(Y.bounty&&Y.bounty.warrants)||[];
+ const wGun=ws.find(w=>w.id==='bounty.rangers.stalker.gun');
+ const wBlade=ws.find(w=>w.id==='bounty.rangers.stalker.blade');
+ const bf06=Y.outlaws&&Y.outlaws.factions&&Y.outlaws.factions['BF-06'];
+ T.ok('S3 Part 2: Ranger HQ implements its Stalker bounty as standing high exchange prices for salvaged pneumatic guns (`stalker_guns`) and Ancient-alloy blades (`stalker_blades`)',
+  !!wGun&&wGun.standing===true&&wGun.trophyGood==='stalker_guns'&&wGun.amount===420&&wGun.trophiesReceived>=10&&(wGun.paidGoods.grain||0)>=500
+  &&!!wBlade&&wBlade.standing===true&&wBlade.trophyGood==='stalker_blades'&&wBlade.amount===280&&wBlade.trophiesReceived>=20&&(wBlade.paidGoods.arms||0)>=20
+  &&!!bf06&&bf06.stage==='active',
+  'exchanged guns: '+(wGun&&wGun.trophiesReceived)+' (paid grain '+(wGun&&wGun.paidGoods.grain)+'), blades: '
+  +(wBlade&&wBlade.trophiesReceived)+' (paid arms '+(wBlade&&wBlade.paidGoods.arms)+')');
+ T.neg('a one-off warrant or one with zero trophies exchanged cannot serve as Ranger HQ\'s standing weapon exchange bounty',
+  w=>w.standing===true&&w.status==='open'&&w.trophiesReceived>=10,
+  Object.assign({},wGun,{standing:false,status:'killed',trophiesReceived:0}),wGun);}
+
+// ---- 9b (owner ruling 2026-11-25): Ancient-alloy blades arm an elite Ranger unit; pneumatic guns mount as gate guns across the Yuni lands
+{const SW=Y.S.stalkerWeapons||{};
+ const eu=SW.eliteUnit||{},gg=SW.gateGuns||{};
+ const sites=gg.sites||[];
+ const yuniMounted=sites.filter(s=>s.settlement===POOL&&s.mounted>0);
+ const lakeGate=sites.find(s=>s.id==='sz85a8i5js.lake_gate');
+ T.ok('S3 Part 2: salvaged Ancient-alloy blades arm the White-Blade Watch elite Ranger unit at Ranger HQ, raising Ranger posse strength',
+  eu.id==='rangers.blade_watch'&&eu.bladesIssued>=20&&eu.troopersEquipped>=10&&eu.bonusStrength>=2&&Y.ledger.ok,
+  eu.name+': '+eu.bladesIssued+' Ancient-alloy blades issued -> '+eu.troopersEquipped+' elite Rangers armed (+'+eu.bonusStrength+' posse strength)');
+ T.neg('an unequipped Ranger unit with 0 blades issued has armed nobody',
+  u=>u.bladesIssued>=20&&u.troopersEquipped>=10,{bladesIssued:0,troopersEquipped:0},eu);
+ T.ok('S3 Part 2: salvaged Stalker pneumatic guns mount on Ranger HQ\'s gate and ship down the West Trunk to mount as gate guns across the Yuni lands',
+  !!lakeGate&&lakeGate.mounted===lakeGate.quota&&gg.shippedToYuni>=8&&gg.totalMounted>=10&&yuniMounted.length>=2&&Y.ledger.ok,
+  'Lake Vapora gate '+((lakeGate&&lakeGate.mounted)||0)+'/'+((lakeGate&&lakeGate.quota)||0)+', shipped to Yuni '+gg.shippedToYuni
+  +', mounted across Yuni gates: '+yuniMounted.map(s=>s.id+':'+s.mounted).join(', '));
+ T.neg('if pneumatic guns never ship down the West Trunk, Yuni\'s city gates mount none',
+  g=>g.shippedToYuni>0&&g.totalMounted>=4,{shippedToYuni:0,totalMounted:0},gg);}
+
+// ---- 10 (S3 Part 2): Hidden Hub 01 source loop — attrition-proof on its own, ended by Heir/Yusar or force, and NEVER leaked
+{const H2=load(),V2=STALKER_TUNE.valley({});
+ V2.ambushes={parties:[{id:'stalkers.gate',name:'Range Stalkers',kind:'stalker',legs:{'caravan.rangers.west':[0,1,2]},every:1,spare:0,strength:8,beasts:0.2,people:2}]};
+ const S2=H2.simValley(V2);
+ H2.valleyRun(90*1440,60);
+ const beforeEnd=S2.ambushes['stalkers.gate'].tries;
+ const actBefore=H2._stalkerActivity(S2);
+ /* Weak expedition fails to end Hub 01; full Heir/Yusar or force expedition ends it permanently! */
+ const badForce=H2.resolveHub01(S2,{mode:'force',relics:1,army:10,explosives:20});
+ const badCall=H2.resolveHub01(S2,{mode:'call',who:'stranger'});
+ const goodForce=H2.resolveHub01(S2,{mode:'force',relics:4,army:120,explosives:350});
+ H2.valleyRun(120*1440,60);
+ const afterEnd=S2.ambushes['stalkers.gate'].tries;
+ T.neg('S3 Part 2: an under-equipped party or non-Heir cannot end the hidden source, whereas a full relic+army+explosives expedition silences it',
+  r=>r.ok&&r.status==='dead',badForce,goodForce);
+ T.ok('S3 Part 2: once the source is ended (`dead`), zero further Stalker ambushes occur anywhere in the province (and non-Heir call is refused)',
+  !badCall.ok&&beforeEnd>0&&actBefore.activity>=0.25&&afterEnd===beforeEnd,
+  'before end: '+beforeEnd+' Stalker ambushes; in 120 days after end: '+(afterEnd-beforeEnd));
+ const allReports=JSON.stringify({books:Y.B,trade:Y.trade,xfer:Y.xfer,bounty:Y.bounty,outlaws:Y.outlaws,exp:Y.S.expeditions,weapons:Y.S.stalkerWeapons});
+ T.neg('S3 Part 2: neither "pressure" nor Hub 01\'s id (`sodpa02bfv`) ever appears in books, trade, transfer, bounty, outlaw, expedition or weapon reports',
+  s=>s.indexOf('pressure')<0&&s.indexOf(STALKER_TUNE.hub.id)<0,allReports+' pressure '+STALKER_TUNE.hub.id,allReports);}
 T.done();

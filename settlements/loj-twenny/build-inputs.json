@@ -103,12 +103,13 @@
     "core/simulation/77-sim-6-items.js": "1a585669cfc508b8c5ca8cf4e97f6b3b0bb4e694694b9a6f35cef6d474dd0182",
     "core/simulation/77-sim-6-money.js": "5ac2d43c9c49f9788852a153833d49f25df38ef50eb68e030929234f80574910",
     "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
+    "core/simulation/77-sim-6-outlaws.js": "e3bdd3c8a5629c7762784b067bcb2c02fff7f7301ad15244a5fc8898f2f6929d",
     "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
     "core/simulation/77-sim-6-season.js": "344a5416aedab4782d68769779c12183058f8a673f58ca1cc0015cf3ff051fac",
-    "core/simulation/77-sim-6-trade.js": "084a34b9b279376ff24422b1f4b1f46fea8f8e4abdbbe4a6032b8b843516ead1",
+    "core/simulation/77-sim-6-trade.js": "ced3841cbb3d739fe919885353de501947e4615206662ec36a1d006d501db674",
     "core/simulation/77-sim-6-transfer.js": "254fa32d81e0e9439978bc779ff550e744ce1b42d14ac0629e1a1f17432dcde1",
     "core/simulation/77-sim-6-unrest.js": "5186f7f23c04ecafbf2042968b5b1b048ed5392b5bcc2ad6c85fd37b65dd5809",
-    "core/simulation/77-sim-7-ledger.js": "ce58a25cccc55009722af3206a9f873b68c924273fb8e1bb6c0cc94a542960e5",
+    "core/simulation/77-sim-7-ledger.js": "de3b21586d08cabae1435ca9eafa931ab4f171cdc6ac0a430701b1d5a2bd412a",
     "core/simulation/77-sim-7-lod.js": "72b3f9c94ceaba426d70bdcd370a7c63fdfea3462f05cecdda3df1695c5dd2f7",
     "core/simulation/77-sim-7-stocks.js": "3ab7ea6dd2094b2df6883d241c40e7bd9fe8c9d8cdf7bb711e167a8146606cde",
     "core/simulation/77-sim-8-export.js": "a8d9da5e4624472ad638978581b2d64be72c82ab3ddda49385a3041ae99d4dea",
@@ -336,7 +337,7 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
-    "core/simulation": "1bdf12b281450fb735fcd422d965919dc4cfebaf923e4cfeba3762b071177c22",
+    "core/simulation": "bc7a1805ec93cacf8a28c0212eedd0fb1993a33b7e7047f1dc547544c0720cb7",
     "kits/catalog": "3c41c7578f03b383b178013c70e92f01f37b79aeb4d79a598ce233156958a61d",
     "kits/motor-vehicles": "33c7770bc49e4831516d6e8a55e5c436d11be30bbbeb59e6bfa82dc9f616c234",
     "kits/tungang/src": "2db439b05aff06c744b32a7f3270095a47cdd5322bf3c5c965910097930f7bce",
@@ -344,10 +345,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "344481aeab9b370fa63bde7b7df9e92795cdae4e384b23fc24289a94c1550c58"
+    "settlements/loj-twenny/dist/loj-twenny.html": "70a59c9bf8130326f55ea2d25ba87a12845687e6557fbcd9d15da323c76dee7b"
    },
    "outputs_raw": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "344481aeab9b370fa63bde7b7df9e92795cdae4e384b23fc24289a94c1550c58"
+    "settlements/loj-twenny/dist/loj-twenny.html": "70a59c9bf8130326f55ea2d25ba87a12845687e6557fbcd9d15da323c76dee7b"
    }
   }
  }

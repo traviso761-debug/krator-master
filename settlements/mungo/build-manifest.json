@@ -451,6 +451,10 @@
   "core/simulation",
   "ae46bc490878"
  ],
+ "77-sim-6-outlaws.js": [
+  "core/simulation",
+  "86790b26e9d2"
+ ],
  "77-sim-6-population.js": [
   "core/simulation",
   "d93273d8e954"
@@ -461,7 +465,7 @@
  ],
  "77-sim-6-trade.js": [
   "core/simulation",
-  "df147b578401"
+  "62b6a89dd776"
  ],
  "77-sim-6-transfer.js": [
   "core/simulation",
@@ -473,7 +477,7 @@
  ],
  "77-sim-7-ledger.js": [
   "core/simulation",
-  "584ba3ed1aae"
+  "2976feef1618"
  ],
  "77-sim-7-lod.js": [
   "core/simulation",

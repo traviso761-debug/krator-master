@@ -102,12 +102,13 @@
     "core/simulation/77-sim-6-items.js": "1a585669cfc508b8c5ca8cf4e97f6b3b0bb4e694694b9a6f35cef6d474dd0182",
     "core/simulation/77-sim-6-money.js": "5ac2d43c9c49f9788852a153833d49f25df38ef50eb68e030929234f80574910",
     "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
+    "core/simulation/77-sim-6-outlaws.js": "e3bdd3c8a5629c7762784b067bcb2c02fff7f7301ad15244a5fc8898f2f6929d",
     "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
     "core/simulation/77-sim-6-season.js": "344a5416aedab4782d68769779c12183058f8a673f58ca1cc0015cf3ff051fac",
-    "core/simulation/77-sim-6-trade.js": "084a34b9b279376ff24422b1f4b1f46fea8f8e4abdbbe4a6032b8b843516ead1",
+    "core/simulation/77-sim-6-trade.js": "ced3841cbb3d739fe919885353de501947e4615206662ec36a1d006d501db674",
     "core/simulation/77-sim-6-transfer.js": "254fa32d81e0e9439978bc779ff550e744ce1b42d14ac0629e1a1f17432dcde1",
     "core/simulation/77-sim-6-unrest.js": "5186f7f23c04ecafbf2042968b5b1b048ed5392b5bcc2ad6c85fd37b65dd5809",
-    "core/simulation/77-sim-7-ledger.js": "ce58a25cccc55009722af3206a9f873b68c924273fb8e1bb6c0cc94a542960e5",
+    "core/simulation/77-sim-7-ledger.js": "de3b21586d08cabae1435ca9eafa931ab4f171cdc6ac0a430701b1d5a2bd412a",
     "core/simulation/77-sim-7-lod.js": "72b3f9c94ceaba426d70bdcd370a7c63fdfea3462f05cecdda3df1695c5dd2f7",
     "core/simulation/77-sim-7-stocks.js": "3ab7ea6dd2094b2df6883d241c40e7bd9fe8c9d8cdf7bb711e167a8146606cde",
     "core/simulation/77-sim-8-export.js": "a8d9da5e4624472ad638978581b2d64be72c82ab3ddda49385a3041ae99d4dea",
@@ -253,7 +254,7 @@
    "listings": {
     "core/furnish": "ce80f99bac79c2ceb339d05ec0e601e97b7ebdf9aba7b964e57178fb20fccdd4",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
-    "core/simulation": "1bdf12b281450fb735fcd422d965919dc4cfebaf923e4cfeba3762b071177c22",
+    "core/simulation": "bc7a1805ec93cacf8a28c0212eedd0fb1993a33b7e7047f1dc547544c0720cb7",
     "core/sockets": "6216ac29803c8319ef932a89b4c3913096098f5698307764f731bbd769c202f9",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "kits/catalog": "3c41c7578f03b383b178013c70e92f01f37b79aeb4d79a598ce233156958a61d",
@@ -265,13 +266,13 @@
    },
    "listed_by": "code",
    "outputs": {
-    "settlements/drum/build-manifest.json": "4b0b0dc84d1cefe72cc4428b387dd3637d07409069105f577da6227673eb6014",
-    "settlements/drum/dist/drum.html": "0c63dce06a7a1850347837b9e1845a64a629bfb616961db133928ffa40ba98a9",
+    "settlements/drum/build-manifest.json": "0cef87a66fd14a8a7b11fe480e7d02069992e633abd4ee0bfa5778fc67e09206",
+    "settlements/drum/dist/drum.html": "32f4a3b1902fd0ce570baa0cbad25385d9141330352615f2b6e544655cbc88d3",
     "settlements/drum/dist/drum.tex.ancients.js": "5dc465f2a9798eee50f21f506467fcd30a1fb61460e8b94301c7c86839f364d7"
    },
    "outputs_raw": {
-    "settlements/drum/build-manifest.json": "4b0b0dc84d1cefe72cc4428b387dd3637d07409069105f577da6227673eb6014",
-    "settlements/drum/dist/drum.html": "0c63dce06a7a1850347837b9e1845a64a629bfb616961db133928ffa40ba98a9",
+    "settlements/drum/build-manifest.json": "0cef87a66fd14a8a7b11fe480e7d02069992e633abd4ee0bfa5778fc67e09206",
+    "settlements/drum/dist/drum.html": "32f4a3b1902fd0ce570baa0cbad25385d9141330352615f2b6e544655cbc88d3",
     "settlements/drum/dist/drum.tex.ancients.js": "5dc465f2a9798eee50f21f506467fcd30a1fb61460e8b94301c7c86839f364d7"
    }
   }
