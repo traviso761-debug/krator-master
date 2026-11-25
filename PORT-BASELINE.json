@@ -1100,6 +1100,10 @@
    "bytes": 2633130,
    "sha256": "4686ddfdd01f7bf602c7aeea988fa9d2f290a500dacf69dce7eddb2e9e915e67"
   },
+  "kits/ancients/dist/arcoindian3.html": {
+   "bytes": 692535,
+   "sha256": "dd1198c9f7ac1c97f7568b3d726275c2116c8da17efb3ca0ebbf1837e21055c4"
+  },
   "kits/ancients/dist/arcpile.html": {
    "bytes": 2737321,
    "sha256": "0f887c35b9a710139c4243b1a412e392108e37d462f0684626a0e098348a2252"
@@ -1235,6 +1239,10 @@
   "kits/ancients/dist/skyk.html": {
    "bytes": 2623299,
    "sha256": "dfd6ccf7cf1b2be08b2c8459c1a29e6d56b1bd4381f86a4a80d64ffc8a74a3b5"
+  },
+  "kits/ancients/dist/slice.html": {
+   "bytes": 707533,
+   "sha256": "d175e135e845df42e7715c2be1bb52c216b713196a5ad936dad4d553d4f89e00"
   },
   "kits/ancients/dist/spaceport.html": {
    "bytes": 2623076,

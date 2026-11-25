@@ -119,7 +119,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc', 'parabola', 'stonebow'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc', 'parabola', 'stonebow', 'arcoindian3', 'slice'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
@@ -211,7 +211,13 @@ TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-e
                 'stonebow': [(os.path.join(ROOT, 'core', 'terrain'), '35-core-strata.js'),
                              (os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
                             + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
-                            + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')]}
+                            + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
+                'arcoindian3': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                               + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                               + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
+                'slice': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                         + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                         + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')]}
 # THEODIGA TODAY (settlements/theodiga, T-town-2, 2026-11-16): the ruined dam, its Dome and its water as the theodiga target
 # draws them (its fragments read in place from targets/theodiga), and the town on the east rim: its drawer from the settlement
 # (src/8ay1-th-town.js) and the isle demo's flattener (58-isle-protos.js), read in place; and three generated bodies, the first
@@ -354,6 +360,8 @@ TARGET_OUT = {
     'quintagon': 'quintagon.html',             # the pentagonal star arcology (src/8au-quintagon.js, targets/quintagon)
     'gatearc': 'gatearc.html',                 # the Hall of Heroes at the Labyrinth's mouth and its five stacks (targets/gatearc)
     'stonebow': 'stonebow.html',               # Soleri's 21. Stonebow canyon-bridge arcology in the Ching-Ma Shut-In (targets/stonebow)
+    'arcoindian3': 'arcoindian3.html',         # the sheer cliff-niche arcology over a gorge river (targets/arcoindian3)
+    'slice': 'slice.html',                     # Slice (after Soleri's Theology): lenticular cliff eye, learning shaft, side specimen caves, sunken park & dwellings wall (targets/slice)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -390,6 +398,8 @@ DETERMINISTIC = {
     '77c-theodiga-water.js', '90w-theodiga-water.js',           # targets/theodiga: the water's records and their drawing (core/water)
     '8av0-stonebow-plan.js', '8av1-stonebow-interiors.js', '8av2-stonebow-water.js',
     '8zz3-stonebow-int-host.js', '90w-stonebow-water.js', '92z1-stonebow-api.js', '35-core-strata.js',   # targets/stonebow (KRAND, no rng())
+    '8au0-arcoindian3-plan.js', '8au2-arcoindian3-water.js', '90w-arcoindian3-water.js',   # targets/arcoindian3: KRAND plan, core/water records and host
+    '8av0-slice-plan.js', '8av2-slice-water.js', '90w-slice-water.js',                     # targets/slice: KRAND plan, core/water records and host
     '89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js',   # core/atmos (IIFE, no rnd())
     '20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js',      # core/water (IIFE, no rnd())
     '8ay1-th-town.js', '58-isle-protos.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js',   # theodiga-today: the town drawn from core/city's records (KRAND), the flattener, the packs

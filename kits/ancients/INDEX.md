@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcpile.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/gatearc.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/lighthouse.html`, `dist/lozenge.html`, `dist/monolith.html`, `dist/parabola.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/quintagon.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/shelf.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/span.html`, `dist/spire.html`, `dist/strongbow-today.html`, `dist/strongbow.html`, `dist/theodiga-today.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcoindian3.html`, `dist/arcpile.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/gatearc.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/lighthouse.html`, `dist/lozenge.html`, `dist/monolith.html`, `dist/parabola.html`, `dist/plymouth.html`, `dist/podium.html`, `dist/quintagon.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/shelf.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/slice.html`, `dist/spaceport.html`, `dist/span.html`, `dist/spire.html`, `dist/stonebow.html`, `dist/strongbow-today.html`, `dist/strongbow.html`, `dist/theodiga-today.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -170,6 +170,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `arcbeam` | `89z-rows.js`, `91z-views.js` | 9 |
 | `arcoindian` | `89z-rows.js`, `91z-views.js` | 11 |
 | `arcoindian2` | `89z-rows.js`, `91z-views.js` | 12 |
+| `arcoindian3` | `89z-rows.js`, `8au0-arcoindian3-plan.js`, `8au1-arcoindian3-draw.js`, `8au2-arcoindian3-water.js`, `90w-arcoindian3-water.js`, `91z-views.js` | 95 |
 | `arcpile` | `89z-rows.js`, `8at0-arcpile-plan.js`, `8at1-arcpile-draw.js`, `91z-views.js` | 59 |
 | `arcube` | `89z-rows.js`, `91z-views.js` | 10 |
 | `blades` | `89z-rows.js`, `91z-views.js` | 7 |
@@ -204,6 +205,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `skyi` | `89z-rows.js`, `91z-views.js` | 4 |
 | `skyj` | `89z-rows.js`, `91z-views.js` | 3 |
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |
+| `slice` | `89z-rows.js`, `8av0-slice-plan.js`, `8av1-slice-draw.js`, `8av2-slice-water.js`, `90w-slice-water.js`, `91z-views.js` | 109 |
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
 | `span` | `89z-rows.js`, `8as0-span-parts.js`, `91z-views.js` | 30 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 4 |
