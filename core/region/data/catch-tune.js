@@ -140,6 +140,43 @@ T.valley=function(o){o=o||{};const K=o.scale==null?10:o.scale,yr=365,days=o.days
    the Brotherhood's Stair house, as Xanadu's tune had it.
    o: {unguided: [group id, ...] (they refuse the guides: no tally, and the Twins take part of the train: C4),
        hazards: false (C5's storms, col, Stalkers and dry oasis off)} */
+/* ================================================================= THE AMBUSHES (R2, the owner's item 5 of 2026-11-24:
+   "implement bandits and Stalkers attacking caravans"). core/region/53-region-ambush.js is the host and is inert without
+   this. Two parties, and PLAN-RAIDS.md section 4 insists they must not blur:
+
+   THE TIN-SKULLS are a bandit gang on the Catch floor that dresses as Stalkers and announces itself in machine-voice.
+   It wants CARGO, in an order -- water and grain and salt before silver, which is BF-05's appetite -- it will TOLL a
+   train and let it go, and it leaves a looted wagon and witnesses. It has a camp, a boss and a bounty, so it can be
+   found and killed. Its take lands in its cache, which is why the floor's salt works is its neighbour.
+
+   THE STALKERS want nobody's cargo at all. They take PEOPLE AND BEASTS and leave nothing, they never toll, and they
+   have no tell: following one leads east and nobody who has taken that road has come back. Their roll improves in the
+   black storms, which is the one season they are hidden in. They cannot be found -- there is no camp record here and
+   no bounty -- and `people` is the number no tune has booked before (PLAN-SIM.md 4c).
+
+   A player who cannot tell them apart in the first hour and can in the tenth is the design working. */
+T.ambushes={
+ kit:{explosives:6},   /* what a round's `kit` adds to its guard: the Geomancers' answer, now anyone's to buy */
+ parties:[
+  {id:'tinskulls',name:'The Tin-Skulls (bandits of the Catch floor, dressed as Stalkers)',kind:'outlaw',
+   strength:4,every:5,spare:3,toll:.12,maul:.3,beasts:.2,
+   wants:['water','grain','salt','tools','iron','silver','arms'],
+   cache:'svhmyhf33w',   /* the Catch salt works: the nearest thing on the floor to a market they can sell into */
+   note:'announces itself; tolls; leaves witnesses; has a camp, a boss and a bounty'},
+  {id:'stalkers.floor',name:'The Stalkers of the Catch floor',kind:'stalker',
+   strength:7,every:6,spare:5,beasts:.18,people:2,hiddenIn:'storms',
+   note:'no cargo, no toll, no tell: it takes the crew and the beasts and leaves nothing'}]};
+/* THE STRENGTHS ARE SET AGAINST WHAT A TRAIN CAN ANSWER WITH, and the first numbers were wrong: at 7 and 11 against a
+   guard of 6 every single attempt mauled or broke the train, which is no ladder at all. A group's guard is about
+   carriers x 1.5 (six for a four-carrier round, five for the salt run's three), so:
+     the Tin-Skulls at 4   -> a guarded train passes or is tolled; an unguarded one is mauled
+     the Stalkers at 7     -> a guarded train passes about a third of the time and is mauled otherwise, and worse in
+                              the black storms, which is the one season they are hidden in
+     and WITH EXPLOSIVES (+6) a train passes the Stalkers every time, which is what "carry explosives" has to mean.
+   `every` and `spare` keep the frequency honest beside that: the Tin-Skulls try two passages in five -- they are often
+   met and mostly only toll -- and the Stalkers ONE IN SIX, which is the rate C5's loss rule used before them, so most
+   crossings of the floor meet nobody at all. A Stalker encounter has to stay rare to stay frightening, and at two in
+   six it was taking a quarter of the beasts off a third of all passages, which is attrition rather than an event. */
 T.speed=30;   /* a pack caravan's km a day on the crossing (24-40: the proposal's section 1c) */
 T.muster=60;  /* days over which the four home pools' caravan seasons are spread, nearest home first (the owner,
                  2026-11-25: "we would probably expect them to arrive at different times as caravans may be coming from
@@ -249,7 +286,10 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   const share=poolOf[g.pool],stagger=Math.round(legs.reduce((a,b)=>a+b,0)/g.carriers);
   /* the pool's own slice of the muster window, by how far its caravans come, and the house's share of that slice */
   const slice=T.muster*1440/poolsByKm.length,poolIdx=poolsByKm.indexOf(g.pool);
+  /* what a train can answer an ambush with (R2): its own guard, and the kit it carries. The Geomancers' explosives
+     were a hard-coded exception in C5; here they are one entry in a list any group could be given. */
   const Rd={id:'caravan.'+g.id,stops,legs,mins:720,cap:g.cap,carriers:g.carriers,stagger,
+   guard:g.guard==null?Math.max(2,Math.round(g.carriers*1.5)):g.guard,kit:g.explosives?['explosives']:[],
    offset:Math.round(poolIdx*slice+slice*share.indexOf(g.id)/share.length),keep:20,want:Math.max(90,Math.round(legs.reduce((a,b)=>a+b,0)/1440)),
    goods,expect,halts,sells,forHalts:['grain','tea','tools'],provision:{beasts:Math.round(g.cap/T.kgPerBeast),eat:T.caravan.eat,loss:T.caravan.loss,maxDays:T.caravan.maxDays,home:0},_group:g,_stops:{end:endIdx}};
   /* the cuts: the Sultan's toll on what the caravan lands inside Xanadu (at the Strongbow lift; for the Qiblai caravans,
@@ -275,7 +315,12 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   Rd.losses=[];
   if(!guided)Rd.losses.push(Object.assign({legs:twinsLegs,why:'the unguided crossing of the Twins'},T.hazards.unguided));
   if(haz){Rd.closed=[{legs:floorLegs,window:'storms'}];if(colB.length)Rd.closed.push({legs:colB,window:'col'});
-   if(!g.explosives)Rd.losses.push(Object.assign({legs:floorLegs,why:'the Stalkers on the Catch floor'},T.hazards.stalkers));
+   /* THE STALKERS ARE NO LONGER A C5 LOSS. They were weather here -- a share of the beasts off every sixth passage of
+      the floor, with the Geomancers exempt by a hard-coded `if(!g.explosives)`. R2 gives them what they are instead: a
+      party with a strength, an appetite and a kind, in T.ambushes below, where the explosives become `kit` on the round
+      and any group can buy the same answer. C5 keeps what the COUNTRY does -- the God-Bore, the whiteouts, the col's
+      gales, the Twins' toll on an unguided train -- and R2 has what somebody does on purpose. Keeping both would have
+      had the Stalkers take the same beasts twice (openworld/catch-bowl/PLAN-RAIDS.md section 4). */
    if(g.route==='A')Rd.losses.push(Object.assign({legs:twinsLegs,window:'col',why:'the cold and gales on the col'},T.hazards.gales));
    if(ggLegs.length){Rd.losses.push(Object.assign({legs:ggLegs,why:'the God-Bore in the Godsgate'},T.hazards.bore));
     Rd.losses.push(Object.assign({legs:ggLegs,window:'whiteout',why:'the rime whiteouts in the Godsgate'},T.hazards.whiteout));}}
@@ -296,10 +341,17 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
    cut:[{at:'sfgtxw10kr',to:'xan.citadel',share:X.toll,goods:salts,why:'the Sultan\'s toll at the Strongbow lift'},
     {at:'sfgtxw10kr',to:'twins.sinter',share:X.horns.tally,goods:salts,why:'the guides\' tally, the gate half (Sinter-Gate)'},
     {at:'sfgtxw10kr',to:'twins.brazier',share:X.horns.tally,goods:salts,why:'the guides\' tally, the shrine half (the Brazier)'}],
-   closed:haz?[{legs:floorLegs,window:'storms'},{legs:colB,window:'col'}]:undefined,losses:haz?[Object.assign({legs:floorLegs,why:'the Stalkers on the Catch floor'},T.hazards.stalkers)]:[],
+   guard:5,kit:[],   /* the Train's own escort on the salt run: without a guard an ambush breaks it every passage */
+   closed:haz?[{legs:floorLegs,window:'storms'},{legs:colB,window:'col'}]:undefined,losses:[],   /* the Stalkers moved to T.ambushes (R2) */
    _legs:{floor:floorLegs,colB}});}
  /* C5: Arfwai's well runs low in late summer */
  V.siteSeasons=(V.siteSeasons||[]).concat(haz?[{settlement:'scatcharfwai01',site:'scatcharfwai01.well.site',window:'dry',regen:T.hazards.dryRegen}]:[]);
+ /* R2: the parties' legs, assembled from the rounds the join has just built -- every round's floor legs, which is
+    where both parties work ("where the traffic is"). Each party watches every provisioned round's floor; the kit and
+    each round's guard decide what happens, not which road it is. */
+ {const legs={};V.roads.forEach(Rd=>{const fl=(Rd._legs||{}).floor;if(fl&&fl.length)legs[Rd.id]=fl.slice();});
+  V.ambushes=Object.keys(legs).length?{kit:Object.assign({},T.ambushes.kit),
+   parties:T.ambushes.parties.map(Pt=>Object.assign({},Pt,{legs:legs}))}:undefined;}
  return V;};
 return T;})();
 if(typeof module!=='undefined')module.exports=CATCH_TUNE;
