@@ -56,3 +56,14 @@ The table is `MUNGO_TRADES` in `src/88d-mungo-trades.js` (checked by `tools/chec
 - [ ] food and craft: bakery, butcher's, brewhouse, tannery, dairy and byre, boatyard for the reed canoes and the fishing fleet.
 - [ ] civic: school, toll house or customs shed at the bridgehead, house of healing, funerary court, a headman's hall (palace and canton staffs: only a rich house).
 - [ ] works and land: an industrial works (refinery or mill; the windmill lifts water only: partly in granary keepers and millers), orchard, quarry or brick yard.
+
+## On the shared sky (W7, 2026-11-24; settlements/locus/PLAN-ONMAP.md)
+
+Mungo reads Locus's sky fragments by name, so it moved with Locus (the owner): `region/site.py` casts its site at the moved pin
+(1322, 828: -1,433 m, its lake 4 km off at -1,452 m, 1.91 atm, Aw); build.py embeds it as `09-locus-site.js`. The shared sky draws
+at the site with its ridge bands (6-450 km) as the far land; no far field and no lifted edge on Mungo (its ground is not on the
+map's yet). The weather and the basin's air are Locus's `90t-locus-air.js`; no refinery here. `20-stage.js` lost its baked dome.
+`verify.py --assert` passes (rtx lane). Before and after: `shots-before-12`, `shots-after-12/21`.
+- [x] **Mungo had not built since 2026-11-23**: Locus's room light adapter (66r, read by name) needs core/interiors' night
+      light volume (KNLV), which Mungo's build did not list, and its build rules did not list 66r. Both added.
+- [ ] The page opens at 06:00 (SKY-PLAN.md 2.1). Game start's day has a total eclipse here from 08:30 to 10:00.

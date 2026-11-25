@@ -80,7 +80,7 @@ function pickWorld(e){
        world time (the hour) is HELD by default and runs at 72 real minutes a day on Run time. The sky, the
        lights, the windows and the simulation (SIM, 77-sim-*) all read MCLOCK.hour; the sky's own clock is
        set from it every frame instead of advancing itself. #hour=H and #time=run in the URL set it. --- */
-var MCLOCK = KCLOCK.make({ hour:10, running:false }), MCLOCK_SET = null;
+var MCLOCK = KCLOCK.make({ hour:6, running:false }), MCLOCK_SET = null;   /* opens at 06:00 (SKY-PLAN.md 2.1; W7) */
 SKY.paused = true;
 (function(){
   var q=new URLSearchParams((location.hash||'').replace(/^#/,'')); var h=parseFloat(q.get('hour')); if(isFinite(h)) MCLOCK.set(h); if(q.get('time')==='run') MCLOCK.run(true);
