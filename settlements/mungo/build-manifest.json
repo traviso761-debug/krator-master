@@ -121,7 +121,7 @@
  ],
  "30-layout.js": [
   "mungo (overrides locus)",
-  "1e42c766f08a"
+  "1e3c657bf6b4"
  ],
  "39-host-edits.js": [
   "virtual",
@@ -315,6 +315,10 @@
   "mungo",
   "cde2b8eefc86"
  ],
+ "65s-abyss-salvage.js": [
+  "kits/abyss-salvage",
+  "fa0d3d8bf8e0"
+ ],
  "65t-tabisti-bundle.js": [
   "virtual",
   "6fc697be590c"
@@ -341,7 +345,7 @@
  ],
  "68-place.js": [
   "mungo (overrides locus)",
-  "a856c4abb0bb"
+  "4da9e864f563"
  ],
  "69a0-bio-matlib-pack.js": [
   "virtual",
@@ -513,7 +517,7 @@
  ],
  "78b-mungo-world.js": [
   "mungo",
-  "bc7706ab3fd5"
+  "da8bb72c3d88"
  ],
  "80-camera.js": [
   "mungo (overrides locus)",

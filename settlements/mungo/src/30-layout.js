@@ -389,11 +389,13 @@ var QUAY = null, NORTH_ROAD = null, SOUTH_ROAD = null, GEO_ROAD = null, JUNCTION
   function crossesEdge(ax,az,bx,bz, skipNode){ for(var i=0;i<ST.edges.length;i++){ var e=ST.edges[i], A=ST.nodes[e.a], B=ST.nodes[e.b];
       if(A===skipNode || B===skipNode) continue; if(segCross(ax,az,bx,bz, A.x,A.z,B.x,B.z)) return e; } return null; }
   function nearNode(x,z,r,except){ var best=null, bd=r; for(var i=0;i<ST.nodes.length;i++){ var n=ST.nodes[i]; if(n.dead || except.indexOf(n)>=0) continue; var d=Math.hypot(n.x-x,n.z-z); if(d<bd){ bd=d; best=n; } } return best; }
+  function nearEdge(x,z,r,skipNode){ for(var i=0;i<ST.edges.length;i++){ var e=ST.edges[i], A=ST.nodes[e.a], B=ST.nodes[e.b];
+      if(A===skipNode || B===skipNode) continue; if(segDist(x,z, A.x,A.z, B.x,B.z) < r) return e; } return null; }
   var Q = [];
   function seedAlong(nodes, prob, cls){ for(var i=0;i<nodes.length-1;i++){ var A=nodes[i], B=nodes[i+1], L=Math.hypot(B.x-A.x,B.z-A.z); if(L<8) continue;
       var h=Math.atan2(B.z-A.z, B.x-A.x); [-1,1].forEach(function(sd){ if(rnd() < prob) Q.push({ from:B, h:h+sd*(Math.PI/2+rr(-0.35,0.35)), cls:cls, gen:0 }); }); } }
-  seedAlong(MAIN_STREET.nodes, 0.9, 'street');
-  seedAlong(NORTH_ROAD, 0.85, 'street'); seedAlong(SOUTH_ROAD.slice(0,4), 0.85, 'street');
+  seedAlong(MAIN_STREET.nodes, 0.85, 'street');
+  seedAlong(NORTH_ROAD, 0.72, 'street'); seedAlong(SOUTH_ROAD.slice(0,4), 0.85, 'street');
   seedAlong(GEO_ROAD, 0.6, 'alley'); seedAlong(QUAY, 0.7, 'alley');
   /* from the market rim too: lanes out between the shops */
   [-128,-86,84,128,-170,170].forEach(function(deg){ var a=deg*Math.PI/180; var n=nearestNodeTo(MARKET.x+Math.cos(a)*(MARKET.r+2), MARKET.z+Math.sin(a)*(MARKET.r+2), 10, function(q){ return q.tag==='marketrim'; }); if(n) Q.push({ from:n, h:a, cls:'alley', gen:0 }); });
@@ -401,19 +403,21 @@ var QUAY = null, NORTH_ROAD = null, SOUTH_ROAD = null, GEO_ROAD = null, JUNCTION
   while(qi < Q.length && made < MAXN){
     var s=Q[qi++], P=s.from, h=s.h, steps=s.gen===0 ? 3+Math.floor(rnd()*4) : 2+Math.floor(rnd()*3), chain=[P];
     for(var k=0;k<steps;k++){
-      var L=rr(15,25); h += rr(-0.44,0.44);
+      var L=rr(16,26); h += rr(-0.40,0.40);
       var x=P.x+Math.cos(h)*L, z=P.z+Math.sin(h)*L;
       if(!townOK(x,z)){ stops.edge++; break; }
       if(blocked(x,z) || segHitsSite(P.x,P.z,x,z,2) || inCircle((P.x+x)/2,(P.z+z)/2,2)){ stops.site++; break; }
       var wet=false; for(var t=0.25;t<1.01;t+=0.25){ var qx=mix(P.x,x,t), qz=mix(P.z,z,t); if(riverDist(qx,qz)<10 || lakeDist(qx,qz)<14) wet=true; } if(wet){ stops.water++; break; }
-      var near = nearNode(x,z,9,chain);
+      var near = nearNode(x,z,12,chain);
       var hit = crossesEdge(P.x,P.z, near?near.x:x, near?near.z:z, P);
       if(hit){ var A=ST.nodes[hit.a], B=ST.nodes[hit.b], tgt = Math.hypot(A.x-P.x,A.z-P.z) < Math.hypot(B.x-P.x,B.z-P.z) ? A : B;
         if(!segHitsSite(P.x,P.z,tgt.x,tgt.z,1.5) && !crossesEdge(P.x,P.z,tgt.x,tgt.z,P) && Math.hypot(tgt.x-P.x,tgt.z-P.z) < 32){ stEdge(P, tgt, s.cls); joins++; }
         stops.cross++; break; }
       if(near){ if(!segHitsSite(P.x,P.z,near.x,near.z,1.5)){ stEdge(P, near, s.cls); joins++; } break; }
+      /* prevent redundant parallel alleys running side-by-side within 16 m of an existing street */
+      if(nearEdge(x,z,16,P) || nearEdge((P.x+x)/2,(P.z+z)/2,13,P)){ stops.cross++; break; }
       var n=stNode(x,z,'lane'+s.gen); stEdge(P, n, s.cls); chain.push(n); P=n; made++;
-      if(s.gen < 2 && rnd() < (s.gen===0 ? 0.42 : 0.25)){ var sd=rnd()<0.5?-1:1; Q.push({ from:n, h:h+sd*(Math.PI/2+rr(-0.4,0.4)), cls:s.gen===0?'alley':'lane', gen:s.gen+1 }); }
+      if(s.gen < 2 && rnd() < (s.gen===0 ? 0.36 : 0.20)){ var sd=rnd()<0.5?-1:1; Q.push({ from:n, h:h+sd*(Math.PI/2+rr(-0.35,0.35)), cls:s.gen===0?'alley':'lane', gen:s.gen+1 }); }
       if(k===steps-1) stops.steps++;
     }
   }

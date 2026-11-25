@@ -55,6 +55,7 @@ var MUNGO_SIM = null;
   function ringSpots(cx,cz,r,n,y){ var o=[]; for(var i=0;i<n;i++){ var a=i/n*TAU+0.3, rr2=r*(0.45+0.55*((i*0.618)%1)); o.push([cx+Math.cos(a)*rr2, cz+Math.sin(a)*rr2, y==null?terrainH(cx+Math.cos(a)*rr2, cz+Math.sin(a)*rr2):y]); } return o; }
   function place(o){ if(o.y==null) o.y=terrainH(o.x,o.z); return SIM.place(o); }
   var HOME_BEDS = { abyss_house_poor:5, abyss_house_mid:6, stilt_poor:5, stilt_mid:6,
+                    swamp_pod_hut:5, swamp_shack_a:5, swamp_shack_b:6, swamp_workshop:5,
                     tb_breeze_cot:5, tb_loggia_row:6, tb_shop_house:6, tb_oriel_townhouse:8, tb_tahawst_mid:8 };
   /* the landward homes: every dwelling the fill placed */
   PLACED.forEach(function(rec, i){ var b=HOME_BEDS[rec.key]; if(!b || rec.plotName) return;

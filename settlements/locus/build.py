@@ -123,8 +123,8 @@ CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.
 # KratorInteriors, ROOM, furnishRoom). Inserted after the kit builders (65-abyss-*) and before the glue
 # 66-locus-furnish.js (FURNISH, the interiors hook). Both generators' own text is exempt from the rules below.
 ROOT = os.path.dirname(os.path.dirname(HERE))
-sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
-import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
+sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal'), os.path.join(ROOT, 'kits', 'abyss-salvage')]
+import locuskit, abysskit, abysssalvage   # Locus, Eastern Abyssal, and Kenshi-swamp Abyssal Salvage kits, read in place
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
 import yunikit              # the Yuni kit: its buildings (55-59c), read in place on Locus's frame (53-assets.js; MODULARITY-PLAN.md step 4b)
 
@@ -310,7 +310,7 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for kit in (yunikit, locuskit, abysskit):   # the Yuni kit and Locus's two (a src/ copy with the same name would win: none)
+    for kit in (yunikit, locuskit, abysskit, abysssalvage):
         for f, p in kit.paths().items():
             paths.setdefault(f, p)
     for f in RECORD_FILES:

@@ -117,39 +117,53 @@ var PLACED = [], PLACE_STATS = { scheduled:0, frontage:0, backlot:0, yards:0, re
       buildPlant('marsh_palmetto', x, z, phash(x,1,z,2)*TAU, { variant:0, seed:Math.round(x*7+z*3) }); TREE_SITES.push([x,z,2.2]);
       PLACED.push({ key:'plant', x:x, z:z, ry:0, w:2.4, d:2.4, tag:'plant' }); pAdd(PLACED[PLACED.length-1]); }); } });
 
-  /* ---------------- 3. THE FILL ---------------- */
-  var POOR_Y = ['tb_breeze_cot','tb_breeze_cot','tb_servant_quarters','tb_tenement_court','abyss_house_poor','poor_mud_house'];
-  var MID_Y  = ['tb_loggia_row','tb_oriel_townhouse','tb_tahawst_mid','tb_breeze_cot','tb_tenement_court','mid_djenne_house','mid_bluewash_townhouse'];
-  var SHOP_Y = ['tb_shop_house','tb_shop_house','tb_tea_tavern','tb_bakery_tannur','tb_butcher_icehouse','tb_bronze_foundry','tb_weaver_dyehouse','tb_incense_distillery','tb_ganch_mason_yard','tb_tannery_airy'];
-  var RICH_Y = ['tb_capricho_villa','tb_oriel_townhouse','tb_tahawst_mid','tb_mirador_estate','tb_secession_palazzo','mid_courtyard_house'];
+  /* ---------------- 3. THE FILL ----------------
+     2:1 Yuni : Urban Tabisti ratio in the inner/mid dry town; outer suburbs (r >= 320 m or low marsh/poor rim)
+     mix original Eastern Abyssal buildings with the new Kenshi-swamp Abyssal Salvage kit (swamp_*). */
+  var POOR_Y = ['abyss_house_poor','abyss_house_poor','stilt_poor','swamp_pod_hut','swamp_shack_a','swamp_shack_b','swamp_workshop','swamp_storehouse','poor_mud_house'];
+  var SUBURB_ABYSS = ['abyss_house_poor','abyss_house_mid','stilt_poor','stilt_mid','swamp_pod_hut','swamp_shack_a','swamp_shack_b','swamp_workshop','swamp_storehouse','swamp_tavern_dome','swamp_dome_hall'];
+  var MID_Y  = ['mid_washed_house','mid_djenne_house','mid_djenne_house','mid_round_tower_house','mid_courtyard_house','mid_bluewash_townhouse',
+                'tb_loggia_row','tb_oriel_townhouse','tb_tahawst_mid'];
+  var SHOP_Y = ['trade_shop_house','trade_shop_house','trade_tavern','trade_smithy','trade_shop_house','trade_tavern',
+                'tb_shop_house','tb_tea_tavern','tb_bakery_tannur'];
+  var RICH_Y = ['mid_courtyard_house','rich_merchant_palace','rich_tower_house','mid_round_tower_house',
+                'tb_capricho_villa','tb_secession_palazzo'];
   var TARGET_PEOPLE = 2650, RICH_CAP = 12;
   var PEOPLE = { poor:6, mid:5, rich:9, stilt_poor:6, stilt_mid:5 };
   var TB_POOR = { tb_breeze_cot:6, tb_servant_quarters:7, tb_tenement_court:12 };
   var TB_MID  = { tb_loggia_row:6, tb_oriel_townhouse:8, tb_tahawst_mid:8 };
   var TB_RICH = { tb_capricho_villa:10, tb_lac_merchant_bayt:12, tb_secession_palazzo:14, tb_mirador_estate:12 };
+  var SWAMP_P = { swamp_pod_hut:5, swamp_shack_a:5, swamp_shack_b:6, swamp_workshop:5, swamp_storehouse:4, swamp_tavern_dome:6, swamp_dome_hall:8 };
   function choose(x, z, cls, r01){
-    var D=districtAt(x,z), h=terrainH(x,z), low = h < 5.0, w=D.wealth, key;
-    if(low){                                                                 /* the wet-season ground: the stilt houses */
-      if(w > 0.45 && r01 < 0.75) key='stilt_mid'; else if(r01 < 0.72) key='stilt_poor'; else key=pick(w>0.4?MID_Y:POOR_Y);
+    var D=districtAt(x,z), h=terrainH(x,z), rad=Math.hypot(x,z), low = h < 5.0, suburb = rad >= 320, w=D.wealth, key;
+    if(low){                                                                 /* the wet-season ground: stilt + Kenshi-swamp salvage */
+      if(r01 < 0.38) key=pick(['swamp_pod_hut','swamp_shack_a','swamp_shack_b','swamp_workshop','swamp_tavern_dome']);
+      else if(w > 0.45 && r01 < 0.78) key='stilt_mid';
+      else if(r01 < 0.85) key='stilt_poor';
+      else key=pick(SUBURB_ABYSS);
+    } else if(suburb){                                                       /* outer suburbs: original Eastern Abyssal + Kenshi-swamp salvage */
+      key = pick(SUBURB_ABYSS);
     } else if(w > 0.66){
-      key = (cls==='boulevard'||cls==='ring') && r01 < 0.35 ? pick(SHOP_Y) : (r01 < 0.14 ? 'stilt_mid' : pick(RICH_Y));
+      key = (cls==='boulevard'||cls==='ring') && r01 < 0.35 ? pick(SHOP_Y) : (r01 < 0.12 ? 'stilt_mid' : pick(RICH_Y));
     } else if(w > 0.40){
-      if((cls==='boulevard'||cls==='street') && r01 < 0.22) key=pick(SHOP_Y); else if(r01 < 0.45) key='stilt_mid'; else key=pick(MID_Y);
+      if((cls==='boulevard'||cls==='street') && r01 < 0.22) key=pick(SHOP_Y); else if(r01 < 0.28) key='stilt_mid'; else key=pick(MID_Y);
     } else {
-      if(r01 < 0.40) key='stilt_poor'; else if(r01 < 0.45) key=pick(['tent_pavilion','sunshade_poles']); else key=pick(POOR_Y);
+      if(r01 < 0.35) key='stilt_poor'; else if(r01 < 0.40) key=pick(['tent_pavilion','sunshade_poles']); else key=pick(POOR_Y);
     }
     if((key.indexOf('rich_')===0 || TB_RICH[key]) && (PLACE_STATS.byFamily.rich||0) >= RICH_CAP) key = pick(MID_Y);
     return { key:key, wealth:w, district:D.key };
   }
   function tagOf(key){ var A=ASSET_BY_KEY[key]; if(!A) return 'house';
-    if(key==='stilt_poor' || TB_POOR[key]) return 'home_poor';
-    if(key==='stilt_mid' || TB_MID[key]) return 'home_mid';
+    if(key==='stilt_poor' || TB_POOR[key] || key==='swamp_pod_hut' || key==='swamp_shack_a' || key==='swamp_shack_b') return 'home_poor';
+    if(key==='stilt_mid' || TB_MID[key] || key==='swamp_dome_hall') return 'home_mid';
     if(TB_RICH[key]) return 'home_rich';
-    if(key==='tb_tea_tavern' || key==='trade_tavern') return 'tavern';
+    if(key==='tb_tea_tavern' || key==='trade_tavern' || key==='swamp_tavern_dome') return 'tavern';
+    if(key==='swamp_workshop' || key==='swamp_storehouse') return 'shop';
     if(key.indexOf('tb_')===0) return 'shop';
     if(A.family==='poor') return 'home_poor'; if(A.family==='mid') return 'home_mid'; if(A.family==='rich') return 'home_rich';
     if(A.family==='trade') return 'shop'; return 'yard'; }
   function countPeople(key){ var t=tagOf(key);
+    if(SWAMP_P[key]){ PLACE_STATS.dwellings++; PLACE_STATS.people += SWAMP_P[key]; return; }
     if(TB_POOR[key]){ PLACE_STATS.dwellings++; PLACE_STATS.people += TB_POOR[key]; return; }
     if(TB_MID[key]){ PLACE_STATS.dwellings++; PLACE_STATS.people += TB_MID[key]; return; }
     if(TB_RICH[key]){ PLACE_STATS.dwellings++; PLACE_STATS.people += TB_RICH[key]; return; }

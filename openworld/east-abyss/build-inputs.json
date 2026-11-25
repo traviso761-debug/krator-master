@@ -146,8 +146,8 @@
     "openworld/east-abyss/data/temp.png": "ca264c1fe00837f6879a3ac7d185009f0378563b1622f29c6aae1c443fedfbe0",
     "openworld/east-abyss/data/wlev.png": "650badc9ed287c0fce9fcd22b1f878fd50dc4f58b56cb2d8c71749fcd24eab4e",
     "openworld/east-abyss/src/46-world-config.js": "4b7c9696f00565630f7a8e197a33ecccb5335af9fde36b516986bf77f5b7dd6b",
-    "openworld/east-abyss/src/47-world-kits.js": "24be8f8a8453dfd6a30162671c8cc13f3a5bc6276d5cb15e9da29b26994b3f82",
-    "openworld/east-abyss/src/49-world-eastabyss.js": "cc73e396d2867a76a64b6f2646ac6d224e47c42d996bc6f63807e73188b02faa",
+    "openworld/east-abyss/src/47-world-kits.js": "e151b26a7423b1f9eb13780a03292bd79345889d62fe42bb9fb774248e707d48",
+    "openworld/east-abyss/src/49-world-eastabyss.js": "58c781fc0962e028f2d01b86f2ede4b124ffad187610edd574b7b11b78c708b0",
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
@@ -156,11 +156,11 @@
    },
    "listed_by": "code",
    "outputs": {
-    "openworld/east-abyss/dist/east-abyss.html": "3d7628444275e5ad1e87ba63a1ff19d2f2f6ae860c1c1b80dafb5e905f2e0f47",
+    "openworld/east-abyss/dist/east-abyss.html": "2f4b198bc359f95f9c6626acc28bb255f08f7541c349684f46bf28055c01191a",
     "openworld/east-abyss/dist/east-abyss.tex.eastabyss.js": "38c6044d82327b2e2162b1ffd405ab94c37a37143c246eb6625385b0e3aa6962"
    },
    "outputs_raw": {
-    "openworld/east-abyss/dist/east-abyss.html": "3d7628444275e5ad1e87ba63a1ff19d2f2f6ae860c1c1b80dafb5e905f2e0f47",
+    "openworld/east-abyss/dist/east-abyss.html": "2f4b198bc359f95f9c6626acc28bb255f08f7541c349684f46bf28055c01191a",
     "openworld/east-abyss/dist/east-abyss.tex.eastabyss.js": "38c6044d82327b2e2162b1ffd405ab94c37a37143c246eb6625385b0e3aa6962"
    }
   }
