@@ -517,6 +517,50 @@ No census beyond Ranger HQ's 500 and the waystations' keepers. No farms. No work
 Copper-Vein Tarn (`PLAN-SITES.md`: a find, with a wrecked Harpooner frozen in the aufeis beside an unlooted winch — a
 ruin, not a producing site). No roads except the Stalker Gate's, which belong to a later region. No markets.
 
+### 4e. What S3 built, and the two halves it is in (2026-11-25)
+
+**`core/region/data/stalker-tune.js`** and **`core/region/tests/test-stalker.js`** (21 passed, 0 failed; a year of the
+province in 3.7 s, 12 settlements, 582 people at 1 actor to 25).
+
+**The network is measured, not drawn.** `tools/gate_route.py` searched the model's own ground, and three of its findings
+changed the province's shape — the east is **one trunk with two forks** rather than three branches, the **south branch
+does not exist** (761 km for 319 straight, topping at 11,025 m: the search climbing a wall), and **Lake Vapora is Ranger
+HQ's own lake** (352 km² at 1,904 m, its shore 2 km from the fort; the brief's +2,180 m caldera is 276 m off it, and
+there are only two water bodies in the province's 129,000 km²). `PLAN.md` section 2a carries the figures. So the tune's
+eleven places are **ten kept posts and a fort, every pixel measured**, with **39 unmanned bothies** between the posts —
+the spacing is a decision, not an arithmetic: a post every day's march gives sixty over the network, more census than
+section 4d allows, and the plan's *"bothies, water tanks and fodder bins"* are mostly unmanned anyway.
+
+**Every place carries a water number and a fodder number**, and most of them have no water within 40 km: those are the
+network's **tanks and bins, filled by the patrol**, marked `tank:true`. It is the same abstraction as Bāb al-Hawa's
+barns and it is there for the same reason — `SIM.trade` draws the beasts' water and fodder at every stop, so a stop
+without both is a sink (section 2x, and `core/simulation/SCHEMA.md`). A check asserts it over all eleven, with a
+negative that removes one bin.
+
+**The salary is a `SIM.transfer`, and that is a decision worth stating.** In a goods economy a salary for a garrison
+538 km up a pass *is* its provisioning, so the Emirate's wages are a **standing bill of supplies on a fixed day,
+"never priced and never answering scarcity"** (`77-sim-6-transfer.js`) — which is exactly a salary's character and
+exactly the lever the Emirate can cut. It falls **thirteen times in a 365-day year** and lands in full, and its grain
+covers the fort's own year at **118 %**, which is what makes 500 people possible where nothing grows. **It is not
+modelled twice:** the convoy that carries it up the west trunk is this same bill seen as carriage, so there is no second
+road feeding the fort, or the garrison would eat two dinners.
+
+**Three patrols, one per branch** (`caravan.rangers.west`, `.ne`, `.se`), not one round over all ten posts — the posts
+lie on different trunks and a single round would walk the same beasts up both. Each carries the posts' water, fodder,
+grain, charcoal and tools out and the salvage in: **this is the upkeep** section 4a calls *"a cost on their books, and
+the reason the salary has to cover more than wages"*, and they are the only roads in the province.
+
+**Hub 01 is a record and must never become a settlement.** No economy, no people, no polity, no road to it (the owner:
+*"There is no trail towards hub 01"*), `endable.byAttrition: false` and `byExpedition: true`. Two checks hold it there:
+one that it is absent from the valley's settlements and from every road, and one that **neither its id nor the word
+"pressure" appears in any settlement, trade or transfer report** — section 4b's requirement that the number be
+unreadable, tested rather than asserted.
+
+**What S3's second half still owes, and why it is not here.** The **bounty** on Stalkers (`SIM.bounty`) and the Rangers'
+**cut of expeditions** both wait on code that is approved and unbuilt
+(`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md`): a cut of expeditions needs an expedition to take a cut of. Nothing in
+the tune or the test pretends otherwise — there are no checks for either, rather than checks that pass vacuously.
+
 ## 5. The five tarns are finds, not settlements
 
 `biomes/seouterwall/PLAN.md` section 4 gives five hidden highland lake oases as *"rewards for off-road exploration"*. On
@@ -541,7 +585,7 @@ and relations. The three new tunes join the same way.
 |---|---|---|
 | **S1** | `CATCH_TUNE` gains the Godsgate's three stops, its four legs and its three seasons (section 2) | the 29 existing checks pass unchanged; a train that misses Bāb al-Hawa loses beasts and one that reaches it does not |
 | **S2** | **DONE 2026-11-25.** `BOWL_TUNE` (section 3), joined to `CATCH_TUNE`; the Train's home moves from the pool to Jabal | **done.** `test-bowl.js` 29/0 (the six places, two hinterlands, five trade roads, the shortfall, and Solta's salt moving on a 520-day run); `test-bowl-join.js` 16/0 (the join's structure, and 120 days of Xanadu + the Catch + the Bowl: **281 settlements, 450,619 people in 330 s**, no problems, the books balanced over all three tunes). Mantis buys its salt from the Train. The stated check "salt reaches Strongbow and Qiblai" holds through **Ṣalṭ al-Bān**, not Solta: section 3c has the division the geography gives |
-| **S3** | `STALKER_TUNE` (section 4): Ranger HQ's 500 on its salary and its cut of expeditions, the waystation network's upkeep, Hub 01's pressure and state, the bounty | the salary lands and a cut of it does not depend on traffic; an expedition's share reaches Ranger HQ; destroying triads lowers the floor's losses and the pressure recovers; the pressure appears in **no** player-readable report; a `dead` Hub 01 ends the Stalker losses region-wide and the Brotherhood and the Rangers both lose income |
+| **S3** | **FIRST HALF DONE 2026-11-25.** `STALKER_TUNE` (section 4): Ranger HQ's 500 on its salary, the waystation network's upkeep, Hub 01's record. **Its cut of expeditions and the bounty wait on `SIM.bounty`** (section 4e) | the salary lands and a cut of it does not depend on traffic; an expedition's share reaches Ranger HQ; destroying triads lowers the floor's losses and the pressure recovers; the pressure appears in **no** player-readable report; a `dead` Hub 01 ends the Stalker losses region-wide and the Brotherhood and the Rangers both lose income |
 | **S4** | **C6**: all three into `EAST_RIFT` with Xanadu and Longsong | **one ledger** over five tunes; Xanadu's salt shortfall narrows but does not close; every tune's own tests still pass |
 | **S5** | The census across the four provinces, for `openworld/PLAN-SETTLEMENTS.md` | the region's population agrees with the map's pins and Gemini's where the owner has not overridden them |
 
