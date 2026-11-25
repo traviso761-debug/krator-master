@@ -6,6 +6,8 @@
 # (a fresh checkout runs godot --headless --path godot --import once first, so the class names register)
 extends SceneTree
 
+const KRand := preload("res://tests/rand/krand.gd")
+
 const DATA := "res://data/catch-bowl/"
 var fails := 0
 
@@ -190,8 +192,61 @@ func _init() -> void:
 	ok("every vantage looks from one place in the box at another",
 		good, V.size() >= 4, "%d vantages: %s" % [V.size(), ", ".join(V.keys())])
 
+	# 13: the near-field layer takes the core's noise and writes no hash of its own (CLAUDE.md: do not copy
+	#     infrastructure into a build -- take the core module)
+	var shf := FileAccess.open("res://shaders/catch_bowl_ground.gdshader", FileAccess.READ)
+	var sht := shf.get_as_text() if shf else ""
+	if shf:
+		shf.close()
+	var takes_core := sht.find("lib/breakup.gdshaderinc") >= 0 and sht.find("km_n(") >= 0
+	# the CODE, not the prose: the shader's own header explains why it does not use fract(sin(large)), and scanning
+	# the whole file for that string made the check fail on the comment that exists to say it is not there
+	var code := ""
+	for ln in sht.split("\n"):
+		var t: String = ln.strip_edges()
+		if t.begins_with("//"):
+			continue
+		var c := t.find("//")
+		code += (t.substr(0, c) if c >= 0 else t) + "\n"
+	var own_hash := code.find("fract(sin") >= 0 or code.find("float hash") >= 0 or code.find("randomSeed") >= 0
+	ok("the ground shader takes core/rand's noise through the shader library and writes none of its own",
+		takes_core and not own_hash and sht.find("dune_") >= 0,
+		not (sht == ""), "%d characters of code, breakup.gdshaderinc %s, no hash of its own: %s" % [code.length(), "included" if takes_core else "MISSING", str(not own_hash)])
+
+	# 14: the dune profile is ASYMMETRIC, which is the whole reason a dune reads as a dune rather than as corrugated
+	#     iron: a long windward rise and a short slipface at the angle of repose.
+	var wind := 0.0
+	var lee := 0.0
+	var re2 := RegEx.new()
+	re2.compile("f < (0\\.[0-9]+) \\? smoothstep")
+	var m2 := re2.search(sht)
+	if m2:
+		wind = float(m2.get_string(1))
+		lee = 1.0 - wind
+	ok("the dune profile is asymmetric: a long windward rise and a short slipface",
+		wind > 0.6 and lee > 0.05 and wind > lee * 2.0,
+		not (absf(wind - 0.5) < 0.01), "windward %.2f of the dune, slipface %.2f" % [wind, lee])
+
+	# 15: a rock is placed by core/rand from its cell, so the same ground gives the same rocks however the camera got
+	#     there -- never a draw-order stream (CLAUDE.md: "a tile or cell is seeded from a hash of (world, cell,
+	#     index, salt), never from how many draws came before it")
+	var RK := load("res://krator/catch_bowl_rocks.gd")
+	var rsrc := FileAccess.open("res://krator/catch_bowl_rocks.gd", FileAccess.READ)
+	var rtxt := rsrc.get_as_text() if rsrc else ""
+	if rsrc:
+		rsrc.close()
+	var by_cell := rtxt.find("KRand.cell(SEED") >= 0
+	var no_rng := rtxt.find("RandomNumberGenerator") < 0 and rtxt.find("randf()") < 0 and rtxt.find("randi()") < 0
+	var a1 = KRand.cell(7731, 412, -88)
+	var a2 = KRand.cell(7731, 412, -88)
+	var a3 = KRand.cell(7731, 413, -88)
+	ok("rocks are placed from their cell by core/rand, and the same cell gives the same rock twice",
+		by_cell and no_rng and a1 == a2 and a1 != a3 and RK != null,
+		not (a1 == a3), "cell(412,-88) gives %d twice; cell(413,-88) gives %d" % [a1, a3])
+
 	print("catch_bowl_test: " + ("all passed" if fails == 0 else str(fails) + " failed"))
 	quit(1 if fails > 0 else 0)
+
 
 
 # the host's vantages, read off the script rather than instanced: the test has no viewport to build terrain in

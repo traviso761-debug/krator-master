@@ -25,6 +25,7 @@ const VSCALE := 1.0            # metres per metre: the model's heights are alrea
 var meta := {}
 var fx: KratorAtmosFx
 var grit: KratorGritFx
+var rocks: KratorCatchBowlRocks
 var cam: Camera3D
 var env: WorldEnvironment
 var sun: DirectionalLight3D
@@ -71,6 +72,12 @@ func _ready() -> void:
 	grit.name = "Grit"
 	add_child(grit)
 	grit.bind(cam, fx)
+	# rocks where the sand is not: the other half of the near-field layer (krator/catch_bowl_rocks.gd)
+	if _arg("plain", "") == "":
+		rocks = KratorCatchBowlRocks.new()
+		rocks.name = "Rocks"
+		add_child(rocks)
+		rocks.bind(self, cam)
 	var w := _arg("weather", "")
 	if w != "":
 		fx.set_kind(w)
@@ -176,10 +183,23 @@ func _build_terrain() -> void:
 	terrain = MeshInstance3D.new()
 	terrain.name = "Terrain"
 	terrain.mesh = st.commit()
-	var mat := StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.roughness = 0.95
-	terrain.material_override = mat
+	# The near-field layer (shaders/catch_bowl_ground.gdshader): dunes on the sand, scree on the scarps, and the tint
+	# bands broken up. The mesh has nothing below 2 km, so without it the floor is one flat wash -- true to the data
+	# and nothing to look at. --plain=1 puts the bare vertex colours back, which is what to compare against.
+	if _arg("plain", "") != "":
+		var mat := StandardMaterial3D.new()
+		mat.vertex_color_use_as_albedo = true
+		mat.roughness = 0.95
+		terrain.material_override = mat
+	else:
+		var sh := ShaderMaterial.new()
+		sh.shader = load("res://shaders/catch_bowl_ground.gdshader")
+		# the God-Bore comes down the Godsgate out of the south-east, and a transverse dune lies across its wind
+		sh.set_shader_parameter("wind_dir", Vector2(0.80, -0.60))
+		sh.set_shader_parameter("dune_spacing", float(_arg("dunes", "260")))
+		sh.set_shader_parameter("dune_height", 7.0)
+		sh.set_shader_parameter("sand_top", 2600.0)
+		terrain.material_override = sh
 	add_child(terrain)
 	var aabb := terrain.get_aabb()
 	var fmt: int = terrain.mesh.surface_get_format(0)
@@ -277,6 +297,8 @@ const VIEWS := {
 		"note": "south from inside the crater over the gap all four trunks cross"},
 	"bowl": {"eye": Vector3(1160.0, 1210.0, 0.0), "at": Vector3(1225.0, 1149.0, 0.0), "up": 11000.0,
 		"note": "across the Bowl's salt toward Jabal, from the south-west rim"},
+	"salt": {"eye": Vector3(1206.0, 1163.0, 0.0), "at": Vector3(1240.0, 1142.0, 0.0), "up": 220.0,
+		"note": "down on the Bowl's salt itself, below sea level, looking along the dunes toward Jabal"},
 	"catch": {"eye": Vector3(1040.0, 1500.0, 0.0), "at": Vector3(1080.0, 1400.0, 0.0), "up": 9000.0,
 		"note": "north up the Catch from the Twins"},
 }
