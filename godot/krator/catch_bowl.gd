@@ -24,10 +24,12 @@ const VSCALE := 1.0            # metres per metre: the model's heights are alrea
 
 var meta := {}
 var fx: KratorAtmosFx
+var grit: KratorGritFx
 var cam: Camera3D
 var env: WorldEnvironment
 var sun: DirectionalLight3D
 var terrain: MeshInstance3D
+var water: MeshInstance3D
 var _heights := PackedFloat32Array()
 var _nx := 0
 var _nz := 0
@@ -52,6 +54,7 @@ func _ready() -> void:
 	_load_heights()
 	_build_sky()
 	_build_terrain()
+	_build_water()
 	_build_pins()
 	fx = KratorAtmosFx.new()
 	fx.name = "AtmosFx"
@@ -63,6 +66,11 @@ func _ready() -> void:
 	fx.bind(env, sun)
 	_build_ui()
 	_place_camera(_arg("at", "jabal"))
+	# the grit rides the camera, so it is bound after the camera exists
+	grit = KratorGritFx.new()
+	grit.name = "Grit"
+	add_child(grit)
+	grit.bind(cam, fx)
 	var w := _arg("weather", "")
 	if w != "":
 		fx.set_kind(w)
@@ -217,25 +225,37 @@ func _build_pins() -> void:
 		var wz := float(s["z"]) - float(off[1])
 		var m := MeshInstance3D.new()
 		var cyl := CylinderMesh.new()
+		# A PIN, NOT A MOUNTAIN. The first pass put a 26 km spike of 3.5 km radius on every site: from any vantage worth
+		# flying to, a single pin filled a third of the frame and read as landform. The Godthrone is 24.8 km of real
+		# ground, so nothing that is only a marker may approach it. 4.5 km on a 350 m base is visible across the Bowl and
+		# still obviously a marker.
 		cyl.top_radius = 0.0
-		cyl.bottom_radius = 3500.0
-		cyl.height = 26000.0
+		cyl.bottom_radius = 350.0
+		cyl.height = 4500.0
 		m.mesh = cyl
 		var mt := StandardMaterial3D.new()
 		mt.albedo_color = Color(0.86, 0.62, 0.22)
 		mt.emission_enabled = true
 		mt.emission = Color(0.86, 0.62, 0.22)
-		mt.emission_energy_multiplier = 0.6
+		mt.emission_energy_multiplier = 0.35
 		m.material_override = mt
-		m.position = Vector3(wx, height_at(wx, wz) + 13000.0, wz)
+		m.position = Vector3(wx, height_at(wx, wz) + 2250.0, wz)
 		m.name = String(s["id"])
 		_pins.add_child(m)
 		var lb := Label3D.new()
 		lb.text = String(s["name"]).split(",")[0]
-		lb.font_size = 180
-		lb.position = Vector3(wx, height_at(wx, wz) + 30000.0, wz)
+		lb.font_size = 64
+		# fixed_size: the name stays the same size on screen at 4 km and at 400, so a far site is still legible and a
+		# near one does not cover the country behind it
+		lb.fixed_size = true
+		lb.pixel_size = 0.0006
+		lb.outline_size = 16
+		lb.position = Vector3(wx, height_at(wx, wz) + 5200.0, wz)
 		lb.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		lb.no_depth_test = true
+		# NOT no_depth_test. With the depth test off every one of the sixteen names drew through the ground and through
+		# the weather, so in the monsoon the whole region's roll of names stacked up along the horizon line in fog that
+		# should have swallowed all of them. A name behind a ridge should be behind the ridge.
+		lb.no_depth_test = false
 		_pins.add_child(lb)
 
 
@@ -245,6 +265,21 @@ func site(nameish: String) -> Dictionary:
 		if String(s["id"]).to_lower() == want or String(s["name"]).to_lower().begins_with(want):
 			return s
 	return {}
+
+
+# Somewhere worth starting from. A site pin puts the eye 16 km up and 48 km back over the pin, which is right for a
+# town and wrong for a landform: these are the landforms, with their own eye and the thing they look at. --at takes
+# either, and --up/--back still override a site's.
+const VIEWS := {
+	"godsgate": {"eye": Vector3(1027.0, 1246.0, 0.0), "at": Vector3(1016.0, 1070.0, 0.0), "up": 9000.0,
+		"note": "up the Godsgate from Bab al-Hawa toward the wall the God-Bore falls down"},
+	"gateway": {"eye": Vector3(1016.0, 1046.0, 0.0), "at": Vector3(1020.0, 1068.0, 0.0), "up": 7000.0,
+		"note": "south from inside the crater over the gap all four trunks cross"},
+	"bowl": {"eye": Vector3(1160.0, 1210.0, 0.0), "at": Vector3(1225.0, 1149.0, 0.0), "up": 11000.0,
+		"note": "across the Bowl's salt toward Jabal, from the south-west rim"},
+	"catch": {"eye": Vector3(1040.0, 1500.0, 0.0), "at": Vector3(1080.0, 1400.0, 0.0), "up": 9000.0,
+		"note": "north up the Catch from the Twins"},
+}
 
 
 func _place_camera(at: String) -> void:
@@ -257,10 +292,29 @@ func _place_camera(at: String) -> void:
 	cam.near = 120.0
 	cam.far = 900000.0
 	cam.fov = 60.0
-	var s := site(at)
 	var off: Array = meta.get("origin_offset_m", [0, 0])
 	var wx := float(_nx) * _m * 0.5
 	var wz := float(_nz) * _m * 0.5
+	if VIEWS.has(at.to_lower()):
+		var v: Dictionary = VIEWS[at.to_lower()]
+		var e: Vector3 = v["eye"]
+		var t: Vector3 = v["at"]
+		var ex := _px_x(e.x)
+		var ez := _px_z(e.y)
+		var tx := _px_x(t.x)
+		var tz := _px_z(t.y)
+		var vup := float(_arg("up", str(v["up"])))
+		if _arg("up", "") == "":
+			vup = minf(vup, _vis_limit())
+		cam.position = Vector3(ex, height_at(ex, ez) + vup, ez)
+		add_child(cam)
+		cam.look_at(Vector3(tx, height_at(tx, tz), tz))
+		cam.current = true
+		if "speed" in cam:
+			cam.speed = 12000.0
+		print("  view %s: %s" % [at, v["note"]])
+		return
+	var s := site(at)
 	if not s.is_empty():
 		wx = float(s["x"]) - float(off[0])
 		wz = float(s["z"]) - float(off[1])
@@ -272,12 +326,87 @@ func _place_camera(at: String) -> void:
 	var g := height_at(wx, wz)
 	var up := float(_arg("up", "16000"))
 	var back := float(_arg("back", "48000"))
+	var lim := _vis_limit()
+	if _arg("up", "") == "":
+		up = minf(up, lim)
+	if _arg("back", "") == "":
+		back = minf(back, lim * 3.0)
 	cam.position = Vector3(wx, g + up, wz + back)
 	add_child(cam)
 	cam.look_at(Vector3(wx, g, wz))
 	cam.current = true
 	if "speed" in cam:
 		cam.speed = 12000.0
+
+
+# How high it is worth starting, given the weather asked for on the command line. The kinds keep their honest
+# Koschmieder visibilities, so a whiteout at 16 km up is a uniform grey rectangle: true, and no use for looking at the
+# country. Half the visibility keeps the ground in the picture. --up overrides it.
+func _vis_limit() -> float:
+	var w := _arg("weather", "")
+	if w == "" or not KratorAtmosFx.KINDS.has(w):
+		return 1.0e9
+	return maxf(600.0, float(KratorAtmosFx.KINDS[w]["visibility_km"]) * 1000.0 * 0.5)
+
+
+# a model pixel to a metre in the mesh's frame (the box's corner is the mesh's origin)
+func _px_x(px: float) -> float:
+	return (px - float(meta.get("box_px", [0, 0, 0, 0])[0])) * _m
+
+
+func _px_z(py: float) -> float:
+	return (py - float(meta.get("box_px", [0, 0, 0, 0])[1])) * _m
+
+
+# THE WATER. water.png says where, wlevel.png says at what height -- and the second is why this draws as lakes rather
+# than as wet ground: at 2 km a sample the bed under a lake is hundreds of metres below its surface, so a mesh laid on
+# the bed reads as a dark stain on the floor. One quad a cell at the recorded level, which steps at the shore because
+# the model's own shoreline does.
+func _build_water() -> void:
+	var wimg := Image.new()
+	var limg := Image.new()
+	if wimg.load(DATA + "water.png") != OK or limg.load(DATA + "wlevel.png") != OK:
+		print("  water: no water.png/wlevel.png -- re-run export_godot.py")
+		return
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var n := 0
+	var half := _m * 0.5
+	for z in mini(_nz, limg.get_height()):
+		for x in mini(_nx, limg.get_width()):
+			if wimg.get_pixel(x, z).r < 0.5:
+				continue
+			var lv := _lo + limg.get_pixel(x, z).r * (_hi - _lo)
+			var wx := float(x) * _m
+			var wz := float(z) * _m
+			# deeper water darker: the drop from the surface to the bed, over 300 m, is plenty of range at this scale
+			var deep := clampf((lv - height_at(wx, wz)) / 300.0, 0.0, 1.0)
+			var col := Color(0.42, 0.60, 0.72).lerp(Color(0.05, 0.14, 0.26), deep)
+			col.a = lerpf(0.72, 0.95, deep)
+			for q in [Vector2(-half, -half), Vector2(half, -half), Vector2(half, half), Vector2(-half, half)]:
+				st.set_color(col)
+				st.set_normal(Vector3.UP)
+				st.add_vertex(Vector3(wx + q.x, lv, wz + q.y))
+			var i := n * 4
+			# the same winding as the terrain, for the same reason
+			st.add_index(i); st.add_index(i + 1); st.add_index(i + 2)
+			st.add_index(i); st.add_index(i + 2); st.add_index(i + 3)
+			n += 1
+	if n == 0:
+		print("  water: no water in the box")
+		return
+	water = MeshInstance3D.new()
+	water.name = "Water"
+	water.mesh = st.commit()
+	var mat := StandardMaterial3D.new()
+	mat.vertex_color_use_as_albedo = true
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.roughness = 0.08
+	mat.metallic = 0.25
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	water.material_override = mat
+	add_child(water)
+	print("  water: %d cells drawn at their own level" % n)
 
 
 func _build_ui() -> void:
@@ -342,7 +471,21 @@ func _shot_tick() -> void:
 		get_tree().quit()
 
 
+# What the air lets you see: pins and names beyond it are turned off rather than drawn into the murk. 1.6 x the
+# Koschmieder visibility is where a dark object is still faintly separable, so that is the cut.
+func _cull_pins() -> void:
+	if _pins == null or cam == null or fx == null:
+		return
+	var reach: float = float(fx.row().get("visibility_km", 200.0)) * 1000.0 * 1.6
+	var eye := cam.global_position
+	for c in _pins.get_children():
+		var n := c as Node3D
+		if n:
+			n.visible = eye.distance_to(n.global_position) <= reach
+
+
 func _process(_d: float) -> void:
+	_cull_pins()
 	_shot_tick()
 	if _label == null or cam == null or fx == null:
 		return

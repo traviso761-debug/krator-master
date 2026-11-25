@@ -22,6 +22,9 @@ It writes, into godot/data/catch-bowl/:
   meta.json     the box, the origin, the metre scale, the height range, the sites, and every weather kind the host offers
   height.png    16-bit greyscale, the box's heights normalised over [lo, hi] from meta.json
   water.png     8-bit: 255 where the model says water
+  wlevel.png    16-bit: the water SURFACE height over the same [lo, hi] as height.png, 0 where there is no water.
+                Without it a host can only put water on the lake bed, which draws as wet ground rather than as a
+                lake: the model keeps the level apart from the ground for exactly this reason.
   temp.png      8-bit: (degC + 90) as the model stores it, so the host can read the air at a point
   rain.png      8-bit: the model's own rain byte (x 4000/255 = mm a year)
 Nothing here is generated or guessed: every byte is the model's, resampled only by the step.
@@ -73,7 +76,7 @@ def main():
             step = max(1, int(sys.argv[i + 1]))
     D = P.load()
     E, _ = P.heights(D)
-    whas, _ = P.water_levels(D)
+    whas, wlev = P.water_levels(D)
     H, W = E.shape
     from smodel.geom import region_mask
     regs = P.regions()
@@ -106,6 +109,10 @@ def main():
     # which is what Godot's Image.load_png gives back as FORMAT_RGB8's red channel pair.
     Image.frombytes('I;16', (h16.shape[1], h16.shape[0]), h16.astype('<u2').tobytes()).save(os.path.join(OUT, 'height.png'))
     Image.fromarray((wsub * 255).astype(np.uint8), mode='L').save(os.path.join(OUT, 'water.png'))
+    # the water surface on height.png's own scale, so a host reads it with the same lo/hi and no second range
+    wl = np.asarray(wlev, dtype=float)[y0:y1:step, x0:x1:step]
+    wl16 = np.where(wsub, np.clip((wl - lo) / max(1.0, hi - lo) * 65535.0, 1, 65535), 0).astype(np.uint16)
+    Image.frombytes('I;16', (wl16.shape[1], wl16.shape[0]), wl16.astype('<u2').tobytes()).save(os.path.join(OUT, 'wlevel.png'))
     Image.fromarray((msub * 255).astype(np.uint8), mode='L').save(os.path.join(OUT, 'inside.png'))
     # the model stores every raster as a base64 PNG in the page, not as an array, so each one is decoded here
     import base64, io as _io

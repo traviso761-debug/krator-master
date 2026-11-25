@@ -128,5 +128,91 @@ func _init() -> void:
 			% [float(dust["visibility_km"]), float(dust["wind"]), float(gale["wind"]),
 			   float(wo["visibility_km"]) * 1000.0, float(dh["sun"])])
 
+	# 9: the water has a LEVEL of its own, not just a mask. Without wlevel.png a host can only lay water on the lake
+	#    bed, which draws as a stain on the floor rather than as a lake.
+	var wi := Image.new()
+	var li := Image.new()
+	var lv_ok := wi.load(DATA + "water.png") == OK and li.load(DATA + "wlevel.png") == OK
+	var wet := 0
+	var levelled := 0
+	var above := 0
+	if lv_ok:
+		var lo2 := float(meta["height"]["lo"])
+		var hi2 := float(meta["height"]["hi"])
+		for z in mini(wi.get_height(), li.get_height()):
+			for x in mini(wi.get_width(), li.get_width()):
+				if wi.get_pixel(x, z).r < 0.5:
+					continue
+				wet += 1
+				var r := li.get_pixel(x, z).r
+				if r > 0.0:
+					levelled += 1
+					if lo2 + r * (hi2 - lo2) > -2600.0:
+						above += 1
+	ok("every water cell has its surface height recorded beside it, on height.png's own scale",
+		lv_ok and wet > 0 and levelled == wet and above == wet,
+		not (lv_ok and levelled == 0),
+		"%d water cells, %d with a level" % [wet, levelled])
+
+	# 10: grit is on for the kinds that carry something and off for the kinds that do not. The monsoon is rain, which
+	#     is weather_fx.gd's box, not grit's.
+	var G: Dictionary = KratorGritFx.GRIT
+	var carries := G.has("dust") and G.has("whiteout") and G.has("gale") and G.has("duststorm_season")
+	var bare := not G.has("clear") and not G.has("deadheat") and not G.has("monsoon")
+	ok("grit is drawn for the four kinds that carry something and for none of the three that do not",
+		carries and bare and float(G["dust"]["amount"]) > float(G["duststorm_season"]["amount"]),
+		not G.has("clear"),
+		"%d kinds carry grit: %s" % [G.size(), ", ".join(G.keys())])
+
+	# 11: a mote is metres across, not a grain. Grains were invisible: at a third of a metre a quad two hundred
+	#     metres off is a fraction of a pixel.
+	var smallest := 999.0
+	for k in G:
+		smallest = minf(smallest, float(G[k]["size"]))
+	ok("a mote is metres across, so it is visible at the distance the fog allows",
+		smallest >= 1.5 and float(G["dust"]["size"]) >= 5.0,
+		not (smallest < 0.5),
+		"the smallest mote is %.1f m, the storm's %.1f m" % [smallest, float(G["dust"]["size"])])
+
+	# 12: the vantages point at ground inside the box, and at something other than their own eye
+	# catch_bowl.gd has no class_name (it is a scene script), so the vantages are read off its source
+	var V: Dictionary = _views()
+	var bx: Array = meta.get("box_px", [0, 0, 0, 0])
+	var good := V.size() >= 4
+	for k in V:
+		var e: Vector3 = V[k]["eye"]
+		var t: Vector3 = V[k]["at"]
+		if e.distance_to(t) < 4.0:
+			good = false
+		for q in [e, t]:
+			if q.x < float(bx[0]) or q.x > float(bx[2]) or q.y < float(bx[1]) or q.y > float(bx[3]):
+				good = false
+	ok("every vantage looks from one place in the box at another",
+		good, V.size() >= 4, "%d vantages: %s" % [V.size(), ", ".join(V.keys())])
+
 	print("catch_bowl_test: " + ("all passed" if fails == 0 else str(fails) + " failed"))
 	quit(1 if fails > 0 else 0)
+
+
+# the host's vantages, read off the script rather than instanced: the test has no viewport to build terrain in
+func _views() -> Dictionary:
+	var src := FileAccess.open("res://krator/catch_bowl.gd", FileAccess.READ)
+	if src == null:
+		return {}
+	var txt := src.get_as_text()
+	src.close()
+	var out := {}
+	for line in txt.split("\n"):
+		var t := line.strip_edges()
+		if not t.begins_with("\"") or t.find("\"eye\":") < 0:
+			continue
+		var name := t.substr(1, t.find("\"", 1) - 1)
+		var nums := []
+		var re := RegEx.new()
+		re.compile("-?[0-9]+\\.[0-9]+")
+		for m in re.search_all(t):
+			nums.append(float(m.get_string()))
+		if nums.size() >= 6:
+			out[name] = {"eye": Vector3(nums[0], nums[1], nums[2]), "at": Vector3(nums[3], nums[4], nums[5])}
+	return out
+

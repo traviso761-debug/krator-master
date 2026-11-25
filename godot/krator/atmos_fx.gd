@@ -72,6 +72,15 @@ var ease_s := 2.5
 # weather kind: the kinds keep their honest densities, and this only lets a viewer turn the air off to look at ground.
 var fog_scale := 1.0
 var _from := {}
+# The clear sky this region draws when nothing is in the air: a high-desert zenith at 1.23 atm, which is darker and
+# less blue than sea level, over a horizon already carrying the dust that never quite settles out of the Catch.
+const SKY_TOP := Color(0.26, 0.42, 0.66)
+const SKY_HORIZON := Color(0.68, 0.70, 0.70)
+const GROUND_HORIZON := Color(0.62, 0.56, 0.46)
+const GROUND_BOTTOM := Color(0.42, 0.36, 0.29)
+# the fog density at which the sky has gone over entirely to the weather's own colour. 0.0008 is the monsoon's, so the
+# black storm and the whiteout saturate well before it and the gale and the dust season sit part way up.
+const SKY_MURK_FULL := 0.0008
 
 # the order the panel shows them in: clear first, then the three the plans call hazards, then the seasons
 static func order() -> Array:
@@ -142,7 +151,12 @@ func _apply(_t: float) -> void:
 		e.fog_density = float(n["fog"]) * fog_scale
 		e.fog_light_color = n["colour"]
 		e.fog_sky_affect = 1.0 - float(n["sky"]) * 0.5
+		# AERIAL PERSPECTIVE: distant ground takes the sky's own colour rather than the fog's flat tint. Over a box
+		# 1,284 km across this is most of what makes a far crest read as far instead of as grey paint.
+		e.fog_aerial_perspective = 1.0
 		e.ambient_light_energy = float(n["sky"])
+		e.ambient_light_color = Color(0.62, 0.66, 0.74).lerp(n["colour"], 0.6)
+		_paint_sky(e, n)
 	if sun:
 		sun.light_energy = _sun0 * float(n["sun"])
 		sun.light_color = Color(1.0, 1.0, 1.0).lerp(n["colour"], 0.55 * (1.0 - float(n["sun"])))
@@ -151,3 +165,28 @@ func _apply(_t: float) -> void:
 		A.wind_scale = float(n["wind"])
 		A.rain = float(n["rain"])
 		A.fog = clampf(float(n["fog"]) / 0.0045, 0.0, 1.0)
+
+
+# THE SKY'S OWN BROWNING, which this file's header listed as owed ("the sky pass's own zenith and haze browning, which
+# in the browser is 89y-host-storm.js"). The fog alone could not do it: fog tints what is in front of the sky, so in a
+# black storm the ground went ochre and the dome stayed blue over it. Here the dome itself goes to the weather's colour
+# as the air thickens, and the whole sky dims or brightens by the kind's `sky`.
+func _paint_sky(e: Environment, n: Dictionary) -> void:
+	var sky: Sky = e.sky
+	if sky == null or not (sky.sky_material is ProceduralSkyMaterial):
+		return
+	var m: ProceduralSkyMaterial = sky.sky_material
+	var c: Color = n["colour"]
+	var murk: float = clampf(float(n["fog"]) / SKY_MURK_FULL, 0.0, 1.0)
+	# `sky` runs to 0.3 in the black storm, and multiplying the dome by it put the zenith at near-black: wrong, because
+	# a karaburan at midday is a lit brown ceiling, not a dark one. The ambient already carries the dimming; the dome
+	# only takes the part of it above 0.6.
+	var lit: float = maxf(clampf(float(n["sky"]), 0.0, 2.0), 0.6)
+	# the horizon goes first and the zenith follows: that is the order a dust wall actually arrives in
+	m.sky_top_color = SKY_TOP.lerp(c, murk) * lit
+	m.sky_horizon_color = SKY_HORIZON.lerp(c, minf(1.0, murk * 1.6)) * lit
+	m.ground_horizon_color = GROUND_HORIZON.lerp(c, minf(1.0, murk * 1.6)) * lit
+	m.ground_bottom_color = GROUND_BOTTOM.lerp(c, murk) * lit
+	# a sun disc the storm swallows and the dead heat opens out
+	m.sun_angle_max = lerpf(1.2, 18.0, murk)
+	m.sun_curve = lerpf(0.12, 0.6, murk)
