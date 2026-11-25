@@ -68,16 +68,18 @@ const TEX_GROUND=BIO.canvasTex(SKEY==='cove'?1024:1536,SKEY==='cove'?1024:1536,(
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*32+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
+const COVE_GND_U=SKEY==='cove'?{uTideLv:{value:0},uTideWetTop:{value:.55}}:null;
 const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xd8d4cc,roughness:.95,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xd8d4cc});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};if(COVE_GND_U)Object.assign(sh.uniforms,COVE_GND_U);
  if(STRATA_SH)STRATA_SH.inject(sh);
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aGL;varying vec4 vGL;attribute float aMir;varying float vMir;attribute float aWet;varying float vWet;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);vGL=aGL;vMir=aMir;vWet=aWet;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying float vMir;varying float vWet;float gSteep;')
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;'+(COVE_GND_U?'uniform float uTideLv;uniform float uTideWetTop;':'')+'varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying float vMir;varying float vWet;float gSteep;float gTideWet;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;gSteep=smoothstep(0.32,0.62,1.0-clamp(vGWN.y,0.0,1.0));vec3 _gT=diffuseColor.rgb*1.5;'+(USE_KG?'\n/*KGROUND*/\n':'')+
   'diffuseColor.rgb*=dt*dt2*1.12;'+
   (STRATA_SH?(SKEY==='cove'?'float _stW=gSteep*(1.0-vMir)*0.9;if(_stW>0.01)diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN),_stW);':'diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN),gSteep*(1.0-vMir)*0.9);'):'')+
-    'diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);}');};
+  (COVE_GND_U?'gTideWet=vGWP.y<7.8?max(vWet*0.42,smoothstep(uTideWetTop+1.1,uTideLv-0.25,vGWP.y)*0.95):vWet;diffuseColor.rgb*=mix(vec3(1.0),vec3(0.56,0.55,0.52),clamp(gTideWet,0.0,1.0));':'gTideWet=vWet;diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);')+'}');
+ if(COVE_GND_U&&USE_KG)sh.fragmentShader=sh.fragmentShader.replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.22,clamp(gTideWet,0.0,1.0)*0.82);');};
 if(USE_KG){const KG_LAYERS=SKEY==='coast'?[
  KGROUND.layer('arch','ground.sand.black',{w:'vGL.x',amt:.9,gain:1.0,tint:'vec3(1.0)',name:'black sand'}),
  KGROUND.layer('arch','rock.basalt.vesicular',{w:'vGL.y',amt:.85,gain:1.0,tint:'vec3(1.0)',name:'pillow lava (stand-in: rock.basalt.pillow is owed)'}),

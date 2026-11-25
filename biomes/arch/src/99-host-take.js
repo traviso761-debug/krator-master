@@ -29,23 +29,24 @@ const VIEWS=(function(){const S=SITE;
  if(SKEY==='coast'){const X=L.XZ,P=S.platform,pm=X((P.al[0]+P.al[1])/2,P.w[0]+40);
   return{'The black sand':look(...X(-200,-300),4,...X(500,60),0),'The pillow platform':look(...X(P.al[0]+120,-90),3,...pm,-1),'The tuff cone':look(...X(-400,-500),12,L.CP[0],L.CP[1],40),
    'The steaming caldera offshore':look(...X(0,-60),6,...X(0,S.steam.w),20),'The warm ground':look(L.WARM[0].x+50,L.WARM[0].z+40,4,L.WARM[0].x,L.WARM[0].z,0),'From afar':look(...X(-2200,-2000),260,0,0,0)};}
- if(SKEY==='cove'){const X=L.XZ,F=S.flames,pw=L.PROW,w1=L.WEEPS[1],wm=w1.F.p(w1.F.L*.52,0),st0=L.STACKS.find(k=>k.h>2.6)||L.STACKS[4];
+ if(SKEY==='cove'){const X=L.XZ,F=S.flames,pw=L.PROW,wHero=L.WEEPS[2]||L.WEEPS[1],wm=wHero.F.p(wHero.F.L*.56,0),st0=L.STACKS.find(k=>k.h>2.6)||L.STACKS[4];
   const cEye=(cx,cz,dyc)=>{const th=terrainH(cx,cz),dh=typeof KDRAWN!=='undefined'&&KDRAWN.h?KDRAWN.h(cx,cz):null,wh=waterH(cx,cz);
    return Math.max(th,dh==null?th:dh,wh>-1e8?wh:-1e9,.5)+(dyc==null?6:Math.max(4,dyc));};
   const cLook=(cx,cz,dyc,tx,tz,dyt)=>[cx,cEye(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
   const vHero=X(210,L.centerA(210)-L.hwW(210)-75),tHero=X(-480,L.centerA(-480)+55);
   const vSill=X(-915,L.centerA(-915)-L.hwW(-915)-90),tSill=X(-755,L.centerA(-755)+15);
   const vProw=X(-235,L.centerA(-235)-L.hwW(-235)-62);
-  const vCurt=X(-95,L.centerA(-95)-L.hwW(-95)-44);
+  const vCurt=X(-95,L.centerA(-95)-L.hwW(-95)+48);
   const sS=L.S_OF(st0.x,st0.z),sSide=L.A_OF(st0.x,st0.z)>=L.centerA(sS)?1:-1,vStk=X(sS-32,L.centerA(sS)+sSide*(sSide>0?L.hwE(sS)+22:L.hwW(sS)+22));
   const vGjar=X(855,L.centerA(855)-L.hwW(855)-56),tGjar=X(1340,L.centerA(1340));
   const vRim=X(140,L.centerA(140)+L.hwE(140)+520),tRim=X(-180,L.centerA(-180)-40);
   const vFar=X(-1720,-420),tFar=X(160,110);
   return{
    'The sanctuary cove':[vHero[0],cEye(vHero[0],vHero[1],32),vHero[1],tHero[0],18,tHero[1]],
+   'Cove entrance overview':[-326,Math.max(385,cEye(-326,-211,12)),-211,-375,18,-701],
+   'Travertine cliff curtains':[vCurt[0],cEye(vCurt[0],vCurt[1],28),vCurt[1],wm[0],48,wm[1]],
    'The sill tidal race':[vSill[0],cEye(vSill[0],vSill[1],22),vSill[1],tSill[0],3,tSill[1]],
    'Arcoforte cliff prow':cLook(vProw[0],vProw[1],14,pw.x,pw.z,-8),
-   'Travertine cliff curtains':cLook(vCurt[0],vCurt[1],12,wm[0],wm[1],6),
    'The White Stacks':[vStk[0],cEye(vStk[0],vStk[1],6.5),vStk[1],st0.x,st0.h*.65,st0.z],
    'Chimaera cleft flames':cLook(F.x-F.dir[0]*18+F.dir[1]*14,F.z-F.dir[1]*18-F.dir[0]*14,5.5,F.x+F.dir[0]*48,F.z+F.dir[1]*48,.5),
    'Southern gjar neck':cLook(vGjar[0],vGjar[1],16,tGjar[0],tGjar[1],4),
@@ -63,8 +64,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  const lab=o.userData.inspectLabel||(o.parent&&o.parent.userData.inspectLabel)||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,item=isItem?(o.name||'').replace(/^biome:/,''):null;
  const PLT=item&&ARCHB.plantOfItem(item);
  const name=PLT?PLT.name+'  ·  '+lab+(best?'  (at '+best.name+')':''):(best?best.name+'  ·  '+lab:lab),tg=PLT?PLT.tags:null,c=chemAt(p.x,p.z);
+ const tideNote=SKEY==='cove'&&typeof COVE_TIDE!=='undefined'?' · tide '+(COVE_TIDE.T.level>=0?'+':'')+COVE_TIDE.T.level.toFixed(1)+' m':'';
  return name+'\n'+(isItem?'flora · '+(tg&&tg.native?'native (fungoid host; partner: '+tg.partner+')':'Earth')+' · '+SITE.name:'terrain / water')+(tg?'\n'+tg.climate+' · '+tg.aridity+' · Koppen '+tg.koppen.join(' '):'')+
-  (tg&&tg.harvest&&tg.harvest.note?'\n'+tg.harvest.note:'')+'\n'+c.what+': pH '+c.pH.toFixed(1)+' · '+c.T.toFixed(0)+' degC · life here: '+c.life+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+  (tg&&tg.harvest&&tg.harvest.note?'\n'+tg.harvest.note:'')+'\n'+c.what+': pH '+c.pH.toFixed(1)+' · '+c.T.toFixed(0)+' degC · life here: '+c.life+tideNote+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 const BUDGET={showcase:{tris:10000000,calls:140},cls:{life:5000000,curtains:1500000,host:2500000},type:{'arch/life':'life','arch/curtains':'curtains','arch/combs':'life','host':'host'}};
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
@@ -125,7 +127,10 @@ const HCHK={
   return{ok:!tideEarth.length&&!badMaq.length&&tot>=120&&!!bandsOk,detail:'terrestrial below +7 m '+tideEarth.length+', maquis on west basalt '+badMaq.length+', intertidal '+tot+' (kelp/byssus '+(itBands?itBands.kelpByssus:0)+', coralline/oyster '+(itBands?itBands.corallineOyster:0)+', barnacle '+(itBands?itBands.barnacle:0)+')'};},
  coveDrawnAndCams(srcs,cams){const hasGrid=Array.isArray(srcs)&&srcs.length>0&&typeof KDRAWN!=='undefined';
   const bad=cams.filter(c=>{const dh=hasGrid?KDRAWN.h(c.x,c.z):terrainH(c.x,c.z),wh=waterH(c.x,c.z),fl=Math.max(terrainH(c.x,c.z),dh==null?-1e9:dh,wh>-1e8?wh:-1e9,0);return c.y<fl+3.0;});
-  return{ok:hasGrid&&!bad.length,detail:'KDRAWN sources '+(srcs?srcs.length:0)+', clipped/underwater cameras '+bad.length};}};
+  return{ok:hasGrid&&!bad.length,detail:'KDRAWN sources '+(srcs?srcs.length:0)+', clipped/underwater cameras '+bad.length};},
+ coveCurtainsAndTide(aud,openCnt,uiOk){
+  const ok=!!aud&&aud.checked>=200&&aud.clipped===0&&aud.minClear>0&&openCnt===1&&!!uiOk;
+  return{ok,detail:'open-water surfaces '+openCnt+' (unified, no entrance seam), curtain samples '+(aud?aud.checked:0)+' (clipped '+(aud?aud.clipped:-1)+', minClear '+(aud?aud.minClear:0)+' m), tide UI '+!!uiOk};}};
 const SIDES=(function(){const o=[];if(SKEY!=='confluence')return o;for(let s=40;s<L.MEET.end-20;s+=60){o.push({s,a:-1,want:'alk'});o.push({s,a:1,want:'acid'});}return o;})();
 const APRON_PTS=L.TER?L.TER.map(T=>[.3,.6,.9].map(f=>T.F.p(T.F.L*f,0))).flat():SKEY==='cove'?L.WEEPS.map(w=>[.25,.55,.85].map(f=>w.F.p(w.F.L*f,0))).flat():[];
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints(),st=window._station||{};
@@ -137,12 +142,13 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing alive where ARCH.lifeAt is none',HCHK.alive(ARCHB.LOG));
  if(SKEY==='sound')add('the pioneers on the flow, the maquis off it',HCHK.lava(ARCHB.LOG));
  if(SKEY!=='coast')add('every hoarder over 1,000 ug/g nickel (ARCH.uptake)',HCHK.hoard(ARCHB.HOARD||[]));   /* the coast is tuff and basalt: no serpentine ground, no hoarders */
- if(SKEY==='cove'){const T=BIO.tagReg(),recs=T?T.query({}):[];
+ if(SKEY==='cove'){const T=BIO.tagReg(),recs=T?T.query({}):[],openN=WATER.surfaces.filter(q=>q.kind==='open').length;
   add('cove fjord basin, sill shoal, ophiolite cliff and gjar saddle',HCHK.coveLandform(terrainH));
   add('Arcoforte cliff-prow site registered in KTAGS and held clear of tall trees',HCHK.arcoforteSite(recs,P));
   add('Type II alkaline cliff curtains, White Stacks and Chimaera cleft flames',HCHK.coveSerpentinization(L.STACKS,L.WEEPS,FLAMES.list));
   add('14 m macrotidal vertical zonation and east-west lithology split',HCHK.coveZonation(ARCHB.LOG,st.intertidalBands));
-  add('KDRAWN ground grid active and all cameras clear of rock and water',HCHK.coveDrawnAndCams(typeof KDRAWN!=='undefined'?KDRAWN.sources:[],Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));}
+  add('KDRAWN ground grid active and all cameras clear of rock and water',HCHK.coveDrawnAndCams(typeof KDRAWN!=='undefined'?KDRAWN.sources:[],Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+  add('unified cove entrance water, rock-clearing 5-tier tufa curtains and 14 m tide UI',HCHK.coveCurtainsAndTide(typeof COVE_TIDE!=='undefined'?COVE_TIDE.T.curtainAudit:null,openN,typeof COVE_TIDE!=='undefined'&&!!COVE_TIDE.T.ui));}
  add('nothing rooted under the water but the curtains',HCHK.dry(P));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
@@ -163,7 +169,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('tall tree trunk inside Arcoforte reserve',HCHK.arcoforteSite([{key:'site:fleetborn-arcoforte',kind:'site',at:[pw.x,78,pw.z]}],[[pw.x,78,pw.z,'biome:artrunk']]));
   add('White Stacks placed in deep abyss',HCHK.coveSerpentinization([{bedY:-45,h:-30}],L.WEEPS,FLAMES.list));
   add('terrestrial shrub inside +-7 m tidal band',HCHK.coveZonation([['argymno',L.XZ(0,L.centerA(0)+L.hwE(0)+2)[0],L.XZ(0,L.centerA(0)+L.hwE(0)+2)[1]]],window._station&&window._station.intertidalBands));
-  add('camera clipped under KDRAWN surface',HCHK.coveDrawnAndCams(typeof KDRAWN!=='undefined'?KDRAWN.sources:[], [{view:'clipped',x:pw.x,y:terrainH(pw.x,pw.z)-2,z:pw.z}]));}
+  add('camera clipped under KDRAWN surface',HCHK.coveDrawnAndCams(typeof KDRAWN!=='undefined'?KDRAWN.sources:[], [{view:'clipped',x:pw.x,y:terrainH(pw.x,pw.z)-2,z:pw.z}]));
+  add('split entrance water or clipped travertine curtain',HCHK.coveCurtainsAndTide({checked:250,clipped:4,minClear:-1.2},2,true));}
  add('a hoarder on ordinary ground',HCHK.hoard([{leaf:ARCH.uptake('pycnandra',{ni:30,pH:7}).leaf}]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  return R;}
@@ -174,11 +181,11 @@ const HINT={confluence:"The Arch, station 1 (scale model 5.1, px 324,180; 183 m,
  barrens:"The Arch, station 3 (scale model 5.1, px 258,246; 155 m, 1.57 atm, Aw, the driest ground on the Arch, 21.6 degrees S): the nickel maquis on the south-eastern horst's lee. A rolling plateau of red laterite cut by lavaka, amphitheatres where the earth has slumped away to its mottled zone and the green garnierite at its base. New Caledonia's maquis minier: candelabra araucarias over she-oak and sedge; the sève bleue (Pycnandra, a quarter nickel in its latex) in the wetter hollows; pitcher plants at the seeps under the lavaka heads; and on the richest nickel, round the lavaka rims, the native verdigris caps beside the Earth hoarders, every hoarder's leaf nickel from ARCH.uptake (ideal type)",
  sound:"The Arch, station 4 (scale model 5.1, px 299,220; 7 m, 1.60 atm, Am, 21 degrees S): the graben's floor on the shore of the sound, the drowned axis 5-8 m deep. Segment 9's eruptive fissure with its spatter ramparts runs along the axis; its last episode, "+(L.AGE==null?"?":L.AGE.toFixed(0))+" years before game start (7.9 m of opening), spread a flow over the wet mangrove flats and blew rootless cones there; ohia and uluhe fern are colonising it, white Stereocaulon lichen on the blocks. Open fissures (gjar) hold gin-clear water; a CO2 hollow at the fissure's end; the White Stacks, brucite and carbonate chimneys, stand out in the sound; mangroves on the tidal mud (ideal type)",
  coast:"The Arch, station 5 (scale model 5.1, px 167,336; 2 m, 1.60 atm, Am, 23.7 degrees S): the south-west shore of the Steaming Seamounts' island. A black sand beach under a tuff cone, dunes with beach she-oaks, naupaka, the creeping beach glory and drift-sown coconut palms; a platform of old pillow lava at the tide line with tide pools; warm, steaming ground on the cone's flank (the ash brooders' nesting ground, the fauna to come) with steam fans; and 3 km offshore the Surtseyan caldera's steam standing over the sea, the vent whose eruptions send base surges and tsunamis across the north-western sea (ideal type)",
- cove:"The Arch, station 6 (scale model 5.1e23, px 236,242; 0 m sea, 1.60 atm, Am, 1,750 mm, 21.5 degrees S): Fleetborn Cove, a sinuous drowned-gjar pocket fjord opening NNW into the Arch Sea across a -9 to -14 m pillow-lava and serpentinite sill (5.2 m/s reversible tidal race, 14 m macrotidal band [-7, +7 m]) and plunging into a calm -45 to -59 m inner sanctuary basin. On the east rises a +246 m ophiolite gorge wall (pillow basalt, vertical sheeted dykes, green serpentinite fault bench with Type II pH > 11 travertine cliff curtains, and red nickel-laterite maquis crown with Araucaria, Pycnandra and verdigris caps) and the +76 m Arcoforte cliff-prow spur (reserved as site:fleetborn-arcoforte); on the west stands a +150 m dark basalt coastal headland with Chimaera H2/CH4 cleft-flames above the sill; Lost-City brucite-carbonate White Stacks rise from shallow fault ledges, and a narrow +7..+22 m gjar fissure neck continues SSE"}[SKEY]||SITE.name;
+ cove:"The Arch, station 6 (scale model 5.1e23, px 236,242; 0 m sea, 1.60 atm, Am, 1,750 mm, 21.5 degrees S): Fleetborn Cove, a sinuous drowned-gjar pocket fjord opening NNW into the Arch Sea across a -9 to -14 m pillow-lava and serpentinite sill (5.2 m/s reversible tidal race, triggerable 14 m macrotidal band [-7, +7 m]) and plunging into a calm -45 to -59 m inner sanctuary basin. On the east rises a +246 m ophiolite gorge wall (pillow basalt, vertical sheeted dykes, green serpentinite fault bench with 5-tier overhanging Type II pH > 11 tufa and brucite-carbonate cliff draperies and cascading waterfall veils, and red nickel-laterite maquis crown with Araucaria, Pycnandra and verdigris caps) and the +76 m Arcoforte cliff-prow spur (reserved as site:fleetborn-arcoforte); on the west stands a +150 m dark basalt coastal headland with Chimaera H2/CH4 cleft-flames above the sill; Lost-City brucite-carbonate White Stacks rise from shallow fault ledges, and a narrow +7..+22 m gjar fissure neck continues SSE"}[SKEY]||SITE.name;
 KHOST.take({build:'arch'+(SKEY==='confluence'?'':'-'+SKEY),title:'Krator biome — The Arch: '+SITE.name,hint:HINT,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
- inspect:describe,stats:()=>'inst '+window._instances,
+ inspect:describe,stats:()=>'inst '+window._instances+(SKEY==='cove'&&typeof COVE_TIDE!=='undefined'?'\ntide '+(COVE_TIDE.T.level>=0?'+':'')+COVE_TIDE.T.level.toFixed(1)+' m':''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export(),chemistry:()=>({format:'krator-arch-chem',version:0,station:SKEY,meeting:SKEY==='confluence'?{alk:L.MEET.alk,acid:L.MEET.acid,qa:L.MEET.qa,qb:L.MEET.qb,mixed:L.MEET.mixed,end:L.MEET.end,samples:L.MEET.samples}:null})},
  minimap:{title:SITE.name},
@@ -186,6 +193,9 @@ KHOST.take({build:'arch'+(SKEY==='confluence'?'':'-'+SKEY),title:'Krator biome �
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._station,site:()=>SITE,meeting:()=>SKEY==='confluence'?L.MEET:null,chem:chemAt,
+ setTide:SKEY==='cove'&&typeof COVE_TIDE!=='undefined'?(v,o)=>COVE_TIDE.setTide(v,o):null,
+ tideState:SKEY==='cove'&&typeof COVE_TIDE!=='undefined'?()=>COVE_TIDE.state():null,
  exportProfile:['registry','items','materials','textures','terrain','stage','atmos'].concat(SKEY==='barrens'?[]:['water']),   /* the barrens have no water */
  exportBox:SKEY==='cove'?[0,-480,400,-80]:SKEY==='coast'?(()=>{const m=L.XZ(-800,60);return[m[0]-200,m[1]-200,m[0]+200,m[1]+200];})():SKEY==='sound'?(()=>{const g=L.GJ[2].F.p(L.GJ[2].F.L/2,0);return[g[0]-200,g[1]-200,g[0]+200,g[1]+200];})():SKEY==='barrens'?[-500,0,-100,400]:SKEY==='dome'?[-1215,-1094,-815,-694]:[200,150,600,550],   /* the meet and the curtains' first 300 m; the dome's second spring */
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),heat:HEAT_AT(x,z),pH:PH_AT(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
+if(SKEY==='cove'&&typeof COVE_TIDE!=='undefined')COVE_TIDE.mountUI();

@@ -217,54 +217,60 @@ const L=(function(){const S=SITE;
   {const C=S.flames,ca=centerA(C.s),p=XZ(C.s,C.side>0?ca+hwE(C.s)+C.du:ca-hwW(C.s)-C.du),dx=AX[0]*.92-VX[0]*.39,dz=AX[1]*.92-VX[1]*.39,dl=Math.hypot(dx,dz);
    C.x=p[0];C.z=p[1];C.dir=[dx/dl,dz/dl];}
   const FL_F=segFrame([S.flames.x,S.flames.z],[S.flames.x+S.flames.dir[0]*S.flames.len,S.flames.z+S.flames.dir[1]*S.flames.len]);
-  function land(x,z){const s=S_OF(x,z),a=A_OF(x,z),ca=centerA(s)+14*n2(x,z,.0018,91),da=a-ca,we=hwE(s)+8*n2(x,z,.004,92),ww=hwW(s)+8*n2(x,z,.004,93);
-   const th=thalwegY(s),seaE=smooth(-940,-1340,s),seaW=smooth(-990,-1400,s),isSill=smooth(-1020,-840,s)*smooth(-580,-730,s),isGjar=smooth(940,1140,s);
+  function land(x,z){const s=S_OF(x,z),a=A_OF(x,z),ca=centerA(s)+14*n2(x,z,.0018,91),da=a-ca,jaw=18*n2(x,z,.0023,125)*smooth(-540,-980,s),
+    we=hwE(s)+8*n2(x,z,.004,92)+jaw,ww=hwW(s)+8*n2(x,z,.004,93)-jaw;
+   const uE=Math.max(0,da-we),uW=Math.max(0,-da-ww),
+    sCoastE=-975-.36*uE+225*Math.sin(uE*.0031+1.05)*smooth(0,180,uE)+145*Math.cos(uE*.0086-.95)*smooth(0,140,uE)+290*n2(x,z,.0011,121)+115*n2(x,z,.0039,122),
+    sCoastW=-1010-.34*uW+235*Math.sin(uW*.0034+2.15)*smooth(0,160,uW)+145*Math.sin(uW*.0094+.35)*smooth(0,140,uW)+275*n2(x,z,.0012,123)+110*n2(x,z,.0042,124);
+   const sBath=s+58*n2(x,z,.0034,97)+24*n2(x,z,.0088,98)*(1-smooth(700,980,s));
+   const th=thalwegY(sBath),seaE=smooth(sCoastE+155,sCoastE-235,s),seaW=smooth(sCoastW+150,sCoastW-230,s),isSill=smooth(-1040,-850,sBath)*smooth(-560,-720,sBath),isGjar=smooth(940,1140,s);
    const edgeE=mix(mix(-5.5,th-2.5,seaE),th+.6,isGjar),edgeW=mix(mix(-5.5,th-2.5,seaW),th+.6,isGjar),fine=.85*n2(x,z,.01,95);
    let h;
-   if(da>=0&&da<we){const f=da/we,p=mix(mix(3.1,1.55,isSill),4.0,isGjar);h=mix(th,edgeE,Math.pow(f,p));
-    if(isSill>.1)h+=isSill*(3.4*smooth(.35,.78,f)*smooth(1.0,.88,f)+1.1*n2(x,z,.018,94)*smooth(1.0,.9,f));
+   if(da>=0&&da<we){const f=da/we,p=mix(mix(3.1,1.75,isSill),4.0,isGjar);h=mix(th,edgeE,Math.pow(f,p));
+    if(isSill>.1)h+=isSill*(2.2*smooth(.42,.80,f)*smooth(1.0,.88,f)*(0.55+0.9*fbm(x*.011,z*.011,94,2))+1.1*n2(x,z,.018,94)*smooth(1.0,.9,f));
     if(isGjar>.2)h-=.75*isGjar*smooth(5.5,1.2,da);
     return h+fine;}
-   if(da<0&&-da<ww){const d=-da,f=d/ww,p=mix(mix(3.0,1.55,isSill),4.0,isGjar);h=mix(th,edgeW,Math.pow(f,p));
-    if(isSill>.1)h+=isSill*(3.2*smooth(.38,.78,f)*smooth(1.0,.88,f)+1.1*n2(x,z,.018,96)*smooth(1.0,.9,f));
+   if(da<0&&-da<ww){const d=-da,f=d/ww,p=mix(mix(3.0,1.75,isSill),4.0,isGjar);h=mix(th,edgeW,Math.pow(f,p));
+    if(isSill>.1)h+=isSill*(2.1*smooth(.44,.80,f)*smooth(1.0,.88,f)*(0.55+0.9*fbm(x*.011,z*.011,96,2))+1.1*n2(x,z,.018,96)*smooth(1.0,.9,f));
     if(isGjar>.2)h-=.75*isGjar*smooth(5.5,1.2,d);
     return h+fine;}
-   if(da>=we){const u=da-we,tideClimb=(7.4-edgeE)*smooth(0,15,u),
+   if(da>=we){const u=uE,tideClimb=(7.4-edgeE)*smooth(0,15,u),
     rib=4.8*Math.sin(s*.085+2.2*n2(x,z,.008,110))+2.4*Math.cos(s*.21),crag=15*n2(x,z,.0024,111)+8*n2(x,z,.007,112),
     dykeTop=103+crag,dykeCliff=dykeTop*smooth(13,80+6*n2(x,z,.006,113),u)+rib*smooth(14,32,u)*smooth(96,62,u),
     serpBench=(18-0.35*crag)*smooth(82,168,u),latRise=(115+11*n2(x,z,.0009,99)+5*n2(x,z,.0035,100))*smooth(155,1480,u)*(1-.28*isGjar*smooth(400,80,u))+42*smooth(2900,8500,u);
-    h=edgeE+(1-seaE)*(tideClimb+dykeCliff+serpBench+latRise)-seaE*4.5*smooth(0,500,u);
+    h=edgeE+(1-seaE)*(tideClimb+dykeCliff+serpBench+latRise)-seaE*(4.5*smooth(0,500,u)+9*smooth(500,2200,u));
     /* Arcoforte cliff-prow bench (+74..+82 m) overlooking both the NNW sill throat and the inner sanctuary basin */
     const dp=Math.hypot((s-PROW.s)*.88,(a-PROW.a)*.95),wProw=(1-seaE)*smooth(152,76,dp)*smooth(16,44,u);
     h=mix(h,76+3.5*smooth(40,150,u)+.8*n2(x,z,.01,101),wProw);
     /* Ultramafic seep hollows on the eastern laterite plateau */
     for(const k of HOLLOWS){const dk=Math.hypot(x-k.x,z-k.z);if(dk<k.r*1.25)h-=k.depth*smooth(k.r*1.15,k.r*.3,dk);}
-    /* Shallow travertine chutes down the Type II cliff-weep tracks */
-    for(const w of WEEPS){const q=w.F.at(x,z);if(q.s>-14&&q.s<w.F.L+8&&Math.abs(q.a)<w.w+10)h-=1.1*smooth(w.w+8,w.w*.3,Math.abs(q.a))*smooth(-14,8,q.s)*smooth(w.F.L+8,w.F.L-12,q.s);}
+    /* Broad convex carbonate boss along Type II cliff-weep tracks (avoids sub-grid notches under 12 m GROUND triangles) */
+    for(const w of WEEPS){const q=w.F.at(x,z);if(q.s>-14&&q.s<w.F.L+4&&Math.abs(q.a)<w.w+14)h+=.55*smooth(w.w+14,w.w*.35,Math.abs(q.a))*smooth(-14,8,q.s)*smooth(w.F.L+4,w.F.L-12,q.s);}
     return h+fine;}
-   {const u=-da-ww,tideClimb=(7.4-edgeW)*smooth(0,16,u),wCrag=11*n2(x,z,.0028,114)+5.5*n2(x,z,.008,115),
+   {const u=uW,tideClimb=(7.4-edgeW)*smooth(0,16,u),wCrag=11*n2(x,z,.0028,114)+5.5*n2(x,z,.008,115),
     bluff=(56+wCrag)*smooth(14,76+5*n2(x,z,.006,116),u)+2.8*Math.sin(s*.09)*smooth(15,34,u)*smooth(82,55,u),
     ridge=(85+12*n2(x,z,.0014,104)+5*n2(x,z,.0045,105))*smooth(75,580,u)*(1-.34*smooth(780,1900,u));
-    h=edgeW+(1-seaW)*(tideClimb+bluff+ridge)-seaW*4.5*smooth(0,500,u);
+    h=edgeW+(1-seaW)*(tideClimb+bluff+ridge)-seaW*(4.5*smooth(0,500,u)+9*smooth(500,2200,u));
     const qf=FL_F.at(x,z);if(qf.s>-12&&qf.s<FL_F.L+12)h-=1.25*smooth(4.2,.6,Math.abs(qf.a))*smooth(-12,10,qf.s)*smooth(FL_F.L+12,FL_F.L-10,qf.s);
     return h+fine;}}
   /* Seeded Lost-City brucite-carbonate White Stacks on shallow (-8.5..-0.8 m) fault ledges near the sill and inner-cove fringe */
   const STACKS=[];for(let i=0;i<S.stacks.n;i++){const zDef=S.stacks.zones[i%S.stacks.zones.length],
    us=KRAND.unit(KRAND.hash(S.seed,i,171)),ua=KRAND.unit(KRAND.hash(S.seed,i,172)),uh=KRAND.unit(KRAND.hash(S.seed,i,173)),ur=KRAND.unit(KRAND.hash(S.seed,i,174));
-   const s=lerp(zDef[0],zDef[1],us),ca=centerA(s),hw=zDef[2]>0?hwE(s):hwW(s),wantY=lerp(-6.8,-1.4,ua);
+   const s=lerp(zDef[0],zDef[1],us),ca=centerA(s),hw=zDef[2]>0?hwE(s):hwW(s),wantY=lerp(-6.6,-1.6,ua);
    let bestP=null,bestY=-3.5,bestErr=1e9;
-   for(let k=0;k<=64;k++){const off=lerp(hw*.58-24,hw*1.06+24,k/64),p=XZ(s,ca+zDef[2]*off),by=land(p[0],p[1]),err=Math.abs(by-wantY)+(by>=-7.8&&by<=-0.9?0:50);
+   for(let k=0;k<=96;k++){const off=lerp(hw*.52-24,hw*1.28+48,k/96),p=XZ(s,ca+zDef[2]*off),by=land(p[0],p[1]),err=Math.abs(by-wantY)+(by>=-7.8&&by<=-0.9?0:80);
     if(err<bestErr){bestErr=err;bestP=p;bestY=by;}}
    const top=i<4?lerp(-.5,1.1,uh):lerp(1.8,5.3,uh);
    STACKS.push({x:bestP[0],z:bestP[1],bedY:bestY,h:Math.max(bestY+2.4,top),r:2.3+3.2*ur,spires:3+(i%2)});}
   const GJAR_PTS=[];for(let s=1880;s>=1015;s-=14){const ca=centerA(s),p=XZ(s,ca);GJAR_PTS.push([p[0],p[1],Math.max(.08,land(p[0],p[1])+.28)]);}
+  let tideLv=S.sea;
   function water(x,z){const s=S_OF(x,z),h=land(x,z);
-   if(s<1070&&h<0)return S.sea;
-   if(s>=1015&&s<=1880){const da=Math.abs(A_OF(x,z)-(centerA(s)+14*n2(x,z,.0018,91)));if(da<3.4&&h<24)return Math.max(S.sea,h+.3);}
+   if(s<1090&&h<tideLv)return tideLv;
+   if(s>=1015&&s<=1880){const da=Math.abs(A_OF(x,z)-(centerA(s)+14*n2(x,z,.0018,91)));if(da<3.4&&h<24)return Math.max(tideLv,h+.3);}
    for(const w of WEEPS)if(Math.hypot(x-w.x,z-w.z)<w.r+1.5)return land(w.x,w.z)+.2;
    return -1e9;}
-  const APRON=(x,z)=>{let a=0;for(const w of WEEPS){a=Math.max(a,smooth(w.r+24,w.r,Math.hypot(x-w.x,z-w.z)));
-   const q=w.F.at(x,z);if(q.s>-16&&q.s<w.F.L+14)a=Math.max(a,smooth(w.w+14,w.w*.45,Math.abs(q.a))*smooth(-16,4,q.s)*smooth(w.F.L+14,w.F.L-4,q.s));}return clamp(a,0,1);};
+  const APRON=(x,z)=>{let a=0;for(const w of WEEPS){a=Math.max(a,smooth(w.r+8,w.r-1,Math.hypot(x-w.x,z-w.z)));
+   const q=w.F.at(x,z);if(q.s>-6&&q.s<w.F.L+4)a=Math.max(a,smooth(w.w*.92,w.w*.36,Math.abs(q.a))*smooth(-6,4,q.s)*smooth(w.F.L+4,w.F.L-6,q.s));}return clamp(a,0,1);};
   const WEST_BASALT=(x,z)=>{const qf=FL_F.at(x,z);if(qf.s>-35&&qf.s<FL_F.L+35&&Math.abs(qf.a)<38)return 0;const s=S_OF(x,z);return A_OF(x,z)<centerA(s)-6?1:0;};
   const INTERTIDAL=(x,z)=>{const s=S_OF(x,z);if(s>1075)return 0;const h=land(x,z);return h>=-7.2&&h<=7.2?1:0;};
   const TREE_KEEP=(x,z)=>Math.hypot(x-PROW.x,z-PROW.z)<PROW.clearR?0:1;
@@ -273,7 +279,7 @@ const L=(function(){const S=SITE;
   const SEEP=(x,z)=>{let a=0;for(const k of HOLLOWS)a=Math.max(a,smooth(k.r*.85,k.r*.2,Math.hypot(x-k.x,z-k.z))*.9);
    for(const w of WEEPS)a=Math.max(a,smooth(w.r+55,w.r+18,Math.hypot(x-w.x,z-w.z))*.55);return clamp(a,0,1);};
   const NI=(x,z)=>WEST_BASALT(x,z)?65:2900+2100*RIM(x,z)+1100*FLOOR(x,z)+650*n2(x,z,.002,108);
-  return{land,water,AX,VX,S_OF,A_OF,XZ,centerA,hwE,hwW,thalwegY,PROW,HOLLOWS,WEEPS,STACKS,GJAR_PTS,FL_F,APRON,ACIDG:()=>0,
+  return{land,water,setTideLv:v=>{tideLv=v;},getTideLv:()=>tideLv,AX,VX,S_OF,A_OF,XZ,centerA,hwE,hwW,thalwegY,PROW,HOLLOWS,WEEPS,STACKS,GJAR_PTS,FL_F,APRON,ACIDG:()=>0,
    WEST_BASALT,INTERTIDAL,TREE_KEEP,RIM,FLOOR,SEEP,NI,farBase:-38,
    spine:[[PROW.x,PROW.z],[S.flames.x,S.flames.z],XZ(-790,centerA(-790)),XZ(80,centerA(80)),XZ(1200,centerA(1200))].concat(WEEPS.map(w=>[w.x,w.z]))};}
  throw new Error('no station '+SKEY);})();

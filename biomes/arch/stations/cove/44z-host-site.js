@@ -25,15 +25,16 @@ ARCH_SITES.cove={
  basin:{s:[-450,720],depth:-58.5,width:[280,450]},
  gjar:{s:[1080,2550],saddle:[7.5,21.5],wd:38},
  arcoforte:{id:'site:fleetborn-arcoforte',s:-370,du:118,r:96,clearR:84,elev:[55,95]},
- /* Type II (Ca-OH, pH > 11) serpentinite fault-contact cliff seeps draping white brucite-carbonate curtains down the gorge wall */
+ /* Type II (Ca-OH, pH > 11) serpentinite fault-contact cliff seeps draping multi-tiered tufa and brucite-carbonate curtains down the gorge wall */
  weeps:[
-  {key:'w1',s:-560,side:1,du:92,r:9,flow:8.5,w:18},
-  {key:'w2',s:-85,side:1,du:96,r:11,flow:12.0,w:24},
-  {key:'w3',s:285,side:1,du:90,r:10,flow:9.5,w:20},
-  {key:'w4',s:640,side:1,du:88,r:8,flow:6.5,w:16}
+  {key:'w0',s:-645,side:1,du:90,r:9,flow:9.5,w:21},
+  {key:'w1',s:-490,side:1,du:92,r:10,flow:11.0,w:24},
+  {key:'w2',s:-85,side:1,du:96,r:11,flow:13.5,w:27},
+  {key:'w3',s:285,side:1,du:90,r:10,flow:10.0,w:22},
+  {key:'w4',s:640,side:1,du:88,r:8,flow:7.0,w:18}
  ],
  /* Shallow fault-ledge zones (-8..+5 m) where alkaline seep water meets Mg-rich seawater to build Lost-City brucite-carbonate White Stacks */
- stacks:{n:14,zones:[[-860,-650,1],[-850,-660,-1],[-160,360,1],[180,680,-1]]},
+ stacks:{n:14,zones:[[-835,-645,1],[-815,-635,-1],[-160,360,1],[180,680,-1]]},
  /* Ultramafic seep/garnierite hollows on the +145..+246 m eastern nickel-laterite plateau */
  hollows:[
   {s:-220,du:540,r:125,depth:14},
