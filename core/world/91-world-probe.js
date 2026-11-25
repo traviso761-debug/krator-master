@@ -183,7 +183,7 @@ return{ready:()=>START.ready,hostChecks,hostNegatives,
  view:(x,z,agl,yaw,pitch)=>CAM.setView(x,z,agl,yaw,pitch),
  // draw one frame now (a screenshot after settle): the sky, the labels, the map, then the scene
  render:()=>{document.getElementById('load').style.display='none';{const P=HOST.camera.position;HOST.scene.fog.density=1/(90000+Math.max(0,P.y-WORLD.H(P.x,P.z,400))*12);}SKY.follow();PLACES.update();CAM.drawMap();for(const f of HOST.TICKS)f(.016,1);
-  HOST.renderer.render(HOST.scene,HOST.camera);return{calls:HOST.renderer.info.render.calls,triangles:HOST.renderer.info.render.triangles};},
+  if(SKY.render)SKY.render();else HOST.renderer.render(HOST.scene,HOST.camera);return{calls:HOST.renderer.info.render.calls,triangles:HOST.renderer.info.render.triangles};},
  // stream until the view is complete (headless screenshots): every queue drained or ms spent
  settle:(ms)=>{const t0=performance.now();ms=ms||60000;let k=0;
   while(performance.now()-t0<ms){START.pump(true);FLORA.draw();k++;if(TERRAIN.pending()===0&&NURSERY.queued()===0&&FLOOR.stats.waiting===0&&FLORA.stats.queue===0&&SEAS.pending()===0&&(typeof STREAMW==='undefined'||!STREAMW||STREAMW.pending()===0)&&k>3)break;}

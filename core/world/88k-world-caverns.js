@@ -118,7 +118,7 @@ const BLACK=new THR.Color(0x050403),HAZE=HOST.HAZE,fogC=new THR.Color();let skyH
 function atmos(E){const k=E.under?sstep(8,60,E.dOpen):0;LAMP.value=E.under?2.4:0;
  fogC.copy(HAZE).lerp(BLACK,k);scene.fog.color.copy(fogC);if(scene.background&&scene.background.isColor)scene.background.copy(fogC);
  if(k>0)scene.fog.density=scene.fog.density*(1-k)+k/55;
- const hide=k>.5;if(hide!==skyHidden&&typeof SKY!=='undefined'){skyHidden=hide;[SKY.sky,SKY.giant].forEach(o=>{if(o)o.visible=!hide;});}}
+ const hide=k>.5;if(hide!==skyHidden&&typeof SKY!=='undefined'){skyHidden=hide;if(SKY.setHidden)SKY.setHidden(hide);else [SKY.sky,SKY.giant].forEach(o=>{if(o)o.visible=!hide;});}}   /* the shared sky (80, W8): its pass is skipped */
 HOST.TICKS.push(()=>update(START.ready?5:40));
 // ---------------------------------------------------------------- the pick reaches the rock; the flora keeps off the holes
 TERRAIN.meshes=()=>{const a=tmeshes();for(const q of ST.values())if(q.group)for(const m of q.group.children)a.push(m);return a;};

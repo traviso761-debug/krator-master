@@ -83,6 +83,11 @@ ORDER = (
        # the weather (Stage 8 V9, G-weather W2): core/world's HOST.weather() binds it; the region starts clear, ?weather=<mode>
        ('core/atmos', '89-atmos-4-weather.js'), ('core/atmos', '89-atmos-9-host.js'), ('core/atmos/host', '89-atmos-e-weatherhost.js'),
        ('core/atmos/fx', '89-atmos-fx-raincover.js'),
+       # the shared sky (W8, STAGE-8/G-weather.md section 6): core/world's SKY_SHARED (80) draws it, with the moving cells (W5: the
+       # region opens 'live'), their lightning and the volumetric clouds (W6)
+       ('core/atmos/sky', '89-atmos-e-skymodel.js'), ('core/atmos/sky', '89-atmos-f-skypresets.js'), ('core/atmos/sky', '89-atmos-g-sky.js'),
+       ('core/atmos/host', '89-atmos-h-skyhost.js'), ('core/atmos/sky', '89-atmos-m-volclouds.js'), ('core/atmos/host', '89-atmos-m-volhost.js'),
+       ('core/atmos/wx', '89-atmos-wx-cells.js'), ('core/atmos/wx', '89-atmos-wx-host.js'), ('core/atmos/fx', '89-atmos-fx-lightning.js'),
        ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
        ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),

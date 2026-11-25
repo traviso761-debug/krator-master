@@ -91,3 +91,29 @@ The pairs (`core/atmos/pairs/pairs.py`; shots of the outer wall, shighlands and 
    (every station). Godot's sky has no mood yet: the twin follows when it does.
 
 The pages rebuild in tier 2's own pass after Stage 8 (section 4, answer 2); their committed pages are unchanged here.
+
+## 6. Tier 2 folds into Stage 8 (the owner, 2026-11-24)
+
+"Can we fold this stuff into the all-builds rebuild now? We'll want moving volumetric weather on all deployed open-world
+files." This replaces section 4's answer 2: tier 2 is no longer a pass after Stage 8.
+
+1. **The branch** (`claude/serene-almeida-d0caec`) has the line (`claude/integration-4` at 3c8c30053) merged into it, its
+   conflicts resolved (the line's once-per-material `cloudShade` guard with tier 2's uniforms; Godot's `cloud_quality` beside
+   `half_res_clouds`; Locus's start keys), the sky's golden vectors regenerated; core/atmos's node tests and the Godot sky,
+   atmos and cells tests pass, and the seven pages tier 2 touched so far build on it. Integration 2 merged it into the line
+   (2026-11-24, after Phase D's rebuild): it rebuilds every page tier 2 and W8 reach in the Stage 8 tree before Phase F.
+2. **W8: the open world onto the shared sky.** `core/world/80-world-sky.js` is its own painted dome (the sedesert kit's, a
+   fixed gas giant, a simple sun arc in `45-world-host.js`): the moving cells' cover and the volumes need `ATMOS.sky`. W8
+   puts every `openworld/*` region on it: the model's sun, moons and giant at the region's site, `S.render` in
+   `98-world-start.js`, the weather (tier 1's W2 binding) with the moving cells, and the volumes. The volumes already write
+   logarithmic depth (the world's renderer takes it). Each region's pages are judged on a pair before Phase D.
+3. **W7's remaining settlements** (Iziz, Screamers, Dalab, Jimjam, Dilihan, Drum, Ledge, Voth) go in as each is done before
+   Phase D; one not done by then keeps its own sky through Stage 8 and moves in its own rebuild after it.
+4. **W8 done** (2026-11-24): `core/world/80-world-sky.js` `SKY_SHARED` (the painted dome kept as `SKY_PAINTED` for a build without
+   the sky); 45 (the sky sets the light; the cells, the region opening 'live'), 98 and 91 (`SKY.render`), 88k (the sky's pass
+   skipped in a tube), 83w (the water reflects the shared sky); the seven `openworld/*/build.py` list the sky, the cells, the
+   lightning and the volumes. No region's baked data changes. On the rtx lane every region's graphics asserts pass (shaders,
+   page errors, error panel, programs); their other failures are the line's (the isle demo's `hamlet-clay-k` sea leg; stale
+   site bakes in oidong-highrift and xanadu-oidong-highrift; one highway station in iziz-cluster; Siṭāq's shore). Seen: the
+   volumes and the rain shafts over the isle demo at 15:30, the cloud base over the Oidong valley's 2,100 m ground. Not done:
+   from high up (30 km) the volumes reach only round the camera; a night shot; the open world's Godot twin has no sky.
