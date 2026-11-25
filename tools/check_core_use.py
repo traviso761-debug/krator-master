@@ -75,6 +75,7 @@ PLACED = {
     'openworld/isle-demo': 'the isle demo world page; rebuild with the biome files',
     'settlements/hook': 'placed (the coast, scale model KLAND); rebuild with the biome files',
     'settlements/longsong': 'placed (the Oidong Valley); rebuild with the biome files',
+    'settlements/arcodiga': 'placed (Crookshore North Crater Kopa-North, 89, 604); rebuild with the biome files',
 }
 BIOME_SYNC_RULES = {'sky-dome', 'water-shader'}   # a settlement that is not placed keeps its own sky and water for now
 

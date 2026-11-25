@@ -1,0 +1,56 @@
+{
+  "build": "arcodiga",
+  "note": "Settlement-level library material slots for settlements/arcodiga (Kōpa-Dīga / Dī-Gā Wài-Sī): Crookshore columnar arch-rift basalt plinths, secondary-ejecta breccia, sawn emerald-nephrite lintels, Eternian bronze/iron hoist girders, flumed benihi red-cypress timber, and charter-plaza basalt cobbles (< 13 active samplers).",
+  "size": 512,
+  "families": {
+    "plinth_columnar": {
+      "lib": "rock.columnar",
+      "scale": [2.0, 2.0],
+      "tint": { "keep": 0.30, "mean": 0.42 },
+      "metal": 0
+    },
+    "plinth_basalt": {
+      "lib": "rock.basalt.polygonal",
+      "scale": [2.2, 2.2],
+      "tint": { "keep": 0.35, "mean": 0.38 },
+      "metal": 0
+    },
+    "nephrite_sawn": {
+      "lib": "rock.schist.emerald",
+      "scale": [1.1, 1.1],
+      "tint": { "keep": 0.55, "mean": 0.64 },
+      "metal": 0.06,
+      "roughLift": 0.08
+    },
+    "bronze_lintel": {
+      "lib": "metal.bronze.verdigris",
+      "scale": [1.4, 1.4],
+      "tint": { "keep": 0.55, "mean": 0.50 },
+      "metal": 0.72
+    },
+    "iron_girder": {
+      "lib": "metal.iron",
+      "scale": [1.1, 1.1],
+      "tint": { "keep": 0.35, "mean": 0.44 },
+      "metal": 0.82
+    },
+    "cypress_timber": {
+      "lib": "wood.weathered_brown_planks",
+      "scale": [1.8, 1.8],
+      "tint": { "keep": 0.40, "mean": 0.52 },
+      "metal": 0
+    },
+    "cobble_plaza": {
+      "lib": "paving.rock064",
+      "scale": [2.4, 2.4],
+      "tint": { "keep": 0.35, "mean": 0.54 },
+      "metal": 0
+    },
+    "whalebone_bleached": {
+      "lib": "organic.bone",
+      "scale": [1.2, 1.2],
+      "tint": { "keep": 0.25, "mean": 0.82 },
+      "metal": 0
+    }
+  }
+}
