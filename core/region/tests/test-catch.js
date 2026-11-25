@@ -160,4 +160,48 @@ const stormCheck=x=>{let crossed=0,waited=0;GROUPS.concat(['caravan.train.salt']
  const site={regen:J.dry.regen},open=J.dry.open;
  T.ok('C5: Arfwai\'s well runs low in late summer: its recharge cut to '+Math.round(CATCH_TUNE.hazards.dryRegen*100)+' % while the dry window is open',!!Sd&&Sd.regen===CATCH_TUNE.hazards.dryRegen&&site.regen!=null&&Math.abs(site.regen-(open?st*Sd.regen:st))<1e-6,
   'the window '+JSON.stringify(CATCH_TUNE.hazards.windows.dry)+', its recharge now '+(site?site.regen:'?')+' l a day ('+(open?'open':'closed')+')');}
+// ---- S1 (openworld/catch-bowl/PLAN-SIM.md section 2): the Godsgate's caravanserai on the north road. Bab al-Hawa is
+//      the pass's only safe night: it has snowmelt and NO fodder work, so what it sells is shelter and what it buys is
+//      every kilogram of fodder and grain the trains carry up 2,400 m.
+const BAH='godsgate.babalhawa';
+// 1: it is declared, on the four Godsgate groups' rounds, and the Train's is untouched (it comes out of Jabal, not over the pass)
+{const P=CATCH_TUNE.places.find(p=>p.id===BAH),onIt=GROUPS.filter(id=>(road(id).stops||[]).indexOf(BAH)>=0);
+ const train=(road('caravan.train')||{}).stops||[],salt=(road('caravan.train.salt')||{}).stops||[];
+ T.ok('S1: Bab al-Hawa is declared at the Godsgate with snowmelt and no fodder work, on the four groups that cross the pass and on neither of the Train\'s rounds',
+  !!P&&P.kind==='serai'&&!!P.well&&!P.fodder&&onIt.length===4&&train.indexOf(BAH)<0&&salt.indexOf(BAH)<0,
+  (P?P.people+' people, well '+P.well[0]+' l a day, fodder '+(P.fodder||'none'):'missing')+'; on '+onIt.map(x=>x.slice(8)).join(', '));
+ T.neg('a place with a reed bed is not the pass\'s caravanserai',
+  x=>{const q=x.find(p=>p.id===BAH);return !!q&&!q.fodder;},CATCH_TUNE.places,
+  CATCH_TUNE.places.map(p=>p.id===BAH?Object.assign({},p,{fodder:2000}):p));}
+// 2: the long home leg is cut at the pass, and the recorded totals of section 1c survive the cut
+{const Rd=road('caravan.getmastarz'),i=Rd.stops.indexOf(BAH),k=Rd.stops.indexOf('scatchkolli01');
+ const home=Rd.legs[Rd.stops.indexOf('gate.iziz')],pass=Rd.legs[i],dayKm=CATCH_TUNE.speed;
+ const km=m=>Math.round(m/1440*dayKm),total=km(home)+km(pass);
+ T.ok('S1: the Godsgate cuts the Iziz houses\' home leg in two, and the two together still measure the 1,232 km of the proposal\'s section 1c',
+  i>=0&&k===i+1&&home>0&&pass>0&&Math.abs(total-1040)<60,
+  'home to the pass '+km(home)+' km, the pass to Kolli '+km(pass)+' km, together '+total+' km (was one leg of 1,040 km)');
+ T.neg('a round whose first northern stop is Kolli has no pass leg',
+  x=>x.stops.indexOf(BAH)>=0&&x.stops.indexOf(BAH)+1===x.stops.indexOf('scatchkolli01'),Rd,
+  Object.assign({},Rd,{stops:Rd.stops.filter(s=>s!==BAH)}));}
+// 3: fodder rides for the halts, which is the only way the pass can feed anyone's beasts
+{const withF=GROUPS.filter(id=>(road(id).forHalts||[]).indexOf('fodder')>=0);
+ T.ok('S1: fodder rides for the halts on every group\'s round, so the pass that grows none can still feed a train\'s beasts',withF.length===GROUPS.length,
+  withF.length+' of '+GROUPS.length+' rounds carry fodder for their halts: '+(road(GROUPS[0]).forHalts||[]).join(', '));
+ T.neg('a round that carries no fodder for its halts cannot provision at the pass',
+  x=>(x.forHalts||[]).indexOf('fodder')>=0,road(GROUPS[0]),Object.assign({},road(GROUPS[0]),{forHalts:['grain','tea','tools']}));}
+// 4: the pass sells to the trains that stop (it is a peopled halt), and it buys its whole table off them
+{const Rd=road('caravan.getmastarz'),i=Rd.stops.indexOf(BAH),sells=(Rd.sells||[]).indexOf(i)>=0,halts=(Rd.halts||[]).indexOf(i)>=0;
+ const B=JB[BAH],bought=B?Object.keys(B.imported||{}).filter(g=>(B.imported[g]||0)>0):[];
+ T.ok('S1: the pass is a selling halt on the round, and a year leaves it fed from the trains it serves',sells&&halts&&bought.length>0,
+  'halt '+halts+', sells '+sells+'; a year imported '+(bought.length?bought.map(g=>g+' '+t(B.imported[g])).join(', '):'nothing'));
+ T.neg('a stop that is not a selling halt does not live off the trade',
+  x=>(x.sells||[]).indexOf(x.stops.indexOf(BAH))>=0,Rd,Object.assign({},Rd,{sells:(Rd.sells||[]).filter(k=>k!==i)}));}
+// 5: the God-Bore costs the pass's legs all year, and the rime whiteouts cost them in winter only
+{const L=J.losses,n=re=>GROUPS.reduce((a,id)=>a+(L[id]||[]).filter(x=>re.test(x.why)).length,0);
+ const bore=n(/God-Bore/),white=n(/whiteout/),W=CATCH_TUNE.hazards.windows.whiteout;
+ T.ok('S1: the God-Bore takes beasts in the Godsgate all year and the rime whiteouts take them in its winter window',bore>0&&white>0,
+  bore+' God-Bore losses, '+white+' whiteout losses (the window '+JSON.stringify(W)+')');
+ const Q=runJoined(365,{hazards:false});
+ T.neg('with the hazards off the Godsgate costs nothing',
+  x=>GROUPS.reduce((a,id)=>a+((x.losses[id]||[]).filter(y=>/God-Bore|whiteout/.test(y.why)).length),0)>0,J,Q);}
 T.done();
