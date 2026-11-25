@@ -119,7 +119,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc', 'parabola', 'stonebow', 'arcoindian3', 'slice'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc', 'parabola', 'stonebow', 'arcoindian3', 'slice', 'tethis'}   # theodiga: the Dome on the Water (2026-11-11); gatearc: the Hall of Heroes; tethis: the pelagic saucer arcology
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
@@ -217,7 +217,10 @@ TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-e
                                + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
                 'slice': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
                          + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
-                         + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')]}
+                         + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
+                # Tethis (2026-11-24): the pelagic saucer arcology in the shallow sea on core/water + core/atmos, watched by core/ruins
+                'tethis': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                          + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in PB_ATMOS] + [(os.path.join(ROOT, 'core', 'water'), f) for f in PB_WATER]}
 # THEODIGA TODAY (settlements/theodiga, T-town-2, 2026-11-16): the ruined dam, its Dome and its water as the theodiga target
 # draws them (its fragments read in place from targets/theodiga), and the town on the east rim: its drawer from the settlement
 # (src/8ay1-th-town.js) and the isle demo's flattener (58-isle-protos.js), read in place; and three generated bodies, the first
@@ -362,6 +365,7 @@ TARGET_OUT = {
     'stonebow': 'stonebow.html',               # Soleri's 21. Stonebow canyon-bridge arcology in the Ching-Ma Shut-In (targets/stonebow)
     'arcoindian3': 'arcoindian3.html',         # the sheer cliff-niche arcology over a gorge river (targets/arcoindian3)
     'slice': 'slice.html',                     # Slice (after Soleri's Theology): lenticular cliff eye, learning shaft, side specimen caves, sunken park & dwellings wall (targets/slice)
+    'tethis': 'tethis.html',                   # the pelagic saucer arcology in the shallow sea (targets/tethis)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -414,6 +418,8 @@ DETERMINISTIC = {
     '49-th-econ.js',                                   # theodiga-today: the economy on core/simulation (KRAND by place, no rng())
     '49m-th-money.js',                                 # theodiga-today: the qud's accounts, wages and prices (no rng())
     '8av0-parabola-plan.js', '90p-parabola-lake.js',   # targets/parabola: KRAND-hashed records; the lake's still record
+    '8az0-tethis-plan.js', '8az1-tethis-water.js',     # targets/tethis: KRAND plan & shallow-sea records, no rng()
+    '8az2-tethis-mats.js', '8az3-tethis-towers.js', '90w-tethis-water.js',   # targets/tethis: materials, tower helpers, core/water & KRUINS
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= set(TH_SIM_FILES)   # core/simulation (its own seeded stream, SIM.rng)

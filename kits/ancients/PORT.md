@@ -297,6 +297,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/strongbow/test-strongbow.js` | 9.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | node test of the plan (no browser) |
 | `targets/strongbow-today/89z-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/strongbow-today/91z-views.js` | 4.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/tethis/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/tethis/8az0-tethis-plan.js` | 53.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/tethis/8az1-tethis-water.js` | 5.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/tethis/8az2-tethis-mats.js` | 25.1 | [draw] | 35 | 3 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/tethis/8az3-tethis-towers.js` | 21.0 | [draw] | 16 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/tethis/8az4-tethis-draw.js` | 39.8 | [draw] | 19 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/tethis/90w-tethis-water.js` | 5.0 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |  |
+| `targets/tethis/91z-views.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/tethis/test-tethis.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | node test of the plan and hull curves |
 | `targets/theodiga/77-dam.js` | 21.4 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/theodiga/77a-theodiga-dome-plan.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/theodiga/77b-theodiga-dome-draw.js` | 7.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |

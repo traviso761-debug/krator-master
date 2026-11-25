@@ -1283,3 +1283,21 @@ Qiblai packs as sidecars (`dist/ancients.tex.xanadu*.js`, `ancients.tex.qiblai.j
 ruin when the page has it, and draws the ruin's east plateau on the town's ground (`THCITY.town.ground`) out to x 1260;
 core/ruins skips the town's meshes (`theodiga:town ...`). On `--target theodiga` none of it is present and nothing changes but
 the text of those two fragments.
+
+## Tethis (`--target tethis`, 2026-11-24)
+
+The pelagic saucer arcology in the shallow sea (`targets/tethis` -> `dist/tethis.html`), after Soleri's *Novanoah* /
+*Babel IID* and Kikutake's *Marine City*, shown intact (`d = 0`, west) and held today by the Hykkousoi of the League of
+Amphitriton (`d = 1`, east; `LORE.md` 6.16). Pure plan, analytical hull descriptor (`TETHIS.HULL`) and rules in
+`8az0-tethis-plan.js` (`[G data]`, `KRAND`, `test-tethis.js`: `1,448 × 956 m` hexagonal/axial lattice, `-24.5 .. +218 m`,
+`346.6 ha` floor, `36,017` Ancient peak / `6,420` Hykkousoi, blueprints and furniture manifests in `plan/`), shallow-sea
+bathymetry and coral shoals in `8az1-tethis-water.js` (`[G data]`, drawn by `core/water` + `core/atmos` in
+`90w-tethis-water.js`), and geometry in `8az2`–`8az4` (`buildTethis`, `reseed(12600+d)`): nine annular stepped saucers
+(`P0–P8`) and four satellites (`S0a–c`, `S3a`) on clustered fluted pylons, two Mushroom Towers (`T0`, `T4` with 24 lit
+radial soffit coffers), six radial plug-in capsule-drum towers (`T1a–T5`), two T-crane condenser columns (`T6a–b`), and four
+submerged rotundas (`U0, U1, U4, U6`). Synthetic reef rock (`ROCK`) and seabed sit behind `!(opts && opts.noTerrain)` on
+isolated `KRAND.child` streams. In `d = 1` the upper rings carry grown nacre pods, scallop balconies, the `T0` helical
+conch-stair, an arched rib-bridge (`B_6_1`) and a rib-drawbridge (`B_5_7s`); `U0, U1, U4` are flooded gill-folk sanctuaries;
+and `B_6_8` lies collapsed on the seabed isolating `P8` as a Salvage Island watched by `core/ruins`. Lives wholly in
+`targets/tethis/`, so the kit's other pages are untouched.
+
