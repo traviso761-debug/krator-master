@@ -1,9 +1,14 @@
 {
-  "tris": 6500000,
-  "calls": 320,
-  "bytes": 6291456,
-  "samplers": 15,
-  "vram_mb": 350,
-  "why": "The Floating City (16,500 on-screen / 24,000 sim urban pop imperial capital in Ria Sound [635, 138]): Ancient Khao Phra Sumeru + Noahbabel sea-ring weir & -90 m submarine hydro-dynamo cone, 28 cellular moon-pool pontoons, RIK (Lower/Upper Ria) + KLK (Suudme) unified DataTexture2DArray atlas, DOUBLEDELTA flora, twin 64 m bluff waterfalls, 4 cliff-hoists & SIM economy; HTML kept well under 6 MB via .tex sidecars and active samplers <= 13.",
-  "raised": "2026-11-25"
+  "what": "The Floating City of Ria Sound (36,000-citizen imperial capital at [635, 138])",
+  "pages": {
+    "floating-city.html": {
+      "tris": 9000000,
+      "calls": 1250,
+      "bytes": 6291456,
+      "samplers": 13,
+      "vram_mb": 420,
+      "why": "36,000-pop imperial capital with 850 Suudme + Lower/Upper Ria lots, kit-grade Sumeru-Noahbabel arcology & 6 Venetian harbour quays, 49 moon-pool pontoons, 72 bascule bridges, 71 watercraft, 1,500+ citizens, 18+ paved bluff streets/squares, 4 viaduct cliff-funiculars, and DOUBLEDELTA flora (5 samplers max via DataTexture2DArray).",
+      "raised": "2026-11-25"
+    }
+  }
 }

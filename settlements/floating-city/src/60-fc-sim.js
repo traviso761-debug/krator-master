@@ -49,42 +49,42 @@ const FC_SIM = (function () {
 
   function createEconomy(opts) {
     opts = opts || {};
-    const simUrbanPop = opts.simUrbanPop == null ? 24000 : opts.simUrbanPop;
-    const onScreenPop = opts.onScreenPop == null ? 16500 : opts.onScreenPop;
-    const households = opts.households == null ? 3800 : opts.households;
+    const simUrbanPop = opts.simUrbanPop == null ? 36000 : opts.simUrbanPop;
+    const onScreenPop = opts.onScreenPop == null ? 28500 : opts.onScreenPop;
+    const households = opts.households == null ? 6200 : opts.households;
 
     const stocks = {
-      food: 640.0,
-      water_fresh: 920.0,
-      electrics: 180.0,
-      ria_amber: 85.0,
-      paktong: 54.0,
-      nephrite_jade: 32.0,
-      superconductors: 22.0,
-      silk: 36.0,
-      sap_varnish: 28.0,
-      sea_byssus: 64.0,
-      timber: 140.0,
-      clay: 160.0,
-      silica: 90.0,
-      coal: 120.0,
-      bitumen: 75.0,
-      lenses: 24.0,
-      seal_bonds: 95.0,
-      cordage: 58.0,
-      cloth: 48.0,
-      glazed_tile: 110.0,
-      hull_repairs: 42.0
+      food: 960.0,
+      water_fresh: 1380.0,
+      electrics: 240.0,
+      ria_amber: 110.0,
+      paktong: 72.0,
+      nephrite_jade: 44.0,
+      superconductors: 28.0,
+      silk: 48.0,
+      sap_varnish: 36.0,
+      sea_byssus: 84.0,
+      timber: 185.0,
+      clay: 210.0,
+      silica: 115.0,
+      coal: 155.0,
+      bitumen: 95.0,
+      lenses: 32.0,
+      seal_bonds: 125.0,
+      cordage: 76.0,
+      cloth: 64.0,
+      glazed_tile: 145.0,
+      hull_repairs: 58.0
     };
     if (opts.sabotageKey) stocks[opts.sabotageKey] = -5000.0;
 
-    /* Daily urban consumption + Crown Bluff reservoir & Riwa-Wata freshwater intake (+118 units/day) */
-    const dailyFoodNeed = simUrbanPop / 250.0; /* 96 units/day vs 110 imported + local fish/terraces (+18) = +32/day net */
-    const dailyWaterNeed = simUrbanPop / 220.0; /* 109 units/day vs +135 bluff aqueduct reservoir intake = +26/day net */
+    /* Daily urban consumption + Crown Bluff reservoir & Riwa-Wata freshwater intake for 36,000 citizens */
+    const dailyFoodNeed = simUrbanPop / 250.0; /* 144 units/day vs 110 imported + 68 lagoon fisheries & D7 terraces = +34/day net */
+    const dailyWaterNeed = simUrbanPop / 220.0; /* 163.6 units/day vs +195 bluff aqueduct reservoir intake = +31.4/day net */
 
     function stepDay() {
-      stocks.food += 18.0 - dailyFoodNeed;
-      stocks.water_fresh += 135.0 - dailyWaterNeed;
+      stocks.food += 68.0 - dailyFoodNeed;
+      stocks.water_fresh += 195.0 - dailyWaterNeed;
 
       for (let r = 0; r < TRADE_ROUTES.length; r++) {
         const rt = TRADE_ROUTES[r];

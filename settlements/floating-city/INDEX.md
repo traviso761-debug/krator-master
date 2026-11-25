@@ -15,15 +15,18 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | <1 |  |
 | `28-fc-mipvar.js` | 2 |  |
-| `40-fc-tide-phys.js` | 9 |  |
-| `42-fc-megastructure-plan.js` | 9 |  |
+| `40-fc-tide-phys.js` | 10 |  |
+| `42-fc-megastructure-plan.js` | 12 |  |
 | `44z-fc-host-init.js` | 6 |  |
-| `45-fc-city-steps.js` | 39 **big** |  |
-| `50-fc-sumeru-draw.js` | 26 |  |
-| `55-fc-pontoons-hoists.js` | 14 |  |
+| `45a-fc-city-defs.js` | 18 |  |
+| `45b-fc-city-steps.js` | 36 **big** |  |
+| `50a-fc-sumeru-core.js` | 26 |  |
+| `50b-fc-dykes-weir.js` | 18 |  |
+| `55-fc-pontoons-hoists.js` | 20 |  |
+| `56-fc-streets-mole.js` | 16 |  |
 | `58-fc-interiors.js` | 5 |  |
 | `60-fc-sim.js` | 6 |  |
-| `70-fc-chars.js` | 4 |  |
+| `70-fc-chars.js` | 5 |  |
 | `85-fc-world-scene.js` | 24 |  |
 | `89w-fc-water-atmos.js` | 9 |  |
 | `99-fc-host-take.js` | 10 |  |

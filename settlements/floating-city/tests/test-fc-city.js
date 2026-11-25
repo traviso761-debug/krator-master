@@ -25,14 +25,15 @@ function loadCtx() {
     path.join(HERE, 'src', '28-fc-mipvar.js'),
     path.join(HERE, 'src', '40-fc-tide-phys.js'),
     path.join(HERE, 'src', '42-fc-megastructure-plan.js'),
-    path.join(HERE, 'src', '45-fc-city-steps.js'),
+    path.join(HERE, 'src', '45a-fc-city-defs.js'),
+    path.join(HERE, 'src', '45b-fc-city-steps.js'),
     path.join(HERE, 'src', '58-fc-interiors.js'),
     path.join(HERE, 'src', '60-fc-sim.js')
   ];
   for (const f of files) {
     vm.runInContext(fs.readFileSync(f, 'utf8'), ctx, { filename: f });
   }
-  vm.runInContext('globalThis._EX = { FC_SITE, FC_TIDE, FC_MEGA, FC_DIMS, FC_TRADES, FC_CITY, FC_INTERIORS, FC_SIM, FC_MIPVAR, WATER, KCITY, KHAZ, KTAGS };', ctx);
+  vm.runInContext('globalThis._EX = { FC_SITE, FC_TIDE, FC_MEGA, FC_DIMS, FC_TRADES, FC_BLUFF_PLAN, FC_CITY, FC_INTERIORS, FC_SIM, FC_MIPVAR, WATER, KCITY, KHAZ, KTAGS };', ctx);
   return ctx._EX;
 }
 
@@ -43,9 +44,9 @@ T.ok('central Noahbabel kolk reaches < -90 m below sea datum', X.FC_SITE.elevAt(
 T.ok('Crown Headland AS-01 citadel plateau stands >= +92 m above tsunami surge', X.FC_SITE.elevAt(260, -1120) >= 92.0, 'elev=' + X.FC_SITE.elevAt(260, -1120));
 T.ok('woody trim line is strictly +38.0 m and safe mainland dwell floor is +65.0 m',
   X.FC_SITE.WOODY_TRIM_Y === 38.0 && X.FC_SITE.SAFE_DWELL_Y === 65.0);
-T.ok('four 90-second Pioneer eddy-braked cliff-hoists and twin 64 m waterfalls are planned',
+T.ok('four 90-second Pioneer cliff-funiculars land on solid +7.8 m Stone Harbour Moles (never in open ocean)',
   X.FC_SITE.CLIFF_HOISTS.length === 4 && X.FC_SITE.WATERFALLS.length === 2 &&
-  X.FC_SITE.CLIFF_HOISTS.every(h => h.liftSec <= 90));
+  X.FC_SITE.CLIFF_HOISTS.every(h => h.liftSec <= 90 && !!X.FC_SITE.isOnMole(h.x0, h.z0, 4.0)));
 
 /* 2. Ancient Sumeru-Noahbabel Megastructure Gate */
 const mega = X.FC_MEGA.plan();
@@ -54,35 +55,41 @@ T.ok('submarine cone has 12 radial penstocks (8 active Pioneer superconductor + 
   mega.submarineCone.activeCount === 8 &&
   mega.submarineCone.floodedCount === 4 &&
   mega.submarineCone.taproot.yBot === -128.0);
-T.ok('1,400 m circular sea-ring weir has 4 sector ship-locks, 8 keeps, and 6 KRUINS scar blocks',
+T.ok('1,400 m circular sea-ring weir has 4 sector ship-locks, 6 Venetian harbour quays, and 6 KRUINS scar blocks',
   mega.seaRing.rOuter === 700.0 &&
   mega.seaRing.locks.length === 4 &&
+  mega.seaRing.quays.length === 6 &&
   mega.seaRing.scarBlocks.length === 6);
-T.ok('central 9+3-peak Khao Phra Sumeru reaches +168 m with 4 Prangs, 4 Mondops, and 3-spire Bussabok',
+T.ok('central 9+3-peak Khao Phra Sumeru reaches +168 m with 5 Gopura Hub-Bastions, 4 Prangs, 4 Mondops, and 3-spire Bussabok',
   mega.sumeru.mahaTipY === 168.0 &&
+  mega.sumeru.bastions.length === 5 &&
   mega.sumeru.prangs.length === 4 &&
   mega.sumeru.mondops.length === 4 &&
   mega.sumeru.bussabok.spires.length === 3);
-T.ok('3 radial Boulevard-Dykes, >= 10 Naga walkways, >= 12 Sala-Nam pavilions, and 6 Ziggurat pods (3 intact + 3 ruin)',
+T.ok('3 radial Boulevard-Dykes connect directly from Sumeru Hub (r0=96 m) to Sea-Ring (r1=698 m) with 8-column Sala-Nam pavilions',
   mega.dykes.length === 3 &&
+  mega.dykes.every(d => d.r0 <= 100.0 && d.r1 >= 695.0) &&
   mega.nagaWalks.length >= 10 &&
   mega.salaPavilions.length >= 12 &&
+  mega.salaPavilions.every(s => s.cols === 8 && s.colH >= 4.5) &&
   mega.zigguratPods.filter(p => p.intact).length === 3 &&
   mega.zigguratPods.filter(p => !p.intact).length === 3);
 
-/* 3. Multi-Kit Non-Ancient Architecture (Suudme + Lower Ria + Upper Ria) & 28 Pontoons Gate */
+/* 3. Dense Multi-Kit Non-Ancient Architecture (850+ Lots), Paved Bluff Streets & 49 Pontoons Gate */
 const cityPlan = X.FC_CITY.buildPlans();
 const layoutAudit = X.FC_CITY.auditLayout(cityPlan);
-T.ok('city layout places >= 24 Suudme (KLK) lots, >= 60 Lower-Ria (RIK) lots, and >= 5 Upper-Ria (RIK) lots',
-  layoutAudit.suudmeCount >= 24 && layoutAudit.lowerRiaCount >= 60 && layoutAudit.upperRiaCount >= 5,
+T.ok('city layout places >= 800 total lots (>= 250 Suudme, >= 500 Lower-Ria, >= 25 Upper-Ria) and >= 18 Bluff paved streets',
+  layoutAudit.totalLots >= 800 && layoutAudit.suudmeCount >= 250 && layoutAudit.lowerRiaCount >= 500 &&
+  layoutAudit.upperRiaCount >= 25 && cityPlan.bluffWays.length >= 18,
   JSON.stringify(layoutAudit));
-T.ok('zero OBB building overlaps across bluff, radial dykes, and all 28 cellular moon-pool pontoons',
-  layoutAudit.overlaps === 0, 'overlaps=' + layoutAudit.overlaps);
+T.ok('zero OBB building overlaps AND zero unsupported/floating corners across all 850 lots',
+  layoutAudit.overlaps === 0 && layoutAudit.unsupportedLots === 0,
+  'overlaps=' + layoutAudit.overlaps + ', unsupported=' + layoutAudit.unsupportedLots);
 T.ok('zero permanent mainland residential dwellings below +65.0 m tsunami refuge line',
   layoutAudit.badMainlandDwell === 0, 'badMainlandDwell=' + layoutAudit.badMainlandDwell);
-T.ok('all 28 cellular moon-pool pontoons and -90 m Dynamo Hall are reachable on the walk graph from AS-01 Bluff Citadel',
-   cityPlan.pontoons.length === 28 && layoutAudit.unreachedNodes.length === 0,
-  'unreached=' + JSON.stringify(layoutAudit.unreachedNodes));
+T.ok('all 49 cellular moon-pool pontoons and -90 m Dynamo Hall are reachable on the walk graph from AS-01 Bluff Citadel',
+   cityPlan.pontoons.length >= 45 && layoutAudit.unreachedNodes.length === 0,
+  'pontoons=' + cityPlan.pontoons.length + ', unreached=' + JSON.stringify(layoutAudit.unreachedNodes));
 
 /* Determinism gate */
 const cityPlan2 = X.FC_CITY.buildPlans();
@@ -90,13 +97,13 @@ T.ok('FC_CITY.buildPlans() is 100% deterministic across repeated calls',
   JSON.stringify(cityPlan.lots) === JSON.stringify(cityPlan2.lots));
 
 /* 4. Two-Basin Tidal Weir, Pontoon Kinematics & KHAZ.TIDE Gate */
-const fixedY = { dyke_nne: 6.2, sumeru_plinth: 5.8, sala_ne: 5.8, sala_se: 5.8, sala_sw: 5.8, sala_w: 5.8, sala_n: 5.8 };
+const fixedY = { dyke_nne: 6.2, sumeru_plinth: 6.2, sala_ne: 6.2, sala_se: 6.2, sala_sw: 6.2, sala_w: 6.2 };
 const floatEbb   = X.KCITY.auditFloatFleet(cityPlan.pontoons, cityPlan.bascules, X.FC_TIDE.setMode('ebb').lagoonY, fixedY);
 const floatSlack = X.KCITY.auditFloatFleet(cityPlan.pontoons, cityPlan.bascules, X.FC_TIDE.setMode('slack').lagoonY, fixedY);
 const floatFlood = X.KCITY.auditFloatFleet(cityPlan.pontoons, cityPlan.bascules, X.FC_TIDE.setMode('flood').lagoonY, fixedY);
 const floatSurge = X.KCITY.auditFloatFleet(cityPlan.pontoons, cityPlan.bascules, X.FC_TIDE.setMode('surge').lagoonY, fixedY);
 
-T.ok('all 28 pontoons stay afloat (0 grounded, collarSafe, |bascule pitch| <= 12 deg) across Ebb, Slack, Flood & Ghost-Surge',
+T.ok('all 49 pontoons stay afloat (0 grounded, collarSafe, |bascule pitch| <= 12 deg) across Ebb, Slack, Flood & Ghost-Surge',
   floatEbb.ok && floatSlack.ok && floatFlood.ok && floatSurge.ok,
   JSON.stringify({ ebb: floatEbb.maxAbsPitchDeg, flood: floatFlood.maxAbsPitchDeg, surge: floatSurge.maxAbsPitchDeg }));
 

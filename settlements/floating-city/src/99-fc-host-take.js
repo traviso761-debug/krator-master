@@ -14,15 +14,15 @@ const VIEWS = {};
     VIEWS[name] = [pos[0], +py.toFixed(1), pos[2], tgt[0], tgt[1], tgt[2]];
   }
 
-  /* 8 Punctuation-free preset views (zero apostrophes, zero colons, 6-float [ex,ey,ez,tx,ty,tz] format) */
-  defView('overview',                 [-180, 460, 1220], [  20,  42,   20]);
-  defView('sumeru-mandala-aerial',    [ 195, 148,  415], [   0,  62,   80]);
-  defView('suudme-tooka-pontoons',    [ 295,  42, -355], [ 215,   8, -225]);
-  defView('lower-ria-naga-canal',     [-315,  44,  185], [-185,  10,  115]);
-  defView('sea-ring-sector-lock',     [-795,  54,  285], [-670,  14,  215]);
-  defView('bluff-waterfalls-hoists',  [ 465,  68, -560], [ 485,  48, -885]);
-  defView('amber-seal-suudme-bluff',  [ 275, 168, -935], [ 275, 108, -1125]);
-  defView('submarine-kolk-gallery',   [-138,  34,  242], [   0,   2,   80]);
+  /* 8 Punctuation-free preset views (including exact sw-dyke-and-sumeru audit angle [-260, 14.5, 345] -> [20, 42, 20]) */
+  defView('overview',                 [-180, 480, 1260], [  20,  42,   20]);
+  defView('sw-dyke-and-sumeru',       [-260,  15,  345], [  20,  42,   20]);
+  defView('sumeru-mandala-aerial',    [ 195, 152,  415], [   0,  68,   80]);
+  defView('suudme-tooka-pontoons',    [ 315,  46, -345], [ 235,   8, -195]);
+  defView('sea-ring-venetian-harbour',[-545,  56,  245], [-640,  10,  165]);
+  defView('bluff-waterfalls-hoists',  [ 355,  72, -625], [ 355,  42, -965]);
+  defView('amber-seal-suudme-bluff',  [ 265, 182, -965], [ 345, 112,-1245]);
+  defView('submarine-kolk-gallery',   [-148,  34,  252], [   0,   2,   80]);
 })();
 
 function setTideState(mode) {
@@ -32,6 +32,7 @@ function setTideState(mode) {
   if (FC_WORLD && FC_WORLD.FLOAT_HOST) FC_WORLD.FLOAT_HOST.update(S.lagoonY);
   if (FC_WORLD && FC_WORLD.MEGA_SCENE) FC_WORLD.MEGA_SCENE.update(0, S);
   if (FC_WORLD && FC_WORLD.PONTOON_SCENE) FC_WORLD.PONTOON_SCENE.update(0, S);
+  if (FC_WORLD && FC_WORLD.STREETS_MOLE_SCENE) FC_WORLD.STREETS_MOLE_SCENE.update(0);
   FC_CHARS.update(0, FC_WORLD.PONTOON_SCENE.wardGroups);
   return S;
 }
@@ -63,8 +64,8 @@ const FC_HOST_CHECKS = {
     const rErr = (typeof RIK !== 'undefined' && RIK.errors) ? RIK.errors.length : 0;
     const kErr = (typeof KLK !== 'undefined' && KLK.errors) ? KLK.errors.length : 0;
     return {
-      ok: A.ok && rErr === 0 && kErr === 0,
-      detail: 'suudme=' + A.suudmeCount + ', lowerRia=' + A.lowerRiaCount + ', upperRia=' + A.upperRiaCount + ', overlaps=' + A.overlaps + ', kitErrs=' + (rErr + kErr)
+      ok: A.ok && A.totalLots >= 800 && A.unsupportedLots === 0 && rErr === 0 && kErr === 0,
+      detail: 'lots=' + A.totalLots + ' (suudme=' + A.suudmeCount + ', lowerRia=' + A.lowerRiaCount + ', upperRia=' + A.upperRiaCount + '), unsupported=' + A.unsupportedLots + ', overlaps=' + A.overlaps
     };
   },
   'tsunami-trimline-and-dwell': function () {
@@ -72,9 +73,10 @@ const FC_HOST_CHECKS = {
     const badWoody = (typeof DOUBLEDELTA !== 'undefined' && DOUBLEDELTA.LOG)
       ? DOUBLEDELTA.LOG.filter(function (e) { return e.woody && e.y < FC_SITE.WOODY_TRIM_Y - 0.5; }).length
       : 0;
+    const hoistsOnMoles = FC_SITE.CLIFF_HOISTS.every(function (h) { return !!FC_SITE.isOnMole(h.x0, h.z0, 4.0); });
     return {
-      ok: A.badMainlandDwell === 0 && badWoody === 0,
-      detail: 'badMainlandDwell(<65m)=' + A.badMainlandDwell + ', badWoody(<38m)=' + badWoody
+      ok: A.badMainlandDwell === 0 && badWoody === 0 && hoistsOnMoles,
+      detail: 'badMainlandDwell(<65m)=' + A.badMainlandDwell + ', badWoody(<38m)=' + badWoody + ', hoistsOnStoneMoles=' + hoistsOnMoles
     };
   },
   'pontoons-and-bascules-all-tides': function () {
@@ -88,9 +90,10 @@ const FC_HOST_CHECKS = {
       if (F.maxAbsPitchDeg > maxPitch) maxPitch = F.maxAbsPitchDeg;
     }
     FC_TIDE.setMode(prev);
+    const nP = FC_WORLD.PLANS.pontoons.length;
     return {
-      ok: allOk && FC_WORLD.PLANS.pontoons.length === 28,
-      detail: '28 pontoons afloat, 0 grounded, max |bascule pitch|=' + maxPitch.toFixed(2) + ' deg <= 12 deg'
+      ok: allOk && nP >= 45,
+      detail: nP + ' pontoons afloat, 0 grounded, max |bascule pitch|=' + maxPitch.toFixed(2) + ' deg <= 12 deg'
     };
   },
   'khaz-tide-bench-and-races': function () {
@@ -176,7 +179,7 @@ const HOST_TICKS = [function () {
 KHOST.take({
   build: 'floating-city',
   title: 'The Floating City of Ria Sound',
-  hint: 'Imperial Ria Sound Capital (24,000 pop, 0.75 g, 1.58 atm): Ancient Sumeru-Noahbabel Sea-Ring & -90 m Submarine Hydro-Dynamo, 28 Moon-Pool Pontoons, Suudme + Lower/Upper Ria Architecture',
+  hint: 'Imperial Ria Sound Capital (36,000 pop, 850 lots, 0.75 g, 1.58 atm): Kit-Grade Sumeru-Noahbabel Arcology, 49 Moon-Pool Pontoons, 72 Bridges, Paved Bluff Burgh & 4 Viaduct Funiculars',
   scene: scene,
   camera: camera,
   renderer: renderer,

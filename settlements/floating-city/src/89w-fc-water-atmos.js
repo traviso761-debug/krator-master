@@ -56,9 +56,11 @@ const FC_ENV = (function () {
     try {
       const rWeirOf = function (x, z) { return Math.hypot(x - FC_SITE.WEIR_CX, z - FC_SITE.WEIR_CZ); };
 
-      /* Outer Sound bed returns +25 m inside the Sea-Ring so outer swell stops cleanly at the circular weir wall! */
+      /* Outer Sound bed returns +25 m inside the Sea-Ring and +8 m on Stone Harbour Moles so breakers wrap the moles! */
       const outerBedAt = function (x, z) {
-        return rWeirOf(x, z) < FC_SITE.WEIR_R - 8.0 ? 25.0 : terrainH(x, z);
+        if (rWeirOf(x, z) < FC_SITE.WEIR_R - 8.0) return 25.0;
+        if (FC_SITE.isOnMole && FC_SITE.isOnMole(x, z, 1.0)) return 8.0;
+        return terrainH(x, z);
       };
       /* Inner Lagoon bed returns +25 m outside the Sea-Ring so the calm jade lagoon stays strictly inside the ring! */
       const lagoonBedAt = function (x, z) {
@@ -142,13 +144,13 @@ const FC_ENV = (function () {
           const WF = FC_SITE.WATERFALLS[i];
           const pts3 = [];
           let yc = 1e9;
-          for (let s = 0; s <= 18; s++) {
-            const u = s / 18;
+          for (let s = 0; s <= 48; s++) {
+            const u = s / 48;
             const px = WF.x0 + (WF.x1 - WF.x0) * u;
             const pz = WF.z0 + (WF.z1 - WF.z0) * u;
             const gh = terrainH(px, pz);
             if (gh <= 2.4) break;
-            yc = Math.min(yc, gh + 0.32);
+            yc = Math.min(yc, gh + 0.45);
             pts3.push([+px.toFixed(2), +pz.toFixed(2), +yc.toFixed(2)]);
           }
           if (pts3.length >= 2) {
@@ -227,6 +229,7 @@ const FC_ENV = (function () {
     FC_WORLD.FLOAT_HOST.update(tideSample.lagoonY);
     FC_WORLD.MEGA_SCENE.update(tSec, tideSample);
     FC_WORLD.PONTOON_SCENE.update(tSec, tideSample);
+    if (FC_WORLD.STREETS_MOLE_SCENE) FC_WORLD.STREETS_MOLE_SCENE.update(tSec);
     FC_CHARS.update(tSec, FC_WORLD.PONTOON_SCENE.wardGroups);
   });
 

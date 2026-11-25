@@ -86,8 +86,8 @@ async def run(a):
         presets = await pg.evaluate("()=>typeof VIEWS!=='undefined'?Object.keys(VIEWS):[]")
         views = presets if a.all_views else (
             parse_views(a.views, presets) if a.views else [
-                'overview', 'sumeru-mandala-aerial', 'suudme-tooka-pontoons',
-                'lower-ria-naga-canal', 'bluff-waterfalls-hoists', 'amber-seal-suudme-bluff'
+                'overview', 'sw-dyke-and-sumeru', 'sumeru-mandala-aerial', 'suudme-tooka-pontoons',
+                'sea-ring-venetian-harbour', 'bluff-waterfalls-hoists', 'amber-seal-suudme-bluff'
             ]
         )
         if sw:

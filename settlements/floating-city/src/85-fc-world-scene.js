@@ -203,10 +203,11 @@ const FC_WORLD = (function () {
     } catch (e) {}
   }
 
-  /* 3. Build Ancient Sumeru-Noahbabel Megastructure + 28 Moon-Pool Pontoons, 4 Cliff-Hoists & Fleet */
+  /* 3. Build Ancient Sumeru-Noahbabel Megastructure + 49 Pontoons/Fleet + Harbour Moles, Viaduct Funiculars & Bluff Streets */
   const PLANS = FC_CITY.buildPlans();
   const MEGA_SCENE = FC_SUMERU_DRAW.buildAll(scene, MATS, KTAGS.page, [SUB_CUT_PLANE]);
   const PONTOON_SCENE = FC_PONTOONS_HOISTS.buildAll(scene, MATS, PLANS, KTAGS.page);
+  const STREETS_MOLE_SCENE = FC_STREETS_MOLE.buildAll(scene, MATS, PLANS, KTAGS.page);
 
   /* 4. Multi-Kit Non-Ancient City Instancing: KLK ('suudme') + RIK ('lower-ria' & 'upper-ria') via KCITY.createSharedAtlas */
   const cityGroup = new THREE.Group();
@@ -276,8 +277,17 @@ const FC_WORLD = (function () {
     });
 
     if (L.instance === 'bluff') {
-      const ph = 4.2;
-      plinthList.push({ x: L.x, y: L.y - ph * 0.5 + 0.08, z: L.z, ry: L.ry, w: L.w + 0.8, h: ph, d: L.d + 0.8 });
+      const cs4 = FC_CITY.obbCorners(L, 0.5);
+      let minG = L.y, maxG = L.y;
+      for (let ci = 0; ci < 4; ci++) {
+        const gy = terrainH(cs4[ci][0], cs4[ci][1]);
+        if (gy < minG) minG = gy;
+        if (gy > maxG) maxG = gy;
+      }
+      const yTop = maxG + 0.18;
+      const yBot = minG - 3.2;
+      L.y = +(yTop - 0.06).toFixed(2);
+      plinthList.push({ x: L.x, y: 0.5 * (yTop + yBot), z: L.z, ry: L.ry, w: L.w + 1.4, h: yTop - yBot, d: L.d + 1.4 });
     }
 
     const P = getMultiKitProto(L.key, L.v);
@@ -425,17 +435,6 @@ const FC_WORLD = (function () {
     pIm.instanceMatrix.needsUpdate = true;
     cityGroup.add(pIm);
     _s3.set(1, 1, 1);
-
-    /* Dressed cobalt-and-travertine terrace court walk connecting AS-01 & Suudme Bluff Bourses */
-    const courtWalk = new THREE.Mesh(new THREE.BoxGeometry(240, 1.2, 16, 16, 1, 2), MATS.cobaltGlaze);
-    const cwPos = courtWalk.geometry.attributes.position;
-    for (let vi = 0; vi < cwPos.count; vi++) {
-      const wx = 295 + cwPos.getX(vi), wz = -1095 + cwPos.getZ(vi);
-      cwPos.setY(vi, terrainH(wx, wz) + 0.12 + cwPos.getY(vi));
-    }
-    courtWalk.geometry.computeVertexNormals();
-    courtWalk.position.set(295, 0, -1095);
-    cityGroup.add(courtWalk);
   }
 
   /* Bind KCITY.hostFloat so all 28 Moon-Pool Pontoons, 29 Bascules & Floating Suudme/Ria Buildings ride the tide! */
@@ -570,8 +569,8 @@ const FC_WORLD = (function () {
           const cLeaf = new THREE.Color(0x4e7e3e);
           for (let gx = 0; gx < 20; gx++) {
             for (let gz = 0; gz < 14; gz++) {
-              const px = 96 + gx * 5.8;
-              const pz = -1348 + gz * 5.4;
+              const px = -85 + gx * 5.8;
+              const pz = -1395 + gz * 5.4;
               const py0 = terrainH(px, pz) - 0.15;
               const hCulm = 7.2 + ((gx * 7 + gz * 3) % 5) * 0.35;
               BIO.put('ddbluffculm', [px, py0, pz], qZero, [1.0, hCulm, 1.0], cCulm);
@@ -640,6 +639,7 @@ const FC_WORLD = (function () {
     PLANS: PLANS,
     MEGA_SCENE: MEGA_SCENE,
     PONTOON_SCENE: PONTOON_SCENE,
+    STREETS_MOLE_SCENE: STREETS_MOLE_SCENE,
     FLOAT_HOST: FLOAT_HOST,
     ATLAS: ATLAS,
     HAZARD_RECS: HAZARD_RECS,

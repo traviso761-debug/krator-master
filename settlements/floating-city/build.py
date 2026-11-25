@@ -219,6 +219,9 @@ def kcons_bundle():
 
 
 VESSELS = [
+    '81-rs-voth-junk.js',
+    '83-rs-voth-ferry.js',
+    '84-rs-voth-taxi.js',
     '85-rs-voth-barge.js',
     '89g-rs-ark-ward.js',
     '89h-rs-hk-whaler.js',

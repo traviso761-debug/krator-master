@@ -1,6 +1,7 @@
-// ================================================================= FLOATING CITY — Imperial Multi-Polity Citizen Crowds [web]
+// ================================================================= FLOATING CITY — Bustling Imperial Citizen Crowds (1,500+ Instanced) [draw]
 // Instanced low-poly citizens dressed in Lower-Ria celadon/saffron silk, Suudme amber/indigo merchant coats,
-// Pioneer slate-cyan coveralls, and Upper-Ria ivory/violet robes across bluff bourses, dykes, and floating pontoons.
+// Pioneer slate-cyan coveralls, and Upper-Ria ivory/violet robes strolling across all 850 building frontages,
+// the 3 Boulevard-Dykes, the Sea-Ring Promenade, the Stone Harbour Moles, and all 49 Floating Pontoons.
 const FC_CHARS = (function () {
   'use strict';
   let group = null;
@@ -15,7 +16,8 @@ const FC_CHARS = (function () {
     0x244c88, /* Suudme cobalt-indigo wool */
     0x3a5666, /* Pioneer PN-12 dynamo engineer */
     0xdcd4e6, /* Upper-Ria Hongsa truce envoy */
-    0x9e342c  /* Heartland lacquer merchant */
+    0xb6382c, /* Heartland lacquer merchant */
+    0xd87a2e  /* Saffron temple pilgrim */
   ];
 
   function init(scene, cityPlan, wardGroups) {
@@ -25,29 +27,57 @@ const FC_CHARS = (function () {
     scene.add(group);
 
     const recs = [];
-    /* 1. Bluff Citadel & Suudme Bourse Promenade Citizens */
+
+    /* 1. Frontage crowds across all 850 lots (1..2 citizens per lot = ~1,275 citizens) */
     for (let i = 0; i < cityPlan.lots.length; i++) {
       const L = cityPlan.lots[i];
-      if (i % 2 !== 0) continue;
-      const h0 = KRAND.unit(KRAND.hash(0xFC900, i, 1, 7));
-      const h1 = KRAND.unit(KRAND.hash(0xFC900, i, 2, 13));
-      const dist = (L.d * 0.5) + 2.4;
-      const cx = L.x + Math.sin(L.ry) * dist + (h0 - 0.5) * 3.0;
-      const cz = L.z + Math.cos(L.ry) * dist + (h1 - 0.5) * 3.0;
-      recs.push({
-        x: cx,
-        z: cz,
-        baseY: L.instance === 'pontoons' ? 0.0 : L.y,
-        wardId: L.instance === 'pontoons' ? L.wardId : null,
-        yaw: L.ry + (h0 - 0.5) * 2.4,
-        phase: h1 * Math.PI * 2,
-        col: PALETTE[i % PALETTE.length]
-      });
+      const count = (i % 2 === 0) ? 2 : 1;
+      for (let c = 0; c < count; c++) {
+        const h0 = KRAND.unit(KRAND.hash(0xFC900, i, c + 1, 7));
+        const h1 = KRAND.unit(KRAND.hash(0xFC900, i, c + 2, 13));
+        const dist = (L.d * 0.5) + 2.0 + c * 1.4;
+        const lat = (h0 - 0.5) * Math.min(10.0, L.w * 0.6);
+        const sn = Math.sin(L.ry), cs = Math.cos(L.ry);
+        const cx = L.x + sn * dist + cs * lat;
+        const cz = L.z + cs * dist - sn * lat;
+        recs.push({
+          x: cx,
+          z: cz,
+          baseY: L.instance === 'pontoons' ? 0.0 : L.y,
+          wardId: L.instance === 'pontoons' ? L.wardId : null,
+          yaw: L.ry + (h0 - 0.5) * 2.8,
+          phase: h1 * Math.PI * 2,
+          stride: 0.8 + h0 * 1.4,
+          col: PALETTE[(i + c) % PALETTE.length]
+        });
+      }
+    }
+
+    /* 2. Bustling Boulevard-Dyke & Sumeru Mandala Court Promenaders (~240 citizens) */
+    const dykeAngles = [-66.0, 152.0, -144.0];
+    for (let d = 0; d < dykeAngles.length; d++) {
+      const a = dykeAngles[d] * Math.PI / 180;
+      const ux = Math.cos(a), uz = Math.sin(a), nx = -uz, nz = ux;
+      for (let s = 0; s < 70; s++) {
+        const rr = 115.0 + s * 8.0;
+        const h0 = KRAND.unit(KRAND.hash(0xFC950, d, s, 5));
+        const lat = (h0 - 0.5) * 14.0;
+        recs.push({
+          x: FC_SITE.WEIR_CX + rr * ux + lat * nx,
+          z: FC_SITE.WEIR_CZ + rr * uz + lat * nz,
+          baseY: 22.0,
+          wardId: null,
+          yaw: Math.atan2(ux, uz) + (s % 2 === 0 ? 0 : Math.PI),
+          phase: h0 * Math.PI * 2,
+          stride: 1.6,
+          col: PALETTE[(d + s) % PALETTE.length]
+        });
+      }
     }
 
     const n = recs.length;
     if (!n) return;
-    const bodyGeo = new THREE.CylinderGeometry(0.22, 0.28, 1.32, 6);
+    const bodyGeo = new THREE.CylinderGeometry(0.22, 0.28, 1.34, 6);
     const headGeo = new THREE.SphereGeometry(0.17, 6, 5);
     const bodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.72, vertexColors: false });
     const headMat = new THREE.MeshStandardMaterial({ color: 0xb68666, roughness: 0.68 });
@@ -80,15 +110,16 @@ const FC_CHARS = (function () {
       const wy = r.wardId && wardGroups && wardGroups[r.wardId]
         ? wardGroups[r.wardId].position.y
         : r.baseY;
-      const swayX = r.x + 0.45 * Math.sin(tSec * 0.7 + r.phase);
-      const swayZ = r.z + 0.45 * Math.cos(tSec * 0.7 + r.phase);
-      _q.setFromAxisAngle(_y, r.yaw + 0.3 * Math.sin(tSec * 0.5 + r.phase));
+      const walkOff = r.stride * Math.sin(tSec * 0.65 + r.phase);
+      const swayX = r.x + Math.sin(r.yaw) * walkOff;
+      const swayZ = r.z + Math.cos(r.yaw) * walkOff;
+      _q.setFromAxisAngle(_y, r.yaw + (Math.cos(tSec * 0.65 + r.phase) >= 0 ? 0 : Math.PI));
 
-      _p.set(swayX, wy + 0.66, swayZ);
+      _p.set(swayX, wy + 0.67, swayZ);
       _m.compose(_p, _q, _s);
       bodyIm.setMatrixAt(r.idx, _m);
 
-      _p.set(swayX, wy + 1.48, swayZ);
+      _p.set(swayX, wy + 1.50, swayZ);
       _m.compose(_p, _q, _s);
       headIm.setMatrixAt(r.idx, _m);
     }
