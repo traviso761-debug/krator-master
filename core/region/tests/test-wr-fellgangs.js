@@ -10,7 +10,7 @@
 //   5. Travellers (`wr.travellers`, 650) & Kradz (`wr.kradz`, 100): Traveller thaw multi-stop rounds (`wr.round.west`, `wr.round.rim`)
 //      wait in winter and earn carrier cuts in thaw + Line portal-gap cuts; Kradz hoist ice/copper/rope down `wr.shaft.twenny`
 //      to `tg.twenny` and bring wax/fungus/rareearths/salvage up with a 10% portering cut;
-//   6. Wildcat raids & Market Peace Fair Truce: `wr.wildcat` raids `wr.road.ice` and `dalab.road.surface` (`S.raids`, zero-sum
+//   6. Wildcat raids & Market Peace Fair Truce: `wr.wildcat` raids `wr.road.ice` and `dalab.road.surface` (`S.roadRaids`, zero-sum
 //      ledger!), while unarmed Wildcat Fair traders enter `wr.blakhed` ONLY during `bk.fair` (`waited > 0` outside `bk.fair`)
 //      selling Kimr `ivory`, `hides` and Firebliss `obsidian`; `WR_TUNE.marketPeace` holds in `'peace'`;
 //   7. W5 Union Strike (`WR_TUNE.valley({strike: true})`): Ledge's lifts (`tg.fower`) & the Line close, Kradz/Union shaft raids
@@ -47,7 +47,7 @@ function runSpec(V, days) {
   return {
     H, V, S, B: H.valleyBooks(), trade: SIM.tradeReport(), ledger: SIM.ledger(a, b, { tol: 1 }),
     actors: SIM.all('actor').length, cuts: JSON.parse(JSON.stringify(S.cuts)),
-    raids: JSON.parse(JSON.stringify(S.raids)), veinMoves: S.veinMoves.slice()
+    roadRaids: JSON.parse(JSON.stringify(S.roadRaids || {})), raidsAt: 'raids' in S, veinMoves: S.veinMoves.slice()
   };
 }
 const landed = (tr, r, leg) => ((tr[r] || {}).landed || {})[leg] || {};
@@ -142,7 +142,7 @@ const politicsOk = (iceRaid, surfRaid, fairLand, fairRep, peace) => {
   return ir > 0 && sr > 0 && fairGoods > 500 && (fairRep.waited || 0) > 3000 && peace.state === 'peace' && peace.truce && peace.score >= 80;
 };
 {
-  const iceRaid = Y.raids['wr.road.ice'] || {}, surfRaid = Y.raids['dalab.road.surface'] || {};
+  const iceRaid = Y.roadRaids['wr.road.ice'] || {}, surfRaid = Y.roadRaids['dalab.road.surface'] || {};
   const fairLand = landed(Y.trade, 'wr.road.fair.wildcat', 'wr.wildcat>wr.blakhed'), fairRep = Y.trade['wr.road.fair.wildcat'] || {};
   const peace = WR_TUNE.marketPeace(Y.B, Y.cuts, Y.trade);
   T.ok('Wildcat raids wr.road.ice & dalab.road.surface zero-sum while unarmed Fair traders enter Blakhed only in bk.fair; Market Peace holds (' + peace.score + '/100)',
@@ -151,6 +151,8 @@ const politicsOk = (iceRaid, surfRaid, fairLand, fairRep, peace) => {
     Math.round((fairLand.ivory || 0) + (fairLand.obsidian || 0) + (fairLand.hides || 0)) + ' kg, peace ' + peace.score);
   T.neg('a collapsed Market Peace or missing Wildcat raids is caught', p => politicsOk(iceRaid, surfRaid, fairLand, fairRep, p), { state: 'crisis', truce: false, score: 20 }, peace);
 }
+/* S3-87b: a road's cargo raids are kept at S.roadRaids, so S.raids is not two things (the Lizardmen's raids are S.raiding, core/region 52) */
+T.ok('the road raids are at S.roadRaids, and the valley keeps no S.raids', !Y.raidsAt && Object.keys(Y.roadRaids).length >= 2, 'S.raids ' + (Y.raidsAt ? 'kept' : 'absent') + ', road raids on ' + Object.keys(Y.roadRaids).join(', '));
 
 /* ---- 7. W5 Invariant: Tungang Union Strike (`strike: true`) starves Ledge before Dalab breaks, books stay clean ---- */
 {
@@ -159,7 +161,7 @@ const politicsOk = (iceRaid, surfRaid, fairLand, fairRep, peace) => {
     const ledgeHungry = (R.B.towns['dalab.ledge'].hungry.grain || 0);
     const nulabHungry = (R.B.towns['wr.nulab'].hungry.grain || 0);
     const shelfHungry = (R.B.towns['dalab.shelf'].hungry.grain || 0);
-    const unionRaids = ((R.raids['dalab.road.surface'] || {}).events || []).filter(e => e.to === 'tg.twenny').length;
+    const unionRaids = ((R.roadRaids['dalab.road.surface'] || {}).events || []).filter(e => e.to === 'tg.twenny').length;
     const liftsLanded = Object.values(landed(R.trade, 'wr.road.lifts', 'wr.nulab>dalab.ledge')).reduce((a, b) => a + b, 0);
     return R.ledger.ok && !R.S.problems.length && liftsLanded === 0 && unionRaids > 0 && ledgeHungry > 100000 && nulabHungry === 0 && shelfHungry === 0;
   };

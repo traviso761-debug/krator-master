@@ -49,10 +49,11 @@ const ce={kind:'doline',form:'cenote',x:0,z:0,r:20,depth:30,floor:50};ok('a ceno
 ok('a karst recipe for KSTRATA',!hadKarst&&KSTRATA.RECIPES.karst&&KSTRATA.create({recipe:'karst',seed:1}).at(0,10,0).recipe==='karst',false);
 ok('a bad box, kind, level or ground throws',throws(()=>K.network({box:[0,0,0,0],ground,level:0}))&&throws(()=>K.network(Object.assign({},o,{kind:'sponge'})))&&throws(()=>K.network(Object.assign({},o,{level:null})))&&throws(()=>K.network({box,level:0})),throws(()=>K.network(o)));
 // ---- the old kinds are byte-identical to the module before 'hypogene' (2026-11-03): network, water, hazards, relief and build
+// (branch and branchHigh re-pinned 2026-11-24, Stage 8 T20: a sink's id carries its level, so two levels' sinks never share one)
 const fnv=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16);};
 const dig=c=>{const D=K.network(c),Cd=KCAVERN.create({ground,cell:2,chunk:16,seed:4});return fnv(JSON.stringify([D,K.water(D),K.hazards(D),K.relief(D),K.build(Cd,D)]));};
 const old={branch:dig(o),branchHigh:dig(Object.assign({},o,{table:52})),maze:dig(Object.assign({},o,{kind:'maze',p:.6,levels:[{y:70,kind:'maze',p:.45}]}))};
-ok('branch and maze unchanged by the hypogene kind ('+JSON.stringify(old)+')',old.branch==='fa943e21'&&old.branchHigh==='84833da7'&&old.maze==='86f39f1f',old.branch==='0');
+ok('branch and maze unchanged by the hypogene kind ('+JSON.stringify(old)+')',old.branch==='e8b43661'&&old.branchHigh==='3fefbd17'&&old.maze==='86f39f1f',old.branch==='0');
 // ---- 'hypogene': rising hot water, two storeys (the active one at the table, an older one above it at an older table)
 const ho={box,ground,world:3,kind:'hypogene',level:0,table:4,temp:52,levels:[{y:22}],joints:{angle:.3,sp:40},feeders:{cell:250,p:.7,depth:150},chamber:{r:[15,40],h:[6,14]}};
 const H=K.network(ho),HM={};H.nodes.forEach(n=>HM[n.id]=n);

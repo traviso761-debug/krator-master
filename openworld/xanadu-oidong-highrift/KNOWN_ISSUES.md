@@ -5,8 +5,9 @@
       are laid at the plan's pixels as asked; the plan's kilometres read as if a pixel were ~0.8 km. Either the line or the text
       wants the owner's word before the recut.
 - [ ] **The tubes' portals lie on the uncarved ground.** The Twins' sculpt is not on the map, so the mouths open wherever the
-      model's ground is at the spec's points: the feeder's Strongbow portal is a ramp down into flat ground (a pit mouth), its SE
-      Twin gasp climbs a steep flank as an open trench. The floors are laid at a depth, so they follow the sculpt;
+      model's ground is at the spec's points: the feeder's Strongbow portal is a ramp down into flat ground (a pit mouth). Its SE
+      Twin gasp climbed a steep flank as an open trench until the 2026-11-23 re-run's ground brought the ramp out on the flank
+      below the mouth; it now stands 1 km south (px 1028,1506.5), where the ramp holds the flank. The floors are laid at a depth, so they follow the sculpt;
       the portals' points may want moving to the sculpted brows (the spec's `at`), data only.
 - [ ] **Up to 630 m of rock over a tube.** The floor keeps its 8 % grade under the uncarved ridges, so A1 and A2 run deep
       under the Godthrone's shield ramp in places; skylights are only drawn where the cover is under 60 m.
@@ -77,8 +78,12 @@
       for their beaches and cliffs; both read region.json's `landforms`. Lift the stamp into core/world or core/coast when a
       second region has landforms; the verify's island check catches a hook that does not chain.
 
-- **The pitched camps (2026-11-23, `src/48t-world-camps.js`, `88t`; settlements/xanadu/WORKS-PLAN.md W2).** The Golden Tears'
-  camp (`WORLD_CAMPS` in `src/48-world-site.js`, site `stearscamp01` in openworld/SITES.json) is outside this region's cut (60 km
-  from its nearest cut ground), so the page reports it awaiting the recut and draws nothing; `tests/test-world-camps.js` proves
-  its ring on synthetic ground. The camps are planned at load, not baked (core/world's 48s pitches only the Beast Riders' camps),
-  and their tents are massing in their dress's colours (no Tents kit bundle for another world yet): TODO.md.
+- **The pitched camps (2026-11-23; on core/world since 2026-11-24, Stage 8 T26; settlements/xanadu/WORKS-PLAN.md W2).** The
+  Golden Tears' camp (`WORLD_CAMPS` in `src/48-world-site.js`, `SITE_SPEC.camps`; site `stearscamp01` in openworld/SITES.json) is
+  laid by core/world's `KWCAMPS` (`core/world/48w-world-camps.js`; this region's `48t` and `88t` are gone) with the Sultanate's
+  people and window registered in `src/48c-camps-xanadu.js`, and baked into `plan/sites.json` (format version 2). The plan made
+  now (2026-11-24, `core/world/bake_sites.py`) lays it in the cut: 28 tents, none short, 4 sluices in the bed, 6 pits, 3 heaps,
+  122 people for the tune's 120, the boxes from the Tents kit's table. **The baked file is version 1 until Phase C rebakes it**
+  (`python3 core/world/bake_sites.py xanadu-oidong-highrift`); until then the page plans the camp at load from `WORLD_CAMPS` and
+  verify's "the baked plan is the plan made here" reads STALE. The tents are massing in their dress's colours until the page
+  carries the Tents kit's bundle (`kits/tents/tents_bundle.py`: 88s then draws `TNK.proto` near the camera).

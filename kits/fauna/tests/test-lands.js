@@ -39,6 +39,14 @@ const G = h => JSON.stringify(FL.groupOf({ herd: h }));
 ok(G('troops of twenty') === '[10,20]' && G('small groups of six, a bull with his cows') === '[3,6]' && G('herds of 12') === '[6,12]', 'groupOf reads the herd\'s number');
 ok(G('alone') === '[1,1]' && G('alone, or a pair') === '[1,2]' && G(null) === '[1,2]' && G('shoals') === '[1,3]', 'groupOf: alone, a pair, unknown, no number');
 
+// ---------------------------------------------------------------- the climate vocabulary (Stage 8 T42: Cwb, Dsc; verify.py's vocab check, here in node)
+{ const V = KF.VOCAB.koppen, inVocab = list => Array.isArray(list) && list.length > 0 && list.every(k => V.indexOf(k) >= 0);
+  const bad = KF.list().map(e => KF.entry(e.key)).filter(e => !inVocab(e.tags && e.tags.koppen)).map(e => e.key);
+  ok(!bad.length, 'every animal\'s koppen classes are in the vocabulary' + (bad.length ? ': ' + bad.join(', ') : ''));
+  ok(V.indexOf('Cwb') >= 0 && V.indexOf('Dsc') >= 0, 'the vocabulary has Cwb and Dsc (siphon-pits\' Terraces and Scarp)');
+  ok(KF.entry('ghaunt-ox').tags.koppen.indexOf('Cwb') >= 0 && KF.entry('flenser-hound').tags.koppen.indexOf('Dsc') >= 0, 'the Ghaunt-Ox lives in Cwb, the Flenser-Hound in Dsc');
+  ok(!inVocab(['ET', 'Cxz']) && !inVocab([]), 'the negative: a class outside the vocabulary (Cxz), or none, is caught'); }
+
 // ---------------------------------------------------------------- the pool by land
 const sav = FL.pool(CAT, 'hyperjungle.savage'), pure = FL.pool(CAT, 'hyperjungle.pure');
 const inRole = (P, r, k) => P.roles[r].some(p => p.key === k);
@@ -48,7 +56,13 @@ ok(!inRole(pure, 'grazer', 'threehorn') && !inRole(pure, 'predator', 'riding-rap
 ok(inRole(pure, 'grazer', 'hyperjungle-strider') && inRole(pure, 'predator', 'vine-boa'), 'pure: the kit\'s own hyperjungle animals by their biome tag');
 ok(!['grazer', 'predator', 'flyer', 'water'].some(r => pure.roles[r].some(p => !row(p.key).biomes.includes('hyperjungle') || row(p.key).domestic)),
   'pure: nothing untagged for the hyperjungle and nothing domestic');
-ok(['longcrawler', 'wingclaw', 'nightwing'].every(k => sav.missing.includes(k)) && sav.missing.every(k => !KF.has(k)), 'savage: the plan\'s beasts the kit lacks are listed missing: ' + sav.missing.join(', '));
+/* the plan's longcrawler, wingclaw and nightwing are the kit's draught-millipede, giant-archaeopteryx and giant-bat (Stage 8 D20) */
+ok(!sav.missing.length && ['draught-millipede', 'giant-archaeopteryx', 'giant-bat'].every(k => KF.has(k) && ['grazer', 'predator', 'flyer', 'water'].some(r => inRole(sav, r, k))),
+  'savage: the plan\'s beasts are the kit\'s (millipede, archaeopteryx, bat), none missing: ' + (sav.missing.join(', ') || 'none'));
+ok(inRole(sav, 'flyer', 'giant-archaeopteryx') && inRole(sav, 'flyer', 'giant-bat'), 'savage: the wingclaw and the nightwing fly');
+FL.land('hyperjungle.test-missing', { include: ['threehorn', 'longcrawler'] });
+{ const neg = FL.pool(CAT, 'hyperjungle.test-missing');
+  ok(neg.missing.length === 1 && neg.missing[0] === 'longcrawler' && !KF.has('longcrawler'), 'the negative: a name the kit lacks is listed missing (longcrawler)'); }
 ok(!pure.missing.length, 'the negative: the pure land misses nothing');
 ok(sav.roles.grazer.find(p => p.key === 'threehorn').w === 3 && sav.roles.grazer.find(p => p.key === 'hyperjungle-strider').w === 0.4, 'savage: the weights (threehorn 3, strider 0.4)');
 

@@ -101,7 +101,7 @@ The second region of sites cut off the scale model into the open world (`openwor
 - **The lava tubes** (2026-11-16, step W3 of `PLAN-TWINS-CROSSING.md`; core/world `42k`, `88k`, its README "Caverns"): Route A
   of the Twins crossing, the Dark-Tube Road, under the ground: A1 from the Vale's portal at the Alph's chasm (938,1496) to the
   First Skylight Break, A2, A3 with the Hall of the Tally-Marks and its roof crack, A4 to the 18 m arch, and the south feeder
-  (the Strongbow branch: `tube_xanadu_se_10`'s lower galleries 1010,1517 > 1028,1506, a gasp up onto Route B under the SE Twin,
+  (the Strongbow branch: `tube_xanadu_se_10`'s lower galleries 1010,1517 > 1028,1506.5 (1028,1506 until the 2026-11-23 re-run's ground), a gasp up onto Route B under the SE Twin,
   then the model's Saddle dike conduit 1024,1485 > the Hall at 1014,1464, where it joins A3 underground: WTUBES `join`, the
   owner, 2026-11-16, "Join the branch to the main line"): 244 km of Route A at the plan's pixels and the feeder's ~131, 10 portals,
   17 skylights, 14 chokes of 3.5 m. All of it lies inside the present box; only A1's first ~15 km are inside the cut's polygons.

@@ -6,11 +6,39 @@ settlements/iziz/VASSAL-KITS.md).
     python3 build.py --no-checks     # skip the lint and the build rules
     python3 verify.py dist/marr.html --assert --views "Opening — Harbour & Delta Overview,Overview"
 """
-import os, shutil, subprocess, sys
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
+import json, os, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+
+# core/rand (KRAND) and core/tags (KTAGS) come onto both pages with the Vernacular's (settlements/iziz/build.py, TAGS_FILES),
+# and its 91t-iziz-tags.js registers every REG entry, so every building VERN.place puts down (90b-city-build.js), into
+# core/tags before the first frame. A page whose manifest lacks one of them stops the build.
+CORE_TAKEN = ('rand', 'tags')
+TAGS_REGISTER = '91t-iziz-tags.js'
+
+
+def check_core_taken():
+    need = [TAGS_REGISTER]
+    for mod in CORE_TAKEN:
+        mdir = os.path.join(ROOT, 'core', mod)
+        need += sorted(f for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js'))
+    with open(os.path.join(HERE, 'kit.json'), encoding='utf-8') as fh:
+        targets = json.load(fh)['targets']
+    for t in sorted(targets):
+        mp = os.path.join(HERE, 'build-manifest-%s.json' % t)
+        if not os.path.isfile(mp):
+            continue
+        with open(mp, encoding='utf-8') as fh:
+            listed = json.load(fh)
+        missing = [f for f in need if f not in listed]
+        if missing:
+            sys.exit('build.py: %s does not take %s (core/rand, core/tags and the REG registration are required)'
+                     % (targets[t], ', '.join(missing)))
 
 if '--no-checks' not in sys.argv:
     if subprocess.call([sys.executable, os.path.join(ROOT, 'tools', 'check_port.py'), '--quiet', HERE]) != 0:
@@ -49,6 +77,8 @@ def _marr_sim_and_ringsea_bundle():
     return ''.join(parts)
 
 if not _rc:
+    if not BSRC.LISTING:
+        check_core_taken()
     for _fname in ('marr-kit.html', 'marr.html'):
         _dist_html = os.path.join(HERE, 'dist', _fname)
         if os.path.isfile(_dist_html):

@@ -1,8 +1,8 @@
 {
  "note": "core/city: test-city.js writes these (--write); a change that moves a lot or a way changes them",
- "sl": "88830e85",
- "krand": "6ffe1a15",
- "lots": 805,
- "krandLots": 811,
+ "sl": "7a0e8af5",
+ "krand": "89ea9cdb",
+ "lots": 806,
+ "krandLots": 798,
  "courts": "d56dffbd"
 }

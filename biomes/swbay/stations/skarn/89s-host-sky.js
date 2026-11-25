@@ -11,11 +11,7 @@ const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:SITE.px,py:SITE.py},air
  {renderer,camera,scene,sun,hemi:HEMI,clock:SKY_CLOCK,fog:true});
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}   /* each frame once the camera is placed (99) */
-{const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-  if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
-  if(m.userData&&m.userData.farField)continue;
-  const k=m.customProgramCacheKey!==THREE.Material.prototype.customProgramCacheKey?String(m.customProgramCacheKey()):'';if(/^biofauna|^bioanim/.test(k))continue;
-  ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
+ATMOS.cloudShadeScene(scene,{skip:(o,m)=>!!(m.userData&&m.userData.farField)});   /* the core's pass, the far field left out (Stage 8 V8, 2026-11-24) */
 ATMOS.bindWeather({climate:{wet:false},sun,hemi:HEMI,grounds:[MAT_GROUND]});
 if(Q.get('hfog')!=='0'){ATMOS.heightFog({falloff:1/600,sun:.4,sky:.3,mist:{density:.0012,y:14,depth:18,noise:.6}});ATMOS.heightFogScene(scene);}
 ATMOS.rainCover({renderer});

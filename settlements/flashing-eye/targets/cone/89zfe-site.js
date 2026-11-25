@@ -18,7 +18,7 @@ const feSm=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 WORLD.init(WORLD_R);
 /* the model's ground in the page's y, and the layout's ground over it */
 const feModel=(x,z,mw)=>WORLD.H(x+FE.WX,z+FE.WZ,mw==null?0:mw)-FE.BENCH;
-const feBase=(x,z,mw)=>FLASHING_EYE.ground(FE.L,z,x,feModel(x,z,mw));
+const feBase=(x,z,mw)=>FLASHING_EYE.stairGround(FE.L,z,x,FLASHING_EYE.ground(FE.L,z,x,feModel(x,z,mw)));   /* the crest under the Stair smoothed to its table */
 // ---------------------------------------------------------------- the pads (buildings off the bench)
 const FE_PADS=[];
 function feLevel(x0,z0,x1,z1){let s=0,n=0;for(let i=0;i<=4;i++)for(let j=0;j<=4;j++){s+=feBase(x0+(x1-x0)*i/4,z0+(z1-z0)*j/4);n++;}return Math.round(s/n*2)/2;}
@@ -59,6 +59,8 @@ for(const [id,v,st] of[['granary',1,2],['infirmary',1,2],['kitchen',1,2],['refec
 {const c=feAt('founders');fePut('qb_chorten',c.u,c.v,0,{v:0,y:c.y},'sacred','founders');}
 // the stairs between the terraces, on the axis: each from the upper terrace's edge down into the lower (the kit's terrace stair)
 for(const id of['st.lower','st.upper']){const P=fePart(id);fePut('qb_terrace_stair',P.box[0],0,0,{v:0,rise:P.rise,w:6,every:6,y:feTY(P.box[0]-1)},'way',id);}
+/* the lower kora's four stairs (its people, 2026-11-23), each at its box's middle; the walk's strips are 90fl's (FE_LIFE) */
+for(const id of['st.kora.lw','st.kora.le','st.kora.uw','st.kora.ue']){const P=fePart(id);fePut('qb_terrace_stair',P.box[0],(P.box[2]+P.box[3])/2,0,{v:0,rise:P.rise,w:P.w,every:6,y:feTY(P.box[0]-1)},'way',id);}
 // the terraces as pads, so the retaining faces between them are drawn (90fg); the Lip terrace is the bench's own level
 for(const T of FE.L.terraces)if(T.y)fePad('terrace:'+T.id,-90,T.u0,90,T.u1,T.y,.5);
 // the cap (on pads), the rim and the apron
@@ -70,10 +72,19 @@ for(const id of['ch.breath1','ch.breath2','ch.breath3','threshold','stairhead'])
 {const P=fePart('foothouse'),c=feC(P.box);fePut('qb_fe_court',c[0],c[1],0,{w:P.box[3]-P.box[2]-.6,d:P.box[1]-P.box[0]-.6,st:2,name:P.name},'foot','foothouse',true);
  fePut('qb_chorten',P.box[1]+14,c[1]+18,0,{v:1},'sacred','foot-chorten',true);}
 {const c=feC(fePart('hut').box);fePut('qb_fe_hut',c[0],c[1],0,{},'rim','hut',true);}
+// the Rest House (sheet F) on the Stair at about 1,080 m, its front and its yard's gateway to the road (the part's `front`), on its
+// own pad and its own ground (FE_REST); the way chortens on the outsides of the Stair's hairpins (the layout's stairChortens)
+{const P=fePart('resthouse'),c=feC(P.box),ry={south:0,east:Math.PI/2,west:-Math.PI/2,north:Math.PI}[P.front==null?'south':P.front];
+ fePut('qb_fe_rest',c[0],c[1],ry,{name:P.name},'stair','resthouse',true);}
+for(const [i,ch] of (FE.L.stairChortens||[]).entries())fePut('qb_chorten',ch[0],ch[1],0,{v:1},'sacred','stair-chorten.'+(i+1),true);
 // the walls: the layout's, with a gap at each gate (on the bench, y 0)
 const FE_WALLS=[];
 for(const W of FE.L.walls){const g=FE.L.gates.filter(G=>G.wall===W.id),L=Math.hypot(W.b[0]-W.a[0],W.b[1]-W.a[1]),dir=[(W.b[0]-W.a[0])/L,(W.b[1]-W.a[1])/L];
- const cuts=g.map(G=>{const t=(G.at[0]-W.a[0])*dir[0]+(G.at[1]-W.a[1])*dir[1],hw=(G.id==='gate.rift'?8:10)/2;return[t-hw,t+hw];}).sort((a,b)=>a[0]-b[0]);
+ const cuts=g.map(G=>{const t=(G.at[0]-W.a[0])*dir[0]+(G.at[1]-W.a[1])*dir[1],hw=(G.id==='gate.rift'?8:10)/2;return[t-hw,t+hw];});
+ /* and at each corner tower the wall runs into: it stops at the tower's faces (its 8 m shaft), so the tower's rooms are clear */
+ for(const P of FE.L.parts){if(P.kind!=='corner_tower')continue;const c=[(P.box[0]+P.box[1])/2,(P.box[2]+P.box[3])/2],t=(c[0]-W.a[0])*dir[0]+(c[1]-W.a[1])*dir[1];
+  if(t<-4||t>L+4||Math.abs((c[0]-W.a[0])*dir[1]-(c[1]-W.a[1])*dir[0])>1)continue;cuts.push([t-4,t+4]);}
+ cuts.sort((a,b)=>a[0]-b[0]);
  let t0=0;const segs=[];for(const [c0,c1] of cuts){if(c0>t0+.5)segs.push([t0,c0]);t0=c1;}if(L>t0+.5)segs.push([t0,L]);
  /* a wall along u steps with the terraces: cut it at each terrace's edge, each piece on its own level */
  const cutsT=[];for(const T of FE.L.terraces)for(const e of[T.u0,T.u1]){if(Math.abs(dir[0])<.5)continue;const t=(e-W.a[0])/dir[0];if(t>.5&&t<L-.5)cutsT.push(t);}
@@ -98,7 +109,9 @@ const FE_BRIDGES=FE_STACKS.map((S,i)=>{const N=FE_STACKS[i+1],bwEnd=FE.L.bridgew
 for(const [i,S] of FE_STACKS.entries())fePut('qb_fe_shrine',FE.L.bridgeway.stacks[i].u,FE.L.bridgeway.stacks[i].v,S.ry,{v:i,y:S.top,name:S.shrine.replace(/^the /,'The ')},'shrine','shrine.'+(i+1));
 // the ways (painted; 90fe): [kind, width, points (page)]
 const FE_WAYS=FE.L.ways.filter(w=>w.id!=='kora.open'&&w.id!=='stair'&&w.id!=='bridges').map(w=>[w.id==='kora.lower'?'kora':'way',w.id==='mule'?3.5:w.id==='breath'?3:2.4,w.pts.map(p=>FE_P(p[0],p[1]))]);
-FE_WAYS.push(['way',3,FE.L.ways.find(w=>w.id==='stair').pts.filter(p=>p[0]<700).map(p=>FE_P(p[0],p[1]))]);
+/* the Stair of the Eye, the whole of it: painted on the fine box at its head, and keeping the flora off it (90fl draws its deck) */
+const FE_STAIR_PTS=FE.L.ways.find(w=>w.id==='stair').pts.map(p=>FE_P(p[0],p[1]));
+FE_WAYS.push(['way',FE.L.stairW==null?3.5:FE.L.stairW,FE_STAIR_PTS]);
 FE_WAYS.push(['rim',2,FE.L.ways.find(w=>w.id==='kora.open').pts.map(p=>FE_P(p[0],p[1]))]);
 // the paved courts and the terraces' fields (page boxes)
 const feBox=b=>[FE_P(b[0],b[2]),FE_P(b[1],b[3])];
@@ -116,6 +129,11 @@ const FE_TALUS=[];
 const FE_FINE={x0:-560,x1:560,z0:-300,z1:400,cell:4},FE_COARSE={x0:-1000,x1:1000,z0:-2800,z1:800,cell:10};
 /* the Foot House's own ground at the spur's foot, 6.4 km south of the Lip: whole cells of the far ground's 400 m grid (90fe) */
 const FE_FOOT={x0:-600,x1:600,z0:6000,z1:6800,cell:8};
+/* the Stair's ground: the spur between the coarse box and the Foot House's, whole cells of the far grid (10 m cells, the coarse
+   box's, so the two meet vertex for vertex at z 800); the Rest House's own finer ground inside it (4 m, on the 10 m grid's lines),
+   the stair box sunk under it as the coarse box is under the fine */
+const FE_STAIRG={x0:-600,x1:600,z0:800,z1:6000,cell:10};
+const FE_REST=(()=>{const c=FE_P(...feC(fePart('resthouse').box));return{x0:Math.floor(c[0]/20)*20-80,x1:Math.floor(c[0]/20)*20+100,z0:Math.floor(c[1]/20)*20-80,z1:Math.floor(c[1]/20)*20+100,cell:4};})();
 const feSegD=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz;let t=l?((x-a[0])*dx+(z-a[1])*dz)/l:0;t=t<0?0:t>1?1:t;return Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z);};
 const FE_CR=FE_P(FE.L.crater.centre[0],FE.L.crater.centre[1]);
 function feSlope(x,z){const e=4;return Math.hypot(terrainH(x+e,z)-terrainH(x-e,z),terrainH(x,z+e)-terrainH(x,z-e))/(2*e);}

@@ -82,6 +82,30 @@ const SRC=read('30-core-foliage.js');
  const s=compile(B,B.leafMat(new T.Texture(),'g',{}));
  check('a leaf compiled after the bind takes atmGust at its root and swells the sway and lean by it',/float atmGust/.test(s.vertexShader)&&/atmGust\(uGustT, _gi\.xz, uAtmW\)/.test(s.vertexShader)&&s.uniforms.uAtmW===A.U.wind);
  check('the program key says so (no program shared with an unbound page)',B.leafMat(null,'x',{}).customProgramCacheKey().endsWith('|gust'));}
+// ---------------------------------------------------------------- 4b. one wind field by default (V10, Stage 8 G-weather W3, 2026-11-24)
+// A page on the shared sky with core/atmos initialised and no bindAtmosWind call: the first program key binds the gusts, so the
+// key and the text agree; with no core/atmos, no shared sky, or BIO.WIND_AUTO false, the leaf is the frozen text (section 1).
+{const atm=(B,noSky)=>{vm.runInContext('var ATMOS={};',B.__ctx);return Object.assign(B.__ctx.ATMOS,{U:{wind:{value:new B.host.THREE.Vector2(.6,-.2)},gustAmp:{value:.4}},PRESETS:{wind:{base:[.6,-.2]}},clock:{t:3},
+  GLSL_WIND:'float atmGust(float t,vec2 xz,vec2 w){return 0.0;}\nvec2 atmWind(float t,vec2 xz,vec2 w,float amp){return w;}'},noSky?{}:{skyUniforms:{uCloud:{value:null}}});};
+ const B=load(SRC),T=B.host.THREE,A=atm(B),m=B.leafMat(new T.Texture(),'k0',{});
+ check('  before any program key: nothing bound yet (the page may still call bindAtmosWind with its gain)',B.GUST===null);
+ const k=m.customProgramCacheKey(),s=compile(B,m);
+ check('the first key binds core/atmos\'s gusts by itself: the key ends |gust, the text takes atmGust at the root, the uniforms are atmos\'s',
+  k.endsWith('|gust')&&/atmGust\(uGustT, _gi\.xz, uAtmW\)/.test(s.vertexShader)&&s.uniforms.uAtmW===A.U.wind&&s.uniforms.uGustAmp===A.U.gustAmp&&B.GUST.k.value===1);
+ const w=B.host.wind();check('...and BIO.WIND follows atmos\'s base wind (the lean and the strength)',Math.abs(Math.hypot(w[0],w[1])-1)<1e-9&&Math.abs(w[0]-.6/Math.hypot(.6,.2))<1e-9);
+ B.__ticks.forEach(f=>f(1/60));check('...and its clock (the gust fronts travel on ATMOS.clock.t)',B.GUST.t.value===3&&B.WIND.on.value===1);
+ const B2=load(SRC);atm(B2);B2.bindAtmosWind({gain:1.3});const m2=B2.leafMat(new B2.host.THREE.Texture(),'k0',{});m2.customProgramCacheKey();
+ check('a page\'s own bindAtmosWind({gain}) before the first frame stands',B2.GUST.k.value===1.3);
+ const g0=B.GUST,u0=s.uniforms.uGustK;B.bindAtmosWind({gain:.7});
+ check('a page that binds after the default keeps the same uniforms (a material compiled on them follows its gain)',B.GUST===g0&&u0===g0.k&&u0.value===.7);
+ const B3=load(SRC);atm(B3);B3.WIND_AUTO=false;const T3=B3.host.THREE,m3=B3.leafMat(new T3.Texture(),'k0',{}),k3=m3.customProgramCacheKey(),s3=compile(B3,m3);
+ check('  negative: BIO.WIND_AUTO false binds nothing; the leaf is the frozen text',B3.GUST===null&&!k3.endsWith('|gust')&&sha(legacy(s3.vertexShader+'\n----\n'+s3.fragmentShader,s3.uniforms))===FROZEN.leaf0);
+ const B4=load(SRC),m4=B4.leafMat(new B4.host.THREE.Texture(),'k0',{}),k4=m4.customProgramCacheKey(),s4=compile(B4,m4);
+ check('  negative: no core/atmos on the page: nothing bound, the frozen text, no BIO.err',B4.GUST===null&&!k4.endsWith('|gust')&&sha(legacy(s4.vertexShader+'\n----\n'+s4.fragmentShader,s4.uniforms))===FROZEN.leaf0&&!(B4.__errs||[]).length);
+ const B5=load(SRC);vm.runInContext('var ATMOS={};',B5.__ctx);B5.leafMat(null,'x',{}).customProgramCacheKey();
+ check('  negative: core/atmos on the page but not initialised (no ATMOS.init yet): nothing bound, silently',B5.GUST===null&&!(B5.__errs||[]).length);
+ const B6=load(SRC);atm(B6,true);const m6=B6.leafMat(new B6.host.THREE.Texture(),'k0',{}),k6=m6.customProgramCacheKey(),s6=compile(B6,m6);
+ check('  negative: core/atmos initialised but no shared sky (a settlement on its own sky): nothing bound, the frozen text',B6.GUST===null&&!k6.endsWith('|gust')&&sha(legacy(s6.vertexShader+'\n----\n'+s6.fragmentShader,s6.uniforms))===FROZEN.leaf0);}
 // ---------------------------------------------------------------- 5. alpha-to-coverage
 {const B=load(SRC),T=B.host.THREE,tex=new T.Texture();
  const a=B.leafMat(tex,'a',{alphaTest:.42}),z=B.leafMat(null,'z',{alphaTest:0}),n=B.leafMat(tex,'n',{alphaTest:0});

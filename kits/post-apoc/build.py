@@ -12,6 +12,9 @@ Checks (they exist because fragments share one JS scope and several agents write
 The catalog's furniture and the interiors core with this kit's interior set are one GENERATED fragment, 38-furniture-bundle.js (virtual_bodies(),
 never written to src/; the name checks skip it but its four globals must not meet a kit name). 91f-furnish.js is the glue (FURNISH, API.md).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.

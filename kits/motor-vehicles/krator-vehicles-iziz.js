@@ -35,7 +35,7 @@ VEHICLE_CULTURE('iziz', {
 
 VEHICLE({
   key: 'iz_six_wheeler', name: 'Izani armoured six-wheeler', culture: 'iziz',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'patrol', 'transport'], drive: 'wheeled', seats: 4, fuel: 'refined oil',
+  tags: { type: ['vehicle', 'patrol', 'transport'], drive: 'wheeled', seats: 4, fuel: 'refined oil',
     terrain: ['road', 'track', 'sand', 'rock'], setting: 'outdoor', guild: 'Forgemasters' },
   variants: 2, variantNames: ['Lancer', 'Courier'],
   /* overall box: 2.8 wide, 6.7 long, 3.6 to the rockets' tips (the cab roof is 2.6) */

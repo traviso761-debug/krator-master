@@ -88,7 +88,7 @@ function ancSkin(secs, y) {
 }
 /* a point on a section's superellipse at angle th (as F.tub lays its vertices) */
 function ancPt(s, th) {
-  const c = Math.cos(th), sn = Math.sin(th), e = 2 / (s.n || 2);
+  const c = Math.cos(th), sn = Math.sin(th), e = 2 / (s.n == null ? 2 : s.n);
   return [s.a * Math.sign(c) * Math.pow(Math.abs(c), e), s.y, (s.z || 0) + s.b * Math.sign(sn) * Math.pow(Math.abs(sn), e)];
 }
 /* a bronze band round a tub body from y0 to y1, `out` proud of the skin */
@@ -283,7 +283,7 @@ const ANC_CANOPY_ANGLES = [0.25, 0.75, 1.3, 1.85, 2.4, 2.9, 3.4, 3.95, 4.5, 5.0,
 /* ---------------------------------------------------------------- anc_pod: the two-seat pod car */
 VEHICLE({
   key: 'anc_pod', name: 'Ancient pod car', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport'], drive: 'wheeled', seats: 2, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport'], drive: 'wheeled', seats: 2, fuel: 'battery',
     terrain: ['road'], setting: 'outdoor' },
   variants: 2, variantNames: ['Civic', 'Hire'],
   /* overall box: 2.3 wide (the wells' lips), 3.3 long, 1.68 to the roof (the Hire's sign) */
@@ -390,7 +390,7 @@ function ancSaloonBody(F, o) {
 
 VEHICLE({
   key: 'anc_saloon', name: 'Ancient saloon', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport'], drive: 'wheeled', seats: 4, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport'], drive: 'wheeled', seats: 4, fuel: 'battery',
     terrain: ['road'], setting: 'outdoor' },
   variants: 2, variantNames: ['Saloon', 'Statesman'],
   /* overall box: 2.6 wide (the wells' lips), 6.0 long, 1.56 to the roof */
@@ -408,7 +408,7 @@ VEHICLE({
 
 VEHICLE({
   key: 'anc_police', name: 'Ancient watch car', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'patrol'], drive: 'wheeled', seats: 4, fuel: 'battery',
+  tags: { type: ['vehicle', 'patrol'], drive: 'wheeled', seats: 4, fuel: 'battery',
     terrain: ['road'], setting: 'outdoor', guild: 'the watch' },
   variants: 2, variantNames: ['Patrol', 'Pursuit'],
   /* overall box: 2.6 wide, 6.1 long (the bull bar), 1.72 to the lamp bar */
@@ -427,7 +427,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_van: the delivery van (a cab pod before a box) */
 VEHICLE({
   key: 'anc_van', name: 'Ancient delivery van', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'cargo', 'transport'], drive: 'wheeled', seats: 2, fuel: 'battery',
+  tags: { type: ['vehicle', 'cargo', 'transport'], drive: 'wheeled', seats: 2, fuel: 'battery',
     terrain: ['road'], setting: 'outdoor' },
   variants: 2, variantNames: ['Van', 'Courier'],
   /* overall box: 2.7 wide (the wells' lips), 6.0 long (the cab pod's nose strip to the door ribs), 2.5 to the box's
@@ -492,7 +492,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_utility: the six-wheeled utility */
 VEHICLE({
   key: 'anc_utility', name: 'Ancient six-wheeled utility', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'utility', 'patrol'], drive: 'wheeled', seats: 3, fuel: 'battery',
+  tags: { type: ['vehicle', 'utility', 'patrol'], drive: 'wheeled', seats: 3, fuel: 'battery',
     terrain: ['road', 'track', 'rock'], setting: 'outdoor' },
   variants: 2, variantNames: ['Works', 'Patrol'],
   /* overall box: 2.8 wide (the wells' lips), 6.2 long, 2.6 to the Patrol's dish */
@@ -565,7 +565,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_hauler: the flatbed hauler, four loads */
 VEHICLE({
   key: 'anc_hauler', name: 'Ancient flatbed hauler', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'cargo', 'transport'], drive: 'wheeled', seats: 2, fuel: 'battery',
+  tags: { type: ['vehicle', 'cargo', 'transport'], drive: 'wheeled', seats: 2, fuel: 'battery',
     terrain: ['road'], setting: 'outdoor' },
   variants: 4, variantNames: ['Flatbed', 'Pods', 'Crates', 'Container'],
   /* overall box: 2.75 wide, 9.2 long, 2.8 to the cab roof (the container 2.75) */
@@ -644,7 +644,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_tram: the guideway tram-car */
 VEHICLE({
   key: 'anc_tram', name: 'Ancient guideway tram-car', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport'], drive: 'wheeled', seats: 40, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport'], drive: 'wheeled', seats: 40, fuel: 'battery',
     terrain: ['road', 'track'], setting: 'outdoor' },
   variants: 1, variantNames: ['Tram-car'],
   /* overall box: 3.1 wide (the wells' lips), 13.4 long, 3.5 to the roof */
@@ -727,7 +727,7 @@ VEHICLE({
 const ANC_TANK_BELT = 0.08;
 VEHICLE({
   key: 'anc_tank', name: 'Ancient lance tank', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'patrol'], drive: 'tracked', seats: 3, fuel: 'battery',
+  tags: { type: ['vehicle', 'patrol'], drive: 'tracked', seats: 3, fuel: 'battery',
     terrain: ['road', 'track', 'sand', 'mud', 'rock', 'snow'], setting: 'outdoor' },
   variants: 2, variantNames: ['Line', 'Command'],
   /* overall box: 3.6 wide (the skirts), 11.6 long (the lance's emitter at 5.77), 2.7 to the aerial */
@@ -800,7 +800,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_heli: the helicopter */
 VEHICLE({
   key: 'anc_heli', name: 'Ancient helicopter', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport', 'patrol'], drive: 'wheeled', seats: 6, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport', 'patrol'], drive: 'wheeled', seats: 6, fuel: 'battery',
     terrain: ['road'], setting: 'outdoor' },
   variants: 2, variantNames: ['Transport', 'Patrol'],
   /* overall box: 10.6 wide (the rotor), 14.2 long (the nose to the tail lamp), 4.2 to the rotor head. On the
@@ -903,7 +903,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_jet: the passenger jet */
 VEHICLE({
   key: 'anc_jet', name: 'Ancient passenger jet', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport'], drive: 'wheeled', seats: 120, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport'], drive: 'wheeled', seats: 120, fuel: 'battery',
     terrain: ['road'], setting: 'outdoor' },
   variants: 1, variantNames: ['Liner'],
   /* overall box: 26 wide (the wings), 32 long, 7.6 to the fin. On the ground, on its gear: a host places it */

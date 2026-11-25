@@ -14,6 +14,9 @@ the sky in the lake and the lake itself (kit.json "files").
     python3 build.py                 # dist/azure-dream.html
     KRATOR_GL=gpu python3 verify.py dist/azure-dream.html --assert --views "Overview,From the barge"
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import io, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +32,8 @@ GEN = os.path.join(HERE, 'gen')
 # path when KSPACE is global). KCITY is the closure's return; KHAMLET leaves through globalThis (core/hamlet 10), and its
 # functions read the closure's KCITY and KSPACE. The villages (src/89zac) are its one user.
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '35-city-squares.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '35-city-squares.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 HAMLET_JS = ['10-hamlet-wood.js', '12-hamlet-gather.js', '20-hamlet-cultures.js', '30-hamlet-village.js']
 SPACE = 'core/space/20-core-space.js'
 REGION = os.path.join(HERE, 'region')

@@ -102,4 +102,5 @@
 - [x] **The sheet's lamps made a lit material's shader too big to compile** (2026-11-12, the rebuild on the merged catalog of
   `claude/loj-twenny-059a5e`: 185 PointLights on the sheet, all lit; the first trades row never drew and `verify.py --shots` timed
   out on both GPU lanes). `src/90-br-sheet.js` keeps at most 24 of the pieces' PointLights on, the nearest the camera, re-picked
-  every half second (as `kits/catalog`'s sheet).
+  every half second (as `kits/catalog`'s sheet), through core's cap since Stage 8 (S3-72: `furnLampCap`,
+  `core/catalog/krator-furniture-core.js`).

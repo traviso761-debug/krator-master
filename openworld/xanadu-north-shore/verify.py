@@ -135,6 +135,7 @@ async def run(a):
                 if need and not has[need]:
                     print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
                 if say(r): fails.append(r['name'])
+            await VW.negatives(pg, has, fails)   # the world's negatives, each must fail (core/world verify_world.py; S3-26)
             print('--- the region ---')
             for neg in (None, 'site', 'landforms', 'stream', 'road'):
                 for r in await pg.evaluate(REGION, neg):

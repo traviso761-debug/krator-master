@@ -48,6 +48,16 @@
             "port": 8811
         },
         {
+            "name": "hook-site",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "settlements/hook/serve.py",
+                "8814"
+            ],
+            "port": 8814,
+            "autoPort": false
+        },
+        {
             "name": "isle-demo",
             "runtimeExecutable": "python",
             "runtimeArgs": [
@@ -531,6 +541,18 @@
             ],
             "port": 8872,
             "autoPort": false
+        },
+        {
+            "name": "flashing-eye",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8834",
+                "--directory",
+                "settlements/flashing-eye/dist"
+            ],
+            "port": 8834
         }
     ]
 }

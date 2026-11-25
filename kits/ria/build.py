@@ -8,7 +8,7 @@ Usage: python3 build.py [--no-checks]
        python3 build.py --list-sources   (what the page is made of: tools/build_sources.py)
 
 The page is one <script> made of, in filename order:
-  src/*                 the kit (00-head.html ... 99-host-tz-ra.js); 26k-kit.js, 31-alt-takes.js, 70-ra-vocab.js, 89-rows.js are [G data]
+  src/*                 the kit (00-head.html ... 99-host-tz-ra.js); 26k-kit.js, 31-alt-takes.js, 89-rows.js are [G data]
   core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/shader           06-core-khook.js, 06b-core-kcolor.js, 07-core-kwarp.js (KHOOK, KCOLOR)
   core/rand             08-core-rand.js (KRAND: core/tags' uid is its hash)

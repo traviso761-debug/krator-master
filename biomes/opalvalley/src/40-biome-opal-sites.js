@@ -9,7 +9,7 @@
 //                     (the ground steps from one level to the next: a sinter dam, a moraine bar, a tuff sill) with a fall on it. axis: the axis's
 //                     z at x = 0 and its wander; walls: the valley's walls north and south (m above the floor and where they start); west: the
 //                     drop past the last link (the next riser, off the page). The glacier station is on KGLACIER instead (its `glacier`).
-//   OPAL_STRATA       the risers' and walls' bedded rock, as KSTRATA recipes (handed to KSTRATA.add by the ground, 84): rhyolitic ignimbrite and
+//   OPAL_STRATA       the names of the risers' and walls' bedded rock, core's KSTRATA recipes (drawn by the ground, 84): rhyolitic ignimbrite and
 //                     tuff with perlite, dark titanium-basalt sills, ironstone partings, pale potch seams and the thin precious-opal seams; the lower
 //                     bed's fire-opal tuffs (cherry-orange)
 //   OPAL_DIGGINGS(S)  a station's diggings as records (PLAN.md section 4.3): placer pits on the gravel bars, riffle sluices on the falls, adits on
@@ -82,25 +82,9 @@ var OPAL_SITES={
   hazards:[{kind:'fall',why:'the cataract\'s lip and the gorge\'s rim'},{kind:'drown',why:'the plunge pool and the gorge\'s rapids'}],
   dig:{bars:[[-900,140,70],[-2000,-120,80]],placer:5,sluice:[],adit:[{x:1650,z:-900}],dive:[]}}};
 // THE STRATA (PLAN.md section 2): rhyolitic ignimbrite and its ash, perlitic glass, the Twins' dark titanium basalt sills, ironstone, the pale potch
-// lines and the thin seams of precious opal (the play-of-colour is the ground's sheen, 84; the seam's colour here is its body colour). Plain data.
-var OPAL_STRATA={
- 'opal-rhyolite':{main:'ignimbrite',kinds:{
-  ignimbrite:{p:.36,th:[4,18],col:[0xb6a490,0xc2b19c,0xa8977f,0xbcae9c],hard:.7,xbed:.15,varnish:.35},
-  tuff:{p:.2,th:[1,6],col:[0xd6cbb6,0xe0d6c0,0xcbbfa6],hard:.35,xbed:.3,varnish:.2},
-  perlite:{p:.08,th:[.5,3],col:[0x8c8e94,0x9a9da4,0x7e8088],hard:.6,xbed:0,varnish:.4},
-  basalt:{p:.14,th:[2,10],col:[0x3a3a42,0x30303a,0x46464e],hard:.92,xbed:0,varnish:.6},
-  ironstone:{p:.07,th:[.3,1.5],col:[0x7a4a2a,0x8a5634,0x6a3e22],hard:.85,xbed:0,varnish:.5,between:true},
-  potch:{p:.1,th:[.15,.8],col:[0xc6cdd4,0xb6c2cc,0xd0d6de],hard:.6,xbed:0,varnish:.1,between:true},
-  opal:{p:.05,th:[.08,.35],col:[0x58b8c4,0x7a68c8,0xc8784a,0x6ac888],hard:.7,xbed:0,varnish:0,between:true}},
-  fx:{xbed:.2,varnish:.3}},
- 'opal-firetuff':{main:'firetuff',kinds:{
-  firetuff:{p:.4,th:[3,14],col:[0xc0683a,0xcc7444,0xb45c34,0xd8884e],hard:.55,xbed:.25,varnish:.25},
-  ash:{p:.18,th:[1,5],col:[0xe0c49a,0xd8b88c,0xe8cfa8],hard:.3,xbed:.3,varnish:.15},
-  ignimbrite:{p:.16,th:[3,12],col:[0xb08a6e,0xa07c62,0xbc967a],hard:.72,xbed:.15,varnish:.35},
-  basalt:{p:.08,th:[2,8],col:[0x3c3638,0x34303a],hard:.92,xbed:0,varnish:.6},
-  potch:{p:.1,th:[.15,.8],col:[0xe8d8c8,0xf0dcc0],hard:.6,xbed:0,varnish:.1,between:true},
-  fireopal:{p:.08,th:[.08,.4],col:[0xe8602a,0xf0882a,0xd8402a,0xf4a83a],hard:.7,xbed:0,varnish:0,between:true}},
-  fx:{xbed:.25,varnish:.25}}};
+// lines and the thin seams of precious opal (the play-of-colour is the ground's sheen, 84; the seam's colour here is its body colour). The recipes are
+// core's (core/terrain/35-core-strata.js, KSTRATA.RECIPES): the risers' and walls' rhyolite, and the lower bed's fire-opal tuff. Plain data.
+var OPAL_STRATA=['opal-rhyolite','opal-firetuff'];
 // THE DIGGINGS (PLAN.md section 4.3): records, a pure function of the site. Each draw is KRAND.hash of (the station's seed, the kind, the index, a salt),
 // so a digging is the same whatever else changes. The host puts them on the ground (y), keeps a placer pit off the water and an adit on the wall.
 var OPAL_GRADES=['low','medium','high'];

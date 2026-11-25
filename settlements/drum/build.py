@@ -3,6 +3,9 @@
 
 Usage: python3 build.py [--no-checks]
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 _cp = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'tools', 'check_port.py')
@@ -77,6 +80,7 @@ def kcity_bundle():
         '10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js',
         '25-city-site.js', '31-city-steps-b.js', '32-city-steps-c.js', '33-city-strategies.js',
         '34-city-radial.js', '40-city-kcity.js',
+        '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js',   # the multi-kit host (Stage 8 D8): inert until called
     ]
     parts = [
         '/* KCITY: core/city in one closure (settlements/drum/build.py). GENERATED: edit core/city/*.js. */\n',

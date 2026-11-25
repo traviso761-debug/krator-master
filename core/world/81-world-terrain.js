@@ -62,6 +62,8 @@ MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DETAIL};sh
    ' diffuseColor.rgb*=mix(mix(near,mid,fd),far,ff);',
    ' if(uOverlay>0.5){vec3 oc=uOverlay<1.5?vOvK:vOvB;diffuseColor.rgb=mix(diffuseColor.rgb,oc*(0.8+0.25*d3.r),0.82);}}'].join('\n'));};
 MAT.customProgramCacheKey=()=>'world-ground'+(S4?'|s4'+S4.map(Y=>Y?1:0).join(''):'');
+/* the sky's cloud shadows and the rain's darkening on the ground (45's HOST.shade: given when the weather binds, only with the shared sky's clouds on the page) */
+if(HOST.shade)HOST.shade(MAT,{porosity:1});
 // the near ground's term: each role present sampled where its weight is above 0 (a branch: a meadow pixel reads one set), the
 // weights sharpened by the samples' heights, the detail faded in from 240 m to 140 m (and by a pixel's footprint, so it never shimmers)
 function S4GLSL(L){const s=['{float s4n=1.0-smoothstep(140.0,240.0,vDist);vec4 s4w=vGL;vec2 s4x=dFdx(vDUV),s4y=dFdy(vDUV);',   /* derivatives outside the branch */

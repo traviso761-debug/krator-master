@@ -37,6 +37,11 @@ python3 build.py --groups farm --out scratch/farm.html   # one species file's ow
 python3 ../../tools/textures/pack.py kits/fauna     # (from the repo root) after a change to materials.json
 ```
 
+The baked models are not in the page: they are in `dist/fauna.tex.models.js`, `-2.js` and `-3.js` beside it (under 15 MB a
+file, the gallery's 16 MB limit), loaded by `<script src>` ahead of the page's script. `dist/krator-fauna.js` is the page's
+own bundle (Stage 8 B10, 2026-11-24: it was 32.8 MB with the models inline, now 1.2 MB), so a world that loads it loads
+those files first; `build.py --inline-models` puts the models back in both.
+
 The sheet: a row per animal, every variant and breed, a 1.75 m figure for scale. **Idle (I)**, **Graze (G)**, **Walk (K)**,
 **Fly (Y)**, **Swim (U)** set what they are all doing (Fly shows an animal's `'fly'` pose build where it has one);
 `?only=key,key` lays out just those; **Night (N)**; **Hover tags (T)** names the animal under the pointer with its tags, traits,

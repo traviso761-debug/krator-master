@@ -55,6 +55,17 @@ after the owner has seen the shots.
 counts the lit, reached and dark rooms), `svixLightPool(eye)` the eye's room's light pool and `svixExport()` interiors.json v2
 (kits/interiors API.md, "Room light").
 
+**Furniture in a host's dry draw** (S2-C24, 2026-11-24). A host that draws the kit's buildings itself places them dry
+(`PLACE_DRY`), and a dry `FURNISH` places nothing. A host that wants them furnished opens the engine's queue round its draw:
+`svfDryBegin()`, then the dry `place()`, then `svfDryFlush(group)`, which draws the queued pieces into the group through a
+fresh indexed batch (`-> {placed, tris, missing, records, group}`). Each record is the one the kit's own page makes (the same
+world frame, seed and wealth; nothing registered in core/tags), the meshes are finished as `buildWorld` finishes the page's
+(shadows, linear colours, detail maps, halos), and every flush shares one material per family (`SVF_DRYMATS`). Without
+`svfDryBegin` nothing changes. A bundle takes the catalog and `core/furnish` with `engine.host_furniture(cultures)` and keeps
+`91f-furnish.js` in place of its FURNISH stub (`settlements/isle-demo/bundles.py` `isk_bundle(furniture=True)`, the city
+page's). `node core/engine/test-furnish-dry.js`. Tungang's bundle (`kits/tungang/tungang_bundle.py` `FURN_HEAD`) keeps its
+own queue: it places with the catalog's default seed and no wealth, so moving it onto this one would change its pieces.
+
 **Taken by:** kits scyvoi, ash-nomads, desert-nomads, eternian, islanders, lizardmen, yeti, resources. `settlements/isle-demo`
 bundles it with the Islanders kit (`bundles.py` `isk_files`). Not yet: `kits/zeijani` and `settlements/noahs-regret` run
 their own forks of it (most files differ); porting them is a later step.
@@ -95,3 +106,30 @@ Pylon, Reed Lake, Yuni, Locus, the Eastern Abyssal, the Beast Riders on the cata
 **Changing it.** Every kit above draws through it. Rebuild them all and run `python3 core/engine/fingerprint.py`, which
 compares what each page draws (the registry's records and every mesh's vertex data and material key) with
 `fingerprint.json`: a refactor must leave every page's fingerprint the same.
+
+The export form (2026-11-24; `GODOT-LOOK-PLAN.md` section 13)
+--------------------------------------------------------------
+Geometry a game engine wants and a page does not, in `30-geo.js`, **off unless a host calls `setForm()` before the world is
+built**: with it off `box()` and `emit()` do what they did, and `fingerprint.py` reads every page `same`.
+
+    setForm({ chamfer: mk => metres, jitter: 0..1, fields: true })
+
+- `chamfer`: `box()` draws the chamfered box (`gboxCh`): the box's own 24 vertices, each moved a bevel in along its face, with
+  twelve edge strips and eight corner triangles: 44 triangles, no new vertex, the faces' normals kept. A box thinner than
+  four bevels stays plain. Widths by class are the caller's (8 to 12 mm furniture, 15 to 25 mm sawn timber, 20 to 40 mm
+  dressed stone, 50 mm and up adobe). A square `beam()` is chamfered the same way; a kit's own boxes are not yet.
+- `jitter`: a building out of true: a batter of half a degree to a degree and a half and a lean off plumb, from a hash of
+  where it stands (`core/rand`), applied to vertices as they are emitted. The placement record and its box are taken from
+  the true positions, so no record, walk box or door moves. Ridge sag and bowed beams are not done.
+- `fields`: every bucket carries `aForm`, three numbers a vertex: height above its building's base (-1 outside any), 1 (a
+  place for baked occlusion: nothing bakes it yet), and 1 on a chamfered box's vertices. `core/export`'s scene reader
+  writes it as a bucket's `geometry.form`.
+- `formMarks(REG, SMOKES)`: where smoke rises (`smokeAt`) and every window's sill (`windowAt`) as plain records.
+
+`node core/engine/test-form.js` checks each. A page opened with **`?form=1`** builds in the form (`90-scene.js`: chamfer
+widths by the material key's kind, `formWidth`; `?form=chamfer`, `jitter` or `fields` for one at a time), and a kit's
+exporter writes the fields (`kits/eternian/src/93e-et-export.js`; `godot/data/world-eternian-form` is the case).
+Rendered walls (plaster, render, lime) are not chamfered: they are drawn as panels that abut in one plane, and a chamfer
+on each cut a groove across the wall. A building's frame is its own; a street, a canal and furniture have none.
+The chamfered box is a unit box drawn through the plain box's own scaled matrix, so each face lands where the plain
+box's does, to the bit. **Not done**: occlusion and the arris of anything but a box are not computed.

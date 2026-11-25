@@ -130,7 +130,9 @@ caravanserai after step 3, its temples after step 5, and runs steps 13-14, the c
 * `TUNE.exact`: the exact-streets rule. No building's footprint reaches a street's carriageway: `tryLot` tests the ways
   exactly, a street laid after a lot knocks out every building it reaches (not only those whose lot cells it crossed),
   and routes keep their carriageway off HARD ground. Without it the raster's cell sampling lets a corner reach a street
-  by up to a metre or two on a bend (Voth's layout is that one; moving it is a layout change).
+  by up to a metre or two on a bend (Voth's layout is that one; moving it is a layout change). Step 12's alleys yield
+  instead (S3-86a, 2026-11-24): routed off the cells within their half width of a standing building (`SL.alleyRoom`),
+  and an alley whose line would still reach one takes its unsmoothed cell line or stops short (`SL.clearAlley`).
 * `tags`: core/tags registration.
 
 ## The strategies
@@ -276,7 +278,7 @@ at each gate, and none unless asked. Each check has a negative.
 
 `node core/city/test-city.js` (picked up by `tools/test_all.py`): a 520 m synthetic site (a pond, a steep knoll, a
 wall, a park and a market, drawn avenues, a highway), the world's steps on the site layer and the builder's defaults;
-then no two footprints overlap, nothing on a street (the exact-streets rule; without it 25 buildings reach one),
+then no two footprints overlap, nothing on a street or an alley (the exact-streets rule; without it 38 buildings reach one; no step-12 alley reaches a building, S3-86a),
 the wall or in water; golden hashes for SL and KRAND streams and for frontage-courts; reruns and a second KRAND seed;
 two cities on a page; the export; the index (a wide footprint the old probe missed, both orders, the road index);
 Erewhon's stance; the ground predicate; core/tags; the site layer's records; the ground deltas; routed avenues (round a hill, two merged, a river bridged); frontage-courts

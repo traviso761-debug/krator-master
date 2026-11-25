@@ -145,6 +145,9 @@ page as it was, its leaves in no walk) 422 reached; with the locked ones shut 39
       (`src/98-start.js` `keys: SHEET ? { p: ... }`, 89-sheetui.js), and the key map (`core/host/92k-host-keys.js`) reserves P for
       Marks. The check came with this round's key-map merge; the town page (`locus.html`) passes. Move the sheet's step-back
       to a key the map leaves to builds (or to a `std` entry), then rebuild Locus.
+      Source fixed 2026-11-24 (Stage 8 B14, D30): the sheet steps back on the left arrow only (as the Yuni kit's sheet,
+      `kits/yuni/targets/sheet/89-ys-sheetui.js`) and `98-start.js` hands the host no `p` key; the pages wait for the rebuild and
+      `verify.py --assert` on both sheets.
 
 ## On its real site, on the shared sky (W7, 2026-11-24; PLAN-ONMAP.md)
 

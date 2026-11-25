@@ -17,11 +17,11 @@ page that reads it came out byte-identical after the move.
 | `43m-world-micro.js`, `wmicro.gd`, `test-micro.js`, `PLAN-MICRO.md` | [G data] | `WMICRO`: the land a DEM shows below ~1 km (the owner, 2026-11-16, with the World Menagerie's DEM builds as the bar): hills by style (`hill`, gradient noise), the drainage (the erosion filter in six octaves 800 m to 25 m, replacing `WRELIEF.erode` in a relief region, flat floors), the grain by the slope. A relief region takes it by listing it after `43-world-relief.js` (`relief.micro: false` turns it off) |
 | `wrelief.gd`, `wsmooth.gd`, `wstreams.gd`, `wland.gd`, `wrelief_test.gd` | GDScript | the twins of `43-world-relief.js`, `40-world-smooth.js`, `44-world-streams.js` and `43b-world-landforms.js` (on `core/terrain/kstacks.gd`) (`PLAN-RELIEF.md` P15), every key of `golden-relief.json` checked in Godot 4.7.2: copies in `godot/tests/relief/` (`godot/tools/sync_core.py`), `godot --headless --path godot --script res://tests/relief/wrelief_test.gd` |
 | `41-world-fields.js` | [G data] | `WORLD`: the region's rasters decoded into the land. It holds:<ul><li>`WORLD.H(x, z, minWave)`: the model's heights, synthesized relief, scarps, river channels and `landHook`;</li><li>the water (`water`, `lakeWater`, `riverWater`);</li><li>the fields every kit reads (`at`, `fieldsFrom`);</li><li>`townW`, `clearHook`, the climate's colour.</li></ul> |
-| `41t-world-town-water.js` | [G data] | `WTOWN`: a town's own water with its ground (WORLD_DATA.towns, `bake_towns.py`): inside its footprint the town's water mask decides the water (`lakeWater`, `waterBodyAt`), its water joins the model's body at its level (one body, the mask taking it in), its river is served by `riverWater`, the model river it joins is cut outside the band and led in by a carved link; `drawn: false` keeps 41 from sinking the ground 3 m. `WTOWN.check()`: the shore against the page's trace, the river, one body. Listed right after 41 |
-| `41l-world-landforms.js` | [G data] | `WLAND`: the scale model's landform records under a cell (`DATA.landforms`, carried by `extract_region.py` into region.json) stamped at 1:1 through the land hook: island, islet, stack, shoal; water (edit_513's forms page, narrows and strait as one field: the bed set to the record's profile, the coarse wet cells beside closed to its width; river left to 41's named river) and shelf (the page's bed for the water it names); bench (a level terrace cut into a slope: w_m by l_m at `rotation`, level at level_m, the uphill side cut and the downhill filled within a batter, `batter_deg` or `batter_run_m`, its toe blended over `skirt_m`); `WLAND.check()` (a bench's level, batter, toe and its cut and fill, max and mean) |
+| (`41-world-fields.js`, its end: 41t until 2026-11-24) | [G data] | `WTOWN`: a town's own water with its ground (WORLD_DATA.towns, `bake_towns.py`): inside its footprint the town's water mask decides the water (`lakeWater`, `waterBodyAt`), its water joins the model's body at its level (one body, the mask taking it in), its river is served by `riverWater`, the model river it joins is cut outside the band and led in by a carved link; `drawn: false` keeps 41 from sinking the ground 3 m. `WTOWN.check()`: the shore against the page's trace, the river, one body. Folded into 41 at Stage 8 B7 (T24): every page that reads 41 has it; it acts only on a town with `water`, and `W.water` reads its wrapped calls (41t's own `W.water` dropped the streams and tarns) |
+| `41l-world-landforms.js` | [G data] | `WLAND`: the scale model's landform records under a cell (`DATA.landforms`, carried by `extract_region.py` into region.json) stamped at 1:1 through the land hook: island, islet, stack, shoal; water (edit_513's forms page, narrows and strait as one field: the bed set to the record's profile, the coarse wet cells beside closed to its width; river left to 41's named river) and shelf (the page's bed for the water it names); bench (a level terrace cut into a slope: w_m by l_m at `rotation`, level at level_m, the uphill side cut and the downhill filled within a batter, `batter_deg` or `batter_run_m`, its toe blended over `skirt_m`); or an outlined bench (2026-11-24, Hook's ground): `outline_px` a polygon in place of the rectangle, its edge wandering by up to `wobble_m` (seeded by the record's id) except along `keep_edges` (a quay or wall held as drawn), the batter divided by the wander's gradient bound so no face is steeper than asked (the bound's noise sample may be stated in the record, `wg_n`, written by `node core/world/landform_wg.js <region.json>` so a page does not sample it at load; `WLAND.check` samples it again and fails one that differs); any bench may be `fill_only` (it only raises: a drowned shelf, a coastal strip that leaves the hills behind it) or `cut_only` (it only lowers: a drowned quarter that leaves deeper water as it was); an outlined one may carry `dome_m` over `dome_run_m` (a rounded hill, not a flat top); `WLAND.benchD(B, x, z)` its distance; `WLAND.check()` (a bench's level or dome, batter, toe and its cut and fill, max and mean; each bench judged on the ground as it stood once it was stamped, the benches up to it in the records' order, a face allowed the steepest batter of the benches reaching it; `steepAt` the first face over its batter) |
 | `42-world-roads.js` | [G data] | `ROADS`: least-cost routing on the land at a held grade; the carriageway shaped into the ground |
 | `44c-world-coast.js` | [G data] | the coasts on core/coast (`KCOAST`, `core/coast/README.md`): at init each water body gets a coast field, `landHook` is chained (the coast's profile, sign-safe, then the region's own hook), each body's mask is redrawn from the field, the fields `coast`, `coastC`, `coast:<class>` join `WORLD.FIELDS`, `WORLD.ground` takes the coast's colour bands; a town's ground and a region's `WORLD.coastKeeps()` keep their coast; the region's sub-cell `landforms` (region.json, from the scale model's `model/data/landforms.json`) are stamped as islands by the body they stand in. `WORLD.coast` {list, at, stats, check}. Listed after the region's `43-*`, with core/mask (25, 27) and core/coast (30) before 41 |
-| `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into |
+| `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into. The weather (Stage 8 V9, `STAGE-8/G-weather.md` W2): `HOST.weather()` binds core/atmos's `ATMOS.bindWeather` once (98 calls it after the LATE modules) with the region's climate from its kits (cold or ash if any kit is, dry only if all are; a `WORLD_KITS` entry's or `WORLD_CONFIG`'s `climate` overrides), the terrain as its wet ground and the rain cover round the camera; it starts `clear`, `?weather=<mode>` opens in another. `HOST.shade(mat, {porosity})` gives `ATMOS.cloudShade` to the ground (81) and every flora and floor material (84's `worldMat`), only with the shared sky's clouds on the page. A build that lists no weather fragments (`core/atmos` `89-atmos-4-weather.js`, `89-atmos-9-host.js`, `host/89-atmos-e-weatherhost.js`, `fx/89-atmos-fx-raincover.js`) draws as before. `node core/world/test-weather.js` |
 | `80-world-sky.js` | [G native] | the sky and light |
 | `81-world-terrain.js` | [web] | the terrain tiles (the land drawn, coloured by `WORLD.ground`). The ground reads its strata only where the rock's weight can move the colour (over 0.004, 2026-11-16): 3-5 ms of the Arc 140T's frame over land without rock |
 | `83-world-water.js` | [G data] | the water levels |
@@ -35,6 +35,7 @@ page that reads it came out byte-identical after the move.
 | `86-world-floor.js` | [web] | the kits' floor patches under the zones |
 | `87-world-places.js`, `88-world-towns.js` | [web] | the "Go to" list and the scale model's settlement markers |
 | `48s-world-sites.js`, `88s-world-sites.js` | [G data], [web] | `KSITES`: a region's sites planned (camps, hamlets, roads, links and their stops, ways to a point); drawn |
+| `48w-world-camps.js` | [G data] | `KWCAMPS`: the pitched tent camps of any people (Stage 8 T26), laid by registered formations and baked into the site plan (version 2); 88s draws them. Below, "Pitched camps (KWCAMPS)". `node core/world/test-world-camps-core.js` |
 | `42b-world-bridges.js`, `88b-world-bridges.js` | [G data], [draw] | `BRIDGES`: where a laid road crosses a named river, a span of deck the ground is not shaped under, so the river runs on (a BRIDGE record: slab, arch, a row of arches or a viaduct, by its length and height; its piers; its builders' culture); drawn in stone, tagged, checked (`_bridges.checks`) |
 | `42k-world-caverns.js`, `88k-world-caverns.js` | [G data], [web] | `WTUBES`: a region's lava tubes (`SITE_SPEC.tubes`) planned as records under the ground and drawn with core/terrain's `KCAVERN` near the camera, the ground opened only at their portals and skylights; the walker (90's G) goes in and along them. Below, "Caverns" |
 | `48t-world-travel.js` | [G data] | `KTRAVEL` (S5 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`, 2026-11-11): travel on the baked links of one or more regions: a node for each site and stop, a stretch between stops with its climb, descent and bridges; per-stretch minutes at a column's pace (Tobler's rule normalised to the flat); multi-hop paths; the nights at the inns and rest stops, or camped where the day runs out. Read by the sim's hosts and core/camp, not drawn. `node core/world/test-travel.js` |
@@ -85,6 +86,53 @@ stands on the water at the village's `level` (`88s`: its deck over it, a footing
 bake loads a region's `src/NN-site-*.js` (such records, generated) before its spec, and the Xanadu row by name
 (core/hamlet/xanadu/23), which a spec registers as a row of its own.
 
+**Pitched camps (KWCAMPS)** (`48w` lays, `bake_sites.py` bakes, `88s` draws; Stage 8 T26, 2026-11-24; the owner: "there could be
+many options here. add as much flexibility as possible"). A camp pitched for a season and struck at its end, of any people: an
+army's lines, a caravan's halt, a prospecting camp, a fair, refugees. Everything about one is open and data-driven; the full
+record shapes are in `48w`'s header.
+- **Formations are a registry**, not a closed list: `KWCAMPS.formation(name, fn, {R, check})`, `fn(spec, ctx)` a plain function on
+  records returning tent slots (`{id, key, v, kind, x, z, ry, w, d, h}`, the door +z), with `R`, `gate`, `hedge`, `short` and its own
+  fields. Shipped: `ring` and `horseshoe` (core/camp's `KCAMP.pitch`), `halt` (`KCAMP.halt`: `formation: 'laager' | 'line'`),
+  `line` (two rows facing a lane from the way in, the chief's at its head) and `cluster` (households round their fires on a
+  sunflower spiral). `ctx` hands a formation the camp's seed (`unit(i, salt)`: KRAND, never a draw count), its site and way, its
+  program and tents with their boxes (`program()`, `tents()`), a placer filed in core/space (`place(gap)`: `fits`, `put`, `first`;
+  KCAMP's oriented boxes and ground test), `enclose` (a hedge round the slots, its gate on the way) and `pens` (downwind). A region
+  or a kit registers more (`tests`: a `spokes` formation).
+- **Where a camp sits.** In the baked plan: a site's spec `camps` entry with a `kind` is laid beside the Beast Riders' bands in its
+  site's `camps` (a band has no `kind`); the region's own list, `SITE_SPEC.camps`, goes to the plan's top-level `camps`, each
+  camp naming its site (`site` + `near`), a point (`at`) or a place on the 5.1 canvas (`px`). A camp whose point the cut does not
+  hold yet goes to `uncut` (not an error). Such a plan is **version 2**; a region with no tent camp is planned exactly as before and
+  written as version 1, so its baked hash stands. A reader takes the camps through `KWCAMPS.of(plan)`: a version 1 plan has none.
+  A tent camp gets a road from its gate only when its spec says `road: true`. `KSITES.check` checks every tent camp (whole, no two
+  tents within half a metre, on good ground). A page whose bake predates its camps and carries the region's `WORLD_CAMPS` plans them
+  at load (`88s`), as xanadu-oidong-highrift's region-local 48t did.
+- **People** come from whatever the region gives: a count, a census record (`{pop}`), core/camp's census of a program
+  (`{census: {culture, program}}`), or a provider the region registers (`KWCAMPS.people(name, fn)`, spec `{provider: name}`); the
+  tents program (`KCAMP.tentProgram`) follows them (a sleeping tent to every `sleepers`, 8). core/world knows no region's tune:
+  xanadu-oidong-highrift registers `xan-tears` (XAN_TUNE.tears.camp) in its `src/48c-camps-xanadu.js`.
+- **Seasons**: an optional `when` (`season` is its old name): year-day windows (a range across the year's end wraps), a calendar's
+  named window (`KWCAMPS.calendar(name, fn)`: xanadu-oidong-highrift's `xan-tune` reads XAN_TUNE.calendar), a registered rule
+  (`KWCAMPS.when(name, fn(yearDay, args, camp))`), or a function of the day (registered as the rule `camp:<id>`, so the record stays
+  JSON). Absent: always pitched. The host reads `KWCAMPS.inSeason(camp, KWCAMPS.yearDay(clock.day))`.
+- **Tents and their boxes**: a slot's def and dress come from core/camp's (role, culture) map (`KCAMP.tentFor`; a people the Tents
+  kit has no dress for falls back to `generic`, and the slot's `fallback` says whom). Its box (`KWCAMPS.boxOf`): the Tents kit's
+  bundle on the page (`TNK.box`, kits/tents/tents_bundle.py), else the kit's table read in place (`tnDims`, which the bake reads),
+  else a region's own (`KWCAMPS.kitDims(name, fn)`), else a **pending box** by the def's size (core/hamlet's pattern: a stand-in by
+  design, `pending: true`, never a failed bake). The camp's `boxes` says which.
+- **Works and marks**: `works: [{rule, ...}]` through `KWCAMPS.works(name, fn)` (shipped: `bed`, n pieces down the strongest flow's
+  bed, the world's own `flow` field; `scatter`, n round the camp on good ground; `beside`, one beside each work of a kind);
+  `marks: [{as, role, near}]` flags the role's tent nearest another role's (the Tears' gold room); `after: [hook]` runs a
+  registered hook on the laid camp; `struck: {hedge, works}` names what stays when it is struck; `escort` lays a second camp beside
+  it, across the way.
+- **Drawing** (`88s`, "the pitched tent camps"): every tent, hedge and work registered in core/tags (build `<region>:camps`) before
+  it is drawn; the flora and floor kept off a disc round each camp; within FULL of the camera the Tents kit's own tents (`TNK.proto`,
+  one per def, dress, role and trade, instanced) when the page carries the bundle, else each tent its form's mass in its dress's
+  colours; a pending box a plain box. Pitched and struck by the world clock's year day. `window._worldCamps.checks(neg)` (verify:
+  whole, its form, in its season; negatives `plan` and `season`).
+- **A region adopts it**: list core/camp `10`, `20`, `30`, `50`, `kits/tents/src/33-tn-table.js` and `48w` (after `48s`), then its own
+  registrations; name those in its `build.py`'s `CAMPS_JS` (paths from the repo root), which `bake_sites.py` reads too, so the
+  bake and the page plan on one set of files; put the camps in `SITE_SPEC.camps` (or a site's `camps` with a `kind`) and rebake.
+
 **A town's own ground** (`openworld/PLAN-VOTH.md` section 3, Layer 2; Voth the first case, 2026-11-11). A settlement whose
 layout is keyed to its page's ground (its shore, its river) hands that ground to the world instead of being rebuilt on it:
 - `python3 core/world/bake_towns.py voth` runs the page's terrain code in node, read only (Voth: `src/10-core.js`
@@ -98,18 +146,20 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
   shore trace is where the ground crosses the level, the stream is the town's river. Its record carries `rot` and `y0`
   (41 buildTowns takes a fixed lift: the page's heights over its water at 0);
 - a town's river marked **`over`** (2026-11-16: Phēr's Swīṭ Siṭrīm, down its wall) runs above the town's water at its own
-  height: 41t sets its water 0.6 m over the world's ground at each point (never climbing downstream), serves it in its
+  height: WTOWN sets its water 0.6 m over the world's ground at each point (never climbing downstream), serves it in its
   channel (`riverWater`, its half-widths) and draws it as its own line (`riverLines`, or on down the link when joined).
   A join needs the model river's water at the cut over the stream's head: where it is not, `WTOWN.check` counts the link
   a climb and fails. An over-level river's link holds its water just over the band's eased ground (41 eases the band after the
   link's carve) and falls to the town's stream at its end, a cascade into its gorge. A town's `linkOut` (default 300 m) moves the cut further out than R + band: Phēr's 2,300 m, where
   the model's 2 km cells have not yet begun its stream's fall to the wall's lip;
-- a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41t` (and `41l`) after
-  `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body. A region that names its towns
+- a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41l` after
+  `41`; 41 takes the ground (`buildTowns`, `townAt`) and, in WTOWN at its end, the water, river and body. A region that names its towns
   in `openworld/SITES.json` (its row's `"towns"`) has them in `core/world/bake_sites.py`'s plan too (`towns_data`), so the
   villages and roads are planned on the town's ground as the page draws it (opt-in, as `41l` is: a build that lists it);
-- `node core/world/test-town-water.js` tests 41t and 41l on a made-up region (with negatives); `node core/world/test-landforms-41l.js`
-  tests 41l's bench kind (named apart from the relief's `test-landforms.js`, which tests 43b's WLAND) (level inside, the batter, far ground untouched, the other kinds unmoved);
+- `node core/world/test-town-water.js` tests WTOWN and 41l on a made-up region (with negatives), and 41's sample (`WORLD.at` a copy, `WORLD.atShared` one shared record for hot loops) and a kit on a list of overlays; `node core/world/test-landforms-41l.js`
+  tests 41l's bench and pancake_dome kinds (named apart from the relief's `test-landforms.js`, which tests 43b's WLAND) (level inside, the batter, far ground untouched, the other kinds unmoved);
+  the outlined bench: its wander bounded, a kept edge exact, fill_only, cut_only and the dome, each with a negative; a bench
+  stamped over by a later one judged on its own ground);
 - `python3 core/world/town_view.py voth [--shots] [--reach-km 30] [--model <another checkout's model/data>]` cuts a scratch region round the pin, runs `WTOWN.check()` and
   `WLAND.check()` on the real town in node, builds a viewing page, and with `--shots` takes the same views on the town's
   page and in the world side by side (GPU, under the harness's lock). It writes nothing in the repo.
@@ -118,7 +168,7 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
 its own near ground on the region's: `python3 core/world/bake_ground.py <region> --site <id>` (and `bake_ground.bake`,
 `fragment`, `key` for a build) runs the region's own land chain in node, in its `build.py`'s order (core/rand, core/terrain's
 relief, the rasters with the baked plan's roads and the model's landforms as the page's `WORLD_DATA` has them, core/mask,
-core/coast, 41 and its land fragments up to 45, the region's `SITE_SPEC` for 44c's kept coasts, the geology), then samples
+core/coast, its land fragments from 40 (or 41) up to 45 with the core/terrain files listed among them, the region's `SITE_SPEC` for 44c's kept coasts after its laid villages (`src/47*-site-*.js`) on a stub `KHAMLET`, the geology), then samples
 `WORLD.H` on nested grids round the site (uint16, 5 cm steps; a coarse level at its own minWave) and checks them, bilinear,
 against `WORLD.H` at 400 points each. The page's fragment (`fragment(...)`: `H(x, z)` in world metres at metres from the
 site, `water` at the points named) carries a few hundred KB, not the region's rasters. `settlements/lightwall/build.py` is
@@ -127,8 +177,7 @@ the worked example: it bakes at build into its `gen/`, skipping the node run (~3
 A town with no tile (`drawn: false`) is kept by `98-world-start.js` when the tiles cannot be fetched, and `88-world-towns.js`
 draws only the towns that have one (2026-11-12).
 
-41t and 41l are new fragments so that 41's reach (eight builds) is untouched; folding them into 41 waits for the next
-all-builds rebuild (`TODO.md`).
+41l is a fragment of its own (opt-in: a build that lists it); 41t was folded into 41 at Stage 8 B7 (2026-11-24, T24).
 
 **Bridges** (2026-11-11; `42b` plans, `88b` draws; `tools/tests/test_bridges.py`). A region opts in with
 `SITE_SPEC.bridges` (`true` or the planner's options: `{culture, clear, approach, ...}`). Every road and link it lays is

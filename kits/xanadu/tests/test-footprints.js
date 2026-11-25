@@ -47,7 +47,10 @@ const KNOWN = {
   xa_mid_a_badgir: 0.36, xa_mid_b_badgir: 6.30, xa_rich_a_badgir: 2.90, xa_rich_c_badgir: 3.10,
   xa_house_turk_a_badgir: 0.79, xa_monastery_white: 1.69, xa_launch: 1.12, xa_stall: 1.02,
   // Gihon's dress twins (88h, 2026-11-23): the gold-and-opal temple and the violet house carry their base def's overhang
-  xa_grand_temple_gold: 2.11, xa_monastery_violet: 1.69
+  xa_grand_temple_gold: 2.11, xa_monastery_violet: 1.69,
+  // the lake's trades (src/87k), sealed with the kit since Stage 8 B9 (2026-11-24) and measured then: the serai's iron
+  // (vIron) and the fish racks' posts (vPost) reach past their lots
+  xa_serai: 0.27, xa_fish_racks: 1.00
 };
 const BUILD_FAILS = {
   xa_lighthouse: 'FRAME_HOOKS is a page global (the sheet and Erewhon have it), not in XAK: the lamp\'s turn hook',

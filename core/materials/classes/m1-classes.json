@@ -1,5 +1,5 @@
 {
- "what": "The M1 material classes (settlements/xanadu/STACK-PLAN.md section 5; GRAPHICS-TERRAIN-PROPOSAL.md M1; STAGE-5-REPORT.md section 4). A build's materials.json names one per family (\"class\"); Stage 8's tools/textures/pack.py reads this table through tools/textures/mclass.py to pack each family; core/materials/classes/10-mat-class.js checks the names (test-class.js). Today's pack.py ignores the field: nothing is re-packed before Stage 8 (the owner, 2026-11-22: data now, looks after).",
+ "what": "The M1 material classes (settlements/xanadu/STACK-PLAN.md section 5; GRAPHICS-TERRAIN-PROPOSAL.md M1; STAGE-5-REPORT.md section 4). A build's materials.json names one per family (\"class\"); tools/textures/pack.py reads this table through tools/textures/mclass.py to pack each family (Stage 8 B11: glazed packs 8-bit web normals, a height 'never' class never takes a height in its alpha, the others pack as a family with no class); core/materials/classes/10-mat-class.js checks the names (test-class.js). Until B11 pack.py ignored the field (the owner, 2026-11-22: data now, looks after); Phase C re-packs the classed builds.",
  "version": 2,
  "rule": {
   "what": "the stack's glazed rule (STAGE-5-REPORT.md section 4): a lit family whose specular is at least specularMin and whose roughness is under roughnessMax. The roughness is the mean of the family's packed roughness map (what the pages draw: m1-measured.json, written by tools/textures/mclass.py --measure from the committed tex/), or, for a family with no packed map, the library record's lifted by the family's roughLift as pack.py lifts the map. Since XS0 (settlements/xanadu/XS1-CLASSES.md, 'Fixes after XS0') every family's class is DERIVED from these values and its cut-out flag (10-mat-class.js derive(): a library card is card; a materials.json \"cutout\" is cutout; the rule's hits are glazed; the rest relief or flat, a patterns/ sheet flat), and test-class.js fails on any disagreement not listed under exceptions.",
@@ -28,21 +28,7 @@
   }
  },
  "pending": {
-  "what": "decided class changes that wait for Stage 8 (the owner: data now, looks after). Each family keeps its class today and must still derive it; once Stage 8 changes its values (and mclass.py --measure is rerun) it derives the pending class, the drift test fails until the materials.json takes it, and then asks for the entry to be dropped.",
-  "kits/xanadu": {
-   "xMosC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "Stage 8 lowers the roughness below 0.35 (the family's materials or its packed roughness map; now 0.381), reruns mclass.py --measure; it then derives glazed and takes 8-bit normals (+149 KB)"},
-   "xMosD": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as xMosC (now 0.354; +159 KB)"},
-   "xBandC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as xMosC (now 0.423; +119 KB)"},
-   "xGiltC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as xMosC (now 0.558; +198 KB)"},
-   "xBandR": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as xMosC (now 0.809; +160 KB)"}
-  },
-  "settlements/xanadu": {
-   "xMosC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"},
-   "xMosD": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"},
-   "xBandC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"},
-   "xGiltC": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"},
-   "xBandR": {"class": "glazed", "by": "the owner, 2026-11-23: \"Glaze at Stage 8\"", "how": "as kits/xanadu"}
-  }
+  "what": "decided class changes that wait for Stage 8 (the owner: data now, looks after). Each family keeps its class today and must still derive it; once Stage 8 changes its values (and mclass.py --measure is rerun) it derives the pending class, the drift test fails until the materials.json takes it, and then asks for the entry to be dropped. Stage 8 B11 (2026-11-24) glazed the five pattern sheets (xMosC, xMosD, xBandC, xGiltC, xBandR in kits/xanadu and settlements/xanadu: class glazed, a roughScale taking the packed roughness under 0.35) and dropped their entries; none is pending now."
  },
  "classes": {
   "glazed": {

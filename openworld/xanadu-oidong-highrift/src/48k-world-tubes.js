@@ -29,8 +29,13 @@ SITE_SPEC.tubes=[
  /* the Strongbow branch (the owner, 2026-11-16: "Join the branch to the main line"): the lower galleries of tube_xanadu_se_10 up to
     the SE Twin, then north-west along the model's Saddle fissure dike conduit to the Hall of the Tally-Marks, where it runs into
     A3 underground (WTUBES `join`): the sim's Route A caravans for Strongbow go Hall, feeder, Strongbow. The old end portal under
-    the SE Twin is a gasp mid-tube now, the way up onto Route B's trail */
+    the SE Twin is a gasp mid-tube now, the way up onto Route B's trail.
+    The gasp moved 1 km south (px 1028,1506 to 1028,1506.5) on the 2026-11-23 re-run's ground: there the mouth sat high on the
+    Twin's flank, the ground climbing to it far steeper than 25 % for more than the 600 m a portal's ramp reaches, so the ramp came
+    out on the ground below the mouth (floor and roof over it at stations 1745-1758). At its new place the ground climbs to the
+    mouth at 25 % from the Strongbow side and falls 9 % beyond it (300 m each way): the plan's checks pass there and a quarter of
+    a pixel round it, and the walker steps out onto the ground at the mouth and back down (a node walk on the drawn ground) */
  {id:'A-feeder',route:'A',name:'The south feeder: the lower galleries of tube_xanadu_se_10 and the Saddle dike conduit (the Strongbow branch)',model:'tube_xanadu_se_10',
-  px:[[1010,1517],[1019,1511.5],[1028,1506],[1024,1485],[1014,1464]],seg:{w:16,h:12},depth:42,join:{tube:'A3',at:'end'},
-  open:[{kind:'portal',at:'start',name:'The feeder portal above Strongbow'},{kind:'portal',at:[1028,1506],name:'The feeder gasp under the SE Twin (up onto Route B)'}],
+  px:[[1010,1517],[1019,1511.5],[1028,1506.5],[1024,1485],[1014,1464]],seg:{w:16,h:12},depth:42,join:{tube:'A3',at:'end'},
+  open:[{kind:'portal',at:'start',name:'The feeder portal above Strongbow'},{kind:'portal',at:[1028,1506.5],name:'The feeder gasp under the SE Twin (up onto Route B)'}],
   chokes:{every:9000,p:.5,w:3.5,h:4.5,len:[48,96]},skylights:{every:6000,p:.5,r:[3,6]}}];

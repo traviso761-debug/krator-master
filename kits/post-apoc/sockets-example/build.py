@@ -10,6 +10,9 @@ core/sockets/ (the socket + culture system) and one tiny demo building. The outp
 
 To start your own build on the socket system: copy the fragment list below, replace 40-demo.js with your buildings, keep 37-sockets.js, 38-symbols.js and 80-cultures.js from core/sockets/.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 

@@ -15,7 +15,7 @@
 //     weight: KCAVERN.cutWeight(C)}) (with other weights: compose, or pass attr: the index of 'aKCut')
 //   KCAVERN.cutLayer(material, {attr: 'aKCut'}) -> material   the KHOOK layer 'kcavern-cut' (once per material)
 //   KCAVERN.cut: {U (the shared uniforms), set(on), on, above(m: 2), boxes([{x, z, hw, hd, ry, floor, top?}]) (at most 32; [] clears),
-//     MAX: 32, discards(y, ownFloor, x, z) -> bool (the shader's rule in JS: a pick's filter, and the node test's)}
+//     MAX: 32, discards(x, y, z, ownFloor) -> bool (the shader's rule in JS: a pick's filter, and the node test's)}
 (function(root){
   'use strict';
   var K=root.KCAVERN;if(!K)throw new Error('host/39h-core-cavern-cut: load core/terrain/39-core-cavern.js first');

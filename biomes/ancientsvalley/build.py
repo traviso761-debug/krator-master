@@ -39,6 +39,9 @@ Stations, like the Cut's and the lowland kits': each is its own page from the sa
 The core and the kits never reference a host global except through BIO.host (biomes/cut/BIOME-API.md); build.py greps the
 valley's own biome fragments for the forbidden names. The metropolis kit's fragments are another kit's and are not scanned.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys, json
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.

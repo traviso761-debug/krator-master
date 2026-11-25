@@ -3,6 +3,7 @@
 // vec3 atmSky(vec3 d): the sky's display colour toward world direction d, every layer composited back to front (deep
 // sky, sun, moons, giant, ring, air, clouds, ridges). Its uniforms are set each frame by krator/sky.gd from the sky model
 // (krator/sky_model.gd, the twin of 89-atmos-e-skymodel.js and 89-atmos-f-skypresets.js).
+// vec3 atmSkyC(vec3 d, vec4 clouds, bool use): the same with the cloud layers handed in (sky_half.gdshader).
 #ifndef ATMOS_SKY_INC
 #define ATMOS_SKY_INC
 float atmSkyPow(float x,float y){return y==2.0?x*x:(x<=0.0?(y==0.0?1.0:0.0):pow(x,y));}
@@ -341,7 +342,7 @@ vec4 atmSkyLandmarks(vec3 d,vec3 air,bool low){vec4 o=vec4(0.0);float el=asin(cl
    m=vec4(mix(atmSkyLmLight(lD.rgb),air,lD.w),cov*lB.w);}}
   o.rgb=o.rgb*(1.0-m.a)+m.rgb*m.a;o.a=o.a*(1.0-m.a)+m.a;}
  return o.a>0.0?vec4(o.rgb/o.a,o.a):o;}
-vec3 atmSky(vec3 d){d=normalize(d);vec3 air=atmSkyAir(d);vec3 T=atmSkyT(d);
+vec3 atmSkyC(vec3 d,vec4 atmClIn,bool atmClUse){d=normalize(d);vec3 air=atmSkyAir(d);vec3 T=atmSkyT(d);
  float skyL=dot(air,vec3(0.3,0.55,0.15));float vis=clamp(1.0-smoothstep(0.012,0.20,skyL)*(1.0-uDayStars*0.8),0.0,1.0);
  vec3 col=air;float lanes;
  if(vis>0.003&&d.y>-0.05){vec3 e=uEq*d;col+=atmSkyDeep(e,lanes)*T*vis;}
@@ -360,9 +361,10 @@ vec3 atmSky(vec3 d){d=normalize(d);vec3 air=atmSkyAir(d);vec3 T=atmSkyT(d);
  col+=deb*T*(1.0-0.9*uHazeFloor);
  col+=atmSkyMeteors(d)*T*clamp(1.0-smoothstep(0.03,0.30,skyL),0.0,1.0);
  vec4 lm=uLmN>0?atmSkyLandmarks(d,air,false):vec4(0.0);col=mix(col,lm.rgb,lm.a);
- vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);
+ vec4 cl;if(atmClUse){cl=atmClIn;}else{cl=atmSkyClouds(d,air);}col=mix(col,cl.rgb,cl.a);
  vec4 rd=atmSkyRidges(d,air);col=mix(col,rd.rgb,rd.a);
  vec4 lo=uLmN>0?atmSkyLandmarks(d,air,true):vec4(0.0);col=mix(col,lo.rgb,lo.a);
  if(d.y<0.0)col=mix(col,uFogC,(1.0-smoothstep(-0.12,0.0,d.y))*(1.0-rd.a)*(1.0-lm.a)*(1.0-lo.a));
  return col;}
+vec3 atmSky(vec3 d){return atmSkyC(d,vec4(0.0),false);}
 #endif

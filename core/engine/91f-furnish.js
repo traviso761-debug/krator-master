@@ -12,21 +12,27 @@ KratorFurniture.setDetail(KIT.furnDetail);
 const SVF=KFURN.create(Object.assign(KFURN.flags(false),{
  catalog:KFURN.catalogOf(KratorFurniture),interiors:null,
  seed:(o,ctx)=>ctx.seed*100+ctx.list.length+1,
- draw:(rec,ctx)=>{const r=KFURN.drawRec(SVF,rec,ctx.wealth);if(r.error)reportErr('furniture '+rec.key+': '+r.error);
-  /* the piece's lights become halos (91n-night.js): fires big and warm, lamps small */
-  const fire=/fire|brazier|stove|forge|cauldron|smoke|kiln/.test(rec.key);
-  for(const L of (r.lights||[])){const k=Math.round(L.x/.6)+','+Math.round(L.y/.6)+','+Math.round(L.z/.6);if(HALOKEY.has(k))continue;HALOKEY.add(k);
-   const c=hc(fire?0xff8a30:0xffc878);HALOS.push({x:L.x,y:L.y,z:L.z,r:c.r,g:c.g,b:c.b,big:fire});}}}));
+ draw:(rec,ctx)=>{const r=KFURN.drawRec(SVF,rec,ctx.wealth);if(r.error)reportErr('furniture '+rec.key+': '+r.error);svfHalos(rec,r);}}));
+/* the piece's lights become halos (91n-night.js): fires big and warm, lamps small */
+function svfHalos(rec,r){const fire=/fire|brazier|stove|forge|cauldron|smoke|kiln/.test(rec.key);
+ for(const L of (r.lights||[])){const k=Math.round(L.x/.6)+','+Math.round(L.y/.6)+','+Math.round(L.z/.6);if(HALOKEY.has(k))continue;HALOKEY.add(k);
+  const c=hc(fire?0xff8a30:0xffc878);HALOS.push({x:L.x,y:L.y,z:L.z,r:c.r,g:c.g,b:c.b,big:fire});}}
 SVF.WEALTH={};   // a def's 0..1 wealth for its furniture (its tags.wealth name, or .5)
 function svfNewBatch(){KFURN.useBatch(SVF,KratorFurniture,null,{indexed:true});SVF.placed=[];SVF.missing={};SVF.cfg.tags=SVTAGS;}
 function svfWealth(rec){const w=rec&&rec.tags&&rec.tags.wealth;return w==='rich'?.9:w==='poor'?.25:w==='middle'?.55:.55;}
+/* a key the catalog lacks: counted on the page (SVF.missing), or on the open dry queue (svfDryBegin), never thrown */
+function svfMiss(key){const M=!PLACE_DRY?SVF.missing:SVF_DRY?SVF_DRY.missing:null;if(M)M[key]=(M[key]==null?0:M[key])+1;}
 function FURNISH(key,lx,ly,lz,lry,o){o=o||{};if(!CURREC){reportErr('FURNISH '+key+' outside a builder');return null;}
- if(PLACE_DRY)return null;lry=lry||0;
- if(!KratorFurniture.has(key)){SVF.missing[key]=(SVF.missing[key]||0)+1;return null;}
+ if(PLACE_DRY&&!SVF_DRY)return null;lry=lry||0;
+ if(!KratorFurniture.has(key)){svfMiss(key);return null;}
  const w=new THREE.Vector3(lx,ly||0,lz).applyMatrix4(CM),e=CM.elements,wry=Math.atan2(e[8],e[10])+lry;
  const c=CURREC;const seed=(DEFS[c.key].seed*7+(c.v|0)*131+(((Math.round(c.x*10)*73856093)^(Math.round(c.z*10)*19349663))>>>0)%9973)>>>0;
- return SVF.place(key,w.x,w.y,w.z,wry,Object.assign({setting:'indoor'},o),[lx,ly||0,lz,lry],{building:c.tid,list:c.furniture,seed:seed,wealth:svfWealth(c)});}
-function FURNISH_HANG(key,lx,topY,lz,lry,o){const A=KratorFurniture.FURN_BY_KEY[key];if(!A){if(!PLACE_DRY)SVF.missing[key]=(SVF.missing[key]||0)+1;return null;}
+ const ctx={building:c.tid,list:c.furniture,seed:seed,wealth:svfWealth(c)};
+ /* a dry draw with a queue open: the record made as a placed draw makes it (the same frame, seed and wealth), nothing
+    registered or drawn, and queued for svfDryFlush */
+ if(PLACE_DRY){ctx.dry=true;const r=SVF.place(key,w.x,w.y,w.z,wry,Object.assign({setting:'indoor'},o),[lx,ly||0,lz,lry],ctx);if(r)SVF_DRY.list.push({rec:r,wealth:ctx.wealth});return r;}
+ return SVF.place(key,w.x,w.y,w.z,wry,Object.assign({setting:'indoor'},o),[lx,ly||0,lz,lry],ctx);}
+function FURNISH_HANG(key,lx,topY,lz,lry,o){const A=KratorFurniture.FURN_BY_KEY[key];if(!A){svfMiss(key);return null;}
  const dm=KratorFurniture.entryDims(A,(o&&o.v)|0);return FURNISH(key,lx,topY-dm.h,lz,lry,o);}
 /* a piece placed by hand in a room with floor floorY and ceiling ceilY, at the height the catalog's own rule gives it
    (KratorFurniture.furnAnchorY): a hung cloth, banner or wall art with its hem FURN_HEM (1.1 m) up where the room allows (the owner,
@@ -51,11 +57,35 @@ function svfDetail(mt){const tf=mt.userData.texFamily,Lt=KMAT.mode==='lib'&&tf?K
     'vec4 texelColor=texture2D(map,dP.zy)*dW.x+texture2D(map,dP.xz)*dW.y+texture2D(map,dP.xy)*dW.z;texelColor=mapTexelToLinear(texelColor);',
     'diffuseColor.rgb*=texelColor.rgb*uDetGain;','#endif'].join('\n'));});
  return true;}
+/* a flushed batch's meshes as the page draws them: shadows, linear colours, the detail maps -> the families detailed.
+   mats (a dry flush's): one material per family kept across flushes, so every host proto's pieces share them */
+function svfFinish(g,mats){const det=[];g.traverse(m=>{if(!m.isMesh)return;const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);
+  const mk=mats&&!m.material.map?f+'|'+(m.material.userData.texFamily==null?'':m.material.userData.texFamily)+'|'+m.material.type:null;
+  if(mk&&mats[mk]){m.material.dispose();m.material=mats[mk];return;}
+  if(!m.material.map&&svfDetail(m.material))det.push(f);if(mk)mats[mk]=m.material;});return det;}
+/* ---- FURNITURE FOR A DRY DRAW (S2-C24). A host that draws the kit's buildings itself (a bundle's proto:
+   settlements/isle-demo/bundles.py ISK.proto) places them dry (PLACE_DRY: nothing registered), where FURNISH placed
+   nothing. Such a host opens a queue round its draw and flushes it into the draw's group:
+     svfDryBegin()          the queue opened: each FURNISH in a dry draw makes its record as the kit's own page does (the
+                            same world frame, seed and wealth) and queues it; none is registered in core/tags
+     svfDryFlush(parent)    the queue drawn through a fresh indexed batch into parent (as buildWorld below draws the page's:
+                            shadows, linear colours, detail maps, halos) and closed -> {placed, tris, missing, records,
+                            group}; a null parent (or ?furniture=0) closes it and draws nothing
+   Without svfDryBegin a dry draw places nothing, as before; the page's own batch (SVF.batch) is never touched. */
+var SVF_DRY=null,SVF_DRYMATS={};
+function svfDryBegin(){SVF_DRY={list:[],missing:{}};return SVF_DRY;}
+function svfDryFlush(parent){const Q=SVF_DRY;SVF_DRY=null;const out={placed:0,tris:0,missing:Q?Q.missing:{},records:Q?Q.list.map(q=>q.rec):[],group:null};
+ if(!Q||!Q.list.length||!parent||!SVF.on)return out;
+ const keep=[SVF.batch,SVF.adapter,SVF.KF],B=KFURN.useBatch(SVF,KratorFurniture,null,{indexed:true});
+ try{for(const q of Q.list){const r=KFURN.drawRec(SVF,q.rec,q.wealth);if(r.error)reportErr('furniture '+q.rec.key+': '+r.error);svfHalos(q.rec,r);}}
+ finally{SVF.batch=keep[0];SVF.adapter=keep[1];SVF.KF=keep[2];}
+ const g=B.flush(parent);g.userData.furniture=true;svfFinish(g,SVF_DRYMATS);
+ out.placed=Q.list.length;out.tris=Math.round(B.tris);out.group=g;return out;}
 // ---- the batch becomes meshes once per world build, after every def is placed
 const svfBuildWorld=buildWorld;
 buildWorld=function(){svTagsReset();svfNewBatch();const t0=performance.now();const W0=svfBuildWorld();
  const g=SVF.group=SVF.batch.flush(WORLD);g.userData.furniture=true;
- SVF.detailed=[];g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map&&svfDetail(m.material))SVF.detailed.push(f);}});
+ SVF.detailed=svfFinish(g);
  if(window._build)window._build.furniture={placed:SVF.placed.length,tris:Math.round(SVF.batch.tris),missing:Object.assign({},SVF.missing),ms:Math.round(performance.now()-t0)};
  if(typeof nightRebuild==='function')nightRebuild();
  return W0;};

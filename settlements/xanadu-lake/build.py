@@ -32,7 +32,8 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
 # core/city in one closure (settlements/pher/build.py's kcity_bundle): its globals stay inside, and so does core/space, which
 # writes KSPACE onto `window` (the closure hands every module a window of its own). Every data fragment of core/city (the
 # host fragments are the page's to draw, and this page draws its own: targets/town/90r)
-CITY_JS = sorted(f for f in os.listdir(os.path.join(ROOT, 'core', 'city')) if f[:2].isdigit() and f.endswith('.js') and '-host-' not in f)
+CITY_JS = sorted(f for f in os.listdir(os.path.join(ROOT, 'core', 'city')) if f[:2].isdigit() and f.endswith('.js') and ('-host-' not in f or f == '53-city-host-multikit.js'))
+CITY_JS.insert(CITY_JS.index('42-city-multikit.js'), '../kits/10-core-kits.js')   # with 53, the multi-kit host (Stage 8 D8): inert until called
 SPACE = 'core/space/20-core-space.js'
 TUNE = 'core/region/data/xan-tune.js'
 # kits/crops (its API.md, "Reading it from a build"): the records and queries, sealed in one closure as gen/89zc-crops-bundle.js

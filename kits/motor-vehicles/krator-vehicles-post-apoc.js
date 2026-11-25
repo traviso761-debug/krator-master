@@ -42,7 +42,7 @@ const PA_BELT = 0.08;
 
 VEHICLE({
   key: 'pa_crawler_hab', name: 'Post-Apoc crawler hab', culture: 'post-apoc',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport', 'cargo'], drive: 'tracked', seats: 4, fuel: 'crude oil',
+  tags: { type: ['vehicle', 'transport', 'cargo'], drive: 'tracked', seats: 4, fuel: 'crude oil',
     terrain: ['sand', 'salt flat', 'mud', 'rock', 'snow'], setting: 'outdoor' },
   variants: 2, variantNames: ['Hab', 'Trader'],
   /* overall box: 4.6 wide, 11.6 long; the roofs are 5.9, the tallest aerial 8.45 */

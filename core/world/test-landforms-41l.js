@@ -116,4 +116,135 @@ T.neg('the islet and the page water answer byte-identically with a bench in the 
 T.ok('...and nothing is skipped', S1.skipped.length === 0 && S0.skipped.length === 0, JSON.stringify(S1.skipped));
 T.neg('a bench without l_m or level_m is skipped by name, not stamped', S => S.benches === 0 && S.skipped.length === 1 && /bench/.test(S.skipped[0].kind),
   { benches: 1, skipped: [] }, Sbad);
+
+// ---------------------------------------------------------------- 5b. a stated wander sample (wg_n: core/world/landform_wg.js)
+// A record may state its noise's sample so a page does not take it at load; the ground is the same bit for bit, and the check
+// samples it again (a wrong one fails). Run after section 5's definitions (below, through stated()).
+function stated() {
+  const rec = o => outlined(Object.assign({ level_m: levelO, wobble_m: 40, keep_edges: [0] }, o));
+  const w0 = world(OLD.concat([rec({})])), B0 = w0.WL.benches.find(b => b.id === 'lf_t_outline'), G = B0.wgN;
+  const heights = wd => { const out = []; for (let x = OX - 420; x <= OX + 420; x += 14) for (let z = OZ - 340; z <= OZ + 340; z += 14) out.push(wd.W.Hbare(x, z)); return out; };
+  const S = g => { const wd = world(OLD.concat([rec({ wg_n: g })])), B = wd.WL.benches.find(b => b.id === 'lf_t_outline');
+    return { stated: B.wgStated, wgN: B.wgN, h: heights(wd), check: wd.WL.check().find(c => c.id === 'lf_t_outline') }; };
+  const H0 = heights(w0), Sok = S(G), Sbad = S(G * 0.5);
+  const same = s => s.stated && s.wgN === G && s.h.every((h, i) => h === H0[i]) && s.check.ok;
+  T.ok('a stated wg_n (the sample itself) is taken as stated: the same ground bit for bit, and WLAND.check passes it', same(Sok),
+    'wg_n ' + G + ', check ' + JSON.stringify(Sok.check && { ok: Sok.check.ok, firstBad: Sok.check.firstBad }));
+  T.neg('...and a stated wg_n that is not the record\'s sample fails the check (half of it: the faces could run steep)', same, Sbad, Sok);
+}
+// ---------------------------------------------------------------- 5. an outlined bench (outline_px, wobble_m, keep_edges)
+// Hook's spit (settlements/hook/world/landforms.json): a polygon instead of a rectangle, its edge wandering by up to wobble_m
+// except along a kept edge. On the slope at x 4 km, z 4 km: a hexagon about 650 by 480 m, its first edge (the south one,
+// p0 to p1) kept
+const OX = 4000, OZ = 4000, HEX = [[-300, -200], [250, -220], [320, 0], [200, 230], [-150, 260], [-330, 60]];
+const toPx = p => [C + (OX + p[0]) / 2000, C + (OZ + p[1]) / 2000];
+const outlined = o => Object.assign({ id: 'lf_t_outline', kind: 'bench', x: OX, z: OZ, outline_px: HEX.map(toPx), batter_deg: 30, skirt_m: 30 }, o);
+const POLY = HEX.map(p => [OX + p[0], OZ + p[1]]);
+const segDist = (x, z, a, b) => { const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz, t = Math.max(0, Math.min(1, ((x - a[0]) * dx + (z - a[1]) * dz) / l2));
+  return Math.hypot(a[0] + dx * t - x, a[1] + dz * t - z); };
+const polySD = (x, z) => { let d = 1e18, ins = false;
+  for (let i = 0, j = POLY.length - 1; i < POLY.length; j = i++) { const a = POLY[j], b = POLY[i];
+    if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) ins = !ins; d = Math.min(d, segDist(x, z, a, b)); }
+  return ins ? -d : d; };
+const levelO = Math.round(w.W.Hbare(OX, OZ));
+function sampleO(o) {
+  const wd = world(OLD.concat([outlined(Object.assign({ level_m: levelO }, o))])), B = wd.WL.benches.find(b => b.id === 'lf_t_outline');
+  const S = { inside: [], band: [], kept: [], check: wd.WL.check().find(c => c.id === 'lf_t_outline'), skipped: wd.WL.skipped.slice() };
+  for (let x = OX - 400; x <= OX + 400; x += 10) for (let z = OZ - 320; z <= OZ + 320; z += 10) {
+    const sd = polySD(x, z), dB = wd.WL.benchD(B, x, z);
+    if (dB === 0) S.inside.push(wd.W.Hbare(x, z));
+    if (Math.abs(sd) < 200) S.band.push({ sd, dB }); }
+  /* the kept edge's middle, 5 to 60 m out (south of it): its distance as drawn */
+  const a = POLY[0], b = POLY[1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), nx = (b[1] - a[1]) / L, nz = -(b[0] - a[0]) / L;
+  for (let t = .3; t <= .7; t += .05) for (let off = 5; off <= 60; off += 5) { const x = a[0] + (b[0] - a[0]) * t + nx * off, z = a[1] + (b[1] - a[1]) * t + nz * off;
+    S.kept.push({ off, dB: wd.WL.benchD(B, x, z) }); }
+  return S; }
+const O1 = sampleO({ wobble_m: 40, keep_edges: [0] }), O0 = sampleO({ wobble_m: 0, keep_edges: [0] }), Onk = sampleO({ wobble_m: 40 });
+T.ok('an outlined bench is read (not skipped) and level on all its ground', O1.skipped.length === 0 && O1.inside.length > 1000 && O1.inside.every(h => h === levelO),
+  O1.inside.length + ' points at ' + levelO + ' m; skipped ' + JSON.stringify(O1.skipped));
+T.ok('WLAND.check: the outlined bench is ok (level inside, no face over its batter as its edge wanders, the toe inside its reach)', !!O1.check && O1.check.ok, JSON.stringify(O1.check));
+const wander = S => S.band.reduce((m, p) => Math.max(m, Math.abs(p.dB - Math.max(0, p.sd))), 0);
+/* measured with no kept edge (on a bench this small the kept edge's 750 m fade covers it all) */
+const wanders = S => { const v = wander(S); return v > 20 && v <= 40 + 1e-6; };
+T.neg('its edge wanders off the outline by up to wobble_m (40 m), no more (none when wobble_m is 0)', wanders, O0, Onk);
+T.ok('...and the kept edge\'s fade calms it (the same bench with its south edge kept wanders less)', wander(O1) < wander(Onk), wander(O1).toFixed(1) + ' m kept, ' + wander(Onk).toFixed(1) + ' m not');
+console.log('      outlined bench: the edge wanders up to ' + wander(Onk).toFixed(1) + ' m off the drawn outline (wobble_m 40)');
+const keptStraight = S => S.kept.every(p => Math.abs(p.dB - p.off) < 1e-6);
+T.neg('a kept edge stays as drawn: off its middle the distance is the outline\'s exactly (not kept, it wanders)', keptStraight, Onk, O1);
+stated();
+
+// ---------------------------------------------------------------- 6. fill_only and dome_m on an outlined bench
+// fill_only: a shelf at a level under part of the ground raises what is lower and leaves what stands higher; dome_m: the
+// ground inside rises toward the middle, by dome_m at dome_run_m in, and 41l's own check holds it to that
+function sampleF(o) {
+  const wd = world(OLD.concat([outlined(Object.assign({ level_m: levelO, wobble_m: 0 }, o))])), B = wd.WL.benches.find(b => b.id === 'lf_t_outline');
+  const S = { pts: [], check: wd.WL.check().find(c => c.id === 'lf_t_outline') };
+  for (let x = OX - 280; x <= OX + 280; x += 20) for (let z = OZ - 180; z <= OZ + 220; z += 20) {
+    const sd = polySD(x, z); if (sd > -5) continue;
+    S.pts.push({ sd, h: wd.W.Hbare(x, z), nat: w0.W.Hbare(x, z) }); }
+  return S; }
+const w0 = world(OLD.slice());
+const Ff = sampleF({ fill_only: true }), Fcut = sampleF({});
+const fillKeeps = S => S.pts.every(p => p.nat > levelO ? Math.abs(p.h - p.nat) < 1e-6 : Math.abs(p.h - levelO) < 1e-6) && S.pts.some(p => p.nat > levelO + 5);
+T.neg('fill_only raises what lies under the level and leaves higher ground as it was (a plain bench cuts it)', fillKeeps, Fcut, Ff);
+T.ok('...and WLAND.check passes it (nothing under the level inside)', !!Ff.check && Ff.check.inside === 0, JSON.stringify(Ff.check && Ff.check.inside));
+const Fc = sampleF({ cut_only: true });
+const cutKeeps = S => S.pts.every(p => p.nat < levelO ? Math.abs(p.h - p.nat) < 1e-6 : Math.abs(p.h - levelO) < 1e-6) && S.pts.some(p => p.nat < levelO - 5);
+T.neg('cut_only lowers what stands over the level and leaves lower ground as it was (a plain bench fills it)', cutKeeps, Fcut, Fc);
+T.ok('...and WLAND.check passes it (nothing over the level inside)', !!Fc.check && Fc.check.inside === 0, JSON.stringify(Fc.check && Fc.check.inside));
+const Fd = sampleF({ dome_m: 30, dome_run_m: 100 });
+/* the dome is rounded (a blurred depth, joined to the exact one at the edge): it stays between the level and the level plus
+   dome_m, never over the exact profile (so it starts at the level where the batter does), and stands near full height
+   deep inside */
+const exact = sd => { const t = Math.min(1, Math.max(0, -sd / 100)); return levelO + 30 * t * t * (3 - 2 * t); };
+const domed = S => S.pts.every(p => p.h >= levelO - 1e-6 && p.h <= exact(p.sd) + 1e-6) && S.pts.filter(p => -p.sd > 180).length > 3 &&
+  S.pts.filter(p => -p.sd > 180).every(p => p.h > levelO + 24);
+T.neg('dome_m: the ground inside rises toward 30 m, round and no higher than its profile (a flat bench does not rise)', domed, Fcut, Fd);
+T.ok('...and WLAND.check holds the dome to its own height (inside 0)', !!Fd.check && Fd.check.inside < 1e-6, JSON.stringify(Fd.check && { inside: Fd.check.inside, over: Fd.check.batter.over }));
+
+// ---------------------------------------------------------------- 7. each bench judged on its own ground (the records' order)
+// a bench stamped over by a later one (here a higher outlined terrace laid across the rectangle's middle) is judged on the
+// ground as it stood once it was stamped: level inside, its own batter; the later one is judged on the ground it made
+{ const over = outlined({ id: 'lf_t_later', x: BX, z: BZ, outline_px: [[-60, -60], [60, -60], [60, 60], [-60, 60]].map(p => [C + (BX + p[0]) / 2000, C + (BZ + p[1]) / 2000]),
+    level_m: level + 12, wobble_m: 0, batter_deg: 30 });
+  const wd = world(OLD.concat([bench({ level_m: level }), over])), chk = wd.WL.check();
+  const first = chk.find(c => c.id === 'lf_t_bench'), later = chk.find(c => c.id === 'lf_t_later');
+  const raised = wd.W.Hbare(BX, BZ) === level + 12;
+  T.ok('a bench stamped over by a later one is judged on its own ground (level inside, no face over its batter); the later one on its',
+    raised && first.inside === 0 && first.batter.over === 0 && later.inside === 0 && later.batter.over === 0,
+    JSON.stringify({ raised, first: { inside: first.inside, over: first.batter.over }, later: { inside: later.inside, over: later.batter.over } })); }
+
+// ---------------------------------------------------------------- 5. the pancake dome (2026-11-24, Stage 8 B7, D15: drawn at 1:1)
+// The scale model's record as DATA.domes holds it (edit_518: px [x, y], d_km, base_m, top_m, h_m): a dome 3 km across on the
+// slope at x 10 km (px 15), its top 150 m over the highest natural ground under it. The model's profile: flat to 0.72 of the
+// radius, then top - (top - ground) x smoothstep(0.72, 1, r/R), raising only
+const DX = 10000, DZ = 0, DR = 1500, sst = (a, b, x) => { let t = (x - a) / (b - a); t = t < 0 ? 0 : t > 1 ? 1 : t; return t * t * (3 - 2 * t); };
+const ring = (r, n) => Array.from({ length: n }, (_, k) => [DX + r * Math.cos(k * 2 * Math.PI / n), DZ + r * Math.sin(k * 2 * Math.PI / n)]);
+const domeAt = [[DX, DZ]].concat(ring(DR * .4, 8), ring(DR * .8, 16), ring(DR * .9, 16), ring(DR * .97, 16)), domeFar = ring(DR * 1.05, 16).concat(ring(DR * 1.6, 16));
+w = world(OLD.slice());
+const nat = domeAt.map(([x, z]) => w.W.Hbare(x, z)), natFar = domeFar.map(([x, z]) => w.W.Hbare(x, z));
+const TOP = Math.round(Math.max(...nat)) + 150, BASE = Math.round(Math.min(...nat));
+const dome = o => Object.assign({ id: 'lf_t_dome', kind: 'pancake_dome', name: 'Test Glass', px: [C + DX / 2000, C + DZ / 2000], d_km: 3, base_m: BASE, top_m: TOP, h_m: TOP - BASE, rock: 'rhyolite_obsidian' }, o);
+const domeSample = wd => ({ at: domeAt.map(([x, z]) => wd.W.Hbare(x, z)), far: domeFar.map(([x, z]) => wd.W.Hbare(x, z)), old: sample(wd).old,
+  check: (wd.WL.check() || []).find(c => c.kind === 'pancake_dome') || null, domes: (wd.WL.domes || []).length, skipped: wd.WL.skipped.slice() });
+w = world(OLD.concat([dome({})]));
+const D1 = domeSample(w);
+w = world(OLD.concat([dome({ d_km: 6 })]));
+const D6 = domeSample(w);
+w = world(OLD.concat([dome({ px: [C - 7, C - 3] })]));
+const Dover = domeSample(w);                                  // the dome laid over the islet
+w = world(OLD.concat([{ id: 'lf_t_crater', kind: 'secondary_crater', px: 15, py: 10, radius_px: 2, floor_m: 100 }, { id: 'lf_t_nodome', kind: 'pancake_dome', px: [15, 10], d_km: 3 }]));
+const Dskip = { skipped: w.WL.skipped.slice(), domes: (w.WL.domes || []).length };
+const want = nat.map((h, i) => { const [x, z] = domeAt[i], t = TOP - (TOP - h) * sst(.72, 1, Math.hypot(x - DX, z - DZ) / DR); return t > h ? t : h; });
+T.ok('the dome is a kind: stamped, listed in WLAND.domes, not skipped, and WLAND.check passes it (its flat at top_m)',
+  D1.domes === 1 && !D1.skipped.length && !!D1.check && D1.check.ok, JSON.stringify(D1.check) + ' skipped ' + JSON.stringify(D1.skipped));
+T.neg('...drawn at 1:1 by the model\'s profile: flat at the top to 0.72 R, the wall raising the ground to top - (top - ground) x smoothstep(0.72, 1, r/R)',
+  S => S.at.every((h, i) => Math.abs(h - want[i]) < 1e-6), { at: nat }, D1);
+T.neg('...its wall within its radius: past R the ground is the natural ground bit for bit (a dome twice as wide moves it)',
+  S => S.far.every((h, i) => h === natFar[i]), D6, D1);
+T.neg('the islet and the page water answer byte-identically with a dome in the records (one laid over the islet moves them)',
+  S => S.old.length === S0.old.length && S.old.every((h, i) => h === S0.old[i]), Dover, D1);
+T.ok('a pancake dome with no top is skipped by name; a secondary_crater (the 2 km cells hold it: no profile to draw) is skipped by name',
+  Dskip.domes === 0 && Dskip.skipped.length === 2 && Dskip.skipped.some(s => s.kind === 'secondary_crater') && Dskip.skipped.some(s => /pancake_dome/.test(s.kind)), JSON.stringify(Dskip));
+console.log('      dome at ' + DX + ',' + DZ + ' r ' + DR + ' m: top ' + TOP + ' m over ' + BASE + ' m; ' + JSON.stringify(D1.check));
 T.done();

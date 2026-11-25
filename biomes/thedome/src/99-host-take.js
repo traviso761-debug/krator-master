@@ -25,6 +25,13 @@ const VIEWS=SKEY==='apron'?{
  'Lenticular crown veil':look(68,-68,12,-12,12,16),
  'Crown rosette gnammas':look(34,-52,4.4,18,-64,0.4),
  'Dome observatory plinth':look(0,-34,5.2,0,4,2.0)
+}:SKEY==='eastflank'?{
+ 'Overview':look(96,-112,34,-12,4,6),
+ 'Perimeter kill line':look(28,-56,9.5,4,12,1.5),
+ 'Carnelian sky island':look(-18,-32,10.5,-78,18,3.5),
+ 'Active mist pylon':look(32,-48,6.5,62,-18,8.0),
+ 'East gnamma mirrors':look(56,-84,5.4,74,-62,0.4),
+ 'Flank lithophone arch':look(82,62,4.8,104,46,1.2)
 }:{
  'Overview':look(-136,-92,34,8,0,-8),
  'Radial kluft throat':look(-74,-1.8,5.6,22,0.5,-2.5),
@@ -200,12 +207,18 @@ function collectUntexturedLitMeshes(extraList){
 
 const HCHK={
  stationSpecies(st,skey){
-  const req=skey==='apron'?['gnammamoss','panbonsai','cloudgarlandpine','cleftfilmyfern','ringlichen']
+  const req=(skey==='apron'||skey==='eastflank')?['gnammamoss','panbonsai','cloudgarlandpine','cleftfilmyfern','ringlichen']
    :skey==='moat'?['moatpitcher','ringlichen','moatcedar']
    :skey==='crown'?['gnammamoss','cloudgarlandpine','crownrosette','ringlichen']
    :['cloudgarlandpine','crownrosette','cleftfilmyfern','ringlichen'];
   const miss=req.filter(k=>!(st&&st[k]>0));
-  return{ok:!miss.length,detail:miss.length?'missing on '+skey+': '+miss.join(', '):req.map(k=>k+' '+st[k]).join(', ')};
+  if(skey==='eastflank'){
+   if(!(st&&st.carnelianSkyIsland>=25))miss.push('carnelianSkyIsland>=25');
+   const tagRecs=(typeof KTAGS!=='undefined'&&KTAGS.page&&KTAGS.page.records)?KTAGS.page.records:[];
+   const hasPylon=tagRecs.some(r=>r&&r.id==='thedome:ecof-mist-pylon'&&r.class==='infrastructure');
+   if(!hasPylon)miss.push('thedome:ecof-mist-pylon');
+  }
+  return{ok:!miss.length,detail:miss.length?'missing on '+skey+': '+miss.join(', '):req.map(k=>k+' '+st[k]).join(', ')+(skey==='eastflank'?', carnelianSkyIsland '+st.carnelianSkyIsland:'')};
  },
  ownDmFootprint(px,py){
   const fp=DOME_PHYS.inDomeFootprint(px,py);
@@ -311,6 +324,8 @@ const HINT=SKEY==='apron'
  ?'Concentric Ring-Dike Moat (1317, 117, +1,749.1 m, 1.29 atm, Cfa): radial sheetwash rills cascading down the bare inner dome toe into a tannin-amber moatpitcher & sphagnum seepage fen impounded behind an arcuate +18 dB whispering-gallery porphyry ring-dike hogback.'
  :SKEY==='crown'
  ?'Lenticular Cloud-Cap Crown (1328, 150, +2,924.8 m true apex, 1.11 atm, Cfb): bathed in The Crown-Veil stationary cap-cloud, concentric cloudgarlandpine treeline ribbons trace exfoliation step-risers around silvery crownrosette fog-cushions and site:dome-observatory.'
+ :SKEY==='eastflank'
+ ?'East Flank Carnelian Sky-Island & Perimeter Kill-Line (1384, 142, +2,361.1 m, 1.19 atm, Cfa): unbroken crimson Erythrophyll spire-and-fan refuge holding the upper quartz-porphyry shoulder upslope of a bone-white Ancient Kill-Line and an active solar Atmospheric Defoliant Mist-Pylon.'
  :'Radial Unloading Kluft Cleft (1372, 148, +2,537.7 m, 1.17 atm, Cfa): walkable wedged-chockstone descent into a 40 m rose-granite tension fissure lined with KSPELEO.SMOKY smoky-quartz & chlorite-dusted microcline megaprisms, breath-ferns, and barometric shimmer wisps.';
 
 const EXPORT_BOX=[-130,-110,130,130];

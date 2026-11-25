@@ -192,6 +192,7 @@
   /* a pack entry's colour map as a decoded Image, for a build that composes it into a canvas (an atlas):
      cb(img) once it has loaded; counted in window._texPending like the textures */
   KMAT.image = function(entry, cb){
+    (KMAT.imaged || (KMAT.imaged = [])).push(entry.map);   /* composed into an atlas: sampled, though no texture keeps its source (BIO.packUnsampled) */
     var img = new Image(); window._texPending++;
     img.onload = function(){ window._texPending--; cb(img); };
     img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed image failed to decode'); };

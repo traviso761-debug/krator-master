@@ -9,6 +9,9 @@ The page is the kit's demo page with its stage swapped: the kit's fragments by p
 left out), the same core modules, and this folder's src/ (45-nt-stage: the ground, the classes, the network, the viaduct, the trestle,
 the guideway; 70-nt-stage: the drawing and the views; 99-nt-take: the checks and core/host). The kit's 47-host-land draws the ground.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, os, re, subprocess, sys, importlib.util
 
 try:

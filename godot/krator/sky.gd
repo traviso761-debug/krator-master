@@ -8,6 +8,8 @@
 extends Node3D
 
 const MOONS := ["companion", "week", "thirteen", "day", "two-day", "four-day"]   # the model's moon order
+const SKY_FULL := preload("res://shaders/sky.gdshader")
+const SKY_HALF := preload("res://shaders/sky_half.gdshader")
 
 @export var site_px := Vector2(446, 690)       # the scale model's pixel (Voth, the reference site)
 @export var hour := 6.0                        # game start: sunrise
@@ -18,6 +20,14 @@ const MOONS := ["companion", "week", "thirteen", "day", "two-day", "four-day"]  
 @export var cover := -1.0                      # cloud cover 0..1; < 0 takes the preset's
 @export var weather := {}                      # {cover, grey, fog}
 @export var cloud_quality := "layers"           # "off", "layers" (the flat cumulus) or "volumes" (W6: the raymarched clouds)
+# the cloud layers in the sky's half-resolution pass (shaders/sky_half.gdshader; GODOT-LOOK-PLAN.md C9): the light rig's
+# low tier sets it (krator/look.gd). The material keeps its uniforms across the swap. The Compatibility renderer has no
+# such pass (checked on 4.7.2: the sky comes out wrong), so there the sky stays whole whatever is asked
+@export var half_res_clouds := false:
+	set(v):
+		half_res_clouds = v and RenderingServer.get_current_rendering_method() != "gl_compatibility"
+		if mat != null:
+			mat.shader = SKY_HALF if half_res_clouds else SKY_FULL
 
 var model
 var preset: Dictionary
@@ -34,7 +44,7 @@ func _ready() -> void:
 	model = load("res://krator/sky_model.gd").new()
 	preset = model.presets["standard"].duplicate(true)
 	mat = ShaderMaterial.new()
-	mat.shader = load("res://shaders/sky.gdshader")
+	mat.shader = SKY_HALF if half_res_clouds else SKY_FULL
 	var sky := Sky.new()
 	sky.sky_material = mat
 	sky.process_mode = Sky.PROCESS_MODE_INCREMENTAL

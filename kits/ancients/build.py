@@ -39,6 +39,9 @@ claim the file is syntactically valid — the only thing that actually catches a
 syntax error here is verify.py, which loads the page and reads the on-screen
 error panel. Do not read a green build as "the JavaScript parses".
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -154,8 +157,9 @@ def sb_ai():
 
 def sb_city_files():
     city = os.path.join(ROOT, 'core', 'city')
-    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js')]
-            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f) and 'host' not in f]
+    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js'), os.path.join(ROOT, 'core', 'kits', '10-core-kits.js')]
+            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f)
+               and ('host' not in f or f == '53-city-host-multikit.js')]   # with 42 and core/kits, the multi-kit host (Stage 8 D8): inert until called
             # kits/crops (plain data): what the foot's fields grow, from the Xanadu vale's crops (kits/crops/API.md, 'Reading it from a build')
             + [os.path.join(ROOT, 'kits', 'crops', 'src', f) for f in ('10-crop-core.js', '20-crop-records.js', '40-crop-query.js')]
             + [os.path.join(ROOT, 'settlements', 'strongbow', 'src', '40-sb-town.js')])
@@ -229,8 +233,9 @@ SEALED |= {SB_CITY, SB_XAK, SB_AI}   # Strongbow today's sealed bodies (core/cit
 
 def th_city_files():
     city = os.path.join(ROOT, 'core', 'city')
-    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js')]
-            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f) and 'host' not in f]
+    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js'), os.path.join(ROOT, 'core', 'kits', '10-core-kits.js')]
+            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f)
+               and ('host' not in f or f == '53-city-host-multikit.js')]   # with 42 and core/kits, the multi-kit host (Stage 8 D8): inert until called
             + [os.path.join(ROOT, 'kits', 'crops', 'src', f) for f in ('10-crop-core.js', '20-crop-records.js', '40-crop-query.js')]
             + [os.path.join(ROOT, 'settlements', 'theodiga', 'src', '40-th-town.js')])
 

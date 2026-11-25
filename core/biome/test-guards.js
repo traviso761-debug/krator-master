@@ -124,7 +124,11 @@ const ground = () => 0;
   const B = forest({ floating: true });
   const gc = B.guardChecks({ ground }), gn = B.guardNegatives({ ground });
   ok('guardChecks fails the floating card; its negatives (lifted, four times the range, the inside-out disc) fail as they must',
-    gc.find(c => /attach audit/.test(c.name)).ok === false && gn.filter(n => /lifted|four times|inside|cells/.test(n.name)).every(n => n.failed) && gn.length === 5, gn);
+    gc.find(c => /attach audit/.test(c.name)).ok === false && gn.filter(n => /lifted|four times|inside|cells|0x161618|nothing samples/.test(n.name)).every(n => n.failed) && gn.length === 7, gn);
+  /* T29d (D10): the two guards (soot; a packed family nothing samples) are among the checks, and on this page, with no near-black
+     unmapped item and no pack, they pass */
+  ok('guardChecks has the soot and unsampled-pack guards, and they pass on a page without either fault',
+    ['under soot', 'packed texture family'].every(k => { const c = gc.find(x => x.name.indexOf(k) >= 0); return c && c.ok === true; }), gc.map(c => c.name));
   ok('guardChecks on a page with nothing inside out passes that check', gc.find(c => /inside out/.test(c.name)).ok === true);
 }
 

@@ -32,7 +32,11 @@ uniform float gloss_k = 0.0;
 uniform vec3 emissive = vec3(0.0);
 uniform vec2 night_k = vec2(0.0);           // hang: emissive intensity by day and by night
 uniform float hang_a = 0.05;
-uniform bool srgb_vcol = false;             // true when GLTFDocument converted glTF COLOR_0 from linear to sRGB
+uniform bool srgb_vcol = false;
+// the export form's wind fields in the mesh's second UV set (core/biome aWind; krator/world_import.gd _wind): u the
+// vertex's stiffness (1 a trunk, 0 a twig's tip), v its branch's phase. Off, a branch stands still, as it always has
+uniform bool wind_uv2 = false;
+uniform float wind_a = 0.035;                // metres a twig's tip moves in a calm breeze             // true when GLTFDocument converted glTF COLOR_0 from linear to sRGB
 
 varying vec3 v_wp;
 varying vec3 v_wn;
@@ -43,6 +47,18 @@ void vertex() {
 	v_local_y = VERTEX.y;
 	if (mode == 5) {   // 50-biome-nhighlands-species.js: the bulbs sway on their threads (local, before the instance matrix)
 		VERTEX = bark_hang(VERTEX, MODEL_MATRIX[3].xyz, atm_time, hang_a);
+	}
+	if (wind_uv2) {
+		// a branch swings as one (its phase), a twig more than a bough (its stiffness), harder in a wind and downwind.
+		// Small on purpose: the leaves on it sway by their own rule (lib/foliage.gdshaderinc) and must not part from it
+		float give = (1.0 - clamp(UV2.x, 0.0, 1.0));
+		give *= give;
+		float ph = UV2.y * 6.2831853;
+		float wk = max(1.0, length(atm_wind));
+		vec2 dir = length(atm_wind) > 1e-3 ? normalize(atm_wind) : vec2(0.85, 0.35);
+		float s = sin(atm_time * 1.7 + ph) + 0.4 * sin(atm_time * 3.1 + ph * 2.3);
+		vec3 push = vec3(dir.x, 0.0, dir.y) * (wind_a * give * wk * (0.35 * (wk - 1.0) + s * 0.7));
+		VERTEX += push * mat3(MODEL_MATRIX);   // the push is in the world; a bucket's own frame is a turn and a place
 	}
 	v_lod = klod(MODEL_MATRIX[3].xyz, CAMERA_POSITION_WORLD, INSTANCE_ID);
 	if (v_lod > 1.5) {

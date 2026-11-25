@@ -41,3 +41,6 @@ const groundEye=(x,z)=>Math.max(terrainH(x,z),waterH(x,z));
 BIO.init({tags:'line',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:()=>0,obstacles:[],ticks:tick,seed:2081,
  origin:[[0,LINE.WIN.walk0],[0,(LINE.WIN.walk0+LINE.WIN.walk1)/2],[0,LINE.WIN.walk1]],center:[0,(LINE.WIN.walk0+LINE.WIN.walk1)/2],fields:{},register:REGISTER,err:reportErr,
  lod:{hero:60,mid:160,far:420,floor:[40,110]},windows:{}});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}

@@ -9,6 +9,9 @@ porters), on core/host's shell with the opt-in ride host fragment (core/walk/fra
 The world (40) is the node tests' (../test-ride.js, ../test-ride-cargo.js); the page adds the clock and the life (50),
 the scene (60) and the take (98).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))

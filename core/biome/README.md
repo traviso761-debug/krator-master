@@ -288,6 +288,17 @@ Adopting it: list `'33-core-fungoid.js'` after `30-core-foliage.js` in `CORE_BIO
 `rng()` draws), so nothing placed after it moves; a new pass can use the layouts. nhighlands' mushroom and disc stalk are the
 first (2026-10-26: `G.mushroom`, `G.disc` in its `50`); the rest of `TODO.md`'s list follows in the final rebuild.
 
+Two options added 2026-11-24 (the owner's choices for the two kits the fungoid pass skipped), both off by default; with
+neither, every part is the same byte for byte (`test-fungoid.js` hashes 18 parts and every literal `BIO.fung` call the kits
+made that day, `test-fungoid-calls.json`):
+- **Ring colours** (`cap`, `bracket`): `o.ringCol [[r, [R,G,B]], ...]` root to rim, `r` a fraction of the radius. The top is
+  resampled at each ring's radius and each vertex's colour is the rings' RGB blended linearly by radius, in place of its grey
+  shade; `bracket`'s `o.underCol [R,G,B]` colours its underside. Oidong's rainbow brackets (`G.bracket`) are the first.
+- **Halves** (`cap`): `o.only 'top'` or `'under'` draws one half of the same cap (the underside: gills or pores, and the stem),
+  and `o.gillRoof` closes the gills' roof along their top edges, facing down (`roofK`). A kit that skins the top and colours
+  the gills apart defs the two halves from one `o`, so the gills hang below the top everywhere: the Throne's parasols
+  (`G.disc`, `G.gills`).
+
 ## Bamboo parts (`33b-core-bamboo.js`, `BIO.bamboo`; opt-in)
 
 The giant-bamboo parts, written once before the kits that need them (`biomes/hyperjungle/PLAN-LANDS.md` section 11, H5,
@@ -422,7 +433,8 @@ sets, gloss, irid, both far kinds, hang, plain bark, solid) as `de751ca46` wrote
 | B9 spin | `BIO.leafMat(tex,key,{spin:true})` (or `spin:{value}` of the host's own): turns about the instance origin by `BIO.SPIN.value` | per material |
 | R5 floor cover takes the ground's colour | `BIO.setGround(tex,[x0,z0,x1,z1],{linear})` or `BIO.setGround(BIO.groundTex(fn,box,128),box)`; leafMat `{ground:{k,gain,tip,fade:[d0,d1]}}` | page + material |
 | R7 alpha-to-coverage | `BIO.setA2C(renderer)` after the kits are built: MSAA on WebGL2 only, the alpha test kept otherwise | page |
-| R8 one wind field | `BIO.bindAtmosWind({gain})` after `ATMOS.init`/`bindHost`: the sway and lean ride `atmGust` at each root | page |
+| R8 one wind field | `BIO.bindAtmosWind({gain})` after `ATMOS.init`/`bindHost`: the sway and lean ride `atmGust` at each root. Since Stage 8 V10 (2026-11-24) a page with core/atmos initialised binds it by itself at the first program key (gain 1; the leaves and the sward both); the call is still how a page sets its gain. `BIO.WIND_AUTO=false` turns the default off | page |
+| V8 cloud shade | every lit material the core makes (leaf, bark, irid, gloss, far, hang, solid, sward) calls `BIO.cloudShade(m)`: queued, then hooked once (`ATMOS.cloudShade`, porosity `BIO.CLOUD.porosity`, .4) when the page shades its lit materials (`ATMOS.cloudShadeScene`: `skyBiome` runs it unless `o.shade` is false; a page on `ATMOS.sky` calls it after its build), made before it or after. No core/atmos, no shared sky, or no scene pass: the text is what it was. `BIO.CLOUD.on=false`: none | page |
 | item 6 back-light | leafMat `{backlit:0..1}` | per material |
 | the cross-fade hook | `BIO.FADE={uniforms,vertexPars,vertex,fragmentPars,fragment}` or `function(sh,kind)`, set before the kits build | page (for the kit workstream's dithered LOD cross-fade) |
 | X4 the ground dither | list `31-core-dither.js`; `BIO.DITHER` is the GLSL (kdither, kditherW, kmacro), `BIO.ditherCell` its JS twin | fragment |

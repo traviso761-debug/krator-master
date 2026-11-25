@@ -1,7 +1,7 @@
 // ================================================================= HOST — stage: terrain, hydrology, KSPACE & BIO.init
 // Implements all three Crook stations from CROOK-RIA-DECISIONS.md section 1.6 and PLAN.md section 3:
 //   shore (default, dist/crook.html):   Drowned ejecta-caldera basalt collar, < +65 m tsunami-scoured columnar basalt
-//                                       spray-benches, sheltered caldera lagoon, Kopa-Tarn Warra mouth, >= +65 m cloud-forest
+//                                       spray-benches, sheltered caldera lagoon, Kopa-Kawa mouth, >= +65 m cloud-forest
 //   wash  (dist/crook-wash.html):       Incised V-gorge forest, shaded skarn-seep wall, 16 monotone-stepped iron-jade
 //                                       rimstone pools, windy chasm rims, and sunny N-facing rain-shadow slope
 //   head  (dist/crook-head.html):       Subalpine moraine tarn, KFROST periglacial stone circles, 48 thermogenic +15 degC
@@ -90,13 +90,13 @@ if(SKEY==='wash'&&SITE.rimstoneSteps){
 // River / stream polylines per station
 const FLOW_LINES=(function(){
  if(SKEY==='shore'){
-  // Kopa-Tarn Warra mouth chute terminating cleanly at the NW Ocean shoreline (x = -68)
+  // Kopa-Kawa (Khopri-Tskhali) mouth chute terminating cleanly at the NW Ocean shoreline (x = -68)
   const pts=[];
   for(let i=0;i<=18;i++){
    const t=i/18,x=360-428*t,z=18-78*t+16*Math.sin(t*4.2);
    pts.push([x,z]);
   }
-  return[{name:'Kopa-Tarn Warra Mouth',pts:pts,w:15,depth:0.85,speed:2.2}];
+  return[{name:'Kopa-Kawa Mouth',pts:pts,w:15,depth:0.85,speed:2.2}];
  }
  if(SKEY==='wash'){
   // Main incised V-gorge torrent (east to west) + north-wall cascade tributary joining main torrent
@@ -112,7 +112,7 @@ const FLOW_LINES=(function(){
    side.push([x,z]);
   }
   return[
-   {name:'Kopa-Tarn Gorge Torrent',pts:main,w:14,depth:0.95,speed:2.6},
+   {name:'Khopri-Tskhali Gorge Torrent',pts:main,w:14,depth:0.95,speed:2.6},
    {name:'Skarn-Wall Tributary Cascade',pts:side,w:4.5,depth:0.45,speed:2.9}
   ];
  }
@@ -174,7 +174,7 @@ function landShore(x,z){
    h=bowl;
   }
  }
- // Incised Kopa-Tarn Warra mouth channel
+ // Incised Kopa-Kawa mouth channel
  const rv=distToPoly(FLOW_LINES[0].pts,x,z);
  if(rv.d<58&&x>-90){
   const bed=mix(88,-1.8,Math.pow(rv.t,0.82));
@@ -484,7 +484,7 @@ if(typeof KHAZ!=='undefined'&&typeof KTAGS!=='undefined'&&KTAGS.page){
  };
  if(SKEY==='shore'){
   regHaz('crook:spraybench','Crookshore Tsunami Spray-Bench Hazard',-25,20,95,65,{kind:'drown',effect:'drown',danger:0.75,dose:0.35,falloff:'linear'});
-  regHaz('crook:meltwater-mouth','Kopa-Tarn Glacial Plunge Current',40,-42,36,8,{kind:'cold',effect:'freeze',danger:0.55,dose:0.25,falloff:'smooth'});
+  regHaz('crook:meltwater-mouth','Kopa-Kawa Glacial Plunge Current',40,-42,36,8,{kind:'cold',effect:'freeze',danger:0.55,dose:0.25,falloff:'smooth'});
  }else if(SKEY==='wash'){
   regHaz('crook:meltwater-gorge','Vardzieti Gorge Whitewater Torrent',0,0,32,12,{kind:'cold',effect:'freeze',danger:0.6,dose:0.3,falloff:'smooth'});
   regHaz('crook:rimstone','Slick Iron-Jade Rimstone Terrace Lips',-90,-85,68,18,{kind:'slip',effect:null,danger:0.35,dose:0.15,falloff:'smooth'});

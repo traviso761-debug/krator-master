@@ -4739,6 +4739,11 @@
     "gloss": "Yan (First) + Warra (river)",
     "name": "Yan Warra"
   },
+  "r_gh_spillway:__tongue__": "xanadui",
+  "r_gh_spillway:xanadui": {
+    "gloss": "Āirã (iron) + Siṭrīm (stream)",
+    "name": "Āirã Siṭrīm"
+  },
   "r_hr_jokulhlaup:__tongue__": "tungang",
   "r_hr_jokulhlaup:tungang": {
     "gloss": "Brant-Fell Gill ('Steep-Fell Jökulhlaup Gorge') — catastrophic glacial outburst gorge descending from the High Rift rim",

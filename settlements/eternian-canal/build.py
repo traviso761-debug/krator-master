@@ -134,12 +134,13 @@ CORE_DIRS = [
 EXPORT_FILES = ['core/export/07-core-export.js', 'core/export/09-core-export-adapters.js']
 CORE_HOST = list(dict.fromkeys(khost.FULL + kengine.HOST + kengine.INTERIORS_HOST + khost.KEYS))
 INTERIOR_SETS = ['eternian']
-FURN_CULTURES = ['eternian', 'generic', 'generic-goods', 'jobs', 'scrap']
+FURN_CULTURES = ['eternian', 'generic', 'generic-goods', 'jobs', 'scrap', 'arms']   # arms: the fort's armour stands (kits/eternian 61-et-defence.js; Stage 8 D27, O5)
 
 CITY_JS = [
     '10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js',
     '25-city-site.js', '31-city-steps-b.js', '32-city-steps-c.js',
     '33-city-strategies.js', '37-city-grid.js', '40-city-kcity.js',
+    '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js',   # the multi-kit host (Stage 8 D8): inert until called
 ]
 HAMLET_JS = [
     '10-hamlet-wood.js', '12-hamlet-gather.js', '14-hamlet-farmland.js',

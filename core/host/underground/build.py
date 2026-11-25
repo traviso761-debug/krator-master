@@ -6,6 +6,9 @@ core/host/UNDERGROUND.md is the plan and the interfaces.
     python3 build.py      # -> underground.html next to this file
     python3 check.py      # headless (KRATOR_GL=gpu for the real GPU): every piece, each with a negative, and the shots
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__)); HOST = os.path.dirname(HERE); CORE = os.path.dirname(HOST)

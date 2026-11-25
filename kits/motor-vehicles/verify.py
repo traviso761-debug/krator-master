@@ -186,7 +186,8 @@ for(const E of KV.list()){
     /* tags and data */
     const T=E.tags||{};
     if(!E.culture||C.cultures().indexOf(E.culture)<0)r.fail.push('tags: culture '+E.culture+' not registered');
-    if(!inList(T.class,C.CLASSES))r.fail.push('tags: class '+T.class);
+    const RC=C.record?C.record(E.key,{}):null;   /* the core/tags record (Stage 8 T9): class 'vehicle'; the def carries no class tag */
+    if(T.class!==undefined||!RC||!inList(RC['class'],C.CLASSES))r.fail.push('tags: class '+(T.class||(RC&&RC['class'])));
     if(!Array.isArray(T.type)||!T.type.length||!T.type.every(x=>inList(x,C.TYPES)))r.fail.push('tags: type '+JSON.stringify(T.type));
     if(!inList(T.drive,C.DRIVES))r.fail.push('tags: drive '+T.drive);
     if(!(T.seats>=1))r.fail.push('tags: seats '+T.seats);
@@ -195,7 +196,7 @@ for(const E of KV.list()){
     for(const k of ['speed','seats','cargo','tank','maxSteer','wheelbase','track','mass'])if(typeof D[k]!=='number'||!(D[k]>=0))r.fail.push('tags: data.'+k+' '+D[k]);
     if(!inList(D.fuel,C.FUELS))r.fail.push('tags: data.fuel '+D.fuel);
     if(!Array.isArray(D.wheels)||D.wheels.length<3)r.fail.push('tags: data.wheels');
-    if(u.key!==E.key||u.culture!==E.culture||!u.tags||u.tags.class!==T.class)r.fail.push('tags: userData does not carry key/culture/tags');
+    if(u.key!==E.key||u.culture!==E.culture||!u.tags||JSON.stringify(u.tags.type)!==JSON.stringify(T.type))r.fail.push('tags: userData does not carry key/culture/tags');
     /* colour: the variant's paint, linear, among the body's vertex colours */
     const paintKey=cfg.paint[E.key]&&cfg.paint[E.key][v];
     if(paintKey){

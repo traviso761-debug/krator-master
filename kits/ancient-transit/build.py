@@ -22,6 +22,9 @@ Another build takes the kit as biomes/ancientsvalley takes kits/metropolis: the 
 and the furniture bundle as a generated fragment (transit_bundle.furniture()); its library pack with tools/textures/matlib_pack.py
 under the name 'ancient-transit'. Usage: python3 build.py [--no-checks] [--inline-packs]
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys, importlib.util
 
 import os as _os, subprocess as _sp, sys as _sys

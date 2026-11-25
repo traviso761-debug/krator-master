@@ -138,7 +138,7 @@
     }
    });
    const wMag=Math.hypot(ATMOS.U.wind.value.x,ATMOS.U.wind.value.y);
-   const animSynced=Math.abs(ANIMU.uWind.value-wMag)<1e-4;
+   const animSynced=Math.abs(ANIMU.uAnimWind.value-wMag)<1e-4;
    const ok=!!(typeof ATMOS!=='undefined'&&ATMOS.U&&!progIssues.length&&hooked.length>=5&&!unhooked.length&&!unbound.length&&
     pinnedVerts>=100&&freeVerts>=400&&maxPinDrift===0&&maxWindDisp>0.05&&timeDeltaMax>0.03&&windTurnDelta>0.05&&downwindAligned>20&&animSynced);
    return {

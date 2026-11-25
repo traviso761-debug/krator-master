@@ -21,6 +21,9 @@ The sheet is the kit and what it is drawn round, each in a <script> of its own, 
 Nothing is copied: every file is read live at build time. Checks: the port lint (tools/check_port.py), unique top-level
 names across the kit's own fragments, `node --check` on every script when node exists.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.

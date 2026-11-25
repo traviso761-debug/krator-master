@@ -367,7 +367,9 @@ def keymap():
         m['generic_trade_' + r] = 'xanadu_trade_' + r
     return m
 
-NEW = {
+# the pieces the catalog lacked, all built since (2026-11-23): the seven in kits/catalog/krator-master-furniture-xanadu.js, the four
+# shared with the Beacon's and the Tempest's lists there too (the Beacon's B8). Kept as the record of what was asked for; nothing is NEW now
+NEW_BUILT = {
   'xanadu_eye_heliograph': 'the Eye Post\'s heliograph: a 60 cm disc of polished speculum bronze in a yoke on a stone pier, a second mirror to turn the sun when it stands behind, a sighting vane with a crosswire, and a slatted shutter on a lever',
   'xanadu_fire_basket': 'the night\'s answer: an iron fire basket on a tall stand behind a screen of hinged iron slats worked by a lever (the shutter), juniper piled beside it; lit from the Ember',
   'xanadu_ember_hearth': 'the Ember\'s hearth: a gilt bronze bowl on a stepped basalt altar under a copper hood, a pair of tongs and the brass lantern the fire is carried in',
@@ -380,6 +382,7 @@ NEW = {
   'xanadu_common_reader_seat': 'the refectory reader\'s raised seat and lectern (shared with the Beacon\'s and the Tempest\'s lists)',
   'xanadu_common_signal_mirror': 'a 30 cm signal mirror on a tripod with a sighting vane and a shutter (shared with the Beacon\'s and the Tempest\'s lists)',
 }
+NEW = {}
 
 # ------------------------------------------------------------------------------------------------ the section
 PROF = DUMP['profile']

@@ -93,16 +93,7 @@ SITE.sky={px:1138,py:858,pressure:1.17,humidity:.82,clouds:{cover:.55,cumulus:.4
  T.STACK={seed:61138,range:[2000,3000],dip:[Math.SQRT1_2,Math.SQRT1_2,-T.rampK],warp:[1.1,.35],warpF:[.012,.05],formations:[
   {recipe:'megabreccia',top:C0-26},{recipe:'carbonate-shelf',top:C0},{recipe:'tig-paleosol',th:1.5},{recipe:'tig-ignimbrite',th:22},{recipe:'tibasalt'}]};
  T.ZONES={paleosol:C0,tuff:C0+1.5,basalt:C0+23.5};   /* the contacts at s = 0 (yy) */
- // the page recipes (KSTRATA.add, as station 1's crag breccia): the baked red paleosol at the terrace contact, and the welded tuff with its fiamme
- if(typeof KSTRATA!=='undefined'){
-  if(!KSTRATA.RECIPES['tig-paleosol'])KSTRATA.add({name:'tig-paleosol',main:'bole',kinds:{
-   bole:{p:.62,th:[.3,.8],col:[0xa4422a,0xb04c30,0x983c26],hard:.25,xbed:0,varnish:.1},
-   baked:{p:.26,th:[.15,.45],col:[0x7a2a1c,0x862f1e,0x6e2618],hard:.4,xbed:0,varnish:.15},
-   root:{p:.12,th:[.05,.2],col:[0xc8a68a,0xd2b294],hard:.2,xbed:0,varnish:0,between:true}},fx:{varnish:.2}});
-  if(!KSTRATA.RECIPES['tig-ignimbrite']){const B=KSTRATA.recipe('outland-tuff'),K=Object.assign({},B.kinds);
-   K.fiamme={p:.1,th:[.08,.3],col:[0x2a2622,0x34302a,0x221e1c],hard:.6,xbed:0,varnish:.3,between:true};   /* black glass lenses, flattened in the welding */
-   K.welded=Object.assign({},K.welded,{p:.26});
-   KSTRATA.add(Object.assign({},B,{name:'tig-ignimbrite',kinds:K}));}}
+ // tig-paleosol (the baked red paleosol at the terrace contact) and tig-ignimbrite (the welded tuff with its fiamme) are core's recipes, as station 1's crag breccia
 })(TIG);
 // the land's forms, before the base's stage runs (see the header): the base's baseH is a hoisted declaration, wrapped here
 baseH=(function(b0){return function(x,z){return TIG.shape(x,z,b0(x,z));};})(baseH);

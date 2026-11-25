@@ -1,5 +1,5 @@
 // ================================================================= HOST — water: braided channels, silt plume, slackwater ponds & bitumen tar seeps (core/water)
-//   bioherm : WATER.open estuarine bay + WATER.plume (ext/61 Ma-Ria golden silt front) + 3 braided WATER.flow channels + 3 WATER.still peat-ponds
+//   bioherm : WATER.open estuarine bay + WATER.plume (ext/61 Riwa-Wata golden silt front) + 3 braided WATER.flow channels + 3 WATER.still peat-ponds
 //   bitumen : 5 glossy iridescent-rimmed WATER.still natural bitumen/asphalt tar pools + 2 WATER.flow tsunami scour drainage streams
 //   throat  : WATER.open Ria Sound mouth + WATER.plume golden delta outflow + 2 deep braided WATER.flow throat channels
 {
@@ -46,7 +46,7 @@ const FLOW_DRAWS=[],STILL_DRAWS=[],W_OUT={};
 
 if(SKEY==='bioherm'){
  const BOX=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1];
- /* Advected golden-brown Ma-Ria river silt plume swirling from channel mouths into blue-green Western Ocean tide (ext/61) */
+ /* Advected golden-brown Riwa-Wata river silt plume swirling from channel mouths into blue-green Western Ocean tide (ext/61) */
  const plumeTint={
   box:BOX,cell:32,
   at:(x,z)=>{
@@ -62,7 +62,7 @@ if(SKEY==='bioherm'){
   }
  };
  BIGW=WATER.open({
-  name:'Western Ocean Tidal Front and Ma-Ria Silt Plume',
+  name:'Western Ocean Tidal Front and Riwa-Wata Silt Plume',
   level:0,
   swell:[[0.14,48,12,0,0.18],[0.08,29,-26,1.4,0.14]],
   field:0.65,bounds:BOX,bed:terrainH,bedCell:10,
@@ -75,7 +75,7 @@ if(SKEY==='bioherm'){
   surf:true,breakers:true,renderOrder:1,roughness:0.12,metalness:0.05,envMapIntensity:0.6,
   shallow:lin(0x889a6e),deep:lin(0x1c5c68)
  });
- BIG_DRAW.mesh.userData.inspectLabel='Western Ocean Tidal Front and Ma-Ria Silt Plume';
+ BIG_DRAW.mesh.userData.inspectLabel='Western Ocean Tidal Front and Riwa-Wata Silt Plume';
 
  L.CH.forEach(c=>{
   const pts=[],sEnd=c.mouthS+6;

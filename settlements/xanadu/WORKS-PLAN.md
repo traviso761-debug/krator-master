@@ -157,7 +157,7 @@ kit's.
 
 - **W1**: `core/hamlet/camp/26-hamlet-camp.js` (opt-in: `spec.camp`, `spec.share`; `core/hamlet/test-hamlet-camp.js`, 15 checks
   with negatives, run by `test-hamlet.js`); the Xanadu row's `mill`, `diggings` and `landing` foci (`core/hamlet/xanadu/23`);
-  `kits/xanadu/extra/88h-xa-mine-works.js` (`xa_stamp_mill`, `xa_sorting_shed`, inside their lots by `test-footprints.js`).
+  `kits/xanadu/extra/88l-xa-mine-works.js` (`xa_stamp_mill`, `xa_sorting_shed`, inside their lots by `test-footprints.js`).
 - **W3**: `settlements/xanadu-works` (a target on Xanadu's page): the four camps from the tune's records, 950 = 500 + 450 and
   850 = 500 + 350; a fifth of the diggings' houses the Glaziers' (`gz-front`, `gz-cell`); the heaps on `KRUBBLE`. Its verify:
   `works-laid`, `census`, `works-present`, `footprints`.

@@ -25,8 +25,8 @@ for(const F of KITF('src').concat(KITF('extra'))){const s=fs.readFileSync(F,'utf
   if(!DIMS[m[1]]&&g('w'))DIMS[m[1]]={w:g('w'),d:g('d'),h:g('h')||8,fw:g('fw')||g('w'),fd:g('fd')||g('d')};}
  /* the garden and water tiles name their key first (xaGardenDef('xa_parterre', ...), xaWaterDef('xa_rill', ...)): 8 m plots */
  for(const m of s.matchAll(/xa(?:Garden|Water)Def\('(xa_[a-z0-9_]+)'/g))if(!DIMS[m[1]])DIMS[m[1]]={w:8,d:8,h:5,fw:8,fd:8};}
-/* the wind-catcher twins (kits/xanadu/extra/88f XH_BADGIR): each its house's box */
-{const m=fs.readFileSync(path.join(ROOT,'kits','xanadu','extra','88f-xa-harbour.js'),'utf8').match(/const XH_BADGIR=\[([^\]]*)\]/);if(m)for(const k of m[1].match(/xa_[a-z0-9_]+/g))if(DIMS[k])DIMS[k+'_badgir']=Object.assign({},DIMS[k],{h:DIMS[k].h+2});}
+/* the wind-catcher twins (kits/xanadu/src/88f XH_BADGIR): each its house's box */
+{const m=fs.readFileSync(path.join(ROOT,'kits','xanadu','src','88f-xa-harbour.js'),'utf8').match(/const XH_BADGIR=\[([^\]]*)\]/);if(m)for(const k of m[1].match(/xa_[a-z0-9_]+/g))if(DIMS[k])DIMS[k+'_badgir']=Object.assign({},DIMS[k],{h:DIMS[k].h+2});}
 /* a twin def takes its base's box (XA.def({key:'xa_monastery_white', baseKey:'xa_monastery', w:D.w, ...})) */
 for(const F of KITF('src').concat(KITF('extra')))for(const m of fs.readFileSync(F,'utf8').matchAll(/key:'(xa_[a-z0-9_]+)',baseKey:'(xa_[a-z0-9_]+)'/g))if(DIMS[m[2]])DIMS[m[1]]=DIMS[m[2]];
 const dims=(k,v)=>DIMS[k]?{key:k,v:v||0,w:DIMS[k].w,d:DIMS[k].d,h:DIMS[k].h,fw:DIMS[k].fw,fd:DIMS[k].fd}:null;

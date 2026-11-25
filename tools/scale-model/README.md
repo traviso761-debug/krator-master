@@ -1351,6 +1351,48 @@ The owner chose "change the world" for Lāiṭwāl (`settlements/lightwall/PLAN.
 - The lake a cell south of the pin, the wall 1,220 m over it a cell north (`tests/test_smodel.py` section 26). The page's
   `lwPending` and `LW_PEND` come out after the region's re-cut (held with the others).
 
+## Hook's spit (2026-11-24): three landform records, no raster changed
+
+The owner chose "a spit at the pin" for Hook (`settlements/hook`; the Hook port session's note
+`hook-map-edit-spit-2026-11-24.md`). Hook's pin `sm3ft5vrof` (809,923) was a wet cell 6 m under the Ring Sea on a drowned
+flat; the continental records describe a peninsula and a spit (a carbonate shelf), which 2 km cells cannot hold. So it is
+sub-cell: three `bench` records (core/world 41l) appended to `model/data/landforms.json` exactly as
+`settlements/hook/world/landforms.json` has them, chained (41l stamps benches in order, so they union), each 5 m over the
+sea (-1,495.2 m), batter 15 degrees:
+- `lf_hook_spit` (809.025, 923.175; 4.7 by 1.9 km, east-west): the peninsula, its east end cut into the plateau's foot,
+  its north shore the waterfront;
+- `lf_hook_shank` (807.675, 923.75; 2.4 by 0.9 km, north-south): south off the west end, closing the lagoon;
+- `lf_hook_barb` (808.0, 924.35; 1.2 by 0.5 km, turned -20 degrees): the tip curling back east-north-east.
+About 10.6 km2 of fill at a mean 12 m. The pin stays at 809,923, on the spit 631 m south of the waterfront. No
+`openworld/` region reaches Hook yet; a cut that does takes the three from here, and Hook's own `world/cut.py` already
+skips a record the model has. 41l's `WLAND.check()` reports `toeOut` on each, since it reads each bench with the others off;
+`settlements/hook/tests/test-hook-world.js` checks the chain's toe on a ring outside it instead (a 41l follow-up).
+Checks: `tests/test_smodel.py` and `node settlements/hook/tests/test-hook-world.js` (15 pass). Rebuilt for the file's
+bytes: the scale model's page, `settlements/lightwall`, `biomes/godshearth` (and its `prismbasin` station),
+`openworld/xanadu-oidong-highrift` (`tools/reach.py`).
+
+## The northern and north-western rivers in their local tongues (2026-11-24, Crook/Ria's c54909f2e re-run)
+
+Crook/Ria's renaming (origin/crook-ria-kits-biomes-checks c54909f2e; its tools `smodel/river_names.py`,
+`smodel/frozen_river_names.json` and `river-names-5.1.md` came onto the line with Integration 2's merge 5c8e4f3a2, its
+model data did not) replayed on this model by river id, its names only, none of its geometry (`length_km`, `mouth_m`,
+`source_m`, `to.at_px`, `kind` stay this model's):
+- 44 rivers renamed, 25 more re-glossed or given a tongue: Low-Ria / High-Ria (9101 Rīwa-Wāta (Ria River), 9109
+  Tlīla-Wāda), Külaneva (9103 Mere-Upe, 9104 Helme-Koski, 9107 Suur-Neva, 9108 Musta-Jõgi), Dzagh-Vardzi (9105
+  Khōpri-Tskhali (Crook River), 9110, 9124, 9125, 9133), and 33 northern Farside courses (Y <= 515) in Yonni-Zāg
+  (-Dānu, -Vēli, -Khōra). 9103 and 9104 had continental-scope's subtitles here ("North Delta River", "North Headland
+  Fork"), not the branch parent's: the branch's names replace them whole.
+- Every `to` naming a renamed river (49), seven tributaries' glosses naming their trunk by its old name, the note of
+  `lf_crook_cascade_caldera`, and the notes of settlements `sdv8flumibridzi` and `shk2kaskedi` (found by id: their
+  reconcile key here is not the branch's).
+- Checked: the tool, run on this model in memory (as `tests/test_smodel.py` section 7 runs it), names all 44 as here.
+  It would also re-coin continental-scope's eleven Hajlandsk Alps rivers and the Locus delta and give 9102 the Hām
+  tongue: not this renaming's, left as they are. `tests/test_smodel.py` 396 pass.
+- Re-baked where the names reach: the pages that read `rivers.json` (`tools/reach.py`: Blakhed, Strongwall, Tempest,
+  Thalaba, Labyrinth, Godshearth), and by name only, by id, the three files with no generator here: `biomes/wouterwall`'s
+  region cut (9105, 9110; page rebuilt), `openworld/resources-settlements.json` (r074) and the globe's
+  `gallery/krator-globe/globe_data.json` (38; not republished).
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

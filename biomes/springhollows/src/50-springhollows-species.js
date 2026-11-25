@@ -217,11 +217,16 @@ var SPRINGHOLLOWS={
   M.stoneTufa.emissiveIntensity=lerp(M.stoneTufa.emissiveIntensity,targetEm,0.12);
  });
 
- // ---------------------------------------------------------------- merged bark buckets
+ // ---------------------------------------------------------------- merged bark & Carnelian chitin buckets
  BIO.bucket('sh_cypress',M['bark.cypress'],{label:'Sapphire-run bald-cypress fluted trunks & buttresses'});
  BIO.bucket('sh_oak',M['bark.oak'],{label:'Karst chinkapin oak trunks & limbs'});
  BIO.bucket('sh_pine',M['bark.pine'],{label:'Shut-in red-rock pine trunks & limbs'});
  BIO.bucket('sh_redbud',M['bark.redbud'],{label:'Hollow rose-cercis & whorl-olive trunks'});
+ BIO.bucket('sh_chitin',M.organicStrangler,{label:'Carnelian Erythrophyll fluted silica-chitin spires'});
+ if(typeof KFRONTIER!=='undefined'&&typeof KFRONTIER.defCladeItems==='function'){
+  KFRONTIER.defCladeItems(BIO,{chitin:M.organicStrangler,ruby:M.rockPorphyry,chalcedony:M.crystalCalcite,bleach:M.stoneAshlar},'sh_kf');
+  SPRINGHOLLOWS.byKey.stranglervine.items.push('sh_kf_flute_collar','sh_kf_veil_lobe','sh_kf_agate_rosette','sh_kf_agate_lens');
+ }
 
  function makeRockGeo(seed,flatY,angular){
   const g=new T3.IcosahedronGeometry(1,angular?1:2),p=g.attributes.position,J={},c=[];

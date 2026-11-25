@@ -12,7 +12,7 @@ const SLOT_SITE=(function(){const F=slotCanopy({slot:STATION.SLOT,cut:STATION.CU
    V['The slot from its lip']=[ex,solidH(ex,ez)+1.7,ez,fx,rimY(mid)-55,fz];}
   V['Under the canopy']=look(c2.x,c2.z,1.7,c2.x+c2.ux*60,c2.z+c2.uz*60,120);
   V['Along the slot']=[at(40).x,rimY(at(150))+25,at(40).z,at(L*.6).x,rimY(at(L*.6))-90,at(L*.6).z];
-  if(C0)V['A cable\'s anchor']=[C0.a[0]+C0.na[0]*14+mid.ux*8,C0.a[1]+4,C0.a[2]+C0.na[2]*14+mid.uz*8,C0.a[0],C0.a[1],C0.a[2]];
+  if(C0)V['A cable anchor']=[C0.a[0]+C0.na[0]*14+mid.ux*8,C0.a[1]+4,C0.a[2]+C0.na[2]*14+mid.uz*8,C0.a[0],C0.a[1],C0.a[2]];
   if(sh&&sh.S){const c=at(sh.s),side=(sh.a[0]-c.x)*c.nx+(sh.a[2]-c.z)*c.nz<0?-1:1,ex=c.x+c.nx*side*(lipOff+30)-c.ux*90,ez=c.z+c.nz*side*(lipOff+30)-c.uz*90,top=KSPAN.low(sh.S).p;   /* from the lip behind a shoot's anchor, to the top of its arch */
    V['Pioneer shoots on the up-draft']=[ex,solidH(ex,ez)+2,ez,top[0],top[1],top[2]];}
   if(STRYDERS.length){const d=STRYDERS[0],q=KSPAN.at(d.S,Math.min(1,d.t+.06));V['A cable-stryder asleep']=[q[0],q[1]+2.5,q[2],d.p[0],d.p[1]-.4,d.p[2]];}

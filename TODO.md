@@ -82,6 +82,34 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **The Iziz Vernacular's hamlet pieces into its src/** (2026-11-24, settlements/hook S5): `kits/iziz-vernacular/extra/75-vern-hamlet-extra.js`
+  (`vern_shrine`, the village shrine core/hamlet's iziz row has as pending; `vern_sawpit`, the settlers' timber works) joins
+  `src/72-vern-civic.js` and `src/73b-vern-works.js` and `vernacular.py`'s FILES, and `core/hamlet/21-hamlet-iziz.js` drops the shrine
+  from `pending` and takes the lumber works (`vern_sawpit`) settlements/hook's `77m` row adds (`SETTLERS`). Only Hook reads the file now
+  (`build.py` IZV_EXTRA). Every page that takes the Vernacular gains the two pieces.
+- **core/hamlet: a resource on the village point** (2026-11-24, settlements/hook KNOWN_ISSUES.md): `KHAMLET.village` faces its works from the
+  point to the resource, and with the two equal the works' box is zero (later houses overlap it). Guard it in `30-hamlet-village.js`.
+- **The Throne's row's terrain, what is left** (2026-11-24, `biomes/throne/PLAN.md` "Dropped or owed", "The row's terrain"; branch
+  `claude/throne-owed-1122`, b040e655a). Taken so far: KSTRATA walls (caldera `tibasalt`, blast `obsidian-pancake`), KLAVA flows (vents at load,
+  kipuka at build time, the caldera's overflow), the kipuka's rille. Left for the rebuild:
+  - **Lava steps: a core addition.** KRELIEF has no step form (a flow's front frozen in a terrace down a slope). Add one to
+    `core/terrain/38b-core-relief-lava.js` (with `test-relief-lava.js`, a negative), then take it on the kipuka's and the vents' flow fronts
+    (the KLAVA deposits' margins: `shared/46k-host-klava-flows.js`). Changes every page that inlines `38b` (Godstep, the Godthrone flank, the kipuka).
+  - **The tube station's surface flows.** Not taken: station 11 is underground and its surface shows only through the skylights, so a flow
+    over it would move the skylights' rims and every check on them for nothing seen. Take it only if the tube gets a surface view.
+  - **KSTRATA's core shader on the Throne's walls.** The caldera's and the blast's beds are drawn in one texture unit
+    (`shared/84s-host-strata-band.js`: colour by bed height, no per-pixel warp, cross-bedding, varnish or colonnade joints), as both grounds read
+    15 of 16 units and the core path (`KSTRATA.shade`) takes five. If the ground's layers are packed (two layers to a map, KNOWN_ISSUES
+    "Sixteen texture units"), switch the walls to `KSTRATA.shade`.
+  - **The kipuka's "nothing rooted under the water" check** now skips a moss skirt on a hyperjungle giant's buttress (one skirt 1.1 m under a
+    stream, 85 m from a 205 m tree, after the KLAVA flows moved the streams' lines). The cause is the hyperjungle kit's: it hangs its skirts
+    from the ground at the trunk (`biomes/hyperjungle/src/60-biome-hyperjungle-floor.js`, the hero boles' moss). Seat each skirt on the ground
+    under it instead, then drop the exemption (`stations/kipuka/99-host-take.js`, `HCHK.onButtress`). Changes every page that reads the
+    hyperjungle kit.
+  - **core/water: the pan's `levelAt`, and the glacier's hand-set line.** `WATER.fields` (ext/60) reads every surface's `levelAt`.
+    Ice has had one in core since Stage 8 B5 (91f152c34, `ext/54`: `S.levelAt=()=>S.level`), so the Throne's glacier no longer needs to
+    set it by hand (`stations/glacier/89w-host-water.js`): drop that line. The pan still has none (its water is only its film): give it one,
+    or let `fields` skip it, with a test.
 - **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
   `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
   `kits/xanadu/src/87k1-xa-lake-rooms.js` join `kits/interiors/sets/xanadu.js` when their pieces join the kit's src/; every page
@@ -115,6 +143,14 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **Execute the All-51-Settlements (`60`-Target) Rebuild & Continental-Scope Quality Pass** (`2026-11-22`, `settlements/ALL-BUILDS-REBUILD-PLAN.md`): port remaining bespoke layouts onto `WORLD.H` + `KCITY`, re-anchor stale cuts (`Erewhon` `841,1517`, `Pinnacle Rock` `1007,686`, `Longsong` `1228.88,1621.23`), apply frame turns (`Verge` `-10°`, `Ys` `-55°`, `Dalab` `+45°`, `Hook` `-9.2°`, `Dhelv` `+90°`, `Noah's Regret` `+90°`, `Ledge` `180°`), and place the locked systemic buildings (`10` Mercenary Bourses, `19` Order Chapterhouses + hidden Whisper-Cell radios + *Tzintzun*'s lab at `Voth`, Geomancer Dual HQs & `Verge` `856 m` oil cableway, Colonization Crier/`styleBooks` halls, Prohibition/Thieves' smuggling cellars, and `Rulings #1–101` workshop I/O chains).
 - **Wire multi-kit fragments & sidecars into settlement & regional builds** (2026-11-22, `core/region/MULTI-KIT-SCOPE.md` Phases 1–4, Rulings #99–101; held for the all-builds rebuild by owner's choice): include `core/kits/10-core-kits.js`, `core/city/42-city-multikit.js`, `core/city/53-city-host-multikit.js` (with `tools/kit_pack.py --sidecars` for cosmopolitan multi-kit pages) and `core/region/47s-region-styles.js` in settlement `CITY_JS` / `CITY_DATA_JS` / `REGION_JS` lists when rebuilding all settlements.
 - **Add `Sphere 27` (`Crook` / `Shroudhills`) biological lineages to `peoples.json`** (`2026-11-22`, `core/region/CROOK-RIA-SCOPE.md` §3.1; held here because `core/charactermodels/data/peoples.json` reaches `settlements/longsong`'s 5 pages): add `"cflit_qbon"` (*cFlīt-qBōn* pelagic `25-min` free-dive lineage), `"yonni"` (*Sfīra-Kandētæ* reverse-dimorphic `90%`-twin Spear-Queens), and `"hush_kin"` (*Silent Vales* *Handspeak* sanctuary tribes) to `core/charactermodels/data/peoples.json`, run `node core/charactermodels/test-rig.js` and `python3 godot/tools/sync_core.py`, and rebuild `settlements/longsong` inside the all-builds pass.
+- **The Orders' catalog pieces and kits/qiblai's interiors options** (2026-11-23, settlements/flashing-eye's interiors):
+  `kits/catalog/krator-master-furniture-xanadu.js` takes the Flashing Eye's seven pieces (the heliograph, the fire basket, the Ember's
+  hearth, the Book's lectern, the mirror bench, the crimson banner, the veil rack) beside the Beacon's eleven (its B8, 94ffe4aae,
+  taken here verbatim so the two merge clean); `kits/qiblai/src/89q5s-qb-shells.js` `qnIxType` takes `prog.doors`, `prog.bulbs`
+  and `prog.stair` (unused by every page but the Flashing Eye's, which behave as before). The catalog file reaches 57 build
+  commands (`python3 tools/reach.py kits/catalog/krator-master-furniture-xanadu.js`), the shells six (Azure Dream, Lightwall,
+  Qiblai's city, Viridian, kits/qiblai, the Flashing Eye); only kits/catalog and settlements/flashing-eye were rebuilt and
+  GPU-verified with the change. The rest ride with the rebuild.
 - **core/terrain's ground shader under an environment map** (2026-11-17, found on the Glaziers' sheet): `43-core-ground.js` names
   `kgTri`'s and the hex sampler's locals `v1 v2 v3` and `r1 r2 r3`, which three r128's `cube_uv_reflection_fragment` `#define`s as
   numbers whenever the scene or the material has an environment map (a skylight): the fragment fails ("'0.276' : syntax error").
@@ -138,6 +174,7 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   The pictures: `kits/catalog/materials.json` "decals" lists the ten owed in `core/materials/PROMPTS-archived.md` section 57 (delivered); once one
   is delivered, `python3 tools/textures/pack.py kits/catalog` packs it and Erewhon (`furniture_bundle.bundle(..., decals=True)`) and
   the catalog's sheet show it (about 150 KB each inline).
+- **Agreed 2026-11-24, source and tests first (`GODOT-LOOK-HANDOFF.md` says what this rebuild must do for it; `GODOT-LOOK-PLAN.md` section 13's table where each addition stands): the pages that take `core/engine`, `core/export`, `core/catalog` and `core/biome` are behind their sources and want this rebuild.** Built: a material's `side`, mirrored triangles, `closed`; in `core/engine` the chamfered box, out of true, a height field and the smoke and sill marks; in `core/catalog` the chamfered box and a grain axis; in `core/biome` wind stiffness and phase; each off until its `setForm()`. Still to write: baked occlusion and edge, the opening's mark, the Godot packs, an exporter that turns the forms on, and Godot's readers. The first note: eleven small export additions for the Godot look: a chamfered box on the box's own 24 vertices, three per-vertex fields (height above the plot, occlusion, edge), an opening's mark on its wall, out-of-true jitter, a furniture grain axis, wind stiffness and phase on plants, and Godot packs that keep colour and roughness; and three in the scene export that the back-face culling of 2026-11-23 turned up: a material's `side` (front, back or double), a mirrored mesh's triangles turned over when its matrix is baked, and `closed: true` on a closed solid; and one the air and the decals of 2026-11-24 need: where smoke rises and where a wall stains (a chimney's outlet, an opening's sill) as registry records. They touch `core/engine`, `core/catalog`, `core/biome`, `core/export` and `tools/textures/pack.py`, so they are cheap only inside this rebuild. The plan's steps 1 to 3 are built (its section 14.3), and 4, 6, 7 and 9, which are Godot-only (14.4); of step 5, the colour cards (P1) and the trunk's flare (P3) change the library and `core/biome` and so ride along too.
 - **Graphics & Terrain Stage 8 (the stack's own list; `STAGE-8/PLAN.md` supersedes it: its corrections A C4-C12, and the owner's D1 puts B1-B5/K1-K5 in their own sessions before Stage 8) (`GRAPHICS-TERRAIN-PROPOSAL.md` §11 & §12c–12d; `INTEGRATION-AND-REMAINING-SURVEY.md`, `BIOME-REBUILD-SURVEY.md`, `KIT-REBUILD-SURVEY.md`, `STAGE-5-REPORT.md`, `STAGE-6-7-REPORT.md`, from `claude/vertical-stack`)** — run in this exact order once the other collected sessions merge:
   1. **Turn `relief.micro: 2` and `relief.alpine: 2` on across every open-world region:** Set `"relief": {"micro": 2, "alpine": 2}` in every `openworld/*/data/region.json` (merging into existing `relief` dicts on `oidong-highrift` & `pinnacle`), re-run the world-tile stream bake, re-bake each region's `plan/sites.json` and resources, export cordillera Godot cases with `--micro=2 --alpine=2 --alpine-step=16`, and bake `40 km` `S1` horizon + sky-visibility maps (`python3 core/world/bake_horizon.py <export_dir>`) for every Godot open-world export. Verify `wrelief_test.gd` v2 goldens (`peaks2`, `crags2`, `records_alpine2`, `land_alpine2`) and `python3 tools/check_godot_exports.py`.
   2. **Roll out the Stage 5 (`M1`) engine-split material packing (`STAGE-5-REPORT.md` §4):**
@@ -156,7 +193,7 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 - **Stage 8: switch the per-page packs on** (2026-11-23, `settlements/xanadu/XS1-CLASSES.md` "Fixes after XS0"): after the re-pack, re-record each Xanadu page's lists (`python3 tools/textures/page_pack.py record <page> --queries ?interiors=1` on a GPU lane, into `settlements/xanadu/page-packs.json`), then make `--page-packs` the default in `settlements/xanadu/build.py` (its `'--page-packs' in sys.argv` test) and rebuild every page built on Xanadu's page; publish each page's renamed sidecars (`<page>.tex.<key>.js`) with it.
 - **Stage 8: glaze the five pattern sheets** (the owner, 2026-11-23: "Glaze at Stage 8"; `settlements/xanadu/XS1-CLASSES.md` "Fixes after XS0"): `xMosC`, `xMosD`, `xBandC`, `xGiltC` and `xBandR` (in `kits/xanadu` and `settlements/xanadu`) stay classed flat until then. At Stage 8 lower their roughness below 0.35 (their materials or their packed roughness maps; packed means now 0.381, 0.354, 0.423, 0.558, 0.809), re-pack, rerun `python3 tools/textures/mclass.py --measure`, class them glazed in both `materials.json` (they then derive glazed and take 8-bit normals, +119 to +198 KB each), and drop their entries from `core/materials/classes/m1-classes.json` "pending" (`test-class.js` fails until both are done).
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
-  `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour), `extra/88h-xa-mine-works.js`
+  `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour), `extra/88l-xa-mine-works.js`
   (2026-11-23, the stamp mill and the sorting shed: `settlements/xanadu-works` takes it) into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
 - **Register the `coyote` culture** (the owner, 2026-11-16, `kits/coyote/PLAN.md` sections 7 and 12): `'coyote': 'Coyote Men'` in
@@ -173,9 +210,6 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `core/engine`'s walkable deck/stair hooks (`36s-stair.js` / `37-wk-rec.js` for `cls === 'vessel'`), the Motor Vehicles kit and the
   Mechs register through core/tags as `vessel` and `vehicle` (the vehicles' own `class:'motor vehicle'` tag is a core/tags problem key:
   drop it for the class).
-- **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
-  spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
-  it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
 - **The Qiblai kit's cell range and college range** (2026-11-23, `settlements/opal-ford/src/89q8-of-order-pieces.js`): `of_cell_range`
   and `of_college_range` (`_m`, `_s`) are written on the kit's contract for Ōpal-Phōrḍ's Iridescent house only; move them into
   `kits/qiblai/src/89q3-qb-sacred.js` (as `qb_cell_range`, `qb_college_range`, the keys renamed in opal-ford's `89zp` and its test)
@@ -295,14 +329,6 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `KHAMLET.village` (`spec.camp`: the row's overrides; `spec.share`: one record over several camps; a spec with neither goes to the
   old functions bit for bit), tested by `core/hamlet/test-hamlet-camp.js` (run by `test-hamlet.js`); `settlements/xanadu-works`
   takes it. At the next all-builds rebuild fold it into `30-hamlet-village.js`, pass `camp` through 48s, drop `xanadu-camp`.
-- **core/world: a generic tent camp in the site planner** (2026-11-23, WORKS-PLAN.md W2): `KSITES.plan` (48s) pitches only the
-  Beast Riders' camps (`kit.programs(tribe)`, culture `beast-rider`), so the Golden Tears' camp (`stearscamp01`) and the Great
-  Caravan's halt at Erehwon are planned region-locally at load (`openworld/xanadu-oidong-highrift/src/48t-world-camps.js`, drawn by
-  88t; the Lake Shore reads both in place) and are not in `plan/sites.json`. Fold `KWCAMPS` into 48s/88s (a SITE_SPEC `camps` entry
-  with `kind: 'ring' | 'halt'`), bake them, and draw them with the Tents kit once it is sealed for another world (next item).
-- **The Tents kit for another world** (2026-11-23): no `tents_bundle.py` yet, so the regions draw the tents as their forms' massing
-  in their dress's colours (88t). Seal it as `XAK` is (`kits/xanadu/kit_bundle.py`) and let 88t draw the kit's own pieces near.
-  The kit has no Dalab dress: the Great Caravan's tents fall back to `generic` (the record says so).
 
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
@@ -382,11 +408,6 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `core/tags/glazier/52g-tags-glazier.js`, which only the Tungang kit loads. Move `'glazier': 'Glaziers'` into `CULTURE_NAMES` in
   `core/tags/52-core-tags-vocab.js` (and `NO_CATALOG` until a Glazier catalog culture file exists), delete `core/tags/glazier/`,
   and drop it from `kits/tungang/build.py`. It moves every page that takes core/tags.
-- **`WATER.drawFlow`'s program cache key leaves out its colours** (2026-11-12, found by `biomes/arch`): `core/water/51-core-water-kinds.js`
-  bakes `o.shallow` and `o.deep` into the fragment shader text but builds `customProgramCacheKey` from the common chunk and the flags only, so
-  every flow on a page after the first draws the first one's colours (three.js reuses the program). Add the two colours (and `o.color`) to the
-  key. `biomes/arch/src/89w-host-water.js` works round it by extending the key itself; drop that once core has it. It moves every page that
-  draws a flow (147 build commands, `python3 tools/reach.py core/water/51-core-water-kinds.js`).
 
 - **Owed from the merge of `ccr-a96f22b6-0hy616` into main (2026-11-18)**, each checked against this line before the merge (a
   worktree at a4ac64ebc builds the same findings), so none is the merge's own; the ratcheted lints' new keys baselined with this entry:

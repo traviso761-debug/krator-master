@@ -109,4 +109,28 @@ function meadow(o) {
   T.ok('B6: one program a page (the key names only the ground texture switch)', P.BIO.SWARD.layers.every(l => l.mat.customProgramCacheKey() === 'biosward'));
   T.ok('B6: the sward is left out of the probe and the audits (userData.probeSkip)', P.BIO.SWARD.meshes.every(m => m.userData.probeSkip && !m.castShadow)); }
 
+// ---------------------------------------------------------------- V10 (Stage 8, G-weather W3, 2026-11-24): the gusts roll across the grass
+// SWARD0: the SHA-1 (16) of the sward's shader (vertex, '----', fragment) as core/biome at 055cb4605 wrote it, no core/atmos on the page
+const SWARD0 = 'e52aea0b4f314a24', crypto = require('crypto');
+const swText = m => { const L = THREE.ShaderLib.lambert, sh = { uniforms: {}, vertexShader: L.vertexShader, fragmentShader: L.fragmentShader }; m.onBeforeCompile(sh); sh.text = sh.vertexShader + '\n----\n' + sh.fragmentShader; return sh; };
+const sha = s => crypto.createHash('sha1').update(s).digest('hex').slice(0, 16);
+/* core/atmos initialised, as ATMOS.init leaves it for the foliage (its wind uniforms, its gust GLSL, its presets and clock), on
+   the shared sky (ATMOS.sky's uniforms); noSky: a page on its own sky */
+const atmos = (P, noSky) => { vm.runInContext('var ATMOS={};', P.ctx); Object.assign(P.ctx.ATMOS, { U: { wind: { value: new THREE.Vector2(.8, .35) }, gustAmp: { value: .55 } },
+  PRESETS: { wind: { base: [.8, .35] } }, clock: { t: 7 }, GLSL_WIND: 'float atmGust(float t,vec2 xz,vec2 w){return 0.0;}\nvec2 atmWind(float t,vec2 xz,vec2 w,float amp){return w;}' },
+  noSky ? {} : { skyUniforms: { uCloud: { value: null } } }); return P.ctx.ATMOS; };
+{ const P = meadow(), m = P.BIO.SWARD.layers[0].mat, k = m.customProgramCacheKey(), sh = swText(m);
+  T.ok('V10: with no core/atmos the sward draws the text it drew (frozen SHA-1) and keys as before, nothing bound', sha(sh.text) === SWARD0 && k === 'biosward' && P.BIO.GUST === null, sha(sh.text) + ' ' + k); }
+{ const P = meadow(), A = atmos(P), m = P.BIO.SWARD.layers[1].mat, k = m.customProgramCacheKey(), sh = swText(m);
+  T.ok('V10: with core/atmos initialised the sward binds its gusts by itself (no bindAtmosWind call): the key says so, the uniforms are atmos\'s own',
+    k === 'biosward|gust' && P.BIO.GUST && sh.uniforms.uAtmW === A.U.wind && sh.uniforms.uGustAmp === A.U.gustAmp, k);
+  T.ok('V10: each clump\'s sway swells with the travelling gust at its root, after its own wave and before it moves',
+    /_swB \*= 1\.0 \+ uGustAmp \* uGustK \* atmGust\(uGustT, _sw0\.xz, uAtmW\);\nmvPosition\.xz \+= _swW \* _swB;/.test(sh.vertexShader) && /float atmGust\(/.test(sh.vertexShader));
+  const on = { gust: true }, off = { gust: false }, run = c => { const Q = meadow(); if (c.gust) atmos(Q); const mm = Q.BIO.SWARD.layers[0].mat; mm.customProgramCacheKey(); return /atmGust\(uGustT, _sw0/.test(swText(mm).vertexShader); };
+  T.neg('V10: the gust term is there only with core/atmos on the page', run, off, on);
+  T.neg('V10: a page with core/atmos on its own sky (no shared sky) keeps the old sward', c => { const Q = meadow(); atmos(Q, !c.sky); const mm = Q.BIO.SWARD.layers[0].mat;
+    return /atmGust\(uGustT, _sw0/.test(swText(mm).vertexShader) === false && mm.customProgramCacheKey() === 'biosward' && sha(swText(mm).text) === SWARD0; }, { sky: true }, { sky: false });
+  T.neg('V10: BIO.WIND_AUTO false keeps a page with core/atmos on the old sward', c => { const Q = meadow(); atmos(Q); Q.BIO.WIND_AUTO = c.auto; const mm = Q.BIO.SWARD.layers[0].mat;
+    return mm.customProgramCacheKey() === 'biosward' && sha(swText(mm).text) === SWARD0; }, { auto: true }, { auto: false }); }
+
 T.done();

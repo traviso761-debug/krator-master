@@ -31,6 +31,9 @@ const SPINE=[[0,0],[RIVER.x(-500),-500],[RIVER.x(500),500],[SF.c[0],SF.c[1]],[80
 BIO.init({tags:'guilin',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:91,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:380,mid:900,far:2400,floor:[240,600]}});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun(SUN_POS);
 
 // ---------------------------------------------------------------- the library layers (or procedural without the pack)

@@ -32,14 +32,17 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `56-ra-west-civic.js` | 18 |  |
 | `57-ra-west-sacred.js` | 32 **big** |  |
 | `58-ra-west-trades.js` | 14 |  |
+| `59-ra-west-dwellings.js` | 24 |  |
+| `59m-ra-west-mil-log.js` | 32 **big** |  |
 | `62-ra-east-court.js` | 20 |  |
 | `64-ra-east-town.js` | 18 |  |
 | `66-ra-east-civic.js` | 18 |  |
 | `67-ra-east-sacred.js` | 21 |  |
 | `68-ra-east-trades.js` | 14 |  |
-| `70-ra-vocab.js` | <1 |  |
-| `72-ra-trades.js` | 8 |  |
-| `89-rows.js` | 2 |  |
+| `69-ra-east-dwellings.js` | 23 |  |
+| `69m-ra-east-mil-log.js` | 29 |  |
+| `72-ra-trades.js` | 10 |  |
+| `89-rows.js` | 3 |  |
 | `91r-ra-roomlight.js` | 8 |  |
 | `91z-ra-world.js` | 3 |  |
-| `99-host-tz-ra.js` | 19 |  |
+| `99-host-tz-ra.js` | 21 |  |

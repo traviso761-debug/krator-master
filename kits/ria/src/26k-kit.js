@@ -9,19 +9,19 @@
 //     obelisks (lodestone = 220), crowned by Khmer Angkor stone Prangs, Northern Lanna white-dolomite & indigo-slate multi-tier
 //     Prasat roofs, Bagan/Nusantara upturned tiered lotus domes, Mandala cloisters, and Silver-Bronze Crested Water-Swan (Hongsa) finials.
 const KIT={id:'ria',title:'Ria Dynasty Architectural Kit',pack:'ria',culture:'ria',
- faction:'Ria Dynasties of the Two Reaches',band:'Ma-Ria',frag:'kits/ria',
+ faction:'Ria Dynasties of the Two Reaches',band:'Riwa-Wata and Liwa-Wada',frag:'kits/ria',
  ground:0x9e9884,groundProc:0x96907c,fog:0xd8dedc,furnDetail:.62};
 const RA={DOOR_H:2.3,WALL:.42,SOCLE:.48,RISER:.18,BAY:3.6};
 const RA_DYNASTIES={
  lowerRia:{
   style:'lower-ria',branch:'Low-Ria (Riwa-Toka)',shift:'Mississippian / Muskogean labial-preserving shift',
   seat:[796,176],sound:[626,140],emblem:'5-Headed Gilded Uktena River-Serpent',
-  cognates:{crown:'kuluna',stone:'sitona',amber:'ampala',palaceBarge:'palasi-baca',weepingValley:'Wipi-wali'}
+  cognates:{river:'Riwa-Wata',crown:'kuluna',stone:'sitona',amber:'ampala',palaceBarge:'palasi-baca',weepingValley:'Wipi-wali'}
  },
  upperRia:{
   style:'upper-ria',branch:'High-Ria (Liwa-Toga)',shift:'Cherokee / Iroquoian bilabial-to-kw/gw shift',
   seat:[1186,118],karst:[1135,153],lodestone:[1058,224],emblem:'Crested Silver-Bronze Water-Swan (Hongsa)',
-  cognates:{crown:'kwaluna',amber:'akwala',upperRia:'Akwala-Liwayi',palaceBarge:'kwalasi-gwatsa',weepingValley:'Wikwi-waliyi',spring:'sikwingi'}
+  cognates:{river:'Liwa-Wada',shutInRiver:'Tlila-Wada',crown:'kwaluna',amber:'akwala',upperRia:'Akwala-Liwayi',palaceBarge:'kwalasi-gwatsa',weepingValley:'Wikwi-waliyi',spring:'sikwingi'}
  }
 };
 const SV_LIB={

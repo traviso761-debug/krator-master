@@ -327,6 +327,7 @@ async def run(a):
                     print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
                 print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                 if not r['ok']: fails.append(r['name'])
+            await VW.negatives(pg, has, fails)   # the world's negatives, each must fail (core/world verify_world.py; S3-26)
             print('--- the isle\'s checks ---')
             for r in await pg.evaluate(ISLE, None):
                 print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])

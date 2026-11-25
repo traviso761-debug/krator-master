@@ -32,7 +32,7 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
 SPACE = 'core/space/20-core-space.js'
 CITY_JS = ['33-city-strategies.js']   # KCITY.prim (frontageRun, huntNear): what core/hamlet reads, as its node tests load it
 HAMLET_JS = ['10-hamlet-wood.js', '12-hamlet-gather.js', '14-hamlet-farmland.js', '16-hamlet-names.js', '18-hamlet-names.js',
-             '20-hamlet-cultures.js', '30-hamlet-village.js', 'xanadu/23-hamlet-xanadu-row.js', 'camp/26-hamlet-camp.js']
+             '20-hamlet-cultures.js', '30-hamlet-village.js']   # the Xanadu row is in 20, the camp census in 30 (Stage 8 B8)
 TUNE = 'core/region/data/xan-tune.js'
 GEN = os.path.join(HERE, 'gen')
 DIST = os.path.join(HERE, 'dist')

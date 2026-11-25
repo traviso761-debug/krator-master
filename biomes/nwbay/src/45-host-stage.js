@@ -466,12 +466,8 @@ const MAT_LIME=new THREE.MeshLambertMaterial({map:TEX_LIME,vertexColors:true,col
 // THE LIMESTONE'S BEDS (core/terrain KSTRATA; BACKPORT.md nwbay's row, "strata on the sea cliffs"; the final rebuild, 2026-10-27): a
 // massive grey limestone in thick beds, darker and paler by bed, thin marl partings and iron-stained bands, near level (Krabi's
 // Ratburi limestone dips a few degrees), drawn on the stacks' walls and the sinkholes' walls as a tint about the bed's mean, under
-// the library's karst grain and the rain's streaks. One stack for the map, so a bed runs from stack to stack. ?strata=0 without it
-if(typeof KSTRATA!=='undefined'&&!KSTRATA.RECIPES['nwbay-karst'])KSTRATA.add({name:'nwbay-karst',main:'lime',kinds:{
- lime:{p:.5,th:[4,16],col:[0xc4bfb5,0xbab5aa,0xcdc8bd],hard:.95,xbed:0,varnish:.2},
- dark:{p:.24,th:[2,8],col:[0x9a978f,0x8e8b84,0xa39f96],hard:.9,xbed:0,varnish:.2},
- marl:{p:.14,th:[.3,1.4],col:[0xa69a84,0x9c907a],hard:.3,xbed:0,varnish:0,between:true},
- iron:{p:.12,th:[.3,1.2],col:[0xb8946c,0xae8a62],hard:.6,xbed:0,varnish:0,between:true}},fx:{xbed:0,varnish:.2}});
+// the library's karst grain and the rain's streaks. One stack for the map, so a bed runs from stack to stack. The recipe is core's `nwbay-karst`.
+// ?strata=0 without it
 const NWBAY_STRATA=new URLSearchParams(location.search).get('strata')!=='0'&&typeof KSTRATA!=='undefined'?
  BIO.strata({recipe:'nwbay-karst',seed:8107,range:[-120,260],dip:[.8,-.6,.03],warp:[5,1.6],res:.25,private:true}):null;
 // the stacks' and the sinkholes' walls take it: strataColor is linear; the tint is the bed's colour over the lime's mean (.47)

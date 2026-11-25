@@ -1,6 +1,8 @@
 # Stage 7 (I1-I4) Longsong Monastery Interiors Automated Test + Gate 5 Sun-Leak Probe + Visual Proof
 # Headless data & light-rig check:
 #   KRATOR_VRAM=none godot --headless --path godot --script res://tests/interiors/stage7_interiors_test.gd
+# L4 (GODOT-LOOK-PLAN.md 6.4), judged by the same probes: add  -- --room-ambient  (indoor surfaces take the room's light
+# as IRRADIANCE and RADIANCE, not emission); run it in Forward+ too (--rendering-method forward_plus --rendering-driver vulkan)
 # Offscreen OpenGL 4.5 GPU Sun-Leak Probe + Paired Negative + 4 Stage 7 Interior Shots:
 #   KRATOR_VRAM=none xvfb-run -a godot --rendering-driver opengl3 --path godot --script res://tests/interiors/stage7_interiors_test.gd -- --shots=/path/to/shots
 extends SceneTree
@@ -12,6 +14,7 @@ const MON_META := "res://data/world-oidong-highrift/places/sq80bzd7ep-monastery/
 var passed := 0
 var failed := 0
 var shots_dir := ""
+var room_ambient := false
 
 
 func _check(cond: bool, msg: String, detail := "") -> void:
@@ -138,6 +141,8 @@ func _initialize() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--shots="):
 			shots_dir = a.trim_prefix("--shots=")
+		elif a == "--room-ambient":   # L4 (GODOT-LOOK-PLAN.md 6.4): every probe below then judges the ambient variant
+			room_ambient = true
 	call_deferred("_run")
 
 
@@ -250,6 +255,24 @@ func _run() -> void:
 
 	_check(mon.has_meta("stage7_interiors"), "stage7-setup-monastery", "Monastery node has stage7_interiors metadata")
 	var st7: Dictionary = mon.get_meta("stage7_interiors")
+	# L4: the ambient variant is the indoor shader without its ambient_light_disabled line; every indoor material moves
+	# to it and back
+	var amb := KInteriorsLight.ambient_shader()
+	var n_mats := (st7.get("materials", []) as Array).size()
+	var n_on := KInteriorsLight.set_room_ambient(mon, true)
+	var all_on := true
+	for m_v in st7.get("materials", []):
+		all_on = all_on and (m_v as ShaderMaterial).shader == amb
+	var n_off := KInteriorsLight.set_room_ambient(mon, false)
+	var all_off := true
+	for m_v in st7.get("materials", []):
+		all_off = all_off and (m_v as ShaderMaterial).shader == KInteriorsLight.INTERIOR_SHADER
+	_check(amb != KInteriorsLight.INTERIOR_SHADER and amb.code.contains("#define K_ROOM_AMBIENT") and not amb.code.contains(KInteriorsLight.AMBIENT_OFF_LINE)
+		and KInteriorsLight.INTERIOR_SHADER.code.contains(KInteriorsLight.AMBIENT_OFF_LINE) and n_mats > 10 and n_on == n_mats and n_off == n_mats and all_on and all_off,
+		"L4-room-ambient-variant", "%d indoor materials move to the IRRADIANCE variant and back" % n_mats)
+	if room_ambient:
+		KInteriorsLight.set_room_ambient(mon, true)
+		print("room ambient: on (the probes below judge the L4 variant)")
 	var stats: Dictionary = st7.get("stats", {})
 	print("Stage 7 setup stats: ", JSON.stringify(stats))
 	_check(int(stats.get("indoor_tris", 0)) > 30000, "I1-shell-split-indoor-tris", "indoor_tris=%d exterior_kept=%d" % [

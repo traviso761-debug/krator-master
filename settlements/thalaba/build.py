@@ -17,6 +17,9 @@ x east, z south, metres from the pin (2 km a pixel).
     python3 ../../tools/build.py settlements/thalaba      # dist/thalaba.html
     KRATOR_GL=gpu python3 verify.py dist/thalaba.html --assert --views "Overview,The market square"
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, io, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -28,7 +31,8 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
 # window of the closure's own, because Xanadu's page keeps core/space out). No nested-squares site: Thalaba is laid by its
 # own steps on the instance (targets/town/89zt-tb-site.js) and filled by the frontage-courts strategy.
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 SPACE = 'core/space/20-core-space.js'
 GEN = os.path.join(HERE, 'gen')
 H_PNG = 'tools/scale-model/model/data/h.png'

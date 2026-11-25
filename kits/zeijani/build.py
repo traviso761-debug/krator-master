@@ -30,6 +30,9 @@ Checks (fragments share one JS scope):
   4. `node --check` on the script when node exists (otherwise the build says the syntax was NOT checked:
      verify.py's error panel is then the only syntax check).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -85,7 +88,7 @@ import placeholder as psky   # the placeholder sky (KratorSky), read in place: M
 CORE_HOST = khost.SHELL + khost.KEYS + ['94-host-polytool.js']   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
+FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods', 'arms']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods; arms: the guardroom's weapon rack (Stage 8 D27, O5)
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js'}
 BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom')
 INTERIOR_SETS = ['zeijani']   # kits/interiors/sets/zeijani.js: the defs' rooms, and the carved defs' void plans

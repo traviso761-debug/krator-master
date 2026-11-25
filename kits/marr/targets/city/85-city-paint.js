@@ -182,11 +182,11 @@ function inPrecinct(x, z, pad) {
  cstroke(kg, sauPts, 15, KLCOL(KL.water));
 })();
 
-let mData = null, kData = null, cData = null;
+let mData = null, kData = null;
 function cityBakeMasks() {
- mData = mg.getImageData(0, 0, CS, CS).data;
- kData = kg.getImageData(0, 0, CS, CS).data;
- cData = cg.getImageData(0, 0, CS, CS).data;
+ /* placement reads core/mask's raster (KMASK.canvas: its RGBA bytes are .data), never a canvas's pixels */
+ mData = mv.data;
+ kData = kv.data;
 }
 function maskAt(x, z) {
  const ix = Math.floor(px(x)), iz = Math.floor(px(z));

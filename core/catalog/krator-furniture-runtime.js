@@ -20,6 +20,7 @@
      KF.FURNS, KF.FURN_BY_KEY, KF.entryDims(A, v), KF.furnAnchorY(A, v, at), KF.lightsOf(key, v, seed, wealth)
      KF.has(key), KF.cultures()
      KF.decalImages({ id: url }), KF.decalInfo()  delivered images for painted panels (mkDecal: a decal key that is a texture id)
+     KF.lampCap(root, max) -> { total, max, pick(cameraPos) }  at most max (KF.LAMP_MAX, 24) of root's PointLights on, the nearest
    A record's x y z is the frame origin (the footprint centre on the floor), ry the heading,
    as the catalog's buildFurn takes them; anchorY (wall, ceiling, surface) is the caller's.
 
@@ -38,6 +39,8 @@ const KF_API = (function () {
   API.has = function (key) { return !!FURN_BY_KEY[key]; };
   /* round primitives' detail for everything built after the call (1 = the catalog page's; 0.5 halves the
      segments of cylinders, cones, domes, balls and rods: a settlement's furniture is about half the triangles) */
+  /* the export form (krator-furniture-core.js, "THE EXPORT FORM"): {chamfer: metres or family -> metres, grain: true} */
+  API.setForm = function (o) { return kfSetForm(o); };
   API.setDetail = function (k) { _LOD = Math.max(0.25, Math.min(1, +k || 1)); return _LOD; };
   API.cultures = function () { return FURN_CULTURES.slice(); };
   /* delivered images for painted panels (krator-furniture-core.js mkDecal): { '<texture id>': url }, registered before the
@@ -45,6 +48,11 @@ const KF_API = (function () {
      which are registered, loaded, still loading or failed */
   API.decalImages = function (tbl) { Object.assign(FURN_DECAL_IMG, tbl || {}); return Object.keys(FURN_DECAL_IMG); };
   API.decalInfo = function () { return { images: Object.keys(FURN_DECAL_IMG), pending: _decalSt.pending, loaded: _decalSt.loaded.slice(), failed: _decalSt.failed.slice() }; };
+  /* the lamp cap (krator-furniture-core.js furnLampCap, S3-72): a host that turns the records' lights into PointLights keeps at
+     most max of them on (24 by default), the nearest the camera: const C = KF.lampCap(scene); C.pick(camera.position), again
+     every half second or so */
+  API.lampCap = function (root, max) { return furnLampCap(root, max); };
+  API.LAMP_MAX = FURN_LAMP_MAX;
 
   const _m = new THREE.Matrix4(), _n = new THREE.Matrix3(), _v = new THREE.Vector3(), _w = new THREE.Vector3();
   /* build one piece into a throw-away group: the core's mk* add to _target */
@@ -105,6 +113,7 @@ const KF_API = (function () {
     if (this.buckets[k]) return this.buckets[k];
     const b = this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) };
     if (this.indexed) b.idx = new Buf(Uint32Array);
+    if (this.indexed && _FORM.grain) b.grn = new Buf(Float32Array);   /* the export form: the grain's way, a vertex */
     return b;
   };
   Batch.prototype.absorb = function (g) {
@@ -133,6 +142,11 @@ const KF_API = (function () {
           b.pos.push3(_v.x, _v.y, _v.z);
           if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); b.nor.push3(_w.x, _w.y, _w.z); } else b.nor.push3(0, 1, 0);
           b.col.push3(cr, cg, cb);
+        }
+        if (b.grn) {
+          const gr = o.userData.grain;
+          if (gr) _w.set(gr[0], gr[1], gr[2]).transformDirection(_m); else _w.set(0, 0, 0);
+          for (let j = 0; j < nv; j++) b.grn.push3(_w.x, _w.y, _w.z);
         }
         if (idx) for (let i = 0; i < n; i++) b.idx.push1(base + idx.getX(i));
         else for (let i = 0; i < n; i++) b.idx.push1(base + i);
@@ -169,6 +183,7 @@ const KF_API = (function () {
       geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
       geo.setAttribute('normal', new THREE.BufferAttribute(b.nor.view().slice(), 3));
       geo.setAttribute('color', new THREE.BufferAttribute(b.col.view().slice(), 3, true));   /* uint8, normalised */
+      if (b.grn && b.grn.n === b.pos.n) geo.setAttribute('aGrain', new THREE.BufferAttribute(b.grn.view().slice(), 3));
       if (b.idx) geo.setIndex(indexAttr(b.idx.view().slice(), b.pos.n / 3));
       let mt;
       if (f === 'glow') mt = new THREE.MeshBasicMaterial({ vertexColors: true });

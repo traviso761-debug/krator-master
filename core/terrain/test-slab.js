@@ -74,7 +74,14 @@ const gP=[];for(let x=-2800;x<=2800;x+=83)for(let z=-1300;z<=500;z+=31)gP.push([
 const gF=path.join(__dirname,'golden-slab.json'),golden={slab:R.slabExport(gR),points:gP,shape:gP.map(p=>R.shape(gR,p[0],p[1],3290)),
   at:gP.map(p=>{const a=R.at(gR,p[0],p[1]);return a?[a.part,a.spur,a.fresh,a.share]:null;})},gJ=JSON.stringify(golden);
 if(process.argv.includes('--write')){fs.writeFileSync(gF,gJ);console.log('wrote golden-slab.json');}
-ok('golden-slab.json is the module\'s output (--write rewrites it)',fs.existsSync(gF)&&fs.readFileSync(gF,'utf8')===gJ,false);
+// the same numbers to 1e-12 relative, not the same text (as test-scarp.js): the file is written on one machine and read on others,
+// whose Math functions can differ in the last bit (2026-11-23: 91 values 1 ulp off on Node 24 against the golden of ec642bf43)
+const near12=(a,b)=>{if(typeof a==='number'&&typeof b==='number')return a===b||Math.abs(a-b)<=1e-12*Math.max(1,Math.abs(a),Math.abs(b));
+ if(Array.isArray(a)&&Array.isArray(b))return a.length===b.length&&a.every((x,i)=>near12(x,b[i]));
+ if(a&&b&&typeof a==='object'&&typeof b==='object'){const ka=Object.keys(a).sort(),kb=Object.keys(b).sort();return ka.join()===kb.join()&&ka.every(k=>near12(a[k],b[k]));}
+ return a===b;};
+const gRead=fs.existsSync(gF)?JSON.parse(fs.readFileSync(gF,'utf8')):null,gOff=JSON.parse(gJ);gOff.shape[7]+=1e-6;
+ok('golden-slab.json is the module\'s output to 1e-12 (--write rewrites it)',!!gRead&&near12(gRead,JSON.parse(gJ)),!!gRead&&near12(gOff,JSON.parse(gJ)));
 ok('the export is plain data (format krator-slab) and refuses another kind',golden.slab.format==='krator-slab'&&golden.slab.spurs.length===gR.spurs.length,!throws(()=>R.slabExport(sc)));
 const gParts={};golden.at.forEach(a=>{if(a)gParts[a[0]]=1;});
 ok('the golden reaches every part ('+Object.keys(gParts).join(', ')+')',['plateau','spur','face','gully','cone','skirt','scar'].every(k=>gParts[k]),false);

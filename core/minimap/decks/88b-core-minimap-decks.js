@@ -60,16 +60,10 @@
   KM.create=function(op){var M=create(op);var bg=(op&&op.bg)||'#101418';
     var band=null,dim=.28,marksOn=true,hand=[],brev=0,sch=null;
     var rev0=M.rev,paint0=M.paint,export0=M.export;
-    /* 88's fromWalk reads rect and strip floors; a carved room (KCAVERN) is a poly floor, drawn here as its box */
-    M.walkBands=function(W,colourOf){var n0=M.records.length;
-      W.floors.forEach(function(fl){var y,r,o2;
-        if(fl.kind==='rect')y=fl.y;else if(fl.kind==='strip')y=(fl.a[2]+fl.b[2])/2;else if(fl.pts&&fl.pts.length){y=0;fl.pts.forEach(function(p){y+=p[2]==null?0:p[2];});y/=fl.pts.length;}else return;
-        o2={y:y,col:colourOf?colourOf(y,fl):'',tag:fl.tag,name:fl.name};
-        if(fl.kind==='rect')r=M.rect(fl.rect[0],fl.rect[1],fl.rect[2],fl.rect[3],o2);
-        else if(fl.kind==='strip')r=M.strip([fl.a[0],fl.a[1]],[fl.b[0],fl.b[1]],fl.w,o2);
-        else{var x0=1e30,x1=-1e30,z0=1e30,z1=-1e30;fl.pts.forEach(function(p){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);});r=M.rect(x0,x1,z0,z1,o2);}
-        r.h=y;});
-      brev++;return M.records.length-n0;};
+    /* 88's fromWalk draws every floor kind (a carved room as its polygon, S2-C19); walkBands only keeps each record's height */
+    M.walkBands=function(W,colourOf){var added=M.fromWalk(W,colourOf);
+      added.forEach(function(r){r.h=r.y;});
+      brev++;return added.length;};
     M.bandOf=function(r){if(!band||r.h==null)return null;return r.h<band[0]?'below':r.h>band[1]?'above':'in';};
     M.band=function(y0,y1,o){o=o||{};if(y0==null){if(band){band=null;brev++;}return null;}
       var b=[Math.min(y0,y1),Math.max(y0,y1)];if(!band||b[0]!==band[0]||b[1]!==band[1]||(o.dim!=null&&o.dim!==dim)||(o.marks!=null&&o.marks!==marksOn)){band=b;brev++;}
@@ -79,7 +73,8 @@
     M.rev=function(){return rev0()+brev*1000003;};
     function arrow(g,px,py,up,col){g.fillStyle=col||(up?'#9fd3ff':'#e0a070');g.strokeStyle='rgba(0,0,0,.7)';g.lineWidth=1;g.beginPath();
       if(up){g.moveTo(px,py-5);g.lineTo(px+4,py+3);g.lineTo(px-4,py+3);}else{g.moveTo(px,py+5);g.lineTo(px+4,py-3);g.lineTo(px-4,py-3);}g.closePath();g.fill();g.stroke();}
-    function centre(r){if(r.kind==='rect')return [(r.rect[0]+r.rect[1])/2,(r.rect[2]+r.rect[3])/2];if(r.kind==='strip')return [(r.a[0]+r.b[0])/2,(r.a[1]+r.b[1])/2];return [r.x,r.z];}
+    function centre(r){if(r.kind==='rect')return [(r.rect[0]+r.rect[1])/2,(r.rect[2]+r.rect[3])/2];if(r.kind==='strip')return [(r.a[0]+r.b[0])/2,(r.a[1]+r.b[1])/2];
+      if(r.kind==='poly'){var cx=0,cz=0;r.pts.forEach(function(p){cx+=p[0];cz+=p[1];});return [cx/r.pts.length,cz/r.pts.length];}return [r.x,r.z];}
     M.paint=function(g,reliefImage){if(!band){paint0(g,reliefImage);}
       else{var ex=export0().records,cols={},keep=[];M.records.forEach(function(r){keep.push([r,r.col,r.y]);});
         var bySeq=M.records.slice().sort(function(p,q){return p.y-q.y||p.seq-q.seq;});bySeq.forEach(function(r,i){cols[r.seq]=ex[i].col;});

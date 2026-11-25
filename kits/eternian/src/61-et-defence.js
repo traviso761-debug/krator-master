@@ -113,10 +113,12 @@ defBuilding({key:'et_fort',name:'Frontier fort',seed:7114,cut:true,w:98,d:88,h:3
    cone('verdigris',0,19.4,0,.22,1.2,P('verdigris'),6);popM();}
   place('et_gate',0,ap,0,{y:0});
   /* the ranges against the walls, each a lean-to of cast block with its front on the court */
+  /* the garrison's armour stands (kits/catalog's arms file, 'arms' in FURN_CULTURES; Stage 8 D27, O5): two in the armoury (4) by its
+     front wall, one in the bunk room (2); the glaive racks stay the fort's own (the arms file gives the Eternians no rack) */
   const RANGES={0:{x:-3,w:14,furn:[['eternian_poor_reed_mat',-4.5,-1.7,0],['eternian_poor_reed_mat',-1.5,-1.7,0],['eternian_poor_reed_mat',1.5,-1.7,0],['eternian_poor_reed_mat',4.5,-1.7,0],['eternian_poor_block_bench',-3,1.9,PI],['eternian_common_chest',5.6,1.2,-PI/2]]},
-   2:{x:3,w:14,furn:[['eternian_common_bunk',-4.5,-1.85,0],['eternian_common_bunk',-1.5,-1.85,0],['eternian_common_bunk',1.5,-1.85,0],['eternian_common_bunk',4.5,-1.85,0],['eternian_poor_block_bench',3,1.9,PI],['eternian_common_chest',-5.6,1.2,PI/2]]},
+   2:{x:3,w:14,furn:[['eternian_common_bunk',-4.5,-1.85,0],['eternian_common_bunk',-1.5,-1.85,0],['eternian_common_bunk',1.5,-1.85,0],['eternian_common_bunk',4.5,-1.85,0],['eternian_poor_block_bench',3,1.9,PI],['eternian_common_chest',-5.6,1.2,PI/2],['eternian_common_armour_stand',-3,1.9,PI]]},
    3:{w:18,furn:[['generic_barrel',-7,-1.8,0],['generic_barrel',-6,-1.8,0],['generic_barrel',-7,-.8,0],['generic_sack',-3,-1.9,0],['generic_sack',-2,-1.9,0],['generic_crate',2,-1.8,0],['generic_crate',3.2,-1.8,0],['job_pole_rack',6.5,-2.2,0]]},
-   4:{w:18,furn:[['eternian_common_arms_rack',-4.5,-2.74,0],['eternian_common_arms_rack',-1.5,-2.74,0],['eternian_common_arms_rack',1.5,-2.74,0],['eternian_common_arms_rack',4.5,-2.74,0],['eternian_court_visor_case',-7.2,0,PI/2],['eternian_common_chest',7.2,0,-PI/2],['eternian_common_bench',0,1.6,PI]]},
+   4:{w:18,furn:[['eternian_common_arms_rack',-4.5,-2.74,0],['eternian_common_arms_rack',-1.5,-2.74,0],['eternian_common_arms_rack',1.5,-2.74,0],['eternian_common_arms_rack',4.5,-2.74,0],['eternian_court_visor_case',-7.2,0,PI/2],['eternian_common_chest',7.2,0,-PI/2],['eternian_common_bench',0,1.6,PI],['eternian_common_armour_stand',-4.5,1.9,PI],['eternian_common_armour_stand',4.5,1.9,PI]]},
    5:{w:18,chimney:[7.2,-2.6],furn:[['eternian_common_table',-3,0,0],['eternian_common_table',3,0,0],['eternian_common_bench',-3,-1.1,0],['eternian_common_bench',3,-1.1,0],['eternian_common_bench',-3,1.1,PI],['eternian_common_bench',3,1.1,PI],['eternian_common_stove',7.0,-2.3,0]]}};
   etHexFaces(ap,(k)=>{const r=RANGES[k];if(!r)return;pushM(TF(r.x||0,0,-1.8-3.25,PI));
    etTrade({w:r.w,d:6.2,storeys:1,sh:3.2,mk:'block',upMk:'block',roof:'pent',roofMk:'tile',roofH:1.0,mask:'lead',chimney:r.chimney,furn:r.furn,

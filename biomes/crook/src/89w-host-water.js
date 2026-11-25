@@ -27,7 +27,7 @@ const W_OUT={station:SKEY,ocean:false,caldera:false,rimstonePools:0,tarn:false,f
   return{x0:box[0],z0:box[1],cell:cell,nx:nx,nz:nz,data:d};
  };
 
- // 1. Heavy 1.60 atm NW Ocean with surf breakers + Kopa-Tarn Warra emerald glacial-flour plume
+ // 1. Heavy 1.60 atm NW Ocean with surf breakers + Kopa-Kawa (Khopri-Tskhali) emerald glacial-flour plume
  const inUpstreamMouth=(x,z)=>x>-52&&distToPoly(FLOW_LINES[0].pts,x,z).d<34;
  const SEA_WATER=WATER.open({
   name:'NW Ocean (Crookshore Surf)',
@@ -55,7 +55,7 @@ const W_OUT={station:SKEY,ocean:false,caldera:false,rimstonePools:0,tarn:false,f
   surf:true,breakers:true,renderOrder:1,roughness:0.16,metalness:0.05,envMapIntensity:0.35,ramp:[1.5,16],pick:true,
   shallow:lin(0x3a847a),deep:lin(0x0d2b38)
  });
- SEA_DRAW.mesh.userData.inspectLabel='NW Ocean (1.60 atm Crookshore breakers & Kopa-Tarn glacial-flour plume)';
+ SEA_DRAW.mesh.userData.inspectLabel='NW Ocean (1.60 atm Crookshore breakers & Kopa-Kawa glacial-flour plume)';
  W_OUT.ocean=true;W_OUT.plume=true;
 
  if(samplersOf(MAT_GROUND)+5<=14){

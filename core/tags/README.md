@@ -116,13 +116,18 @@ Open but checked. `KTAGS.norm(tags)` maps the input, then checks each key agains
 | `diet` | free (an animal's: `fish`, `grass`...) |
 | `fire`, `form`, `origin`, `heat`, `plume`, `spiral` | free: a kit's own trait on every species (crater-drylands' fire response, ehighlands' growth form, geyser's and the Throne's origin, geyser's heat, the Throne's plume, shighlands' spiral habit) |
 | `style` `room` `biome` `family` `variant` | free |
+| `propulsion` `hull` `crew` | a vessel's (2026-11-17): `VOCAB.propulsions`, `VOCAB.hulls`; crew free (a number) |
+| `drive` `seats` `fuel` | a vehicle's (2026-11-17): `VOCAB.drives` (wheeled tracked legged drawn rail hover half-track, and a walker's legs: biped digitigrade quadruped tripod hexapod); seats and fuel free |
+| `pilot` `weapon` `guild` | a walker's (Stage 8 T9, 2026-11-24, the owner: make new tags): `VOCAB.pilots` (head chest cab saddle none), `VOCAB.weapons` (a list: kits/mechs' `MECH_WEAPONS`), guild free. A mech is class `vehicle`, kind `mech` (`KratorMechs.record`); its types (war machine, industrial, siege, standard-bearer, scout, line, heavy, utility, transport) are in `VOCAB.types`, and `kits/mechs/tests/test-tags.js` fails when the kit's lists and these drift |
 | `trap` | an object: a carnivorous plant's trap record (`core/biome/37-core-traps.js`) |
 | `hazard` | an object (2026-10-26): what can hurt a walker, `{kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}`; `kind` one of `VOCAB.hazardKinds` (heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck trap time mine), whose row fills the rest. Read by core/hazard (`KHAZ`; `core/hazard/README.md`) |
 | `taboo` | an object (2026-10-26, the Outlands' C6): an area a people will not build in, `{of: null (every people) \| [culture...], why, shape}`. A record is of a people by `tags.faction`, else `tags.culture`. Placement asks `KHAZ.forbids` / `KHAZ.tabooOk` (`core/hazard/README.md`, "Adopting it" step 5) |
 
 The culture aliases (`PROPOSAL.md`, "The culture list, cleaned"): `yuni-court`, `yuni-common`, `yuni-poor` are
 `yuni` with wealth rich, middle, poor; `sahelian` is `yuni` with `style: 'sahelian'`; `iziz-old` is `iziz`;
-`ancients-salvage` is `ancient` with `state: 'salvage'`; `generic` and `scrap` are no culture, `set` instead. An alias
+`ancients-salvage` is `ancient` with `state: 'salvage'`; `generic` and `scrap` are no culture, `set` instead. The vehicle and
+walker kits' names (Stage 8 T9): `republic` is `republican`; `geomancer` is `yuni` with `guild: 'Geomancers'` (the oil guild,
+culturally "mostly Yuni", LORE.md 6.9); `stalker` is `ancient` with `style: 'stalker'` (the Catch's killers, the Ancients' make). An alias
 never overwrites a tag the record gives, a `null` included (a civic Yuni building keeps `wealth: null`).
 
 An unknown key or value stays on the record as given and is counted by `T.audit()` (`unknownKeys`,

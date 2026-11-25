@@ -18,7 +18,13 @@ FOUNDATION = ['70-xa-tex.js', '71-xa-mat.js', '71c-xa-openings.js', '72-xa-helpe
               '88-xa-dress.js', '89-xa-trades.js']
 BUILDINGS = ['74-xa-dwell.js', '75-xa-trade.js', '76-xa-farm.js', '77-xa-sacred.js', '78-xa-palace.js', '79-xa-guild.js',
              '80-xa-military.js', '81-xa-public.js', '82-xa-hill.js', '83-xa-turk.js', '84-xa-grandbath.js', '85-xa-water.js',
-             '85b-xa-garden.js', '86-xa-vizier.js', '86b-xa-plants.js', '87-xa-spicer.js', '87b-xa-andean.js', '87c-xa-erewhon.js']
+             '85b-xa-garden.js', '86-xa-vizier.js', '86b-xa-plants.js', '87-xa-spicer.js', '87b-xa-andean.js', '87c-xa-erewhon.js',
+             # Stage 8 B9 (2026-11-24; T7, T11): the lake's trades (87k) and the opt-in pieces that waited in extra/ (88c the
+             # caravanserai, 88d the lake craft, 88e the stall, 88f the harbour, 88g the works, 88h Gihon's pieces, 88k the
+             # landing and the governor's house, 88l the mines' works) join every page of the kit and XAK. 87k1's rooms are
+             # kits/interiors/sets/xanadu-lake.js now; 87k2 (the slate wall) stays opt-in. extra/ keeps 88i, 88j and 69dy
+             '87k-xa-lake-trades.js', '88c-xa-caravanserai.js', '88d-xa-lakecraft.js', '88e-xa-stall.js', '88f-xa-harbour.js',
+             '88g-xa-works.js', '88h-xa-gihon.js', '88k-xa-landing.js', '88l-xa-mine-works.js']
 FILES = sorted(FOUNDATION + BUILDINGS)
 # Erewhon's citadel (2026-11-09; settlements/xanadu/citadel/BLUEPRINT.md and refs/citadel/STYLE.md): the Moorish and Mughal
 # parameters (78l, [G data]: XMOOR), the vocabulary (78m: the materials owed in PROMPTS-NEEDED.md section 41, the arch heads, muqarnas, star

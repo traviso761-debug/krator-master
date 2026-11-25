@@ -84,11 +84,7 @@ function gorgeK(s){return GORGE.on?smooth(GORGE.s0,GORGE.s0+320,s)*smooth(GORGE.
 function gorgeCut(x,z){const s=sOf(x,z),k=gorgeK(s);if(k<=0)return 0;const d=Math.abs(tOf(x,z)-RIVER_T(s)),W=riverW(x,z),fl=W*.75,wall=fl+16+10*(fbm(s*.006,3.1,331,2)-.5);
  if(d>=wall+18)return 0;const e=smooth(wall+18,wall,d),w=smooth(wall,fl,d);return k*(26+14*fbm(s*.0031,7.7,332,2))*(.1*e+.9*w);}
 // THE MARL'S BEDS (core/terrain KSTRATA; ?marl=0 none): soft blue-grey clay with thin harder bands, near level; the walls' steps come from this record's ledge pass, the shader draws the same beds
-// (the ground's vGL2.z, 86-host-fields.js) and the ledge plants read its hardness (87-host-gorge.js), so bed, step and plant agree
-if(typeof KSTRATA!=='undefined'&&!KSTRATA.RECIPES['nwl-marl'])KSTRATA.add({name:'nwl-marl',main:'marl',kinds:{
- marl:{p:.56,th:[1.2,3.8],col:[0x8ba2ac,0x7f97a2,0x97acb2],hard:.25,xbed:0,varnish:0},
- clay:{p:.26,th:[.5,1.6],col:[0x62798a,0x6d8490],hard:.1,xbed:0,varnish:0},
- band:{p:.18,th:[.25,.7],col:[0xb8bdb2,0xaab2aa],hard:.8,xbed:0,varnish:0,between:true}},fx:{xbed:0,varnish:0}});
+// (the ground's vGL2.z, 86-host-fields.js) and the ledge plants read its hardness (87-host-gorge.js), so bed, step and plant agree. The recipe is core's `nwl-marl`
 const NW_MARL=GORGE.on&&typeof KSTRATA!=='undefined'?BIO.strata({recipe:'nwl-marl',seed:8105,range:[-40,420],dip:[.3,-.2,.02],warp:[4,1.4],res:.25,private:true}):null;
 // the ground before the river's channel: the land, the bayou, the oxbows and the valley the river cut
 function terrainPre(x,z,rd,W){

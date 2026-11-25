@@ -8,6 +8,9 @@
   python3 build.py --list-sources                                -> union of all read repo files (tools/dep_graph.py)
   python3 build.py --inline-packs                                -> inline texture pack (default: shared sidecar)
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import json
 import os
 import re

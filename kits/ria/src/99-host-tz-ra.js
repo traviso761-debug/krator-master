@@ -20,10 +20,12 @@
     sel.insertBefore(opt,sel.options[2]||null);
    }
   };
-  if(ROWS[0])addView('Lower Ria Row Overview',[ROWS[0].w*.12,36,ROWS[0].z+72,0,6,ROWS[0].z]);
-  if(ROWS[1])addView('Lower Ria Works Row Overview',[ROWS[1].w*.12,32,ROWS[1].z+64,0,5,ROWS[1].z]);
-  if(ROWS[2])addView('Upper Ria Row Overview',[ROWS[2].w*.12,36,ROWS[2].z+72,0,6,ROWS[2].z]);
-  if(ROWS[3])addView('Upper Ria Works Row Overview',[ROWS[3].w*.12,32,ROWS[3].z+64,0,5,ROWS[3].z]);
+  if(ROWS[0])addView('Lower Ria Court and Sacred Row',[ROWS[0].w*.1,36,ROWS[0].z+74,0,6,ROWS[0].z]);
+  if(ROWS[1])addView('Lower Ria Military and Logistics Row',[ROWS[1].w*.1,38,ROWS[1].z+76,0,5,ROWS[1].z]);
+  if(ROWS[2])addView('Lower Ria All Dwellings Row',[ROWS[2].w*.1,32,ROWS[2].z+64,0,5,ROWS[2].z]);
+  if(ROWS[3])addView('Upper Ria Court and Sacred Row',[ROWS[3].w*.1,36,ROWS[3].z+74,0,6,ROWS[3].z]);
+  if(ROWS[4])addView('Upper Ria Military and Logistics Row',[ROWS[4].w*.1,38,ROWS[4].z+76,0,5,ROWS[4].z]);
+  if(ROWS[5])addView('Upper Ria All Dwellings Row',[ROWS[5].w*.1,32,ROWS[5].z+64,0,5,ROWS[5].z]);
   const byKey=k=>SITES.find(s=>s.key===k);
   const pWest=byKey('ra_west_prasat_palace');
   if(pWest)addView('Chakri-Ishtar Prasat Palace front',[pWest.x+16,15,pWest.z+32,pWest.x,8.5,pWest.z-1]);
@@ -61,6 +63,22 @@
   if(pDica)addView('Porphyry-and-Dolomite Triple-Spire Dicastery',[pDica.x+15,13,pDica.z+29,pDica.x,8.0,pDica.z]);
   const pCary=byKey('ra_east_caryatid_reliquary');
   if(pCary)addView('Silver-Caryatid Stupa and Scripture Mondop',[pCary.x+13,12,pCary.z+26,pCary.x,7.2,pCary.z-.6]);
+  const pStrat=byKey('ra_west_strategion_keep');
+  if(pStrat)addView('Ishtar-Prasat Command Strategion Citadel',[pStrat.x+14,13,pStrat.z+27,pStrat.x,7.8,pStrat.z-.5]);
+  const pBoom=byKey('ra_west_boom_arsenal');
+  if(pBoom)addView('Uktena River-Chain Boom Naval Arsenal',[pBoom.x+14,12,pBoom.z+26,pBoom.x+1,6.0,pBoom.z]);
+  const pCrane=byKey('ra_west_crane_wharf');
+  if(pCrane)addView('Treadwheel River-Quay Crane Wharf',[pCrane.x+15,12,pCrane.z+25,pCrane.x+1,5.5,pCrane.z]);
+  const pTen=byKey('ra_west_courtyard_tenement');
+  if(pTen)addView('Three-Storey Canal Porter Tenement',[pTen.x+12,11,pTen.z+23,pTen.x,5.8,pTen.z-1]);
+  const pClan=byKey('ra_west_clan_compound');
+  if(pClan)addView('Patrician Walled Clan Compound',[pClan.x+14,14,pClan.z+28,pClan.x,5.5,pClan.z-1]);
+  const pAcro=byKey('ra_east_acropolis_keep');
+  if(pAcro)addView('Porphyry-Pylon Shikhara Command Citadel',[pAcro.x+14,13,pAcro.z+27,pAcro.x,8.0,pAcro.z-.5]);
+  const pToll=byKey('ra_east_caravan_tollhouse');
+  if(pToll)addView('Battered Porphyry Caravan Weigh-Tollhouse',[pToll.x+12,11,pToll.z+23,pToll.x,5.8,pToll.z]);
+  const pIns=byKey('ra_east_veranda_insula');
+  if(pIns)addView('Classical Dolomite Guild Apartment Insula',[pIns.x+13,11,pIns.z+23,pIns.x,5.5,pIns.z]);
  }
 
  const settle=n=>{for(let i=0;i<(n==null?40:n);i++)KDOOR.step(.1);};
@@ -330,9 +348,15 @@
    }
    for(const st of ['lower-ria','upper-ria']){
     for(const wt of ['poor','middle','rich']){
-     const has=Object.keys(DEFS).some(k=>DEFS[k].cls==='building'&&DEFS[k].tags.style===st&&DEFS[k].tags.wealth===wt);
-     if(!has)bad.push(st+':missing-wealth-'+wt);
+     for(const dt of ['dwelling-single','dwelling-multi']){
+      const has=Object.keys(DEFS).some(k=>DEFS[k].cls==='building'&&DEFS[k].tags.style===st&&DEFS[k].tags.wealth===wt&&(DEFS[k].tags.types||[]).indexOf(dt)>=0);
+      if(!has)bad.push(st+':missing-'+wt+'-'+dt);
+     }
     }
+    const milN=Object.keys(DEFS).filter(k=>DEFS[k].cls==='building'&&DEFS[k].tags.style===st&&(DEFS[k].tags.types||[]).indexOf('military')>=0).length;
+    const infN=Object.keys(DEFS).filter(k=>DEFS[k].cls==='building'&&DEFS[k].tags.style===st&&(DEFS[k].tags.types||[]).indexOf('infrastructure')>=0).length;
+    if(milN<6)bad.push(st+':military<6:'+milN);
+    if(infN<6)bad.push(st+':infrastructure<6:'+infN);
    }
    return {ok:!bad.length,rows:RA_TRADES.length,bad};
   },

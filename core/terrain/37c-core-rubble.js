@@ -113,7 +113,7 @@
         f.forEach(function (ci) { var p = C[ci], v0 = vert(p[0], p[1], p[2], b.chunk ? 2 : 1, 1 - b.tone); if (nx >= ny && nx >= nz) { uv[v0 * 2] = p[2]; uv[v0 * 2 + 1] = p[1]; } else if (nz >= ny) { uv[v0 * 2] = p[0]; uv[v0 * 2 + 1] = p[1]; } q.push(v0); });
         idx.push(q[0], q[1], q[2], q[0], q[2], q[3]); });
     });
-    return { pos: new Float32Array(pos), idx: new Uint32Array(idx), uv: new Float32Array(uv), part: new Uint8Array(part), occ: new Float32Array(occ) };
+    return { pos: new Float32Array(pos), idx: idx,   /* a plain array: three r128's setIndex() keeps a typed array raw and the draw throws (S3-88b) */ uv: new Float32Array(uv), part: new Uint8Array(part), occ: new Float32Array(occ) };
   }
   function walkTris(H, cell) {
     cell = cell == null ? (H.cell == null ? 4 : H.cell) : cell; var R = Math.max(H.rx, H.rz), nr = Math.max(2, Math.ceil(R / cell)), ns = Math.max(12, Math.ceil(TAU * R / cell)), out = [];

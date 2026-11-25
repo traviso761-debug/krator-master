@@ -46,8 +46,8 @@ function adaptOidong(x,z,A){
  return A;}
 const ff=WORLD.fieldsFrom;
 WORLD.fieldsFrom=function(x,z,h,tanS,P,out){return adaptOidong(x,z,ff.call(WORLD,x,z,h,tanS,P,out));};
-const at=WORLD.at;
-WORLD.at=function(x,z){return adaptOidong(x,z,at.call(WORLD,x,z));};
+const at=WORLD.atShared;
+WORLD.atShared=function(x,z){return adaptOidong(x,z,at.call(WORLD,x,z));};   /* WORLD.at copies it (core/world 41) */
 WORLD.OHR_FIELDS=Object.keys(EXTRA);})();
 // The High Rift's ground (as openworld/xanadu-oidong-highrift's 43 greens the Xanadu overlay), plus lush moss-vale tinting
 // where the Oidong Valley & Strongbow canyon floor carry woodland moisture.

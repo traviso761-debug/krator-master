@@ -212,7 +212,7 @@ const LINE_POWER_SECS = [{ y: 0.95, a: 1.62, b: 10.6, n: 4.5, z: 0 }, { y: 1.25,
   { y: 4.0, a: 1.55, b: 9.2, n: 4, z: -1.2 }, { y: 4.32, a: 1.1, b: 8.4, n: 3.5, z: -1.9 }];
 VEHICLE({
   key: 'anc_line_power', name: 'Ancient Line power car', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport'], drive: 'wheeled', seats: 2, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport'], drive: 'wheeled', seats: 2, fuel: 'battery',
     terrain: ['track'], setting: 'underground' },
   variants: 2, variantNames: ['Built', 'Kept (Tungang)'],
   w: 3.6, d: 22, h: 4.4,
@@ -278,7 +278,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_line_saloon: the saloon */
 VEHICLE({
   key: 'anc_line_saloon', name: 'Ancient Line saloon', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport'], drive: 'wheeled', seats: 64, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport'], drive: 'wheeled', seats: 64, fuel: 'battery',
     terrain: ['track'], setting: 'underground' },
   variants: 2, variantNames: ['Built', 'Kept (Tungang)'],
   w: 3.6, d: 24, h: 4.4,
@@ -302,7 +302,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_line_crew: the crew car */
 VEHICLE({
   key: 'anc_line_crew', name: 'Ancient Line crew car', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport', 'utility'], drive: 'wheeled', seats: 8, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport', 'utility'], drive: 'wheeled', seats: 8, fuel: 'battery',
     terrain: ['track'], setting: 'underground' },
   variants: 2, variantNames: ['Built', 'Kept (Tungang)'],
   w: 3.6, d: 24, h: 4.4,
@@ -341,7 +341,7 @@ VEHICLE({
 const LINE_VAN_DOORS = [-7.2, 0, 7.2];
 VEHICLE({
   key: 'anc_line_van', name: 'Ancient Line freight van', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'cargo'], drive: 'wheeled', seats: 1, fuel: 'battery',
+  tags: { type: ['vehicle', 'cargo'], drive: 'wheeled', seats: 1, fuel: 'battery',
     terrain: ['track'], setting: 'underground' },
   variants: 2, variantNames: ['Built', 'Kept (Tungang)'],
   w: 3.6, d: 24, h: 4.4,
@@ -372,7 +372,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- anc_line_tank: the tank car */
 VEHICLE({
   key: 'anc_line_tank', name: 'Ancient Line tank car', culture: 'ancient',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'cargo', 'utility'], drive: 'wheeled', seats: 1, fuel: 'battery',
+  tags: { type: ['vehicle', 'cargo', 'utility'], drive: 'wheeled', seats: 1, fuel: 'battery',
     terrain: ['track'], setting: 'underground' },
   variants: 2, variantNames: ['Built', 'Kept (Tungang)'],
   w: 3.6, d: 22, h: 4.4,

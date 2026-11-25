@@ -40,6 +40,7 @@ async function start(){
   if(qa!=null)window.KRATOR_ALPINE=qa==='0'||qa==='false'?false:qa==='2'?2:1;}
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
+ if(HOST.weather)HOST.weather();   /* the weather, once, where the build lists it (45: after ATMOS.init and the terrain's material) */
  CAM.paintBase(R);
  // the first view: the region's own WORLD_CONFIG.start, either {view: [x, z, height above ground, yaw, pitch], look?: [x, z, height above
  // ground]} or the name of a place (framed as "Go to" frames it; the probe's flora checks run round it: the isle demo), else little-demo's:

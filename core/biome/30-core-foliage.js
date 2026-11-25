@@ -39,9 +39,43 @@ BIO.GUST=null;
 BIO.bindAtmosWind=function(o){o=o||{};
  if(typeof ATMOS==='undefined'||!ATMOS||!ATMOS.U||!ATMOS.GLSL_WIND||!ATMOS.PRESETS){if(BIO.err)BIO.err('BIO.bindAtmosWind: core/atmos is not initialised (ATMOS.init first)');return false;}
  const PW=ATMOS.PRESETS.wind,calm=Math.hypot(PW.base[0],PW.base[1])||1;
- BIO.GUST={glsl:ATMOS.GLSL_WIND,t:{value:ATMOS.clock?ATMOS.clock.t:0},w:ATMOS.U.wind,amp:ATMOS.U.gustAmp,k:{value:o.gain==null?1:+o.gain}};
+ const gain=o.gain==null?1:+o.gain;   /* bound already (V10's default, below): the same uniforms, its gain set, so a material compiled on them follows */
+ if(BIO.GUST&&BIO.GUST.w===ATMOS.U.wind&&BIO.GUST.amp===ATMOS.U.gustAmp&&BIO.GUST.glsl===ATMOS.GLSL_WIND)BIO.GUST.k.value=gain;
+ else BIO.GUST={glsl:ATMOS.GLSL_WIND,t:{value:ATMOS.clock?ATMOS.clock.t:0},w:ATMOS.U.wind,amp:ATMOS.U.gustAmp,k:{value:gain}};
  if(BIO.host&&!BIO.host.wind)BIO.host.wind=()=>{const w=ATMOS.U.wind.value;return[w.x/calm,w.y/calm];};
  if(BIO.host)BIO._tickWind();return true;};
+// ONE WIND FIELD BY DEFAULT (V10, G-weather W3, WEATHER-RESEARCH proposal 5; 2026-11-24). A page on the shared sky (ATMOS.sky:
+// every biome kit) with core/atmos initialised (ATMOS.init or bindHost: its wind uniforms and GLSL_WIND) reads its travelling
+// gusts without asking: the first program key a foliage or sward material computes (three asks it before the hook runs, so the
+// key and the text agree) binds it, as BIO.bindAtmosWind() would (gain 1; a page's own bindAtmosWind({gain}) sets its gain on the
+// same uniforms). Without core/atmos or the shared sky (a settlement on its own sky, the open world until V9), or with
+// BIO.WIND_AUTO false, nothing is bound and every shader is the text it was.
+BIO.WIND_AUTO=true;
+BIO._gustAuto=function(){if(BIO.GUST)return true;if(!BIO.WIND_AUTO||!BIO.host)return false;let A=null;
+ try{A=typeof ATMOS!=='undefined'?ATMOS:null;}catch(e){return false;}   /* ATMOS's const may come later in the script */
+ if(!A||!A.U||!A.U.wind||!A.U.gustAmp||!A.GLSL_WIND||!A.PRESETS||!A.PRESETS.wind||!A.skyUniforms||!A.skyUniforms.uCloud)return false;
+ return BIO.bindAtmosWind()===true;};
+// CLOUD SHADE ON THE BIOME CORE'S MATERIALS (V8, G-weather W1, SKY-PLAN.md 11.1 step 3; 2026-11-24). Every lit material the core
+// makes (leafMat, barkMat and its irid and far kinds, glossBarkMat, hangMat, solidMat, the sward's) calls BIO.cloudShade(m) once:
+// the sky's clouds shade it and the rain darkens it (ATMOS.cloudShade, porosity BIO.CLOUD.porosity: .4, the plants'). The call
+// only queues: the hook goes on when the page shades its lit materials (ATMOS.cloudShadeScene: ATMOS.skyBiome runs it unless
+// o.shade is false; a page on ATMOS.sky calls it itself), for every material queued before, and at the next frame for one made
+// after it. So a page with no core/atmos, or with no shared sky, or one that keeps its materials unshaded, draws the text it
+// drew, and a material made and then hooked by its kit takes the cloud layer over the kit's hook, as a page's own pass did.
+// BIO.CLOUD.porosity: a host may set it before its sky (or pass cloudShadeScene's o.biome); BIO.CLOUD.on false: none.
+// ATMOS.cloudShade is once a material, so the core's call and a page's scene pass never stack.
+BIO.CLOUD={on:true,porosity:.4};
+BIO._shadeQ=[];BIO._shadeSeen=typeof WeakSet!=='undefined'?new WeakSet():null;BIO._shadeTicked=false;
+BIO.cloudShade=function(m){if(!m||!m.isMaterial||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))return m;
+ const S=BIO._shadeSeen;if(S){if(S.has(m))return m;S.add(m);}else if(BIO._shadeQ.indexOf(m)>=0)return m;
+ BIO._shadeQ.push(m);
+ if(!BIO._shadeTicked&&BIO.host&&BIO.host.ticks){BIO._shadeTicked=true;BIO.host.ticks(()=>{if(BIO._shadeQ.length)BIO.cloudShadeFlush();});}
+ return m;};
+BIO.cloudShadeFlush=function(p){if(p!=null&&isFinite(+p))BIO.CLOUD.porosity=+p;let A=null;
+ try{A=typeof ATMOS!=='undefined'?ATMOS:null;}catch(e){return 0;}
+ if(!A){BIO._shadeQ.length=0;return 0;}   /* no core/atmos on the page: nothing will shade them */
+ if(!A.skyShadeOn||!A.cloudShade||!BIO.CLOUD.on)return 0;
+ const q=BIO._shadeQ.splice(0),por=BIO.CLOUD.porosity==null?.4:BIO.CLOUD.porosity;for(const m of q)A.cloudShade(m,{porosity:por});return q.length;};
 // THE SPIN (B9; nsemiarid's helicopter trumpets): a leafMat with o.spin turns its vertices about the instance's own origin,
 // round its own up axis, by BIO.SPIN.value radians (the host integrates the wind into it) at a speed and phase per
 // instance (x0.8..1.2). o.spin may be a uniform {value} of the host's own instead of true.
@@ -102,7 +136,7 @@ BIO.groundTex=function(fn,box,N){N=N==null?128:N;const T=BIO.host.THREE,d=new Ui
 // <common>, the vertex code before <fog_vertex> (mvPosition, transformed and the instance matrix are in scope), the
 // fragment code after <clipping_planes_fragment> (the top of main(): a dither discard goes here). Null: no shader changes.
 if(BIO.FADE===undefined)BIO.FADE=null;
-BIO._fx=function(){return (BIO.GUST?'|gust':'')+(BIO.FADE?'|fade':'');};   /* what the page-wide switches add to a program key */
+BIO._fx=function(){return (BIO._gustAuto()?'|gust':'')+(BIO.FADE?'|fade':'');};   /* what the page-wide switches add to a program key (V10: asking binds core/atmos's gusts when the page has them) */
 BIO._fadeInject=function(sh,kind){const F=BIO.FADE;if(!F)return;if(typeof F==='function'){F(sh,kind);return;}
  if(F.uniforms)Object.assign(sh.uniforms,F.uniforms);
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+(F.vertexPars||'')).replace('#include <fog_vertex>',(F.vertex||'')+'\n#include <fog_vertex>');
@@ -402,11 +436,11 @@ BIO.leafMat=function(tex,key,o){const T=BIO.host.THREE;o=o||{};
  const ck='biofol|'+BIO.kitKey(key);BIO._hookKey(m,BIO.foliageHook(o),t=>BIO._leafKey(o,t),t=>ck+BIO._fx()+(t.alphaToCoverage?'|a2c':''));
  m.userData.bio={kind:'leaf',key:BIO.kitKey(key),opts:o};   // what it is, as data (42-core-export)
  BIO._leafMats.push(m);if(BIO.A2C)BIO._a2cApply(m);
- BIO._tickWind();return m;};
+ BIO._tickWind();return BIO.cloudShade(m);};
 // a BARK / WOOD material for merged buckets: Lambert, vertex-coloured, textured
 BIO.barkMat=function(tex,col){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});m.userData.bio={kind:'bark'};
  if(BIO.FADE){m.onBeforeCompile=sh=>BIO._fadeInject(sh,'bark');m.customProgramCacheKey=()=>'biobark'+BIO._fx();}   /* the cross-fade hook only: no hook otherwise */
- return m;};
+ return BIO.cloudShade(m);};   /* V8: queued (the irid and far kinds made on it too), hooked when the page shades */
 // an IRIDESCENT BARK (the 'irid' kind): a bark whose colour shifts with the view angle and, slowly, with the wind:
 // colA facing the eye, colB at grazing angles (default green to coppery red, the east abyss's sky scale-tree). The
 // tints are baked into the shader text, so the program cache key carries the kit and the key (BIO.kitKey): each kit's
@@ -446,7 +480,7 @@ BIO.glossBarkMat=function(tex,key,o){o=o||{};const T=BIO.host.THREE;
     'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');BIO._fadeInject(sh,'gloss');};
  m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:Object.assign({alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain,gloss:o.gloss||0},c2?{c2:'aC2'}:{})};   // as data (42-core-export)
  const ck='biogloss|'+BIO.kitKey(key)+(c2?'|c2':'');BIO._hookKey(m,hook,()=>'biogloss'+(c2?'|c2':'')+BIO._fx(),()=>ck+BIO._fx());   /* B3: its numbers were uniforms already */
- m.barkLook={alt,gloss:o.gloss||0,mask:tex.maskMean||0};return m;};
+ m.barkLook={alt,gloss:o.gloss||0,mask:tex.maskMean||0};return BIO.cloudShade(m);};
 // the FAR IMPOSTORS' material (the 'far' kind; rift's and swlowlands' farMat, one copy since 2026-10-25): vertex-coloured
 // Lambert, with the trunks' look carried in the impostor's uv. o.rule:
 //   'irid'  (rift): u a second colour (8 bits a channel on sqrt(linear) packed into one float, decoded per vertex), v 0
@@ -483,12 +517,12 @@ BIO.hangMat=function(m,key,o){o=o||{};const A=o.swayA==null?.05:+o.swayA,W=o.swa
  const hook=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uHangA={value:Ag};sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;uniform float uHangA;')
   .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+='+W+'*uHangA*sin(uWindT*1.1+ph);transformed.z+='+W+'*uHangA*cos(uWindT*.8+ph*1.3);}\n#endif');BIO._fadeInject(sh,'hang');};
  const ck='biohang|'+BIO.kitKey(key)+'|'+W+'|'+A;BIO._hookKey(m,hook,()=>'biohang|'+W+BIO._fx(),()=>ck+BIO._fx());
- m.userData.bio={kind:'hang',key:BIO.kitKey(key),opts:Object.assign({swayA:A,swayW:W},o.night?{night:o.night}:{})};BIO._tickWind();return m;};
+ m.userData.bio={kind:'hang',key:BIO.kitKey(key),opts:Object.assign({swayA:A,swayW:W},o.night?{night:o.night}:{})};BIO._tickWind();return BIO.cloudShade(m);};
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});
  m.userData.bioSolid=true;   /* B2/M4: a rock or rod's material (no export kind: the export draws it plain, as before) */
  if(BIO.FADE){m.onBeforeCompile=sh=>BIO._fadeInject(sh,'solid');m.customProgramCacheKey=()=>'biosolid'+BIO._fx();}   /* the cross-fade hook only */
- return m;};
+ return BIO.cloudShade(m);};
 
 // ---------------------------------------------------------------- colour (sedesert-1)
 // The sRGB-aware colour maths every biome ends up needing (the abyss kit's
@@ -646,10 +680,12 @@ function _swMat(){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:0xff
  const U={uSwR:{value:new T.Vector4(0,26,36,0)},uSwTipA:{value:new T.Vector3(.17,.32,.08)},uSwTipB:{value:new T.Vector3(.24,.38,.10)},uSwRoot:{value:new T.Vector3(.09,.12,.05)},uSwSeed:{value:new T.Vector3(.62,.52,.26)}};
  m.userData.swU=U;m.userData.bio={kind:'sward'};
  const gtOn=()=>!!(BIO.GROUND&&BIO.GROUND.tex.value);
- m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uWindV=BIO.WIND.v;sh.uniforms.uWindOn=BIO.WIND.on;const gt=gtOn();
+ m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uWindV=BIO.WIND.v;sh.uniforms.uWindOn=BIO.WIND.on;const gt=gtOn(),gs=BIO.GUST;
   if(gt){sh.uniforms.uGTex=BIO.GROUND.tex;sh.uniforms.uGBox=BIO.GROUND.box;sh.uniforms.uGPow={value:BIO.GROUND.linear?1:2.2};}
+  if(gs){sh.uniforms.uGustT=gs.t;sh.uniforms.uAtmW=gs.w;sh.uniforms.uGustAmp=gs.amp;sh.uniforms.uGustK=gs.k;}
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;\nuniform vec2 uWindV;\nuniform float uWindOn;\nuniform vec4 uSwR;\n'+
-    'uniform vec3 uSwTipA;\nuniform vec3 uSwTipB;\nuniform vec3 uSwRoot;\nuniform vec3 uSwSeed;\nattribute vec4 aSw;\nvarying vec3 vSwC;\n'+(gt?'uniform sampler2D uGTex;\nuniform vec4 uGBox;\nuniform float uGPow;\n':''))
+    'uniform vec3 uSwTipA;\nuniform vec3 uSwTipB;\nuniform vec3 uSwRoot;\nuniform vec3 uSwSeed;\nattribute vec4 aSw;\nvarying vec3 vSwC;\n'+(gt?'uniform sampler2D uGTex;\nuniform vec4 uGBox;\nuniform float uGPow;\n':'')+
+    (gs?'uniform float uGustT;\nuniform vec2 uAtmW;\nuniform float uGustAmp;\nuniform float uGustK;\n'+gs.glsl+'\n':''))
    .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nobjectNormal = normalize(mix(vec3(0.0, 1.0, 0.0), objectNormal, 0.24 + 0.52 * clamp(uv.y, 0.0, 1.0)));')
    .replace('#include <project_vertex>',['vec3 _sw0 = (modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;',
     'vec3 _swE = -(viewMatrix[3].xyz * mat3(viewMatrix)); float _swD = distance(_sw0, _swE);',
@@ -659,18 +695,20 @@ function _swMat(){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:0xff
     'vec2 _swW = length(uWindV) > 0.001 ? normalize(uWindV) : vec2(0.85, 0.35);',
     'float _swP = dot(_sw0.xz, _swW) * 0.14 - uWindT * 2.15 + aSw.x * 6.2831853;',
     'float _swG = 0.55 + 0.45 * sin(dot(_sw0.xz, _swW) * 0.035 - uWindT * 0.85);',
-    'float _swB = _swH * _swH * (sin(_swP) * 0.13 + 0.05 * sin(_swP * 2.3 + aSw.y * 5.0)) * (0.65 + 0.7 * _swG) * mix(1.0, max(0.3, length(uWindV)), uWindOn) * _swK;',
+    'float _swB = _swH * _swH * (sin(_swP) * 0.13 + 0.05 * sin(_swP * 2.3 + aSw.y * 5.0)) * (0.65 + 0.7 * _swG) * mix(1.0, max(0.3, length(uWindV)), uWindOn) * _swK;'].concat(gs?[
+    /* V10: core/atmos's travelling gust at the clump's root, as the leaves take it: a gust front rolls across the grass */
+    '_swB *= 1.0 + uGustAmp * uGustK * atmGust(uGustT, _sw0.xz, uAtmW);']:[],[
     'mvPosition.xz += _swW * _swB; mvPosition.y -= abs(_swB) * 0.22 * _swH;',
     gt?'vec3 _swR = pow(texture2D(uGTex, (_sw0.xz - uGBox.xy) / (uGBox.zw - uGBox.xy)).rgb, vec3(uGPow));':'vec3 _swR = uSwRoot;',   /* uGPow 2.2: sRGB to linear; 1: a linear ground */
     'if (aSw.w > 0.5) { float _p = aSw.w; float _r = floor(_p / 65536.0); _p -= _r * 65536.0; float _g = floor(_p / 256.0); vec3 _q = vec3(_r, _g, _p - _g * 256.0) / 255.0; _swR = _q * _q; }',
     'vec3 _swT = mix(uSwTipA, uSwTipB, aSw.y); if (uv.x > 1.5) _swT = uSwSeed * (0.85 + 0.3 * aSw.y);',
     'vSwC = mix(mix(_swR, _swT, 0.58) * 0.52, mix(_swT * 1.32, _swR * 1.18, 0.38), smoothstep(0.04, 0.88, _swH));',
-    'mvPosition = viewMatrix * mvPosition;','gl_Position = projectionMatrix * mvPosition;'].join('\n'));
+    'mvPosition = viewMatrix * mvPosition;','gl_Position = projectionMatrix * mvPosition;']).join('\n'));
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vSwC;')
    .replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb *= vSwC;')
    .replace('reflectedLight.indirectDiffuse += ( gl_FrontFacing ) ? vIndirectFront : vIndirectBack;','reflectedLight.indirectDiffuse += 0.8*vIndirectFront + 0.2*vIndirectBack;')
    .replace('reflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;','reflectedLight.directDiffuse = vLightFront + 0.35*vLightBack;');};
- m.customProgramCacheKey=()=>'biosward'+(gtOn()?'|gt':'');return m;}
+ m.customProgramCacheKey=()=>'biosward'+(gtOn()?'|gt':'')+(BIO._gustAuto()?'|gust':'');return BIO.cloudShade(m);}
 // the camera the sward follows: o.camera, BIO.init's h.camera, else the page's global `camera`
 function _swCam(){if(SW.o.camera)return SW.o.camera;if(BIO.host&&BIO.host.camera)return BIO.host.camera;try{return typeof camera!=='undefined'&&camera&&camera.isCamera?camera:null;}catch(e){return null;}}
 BIO.sward=function(o){if(o===false){SW.asked=true;BIO._swardStop();return false;}o=o||{};SW.asked=true;

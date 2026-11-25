@@ -22,7 +22,8 @@
   spring:[[120,-135],[-16,-36],[82,34],[-54,-24],[-48,24],[165,-38]],
   shutin:[[134,-34],[-118,-132],[-24,-28],[-56,46],[28,68],[8,-72],[-138,-32]],
   fenestre:[[-48,-54],[-115,-118],[-18,-26],[28,-32],[0,0],[22,22],[44,-18]],
-  glade:[[-125,-128],[-14,-52],[-16,-24],[-38,-36],[-148,112],[-98,74],[118,-98]]
+  glade:[[-125,-128],[-14,-52],[-16,-24],[-38,-36],[-148,112],[-98,74],[118,-98]],
+  porphyryrelict:[[-118,-112],[-34,-46],[56,48],[-92,22],[-58,-32],[-96,-72]]
  };
 
  SPRINGHOLLOWS.placeAll=function(opt){
@@ -258,6 +259,24 @@
     const tSeed=KRAND.hash(seed+410,ix,iz);
 
     if(dk.inDike){
+     // Station 5 (porphyryrelict): high purple-red porphyry knob (> +16 m) crowned in Carnelian Erythrophyll sky-island clades!
+     if(skey==='porphyryrelict'&&typeof KFRONTIER!=='undefined'){
+      const rq=HOLLOW_PHYS.porphyryRelictQuiltAt(px,pz,py,site);
+      if(rq.biosphere==='carnelian'&&py>16.0){
+       if(rng()>0.72*q||!free(px,pz,3.6))continue;
+       claim('carnelian',px,pz,3.6);
+       const sc=rr(0.84,1.18),kfCfg={bucket:'sh_chitin',skelBucket:'sh_chitin',prefix:'sh_kf',sunAzimuthRad:0.65};
+       if(rng()<0.34&&dCam<210){
+        KFRONTIER.growErythraVeil(BIO,kfCfg,px,py,pz,tSeed,sc);
+        recordPlaced('stranglervine',px,py,pz,'porphyryglade',{inDike:true,biosphere:'carnelian',clade:'erythra-veil'});
+       }else{
+        KFRONTIER.growOrganPipe(BIO,kfCfg,px,py,pz,tSeed,sc,{});
+        recordPlaced('stranglervine',px,py,pz,'porphyryglade',{inDike:true,biosphere:'carnelian',clade:'carnelian-organpipe'});
+       }
+       st.stranglervine++;
+       continue;
+      }
+     }
      // Shut-In Red-Rock Pine strictly confined to inDike === true!
      if(rng()>0.58*q||!free(px,pz,4.2))continue;
      claim('pine',px,pz,4.2);
@@ -270,6 +289,7 @@
      recordPlaced('porphyrypine',px,py,pz,'porphyryglade',{inDike:true});
      st.porphyrypine++;
     }else{
+     if(skey==='porphyryrelict'&&site.mistPylon&&Math.hypot(px-site.mistPylon.x,pz-site.mistPylon.z)<18.0)continue;
      if(rng()>0.66*q||!free(px,pz,4.8))continue;
      const isRedbud=dCam<175&&rng()<0.24;
      claim(isRedbud?'redbud':'oak',px,pz,isRedbud?3.2:4.8);
@@ -336,7 +356,11 @@
      recordPlaced('calaminefern',px,py,pz,'shutingorge',{dikeDistM:+Math.abs(dk.signedDistM).toFixed(1),zinc:90});
      st.calaminefern++;
     }else if(dk.inDike){
-     if(rng()<0.48*q){
+     if(skey==='porphyryrelict'&&py>15.0&&typeof KFRONTIER!=='undefined'&&rng()<0.64*q){
+      KFRONTIER.putAgateWindow(BIO,'sh_kf',px,py,pz,KRAND.hash(seed+545,ix,iz),rr(0.75,1.35),false);
+      recordPlaced('stranglervine',px,py,pz,'porphyryglade',{inDike:true,biosphere:'carnelian',clade:'agate-window'});
+      st.stranglervine++;
+     }else if(rng()<0.48*q){
       const gSc=rr(0.48,0.92);
       BIO.put('sh_gladegrass',[px,py-0.03,pz],qEuler(0,rr(0,TAU),0),[gSc,gSc*0.9,gSc],pickC(PAL.gladegrass,0.04));
      }
@@ -360,6 +384,25 @@
       st.boulders++;
      }
     }
+   }
+  }
+
+  if(skey==='porphyryrelict'&&st.springsponge===0){
+   for(let i=0;i<12;i++){
+    reseed(KRAND.hash(seed+580,i,1));
+    const px=-88+rr(-10,10),pz=-24+rr(-10,10),py=Y(px,pz),sc=rr(0.24,0.46);
+    BIO.put('sh_springsponge',[px,py+0.02,pz],qEuler(0,rr(0,TAU),0),[sc*1.2,sc*0.5,sc*1.2],pickC(PAL.sponge,0.03));
+    recordPlaced('springsponge',px,py,pz,'springrun',{submerged:true});
+    st.springsponge++;
+   }
+   if(reg){
+    reg({
+     tagId:'springhollows:porphyry-carnelian-crown',
+     name:'High Purple-Red Porphyry Carnelian Erythrophyll Sky-Island Refuge',
+     tagClass:'flora',
+     x:12,y:Y(12,8)-4,z:8,r:56,h:28,
+     tags:{biome:'springhollows',biosphere:'carnelian',lithology:'porphyry-dike'}
+    });
    }
   }
 

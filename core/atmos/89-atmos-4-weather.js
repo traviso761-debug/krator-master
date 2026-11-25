@@ -39,11 +39,11 @@
   // rain: streaks in a box (240 m) that travels with the camera
   const P=A.PRESETS.rain,F=A.glf,B=P.box/2,N=o.drops||P.drops,pos=new Float32Array(N*6),end=new Float32Array(N*2);for(let i=0;i<N;i++){const x=A.rr(-B,B),y=A.rr(-B,B),z=A.rr(-B,B);pos.set([x,y,z,x,y,z],i*6);end[i*2+1]=1;}
   const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('tip',new T.BufferAttribute(end,1));
-  const rm=new T.ShaderMaterial({uniforms:{time:A.U.time,wind:A.U.wind,windOff:A.U.windOff,light:A.U.light,rain:A.U.rain},transparent:true,depthWrite:false,fog:false,
+  const rm=new T.ShaderMaterial(A.logDepth({uniforms:{time:A.U.time,wind:A.U.wind,windOff:A.U.windOff,light:A.U.light,rain:A.U.rain},transparent:true,depthWrite:false,fog:false,
    vertexShader:`uniform float time;uniform vec2 wind;uniform vec2 windOff;uniform float rain;attribute float tip;varying float vA;
     void main(){vec3 p=position;p.y=mod(p.y-time*${F(P.fall)},${F(P.box)})-${F(B)}+cameraPosition.y;p.xz=mod(p.xz-cameraPosition.xz+${F(B)}+windOff*${F(P.windRide)},${F(P.box)})-${F(B)}+cameraPosition.xz;
      p+=normalize(vec3(wind.x*${F(P.slant)},-1.0,wind.y*${F(P.slant)}))*tip*${F(P.streak)};vec4 mv=viewMatrix*vec4(p,1.0);vA=rain*(1.0-smoothstep(${F(P.fade[0])},${F(P.fade[1])},length(mv.xyz)))*(0.35+0.65*tip);gl_Position=projectionMatrix*mv;}`,
-   fragmentShader:`uniform float light;varying float vA;void main(){gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.35+0.65*light),vA*${F(P.alpha)});}`});
+   fragmentShader:`uniform float light;varying float vA;void main(){gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.35+0.65*light),vA*${F(P.alpha)});}`}));
   A.rainMat=rm;if(A.rainCoverPatch)A.rainCoverPatch(rm);   /* the readers of the rain occlusion map (fx/89-atmos-fx-raincover.js) */
   const rain=new T.LineSegments(g,rm);rain.frustumCulled=false;rain.renderOrder=4;rain.name='atmos:rain';A.add(rain);A.noRay(rain);
   // lightning: a jagged ribbon far off, a double flash
@@ -66,13 +66,18 @@
   if(o.ash&&A.ashWeather)A.ashWeather();
   if(o.snow&&A.snowWeather)A.snowWeather();
   if(o.ui&&A.weatherUI)A.weatherUI(o.ui);A.strike=strike;return W;};
+ // LOG DEPTH (2026-11-24, Stage 8 V9): the weather's own ShaderMaterials take three's log-depth chunks, so on a renderer with
+ // logarithmicDepthBuffer (the open world's) the rain, flecks, streaks and veils are hidden behind the ground as they should be, not
+ // drawn only against the sky. On a page without it the chunks are empty. A.logDepth(o) rewrites o's two shaders and returns o
+ A.logDepth=o=>{o.vertexShader='#include <common>\n#include <logdepthbuf_pars_vertex>\n'+o.vertexShader.replace(/(gl_Position=[^;]*;)(\s*\}\s*)$/,'$1\n#include <logdepthbuf_vertex>\n$2');
+  o.fragmentShader='#include <logdepthbuf_pars_fragment>\n'+o.fragmentShader.replace(/void main\(\)\{/,'void main(){\n#include <logdepthbuf_fragment>\n');return o;};
  // THE FLAKES' drawing (the ash's, o.ash, and the snow's, o.snow; key 'ash' or 'snow', each its own preset and uniform):
  // the flecks, a box of tumbling specks riding the camera, slow to fall and driven downwind by the module's wind (which the
  // storm raises); the streaks; the veils, big soft sprites skimming the ground under the camera (the host's ground),
  // racing downwind faster still, only in the storm. All read A.U[key] (amt in the shaders); nothing costs anything at 0
  A.flakeWeather=key=>{const T=A.T,P=A.PRESETS[key],F=A.glf,B=P.box/2,N=P.flecks,pos=[],pp=[],U=A.U[key];
   for(let i=0;i<N;i++){pos.push(A.rr(-B,B),A.rr(-B,B),A.rr(-B,B));pp.push(A.rnd(),A.rnd(),A.rr(P.size[0],P.size[1]),A.rr(.5,2));}
-  const fm=new T.ShaderMaterial({uniforms:{time:A.U.time,windOff:A.U.windOff,px:A.U.px,light:A.U.light,amt:U},transparent:true,depthWrite:false,fog:false,
+  const fm=new T.ShaderMaterial(A.logDepth({uniforms:{time:A.U.time,windOff:A.U.windOff,px:A.U.px,light:A.U.light,amt:U},transparent:true,depthWrite:false,fog:false,
    vertexShader:`uniform float time;uniform vec2 windOff;uniform float light;uniform float amt;attribute vec4 pp;varying float vA;
     ${A.GLSL_QUAD}
     void main(){vec3 p=ipos;p.y=mod(p.y-time*${F(P.fall)}*(0.6+0.8*pp.x)+sin(time*0.9+pp.y*9.0)*0.6,${F(P.box)})-${F(B)}+cameraPosition.y;
@@ -80,29 +85,29 @@
      p.xz=mod(p.xz-cameraPosition.xz+${F(B)}+d,${F(P.box)})-${F(B)}+cameraPosition.xz;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,0.3);
      float tumble=0.45+0.55*abs(sin(time*pp.w*3.0+pp.x*20.0));float ps=clamp(pp.z*tumble*px/dd,1.5,9.0);
      vA=step(fract(pp.x*7.31),amt)*(1.0-smoothstep(${F(P.fade[0])},${F(P.fade[1])},dd))*${F(P.alpha)};gl_Position=atmQuad(mv,ps);}`,
-   fragmentShader:`uniform float light;varying float vA;varying vec2 vUv;void main(){float r=length(vUv-0.5);if(r>0.5||vA<0.004)discard;gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.3+0.7*light),vA*smoothstep(0.5,0.38,r));}`});
+   fragmentShader:`uniform float light;varying float vA;varying vec2 vUv;void main(){float r=length(vUv-0.5);if(r>0.5||vA<0.004)discard;gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.3+0.7*light),vA*smoothstep(0.5,0.38,r));}`}));
   A.sprites(key+'flecks',{ipos:[3,pos],pp:[4,pp]},fm,4);(A.flakeMats=A.flakeMats||{})[key]=fm;if(A.rainCoverPatch)A.rainCoverPatch(fm);
   // the streaks: short lines of ash driven nearly flat along the gale (the storm's sense of speed), riding the camera
   {const SB=P.streakBox/2,NS=P.streaks,sp=new Float32Array(NS*6),tip=new Float32Array(NS*2),sd=new Float32Array(NS*2);
    for(let i=0;i<NS;i++){const x=A.rr(-SB,SB),y=A.rr(-SB*.4,SB*.6),z=A.rr(-SB,SB),r=A.rnd();sp.set([x,y,z,x,y,z],i*6);tip[i*2+1]=1;sd[i*2]=r;sd[i*2+1]=r;}
    const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(sp,3));g.setAttribute('tip',new T.BufferAttribute(tip,1));g.setAttribute('seed',new T.BufferAttribute(sd,1));
-   const lm=new T.ShaderMaterial({uniforms:{time:A.U.time,wind:A.U.wind,windOff:A.U.windOff,light:A.U.light,amt:U},transparent:true,depthWrite:false,fog:false,
+   const lm=new T.ShaderMaterial(A.logDepth({uniforms:{time:A.U.time,wind:A.U.wind,windOff:A.U.windOff,light:A.U.light,amt:U},transparent:true,depthWrite:false,fog:false,
     vertexShader:`uniform float time;uniform vec2 wind;uniform vec2 windOff;uniform float amt;attribute float tip;attribute float seed;varying float vA;
      void main(){vec3 p=position;p.y=mod(p.y-time*${F(P.fall)}*1.5,${F(P.streakBox)})-${F(SB)}*0.4+cameraPosition.y-2.0;
       p.xz=mod(p.xz-cameraPosition.xz+${F(SB)}+windOff*${F(P.streakRide)}*(0.8+0.4*seed),${F(P.streakBox)})-${F(SB)}+cameraPosition.xz;
       vec3 d=normalize(vec3(wind.x,-0.08,wind.y)+vec3(0.0001));p-=d*tip*mix(${F(P.streakLen[0])},${F(P.streakLen[1])},seed);vec4 mv=viewMatrix*vec4(p,1.0);
       vA=step(fract(seed*5.13),amt*amt)*(1.0-smoothstep(15.0,${F(SB)},length(mv.xyz)))*(0.3+0.7*(1.0-tip));gl_Position=projectionMatrix*mv;}`,
-    fragmentShader:`uniform float light;varying float vA;void main(){if(vA<0.004)discard;gl_FragColor=vec4(vec3(${P.streakColor.map(F).join(',')})*(0.3+0.7*light),vA*${F(P.streakAlpha)});}`});
+    fragmentShader:`uniform float light;varying float vA;void main(){if(vA<0.004)discard;gl_FragColor=vec4(vec3(${P.streakColor.map(F).join(',')})*(0.3+0.7*light),vA*${F(P.streakAlpha)});}`}));
    const ls=new T.LineSegments(g,lm);ls.frustumCulled=false;ls.renderOrder=4;ls.name='atmos:'+key+'streaks';A.add(ls);A.noRay(ls);A.stats[key+'streaks']=NS;}
   const VB=P.veilBox/2,vpos=[],vpp=[];for(let i=0;i<P.veils;i++){vpos.push(A.rr(-VB,VB),0,A.rr(-VB,VB));vpp.push(A.rnd(),A.rr(P.veilY[0],P.veilY[1]),A.rr(P.veilSize[0],P.veilSize[1]),A.rnd());}
   const ground={value:0};A.hook(()=>{const c=A.h.camera.position;ground.value=A.h.ground?A.h.ground(c.x,c.z):0;});
-  const vm=new T.ShaderMaterial({uniforms:{time:A.U.time,windOff:A.U.windOff,px:A.U.px,light:A.U.light,amt:U,ground},transparent:true,depthWrite:false,fog:false,
+  const vm=new T.ShaderMaterial(A.logDepth({uniforms:{time:A.U.time,windOff:A.U.windOff,px:A.U.px,light:A.U.light,amt:U,ground},transparent:true,depthWrite:false,fog:false,
    vertexShader:`uniform float time;uniform vec2 windOff;uniform float light;uniform float amt;uniform float ground;attribute vec4 pp;varying float vA;
     ${A.GLSL_QUAD}
     void main(){vec3 p=ipos;vec2 d=windOff*${F(P.veilRide)}*(0.8+0.4*pp.x);p.xz=mod(p.xz-cameraPosition.xz+${F(VB)}+d,${F(P.veilBox)})-${F(VB)}+cameraPosition.xz;
      p.y=ground+pp.y+sin(time*0.4+pp.w*6.0)*2.0;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);float ps=clamp(pp.z*px/dd,2.0,900.0);
      vA=smoothstep(0.5,1.0,amt)*${F(P.veilAlpha)}*smoothstep(4.0,30.0,dd)*(0.6+0.4*sin(time*0.7+pp.w*9.0));gl_Position=atmQuad(mv,ps);}`,
-   fragmentShader:`uniform float light;varying float vA;varying vec2 vUv;void main(){float r=length(vUv-0.5);if(r>0.5||vA<0.003)discard;gl_FragColor=vec4(vec3(${P.veilColor.map(F).join(',')})*(0.35+0.65*light),vA*smoothstep(0.5,0.0,r));}`});
+   fragmentShader:`uniform float light;varying float vA;varying vec2 vUv;void main(){float r=length(vUv-0.5);if(r>0.5||vA<0.003)discard;gl_FragColor=vec4(vec3(${P.veilColor.map(F).join(',')})*(0.35+0.65*light),vA*smoothstep(0.5,0.0,r));}`}));
   A.sprites(key+'veils',{ipos:[3,vpos],pp:[4,vpp]},vm,4);
   A.rec(key,key==='ash'?{preset:'ash',modes:A.ASH_MODES,flecks:N,streaks:P.streaks,veils:P.veils,note:'W.ash 0..1 (ashfall '+P.ashfall+', the storm 1); flecks ride the camera and the wind; veils skim the ground under the camera in the storm (ash>0.5); the storm lightning is warm'}:{preset:key,modes:A.SNOW_MODES,flecks:N,streaks:P.streaks,veils:P.veils,note:'W.snow 0..1 (snowfall '+P.snowfall+', the blizzard 1); flakes ride the camera and the wind; streaks of blown snow and spindrift skimming the ground in the blizzard (snow>0.5); no lightning'});};   // the selector itself is host code: 89-atmos-9-host.js
  A.ashWeather=()=>A.flakeWeather('ash');A.snowWeather=()=>A.flakeWeather('snow');

@@ -44,15 +44,23 @@ def node():
 
 
 def land_chain(region):
-    """the region's land fragments from 41 to 45, in its build.py's order: [(label, path)]"""
+    """the region's land fragments up to 45, in its build.py's order: [(label, path)]. From 41, or from 40 when the build
+    lists the relief block before 41 (40 smooth, 43 relief, 43m micro, 44 streams, core/terrain's 37 stacks, 43b landforms:
+    41 throws without them on a relief region); core/terrain fragments the bake's HEAD already loads are not loaded twice"""
     base = os.path.join(ROOT, 'openworld', region)
     txt = io.open(os.path.join(base, 'build.py'), encoding='utf-8').read()
     a, b = txt.index("'41-world-fields.js'"), txt.index("'45-world-host.js'")
+    r0 = txt.find("'40-world-smooth.js'")
+    if 0 <= r0 < a:
+        a = r0
+    head = {j[-1] for j in HEAD}
     out = []
-    for f in re.findall(r"'(4\d[a-z]?-world-[a-z0-9-]+\.js)'", txt[a:b]):
-        if f in SKIP or any(o[0].endswith('/' + f) for o in out):
+    # the world fragments by name, and core/terrain's own as ('core/terrain', '<file>') pairs: never a host/ folder's (drawing)
+    names = re.findall(r"\('core/terrain', '([0-9a-z-]+\.js)'\)|'(4\d[a-z]?-world-[a-z0-9-]+\.js)'", txt[a:b])
+    for f in [t or w for t, w in names]:
+        if f in SKIP or f in head or any(o[0].endswith('/' + f) for o in out):
             continue
-        for d in (os.path.join(base, 'src'), HERE):
+        for d in (os.path.join(base, 'src'), HERE, os.path.join(ROOT, 'core', 'terrain')):
             if os.path.isfile(os.path.join(d, f)):
                 out.append((os.path.relpath(os.path.join(d, f), ROOT).replace(os.sep, '/'), os.path.join(d, f)))
                 break
@@ -80,6 +88,13 @@ def extras(region):
     return out
 
 
+def site_data(region):
+    """the region's site data fragments (src/NN-site-*.js: a village its own page laid, Gihon's Landing), which its SITE_SPEC
+    reads, so they load before it, as core/world/bake_sites.py loads them"""
+    src = os.path.join(ROOT, 'openworld', region, 'src')
+    return sorted(f for f in os.listdir(src) if re.match(r'^\d\d[a-z]?-site-.+\.js$', f)) if os.path.isdir(src) else []
+
+
 def inputs(region):
     """every file the bake reads (its cache key)"""
     base = os.path.join(ROOT, 'openworld', region)
@@ -87,6 +102,7 @@ def inputs(region):
     files += [os.path.join(base, 'build.py'), os.path.join(base, 'src', '48-world-site.js'), os.path.join(base, 'plan', 'sites.json'),
               LANDFORMS, os.path.abspath(__file__), os.path.join(HERE, 'world_data.py'), WD.GEOLOGY]
     files += [os.path.join(ROOT, w, f) for w, f in WD.RES_FRAGS]
+    files += [os.path.join(base, 'src', f) for f in site_data(region)]
     data = os.path.join(base, 'data')
     files += sorted(os.path.join(data, f) for f in os.listdir(data))
     return [f for f in files if os.path.isfile(f)]
@@ -138,7 +154,11 @@ def script(region, site_id, levels, probes):
     spec = os.path.join(base, 'src', '48-world-site.js')
     if os.path.isfile(spec):   # the region's SITE_SPEC: the coasts kept round its sites' hamlets (44c keeps)
         parts.append(WD.net_fragment(spec))
-        parts.append('var KHAMLET={CULTURES:new Proxy({},{get:(t,k)=>k in t?t[k]:{}})};   /* the spec tunes core/hamlet\'s cultures; the ground does not read them */\n')
+        # the spec tunes core/hamlet's cultures and may call its builders at load (xanadu-oidong-highrift's KHAMLET.xanaduRow,
+        # which throws when it is missing): the ground reads neither, so the stub answers both with empty records
+        parts.append('var KHAMLET={CULTURES:new Proxy({},{get:(t,k)=>k in t?t[k]:{}}),xanaduRow:function(){return {};}};   /* the spec tunes core/hamlet\'s cultures; the ground does not read them */\n')
+        for f in site_data(region):
+            parts.append('\n// ---- openworld/%s/src/%s\n' % (region, f) + io.open(os.path.join(base, 'src', f), encoding='utf-8').read())
         parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + io.open(spec, encoding='utf-8').read())
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))   # the coasts' classes read the provinces (44c rockAt)
     for where, f in WD.RES_FRAGS:

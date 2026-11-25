@@ -14,7 +14,6 @@
   "settlements/dalab/src/71-dalab-trade.js",
   "settlements/dalab/src/71c-dalab-town.js",
   "settlements/dalab/src/73-dalab-sacred.js",
-  "kits/xanadu/src/87k-xa-lake-trades.js",
   "core/walk/box/24-core-walk-box.js"
  ],
  "scoped": [
@@ -49,6 +48,12 @@
     "core/drawn",
     [
      "10-core-drawn.js"
+    ]
+   ],
+   [
+    "core/terrain",
+    [
+     "43-core-ground.js"
     ]
    ],
    [
@@ -116,6 +121,7 @@
   "50-core-water-draw.js",
   "51-core-water-kinds.js",
   "10-core-drawn.js",
+  "43-core-ground.js",
   "69d-dalab-mat.js",
   "69e-dalab-helpers.js",
   "69bk2-tg-bundle.js",

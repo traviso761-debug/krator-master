@@ -6,7 +6,7 @@ ride and keep great beasts, flying and running, and their towns are Mav's Refuge
 quarter in Kautoa (Ridertown, `settlements/isle-demo`).
 
 ```
-python3 build.py                                   # dist/beast-riders.html
+python3 build.py                                   # dist/beast-riders.html, and its maps beside it: dist/beast-riders.tex.brtowns.js (the towns'), .tex.kftex.js (the detail maps; --inline-packs: in the page)
 python3 verify.py dist/beast-riders.html --assert [--shots DIR]
 python3 ../../tools/textures/pack.py kits/beast-riders   # (from the repo root) after a change to materials.json
 ```

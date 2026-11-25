@@ -169,6 +169,7 @@ with open(os.path.join(fake, 'dist', 'p.html'), 'w', encoding='utf-8', newline='
 with open(os.path.join(fake, 'verify.py'), 'w', encoding='utf-8', newline='\n') as fh:
     fh.write("import sys, os\n"
              "print('harness: renderer FAKE GPU; lane arc; KRATOR_GL=' + os.environ.get('KRATOR_GL', ''))\n"
+             "print('stall=' + os.environ.get('KRATOR_GPU_STALL_MIN', '-'))\n"
              "mode = sys.argv[sys.argv.index('--mode') + 1]\n"
              "cnt = os.path.join(os.path.dirname(os.path.abspath(__file__)), mode + '.count')\n"
              "n = int(open(cnt).read()) + 1 if os.path.exists(cnt) else 1\n"
@@ -189,6 +190,7 @@ def job(i, mode, kind='verify'):
 
 
 fjobs = [job(0, 'ok'), job(1, 'stall'), job(2, 'fail'), job(3, '', 'check')]
+fjobs[0]['stall_min'] = 45   # verify_all.json "stall": the page's own watchdog reaches its job
 meta = {'created': 'now', 'head': 'test', 'gpu': True, 'tier': 'auto', 'since': 'HEAD', 'select': 'test', 'lanes': ['arc'], 'workers': 1}
 run = VA.Run(os.path.join(TMP, 'runs', 'r1'))
 run.save_plan(meta, fjobs)
@@ -196,6 +198,13 @@ na = argparse.Namespace(lane='', retry_failed=False, no_retry=False, no_cache=Fa
 VA.execute(run, meta, fjobs, na, cfg)
 res = {r['id']: r for r in VA.results(run, fjobs)}
 check('fake run: the pass', res[0]['status'] == 'pass', res[0].get('status'))
+with open(res[0]['log'], encoding='utf-8') as fh:
+    lg = fh.read()
+check("a page's stall limit is its job's KRATOR_GPU_STALL_MIN", 'stall=45' in lg and 'stall=-' not in lg, lg[-300:])
+cfgs = json.loads(json.dumps(cfg))
+cfgs['stall']['pages'] = {'openworld/pinnacle/*': 60}
+pj = [j for j in VA.plan(cfgs, argparse.Namespace(only=['openworld/pinnacle/'], all=True, tier='full', since='HEAD', limit=0)) if not j.get('status')]
+check('verify_all.json "stall" reaches the plan by glob', pj and all(j['stall_min'] == 60 for j in pj), [(j['page'], j.get('stall_min')) for j in pj])
 check('fake run: the stall rerun once, then left stalled', res[1]['status'] == 'stalled' and res[1]['attempts'] == 2, (res[1].get('status'), res[1].get('attempts')))
 check('fake run: the failure, its item read', res[2]['status'] == 'fail' and res[2].get('items') == ['something new'], res[2])
 check('fake run: the check.py', res[3]['status'] == 'pass', res[3].get('status'))

@@ -91,9 +91,14 @@ const counts=T=>T.reduce((C,t)=>{C[t.sp]++;return C;},THRONE.SPECIES.map(()=>0))
 const capList=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();scene.traverse(M=>{if(!M.isInstancedMesh||M.name!=='biome:gcoral')return;
  for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,s);if(p.y>terrainH(p.x,p.z)+2)o.push({x:p.x,y:p.y,z:p.z,s:s.x,y0:p.y+.44*s.y,y1:p.y+1.05*s.y});}});return o;};   // y0..y1 the cap's own height (its lathe runs .44..1 of its scale)
 const riverProfile=()=>{const H=[];for(let u=BREACH_U;u>-TERR.R;u-=25){const c=upAt(u,riverC(u)),w=waterH(c[0],c[1]);if(w>-1e8)H.push(w);}return H;};   // the water's own surface, as the page reads it
+/* THE LAKE FROZEN (89w, WATER.ice): the ice drawn over the lake's outline, and every iceberg inside it (held in the ice where it calved) */
+function iceLakeCheck(I,bergs){if(!I)return{ok:false,detail:'no ice on the lake (89w)'};const P=I.poly,inP=(x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];
+  if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};const out=bergs.filter(p=>!inP(p[0],p[2]));
+ return{ok:bergs.length>0&&!out.length,detail:bergs.length+' icebergs, '+(bergs.length-out.length)+' held in the ice'+(out.length?' ('+out.length+' outside it)':'')+'; '+I.drifts.length+' drifts'};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the cold belt\'s trees placed, and only they',HCHK.placed(counts(THRONE.TREES)));
  add('nothing grows on the ice',HCHK.ice(THRONE.TREES,P));
+ add('the lake frozen, its icebergs held in the ice',iceLakeCheck(LAKE_ICE,P.filter(p=>p[3]==='biome:serac'&&Math.abs(p[1]-LAKE.level)<6)));
  add('every ice cave warm and alive inside',HCHK.caves(GLACIER.caves));
  add('the river runs down the flank',HCHK.river(riverProfile()));
  add('no gill-coral cap clips another',HCHK.caps(capList()));
@@ -110,6 +115,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const L=capList();add('two caps in one place',HCHK.caps(L.concat([Object.assign({},L[0],{x:L[0].x+.5,y0:L[0].y0+.2,y1:L[0].y1+.2})])));}
  add('a weather without the snow',HCHK.weather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES}),ATMOS.U));
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
+ add('an iceberg out on the moraine',iceLakeCheck(LAKE_ICE,[[TERM.x==null?upAt(TERM.u0-200,TERM.p0)[0]:TERM.x,LAKE.level,upAt(TERM.u0-200,TERM.p0)[1],'biome:serac']]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

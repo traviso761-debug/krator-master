@@ -1,7 +1,8 @@
-// node core/world/test-town-water.js: a town's own water in the world (41t-world-town-water.js) and the landform stamps
+// node core/world/test-town-water.js: a town's own water in the world (41-world-fields.js WTOWN: 41t until 2026-11-24) and the landform stamps
 // (41l-world-landforms.js) on a small made-up region: a sea at -1,500 m with land to the east, a model river (the 'Turm')
 // coming up from the south, a town in the sea with its own lake (r 450 m) and river (south to its footprint's edge), an
 // islet record. Each check has a negative that must fail. The real case (Voth's page) is core/world/town_view.py.
+// Also 41's sample (WORLD.at a copy, WORLD.atShared the hot loop's one record: S3-55) and a kit on a list of overlays (T28).
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');
 const load = f => vm.runInThisContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), { filename: f });
@@ -27,6 +28,8 @@ function region(opt) {
     biomes: [{ name: 'Ring Sea', colour: '#335577' }], classes: [{ code: 'Af', group: 'A', color: '#00aa00' }],
     rain: { scale_mm: 4000 / 255 }, temp: { offset: -90 }, pressure: { atm0: 1.6, scale_m: 8000 },
     drainage: { min_accum: 1000, lines: [] },
+    // a tarn on the land east of the town (opt.pond: relief P7's record, one 250 m cell at x 16 km, z 14 km, its level -1,250 m)
+    ...(opt.pond ? { streams: { cell: 250, x0: 16000, z0: 14000, lines: [], ponds: [{ l: -12500, d: 20, c: [0, 0], r: '0:0-0' }] } } : {}),
     // the Turm: from the south (z +18 km) north toward the town, at -1,300 m falling to the sea's level
     // named by the model's id and name, as edit_513 left the Turm (r029, 'Turm Rivrh')
     rivers: opt.river === false ? [] : [{ id: 'r029', name: 'Turm Rivrh', line: [[0, 18000, -1300], [200, 12000, -1380], [-300, 6000, -1420], [0, 2000, -1440], [0, 0, -1500]], width_m: 60, depth_m: 4 }],
@@ -71,9 +74,9 @@ function town(opt) {
 function world(opt) {
   const { meta, R } = region(opt);
   global.WORLD_DATA = { meta, towns: { format: 'krator-openworld-towns', version: 1, towns: opt.towns } };
-  global.WORLD_KITS = [];
-  load('core/rand/08-core-rand.js'); load('core/terrain/38-core-relief.js');
-  load('core/world/41-world-fields.js'); if (opt.water !== false) { load('core/world/41t-world-town-water.js'); load('core/world/41l-world-landforms.js'); }
+  global.WORLD_KITS = opt.kits || [];
+  load('core/rand/08-core-rand.js'); load('core/terrain/38-core-relief.js'); load('core/world/40-world-smooth.js'); load('core/world/44-world-streams.js');
+  load('core/world/41-world-fields.js'); if (opt.water !== false) load('core/world/41l-world-landforms.js');
   const W = vm.runInThisContext('WORLD'); W.init(R);
   return W;
 }
@@ -137,9 +140,9 @@ ok('the river form is left to 41\'s named river (not stamped, not skipped); the 
   ok('negative: a shore trace 30 m off the ground fails the shore check', true, !c2.ok && c2.shore.max > 20, 'worst ' + c2.shore.max + ' m'); void W2; }
 { const W3 = world({ towns: [town({ noWater: true })] });
   ok('a town without water leaves the world\'s water alone (the model\'s sea in its footprint, the Turm whole)',
-    W3.lakeWater(600, 0) === LEVEL && WORLD_DATA.meta.rivers[0].line.length === 5 && vm.runInThisContext('WTOWN').list.length === 0, true); }
+    W3.lakeWater(600, 0) === LEVEL && WORLD_DATA.meta.rivers[0].line.length === 5 && vm.runInThisContext('WTOWN').list.length === 0, true);
+  ok('negative: without the town\'s water record its land in the sea\'s cells reads as sea (what WTOWN fixes)', true, W3.lakeWater(600, 0) === LEVEL); }
 { const W4 = world({ towns: [town({})], water: false });
-  ok('negative: without 41t the town\'s land in the sea\'s cells reads as sea (what 41t fixes)', true, W4.lakeWater(600, 0) === LEVEL);
   ok('negative: without 41l the strait\'s coarse cells stand under the water 600 m off its line (what its stamp closes)', true,
     W4.Hbare(14000, -3400) < LEVEL && W4.water(14000, -3400) > W4.Hbare(14000, -3400)); }
 { world({ towns: [town({ join: 'r999' })] });
@@ -168,6 +171,32 @@ ok('the river form is left to 41\'s named river (not stamped, not skipped); the 
   ok('the town linkOut moves the cut out (R + band + 900) and the link starts there (unwarped, within 80 m)', Math.abs(Math.hypot(l9[0], l9[1]) - 2100) < 1 && !!L9
     && Math.abs(Math.hypot(L9.from[0], L9.from[1]) - 2100) < 80, Math.abs(Math.hypot(l9[0], l9[1]) - 1500) > 1,
     Math.round(Math.hypot(l9[0], l9[1])) + ' m, the link from ' + (L9 ? Math.round(Math.hypot(L9.from[0], L9.from[1])) + ' m' : 'none')); }
+
+// ---- 6. W.water with a town on the page: the lake's, the river's, a stream's and a tarn's (2026-11-24, Stage 8 B7, T24: 41t
+// replaced W.water with the lake's and the river's alone, so on a page with a town a stream or a tarn was dry)
+{ const W6 = world({ towns: [town({})], pond: true }), px = 16000, pz = 14000;
+  ok('with a town\'s water on the page, W.water still holds a tarn (its level -1,250 over ground ' + W6.H(px, pz).toFixed(1) + ')',
+    W6.pondWater(px, pz) === -1250 && W6.water(px, pz) === -1250 && vm.runInThisContext('WTOWN').list.length === 1, !(W6.water(px + 2000, pz) === -1250),
+    'W.water ' + W6.water(px, pz)); }
+
+// ---- 7. the sample (2026-11-24, Stage 8 B7, S3-55: WORLD.at returned the one shared record, so a caller that sampled again
+// before reading, 49r's assess and the host's cached sample, read another point's fields)
+{ const W7 = world({ towns: [] }), a = W7.at(-5000, 0), h = a.h, b = W7.at(16000, 14000);
+  const shared = typeof W7.atShared === 'function' ? W7.atShared(-5000, 0) : null, sh = shared ? shared.h : NaN;
+  if (shared) W7.atShared(16000, 14000);
+  ok('WORLD.at returns a record of its own: a second sample leaves the first as it was (' + h.toFixed(1) + ' beside ' + b.h.toFixed(1) + ')',
+    a !== b && a.h === h && b.h !== h && typeof b.wet === 'number', !!shared && shared.h !== sh, 'the shared record ' + (shared ? 'moved to ' + shared.h.toFixed(1) : 'missing'));
+  const at0 = W7.atShared;
+  if (at0) W7.atShared = (x, z) => { const A = at0(x, z); A.addedField = 7; return A; };
+  const c = W7.at(0, 0); if (at0) W7.atShared = at0;
+  ok('...a field a world adds by wrapping WORLD.atShared (44c, the regions\' 43) reaches WORLD.at', c.addedField === 7, true); }
+
+// ---- 8. a kit on a list of overlays (2026-11-24, Stage 8 B7, T28: the Iziz cluster's savannah on three rims)
+{ const W8 = world({ towns: [], kits: [{ name: 'listed', overlay: ['somewhere else', 'ring sea'] }, { name: 'single', overlay: 'ring sea' }] });
+  const kl = W8.kitW(0, -5000, 0), ks = W8.kitW(1, -5000, 0);
+  const W9 = world({ towns: [], kits: [{ name: 'listed', overlay: ['somewhere else'] }] }), kn = W9.kitW(0, -5000, 0);
+  ok('a kit whose overlay is a list grows on each name of it (the first kit to name the overlay takes it)', kl > .99 && ks === 0, kn === 0,
+    'listed ' + kl.toFixed(2) + ', single ' + ks.toFixed(2) + '; a list without the name ' + kn.toFixed(2)); }
 
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

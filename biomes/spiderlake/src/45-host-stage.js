@@ -105,6 +105,15 @@ const FLOW_LINES=(function(){
    {name:'Hau-Gel North Warm-Seep Braid',pts:northBraid,w:9.5,depth:0.55,speed:1.25}
   ];
  }
+ if(SKEY==='haugel'){
+  // NE 9106 Hau-Gel inflow gorge chute (585 m3/s) rushing west from x = +380 into Spider Lake bay at x = -48
+  const pts=[];
+  for(let i=0;i<=26;i++){
+   const t=i/26,x=380-428*t,z=11.0*Math.sin((x+60)*0.012);
+   pts.push([x,z]);
+  }
+  return[{name:'9106 Hau-Gel Upper Inflow Gorge Chute (585 m3/s)',pts:pts,w:16.5,depth:0.95,speed:2.85}];
+ }
  return[];
 })();
 
@@ -320,12 +329,53 @@ function landRampart(x,z){
  return crest+hummock+flankDrop;
 }
 
+function landHaugel(x,z){
+ // West (x < -42): sheltered Spider Lake bay (-10.5 m bed) with littoral bald-cypress shoals;
+ // East (x >= -42): 585 m3/s 9106 Hau-Gel inflow canyon flanked by steaming sinter benches & steep dry Carnelian secondary-ejecta cliffs!
+ const zCenter=11.0*Math.sin((x+60)*0.012);
+ const az=Math.abs(z-zCenter+6*n2(x,z,0.006,651));
+ let h=0;
+ if(x<-42){
+  const inBay=smooth(145,58,az);
+  const bayBed=-1.1-9.8*smooth(-42,-260,x)*inBay+1.1*n2(x,z,0.022,652);
+  const bayShore=2.4+14.5*smooth(82,190,az)+26.0*smooth(185,420,az)+2.8*n2(x,z,0.009,653);
+  h=mix(bayShore,bayBed,inBay);
+ }else{
+  const u=clamp((x+42)/422,0,1.2);
+  const benchBase=2.1+6.2*u+1.6*n2(x,z,0.014,654);
+  const cliffRise=18.5*smooth(56,112,az)+24.0*smooth(108,245,az)+4.2*n2(x,z,0.011,655);
+  h=benchBase+cliffRise;
+ }
+ // Cut north amber-mulberry bench at z = -96 (x in [-115..+115])
+ if(SITE.terraces&&SITE.terraces.length){
+  const xm=smooth(130,88,Math.abs(x))*smooth(26,8,Math.abs(z+96));
+  h=mix(h,12.5,xm*0.85);
+ }
+ // Incise monotone 9106 Hau-Gel inflow gorge channel cleanly into Spider Lake bay
+ const rv=distToPoly(FLOW_LINES[0].pts,x,z);
+ if(rv.d<34){
+  const thalweg=mix(8.05,-1.55,rv.t);
+  h=mix(h,Math.min(h,thalweg),smooth(32,12,rv.d));
+ }
+ // Emergent gorge-mouth ejecta stacks + flat reserve bench at (-165, -135) + raised sinter pools
+ h=Math.max(h,stackH(SITE.stacks,x,z,660));
+ if(SITE.reserves&&SITE.reserves.length){
+  const R=SITE.reserves[0],rd=Math.hypot(x-R.x,z-R.z);
+  if(rd<R.r*1.35){
+   h=mix(h,5.6+0.35*n2(x,z,0.02,668),smooth(R.r*1.32,R.r*0.68,rd));
+  }
+ }
+ h=applyThermalPools(h,SITE.thermalPools,x,z,670);
+ return h+0.85*n2(x,z,0.024,656);
+}
+
 function land(x,z){
  if(SKEY==='spillway')return landSpillway(x,z);
  if(SKEY==='narrows')return landNarrows(x,z);
  if(SKEY==='pavilion')return landPavilion(x,z);
  if(SKEY==='fen')return landFen(x,z);
  if(SKEY==='dolomite')return landDolomite(x,z);
+ if(SKEY==='haugel')return landHaugel(x,z);
  return landRampart(x,z);
 }
 
@@ -353,6 +403,13 @@ function water(x,z){
     const flLvl=mix(3.1,0.0,rv.t);
     if(flLvl>0.04)return flLvl;
    }
+  }
+ }
+ if(SKEY==='haugel'){
+  const rv=distToPoly(FLOW_LINES[0].pts,x,z);
+  if(rv.d<FLOW_LINES[0].w*0.95){
+   const flLvl=mix(9.0,0.0,rv.t);
+   if(flLvl>0.04)return flLvl;
   }
  }
  // Open +1,460.0 m Spider Lake datum (local y = 0.0)
@@ -533,6 +590,8 @@ if(typeof KHAZ!=='undefined'&&typeof KTAGS!=='undefined'&&KTAGS.page){
   regHaz('spiderlake:broodguard','Arachneapolita Brood-Pavilion Guard Drum (< 2.5 m without Hum/smudge)',12,-28,28,16,{kind:'hunter',effect:'bleed',danger:0.30,dose:0.12,falloff:'smooth'});
  }else if(SKEY==='fen'){
   regHaz('spiderlake:thermalbath','Hot Alkaline Carbonate Vent Throat (+44.2 C scald center)',78,58,9.5,4,{kind:'heat',effect:'burn',danger:0.52,dose:0.24,falloff:'smooth'});
+ }else if(SKEY==='haugel'){
+  regHaz('spiderlake:thermalbath','Hau-Gel Upper Scalding Sinter Terrace Vent (+45.6 C scald center)',44,58,12.5,4,{kind:'heat',effect:'burn',danger:0.58,dose:0.28,falloff:'smooth'});
  }
 }
 
@@ -550,6 +609,7 @@ const SPINE=SKEY==='spillway'?[[-28,-68],[-22,74],[68,142],[142,-88]]
  :SKEY==='pavilion'?[[-35,-25],[35,-20],[0,95],[0,142]]
  :SKEY==='fen'?[[34,26],[-26,48],[-95,-95],[-145,-92]]
  :SKEY==='dolomite'?[[18,-26],[18,22],[48,-82],[128,-136]]
+ :SKEY==='haugel'?[[-58,-64],[-52,68],[44,58],[-14,-82]]
  :[[-85,15],[0,0],[95,-18],[0,-110]];
 
 BIO.init({

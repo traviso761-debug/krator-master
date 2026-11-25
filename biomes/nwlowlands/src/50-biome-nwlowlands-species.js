@@ -613,5 +613,6 @@ BIO.def('lantern',G.lantern(),M.lantern,{label:'Glow-willow lanterns'});
 BIO.def('halo',BIO.geo.bloom(),M.halo,{label:'Lantern glow'});
 BIO.def('pompom',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Flower heads'});
 BIO.def('fungus',LK.fung&&BIO.fung?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.34,droop:.16,wav:5,wavA:.04,lump:.08}):new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+NWLOW.FUNG_SHELF=!!(LK.fung&&BIO.fung);   /* 65's bracket() turns the shelf out of its wall (as nwbay's NWBAY.FUNG_SHELF) */
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(NWLOW.ROCKTEX),{label:'Boulders'});
 })();

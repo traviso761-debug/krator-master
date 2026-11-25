@@ -206,3 +206,4 @@ Girder carry no size declarations, so there is nothing there to sync. The catalo
 - [x] **The sheet's lamps overflowed the shader's uniforms** (2026-11-11, after the Tungang and the Fellgang pieces met in the
   merge on `claude/loj-twenny-059a5e`: "FRAGMENT shader uniforms count exceeds MAX_FRAGMENT_UNIFORM_VECTORS(1024)" on both GPU
   lanes). `src/90-sheet.js` keeps at most 24 of the pieces' PointLights on, the nearest the camera, re-picked every half second.
+  The cap is core's since Stage 8 (S3-72): `furnLampCap` in `core/catalog/krator-furniture-core.js` (`KF.lampCap` in the runtime).

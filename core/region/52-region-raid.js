@@ -21,7 +21,7 @@
    (`km / kmDay` days), resolves the assault (KCAMP.raidOutcome on its strength and the target's defence, a hash of the raid's
    id: no draws), takes within the caps (KCAMP.raidTake, KCAMP.raidDead), marches home and lands the plunder and the dead in its
    store. A target's standing falls with its losses and recovers each day (KCAMP.raidRecover); a fort's `state` goes damaged on a
-   success and ruined on a sack, and is repaired after a season. RECORDS by id (in S.raiding: S.raids is a road's cargo raids, 50's W5): S.raiding.expeditions [{id, faction, from, target, warriors, km, leave, arrive, back, band, before, take, dead, lost,
+   success and ruined on a sack, and is repaired after a season. RECORDS by id (in S.raiding: S.roadRaids is a road's cargo raids, 50's W5): S.raiding.expeditions [{id, faction, from, target, warriors, km, leave, arrive, back, band, before, take, dead, lost,
    bands {party: {morale, next}}}], S.raiding.raids [{id, party, from, target, turn,
    leave, arrive, back, warriors, band, ratio, before {stock, people, floor}, take, dead, lost, landed}], S.raiding.events [{minute, kind, raid, target, faction,
    ...}], S.raiding.targets {id: {standing, people, base, state, last, hits, aid}}; H.raidReport(). */

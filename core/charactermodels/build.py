@@ -20,6 +20,9 @@ its head fragment (PAGES), then one inline script: core/rand (KRAND), the data (
 fragments src/10-89 and the page's own 9x fragment. three.js r128 and its GLTFLoader load from the CDN, as in the hero
 build. Deterministic: the same inputs give the same bytes; build-manifest.json holds a sha1 per input.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, gzip, hashlib, json, os, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))

@@ -46,6 +46,6 @@ const VIEWS={
  // the fallen lower hull in the scree
  'The fallen hull':              (function(S){return SBW(S,S.quiver.x-60,160,560).concat(SBW(S,S.quiver.x,40,120));})(SBB),
  // the crown: the Order's banners, the bent mast
- "The Order's crown":            (function(S){return SBW(S,-240,S.crown.y+140,360).concat(SBW(S,0,S.crown.y+40,S.back+60));})(SBB),
+ "The crown of the Order":            (function(S){return SBW(S,-240,S.crown.y+140,360).concat(SBW(S,0,S.crown.y+40,S.back+60));})(SBB),
  'The ruin at night':            SBHERO(SBB).concat([1]),
 };

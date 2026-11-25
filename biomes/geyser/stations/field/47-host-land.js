@@ -46,4 +46,7 @@ BIO.init({tags:'geyser',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
  obstacles:OBSTACLES,ticks:tick,seed:SITE.seed==null?64:SITE.seed,origin:SPINE,center:[BASIN.x,BASIN.z],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:240,mid:620,far:1800,floor:[200,480]},
  windows:{water:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],stair:[BASIN.x-1,BASIN.z-1,BASIN.x+1,BASIN.z+1]}});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun(SUN_POS);
