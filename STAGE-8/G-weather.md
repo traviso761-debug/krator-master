@@ -9,7 +9,7 @@ tier 2 comes after Stage 8, with true volumetric clouds (W6), and the settlement
 | Piece | Where | State |
 |---|---|---|
 | Weather state `W` (rain, fog, wet, wind, flash; snow and ash opt-in), eased by a pure step; modes auto, clear, rain, storm, fog, snowfall, blizzard, ashfall, ash; rain streaks and a bolt | `89-atmos-4-weather.js` | built. `auto` follows only the hour (dawn fog, an evening shower), and it rains everywhere on the page at once |
-| `ATMOS.bindWeather`: a biome names its climate and gets its modes, fog, sun and sky dimming, wet ground and snow cover | `host/89-atmos-e-weatherhost.js` | built; on about 66 biome kits and 6 settlements (girder, iziz, locus, longsong, voth, marr). Each page starts `clear`, so its preset views don't change |
+| `ATMOS.bindWeather`: a biome names its climate and gets its modes, fog, sun and sky dimming, wet ground and snow cover | `host/89-atmos-e-weatherhost.js` | built; on about 66 biome kits and settlements (girder, iziz, longsong, voth, marr; Locus was listed but had no binding until W7, 2026-11-24). Each page starts `clear`, so its preset views don't change |
 | The shared sky: a cumulus and a cirrus layer on sky planes, world-anchored, riding the wind, lit by the sun and giantshine; cloud moods (dark, tint, turbulence, glow episodes) | `sky/89-atmos-g-sky.js`, `sky/89-atmos-k-cloudmood.js` | built; on every biome kit (`ATMOS.skyBiome`, 155 callers). The clouds are flat layers, not volumes |
 | A sea of cloud seen from above (billowed, drifting, bit-exact in JS, GLSL and Godot) | `89-atmos-d-clouddeck.js`, `fx/89-atmos-fx-deckday.js` | built; on the pages that look down on a deck |
 | Cloud shadows on the ground and rain darkening, from the sky's own cloud field | `atmos_cloudshade`, `ATMOS.cloudShade` | built; wired on only 14 kits (swbay, the outer walls, catch, cut, farside, k-guilin, sedesert, shroudhills, abyssal-savannah, ancientsvalley, batteredisle). The biome core's material makers never call it |
@@ -68,3 +68,26 @@ weather still starts `clear` on every page, so verify views and their asserts st
    cost passes are measured on the Arc 140T against the 1 ms rule (SKY-PLAN section 10), with a per-preset quality tier
    (off, layers, volumes) so a page over budget steps down. Which pages take volumes at which tier is settled on the pairs.
 4. **The settlements move onto the shared sky with tier 2 (W7)**, Voth last, each sky judged on its page.
+
+## 5. The owner's answers on the W6 pairs (2026-11-24)
+
+The pairs (`core/atmos/pairs/pairs.py`; shots of the outer wall, shighlands and Throne station 1 at layers and volumes, cover
+0.6 on both, on the Arc) were judged on their page. "These look mostly good", with one defect to fix first:
+
+1. **The pixelated look** (a diagonal dither on thin cloud edges at the march's texel size, worst on the outer wall's sky):
+   fixed. The march's jitter pattern now moves each frame (interleaved gradient noise at the pixel offset by 5.588238 a
+   frame), and the resolve filters the new frame with a 3x3 tent and clips the history to its neighbourhood's mean +- 1.25
+   sigma, instead of blending the raw texel into a min-max box.
+2. **The outer walls take volumes**: `89-atmos-m-volclouds.js` and `89-atmos-m-volhost.js` are listed in wouterwall,
+   nwouterwall, neouterwall and seouterwall (every station). The budget's step-down holds them on the Arc.
+3. **Shighlands takes volumes with the layer above the cloud sea**: listed, and its cloud base raised from the sky's 1600 m
+   to 2600 m (`clouds.height`), 1350 m clear of the deck's top (`CLOUD_Y`, 1250 m), so the cumulus stands round the rim's
+   eye level instead of sitting on the sea. The flat layer and the cloud shadows move with it.
+4. **The Throne keeps layers**: station 1 and its stations do not list the volumes (no triangles to spare at its ceiling,
+   and its eye at 2.8 km puts the whole layer below it).
+5. **Ancient's Valley takes volumes, with its clouds' mood carried into them** (asked after the pairs: the mood's tint, dark
+   and glow lived on the flat cumulus, which the volumes replace). The volumes' composite now applies the mood at each
+   pixel's cloud (`ATMOS.skyMoodGLSL`); judged on a copy with the mood held, day and 22:00. Listed in the valley's build
+   (every station). Godot's sky has no mood yet: the twin follows when it does.
+
+The pages rebuild in tier 2's own pass after Stage 8 (section 4, answer 2); their committed pages are unchanged here.

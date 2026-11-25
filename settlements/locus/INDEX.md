@@ -36,8 +36,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `00-head.html` | 5 |  |
 | `05-palette.js` | 13 | 0. PALETTE (1) |
 | `10-core.js` | 17 | 1. CORE (1); 2. WORLD CONSTANTS — LOCUS (100); 4. TERRAIN FIELD (220) |
-| `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (228) |
-| `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
+| `20-stage.js` | 2 | 4. STAGE (1) |
+| `21-sky.js` | 5 | 5b. KRATOR SKY: the clock and the sky's state (1) |
 | `30-layout.js` | 40 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (91); THE ROUTE GRID (107); WALK GRAPH (the life layer's network) (498) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
 | `45-kit.js` | 28 | 10. KIT (1); NIGHT LIGHT VOLUME (128) |
@@ -60,9 +60,10 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 14 | 20. EMIT + GROUND + WATER — LOCUS (1) |
 | `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
+| `76f-locus-far.js` | 7 | THE FAR FIELD — LOCUS ON ITS REAL SITE (W7) (1) |
 | `80-camera.js` | 10 | 25. CAMERA: ON core/host (1); THE PAGE'S FRAME (98-start.js runs it after the  (101) |
 | `81-glow.js` | 7 | 26. NIGHT GLOW (1) |
-| `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
+| `82-daynight.js` | 2 | 27. DAY / NIGHT (1) |
 | `83-locus-fauna.js` | 12 | 19F. AMBIENT FAUNA — LOCUS (1) |
 | `84-life.js` | 51 **big** | 20. THE LIFE LAYER — LOCUS (1) |
 | `85-probe.js` | 1 | 29. PROBE (1) |
@@ -71,6 +72,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `88b-locus-minimap.js` | 3 | MINIMAP (1) |
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |
 | `90-atmos-host.js` | 1 | ATMOS: the shared atmosphere module, bound to Lo (1) |
+| `90s-host-sky.js` | 4 | HOST: Krator's sky over Locus (and Mungo), the shared sky (W7) (1) |
+| `90t-locus-air.js` | 4 | THE BASIN'S AIR AND WEATHER, AND THE REFINERY'S SMOKE (W7) (1) |
 | `90w-lake.js` | 5 | THE SALT LAKE ON core/water (1) |
 | `95-locus-doors.js` | 5 | 31b. THE DOORS: core/door on the Yuni engine's l (1) |
 | `98-start.js` | 7 | 99. START: ON core/host (1) |

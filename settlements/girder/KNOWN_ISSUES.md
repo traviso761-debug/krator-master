@@ -176,3 +176,30 @@ The owner: "remove all dark voids and make all windows, doors and portals actual
 - [ ] A few store windows (55-arch.js, `winAt(f,..,y+2.7,'f',0.8,0.45)`) rise above a shabby store's low lid wall (H 2.5 to 3.1 m), so they cannot be cut and stand before a card on nothing above the wall; they did before (as a dark plate). Lower them or skip them on a lid.
 - [ ] The leaves turn on the instance's world-UV map, so the plank grain slides a little as a leaf swings. The room cards and lit panes take no night light volume.
 - [x] kits/beast-riders sealed 55-arch.js in a closure without 54-openings.js and core/door, its leaves drawn shut and ring walls whole through shims at the top of 55-arch.js's IIFE. Closed 2026-11-09: towns.py seals 54-openings.js and core/door (KDOOR, KGLASS on the closure's own root) with it, the kit draws the panes as 81-glow.js does and its doors open (kits/beast-riders/README.md); the shims are gone (`gaLeaf`/`gaSectorWins` are `goLeaf`/`goSectorWins`).
+
+## The shared sky (W7, 2026-11-24)
+
+Girder's sky moved onto core/atmos's shared sky (STAGE-8/G-weather.md W7; core/atmos/SKY-PLAN.md section 9): `90s-host-sky.js`
+draws `ATMOS.sky` at Girder's place on the scale model (map 5.1 px 1039, 869; the sky's site frame 767, 539), 1.9 atm and
+humid, and sets the sun, the hemisphere, the fog and the exposure from the colour script, with its own giantshine light.
+`21-sky.js` keeps the clock, `SKY` and `SKY_STATE` (filled from the shared sky each frame); `82-daynight.js` keeps the lamps'
+night factor and the ambient fill; `20-stage.js` lost the baked dome, its eruption cycle and the sun and moon sprites.
+`verify.py --assert` passes on the arc lane. Before and after: `shots-before-10/21`, `shots-after-10/21` (four views each).
+The look changes, for the owner to judge (SKY-PLAN.md section 8: each page's light is the model's at its site):
+- [ ] **The sky**: the real sky (sun, giant, ring, moons, station, cluster, stars, procedural cumulus) replaces the painted
+      haze. By day a blue sky with cumulus over the towers; at night the stars where the old page had a blue night.
+- [ ] **The light is the model's**: by day the towers' shaded faces are darker (the sky's hemisphere is dimmer than the old
+      tuned fill). At night (the owner, 2026-11-24, on the pairs: "raise fill partway") the preset's `nightFill` (core/atmos
+      skyLook, JS and Godot) leans the hemisphere toward the old page's cool fill and warm soil by 0.75 at night: about 60% of
+      the old night fill, the giantshine key kept, the lamps still the brightest thing. From above the canopy and the town read;
+      from the brook the towers' south faces (turned from the giant) read mostly by their lamps.
+- [x] **The far land is the model's own ground** (the owner, 2026-11-24: "no painted volcano, real terrain only"):
+      `region/far.py` casts three bands (4-20, 20-80 and 80-450 km) from the scale model at Girder's pixel, the water's surface
+      where there is water, with the planet's curve and the thick air's refraction; build.py embeds `region/far.json` as
+      `89r-host-far.js`. Girder sits at -1,386 m: the near land lies about the horizon, the far land rises to 1.75 degrees in
+      the ENE. The old dome's painted volcano is gone: the Throne is 390 km WNW and below the horizon on the model, and nothing
+      stands in for it. Rerun `far.py` when the model moves. The flyers' sortie "toward the volcano" (84a) still flies north-west.
+- [ ] **The page opens at 06:00** (SKY-PLAN.md 2.1: every page opens at sunrise; it opened at 10:00).
+- [x] **One clock**: on the shared sky the host shows an hour too; it mirrors Girder's (98-start's girderFrame), its slider sets
+      Girder's hour and its run / hold drives Girder's pause.
+- [ ] **The Sky panel is gone** (the old dome's debug panel: pressure, forced eclipse, rings): the shared sky has no page panel.

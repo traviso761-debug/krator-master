@@ -501,6 +501,33 @@ The shader noise is an integer hash (lowbias32), never sin.
 
 `localFx` gained two kinds for them: `fume` (a pool's low haze) and `chaff` (seed heads lifted and carried as a gust front passes).
 `core/atmos/fxdemo` shows them (`#scene=yards`, `#scene=terraces`).
+## Weather cells: the weather on the map (`wx/`, opt-in, 2026-11-23; W5 of `STAGE-8/G-weather.md`; `wx/test-cells.js`)
+
+The weather has a place: a seeded set of cells (rain, storm, fog, snow, dust, ash) drifts on the wind over the map, so a
+storm is seen coming, rains where it is and not a kilometre off, and the ground dries after it has gone.
+
+- **The data** (`wx/89-atmos-wx-cells.js`, [G data]). The plane is cut into spawn tiles in the frame that drifts with the
+  steering wind (the base wind's direction at `PRESETS.wxcells.speed`, 9 m/s). Each tile has six slots; a slot lives a run of
+  generations, each with a kind drawn from the climate's weights (or clear), a life, a centre, a wander, a size, a stretch
+  along the wind and a strength. Every draw is `KRAND.hash` of integers (seed, tile, slot, generation), so a cell is a pure
+  function of the place and the clock: no stream, no draw order, the same in Godot. `ATMOS.weatherAt(x, z, t)` is the local
+  `W` (`wet` is the rain of the last 20 minutes, `PRESETS.wxcells.lag`). The weights come from the climate flags
+  `bindWeather` takes and the crops kit's axes (`ATMOS.wxAxesFromCrops(CROPS, biome)`: warmth, aridity, air).
+- **On a page** (`wx/89-atmos-wx-host.js`): `ATMOS.bindWeather({..., cells: {biome}})` (or `ATMOS.weatherCells(o)` after it)
+  adds the mode `live` to the Weather selector. While it is chosen, the camera's sample is `W`; a 64 px coverage map round
+  the camera clouds the sky over the cells and darkens a storm's base (`sky/89-atmos-g-sky.js`, `atmWx`, compiled only on a
+  page that lists the cells file), and the ground's cloud shadows read the same map; storm cells strike in their cores (by
+  the clock: the same strikes at any frame rate), each a branched bolt (`fx/89-atmos-fx-lightning.js`, its own seed) with its
+  thunder delayed by distance (`ATMOS.onThunder`: `core/audio`'s); rain shafts and virga hang under the nearest wet cells (one
+  draw); splashes land on the ground and on cover round the camera (`ATMOS.rainSplashes`, `fx/89-atmos-fx-raincover.js`).
+- **It changes nothing until asked.** The page keeps its own start mode (`bindWeather` keeps `clear`); `?weather=<mode>` in
+  the URL picks and holds a mode, so a verify passes `?weather=clear` and its views stay what they were. List `core/rand`,
+  `wx/89-atmos-wx-cells.js` and `wx/89-atmos-wx-host.js` (after `89-atmos-4-weather.js` and the sky), and
+  `fx/89-atmos-fx-lightning.js` and `fx/89-atmos-fx-raincover.js` for the bolts and the splashes.
+- **The demo** is `core/atmos/wxdemo` (`?climate=temperate|tropic|desert|highland|ash`, `?view=front|under|village|aerial`,
+  `?hold=1`). **Godot**: `godot/krator/atmos_cells.gd`, held to `wx/golden-cells.json` by `godot/tests/atmos/cells_test.gd`
+  (`GODOT.md`, "Weather cells").
+
 ## Tags
 
 The module registers nothing itself, because a host's registry is its own. The Iziz city adds REG entries for what it

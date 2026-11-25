@@ -1104,6 +1104,29 @@
    "ridges": []
   }
  },
+ "volclouds": {
+  "res": 2,
+  "steps": 56,
+  "lightSteps": 5,
+  "thin": 600,
+  "thick": 2000,
+  "storm": 6500,
+  "density": 0.045,
+  "base": 1300,
+  "detail": 380,
+  "erode": 0.45,
+  "ambient": 0.45,
+  "forward": 0.72,
+  "maxDist": 60000,
+  "maskN": 512,
+  "maskSpan": 100000,
+  "maskEvery": 4,
+  "blend": 0.14,
+  "haze": 45000,
+  "key": 0.55,
+  "amb": 0.9,
+  "budget": 1
+ },
  "maxRidges": 4,
  "maxLandmarks": 6
 }

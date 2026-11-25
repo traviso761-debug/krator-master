@@ -74,7 +74,7 @@ var MHOST = KHOST.take(KHOST.standard({
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, clear:1.6, minR:4, maxR:5000,
   walk:(typeof MRWALK !== 'undefined' && MRWALK.on) ? KWALK : null,   /* core/walk: the units' walls and the shut doors block the walker (83-mr-walk.js) */
   views:mViews, start:VIEWS[0][0],
-  clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the sky's own (21-sky.js, the slider): no host hour */
+  clock:{ hour:6, running:false, scale:1, speeds:[0, 1, 2, 4, 8], onSet:function(h){ skySetHour(h); } },   /* the world hour is the sky's own (21-sky.js); on the shared sky the host shows an hour too: it mirrors the page's (mavFrame), and its slider sets it */
   inspect:function(hit, hits, rec){ return inspectDescribe(hit, rec); },
   palette:{ items:mPal, build:function(key){ var b = KratorFurniture.batch({ indexed:true }); b.place(key, 0, 0, 0, 0, { variant:0, seed:1, wealth:0.5 }); return b.flush(); } },
   edits:{ world:MWORLD, log:BEDIT.log,
@@ -97,10 +97,13 @@ var MHOST = KHOST.take(KHOST.standard({
 KHOST.on(function mavClamp(){ var t = MHOST.ctl.target; t.x = clamp(t.x, -HW+60, HW-60); t.z = clamp(t.z, -HW+60, HW-60); t.y = clamp(t.y, -10, 700); }, 'tick');
 /* Mav's own frame, after the host has placed the camera: the sky, the night, the ticks, the sun. The motion speeds and the
    pause reach the sky and the life layer (dt is the host's motion time, capped as before). */
-KHOST.on(function mavFrame(dtm){
+var mRunWas = null;
+KHOST.on(function mavFrame(dtm, clock){
   var dt = Math.min(0.06, dtm);
   if(mBuildIx){ mBuildIx = false; if(window._interiors && _interiors.buildNow) _interiors.buildNow(); }   /* an interior view: its rooms at once */
-  skyAdvance(dt); updateSky(); updateDayNight();
+  if(mRunWas !== null && clock && clock.running !== mRunWas) SKY.paused = !clock.running;   /* the host's run / hold drives the sky clock's pause */
+  skyAdvance(dt); updateSky(); updateDayNight(); atmosFrame(dt);
+  if(clock){ clock.set(skyHour()); clock.day = Math.floor(SKY_T/86400); clock.running = mRunWas = !SKY.paused; }   /* the host's clock mirrors the page's (W7) */
   var hour = skyHour(), nk = DAYNIGHT_NIGHT_K;
   CLOTH_TIME.value += dt;
   waterUni.uTime.value += dt; waterUni.uCam.value.copy(camera.position);

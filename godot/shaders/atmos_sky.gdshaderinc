@@ -61,6 +61,7 @@ uniform vec4 uCloud;
 uniform vec4 uCloudH;
 uniform vec2 uWind;
 uniform vec3 uCamPos;
+uniform float uVolOn;
 uniform vec3 uNightK;
 uniform sampler2D uRidgeTex : filter_nearest;
 uniform int uRidgeN;
@@ -255,7 +256,7 @@ vec4 atmSkyClouds(vec3 d,vec3 air){if(d.y<0.004||uCloud.x<=0.0)return vec4(0.0);
  if(uCloud.z>0.0&&(uCloudH.y-uCamPos.y)/d.y>0.0){vec2 p=(uCamPos.xz+d.xz/d.y*(uCloudH.y-uCamPos.y))/uCloudH.z;vec3 q=vec3(p.x*0.35+w.x*0.5,p.y*1.6+w.y*0.5,3.0);
   float n=atmSkyFbm(q,4,90u)*0.5+0.5;float a=smoothstep(0.58,0.86,n)*uCloud.z*0.5*smoothstep(0.004,0.08,d.y)*exp(-uCloudH.y/max(d.y,0.004)/160000.0);
   vec3 c=sunL*0.42*(0.75+0.5*atmSkyPow(cs,6.0))+amb*0.85+uShineC*uShineI*0.25;o=vec4(c,a);}
- float hc=uCloudH.x-uCamPos.y;if(uCloud.y>0.0&&hc/d.y>0.0){vec2 xz=uCamPos.xz+d.xz/d.y*hc;
+ float hc=uCloudH.x-uCamPos.y;if(uCloud.y>0.0&&hc/d.y>0.0&&uVolOn<0.5){vec2 xz=uCamPos.xz+d.xz/d.y*hc;
   float bank=uCloud.w*exp(-d.y*9.0);float n=atmCloudField(xz,5)+bank*0.35;
   float cov=atmCloudCover(n);
   float n2=atmCloudField(xz+s2*0.18*uCloudH.z,5)+bank*0.35;float sh=clamp(0.62+(n-n2)*3.2,0.0,1.0);

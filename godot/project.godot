@@ -115,6 +115,10 @@ atm_wet={
 "type": "float",
 "value": 0.0
 }
+atm_vol_mid_h={
+"type": "float",
+"value": 0.0
+}
 atm_sky_noise={
 "type": "sampler3D",
 "value": ""

@@ -1,0 +1,43 @@
+{
+ "what": "the inputs each build command read and the pages it wrote; tools/build.py writes it, tools/check_stale.py and tools/reach.py read it (tools/buildlib.py)",
+ "runs": {
+  "build.py": {
+   "inputs": {
+    "core/atmos/89-atmos-0-core.js": "66ba61929c02bfff724870bdd4ecd3c4d1ac81a083afe687a7d7e072dda39a5d",
+    "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
+    "core/atmos/89-atmos-4-weather.js": "bb900fc3dd362a0b83a89c236a9f9412e75bfa6f977aa006df56e237531cb9e8",
+    "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "f242336fa9c9f901b95c133effec3f209c15d8bbfe07d19ac5bcfcb4fff11bbf",
+    "core/atmos/fx/89-atmos-fx-raincover.js": "3be3e647fad60a39ff8e555f5378e26b341d26f0a8e7d563d0238bf387c3be82",
+    "core/atmos/host/89-atmos-e-weatherhost.js": "ad8f6c63439b4098a9d24f49caacc0515cc51ca43f698718bf43c0d550fb0525",
+    "core/atmos/host/89-atmos-h-skyhost.js": "33a640683cc2a59130731cbc82e19ca0075ab0747b27d6f336cafa305fc7ebb9",
+    "core/atmos/host/89-atmos-m-volhost.js": "512b5f26ad05c794dded69474ab3ff9add8299ebdd324bdf79a399bcfb352294",
+    "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "792dc3d85d04f4d52dda3541ae1e5c3c1310e32b76e33745f960227d27fbe3af",
+    "core/atmos/sky/89-atmos-m-volclouds.js": "2a910fdbe9e33856c0abf5f01fcf253e0b84f19909865a2e9de202c3fa0cb6f5",
+    "core/atmos/wx/89-atmos-wx-cells.js": "8ca8438ab0e0945828491c09aea3526ac2ce49198d5bf5ca1232cb310bb11346",
+    "core/atmos/wx/89-atmos-wx-host.js": "91a68a440753ec7a518f8ed303e7ef32f800fb1eef37ad3def030a333c125c25",
+    "core/atmos/wxdemo/build.py": "7810a578d7b6be37af7e847689f1e955a789ff49ee48df95b6a9ca84141b2a07",
+    "core/atmos/wxdemo/src/00-head.html": "36487f513931cb015b58e8fd873aa98368bbea244572d6672a6a4b91f55fd2d9",
+    "core/atmos/wxdemo/src/10-demo.js": "a41e811aebf7de183a4c80377ec548d4181fb832f85a2828f349acc747b71bc1",
+    "core/audio/24-core-audio-sky.js": "0a11de78a404e63a156c3cc4202dabe044f2332226b86064902602ffe4b94b76",
+    "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
+    "core/rand/08-core-rand.js": "74a7f6ab96bc27a68097ac2cd81606460b1386fdb12c7506543ed967e78d5d7a",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
+    "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
+    "kits/ancients/three.min.js": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2",
+    "kits/crops/src/10-crop-core.js": "e0fd8df3e80b28b7655d5a432dc801537c24f3af67ec5b099a686d6bc5dc6692",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2"
+   },
+   "listings": {},
+   "listed_by": "code",
+   "outputs": {
+    "core/atmos/wxdemo/dist/wx-demo.html": "09d6c3eef1d107c13c56b3f2f687dc78ba9aac372d919ad5671358e18c89e5be"
+   },
+   "outputs_raw": {
+    "core/atmos/wxdemo/dist/wx-demo.html": "09d6c3eef1d107c13c56b3f2f687dc78ba9aac372d919ad5671358e18c89e5be"
+   }
+  }
+ }
+}
