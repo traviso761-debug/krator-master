@@ -22,9 +22,19 @@ IZIZ = (963, 985)
 FONT = '/usr/share/fonts/truetype/dejavu/DejaVuSans%s.ttf'
 TINT = [(0, (52, 88, 56)), (400, (96, 124, 66)), (900, (150, 148, 94)), (1500, (176, 152, 112)),
         (2200, (166, 138, 118)), (2900, (150, 140, 140)), (3600, (200, 200, 206)), (4600, (248, 250, 252))]
-# the roads worth drawing: a pin, and the colour it gets
-ROADS = [('Jabal', (1225, 1149)), ('Mantis', (1114, 1164)), ('Parabola', (970, 1186)),
-         ('Bab al-Hawa (Godsgate)', (1028, 1246)), ('Strongbow', (1001, 1596))]
+# how each recorded route class is drawn: colour, width, and whether it gets a name
+CLASS = {'trunk':    ((246, 232, 198), 5, True),
+         'izani':    ((236, 206, 150), 4, True),
+         'line':     ((150, 200, 240), 4, True),
+         'xanadu':   ((230, 200, 240), 3, False),
+         'yuni':     ((200, 230, 200), 3, False),
+         'vothic':   ((220, 220, 200), 3, False),
+         'trade':    ((240, 220, 180), 3, False),
+         'branch':   ((220, 210, 190), 3, False),
+         'extension':((220, 210, 190), 3, False),
+         'dirt':     ((198, 176, 146), 3, False),
+         'trail':    ((186, 170, 150), 2, False),
+         'possible': ((170, 170, 180), 2, False)}
 
 
 def pins():
@@ -140,7 +150,7 @@ def main():
     args = ap.parse_args()
     X0, X1, Y0, Y1, S = VIEWS[args.view]
     zoom = args.view == 'gates'
-    TITLE = ('The gateways into Iziz' if zoom else 'The Catch, the Bowl and the doors into Iziz')
+    TITLE = ('Eidolon and the gateway into Iziz' if zoom else 'The Catch, the Bowl and the roads into Iziz')
     if args.out is None:
         args.out = os.path.join(ROOT, 'openworld', 'catch-bowl', 'shots',
                                 'region-map.png' if not zoom else 'gates-map.png')
@@ -172,21 +182,34 @@ def main():
     DO, _ = doors(E, arc)
     PIN = pins()
 
-    # the roads first, under everything
+    # the recorded routes, under everything
+    with open(os.path.join(ROOT, 'openworld', 'net51-gemini.json'), encoding='utf-8') as fh:
+        NET = json.load(fh)
     out = []
-    for nm, src in ROADS:
-        pa = road(E, wet, src, IZIZ)
-        if not pa:
+    for r in sorted(NET['routes'], key=lambda r: CLASS.get(r.get('class'), ((0,) * 3, 1, 0))[1]):
+        px = r.get('px') or []
+        if len(px) < 2:
             continue
-        cross = None
-        for x, y in pa:
-            if inside(arc, x, y):
-                near = min((math.hypot(x - dx, y - dy), m, dx, dy) for m, dx, dy, _ in DO)
-                cross = (x, y, near)
-                break
-        dr.line([pt(*q) for q in pa], fill=(28, 24, 20, 190), width=9, joint='curve')
-        dr.line([pt(*q) for q in pa], fill=(246, 232, 198, 235), width=4, joint='curve')
-        out.append((nm, len(pa) * 2, max(float(E[y, x]) for x, y in pa), cross))
+        pts = [(float(a), float(b)) for a, b in px]
+        if not any(X0 - 30 <= x <= X1 + 30 and Y0 - 30 <= y <= Y1 + 30 for x, y in pts):
+            continue
+        col, wd, named = CLASS.get(r.get('class'), ((190, 190, 190), 2, False))
+        xy = [pt(x, y) for x, y in pts]
+        dr.line(xy, fill=(24, 20, 16, 180), width=wd * 2 + 1, joint='curve')
+        dr.line(xy, fill=col + (235,), width=wd, joint='curve')
+        # where it crosses the crater wall
+        st = [inside(arc, x, y) for x, y in pts]
+        for i in range(1, len(pts)):
+            if st[i] != st[i - 1]:
+                x, y = pts[i]
+                if X0 <= x < X1 and Y0 <= y < Y1:
+                    out.append((r.get('id'), r.get('from'), r.get('to'), x, y,
+                                float(E[int(round(y)), int(round(x))])))
+        if named and len(xy) > 6:
+            mx, my = xy[len(xy) // 2]
+            if 90 < mx < w * S - 90 and 150 < my < h * S - 260:
+                dr.text((mx, my - 8), '%s - %s' % (r.get('from'), r.get('to')), font=f9, anchor='md',
+                        fill=col + (255,), stroke_width=4, stroke_fill=(0, 0, 0, 225))
 
     for nm, col, wd in [('Inner Crater', (255, 226, 120, 240), 5), ('The Bowl', (120, 210, 255, 220), 4),
                         ('The Catch', (255, 150, 120, 220), 4), ('Jabal Shiekdom', (210, 160, 255, 205), 3)]:
@@ -204,17 +227,14 @@ def main():
                 stroke_width=4, stroke_fill=(0, 0, 0, 225))
 
     # the two gateways the roads actually use
-    gate_r = 26 if zoom else 22
-    for nm, x, y, lx_, ly_, an in [('EAST gateway', 1026, 1063, 1, 1, 'la'),
-                                   ('WEST gateway', 976, 1081, -1, 1, 'ra')]:
+    gate_r = 46 if zoom else 30
+    for nm, x, y, lx_, ly_, an in [('THE gateway  all four trunks', 1020, 1068, 1, 1, 'la')]:
         cx, cy = pt(x, y)
         dr.ellipse([cx - gate_r, cy - gate_r, cx + gate_r, cy + gate_r], outline=(60, 230, 255, 240), width=5)
         dr.text((cx + lx_ * (gate_r + 8), cy + gate_r + 6), nm, font=f13, fill=(120, 240, 255, 255),
                 anchor=an, stroke_width=5, stroke_fill=(0, 0, 0, 235))
 
-    cands = [('Eidolon as pinned now', 1016, 1058, (255, 210, 60), 0, -1, 'md'),
-             ('A  1021,1061', 1021, 1061, (90, 255, 140), 1, 0, 'lm'),
-             ('B  1002,1070', 1002, 1070, (255, 150, 230), -1, 0, 'rm')]
+    cands = [('Eidolon  1016,1058', 1016, 1058, (255, 210, 60), 0, -1, 'md')]
     for nm, x, y, col, lx_, ly_, an in cands:
         cx, cy = pt(x, y)
         r = 18 if zoom else 15
@@ -261,12 +281,12 @@ def main():
     dr.text((bx, by + 10), '0', font=f9, fill=(255, 255, 255, 255))
     dr.text((bx + L, by + 10), '%d km' % km, font=f9, anchor='ra', fill=(255, 255, 255, 255))
     lx, ly = w * S - 352, 16
-    panel(lx, ly, 332, 288)
+    panel(lx, ly, 332, 262)
     rows = [((255, 226, 120), 'Inner Crater boundary'), ((120, 210, 255), 'The Bowl'),
             ((255, 150, 120), 'The Catch'), ((210, 160, 255), 'Jabal Shiekdom'),
-            ((246, 232, 198), 'least-cost road into Iziz'), ((230, 70, 60), 'a door through the wall'),
-            ((60, 230, 255), 'a gateway the roads use'), ((255, 210, 60), 'Eidolon as pinned now'),
-            ((90, 255, 140), 'A  holds the east gate'), ((255, 150, 230), 'B  watches both gates')]
+            ((246, 232, 198), 'trunk road'), ((236, 206, 150), 'Izani road'),
+            ((150, 200, 240), 'the Rift line'), ((230, 70, 60), 'a door through the wall'),
+            ((60, 230, 255), 'where the trunks cross the wall'), ((255, 210, 60), 'Eidolon as pinned')]
     for i, (c, t) in enumerate(rows):
         yy = ly + 22 + i * 26
         dr.rectangle([lx + 18, yy + 6, lx + 48, yy + 15], fill=c + (255,))
@@ -274,14 +294,8 @@ def main():
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     img.save(args.out)
     print('wrote %s  %dx%d px (%d x %d km of ground)' % (args.out, img.width, img.height, (X1 - X0) * 2, (Y1 - Y0) * 2))
-    for nm, km, top, cross in out:
-        if cross:
-            x, y, (d, m, dx, dy) = cross
-            c = 'enters the crater at %d,%d (%d m), %d km from the %d m door at %d,%d' % (
-                x, y, int(E[y, x]), d * 2, m, dx, dy)
-        else:
-            c = 'never enters the crater'
-        print('  %-24s %4d km of road, tops %4.0f m; %s' % (nm, km, top, c))
+    for rid, a, b, x, y, m in out:
+        print('  %-28s %-11s - %-11s crosses the wall at %6.1f,%-6.1f  %4.0f m' % (rid, a, b, x, y, m))
     print('  %d doors on the arc: %s' % (len(DO), ', '.join('%d m at %d,%d' % (m, x, y) for m, x, y, _ in DO)))
 
 
