@@ -48,7 +48,15 @@
 //   SIM.tradeStep(minute, t)                     SIM.step's, after the economies' step
 //   SIM.tradeInbound(g, s?) / SIM.tradeOutbound(g, s?)   units of g at sea toward / from settlement s (SIM.ECON's)
 //   SIM.tradeReport(id?) -> {id: {stops, carriers:[{k, phase, at, to, cargo, eta}], shipped:{'a>b': {good: n}},
-//               landed:{'a>b': {good: n}}, tithed:{'a>b': {good: n}}, owed:{'a:good': n}, voyages, refused, empty}}
+//               landed:{'a>b': {good: n}}, lost:{'a>b': {good: n}}, tithed:{'a>b': {good: n}}, owed:{'a:good': n},
+//               voyages, refused, empty}}
+//   SIM.tradeLose(routeId, carrier, good, n)  cargo taken OFF a carrier in flight, booked so the ledger still closes.
+//     A leg's identity is `at sea before + shipped - landed = at sea after`; anything that reaches into a carrier's
+//     hold mid-leg and removes a load breaks it, because the at-sea pool falls with no landing to answer for it. That
+//     is what an ambush does (core/region/53-region-ambush.js), and before this call existed the ambush year's ledger
+//     failed with `0 at sea + 90 shipped - 24 landed`. A loss is NOT a landing: it does not reach the leg's receiver
+//     and must not be booked as its import. It leaves the map here, and if it lands anywhere -- an outlaw's cache --
+//     that settlement books it as an import from abroad, which the ledger already allows.
 // THE WANT. A town's want of a good, a day, is its use plus its unmet draws (the economy's `short`, by the day), over
 // the economy's `window` and today so far: a town that has none of a good shows its want by what it could not get.
 // A load is each good the receiver wants, fewest days of it first (its warehouses, its sites and what is already at
@@ -71,7 +79,7 @@
     if(T.routes[o.id]) throw new Error('SIM.trade '+o.id+': made already');
     var R={ id:o.id, stops:o.stops.map(function(s){ return { settlement:s.settlement, place:s.place }; }), cap:o.cap, carriers:[],
             minutes:o.minutes, mins:o.mins==null ? 120 : o.mins, stagger:o.stagger==null ? 0 : o.stagger, offset:o.offset==null ? 0 : o.offset, line:o.line==null ? null : o.line,
-            goods:o.goods||null, keep:o.keep, want:o.want, most:o.most==null ? o.cap : o.most, expect:o.expect||null, shipped:{}, landed:{}, voyages:0, refused:0, empty:0 };
+            goods:o.goods||null, keep:o.keep, want:o.want, most:o.most==null ? o.cap : o.most, expect:o.expect||null, shipped:{}, landed:{}, lost:{}, voyages:0, refused:0, empty:0 };
     if(o.share){ R.share=o.share; R.tithed={}; R.owed={}; R.mark={}; }   /* a tithe road (S3): see the header */
     if(o.legs!=null) R.legs=o.legs.slice();   /* C1: a passage per leg */
     if(o.provision!=null){ var Pv=o.provision; R.provision={ beasts:Pv.beasts, eat:Pv.eat, loss:Pv.loss==null ? .5 : Pv.loss, home:Pv.home==null ? 0 : Pv.home, maxDays:Pv.maxDays==null ? Infinity : Pv.maxDays };
@@ -105,6 +113,12 @@
       var s=R.stops[end==='to' ? (C.dest!=null ? C.dest : C.to) : (C.orig!=null ? C.orig : C.from)];
       if(!s || s.settlement!==key) return; C.cargo.forEach(function(c){ if(c.good===g) n+=c.n; }); }); });
     return n; }
+  /* cargo off a carrier in flight: the leg it is on, and the tally the ledger reads. `n` is what was actually taken. */
+  SIM.tradeLose = function(rid, C, g, n){ var T=SIM.TRADE, R=T && T.routes[rid]; if(!R || !(n>0) || !C) return 0;
+    var a = C.orig!=null ? C.orig : C.from, b = C.to!=null ? C.to : C.dest;
+    if(a==null || b==null || !R.stops[a] || !R.stops[b]) return 0;
+    var key = R.stops[a].settlement+'>'+R.stops[b].settlement, o = R.lost[key] || (R.lost[key]={});
+    o[g] = (o[g]||0) + n; return n; };
   SIM.tradeInbound = function(g, s){ if(!SIM.TRADE) return 0; var k=s!=null ? s : SIM.ECON && SIM.ECON.settlement; return k==null ? 0 : atSea(g, k, 'to'); };
   SIM.tradeOutbound = function(g, s){ if(!SIM.TRADE) return 0; var k=s!=null ? s : SIM.ECON && SIM.ECON.settlement; return k==null ? 0 : atSea(g, k, 'from'); };
 
@@ -228,6 +242,7 @@
     T.order.forEach(function(k){ if(id!=null && k!==id) return; var R=T.routes[k];
       out[k]={ stops:R.stops.map(function(s){ return s.settlement; }), voyages:R.voyages, refused:R.refused, empty:R.empty,
         shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)),
+        lost:JSON.parse(JSON.stringify(R.lost||{})),
         carriers:R.carriers.map(function(C){ return { k:C.k, phase:C.phase, at:C.at!=null ? R.stops[C.at].settlement : null, to:C.to!=null ? R.stops[C.to].settlement : null,
           cargo:C.cargo.map(function(c){ return { good:c.good, n:c.n }; }), eta:C.eta }; }) };
       if(R.share){ out[k].tithed=JSON.parse(JSON.stringify(R.tithed)); out[k].owed=JSON.parse(JSON.stringify(R.owed)); }   /* a tithe road's (only: the others' reports unchanged) */

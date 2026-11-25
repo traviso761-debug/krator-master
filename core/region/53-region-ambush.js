@@ -61,12 +61,17 @@ KREGION.part('53-region-ambush', function (H) {
     if (!P.length) { S.ambushNone = 'no party of V.ambushes has a leg on a provisioned round'; return; }
     /* the take: an outlaw works down its `wants`, never below the carrier's own floor of its staples; a Stalker takes
        no cargo at all, so `wants` is not read for it */
-    var takeCargo = function (Cr, Pt, share, A) {
+    var takeCargo = function (Cr, Pt, share, A, rid) {
       var got = {}; if (Pt.kind === 'stalker') return got;
       (Pt.wants || []).forEach(function (g) {
         (Cr.cargo || []).forEach(function (row) { if (row.good !== g || row.n <= 0) return;
           var n = Math.floor(row.n * share); if (n <= 0) return; row.n -= n; got[g] = (got[g] || 0) + n; }); });
-      Object.keys(got).forEach(function (g) { A.took[g] = (A.took[g] || 0) + got[g]; });
+      /* BOOK IT. Reaching into a hold mid-leg takes the load out of the at-sea pool, and the leg's identity is
+         `at sea + shipped - landed = at sea`: without this the ambush year's ledger failed with `0 at sea + 90
+         shipped - 24 landed`. It is a loss, not a landing -- the leg's receiver never sees it -- so it goes on the
+         route's `lost` tally (SIM.tradeLose), and `land()` below books the cache's side as an import from abroad. */
+      Object.keys(got).forEach(function (g) { A.took[g] = (A.took[g] || 0) + got[g];
+        if (SIM.tradeLose) SIM.tradeLose(rid, Cr, g, got[g]); });
       return got;
     };
     var land = function (Pt, got) { if (!Pt.cache || !spec[Pt.cache]) return;
@@ -93,9 +98,9 @@ KREGION.part('53-region-ambush', function (H) {
             var out = H.ambushOutcome({ kind: Pt.kind, strength: Pt.strength, guard: H.ambushGuard(Rd, kit), hidden: hidden, roll: roll });
             A[out]++;
             var got = {}, beasts = 0, people = 0;
-            if (out === 'tolled') got = takeCargo(Cr, Pt, D(Pt.toll, 0.12), A);
+            if (out === 'tolled') got = takeCargo(Cr, Pt, D(Pt.toll, 0.12), A, rid);
             else if (out === 'mauled' || out === 'broken') {
-              got = takeCargo(Cr, Pt, D(Pt.maul, 0.35), A);
+              got = takeCargo(Cr, Pt, D(Pt.maul, 0.35), A, rid);
               if (Cr.beasts > 0) { beasts = Math.max(1, Math.round(Cr.beasts * D(Pt.beasts, 0.25))); Cr.beasts -= beasts; TR.died += beasts; A.beasts += beasts; }
               /* THE PEOPLE: Stalkers take the crew, which is what makes them read differently from bandits. Booked as
                  its own number and in the log, never as theft of a good (PLAN-SIM.md 4c). */
