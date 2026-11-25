@@ -34,6 +34,9 @@ function holdFeathers(on){const out={on:!!on,feathers:0,moved:0};if(!on||typeof 
  _mark('desert');
  try{window._biome=CATCH.build({R:TERR.R-100,quality:q});}catch(e){reportErr('catch: '+e.stack);}
  _mark('catch');
+ // A STATION'S OWN PASS (the gills stations' 87-host-gills.js: the breath pipes, the life on them, the candles and the published sites):
+ // after the kits' passes and before the bake, as the godthrone's gills stations run it. No station but those defines stationBuild.
+ if(typeof stationBuild==='function'){try{window._station=stationBuild();}catch(e){reportErr('station: '+e.stack);}_mark('station');}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
  _mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);

@@ -2,7 +2,7 @@
 // The breath, the species and the layouts as plain records: no THREE, no DOM, no Math.random, no sin hash; every draw from core/rand (KRAND.hash of
 // (world, gill, index, salt)), never from how many draws came before. The host kits read this fragment in place (biomes/xanadu --station gills: its
 // station.json "reads"; the catch's and the godthrone's stations later) and draw the records with their own builders; their 87 opens the registry
-// (BIO.kit('gills')) and closes it with BIO.kitEnd(GILLS), so this file needs only KRAND (core/rand) and runs in node as it does on a page.
+// (BIO.kit('gills')) and closes it with BIO.kitEnd(GILLS), so this file needs KRAND (core/rand) and KSPACE (core/space, the keep-clear between pipes) and runs in node as it does on a page.
 //
 //   GILLS.breath(t | ATMOS.libration(t))   the breath state 0..1 at clock t (days from game start, the sky's t = day + hour/24): 1 the out-breath (Bhlo), 0 the in-breath
 //                          (Suq). A plateau of 3 hours centred on the top of the giant's nod (Noḍ), an hour's ramp each side, the in-breath the rest of the
@@ -83,6 +83,14 @@ var GILLS=(function(){
  G.life=function(L,o){const gr=o.ground,ice=o.iceH==null?1e9:o.iceH,lip=o.lip||[3,9],step=o.step==null?18:o.step,wd=o.wind||[.7,.7],seed=o.seed==null?0x6112:o.seed;
   const R={pipes:[],collars:[],fringes:[],pads:[],beads:[],lamps:[],dew:[],turf:[],cups:[],wood:[],steam:[]};
   const wl=Math.hypot(wd[0],wd[1])||1,wx=wd[0]/wl,wz=wd[1]/wl;
+  /* THE KEEP-CLEAR BETWEEN PIPES (PLAN.md section 13's core adoption: core/space, "the keep-clear between pipes"). Without it the lips' pipes
+     grew into one another and a FALLEN pipe lay straight through whatever stood along its bearing, which is what the eye caught first. One
+     KSPACE grid, never a second spatial hash (CLAUDE.md). A pipe's footprint is its own disc; a fallen one sweeps its length, so its disc sits at
+     the body's middle with half its length for a radius. Each pipe draws from its own (gill, k, side) stream, so rejecting one moves no other. */
+  const SPC=(typeof KSPACE!=='undefined'&&KSPACE.create)?KSPACE.create({cell:40}):null,GAP=o.gap==null?1.5:o.gap;
+  const footOf=p=>{if(p.state!=='fallen')return [p.x,p.z,p.r];
+   const d=p.toward,l=Math.hypot(d[0],d[1])||1;return [p.x+d[0]/l*p.H/2,p.z+d[1]/l*p.H/2,p.H/2+p.r];};
+  const roomFor=F=>!SPC||!SPC.some(F[0],F[1],F[2]+GAP,it=>Math.hypot(it[0]-F[0],it[1]-F[1])<it[2]+F[2]+GAP);
   L.gills.forEach((g,gi)=>{const len=g.r*(g.a1-g.a0),N=Math.max(2,Math.floor(len/step));
    for(let k=0;k<N;k++)for(let side=-1;side<=1;side+=2){const s=H(seed,gi,k,side+2),al=(k+.2+.6*s.next())/N,an=g.a0+(g.a1-g.a0)*al,end=sm(0,.12,al)*sm(1,.88,al);
     if(s.next()>.35+.6*end)continue;
@@ -92,7 +100,11 @@ var GILLS=(function(){
     const mid=.55+.45*end,H0=Math.min(88,(10+30*s.next()*mid)*(.7+.5*Math.min(1,g.age))),stu=s.next();
     const state=g.alive?'standing':(stu<.45?'standing':stu<.75?'broken':stu<.9?'fallen':'rubble');
     const p={id:g.id+'.pipe.'+k+(side<0?'a':'b'),gill:g.id,x,z,y0,H:H0,r:1.8+2.6*s.next()*(.6+.4*mid),mouths:1+Math.floor(s.next()*2.99),state,ice:isIce,live,
-     lag:s.next()*.5,toward:[g.c[0],g.c[1]],side,lean:.02*s.next(),seed:KRAND.hash(seed,gi,k,side+2,0x91BE)>>>0};
+     /* toward is a BEARING, not a place (KSTACKS reads atan2(toward[1], toward[0])): the way the pipe leans, and the way it lies if it has
+        fallen. It points out across the lip, away from the crack's centre, so a pipe topples off its own edge. It used to be handed the gill's
+        centre COORDINATES, which gave every pipe on a gill one identical bearing: whole fields leaned and fell the same way. */
+     lag:s.next()*.5,toward:[Math.cos(an)*side,Math.sin(an)*side],side,lean:.02*s.next(),seed:KRAND.hash(seed,gi,k,side+2,0x91BE)>>>0};
+    const F=footOf(p);if(!roomFor(F))continue;if(SPC)SPC.insert(F,F[0],F[1],F[2]);
     R.pipes.push(p);
     if(state==='standing'&&!isIce){const top=y0+H0;
      R.collars.push({id:p.id.replace('.pipe.','.collar.'),pipe:p.id,x,z,y:top,r:p.r*(.9+.3*s.next()),lag:p.lag});
