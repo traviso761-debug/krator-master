@@ -81,6 +81,43 @@ becomes stages on real ground (`PLAN-TERRAIN.md` section 5a: a carved thalweg, 2
 > Stair about 1,232 km, Yuni about 1,415) are unchanged — the distance moves from one long leg into two. **The Train of
 > Jabal does not cross the Godsgate**: it comes out of Jabal to Arfwai, so its round is untouched.
 
+### 2z. A fragility S1 exposed, which is the owner's to settle
+
+**The two Iziz houses run the identical round and can starve each other.** `test-catch.js`'s C3 check wants both to land
+iron at Strongbow; with S1 in, **Getmastarz lands 4.0 t and Goldanda 0.0 t**. It is not a timing drift — measured, the
+two are *exactly* alike:
+
+| | Getmastarz | Goldanda |
+|---|---|---|
+| Round | 133 days | 133 days |
+| Outbound to Strongbow | 67 days | 67 days |
+| First arrivals | days 67, 100, 133, 167 | days 67, 100, 133, 167 |
+| Pool | `gate.iziz` | `gate.iziz` |
+| Share of Iziz's trade | .5 | .5 |
+| The only difference | its Kolli well, `scatchkolli01` | its Kolli well, `scatchkolli01.goldanda` |
+
+So the two rivals **depart at the same hour, on the same road, from the same pool**, and contend for the same cargo at
+the same instant; which of them loads is then down to iteration order. Before S1 the check passed; the extra stop shifted
+the phase enough for one house to take everything.
+
+**This is a pre-existing fragility, not something S1 broke** — and it is also questionable world-building. The proposal
+has the two houses *competing* for the same south-bound loads (`PROPOSAL-CATCH.md` section 2, "The rivalries"), which is
+right; total starvation of one is not, and two rival houses would not in any case leave on the same hour.
+
+**I have not patched it**, because the fix is a design choice and not a literal:
+
+| | What it would mean |
+|---|---|
+| **a. Offset the two houses' departures** *(recommended)* | rivals leave on alternate schedules — a `phase` on the group, or simply different `stagger`. Cheapest, and truer than lockstep |
+| **b. Give them different roads** | Getmastarz *are* the Gatemasters, so the Godsgate is theirs; Goldanda, "the bankers of the eastern road", might come another way. Richer, but it invents route lore the owner has not given |
+| **c. Split the pool** | each house its own stock at Iziz, so contention is for the *market* rather than for the warehouse |
+| **d. Leave it** | and loosen the check to "the two together land iron", accepting that in a given year one house may be shut out — which is arguably what a rivalry means |
+
+Until it is settled, the C3 and C4 checks stay red, with this as the reason. They are the only two failures of
+`test-catch.js` that are not mine (the other three were: two hard-coded counts that moved when S1 added a place, five
+negatives written with their pair the wrong way round, and one assertion that demanded a windowed roll come up inside a
+single year).
+
 ### 2a. The stops it adds to `CATCH_TUNE.places`
 
 | Stop | Px | Elev | People | Kind | What it sells |
