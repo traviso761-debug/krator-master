@@ -28,6 +28,7 @@ var grit: KratorGritFx
 var rocks: KratorCatchBowlRocks
 var flora: KratorCatchBowlFlora
 var landforms: KratorCatchBowlLandforms
+var network: KratorCatchBowlNetwork
 var cam: Camera3D
 var env: WorldEnvironment
 var sun: DirectionalLight3D
@@ -69,6 +70,10 @@ func _ready() -> void:
 	fx.bind(env, sun)
 	_build_ui()
 	_place_camera(_arg("at", "jabal"))
+	network = KratorCatchBowlNetwork.new()
+	network.name = "Network"
+	add_child(network)
+	network.bind(self, cam, fx)
 	# the grit rides the camera, so it is bound after the camera exists
 	grit = KratorGritFx.new()
 	grit.name = "Grit"
@@ -92,9 +97,9 @@ func _ready() -> void:
 	if w != "":
 		fx.set_kind(w)
 	_shot = _arg("shot", "")
-	print("catch-bowl: %d x %d samples at %.0f m (%s km), heights %.0f..%.0f m, %d sites, %d weather kinds"
+	print("catch-bowl: %d x %d samples at %.0f m (%s km), heights %.0f..%.0f m, %d sites, %d weather kinds, %d routes"
 		% [_nx, _nz, _m, str(meta.get("km", [])), _lo, _hi, (meta.get("sites", []) as Array).size(),
-		   (meta.get("weather", []) as Array).size()])
+		   (meta.get("weather", []) as Array).size(), (meta.get("routes", []) as Array).size()])
 
 
 func _arg(k: String, d: String) -> String:
@@ -269,7 +274,22 @@ func _build_pins() -> void:
 		# the export gives x,z from the region's origin pixel; the mesh starts at the box's corner
 		var wx := float(s["x"]) - float(off[0])
 		var wz := float(s["z"]) - float(off[1])
+		var is_ruin := bool(s.get("ancient_ruin", false))
 		var m := MeshInstance3D.new()
+		if is_ruin:
+			# PLAN-SITES.md section 0 & PLAN-SETPIECES.md: "a marker and a far silhouette only", "a tower that is not rock"
+			# — dark, unlit, with NO floating name label!
+			var bx := BoxMesh.new()
+			bx.size = Vector3(420.0, 2200.0, 420.0)
+			m.mesh = bx
+			var rmt := StandardMaterial3D.new()
+			rmt.albedo_color = Color(0.14, 0.14, 0.16)
+			rmt.roughness = 0.85
+			m.material_override = rmt
+			m.position = Vector3(wx, height_at(wx, wz) + 1100.0, wz)
+			m.name = String(s["id"])
+			_pins.add_child(m)
+			continue
 		var cyl := CylinderMesh.new()
 		# A PIN, NOT A MOUNTAIN. The first pass put a 26 km spike of 3.5 km radius on every site: from any vantage worth
 		# flying to, a single pin filled a third of the frame and read as landform. The Godthrone is 24.8 km of real
@@ -338,6 +358,10 @@ const VIEWS := {
 		"note": "down on the Bowl's salt itself, below sea level, looking along the dunes toward Jabal"},
 	"catch": {"eye": Vector3(1040.0, 1500.0, 0.0), "at": Vector3(1080.0, 1400.0, 0.0), "up": 9000.0,
 		"note": "north up the Catch from the Twins"},
+	"twins": {"eye": Vector3(1002.0, 1498.0, 0.0), "at": Vector3(1056.0, 1462.0, 0.0), "up": 4500.0,
+		"note": "along Route B (the Steaming-Stone Dash) over the Brazier toward Catch-Lookout"},
+	"stalkergate": {"eye": Vector3(1415.0, 1252.0, 0.0), "at": Vector3(1493.0, 1225.0, 0.0), "up": 5500.0,
+		"note": "east from Ranger HQ on Lake Vapora up the shared east graben trunk toward the fork"},
 }
 
 
@@ -536,12 +560,12 @@ func _build_ui() -> void:
 		b.pressed.connect(func() -> void: fx.set_kind(k))
 		box.add_child(b)
 	_label = RichTextLabel.new()
-	_label.custom_minimum_size = Vector2(312, 150)
+	_label.custom_minimum_size = Vector2(312, 185)
 	_label.bbcode_enabled = true
 	_label.fit_content = true
 	box.add_child(_label)
 	var help := Label.new()
-	help.text = "WASD/QE fly, drag to look, Shift x5, Ctrl+wheel speed\n1-7 switch weather"
+	help.text = "WASD/QE fly, drag to look, Shift x5, Ctrl+wheel speed\n1-7 weather | R routes | U bores/tubes | O outlaws | Space pause"
 	help.autowrap_mode = TextServer.AUTOWRAP_WORD
 	box.add_child(help)
 
@@ -555,10 +579,19 @@ func _note(k: String) -> String:
 
 func _unhandled_input(e: InputEvent) -> void:
 	if e is InputEventKey and e.pressed and not e.echo:
+		var kc := (e as InputEventKey).keycode
 		var ks := KratorAtmosFx.order()
-		var n := (e as InputEventKey).keycode - KEY_1
+		var n := kc - KEY_1
 		if n >= 0 and n < ks.size():
 			fx.set_kind(ks[n])
+		elif kc == KEY_R and network != null and network.surface_routes_node != null:
+			network.surface_routes_node.visible = not network.surface_routes_node.visible
+		elif kc == KEY_U and network != null and network.under_routes_node != null:
+			network.under_routes_node.visible = not network.under_routes_node.visible
+		elif kc == KEY_O and network != null and network.outlaws_node != null:
+			network.outlaws_node.visible = not network.outlaws_node.visible
+		elif kc == KEY_SPACE and network != null:
+			network.paused = not network.paused
 
 
 # --shot=shots/catch-bowl.png: render, let the weather settle, save a screenshot, quit (spike.gd's idiom)
@@ -621,9 +654,25 @@ func _process(_d: float) -> void:
 	var n := fx._now()
 	var px := int(round(p.x / 2000.0)) + int(meta.get("box_px", [0, 0, 0, 0])[0])
 	var pz := int(round(p.z / 2000.0)) + int(meta.get("box_px", [0, 0, 0, 0])[1])
-	_label.text = ("[b]%s[/b]\nvisibility %s\nwind x%.2f  sun x%.2f\n%s\n\neye %.0f m, ground %.0f m\npx %d,%d"
+	var haz_line := ""
+	var day_line := ""
+	if network != null:
+		var wid := String(fx._kind) if "_kind" in fx else "clear"
+		var tc := network.temp_at_px(float(px), float(pz), g, wid, 14.0)
+		var hz := KratorCatchBowlNetwork.evaluate_hazards(meta, float(px), float(pz), g, tc, wid, float(n["wind"]))
+		var doses: Dictionary = hz["doses"]
+		var dkeys := doses.keys()
+		var dstr := "none"
+		if not dkeys.is_empty():
+			var parts := []
+			for dk in dkeys:
+				parts.append("%s %.0f%%" % [str(dk), float(doses[dk]) * 100.0])
+			dstr = "[color=#e86a42]" + ", ".join(parts) + "[/color]"
+		haz_line = "\n%.2f atm  %+.0f degC\nhazards: %s" % [float(hz["atm"]), float(hz["temp_c"]), dstr]
+		day_line = "\nsim day %.1f (%d trains)" % [network.sim_day, network._trains.size()]
+	_label.text = ("[b]%s[/b]\nvisibility %s\nwind x%.2f  sun x%.2f\n%s\n\neye %.0f m, ground %.0f m\npx %d,%d%s%s"
 		% [n["name"],
 		   ("%.0f km" % n["visibility_km"]) if float(n["visibility_km"]) >= 1.0 else ("%.0f m" % (float(n["visibility_km"]) * 1000.0)),
 		   n["wind"], n["sun"],
 		   ("[color=#c89a3a]hides a Stalker[/color]" if bool(n["hides"]) else ""),
-		   p.y, g, px, pz])
+		   p.y, g, px, pz, haz_line, day_line])

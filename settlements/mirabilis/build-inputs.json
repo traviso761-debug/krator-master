@@ -131,7 +131,7 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "fc431c67de20d8d247752dba9e864e2a9fe0e64889be1fdfa15325c975a58f11",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
-    "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
+    "core/terrain/37-core-stacks.js": "ec3a3fa27dcef98f28b6e54ab2c4ff559c62dd6fdf2a00d48ab2c79489612134",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
     "core/terrain/38c-core-landforms.js": "cb264e373cb63c0912498ca2e4fa06447d347c89f519c98797a1ba626e0a883b",
     "core/terrain/43-core-ground.js": "5d795750eb491e8c6bf3f34eea3a7156a2b7e9bab170aadc4917021d7316014c",
@@ -508,14 +508,14 @@
    },
    "listed_by": "code",
    "outputs": {
-    "settlements/mirabilis/build-manifest.json": "150511b1e446f4821fd373d4a57c8cccdecaef68249f5a3ac59e4fa9077da696",
-    "settlements/mirabilis/dist/mirabilis.html": "4f2e87d2f094f45a07eafb67f8c4ab13f64654eda4f7545397165bb1fe30d241",
+    "settlements/mirabilis/build-manifest.json": "33afee12f74db7843ccfa8935d7214526fd964f71aeddeb3ff7c8c67eee08ddd",
+    "settlements/mirabilis/dist/mirabilis.html": "cb9fb2ac05af00fd9b10ea0173146873d611e5ad2562c586f97a9654b3a242d2",
     "settlements/mirabilis/dist/mirabilis.tex.hayrant-2.js": "1071ee779669d8c500f2a4525d39be372be88867d786ca1fdd25e4c589cc1739",
     "settlements/mirabilis/dist/mirabilis.tex.hayrant.js": "b420332107e3e4a8ddbd6a3e6b78d2c871056eade1d39d36d5b07cd0d6e1029d"
    },
    "outputs_raw": {
-    "settlements/mirabilis/build-manifest.json": "150511b1e446f4821fd373d4a57c8cccdecaef68249f5a3ac59e4fa9077da696",
-    "settlements/mirabilis/dist/mirabilis.html": "4f2e87d2f094f45a07eafb67f8c4ab13f64654eda4f7545397165bb1fe30d241",
+    "settlements/mirabilis/build-manifest.json": "33afee12f74db7843ccfa8935d7214526fd964f71aeddeb3ff7c8c67eee08ddd",
+    "settlements/mirabilis/dist/mirabilis.html": "cb9fb2ac05af00fd9b10ea0173146873d611e5ad2562c586f97a9654b3a242d2",
     "settlements/mirabilis/dist/mirabilis.tex.hayrant-2.js": "1071ee779669d8c500f2a4525d39be372be88867d786ca1fdd25e4c589cc1739",
     "settlements/mirabilis/dist/mirabilis.tex.hayrant.js": "b420332107e3e4a8ddbd6a3e6b78d2c871056eade1d39d36d5b07cd0d6e1029d"
    }

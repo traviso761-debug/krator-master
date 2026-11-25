@@ -321,6 +321,119 @@ func _init() -> void:
 			and KratorAtmosFx.GRADE.size() == KratorAtmosFx.KINDS.size(),
 		not (dark.r > 0.9), "dark %s, light %s, %d kinds graded" % [str(dark), str(light), KratorAtmosFx.GRADE.size()])
 
+	# 21: recorded routes, Stalker Gate graben branches, Twins trails & underground bores/tubes -- and ZERO trail to Hub 01
+	var routes: Array = meta.get("routes", [])
+	var r_ids := []
+	var surf_n := 0
+	var under_n := 0
+	var hub_road := false
+	for r in routes:
+		var rid := String(r.get("id", ""))
+		var rnm := String(r.get("name", "")).to_lower()
+		r_ids.append(rid)
+		if bool(r.get("underground", false)):
+			under_n += 1
+		else:
+			surf_n += 1
+		if rnm.find("hub 01") >= 0 or rnm.find("sodpa02bfv") >= 0:
+			hub_road = true
+	ok("routes carry surface highways/trails and underground bores/tubes, the three Stalker Gate branches (no south), and zero trail to Hub 01",
+		surf_n >= 12 and under_n >= 3 and r_ids.has("gate.west") and r_ids.has("gate.northeast") and r_ids.has("gate.southeast")
+			and not r_ids.has("gate.south") and r_ids.has("twins.route_b") and r_ids.has("twins.route_a") and not hub_road,
+		not hub_road and not r_ids.has("gate.south"),
+		"%d surface, %d underground; Hub 01 road present: %s" % [surf_n, under_n, str(hub_road)])
+
+	# 22: the Stalker Gate waystation network (10 kept posts + 39 unmanned bothies) and named Twins/Catch setpiece stops
+	var stops: Array = meta.get("stops", [])
+	var bothies: Array = meta.get("bothies", [])
+	var kept_n := 0
+	var stop_ids := []
+	for sp in stops:
+		stop_ids.append(String(sp.get("id", "")))
+		if bool(sp.get("kept", false)):
+			kept_n += 1
+	ok("all 10 kept Stalker Gate wayhouses, 39 unmanned day-march bothies, Twins stops, highland tarns and the Rangers' Last Cairn are exported",
+		kept_n == 10 and bothies.size() == 39 and stop_ids.has("twins.brazier") and stop_ids.has("twins.hall")
+			and stop_ids.has("godsgate.babalhawa") and stop_ids.has("rangers.last_cairn") and stop_ids.has("tarn.1"),
+		bothies.size() != 0 and kept_n == 10,
+		"%d kept posts, %d total stops/setpieces, %d bothies" % [kept_n, stops.size(), bothies.size()])
+
+	# 23: moving caravan rounds (`CATCH_TUNE`, `BOWL_TUNE`, `STALKER_TUNE` patrols) advance deterministically along their polylines
+	var NET := load("res://krator/catch_bowl_network.gd")
+	var net_inst = NET.new()
+	net_inst._m = float(meta.get("m_per_sample", 2000.0))
+	var bpx: Array = meta.get("box_px", [0, 0, 0, 0])
+	net_inst._box_x0 = float(bpx[0])
+	net_inst._box_y0 = float(bpx[1])
+	net_inst._build_caravans(meta)
+	var pos_d0: Vector3 = net_inst.train_pos_at_day(0, 0.0)
+	var pos_d5: Vector3 = net_inst.train_pos_at_day(0, 5.0)
+	var pos_d5_again: Vector3 = net_inst.train_pos_at_day(0, 5.0)
+	var train_cnt: int = net_inst._trains.size()
+	net_inst.free()
+	ok("all seven caravan & Ranger patrol rounds spawn trains that move deterministically day by day",
+		(meta.get("caravans", []) as Array).size() == 7 and train_cnt >= 15
+			and pos_d0.distance_to(pos_d5) > 50000.0 and pos_d5.distance_to(pos_d5_again) < 0.01,
+		not (pos_d0.distance_to(pos_d5) < 1.0),
+		"%d trains across 7 rounds; train 0 moved %.1f km in 5 days" % [train_cnt, pos_d0.distance_to(pos_d5) / 1000.0])
+
+	# 24: outlaw brotherhoods (`BF-05` Salt-Thirsters, `BF-06` Glass-Eaters, `BF-07` Tin-Skulls) carry HQs, sub-camps & bounties,
+	#     while Stalkers remain hidden from visible markers and Hub 01 carries `ancient_ruin: true` (no settlement label)
+	var outlaws: Array = meta.get("outlaws", [])
+	var ol_ids := []
+	for ol in outlaws:
+		ol_ids.append(String(ol.get("id", "")))
+	var hub_site := {}
+	for s in sites:
+		if String(s.get("id", "")) == "sodpa02bfv":
+			hub_site = s
+	ok("BF-05, BF-06 and BF-07 outlaw brotherhoods are placed with HQs, sub-camps and bounties, while Hub 01 is an unlabelled ancient ruin",
+		ol_ids.has("BF-05") and ol_ids.has("BF-06") and ol_ids.has("BF-07")
+			and bool(hub_site.get("ancient_ruin", false)) and String(hub_site.get("name", "")).to_lower().find("hub 01") < 0,
+		not ol_ids.has("stalker") and String(hub_site.get("name", "")).to_lower().find("hub 01") < 0,
+		"outlaws: %s; ruin marker: '%s'" % [", ".join(ol_ids), String(hub_site.get("name", ""))])
+
+	# 25: live ambient hazard evaluation across the four provinces:
+	#     - Bowl floor (-1,206 m, +47 C deadheat) -> ~1.86 atm (no thin-air) + strong `hot`
+	#     - SE outer wall crest (+10,500 m, -22 C God-Bore) -> `thin-air` + `death_zone` + wind-amplified `cold`
+	#     - Catch floor (+380 m, black storm) -> `caustic-dust` + `dust` (while Bowl storm is non-caustic ochre dust)
+	var hz_bowl: Dictionary = KratorCatchBowlNetwork.evaluate_hazards(meta, 1225.0, 1149.0, -1206.0, 47.0, "deadheat", 1.0)
+	var hz_wall: Dictionary = KratorCatchBowlNetwork.evaluate_hazards(meta, 1100.0, 1250.0, 10500.0, -22.0, "gale", 2.8)
+	var hz_catch_storm: Dictionary = KratorCatchBowlNetwork.evaluate_hazards(meta, 1080.0, 1410.0, 380.0, 26.0, "dust", 2.0)
+	var hz_bowl_storm: Dictionary = KratorCatchBowlNetwork.evaluate_hazards(meta, 1250.0, 1150.0, -1150.0, 34.0, "dust", 2.0)
+	var dbowl: Dictionary = hz_bowl["doses"]
+	var dwall: Dictionary = hz_wall["doses"]
+	var dcatch: Dictionary = hz_catch_storm["doses"]
+	var dbstorm: Dictionary = hz_bowl_storm["doses"]
+	ok("ambient hazards differentiate the provinces: Bowl dead-heat (`hot` at >1.8 atm), Wall crest (`thin-air` + `death_zone` + God-Bore `cold`), and Catch black storm (`caustic-dust` vs Bowl ochre `dust`)",
+		float(hz_bowl["atm"]) > 1.80 and not dbowl.has("thin-air") and float(dbowl.get("hot", 0.0)) > 0.5
+			and bool(hz_wall["death_zone"]) and float(dwall.get("thin-air", 0.0)) > 0.3 and float(dwall.get("cold", 0.0)) > 0.7
+			and dcatch.has("caustic-dust") and not dbstorm.has("caustic-dust") and dbstorm.has("dust"),
+		not dcatch.is_empty() and not dbstorm.has("caustic-dust"),
+		"Bowl %.2f atm hot=%.2f; Wall %.2f atm thin=%.2f cold=%.2f; Catch caustic=%s"
+			% [float(hz_bowl["atm"]), float(dbowl.get("hot", 0.0)), float(hz_wall["atm"]),
+			   float(dwall.get("thin-air", 0.0)), float(dwall.get("cold", 0.0)), str(dcatch.get("caustic-dust", 0.0))])
+
+	# 26: Ranger HQ (`sz85a8i5js`) implements its standing Stalker bounty as a high exchange price for salvaged
+	#     Stalker pneumatic guns (`stalker_guns`, mounted as gate guns at important places across the Yuni lands) and
+	#     Ancient-alloy blades (`stalker_blades`, used by the White-Blade Watch elite Ranger unit)
+	var rb: Dictionary = meta.get("ranger_bounties", {})
+	var ex_w: Array = rb.get("exchange_warrants", [])
+	var eu_rec: Dictionary = rb.get("elite_unit", {})
+	var gg_sites: Array = rb.get("gate_gun_sites", [])
+	var has_gun := false
+	var has_blade := false
+	for w in ex_w:
+		if String(w.get("trophy_good", "")) == "stalker_guns" and bool(w.get("standing", false)) and int(w.get("exchange_talents", 0)) >= 400:
+			has_gun = true
+		if String(w.get("trophy_good", "")) == "stalker_blades" and bool(w.get("standing", false)) and int(w.get("exchange_talents", 0)) >= 250:
+			has_blade = true
+	ok("Ranger HQ's Stalker bounty exchanges pneumatic guns (mounted as gate guns across the Yuni lands) and Ancient-alloy blades (used by the elite Ranger unit)",
+		String(rb.get("issuer", "")) == "sz85a8i5js" and has_gun and has_blade
+			and String(eu_rec.get("weapon", "")) == "stalker_blades" and gg_sites.size() >= 8 and gg_sites.has("yuni.caravan_gate"),
+		not ex_w.is_empty() and not gg_sites.is_empty(),
+		"%d weapon warrants, elite unit %s, %d Yuni gate-gun sites" % [ex_w.size(), String(eu_rec.get("id", "?")), gg_sites.size()])
+
 	print("catch_bowl_test: " + ("all passed" if fails == 0 else str(fails) + " failed"))
 	quit(1 if fails > 0 else 0)
 

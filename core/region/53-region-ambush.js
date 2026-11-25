@@ -98,10 +98,13 @@ KREGION.part('53-region-ambush', function (H) {
             var cnt = Cr._ambN || (Cr._ambN = {}), n = cnt[Pt.id] = (cnt[Pt.id] || 0) + 1;
             var every = D(Pt.every, 3) > 0 ? D(Pt.every, 3) : 1, spare = D(Pt.spare, 0);
             if ((n - 1) % every < spare) return;   /* this passage is one of the ones that goes by untouched */
+            var mod = H.ambushFilter ? H.ambushFilter(Pt, Rd, Cr, minute, V, S) : null;
+            if (mod && mod.skip) return;
             A.tries++;
             var hidden = !!(Pt.hiddenIn && SIM.inSeason && SIM.inSeason(Pt.hiddenIn, minute));
             var roll = unit(seed + '|' + Pt.id + '|' + rid + '|' + Cr.k + '|' + n);
-            var out = H.ambushOutcome({ kind: Pt.kind, strength: Pt.strength, guard: H.ambushGuard(Rd, kit), hidden: hidden, roll: roll });
+            var effStr = mod && mod.strength != null ? mod.strength : Pt.strength;
+            var out = H.ambushOutcome({ kind: Pt.kind, strength: effStr, guard: H.ambushGuard(Rd, kit), hidden: hidden, roll: roll });
             A[out]++;
             var got = {}, beasts = 0, people = 0;
             if (out === 'tolled') got = takeCargo(Cr, Pt, D(Pt.toll, 0.12), A, rid);
@@ -111,9 +114,10 @@ KREGION.part('53-region-ambush', function (H) {
               /* THE PEOPLE: Stalkers take the crew, which is what makes them read differently from bandits. Booked as
                  its own number and in the log, never as theft of a good (PLAN-SIM.md 4c). */
               if (Pt.kind === 'stalker') { people = D(Pt.people, 2); A.people += people; }
-              if (out === 'broken') { Cr.to = Rd.stops[Cr.from]; Cr.eta = minute + 1; }   /* the train turns back */
+              if (out === 'broken') { Cr.to = typeof Cr.to === 'number' ? Cr.from : Rd.stops[Cr.from]; Cr.eta = minute + 1; }   /* the train turns back */
             }
             land(Pt, got);
+            if (H.ambushAfter) H.ambushAfter(Pt, Rd, Cr, out, got, beasts, people, minute, V, S);
             S.ambushLog.push({ minute: minute, party: Pt.id, road: rid, carrier: Cr.k, leg: Cr.from, outcome: out,
               took: got, beasts: beasts, people: people });
             SIM.logEvent('ambush ' + out, { party: Pt.id, road: rid, carrier: Cr.k, leg: Cr.from, beasts: beasts, people: people });

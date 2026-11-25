@@ -1,0 +1,382 @@
+{
+  "region": "east-abyss",
+  "box_px": [
+    1206,
+    620,
+    1358,
+    1125
+  ],
+  "origin_px": [
+    1285,
+    875
+  ],
+  "step": 1,
+  "m_per_px": 2000.0,
+  "elev_lo_m": -2599.1,
+  "elev_hi_m": 5775.71,
+  "size": [
+    152,
+    505
+  ],
+  "landforms": [
+    "none",
+    "mesa",
+    "pedestal",
+    "hoodoo",
+    "karst",
+    "evaporite",
+    "breccia",
+    "tor"
+  ],
+  "landform_counts": {
+    "none": 14410,
+    "mesa": 49383,
+    "pedestal": 5898,
+    "hoodoo": 236,
+    "karst": 3531,
+    "evaporite": 2745,
+    "breccia": 284,
+    "tor": 273
+  },
+  "weather": [
+    {
+      "id": "clear",
+      "name": "Clear dense-air",
+      "note": "1.9-2.2 atm East Abyss floor, warm turquoise salt lakes and sunbeams"
+    },
+    {
+      "id": "humid",
+      "name": "Abyssal steam haze",
+      "note": "thick tropical-abyssal humidity hanging over the canopy and salt marshes"
+    },
+    {
+      "id": "monsoon",
+      "name": "East Abyss monsoon",
+      "note": "heavy seasonal rain cascading off the eastern cliff walls into the salt lakes"
+    },
+    {
+      "id": "saltmist",
+      "name": "Salt-pan mist",
+      "note": "morning evaporative mist rising off the closed-basin brine lakes"
+    },
+    {
+      "id": "dust",
+      "name": "Rim-wind haze",
+      "note": "warm ochre dust spilling over the western escarpment from the SE desert"
+    }
+  ],
+  "sites": [
+    {
+      "id": "s2iq6zqe2x",
+      "name": "Furrow",
+      "type": "town",
+      "polity": "Nomad Country",
+      "px": [
+        1276,
+        639
+      ],
+      "x": -18000.0,
+      "z": -472000.0,
+      "elev_m": -592.8
+    },
+    {
+      "id": "sx4srhrf5g",
+      "name": "Locus",
+      "type": "town",
+      "polity": "Yuni Emirate",
+      "px": [
+        1267,
+        1043
+      ],
+      "x": -36000.0,
+      "z": 336000.0,
+      "elev_m": -2402.6
+    },
+    {
+      "id": "s4xb8r0vmy",
+      "name": "Mungo",
+      "type": "town",
+      "polity": "Nomad Country",
+      "px": [
+        1322,
+        828
+      ],
+      "x": 74000.0,
+      "z": -94000.0,
+      "elev_m": -1432.9
+    },
+    {
+      "id": "sndrdffkyg",
+      "name": "Reed",
+      "type": "village",
+      "polity": "Nomad Country",
+      "px": [
+        1280,
+        678
+      ],
+      "x": -10000.0,
+      "z": -394000.0,
+      "elev_m": -1750.0
+    },
+    {
+      "id": "sduqx62i09",
+      "name": "Verge",
+      "type": "city",
+      "polity": "Yuni Emirate",
+      "px": [
+        1268,
+        949
+      ],
+      "x": -34000.0,
+      "z": 148000.0,
+      "elev_m": -1684.9
+    },
+    {
+      "id": "ss0il0ejb7",
+      "name": "Yuni",
+      "type": "city",
+      "polity": "Yuni Emirate",
+      "px": [
+        1263,
+        1089
+      ],
+      "x": -44000.0,
+      "z": 428000.0,
+      "elev_m": 636.2
+    },
+    {
+      "id": "s7f7ct6r5p",
+      "name": "Reed upriver fields (to be named)",
+      "type": "village",
+      "polity": "Nomad Country",
+      "px": [
+        1297,
+        683
+      ],
+      "x": 24000.0,
+      "z": -384000.0,
+      "elev_m": -779.8
+    },
+    {
+      "id": "sdi0nzz51a",
+      "name": "Liikofi",
+      "type": "city",
+      "polity": "Tabisti: Liikofi",
+      "px": [
+        1316,
+        797
+      ],
+      "x": 62000.0,
+      "z": -156000.0,
+      "elev_m": -1358.4
+    },
+    {
+      "id": "sn98ob5duu",
+      "name": "Sfenops",
+      "type": "city",
+      "polity": "Tabisti: Sfenops",
+      "px": [
+        1282,
+        663
+      ],
+      "x": -6000.0,
+      "z": -424000.0,
+      "elev_m": -1369.7
+    },
+    {
+      "id": "sr666p3u3p",
+      "name": "Cline",
+      "type": "village",
+      "polity": "Nomad Country",
+      "px": [
+        1225,
+        646
+      ],
+      "x": -120000.0,
+      "z": -458000.0,
+      "elev_m": -464.1
+    },
+    {
+      "id": "sq11desertw1",
+      "name": "Dasri village (to be named)",
+      "type": "village",
+      "polity": "Nomad Country",
+      "px": [
+        1270,
+        745
+      ],
+      "x": -30000.0,
+      "z": -260000.0,
+      "elev_m": 204.9
+    },
+    {
+      "id": "sq11desertw3",
+      "name": "Dasri village (to be named)",
+      "type": "village",
+      "polity": "Nomad Country",
+      "px": [
+        1243,
+        844
+      ],
+      "x": -84000.0,
+      "z": -62000.0,
+      "elev_m": 582.4
+    },
+    {
+      "id": "sq11desertw6",
+      "name": "Izani-Dasri village (to be named)",
+      "type": "village",
+      "polity": "Empire of Iziz",
+      "px": [
+        1240,
+        960
+      ],
+      "x": -90000.0,
+      "z": 170000.0,
+      "elev_m": 180.5
+    },
+    {
+      "id": "s729bdsrtd",
+      "name": "Rifar al-Dhahab",
+      "type": "village",
+      "polity": "Nomad Country",
+      "px": [
+        1333,
+        886
+      ],
+      "x": 96000.0,
+      "z": 22000.0,
+      "elev_m": 1715.2
+    },
+    {
+      "id": "sr72acbono",
+      "name": "Sista Riba",
+      "type": "village",
+      "polity": "Yuni Emirate",
+      "px": [
+        1311,
+        982
+      ],
+      "x": 52000.0,
+      "z": 214000.0,
+      "elev_m": 1048.1
+    },
+    {
+      "id": "syuninrth1",
+      "name": "Bissa",
+      "type": "outpost",
+      "polity": "Yuni Emirate",
+      "px": [
+        1268,
+        994
+      ],
+      "x": -34000.0,
+      "z": 238000.0,
+      "elev_m": -1886.8
+    },
+    {
+      "id": "smidtabis1",
+      "name": "Middle Tabisti",
+      "type": "town",
+      "polity": "Tabisti: Liikofi",
+      "px": [
+        1311,
+        761
+      ],
+      "x": 52000.0,
+      "z": -228000.0,
+      "elev_m": -1397.7
+    },
+    {
+      "id": "stafidda01",
+      "name": "Tafidda",
+      "type": "city",
+      "polity": "Tabisti: Tafidda",
+      "px": [
+        1293,
+        882
+      ],
+      "x": 16000.0,
+      "z": 14000.0,
+      "elev_m": -1979.0
+    },
+    {
+      "id": "sslice0001",
+      "name": "Slice",
+      "type": "inhabited ruin",
+      "polity": "Tabisti: Liikofi",
+      "px": [
+        1309,
+        949
+      ],
+      "x": 48000.0,
+      "z": 148000.0,
+      "elev_m": -985.7
+    },
+    {
+      "id": "sarcades01",
+      "name": "The Arcades",
+      "type": "ruined arcology",
+      "polity": "Uninhabited",
+      "px": [
+        1253,
+        628
+      ],
+      "x": -64000.0,
+      "z": -494000.0,
+      "elev_m": -967.7
+    },
+    {
+      "id": "sdownback1",
+      "name": "Downback",
+      "type": "village",
+      "polity": "Yuni Emirate",
+      "px": [
+        1250,
+        1065
+      ],
+      "x": -70000.0,
+      "z": 380000.0,
+      "elev_m": -753.1
+    },
+    {
+      "id": "supspring1",
+      "name": "Upsprings",
+      "type": "village",
+      "polity": "Yuni Emirate",
+      "px": [
+        1280,
+        1106
+      ],
+      "x": -10000.0,
+      "z": 462000.0,
+      "elev_m": 1184.5
+    },
+    {
+      "id": "sbirsakhr1",
+      "name": "Bir-Sakhr Reed",
+      "type": "village",
+      "polity": "Reed-Lake: Independent",
+      "px": [
+        1293,
+        727
+      ],
+      "x": 16000.0,
+      "z": -296000.0,
+      "elev_m": -1616.3
+    },
+    {
+      "id": "sbraitard1",
+      "name": "Braita Reed",
+      "type": "village",
+      "polity": "Reed-Lake: Independent",
+      "px": [
+        1288,
+        969
+      ],
+      "x": 6000.0,
+      "z": 188000.0,
+      "elev_m": -2341.6
+    }
+  ]
+}

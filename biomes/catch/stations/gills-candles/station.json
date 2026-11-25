@@ -1,0 +1,15 @@
+{
+ "name": "The pipe field and the candles (station 5; biomes/gills/PLAN.md section 11 item 4 and section 18.2): the lowest White Gills (Wāiṭ Gīl) at 3,746 m and 1.00 atm, a dead gill closed by the tide's shift of the swarm with its hundreds of bone-white brucite pipes standing silent, fallen ones across the floor and rubble fans of broken rings; beside it the dry gills whose gas burns, blue candle flames (Qãḍal) a metre tall at the throats with a black heat crust round each; the History Monks' hermitage cut into a fallen pipe's base, the caravan stop at the salt cups, the Geomancers' capped gas-house and the caravans' smelting hearths, all published as sites and none of them built; the dark arch-rift-basalt colonnade scarp behind and the Catch's white floor far below to the north. Set in autumn at dusk, on the out-breath",
+ "out": "catch-gills-candles.html",
+ "reads": {
+  "35-core-strata.js": "core/terrain/35-core-strata.js",
+  "35b-core-lamina.js": "core/terrain/35b-core-lamina.js",
+  "35c-core-lamina-shade.js": "core/terrain/host/35b-core-lamina-shade.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "89-atmos-3-particles.js": "core/atmos/89-atmos-3-particles.js",
+  "44-gills-life.js": "biomes/gills/src/44-gills-life.js",
+  "45-gills-candles.js": "biomes/gills/src/45-gills-candles.js",
+  "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js"
+ },
+ "packs": ["biomes/gills"]
+}

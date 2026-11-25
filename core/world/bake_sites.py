@@ -53,6 +53,12 @@ LANDFORMS_JS = '41l-world-landforms.js'   # opt-in: a region whose build.py list
 # is planned without them, or the plan is made on land the page never draws (2026-11-16: the coast's shaping lowered points
 # 838 m that the page leaves as they are, so the browser's plan and the bake differed)
 COAST_JS = '44c-world-coast.js'
+HAZARDS_JS = '48h-world-hazards.js'
+FIXTURES_JS = '48f-world-fixtures.js'
+HAZARD_DEPS = [('core', 'tags', '50-core-tags.js'), ('core', 'tags', '52-core-tags-vocab.js'),
+               ('core', 'biome', '37-core-traps.js'), ('core', 'hazard', '20-core-hazard.js'),
+               ('core', 'hazard', '21-core-hazard-flow.js'), ('core', 'hazard', '22-core-hazard-env.js'),
+               ('core', 'hazard', '22-core-hazard-bore.js'), ('core', 'hazard', '22-core-hazard-tunnel.js')]
 
 
 def takes(region, frag):
@@ -135,6 +141,11 @@ def script(region):
         # the page carries in WORLD_DATA.towns (41 takes the ground and the water), so the plan is made on the town's ground as the page draws it
         if j[-1] == '41-world-fields.js' and region_towns(region):
             parts.append('\nWORLD_DATA.towns=' + json.dumps(towns_data(region), separators=(',', ':'), ensure_ascii=False) + ';\n')
+    if takes(region, HAZARDS_JS):
+        for k in HAZARD_DEPS + [('core', 'world', HAZARDS_JS)]:
+            parts.append('\n// ---- %s\n' % '/'.join(k) + open(os.path.join(ROOT, *k), encoding='utf-8').read())
+    if takes(region, FIXTURES_JS):
+        parts.append('\n// ---- core/world/%s\n' % FIXTURES_JS + open(os.path.join(HERE, FIXTURES_JS), encoding='utf-8').read())
     parts.append(WD.net_fragment(os.path.join(base, 'src', '48-world-site.js')))   # the network routes the region's links follow
     # the region's site data (src/NN-site-*.js, before its spec: a village its own page laid, 48s laidVillage; Gihon's Landing)
     for f in sorted(f for f in os.listdir(os.path.join(base, 'src')) if re.match(r'^\d\d[a-z]?-site-.+\.js$', f)):

@@ -498,7 +498,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Sign: the **hyperboloid**, yellow. No ships.
 - **A fluid society** (the owner, 2026-11-03): as in the Iron Republic, a Yuni worker may rise two stations in a single
   generation (core/simulation/PLAN-MONEY.md).
-- Controls Locus, Verge lower city, and an outpost to their north [TBD].
+- Controls Locus, Verge lower city, and Ranger HQ on Lake Vapora at the eastern end of the Stalker Gate (`sz85a8i5js`).
+- **Stalker bounties, gate guns, and elite Rangers** [the owner, 2026-11-25]: the Rangers' standing bounty on Stalkers is implemented as a high exchange price for salvaged **Stalker pneumatic guns** (`st_harpooner`) and **Ancient-alloy blades** (`st_blade`). The Ancient-alloy blades are used by an elite Ranger unit, and the pneumatic guns are mounted as **gate guns** at important places throughout the Yuni lands (Yuni's gates and Grand Vault, Locus, Verge, and Ranger HQ).
 - **Language and letters.** Yuni is *UNIV.* off the gate: the town grew in an Ancient agricultural and mechanical college, whose people sounded Australian. A thousand years carried those habits on until a modern English speaker cannot follow it: words clipped with *-o* and *-i* (*Labbo*, *Deppo*, *Bildo*), sliding vowels (*dai*, *hoi*, *nau*), phrases run together (*Gdai, mai. Awyagoi?*). The ruler is the *Emmo* (from Emeritus); outsiders say *Emir*, the desert caravaneers' form (§6.8). The walls keep the old spelling. Latin letters in stencil gate capitals; the ampersand counts as a 27th letter. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.12 Voth (SW Bay of Ring Sea)

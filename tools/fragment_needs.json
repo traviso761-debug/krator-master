@@ -56,6 +56,10 @@
   "core/water/ext/61-core-water-plume.js": {"needs": ["core/water/20-core-water.js", "core/water/50-core-water-draw.js"]},
   "core/city/42-city-multikit.js": {"needs": ["core/city/40-city-kcity.js"], "after": ["core/kits/10-core-kits.js"]},
   "core/city/53-city-host-multikit.js": {"needs": ["core/city/40-city-kcity.js"], "after": ["core/kits/10-core-kits.js"]},
-  "core/region/47s-region-styles.js": {"needs": ["core/region/00-region-core.js"], "after": ["core/kits/10-core-kits.js"]}
+  "core/region/47s-region-styles.js": {"needs": ["core/region/00-region-core.js"], "after": ["core/kits/10-core-kits.js"]},
+  "core/world/48h-world-hazards.js": {"needs": ["core/rand/08-core-rand.js"], "after": ["core/world/48w-world-camps.js", "core/hazard/20-core-hazard.js"]},
+  "core/world/88h-world-hazards.js": {"needs": ["core/tags/50-core-tags.js", "core/tags/52-core-tags-vocab.js", "core/biome/37-core-traps.js", "core/hazard/20-core-hazard.js", "core/world/48h-world-hazards.js", "core/world/41-world-fields.js", "core/world/45-world-host.js"], "after": ["core/world/88s-world-sites.js"]},
+  "core/world/48f-world-fixtures.js": {"needs": ["core/rand/08-core-rand.js", "core/space/20-core-space.js"], "after": ["core/world/48s-world-sites.js", "core/world/48h-world-hazards.js"]},
+  "core/world/88f-world-fixtures.js": {"needs": ["core/tags/50-core-tags.js", "core/tags/52-core-tags-vocab.js", "core/world/48f-world-fixtures.js", "core/world/41-world-fields.js", "core/world/45-world-host.js"], "after": ["core/world/88s-world-sites.js", "core/world/88k-world-caverns.js", "core/ruins/21-core-ruins-host.js"]}
  }
 }

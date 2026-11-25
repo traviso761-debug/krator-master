@@ -78,6 +78,218 @@ WEATHER = [
 ]
 
 
+def _gate_network(E, whas, box, step):
+    """Compute the Stalker Gate graben routes (west, northeast, southeast — never south, which was withdrawn at 11,025 m,
+    and NEVER any trail toward Hub 01!), plus the 10 kept wayhouses and 39 unmanned day-march bothies."""
+    sys.path[:0] = [HERE]
+    import gate_route as GR
+    cost = GR.cost_grid(E, whas)
+    routes_out = []
+    for bname, bend, bnote in GR.BRANCHES:
+        if bname == 'south':
+            continue
+        p = GR.route(cost, GR.HQ, bend)
+        if not p:
+            continue
+        # subsample polyline every 2 steps to keep meta.json compact while hugging every graben bend
+        pts = [[int(x), int(y)] for idx, (x, y) in enumerate(p) if idx % 2 == 0 or idx == len(p) - 1]
+        km = sum(KM_PER_PX * (1.4142 if ax != bx and ay != by else 1.0) for (ax, ay), (bx, by) in zip(p[:-1], p[1:]))
+        routes_out.append(dict(
+            id='gate.' + bname,
+            name='Stalker Gate ' + bname + ' trail (' + bnote + ')',
+            kind='trail',
+            cls='stalker_gate',
+            underground=False,
+            km=round(km, 1),
+            px=pts
+        ))
+    kept_posts = [
+        dict(id='gate.w1', name='Wayhouse 1 (west trunk)', branch='west', px=1402, py=1200, m=1903, people=8, kept=True),
+        dict(id='gate.w2', name='Wayhouse 2 (west trunk)', branch='west', px=1389, py=1167, m=1903, people=8, kept=True),
+        dict(id='gate.w3', name='Wayhouse 3 (west trunk)', branch='west', px=1372, py=1129, m=1829, people=8, kept=True),
+        dict(id='gate.w4', name='Wayhouse 4 (west trunk)', branch='west', px=1344, py=1099, m=1831, people=8, kept=True),
+        dict(id='gate.w5', name='Wayhouse 5 (west trunk)', branch='west', px=1303, py=1090, m=1790, people=8, kept=True),
+        dict(id='gate.e1', name='The High Wayhouse (east trunk summit)', branch='east', px=1462, py=1231, m=2824, people=10, kept=True),
+        dict(id='gate.ne1', name='NE Fork Wayhouse', branch='northeast', px=1504, py=1225, m=2376, people=8, kept=True),
+        dict(id='gate.ne2', name='The Loom Wayhouse', branch='northeast', px=1509, py=1185, m=2297, people=8, kept=True),
+        dict(id='gate.se1', name='SE Fork Wayhouse', branch='southeast', px=1505, py=1270, m=2162, people=8, kept=True),
+        dict(id='gate.se2', name='The Slabfield Wayhouse', branch='southeast', px=1509, py=1313, m=2140, people=8, kept=True),
+    ]
+    # Place the 39 unmanned day-march bothies evenly along the three branches (17 west, 5+7=12 NE, 10 SE = 39 total)
+    bothy_counts = {'gate.west': 17, 'gate.northeast': 12, 'gate.southeast': 10}
+    bothies = []
+    for r in routes_out:
+        nb = bothy_counts.get(r['id'], 0)
+        pts = r['px']
+        for k in range(1, nb + 1):
+            idx = min(len(pts) - 1, max(0, int(round(k * (len(pts) - 1) / (nb + 1)))))
+            bx, by = pts[idx]
+            bothies.append(dict(id='%s.bothy.%d' % (r['id'], k), branch=r['id'].split('.')[1], px=bx, py=by,
+                                m=round(float(E[int(by), int(bx)]), 1), kept=False))
+    return routes_out, kept_posts, bothies
+
+
+def _network_and_sim(E, whas, box, step):
+    x0, y0, x1, y1 = box
+    in_box = lambda px, py: (x0 <= px < x1) and (y0 <= py < y1)
+    routes = []
+
+    # 1. Recorded scale-model routes from net51-gemini.json inside the Catch-Bowl box
+    #    RULING (PLAN.md 2b & 12): NEVER export any route to or from Hub 01 ("Hub 01 to Stair" is excluded!)
+    net_path = os.path.join(REPO, 'openworld', 'net51-gemini.json')
+    if os.path.isfile(net_path):
+        NJ = json.load(open(net_path, encoding='utf-8'))
+        raw_routes = NJ.get('routes', {})
+        items = raw_routes.items() if isinstance(raw_routes, dict) else [(str(i), r) for i, r in enumerate(raw_routes)]
+        for rid, r in items:
+            rname = str(r.get('name', rid))
+            if 'hub 01' in rname.lower() or 'sodpa02bfv' in rname.lower():
+                continue
+            pts = r.get('px', [])
+            clipped = [[round(float(p[0]), 1), round(float(p[1]), 1)] for p in pts if in_box(p[0], p[1])]
+            if len(clipped) < 2:
+                continue
+            rcls = str(r.get('class') or r.get('kind') or 'trunk')
+            under = (rcls in ('line', 'possible')) or ('bore' in rname.lower())
+            routes.append(dict(
+                id='net.' + str(rid),
+                name=rname,
+                kind='bore' if under else 'road',
+                cls=rcls,
+                underground=under,
+                px=clipped
+            ))
+
+    # 2. Stalker Gate waystation network (Dijkstra graben trails + 10 kept wayhouses + 39 bothies)
+    gate_routes, kept_posts, bothies = _gate_network(E, whas, box, step)
+    routes.extend(gate_routes)
+
+    # 3. Twins crossing routes (Route B Steaming-Stone Dash surface trail + Route A Dark-Tube underground tubes + Catch descents)
+    twins_routes = [
+        dict(id='twins.route_b', name='Route B: The Steaming-Stone Dash (Brotherhood trail)', kind='trail', cls='twins_trail',
+             underground=False, px=[[996, 1504], [1005, 1489], [1016, 1479], [1031, 1473], [1056, 1462], [1083, 1474], [1106, 1442]]),
+        dict(id='twins.route_a', name='Route A: The Dark-Tube Road (lava tubes A1-A4 & 3 open sprints)', kind='tube', cls='twins_tube',
+             underground=True, px=[[938, 1496], [952, 1489], [966, 1479], [978, 1468], [982, 1466], [994, 1467], [1002, 1469],
+                                   [1006, 1468], [1014, 1464], [1020, 1461], [1024, 1459], [1038, 1452]]),
+        dict(id='twins.arch_descent', name='Route A North Arch descent to Bitta & Stair', kind='trail', cls='twins_trail',
+             underground=False, px=[[1038, 1452], [1088, 1455], [1106, 1442]]),
+        dict(id='twins.hermitage_path', name='Monks\' turn-off to the White Gills Hermitage', kind='path', cls='twins_path',
+             underground=False, px=[[1038, 1452], [1015, 1430]]),
+        # Catch & Bowl active caravan tracks connecting the oases, Godsgate and salt pans
+        dict(id='catch.godsgate_stair', name='The Godsgate crossing (Parabola -> Bab al-Hawa -> Kolli -> Arfwai -> Stair)',
+             kind='trail', cls='caravan', underground=False,
+             px=[[970, 1186], [1027, 1258], [1058, 1367], [1090, 1387], [1106, 1442]]),
+        dict(id='catch.salt_road', name='Train of Jabal salt road (Jabal -> Solta -> Mantis -> Parabola & Salt al-Ban -> Stair)',
+             kind='trail', cls='caravan', underground=False,
+             px=[[1225, 1149], [1169, 1150], [1113, 1164], [1080, 1428], [1090, 1387], [1106, 1442]]),
+    ]
+    for tr in twins_routes:
+        tr['px'] = [p for p in tr['px'] if in_box(p[0], p[1])]
+        if len(tr['px']) >= 2:
+            routes.append(tr)
+
+    # 4. Named setpiece stops: Twins oases, Bab al-Hawa, SE outer wall highland tarns, and the Rangers' Last Cairn
+    setpieces = [
+        dict(id='twins.sinter', name='Sinter-Gate (Bab al-Bukhar toll house)', kind='waystation', faction='horns', px=996, py=1504),
+        dict(id='twins.kettle', name='Mud-Kettle Hollow (maar mud pots)', kind='waystation', faction='horns', px=1005, py=1489),
+        dict(id='twins.brazier', name='The Brazier (Shrine of the Split Horn)', kind='waystation', faction='horns', px=1016, py=1479),
+        dict(id='twins.tarn', name='Brimstone-Tarn (sulfur diggings)', kind='waystation', faction='horns', px=1031, py=1473),
+        dict(id='twins.lookout', name='Catch-Lookout Spring (eye-wash basins)', kind='waystation', faction='horns', px=1056, py=1462),
+        dict(id='twins.hall', name='Hall of the Tally-Marks (tube A3 cistern)', kind='tube_hall', faction='horns', px=1014, py=1464, underground=True),
+        dict(id='twins.arch', name='18 m Basalt Arch (Route A north mouth)', kind='setpiece', faction='horns', px=1038, py=1452),
+        dict(id='godsgate.babalhawa', name='Bab al-Hawa (Vent-Shaft Caravanserai)', kind='caravanserai', faction='stair', px=1027, py=1258),
+        dict(id='rangers.last_cairn', name='The Rangers\' Last Cairn (no trail beyond)', kind='cairn', faction='yunicrown', px=1378, py=1322),
+        dict(id='tarn.1', name='West Godsgate Cirque Tarn', kind='tarn', faction=None, px=1016, py=1236),
+        dict(id='tarn.2', name='East Godsgate Cirque Tarn', kind='tarn', faction=None, px=1064, py=1272),
+        dict(id='tarn.3', name='Mid-Wall Tarn', kind='tarn', faction=None, px=1134, py=1218),
+        dict(id='tarn.4', name='High Bench Tarn', kind='tarn', faction=None, px=1208, py=1254),
+        dict(id='tarn.5', name='Bowl-Rim Tarn', kind='tarn', faction=None, px=1288, py=1184),
+    ]
+    all_stops = []
+    for sp in kept_posts + setpieces:
+        if not in_box(sp['px'], sp['py']):
+            continue
+        row = dict(sp)
+        row['x'] = (row['px'] - ORIGIN_PX[0]) * M_PER_PX
+        row['z'] = (row['py'] - ORIGIN_PX[1]) * M_PER_PX
+        if 'm' not in row:
+            row['m'] = round(float(E[int(row['py']), int(row['px'])]), 1)
+        all_stops.append(row)
+
+    # 5. Live caravan rounds (`CATCH_TUNE` + `BOWL_TUNE` + `STALKER_TUNE` patrols) for moving markers in catch_bowl.gd
+    caravans = [
+        dict(id='caravan.getmastarz', name='House Getmastarz (Godsgate -> Stair -> Twins)', faction='getmastarz',
+             color='#d9822b', speed_km_day=30.0, trains=3, guard=6, kit=[],
+             px=[[1016, 1058], [970, 1186], [1027, 1258], [1058, 1367], [1090, 1387], [1106, 1442], [1083, 1474], [1056, 1462], [1016, 1479], [996, 1504]]),
+        dict(id='caravan.goldanda', name='House Goldanda (Mantis -> Godsgate -> Stair)', faction='goldanda',
+             color='#e6b830', speed_km_day=30.0, trains=2, guard=7, kit=[],
+             px=[[1113, 1164], [970, 1186], [1027, 1258], [1058, 1367], [1106, 1442], [1088, 1455], [1038, 1452]]),
+        dict(id='caravan.train_jabal', name='The Train of Jabal (Jabal -> Solta -> Salt al-Ban -> Stair)', faction='train',
+             color='#e8dcc4', speed_km_day=28.0, trains=4, guard=6, kit=[],
+             px=[[1225, 1149], [1169, 1150], [1113, 1164], [1080, 1428], [1090, 1387], [1106, 1442]]),
+        dict(id='caravan.geomancers', name='Geomancer Drilling Train (armed with explosives)', faction='geomancer',
+             color='#48b8d0', speed_km_day=28.0, trains=2, guard=6, kit=['explosives'],
+             px=[[1263, 1089], [1113, 1164], [1106, 1442], [1083, 1474], [1056, 1462]]),
+        dict(id='caravan.rangers.west', name='Ranger HQ West Supply Convoy', faction='yunicrown',
+             color='#5ec476', speed_km_day=24.0, trains=3, guard=9, kit=['arms', 'explosives'],
+             px=next((r['px'] for r in gate_routes if r['id'] == 'gate.west'), [[1420, 1242], [1263, 1089]])),
+        dict(id='caravan.rangers.ne', name='Ranger HQ North-East Patrol', faction='yunicrown',
+             color='#5ec476', speed_km_day=24.0, trains=2, guard=8, kit=['arms'],
+             px=next((r['px'] for r in gate_routes if r['id'] == 'gate.northeast'), [[1420, 1242], [1520, 1140]])),
+        dict(id='caravan.rangers.se', name='Ranger HQ South-East Patrol', faction='yunicrown',
+             color='#5ec476', speed_km_day=24.0, trains=2, guard=8, kit=['arms'],
+             px=next((r['px'] for r in gate_routes if r['id'] == 'gate.southeast'), [[1420, 1242], [1530, 1350]])),
+    ]
+
+    # 6. Outlaw brotherhood camps (`BF-05`, `BF-06`, `BF-07` — visible on outlaw/bounty map) vs silent Stalker hunting grounds
+    #    (kept strictly separate and NEVER given visible pins/labels or tied to Hub 01's id in UI!)
+    outlaws = [
+        dict(id='BF-05', name='The Salt-Thirsters (Dust-Cloaks)', boss='Dry-Tongue', zone='the bowl',
+             hq_px=[1138, 1158], subs_px=[[1152, 1152], [1095, 1168]], wants=['water', 'grain', 'salt'], bounty_talents=650),
+        dict(id='BF-06', name='The Glass-Eaters (Naphtha-Breathers)', boss='The Cracked Retort', zone='Stalker Gate',
+             hq_px=[1385, 1110], subs_px=[[1330, 1095], [1295, 1125]], wants=['oil', 'sulfur', 'water', 'grain'], bounty_talents=900),
+        dict(id='BF-07', name='The Tin-Skulls (Stalker-Mimics)', boss='Unit Zero-Nine', zone='the catch',
+             hq_px=[1112, 1434], subs_px=[[1034, 1266], [1076, 1466]], wants=['alloy', 'cells', 'tools', 'water'], bounty_talents=850),
+    ]
+    # Stalker hunting envelopes (used ONLY by hazard/encounter evaluation, never drawn as map pins or named as Hub 01's!)
+    stalker_envelopes = [
+        dict(id='stalker.catch_floor', center_px=[1072, 1408], radius_km=95.0, kind='hunter'),
+        dict(id='stalker.east_wall', center_px=[1185, 1310], radius_km=110.0, kind='hunter'),
+        dict(id='stalker.range', center_px=[1360, 1320], radius_km=140.0, kind='hunter'),
+    ]
+    hazard_rules = dict(
+        thin_air_start_atm=0.60,
+        thin_air_lethal_atm=0.18,
+        death_zone_m=8000.0,
+        hot_start_c=38.0,
+        hot_worst_c=52.0,
+        cold_start_c=0.0,
+        cold_worst_c=-30.0,
+        black_storm_days=[70, 112],
+        whiteout_days=[300, 60],
+        deadheat_days=[20, 70],
+    )
+    ranger_bounties = dict(
+        issuer='sz85a8i5js',
+        polity='yunicrown',
+        exchange_warrants=[
+            dict(id='bounty.rangers.stalker.gun', target='st_harpooner', trophy_good='stalker_guns',
+                 exchange_talents=420, standing=True,
+                 use='mounted as gate guns at important places throughout the Yuni lands'),
+            dict(id='bounty.rangers.stalker.blade', target='st_blade', trophy_good='stalker_blades',
+                 exchange_talents=280, standing=True,
+                 use='used by the White-Blade Watch elite Ranger unit at Ranger HQ'),
+        ],
+        elite_unit=dict(id='rangers.blade_watch', name='The White-Blade Watch (Elite Ranger Unit)',
+                        settlement='sz85a8i5js', weapon='stalker_blades', blades_per_trooper=2, max_troopers=60),
+        gate_gun_sites=[
+            'sz85a8i5js.lake_gate', 'yuni.caravan_gate', 'yuni.north_gate', 'yuni.grand_vault',
+            'yuni.shepherds_gate', 'yuni.river_gate', 'yuni.potters_gate', 'locus.causeway_gate', 'verge.lower_gate'
+        ],
+    )
+    return routes, all_stops, bothies, caravans, outlaws, stalker_envelopes, hazard_rules, ranger_bounties
+
+
 def main():
     step = 1
     for i, a in enumerate(sys.argv):
@@ -186,11 +398,17 @@ def main():
         if px is None:
             print('  (site %s has no pixel in the model and none of its own: left out)' % sid)
             continue
-        sites.append(dict(id=sid, name=(m or row).get('name', sid), type=row.get('type', ''), px=px, py=py,
+        # Hub 01 (`sodpa02bfv`): keep in `sites` for the 16-site count, marked `ancient_ruin: true` & `no_pin_label: true`
+        # so the host draws a silent dark monolith silhouette rather than a bright settlement beacon or road!
+        is_hub = (sid == 'sodpa02bfv')
+        sites.append(dict(id=sid, name='Unmarked Ancient Ruin' if is_hub else (m or row).get('name', sid),
+                          type='ruin' if is_hub else row.get('type', ''), px=px, py=py,
                           from_model=bool(m),
+                          ancient_ruin=is_hub,
                           x=(px - ORIGIN_PX[0]) * M_PER_PX, z=(py - ORIGIN_PX[1]) * M_PER_PX,
                           m=round(float(E[int(py), int(px)]), 1), reach_km=row.get('reach_km')))
     sites.sort(key=lambda s: s['id'])
+    routes, stops, bothies, caravans, outlaws, stalker_env, hazard_rules, ranger_bounties = _network_and_sim(E, whas, box, step)
     meta = dict(
         region=REGION, note='the scale model at %g km a pixel, NOT the 1:1 cut: see this file\'s own tool' % (KM_PER_PX * step),
         box_px=list(box), step=step, m_per_sample=M_PER_PX * step, origin_px=ORIGIN_PX,
@@ -202,11 +420,16 @@ def main():
         inside_pct=round(100.0 * float(msub.mean()), 1),
         origin_offset_m=[(x0 - ORIGIN_PX[0]) * M_PER_PX, (y0 - ORIGIN_PX[1]) * M_PER_PX],
         polygons=[dict(id=i, name=n) for i, n in POLYGONS], sites=sites, weather=WEATHER,
+        routes=routes, stops=stops, bothies=bothies, caravans=caravans, outlaws=outlaws,
+        stalker_envelopes=stalker_env, hazard_rules=hazard_rules, ranger_bounties=ranger_bounties,
         temp_offset_c=-90, rain_per_byte=4000.0 / 255.0)
     with open(os.path.join(OUT, 'meta.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)
         f.write('\n')
     print('  landforms: ' + ', '.join('%s %d' % (k, v) for k, v in famcount.items() if v))
+    print('  network: %d routes (%d surface, %d underground), %d stops/setpieces, %d bothies, %d caravan rounds, %d outlaw brotherhoods'
+          % (len(routes), sum(1 for r in routes if not r.get('underground')), sum(1 for r in routes if r.get('underground')),
+             len(stops), len(bothies), len(caravans), len(outlaws)))
     print('godot/data/catch-bowl: %d x %d samples at %g km (%d x %d km), heights %.0f to %.0f m, %.1f %% inside the six polygons, %d sites, %d weather kinds'
           % (sub.shape[1], sub.shape[0], KM_PER_PX * step, meta['km'][0], meta['km'][1], lo, hi, meta['inside_pct'], len(sites), len(WEATHER)))
 

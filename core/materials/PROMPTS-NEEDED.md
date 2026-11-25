@@ -488,6 +488,32 @@ Flat cut-out pattern sheet, square, 2048x2048, on a solid flat bright magenta ba
 Flat sheet of nine separate botanical twig cut-outs arranged in a clean 3x3 grid with generous margin between cells, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple in the subject (blossoms warm ivory-white #f6efe4 with golden-amber stamens #c88a28 and deep rust-red sepals #8e2e24, never pink). Flat, even, shadowless lighting. Subject: nine sprigs of a highland wild apricot tree whose leaves and blossoms grow in tight five-ranked spiral whorls around dark reddish-brown woody twigs: six sprigs with crisp ovate serrated green-bronze leaves (#587038 to #7c8840) and small ivory five-petalled stone-fruit blossoms, three sprigs bearing small ripe golden-ochre apricots (#d88c32) nestled in leaf whorls. No text, no border, no watermark.
 ```
 
+## Stalker Gate (`biomes/stalker-gate`, planned 2026-11-25)
+
+Its `PLAN.md` section 9. The reuse list (basalt, talus, puna, tundra, snow, sinter, travertine, aufeis, cushion, ichu,
+lichen, polygon turf) covers most of the kit; these four have no set in the library. Nothing is built yet, so nothing is
+standing in for them.
+
+`rock.basalt.frostshatter` (the kit's commonest surface: the angular frost-wedged talus of every defile floor and chute):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a bed of freshly frost-shattered basalt talus, angular blocky fragments from fist to head sized packed edge to edge at every orientation, every face a sharp flat fracture plane with crisp unworn edges and no rounding whatsoever, the rock blue-black to charcoal (#2b2d31) with paler grey-green weathered faces (#6c7068) where a fragment has lain exposed, fine grey rock flour and splinters filling the gaps between blocks, a few faces showing thin pale frost-rime in their shadows. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`ground.rime.crust` (the condensate line round Lake Vapora, where the steam meets the freezing air):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a mineral crust furred over with rime ice, a damp pale grey-buff sinter base (#b9b2a4) showing in patches between a growth of fine white feathery frost crystals that stand up off the surface in soft needle clusters, thicker and more matted in the hollows and thinning to bare wet crust on the high points, a faint warm ochre mineral staining (#8a7450) under the ice where the water has run. Full colour: not tinted.
+```
+
+`card.krummholz` (the wind-trained scrub of every lee pocket; a sheet of cut-outs, all growth to one side):
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate clumps of wind-flagged alpine krummholz scrub, each a low gnarled woody mat whose every branch and needle-spray is swept hard to the RIGHT as if under a permanent gale, the windward side bare and abraded to grey stripped wood, the leeward side carrying short dense dark blue-green needle foliage in flattened streaming tufts, trunks thick and contorted close to the ground, no upright leader on any of them. Keep colours natural but slightly muted and even, so the sheet can be tinted to different palettes without looking stained. No text, no border, no watermark.
+```
+
+`card.slotgrass` (the venturi grass of the pinches: stiff triangular blades that hum in the gale):
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: eight separate tussocks of stiff alpine bunchgrass, each a tight basal clump throwing up straight rigid blades that are visibly thick and triangular in cross-section rather than flat, held upright and only slightly bent, the blades a dull grey-green (#7f8a6a) drying to straw (#b9a877) at the tips, a few dead blades from last season pale and bleached at the clump's outside. Keep colours natural but slightly muted and even, so the sheet can be tinted to different palettes without looking stained. No text, no border, no watermark.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

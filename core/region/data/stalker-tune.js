@@ -35,9 +35,11 @@ T.speed=24;      /* a laden pack day on a graben trail: under the Catch's 30 on 
 T.winding=1.0;   /* the routes are already measured on the ground, so their km are road km */
 
 /* the goods: the ones the other two tunes declare, restated so this tune stands alone in node (the join merges the
-   tables with Object.assign, where a duplicate costs nothing), plus what a garrison in a 0 mm province needs */
+   tables with Object.assign, where a duplicate costs nothing), plus what a garrison in a 0 mm province needs, and the two
+   Stalker weapons Ranger HQ buys at a high exchange price (owner, 2026-11-25): pneumatic harpoon guns (`stalker_guns`,
+   mounted as gate guns across the Yuni lands) and Ancient-alloy blades (`stalker_blades`, used by an elite Ranger unit) */
 T.goods={grain:{unit:'kg'},salt:{unit:'kg'},tea:{unit:'kg'},tools:{unit:'kg'},water:{unit:'l'},fodder:{unit:'kg'},
- cloth:{unit:'kg'},alloy:{unit:'kg'},cells:{unit:'ea'},
+ cloth:{unit:'kg'},alloy:{unit:'kg'},cells:{unit:'ea'},stalker_guns:{unit:'ea'},stalker_blades:{unit:'ea'},
  arms:{unit:'ea'},explosives:{unit:'kg'},charcoal:{unit:'kg'},medicine:{unit:'kg'},timber:{unit:'kg'}};
 
 /* FORT and POST. A fort eats like a town and burns charcoal and medicine a town does not; a post is eight keepers in a
@@ -125,6 +127,85 @@ T.patrolGoods={out:['water','fodder','grain','charcoal','tools','salt','tea'],ba
 T.caravan={beasts:40,eat:{water:30,fodder:6},loss:.5,maxDays:6};
 T.kgPerBeast=200;
 
+/* S3 PART 2 (2026-11-25, PLAN-SIM.md section 4b-4e & owner ruling 2026-11-25):
+   1. Standing Stalker bounty implemented as a HIGH EXCHANGE PRICE at Ranger HQ (`sz85a8i5js`, `yunicrown`) for salvaged
+      Stalker pneumatic harpoon guns (`stalker_guns`, from `st_harpooner`) and Ancient-alloy hooked blades (`stalker_blades`,
+      from `st_blade`), paid `1.0x` (`targetKind: 'stalker'`) in coin and high-value garrison stores (`grain`, `tea`, `salt`,
+      `arms`, `medicine`, `tools`).
+   2. Downstream weapon allocation (`T.stalkerWeapons`):
+      - `stalker_blades` are issued at Ranger HQ (`sz85a8i5js`) to equip an elite Ranger unit (`rangers.blade_watch`, the
+        White-Blade Watch), raising Ranger warrant-posse strength as troopers are armed;
+      - `stalker_guns` are mounted on Ranger HQ's own Lake Vapora gate and dispatched down the West Trunk to `crown.yuni`
+        to be mounted as gate guns at important places throughout the Yuni lands (Yuni's Caravan, North, Shepherds', River
+        and Potters' Gates, the Grand Vault citadel gate, Locus's causeway gate, and Verge's lower city gate; LORE.md 6.11).
+   3. Range salvage expeditions staged out of Ranger HQ into the Stalker Range (completely independent of passing road
+      traffic!): Ranger HQ takes its `cut` (`15%`, owner ruling 2026-11-24) of expedition bulk salvage while the party turns
+      in salvaged Stalker pneumatic guns and Ancient-alloy blades at Ranger HQ's standing exchange board.
+   4. Hidden source config (`stalkerSource`): drives `54-region-outlaws.js`'s private WeakMap loop (`active | mastered |
+      dead`) without ever exposing `"pressure"` or `sodpa02bfv` in any player-readable report.
+   5. `BF-06` Glass-Eaters (`Naphtha-Breathers`) operating on the western Yuni <-> Stalker Gate approach (`orderliness: 0.36`). */
+T.bounties={
+ seed:20261125,
+ warrants:[
+  {id:'bounty.rangers.stalker.gun',target:'st_harpooner',targetKind:'stalker',trophyGood:'stalker_guns',polity:'yunicrown',
+   issuerSettlement:'sz85a8i5js',tier:2,amount:420,standing:true,
+   goodsReward:{grain:55,tea:2,salt:4,medicine:1,tools:1},
+   reason:'standing Ranger high exchange price for a salvaged Stalker pneumatic gun (mounted as gate guns across the Yuni lands)'},
+  {id:'bounty.rangers.stalker.blade',target:'st_blade',targetKind:'stalker',trophyGood:'stalker_blades',polity:'yunicrown',
+   issuerSettlement:'sz85a8i5js',tier:2,amount:280,standing:true,
+   goodsReward:{grain:35,tea:1,salt:2,arms:1},
+   reason:'standing Ranger high exchange price for a salvaged Stalker Ancient-alloy blade (used by the elite Ranger unit)'},
+  {id:'bounty.rangers.bf06.boss',target:'BF-06.boss.0',targetKind:'outlaw',outlawFaction:'BF-06',polity:'yunicrown',
+   issuerSettlement:'sz85a8i5js',tier:3,amount:900,standing:false,
+   goodsReward:{grain:120,arms:4},
+   reason:'warrant on The Cracked Retort (Glass-Eaters HQ in Loom Chasms)'}],
+ manhunters:[{id:'mh.vapora.watch',name:'Lake Vapora Warrant-Rangers',zone:'mid-basin-gate',polity:'yunicrown',strength:10}]};
+
+T.stalkerWeapons={
+ eliteUnit:{
+  id:'rangers.blade_watch',
+  name:'The White-Blade Watch (Elite Ranger Unit)',
+  settlement:'sz85a8i5js',
+  good:'stalker_blades',
+  bladesPerTrooper:2,
+  maxTroopers:60,
+  manhunterId:'mh.vapora.watch'
+ },
+ gateGuns:{
+  hub:'sz85a8i5js',
+  yuniPool:'crown.yuni',
+  good:'stalker_guns',
+  dispatchEveryDays:30,
+  sites:[
+   {id:'sz85a8i5js.lake_gate',name:'Lake Vapora West Gate, Ranger HQ',settlement:'sz85a8i5js',quota:2},
+   {id:'yuni.caravan_gate',name:'Caravan Gate, Yuni',settlement:'crown.yuni',quota:4},
+   {id:'yuni.north_gate',name:'North Gate, Yuni',settlement:'crown.yuni',quota:4},
+   {id:'yuni.grand_vault',name:'Grand Vault & Emir\'s Citadel Gate, Yuni',settlement:'crown.yuni',quota:4},
+   {id:'yuni.shepherds_gate',name:'Shepherds\' Gate, Yuni',settlement:'crown.yuni',quota:2},
+   {id:'yuni.river_gate',name:'River Gate, Yuni',settlement:'crown.yuni',quota:2},
+   {id:'yuni.potters_gate',name:'Potters\' Gate, Yuni',settlement:'crown.yuni',quota:2},
+   {id:'locus.causeway_gate',name:'Refinery Causeway Gate, Locus',settlement:'crown.yuni',quota:2},
+   {id:'verge.lower_gate',name:'Lower City Gate, Verge',settlement:'crown.yuni',quota:2}
+  ]
+ }
+};
+
+T.expeditions=[
+ {id:'exp.rangers.salvage.north',base:'sz85a8i5js',partyPool:'crown.yuni',everyDays:45,firstDay:22,cut:0.15,
+  supplies:{grain:160,water:360,explosives:16,tools:4},yield:{alloy:340,cells:16},
+  trophyWarrants:{stalker_guns:'bounty.rangers.stalker.gun',stalker_blades:'bounty.rangers.stalker.blade'}},
+ {id:'exp.rangers.salvage.east',base:'sz85a8i5js',partyPool:'crown.yuni',everyDays:60,firstDay:38,cut:0.15,
+  supplies:{grain:200,water:440,explosives:22,tools:5},yield:{alloy:420,cells:20},
+  trophyWarrants:{stalker_guns:'bounty.rangers.stalker.gun',stalker_blades:'bounty.rangers.stalker.blade'}}];
+
+T.outlaws={
+ seed:20261125,
+ zones:[{id:'mid-basin-gate',name:'Mid Basin & West Stalker Gate',polity:'yunicrown',orderliness:0.36,targetOrder:0.36,
+  legs:['caravan.rangers.west']}],
+ factions:[{id:'BF-06',template:'BF-06',zone:'mid-basin-gate',initialSubs:2,legs:['caravan.rangers.west']}]};
+
+T.stalkerSource={initial:1.0,attritionFloor:0.25,regenPerWeek:0.06,dropPerKill:0.08,status:'active'};
+
 /* ---- the province on its own, for the standalone test: the fort, the posts, the patrols, and the salary from an
    off-map pool standing for the Emirate's own country (the Yuni valley, px 1263,1089). */
 T.valley=function(o){o=o||{};const K=o.scale==null?25:o.scale,yr=365,days=o.days==null?400:o.days;
@@ -144,6 +225,7 @@ T.valley=function(o){o=o||{};const K=o.scale==null?25:o.scale,yr=365,days=o.days
   const start={};Object.keys(diet).forEach(g=>{start[g]=Math.ceil(n*diet[g]*days);});
   if(P.well)start.water=P.well[0]*3;
   if(P.fodder)start.fodder=P.fodder*10;
+  if(P.kind==='fort'){start.explosives=(start.explosives||0)+600;start.arms=(start.arms||0)+120;start.medicine=(start.medicine||0)+90;start.tools=(start.tools||0)+90;}
   return{id:P.id,name:P.name,faction:P.faction,people:n,x:p.x,z:p.z,scale:K,eats:Object.assign({},diet),keepDays:20,start,works};};
  const S=T.places.map(mk);
  /* the off-map pool the salary comes out of: it holds the bill many times over, as Xanadu's gateways do */
@@ -155,7 +237,12 @@ T.valley=function(o){o=o||{};const K=o.scale==null?25:o.scale,yr=365,days=o.days
  const F=T.factions.map(f=>f.id);
  return{seed:20261125,scale:K,start:0,calendar:T.calendar,goods:T.goods,factions:T.factions,
   relations:[].concat(...F.map(a=>F.filter(b=>b!==a).map(b=>({a,b,stance:'friendly'})))),
-  settlements:S,roads:T.roads(by),transfers:[T.salary]};};
+  settlements:S,roads:T.roads(by),transfers:[T.salary],
+  bounties:JSON.parse(JSON.stringify(T.bounties)),
+  stalkerWeapons:JSON.parse(JSON.stringify(T.stalkerWeapons)),
+  expeditions:JSON.parse(JSON.stringify(T.expeditions)),
+  outlaws:JSON.parse(JSON.stringify(T.outlaws)),
+  stalkerSource:Object.assign({},T.stalkerSource)};};
 
 /* the patrol rounds, built off whatever settlement table they are given, so the valley and the join share one builder */
 T.roads=function(by){const HQ=T.network.hub;
@@ -189,8 +276,17 @@ T.join=function(BV,o){o=o||{};
  const by={};V.settlements.forEach(s=>{by[s.id]=s;});
  V.roads=BV.roads.concat(T.roads(by));
  V.transfers=(BV.transfers||[]).concat([T.salary]);
+ V.bounties={seed:T.bounties.seed,warrants:((BV.bounties&&BV.bounties.warrants)||[]).concat(JSON.parse(JSON.stringify(T.bounties.warrants))),
+  manhunters:((BV.bounties&&BV.bounties.manhunters)||[]).concat(JSON.parse(JSON.stringify(T.bounties.manhunters)))};
+ V.stalkerWeapons=JSON.parse(JSON.stringify(T.stalkerWeapons));
+ V.expeditions=(BV.expeditions||[]).concat(JSON.parse(JSON.stringify(T.expeditions)));
+ V.outlaws={seed:T.outlaws.seed,zones:((BV.outlaws&&BV.outlaws.zones)||[]).concat(JSON.parse(JSON.stringify(T.outlaws.zones))),
+  factions:((BV.outlaws&&BV.outlaws.factions)||[]).concat(JSON.parse(JSON.stringify(T.outlaws.factions)))};
+ V.stalkerSource=Object.assign({},T.stalkerSource);
  V._stalker={places:T.places.length,posts:T.places.filter(P=>P.kind==='post').length,people:T.places.reduce((n,P)=>n+P.people,0),
   patrols:T.patrols.map(R=>R.id),salary:T.salary.id,pool:T.pool.id,hub:T.hub.id,hubIsASettlement:false,
+  bountyWarrants:['bounty.rangers.stalker.gun','bounty.rangers.stalker.blade'],
+  eliteUnit:T.stalkerWeapons.eliteUnit.id,gateGunSites:T.stalkerWeapons.gateGuns.sites.length,expeditionCut:0.15,
   bothies:T.network.trunks.concat(T.network.branches).reduce((n,x)=>n+x.bothies,0)};
  return V;};
 return T;})();

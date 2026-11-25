@@ -1,5 +1,12 @@
 # biomes/catch: known issues
 
+- [ ] **The gills stations' ground has no carbonate texture set.** `--station gills-candles` paints the White Gills' floor from the Catch's
+      own pack (`ground.crust`, `ground.soda`, `ground.gravel`, `ground.reg`); the library's `ground.travertine.white`, `stone.geyserite`
+      and `ground.sinter` are not wired, because a ground layer can only come from the page's own pack (45c, `KMAT.packed('catch', ...)`)
+      and adding them to `materials.json` would put them on all four basin pages too. Said plainly rather than papered over.
+- [ ] **`gills-candles` has been seen on SwiftShader only** (2026-11-25): no GPU lane was reachable from the container that built it.
+- [ ] **The catch's other two gills stations are owed**: `--station gills` (the White Gill over Bitta's road) and `--station gills-pass`
+      (the pass and the White ladder), `biomes/gills/PLAN.md` section 11 items 3 and 5.
 - [ ] **The walls are painted, not cast.** Each station's horizon is four of the shared sky's ridge layers drawn from the
       survey's distances (PLAN.md section 1): far crests 12-17 km, the Godthrone north-west, the inner walls' snowfields,
       the interior hills. A horizon cast from the scale model's heightfield at the site (SKY-PLAN.md 3.3, "Later") replaces

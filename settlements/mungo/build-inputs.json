@@ -137,6 +137,7 @@
     "core/simulation/77-sim-6-items.js": "1a585669cfc508b8c5ca8cf4e97f6b3b0bb4e694694b9a6f35cef6d474dd0182",
     "core/simulation/77-sim-6-money.js": "5ac2d43c9c49f9788852a153833d49f25df38ef50eb68e030929234f80574910",
     "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
+    "core/simulation/77-sim-6-outlaws.js": "e3bdd3c8a5629c7762784b067bcb2c02fff7f7301ad15244a5fc8898f2f6929d",
     "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
     "core/simulation/77-sim-6-season.js": "344a5416aedab4782d68769779c12183058f8a673f58ca1cc0015cf3ff051fac",
     "core/simulation/77-sim-6-trade.js": "ced3841cbb3d739fe919885353de501947e4615206662ec36a1d006d501db674",
@@ -727,7 +728,7 @@
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/sched": "a2fbc91d2344c14e84e74c6d0f1d22208ffaa3273ee19e34c81937b6f43d6763",
     "core/shader": "096503afdb3e218ae4dee6db5ba7786d7fca4b7a58dc1de35a6a961152b2b8db",
-    "core/simulation": "1bdf12b281450fb735fcd422d965919dc4cfebaf923e4cfeba3762b071177c22",
+    "core/simulation": "bc7a1805ec93cacf8a28c0212eedd0fb1993a33b7e7047f1dc547544c0720cb7",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "core/walk": "c2dba1d905c6546cc60841fa95b468a852915494776bd7eee35713cb4f48c648",
     "core/water": "5a0af958955dc7a04dcb51ada7a7f306cbdf780fd8bc246470037f68b9f4d6b5",
@@ -748,8 +749,8 @@
    },
    "listed_by": "code",
    "outputs": {
-    "settlements/mungo/build-manifest.json": "f6fc731b9268b45df18b2d88a13a081f7e4c42d81beadd7d7a38fa3eb381040d",
-    "settlements/mungo/dist/mungo.html": "047db11542a611cc2f8e6c1bdabdc20f68bf840fb752b1954e3a12916a9b39ed",
+    "settlements/mungo/build-manifest.json": "3e128b51a8e20ab96cc7a1868443254f87d210769bace457bcec33f6523d00d8",
+    "settlements/mungo/dist/mungo.html": "443da27d75c2ed5efc2c05e85f700d3b6c99b9adc24478e148e91ff847a54ece",
     "settlements/mungo/dist/mungo.tex.eastabyss.js": "fa81f60aa81dace6b5d91e5a06e535243ae6a8d33c9e4f8be02a3c781cf5934f",
     "settlements/mungo/dist/mungo.tex.locus.js": "d54d818fecfc9c5c32feb714a3f7568bc1d03aade459b83553271d22a142c330",
     "settlements/mungo/dist/mungo.tex.reedlake-2.js": "8bfecb53c2f4e62fe89a865610df54b5ca7c806f0e1fde71087b3685f6fa3c95",
@@ -758,8 +759,8 @@
     "settlements/mungo/dist/mungo.tex.tabisti.js": "ec504ccae11c2d61cde65c2f77bdbea5232cbf560f5165f7ef39222b7469be1b"
    },
    "outputs_raw": {
-    "settlements/mungo/build-manifest.json": "f6fc731b9268b45df18b2d88a13a081f7e4c42d81beadd7d7a38fa3eb381040d",
-    "settlements/mungo/dist/mungo.html": "047db11542a611cc2f8e6c1bdabdc20f68bf840fb752b1954e3a12916a9b39ed",
+    "settlements/mungo/build-manifest.json": "3e128b51a8e20ab96cc7a1868443254f87d210769bace457bcec33f6523d00d8",
+    "settlements/mungo/dist/mungo.html": "443da27d75c2ed5efc2c05e85f700d3b6c99b9adc24478e148e91ff847a54ece",
     "settlements/mungo/dist/mungo.tex.eastabyss.js": "fa81f60aa81dace6b5d91e5a06e535243ae6a8d33c9e4f8be02a3c781cf5934f",
     "settlements/mungo/dist/mungo.tex.locus.js": "d54d818fecfc9c5c32feb714a3f7568bc1d03aade459b83553271d22a142c330",
     "settlements/mungo/dist/mungo.tex.reedlake-2.js": "8bfecb53c2f4e62fe89a865610df54b5ca7c806f0e1fde71087b3685f6fa3c95",

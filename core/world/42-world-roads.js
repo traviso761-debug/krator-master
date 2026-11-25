@@ -21,6 +21,14 @@
 //   ROADS.routeAll(pairs, places, opts)  every pair once (A-B and B-A are one road); places: name -> {x, z, r}
 var ROADS=(function(){'use strict';
 const G=.08,HW=4;                 // the ruling grade and the half-width of the carriageway (8 m)
+const KINDS={road:{hw:4,grade:.08},highway:{hw:4,grade:.08},trail:{hw:2,grade:.18},path:{hw:1.2,grade:.25}};
+function kind(name,spec){if(spec===undefined)return KINDS[name]||null;
+ if(spec===null){delete KINDS[name];return api;}
+ KINDS[name]={hw:spec.hw==null?2:spec.hw,grade:spec.grade==null?.18:spec.grade};return api;}
+function resolveOpts(opts){opts=opts||{};const kd=opts.kind?KINDS[opts.kind]:null;
+ if(opts.kind&&!kd)throw new Error('ROADS: unknown way kind '+opts.kind);
+ const rg=opts.grade!=null?opts.grade:(kd?kd.grade:G),hw=opts.hw!=null?opts.hw:(kd?kd.hw:HW);
+ return{rg,hw,kind:opts.kind||null,customKind:!!(opts.kind&&opts.kind!=='road'&&opts.kind!=='highway'),customGrade:Math.abs(rg-G)>1e-9};}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 // a binary heap of (cost, id)
 function Heap(){this.k=[];this.v=[];}
@@ -31,13 +39,14 @@ Heap.prototype.pop=function(){const k=this.k,v=this.v,top=v[0],tc=k[0],lc=k.pop(
  this.c=tc;return top;};
 Object.defineProperty(Heap.prototype,'size',{get(){return this.k.length;}});
 const NB16=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1],[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]];
-// the step's cost per metre for grade g; steep: the fine pass's sharper rise over G (switchbacks)
-// (coarse: over 2 G a step is a cliff to the route, worth any detour to a ramp)
-const gradeCost=(g,steep)=>{const r=g/G;return steep?1+.6*r*r+(r>1?Math.pow(r-1,2)*40:0):1+r*r+r*r*r*r/8+(r>2?Math.pow(r-2,4)*20:0);};
+// the step's cost per metre for grade g against ruling grade rg; steep: the fine pass's sharper rise over rg (switchbacks)
+// (coarse: over 2 rg a step is a cliff to the route, worth any detour to a ramp)
+const gradeCost=(g,steep,rg)=>{const r=g/rg;return steep?1+.6*r*r+(r>1?Math.pow(r-1,2)*40:0):1+r*r+r*r*r*r/8+(r>2?Math.pow(r-2,4)*20:0);};
 
 // a least-cost search over cells: cellXZ(id) -> [x,z], heightOf(id), wetOf(id), neighbours via (i,j); A* with the
 // straight distance (every step costs at least its length)
-function search(nx,ny,cs,x0,z0,ok,hOf,wOf,a,b,steep){
+function search(nx,ny,cs,x0,z0,ok,hOf,wOf,a,b,steep,rg){
+ rg=rg==null?G:rg;
  const id=(i,j)=>j*nx+i,sx=Math.round((a.x-x0)/cs),sz=Math.round((a.z-z0)/cs),tx=Math.round((b.x-x0)/cs),tz=Math.round((b.z-z0)/cs);
  const S=id(clamp(sx,0,nx-1),clamp(sz,0,ny-1)),T=id(clamp(tx,0,nx-1),clamp(tz,0,ny-1));
  const dist=new Map(),prev=new Map(),done=new Set(),H=new Heap();
@@ -49,7 +58,7 @@ function search(nx,ny,cs,x0,z0,ok,hOf,wOf,a,b,steep){
    /* a knight's step crosses two more cells on its way: both must be open too (else a keep-off a cell wide is hopped) */
    if(Math.abs(di)===2){if(!ok(id(ui+di/2,uj))||!ok(id(ui+di/2,uj+dj)))continue;}else if(Math.abs(dj)===2){if(!ok(id(ui,uj+dj/2))||!ok(id(ui+di,uj+dj/2)))continue;}
    const L=Math.hypot(di,dj)*cs,g=Math.abs(hOf(v)-hu)/L;
-   const c=du+L*(gradeCost(g,steep)+(wOf(v)&&v!==T?40:0));
+   const c=du+L*(gradeCost(g,steep,rg)+(wOf(v)&&v!==T?40:0));
    if(c<(dist.has(v)?dist.get(v):Infinity)){dist.set(v,c);prev.set(v,u);H.push(c+hz(v),v);}}}
  if(!prev.has(T)&&S!==T)return null;
  const P=[T];while(P[P.length-1]!==S)P.push(prev.get(P[P.length-1]));P.reverse();
@@ -57,10 +66,11 @@ function search(nx,ny,cs,x0,z0,ok,hOf,wOf,a,b,steep){
 
 // the coarse grid's heights and water, once for every road
 let CO=null;
-function coarseGrid(){if(CO)return CO;const B=WORLD.box(),cs=2000,nx=Math.ceil((B[2]-B[0])/cs)+1,ny=Math.ceil((B[3]-B[1])/cs)+1;
+function coarseGrid(){const B=WORLD.box();if(CO&&CO.B[0]===B[0]&&CO.B[1]===B[1]&&CO.B[2]===B[2]&&CO.B[3]===B[3])return CO;
+ const cs=2000,nx=Math.ceil((B[2]-B[0])/cs)+1,ny=Math.ceil((B[3]-B[1])/cs)+1;
  const h=new Float32Array(nx*ny),w=new Uint8Array(nx*ny);
  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const x=B[0]+i*cs,z=B[1]+j*cs,k=j*nx+i;h[k]=WORLD.Hland(x,z,4000);w[k]=WORLD.water(x,z)>h[k]+1?1:0;}
- CO={B,cs,nx,ny,h,w};return CO;}
+ CO={B:B.slice(),cs,nx,ny,h,w};return CO;}
 
 function chaikin(P,n){for(let it=0;it<n;it++){if(P.length<3)break;const Q=[P[0]];
   for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];Q.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75]);}
@@ -72,10 +82,10 @@ function resample(P,step){const out=[P[0].slice()];let carry=0;
 // keep the part of a line outside the circles round its two ends (where the settlements' own streets take over)
 function trim(P,a,b){let s=0,e=P.length-1;while(s<e&&Math.hypot(P[s][0]-a.x,P[s][1]-a.z)<a.r)s++;while(e>s&&Math.hypot(P[e][0]-b.x,P[e][1]-b.z)<b.r)e--;return P.slice(Math.max(0,s-1),e+2);}
 
-function route(a,b,opts){opts=opts||{};const t0=Date.now();
+function route(a,b,opts){opts=opts||{};const t0=Date.now(),K0=resolveOpts(opts),rg=K0.rg,hw=K0.hw;
  // 1. coarse
  const C=coarseGrid();
- const c1=search(C.nx,C.ny,C.cs,C.B[0],C.B[1],()=>true,k=>C.h[k],k=>C.w[k],a,b,false);
+ const c1=search(C.nx,C.ny,C.cs,C.B[0],C.B[1],()=>true,k=>C.h[k],k=>C.w[k],a,b,false,rg);
  if(!c1)return {from:a.name,to:b.name,error:'no coarse route'};
  // 2. fine: a 200 m grid over the coarse route's box (+6 km), only cells within 6 km of it
  const cs=200,R=6000,P1=c1.cells;let bx0=1e18,bz0=1e18,bx1=-1e18,bz1=-1e18;
@@ -89,7 +99,7 @@ function route(a,b,opts){opts=opts||{};const t0=Date.now();
  const hOf=k=>{let v=hC.get(k);if(v===undefined){const i=k%nx,j=(k-i)/nx,x=bx0+i*cs,z=bz0+j*cs;v=WORLD.Hland(x,z,300);hC.set(k,v);wC.set(k,WORLD.water(x,z)>v+.5?1:0);}return v;};
  const wOf=k=>{hOf(k);return wC.get(k);};
  const av=opts.avoid,aC=new Map(),avoidAt=k=>{let v=aC.get(k);if(v===undefined){const i=k%nx,j=(k-i)/nx;v=av(bx0+i*cs,bz0+j*cs)?1:0;aC.set(k,v);}return v;};
- const c2=search(nx,ny,cs,bx0,bz0,av?k=>ok[k]===1&&!avoidAt(k):k=>ok[k]===1,hOf,wOf,a,b,true);
+ const c2=search(nx,ny,cs,bx0,bz0,av?k=>ok[k]===1&&!avoidAt(k):k=>ok[k]===1,hOf,wOf,a,b,true,rg);
  if(!c2)return {from:a.name,to:b.name,error:'no fine route'};
  // 3. the line: the cells smoothed, trimmed at the settlements, every 20 m
  let L=chaikin(c2.cells,4);L=trim(L,a,b);L=resample(L,20);
@@ -106,8 +116,8 @@ function route(a,b,opts){opts=opts||{};const t0=Date.now();
  // both ends are pinned to the land there (a town's edge, a waystation), so roads that meet at a town meet at its level
  e[0]=Math.max(raw[0],lb[0]);e[n-1]=Math.max(raw[n-1],lb[n-1]);
  for(let it=0;it<200;it++){let ch=0;
-  for(let i=1;i<n-1;i++){const d=G*seg[i],lo=Math.max(e[i-1]-d,lb[i]),hi=e[i-1]+d;if(e[i]<lo-1e-6){e[i]=lo;ch++;}else if(e[i]>hi+1e-6){e[i]=Math.max(hi,lb[i]);ch++;}}
-  for(let i=n-2;i>0;i--){const d=G*seg[i+1],lo=Math.max(e[i+1]-d,lb[i]),hi=e[i+1]+d;if(e[i]<lo-1e-6){e[i]=lo;ch++;}else if(e[i]>hi+1e-6){e[i]=Math.max(hi,lb[i]);ch++;}}
+  for(let i=1;i<n-1;i++){const d=rg*seg[i],lo=Math.max(e[i-1]-d,lb[i]),hi=e[i-1]+d;if(e[i]<lo-1e-6){e[i]=lo;ch++;}else if(e[i]>hi+1e-6){e[i]=Math.max(hi,lb[i]);ch++;}}
+  for(let i=n-2;i>0;i--){const d=rg*seg[i+1],lo=Math.max(e[i+1]-d,lb[i]),hi=e[i+1]+d;if(e[i]<lo-1e-6){e[i]=lo;ch++;}else if(e[i]>hi+1e-6){e[i]=Math.max(hi,lb[i]);ch++;}}
   if(!ch)break;}
  let climb=0,mg=0,cutMax=0,fillMax=0,cutAt=null,fillAt=null;
  for(let i=0;i<n;i++){if(i){const d=e[i]-e[i-1];if(d>0)climb+=d;if(seg[i]>1)mg=Math.max(mg,Math.abs(d)/seg[i]);}
@@ -115,20 +125,24 @@ function route(a,b,opts){opts=opts||{};const t0=Date.now();
  // 5. the stored line: Douglas-Peucker over (x, z, 5e), within 0.25 m across and 5 cm in height, no piece over 200 m
  const keep=new Uint8Array(n);keep[0]=keep[n-1]=1;const stack=[[0,n-1]];
  while(stack.length){const [a0,b0]=stack.pop();if(b0-a0<2)continue;const A=L[a0],B=L[b0],ea=e[a0],eb=e[b0];
-  const dx=B[0]-A[0],dz=B[1]-A[1],l2=dx*dx+dz*dz||1;let worst=0,wi=-1;
+  const dx=B[0]-A[0],dz=B[1]-A[1],l2=dx*dx+dz*dz>0?dx*dx+dz*dz:1;let worst=0,wi=-1;
   for(let i=a0+1;i<b0;i++){const t=((L[i][0]-A[0])*dx+(L[i][1]-A[1])*dz)/l2,px=A[0]+dx*t-L[i][0],pz=A[1]+dz*t-L[i][1],pe=(ea+(eb-ea)*t-e[i])*5;
    const d=Math.max(Math.hypot(px,pz),Math.abs(pe));if(d>worst){worst=d;wi=i;}}
   if(worst>.25||Math.sqrt(l2)>200){const m=wi>0?wi:(a0+b0)>>1;keep[m]=1;stack.push([a0,m],[m,b0]);}}
  const pts=[];for(let i=0;i<n;i++)if(keep[i])pts.push([Math.round(L[i][0]*10)/10,Math.round(L[i][1]*10)/10,Math.round(e[i]*100)/100]);
- return {from:a.name,to:b.name,hw:HW,pts,
+ const out={from:a.name,to:b.name,hw,pts,
   length_m:Math.round(seg.reduce((s,v)=>s+v,0)),climb_m:Math.round(climb),maxGrade:Math.round(mg*1000)/1000,cutMax_m:Math.round(cutMax),fillMax_m:Math.round(fillMax),
   cutAt:cutAt&&cutAt.map(Math.round),fillAt:fillAt&&fillAt.map(Math.round),
-  cells:{coarse:c1.cells.length,fine:c2.cells.length,expanded:c2.expanded,stored:pts.length,sampled:n},ms:Date.now()-t0};}
+  cells:{coarse:c1.cells.length,fine:c2.cells.length,expanded:c2.expanded,stored:pts.length,sampled:n},ms:Date.now()-t0};
+ if(K0.customKind)out.kind=K0.kind;
+ if(K0.customGrade||K0.customKind)out.grade=rg;
+ return out;}
 
-function routeAll(pairs,places,opts){const seen=new Set(),out=[],errors=[];
+function routeAll(pairs,places,opts){const seen=new Set(),out=[],errors=[],K0=resolveOpts(opts);
  for(const [a,b] of pairs){const k=[a,b].sort().join('|');if(seen.has(k))continue;seen.add(k);
   if(!places[a]||!places[b]){errors.push('no place: '+(places[a]?b:a));continue;}
   const r=route(Object.assign({name:a},places[a]),Object.assign({name:b},places[b]),opts);
   if(r.error)errors.push(a+' - '+b+': '+r.error);else out.push(r);}
- return {format:'krator-openworld-roads',version:1,grade:G,roads:out,errors};}
-return {route,routeAll,G,HW};})();
+ return {format:'krator-openworld-roads',version:1,grade:K0.rg,roads:out,errors};}
+const api={route,routeAll,kind,KINDS,G,HW};
+return api;})();
