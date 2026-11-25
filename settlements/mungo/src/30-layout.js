@@ -65,14 +65,15 @@ var MAIN_STREET = null, PONTOON = null, LANDING = null;
   var sx = lakeShoreX(HUB.z);
   LANDING = { x:sx+2, z:HUB.z, name:'The pontoon landing' };
   /* the shops: a ring round the square, the quay (west) and the main street (east) left open.
-     Footprints from ABYSS-KIT-NOTES.md; the builders' yard is new (falls back to the salvage dealer). */
+     Re-specced on kits/tabisti (TBK): vaulted souq arcade, bronze foundry, weaver/dyehouse, tea tavern,
+     incense distillery and ganch/hazarbaf builders' yard. */
   var RING = [
-    ['abyss_shop_weapons', 0, -150, 13, 12, 'Weaponsmith', null],
-    ['abyss_shop_armor',   0, -108, 12, 12, 'Armourer', null],
-    ['abyss_shop_general', 1,  -66, 13, 12, 'General goods', null],
-    ['abyss_shop_food',    0,   62, 13, 12, 'Cookshop and fish stall', null],
-    ['abyss_shop_alchemy', 0,  106, 12, 12, 'Alchemist', null],
-    ['abyss_shop_builder', 0,  150, 18, 14, "Builders' yard", 'abyss_shop_salvage']
+    ['tb_bronze_foundry',     0, -150, 22, 18, 'Weaponsmith', 'abyss_shop_weapons'],
+    ['tb_weaver_dyehouse',    0, -106, 22, 20, 'Armourer and outfitter', 'abyss_shop_armor'],
+    ['tb_souq_arcade',        0,  -58, 26, 20, 'General goods', 'abyss_shop_general'],
+    ['tb_tea_tavern',         0,   58, 22, 20, 'Cookshop and tea stall', 'abyss_shop_food'],
+    ['tb_incense_distillery', 0,  106, 20, 18, 'Alchemist', 'abyss_shop_alchemy'],
+    ['tb_ganch_mason_yard',   0,  150, 22, 18, "Builders' yard", 'abyss_shop_builder']
   ];
   RING.forEach(function(R){ var a=R[2], r=MARKET.r + 4 + R[4]/2, p=polarXZ(a, r);
     var S = schedule(R[0], R[1], p[0], p[1], towardHub(p[0],p[1]), R[3], R[4], R[5], 'shop', { alt:R[6], trade:R[5] });
@@ -283,21 +284,21 @@ var QUAY = null, NORTH_ROAD = null, SOUTH_ROAD = null, GEO_ROAD = null, JUNCTION
 (function(){
   if(SHEET) return;
   function tH(x,z){ return terrainH(x,z); }
-  /* the headman's house closes the main street's east end, its door looking back down the street */
-  HEADMAN = schedule('abyss_house_rich', 0, 334, -32, -Math.PI/2, 24, 24, "The headman's house", 'civic', { role:'headman' });
+  /* the Ahedman's house closes the main street's east end, its door looking back down the street */
+  HEADMAN = schedule('tb_capricho_villa', 0, 334, -32, -Math.PI/2, 22, 20, "The headman's house", 'civic', { role:'headman', alt:'abyss_house_rich' });
   /* the caravanserai on the north road, its gate to the road (west) */
-  CARAVANSERAI = schedule('abyss_caravanserai', 0, 222, -112, -Math.PI/2, 56, 58, 'Caravanserai of Mungo', 'caravanserai');
+  CARAVANSERAI = schedule('tb_caravanserai_urban', 0, 222, -112, -Math.PI/2, 30, 26, 'Caravanserai of Mungo', 'caravanserai', { alt:'abyss_caravanserai' });
   /* the two inns: one on the main street's north side, one on its south side by the south road */
-  INNS.push(schedule('abyss_inn', 0, 104, -44, 0, 24, 23, 'The Bridgehead Inn', 'inn'));
-  INNS.push(schedule('abyss_inn', 1, 214, 26, Math.PI, 24, 23, 'The Caravan Inn', 'inn'));
+  INNS.push(schedule('tb_oriel_townhouse', 0, 104, -44, 0, 18, 20, 'The Bridgehead Inn', 'inn', { alt:'abyss_inn' }));
+  INNS.push(schedule('tb_tahawst_mid', 0, 214, 26, Math.PI, 22, 22, 'The Caravan Inn', 'inn', { alt:'abyss_inn' }));
   /* the city watch by the south road and the river bridge */
-  WATCH = schedule('abyss_barracks', 0, 212, 84, -Math.PI/2, 52, 46, 'The city watch', 'watch');
+  WATCH = schedule('tb_barracks_court', 0, 212, 84, -Math.PI/2, 26, 22, 'The city watch', 'watch', { alt:'abyss_barracks' });
   /* the warehouses: by the caravanserai (the caravans' goods), and on the shore (the fish and the reed goods) */
-  WAREHOUSES.push(schedule('abyss_warehouse', 1, 238, -186, -Math.PI/2, 36, 22, 'Caravan warehouse', 'warehouse'));
-  WAREHOUSES.push(schedule('locus_warehouse', 0, 106, -118, Math.PI/2, 42, 22, 'Salt-and-goods warehouse', 'warehouse'));
-  FISH_WAREHOUSE = schedule('abyss_warehouse', 0, -6, -70, 0, 36, 22, 'Fish warehouse', 'warehouse');
+  WAREHOUSES.push(schedule('tb_bonded_warehouse', 0, 238, -186, -Math.PI/2, 24, 18, 'Caravan warehouse', 'warehouse', { alt:'abyss_warehouse' }));
+  WAREHOUSES.push(schedule('tb_lake_quay_customs', 0, 106, -118, Math.PI/2, 26, 22, 'Salt-and-goods customs warehouse', 'warehouse', { alt:'locus_warehouse' }));
+  FISH_WAREHOUSE = schedule('tb_fish_curing_pier', 0, -6, -70, 0, 22, 20, 'Fish curing warehouse', 'warehouse', { alt:'abyss_warehouse' });
   WAREHOUSES.push(FISH_WAREHOUSE);
-  SALT_MERCHANT = schedule('abyss_shop_salt', 0, -22, 40, Math.PI, 14, 12, 'Salt and fish merchant', 'shop', { trade:'Salt and fish merchant' });
+  SALT_MERCHANT = schedule('tb_shop_house', 0, -26, 46, Math.PI, 18, 20, 'Salt and fish merchant', 'shop', { trade:'Salt and fish merchant', alt:'abyss_shop_salt' });
   SHOPS.push(SALT_MERCHANT);
   /* the Geomancers' quarter, east of the headman's: the chapterhouse, its forecourt and buggy park, the
      generator that powers the quarter, the fuel station, and six Yuni houses round it */

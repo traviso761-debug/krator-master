@@ -138,14 +138,14 @@ def vendor_check():
           % (('; MISSING ' + ', '.join(missing)) if missing else ''))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
-VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+VIRTUAL = {'65t-tabisti-bundle.js', '65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '46t-tabisti-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 # the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Locus has no TEX.def
 # painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
 TEX_DIR = os.path.join(HERE, 'tex')
-DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js', '69a0-bio-matlib-pack.js'}
+DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js', '46t-tabisti-matlib-pack.js', '65u-locus-tabisti.js', '69a0-bio-matlib-pack.js'}
 
 
 # the library pack beside the pages (<build>.tex.<key>.js), one file every page of the build shares; --inline-packs puts
@@ -198,10 +198,15 @@ def virtual_bodies():
             print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
     vb.setdefault('65y-vehicles-bundle.js', '/* kits/motor-vehicles: not built; KratorVehicles absent */\nvar KratorVehicles = null;\n')
     vb['46-matlib-pack.js'] = matlib_pack(SIDE)
-    # the eastern-abyss biome (read in place, BIO_CANON): its library pack, before the biome code (69a1-...)
+    # the eastern-abyss biome (read in place, BIO_CANON) and kits/tabisti (TBK): their library packs
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack as _mp
+    vb['46t-tabisti-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'kits', 'tabisti'), 'tabisti', side=SIDE)
     vb['69a0-bio-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss')
+    import importlib.util as _ilu
+    _tb_spec = _ilu.spec_from_file_location('tabisti_kit_bundle', os.path.join(ROOT, 'kits', 'tabisti', 'kit_bundle.py'))
+    _tb_mod = _ilu.module_from_spec(_tb_spec); _tb_spec.loader.exec_module(_tb_mod)
+    vb['65t-tabisti-bundle.js'] = _tb_mod.bundle('TBK')[0]
     vb[khost.EDITS_JS] = khost.edits_js(HERE, 'locus')   # the world page's edits (a kit sheet ignores them: 66-locus-furnish.js)
     return vb
 

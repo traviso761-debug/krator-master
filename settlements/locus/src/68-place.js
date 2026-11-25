@@ -90,7 +90,7 @@ var PLACED = [], PLACE_STATS = { scheduled:0, frontage:0, backlot:0, yards:0, re
   (function(){ var M=MARKET, cy=terrainH(M.x,M.z);
     put('prop_fountain_kiosk', M.x, M.z, 0, 1, 811, 'Market fountain', 'market', 0.7);
     [[0,30],[180,30]].forEach(function(q,i){ var a=(q[0]+90)*Math.PI/180, x=M.x+Math.cos(a)*q[1], z=M.z+Math.sin(a)*q[1];
-      put('trade_market_hall', x, z, faceRy(M.x-x, M.z-z), i%2, 820+i, 'Arcaded market hall', 'market', 0.7); });
+      put('tb_souq_arcade', x, z, faceRy(M.x-x, M.z-z), 0, 820+i, 'Tabisti souq arcade', 'market', 0.7); });
     for(var s=0;s<14;s++){ var a2=s/14*TAU+0.12, r2=(s%2)?17:22, x2=M.x+Math.cos(a2)*r2, z2=M.z+Math.sin(a2)*r2;
       if(Math.abs(Math.sin(a2)) > 0.72) continue;
       if(obbClear(x2,z2,faceRy(M.x-x2,M.z-z2),3,3,0.6)) put('prop_market_stall', x2, z2, faceRy(M.x-x2,M.z-z2), s%4, 830+s, 'Market stall', 'market', 0.5); }
@@ -118,12 +118,15 @@ var PLACED = [], PLACE_STATS = { scheduled:0, frontage:0, backlot:0, yards:0, re
       PLACED.push({ key:'plant', x:x, z:z, ry:0, w:2.4, d:2.4, tag:'plant' }); pAdd(PLACED[PLACED.length-1]); }); } });
 
   /* ---------------- 3. THE FILL ---------------- */
-  var POOR_Y = ['poor_mud_house','poor_mud_house','poor_egg_hut','poor_musgum','poor_cone_cluster','poor_compound','poor_shack'];
-  var MID_Y  = ['mid_washed_house','mid_djenne_house','mid_djenne_house','mid_round_tower_house','mid_courtyard_house','mid_washed_house','mid_bluewash_townhouse'];
-  var SHOP_Y = ['trade_shop_house','trade_shop_house','trade_tavern','trade_smithy'];
-  var RICH_Y = ['mid_courtyard_house','stilt_mid','mid_round_tower_house','mid_courtyard_house','rich_merchant_palace','rich_tower_house','mid_djenne_house'];
-  var TARGET_PEOPLE = 2650, RICH_CAP = 8;
+  var POOR_Y = ['tb_breeze_cot','tb_breeze_cot','tb_servant_quarters','tb_tenement_court','abyss_house_poor','poor_mud_house'];
+  var MID_Y  = ['tb_loggia_row','tb_oriel_townhouse','tb_tahawst_mid','tb_breeze_cot','tb_tenement_court','mid_djenne_house','mid_bluewash_townhouse'];
+  var SHOP_Y = ['tb_shop_house','tb_shop_house','tb_tea_tavern','tb_bakery_tannur','tb_butcher_icehouse','tb_bronze_foundry','tb_weaver_dyehouse','tb_incense_distillery','tb_ganch_mason_yard','tb_tannery_airy'];
+  var RICH_Y = ['tb_capricho_villa','tb_oriel_townhouse','tb_tahawst_mid','tb_mirador_estate','tb_secession_palazzo','mid_courtyard_house'];
+  var TARGET_PEOPLE = 2650, RICH_CAP = 12;
   var PEOPLE = { poor:6, mid:5, rich:9, stilt_poor:6, stilt_mid:5 };
+  var TB_POOR = { tb_breeze_cot:6, tb_servant_quarters:7, tb_tenement_court:12 };
+  var TB_MID  = { tb_loggia_row:6, tb_oriel_townhouse:8, tb_tahawst_mid:8 };
+  var TB_RICH = { tb_capricho_villa:10, tb_lac_merchant_bayt:12, tb_secession_palazzo:14, tb_mirador_estate:12 };
   function choose(x, z, cls, r01){
     var D=districtAt(x,z), h=terrainH(x,z), low = h < 5.0, w=D.wealth, key;
     if(low){                                                                 /* the wet-season ground: the stilt houses */
@@ -131,18 +134,26 @@ var PLACED = [], PLACE_STATS = { scheduled:0, frontage:0, backlot:0, yards:0, re
     } else if(w > 0.66){
       key = (cls==='boulevard'||cls==='ring') && r01 < 0.35 ? pick(SHOP_Y) : (r01 < 0.14 ? 'stilt_mid' : pick(RICH_Y));
     } else if(w > 0.40){
-      if((cls==='boulevard'||cls==='street') && r01 < 0.22) key=pick(SHOP_Y); else if(r01 < 0.52) key='stilt_mid'; else key=pick(MID_Y);
+      if((cls==='boulevard'||cls==='street') && r01 < 0.22) key=pick(SHOP_Y); else if(r01 < 0.45) key='stilt_mid'; else key=pick(MID_Y);
     } else {
       if(r01 < 0.40) key='stilt_poor'; else if(r01 < 0.45) key=pick(['tent_pavilion','sunshade_poles']); else key=pick(POOR_Y);
     }
-    if(key.indexOf('rich_')===0 && (PLACE_STATS.byFamily.rich||0) >= RICH_CAP) key = pick(MID_Y);
+    if((key.indexOf('rich_')===0 || TB_RICH[key]) && (PLACE_STATS.byFamily.rich||0) >= RICH_CAP) key = pick(MID_Y);
     return { key:key, wealth:w, district:D.key };
   }
   function tagOf(key){ var A=ASSET_BY_KEY[key]; if(!A) return 'house';
-    if(key==='stilt_poor') return 'home_poor'; if(key==='stilt_mid') return 'home_mid';
+    if(key==='stilt_poor' || TB_POOR[key]) return 'home_poor';
+    if(key==='stilt_mid' || TB_MID[key]) return 'home_mid';
+    if(TB_RICH[key]) return 'home_rich';
+    if(key==='tb_tea_tavern' || key==='trade_tavern') return 'tavern';
+    if(key.indexOf('tb_')===0) return 'shop';
     if(A.family==='poor') return 'home_poor'; if(A.family==='mid') return 'home_mid'; if(A.family==='rich') return 'home_rich';
-    if(key==='trade_tavern') return 'tavern'; if(A.family==='trade') return 'shop'; return 'yard'; }
-  function countPeople(key){ var t=tagOf(key); if(t==='home_poor'){ PLACE_STATS.dwellings++; PLACE_STATS.people += (key==='poor_compound'||key==='poor_cone_cluster')?11:6; }
+    if(A.family==='trade') return 'shop'; return 'yard'; }
+  function countPeople(key){ var t=tagOf(key);
+    if(TB_POOR[key]){ PLACE_STATS.dwellings++; PLACE_STATS.people += TB_POOR[key]; return; }
+    if(TB_MID[key]){ PLACE_STATS.dwellings++; PLACE_STATS.people += TB_MID[key]; return; }
+    if(TB_RICH[key]){ PLACE_STATS.dwellings++; PLACE_STATS.people += TB_RICH[key]; return; }
+    if(t==='home_poor'){ PLACE_STATS.dwellings++; PLACE_STATS.people += (key==='poor_compound'||key==='poor_cone_cluster')?11:6; }
     else if(t==='home_mid'){ PLACE_STATS.dwellings++; PLACE_STATS.people += 5; } else if(t==='home_rich'){ PLACE_STATS.dwellings++; PLACE_STATS.people += (key==='rich_terrace_apartments'?36:(key==='rich_family_compound'?16:9)); }
     else if(t==='shop'||t==='tavern'){ PLACE_STATS.dwellings++; PLACE_STATS.people += 4; } }
   SITES_L.forEach(function(S){ if(S.rec) countPeople(S.key); });

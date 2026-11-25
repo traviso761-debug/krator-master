@@ -53,7 +53,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     else if(t==='farm') place(k==='farm_saltrice_paddies' ? 'paddy' : 'farm', b, { cap:8 });      /* paddy blocks: worked, never a home */
     else if(t==='civic'){ if(k==='civic_geomancer_chapterhouse') place('geochapter', b, { cap:30 }); else if(k==='locus_warehouse') place('warehouse', b, { cap:12 }); else place('civic', b, { cap:20 }); }
     else if(t==='rich') place('home_rich', b, { cap:10 });
-    else if(t==='market') { if(k==='trade_market_hall') place('market', b, { cap:20 }); }
+    else if(t==='market') { if(k==='trade_market_hall' || k==='tb_souq_arcade') place('market', b, { cap:20 }); }
   });
   /* open places are stood IN, not at a door */
   function openPlace(cat, x, z, r, name){ var e={ cat:cat, x:x, z:z, r:r, name:name, doors:null, entries:0, active:0, cap:999, open:true }; (POI[cat]||(POI[cat]=[])).push(e); return e; }
@@ -170,8 +170,8 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
      Local frame of the building: +z is the gate side; the well is at (0,-3), the stables along -x. */
   var CS = CARAVANSERAI, CGN = ST.caravanGate ? ST2NAV[ST.caravanGate.id].id : -1;
   function csLoc(lx,lz){ var p=loc(CS.x,CS.z,lx,lz,CS.ry); return { x:p[0], z:p[1] }; }
-  var GATE_OUT = ST.caravanGate ? { x:ST.caravanGate.x, z:ST.caravanGate.z } : csLoc(0,40), GATE_IN = csLoc(0,22);
-  function courtSpot(){ return csLoc(rr(-30,30), rr(-22,-11)); }
+  var GATE_OUT = ST.caravanGate ? { x:ST.caravanGate.x, z:ST.caravanGate.z } : csLoc(0,18), GATE_IN = csLoc(0,10);
+  function courtSpot(){ return csLoc(rr(-8,8), rr(-7,2)); }
   function newCaravan(state){ var E=pick(ENDS); if(!E || !YARD) return null;
     var v=spawnVeh('caravan', CARAVAN, CARAVAN.beasts, [E.x,E.z]); v.end=E; v.leg2='in'; v.node=E.id;
     if(state==='yard'){ var cp=courtSpot(); v.x=cp.x; v.z=cp.z; v.y=terrainH(v.x,v.z); v.leg2='rest'; v.wait=rr(20,120); v.node=CGN; }
