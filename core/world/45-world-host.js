@@ -59,7 +59,7 @@ function sunAt(h){const t=(h-6)/12,alt=SUN_MAX*Math.sin(Math.PI*t),az=Math.PI/2*
  if(typeof BIO!=='undefined'&&BIO.host&&BIO.setSun)BIO.setSun([SUN_DIR.x,Math.max(.02,SUN_DIR.y),SUN_DIR.z]);}
 const hourNow=()=>CLOCK?CLOCK.hour:HOUR0;
 sunAt(hourNow());sunHour=hourNow();
-TICKS.push(()=>{const h=hourNow();if(Math.abs(h-sunHour)>1/120){sunAt(h);sunHour=h;}});   /* every half a world minute */
+TICKS.push(()=>{if(typeof SKY!=='undefined'&&SKY&&SKY.S)return;const h=hourNow();if(Math.abs(h-sunHour)>1/120){sunAt(h);sunHour=h;}});   /* every half a world minute; on the shared sky (80's SKY_SHARED, W8) the sky sets the sun, the light and the haze */
 
 // ---------------------------------------------------------------- the field sources
 const SRC={mode:'world',profile:null,grid:null};
@@ -91,7 +91,7 @@ const shadow=(typeof KSHADOW!=='undefined'&&KSHADOW&&KSHADOW.attach)?KSHADOW.att
 // and host/89-atmos-e-weatherhost.js; 89-atmos-9-host.js puts the selector in the bar, fx/89-atmos-fx-raincover.js the rain cover round
 // the camera): a page without them is unchanged, and HOST.weather() is null there.
 // THE CLIMATE is the region's kits' (WX_KIT_CLIMATE: what each kit's own page binds; a kit's WORLD_KITS entry .climate, or the region's
-// WORLD_CONFIG.climate, says otherwise): cold or ash if any kit is, dry only if every kit is. It STARTS CLEAR (the views and the verify
+// WORLD_CONFIG.climate, says otherwise): cold or ash if any kit is, dry only if every kit is. It STARTS CLEAR, or live on the shared sky with the cells (below) (the views and the verify
 // asserts stay what they were); ?weather=<mode> opens in another mode the region offers (an unknown one: clear). The binding eases the
 // fog, the sun and the sky light (it follows what sunAt and 98's haze write each frame) and wets the terrain (WATER.wetGround).
 // HOST.shade(material, {porosity}) asks for the sky's cloud shadows and rain darkening (ATMOS.cloudShade) on a ground or plant
@@ -119,7 +119,13 @@ function weather(){if(WX.W||WX.off)return WX.W;
  if(typeof A.rainCover==='function'&&!A.raincover){try{WX.cover=A.rainCover({renderer});}catch(e){reportErr('weather: rain cover: '+(e.stack||e));}}
  const bar=typeof document!=='undefined'&&document.querySelector?document.querySelector('#ui .bar'):null;
  const grounds=typeof TERRAIN!=='undefined'&&TERRAIN&&TERRAIN.MAT?[TERRAIN.MAT]:[];
- WX.W=A.bindWeather(Object.assign({climate:C,sun,hemi,fog:scene.fog,grounds,mode},bar?{ui:bar}:{}));
+ /* THE MOVING WEATHER (W8, the owner 2026-11-24: "moving volumetric weather on all deployed open-world files"): where the build
+    lists core/atmos/wx (W5's cells) and the shared sky (80's SKY_SHARED), the cells drift over the region on its climate and the
+    page opens in 'live' (?weather=<mode> still opens in another; WORLD_CONFIG.cells: the cells' options, false for none) */
+ const cfgCells=typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG?WORLD_CONFIG.cells:null;
+ const cells=cfgCells!==false&&typeof A.weatherCells==='function'&&typeof KRAND!=='undefined'&&typeof SKY!=='undefined'&&SKY&&SKY.S?Object.assign({mode:'live'},cfgCells||{}):null;
+ WX.W=A.bindWeather(Object.assign({climate:C,sun,hemi,fog:scene.fog,grounds,mode},bar?{ui:bar}:{},cells?{cells}:{}));
+ if(cells)WX.mode=WX.W.mode;
  for(const [m,o] of WX.queue)shadeNow(m,o);WX.queue.length=0;
  return WX.W;}
 
