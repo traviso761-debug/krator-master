@@ -230,18 +230,31 @@ const BAH='godsgate.babalhawa';
  const Q=runJoined(365,{hazards:false});
  T.neg('with the hazards off the Godsgate costs nothing',
   x=>GROUPS.reduce((a,id)=>a+((x.losses[id]||[]).filter(y=>/God-Bore|whiteout/.test(y.why)).length),0)>0,Q,J);}
-// ---- the rivals leave in turn (the owner, 2026-11-25: "can we stagger house departures so they don't step on each
-//      other like that"). Two groups out of one pool had identical first sailings and contended for the same cargo on
-//      the same minute; SIM.trade gained `offset` and the groups sharing a pool are now spread through one stagger.
-{const G1=road('caravan.getmastarz'),G2=road('caravan.goldanda');
- const solo=['caravan.train','caravan.yuniguild','caravan.geomancer'].map(road).filter(Boolean);
- const apart=Math.abs((G2.offset||0)-(G1.offset||0));
- const good=apart>0&&Math.abs(apart-G1.stagger/2)<=1&&solo.every(r=>(r.offset||0)===0);
- T.ok('the two Iziz houses out of one pool leave in turn, half a stagger apart, and a group alone on its pool is unshifted',good,
-  'Getmastarz offset '+Math.round((G1.offset||0)/1440)+' d, Goldanda '+Math.round((G2.offset||0)/1440)+' d of a '
-  +Math.round(G1.stagger/1440)+' d stagger; the Train, the Guild and the Geomancers '+solo.map(r=>Math.round((r.offset||0)/1440)).join('/')+' d');
- T.neg('two rounds that leave on the same minute are not staggered',
-  x=>x.a>0&&Math.abs(x.a-x.s/2)<=1,{a:0,s:G1.stagger},{a:Math.round(G1.stagger/2),s:G1.stagger});}
+/* ---- ALL FIVE LEAVE IN TURN, AND THEIR ORDER IS HOW FAR THEY COME (the owner, 2026-11-25: first "can we stagger
+   house departures so they don't step on each other like that", then "we would probably expect them to arrive at
+   different times as caravans may be coming from as far as Iziz, Jabal, Verge, or Yuni").
+   The first version staggered only the two houses sharing a pool and left every other group on the same hour; S4
+   measured what that costs (PLAN-SIM.md 6b). Now the four home pools take an even slice of CATCH_TUNE.muster each,
+   ORDERED BY THEIR HOME LEG -- Jabal's 684 km first, the Geomancers' 1,017 km last -- and the two Iziz houses split
+   their own slice. So the expected phases at a 60-day muster are 0, 15, 23, 30 and 45 days. */
+{const R=CATCH_TUNE.groups.map(g=>({id:g.id,pool:g.pool,r:road('caravan.'+g.id)})).filter(x=>x.r);
+ const off=x=>x.r.offset||0,days=x=>Math.round(off(x)/1440);
+ const byPool={};R.forEach(x=>{(byPool[x.pool]=byPool[x.pool]||[]).push(x);});
+ const pools=Object.keys(byPool),slice=CATCH_TUNE.muster*1440/pools.length;
+ /* every pool on its own slice, no two pools together, and the shared pool's two houses apart but inside one slice */
+ const perPool=pools.map(p=>Math.min.apply(null,byPool[p].map(off)));
+ const spread=perPool.slice().sort((a,b)=>a-b);
+ const distinct=spread.every((v,i)=>i===0||v-spread[i-1]>=slice-1);
+ const iz=byPool['gate.iziz'].map(off).sort((a,b)=>a-b);
+ const housesApart=iz.length===2&&iz[1]-iz[0]>0&&iz[1]-iz[0]<=slice;
+ const nearestFirst=Math.min.apply(null,byPool['gate.dasri'].map(off))===0;
+ const widest=Math.max.apply(null,R.map(off));
+ const good=distinct&&housesApart&&nearestFirst&&widest>=slice*(pools.length-1)-1&&widest<CATCH_TUNE.muster*1440;
+ T.ok('all five groups leave in turn over the '+CATCH_TUNE.muster+'-day muster, the four pools a slice apart in order of how far they come, and the two Iziz houses sharing their slice',good,
+  R.sort((a,b)=>off(a)-off(b)).map(x=>x.id+' day '+days(x)).join(', ')+'; a slice is '+Math.round(slice/1440)+' d');
+ T.neg('two pools leaving on the same day are not spread over the muster',
+  x=>{const s=x.slice().sort((a,b)=>a-b);return s.every((v,i)=>i===0||v-s[i-1]>=slice-1);},
+  perPool.map(()=>0),perPool);}
 // and the point of it: both houses now land iron at Strongbow, neither starved by the other
 {const g=landedAt(J.trade,['caravan.getmastarz'],'sfgtxw10kr'),d=landedAt(J.trade,['caravan.goldanda'],'sfgtxw10kr');
  T.ok('with the houses staggered, BOTH land iron at Strongbow: neither rival is starved of the pool by the other',(g.iron||0)>0&&(d.iron||0)>0,

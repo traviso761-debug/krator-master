@@ -141,6 +141,10 @@ T.valley=function(o){o=o||{};const K=o.scale==null?10:o.scale,yr=365,days=o.days
    o: {unguided: [group id, ...] (they refuse the guides: no tally, and the Twins take part of the train: C4),
        hazards: false (C5's storms, col, Stalkers and dry oasis off)} */
 T.speed=30;   /* a pack caravan's km a day on the crossing (24-40: the proposal's section 1c) */
+T.muster=60;  /* days over which the four home pools' caravan seasons are spread, nearest home first (the owner,
+                 2026-11-25: "we would probably expect them to arrive at different times as caravans may be coming from
+                 as far as Iziz, Jabal, Verge, or Yuni"). A declared window, not a derived one: see the note at T.join's
+                 stagger. Four pools at 60 days gives 0, 15, 30 and 45, and the two Iziz houses split their 15 */
 T.winding=1.25;   /* road over straight line */
 /* the homes, off the map: the leg from the home's pool to the first water, km (section 1c: Iziz to Stair about 1,232 km
    by Arcbeam, Parabola and the Godsgate; Yuni to Stair about 1,415 by Mantis; Locus 92 km beyond Yuni; Jabal to Arfwai by
@@ -204,14 +208,34 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   s.start=Object.assign({},s.start,{water:lDay*3,fodder:fDay*10});});
  const legKm=(a,b)=>{const A=S(a),B=S(b);return Math.hypot(A.x-B.x,A.z-B.z)/1000*T.winding;},mins=km=>Math.max(240,Math.round(km/T.speed*1440));
  const peopled=id=>{const s=S(id);return s&&s.people>0&&!/^gate\./.test(id);};
- /* THE RIVALS LEAVE IN TURN (the owner, 2026-11-25: "can we stagger house departures so they don't step on each
-    other like that"). Two groups that load at the same off-map pool -- the two Iziz houses, both out of gate.iziz --
+ /* THE CARAVANS LEAVE IN TURN, AND THEIR PHASES FOLLOW HOW FAR THEY COME (the owner, 2026-11-25: first "can we
+    stagger house departures so they don't step on each other like that", then "we would probably expect them to arrive
+    at different times as caravans may be coming from as far as Iziz, Jabal, Verge, or Yuni").
+
+    The first version staggered only the groups that SHARE a pool -- the two Iziz houses, both out of gate.iziz, which
     had identical rounds and identical first sailings, so they reached the warehouse on the same minute and contended
-    for the same cargo; which of them loaded was down to iteration order, and in a year one could take everything
-    (openworld/catch-bowl/PLAN-SIM.md 2z). So the groups sharing a pool are spread evenly through one stagger: the
-    i-th of n leaves i/n of the way through it. One group on a pool is unaffected (phase 0), as the Train, Yuni's
-    Guild and the Geomancers are. */
+    for the same cargo (PLAN-SIM.md 2z). Every other group still left on the same hour as every other, and S4 found
+    what that costs: with the gateway roads replaced by caravan rounds, the far ends of Xanadu's distribution run dry
+    between arrivals, 10.1 t of salt over 116 settlements in 120 days (PLAN-SIM.md 6b).
+
+    THE PHASES NOW FOLLOW THE HOMES' DISTANCES, which is the owner's reasoning: a train out of the Geomancers' country
+    has 1,017 km to come and one out of Jabal 684, so they do not muster on the same morning and they do not arrive on
+    the same week. The pools are ordered by their home leg, and each takes an even slice of `T.muster`; a pool shared by
+    two houses splits its own slice between them.
+
+    `T.muster` IS A CHOICE AND IS HERE TO BE SEEN. The distances alone only spread the five by about eleven days (333 km
+    between the nearest home and the furthest, at 30 km a day), which is not enough to flatten a 133-day round's
+    arrivals. The spread wanted is the caravan season's -- houses do not all leave on the same morning even from the
+    same city -- so the window is declared rather than derived, and it is one number to turn if the owner wants the
+    arrivals tighter or looser. The ORDER within it is the map's; only its width is a judgement.
+    A first version sliced each group's OWN stagger instead, which put Yuni's Guild and House Getmastarz on the same
+    day eight days in, because a group's stagger is its round over its carrier count and the five are not comparable.
+    One shared window fixes that: every phase is in the same units. */
  const poolOf={};T.groups.forEach(g=>{(poolOf[g.pool]=poolOf[g.pool]||[]).push(g.id);});
+ const kmOfPool=p=>{const h=T.homes[p];if(h.km!=null)return h.km;
+  const g0=T.groups.find(q=>q.pool===p);
+  return Math.hypot(at(h.px[0],h.px[1]).x-S(g0.north[0]).x,at(h.px[0],h.px[1]).z-S(g0.north[0]).z)/1000*T.winding;};
+ const poolsByKm=Object.keys(poolOf).sort((a,b)=>kmOfPool(a)-kmOfPool(b));
  T.groups.forEach(g=>{const GW=G(g.pool),south=g.north.concat(['s2o8f4p123','scatchbitta01',g.lasso||'scatchlasso01'],g.route==='A'?[]:['twins.lookout'],T.twins[g.route]);
   const yuni=g.end==='skm4jjo2vl',out=[g.pool].concat(south,['sfgtxw10kr'],yuni?['skm4jjo2vl']:[]),back=out.slice(1,-1).reverse();
   const stops=out.concat(back),n=stops.length,endIdx=out.length-1;
@@ -223,8 +247,10 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   stops.forEach(s=>{if(!goods[s])goods[s]=[];});
   const expect={[g.pool]:exp,[g.end]:{iron:30*g.share,arms:.5*g.share,pearls:.06,wine:3,oil:2}};
   const share=poolOf[g.pool],stagger=Math.round(legs.reduce((a,b)=>a+b,0)/g.carriers);
+  /* the pool's own slice of the muster window, by how far its caravans come, and the house's share of that slice */
+  const slice=T.muster*1440/poolsByKm.length,poolIdx=poolsByKm.indexOf(g.pool);
   const Rd={id:'caravan.'+g.id,stops,legs,mins:720,cap:g.cap,carriers:g.carriers,stagger,
-   offset:Math.round(stagger*share.indexOf(g.id)/share.length),keep:20,want:Math.max(90,Math.round(legs.reduce((a,b)=>a+b,0)/1440)),
+   offset:Math.round(poolIdx*slice+slice*share.indexOf(g.id)/share.length),keep:20,want:Math.max(90,Math.round(legs.reduce((a,b)=>a+b,0)/1440)),
    goods,expect,halts,sells,forHalts:['grain','tea','tools'],provision:{beasts:Math.round(g.cap/T.kgPerBeast),eat:T.caravan.eat,loss:T.caravan.loss,maxDays:T.caravan.maxDays,home:0},_group:g,_stops:{end:endIdx}};
   /* the cuts: the Sultan's toll on what the caravan lands inside Xanadu (at the Strongbow lift; for the Qiblai caravans,
      on what they land at Qiblai having come up it); the tally's two halves on the same landings, and its outbound half at

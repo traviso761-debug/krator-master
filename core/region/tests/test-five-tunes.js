@@ -71,14 +71,17 @@ console.log('the five tunes: '+G.er.settlements.length+' (Xanadu + Longsong) -> 
  const hubAbsent=sv.settlements.every(s=>s.id!==STALKER_TUNE.hub.id)
   &&sv.roads.every(r=>(r.stops||[]).indexOf(STALKER_TUNE.hub.id)<0&&r.from!==STALKER_TUNE.hub.id&&r.to!==STALKER_TUNE.hub.id);
  const salary=(sv.transfers||[]).some(x=>x.id===STALKER_TUNE.salary.id);
- const offsets=['caravan.getmastarz','caravan.goldanda'].map(id=>(road(id)||{}).offset);
- const staggered=offsets[0]===0&&offsets[1]>0;
+ /* all five phases, not just the two houses': the pools take a slice of CATCH_TUNE.muster each, ordered by their home
+    leg, so the Train out of Jabal leaves first and the Geomancers last (the owner, 2026-11-25) */
+ const offsets=CATCH_TUNE.groups.map(g=>(road('caravan.'+g.id)||{}).offset||0);
+ const uniq=Array.from(new Set(offsets)).sort((a,b)=>a-b);
+ const staggered=uniq.length===CATCH_TUNE.groups.length&&uniq[0]===0&&uniq[uniq.length-1]>0;
  T.ok('S4: at the end of the chain the Train still loads at Jabal, the pool is gone, the salary is on the books, the rival houses still leave in turn, and Hub 01 is still not a settlement',
   trainHome&&poolGone&&hubAbsent&&salary&&staggered,
   'Train from '+((road('caravan.train')||{stops:['?']}).stops[0])+'; pool gone '+poolGone+'; salary '+salary
-  +'; house offsets '+offsets.join(' / ')+'; hub absent '+hubAbsent);
- T.neg('a chain that lost the stagger has undone S2\'s fix',
-  x=>x[0]===0&&x[1]>0,[0,0],offsets);}
+  +'; the five leave on days '+offsets.map(m=>Math.round(m/1440)).join('/')+'; hub absent '+hubAbsent);
+ T.neg('a chain where two rounds leave on the same minute has undone the stagger',
+  x=>new Set(x).size===x.length,offsets.map(()=>0),offsets);}
 
 // ---- 4: it runs, with one ledger over all five
 const t0=Date.now(),J=go(G.sv,G.H,DAYS);
