@@ -586,7 +586,7 @@ and relations. The three new tunes join the same way.
 | **S1** | `CATCH_TUNE` gains the Godsgate's three stops, its four legs and its three seasons (section 2) | the 29 existing checks pass unchanged; a train that misses Bāb al-Hawa loses beasts and one that reaches it does not |
 | **S2** | **DONE 2026-11-25.** `BOWL_TUNE` (section 3), joined to `CATCH_TUNE`; the Train's home moves from the pool to Jabal | **done.** `test-bowl.js` 29/0 (the six places, two hinterlands, five trade roads, the shortfall, and Solta's salt moving on a 520-day run); `test-bowl-join.js` 16/0 (the join's structure, and 120 days of Xanadu + the Catch + the Bowl: **281 settlements, 450,619 people in 330 s**, no problems, the books balanced over all three tunes). Mantis buys its salt from the Train. The stated check "salt reaches Strongbow and Qiblai" holds through **Ṣalṭ al-Bān**, not Solta: section 3c has the division the geography gives |
 | **S3** | **FIRST HALF DONE 2026-11-25.** `STALKER_TUNE` (section 4): Ranger HQ's 500 on its salary, the waystation network's upkeep, Hub 01's record. **Its cut of expeditions and the bounty wait on `SIM.bounty`** (section 4e) | the salary lands and a cut of it does not depend on traffic; an expedition's share reaches Ranger HQ; destroying triads lowers the floor's losses and the pressure recovers; the pressure appears in **no** player-readable report; a `dead` Hub 01 ends the Stalker losses region-wide and the Brotherhood and the Rangers both lose income |
-| **S4** | **C6**: all three into `EAST_RIFT` with Xanadu and Longsong | **one ledger** over five tunes; Xanadu's salt shortfall narrows but does not close; every tune's own tests still pass |
+| **S4** | **BUILT 2026-11-25.** **C6**: all three into `EAST_RIFT` with Xanadu and Longsong | `core/region/tests/test-five-tunes.js`. **The chain composes without a line of new join code**: `EAST_RIFT.valley` is itself `Object.assign({}, XAN_TUNE.valley(...), {...})`, so `CATCH_TUNE.join` takes it unchanged and the three joins stack — **317 settlements, 457,449 people, 65 goods, 18 factions, 23 calendar windows, no problems** |
 | **S5** | The census across the four provinces, for `openworld/PLAN-SETTLEMENTS.md` | the region's population agrees with the map's pins and Gemini's where the owner has not overridden them |
 
 **The frames.** This region's cut has its own origin (*proposed* px [1194,1280]); `CATCH_TUNE` is written in Xanadu's
@@ -597,6 +597,33 @@ frame.
 **The rule, as ever** (CLAUDE.md): a change to `core/simulation` keeps Voth's stocks proof, `test-sim.js` and the
 baseline unchanged unless it is meant to move them. Every trade-code change C1 and C2 needed was made inert where
 unused, and the same discipline holds for the escort cut, the pressure number and `SIM.outlaws`.
+
+### 6a. What S4 found, and the one line of code it needed (2026-11-25)
+
+**None.** The chain is
+
+```js
+STALKER_TUNE.join(BOWL_TUNE.join(CATCH_TUNE.join(EAST_RIFT.valley(Pxan, Pls))))
+```
+
+and it works because **`EAST_RIFT.valley` returns a valley of the same shape as `XAN_TUNE.valley`** — it is literally
+`Object.assign({}, X, {...})` — so `CATCH_TUNE.join` takes it without knowing Longsong is in it, and each join after
+takes the one before. Nothing in the three new tunes had to be told that two other plans were already there. That is
+worth recording as the reason the frame discipline mattered: all three were written in Xanadu's frame
+(`T.px` measuring from px 1191,1569) precisely so this would be free.
+
+**What it builds:** 282 (Xanadu + Longsong) → 298 (+ the Catch) → 305 (+ the Bowl) → **317** (+ the Stalker Range), with
+the Dasri pool gone, which is why the arithmetic is +16 +7 +12 −1.
+
+**The structural checks hold at the end of the chain**, which is what C6 is really asking: the Train still loads at
+Jabal, the pool is gone, the Emirate's salary is on the books and still falls, **the rival houses still leave in turn**
+(offsets 0 and 24,018), Hub 01 is still neither a settlement nor on any road, and every tune's goods, factions and
+calendar windows survive all four joins.
+
+**On the runs:** this test makes **two 120-day runs**, not one year, because it measures one number against another —
+Xanadu's salt shortfall with and without the three new tunes — and a year over 317 settlements is twenty-odd minutes
+each. The year-long runs stay in each tune's own test (`test-east-rift`, `test-catch`, `test-bowl-join`,
+`test-stalker`), which is where they belong.
 
 ## 7. Questions for the owner — all answered 2026-11-24
 
