@@ -1,0 +1,145 @@
+{
+ "edit": "5.1 edit 29: Bab al-Hawa's pin onto the Godsgate thalweg",
+ "date": "2026-11-24",
+ "batch": "5.1e27",
+ "why": "the owner, 2026-11-24, answer B: the pin moves onto the thalweg, about px 1027,1258, +3,590 m (PLAN.md section 11 edit 2). It is a site of the region's cut, so its square takes ground",
+ "id": "sbabalhawa01",
+ "from_px": [
+  1028,
+  1246
+ ],
+ "to_px": [
+  1027,
+  1258
+ ],
+ "from_ground_m": 3660.6,
+ "to_ground_m": 3636.6,
+ "apron_m_recorded": 3590.0,
+ "apron_is_m_under_the_cell": 46.6,
+ "moved_km_south": 24,
+ "descent_m": 23.9,
+ "chosen": {
+  "px": [
+   1027,
+   1258
+  ],
+  "ground_m": 3636.6,
+  "abs_minus_3590_m": 46.6,
+  "square_10km": {
+   "min_m": 3624,
+   "median_m": 4562,
+   "max_m": 6990,
+   "relief_m": 3366,
+   "pct_under_4000m": 33
+  },
+  "water": false
+ },
+ "candidates_ranked_by_height_match": [
+  {
+   "px": [
+    1027,
+    1260
+   ],
+   "ground_m": 3624.0,
+   "abs_minus_3590_m": 34.0,
+   "square_10km": {
+    "min_m": 3608,
+    "median_m": 4788,
+    "max_m": 7004,
+    "relief_m": 3396,
+    "pct_under_4000m": 26
+   },
+   "water": false
+  },
+  {
+   "px": [
+    1027,
+    1259
+   ],
+   "ground_m": 3632.1,
+   "abs_minus_3590_m": 42.1,
+   "square_10km": {
+    "min_m": 3608,
+    "median_m": 4615,
+    "max_m": 6990,
+    "relief_m": 3382,
+    "pct_under_4000m": 30
+   },
+   "water": false
+  },
+  {
+   "px": [
+    1027,
+    1258
+   ],
+   "ground_m": 3636.6,
+   "abs_minus_3590_m": 46.6,
+   "square_10km": {
+    "min_m": 3624,
+    "median_m": 4562,
+    "max_m": 6990,
+    "relief_m": 3366,
+    "pct_under_4000m": 33
+   },
+   "water": false
+  },
+  {
+   "px": [
+    1028,
+    1256
+   ],
+   "ground_m": 3671.8,
+   "abs_minus_3590_m": 81.8,
+   "square_10km": {
+    "min_m": 3620,
+    "median_m": 4196,
+    "max_m": 6856,
+    "relief_m": 3236,
+    "pct_under_4000m": 41
+   },
+   "water": false
+  },
+  {
+   "px": [
+    1027,
+    1257
+   ],
+   "ground_m": 3675.0,
+   "abs_minus_3590_m": 85.0,
+   "square_10km": {
+    "min_m": 3620,
+    "median_m": 4422,
+    "max_m": 6990,
+    "relief_m": 3370,
+    "pct_under_4000m": 36
+   },
+   "water": false
+  }
+ ],
+ "chosen_because": "the owner's own coordinate; the thalweg cell of its row; the roomiest square of the three rows within 50 m of +3,590 m (33 % under 4,000 m against 1027,1260's 26 %, whose west neighbour stands 2,855 m over it); and the row ANCIENT-NETWORK.md (shaft at 1033,1258) and PLAN.md 6.2's chain both put Bab al-Hawa on",
+ "which_pixel_the_1205_m_belongs_to": {
+  "MAP_EDITS_and_SITES_json_say": "the pin stands 1,205 m up the corridor's east wall",
+  "that_figure_is_the_shaft_pixel": {
+   "px": [
+    1033,
+    1258
+   ],
+   "ground_m": 4794.7,
+   "planned_m": 3590.0,
+   "delta_m": 1205,
+   "m_over_the_thalweg_cell_on_its_row": 1158,
+   "source": "survey.py seow; ANCIENT-NETWORK.md puts the Bab al-Hawa shaft at 1033,1258"
+  },
+  "the_settlement_pin_measured": "the pin [1028, 1246] reads 3660.6 m; row 1246's thalweg is 3630.3 m at x 1027, so it stands 30 m over the corridor floor, inside the trench, and only 24 m over the cell it moves to",
+  "old_pin_square_10km": {
+   "min_m": 3577,
+   "median_m": 4301,
+   "max_m": 6062,
+   "relief_m": 2486,
+   "pct_under_4000m": 35
+  },
+  "so": "the move is the owner's and stands - it puts settlement, shaft row and thalweg in one place - but the 1,205 m reads in both files as a claim about the pin when it is the shaft pixel, which edit 530 brings down (not edited here: MAP-EDITS.md is the queue, SITES.json another session's)"
+ },
+ "people_left_alone": "populations-gemini.json already has cur_pop 320 / on_screen_pop 120, which is answer C",
+ "raster_changed": false
+}

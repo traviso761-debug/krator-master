@@ -4,7 +4,7 @@
     "inner_rim_spheres_1_26_pop": 3162072,
     "exterior_sphere_27_pop": 187000,
     "continental_27_sphere_total_pop": 3349072,
-    "domestic_pins": 207,
+    "domestic_pins": 206,
     "domestic_polities": 63,
     "on_screen_pop": 799693,
     "sim_urban_pop": 1115929,
@@ -4148,13 +4148,13 @@
       "polity": "Yuni Emirate",
       "stage": "outpost",
       "is_exterior": false,
-      "cur_pop": 350,
-      "on_screen_pop": 129,
-      "off_screen_mult": 2.0,
-      "sim_urban_pop": 259,
-      "pop_known": false,
-      "pop_source": "2026-11-15 user Stalker Gate caravan escort outpost addition",
-      "note": "Fortified Yuni Ranger garrison (1420,1242) guarding caravans through the Stalker Gate passes"
+      "cur_pop": 500,
+      "on_screen_pop": 500,
+      "off_screen_mult": 1.0,
+      "sim_urban_pop": 500,
+      "pop_known": true,
+      "pop_source": "2026-11-24 the owner: 500, on a salary from the Yuni Emirate and a small cut of expeditions' profits",
+      "note": "Yuni's fortified Stalker-watch on Lake Vapora's shore (1420,1242; 1,982 m), the Stalker Gate's anchor and the waystation network's"
     },
     {
       "id": "skjtxiqwjk",
@@ -4618,22 +4618,6 @@
       "sim_urban_pop": 259,
       "pop_known": false,
       "pop_source": "estimated by type (village)",
-      "note": "1:1 on-screen village/fort/outpost"
-    },
-    {
-      "id": "sthetwins01",
-      "name": "The Twins",
-      "pin_name": "The Twins",
-      "in_scale_model": true,
-      "polity": "Twins Pass Wardenry",
-      "stage": "fort",
-      "is_exterior": false,
-      "cur_pop": 420,
-      "on_screen_pop": 198,
-      "off_screen_mult": 1.0,
-      "sim_urban_pop": 198,
-      "pop_known": false,
-      "pop_source": "",
       "note": "1:1 on-screen village/fort/outpost"
     },
     {
