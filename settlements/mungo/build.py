@@ -101,6 +101,11 @@ DETERMINISTIC |= set(MATLIB_RECORD) | {'46-matlib-pack.js', '46r-reed-matlib-pac
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'atmos')) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js', '95-locus-doors.js'}   # core/door and Locus's binding of it (no rnd())
 DETERMINISTIC |= {'20-core-water.js', '50-core-water-draw.js', '90w-lake.js'}   # core/water and Locus's lake binding (no rnd())
+# The room light, as Locus and Girder list it (settlements/locus/build.py 105-106): Mungo takes Locus's adapter but
+# never declared either file, so every Mungo build has failed the generative-fragment rule since 4acd6e78. Neither
+# calls rnd(); 66r-locus-roomlight.js only wires KRLHOST.wirePage to the page.
+DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('66r-locus-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
 PALETTE_FILE = '05-palette.js'
 PALETTE_FILES = {'05-palette.js', '05b-mungo-palette.js'}
 # PARTS: Locus's fragments cut at their section markers so they can be read (settlements/locus/build.py CONTINUES)

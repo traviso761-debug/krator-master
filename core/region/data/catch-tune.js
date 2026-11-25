@@ -8,7 +8,7 @@
 //   CATCH_TUNE.goods         every good and its unit; water in litres
 //   CATCH_TUNE.diet          a person's day by the kind of place (stair, oasis, works, monks)
 //   CATCH_TUNE.calendar      the Catch's year: the salt pans worked in the cool months (the storms and the col are C5's)
-//   CATCH_TUNE.places        Stair, the oases, the salt works, the Twins' stations, the Brotherhood's Stair house, the
+//   CATCH_TUNE.places        Stair, the oases, the salt works, the Godsgate's caravanserai, the Twins' stations, the Brotherhood's Stair house, the
 //                            White Gills (section 1 of the proposal; the people are the owner's, the split of an oasis
 //                            between its keepers and the Twins' numbers are proposed)
 //   CATCH_TUNE.caravan       a caravan's beasts: how many a carrier leads, what one drinks and eats a day (C2)
@@ -29,7 +29,10 @@ T.goods={grain:{unit:'kg'},salt:{unit:'kg'},tea:{unit:'kg'},tools:{unit:'kg'},su
 T.diet={stair:{grain:165*D,salt:7*D,tea:1.5*D,tools:.5*D,water:10},
  oasis:{grain:170*D,salt:7*D,tea:1*D,tools:.3*D,water:8},
  works:{grain:190*D,salt:7*D,tea:1*D,tools:1.2*D,water:10},
- monks:{grain:150*D,salt:5*D,tea:2*D,water:6}};
+ monks:{grain:150*D,salt:5*D,tea:2*D,water:6},
+ /* the Godsgate's caravanserai (S1): it grows nothing at 3,590 m and buys its whole table off the trains, but it has
+    snowmelt at the divide, so water is the one thing it is not short of. More tools than an oasis: it is a repair stop */
+ serai:{grain:175*D,salt:7*D,tea:1.5*D,tools:1.2*D,water:12}};
 /* the year: core/clock's, Xanadu's clock (year day 0 is the clock's 259). The Catch floor is BWk: the pans are raked in the
    cool months, when the brine is not boiling off the bed faster than the rakers can draw it (proposed) */
 T.calendar={windows:{pans:[300,90]}};
@@ -53,6 +56,25 @@ T.places=[
  {id:'scatchlasso01.geo',name:'Lasso: the Geomancers\' well and pens',faction:'geomancer',px:1083.5,py:1474.5,people:50,kind:'oasis',well:[200000,10],fodder:3000},
  {id:'svhmyhf33w',name:'Ṣalṭ al-Bān, the Catch salt works (the Train of Jabal\'s pans)',faction:'train',px:1080,py:1428,people:120,kind:'works',well:[4000,15],fodder:1000,
   pans:{salt:600000,soda:200000,potash:60000,saltpeter:30000,gypsum:100000}},
+ /* THE GODSGATE (S1 of openworld/catch-bowl/PLAN-SIM.md section 2; the owner, 2026-11-24 kept the pin: "Agree keep
+    both"). Bab al-Hawa, the Vent-Shaft Caravanserai at the pass's divide: the sunken apron inside the Ancients'
+    cyclopean wind-baffle crescent, round the 40 m collar of the ruined Parabola-Stair bore's ventilation shaft, which
+    still drafts +16 degC air up through its rubble. It is the pass's ONLY safe overnight camp, out of the 80-130 km/h
+    nocturnal God-Bore. px 1027,1258 is the Godsgate corridor's own floor at that row (+3,590 m), not the map's present
+    pin 1,205 m up the east wall: the move is queued (openworld/catch-bowl/MAP-EDITS.md edit 2).
+    What it sells is NIGHTS, water and a night's fodder. Nothing is CUT at 3,590 m -- the `fodder` below is not a reed
+    bed but the serai's BARNS, hay winched and carried up 2,400 m and stacked through the summer, which is how a
+    caravanserai on an artery works. It has to be there: `provision` draws the beasts' water and fodder at EVERY stop
+    (core/simulation/77-sim-6-trade.js, "the beasts water and feed whether or not the stop trades"), so a stop with no
+    fodder is a sink that can never be filled. Written without it, the serai ran 321,624 kg short of fodder in a year
+    and House Goldanda -- the second of the two houses to load at the shared Iziz pool -- landed no iron at Strongbow at
+    all, while Getmastarz landed 4.0 t: openworld/catch-bowl/PLAN-SIM.md 2y has the diagnosis. 1,000 kg a day carries
+    the traffic with a little over; `forHalts` therefore no longer hauls fodder as freight, which is capacity the trade
+    goods get back. People: 120 permanent (the owner, 2026-11-24), the keepers, the
+    shaft's winch crew and the Oasis Stations' hands; Gemini's 320 counts the caravans in residence, which the sim
+    holds as halts instead. Faction: Stair's merchants, who keep Bitta's brackish well the same way (proposed) */
+ {id:'godsgate.babalhawa',name:'Bab al-Hawa, the Vent-Shaft Caravanserai (the Godsgate\'s only safe night)',faction:'stair',px:1027,py:1258,people:120,kind:'serai',
+  well:[120000,15],fodder:1000,repairs:true},   /* fodder: the BARNS, carried up and stacked, not anything cut here (above) */
  /* the Twins (biomes/twins/PLAN.md section 3): the Brotherhood's waystations, hot springs and heated stone corrals */
  {id:'twins.sinter',name:'Sinter-Gate (Bāb al-Bukhār): Route B\'s south gate, the Brotherhood\'s south-west toll house',faction:'horns',px:996,py:1504,people:20,kind:'oasis',well:[80000,10],fodder:1500},
  {id:'twins.kettle',name:'Mud-Kettle Hollow (a maar crater of mud pots)',faction:'horns',px:1005,py:1489,people:10,kind:'oasis',well:[20000,10],fodder:600},
@@ -118,21 +140,66 @@ T.valley=function(o){o=o||{};const K=o.scale==null?10:o.scale,yr=365,days=o.days
    the Brotherhood's Stair house, as Xanadu's tune had it.
    o: {unguided: [group id, ...] (they refuse the guides: no tally, and the Twins take part of the train: C4),
        hazards: false (C5's storms, col, Stalkers and dry oasis off)} */
+/* ================================================================= THE AMBUSHES (R2, the owner's item 5 of 2026-11-24:
+   "implement bandits and Stalkers attacking caravans"). core/region/53-region-ambush.js is the host and is inert without
+   this. Two parties, and PLAN-RAIDS.md section 4 insists they must not blur:
+
+   THE TIN-SKULLS are a bandit gang on the Catch floor that dresses as Stalkers and announces itself in machine-voice.
+   It wants CARGO, in an order -- water and grain and salt before silver, which is BF-05's appetite -- it will TOLL a
+   train and let it go, and it leaves a looted wagon and witnesses. It has a camp, a boss and a bounty, so it can be
+   found and killed. Its take lands in its cache, which is why the floor's salt works is its neighbour.
+
+   THE STALKERS want nobody's cargo at all. They take PEOPLE AND BEASTS and leave nothing, they never toll, and they
+   have no tell: following one leads east and nobody who has taken that road has come back. Their roll improves in the
+   black storms, which is the one season they are hidden in. They cannot be found -- there is no camp record here and
+   no bounty -- and `people` is the number no tune has booked before (PLAN-SIM.md 4c).
+
+   A player who cannot tell them apart in the first hour and can in the tenth is the design working. */
+T.ambushes={
+ kit:{explosives:6},   /* what a round's `kit` adds to its guard: the Geomancers' answer, now anyone's to buy */
+ parties:[
+  {id:'tinskulls',name:'The Tin-Skulls (bandits of the Catch floor, dressed as Stalkers)',kind:'outlaw',
+   strength:4,every:5,spare:3,toll:.12,maul:.3,beasts:.2,
+   wants:['water','grain','salt','tools','iron','silver','arms'],
+   cache:'svhmyhf33w',   /* the Catch salt works: the nearest thing on the floor to a market they can sell into */
+   note:'announces itself; tolls; leaves witnesses; has a camp, a boss and a bounty'},
+  {id:'stalkers.floor',name:'The Stalkers of the Catch floor',kind:'stalker',
+   strength:7,every:6,spare:5,beasts:.18,people:2,hiddenIn:'storms',
+   note:'no cargo, no toll, no tell: it takes the crew and the beasts and leaves nothing'}]};
+/* THE STRENGTHS ARE SET AGAINST WHAT A TRAIN CAN ANSWER WITH, and the first numbers were wrong: at 7 and 11 against a
+   guard of 6 every single attempt mauled or broke the train, which is no ladder at all. A group's guard is about
+   carriers x 1.5 (six for a four-carrier round, five for the salt run's three), so:
+     the Tin-Skulls at 4   -> a guarded train passes or is tolled; an unguarded one is mauled
+     the Stalkers at 7     -> a guarded train passes about a third of the time and is mauled otherwise, and worse in
+                              the black storms, which is the one season they are hidden in
+     and WITH EXPLOSIVES (+6) a train passes the Stalkers every time, which is what "carry explosives" has to mean.
+   `every` and `spare` keep the frequency honest beside that: the Tin-Skulls try two passages in five -- they are often
+   met and mostly only toll -- and the Stalkers ONE IN SIX, which is the rate C5's loss rule used before them, so most
+   crossings of the floor meet nobody at all. A Stalker encounter has to stay rare to stay frightening, and at two in
+   six it was taking a quarter of the beasts off a third of all passages, which is attrition rather than an event. */
 T.speed=30;   /* a pack caravan's km a day on the crossing (24-40: the proposal's section 1c) */
+T.muster=60;  /* days over which the four home pools' caravan seasons are spread, nearest home first (the owner,
+                 2026-11-25: "we would probably expect them to arrive at different times as caravans may be coming from
+                 as far as Iziz, Jabal, Verge, or Yuni"). A declared window, not a derived one: see the note at T.join's
+                 stagger. Four pools at 60 days gives 0, 15, 30 and 45, and the two Iziz houses split their 15 */
 T.winding=1.25;   /* road over straight line */
 /* the homes, off the map: the leg from the home's pool to the first water, km (section 1c: Iziz to Stair about 1,232 km
    by Arcbeam, Parabola and the Godsgate; Yuni to Stair about 1,415 by Mantis; Locus 92 km beyond Yuni; Jabal to Arfwai by
    the Train's road) */
-T.homes={'gate.iziz':{km:1040},'gate.yuni':{km:1225},'gate.geomancers':{km:1300},'gate.dasri':{px:[1225,1149]}};
+/* S1: the four groups that come over the Godsgate now stop at Bab al-Hawa, so their home leg ends there instead of at
+   Kolli and the pass-to-Kolli stretch (283 km by legKm) is a leg of its own. The totals of section 1c are unchanged:
+   Iziz to Stair is still about 1,232 km, Yuni's about 1,415. The Train comes out of Jabal to Arfwai and never crosses
+   the pass, so its home is untouched. */
+T.homes={'gate.iziz':{km:757},'gate.yuni':{km:942},'gate.geomancers':{km:1017},'gate.dasri':{px:[1225,1149]}};
 /* the groups (section 2): their pool (Xanadu's gateway), their caravans, their own wells, their terminus, their Twins
    route (C4: packs take Route A's tubes, wagons and herds Route B's open dash), and whether they carry explosives (the
    Stalkers keep off: the Geomancers') */
 T.groups=[
- {id:'getmastarz',pool:'gate.iziz',name:'House Getmastarz\'s caravans (Iziz, past the Godsgate)',north:['scatchkolli01','scatcharfwai01'],end:'sfgtxw10kr',route:'A',carriers:4,cap:40000,share:.5},
- {id:'goldanda',pool:'gate.iziz',name:'House Goldanda\'s caravans (Iziz, the bankers of the eastern road)',north:['scatchkolli01.goldanda','scatcharfwai01'],end:'sfgtxw10kr',route:'A',carriers:4,cap:40000,share:.5},
+ {id:'getmastarz',pool:'gate.iziz',name:'House Getmastarz\'s caravans (Iziz, past the Godsgate)',north:['godsgate.babalhawa','scatchkolli01','scatcharfwai01'],end:'sfgtxw10kr',route:'A',carriers:4,cap:40000,share:.5},
+ {id:'goldanda',pool:'gate.iziz',name:'House Goldanda\'s caravans (Iziz, the bankers of the eastern road)',north:['godsgate.babalhawa','scatchkolli01.goldanda','scatcharfwai01'],end:'sfgtxw10kr',route:'A',carriers:4,cap:40000,share:.5},
  {id:'train',pool:'gate.dasri',name:'The Train of Jabal (the Dasri\'s salt caravans)',north:['scatcharfwai01'],end:'sfgtxw10kr',route:'B',carriers:6,cap:30000,share:1},
- {id:'yuniguild',pool:'gate.yuni',name:'The Yuni Merchants\' Guild\'s caravans',north:['scatchkolli01','scatcharfwai01'],lasso:'scatchlasso01',end:'skm4jjo2vl',route:'B',carriers:10,cap:20000,share:1},
- {id:'geomancer',pool:'gate.geomancers',name:'The Geomancers\' oil caravans',north:['scatchkolli01','scatcharfwai01'],lasso:'scatchlasso01.geo',end:'skm4jjo2vl',route:'B',carriers:4,cap:30000,share:1,explosives:true}];
+ {id:'yuniguild',pool:'gate.yuni',name:'The Yuni Merchants\' Guild\'s caravans',north:['godsgate.babalhawa','scatchkolli01','scatcharfwai01'],lasso:'scatchlasso01',end:'skm4jjo2vl',route:'B',carriers:10,cap:20000,share:1},
+ {id:'geomancer',pool:'gate.geomancers',name:'The Geomancers\' oil caravans',north:['godsgate.babalhawa','scatchkolli01','scatcharfwai01'],lasso:'scatchlasso01.geo',end:'skm4jjo2vl',route:'B',carriers:4,cap:30000,share:1,explosives:true}];
 /* Route A (the owner, 2026-11-16: "Vale chasm with strongbow branch"): from the Catch's fan by the White Gills
    Hermitage into the tubes, the Hall of the Tally-Marks, then the Strongbow branch's galleries down to Strongbow (the
    Vale's portal is the way on into the Vale, not the caravans' to Strongbow); Route B by its five oases */
@@ -141,8 +208,17 @@ T.kgPerBeast=200;   /* a pack beast's load: a carrier's beasts are its cap over 
 /* the seasons (the owner's answer 5, 2026-11-16: "both close"; the windows are proposed): the spring black storms close
    the Catch floor about six weeks; winter shuts the Twins' col to Route B (Route A's tubes stay open to packs); Arfwai's
    well runs low in late summer */
-T.hazards={windows:{storms:[70,112],col:[330,60],dry:[200,260]},
- stalkers:{every:6,spare:5,share:.05},gales:{every:4,spare:3,share:.04},unguided:{every:3,spare:1,share:.25},dryRegen:.3};
+/* S1 adds the Godsgate's two (biomes/seouterwall/PLAN.md section 2, the numbers proposed):
+   - `bore`: the nightly katabatic God-Bore, 80-130 km/h down every couloir from two hours after dusk until after dawn.
+     All year, not a season. The rate is LOW because Bab al-Hawa is there to shelter in; a train that could not reach it
+     is the region's event, not a leg's rate (openworld/catch-bowl/PLAN-SIM.md 2c).
+   - `whiteout`: the flash rime-fog banks of winter, 80 km of visibility to under 12 m in minutes. A LOSS, not a
+     closure: they are sudden, not seasonal, and the Catch floor's storms and the Twins' col are the crossing's two
+     real closures. Closing the pass for the whole window instead would shut the crater's road to Xanadu for a third of
+     the year, which the lore does not say and which would swing every book that depends on the crossing. */
+T.hazards={windows:{storms:[70,112],col:[330,60],dry:[200,260],whiteout:[300,60]},
+ stalkers:{every:6,spare:5,share:.05},gales:{every:4,spare:3,share:.04},unguided:{every:3,spare:1,share:.25},dryRegen:.3,
+ bore:{every:5,spare:4,share:.03},whiteout:{every:4,spare:3,share:.05}};
 T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min(10,XV.scale)}),haz=o.hazards!==false,un=o.unguided||[];
  const V=Object.assign({},XV),X=XAN_TUNE,at=(px,py)=>T.px(px,py);
  /* the places: the Catch's join Xanadu's (its Stair house replaces Xanadu's off-map stand-in, horns.stair) */
@@ -169,6 +245,34 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   s.start=Object.assign({},s.start,{water:lDay*3,fodder:fDay*10});});
  const legKm=(a,b)=>{const A=S(a),B=S(b);return Math.hypot(A.x-B.x,A.z-B.z)/1000*T.winding;},mins=km=>Math.max(240,Math.round(km/T.speed*1440));
  const peopled=id=>{const s=S(id);return s&&s.people>0&&!/^gate\./.test(id);};
+ /* THE CARAVANS LEAVE IN TURN, AND THEIR PHASES FOLLOW HOW FAR THEY COME (the owner, 2026-11-25: first "can we
+    stagger house departures so they don't step on each other like that", then "we would probably expect them to arrive
+    at different times as caravans may be coming from as far as Iziz, Jabal, Verge, or Yuni").
+
+    The first version staggered only the groups that SHARE a pool -- the two Iziz houses, both out of gate.iziz, which
+    had identical rounds and identical first sailings, so they reached the warehouse on the same minute and contended
+    for the same cargo (PLAN-SIM.md 2z). Every other group still left on the same hour as every other, and S4 found
+    what that costs: with the gateway roads replaced by caravan rounds, the far ends of Xanadu's distribution run dry
+    between arrivals, 10.1 t of salt over 116 settlements in 120 days (PLAN-SIM.md 6b).
+
+    THE PHASES NOW FOLLOW THE HOMES' DISTANCES, which is the owner's reasoning: a train out of the Geomancers' country
+    has 1,017 km to come and one out of Jabal 684, so they do not muster on the same morning and they do not arrive on
+    the same week. The pools are ordered by their home leg, and each takes an even slice of `T.muster`; a pool shared by
+    two houses splits its own slice between them.
+
+    `T.muster` IS A CHOICE AND IS HERE TO BE SEEN. The distances alone only spread the five by about eleven days (333 km
+    between the nearest home and the furthest, at 30 km a day), which is not enough to flatten a 133-day round's
+    arrivals. The spread wanted is the caravan season's -- houses do not all leave on the same morning even from the
+    same city -- so the window is declared rather than derived, and it is one number to turn if the owner wants the
+    arrivals tighter or looser. The ORDER within it is the map's; only its width is a judgement.
+    A first version sliced each group's OWN stagger instead, which put Yuni's Guild and House Getmastarz on the same
+    day eight days in, because a group's stagger is its round over its carrier count and the five are not comparable.
+    One shared window fixes that: every phase is in the same units. */
+ const poolOf={};T.groups.forEach(g=>{(poolOf[g.pool]=poolOf[g.pool]||[]).push(g.id);});
+ const kmOfPool=p=>{const h=T.homes[p];if(h.km!=null)return h.km;
+  const g0=T.groups.find(q=>q.pool===p);
+  return Math.hypot(at(h.px[0],h.px[1]).x-S(g0.north[0]).x,at(h.px[0],h.px[1]).z-S(g0.north[0]).z)/1000*T.winding;};
+ const poolsByKm=Object.keys(poolOf).sort((a,b)=>kmOfPool(a)-kmOfPool(b));
  T.groups.forEach(g=>{const GW=G(g.pool),south=g.north.concat(['s2o8f4p123','scatchbitta01',g.lasso||'scatchlasso01'],g.route==='A'?[]:['twins.lookout'],T.twins[g.route]);
   const yuni=g.end==='skm4jjo2vl',out=[g.pool].concat(south,['sfgtxw10kr'],yuni?['skm4jjo2vl']:[]),back=out.slice(1,-1).reverse();
   const stops=out.concat(back),n=stops.length,endIdx=out.length-1;
@@ -179,7 +283,14 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   const goods={[g.pool]:GW.in.concat(['grain','tea','tools']),[g.end]:GW.out.slice()};
   stops.forEach(s=>{if(!goods[s])goods[s]=[];});
   const expect={[g.pool]:exp,[g.end]:{iron:30*g.share,arms:.5*g.share,pearls:.06,wine:3,oil:2}};
-  const Rd={id:'caravan.'+g.id,stops,legs,mins:720,cap:g.cap,carriers:g.carriers,stagger:Math.round(legs.reduce((a,b)=>a+b,0)/g.carriers),keep:20,want:Math.max(90,Math.round(legs.reduce((a,b)=>a+b,0)/1440)),
+  const share=poolOf[g.pool],stagger=Math.round(legs.reduce((a,b)=>a+b,0)/g.carriers);
+  /* the pool's own slice of the muster window, by how far its caravans come, and the house's share of that slice */
+  const slice=T.muster*1440/poolsByKm.length,poolIdx=poolsByKm.indexOf(g.pool);
+  /* what a train can answer an ambush with (R2): its own guard, and the kit it carries. The Geomancers' explosives
+     were a hard-coded exception in C5; here they are one entry in a list any group could be given. */
+  const Rd={id:'caravan.'+g.id,stops,legs,mins:720,cap:g.cap,carriers:g.carriers,stagger,
+   guard:g.guard==null?Math.max(2,Math.round(g.carriers*1.5)):g.guard,kit:g.explosives?['explosives']:[],
+   offset:Math.round(poolIdx*slice+slice*share.indexOf(g.id)/share.length),keep:20,want:Math.max(90,Math.round(legs.reduce((a,b)=>a+b,0)/1440)),
    goods,expect,halts,sells,forHalts:['grain','tea','tools'],provision:{beasts:Math.round(g.cap/T.kgPerBeast),eat:T.caravan.eat,loss:T.caravan.loss,maxDays:T.caravan.maxDays,home:0},_group:g,_stops:{end:endIdx}};
   /* the cuts: the Sultan's toll on what the caravan lands inside Xanadu (at the Strongbow lift; for the Qiblai caravans,
      on what they land at Qiblai having come up it); the tally's two halves on the same landings, and its outbound half at
@@ -195,16 +306,25 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   /* the Twins' legs: from the lookout over the col to Strongbow and back; the Catch floor's: the north road's (Kolli,
      Arfwai) to Stair, the floor the storms close; Route B's open dash between the Twins' oases, the col winter shuts */
   const tw=x=>/^twins\./.test(x)||x==='sttkxo9ndy',fl=x=>/^scatch|^s2o8f4p123/.test(x),north=x=>/^scatchkolli01|^scatcharfwai01/.test(x);
+  const gg=x=>/^godsgate\./.test(x),ggLegs=[];   /* S1: a leg with the pass at either end */
   stops.forEach((s,i)=>{const t=stops[(i+1)%n];
    if(tw(s)&&(tw(t)||t==='sfgtxw10kr')||s==='sfgtxw10kr'&&tw(t))twinsLegs.push(i);
    if(fl(s)&&fl(t)&&(north(s)||north(t)))floorLegs.push(i);
-   if(g.route==='B'&&tw(s)&&tw(t))colB.push(i);});
+   if(g.route==='B'&&tw(s)&&tw(t))colB.push(i);
+   if(gg(s)||gg(t))ggLegs.push(i);});
   Rd.losses=[];
   if(!guided)Rd.losses.push(Object.assign({legs:twinsLegs,why:'the unguided crossing of the Twins'},T.hazards.unguided));
   if(haz){Rd.closed=[{legs:floorLegs,window:'storms'}];if(colB.length)Rd.closed.push({legs:colB,window:'col'});
-   if(!g.explosives)Rd.losses.push(Object.assign({legs:floorLegs,why:'the Stalkers on the Catch floor'},T.hazards.stalkers));
-   if(g.route==='A')Rd.losses.push(Object.assign({legs:twinsLegs,window:'col',why:'the cold and gales on the col'},T.hazards.gales));}
-  Rd._legs={twins:twinsLegs,floor:floorLegs,colB};
+   /* THE STALKERS ARE NO LONGER A C5 LOSS. They were weather here -- a share of the beasts off every sixth passage of
+      the floor, with the Geomancers exempt by a hard-coded `if(!g.explosives)`. R2 gives them what they are instead: a
+      party with a strength, an appetite and a kind, in T.ambushes below, where the explosives become `kit` on the round
+      and any group can buy the same answer. C5 keeps what the COUNTRY does -- the God-Bore, the whiteouts, the col's
+      gales, the Twins' toll on an unguided train -- and R2 has what somebody does on purpose. Keeping both would have
+      had the Stalkers take the same beasts twice (openworld/catch-bowl/PLAN-RAIDS.md section 4). */
+   if(g.route==='A')Rd.losses.push(Object.assign({legs:twinsLegs,window:'col',why:'the cold and gales on the col'},T.hazards.gales));
+   if(ggLegs.length){Rd.losses.push(Object.assign({legs:ggLegs,why:'the God-Bore in the Godsgate'},T.hazards.bore));
+    Rd.losses.push(Object.assign({legs:ggLegs,window:'whiteout',why:'the rime whiteouts in the Godsgate'},T.hazards.whiteout));}}
+  Rd._legs={twins:twinsLegs,floor:floorLegs,colB,godsgate:ggLegs};
   V.roads.push(Rd);});
  /* the Train works the salt works: a round of its own from the pans to Strongbow by Stair and Route B, food back */
  {const g=T.groups.find(x=>x.id==='train'),out=['svhmyhf33w','s2o8f4p123','scatchbitta01','scatchlasso01','twins.lookout'].concat(T.twins.B,['sfgtxw10kr']),
@@ -221,10 +341,17 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
    cut:[{at:'sfgtxw10kr',to:'xan.citadel',share:X.toll,goods:salts,why:'the Sultan\'s toll at the Strongbow lift'},
     {at:'sfgtxw10kr',to:'twins.sinter',share:X.horns.tally,goods:salts,why:'the guides\' tally, the gate half (Sinter-Gate)'},
     {at:'sfgtxw10kr',to:'twins.brazier',share:X.horns.tally,goods:salts,why:'the guides\' tally, the shrine half (the Brazier)'}],
-   closed:haz?[{legs:floorLegs,window:'storms'},{legs:colB,window:'col'}]:undefined,losses:haz?[Object.assign({legs:floorLegs,why:'the Stalkers on the Catch floor'},T.hazards.stalkers)]:[],
+   guard:5,kit:[],   /* the Train's own escort on the salt run: without a guard an ambush breaks it every passage */
+   closed:haz?[{legs:floorLegs,window:'storms'},{legs:colB,window:'col'}]:undefined,losses:[],   /* the Stalkers moved to T.ambushes (R2) */
    _legs:{floor:floorLegs,colB}});}
  /* C5: Arfwai's well runs low in late summer */
  V.siteSeasons=(V.siteSeasons||[]).concat(haz?[{settlement:'scatcharfwai01',site:'scatcharfwai01.well.site',window:'dry',regen:T.hazards.dryRegen}]:[]);
+ /* R2: the parties' legs, assembled from the rounds the join has just built -- every round's floor legs, which is
+    where both parties work ("where the traffic is"). Each party watches every provisioned round's floor; the kit and
+    each round's guard decide what happens, not which road it is. */
+ {const legs={};V.roads.forEach(Rd=>{const fl=(Rd._legs||{}).floor;if(fl&&fl.length)legs[Rd.id]=fl.slice();});
+  V.ambushes=Object.keys(legs).length?{kit:Object.assign({},T.ambushes.kit),
+   parties:T.ambushes.parties.map(Pt=>Object.assign({},Pt,{legs:legs}))}:undefined;}
  return V;};
 return T;})();
 if(typeof module!=='undefined')module.exports=CATCH_TUNE;

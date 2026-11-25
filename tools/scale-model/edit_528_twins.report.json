@@ -1,0 +1,54 @@
+{
+ "edit": "5.1 edit 28: \"The Twins\" dropped",
+ "date": "2026-11-24",
+ "batch": "5.1e26",
+ "why": "the owner, 2026-11-16, confirmed 2026-11-24 (PLAN.md section 11 edit 1): Gemini's pin, its polity invented; the twins polygon is cut by openworld/catch-bowl, so the cut would place it",
+ "dropped_id": "sthetwins01",
+ "dropped_record": {
+  "id": "sthetwins01",
+  "name": "The Twins",
+  "type": "fort",
+  "px": 1042,
+  "py": 1525,
+  "notes": "Geothermal steam-vent pass fort between Stair and Strongbow. From Gemini's trade model (openworld/world-pins-gemini.json, 2026-11-14). Id sthetwins01 since 5.1e14 (was gem_twins_pass), as openworld/populations-gemini.json keys it.",
+  "createdAt": "2026-11-15T00:00:00.000Z",
+  "polity": "Twins Pass Wardenry"
+ },
+ "dropped_the_live_record_not_the_dead_id": {
+  "live_in_defSetts_before": true,
+  "dead_id": "gem_twins_pass",
+  "dead_id_already_in_SETT_DROPPED_5.1e14": true,
+  "dead_id_was_live": false
+ },
+ "defSetts": {
+  "before": 293,
+  "after": 292
+ },
+ "SETT_ADDED_5.1e14": {
+  "before": 4,
+  "after": 3
+ },
+ "populations_gemini_rows_removed": 1,
+ "populations_gemini_row": {
+  "id": "sthetwins01",
+  "name": "The Twins",
+  "pin_name": "The Twins",
+  "in_scale_model": true,
+  "polity": "Twins Pass Wardenry",
+  "stage": "fort",
+  "is_exterior": false,
+  "cur_pop": 420,
+  "on_screen_pop": 198,
+  "off_screen_mult": 1.0,
+  "sim_urban_pop": 198,
+  "pop_known": false,
+  "pop_source": "",
+  "note": "1:1 on-screen village/fort/outpost"
+ },
+ "populations_gemini_domestic_pins": {
+  "before": 207,
+  "after": 206
+ },
+ "populations_gemini_totals_left_alone": "summary.on_screen_pop / sim_urban_pop are CONTINENTAL-SCOPE.md's, not sums of these rows, and already differ from them",
+ "raster_changed": false
+}

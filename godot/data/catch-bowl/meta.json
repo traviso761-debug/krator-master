@@ -1,0 +1,312 @@
+{
+ "region": "catch-bowl",
+ "note": "the scale model at 2 km a pixel, NOT the 1:1 cut: see this file's own tool",
+ "box_px": [
+  913,
+  1042,
+  1555,
+  1571
+ ],
+ "step": 1,
+ "m_per_sample": 2000.0,
+ "origin_px": [
+  1233,
+  1306
+ ],
+ "size": [
+  642,
+  529
+ ],
+ "km": [
+  1284,
+  1058
+ ],
+ "height": {
+  "lo": -2595.5,
+  "hi": 15527.2
+ },
+ "landforms": [
+  "none",
+  "mesa",
+  "pedestal",
+  "hoodoo",
+  "karst",
+  "evaporite",
+  "breccia",
+  "tor"
+ ],
+ "landform_counts": {
+  "none": 34497,
+  "mesa": 82592,
+  "pedestal": 32698,
+  "hoodoo": 4980,
+  "karst": 6326,
+  "evaporite": 78954,
+  "breccia": 96431,
+  "tor": 3140
+ },
+ "inside_pct": 55.6,
+ "origin_offset_m": [
+  -640000.0,
+  -528000.0
+ ],
+ "polygons": [
+  {
+   "id": "rmvka7icdn1dq",
+   "name": "the catch"
+  },
+  {
+   "id": "rmvka5413efyi",
+   "name": "the bowl"
+  },
+  {
+   "id": "rmw4xy4tp9b29",
+   "name": "SE outer wall"
+  },
+  {
+   "id": "rmvkknh1am4fw",
+   "name": "stalker range"
+  },
+  {
+   "id": "rmvstalkergate",
+   "name": "Stalker Gate"
+  },
+  {
+   "id": "rmw536m06wlyf",
+   "name": "twins"
+  }
+ ],
+ "sites": [
+  {
+   "id": "s0zgu7u6yb",
+   "name": "Solta",
+   "type": "works",
+   "px": 1169,
+   "py": 1150,
+   "from_model": true,
+   "x": -128000.0,
+   "z": -312000.0,
+   "m": -1114.9,
+   "reach_km": 10
+  },
+  {
+   "id": "s2o8f4p123",
+   "name": "Stair",
+   "type": "town",
+   "px": 1106,
+   "py": 1442,
+   "from_model": true,
+   "x": -254000.0,
+   "z": 272000.0,
+   "m": 1379.2,
+   "reach_km": 20
+  },
+  {
+   "id": "sa5o6dvjdv",
+   "name": "Jabal",
+   "type": "city",
+   "px": 1225,
+   "py": 1149,
+   "from_model": true,
+   "x": -16000.0,
+   "z": -314000.0,
+   "m": -1206.2,
+   "reach_km": 30
+  },
+  {
+   "id": "sbabalhawa01",
+   "name": "Bab al-Hawa (Godsgate)",
+   "type": "outpost",
+   "px": 1027,
+   "py": 1258,
+   "from_model": true,
+   "x": -412000.0,
+   "z": -96000.0,
+   "m": 3640.2,
+   "reach_km": 10
+  },
+  {
+   "id": "scatcharfwai01",
+   "name": "Arfwai",
+   "type": "outpost",
+   "px": 1090,
+   "py": 1387,
+   "from_model": true,
+   "x": -286000.0,
+   "z": 162000.0,
+   "m": 1073.9,
+   "reach_km": 8
+  },
+  {
+   "id": "scatchbitta01",
+   "name": "Bitta",
+   "type": "outpost",
+   "px": 1088,
+   "py": 1455,
+   "from_model": true,
+   "x": -290000.0,
+   "z": 298000.0,
+   "m": 1575.7,
+   "reach_km": 8
+  },
+  {
+   "id": "scatchkolli01",
+   "name": "Kolli",
+   "type": "outpost",
+   "px": 1058,
+   "py": 1367,
+   "from_model": true,
+   "x": -350000.0,
+   "z": 122000.0,
+   "m": 1446.5,
+   "reach_km": 8
+  },
+  {
+   "id": "scatchlasso01",
+   "name": "Lasso",
+   "type": "outpost",
+   "px": 1083,
+   "py": 1474,
+   "from_model": true,
+   "x": -300000.0,
+   "z": 336000.0,
+   "m": 1509.3,
+   "reach_km": 8
+  },
+  {
+   "id": "scyeauyek7",
+   "name": "Parabola",
+   "type": "arcology",
+   "px": 970,
+   "py": 1186,
+   "from_model": true,
+   "x": -526000.0,
+   "z": -240000.0,
+   "m": 1716.1,
+   "reach_km": 20
+  },
+  {
+   "id": "skz25tuq0w",
+   "name": "Arcbeam",
+   "type": "arcology",
+   "px": 1016,
+   "py": 1058,
+   "from_model": true,
+   "x": -434000.0,
+   "z": -496000.0,
+   "m": 2119.0,
+   "reach_km": 20
+  },
+  {
+   "id": "slw9dufqfs",
+   "name": "Mantis",
+   "type": "town",
+   "px": 1113,
+   "py": 1164,
+   "from_model": true,
+   "x": -240000.0,
+   "z": -284000.0,
+   "m": -978.1,
+   "reach_km": 25
+  },
+  {
+   "id": "sodpa02bfv",
+   "name": "Hub 01",
+   "type": "ruined arcology",
+   "px": 1344,
+   "py": 1409,
+   "from_model": true,
+   "x": 222000.0,
+   "z": 206000.0,
+   "m": 4350.7,
+   "reach_km": 8
+  },
+  {
+   "id": "sq11desertw7",
+   "name": "Esper",
+   "type": "village",
+   "px": 1042,
+   "py": 1083,
+   "from_model": true,
+   "x": -382000.0,
+   "z": -446000.0,
+   "m": 895.5,
+   "reach_km": 15
+  },
+  {
+   "id": "sttkxo9ndy",
+   "name": "White Gills Hermitage",
+   "type": "outpost",
+   "px": 1015,
+   "py": 1430,
+   "from_model": true,
+   "x": -436000.0,
+   "z": 248000.0,
+   "m": 3745.9,
+   "reach_km": 8
+  },
+  {
+   "id": "svhmyhf33w",
+   "name": "Ṣalṭ al-Bān",
+   "type": "works",
+   "px": 1080,
+   "py": 1428,
+   "from_model": true,
+   "x": -306000.0,
+   "z": 244000.0,
+   "m": 457.8,
+   "reach_km": 10
+  },
+  {
+   "id": "sz85a8i5js",
+   "name": "Ranger HQ",
+   "type": "outpost",
+   "px": 1420,
+   "py": 1242,
+   "from_model": true,
+   "x": 374000.0,
+   "z": -128000.0,
+   "m": 1982.2,
+   "reach_km": 15
+  }
+ ],
+ "weather": [
+  {
+   "id": "clear",
+   "name": "Clear",
+   "note": "the default: the Catch at 1.83 atm and +47 degC in high summer"
+  },
+  {
+   "id": "dust",
+   "name": "Black storm",
+   "note": "the Catch's spring karaburan: ATMOS.airLoad, ochre-brown, the walls gone first (biomes/catch/KNOWN_ISSUES.md; core/atmos/fx/89-atmos-fx-airload.js)"
+  },
+  {
+   "id": "gale",
+   "name": "The God-Bore",
+   "note": "the SE outer wall's nocturnal katabatic, 80-130 km/h down the Godsgate (biomes/seouterwall/PLAN.md 2.x; ATMOS.gale)"
+  },
+  {
+   "id": "whiteout",
+   "name": "Rime whiteout",
+   "note": "the Godsgate's barometric whiteout and freezing rime fog, the pass's winter window [300, 60]"
+  },
+  {
+   "id": "duststorm_season",
+   "name": "Dust season",
+   "note": "ATMOS.dustSeason: the floor hazy for weeks, not hours"
+  },
+  {
+   "id": "deadheat",
+   "name": "Dead heat",
+   "note": "the Bowl's high summer, too hot to work at all (BOWL_TUNE.calendar.windows.deadheat)"
+  },
+  {
+   "id": "monsoon",
+   "name": "Mantis's monsoon",
+   "note": "1,553 mm on a hot-desert shore: the one wet place in the region (BOWL_TUNE.calendar.windows.monsoon)"
+  }
+ ],
+ "temp_offset_c": -90,
+ "rain_per_byte": 15.686274509803921
+}

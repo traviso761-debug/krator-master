@@ -34,7 +34,7 @@ const SITE={
  // the rockfall heaps (KRUBBLE.heap) at the foot of the west wall: n of them, walking `dir` from x0 along rows z (the ground `foot` m up)
  heaps:{n:5,foot:[55,95],x0:-1100,dir:[-1,0],z:[-1900,1900],rx:[22,46],seed:6121},
  // the Ancients' highway (PLAN.md section 3.3): its line down the floor's east half, its width and ruling grade (47 grades and draws it)
- road:{id:'godsgate-highway',name:'The Ancients\' Godsgate highway (30 m, a 4 % ruling grade: the surface road over the sealed Arcbeam-Stair tunnel)',
+ road:{id:'godsgate-highway',name:'The Ancients\' Godsgate highway (30 m, a 4 % ruling grade: the surface road over the sealed Parabola-Stair bore)',
   pts:[[380,-2600],[330,-1500],[260,-400],[250,400],[300,1400],[400,2600]],w:30,grade:.04,shoulder:16},
  // the zones a check looks for on this station's near ground (99)
  need:['col','moraine','floor','fan','crag','scree','krummholz','puna','road'],

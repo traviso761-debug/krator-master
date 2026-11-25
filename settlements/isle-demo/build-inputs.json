@@ -4,7 +4,6 @@
   "build.py": {
    "inputs": {
     "core/biome/44-core-stage.js": "9205840ce8a41144089ba4dbb03f809e0070da433ad2d44d74c1b220e5590478",
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
     "core/catalog/krator-furniture-core.js": "03254b2efa2343736c10c2574d3764dd3e1e27316727319512e8a1718d644f29",
@@ -96,7 +95,7 @@
     "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
     "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
     "core/simulation/77-sim-6-season.js": "344a5416aedab4782d68769779c12183058f8a673f58ca1cc0015cf3ff051fac",
-    "core/simulation/77-sim-6-trade.js": "4643db21fc8852df4d8c56440601f97d9620d6e4a7574434d40d5311b695c1ca",
+    "core/simulation/77-sim-6-trade.js": "084a34b9b279376ff24422b1f4b1f46fea8f8e4abdbbe4a6032b8b843516ead1",
     "core/simulation/77-sim-6-transfer.js": "254fa32d81e0e9439978bc779ff550e744ce1b42d14ac0629e1a1f17432dcde1",
     "core/simulation/77-sim-6-unrest.js": "5186f7f23c04ecafbf2042968b5b1b048ed5392b5bcc2ad6c85fd37b65dd5809",
     "core/simulation/77-sim-7-ledger.js": "ce58a25cccc55009722af3206a9f873b68c924273fb8e1bb6c0cc94a542960e5",
@@ -122,6 +121,7 @@
     "kits/ancients/src/54-mat-concrete.js": "2d389333570d294e50e2e8d93681b2e6f203971467e451804c851d0d8f0c1b83",
     "kits/ancients/src/69-mat-salvage.js": "0730715865d221e3309d62f5886d38a9922a4872d5b9f5fce3730c5351a0ed62",
     "kits/beast-riders/PORT.md": "21b21a7447de96e139906446c400742ad30de08eadb175a61b58c8bdc0ee1e49",
+    "kits/beast-riders/build.py": "893b75e843d75d6385d3ddedd28518532175d9a6ba8c9644582ded0abe20be46",
     "kits/beast-riders/src/50-br-mounts.js": "9c16eed843bdd2c5adc49cd00c58c0192d5948f67bae779d9f121db119d9b9ca",
     "kits/beast-riders/src/60-br-ports.js": "22ff9d39a44ed5d328fcf9b7e469295903518a76032f7147496229322dd4c7ad",
     "kits/beast-riders/src/79-br-camp.js": "542b1fb3b46f02c3c6ddc93ac582fe9e2cefab83a53e3a1dde713a77664b98dd",
@@ -158,7 +158,6 @@
     "kits/beast-riders/towns/girder-ports.js": "8b218d26d03ac965fc77e9480959b629bca4f86223abc85a67acf1849825a775",
     "kits/beast-riders/towns/hook.js": "a922d389ad237ba5d9bf2c9f1fbb26e30755910eed32675c59c93e241b7863ca",
     "kits/beast-riders/towns/mavs-ports.js": "5e372ea147014cfb1a44563adeed3c02ab1a992f6cd9d7ecc9a9c96a7e5f19b9",
-    "kits/catalog/furniture_bundle.py": "d90a6e8ea6d8abdbf05b827ac5aec6b4eea76ee8412013ffc82f8fa138827a5b",
     "kits/catalog/krator-master-furniture-beast-rider.js": "647d5bbb08106d9f689f189e063b19b68b8267338068327563dc34f0ddfc0bb9",
     "kits/catalog/krator-master-furniture-generic-fruit.js": "858ded98e076a6c6f96b5350718a514da4ecf5b161bcaed0805b837999b5dba5",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
@@ -267,7 +266,6 @@
     "kits/fauna/tex/skin.albedo.webp": "3ab6d925ecf817078b66c17122eac5f79f81dbe515bc78b54ff110a2f83137d6",
     "kits/fauna/tex/sleek.albedo.webp": "d84a1e76db9bf4b0ff418232509e815ff3bc3c6b02647924f9ec8be952401f0e",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
-    "kits/interiors/kit_bundle.py": "7c5d0b463783851d47ef2e3857d8341b421bb4235e75eaea8e297819aecd4384",
     "kits/interiors/sets/beast-rider.js": "88f45c32379f7bbf2a0695ee26b4e20157a6baedd7403c01e0f64e0cf44ebbcd",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
@@ -529,7 +527,6 @@
     "kits/iziz-vernacular/src/74-vern-guilds.js": "2f8db095e3d23f3767f43777bdb64a7a5d222ec7b1d1b0cdfaf70df3da966603",
     "kits/iziz-vernacular/src/74b-vern-frontier.js": "a488d92600d611e571ca6a7e2b0e0dbcaeb697ce1ff9fa98889101c008f2d86b",
     "kits/iziz-vernacular/src/74z-vern-trades.js": "945843153f49ecbaaec8fe530ddf0c3efb8d2715e793693f91abbede5e3f48e5",
-    "kits/iziz-vernacular/vernacular.py": "adcba6da99df02f2725becd080b6db00df65e8659d79f5b2b5d3bb0ae9e7fe16",
     "kits/resources/src/42r-res-ore.js": "a07d772f7dc72bfde527cc3f4c8050685b4eab577e504b5c26a4913d61828b14",
     "kits/resources/src/44r-res-nodes.js": "c79138f7af41abcc96c581e667bf16a97bfa9e1d8675a30068633976620b67e8",
     "kits/ringsea/src/00-head.html": "3c3bc4894f147593ea5e8a914e240098c44e6df322ae753a706d4c3933132d6e",
@@ -950,7 +947,6 @@
     "settlements/mavs-refuge/tex/wall.normal.webp": "10538c0561a575ac090eeb9b12658116d7f9a698f4ef2c179e456da435b1f95f",
     "settlements/mavs-refuge/tex/wall.rough.webp": "7b7d15580f9a3172b41867c437c4414b07578e2c381a2a1b19c0c60f65d9d201",
     "settlements/voth/catalog/lod.js": "ea76913d4f87b6e32d400196cda7eeaf3d5a55ec58bca5c7773ac861ce8c1bb6",
-    "settlements/voth/ringsea.py": "2844e2c31501fea2707af2a35cde294f40087737c889e4373c6a6a78f8adcb16",
     "settlements/voth/targets/voth-site/00-head.html": "63c3c773fb26ea5a8b4bd9039a9d8d72f98046b5678b80247c29a2566504f5ff",
     "settlements/voth/targets/voth-site/10-site-model.js": "4e6ee426165afd9918187c3f125703dcaf3bd4df051989b61f9bb638562c9527",
     "settlements/voth/targets/voth-site/50-site-scene.js": "4560c244c61b9f2601a0fcb2c66a1a0aea94e24742ada87ca3ab919d77b15f70",
@@ -983,10 +979,7 @@
     "settlements/ys/src/78-hyk-agri.js": "213155a0d24578e36ab3fce37f11197f6715a694b1ae8d6fa31a28e393cc1b69",
     "settlements/ys/src/79-hyk-markets.js": "7d799c2cf0f5214021b3ed42420f84b8e46aa21fdaef11fc830e8de47851194c",
     "settlements/ys/src/79z-ys-matlib.js": "4c49a4c02c89eda07d05b6dd45a4d3869af182fcc53c27fc9dc34c137dd5630e",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
-    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
-    "tools/textures/matlib_pack.py": "1b52c8d572be81c62d6615f168922754b262e233694b207ae266d678bd4212c8"
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "core/simulation": "1bdf12b281450fb735fcd422d965919dc4cfebaf923e4cfeba3762b071177c22",
@@ -1003,8 +996,8 @@
    },
    "listed_by": "code",
    "outputs": {
-    "settlements/isle-demo/dist/isle-city.html": "db760dd5cd5cb1e8feef8e414f30d4d4c6f405bb1d952b66c67b6569f155cecc",
-    "settlements/isle-demo/dist/isle-city.plan.js": "53c50ce644cccfadfb40ebc4a3c8ad8a5bc43679c88b46d83894aa7e1f9af52d",
+    "settlements/isle-demo/dist/isle-city.html": "6cd6500b827efacadf44c0325ac4fb25f6a2a0ef258856b480b8c7812fd1932f",
+    "settlements/isle-demo/dist/isle-city.plan.js": "acf11a863cc52a658b0a1a70d133c88b48753ea05276ecfc0cd37b62b6b2303d",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "c72fa3b1b843cced9cea17d5db49269befc6e5a3a719f0fd99aece5249cc12e7",
     "settlements/isle-demo/dist/isle-city.tex.islanders-3.js": "d752648ae8a0dff49cd9552ef801690ce291b9891838c23e2971c4daa3fb88de",
@@ -1016,8 +1009,8 @@
     "settlements/isle-demo/dist/isle-site.html": "efa35784569bde821320ae337626c302e2ca4a403d9ee1ea5bf7d67736d3947b"
    },
    "outputs_raw": {
-    "settlements/isle-demo/dist/isle-city.html": "db760dd5cd5cb1e8feef8e414f30d4d4c6f405bb1d952b66c67b6569f155cecc",
-    "settlements/isle-demo/dist/isle-city.plan.js": "53c50ce644cccfadfb40ebc4a3c8ad8a5bc43679c88b46d83894aa7e1f9af52d",
+    "settlements/isle-demo/dist/isle-city.html": "6cd6500b827efacadf44c0325ac4fb25f6a2a0ef258856b480b8c7812fd1932f",
+    "settlements/isle-demo/dist/isle-city.plan.js": "acf11a863cc52a658b0a1a70d133c88b48753ea05276ecfc0cd37b62b6b2303d",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "c72fa3b1b843cced9cea17d5db49269befc6e5a3a719f0fd99aece5249cc12e7",
     "settlements/isle-demo/dist/isle-city.tex.islanders-3.js": "d752648ae8a0dff49cd9552ef801690ce291b9891838c23e2971c4daa3fb88de",

@@ -4,6 +4,57 @@
       survey's distances (PLAN.md section 1): far crests 12-17 km, the Godthrone north-west, the inner walls' snowfields,
       the interior hills. A horizon cast from the scale model's heightfield at the site (SKY-PLAN.md 3.3, "Later") replaces
       them with no code change: the stage's `ridges` take a `profile`.
+
+- [x] **The painted walls were about three times too tall — all four stations are now cast** (measured and corrected 2026-11-25 by the
+      scale-model session's horizon cast, 1,024 azimuths per band; `openworld/catch-bowl/PLAN-TERRAIN.md` **P19**). The
+      drawn ceiling of a ridge layer is `base + amp + peakAmp` (`core/atmos/sky/89-atmos-e-skymodel.js`,
+      `A.ridgeProfile`). From the Catch floor the highest thing visible **anywhere** is **2.97°**, and the tallest ground
+      within 240 km subtends under **2°**, and the Godthrone massif itself — **24.8 km high, the tallest ground on the
+      map** — subtends only **0.42°** from station 1, standing 451 km off with 21.1 km of that curvature drop. These
+      pages drew:
+
+      | Station | Fragment | far crest | inner wall | max drawn |
+      |---|---|---|---|---|
+      | 1 sand sea | `src/45b-host-stage.js` | `-1.81 / 8.82 / 2.4` | `-1.96 / 8.82 / 3` | 9.41° / 9.86° |
+      | 2 Stair's oasis | `stations/oasis/45b-host-stage.js` | **identical** | **identical** | 9.41° / 9.86° |
+      | 3 the lake | `stations/lake/45b-host-stage.js` | **identical** | **identical** | 9.41° / 9.86° |
+      | 4 north fan | `stations/fan/45b-host-stage.js` | `-2.10 / 12.60 / 2.4` | `-3.00 / 16.80 / 3` | 15.0° / 16.8° |
+
+      Stations 1, 2 and 3 shared the far-crest and inner-wall layers to the digit: the layers were written once and
+      copied, so this was one authoring error, not three. (The other two layers were *not* copied wholesale — station 1's
+      Godthrone layer read `base:3.6, amp:1.2` where station 4's read `2.2 / 2.8` — so each of the eight was cast and
+      reported on its own rather than assumed.) **All four are now cast**, and two further facts came out of doing it:
+
+      - **The eye is the page's `siteH` + 30, not the model cell.** `core/atmos`'s ridges are elevation angles in the
+        camera's space and the camera stands on the *page's* ground. The far layers do not care (under 0.1°), but **the
+        near layer moves about 0.8° per 100 m — more than its own amplitude**, so it can never be pinned tighter than
+        the page's own ground is known. At station 2 the gap is 379 m (the model cell is Stair's hill; `siteH` is the
+        spring at its foot, sub-cell on a 2 km grid) and layer 3 moves 1.44°; at station 1 the 98 m gap flips its sign.
+      - **`snowH` is in `dist·tan(el)` units, not metres of terrain** (`89-atmos-g-sky.js`: `hgt = dist*tan(radians(el))`,
+        and `snowH` and `forestH` are compared against `hgt`). So cutting the amplitudes ~2.5× shrank every drawn
+        ridge's `hgt` by the same factor and **put every station's snow line above the ridge it sits on — the snowfields
+        vanished entirely** until they were re-expressed as the `hgt` at which the real horizon crosses the intended
+        snow line (1,700 / 3,100 / 1,850 / 2,150 for stations 1-4). Station 4's is the instructive one: in its 30-90 km
+        band the terrain never reaches the authored 4,400 m at all, so its snowfields were never physically there.
+      - `hz` needs no such care and none was changed: `89s` sets `haze = -ln(1-hz)/(dist·fogDensity)` and the shader
+        applies `1-exp(-dist·uFogD·R.w)+0.06`, so `dist` cancels and the applied haze is `hz + 0.06` whatever `dist` is.
+
+      It needs no model to see that it is wrong: a 12 km wall subtends ~9° only at about **70 km**, and the Catch is
+      ~127,000 km², so from its middle the walls are **150-250 km** off — at 200 km a 12 km wall subtends ~**2.1°** after
+      curvature. The authored numbers are a **4.22-era hand survey** the scale model has moved under twice since. Nothing
+      is broken and nothing crashes, but every screenshot of the Catch floor misstates the scale of its own horizon.
+
+      **To fix:** cast at each station's pixel with `biomes/seouterwall/region/far.py`'s `ridges_of` (the horizon at 1,024
+      azimuths per distance band, with the planet's curvature, `drop = d²/2R`, R from the sky model's `kmPerDeg` 84 →
+      4,812,845 m), then take `base` = the band's 2nd percentile elevation angle, `base + amp` = the 98th, `peakAmp` = the
+      rest to the max, `dist` = the mean distance of the horizon-defining points. Which makes this entry and the one above
+      the same job: the cast is the fix for both.
+
+- [ ] **`STAGE.site` is in the 4.22 legacy frame, not the scale model's** (2026-11-25; `PLAN-TERRAIN.md` **P22**).
+      `89-atmos-e-skymodel.js` carries `frame:{mPerPx:2000, refPx:[446,690], ...}` and that `refPx` is a legacy pixel. All
+      four stations' `site` values are legacy and map onto their 5.1 pixels by exactly `legacy_shift` (**+272, +330**), so
+      **re-siting a station with a model pixel moves the sun, the giant, the ring and the moons.** Nothing in these
+      fragments says which frame their numbers are in; this note is the only thing that does.
 - [x] **The black storm** (2026-10-26): core/atmos's weather still has no dust-storm mode (a core change: an opt-in `o.dust`
       like `o.ash`), so the host composes one (`src/89y-host-storm.js`, the panel's "air" select or `?air=storm`): ATMOS's
       wind base scaled to a gale (the dust box lifts thick off every bare patch), then, after the shared sky has set the
@@ -29,7 +80,23 @@
 - [ ] **The tunnel's portal is a placeholder** (station 2): a plain concrete frame and a dark mouth, until the Stair build
       draws it from `kits/ancients`. Stair itself (the Hill arcology, the merchants, the divers) is its own build: the Hill's
       slope is left empty here, a `site.stair` record.
-- [ ] **The oases' names and places are proposed** (PLAN.md section 8, 2026-10-26): the owner asked for proposals.
+- [x] **`CATCH.OASES` carried the 4.21 canvas** (fixed 2026-11-24). Four of the five records stood 75 to 209 km from the
+      pins the owner's scale-model edit 5 set: Kolli 209 km out, Lasso 203, Bitta 112, Arfwai 75; only Stair agreed. They
+      now carry the **5.1** pixels, every oasis is marked lived-in with its people and its keeper (the owner, 2026-11-16:
+      each is kept by one caravan group's hands, ~100 or less), and Stair's note says 750 in place of "a couple of
+      hundred". `openworld/catch-bowl/PLAN-TERRAIN.md` P1 has the measurement and `tools/survey.py drift` reproduces it.
+      The records are read only by this kit's own checks, so no placement moved; the four pages were rebuilt and the hash
+      baseline updated all the same, since the fragment rides in the page.
+- [ ] **Stations 1 and 4 stand at 4.21 pixels** (`openworld/catch-bowl/PLAN-TERRAIN.md` P2). Shifted into 5.1, the sand
+      sea's point (1072,1340) now reads **4,901 m** and the north fan's (1010,1274) **7,037 m**: both are mountainside.
+      Each station's *local ground is synthetic*, authored in its own `45b-host-stage.js`, so neither page is wrong — but
+      `STAGE.site` (the sky's place) and `STAGE.ridges` (the walls, "painted from the survey's distances") were surveyed
+      at those pixels. Measured candidates: station 1 at **px 1055,1386** (448 m, a 6 m/km slope, the floor's heart
+      between Arfwai and the terminal lake) and station 4 at **px 1056,1366** (~1,400 m, Kolli in the frame, the wall
+      3,530 m close on the north). Re-siting means re-surveying each station's ridge distances on every bearing and
+      rebuilding both pages; a session was spun off for it on 2026-11-24.
+- [ ] **The oases' names are proposed** (PLAN.md section 8, 2026-10-26): the owner asked for proposals. Their *places*
+      are no longer proposed — they are the model's own pins (above).
 - [ ] **No fauna.** The sedesert kit's deer and coyotes are not read (the floor is too hot); the Catch has none of its own
       yet (brine flies at the lake, a wading bird on the brine, the caravans' beasts: for `kits/fauna`).
 - [ ] **The dune shrub has no library card.** It is drawn as procedural geometry (green jointed twigs, red fruit), which

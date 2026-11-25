@@ -23,9 +23,9 @@ console.log('a year of the Catch in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+Y
 // 1. declared: Stair and its Brotherhood house, the oases (Kolli's and Lasso's two keepers each), the salt works, the six
 //    Twins stations, the White Gills; Stair's 750 and the oases at the owner's numbers
 {const P=id=>Y.V.settlements.find(s=>s.id===id),pp=ids=>ids.reduce((n,id)=>n+(P(id)?P(id).people:0),0);
- const good=Y.S.order.length===16&&!Y.S.problems.length&&pp([STAIR,'horns.stair'])===750&&pp(['scatchkolli01','scatchkolli01.goldanda'])===80&&
+ const good=Y.S.order.length===17&&!Y.S.problems.length&&pp([STAIR,'horns.stair'])===750&&pp(['scatchkolli01','scatchkolli01.goldanda'])===80&&
   pp(['scatcharfwai01'])===60&&pp(['scatchbitta01'])===40&&pp(['scatchlasso01','scatchlasso01.geo'])===100;
- T.ok('the Catch declared: Stair 750 with the Brotherhood\'s house, Kolli 80, Arfwai 60, Bitta 40, Lasso 100, the salt works, the Twins\' six stations, the White Gills; no problems',good,
+ T.ok('the Catch declared: Stair 750 with the Brotherhood\'s house, Kolli 80, Arfwai 60, Bitta 40, Lasso 100, the salt works, Bab al-Hawa 120, the Twins\' six stations, the White Gills; no problems',good,
   Y.S.order.length+' settlements; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));}
 // 2. the year's books balance
 T.ok('the year\'s books balance, every settlement and good',Y.ledger.ok,Y.ledger.ok?'all goods':Y.ledger.problems.slice(0,3).join('; '));
@@ -38,8 +38,8 @@ const fedCheck=Bk=>{const bad=[];Object.keys(Bk).forEach(s=>{const x=Bk[s];if(!x
 //    hold the town's water many times over
 {const wells=Object.values(Y.sites).filter(x=>x.kind==='aquifer'),low=wells.filter(x=>x.amount<x.start*.5);
  const st=B[STAIR],made=st.made.water||0,used=st.used.water||0;
- const good=wells.length===15&&!low.length&&made>=used;
- T.ok('15 wells draw what their people use and hold their aquifers (none under half at the year\'s end)',good,
+ const good=wells.length===16&&!low.length&&made>=used;
+ T.ok('16 wells draw what their people use and hold their aquifers (none under half at the year\'s end)',good,
   wells.length+' wells; low: '+(low.map(x=>x.settlement+' '+Math.round(x.amount)).join(', ')||'none')+'; Stair drew '+Math.round(made/1000)+' m3, used '+Math.round(used/1000)+' m3');}
 // 5. the salt works: the Train's pans make the year's salt, soda, potash, saltpeter and gypsum in the cool months
 const pansCheck=Bk=>{const m=Bk.svhmyhf33w.made,P=CATCH_TUNE.places.find(p=>p.id==='svhmyhf33w').pans;return Object.keys(P).every(g=>(m[g]||0)>=P[g]*.8&&(m[g]||0)<=P[g]*1.1);};
@@ -160,4 +160,104 @@ const stormCheck=x=>{let crossed=0,waited=0;GROUPS.concat(['caravan.train.salt']
  const site={regen:J.dry.regen},open=J.dry.open;
  T.ok('C5: Arfwai\'s well runs low in late summer: its recharge cut to '+Math.round(CATCH_TUNE.hazards.dryRegen*100)+' % while the dry window is open',!!Sd&&Sd.regen===CATCH_TUNE.hazards.dryRegen&&site.regen!=null&&Math.abs(site.regen-(open?st*Sd.regen:st))<1e-6,
   'the window '+JSON.stringify(CATCH_TUNE.hazards.windows.dry)+', its recharge now '+(site?site.regen:'?')+' l a day ('+(open?'open':'closed')+')');}
+// ---- S1 (openworld/catch-bowl/PLAN-SIM.md section 2): the Godsgate's caravanserai on the north road. Bab al-Hawa is
+//      the pass's only safe night: snowmelt at the divide, and BARNS - hay carried up 2,400 m and stacked through the
+//      summer, since nothing is cut at 3,590 m. It was first written with no fodder at all, on the reasoning that the
+//      trains would haul its fodder as freight; that made it a sink the beasts could never be fed from, because
+//      SIM.trade provisions at EVERY stop, and it cost a trade route (PLAN-SIM.md 2x and 2y). The checks below are
+//      written round that: a stop on a caravan road needs a water number AND a fodder number.
+const BAH='godsgate.babalhawa';
+// 1: it is declared, on the four Godsgate groups' rounds, and the Train's is untouched (it comes out of Jabal, not over the pass)
+{const P=CATCH_TUNE.places.find(p=>p.id===BAH),onIt=GROUPS.filter(id=>(road(id).stops||[]).indexOf(BAH)>=0);
+ const train=(road('caravan.train')||{}).stops||[],salt=(road('caravan.train.salt')||{}).stops||[];
+ T.ok('S1: Bab al-Hawa is declared at the Godsgate with its snowmelt and its barns, on the four groups that cross the pass and on neither of the Train\'s rounds',
+  !!P&&P.kind==='serai'&&!!P.well&&P.fodder>0&&onIt.length===4&&train.indexOf(BAH)<0&&salt.indexOf(BAH)<0,
+  (P?P.people+' people, well '+P.well[0]+' l a day, barns '+(P.fodder||'NONE')+' kg a day':'missing')+'; on '+onIt.map(x=>x.slice(8)).join(', '));
+ T.neg('a stop on a caravan road with a well and no fodder is caught: the beasts draw there every passage, so it is a sink that can never be filled',
+  x=>{const q=x.find(p=>p.id===BAH);return !!q&&!!q.well&&q.fodder>0;},
+  CATCH_TUNE.places.map(p=>{if(p.id!==BAH)return p;const d=Object.assign({},p);delete d.fodder;return d;}),CATCH_TUNE.places);}
+// 2: the long home leg is cut at the pass, and the recorded totals of section 1c survive the cut
+{const Rd=road('caravan.getmastarz'),i=Rd.stops.indexOf(BAH),k=Rd.stops.indexOf('scatchkolli01');
+ const home=Rd.legs[Rd.stops.indexOf('gate.iziz')],pass=Rd.legs[i],dayKm=CATCH_TUNE.speed;
+ const km=m=>Math.round(m/1440*dayKm),total=km(home)+km(pass);
+ T.ok('S1: the Godsgate cuts the Iziz houses\' home leg in two, and the two together still measure the 1,232 km of the proposal\'s section 1c',
+  i>=0&&k===i+1&&home>0&&pass>0&&Math.abs(total-1040)<60,
+  'home to the pass '+km(home)+' km, the pass to Kolli '+km(pass)+' km, together '+total+' km (was one leg of 1,040 km)');
+ T.neg('a round whose first northern stop is Kolli has no pass leg',
+  x=>x.stops.indexOf(BAH)>=0&&x.stops.indexOf(BAH)+1===x.stops.indexOf('scatchkolli01'),
+  Object.assign({},Rd,{stops:Rd.stops.filter(s=>s!==BAH)}),Rd);}
+/* 3: EVERY halt waters and feeds. SIM.trade draws the beasts' water and fodder at every stop, not only at the ones
+      named in `halts` ("the beasts water and feed whether or not the stop trades", 77-sim-6-trade.js), so a stop with a
+      well and no fodder taxes every train that passes and reports the shortfall against itself. This is the general
+      form of the bug Bab al-Hawa was: core/simulation/SCHEMA.md carries the rule. `fodder` left `forHalts` with the
+      barns, so the trains no longer haul it as freight -- which is capacity the trade goods get back. */
+{const byId={};CATCH_TUNE.places.forEach(p=>{byId[p.id]=p;});
+ const bad=[];let seen=0;
+ GROUPS.concat(['caravan.train.salt']).forEach(id=>{const Rd=road(id);(Rd.halts||[]).forEach(i=>{const q=byId[Rd.stops[i]];
+  if(!q)return;   /* a halt in Xanadu's own settlements, not this tune's to declare */
+  seen++;if(!q.well||!(q.fodder>0))bad.push(id.slice(8)+' at '+Rd.stops[i]);});});
+ T.ok('S1: every halt this tune declares waters AND feeds its beasts, so no round provisions at a sink',seen>0&&bad.length===0,
+  seen+' halt passages checked over '+(GROUPS.length+1)+' rounds; '+(bad.length?'SINKS: '+bad.slice(0,4).join(', '):'none without both a well and fodder'));
+ T.neg('a halt with a well and no fodder is caught wherever it is on the round',
+  x=>{const bd=[];(x.halts||[]).forEach(i=>{const q=x._by[x.stops[i]];if(q&&(!q.well||!(q.fodder>0)))bd.push(i);});return bd.length===0;},
+  Object.assign({},road(GROUPS[0]),{_by:Object.assign({},byId,{[BAH]:Object.assign({},byId[BAH],{fodder:0})})}),
+  Object.assign({},road(GROUPS[0]),{_by:byId}));
+ T.ok('S1: fodder no longer rides as freight for the halts, now that the pass has barns of its own',
+  GROUPS.every(id=>(road(id).forHalts||[]).indexOf('fodder')<0),
+  'forHalts: '+(road(GROUPS[0]).forHalts||[]).join(', '));}
+// 4: the pass sells to the trains that stop (it is a peopled halt), and it buys its whole table off them
+{const Rd=road('caravan.getmastarz'),i=Rd.stops.indexOf(BAH),sells=(Rd.sells||[]).indexOf(i)>=0,halts=(Rd.halts||[]).indexOf(i)>=0;
+ const B=JB[BAH],bought=B?Object.keys(B.imported||{}).filter(g=>(B.imported[g]||0)>0):[];
+ T.ok('S1: the pass is a selling halt on the round, and a year leaves it fed from the trains it serves',sells&&halts&&bought.length>0,
+  'halt '+halts+', sells '+sells+'; a year imported '+(bought.length?bought.map(g=>g+' '+t(B.imported[g])).join(', '):'nothing'));
+ T.neg('a stop that is not a selling halt does not live off the trade',
+  x=>(x.sells||[]).indexOf(x.stops.indexOf(BAH))>=0,Object.assign({},Rd,{sells:(Rd.sells||[]).filter(k=>k!==i)}),Rd);}
+// 5: the God-Bore costs the pass's legs all year, and the rime whiteouts cost them in winter only
+{const L=J.losses,n=re=>GROUPS.reduce((a,id)=>a+(L[id]||[]).filter(x=>re.test(x.why)).length,0);
+ const bore=n(/God-Bore/),white=n(/whiteout/),W=CATCH_TUNE.hazards.windows.whiteout;
+ /* the God-Bore is nightly, so a year must show it. The whiteouts are a WINDOWED roll on the pass's legs only, and a
+    train crosses the pass about twice a year: a year holds under one expected whiteout loss, so demanding one would be
+    demanding a die come up. Assert instead that the rule is declared on the right legs with the right window. */
+ /* ...and on the PASS groups only. The Train of Jabal comes out of Jabal and never crosses the Godsgate, so it has no
+    `godsgate` legs and must carry no whiteout rule: requiring one of every group was this check's own bug. */
+ const pass=GROUPS.filter(id=>((road(id)._legs||{}).godsgate||[]).length>0);
+ const decl=pass.length===4&&pass.every(id=>{const Rd=road(id),gg=Rd._legs.godsgate;
+  const w=(Rd.losses||[]).find(x=>/whiteout/.test(x.why));
+  return !!w&&w.window==='whiteout'&&w.legs.length===gg.length;})
+  &&GROUPS.filter(id=>pass.indexOf(id)<0).every(id=>!(road(id).losses||[]).some(x=>/whiteout/.test(x.why)));
+ T.ok('S1: the God-Bore takes beasts in the Godsgate all year, and the rime whiteouts are declared on the pass\'s legs in its winter window',bore>0&&decl,
+  bore+' God-Bore losses and '+white+' whiteout losses this year (the window '+JSON.stringify(W)+'; a train crosses the pass about twice a year, so a whiteout loss is under one a year in expectation)');
+ const Q=runJoined(365,{hazards:false});
+ T.neg('with the hazards off the Godsgate costs nothing',
+  x=>GROUPS.reduce((a,id)=>a+((x.losses[id]||[]).filter(y=>/God-Bore|whiteout/.test(y.why)).length),0)>0,Q,J);}
+/* ---- ALL FIVE LEAVE IN TURN, AND THEIR ORDER IS HOW FAR THEY COME (the owner, 2026-11-25: first "can we stagger
+   house departures so they don't step on each other like that", then "we would probably expect them to arrive at
+   different times as caravans may be coming from as far as Iziz, Jabal, Verge, or Yuni").
+   The first version staggered only the two houses sharing a pool and left every other group on the same hour; S4
+   measured what that costs (PLAN-SIM.md 6b). Now the four home pools take an even slice of CATCH_TUNE.muster each,
+   ORDERED BY THEIR HOME LEG -- Jabal's 684 km first, the Geomancers' 1,017 km last -- and the two Iziz houses split
+   their own slice. So the expected phases at a 60-day muster are 0, 15, 23, 30 and 45 days. */
+{const R=CATCH_TUNE.groups.map(g=>({id:g.id,pool:g.pool,r:road('caravan.'+g.id)})).filter(x=>x.r);
+ const off=x=>x.r.offset||0,days=x=>Math.round(off(x)/1440);
+ const byPool={};R.forEach(x=>{(byPool[x.pool]=byPool[x.pool]||[]).push(x);});
+ const pools=Object.keys(byPool),slice=CATCH_TUNE.muster*1440/pools.length;
+ /* every pool on its own slice, no two pools together, and the shared pool's two houses apart but inside one slice */
+ const perPool=pools.map(p=>Math.min.apply(null,byPool[p].map(off)));
+ const spread=perPool.slice().sort((a,b)=>a-b);
+ const distinct=spread.every((v,i)=>i===0||v-spread[i-1]>=slice-1);
+ const iz=byPool['gate.iziz'].map(off).sort((a,b)=>a-b);
+ const housesApart=iz.length===2&&iz[1]-iz[0]>0&&iz[1]-iz[0]<=slice;
+ const nearestFirst=Math.min.apply(null,byPool['gate.dasri'].map(off))===0;
+ const widest=Math.max.apply(null,R.map(off));
+ const good=distinct&&housesApart&&nearestFirst&&widest>=slice*(pools.length-1)-1&&widest<CATCH_TUNE.muster*1440;
+ T.ok('all five groups leave in turn over the '+CATCH_TUNE.muster+'-day muster, the four pools a slice apart in order of how far they come, and the two Iziz houses sharing their slice',good,
+  R.sort((a,b)=>off(a)-off(b)).map(x=>x.id+' day '+days(x)).join(', ')+'; a slice is '+Math.round(slice/1440)+' d');
+ T.neg('two pools leaving on the same day are not spread over the muster',
+  x=>{const s=x.slice().sort((a,b)=>a-b);return s.every((v,i)=>i===0||v-s[i-1]>=slice-1);},
+  perPool.map(()=>0),perPool);}
+// and the point of it: both houses now land iron at Strongbow, neither starved by the other
+{const g=landedAt(J.trade,['caravan.getmastarz'],'sfgtxw10kr'),d=landedAt(J.trade,['caravan.goldanda'],'sfgtxw10kr');
+ T.ok('with the houses staggered, BOTH land iron at Strongbow: neither rival is starved of the pool by the other',(g.iron||0)>0&&(d.iron||0)>0,
+  'Getmastarz iron '+t(g.iron||0)+', Goldanda iron '+t(d.iron||0));
+ T.neg('a house that lands nothing has been starved',x=>(x.a||0)>0&&(x.b||0)>0,{a:4000,b:0},{a:4000,b:1500});}
 T.done();
