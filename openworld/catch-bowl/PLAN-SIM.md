@@ -81,10 +81,42 @@ becomes stages on real ground (`PLAN-TERRAIN.md` section 5a: a carved thalweg, 2
 > Stair about 1,232 km, Yuni about 1,415) are unchanged — the distance moves from one long leg into two. **The Train of
 > Jabal does not cross the Godsgate**: it comes out of Jabal to Arfwai, so its round is untouched.
 
-### 2y. What actually broke Goldanda: the serai had no fodder (2026-11-25)
+### 2x. The stagger never reached the sim: a dropped field in the region loader (2026-11-25)
 
-**Section 2z below diagnosed this wrongly, and the stagger it recommended did not fix it.** Recording both, because the
-wrong diagnosis was plausible and the right one is a rule worth not learning twice.
+**This is the third reading of one failure, and the first one with a mechanism that explains the evidence.** The
+sequence is worth keeping whole, because each step was a reasonable inference from what was in front of me and two of
+the three were wrong.
+
+1. **2z**: the two Iziz houses contend for one pool at the same instant. The owner chose the stagger; it was built.
+2. The numbers came back **byte-identical**, so I concluded the stagger was not the lever and looked elsewhere — **2y**:
+   Bāb al-Hawa had no fodder, the serai ran 321,624 kg short, and the halts' provisioning was crowding the trade cargo
+   off the beasts. The barns went in. Goldanda still landed **0.0 t**, with Getmastarz still at 4.0 t.
+3. **The real reason the numbers did not move: `offset` never reached the sim.** `core/region/50-region-valley.js` builds
+   each `SIM.trade` call from an **explicit field list**, and that list carried `stagger` but not `offset`. So
+   `CATCH_TUNE` wrote `offset: 24018` into the road spec, the probe read it back off `V.roads` and printed
+   `caravan.goldanda(off 24018)` — and the sim was handed `offset: undefined`. The round's own `R.offset` fell to its
+   `o.offset == null ? 0` default, and the first departure stayed at minute 780, the same minute as Getmastarz's. The
+   probe's own departure list said so (`{"k":0,"from":0,"m":780}` for both houses) and I read it as the offset being
+   too small to matter rather than as the offset not being there.
+
+**The lesson is about the shape of the evidence, not about caravans.** "Identical output under a changed input" has two
+explanations — the input is not the lever, or *the input never arrived* — and I took the first without checking the
+second, which was one grep away. A spec field that a loader has to forward by name is exactly where a change gets lost,
+and the loader's own doc comment did not list `offset` either, so nothing contradicted me.
+
+**Fixed:** `50-region-valley.js` forwards `offset`, and its spec comment names it. Only `settlements/shumar` and
+`settlements/urundashi` embed that file; both are rebuilt. `test-catch.js` is re-running with the offset actually
+applied, so **2z's diagnosis is back in play and untested**: the stagger may fix Goldanda after all, and the barns may
+turn out to have been an unrelated (real) bug fixed on the way.
+
+**What is settled either way:** the serai's 321,624 kg fodder shortfall was real and is fixed on its own merits, and the
+rule in 2y's last paragraph stands — a settlement on a caravan's road is a place the beasts eat, whether or not it
+trades.
+
+### 2y. The serai had no fodder: a real bug, but not this one (2026-11-25)
+
+**Read 2x above first.** This section's finding is correct and its fix is kept; its *conclusion* — that this is what
+broke Goldanda — was wrong, because the stagger it was displacing had never been applied at all.
 
 The symptom was real: `test-catch.js`'s C3 wanted both Iziz houses to land iron at Strongbow, and **Getmastarz landed
 4.0 t while Goldanda landed 0.0 t**. 2z read that as the two rivals contending for the same pool at the same instant,
@@ -130,8 +162,9 @@ not it trades. Every new stop needs a water *and* a fodder number, or it silentl
 
 ### 2z. A fragility S1 exposed, which is the owner's to settle
 
-> **Superseded as a diagnosis by section 2y (2026-11-25).** The fragility described here is real and the stagger built
-> for it is kept, but it was *not* what starved Goldanda. Read 2y first.
+> **Back in play (2026-11-25).** This was marked superseded by 2y for a few hours. Section **2x** explains why that was
+> premature: the stagger this section recommended was written into the tune but **dropped by the region loader**, so it
+> was never tested. Read 2x, then 2y, then this.
 
 **The two Iziz houses run the identical round and can starve each other.** `test-catch.js`'s C3 check wants both to land
 iron at Strongbow; with S1 in, **Getmastarz lands 4.0 t and Goldanda 0.0 t**. It is not a timing drift — measured, the

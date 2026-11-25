@@ -2089,8 +2089,8 @@
    "sha256": "01eecb7b86e753639bec345d5c9432fb061b132467f40845239f6246bb4a194c"
   },
   "settlements/shumar/dist/shumar.html": {
-   "bytes": 3375440,
-   "sha256": "0c0777240a927dae83730e90a000ea0c1e4ae218217eaf69d25bff838e7bb49a"
+   "bytes": 3375616,
+   "sha256": "7858dcc29653a411f35ac971c253e0ebcfad4f8ede1a9f7759c1d1c91fb9549e"
   },
   "settlements/skink/dist/skink.html": {
    "bytes": 8214933,
@@ -2129,8 +2129,8 @@
    "sha256": "662c92689663347e685830c7684b7b429c3161b4a2ca6a91b41e8e3b7f859d4d"
   },
   "settlements/urundashi/dist/urundashi.html": {
-   "bytes": 3333873,
-   "sha256": "fc6d909f0cb80ea5ba8ae5eda606d225480595023641b854ee642c2c23e68786"
+   "bytes": 3334049,
+   "sha256": "7e0996c7e6cdb0b476194077e1896605035a5dc77fb9426a8a340c34966fb045"
   },
   "settlements/verge/dist/verge.html": {
    "bytes": 3340526,
