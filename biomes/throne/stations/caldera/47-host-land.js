@@ -1,7 +1,7 @@
 // ================================================================= HOST — the land, the fields, the binding (the caldera rim)
 // The rim (its crest ragged, its peaks), the plateau falling gently away behind it, the wall terraced down to the floor, the
 // floor's cones, the lake's pit. The fields the kit reads (cached), BIO.init.
-const FLOWS=THRONE.flowHistory({R:TERR.R+260,cell:16,baseH:(x,z)=>CAL.rim,flows:[],old:THRONE.OLD});
+var CAL_FLOWS=null;   /* the lake's overflow on the floor (below, once the ground it runs over is defined): terrainH0u adds it */
 const ageLabel=a=>a<THRONE.OLD?Math.round(a)+' years':'no flow in the record';
 _mark('stage');
 const ridged=(x,z,s)=>1-Math.abs(fbm(x,z,s,3)*2-1);
@@ -28,10 +28,19 @@ function terrainH0u(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a),pk=peakH(a),
   /* the beds' ledges on the wall itself (not the floor's cones): the slope by differences of the wall alone */
   if(STRATA&&r>CAL.foot-20){const e=2,gx=(wallH(x+e,z)-wallH(x-e,z))/(2*e),gz=(wallH(x,z+e)-wallH(x,z-e))/(2*e);h=STRATA.ledge(x,z,h,Math.sqrt(gx*gx+gz*gz),STRATA_LEDGE);}
   if(r<CAL.foot+20){h+=coneAt(x,z).h+5*(fbm(x*.01,z*.01,118,2)-.5)*smooth(CAL.foot,CAL.foot-200,r);}}
+ if(CAL_FLOWS)h+=CAL_FLOWS.thickAt(x,z);
  // the lake's pit: steep walls down to the lava, a spatter lip round it
  const dl=LAKE.de(x,z);if(dl<LAKE.r*1.35){h+=3.5*Math.exp(-Math.pow((dl-LAKE.r*1.12)/(LAKE.r*.06),2));h=mix(h,LAKE.level-5,smooth(LAKE.r*1.07,LAKE.r*.99,dl));}
  return h;}
 if(BREACH){let s=0;for(let i=0;i<16;i++){const a=i/16*TAU;s+=terrainH0u(BREACH.x+Math.cos(a)*BREACH.throatR,BREACH.z+Math.sin(a)*BREACH.throatR);}BREACH.y=s/16;}   /* the rim's height (the kit's pitY) */
+// THE LAKE'S OVERFLOW (core/terrain KLAVA.bake through shared/46k; PLAN.md "the row's terrain", 2026-11-24): eleven years ago the lake rose
+// and spilled over its lip on the side away from the rim's breach, ~1.5 Mm3 frozen in lobes on the floor round the cones; the pit itself
+// is walled off for the bake (the lava cannot run back into it). ?klava=0 none (the floor as before)
+const OVERFLOW=(function(){const ul=Math.hypot(LAKE.x,LAKE.z)||1,R1=LAKE.r*1.24;return{x:LAKE.x+LAKE.x/ul*R1,z:LAKE.z+LAKE.z/ul*R1};})();
+const FLOWS=THRONE_KLAVA_FLOWS({R:TERR.R+260,cell:16,old:THRONE.OLD,baseH:(x,z)=>LAKE.de(x,z)<LAKE.r*1.16?CAL.rim:terrainH0u(x,z),
+ flows:[{key:'overflow',name:'The lake\'s overflow (eleven years old)',x:OVERFLOW.x,z:OVERFLOW.z,age:11,len:0,w:[0,0],th:[0,0],seed:9701,
+  klava:{cell:10,pad:700,vents:[{x:OVERFLOW.x,z:OVERFLOW.z,r:20,Q:20,duration:75000,T:1420}]}}]});
+CAL_FLOWS=FLOWS;window._klava=FLOWS.klava;
 function waterH(x,z){return -1e9;}   // no water up here: the lake is lava (86 draws it); the snow is solid
 
 // ---------------------------------------------------------------- the fields (cached below; these are the definitions)

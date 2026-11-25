@@ -1021,8 +1021,8 @@
    "sha256": "5100d533f8c223099d3582452f180709116102ea407588ec80496c62ecab7e49"
   },
   "biomes/throne/dist/throne-caldera.html": {
-   "bytes": 1195334,
-   "sha256": "ab6f662d9a9ef0ad7fc435a78849167e24899bc9cc5b0ad72b6e387dd22515d3"
+   "bytes": 1224546,
+   "sha256": "e2e80d97de722dc51977b4748a909137059c70e5fc3f1f178b8071573ff30b92"
   },
   "biomes/throne/dist/throne-cloud.html": {
    "bytes": 1272721,
@@ -1045,8 +1045,8 @@
    "sha256": "42962983b1b3c8dea718150567075dab4f482aa7f4e80a91bcc0907302c59e7a"
   },
   "biomes/throne/dist/throne-kipuka.html": {
-   "bytes": 1404164,
-   "sha256": "6bf48ab57b17ea8d94e9391c8585d4f0a0d7b2aab6fa923b938acd7bdada3147"
+   "bytes": 1814003,
+   "sha256": "0aef2ef96ad61a1427fd151aa2cc972e3ca094a51956119996a9df1f7c405508"
   },
   "biomes/throne/dist/throne-penitentes.html": {
    "bytes": 1046436,
@@ -1061,8 +1061,8 @@
    "sha256": "7c87b4f0e4ed15503491c71aaf2a2c3ed1265ba3cfa0d3fe504efcc0976a90a5"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 1530311,
-   "sha256": "89bafc20fa28c889a654966c67256a641ee6ea08611097394b4c7b9a294f0a13"
+   "bytes": 1531755,
+   "sha256": "d9b7a5c4badafd0384d277377eeb56dcc65fa04069d73e6ef67d8a21578d6dc3"
   },
   "biomes/throne/dist/throne.html": {
    "bytes": 1292415,

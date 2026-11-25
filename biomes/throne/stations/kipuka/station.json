@@ -12,7 +12,8 @@
   "48c-hj-fauna.js": "../hyperjungle/src/58-biome-hyperjungle-fauna.js",
   "48d-hj-floor.js": "../hyperjungle/src/60-biome-hyperjungle-floor.js",
   "48e-hj-dress.js": "../hyperjungle/src/65-biome-hyperjungle-dress.js",
-  "48f-hj-build.js": "../hyperjungle/src/70-biome-hyperjungle.js"
+  "48f-hj-build.js": "../hyperjungle/src/70-biome-hyperjungle.js",
+  "46k-host-klava-flows.js": "../throne/shared/46k-host-klava-flows.js"
  },
  "packs": {
   "hyperjungle": "../hyperjungle"
@@ -34,5 +35,24 @@
   "50-core-water-draw.js",
   "51-core-water-kinds.js"
  ],
- "atmosHost": true
+ "atmosHost": true,
+ "bake": {
+  "script": "bake-flows.js",
+  "out": "kipuka-flows.json",
+  "name": "KIPUKA_FLOWS",
+  "slot": "45a2-host-flows-data.js",
+  "inputs": [
+   "core/rand/08-core-rand.js",
+   "core/biome/10-core-head.js",
+   "core/terrain/46-core-lava.js",
+   "biomes/throne/src/46-biome-throne-flows.js",
+   "biomes/throne/stations/kipuka/45-host-stage.js",
+   "biomes/throne/stations/kipuka/47-host-land.js",
+   "biomes/throne/stations/kipuka/bake-flows.js"
+  ]
+ },
+ "terrain": [
+  "38-core-relief.js",
+  "38b-core-relief-lava.js"
+ ]
 }
