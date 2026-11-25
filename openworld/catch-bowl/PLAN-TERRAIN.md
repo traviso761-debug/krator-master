@@ -454,9 +454,42 @@ moved to 1027,1258 by map edit 2, which is applied (5.1-dated).
 **Found by the map session, 2026-11-25, and the most portable finding of the whole survey.** `biomes/seouterwall/PLAN.md`
 step 6.1 compresses the cordillera, and **the compression follows `E_base`, the 9 km-smoothed base** — which is *high*
 in a valley ringed by 8 km walls. So the valley floors come down with the walls, and each tarn's outflow ends up
-**running downhill into a bowl and uphill out of it**: r708 at **+659.8 m** and r645 at **+407.3 m** against
-`test_smodel`'s 50 m allowance. Carving them back afterwards cuts 300 cells **outside** the province by up to 680 m;
-**guarding the beds while 6.1 runs costs almost nothing.**
+**running downhill into a bowl and uphill out of it**.
+
+**The part that makes it a trap rather than a bug: the curve's knee is tested on `E_base`, not on the cell's own
+height.**
+
+```
+E_alp = where(E_base > 3850, 3850 + 2150*tanh((E_base - 3850)/3600), E_base)
+```
+
+Read quickly, "the curve is the identity below its knee" sounds like a guarantee that low ground is safe. It is not: it
+is a guarantee about the **smoothed** field. A valley floor at 3,000 m whose 9 km neighbourhood averages 7,000 m is
+compressed *as if it were 7,000 m ground*.
+
+**And that is why it is invisible to a point check.** All eight of the landed readings — the saddle, the five tarns,
+Hub 01 — came through at **0.000 m**, and the rescale looked clean, because a point inside the guard is protected.
+**A river is a *path* through unguarded ground between protected points.** No check that samples points rather than
+courses can see this failure.
+
+| | Before 6.1 | After 6.1, guarding only 6.2 and 6.3 |
+|---|---|---|
+| Worst climb in all 963 rivers | 48.3 m (r175) | — |
+| The province's seven rivers | **all 0.0 m** (6.4 had landed them) | — |
+| r708 Wādī al-Ṣakhr | 0.0 m | **+659.8 m** |
+| r645 Wādī al-Zulāl al-Ṣaghīr | 0.0 m | **+407.3 m** |
+| r440 Guli rrija | 0.0 m | +25.1 m |
+| r464 Wādī al-Qamar al-Kabīr | 0.0 m | +1.4 m |
+
+Note what the allowance does to the evidence: at `test_smodel`'s 50 m, **only two of the four broken rivers fail**, so a
+laxer check would have passed the whole thing.
+
+**The fix and its cost.** Carving the courses back down (6.4 step 1's own remedy) does fix the climbs, but it cuts
+**300 cells outside the province by up to 679.8 m**, because a bed graded out of a bowl must keep falling downstream of
+the boundary. **Guarding the beds instead** — every river cell in the model, `binary_dilation` by one for the banks,
+unioned into the guard — puts every river back to **0.0 m**, moves **nothing** outside the province, and costs only
+1,361 → 1,072 fully-weighted core cells. After it, the worst climb over every river in the model is **48.3 m**: exactly
+what it was before, so the rescale adds none.
 
 This is a property of the smoothing, not of model 5.1, so **whoever applies 6.1 to the new model hits it first**. It is
 also the answer to a question `PLAN.md` question A leaves open: the rescale is not simply a matter of where the
@@ -465,13 +498,49 @@ east-west line falls, because wherever it falls, 6.4's beds have to be held whil
 ### P19 — the authored ridge amplitudes are up to three times what the ground subtends *(an authoring error, true on any model)*
 
 **Found by the map session's horizon re-survey, 2026-11-25** (the horizon cast at 1,024 azimuths per band). From the
-Catch floor, **the highest thing visible anywhere is 2.97°**, and the Godthrone mass — 13.6 km of mountain at 240 km —
-subtends **1.72°**. `biomes/catch`'s pages draw ridges up to **9.4°**, about three times over, because the authored
-amplitudes are a **4.22-era hand survey** that the model has moved under twice since.
+Catch floor, **the highest thing visible anywhere is 2.97°** (a 3,179 m ridge 47 km NNW), and the tallest ground within
+240 km — 13,628 m of Godthrone at 239.7 km — subtends **1.72°**. The pages draw ridges up to **9.4°**, and at one
+station **16.8°**.
 
-It is not a terrain bug and it blocks nothing, but every screenshot of the Catch floor is wrong about the scale of its
-own horizon, which is the one thing a 2 km/px model is *for*. The fix is to re-derive the amplitudes by casting, which
-is now a tool rather than a hand survey. The fragments carrying the 9.4° figures are to be named.
+**It is all four stations, not two, and two of them are still wrong.** The max drawn angle is `base + amp + peakAmp`
+(`core/atmos/sky/89-atmos-e-skymodel.js`, `A.ridgeProfile`: `e = base + amp*(0.5 + 0.5*v) + p`, so `base` is the floor
+and `base + amp + peakAmp` the ceiling):
+
+| Station | Fragment | far crest | inner wall | max drawn |
+|---|---|---|---|---|
+| 1 sand sea | `biomes/catch/src/45b-host-stage.js` | `-1.81 / 8.82 / 2.4` | `-1.96 / 8.82 / 3` | 9.41° / 9.86° |
+| 2 Stair's oasis | `biomes/catch/stations/oasis/45b-host-stage.js` | **identical** | **identical** | 9.41° / 9.86° |
+| 3 the lake | `biomes/catch/stations/lake/45b-host-stage.js` | **identical** | **identical** | 9.41° / 9.86° |
+| 4 north fan | `biomes/catch/stations/fan/45b-host-stage.js` | `-2.10 / 12.60 / 2.4` | `-3.00 / 16.80 / 3` | 15.0° / 16.8° |
+
+Stations 1, 2 and 3 are **byte-identical** — written once and copied — which is why this is one authoring error rather
+than three independent mistakes. The map session corrected **stations 1 and 4 only**, the two it was re-siting;
+**stations 2 and 3 still carry it, and nothing in the repo flags them.**
+
+**The physical argument, which needs no model at all.** A 12 km wall subtends ~9° only at about **70 km**. The Catch is
+~127,000 km², so from its middle the walls are **150–250 km** off, and at 200 km a 12 km wall subtends ~**2.1°** after
+curvature. So 9.4° was never geometrically available from that floor **on any model**: it implies walls at 70 km, which
+the polygon does not have. The authored amplitudes are a **4.22-era hand survey** the model has moved under twice.
+
+**How to re-derive it on the new model**, which is a tool already in the repo and already trusted —
+`biomes/seouterwall/region/far.py`'s `ridges_of` cast: cast the horizon at 1,024 azimuths per distance band with the
+planet's curvature (`drop = d²/2R`, R from the sky model's `kmPerDeg` 84 → 4,812,845 m), then take `base` = the band's
+2nd percentile elevation angle, `base + amp` = the 98th, `peakAmp` = the rest to the max, and `dist` = the mean distance
+of the horizon-defining points.
+
+It blocks nothing, but every screenshot of the Catch floor is wrong about the scale of its own horizon, which is the one
+thing a 2 km/px model is *for*.
+
+### P22 — `STAGE.site` is in the 4.22 legacy frame, not 5.1 *(a trap for anyone re-siting a station)*
+
+**The map session, 2026-11-25.** `core/atmos/sky/89-atmos-e-skymodel.js` carries
+`frame:{mPerPx:2000, refPx:[446,690], refLat:-40, kmPerDeg:84, refSubLon:57}`, and that `refPx` is a **legacy pixel**
+(Voth's). All four Catch stations' `site` values are in that frame, and they map onto their 5.1 pixels by exactly
+`legacy_shift` (**+272, +330**).
+
+So **anyone re-siting a station on the new model must write the legacy pixel, not the model pixel** — or the sun, the
+giant, the ring and the moons all move. It is the kind of error that looks like an art problem and is a coordinate
+problem, and nothing in the station files says which frame their numbers are in.
 
 ### P20 — step 6.2's chain and the thalweg that actually landed disagree by 5 px *(a plan question)*
 
@@ -583,6 +652,7 @@ rangers got near enough to see a facility and come home, and its function is the
 | P16 | no | the Stalker Range has almost nothing to simulate, and should not be given a census |
 | **P17** | **settled; the rename is DONE (2026-11-24)** | the Arcbeam-Stair tunnel is gone, but the owner has given a **ruined Parabola-Stair bore** in its place (2026-11-24), which restores the Catch's oldest lore word for word. `LORE.md` §4, `biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md`, `ANCIENT-NETWORK.md` and `ANCIENT-ROADS.md` are rewritten (answers M and N) |
 | **P18** | **a law of the method; blocks 6.1** | applying the rescale without guarding 6.4's beds breaks every tarn outflow (r708 +659.8 m, r645 +407.3 m against a 50 m allowance), because the compression follows the 9 km-smoothed base. **Survives the new model.** Guarding the beds is nearly free |
-| **P19** | **an authoring error; survives the new model** | the Catch's authored ridge amplitudes reach 9.4° where the ground subtends at most **2.97°** from the floor (Godthrone, 13.6 km at 240 km, is 1.72°): a 4.22-era hand survey the model has moved under twice. Re-derive by casting |
+| **P19** | **an authoring error; survives the new model; TWO STATIONS STILL WRONG** | the Catch's authored ridge amplitudes reach 9.4° (station 4: **16.8°**) where the ground subtends at most **2.97°** from the floor (Godthrone, 13.6 km at 240 km, is 1.72°). A 12 km wall subtends 9° only at 70 km, and these walls are 150-250 km off, so it was never available on any model. All **four** stations carry it, 1-3 byte-identically; only 1 and 4 are corrected. Re-derive with `far.py`'s `ridges_of` cast |
 | P20 | a plan question | 6.2's chain centreline (x 1032) against the thalweg that landed (x 1027) at row 1258: one of the two is mis-fitted |
 | P21 | a claim to correct | `biomes/seouterwall/PLAN.md` §5 implies its six station bases pass the 150 m check only after the terrain pass; they passed **before** it, so they are no evidence for 6.1 — see P18 |
+| **P22** | **a trap; survives the new model** | `STAGE.site` is in the **4.22 legacy frame** (`89-atmos-e-skymodel.js`'s `refPx:[446,690]`), offset from 5.1 by `legacy_shift` (+272, +330). Re-site a station with a model pixel and the sun, giant, ring and moons all move. Nothing in the station files says which frame they are in |

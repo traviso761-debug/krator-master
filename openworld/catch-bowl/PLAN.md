@@ -775,17 +775,22 @@ python3 tools/scale-model/cut_site.py catch-bowl --dry    # does the region stil
 node core/region/tests/test-bowl.js                       # do the six places still load? (~100 s)
 ```
 
-Then: read `survey.py`'s output against `PLAN-TERRAIN.md`'s tables, correct what moved, re-check the twenty-one
-pitfalls (**P1-P4, P8, P11, P13-P16 and P20 are terrain findings and may change; P5-P7, P9, P10, P12, P17, P18, P19 and
-P21 are structural and will not** — P18 is a property of the rescale's 9 km smoothing and P19 of the authored page
-amplitudes, so both are true on any ground), re-rank `bridge_sites.py` for Arcbeam's px, and walk `MAP-EDITS.md` edit by
+Then: read `survey.py`'s output against `PLAN-TERRAIN.md`'s tables, correct what moved, re-check the twenty-two
+pitfalls (**P1-P4, P8, P11, P13-P16 and P20 are terrain findings and may change; P5-P7, P9, P10, P12, P17, P18, P19,
+P21 and P22 are structural and will not**), re-rank `bridge_sites.py` for Arcbeam's px, and walk `MAP-EDITS.md` edit by
 edit.
 
-**Two of those carry over as warnings rather than as readings.** P18: whoever applies the SE outer wall's step 6.1 to
-the new model must guard 6.4's river beds while it runs, or every tarn outflow ends up running downhill in and uphill
-out — the compression follows the 9 km-smoothed base, which is high in a valley ringed by 8 km walls. P19: the Catch's
-authored ridge amplitudes reach 9.4° where the ground subtends at most 2.97° from the floor, so they want re-deriving by
-casting whatever model is underneath.
+**Three of those carry over as warnings rather than as readings, and each will cost a day if it is met cold:**
+
+- **P18** — whoever applies the SE outer wall's step 6.1 to the new model must **guard 6.4's river beds while it runs**,
+  or every tarn outflow ends up running downhill in and uphill out. The curve's knee is tested on `E_base`, the
+  9 km-smoothed base, not on a cell's own height, so a valley floor in a ring of 8 km walls is compressed as if it were
+  wall. It is invisible to any point check: eight landed point readings came through at 0.000 m while two rivers broke.
+- **P19** — the Catch's authored ridge amplitudes reach 9.4° (one station 16.8°) where the ground subtends at most 2.97°
+  from the floor, on **any** model: a 12 km wall subtends 9° only at 70 km and these walls are 150-250 km off. All four
+  stations carry it; only two are corrected. Re-derive with `far.py`'s `ridges_of` cast.
+- **P22** — `STAGE.site` is in the **4.22 legacy frame**, offset from the model by `legacy_shift` (+272, +330). Re-site
+  a station with a model pixel and the sun, the giant, the ring and the moons all move.
 
 ### The order this implies
 

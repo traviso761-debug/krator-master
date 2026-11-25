@@ -32,9 +32,10 @@ and a reproducible survey (`openworld/catch-bowl/README.md`). Nothing is cut and
 > account — what does not depend on the model (every census and sim ruling, the hazards, the setpieces, the raids, the
 > kit assignments, the lore corrections), what must be re-measured (thirteen rows), that the **reissued pin ids are the
 > sharper risk than the heights** and break loudly at `load()` rather than drifting, the four commands that re-measure
-> it all in one run each, which of the twenty-one pitfalls can move and which cannot (**P18 and P19, added 2026-11-25,
-> survive any model: the rescale breaks 6.4's river beds unless they are guarded, and the Catch's authored ridge
-> amplitudes are three times what the ground subtends**). **Ask Gemini for a rename table
+> it all in one run each, which of the twenty-two pitfalls can move and which cannot (**P18, P19 and P22, added
+> 2026-11-25, survive any model: the rescale breaks 6.4's river beds unless they are guarded; the Catch's authored ridge
+> amplitudes are three times what the ground subtends, on all four stations, two still uncorrected; and `STAGE.site` is
+> in the 4.22 legacy frame, not the model's**). **Ask Gemini for a rename table
 > from old pin id to new**: `SITES.json`, both region tunes and both region tests key on 5.1 ids, and a mapping turns
 > the migration into a single pass. `openworld/catch-bowl/MAP-EDITS.md` carries the same warning, edit by edit.
 
