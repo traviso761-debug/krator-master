@@ -106,10 +106,14 @@ Also parked here: the two salt-works pins (Ṣalṭ al-Bān, Solta) are still he
 1,205 m up the Godsgate's east wall, 12 km off its own plan's floor (P14); the Tharn crater reads 671 m above its plan
 and holds a 6,910 m lake (P15); the Stalkers have no buried pose and no line on the harpoon (P12,
 `kits/mechs/KNOWN_ISSUES.md`); `SIM.outlaws` and `SIM.bounty` are approved in
-`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built; and `STALKER_TUNE` and the `EAST_RIFT` join (C6) are
-designed in `PLAN-SIM.md` and not written (**`BOWL_TUNE` is written**: `core/region/data/bowl-tune.js`,
-`core/region/tests/test-bowl.js`, 18 passed, six places and two hinterlands, 56,070 people in about 100 s; its `join`
-is S2's second half and is next).
+`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built; and `STALKER_TUNE` (S3) and the `EAST_RIFT` join (S4/C6)
+are designed in `PLAN-SIM.md` and not written. **S2 is DONE** (2026-11-25): `core/region/data/bowl-tune.js` with its
+five trade roads and `BOWL_TUNE.join`, `core/region/tests/test-bowl.js` (29 passed) and
+`core/region/tests/test-bowl-join.js` (16 passed) — the Bowl's six places and two hinterlands, the Train of Jabal
+re-homed from its off-map pool onto Jabal itself, and 120 days of Xanadu + the Catch + the Bowl as one valley: **281
+settlements, 450,619 people, no problems, the books balanced over all three tunes**. One question for the owner falls
+out of it (`PLAN-SIM.md` 3c): **the Bowl is ~15 % short of its own grain and grows no tea at all, and Jabal has 15,000
+people with no hinterland** — should Jabal have one, or does it eat Xanadu's bread for good?
 
 **What this session owes, as of 2026-11-25:**
 

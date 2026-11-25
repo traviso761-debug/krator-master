@@ -376,7 +376,7 @@ tunes and a join, and it had outgrown a section here. In short:
 - `CATCH_TUNE` **runs today** (C0-C5 done, 16 places, 7 factions, the rounds, the tallies, the seasons, 29 checks).
 - It **gains the Godsgate's three stops** and the north road's four legs, where a caravanserai sells *survivable nights*
   rather than water — the one asymmetry that makes the pass an economy.
-- **`BOWL_TUNE`** brings Jabal (so the Train of Jabal stops being an off-map pool), Mantis, Solta, the north road's arcology, Parabola and
+- **`BOWL_TUNE`** is **written and joined** (2026-11-25; `PLAN-SIM.md` sections 3b and 3c): it brings Jabal (so the Train of Jabal stops being an off-map pool), Mantis, Solta, the north road's arcology, Parabola and
   the unnamed village.
 - **`STALKER_TUNE`** is deliberately tiny: **Ranger HQ** (Yuni's Stalker-watch, which sells escort and Stalker salvage
   and posts the only bounty), **Hub 01** as a faction with no economy and one output — a hidden, capped pressure number
