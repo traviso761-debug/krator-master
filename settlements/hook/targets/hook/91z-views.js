@@ -36,5 +36,26 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  if(typeof HOOK_SITE!=='undefined'){const mk=id=>(HOOK_SITE.markers||[]).find(m=>m.id===id);const B=mk('B'),E=mk('E');
   if(B)V['The palace']=[B.x+60,terrainH(B.x,B.z)+45,B.z+170,B.x,terrainH(B.x,B.z)+14,B.z];
   if(E)V['The slave market']=[E.x-80,terrainH(E.x,E.z)+22,E.z+70,E.x,terrainH(E.x,E.z)+4,E.z];}
+ // S3: the Ancient city round the port (77-hook-ruin.js, 90c): from high over the harbour to the downtown and the Crown;
+ // low over the drowned downtown from beside the Drowned Spire; on the freeway's approach, looking up the deck to the gate
+ if(typeof HOOK_RUIN!=='undefined'&&HOOK_RUIN.crown){const C=HOOK_RUIN.crown,S=HOOK_RUIN.spire,G=HOOK_RUIN.gates[1],ctr=HOOK_RUIN.spans.reduce((a,s)=>[a[0]+s.x/HOOK_RUIN.spans.length,a[1]+s.z/HOOK_RUIN.spans.length],[0,0]);
+  V['The Ancient city']=[cx+(cx-ctr[0])*.6,1900,cz+(cz-ctr[1])*.6,ctr[0],0,ctr[1]];
+  if(S)V['The drowned downtown']=[S.x+(S.x-C.x)*.12,30,S.z+(S.z-C.z)*.12,C.x,C.y+60,C.z];
+  const aps=HOOK_RUIN.spans.filter(s=>s.arc==='approach'),ap=aps[aps.length-1];   /* the approach's far end, by the ramp */
+  if(ap&&G)V['The road in']=[ap.x,ap.y+4,ap.z,G.x,G.y+10,G.z];
+  /* up close (90d): beside the Crown, its neighbours drawn as the kit's heroes */
+  V['The Crown up close']=[C.x+160,C.y+70,C.z+160,C.x,C.y+90,C.z];
+  /* S4 (90e): over the south-west swamp's mangroves toward the drowned downtown */
+  V['The mangroves']=[-1700,22,-2050,-1954,2,-2245];
+  /* S5 (77m): over Lantern Point, the Hukoa's fishing hamlet, and the Glebe, the settlers' farms */
+  if(typeof HOOK_PLACES!=='undefined'&&HOOK_PLACES){const mid=id=>{const L=HOOK_PLACES.lots.filter(l=>l.place===id);if(!L.length)return null;
+    let x=0,z=0,y=0;for(const l of L){x+=l.x;z+=l.z;y=Math.max(y,l.y);}return [x/L.length,y,z/L.length];};
+   const a=mid('huka.h1'),b=mid('huka.h2');
+   if(a)V['Lantern Point']=[a[0]+110,a[1]+45,a[2]+110,a[0],a[1]+2,a[2]];
+   if(b)V['The Glebe']=[b[0]-120,b[1]+55,b[2]+120,b[0],b[1]+2,b[2]];
+   /* the Drowned Spire's village (its pods up the Spire) and the deck camp on its freeway span */
+   const sv=HOOK_PLACES.villages['huka.c1'],dv=HOOK_PLACES.villages['huka.c3'];
+   if(sv&&S)V['The Spire village']=[S.x+150,70,S.z+150,S.x,95,S.z];
+   if(dv){const L=HOOK_PLACES.lots.find(l=>l.place==='huka.c3');if(L)V['The deck camp']=[dv.site.x+70,L.y+28,dv.site.z+70,dv.site.x,L.y+2,dv.site.z];}}}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();

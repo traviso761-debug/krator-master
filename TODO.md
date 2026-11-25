@@ -82,6 +82,13 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **The Iziz Vernacular's hamlet pieces into its src/** (2026-11-24, settlements/hook S5): `kits/iziz-vernacular/extra/75-vern-hamlet-extra.js`
+  (`vern_shrine`, the village shrine core/hamlet's iziz row has as pending; `vern_sawpit`, the settlers' timber works) joins
+  `src/72-vern-civic.js` and `src/73b-vern-works.js` and `vernacular.py`'s FILES, and `core/hamlet/21-hamlet-iziz.js` drops the shrine
+  from `pending` and takes the lumber works (`vern_sawpit`) settlements/hook's `77m` row adds (`SETTLERS`). Only Hook reads the file now
+  (`build.py` IZV_EXTRA). Every page that takes the Vernacular gains the two pieces.
+- **core/hamlet: a resource on the village point** (2026-11-24, settlements/hook KNOWN_ISSUES.md): `KHAMLET.village` faces its works from the
+  point to the resource, and with the two equal the works' box is zero (later houses overlap it). Guard it in `30-hamlet-village.js`.
 - **The Throne's row's terrain, what is left** (2026-11-24, `biomes/throne/PLAN.md` "Dropped or owed", "The row's terrain"; branch
   `claude/throne-owed-1122`, b040e655a). Taken so far: KSTRATA walls (caldera `tibasalt`, blast `obsidian-pancake`), KLAVA flows (vents at load,
   kipuka at build time, the caldera's overflow), the kipuka's rille. Left for the rebuild:

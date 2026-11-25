@@ -25,11 +25,13 @@ function editor(terrain) {
   const src = fs.readFileSync(path.join(ROOT, 'settlements', 'voth', 'targets', 'voth-site', '10-site-model.js'), 'utf8');
   const a = src.indexOf('var TERR = {'), b = src.indexOf('TERR.sync = function');
   const ctx = vm.createContext({ Math, Float32Array, Float64Array, VOTH: { terrainH: ground } });
-  vm.runInContext(src.slice(a, b) + '\nTERR.reset(); (' + JSON.stringify(terrain) + ').forEach(TERR.stroke); globalThis.__T = TERR;', ctx);
+  /* on the page's square (76b: 7.2 km each way at 8 m, the editor's ?ext= square), not Voth's 3.9 km at 6 m */
+  vm.runInContext(src.slice(a, b) + '\nTERR.ext = 7200; TERR.cell = 8; TERR.N = Math.ceil(2 * TERR.ext / TERR.cell) + 1; TERR.D = null; TERR.base = null;'
+    + '\nTERR.reset(); (' + JSON.stringify(terrain) + ').forEach(TERR.stroke); globalThis.__T = TERR;', ctx);
   return (x, z) => ctx.__T.h(x, z);
 }
 
-const raise = { m: 'raise', r: 80, s: 6, pts: [[-402, 300]] }   /* on a grid node (6 m cells from -3900) */, lower = { m: 'lower', r: 60, s: 4, pts: [[500, -200], [520, -200]] };
+const raise = { m: 'raise', r: 80, s: 6, pts: [[-400, 304]] }   /* on a grid node (8 m cells from -7200) */, lower = { m: 'lower', r: 60, s: 4, pts: [[500, -200], [520, -200]] };
 const smooth = { m: 'smooth', r: 90, s: 1, pts: [[100, -50], [100, -50], [100, -50]] };
 
 /* none, and the editor's page: untouched */
@@ -38,8 +40,8 @@ const smooth = { m: 'smooth', r: 90, s: 1, pts: [[100, -50], [100, -50], [100, -
 
 /* raise and lower */
 { const P = page([raise]), d = (x, z) => P.natH(x, z) - ground(x, z);
-  T.ok('a raise stroke lifts its centre by its strength', Math.abs(d(-402, 300) - 6) < 1e-3, 'delta ' + d(-402, 300).toFixed(4));
-  T.ok('and nothing past its radius', Math.abs(d(-402 + 90, 300)) < 1e-6 && Math.abs(d(0, 0)) < 1e-6, 'at r+10: ' + d(-312, 300)); }
+  T.ok('a raise stroke lifts its centre by its strength', Math.abs(d(-400, 304) - 6) < 1e-3, 'delta ' + d(-400, 304).toFixed(4));
+  T.ok('and nothing past its radius', Math.abs(d(-400 + 90, 304)) < 1e-6 && Math.abs(d(0, 0)) < 1e-6, 'at r+10: ' + d(-310, 304)); }
 { const P = page([lower]), d = P.natH(510, -200) - ground(510, -200);
   T.ok('a lower stroke lowers the ground', d < -6 && d > -8.1, 'delta ' + d.toFixed(3)); }
 

@@ -1,6 +1,7 @@
 # Hook as the living third of a drowned Ancient city: a reblueprint proposal
 
-*Proposal, 2026-11-24, for the owner's decision. Nothing here is built. The owner asked for "a proposal for rebuilding /
+*Proposal, 2026-11-24; **the owner's answers are in section 8** (the city is Huka; lagoon and scarp; salvagers, stilt
+villages and pods; a gradient of wildness; two pages; M1 starts now). Nothing here is built. The owner asked for "a proposal for rebuilding /
 reblueprinting the settlement using the Ancient Transit and metropolis kit (as well as current Ancient kit material) to
 make Hook a port settlement making up about 1/3 of [a] larger ruined city overgrown with jungle". Paths are from the repo
 root; "today" means `claude/unruffled-greider-5cf58d` at the port onto the integration line.*
@@ -137,7 +138,7 @@ that page. Proposed:
 | Phase | What | Done when |
 |---|---|---|
 | **M0** | The owner's answers to section 1 and section 8; the city's name in LORE.md | the questions closed |
-| **M1** | `HOOK_RUIN`: the Ancient grid over the lagoon and the scarp, the avenues continued, the ruin-state field, every block and tower a `core/tags` record; node test with negatives | records stable by id, the same in any order |
+| **M1** (done 2026-11-24: `src/77-hook-ruin.js`, `tests/test-hook-ruin.js`; README.md "Huka's ruin") | `HOOK_RUIN`: the Ancient grid over the lagoon and the scarp, the avenues continued, the ruin-state field, every block and tower a `core/tags` record; node test with negatives | records stable by id, the same in any order |
 | **M2** | The Sunk City drawn: metropolis wild ruins standing in the water, fallen towers, KRUBBLE islands, `KRUINS.watch` | verify: nothing floats, every wreck seated, towers' feet under the water line |
 | **M3** | The Scarp City: terraces and towers on pads, the crest landmark, the funicular stump | verify on the GPU; the scarp's pads within their batter |
 | **M4** | The transit: the viaduct across the lagoon (ruin shares by distance), the highway up the scarp, the causeways (the kit's new form), cars in the water | the three routes' first kilometres laid; spans' states as planned |
@@ -146,14 +147,91 @@ that page. Proposed:
 
 Each phase is a session of its own; M1 first, since everything else reads its records.
 
-## 8. Questions for the owner
+## 8. The owner's answers (2026-11-24)
 
-1. Is Hook the harbour third of a larger Ancient city, and what was that city called?
-2. The ruin's two thirds: the lagoon (drowned) and the scarp (upper), as proposed; or somewhere else (along the coast
-   east, a scale-model edit)?
-3. Who lives in or uses the ruin, and how far into it does the living port reach (salvage camps, stilt villages among the
-   stumps)?
-4. How wild: canopy to the crowns everywhere, or a gradient from picked-clean near the port to untouched far out?
-5. One page or two: the port page drawing the ruin from afar, and a ruin page (or stations) for close up?
-6. The new pieces in other kits: a causeway form in `kits/ancient-transit`, a placer and `KRUINS.watch` for
-   `kits/metropolis`, the Ancient grid lifted out of the valley. Built from this plan, or by those kits' sessions?
+1. **Yes: Hook is the harbour third of the Ancient city, and the whole city is *Huka*** (the Hukoa's name for the port
+   stands for all of it; the port is Huka's harbour). LORE.md's Hook entry to say so.
+2. **The lagoon and the scarp**, as proposed: the Sunk City in the lagoon south of the spit, the Scarp City up the
+   plateau's faces. No scale-model edit beyond the spit.
+3. **The ruin's people: salvagers' camps, Hukoa stilt villages among the drowned stumps, and Hykkousoi pods on the
+   towers that still stand.** Not shunned. (The Izani patrol its edge; the far ruin is the jungle's.)
+4. **A gradient**: picked clean with paths near the port, wilder with distance, jungle to the crowns in the far lagoon
+   and up the scarp.
+5. **Two pages, one record set**: the port page draws Huka's ruin from afar (shells, impostors); a ruin page draws it up
+   close with the port far.
+6. **Built from Hook's plan**: the causeway form in `kits/ancient-transit`, the tower placer and `KRUINS.watch` for
+   `kits/metropolis`, and the Ancient grid lifted out of the valley are made by Hook's phases, following each kit's
+   rules (rebuild and verify what each change reaches).
+7. **Start now, M1 only**: the ruin's records (no drawing) in a session of its own on the integration line, merged
+   after Stage 8.
+
+## 9. The layout redone: Alexandria in gross form (the owner, 2026-11-24, later the same day)
+
+After M1's first layout (section 3: a Sunk City in the lagoon, a Scarp City up the plateau's faces) and a look at the
+spit from above (three rectangles: blocky), the owner gave the plan of ancient Alexandria (Mahmud-Bey's, Wagner & Debes)
+as the city's gross form:
+
+1. **Names.** The whole city is still glossed as **Hook** (*Huka* is the Hukoa's word for it); the living town is
+   **Port Hook**. It stands where Alexandria's **Island of Pharos and the Eunostos harbour** are: the spit and its harbour.
+2. **The old city**, ruined and gone to jungle, is where **Bruchium and Rhakotis** are: on the mainland behind the
+   harbours, one grid.
+3. **A sunken peninsula** trails off from the intact part to the east and north-east: it once closed the **Great Harbour**
+   into a lagoon. The islets the scale model already has off the spit's east end lie along it.
+4. **A second sunken quarter** roughly where the **Nekropolis** is: south-west of the old city's western quarter, in the
+   lagoon behind the spit.
+5. **The land is reshaped to fit**, more than the spit (the owner: "we might need to do some more extensive land
+   reshaping"). The answers to this session's questions:
+   - **A raised coastal plain** for the old city: a low plain 2 to 3 km deep, 5 to 20 m over the sea, between the
+     harbours and the plateau, the scarp pushed back; the plateau the city's hill behind it.
+   - **Pharos an island**, cut off from the plateau at its east end and joined to the mainland by a built Ancient
+     causeway (the Heptastadium); the Great Harbour and the lagoon meet through its arches.
+   - **As Hook's own landform records** (core/world 41l benches with an outline: the spit's natural outline, 2026-11-24),
+     so the page and the ruin's records build on them now; the same records go to the scale model's edit queue.
+   - **M1 committed as the base**, its extents and quarters redone for this layout in the next change.
+
+A sketch of this reading on the ground as it was: `shots/hook-alexandria-reading.png` (gitignored; made by this session's
+scratch map). Sections 2 to 4 above stand where they do not contradict this one; the phases (section 7) keep their order.
+
+## 10. The owner's own site plan (2026-11-24, later still): the redo
+
+The owner sent a rough site plan of their own and said much of the above may be redone from scratch. **The proposal for it
+is `plan/hook-site-plan.html`** (published to the owner as an Artifact, "Hook Site Plan"): the plan read back, the Ancient
+city beside today's on two maps, a zone-by-zone comparison, thirteen hamlets, camps and posts in the environs, the plan
+fitted onto the 5.1 ground (two placements, measured), what carries over, phases S0 to S6 and seven questions.
+
+The plan in brief: **Port Hook** (the waterfront) was the port district of an Ancient city about 10 km across; the
+**downtown** stood close to it, ringed by an **elevated freeway**; half the downtown **sank** (towers in shallow water,
+mangroves); height and density **fade with distance from the downtown**; the freeway's standing south arc is the **one
+clear approach** from the south; a **city wall** runs from the harbour to the freeway and closes the peninsula (the port,
+its hamlets, ground cleared or reclaimed, ruin half decaying) off from the mainland; a **Hykkousoi fishing village in a
+drowned tower** is the coast's smuggling haven.
+
+**The owner's answers (2026-11-24):**
+1. **Placement B**: the plan turned 34 degrees so its waterfront lies on today's quays. Port Hook is kept as built; the
+   wall stands on the spit's east end; the drowned downtown on today's lagoon.
+2. **The north ridge as drawn**, the full length into water 130 to 150 m deep, its flanks steep; the hill and Lantern
+   Point on it.
+3. **The wall is the Pirate Emperors'**: raised from Ancient rubble against raids from the jungle side, repaired by Voth,
+   held by the Izani now.
+4. **The freeway's west arc is fallen**: the south ramp and the east arc to the Freeway Gate are the one clear approach.
+5. **The Drowned Spire is one Spindle** standing to its crown: the village in its upper floors, pods on the crown.
+6. Not asked again, the proposal's defaults: the bay between the ridge and the mainland is Port Hook's harbour (the Hook
+   breakwater kept as built); the places keep working names until the tongues give real ones.
+
+The redo starts with S1 (the ground); the Alexandria landforms of section 9 (plain, strait, shelf) are dropped, and M1's
+records are redone on the plan's field in S2.
+
+**Done (2026-11-24):** S1, the ground (`world/landforms.json`: the drowned downtown, the walled peninsula with the north
+ridge, the mainland's strips tapering past the city limits, two domed hills; README "The ground"), and S2, the records
+(`src/77-hook-ruin.js`: the blocks and towers by ground and zone, the Crown, the Drowned Spire, the ring freeway span by
+span with its fallen west arc, the wall and its gates, the south road, the thirteen places; README "The Ancient city").
+Then (the owner, mid-S3: "the surrounding terrain could use a bit of levelling out into a coastal plain / mangrove
+swamp") the mainland's fill strip became a coastal plain at 4 m on the plan's low ground and a mangrove swamp at its water
+edges, and S3's far tier drew the whole city as instanced massing (towers by state, reefs, heaps, pods, the freeway,
+the wall), every base seated on the drawn ground; then the heroes up close (90d: the ten towers nearest the camera as
+the kit's heroes, their massing hidden; the kit sealed in the page as `KMP`). Then S4 (90e: the Ring Sea isles kit's
+mangroves and rainforest, about 23,000 trees on the ruin's heart, kept off the town, the walled clearings and the cliffs and
+clear of every drawn footprint; 77k: mangrove mud and the forest floor painted through the Port kit's `PORT.paint`). Then the jungle over the
+whole ruin, and S5 (77m: eleven of the thirteen places laid out by core/hamlet on the Islanders', the Iziz Vernacular's and
+a post-apoc salvagers' row, 243 buildings drawn as the town's lots are). Next: S5's remainder (the Spire's pods, the deck
+camp), S6's tiers and pages; a shell or impostor tier between the heroes and the massing.
