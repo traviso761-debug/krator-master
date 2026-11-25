@@ -1,14 +1,24 @@
 // ================================================================= HOST — stage (the Catch, station 1: THE SAND SEA)
-// WHERE (PLAN.md section 10): the floor's core north of the interior hills, proposed px 800,1010 on the scale model, ~350 m,
-// 18 mm of rain a year (4.22). A Taklamakan erg in small: LINEAR DUNES running with the wind (from the north-north-east,
+// WHERE (PLAN.md section 10; RE-SITED 2026-11-24, PLAN-TERRAIN.md P2): the floor's heart, px 783,1056 on the scale
+// model (5.1 px 1055,1386), 16 mm of rain a year. The site was proposed on the 4.21/4.22 canvas as px 800,1010, which
+// the model's own legacy_shift (+272, +330) carries to 5.1 px 1072,1340 - and that cell now reads 4,901 m of
+// mountainside, so the sky and the far walls were being drawn for a place 4.5 km up a wall. The new cell is the
+// flattest floor between Arfwai (1090,1387) and the terminal lake (1035,1392): 448 m, a 7.8 m/km median slope and
+// 193 m of relief within 12 km, the least of any dry cell in that corridor, with the nearest water 15 km off - well
+// outside this page's 6.6 km frame, which an erg wants. ITS GROUND IS 448 m, NOT THE ~350 m THIS PAGE DRAWS: the page's
+// erg is authored analytically (TERR, baseH, the dunes), not sampled from the model, so the 98 m changes nothing it
+// draws and `siteH` stays 350 to keep the page's own ground, fog and camera consistent. Only STAGE.site and
+// STAGE.ridges move, because only they were surveyed at the old pixel.
+// A Taklamakan erg in small: LINEAR DUNES running with the wind (from the north-north-east,
 // the dawn katabatics off the walls), three STAR DUNES where the winds cross, 110 to 160 m, a GRAVEL REG on the west
 // (varnished black pavement), and in the south-east an OLD LAKE BED the dunes have stripped: its silt cut by the wind into
 // YARDANGS (core/terrain KBASIN). A DEAD CHANNEL crosses from the north to the south-west, a river's course from a wetter
 // century: its tugai poplars dead standing, a few still green where the water lingers, salt cedars on their sand cones
 // (nebkhas) along it. A Stalker pair lies under the sand in a corridor a stage out from the channel (the kits/mechs bundle).
 //
-// THE MAP (x east, z south, y up, real metres above the sea; R 3300). The walls stand 60-260 km off on every side: the
-// shared sky's ridges (89s-host-sky.js), from the survey's distances (PLAN.md section 1).
+// THE MAP (x east, z south, y up, real metres above the sea; R 3300). The walls stand 22-273 km off: the shared sky's
+// ridges (89s-host-sky.js), re-surveyed from the new pixel on the 5.1 model (2026-11-24) by casting the horizon at
+// 1,024 azimuths in each layer's band with the planet's curvature, as biomes/seouterwall/region/far.py casts it.
 const TERR={R:3300};
 const WIND=(function(){const w=[-.6,.8],l=Math.hypot(w[0],w[1]);return[w[0]/l,w[1]/l];})();   // toward the south-south-west
 const ALONG=(x,z)=>x*WIND[0]+z*WIND[1],ACROSS=(x,z)=>-x*WIND[1]+z*WIND[0];
@@ -76,14 +86,21 @@ const STALK_C=(function(){let best=null,bh=1e9;for(let k=0;k<40;k++){const z=-50
 const STAGE={
  key:'sand',name:'The Catch: the sand sea',title:'Krator biome — the Catch: the sand sea',seed:23,
  hint:'The Catch, station 1: the sand sea on the sealed basin\'s floor (~350 m, 18 mm of rain): linear and star dunes, the gravel reg, yardangs on an old lake bed, a dead channel with its tugai dead standing, salt cedars on their sand cones, and something under the sand',
- site:{px:800,py:1010},air:{pressure:1.56,humidity:.12},clouds:{cover:.04},fogDensity:0.00016,fogH:{y0:335,H:70,k:.85},siteH:350,   /* the haze thick enough that each dune ridge back is paler than the one before it (the owner, 2026-10-26: depth between near and far dunes) */
- // the walls on every horizon (PLAN.md section 1): far crests 12-17 km, bare above the air, the Godthrone's mass north-west;
- // the inner walls 3-6 km nearer, their snowfields; the interior hills low in the south
+ site:{px:783,py:1056},air:{pressure:1.56,humidity:.12},clouds:{cover:.04},fogDensity:0.00016,fogH:{y0:335,H:70,k:.85},siteH:350,   /* the haze thick enough that each dune ridge back is paler than the one before it (the owner, 2026-10-26: depth between near and far dunes) */
+ // the walls on every horizon, RE-SURVEYED on the 5.1 model from px 783,1056 (2026-11-24): `dist`, `base`, `amp` and
+ // `peakAmp` are the measured horizon's own (base the 2nd percentile of its elevation angle in the layer's band, base+amp
+ // the 98th, peakAmp the rest to the maximum, dist the mean distance of the horizon-defining points); `cycles`, `octaves`,
+ // `peaks`, `seed`, `rock`, `snowH`, `hz` and the windows are the author's and keep each layer's character and place.
+ // THE WALLS ARE MUCH LOWER IN THE SKY THAN THIS PAGE USED TO DRAW THEM, and that is the correction, not a loss: the
+ // Catch's crests do run 10-17 km, but on the 5.1 model they stand 48-273 km off from this cell, so the highest thing
+ // visible anywhere from it is 2.97 deg (a 3,179 m ridge 47 km north-north-west) and the 13.6 km Godthrone mass, 240 km
+ // away, subtends 1.72 deg. The old numbers reached 9.4 deg, which is a 4.22-era hand survey the 5.1 remodelling left
+ // behind; a 12 km wall only subtends 9 deg at about 70 km, and nothing that tall is within 90 km of the floor's heart.
  ridges:[
-  {dist:240000,base:-1.81,amp:8.82,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:41,rock:[.46,.38,.32],hz:0.7},
-  {dist:300000,base:3.6,amp:1.2,cycles:7,octaves:4,peaks:3,peakAmp:.6,win:[305,24,1.6],floor:-1,seed:42,rock:[.33,.29,.27],hz:0.66},   /* the Godthrone's mass, north-west */
-  {dist:70000,base:-1.96,amp:8.82,cycles:42,octaves:6,peaks:26,peakAmp:3,seed:43,rock:[.5,.4,.32],snowH:4300,hz:0.5},
-  {peaks:14,peakAmp:1.2,dist:22000,base:.1,amp:1.3,cycles:34,octaves:5,win:[185,70,1.5],floor:-1,seed:44,rock:[.62,.48,.34],hz:0.3}],
+  {dist:144000,base:-0.53,amp:3.06,cycles:30,octaves:6,peaks:18,peakAmp:0.18,seed:41,rock:[.46,.38,.32],hz:0.7},   /* the far crests, 90-240 km: highest at az 324 */
+  {dist:273000,base:-0.10,amp:0.41,cycles:7,octaves:4,peaks:3,peakAmp:.1,win:[305,24,1.6],floor:-1,seed:42,rock:[.33,.29,.27],hz:0.66},   /* the Godthrone's mass, north-west: measured highest at az 301, so the window stands */
+  {dist:49000,base:-0.47,amp:3.43,cycles:42,octaves:6,peaks:26,peakAmp:0.1,seed:43,rock:[.5,.4,.32],snowH:4300,hz:0.5},   /* the inner walls, 30-90 km: their top is 4,396 m here, so snowH 4300 shows only on the highest */
+  {peaks:14,peakAmp:0.1,dist:22000,base:-0.39,amp:0.5,cycles:34,octaves:5,win:[185,70,1.5],floor:-1,seed:44,rock:[.62,.48,.34],hz:0.3}],   /* the interior hills south, 6-30 km: -0.39 to +0.13 deg, barely over the floor */
  spine:SPINE,nebkhas:NEBKHAS,bias:{},expect:['poplar','tamarisk','broom'],hour:15.5,
  water:[],                                    /* the sand sea has none: the channel's water is underground */
  sedQ:0,                                      /* no sedesert flora: no oasis here */

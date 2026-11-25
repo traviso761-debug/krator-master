@@ -1,8 +1,16 @@
 // ================================================================= HOST — stage (the Catch, station 4: THE NORTH FAN AND THE WALLS)
 // WHERE (PLAN.md sections 4, 5 and 10): the way in. The crossing comes down from the 6.2 km notch on the Bowl's side (px
 // 726,896) by a gorge, and the gorge spills a GRAVEL FAN tens of kilometres long onto the floor; this page is the fan's
-// lower reach and its toe, proposed px 738,944, ~1,400 m. The mountain front stands on the north (the inner wall's foot),
-// the gorge's mouth cut into it; BRAIDED DRY CHANNELS spread down the fan from the mouth, the water of the walls' snowmelt
+// lower reach and its toe, RE-SITED 2026-11-24 (PLAN-TERRAIN.md P2) to px 786,1037 on the scale model (5.1 px
+// 1058,1367), 1,446 m - Kolli's own cell. The site was proposed on the 4.21/4.22 canvas as px 738,944, which the
+// model's legacy_shift (+272, +330) carries to 5.1 px 1010,1274, and that cell now reads 5,715 m: 4.3 km up a wall,
+// with the oasis 186 km away. The page depicts the fan's toe WITH KOLLI AT IT, and this page's frame is 6.6 km across
+// (R 3300, about 3.3 px), so the site has to hold the oasis: 1058,1367 is the oasis cell itself, reads 1,446 m against
+// this page's siteH of 1,400, and has the mountain front where the page draws it - 2,864 m 8 km north, rising to
+// 3,459 m. (The measured candidate 1056,1366 was refined away: it reads 1,814 m, nearer the page's 1,880 m apex than
+// its toe, and puts Kolli 4.5 km out, outside the frame.) Its ground is synthetic (fanH, landH, APEX, FRONT_Z), so
+// nothing it draws changes; only STAGE.site and STAGE.ridges move.
+// The mountain front stands on the north (the inner wall's foot), the gorge's mouth cut into it; BRAIDED DRY CHANNELS spread down the fan from the mouth, the water of the walls' snowmelt
 // sinking into the gravel; at the fan's toe it surfaces again as THE FIRST OASIS, Kolli ("the cold one", PLAN.md section
 // 8): a seep, a cold little pool, reeds, a few poplars and salt cedars. Nothing else grows on the fan but a dune shrub in a
 // sand pocket. The walls close on the north and the west, snow on their shoulders, bare rock above the air; the Godthrone's
@@ -56,13 +64,19 @@ fireRing(SEEP.x-40,SEEP.z-30,'A caravan\'s fire ring at Kolli (the first night d
 const STAGE={
  key:'fan',name:'The Catch: the north fan and the walls',title:'Krator biome — the Catch: the north fan and the walls',seed:37,hour:13,
  hint:'The Catch, station 4: the way in, the gravel fan under the 6.2 km notch (~1,400 m at its toe): braided dry channels down from the gorge\'s mouth, the mountain front, the walls\' snowfields and the bare crests above the air, the Godthrone north-west, and Kolli, the first oasis, a cold seep at the fan\'s toe',
- site:{px:738,py:944},air:{pressure:1.38,humidity:.15},clouds:{cover:.06},fogDensity:0.00013,fogH:{y0:1340,H:160,k:.75},siteH:1400,
- // the walls are close here: the notch's shoulders 40 km north, the inner wall's flank on the west
+ site:{px:786,py:1037},air:{pressure:1.38,humidity:.15},clouds:{cover:.06},fogDensity:0.00013,fogH:{y0:1340,H:160,k:.75},siteH:1400,
+ // RE-SURVEYED on the 5.1 model from px 786,1037 (2026-11-24), the same cast as station 1's: the near horizon here is
+ // a great amphitheatre open to the SOUTH - the front wraps from az 250 round through north to 110, reaching 9.8 deg
+ // 8 km off at az 0-10, while az 120-240 falls away at -1.6 to -2.2 deg as the floor drops off the fan's toe. The page
+ // draws that northern front itself (FRONT_Z, 2.55 km out and about 22 deg), so the sky does not double it; what the sky
+ // owes is the open south and the bands beyond. So the near layer's window turns from the author's [150,90] - which
+ // pointed at the open south on the OLD site and clipped the wall at its east edge - to [180,60], the sector that is
+ // genuinely open floor, and is fitted there.
  ridges:[
-  {dist:120000,base:-2.10,amp:12.60,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:71,rock:[0.39,0.34,0.32],hz:0.55},
-  {dist:200000,base:2.2,amp:2.8,cycles:6,octaves:4,peaks:3,peakAmp:1.6,win:[300,30,1.4],floor:-1,seed:72,rock:[0.37,0.32,0.31],hz:0.62},
-  {dist:35000,base:-3.00,amp:16.80,cycles:42,octaves:6,peaks:26,peakAmp:3,win:[330,160,.8],floor:-1,seed:73,rock:[0.46,0.39,0.34],snowH:4400,hz:0.36},
-  {peaks:14,peakAmp:1.2,dist:9000,base:0.23,amp:2.5,cycles:34,octaves:5,win:[150,90,1.2],floor:-1,seed:74,rock:[0.63,0.52,0.41],hz:0.18}],
+  {dist:142000,base:-1.11,amp:4.05,cycles:30,octaves:6,peaks:18,peakAmp:0.14,seed:71,rock:[0.39,0.34,0.32],hz:0.55},   /* the far crests, 90-240 km: highest at az 312 */
+  {dist:283000,base:-0.70,amp:1.09,cycles:6,octaves:4,peaks:3,peakAmp:0.1,win:[300,30,1.4],floor:-1,seed:72,rock:[0.37,0.32,0.31],hz:0.62},   /* the Godthrone, north-west: measured highest at az 296, so the window stands */
+  {dist:48000,base:-1.24,amp:5.05,cycles:42,octaves:6,peaks:26,peakAmp:0.1,win:[330,160,.8],floor:-1,seed:73,rock:[0.46,0.39,0.34],snowH:4400,hz:0.36},   /* the walls, 30-90 km: highest at az 334, dead on this window's centre */
+  {peaks:14,peakAmp:0.16,dist:30000,base:-2.25,amp:0.47,cycles:34,octaves:5,win:[180,60,1.2],floor:-1,seed:74,rock:[0.63,0.52,0.41],hz:0.18}],   /* the floor falling away south of the toe, 6-30 km: -2.25 to -1.62 deg */
  spine:SPINE,nebkhas:[],expect:['poplar','tamarisk','reed','broom'],
  bias:{poplar:(x,z)=>smooth(300,60,poolD(x,z))*2,tamarisk:(x,z)=>smooth(320,40,poolD(x,z))*1.5},
  water:[{key:'kolli',kind:'still',rec:POOL.rec,name:POOL.name,look:{color:0x2a6a70,roughness:.06,metalness:.05,envMapIntensity:.5,renderOrder:1}}],
