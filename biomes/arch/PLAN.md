@@ -416,6 +416,7 @@ at px 294,588) across the sea to the south-east. No kit borders the Arch on land
 | `barrens` | **258,246**, the south-eastern horst's lee | 155 m | 1.57 | 1,427 mm | +27 (+32 / +22) | Aw | 21.6 S |
 | `sound` | **299,220**, the graben floor on the sound's shore | 7 m | 1.60 | 1,804 mm | +30 (+34 / +26) | Am | 21.0 S |
 | `coast` | **167,336**, the seamount island's south-west shore, the Surtseyan caldera 3 km off | 2 m | 1.60 | 1,710 mm | +28 (+33 / +23) | Am | 23.7 S |
+| `cove` | **236,242** (`5.1e23`), Fleetborn Cove sinuous drowned-gjár pocket fjord & `-11 m` sill, 44 km W of `barrens` | 0 m (`-59..+246 m`) | 1.60 | 1,750 mm | +28 (+33 / +24) | Am | 21.5 S |
 
 The dome's profile from the summit (px 314,168) to the sound's shore (329,188): 1,456, 1,265, 896, 749, 591, 444, 271, 275,
 218, 76, 8 m: a 1,450 m fall over 50 km, the springs at its foot.
@@ -555,6 +556,7 @@ no one on Krator has followed home (`LORE.md` 6.19). Proposals, each for the own
 | `barrens` | `dist/arch-barrens.html` | the nickel maquis in the Aw lee: red earth, green rock, Earth hoarders and native verdigris caps, pitcher seeps, lavaka gullies, the verdigris browser |
 | `sound` | `dist/arch-sound.html` | the graben floor: gjár with blue water, the last episode's fissure flow with spatter ramparts and rootless cones on the mangrove flats, a gas hollow, the White Stacks in the sound |
 | `coast` | `dist/arch-coast.html` | the seamount island: black sand, a tuff ring's cliff, a pillow-lava platform with tide pools, the Surtseyan caldera steaming offshore, the ash brooders' warm ground |
+| `cove` | `dist/arch-cove.html` | Fleetborn Cove (`settlements/fleetborn-cove/PLAN.md` §1): sinuous drowned-gjár pocket fjord opening NNW across a `-9..-14 m` pillow-lava & serpentinite sill (`5.2 m/s` reversible tidal race, `14 m` macrotidal band `[-7, +7 m]`) into a calm `-45..-59 m` inner sanctuary basin; `+246 m` eastern ophiolite gorge wall (pillow basalt, sheeted dykes, green serpentinite fault bench with Type II `pH > 11` white travertine cliff curtains, red nickel-laterite maquis crown) with the `+76 m` `Arcoforte` cliff-prow spur reserved in `KTAGS` as `site:fleetborn-arcoforte`; `+150 m` western basalt coastal headland with Chimaera `H2`/`CH4` cleft-flames overlooking the sill; Lost-City brucite-carbonate White Stacks on shallow fault ledges; narrow `+7..+22 m` southern gjár fissure neck |
 
 ## 12. Core adoption (written before the first fragment, as `CLAUDE.md` asks)
 

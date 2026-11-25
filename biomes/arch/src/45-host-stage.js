@@ -195,6 +195,87 @@ const L=(function(){const S=SITE;
   const WARM=S.warm.map(v=>{const p=XZ(v.al,v.w);return{x:p[0],z:p[1],r:v.r,T:v.T};});
   return{land,water,XZ,AL:AL2,WW,CP,SAND,PLAT,TUFF,WARM,STRAND:(x,z)=>{const w=WW(x,z);return smooth(-1100,-700,w)*smooth(-60,-180,w);},APRON:()=>0,ACIDG:()=>0,farBase:-20,
    spine:[[0,0],CP,XZ((P.al[0]+P.al[1])/2,100)].concat(WARM.map(v=>[v.x,v.z]))};}
+ if(SKEY==='cove'){const AX=S.axis,VX=[AX[1],-AX[0]],S_OF=(x,z)=>x*AX[0]+z*AX[1],A_OF=(x,z)=>x*VX[0]+z*VX[1],XZ=(s,a)=>[s*AX[0]+a*VX[0],s*AX[1]+a*VX[1]];
+  /* Sinuous tectonic fault-jog centerline and scalloped side embayments: dogleg across the NNW sill baffles open swell */
+  const centerA=s=>-95*smooth(-560,-1060,s)+54*Math.sin(s*.0028+.85)*smooth(-1250,-480,s)*smooth(1500,850,s)-46*smooth(-300,140,s)*smooth(640,220,s)+36*smooth(260,680,s)*smooth(1280,920,s);
+  const hwE=s=>{const throat=-52*smooth(-1060,-840,s)*smooth(-560,-740,s),prow=-58*Math.exp(-Math.pow((s-S.arcoforte.s)/115,2)),
+   bightE=66*Math.exp(-Math.pow((s+95)/165,2))+38*Math.exp(-Math.pow((s-470)/180,2)),inner=lerp(176,19,smooth(860,1140,s)),flare=240*smooth(-920,-1380,s);
+   return Math.max(17,inner+throat+prow+bightE+flare);};
+  const hwW=s=>{const throat=-48*smooth(-1080,-850,s)*smooth(-560,-740,s),bightW=50*Math.exp(-Math.pow((s+260)/150,2))+68*Math.exp(-Math.pow((s-360)/195,2)),
+   inner=lerp(172,19,smooth(860,1140,s)),flare=240*smooth(-960,-1420,s);return Math.max(17,inner+throat+bightW+flare);};
+  const thalwegY=s=>{if(s<-790){const outer=lerp(-53,-39,smooth(-2400,-1120,s));return mix(outer,-11.3,smooth(-1120,-820,s));}
+   if(s<-420)return mix(-11.3,-51.5,smooth(-740,-440,s));
+   if(s<740){const deep=-51.5-6.8*Math.exp(-Math.pow((s-140)/340,2));return mix(deep,-46.0,smooth(480,740,s));}
+   if(s<1120)return mix(-46.0,8.2,smooth(740,1120,s));
+   return 8.2+12.2*smooth(1120,1920,s)-5.0*smooth(2050,2580,s);};
+  const PROW_A=centerA(S.arcoforte.s)+hwE(S.arcoforte.s)+S.arcoforte.du,PROW_P=XZ(S.arcoforte.s,PROW_A);
+  const PROW={id:S.arcoforte.id,s:S.arcoforte.s,a:PROW_A,x:PROW_P[0],z:PROW_P[1],r:S.arcoforte.r,clearR:S.arcoforte.clearR};
+  const HOLLOWS=S.hollows.map(h=>{const a=centerA(h.s)+hwE(h.s)+h.du,p=XZ(h.s,a);return Object.assign({a,x:p[0],z:p[1]},h);});
+  const WEEPS=S.weeps.map((w,i)=>{const ca=centerA(w.s),we=hwE(w.s),ww=hwW(w.s),aLip=w.side>0?ca+we+w.du:ca-ww-w.du,aFoot=w.side>0?ca+we-3:ca-ww+3;
+   const lip=XZ(w.s,aLip),foot=XZ(w.s,aFoot),chem=ARCH.spring('typeII',S.seed,i);chem.pH=Math.max(11.35,chem.pH);
+   return Object.assign({x:lip[0],z:lip[1],fx:foot[0],fz:foot[1],F:segFrame(lip,foot),chem},w);});
+  {const C=S.flames,ca=centerA(C.s),p=XZ(C.s,C.side>0?ca+hwE(C.s)+C.du:ca-hwW(C.s)-C.du),dx=AX[0]*.92-VX[0]*.39,dz=AX[1]*.92-VX[1]*.39,dl=Math.hypot(dx,dz);
+   C.x=p[0];C.z=p[1];C.dir=[dx/dl,dz/dl];}
+  const FL_F=segFrame([S.flames.x,S.flames.z],[S.flames.x+S.flames.dir[0]*S.flames.len,S.flames.z+S.flames.dir[1]*S.flames.len]);
+  function land(x,z){const s=S_OF(x,z),a=A_OF(x,z),ca=centerA(s)+14*n2(x,z,.0018,91),da=a-ca,we=hwE(s)+8*n2(x,z,.004,92),ww=hwW(s)+8*n2(x,z,.004,93);
+   const th=thalwegY(s),seaE=smooth(-940,-1340,s),seaW=smooth(-990,-1400,s),isSill=smooth(-1020,-840,s)*smooth(-580,-730,s),isGjar=smooth(940,1140,s);
+   const edgeE=mix(mix(-5.5,th-2.5,seaE),th+.6,isGjar),edgeW=mix(mix(-5.5,th-2.5,seaW),th+.6,isGjar),fine=.85*n2(x,z,.01,95);
+   let h;
+   if(da>=0&&da<we){const f=da/we,p=mix(mix(3.1,1.55,isSill),4.0,isGjar);h=mix(th,edgeE,Math.pow(f,p));
+    if(isSill>.1)h+=isSill*(3.4*smooth(.35,.78,f)*smooth(1.0,.88,f)+1.1*n2(x,z,.018,94)*smooth(1.0,.9,f));
+    if(isGjar>.2)h-=.75*isGjar*smooth(5.5,1.2,da);
+    return h+fine;}
+   if(da<0&&-da<ww){const d=-da,f=d/ww,p=mix(mix(3.0,1.55,isSill),4.0,isGjar);h=mix(th,edgeW,Math.pow(f,p));
+    if(isSill>.1)h+=isSill*(3.2*smooth(.38,.78,f)*smooth(1.0,.88,f)+1.1*n2(x,z,.018,96)*smooth(1.0,.9,f));
+    if(isGjar>.2)h-=.75*isGjar*smooth(5.5,1.2,d);
+    return h+fine;}
+   if(da>=we){const u=da-we,tideClimb=(7.4-edgeE)*smooth(0,15,u),
+    rib=4.8*Math.sin(s*.085+2.2*n2(x,z,.008,110))+2.4*Math.cos(s*.21),crag=15*n2(x,z,.0024,111)+8*n2(x,z,.007,112),
+    dykeTop=103+crag,dykeCliff=dykeTop*smooth(13,80+6*n2(x,z,.006,113),u)+rib*smooth(14,32,u)*smooth(96,62,u),
+    serpBench=(18-0.35*crag)*smooth(82,168,u),latRise=(115+11*n2(x,z,.0009,99)+5*n2(x,z,.0035,100))*smooth(155,1480,u)*(1-.28*isGjar*smooth(400,80,u))+42*smooth(2900,8500,u);
+    h=edgeE+(1-seaE)*(tideClimb+dykeCliff+serpBench+latRise)-seaE*4.5*smooth(0,500,u);
+    /* Arcoforte cliff-prow bench (+74..+82 m) overlooking both the NNW sill throat and the inner sanctuary basin */
+    const dp=Math.hypot((s-PROW.s)*.88,(a-PROW.a)*.95),wProw=(1-seaE)*smooth(152,76,dp)*smooth(16,44,u);
+    h=mix(h,76+3.5*smooth(40,150,u)+.8*n2(x,z,.01,101),wProw);
+    /* Ultramafic seep hollows on the eastern laterite plateau */
+    for(const k of HOLLOWS){const dk=Math.hypot(x-k.x,z-k.z);if(dk<k.r*1.25)h-=k.depth*smooth(k.r*1.15,k.r*.3,dk);}
+    /* Shallow travertine chutes down the Type II cliff-weep tracks */
+    for(const w of WEEPS){const q=w.F.at(x,z);if(q.s>-14&&q.s<w.F.L+8&&Math.abs(q.a)<w.w+10)h-=1.1*smooth(w.w+8,w.w*.3,Math.abs(q.a))*smooth(-14,8,q.s)*smooth(w.F.L+8,w.F.L-12,q.s);}
+    return h+fine;}
+   {const u=-da-ww,tideClimb=(7.4-edgeW)*smooth(0,16,u),wCrag=11*n2(x,z,.0028,114)+5.5*n2(x,z,.008,115),
+    bluff=(56+wCrag)*smooth(14,76+5*n2(x,z,.006,116),u)+2.8*Math.sin(s*.09)*smooth(15,34,u)*smooth(82,55,u),
+    ridge=(85+12*n2(x,z,.0014,104)+5*n2(x,z,.0045,105))*smooth(75,580,u)*(1-.34*smooth(780,1900,u));
+    h=edgeW+(1-seaW)*(tideClimb+bluff+ridge)-seaW*4.5*smooth(0,500,u);
+    const qf=FL_F.at(x,z);if(qf.s>-12&&qf.s<FL_F.L+12)h-=1.25*smooth(4.2,.6,Math.abs(qf.a))*smooth(-12,10,qf.s)*smooth(FL_F.L+12,FL_F.L-10,qf.s);
+    return h+fine;}}
+  /* Seeded Lost-City brucite-carbonate White Stacks on shallow (-8.5..-0.8 m) fault ledges near the sill and inner-cove fringe */
+  const STACKS=[];for(let i=0;i<S.stacks.n;i++){const zDef=S.stacks.zones[i%S.stacks.zones.length],
+   us=KRAND.unit(KRAND.hash(S.seed,i,171)),ua=KRAND.unit(KRAND.hash(S.seed,i,172)),uh=KRAND.unit(KRAND.hash(S.seed,i,173)),ur=KRAND.unit(KRAND.hash(S.seed,i,174));
+   const s=lerp(zDef[0],zDef[1],us),ca=centerA(s),hw=zDef[2]>0?hwE(s):hwW(s),wantY=lerp(-6.8,-1.4,ua);
+   let bestP=null,bestY=-3.5,bestErr=1e9;
+   for(let k=0;k<=64;k++){const off=lerp(hw*.58-24,hw*1.06+24,k/64),p=XZ(s,ca+zDef[2]*off),by=land(p[0],p[1]),err=Math.abs(by-wantY)+(by>=-7.8&&by<=-0.9?0:50);
+    if(err<bestErr){bestErr=err;bestP=p;bestY=by;}}
+   const top=i<4?lerp(-.5,1.1,uh):lerp(1.8,5.3,uh);
+   STACKS.push({x:bestP[0],z:bestP[1],bedY:bestY,h:Math.max(bestY+2.4,top),r:2.3+3.2*ur,spires:3+(i%2)});}
+  const GJAR_PTS=[];for(let s=1880;s>=1015;s-=14){const ca=centerA(s),p=XZ(s,ca);GJAR_PTS.push([p[0],p[1],Math.max(.08,land(p[0],p[1])+.28)]);}
+  function water(x,z){const s=S_OF(x,z),h=land(x,z);
+   if(s<1070&&h<0)return S.sea;
+   if(s>=1015&&s<=1880){const da=Math.abs(A_OF(x,z)-(centerA(s)+14*n2(x,z,.0018,91)));if(da<3.4&&h<24)return Math.max(S.sea,h+.3);}
+   for(const w of WEEPS)if(Math.hypot(x-w.x,z-w.z)<w.r+1.5)return land(w.x,w.z)+.2;
+   return -1e9;}
+  const APRON=(x,z)=>{let a=0;for(const w of WEEPS){a=Math.max(a,smooth(w.r+24,w.r,Math.hypot(x-w.x,z-w.z)));
+   const q=w.F.at(x,z);if(q.s>-16&&q.s<w.F.L+14)a=Math.max(a,smooth(w.w+14,w.w*.45,Math.abs(q.a))*smooth(-16,4,q.s)*smooth(w.F.L+14,w.F.L-4,q.s));}return clamp(a,0,1);};
+  const WEST_BASALT=(x,z)=>{const qf=FL_F.at(x,z);if(qf.s>-35&&qf.s<FL_F.L+35&&Math.abs(qf.a)<38)return 0;const s=S_OF(x,z);return A_OF(x,z)<centerA(s)-6?1:0;};
+  const INTERTIDAL=(x,z)=>{const s=S_OF(x,z);if(s>1075)return 0;const h=land(x,z);return h>=-7.2&&h<=7.2?1:0;};
+  const TREE_KEEP=(x,z)=>Math.hypot(x-PROW.x,z-PROW.z)<PROW.clearR?0:1;
+  const RIM=(x,z)=>{let a=0;for(const k of HOLLOWS){const c=smooth(k.r*1.18,k.r*.35,Math.hypot(x-k.x,z-k.z));a=Math.max(a,c*(1-c)*4);}return clamp(a,0,1);};
+  const FLOOR=(x,z)=>{let a=0;for(const k of HOLLOWS)a=Math.max(a,smooth(k.r*1.05,k.r*.3,Math.hypot(x-k.x,z-k.z)));return clamp(a,0,1);};
+  const SEEP=(x,z)=>{let a=0;for(const k of HOLLOWS)a=Math.max(a,smooth(k.r*.85,k.r*.2,Math.hypot(x-k.x,z-k.z))*.9);
+   for(const w of WEEPS)a=Math.max(a,smooth(w.r+55,w.r+18,Math.hypot(x-w.x,z-w.z))*.55);return clamp(a,0,1);};
+  const NI=(x,z)=>WEST_BASALT(x,z)?65:2900+2100*RIM(x,z)+1100*FLOOR(x,z)+650*n2(x,z,.002,108);
+  return{land,water,AX,VX,S_OF,A_OF,XZ,centerA,hwE,hwW,thalwegY,PROW,HOLLOWS,WEEPS,STACKS,GJAR_PTS,FL_F,APRON,ACIDG:()=>0,
+   WEST_BASALT,INTERTIDAL,TREE_KEEP,RIM,FLOOR,SEEP,NI,farBase:-38,
+   spine:[[PROW.x,PROW.z],[S.flames.x,S.flames.z],XZ(-790,centerA(-790)),XZ(80,centerA(80)),XZ(1200,centerA(1200))].concat(WEEPS.map(w=>[w.x,w.z]))};}
  throw new Error('no station '+SKEY);})();
 function landH(x,z){return L.land(x,z);}
 function floor0(x){return L.farBase;}
@@ -202,8 +283,8 @@ const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=L.land(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 function waterH(x,z){return L.water(x,z);}
 // THE CHEMISTRY OF THE GROUND (PLAN.md 3.5): the pH every plant asks ARCH.lifeAt for; the water's own where it is wet
-const PH_AT=(x,z)=>{const ap=L.APRON(x,z),ac=L.ACIDG(x,z);let p=L.LAVA&&L.LAVA(x,z)!=null?6.6:L.MUD&&L.MUD(x,z)?7.2:5.8;p=mix(p,10.6,smooth(.3,.7,ap));p=mix(p,2.8,smooth(.3,.7,ac));return p;};
-const CAMG_AT=(x,z)=>L.LAVA&&L.LAVA(x,z)!=null?1.2:L.MUD&&L.MUD(x,z)?.6:L.TUFF?.9:.08;   /* basalt and the sound's mud are not serpentine ground */
+const PH_AT=(x,z)=>{const ap=L.APRON(x,z),ac=L.ACIDG(x,z);let p=SKEY==='cove'?(L.WEST_BASALT(x,z)?6.4:5.8):(L.LAVA&&L.LAVA(x,z)!=null?6.6:L.MUD&&L.MUD(x,z)?7.2:5.8);p=mix(p,SKEY==='cove'?11.5:10.6,smooth(SKEY==='cove'?.25:.3,SKEY==='cove'?.65:.7,ap));p=mix(p,2.8,smooth(.3,.7,ac));return p;};
+const CAMG_AT=(x,z)=>SKEY==='cove'?(L.WEST_BASALT(x,z)?1.35:.08):L.LAVA&&L.LAVA(x,z)!=null?1.2:L.MUD&&L.MUD(x,z)?.6:L.TUFF?.9:.08;   /* basalt and the sound's mud are not serpentine ground */
 const LAVA_AT=(x,z)=>L.LAVA?L.LAVA(x,z):null;   /* the age of the flow under a point (years), or null: ARCH.lifeAt's lavaAge */   /* the laterite over serpentinite: Ca:Mg ~.08 everywhere on this page (PLAN.md 3.3) */
 const SOIL_AT=(x,z)=>({ni:L.NI?L.NI(x,z):3200+1400*n2(x,z,.002,31),pH:PH_AT(x,z),caMg:CAMG_AT(x,z),n:.15,p:.12});
 

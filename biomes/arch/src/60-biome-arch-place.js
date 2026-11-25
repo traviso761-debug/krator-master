@@ -16,15 +16,15 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  const F=n=>(x,z)=>BIO.field(n,x,z),wet=F('wet'),rock=F('rock'),slope=F('slope');
  const Lv=BIO.LOD(),c0=BIO.center();
  const chem=(x,z)=>({pH:ph(x,z),T:heat(x,z),caMg:soil(x,z).caMg,lavaAge:lava(x,z)});
- /* the maquis is serpentine ground's: never on the basalt of a flow or in the sound's mud */
- const earth=(x,z)=>!strand&&ARCH.earthOk(chem(x,z))&&lava(x,z)==null&&!mud(x,z),pioneer=(x,z)=>lava(x,z)!=null&&ARCH.earthOk(chem(x,z)),life=(x,z)=>ARCH.lifeAt(chem(x,z));
+ /* the maquis is serpentine ground's: never on the basalt of a flow, in the sound's mud, on cove's western basalt headland, or inside the +-7 m tide band */
+ const cv=o.cove||null,earth=(x,z)=>!strand&&(!cv||(!cv.westBasalt(x,z)&&Y(x,z)>7.4))&&ARCH.earthOk(chem(x,z))&&lava(x,z)==null&&!mud(x,z),pioneer=(x,z)=>lava(x,z)!=null&&ARCH.earthOk(chem(x,z)),life=(x,z)=>ARCH.lifeAt(chem(x,z));
  const cellPass=(cell,salt,maxD,fn)=>{const N=Math.ceil(R*2/cell);for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){
   const x=c0[0]-R+(ix+.5)*cell,z=c0[1]-R+(iz+.5)*cell;if(Math.hypot(x-c0[0],z-c0[1])>R)continue;const ld=BIO.lodD(x,z);if(ld>maxD)continue;
   reseed(KRAND.cell(seed+salt,ix,iz));const px=x+rr(-.5,.5)*cell,pz=z+rr(-.5,.5)*cell;if(BIO.mask(px,pz)<=0||keep(px,pz)<=0)continue;
   fn(px,Y(px,pz),pz,ld<Lv.floor[0]?2:ld<Lv.floor[1]?1:0);}};
  const log=(it,x,z)=>ARCHB.LOG.push([it,x,z,life(x,z),ph(x,z),heat(x,z)]);
  // CANDELABRA ARAUCARIA: scattered over the maquis, more on the dome's crests (the drier, better-drained ground)
- cellPass(60,1,Lv.far,(x,y,z,lv)=>{if(!earth(x,z))return;const a=.3*(1-smooth(.4,.7,rock(x,z)))*(.6+.6*BIO.field('upland',x,z))*q;if(rng()>a)return;
+ cellPass(60,1,Lv.far,(x,y,z,lv)=>{if(!earth(x,z)||(cv&&cv.treeKeep(x,z)<=0))return;const a=.3*(1-smooth(.4,.7,rock(x,z)))*(.6+.6*BIO.field('upland',x,z))*q;if(rng()>a)return;
   const H=rr(8,20),tc=pickC(PAL.trunk,.02),rc=pickC(PAL.needles,.03),yaw=rr(0,TAU);BIO.put('artrunk',[x,y-.2,z],qEuler(rr(-.03,.03),yaw,rr(-.03,.03)),[(.15+H*.012)/.05,H,(.15+H*.012)/.05],tc);
   const tiers=Math.round(H/2.6);for(let t=0;t<tiers;t++){const hy=H*(.35+.6*t/Math.max(1,tiers-1)),n=t===tiers-1?0:ri(2,4),L=(1-t/tiers)*rr(1.6,3.6)+.6;
    for(let k=0;k<n;k++){const az=yaw+k/n*TAU+rr(-.3,.3);/* an arm out and turning up: a bowed stalk lying along its azimuth, its bow lifting the tip */
@@ -36,7 +36,7 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
    const s=rr(1.4,4.2)*ARCH.stunt(Object.assign({n:.15,p:.12},soil(px,pz)))*2.2;BIO.put('argymno',[px,Y(px,pz)-.1,pz],qEuler(0,rr(0,TAU),0),[s*.8,s,s*.8],pickC(PAL.casuar,.03));log('argymno',px,pz);st.gymnostoma++;}});
  // SEVE BLEUE: the wetter hollows of the laterite (the hoarder: its leaf nickel from ARCH.uptake, recorded)
  ARCHB.HOARD=[];
- cellPass(14,3,Lv.mid,(x,y,z,lv)=>{if(!earth(x,z))return;const a=.45*smooth(.45,.75,wet(x,z))*(1-rock(x,z))*q;if(rng()>a)return;
+ cellPass(14,3,Lv.mid,(x,y,z,lv)=>{if(!earth(x,z)||(cv&&cv.treeKeep(x,z)<=0))return;const a=.45*smooth(.45,.75,wet(x,z))*(1-rock(x,z))*q;if(rng()>a)return;
   const s=rr(2.5,6),up=ARCH.uptake('pycnandra',soil(x,z));BIO.put('arpycntrunk',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[s*.6,s*.45,s*.6],pickC(PAL.trunk,.02));
   BIO.put('arpycn',[x,y+s*.35,z],qEuler(0,rr(0,TAU),0),[s*.55,s*.65,s*.55],pickC(PAL.glossy,.03));ARCHB.HOARD.push({x,z,leaf:up.leaf,latex:up.latex});log('arpycn',x,z);st.pycnandra++;});
  // MAQUIS SEDGE: tussocks between, on the bare laterite
@@ -86,6 +86,36 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  cellPass(7,12,Lv.mid,(x,y,z,lv)=>{if(!mud(x,z)||ARCH.lifeAt(chem(x,z))==='none')return;const a=.75*q;if(rng()>a)return;const H=rr(3,7),yaw=rr(0,TAU),r0=Math.max(y,BIO.host.waterH(x,z));
   if(lv>0)for(let k=0;k<6;k++){const az=yaw+k/6*TAU;BIO.put('armangroveprop',[x,r0+H*.32,z],qEuler(0,az,Math.PI-rr(.5,.8)),[1.2,H*.38,1.2],pickC(PAL.prop,.02));}
   BIO.put('armangrove',[x,r0+H*.45,z],qEuler(0,rr(0,TAU),0),[H*.55,H*.5,H*.55],pickC(PAL.mangrove,.02));log('armangrove',x,z);st.mangrove++;});
+ /* COVE WESTERN BASALT HEADLAND: lush Am coastal trees, pandanus/palm crowns, coastal shrubs and fern thickets above +7.5 m */
+ if(cv){const westOk=(x,z)=>cv.westBasalt(x,z)>0&&Y(x,z)>7.6&&cv.treeKeep(x,z)>0&&ARCH.earthOk(chem(x,z));
+  cellPass(32,21,Lv.far,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.38*(1-smooth(.45,.75,rock(x,z)))*q;if(rng()>a)return;const H=rr(6,13),yaw=rr(0,TAU);
+   BIO.put('arcastrunk',[x,y-.2,z],qEuler(rr(-.05,.05),yaw,rr(-.05,.05)),[(.13+H*.011)/.05,H,(.13+H*.011)/.05],pickC(PAL.trunk,.03));
+   for(let k=0;k<3;k++){const ca=yaw+k*2.1,cr=(k?rr(.35,.95):0);BIO.put('arcas',[x+Math.cos(ca)*cr,y+H*(.5+.15*k),z+Math.sin(ca)*cr],qEuler(0,rr(0,TAU),0),[H*.36,H*.34,H*.36],pickC(PAL.casuar2,.03));}log('arcastrunk',x,z);st.casuarina++;});
+  cellPass(16,22,Lv.mid,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.64*(1-smooth(.5,.82,rock(x,z)))*q;if(rng()>a)return;const H=rr(3.8,8.8),yaw=rr(0,TAU),flw=rng()<.25;
+   BIO.put('arohiatrunk',[x,y-.1,z],qEuler(rr(-.1,.1),yaw,rr(-.1,.1)),[H*.9,H*.75,H*.9],pickC(PAL.trunk,.03));
+   for(let k=0;k<2;k++){const ca=yaw+k*2.4,cr=k?H*.14:0;BIO.put('arohia',[x+Math.cos(ca)*cr,y+H*(.56+.1*k),z+Math.sin(ca)*cr],qEuler(0,rr(0,TAU),0),[H*.56,H*.45,H*.56],pickC(flw&&k===1?PAL.ohiaFlower:PAL.ohia,.03));}log('arohia',x,z);st.ohia++;});
+  cellPass(25,23,Lv.far,(x,y,z,lv)=>{if(!westOk(x,z)||y>85)return;const a=.44*smooth(85,16,y)*(1-smooth(.45,.75,rock(x,z)))*q;if(rng()>a)return;const H=rr(6,13),yaw=rr(0,TAU),lean=rr(.12,.34);
+   BIO.put('arpalmtrunk',[x,y-.2,z],qEuler(0,yaw,lean),[(.3)/.05,H,(.3)/.05],pickC(PAL.palmtrunk,.02));
+   const tx=x-Math.cos(yaw)*Math.sin(lean)*H,ty=y+H*Math.cos(lean)*.97,tz=z+Math.sin(yaw)*Math.sin(lean)*H;
+   for(let k=0;k<8;k++)BIO.put('arpalm',[tx,ty,tz],qEuler(0,k/8*TAU+rr(-.2,.2),0),[2.9,1.05,2.9],pickC(PAL.palm,.03));log('arpalmtrunk',x,z);st.coconut++;});
+  cellPass(8.5,24,Lv.mid,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.56*(1-smooth(.52,.82,rock(x,z)))*q;if(rng()>a)return;const s=rr(1.0,2.3);
+   BIO.put('arnaupaka',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[s*1.25,s,s*1.25],pickC(PAL.naupaka,.03));log('arnaupaka',x,z);st.naupaka++;});
+  cellPass(5.8,25,Lv.floor[1],(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.64*(1-smooth(.5,.8,rock(x,z)))*q;if(rng()>a)return;const s=rr(.8,1.65);
+   BIO.put('aruluhe',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[s*1.35,s*.75,s*1.35],pickC(PAL.uluhe,.03));log('aruluhe',x,z);st.uluhe++;});}
+ return st;};
+/* COVE 14 m MACROTIDAL ZONATION ([-7 m, +7 m]): kelp & Sea-Byssus fringe (-6.6..-0.5 m), coralline-oyster visor (-0.5..+2.6 m), barnacle band (+2.6..+6.8 m) */
+ARCHB.intertidal=function(cove,R,q){q=q==null?1:q;R=R==null?2450:R;
+ const st={total:0,kelpByssus:0,corallineOyster:0,barnacle:0,pts:[]},seed=KRAND.child(1000037,'arch/intertidal'),c0=BIO.center(),Lv=BIO.LOD(),cell=7.5,N=Math.ceil(R*2/cell);
+ const KB_PAL=[0xc89e38,0xb88c2e,0x3e5226,0x4c622e],CO_PAL=[0xd8bec4,0xe2d4d8,0xcfb4bc],BA_PAL=[0xd8d6cc,0xcccac0,0xe2e0d6];
+ for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){const x=c0[0]-R+(ix+.5)*cell,z=c0[1]-R+(iz+.5)*cell;
+  if(Math.hypot(x-c0[0],z-c0[1])>R||BIO.lodD(x,z)>Lv.mid)continue;
+  reseed(KRAND.cell(seed,ix,iz));const px=x+rr(-.45,.45)*cell,pz=z+rr(-.45,.45)*cell;if(!cove.intertidal(px,pz))continue;
+  const y=Y(px,pz);if(y<-6.6||y>6.8||rng()>.58*q)continue;
+  const n=ri(1,3);for(let k=0;k<n;k++){const ox=px+rr(-1.4,1.4),oz=pz+rr(-1.4,1.4),oy=Y(ox,oz);if(oy<-6.6||oy>6.8)continue;
+   if(oy<-.45){const s=rr(.22,.52);BIO.put('arhem',[ox,oy+.02,oz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s,s*1.15,s],pickC(KB_PAL,.03));st.kelpByssus++;}
+   else if(oy<2.6){const s=rr(.18,.44);BIO.put(oy>0.1&&rng()<.5?'arlime':'arhem',[ox,oy+.03,oz],qEuler(rr(-.15,.15),rr(0,TAU),0),[s,s*.85,s],pickC(CO_PAL,.02));st.corallineOyster++;}
+   else{const s=rr(.16,.38);BIO.put('arhem',[ox,oy+.02,oz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s,s*.65,s],pickC(BA_PAL,.02));st.barnacle++;}
+   st.total++;if(st.pts.length<600)st.pts.push([ox,oy,oz]);}}
  return st;};
 // THE CURTAINS: along a meeting's dividing line, a wall every 1.2-2 m wherever the sample says it can stand; a few short side walls where the halves braid;
 // the young hems on the margin of the stand. line(s, a) -> [x, z] the meeting's frame; level(s) the water's surface; the +z (white) face to the alkaline

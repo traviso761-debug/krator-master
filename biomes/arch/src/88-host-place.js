@@ -3,8 +3,10 @@
 // life where ARCH.lifeAt is 'native'), the curtains along the meeting's dividing line (ARCHB.curtains, on ARCH.meeting's samples), the seep combs at the
 // flame cleft (ARCHB.combs, on the flames 89b lights).
 const DRY=(x,z)=>{const w=waterH(x,z);return w<-1e8||terrainH(x,z)>w+.3?1:0;};
-const STATION_BUILD=function(Q){Q=Q==null?1:Q;const st={};
- BIO.cur='arch/life';Object.assign(st,ARCHB.buildArch(TERR.R-150,Q,{heat:HEAT_AT,ph:PH_AT,soil:SOIL_AT,keep:DRY,lava:LAVA_AT,mud:L.MUD||null,strand:L.STRAND||null,sand:L.SAND||null}));
+const COVE_OPT=SKEY==='cove'?{westBasalt:L.WEST_BASALT,treeKeep:L.TREE_KEEP,intertidal:L.INTERTIDAL}:null;
+const STATION_BUILD=function(Q){Q=Q==null?1:Q;const q=SKEY==='cove'?Q*.76:Q,st={};
+ BIO.cur='arch/life';Object.assign(st,ARCHB.buildArch(TERR.R-150,q,{heat:HEAT_AT,ph:PH_AT,soil:SOIL_AT,keep:DRY,lava:LAVA_AT,mud:L.MUD||null,strand:L.STRAND||null,sand:L.SAND||null,cove:COVE_OPT}));
+ if(COVE_OPT){const it=ARCHB.intertidal(COVE_OPT,TERR.R-150,Q);st.intertidal=it.total;st.intertidalBands=it;}
  if(L.MEET){BIO.cur='arch/curtains';const O=L.OUT;st.curtains=ARCHB.curtains(L.MEET,(s,a)=>O.p(s,a),L.outLv,Q);}
  if(FLAMES.list.length){BIO.cur='arch/combs';st.combs=ARCHB.combs(FLAMES.list,Q).combs;}
  BIO.cur=null;return st;};

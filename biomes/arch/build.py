@@ -57,9 +57,11 @@ def find_node():
 
 HERE=os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+STATIONS=['barrens','coast','cove','dome','sound']
+if '--station' not in sys.argv: BSRC.variants([['--station',_st] for _st in STATIONS])
 if '--all' in sys.argv:
     _r=[subprocess.call([sys.executable,os.path.abspath(__file__)]+[a for a in sys.argv[1:] if a!='--all'])]
-    for _st in sorted(os.listdir(os.path.join(os.path.dirname(os.path.abspath(__file__)),'stations'))):
+    for _st in STATIONS:
         _r.append(subprocess.call([sys.executable,os.path.abspath(__file__),'--station',_st]+[a for a in sys.argv[1:] if a!='--all']))
     sys.exit(max(_r))
 SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
@@ -105,7 +107,8 @@ PATH.setdefault('35s-core-strata-shade.js',J('core','terrain','host','35-core-st
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','33b-core-bamboo.js','34-core-impostor.js',
  '35-core-anim.js','39-core-lean.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME: PATH.setdefault(f,J('core','biome',f))
-# core/space (KSPACE), core/rand and core/tags, core/export: as before
+# core/drawn (KDRAWN), core/space (KSPACE), core/rand and core/tags, core/export: as before
+PATH.setdefault('10-core-drawn.js',J('core','drawn','10-core-drawn.js'))
 PATH.setdefault('20-core-space.js',J('core','space','20-core-space.js'))
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
 for f,d in CORE_TAGS.items(): PATH.setdefault(f,J('core',d,f))
@@ -150,7 +153,13 @@ for f in CORE_MAT: PATH.setdefault(f,J('core','materials','record',f))
 # showed its whole sheet; TODO.md, "The inline pack writers that drop cell")
 sys.path.insert(0,J('tools','textures'))
 import matlib_pack
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'arch',own=True),khost.EDITS_JS:khost.edits_js(HERE,'arch')}
+_ALL_FAMS=sorted(_json.load(open(os.path.join(HERE,'materials.json'),encoding='utf-8'))['families'])
+_ST_FAMS={
+ 'coast':['ground.sand.black','rock.basalt.vesicular','rock.tuff','rock.palagonite'],
+ 'sound':['ground.lava.aa','ground.sand.black','ground.redsoil','ground.lichen.crust'],
+ 'cove':['ground.travertine.white','rock.basalt.vesicular','ground.redsoil','ground.lichen.crust'],
+}.get(STATION,['ground.travertine.white','ground.travertine.acid','ground.redsoil','ground.sulphur'])
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'arch',own=True,exclude=[f for f in _ALL_FAMS if f not in _ST_FAMS]),khost.EDITS_JS:khost.edits_js(HERE,'arch')}
 # THE NEIGHBOURS' KITS, read in place (ebadlands' lines): a station names them in station.json ("kin": {"<kit>": [[fragments], "<API>", [pack families]]});
 # each kit's fragments slot after the host stage (45) and before this kit (50), in their own registry, closed by a one-line kitEnd
 KIN_ALL={}   # no neighbour is read in place on the main page; a station may name one in its station.json
