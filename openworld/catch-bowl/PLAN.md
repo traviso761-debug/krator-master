@@ -167,15 +167,41 @@ The map agrees. Its low line, row by row, runs **1,783 to 3,939 m** and sits mos
 water from **1,910 to 2,460 m**, and **Ranger HQ at 1,982 m stands on a lake shore**. So this province is the one
 habitable thing east of the Catch, and the only sensible place for the network the owner asked for.
 
-**The network** (*proposed*): a `trail` (the kind of B3) with `stops`, on `KSITES`, following the graben floors rather
-than any straight line:
+**The network**: a `trail` (the kind of B3) with `stops`, on `KSITES`, following the graben floors rather than any
+straight line. **Routed and measured on 2026-11-25** by `tools/gate_route.py`, a least-cost search over the model's own
+ground (eight-connected Dijkstra; each step costs its distance times `1 + (max(0, E - 2450)/300)**1.6`, so it wanders
+the floors freely and pays dearly to climb; water impassable). The straight lines are not usable and that is why the
+search exists: straight west from Ranger HQ crosses **4,416 and 4,507 m**, and straight south **5,492 and 8,109 m**.
 
-| Branch | From | To | Note |
-|---|---|---|---|
-| **West** | Ranger HQ | the Yuni valley (1263,1089) | the supply line: everything Ranger HQ eats comes up it. The one branch that leaves the region's cut inside it |
-| **North-east** | Ranger HQ | the Loom Chasms' edge | laid to the cut's edge, `short` |
-| **South-east** | Ranger HQ | the Slabfields' edge | ditto |
-| **South** | Ranger HQ | the Siphon Pits' edge, by Lake Vapora | ditto; Lake Vapora is the hub, not a terminus |
+| Branch | To | Road | Days | Median / max | Kept posts |
+|---|---|---|---|---|---|
+| **West** | the Yuni valley (1263,1089) | **538 km** (438 straight, winding 1.23) | 22.4 | 2,341 / 3,939 m | 5, with 17 unmanned bothies |
+| **North-east** | the Loom Chasms' edge | 363 km (286, 1.27) | 15.1 | 2,420 / 2,882 m | 3, with 12 bothies |
+| **South-east** | the Slabfields' edge | 446 km (308, 1.45) | 18.6 | 2,353 / 2,882 m | 4, with 15 bothies |
+| ~~**South**~~ | ~~the Siphon Pits' edge~~ | **withdrawn** — see below | — | 2,402 / **11,025 m** | — |
+
+**Three findings, and each changes the network's shape:**
+
+1. **It is not four branches from a hub; it is two trunks, and the eastern one forks.** The north-east, south-east and
+   south routes **share their first 148 km** out of Ranger HQ and part at **px 1493,1225**; the south-east and south
+   then share a further stretch to 370 km and part at **px 1516,1336**. So the east is one trunk with two forks, which
+   is how a graben network works and is cheaper to keep than three roads.
+2. **The south branch does not exist on this ground.** Its route runs 761 km for 319 km straight (winding **2.39**) and
+   tops out at **11,025 m** — the search gives up and climbs a wall, which means there is no southern graben exit. Its
+   premise was that Lake Vapora lay south; it does not (3). Withdrawn, and the owner's *"Lake Vapora is the hub, not a
+   terminus"* turns out to be truer than intended.
+3. **Lake Vapora is Ranger HQ's own lake.** There are only **two water bodies in the province's 129,000 km²**: one of
+   **352 km² centred px 1423,1235 at 1,904 m**, whose shore is **2 km** from Ranger HQ, and one of 112 km² at
+   px 1443,1146 at 2,457 m. The brief puts the Lake Vapora caldera at +2,180 m, which is 276 m off the larger lake and
+   553 m off the smaller; the larger is the one the map's own *"Ranger HQ stands on a lake shore"* refers to. So *"Ranger
+   HQ stands on a lake shore"* and *"Lake Vapora is the hub"* are **one statement**, and the Rangers' fort stands on the
+   caldera lake at 1,904 m.
+
+A note for whoever re-runs it: a post every day's march gives twenty-one on the west branch alone and about sixty over
+the network, more census than the province is meant to carry. `--every <days>` spaces the **kept** posts (default 4) and
+the day-marches between them are the unmanned bothies, which is what the plan's *"bothies, water tanks and fodder bins"*
+describes. The kept posts are nudged to the best dry cell within 3 px, scored as elevation plus 40 m a kilometre of
+distance to water — so a post trades 400 m of height for 10 km of carry, which is the trade a keeper actually makes.
 | ~~A spur toward Hub 01~~ | - | - | **There is none** (the owner, 2026-11-24: *"There is no trail towards hub 01. People who go that way tend not to come back."*). The network's westernmost waystation is the last built thing; beyond it the ground is unmarked. See section 2b |
 
 ### 2b. What the Rangers know about Hub 01, and what the region may show
