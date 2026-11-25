@@ -976,12 +976,18 @@ static func chimney(o: Dictionary, seed: int) -> Dictionary:
 	var bedH := maxf(float(_chp(o, F, "bed", H / 12)), 1.5)
 	var ctx := {"H": H, "wall": wall, "I": I, "LG": LG, "LW": LW, "bedH": bedH, "se": se, "ry": ry, "lob": lob, "ns": ns}
 	var radAt := func(u): return _rad_at(R0, taper, fl, u)
+	var FBLEND := minf(0.12, maxf(0.03, (cut - fork) * 0.45))
+	var NECK := 0.52 if mouths == 2 else 0.64
+	var NBLEND := minf(0.3, fork * 0.6)
+	var radTrunk: Callable = (func(u): return radAt.call(u) * (1.0 - (1.0 - NECK) * sm(fork - NBLEND, fork, u))) if mouths > 1 else radAt
 	var u1: float = fork if mouths > 1 else cut
-	_ch_column(beds, ctx, 0, x, z, gC, 0, u1, radAt, lean, la, 0)
+	_ch_column(beds, ctx, 0, x, z, gC, 0, u1, radTrunk, lean, la, 0)
 	if mouths > 1:
-		var yF := gC + fork * H
-		var ox := cos(la) * tan(lean) * fork * H
-		var oz := sin(la) * tan(lean) * fork * H
+		var blend := FBLEND
+		var u0b := maxf(0.0, fork - blend)
+		var yF := gC + u0b * H
+		var ox := cos(la) * tan(lean) * u0b * H
+		var oz := sin(la) * tan(lean) * u0b * H
 		var sp: float = _chp(o, F, "spread", 0.3)
 		var base := KRand.unit(_h(seed, [0, 842])) * TAU
 		for m in mouths:
@@ -989,8 +995,12 @@ static func chimney(o: Dictionary, seed: int) -> Dictionary:
 			var rf: float = radAt.call(fork) * (0.68 if mouths == 2 else 0.58)
 			var q: float = radAt.call(fork) * 0.42
 			var rfork: float = radAt.call(fork)
-			var RF := func(u): return maxf(rf * (radAt.call(u) / rfork), wall + 0.05)
-			_ch_column(beds, ctx, m + 1, x + ox + cos(az) * q, z + oz + sin(az) * q, yF, fork, cut, RF, sp * (0.8 + 0.4 * KRand.unit(_h(seed, [m, 843]))), az, m + 1)
+			var swell := 1.08
+			var RF := func(u):
+				var t := _clamp((u - u0b) / maxf(1e-6, blend * 1.8), 0.0, 1.0)
+				var sw := 1.0 + (swell - 1.0) * (1.0 - t) * (1.0 - t)
+				return maxf(rf * (radAt.call(u) / rfork) * sw, wall + 0.05)
+			_ch_column(beds, ctx, m + 1, x + ox + cos(az) * q, z + oz + sin(az) * q, yF, u0b, cut, RF, sp * (0.8 + 0.4 * KRand.unit(_h(seed, [m, 843]))), az, m + 1)
 	var feet := [0]
 	if gr is Callable and state != "fallen":
 		_set_foot(beds[0], gr, sink, float(beds[0].y) + float(beds[0].h))

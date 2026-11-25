@@ -3,6 +3,7 @@
 const fs=require('fs'),path=require('path'),ROOT=path.join(__dirname,'..','..','..');
 global.window=global;
 eval(fs.readFileSync(path.join(ROOT,'core','rand','08-core-rand.js'),'utf8')+';global.KRAND=KRAND;');
+eval(fs.readFileSync(path.join(ROOT,'core','space','20-core-space.js'),'utf8')+';global.KSPACE=KSPACE;');   /* GILLS.life keeps its pipes clear on KSPACE (PLAN.md section 13), so the test loads it as a page does */
 const AT=path.join(ROOT,'core','atmos'),FR=['89-atmos-0-core.js','89-atmos-0p-presets.js'].map(f=>path.join(AT,f))
  .concat(fs.readdirSync(path.join(AT,'sky')).filter(f=>/^89-atmos-.*\.js$/.test(f)).sort().map(f=>path.join(AT,'sky',f)));
 eval(FR.map(f=>fs.readFileSync(f,'utf8')).join('\n')+';global.ATMOS=ATMOS;');

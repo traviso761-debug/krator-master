@@ -76,7 +76,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 CORE = lambda *p: os.path.join(ROOT, 'core', *p)
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
-STATIONS = ['oasis', 'lake', 'fan']
+STATIONS = ['oasis', 'lake', 'fan', 'gills-candles']
 
 # core/terrain: KSTACKS (the lake-bed mesas), KBASIN (the old lake's strandlines, silt, salt and the wind's yardangs); the final rebuild
 # (pair 11, 2026-11-09): KGROUND (43: the ground's library layers, hex-tiled, scaled with distance, blended by height: 45c) and KHORIZON
@@ -119,6 +119,7 @@ KITS = {'49a-sed-species.js': 'src/50-biome-sedesert-species.js', '49b-sed-trees
 def build(station=None):
     PATH = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
     out_name = 'catch.html'
+    stn = {}
     if station:
         sd = os.path.join(HERE, 'stations', station)
         stn = json.load(open(os.path.join(sd, 'station.json'), encoding='utf-8'))
@@ -126,6 +127,11 @@ def build(station=None):
         for f in os.listdir(sd):
             if f.endswith('.js') or f.endswith('.html'):
                 PATH[f] = os.path.join(sd, f)
+        # A STATION'S READS (station.json "reads": {slot: path from the repo root}): core pieces and a shared kit's fragments it takes BY PATH,
+        # as the godthrone's and xanadu's gills stations read them. Per station, never in CORE_*: the Gills' shared life, core/terrain's strata
+        # and lamina and core/hazard's flow ride on the gills pages only, so the four basin pages keep their bytes.
+        for slot, p in stn.get('reads', {}).items():
+            PATH[slot] = os.path.join(ROOT, *p.split('/'))
     for f in CORE_TERRAIN:
         PATH.setdefault(f, CORE('terrain', f))
     for f, p in CORE_TERRAIN_HOST.items():
@@ -178,6 +184,11 @@ def build(station=None):
                '44b-host-matlib-pack-sedesert.js': _mp.fragment(SED, 'sedesert', exclude=sed_ex),
                '79-host-mechs.js': mech_bundle.bundle(['stalker']),
                khost.EDITS_JS: khost.edits_js(HERE, 'catch' if not station else 'catch-' + station)}
+    # A SHARED KIT'S OWN PACK (station.json "packs": the Gills' library sets, biomes/gills/tex), read as a second pack as the godthrone's and
+    # xanadu's gills stations read it
+    for _i, _k in enumerate(stn.get('packs', [])):
+        _slot = '44p%d-host-matlib-pack-%s.js' % (_i, os.path.basename(_k))
+        VIRTUAL[_slot] = _mp.fragment(os.path.join(ROOT, *_k.split('/')), os.path.basename(_k))
     for f in VIRTUAL:
         PATH[f] = None
     frags = sorted(PATH)
