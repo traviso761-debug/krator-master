@@ -1,0 +1,35 @@
+{
+ "format": "krator-ground-layer-set",
+ "version": 1,
+ "what": "The Catch and the Bowl's ground-layer set, for the preview host krator/catch_bowl.gd and its shader shaders/catch_bowl_ground.gdshader. Six desert layers in the six roles godot/shaders/terrain.gdshader gives the layer indices, so when the region is cut the set drops into the 1:1 shader's selectors without being repacked. The preview binds it to its own samplers rather than the global uniforms, because it is not on the chunk pipeline that sets those.",
+ "set": "catch-bowl",
+ "style": {
+  "overlay": "catch-bowl",
+  "worldStyle": "desert",
+  "palette": "catch",
+  "where": "openworld/catch-bowl/PLAN.md; the region is not cut yet, so nothing reads this but the preview host"
+ },
+ "regions": ["openworld/catch-bowl"],
+ "out": "godot/data/ground_layers/catch-bowl/",
+ "size": 512,
+ "layers": [
+  {"index": 0, "role": "base", "name": "sand_dune", "library": "ground.sand.dune", "tile_m": 2.4,
+   "ground": "the ergs: the Bowl's sand seas and the Catch's drifts, the only ground the dune lines are drawn on",
+   "note": "the shader's erg mask picks it; tile at 2.4 m so a dune's flank reads as sand and not as gravel"},
+  {"index": 1, "role": "wet", "name": "salt_crust", "library": "ground.salt", "tile_m": 3.0,
+   "ground": "the Bowl's salt pan below sea level and the Catch's sabkhas: the brightest ground in the region",
+   "note": "the wet role, because a sabkha is where the water was"},
+  {"index": 2, "role": "high", "name": "ironstone", "library": "ground.ironstone", "tile_m": 2.8,
+   "ground": "the benches and the high desert pavement above the sand line, dark with desert varnish",
+   "note": "the high role: what the uplands are, not alpine turf"},
+  {"index": 3, "role": "gravel", "name": "reg_gravel", "library": "ground.gravelly_sand", "tile_m": 1.9,
+   "ground": "the reg: gravel plains swept clean of sand, between the ergs",
+   "note": "the province mask's other half; ground.gravel019 is coarser and is the scree's layer"},
+  {"index": 4, "role": "rock", "name": "slickrock", "library": "ground.slickrock", "tile_m": 4.2,
+   "ground": "the scarps, the Godsgate's walls and every slope too steep for sand to lie on",
+   "note": "tiled large: a scarp seen from a kilometre wants metres a tile, not centimetres"},
+  {"index": 5, "role": "pave", "name": "scree", "library": "ground.gravel019", "tile_m": 1.4,
+   "ground": "the talus below the scarps, where the shader's scree layer already puts its relief",
+   "note": "the pave role has no paving here; the Catch has no made roads"}
+ ]
+}

@@ -172,10 +172,11 @@ var AV = typeof AV !== 'undefined' ? AV : {};
     var state = o.state || 'refurbished';
     var seed = o.seed == null ? 19690 : (o.seed | 0);
     var culture = o.culture || (state === 'refurbished' ? 'republican' : 'ancient');
+    var isRep = state === 'refurbished';
     var D = AV.DIM, HY = D.HYDRO;
     var P = {
       id: o.id || ('cascade.' + state),
-      name: state === 'refurbished' ? 'Cascade (Hydropowered Republic Industrial Arcology)' : state === 'ruined' ? 'Cascade (Post-Cataclysm Ruin)' : 'Cascade (Ancient Hydro-Core Intact)',
+      name: isRep ? 'Cascade (Hydropowered Republic Industrial Arcology)' : state === 'ruined' ? 'Cascade (Post-Cataclysm Ruin)' : 'Cascade (Ancient Prime Dynamo Intact)',
       state: state,
       culture: culture,
       seed: seed,
@@ -188,12 +189,13 @@ var AV = typeof AV !== 'undefined' ? AV : {};
       crownTiers: [],
       decks: [],
       portals: [],
+      ancientRelics: null,
       hydroHall: null,
       republican: [],
       debris: []
     };
 
-    // 1. Eight carved stepped apses (South Apse k=2 carries the central notch for the y = 31.8 m Headrace Aqueduct)
+    // 1. Eight carved stepped apses (in refurbished state, South Apse k=2 is notched for the y = 31.8 m Headrace Aqueduct)
     for (var k = 0; k < 8; k++) {
       var th = AV.faceAngle(k), c = Math.cos(th), s = Math.sin(th);
       var rMouth = AV.apothemAt(k, 1);
@@ -212,7 +214,7 @@ var AV = typeof AV !== 'undefined' ? AV : {};
           rFront: rFront,
           rBack: rBack,
           w: spanW,
-          aqueductNotch: k === 2 && t <= 3 ? HY.notchHW : 0
+          aqueductNotch: isRep && k === 2 && t <= 3 ? HY.notchHW : 0
         });
       }
       var apse = {
@@ -225,7 +227,7 @@ var AV = typeof AV !== 'undefined' ? AV : {};
         hw: D.APSE.hw,
         crownY: D.APSE.crownY,
         canal: hasCanal,
-        aqueduct: k === 2,
+        aqueduct: isRep && k === 2,
         tiers: tiers,
         breached: state === 'ruined' && (k === 1 || k === 5)
       };
@@ -243,18 +245,20 @@ var AV = typeof AV !== 'undefined' ? AV : {};
         h: hasCanal ? D.APSE.portalH : D.APSE.gateH
       });
     }
-    P.portals.push({
-      id: 'av.portal.aqueduct.south',
-      k: 8,
-      face: 'South',
-      kind: 'aqueduct',
-      x: 0.0,
-      y: HY.aqueductY,
-      z: D.APOTHEM_CARD,
-      yaw: Math.PI / 2,
-      w: HY.aqueductW,
-      h: 8.5
-    });
+    if (isRep) {
+      P.portals.push({
+        id: 'av.portal.aqueduct.south',
+        k: 8,
+        face: 'South',
+        kind: 'aqueduct',
+        x: 0.0,
+        y: HY.aqueductY,
+        z: D.APOTHEM_CARD,
+        yaw: Math.PI / 2,
+        w: HY.aqueductW,
+        h: 8.5
+      });
+    }
 
     // 2. Twelve cylindrical skyscraper column-towers (4 inner + 8 outer)
     var innerSigns = [[1, 1], [-1, 1], [-1, -1], [1, -1]];
@@ -322,7 +326,7 @@ var AV = typeof AV !== 'undefined' ? AV : {};
     }
 
     // 3. Five-tier stepped faceted pyramidal crown (Sheet 1 #2 motif)
-    var CR = D.CROWN, tSpan = (CR.yLantern - CR.y0) / CR.tiers;
+    var CR = D.CROWN;
     for (var ct = 0; ct < CR.tiers; ct++) {
       var f0 = ct / CR.tiers, f1 = (ct + 1) / CR.tiers;
       var ya = r3(CR.y0 + f0 * (CR.yLantern - CR.y0)), yb = r3(CR.y0 + f1 * (CR.yLantern - CR.y0));
@@ -345,7 +349,7 @@ var AV = typeof AV !== 'undefined' ? AV : {};
       r0: CR.rTop,
       r1: 6.5,
       alive: state !== 'ruined',
-      mode: state === 'refurbished' ? 'republic-arc' : state === 'intact' ? 'ancient-cyan' : 'dead'
+      mode: isRep ? 'republic-arc' : state === 'intact' ? 'ancient-cyan' : 'dead'
     };
 
     // 4. Decks (in ruined state, decks above L8 have breached roofs/openings)
@@ -357,65 +361,154 @@ var AV = typeof AV !== 'undefined' ? AV : {};
       }));
     }
 
-    // 5. Hydropowered Central Industrial Hall & Aqueduct Machinery Records
-    P.hydroHall = {
-      id: 'av.hydro.hall',
-      aqueduct: {
-        id: 'av.hydro.aqueduct',
-        yWater: HY.aqueductY,
-        yBed: HY.aqueductBedY,
-        w: HY.aqueductW,
-        zStart: HY.aqueductZ1,
-        zHeadbox: HY.aqueductZ0,
-        intact: state !== 'ruined'
+    // 5a. Original Ancient Prime Toroidal Dynamo & Superconducting Power-Spine Relics (present in ALL 3 states:
+    //     online in 'intact', shattered in 'ruined', and carefully stabilized/spliced-around in 'refurbished'!)
+    P.ancientRelics = {
+      id: 'av.relic.suite',
+      primeDynamo: {
+        id: 'av.relic.prime_dynamo',
+        kind: 'ancient-prime-dynamo',
+        x: 0.0,
+        y: 6.0,
+        z: -15.8,
+        plinthR: 6.8,
+        torusY: 16.8,
+        torusR: 6.4,
+        tubeR: 1.32,
+        yTop: 27.4,
+        status: state === 'intact' ? 'online' : isRep ? 'failed-stabilized' : 'shattered',
+        missingSegs: state === 'intact' ? [] : [2, 3, 4, 5],
+        stabilized: isRep
       },
-      cataracts: [
-        { id: 'av.hydro.fall.main', name: 'Central Cataract Plunge', lip: [[-4.8, 16.2, HY.aqueductY], [4.8, 16.2, HY.aqueductY]], dir: [0, -1], drop: HY.cataractDrop, speed: 2.6 },
-        { id: 'av.hydro.fall.west', name: 'West Overshot Wheel Chute', lip: [[-15.0, 15.6, HY.aqueductY - 0.1], [-11.8, 15.6, HY.aqueductY - 0.1]], dir: [0, -1], drop: HY.cataractDrop - 0.1, speed: 2.1 },
-        { id: 'av.hydro.fall.east', name: 'East Overshot Wheel Chute', lip: [[11.8, 15.6, HY.aqueductY - 0.1], [15.0, 15.6, HY.aqueductY - 0.1]], dir: [0, -1], drop: HY.cataractDrop - 0.1, speed: 2.1 }
+      statorCradle: isRep ? {
+        id: 'av.relic.stator_cradle',
+        kind: 'salvaged-stator-arc',
+        x: -12.4,
+        y: 6.0,
+        z: -20.4,
+        yaw: 0.30,
+        r: 6.4
+      } : null,
+      coolantRing: {
+        id: 'av.relic.coolant_ring',
+        kind: 'ancient-coolant-ring',
+        x: 0.0,
+        y: -3.3,
+        z: 6.5,
+        r: 12.2,
+        h: 4.35,
+        status: state === 'intact' ? 'online' : 'repurposed'
+      },
+      busTrunks: [
+        { id: 'av.relic.trunk.nw', corner: 'NW', sgnX: -1, sgnZ: -1, y: 11.6, stubX: -15.6, spliceX: -34.8, spliceZ: -16.5, towerX: -43.5, towerZ: -43.5, spliced: isRep },
+        { id: 'av.relic.trunk.ne', corner: 'NE', sgnX: 1, sgnZ: -1, y: 11.6, stubX: 15.6, spliceX: 34.8, spliceZ: -16.5, towerX: 43.5, towerZ: -43.5, spliced: isRep },
+        { id: 'av.relic.trunk.sw', corner: 'SW', sgnX: -1, sgnZ: 1, y: 11.6, stubX: -15.6, spliceX: -34.8, spliceZ: -6.5, towerX: -43.5, towerZ: 43.5, spliced: isRep },
+        { id: 'av.relic.trunk.se', corner: 'SE', sgnX: 1, sgnZ: 1, y: 11.6, stubX: 15.6, spliceX: 34.8, spliceZ: -6.5, towerX: 43.5, towerZ: 43.5, spliced: isRep }
       ],
-      wheels: [
-        { id: 'av.hydro.wheel.wu', kind: 'overshot-wheel', side: 'west', tier: 'upper', x: -13.4, y: 21.6, z: 9.8, r: HY.wheelR, w: HY.wheelW, rpm: 7.5 },
-        { id: 'av.hydro.wheel.eu', kind: 'overshot-wheel', side: 'east', tier: 'upper', x: 13.4, y: 21.6, z: 9.8, r: HY.wheelR, w: HY.wheelW, rpm: 7.5 },
-        { id: 'av.hydro.wheel.wl', kind: 'overshot-wheel', side: 'west', tier: 'lower', x: -13.4, y: 8.6, z: 2.2, r: HY.wheelR, w: HY.wheelW, rpm: -8.2 },
-        { id: 'av.hydro.wheel.el', kind: 'overshot-wheel', side: 'east', tier: 'lower', x: 13.4, y: 8.6, z: 2.2, r: HY.wheelR, w: HY.wheelW, rpm: -8.2 }
+      capacitors: [
+        { id: 'av.relic.cap.0', kind: 'ancient-capacitor', x: -23.8, y: 6.0, z: 3.5, r: 2.05, h: 8.8, retrofit: 'sluice-governor' },
+        { id: 'av.relic.cap.1', kind: 'ancient-capacitor', x: 23.8, y: 6.0, z: 3.5, r: 2.05, h: 8.8, retrofit: 'sluice-governor' },
+        { id: 'av.relic.cap.2', kind: 'ancient-capacitor', x: -35.8, y: 6.0, z: -24.5, r: 2.15, h: 8.4, retrofit: 'busbar-switch' },
+        { id: 'av.relic.cap.3', kind: 'ancient-capacitor', x: 35.8, y: 6.0, z: -24.5, r: 2.15, h: 8.4, retrofit: 'busbar-switch' },
+        { id: 'av.relic.cap.4', kind: 'ancient-capacitor', x: -5.8, y: 6.0, z: -8.2, r: 1.42, h: 6.4, retrofit: 'dais-pylon' },
+        { id: 'av.relic.cap.5', kind: 'ancient-capacitor', x: 5.8, y: 6.0, z: -8.2, r: 1.42, h: 6.4, retrofit: 'dais-pylon' }
       ],
-      gearTowers: [
-        { id: 'av.hydro.gear.sw', kind: 'bevel-shaft', x: -19.2, z: 9.8, y0: 0.0, y1: 31.0, gearY: [8.6, 21.6, 29.4] },
-        { id: 'av.hydro.gear.se', kind: 'bevel-shaft', x: 19.2, z: 9.8, y0: 0.0, y1: 31.0, gearY: [8.6, 21.6, 29.4] },
-        { id: 'av.hydro.gear.nw', kind: 'bevel-shaft', x: -19.2, z: -16.0, y0: 0.0, y1: 31.0, gearY: [8.6, 19.2, 29.4] },
-        { id: 'av.hydro.gear.ne', kind: 'bevel-shaft', x: 19.2, z: -16.0, y0: 0.0, y1: 31.0, gearY: [8.6, 19.2, 29.4] }
-      ],
-      lineShafts: [
-        { id: 'av.hydro.line.w1', axis: 'z', x: -19.2, y: 13.2, z0: -38.0, z1: 12.0, pulleys: [-34, -26, -18, -8, 2] },
-        { id: 'av.hydro.line.e1', axis: 'z', x: 19.2, y: 13.2, z0: -38.0, z1: 12.0, pulleys: [-34, -26, -18, -8, 2] },
-        { id: 'av.hydro.line.w2', axis: 'z', x: -19.2, y: 21.6, z0: -36.0, z1: 12.0, pulleys: [-30, -20, -10, 0] },
-        { id: 'av.hydro.line.e2', axis: 'z', x: 19.2, y: 21.6, z0: -36.0, z1: 12.0, pulleys: [-30, -20, -10, 0] },
-        { id: 'av.hydro.line.n', axis: 'x', z: -16.0, y: 19.2, x0: -38.0, x1: 38.0, pulleys: [-32, -24, -10, 10, 24, 32] }
-      ],
-      penstocks: [
-        { id: 'av.hydro.penstock.w', a: [-19.5, 30.2, 18.0], b: [-29.0, 8.2, -4.0], r: HY.penstockR },
-        { id: 'av.hydro.penstock.e', a: [19.5, 30.2, 18.0], b: [29.0, 8.2, -4.0], r: HY.penstockR }
-      ],
-      dynamos: [
-        { id: 'av.hydro.dynamo.w0', kind: 'hydro-dynamo', x: -29.0, y: 6.0, z: -6.5, mw: 4.5 },
-        { id: 'av.hydro.dynamo.w1', kind: 'hydro-dynamo', x: -29.0, y: 6.0, z: -16.5, mw: 4.5 },
-        { id: 'av.hydro.dynamo.e0', kind: 'hydro-dynamo', x: 29.0, y: 6.0, z: -6.5, mw: 4.5 },
-        { id: 'av.hydro.dynamo.e1', kind: 'hydro-dynamo', x: 29.0, y: 6.0, z: -16.5, mw: 4.5 }
-      ],
-      tripHammers: [
-        { id: 'av.hydro.hammer.w', kind: 'trip-hammer', x: -11.5, y: 6.0, z: -28.0, yaw: 0, phase: 0.0 },
-        { id: 'av.hydro.hammer.e', kind: 'trip-hammer', x: 11.5, y: 6.0, z: -28.0, yaw: Math.PI, phase: 1.57 }
-      ],
-      cupolas: [
-        { id: 'av.hydro.cupola.w', kind: 'blast-cupola', x: -24.5, y: 6.0, z: -38.0, r: 3.4, h: 19.5 },
-        { id: 'av.hydro.cupola.e', kind: 'blast-cupola', x: 24.5, y: 6.0, z: -38.0, r: 3.4, h: 19.5 }
-      ],
-      bridgeCrane: { id: 'av.hydro.bridgecrane', y: 40.5, z: -24.0, x0: -42.0, x1: 42.0, ladleX: -6.0 }
+      hallProps: state === 'ruined' ? [] : (isRep ? [
+        /* Surviving Ancient control stands, glass consoles & telemetry racks left bolted on the Hall floor */
+        { id: 'av.relic.prop.0', key: 'ancients_control_stand', x: -2.4, y: 6.45, z: -8.6, ry: Math.PI },
+        { id: 'av.relic.prop.1', key: 'ancients_control_stand', x: 2.4, y: 6.45, z: -8.6, ry: Math.PI },
+        { id: 'av.relic.prop.2', key: 'yuni_ancient_glass_console', x: 0.0, y: 6.45, z: -9.6, ry: 0.0 },
+        { id: 'av.relic.prop.3', key: 'ancients_server_rack', x: -8.4, y: 6.0, z: -13.2, ry: Math.PI * 0.5 },
+        { id: 'av.relic.prop.4', key: 'ancients_server_rack', x: 8.4, y: 6.0, z: -13.2, ry: -Math.PI * 0.5 },
+        { id: 'av.relic.prop.5', key: 'yuni_ancient_socket_rack', x: -8.4, y: 6.0, z: -18.2, ry: Math.PI * 0.5 },
+        { id: 'av.relic.prop.6', key: 'yuni_ancient_socket_rack', x: 8.4, y: 6.0, z: -18.2, ry: -Math.PI * 0.5 },
+        { id: 'av.relic.prop.7', key: 'ancients_cargo_pods', x: 12.6, y: 6.0, z: -21.2, ry: 0.4 },
+        /* Careful Iron Republic surveyor, splice-test & millwright stations rigged alongside the Ancient relics */
+        { id: 'av.relic.prop.8', key: 'republican_court_terminal', x: -4.2, y: 6.45, z: -9.2, ry: 2.7 },
+        { id: 'av.relic.prop.9', key: 'republican_court_terminal', x: 4.2, y: 6.45, z: -9.2, ry: -2.7 },
+        { id: 'av.relic.prop.10', key: 'hl_rep_lamp_standard', x: -6.6, y: 6.0, z: -10.2, ry: 0.0 },
+        { id: 'av.relic.prop.11', key: 'hl_rep_lamp_standard', x: 6.6, y: 6.0, z: -10.2, ry: 0.0 },
+        { id: 'av.relic.prop.12', key: 'hl_rep_workbench', x: -14.8, y: 6.0, z: -23.2, ry: 0.2 },
+        { id: 'av.relic.prop.13', key: 'hl_rep_tool_chest', x: -10.4, y: 6.0, z: -23.4, ry: -0.4 },
+        { id: 'av.relic.prop.14', key: 'hl_rep_winch', x: -14.8, y: 6.0, z: -17.6, ry: 0.8 },
+        { id: 'av.relic.prop.15', key: 'hl_rep_workbench', x: -33.2, y: 6.0, z: -11.5, ry: Math.PI * 0.5 },
+        { id: 'av.relic.prop.16', key: 'hl_rep_workbench', x: 33.2, y: 6.0, z: -11.5, ry: -Math.PI * 0.5 }
+      ] : [
+        { id: 'av.relic.prop.0', key: 'ancients_control_stand', x: -2.6, y: 6.45, z: -8.6, ry: Math.PI },
+        { id: 'av.relic.prop.1', key: 'ancients_control_stand', x: 2.6, y: 6.45, z: -8.6, ry: Math.PI },
+        { id: 'av.relic.prop.2', key: 'yuni_ancient_glass_console', x: 0.0, y: 6.45, z: -9.6, ry: 0.0 },
+        { id: 'av.relic.prop.3', key: 'ancients_server_rack', x: -8.4, y: 6.0, z: -13.2, ry: Math.PI * 0.5 },
+        { id: 'av.relic.prop.4', key: 'ancients_server_rack', x: 8.4, y: 6.0, z: -13.2, ry: -Math.PI * 0.5 },
+        { id: 'av.relic.prop.5', key: 'yuni_ancient_light_stem', x: -6.4, y: 6.0, z: -10.2, ry: 0.0 },
+        { id: 'av.relic.prop.6', key: 'yuni_ancient_light_stem', x: 6.4, y: 6.0, z: -10.2, ry: 0.0 }
+      ])
     };
 
+    // 5b. Iron Republic Hydropower Replacement Setup (built in 'refurbished' to replace the failed Ancient Prime Dynamo,
+    //     carefully routing gear-towers, belt line-shafts, penstocks & busbar splices around the stabilized Ancient core!)
+    if (isRep) {
+      P.hydroHall = {
+        id: 'av.hydro.hall',
+        replacesRelic: 'av.relic.prime_dynamo',
+        aqueduct: {
+          id: 'av.hydro.aqueduct',
+          yWater: HY.aqueductY,
+          yBed: HY.aqueductBedY,
+          w: HY.aqueductW,
+          zStart: HY.aqueductZ1,
+          zHeadbox: HY.aqueductZ0,
+          intact: true
+        },
+        cataracts: [
+          { id: 'av.hydro.fall.main', name: 'Central Cataract Plunge', lip: [[-4.8, 16.2, HY.aqueductY], [4.8, 16.2, HY.aqueductY]], dir: [0, -1], drop: HY.cataractDrop, speed: 2.6 },
+          { id: 'av.hydro.fall.west', name: 'West Overshot Wheel Chute', lip: [[-15.0, 15.6, HY.aqueductY - 0.1], [-11.8, 15.6, HY.aqueductY - 0.1]], dir: [0, -1], drop: HY.cataractDrop - 0.1, speed: 2.1 },
+          { id: 'av.hydro.fall.east', name: 'East Overshot Wheel Chute', lip: [[11.8, 15.6, HY.aqueductY - 0.1], [15.0, 15.6, HY.aqueductY - 0.1]], dir: [0, -1], drop: HY.cataractDrop - 0.1, speed: 2.1 }
+        ],
+        wheels: [
+          { id: 'av.hydro.wheel.wu', kind: 'overshot-wheel', side: 'west', tier: 'upper', x: -13.4, y: 21.6, z: 9.8, r: HY.wheelR, w: HY.wheelW, rpm: 7.5 },
+          { id: 'av.hydro.wheel.eu', kind: 'overshot-wheel', side: 'east', tier: 'upper', x: 13.4, y: 21.6, z: 9.8, r: HY.wheelR, w: HY.wheelW, rpm: 7.5 },
+          { id: 'av.hydro.wheel.wl', kind: 'overshot-wheel', side: 'west', tier: 'lower', x: -13.4, y: 8.6, z: 2.2, r: HY.wheelR, w: HY.wheelW, rpm: -8.2 },
+          { id: 'av.hydro.wheel.el', kind: 'overshot-wheel', side: 'east', tier: 'lower', x: 13.4, y: 8.6, z: 2.2, r: HY.wheelR, w: HY.wheelW, rpm: -8.2 }
+        ],
+        gearTowers: [
+          { id: 'av.hydro.gear.sw', kind: 'bevel-shaft', x: -19.2, z: 9.8, y0: 0.0, y1: 31.0, gearY: [8.6, 21.6, 29.4] },
+          { id: 'av.hydro.gear.se', kind: 'bevel-shaft', x: 19.2, z: 9.8, y0: 0.0, y1: 31.0, gearY: [8.6, 21.6, 29.4] },
+          { id: 'av.hydro.gear.nw', kind: 'bevel-shaft', x: -19.2, z: -25.2, y0: 0.0, y1: 31.0, gearY: [8.6, 17.6, 29.4] },
+          { id: 'av.hydro.gear.ne', kind: 'bevel-shaft', x: 19.2, z: -25.2, y0: 0.0, y1: 31.0, gearY: [8.6, 17.6, 29.4] }
+        ],
+        lineShafts: [
+          { id: 'av.hydro.line.w1', axis: 'z', x: -19.2, y: 13.2, z0: -38.0, z1: 12.0, pulleys: [-35, -28, -20, -10, 2] },
+          { id: 'av.hydro.line.e1', axis: 'z', x: 19.2, y: 13.2, z0: -38.0, z1: 12.0, pulleys: [-35, -28, -20, -10, 2] },
+          { id: 'av.hydro.line.w2', axis: 'z', x: -19.2, y: 21.6, z0: -36.0, z1: 12.0, pulleys: [-32, -22, -12, 0] },
+          { id: 'av.hydro.line.e2', axis: 'z', x: 19.2, y: 21.6, z0: -36.0, z1: 12.0, pulleys: [-32, -22, -12, 0] },
+          /* Routed north at z = -25.2 around the towering Failed Ancient Prime Dynamo at z = -15.8! */
+          { id: 'av.hydro.line.n', axis: 'x', z: -25.2, y: 17.6, x0: -38.0, x1: 38.0, pulleys: [-32, -24, -12.4, 12.4, 24, 32] }
+        ],
+        penstocks: [
+          { id: 'av.hydro.penstock.w', a: [-19.5, 30.2, 18.0], b: [-29.0, 8.2, -4.0], r: HY.penstockR },
+          { id: 'av.hydro.penstock.e', a: [19.5, 30.2, 18.0], b: [29.0, 8.2, -4.0], r: HY.penstockR }
+        ],
+        dynamos: [
+          { id: 'av.hydro.dynamo.w0', kind: 'hydro-dynamo', x: -29.0, y: 6.0, z: -6.5, mw: 4.5, spliceTo: 'av.relic.trunk.sw' },
+          { id: 'av.hydro.dynamo.w1', kind: 'hydro-dynamo', x: -29.0, y: 6.0, z: -16.5, mw: 4.5, spliceTo: 'av.relic.trunk.nw' },
+          { id: 'av.hydro.dynamo.e0', kind: 'hydro-dynamo', x: 29.0, y: 6.0, z: -6.5, mw: 4.5, spliceTo: 'av.relic.trunk.se' },
+          { id: 'av.hydro.dynamo.e1', kind: 'hydro-dynamo', x: 29.0, y: 6.0, z: -16.5, mw: 4.5, spliceTo: 'av.relic.trunk.ne' }
+        ],
+        tripHammers: [
+          { id: 'av.hydro.hammer.w', kind: 'trip-hammer', x: -12.4, y: 6.0, z: -30.5, yaw: 0, phase: 0.0 },
+          { id: 'av.hydro.hammer.e', kind: 'trip-hammer', x: 12.4, y: 6.0, z: -30.5, yaw: Math.PI, phase: 1.57 }
+        ],
+        cupolas: [
+          { id: 'av.hydro.cupola.w', kind: 'blast-cupola', x: -24.5, y: 6.0, z: -39.0, r: 3.4, h: 19.5 },
+          { id: 'av.hydro.cupola.e', kind: 'blast-cupola', x: 24.5, y: 6.0, z: -39.0, r: 3.4, h: 19.5 }
+        ],
+        bridgeCrane: { id: 'av.hydro.bridgecrane', y: 40.5, z: -29.0, x0: -42.0, x1: 42.0, ladleX: -6.5 },
+        salvageHoist: { id: 'av.hydro.salvagehoist', y: 40.2, z: -15.8, x0: -42.0, x1: 42.0, hoistX: 0.0 }
+      };
+    }
+
     // 6. Iron Republic exterior tailrace sluice wheels, gantry cranes & triskele banners
-    if (state === 'refurbished') {
+    if (isRep) {
       [0, 4].forEach(function (fk, idx) {
         var a = AV.faceAngle(fk), rm = AV.apothemAt(fk, 1) - 6.0;
         P.republican.push({
@@ -478,10 +571,17 @@ var AV = typeof AV !== 'undefined' ? AV : {};
     if (!delta) return { applied: 0, skipped: 0 };
     var byId = {}, applied = 0, skipped = 0;
     var lists = [P.apses, P.towers, P.bridges, P.collarStruts, P.crownTiers, P.decks, P.portals, P.republican, P.debris];
+    if (P.ancientRelics) {
+      lists.push(P.ancientRelics.busTrunks, P.ancientRelics.capacitors, P.ancientRelics.hallProps);
+      if (P.ancientRelics.primeDynamo) byId[P.ancientRelics.primeDynamo.id] = P.ancientRelics.primeDynamo;
+      if (P.ancientRelics.statorCradle) byId[P.ancientRelics.statorCradle.id] = P.ancientRelics.statorCradle;
+      if (P.ancientRelics.coolantRing) byId[P.ancientRelics.coolantRing.id] = P.ancientRelics.coolantRing;
+    }
     if (P.hydroHall) {
       lists.push(P.hydroHall.wheels, P.hydroHall.gearTowers, P.hydroHall.dynamos, P.hydroHall.tripHammers, P.hydroHall.cupolas);
       if (P.hydroHall.aqueduct) byId[P.hydroHall.aqueduct.id] = P.hydroHall.aqueduct;
       if (P.hydroHall.bridgeCrane) byId[P.hydroHall.bridgeCrane.id] = P.hydroHall.bridgeCrane;
+      if (P.hydroHall.salvageHoist) byId[P.hydroHall.salvageHoist.id] = P.hydroHall.salvageHoist;
     }
     lists.forEach(function (L) {
       (L || []).forEach(function (r) { if (r && r.id) byId[r.id] = r; });

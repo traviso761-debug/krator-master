@@ -127,7 +127,7 @@ script is in this session's scratchpad: `measure.py`, `lines.py`).
 | G6 | **Loj Twenny's cave** | 457,1269 | riftrim and the tungang plan put it "on `tube_rift_08`", but that tube is at 628,1528-594,1558, 300 km off | the Line plan's side gallery from km 218 (25 km); its question 3 |
 | G7 | **The Inner Wall tunnel's surface access** | Cascade 568,841 is 214 km from the Drum-Dorado line (the doc's "~140 km" was measured on the old line) | the draft found surface passes (Cascade-Drum, 6 km of tunnel) instead of the tunnel | pin the tunnel (M2); question 5 |
 | G8 | **Span's tunnels are not in the draft** | Span 554,1010: the Basin Tunnel's lower portal is unplaced; the Valley Tunnel's portal is on the Deep Reach floor | span's plan says "the two Ancient highways meet on the Cross" | branch routes `span.basin`, `span.valley`; question 6 |
-| G9 | **The Stair tunnel** | Arcbeam-Stair | the draft has an 860 km surface route with 16 km of tunnel; seouterwall *proposes* a 180 km base tunnel, the Bab al-Hawa shaft (1033,1258) and a surface highway through the Godsgate; catch has the caravans enter by the 6.2 km notch (*old* 726,896) | question 7 |
+| G9 | **The Stair tunnel** | Parabola-Stair (was "Arcbeam-Stair") | the draft has an 860 km surface route with 16 km of tunnel; seouterwall *proposes* a 180 km base tunnel, the Bab al-Hawa shaft (1033,1258) and a surface highway through the Godsgate; catch has the caravans enter by the 6.2 km notch (*old* 726,896) | **answered** (the owner, 2026-11-24): no bore to Arcbeam, a **ruined bore from Parabola to Stair** and the surface highway; `rift.bowl.parabola-stair` is in the network layer (scale-model edit 31) |
 | G10 | **Xanadu's line** | Strongbow 1026,1594 to Theodiga 908,1535 (264 km, under 2,600 m); Theodiga to the Pile 381 km | the draft joins them; no doc says how Strongbow's line meets the rest, and the caravans use the Lasso pass (1040,1566) | **answered**: the Rift line's east end runs the Pile-Theodiga-Strongbow; it may go on from Theodiga to Stair and a Bowl arcology (section 8) |
 | G11 | **Nodes the draft lacks or should drop** | new: Fort Ebon 695,782, Nulab 443,1359; in the valley plan but not in the model's source: Wheel 406,886, Thera 526,955; the three Zeijani caverns (876,802; 834,882; 806,818) and Dhelv would be picked up as "cavern" nodes | the draft skips only Dhelv | M1 |
 | G12 | **Upkeep spheres by polygon name** | `ancient_roads.py` `UPKEEP` | names are stale: "Dalab Council" is now "Realm of Dalab"; "Dilihan Province", "Tungang Union", "Fellgangs" and "Shell Province" are unmapped; there is no "Beast Riders" or "The Cut" political polygon | M1, M3 |
@@ -632,10 +632,20 @@ swhighlands' Drum and Cascade.
 - **The Bowl arcology** goes at **970,1186**: the Bowl's most temperate ground near the Godsgate (15 degC mean, 1,716 m,
   314 mm of rain).
 - **"No tunnel to Arcbeam" means: drop the Stair tunnel.** There is no Ancient tunnel from Arcbeam to Stair at all.
-  - Stair is reached by the Rift line's possible leg from Strongbow, and by the surface trunks.
-  - This changes canon in `LORE.md` §4 (the Catch: "the Ancients' tunnel to Stair ... sealed halfway", the divers'
-    prospect), `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` (the base tunnel and Bab al-Hawa). I have not
-    rewritten those yet (follow-up question 1 below).
+  - **Narrowed 2026-11-24 (the owner): "there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."**
+    So there IS a bore to Stair; its north end is **Parabola** (970,1186), which the same answers of 2026-11-11 had
+    already made the Bowl arcology, and the owner confirmed on 2026-11-24 ("parabola is the arcology now"). Proposed id:
+    `rift.bowl.parabola-stair`, beside the kept `rift.bowl.theodiga-stair`. It is **ruined**, not shut by design: 580 km,
+    its line straight down the Godsgate corridor, 115 km of it under the SE outer wall with up to 6.6 km of rock over it,
+    and sealed halfway — Yuni stripped the northern half long ago, the southern half from Stair is the divers' prospect.
+    Bab al-Hawa's 40 m shaft (1033,1258) is its ventilation and access shaft, 1,400 m down to the bore's summit section
+    near +2,190 m. **Nothing runs under Arcbeam**, which the highway merely passes.
+    `openworld/catch-bowl/PLAN-TERRAIN.md` P17 has the measurements; `PLAN.md` answers M and N.
+  - Stair is reached by that bore, by the Rift line's possible leg from Strongbow, and by the surface trunks.
+  - ~~This changes canon in `LORE.md` §4 ... I have not rewritten those yet~~ **Done 2026-11-24**, as a rename rather
+    than a demolition, now that the Parabola bore stands: `LORE.md` §4, `biomes/catch/PLAN.md` section 6 and
+    `biomes/seouterwall/PLAN.md` section 3.3 carry Parabola's name, and §4's oldest passage (sealed halfway, the northern
+    half stripped by Yuni, the southern the divers' prospect) is true again word for word.
 - **Quintagon** goes at **1349,830** (2,320 m, 14 degC, 376 mm, 289 km from Verge).
 - **The Outland Gate highway** runs from the Outlands (Trickster's House) north through the Gate to the Ria valley. It
   splits at the Gate, and the branch runs south-west through the Tiers to the Korona site.

@@ -198,13 +198,13 @@ var AV = typeof AV !== 'undefined' ? AV : {};
         });
       });
     } else if (L.zone === 'hydro_hall') {
-      // L1 (y = 6.0 m): Great Central Industrial Hall Ring (clear of central [-38..38] cataract/wheels/cupolas & South aqueduct!)
+      // L1 (y = 6.0 m): Great Central Assembly & Industrial Hall Ring around the Failed Ancient Prime Dynamo & Hydropower Retrofit
       var hallWings = [
-        { sfx: 'rolling.n', cx: 0, cz: -72, w: 34, d: 16, yaw: 0, rec: 'engine-room', job: 'smithing', label: 'North Great Rolling Mill and Trip-Hammer Hall' },
-        { sfx: 'dynamo.e', cx: 72, cz: 0, w: 34, d: 16, yaw: Math.PI / 2, rec: 'engine-room', job: 'machining', label: 'East Hydro-Dynamo Switchgear and Lathe Hall' },
-        { sfx: 'foundry.w', cx: -72, cz: 0, w: 34, d: 16, yaw: -Math.PI / 2, rec: 'engine-room', job: 'smithing', label: 'West Cupola Casting and Pattern Foundry' },
-        { sfx: 'ingot.se', cx: 46, cz: 74, w: 26, d: 15, yaw: Math.PI, rec: 'store-hall', job: 'warehousing', label: 'South-East Ingot and Slag Store Hall' },
-        { sfx: 'ingot.sw', cx: -46, cz: 74, w: 26, d: 15, yaw: Math.PI, rec: 'store-hall', job: 'warehousing', label: 'South-West Timber and Coke Store Hall' }
+        { sfx: 'rolling.n', cx: 0, cz: -72, w: 34, d: 16, yaw: 0, rec: 'engine-room', job: 'smithing', label: isRep ? 'North Great Rolling Mill and Trip-Hammer Hall' : 'North Ancient Field-Coil Auxiliary Hall' },
+        { sfx: 'dynamo.e', cx: 72, cz: 0, w: 34, d: 16, yaw: Math.PI / 2, rec: 'engine-room', job: 'machining', label: isRep ? 'East Hydro-Dynamo and Ancient Busbar Splice Hall' : 'East Ancient Superconducting Bus Hall' },
+        { sfx: 'foundry.w', cx: -72, cz: 0, w: 34, d: 16, yaw: -Math.PI / 2, rec: 'engine-room', job: 'smithing', label: isRep ? 'West Cupola Foundry and Ancient Stator Salvage Hall' : 'West Ancient Harmonic Regulator Hall' },
+        { sfx: 'ingot.se', cx: 46, cz: 74, w: 26, d: 15, yaw: Math.PI, rec: 'store-hall', job: 'warehousing', label: isRep ? 'South-East Ingot and Relic Core Store Hall' : 'South-East Ancient Cryo-Cell Store' },
+        { sfx: 'ingot.sw', cx: -46, cz: 74, w: 26, d: 15, yaw: Math.PI, rec: 'store-hall', job: 'warehousing', label: isRep ? 'South-West Timber Cribbing and Coke Store Hall' : 'South-West Ancient Conduit Spares Vault' }
       ];
       hallWings.forEach(function (hw) {
         addHallPart(AI, parts, walls, rooms, {

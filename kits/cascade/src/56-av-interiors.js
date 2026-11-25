@@ -87,9 +87,57 @@
       byDeck[dk.k] = { storey: st, furnished: furnished, recs: recs };
     });
 
-    var bundle = { siteKey: siteKey, byDeck: byDeck, totalRooms: totalRooms, totalPieces: totalPieces };
+    // Register open-floor Assembly Hall Ancient relic & Republican millwright pieces in KFURN + KTAGS
+    var hallRecs = [];
+    if (siteKey === 'refurbished' && P.ancientRelics && P.ancientRelics.hallProps) {
+      P.ancientRelics.hallProps.forEach(function (hp) {
+        var rec = AV.IX.furnPass.place(
+          hp.key, S.x + hp.x, hp.y, S.z + hp.z, hp.ry,
+          { v: 0, setting: 'indoor', room: 'av.central.hall' },
+          [hp.x, hp.y, hp.z, hp.ry],
+          { building: P.id, room: 'av.central.hall' }
+        );
+        if (rec) hallRecs.push(rec);
+      });
+    }
+
+    var bundle = { siteKey: siteKey, byDeck: byDeck, hallRecs: hallRecs, totalRooms: totalRooms, totalPieces: totalPieces + hallRecs.length };
     AV.IX.recordsByState[siteKey] = bundle;
     return bundle;
+  };
+
+  // Build always-visible indexed catalog Ancient relic consoles/racks & Republican millwright benches on the L1 Hall floor
+  AV.buildHallFloorProps = function (siteKey) {
+    AV.initInteriors();
+    var S = AV.SITES[siteKey];
+    if (!S || !S.plan.ancientRelics || !S.plan.ancientRelics.hallProps || !S.plan.ancientRelics.hallProps.length) return null;
+    KratorFurniture.setDetail(0.6);
+    var Bf = KratorFurniture.batch({ indexed: true });
+    var count = 0;
+    S.plan.ancientRelics.hallProps.forEach(function (hp, idx) {
+      Bf.place(hp.key, hp.x, hp.y + 0.03, hp.z, hp.ry, {
+        variant: idx % 3,
+        seed: AV.idHash(hp.id) & 0xffff,
+        wealth: 0.68,
+        setting: 'indoor'
+      });
+      count++;
+    });
+    var wrap = new THREE.Group();
+    wrap.name = S.plan.id + '.hallProps';
+    wrap.position.set(S.x, S.y, S.z);
+    var fg = Bf.flush(wrap);
+    if (fg) {
+      fg.traverse(function (o) {
+        if (o.isMesh) {
+          KFURN.linearColours(o.geometry);
+          o.userData.probeSkip = true;
+          o.userData.decor = true;
+        }
+      });
+    }
+    wrap.userData = { count: count };
+    return wrap;
   };
 
   // Build 3D geometry (slabs, partitions with door gaps/lintels, core stairs/lifts, and furniture batch) for one deck

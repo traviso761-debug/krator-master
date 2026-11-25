@@ -1,0 +1,14 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls, bytes, samplers and vram_mb; GRAPHICS-TERRAIN-PROPOSAL.md Stage 1). A raise needs a new why.",
+ "pages": {
+  "hayrant.html": {
+   "tris": 2000000,
+   "calls": 220,
+   "bytes": 16777216,
+   "samplers": 15,
+   "vram_mb": 320,
+   "why": "48 Hayrant Western Outer Wall vassal definitions (46 hy_* dwellings, Pepar-Hom Prefectural Seat, Sutar-Tawar Clock Observatory, Hueru-Kuran Sister-Clan Legation, Santa Cristina spring keyhole step-well, frontier nuraghi, saltpeter/kiln/nephrite/flume works, plus Mirabilis Mixed Vassal Street reading 6 Eternian et_* peers in place, Ancestor Statuary Ranks, and 57 kits/resources ore nodes) across 11 rows with 463 furnished pieces, 7 core/water surfaces, and Stage 5 M1-M4 library maps",
+   "raised": "2026-11-24"
+  }
+ }
+}

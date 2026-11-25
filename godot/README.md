@@ -10,6 +10,32 @@ Run on Windows with **Godot 4.7.2-stable** too (2026-10-08: the dhelv case and i
 `core/rand` test, and the Compatibility renderer (OpenGL on Mesa llvmpipe, under Xvfb) for the screenshots in
 `godot/shots/` (gitignored). Forward+ on a real GPU has **not** been run yet: that, and the look, is tomorrow's job (`CHECKLIST.md`).
 
+## The Catch and the Bowl, and its weather (2026-11-25)
+
+The one scene here that is not a spike case. `catch_bowl.tscn` opens the **catch-bowl region** at the scale model's own
+2 km a sample -- a 1,284 x 1,058 km box, heights -2,595 to 15,527 m, the sixteen sites as markers -- and gives it a
+panel of the region's own weather: the Catch's black storm, the God-Bore, the rime whiteout, the dust season, the dead
+heat and Mantis's monsoon, with the visibility, wind and sun of each, and whether it hides a Stalker.
+
+```
+python3 openworld/catch-bowl/tools/export_godot.py        # writes godot/data/catch-bowl from the model's rasters
+godot --path godot catch_bowl.tscn                        # fly it: WASD/QE, drag to look, 1-7 switch weather
+godot --path godot catch_bowl.tscn -- --at=jabal --weather=dust --up=60000 --back=95000
+godot --headless --path godot --script res://tests/catchbowl/catch_bowl_test.gd   # 8 checks, exits 0
+```
+
+**It is the region's true shape, not the region.** catch-bowl is not cut yet -- it waits on three map edits and on the
+owner's new scale model (`openworld/catch-bowl/PLAN.md` section 13) -- so there is no flora, no settlement drawn, no
+road, and the ground is a 2 km grid rather than the metre-scale heightfield `krator/world_stream.gd` streams. When the
+region is cut, the usual path replaces this and `krator/catch_bowl.gd` goes.
+
+**The weather is `krator/atmos_fx.gd`**, which sits on top of `krator/atmos.gd`: the browser's fx layer
+(`core/atmos/fx/`: `ATMOS.airLoad`, `ATMOS.gale`, `ATMOS.dustSeason`) is not ported, and this is the region's half of
+it. Each kind is fog, sun and wind numbers -- no new gdshader -- with the honest visibilities (Koschmieder, as
+`KHAZ.sight` computes them), so a black storm really is 400 m and a whiteout 150 m. What a later pass owes: the dust as
+particles riding the camera (`krator/weather_fx.gd`'s rain box is the shape to copy), a gale's spindrift, and the sky
+pass's own browning, which in the browser is `89y-host-storm.js`.
+
 ## Run it
 
 Godot 4.3 or later (4.5 tested). From the repo root:
