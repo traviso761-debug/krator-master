@@ -646,9 +646,34 @@ batches. The check now asserts the shape of the real answer — joined, the shor
 appetite and concentrated at the gateway** — and a second one that Strongbow still imports several times what it lacks,
 so the supply is working and only its timing is coarse.
 
-**If the owner wants it smoothed**, the lever is the caravans' stagger rather than their number: five groups' rounds
-arriving on five different phases would flatten the gaps without inventing a continuous road. That is a tuning
-question, not a bug, and it is not done.
+**The owner's answer, and what measuring it showed (2026-11-25).** *"We would probably expect them to arrive at
+different times as caravans may be coming from as far as Iziz, Jabal, Verge, or Yuni."* So the four home pools now take
+a slice of a declared 60-day muster each, ordered by their home leg: the five leave on days 0, 15, 23, 30 and 45
+(`CATCH_TUNE.muster`, and the long note at `T.join`'s stagger).
+
+**Measured over the same 120 days, it did what it should where it should and did not close the total:**
+
+| | all five leaving together | spread over the 60-day muster |
+|---|---|---|
+| **Strongbow's own shortfall** | **2.81 t** | **1.31 t** — less than half |
+| Strongbow's salt eaten | 5.1 t | **6.6 t** — a fifth more |
+| the Sultanate's total | 10.1 t over 116 settlements | 10.5 t over 120 |
+| the second worst | a ring village at 0.14 t | **Qiblai, 14,700 people, 0.83 t** |
+
+**So the shortfall was never mostly about arrival lumpiness, and now we know.** Spreading the arrivals halved the
+shortfall *at the gateway where the caravans land* — which is exactly where it should act, and it is the owner's
+reasoning confirmed. What it did not touch is the total, because **the rest of the shortfall is downstream of
+Strongbow**: the ring villages and farm hamlets of 145 to 290 people at the end of Xanadu's own onward roads, and now
+Qiblai at the far end of them, which appears in the top two only once Strongbow is being supplied better and draws
+more through.
+
+**So the remaining lever is not the muster's width; it is Xanadu's own onward distribution** — the `want`, `keep` and
+carrier counts on `road.ks-sb`, `road.qb-ks` and the hamlet lanes, which were sized when the four gateway roads
+delivered continuously. That is `XAN_TUNE`'s to retune, not this region's, and it is **not done**. Widening the muster
+further would only move Strongbow's remaining 1.31 t around.
+
+**And the whole thing is 3 % of what the Sultanate eats in the period** (10.5 t against about 340 t), spread over 120
+settlements at a tenth of a tonne each. It is worth knowing precisely and it is not worth bending the model for.
 
 ### 6a. What S4 found, and the one line of code it needed (2026-11-25)
 
