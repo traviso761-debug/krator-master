@@ -28,8 +28,8 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 5 |  |
 | `05-palette.js` | 7 | 0. PALETTE (1) |
 | `10-core.js` | 8 | 1. CORE (1); 2. WORLD CONSTANTS (78); 3. TERRAIN FIELD (149) |
-| `20-stage.js` | 15 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (289) |
-| `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
+| `20-stage.js` | 2 | 4. STAGE (1) |
+| `21-sky.js` | 5 | 5b. KRATOR SKY: the clock and the sky's state (1) |
 | `30-layout.js` | 30 | 5. LAYOUT (1); PLATFORMS (102); SATELLITES + BRIDGES (167); STAIR BAYS (246); DECK LOTS + ROOMS (281); SPIRALS: gate ramps + the council stair (349); ROOSTS (393); NAV GRAPH (415) |
 | `32-branches.js` | 8 | 6. BRANCH SKELETONS (1) |
 | `45-kit.js` | 31 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
@@ -52,7 +52,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `79-spiders.js` | 60 **big** | 19. SPIDER-RIDERS (1) |
 | `80-camera.js` | 7 | 25. CAMERA: MAV'S REFUGE ON core/host (1) |
 | `81-glow.js` | 7 | 26. NIGHT GLOW (1) |
-| `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
+| `82-daynight.js` | 2 | 27. DAY / NIGHT (1) |
 | `83-mr-walk.js` | 5 | 25c. THE WALK: core/walk under the doors (KWALK; (1) |
 | `84-flyers.js` | 23 | 84. FLYERS (1) |
 | `84a-flyers-routes.js` | 15 |  |
@@ -62,5 +62,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `85-probe.js` | <1 | 29. PROBE (1) |
 | `86-inspect.js` | 3 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |
+| `90-atmos-host.js` | 2 | ATMOS: the shared atmosphere module, bound to Mav's Refuge (1) |
+| `90s-host-sky.js` | 4 | HOST: Krator's sky over Mav's Refuge, the shared sky (W7) (1) |
 | `98-start.js` | 10 | 99. START: MAV'S REFUGE ON core/host (1) |
 | `99-tail.html` | <1 |  |
