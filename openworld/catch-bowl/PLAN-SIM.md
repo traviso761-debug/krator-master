@@ -81,7 +81,57 @@ becomes stages on real ground (`PLAN-TERRAIN.md` section 5a: a carved thalweg, 2
 > Stair about 1,232 km, Yuni about 1,415) are unchanged — the distance moves from one long leg into two. **The Train of
 > Jabal does not cross the Godsgate**: it comes out of Jabal to Arfwai, so its round is untouched.
 
+### 2y. What actually broke Goldanda: the serai had no fodder (2026-11-25)
+
+**Section 2z below diagnosed this wrongly, and the stagger it recommended did not fix it.** Recording both, because the
+wrong diagnosis was plausible and the right one is a rule worth not learning twice.
+
+The symptom was real: `test-catch.js`'s C3 wanted both Iziz houses to land iron at Strongbow, and **Getmastarz landed
+4.0 t while Goldanda landed 0.0 t**. 2z read that as the two rivals contending for the same pool at the same instant,
+the owner chose the stagger, and the stagger was built. Then the numbers came back **byte-identical** — Goldanda 0.0 t,
+Getmastarz 4.0 t, the tally figures to the kilogram — with `caravan.goldanda(off 24018)` against
+`caravan.getmastarz(off 0)`, so the offset was being applied and was changing nothing. Identical output under a changed
+input is the proof that the thing changed was not the lever.
+
+What a probe of the joined year actually showed:
+
+| | Getmastarz | Goldanda |
+|---|---|---|
+| Landed at Strongbow (`gate.iziz>sfgtxw10kr`) | `arms 43, iron 3990, pearls 8, oil 5095, salt 13979` | **the key is not there at all** |
+| Landed back home (`sfgtxw10kr>gate.iziz`) | `goldwork 60, wheels 90, opium 1947` | `goldwork 9, wheels 13, opium 12539, cacao 18000` |
+| The Twins' cut | `xan.citadel:iron 199`, `twins.sinter:iron 159`, `twins.hall:iron 159` | only return-leg entries |
+| Beasts at year's end | 97, 100, 100, 200 | 97, 100, 100, 200 |
+
+So **Goldanda's round runs**. Its carriers cross the pass, reach Strongbow, load there and come home full — the
+unguided-crossing check passes on exactly those caravans, losing beasts on the Twins. What Goldanda never does is carry
+anything *out*. One carrier was still in flight at the year's close with `iron 1995, salt 8283` aboard, eta 531,105
+against the year's 525,600 minutes: it had finally got a load, too late to be counted.
+
+**The cause was the stop S1 added.** Bāb al-Hawa was written with a well and *no fodder work at all*, on the reasoning
+that nothing is cut at 3,590 m and the trains would carry its fodder as freight (`forHalts`). But
+`core/simulation/77-sim-6-trade.js` draws the beasts' water and fodder **at every stop**, not only at halts — its own
+words, line 175: *"the beasts water and feed whether or not the stop trades."* So a stop with no fodder work is a sink
+that can never be filled, and the serai ended the year **321,624 kg short of fodder** while the trains hauled grain and
+fodder up the pass as freight instead of trade goods. Of the two houses loading at one pool, the one that loads second
+got what was left: grain for the halts, and no iron.
+
+**The fix, and the lore it settles.** Bāb al-Hawa gets `fodder: 1000` (kg a day) — not a reed bed but **the serai's
+barns**, hay winched and carried up 2,400 m and stacked through the summer, which is how a caravanserai on an artery
+works. "Nothing is cut at 3,590 m" still holds; what was wrong was the inference that therefore nothing is *stored*
+there. And `forHalts` drops `fodder`, so the trains stop hauling it as freight — capacity the trade goods get back.
+1,000 kg a day carries the measured traffic with a little over, which leaves the Godsgate a bottleneck in a heavy year
+without making it an impassable one.
+
+**The stagger stays**, on its own merits and as the owner asked: two rival houses would not leave on the same hour, and
+lockstep departure was an artefact whatever else was wrong. It is simply not what was starving Goldanda.
+
+**The rule for next time:** in `SIM.trade`, a settlement put on a caravan's road is a place the beasts eat, whether or
+not it trades. Every new stop needs a water *and* a fodder number, or it silently taxes every train that passes.
+
 ### 2z. A fragility S1 exposed, which is the owner's to settle
+
+> **Superseded as a diagnosis by section 2y (2026-11-25).** The fragility described here is real and the stagger built
+> for it is kept, but it was *not* what starved Goldanda. Read 2y first.
 
 **The two Iziz houses run the identical round and can starve each other.** `test-catch.js`'s C3 check wants both to land
 iron at Strongbow; with S1 in, **Getmastarz lands 4.0 t and Goldanda 0.0 t**. It is not a timing drift — measured, the
@@ -130,10 +180,12 @@ The question as it was put, and the options weighed:
 | **c. Split the pool** | each house its own stock at Iziz, so contention is for the *market* rather than for the warehouse |
 | **d. Leave it** | and loosen the check to "the two together land iron", accepting that in a given year one house may be shut out — which is arguably what a rivalry means |
 
-Until it is settled, the C3 and C4 checks stay red, with this as the reason. They are the only two failures of
-`test-catch.js` that are not mine (the other three were: two hard-coded counts that moved when S1 added a place, five
-negatives written with their pair the wrong way round, and one assertion that demanded a windowed roll come up inside a
-single year).
+Until it is settled, the C3 and C4 checks stay red, with this as the reason. ~~They are the only two failures of
+`test-catch.js` that are not mine~~ — **wrong, and section 2y says why: they were mine too.** S1 put a stop with no
+fodder on four groups' roads. The full tally of this work's own breakages, kept because the pattern is the useful part:
+two hard-coded counts that moved when S1 added a place; five negatives written with their pair the wrong way round; one
+assertion that demanded a windowed roll come up inside a single year; and a new stop given water but no fodder, which
+cost a trade route and was then misdiagnosed as a rivalry.
 
 ### 2a. The stops it adds to `CATCH_TUNE.places`
 

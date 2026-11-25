@@ -62,13 +62,19 @@ T.places=[
     still drafts +16 degC air up through its rubble. It is the pass's ONLY safe overnight camp, out of the 80-130 km/h
     nocturnal God-Bore. px 1027,1258 is the Godsgate corridor's own floor at that row (+3,590 m), not the map's present
     pin 1,205 m up the east wall: the move is queued (openworld/catch-bowl/MAP-EDITS.md edit 2).
-    What it sells is NIGHTS, not water. It has snowmelt at the divide and NO fodder work at all: nothing is cut at
-    3,590 m, so every kilogram of fodder here came up 2,400 m on a beast's back and is bought off the trains that stop
-    (which is why `forHalts` carries fodder below). People: 120 permanent (the owner, 2026-11-24), the keepers, the
+    What it sells is NIGHTS, water and a night's fodder. Nothing is CUT at 3,590 m -- the `fodder` below is not a reed
+    bed but the serai's BARNS, hay winched and carried up 2,400 m and stacked through the summer, which is how a
+    caravanserai on an artery works. It has to be there: `provision` draws the beasts' water and fodder at EVERY stop
+    (core/simulation/77-sim-6-trade.js, "the beasts water and feed whether or not the stop trades"), so a stop with no
+    fodder is a sink that can never be filled. Written without it, the serai ran 321,624 kg short of fodder in a year
+    and House Goldanda -- the second of the two houses to load at the shared Iziz pool -- landed no iron at Strongbow at
+    all, while Getmastarz landed 4.0 t: openworld/catch-bowl/PLAN-SIM.md 2y has the diagnosis. 1,000 kg a day carries
+    the traffic with a little over; `forHalts` therefore no longer hauls fodder as freight, which is capacity the trade
+    goods get back. People: 120 permanent (the owner, 2026-11-24), the keepers, the
     shaft's winch crew and the Oasis Stations' hands; Gemini's 320 counts the caravans in residence, which the sim
     holds as halts instead. Faction: Stair's merchants, who keep Bitta's brackish well the same way (proposed) */
  {id:'godsgate.babalhawa',name:'Bab al-Hawa, the Vent-Shaft Caravanserai (the Godsgate\'s only safe night)',faction:'stair',px:1027,py:1258,people:120,kind:'serai',
-  well:[120000,15],repairs:true},
+  well:[120000,15],fodder:1000,repairs:true},   /* fodder: the BARNS, carried up and stacked, not anything cut here (above) */
  /* the Twins (biomes/twins/PLAN.md section 3): the Brotherhood's waystations, hot springs and heated stone corrals */
  {id:'twins.sinter',name:'Sinter-Gate (Bāb al-Bukhār): Route B\'s south gate, the Brotherhood\'s south-west toll house',faction:'horns',px:996,py:1504,people:20,kind:'oasis',well:[80000,10],fodder:1500},
  {id:'twins.kettle',name:'Mud-Kettle Hollow (a maar crater of mud pots)',faction:'horns',px:1005,py:1489,people:10,kind:'oasis',well:[20000,10],fodder:600},
@@ -219,7 +225,7 @@ T.join=function(XV,o){o=o||{};const C=T.valley({scale:XV.scale==null?10:Math.min
   const share=poolOf[g.pool],stagger=Math.round(legs.reduce((a,b)=>a+b,0)/g.carriers);
   const Rd={id:'caravan.'+g.id,stops,legs,mins:720,cap:g.cap,carriers:g.carriers,stagger,
    offset:Math.round(stagger*share.indexOf(g.id)/share.length),keep:20,want:Math.max(90,Math.round(legs.reduce((a,b)=>a+b,0)/1440)),
-   goods,expect,halts,sells,forHalts:['grain','tea','tools','fodder'],provision:{beasts:Math.round(g.cap/T.kgPerBeast),eat:T.caravan.eat,loss:T.caravan.loss,maxDays:T.caravan.maxDays,home:0},_group:g,_stops:{end:endIdx}};
+   goods,expect,halts,sells,forHalts:['grain','tea','tools'],provision:{beasts:Math.round(g.cap/T.kgPerBeast),eat:T.caravan.eat,loss:T.caravan.loss,maxDays:T.caravan.maxDays,home:0},_group:g,_stops:{end:endIdx}};
   /* the cuts: the Sultan's toll on what the caravan lands inside Xanadu (at the Strongbow lift; for the Qiblai caravans,
      on what they land at Qiblai having come up it); the tally's two halves on the same landings, and its outbound half at
      home; the Brotherhood's margin at Qiblai where its factor stands */
