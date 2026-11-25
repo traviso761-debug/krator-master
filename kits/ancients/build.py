@@ -106,7 +106,7 @@ CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/
 # A target listed here gets the GENERATED 8zy-interiors-bundle.js (the catalog's Ancient furniture, kits/interiors'
 # core with the arcology's set, kits/ancients-interiors' core) and the shared core/rand, core/tags and core/furnish;
 # every other target builds exactly as before (the interior fragments do nothing without the bundle).
-INTERIOR_TARGETS = {'interiors', 'theodiga-today'}   # theodiga-today: the arcology's inhabited levels (settlements/theodiga T-arc-1)
+INTERIOR_TARGETS = {'interiors', 'theodiga-today', 'arcodiga', 'arckibuz'}   # theodiga-today, arcodiga, arckibuz: arcology interiors & culture sockets
 INTERIOR_BUNDLE = '8zy-interiors-bundle.js'
 CORE_RAND = os.path.join(ROOT, 'core', 'rand')
 CORE_TAGS = os.path.join(ROOT, 'core', 'tags')
@@ -116,8 +116,11 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'theodiga', 'theodiga-today'}   # theodiga: the Dome on the Water (2026-11-11)
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'theodiga', 'theodiga-today', 'arcodiga', 'arckibuz'}   # theodiga: the Dome on the Water (2026-11-11)
 TAGS_CORE = INTERIOR_CORE[:4]
+_WATER_RUINS_READS = ([(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                      + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                      + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')])
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
@@ -126,9 +129,9 @@ TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-e
                 # Theodiga (the owner, 2026-11-15: "make sure this build is on core/water and all other relevant core modules"):
                 # its lake, outlets, cascade and river on core/water, bound to core/atmos as kits/port binds it (targets/theodiga
                 # 77c, 90w), and its ruin watched by core/ruins
-                'theodiga': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
-                            + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
-                            + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
+                'theodiga': list(_WATER_RUINS_READS),
+                'arcodiga': list(_WATER_RUINS_READS),
+                'arckibuz': list(_WATER_RUINS_READS),
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
                             (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
@@ -185,7 +188,11 @@ def th_xak():
 INTERIOR_FURN = ['generic-goods']
 # a target's own furniture cultures beside them: Theodiga's inhabited levels are furnished as Xanadu's clergy would (T-arc-1)
 INTERIOR_SETS_TARGET = {'theodiga-today': ['xanadu-scrap']}   # kits/interiors sets a target's own buildings take (theodiga-today: the town, T-town-7)
-INTERIOR_FURN_TARGET = {'theodiga-today': ['xanadu', 'generic', 'eastabyss', 'scrap']}   # the arcology's and the town's (T-town-7) furniture
+INTERIOR_FURN_TARGET = {
+    'theodiga-today': ['xanadu', 'generic', 'eastabyss', 'scrap'],   # the arcology's and the town's (T-town-7) furniture
+    'arcodiga': ['post-apoc', 'scrap', 'generic', 'pylon', 'iziz', 'republican', 'eternian', 'xanadu'],
+    'arckibuz': ['post-apoc', 'scrap', 'generic', 'pylon', 'iziz', 'nomad', 'eastabyss', 'xanadu'],
+}
 
 
 def interior_bundle(target=None):
@@ -266,6 +273,8 @@ TARGET_OUT = {
     'span': 'span.html',                       # Span's pieces (targets/span; settlements/span PLAN.md SP2): gallery, range, dome, pad, Cross, weir, portal
     'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
     'quintagon': 'quintagon.html',             # the pentagonal star arcology (src/8au-quintagon.js, targets/quintagon)
+    'arcodiga': 'arcodiga.html',               # Soleri's Arcodiga dam arcology: intact, ruined, refurbished centerpiece with socketed interiors (targets/arcodiga)
+    'arckibuz': 'arckibuz.html',               # Soleri's Arckibuz desert arcology: intact, ruined, refurbished centerpiece with socketed interiors (targets/arckibuz)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -292,6 +301,8 @@ DETERMINISTIC = {
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
+    '8av0-arcodiga-plan.js', '8av1-arcodiga-interiors.js', '8av2-arcodiga-water.js', '8av2b-arcodiga-parts.js', '8zz3-arcodiga-host.js', '90w-arcodiga-water.js',   # targets/arcodiga
+    '8aw0-arckibuz-plan.js', '8aw1-arckibuz-interiors.js', '8aw2-arckibuz-water.js', '8aw2b-arckibuz-parts.js', '8zz4-arckibuz-host.js', '90w-arckibuz-water.js',   # targets/arckibuz
     '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',   # targets/theodiga: the Dome on the Water, KRAND records, no rng()
     '77c-theodiga-water.js', '90w-theodiga-water.js',           # targets/theodiga: the water's records and their drawing (core/water)
     '89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js',   # core/atmos (IIFE, no rnd())
