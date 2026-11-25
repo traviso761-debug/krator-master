@@ -58,7 +58,7 @@
         var dx=Math.cos(el)*Math.cos(az),dy=Math.sin(el),dz=Math.cos(el)*Math.sin(az),y0=g[0]+r*.5,t=0;
         /* march along the beam while the void holds it: a beam ends at the rock it reaches, or at its length */
         while(t<L0&&C.sdf(x+dx*(t+.5),y0+dy*(t+.5),z+dz*(t+.5))>r*.5)t+=.5;if(t<S.len[0]*.5)return null;
-        return {id:id,kind:'beam',x:x,y:g[0],z:z,len:t,r:r,az:az,el:el,mineral:mn};}
+        return {id:id,kind:'beam',x:x,y:g[0],z:z,len:Math.min(t,L0),r:r,az:az,el:el,mineral:mn};}
       if(k==='block'){var n=Math.round(rng(S.n||[2,6],u(20))),sp=rng(S.r,u(21)),parts=[];
         for(var a=0;a<n;a++){var w=function(s){return K.unit(K.hash(seed,a,0x5300+s));},an=w(1)*2*Math.PI,dd=sp*Math.sqrt(w(2));
           var qx=Math.cos(an)*dd,qz=Math.sin(an)*dd,gb=gapAt(C,x+qx,o.y,z+qz);if(!gb)continue;

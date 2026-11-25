@@ -23,7 +23,9 @@ W.floor({rect:[0,60,0,20],y:0,name:'Platform'});W.floor({rect:[10,50,5,15],y:4.5
 const M=KMAP.create({frame:[0,60,0,60],size:120});M.walkBands(W,y=>y>6?'#6688aa':y>2?'#88aa66':'#aa8866');
 ok('walkBands keeps each floor\'s height',M.records.map(r=>r.h).join()==='0,4.5,9',M.records.some(r=>r.h==null));
 {const Wp=KWALK.create();Wp.poly({pts:[[0,0,4.5],[10,0,4.5],[10,8,4.5],[0,8,4.5]],name:'carved room'});const Mp=KMAP.create({frame:[0,20,0,20]});Mp.walkBands(Wp);
- const r=Mp.records[0];ok('a poly floor (a carved room) comes in as its box, with its height',r&&r.kind==='rect'&&r.rect.join()==='0,10,0,8'&&r.h===4.5,!r);}
+ const r=Mp.records[0];ok('a poly floor (a carved room) comes in as its polygon (88 draws it), with its height',r&&r.kind==='poly'&&r.pts.length===4&&r.h===4.5,!r||r.kind==='rect');
+ Mp.band(4,5);Mp.band(10,12);const gp=rec();Mp.paint(gp,null);
+ ok('a named poly floor out of the band gets its arrow at its middle',gp.L.some(c=>c[0]==='fill'&&c[1]==='#e0a070'),false);}
 ok('no band: bandOf is null',M.bandOf(M.records[0])===null,false);
 const r0=M.rev();M.band(3,6);
 ok('setting a band moves rev (the host repaints)',M.rev()!==r0,false);

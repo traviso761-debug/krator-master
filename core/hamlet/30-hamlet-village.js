@@ -43,8 +43,82 @@ KHAMLET.TUNE = {
 
 KHAMLET.row = function (c) { return typeof c === 'string' ? KHAMLET.CULTURES[c] : c; };
 
+/* ---------------------------------------------------------------- the work camp (folded from core/hamlet/camp/26, Stage 8 B8: T25)
+   TODO.md, "core/hamlet: a work camp" (the owner, 2026-11-11: a mining camp is "mostly miners"); settlements/xanadu/WORKS-PLAN.md
+   W1. A spec with neither `camp` nor `share` is laid exactly as before.
+     spec.camp    true: the row's camp overrides (row.camp: KHAMLET.xanaduRow carries them on every row, 20) replace its
+                  workShare, household, services, houses and religious building: the people nearly all at work, in bunkhouses,
+                  no families. An object: those overrides, over the row's own. A row with no `camp` and spec.camp true takes
+                  KHAMLET.CAMP (workShare .9, households of 4, no middling houses)
+     spec.share   {pop, parts: [weights], i}: one tune record of `pop` people laid as several drawn camps; this camp is part
+                  `i`. The parts are dealt by the largest remainder, so the camps' people add up to pop exactly. The camp's
+                  people are its part (capped at popMax, which defaults to the part and never passes KHAMLET.POP_MAX);
+                  its workers are workShare of them, and the focus takes every worker the services leave (a record's
+                  people are the tune's, not what the focus wants). census.share says what was dealt
+     KHAMLET.campRow(row, camp)    the row a camp lays with (a fresh row: the given one is not changed)
+     KHAMLET.sharePart(share)      the people of part share.i, or null when the share is malformed
+     KHAMLET.shareParts(share)     every part's people, in order (they add up to share.pop) */
+KHAMLET.CAMP = {workShare: 0.9, household: 4};
+KHAMLET.campRow = function (row, camp) {
+  if (!camp || !row) return row;
+  if (row._camp) return row;
+  var C = Object.assign({}, row.camp || KHAMLET.CAMP, typeof camp === 'object' ? camp : {});
+  var r = Object.assign({}, row);
+  if (C.workShare != null) r.workShare = C.workShare;
+  if (C.household != null) r.household = C.household;
+  if (C.religious != null) {
+    r.religious = C.religious;
+    /* the camp's religious building is not also among its works (the shared Xanadu row's wayside shrine: a camp by name) */
+    var wk = {};
+    for (var f in row.works) wk[f] = row.works[f].filter(function (w) { return w.key !== C.religious; });
+    r.works = wk;
+  }
+  if (C.services) r.services = Object.assign({}, row.services, C.services);
+  var H = C.houses || row.houses;
+  r.houses = {poor: H.poor, middling: H.middling, head: H.head, middlingShare: C.houses ? H.middlingShare : 0};
+  r._camp = true;
+  return r;
+};
+KHAMLET.shareParts = function (S) {
+  if (!S || !(S.pop >= 0) || !S.parts || !S.parts.length) return null;
+  var tot = 0, i;
+  for (i = 0; i < S.parts.length; i++) { if (!(S.parts[i] >= 0)) return null; tot += S.parts[i]; }
+  if (!(tot > 0)) return null;
+  var exact = S.parts.map(function (w) { return S.pop * w / tot; }), out = exact.map(Math.floor), left = S.pop;
+  out.forEach(function (n) { left -= n; });
+  /* the largest remainders take the people left over; a tie goes to the earlier part (no draw) */
+  var order = exact.map(function (x, k) { return [x - Math.floor(x), k]; }).sort(function (a, b) { return b[0] - a[0] || a[1] - b[1]; });
+  for (i = 0; i < left; i++) out[order[i][1]]++;
+  return out;
+};
+KHAMLET.sharePart = function (S) {
+  var P = KHAMLET.shareParts(S);
+  return P && S.i >= 0 && S.i < P.length ? P[S.i] : null;
+};
+
 /* ---------------------------------------------------------------- census: jobs first, people follow */
 KHAMLET.census = function (spec, row) {
+  if (spec.camp) row = KHAMLET.campRow(row, spec.camp);
+  if (spec.share) {
+    /* one record dealt over several camps: this camp's people are its part, and the focus takes every worker left */
+    var part = KHAMLET.sharePart(spec.share);
+    if (part != null) {
+      var popS = Math.min(part, Math.min(KHAMLET.POP_MAX, spec.popMax == null ? part : spec.popMax)), SS = row.services, whS = 1;
+      var servS = function () { return SS.religious + SS.civic + SS.general + SS.food + SS.warehouse * whS; };
+      var workersS = Math.floor(popS * row.workShare);
+      var focusS = Math.max(0, workersS - servS());
+      whS = 1 + Math.floor(focusS / 80);
+      focusS = Math.max(0, workersS - servS());
+      var outS = spec.worksOut || [];
+      var worksS = (row.works[spec.focus] || []).map(function (w) {
+        var n = focusS > 0 ? Math.max(1, Math.ceil(focusS * w.share / w.jobs)) : 0;
+        return {key: w.key, n: n, jobs: w.jobs, out: outS.indexOf(w.key) >= 0};
+      });
+      return {popMax: Math.min(KHAMLET.POP_MAX, spec.popMax == null ? part : spec.popMax), pop: popS, workers: focusS + servS(), focusJobs: focusS,
+              serviceJobs: servS(), warehouses: whS, households: Math.ceil(popS / row.household), works: worksS, capped: part > popS,
+              camp: !!spec.camp, share: {pop: spec.share.pop, i: spec.share.i, part: part, parts: KHAMLET.shareParts(spec.share)}};
+    }
+  }
   var popMax = Math.min(KHAMLET.POP_MAX, spec.popMax == null ? KHAMLET.POP_MAX : spec.popMax);
   var S = row.services, warehouses = 1;
   var services = function () { return S.religious + S.civic + S.general + S.food + S.warehouse * warehouses; };
@@ -60,8 +134,11 @@ KHAMLET.census = function (spec, row) {
     return {key: w.key, n: n, jobs: w.jobs, out: outK.indexOf(w.key) >= 0};
   });
   var workers = focusJobs + services(), pop = Math.min(popMax, Math.ceil(workers / row.workShare));
-  return {popMax: popMax, pop: pop, workers: workers, focusJobs: focusJobs, serviceJobs: services(), warehouses: warehouses,
+  var out = {popMax: popMax, pop: pop, workers: workers, focusJobs: focusJobs, serviceJobs: services(), warehouses: warehouses,
           households: Math.ceil(pop / row.household), works: works, capped: wanted > focusJobs};
+  if (spec.camp || spec.share) out.camp = !!spec.camp;
+  if (spec.share) out.share = {error: 'a malformed share'};   /* a share that deals nothing: the village a spec without it lays */
+  return out;
 };
 
 /* ---------------------------------------------------------------- the program: buildings in a fixed order */
@@ -142,6 +219,7 @@ KHAMLET.resourceFor = function (spec, row) {
 KHAMLET.village = function (spec) {
   var row = KHAMLET.row(spec.culture);
   if (!row) return {id: spec.id, error: 'no culture ' + spec.culture};
+  if (spec.camp) row = KHAMLET.campRow(row, spec.camp);   /* a work camp lays with its camp row (above) */
   /* a focus is one of the common FOCI, or one a row keeps to itself (its works name it: the Order's `monastery`, the
      Xanadu valley's `silk`), so a row's own trade needs no entry every other row must answer */
   if (KHAMLET.FOCI.indexOf(spec.focus) < 0 && !(row.works && row.works[spec.focus])) return {id: spec.id, error: 'no focus ' + spec.focus};

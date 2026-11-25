@@ -36,7 +36,7 @@
   return W.cellsGLSL+'\nvec4 wtrPan(vec2 p,float wet){vec4 C=wtrCells(p,'+f(P.cell)+','+f(P.jitter)+');float c=wtrCrack(C,'+f(P.crack)+');float low=wtrXHash(C.zw+vec2(3.1,11.7));float w=clamp(wet,0.0,1.0);'+
    'float film=max(c*smoothstep(0.0,0.3,w),smoothstep(low,low+0.12,w*'+f(P.flood)+'));float damp=smoothstep(0.0,0.5,w);'+
    'vec3 col=mix('+v3(W.rgbOf(C.salt))+','+v3(W.rgbOf(C.crack))+',c);col=mix(col,col*'+f(C.damp)+',damp);col=mix(col,'+v3(P.brineRGB)+',film*0.9);return vec4(col,film);}';};
- W.drawPan=(P,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,lift=o.lift==null?.02:o.lift,g=flatMesh(T,P.poly,P.level+lift);
+ W.drawPan=(P,o)=>{o=o||{};const A=W.atmosBound('WATER.drawPan'),T=o.THREE||A.T,scene=o.scene||A.h.scene,lift=o.lift==null?.02:o.lift,g=flatMesh(T,P.poly,P.level+lift);
   const mat=new T.MeshStandardMaterial({color:0xffffff,roughness:P.roughness[0],metalness:o.metalness==null?0:o.metalness});sky(mat,o);W.biasMaterial(mat,o);
   const U={wtrPanWet:{value:P.wetNow()}};A.hook(()=>{U.wtrPanWet.value=P.wetNow();});
   const CH=W.panGLSL(P)+'\nuniform float wtrPanWet;'+VW;mat.customProgramCacheKey=()=>'wtr-pan:'+W.hashStr(CH);
@@ -52,7 +52,7 @@
    'if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0){return vec2(0.0);}vec4 t=texture2D(wtrIceMap,uv);return vec2(t.x,t.y);}\n'+
    'vec3 wtrIce(vec2 p){vec2 rd=wtrIceRD(p);float c=wtrCrack(wtrCells(p,'+f(K.cell)+','+f(K.jitter)+'),'+f(K.width)+');vec3 col=mix('+v3(W.rgbOf(C.ice))+','+v3(W.rgbOf(C.crack))+',c*0.8);'+
    (I.rim.salt?'col=mix(col,'+v3(W.rgbOf(C.salt))+',rd.x);':'')+'return mix(col,'+v3(W.rgbOf(C.snow))+',smoothstep(0.0,0.25,rd.y));}';};
- W.drawIce=(I,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,lift=o.lift==null?W.ICE.lift:o.lift,rr=o.roughness||[.12,.9];
+ W.drawIce=(I,o)=>{o=o||{};const A=W.atmosBound('WATER.drawIce'),T=o.THREE||A.T,scene=o.scene||A.h.scene,lift=o.lift==null?W.ICE.lift:o.lift,rr=o.roughness||[.12,.9];
   const M=I.bake(o.cell),tex=new T.DataTexture(M.data,M.nx,M.nz,T.RGBAFormat,T.UnsignedByteType);tex.magFilter=tex.minFilter=T.LinearFilter;tex.wrapS=tex.wrapT=T.ClampToEdgeWrapping;tex.needsUpdate=true;
   const g=flatMesh(T,I.poly,I.level+lift),mat=new T.MeshStandardMaterial({color:0xffffff,roughness:rr[0],metalness:0});sky(mat,o);W.biasMaterial(mat,o);
   const U={wtrIceMap:{value:tex}},CH=W.iceGLSL(I,M)+'\n'+VW;mat.customProgramCacheKey=()=>'wtr-ice:'+W.hashStr(CH);
@@ -76,7 +76,7 @@
 
  // ---- WEED: blades along +x from the root (length 1), lying low and streaming downstream, swaying more toward the tip
  W.weedGLSL=sway=>{const per=W.period(),n=Math.max(1,Math.round(per/4.5));return'float wtrWeedSway(vec2 rt,float u){return '+f(sway)+'*u*u*sin(6.283185307*(atmWaveT*'+f(n/per)+')+rt.x*0.37+rt.y*0.23);}';};
- W.drawWeed=(list,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,n=o.segs==null?5:o.segs,w=o.width==null?.09:o.width,sw=o.sway==null?.12:o.sway,lift=o.lift==null?0:o.lift;
+ W.drawWeed=(list,o)=>{o=o||{};const A=W.atmosBound('WATER.drawWeed'),T=o.THREE||A.T,scene=o.scene||A.h.scene,n=o.segs==null?5:o.segs,w=o.width==null?.09:o.width,sw=o.sway==null?.12:o.sway,lift=o.lift==null?0:o.lift;
   const pos=[],nrm=[],uv=[],idx=[];for(let i=0;i<=n;i++){const u=i/n,y=.18*u*(1-.5*u),hw=w*(1-.6*u);pos.push(u,y,-hw,u,y,hw);nrm.push(0,1,0,0,1,0);uv.push(u,0,u,1);if(i<n){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2);}}
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(nrm,3));
   g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeBoundingSphere();

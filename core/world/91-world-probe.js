@@ -151,6 +151,10 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
  // a point in the sea: the first along a line west from the Ring Sea's ruin (Lunapolis) where the water stands over the ground
  const wet=[{k:0,sp:0,sap:false,v:0,x:0,y:-3000,z:0,rot:0,Ht:5,pass:0}];let sx=null,sz=-20000;
  for(let x=-260000;x>-560000&&sx===null;x-=4000){const w=WORLD.water(x,sz);if(w>WORLD.H(x,sz)+5)sx=x;}
+ /* another region: the first wet point inside it on a lattice over its box (a lake, a river's reach), so the control runs
+    wherever the region holds water (2026-11-24, Stage 8 B7, S3-26: the regions' verify now needs every negative to fail) */
+ if(sx===null){const B=WORLD.box(),st=Math.max(2000,(B[2]-B[0])/80,(B[3]-B[1])/80);
+  for(let z=B[1]+st/2;z<B[3]&&sx===null;z+=st)for(let x=B[0]+st/2;x<B[2]&&sx===null;x+=st)if(WORLD.inside(x,z)&&WORLD.water(x,z)>WORLD.H(x,z)+5){sx=x;sz=z;}}
  out.push(Object.assign({name:'negative: a tree put under the water'+(sx===null?' (no sea found: the control cannot run)':'')},rooted(allRecs().slice(0,50).concat(sx===null?[]:[Object.assign({},wet[0],{x:sx,z:sz,y:WORLD.H(sx,sz)})]))));
  out.push(Object.assign({name:'negative: a tree put outside the polygon'},rooted(allRecs().slice(0,50).concat([Object.assign({},wet[0],{x:WORLD.box()[0]+500,z:WORLD.box()[1]+500,y:9000})]))));
  {const T=FLORA.buildTile(tx,tz).slice(0,40);if(T.length){const a=T[0];T.push(Object.assign({},a,{x:a.x+.5,Ht:a.Ht-1}));}

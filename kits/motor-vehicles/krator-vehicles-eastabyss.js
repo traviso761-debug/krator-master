@@ -41,7 +41,7 @@ VEHICLE_CULTURE('eastabyss', {
 
 VEHICLE({
   key: 'ab_caravan_truck', name: 'Abyssal caravan truck', culture: 'eastabyss',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport', 'cargo'], drive: 'wheeled', seats: 3, fuel: 'crude oil',
+  tags: { type: ['vehicle', 'transport', 'cargo'], drive: 'wheeled', seats: 3, fuel: 'crude oil',
     terrain: ['sand', 'salt flat', 'mud', 'track'], setting: 'outdoor' },
   variants: 2, variantNames: ['Caravan', "Headman's"],
   /* overall box: 3.2 wide, 7.5 long; the cab roof is 3.05, the mast's shades 4.85 */

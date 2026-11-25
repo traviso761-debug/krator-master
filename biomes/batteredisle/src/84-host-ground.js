@@ -4,42 +4,8 @@ if (typeof BIO !== 'undefined' && typeof BIO.tagReg === 'function') BIO.tagReg()
 
 const GQ = new URLSearchParams(location.search);
 
-/* 1. Custom KSTRATA worn-cone columns (PLAN.md section 8.1: worn-scoria-palagonite, olivine-plug-basalt, upturned-coal-collar) */
-if (typeof KSTRATA !== 'undefined' && KSTRATA.add) {
- KSTRATA.add({
-  name: 'battered-scoria-palagonite',
-  main: 'scoria',
-  kinds: {
-   basalt:     { p: 0.20, th: [3.0, 9.0], col: [0x25262b, 0x2c2e34], hard: 0.94, xbed: 0, varnish: 0.08 },
-   palagonite: { p: 0.36, th: [4.5, 14.0], col: [0xb9985a, 0xc4a466, 0xa8884e], hard: 0.52, xbed: 0.1, varnish: 0.05 },
-   spatter:    { p: 0.12, th: [1.2, 3.8], col: [0x3b2826, 0x48302c], hard: 0.88, xbed: 0, varnish: 0.12, between: true },
-   scoria:     { p: 0.32, th: [3.5, 12.0], col: [0x7a2e22, 0x62261e, 0x382826], hard: 0.28, xbed: 0.15, varnish: 0 }
-  },
-  fx: {}
- });
- KSTRATA.add({
-  name: 'battered-plug-basalt',
-  main: 'columnar',
-  kinds: {
-   olivine:    { p: 0.38, th: [5.0, 16.0], col: [0x2a332b, 0x323d34], hard: 0.96, xbed: 0, varnish: 0.06 },
-   columnar:   { p: 0.52, th: [6.0, 20.0], col: [0x2e3036, 0x383a42], hard: 0.98, xbed: 0, varnish: 0.08 },
-   garnierite: { p: 0.10, th: [0.6, 2.4], col: [0x4f8a6b, 0x5ca07c], hard: 0.65, xbed: 0, varnish: 0.15, between: true }
-  },
-  fx: {}
- });
- KSTRATA.add({
-  name: 'battered-coal-collar',
-  main: 'sandstone',
-  kinds: {
-   sandstone:  { p: 0.36, th: [2.5, 8.0], col: [0xa89674, 0xb4a280], hard: 0.74, xbed: 0.12, varnish: 0.04 },
-   coal:       { p: 0.18, th: [0.6, 1.9], col: [0x141518, 0x1e2024], hard: 0.44, xbed: 0, varnish: 0.24, between: true },
-   shale:      { p: 0.22, th: [1.8, 5.5], col: [0x4e5258, 0x585c62], hard: 0.48, xbed: 0, varnish: 0 },
-   palagonite: { p: 0.24, th: [3.0, 9.0], col: [0xb59458, 0xc09e62], hard: 0.54, xbed: 0.08, varnish: 0.04 }
-  },
-  fx: {}
- });
-}
-
+/* 1. The worn-cone columns (PLAN.md section 8.1: worn-scoria-palagonite, olivine-plug-basalt, upturned-coal-collar): core's KSTRATA recipes
+   battered-scoria-palagonite, battered-plug-basalt and battered-coal-collar (core/terrain/35-core-strata.js) */
 const STRATA = (GQ.get('strata') === '0' || typeof KSTRATA === 'undefined') ? null : KSTRATA.create({
  seed: STAGE.seed + 411,
  range: [-70, 320],

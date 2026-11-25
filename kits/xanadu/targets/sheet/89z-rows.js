@@ -8,5 +8,5 @@
 const SHEET={title:'Xanadu Building Kit',build:'xanadu',ground:'xMeadow',groundRepeat:400,haze:.00042,exposure:1.05,spreadAll:true,
  owns:k=>VERN.defs[k].kit==='xanadu',
  panes:['vWinClear','vWinLit','xStainedB','xFrostedB','xGlass'],
- budget:{showcase:{tris:6000000,calls:600}},   // every variant of everything: Xanadu's sheet's budget
+ budget:{showcase:{tris:7000000,calls:600}},   /* every variant of everything: Xanadu's sheet's budget. 7 M (was 6 M; the owner, Stage 8 D17, 2026-11-23): the sheet measured 6.71 M with every family's variants laid out (S3-35), and it is a showcase of the whole kit, not a page a player walks; kits/xanadu/BUDGETS.json holds the same ceiling with its why */
  rows:XA.families().map(F=>({family:F.family,keys:[].concat(...F.keys.map(k=>{const n=VERN.defs[k].nv==null?3:VERN.defs[k].nv,out=[];for(let v=0;v<n;v++)out.push({key:k,o:{v}});return out;}))}))};

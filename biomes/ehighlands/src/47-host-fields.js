@@ -24,4 +24,7 @@ if(STAGE.exact)for(const n in STAGE.exact)FIELD[n]=STAGE.exact[n];
 BIO.init({tags:'ehighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
  obstacles:OBSTACLES,ticks:tick,seed:37,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:STAGE.lod||{hero:300,mid:820,far:2500,floor:[260,640]},windows:STAGE.windows||{}});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun(SUNP);

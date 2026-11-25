@@ -40,6 +40,10 @@ Sources:
   Rim Post, Eye, Erehwon. Section 3's "+40 m" from the lamp was read on the lowered rim and no longer holds once the knoll is
   restored. The Beacon's layout carries the Rim Post (`claude/beacon-monastery-d509f5`, 8a4b5ae99).
 
+- **The Order are scouts on the Rift** (the owner, 2026-11-23: "the flashing eyes function as scouts monitoring lizardmen
+  movements in the rift"). The house faces the Rift for this as well as for its doctrine: its watchers keep the Lizardmen's
+  movements on the Rift floor (`LORE.md` §6.20). What follows from it is *proposed* (section 1.3, the Rift Watch).
+
 ## 1. The Order of the Flashing Eye
 
 ### 1.1 What is written
@@ -55,6 +59,8 @@ Sources:
 - **Each great house takes a tenth** of the council's income: the council keeps a fifth, and each of the eight takes an
   eighth of the rest (`settlements/kirstabal/PLAN.md`, section 4; not yet in the tune, where the History Monks' house
   still takes 1/8).
+- **The Order's monks are scouts**: they monitor the Lizardmen's movements in the Rift (the owner, 2026-11-23; `LORE.md`
+  §6.13, §6.20).
 - Nothing else is written: no doctrine, no head house, no size.
 
 ### 1.2 The doctrine (*proposed*)
@@ -111,6 +117,7 @@ times with eyes lowered (`kits/qiblai/PLAN.md` 2a). The Order reads them as a **
 | **The crimson Prismarch** | the Order's abbot. He lives on the mountain and **sits on the council by mirror**: his words go to Qiblai by the day line, read aloud in the crimson spoke by his reader. He goes down to Qiblai once a year, for the grant of fealty |
 | **The Prior** | keeps the house |
 | **The Master of the Eye** | keeps the crater, the Rim Watch and the Book of Breaths |
+| **The Master of the Rift** | keeps **the Rift Watch** (the owner, 2026-11-23: the Order are scouts on the Lizardmen; the office is *proposed*): watchers by day and night at the Readers' Gallery's windows in the band's face (L-1) and in the two towers on the Lip (the south-west and south-east towers), glasses on the Rift floor; what they see is written in the Book of the Rift and goes up the mirror line with the day's flashes |
 | **The Master of Mirrors** | keeps the Eye Post, the Mirror Hall, the signal readers, the Mirror School and the Book of Flashes |
 | **The Keeper of the Ember** | keeps the Hall of the Ember and lights the house's fires |
 | **The Hosteller** | keeps the Foot House and the pilgrims |
@@ -565,7 +572,7 @@ and Godot read one plan. It is a new build: it lists itself under every check in
 | **F3** (**done** 2026-11-16) | **The layout as data**: `src/30-fe-layout.js`, `src/31-fe-rules.js` (section 2.3's rules, and the page's ground: the bench, the band and the crater as one sign-safe function, `FLASHING_EYE.ground`), `layout_dump.js`; the sights re-run by `tools/sights.py` | | `node settlements/flashing-eye/test-flashing-eye.js` (66 checks: 21 rules, 32 negatives, the tune's px and people, the ground) |
 | **F4** (**done** 2026-11-16, e25e691cd: `T.flashingeye`, check 32) | **The tune**: `T.flashingeye`, `xan.flashingeye` (320), its terraces, its three roads, `qb.crimson` and its tenth, the purse (section 4) | the Xanadu sim session | `test-xan-economy.js`, the new check and its negatives; the baseline moved on purpose |
 | **F5** (the page **first pass done** 2026-11-16: `dist/flashing-eye.html` on its own region cut, `verify.py --assert` on the RTX lane; `README.md`, `KNOWN_ISSUES.md`. The open world's region still to take it) | **The house on the open world**: the recut region with the cone on it; the cliff band authored (`core/terrain` carve, `KRUBBLE`); the vent drawn (`core/atmos`, `core/hazard`); the layout's frame on the 1:1 ground; the sights asserted on the drawn ground | the open-world session | the region's verify; line-of-sight asserts to the Beacon, Erehwon and the Tears' camp; no trees on the band or the rim |
-| **F6** (the watch **done** 2026-11-16: `src/40-fe-watch.js`, `test-watch.js`, 25 checks) | **The records, the interiors and the life**: the new records (the Lip Range, the Hall of the Ember, the Eye Post, the Foot House) on the Qiblai kit's helpers; the interiors from the blueprint; the catalog's new pieces; the Rim Watch, the day line, the Opening and the Closing and the Station's nights on `core/sched`; pilgrims on the Stair | | the walk and interiors audits; `check_core_use`; the page's `verify.py --assert` on a GPU lane |
+| **F6** (the watch **done** 2026-11-16: `src/40-fe-watch.js`, `test-watch.js`, 25 checks; the people **done** 2026-11-23: `src/41-fe-people.js`, `targets/cone/90fm-fe-people.js` on core/charactermodels, `test-people.js`, 16 checks, `verify.py`'s `people-*`) | **The records, the interiors and the life**: the new records (the Lip Range, the Hall of the Ember, the Eye Post, the Foot House) on the Qiblai kit's helpers; the interiors from the blueprint; the catalog's new pieces; the Rim Watch, the day line, the Opening and the Closing and the Station's nights on `core/sched`; pilgrims on the Stair | | the walk and interiors audits; `check_core_use`; the page's `verify.py --assert` on a GPU lane |
 
 ## 8. Questions for the owner
 

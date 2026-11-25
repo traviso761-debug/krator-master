@@ -13,12 +13,12 @@ if(SKEY==='polynya'&&SHORE_ICE){const R=TERR.R*1.05,M=[],LV=SITE.lake.level,open
   if((HEAT_AT(x,z)>5)===warm)M.push([x,LV+.3,z,'steam']);}
  for(let k=0;k*8<M.length;k++)STEAM_GROUPS['frost'+k]={emitters:M.slice(k*8,k*8+8),n:12,k:.8};
  window._frostSmoke={mouths:M.length,groups:Math.ceil(M.length/8)};}
-// THE DECK'S LIGHT (station 3; the Arete's pits a little): under the lid the sky's fog colour is tinted amber and the sun dimmed, by how deep the eye is
-// under it. The mist has no colour of its own in core/atmos (its colour is the page's fog colour: sky/89-atmos-j-fog.js, cM = fc), so the page tints the
-// fog colour per frame after the sky sets it (KNOWN_ISSUES.md: a mist tint in the fog chunk is a proposed core change)
+// THE DECK'S LIGHT (station 3; the Arete's pits a little): under the lid the sun is dimmed and the sky's light tinted amber, by how deep the eye is
+// under it. The deck's amber in the fog is the mist's own colour (89a: heightFog mist.colour, core/atmos since 2026-11-24, T41): the page no longer
+// tints the fog colour each frame
 const DECK_TINT={amber:new THREE.Color(SITE.fog&&SITE.fog.color||'#d4a359'),k:0};
 function deckView(){if(!DECK)return;const under=smooth(DECK.y+40,DECK.y-60,camera.position.y),k=(SKEY==='pitfloor'?.85:.35)*under;DECK_TINT.k=k;if(k<=0)return;
- scene.fog.color.lerp(DECK_TINT.amber,k);sun.intensity*=1-.55*k;const hemi=scene.children.find(o=>o.isHemisphereLight);if(hemi)hemi.color.lerp(DECK_TINT.amber,k*.5);}
+ sun.intensity*=1-.55*k;const hemi=scene.children.find(o=>o.isHemisphereLight);if(hemi)hemi.color.lerp(DECK_TINT.amber,k*.5);}
 // THE DECK'S LID (station 3): a sheet at the deck's top, so from under it the sky is the deck's underside (the fog takes it to amber) and from the rim the
 // deck is a flat sea of amber cloud filling the maar. Drawn, not a fog layer: the height fog's mist ends at its lid, the sky dome does not take fog
 const DECK_LID=(function(){if(SKEY!=='pitfloor'||new URLSearchParams(location.search).get('lid')==='0')return null;const r=SITE.maar.r+60;

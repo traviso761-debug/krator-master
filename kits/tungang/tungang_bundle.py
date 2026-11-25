@@ -180,6 +180,10 @@ def bundle(tex=True, with_files=False, furniture=False, side=None, res=False, cu
             body += '/* ---- kits/tungang/tex (generated: the library pack, materials.json) ---- */' + NL + pack(tex, side) + NL
         else:
             body += '/* ---- %s ---- */%s%s%s;%s' % (rel(fs[n]), NL, rd(fs[n]), NL, NL)
+            if n == '40-pueblo-rooms.js':
+                # core/pueblo publishes on root (globalThis); a sealing host may hand the closure a proxy for it
+                # (tools/kit_pack.py: _KP_WIN), so the kit's bare KPUEBLO is bound here (Stage 8, 2026-11-24)
+                body += 'var KPUEBLO = window.KPUEBLO;' + NL
     rfs = []
     if res:
         rfs = [os.path.join(ROOT, 'kits', 'resources', 'src', f) for f in RES_FILES]

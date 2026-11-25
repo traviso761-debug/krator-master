@@ -20,7 +20,8 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import build_sources as BSRC                      # noqa: E402
 
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 SPACE = 'core/space/20-core-space.js'
 H_PNG = 'tools/scale-model/model/data/h.png'
 M_PER_PX = 2000.0

@@ -1,7 +1,7 @@
-// node core/hamlet/test-hamlet-camp.js: the work camp's census (core/hamlet/camp/26-hamlet-camp.js, opt-in; TODO.md "a work
-// camp", settlements/xanadu/WORKS-PLAN.md W1): spec.camp takes the row's camp overrides, spec.share splits one tune record over
-// several camps, and a spec with neither lays as before. Every negative is a fault and its fix (tools/ktest.js).
-// test-hamlet.js runs this file as its last step.
+// node core/hamlet/test-hamlet-camp.js: the work camp's census (in 30-hamlet-village.js since Stage 8 B8, T25; folded from
+// core/hamlet/camp/26; TODO.md "a work camp", settlements/xanadu/WORKS-PLAN.md W1): spec.camp takes the row's camp overrides,
+// spec.share splits one tune record over several camps, and a spec with neither lays as before. Every negative is a fault and
+// its fix (tools/ktest.js). test-hamlet.js runs this file as its last step.
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const T = require('../../tools/ktest.js')(__filename);
@@ -12,7 +12,6 @@ load('core/rand/08-core-rand.js');
 load('core/space/20-core-space.js');
 load('core/city/33-city-strategies.js');
 fs.readdirSync(__dirname).filter(f => /^\d\d-hamlet-.*\.js$/.test(f)).sort().forEach(f => load('core/hamlet/' + f));
-load('core/hamlet/xanadu/23-hamlet-xanadu-row.js');
 const H = KHAMLET;
 
 /* the kit's boxes (every XA.def in kits/xanadu/src, as test-hamlet-xanadu-row.js reads them); a key it lacks takes the row's pending box */
@@ -22,18 +21,22 @@ for (const f of fs.readdirSync(path.join(ROOT, 'kits', 'xanadu', 'src')).filter(
   let m; while ((m = re.exec(t))) KIT[m[1]] = { w: +m[2], d: +m[3], h: +m[4] };
 }
 const dims = k => KIT[k] || null;
-/* the villages a page lays without the camp file, to hold it to them once it is loaded */
 const base = (focus, o) => Object.assign({ id: 'cp-' + focus, world: 5120, culture: H.xanaduRow(), focus, site: { x: 0, z: 0 },
   link: { x: 400, z: 60 }, resource: { x: -40, z: 260 }, dims }, o || {});
-const before = ['farming', 'mine', 'ranch'].map(f => H.hashOf(H.village(base(f))));
-const census0 = H.census(base('mine'), H.xanaduRow());
-load('core/hamlet/camp/26-hamlet-camp.js');
-load('core/hamlet/camp/26-hamlet-camp.js');   /* twice: it wraps once */
+/* the villages and the census a page laid before the camp census was folded into 30 (2026-11-24: 30 and 23 without 26), the
+   golden: the fold moves no village that asks for no camp. The mine's hash moved on 2026-11-24 with Stage 8 B9 (kits/xanadu's
+   88c-88l into src/: the mine head and the works are sized from the kit, no longer pending boxes), 3355569493 -> 3976259149;
+   read without those files it is 3355569493 still */
+const before = [3369841157, 3976259149, 580878136];
+const census0 = '{"popMax":500,"pop":123,"workers":55,"focusJobs":40,"serviceJobs":15,"warehouses":1,"households":23,"works":[' +
+  '{"key":"xa_adit","n":3,"jobs":8,"out":false},{"key":"xa_mine_head","n":1,"jobs":12,"out":false},{"key":"xa_workshop","n":2,"jobs":8,"out":false},' +
+  '{"key":"xa_smithy","n":1,"jobs":6,"out":false},{"key":"xa_wayside_shrine","n":1,"jobs":1,"out":false}],"capped":false}';
 
-// ---- opt-in: a spec without camp or share lays as before, bit for bit
+// ---- a spec without camp or share lays as before, bit for bit
 const after = ['farming', 'mine', 'ranch'].map(f => H.hashOf(H.village(base(f))));
-T.ok('loading the camp file moves no village: farming, mine and ranch hash as before (' + after.join(', ') + ')',
-  after.join() === before.join() && JSON.stringify(H.census(base('mine'), H.xanaduRow())) === JSON.stringify(census0) && !!H.census.base);
+T.ok('the camp census in 30 moves no village: farming, mine and ranch hash as before (' + after.join(', ') + ')',
+  after.join() === before.join() && JSON.stringify(H.census(base('mine'), H.xanaduRow())) === census0 && typeof H.campRow === 'function' &&
+  !fs.existsSync(path.join(__dirname, 'camp')));
 T.neg('a spec with camp: false lays the village a spec without it lays (and camp: true does not)',
   s => H.hashOf(H.village(s)) === before[1], base('mine', { camp: true }), base('mine', { camp: false }));
 
@@ -51,7 +54,13 @@ const bunk = v => !v.error && housesOf(v).every(k => ['xa_poor_b', 'xa_mid_c', '
 T.ok('a camp village lays bunkhouses only (xa_poor_b, xa_mid_c, the overseer\'s xa_rich_a) and the miners\' shrine as its religious building (' +
   vCamp.records.length + ' buildings)', bunk(vCamp));
 T.neg('the row\'s camp overrides reach the layout (the families\' village is caught)', bunk, H.village(base('mine', { popMax: 300 })), vCamp);
-const bare = Object.assign({}, H.CULTURES.xanadu);
+T.neg('a camp by the row\'s name (a site planner passes spec.camp and the culture `xanadu`) lays bunkhouses (no camp: caught)', bunk,
+  H.village(base('mine', { culture: 'xanadu', popMax: 300 })), H.village(base('mine', { culture: 'xanadu', camp: true, popMax: 300 })));
+const oneShrine = v => !v.error && v.records.filter(r => r.key === 'xa_wayside_shrine').length === 1;
+T.neg('a camp by name keeps one shrine: its religious building, none left among the works (the row\'s works shrine kept: caught)', oneShrine,
+  H.village(base('mine', { culture: Object.assign({}, H.CULTURES.xanadu, { camp: Object.assign({}, H.CULTURES.xanadu.camp, { religious: null }), religious: 'xa_wayside_shrine' }),
+    camp: true, popMax: 300 })), H.village(base('mine', { culture: 'xanadu', camp: true, popMax: 300 })));
+const bare = Object.assign({}, H.CULTURES.xanadu);delete bare.camp;   /* the shared row carries the camp overrides since the fold */
 const cBare = H.census(base('mine', { culture: bare, camp: true, popMax: 200 }), bare);
 T.ok('a row with no camp overrides takes KHAMLET.CAMP (' + cBare.workers + ' of ' + cBare.pop + ', households of 4)', campOf(cBare));
 const cObj = H.census(base('mine', { camp: { household: 5 }, popMax: 200 }), row);

@@ -38,6 +38,13 @@ const VIEWS=SKEY==='spillway'?{
  'Sub-escarpment grotto':look(18,-48,4.6,18,-14,2.2),
  'Celestine calcite hall':look(4,4,14,18,22,-16),
  'Springhollows vista':look(82,88,28,-95,-115,4)
+}:SKEY==='haugel'?{
+ 'Overview':look(-128,-52,38,32,6,8),
+ 'Hau-Gel inflow chute':look(-28,-22,12,95,8,2),
+ 'Scalding sinter terrace':look(-8,22,7.5,44,58,0.5),
+ 'Carnelian ejecta cliffs':look(18,18,14,68,96,12),
+ 'Gorge mouth curtain':look(-112,8,14,-54,2,14),
+ 'Silk toll reserve':look(-118,-92,16,-165,-135,2)
 }:{
  'Overview':look(-115,-85,34,18,12,8),
  'Ejecta megablock crest':look(-48,32,6.5,12,4,2.5),
@@ -206,9 +213,11 @@ const HCHK={
    ?['chinkapinoak','porphyrypine','lakesmokesedge','porphyryfern','rampartgossamer']
    :['spindlewillow','crowncypress','ambermulberry','lakesmokesedge','silkfenpitcher','porphyryfern','bridgecurtain','broodpavilion','weirframe_wild','rampartgossamer'];
   const miss=req.filter(k=>!(st&&st[k]>0));
+  const carnOk=skey!=='haugel'||Boolean(st&&st.carnelianRelicts>=10);
+  if(!carnOk)miss.push('carnelianRelicts>=10');
   return{
    ok:!miss.length,
-   detail:miss.length?'missing on '+skey+': '+miss.join(', '):req.map(k=>k+' '+st[k]).join(', ')
+   detail:miss.length?'missing on '+skey+': '+miss.join(', '):req.map(k=>k+' '+st[k]).join(', ')+(skey==='haugel'?', carnelianRelicts '+st.carnelianRelicts:'')
   };
  },
  lakeDatumPhysics(elevM){
@@ -340,6 +349,8 @@ const HINT=SKEY==='spillway'
  ?'Hydrothermal Lake-Smoke Midge-Fen (1328, 228, +1,460 m, 1.33 atm): 640 m3/s Hau-Gel inflow delta with steaming +37-44 C alkaline carbonate sericin-degumming springs, golden diatom mats, snare-mouth pitchers, submerged air-bell silk domes, and 300 m dusk midge pillars.'
  :SKEY==='dolomite'
  ?'Dolomite Rim & Crystal Grotto (1256, 184, +1,460 m, 1.33 atm): cream carbonate-shelf bluffs sliced by an imperial red-porphyry dike above the sub-escarpment tube_ozarks_15 conduit, opening into a walk-in KSPELEO.CALCITE celestine-and-calcite crystal chamber.'
+ :SKEY==='haugel'
+ ?'Hau-Gel Inflow Gorge & Carnelian Ejecta Cliffs (1354, 238, +1,460..+1,505 m, 1.33 atm): 585 m3/s NE 9106 Hau-Gel canyon rushing past +41-46 C scalding sinter terraces and Golden Cable curtains below dry secondary-ejecta cliffs crowned with crimson Erythrophyll fans and 0.75 g ruby bladder-tethers.'
  :'North Ejecta Rampart (1278, 166, +2,040 m, 1.24 atm): unbroken ballistic secondary-ejecta boulder-collar sealing +1,460 m Spider Lake (south) cleanly from Ria Valley headwaters (north), carpeted in calming porphyry smudge-ferns and spiderling gossamer.';
 
 const EXPORT_BOX_BY_STATION=SKEY==='narrows'?[-120,-95,140,135]:SKEY==='dolomite'?[-80,-110,135,95]:[-130,-110,130,130];

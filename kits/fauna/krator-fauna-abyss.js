@@ -88,7 +88,7 @@ function faAbSprawlLeg(A, fam, pts, front, s, col, padCol, claw) {
    o.knob(i) the joint ball's size against the segment's radius */
 function faAbLimb(A, fam, pts, ns, col, o) {
   o = o || {};
-  const cf = typeof col === 'function' ? col : () => col, kn = typeof o.knob === 'function' ? o.knob : () => (o.knob || 1.02);
+  const cf = typeof col === 'function' ? col : () => col, kn = typeof o.knob === 'function' ? o.knob : () => (o.knob == null ? 1.02 : o.knob);
   for (let i = 0; i < pts.length - 1; i++) {
     const a = pts[i], b = pts[i + 1];
     A.tube(fam, t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t], t => { const r = a[3] + (b[3] - a[3]) * t; return [r, r]; }, 1, ns, cf(i, false),

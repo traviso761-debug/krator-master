@@ -13,13 +13,20 @@
 //   KSITES.plan(spec, kit)          -> the region's plan (below). spec: the region's SITE_SPEC (a hamlet's `link`
 //                                   [dx, dz] aims its main lane, `road: false` lays it no road: a page-less site's own house;
 //                                   `laid` puts a village its own page laid on the world as it is: laidVillage below)
-//                                   {region, world, sites: {<site id>: {camps: [{tribe, near: [dx, dz] from the site, look?}],
-//                                   road?: {r}}}}; kit: {dims(key, v) -> {w, d, h}, programs(tribe) -> a band's program}
+//                                   {region, world, sites: {<site id>: {camps: [{tribe, near: [dx, dz] from the site, look?}
+//                                   (a Beast Riders' band) | a tent camp's CAMP SPEC with a kind (48w)], road?: {r}}}, camps?:
+//                                   [CAMP SPEC] (the region's own tent camps, 48w)}; kit: {dims(key, v) -> {w, d, h},
+//                                   programs(tribe) -> a band's program} (a tent camp takes its boxes from the Tents kit: 48w)
 //   KSITES.hash(plan)               FNV-1a of the plan's canonical text (no log, no hash): the bake and a re-plan agree
 //   KSITES.check(plan)              the plan against the world as it stands: {ok, problems, counts}
 //
-// THE PLAN (format 'krator-site-plan', version 1; metres in the region's frame, rounded to the centimetre):
+// THE PLAN (format 'krator-site-plan'; metres in the region's frame, rounded to the centimetre):
 //   {format, version, region, map, world, sites: [{id, name, type, x, z, camps: [CAMP], roads: [ROAD]}], errors, hash}
+//   VERSION 2 (Stage 8 T26, 2026-11-24): the pitched tent camps (core/world 48w KWCAMPS; its CAMP record there, with a `kind`):
+//   a site's spec camp with a `kind` is laid beside the bands in its site's `camps`; the region's own list (SITE_SPEC.camps:
+//   [CAMP SPEC], each naming its site, a point or a place on the canvas) goes to the plan's `camps`, and a camp whose point the
+//   cut does not hold yet to its `uncut` [{id, site, why}]. A region with no tent camp is planned exactly as before and written
+//   as version 1 (its baked hash stands); a reader of a version 1 plan sees no tent camps (KWCAMPS.of), never an error
 //   CAMP {id: '<site>/camp/<tribe>', tribe, name, site: {x, z}, way, R, hearth, gate, census: {pop, adults, children, elders,
 //         riders, mounts, households}, records: [{id, key, v, kind, x, z, ry, w, d, h}], hedge, fence, pasture, short}
 //   ROAD {id: '<site>/road/<n>', from (a camp's id), to (the site's id), hw, pts: [[x, z, e]], length_m, maxGrade}
@@ -55,9 +62,17 @@ const campR=prog=>{const ha=prog&&prog.pasture&&prog.pasture.ha||0;return Math.m
 function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:spec.region,map:(WORLD_DATA.meta.cut||{}).map||null,
   world:spec.world,sites:[],errors:[]};
  const sites=WORLD_DATA.meta.sites||[];
+ /* the tent camps (version 2): the region's list, or a site's camp with a kind */
+ const KW=typeof KWCAMPS!=='undefined'?KWCAMPS:null,tents=!!(spec.camps&&spec.camps.length)||Object.keys(spec.sites||{}).some(k=>((spec.sites[k]||{}).camps||[]).some(c=>c.kind));
+ if(tents)out.version=2;
  for(const S of sites){const SP=(spec.sites||{})[S.id];if(!SP)continue;
   const site={id:S.id,name:S.name,type:S.type,x:S.x,z:S.z,camps:[],roads:[]};
-  for(const C of SP.camps||[]){const id=S.id+'/camp/'+C.tribe,prog=kit.programs(C.tribe);
+  for(const C of SP.camps||[]){
+   /* a pitched tent camp (a kind: a KWCAMPS formation), laid beside the bands on this site */
+   if(C.kind){if(!KW){out.errors.push(S.id+'/'+C.id+': a tent camp, but core/world 48w (KWCAMPS) is not loaded');continue;}
+    const L=KW.lay(C,spec.world,{anchor:S});if(L.uncut)(out.uncut||(out.uncut=[])).push(L.uncut);if(L.error)out.errors.push(L.error);
+    (L.errors||[]).forEach(e=>out.errors.push(e));if(L.camp)site.camps.push(L.camp);continue;}
+   const id=S.id+'/camp/'+C.tribe,prog=kit.programs(C.tribe);
    if(!prog){out.errors.push(id+': no program for '+C.tribe);continue;}
    const R=campR(prog),at=siteFor([S.x+C.near[0],S.z+C.near[1]],C.look==null?1500:C.look,R);
    if(!at){out.errors.push(id+': no ground for a camp within '+(C.look==null?1500:C.look)+' m of its point');continue;}
@@ -82,7 +97,7 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
       heart points its lane down its road, not at its own green) */
    const lk=Hs.link?{x:S.x+Hs.link[0],z:S.z+Hs.link[1]}:{x:S.x,z:S.z};
    const v=KHAMLET.village({id,world:spec.world,culture:Hs.culture||SP.culture,focus:Hs.focus,site:at,link:lk,dims:kit.dims,
-    ground:{ok:groundOk},popMax:Hs.pop});
+    ground:{ok:groundOk},popMax:Hs.pop,camp:Hs.camp});
    if(v.error)out.errors.push(id+': '+v.error);
    const main=(v.lanes||[]).find(l=>l.main)||(v.lanes||[])[0],end=main?main.pts[main.pts.length-1]:[v.site.x,v.site.z];
    site.hamlets.push({id,name:Hs.name||(Hs.focus+' village'),focus:Hs.focus,culture:Hs.culture||SP.culture,site:{x:r2(v.site.x),z:r2(v.site.z)},
@@ -102,10 +117,16 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
     return best?{name:S.id+'/junction',x:best[0],z:best[1],r:0,e:best[2]}:to;};
    const lay=(fromId,at)=>{const T=toFor(at),R=road(site.roads.length,S.id,fromId,at,T,hw);if(!R){out.errors.push(fromId+': no road to the site');return;}
     if(T.e!=null){const L=R.pts[R.pts.length-1];L[0]=r2(T.x);L[1]=r2(T.z);L[2]=r2(T.e);R.joins=true;}site.roads.push(R);};
-   site.camps.forEach(C=>lay(C.id,C.gate));
+   site.camps.forEach(C=>{if(!C.kind||C.road)lay(C.id,C.gate);});   /* a tent camp's road only when its spec asks (road: true) */
    (site.hamlets||[]).forEach(V=>{if(!V.noRoad)lay(V.id,V.end);});}
   if(spec.bridges)site.roads=site.roads.map(R=>bridged(R,spec,out));
   out.sites.push(site);}
+ /* a site's tent camps whose site the cut does not hold yet: uncut (the region's next recut lays them) */
+ for(const k of Object.keys(spec.sites||{}).sort())if(!sites.some(s=>s.id===k))for(const C of (spec.sites[k].camps||[]))if(C.kind)
+  (out.uncut||(out.uncut=[])).push({id:C.id,site:k,why:'the cut has no site '+k+' yet (the region\'s next recut)'});
+ /* the region's own tent camps (spec.camps: [CAMP SPEC]), laid by KWCAMPS on the world's ground */
+ if(spec.camps&&spec.camps.length){if(!KW)out.errors.push('tent camps asked for, but core/world 48w (KWCAMPS) is not loaded');
+  else{const T=KW.plan({world:spec.world,camps:spec.camps},{sites});out.camps=T.camps;if(T.uncut.length)(out.uncut||(out.uncut=[])).push(...T.uncut);T.errors.forEach(e=>out.errors.push(e));}}
  /* the roads between the towns (spec.links: [a, b, {hw, r}]): from one site's reach to the other's */
  if(spec.links&&typeof ROADS!=='undefined'){out.links=[];
   for(const L of spec.links){const A=out.sites.find(s=>s.id===L[0]),B=out.sites.find(s=>s.id===L[1]),o=L[2]||{};
@@ -287,9 +308,17 @@ function hash(P){const s=JSON.stringify(P,(k,v)=>k==='hash'||k==='log'||k==='ms'
  for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return('00000000'+h.toString(16)).slice(-8);}
 /* the plan against the world as it stands (a stale bake, ground that moved): every camp whole, its records on good
    ground and apart (KCAMP.check), each road's ends at its camp's gate and within the site's reach */
+/* a pitched tent camp (48w, version 2): whole (nothing short), its tents and its escort's no two within half a metre (KCAMP's
+   oriented boxes), each box's corners on good ground */
+function tentCheck(C,problems,counts,ok){counts.camps++;counts.tents=(counts.tents==null?0:counts.tents)+1;const R=C.records.concat(C.escort?C.escort.records:[]);counts.records+=R.length;
+ const sh=C.short.concat(C.escort?C.escort.short:[]);if(sh.length)problems.push(C.id+': not pitched '+sh.join(','));let ov=0,off=0;
+ for(let i=0;i<R.length;i++){for(let j=i+1;j<R.length;j++)if(KCAMP.overlaps(R[i],R[j],.5))ov++;if(!KCAMP.box(R[i],0).every(q=>ok(q[0],q[1])))off++;}
+ if(ov)problems.push(C.id+': '+ov+' overlapping tents');if(off)problems.push(C.id+': '+off+' tents off good ground');if(!R.length)problems.push(C.id+': no tent');}
 function check(P,opt){opt=opt||{};const problems=[],counts={sites:0,camps:0,records:0,roads:0};
+ for(const C of P.camps||[])tentCheck(C,problems,counts,opt.groundOk||groundOk);
  for(const S of P.sites){counts.sites++;
-  for(const C of S.camps){counts.camps++;counts.records+=C.records.length;
+  for(const C of S.camps){if(C.kind){tentCheck(C,problems,counts,opt.groundOk||groundOk);continue;}
+   counts.camps++;counts.records+=C.records.length;
    if(C.short.length)problems.push(C.id+': not pitched '+C.short.join(','));
    const k=KCAMP.check({records:C.records,hedge:C.hedge},{ok:opt.groundOk||groundOk});
    if(k.overlaps)problems.push(C.id+': '+k.overlaps+' overlapping boxes');if(k.offGround)problems.push(C.id+': '+k.offGround+' boxes off good ground');
@@ -323,4 +352,4 @@ function check(P,opt){opt=opt||{};const problems=[],counts={sites:0,camps:0,reco
  if(P.bridges&&typeof BRIDGES!=='undefined'){const all=P.sites.flatMap(S=>S.roads).concat(P.links||[]).concat(P.ways||[]),K=BRIDGES.check(all,P.bridges);
   counts.bridges=K.counts.bridges;counts.spans=K.counts.spans;counts.piers=K.counts.piers;K.problems.forEach(q=>problems.push(q));}
  return{ok:!problems.length,problems,counts};}
-return{SLOPE,groundOk,discOk,siteFor,plan,hash,check,slopeAt};})();
+return{VERSION:2,SLOPE,groundOk,discOk,siteFor,plan,hash,check,slopeAt};})();

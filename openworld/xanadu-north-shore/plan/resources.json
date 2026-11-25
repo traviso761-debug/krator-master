@@ -3,15 +3,15 @@
  "version": 1,
  "region": "xanadu-north-shore",
  "census": {
-  "area_km2": 4416,
+  "area_km2": 4576,
   "step_m": 4000,
   "provinces": {
-   "rift": 3312,
-   "water": 1104
+   "rift": 3408,
+   "water": 1168
   },
   "families": {
    "iron": {
-    "mean": 52.5,
+    "mean": 52.1,
     "good_km2": 0,
     "rich_km2": 0,
     "peak": {
@@ -19,21 +19,21 @@
      "x": -24000,
      "z": -44000
     },
-    "nodes": 101
+    "nodes": 104
    },
    "copper": {
-    "mean": 90,
-    "good_km2": 3312,
+    "mean": 89.4,
+    "good_km2": 3408,
     "rich_km2": 0,
     "peak": {
      "byte": 120,
      "x": -24000,
      "z": -44000
     },
-    "nodes": 97
+    "nodes": 100
    },
    "tin": {
-    "mean": 37.5,
+    "mean": 37.2,
     "good_km2": 0,
     "rich_km2": 0,
     "peak": {
@@ -41,7 +41,7 @@
      "x": -24000,
      "z": -44000
     },
-    "nodes": 41
+    "nodes": 42
    },
    "nickel": {
     "mean": 0,
@@ -55,7 +55,7 @@
     "nodes": 0
    },
    "gold": {
-    "mean": 67.5,
+    "mean": 67,
     "good_km2": 0,
     "rich_km2": 0,
     "peak": {
@@ -63,10 +63,10 @@
      "x": -24000,
      "z": -44000
     },
-    "nodes": 47
+    "nodes": 48
    },
    "silver": {
-    "mean": 60,
+    "mean": 59.6,
     "good_km2": 0,
     "rich_km2": 0,
     "peak": {
@@ -74,18 +74,18 @@
      "x": -24000,
      "z": -44000
     },
-    "nodes": 42
+    "nodes": 43
    },
    "rare-earth": {
-    "mean": 142.5,
-    "good_km2": 3312,
-    "rich_km2": 3312,
+    "mean": 141.5,
+    "good_km2": 3408,
+    "rich_km2": 3408,
     "peak": {
      "byte": 190,
      "x": -24000,
      "z": -44000
     },
-    "nodes": 69
+    "nodes": 71
    },
    "coal": {
     "mean": 0,
@@ -99,15 +99,15 @@
     "nodes": 0
    },
    "oil": {
-    "mean": 46.9,
-    "good_km2": 1152,
+    "mean": 47.5,
+    "good_km2": 1232,
     "rich_km2": 0,
     "peak": {
      "byte": 110,
      "x": -48000,
      "z": 4000
     },
-    "nodes": 32
+    "nodes": 34
    },
    "sulfur": {
     "mean": 0,
@@ -187,9 +187,9 @@
     "nodes": 0
    },
    "stone": {
-    "mean": 176.3,
-    "good_km2": 3312,
-    "rich_km2": 3152,
+    "mean": 175.5,
+    "good_km2": 3408,
+    "rich_km2": 3248,
     "peak": {
      "byte": 255,
      "x": -8000,
@@ -198,9 +198,9 @@
     "nodes": 0
    },
    "clay": {
-    "mean": 40,
-    "good_km2": 768,
-    "rich_km2": 768,
+    "mean": 41,
+    "good_km2": 816,
+    "rich_km2": 816,
     "peak": {
      "byte": 230,
      "x": -12000,
@@ -209,9 +209,9 @@
     "nodes": 0
    },
    "wood": {
-    "mean": 157.4,
-    "good_km2": 3312,
-    "rich_km2": 2528,
+    "mean": 157.2,
+    "good_km2": 3408,
+    "rich_km2": 2624,
     "peak": {
      "byte": 255,
      "x": -48000,
@@ -220,9 +220,9 @@
     "nodes": 0
    },
    "water": {
-    "mean": 254.2,
-    "good_km2": 4416,
-    "rich_km2": 4416,
+    "mean": 254.3,
+    "good_km2": 4576,
+    "rich_km2": 4576,
     "peak": {
      "byte": 255,
      "x": -24000,
@@ -231,7 +231,7 @@
     "nodes": 0
    },
    "limestone": {
-    "mean": 52.5,
+    "mean": 52.1,
     "good_km2": 0,
     "rich_km2": 0,
     "peak": {
@@ -298,7 +298,7 @@
    }
   },
   "farm": {
-   "mean": 0.286,
+   "mean": 0.277,
    "good_km2": 1392,
    "best_km2": 960,
    "peak": {
@@ -308,8 +308,8 @@
    }
   },
   "placers": {
-   "gold": 6,
-   "tin": 6
+   "gold": 7,
+   "tin": 7
   },
   "ruin_km2": 0,
   "vents": 1,
@@ -384,6 +384,16 @@
    "z": -42058.5,
    "score": 697,
    "label": "Placer gold (high grade, river r442)",
+   "why": "a gold placer the rivers carried down (flatten)"
+  },
+  {
+   "id": "res-unique-gold--64-20",
+   "kind": "unique",
+   "family": "gold",
+   "x": -64210,
+   "z": 20342.100000000093,
+   "score": 562,
+   "label": "Placer gold (high grade, river r492)",
    "why": "a gold placer the rivers carried down (flatten)"
   }
  ]

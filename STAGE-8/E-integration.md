@@ -15,7 +15,10 @@
    claude/roomlight-fixes 02b9afc2, claude/citadel-room-graph 4067d5d3, claude/citadel-furnishing-cb5e01 f348edf53.
 3. Before Stage 8: claude/xanadu-packs a8d7e7c18 (--page-packs off by default); XS0 files only from claude/xs0-measure-local
    02716be9b (settlements/xanadu/XS0-MEASURE.md, .json, xs0/); lake towns A1 e15d66e4f (or claude/xanadu-plans-ad6ef4 if done).
-4. **Before step 29's verify (the scale-model session, via the coordinator, 2026-11-23):** on every heavy open-world page the GPU
+4. **Done 2026-11-24 (ab4eb8f07, claude/agitated-lalande-bbb361):** the stall was two universal asserts, leaf-stems walking every
+   far-terrain triangle and water-mouths reading vertices 26-52 km off; both fixed, the five heavy pages' universal asserts now 0.2-4.5 s.
+   Now that water-mouths reads the right vertices it reports streams unfaded into the Ring Sea (lake-shore 1726 m and 1140 m,
+   north-shore 1126 m, oidong-highrift 1840 m): reports today, failures once D28 turns water-mouths on everywhere. The original item: **Before step 29's verify (the scale-model session, via the coordinator, 2026-11-23):** on every heavy open-world page the GPU
    verify stalls in the harness's universal asserts after the region's own checks have printed. Pinnacle took 24.8 min on the rtx
    lane, at the edge of the 25-min watchdog; xanadu-lake-shore and xanadu-oidong-highrift were killed there (the lake-shore
    death after its resources panel, in the known failures below, may be the same thing). Left alone, the 484-job verify loses its
@@ -48,8 +51,30 @@
 | xanadu-north-shore "baked plan is the plan made here" | **fixed by the region cuts (eba6fe089):** a stale bake; the rebake matches the browser. The cuts also laid the Malbari-Haibh shore road and moved Pher's farm-2 off the Thalaba climb | - | none |
 | iziz-cluster highways (region cuts, 2026-11-23) | 0.42 m and 31.4 % at -37000,-50606: the Mav's Refuge-Girder link crosses newly standing water, and `ROADS.route`'s 2 m water floor (`42-world-roads.js` lb, e=max(hi,lb)) beats the grade (a 1.8 m step in 5.7 m). Passed before b8ae0593e | core/world roads with the stack's water | ease the floor into the grade (or bridge the crossing) in 42-world-roads.js; re-bake iziz-cluster |
 | oidong-highrift trees (same) | 3 of 4737 trees inside a stronger tree's keep-clear | core/world flora | the flora placement's keep-clear pass |
-| xanadu-oidong-highrift (same) | Erehwon's bench pin 841,1507.64 falls in the lake on the re-run's model; the Pleasure Dome isle is 367 m off the page's island. **Fixed:** the A-feeder tube (the SE Twin's gasp moved, 4c3910794), the walker's eye in rock (the walk streams its ground, 4c3910794), Gihon's north pier light (b28186237). The page is 14.6 MB, 91% of its cap | the re-run moved the ground under them | Erewhon's page refit (the fit-erewhon session); move the isle's landform onto the island; plan the page's split before it grows |
+| xanadu-oidong-highrift (same) | **all fixed:** Erehwon's pin and the Pleasure Dome isle (the Erewhon re-seat, 43199acbd), the A-feeder tube and the walker (4c3910794), Gihon's pier light (b28186237). The page is 14.6 MB, 91% of its cap | - | plan the page's split before it grows |
+| settlements/opal-ford, settlements/lightwall (the Erewhon session, 2026-11-24) | opal-ford's rebuild is 16.10 MB, over its 16 MB cap; lightwall's bake stops because `core/hamlet/xanadu/23-hamlet-xanadu-row.js` is not loaded. Both left unbuilt on the line | opal-ford: past its cap; lightwall: the Xanadu hamlet row not in its build | opal-ford: its per-page pack (step 22) or a split before Phase D (B10); lightwall: B8 folds the row into `20-hamlet-cultures.js`, which fixes it, else list the file in its build |
 | godot pinnacle_world_test (2026-11-23) | fails on Windows: it writes into "/tmp" (no such directory), then an index out of bounds at line 160; the same on both sides of the graphics-quality merge | a Linux path in the test | write to `user://` or `OS.get_cache_dir()` |
+| water-mouths on the open world (the verify session, 2026-11-24, after ab4eb8f07) | with the check now reading the right vertices, streams run unfaded into the Ring Sea: xanadu-lake-shore 1726 m and 1140 m, xanadu-north-shore 1126 m, oidong-highrift 1840 m. Reports today (those pages do not opt in); failures once D28 turns water-mouths on everywhere in step 33 | the regions' stream mouths do not fade into the sea | fade each mouth into the sea in the region's stream bake (core/world bake_streams / 83-world-water) before step 33, or carry them on purpose in verify_all.json's known list with the D28 switch |
+
+**The red baseline** (Stage 8 step 2: `python tools/test_all.py` in `C:\Users\travi\Documents\krator-stage8` at 8336b72b5, the line
+before Phase B; 2026-11-24, 15789 s): 369 steps, 347 passed, **22 failed**. Against the table above:
+- Since fixed in Phase B (expect them green in Phase F): builds take the core modules (Marr, 6826528f1), botany census
+  (c30779e81), stations have views (44b077379), test-hamlet (8ddd11502).
+- As the table says: dependencies run one way (kits/marr's page an LFS pointer), test_bridges, test-audio, test-slab, drum, torus,
+  sw-arcology (pages 0 KB), test-outposts, nwbay test-geology, check_stale, test-east-rift and test-xan-economy (timing only: 582 s,
+  665 s).
+- **Not in the table before:** "godot vendored core in step" (core changed since `godot/tools/sync_core.py` last ran: rerun it in
+  Phase E with the Godot exports); `tools/tests/test_kit_pack.py` (the kit manifest: Phase C step 20's `kit_pack.py --manifest`);
+  `core/city/test-host-multikit.js` (D8's multi-kit host: its agent is on it); `core/materials/classes/test-class.js` (7 known
+  drifts in PLAN.md 318, plus B11's four until Phase C re-packs); `kits/interiors/tests/test-fixtures.js` (needs the built
+  `interiors-core.js`: the rebuild); `kits/shumari/tests/test-sm-kit.js` (it builds the kit, which stops on `kits/shumari/tex/*` LFS pointers in a skip-smudge
+  tree: `lfs_needs.py kits/shumari --pull` in the rebuild tree).
+
+**After Phase B** (`test_all.py --no-build` in the stage8 tree at c07c2d7b1, 2026-11-24, 8624 s): 383 steps, **15 failed**. Gone since
+the red baseline: core modules, botany, views, test-hamlet, test_kit_pack, test-host-multikit, test-slab. Left, each as above:
+dependencies (kits/marr's page a pointer), godot vendored core, test_bridges, test-audio, test-class (B11's drift until the
+re-pack), east-rift and xan-economy (timing only: 262 s, 394 s), drum, torus, sw-arcology, interiors test-fixtures, shumari
+(pointers), test-outposts, nwbay test-geology, check_stale.
 
 Fixed on the line this session (do not redo): Tungang bundle replay (94ff6cf69), 16 ORNUM defaults (94ff6cf69, fccf87423).
 

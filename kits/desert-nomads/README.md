@@ -13,7 +13,7 @@ style guide (the `desertnomad` reference folder):
   in the desert. In the abyss: riding and pack lizards, now and then a camel, goats, sheep and emus. No vardo, no Baelu.
 
 ```
-cd kits/desert-nomads && python3 build.py                   # dist/desert-nomads.html
+cd kits/desert-nomads && python3 build.py                   # dist/desert-nomads.html and its library pack beside it, dist/desert-nomads.tex.desert-nomads*.js (--inline-packs: in the page)
 python3 build.py --vendor-check                             # the engine against kits/scyvoi/src (must read OK)
 python3 verify.py dist/desert-nomads.html --assert          # invariants (headless Chromium, about a minute)
 python3 verify.py dist/desert-nomads.html --cut --views "Sheikh's tent - inside (cut-away)"

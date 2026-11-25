@@ -12,6 +12,9 @@ The core and the biome leaf never reference a host global except through
 BIO.host (see BIOME-API.md); build.py greps for the forbidden names so a
 biome fragment cannot quietly grow a dependency on one world's engine.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -76,7 +79,8 @@ CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
 # 31j the limbs' joints (BIO.flareJoin, 55's limb(); 2026-11-03), 34 the octahedral impostors (the far trees, 55), 41 the environmental fields (src/89x-host-fields.js) (2026-11-02)
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js']
+# 33 the fungoid parts (BIO.fung, 2026-11-24: the parasol caps' top and gills, 50's G.disc and G.gills; core/rand is on the page, CORE_TAGS below)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','33-core-fungoid.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -96,7 +100,7 @@ if STATION:
     # src/89w-host-water.js is station 1's water (core/water, 2026-10-26): a station draws its own water in its own 89w (or none)
     PATH.pop('89w-host-water.js',None)
     for f in os.listdir(STN_DIR):
-        if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
+        if (f.endswith('.js') or f.endswith('.html')) and re.match(r'\d',f): PATH[f]=os.path.join(STN_DIR,f)   # numbered fragments only (a station's bake script is not one)
     for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
     # core/terrain fragments a station takes by path (station.json "terrain"; 2026-11-03: the glacier's KGLACIER, 44g and host/44h)
     for f in STN.get('terrain',[]): PATH[os.path.basename(f)]=os.path.join(CORE_T,os.path.normpath(f))
@@ -176,7 +180,7 @@ sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures
 import matlib_pack as _mp
 SIDE={}
 INLINE='--inline-packs' in sys.argv
-def matlib_pack(pname='throne',tex_dir=None):
+def matlib_pack(pname='throne',tex_dir=None,keep=None):
     """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the committed
     tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same).
     pname/tex_dir: another kit's pack (a station's 'packs'), the same way. Unless --inline-packs, the maps go into SIDE
@@ -187,6 +191,7 @@ def matlib_pack(pname='throne',tex_dir=None):
     if not os.path.isfile(pj): return "/* no tex/pack.json: the kit runs on its procedural textures */\nKMAT.pack('%s', {});\n"%pname
     pack=json.load(open(pj,encoding='utf-8'));out=[]
     for fam in sorted(pack['families']):
+        if keep is not None and fam not in keep: continue   # a station's pack cut to the maps it draws ('packs': {name: {dir, keep}})
         e=pack['families'][fam]
         f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
            'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
@@ -205,7 +210,9 @@ VIRTUAL={'44-host-matlib-pack.js':matlib_pack()}
 # a station's other kits' packs (station.json 'packs': {pack name: that kit's folder, from this one}), inlined the same way
 if STATION:
     for _pn,_pd in STN.get('packs',{}).items():
-        VIRTUAL['44b-host-matlib-pack-%s.js'%_pn]=matlib_pack(_pn,os.path.join(os.path.normpath(os.path.join(HERE,_pd)),'tex'))
+        _pk=None
+        if isinstance(_pd,dict): _pk=set(_pd.get('keep',[])) if 'keep' in _pd else None; _pd=_pd['dir']   # {dir, keep}: only those families (2026-11-24: the isle's ringisles pandanus)
+        VIRTUAL['44b-host-matlib-pack-%s.js'%_pn]=matlib_pack(_pn,os.path.join(os.path.normpath(os.path.join(HERE,_pd)),'tex'),_pk)
 # THE PAGE'S REGION (2026-11-23): the scale model's heights round the station's site (tools/sites51.py --bake: stations/<name>/region.json, station 1's
 # region.json beside this file), inlined as REGION_DATA and read by the Godthrone's REGION (its src/45a5, read in place) for the far country (85)
 _rj=os.path.join(STN_DIR if STATION else HERE,'region.json')
@@ -213,6 +220,22 @@ if os.path.isfile(_rj):
     VIRTUAL['45a3-host-region-data.js']='/* GENERATED from %s (tools/sites51.py; do not edit) */\nconst REGION_DATA=%s;\n'%(
         os.path.relpath(_rj,HERE).replace(os.sep,'/'),open(_rj,encoding='utf-8').read().strip())
     PATH['45a5-host-region.js']=os.path.normpath(os.path.join(HERE,'..','godthrone','src','45a5-host-region.js'))
+# A STATION'S BAKE (2026-11-24, the Godthrone's way: its build.py; station.json "bake": {"script", "out", "name", "slot", "inputs": [paths from the
+# repo root]}): a deterministic node bake (the kipuka's frozen flows: KLAVA.bake) whose result is committed beside the station and inlined as a
+# generated fragment; re-run only when the hash of its inputs (the files it reads, the script itself) changes
+if STATION and STN.get('bake'):
+    import hashlib, json as _json
+    _bk=STN['bake']; _outp=os.path.join(STN_DIR,_bk['out']); _hh=hashlib.sha256()
+    _root=os.path.normpath(os.path.join(HERE,'..','..'))
+    for _f in _bk.get('inputs',[]): _hh.update(open(os.path.join(_root,*_f.split('/')),'rb').read().replace(b'\r\n',b'\n'))
+    _hx=_hh.hexdigest()[:16]
+    _cur=_json.load(open(_outp,encoding='utf-8')).get('hash') if os.path.isfile(_outp) else None
+    if _cur!=_hx:
+        _node=find_node()
+        if not _node: sys.exit('build.py: %s is stale (or missing) and there is no node to bake it'%_bk['out'])
+        print('baking %s (its inputs changed) ...'%_bk['out'])
+        if subprocess.call([_node,os.path.join(STN_DIR,_bk['script']),_outp,_hx])!=0: sys.exit('build.py: the bake failed')
+    VIRTUAL[_bk.get('slot','45a2-host-bake-data.js')]='/* GENERATED from %s (do not edit) */\nconst %s=%s;\n'%(_bk['out'],_bk['name'],open(_outp,encoding='utf-8').read().strip())
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]

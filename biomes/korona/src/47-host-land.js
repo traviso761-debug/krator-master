@@ -62,6 +62,9 @@ const SPINE=STAGE.spine;
 BIO.init({tags:'korona',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:97,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:420,mid:950,far:2400,floor:[260,650]},windows:STAGE.windows||{}});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun(SUN_POS);
 // the station's say, through the host for the kit (BIOME-API.md): the summit's bogs, the plants' density bias, the safe path, the pools
 BIO.host.bogAt=(x,z)=>STAGE.bogAt(x,z);BIO.host.korona={bias:STAGE.bias||{},path:STAGE.path||null,pools:STAGE.pools};

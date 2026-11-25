@@ -6,19 +6,18 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 20 (20%) | 0 (0%) | 6 (6%) | 45 (47%) | 25 (26%) |
+| KB | 18 (19%) | 0 (0%) | 6 (6%) | 45 (48%) | 25 (27%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/35g-godstep-strata.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/44a-host-station.js` | 2.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the station: the square a page draws and what it builds |
 | `src/45-host-stage.js` | 3.0 | [web] | 6 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/45a5-host-region.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45b-host-model.js` | 12.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the ground model (KRELIEF.stair, KLAVA bake, tumuli, dunes, pan, path) is data; (no browser call) |
-| `src/45c-host-field.js` | 8.0 | [web] | 0 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/45c-host-field.js` | 8.0 | [web] | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/50-biome-godstep-species.js` | 6.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: the ground classes and palettes are data; the items' geometry (blocks, columns, cairns, BIO.fung parts) draws |
 | `src/51-biome-godstep-stalk.js` | 5.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the stalks' placement (GSTEP.stalks) is data; the stalk's geometry (BIO.fung parts merged) draws |
 | `src/60-biome-godstep-ground.js` | 5.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |

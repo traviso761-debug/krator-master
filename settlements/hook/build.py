@@ -22,6 +22,9 @@ over them (SITE_TARGETS below).
 Usage:  python3 build.py [--target hook|hook-site] [--no-checks] [--inline-packs]
         python3 build.py --vendor-check     (every src/ file that shadows a kits/port/src fragment)
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import contextlib, hashlib, importlib.util, io, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -94,12 +97,11 @@ def own_src():
 # core/rand, core/space and core/tags, read in place under their own names (each one global: KRAND, KSPACE, KTAGS)
 CORE_PLACE = [('08-core-rand.js', 'core/rand/08-core-rand.js'),
               # core/hamlet (S5: the environs' hamlets and camps, 77m-hook-places.js), read in place after core/city's closure (76)
-              # and the kits' boxes (77f): its fragments in its own order, the work camp (camp/26) after 30
+              # and the kits' boxes (77f): its fragments in its own order (the work camp is in 30 since Stage 8)
               ('77j0-hamlet-wood.js', 'core/hamlet/10-hamlet-wood.js'), ('77j1-hamlet-gather.js', 'core/hamlet/12-hamlet-gather.js'),
               ('77j2-hamlet-farmland.js', 'core/hamlet/14-hamlet-farmland.js'), ('77j3-hamlet-names.js', 'core/hamlet/16-hamlet-names.js'),
               ('77j4-hamlet-names.js', 'core/hamlet/18-hamlet-names.js'), ('77j5-hamlet-cultures.js', 'core/hamlet/20-hamlet-cultures.js'),
-              ('77j6-hamlet-iziz.js', 'core/hamlet/21-hamlet-iziz.js'), ('77j7-hamlet-village.js', 'core/hamlet/30-hamlet-village.js'),
-              ('77j8-hamlet-camp.js', 'core/hamlet/camp/26-hamlet-camp.js'), ('20-core-space.js', 'core/space/20-core-space.js'),
+              ('77j6-hamlet-iziz.js', 'core/hamlet/21-hamlet-iziz.js'), ('77j7-hamlet-village.js', 'core/hamlet/30-hamlet-village.js'), ('20-core-space.js', 'core/space/20-core-space.js'),
               ('50-core-tags.js', 'core/tags/50-core-tags.js'), ('52-core-tags-vocab.js', 'core/tags/52-core-tags-vocab.js'),
               # the ground: core/terrain's relief noise (KRELIEF, which 41 grows its detail from) and core/world's fields
               # (41-world-fields.js: WORLD, the open world's land at 1:1), read in place as settlements/pinnacle-rock reads
@@ -119,7 +121,8 @@ WORLD_FRAG = '75b-hook-world-data.js'
 # core/city in one closure, as Verge takes it (settlements/verge/build.py kcity_bundle): its globals (SL, PLAN, TUNE, V,
 # clamp, CG...) stay inside, where they cannot clash with the Port page's; Hook reads KCITY and KCITY.lib
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js', '50-city-host-streets.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js', '../kits/10-core-kits.js', '42-city-multikit.js',
+           '50-city-host-streets.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 KCITY_FRAG = '76-kcity-bundle.js'
 SITE_FRAG = '76-hook-site-data.js'
 SITE_JSON = os.path.join(HERE, 'site', 'hook-site.json')

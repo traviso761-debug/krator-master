@@ -82,7 +82,8 @@ CITY_FILES = [
     '10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js',
     '25-city-site.js', '31-city-steps-b.js', '32-city-steps-c.js', '33-city-strategies.js',
     '34-city-radial.js', '35-city-squares.js', '36-city-covered.js', '37-city-grid.js',
-    '40-city-kcity.js'
+    '40-city-kcity.js',
+    '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js'   # the multi-kit host (Stage 8 D8): inert until called
 ]
 CITY_PATHS = [_B('core', 'city', f) for f in CITY_FILES]
 

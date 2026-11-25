@@ -1,6 +1,6 @@
 // ================================================================= THE IZIZ CLUSTER: the kits, which biome kits grow here
 // [G data] The open world's kit registry (core/world/41-world-fields.js reads it at init: each entry's overlay is the
-// biome region, or here the list of them (the shim below), it grows on, matched by name). The cut is the savage hyperjungle's round Girder and
+// biome region, or a list of them (41 WORLD.growsOn), it grows on, matched by name). The cut is the savage hyperjungle's round Girder and
 // Mav's Refuge (and a corner of hyperjungle S), and the savannah rims' round Talia (the SE rim's, the E rim's, a pixel of
 // the NE rim's):
 //   hyperjungle        on the savage hyperjungle and hyperjungle S: the kit has no pass table as data, so its numbers
@@ -27,8 +27,4 @@ return[{name:'abyssal-savannah',global:'ABSAV_WORLD.absav',overlay:['se savannah
   floor:{profiles:{floor:{}},pick:()=>({floor:1})}}];})();
 // a kit's export object by its expression (a top-level const is not on window: an indirect eval reaches it)
 WORLD_KITS.api=k=>k._api||(k._api=(0,eval)(k.global));
-/* a kit on several overlays: core/world/41-world-fields.js finds a biome's kit with WORLD_KITS.findIndex(k=>k.overlay===name);
-   this tries the entry as it is, then once a name of its list. A shim until 41 takes a list itself (TODO.md, "Ride along
-   with the next all-builds rebuild": the change moves every page that reads core/world) */
-WORLD_KITS.findIndex=function(f){for(let i=0;i<this.length;i++){const k=this[i];if(f(k,i,this))return i;
- if(Array.isArray(k.overlay)&&k.overlay.some(n=>f(Object.assign({},k,{overlay:n}),i,this)))return i;}return -1;};
+

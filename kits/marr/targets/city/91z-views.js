@@ -11,7 +11,7 @@ const VIEWS = {
  'Isla de Marchondaz & Markita de Porta': [155, 52, -95, 86, 8, -38],
  'Isla de Kanal & Gardon de Kanal': [158, 56, 285, 80, 8, 175],
  'IV. De Xedaz — Rropaguoka & Tenements': [325, 68, -185, 240, 10, 25],
- 'Om de Landarnaz — Courtesans\' Quarter': [205, 24, -18, 254, 9, 12],
+ 'Om de Landarnaz (the Courtesans Quarter)': [205, 24, -18, 254, 9, 12],
  'V. Qartar de Gardonz — Mansion Estates & Paseo': [-210, 74, -145, -235, 10, 80],
  'Paseo de Gardonz — Eye Level': _marEye(-212, 18, -212, 95),
  'Knal Greta & Poinda Greta — Canal Eye Level': [0, 8.5, -55, 0, 6.5, 40],

@@ -47,25 +47,38 @@
 //                            cut_only the other way: it only lowers (a drowned quarter: deeper water in it stays as it was).
 //                            dome_m (outlined): the ground inside rises by up to dome_m over the first dome_run_m (default 300)
 //                            in from the edge, smoothly, so a raised hill or ridge has relief, not a flat top
-// Any other kind is left out and named in WLAND.skipped (a new kind adds its profile here first).
+//   pancake_dome             a flat-topped, steep-walled table of viscous lava (the scale model's DATA.domes, edit_518: the
+//                            Firebliss and Korona domes; 2026-11-24, Stage 8 B7, D15: drawn at 1:1, not raster-only), its
+//                            middle at px [x, y] (or px/py, or x/z), d_km across (or r_m, or radius_px), its top at top_m (or
+//                            base_m + h_m, or base_m + relief_m). The model's own profile at 1:1: flat at the top to DOME_TOP of
+//                            the radius, then the wall, top - (top - ground) x smoothstep(DOME_TOP, 1, r/R), raising the ground
+//                            only (edit_518: prof = top_m - (top_m - E) * sstep(.72, 1, r)), so the cliff the 2 km cells smear
+//                            over a cell or two stands within its last 28 % of the radius
+// Any other kind is left out and named in WLAND.skipped (a new kind adds its profile here first). Not drawn here: the
+// scale model's secondary_crater (the SE Tharn crater, 108 km: its 2 km cells already hold its floor, slump walls and rim,
+// which edit_522 shaped from the ground under them and its own noise, so the record carries no profile to draw again) and
+// secondary_crater_bay (no record on this line: the Crookshore bays gave way, 2026-11-23); both are listed as skipped.
 //
-//   WLAND.list        the stamped island records (in metres); WLAND.waters the water records; WLAND.benches the benches
+//   WLAND.list        the stamped island records (in metres); WLAND.waters the water records; WLAND.benches the benches;
+//                     WLAND.domes the pancake domes
 //   WLAND.skipped     [{id, kind}] the records of a kind this fragment does not know
 //   WLAND.at(x,z)     the island record whose reach holds (x,z), or null
 //   WLAND.benchAt(x,z) the bench record whose reach holds (x,z), or null
 //   WLAND.benchD(B,x,z) m off bench B's level ground (0 on it): its rectangle, or its outline as it wanders
+//   WLAND.domeAt(x,z) the pancake dome whose radius holds (x,z), or null
 //   WLAND.waterAt(x,z) the water field there: {s (m, < 0 in the water), id (the nearest record)}, or null beyond reach
 //   WLAND.check()     each record against what it asks: an island's top and waterline; a water record's channel under its
 //                     water (and a strait's banks dry beside it), outside every town's footprint; a bench level inside,
 //                     no face steeper than its batter, the batter meeting the ground inside its reach, and its earthworks:
-//                     the cut's and the fill's depths (max and mean over the ground each moves) and areas
+//                     the cut's and the fill's depths (max and mean over the ground each moves) and areas; a dome's top at
+//                     its top_m over its flat (the fall to the ground past its foot reported)
 var WLAND=(function(){'use strict';
 const W=WORLD,lerp=(a,b,t)=>a+(b-a)*t,smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 // REACH_W: how far off a water record its shore raise reaches. It covers a whole coarse cell (2 km) and its ring: a channel
 // jogs from wet cell to wet cell, so a wet cell's far side can lie 1.6 km off the line (edit_513's strait)
 const KN=KRELIEF.noise(1414),REACH=1.8,SKIRT=8,REACH_W=2400,TAPER=4000;
 const KINDS={island:1,islet:1,stack:1,shoal:1};
-const api={list:[],waters:[],benches:[],skipped:[]};
+const api={list:[],waters:[],benches:[],domes:[],skipped:[]};
 const smin=(a,b,k)=>{const h=Math.max(0,Math.min(1,.5+.5*(b-a)/k));return lerp(b,a,h)-k*h*(1-h);};
 const segD=(x,z,ax,az,bx,bz)=>{const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz;let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;return[Math.hypot(ax+dx*t-x,az+dz*t-z),t];};
 
@@ -203,10 +216,20 @@ function outlineRec(r,px,skirt,tan){const poly=r.outline_px.map(px),n=poly.lengt
 function wgSample(B){let G=0;for(let x=B.x-WG_SPAN/2;x<=B.x+WG_SPAN/2;x+=WG_STEP)for(let z=B.z-WG_SPAN/2;z<=B.z+WG_SPAN/2;z+=WG_STEP){const e=wobN(B,x,z);G=Math.max(G,Math.hypot(wobN(B,x+1,z)-e,wobN(B,x,z+1)-e));}
  return G;}
 
+// ---------------------------------------------------------------- the pancake domes
+// DOME_TOP: flat to this share of the radius, then the wall (edit_518's DOME_TOP, DOME_EDGE = 0.72, 1.0)
+const DOME_TOP=.72;
+function domeStamp(D,x,z,h){const d=Math.hypot(x-D.x,z-D.z);if(d>=D.r)return h;
+ const t=D.top-(D.top-h)*smooth(DOME_TOP,1,d/D.r);return t>h?t:h;}
+function domeFind(x,z){for(const D of api.domes)if(Math.hypot(x-D.x,z-D.z)<D.r)return D;return null;}
+function domeRec(r,xz){const R=r.r_m!=null?r.r_m:r.d_km!=null?r.d_km*500:r.radius_px!=null?r.radius_px*2000:null,
+  top=r.top_m!=null?r.top_m:r.base_m!=null&&(r.h_m!=null||r.relief_m!=null)?r.base_m+(r.h_m!=null?r.h_m:r.relief_m):null;
+ return R>0&&top!=null?{id:r.id,kind:'pancake_dome',name:r.name||null,x:xz[0],z:xz[1],r:R,top,base:r.base_m==null?null:r.base_m}:null;}
+
 // built before 41's init (the hook must be in place when 41 lifts its towns), so the pixels are read on the region's frame
 // here, not through WORLD.fromPx: x = (px - cx) * 2 km, z = (py - cy) * 2 km
 function build(){const R=WORLD_DATA.meta.landforms||[],O=WORLD_DATA.meta.frame.origin_px,px=(p)=>[(p[0]-O[0])*2000,(p[1]-O[1])*2000];
- api.list.length=0;api.waters.length=0;api.benches.length=0;api.skipped.length=0;
+ api.list.length=0;api.waters.length=0;api.benches.length=0;api.domes.length=0;api.skipped.length=0;
  const shelves=new Set(R.filter(r=>r.kind==='shelf').map(r=>r.of));
  for(const r of R){
   if(r.kind==='water'){if(r.form==='river')continue;   // 41's named river (and a town's own) carries it
@@ -222,20 +245,25 @@ function build(){const R=WORLD_DATA.meta.landforms||[],O=WORLD_DATA.meta.frame.o
   if(r.kind==='shelf')continue;   // read with the water it names
   if(r.kind==='bench'){if(!(((r.outline_px&&r.outline_px.length>=3)||(r.w_m>0&&r.l_m>0))&&r.level_m!=null)){api.skipped.push({id:r.id,kind:'bench (no outline_px or w_m and l_m, or no level_m)'});continue;}
    api.benches.push(benchRec(r,r.x!=null?[r.x,r.z]:px([r.px,r.py]),px));continue;}
+  if(r.kind==='pancake_dome'){const D=domeRec(r,r.x!=null?[r.x,r.z]:px(Array.isArray(r.px)?r.px:[r.px,r.py]));
+   if(!D){api.skipped.push({id:r.id,kind:'pancake_dome (no d_km, r_m or radius_px, or no top_m or base_m with h_m)'});continue;}
+   api.domes.push(D);continue;}
   if(!KINDS[r.kind]){api.skipped.push({id:r.id,kind:r.kind});continue;}
   const xz=r.x!=null?[r.x,r.z]:px([r.px,r.py]),h=KRAND.child(1414,r.id||r.kind);   // the record's own noise offset, by its id
   api.list.push({id:r.id,kind:r.kind,x:xz[0],z:xz[1],r:r.r_m,crest:r.crest_m,water:r.water_m,ox:(h%997)/9.97,oz:((h>>>10)%991)/9.91});}}
 const base=W.init;
 W.init=function(R){build();
- if(api.list.length||api.waters.length||api.benches.length){const prev=W.landHook;
-  // the benches last: a terrace is level whatever the water and the islands did under it
+ if(api.list.length||api.waters.length||api.benches.length||api.domes.length){const prev=W.landHook;
+  // the benches last: a terrace is level whatever the water, the islands and the domes did under it
   W.landHook=(x,z,h,mw)=>{if(prev)h=prev(x,z,h,mw);if(api.waters.length)h=waterStamp(x,z,h);const L=find(x,z);if(L)h=stamp(L,x,z,h);
+   for(let i=0;i<api.domes.length;i++)h=domeStamp(api.domes[i],x,z,h);
    for(let i=0;i<api.benches.length&&i<=benchUpTo;i++)h=benchStamp(api.benches[i],x,z,h);return h;};}
  base(R);};
 api.at=(x,z)=>find(x,z);
 api.wgSample=B=>wgSample(B);   /* a wandering bench's |grad n|, sampled (core/world/landform_wg.js states it in the record) */
 api.benchAt=(x,z)=>benchFind(x,z);
 api.benchD=(B,x,z)=>benchD(B,x,z);   /* m off bench B's level ground (0 on it): its rectangle, or its outline as it wanders */
+api.domeAt=(x,z)=>domeFind(x,z);
 api.waterAt=(x,z)=>{const F=wField(x,z);return F?{s:F.s,id:F.id}:null;};
 
 // ---------------------------------------------------------------- the checks
@@ -292,5 +320,13 @@ function benchCheck(B,o){const st=(o&&o.step)||Math.max(4,(B.a+B.b)/24),U=B.a+B.
  const wgBad=B.wgStated&&wgSample(B)!==B.wgN;if(wgBad)firstBad=firstBad||['wg_n',B.wgN];
  return{id:B.id,kind:'bench',level:B.level,inside:+inside.toFixed(6),batter:{asked:deg(B.tan),steepest:deg(steep),over,faces},toeOut,
   cut:ew(cut),fill:ew(fill),inTown:inTown(B.x,B.z),firstBad,steepAt,wgStated:!!B.wgStated,ok:inside<=1e-6&&over===0&&toeOut===0&&!wgBad};}
-api.check=(o)=>api.list.map(islandCheck).concat(api.waters.map(waterCheck),api.benches.map(B=>benchCheck(B,o)));
+/* a dome: its top over the flat (the middle and four points at half the radius) at top_m (the ground's detail may stand a
+   little over it, never under); reported, not judged: the least fall from the top to the ground at 1.1 R on 8 rays (the
+   world's own ground there: the stamp raises only, as the model's edit did) */
+function domeCheck(D){const dirs=[0,1,2,3,4,5,6,7].map(k=>[Math.cos(k*Math.PI/4),Math.sin(k*Math.PI/4)]);
+ const flat=[[0,0],[.5,0],[-.5,0],[0,.5],[0,-.5]].map(([a,b])=>W.Hbare(D.x+a*D.r,D.z+b*D.r)),low=Math.min(...flat);
+ const fall=Math.min(...dirs.map(([a,b])=>D.top-W.Hbare(D.x+a*D.r*1.1,D.z+b*D.r*1.1)));
+ return{id:D.id,kind:'pancake_dome',top:D.top,flatMin:+low.toFixed(1),fallMin:+fall.toFixed(1),inTown:inTown(D.x,D.z),
+  ok:low>=D.top-.01};}
+api.check=(o)=>api.list.map(islandCheck).concat(api.waters.map(waterCheck),api.benches.map(B=>benchCheck(B,o)),api.domes.map(domeCheck));
 return api;})();

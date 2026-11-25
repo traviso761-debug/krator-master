@@ -1,0 +1,17 @@
+{
+ "id": "seep",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arcflow — pH 11.5 Cerulean Travertine Cascades & Jumala-Tuli Cold-Flames",
+ "out": "arcflow-seep.html",
+ "px": [518, 118],
+ "sky": [246, -212],
+ "elevM": 116.3,
+ "pAtm": 1.58,
+ "koppen": "Am",
+ "rainMmYr": 2070,
+ "strataStack": "arch-ophiolite",
+ "reserves": [
+  { "id": "site:kulanewa-ikki-shrine", "x": 132, "z": -86, "r": 44 }
+ ],
+ "modes": ["Day", "Dusk Cold-Flames"]
+}

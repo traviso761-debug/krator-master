@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Build dist/fauna.html (the Fauna kit sheet) and dist/krator-fauna.js (the bundle alone).
 
+The baked models are in dist/fauna.tex.models.js (and -2, -3 ...: under 15 MB a file, the gallery takes no file over
+16 MB), loaded by plain <script src> tags ahead of the page's script; dist/krator-fauna.js is the page's bundle, so a
+world that loads it loads those files first (FA_MODELS_SIDE; without them the bundle warns and draws the parts-built
+animals). --inline-models puts the models back in both.
+
 The kit's own files stay at the top of this folder, where other builds read them through fauna_bundle.py
 (as the catalog's furniture is read through furniture_bundle.py); src/ holds only the page around them:
 
@@ -22,6 +27,9 @@ holds a sha1 per input.
 Usage:  python3 build.py [--no-checks] [--vendor-check] [--groups livestock,mounts --out scratch/x.html]
         (--groups builds a page with only those species files; --out writes it elsewhere and leaves dist/ alone)
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -116,11 +124,11 @@ def main():
     tail = [f for f in frags if f.endswith('.html') and f >= '50']
     js = [f for f in frags if f.endswith('.js')]
     groups = sys.argv[sys.argv.index('--groups') + 1].split(',') if '--groups' in sys.argv else None
-    bundle = fauna_bundle.bundle(groups, mdl=True)
     # the page's models beside it (dist/fauna.tex.models.js, split under 15 MB a file: the gallery takes no file over 16 MB);
-    # dist/krator-fauna.js keeps them inline for the worlds that load it. --inline-models puts them back in the page
+    # dist/krator-fauna.js is the same bundle, so it reads the same files (Stage 8 B10: a world that loads it loads
+    # fauna.tex.models*.js ahead of it). --inline-models puts them back in the page and the bundle
     mside = None if ('--inline-models' in sys.argv or '--out' in sys.argv) else {}
-    page_bundle = fauna_bundle.bundle(groups, mdl=True, side=mside) if mside is not None else bundle
+    bundle = page_bundle = fauna_bundle.bundle(groups, mdl=True, side=mside)
     parts = [('krator-asset-engine.js', read(ENGINE)), (BUNDLE, page_bundle)] + [(f, read(src_path(f))) for f in js]
     if '--no-checks' not in sys.argv:
         errs = check(parts)

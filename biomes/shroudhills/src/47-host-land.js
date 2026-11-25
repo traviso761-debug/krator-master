@@ -80,6 +80,9 @@ BIO.init({
  eye: function(){ return [camera.position.x, camera.position.y, camera.position.z]; },
  lod: { hero: 250, mid: 650, far: 2400, floor: [240, 560] }
 });
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun(SUN_POS);
 BIO.host.shroudhills = {
  wind: STAGE.wind || [0.7071, 0.7071],
@@ -88,31 +91,8 @@ BIO.host.shroudhills = {
 };
 _mark('binding');
 
-// ---- KSTRATA geological recipes (PLAN.md section 1: 65% Sedimentary ironstone/coal + 35% Crystalline/Granite tors)
+// ---- KSTRATA: core's recipes shroudhills-ironcoal and shroudhills-granite (PLAN.md section 1: 65% Sedimentary ironstone/coal + 35% Crystalline/Granite tors)
 const GQ = new URLSearchParams(location.search);
-if (typeof KSTRATA !== 'undefined' && KSTRATA.add) {
- KSTRATA.add({
-  name: 'shroudhills-ironcoal',
-  main: 'ironstone',
-  kinds: {
-   ironstone: { p: 0.56, th: [1.2, 5.5], col: [0x6e442c, 0x7c4e32, 0x5c3824], hard: 0.65, xbed: 0, varnish: 0.1 },
-   siltstone: { p: 0.24, th: [0.8, 3.2], col: [0x4c4a44, 0x58544c, 0x3e3c38], hard: 0.5, xbed: 0, varnish: 0 },
-   coal: { p: 0.20, th: [0.35, 1.4], col: [0x1c1d20, 0x24262a, 0x16171a], hard: 0.42, xbed: 0, varnish: 0.2, between: true }
-  },
-  fx: {}
- });
- KSTRATA.add({
-  name: 'shroudhills-granite',
-  main: 'granite',
-  kinds: {
-   granite: { p: 0.68, th: [3.5, 14.0], col: [0xc6c4bc, 0xd2d0c8, 0xb4b2aa], hard: 0.92, xbed: 0, varnish: 0.05 },
-   gneiss: { p: 0.22, th: [1.5, 6.0], col: [0x989a96, 0xa8aaa4, 0x888a86], hard: 0.85, xbed: 0, varnish: 0 },
-   quartz: { p: 0.10, th: [0.12, 0.55], col: [0xe8e8e2, 0xf0efe8], hard: 0.95, xbed: 0, varnish: 0, between: true }
-  },
-  fx: {}
- });
-}
-
 const STRATA = (GQ.get('strata') === '0' || typeof KSTRATA === 'undefined') ? null : KSTRATA.create({
  seed: STAGE.seed + 300,
  range: [-60, 420],

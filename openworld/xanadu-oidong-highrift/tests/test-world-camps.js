@@ -1,4 +1,5 @@
-// node openworld/xanadu-oidong-highrift/tests/test-world-camps.js: the pitched camps' planner (src/48t-world-camps.js, KWCAMPS;
+// node openworld/xanadu-oidong-highrift/tests/test-world-camps.js: the pitched camps' planner (core/world/48w-world-camps.js, KWCAMPS,
+// with this region's src/48c-camps-xanadu.js;
 // settlements/xanadu/WORKS-PLAN.md W2) on a synthetic world: the Golden Tears' fortified ring as the region's WORLD_CAMPS
 // spec has it, and the Great Caravan's halt as openworld/xanadu-lake-shore's has it, each with its negatives (tools/ktest.js:
 // a fault and its fix). The Tears' camp's point is outside the region's cut until its next recut (48-world-site.js), so its
@@ -27,7 +28,8 @@ global.WORLD = {
 };
 global.WORLD_DATA = { meta: { sites: [] } };
 load('core/world/48s-world-sites.js');
-load('openworld/xanadu-oidong-highrift/src/48t-world-camps.js');
+load('core/world/48w-world-camps.js');   /* KWCAMPS: core/world's since Stage 8 T26 (this region's 48t until 2026-11-24) */
+load('openworld/xanadu-oidong-highrift/src/48c-camps-xanadu.js');   /* the Sultanate's people and windows, registered on it */
 /* the spec as the region's file writes it: its `var WORLD_CAMPS=...` to the end of the file, run alone (the rest of the file needs core/hamlet) */
 const spec = f => { const t = rd(f), i = t.indexOf('var WORLD_CAMPS='); if (i < 0) throw new Error(f + ': no WORLD_CAMPS'); const s = {}; vm.runInNewContext(t.slice(i) + '\n;this.WC = WORLD_CAMPS;', s); return s.WC; };
 const TEARS = spec('openworld/xanadu-oidong-highrift/src/48-world-site.js'), HALT = spec('openworld/xanadu-lake-shore/src/48-world-site.js');

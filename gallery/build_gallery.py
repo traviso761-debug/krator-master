@@ -502,9 +502,9 @@ ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
              # the Eternian kit: about 24 MB (its page and two packs), published as built from kits/eternian/dist
              # (gallery/README.md, "The Eternian kit: its own artifact")
              'kits/eternian': 'kits/eternian/build.py',
-             # Voth's city plan: 19.7 MB, over 16 MB a file, and it made Krator Worlds P-V fail the sharing review
-             # (2026-10-23); its own artifact. A page, not a build folder: the Voth catalog (voth-catalog) shares the
-             # folder and stays in the parts
+             # Voth's city plan: it made Krator Worlds P-V fail the sharing review (2026-10-23); its own artifact, the page
+             # (9.6 MB) with its pack beside it (voth-city.tex.voth.js, 9.5 MB; Stage 8 B10). A page, not a build folder:
+             # the Voth catalog (voth-catalog) shares the folder and stays in the parts
              'settlements/voth/dist/voth-city.html': 'settlements/voth/build.py',
              # the Isle Demo: about 84 MB with its packs, its own artifact since the live I-S index was edited in place
              'openworld/isle-demo': 'openworld/isle-demo/build.py'}
@@ -513,7 +513,8 @@ ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
 # gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).
 # Builds published as their own artifact that still get a card in the parts (the owner, 2026-10-20): the card sorts
 # under its letter in its section like any other and opens the build's artifact (href) instead of a page in worlds/.
-# section, slug, name, blurb, the artifact, the build's files that make up its size (globs under the build folder)
+# section, slug, name, blurb, the artifact, the build's files that make up its size (globs under the build folder, or
+# under the page's folder when the key is a page: Voth's page and its pack, dist/voth-city.tex.voth.js)
 THRONE_URL = 'https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX'   # the Throne Stations (gallery/README.md)
 LINKED = {
     'kits/eternian': ('kit', 'eternian', 'Eternian Kit',
@@ -530,7 +531,7 @@ LINKED = {
                              'https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY',
                              ['dist/longsong.html', 'dist/longsong.tex.*.js', 'dist/kchar/*']),
     'settlements/voth/dist/voth-city.html': ('world', 'voth', 'Voth', next(e[4] for e in ENTRIES if e[1] == 'voth') + ' Its own artifact (Voth City Plan).',
-                                             'https://claude.ai/artifact/1W4BzV1Ss4VPUhcWG6zfsy', ['']),
+                                             'https://claude.ai/artifact/1W4BzV1Ss4VPUhcWG6zfsy', ['voth-city.html', 'voth-city.tex.*.js']),
     'openworld/isle-demo': ('world', 'isle-demo', 'Isle Demo (open world)',
                             next(e[4] for e in ENTRIES if e[1] == 'isle-demo') + ' Its own artifact.',
                             'https://claude.ai/artifact/8Gwe3uUG9Ex86Mp3YbHXEM', ['dist/isle-demo.html', 'dist/isle-demo.tex.*.js']),
@@ -747,7 +748,8 @@ def main():
     for d, (section, slug, name, blurb, url, files) in LINKED.items():   # a card for each, opening its own artifact
         if d not in skip:
             continue
-        size = sum(os.path.getsize(f) for g in files for f in glob.glob(os.path.join(ROOT, d, g) if g else os.path.join(ROOT, d)))
+        base = d if os.path.isdir(os.path.join(ROOT, d)) else os.path.dirname(d)   # a page (Voth's) counts its folder's files
+        size = sum(os.path.getsize(f) for g in files for f in glob.glob(os.path.join(ROOT, base, g)))
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb, 'mb': round(size / 1048576, 1),
                       'source': d, 'tag': 'new', 'href': url})
     if 'biomes/throne' in skip:   # the Throne's stations: a card each, in station order, opening the Throne's artifact

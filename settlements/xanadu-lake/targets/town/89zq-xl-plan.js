@@ -44,7 +44,9 @@ function xlPools(S){const W=xlWealth(S),a=S.andean,P={};
   if(q.role==='market')XL.HOUSES.shops.forEach(k=>pool.push([k,.12]));
   P[q.id]=pool.map(([k,v])=>[k,+v.toFixed(4)]);}
  return P;}
-const xlTune=half=>({cell:2.5,rasterHalf:half,maxSlope:.3,exact:true,
+/* maxSlope: core/city's steepest lot, 0.3 unless the town's layout sets its own (layout.maxSlope: Saphran's steeper wall on the
+   re-run's model, 2026-11-24) */
+const xlTune=(half,ms)=>({cell:2.5,rasterHalf:half,maxSlope:ms==null?.3:ms,exact:true,
  width:{avenue:10,main:8,side:5.5,alley:3,highway:10,lane:4.5},lot:{side:1.6,setback:1.4,rear:3,inset:1,step:3},
  classes:{rich:[['xa_rich_a',0]],middle:[['xa_mid_a',0],['xa_mid_c',0]],poor:[['xa_poor_c',0]]},fallback:{rich:'middle',middle:'poor',poor:null},
  civic:[],civicSpacing:120,voidMax:40,voidIters:0,voidBatch:0,sideSpacing:48,sideMax:200,alleyFrac:.25,blindMax:90,interiorDepth:9,interiorRounds:0,
@@ -78,10 +80,13 @@ const xlMain=Lay=>Lay.stairs.reduce((a,b)=>Math.abs(b)<Math.abs(a)?b:a,Lay.stair
 // its lowest front corner stands 4 m up the beach; the first whose back corners stay 5 m clear of the road; else 6 m further
 // along (dir), at most six tries. {x, z, ry} or null
 function xlBeachFit(key,D,x,dir){const R0=XL.SPECS[key].layout.road;
+ /* the front's depth up the beach: 4 m, or as far as the beach takes to stand 0.3 m over the level (at most 10 m: Haibh's flat
+    beach on the second move, 2026-11-24, is 0.13 m up at 4 m) */
+ const PF=xlFit(key);let dfr=4;while(dfr<10&&xlProf(PF,dfr)<.3)dfr+=.5;
  for(let t=0;t<6;t++,x+=6*dir){const hw=D.w/2+10,sl=(xlShoreZ(key,x+hw)-xlShoreZ(key,x-hw))/(2*hw),rt=Math.max(-.35,Math.min(.35,Math.atan2(-sl,1)));
   for(const ry of[rt,rt/2,0]){const c=Math.cos(ry),s=Math.sin(ry),pt=(lx,lz)=>[x+lx*c+lz*s,-lx*s+lz*c];
    const fr=[pt(-D.w/2,D.d/2),pt(D.w/2,D.d/2),pt(0,D.d/2)],bk=[pt(-D.w/2,-D.d/2),pt(D.w/2,-D.d/2),pt(0,-D.d/2)];
-   const z=Math.min(...fr.map(q=>xlShoreZ(key,q[0])-4-q[1]));   /* every front corner 4 m or more up the beach */
+   const z=Math.min(...fr.map(q=>xlShoreZ(key,q[0])-dfr-q[1]));   /* every front corner dfr m or more up the beach */
    if(Math.max(...bk.map(q=>xlShoreZ(key,q[0])-(q[1]+z)))<=R0-5)return{x,z,ry};}}
  return null;}
 function xlCivicSpec(key){const S=XL.SPECS[key],G=xlGeo(key),L=S.layout,out=[],R=L.road,mk=L.market,main=xlMain(L);
@@ -109,7 +114,7 @@ function xlCivicSpec(key){const S=XL.SPECS[key],G=xlGeo(key),L=S.layout,out=[],R
  if(has('xa_bridge')&&G.stream)out.push(['xa_bridge',xlStreamXd(G,R),R,Math.PI/2,XL.WHY.xa_bridge,0]);
  return out;}
 function xlPlaceCivic(key,C,L,list){const K=KCITY.lib,SLx=K.SL,PLAN_=K.plan(),out=[];
- for(let [k,x,dd,ry,why,v0,swing] of list){const v=v0|0,D=xlDims(k,v);if(!D){out.push({key:k,err:'no def'});continue;}
+ for(let [k,x,dd,ry,why,v0,swing,inBlock] of list){const v=v0|0,D=xlDims(k,v);if(!D){out.push({key:k,err:'no def'});continue;}
   /* every piece turned to the shore's line across its own width and 10 m either side (at most 20 degrees; its front to the
      lake), so on a curving or jagged shore no corner reaches across the shore road or a contour row; its x kept */
   if(dd&&typeof dd==='object'){const q=L.P(x,dd.z),r=dd.ry+ry,u=[Math.cos(r),-Math.sin(r)],o=K.obb(q,u,D.w/2,D.d/2);   /* a fitted beach piece (xlBeachFit) */
@@ -119,9 +124,18 @@ function xlPlaceCivic(key,C,L,list){const K=KCITY.lib,SLx=K.SL,PLAN_=K.plan(),ou
   const zs=xlShoreZ(key,x),hw=D.w/2+10,sl=(xlShoreZ(key,x+hw)-xlShoreZ(key,x-hw))/(2*hw),R0=XL.SPECS[key].layout.road;
   /* a beach piece turns no further than its swing leaves it clear of the water and of the shore road (its depth plus 5 m in
      front and 5 m behind) */
-  const cap=dd==='beach'?Math.asin(Math.max(0,Math.min(.34,(R0-10-D.d)/D.w))):.35,rt=Math.max(-cap,Math.min(cap,Math.atan2(-sl,1)));
+  /* a host in a block between two contour rows turns with them whatever the shore does (the rows follow the shore's line):
+     held at 20 degrees on a shore bent harder (the re-run's model, 2026-11-24) it stood askew and its corners reached a row */
+  const cap=dd==='beach'?Math.asin(Math.max(0,Math.min(.34,(R0-10-D.d)/D.w))):inBlock?1.2:.35,rt=Math.max(-cap,Math.min(cap,Math.atan2(-sl,1)));
   const off=dd==='ghat'?-1.7:dd==='water'?-D.d/2+5:dd==='beach'?-D.d/2-5-Math.abs(Math.sin(rt))*D.w/2:-dd-(swing?Math.abs(Math.sin(rt))*D.w/2:0);   /* + toward the lake; a turned landmark above the road set back by its swing */
-  const x1=x,z=zs+off;ry=ry+rt;
+  const x1=x;let z=zs+off;
+  /* a landmark above the shore road: its depth was measured at its middle's x, but on a bent shore (the re-run's model,
+     2026-11-24: Malbari's han) a corner stands where the shore lies nearer; stepped inland until every corner, measured at
+     its own x, clears the road's line by 5 m (the road's half width and a metre) */
+  if(swing)for(let it=0;it<8;it++){const c=Math.cos(ry+rt),s=Math.sin(ry+rt);let dmin=1e9;
+   for(const [a,b] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const cx=x1+c*a*D.w/2+s*b*D.d/2,cz=z-s*a*D.w/2+c*b*D.d/2;dmin=Math.min(dmin,xlShoreZ(key,cx)-cz);}
+   const need=R0+5-dmin;if(need<=.05)break;z-=need;}
+  ry=ry+rt;
   const q=L.P(x1,z),u=[Math.cos(ry),-Math.sin(ry)],o=K.obb(q,u,D.w/2,D.d/2);
   const lot={id:PLAN_.lots.length,cls:'landmark',role:why,key:k,v,slot:0,wealth:1,x:q[0],z:q[1],y:0,ry,w:D.w,d:D.d,h:D.h,lot:o,bo:o,way:-1,side:0,s:0,born:1,died:null,civic:true,why};
   const st=KCITY.stance(o,(a,b)=>L.h(a,b),{maxDrop:12});lot.y=st?st.y:L.h(q[0],q[1]);if(st)lot.drop=st.drop;
@@ -163,8 +177,10 @@ function xlSteps(key,T){const S=XL.SPECS[key],G=xlGeo(key),Lay=S.layout,L=T.L,K=
    if(sh&&sh.n>G.benches.length&&G.benches.length){const others=Lay.stairs.filter(x=>x!==main).slice(0,sh.n-G.benches.length);
     T.civic=T.civic.concat(xlPlaceCivic(key,C,L,others.map((x,k)=>['xa_wayside_shrine',x+9,G.benches[0].d0+17,0,'the wayside shrine at a terrace stair\'s head',(k+1)%3])));}
    /* the bench's works behind the bench houses, and the orchards' plots over their fields */
-   T.civic=T.civic.concat(xlPlaceCivic(key,C,L,xlBenchWorks(key).map(([k,x,d])=>[k,x,d,0,XL.WHY[k]||'a work of the town\'s trade',0])));
-   const FS=Lay.fields||{};if(FS.orchard)for(const F of T.fields)T.civic=T.civic.concat(xlPlaceCivic(key,C,L,(F.plots||[]).map(([x,d])=>['xa_orchard_plot',x,d,0,'the '+(F.crop||'orchard')+' plot on bench '+(F.bench+1),FS.plot|0])));}},
+   /* both turned fully with the bench (it follows the shore's line, as the contour rows do: xlPlaceCivic's inBlock), so on a
+      bent shore a work and the plot behind it stay apart (Malbari's west end on the re-run's model, 2026-11-24) */
+   T.civic=T.civic.concat(xlPlaceCivic(key,C,L,xlBenchWorks(key).map(([k,x,d])=>[k,x,d,0,XL.WHY[k]||'a work of the town\'s trade',0,false,true])));
+   const FS=Lay.fields||{};if(FS.orchard)for(const F of T.fields)T.civic=T.civic.concat(xlPlaceCivic(key,C,L,(F.plots||[]).map(([x,d])=>['xa_orchard_plot',x,d,0,'the '+(F.crop||'orchard')+' plot on bench '+(F.bench+1),FS.plot|0,false,true])));}},
  {name:'the streets',run(C){const S_=K().SL,line=(d,x0,x1,st)=>{const P=[];for(let x=x0;x<=x1+.1;x+=st)P.push(L.P(x,xlShoreZ(key,x)-d));return P;};
    S_.addWay('main',line(R0,west-40,G.stream?G.stream.x+70:Lay.half+40,15),3,{tag:'the shore road'});
    for(let i=1;i<rows.length;i++){const d=rows[i];S_.addWay('side',line(d,west,eastAt(d)-(G.stream?6:0),15),3,{tag:'row '+i});}
@@ -206,7 +222,7 @@ function xlSteps(key,T){const S=XL.SPECS[key],G=xlGeo(key),Lay=S.layout,L=T.L,K=
    const host=(wk,qid,a,why,v)=>{const D=xlDims(wk,v|0);if(!D)return false;
     for(const q2 of [qid,rest&&rest.id]){if(!q2)continue;const cand=blocks.filter(b=>b.quarter===q2&&!b.host&&!b.bench).sort((u,w)=>far(u,a)-far(w,a)||u.i-w.i||u.j-w.j);
      for(const b of cand){const c=L.P(b.at[0],xlShoreZ(key,b.at[0])-b.at[1]);if(clash(c,D))continue;   /* at the block's own middle: its x, its mid-depth */
-      const lot=xlPlaceCivic(key,C,L,[[wk,b.at[0],b.at[1],0,why,v|0]])[0];if(lot&&lot.bo){b.host={c:lot.bo.c,u:lot.bo.u,hw:lot.bo.hw,hd:lot.bo.hd};T.civic.push(lot);return true;}}}
+      const lot=xlPlaceCivic(key,C,L,[[wk,b.at[0],b.at[1],0,why,v|0,false,true]])[0];if(lot&&lot.bo){b.host={c:lot.bo.c,u:lot.bo.u,hw:lot.bo.hw,hd:lot.bo.hd};T.civic.push(lot);return true;}}}
     return false;};
    const streamQ=S.quarters.find(q=>q.at==='stream'&&q.role==='industry')||S.quarters.find(q=>q.at==='stream');
    for(const l of S.landmarks)if((l.at==='slope'||l.at==='stream')&&l.key!=='xa_shops'){if(l.key==='xa_river_span'&&!G.stream)continue;   /* a bridge wants the town's stream */
@@ -288,7 +304,7 @@ function xlRun(key){const S=XL.SPECS[key];if(!S)throw new Error('xanadu-lake: no
  let T=null,best=null,marginQ={};
  for(let attempt=0;attempt<4;attempt++){
  T={key,seed:XL.seed(key),L,civic:[],blocks:[],fields:xlFields(key),marginQ:Object.assign({},marginQ)};
- const C=KCITY.create({name:'xanadu-lake:'+key,tune:xlTune(Math.ceil(Math.max(Lay.half+260,G.stream?G.stream.x+220:0,(Lay.rows[Lay.rows.length-1]+400)))/10*10),seed:T.seed,ground:{h:L.h},kit:{dims:xlDims},
+ const C=KCITY.create({name:'xanadu-lake:'+key,tune:xlTune(Math.ceil(Math.max(Lay.half+260,G.stream?G.stream.x+220:0,(Lay.rows[Lay.rows.length-1]+400)))/10*10,Lay.maxSlope),seed:T.seed,ground:{h:L.h},kit:{dims:xlDims},
   rand:'krand',index:{order:'insertion'},steps:xlSteps(key,T)});
  T.C=C;T.plan=C.run();
  const got={};for(const l of T.plan.lots){if(l.died!=null||l.civic||!l.court)continue;const b=T.blocks.find(b=>b.id===l.court);if(b)got[b.quarter]=(got[b.quarter]||0)+1;}

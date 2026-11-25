@@ -89,10 +89,16 @@ const SUNS=new THREE.Sprite(new THREE.SpriteMaterial({map:sunTex,fog:false,depth
 SUNS.renderOrder=-9;SUNS.frustumCulled=false;SUNS.userData.probeSkip=true;scene.add(SUNS);
 const SUN_D=DOME*.9,SUN_S=SUN_D*.22,_warm=new THREE.Color(1,.62,.38),_white=new THREE.Color(1,1,1);
 const _skyNight=new THREE.Color(0x162238),_skyDusk=new THREE.Color(0xd29c7e),_skyDay=new THREE.Color(0xffffff);
+// THE WEATHER (45's HOST.weather, where the build lists core/atmos's): the dome greys toward the weather's fog, the giant sinks into
+// its haze and the sun's disc fades as the sky clouds over (ATMOS.wxLook: grey, cover). Clear, or no weather on the page: as before
+const _skyWx=new THREE.Color(0x8c9299);
 function follow(){const P=camera.position;sky.position.copy(P);giant.position.copy(P).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);
  const S=HOST.SUN_DIR,up=S.y,twi=Math.max(0,Math.min(1,(up+.18)/.22)),gold=Math.max(0,Math.min(1,(up+.02)/.32));
- GU.uSunDir.value.copy(S);GU.uHazeC.value.copy(HOST.HAZE);
+ const L=typeof ATMOS!=='undefined'&&ATMOS.wxLook?ATMOS.wxLook():null,grey=L?L.grey:0,cover=L?L.cover:0;
+ GU.uSunDir.value.copy(S);GU.uHazeC.value.copy(HOST.HAZE);GU.uHazeK.value=.30+.56*cover;
+ if(grey>0)GU.uHazeC.value.lerp(HOST.scene.fog.color,grey);
  sky.material.color.copy(_skyNight).lerp(_skyDusk,twi).lerp(_skyDay,gold);
+ if(grey>0)sky.material.color.lerp(_skyWx.copy(HOST.scene.fog.color).multiplyScalar(.5+.5*gold),grey*.8);
  SUNS.position.copy(P).addScaledVector(S,SUN_D);SUNS.visible=up>-.05;SUNS.scale.setScalar(SUN_S*(1+.6*Math.max(0,1-up/.3)));
- SUNS.material.color.copy(_warm).lerp(_white,Math.max(0,Math.min(1,up/.35)));SUNS.material.opacity=Math.max(0,Math.min(1,(up+.05)/.1));}
+ SUNS.material.color.copy(_warm).lerp(_white,Math.max(0,Math.min(1,up/.35)));SUNS.material.opacity=Math.max(0,Math.min(1,(up+.05)/.1))*(1-.9*cover);}
 return{follow,sky,giant};})();

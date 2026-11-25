@@ -49,18 +49,6 @@ function skyView(dt){
  BIO.setSun(SKY.state.sunDir);
 }
 
-{
- const seen = new Set();
- scene.traverse(function(o){
-  if (!o.isMesh || !o.material) return;
-  const mats = Array.isArray(o.material) ? o.material : [o.material];
-  for (let i = 0; i < mats.length; i++) {
-   const m = mats[i];
-   if (seen.has(m) || !(m.isMeshLambertMaterial || m.isMeshStandardMaterial || m.isMeshPhongMaterial)) continue;
-   seen.add(m);
-   const k = m.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? String(m.customProgramCacheKey()) : '';
-   if (/^biofauna|^bioanim|^shroudhills-ant/.test(k)) continue;
-   ATMOS.cloudShade(m, { porosity: o.userData.biome ? 0.42 : o.userData.host ? 0.65 : 1.0 });
-  }
- });
-}
+/* the clouds' shadows and the rain's darkening on every lit material, once: the core's pass (Stage 8 V8, 2026-11-24), with these
+   hills' porosities (the plants .42, also the biome core's materials made after it; the works .65), the fauna and the ants left out */
+ATMOS.cloudShadeScene(scene, { biome: 0.42, host: 0.65, leave: /^biofauna|^bioanim|^shroudhills-ant/ });

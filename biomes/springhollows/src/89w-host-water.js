@@ -55,7 +55,7 @@ const MAIN_STILL=(function(){
   }
   upperPoly.push([-50,7.2*Math.sin(clamp(16/142,0,1)*TAU)],...upperS);
   const SU=WATER.still({
-   name:'Ching-Ma Upper Calm Dolomite Reach',
+   name:'Tlila-Wada Upper Calm Dolomite Reach',
    level:6.25,
    poly:upperPoly,
    gradient:{centre:0x1b5a68,rim:0x4ea89c,power:1.2,at:[-220,0],radius:190}
@@ -71,7 +71,7 @@ const MAIN_STILL=(function(){
   }
   lowerPoly.push(...lowerS);
   const SL=WATER.still({
-   name:'Ching-Ma Lower Shut-In Plunge Pool',
+   name:'Tlila-Wada Lower Shut-In Plunge Pool',
    level:0.20,
    poly:lowerPoly,
    fountain:[68,0],
@@ -93,6 +93,19 @@ const MAIN_STILL=(function(){
    gradient:{centre:0x0b48a8,rim:0x3cd4cc,power:1.05,at:[30,22],radius:22}
   });
   const D=WATER.drawStill(S,{roughness:0.04,metalness:0.12,envMapIntensity:0.65,opacity:0.92,renderOrder:1,pick:true});
+  W_OUT.stills++;
+  return D;
+ }
+ if(SKEY==='porphyryrelict'){
+  const poly=makeOvalPoly(-88,-24,15.5,14.5,20,7465);
+  const S=WATER.still({
+   name:'Porphyry Sky-Island Dolomite Contact Spring Tarn',
+   level:1.85,
+   poly:poly,
+   fountain:[-88,-24],
+   gradient:{centre:0x0f4488,rim:0x3cb2a6,power:1.15,at:[-88,-24],radius:15}
+  });
+  const D=WATER.drawStill(S,{roughness:0.06,metalness:0.08,envMapIntensity:0.50,opacity:0.92,renderOrder:1,pick:true});
   W_OUT.stills++;
   return D;
  }

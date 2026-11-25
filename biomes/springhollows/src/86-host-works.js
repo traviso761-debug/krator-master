@@ -37,11 +37,13 @@ const WORKS=(function(){
   if(SKEY==='spring'){
    regHaz('springhollows:sump','Cav Ozarks Resurgence Artesian Throat Sump',-62,-5.8,0,22,8,HOLLOW_PHYS.hazardSpec('sump'));
   }else if(SKEY==='shutin'){
-   regHaz('springhollows:shutin','Ching-Ma Red-Porphyry Shut-In Whitewater Chute',0,2.5,0,46,12,HOLLOW_PHYS.hazardSpec('shutin'));
+   regHaz('springhollows:shutin','Tlila-Wada Red-Porphyry Shut-In Whitewater Chute',0,2.5,0,46,12,HOLLOW_PHYS.hazardSpec('shutin'));
   }else if(SKEY==='fenestre'){
    regHaz('springhollows:fenestre','18 m Sinkhole Fern-Fenestre Skylight Drop Lip',10,2.2,8,14,32,HOLLOW_PHYS.hazardSpec('fenestre'));
    regHaz('springhollows:sump','Spider Lake Sub-Escarpment Phreatic Sump Pool',38,-25.4,24,18,6,HOLLOW_PHYS.hazardSpec('sump'));
    regHaz('springhollows:crystal','Condensate-Wet Celestine Megacrystal Beam Span',18,-25.5,16,32,14,HOLLOW_PHYS.hazardSpec('crystal'));
+  }else if(SKEY==='porphyryrelict'){
+   regHaz('springhollows:crystal','Steep Spheroidal Purple-Red Porphyry Tor Ledges',12,22.0,8,44,18,HOLLOW_PHYS.hazardSpec('crystal'));
   }else{
    regHaz('springhollows:fenestre','Onyx Kipuka Skylight Drop Perimeter',-38,3.2,-36,12,20,HOLLOW_PHYS.hazardSpec('fenestre'));
   }
@@ -52,6 +54,33 @@ const WORKS=(function(){
     try{KTAGS.page.add(rec);HAZARDS.push(rec);}catch(e){}
    }
   }
+ }
+
+ // Station 5 (porphyryrelict): Inert Ancient Atmospheric Defoliant Mist-Pylon in the lower dolomite hollow
+ if(SITE.mistPylon&&typeof KFRONTIER!=='undefined'&&typeof KFRONTIER.placeMachine==='function'){
+  const mp=KFRONTIER.placeMachine({
+   THREE:THREE,
+   scene:group,
+   tagPage:(typeof KTAGS!=='undefined'&&KTAGS.page)?KTAGS.page:null,
+   register:REGISTER,
+   space:SPACE,
+   hazards:HAZARDS,
+   groundH:DRAWN_H,
+   mats:{
+    hull:SPRINGHOLLOWS.M.rockPorphyry,
+    ceramic:SPRINGHOLLOWS.M.stoneAshlar,
+    bronze:SPRINGHOLLOWS.M.worksBrass
+   }
+  },{
+   id:'springhollows:ecof-mist-pylon',
+   kind:'ecof_mist_pylon',
+   x:SITE.mistPylon.x,
+   z:SITE.mistPylon.z,
+   rotY:0.62,
+   state:'inert',
+   hour:12.0
+  });
+  items.push(mp);
  }
 
  const addPart=(geo,mat,x,y,z,rx,ry,rz,label)=>{
@@ -125,6 +154,9 @@ const WORKS=(function(){
   }else if(SKEY==='fenestre'){
    addSpringGaugeStela(-22,-16,0.72,0);
    addSpringGaugeStela(18,-18,-0.65,1);
+  }else if(SKEY==='porphyryrelict'){
+   addSpringGaugeStela(-76,-8,0.42,0);
+   addSpringGaugeStela(-42,-36,-0.35,1);
   }else{
    addSpringGaugeStela(-18,-38,0.45,0);
    addSpringGaugeStela(24,62,-0.32,1);

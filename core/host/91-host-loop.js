@@ -23,7 +23,8 @@
 //     o.layers, o.stats, o.inspect, o.exporters, o.controls, o.keys, o.title, o.hint, o.build   the panel (92)
 //     o.budget, o.types, o.regHas, o.checks, o.api   the probe (95-host-probe.js)
 //   KHOST.on(fn, phase)             a subscriber, fn(dt, clock): phase 'tick' (default: before the camera is placed),
-//                                   'view' (after it, before drawing: LOD, the sky), 'after' (after drawing)
+//                                   'view' (after it, before drawing: LOD, the sky), 'after' (after drawing), 'restore' (once
+//                                   when a lost WebGL context comes back, before the loop resumes: re-bake a render target)
 //   KHOST.off(fn)
 //   Query: ?hour=7.5 (also #hour=), ?time=run starts the world hour running, ?t=12 pins motion time (repeatable shots).
 //
@@ -33,7 +34,7 @@
 (function(root){
 'use strict';
 const K=root.KHOST=root.KHOST||{};
-const SUBS={tick:[],view:[],after:[]},DEAD=new Set();
+const SUBS={tick:[],view:[],after:[],restore:[]},DEAD=new Set();
 K.on=function(fn,phase){(SUBS[phase||'tick']||SUBS.tick).push(fn);return fn;};
 K.off=function(fn){for(const p in SUBS){const i=SUBS[p].indexOf(fn);if(i>=0)SUBS[p].splice(i,1);}};
 K.err=K.err||function(m){console.error(m);};
@@ -73,8 +74,24 @@ K.take=function(o){
  const first=o.start||Object.keys(H.views)[0];if(first)K.go(first);
  // ---------------------------------------------------------------- the frame
  const ticks=o.ticks||null,hourTicks=o.hourTicks||null,hooks=o.frameHooks||null,sky=o.sky||null,draw=o.draw||null;
- let last=performance.now(),drawErr=false;
+ let last=performance.now(),drawErr=false,raf=0,lost=false;
+ // ---------------------------------------------------------------- WebGL context loss (S3-76a, D26)
+ /* three r128 already prevents the default on webglcontextlost, skips render() while the context is gone and, on
+    webglcontextrestored, makes its GL state again (fresh properties: every program and texture is rebuilt from the scene's own
+    objects on the next draw). Its listeners are added in its constructor, so they run before these. The host pauses the frame
+    loop while the context is gone (no tick or subscriber runs against a dead context and gets skipped for it), and on restore
+    resumes it with the clock's last time reset, after the 'restore' subscribers (a page that baked into a render target once
+    bakes it again). H.glLost counts losses, H.glRestored restores; H.contextLost is true while it is gone. */
+ H.glLost=0;H.glRestored=0;H.contextLost=false;
+ const cv=renderer.domElement;
+ if(cv&&cv.addEventListener){
+  cv.addEventListener('webglcontextlost',function(e){if(e&&e.preventDefault)e.preventDefault();if(lost)return;lost=true;H.contextLost=true;H.glLost++;
+   if(raf){cancelAnimationFrame(raf);raf=0;}console.warn('KHOST: WebGL context lost; the frame loop is paused until it is restored');},false);
+  cv.addEventListener('webglcontextrestored',function(){if(!lost)return;lost=false;H.contextLost=false;H.glRestored++;last=performance.now();
+   for(let i=0;i<SUBS.restore.length;i++)call(SUBS.restore[i],'restore',0,clock);
+   if(!raf)raf=requestAnimationFrame(frame);},false);}
  function frame(){
+  raf=0;if(lost)return;
   const now=performance.now(),raw=Math.max(0,(now-last)/1000),real=Math.min(.1,raw);last=now;
   clock.step(CO.maxStep==null?real:Math.min(CO.maxStep,raw));const dt=clock.dt;   // maxStep: a page whose clock ran on real time between frames (Voth) keeps it
   C.move(real);
@@ -90,7 +107,7 @@ K.take=function(o){
   if(hid)K.layersShow(hid);
   for(let i=0;i<SUBS.after.length;i++)call(SUBS.after[i],'after',dt,clock);
   if(K.panelFrame)K.panelFrame(real);
-  requestAnimationFrame(frame);}
+  if(!lost)raf=requestAnimationFrame(frame);}
  K.taken=true;
  frame();root._ready=true;
  return {clock,camera,renderer,scene,ctl:C.ctl,cam:C,setView:C.setView,go:K.go,err:K.err,on:K.on};};

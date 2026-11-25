@@ -10,7 +10,11 @@ The planners are [G data], so the plan is made in node, not in a browser: the re
 camp table (kits/beast-riders 79-br-camp.js) and the boxes the kit declares for its tents and pens (read from its
 source, as settlements/isle-demo/build.py reads its kits' boxes), the region's SITE_SPEC (openworld/<region>/src/
 48-world-site.js), then KSITES.plan (core/world/48s-world-sites.js). The page reads the baked file (WORLD_DATA.sites) and
-its verify plans again in the browser and compares the hash, so the bake, the page and Godot read one plan."""
+its verify plans again in the browser and compares the hash, so the bake, the page and Godot read one plan.
+
+The pitched tent camps (core/world/48w-world-camps.js KWCAMPS, plan version 2; Stage 8 T26) are laid in the same pass, their
+boxes from the Tents kit's table (kits/tents/src/33-tn-table.js), after the region's own registrations on KWCAMPS (its build.py's
+CAMPS_JS: the files its camps need, from the repo root)."""
 import json, os, re, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -35,13 +39,14 @@ JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.j
       ('core', 'world', '44c-world-coast.js'),   # the coasts, as the page has them (opt-in)
       ('core', 'space', '20-core-space.js'),
       ('core', 'camp', '10-camp-cultures.js'), ('core', 'camp', '20-camp-census.js'), ('core', 'camp', '30-camp-pitch.js'),
+      # the pitched tent camps (48w KWCAMPS, Stage 8 T26): core/camp's tents by role and culture, and the Tents kit's table (its
+      # boxes, tnDims: what a page reads in place or in its TNK bundle)
+      ('core', 'camp', '50-camp-tents.js'), ('kits', 'tents', 'src', '33-tn-table.js'),
       ('kits', 'beast-riders', 'src', '79-br-camp.js'),
       ('core', 'city', '33-city-strategies.js'), ('core', 'hamlet', '10-hamlet-wood.js'), ('core', 'hamlet', '12-hamlet-gather.js'),
       ('core', 'hamlet', '14-hamlet-farmland.js'), ('core', 'hamlet', '16-hamlet-names.js'), ('core', 'hamlet', '18-hamlet-names.js'),
       ('core', 'hamlet', '20-hamlet-cultures.js'), ('core', 'hamlet', '21-hamlet-iziz.js'), ('core', 'hamlet', '30-hamlet-village.js'),
-      # the Xanadu row by name (opt-in: it registers nothing, a region's spec passes KHAMLET.xanaduRow() as a row)
-      ('core', 'hamlet', 'xanadu', '23-hamlet-xanadu-row.js'),
-      ('core', 'world', '48s-world-sites.js')]
+      ('core', 'world', '48s-world-sites.js'), ('core', 'world', '48w-world-camps.js')]
 
 LANDFORMS_JS = '41l-world-landforms.js'   # opt-in: a region whose build.py lists it (script())
 # the coasts (core/world 44c on core/coast) are opt-in too: a region whose page does not take them (openworld/oidong-highrift)
@@ -53,6 +58,16 @@ COAST_JS = '44c-world-coast.js'
 def takes(region, frag):
     """the region's page lists `frag` (its build.py names it)"""
     return frag in open(os.path.join(ROOT, 'openworld', region, 'build.py'), encoding='utf-8').read()
+
+
+def camps_js(region):
+    """the files a region's tent camps need before its spec (its build.py's CAMPS_JS = ['<path from the repo root>', ...]: the
+    providers, calendars and formations it registers on KWCAMPS, and what they read), [] for a region without; the page's
+    build list takes the same constant, so the bake and the page read one set of files"""
+    import ast
+    s = open(os.path.join(ROOT, 'openworld', region, 'build.py'), encoding='utf-8').read()
+    m = re.search(r'^CAMPS_JS\s*=\s*(\[[^\]]*\])', s, re.M)
+    return ast.literal_eval(m.group(1)) if m else []
 
 
 def node():
@@ -117,14 +132,16 @@ def script(region):
         if j[-1] == '41-world-fields.js' and LANDFORMS_JS in open(os.path.join(base, 'build.py'), encoding='utf-8').read():
             parts.append('\n// ---- core/world/%s\n' % LANDFORMS_JS + open(os.path.join(HERE, LANDFORMS_JS), encoding='utf-8').read())
         # the towns' own ground (core/world/bake_towns.py: openworld/SITES.json's region row "towns", opt-in): the records
-        # the page carries in WORLD_DATA.towns and 41t, so the plan is made on the town's ground as the page draws it
+        # the page carries in WORLD_DATA.towns (41 takes the ground and the water), so the plan is made on the town's ground as the page draws it
         if j[-1] == '41-world-fields.js' and region_towns(region):
             parts.append('\nWORLD_DATA.towns=' + json.dumps(towns_data(region), separators=(',', ':'), ensure_ascii=False) + ';\n')
-            parts.append('\n// ---- core/world/41t-world-town-water.js\n' + open(os.path.join(HERE, '41t-world-town-water.js'), encoding='utf-8').read())
     parts.append(WD.net_fragment(os.path.join(base, 'src', '48-world-site.js')))   # the network routes the region's links follow
     # the region's site data (src/NN-site-*.js, before its spec: a village its own page laid, 48s laidVillage; Gihon's Landing)
     for f in sorted(f for f in os.listdir(os.path.join(base, 'src')) if re.match(r'^\d\d[a-z]?-site-.+\.js$', f)):
         parts.append('\n// ---- openworld/%s/src/%s\n' % (region, f) + open(os.path.join(base, 'src', f), encoding='utf-8').read())
+    # the region's tent camps' registrations on KWCAMPS (its build.py's CAMPS_JS), before its spec
+    for p in camps_js(region):
+        parts.append('\n// ---- %s\n' % p + open(os.path.join(ROOT, *p.split('/')), encoding='utf-8').read())
     parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + open(os.path.join(base, 'src', '48-world-site.js'), encoding='utf-8').read())
     # the geology the coast's classes read (44c: rock hardness from the provinces), as the page loads it
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))
@@ -223,6 +240,9 @@ def main():
     n = sum(len(S['camps']) for S in P['sites'])
     print('baked %s: %d sites, %d camps, %d roads, hash %s' % (os.path.relpath(dst, ROOT).replace(os.sep, '/'), len(P['sites']), n,
           sum(len(S['roads']) for S in P['sites']), P['hash']))
+    tc = len(P.get('camps', [])) + sum(1 for S in P['sites'] for C in S['camps'] if C.get('kind'))
+    if P.get('version', 1) >= 2:
+        print('  version %d: %d tent camps laid, %d awaiting the recut' % (P['version'], tc, len(P.get('uncut', []))))
     for e in P['errors']:
         print('  error: ' + e)
     print('  check: %s %s' % ('ok' if chk['ok'] else 'PROBLEMS', json.dumps(chk['counts'])))

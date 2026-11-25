@@ -55,10 +55,11 @@ NOT_APPLICABLE = {
     'kits/resources': {'tags': 'data kit; nodes are tagged by the works that take them'},
 }
 
-# OWN rules a build's named fragment may break on purpose, with the reason (the only one so far: a verify-time audit that reads pixels to
-# CHECK the page, not to place anything on it; placement reads stay on core/mask).
+# OWN rules a build's named fragment may break on purpose, with the reason: reads of pixels that place nothing (a verify-time audit
+# that CHECKS the page; a texture edit on a canvas before upload). Placement reads stay on core/mask.
 OWN_OK = {
     'biomes/ancientsvalley': {('getImageData', 'src/99-host-take.js'): 'the cards-cut audit (HCHK.cardsCut, the owner 2026-11-09) reads a 32 x 32 downsample of each map for its alpha share at verify time; nothing is placed from it'},
+    'kits/marr': {('getImageData', 'targets/city/90a-city-world.js'): 'cityTerrainMesh stamps the cobble pattern into the painted ground albedo (gcv, a DOM canvas uploaded as a texture) before upload: a texture edit, nothing is placed from it; placement reads the KMASK rasters (85-city-paint.js)'},
 }
 
 ALL_MODULES = ['anomaly', 'atmos', 'biome', 'camp', 'city', 'clock', 'engine', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask',

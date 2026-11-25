@@ -99,27 +99,30 @@ function bkPaint(P){const G=BK_GROUND,T=BK_TOWN,E=P.E;
  {const R=G.river.pts,Q=R.map(p=>[p.x,p.z]);P.g.strokeStyle=BK_COL.shingle;P.line(P.g,Q,R[0].w+10);P.c.strokeStyle='rgb(255,0,0)';P.line(P.c,Q,R[0].w+10);}
  P.g.strokeStyle=BK_COL.dirt;P.line(P.g,G.leat,5);P.a.strokeStyle='rgb(0,0,255)';P.line(P.a,G.leat,5);
  for(const p of G.ponds){P.g.fillStyle=BK_COL.shingle;P.box(P.g,p.x,p.z,p.w+8,p.d+8,p.ry);P.c.fillStyle='rgb(255,0,0)';P.box(P.c,p.x,p.z,p.w+8,p.d+8,p.ry);}}
-// the ground's material: the tint as its map, the eight sets sampled in world metres, blended by the three masks
+// the ground's material: the tint as its map, the eight sets sampled in world metres by core/terrain's KGROUND (one layer each, in the
+// order they were mixed: turf under all, then peat, tilled, dirt, yard, shingle, ruts, flag), blended by the three masks under the tint.
+// KGROUND draws them as the page's own shader did: one scale (far off), no hex tiling, a plain mix (blend 0), three's sRGB curve, the
+// ruts' turned second sample (turn). BK_KGARRAY (the owner, 2026-11-24, "put blakhed shader in core terrain"): the eight maps one
+// texture array (KGROUND's array option), so the ground's program takes 5 samplers instead of 12; ?kgarray=0 draws the eight samplers
+const BK_KGARRAY=true;
 function bkGroundMat(P,key){const T=c=>{const t=new THREE.CanvasTexture(c);t.encoding=THREE.LinearEncoding;t.anisotropy=4;return t;};
  const tex=new THREE.CanvasTexture(P.cv);tex.encoding=THREE.sRGBEncoding;tex.anisotropy=8;
  const lib=k=>{const t=MAT[k]&&MAT[k].map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.needsUpdate=true;}return t;};
  const sc=k=>{const L=KMAT.packed&&KMAT.packed('blakhed',k);return 1/(L&&L.scale?L.scale[0]:3);};
- const U={tTurf:{value:lib('bkTurf')},tDirt:{value:lib('bkDirt')},tFlag:{value:lib('bkFlag')},tTill:{value:lib('bkTilled')},tPeat:{value:lib('bkPeat')},tYard:{value:lib('bkYard')},
-  tRuts:{value:lib('bkRuts')},tShin:{value:lib('bkShingle')},tMA:{value:T(P.ma)},tMB:{value:T(P.mb)},tMC:{value:T(P.mc)},
-  kA:{value:new THREE.Vector4(sc('bkTurf'),sc('bkDirt'),sc('bkFlag'),sc('bkTilled'))},kB:{value:new THREE.Vector4(sc('bkPeat'),sc('bkYard'),sc('bkRuts'),sc('bkShingle'))}};
+ const U={tMA:{value:T(P.ma)},tMB:{value:T(P.mb)},tMC:{value:T(P.mc)}};
  const mat=new THREE.MeshStandardMaterial({map:tex,roughness:.95,metalness:0});
  mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vBkW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvBkW=(modelMatrix*vec4(transformed,1.0)).xyz;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vBkW;uniform sampler2D tTurf,tDirt,tFlag,tTill,tPeat,tYard,tRuts,tShin,tMA,tMB,tMC;uniform vec4 kA,kB;')
-   .replace('#include <map_fragment>',['#ifdef USE_MAP','vec4 bkT=mapTexelToLinear(texture2D(map,vUv));vec3 mA=texture2D(tMA,vUv).rgb,mB=texture2D(tMB,vUv).rgb,mC=texture2D(tMC,vUv).rgb;vec2 bw=vBkW.xz;',
-    'vec3 bc=sRGBToLinear(texture2D(tTurf,bw*kA.x)).rgb;bc=mix(bc,sRGBToLinear(texture2D(tPeat,bw*kB.x)).rgb,mB.r);',
-    'bc=mix(bc,sRGBToLinear(texture2D(tTill,bw*kA.w)).rgb,mA.g);bc=mix(bc,sRGBToLinear(texture2D(tDirt,bw*kA.y)).rgb,mA.b);',
-    'bc=mix(bc,sRGBToLinear(texture2D(tYard,bw*kB.y)).rgb,mB.g);bc=mix(bc,sRGBToLinear(texture2D(tShin,bw*kB.w)).rgb,mC.r);',
-    'vec3 bkRd=mix(sRGBToLinear(texture2D(tRuts,bw*kB.z)).rgb,sRGBToLinear(texture2D(tRuts,mat2(0.8,-0.6,0.6,0.8)*bw*(kB.z*0.41)+vec2(0.37,0.71))).rgb,0.45);',
-    'bc=mix(bc,bkRd,mB.b);bc=mix(bc,sRGBToLinear(texture2D(tFlag,bw*kA.z)).rgb,mA.r);',
-    'diffuseColor.rgb*=bc*bkT.rgb*4.6;','#endif'].join('\n'));};
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D tMA,tMB,tMC;')
+   .replace('#include <map_fragment>',['#ifdef USE_MAP','vec4 bkT=mapTexelToLinear(texture2D(map,vUv));vec3 mA=texture2D(tMA,vUv).rgb,mB=texture2D(tMB,vUv).rgb,mC=texture2D(tMC,vUv).rgb;',
+    '/*KGROUND*/','diffuseColor.rgb*=bkT.rgb*4.6;','#endif'].join('\n'));};
  if(key==='country'){mat.polygonOffset=true;mat.polygonOffsetFactor=1;mat.polygonOffsetUnits=2;}
- mat.customProgramCacheKey=()=>'blakhed-ground-'+key;return mat;}
+ mat.customProgramCacheKey=()=>'blakhed-ground-'+key;
+ /* a layer of the set k at weight w (a GLSL float of the masks); the ruts mixed as before: mix(bc, mix(A, B, .45), mB.b) */
+ const L=(k,w,x)=>Object.assign({map:lib(k),k:sc(k),w,lin:'srgb',name:k},x);
+ KGROUND.hook(mat,{layers:[L('bkTurf','1.0'),L('bkPeat','mB.r'),L('bkTilled','mA.g'),L('bkDirt','mA.b'),L('bkYard','mB.g'),L('bkShingle','mC.r'),
+   L('bkRuts','mB.b',{turn:{m:[.8,-.6,.6,.8],scale:.41,off:[.37,.71],mix:.45}}),L('bkFlag','mA.r')],
+  hex:false,far:false,blend:0,array:BK_KGARRAY||null,key:'bk'});
+ return mat;}
 // ---------------------------------------------------------------- the meshes: a plane of the extent's cells, its heights the ground's, sunk
 // `sink` m where a finer extent lies over it (a full cell inside), registered with core/drawn
 const bkIn=(E,x,z,m)=>x>E.x0+m&&x<E.x1-m&&z>E.z0+m&&z<E.z1-m;

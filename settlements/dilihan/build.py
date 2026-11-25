@@ -330,7 +330,8 @@ PATH['54b-city-host-construct.js'] = core('city', '54-city-host-construct.js')
 
 # 3. Core city & hamlet (including 21-hamlet-iziz.js) sealed in one clean closure on Object.create(window)
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js',
-           '31-city-steps-b.js', '32-city-steps-c.js', '33-city-strategies.js', '37-city-grid.js', '40-city-kcity.js']
+           '31-city-steps-b.js', '32-city-steps-c.js', '33-city-strategies.js', '37-city-grid.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 HAMLET_JS = ['10-hamlet-wood.js', '12-hamlet-gather.js', '14-hamlet-farmland.js', '16-hamlet-names.js', '18-hamlet-names.js',
              '20-hamlet-cultures.js', '21-hamlet-iziz.js', '30-hamlet-village.js']
 
@@ -476,7 +477,7 @@ for d in (('kits', 'catalog'), ('kits', 'interiors'), ('tools', 'textures')):
     sys.path.insert(0, os.path.join(ROOT, *d))
 import furniture_bundle, kit_bundle, matlib_pack  # noqa: E402
 
-FURN_CULTURES = ['iziz', 'hykkousoi', 'republican', 'generic', 'generic-goods', 'scrap', 'jobs']
+FURN_CULTURES = ['iziz', 'hykkousoi', 'republican', 'generic', 'generic-goods', 'scrap', 'jobs', 'arms']   # arms: the garrison's racks and stands (Stage 8 D27, O5)
 CUT_DIR = os.path.join(ROOT, 'biomes', 'cut')
 CUT_PACK_JSON = os.path.join(CUT_DIR, 'tex', 'pack.json')
 CUT_EXCLUDE = [k for k in (json.load(io.open(CUT_PACK_JSON, encoding='utf-8')).get('families', {}) if os.path.isfile(CUT_PACK_JSON) else {})

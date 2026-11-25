@@ -20,7 +20,8 @@ const HOOK = path.join(__dirname, '..'), ROOT = path.join(HOOK, '..', '..');
 const rd = p => fs.readFileSync(p, 'utf8');
 function py(code, args) {
   for (const exe of ['python3', 'python']) {
-    try { return cp.execFileSync(exe, ['-c', code].concat(args || []), { encoding: 'utf8', maxBuffer: 1 << 28, stdio: ['ignore', 'pipe', 'ignore'], cwd: HOOK }); } catch (e) { /* the next name */ }
+    try { return cp.execFileSync(exe, ['-c', code].concat(args || []), { encoding: 'utf8', maxBuffer: 1 << 28, stdio: ['ignore', 'pipe', 'ignore'], cwd: HOOK,
+      env: Object.assign({}, process.env, { KRATOR_ALLOW_PLAIN_BUILD: '1' }) }   /* build.py imported, not run (tools/buildlib through_tools_build) */); } catch (e) { /* the next name */ }
   }
   throw new Error('no python to run ' + code.slice(0, 60));
 }
@@ -42,7 +43,7 @@ function load() {
     'var HOOK_SITE = ' + JSON.stringify(SITE) + ';', BUILD.kcity, rd(path.join(HOOK, 'src', '77-hook-ruin.js')), BUILD.dims, BUILD.net]
     .concat(['10-hamlet-wood', '12-hamlet-gather', '14-hamlet-farmland', '16-hamlet-names', '18-hamlet-names', '20-hamlet-cultures', '21-hamlet-iziz', '30-hamlet-village']
       .map(f => H('core/hamlet/' + f + '.js')))
-    .concat([H('core/hamlet/camp/26-hamlet-camp.js'), rd(path.join(HOOK, 'src', '77m-hook-places.js')),
+    .concat([rd(path.join(HOOK, 'src', '77m-hook-places.js')),
       'globalThis.__P = HOOK_PLACES; globalThis.__R = HOOK_RUIN; globalThis.__KL = KCITY.lib;']).join('\n;\n');
   const ctx = ctxBase(); ctx.globalThis = ctx; ctx.window = ctx;
   vm.runInContext(src, ctx, { filename: 'hook-places' });

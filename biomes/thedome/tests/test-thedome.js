@@ -3,6 +3,7 @@
 const T = require('../../../tools/ktest.js')(__filename);
 
 require('../../../core/rand/08-core-rand.js');
+require('../../../core/frontier/18-core-frontier.js');
 require('../../../core/tags/50-core-tags.js');
 require('../../../core/tags/52-core-tags-vocab.js');
 require('../../../core/biome/37-core-traps.js');
@@ -23,9 +24,9 @@ const CROPS_TD = require('../src/22-thedome-crops.js');
 const FAUNA = require('../src/24-thedome-fauna.js');
 const SITES = require('../src/41-biome-dome-sites.js');
 
-/* 1. Strict rmweubdnyts8y & Sibling-Exclusive own_dm Invariant (PLAN.md section 8 #1) */
+/* 1. Strict rmweubdnyts8y & Sibling-Exclusive own_dm Invariant (PLAN.md section 8 #1 + Station 5 eastflank) */
 {
-  const stationIds = ['apron', 'moat', 'crown', 'cleft'];
+  const stationIds = ['apron', 'moat', 'crown', 'cleft', 'eastflank'];
   const allInsideOwnDm = stationIds.every(id => {
     const s = SITES[id];
     const fp = PHYS.inDomeFootprint(s.px[0], s.px[1]);
@@ -33,9 +34,16 @@ const SITES = require('../src/41-biome-dome-sites.js');
   });
   const pCrown = PHYS.pressureAt(SITES.crown.elevM);
   const pMoat = PHYS.pressureAt(SITES.moat.elevM);
+  const efUp = PHYS.eastFlankFrontierAt(-85, 0, 18.0, SITES.eastflank);
+  const efKill = PHYS.eastFlankFrontierAt(8, 0, 4.0, SITES.eastflank);
+  const efDown = PHYS.eastFlankFrontierAt(95, 0, -16.0, SITES.eastflank);
 
-  T.ok('all 4 station pixels (1336,128), (1317,117), (1328,150), (1372,148) sit strictly inside rmweubdnyts8y own_dm',
+  T.ok('all 5 station pixels (1336,128), (1317,117), (1328,150), (1372,148), (1384,142) sit strictly inside rmweubdnyts8y own_dm',
     allInsideOwnDm);
+  T.ok('Station 5 (eastflank) partitions cleanly into upslope Carnelian sky-island, bone-white Kill-Line, and downslope Earth zone',
+    efUp.biosphere === 'carnelian' && efUp.upslopeRed01 > 0.85 &&
+    efKill.biosphere === 'bleach' && efKill.bleach01 > 0.90 &&
+    efDown.biosphere === 'earth' && efDown.mistPool01 > 0.50);
   T.ok('barometric & Koppen gradient spans +1,749.1 m (1.28-1.30 atm Cfa) to +2,924.8 m apex (1.11 atm Cfb Crown-Veil)',
     Math.abs(pMoat.pAtm - 1.275) <= 0.03 && pMoat.koppen === 'Cfa' &&
     Math.abs(pCrown.pAtm - 1.113) <= 0.02 && pCrown.koppen === 'Cfb' && pCrown.inCrownVeil === true);

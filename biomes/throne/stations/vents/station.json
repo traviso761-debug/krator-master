@@ -26,7 +26,8 @@
  "terrain": [
   "39-core-cavern.js",
   "39f-core-geode.js",
-  "host/39g-core-geode-draw.js"
+  "host/39g-core-geode-draw.js",
+  "46-core-lava.js"
  ],
  "kits": {
   "48r1-rheo-phys.js": "../rheolith/src/40-rheolith-phys.js",
@@ -34,6 +35,7 @@
   "48r3-rheo-place.js": "../rheolith/src/60-rheolith-place.js",
   "48r4-rheo-build.js": "../rheolith/src/70-rheolith.js",
   "44r-host-breach.js": "../throne/shared/44r-host-breach.js",
-  "83r-host-breach-ground.js": "../throne/shared/83r-host-breach-ground.js"
+  "83r-host-breach-ground.js": "../throne/shared/83r-host-breach-ground.js",
+  "46k-host-klava-flows.js": "../throne/shared/46k-host-klava-flows.js"
  }
 }

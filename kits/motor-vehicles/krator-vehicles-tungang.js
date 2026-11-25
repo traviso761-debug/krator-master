@@ -83,7 +83,7 @@ function tgLampCode(F, z, dz, y, front) {
 /* ---------------------------------------------------------------- tg_trolley: the Fixers' trolley */
 VEHICLE({
   key: 'tg_trolley', name: 'Fixers\' trolley', culture: 'tungang',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'utility'], drive: 'wheeled', seats: 4, fuel: 'battery',
+  tags: { type: ['vehicle', 'utility'], drive: 'wheeled', seats: 4, fuel: 'battery',
     terrain: ['track'], setting: 'underground' },
   variants: 1, variantNames: ['Trolley'],
   w: 2.9, d: 4.6, h: 2.8,
@@ -136,7 +136,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- tg_flat: the flat wagon */
 VEHICLE({
   key: 'tg_flat', name: 'Tungang flat wagon', culture: 'tungang',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'cargo'], drive: 'wheeled', seats: 1, fuel: 'battery',
+  tags: { type: ['vehicle', 'cargo'], drive: 'wheeled', seats: 1, fuel: 'battery',
     terrain: ['track'], setting: 'underground' },
   variants: 2, variantNames: ['Empty', 'Spoil'],
   w: 3.2, d: 12.4, h: 2.4,
@@ -172,7 +172,7 @@ VEHICLE({
 /* ---------------------------------------------------------------- tg_icewagon: the ice wagon */
 VEHICLE({
   key: 'tg_icewagon', name: 'Tungang ice wagon', culture: 'tungang',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'cargo'], drive: 'wheeled', seats: 1, fuel: 'battery',
+  tags: { type: ['vehicle', 'cargo'], drive: 'wheeled', seats: 1, fuel: 'battery',
     terrain: ['track'], setting: 'underground' },
   variants: 1, variantNames: ['Ice wagon'],
   w: 3.2, d: 10.4, h: 3.6,

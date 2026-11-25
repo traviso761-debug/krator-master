@@ -92,7 +92,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  return R;}
 KHOST.on(SKY.view,'view');
-KHOST.on(deckView,'view');   /* after the sky: the deck's amber over the fog colour (89b) */
+KHOST.on(deckView,'view');   /* after the sky: the deck's light, the sun dimmed and the sky's light amber (89b) */
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 const HINT={terraces:"Station 1 of Region 98 (scale model 5.1, px 1519,1453; 2,157 m, 1.22 atm, +15 degC mean, Cwb): the Ostrukh Terraces, the cold arable graben. The braided meltwater from the Stalker glaciers on its cobble bed, loess terraces stepping up both sides with the crops kits/crops gives the station, dwarf blue willow on the bars, farmstead sites (ideal type)",
  scarp:"Station 2 (px 1559,1457; 3,289 m, 1.06 atm, +4 degC, Dsc): the Scarp Pass, the Ostrukh Wall's ravine and scree fan with the caravan road switchbacking up it, the tollhouse site, beacon baskets, frost polygons on the plateau, cushion moss and lichen; no trees (ideal type)",

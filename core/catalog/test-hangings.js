@@ -13,7 +13,8 @@
       STANDS lists the pieces that stand on the floor by design (a hanging on its own poles), each with its reason.
    2. THE DECAL IMAGE (mkDecal): a painted panel whose key is a delivered texture id shows the image once it loads, drawn
       at the panel's aspect (an image of another shape cropped about its centre), the painting until then; a key with no
-      image keeps the painting. A stub Image stands in for the browser's. */
+      image keeps the painting. A stub Image stands in for the browser's.
+   3. THE LAMP CAP (S3-72, furnLampCap): at most 24 of a page's PointLights on, the nearest the camera; the runtime's KF.lampCap. */
 'use strict';
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const T = require('../../tools/ktest.js')(__filename);
@@ -117,4 +118,36 @@ T.ok('the loaded image replaces the painting on the same texture (a batch sharin
 T.ok('the image is drawn at the panel\'s aspect, cropped about its centre', Math.abs(sw / sh - aspect) < 1e-6 && Math.abs(im.width / im.height - aspect) < 0.01 &&
   Math.abs(sx - (2000 - sw) / 2) < 1e-6 && sy === 0 && sh === 1000 && dx === 0 && dy === 0 && dw === im.width && dh === im.height, [sx, sy, sw, sh, im.width, im.height].join(' '));
 T.ok('the runtime reports the load', JSON.stringify(run('JSON.stringify(_decalSt)', 'q.js')).indexOf('hanging-pleasure-dome') >= 0, run('JSON.stringify(_decalSt)', 'q.js'));
+
+/* ---- 3. the lamp cap (S3-72): every F.lamp is a live PointLight, and a page of them overflows a lit shader. furnLampCap keeps
+   at most 24 on, the nearest the camera, always exactly that many; the sheets and the runtime (KF.lampCap) share it */
+const cap = JSON.parse(run(`(function () {
+  const root = new THREE.Group(), cam = new THREE.Vector3(0, 2, 0), out = {};
+  for (let i = 0; i < 40; i++) { const l = new THREE.PointLight(0xffb066, 1, 10); l.position.set((i % 2 ? 1 : -1) * (i + 1), 2, 0); root.add(l); }
+  const lit = () => root.children.filter(l => l.visible).map(l => Math.abs(l.position.x)).sort((a, b) => a - b);
+  out.uncapped = lit();
+  const C = (typeof furnLampCap === 'function') ? furnLampCap(root) : null;
+  if (C) { out.total = C.total; out.max = C.max; out.ret = C.pick(cam); }
+  out.near = lit();
+  if (C) { cam.set(40, 2, 0); C.pick(cam); out.moved = lit().length; out.movedFar = root.children.filter(l => l.visible && l.position.x < -8).length; }
+  const few = new THREE.Group(); for (let i = 0; i < 10; i++) few.add(new THREE.PointLight(0xffffff, 1, 5));
+  if (C) { const F2 = furnLampCap(few); out.fewRet = F2.pick(cam); out.fewOn = few.children.filter(l => l.visible).length; }
+  let lamp = null;
+  for (const A of FURNS) { if (A.type !== 'lamp') continue; const g = buildFurn(A.key, 0, 0, 0, { variant: 0, seed: 1, y: 0 }); INSTANCES.length = 0;
+    let n = 0; if (g) g.traverse(o => { if (o.isPointLight) n++; }); if (n && C) { lamp = { key: A.key, n: n, caught: furnLampCap(g).total }; break; } }
+  out.lamp = lamp;
+  return JSON.stringify(out);
+})()`, 'lampcap.js'));
+const first24 = Array.from({ length: 24 }, (_, i) => i + 1);
+T.neg('40 lamps on a page: the cap leaves exactly the 24 nearest the camera on (an uncapped page has all 40 lit)',
+  S => S.length === 24 && S.every((x, i) => x === first24[i]), cap.uncapped, cap.near);
+T.ok('the cap reports what it holds (40 lights, 24 on)', cap.total === 40 && cap.max === 24 && cap.ret === 24, JSON.stringify([cap.total, cap.max, cap.ret]));
+T.ok('the camera moved: still exactly 24 on, the far end\'s lamps off', cap.moved === 24 && cap.movedFar === 0, cap.moved + ' on, ' + cap.movedFar + ' far');
+T.ok('under the cap nothing is turned off', cap.fewRet === 10 && cap.fewOn === 10, cap.fewRet + ' / ' + cap.fewOn);
+T.ok('a catalog lamp\'s F.lamp PointLights are what the cap gathers', !!cap.lamp && cap.lamp.caught === cap.lamp.n, JSON.stringify(cap.lamp));
+let rtCap = null;
+try { run(fs.readFileSync(AT('krator-furniture-runtime.js'), 'utf8'), 'krator-furniture-runtime.js');
+  rtCap = run('(function () { const g = new THREE.Group(); for (let i = 0; i < 30; i++) { const l = new THREE.PointLight(); l.position.set(i, 0, 0); g.add(l); } ' +
+    'const C = KF_API.lampCap(g); C.pick(new THREE.Vector3()); return KF_API.LAMP_MAX + "/" + g.children.filter(l => l.visible).length; })()', 'rt.js'); } catch (e) { rtCap = String(e && e.message || e); }
+T.ok('the runtime hands hosts the same cap (KF.lampCap, KF.LAMP_MAX)', rtCap === '24/24', rtCap);
 T.done();

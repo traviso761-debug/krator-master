@@ -32,7 +32,8 @@ Running: KRATOR_GL=gpu (--software for SwiftShader), the lane `auto` unless --la
 its build folder, so the harness's own wrapper takes the lane's lock (arc, rtx, and the cloud lanes when
 `harness.py cloud status` says a machine is on), queues first come first served, runs the 25-minute stall watchdog and the
 verify cache ("cached pass": skipped on the same bytes; --no-cache reruns). --workers defaults to the lanes there are;
-waiters hold no browser. A stalled (124) or crashed (75) run is rerun once. This driver never starts, stops or prewarms a
+waiters hold no browser. A stalled (124) or crashed (75) run is rerun once. A page slow but moving can take its own
+watchdog (verify_all.json "stall": minutes by glob, set as its job's KRATOR_GPU_STALL_MIN, which reaches a cloud lane too). This driver never starts, stops or prewarms a
 cloud machine: that is the owner's priced yes; when a run used a cloud lane its report says to tell the owner the queue is
 empty (the machine bills by the hour; stop it, never destroy it). check.py folders (core/host/example ...) run in software
 GL: they take no lane.
@@ -524,8 +525,10 @@ def plan(cfg, a):
         args = main_args(full, cfg, flags) if tier == 'main' else full
         est, esrc = estimate(row, args, cfg, durs)
         out_flag = '--out' if '--out' in flags else '--shots' if '--shots' in flags else None
+        stall = (cfg.get('stall') or {}).get('pages') or {}
+        sg = _globbed(page, list(stall))
         j.update(state=st, page_arg=page_arg(row) if row['kind'] == 'verify' else None, args=args, full_args=full, why=why,
-                 tier=tier, tier_why=twhy, est=round(est), est_src=esrc, out_flag=out_flag)
+                 tier=tier, tier_why=twhy, est=round(est), est_src=esrc, out_flag=out_flag, stall_min=stall[sg] if sg else None)
         jobs.append(j)
     jobs.sort(key=lambda j: ('status' in j, -j['est'], j['page']))
     if a.limit:
@@ -826,9 +829,12 @@ def execute(run, meta, jobs, a, cfg):
             e = dict(env)
             if j['kind'] == 'check':
                 e.pop('KRATOR_GL', None)   # a check.py takes no lane: software GL
+            if j.get('stall_min'):
+                e['KRATOR_GPU_STALL_MIN'] = str(j['stall_min'])   # verify_all.json "stall": this page's watchdog, on a cloud lane too
             t0 = time.time()
             with open(log, 'w', encoding='utf-8', newline='\n') as fh:
-                fh.write('# %s\n# cwd %s\n# KRATOR_GL=%s KRATOR_GPU_LANE=%s\n' % (' '.join(argv), cwd, e.get('KRATOR_GL', ''), e.get('KRATOR_GPU_LANE', 'auto')))
+                fh.write('# %s\n# cwd %s\n# KRATOR_GL=%s KRATOR_GPU_LANE=%s KRATOR_GPU_STALL_MIN=%s\n' % (
+                    ' '.join(argv), cwd, e.get('KRATOR_GL', ''), e.get('KRATOR_GPU_LANE', 'auto'), e.get('KRATOR_GPU_STALL_MIN', '25')))
                 fh.flush()
                 p = subprocess.Popen(argv, cwd=cwd, env=e, stdout=fh, stderr=subprocess.STDOUT)
                 running[j['id']] = p

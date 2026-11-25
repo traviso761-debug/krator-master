@@ -12,6 +12,7 @@
 //               its density follows the hour (dawn) and the weather's fog, in patches that drift with the wind and the gusts;
 //               opt-in, a FIELD over the ground (o.mist.field: the smog thick in a city, thin on its terraces) scales it by
 //               place, read from a texture built once (below, "THE MIST FIELD")
+//               opt-in, a COLOUR of its own (o.mist.colour, o.mist.mix: the Siphon Pits' amber deck); without it the mist takes the fog's colour
 //   THE BAND    a layer of cloud at mid-height (o.band.y [bottom, top]), broken by the same drifting noise (o.band.cover)
 //   THE BELT    (opt-in, ATMOS.fogBelt: the Outlands' C1) cloud lying on the slope between two heights, thicker on faces
 //               turned to the wind, read from a ground field and marched in a few steps (below, "THE BELT"); drawn as band
@@ -20,7 +21,7 @@
 //   ATMOS.fogGLSL()         the chunk: uniforms atmFogH, atmFogMist, atmFogBand, atmFogSunDir, atmFogSunC, atmFogZen,
 //                           atmFogDrift, atmFogShape and vec4 atmFog(ro, rd, L, fogColour, fogDensity) -> (colour, amount)
 //   ATMOS.fogAt(ro, P, F)   the JS twin (tests, a host's own checks): F = {density, colour, falloff, ref, shape, mist:{density,
-//                           y, depth, noise, field (a function (x,z) -> 0..1, or ATMOS.fogMistFieldMake's record), samples},
+//                           y, depth, noise, field (a function (x,z) -> 0..1, or ATMOS.fogMistFieldMake's record), samples, colour [r,g,b], mix},
 //                           band:{density, y0, y1, cover}, belt (ATMOS.fogBeltMake), drift, sunDir, sunC, zen, sun, sky, compress}
 //                           -> {amount, colour}
 //   ATMOS.fogLayer / fogPool / fogSlab   the three optical-depth integrals, pure (test-sky.js holds the GLSL to them)
@@ -55,7 +56,8 @@
   const amount=1-Math.exp(-(oA+tM+tB));
   const up=ss(0,.6,rd[1])*(F.sky||0),sd=F.sunDir||[0,1,0],mie=Math.min(1,(F.sun||0)*Math.pow(Math.max(0,rd[0]*sd[0]+rd[1]*sd[1]+rd[2]*sd[2]),8)*ss(-.05,.05,sd[1]));
   const fc=F.colour||[.5,.5,.5],z=F.zen||fc,sc=F.sunC||[1,1,1];
-  const cA=fc.map((v,i)=>{const a=v+(z[i]-v)*up;return a+(sc[i]-a)*mie;}),cM=fc.slice(),cB=fc.map((v,i)=>v+(sc[i]*.9-v)*.35);
+  const mc=M.colour==null?null:Array.isArray(M.colour)?M.colour:[M.colour.r,M.colour.g,M.colour.b],mk=M.mix==null?1:M.mix;   /* the mist's own colour (T41) */
+  const cA=fc.map((v,i)=>{const a=v+(z[i]-v)*up;return a+(sc[i]-a)*mie;}),cM=mc?fc.map((v,i)=>v+(mc[i]-v)*mk):fc.slice(),cB=fc.map((v,i)=>v+(sc[i]*.9-v)*.35);
   const w=oA+tM+tB||1,colour=[0,1,2].map(i=>(cA[i]*oA+cM[i]*tM+cB[i]*tB)/w);
   return{amount,colour};};
  // ---- THE BELT (C1 of biomes/outlands/PLAN.md 12, approved 2026-10-26): a cloud band lying ON the slope between two heights,
@@ -165,5 +167,9 @@
    ' else{float st=q.x/atmFogMistK.y,lo=q.y-0.5*q.x,s=0.0,sw=0.0;for(int i=0;i<8;i++){if(float(i)>=atmFogMistK.y)break;vec3 p=ro+rd*(lo+st*(float(i)+0.5));float w=p.y<atmFogMist.y?1.0:exp(-(p.y-atmFogMist.y)*atmFogMist.z);s+=w*atmFogMistAt(p.xz);sw+=w;}',
    '  r=sw>0.0?s/sw:1.0;}return r;}');
    const i=G.findIndex(l=>l.indexOf(' vec3 P=ro+rd*L;float tM=0.0;')===0);G[i]=G[i].replace('atmFogPool(atmFogMist.z,atmFogMist.y,ro.y,rd.y,L);','atmFogPool(atmFogMist.z,atmFogMist.y,ro.y,rd.y,L);tM*=atmFogMistField(ro,rd,L);');}
+  // the mist's own colour (2026-11-24, T41), only on a page that gave one (ATMOS.heightFog({mist:{colour, mix}})): cM = mix(fc, colour, mix), where it was fc
+  if(A.fogMistColOn){G.splice(G.findIndex(l=>l.indexOf('float atmFogNoise(')===0)+1,0,'uniform vec4 atmFogMistC;');
+   /* atmFogMistC: rgb the mist's colour (as scene.fog.color holds it), w its share over the fog colour */
+   const i=G.findIndex(l=>l.indexOf(' vec3 cA=')===0);G[i]=G[i].replace('vec3 cM=fc;','vec3 cM=mix(fc,atmFogMistC.rgb,atmFogMistC.w);');}
   return G.join('\n');};
 })();

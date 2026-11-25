@@ -19,6 +19,9 @@ roads between the towns. The towns themselves are their pages' (settlements/xana
   python3 build.py
   python3 build.py --no-checks
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, importlib.util, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -62,7 +65,10 @@ XA = os.path.join(ROOT, 'settlements', 'xanadu')
 XA_FAMS = ('cloth', 'clothR', 'corrugate', 'plaster', 'stone', 'tarp', 'thatch', 'white', 'wood', 'woodV', 'xBandC', 'xEarth', 'xMosC',
            'xMosD', 'xPenbey', 'xRubble', 'xSun', 'xTiles', 'xValance', 'xWash')
 LDF = lambda *fs: [('ld', f) for f in fs]
-CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
+# the pitched camps' registrations on core/world's KWCAMPS and what they read (from the repo root): the page's list and
+# core/world/bake_sites.py (camps_js) both take this constant, so the bake and the page plan the camps on one set of files
+CAMPS_JS = ['core/region/data/xan-tune.js', 'openworld/xanadu-oidong-highrift/src/48c-camps-xanadu.js']
+CORE_BIOME =['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
               '32-core-variants.js', '33-core-fungoid.js', '34-core-impostor.js', '35-core-anim.js', '36-core-walker.js', '38-core-fire.js',
               '39-core-lean.js']
 # the region's resources (core/world/world_data.py: the geology cropped to the box; kits/resources' field, read in place)
@@ -81,6 +87,9 @@ ORDER = (
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
        ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
        ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
+       # the weather (Stage 8 V9, G-weather W2): core/world's HOST.weather() binds it; the region starts clear, ?weather=<mode>
+       ('core/atmos', '89-atmos-4-weather.js'), ('core/atmos', '89-atmos-9-host.js'), ('core/atmos/host', '89-atmos-e-weatherhost.js'),
+       ('core/atmos/fx', '89-atmos-fx-raincover.js'),
        ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
        ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
@@ -104,14 +113,14 @@ ORDER = (
        ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
-       ('core/hamlet/xanadu', '23-hamlet-xanadu-row.js'),   # the Xanadu row by name: Gihon's ring and the Alph's hamlets
        ('ld', '48s-world-sites.js'), ('src', '47g-site-gihon-landing.js'), ('src', '48-world-site.js'), ('src', '48k-world-tubes.js'), ('src', '49-world-xanadu.js'),
-       # the pitched camps (settlements/xanadu/WORKS-PLAN.md W2): core/camp, the Tents kit's boxes, the tune, read in place
+       # the pitched camps (settlements/xanadu/WORKS-PLAN.md W2): core/camp, the Tents kit's boxes, core/world's KWCAMPS (48w,
+       # Stage 8 T26) and the Sultanate's registrations on it (CAMPS_JS, which core/world/bake_sites.py reads too); 88s draws them
        ('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'), ('core/camp', '50-camp-tents.js'),
-       ('kits/tents/src', '33-tn-table.js'), ('core/region/data', 'xan-tune.js'), ('src', '48t-world-camps.js')]
+       ('kits/tents/src', '33-tn-table.js'), ('ld', '48w-world-camps.js')] + [tuple(p.rsplit('/', 1)) for p in CAMPS_JS]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '83s-world-streams.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js',
-          '88k-world-caverns.js', '88l-world-landforms.js') + [('src', '88t-world-camps.js')]   # the pitched camps drawn (W2)
+          '88k-world-caverns.js', '88l-world-landforms.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
@@ -154,22 +163,17 @@ def data_fragment():
             + ',landforms:' + json.dumps(lf, separators=(',', ':'), ensure_ascii=False) + '};\n')
 
 
-# Gihon's villages (2026-11-22): the lake trades (src/87k: the Xanadu row by name's fermentary and tea factory, which the bake
-# sizes from every src file, and the Landing's serai), the lake craft and the harbour (extra/88d, 88f: the Landing's mole runs,
-# lights, barges and waterfront warehouses: laid records carry their own boxes). No row lays a key here that the bake does not
-# size too, so the baked plan and the page's agree; 88g is left out because its works pieces are keys the rows lay as pending
-# boxes (the page would size them, the bake not)
-XAK_EXTRA = (('src', '87k-xa-lake-trades.js'), ('extra', '88d-xa-lakecraft.js'), ('extra', '88f-xa-harbour.js'))
+# Gihon's villages (2026-11-22) draw the lake trades (87k: the Xanadu row by name's fermentary and tea factory, and the
+# Landing's serai), the lake craft and the harbour (88d, 88f: the Landing's mole runs, lights, barges and waterfront
+# warehouses). Until Stage 8 B9 (2026-11-24) this build added them to its XAK by name (XAK_EXTRA); they are in the kit's
+# FILES now (kits/xanadu/xanadu.py), so every XAK has them, 88g's works with them: the bake sizes every src file (core/world/
+# bake_sites.py), so the baked plan and the page's still agree
 
 
 def xak_bundle():
     spec = importlib.util.spec_from_file_location('xanadu_kit_bundle', os.path.join(ROOT, 'kits', 'xanadu', 'kit_bundle.py'))
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    # the kit's opt-in pieces Gihon's villages draw (XAK_EXTRA), read in place among the kit's files in their filename order,
-    # as files() orders them. Here, not in kit_bundle.py, so the kit's other 22 pages do not move
-    base = mod.files
-    mod.files = lambda *a: sorted(base(*a) + [os.path.join(ROOT, 'kits', 'xanadu', d, f) for d, f in XAK_EXTRA], key=os.path.basename)
     js, _ = mod.bundle('XAK')
     return js
 

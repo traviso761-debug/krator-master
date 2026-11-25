@@ -20,6 +20,7 @@
      KF.FURNS, KF.FURN_BY_KEY, KF.entryDims(A, v), KF.furnAnchorY(A, v, at), KF.lightsOf(key, v, seed, wealth)
      KF.has(key), KF.cultures()
      KF.decalImages({ id: url }), KF.decalInfo()  delivered images for painted panels (mkDecal: a decal key that is a texture id)
+     KF.lampCap(root, max) -> { total, max, pick(cameraPos) }  at most max (KF.LAMP_MAX, 24) of root's PointLights on, the nearest
    A record's x y z is the frame origin (the footprint centre on the floor), ry the heading,
    as the catalog's buildFurn takes them; anchorY (wall, ceiling, surface) is the caller's.
 
@@ -47,6 +48,11 @@ const KF_API = (function () {
      which are registered, loaded, still loading or failed */
   API.decalImages = function (tbl) { Object.assign(FURN_DECAL_IMG, tbl || {}); return Object.keys(FURN_DECAL_IMG); };
   API.decalInfo = function () { return { images: Object.keys(FURN_DECAL_IMG), pending: _decalSt.pending, loaded: _decalSt.loaded.slice(), failed: _decalSt.failed.slice() }; };
+  /* the lamp cap (krator-furniture-core.js furnLampCap, S3-72): a host that turns the records' lights into PointLights keeps at
+     most max of them on (24 by default), the nearest the camera: const C = KF.lampCap(scene); C.pick(camera.position), again
+     every half second or so */
+  API.lampCap = function (root, max) { return furnLampCap(root, max); };
+  API.LAMP_MAX = FURN_LAMP_MAX;
 
   const _m = new THREE.Matrix4(), _n = new THREE.Matrix3(), _v = new THREE.Vector3(), _w = new THREE.Vector3();
   /* build one piece into a throw-away group: the core's mk* add to _target */

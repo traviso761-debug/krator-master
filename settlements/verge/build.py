@@ -106,7 +106,7 @@ MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']  
 SIDE = {}   # the library packs' maps, written to dist/verge.tex.js (tools/textures/matlib_pack.py write_sidecar)
 
 # the catalog's cultures Verge furnishes from (kits/catalog/furniture_bundle.py; names are file suffixes)
-FURN_CULTURES = ['iziz', 'eastabyss', 'nomad', 'generic', 'generic-goods', 'scrap', 'jobs']
+FURN_CULTURES = ['iziz', 'eastabyss', 'nomad', 'generic', 'generic-goods', 'scrap', 'jobs', 'arms']   # arms: the garrison's racks and stands (Stage 8 D27, O5)
 INTERIOR_SETS = ['iziz', 'locus', 'abyss', 'yuni', 'yuni-town']   # yuni: the middle-class houses; yuni-town: civic, trade, poor, rich
 
 # ---------------------------------------------------------------- the Iziz Vernacular bundle (IZV)
@@ -187,7 +187,8 @@ def ykit_bundle():
 # core/city (the city-layout module), its data fragments in one closure: its globals (SL, PLAN, TUNE, V, obb, clamp...)
 # stay inside it, and Verge reads KCITY and KCITY.lib (70-verge-place.js runs one instance per level)
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 
 
 def kcity_bundle():

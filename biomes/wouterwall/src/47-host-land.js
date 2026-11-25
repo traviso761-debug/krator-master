@@ -135,6 +135,9 @@ BIO.init({tags:'wouterwall',THREE:THREE,scene:scene,terrainH:terrainH,field:FIEL
  obstacles:OBSTACLES,ticks:tick,seed:SITE.seed,origin:SPINE,center:[0,0],fields:FIELDS,register:REGISTER,err:reportErr,
  eye:()=>[camera.position.x,camera.position.y,camera.position.z],
  lod:{hero:400,mid:950,far:SITE.R*1.2,floor:SITE.floorBand||[260,600]}});   /* a station's floor band (SITE.floorBand): station 4's wide plateau steppe keeps the plumegrass under its cap */
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun([sun.position.x,sun.position.y,sun.position.z]);
 _mark('init');
 

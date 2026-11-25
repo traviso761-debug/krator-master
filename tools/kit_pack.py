@@ -603,6 +603,9 @@ def _seal_yuni_family(spec):
     import yunikit, locuskit, abysskit
 
     engine_files = [os.path.join(locus_src, f) for f in ('05-palette.js', '10-core.js', '45-kit.js', '47-texture.js', '50-structure.js', '53-assets.js')]
+    # 45-kit.js builds its night light volume with KNLV.create at load: core/interiors' one copy goes before it, as the Locus and Yuni
+    # pages take it (their build.py '20-core-roomlight-host.js'); without it the sealed bundle stopped on "KNLV is not defined"
+    engine_files.insert(2, os.path.join(ROOT, 'core', 'interiors', '20-core-roomlight-host.js'))
     mode = spec['yuni_mode']
     if mode == 'yuni':
         bfiles = [yunikit.path(f) for f in ('56-mid.js', '57-poor.js', '58-rich.js', '59-civic.js')]

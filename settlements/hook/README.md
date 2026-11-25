@@ -334,7 +334,7 @@ floor in patches on the low ground the jungle has. View: `The mangroves`. `verif
 standing in the water, none in the town, on a clearing, on a cliff, inside a footprint or over the ground).
 
 **The hamlets and camps (S5, `src/77m-hook-places.js`, `[G data]`):** the site plan's thirteen places. Eleven laid out
-by core/hamlet (`KHAMLET.village`; the camps through its work-camp option, `core/hamlet/camp/26`), read in place
+by core/hamlet (`KHAMLET.village`; the camps through its work-camp option, `spec.camp`), read in place
 (`build.py` CORE_PLACE, `77j*`): the Hukoa's on the Islanders' row (Lantern Point's fishing hamlet with its quay, the salt
 pans, the mangrove camp, the charcoal burners), the Iziz settlers' on the Iziz Vernacular's (the Glebe's farms, the
 Freeway Gate's way station, the posts, the timber and hunters' camps: `HOOK_PLACES.SETTLERS`, core/hamlet's row with the

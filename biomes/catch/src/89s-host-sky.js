@@ -23,7 +23,4 @@ const DUST=Object.assign({col:0xcdb592,k:.5},STAGE.dust||{}),DUST_C=new THREE.Co
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;if(scene.fog)scene.fog.color.lerp(DUST_C,DUST.k);SKY.uniforms.uFogC.value.lerp(DUST_C,DUST.k);fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}   /* each frame: 99-host-take.js subscribes it */
 // the clouds' shadows on every lit material the build made, once (SKY-PLAN.md 11.1)
-{const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-  if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
-  const k=m.customProgramCacheKey!==THREE.Material.prototype.customProgramCacheKey?String(m.customProgramCacheKey()):'';if(/^biofauna|^bioanim/.test(k))continue;
-  if(ATMOS.cloudShade)ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
+if(ATMOS.cloudShadeScene)ATMOS.cloudShadeScene(scene);   /* the core's pass (Stage 8 V8, 2026-11-24) */

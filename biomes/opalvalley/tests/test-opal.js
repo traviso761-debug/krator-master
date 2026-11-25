@@ -5,7 +5,7 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..', '..');
 const ctx = {console, Math, Object, Array, JSON, Error, Number, String, Set, Map};
 ctx.globalThis = ctx; vm.createContext(ctx);
-for (const f of ['core/rand/08-core-rand.js', 'biomes/opalvalley/src/40-biome-opal-sites.js'])
+for (const f of ['core/rand/08-core-rand.js', 'core/terrain/35-core-strata.js', 'biomes/opalvalley/src/40-biome-opal-sites.js'])
   vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8') + '\n;globalThis.OPAL_SITES=typeof OPAL_SITES!=="undefined"?OPAL_SITES:globalThis.OPAL_SITES;' +
     'globalThis.OPAL_DIGGINGS=typeof OPAL_DIGGINGS!=="undefined"?OPAL_DIGGINGS:globalThis.OPAL_DIGGINGS;globalThis.OPAL_STRATA=typeof OPAL_STRATA!=="undefined"?OPAL_STRATA:globalThis.OPAL_STRATA;', ctx, {filename: f});
 const S = ctx.OPAL_SITES, D = ctx.OPAL_DIGGINGS, ST = ctx.OPAL_STRATA;
@@ -23,8 +23,9 @@ for (const k of Object.keys(S)) {
   if (s.chain) check(k + ': the chain steps down link by link', stepsDown(s.chain), s.chain.map(L => L.y).join(' > '));
   check(k + ': the pressure is the height\'s', airOk(s), s.base + ' m, ' + s.atm + ' atm');
 }
-for (const r in ST) {
-  const R = ST[r], ks = Object.keys(R.kinds), p = ks.reduce((t, k) => t + R.kinds[k].p, 0);
+check('the strata recipes the kit names are core\'s', ST.length === 2 && ST.every(r => ctx.KSTRATA.RECIPES[r]), ST.join(', '));
+for (const r of ST) {
+  const R = ctx.KSTRATA.RECIPES[r], ks = Object.keys(R.kinds), p = ks.reduce((t, k) => t + R.kinds[k].p, 0);
   check(r + ': a strata recipe (its main kind present, its shares sum to 1)', R.kinds[R.main] && Math.abs(p - 1) < 1e-6, ks.length + ' kinds, sum ' + p.toFixed(3));
 }
 // the negatives: each must fail

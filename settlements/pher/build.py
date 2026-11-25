@@ -13,6 +13,9 @@ tools/check_core_use.py).
     node settlements/pher/tests/test-pher-site.js      # the plan in node
     KRATOR_GL=gpu python3 settlements/pher/verify.py settlements/pher/dist/pher.html --assert --views "Overview,From the cove"
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import io, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -23,7 +26,8 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
 # core/city in one closure (as settlements/qiblai/build.py's kcity_bundle): its globals stay inside, and so does core/space,
 # which writes KSPACE onto `window` (the closure hands every module a window of its own). Every data fragment of core/city
 # (the host fragments are the page's to draw, and this page draws its own: targets/town/90r)
-CITY_JS = sorted(f for f in os.listdir(os.path.join(ROOT, 'core', 'city')) if f[:2].isdigit() and f.endswith('.js') and '-host-' not in f)
+CITY_JS = sorted(f for f in os.listdir(os.path.join(ROOT, 'core', 'city')) if f[:2].isdigit() and f.endswith('.js') and ('-host-' not in f or f == '53-city-host-multikit.js'))
+CITY_JS.insert(CITY_JS.index('42-city-multikit.js'), '../kits/10-core-kits.js')   # with 53, the multi-kit host (Stage 8 D8): inert until called
 SPACE = 'core/space/20-core-space.js'
 GEN = os.path.join(HERE, 'gen')
 

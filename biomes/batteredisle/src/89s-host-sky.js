@@ -49,16 +49,6 @@ function skyView(dt){
  BIO.setSun(SKY.state.sunDir);
 }
 
-{
- const seen = new Set();
- scene.traverse(function(o){
-  if (!o.isMesh || !o.material) return;
-  const mats = Array.isArray(o.material) ? o.material : [o.material];
-  for (let i = 0; i < mats.length; i++) {
-   const m = mats[i];
-   if (seen.has(m) || !(m.isMeshLambertMaterial || m.isMeshStandardMaterial || m.isMeshPhongMaterial)) continue;
-   seen.add(m);
-   ATMOS.cloudShade(m, { porosity: o.userData.biome ? 0.44 : o.userData.host ? 0.68 : 1.0 });
-  }
- });
-}
+/* the clouds' shadows and the rain's darkening on every lit material, once: the core's pass (Stage 8 V8, 2026-11-24), with this
+   isle's porosities (the plants .44, also the biome core's materials made after it; the works .68) and the fauna shaded, as before */
+ATMOS.cloudShadeScene(scene, { biome: 0.44, host: 0.68, leave: null });

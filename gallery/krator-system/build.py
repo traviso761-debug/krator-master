@@ -5,6 +5,9 @@ orrery (orrery3d.js; three.js r128 from cdnjs) and its maps (maps.json). The num
 (core/atmos/SKY-PLAN.md, on the sky branch until it merges).
     python3 build.py                     rebuild the page
     python3 build.py --globe <atlas>     redraw Krator's globe from the atlas image first"""
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, html, io, json, os, sys
 import numpy as np
 from PIL import Image

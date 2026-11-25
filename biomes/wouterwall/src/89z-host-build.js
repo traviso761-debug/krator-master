@@ -44,9 +44,7 @@ const AIR=(function(){const Q=new URLSearchParams(location.search),out={raincove
  // THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain, wet or fresh snow under the larch's crowns or a pillar's cap
  if(ATMOS.rainCover){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}
  // the clouds' shadows and the weather's darkening on the ground, the plants and the rock (SKY-PLAN.md 11.1): every lit material, once
- {const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material||isWater(o))return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-   if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
-   ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
+ ATMOS.cloudShadeScene(scene,{leave:null,skip:o=>isWater(o)});   /* the core's pass (Stage 8 V8, 2026-11-24): the water left out, the fauna shaded as before */
  // THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js): a cold climate (snowfall and blizzards besides the base five); the ground
  // wets in the rain. It starts clear, so the page looks as it is; the Weather selector in the panel picks the rest. The shared sky
  // (89s) draws the weather's light and air from the colour script (its o.weather), so the binding is given no sun, hemisphere or

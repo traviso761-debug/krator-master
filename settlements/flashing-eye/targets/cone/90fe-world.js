@@ -3,7 +3,8 @@
 // canvas.
 //   the sky      KratorSky (Xanadu's 81-sky.js), as the Azure Dream's page takes it; ?hour=21 opens the page by night
 //   the ground   three meshes of terrainH (89zfe): the fine box (4 m cells: the bench, the band, the apron), the coarse box (10 m:
-//                the cap, the crater, the spur's sides), each holed under the finer; and the far ground (the whole cut, 400 m
+//                the cap, the crater, the spur's sides), each holed under the finer; the Foot House's (8 m), the Stair's down the
+//                spur (10 m) and the Rest House's in it (4 m); and the far ground (the whole cut, 400 m
 //                cells, the world's colours). One ground shader blends the pack's sets in world metres: grass, the cap's ash
 //                rising toward the rim, scoria on the crater's walls and rampart, cinder on its floor and the talus, the
 //                columnar basalt on every face steeper than ~55 degrees (projected on the face, not the plan); on the fine box a
@@ -44,20 +45,22 @@ function feGroundMat(masked,key){
   uCr:{value:new THREE.Vector3(FE_CR[0],FE_CR[1],FE.L.crater.r)},uBox:{value:new THREE.Vector4(FEG.x0,FEG.z0,FEG_W,FEG_H)}};
  const mat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.97,metalness:0});
  mat.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;')
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;attribute float feAF;varying float vFeAF;')
    .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nvFeN=normalize((modelMatrix*vec4(objectNormal,0.0)).xyz);')
-   .replace('#include <begin_vertex>','#include <begin_vertex>\nvFeW=(modelMatrix*vec4(transformed,1.0)).xyz;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;uniform sampler2D tGrass,tDirt,tCobble,tFlag,tAsh,tSco,tCin,tCol,tMask;uniform vec4 kA,kB,uBox;uniform vec3 uCr;\nvec3 feT(sampler2D t,vec2 p){return sRGBToLinear(texture2D(t,p)).rgb;}\nvec4 feM(vec2 p){return texture2D(tMask,p);}')   /* feM: the zone mask, linear data, not a colour (the coarse mesh never reads it) */
+   .replace('#include <begin_vertex>','#include <begin_vertex>\nvFeW=(modelMatrix*vec4(transformed,1.0)).xyz;vFeAF=feAF;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vFeW;varying vec3 vFeN;varying float vFeAF;uniform sampler2D tGrass,tDirt,tCobble,tFlag,tAsh,tSco,tCin,tCol,tMask;uniform vec4 kA,kB,uBox;uniform vec3 uCr;\nvec3 feT(sampler2D t,vec2 p){return sRGBToLinear(texture2D(t,p)).rgb;}\nvec4 feM(vec2 p){return texture2D(tMask,p);}')   /* feM: the zone mask, linear data, not a colour (the coarse mesh never reads it) */
    .replace('#include <map_fragment>',['#include <map_fragment>','vec2 w=vFeW.xz;float y=vFeW.y;vec3 n=normalize(vFeN);float dc=length(w-uCr.xy);',
     'vec3 c=feT(tGrass,w*kA.x)*vec3(.68,.72,.56);',   /* an upland meadow at 1,700 m, not the lowland Af grass the set was made for */
     /* the cap's ash: rising with the height toward the rim, all of it within 250 m of the crater */
-    'float ash=max(smoothstep(30.0,150.0,y)*0.85,smoothstep(uCr.z+260.0,uCr.z+60.0,dc));c=mix(c,feT(tAsh,w*kB.x),ash);',
+    /* and the plume's ash fall downwind (90fh: ATMOS.ashPlume's under() baked into each vertex, feAF; 0 where a mesh has none) */
+    'float ash=max(max(smoothstep(30.0,150.0,y)*0.85,smoothstep(uCr.z+260.0,uCr.z+60.0,dc)),vFeAF);c=mix(c,feT(tAsh,w*kB.x),ash);',
     /* the crater: scoria on its walls and rampart, cinder on its floor */
     'float cr=smoothstep(uCr.z+60.0,uCr.z-10.0,dc);c=mix(c,feT(tSco,w*kB.y),cr);c=mix(c,feT(tCin,w*kB.z),smoothstep(uCr.z*0.55,uCr.z*0.3,dc));',
     /* the talus under the band's face (between the face's foot and the talus's toe, by the Lip's curve): cinder */
     'float dl=w.y+'+FE.L.band.lipK.toFixed(6)+'*w.x*w.x;float ta=smoothstep(10.0,30.0,dl)*smoothstep(150.0,105.0,dl)*smoothstep('+FE.L.band.halfLen.toFixed(1)+',' +(FE.L.band.halfLen-FE.L.band.taper).toFixed(1)+',abs(w.x))*smoothstep(0.99,0.9,n.y);c=mix(c,feT(tCin,w*kB.z),ta*0.85);',
     /* the faces: the colonnade, projected on the face (east-west and up) */
-    'float st=smoothstep(0.62,0.42,n.y);vec2 fp=abs(n.x)>abs(n.z)?vec2(w.y,y):vec2(w.x,y);c=mix(c,feT(tCol,fp*kB.w),st);',
+    /* the two side projections blended by the face's normal (triplanar on x and z), so a flank facing between them is not stretched */
+    'float st=smoothstep(0.62,0.42,n.y);vec2 bw=pow(abs(n.xz),vec2(4.0));bw/=max(1e-4,bw.x+bw.y);c=mix(c,feT(tCol,vec2(w.y,y)*kB.w)*bw.x+feT(tCol,vec2(w.x,y)*kB.w)*bw.y,st);',
     masked?'vec2 mu=(w-uBox.xy)/uBox.zw;if(mu.x>0.0&&mu.x<1.0&&mu.y>0.0&&mu.y<1.0){vec4 m=feM(vec2(mu.x,1.0-mu.y));c=mix(c,feT(tDirt,w*kA.y),m.b*(1.0-st));c=mix(c,feT(tCobble,w*kA.z),m.r*(1.0-st));c=mix(c,feT(tFlag,w*kA.w),m.g*(1.0-st));}':'',
     'diffuseColor.rgb*=c;'].join('\n'));};
  mat.customProgramCacheKey=()=>'flashing-eye-ground-'+key;return mat;}
@@ -74,17 +77,20 @@ function feGroundMesh(B,name,mat,over,sink){const nx=Math.round((B.x1-B.x0)/B.ce
 groundM=feGroundMesh(FE_FINE,'terrain (the bench and the band)',feGroundMat(true,'fine'));
 const feCoarse=feGroundMesh(FE_COARSE,'terrain (the cone)',feGroundMat(false,'coarse'),FE_FINE,3);
 const feFootG=feGroundMesh(FE_FOOT,'terrain (the Foot House)',feGroundMat(false,'foot'));
+/* the spur under the Stair of the Eye (10 m), and the Rest House's ground in it (4 m), the spur's sunk under it */
+const feStairG=feGroundMesh(FE_STAIRG,'terrain (the Stair of the Eye)',feGroundMat(false,'stair'),FE_REST,3);
+const feRestG=feGroundMesh(FE_REST,'terrain (the Rest House)',feGroundMat(false,'rest'));
 // the far ground: the cut in the world's colours on a 400 m grid aligned to the coarse box (whole cells of it), holed under it
 (function feFar(){const B=WORLD.box(),FC=400,C=FE_COARSE,bx0=B[0]-FE.WX,bz0=B[1]-FE.WZ,bx1=B[2]-FE.WX,bz1=B[3]-FE.WZ;
  const X0=C.x0-FC*Math.floor((C.x0-bx0)/FC),Z0=C.z0-FC*Math.floor((C.z0-bz0)/FC),NX=Math.floor((bx1-X0)/FC),NZ=Math.floor((bz1-Z0)/FC);
  const pos=new Float32Array((NX+1)*(NZ+1)*3),col=new Float32Array((NX+1)*(NZ+1)*3),idx=[];
- for(let j=0;j<=NZ;j++)for(let i=0;i<=NX;i++){const k=j*(NX+1)+i,x=X0+i*FC,z=Z0+j*FC,edge=[C,FE_FOOT].some(Q=>x>=Q.x0-1&&x<=Q.x1+1&&z>=Q.z0-1&&z<=Q.z1+1);
+ for(let j=0;j<=NZ;j++)for(let i=0;i<=NX;i++){const k=j*(NX+1)+i,x=X0+i*FC,z=Z0+j*FC,edge=[C,FE_FOOT,FE_STAIRG].some(Q=>x>=Q.x0-1&&x<=Q.x1+1&&z>=Q.z0-1&&z<=Q.z1+1);
   pos[3*k]=x;pos[3*k+1]=edge?terrainH(x,z)-4:feModel(x,z,FC);pos[3*k+2]=z;}
  const GR=[.07,.1,.045],DR=[.13,.12,.08],RK=[.16,.15,.14],AS=[.2,.19,.18],mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
  for(let j=0;j<=NZ;j++)for(let i=0;i<=NX;i++){const k=j*(NX+1)+i,h=pos[3*k+1]+FE.BENCH,hx=pos[3*(j*(NX+1)+Math.min(NX,i+1))+1]-pos[3*(j*(NX+1)+Math.max(0,i-1))+1],
    hz=pos[3*(Math.min(NZ,j+1)*(NX+1)+i)+1]-pos[3*(Math.max(0,j-1)*(NX+1)+i)+1],sl=Math.hypot(hx,hz)/(2*FC);
   let c=mix(GR,DR,feSm(200,1600,h));c=mix(c,AS,feSm(1600,1850,h));c=mix(c,RK,feSm(.3,.7,sl));col[3*k]=c[0];col[3*k+1]=c[1];col[3*k+2]=c[2];}
- for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const cxm=X0+(i+.5)*FC,czm=Z0+(j+.5)*FC;if(feIn(C,cxm,czm,-1)||feIn(FE_FOOT,cxm,czm,-1))continue;const a=j*(NX+1)+i,b=a+1,c=a+NX+1,d=c+1;idx.push(a,c,b,b,c,d);}
+ for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const cxm=X0+(i+.5)*FC,czm=Z0+(j+.5)*FC;if(feIn(C,cxm,czm,-1)||feIn(FE_FOOT,cxm,czm,-1)||feIn(FE_STAIRG,cxm,czm,-1))continue;const a=j*(NX+1)+i,b=a+1,c=a+NX+1,d=c+1;idx.push(a,c,b,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
  const far=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,metalness:0}));far.userData.probeSkip=true;far.userData.lodSkip=true;far.name='far ground (the scale model)';scene.add(far);
  /* the lake beyond: a flat sheet at its level where the cut holds water (Erewhon's lake, -520 m), under the far ground */

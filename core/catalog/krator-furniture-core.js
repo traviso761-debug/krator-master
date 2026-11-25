@@ -487,7 +487,7 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
   'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian',
-  'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia'];   // the shared culture rebuild (kits/yeti/PLAN.md section 11, 2026-11-03)
+  'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia', 'shumari'];   // the shared culture rebuild (kits/yeti/PLAN.md section 11, 2026-11-03); Shumari's file (Stage 8, D14)
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
@@ -1316,5 +1316,27 @@ function measureInstance(g) {
   if (!meshes || box.isEmpty()) return { empty: true, meshes: 0, tris: 0, w: 0, d: 0, h: 0, box: box };
   const size = box.getSize(new THREE.Vector3());
   return { empty: false, meshes: meshes, tris: Math.round(tris), w: size.x, d: size.z, h: size.y, box: box, min: box.min.clone(), max: box.max.clone() };
+}
+
+/* ---------------------------------------------------------- the lamp cap (S3-72)
+   Every lamp a piece holds (F.lamp) is a live PointLight, and a page of them overflows a lit material's shader
+   (MAX_FRAGMENT_UNIFORM_VECTORS 1024 on both GPU lanes: the catalog sheet once the Tungang and Fellgang lamps came in,
+   2026-11-11; the Beast Riders' sheet with 185, 2026-11-12). furnLampCap(root, max) gathers the PointLights under root
+   (they stand still) and keeps at most max of them on (FURN_LAMP_MAX, 24, by default): pick(p) turns on the nearest p (the
+   camera) and turns off the rest, always exactly max, so the programs never recompile as the camera moves. A host calls
+   pick at the start and again every half second or so; under max lights it changes nothing. */
+const FURN_LAMP_MAX = 24;
+function furnLampCap(root, max) {
+  max = max == null ? FURN_LAMP_MAX : max;
+  const L = [], w = new THREE.Vector3();
+  root.updateMatrixWorld(true);
+  root.traverse(function (o) { if (o.isPointLight) { o.getWorldPosition(w); L.push({ l: o, p: w.clone() }); } });
+  return { total: L.length, max: max, lights: L,
+    pick: function (p) {
+      if (L.length <= max) return L.length;
+      L.sort(function (a, b) { return a.p.distanceToSquared(p) - b.p.distanceToSquared(p); });
+      L.forEach(function (q, i) { q.l.visible = i < max; });
+      return max;
+    } };
 }
 

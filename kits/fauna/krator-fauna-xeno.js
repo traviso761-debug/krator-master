@@ -5,8 +5,8 @@
    (biomes/siphon-pits, 2026-11-11): the Ghaunt-Ox, the Flenser-Hound and the Pipe-Borer. Dimensions are the measured boxes of the builds (verify.py --assert). Drawn by the wild file's shared builder (faWdHex, the
    'centaur' and 'hexapod' gaits), so this file sorts after krator-fauna-wild.js and a bundle that takes `xeno` must take `wild` and `hyperjungle`
    too (as `wild` itself needs `hyperjungle`). Each animal is a record first (tags, traits, yields, life, data, schedule): the biome kit publishes
-   where it lives (its herds and lairs) and a world places it. The 5.1 climate classes the vocabulary lacks (Cwb, Dsc) are given as their nearest
-   (KNOWN_ISSUES.md).
+   where it lives (its herds and lairs) and a world places it. The 5.1 climate classes the vocabulary lacked (Cwb, Dsc) were given as their nearest
+   until Stage 8 B9 (2026-11-24, T42): fauna-core.js has them now, the Ghaunt-Ox takes Cwb (the Terraces) and the Flenser-Hound Dsc (the Scarp).
    ====================================================================== */
 const FA_XN_SRC = { build: 'kits/fauna', file: 'krator-fauna-xeno.js', lines: '-' };
 /* an animal by the wild file's maker, filed under this group and this file */
@@ -23,7 +23,7 @@ function faXnAnimal(d) {
 function faXnCoat(A, o) {
   faWdHex(A, o);
   if (!o.coat) return;
-  const S = A.S, c = o.c, kS = o.stock || 1, yb = o.yb / kS, th = {}, ab = {};
+  const S = A.S, c = o.c, kS = o.stock == null ? 1 : o.stock, yb = o.yb / kS, th = {}, ab = {};
   for (const a in o.th) th[a] = o.th[a] * kS;
   for (const a in o.ab) ab[a] = o.ab[a] * kS;
   const W = (th.w + ab.w) * 0.5, H = (th.h + ab.h) * 0.5, row = (z, w, h, dy) => [0, (yb + (dy || 0) + 0.025 * h) * S, z * S, w * S, h * 1.025 * S];
@@ -35,7 +35,7 @@ const FA_XN_98 = { biomes: ['siphon-pits'], aridity: ['semiarid', 'subhumid'], c
 
 /* THE WOOLLY GHAUNT-OX (Ovisaphon borealis): 1,800 kg; crampon forelimbs for the talus, columnar middle limbs, hind levers that jump a ledge.
    Domesticated on the Ostrukh Terraces (pairs at the stone seed-drills), wild herds on the scarp's ledges and the pit floors */
-faXnAnimal(Object.assign({}, FA_WD_C, FA_XN_98, { koppen: ['Cfb', 'Dfb', 'ET', 'Cfa'], dom: true, herdedBy: ['the Ostrukh farmers'], key: 'ghaunt-ox', name: 'Woolly Ghaunt-Ox', kind: faXnCoat,
+faXnAnimal(Object.assign({}, FA_WD_C, FA_XN_98, { koppen: ['Cfb', 'Dfb', 'ET', 'Cfa', 'Cwb'], dom: true, herdedBy: ['the Ostrukh farmers'], key: 'ghaunt-ox', name: 'Woolly Ghaunt-Ox', kind: faXnCoat,
   dim: [1.95, 5.25, 1.85], mass: 1800, meat: 650, hide: 7, hideNote: 'thick, oily under the wool: boots, harness, the ropers\' cradles',
   extra: { wool: { amount: 9, note: 'a shaggy undercoat combed out each spring: the terraces\' felt and rope' }, milk: { amount: 5, note: 'thick and fatty: the farms\' cheese' } },
   traits: { rideable: true, draught: true, milkable: true }, lives: ['terraces', 'scarp', 'pitfloor'],
@@ -47,7 +47,7 @@ faXnAnimal(Object.assign({}, FA_WD_C, FA_XN_98, { koppen: ['Cfb', 'Dfb', 'ET', '
 
 /* THE FLENSER-HOUND (Scyllatherium fissum): the Arete Way's ambusher. Tripartite limbs: two folding raptorial scythe-arms for a silent strike at
    the neck, two lateral claspers that lock to the rock in a gale, two long sprinting hind legs. Pale as rime; it crouches under the rims in a blizzard */
-faXnAnimal(Object.assign({}, FA_WD_C, FA_XN_98, { koppen: ['ET', 'Dfc', 'Dfb'], aridity: ['semiarid', 'arid'], climate: ['cold'], key: 'flenser-hound', name: 'Flenser-Hound', kind: faWdHex,
+faXnAnimal(Object.assign({}, FA_WD_C, FA_XN_98, { koppen: ['ET', 'Dfc', 'Dfb', 'Dsc'], aridity: ['semiarid', 'arid'], climate: ['cold'], key: 'flenser-hound', name: 'Flenser-Hound', kind: faWdHex,
   dim: [2.15, 5.23, 2.87], mass: 420, meat: 120, hide: 3, hideNote: 'a pale, close, waxy hide: blizzard capes', lives: ['arete', 'scarp'],
   tags: { diet: 'carnivore', feeding: 'predator', temperament: 'aggressive', activity: 'cathemeral', habitat: ['rock', 'ground'], locomotion: ['walks', 'runs', 'climbs', 'leaps'] },
   note: 'the apex predator of the plateau\'s rims: a lean pale six-limbed hunter; its fore pair fold like a mantis\'s scythes and strike at the neck without a sound, its middle pair are claspers that lock to the basalt when the gale gusts, its hind pair are long sprinting legs; it waits under the fog line below the Arete Way\'s rims in a blizzard and lunges at the straggler of a caravan',

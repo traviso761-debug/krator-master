@@ -18,7 +18,6 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `35t-godthrone-strata.js` | 2 |  |
 | `44a-host-station.js` | 2 |  |
 | `45-host-stage.js` | 5 | the frame (47) |
 | `45a5-host-region.js` | 1 |  |

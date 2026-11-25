@@ -12,6 +12,7 @@ function loadInGlobal(relPath) {
 }
 
 loadInGlobal('core/rand/08-core-rand.js');
+loadInGlobal('core/frontier/18-core-frontier.js');
 loadInGlobal('core/tags/50-core-tags.js');
 loadInGlobal('core/tags/52-core-tags-vocab.js');
 loadInGlobal('core/biome/37-core-traps.js');
@@ -30,7 +31,7 @@ const { HOLLOW_PHYS: PHYS, HOLLOW_SITES: SITES } = require('../src/15-springholl
 const SH_CROPS = require('../src/22-springhollows-crops.js');
 const SH_FAUNA = require('../src/24-springhollows-fauna.js');
 
-// 1. Porphyry dike intrusion & Ching-Ma shut-in hydraulic pinch (PLAN.md section 7.3 #1)
+// 1. Porphyry dike intrusion & Tlila-Wada shut-in hydraulic pinch (PLAN.md section 7.3 #1)
 {
   const site = SITES.shutin;
   const inDike = PHYS.porphyryDikeAt(0, 0, site);
@@ -41,7 +42,7 @@ const SH_FAUNA = require('../src/24-springhollows-fauna.js');
   T.ok('purple-red rhyolite porphyry dike sets strataKind = porphyry-dike (hardness 0.96) vs carbonate-shelf (0.42)',
     inDike.inDike === true && inDike.strataKind === 'porphyry-dike' && inDike.rockHardness01 >= 0.94 &&
     inDolomite.inDike === false && inDolomite.strataKind === 'carbonate-shelf' && inDolomite.rockHardness01 <= 0.45);
-  T.ok('Ching-Ma pinches from >= 65 m subcritical dolomite pool (Fr < 0.35) to <= 24 m supercritical porphyry chute (Fr > 1.15, whitewater > 0.85, liftBypassReq)',
+  T.ok('Tlila-Wada pinches from >= 65 m subcritical dolomite pool (Fr < 0.35) to <= 24 m supercritical porphyry chute (Fr > 1.15, whitewater > 0.85, liftBypassReq)',
     flowOpen.channelWidthM >= 65.0 && flowOpen.froude < 0.35 && flowOpen.liftBypassReq === false &&
     flowChute.channelWidthM <= 24.0 && flowChute.froude > 1.15 && flowChute.whitewater01 > 0.85 && flowChute.liftBypassReq === true);
   T.neg('counterweight boat-lift bypass requires supercritical porphyry shut-in constriction',
@@ -163,6 +164,12 @@ const SH_FAUNA = require('../src/24-springhollows-fauna.js');
   const rAA = globalThis.KMAT_M1.roughnessWithVariance(rBase, 3.0, [0.002, 0.008, 0.022, 0.055, 0.095, 0.14, 0.18, 0.22]);
   T.ok('KMAT_M1 M2 roughnessWithVariance widens grazing/far crystal and wet-porphyry roughness cleanly',
     rAA > rBase && rAA < 0.65 && globalThis.KMAT_M1.GLSL_COMMON.indexOf('km1RoughAA') >= 0);
+  // Verify Station 5 (porphyryrelict) Carnelian porphyry knob vs dolomite hollow partition
+  const prKnob = PHYS.porphyryRelictQuiltAt(12, 8, 28.0, SITES.porphyryrelict);
+  const prHollow = PHYS.porphyryRelictQuiltAt(-90, 20, 4.5, SITES.porphyryrelict);
+  T.ok('Station 5 (porphyryrelict) crowns high purple-red porphyry knob in Carnelian clades while keeping dolomite hollows Earthlike',
+    prKnob.inDike === true && prKnob.biosphere === 'carnelian' && prKnob.redDominance01 > 0.70 &&
+    prHollow.inDike === false && prHollow.biosphere === 'earth');
 }
 
 T.done();

@@ -213,4 +213,38 @@ T.ok('...and WLAND.check holds the dome to its own height (inside 0)', !!Fd.chec
   T.ok('a bench stamped over by a later one is judged on its own ground (level inside, no face over its batter); the later one on its',
     raised && first.inside === 0 && first.batter.over === 0 && later.inside === 0 && later.batter.over === 0,
     JSON.stringify({ raised, first: { inside: first.inside, over: first.batter.over }, later: { inside: later.inside, over: later.batter.over } })); }
+
+// ---------------------------------------------------------------- 5. the pancake dome (2026-11-24, Stage 8 B7, D15: drawn at 1:1)
+// The scale model's record as DATA.domes holds it (edit_518: px [x, y], d_km, base_m, top_m, h_m): a dome 3 km across on the
+// slope at x 10 km (px 15), its top 150 m over the highest natural ground under it. The model's profile: flat to 0.72 of the
+// radius, then top - (top - ground) x smoothstep(0.72, 1, r/R), raising only
+const DX = 10000, DZ = 0, DR = 1500, sst = (a, b, x) => { let t = (x - a) / (b - a); t = t < 0 ? 0 : t > 1 ? 1 : t; return t * t * (3 - 2 * t); };
+const ring = (r, n) => Array.from({ length: n }, (_, k) => [DX + r * Math.cos(k * 2 * Math.PI / n), DZ + r * Math.sin(k * 2 * Math.PI / n)]);
+const domeAt = [[DX, DZ]].concat(ring(DR * .4, 8), ring(DR * .8, 16), ring(DR * .9, 16), ring(DR * .97, 16)), domeFar = ring(DR * 1.05, 16).concat(ring(DR * 1.6, 16));
+w = world(OLD.slice());
+const nat = domeAt.map(([x, z]) => w.W.Hbare(x, z)), natFar = domeFar.map(([x, z]) => w.W.Hbare(x, z));
+const TOP = Math.round(Math.max(...nat)) + 150, BASE = Math.round(Math.min(...nat));
+const dome = o => Object.assign({ id: 'lf_t_dome', kind: 'pancake_dome', name: 'Test Glass', px: [C + DX / 2000, C + DZ / 2000], d_km: 3, base_m: BASE, top_m: TOP, h_m: TOP - BASE, rock: 'rhyolite_obsidian' }, o);
+const domeSample = wd => ({ at: domeAt.map(([x, z]) => wd.W.Hbare(x, z)), far: domeFar.map(([x, z]) => wd.W.Hbare(x, z)), old: sample(wd).old,
+  check: (wd.WL.check() || []).find(c => c.kind === 'pancake_dome') || null, domes: (wd.WL.domes || []).length, skipped: wd.WL.skipped.slice() });
+w = world(OLD.concat([dome({})]));
+const D1 = domeSample(w);
+w = world(OLD.concat([dome({ d_km: 6 })]));
+const D6 = domeSample(w);
+w = world(OLD.concat([dome({ px: [C - 7, C - 3] })]));
+const Dover = domeSample(w);                                  // the dome laid over the islet
+w = world(OLD.concat([{ id: 'lf_t_crater', kind: 'secondary_crater', px: 15, py: 10, radius_px: 2, floor_m: 100 }, { id: 'lf_t_nodome', kind: 'pancake_dome', px: [15, 10], d_km: 3 }]));
+const Dskip = { skipped: w.WL.skipped.slice(), domes: (w.WL.domes || []).length };
+const want = nat.map((h, i) => { const [x, z] = domeAt[i], t = TOP - (TOP - h) * sst(.72, 1, Math.hypot(x - DX, z - DZ) / DR); return t > h ? t : h; });
+T.ok('the dome is a kind: stamped, listed in WLAND.domes, not skipped, and WLAND.check passes it (its flat at top_m)',
+  D1.domes === 1 && !D1.skipped.length && !!D1.check && D1.check.ok, JSON.stringify(D1.check) + ' skipped ' + JSON.stringify(D1.skipped));
+T.neg('...drawn at 1:1 by the model\'s profile: flat at the top to 0.72 R, the wall raising the ground to top - (top - ground) x smoothstep(0.72, 1, r/R)',
+  S => S.at.every((h, i) => Math.abs(h - want[i]) < 1e-6), { at: nat }, D1);
+T.neg('...its wall within its radius: past R the ground is the natural ground bit for bit (a dome twice as wide moves it)',
+  S => S.far.every((h, i) => h === natFar[i]), D6, D1);
+T.neg('the islet and the page water answer byte-identically with a dome in the records (one laid over the islet moves them)',
+  S => S.old.length === S0.old.length && S.old.every((h, i) => h === S0.old[i]), Dover, D1);
+T.ok('a pancake dome with no top is skipped by name; a secondary_crater (the 2 km cells hold it: no profile to draw) is skipped by name',
+  Dskip.domes === 0 && Dskip.skipped.length === 2 && Dskip.skipped.some(s => s.kind === 'secondary_crater') && Dskip.skipped.some(s => /pancake_dome/.test(s.kind)), JSON.stringify(Dskip));
+console.log('      dome at ' + DX + ',' + DZ + ' r ' + DR + ' m: top ' + TOP + ' m over ' + BASE + ' m; ' + JSON.stringify(D1.check));
 T.done();

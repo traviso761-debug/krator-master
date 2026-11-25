@@ -36,7 +36,7 @@ VEHICLE_CULTURE('republic', {
 
 VEHICLE({
   key: 'rep_crawler', name: 'Republic salvage crawler', culture: 'republic',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport', 'survey'], drive: 'wheeled', seats: 6, fuel: 'battery',
+  tags: { type: ['vehicle', 'transport', 'survey'], drive: 'wheeled', seats: 6, fuel: 'battery',
     terrain: ['sand', 'salt flat', 'rock'], setting: 'outdoor', guild: 'Salvagers' },
   variants: 2, variantNames: ['Survey', 'Hauler'],
   /* overall box: 6.0 wide, 11.4 long; the lid's raised edge reaches 8.4, the lamp spire 9.2 */

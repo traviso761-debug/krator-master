@@ -35,11 +35,10 @@ KHAMLET.CULTURES['xanadu-fishing']=Object.assign({},KHAMLET.CULTURES.xanadu,{
  focusJobs:Object.assign({},KHAMLET.CULTURES.xanadu.focusJobs,{fishing:90}),reach:Object.assign({},KHAMLET.CULTURES.xanadu.reach,{fishing:260}),
  pending:Object.assign({},KHAMLET.CULTURES.xanadu.pending,{xh_fish_racks:{w:16,d:11,h:3.6,what:'fish racks and a smokehouse'}})});
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-fishing']={culture:'xanadu'};
-/* the Xanadu row by name (core/hamlet/xanadu/23, KHAMLET.xanaduRow: the shared row with the orchard and tea foci and a wayside
-   shrine in each village), as Gihon's page lays its ring and the Alph's hamlets (settlements/gihon/src/42-gh-ring.js). Its works
-   keys the kit's src lacks (the shrine, the apiary) are its pending boxes here: this page loads the kit's extra/88d and 88f, not
-   88g, which would size them on the page and not in the bake */
-if(!KHAMLET.xanaduRow)throw new Error('the region\'s sites: core/hamlet/xanadu/23-hamlet-xanadu-row.js is not loaded');
+/* the Xanadu row by name (core/hamlet/20's KHAMLET.xanaduRow since Stage 8 B8, D11: the shared row with the orchard and tea foci
+   and a wayside shrine in each village), as Gihon's page lays its ring and the Alph's hamlets (settlements/gihon/src/42-gh-ring.js).
+   88d, 88f and 88g are in the kit's src since Stage 8 B9; a works key the bake's kit dims lack is still a pending box */
+if(!KHAMLET.xanaduRow)throw new Error('the region\'s sites: core/hamlet/20-hamlet-cultures.js (KHAMLET.xanaduRow) is not loaded');
 KHAMLET.CULTURES['xanadu-row']=KHAMLET.xanaduRow({});
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-row']={culture:'xanadu'};
 // bridges (core/world/42b-world-bridges.js; 2026-11-16, for Thalaba's Briḍj): every road and link this region lays is bridged
@@ -174,7 +173,7 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
     Kirstabal along the lake to Qiblai (the owner, 2026-11-16: "road follows lake and gorge"; the barges carry the bulk) */
  links:[['s57bkv9741','skm4jjo2vl',{hw:4,r:2000}],['skm4jjo2vl','sq80bzd7ep',{hw:4,r:1500}],
   ['sl758m2396','sstrongbowft',{hw:3.5,r:1200}],['sl758m2396','skm4jjo2vl',{hw:3,r:1500}]]};
-// THE PITCHED CAMPS (48t-world-camps.js plans them at load, 88t draws them; settlements/xanadu/WORKS-PLAN.md section 3, step W2):
+// THE PITCHED CAMPS (core/world 48w KWCAMPS lays them, 88s draws them; settlements/xanadu/WORKS-PLAN.md section 3, step W2):
 // the Golden Tears' armed prospecting camp on the Rift floor (XAN_TUNE.tears.camp, exp.rift-gold: 120 people, worked in the
 // rift season, year days 300-60). PROPOSED in the plan, the owner's word "a bit more militaristic" (2026-11-16): a fortified
 // ring of the Xanadu silk's bell tents inside a thorn zariba and its ditch, one gate on the track up to the Gold March (toward
@@ -184,9 +183,16 @@ var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,bridges:{culture:'x
 // zariba's low ring and the pits stay. NOT ON THE GROUND YET: the camp's point (px 850,1628) is 60 km outside this region's cut
 // (the High Rift polygon does not reach the Rift floor there), so openworld/SITES.json lists the site (stearscamp01) and the
 // region's next recut (tools/scale-model/cut_site.py, the one that takes the Spillway's and the Devisers' squares and the gorge
-// corridor already listed) gives it its square; until then 48t reports it as awaiting the recut. Its ring is proven on synthetic
-// ground by tests/test-world-camps.js.
+// corridor already listed) gives it its square; until then the plan lists it as awaiting the recut (`uncut`). (2026-11-24: the
+// cut's meta now holds stearscamp01 and core/world/bake_sites.py lays the ring there: 28 tents, 4 sluices.) Its ring is proven
+// on synthetic ground by tests/test-world-camps.js. The Sultanate's parts are registered by src/48c-camps-xanadu.js: the people
+// ('xan-tears': XAN_TUNE.tears.camp) and the window ('rift-season': XAN_TUNE.calendar). The camps are the plan's region-level
+// list (SITE_SPEC.camps: core/world/bake_sites.py bakes them into plan/sites.json, format version 2).
 var WORLD_CAMPS={world:1191569,camps:[
  {id:'stearscamp01/camp/tears',kind:'ring',name:'The Golden Tears\' armed prospecting camp',site:'stearscamp01',near:[0,0],look:3000,way:[62,12],
-  culture:'xanadu',tears:true,program:{trades:['smith'],supply:2,guard:4,mess:2,stable:2,latrine:1},hedge:{key:'zariba',v:0},
-  works:{sluices:4,pits:6,heaps:3,look:2500},season:{window:'rift-season'},struck:{hedge:true,works:['pit']}}]};
+  culture:'xanadu',people:{provider:'xan-tears'},program:{trades:['smith'],supply:2,guard:4,mess:2,stable:2,latrine:1},hedge:{key:'zariba',v:0},
+  marks:[{as:'goldRoom',role:'supply',near:'chief'}],
+  works:[{rule:'bed',kind:'sluice',key:'xa_placer_sluice',n:4,look:2500,w:12,d:32,h:3},{rule:'scatter',kind:'pit',key:'pit',n:6,w:4,d:3,h:1.2},
+   {rule:'beside',of:'sluice',kind:'heap',key:'tailings',n:3,off:12,w:9,d:7,h:1.6}],
+  when:{window:'rift-season'},struck:{hedge:true,works:['pit']}}]};
+if(typeof SITE_SPEC!=='undefined')SITE_SPEC.camps=WORLD_CAMPS.camps;

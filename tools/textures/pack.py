@@ -25,7 +25,15 @@ Processing, per family:
            matches the map it replaces under the same instance tint.
   normal   resized and renormalised (OpenGL convention, as the library and Godot use); written as LOSSLESS WebP of its
            channels kept to 6 bits (NORMAL_BITS: 0.7 degrees mean error, 40% smaller than 8 bits)
-  rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
+  rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map; then times roughScale (optional,
+           written into the entry when given: Stage 8 B11 takes the glazed pattern sheets' packed roughness under the
+           class rule's 0.35 with it, D18), the other way from the lift
+  class    the family's M1 class (core/materials/classes/m1-classes.json, read only through tools/textures/mclass.py's
+           settings(); Stage 8 B11, D4). glazed: the web normal kept to 8 bits (xy8; its entry says "normalBits": 8), and on a
+           packFormat 2 pack asked in xy6, xy8; card and cutout (height 'never'): never a height in the colour map's alpha
+           (Gate 1: packFormat 2 packs alphaMode none, packFormat 1 refuses a "height" or "pom" on one); a class's "flat"
+           counts as the family's for packFormat 2's Gate 1. Every other class, and a family with no class yet, packs
+           exactly as before (6-bit normals: NORMAL_BITS). A Godot pack (packFormat 2, oct8) keeps its encoding
   lib      a library id, or a pattern sheet as 'patterns/<culture>/<name>'
   size     per family: overrides the build's map size; [w, h] keeps a sheet's shape (a dome's sky, not a tile)
   mapOnly  `"mapOnly": true` writes the colour map only (a sheet the build uses as a plain texture, not a lit material)
@@ -63,6 +71,8 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import buildlib  # noqa: E402
+sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+import mclass  # noqa: E402  (the M1 class table: the one reader of a family's "class")
 
 LIB = os.path.join(ROOT, 'core', 'materials', 'library')
 MATS = os.path.join(ROOT, 'core', 'materials')
@@ -95,6 +105,9 @@ def load(path, size, mode):
 NORMAL_BITS = 6   # a normal's channels kept to 6 bits (each value the middle of its step): lossless WebP of it is 40%
                   # smaller than of 8 bits, for 0.7 degrees mean error (1.3 at the 99th percentile; brick at 512 px,
                   # 2026-10-14). The pages were three times their lossy size with 8-bit lossless normals
+
+
+WEB_NORMAL_BITS = {'xy6': NORMAL_BITS, 'xy8': 8}   # a class's web normal encoding as the bits packFormat 1 keeps
 
 
 def quantize(a, bits):
@@ -236,9 +249,10 @@ def normal_error_stats(n_ref, n_dec):
     }
 
 
-def assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_ref, n_dec, r_arr, cav_arr):
-    """Section 9.2 Gate 1: channel physics check at write time (honouring flat declarations and never putting height in a card)."""
-    if card and alpha_mode == 'height':
+def assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_ref, n_dec, r_arr, cav_arr, flat=None, cut=False):
+    """Section 9.2 Gate 1: channel physics check at write time (honouring flat declarations and never putting height in a card,
+    or in a family whose class is a cut-out: cut). flat: the family's class's flat when it has one (else its own "flat")."""
+    if (card or cut) and alpha_mode == 'height':
         raise ValueError('%s: Gate 1 violation — height must never overwrite alpha on a cut-out card' % fam)
     for nm, arr in (('height', h_arr), ('normal', n_dec), ('roughness', r_arr), ('cavity', cav_arr)):
         if arr is not None and not np.all(np.isfinite(arr)):
@@ -249,7 +263,7 @@ def assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_ref, n_dec, r_arr, 
         st = normal_error_stats(n_ref, n_dec)
         if st['meanDeg'] > 3.5:
             raise ValueError('%s: Gate 1 violation — normal quantisation mean error %.2f deg > 3.5 deg' % (fam, st['meanDeg']))
-    if h_arr is not None and not cfg.get('flat') and not card:
+    if h_arr is not None and not (cfg.get('flat') if flat is None else flat) and not card:
         span = float(np.percentile(h_arr, 99) - np.percentile(h_arr, 1))
         if span < 0.02:
             raise ValueError('%s: Gate 1 violation — height p99-p01 %.4f < 0.02 without "flat": true' % (fam, span))
@@ -257,6 +271,16 @@ def assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_ref, n_dec, r_arr, 
 
 def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
     lib = cfg['lib']
+    # the family's M1 class (Stage 8 B11): None while it has none, and then nothing below differs from before. A class whose
+    # settings equal today's (xy6 web normals, a height allowed) packs byte for byte as an unclassed family
+    S = mclass.settings(cfg, none_ok=True)
+    web_enc = S['web']['normal'] if S is not None else None
+    cut = S is not None and S['height'] == 'never'          # card, cutout: alphaTest reads the alpha (Gate 1)
+    flat = (bool(cfg.get('flat')) or S['flat']) if S is not None else None
+    nbits = WEB_NORMAL_BITS[web_enc] if web_enc else NORMAL_BITS
+    if pack_format == 2 and web_enc == 'xy8' and normal_enc == 'xy6':
+        normal_enc = 'xy8'     # a web two-map pack promotes a glazed family; a Godot pack (oct8) keeps its encoding (D4)
+    rscale = cfg.get('roughScale')
     d = set_dir(lib)
     sz = cfg.get('size', size)                # a family may ask for a smaller map (a detail map on small furniture), or [w, h]
     size = [int(v) for v in sz] if isinstance(sz, list) else int(sz)
@@ -289,15 +313,20 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
     rgb = grey * (1 - keep) + col * keep
     ph = path('heightMap', 'height.png')
     has_lit = os.path.isfile(pn) and not card and not cfg.get('mapOnly')
+    if cut and not card and (cfg.get('height') or cfg.get('pom')):
+        raise ValueError('%s: Gate 1 violation — a %s family never takes a height in its alpha (drop "height"/"pom")' % (fam, S['cls']))
 
     if pack_format == 2:
         n_float, n_dec, r_final, cav_arr, h_arr, mip_var = None, None, None, None, None, None
+        h_from = None
         if has_lit:
             n_float = load(pn, size, 'RGB') * 2.0 - 1.0
             n_float /= np.maximum(np.linalg.norm(n_float, axis=2, keepdims=True), 1e-6)
             mip_var = compute_mip_variance(n_float)
             cav_arr = compute_cavity_from_normal(n_float)
-            if os.path.isfile(ph):
+            if cut:
+                pass           # a cut-out class: alphaMode none, no height made (Gate 1)
+            elif os.path.isfile(ph):
                 hm = load(ph, size, 'L')
                 lo, hi = np.percentile(hm, [1, 99])
                 h_arr = np.clip(0.5 + (hm - hm.mean()) / max(float(hi - lo), 1e-4), 0.02, 1.0)
@@ -309,6 +338,8 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
                 r_raw = load(pr, size, 'L')
                 lift = float(cfg.get('roughLift', 0.0))
                 r_final = np.clip(r_raw + (1.0 - r_raw) * lift, 0.0, 1.0)
+                if rscale is not None:
+                    r_final = np.clip(r_final * float(rscale), 0.0, 1.0)
             else:
                 r_final = np.full(n_float.shape[:2], 0.85, dtype=np.float64)
             rg_u8, n_dec = encode_normal_rg(n_float, normal_enc)
@@ -325,7 +356,7 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
         else:
             alpha_mode = 'none'
             out['map'] = webp(rgb, 82, 'RGB')
-        assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_float, n_dec, r_final, cav_arr)
+        assert_pack_physics(fam, cfg, card, alpha_mode, h_arr, n_float, n_dec, r_final, cav_arr, flat=flat, cut=cut)
         height = (alpha_mode == 'height')
     else:
         height = bool(cfg.get('height')) and not card and os.path.isfile(ph)
@@ -357,7 +388,8 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
             # lossless: lossy WebP is always 4:2:0, which halves the X and Y the normal keeps in red and green (measured on
             # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08),
             # its channels kept to NORMAL_BITS
-            out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=NORMAL_BITS)
+            # (B11: a glazed family keeps 8 bits, xy8, so curved highlights do not band: nbits from its class, D4)
+            out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=nbits)
             # M2: the normal map's variance per mip level, from the float normals before quantising: the shader adds it to the
             # roughness at the mip it samples (specular anti-aliasing, no new bytes; core/materials/record 25-matlib-host.js)
             if cfg.get('specAA'):
@@ -371,7 +403,10 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
         if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
             r = load(pr, size, 'L')
             lift = float(cfg.get('roughLift', 0.0))
-            out['roughnessMap'] = webp(r + (1 - r) * lift, 85, 'L')
+            r = r + (1 - r) * lift
+            if rscale is not None:     # B11: lowers a glazed pattern sheet's roughness under the rule's 0.35 (D18)
+                r = r * float(rscale)
+            out['roughnessMap'] = webp(r, 85, 'L')
 
     entry = {
         'lib': lib,
@@ -391,6 +426,10 @@ def process(fam, cfg, size, pack_format=1, normal_enc='xy6'):
     }
     if height:
         entry['height'] = True
+    if pack_format != 2 and has_lit and nbits != NORMAL_BITS:   # B11: the glazed class's 8-bit web normal (the rest: none,
+        entry['normalBits'] = nbits                              # so their pack.json is as before)
+    if rscale is not None and not card and not cfg.get('mapOnly'):
+        entry['roughScale'] = float(rscale)
     if pack_format != 2 and has_lit and cfg.get('specAA'):
         entry['mipVariance'] = mip_v1
     if pack_format != 2 and has_lit and cfg.get('pom') and not card:

@@ -25,6 +25,9 @@ its 50/60/70 in its own registry, with its pack: the ground's library layers are
 stations/<name>/station.json: "kin" {"<kit>": [[fragments], "<API>", [pack families] | "*"]}; "core" {"<slot>": "<path from the repo root>"};
 "base" "<station>". The station records' own fields (site, water, ...) are the plan's data and are not read here.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.

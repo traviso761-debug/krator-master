@@ -35,13 +35,13 @@ var SITE_SPEC={region:'xanadu-north-shore',world:8431491,bridges:{culture:'xanad
  links:[['spher0north1','shvo49k0y2',{hw:3,r:1500,keep:true,stops:XNS_STOPS,culture:'xanadu',guide:[[843.60,1489.29],[838,1487.2],
    [833,1485.6],[828,1483.6],[824.3,1481.2],[823,1479.6],[822.7,1477.6],[823.2,1475.6],[822.9,1473.6],[822.9,1471.6],
    [823.4,1469.6],[824.7,1467.6],[826.2,1465.6],[827,1463.8],[830,1463.6],[833.5,1463.6],[837,1463.3],[840,1463]]}],
-  /* the shore road west from Malbari (825,1488) over the Qol Siṭrīm to Hāibh (817,1490): it crosses the river on the Qol
+  /* the shore road west from Malbari (825,1488) over the Qol Siṭrīm to Hāibh (812.84,1490.09: moved along the shore to its gentle strand, 2026-11-24): it crosses the river on the Qol
      bridge (SITES.json sxanqolbridge01, r272 at 823.57,1487.23; the owner, 2026-11-23: "place bridge on map at open world
      step"), which `bridges` above builds where the road meets the named river */
   /* via 2000: the guide is resampled every `via` m (8 km by default kept one point of it, and the road met the Qol 2.5 km
      below the bridge site, at its mouth; 1 km put a hop point where no route starts). The span stands 47 m from the site */
   ['sxanlkmulberry01','sxanlkhive01',{hw:2,r:1000,via:2000,keep:true,culture:'xanadu',guide:[[825,1488],[824.3,1487.5],[823.57,1487.23],
-   [822.8,1487.3],[820.5,1488.4],[817,1490]]}]]};
+   [822.8,1487.3],[820.5,1488.4],[817,1490],[815,1490.1],[812.84,1490.09]]}]]};
 // THE COUNTRYSIDE SAMPLE (core/world 48v and 88r; settlements/xanadu/HAMLETS-PLAN.md section 3, BUILD-PLAN A9): the province's
 // bulk villages (p7, Nōrth-Shor: the rim plain's grain and mulberry farms, the herds toward the hills) laid near nothing named, one at most to a 6 km cell, kept with the chance of its
 // farmland; never counted by the sim. The foci are core/hamlet's Xanadu row's: orchard and silk villages are farming ones until

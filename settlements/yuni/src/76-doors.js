@@ -45,7 +45,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   DOORS.doorsNear = doorsNear; DOORS.buildingsNear = buildingsNear;
 
   /* ---------------------------------------------------------------- door posing */
-  var _mx = new THREE.Matrix4(), ZERO = new THREE.Matrix4().makeScale(0,0,0), OPEN_ANG = 1.40;
+  var _mx = new THREE.Matrix4(), ZERO = new THREE.Matrix4().makeScale(0,0,0), OPEN_ANG = 1.75;
   function leafMesh(L){ var B=(L.bk||BUCKET)[L.key]; return B && B.mesh ? B : null; }
   function poseLeaf(L, open){
     var B=leafMesh(L); if(!B) return; var r=B.list[L.i]; if(!r) return; var r2=r.slice();
@@ -66,9 +66,10 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
      a solid body: locked as built (KDOOR.lock asBuilt, so a save keeps no delta for it). KDOOR eases the rest; each one's
      leaves are posed here as it moves (KDOORHOST.posed), and its reveal hidden while it stands open onto a live interior. */
   var KD = [];
-  /* Yuni's leaves swing OPEN_ANG (1.4 rad, ~80 degrees), not the registry's 1.75: kept on purpose (a leaf hung in a thick adobe
-     reveal, or beside a partition, strikes the wall past ~85 degrees), and recorded on each record (R.swing), so KDOOR.angle,
-     KDOOR.leaves and KDOOR.export() (Godot) give the angle the page draws */
+  /* Yuni's leaves swing OPEN_ANG, the registry's 1.75 rad (~100 degrees): the owner's call (Stage 8 D24, 2026-11-23; it was 1.4,
+     kept short because a leaf in a thick adobe reveal or beside a partition can strike the wall past ~85 degrees: look for it on
+     the rebuilt pages), recorded on each record (R.swing), so KDOOR.angle, KDOOR.leaves and KDOOR.export() (Godot) give the
+     angle the page draws */
   FIX.doors.forEach(function(D){ var R=D._kd; if(!R) return; KD.push(R); R.fixD = D; if(R.kind==='swing' && R.swing==null) R.swing = OPEN_ANG;
     if(D.to==='interior' && !(D.building && interiorPlan(D.building))) KDOOR.lock(R, true, { asBuilt:true });
   });

@@ -30,6 +30,7 @@ if(SITE.hasOpenLake){
  const lakeAllowed=(x,z)=>{
   if(SKEY==='spillway'&&x<-18)return false;
   if(SKEY==='fen'&&(z+0.35*x)+32>2&&inFlowChannel(x,z,2))return false;
+  if(SKEY==='haugel'&&x>-34&&inFlowChannel(x,z,2))return false;
   if(inThermalBowl(x,z))return false;
   return terrainH(x,z)<0.04;
  };
@@ -116,7 +117,7 @@ if(SITE.thermalPools&&SITE.thermalPools.length&&typeof WATER.spring==='function'
  }
 }
 
-// Monotone non-climbing cataract & delta flows (spillway 380 m3/s & fen 640 m3/s; strictly 0 on rampart!)
+// Monotone non-climbing cataract & delta flows (spillway 380 m3/s, fen 640 m3/s & haugel 585 m3/s; strictly 0 on rampart!)
 FLOW_LINES.forEach(FL=>{
  const pts=[];
  let yc=1e9;
@@ -127,12 +128,14 @@ FLOW_LINES.forEach(FL=>{
  }
  const fw=WATER.flow({
   name:FL.name,pts:pts,width:FL.w*2,speed:FL.speed,
-  rapids:SKEY==='spillway'?[0.08,0.24]:[0.02,0.08]
+  rapids:(SKEY==='spillway'||SKEY==='haugel')?[0.08,0.24]:[0.02,0.08]
  });
  const flowKeep=SKEY==='spillway'
   ?(x,z)=>clamp((-16-x)/10,0,1)
   :SKEY==='fen'
   ?(x,z)=>clamp(((z+0.35*x)+40)/26,0,1)
+  :SKEY==='haugel'
+  ?(x,z)=>clamp((x+48)/22,0,1)
   :null;
  const fd=WATER.drawFlow(fw,Object.assign({
   shallow:lin(0x62b8aa),deep:lin(0x1b525c),color:0xffffff,roughness:0.12,metalness:0.05,envMapIntensity:0.46,

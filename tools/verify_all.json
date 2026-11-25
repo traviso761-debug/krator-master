@@ -57,6 +57,11 @@
   "items": []
  },
 
+ "stall": {
+  "what": "a page's stall watchdog in minutes (KRATOR_GPU_STALL_MIN for its job, local or cloud: the harness passes it to the machine) when 25 is too short for a page that is slow but moving; globs on the repo path, the first that matches. Empty: every page takes the harness's 25",
+  "pages": {}
+ },
+
  "long": {
   "what": "first-run time guesses in seconds (a run's own times replace them: %LOCALAPPDATA%/krator-verify-all/durations.json); longest first",
   "settlements/voth/dist/voth-city.html": 2400,

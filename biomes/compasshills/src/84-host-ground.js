@@ -1,24 +1,9 @@
 // ================================================================= HOST — ground (KGROUND + custom banded-ironstone KSTRATA + KDRAWN; [G shader])
-// Registers custom KSTRATA recipe 'banded-ironstone' (jet-black specular magnetite & crimson jasper-chert bands over warm
+// Draws core's KSTRATA recipe 'banded-ironstone' (core/terrain/35-core-strata.js: jet-black specular magnetite & crimson jasper-chert bands over warm
 // ferruginous cuesta sandstone), binds 4 library KGROUND layers per station (<= 12 samplers total), steers sub-metre
 // black Fe3O4 sand ripples along COMPASS_PHYS.sandStreamAt tangents via vertex attribute aBDir, and registers KDRAWN ground.
 const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
 const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
-
-if(typeof KSTRATA!=='undefined'&&KSTRATA.add&&!KSTRATA.RECIPES['banded-ironstone']){
- KSTRATA.add({
-  name:'banded-ironstone',
-  main:'magnetite',
-  noRepeat:true,
-  kinds:{
-   magnetite:{p:0.38,th:[1.2,4.2],col:[0x1c1e26,0x242730,0x171920],hard:0.96,xbed:0.15,varnish:0.25,irid:1,jit:0.04},
-   cuestasand:{p:0.34,th:[2.2,6.8],col:[0xc4945a,0xb8864e,0xd0a268],hard:0.76,xbed:0.72,varnish:0.35,jit:0.06},
-   jasper:{p:0.14,th:[0.25,0.95],col:[0x8e3428,0x9e3e30,0x7c2c22],hard:0.92,xbed:0.10,varnish:0.20,between:true,jit:0.04},
-   quenchslag:{p:0.14,th:[0.8,2.6],col:[0x583a44,0x68444e,0x4c323c],hard:0.84,xbed:0.20,varnish:0.30,jit:0.06}
-  },
-  fx:{sheen:1,xbed:0.55,joints:1,varnish:0.25,regolith:0.45}
- });
-}
 
 const STRATA=(function(){
  if(GQ.get('strata')==='0'||typeof KSTRATA==='undefined')return null;

@@ -21,6 +21,9 @@
   function resolveKits(o) {
     if (o && o.kits) return o.kits;
     if (typeof KRATOR_KITS !== 'undefined') return KRATOR_KITS;
+    /* a settlement that seals core/kits with core/city in one closure on a window of its own (Object.create(window)):
+       KRATOR_KITS is on that window, not a global (2026-11-24, Stage 8 D8) */
+    if (typeof window !== 'undefined' && window.KRATOR_KITS) return window.KRATOR_KITS;
     if (typeof globalThis !== 'undefined' && globalThis.KRATOR_KITS) return globalThis.KRATOR_KITS;
     throw new Error('KCITY.multikit: load core/kits/10-core-kits.js first (or pass opts.kits)');
   }

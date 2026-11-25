@@ -49,6 +49,9 @@ function worldMat(m){if(WMAT.has(m))return WMAT.get(m);let w=null;const b=m.user
   if(m.onBeforeCompile!==THREE.Material.prototype.onBeforeCompile)w.onBeforeCompile=m.onBeforeCompile;
   if(m.customProgramCacheKey!==THREE.Material.prototype.customProgramCacheKey){const k=m.customProgramCacheKey();w.customProgramCacheKey=()=>'w|'+k;}
   w.userData.kind=b?b.kind:'plain';}
+ /* the sky's cloud shadows and the rain's darkening on the world's flora and floor, every plant drawn from here (85, 86): leaves wet
+    less than bark and rock (45's HOST.shade: only with the shared sky's clouds on the page) */
+ if(w&&HOST.shade)HOST.shade(w,{porosity:w.userData.kind==='leaf'?.4:.6});
  WMAT.set(m,w);return w;}
 
 // ---------------------------------------------------------------- harvest: what the kit wrote, as one geometry per material

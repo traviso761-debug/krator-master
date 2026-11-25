@@ -22,6 +22,9 @@ Also enforces the rules that make subagent work safe:
 
 Usage:  python3 build.py [--no-checks]
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
     sys.stdout.reconfigure(encoding='utf-8')

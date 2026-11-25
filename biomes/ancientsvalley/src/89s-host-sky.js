@@ -15,6 +15,4 @@ const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:STAGE.px[0],py:STAGE.px
 if(STAGE.cloudMood&&typeof ATMOS.cloudMood==='function')ATMOS.cloudMood(SKY,Object.assign({seed:STAGE.seed|0,tintAt:(x,z)=>{if(typeof AV_XP!=='undefined'&&AV_XP.registry){const k=KratorExtraplanar.tintAt(x,z,AV_XP.registry);if(k)return k;}const t=STAGE.F.taint(x,z);return t>.55?[.46,.28,.38]:t>.3?[.42,.33,.30]:null;}},STAGE.cloudMood));   /* tintAt -> [r,g,b] | null: an extraplanar solid's own tint over it (75), the taint's red-purple where it runs deep, its brown-purple where it is felt, the palette's episodes elsewhere */
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}
-{const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-  if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
-  ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
+ATMOS.cloudShadeScene(scene,{leave:null});   /* the clouds' shadows on every lit material, once (the core's pass, Stage 8 V8, 2026-11-24; the fauna too, as before) */

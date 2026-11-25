@@ -7,8 +7,10 @@ function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
 window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 /* three.js r128 logs a failed shader compile with console.error and simply does not draw the mesh: window.onerror never
-   fires. Forward those to the panel so a vanished surface is an error, not a mystery. */
-{const ce=console.error.bind(console);console.error=function(){try{const m=Array.prototype.join.call(arguments,' ');if(/shader|WebGLProgram|GL_INVALID/i.test(m))reportErr('GL: '+m.slice(0,600));}catch(e){}return ce.apply(console,arguments);};}
+   fires. Forward those to the panel so a vanished surface is an error, not a mystery. A re-entry guard: a bundle's reportErr
+   that logs with console.error (settlements/isle-demo/bundles.py's ISK, T21) comes back through here once and passes on,
+   where it used to be forwarded again, round and round until the stack overflowed. */
+{const ce=console.error.bind(console);let inErr=false;console.error=function(){if(!inErr){inErr=true;try{const m=Array.prototype.join.call(arguments,' ');if(/shader|WebGLProgram|GL_INVALID/i.test(m))reportErr('GL: '+m.slice(0,600));}catch(e){}finally{inErr=false;}}return ce.apply(console,arguments);};}
 
 // ---------------------------------------------------------------- rng + noise
 // One global stream. Every builder opens with reseed(N) (place() does it from the def's seed), so a change inside

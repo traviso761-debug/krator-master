@@ -21,7 +21,7 @@
 //        film, ridge, colour}; P.heightAt -> the brine film's level where it stands, else null; kind 'pan'
 //   ICE     W.ice({name, poly | bounds, level, rim {width, salt}, drifts {wind, spacing, chance, len, wid, depth}, cracks {cell, width}, colours,
 //        seed}) a frozen lake: black ice cracked in big polygons, a salt rim, snow drifts placed by cell. I.driftAt, I.rimAt, I.crackAt,
-//        I.colourAt, I.heightAt (the ice plus its drift), I.bake(cell) (rim and drift as bytes for the drawing); kind 'ice'
+//        I.colourAt, I.heightAt (the ice plus its drift), I.levelAt() (the level), I.bake(cell) (rim and drift as bytes for the drawing); kind 'ice'
 //   W.driftMesh(I, {res, lift}) -> {pos, nrm, idx, count}: the drifts as one mesh (arrays)
 //   BLOOD   W.rustAt(age, tau) the share rusted after `age` s in the air; W.underIceFall({name, mouth, dir, width, drop, foot, face, ice,
 //        speed, age0, tau, look, stain, icicles, pool, seed}) the bloodfalls: a WATER.fall out from under an ice cliff, its rust down the
@@ -147,6 +147,8 @@
   S.colourAt=(x,z)=>W.iceColour(S,S.crackAt(x,z),S.rimAt(x,z),S.maxDrift>0?S.driftAt(x,z)/S.maxDrift:0);
   // the ice is walkable ground: its level plus the snow on it; WATER.heightAt answers it as a surface (it ranks after open water)
   S.heightAt=(x,z)=>S.contains(x,z)?S.level+S.driftAt(x,z):null;
+  /* the level as open water answers it (t ignored: the ice does not tide); WATER.fields (ext/60) reads it (2026-11-24, T43: the polynya set its own) */
+  S.levelAt=()=>S.level;
   S.normalAt=()=>[0,1,0];
   // the rim and the drift (normalised by the deepest) as bytes over the box: R rim, G drift, B 0, A 255 (WATER.tintSample reads it back)
   S.bake=c=>{c=c==null?2:c;const nx=Math.max(2,Math.ceil((B[2]-B[0])/c)),nz=Math.max(2,Math.ceil((B[3]-B[1])/c)),data=new Uint8Array(nx*nz*4);

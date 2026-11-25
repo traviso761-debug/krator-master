@@ -4,7 +4,7 @@
      2. moat  (1317, 117) +1,749.1 m, 1.29 atm, Cfa — Concentric Ring-Dike Hogback, Seepage Pitcher-Fen & Whispering Scarp
      3. crown (1328, 150) +2,924.8 m, 1.11 atm, Cfb — Lenticular Cloud-Cap Apex, Concentric Treeline Garlands & Observatory Plinth
      4. cleft (1372, 148) +2,537.7 m, 1.17 atm, Cfa — 40 m Radial Unloading Kluft Fissure, KSPELEO.SMOKY Quartz Vault & Wind-Organ
-   Also registers the custom 'laccolith-shell' KSTRATA column when KSTRATA is present.
+   Its KSTRATA columns ('laccolith-shell', 'ring-dike-collar') are core's recipes (core/terrain/35-core-strata.js).
    Zero THREE, zero DOM.
 */
 var DOME_SITES = (function () {
@@ -16,37 +16,11 @@ var DOME_SITES = (function () {
     return R;
   }
 
-  /* Register custom surface-parallel quartz-porphyry & leucogranite exfoliation column onto KSTRATA */
+  /* The surface-parallel quartz-porphyry & leucogranite exfoliation column ('laccolith-shell') and the moat's 'ring-dike-collar' are core's
+     KSTRATA recipes (core/terrain/35-core-strata.js): this only says whether KSTRATA is loaded with them */
   function registerStrata() {
     var KS = typeof KSTRATA !== 'undefined' ? KSTRATA : (typeof globalThis !== 'undefined' ? globalThis.KSTRATA : null);
-    if (!KS || typeof KS.add !== 'function') return false;
-    if (!KS.RECIPES || !KS.RECIPES['laccolith-shell']) {
-      KS.add({
-        name: 'laccolith-shell',
-        main: 'porphyry',
-        noRepeat: false,
-        kinds: {
-          porphyry:  { p: 0.48, th: [1.1, 2.8], col: [0xc4a89e, 0xbba096, 0xccb2a8, 0xb5988e], hard: 0.90, xbed: 0.0, varnish: 0.35 },
-          leuco:     { p: 0.30, th: [0.8, 2.2], col: [0xdad4ce, 0xe2dcd6, 0xcfc8c2], hard: 0.86, xbed: 0.0, varnish: 0.25 },
-          aplite:    { p: 0.12, th: [0.15, 0.45], col: [0xede9e2, 0xf2eee8], hard: 0.94, xbed: 0.0, varnish: 0.12, between: true },
-          parting:   { p: 0.10, th: [0.12, 0.38], col: [0x7e6d68, 0x6e5f5a], hard: 0.28, xbed: 0.0, varnish: 0.55, between: true }
-        },
-        fx: { varnish: 0.35 }
-      });
-    }
-    if (!KS.RECIPES || !KS.RECIPES['ring-dike-collar']) {
-      KS.add({
-        name: 'ring-dike-collar',
-        main: 'redporph',
-        kinds: {
-          redporph:  { p: 0.44, th: [2.0, 6.5], col: [0x8c484c, 0x9a5256, 0x7c3e42], hard: 0.92, xbed: 0.0, varnish: 0.55 },
-          arkose:    { p: 0.32, th: [1.2, 4.0], col: [0xb88e74, 0xc49a80, 0xa87e66], hard: 0.68, xbed: 0.45, varnish: 0.40 },
-          carbonate: { p: 0.24, th: [1.0, 3.5], col: [0xd2ccc0, 0xdcd6ca, 0xc4beb2], hard: 0.74, xbed: 0.1, varnish: 0.28 }
-        },
-        fx: { xbed: 0.35, varnish: 0.45 }
-      });
-    }
-    return true;
+    return !!(KS && KS.RECIPES && KS.RECIPES['laccolith-shell'] && KS.RECIPES['ring-dike-collar']);
   }
 
   /* Deterministic non-overlapping gnamma solution-pan generator for bare exfoliation benches */
@@ -93,8 +67,6 @@ var DOME_SITES = (function () {
     }
     return out;
   }
-
-  registerStrata();
 
   var APRON_TENTS = [
     { id: 'atent-hero', x: -18.0, z: 26.0, spanM: 22.0, lengthM: 17.5, gapM: 2.15, thickM: 0.92, ry: 0.16 },
@@ -304,7 +276,66 @@ var DOME_SITES = (function () {
       gnammas: [],
       reserves: [],
       geology: { stone: 214, iron: 40, copper: 10, clay: 28, smokyQuartz: 1 }
-    }
+    },
+
+    eastflank: (function () {
+      var efTents = [
+        { id: 'ef-atent-1', x: 104.0, z: 46.0, spanM: 19.0, lengthM: 15.0, gapM: 1.75, thickM: 0.96, ry: -0.18 }
+      ];
+      var efHeroPans = [
+        { id: 'ef-mirror-1', x: 74.0, z: -62.0, r: 6.2, depth: 0.52, islandR: 1.55, islandDx: 0.15, islandDz: -0.1, sillY: null },
+        { id: 'ef-mirror-2', x: 118.0, z: -12.0, r: 5.8, depth: 0.48, islandR: 0, islandDx: 0, islandDz: 0, sillY: null }
+      ];
+      var efGnammas = makeGnammas(6510, 22, 320, function (x, z, r) {
+        /* Keep strictly downslope of the Kill-Line (x > 46), clear of the active Mist-Pylon (62, -18), A-tent & risers! */
+        if (x < 46 + r) return true;
+        if (Math.hypot(x - 62.0, z + 18.0) < r + 24.0) return true;
+        if (Math.hypot(x - 104.0, z - 46.0) < r + 20.0) return true;
+        var d0 = Math.hypot(x + 880.0, z - 140.0);
+        var frac = (d0 / 52.0) - Math.floor(d0 / 52.0);
+        if (Math.min(frac, 1.0 - frac) * 52.0 < r + 6.5) return true;
+        return false;
+      }, efHeroPans);
+      return {
+        id: 'eastflank',
+        out: 'thedome-eastflank.html',
+        name: 'East Flank Carnelian Sky-Island, Perimeter Kill-Line & Active Mist-Pylon',
+        region: 'The Dome, East Frontier Shoulder',
+        px: [1384, 142],
+        skyOffset: [1112, -188],
+        domeApexPx: [1328, 150],
+        inDomeVerified: true,
+        ownDmVerified: true,
+        elevM: 2361.1,
+        baseElevM: 2361.1,
+        pAtm: 1.19,
+        koppen: 'Cfa',
+        rainMmYr: 1067,
+        tempMeanC: 15.0,
+        wind: [3.4, -1.8],
+        seed: 6501,
+        strataStack: 'laccolith-shell',
+        strataRange: [-110, 210],
+        domeCenterLocal: [-880, 140],
+        shellSpacingM: 52.0,
+        riserBandM: 5.2,
+        riserHeightM: 2.05,
+        shellThicknessM: 1.15,
+        baseSlopeDeg: 11.2,
+        killLine: {
+          x0: 8.0, z0: 0.0, dx: 0.20, dz: 0.98, halfWidthM: 24.0, vanguardWidthM: 18.0, lengthM: 1600.0, mode: 'kill-line'
+        },
+        mistPylon: {
+          x: 62.0, z: -18.0, poolElevM: -14.0, bandM: 18.0, reachM: 680.0, hazardRadiusM: 24.0, state: 'active'
+        },
+        kin: ['swlowlands'],
+        modes: ['Vernal-Brim', 'Sun-Baked Dry', 'Crown-Mist'],
+        aTents: efTents,
+        gnammas: efGnammas,
+        reserves: [],
+        geology: { stone: 208, iron: 44, copper: 14, clay: 24 }
+      };
+    })()
   };
 
   SITES.registerStrata = registerStrata;

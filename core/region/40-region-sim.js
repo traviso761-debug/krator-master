@@ -57,6 +57,8 @@ RH.tradeOf = function (key) {
   if (!RH._trade) { RH._trade = {}; (typeof ISLE_TRADES !== 'undefined' ? ISLE_TRADES : []).forEach(function (r) { (r.east || []).concat(r.west || []).forEach(function (k) { if (!RH._trade[k]) RH._trade[k] = r.trade; }); }); }
   return RH._trade[key] || (RH.COLONY_AS && RH.COLONY_AS[key] ? RH.tradeOf(RH.COLONY_AS[key]) : null);   /* a colony's stand-in: its Islander counterpart's trade (47k) */
 };
+/* a kit key's box and role from the isle's ISLE_DIMS, or null on a host that has none (S2-C15: the region parts run on other hosts) */
+RH.dimsOf = function (key) { return typeof ISLE_DIMS !== 'undefined' && ISLE_DIMS && ISLE_DIMS[key] || null; };
 RH.simPlaces = function (TS, R, G, nav) {
   var T = RH.TUNE.sim, F = G.frame, s = TS.id, out = { places: [], homes: 0, beds: 0, posts: 0, byKind: {}, unmapped: {}, far: 0 };
   var world = function (x, z) { return { x: +(x + F.x).toFixed(2), y: +(G.h(x, z) + F.sea).toFixed(2), z: +(z + F.z).toFixed(2) }; };
@@ -84,7 +86,8 @@ RH.simPlaces = function (TS, R, G, nav) {
       var Pl = put(s + '.' + L.lot, 'an empty lot', ['lot', { WORK: 100 / Math.max(1, L.w * L.d) }, { out: true, wander: 4 }], L.x, L.z, L.ry, L.w * L.d, 0, tags);
       if (nl > crew) { delete Pl.activities.WORK; out.posts -= 1; }
       return; }
-    var rec = [s + '.' + L.lot, L.name || ISLE_DIMS[L.key] && ISLE_DIMS[L.key].role || L.key, K, L.x, L.z, L.ry, L.w * L.d, beds, tags];
+    var DM = RH.dimsOf(L.key);   /* the kit's role name; a host without the isle's ISLE_DIMS names the place by its key (S2-C15) */
+    var rec = [s + '.' + L.lot, L.name || DM && DM.role || L.key, K, L.x, L.z, L.ry, L.w * L.d, beds, tags];
     if (K[0] === 'home') homes.push({ h: KRAND.hash(T.seed, 71, i), rec: rec }); else put.apply(null, rec);
   });
   (R.fields || []).forEach(function (Fr) {
@@ -169,7 +172,7 @@ RH.simDeclare = function (plans, clock, opts) {
     X.items = RH.simHouseholds(TS, X.places.places, X.econ.foods);
     X.ms.people = Date.now() - t1;
   });
-  S.trade = RH.simTrade();
+  S.trade = RH.simTrade ? RH.simTrade() : null;   /* the isle's canoe line (its 47); a host without one has none (S2-C15) */
   S.build = RH.simBuild();   /* the empty lots and upkeep (47b), before the money opens the lots' accounts */
   S.crime = RH.simCrime();   /* crime and punishment (47c), after everyone is placed */
   S.yards = RH.expYards ? RH.expYards() : null;   /* the canoe sheds' canoes of the islands' goods (47x), before the money prices them and opens their accounts */

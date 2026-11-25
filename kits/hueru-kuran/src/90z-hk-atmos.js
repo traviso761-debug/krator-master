@@ -9,7 +9,7 @@
  if(qs.has('t'))ATMOS.clock.fixed=+qs.get('t');
  const syncWind=()=>{
   const w=ATMOS.U.wind.value;
-  ANIMU.uWind.value=Math.hypot(w.x,w.y);
+  ANIMU.uAnimWind.value=Math.hypot(w.x,w.y);
  };
  syncWind();
  ATMOS.hook(()=>syncWind());

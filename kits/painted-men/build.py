@@ -12,6 +12,9 @@ formline & totem layer (83-pm-tlingit.js) and dwellings/halls/salvage (84-tri-dw
 core/furnish, the GENERATED 69d-furniture-bundle.js, and targets/sheet/ (88y-pmsheet-matlib.js, 89z-rows.js, 91t-pmsheet-tags.js).
 Packed PBR and Tlingit frieze maps named in materials.json are read in place from kits/highlands/tex/.
 Core modules taken: core/rand, core/tags, core/walk, core/door, core/host, core/atmos (placeholder), core/materials, core/furnish."""
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))

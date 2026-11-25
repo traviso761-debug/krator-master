@@ -39,6 +39,9 @@ claim the file is syntactically valid — the only thing that actually catches a
 syntax error here is verify.py, which loads the page and reads the on-screen
 error panel. Do not read a green build as "the JavaScript parses".
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -221,7 +224,7 @@ SCOPED_PREFIXES = ('86-bio-',)
 # KratorFurniture) and the interiors core with this kit's interior set (kits/interiors/kit_bundle.py:
 # KratorInteriors, ROOM, furnishRoom). Inserted at build time between the vernacular helpers and the
 # Highlands vocabulary; never written to src/. 89y-hl-furnish.js is the glue (after 73-hl-carve's own VERN.place, before the scene) (FURNISH, the interiors hook).
-FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc']
+FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc', 'arms']   # arms: the garrison's weapon racks and armour stands for the barracks and the armoury (Stage 8 D27, O5)
 VIRTUAL = {'69d-furniture-bundle.js'}
 
 

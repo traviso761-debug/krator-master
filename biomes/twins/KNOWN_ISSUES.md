@@ -5,9 +5,10 @@
 - [ ] **No life layer yet.** The resting caravan in tube A1, the guides, the Cloud-Yaks and Basalt-Mules, the cinder-vipers and the
   pyroduct swifts (`PLAN.md` section 5.3) are owed to `kits/fauna`, `core/camp` and `kits/catalog` (the caravan's goods); nothing stands in
   for them. The tubes' floors are KCAVERN's plan but no `core/walk` layer is on the page (`STATION_FLOOR` is the camera's guard).
-- [ ] **KSTRATA has no `obsidian` or `scoria` recipe** (`PLAN.md` section 0 names them; core has `tibasalt` as the nearest). Station 1's faces
-  are `tibasalt`; its obsidian is items and a ground class. The recipes are owed to `core/terrain/35-core-strata.js`: adding one changes every
-  page that inlines that file, so it waits for an all-builds rebuild (`TODO.md`, "Ride along with the next all-builds rebuild").
+- [ ] **The coulees and spatter cones are not on their obsidian recipe yet.** Core has both recipes now: `obsidian-pancake` is the Twins'
+  obsidian (the owner, Stage 8 D12: no separate `obsidian` recipe) and `scoria` has landed. Every face is still `tibasalt` (each station's
+  `KSTRATA.create({formations:[{recipe:'tibasalt'}]})`; `99-host-take.js` asserts it), and the obsidian is items and a ground class. Owed
+  here, not in core: a formation on `obsidian-pancake` where the coulees and cones stand, and the rock check taking both recipes.
 - [ ] **The NW Twin's plume does not read from station 1** (`89b-host-twins.js`: core/atmos `smoke`, sprites 420-1,700 m at 24 km, 70 to
   an emitter, alpha .42). The mesh is built and in view (`ATMOS.root`'s `atmos:smoke`, 350 sprites, the plume's centre in the middle of the
   frame), but from this site the gas giant hangs exactly behind the NW Twin and a grey column on its dark disc does not show under software

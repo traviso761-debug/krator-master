@@ -182,7 +182,7 @@
       { id: 'block-e', poly: rect(8, 20, 13.5, -2), y: 0.4, levels: [{ h: 3.6 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 4),
         doors: [{ at: [9.5, -7], w: 1.2 }, { at: [9.5, 3], w: 1.2 }], program: ['barracks', 'barracks', 'barracks', 'store'] },
       { id: 'armoury', poly: rect(9, 6, 0, -11.5), y: 0, levels: [{ h: 3.4 }], wall: 0.5, roof: 'hip', pitch: pt(1.4 / 3),
-        doors: [{ at: [0, -8.5], w: 1.6 }], program: ['store'], windows: false }],
+        doors: [{ at: [0, -8.5], w: 1.6 }], program: ['armoury'], windows: false }],   /* armoury (was a store): the garrison's racks and stands, 'arms' (Stage 8 D27, O5) */
     note: 'the two barrack blocks (doors to the yard) and the stone armoury; the watch tower (ladder landings only), the gate towers ' +
       'and the drill yard are open' });
   add({ key: 'vern_alchemist', name: "Alchemist's compound", wealth: CIVIC, types: ['civic', 'industry'], lot: [32, 28],

@@ -121,7 +121,14 @@ ok('...negative: a surface given a look (and only it) gains a look record in the
  ok('driftMesh: '+DM.count+' vertices ('+I.drifts.length+' drifts x 49), from the ice (+ lift) to the deepest drift',DM.count===I.drifts.length*49&&Math.abs(Math.min(...ys)-4100.01)<1e-6&&Math.max(...ys)-4100.01<=I.maxDrift+1e-9&&Math.max(...ys)-4100.01>I.maxDrift*.8&&DM.idx.length===I.drifts.length*216,false);
  const D=W.drawIce(I,{}),c=compiled(D.material),D2=W.drawIce(W.ice({name:'bare',poly,level:0,drifts:false}),{});
  ok('drawIce: the ice\'s chunk and its bake as a texture, the drifts as a second mesh; an ice without drifts draws one mesh',c.fs.includes('vec3 wtrIce(')&&c.uniforms.wtrIceMap.value===D.texture&&D.drifts&&D.drifts.name==='water:tarn drifts',!!D2.drifts);
- const ex=W.export().surfaces.find(s=>s.name==='tarn');ok('the export carries the ice and every drift record (Godot places them as they are)',ex.kind==='ice'&&ex.drifts.length===I.drifts.length&&ex.rim.salt===true&&ex.maxDrift===I.maxDrift,false);}
+ const ex=W.export().surfaces.find(s=>s.name==='tarn');ok('the export carries the ice and every drift record (Godot places them as they are)',ex.kind==='ice'&&ex.drifts.length===I.drifts.length&&ex.rim.salt===true&&ex.maxDrift===I.maxDrift,false);
+ // 2026-11-24 (T43): the ice answers levelAt as open water does, so WATER.fields (ext/60, which reads S.levelAt(0) of every surface but a flow or
+ // a still) takes it; it threw on an ice record, and the polynya gave its own records one
+ if(!W.fields)eval(rd('core/water/ext/60-core-water-fields.js'));
+ const fd=(S,gy)=>{try{const F=W.fields({box:[-40,-40,40,40],cell:4,ground:()=>gy,surfaces:[S]});return W.fieldAt(F,0,0).depth;}catch(e){return'threw: '+e.message;}};
+ const dI=fd(I,4098),dLow=fd(W.ice({name:'under the ground',poly,level:4096,drifts:false}),4098);
+ ok('the ice answers levelAt ('+(I.levelAt&&I.levelAt(0))+'), and WATER.fields reads it: 2 m of water over ground 2 m under its level (depth '+dI+')',
+  typeof I.levelAt==='function'&&I.levelAt(0)===4100&&I.levelAt(5e4)===4100&&dI===2,dLow!==0);}
 
 // ================================================================ 5. the bloodfalls (the Godthrone)
 {ok('rust: none at the mouth, 1 - 1/e after tau seconds in the air',W.rustAt(0,3)===0&&Math.abs(W.rustAt(3,3)-(1-Math.exp(-1)))<1e-15,W.rustAt(-1,3)!==0);

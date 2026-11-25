@@ -57,7 +57,7 @@ H.simValley = function (V) {
      on 40-49, RH.SIM): no SIM.init, the host's clock, its own walking layer; a road may end at one of the host's towns,
      at the place V.extern names for it ({settlement: place}) */
   var KV = V.scale == null ? 10 : V.scale, m0 = V.start == null ? 0 : V.start, C = V.attach && H.SIM ? H.SIM.clock : { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
-  var S = H.VALLEY = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, fed: {}, starved: {}, away: {}, carry: {}, moves: [], last: C.m, veinWorks: [], veinMoves: [], cuts: {}, raids: {} };
+  var S = H.VALLEY = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, fed: {}, starved: {}, away: {}, carry: {}, moves: [], last: C.m, veinWorks: [], veinMoves: [], cuts: {}, roadRaids: {} };
   if (!V.attach) H.SIM = S;
   if (!V.attach) SIM.init({ seed: V.seed == null ? 1 : V.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
   ['SLEEP', 'WORK', 'REST'].forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a, indoor: a !== 'WORK' }); });
@@ -128,7 +128,7 @@ H.simValley = function (V) {
       TR.carriers.forEach(function (Cr) { if (Cr.phase !== 'sail' || Cr.from == null) return; var mark = Cr.from + '@' + Cr.eta;
         if (Cr._lossSeen === mark) return; Cr._lossSeen = mark;
         Rd.losses.forEach(function (Ls) { if (Ls.legs.indexOf(Cr.from) < 0) return; if (Ls.window && !(SIM.inSeason && SIM.inSeason(Ls.window, minute))) return;
-          var cnt = Cr._lossN || (Cr._lossN = {}), key = Ls.why, n = cnt[key] = (cnt[key] || 0) + 1, every = Ls.every == null ? 1 : Ls.every, spare = Ls.spare == null ? 0 : Ls.spare;   /* counted over every leg of its kind */
+          var cnt = Cr._lossN || (Cr._lossN = {}), key = Ls.why, n = cnt[key] = (cnt[key] || 0) + 1, every = Ls.every > 0 ? Ls.every : 1, spare = Ls.spare == null ? 0 : Ls.spare;   /* counted over every leg of its kind */
           if ((n - 1) % every < spare || Cr.beasts <= 0) return;
           var dead = Math.max(1, Math.round(Cr.beasts * Ls.share)); Cr.beasts -= dead; TR.died += dead;
           S.losses[Rd.id].push({ carrier: Cr.k, leg: Cr.from, dead: dead, why: Ls.why, minute: minute });
@@ -156,11 +156,12 @@ H.simValley = function (V) {
   });
   /* W5: road cargo raids: on a road's landing at `at` (optionally from `from`, while `window` is open), of every `every`
      arrivals `spare` pass whole and the rest lose `share` of their landed goods to `to`'s first warehouse (booked exported
-     from `at` and imported into `to`, keeping SIM.ledgerSnap zero-sum); S.raids[road] = {events, taken} */
+     from `at` and imported into `to`, keeping SIM.ledgerSnap zero-sum); S.roadRaids[road] = {events, taken} (S3-87b: not S.raids,
+     the generic name; the Lizardmen's raids are S.raiding, 52) */
   var RAIDS = (V.roads || []).filter(function (Rd) { return Rd.raids && Rd.raids.length && SIM.TRADE && SIM.TRADE.routes[Rd.id]; });
-  RAIDS.forEach(function (Rd) { S.raids[Rd.id] = { events: [], seen: {}, count: {}, taken: {} }; });
+  RAIDS.forEach(function (Rd) { S.roadRaids[Rd.id] = { events: [], seen: {}, count: {}, taken: {} }; });
   if (RAIDS.length) SIM.stepHooks.push(function (minute) {
-    RAIDS.forEach(function (Rd) { var L = SIM.TRADE.routes[Rd.id].landed, Rx = S.raids[Rd.id];
+    RAIDS.forEach(function (Rd) { var L = SIM.TRADE.routes[Rd.id].landed, Rx = S.roadRaids[Rd.id];
       Rd.raids.forEach(function (ra, ri) { if (!S.towns[ra.at] || !S.towns[ra.to]) return;
         Object.keys(L).sort().forEach(function (leg) { var sp = leg.split('>');
           if (sp[1] !== ra.at || (ra.from && sp[0] !== ra.from)) return;
@@ -171,7 +172,7 @@ H.simValley = function (V) {
             if (!ra.goods || ra.goods.indexOf(g) >= 0) deltas.push([g, d]); });
           if (!deltas.length) return;
           if (ra.window && !(SIM.inSeason && SIM.inSeason(ra.window, minute))) return;
-          var nPass = Rx.count[ck] = (Rx.count[ck] || 0) + 1, ev = ra.every == null ? 1 : ra.every, sp0 = ra.spare == null ? 0 : ra.spare;
+          var nPass = Rx.count[ck] = (Rx.count[ck] || 0) + 1, ev = ra.every > 0 ? ra.every : 1, sp0 = ra.spare == null ? 0 : ra.spare;
           if ((nPass - 1) % ev < sp0) return;
           deltas.forEach(function (pair) { var g = pair[0], d = pair[1], want = Math.max(1, Math.floor(d * ra.share)), took = 0;
             SIM.withEcon(ra.at, function () { took = SIM.economyTake(g, want); if (took > 0) SIM.economyBook('exported', g, took); });

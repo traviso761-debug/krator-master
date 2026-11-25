@@ -274,6 +274,28 @@
   skip('xa_ice_cave', 'The Caves of Ice', ['religious', 'infrastructure'], 'a cave');
   skip('xa_bridge', 'Street bridge', ['infrastructure'], 'a bridge');
 
+  /* ================================================================ the caravanserai (88c-xa-caravanserai.js)
+     Until Stage 8 B9 (2026-11-24; T7) the set 'xanadu-extra' (kits/xanadu/extra/69dz-ix-xanadu-extra.js), moved here with its
+     piece into the kit's src/. Each of the five ranges a body of two battered storeys (xnStack 3.8 + 3.2 m on a 0.6 m plinth),
+     planned INSET on the top storey's footprint, its door on the court face. Below, the stores and the common room with its
+     kitchen (the stables are the arcade's lean-to, outside the body); above, the travellers' rooms. The gate block and the four
+     corner towers stay solid. range(): a battered range of storeys hs at (cx, cz), base w x d, its door moved onto its top
+     footprint's court face (toward the court's middle, the plot's origin) */
+  function range(id, cx, cz, w, d, hs, program) {
+    let ww = w, dd = d; hs.forEach(function (h) { const k = batK(ww, h, dd); ww *= k; dd *= k; });
+    const alongX = w > d, door = alongX ? [cx, r3(cz - Math.sign(cz) * dd / 2)] : [r3(cx - Math.sign(cx) * ww / 2), cz];
+    return { id: id, poly: rect(r3(ww), r3(dd), cx, cz), y: 0.6, levels: hs.map(function (h) { return { h: h }; }), wall: 0.45, roof: 'flat',
+      doors: [{ at: door, w: 1.4 }], program: program, inset: true };
+  }
+  const SERAI_HS = [3.8, 3.2];
+  add({ key: 'xa_caravanserai', name: 'Caravanserai', wealth: MID, types: ['tavern/inn', 'market/shop'], lot: [54, 56],
+    bodies: [range('back', 0, -20.5, 34, 7, SERAI_HS, [['tavern', 'kitchen', 'store'], ['bedroom', 'bedroom', 'bedroom', 'bedroom']]),
+      range('east', 20.5, 0, 7, 34, SERAI_HS, [['store', 'store'], ['bedroom', 'bedroom', 'bedroom']]),
+      range('west', -20.5, 0, 7, 34, SERAI_HS, [['store', 'store'], ['bedroom', 'bedroom', 'bedroom']]),
+      range('front_e', 11.5, 20.5, 11, 7, SERAI_HS, [['store'], ['bedroom']]),
+      range('front_w', -11.5, 20.5, 11, 7, SERAI_HS, [['store'], ['bedroom']])],
+    note: 'five ranges round the court: the common room, its kitchen and the stores below, the travellers\' rooms above; the gate block and the corner towers solid' });
+
   /* ================================================================ the Palopó repaints (88-xa-dress.js): the base's rooms */
   ['xa_poor_a', 'xa_poor_b', 'xa_poor_c', 'xa_mid_a', 'xa_mid_b', 'xa_mid_c', 'xa_rich_a', 'xa_rich_b', 'xa_rich_c', 'xa_shops', 'xa_bath', 'xa_temple',
     'xa_house_turk_a', 'xa_house_turk_b', 'xa_shop_turk_a', 'xa_shop_turk_b', 'xa_andean_mid', 'xa_andean_rich'].forEach(function (k) {

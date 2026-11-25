@@ -34,7 +34,7 @@
  W.drawFalls=(list,o)=>{o=o||{};
   // (a margin or edge is the curtains' record too, for the export: Godot widens and fades them the same way; nothing is recorded without one)
   if(o.margin!=null||o.edge!=null)for(const S of list)S.curtainOpt=W.sideOpt({rows:W.curtainRows(S,o),cols:o.cols==null?W.PRESETS.fall.cols:o.cols},o);
-  const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,M=W.mergedFalls(list,o),C=M.curtain,name=o.name||'falls',ids=list.map(S=>S.id);
+  const A=W.atmosBound('WATER.drawFalls'),T=o.THREE||A.T,scene=o.scene||A.h.scene,M=W.mergedFalls(list,o),C=M.curtain,name=o.name||'falls',ids=list.map(S=>S.id);
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(C.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(C.nrm,3));
   g.setAttribute('wtrUF',new T.Float32BufferAttribute(C.uv,2));g.setAttribute('wtrFP',new T.Float32BufferAttribute(C.fp,2));g.setIndex(C.idx);g.computeBoundingSphere();
   const col=o.color==null?0xb8d4d6:o.color,op=o.opacity==null?.92:o.opacity;
@@ -72,7 +72,7 @@
  // 1/radius, power) and its two colours ride as vertex attributes (power -1: no gradient, the material's colour). The colour step is wtrPoolT
  // (W.poolGLSL; twin: the surface's gradientT). o.tint: a hex multiplier on the colour (drawStill's). Without either, all is as before.
  W.poolGLSL='float wtrPoolT(vec2 p,vec4 g){return pow(clamp(length(p-g.xy)*g.z,0.0,1.0),g.w);}';
- W.drawPools=(list,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,name=o.name||'pools',pos=[],idx=[];
+ W.drawPools=(list,o)=>{o=o||{};const A=W.atmosBound('WATER.drawPools'),T=o.THREE||A.T,scene=o.scene||A.h.scene,name=o.name||'pools',pos=[],idx=[];
   const GR=list.map(S=>S.gradient||(o.gradient?(S.gradient=W.gradientOf(S,o.gradient)):null)),anyG=GR.some(Boolean),ga=[],gc=[],gr=[],cv=c=>W.colLin(T,c);
   list.forEach((S,si)=>{const M=W.stillMesh(S),b=pos.length/3,G=GR[si];for(const v of M.pos)pos.push(v);for(const k of M.idx)idx.push(b+k);
    if(anyG){const a=G?[G.at[0],G.at[1],1/G.radius,G.power]:[0,0,0,-1],c0=G?cv(G.centre):[0,0,0],c1=G?cv(G.rim):[0,0,0];for(let k=0;k<M.pos.length/3;k++){ga.push(...a);gc.push(...c0);gr.push(...c1);}}});

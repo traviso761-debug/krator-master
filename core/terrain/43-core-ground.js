@@ -25,6 +25,14 @@
 //        blend (.18), hex ({rot: .6, contrast: .6, exp: 7} or false), far ({d: 60, levels: 3} or false),
 //        baseH (a GLSL float: the height of the paint under the first layer, '0.5'), key (the program key's part)
 //        -> mat. mat.userData.kground holds the layers drawn (their names) for the inspector and the export
+//        array (opt-in, 2026-11-24, the owner: "put blakhed shader in core terrain"): true or {size: [w, h]}: every layer's map
+//          a layer of ONE texture array (uniform sampler2DArray uKGA; DataTexture2DArray built from the maps' images when they land,
+//          one size: the largest, the rest resampled and said), sampled by layer index with the same hex / distance / triplanar
+//          sampling, so N map layers take one texture unit instead of N. WebGL2 only (WebGL1: the plain samplers). Off, the shader
+//          text and the key are byte for byte today's; on, the key ends '-A<maps>'. mat.userData.kgroundArray: {n, names, size,
+//          resampled, filled, drawn ('array'|'plain')}. ?kgarray=0 turns it off on any page, ?kgarray=1 on where the page did not say
+//        a layer's lin: 'srgb' decodes with three's exact sRGB curve (sRGBToLinear) instead of pow 2.2; turn {m, scale, off, mix}: the
+//          same map sampled again turned and scaled, the decoded colours mixed (a page's own break-up; on the plane only)
 //   KGROUND.glsl(o)  the GLSL library alone (kgSample, kgHL, ...), for a page that writes its own blend
 //   KGROUND.fn       the JS twins of the GLSL (tri, hash, heightLerp, lod; the kinds' hash3, vor2, vor3, vnoise, ripple),
 //        for tests and for Godot's port
@@ -57,7 +65,7 @@
 //   ?kgrelief=1 [&kgtri=1]   the before-and-after switch on any page, for judging (the page's own options win); ?kgrelief=2 doubles it
 //
 // Godot: ground.gdshader with the same layers as uniforms and the same functions (the godotshaders hex-tiling port, MIT,
-// is the same algorithm); core/terrain/README.md, "Godot".
+// is the same algorithm); core/terrain/GROUND.md, "Godot" (the array: a sampler2DArray as terrain.gdshader's kgd_albedo_arr).
 (function(root){
   // ---------------------------------------------------------------- the JS twins (the GLSL below says the same)
   function fract(v){return v-Math.floor(v);}
@@ -97,16 +105,18 @@
     return ['#if __VERSION__ >= 300',
       '#define KG_GRAD(t,p,dx,dy) textureGrad(t,p,dx,dy)','#define KG_LOD(t,p,l) textureLod(t,p,l)',
       '#else','#define KG_GRAD(t,p,dx,dy) texture2D(t,p)','#define KG_LOD(t,p,l) vec4(0.5)','#endif',
+      /* the eye, once (KHOOK.EYE's text and guard: whichever comes first defines it), for the glint and the far blend */
+      '#ifndef KHOOK_EYE','#define KHOOK_EYE','vec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}','#endif',
       'vec2 kgHash(vec2 p){vec3 p3=fract(vec3(p.xyx)*vec3(0.1031,0.1030,0.0973));p3+=dot(p3,p3.yzx+33.33);return fract((p3.xx+p3.yz)*p3.zy);}',
-      'void kgTri(vec2 st,out vec3 w,out vec2 v1,out vec2 v2,out vec2 v3){st*=3.4641016;vec2 sk=vec2(st.x-0.57735027*st.y,1.15470054*st.y);',
+      'void kgTri(vec2 st,out vec3 w,out vec2 kgV1,out vec2 kgV2,out vec2 kgV3){st*=3.4641016;vec2 sk=vec2(st.x-0.57735027*st.y,1.15470054*st.y);',
       ' vec2 b=floor(sk);vec3 t=vec3(fract(sk),0.0);t.z=1.0-t.x-t.y;float s=step(0.0,-t.z),s2=2.0*s-1.0;',
-      ' w=vec3(-t.z*s2,s-t.y*s2,s-t.x*s2);v1=b+vec2(s,s);v2=b+vec2(s,1.0-s);v3=b+vec2(1.0-s,s);}',
+      ' w=vec3(-t.z*s2,s-t.y*s2,s-t.x*s2);kgV1=b+vec2(s,s);kgV2=b+vec2(s,1.0-s);kgV3=b+vec2(1.0-s,s);}',
       /* the turn of a hex cell, from its integer vertex (no sine hash): Mikkelsen's LoadRot2x2 */
       'mat2 kgRot(vec2 v){float a=abs(v.x*v.y)+abs(v.x+v.y)+3.14159265;a=mod(a,6.2831853);if(a>3.14159265)a-=6.2831853;a*='+f(rot)+';float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}',
       'vec2 kgCen(vec2 v){return vec2(v.x+0.5*v.y,v.y*0.8660254)/3.4641016;}',
       'vec4 kgHex(sampler2D t,vec2 st,vec2 dx,vec2 dy){'+(hx?
-        'vec3 w;vec2 v1,v2,v3;kgTri(st,w,v1,v2,v3);mat2 r1=kgRot(v1),r2=kgRot(v2),r3=kgRot(v3);vec2 c1=kgCen(v1),c2=kgCen(v2),c3=kgCen(v3);'+
-        'vec4 a=KG_GRAD(t,r1*(st-c1)+c1+kgHash(v1),r1*dx,r1*dy),b=KG_GRAD(t,r2*(st-c2)+c2+kgHash(v2),r2*dx,r2*dy),c=KG_GRAD(t,r3*(st-c3)+c3+kgHash(v3),r3*dx,r3*dy);'+
+        'vec3 w;vec2 kgV1,kgV2,kgV3;kgTri(st,w,kgV1,kgV2,kgV3);mat2 kgR1=kgRot(kgV1),kgR2=kgRot(kgV2),kgR3=kgRot(kgV3);vec2 c1=kgCen(kgV1),c2=kgCen(kgV2),c3=kgCen(kgV3);'+
+        'vec4 a=KG_GRAD(t,kgR1*(st-c1)+c1+kgHash(kgV1),kgR1*dx,kgR1*dy),b=KG_GRAD(t,kgR2*(st-c2)+c2+kgHash(kgV2),kgR2*dx,kgR2*dy),c=KG_GRAD(t,kgR3*(st-c3)+c3+kgHash(kgV3),kgR3*dx,kgR3*dy);'+
         'vec3 L=vec3(0.299,0.587,0.114),D=mix(vec3(1.0),vec3(dot(a.rgb,L),dot(b.rgb,L),dot(c.rgb,L)),'+f(con)+');vec3 W=D*pow(max(w,vec3(0.0)),vec3('+f(ex)+'));W/=max(W.x+W.y+W.z,1e-5);'+
         'return W.x*a+W.y*b+W.z*c;}':'return KG_GRAD(t,st,dx,dy);}'),
       /* the distance scale: lv the continuous level (KGROUND.fn.lod); two scales cross-faded */
@@ -116,14 +126,14 @@
       'float kgLum(vec3 c){return dot(c,vec3(0.299,0.587,0.114));}'].join('\n')+'\n';}
   // the kinds' GLSL (KGROUND.fn's hash3, vor2, vor3, vnoise, ripple), added only when a layer has a kind
   function kindsGlsl(){return ['vec3 kgHash3(vec3 p){p=fract(p*vec3(0.1031,0.1030,0.0973));p+=dot(p,p.yxz+33.33);return fract((p.xxy+p.yxx)*p.zyx);}',
-    'vec2 kgVor2(vec2 x,float jit,float sd,out vec2 cid,out vec2 rel){vec2 n=floor(x),f=x-n,r1=vec2(0.0),r2=vec2(1.0,0.0);float d1=8.0,d2=8.0;cid=n;',
+    'vec2 kgVor2(vec2 x,float jit,float sd,out vec2 cid,out vec2 rel){vec2 n=floor(x),f=x-n,kgR1=vec2(0.0),kgR2=vec2(1.0,0.0);float d1=8.0,d2=8.0;cid=n;',
     ' for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){vec2 g=vec2(float(i),float(j));vec2 r=g+0.5+jit*(kgHash3(vec3(n+g,sd)).xy-0.5)-f;float d=dot(r,r);',
-    '  if(d<d1){d2=d1;r2=r1;d1=d;r1=r;cid=n+g;}else if(d<d2){d2=d;r2=r;}}',
-    ' rel=r1;vec2 u=r2-r1;return vec2(sqrt(d1),dot(0.5*(r1+r2),u)/max(length(u),1e-6));}',
-    'vec2 kgVor3(vec3 x,float jit,float sd,out vec3 cid,out vec3 rel){vec3 n=floor(x),f=x-n,r1=vec3(0.0),r2=vec3(1.0,0.0,0.0),s=sd*vec3(1.0,1.7,2.3);float d1=8.0,d2=8.0;cid=n;',
+    '  if(d<d1){d2=d1;kgR2=kgR1;d1=d;kgR1=r;cid=n+g;}else if(d<d2){d2=d;kgR2=r;}}',
+    ' rel=kgR1;vec2 u=kgR2-kgR1;return vec2(sqrt(d1),dot(0.5*(kgR1+kgR2),u)/max(length(u),1e-6));}',
+    'vec2 kgVor3(vec3 x,float jit,float sd,out vec3 cid,out vec3 rel){vec3 n=floor(x),f=x-n,kgR1=vec3(0.0),kgR2=vec3(1.0,0.0,0.0),s=sd*vec3(1.0,1.7,2.3);float d1=8.0,d2=8.0;cid=n;',
     ' for(int k=-1;k<=1;k++)for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){vec3 g=vec3(float(i),float(j),float(k));vec3 r=g+0.5+jit*(kgHash3(n+g+s)-0.5)-f;float d=dot(r,r);',
-    '  if(d<d1){d2=d1;r2=r1;d1=d;r1=r;cid=n+g;}else if(d<d2){d2=d;r2=r;}}',
-    ' rel=r1;vec3 u=r2-r1;return vec2(sqrt(d1),dot(0.5*(r1+r2),u)/max(length(u),1e-6));}',
+    '  if(d<d1){d2=d1;kgR2=kgR1;d1=d;kgR1=r;cid=n+g;}else if(d<d2){d2=d;kgR2=r;}}',
+    ' rel=kgR1;vec3 u=kgR2-kgR1;return vec2(sqrt(d1),dot(0.5*(kgR1+kgR2),u)/max(length(u),1e-6));}',
     'float kgVN(vec2 p,float sd){vec2 i=floor(p),f=p-i,u=f*f*(3.0-2.0*f);float a=kgHash3(vec3(i,sd)).x,b=kgHash3(vec3(i+vec2(1.0,0.0),sd)).x,c=kgHash3(vec3(i+vec2(0.0,1.0),sd)).x,d=kgHash3(vec3(i+1.0,sd)).x;',
     ' return a+(b-a)*u.x+(c-a)*u.y+(a-b-c+d)*u.x*u.y;}',
     'float kgRipple(float u,float a){float f=fract(u);return f<a?f/a:(1.0-f)/(1.0-a);}'].join('\n')+'\n';}
@@ -197,7 +207,7 @@
           'kgH=clamp(kgH+(kgRh-0.5)*0.3*kgRf,0.02,1.0);}');}
       if(gs>0)s.push('{vec2 kgGc=kgWP.xz/'+f(gs)+';vec2 kgGi=floor(kgGc);vec3 kgGh=kgHash3(vec3(kgGi,'+sd+'+3.7)),kgGh2=kgHash3(vec3(kgGi.yx,'+sd+'+8.9));'+
           'float kgGd=length(fract(kgGc)-0.25-0.5*kgGh.xy);vec3 kgGn=normalize(vec3((kgGh2.x-0.5)*'+f(L.spread==null?2:L.spread)+',1.0,(kgGh2.y-0.5)*'+f(L.spread==null?2:L.spread)+'));'+
-          'float kgGl=pow(max(dot(reflect(-normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-kgWP),kgGn),kgSun),0.0),'+f(L.sharp==null?150:L.sharp)+');'+
+          'float kgGl=pow(max(dot(reflect(-normalize(kEye()-kgWP),kgGn),kgSun),0.0),'+f(L.sharp==null?150:L.sharp)+');'+
           'kgC+='+lin3(L.glintColor==null?0xffffff:L.glintColor)+'*kgGl*'+f(L.sparkle==null?4:L.sparkle)+'*step(kgGh.z,'+f(L.glintDensity==null?.2:L.glintDensity)+')*(1.0-smoothstep(0.15,0.3,kgGd))*(1.0-smoothstep('+f(.5*gs)+','+f(1.5*gs)+',kgFp));}');}
     else{
       // polygons on the plane (sand-wedge and ice-wedge polygons, patterned ground, a mare's pressure plates): Voronoi cells of
@@ -219,9 +229,10 @@
     var out={map:K.textures(L,{aniso:8}).map,k:1/(L.scale&&L.scale[0]?L.scale[0]:1),name:slot};if(o)for(var q in o)out[q]=o[q];return out;}
 
   // ---------------------------------------------------------------- the hook
-  function code(o,LY){var far=o.far===false?null:(o.far||{}),d0=far?(far.d==null?60:far.d):0,lv=far?(far.levels==null?3:far.levels):0,bl=o.blend==null?.18:o.blend,f=function(v){return (+v).toFixed(4);};
+  function code(o,LY){var s=code0(o,LY);return o&&o.array?arrRewrite(s,arrIndex(LY).li):s;}
+  function code0(o,LY){var far=o.far===false?null:(o.far||{}),d0=far?(far.d==null?60:far.d):0,lv=far?(far.levels==null?3:far.levels):0,bl=o.blend==null?.18:o.blend,f=function(v){return (+v).toFixed(4);};
     var tri=triOf(o),rl=reliefOf(o);
-    var s=['{vec3 kgDx=dFdx(kgWP),kgDy=dFdy(kgWP);float kgD=length(kgWP-(-(viewMatrix[3].xyz*mat3(viewMatrix))));',
+    var s=['{vec3 kgDx=dFdx(kgWP),kgDy=dFdy(kgWP);float kgD=length(kgWP-kEye());',
       ' float kgLv='+(far?'min('+f(lv)+',max(0.0,log2(max(kgD/'+f(d0)+',1.0))))':'0.0')+';float kgHc='+(o.baseH||'0.5')+';'];
     if(tri)s.push(' vec3 kgN=normalize(kgWN);float kgSt=smoothstep('+f(tri.from)+','+f(tri.to)+',1.0-abs(kgN.y))*(1.0-smoothstep('+f(tri.far*.7)+','+f(tri.far)+',kgD));');
     var smp=function(i,k){return tri?'kgTS(uKG'+i+',kgWP,kgDx,kgDy,kgN,'+k+',kgLv,kgSt)':'kgSample(uKG'+i+',kgWP.xz*'+k+',kgDx.xz*'+k+',kgDy.xz*'+k+',kgLv)';};
@@ -229,12 +240,17 @@
       if(L.kind!=null){if(!KINDS[L.kind])throw new Error('KGROUND: no layer kind \''+L.kind+'\' (clast, sand, polygon)');
         s.push(' {float kgA0=clamp('+L.w+',0.0,1.0)*'+f(L.amt==null?1:L.amt)+';if(kgA0>0.0){'+kindBody(L,i,f)+
           'float kgA=kgHL(kgA0,kgHc,kgH,'+f(bl)+');diffuseColor.rgb=mix(diffuseColor.rgb,kgC,kgA);kgHc=mix(kgHc,kgH,kgA);}}');return;}
-      var h=L.h||{},from=h.from||'lum',hc=h.contrast==null?1.6:h.contrast,k=f(L.k);
+      var h=L.h||{},from=h.from||'lum',hc=h.contrast==null?1.6:h.contrast,k=f(L.k),tn=turnOf(L.turn);
+      if(tn&&tri)throw new Error('KGROUND: layer '+(L.name||i)+': a turn is drawn on the plane only, not with o.tri');
+      /* the decode: lin true (pow 2.2, as the pages do), false (the map is linear), 'srgb' (three's exact curve, sRGBToLinear) */
+      var dc=function(t){return L.lin===false?t+'.rgb':L.lin==='srgb'?'sRGBToLinear('+t+').rgb':'pow('+t+'.rgb,vec3(2.2))';},
+        k2=tn?f(L.k*tn.scale):'',tm=tn?'mat2('+tn.m.map(f).join(',')+')':'';
       // skip the fetches where the layer's weight is 0 (kgHL(0,..) is 0, so the output is unchanged): every fetch in the
       // branch has explicit gradients (KG_GRAD/textureGrad with kgDx/kgDy taken above) or an explicit LOD (KG_LOD), so it is
       // defined in non-uniform control flow; WebGL1's fallback (texture2D) takes implicit derivatives there, kept as is
       s.push(' {float kgA0=clamp('+L.w+',0.0,1.0)*'+f(L.amt==null?1:L.amt)+';if(kgA0>0.0){vec4 kgT='+smp(i,k)+';'+
-        'vec3 kgC='+(L.lin===false?'kgT.rgb':'pow(kgT.rgb,vec3(2.2))')+'*('+(L.tint||'vec3(1.0)')+')*'+f(L.gain==null?1:L.gain)+';'+
+        (tn?'vec4 kgT2=kgSample(uKG'+i+','+tm+'*(kgWP.xz*'+k2+')+vec2('+f(tn.off[0])+','+f(tn.off[1])+'),'+tm+'*(kgDx.xz*'+k2+'),'+tm+'*(kgDy.xz*'+k2+'),kgLv);':'')+
+        'vec3 kgC='+(tn?'mix('+dc('kgT')+','+dc('kgT2')+','+f(tn.mix)+')':dc('kgT'))+'*('+(L.tint||'vec3(1.0)')+')*'+f(L.gain==null?1:L.gain)+';'+
         'float kgH='+(from==='a'?'kgT.a':'clamp(0.5+(kgLum(kgT.rgb)-kgLum(KG_LOD(uKG'+i+',vec2(0.5),16.0).rgb))*'+f(hc)+',0.02,1.0)')+';'+
         'float kgA=kgHL(kgA0,kgHc,kgH,'+f(bl)+');'+
         'diffuseColor.rgb=mix(diffuseColor.rgb,kgC,kgA);kgHc=mix(kgHc,kgH,kgA);}}');});
@@ -254,6 +270,50 @@
   var TRI_GLSL='vec4 kgTS(sampler2D t,vec3 p,vec3 dx,vec3 dy,vec3 n,float k,float lv,float s){vec4 c=vec4(0.0);if(s<1.0)c=kgSample(t,p.xz*k,dx.xz*k,dy.xz*k,lv);'+
     'if(s>0.0){float a=abs(n.x)/(abs(n.x)+abs(n.z)+1e-5),wx=smoothstep(0.3,0.7,a);vec4 sd=vec4(0.0);'+
     'if(wx<1.0)sd+=(1.0-wx)*kgSample(t,p.xy*k,dx.xy*k,dy.xy*k,lv);if(wx>0.0)sd+=wx*kgSample(t,p.zy*k,dx.zy*k,dy.zy*k,lv);c=mix(c,sd,s);}return c;}\n';
+  // ---------------------------------------------------------------- a layer's turned second sample (opt-in, 2026-11-24: Blakhed's ruts)
+  // L.turn {m: [a, b, c, d] (a GLSL mat2, column-major; [.8, -.6, .6, .8]), scale (.41: its tile against the layer's), off ([x, y] in
+  // tiles), mix (.45: its share)}: the same map sampled again turned, scaled and shifted, the two decoded colours mixed: a page's own
+  // break-up of a repeat, on the plane only
+  function turnOf(t){if(!t)return null;t=t===true?{}:t;return {m:t.m||[.8,-.6,.6,.8],scale:t.scale==null?.41:t.scale,off:t.off||[.37,.71],mix:t.mix==null?.45:t.mix};}
+  // ---------------------------------------------------------------- the layers' maps in one texture array (opt-in, 2026-11-24: the owner,
+  // "put blakhed shader in core terrain"). o.array {size: [w, h] (default: the largest layer's)} or true: every layer's map (a kind's too)
+  // becomes a layer of ONE sampler2DArray uKGA (a map two layers share is one layer), sampled by its index with the same hex, distance
+  // and triplanar sampling (kgSampleA / kgHexA / kgTSA: the same text on texture(arr, vec3(uv, layer))). One texture unit for all the
+  // layers instead of one each. WebGL2 only: on WebGL1 the hook draws the plain samplers. Off (no o.array), the shader text and
+  // the program key are exactly what they were (test-ground.js's FROZEN).
+  function arrIndex(LY){var maps=[],li={};LY.forEach(function(L,i){if(!L||!L.map)return;var j=maps.indexOf(L.map);if(j<0){j=maps.length;maps.push(L.map);}li[i]=j;});return {maps:maps,li:li};}
+  function arrRewrite(s,li){var n=function(i){return (+li[i]).toFixed(1);};
+    s=s.replace(/\b(kgSample|kgTS)\(uKG(\d+),/g,function(m,fn,i){return li[i]==null?m:fn+'A(uKGA,'+n(i)+',';})
+      .replace(/\bKG_(GRAD|LOD)\(uKG(\d+),/g,function(m,fn,i){return li[i]==null?m:'KG_'+fn+'A(uKGA,'+n(i)+',';});
+    var left=/\buKG\d+\b/.exec(s);if(left)throw new Error('KGROUND: '+left[0]+' left on the plain sampler in the array path');return s;}
+  var arrA=function(x){return x.replace('vec4 kgHex(sampler2D t,','vec4 kgHexA(sampler2DArray t,float l,').replace('vec4 kgSample(sampler2D t,','vec4 kgSampleA(sampler2DArray t,float l,')
+    .replace('vec4 kgTS(sampler2D t,','vec4 kgTSA(sampler2DArray t,float l,').replace(/KG_GRAD\(t,/g,'KG_GRADA(t,l,').replace(/kgHex\(t,/g,'kgHexA(t,l,').replace(/kgSample\(t,/g,'kgSampleA(t,l,');};
+  /* the array library: the hex sampler, the distance scale and (with o.tri) the side planes, rewritten from glsl(o)'s text on the array */
+  function arrGlsl(o,tri){var g=glsl(o).split('\n'),i=g.findIndex(function(l){return /^vec4 kgHex\(/.test(l);});
+    if(i<0||!/^vec4 kgSample\(/.test(g[i+1])||!/^ if\(fr>/.test(g[i+2]))throw new Error('KGROUND: the array library could not find kgHex and kgSample');
+    return ['#define KG_GRADA(t,l,p,dx,dy) textureGrad(t,vec3(p,l),dx,dy)','#define KG_LODA(t,l,p,v) textureLod(t,vec3(p,l),v)'].concat(g.slice(i,i+3).map(arrA)).join('\n')+'\n'+(tri?arrA(TRI_GLSL):'');}
+  /* the array texture: a 1-texel grey stand-in until every layer's image has landed (KMAT's t._onImage, else a poll), then the maps'
+     pixels copied in at one size (a map of another size resampled, and said: console.warn and st.resampled), each turned as the GPU reads
+     it (flipY), mipmapped, the first map's wrap and encoding, the largest anisotropy. The copy reads the maps' pixels: drawing, not
+     placement (nothing is placed from them). window._texPending counts it while it waits, so a harness waits for it */
+  function arrayOf(maps,names,o){o=o===true?{}:(o||{});var T=root.THREE,st={n:maps.length,names:names,size:null,resampled:[],filled:false,uni:{value:null}};
+    if(!T||!T.DataTexture2DArray||typeof document==='undefined'||!maps.length)return st;
+    var mk=function(data,w,h){var t=new T.DataTexture2DArray(data,w,h,maps.length),m=maps[0];t.format=T.RGBAFormat;t.type=T.UnsignedByteType;
+      t.wrapS=m.wrapS==null?T.RepeatWrapping:m.wrapS;t.wrapT=m.wrapT==null?T.RepeatWrapping:m.wrapT;t.encoding=m.encoding;t.magFilter=T.LinearFilter;
+      t.minFilter=w>1?T.LinearMipmapLinearFilter:T.LinearFilter;t.generateMipmaps=w>1;t.anisotropy=Math.max.apply(null,maps.map(function(q){return q.anisotropy>1?q.anisotropy:1;}));t.needsUpdate=true;return t;};
+    st.uni.value=mk(new Uint8Array(4*maps.length).fill(128),1,1);
+    var ready=function(t){var im=t&&t.image;return !!im&&im.complete!==false&&(im.naturalWidth||im.width)>0;},dim=function(t,k){var im=t.image;return im['natural'+k]||im[k.toLowerCase()];};
+    var waits=typeof root._texPending==='number';if(waits)root._texPending++;
+    var fill=function(){if(st.filled||!maps.every(ready))return;
+      var W=o.size?(o.size[0]||o.size):Math.max.apply(null,maps.map(function(t){return dim(t,'Width');})),H=o.size?(o.size[1]||o.size):Math.max.apply(null,maps.map(function(t){return dim(t,'Height');}));
+      var cv=document.createElement('canvas');cv.width=W;cv.height=H;var cx=cv.getContext('2d',{willReadFrequently:true}),data=new Uint8Array(W*H*4*maps.length);
+      maps.forEach(function(t,j){var w=dim(t,'Width'),h=dim(t,'Height');if(w!==W||h!==H)st.resampled.push((names[j]||'layer '+j)+' '+w+'x'+h+' to '+W+'x'+H);
+        cx.save();cx.clearRect(0,0,W,H);if(t.flipY!==false){cx.translate(0,H);cx.scale(1,-1);}cx.drawImage(t.image,0,0,W,H);cx.restore();data.set(cx.getImageData(0,0,W,H).data,j*W*H*4);});
+      var old=st.uni.value;st.uni.value=mk(data,W,H);if(old)old.dispose();st.size=[W,H];st.filled=true;if(waits)root._texPending--;
+      if(st.resampled.length&&typeof console!=='undefined')console.warn('KGROUND array: resampled '+st.resampled.join('; '));};
+    fill();if(!st.filled){maps.forEach(function(t){if(!ready(t)){if(!Array.isArray(t._onImage))t._onImage=[];t._onImage.push(fill);}});
+      var tries=0,poll=function(){fill();if(!st.filled&&++tries<1200)setTimeout(poll,100);};setTimeout(poll,100);}
+    return st;}
   // the bed's relief at a point (core/terrain/host/35-core-strata-shade.js's core path: the same bed as strataColor): a hard bed stands
   // proud and a soft one is recessed, each bed's nose rounded at its top and foot, a faint lamination; 0 in a blocks formation
   var STRATA_RELIEF_GLSL=['float ksRelief(vec3 wp,vec3 wn){',
@@ -269,8 +329,8 @@
    ' return (bi.b-0.5)*(0.3+0.7*nose)+0.04*sin(yy*5.1+w1*31.0);}'].join('\n')+'\n';
   // the normal bumped by the relief's height (Mikkelsen 2010, "Bump Mapping Unparametrized Surfaces on the GPU": the height's screen
   // derivatives on the surface's own), in view space; no texture unit, so a page at its sampler limit can take it
-  var BUMP_GLSL='vec3 kgBump(vec3 vp,vec3 n,float h){vec3 px=dFdx(vp),py=dFdy(vp),r1=cross(py,n),r2=cross(n,px);float dt=dot(px,r1);'+
-    'vec3 g=sign(dt)*(dFdx(h)*r1+dFdy(h)*r2);return normalize(abs(dt)*n-g);}\n';
+  var BUMP_GLSL='vec3 kgBump(vec3 vp,vec3 n,float h){vec3 px=dFdx(vp),py=dFdy(vp),kgR1=cross(py,n),kgR2=cross(n,px);float dt=dot(px,kgR1);'+
+    'vec3 g=sign(dt)*(dFdx(h)*kgR1+dFdy(h)*kgR2);return normalize(abs(dt)*n-g);}\n';
   function reliefFrag(sh,rl,K){var fs=sh.fragmentShader,std=fs.indexOf('#include <normal_fragment_maps>')>=0,
       vp='(viewMatrix*vec4(kgWP,1.0)).xyz';
     /* MeshStandard (and Phong): the lit normal is bumped. Lambert (r128 lights per vertex): the sun's share is scaled by the bumped
@@ -309,19 +369,28 @@
   var PV=[];function pvCatch(mat){if(PV.indexOf(mat)<0)PV.push(mat);var T=root.THREE;if(!T||!T.Object3D||T.Object3D.prototype._kgPv)return;
     var P=T.Object3D.prototype,was=P.onBeforeRender;P._kgPv=true;
     P.onBeforeRender=function(r,s,c,g,m){if(m&&PV.indexOf(m)>=0&&g&&!g.attributes.aKGAO&&this.isMesh)cavityMesh(this);return was.apply(this,arguments);};}
-  function preview(){try{var q=new URLSearchParams(root.location&&root.location.search||'');var k=parseFloat(q.get('kgrelief'));return {relief:k>0,k:k>0?k:1,tri:q.get('kgtri')==='1'};}catch(e){return {};}}
+  function preview(){try{var q=new URLSearchParams(root.location&&root.location.search||'');var k=parseFloat(q.get('kgrelief'));return {relief:k>0,k:k>0?k:1,tri:q.get('kgtri')==='1',arr:q.get('kgarray')};}catch(e){return {};}}
   function hook(mat,o){o=o||{};var LY=(o.layers||[]).filter(function(L){return L&&(L.map||L.kind!=null);});if(!mat)return mat;
     mat.userData.kground=LY.map(function(L){return L.name||'layer';});if(!LY.length)return mat;
     var pv=preview(),pvMesh=false;
     if((pv.relief&&o.relief==null)||(pv.tri&&o.tri==null)){var o2={};for(var q in o)o2[q]=o[q];
       if(pv.relief&&o.relief==null){o2.relief={bump:.05*pv.k,cavity:Math.min(.9,.55*pv.k),mesh:Math.min(1,.7*pv.k),strata:.3*pv.k,strataW:'smoothstep(0.06,0.3,1.0-abs(normalize(vSWN).y))'};pvMesh=true;}
       if(pv.tri&&o.tri==null)o2.tri=true;o=o2;}
-    var K=kh(),at=o.at||'/*KGROUND*/',kinds=LY.some(function(L){return L.kind!=null;}),tri=triOf(o),rl=reliefOf(o),body=code(o,LY);
-    var lib=glsl(o)+(kinds?kindsGlsl():'')+(tri?TRI_GLSL:'')+(rl?BUMP_GLSL:'');
+    var K=kh(),at=o.at||'/*KGROUND*/',kinds=LY.some(function(L){return L.kind!=null;}),tri=triOf(o),rl=reliefOf(o),plain=code0(o,LY);
+    var lib0=glsl(o)+(kinds?kindsGlsl():'')+(tri?TRI_GLSL:'')+(rl?BUMP_GLSL:'');
+    /* the texture array (o.array; ?kgarray=0 turns it off on any page, ?kgarray=1 on where the page did not say) */
+    var aon=pv.arr==='0'?null:(o.array||(pv.arr==='1'&&o.array==null?true:null)),AI=aon?arrIndex(LY):null,AR=AI&&AI.maps.length?arrayOf(AI.maps,AI.maps.map(function(m){
+      for(var q=0;q<LY.length;q++)if(LY[q].map===m)return LY[q].name||'layer '+q;return '';}),aon):null;
+    var bodyA=AR?arrRewrite(plain,AI.li):plain,libA=AR?lib0+arrGlsl(o,tri):lib0;
+    if(AR)mat.userData.kgroundArray=AR;
     if(kinds)mat.userData.kgroundKinds=LY.map(function(L){return L.kind||null;});
     if(rl||tri)mat.userData.kgroundRelief={relief:!!rl,tri:!!tri};
     /* a KHOOK layer (core/shader): after the page's own hook and the layers before it, keyed by its layers; a missing anchor throws */
-    return K.add(mat,'kground',function(sh,r){if(/varying vec3 kgWP;/.test(sh.vertexShader))return;LY.forEach(function(L,i){if(L.map)sh.uniforms['uKG'+i]={value:L.map};});
+    return K.add(mat,'kground',function(sh,r){if(/varying vec3 kgWP;/.test(sh.vertexShader))return;
+      /* the array needs WebGL2 (sampler2DArray, textureGrad on it): on WebGL1 the plain samplers, the same layers */
+      var useA=!!AR&&!(r&&r.capabilities&&r.capabilities.isWebGL2===false),body=useA?bodyA:plain,lib=useA?libA:lib0;
+      if(AR)AR.drawn=useA?'array':'plain';
+      LY.forEach(function(L,i){if(L.map&&!useA)sh.uniforms['uKG'+i]={value:L.map};});if(useA)sh.uniforms.uKGA=AR.uni;
       var wp='vec4 kgW4=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\nkgW4=instanceMatrix*kgW4;\n#endif\nkgWP=(modelMatrix*kgW4).xyz;\n';
       if(tri)wp+='kgWN=normalize(mat3(modelMatrix)*objectNormal);\n';
       if(rl&&rl.mesh)wp+='vKGAO=aKGAO;\n';
@@ -330,13 +399,13 @@
       /* the bed relief needs the core strata path's uniforms (KSTRATA.shade); on the legacy strata, or none, it is left out */
       var b=body,ks=!!(rl&&rl.strata&&sh.fragmentShader.indexOf('uKSBed')>=0);if(rl&&rl.strata&&!ks)b=b.replace(/float kgSF=[^;]*;if\(kgSF>0\.001\)kgBH\+=ksRelief\([^;]*;/,'');
       var dec='varying vec3 kgWP;\n'+(tri?'varying vec3 kgWN;\n':'')+(rl?(rl.mesh?'varying float vKGAO;\n':'')+'float kgBH=0.0,kgOcc=1.0;\n':'')+
-        LY.map(function(L,i){return L.map?'uniform sampler2D uKG'+i+';':'';}).join('')+'\n'+lib+(ks?STRATA_RELIEF_GLSL:'');
+        (useA?'precision highp sampler2DArray;uniform sampler2DArray uKGA;':LY.map(function(L,i){return L.map?'uniform sampler2D uKG'+i+';':'';}).join(''))+'\n'+lib+(ks?STRATA_RELIEF_GLSL:'');
       var fs=K.rep(sh.fragmentShader,'void main() {',dec+'void main() {','kground');
       fs=fs.indexOf(at)>=0?fs.replace(at,b):K.rep(fs,'#include <map_fragment>','#include <map_fragment>\n'+b,'kground');
       sh.fragmentShader=fs;if(rl)reliefFrag(sh,rl,K);
       if(pvMesh)pvCatch(mat);},
-      {key:'kground-'+(o.key||'')+'-'+LY.length+'-'+body.length+(rl||tri?'-r'+(rl?1:0)+(tri?1:0):'')});}
+      {key:'kground-'+(o.key||'')+'-'+LY.length+'-'+plain.length+(rl||tri?'-r'+(rl?1:0)+(tri?1:0):'')+(AR?'-A'+AI.maps.length:'')});}
   function kh(){var K=root.KHOOK;if(!K)throw new Error('core/terrain: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');return K;}
-  root.KGROUND={layer:layer,hook:hook,glsl:glsl,code:code,kindsGlsl:kindsGlsl,KINDS:Object.keys(KINDS),BRECCIA:BRECCIA,cavity:cavity,cavityMesh:cavityMesh,
+  root.KGROUND={layer:layer,hook:hook,glsl:glsl,code:code,kindsGlsl:kindsGlsl,arrayGlsl:arrGlsl,KINDS:Object.keys(KINDS),BRECCIA:BRECCIA,cavity:cavity,cavityMesh:cavityMesh,
     fn:{hash:hash,tri:tri,heightLerp:heightLerp,lod:lod,hash3:hash3,vor2:vor2,vor3:vor3,vnoise:vnoise,ripple:ripple}};
 })(typeof globalThis!=='undefined'?globalThis:this);

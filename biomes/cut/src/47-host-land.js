@@ -21,6 +21,9 @@ BIO.init({tags:'cut',THREE,scene,terrainH,
  mask:(x,z)=>{const d=terrainH(x,z)-WATER_LEVEL;return d<.15?0:d<.7?(d-.15)/.55:1;},
  waterH:STAGE.water?((x,z)=>WATER_LEVEL):((x,z)=>-1e9),
  obstacles:OBSTACLES,ticks:tick,seed:STAGE.seed,origin:STAGE.spine,center:[0,0],fields:STAGE.fields,err:reportErr,register:o=>REGISTER(o)});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun([-1200,900,-600]);
 // ---------------------------------------------------------------- the ground
 const GROUND=(function(){const N=420,S=TERR.R*2.2,NC=220;

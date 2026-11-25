@@ -17,6 +17,9 @@ The town on the mesa is settlements/pinnacle-rock's own page.
   python3 build.py            # dist/pinnacle.html
   python3 build.py --no-checks
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -79,6 +82,9 @@ ORDER = (
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
        ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
        ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
+       # the weather (Stage 8 V9, G-weather W2): core/world's HOST.weather() binds it; the region starts clear, ?weather=<mode>
+       ('core/atmos', '89-atmos-4-weather.js'), ('core/atmos', '89-atmos-9-host.js'), ('core/atmos/host', '89-atmos-e-weatherhost.js'),
+       ('core/atmos/fx', '89-atmos-fx-raincover.js'),
        ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
        ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),

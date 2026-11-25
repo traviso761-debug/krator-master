@@ -10,43 +10,6 @@ const GQ=new URLSearchParams(location.search);
 const USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
 const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 
-if(typeof KSTRATA!=='undefined'&&KSTRATA.add){
- KSTRATA.add({
-  name:'drown-serpentinite',main:'antigorite',
-  kinds:{
-   antigorite:{p:0.56,th:[1.2,4.2],col:[0x263e36,0x2e4a40,0x1f332c,0x355448],hard:0.78,xbed:0,varnish:0},
-   peridotite:{p:0.24,th:[0.8,2.8],col:[0x1e2d28,0x283832],hard:0.88,xbed:0,varnish:0},
-   magnesite:{p:0.12,th:[0.10,0.42],col:[0xdce6e2,0xcad8d4],hard:0.62,xbed:0,varnish:0,between:true},
-   garnierite:{p:0.08,th:[0.18,0.65],col:[0x3aa68c,0x2e927a],hard:0.54,xbed:0,varnish:0}
-  },fx:{}
- });
- KSTRATA.add({
-  name:'drown-ophiolite',main:'pillowbasalt',
-  kinds:{
-   pillowbasalt:{p:0.58,th:[1.6,5.5],col:[0x343a42,0x2c323a,0x3e454e],hard:0.86,xbed:0,varnish:0},
-   sheetdyke:{p:0.28,th:[0.9,3.2],col:[0x282e34,0x323840],hard:0.90,xbed:0,varnish:0},
-   nephritelens:{p:0.14,th:[0.2,0.85],col:[0x36886a,0x2c765a],hard:0.92,xbed:0,varnish:0,between:true}
-  },fx:{}
- });
- KSTRATA.add({
-  name:'drown-laterite-cuirasse',main:'laterite',
-  kinds:{
-   laterite:{p:0.58,th:[1.4,4.8],col:[0x8e3e2a,0x9e4832,0x7c3422],hard:0.52,xbed:0,varnish:0},
-   cuirasse:{p:0.26,th:[0.8,2.6],col:[0x6c2c1e,0x5c2418],hard:0.84,xbed:0,varnish:0},
-   saprolite:{p:0.16,th:[0.6,2.0],col:[0x487c62,0x3c6c54],hard:0.38,xbed:0,varnish:0}
-  },fx:{}
- });
- KSTRATA.add({
-  name:'drown-coal-measure',main:'sandstone',
-  kinds:{
-   sandstone:{p:0.46,th:[1.2,4.0],col:[0x98886c,0x8a7a60,0xa69678],hard:0.68,xbed:0,varnish:0},
-   shale:{p:0.30,th:[0.6,2.2],col:[0x4e5458,0x42484c],hard:0.42,xbed:0,varnish:0},
-   bituminous:{p:0.18,th:[0.5,1.6],col:[0x18181c,0x222226,0x121216],hard:0.58,xbed:0,varnish:0},
-   seatclay:{p:0.06,th:[0.2,0.7],col:[0x6a6860,0x5c5a52],hard:0.32,xbed:0,varnish:0,between:true}
-  },fx:{}
- });
-}
-
 const STRATA=(function(){
  if(GQ.get('strata')==='0'||typeof KSTRATA==='undefined')return null;
  if(SKEY==='drowned'){

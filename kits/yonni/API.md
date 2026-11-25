@@ -28,8 +28,11 @@ Units, coordinate frames, `defBuilding`, `place()`, `FURNISH`, doors (`KDOOR`), 
 | `57-yn-forts.js` | `ynf` | Formline Fortifications: `ynfFormlinePanel`, `ynfDiamondScreen`, `ynfGablePier`, `yn-wall-curtain`, `yn-gatehouse-portal`, `yn-tower-formline` (~26 m) |
 | `58-yn-trades.js` | `ynt` | 10 Voth-census workshops, processing drums, clinic & mead-rotunda tavern |
 | `59-yn-works.js` | `ynw` | 10 Voth-census market, shophouse, granary, squall-mill, warehouse, centered `yn-farmstead`, byre, mine, quarry, pharos |
+| `60-yn-monuments.js` | `ynm` | 6 Monumental sacred/civic/citadel landmarks (`yn-spire-saucers`, `yn-monastery-giltcluster`, `yn-arena-ringcourt`, `yn-sanctuary-giltgate`, `yn-shrine-pylondome`, `yn-citadel-hexstilt`) + `ynmBulbDome`, `ynmSaucerPod`, `ynmHexTrussLeg` |
+| `61-yn-quarters.js` | `ynq` | 7 Freestanding inns, villas, manors, bazaar-drums, sun-towers, garrison compounds & smelters (`yn-inn-staineddrum`, `yn-villa-belvedere`, `yn-manor-apserose`, `yn-bazaar-drum`, `yn-tower-sunpetal`, `yn-compound-sails`, `yn-smelter-scallop`) |
 | `62-yn-harbour.js` | `ynh` | 4 Coastal harbour & war-galley dockyard defs (`shore: true`) |
 | `64-yn-cliff.js` | `ynk` | 6 Cliff-Flush Engaged Mode defs (`style: 'cliff'`), including `yn-cliff-rotunda` & `yn-cliff-cluster` |
+| `64b-yn-cliff-grand.js` | `ynk2` | 2 Grand Cliff-Flush complexes (`yn-cliff-lanternhold`, `yn-cliff-viaduct-hall`) |
 | `65-yn-borderfort.js` | `ynr` | Spear-Queen Frontier Border-Fort (`yn-border-fort`, `style: 'cliff'`), `ynrBeaconBrazier`, `ynrProwBastion` |
 | `66-yn-flora.js` | `ynb` | 4 Placeholder wet-coastal flora defs (`cls: 'flora'`) |
 | `68-yn-census.js` | `yn` | `[G data]` `YN_TRADES` (44 Voth census trades) and `ynDims()` (`core/city` footprint export) |

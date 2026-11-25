@@ -36,6 +36,9 @@ BIO.init({tags:'farside',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH
  obstacles:OBSTACLES,ticks:tick,seed:STAGE.seed,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  eye:()=>[camera.position.x,camera.position.y,camera.position.z],
  lod:{hero:520,mid:1100,far:2600,floor:[300,700]}});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun(SUN_POS);
 // the station's say, through the host for the kit (BIOME-API.md): the wind's direction (the onshore north-wester, down u)
 BIO.host.farside={wind:[SQ,SQ],coastD:STAGE.coastD||null,station:STAGE.key};

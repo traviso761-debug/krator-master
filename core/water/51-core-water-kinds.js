@@ -67,7 +67,7 @@
     'vec2 c=sp>1.0e-6?v/sp:vec2(1.0,0.0);vec2 g0=wtrRipG(p-v*p0*T,c);vec2 g1=wtrRipG(p-v*p1*T+vec2('+f(.37*R[0][1])+','+f(.61*R[0][1])+'),c);'+
     'float w0=1.0-abs(2.0*p0-1.0);float k=1.0+'+f(Q.rapidGain)+'*smoothstep('+f(RP[0])+','+f(RP[1])+',slope);vec2 s=(g0*w0+g1*(1.0-w0))*k;return normalize(vec3(-s.x,1.0,-s.y));}',
    'float wtrFlowFoam(float slope,float bank){return max('+f(Q.foam[0])+'*smoothstep('+f(RP[0])+','+f(RP[1])+',slope),'+f(Q.foam[1])+'*(1.0-smoothstep(0.0,'+f(Q.edge)+',bank)));}'].join('\n');};
- W.drawFlow=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.flow,per=W.period();
+ W.drawFlow=(S,o)=>{o=o||{};const A=W.atmosBound('WATER.drawFlow'),T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.flow,per=W.period();
   if(o.rapids)S.rapids=[o.rapids[0],o.rapids[1]];const rap=S.rapids||null;
   S.ribbonOpt={step:o.step==null?Q.step:o.step,across:o.across==null?Q.across:o.across,margin:o.margin==null?Q.margin:o.margin};
   if(o.depthBias!=null)S.ribbonOpt.depthBias=o.depthBias;if(o.chute!=null)S.ribbonOpt.chute=o.chute;
@@ -90,7 +90,10 @@
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x2b5a5a:o.color,roughness:o.roughness==null?.12:o.roughness,metalness:o.metalness==null?.1:o.metalness,
    transparent:o.transparent!==false,depthWrite:o.transparent===false});sky(mat,o);W.biasMaterial(mat,o);
   const CH='#include <atmos_waves>\n'+W.flowGLSL(rap)+'\n'+NOISE+'\n'+BREAK+'\nvarying vec2 vWtrF;varying float vWtrS;varying float vWtrB;varying vec3 vWtrW;'+(EF?'varying float vWtrE;':'');
-  const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+(o.transparent!==false?'t':'')+W.rainK(o)+(o.chute!=null?'c'+o.chute:'')+(EF?'e'+EF.len+','+EF.foam+','+EL+','+EF.color+','+!!EF.keepFoam+','+EF.flow+','+EF.turn+','+EF.turnK:'')+(o.mouths&&o.mouths.length?'m'+JSON.stringify(o.mouths):'');
+  /* the colours baked into the text join the program's key (2026-11-24, T37): without them three.js reused the first flow's program and every
+     flow on a page drew its colours (arch's streams, 2026-11-12). o.color is the material's uniform, keyed too as TODO.md asked */
+  const SHc=lin(T,o.shallow==null?0x6f9a8a:o.shallow),DPc=lin(T,o.deep==null?0x1d3f44:o.deep),CK=o.color==null?'':'|c'+W.colLin(T,o.color).map(glf).join(',');
+  const T2=per/Q.phases;mat.customProgramCacheKey=()=>'wtr-flow:'+W.hashStr(CH)+'|sd'+SHc+DPc+CK+(o.transparent!==false?'t':'')+W.rainK(o)+(o.chute!=null?'c'+o.chute:'')+(EF?'e'+EF.len+','+EF.foam+','+EL+','+EF.color+','+!!EF.keepFoam+','+EF.flow+','+EF.turn+','+EF.turnK:'')+(o.mouths&&o.mouths.length?'m'+JSON.stringify(o.mouths):'');
   mat.onBeforeCompile=sh=>{A.waveUniforms(sh.uniforms);
    W.vs(sh,'wtr-drawFlow',['#include <common>','#include <common>\n'+CH+'\nattribute vec2 wtrFlow;attribute float wtrSlope;attribute float wtrBank;'+(EF?'attribute float wtrAlong;':'')],['#include <begin_vertex>','#include <begin_vertex>\nvWtrF=wtrFlow;vWtrS=wtrSlope;vWtrB=wtrBank;vWtrW=(modelMatrix*vec4(position,1.0)).xyz;'+(EF?'vWtrE='+f(EL)+'-wtrAlong;'+(EF.flow?'{float wtrU=1.0-smoothstep(0.0,'+f(EF.turn==null?8:EF.turn)+',vWtrE);vWtrF=mix(vWtrF,vec2('+f(EF.flow[0])+','+f(EF.flow[1])+')*length(vWtrF),wtrU*'+f(EF.turnK==null?1:EF.turnK)+');}':''):'')]);   /* endFade.flow [x, z] (a unit), endFade.turn (8 m), endFade.turnK (1: how far it turns): the current turns into the main's over the last turn m, its ripples
     joining the main's; the ripples are advected by phase, so a short or full turn shears them: a long, partial one (30 m, .6) reads best */
@@ -104,7 +107,7 @@
      // across a tributary's mouth). Given to both drawings, the two waters meet as one and the foam borders end on one arc; a fourth
      // value 0 ([x, z, r, 0], the tributary's own drawing) keeps its ribbon's side fade (no hard edge of it over the main's water)
      (MO?'float wtrMh=1.0,wtrMa=1.0;'+o.mouths.map(M=>{const d='smoothstep('+f(M[2]*.55)+','+f(M[2])+',length(vWtrW.xz-vec2('+f(M[0])+','+f(M[1])+')))';return 'wtrMh*='+d+';'+(M[3]===0?'':'wtrMa*='+d+';');}).join('')+'wtrFoamK*=wtrMh;float wtrBm=mix(max(vWtrB,3.5),vWtrB,wtrMh),wtrBa=mix(max(vWtrB,3.5),vWtrB,wtrMa);':'')+(EF?'wtrFoamK*=smoothstep('+f(EF.foam)+','+f(EF.foam+Math.max(1,EF.len))+',vWtrE);':'')+
-     'diffuseColor.rgb=mix('+lin(T,o.shallow==null?0x6f9a8a:o.shallow)+','+lin(T,o.deep==null?0x1d3f44:o.deep)+',smoothstep(0.3,3.5,'+(MO?'wtrBm':'vWtrB')+'));'+
+     'diffuseColor.rgb=mix('+SHc+','+DPc+',smoothstep(0.3,3.5,'+(MO?'wtrBm':'vWtrB')+'));'+
      'diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.86,0.9,0.9),wtrFoamK);'+
      (o.transparent!==false?(MO?'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,wtrBm))*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,wtrBa);diffuseColor.a=mix(smoothstep('+f(-S.ribbonOpt.margin)+',0.25,wtrBa),diffuseColor.a,wtrMh);'   /* opaque in any mouth's hole but at its own sides: a pool under it (WATER.join pool) does not show through */:'diffuseColor.a*=mix(0.78,0.95,smoothstep(0.0,3.0,vWtrB))*smoothstep('+f(-S.ribbonOpt.margin)+',0.25,vWtrB);'):'')+
      // endFade.color (the main's water, sRGB): over the stretch that lies on the main (vWtrE under foam) the colour turns to the main's
@@ -145,7 +148,7 @@
    'float wtrFallFoam(float fl,float s){return clamp(0.25+0.6*smoothstep(0.0,0.4,fl)+0.7*(s-0.5),0.0,1.0);}',
    'vec2 wtrPlunge(vec2 p){vec2 d=p-vec2('+f(P.x)+','+f(P.z)+');float r=length(d);float ph=fract(atmWaveT*'+f(PQ.cycles/per)+');float a=6.283185307*(fract(r*'+f(1/PQ.ring)+')-ph);'+
     'float e=exp(-r*'+f(1/P.r)+');float nz=wtrNoiseP(vec2(d.x*0.45+d.y*0.21,ph*12.0+r*0.3),12.0);return vec2(e*clamp(0.35+0.25*sin(a)+0.8*(nz-0.35),0.0,1.0),0.08*e*sin(a));}'].join('\n');};
- W.drawFall=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.fall;
+ W.drawFall=(S,o)=>{o=o||{};const A=W.atmosBound('WATER.drawFall'),T=o.THREE||A.T,scene=o.scene||A.h.scene,Q=W.PRESETS.fall;
   S.curtainOpt={rows:W.curtainRows(S,o),cols:o.cols==null?Q.cols:o.cols};W.sideOpt(S.curtainOpt,o);const M=W.curtain(S,S.curtainOpt),g=new T.BufferGeometry();
   g.setAttribute('position',new T.Float32BufferAttribute(M.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(M.nrm,3));g.setAttribute('wtrUF',new T.Float32BufferAttribute(M.uv,2));g.setIndex(M.idx);g.computeBoundingSphere();
   /* o.lipK (opt-in, default none: the old curtain): the curtain's base alpha at the lip, thinning to the old 0.45 a third of the way
@@ -184,7 +187,7 @@
    'return normalize(vec3(-s.x,1.0,-s.y));}'+
    // a centre-to-rim gradient (20's S.gradientT): 0 at the middle, 1 at the rim
    (S.gradient?'\nfloat wtrStillT(vec2 p){return pow(clamp(length(p-vec2('+f(S.gradient.at[0])+','+f(S.gradient.at[1])+'))*'+f(1/S.gradient.radius)+',0.0,1.0),'+f(S.gradient.power)+');}':'');};
- W.drawStill=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,M=W.stillMesh(S),g=new T.BufferGeometry();
+ W.drawStill=(S,o)=>{o=o||{};const A=W.atmosBound('WATER.drawStill'),T=o.THREE||A.T,scene=o.scene||A.h.scene,M=W.stillMesh(S),g=new T.BufferGeometry();
   g.setAttribute('position',new T.Float32BufferAttribute(M.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(new Float32Array(M.pos.length).map((v,i)=>i%3===1?1:0),3));g.setIndex(M.idx);g.computeBoundingSphere();
   const mat=new T.MeshStandardMaterial({color:o.color==null?0x24443f:o.color,roughness:o.roughness==null?.06:o.roughness,metalness:o.metalness==null?.15:o.metalness,
    transparent:o.opacity!=null&&o.opacity<1,opacity:o.opacity==null?1:o.opacity,depthWrite:!(o.opacity!=null&&o.opacity<1)});sky(mat,o);W.biasMaterial(mat,o);

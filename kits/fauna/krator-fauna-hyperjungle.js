@@ -727,7 +727,7 @@ ANIMAL({
    (body, belly, head, wing, tip, tail, beak, leg), tailL, beakL, hook, span (a half-span in body units), chord */
 function faHiBird(A, o) {
   const M = A.S * o.k, R = rows => rows.map(r => [r[0] * M, r[1] * M, r[2] * M, r[3] * M, r[4] * M]), mix = faHiMix;
-  const bw = o.bw || 1, tipC = mix(o.wing, o.tip, 0.8);
+  const bw = o.bw == null ? 1 : o.bw, tipC = mix(o.wing, o.tip, 0.8);
   const plum = (t, f, q) => { const up = Math.cos(f); return mix(mix(o.body, o.belly, faHjSm(0.0, -0.7, up)), o.wing, 0.35 * faHjSm(0.1, 0.5, up) * (q[2] / M < 0.1 ? 1 : 0)); };
   faHjRows(A, o.bodyFam || 'feather', R([[0, 0.236, -0.3, 0.025 * bw, 0.02 * bw], [0, 0.228, -0.24, 0.06 * bw, 0.055 * bw], [0, 0.218, -0.13, 0.095 * bw, 0.092 * bw], [0, 0.212, -0.01, 0.11 * bw, 0.11 * bw],
     [0, 0.222, 0.1, 0.1 * bw, 0.105 * bw], [0, 0.245, 0.18, 0.08 * bw, 0.085 * bw], [0, 0.27, 0.23, 0.062 * bw, 0.066 * bw]]), 16, 14, null, { round: [0.1, 0], colf: plum });

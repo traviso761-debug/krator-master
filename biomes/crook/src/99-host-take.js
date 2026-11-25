@@ -9,7 +9,7 @@ const VIEWS=SKEY==='shore'?{
  'Tsunami trimline bluff':look(18,52,18,92,48,14),
  'Canopy cup-sponges':look(112,36,12,138,44,16),
  'Caldera lagoon collar':look(108,-115,36,210,-170,2),
- 'Kopa-Tarn plume mouth':look(-88,-95,26,10,-48,2)
+ 'Kopa-Kawa plume mouth':look(-88,-95,26,10,-48,2)
 }:SKEY==='wash'?{
  'Overview':look(-185,95,62,-15,-25,12),
  'Stepped rimstone pools':look(-136,-62,6.5,-96,-88,0.4),

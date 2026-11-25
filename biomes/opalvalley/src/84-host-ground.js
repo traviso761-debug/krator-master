@@ -1,7 +1,7 @@
 // ================================================================= HOST — the ground (PLAN.md sections 2 and 11)
 // One ground mesh painted from the fields, the treads and the heat, on KGROUND (43-core-ground.js) with at most four library layers a station (the
 // 16-unit limit: High Rift's Mirror found six too many), each on its documented mask, and every steep face in Opal Valley's own beds (KSTRATA, 35 + host/35
-// shade: strataColor; the recipes are data, 40: OPAL_STRATA, handed to KSTRATA.add here):
+// shade: strataColor; the recipes are core's, opal-rhyolite and opal-firetuff: core/terrain/35-core-strata.js, named in 40's OPAL_STRATA):
 //   aGL.x  SINTER     ground.sinter: the dams' rimstone and aprons (the middle bed's), the seeps' hot ground, the cataract's apron
 //   aGL.y  STATION A  ice.glacier (the glacier's ice) / ground.gravel042 (the bars, the moraines, the gorge's floor) / ground.mat.thermal (the seeps' run-off)
 //   aGL.z  STATION B  ice.debris (the glacier's margins and moraines) / ground.tundra (the upper bed's turf) / stone.geyserite (the middle bed's dam rims)
@@ -15,7 +15,6 @@ const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined
 const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 const SHEEN=GQ.has('sheen')?+GQ.get('sheen'):.7;   /* judged in the shots (2026-11-11): the first pass's coat (x0.55..1.5 over the whole mask) read as paint */
 const STRATA_RECIPE=(SKEY==='lowerbed'||SKEY==='riftmouth')?'opal-firetuff':'opal-rhyolite';
-if(typeof KSTRATA!=='undefined')for(const k in OPAL_STRATA)if(!KSTRATA.RECIPES[k])KSTRATA.add(Object.assign({name:k},OPAL_STRATA[k]));
 const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:4700+SITE.zone,recipe:STRATA_RECIPE,range:[SITE.base-1000,SITE.base+2600],
  dip:[.25,.96,.07],warp:[8,2]});
 const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:SKEY==='lowerbed'?0xb08060:0x9a8c80}):null;

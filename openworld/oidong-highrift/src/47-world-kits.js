@@ -20,7 +20,7 @@ const OID_PROFILES={
  stream:{wet:.85,upland:.12,slope:.08,rock:.06,cold:.1,mist:.15,flat:0,flow:.85},
  flats:{wet:.34,upland:.10,slope:.04,rock:.08,cold:.15,mist:0,flat:.88,flow:0}};
 function oidPick(x,z){
- const A=WORLD.at(x,z),live=(1-sm(.58,.88,A.rock))*(1-sm(.72,.92,A.slope));
+ const A=WORLD.atShared(x,z),live=(1-sm(.58,.88,A.rock))*(1-sm(.72,.92,A.slope));
  if(!(live>.02))return{moss:0};
  const mist=sm(.28,.65,A.mist==null?0:A.mist)*live,str=sm(.38,.75,A.flow)*live*(1-mist*.5);
  const fl=sm(.35,.72,A.flat==null?0:A.flat)*live*(1-mist)*(1-str);

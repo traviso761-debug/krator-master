@@ -42,8 +42,27 @@ fragments no station overrides, so every page takes it the same way; each piece 
   Sites (5.1 px): station 1 859,863; ash desert 869,856; blast 859,805; caldera 847,834; cloud forest 820,834; delta 900,858; frontier 795,860; glacier
   834,821 (the model's flank on its bearing reaches 5.3 km, not the page's 6 km); isle 769,834; kipuka 815,843; penitentes 866,839; savanna 847,870;
   vents 880,846.
-- **The row's terrain**: `tibasalt` strata on the caldera's wall, pit chains and lava steps, rilles on the kipuka, KLAVA on the vents, kipuka, tube and
-  caldera. Each moves a page's ground and every placement on it; the flow model (`46`) is the kit's own mosaic history. Owed for the owner's look pass.
+- **The row's terrain: begun 2026-11-24** (the owner's yes). Each moves a page's ground and every placement on it.
+  **Taken:** the caldera's wall in KSTRATA's `tibasalt` (thin black flows, orange and black glass-bead horizons) and the blast's scar in
+  `obsidian-pancake` (the 5.1 dome strata note: glassy flow-banded sheets, pumice between, perlitic breccia), each station's `STRATA` in its 47: the
+  ledge pass on the wall's ground (`S.ledge`: hard beds steep, soft beds benched where it shows rock) and each bed's colour on the steep under the
+  snow (`shared/84s-host-strata-band.js`: the stratigraphic height a vertex attribute, `S.colorAt` one band texture; one texture unit, as each
+  ground reads fifteen: KSTRATA's core shader takes five). `?strata=0` the walls as before. The vents' four-year fissure flow frozen by
+  core/terrain's lava-flow module (`shared/46k-host-klava-flows.js`, `THRONE_KLAVA_FLOWS`: a flow given `klava` is run by `KLAVA.bake` over the
+  ground the older flows left, four vents along the fissure's middle, 1.0 Mm3, and laid into the kit's mosaic; 1.9 s at load; a check that it
+  froze whole, with a negative). `?klava=0` the kit's sheet.
+  **The kipuka's five flows** (2026-11-24): frozen by KLAVA at build time (`stations/kipuka/bake-flows.js`, `station.json` `bake`, the Godthrone's
+  way, now in this build.py: re-run when its inputs' hash changes; `kipuka-flows.json` inlined as `KIPUKA_FLOWS`). A windward flow is tube-fed, so
+  each is baked as breakouts every 480 m along the kit's own path, each in its own box on one 20 m lattice over the ground the older ones left:
+  60 Mm3 in 2 s of node, under 1% drained off the map's edge; the hills part the lobes, so the kipukas are what the lava went round. The paths stay
+  the kit's (the tube, the streams' lines, the views). A KLAVA film under .35 m is not laid (the mosaic would call its ground still old). The
+  kipuka's 'nothing rooted under the water' check skips a moss skirt on a hyperjungle giant's buttress (on bark, not rooted: a 200 m tree's
+  buttresses reach over a stream's bank). **The rille** (KRELIEF.tube and KRELIEF.tubeRille, `38`/`38b` in `terrain`): over the tube's middle and
+  lower reach (52-70% of its length) its roof has fallen, a trench down to its floor between the skylights (the pit chain); the view 'The rille
+  (the tube's fallen roof)'; `?rille=0` none. **The caldera's floor:** the lake's overflow, eleven years old, 1.5 Mm3 from its far lip (away from
+  the breach), the pit walled off for the bake; 1.7 s at load; a check with a negative.
+  **Left, and why:** the tube's surface (station 11 is underground: its surface shows only through the skylights, and a flow over it would move the
+  skylights' rims and every check on them for nothing seen); lava steps (KRELIEF has no step form yet: a core addition).
 - **The row's ground kinds: taken 2026-11-03** (KGROUND's layer kinds, procedural, no texture unit; each after the page's own layers at a
   `/*KGROUND*/` marker; `?kinds=0` none): `clast` on the caldera's walls (the old flows' basalt, scoria and ash beds as blocks in an ash matrix,
   on the cliff layer's weight), `sand` on the ash desert's dunes (ripples across the plume's wind; no glints: they read `cameraPosition`, which
@@ -55,7 +74,7 @@ fragments no station overrides, so every page takes it the same way; each piece 
   pools are graded by heat, bluer the hotter, and brine's ramp (red-brown to turquoise) would replace that look (the owner's call).
 - **Life**: seasons, KFIRE and mounds on the savanna (its burn is its own, and moving onto KFIRE re-lights the fires); `BIO.fung` for the caps, the cap tubes
   and the bladders (`TODO.md`: shapes move and want the owner's eye).
-- **Exchanges** (`EXCHANGES.md`): ringisles' strand pandanus on the isle's beaches is not read in place yet (ringisles is pair 8 and reads this kit).
+- **Exchanges: taken 2026-11-24** (`EXCHANGES.md`, ringisles -> throne): the Ring Sea isles' strand pandanus on the geyser isle's beaches. `stations/isle/station.json` reads ringisles' species, look and trees in place (`kits`: 48p1-48p3; its 70 would build the whole kit, so `48p9-host-ri-close.js` closes its registry) and only the two maps the pandanus draws (`packs`: `{dir, keep}`, a new form in `build.py`: `bark3`, `strap`; a 0.34 MB sidecar); `88p-host-pandan.js` plants it with `RINGISLES.treeAt` after the kit, per 14 m cell (core/rand), on the strand 1.3-3.4 m above the sea, leaning down the slope, clear of the Throne's trees, the camp, the path and the canoes: 298 trees; the check 'the strand pandanus at the high-tide line' with a negative; the view 'Strand pandanus on the beach'. `?pandan=0` none.
 
 **Map 5.1** (`biomes/STATIONS-MAP-5.1.md`): station 3 re-surveyed and its flank refitted (`stations/frontier/45-host-stage.js`); the caldera checked
 against the model (`stations/caldera`, `KNOWN_ISSUES.md`); station 11 is `tube_hot_05` (`stations/tube/station.json`).

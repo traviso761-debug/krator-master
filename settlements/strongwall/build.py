@@ -17,6 +17,9 @@ and the model's rivers within the far square (Kruk Gill, the wadi whose mouth th
     python3 ../../tools/build.py settlements/strongwall      # dist/strongwall.html
     KRATOR_GL=gpu python3 verify.py dist/strongwall.html --assert --views "Overview,The Qiblai Gate"
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, io, json, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))

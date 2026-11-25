@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bake a settlement page's own ground for the open world: openworld/towns/<town>/ (openworld/PLAN-VOTH.md section 3,
 Layer 2, step V2). The world then takes the town's ground inside its footprint (core/world 41 buildTowns / townAt), its
-water as the town's water mask and its river as a named river (core/world/41t-world-town-water.js).
+water as the town's water mask and its river as a named river (core/world/41-world-fields.js's WTOWN, 41t until 2026-11-24).
 
     python3 core/world/bake_towns.py <town>            # write openworld/towns/<town>/ (town.json, ground.png, water.png)
     python3 core/world/bake_towns.py <town> --check    # bake again and compare with the files (exit 1 if stale)
