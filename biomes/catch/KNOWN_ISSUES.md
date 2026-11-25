@@ -4,6 +4,39 @@
       survey's distances (PLAN.md section 1): far crests 12-17 km, the Godthrone north-west, the inner walls' snowfields,
       the interior hills. A horizon cast from the scale model's heightfield at the site (SKY-PLAN.md 3.3, "Later") replaces
       them with no code change: the stage's `ridges` take a `profile`.
+
+- [ ] **And the painted walls are about three times too tall — stations 2 and 3 still are** (measured 2026-11-25 by the
+      scale-model session's horizon cast, 1,024 azimuths per band; `openworld/catch-bowl/PLAN-TERRAIN.md` **P19**). The
+      drawn ceiling of a ridge layer is `base + amp + peakAmp` (`core/atmos/sky/89-atmos-e-skymodel.js`,
+      `A.ridgeProfile`). From the Catch floor the highest thing visible **anywhere** is **2.97°**, and the tallest ground
+      within 240 km — 13,628 m of Godthrone at 239.7 km — subtends **1.72°**. These pages draw:
+
+      | Station | Fragment | far crest | inner wall | max drawn |
+      |---|---|---|---|---|
+      | 1 sand sea | `src/45b-host-stage.js` | `-1.81 / 8.82 / 2.4` | `-1.96 / 8.82 / 3` | 9.41° / 9.86° |
+      | 2 Stair's oasis | `stations/oasis/45b-host-stage.js` | **identical** | **identical** | 9.41° / 9.86° |
+      | 3 the lake | `stations/lake/45b-host-stage.js` | **identical** | **identical** | 9.41° / 9.86° |
+      | 4 north fan | `stations/fan/45b-host-stage.js` | `-2.10 / 12.60 / 2.4` | `-3.00 / 16.80 / 3` | 15.0° / 16.8° |
+
+      Stations 1, 2 and 3 are **byte-identical**: the layers were written once and copied, so this is one authoring error,
+      not three. **Stations 1 and 4 are corrected** (the two the scale-model session re-sited); **2 and 3 are not.**
+
+      It needs no model to see that it is wrong: a 12 km wall subtends ~9° only at about **70 km**, and the Catch is
+      ~127,000 km², so from its middle the walls are **150-250 km** off — at 200 km a 12 km wall subtends ~**2.1°** after
+      curvature. The authored numbers are a **4.22-era hand survey** the scale model has moved under twice since. Nothing
+      is broken and nothing crashes, but every screenshot of the Catch floor misstates the scale of its own horizon.
+
+      **To fix:** cast at each station's pixel with `biomes/seouterwall/region/far.py`'s `ridges_of` (the horizon at 1,024
+      azimuths per distance band, with the planet's curvature, `drop = d²/2R`, R from the sky model's `kmPerDeg` 84 →
+      4,812,845 m), then take `base` = the band's 2nd percentile elevation angle, `base + amp` = the 98th, `peakAmp` = the
+      rest to the max, `dist` = the mean distance of the horizon-defining points. Which makes this entry and the one above
+      the same job: the cast is the fix for both.
+
+- [ ] **`STAGE.site` is in the 4.22 legacy frame, not the scale model's** (2026-11-25; `PLAN-TERRAIN.md` **P22**).
+      `89-atmos-e-skymodel.js` carries `frame:{mPerPx:2000, refPx:[446,690], ...}` and that `refPx` is a legacy pixel. All
+      four stations' `site` values are legacy and map onto their 5.1 pixels by exactly `legacy_shift` (**+272, +330**), so
+      **re-siting a station with a model pixel moves the sun, the giant, the ring and the moons.** Nothing in these
+      fragments says which frame their numbers are in; this note is the only thing that does.
 - [x] **The black storm** (2026-10-26): core/atmos's weather still has no dust-storm mode (a core change: an opt-in `o.dust`
       like `o.ash`), so the host composes one (`src/89y-host-storm.js`, the panel's "air" select or `?air=storm`): ATMOS's
       wind base scaled to a gale (the dust box lifts thick off every bare patch), then, after the shared sky has set the
