@@ -2,8 +2,8 @@
  "edit": "5.1 edit 28: the Ria basin as one river system",
  "date": "2026-11-24",
  "rivers": 30,
- "grooves_filled_cells": 9156,
- "grooves_filled_m_median": 25.7,
+ "grooves_filled_cells": 8735,
+ "grooves_filled_m_median": 26.2,
  "joined_elsewhere": [
   {
    "river": "9225",
@@ -94,12 +94,12 @@
    ]
   }
  ],
- "deep_grooves_filled_cells": 2559,
- "land_moved_cells": 23108,
- "lowered_cells": 12308,
- "raised_cells": 10800,
- "lowered_m_median": 27.3,
- "lowered_m_max": 827.0,
+ "deep_grooves_filled_cells": 2451,
+ "land_moved_cells": 22750,
+ "lowered_cells": 12439,
+ "raised_cells": 10311,
+ "lowered_m_median": 27.9,
+ "lowered_m_max": 673.0,
  "fixed_points": [
   {
    "river": "9101",
@@ -317,20 +317,20 @@
   },
   "9203": {
    "name": "Ākwala-Gēla",
-   "km": 135,
+   "km": 134,
    "sinuosity": 1.09,
    "q": 115
   },
   "9204": {
    "name": "Dōma-Nōrta",
-   "km": 170,
-   "sinuosity": 1.14,
+   "km": 165,
+   "sinuosity": 1.11,
    "q": 130
   },
   "9205": {
    "name": "Dōma-Sūtha",
-   "km": 97,
-   "sinuosity": 1.23,
+   "km": 154,
+   "sinuosity": 1.31,
    "q": 110
   },
   "9206": {
@@ -354,7 +354,7 @@
   "9209": {
    "name": "Sikwīngi-Mēna",
    "km": 67,
-   "sinuosity": 1.03,
+   "sinuosity": 1.04,
    "q": 145
   },
   "9210": {
@@ -371,8 +371,8 @@
   },
   "9212": {
    "name": "Kwīna-Rīla",
-   "km": 11,
-   "sinuosity": 1.08,
+   "km": 19,
+   "sinuosity": 1.12,
    "q": 48
   },
   "9213": {
@@ -390,31 +390,31 @@
   "9215": {
    "name": "Mōlu-Gūli",
    "km": 132,
-   "sinuosity": 1.05,
+   "sinuosity": 1.07,
    "q": 96
   },
   "9216": {
    "name": "Sāpa-Rīwa",
-   "km": 227,
-   "sinuosity": 1.16,
+   "km": 232,
+   "sinuosity": 1.18,
    "q": 118
   },
   "9217": {
    "name": "Yādü-Chē",
-   "km": 132,
+   "km": 131,
    "sinuosity": 1.11,
    "q": 46
   },
   "9218": {
    "name": "Lōda-Māgna",
    "km": 3,
-   "sinuosity": 1.01,
+   "sinuosity": 1.09,
    "q": 112
   },
   "9219": {
    "name": "Kōmpa-Wēsta",
-   "km": 85,
-   "sinuosity": 1.02,
+   "km": 86,
+   "sinuosity": 1.03,
    "q": 104
   },
   "9220": {
@@ -449,50 +449,50 @@
   },
   "9225": {
    "name": "Āmpala-Krīk",
-   "km": 121,
-   "sinuosity": 1.06,
+   "km": 119,
+   "sinuosity": 1.04,
    "q": 125
   },
   "9226": {
    "name": "Dīpü-Wāsha",
-   "km": 231,
-   "sinuosity": 1.12,
+   "km": 227,
+   "sinuosity": 1.1,
    "q": 78
   },
   "9227": {
    "name": "Hārta-Nōrta",
-   "km": 77,
-   "sinuosity": 1.12,
+   "km": 76,
+   "sinuosity": 1.1,
    "q": 64
   }
  },
  "reclimate": {
-  "cells": 24009,
-  "class_changed": 2392,
-  "rain_mean_before_mm": 1069.0,
-  "rain_mean_after_mm": 1070.0,
+  "cells": 23717,
+  "class_changed": 2306,
+  "rain_mean_before_mm": 1071.0,
+  "rain_mean_after_mm": 1074.0,
   "classes_now": {
    "Am": 37,
    "Aw": 1,
-   "BSk": 361,
-   "Csa": 5023,
-   "Csb": 58,
-   "Cfa": 17522,
-   "Cfb": 108,
-   "Dsc": 37,
+   "BSk": 292,
+   "Csa": 4960,
+   "Csb": 61,
+   "Cfa": 17375,
+   "Cfb": 96,
+   "Dsc": 33,
    "Dfb": 82,
-   "Dfc": 386,
-   "ET": 256,
+   "Dfc": 383,
+   "ET": 259,
    "EF": 113,
    "HT": 25
   }
  },
  "threads_removed_px": {
-  "st": 2112,
-  "t": 4336
+  "st": 2109,
+  "t": 4355
  },
  "threads_removed_px_28b": {
-  "st": 4595,
-  "t": 7982
+  "st": 4618,
+  "t": 8053
  }
 }

@@ -1,0 +1,26 @@
+{
+ "edit": "5.1 edit 28a: the Dome as a shield volcano",
+ "date": "2026-11-25",
+ "centre": [
+  1351.0,
+  145.7
+ ],
+ "radius_km": 99,
+ "summit_m": 2923,
+ "caldera_floor_m": 2782,
+ "edge_m_median": 1506,
+ "moved_cells": 10223,
+ "raised": 3395,
+ "lowered": 6828,
+ "reclimate": {
+  "cells": 9508,
+  "class_changed": 576,
+  "rain_mean_before_mm": 1172.0,
+  "rain_mean_after_mm": 1211.0,
+  "classes_now": {
+   "Csa": 126,
+   "Cfa": 9096,
+   "Cfb": 286
+  }
+ }
+}

@@ -245,6 +245,11 @@ def main():
     lap = C.lapse(D, E0, En, whas0, wlev0, whas, wlev)
     for k in C.TEMPS:
         D[k] = lap[k]
+    # the pass and the trough cut into the airless crest: their cells take the air of the land round them (temperatures of
+    # the nearby land of their new height) and are let go of class O, so the reclimate classes them (edit 32's helpers)
+    import edit_532_sw_wall_trigemini as T32
+    rep['airless_cells_given_air'] = T32.give_air(D, E0, En, whas0, sh)
+    rep['class_O_let_go'] = T32.unair(D, E0, En, whas)
     forced = whas.copy()
     rain2, cls2, zon2, _, crep = C.reclimate(D, E0, En, whas, forced)
     rep['reclimate'] = crep
