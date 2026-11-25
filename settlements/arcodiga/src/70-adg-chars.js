@@ -5,8 +5,8 @@
 //   - Hueru-Kuran Whale-Clans ('hueru-kuran'): oiled sea-mammal gutskin, indigo/spruce-bark parkas & kaen headbands.
 //   - Pelagic cFlit-qBon Powerhouse Divers & Upland Dzagh-Vardzi Muleteers trading in Diga-Maketi Charter Market.
 const ADG_CHARS = (function(){
- const CAP = 160;
- const RADIUS = 460;
+ const CAP = 240;
+ const RADIUS = 540;
  let _coatMesh = null;
  let _headMesh = null;
  let _hatMesh = null;
@@ -77,7 +77,7 @@ const ADG_CHARS = (function(){
 
   if (nowMs - _lastChooseMs > 650 || _selected.length === 0) {
    _lastChooseMs = nowMs;
-   const cx = camera ? camera.position.x : 960;
+   const cx = camera ? camera.position.x : 1120;
    const cz = camera ? camera.position.z : 210;
    const cands = [];
    const actors = SIM.all('actor');
@@ -115,7 +115,7 @@ const ADG_CHARS = (function(){
    const a = _selected[i];
    const p = SIM.pose(a, t);
    const groundY = ADG_SITE.bareGround(p.x, p.z);
-   const py = (p.x > 35 && p.x < 920 && p.z > 130 && p.z < 295)
+   const py = (p.x > 35 && p.x < 1020 && p.z > 144 && p.z < 298)
     ? Math.max(81.0, p.y == null ? 81.0 : p.y)
     : Math.max(groundY, p.y == null ? groundY : p.y);
    _pos.set(p.x, py, p.z);

@@ -248,46 +248,8 @@ const ADG_WORLD = (function(){
   }
  }
 
- /* East Portal Highway Viaduct & Stepped Basalt Ramp linking East Wing (+81 m) cleanly up to Diga-Maketi Charter Plaza (+176.5 m) */
- const portalRampGroup = new THREE.Group();
- portalRampGroup.name = 'adg_east_portal_ramp';
- scene.add(portalRampGroup);
- {
-  const rSteps = 22;
-  const jadeTreads = [], colTreads = [];
-  for (let s = 0; s <= rSteps; s++) {
-   const t = s / rSteps;
-   const rx = 795.0 + t * 112.0;
-   const ry = 81.0 + (terrainH(907.0, 210.0) - 81.0) * (t * t * (3 - 2 * t));
-   (s % 4 === 0 ? jadeTreads : colTreads).push([rx, ry - 1.1, 210.0]);
-   if (typeof KWALK !== 'undefined' && KWALK.floor) {
-    KWALK.floor({ rect: [rx - 3.2, rx + 3.2, 202.0, 218.0], y: ry + 0.05 });
-   }
-  }
-  const treadGeo = new THREE.BoxGeometry(6.4, 2.2, 16.0);
-  const _tm = new THREE.Matrix4();
-  [[jadeTreads, MATS.nephriteSawn], [colTreads, MATS.plinthColumnar]].forEach(function(pair){
-   const pts = pair[0], mat = pair[1];
-   if (!pts.length) return;
-   const im = new THREE.InstancedMesh(treadGeo, mat, pts.length);
-   for (let i = 0; i < pts.length; i++) {
-    _tm.makeTranslation(pts[i][0], pts[i][1], pts[i][2]);
-    im.setMatrixAt(i, _tm);
-   }
-   im.instanceMatrix.needsUpdate = true;
-   KCITY.boundedInstanced(im);
-   portalRampGroup.add(im);
-  });
-  /* Register walkable East Wing Highway Deck (x = +38..+795 m, worldY = +81.0 m) in KWALK & KDRAWN */
-  const hwyDeckProxy = new THREE.Mesh(new THREE.BoxGeometry(760.0, 1.2, 28.0), MATS.cobblePlaza);
-  hwyDeckProxy.position.set(416.0, 80.4, 210.0);
-  portalRampGroup.add(hwyDeckProxy);
-  if (typeof KWALK !== 'undefined' && KWALK.floor) {
-   KWALK.floor({ rect: [38.0, 795.0, 196.0, 224.0], y: 81.0 });
-  }
-  portalRampGroup.updateMatrixWorld(true);
-  if (typeof KDRAWN !== 'undefined' && KDRAWN.add) KDRAWN.add(KDRAWN.fromObject(portalRampGroup));
- }
+ /* East Wing Charter Concourse Portal Gatehouse & Forecourt at x = +1020.5 m (0 arcology clipping!) */
+ ADG_STREETS_PORTAL.buildEastWingPortal(scene, MATS, KTAGS.page, statuaryAuditLog);
 
  /* Register Arcodiga Ruin in core/ruins (KRUINS.watch -> asserted automatically by tools/harness.py!) */
  if (typeof KRUINS !== 'undefined' && KRUINS.watch && ancBuilt && ancBuilt.root) {
@@ -404,80 +366,8 @@ const ADG_WORLD = (function(){
   }
  }
 
- /* Draw merged basalt cobble street network across Z1, Z4, Z5 & Z6 in 1 single draw call */
- const streetGroup = new THREE.Group();
- streetGroup.name = 'adg_streets_and_plinths';
- scene.add(streetGroup);
- {
-  const allVerts = [], allUvs = [], allIdx = [];
-  let vBase = 0;
-  function appendWayRibbon(pts, w, lift){
-   if (!pts || pts.length < 2) return;
-   let distAcc = 0;
-   for (let i = 0; i < pts.length; i++) {
-    const p = pts[i];
-    const prev = pts[Math.max(0, i - 1)], next = pts[Math.min(pts.length - 1, i + 1)];
-    let tx = next[0] - prev[0], tz = next[1] - prev[1];
-    const tl = Math.hypot(tx, tz) || 1;
-    tx /= tl; tz /= tl;
-    const nx = -tz * w * 0.5, nz = tx * w * 0.5;
-    if (i > 0) distAcc += Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]);
-    const yL = terrainH(p[0] + nx, p[1] + nz) + lift;
-    const yR = terrainH(p[0] - nx, p[1] - nz) + lift;
-    allVerts.push(p[0] + nx, yL, p[1] + nz, p[0] - nx, yR, p[1] - nz);
-    allUvs.push(0, distAcc * 0.22, w * 0.22, distAcc * 0.22);
-    if (i < pts.length - 1) {
-     const b = vBase + i * 2;
-     allIdx.push(b, b + 3, b + 1, b, b + 2, b + 3);
-    }
-   }
-   vBase += pts.length * 2;
-  }
-  for (let i = 0; i < PLANS.ways.length; i++) {
-   const W = PLANS.ways[i];
-   appendWayRibbon(W.pts, W.w == null ? 6.0 : W.w, 0.14);
-  }
-  if (allVerts.length) {
-   const g = new THREE.BufferGeometry();
-   g.setAttribute('position', new THREE.Float32BufferAttribute(allVerts, 3));
-   g.setAttribute('uv', new THREE.Float32BufferAttribute(allUvs, 2));
-   g.setIndex(allIdx);
-   g.computeVertexNormals();
-   streetGroup.add(new THREE.Mesh(g, MATS.cobblePlaza));
-  }
- }
-
- /* Instanced Columnar Basalt & Polygonal Basalt Terraced Plinths under all KCITY lots */
- {
-  const hkPlinths = [], etPlinths = [];
-  for (let i = 0; i < PLANS.lots.length; i++) {
-   const L = PLANS.lots[i];
-   const ph = Math.max(1.6, (L.drop == null ? 0 : L.drop) + 2.8);
-   const rec = { x: L.x, y: L.y - ph * 0.5 + 0.06, z: L.z, ry: L.ry, w: L.w + 0.8, h: ph, d: L.d + 0.8 };
-   if (L.kit === 'eternian') etPlinths.push(rec);
-   else hkPlinths.push(rec);
-  }
-  const _m4 = new THREE.Matrix4(), _q4 = new THREE.Quaternion(), _yA = new THREE.Vector3(0, 1, 0), _p3 = new THREE.Vector3(), _s3 = new THREE.Vector3();
-  function emitPlinths(list, mat){
-   if (!list.length) return;
-   const im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, list.length);
-   for (let i = 0; i < list.length; i++) {
-    const r = list[i];
-    _p3.set(r.x, r.y, r.z);
-    _q4.setFromAxisAngle(_yA, r.ry);
-    _s3.set(r.w, r.h, r.d);
-    _m4.compose(_p3, _q4, _s3);
-    im.setMatrixAt(i, _m4);
-   }
-   im.instanceMatrix.needsUpdate = true;
-   KCITY.boundedInstanced(im);
-   streetGroup.add(im);
-  }
-  emitPlinths(hkPlinths, MATS.plinthColumnar);
-  emitPlinths(etPlinths, MATS.plinthBasalt);
-  streetGroup.updateMatrixWorld(true);
-  if (typeof KDRAWN !== 'undefined' && KDRAWN.add) KDRAWN.add(KDRAWN.fromObject(streetGroup));
- }
+ /* Draw merged basalt cobble streets, 6-fold hexagonal court plazas & hexagonal/rectangular plinths */
+ ADG_STREETS_PORTAL.buildStreetsAndPlinths(scene, PLANS, MATS);
 
  /* Create KCITY.hostMultikit 3-Ring HLOD + Shared DataTexture2DArray Atlas (< 13 samplers, <= 350 MB VRAM) */
  const cityGroup = new THREE.Group();
@@ -489,15 +379,15 @@ const ADG_WORLD = (function(){
   defaultKit: 'hueru-kuran',
   renderer: renderer,
   group: cityGroup,
-  fullR: 280,
-  mid1R: 620,
+  fullR: 195,
+  mid1R: 480,
   midR: 1550,
   bakeBudgetMs: 180,
-  maxVramMB: 300
+  maxVramMB: 310
  });
  multikitHost.setPlan({ lots: PLANS.lots });
  {
-  const warmEyes = [[980, 210], [680, 1180]];
+  const warmEyes = [[1120, 210], [1165, 535], [1020, -485], [680, 1180]];
   for (let w = 0; w < warmEyes.length; w++) {
    for (let p = 0; p < 8; p++) multikitHost.update(warmEyes[w], true);
   }
@@ -667,19 +557,18 @@ const ADG_WORLD = (function(){
   interiorGroup.visible = Math.hypot(camera.position.x - 750, camera.position.z - 210) < 450;
  });
 
- /* 7. Crookshore +65.0 m Trimline Ecology (biomes/crook read in place + settlement-collar hero stands on KRAND & KSPACE) */
+ /* 7. Crookshore +65.0 m Trimline Ecology (biomes/crook + settlement-collar hero stands on KRAND & KSPACE) */
  const bioSpace = KSPACE.create({ cell: 18 });
  for (let i = 0; i < PLANS.lots.length; i++) {
   const L = PLANS.lots[i];
-  const rLot = Math.max(L.w, L.d) * 0.65 + 16.0;
+  const rLot = Math.max(L.w, L.d) * 0.65 + 14.0;
   if (bioSpace.insert) bioSpace.insert({ x: L.x, z: L.z, r: rLot, kind: 'building' }, L.x, L.z, rLot);
  }
- /* Reserve Z4 Charter Plaza, Z5 Nuraghe/Stepwell core & Z6 Superintendency Fort streets so trees frame the towns cleanly */
  const townClears = [
-  [1045,  210, 195],
-  [1020, -495, 235],
-  [1160, -345, 185],
-  [1075,  555, 255],
+  [1205,  205, 225],
+  [1045, -495, 245],
+  [1160, -165, 210],
+  [1205,  545, 285],
   [ 635, -565, 135],
   [ 475,  425, 145]
  ];
@@ -706,7 +595,6 @@ const ADG_WORLD = (function(){
     seed: ADG_SITE.SEED
    });
 
-   /* Deterministic KRAND hero flora & spray-sponge collar framing Z1, NW Breach, Gorge-Throat, Z4, Z5, Z6 & West Rim */
    const H01 = function(cx, cz, k, salt){
     return KRAND.unit(KRAND.hash(ADG_SITE.SEED >>> 0, (cx | 0) * 73856093 ^ (cz | 0) * 19349663, k | 0, salt | 0));
    };
@@ -717,7 +605,7 @@ const ADG_WORLD = (function(){
     return true;
    };
 
-   /* 7A. < +65.0 m Basalt Spray-Bench Lithistid Chimney- & Cushion-Sponges (strictly 0 woody trees!) */
+   /* 7A. < +65.0 m Basalt Spray-Bench Lithistid Sponges (0 woody trees!) */
    const sprayBoxes = [
     [520, 795, -780, -360],
     [-1180, -760, -1350, -960],
@@ -771,24 +659,24 @@ const ADG_WORLD = (function(){
     BIO.kit(_prevKit);
    }
 
-   /* 7B. >= +65.0 m Hero 3D Benihi Red-Cypress, Sitka Spruce, Redcedar & Canopy Fog-Sponges around Rim Collars */
+   /* 7B. >= +65.0 m Hero Benihi Red-Cypress, Sitka Spruce & Redcedar around Rim Collars */
    const forestBoxes = [
-    [820, 1580, -920, 860],
-    [-1320, -820, -680, 520]
+    [820, 1820, -1120, 1060],
+    [-1420, -820, -780, 620]
    ];
    let heroCount = 0;
    for (let bi = 0; bi < forestBoxes.length; bi++) {
     const B = forestBoxes[bi];
-    for (let gz = B[2]; gz <= B[3]; gz += 58) {
-     for (let gx = B[0]; gx <= B[1]; gx += 58) {
-      if (heroCount >= 84) break;
-      const cx = (gx / 58) | 0, cz = (gz / 58) | 0;
-      if (H01(cx, cz, 1, 0x620) > 0.62) continue;
-      const x = gx + (H01(cx, cz, 2, 0x620) - 0.5) * 42.0;
-      const z = gz + (H01(cx, cz, 3, 0x620) - 0.5) * 42.0;
+    for (let gz = B[2]; gz <= B[3]; gz += 56) {
+     for (let gx = B[0]; gx <= B[1]; gx += 56) {
+      if (heroCount >= 92) break;
+      const cx = (gx / 56) | 0, cz = (gz / 56) | 0;
+      if (H01(cx, cz, 1, 0x620) > 0.65) continue;
+      const x = gx + (H01(cx, cz, 2, 0x620) - 0.5) * 40.0;
+      const z = gz + (H01(cx, cz, 3, 0x620) - 0.5) * 40.0;
       const y = terrainH(x, z);
       if (y < 66.0) continue;
-      if (ADG_SITE.townBandMask(x, z) < 0.35) continue;
+      if (ADG_SITE.townBandMask(x, z) < 0.30) continue;
       const e = 2.0;
       const slp = Math.hypot((terrainH(x + e, z) - terrainH(x - e, z)) / (2 * e), (terrainH(x, z + e) - terrainH(x, z - e)) / (2 * e));
       if (slp > 0.66) continue;

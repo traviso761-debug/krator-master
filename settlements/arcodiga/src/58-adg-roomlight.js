@@ -92,20 +92,20 @@ const ADG_ROOMS = (function(){
    name: 'Di-Ga Wai-Si Superintendency Censorate Hall',
    culture: 'eternian',
    vault: false,
-   box: [984.0, 166.0, 515.0, 1006.0, 171.2, 535.0],
+   box: [1194.0, 173.0, 448.0, 1216.0, 178.2, 468.0],
    doors: [
-    { id: 'd_hall_court', out: true, w: 2.4, x: 984.0, z: 525.0 }
+    { id: 'd_hall_court', out: true, w: 2.4, x: 1205.0, z: 468.0 }
    ],
    windows: [
-    { x: 1006.0, y: 168.5, z: 521.0, w: 3.2, h: 2.2, room: 'adg.hall.superintendency' },
-    { x: 1006.0, y: 168.5, z: 529.0, w: 3.2, h: 2.2, room: 'adg.hall.superintendency' }
+    { x: 1216.0, y: 175.5, z: 454.0, w: 3.2, h: 2.2, room: 'adg.hall.superintendency' },
+    { x: 1216.0, y: 175.5, z: 462.0, w: 3.2, h: 2.2, room: 'adg.hall.superintendency' }
    ],
    lamps: [
-    { x: 995.0, y: 170.0, z: 525.0, amp: 1.15, r: 12.0, room: 'adg.hall.superintendency', color: [1.0, 0.80, 0.52] }
+    { x: 1205.0, y: 177.0, z: 458.0, amp: 1.15, r: 12.0, room: 'adg.hall.superintendency', color: [1.0, 0.80, 0.52] }
    ],
    furniture: [
-    { key: 'eternian_magistrate_dais', x: 992.0, y: 166.0, z: 525.0, ry: 1.57 },
-    { key: 'eternian_seal_coffer',     x: 998.0, y: 166.0, z: 522.0, ry: 0.0 }
+    { key: 'eternian_magistrate_dais', x: 1202.0, y: 173.0, z: 458.0, ry: 0.0 },
+    { key: 'eternian_seal_coffer',     x: 1208.0, y: 173.0, z: 455.0, ry: 0.0 }
    ]
   }
  ];

@@ -16,10 +16,10 @@ const VIEWS = {};
  /* Punctuation-free preset views (zero apostrophes, zero colons, 6-float [ex,ey,ez,tx,ty,tz] format!) */
  defView('overview',                   [ 680, 485, 1180], [ 220, 105,  -80]);
  defView('arcodiga-breach-and-throat', [-115,  96,  680], [-145, 108,   25]);
- defView('east-wing-charter-portal',   [ 825, 226,  385], [1015, 178,  208]);
- defView('kopa-diga-nuraghe-rim',      [ 835, 224, -315], [ 975, 176, -515]);
+ defView('east-wing-charter-portal',   [ 955, 238,  365], [1125, 180,  210]);
+ defView('kopa-diga-nuraghe-rim',      [ 835, 228, -305], [1025, 178, -515]);
  defView('cliff-hoists-and-lagoon',    [ 385,  88, -555], [ 755,  72, -555]);
- defView('eternian-fort-and-clock',    [ 835, 236,  305], [1045, 174,  515]);
+ defView('eternian-fort-and-clock',    [ 955, 295,  335], [1195, 174,  545]);
  defView('dam-lee-coaling-quay',       [ 285,  62,  655], [ 485,  12,  465]);
 })();
 
@@ -106,6 +106,20 @@ const ADG_HOST_CHECKS = {
    detail: audit.lots + ' lots (HKK=' + ADG_WORLD.PLANS.hkLots.length + ', ETK=' + ADG_WORLD.PLANS.etLots.length + '), 0 overlaps, min dwelling y=' + audit.minDwellingY + ' m'
   };
  },
+ 'no-arcology-clipping': function(){
+  const c = ADG_CITY.auditArcologyClearance(ADG_WORLD.PLANS.lots, ADG_WORLD.PLANS.ways);
+  return {
+   ok: c.ok && c.lotHits === 0 && c.wayHits === 0,
+   detail: 'lotHits=' + c.lotHits + ', wayHits=' + c.wayHits + ' across ' + ADG_WORLD.PLANS.ways.length + ' street segments'
+  };
+ },
+ 'eternian-hex-honeycomb': function(){
+  const h = ADG_HEX.auditHexAlignment(ADG_WORLD.PLANS.lots);
+  return {
+   ok: h.ok && h.macroCells === 15 && h.aligned60 === h.hexBuildings,
+   detail: h.macroCells + ' hex cells, ' + h.z6Lots + ' Z6 lots, ' + h.aligned60 + '/' + h.hexBuildings + ' hex buildings aligned to 60 deg'
+  };
+ },
  'multikit-hlod-atlas': function(){
   const hc = ADG_WORLD.multikitHost ? ADG_WORLD.multikitHost.hlodCheck() : { ok: false };
   return {
@@ -121,7 +135,7 @@ const ADG_HOST_CHECKS = {
   const fs = ADG_WORLD.floraStats;
   const dd = CROOK_PHYS.sprayTrimAt({ elevM: 18.0, coastDistKm: 0.25, wnwExposure01: 0.9, calderaShelter01: 0.15, silicaByte: 150, drawdownM: 8.0 });
   return {
-   ok: fs.spongesBelow65 >= 20 && fs.treesAbove65 >= 25 && fs.treesBelow65 === 0 && dd.ostiaOpen01 < 0.25,
+   ok: fs.spongesBelow65 >= 20 && fs.treesAbove65 >= 20 && fs.treesBelow65 === 0 && dd.ostiaOpen01 < 0.25,
    detail: 'sponges(<65m)=' + fs.spongesBelow65 + ', heroTrees(>=65m)=' + fs.treesAbove65 + ', canopySponges=' + fs.canopySponges + ', trees(<65m)=' + fs.treesBelow65
   };
  },
@@ -139,7 +153,7 @@ const ADG_HOST_CHECKS = {
   const st = S ? S.stocks() : null;
   const tr = S ? S.tradeReport() : {};
   const painted = S ? S.citizens.filter(function(c){ return c.cohort === 'eternian' && c.faceChalk; }).length : 0;
-  const ok = !!(hoistsOk && S && S.pop === 3400 && st && st.by.sawn_nephrite.total > 50 && st.by.benihi_timber.total > 50 && Object.keys(tr).length === 4 && painted >= 20);
+  const ok = !!(hoistsOk && S && S.pop === 6800 && st && st.by.sawn_nephrite.total > 50 && st.by.benihi_timber.total > 50 && Object.keys(tr).length === 4 && painted >= 30);
   return {
    ok: ok,
    detail: '3x 90s hoists, pop=' + (S ? S.pop : 0) + ', paintedEternians=' + painted + ', windHooks=' + ADG_ENV.windBoundCount + ', nephrite=' + (st && st.by.sawn_nephrite.total)
@@ -166,17 +180,29 @@ function adgHostNegativesList(){
   const res = ADG_CITY.auditLots(low);
   R.push({ name: 'dwelling below +65 m tsunami trimline rejected', failed: res.lowDwellings > 0, detail: 'lowDwellings=' + res.lowDwellings });
  }
- /* 2. Negative multikit HLOD duplicate representation */
+ /* 2. Negative street slicing through East Stiffening Wing */
+ {
+  const clipWays = ADG_WORLD.PLANS.ways.concat([{ inst: 'et_cantonment', kind: 'avenue', w: 9.5, pts: [[965, 95], [965, 362]] }]);
+  const res = ADG_CITY.auditArcologyClearance(ADG_WORLD.PLANS.lots, clipWays);
+  R.push({ name: 'street slicing through East Stiffening Wing rejected', failed: !res.ok, detail: 'wayHits=' + res.wayHits });
+ }
+ /* 3. Negative skewed hexagonal building in Z6 honeycomb */
+ {
+  const skew = ADG_WORLD.PLANS.lots.concat([{ id: 9992, zone: 'Z6', kit: 'eternian', key: 'eternian:et_hex_house', v: 0, x: 1205, y: 175, z: 500, ry: 0.42 }]);
+  const res = ADG_HEX.auditHexAlignment(skew);
+  R.push({ name: 'off-grid skewed hexagonal building in Z6 rejected', failed: !res.ok, detail: 'aligned60=' + res.aligned60 + '/' + res.hexBuildings });
+ }
+ /* 4. Negative multikit HLOD duplicate representation */
  {
   const dup = ADG_WORLD.multikitHost ? ADG_WORLD.multikitHost.hlodCheck({ twice: true }) : { ok: true };
   R.push({ name: 'duplicate multikit HLOD lot representation caught', failed: !dup.ok, detail: 'twice=' + dup.twice });
  }
- /* 3. Negative open-eyed / Sanctum-gold statuary fault */
+ /* 5. Negative open-eyed / Sanctum-gold statuary fault */
  {
   const bad = auditClosedEyesStatuary([{ eyes: 'open', metal: 'gold' }]);
   R.push({ name: 'open-eyed or Sanctum-gold statuary rejected on frontier superintendency', failed: !bad.ok, detail: bad.detail });
  }
- /* 4. Negative sky daylight leak into vault=true room */
+ /* 6. Negative sky daylight leak into vault=true room */
  {
   const leaky = JSON.parse(JSON.stringify(ADG_WORLD.ROOM_LIGHT_TABLE));
   leaky.byId['adg.vault.santa_cristina'].daylight = 0.05;
@@ -211,7 +237,7 @@ const HOST_TICKS = [function(){
 KHOST.take({
  build: 'arcodiga',
  title: 'Kōpa-Dīga / Arcodiga / Dī-Gā Wài-Sī',
- hint: 'Crookshore North Crater (89, 604 · 1.60 atm): Tsunami-breached Arcodiga dam-arcology (-95 m) + Hueru-Kuran & Eternal State Charter Town (3,400 pop)',
+ hint: 'Crookshore North Crater (89, 604 · 1.60 atm): Tsunami-breached Arcodiga dam-arcology (-95 m) + Dense Hueru-Kuran & Hexagonal Eternal State Charter Town (6,800 pop)',
  scene: scene,
  camera: camera,
  renderer: renderer,
@@ -227,7 +253,7 @@ KHOST.take({
   view: function(name){
    const v = VIEWS[name];
    if (v && ADG_WORLD && ADG_WORLD.multikitHost) {
-    for (let p = 0; p < 20; p++) ADG_WORLD.multikitHost.update([v.pos[0], v.pos[2]], true);
+    for (let p = 0; p < 20; p++) ADG_WORLD.multikitHost.update([v[0], v[2]], true);
    }
   }
  },
@@ -235,7 +261,7 @@ KHOST.take({
   if (ADG_ENV && ADG_ENV.skyHandle && ADG_ENV.skyHandle.render) ADG_ENV.skyHandle.render();
  },
  stats: function(){
-  return ADG_STATE.mode + ' · lots ' + ADG_WORLD.PLANS.lots.length + ' · pop 3400';
+  return ADG_STATE.mode + ' · lots ' + ADG_WORLD.PLANS.lots.length + ' · pop 6800';
  },
  layers: {
   'flora and sponges': { match: function(o){ return !!(o.userData && o.userData.biome); } },

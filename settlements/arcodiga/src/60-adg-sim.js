@@ -65,9 +65,9 @@ const ADG_TRADE_ROUTES = [
 ];
 
 const ADG_SIM = (function(){
- const POP_TOTAL = 3400;
- const HOUSEHOLDS_TOTAL = 715;
- const ACTOR_COUNT = 180;
+ const POP_TOTAL = 6800;
+ const HOUSEHOLDS_TOTAL = 1380;
+ const ACTOR_COUNT = 260;
 
  const ALL_GOODS = [
   'kelp_bread', 'fish', 'rice', 'barley', 'tea', 'salt',
@@ -383,8 +383,8 @@ const ADG_SIM = (function(){
   _state = {
    pop: POP_TOTAL,
    households: HOUSEHOLDS_TOTAL,
-   hueruPop: 2450,
-   eternianPop: 950,
+   hueruPop: 4900,
+   eternianPop: 1900,
    citizens: citizens,
    advanceTo: advanceTo,
    stocks: function(){ return { day: Math.floor(_simMinute / 1440), by: stockLedger }; },

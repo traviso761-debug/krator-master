@@ -34,11 +34,11 @@ const ADG_SITE = (function(){
  }
  const MICRO_STYLE = { hill: 7.5, gully: 0.48, rough: 0.68 };
 
- /* Six spatial & cultural zones from PLAN.md §3 */
+ /* Six spatial & cultural zones from PLAN.md §3 (scaled to 6,800 pop / 1,380 HH, 0 arcology clipping) */
  const ZONES = [
   {
    id: 'Z1', key: 'caldera_lagoon', name: 'Kopa-North Caldera Lagoon & Lower Hoist Cove',
-   tier: 'cove', kit: 'hueru-kuran', elevBand: [-95, 38], pop: 140, households: 0, dwellingsAllowed: false,
+   tier: 'cove', kit: 'hueru-kuran', elevBand: [-95, 38], pop: 240, households: 0, dwellingsAllowed: false,
    poly: [[545, -715], [765, -715], [765, -415], [545, -415]]
   },
   {
@@ -48,23 +48,23 @@ const ADG_SITE = (function(){
   },
   {
    id: 'Z3', key: 'arcodiga_east_wing', name: 'Reclaimed East Stiffening Wing & Buttresses E1-E2',
-   tier: 'arcology', kit: 'eternian', elevBand: [81, 227], pop: 420, households: 95, dwellingsAllowed: true,
-   poly: [[38, 130], [930, 130], [930, 298], [38, 298]]
+   tier: 'arcology', kit: 'eternian', elevBand: [81, 227], pop: 680, households: 155, dwellingsAllowed: true,
+   poly: [[38, 144], [1020, 144], [1020, 298], [38, 298]]
   },
   {
    id: 'Z4', key: 'portal_market', name: 'Diga-Maketi East Highway Charter Plaza',
-   tier: 'rim', kit: 'truce', elevBand: [168, 186], pop: 220, households: 48, dwellingsAllowed: true,
-   poly: [[885, 85], [1255, 85], [1255, 320], [885, 320]]
+   tier: 'rim', kit: 'truce', elevBand: [172, 190], pop: 560, households: 118, dwellingsAllowed: true,
+   poly: [[1032, 95], [1465, 95], [1465, 306], [1032, 306]]
   },
   {
    id: 'Z5', key: 'kopa_diga_rim', name: 'Kopa-Diga Hueru-Kuran Caldera-Rim Town',
-   tier: 'rim', kit: 'hueru-kuran', elevBand: [95, 205], pop: 2090, households: 452, dwellingsAllowed: true,
-   poly: [[815, -920], [1610, -920], [1640, -280], [1480, 75], [845, 75], [805, -390]]
+   tier: 'rim', kit: 'hueru-kuran', elevBand: [95, 205], pop: 3620, households: 762, dwellingsAllowed: true,
+   poly: [[815, -920], [1610, -920], [1640, -280], [1480, 90], [1035, 90], [1035, 130], [845, 130], [805, -390]]
   },
   {
-   id: 'Z6', key: 'eternian_cantonment', name: 'Di-Ga Wai-Si Eternian Superintendency Fort',
-   tier: 'rim', kit: 'eternian', elevBand: [145, 190], pop: 530, households: 120, dwellingsAllowed: true,
-   poly: [[855, 335], [1465, 335], [1465, 855], [855, 855]]
+   id: 'Z6', key: 'eternian_cantonment', name: 'Di-Ga Wai-Si Eternian Hexagonal Superintendency',
+   tier: 'rim', kit: 'eternian', elevBand: [152, 194], pop: 1700, households: 345, dwellingsAllowed: true,
+   poly: [[865, 314], [1565, 314], [1565, 885], [1045, 885], [865, 560]]
   }
  ];
 
@@ -105,9 +105,9 @@ const ADG_SITE = (function(){
  const TIDE_CLOCK = {
   id: 'eternian_tsunami_clock',
   name: 'Di-Ga Wai-Si Bronze Tsunami-Tide & Relay Clock',
-  x: 965,
-  z: 435,
-  baseY: 168.0
+  x: 1121,
+  z: 506.5,
+  baseY: 173.0
  };
 
  /* Perennial eastern cloudforest cascades driving hk_jade_sawmill wire-saws & hk_cypress_flume_yard
@@ -129,14 +129,33 @@ const ADG_SITE = (function(){
   }
  ];
 
- /* Surveyed kits/resources nodes worked by hk_jade_quarry and et_mine */
+ /* Surveyed kits/resources nodes worked by hk_jade_quarry and et_mine (east of the 15-cell Eternian Honeycomb) */
  const RESOURCE_NODES = [
   { id: 'res_crook_jade_1',   kind: 'jade',   rock: 'nephrite', grade: 3, byteVal: 200, x: 1515, z: -615 },
   { id: 'res_crook_silica_1', kind: 'silica', rock: 'quartz',   grade: 2, byteVal: 150, x: 1485, z: -335 },
-  { id: 'res_crook_coal_1',   kind: 'coal',   rock: 'coal',     grade: 3, byteVal: 209, x: 1385, z:  695 },
-  { id: 'res_crook_tin_1',    kind: 'tin',    rock: 'tin',      grade: 3, byteVal: 200, x: 1415, z:  525 },
-  { id: 'res_crook_iron_1',   kind: 'iron',   rock: 'iron',     grade: 2, byteVal: 180, x: 1355, z:  785 }
+  { id: 'res_crook_coal_1',   kind: 'coal',   rock: 'coal',     grade: 3, byteVal: 209, x: 1512, z:  645 },
+  { id: 'res_crook_tin_1',    kind: 'tin',    rock: 'tin',      grade: 3, byteVal: 200, x: 1505, z:  495 },
+  { id: 'res_crook_iron_1',   kind: 'iron',   rock: 'iron',     grade: 2, byteVal: 180, x: 1495, z:  765 }
  ];
+
+ /* Exact parametric 2D keep-out hull of Arcodiga Dam-Arcology (VTOL, Spine, Arch/Prows/Ribs, and x in [-1022,+1022] Stiffening Wing) */
+ function inArcologyKeepout(x, z, pad){
+  const p = pad == null ? 0 : pad;
+  if (Math.abs(x) <= 74.0 + p && z >= -564.0 - p && z <= -175.0 + p) return true;
+  if (Math.abs(x) <= 54.0 + p && z >= -460.0 - p && z <= 220.0 + p) return true;
+  if (Math.abs(x) <= 740.0 + p) {
+   const u = clamp(x / 730.0, -1.0, 1.0);
+   const zUp = -260.0 * (1.0 - u * u);
+   if (z >= zUp - 20.0 - p && z <= zUp + 268.0 + p) return true;
+  }
+  if (x >= -1022.0 - p && x <= 1022.0 + p) {
+   const uCl = Math.min(1.0, Math.abs(x) / 930.0);
+   const zRear = 148.0 + 24.0 * uCl * uCl - 8.0 - p;
+   const zFront = 296.0 - 22.0 * uCl * uCl + 8.0 + p;
+   if (z >= zRear && z <= zFront) return true;
+  }
+  return false;
+ }
 
  function inPoly(x, z, P){
   let inside = false;
@@ -273,14 +292,14 @@ const ADG_SITE = (function(){
    }
   }
 
-  /* 6. Terrace Grading across Z4 Charter Market (+176 m), Z5 Hueru-Kuran Rim (+166..+204 m), and Z6 Eternian Fort (+158..+188 m)
+  /* 6. Terrace Grading across Z4 Charter Market (+178 m), Z5 Hueru-Kuran Rim (+166..+204 m), and Z6 Eternian Honeycomb (+162..+190 m)
      Guarantees gentle building-ready benches strictly >= +95.0 m (0 permanent dwellings < +65.0 m!) */
   {
    const dZ4 = polyDist(x, z, ZONES[3].poly);
    const z4K = 1.0 - smooth(0, 95, dZ4);
    if (z4K > 0) {
-    const targetZ4 = 176.5 + 5.5 * smooth(910, 1230, x) + n2 * 0.6;
-    h = mix(h, targetZ4, z4K * 0.90);
+    const targetZ4 = 178.0 + 6.5 * smooth(1030, 1440, x) + n2 * 0.45;
+    h = mix(h, targetZ4, z4K * 0.92);
    }
 
    const dZ5 = polyDist(x, z, ZONES[4].poly);
@@ -291,10 +310,10 @@ const ADG_SITE = (function(){
    }
 
    const dZ6 = polyDist(x, z, ZONES[5].poly);
-   const z6K = 1.0 - smooth(0, 105, dZ6);
+   const z6K = 1.0 - smooth(0, 110, dZ6);
    if (z6K > 0) {
-    const targetZ6 = 160.0 + 24.0 * smooth(870, 1380, x) + n1 * 2.0 + n2 * 0.6;
-    h = mix(h, Math.max(148.0, targetZ6), z6K * 0.88);
+    const targetZ6 = 162.0 + 25.0 * smooth(890, 1520, x) + n1 * 1.4 + n2 * 0.45;
+    h = mix(h, Math.max(152.0, targetZ6), z6K * 0.92);
    }
   }
 
@@ -389,6 +408,7 @@ const ADG_SITE = (function(){
   TIDE_CLOCK: TIDE_CLOCK,
   STREAMS: STREAMS,
   RESOURCE_NODES: RESOURCE_NODES,
+  inArcologyKeepout: inArcologyKeepout,
   inPoly: inPoly,
   polyDist: polyDist,
   zoneAt: zoneAt,

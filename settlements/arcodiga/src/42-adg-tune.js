@@ -63,7 +63,8 @@ const ADG_TUNE = (function(){
   et_merchant_house:   { w: 12.4, d: 11.4, h: 18.4, family: 'rich',   wealth: 0.78, types: ['dwelling', 'trade'], tier: 2 },
   et_hex_villa:        { w: 24.0, d: 24.0, h: 15.0, family: 'rich',   wealth: 0.84, types: ['dwelling'], tier: 2 },
   et_official_villa:   { w: 24.6, d: 20.6, h: 11.6, family: 'rich',   wealth: 0.90, types: ['dwelling', 'civic'], tier: 2 },
-  et_shophouse:        { w: 10.0, d: 10.0, h: 10.0, family: 'shop',   wealth: 0.54, types: ['shop', 'commercial'], tier: 2 },
+  et_shophouse:        { w: 10.0, d: 10.0, h: 10.0, family: 'shop',   wealth: 0.54, types: ['shop', 'commercial', 'dwelling'], tier: 2 },
+  et_printer:          { w: 11.0, d: 11.0, h: 10.0, family: 'shop',   wealth: 0.56, types: ['shop', 'craft'], tier: 2 },
   et_tea_house:        { w: 14.0, d: 14.0, h:  9.0, family: 'hosp',   wealth: 0.58, types: ['tavern', 'hospitality'], tier: 2 },
   et_inn:              { w: 22.0, d: 20.0, h: 15.0, family: 'hosp',   wealth: 0.66, types: ['inn', 'hospitality'], tier: 2 },
   et_bakehouse:        { w: 11.0, d: 11.0, h: 10.0, family: 'shop',   wealth: 0.48, types: ['shop', 'craft'], tier: 2 },
@@ -80,6 +81,8 @@ const ADG_TUNE = (function(){
   et_granary:          { w: 15.0, d: 15.0, h: 14.0, family: 'work',   wealth: 0.62, types: ['work', 'storage'], tier: 2 },
   et_mine:             { w: 22.0, d: 18.0, h: 16.0, family: 'work',   wealth: 0.58, types: ['industry', 'mine'], tier: 2 },
   et_quarry:           { w: 24.0, d: 18.0, h: 12.0, family: 'work',   wealth: 0.54, types: ['industry', 'work'], tier: 2 },
+  et_farmstead:        { w: 30.0, d: 28.0, h:  9.0, family: 'farm',   wealth: 0.44, types: ['farm'], tier: 1 },
+  et_mushroom_cellar:  { w: 11.0, d:  9.0, h:  5.0, family: 'farm',   wealth: 0.36, types: ['farm', 'work'], tier: 1 },
   et_terraces:         { w: 24.0, d: 20.0, h:  4.0, family: 'farm',   wealth: 0.42, types: ['farm'], tier: 1 },
   et_tea_garden:       { w: 26.0, d: 22.0, h:  8.0, family: 'farm',   wealth: 0.48, types: ['farm'], tier: 1 },
   et_goat_fold:        { w: 20.0, d: 20.0, h:  3.2, family: 'farm',   wealth: 0.40, types: ['farm'], tier: 1 },
@@ -109,6 +112,53 @@ const ADG_TUNE = (function(){
   et_fish_landing:     { w: 14.0, d: 16.0, h:  4.0, family: 'harbor', wealth: 0.54, types: ['harbor'], tier: 2 },
   et_lighthouse:       { w: 14.0, d: 14.0, h: 34.0, family: 'harbor', wealth: 0.84, types: ['harbor', 'landmark'], tier: 3 }
  };
+
+ /* Canonical hexagonal plan radii (matching etHex(R) in kits/eternian/src/46-et-civic-kit.js) */
+ const HEX_ALWAYS_R = {
+  et_hex_hut:          4.1,
+  et_hex_house:        5.5,
+  et_hex_villa:       12.2,
+  et_tea_house:        7.4,
+  et_healer:           7.2,
+  et_market_hall:     12.8,
+  et_granary:          7.8,
+  et_warehouse:       11.0,
+  et_examination_hall:13.6,
+  et_fort:            50.2,
+  et_kiln:            13.2,
+  et_tile_works:      13.0,
+  et_tube_station:     5.2,
+  et_lighthouse:       7.0
+ };
+
+ const HEX_V1_R = {
+  et_shophouse: 5.3,
+  et_bakehouse: 5.5,
+  et_smithy:    5.4,
+  et_weaver:    6.0,
+  et_brewhouse: 6.1,
+  et_inn:      11.0
+ };
+
+ function rawKeyOf(qkey){
+  const s = String(qkey || '');
+  const idx = s.indexOf(':');
+  return idx > 0 ? s.slice(idx + 1) : s;
+ }
+
+ function isHexPiece(qkey, v){
+  const rk = rawKeyOf(qkey);
+  if (HEX_ALWAYS_R[rk] != null) return true;
+  if ((v | 0) === 1 && HEX_V1_R[rk] != null) return true;
+  return false;
+ }
+
+ function hexPlinthRadius(qkey, v){
+  const rk = rawKeyOf(qkey);
+  if (HEX_ALWAYS_R[rk] != null) return HEX_ALWAYS_R[rk];
+  if ((v | 0) === 1 && HEX_V1_R[rk] != null) return HEX_V1_R[rk];
+  return null;
+ }
 
  function installManifest(KK){
   if (!KK || !KK.loadManifest) return null;
@@ -164,6 +214,10 @@ const ADG_TUNE = (function(){
  return {
   HK_PIECES: HK_PIECES,
   ET_PIECES: ET_PIECES,
+  HEX_ALWAYS_R: HEX_ALWAYS_R,
+  HEX_V1_R: HEX_V1_R,
+  isHexPiece: isHexPiece,
+  hexPlinthRadius: hexPlinthRadius,
   installManifest: installManifest,
   dimsOf: dimsOf,
   isDwellingKey: isDwellingKey

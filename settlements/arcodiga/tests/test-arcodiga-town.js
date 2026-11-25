@@ -97,15 +97,16 @@ load('settlements/arcodiga/src/40-adg-site.js');
 load('settlements/arcodiga/src/42-adg-trades.js');
 load('settlements/arcodiga/src/42-adg-tune.js');
 load('settlements/arcodiga/src/44-adg-crook-delta.js');
-load('settlements/arcodiga/src/45-adg-city-steps.js');
+load('settlements/arcodiga/src/45a-adg-hex-plan.js');
+load('settlements/arcodiga/src/45b-adg-city-steps.js');
 load('settlements/arcodiga/src/58-adg-roomlight.js');
 load('settlements/arcodiga/src/60-adg-sim.js');
 
 const {
- ADG_MIPVAR, ADG_SITE, ADG_TRADES, ADG_TUNE, ADG_CROOK_DELTA, ADG_CITY, ADG_ROOMS, ADG_SIM,
+ ADG_MIPVAR, ADG_SITE, ADG_TRADES, ADG_TUNE, ADG_CROOK_DELTA, ADG_HEX, ADG_CITY, ADG_ROOMS, ADG_SIM,
  ARCODIGA, ADG_INTERIORS, CROOK_PHYS, WMICRO, KROOMLIGHT, KMAT_M1
 } = vm.runInContext(
- '({ ADG_MIPVAR, ADG_SITE, ADG_TRADES, ADG_TUNE, ADG_CROOK_DELTA, ADG_CITY, ADG_ROOMS, ADG_SIM, ARCODIGA, ADG_INTERIORS, CROOK_PHYS, WMICRO, KROOMLIGHT, KMAT_M1 })',
+ '({ ADG_MIPVAR, ADG_SITE, ADG_TRADES, ADG_TUNE, ADG_CROOK_DELTA, ADG_HEX, ADG_CITY, ADG_ROOMS, ADG_SIM, ARCODIGA, ADG_INTERIORS, CROOK_PHYS, WMICRO, KROOMLIGHT, KMAT_M1 })',
  ctx
 );
 
@@ -153,21 +154,46 @@ const {
   delta);
 }
 
-/* --- Gate 3: Three-Instance Dual-Polity KCITY Layout (0 Overlaps, 0 Dwellings < +65.0 m, Determinism) --- */
+/* --- Gate 3: Dense Three-Instance KCITY Layout, Zero Arcology Clipping & 6-Fold Eternian Hex Grid --- */
 const plans = ADG_CITY.buildPlans({ fresh: true });
 {
  const audit = ADG_CITY.auditLots(plans.lots);
+ const arcClear = ADG_CITY.auditArcologyClearance(plans.lots, plans.ways);
+ const hexAudit = ADG_HEX.auditHexAlignment(plans.lots);
 
- T.ok('three KCITY instances place HKK rim, ETK cantonment + Charter Market, and non-residential harbour works with 0 OBB overlaps',
+ T.ok('three KCITY instances densely place HKK rim, ETK hexagonal cantonment + Charter Market, and harbour works with 0 OBB overlaps',
   audit.ok &&
   audit.overlaps === 0 &&
   audit.lowDwellings === 0 &&
   audit.minDwellingY >= 95.0 &&
-  plans.hkLots.length >= 60 &&
-  plans.etLots.length >= 55 &&
-  plans.coveLots.length >= 18 &&
+  plans.hkLots.length >= 240 &&
+  plans.etLots.length >= 260 &&
+  plans.coveLots.length >= 30 &&
   plans.constructionLots.length >= 2,
   JSON.stringify(audit) + ' cons=' + plans.constructionLots.length);
+
+ T.ok('zero streets and zero buildings clip through Arcodiga dam-arch or x<=1022 East Stiffening Wing',
+  arcClear.ok && arcClear.lotHits === 0 && arcClear.wayHits === 0,
+  JSON.stringify(arcClear));
+
+ const badWays = plans.ways.concat([{ inst: 'et_cantonment', kind: 'avenue', w: 9.5, pts: [[965, 95], [965, 362]] }]);
+ T.neg('arcology clearance audit catches street slicing through East Stiffening Wing',
+  function(ws){ return ADG_CITY.auditArcologyClearance(plans.lots, ws).ok; },
+  badWays,
+  plans.ways);
+
+ T.ok('Z6 Eternian Superintendency deploys 15 contiguous hexagonal cells with 100% 60-degree aligned hex buildings',
+  hexAudit.ok && hexAudit.macroCells === 15 && hexAudit.hexBuildings >= 120 && hexAudit.aligned60 === hexAudit.hexBuildings,
+  JSON.stringify(hexAudit));
+
+ const skewedHexLots = plans.lots.concat([{
+  id: 9997, zone: 'Z6', kit: 'eternian', key: 'eternian:et_hex_house', v: 0,
+  x: 1205, y: 175, z: 500, ry: 0.42
+ }]);
+ T.neg('hexagonal alignment audit catches off-grid skewed hexagonal building in Z6',
+  function(arr){ return ADG_HEX.auditHexAlignment(arr).ok; },
+  skewedHexLots,
+  plans.lots);
 
  /* Negative 1: inject an overlapping lot and prove auditLots catches it */
  const clashLots = plans.lots.slice();
@@ -319,14 +345,14 @@ const plans = ADG_CITY.buildPlans({ fresh: true });
  const activeCarriers = routeIds.every(function(id){ return routes[id].trips >= 100; });
  const paintedEternians = simState.citizens.filter(function(c){ return c.cohort === 'eternian' && c.faceChalk === true; });
 
- T.ok('SIM runs 3,400-citizen / 715-HH economy for 30 days with positive stocks across all 5 chains, 4 routes & painted Eternians',
-  simState.pop === 3400 &&
-  simState.households === 715 &&
+ T.ok('SIM runs 6,800-citizen / 1,380-HH economy for 30 days with positive stocks across all 5 chains, 4 routes & painted Eternians',
+  simState.pop === 6800 &&
+  simState.households === 1380 &&
   stocks.day >= 30 &&
   allStocksPositive(stocks) &&
   routeIds.length === 4 &&
   activeCarriers &&
-  paintedEternians.length >= 20,
+  paintedEternians.length >= 30,
   'day=' + stocks.day + ', nephrite=' + stocks.by.sawn_nephrite.total + ', timber=' + stocks.by.benihi_timber.total + ', coal=' + stocks.by.crook_coal.total + ', alloy=' + stocks.by.ancient_alloy.total);
 
  const depleted = JSON.parse(JSON.stringify(stocks));
