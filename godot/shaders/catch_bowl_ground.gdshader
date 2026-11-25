@@ -40,6 +40,12 @@ uniform float dune_height = 7.0;            // metres crest to trough
 // made the Bowl's rim look like soft grey cloud from 600 m up: that was the scree aliasing, not ground.
 uniform float dune_fade_m = 9000.0;         // 260 m features
 uniform float scree_fade_m = 1300.0;        // 26 m features
+uniform float ripple_fade_m = 420.0;        // 0.5 m features: wind ripples, gone by a few hundred metres
+uniform float ripple_m = 0.52;              // crest to crest, which is what a sand ripple actually measures
+// 4.5 cm, at the deep end of the real range (2-6 cm). At 2 cm the shading under a sun 34 degrees up is almost
+// nothing, and the reference photographs that make ripples the dominant texture of a dune field are all taken at a
+// low sun that rakes them. Rather than fake the hour, the amplitude sits at the top of what sand really does.
+uniform float ripple_h = 0.045;
 uniform float swell_fade_m = 5000.0;        // 130 m features: the band between the scree and the dunes
 uniform float breakup_fade_m = 20000.0;     // 420 m features
 uniform float sand_top = 2600.0;            // above this the ground is rock, and rock does not drift
@@ -84,6 +90,7 @@ void fragment() {
 	float d = clamp(detail, 0.0, 1.0);
 	float near = (1.0 - smoothstep(0.0, dune_fade_m, dist)) * d;
 	float nearS = (1.0 - smoothstep(scree_fade_m * 0.3, scree_fade_m, dist)) * d;
+	float nearR = (1.0 - smoothstep(ripple_fade_m * 0.35, ripple_fade_m, dist)) * d;
 	float nearW = (1.0 - smoothstep(swell_fade_m * 0.25, swell_fade_m, dist)) * d;
 	float nearB = (1.0 - smoothstep(0.0, breakup_fade_m, dist)) * d;
 	float slope = clamp(1.0 - n.y, 0.0, 1.0);
@@ -133,6 +140,30 @@ void fragment() {
 			vec2 perp = vec2(-w.y, w.x);
 			vec2 slopev = -(w * g + perp * cross_g) * sand * near;
 			n = normalize(n + vec3(slopev.x, 0.0, slopev.y));
+			// --- RIPPLES, the scale under the dunes. A sand sheet is not smooth between its dunes: it is
+			// covered in wind ripples half a metre crest to crest and a couple of centimetres deep, lying
+			// ACROSS the wind exactly as the dunes do, and in any photograph of a dune field they are the
+			// dominant texture of the whole foreground -- more of what the eye reads as "sand" than the dune
+			// shape is. They are tiny, so they fade within a few hundred metres and the dunes carry on alone.
+			if (nearR > 0.002) {
+				float ru = dot(wp.xz, w) / max(ripple_m, 0.05);
+				// ripples wander and fork, so the crest line is perturbed by a noise a few metres across
+				ru += (km_n(vec3(wp.xz / 3.1, 31.0)) - 0.5) * 1.3;
+				// a ripple is asymmetric like its parent dune, just much smaller
+				float rf = fract(ru);
+				float rprof = rf < 0.68 ? smoothstep(0.0, 1.0, rf / 0.68) : 1.0 - smoothstep(0.0, 1.0, (rf - 0.68) / 0.32);
+				float rd = 0.08;
+				float rp = dot(wp.xz + w * rd, w) / max(ripple_m, 0.05) + (km_n(vec3((wp.xz + w * rd) / 3.1, 31.0)) - 0.5) * 1.3;
+				float rm = dot(wp.xz - w * rd, w) / max(ripple_m, 0.05) + (km_n(vec3((wp.xz - w * rd) / 3.1, 31.0)) - 0.5) * 1.3;
+				float pf = fract(rp);
+				float mf = fract(rm);
+				float pp = pf < 0.68 ? smoothstep(0.0, 1.0, pf / 0.68) : 1.0 - smoothstep(0.0, 1.0, (pf - 0.68) / 0.32);
+				float mm2 = mf < 0.68 ? smoothstep(0.0, 1.0, mf / 0.68) : 1.0 - smoothstep(0.0, 1.0, (mf - 0.68) / 0.32);
+				float rg = (pp - mm2) * ripple_h / (2.0 * rd);
+				n = normalize(n + vec3(-w.x * rg, 0.0, -w.y * rg) * sand * nearR);
+				col *= 1.0 + sand * nearR * 0.05 * (rprof - 0.5) * 2.0;
+			}
+
 			// the crest is scoured pale, the trough holds the coarse dark grains
 			col *= 1.0 + sand * near * 0.12 * (hc - 0.5) * 2.0;
 			rough -= sand * near * 0.08;

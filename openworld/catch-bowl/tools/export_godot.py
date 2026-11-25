@@ -22,6 +22,13 @@ It writes, into godot/data/catch-bowl/:
   meta.json     the box, the origin, the metre scale, the height range, the sites, and every weather kind the host offers
   height.png    16-bit greyscale, the box's heights normalised over [lo, hi] from meta.json
   water.png     8-bit: 255 where the model says water
+  geology.png   8-bit: the LANDFORM FAMILY at each sample, as an index into meta.json's `landforms`. Rock does not
+                weather into one shape: flat-lying sandstone gives mesas, buttes and arches; a hard ironstone cap over
+                soft rock gives a pedestal; tuff gives hoodoos; limestone gives undercut towers; an evaporite pan
+                gives fluted pillars; and shocked impact breccia gives jagged ridges of angular block. The Catch and
+                the Bowl have all six in different places (kits/resources/data/geology-gemini.json over this box:
+                stone 214, impactite 148, saltpeter 159, iron 110, with limestone, halite and tuff in pockets), so the
+                family is decided here, from the geology, once, rather than guessed per rock in the host.
   wlevel.png    16-bit: the water SURFACE height over the same [lo, hi] as height.png, 0 where there is no water.
                 Without it a host can only put water on the lake bed, which draws as wet ground rather than as a
                 lake: the model keeps the level apart from the ground for exactly this reason.
@@ -47,6 +54,8 @@ M_PER_PX = KM_PER_PX * 1000.0
 # by its NAME and not its id -- which cost me a run: handed the six ids out of SITES.json it reported "no region named
 # 'rmw4xy4tp9b29'" for four of them and silently matched nothing for the other two. The ids are kept beside the names so
 # a reader can check both against the model, and so the pair survives a model that reissues ids.
+# The landform families, in the order their indices run. 0 is nothing in particular: most ground is not a landform.
+LANDFORMS = ['none', 'mesa', 'pedestal', 'hoodoo', 'karst', 'evaporite', 'breccia', 'tor']
 POLYGONS = [('rmvka7icdn1dq', 'the catch'), ('rmvka5413efyi', 'the bowl'), ('rmw4xy4tp9b29', 'SE outer wall'),
             ('rmvkknh1am4fw', 'stalker range'), ('rmvstalkergate', 'Stalker Gate'), ('rmw536m06wlyf', 'twins')]
 ORIGIN_PX = [1233, 1306]
@@ -113,6 +122,42 @@ def main():
     wl = np.asarray(wlev, dtype=float)[y0:y1:step, x0:x1:step]
     wl16 = np.where(wsub, np.clip((wl - lo) / max(1.0, hi - lo) * 65535.0, 1, 65535), 0).astype(np.uint16)
     Image.frombytes('I;16', (wl16.shape[1], wl16.shape[0]), wl16.astype('<u2').tobytes()).save(os.path.join(OUT, 'wlevel.png'))
+    # --- the landform family per sample, from the geology
+    import base64 as _b64
+    GJ = json.load(open(os.path.join(REPO, 'kits', 'resources', 'data', 'geology-gemini.json'), encoding='utf-8'))
+    gw, gh, gcell = int(GJ['grid']['w']), int(GJ['grid']['h']), float(GJ['grid']['cell_km'])
+
+    def glayer(name):
+        raw = GJ['layers'].get(name)
+        if raw is None:
+            return np.zeros((gh, gw), dtype=np.uint8)
+        b = np.frombuffer(_b64.b64decode(raw), dtype=np.uint8)
+        return np.repeat(b[1::2], b[0::2].astype(np.int32) + 1).reshape(gh, gw)
+
+    def at(name):
+        # the layer on the box own samples; nearest, since the geology grid is 4 km and the box 2 km
+        a = glayer(name)
+        ys = np.clip((np.arange(y0, y1, step) * KM_PER_PX / gcell).astype(int), 0, gh - 1)
+        xs = np.clip((np.arange(x0, x1, step) * KM_PER_PX / gcell).astype(int), 0, gw - 1)
+        return a[np.ix_(ys, xs)].astype(float)
+
+    stone, impact, iron = at('stone'), at('impactite'), at('iron')
+    tuff, lime, halite, saltp = at('tuff'), at('limestone'), at('halite'), at('saltpeter')
+    gy_, gx_ = np.gradient(sub, 2000.0)
+    gslope = np.hypot(gx_, gy_)
+    fam = np.zeros(sub.shape, dtype=np.uint8)
+    # the order matters: the rarer and more particular a family is, the earlier it claims its ground
+    fam[(stone >= 120) & (gslope < 0.14)] = LANDFORMS.index('mesa')
+    fam[(iron >= 140) & (stone >= 90) & (gslope < 0.10)] = LANDFORMS.index('pedestal')
+    fam[(impact >= 170) & (gslope < 0.30)] = LANDFORMS.index('breccia')
+    fam[tuff >= 60] = LANDFORMS.index('hoodoo')
+    fam[lime >= 90] = LANDFORMS.index('karst')
+    fam[((halite >= 60) | (saltp >= 190)) & (gslope < 0.05)] = LANDFORMS.index('evaporite')
+    fam[gslope >= 0.30] = LANDFORMS.index('tor')   # steep ground sheds blocks whatever it is made of
+    fam[wsub] = 0
+    Image.fromarray(fam, mode='L').save(os.path.join(OUT, 'geology.png'))
+    famcount = {LANDFORMS[i]: int((fam == i).sum()) for i in range(len(LANDFORMS))}
+
     Image.fromarray((msub * 255).astype(np.uint8), mode='L').save(os.path.join(OUT, 'inside.png'))
     # the model stores every raster as a base64 PNG in the page, not as an array, so each one is decoded here
     import base64, io as _io
@@ -152,6 +197,8 @@ def main():
         size=[int(sub.shape[1]), int(sub.shape[0])],
         km=[round(sub.shape[1] * KM_PER_PX * step), round(sub.shape[0] * KM_PER_PX * step)],
         height=dict(lo=round(lo, 1), hi=round(hi, 1)),
+        landforms=LANDFORMS,
+        landform_counts=famcount,
         inside_pct=round(100.0 * float(msub.mean()), 1),
         origin_offset_m=[(x0 - ORIGIN_PX[0]) * M_PER_PX, (y0 - ORIGIN_PX[1]) * M_PER_PX],
         polygons=[dict(id=i, name=n) for i, n in POLYGONS], sites=sites, weather=WEATHER,
@@ -159,6 +206,7 @@ def main():
     with open(os.path.join(OUT, 'meta.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)
         f.write('\n')
+    print('  landforms: ' + ', '.join('%s %d' % (k, v) for k, v in famcount.items() if v))
     print('godot/data/catch-bowl: %d x %d samples at %g km (%d x %d km), heights %.0f to %.0f m, %.1f %% inside the six polygons, %d sites, %d weather kinds'
           % (sub.shape[1], sub.shape[0], KM_PER_PX * step, meta['km'][0], meta['km'][1], lo, hi, meta['inside_pct'], len(sites), len(WEATHER)))
 

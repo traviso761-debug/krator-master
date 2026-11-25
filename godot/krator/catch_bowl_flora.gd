@@ -29,7 +29,11 @@ const MOVED := 160.0
 # Each species: the kit's key, its height range and crown, its colour, and the ground it wants.
 # H and crownR are the kit's own [min, max]; the colours are its PAL entries.
 const SPECIES := {
-	"poplar_live": {"h": [8.0, 16.0], "crown": [4.0, 7.5], "col": Color(0.478, 0.604, 0.290), "bark": Color(0.541, 0.510, 0.463), "trunk": true},
+	# GOLD, not green. The kit carries both -- PAL.poplar is the summer leaf and PAL.poplarGold
+	# (0xd8b030, 0xe0c040, 0xc8a028) the autumn -- and I took the green one. Every photograph of a tugai stand is
+	# gold against the sand, because that is when anyone goes to look at it and because the contrast against a
+	# yellow desert is the whole reason the tree reads at all. Green tugai on yellow sand is nearly invisible.
+	"poplar_live": {"h": [8.0, 16.0], "crown": [4.0, 7.5], "col": Color(0.847, 0.690, 0.188), "bark": Color(0.541, 0.510, 0.463), "trunk": true},
 	"poplar_dead": {"h": [7.0, 14.0], "crown": [1.2, 2.2], "col": Color(0.784, 0.753, 0.698), "bark": Color(0.784, 0.753, 0.698), "trunk": true},
 	"tamarisk": {"h": [3.0, 6.5], "crown": [2.5, 4.5], "col": Color(0.447, 0.502, 0.388), "bark": Color(0.478, 0.439, 0.388), "trunk": false},
 	"broom": {"h": [0.8, 1.9], "crown": [0.7, 1.5], "col": Color(0.408, 0.541, 0.302), "bark": Color(0.408, 0.541, 0.302), "trunk": false},
@@ -221,7 +225,11 @@ func _rebuild(p: Vector3) -> void:
 			var sz: float = (host.height_at(x, z + d) - host.height_at(x, z - d)) / (2.0 * d)
 			var slope: float = sqrt(sx * sx + sz * sz)
 			var wkm := water_km(x, z)
+			# the grove mask: about a kilometre across, so the tugai comes in stands with bare sand between them
+			var clump := KRand.unit(KRand.cell(SEED + 77, ix >> 2, iz >> 2))
 			var key := _species_for(g, slope, wkm, u0)
+			if (key == "poplar_live" or key == "poplar_dead" or key == "tamarisk") and clump < 0.42:
+				key = ""
 			if key == "":
 				continue
 			var n := 1 + int(u0 * 23.0) % 3

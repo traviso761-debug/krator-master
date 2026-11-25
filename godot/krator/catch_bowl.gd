@@ -27,6 +27,7 @@ var fx: KratorAtmosFx
 var grit: KratorGritFx
 var rocks: KratorCatchBowlRocks
 var flora: KratorCatchBowlFlora
+var landforms: KratorCatchBowlLandforms
 var cam: Camera3D
 var env: WorldEnvironment
 var sun: DirectionalLight3D
@@ -83,6 +84,10 @@ func _ready() -> void:
 		flora.name = "Flora"
 		add_child(flora)
 		flora.bind(self, cam)
+		landforms = KratorCatchBowlLandforms.new()
+		landforms.name = "Landforms"
+		add_child(landforms)
+		landforms.bind(self, cam)
 	var w := _arg("weather", "")
 	if w != "":
 		fx.set_kind(w)
@@ -318,6 +323,15 @@ const VIEWS := {
 		"note": "south from inside the crater over the gap all four trunks cross"},
 	"bowl": {"eye": Vector3(1160.0, 1210.0, 0.0), "at": Vector3(1225.0, 1149.0, 0.0), "up": 11000.0,
 		"note": "across the Bowl's salt toward Jabal, from the south-west rim"},
+	# the four landform vantages: each is where its family is densest in geology.png (one tool run told me where)
+	"mesas": {"eye": Vector3(1133.0, 1053.0, 0.0), "at": Vector3(1127.0, 1045.0, 0.0), "up": 420.0,
+		"note": "the sandstone benches north of the Bowl: mesas, buttes and their talus skirts"},
+	"hoodoos": {"eye": Vector3(1497.5, 1170.0, 0.0), "at": Vector3(1494.0, 1166.0, 0.0), "up": 90.0,
+		"note": "a tuff field east of the Bowl: hoodoos, banded hard and soft under a caprock"},
+	"pedestals": {"eye": Vector3(1401.0, 1134.0, 0.0), "at": Vector3(1398.0, 1130.0, 0.0), "up": 70.0,
+		"note": "ironstone caps over soft rock: pedestal rocks on their sheltered stems"},
+	"karst": {"eye": Vector3(921.5, 1506.5, 0.0), "at": Vector3(918.0, 1502.0, 0.0), "up": 240.0,
+		"note": "limestone in the Catch's south-west: towers undercut where the water stood"},
 	"kolli": {"eye": Vector3(1058.6, 1368.6, 0.0), "at": Vector3(1058.0, 1367.0, 0.0), "up": 60.0,
 		"note": "south over Kolli's seep: the tugai on the flat below the fan, which is the only green in the Catch"},
 	"salt": {"eye": Vector3(1206.0, 1163.0, 0.0), "at": Vector3(1240.0, 1142.0, 0.0), "up": 220.0,
@@ -580,7 +594,24 @@ func _cull_pins() -> void:
 			n.visible = d <= reach and d > 5200.0
 
 
+# THE NEAR PLANE HAS TO FOLLOW THE EYE DOWN. 120 m was chosen so that a 900 km far plane still left a usable depth
+# buffer over a box 1,282 km across, and it is right at altitude. At thirty metres above the sand it clips away
+# everything within 120 m -- the whole foreground, which is exactly where the wind ripples, the grit and the nearest
+# rocks are. The first low shots came back with a flat dead band across the bottom of the frame and I took it for a
+# shader fault; it was the near plane eating the ground. Near follows the height above ground, and far follows near,
+# so the ratio stays in the few-thousands at every altitude.
+func _fit_clip() -> void:
+	if cam == null:
+		return
+	var p := cam.global_position
+	var up: float = maxf(1.0, p.y - height_at(p.x, p.z))
+	var n: float = clampf(up * 0.02, 0.2, 120.0)
+	cam.near = n
+	cam.far = clampf(n * 9000.0, 40000.0, 900000.0)
+
+
 func _process(_d: float) -> void:
+	_fit_clip()
 	_cull_pins()
 	_shot_tick()
 	if _label == null or cam == null or fx == null:

@@ -25,6 +25,26 @@
   "lo": -2595.5,
   "hi": 15527.2
  },
+ "landforms": [
+  "none",
+  "mesa",
+  "pedestal",
+  "hoodoo",
+  "karst",
+  "evaporite",
+  "breccia",
+  "tor"
+ ],
+ "landform_counts": {
+  "none": 34497,
+  "mesa": 82592,
+  "pedestal": 32698,
+  "hoodoo": 4980,
+  "karst": 6326,
+  "evaporite": 78954,
+  "breccia": 96431,
+  "tor": 3140
+ },
  "inside_pct": 55.6,
  "origin_offset_m": [
   -640000.0,
