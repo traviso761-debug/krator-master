@@ -107,28 +107,38 @@ const ADG_TUNE = (function(){
   et_talking_head:     { w:  5.0, d:  3.4, h:  5.4, family: 'sacred', wealth: 0.88, types: ['sacred', 'landmark'], tier: 3 },
   et_quay:             { w: 32.0, d: 14.0, h: 12.0, family: 'harbor', wealth: 0.72, types: ['harbor', 'trade'], tier: 2 },
   et_dock:             { w: 30.0, d: 26.0, h: 12.0, family: 'harbor', wealth: 0.76, types: ['harbor', 'work'], tier: 2 },
-  et_canal_landing:    { w: 12.0, d: 12.0, h:  5.0, family: 'harbor', wealth: 0.58, types: ['harbor'], tier: 2 },
-  et_ferry_landing:    { w: 12.0, d: 16.0, h:  5.0, family: 'harbor', wealth: 0.58, types: ['harbor'], tier: 2 },
-  et_fish_landing:     { w: 14.0, d: 16.0, h:  4.0, family: 'harbor', wealth: 0.54, types: ['harbor'], tier: 2 },
-  et_lighthouse:       { w: 14.0, d: 14.0, h: 34.0, family: 'harbor', wealth: 0.84, types: ['harbor', 'landmark'], tier: 3 }
+  et_canal_landing:      { w: 12.0, d: 12.0, h:  5.0, family: 'harbor', wealth: 0.58, types: ['harbor'], tier: 2 },
+  et_ferry_landing:      { w: 12.0, d: 16.0, h:  5.0, family: 'harbor', wealth: 0.58, types: ['harbor'], tier: 2 },
+  et_fish_landing:       { w: 14.0, d: 16.0, h:  4.0, family: 'harbor', wealth: 0.54, types: ['harbor'], tier: 2 },
+  et_lighthouse:         { w: 14.0, d: 14.0, h: 34.0, family: 'harbor', wealth: 0.84, types: ['harbor', 'landmark'], tier: 3 },
+  et_wood_transit_shed:  { w: 20.0, d: 11.0, h:  9.2, family: 'harbor', wealth: 0.56, types: ['harbor', 'work', 'storage'], tier: 2 },
+  et_wood_hex_warehouse: { w: 14.0, d: 14.0, h: 11.4, family: 'harbor', wealth: 0.60, types: ['harbor', 'work', 'storage'], tier: 2 },
+  et_wood_coaling_bunker:{ w: 18.0, d: 12.0, h: 10.4, family: 'harbor', wealth: 0.52, types: ['harbor', 'industry'], tier: 2 },
+  et_wood_boat_shed:     { w: 14.0, d: 18.0, h:  8.8, family: 'harbor', wealth: 0.50, types: ['harbor', 'work'], tier: 2 },
+  et_wood_net_loft:      { w: 16.0, d: 10.0, h:  9.2, family: 'harbor', wealth: 0.44, types: ['harbor', 'work'], tier: 1 },
+  et_wood_chandlery:     { w: 12.0, d: 10.0, h:  9.6, family: 'harbor', wealth: 0.54, types: ['harbor', 'shop', 'trade'], tier: 2 },
+  et_wood_tally_kiosk:   { w:  9.0, d:  9.0, h:  8.8, family: 'harbor', wealth: 0.62, types: ['harbor', 'civic', 'trade'], tier: 2 },
+  et_wood_crane_stage:   { w: 12.0, d: 10.0, h: 11.8, family: 'harbor', wealth: 0.52, types: ['harbor', 'infrastructure'], tier: 2 }
  };
 
  /* Canonical hexagonal plan radii (matching etHex(R) in kits/eternian/src/46-et-civic-kit.js) */
  const HEX_ALWAYS_R = {
-  et_hex_hut:          4.1,
-  et_hex_house:        5.5,
-  et_hex_villa:       12.2,
-  et_tea_house:        7.4,
-  et_healer:           7.2,
-  et_market_hall:     12.8,
-  et_granary:          7.8,
-  et_warehouse:       11.0,
-  et_examination_hall:13.6,
-  et_fort:            50.2,
-  et_kiln:            13.2,
-  et_tile_works:      13.0,
-  et_tube_station:     5.2,
-  et_lighthouse:       7.0
+  et_hex_hut:            4.1,
+  et_hex_house:          5.5,
+  et_hex_villa:         12.2,
+  et_tea_house:          7.4,
+  et_healer:             7.2,
+  et_market_hall:       12.8,
+  et_granary:            7.8,
+  et_warehouse:         11.0,
+  et_examination_hall:  13.6,
+  et_fort:              50.2,
+  et_kiln:              13.2,
+  et_tile_works:        13.0,
+  et_tube_station:       5.2,
+  et_lighthouse:         7.0,
+  et_wood_hex_warehouse: 6.2,
+  et_wood_tally_kiosk:   4.1
  };
 
  const HEX_V1_R = {

@@ -98,7 +98,7 @@ const ADG_FLEET = (function(){
   const cradleDeckGeo = new THREE.BoxGeometry(19.0, 0.58, 6.4);
   const cradleRibGeo = new THREE.BoxGeometry(0.48, 1.35, 6.8);
 
-  /* 1. Three 90-second Cliff-Hoists (2 Hueru-Kuran Z1<->Z5 + 1 Eternian Girder Lift Z6_WHARF<->Z6) */
+  /* 1. Three 90-second Cliff-Hoists — Solidly Connected to Both Lower Shore/Mole & Upper Cliff Rim via Pier-Supported Viaducts */
   for (let i = 0; i < ADG_SITE.HOISTS.length; i++) {
    const H = ADG_SITE.HOISTS[i];
    const isEt = H.culture === 'eternian';
@@ -113,7 +113,7 @@ const ADG_FLEET = (function(){
     name: H.name,
     at: [liftX, H.footY, fz],
     ry: 0,
-    size: [24.0, 14.0, hSpan + 9.0],
+    size: [Math.max(28.0, (hx - fx) + 24.0), 16.0, hSpan + 12.0],
     tags: { culture: H.culture, types: ['infrastructure'], job: 'warehousing' }
    }).id : null;
 
@@ -123,38 +123,188 @@ const ADG_FLEET = (function(){
 
    const frameMat = isEt ? ironMat : colMat;
    const accMat = isEt ? bronzeMat : jadeMat;
+   const pierStoneMat = isEt ? basMat : colMat;
+   const deckMat = mats.cobblePlaza || basMat;
 
+   /* 1A. Lower Shore / Mole Freight Transfer Station & Approach Ramp (seated deep into the flush shore/mole apron) */
+   {
+    const basePad = new THREE.Mesh(new THREE.BoxGeometry(28.0, 9.0, 18.0), pierStoneMat);
+    basePad.position.set(liftX - 2.0, H.footY - 4.4, fz);
+    hg.add(basePad);
+
+    const lowerStage = new THREE.Mesh(new THREE.BoxGeometry(24.0, 0.52, 15.6), timberMat);
+    lowerStage.position.set(liftX - 3.0, H.footY + 0.24, fz);
+    hg.add(lowerStage);
+
+    /* Graded timber/cobble freight ramp connecting westward straight onto the Mole / Cove Spine Road */
+    const rampEndY = terrainH(fx - 9.0, fz);
+    const rampMidY = (H.footY + 0.18 + rampEndY + 0.18) * 0.5;
+    const rampPitch = Math.atan2((H.footY - rampEndY), 10.0);
+    const ramp = new THREE.Mesh(new THREE.BoxGeometry(11.0, 0.52, 11.2), deckMat);
+    ramp.position.set(fx - 6.5, rampMidY, fz);
+    ramp.rotation.z = rampPitch;
+    hg.add(ramp);
+
+    /* Lower Hoist Portal Pylons & Stepped Lintel */
+    for (let s = -1; s <= 1; s += 2) {
+     const lPylon = new THREE.Mesh(new THREE.BoxGeometry(3.2, 7.6, 2.8), pierStoneMat);
+     lPylon.position.set(fx - 2.2, H.footY + 3.8, fz + s * 5.2);
+     hg.add(lPylon);
+    }
+    const lLintel = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.35, 13.8), accMat);
+    lLintel.position.set(fx - 2.2, H.footY + 7.9, fz);
+    hg.add(lLintel);
+   }
+
+   /* 1B. Four-Column Braced Lattice Vertical Hoist Shaft (y = footY - 4 .. headY + 8) */
+   const towerH = hSpan + 12.0;
+   const towerMidY = H.footY + towerH * 0.5 - 3.5;
+   for (let sx = -1; sx <= 1; sx += 2) {
+    const colX = liftX + (sx < 0 ? -4.2 : 4.6);
+    for (let sz = -1; sz <= 1; sz += 2) {
+     const pCol = new THREE.Mesh(pierGeo, frameMat);
+     pCol.scale.set(0.82, towerH, 0.78);
+     pCol.position.set(colX, towerMidY, fz + sz * 4.8);
+     hg.add(pCol);
+    }
+   }
+   const nTiers = Math.max(4, Math.round(hSpan / 18.5));
+   for (let t = 1; t <= nTiers; t++) {
+    const ty = H.footY + (hSpan * t) / nTiers;
+    for (let sz = -1; sz <= 1; sz += 2) {
+     const tieX = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.75, 0.75), frameMat);
+     tieX.position.set(liftX + 0.2, ty, fz + sz * 4.8);
+     hg.add(tieX);
+     if (t < nTiers) {
+      const nextY = H.footY + (hSpan * (t + 1)) / nTiers;
+      const dLen = Math.hypot(8.8, nextY - ty);
+      const diag = new THREE.Mesh(new THREE.BoxGeometry(dLen, 0.48, 0.48), isEt ? accMat : timberMat);
+      diag.position.set(liftX + 0.2, (ty + nextY) * 0.5, fz + sz * 4.8);
+      diag.rotation.z = (t % 2 === 0 ? 1 : -1) * Math.atan2(nextY - ty, 8.8);
+      hg.add(diag);
+     }
+    }
+    const tieZ = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.75, 10.4), frameMat);
+    tieZ.position.set(liftX + 4.6, ty, fz);
+    hg.add(tieZ);
+   }
+
+   /* 1C. Paved Viaduct Bridge Deck, Deep Side Trusses & Rock-Socketed Cliff Support Piers (liftX -> hx + 12 m) */
+   {
+    const xStart = liftX - 2.5;
+    const xEnd = hx + 12.0;
+    const bridgeLen = xEnd - xStart;
+    const bridgeMidX = (xStart + xEnd) * 0.5;
+    const deckY = H.headY + 0.22;
+
+    /* Continuous paved roadway deck connecting tower sheaves straight into the upper cliff-rim street */
+    const bridgeDeck = new THREE.Mesh(new THREE.BoxGeometry(bridgeLen, 0.68, 10.4), deckMat);
+    bridgeDeck.position.set(bridgeMidX, deckY, fz);
+    hg.add(bridgeDeck);
+
+    /* Deep under-deck Warren trusses & upper safety parapets */
+    const nPanels = Math.max(4, Math.round(bridgeLen / 14.0));
+    const panelW = bridgeLen / nPanels;
+    for (let sz = -1; sz <= 1; sz += 2) {
+     const zSide = fz + sz * 5.0;
+     const topChord = new THREE.Mesh(new THREE.BoxGeometry(bridgeLen, 0.65, 0.75), frameMat);
+     topChord.position.set(bridgeMidX, deckY - 0.15, zSide);
+     hg.add(topChord);
+
+     const botChord = new THREE.Mesh(new THREE.BoxGeometry(bridgeLen - 6.0, 0.65, 0.75), frameMat);
+     botChord.position.set(bridgeMidX + 1.5, deckY - 3.35, zSide);
+     hg.add(botChord);
+
+     const parapet = new THREE.Mesh(new THREE.BoxGeometry(bridgeLen, 1.12, 0.42), isEt ? accMat : pierStoneMat);
+     parapet.position.set(bridgeMidX, deckY + 0.86, zSide);
+     hg.add(parapet);
+
+     for (let p = 0; p <= nPanels; p++) {
+      const px = xStart + p * panelW;
+      const vPost = new THREE.Mesh(new THREE.BoxGeometry(0.55, 3.3, 0.65), frameMat);
+      vPost.position.set(px, deckY - 1.75, zSide);
+      hg.add(vPost);
+      if (p < nPanels) {
+       const wLen = Math.hypot(panelW, 3.2);
+       const web = new THREE.Mesh(new THREE.BoxGeometry(wLen, 0.44, 0.44), isEt ? accMat : timberMat);
+       web.position.set(px + panelW * 0.5, deckY - 1.75, zSide);
+       web.rotation.z = (p % 2 === 0 ? 1 : -1) * Math.atan2(3.2, panelW);
+       hg.add(web);
+      }
+     }
+    }
+
+    /* Intermediate Rock-Socketed Cliff Support Pier Bents (spaced so liftX..liftX+58 cleanly spans the x = 716 Harbour Road!) */
+    const pierXs = isEt
+     ? [liftX + 58.0, liftX + 110.0, liftX + 150.0]
+     : [liftX + (hx - liftX) * 0.38, liftX + (hx - liftX) * 0.72];
+    for (let p = 0; p < pierXs.length; p++) {
+     const px = pierXs[p];
+     if (px >= hx - 4.0) continue;
+     const gY = Math.min(deckY - 6.0, terrainH(px, fz) - 8.0);
+     const pH = (deckY - 3.1) - gY;
+     if (pH <= 4.0) continue;
+     for (let sz = -1; sz <= 1; sz += 2) {
+      const bent = new THREE.Mesh(new THREE.BoxGeometry(3.8, pH, 2.8), pierStoneMat);
+      bent.position.set(px, gY + pH * 0.5, fz + sz * 4.7);
+      hg.add(bent);
+     }
+     const capBeam = new THREE.Mesh(new THREE.BoxGeometry(4.6, 1.4, 11.8), accMat);
+     capBeam.position.set(px, deckY - 3.2, fz);
+     hg.add(capBeam);
+     if (pH > 32.0) {
+      const midTie = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.1, 10.8), frameMat);
+      midTie.position.set(px, gY + pH * 0.58, fz);
+      hg.add(midTie);
+     }
+    }
+
+    /* Upper Cliff-Rim Masonry Headhouse Abutment & Portal Arch (anchored solidly into Z5/Z6 shore rim!) */
+    const rimGroundY = terrainH(hx + 6.0, hz);
+    const abutBaseY = Math.min(rimGroundY, deckY) - 10.0;
+    const abutH = (deckY + 0.28) - abutBaseY;
+    const abutment = new THREE.Mesh(new THREE.BoxGeometry(20.0, abutH, 16.4), pierStoneMat);
+    abutment.position.set(hx + 5.5, abutBaseY + abutH * 0.5, hz);
+    hg.add(abutment);
+
+    for (let sz = -1; sz <= 1; sz += 2) {
+     const uPylon = new THREE.Mesh(new THREE.BoxGeometry(4.2, 8.2, 3.2), pierStoneMat);
+     uPylon.position.set(hx + 1.5, deckY + 4.2, hz + sz * 5.2);
+     hg.add(uPylon);
+    }
+    const uArch = new THREE.Mesh(new THREE.BoxGeometry(4.8, 1.6, 14.2), accMat);
+    uArch.position.set(hx + 1.5, deckY + 8.6, hz);
+    hg.add(uArch);
+
+    /* Eternian pneumatic capsule dispatch conduit running from hoist head toward et_tube_station at (892, 415) */
+    if (isEt) {
+     const pipeLen = 26.0;
+     const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, pipeLen, 10), bronzeMat);
+     tube.rotation.z = Math.PI * 0.5;
+     tube.position.set(hx + 14.0, deckY + 3.4, hz - 4.8);
+     hg.add(tube);
+    }
+   }
+
+   /* 1D. Overhead Sheaves, Hoist Cables, Dynamic Counterweight & Cargo Cradle */
    for (let s = -1; s <= 1; s += 2) {
-    const pCol = new THREE.Mesh(pierGeo, frameMat);
-    pCol.scale.set(1, hSpan + 9.0, 1);
-    pCol.position.set(liftX + 4.2, H.footY + (hSpan + 9.0) * 0.5 - 2.0, fz + s * 4.6);
-    hg.add(pCol);
-
-    const spanX = Math.max(12.0, hx - liftX);
-    const strutLen = Math.hypot(spanX, 6.5);
-    const strut = new THREE.Mesh(new THREE.BoxGeometry(strutLen, 1.15, 1.15), isEt ? ironMat : timberMat);
-    strut.position.set((liftX + hx) * 0.5, H.headY + 3.2, fz + s * 4.6);
-    strut.lookAt(hx, H.headY + 5.8, hz + s * 4.6);
-    hg.add(strut);
-
     const sh = new THREE.Mesh(sheaveGeo, accMat);
-    sh.position.set(liftX, H.headY + 5.6, fz + s * 3.1);
+    sh.position.set(liftX, H.headY + 6.2, fz + s * 3.1);
     hg.add(sh);
 
     const cb = new THREE.Mesh(cableGeo, ironMat);
-    cb.scale.set(1, hSpan + 4.5, 1);
-    cb.position.set(liftX, H.footY + (hSpan + 4.5) * 0.5, fz + s * 3.1);
+    cb.scale.set(1, hSpan + 5.2, 1);
+    cb.position.set(liftX, H.footY + (hSpan + 5.2) * 0.5, fz + s * 3.1);
     hg.add(cb);
    }
 
-   const crossHead = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.4, 12.2), accMat);
-   crossHead.position.set(liftX + 1.5, H.headY + 6.4, fz);
+   const crossHead = new THREE.Mesh(new THREE.BoxGeometry(10.6, 1.5, 12.6), accMat);
+   crossHead.position.set(liftX + 0.2, H.headY + 7.2, fz);
    hg.add(crossHead);
 
    const cw = new THREE.Mesh(tankGeo, isEt ? bronzeMat : basMat);
    cw.userData.dynamic = true;
    cw.position.set(liftX + 6.8, H.headY - 8.0, fz);
-   hg.add(cw);
 
    const cradle = new THREE.Group();
    cradle.userData.dynamic = true;
@@ -165,7 +315,6 @@ const ADG_FLEET = (function(){
     rib.position.set(r * 2.7, 0.72, 0);
     cradle.add(rib);
    }
-   /* Sawn nephrite blocks / coal & benihi spar crates lashed on cradles */
    const crateGeo = new THREE.BoxGeometry(2.2, 1.45, 2.0);
    for (let c = 0; c < 3; c++) {
     const cr = new THREE.Mesh(crateGeo, isEt ? bronzeMat : jadeMat);
@@ -173,6 +322,10 @@ const ADG_FLEET = (function(){
     cradle.add(cr);
    }
    mergeStaticGroupByMat(cradle);
+
+   /* Merge static viaduct, tower & stations into 3-4 clean meshes by material before attaching dynamic cradle & counterweight */
+   mergeStaticGroupByMat(hg);
+   hg.add(cw);
    hg.add(cradle);
 
    hg.updateMatrixWorld(true);
@@ -192,6 +345,7 @@ const ADG_FLEET = (function(){
     cycleSec: H.cycleSec,
     cradle: cradle,
     counterweight: cw,
+    viaductSpanM: +(hx - liftX).toFixed(1),
     clearanceOk: (H.headY - H.footY) >= 135.0
    });
   }

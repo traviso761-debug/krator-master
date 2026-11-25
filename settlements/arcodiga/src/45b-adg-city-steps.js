@@ -166,22 +166,80 @@ const ADG_CITY = (function(){
   { key: 'hueru-kuran:hk_wave_splitter',     x:  -905, z: -1075, ry: -0.78, zone: 'Z1', role: 'Inner NW Breach Whale-Jawbone Basalt Wave-Splitter E', y: 9.2 },
   { key: 'hueru-kuran:hk_prou_torre',        x:  -842, z: -1022, ry: -0.78, zone: 'Z1', role: 'NW Breach Swell-Watch & Tsunami Horn Prou Torre', y: 11.4 },
 
-  /* Z6_WHARF: Sheltered SE Dam-Lee Farport Junk Coaling & Timber Quay (+5.5..+12 m) */
-  { key: 'eternian:et_dock',                 x:  408, z:  462, ry:  0.0000, zone: 'Z6_WHARF', role: 'Farport State Supply-Junk Drydock & Mast-Stepping Yard', y: 6.0 },
-  { key: 'eternian:et_quay',                 x:  458, z:  468, ry:  0.0000, zone: 'Z6_WHARF', role: 'West Dam-Lee Steam-Coal & Cassiterite Junk Quay', y: 6.1 },
-  { key: 'eternian:et_quay',                 x:  502, z:  468, ry:  0.0000, zone: 'Z6_WHARF', role: 'Central Dam-Lee 30 m Benihi Mast-Loading Quay', y: 6.2, v: 1 },
-  { key: 'eternian:et_quay',                 x:  546, z:  468, ry:  0.0000, zone: 'Z6_WHARF', role: 'East Dam-Lee Bonded Porcelain & Tea Lighter Quay', y: 6.3 },
-  { key: 'eternian:et_canal_landing',        x:  368, z:  408, ry: -1.5708, zone: 'Z6_WHARF', role: 'Tailrace Lighter & Dive-Tender Basin Landing', y: 5.8 },
-  { key: 'eternian:et_ferry_landing',        x:  368, z:  448, ry: -1.5708, zone: 'Z6_WHARF', role: 'Gorge-Mouth Sound Pilot & Shuttle Ferry Landing', y: 5.8 },
-  { key: 'eternian:et_fish_landing',         x:  584, z:  468, ry:  0.0000, zone: 'Z6_WHARF', role: 'Tailrace Eddy Squid & Kelp-Provision Landing', y: 6.5 },
-  { key: 'eternian:et_lighthouse',           x:  354, z:  486, ry:  0.0000, zone: 'Z6_WHARF', role: 'Dam-Lee Breakwater Hexagonal Bronze Storm-Lantern Tower', y: 6.4 },
-  { key: 'eternian:et_warehouse',            x:  558, z:  412, ry:  0.0000, zone: 'Z6_WHARF', role: 'Girder-Lift Foot Hexagonal Steam-Coal Bunker E', y: 9.8 },
-  { key: 'eternian:et_warehouse',            x:  516, z:  412, ry:  0.0000, zone: 'Z6_WHARF', role: 'Dam-Lee Benihi Mast & Spar Hexagonal Shed C', y: 9.0, v: 1 },
-  { key: 'eternian:et_warehouse',            x:  472, z:  412, ry:  0.0000, zone: 'Z6_WHARF', role: 'Farport Cassiterite Ingot Hexagonal Store W', y: 8.2 },
-  { key: 'eternian:et_granary',              x:  432, z:  412, ry:  0.0000, zone: 'Z6_WHARF', role: 'Fleet Hardtack & Salt-Rice Hexagonal Silo', y: 7.4 },
-  { key: 'eternian:et_customs_house',        x:  492, z:  362, ry:  0.0000, zone: 'Z6_WHARF', role: 'Wharf Weighbridge & Harbour-Master Tally Gate', y: 8.4 },
-  { key: 'eternian:et_smithy',               x:  536, z:  362, ry:  0.0000, zone: 'Z6_WHARF', role: 'Wharf Chain-Cable & Boiler-Plate Hex Forge', y: 9.2, v: 1 },
-  { key: 'eternian:et_tube_station',         x:  574, z:  415, ry: -1.5708, zone: 'Z6_WHARF', role: 'Girder-Lift Foot Pneumatic Dispatch Hex Kiosk', y: 10.4 }
+  /* Z6_WHARF: Flush SE Dam-Lee Harbour Mole — Dense Wooden Disposable Eternian Harbour District (52 non-dwelling lots, +5.8..+11 m) */
+  /* Outer West Mole Head & Slipway */
+  { key: 'eternian:et_lighthouse',           x:  354, z:  508, ry:  0.0000, zone: 'Z6_WHARF', role: 'Dam-Lee Breakwater Hexagonal Bronze Storm-Lantern Tower' },
+  { key: 'eternian:et_wood_crane_stage',     x:  356, z:  336, ry:  3.1416, zone: 'Z6_WHARF', role: 'NW Mole Head Timber Sheerlegs Crane & Capstan Stage' },
+  { key: 'eternian:et_canal_landing',        x:  354, z:  384, ry: -1.5708, zone: 'Z6_WHARF', role: 'Tailrace Dive-Tender & Lighter Basin Landing' },
+  { key: 'eternian:et_ferry_landing',        x:  354, z:  444, ry: -1.5708, zone: 'Z6_WHARF', role: 'Gorge-Mouth Sound Pilot & Shuttle Ferry Landing' },
+  { key: 'eternian:et_dock',                 x:  392, z:  468, ry:  0.0000, zone: 'Z6_WHARF', role: 'Farport Supply-Junk Repair Slipway & Mast Yard' },
+  { key: 'eternian:et_wood_boat_shed',       x:  384, z:  364, ry:  3.1416, zone: 'Z6_WHARF', role: 'Outer Mole Timber Lighter Boathouse W' },
+  { key: 'eternian:et_wood_boat_shed',       x:  404, z:  364, ry:  3.1416, zone: 'Z6_WHARF', role: 'Outer Mole Timber Sampan Boathouse E' },
+  { key: 'eternian:et_wood_tally_kiosk',     x:  382, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Outer Breakwater Hexagonal Timber Harbour-Watch Kiosk' },
+  { key: 'eternian:et_wood_chandlery',       x:  404, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Outer Mole Pilot & Hawser Timber Chandlery', v: 0 },
+  { key: 'eternian:et_wood_hex_warehouse',   x:  384, z:  432, ry:  3.1416, zone: 'Z6_WHARF', role: 'Outer Mole Timber Hexagonal Pitch & Oakum Store' },
+  { key: 'eternian:et_wood_chandlery',       x:  406, z:  432, ry:  3.1416, zone: 'Z6_WHARF', role: 'Slipway Shipwrights Timber Cooperage & Stores', v: 1 },
+  { key: 'eternian:et_wood_net_loft',        x:  396, z:  330, ry:  3.1416, zone: 'Z6_WHARF', role: 'Outer Breakwater Timber Net-Drying & Provision Loft' },
+
+  /* South Deep-Water Coaling & Junk Berth Apron (facing +z = 0 toward the sound) */
+  { key: 'eternian:et_wood_coaling_bunker',  x:  448, z:  511, ry:  0.0000, zone: 'Z6_WHARF', role: 'West Timber Steam-Coal Hopper Bunker' },
+  { key: 'eternian:et_wood_crane_stage',     x:  472, z:  512, ry:  0.0000, zone: 'Z6_WHARF', role: 'West Coaling Berth Slewing Timber Crane' },
+  { key: 'eternian:et_wood_coaling_bunker',  x:  496, z:  511, ry:  0.0000, zone: 'Z6_WHARF', role: 'Mid-West Bituminous Bunker Hopper' },
+  { key: 'eternian:et_quay',                 x:  536, z:  511, ry:  0.0000, zone: 'Z6_WHARF', role: 'Central Farport 30 m Benihi Mast-Loading Quay', v: 1 },
+  { key: 'eternian:et_wood_coaling_bunker',  x:  572, z:  511, ry:  0.0000, zone: 'Z6_WHARF', role: 'Mid-East Cassiterite & Steam-Coal Bunker' },
+  { key: 'eternian:et_wood_crane_stage',     x:  596, z:  512, ry:  0.0000, zone: 'Z6_WHARF', role: 'East Berth Slewing Timber Jib-Crane' },
+  { key: 'eternian:et_quay',                 x:  630, z:  511, ry:  0.0000, zone: 'Z6_WHARF', role: 'East Bonded Porcelain & Tea Junk Quay' },
+  { key: 'eternian:et_fish_landing',         x:  666, z:  512, ry:  0.0000, zone: 'Z6_WHARF', role: 'Shore-Eddy Squid & Kelp Provision Jetty' },
+  { key: 'eternian:et_wood_net_loft',        x:  696, z:  512, ry:  0.0000, zone: 'Z6_WHARF', role: 'Shore-Root Timber Net-Curing & Salting Loft S' },
+
+  /* North Tailrace Lighter & Mast-Landing Apron (facing -z = PI toward the tailrace) */
+  { key: 'eternian:et_wood_net_loft',        x:  446, z:  330, ry:  3.1416, zone: 'Z6_WHARF', role: 'Tailrace Timber Net & Kelp Drying Loft W' },
+  { key: 'eternian:et_wood_crane_stage',     x:  470, z:  330, ry:  3.1416, zone: 'Z6_WHARF', role: 'North Mast-Sling Timber Crane Stage' },
+  { key: 'eternian:et_wood_transit_shed',    x:  496, z:  330, ry:  3.1416, zone: 'Z6_WHARF', role: 'North Benihi Timber Transit Shed W' },
+  { key: 'eternian:et_wood_transit_shed',    x:  538, z:  330, ry:  3.1416, zone: 'Z6_WHARF', role: 'North Benihi Timber Transit Shed C' },
+  { key: 'eternian:et_wood_crane_stage',     x:  564, z:  330, ry:  3.1416, zone: 'Z6_WHARF', role: 'North Lighter Capstan & Sheerlegs Stage' },
+  { key: 'eternian:et_wood_transit_shed',    x:  612, z:  330, ry:  3.1416, zone: 'Z6_WHARF', role: 'North Bonded Crate Timber Transit Shed E' },
+  { key: 'eternian:et_wood_boat_shed',       x:  644, z:  333, ry:  3.1416, zone: 'Z6_WHARF', role: 'Shore-Lee Dive-Skiff Timber Repair Boathouse' },
+
+  /* North-West Mole Block (between z = 344 North Quay and z = 415 Grand Spine) */
+  { key: 'eternian:et_wood_hex_warehouse',   x:  448, z:  366, ry:  3.1416, zone: 'Z6_WHARF', role: 'NW Timber Hexagonal Salt-Store' },
+  { key: 'eternian:et_wood_hex_warehouse',   x:  468, z:  366, ry:  3.1416, zone: 'Z6_WHARF', role: 'NW Timber Hexagonal Cordage Godown' },
+  { key: 'eternian:et_wood_chandlery',       x:  490, z:  364, ry:  3.1416, zone: 'Z6_WHARF', role: 'North Sail-Loft & Rigging Chandlery', v: 0 },
+  { key: 'eternian:et_wood_transit_shed',    x:  456, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Spine NW Timber Freight Transit Shed' },
+  { key: 'eternian:et_wood_chandlery',       x:  488, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Spine NW Cooperage & Water-Cask Loft', v: 1 },
+
+  /* North-Central Mole Block */
+  { key: 'eternian:et_customs_house',        x:  542, z:  364, ry:  3.1416, zone: 'Z6_WHARF', role: 'Superintendency Mole Weighbridge & Customs House' },
+  { key: 'eternian:et_wood_tally_kiosk',     x:  572, z:  364, ry:  3.1416, zone: 'Z6_WHARF', role: 'North Weighbridge Hexagonal Timber Tally Kiosk' },
+  { key: 'eternian:et_wood_hex_warehouse',   x:  534, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Central Timber Hexagonal Tea & Silk Godown' },
+  { key: 'eternian:et_wood_hex_warehouse',   x:  554, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Central Timber Hexagonal Porcelain Godown' },
+  { key: 'eternian:et_wood_chandlery',       x:  576, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Central Ship-Stores Timber Chandlery', v: 0 },
+
+  /* North-East Hoist-Approach Block (adjacent to Girder-Lift Lower Freight Station) */
+  { key: 'eternian:et_wood_transit_shed',    x:  622, z:  364, ry:  3.1416, zone: 'Z6_WHARF', role: 'Hoist-North Timber Mast & Spar Shed' },
+  { key: 'eternian:et_wood_net_loft',        x:  648, z:  364, ry:  3.1416, zone: 'Z6_WHARF', role: 'Shore-North Fleet Provision Curing Loft' },
+  { key: 'eternian:et_wood_transit_shed',    x:  622, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Girder-Lift North Rapid-Sling Timber Shed' },
+  { key: 'eternian:et_tube_station',         x:  650, z:  398, ry:  0.0000, zone: 'Z6_WHARF', role: 'Girder-Lift Foot Pneumatic Dispatch Hex Kiosk' },
+
+  /* South-West Mole Block (between z = 415 Grand Spine and z = 496 South Coaling Quay) */
+  { key: 'eternian:et_wood_hex_warehouse',   x:  448, z:  434, ry:  3.1416, zone: 'Z6_WHARF', role: 'SW Timber Hexagonal Cassiterite Ingot Store' },
+  { key: 'eternian:et_wood_hex_warehouse',   x:  468, z:  434, ry:  3.1416, zone: 'Z6_WHARF', role: 'SW Timber Hexagonal Hardtack & Salt-Rice Godown' },
+  { key: 'eternian:et_wood_tally_kiosk',     x:  490, z:  432, ry:  3.1416, zone: 'Z6_WHARF', role: 'Spine West Hexagonal Timber Weigh-Tally Kiosk' },
+  { key: 'eternian:et_wood_transit_shed',    x:  454, z:  476, ry:  0.0000, zone: 'Z6_WHARF', role: 'SW Coaling-Apron Timber Transit Shed' },
+  { key: 'eternian:et_wood_chandlery',       x:  486, z:  476, ry:  0.0000, zone: 'Z6_WHARF', role: 'SW Junk Pitch & Cordage Timber Chandlery', v: 1 },
+
+  /* South-Central Mole Block */
+  { key: 'eternian:et_wood_transit_shed',    x:  538, z:  432, ry:  3.1416, zone: 'Z6_WHARF', role: 'Spine Central Timber Freight Transit Shed' },
+  { key: 'eternian:et_wood_hex_warehouse',   x:  568, z:  434, ry:  3.1416, zone: 'Z6_WHARF', role: 'Spine Central Timber Hexagonal Warehouse' },
+  { key: 'eternian:et_wood_hex_warehouse',   x:  534, z:  476, ry:  0.0000, zone: 'Z6_WHARF', role: 'South-Central Timber Hexagonal Coal-Sack Godown' },
+  { key: 'eternian:et_wood_transit_shed',    x:  564, z:  476, ry:  0.0000, zone: 'Z6_WHARF', role: 'South-Central Farport Cargo Timber Shed' },
+
+  /* South-East Hoist-Foot & Shore-Gate Block */
+  { key: 'eternian:et_wood_transit_shed',    x:  622, z:  432, ry:  3.1416, zone: 'Z6_WHARF', role: 'Girder-Lift South Rapid-Sling Timber Shed' },
+  { key: 'eternian:et_wood_tally_kiosk',     x:  650, z:  432, ry:  3.1416, zone: 'Z6_WHARF', role: 'Hoist-Foot Customs & Dispatch Timber Hex Kiosk' },
+  { key: 'eternian:et_wood_coaling_bunker',  x:  620, z:  476, ry:  0.0000, zone: 'Z6_WHARF', role: 'Hoist-Foot Reserve Timber Coal Pocket Bunker' },
+  { key: 'eternian:et_wood_hex_warehouse',   x:  648, z:  476, ry:  0.0000, zone: 'Z6_WHARF', role: 'Shore-Gate Timber Hexagonal Bonded Godown' },
+  { key: 'eternian:et_wood_chandlery',       x:  672, z:  474, ry:  0.0000, zone: 'Z6_WHARF', role: 'Harbour-Road Gate Teamsters & Riggers Chandlery', v: 0 }
  ];
 
  /* ================================================================ 2. Dense Strategy Pools */
@@ -505,8 +563,9 @@ const ADG_CITY = (function(){
       S.addWay(hw.kind, hw.pts, 3, { tag: hw.tag });
      }
 
-     /* 3. West Gorge-Brow Girder-Lift Spur (z = 415, south of Wing) & East Skarn Mine Tracks */
-     S.addWay('side', [[872, 415], [925, 415], [981, 458]], 3, { tag: 'Girder-Lift & Tube-Station Spur' });
+     /* 3. West Gorge-Brow Girder-Lift Viaduct Avenue, Cliff-Rim Boulevard to Harbour Switchback & East Skarn Mine Tracks */
+     S.addWay('main', [[866, 415], [925, 415], [981, 458]], 3, { tag: 'Girder-Lift Headhouse & Tube-Station Avenue' });
+     S.addWay('main', [[866, 415], [868, 472], [870, 525], [981, 555]], 3, { tag: 'Gorge-Rim Cliff Boulevard to Harbour Switchback' });
      S.addWay('side', [[1429, 458], [1472, 495]], 3, { tag: 'Cassiterite Adit Track' });
      S.addWay('side', [[1429, 555], [1458, 585], [1478, 645]], 3, { tag: 'Quarry & Steam-Coal Seam Track' });
     }
@@ -570,14 +629,28 @@ const ADG_CITY = (function(){
     name: 'cove_works_ways',
     run: function(){
      const S = K().SL;
+     /* Z1 Sheltered Lagoon Cove Ways */
      S.addWay('main', [[598, -685], [598, -555], [598, -435]], 3, { tag: 'Kopa-North Lagoon Quay Front' });
      S.addWay('side', [[654, -665], [654, -555], [654, -450]], 3, { tag: 'Lagoon Boatyard & Rigging Lane' });
-     S.addWay('side', [[598, -625], [735, -625]], 3, { tag: 'North Hoist-Foot Sling Way' });
-     S.addWay('side', [[598, -555], [730, -555]], 3, { tag: 'Mid Causeway & Silo Way' });
-     S.addWay('side', [[598, -485], [735, -485]], 3, { tag: 'South Hoist-Foot Salvage Way' });
-     S.addWay('main', [[368, 442], [478, 442], [588, 442]], 3, { tag: 'Dam-Lee Coaling & Mast Quay Way' });
-     S.addWay('side', [[385, 386], [492, 386], [588, 386]], 3, { tag: 'Wharf Bunker & Tally Back-Lane' });
-     S.addWay('side', [[492, 355], [492, 468]], 3, { tag: 'Customs Weighbridge Cross-Slip' });
+     S.addWay('side', [[598, -625], [744, -625]], 3, { tag: 'North Hoist-Foot Sling Way' });
+     S.addWay('side', [[598, -555], [738, -555]], 3, { tag: 'Mid Causeway & Silo Way' });
+     S.addWay('side', [[598, -485], [744, -485]], 3, { tag: 'South Hoist-Foot Salvage Way' });
+
+     /* Graded Cliff-Side Switchback Harbour Road (Z6 Cantonment +160.0 m -> Flush Mole +11.0 m) */
+     const hrPts = [];
+     for (let i = 0; i < ADG_SITE.HARBOUR_ROAD.length; i++) {
+      hrPts.push([ADG_SITE.HARBOUR_ROAD[i][0], ADG_SITE.HARBOUR_ROAD[i][1]]);
+     }
+     S.addWay('avenue', hrPts, 3, { tag: 'Farport Mole Cliff-Switchback Harbour Road' });
+
+     /* Flush SE Dam-Lee Mole Street Network */
+     S.addWay('avenue', [[662, 336], [676, 415], [688, 495]], 3, { tag: 'Mole Shoreline-Root Marginal Boulevard' });
+     S.addWay('avenue', [[358, 415], [422, 415], [508, 415], [596, 415], [676, 415]], 3, { tag: 'Grand Hoist-to-Beacon Mole Spine' });
+     S.addWay('main',   [[366, 345], [422, 345], [508, 345], [596, 345], [662, 345]], 3, { tag: 'North Dam-Lee Lighter & Mast Quay Way' });
+     S.addWay('main',   [[368, 495], [428, 495], [508, 495], [596, 495], [688, 495]], 3, { tag: 'South Farport Coaling & Junk Quay Way' });
+     S.addWay('side',   [[422, 345], [422, 415], [428, 495]], 3, { tag: 'West Breakwater Cross-Slip' });
+     S.addWay('side',   [[508, 345], [508, 415], [508, 495]], 3, { tag: 'Central Weighbridge Cross-Slip' });
+     S.addWay('side',   [[596, 345], [596, 415], [596, 495]], 3, { tag: 'East Bunker & Hoist Cross-Slip' });
     }
    }
   ];
@@ -588,8 +661,8 @@ const ADG_CITY = (function(){
   const h = ADG_SITE.bareGround;
   const nodes = [
    { id: 'z1_lagoon_quay',      zone: 'Z1', x:  598, y: 6.0,                 z: -555 },
-   { id: 'z1_hoist_n_foot',     zone: 'Z1', x:  742, y: 5.5,                 z: -625 },
-   { id: 'z1_hoist_s_foot',     zone: 'Z1', x:  742, y: 5.6,                 z: -485 },
+   { id: 'z1_hoist_n_foot',     zone: 'Z1', x:  738, y: 11.4,                z: -625 },
+   { id: 'z1_hoist_s_foot',     zone: 'Z1', x:  738, y: 11.4,                z: -485 },
    { id: 'z3_bulkhead_seal',    zone: 'Z3', x:   42, y: 81.0,                z:  210 },
    { id: 'z3_wing_hub_east',    zone: 'Z3', x:   92, y: 81.0,                z:  210 },
    { id: 'z3_wing_learning',    zone: 'Z3', x:  260, y: 81.0,                z:  210 },
@@ -600,20 +673,22 @@ const ADG_CITY = (function(){
    { id: 'z4_east_gate',        zone: 'Z4', x: 1365, y: h(1365, 210) + 0.2,  z:  210 },
    { id: 'z5_south_rim',        zone: 'Z5', x: 1058, y: h(1058, -55) + 0.2,  z:  -55 },
    { id: 'z5_santa_cristina',   zone: 'Z5', x: 1058, y: h(1058, -332) + 0.2, z: -332 },
-   { id: 'z5_hoist_s_head',     zone: 'Z5', x:  828, y: 152.0,               z: -485 },
+   { id: 'z5_hoist_s_head',     zone: 'Z5', x:  838, y: 152.0,               z: -485 },
    { id: 'z5_nuraghe_brow',     zone: 'Z5', x:  912, y: h(912, -520) + 0.2,  z: -520 },
-   { id: 'z5_hoist_n_head',     zone: 'Z5', x:  828, y: 146.0,               z: -625 },
+   { id: 'z5_hoist_n_head',     zone: 'Z5', x:  838, y: 148.0,               z: -625 },
    { id: 'z5_sawmill_terrace',  zone: 'Z5', x: 1268, y: h(1268, -430) + 0.2, z: -430 },
    { id: 'z5_flume_terrace',    zone: 'Z5', x: 1268, y: h(1268, -130) + 0.2, z: -130 },
    { id: 'z6_north_gate',       zone: 'Z6', x: 1205, y: h(1205, 318) + 0.2,  z:  318 },
    { id: 'z6_ministry_court',   zone: 'Z6', x: 1205, y: h(1205, 458) + 0.2,  z:  458 },
    { id: 'z6_clock_plaza',      zone: 'Z6', x: 1121, y: h(1121, 506) + 0.2,  z:  506 },
-   { id: 'z6_lift_head',        zone: 'Z6', x:  865, y: 158.0,               z:  415 },
+   { id: 'z6_lift_head',        zone: 'Z6', x:  866, y: 158.0,               z:  415 },
+   { id: 'z6_harbour_brow',     zone: 'Z6', x:  876, y: 160.5,               z:  535 },
+   { id: 'z6_harbour_hairpin',  zone: 'Z6', x:  782, y:  80.0,               z:  326 },
    { id: 'z6_fort_parade',      zone: 'Z6', x: 1205, y: h(1205, 610) + 0.2,  z:  610 },
    { id: 'z6_villas_east',      zone: 'Z6', x: 1289, y: h(1289, 506) + 0.2,  z:  506 },
    { id: 'z6_kilns_south',      zone: 'Z6', x: 1289, y: h(1289, 604) + 0.2,  z:  604 },
-   { id: 'z6_lift_foot',        zone: 'Z6', x:  592, y: 6.5,                 z:  415 },
-   { id: 'z6_lee_wharf',        zone: 'Z6', x:  478, y: 6.4,                 z:  442 }
+   { id: 'z6_lift_foot',        zone: 'Z6', x:  676, y: 10.6,                z:  415 },
+   { id: 'z6_lee_wharf',        zone: 'Z6', x:  508, y: h(508, 415) + 0.2,   z:  415 }
   ];
 
   const byId = {};
@@ -643,6 +718,9 @@ const ADG_CITY = (function(){
    ['z6_north_gate', 'z6_ministry_court', 'avenue'],
    ['z6_ministry_court', 'z6_clock_plaza', 'street'],
    ['z6_clock_plaza', 'z6_lift_head', 'street'],
+   ['z6_lift_head', 'z6_harbour_brow', 'street'],
+   ['z6_harbour_brow', 'z6_harbour_hairpin', 'road'],
+   ['z6_harbour_hairpin', 'z6_lift_foot', 'road'],
    ['z6_ministry_court', 'z6_villas_east', 'street'],
    ['z6_ministry_court', 'z6_fort_parade', 'avenue'],
    ['z6_fort_parade', 'z6_kilns_south', 'street'],

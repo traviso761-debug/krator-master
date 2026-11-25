@@ -68,25 +68,44 @@ const ADG_SITE = (function(){
   }
  ];
 
- /* Sheltered SE Dam-Lee Coaling & Timber Wharf sub-polygon (part of Z6 port operations, 0 dwellings) */
- const LEE_WHARF_POLY = [[335, 325], [615, 325], [615, 505], [335, 505]];
+ /* Sheltered SE Dam-Lee Coaling & Timber Mole — eastern border seated 100% flush against the rising basalt cliff shoreline */
+ const LEE_WHARF_POLY = [
+  [340, 322],
+  [672, 322],
+  [698, 415],
+  [744, 526],
+  [340, 526]
+ ];
+
+ /* Graded Cliff-Side Switchback Harbour Viaduct Road (3D [x, z, y] centerline standing proud on the sunlit cliff face from Z6 +160 m down to Mole +11 m) */
+ const HARBOUR_ROAD = [
+  [870, 525, 160.0],
+  [838, 462, 134.0],
+  [806, 395, 108.0],
+  [778, 336,  84.0],
+  [748, 332,  72.0],
+  [730, 362,  58.0],
+  [716, 415,  39.0],
+  [708, 474,  20.0],
+  [688, 495,  11.0]
+ ];
 
  /* NW Ocean Breach wave-splitter bench (part of Z1 coastal defence, 0 dwellings) */
  const NW_BREACH_BENCH = [[-1160, -1340], [-790, -1340], [-790, -980], [-1160, -980]];
 
- /* Two 90-second Hueru-Kuran water-ballast cliff-hoists (Z5 -> Z1) + One Eternian girder/tube cliff-lift (Z6 -> Dam-Lee Quay) */
+ /* Two 90-second Hueru-Kuran water-ballast cliff-hoists (Z5 -> Z1) + One Eternian girder/tube cliff-lift (Z6 -> Flush Mole Root) */
  const HOISTS = [
   {
    id: 'hk_hoist_north', culture: 'hueru-kuran', name: 'North Baidarka & Whale-Oil 90s Cliff-Hoist',
-   foot: [742, -625], head: [828, -625], footY: 5.2, headY: 146.0, cycleSec: 90
+   foot: [738, -625], head: [838, -625], footY: 11.4, headY: 148.0, cycleSec: 90
   },
   {
    id: 'hk_hoist_south', culture: 'hueru-kuran', name: 'South Nephrite & Kelp-Crate 90s Cliff-Hoist',
-   foot: [742, -485], head: [828, -485], footY: 5.4, headY: 152.0, cycleSec: 90
+   foot: [738, -485], head: [838, -485], footY: 11.4, headY: 152.0, cycleSec: 90
   },
   {
    id: 'et_girder_lift', culture: 'eternian', name: 'East Buttress E2 Bronze Girder & Tube Cliff-Lift',
-   foot: [592, 415], head: [865, 415], footY: 6.2, headY: 158.0, cycleSec: 90
+   foot: [676,  415], head: [866,  415], footY: 10.6, headY: 158.0, cycleSec: 90
   }
  ];
 
@@ -272,23 +291,31 @@ const ADG_SITE = (function(){
    }
   }
 
-  /* 4. Z1 East Lagoon Baidarka & Cliff-Hoist Cove Shelf (+4.2..+14.5 m sheltered basalt bench at x = 545..765, z = -715..-415) */
+  /* 4. Z1 East Lagoon Baidarka & Cliff-Hoist Cove Shelf (+4.6..+13.2 m sheltered basalt bench flush into the east caldera cliff) */
   {
    const dZ1 = polyDist(x, z, ZONES[0].poly);
-   const z1K = 1.0 - smooth(0, 38, dZ1);
+   const z1K = 1.0 - smooth(0, 34, dZ1);
    if (z1K > 0) {
-    const shelfY = 4.6 + 8.5 * smooth(560, 755, x) + n2 * 0.35;
-    h = mix(h, shelfY, z1K);
+    const shelfY = 4.8 + 7.8 * smooth(555, 748, x) + n2 * 0.25;
+    if (h < shelfY) {
+     h = mix(h, shelfY, z1K);
+    } else if (dZ1 <= 0 && h < shelfY + 5.0) {
+     h = mix(shelfY, h, smooth(shelfY, shelfY + 5.0, h));
+    }
    }
   }
 
-  /* 5. Z6 Sheltered SE Dam-Lee Coaling & Timber Quay (+5.2..+12.5 m behind East Buttress E2 at x = 335..615, z = 325..505) */
+  /* 5. Z6 Sheltered SE Dam-Lee Coaling & Timber Mole (+5.8..+11.0 m seated 100% flush into the eastern basalt shoreline, zero water gap!) */
   {
    const dWharf = polyDist(x, z, LEE_WHARF_POLY);
-   const whK = 1.0 - smooth(0, 36, dWharf);
+   const whK = 1.0 - smooth(0, 26, dWharf);
    if (whK > 0) {
-    const whY = 5.4 + 6.8 * smooth(355, 605, x) + n2 * 0.3;
-    h = mix(h, whY, whK);
+    const whY = 5.8 + 5.0 * smooth(348, 695, x) + n2 * 0.16;
+    if (h < whY) {
+     h = mix(h, whY, whK);
+    } else if (dWharf <= 0 && h < whY + 5.5) {
+     h = mix(whY, h, smooth(whY, whY + 5.5, h));
+    }
    }
   }
 
@@ -317,21 +344,42 @@ const ADG_SITE = (function(){
    }
   }
 
-  /* 7. Rock-cut slots for the 3 cliff-hoists so cradle cables clear the basalt cliff face cleanly */
+  /* 7. Rock-cut clearance at hoist foot pockets so vertical lift cages clear the cliff toe cleanly */
   for (let i = 0; i < HOISTS.length; i++) {
    const H = HOISTS[i];
-   const ax0 = H.foot[0], az0 = H.foot[1], bx0 = H.head[0], bz0 = H.head[1];
-   const dx = bx0 - ax0, dz = bz0 - az0, l2 = dx * dx + dz * dz;
-   const t = l2 > 1e-6 ? clamp(((x - ax0) * dx + (z - az0) * dz) / l2, 0, 1) : 0;
-   const dist = Math.hypot(ax0 + dx * t - x, az0 + dz * t - z);
-   const slotK = (1.0 - smooth(5.0, 14.0, dist)) * smooth(-0.05, 0.08, t) * (1.0 - smooth(0.92, 1.05, t));
-   if (slotK > 0) {
-    const rampY = mix(H.footY, H.headY, t);
-    h = mix(h, Math.min(h, rampY - 1.2), slotK * 0.65);
+   const lx = H.foot[0] + 10.0, lz = H.foot[1];
+   const dFoot = Math.hypot(x - lx, z - lz);
+   const pocketK = 1.0 - smooth(9.0, 20.0, dFoot);
+   if (pocketK > 0 && h > H.footY) {
+    h = mix(h, H.footY, pocketK * 0.85);
+   }
+  }
+
+  /* 8. Graded Cliff-Side Switchback Harbour Road Bench (Z6 Rim +160.5 m -> North Hairpin +80 m -> Flush Mole +10.8 m) */
+  if (x > 650 && x < 915 && z > 295 && z < 575) {
+   const rd = harbourRoadAt(x, z);
+   const rdK = 1.0 - smooth(8.5, 25.0, rd.dist);
+   if (rdK > 0) {
+    h = mix(h, rd.y, rdK * 0.92);
    }
   }
 
   return h;
+ }
+
+ function harbourRoadAt(x, z){
+  let bestD = 1e9, bestY = 10.8;
+  for (let i = 0; i < HARBOUR_ROAD.length - 1; i++) {
+   const a = HARBOUR_ROAD[i], b = HARBOUR_ROAD[i + 1];
+   const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz;
+   const t = l2 > 1e-6 ? clamp(((x - a[0]) * dx + (z - a[1]) * dz) / l2, 0, 1) : 0;
+   const d = Math.hypot(a[0] + dx * t - x, a[1] + dz * t - z);
+   if (d < bestD) {
+    bestD = d;
+    bestY = a[2] + (b[2] - a[2]) * t;
+   }
+  }
+  return { dist: bestD, y: bestY };
  }
 
  function bareGround(x, z){
@@ -402,6 +450,7 @@ const ADG_SITE = (function(){
   MICRO_STYLE: MICRO_STYLE,
   ZONES: ZONES,
   LEE_WHARF_POLY: LEE_WHARF_POLY,
+  HARBOUR_ROAD: HARBOUR_ROAD,
   NW_BREACH_BENCH: NW_BREACH_BENCH,
   HOISTS: HOISTS,
   SANTA_CRISTINA: SANTA_CRISTINA,
@@ -415,6 +464,7 @@ const ADG_SITE = (function(){
   townDist: townDist,
   townBandMask: townBandMask,
   calderaShelterAt: calderaShelterAt,
+  harbourRoadAt: harbourRoadAt,
   macroGround: macroGround,
   bareGround: bareGround,
   ground: { h: bareGround },

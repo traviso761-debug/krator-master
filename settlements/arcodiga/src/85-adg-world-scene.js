@@ -387,7 +387,7 @@ const ADG_WORLD = (function(){
  });
  multikitHost.setPlan({ lots: PLANS.lots });
  {
-  const warmEyes = [[1120, 210], [1165, 535], [1020, -485], [680, 1180]];
+  const warmEyes = [[1120, 210], [1165, 535], [1020, -485], [680, 1180], [520, 420]];
   for (let w = 0; w < warmEyes.length; w++) {
    for (let p = 0; p < 8; p++) multikitHost.update(warmEyes[w], true);
   }

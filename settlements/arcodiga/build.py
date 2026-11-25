@@ -213,7 +213,7 @@ HK_EXCL = (
     'pegmatite', 'plain', 'potash', 'quartz', 'reed', 'sand', 'schistem', 'soda', 'stone',
     'sulphur', 'tar', 'turq', 'verdigris', 'wood',
 )
-ET_EXCL = ('gilt', 'ground', 'onyx', 'planks', 'screen', 'screenB', 'titanium')
+ET_EXCL = ('gilt', 'ground', 'onyx', 'screen', 'screenB', 'titanium')
 CROOK_KEEP = (
     'bark.cedar', 'bark.cypress', 'bark.fir', 'bark.maple', 'bark.spruce',
     'beard', 'blossom', 'cedar', 'maple', 'rhodo',

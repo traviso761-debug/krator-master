@@ -47,6 +47,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `69-et-coast.js` | 7 |  |
 | `70-et-canal.js` | 6 |  |
 | `71-et-harbour.js` | 11 |  |
+| `72-et-harbour-wood.js` | 21 |  |
 | `89-rows.js` | 3 |  |
 | `91c-et-clock.js` | 3 |  |
 | `91d-et-water.js` | 2 |  |

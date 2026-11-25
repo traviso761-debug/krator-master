@@ -15,19 +15,19 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | <1 |  |
 | `28-adg-mipvar.js` | 1 |  |
-| `40-adg-site.js` | 18 |  |
+| `40-adg-site.js` | 19 |  |
 | `42-adg-trades.js` | 5 |  |
-| `42-adg-tune.js` | 16 |  |
+| `42-adg-tune.js` | 17 |  |
 | `44-adg-crook-delta.js` | 7 |  |
 | `44z-adg-host-init.js` | 6 |  |
 | `45a-adg-hex-plan.js` | 19 |  |
-| `45b-adg-city-steps.js` | 49 **big** |  |
-| `55-adg-hoists-fleet.js` | 18 |  |
+| `45b-adg-city-steps.js` | 57 **big** |  |
+| `55-adg-hoists-fleet.js` | 25 |  |
 | `58-adg-roomlight.js` | 6 |  |
 | `60-adg-sim.js` | 15 |  |
 | `70-adg-chars.js` | 5 |  |
-| `84-adg-streets-portal.js` | 11 |  |
+| `84-adg-streets-portal.js` | 21 |  |
 | `85-adg-world-scene.js` | 30 **big** |  |
 | `89w-adg-water-atmos.js` | 11 |  |
-| `99-adg-host-take.js` | 12 |  |
+| `99-adg-host-take.js` | 13 |  |
 | `99-tail.html` | <1 |  |

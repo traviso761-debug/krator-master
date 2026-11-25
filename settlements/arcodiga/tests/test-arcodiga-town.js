@@ -127,6 +127,22 @@ const {
   nwBreach <= -35.0 && leeWharf >= 5.0 && leeWharf <= 12.0,
   'nwBreach=' + nwBreach.toFixed(1) + ' m, leeWharf=' + leeWharf.toFixed(1) + ' m');
 
+ /* Verify the entire eastern border of the SE Harbour Mole sits 100% flush to the rising basalt shoreline (zero water moat!) */
+ let minMoleToShoreY = Infinity;
+ for (const zz of [332, 375, 415, 465, 515]) {
+  for (let xx = 348; xx <= 760; xx += 8) {
+   const yy = ADG_SITE.bareGround(xx, zz);
+   if (yy < minMoleToShoreY) minMoleToShoreY = yy;
+  }
+ }
+ const etLift = ADG_SITE.HOISTS.find(function(h){ return h.id === 'et_girder_lift'; });
+ T.ok('SE harbour mole sits 100% flush to shoreline (min y >= +5.5 m across x=348..760), cargo hoist anchors at shore root, and graded Harbour Road descends cleanly',
+  minMoleToShoreY >= 5.5 &&
+  etLift && etLift.foot[0] >= 670 && (etLift.head[0] - etLift.foot[0]) <= 195 &&
+  ADG_SITE.HARBOUR_ROAD && ADG_SITE.HARBOUR_ROAD.length >= 8 &&
+  ADG_SITE.harbourRoadAt(748, 332).y >= 70.0 && ADG_SITE.harbourRoadAt(716, 415).y >= 35.0,
+  'minMoleToShoreY=' + minMoleToShoreY.toFixed(2) + ' m, liftSpan=' + (etLift.head[0] - etLift.foot[0]) + ' m');
+
  T.ok('WMICRO is initialized in version 2 mean-compensated mode with smooth town-edge transition',
   WMICRO.version === 2,
   'WMICRO.version=' + WMICRO.version);
@@ -168,9 +184,16 @@ const plans = ADG_CITY.buildPlans({ fresh: true });
   audit.minDwellingY >= 95.0 &&
   plans.hkLots.length >= 240 &&
   plans.etLots.length >= 260 &&
-  plans.coveLots.length >= 30 &&
+  plans.coveLots.length >= 65 &&
   plans.constructionLots.length >= 2,
   JSON.stringify(audit) + ' cons=' + plans.constructionLots.length);
+
+ const moleLots = plans.lots.filter(function(l){ return l.zone === 'Z6_WHARF'; });
+ const woodMoleLots = moleLots.filter(function(l){ return l.rawKey && l.rawKey.indexOf('et_wood_') === 0; });
+ const woodKinds = new Set(woodMoleLots.map(function(l){ return l.rawKey; }));
+ T.ok('SE harbour mole densely deploys all 8 wooden disposable Eternian harbour building types with zero permanent dwellings',
+  moleLots.length >= 45 && woodMoleLots.length >= 32 && woodKinds.size === 8,
+  'moleLots=' + moleLots.length + ', woodMoleLots=' + woodMoleLots.length + ', woodKinds=' + woodKinds.size);
 
  T.ok('zero streets and zero buildings clip through Arcodiga dam-arch or x<=1022 East Stiffening Wing',
   arcClear.ok && arcClear.lotHits === 0 && arcClear.wayHits === 0,

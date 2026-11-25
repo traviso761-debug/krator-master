@@ -18,6 +18,7 @@ const FAMILIES=[
  {name:'The land (P6)',keys:['et_farmstead','et_paddy','et_tea_garden','et_mine','et_quarry','et_stock_pens']},
  {name:"The coast's works (Farside's backport)",keys:['et_kelp_kiln','et_lime_kiln','et_wrack_heap','et_wrack_cart','et_terraces','et_goat_fold','et_kelp_rack']},
  {name:'Hydraulics and harbour (P6)',keys:['et_lock','et_reservoir_wall','et_spillway','et_canal_landing','et_ferry_landing','et_fish_landing','et_quay','et_dock','et_lighthouse','et_factory_quarter']},
+ {name:'Disposable wooden harbour (tsunami moles & Farport)',keys:['et_wood_transit_shed','et_wood_hex_warehouse','et_wood_coaling_bunker','et_wood_boat_shed','et_wood_net_loft',{key:'et_wood_chandlery',o:{v:0}},{key:'et_wood_chandlery',o:{v:1}},'et_wood_tally_kiosk','et_wood_crane_stage']},
  {name:'Profile helpers (P1)',keys:['et_sample_piers','et_sample_lancets',{key:'et_sample_screens',o:{v:0}},{key:'et_sample_screens',o:{v:1}},{key:'et_sample_screens',o:{v:2}},'et_sample_block']},
  {name:'Statuary (P2): the head generator',keys:['et_sample_heads','et_sample_figures','et_sample_masks']}
 ];

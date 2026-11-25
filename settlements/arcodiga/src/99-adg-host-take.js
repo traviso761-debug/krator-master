@@ -20,7 +20,8 @@ const VIEWS = {};
  defView('kopa-diga-nuraghe-rim',      [ 835, 228, -305], [1025, 178, -515]);
  defView('cliff-hoists-and-lagoon',    [ 385,  88, -555], [ 755,  72, -555]);
  defView('eternian-fort-and-clock',    [ 955, 295,  335], [1195, 174,  545]);
- defView('dam-lee-coaling-quay',       [ 285,  62,  655], [ 485,  12,  465]);
+ defView('dam-lee-coaling-quay',       [ 265,  58,  635], [ 525,  14,  425]);
+ defView('mole-hoist-and-road',        [ 705, 284,  825], [ 702, 105,  277]);
 })();
 
 function setCharterMode(mode){
