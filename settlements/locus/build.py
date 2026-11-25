@@ -123,8 +123,8 @@ CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.
 # KratorInteriors, ROOM, furnishRoom). Inserted after the kit builders (65-abyss-*) and before the glue
 # 66-locus-furnish.js (FURNISH, the interiors hook). Both generators' own text is exempt from the rules below.
 ROOT = os.path.dirname(os.path.dirname(HERE))
-sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
-import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
+sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal'), os.path.join(ROOT, 'kits', 'abyss-salvage')]
+import locuskit, abysskit, abysssalvage   # Locus, Eastern Abyssal, and Kenshi-swamp Abyssal Salvage kits, read in place
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
 import yunikit              # the Yuni kit: its buildings (55-59c), read in place on Locus's frame (53-assets.js; MODULARITY-PLAN.md step 4b)
 
@@ -138,14 +138,14 @@ def vendor_check():
           % (('; MISSING ' + ', '.join(missing)) if missing else ''))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
-VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+VIRTUAL = {'65t-tabisti-bundle.js', '65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '46t-tabisti-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 # the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Locus has no TEX.def
 # painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
 TEX_DIR = os.path.join(HERE, 'tex')
-DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js', '69a0-bio-matlib-pack.js'}
+DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js', '46t-tabisti-matlib-pack.js', '65u-locus-tabisti.js', '69a0-bio-matlib-pack.js'}
 
 
 # the library pack beside the pages (<build>.tex.<key>.js), one file every page of the build shares; --inline-packs puts
@@ -198,10 +198,15 @@ def virtual_bodies():
             print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
     vb.setdefault('65y-vehicles-bundle.js', '/* kits/motor-vehicles: not built; KratorVehicles absent */\nvar KratorVehicles = null;\n')
     vb['46-matlib-pack.js'] = matlib_pack(SIDE)
-    # the eastern-abyss biome (read in place, BIO_CANON): its library pack, before the biome code (69a1-...)
+    # the eastern-abyss biome (read in place, BIO_CANON) and kits/tabisti (TBK): their library packs
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack as _mp
+    vb['46t-tabisti-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'kits', 'tabisti'), 'tabisti', side=SIDE)
     vb['69a0-bio-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss')
+    import importlib.util as _ilu
+    _tb_spec = _ilu.spec_from_file_location('tabisti_kit_bundle', os.path.join(ROOT, 'kits', 'tabisti', 'kit_bundle.py'))
+    _tb_mod = _ilu.module_from_spec(_tb_spec); _tb_spec.loader.exec_module(_tb_mod)
+    vb['65t-tabisti-bundle.js'] = _tb_mod.bundle('TBK')[0]
     vb[khost.EDITS_JS] = khost.edits_js(HERE, 'locus')   # the world page's edits (a kit sheet ignores them: 66-locus-furnish.js)
     return vb
 
@@ -305,7 +310,7 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for kit in (yunikit, locuskit, abysskit):   # the Yuni kit and Locus's two (a src/ copy with the same name would win: none)
+    for kit in (yunikit, locuskit, abysskit, abysssalvage):
         for f, p in kit.paths().items():
             paths.setdefault(f, p)
     for f in RECORD_FILES:

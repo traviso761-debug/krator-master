@@ -54,7 +54,9 @@ var MUNGO_SIM = null;
   function front(S, k, n, out){ var spots=[]; for(var i=0;i<n;i++){ var lx=(i-(n-1)/2)*(S.w/(n+1)), p=loc(S.x,S.z,lx,S.d/2+(out||1.6)+ (i%2)*0.9,S.ry); spots.push([p[0],p[1],terrainH(p[0],p[1])]); } return spots; }
   function ringSpots(cx,cz,r,n,y){ var o=[]; for(var i=0;i<n;i++){ var a=i/n*TAU+0.3, rr2=r*(0.45+0.55*((i*0.618)%1)); o.push([cx+Math.cos(a)*rr2, cz+Math.sin(a)*rr2, y==null?terrainH(cx+Math.cos(a)*rr2, cz+Math.sin(a)*rr2):y]); } return o; }
   function place(o){ if(o.y==null) o.y=terrainH(o.x,o.z); return SIM.place(o); }
-  var HOME_BEDS = { abyss_house_poor:5, abyss_house_mid:6, stilt_poor:5, stilt_mid:6 };
+  var HOME_BEDS = { abyss_house_poor:5, abyss_house_mid:6, stilt_poor:5, stilt_mid:6,
+                    swamp_pod_hut:5, swamp_shack_a:5, swamp_shack_b:6, swamp_workshop:5,
+                    tb_breeze_cot:5, tb_loggia_row:6, tb_shop_house:6, tb_oriel_townhouse:8, tb_tahawst_mid:8 };
   /* the landward homes: every dwelling the fill placed */
   PLACED.forEach(function(rec, i){ var b=HOME_BEDS[rec.key]; if(!b || rec.plotName) return;
     var kind = (lakeDist(rec.x,rec.z) < 90 || riverDist(rec.x,rec.z) < 60) ? 'home_shore' : 'home_town';
@@ -70,7 +72,10 @@ var MUNGO_SIM = null;
   WAREHOUSES.forEach(function(S, i){ if(S===FISH_WAREHOUSE) return; site(S, { id:'warehouse_'+i, kind:'warehouse', org:'mungo_traders', activities:{ STORE:6, DELIVER:10, TRADE:4, WORK:4 }, spots:front(S,0,6,2), wander:1.5 }); });
   site(FISH_WAREHOUSE, { id:'fish_warehouse', kind:'fish_market', org:'mungo_traders', activities:{ STORE:6, DELIVER:14, TRADE:4, KEEP_SHOP:2, BUY:4, WORK:4 }, spots:front(FISH_WAREHOUSE,0,8,2), wander:1.5 });
   SHOPS.forEach(function(S, i){ var k=S.placedKey||S.key;
-    var kind = k==='abyss_shop_builder' ? 'builders_yard' : k==='abyss_shop_food' ? 'food_shop' : k==='abyss_shop_salt' ? 'fish_market' : 'shop';
+    var kind = (k==='abyss_shop_builder' || k==='tb_ganch_mason_yard') ? 'builders_yard'
+             : (k==='abyss_shop_food' || k==='tb_tea_tavern') ? 'food_shop'
+             : (k==='abyss_shop_salt' || k==='tb_shop_house') ? 'fish_market'
+             : 'shop';
     var acts = { KEEP_SHOP:2, BUY:8, TRADE:3 }; if(kind==='builders_yard'){ acts.DELIVER=20; acts.CRAFT=4; } if(kind==='food_shop'){ acts.DELIVER=6; acts.EAT=8; } if(kind==='fish_market') acts.DELIVER=12;
     site(S, { id:'shop_'+i, kind:kind, org:'mungo_traders', trade:S.trade, activities:acts, spots:front(S,0,6,1.4), wander:0.6 }); });
   site(GEOCHAPTER, { id:'chapterhouse', kind:'chapterhouse', org:'geomancers_mungo', access:'friendly', activities:{ SLEEP:10, EAT:12, REST:10, WORK:18, STUDY:10 } });

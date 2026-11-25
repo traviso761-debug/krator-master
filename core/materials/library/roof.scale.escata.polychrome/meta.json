@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.563,
+    0.385
+   ],
+   "seam_before": [
+    1.237,
+    2.083
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.03,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.15,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.18,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "roof",
+  "id": "roof.scale.escata.polychrome",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "roof.scale.escata.polychrome.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on ceramic roof surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Catalan Modernisme imbricated fish-scale (escata) glazed ceramic cupola tiles with rounded lower noses laid in tight overlapping courses arranged in repeating horizontal chevron bands of warm golden-amber (#d48a2c), burnt terracotta-rose (#b84e38), pale cream-ivory (#eadcc4), and alkaline turquoise-teal (#1d8b84); vitreous lead glaze pooling slightly darker near each rounded tile lip with tiny kiln pinholes and fine crazing, thin pale mortar shadow at the overlaps. Full colour.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Urban Tabisti escata ceramic spires, cupolas and polychrome roofs (kits/tabisti, escata, 1.2 m)",
+  "sha1": "4beb05c5774bb5edbfd50410b948cec069e32046"
+ }
+}

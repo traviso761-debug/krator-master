@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 135,
+   "key_lo": 45,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1024,
+   1024
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "brick",
+  "id": "brick.claustra.screen",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.72,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "brick.claustra.screen.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Flat cut-out pattern sheet, square, 2048x2048, on a solid flat bright magenta background (#ff00ff) filling every pierced opening cleanly with crisp hard edges and zero anti-aliased pink halo; no magenta, pink or purple anywhere on the brick or tile. Flat, even, shadowless lighting. The left edge must continue into the right edge and the top into the bottom. Material: a pierced architectural claustra breeze-screen wall built of canted warm sandy-buff bricks (#d4b88e) and terracotta-ochre bricks (#bf684c) mortared at 45-degree angles in an interlocking diamond-and-cross honeycomb lattice, with small square alkaline-teal glazed ceramic boss tiles (#1c8a84) set at every lattice intersection and pale lime mortar (#dfd5c2) at the joints, framing clean open geometric ventilation apertures (#ff00ff). No perspective, no text, no border, no watermark.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Urban Tabisti pierced brick-and-kashi claustra breeze screens (kits/tabisti, claustra, 1.2 m)",
+  "sha1": "55ed75c7d1ba1bf051805f430af1c21cfb2b0020"
+ }
+}
