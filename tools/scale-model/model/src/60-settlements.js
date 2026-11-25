@@ -189,7 +189,9 @@
     const badge=document.getElementById('settCountBadge');
     if(badge) badge.textContent=settlements.size;
     settStatus.textContent=settlements.size+' settlement'+(settlements.size===1?'':'s')+(db?' · shared store':' · this browser only');
-    if(typeof applySearchAndFilters==='function') applySearchAndFilters();
+    /* the first render runs before 90-ui.js declares the search state (rSearch, activeSettType: a ReferenceError there stopped
+       the scene being built, 2026-11-24); the filter runs from the UI's own events once it is wired */
+    try{ applySearchAndFilters(); }catch(e){ if(!(e instanceof ReferenceError)) throw e; }
   }
   function settAddAt(px,py,name,type){
     const id='s'+Math.random().toString(36).slice(2,11);
