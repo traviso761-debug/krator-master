@@ -251,7 +251,10 @@ simulable in this province is at Ranger HQ or is a Stalker. P16, and `PLAN-SIM.m
 
 ## 7. The pitfall register
 
-Each pitfall is a thing that will bite the build if it is not handled, with what to do.
+Each pitfall is a thing that will bite the build if it is not handled, with what to do. **P18 to P21 were added on
+2026-11-25 from the scale-model session's work**, and the first two of them are the only entries here that are *known*
+to survive a new scale model: P18 is a property of the rescale's smoothing and P19 of the authored pages, not of any
+model's bytes.
 
 ### P1 — `biomes/catch`'s own records are up to 209 km off the map *(blocking for item 3)*
 
@@ -432,12 +435,58 @@ Three ways forward, and this is the single biggest decision the two new province
 *Proposed:* **(3)**, and ask. It gives the player the explorable half, keeps the Stalkers' half forbidding, and is a
 smaller edit than (1). — **The owner chose this shape on 2026-11-24**; only the line's place remains.
 
-### P14 — Bāb al-Hawa's pin is 1,205 m up the corridor wall *(fix with the cut)*
+### P14 — the Godsgate shaft pixel is 1,205 m up the corridor wall *(corrected 2026-11-25; fix with the cut)*
 
-Its own plan puts the vent-shaft collar and the caravanserai at **+3,590 m** just south of the 3,620 m saddle. The map's
-pin (1033,1258) reads **4,795 m**; the corridor's floor at that row is at px **1027**. Either the pin moves ~12 km west
-onto the thalweg, or the caravanserai stands on a bench the region cuts (`WLAND`'s `bench` record). *Proposed:* move the
-pin — the plan describes a **sunken** concrete apron on the pass floor, not a perch.
+**As first written this said "Bāb al-Hawa's *pin*", and that was wrong.** The map session measured both and they are not
+the same thing: **1033,1258 is the *plan's shaft pixel*** (`biomes/seouterwall/PLAN.md` 3.3's vent collar), which reads
+**4,795 m** against the plan's **+3,590 m**, so the shaft is the thing standing 1,205 m up the corridor's east wall. The
+**settlement** `sbabalhawa01` stood 30 m over its own row's thalweg, inside the trench, which is a different and much
+smaller error. `SITES.json` and this entry both read as a claim about the pin and are corrected together.
+
+What still wants settling is the shaft: its own plan puts the vent collar and the caravanserai at **+3,590 m** just
+south of the 3,620 m saddle, and the corridor's floor at that row is at px **1027**. Either the plan's shaft pixel moves
+~12 km west onto the thalweg, or the collar stands on a bench the region cuts (`WLAND`'s `bench` record). *Proposed:*
+move it — the plan describes a **sunken** concrete apron on the pass floor, not a perch. The settlement's own pin was
+moved to 1027,1258 by map edit 2, which is applied (5.1-dated).
+
+### P18 — applying the SE outer wall's rescale breaks the river beds unless they are guarded *(a law of the method, not a 5.1 number)*
+
+**Found by the map session, 2026-11-25, and the most portable finding of the whole survey.** `biomes/seouterwall/PLAN.md`
+step 6.1 compresses the cordillera, and **the compression follows `E_base`, the 9 km-smoothed base** — which is *high*
+in a valley ringed by 8 km walls. So the valley floors come down with the walls, and each tarn's outflow ends up
+**running downhill into a bowl and uphill out of it**: r708 at **+659.8 m** and r645 at **+407.3 m** against
+`test_smodel`'s 50 m allowance. Carving them back afterwards cuts 300 cells **outside** the province by up to 680 m;
+**guarding the beds while 6.1 runs costs almost nothing.**
+
+This is a property of the smoothing, not of model 5.1, so **whoever applies 6.1 to the new model hits it first**. It is
+also the answer to a question `PLAN.md` question A leaves open: the rescale is not simply a matter of where the
+east-west line falls, because wherever it falls, 6.4's beds have to be held while the walls move.
+
+### P19 — the authored ridge amplitudes are up to three times what the ground subtends *(an authoring error, true on any model)*
+
+**Found by the map session's horizon re-survey, 2026-11-25** (the horizon cast at 1,024 azimuths per band). From the
+Catch floor, **the highest thing visible anywhere is 2.97°**, and the Godthrone mass — 13.6 km of mountain at 240 km —
+subtends **1.72°**. `biomes/catch`'s pages draw ridges up to **9.4°**, about three times over, because the authored
+amplitudes are a **4.22-era hand survey** that the model has moved under twice since.
+
+It is not a terrain bug and it blocks nothing, but every screenshot of the Catch floor is wrong about the scale of its
+own horizon, which is the one thing a 2 km/px model is *for*. The fix is to re-derive the amplitudes by casting, which
+is now a tool rather than a hand survey. The fragments carrying the 9.4° figures are to be named.
+
+### P20 — step 6.2's chain and the thalweg that actually landed disagree by 5 px *(a plan question)*
+
+At row 1258 the Godsgate's **6.2 chain centreline is near x 1032**, while the **thalweg that landed is at x 1027** —
+5 px, 10 km. Since 6.2 landed *to the metre* elsewhere, one of the two is mis-fitted rather than mis-applied: either the
+plan's shaft pixel moves to 1027,1258 (P14's proposal) or 6.2's chain wants re-fitting through that row. Not a 5.1
+artefact; a question for `biomes/seouterwall/PLAN.md`.
+
+### P21 — the SE outer wall's station bases were never a free acceptance test *(a claim to correct)*
+
+`biomes/seouterwall/PLAN.md` section 5 says its six station bases were designed to pass `test_smodel`'s 150 m check
+*"once the terrain pass is applied"*. But 6.2 (the Godsgate corridor) and 6.3 (the five tarns) had **already** landed all
+six station cells to the metre, so **all six passed before any rescale**. The sentence reads as though the rescale were
+on trial and the stations were the evidence; in fact the stations prove nothing about 6.1 either way. Worth correcting
+so that nobody later takes six green cells as a licence to apply 6.1 unguarded — which is exactly what P18 says breaks.
 
 ### P15 — the Tharn crater is 671 m out and holds a lake *(leave it; a later session's)*
 
@@ -529,7 +578,11 @@ rangers got near enough to see a facility and come home, and its function is the
 | P11 | no | `extract_region.py` wants scipy; GPU verifies want a lane |
 | P12 | no | the Stalkers have no buried pose and no harpoon line |
 | **P13** | **settled, line open** | the rescale never landed; the owner rules the **west** rescaled and the **east** left high and airless (2026-11-24). Where the line falls is `PLAN.md` question A |
-| P14 | a map edit | Bāb al-Hawa's pin is 1,205 m up the corridor wall; now that the place stays, the pin moves to the thalweg (`PLAN.md` question B) |
+| **P14** | **corrected 2026-11-25; the settlement's pin is applied** | the **shaft pixel** (1033,1258) is what stands 1,205 m up the wall, not the settlement, which was 30 m over its row's thalweg. The settlement's pin moved to 1027,1258 (map edit 2, applied); the **plan's shaft pixel** still wants moving or benching |
 | P15 | no | the Tharn crater is 671 m out; outside this cut |
 | P16 | no | the Stalker Range has almost nothing to simulate, and should not be given a census |
-| **P17** | **settled; a rename is owed** | the Arcbeam-Stair tunnel is gone, but the owner has given a **ruined Parabola-Stair bore** in its place (2026-11-24), which restores the Catch's oldest lore word for word. `LORE.md` §4, `biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md`, `ANCIENT-NETWORK.md` and `ANCIENT-ROADS.md` need the rename (answers M and N) |
+| **P17** | **settled; the rename is DONE (2026-11-24)** | the Arcbeam-Stair tunnel is gone, but the owner has given a **ruined Parabola-Stair bore** in its place (2026-11-24), which restores the Catch's oldest lore word for word. `LORE.md` §4, `biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md`, `ANCIENT-NETWORK.md` and `ANCIENT-ROADS.md` are rewritten (answers M and N) |
+| **P18** | **a law of the method; blocks 6.1** | applying the rescale without guarding 6.4's beds breaks every tarn outflow (r708 +659.8 m, r645 +407.3 m against a 50 m allowance), because the compression follows the 9 km-smoothed base. **Survives the new model.** Guarding the beds is nearly free |
+| **P19** | **an authoring error; survives the new model** | the Catch's authored ridge amplitudes reach 9.4° where the ground subtends at most **2.97°** from the floor (Godthrone, 13.6 km at 240 km, is 1.72°): a 4.22-era hand survey the model has moved under twice. Re-derive by casting |
+| P20 | a plan question | 6.2's chain centreline (x 1032) against the thalweg that landed (x 1027) at row 1258: one of the two is mis-fitted |
+| P21 | a claim to correct | `biomes/seouterwall/PLAN.md` §5 implies its six station bases pass the 150 m check only after the terrain pass; they passed **before** it, so they are no evidence for 6.1 — see P18 |

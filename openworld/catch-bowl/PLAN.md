@@ -775,9 +775,17 @@ python3 tools/scale-model/cut_site.py catch-bowl --dry    # does the region stil
 node core/region/tests/test-bowl.js                       # do the six places still load? (~100 s)
 ```
 
-Then: read `survey.py`'s output against `PLAN-TERRAIN.md`'s tables, correct what moved, re-check the seventeen pitfalls
-(**P1-P4, P8, P11, P13-P16 are terrain findings and may change; P5-P7, P9, P10, P12 and P17 are structural and will
-not**), re-rank `bridge_sites.py` for Arcbeam's px, and walk `MAP-EDITS.md` edit by edit.
+Then: read `survey.py`'s output against `PLAN-TERRAIN.md`'s tables, correct what moved, re-check the twenty-one
+pitfalls (**P1-P4, P8, P11, P13-P16 and P20 are terrain findings and may change; P5-P7, P9, P10, P12, P17, P18, P19 and
+P21 are structural and will not** — P18 is a property of the rescale's 9 km smoothing and P19 of the authored page
+amplitudes, so both are true on any ground), re-rank `bridge_sites.py` for Arcbeam's px, and walk `MAP-EDITS.md` edit by
+edit.
+
+**Two of those carry over as warnings rather than as readings.** P18: whoever applies the SE outer wall's step 6.1 to
+the new model must guard 6.4's river beds while it runs, or every tarn outflow ends up running downhill in and uphill
+out — the compression follows the 9 km-smoothed base, which is high in a valley ringed by 8 km walls. P19: the Catch's
+authored ridge amplitudes reach 9.4° where the ground subtends at most 2.97° from the floor, so they want re-deriving by
+casting whatever model is underneath.
 
 ### The order this implies
 

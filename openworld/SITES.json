@@ -1230,7 +1230,7 @@
    "reach_km": 10,
    "page": null,
    "state": "planned",
-   "notes": "The Vent-Shaft Caravanserai in the Godsgate (biomes/seouterwall/PLAN.md section 3.3): a 40 m Ancient ventilation and access shaft collar sunk 1,400 m to the summit section of the ruined Parabola-Stair bore, plugged 180 m down but still drafting +16 degC air, with the pass's only safe overnight camp in the lee of its cyclopean wind-baffle crescent. About 120 permanent people (the owner, 2026-11-24). KEPT by the owner 2026-11-24 ('Agree keep both'); its pin wants moving onto the Godsgate's thalweg at about px 1027,1258 (+3,590 m), 1,205 m below where it stands."
+   "notes": "The Vent-Shaft Caravanserai in the Godsgate (biomes/seouterwall/PLAN.md section 3.3): a 40 m Ancient ventilation and access shaft collar sunk 1,400 m to the summit section of the ruined Parabola-Stair bore, plugged 180 m down but still drafting +16 degC air, with the pass's only safe overnight camp in the lee of its cyclopean wind-baffle crescent. About 120 permanent people (the owner, 2026-11-24). KEPT by the owner 2026-11-24 ('Agree keep both'); its pin was moved onto the Godsgate's thalweg at px 1027,1258 (+3,590 m) by the scale-model session's edit 5.1e27, applied 2026-11-25. CORRECTED 2026-11-25: the '1,205 m up the corridor's east wall' this note used to claim of the PIN is the plan's SHAFT pixel 1033,1258 (planned 3,590 m, 5.1 reads 4,795 m); the settlement itself stood 30 m over its own row's thalweg, inside the trench. The shaft pixel still wants moving or benching (openworld/catch-bowl/PLAN-TERRAIN.md P14, P20)."
   },
   "scatchkolli01": {
    "name": "Kolli",

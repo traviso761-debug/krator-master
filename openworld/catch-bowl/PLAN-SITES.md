@@ -438,7 +438,7 @@ So, decided:
    old one, standing in until the new model issues one.
 
 **One thing the new model changes for everything else on this page**: every elevation, span, grade and rim-level figure
-in these plans — this section's 332 m, section 7a's survey, `PLAN-TERRAIN.md`'s seventeen pitfalls, and all eleven
+in these plans — this section's 332 m, section 7a's survey, `PLAN-TERRAIN.md`'s twenty-one pitfalls, and all eleven
 queued map edits — was measured against **scale model 5.1**. A new model is a new ground. See `PLAN.md` section 13.
 
 ## 8. The two salt works
