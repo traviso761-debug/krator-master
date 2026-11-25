@@ -359,6 +359,64 @@ people.
 Left for S2's second half: `BOWL_TUNE.join` — the Train's rounds, Mantis buying its salt at Solta, and the north road's
 stops at Arcbeam, Parabola and Esper.
 
+### 3c. S2's second half: the Bowl's own trade, the Train's homecoming, and a province that cannot feed itself (2026-11-25)
+
+**The Bowl is short of its own bread and grows no tea at all.** Measured off the tune rather than estimated: the two
+hinterlands grow 9,000 t of grain a year and the six places and two rings eat about 10,600 t, so the province is
+**roughly 15 % short**, and **nobody in the Bowl grows a leaf of tea**. The sharp case is **Jabal**: 15,000 people, and
+the owner ruled hinterlands for Mantis and for the arcology but not for Jabal, so it has **no countryside of its own and
+no grain source anywhere in the province** — its 3,000 t a year has to come from somewhere else.
+
+That is not a fault in S2; it *is* S2. A Dasri capital on the Bowl's floor that cannot feed itself is why the Train of
+Jabal exists, why its home mattering is the step's point, and why the Bowl had to be joined rather than run on its own.
+`test-bowl.js` asserts the shortfall with its numbers, so the day someone balances the Bowl by accident, the check says
+so. **One question for the owner: should Jabal have a hinterland too?** Mantis and the arcology got theirs because the
+owner named them; Jabal's was never put. If it should, the shape is already written (`T.places[].ring`) and the Bowl's
+grain gap closes; if it should not, Jabal eats Xanadu's bread for good, which is a sharper dependency and arguably the
+better story.
+
+**Five trade roads inside the Bowl** (`BOWL_TUNE.trade`), each between two places the tune declares, so they run in the
+standalone valley as well as in the join, and each measured off the places' own positions at 30 km a day and 1.25 of
+winding:
+
+| Road | Days | Out | Back |
+|---|---|---|---|
+| `trade.solta.jabal` | 5 (140 km) | salt, gypsum | grain, dates, tools, cloth |
+| `trade.jabal.mantis` | 9 (283 km) | **salt**, brick, tools, coffee | dates, figs, fish, frankincense, resin, cloth |
+| `trade.esper.arcology` | 3 (90 km) | dates, hides, timber | salt, tools, tea, cloth |
+| `trade.solta.arcology` | 15 (446 km) | salt, gypsum | tools, brick, cloth |
+| `trade.parabola.arcology` | 11 (340 km) | alloy, cells | grain, salt, tools |
+
+The one the plan named is the second: **Mantis buys its salt from the Train**, which is section 3's grievance and the
+one pair in `BOWL_TUNE.rivals`. Solta's pans are the Bowl's only salt, they are the Train's own works, and Mantis's
+Izani houses must buy at the Train's price — which is what sends them onto the Catch road looking for another seller.
+
+**Esper's market is the arcology, not Jabal.** Its own record reads *"72 km from Arcbeam"* and the model agrees to the
+kilometre (36 px); Jabal is 486 km off. A village of 220 does not haul dates past a nearer buyer. The road was written
+to Jabal first and corrected when the two distances were measured.
+
+**A thing worth knowing about the standalone valley, because it looked like a bug for an hour.** `T.valley` stocks every
+place for 400 days, so inside a 365-day run **nobody wants anything and every carrier sails empty** — 114 voyages on
+Solta's road, all empty, and the same on the two hinterland lanes, which had never been exercised either. That is
+correct behaviour for a closed box that cannot feed itself: the start is what lets the no-roads checks mean anything.
+The roads are therefore proved by a **520-day run**, past the start, where the salt does move. If a future check wants
+goods to move inside a year, the start has to come down first.
+
+**`BOWL_TUNE.join(CV)`** takes the Catch-joined valley (`CATCH_TUNE.join(XAN_TUNE.valley())`) and adds the Bowl the way
+`EAST_RIFT` adds a plan: merge goods, factions, relations and calendar windows, concatenate settlements and roads. And
+then **the Train of Jabal comes home.** `CATCH_TUNE` carries the Dasri as an off-map pool, `gate.dasri`, standing at
+**px 1225,1149 — which is Jabal's own cell**, because the pool was only ever a stand-in for a city that was not on the
+map. With the Bowl joined it is, so:
+
+- the stand-in settlement goes, and **both** of the Train's rounds (`caravan.train` and `caravan.train.salt`) load at
+  Jabal instead;
+- **Jabal takes the pool's warehouse** — the pool's `start` merged in at the larger of the two per good — because that
+  stock is the Dasri caravan masters' and they keep it at Jabal;
+- the **home legs are re-measured** from Jabal's real position, in place of the pool's declared distance.
+
+`V._bowl` records what the join did (which rounds were re-homed, whether a pool was found) so a check can read it
+rather than infer it.
+
 ## 4. The Stalker Range: `STALKER_TUNE`
 
 **The province has no economy and must not be given one** (`PLAN-TERRAIN.md` P16: 0 mm of median rain, -22 °C median,

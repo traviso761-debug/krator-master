@@ -1,8 +1,9 @@
 // node core/region/tests/test-bowl.js — the Bowl on core/simulation (step S2 of openworld/catch-bowl/PLAN-SIM.md
-// section 3; the owner, 2026-11-24). S2's first half: the Bowl's six places (core/region/data/bowl-tune.js) declared by
-// core/region's valley host at the abstract level, on their own make and a stocked start, for a year -- as C0 did for the
-// Catch before its rounds were put on. The rounds (BOWL_TUNE.join: the Train of Jabal's home becoming a town instead of
-// an off-map pool) come after. Each negative is a pair (tools/ktest.js).
+// section 3; the owner, 2026-11-24). The Bowl's six places (core/region/data/bowl-tune.js) declared by core/region's
+// valley host at the abstract level, on their own make and a stocked start, for a year -- as C0 did for the Catch before
+// its rounds were put on -- and then S2's SECOND HALF: the Bowl's five trade roads, and `BOWL_TUNE.join`, which puts the
+// Bowl into the Catch-joined valley and brings the Train of Jabal home from its off-map pool to Jabal itself.
+// Each negative is a pair (tools/ktest.js).
 const fs=require('fs'),path=require('path');
 const T=require('../../../tools/ktest.js')(__filename);
 global.window=global;
@@ -37,6 +38,66 @@ const ID={jabal:'sa5o6dvjdv',mantis:'slw9dufqfs',solta:'s0zgu7u6yb',arco:'skz25t
   hungry.length?hungry.join(', ')+' short':'six places, none short');
  T.neg('a place whose wells were never dug does run short',
   x=>x.length===0,['slw9dufqfs'],hungry);}
+/* ---- S2's second half, part 1: THE BOWL'S FIVE TRADE ROADS (BOWL_TUNE.trade). Each is between two places this tune
+   declares, so they run here as well as in the join. The one the plan names is Jabal -> Mantis: MANTIS BUYS ITS SALT
+   FROM THE TRAIN, which is the grievance its Izani houses carry onto the Catch road (PLAN-SIM.md section 3, and the one
+   pair in BOWL_TUNE.rivals). */
+const RD=id=>Y.V.roads.find(r=>r.id===id),TR=BOWL_TUNE.trade.map(r=>r.id);
+{const got=TR.filter(id=>!!RD(id)),lanes=Y.V.roads.filter(r=>/^lane\./.test(r.id));
+ T.ok('S2: the Bowl\'s five trade roads are declared beside the two hinterland lanes, each measured off its own places',
+  got.length===5&&lanes.length===2&&TR.every(id=>(RD(id)||{}).minutes>0),
+  got.map(id=>id.replace('trade.','')+' '+Math.round(RD(id).minutes/1440)+' d').join(', '));
+ T.neg('a road with no passage time is not a measured road',
+  x=>x.every(r=>r.minutes>0),TR.map(id=>Object.assign({},RD(id),{minutes:0})),TR.map(id=>RD(id)));}
+/* Esper's market is the arcology, not Jabal: its own record says "72 km from Arcbeam" and the model agrees to the
+   kilometre, while Jabal is 486 km off. A village of 220 does not haul dates past a nearer buyer. */
+{const E=RD('trade.esper.arcology'),km=E?Math.round(E.minutes/1440*BOWL_TUNE.speed):0;
+ T.ok('S2: Esper sells into the arcology 90 km away, not Jabal 486 km away',!!E&&km>=70&&km<=110,
+  'Esper to the arcology '+km+' km by road ('+Math.round(E.minutes/1440)+' d); its record says 72 km straight');
+ T.neg('a road of 486 km is not the 72 km the record gives',
+  x=>x>=70&&x<=110,486,km);}
+/* THE BOWL CANNOT FEED ITSELF, and that is the point of S2 rather than a fault in it. Measured off the tune: the six
+   places and two hinterlands eat more grain than the two rings grow, and NOBODY IN THE BOWL GROWS TEA AT ALL. Jabal is
+   the sharp case -- 15,000 people, no hinterland of its own (the owner ruled rings for Mantis and the arcology, not for
+   Jabal) and no grain source anywhere in the province. Its bread comes up the Dasri road from Xanadu, which is exactly
+   why the Train of Jabal's home mattering is what S2 is about. PLAN-SIM.md section 3c. */
+{const D=1/365,diet=BOWL_TUNE.diet;
+ const eats=g=>BOWL_TUNE.places.reduce((n,P)=>n+(diet[P.kind][g]||0)*P.people*365,0)
+  +BOWL_TUNE.places.filter(P=>P.ring).reduce((n,P)=>n+(diet.village[g]||0)*P.ring.people*365,0);
+ const grows=g=>BOWL_TUNE.places.reduce((n,P)=>n+((P.make||{})[g]||0)+((P.pans||{})[g]||0)
+  +(P.ring?((P.ring.make||{})[g]||0):0),0);
+ const grain={eat:eats('grain'),grow:grows('grain')},tea={eat:eats('tea'),grow:grows('tea')};
+ const jabalGrain=(diet.city.grain||0)*15000*365;
+ T.ok('S2: the Bowl is short of its own bread and grows no tea at all, so the join has to feed it',
+  grain.grow<grain.eat&&tea.grow===0&&jabalGrain>0,
+  'grain: grows '+t(grain.grow)+' a year, eats '+t(grain.eat)+' -- short '+t(grain.eat-grain.grow)
+  +' ('+Math.round(100*(grain.eat-grain.grow)/grain.eat)+' %); tea: grows '+t(tea.grow)+', eats '+t(tea.eat)
+  +'; Jabal alone eats '+t(jabalGrain)+' with no hinterland and no Bowl source');
+ T.neg('a province that grows more bread than it eats is not short of it',
+  x=>x.grow<x.eat,{grow:grain.eat*1.2,eat:grain.eat},grain);}
+/* ...and so the standalone valley's roads run EMPTY, which is right and not a bug: every place is stocked for 400 days
+   (`T.valley`'s `days`), so inside a year nobody wants anything and no carrier loads. Run past the start and the salt
+   moves. This is the check that proves the five roads carry goods and not just a declaration. */
+{const L=run(520),landed={};
+ L.V.roads.forEach(r=>{const R=SIM.tradeReport(r.id)||{},M=R.landed||{};
+  Object.keys(M).forEach(k=>{const to=k.split('>')[1];Object.keys(M[k]).forEach(g=>{
+   (landed[g]=landed[g]||{})[to]=(landed[g][to]||0)+M[k][g];});});});
+ const salt=landed.salt||{},toMantis=salt[ID.mantis]||0,moved=Object.keys(salt).length;
+ T.ok('S2: run past the stocked start and Solta\'s salt moves -- Mantis buys its salt from the Train, which is the grievance its houses carry onto the Catch road',
+  toMantis>0&&moved>=2,
+  '520 days: salt landed at '+(moved?Object.keys(salt).map(k=>k.replace(/^s/,'')+' '+t(salt[k])).join(', '):'nowhere')
+  +'; the goods that moved at all: '+(Object.keys(landed).join(', ')||'none'));
+ T.neg('a Bowl whose salt never reaches Mantis is not the one the grievance is written for',
+  x=>(x[ID.mantis]||0)>0,Object.assign({},salt,{[ID.mantis]:0}),salt);}
+// and the grievance is in the records: the Train and Mantis's houses are the tune's one wary pair
+{const wary=Y.V.relations.filter(r=>r.stance==='wary'),pair=wary.some(r=>(r.a==='train'&&r.b==='mantishouses')||(r.a==='mantishouses'&&r.b==='train'));
+ T.ok('S2: the Train and Mantis\'s Izani houses are wary of each other, and nobody else in the Bowl is',pair&&wary.length===2,
+  wary.map(r=>r.a+'/'+r.b).join(', ')+' (a pair is two rows, one each way)');
+ T.neg('a Bowl where every faction is friendly has lost its grievance',
+  x=>x.some(r=>r.stance==='wary'),Y.V.relations.map(r=>Object.assign({},r,{stance:'friendly'})),Y.V.relations);}
+// the books balance over the roads as well as the works
+T.ok('S2: the Bowl\'s year balances with its roads running, every settlement and good',Y.ledger.ok,
+  Y.ledger.ok?'all goods':Y.ledger.problems.slice(0,3).join('; '));
 // the works: Jabal makes what a city of 15,000 makes, Solta rakes salt and gypsum, Mantis taps frankincense and resin
 {const W=id=>(Y.V.settlements.find(s=>s.id===id).works||[]).map(w=>w.out[0]).filter(Boolean);
  const jab=W(ID.jabal),sol=W(ID.solta),man=W(ID.mantis);

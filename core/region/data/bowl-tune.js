@@ -94,6 +94,32 @@ T.factions=[{id:'jabal',name:'The Jabal Sheikhdom (the Dasri\'s Bowl capital)'},
 /* the Train sells salt to all comers and holds both works, which the Izani houses -- who once had Solta's salt --
    resent (the owner, 2026-11-16: "Solta too"); everyone else friendly */
 T.rivals=[['train','mantishouses']];
+T.speed=30;      /* km a day on a Bowl track, as CATCH_TUNE's: the same beasts on the same kind of road */
+T.winding=1.25;  /* road over straight line */
+/* THE BOWL'S OWN TRADE (S2). Five roads, each between two places this tune declares, so they run in the standalone
+   valley as well as in the join. Every one is named from what the census and the works already say:
+   - the pans at Solta make 900 t of salt and 400 t of gypsum a year and grow nothing, so the salt goes to Jabal and the
+     food comes back. This is the Train of Jabal's own works and its own road.
+   - MANTIS BUYS ITS SALT FROM THE TRAIN, which is PLAN-SIM.md section 3's grievance and `T.rivals`' one pair: the
+     Dasri hold the Bowl's only salt and Mantis's Izani houses must buy it at the Train's price, which is what sends
+     them onto the Catch road looking for another seller.
+   - Esper is the Bowl's one farming village, and its market is the arcology on the north road, not Jabal: its own
+     record reads "72 km from Arcbeam" and the model agrees to the kilometre (36 px), where Jabal is 486 km off. A
+     village of 220 does not haul dates 486 km past a nearer buyer.
+   - the north road's arcology (10,000 with 6,000 in its ring) is fed by its own countryside but buys its salt here too.
+   - Parabola's divers sell alloy and cells up the north road to the arcology, which is the nearest market that wants
+     them, and eat on what comes back. */
+T.trade=[
+ {id:'trade.solta.jabal',a:'s0zgu7u6yb',b:'sa5o6dvjdv',cap:240000,carriers:3,want:30,
+  out:['salt','gypsum'],back:['grain','dates','tools','cloth']},
+ {id:'trade.jabal.mantis',a:'sa5o6dvjdv',b:'slw9dufqfs',cap:300000,carriers:4,want:25,
+  out:['salt','brick','tools','coffee'],back:['dates','figs','fish','frankincense','resin','cloth']},
+ {id:'trade.esper.arcology',a:'sq11desertw7',b:'skz25tuq0w',cap:60000,carriers:1,want:40,
+  out:['dates','hides','timber'],back:['salt','tools','tea','cloth']},
+ {id:'trade.solta.arcology',a:'s0zgu7u6yb',b:'skz25tuq0w',cap:200000,carriers:3,want:30,
+  out:['salt','gypsum'],back:['tools','brick','cloth']},
+ {id:'trade.parabola.arcology',a:'scyeauyek7',b:'skz25tuq0w',cap:80000,carriers:2,want:45,
+  out:['alloy','cells'],back:['grain','salt','tools']}];
 T.valley=function(o){o=o||{};const K=o.scale==null?25:o.scale,yr=365,days=o.days==null?400:o.days;
  const win=w=>{const W=T.calendar.windows[w];return(W[1]-W[0]+yr)%yr;};
  const rate=(perYr,crew,d)=>perYr/(Math.max(1,Math.round(crew/K))*K*(d==null?yr:d)*12);
@@ -136,9 +162,61 @@ T.valley=function(o){o=o||{};const K=o.scale==null?25:o.scale,yr=365,days=o.days
   /* the lanes: the ring sends what it grows down to the town, the town sends back what the ring does not */
   RR.push({id:'lane.'+P.id,from:P.id+'.ring',to:P.id,minutes:600,cap:400000,want:30,
    goods:{[P.id+'.ring']:Object.keys(G.make||{}),[P.id]:['salt','tea','tools','cloth'].filter(g=>T.goods[g])}});});
+ /* the Bowl's five trade roads (T.trade), their passages measured off the places' own positions */
+ const byId={};S.forEach(s=>{byId[s.id]=s;});
+ const legKm=(a,b)=>{const A=byId[a],B=byId[b];return Math.hypot(A.x-B.x,A.z-B.z)/1000*T.winding;};
+ const mins=km=>Math.max(240,Math.round(km/T.speed*1440));
+ const TR=T.trade.map(R=>({id:R.id,from:R.a,to:R.b,minutes:mins(legKm(R.a,R.b)),cap:R.cap,carriers:R.carriers,
+  want:R.want,keep:20,goods:{[R.a]:R.out.filter(g=>T.goods[g]),[R.b]:R.back.filter(g=>T.goods[g])},
+  stagger:Math.round(mins(legKm(R.a,R.b))*2/R.carriers)}));
  const F=T.factions.map(f=>f.id),wary=(a,b)=>T.rivals.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a));
  return{seed:20261124,scale:K,start:0,calendar:T.calendar,goods:T.goods,factions:T.factions,
   relations:[].concat(...F.map(a=>F.filter(b=>b!==a).map(b=>({a,b,stance:wary(a,b)?'wary':'friendly'})))),
-  settlements:S.concat(RINGS),roads:RR,transfers:[]};};
+  settlements:S.concat(RINGS),roads:RR.concat(TR),transfers:[]};};
+
+/* ================================================================= THE JOIN (S2, PLAN-SIM.md section 6)
+   `CV` is the Catch-joined valley -- `CATCH_TUNE.join(XAN_TUNE.valley())` -- so this is the third plan into the frame,
+   and it joins the way EAST_RIFT joins the others: merge goods, factions, relations and calendar windows, concatenate
+   settlements and roads.
+   AND THE TRAIN OF JABAL COMES HOME. `CATCH_TUNE` carries the Dasri as an off-map pool, `gate.dasri`, standing at
+   px 1225,1149 -- which is JABAL'S OWN CELL, because the pool was only ever a stand-in for a city that was not on the
+   map. With the Bowl joined it is, so the stand-in goes and both of the Train's rounds load at Jabal instead: its
+   warehouse (the pool's `start`) comes with it, since that stock is the Dasri caravan masters' and they keep it at
+   Jabal. The home legs are re-measured from Jabal's real position rather than the pool's declared 0 km. */
+T.join=function(CV,o){o=o||{};
+ const B=T.valley({scale:CV.scale==null?25:Math.min(25,CV.scale),days:o.days});
+ const JABAL='sa5o6dvjdv',POOL='gate.dasri';
+ const V=Object.assign({},CV);
+ V.goods=Object.assign({},CV.goods,T.goods);
+ V.factions=CV.factions.concat(B.factions.filter(f=>!CV.factions.some(g=>g.id===f.id)));
+ const rel=CV.relations.slice(),has=(a,b)=>rel.some(r=>r.a===a&&r.b===b);
+ B.relations.forEach(r=>{if(!has(r.a,r.b))rel.push(r);});
+ V.factions.forEach(f=>V.factions.forEach(g=>{if(f.id!==g.id&&!has(f.id,g.id))rel.push({a:f.id,b:g.id,stance:'friendly'});}));
+ V.relations=rel;
+ V.calendar=Object.assign({},CV.calendar,{windows:Object.assign({},CV.calendar.windows,T.calendar.windows)});
+ /* the pool goes; Jabal takes its warehouse */
+ const pool=CV.settlements.find(s=>s.id===POOL);
+ const setts=CV.settlements.filter(s=>s.id!==POOL).concat(B.settlements);
+ const J=setts.find(s=>s.id===JABAL);
+ if(!J)throw new Error('BOWL_TUNE.join: no Jabal ('+JABAL+') in the Bowl\'s settlements');
+ J.start=Object.assign({},pool?pool.start:{},J.start);   /* Jabal's own stock wins where both name a good */
+ if(pool&&pool.start)Object.keys(pool.start).forEach(g=>{J.start[g]=Math.max(J.start[g]||0,pool.start[g]);});
+ V.settlements=setts;
+ /* the Train's two rounds re-homed on Jabal, their home legs re-measured */
+ const by={};setts.forEach(s=>{by[s.id]=s;});
+ const legKm=(a,b)=>{const A=by[a],Bq=by[b];return Math.hypot(A.x-Bq.x,A.z-Bq.z)/1000*T.winding;};
+ const mins=km=>Math.max(240,Math.round(km/T.speed*1440));
+ const rehomed=[];
+ V.roads=CV.roads.map(R=>{
+  if(!R.stops||R.stops.indexOf(POOL)<0)return R;
+  const stops=R.stops.map(s=>s===POOL?JABAL:s),n=stops.length;
+  const legs=(R.legs||[]).map((m,i)=>{const a=stops[i],b=stops[(i+1)%n];
+   return(R.stops[i]===POOL||R.stops[(i+1)%n]===POOL)?mins(legKm(a,b)):m;});
+  rehomed.push(R.id);
+  return Object.assign({},R,{stops,legs:legs.length?legs:undefined});
+ }).concat(B.roads);
+ V._bowl={rehomed,pooled:!!pool,jabal:JABAL,places:T.places.length,rings:T.places.filter(P=>P.ring).length,
+  trade:T.trade.map(R=>R.id)};
+ return V;};
 return T;})();
 if(typeof module!=='undefined')module.exports=BOWL_TUNE;

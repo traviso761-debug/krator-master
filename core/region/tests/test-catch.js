@@ -161,18 +161,21 @@ const stormCheck=x=>{let crossed=0,waited=0;GROUPS.concat(['caravan.train.salt']
  T.ok('C5: Arfwai\'s well runs low in late summer: its recharge cut to '+Math.round(CATCH_TUNE.hazards.dryRegen*100)+' % while the dry window is open',!!Sd&&Sd.regen===CATCH_TUNE.hazards.dryRegen&&site.regen!=null&&Math.abs(site.regen-(open?st*Sd.regen:st))<1e-6,
   'the window '+JSON.stringify(CATCH_TUNE.hazards.windows.dry)+', its recharge now '+(site?site.regen:'?')+' l a day ('+(open?'open':'closed')+')');}
 // ---- S1 (openworld/catch-bowl/PLAN-SIM.md section 2): the Godsgate's caravanserai on the north road. Bab al-Hawa is
-//      the pass's only safe night: it has snowmelt and NO fodder work, so what it sells is shelter and what it buys is
-//      every kilogram of fodder and grain the trains carry up 2,400 m.
+//      the pass's only safe night: snowmelt at the divide, and BARNS - hay carried up 2,400 m and stacked through the
+//      summer, since nothing is cut at 3,590 m. It was first written with no fodder at all, on the reasoning that the
+//      trains would haul its fodder as freight; that made it a sink the beasts could never be fed from, because
+//      SIM.trade provisions at EVERY stop, and it cost a trade route (PLAN-SIM.md 2x and 2y). The checks below are
+//      written round that: a stop on a caravan road needs a water number AND a fodder number.
 const BAH='godsgate.babalhawa';
 // 1: it is declared, on the four Godsgate groups' rounds, and the Train's is untouched (it comes out of Jabal, not over the pass)
 {const P=CATCH_TUNE.places.find(p=>p.id===BAH),onIt=GROUPS.filter(id=>(road(id).stops||[]).indexOf(BAH)>=0);
  const train=(road('caravan.train')||{}).stops||[],salt=(road('caravan.train.salt')||{}).stops||[];
- T.ok('S1: Bab al-Hawa is declared at the Godsgate with snowmelt and no fodder work, on the four groups that cross the pass and on neither of the Train\'s rounds',
-  !!P&&P.kind==='serai'&&!!P.well&&!P.fodder&&onIt.length===4&&train.indexOf(BAH)<0&&salt.indexOf(BAH)<0,
-  (P?P.people+' people, well '+P.well[0]+' l a day, fodder '+(P.fodder||'none'):'missing')+'; on '+onIt.map(x=>x.slice(8)).join(', '));
- T.neg('a place with a reed bed is not the pass\'s caravanserai',
-  x=>{const q=x.find(p=>p.id===BAH);return !!q&&!q.fodder;},
-  CATCH_TUNE.places.map(p=>p.id===BAH?Object.assign({},p,{fodder:2000}):p),CATCH_TUNE.places);}
+ T.ok('S1: Bab al-Hawa is declared at the Godsgate with its snowmelt and its barns, on the four groups that cross the pass and on neither of the Train\'s rounds',
+  !!P&&P.kind==='serai'&&!!P.well&&P.fodder>0&&onIt.length===4&&train.indexOf(BAH)<0&&salt.indexOf(BAH)<0,
+  (P?P.people+' people, well '+P.well[0]+' l a day, barns '+(P.fodder||'NONE')+' kg a day':'missing')+'; on '+onIt.map(x=>x.slice(8)).join(', '));
+ T.neg('a stop on a caravan road with a well and no fodder is caught: the beasts draw there every passage, so it is a sink that can never be filled',
+  x=>{const q=x.find(p=>p.id===BAH);return !!q&&!!q.well&&q.fodder>0;},
+  CATCH_TUNE.places.map(p=>{if(p.id!==BAH)return p;const d=Object.assign({},p);delete d.fodder;return d;}),CATCH_TUNE.places);}
 // 2: the long home leg is cut at the pass, and the recorded totals of section 1c survive the cut
 {const Rd=road('caravan.getmastarz'),i=Rd.stops.indexOf(BAH),k=Rd.stops.indexOf('scatchkolli01');
  const home=Rd.legs[Rd.stops.indexOf('gate.iziz')],pass=Rd.legs[i],dayKm=CATCH_TUNE.speed;
@@ -183,12 +186,25 @@ const BAH='godsgate.babalhawa';
  T.neg('a round whose first northern stop is Kolli has no pass leg',
   x=>x.stops.indexOf(BAH)>=0&&x.stops.indexOf(BAH)+1===x.stops.indexOf('scatchkolli01'),
   Object.assign({},Rd,{stops:Rd.stops.filter(s=>s!==BAH)}),Rd);}
-// 3: fodder rides for the halts, which is the only way the pass can feed anyone's beasts
-{const withF=GROUPS.filter(id=>(road(id).forHalts||[]).indexOf('fodder')>=0);
- T.ok('S1: fodder rides for the halts on every group\'s round, so the pass that grows none can still feed a train\'s beasts',withF.length===GROUPS.length,
-  withF.length+' of '+GROUPS.length+' rounds carry fodder for their halts: '+(road(GROUPS[0]).forHalts||[]).join(', '));
- T.neg('a round that carries no fodder for its halts cannot provision at the pass',
-  x=>(x.forHalts||[]).indexOf('fodder')>=0,Object.assign({},road(GROUPS[0]),{forHalts:['grain','tea','tools']}),road(GROUPS[0]));}
+/* 3: EVERY halt waters and feeds. SIM.trade draws the beasts' water and fodder at every stop, not only at the ones
+      named in `halts` ("the beasts water and feed whether or not the stop trades", 77-sim-6-trade.js), so a stop with a
+      well and no fodder taxes every train that passes and reports the shortfall against itself. This is the general
+      form of the bug Bab al-Hawa was: core/simulation/SCHEMA.md carries the rule. `fodder` left `forHalts` with the
+      barns, so the trains no longer haul it as freight -- which is capacity the trade goods get back. */
+{const byId={};CATCH_TUNE.places.forEach(p=>{byId[p.id]=p;});
+ const bad=[];let seen=0;
+ GROUPS.concat(['caravan.train.salt']).forEach(id=>{const Rd=road(id);(Rd.halts||[]).forEach(i=>{const q=byId[Rd.stops[i]];
+  if(!q)return;   /* a halt in Xanadu's own settlements, not this tune's to declare */
+  seen++;if(!q.well||!(q.fodder>0))bad.push(id.slice(8)+' at '+Rd.stops[i]);});});
+ T.ok('S1: every halt this tune declares waters AND feeds its beasts, so no round provisions at a sink',seen>0&&bad.length===0,
+  seen+' halt passages checked over '+(GROUPS.length+1)+' rounds; '+(bad.length?'SINKS: '+bad.slice(0,4).join(', '):'none without both a well and fodder'));
+ T.neg('a halt with a well and no fodder is caught wherever it is on the round',
+  x=>{const bd=[];(x.halts||[]).forEach(i=>{const q=x._by[x.stops[i]];if(q&&(!q.well||!(q.fodder>0)))bd.push(i);});return bd.length===0;},
+  Object.assign({},road(GROUPS[0]),{_by:Object.assign({},byId,{[BAH]:Object.assign({},byId[BAH],{fodder:0})})}),
+  Object.assign({},road(GROUPS[0]),{_by:byId}));
+ T.ok('S1: fodder no longer rides as freight for the halts, now that the pass has barns of its own',
+  GROUPS.every(id=>(road(id).forHalts||[]).indexOf('fodder')<0),
+  'forHalts: '+(road(GROUPS[0]).forHalts||[]).join(', '));}
 // 4: the pass sells to the trains that stop (it is a peopled halt), and it buys its whole table off them
 {const Rd=road('caravan.getmastarz'),i=Rd.stops.indexOf(BAH),sells=(Rd.sells||[]).indexOf(i)>=0,halts=(Rd.halts||[]).indexOf(i)>=0;
  const B=JB[BAH],bought=B?Object.keys(B.imported||{}).filter(g=>(B.imported[g]||0)>0):[];
@@ -202,9 +218,13 @@ const BAH='godsgate.babalhawa';
  /* the God-Bore is nightly, so a year must show it. The whiteouts are a WINDOWED roll on the pass's legs only, and a
     train crosses the pass about twice a year: a year holds under one expected whiteout loss, so demanding one would be
     demanding a die come up. Assert instead that the rule is declared on the right legs with the right window. */
- const decl=GROUPS.every(id=>{const Rd=road(id),gg=Rd._legs.godsgate||[];
+ /* ...and on the PASS groups only. The Train of Jabal comes out of Jabal and never crosses the Godsgate, so it has no
+    `godsgate` legs and must carry no whiteout rule: requiring one of every group was this check's own bug. */
+ const pass=GROUPS.filter(id=>((road(id)._legs||{}).godsgate||[]).length>0);
+ const decl=pass.length===4&&pass.every(id=>{const Rd=road(id),gg=Rd._legs.godsgate;
   const w=(Rd.losses||[]).find(x=>/whiteout/.test(x.why));
-  return gg.length>0&&!!w&&w.window==='whiteout'&&w.legs.length===gg.length;});
+  return !!w&&w.window==='whiteout'&&w.legs.length===gg.length;})
+  &&GROUPS.filter(id=>pass.indexOf(id)<0).every(id=>!(road(id).losses||[]).some(x=>/whiteout/.test(x.why)));
  T.ok('S1: the God-Bore takes beasts in the Godsgate all year, and the rime whiteouts are declared on the pass\'s legs in its winter window',bore>0&&decl,
   bore+' God-Bore losses and '+white+' whiteout losses this year (the window '+JSON.stringify(W)+'; a train crosses the pass about twice a year, so a whiteout loss is under one a year in expectation)');
  const Q=runJoined(365,{hazards:false});
