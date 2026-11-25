@@ -31,7 +31,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `42-biome-arch-meeting.js` | 4 |  |
 | `45-host-stage.js` | 33 **big** | the land (33); the climate fields (the field contract's units:  (297); the host binding (324) |
 | `48-host-therm.js` | 3 |  |
-| `50-biome-arch-species.js` | 16 | palettes (sRGB hex) (16); the species (25); textures and materials (procedural cards; the pa (81); the items (97) |
+| `50-biome-arch-species.js` | 42 **big** | palettes (sRGB hex) (17); the species (28); High-detail procedural bark & unclipped botanica (84); the items (430); Structural multi-limbed tree builders (BIO.tree  (472) |
 | `60-biome-arch-place.js` | 18 |  |
 | `70-biome-arch.js` | <1 |  |
 | `84-host-ground.js` | 18 |  |

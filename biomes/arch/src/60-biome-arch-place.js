@@ -33,12 +33,15 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  // MAQUIS SHE-OAK: the commonest shrub, everywhere Earth can grow, thinning on the steeps
  cellPass(9,2,Lv.mid,(x,y,z,lv)=>{if(!earth(x,z))return;const a=.5*(1-smooth(.45,.75,rock(x,z)))*q;if(rng()>a)return;const n=lv===2?ri(2,4):1;
   for(let k=0;k<n;k++){const ang=rr(0,TAU),d=k?rr(.8,2.2):0,px=x+Math.cos(ang)*d,pz=z+Math.sin(ang)*d;if(BIO.mask(px,pz)<=0||!earth(px,pz))continue;
-   const s=rr(1.4,4.2)*ARCH.stunt(Object.assign({n:.15,p:.12},soil(px,pz)))*2.2;BIO.put('argymno',[px,Y(px,pz)-.1,pz],qEuler(0,rr(0,TAU),0),[s*.8,s,s*.8],pickC(PAL.casuar,.03));log('argymno',px,pz);st.gymnostoma++;}});
+   const s=rr(1.4,4.2)*ARCH.stunt(Object.assign({n:.15,p:.12},soil(px,pz)))*2.2;
+   ARCHB.growGymnostoma(px,Y(px,pz),pz,s,KRAND.hash(seed+201,Math.round(px*10),Math.round(pz*10)+k),lv);log('argymno',px,pz);st.gymnostoma++;}});
  // SEVE BLEUE: the wetter hollows of the laterite (the hoarder: its leaf nickel from ARCH.uptake, recorded)
  ARCHB.HOARD=[];
  cellPass(14,3,Lv.mid,(x,y,z,lv)=>{if(!earth(x,z)||(cv&&cv.treeKeep(x,z)<=0))return;const a=.45*smooth(.45,.75,wet(x,z))*(1-rock(x,z))*q;if(rng()>a)return;
-  const s=rr(2.5,6),up=ARCH.uptake('pycnandra',soil(x,z));BIO.put('arpycntrunk',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[s*.6,s*.45,s*.6],pickC(PAL.trunk,.02));
-  BIO.put('arpycn',[x,y+s*.35,z],qEuler(0,rr(0,TAU),0),[s*.55,s*.65,s*.55],pickC(PAL.glossy,.03));ARCHB.HOARD.push({x,z,leaf:up.leaf,latex:up.latex});log('arpycn',x,z);st.pycnandra++;});
+  const s=rr(2.5,6),up=ARCH.uptake('pycnandra',soil(x,z)),yaw=rr(0,TAU),cy=rr(0,TAU),tc=pickC(PAL.trunk,.02),lc=pickC(PAL.glossy,.03);
+  BIO.tree(x,z,()=>{BIO.put('arpycntrunk',[x,y-.12,z],qEuler(0,yaw,0),[1.05+s*.14,s*.48,1.05+s*.14],tc);
+   BIO.put('arpycn',[x,y+s*.36,z],qEuler(0,cy,0),[s*.56,s*.58,s*.56],lc,{n:[0,1,0]});});
+  ARCHB.HOARD.push({x,z,leaf:up.leaf,latex:up.latex});log('arpycn',x,z);st.pycnandra++;});
  // MAQUIS SEDGE: tussocks between, on the bare laterite
  cellPass(4,4,Lv.floor[1],(x,y,z,lv)=>{if(!earth(x,z))return;const a=.35*(1-smooth(.4,.7,rock(x,z)))*q;if(rng()>a)return;const s=rr(.35,.75);
   BIO.put('arsedge',[x,y-.05,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[s,s*rr(.9,1.3),s],pickC(PAL.sedge,.03));log('arsedge',x,z);st.sedge++;});
@@ -63,45 +66,43 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
   BIO.put('arverd',[x,y+hs*.95,z],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),[s,s,s],pickC(PAL.verd,.03));
   ARCHB.HOARD.push({x,z,leaf:ARCH.uptake('verdigris',sl).leaf,native:true});log('arverd',x,z);st.verdigris++;});
  // THE LAVA'S PIONEERS: ohia and uluhe on a flow older than their lag (ARCH.earthOk), denser with its age
- cellPass(16,10,Lv.mid,(x,y,z,lv)=>{if(!pioneer(x,z))return;const a=.55*smooth(30,160,lava(x,z))*q;if(rng()>a)return;const H=rr(2,7),yaw=rr(0,TAU);
-  BIO.put('arohiatrunk',[x,y-.1,z],qEuler(rr(-.12,.12),yaw,rr(-.12,.12)),[H*.9,H*.75,H*.9],pickC(PAL.trunk,.03));
-  BIO.put('arohia',[x,y+H*.6,z],qEuler(0,rr(0,TAU),0),[H*.4,H*.35,H*.4],pickC(rng()<.25?PAL.ohiaFlower:PAL.ohia,.03));log('arohia',x,z);st.ohia++;});
- cellPass(5,11,Lv.floor[1],(x,y,z,lv)=>{if(!pioneer(x,z))return;const a=.6*smooth(20,120,lava(x,z))*q;if(rng()>a)return;const s=rr(.6,1.4);
-  BIO.put('aruluhe',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[s*1.3,s*.7,s*1.3],pickC(PAL.uluhe,.03));log('aruluhe',x,z);st.uluhe++;});
+ cellPass(16,10,Lv.mid,(x,y,z,lv)=>{if(!pioneer(x,z))return;const a=.55*smooth(30,160,lava(x,z))*q;if(rng()>a)return;const H=rr(3.2,8.4),flw=rng()<.45;
+  ARCHB.growOhia(x,y,z,H,KRAND.hash(seed+110,Math.round(x*10),Math.round(z*10)),flw);log('arohia',x,z);st.ohia++;});
+ cellPass(5,11,Lv.floor[1],(x,y,z,lv)=>{if(!pioneer(x,z))return;const a=.6*smooth(20,120,lava(x,z))*q;if(rng()>a)return;
+  const n=lv>0?ri(1,3):1;for(let k=0;k<n;k++){const ox=x+(k?rr(-1.3,1.3):0),oz=z+(k?rr(-1.3,1.3):0);if(k&&(!pioneer(ox,oz)||BIO.mask(ox,oz)<=0))continue;
+   const s=rr(.95,1.85);BIO.put('aruluhe',[ox,Y(ox,oz)-.04,oz],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[s,s*.95,s],pickC(PAL.uluhe,.03));log('aruluhe',ox,oz);st.uluhe++;}});
  // THE STRAND (the coast station: o.strand(x, z) 0..1, the dunes and the back of the beach): she-oak, naupaka, the creeping glory, drift palms
  if(strand){const ok=(x,z)=>strand(x,z)>.05&&ARCH.earthOk(chem(x,z));
-  cellPass(22,13,Lv.far,(x,y,z,lv)=>{if(!ok(x,z))return;const a=.55*smooth(.2,.7,strand(x,z))*q;if(rng()>a)return;const H=rr(6,16),yaw=rr(0,TAU);
-   BIO.put('arcastrunk',[x,y-.2,z],qEuler(rr(-.05,.05),yaw,rr(-.05,.05)),[(.12+H*.01)/.05,H,(.12+H*.01)/.05],pickC(PAL.trunk,.03));
-   for(let k=0;k<3;k++)BIO.put('arcas',[x+rr(-1,1),y+H*(.55+.15*k),z+rr(-1,1)],qEuler(0,rr(0,TAU),0),[H*.28,H*.3,H*.28],pickC(PAL.casuar2,.03));log('arcastrunk',x,z);st.casuarina++;});
+  cellPass(22,13,Lv.far,(x,y,z,lv)=>{if(!ok(x,z))return;const a=.55*smooth(.2,.7,strand(x,z))*q;if(rng()>a)return;const H=rr(6.8,16.2);
+   ARCHB.growCasuarina(x,y,z,H,KRAND.hash(seed+113,Math.round(x*10),Math.round(z*10)));log('arcastrunk',x,z);st.casuarina++;});
   cellPass(26,14,Lv.far,(x,y,z,lv)=>{if(!ok(x,z))return;const w=BIO.field('wet',x,z),a=.35*smooth(.4,.9,strand(x,z))*q;if(rng()>a)return;const H=rr(8,17),yaw=rr(0,TAU),lean=rr(.15,.4);
    BIO.put('arpalmtrunk',[x,y-.2,z],qEuler(0,yaw,lean),[(.32)/.05,H,(.32)/.05],pickC(PAL.palmtrunk,.02));
    /* the crown on the leaning tip: (0, H, 0) turned by the trunk's own rotation */
    const tx=x-Math.cos(yaw)*Math.sin(lean)*H,ty=y+H*Math.cos(lean)*.97,tz=z+Math.sin(yaw)*Math.sin(lean)*H;
    for(let k=0;k<8;k++)BIO.put('arpalm',[tx,ty,tz],qEuler(0,k/8*TAU+rr(-.2,.2),0),[3.2,1,3.2],pickC(PAL.palm,.03));void w;log('arpalmtrunk',x,z);st.coconut++;});
   cellPass(6,15,Lv.mid,(x,y,z,lv)=>{if(!ok(x,z))return;const a=.5*smooth(.1,.5,strand(x,z))*q;if(rng()>a)return;const s=rr(.8,2);
-   BIO.put('arnaupaka',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[s*1.2,s,s*1.2],pickC(PAL.naupaka,.03));log('arnaupaka',x,z);st.naupaka++;});
+   BIO.put('arnaupaka',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[s*1.2,s,s*1.2],pickC(PAL.naupaka,.03),{n:[0,1,0]});log('arnaupaka',x,z);st.naupaka++;});
   cellPass(3,16,Lv.floor[1],(x,y,z,lv)=>{const sa=o.sand?o.sand(x,z):0;if(sa<.3||!ARCH.earthOk(chem(x,z)))return;const a=.45*q;if(rng()>a)return;const n=lv===2?ri(2,5):1;
    for(let k=0;k<n;k++){const px=x+rr(-1.2,1.2),pz=z+rr(-1.2,1.2);if(BIO.mask(px,pz)<=0)continue;const s=rr(.2,.5);BIO.put('aripomoea',[px,Y(px,pz)+.01,pz],qEuler(0,rr(0,TAU),0),[s,s,s],pickC(PAL.ipomoea,.03));log('aripomoea',px,pz);st.ipomoea++;}});}
  // THE MANGROVES: the sound's tidal mud (from just under the water to a metre over it), dense
- cellPass(7,12,Lv.mid,(x,y,z,lv)=>{if(!mud(x,z)||ARCH.lifeAt(chem(x,z))==='none')return;const a=.75*q;if(rng()>a)return;const H=rr(3,7),yaw=rr(0,TAU),r0=Math.max(y,BIO.host.waterH(x,z));
-  if(lv>0)for(let k=0;k<6;k++){const az=yaw+k/6*TAU;BIO.put('armangroveprop',[x,r0+H*.32,z],qEuler(0,az,Math.PI-rr(.5,.8)),[1.2,H*.38,1.2],pickC(PAL.prop,.02));}
-  BIO.put('armangrove',[x,r0+H*.45,z],qEuler(0,rr(0,TAU),0),[H*.55,H*.5,H*.55],pickC(PAL.mangrove,.02));log('armangrove',x,z);st.mangrove++;});
+ cellPass(7,12,Lv.mid,(x,y,z,lv)=>{if(!mud(x,z)||ARCH.lifeAt(chem(x,z))==='none')return;const a=.75*q;if(rng()>a)return;const H=rr(3,7),yaw=rr(0,TAU),r0=Math.max(y,BIO.host.waterH(x,z)),nP=lv>0?6:3;
+  BIO.tree(x,z,()=>{for(let k=0;k<nP;k++){const az=yaw+k/nP*TAU;BIO.put('armangroveprop',[x,r0+H*.32,z],qEuler(0,az,Math.PI-rr(.5,.8)),[1.2,H*.38,1.2],pickC(PAL.prop,.02));}
+   BIO.put('armangrove',[x,r0+H*.45,z],qEuler(0,rr(0,TAU),0),[H*.55,H*.5,H*.55],pickC(PAL.mangrove,.02),{n:[0,1,0]});});log('armangrove',x,z);st.mangrove++;});
  /* COVE WESTERN BASALT HEADLAND: lush Am coastal trees, pandanus/palm crowns, coastal shrubs and fern thickets above +7.5 m */
  if(cv){const westOk=(x,z)=>cv.westBasalt(x,z)>0&&Y(x,z)>7.6&&cv.treeKeep(x,z)>0&&ARCH.earthOk(chem(x,z));
-  cellPass(32,21,Lv.far,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.38*(1-smooth(.45,.75,rock(x,z)))*q;if(rng()>a)return;const H=rr(6,13),yaw=rr(0,TAU);
-   BIO.put('arcastrunk',[x,y-.2,z],qEuler(rr(-.05,.05),yaw,rr(-.05,.05)),[(.13+H*.011)/.05,H,(.13+H*.011)/.05],pickC(PAL.trunk,.03));
-   for(let k=0;k<3;k++){const ca=yaw+k*2.1,cr=(k?rr(.35,.95):0);BIO.put('arcas',[x+Math.cos(ca)*cr,y+H*(.5+.15*k),z+Math.sin(ca)*cr],qEuler(0,rr(0,TAU),0),[H*.36,H*.34,H*.36],pickC(PAL.casuar2,.03));}log('arcastrunk',x,z);st.casuarina++;});
-  cellPass(16,22,Lv.mid,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.64*(1-smooth(.5,.82,rock(x,z)))*q;if(rng()>a)return;const H=rr(3.8,8.8),yaw=rr(0,TAU),flw=rng()<.25;
-   BIO.put('arohiatrunk',[x,y-.1,z],qEuler(rr(-.1,.1),yaw,rr(-.1,.1)),[H*.9,H*.75,H*.9],pickC(PAL.trunk,.03));
-   for(let k=0;k<2;k++){const ca=yaw+k*2.4,cr=k?H*.14:0;BIO.put('arohia',[x+Math.cos(ca)*cr,y+H*(.56+.1*k),z+Math.sin(ca)*cr],qEuler(0,rr(0,TAU),0),[H*.56,H*.45,H*.56],pickC(flw&&k===1?PAL.ohiaFlower:PAL.ohia,.03));}log('arohia',x,z);st.ohia++;});
+  cellPass(28,21,Lv.far,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.44*(1-smooth(.45,.75,rock(x,z)))*q;if(rng()>a)return;const H=rr(7.2,14.5);
+   ARCHB.growCasuarina(x,y,z,H,KRAND.hash(seed+211,Math.round(x*10),Math.round(z*10)));log('arcastrunk',x,z);st.casuarina++;});
+  cellPass(15,22,Lv.mid,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.66*(1-smooth(.5,.82,rock(x,z)))*q;if(rng()>a)return;const H=rr(4.4,9.6),flw=rng()<.48;
+   ARCHB.growOhia(x,y,z,H,KRAND.hash(seed+222,Math.round(x*10),Math.round(z*10)),flw);log('arohia',x,z);st.ohia++;});
   cellPass(25,23,Lv.far,(x,y,z,lv)=>{if(!westOk(x,z)||y>85)return;const a=.44*smooth(85,16,y)*(1-smooth(.45,.75,rock(x,z)))*q;if(rng()>a)return;const H=rr(6,13),yaw=rr(0,TAU),lean=rr(.12,.34);
    BIO.put('arpalmtrunk',[x,y-.2,z],qEuler(0,yaw,lean),[(.3)/.05,H,(.3)/.05],pickC(PAL.palmtrunk,.02));
    const tx=x-Math.cos(yaw)*Math.sin(lean)*H,ty=y+H*Math.cos(lean)*.97,tz=z+Math.sin(yaw)*Math.sin(lean)*H;
    for(let k=0;k<8;k++)BIO.put('arpalm',[tx,ty,tz],qEuler(0,k/8*TAU+rr(-.2,.2),0),[2.9,1.05,2.9],pickC(PAL.palm,.03));log('arpalmtrunk',x,z);st.coconut++;});
   cellPass(8.5,24,Lv.mid,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.56*(1-smooth(.52,.82,rock(x,z)))*q;if(rng()>a)return;const s=rr(1.0,2.3);
-   BIO.put('arnaupaka',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[s*1.25,s,s*1.25],pickC(PAL.naupaka,.03));log('arnaupaka',x,z);st.naupaka++;});
-  cellPass(5.8,25,Lv.floor[1],(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.64*(1-smooth(.5,.8,rock(x,z)))*q;if(rng()>a)return;const s=rr(.8,1.65);
-   BIO.put('aruluhe',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[s*1.35,s*.75,s*1.35],pickC(PAL.uluhe,.03));log('aruluhe',x,z);st.uluhe++;});}
+   BIO.put('arnaupaka',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[s*1.25,s,s*1.25],pickC(PAL.naupaka,.03),{n:[0,1,0]});log('arnaupaka',x,z);st.naupaka++;});
+  cellPass(5.2,25,Lv.mid,(x,y,z,lv)=>{if(!westOk(x,z))return;const a=.66*(1-smooth(.5,.8,rock(x,z)))*q;if(rng()>a)return;
+   const n=lv>0?ri(1,3):1;for(let k=0;k<n;k++){const ox=x+(k?rr(-1.4,1.4):0),oz=z+(k?rr(-1.4,1.4):0);if(k&&(!westOk(ox,oz)||BIO.mask(ox,oz)<=0))continue;
+    const s=rr(1.05,2.05);BIO.put('aruluhe',[ox,Y(ox,oz)-.04,oz],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[s,s*.95,s],pickC(PAL.uluhe,.03));log('aruluhe',ox,oz);st.uluhe++;}});}
  return st;};
 /* COVE 14 m MACROTIDAL ZONATION ([-7 m, +7 m]): kelp & Sea-Byssus fringe (-6.6..-0.5 m), coralline-oyster visor (-0.5..+2.6 m), barnacle band (+2.6..+6.8 m) */
 ARCHB.intertidal=function(cove,R,q){q=q==null?1:q;R=R==null?2450:R;

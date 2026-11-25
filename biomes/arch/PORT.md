@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 27 (16%) | 18 (11%) | 1 (1%) | 48 (29%) | 73 (43%) |
+| KB | 27 (14%) | 18 (9%) | 1 (1%) | 48 (25%) | 98 (51%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -18,8 +18,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/42-biome-arch-meeting.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-host-stage.js` | 32.9 | [web] | 7 | 0 | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/48-host-therm.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/50-biome-arch-species.js` | 16.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: the species records are data; the items and materials draw (BIO.def, BIO.alphaTex, the curtain's BufferGeometry) |
-| `src/60-biome-arch-place.js` | 18.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | placement on KRAND cells and on ARCH (40) for every plant; its colours are THREE.Color (ARCHB.C): data once colours are hex |
+| `src/50-biome-arch-species.js` | 42.1 | [draw] | 0 | 4 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | split: the species records are data; the items and materials draw (BIO.def, BIO.alphaTex, the curtain's BufferGeometry) |
+| `src/60-biome-arch-place.js` | 17.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | placement on KRAND cells and on ARCH (40) for every plant; its colours are THREE.Color (ARCHB.C): data once colours are hex |
 | `src/70-biome-arch.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/84-host-ground.js` | 18.4 | [G shader] | 5 | 2 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 |  |
 | `src/85-host-far.js` | 4.8 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 |  |

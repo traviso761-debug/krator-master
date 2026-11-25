@@ -4,7 +4,7 @@
   "build.py": {
    "inputs": {
     "biomes/arch/KNOWN_ISSUES.md": "976d73a714c369abb9da863d07c087355b47def55017660cd0109d308adfad38",
-    "biomes/arch/PORT.md": "519df2b3f7d53369c58ae408beecb4b115c0ebb26941bf4cfd67cad3d640fd25",
+    "biomes/arch/PORT.md": "7e3e2e6eff86478f078f77eaf81fbceec702078d5e1c5298dd68774463c67572",
     "biomes/arch/build.py": "ce4f8e2854b40ec6dde4f633ab58a418266efaea13f85862d43a8906e3613411",
     "biomes/arch/materials.json": "3f13198b8a0ecb67b2075780a1f936fc17286c1311b134cfeb63b16c2c7efe4d",
     "biomes/arch/src/00-head.html": "2686947d8a943ca3dfaf1abff5865b0d5d25faf0c50a1e66826d089615a8d25b",
@@ -13,8 +13,8 @@
     "biomes/arch/src/42-biome-arch-meeting.js": "c581e171259af965389d5419f85434e92f592b5344b4186b00b551f44a4718db",
     "biomes/arch/src/45-host-stage.js": "4b5278b5bbe682fdcd2bed4cf0252436407bad9a59c9e24f1dfcace612e23b16",
     "biomes/arch/src/48-host-therm.js": "aec913383f2b651a845046f52669d75e34fad96aa6d081b6e10c7c11d38599cd",
-    "biomes/arch/src/50-biome-arch-species.js": "b57a7b4231774847c284ac5d66a93f2a34c3a8a0782b9f8568f991d491ac6425",
-    "biomes/arch/src/60-biome-arch-place.js": "673b98944da0b1dfa219850f17bca18d73f80f8745463b5c3a0784d87cd3b827",
+    "biomes/arch/src/50-biome-arch-species.js": "8d177f1f8cb1d85074d017a5a448b7e37bb14d482ff6b9133935170f9813082b",
+    "biomes/arch/src/60-biome-arch-place.js": "b5c06feb294f5c9061e785ba3e9f4b3ab69d93d4bdd04f915a8731b472f305dd",
     "biomes/arch/src/70-biome-arch.js": "f44017fef2a14277801afa8dda32975d643c60c7abb24a015971676163085258",
     "biomes/arch/src/84-host-ground.js": "c3baa65f5e31213668aa82626b77b077df39fa4b56b4dd37fd786b874f1a8f8e",
     "biomes/arch/src/85-host-far.js": "a085c670bffa7b11dcddb87d1607867c12cc23ccc729d10882e3383e06e7ee2c",
@@ -130,16 +130,16 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch.html": "a3a5b21f5885698997d5171a6df651730201397cd7358979f1406708997ce08b"
+    "biomes/arch/dist/arch.html": "a3fc2719d290809ceb4bbe760c4332dbc8b600f97cedba1bbe083ee8a97b93d1"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch.html": "a3a5b21f5885698997d5171a6df651730201397cd7358979f1406708997ce08b"
+    "biomes/arch/dist/arch.html": "a3fc2719d290809ceb4bbe760c4332dbc8b600f97cedba1bbe083ee8a97b93d1"
    }
   },
   "build.py --station barrens": {
    "inputs": {
     "biomes/arch/KNOWN_ISSUES.md": "976d73a714c369abb9da863d07c087355b47def55017660cd0109d308adfad38",
-    "biomes/arch/PORT.md": "519df2b3f7d53369c58ae408beecb4b115c0ebb26941bf4cfd67cad3d640fd25",
+    "biomes/arch/PORT.md": "7e3e2e6eff86478f078f77eaf81fbceec702078d5e1c5298dd68774463c67572",
     "biomes/arch/build.py": "ce4f8e2854b40ec6dde4f633ab58a418266efaea13f85862d43a8906e3613411",
     "biomes/arch/materials.json": "3f13198b8a0ecb67b2075780a1f936fc17286c1311b134cfeb63b16c2c7efe4d",
     "biomes/arch/src/00-head.html": "2686947d8a943ca3dfaf1abff5865b0d5d25faf0c50a1e66826d089615a8d25b",
@@ -148,8 +148,8 @@
     "biomes/arch/src/42-biome-arch-meeting.js": "c581e171259af965389d5419f85434e92f592b5344b4186b00b551f44a4718db",
     "biomes/arch/src/45-host-stage.js": "4b5278b5bbe682fdcd2bed4cf0252436407bad9a59c9e24f1dfcace612e23b16",
     "biomes/arch/src/48-host-therm.js": "aec913383f2b651a845046f52669d75e34fad96aa6d081b6e10c7c11d38599cd",
-    "biomes/arch/src/50-biome-arch-species.js": "b57a7b4231774847c284ac5d66a93f2a34c3a8a0782b9f8568f991d491ac6425",
-    "biomes/arch/src/60-biome-arch-place.js": "673b98944da0b1dfa219850f17bca18d73f80f8745463b5c3a0784d87cd3b827",
+    "biomes/arch/src/50-biome-arch-species.js": "8d177f1f8cb1d85074d017a5a448b7e37bb14d482ff6b9133935170f9813082b",
+    "biomes/arch/src/60-biome-arch-place.js": "b5c06feb294f5c9061e785ba3e9f4b3ab69d93d4bdd04f915a8731b472f305dd",
     "biomes/arch/src/70-biome-arch.js": "f44017fef2a14277801afa8dda32975d643c60c7abb24a015971676163085258",
     "biomes/arch/src/84-host-ground.js": "c3baa65f5e31213668aa82626b77b077df39fa4b56b4dd37fd786b874f1a8f8e",
     "biomes/arch/src/85-host-far.js": "a085c670bffa7b11dcddb87d1607867c12cc23ccc729d10882e3383e06e7ee2c",
@@ -267,16 +267,16 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-barrens.html": "71ae831d0220e7d69ab957d67f80ce7d637be9827d8ee7f131989f77ffbd3bfd"
+    "biomes/arch/dist/arch-barrens.html": "d8ad5a2b721867a4023564e9fe921f9c8340b6c2e08717de2d459c0bd18b7de7"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-barrens.html": "71ae831d0220e7d69ab957d67f80ce7d637be9827d8ee7f131989f77ffbd3bfd"
+    "biomes/arch/dist/arch-barrens.html": "d8ad5a2b721867a4023564e9fe921f9c8340b6c2e08717de2d459c0bd18b7de7"
    }
   },
   "build.py --station coast": {
    "inputs": {
     "biomes/arch/KNOWN_ISSUES.md": "976d73a714c369abb9da863d07c087355b47def55017660cd0109d308adfad38",
-    "biomes/arch/PORT.md": "519df2b3f7d53369c58ae408beecb4b115c0ebb26941bf4cfd67cad3d640fd25",
+    "biomes/arch/PORT.md": "7e3e2e6eff86478f078f77eaf81fbceec702078d5e1c5298dd68774463c67572",
     "biomes/arch/build.py": "ce4f8e2854b40ec6dde4f633ab58a418266efaea13f85862d43a8906e3613411",
     "biomes/arch/materials.json": "3f13198b8a0ecb67b2075780a1f936fc17286c1311b134cfeb63b16c2c7efe4d",
     "biomes/arch/src/00-head.html": "2686947d8a943ca3dfaf1abff5865b0d5d25faf0c50a1e66826d089615a8d25b",
@@ -285,8 +285,8 @@
     "biomes/arch/src/42-biome-arch-meeting.js": "c581e171259af965389d5419f85434e92f592b5344b4186b00b551f44a4718db",
     "biomes/arch/src/45-host-stage.js": "4b5278b5bbe682fdcd2bed4cf0252436407bad9a59c9e24f1dfcace612e23b16",
     "biomes/arch/src/48-host-therm.js": "aec913383f2b651a845046f52669d75e34fad96aa6d081b6e10c7c11d38599cd",
-    "biomes/arch/src/50-biome-arch-species.js": "b57a7b4231774847c284ac5d66a93f2a34c3a8a0782b9f8568f991d491ac6425",
-    "biomes/arch/src/60-biome-arch-place.js": "673b98944da0b1dfa219850f17bca18d73f80f8745463b5c3a0784d87cd3b827",
+    "biomes/arch/src/50-biome-arch-species.js": "8d177f1f8cb1d85074d017a5a448b7e37bb14d482ff6b9133935170f9813082b",
+    "biomes/arch/src/60-biome-arch-place.js": "b5c06feb294f5c9061e785ba3e9f4b3ab69d93d4bdd04f915a8731b472f305dd",
     "biomes/arch/src/70-biome-arch.js": "f44017fef2a14277801afa8dda32975d643c60c7abb24a015971676163085258",
     "biomes/arch/src/84-host-ground.js": "c3baa65f5e31213668aa82626b77b077df39fa4b56b4dd37fd786b874f1a8f8e",
     "biomes/arch/src/85-host-far.js": "a085c670bffa7b11dcddb87d1607867c12cc23ccc729d10882e3383e06e7ee2c",
@@ -404,16 +404,16 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-coast.html": "45f6b302fa35b9c76cff502b52421c3a9218c3ca7c9fcd3c786eab62438a370b"
+    "biomes/arch/dist/arch-coast.html": "7b9e5740bd3263e1924d65b11262000b51521b2ca489820aa968dc8dbf8f2352"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-coast.html": "45f6b302fa35b9c76cff502b52421c3a9218c3ca7c9fcd3c786eab62438a370b"
+    "biomes/arch/dist/arch-coast.html": "7b9e5740bd3263e1924d65b11262000b51521b2ca489820aa968dc8dbf8f2352"
    }
   },
   "build.py --station cove": {
    "inputs": {
     "biomes/arch/KNOWN_ISSUES.md": "976d73a714c369abb9da863d07c087355b47def55017660cd0109d308adfad38",
-    "biomes/arch/PORT.md": "519df2b3f7d53369c58ae408beecb4b115c0ebb26941bf4cfd67cad3d640fd25",
+    "biomes/arch/PORT.md": "7e3e2e6eff86478f078f77eaf81fbceec702078d5e1c5298dd68774463c67572",
     "biomes/arch/build.py": "ce4f8e2854b40ec6dde4f633ab58a418266efaea13f85862d43a8906e3613411",
     "biomes/arch/materials.json": "3f13198b8a0ecb67b2075780a1f936fc17286c1311b134cfeb63b16c2c7efe4d",
     "biomes/arch/src/00-head.html": "2686947d8a943ca3dfaf1abff5865b0d5d25faf0c50a1e66826d089615a8d25b",
@@ -422,8 +422,8 @@
     "biomes/arch/src/42-biome-arch-meeting.js": "c581e171259af965389d5419f85434e92f592b5344b4186b00b551f44a4718db",
     "biomes/arch/src/45-host-stage.js": "4b5278b5bbe682fdcd2bed4cf0252436407bad9a59c9e24f1dfcace612e23b16",
     "biomes/arch/src/48-host-therm.js": "aec913383f2b651a845046f52669d75e34fad96aa6d081b6e10c7c11d38599cd",
-    "biomes/arch/src/50-biome-arch-species.js": "b57a7b4231774847c284ac5d66a93f2a34c3a8a0782b9f8568f991d491ac6425",
-    "biomes/arch/src/60-biome-arch-place.js": "673b98944da0b1dfa219850f17bca18d73f80f8745463b5c3a0784d87cd3b827",
+    "biomes/arch/src/50-biome-arch-species.js": "8d177f1f8cb1d85074d017a5a448b7e37bb14d482ff6b9133935170f9813082b",
+    "biomes/arch/src/60-biome-arch-place.js": "b5c06feb294f5c9061e785ba3e9f4b3ab69d93d4bdd04f915a8731b472f305dd",
     "biomes/arch/src/70-biome-arch.js": "f44017fef2a14277801afa8dda32975d643c60c7abb24a015971676163085258",
     "biomes/arch/src/84-host-ground.js": "c3baa65f5e31213668aa82626b77b077df39fa4b56b4dd37fd786b874f1a8f8e",
     "biomes/arch/src/85-host-far.js": "a085c670bffa7b11dcddb87d1607867c12cc23ccc729d10882e3383e06e7ee2c",
@@ -542,16 +542,16 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-cove.html": "ed73a21a006bb1ea26c62e7e6edb69b46636640b508bbc9e77a8a5deb64a9229"
+    "biomes/arch/dist/arch-cove.html": "1782db0ab2c2db2a1b35c4b2bf37be26a119de74d627f68ef64f8b6813e52bb8"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-cove.html": "ed73a21a006bb1ea26c62e7e6edb69b46636640b508bbc9e77a8a5deb64a9229"
+    "biomes/arch/dist/arch-cove.html": "1782db0ab2c2db2a1b35c4b2bf37be26a119de74d627f68ef64f8b6813e52bb8"
    }
   },
   "build.py --station dome": {
    "inputs": {
     "biomes/arch/KNOWN_ISSUES.md": "976d73a714c369abb9da863d07c087355b47def55017660cd0109d308adfad38",
-    "biomes/arch/PORT.md": "519df2b3f7d53369c58ae408beecb4b115c0ebb26941bf4cfd67cad3d640fd25",
+    "biomes/arch/PORT.md": "7e3e2e6eff86478f078f77eaf81fbceec702078d5e1c5298dd68774463c67572",
     "biomes/arch/build.py": "ce4f8e2854b40ec6dde4f633ab58a418266efaea13f85862d43a8906e3613411",
     "biomes/arch/materials.json": "3f13198b8a0ecb67b2075780a1f936fc17286c1311b134cfeb63b16c2c7efe4d",
     "biomes/arch/src/00-head.html": "2686947d8a943ca3dfaf1abff5865b0d5d25faf0c50a1e66826d089615a8d25b",
@@ -560,8 +560,8 @@
     "biomes/arch/src/42-biome-arch-meeting.js": "c581e171259af965389d5419f85434e92f592b5344b4186b00b551f44a4718db",
     "biomes/arch/src/45-host-stage.js": "4b5278b5bbe682fdcd2bed4cf0252436407bad9a59c9e24f1dfcace612e23b16",
     "biomes/arch/src/48-host-therm.js": "aec913383f2b651a845046f52669d75e34fad96aa6d081b6e10c7c11d38599cd",
-    "biomes/arch/src/50-biome-arch-species.js": "b57a7b4231774847c284ac5d66a93f2a34c3a8a0782b9f8568f991d491ac6425",
-    "biomes/arch/src/60-biome-arch-place.js": "673b98944da0b1dfa219850f17bca18d73f80f8745463b5c3a0784d87cd3b827",
+    "biomes/arch/src/50-biome-arch-species.js": "8d177f1f8cb1d85074d017a5a448b7e37bb14d482ff6b9133935170f9813082b",
+    "biomes/arch/src/60-biome-arch-place.js": "b5c06feb294f5c9061e785ba3e9f4b3ab69d93d4bdd04f915a8731b472f305dd",
     "biomes/arch/src/70-biome-arch.js": "f44017fef2a14277801afa8dda32975d643c60c7abb24a015971676163085258",
     "biomes/arch/src/84-host-ground.js": "c3baa65f5e31213668aa82626b77b077df39fa4b56b4dd37fd786b874f1a8f8e",
     "biomes/arch/src/85-host-far.js": "a085c670bffa7b11dcddb87d1607867c12cc23ccc729d10882e3383e06e7ee2c",
@@ -679,16 +679,16 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-dome.html": "5c8b73ebb0c16c4083ec848562394e4abeed9095df41c02ecfeaaf1c69fc6ab8"
+    "biomes/arch/dist/arch-dome.html": "a6af99694e08e9ffa636596812581bfc3e044ac74d7c17994919ac823f38cc1b"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-dome.html": "5c8b73ebb0c16c4083ec848562394e4abeed9095df41c02ecfeaaf1c69fc6ab8"
+    "biomes/arch/dist/arch-dome.html": "a6af99694e08e9ffa636596812581bfc3e044ac74d7c17994919ac823f38cc1b"
    }
   },
   "build.py --station sound": {
    "inputs": {
     "biomes/arch/KNOWN_ISSUES.md": "976d73a714c369abb9da863d07c087355b47def55017660cd0109d308adfad38",
-    "biomes/arch/PORT.md": "519df2b3f7d53369c58ae408beecb4b115c0ebb26941bf4cfd67cad3d640fd25",
+    "biomes/arch/PORT.md": "7e3e2e6eff86478f078f77eaf81fbceec702078d5e1c5298dd68774463c67572",
     "biomes/arch/build.py": "ce4f8e2854b40ec6dde4f633ab58a418266efaea13f85862d43a8906e3613411",
     "biomes/arch/materials.json": "3f13198b8a0ecb67b2075780a1f936fc17286c1311b134cfeb63b16c2c7efe4d",
     "biomes/arch/src/00-head.html": "2686947d8a943ca3dfaf1abff5865b0d5d25faf0c50a1e66826d089615a8d25b",
@@ -697,8 +697,8 @@
     "biomes/arch/src/42-biome-arch-meeting.js": "c581e171259af965389d5419f85434e92f592b5344b4186b00b551f44a4718db",
     "biomes/arch/src/45-host-stage.js": "4b5278b5bbe682fdcd2bed4cf0252436407bad9a59c9e24f1dfcace612e23b16",
     "biomes/arch/src/48-host-therm.js": "aec913383f2b651a845046f52669d75e34fad96aa6d081b6e10c7c11d38599cd",
-    "biomes/arch/src/50-biome-arch-species.js": "b57a7b4231774847c284ac5d66a93f2a34c3a8a0782b9f8568f991d491ac6425",
-    "biomes/arch/src/60-biome-arch-place.js": "673b98944da0b1dfa219850f17bca18d73f80f8745463b5c3a0784d87cd3b827",
+    "biomes/arch/src/50-biome-arch-species.js": "8d177f1f8cb1d85074d017a5a448b7e37bb14d482ff6b9133935170f9813082b",
+    "biomes/arch/src/60-biome-arch-place.js": "b5c06feb294f5c9061e785ba3e9f4b3ab69d93d4bdd04f915a8731b472f305dd",
     "biomes/arch/src/70-biome-arch.js": "f44017fef2a14277801afa8dda32975d643c60c7abb24a015971676163085258",
     "biomes/arch/src/84-host-ground.js": "c3baa65f5e31213668aa82626b77b077df39fa4b56b4dd37fd786b874f1a8f8e",
     "biomes/arch/src/85-host-far.js": "a085c670bffa7b11dcddb87d1607867c12cc23ccc729d10882e3383e06e7ee2c",
@@ -816,10 +816,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-sound.html": "f1cba3977bd42bc5fbf632f46eed4b58758cd30940372f9760d1ac07b0150b3d"
+    "biomes/arch/dist/arch-sound.html": "61eec05a84878b1b2b5fa603549d6495bdfd4eed99197cd795083bf62a7735e4"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-sound.html": "f1cba3977bd42bc5fbf632f46eed4b58758cd30940372f9760d1ac07b0150b3d"
+    "biomes/arch/dist/arch-sound.html": "61eec05a84878b1b2b5fa603549d6495bdfd4eed99197cd795083bf62a7735e4"
    }
   }
  }
