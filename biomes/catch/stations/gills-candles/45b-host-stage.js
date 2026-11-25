@@ -23,7 +23,7 @@ const SITE_H=3746;
 // full night with the sun 21 degrees under the horizon and drew black. 16.5 h puts the sun 2.4 degrees up - the last light on the mist wall and
 // the backlit plumes section 18.2 asks for - with the giant 26 degrees up to nod over it.
 const GDUSK=16.5;
-function GDAY(){const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash);if(m)return +decodeURIComponent(m[1])||0;
+function GDAY(){const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash);if(m){const v=+decodeURIComponent(m[1]);return isFinite(v)?v:0;}   /* not `||0`: day 0 is a real day (CLAUDE.md) */
  if(GDAY.d!=null)return GDAY.d;let b=0,bd=99;for(let d=0;d<400;d++){const e=Math.abs(GILLS.peakHour(d)-GDUSK);if(e<bd){bd=e;b=d;}}return GDAY.d=b;}
 // ---------------------------------------------------------------- the swarm (GILLS.layout; the shared life, read in place)
 // Two breathing cracks still at the field's south edge (the swarm's live front, climbing toward station gills), seven closed: of those the dry

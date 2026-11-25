@@ -386,8 +386,8 @@
     "biomes/catch/src/99-host-take.js": "34bec77239596e4bb59890446015777c3582e0adced2bba97d645894650e87ae",
     "biomes/catch/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/catch/stations/gills-candles/00-head.html": "5106b0c200af8b6cfb31d4532345c4947766f283ceabb27de8be1fde12ada724",
-    "biomes/catch/stations/gills-candles/45b-host-stage.js": "096d648ae3ee03e1e972b685b521623fb3ee2aba264633a1637a4a4790ffc5ee",
-    "biomes/catch/stations/gills-candles/87-host-gills.js": "6a7b496d34f0f9194d9729083b15d18b233be6f7983a6b21532504aa9b3c6991",
+    "biomes/catch/stations/gills-candles/45b-host-stage.js": "3a1db86280a597734962160e15ce4c664a9a348bae227858abd3f0deede0b7ca",
+    "biomes/catch/stations/gills-candles/87-host-gills.js": "297251464583d0813ace47360a0f5ae20c619c1f70e1a3a373beace5d4914e2a",
     "biomes/catch/stations/gills-candles/89y2-host-gills-late.js": "ea1d2e70f9e4dd0c114d50ee22bd154566e24bfe9ea33120803ca424d3f874df",
     "biomes/catch/stations/gills-candles/station.json": "c5cf26adcf7033162118b9a0e89865c112024cfe75590213ddc9799c9177ef62",
     "biomes/catch/tex/bark0.albedo.webp": "3e71aae7540b5bf54d9894c221e1d6d5ef93a35c710cb334c14e26f2acb56507",
@@ -551,10 +551,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-gills-candles.html": "a8a1894c64b67dc25531368da20cb074ed4b83ec125e94ed9247f4afa131f598"
+    "biomes/catch/dist/catch-gills-candles.html": "65ce5ac16e6f9c8cb979418cfabf004ce599ecaa0936d0cc616d7f2804ae0d6b"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-gills-candles.html": "a8a1894c64b67dc25531368da20cb074ed4b83ec125e94ed9247f4afa131f598"
+    "biomes/catch/dist/catch-gills-candles.html": "65ce5ac16e6f9c8cb979418cfabf004ce599ecaa0936d0cc616d7f2804ae0d6b"
    }
   },
   "build.py --station lake": {

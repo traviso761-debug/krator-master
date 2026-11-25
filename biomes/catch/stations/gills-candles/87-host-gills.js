@@ -60,7 +60,7 @@ function stationBuild(){const D=GILLS.dress(SG.country),T3=THREE,t0=performance.
  GILLS_DRAW.lamina=LAM;
  const PK=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('gills',n):null,
   PL={lam:PK('pipe.lamina'),collar:PK('collar'),fringe:PK('fringe'),turf:PK('turf')};
- const PT=k=>PL[k]?KMAT.textures(PL[k],{aniso:8}).map:null,LT=PT('lam'),LK=PL.lam?1/(PL.lam.scale&&PL.lam.scale[0]||1.5):0;
+ const PT=k=>PL[k]?KMAT.textures(PL[k],{aniso:8}).map:null,LT=PT('lam'),LK=PL.lam?1/(PL.lam.scale&&PL.lam.scale[0]!=null?PL.lam.scale[0]:1.5):0;   /* a scale is a real number: no `||` default */
  GILLS_DRAW.lib=Object.keys(PL).filter(k=>PL[k]);
  const pipeMat=v=>{const m=new T3.MeshLambertMaterial({vertexColors:true});m.userData.gills='pipe';if(!LAM)return m;const S=LAM[v].S;
   m.extensions={derivatives:true};m.customProgramCacheKey=()=>'gills-pipe-lamina-'+v+(LT?'-t':'');
@@ -87,7 +87,7 @@ function stationBuild(){const D=GILLS.dress(SG.country),T3=THREE,t0=performance.
  BIO.tally&&BIO.tally(tris,0,0);
  // ---- the items: unit geometries with a white vertex colour (the put's colour is the dress)
  const white=g=>{const n=g.attributes.position.count,c=new Float32Array(n*3).fill(1);g.setAttribute('color',new T3.BufferAttribute(c,3));return g;};
- const lathe=(pts,seg)=>white(new T3.LatheGeometry(pts.map(p=>new T3.Vector2(p[0],p[1])),seg||12));
+ const lathe=(pts,seg)=>white(new T3.LatheGeometry(pts.map(p=>new T3.Vector2(p[0],p[1])),seg==null?12:seg));
  const collarG=lathe([[1.0,-.15],[1.18,0],[1.22,.18],[1.08,.32],[.92,.3]],14);
  if(PL.collar){const uv=collarG.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*8,uv.getY(i)*1.5);}
  const cellUV=(c,u,w)=>[c[0]+(c[2]-c[0])*u,1-(c[3]-(c[3]-c[1])*w)];
