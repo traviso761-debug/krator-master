@@ -1393,6 +1393,64 @@ model data did not) replayed on this model by river id, its names only, none of 
   region cut (9105, 9110; page rebuilt), `openworld/resources-settlements.json` (r074) and the globe's
   `gallery/krator-globe/globe_data.json` (38; not republished).
 
+## 5.1 edits 28 to 33 (2026-11-24 and 2026-11-25): the owner's map pass
+
+The edits run in this order on b6b57c130 (the page fix): 28a, 28, 28b, 29, 30, 31, 32, 33. Each refuses to run twice;
+to change one, check `tools/scale-model/model` out at b6b57c130 and run the chain again. Each writes a
+`<script>.report.json` beside it.
+- **28a, `edit_528a_dome_shield.py`: the Dome as the shield volcano its record describes** (the owner: "im not sure the
+  Dome biome got rendered on map correctly"; the polygon held uneven upland). A convex shield round the polygon's centre
+  (1351,146; ~100 km across) rises from 1,440 m at its edge to 2,925 m. It has an 8 km summit caldera 140 m deep, radial
+  lava ribbing, and a quarter of the land's fine texture kept. It is eased over 8 px past the polygon, and the shores
+  are kept only where the shield moved the land. It runs before 28, so the Ria's headwaters route off it (Cfa).
+- **28, `edit_528_ria_network.py`: the Ria basin as one river system** (the owner wanted "an extended
+  mississippi/missouri system" instead of squiggles, laid in valleys that respect continental-scope's Ria country). The
+  basin's 30 rivers (9107, 9103 and 9104 aside) are re-routed by least cost over the land. The waypoints are their towns,
+  canal ends and old courses. Every laid course absorbs the next, so a river joins the first river it meets and none
+  cross. The courses are smoothed, then given a two-scale meander (retried flatter where it would cross). The channels
+  and floors are cut, walls capped at 250/120 m. The old courses' grooves are filled where no new course runs. The beds
+  and the ground along every course run downhill. Flow is re-accumulated, and each `to` names the river joined.
+- **28b, `edit_528b_ria_threads.py`: the old courses' painted threads** painted out of the satellite and relief (within
+  12 px of an old basin course, over 2 px from any new one).
+- **29, `edit_529_arch_reaches.py`: the Arch's graben river in reaches** (the owner: "one river that feeds into multiple
+  lakes"). The one-cell water line over the lakes became dry ground. Vai Ahi (islanderw tongue, `r_arch_1`-`7`) rises on
+  the mainland past the north-east lake and runs lake to lake to the sea.
+- **30, `edit_530_white_pass.py`: White Pass, White Lake, Matron's Coast, Arkerum** (the owner's polygons and pin,
+  `edit_530_live.json`):
+  - Matron's Coast is raised from the sea (32,012 km2) as a Cfb rainforest plain, and 23 rivers run on across it.
+  - Arkerum's ejecta crater (floor 60 m, rim 490 m, breached to the sea) is the Spear-Queens' city.
+  - White Pass is a U-trough over a 5,400 m summit.
+  - White Lake is a Sasquatch-style trough (tarn 5,890 m, WH), with the Yeti town of Whitelake, which tolls the pass.
+  - The cut cells get the nearby land's air and classes (edit 32's helpers, below).
+- **31, `edit_531_mistheights.py`: Mistheights** (polygon `edit_531_live.json`). The cut through the W outer wall:
+  - Two entry valleys funnel warm damp north-westerly air up to 3,900 m.
+  - A misty high country runs at 3,900-4,300 m: Cfc under 4,800 m, 3,500 mm.
+  - The way out west is easy (3,000 m). The way east crosses a 5,400 m col, as hard as White Pass.
+- **32, `edit_532_sw_wall_trigemini.py`: the SW outer wall and the Trigemini Pass** (the owner: "a few small vales to
+  break up the complete airlessness, but most prominently ... the Trigemini Pass region which contains a Cold Lake type
+  lake at its center and provides one of Dalab's backup routes to the Rift"; polygons `edit_532_live.json`):
+  - Three U-troughs meet at a basin round 279,1120. Its half-frozen tarn is like Cold Lake: level 5,680 m, WH.
+  - NE over a 6,350 m col to Dalab's side (4,870 m).
+  - S over a 6,250 m col to the w rift highland (4,630 m): Dalab's back way to the Rift.
+  - W over a 6,450 m col to the copper glacier's head (5,130 m).
+  - Three vales cut into the crest (heads at 410,1213, 568,1292 and 628,1362; 5.9-6.2 km), each opening onto the
+    breathable flank nearest it.
+  - SW outer wall (biome) and Trigemini Pass become default regions, key 5.1e28.
+- **33, `edit_533_ricochet_craters.py`: Ricochet Peaks' ejecta craters** (the owner: "a few ejecta craters leading to a
+  few semi-habitable pockets"):
+  - Four craters sunk into the 9-15 km peaks: West 1215,1535 (5,400 m), North 1295,1515 (5,800 m), South 1335,1592
+    (5,600 m) and East 1450,1558 (5,300 m). Each is 28-32 km across, with a 250 m ejecta rim and an apron.
+  - Notched cols (6.3-7 km) chain them with the old 6.9 km ice-tarn crater at 1375,1525. The chain runs from the southern
+    flank by Longsong to the southern flank by the High Rift.
+  - The pockets are dry tundra and ice (ET/EF): the range gets ~75 mm.
+  - Ricochet Peaks becomes a default biome region, key 5.1e29.
+
+Cuts into an airless crest (30-33): a cut cell keeps its -90 C airless temperatures through a lapse and its class O
+through the reclimate. So the cells moved under 7.2 km take the temperatures of the nearby land of their new height.
+Every moved land cell gets the hottest afternoon over its warm month and the coldest night under its cold one. The O
+class is let go, so the reclimate classes the cell from its climate. Biome kits for Matron's Coast, Mistheights, the
+SW outer wall and Ricochet Peaks are a follow-up.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

@@ -1,0 +1,136 @@
+{
+ "edit": "5.1 edit 29: the Arch's graben river in reaches",
+ "date": "2026-11-24",
+ "one_cell_water_removed": 15,
+ "lakes": [
+  {
+   "label": 2,
+   "cells": 315,
+   "level_m": -0.2
+  },
+  {
+   "label": 10,
+   "cells": 592,
+   "level_m": -0.2
+  },
+  {
+   "label": 30,
+   "cells": 114,
+   "level_m": -0.2
+  },
+  {
+   "label": 31,
+   "cells": 296,
+   "level_m": -0.2
+  },
+  {
+   "label": 40,
+   "cells": 446,
+   "level_m": -0.2
+  },
+  {
+   "label": 54,
+   "cells": 117,
+   "level_m": -0.2
+  }
+ ],
+ "name": "Vai Ahi",
+ "tongue": "islanderw",
+ "reaches": [
+  {
+   "id": "r_arch_1",
+   "km": 19.5,
+   "to": "lake",
+   "from": [
+    537.4,
+    96.54
+   ],
+   "end": [
+    534.0,
+    104.0
+   ]
+  },
+  {
+   "id": "r_arch_2",
+   "km": 67.5,
+   "to": "lake",
+   "from": [
+    513.41,
+    111.07
+   ],
+   "end": [
+    483.0,
+    119.0
+   ]
+  },
+  {
+   "id": "r_arch_3",
+   "km": 38.5,
+   "to": "lake",
+   "from": [
+    439.41,
+    150.88
+   ],
+   "end": [
+    425.0,
+    161.0
+   ]
+  },
+  {
+   "id": "r_arch_4",
+   "km": 44.5,
+   "to": "lake",
+   "from": [
+    409.4,
+    172.1
+   ],
+   "end": [
+    390.0,
+    165.0
+   ]
+  },
+  {
+   "id": "r_arch_5",
+   "km": 37.8,
+   "to": "lake",
+   "from": [
+    365.43,
+    173.08
+   ],
+   "end": [
+    352.0,
+    185.0
+   ]
+  },
+  {
+   "id": "r_arch_6",
+   "km": 55.1,
+   "to": "lake",
+   "from": [
+    316.42,
+    204.11
+   ],
+   "end": [
+    297.0,
+    222.0
+   ]
+  },
+  {
+   "id": "r_arch_7",
+   "km": 60.4,
+   "to": "sea",
+   "from": [
+    283.0,
+    234.59
+   ],
+   "end": [
+    308.0,
+    241.0
+   ]
+  }
+ ],
+ "painted_out_px": {
+  "st": 160,
+  "t": 254
+ }
+}

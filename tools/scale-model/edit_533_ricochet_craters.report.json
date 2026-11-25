@@ -1,0 +1,79 @@
+{
+ "edit": "5.1 edit 33: Ricochet Peaks' ejecta craters",
+ "date": "2026-11-25",
+ "craters": {
+  "West": {
+   "centre": [
+    1215.0,
+    1535.0
+   ],
+   "floor_m": 5400,
+   "peaks_m_was": 13359,
+   "across_km": 30
+  },
+  "North": {
+   "centre": [
+    1295.0,
+    1515.0
+   ],
+   "floor_m": 5800,
+   "peaks_m_was": 10322,
+   "across_km": 28
+  },
+  "South": {
+   "centre": [
+    1335.0,
+    1592.0
+   ],
+   "floor_m": 5600,
+   "peaks_m_was": 14572,
+   "across_km": 28
+  },
+  "East": {
+   "centre": [
+    1450.0,
+    1558.0
+   ],
+   "floor_m": 5300,
+   "peaks_m_was": 11220,
+   "across_km": 32
+  }
+ },
+ "flanks": {
+  "W": [
+   1215,
+   1585,
+   5902
+  ],
+  "E": [
+   1451,
+   1626,
+   5993
+  ]
+ },
+ "outside_polygon_moved_cells": 77,
+ "rivers_kept_downhill": [],
+ "land_moved_cells": 9948,
+ "lowered_m_max": 9652,
+ "raised_cells": 4082,
+ "reclimate": {
+  "cells": 3537,
+  "class_changed": 1550,
+  "rain_mean_before_mm": 15.0,
+  "rain_mean_after_mm": 87.0,
+  "classes_now": {
+   "ET": 1464,
+   "EF": 1621,
+   "HT": 50,
+   "HF": 402
+  },
+  "airless_cells_given_air": 9239,
+  "class_O_let_go": 2829
+ },
+ "floor_classes": {
+  "ET": 902,
+  "EF": 651,
+  "HT": 19,
+  "O": 52
+ }
+}
