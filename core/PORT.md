@@ -220,6 +220,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `hazard/21-core-hazard-flow.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.moveAt, drift, poolK: a hazard's move read (move.pull toward its core) and gas pooled on a band's floor (shape.pool); test-hazard-flow.js; core/hazard/GODOT.md "Moving and pooling" |
 | `hazard/22-core-hazard-env.js` | 28.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.crust/under, KHAZ.night (bindClock, bindWind), KHAZ.front (flood, charge, bindHerd), KHAZ.ENV builders; test-hazard-env.js; GODOT.md "Crusts, night and fronts" |
 | `hazard/22-core-hazard-tunnel.js` | 20.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `hazard/23-core-hazard-tide.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.bindTide, tideSample, KHAZ.tide (macrotidal bench submergence & Ghost-Tsunami drawdown warning), KHAZ.race (reversing flood/ebb sluice & narrows race), KHAZ.TIDE builders; test-hazard-tide.js |
 | `host/90-host-camera.js` | 11.7 | [web] | 7 | 0 | 0 | 10 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `host/91-host-loop.js` | 8.2 | [web] | 3 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `host/91b-host-follow.js` | 13.1 | [web] | 5 | 0 | 1 | 3 | 1 | 8 | 0 | 0 | 0 | 0 | 0 |  |
