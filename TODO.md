@@ -75,6 +75,25 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **The Throne's row's terrain, what is left** (2026-11-24, `biomes/throne/PLAN.md` "Dropped or owed", "The row's terrain"; branch
+  `claude/throne-owed-1122`, b040e655a). Taken so far: KSTRATA walls (caldera `tibasalt`, blast `obsidian-pancake`), KLAVA flows (vents at load,
+  kipuka at build time, the caldera's overflow), the kipuka's rille. Left for the rebuild:
+  - **Lava steps: a core addition.** KRELIEF has no step form (a flow's front frozen in a terrace down a slope). Add one to
+    `core/terrain/38b-core-relief-lava.js` (with `test-relief-lava.js`, a negative), then take it on the kipuka's and the vents' flow fronts
+    (the KLAVA deposits' margins: `shared/46k-host-klava-flows.js`). Changes every page that inlines `38b` (Godstep, the Godthrone flank, the kipuka).
+  - **The tube station's surface flows.** Not taken: station 11 is underground and its surface shows only through the skylights, so a flow
+    over it would move the skylights' rims and every check on them for nothing seen. Take it only if the tube gets a surface view.
+  - **KSTRATA's core shader on the Throne's walls.** The caldera's and the blast's beds are drawn in one texture unit
+    (`shared/84s-host-strata-band.js`: colour by bed height, no per-pixel warp, cross-bedding, varnish or colonnade joints), as both grounds read
+    15 of 16 units and the core path (`KSTRATA.shade`) takes five. If the ground's layers are packed (two layers to a map, KNOWN_ISSUES
+    "Sixteen texture units"), switch the walls to `KSTRATA.shade`.
+  - **The kipuka's "nothing rooted under the water" check** now skips a moss skirt on a hyperjungle giant's buttress (one skirt 1.1 m under a
+    stream, 85 m from a 205 m tree, after the KLAVA flows moved the streams' lines). The cause is the hyperjungle kit's: it hangs its skirts
+    from the ground at the trunk (`biomes/hyperjungle/src/60-biome-hyperjungle-floor.js`, the hero boles' moss). Seat each skirt on the ground
+    under it instead, then drop the exemption (`stations/kipuka/99-host-take.js`, `HCHK.onButtress`). Changes every page that reads the
+    hyperjungle kit.
+  - **The owner's calls, still open:** `brine` in the vents' pools (would replace the pools' heat-graded blues) and `WATER.ice` on the
+    glacier's lake (would freeze the lake its icebergs float in) (`biomes/throne/PLAN.md`, "The row's water kinds").
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
   `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
