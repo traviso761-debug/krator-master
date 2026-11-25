@@ -215,8 +215,12 @@ def main():
     print(json.dumps(rep, ensure_ascii=False, indent=1))
 
     assert km == 580, 'the bore measures %d km, not the 580 km the plan gives' % km
-    assert rep['bore']['at_45_pct_px'] == [1031.2, 1301.2] or abs(rep['bore']['at_45_pct_px'][0] - 1031) <= 1, \
-        'the line does not pass down the corridor where the plan says'
+    # 2026-11-25: was `== [1031.2, 1301.2] or abs(x - 1031) <= 1`. The first arm was false on the run that produced the
+    # committed report ([1031.0, 1300.8]), so the second was carrying it alone -- and the second checks only x, so the
+    # line's y could drift arbitrarily far up or down the trench and still pass. Both axes now, at the same tolerance.
+    bx, by = rep['bore']['at_45_pct_px']
+    assert abs(bx - 1031) <= 1 and abs(by - 1301) <= 1, \
+        'the line does not pass down the corridor where the plan says: %s' % ((bx, by),)
     assert rep['bore']['tunnel_km'] > 400, 'a base tunnel that is mostly not tunnel'
     assert not arcbeam_tunnels, 'an Arcbeam-Stair tunnel is in the network layer after all: %s' % arcbeam_tunnels
     if dry:

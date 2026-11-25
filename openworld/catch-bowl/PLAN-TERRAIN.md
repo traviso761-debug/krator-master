@@ -499,7 +499,11 @@ east-west line falls, because wherever it falls, 6.4's beds have to be held whil
 
 **Found by the map session's horizon re-survey, 2026-11-25** (the horizon cast at 1,024 azimuths per band). From the
 Catch floor, **the highest thing visible anywhere is 2.97°** (a 3,179 m ridge 47 km NNW), and the tallest ground within
-240 km — 13,628 m of Godthrone at 239.7 km — subtends **1.72°**. The pages draw ridges up to **9.4°**, and at one
+240 km — subtends under **2°**; the Godthrone massif itself, **24.8 km high and the tallest ground on the map**,
+subtends only **0.42°** from station 1, because it stands 451 km off and 21.1 km of that is curvature drop. (A figure
+first recorded here as "13,628 m of Godthrone at 239.7 km, 1.72°" was withdrawn by its author on 2026-11-25: it was
+assembled from a layer's `top_max_m` and an authored `dist`, two readings that describe no single feature. The
+correction is the same error these amplitudes are, one level up.) The pages draw ridges up to **9.4°**, and at one
 station **16.8°**.
 
 **It is all four stations, not two, and two of them are still wrong.** The max drawn angle is `base + amp + peakAmp`
@@ -652,7 +656,7 @@ rangers got near enough to see a facility and come home, and its function is the
 | P16 | no | the Stalker Range has almost nothing to simulate, and should not be given a census |
 | **P17** | **settled; the rename is DONE (2026-11-24)** | the Arcbeam-Stair tunnel is gone, but the owner has given a **ruined Parabola-Stair bore** in its place (2026-11-24), which restores the Catch's oldest lore word for word. `LORE.md` §4, `biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md`, `ANCIENT-NETWORK.md` and `ANCIENT-ROADS.md` are rewritten (answers M and N) |
 | **P18** | **a law of the method; blocks 6.1** | applying the rescale without guarding 6.4's beds breaks every tarn outflow (r708 +659.8 m, r645 +407.3 m against a 50 m allowance), because the compression follows the 9 km-smoothed base. **Survives the new model.** Guarding the beds is nearly free |
-| **P19** | **an authoring error; survives the new model; TWO STATIONS STILL WRONG** | the Catch's authored ridge amplitudes reach 9.4° (station 4: **16.8°**) where the ground subtends at most **2.97°** from the floor (Godthrone, 13.6 km at 240 km, is 1.72°). A 12 km wall subtends 9° only at 70 km, and these walls are 150-250 km off, so it was never available on any model. All **four** stations carry it, 1-3 byte-identically; only 1 and 4 are corrected. Re-derive with `far.py`'s `ridges_of` cast |
+| **P19** | **an authoring error; survives the new model; ALL FOUR STATIONS CAST (2026-11-25)** | the Catch's authored ridge amplitudes reached 9.4° (station 4: **16.8°**) where the ground subtends at most **2.97°** from the floor — the Godthrone massif, 24.8 km high, subtends **0.42°** at 451 km. A 12 km wall subtends 9° only at 70 km, and these walls are 150-250 km off, so it was never available on any model. All four are now cast with `far.py`'s `ridges_of`. Two further facts came out of doing it: **the eye is the page's `siteH` + 30, not the model cell** (the near layer moves ~0.8° per 100 m, more than its own amplitude), and **`snowH` is in `dist·tan(el)` units**, so cutting the amplitudes 2.5× put every snow line above its ridge and the snowfields vanished until they were re-expressed |
 | P20 | a plan question | 6.2's chain centreline (x 1032) against the thalweg that landed (x 1027) at row 1258: one of the two is mis-fitted |
 | P21 | a claim to correct | `biomes/seouterwall/PLAN.md` §5 implies its six station bases pass the 150 m check only after the terrain pass; they passed **before** it, so they are no evidence for 6.1 — see P18 |
 | **P22** | **a trap; survives the new model** | `STAGE.site` is in the **4.22 legacy frame** (`89-atmos-e-skymodel.js`'s `refPx:[446,690]`), offset from 5.1 by `legacy_shift` (+272, +330). Re-site a station with a model pixel and the sun, giant, ring and moons all move. Nothing in the station files says which frame they are in |

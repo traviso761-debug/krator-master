@@ -93,14 +93,28 @@ const STAGE={
  // `peaks`, `seed`, `rock`, `snowH`, `hz` and the windows are the author's and keep each layer's character and place.
  // THE WALLS ARE MUCH LOWER IN THE SKY THAN THIS PAGE USED TO DRAW THEM, and that is the correction, not a loss: the
  // Catch's crests do run 10-17 km, but on the 5.1 model they stand 48-273 km off from this cell, so the highest thing
- // visible anywhere from it is 2.97 deg (a 3,179 m ridge 47 km north-north-west) and the 13.6 km Godthrone mass, 240 km
- // away, subtends 1.72 deg. The old numbers reached 9.4 deg, which is a 4.22-era hand survey the 5.1 remodelling left
+ // visible anywhere from it is 2.97 deg (a 3,179 m ridge 47 km north-north-west), and the Godthrone massif - 24.8 km
+ // high, the tallest ground on the map - subtends only 0.42 deg, because it stands 451 km off and 21.1 km of that is
+ // curvature drop. (CORRECTED 2026-11-25: this comment first said "the 13.6 km Godthrone mass, 240 km away, subtends
+ // 1.72 deg", which was assembled from two unrelated readings - layer 0's top_max_m and the authored dist - and
+ // described no feature of the model.) The old numbers reached 9.4 deg, which is a 4.22-era hand survey the 5.1 remodelling left
  // behind; a 12 km wall only subtends 9 deg at about 70 km, and nothing that tall is within 90 km of the floor's heart.
+ // THE EYE IS THE PAGE'S `siteH` + 30, NOT THE MODEL CELL (re-cast 2026-11-25): core/atmos's ridges are elevation angles
+ // in the camera's space and the camera stands on the PAGE's ground, so the cast walks the model's terrain from
+ // siteH + 30. Here that is 380 m against the model cell's 448, and the far layers do not care (under 0.1 deg) while
+ // THE NEAR LAYER MOVES ABOUT 0.8 DEG PER 100 m - more than its own amplitude - so layer 3 flipped sign. Layer 3 can
+ // never be pinned tighter than this page's own ground is known.
+ // AND `snowH` IS IN `dist * tan(el)` UNITS, not metres of terrain (89-atmos-g-sky.js: hgt = dist*tan(radians(el)), and
+ // snowH and forestH are compared against hgt). Cutting the amplitudes 2.5x shrinks every drawn ridge's hgt by the same
+ // factor, so the authored snowH:4300 ended up ABOVE the ridge it sits on and the snowfields vanished. It is re-expressed
+ // as the hgt at which the real horizon crosses the intended snow line. `hz` needs no such care and none moved: 89s sets
+ // haze = -ln(1-hz)/(dist*fogDensity) and the shader applies 1-exp(-dist*uFogD*R.w)+0.06, so `dist` cancels and the
+ // applied haze is hz + 0.06 whatever `dist` is.
  ridges:[
-  {dist:144000,base:-0.53,amp:3.06,cycles:30,octaves:6,peaks:18,peakAmp:0.18,seed:41,rock:[.46,.38,.32],hz:0.7},   /* the far crests, 90-240 km: highest at az 324 */
-  {dist:273000,base:-0.10,amp:0.41,cycles:7,octaves:4,peaks:3,peakAmp:.1,win:[305,24,1.6],floor:-1,seed:42,rock:[.33,.29,.27],hz:0.66},   /* the Godthrone's mass, north-west: measured highest at az 301, so the window stands */
-  {dist:49000,base:-0.47,amp:3.43,cycles:42,octaves:6,peaks:26,peakAmp:0.1,seed:43,rock:[.5,.4,.32],snowH:4300,hz:0.5},   /* the inner walls, 30-90 km: their top is 4,396 m here, so snowH 4300 shows only on the highest */
-  {peaks:14,peakAmp:0.1,dist:22000,base:-0.39,amp:0.5,cycles:34,octaves:5,win:[185,70,1.5],floor:-1,seed:44,rock:[.62,.48,.34],hz:0.3}],   /* the interior hills south, 6-30 km: -0.39 to +0.13 deg, barely over the floor */
+  {dist:140000,base:-0.49,amp:3.06,cycles:30,octaves:6,peaks:18,peakAmp:0.17,seed:41,rock:[.46,.38,.32],hz:0.7},   /* the far crests, 90-240 km: highest at az 324 */
+  {dist:273000,base:-0.08,amp:0.40,cycles:7,octaves:4,peaks:3,peakAmp:0.10,win:[305,24,1.6],floor:-1,seed:42,rock:[.33,.29,.27],hz:0.66},   /* the Godthrone's mass, north-west: measured highest at az 301, so the window stands */
+  {dist:48000,base:-0.29,amp:3.37,cycles:42,octaves:6,peaks:26,peakAmp:0.10,seed:43,rock:[.5,.4,.32],snowH:1700,hz:0.5},   /* the inner walls, 30-90 km: terrain tops 4,361 m; snowH is in dist*tan(el) units (see the note above), and the horizon crosses 4,300 m at 2.01 deg, which is 1,700 of them */
+  {peaks:14,peakAmp:0.10,dist:22000,base:0.42,amp:0.24,cycles:34,octaves:5,win:[185,70,1.5],floor:-1,seed:44,rock:[.62,.48,.34],hz:0.3}],   /* the interior hills south, 6-30 km: +0.42 to +0.66 deg from the page's own eye, barely over the floor; dist kept at the author's 22 km because the cast pins to the band floor */
  spine:SPINE,nebkhas:NEBKHAS,bias:{},expect:['poplar','tamarisk','broom'],hour:15.5,
  water:[],                                    /* the sand sea has none: the channel's water is underground */
  sedQ:0,                                      /* no sedesert flora: no oasis here */

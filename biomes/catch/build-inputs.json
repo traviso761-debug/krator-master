@@ -3,12 +3,12 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/catch/KNOWN_ISSUES.md": "3cb9c043d46472f907ce82fb868614bc22c57545c1f37bd010ccf828b0f47912",
+    "biomes/catch/KNOWN_ISSUES.md": "18a2b0d962195d8523d396f9e5ce99a39671a2231cd42a55244a7d100d0698d8",
     "biomes/catch/PORT.md": "bfa64568618b62ceea21db3702aa79eca40c5e6808b62fd77eca29da19c882f9",
     "biomes/catch/build.py": "3e4eb96aa4ed1104d1f3449ce6055b5181bc8cc95cfb8c5bd3c598a170a97a0f",
     "biomes/catch/src/00-head.html": "170e275ac5cf954835455afe78b4f53f341fef03bb438f2bd83a2ca5161275ee",
     "biomes/catch/src/45-host-scene.js": "3f6030c95e30d4f462d06b4c81783c3484021c4708ea548cafc57ff5e8a6e3b5",
-    "biomes/catch/src/45b-host-stage.js": "dabf580dcc2de14b4cfc49b533676055d721e04379c5a8be461c287475d12229",
+    "biomes/catch/src/45b-host-stage.js": "b915fdd9d6e0af08ece27a2ba7342dfdf2e8b9dc58b739ea307db6474298da67",
     "biomes/catch/src/45c-host-ground.js": "0d66eea66d9db1bb0599ef88252868a929fa4418403edd554730de217546ad6f",
     "biomes/catch/src/46-host-rock.js": "02620607c041928dbb0ac96de815e57a001e5e7a4531faed44b2e59427aa15ef",
     "biomes/catch/src/49z-host-sed-end.js": "0bc25716e90fdaffbe141f9e08c294e42344eede20a939e8cb4f249fb6e43aa3",
@@ -172,15 +172,15 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/catch/dist/catch.html": "4da9743c55de779c0ac649f51fbde4110d6aea8a0100bdf184c0d2e30dea8076"
+    "biomes/catch/dist/catch.html": "87e94d4fdace6d17c01593eef6e68e6df5ade3ec28a2a08d558382e45687b680"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch.html": "4da9743c55de779c0ac649f51fbde4110d6aea8a0100bdf184c0d2e30dea8076"
+    "biomes/catch/dist/catch.html": "87e94d4fdace6d17c01593eef6e68e6df5ade3ec28a2a08d558382e45687b680"
    }
   },
   "build.py --station fan": {
    "inputs": {
-    "biomes/catch/KNOWN_ISSUES.md": "3cb9c043d46472f907ce82fb868614bc22c57545c1f37bd010ccf828b0f47912",
+    "biomes/catch/KNOWN_ISSUES.md": "18a2b0d962195d8523d396f9e5ce99a39671a2231cd42a55244a7d100d0698d8",
     "biomes/catch/PORT.md": "bfa64568618b62ceea21db3702aa79eca40c5e6808b62fd77eca29da19c882f9",
     "biomes/catch/build.py": "3e4eb96aa4ed1104d1f3449ce6055b5181bc8cc95cfb8c5bd3c598a170a97a0f",
     "biomes/catch/src/45-host-scene.js": "3f6030c95e30d4f462d06b4c81783c3484021c4708ea548cafc57ff5e8a6e3b5",
@@ -203,7 +203,7 @@
     "biomes/catch/src/99-host-take.js": "83309e183c5a53a03f4dee02059496763c82040309c3b4ba4b736fb0def7d9d2",
     "biomes/catch/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/catch/stations/fan/00-head.html": "35d8a48b1fa02674ffa343c4555761800ff7cc2c5d2fccb00b3e60a2d6c0d073",
-    "biomes/catch/stations/fan/45b-host-stage.js": "56175fc032fcd41aaad770b80cee6077f868ed84135b929c8de31abc35beffa6",
+    "biomes/catch/stations/fan/45b-host-stage.js": "e5389715b7601f023a393e5f9cb06d2b2470f1456c48cd2754388ffa758c340a",
     "biomes/catch/stations/fan/station.json": "a65bed589340d921333b9dee9a5e5815db2eb661333e1ff498a06b978432066c",
     "biomes/catch/tex/bark0.albedo.webp": "3e71aae7540b5bf54d9894c221e1d6d5ef93a35c710cb334c14e26f2acb56507",
     "biomes/catch/tex/bark1.albedo.webp": "88bf998b68ca1295b67a62884c623d0e8e51e2eb989a4938346a5d887634d9f8",
@@ -351,15 +351,15 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/catch/dist/catch-fan.html": "f4242a9bf7bf0b6964a8552f6dc357076026f6033df84f255758429361ba71b6"
+    "biomes/catch/dist/catch-fan.html": "dd25145859beee0f69db5d8eb90ce8b2ef235ff3fe724220c7b85c04bbc34445"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-fan.html": "f4242a9bf7bf0b6964a8552f6dc357076026f6033df84f255758429361ba71b6"
+    "biomes/catch/dist/catch-fan.html": "dd25145859beee0f69db5d8eb90ce8b2ef235ff3fe724220c7b85c04bbc34445"
    }
   },
   "build.py --station lake": {
    "inputs": {
-    "biomes/catch/KNOWN_ISSUES.md": "3cb9c043d46472f907ce82fb868614bc22c57545c1f37bd010ccf828b0f47912",
+    "biomes/catch/KNOWN_ISSUES.md": "18a2b0d962195d8523d396f9e5ce99a39671a2231cd42a55244a7d100d0698d8",
     "biomes/catch/PORT.md": "bfa64568618b62ceea21db3702aa79eca40c5e6808b62fd77eca29da19c882f9",
     "biomes/catch/build.py": "3e4eb96aa4ed1104d1f3449ce6055b5181bc8cc95cfb8c5bd3c598a170a97a0f",
     "biomes/catch/src/45-host-scene.js": "3f6030c95e30d4f462d06b4c81783c3484021c4708ea548cafc57ff5e8a6e3b5",
@@ -382,7 +382,7 @@
     "biomes/catch/src/99-host-take.js": "83309e183c5a53a03f4dee02059496763c82040309c3b4ba4b736fb0def7d9d2",
     "biomes/catch/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/catch/stations/lake/00-head.html": "4bcf3062f36b9719cfe5dac557fc17053367e3eb8a6624b73279605fb623668e",
-    "biomes/catch/stations/lake/45b-host-stage.js": "da6a06e11407dbfc18c635a0a1fc209d6162c83dcafaaacf6fc252289998ff18",
+    "biomes/catch/stations/lake/45b-host-stage.js": "d749e35f875c00bc6d6b6eea7565a7d44ee7eceaf17db745c3ab65b303e656e3",
     "biomes/catch/stations/lake/station.json": "de5b7899b4dfc6a85fa566bae149d3075399d7174e1fdc1e58823b9dc503f1d7",
     "biomes/catch/tex/bark0.albedo.webp": "3e71aae7540b5bf54d9894c221e1d6d5ef93a35c710cb334c14e26f2acb56507",
     "biomes/catch/tex/bark1.albedo.webp": "88bf998b68ca1295b67a62884c623d0e8e51e2eb989a4938346a5d887634d9f8",
@@ -530,15 +530,15 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/catch/dist/catch-lake.html": "aeb18fb509df8795d6b1c8d285522007b7590fc6e18e7bf5e54afefbd715f50b"
+    "biomes/catch/dist/catch-lake.html": "1ee08a73149129e212eb811556a9ab6c5ff6ebadf4d9e59db55f04328eca9c2b"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-lake.html": "aeb18fb509df8795d6b1c8d285522007b7590fc6e18e7bf5e54afefbd715f50b"
+    "biomes/catch/dist/catch-lake.html": "1ee08a73149129e212eb811556a9ab6c5ff6ebadf4d9e59db55f04328eca9c2b"
    }
   },
   "build.py --station oasis": {
    "inputs": {
-    "biomes/catch/KNOWN_ISSUES.md": "3cb9c043d46472f907ce82fb868614bc22c57545c1f37bd010ccf828b0f47912",
+    "biomes/catch/KNOWN_ISSUES.md": "18a2b0d962195d8523d396f9e5ce99a39671a2231cd42a55244a7d100d0698d8",
     "biomes/catch/PORT.md": "bfa64568618b62ceea21db3702aa79eca40c5e6808b62fd77eca29da19c882f9",
     "biomes/catch/build.py": "3e4eb96aa4ed1104d1f3449ce6055b5181bc8cc95cfb8c5bd3c598a170a97a0f",
     "biomes/catch/src/45-host-scene.js": "3f6030c95e30d4f462d06b4c81783c3484021c4708ea548cafc57ff5e8a6e3b5",
@@ -561,7 +561,7 @@
     "biomes/catch/src/99-host-take.js": "83309e183c5a53a03f4dee02059496763c82040309c3b4ba4b736fb0def7d9d2",
     "biomes/catch/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/catch/stations/oasis/00-head.html": "a432d5448ef7e1aa6cfe810e24087e1107b07caacdac69236e352df5d4c582d2",
-    "biomes/catch/stations/oasis/45b-host-stage.js": "67fd8416ff8d98cb5ced748e9a2dbc8d26ffc084a09398c5b0ad1261d48114e4",
+    "biomes/catch/stations/oasis/45b-host-stage.js": "e26efc6425c1d359a84a8554201ab02ef1c3b76cee528f9477539614715f4b29",
     "biomes/catch/stations/oasis/station.json": "58334fb15decf031acde8d04c71be98906a2c4d5287eb285f137cd6af1293583",
     "biomes/catch/tex/bark0.albedo.webp": "3e71aae7540b5bf54d9894c221e1d6d5ef93a35c710cb334c14e26f2acb56507",
     "biomes/catch/tex/bark1.albedo.webp": "88bf998b68ca1295b67a62884c623d0e8e51e2eb989a4938346a5d887634d9f8",
@@ -709,10 +709,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/catch/dist/catch-oasis.html": "6c295d561e9886d015b97f8382c0b30f4df6d7913fb52a7d6da99005d405103c"
+    "biomes/catch/dist/catch-oasis.html": "12a1277f905a01dc36e69efef69e4114a425046d6b76dd72924d8bebc2957ab8"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-oasis.html": "6c295d561e9886d015b97f8382c0b30f4df6d7913fb52a7d6da99005d405103c"
+    "biomes/catch/dist/catch-oasis.html": "12a1277f905a01dc36e69efef69e4114a425046d6b76dd72924d8bebc2957ab8"
    }
   }
  }

@@ -65,7 +65,9 @@ const STAGE={
  key:'fan',name:'The Catch: the north fan and the walls',title:'Krator biome — the Catch: the north fan and the walls',seed:37,hour:13,
  hint:'The Catch, station 4: the way in, the gravel fan under the 6.2 km notch (~1,400 m at its toe): braided dry channels down from the gorge\'s mouth, the mountain front, the walls\' snowfields and the bare crests above the air, the Godthrone north-west, and Kolli, the first oasis, a cold seep at the fan\'s toe',
  site:{px:786,py:1037},air:{pressure:1.38,humidity:.15},clouds:{cover:.06},fogDensity:0.00013,fogH:{y0:1340,H:160,k:.75},siteH:1400,
- // RE-SURVEYED on the 5.1 model from px 786,1037 (2026-11-24), the same cast as station 1's: the near horizon here is
+ // RE-SURVEYED on the 5.1 model from px 786,1037 (2026-11-24, re-cast 2026-11-25 from the page's own eye at
+ // siteH + 30 rather than the model cell - here immaterial, 0.01-0.09 deg, but see station 1's note for why it matters
+ // there and for `snowH`'s units): the near horizon here is
  // a great amphitheatre open to the SOUTH - the front wraps from az 250 round through north to 110, reaching 9.8 deg
  // 8 km off at az 0-10, while az 120-240 falls away at -1.6 to -2.2 deg as the floor drops off the fan's toe. The page
  // draws that northern front itself (FRONT_Z, 2.55 km out and about 22 deg), so the sky does not double it; what the sky
@@ -73,10 +75,10 @@ const STAGE={
  // pointed at the open south on the OLD site and clipped the wall at its east edge - to [180,60], the sector that is
  // genuinely open floor, and is fitted there.
  ridges:[
-  {dist:142000,base:-1.11,amp:4.05,cycles:30,octaves:6,peaks:18,peakAmp:0.14,seed:71,rock:[0.39,0.34,0.32],hz:0.55},   /* the far crests, 90-240 km: highest at az 312 */
-  {dist:283000,base:-0.70,amp:1.09,cycles:6,octaves:4,peaks:3,peakAmp:0.1,win:[300,30,1.4],floor:-1,seed:72,rock:[0.37,0.32,0.31],hz:0.62},   /* the Godthrone, north-west: measured highest at az 296, so the window stands */
-  {dist:48000,base:-1.24,amp:5.05,cycles:42,octaves:6,peaks:26,peakAmp:0.1,win:[330,160,.8],floor:-1,seed:73,rock:[0.46,0.39,0.34],snowH:4400,hz:0.36},   /* the walls, 30-90 km: highest at az 334, dead on this window's centre */
-  {peaks:14,peakAmp:0.16,dist:30000,base:-2.25,amp:0.47,cycles:34,octaves:5,win:[180,60,1.2],floor:-1,seed:74,rock:[0.63,0.52,0.41],hz:0.18}],   /* the floor falling away south of the toe, 6-30 km: -2.25 to -1.62 deg */
+  {dist:141000,base:-1.10,amp:4.05,cycles:30,octaves:6,peaks:18,peakAmp:0.14,seed:71,rock:[0.39,0.34,0.32],hz:0.55},   /* the far crests, 90-240 km: highest at az 312 */
+  {dist:282000,base:-0.69,amp:1.09,cycles:6,octaves:4,peaks:3,peakAmp:0.10,win:[300,30,1.4],floor:-1,seed:72,rock:[0.37,0.32,0.31],hz:0.62},   /* the Godthrone, north-west: measured highest at az 296, so the window stands */
+  {dist:47000,base:-1.21,amp:5.11,cycles:42,octaves:6,peaks:26,peakAmp:0.10,win:[330,160,.8],floor:-1,seed:73,rock:[0.46,0.39,0.34],snowH:3100,hz:0.36},   /* the walls, 30-90 km: highest at az 334, dead on this window's centre. In THIS band the terrain never reaches 4,400 m (it tops 3,568), so the authored snowH put snow where there was no mountain; 3,100 in dist*tan(el) units leaves a trace on the highest crest only */
+  {peaks:14,peakAmp:0.16,dist:30000,base:-2.16,amp:0.47,cycles:34,octaves:5,win:[180,60,1.2],floor:-1,seed:74,rock:[0.63,0.52,0.41],hz:0.18}],   /* the floor falling away south of the toe, 6-30 km: -2.16 to -1.69 deg from the page's own eye */
  spine:SPINE,nebkhas:[],expect:['poplar','tamarisk','reed','broom'],
  bias:{poplar:(x,z)=>smooth(300,60,poolD(x,z))*2,tamarisk:(x,z)=>smooth(320,40,poolD(x,z))*1.5},
  water:[{key:'kolli',kind:'still',rec:POOL.rec,name:POOL.name,look:{color:0x2a6a70,roughness:.06,metalness:.05,envMapIntensity:.5,renderOrder:1}}],

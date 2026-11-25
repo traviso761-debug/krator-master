@@ -5,11 +5,13 @@
       the interior hills. A horizon cast from the scale model's heightfield at the site (SKY-PLAN.md 3.3, "Later") replaces
       them with no code change: the stage's `ridges` take a `profile`.
 
-- [ ] **And the painted walls are about three times too tall — stations 2 and 3 still are** (measured 2026-11-25 by the
+- [x] **The painted walls were about three times too tall — all four stations are now cast** (measured and corrected 2026-11-25 by the
       scale-model session's horizon cast, 1,024 azimuths per band; `openworld/catch-bowl/PLAN-TERRAIN.md` **P19**). The
       drawn ceiling of a ridge layer is `base + amp + peakAmp` (`core/atmos/sky/89-atmos-e-skymodel.js`,
       `A.ridgeProfile`). From the Catch floor the highest thing visible **anywhere** is **2.97°**, and the tallest ground
-      within 240 km — 13,628 m of Godthrone at 239.7 km — subtends **1.72°**. These pages draw:
+      within 240 km subtends under **2°**, and the Godthrone massif itself — **24.8 km high, the tallest ground on the
+      map** — subtends only **0.42°** from station 1, standing 451 km off with 21.1 km of that curvature drop. These
+      pages drew:
 
       | Station | Fragment | far crest | inner wall | max drawn |
       |---|---|---|---|---|
@@ -18,8 +20,24 @@
       | 3 the lake | `stations/lake/45b-host-stage.js` | **identical** | **identical** | 9.41° / 9.86° |
       | 4 north fan | `stations/fan/45b-host-stage.js` | `-2.10 / 12.60 / 2.4` | `-3.00 / 16.80 / 3` | 15.0° / 16.8° |
 
-      Stations 1, 2 and 3 are **byte-identical**: the layers were written once and copied, so this is one authoring error,
-      not three. **Stations 1 and 4 are corrected** (the two the scale-model session re-sited); **2 and 3 are not.**
+      Stations 1, 2 and 3 shared the far-crest and inner-wall layers to the digit: the layers were written once and
+      copied, so this was one authoring error, not three. (The other two layers were *not* copied wholesale — station 1's
+      Godthrone layer read `base:3.6, amp:1.2` where station 4's read `2.2 / 2.8` — so each of the eight was cast and
+      reported on its own rather than assumed.) **All four are now cast**, and two further facts came out of doing it:
+
+      - **The eye is the page's `siteH` + 30, not the model cell.** `core/atmos`'s ridges are elevation angles in the
+        camera's space and the camera stands on the *page's* ground. The far layers do not care (under 0.1°), but **the
+        near layer moves about 0.8° per 100 m — more than its own amplitude**, so it can never be pinned tighter than
+        the page's own ground is known. At station 2 the gap is 379 m (the model cell is Stair's hill; `siteH` is the
+        spring at its foot, sub-cell on a 2 km grid) and layer 3 moves 1.44°; at station 1 the 98 m gap flips its sign.
+      - **`snowH` is in `dist·tan(el)` units, not metres of terrain** (`89-atmos-g-sky.js`: `hgt = dist*tan(radians(el))`,
+        and `snowH` and `forestH` are compared against `hgt`). So cutting the amplitudes ~2.5× shrank every drawn
+        ridge's `hgt` by the same factor and **put every station's snow line above the ridge it sits on — the snowfields
+        vanished entirely** until they were re-expressed as the `hgt` at which the real horizon crosses the intended
+        snow line (1,700 / 3,100 / 1,850 / 2,150 for stations 1-4). Station 4's is the instructive one: in its 30-90 km
+        band the terrain never reaches the authored 4,400 m at all, so its snowfields were never physically there.
+      - `hz` needs no such care and none was changed: `89s` sets `haze = -ln(1-hz)/(dist·fogDensity)` and the shader
+        applies `1-exp(-dist·uFogD·R.w)+0.06`, so `dist` cancels and the applied haze is `hz + 0.06` whatever `dist` is.
 
       It needs no model to see that it is wrong: a 12 km wall subtends ~9° only at about **70 km**, and the Catch is
       ~127,000 km², so from its middle the walls are **150-250 km** off — at 200 km a 12 km wall subtends ~**2.1°** after

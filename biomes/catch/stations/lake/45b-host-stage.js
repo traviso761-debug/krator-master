@@ -87,10 +87,14 @@ const STAGE={
  hint:'The Catch, station 3: the terminal soda lake at the basin\'s lowest point (318 m): pink, teal and ochre brine, algal mats, soda crust, white efflorescence and a playa of ochre salt polygons, the old lake\'s strandlines, yardangs and castellated mesas of wind-cut lake beds, dead channels with their dead poplars, saltbush and brine lamps',
  site:{px:763,py:1062},air:{pressure:1.57,humidity:.2},clouds:{cover:.04},fogDensity:0.00015,fogH:{y0:316,H:45,k:.8},siteH:318,
  ridges:[
-  {dist:200000,base:-1.81,amp:8.82,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:61,rock:[0.41,0.36,0.32],hz:0.68},
-  {dist:260000,base:1.7,amp:2.2,cycles:7,octaves:4,peaks:3,peakAmp:1.2,win:[322,24,1.6],floor:-1,seed:62,rock:[0.38,0.33,0.31],hz:0.64},
-  {dist:60000,base:-1.96,amp:8.82,cycles:42,octaves:6,peaks:26,peakAmp:3,seed:63,rock:[0.48,0.40,0.33],snowH:4200,hz:0.48},
-  {peaks:14,peakAmp:1.2,dist:18000,base:0.27,amp:2.8,cycles:34,octaves:5,win:[140,80,1.4],floor:-1,seed:64,rock:[0.67,0.53,0.39],hz:0.28}],
+  // RE-SURVEYED on the 5.1 model 2026-11-25 (PLAN-TERRAIN.md P19), the same cast as station 2's, from this page's own
+  // eye (siteH 318 + 30). The authored amplitudes were station 1's, copied. One reading here was hand-verified against
+  // the tool at 1 km steps with no interpolation: the Godthrone massif is px 861,1272, 24,823 m high, 423 km off, and
+  // after an 18.2 km curvature drop it subtends 0.80 deg - the cast said 0.80, the hand walk +0.813.
+  {dist:121000,base:-0.51,amp:3.77,cycles:30,octaves:6,peaks:18,peakAmp:0.11,seed:61,rock:[0.41,0.36,0.32],hz:0.68},   /* 90-240 km: -0.52 to 3.37 deg, terrain tops 13,505 m, highest at az 321 */
+  {dist:284000,base:-0.24,amp:1.04,cycles:7,octaves:4,peaks:3,peakAmp:0.10,win:[322,24,1.6],floor:-1,seed:62,rock:[0.38,0.33,0.31],hz:0.64},   /* the Godthrone: 24,823 m at px 861,1272, 423 km off, subtending 0.80 deg after an 18.6 km curvature drop - hand-verified */
+  {dist:64000,base:-0.09,amp:3.24,cycles:42,octaves:6,peaks:26,peakAmp:0.10,seed:63,rock:[0.48,0.40,0.33],snowH:2150,hz:0.48},   /* 30-90 km: -0.11 to 3.20 deg, terrain tops 4,588 m, highest at az 321; the horizon crosses 4,200 m at 1.94 deg */
+  {peaks:14,peakAmp:0.10,dist:23000,base:-0.11,amp:0.33,cycles:34,octaves:5,win:[140,80,1.4],floor:-1,seed:64,rock:[0.67,0.53,0.39],hz:0.28}],   /* 6-30 km over the lake: -0.11 to 0.22 deg, flat as a lake horizon should be */
  spine:SPINE,nebkhas:NEBKHAS,expect:['saltbush','brinelamp','poplar','tamarisk'],
  bias:{broom:.5,salt:.3,reed:(x,z)=>smooth(260,60,chD(x,z)),poplar:(x,z)=>smooth(-250,-450,shoreD(x,z))},
  water:[{key:'lake',kind:'open',name:'The terminal lake (soda brine: the Catch\'s one great salt field)',
