@@ -16,6 +16,7 @@ page is written from it.
 | `tests/test_smodel.py` | smodel against the scripts it was lifted from, on the live data, plus vent-peak and weather checks |
 | `extract_region.py`, `build_425_master.py` | the live tools: they read a saved page or `model/data`, through smodel |
 | `history/` | every past edit's script and report (4.11 to 4.24), frozen as the record (`history/README.md`) |
+| `tides/` | the tidal calculator: `bake_tides.py` solves the tide over each sea basin and writes `model/data/tides.json`, which `core/water/tide` (`KTIDE`) reads. Rerun it after an edit that moves the coast or the sea floor (`tides/README.md`) |
 
 The data's rasters and how each map mode on the page draws from them are in `BRIEF-GEMINI.md` ("The grids and the
 rasters", "How each map mode gets its picture").
