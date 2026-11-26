@@ -1283,3 +1283,29 @@ Qiblai packs as sidecars (`dist/ancients.tex.xanadu*.js`, `ancients.tex.qiblai.j
 ruin when the page has it, and draws the ruin's east plateau on the town's ground (`THCITY.town.ground`) out to x 1260;
 core/ruins skips the town's meshes (`theodiga:town ...`). On `--target theodiga` none of it is present and nothing changes but
 the text of those two fragments.
+
+## Tethis (`--target tethis`, 2026-11-24)
+
+The pelagic saucer arcology in the shallow sea (`targets/tethis` -> `dist/tethis.html`), after Soleri's *Novanoah* /
+*Babel IID* and Kikutake's *Marine City*, shown intact (`d = 0`, west) and held today by the Hykkousoi of the League of
+Amphitriton (`d = 1`, east; `LORE.md` 6.16). Pure plan, analytical hull descriptor (`TETHIS.HULL`) and rules in
+`8az0-tethis-plan.js` (`[G data]`, `KRAND`, `test-tethis.js`: `1,448 × 956 m` hexagonal/axial lattice, `-24.5 .. +218 m`,
+`346.6 ha` floor, `36,017` Ancient peak / `6,420` Hykkousoi, blueprints and furniture manifests in `plan/`), shallow-sea
+bathymetry and coral shoals in `8az1-tethis-water.js` (`[G data]`, drawn by `core/water` + `core/atmos` in
+`90w-tethis-water.js`), and geometry in `8az2`–`8az4` (`buildTethis`, `reseed(12600+d)`): nine annular stepped saucers
+(`P0–P8`) and four satellites (`S0a–c`, `S3a`) on clustered fluted pylons, two Mushroom Towers (`T0`, `T4` with 24 lit
+radial soffit coffers), six radial plug-in capsule-drum towers (`T1a–T5`), two T-crane condenser columns (`T6a–b`), and four
+submerged rotundas (`U0, U1, U4, U6`). Synthetic reef rock (`ROCK`) and seabed sit behind `!(opts && opts.noTerrain)` on
+isolated `KRAND.child` streams. In `d = 1` the upper rings carry grown nacre pods, scallop balconies, the `T0` helical
+conch-stair, an arched rib-bridge (`B_6_1`) and a rib-drawbridge (`B_5_7s`); `U0, U1, U4` are flooded gill-folk sanctuaries;
+and `B_6_8` lies collapsed on the seabed isolating `P8` as a Salvage Island watched by `core/ruins`. Lives wholly in
+`targets/tethis/`, so the kit's other pages are untouched.
+
+## Arcodiga & Arckibuz (`--target arcodiga`, `--target arckibuz`, 2026-11-24)
+
+Paolo Soleri's **Plate 18: Arcodiga** (`targets/arcodiga` -> `dist/arcodiga.html`) and **Plate 15: Arckibuz** (`targets/arckibuz` -> `dist/arckibuz.html`), built as self-contained target-only arcologies (`src/` untouched) with `[G data]` interiors planned during construction on `kits/ancients-interiors` so each refurbished state (`d = 3`, placed at `x = 0` beside `d = 0` intact and `d = 1` ruined) works directly as a settlement centerpiece:
+
+- **Arcodiga**: `360 m` convex-upstream arch dam (`1,460 m` chord), `432 m` upstream VTOL Airport tower, `2,040 m` hyperbolic Horizontal Stiffening Wing (`HIGHWAYS` prow at `176 m`, `RESEARCH` / `LEARNING` flaring to `322 m`), Axial City Spine, 4 central prows, 16 radial Living-Working buttress ribs, Powerhouse with hydro tailrace falls & Y-waterways, and 3 circular pumped-silt basins (`298.5k` max tris/site, `65` draw calls, `1,143` rooms per state, `15,275` furniture pieces, `_api.arcodigaSocket(culture)`). In `d = 3`, active cores house ~`26.6k` people while the 12 outer ribs stand sealed behind bulkheads as `rehab` expansion sockets.
+- **Arckibuz**: `120 m` desert agricultural citadel rising out of a `250 x 250 m` (`6.25 ha`) sunken pit (`Crop Processing`, `Storage & Production`, tunnel under desert highway to `Shelter` light shaft), ringed by 5 polygonal `Vegetable Gardens`, stepped `City Center` & circular 6-tier `Community` council amphitheater (`AI.ringPlate` + 4 pinwheel bastions), cantilevered louvered `Housing` crown, 5 peaked `Tent Structure` roofs, and NE shoulder `Water Reservoir` (`133.1k` max tris/site, `68` draw calls, `426` rooms per state, `6,030` furniture pieces, `_api.arckibuzSocket(culture)`). In `d = 3`, active cores house `1,660` people while `housing-e` + `pit-east` (`+840`) stand sealed behind bulkheads.
+- **Host integration (`HULL` & `opts.noTerrain`)**: Both builders expose `[G data]` hull descriptors (`ARCODIGA.HULL` / `buildArcodiga.hull` and `ARCKIBUZ.HULL` / `buildArckibuz.hull`: `span`, `H`, `toe`/`toeZ`, `zUp`, `rAt(y)`, waterlines, quays/docks) used directly by their `core/water` fragments, isolate synthetic demo rock/terrain RNG inside dedicated `reseed(...)` sub-blocks, and gate `meshMerged(ROCK, ...)` under `if (!opts?.noTerrain)` so host worlds disabling demo terrain never shift a single megastructure `rng()` draw.
+

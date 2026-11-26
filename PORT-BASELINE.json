@@ -1092,6 +1092,14 @@
    "bytes": 2630474,
    "sha256": "9aba34cd7de4423ecb6529e959f5a6a752f2c84d53393a5c16dae16e59a26d4c"
   },
+  "kits/ancients/dist/arckibuz.html": {
+   "bytes": 2127102,
+   "sha256": "37f20f960e48eede5c50e69a28a9546fe2090984647bd30f4cc221e9c38f723f"
+  },
+  "kits/ancients/dist/arcodiga.html": {
+   "bytes": 2043816,
+   "sha256": "4bff7919a40a6ca832801faa3c622e65fe8bc094ea0e65ceb7d60274bdbf9d22"
+  },
   "kits/ancients/dist/arcoindian.html": {
    "bytes": 2632472,
    "sha256": "19a82e118352d6c233900e7f1acf7582665bceb440efdbdde044d708ccd35a73"
@@ -1099,6 +1107,10 @@
   "kits/ancients/dist/arcoindian2.html": {
    "bytes": 2633130,
    "sha256": "4686ddfdd01f7bf602c7aeea988fa9d2f290a500dacf69dce7eddb2e9e915e67"
+  },
+  "kits/ancients/dist/arcoindian3.html": {
+   "bytes": 692535,
+   "sha256": "dd1198c9f7ac1c97f7568b3d726275c2116c8da17efb3ca0ebbf1837e21055c4"
   },
   "kits/ancients/dist/arcpile.html": {
    "bytes": 2737321,
@@ -1236,6 +1248,10 @@
    "bytes": 2623299,
    "sha256": "dfd6ccf7cf1b2be08b2c8459c1a29e6d56b1bd4381f86a4a80d64ffc8a74a3b5"
   },
+  "kits/ancients/dist/slice.html": {
+   "bytes": 707533,
+   "sha256": "d175e135e845df42e7715c2be1bb52c216b713196a5ad936dad4d553d4f89e00"
+  },
   "kits/ancients/dist/spaceport.html": {
    "bytes": 2623076,
    "sha256": "3e09a854f75a387aa7a853c3890f73899b7cd94fb0bda50510dd422834fe6e46"
@@ -1248,6 +1264,10 @@
    "bytes": 331680,
    "sha256": "2640e7a1f50a00cc7bc0e3f4313421905e97832f8e0071c43cbde9b5d63692ff"
   },
+  "kits/ancients/dist/stonebow.html": {
+   "bytes": 2028974,
+   "sha256": "01c074ebcf74aa4e6649c3485a286ac424c21c6a8044a41c757bf5023f1c1071"
+  },
   "kits/ancients/dist/strongbow-today.html": {
    "bytes": 2027445,
    "sha256": "aa7b9ba0bcc3230c2d2777c8872259b12ab93237450491d3187f76c369efc131"
@@ -1255,6 +1275,10 @@
   "kits/ancients/dist/strongbow.html": {
    "bytes": 857715,
    "sha256": "b755e0c6acc415f0ec1aec5bdc357495427fb676bcfafb7e1fd4a7b8e7b28d72"
+  },
+  "kits/ancients/dist/tethis.html": {
+   "bytes": 723954,
+   "sha256": "4c304ccd0219e4a5a0325c99c487e56cd99bd4e7406f1dbb2a39dfe9a5e33060"
   },
   "kits/ancients/dist/theodiga-today.html": {
    "bytes": 3466583,
@@ -1287,6 +1311,10 @@
   "kits/ancients/dist/yuni-variants.html": {
    "bytes": 2624105,
    "sha256": "1c4d9927d492e58f312055ecad5ed97d3753670a0cfb04802981d1f661d03ff6"
+  },
+  "kits/arcoforte/dist/arcoforte.html": {
+   "bytes": 2428126,
+   "sha256": "1e4b356c2040cf207d2cfcbf93f5c49186324d846bfc82f22c6422d8895b4ef7"
   },
   "kits/ash-nomads/dist/ash-nomads.html": {
    "bytes": 19035333,
