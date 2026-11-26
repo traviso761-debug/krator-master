@@ -22,8 +22,15 @@ const FC_SUMERU_DRAW = (function () {
     const addBox = FC_SUMERU_CORE.addBox;
     const addCyl = FC_SUMERU_CORE.addCyl;
     const addCone = FC_SUMERU_CORE.addCone;
+    const addArcBand = FC_SUMERU_CORE.addArcBand;
+    const addRibbonWalk = FC_SUMERU_CORE.addRibbonWalk;
     const mergeStaticGroup = FC_SUMERU_CORE.mergeStaticGroup;
     const lowGroundUnderBox = FC_SUMERU_CORE.lowGroundUnderBox;
+
+    const roadCobaltMat = MATS.cobaltGlaze.clone();
+    roadCobaltMat.polygonOffset = true;
+    roadCobaltMat.polygonOffsetFactor = -2;
+    roadCobaltMat.polygonOffsetUnits = -8;
 
     const coreOut = FC_SUMERU_CORE.buildCore(M, root, MATS, tagReg, subClipPlanes, dynamicMeshes, turbineRings);
 
@@ -36,13 +43,37 @@ const FC_SUMERU_DRAW = (function () {
     root.add(weirGroup);
 
     const nSeg = 108;
-    const lockAngles = SR.locks.map(function (L) { return ((L.angDeg % 360) + 360) % 360; });
+    const lockAngles = SR.locks.map(function (L) { return ((L.angDeg % 360) + 360) % 360; }).sort(function (a, b) { return a - b; });
+    const dykeAngles = M.dykes.map(function (D) { return ((D.angDeg % 360) + 360) % 360; });
     const rMid = 0.5 * (SR.rOuter + SR.rInner);
-    const ringW = SR.rOuter - SR.rInner;
-    const segLen = (2 * Math.PI * rMid) / nSeg * 1.04;
 
     const lanternRecs = [];
     const stallRecs = [];
+
+    /* Build seamless mitered Sea-Ring arcs between the 4 Ship-Lock gaps (0 chord-to-chord overlap!) */
+    const lockHalfDeg = 2.4;
+    const rawArcs = [];
+    for (let li = 0; li < lockAngles.length; li++) {
+      const aStart = lockAngles[li] + lockHalfDeg;
+      const aEnd = (li + 1 < lockAngles.length ? lockAngles[li + 1] : lockAngles[0] + 360.0) - lockHalfDeg;
+      const sc0 = SR.scarArcDeg[0], sc1 = SR.scarArcDeg[1];
+      if (aStart < sc0 && aEnd > sc1) {
+        rawArcs.push({ a0: aStart, a1: sc0, scar: false });
+        rawArcs.push({ a0: sc0,    a1: sc1, scar: true  });
+        rawArcs.push({ a0: sc1,    a1: aEnd, scar: false });
+      } else {
+        rawArcs.push({ a0: aStart, a1: aEnd, scar: (aStart >= sc0 && aEnd <= sc1) });
+      }
+    }
+    for (let ai = 0; ai < rawArcs.length; ai++) {
+      const A = rawArcs[ai];
+      const nSub = Math.max(2, Math.round((A.a1 - A.a0) / 3.2));
+      addArcBand(weirGroup, SR.cx, SR.cz, SR.rInner, SR.rOuter, -32.0, SR.promenadeY - 1.5, A.a0, A.a1, nSub, A.scar ? MATS.cobaltGlaze : MATS.ancientConcrete, 7.5);
+      addArcBand(weirGroup, SR.cx, SR.cz, SR.rInner - 0.8, SR.rOuter + 1.0, SR.promenadeY - 1.5, SR.promenadeY, A.a0, A.a1, nSub, MATS.travertineStone, 5.0);
+      addArcBand(weirGroup, SR.cx, SR.cz, SR.rOuter - 11.2, SR.rOuter - 2.0, SR.promenadeY, SR.promenadeY + 0.26, A.a0, A.a1, nSub, roadCobaltMat, 4.5);
+      addArcBand(weirGroup, SR.cx, SR.cz, SR.rOuter - 1.8, SR.rOuter + 0.2, SR.promenadeY, SR.promenadeY + 1.45, A.a0, A.a1, nSub, MATS.celadonRoof, 4.0);
+      addArcBand(weirGroup, SR.cx, SR.cz, SR.rInner - 0.2, SR.rInner + 1.2, SR.promenadeY, SR.promenadeY + 1.15, A.a0, A.a1, nSub, MATS.travertineStone, 4.0);
+    }
 
     for (let s = 0; s < nSeg; s++) {
       const deg = (s + 0.5) * (360 / nSeg);
@@ -50,37 +81,35 @@ const FC_SUMERU_DRAW = (function () {
       for (let li = 0; li < lockAngles.length; li++) {
         let diff = Math.abs(deg - lockAngles[li]);
         if (diff > 180) diff = 360 - diff;
-        if (diff < 2.2) { inLock = true; break; }
+        if (diff < 2.8) { inLock = true; break; }
       }
       if (inLock) continue;
+      let nearDyke = false;
+      for (let di = 0; di < dykeAngles.length; di++) {
+        let diff = Math.abs(deg - dykeAngles[di]);
+        if (diff > 180) diff = 360 - diff;
+        if (diff < 3.4) { nearDyke = true; break; }
+      }
 
       const rad = deg * Math.PI / 180;
       const ux = Math.cos(rad), uz = Math.sin(rad);
       const sx = SR.cx + rMid * ux, sz = SR.cz + rMid * uz;
       const bed = Math.min(-28.0, terrainH(sx, sz) - 1.0);
-      const hWeir = SR.promenadeY - bed;
       const inScar = deg >= SR.scarArcDeg[0] && deg <= SR.scarArcDeg[1];
 
-      /* Main sea-ring casemate wall & rampart deck */
-      addBox(weirGroup, ringW, hWeir, segLen, sx, bed, sz, -rad, inScar ? MATS.cobaltGlaze : MATS.ancientConcrete, 7.5);
-      addBox(weirGroup, 10.5, hWeir - 2.0, 8.0, SR.cx + (SR.rOuter + 3.6) * ux, bed, SR.cz + (SR.rOuter + 3.6) * uz, -rad, MATS.ancientConcrete, 5.5);
+      /* Ocean-facing wave-buttresses seated outside SR.rOuter + 1.0 and below promenade deck */
+      addBox(weirGroup, 9.2, (SR.promenadeY - 1.6) - bed, 8.0, SR.cx + (SR.rOuter + 5.6) * ux, bed, SR.cz + (SR.rOuter + 5.6) * uz, -rad, MATS.ancientConcrete, 5.5);
 
-      /* Travertine promenade deck + cobalt rampart road + ocean/lagoon parapets */
-      addBox(weirGroup, ringW + 2.0, 1.5, segLen, sx, SR.promenadeY - 1.2, sz, -rad, MATS.travertineStone, 5.0);
-      addBox(weirGroup, 9.5, 0.25, segLen, SR.cx + (SR.rOuter - 6.5) * ux, SR.promenadeY + 0.2, SR.cz + (SR.rOuter - 6.5) * uz, -rad, MATS.cobaltGlaze, 4.5);
-      addBox(weirGroup, 1.8, 1.5, segLen, SR.cx + (SR.rOuter - 0.8) * ux, SR.promenadeY, SR.cz + (SR.rOuter - 0.8) * uz, -rad, MATS.celadonRoof, 4.0);
-      addBox(weirGroup, 1.4, 1.2, segLen, SR.cx + (SR.rInner + 0.8) * ux, SR.promenadeY, SR.cz + (SR.rInner + 0.8) * uz, -rad, MATS.travertineStone, 4.0);
-
-      if (s % 2 === 0) {
+      if (s % 2 === 0 && !nearDyke) {
         lanternRecs.push({ x: SR.cx + (SR.rOuter - 2.4) * ux, y: SR.promenadeY, z: SR.cz + (SR.rOuter - 2.4) * uz });
       }
 
-      /* 18 Octagonal Ocean Watch-Turrets */
-      if (s % 6 === 0 && !inScar) {
+      /* Octagonal Ocean Watch-Turrets (clear of scar, locks, and radial dyke viaduct junctions) */
+      if (s % 6 === 0 && !inScar && !nearDyke) {
         const tx = SR.cx + (SR.rOuter - 3.2) * ux, tz = SR.cz + (SR.rOuter - 3.2) * uz;
-        addCyl(weirGroup, 6.4, 7.0, 11.2, 8, tx, SR.promenadeY - 0.2, tz, 0, MATS.ancientCeramic, 4.0);
-        addCone(weirGroup, 7.5, 6.2, 8, tx, SR.promenadeY + 10.6, tz, 0, MATS.celadonRoof);
-        addCone(weirGroup, 1.6, 4.0, 8, tx, SR.promenadeY + 16.4, tz, 0, MATS.giltChofa);
+        addCyl(weirGroup, 6.4, 7.0, 11.0, 8, tx, SR.promenadeY, tz, 0, MATS.ancientCeramic, 4.0);
+        addCone(weirGroup, 7.5, 6.2, 8, tx, SR.promenadeY + 11.0, tz, 0, MATS.celadonRoof);
+        addCone(weirGroup, 1.6, 4.0, 8, tx, SR.promenadeY + 16.8, tz, 0, MATS.giltChofa);
       }
 
       if (typeof KWALK !== 'undefined' && KWALK.floor) {
@@ -88,42 +117,41 @@ const FC_SUMERU_DRAW = (function () {
       }
     }
 
-    /* 8 Wide Inner Venetian Harbour-Quay Masonry Shelves (+6.2 m terrace from r = 896..986 m = 90 m radial depth!) */
+    /* 8 Wide Inner Venetian Harbour-Quay Masonry Shelves (+6.2 m terrace from r = 896..982 m via seamless addArcBand!) */
     for (let q = 0; q < SR.quays.length; q++) {
       const Q = SR.quays[q];
       let spanDeg = Q.ang1 - Q.ang0;
       if (spanDeg < 0) spanDeg += 360;
       const nChord = Math.max(4, Math.ceil(spanDeg / 2.8));
       const dDeg = spanDeg / nChord;
-      const rQMid = 0.5 * (Q.rIn + Q.rOut);
-      const qDepth = (Q.rOut - Q.rIn) + 3.5;
+      const rQMid = 0.5 * (Q.rIn + SR.rInner);
+
+      addArcBand(weirGroup, SR.cx, SR.cz, Q.rIn, SR.rInner, -30.0, Q.deckY, Q.ang0, Q.ang1, nChord, MATS.travertineStone, 7.5);
+      addArcBand(weirGroup, SR.cx, SR.cz, Q.rIn, Q.rIn + 2.5, Q.deckY, Q.deckY + 0.65, Q.ang0, Q.ang1, nChord, Q.style === 'suudme' ? MATS.cobaltGlaze : MATS.giltChofa, 3.5);
+      /* Twin concentric paved ring-streets cleanly inside the corridors between building rows (r=921.2..928.8 & r=954.0..959.5) */
+      addArcBand(weirGroup, SR.cx, SR.cz, 954.0, 959.5, Q.deckY, Q.deckY + 0.26, Q.ang0, Q.ang1, nChord, roadCobaltMat, 4.5);
+      addArcBand(weirGroup, SR.cx, SR.cz, 921.2, 928.8, Q.deckY, Q.deckY + 0.26, Q.ang0, Q.ang1, nChord, roadCobaltMat, 4.5);
+      /* Waterfront boat-step apron (+2.5 m) butted cleanly outside Q.rIn */
+      addArcBand(weirGroup, SR.cx, SR.cz, Q.rIn - 4.6, Q.rIn, -26.0, 2.5, Q.ang0, Q.ang1, nChord, MATS.ancientConcrete, 5.5);
+
       for (let c = 0; c < nChord; c++) {
         const deg = Q.ang0 + (c + 0.5) * dDeg;
         const rad = deg * Math.PI / 180;
         const ux = Math.cos(rad), uz = Math.sin(rad);
         const qx = SR.cx + rQMid * ux, qz = SR.cz + rQMid * uz;
-        const chordLen = 2 * Q.rOut * Math.sin((dDeg * 0.5) * Math.PI / 180) * 1.08;
-
-        addBox(weirGroup, qDepth, Q.deckY - (-30.0), chordLen, qx, -30.0, qz, -rad, MATS.travertineStone, 7.5);
-        /* Canal embankment coping + Twin Concentric Paved Ring-Streets at r=956.5 m & r=925.0 m */
-        addBox(weirGroup, 2.6, 0.8, chordLen, SR.cx + (Q.rIn + 1.2) * ux, Q.deckY - 0.35, SR.cz + (Q.rIn + 1.2) * uz, -rad, Q.style === 'suudme' ? MATS.cobaltGlaze : MATS.giltChofa, 3.5);
-        addBox(weirGroup, 9.5, 0.25, chordLen, SR.cx + 957.0 * ux, Q.deckY - 0.05, SR.cz + 957.0 * uz, -rad, MATS.cobaltGlaze, 4.5);
-        addBox(weirGroup, 9.5, 0.25, chordLen, SR.cx + 925.5 * ux, Q.deckY - 0.05, SR.cz + 925.5 * uz, -rad, MATS.cobaltGlaze, 4.5);
-        /* Waterfront boat-step apron (+2.5 m) */
-        addBox(weirGroup, 4.6, 2.5 - (-26.0), chordLen * 0.94, SR.cx + (Q.rIn - 2.0) * ux, -26.0, SR.cz + (Q.rIn - 2.0) * uz, -rad, MATS.ancientConcrete, 5.5);
-
         lanternRecs.push({ x: SR.cx + 899.0 * ux, y: Q.deckY, z: SR.cz + 899.0 * uz });
-        stallRecs.push({ x: SR.cx + 925.5 * ux, y: Q.deckY, z: SR.cz + 925.5 * uz, ry: -rad, col: c % 2 === 0 ? 0xdba23a : 0x2e7e76 });
-
+        stallRecs.push({ x: SR.cx + 925.0 * ux, y: Q.deckY + 0.26, z: SR.cz + 925.0 * uz, ry: -rad, col: c % 2 === 0 ? 0xdba23a : 0x2e7e76 });
         if (typeof KWALK !== 'undefined' && KWALK.floor) {
           KWALK.floor({ rect: [qx - 32, qx + 32, qz - 32, qz + 32], y: Q.deckY });
         }
       }
-      const midRad = (Q.ang0 + spanDeg * 0.5) * Math.PI / 180;
+
+      /* Non-overlapping 6-step quay-to-promenade stone stairs at Q.ang0 + 0.45 deg (clear of building arc!) */
+      const stRad = (Q.ang0 + 0.45) * Math.PI / 180;
       for (let st = 0; st < 6; st++) {
-        const rSt = 968.0 + st * 3.0;
-        const ySt = Q.deckY + (st + 1) * ((SR.promenadeY - Q.deckY) / 6);
-        addBox(weirGroup, 4.2, ySt - Q.deckY + 0.5, 12.0, SR.cx + rSt * Math.cos(midRad), Q.deckY - 0.3, SR.cz + rSt * Math.sin(midRad), -midRad, MATS.travertineStone, 3.5);
+        const rSt = 970.2 + st * 2.0;
+        const ySt = Q.deckY + (st + 1) * ((SR.promenadeY - 0.45 - Q.deckY) / 6);
+        addBox(weirGroup, 2.0, ySt - Q.deckY, 9.5, SR.cx + rSt * Math.cos(stRad), Q.deckY, SR.cz + rSt * Math.sin(stRad), -stRad, MATS.travertineStone, 3.5);
       }
     }
 
@@ -133,9 +161,9 @@ const FC_SUMERU_DRAW = (function () {
     root.add(scarGroup);
     {
       const a0 = 254 * Math.PI / 180;
-      const mx = SR.cx + rMid * Math.cos(a0), mz = SR.cz + rMid * Math.sin(a0);
-      const g0 = lowGroundUnderBox(mx, mz, 14, 14);
-      addBox(scarGroup, 26, 18.0 - (g0 - 0.3), 26, mx, g0 - 0.3, mz, 0, MATS.cobaltGlaze, 6.0);
+      const mx = SR.cx + (SR.rOuter + 15.0) * Math.cos(a0), mz = SR.cz + (SR.rOuter + 15.0) * Math.sin(a0);
+      const g0 = lowGroundUnderBox(mx, mz, 9, 9);
+      addBox(scarGroup, 18, 14.5 - (g0 - 0.3), 18, mx, g0 - 0.3, mz, 0.2, MATS.cobaltGlaze, 6.0);
       for (let i = 0; i < SR.scarBlocks.length; i++) {
         const B = SR.scarBlocks[i];
         const gb = lowGroundUnderBox(B.x, B.z, B.w * 0.5, B.d * 0.5);
@@ -155,15 +183,15 @@ const FC_SUMERU_DRAW = (function () {
       for (let k = 0; k < L.keeps.length; k++) {
         const K = L.keeps[k];
         const g0 = Math.min(-30.0, terrainH(K.x, K.z) - 1.0);
-        addCyl(weirGroup, 14.0, 17.5, L.bridgeY + 2.0 - g0, 12, K.x, g0, K.z, 0, MATS.ancientCeramic, 6.0);
-        addCyl(weirGroup, 15.5, 15.8, 2.4, 12, K.x, L.bridgeY + 0.5, K.z, 0, MATS.giltChofa, 3.5);
-        addCone(weirGroup, 16.4, 9.6, 12, K.x, L.bridgeY + 2.6, K.z, 0, MATS.celadonRoof);
-        addCone(weirGroup, 2.8, 6.5, 8, K.x, L.bridgeY + 11.6, K.z, 0, MATS.giltChofa);
+        addCyl(weirGroup, 14.0, 17.5, L.bridgeY + 1.0 - g0, 12, K.x, g0, K.z, 0, MATS.ancientCeramic, 6.0);
+        addCyl(weirGroup, 15.5, 15.8, 1.8, 12, K.x, L.bridgeY + 1.0, K.z, 0, MATS.giltChofa, 3.5);
+        addCone(weirGroup, 16.4, 9.6, 12, K.x, L.bridgeY + 2.8, K.z, 0, MATS.celadonRoof);
+        addCone(weirGroup, 2.8, 6.5, 8, K.x, L.bridgeY + 11.8, K.z, 0, MATS.giltChofa);
       }
 
-      addBox(weirGroup, 19.0, 3.0, 98.0, L.x, L.bridgeY - 1.5, L.z, -a, MATS.paktongMetal, 5.0);
-      addBox(weirGroup, 1.3, 5.4, 96.0, L.x - 8.6 * Math.cos(a), L.bridgeY + 1.0, L.z - 8.6 * Math.sin(a), -a, MATS.paktongMetal, 4.0);
-      addBox(weirGroup, 1.3, 5.4, 96.0, L.x + 8.6 * Math.cos(a), L.bridgeY + 1.0, L.z + 8.6 * Math.sin(a), -a, MATS.paktongMetal, 4.0);
+      addBox(weirGroup, 19.0, 3.0, 72.0, L.x, L.bridgeY - 1.5, L.z, -a, MATS.paktongMetal, 5.0);
+      addBox(weirGroup, 1.3, 5.4, 70.0, L.x - 8.6 * Math.cos(a), L.bridgeY + 1.5, L.z - 8.6 * Math.sin(a), -a, MATS.paktongMetal, 4.0);
+      addBox(weirGroup, 1.3, 5.4, 70.0, L.x + 8.6 * Math.cos(a), L.bridgeY + 1.5, L.z + 8.6 * Math.sin(a), -a, MATS.paktongMetal, 4.0);
 
       const gateL = new THREE.Mesh(FC_SUMERU_CORE.uvScaleBox(3.4, 28.0, 24.0, 4.0), MATS.paktongMetal);
       gateL.position.set(L.x, -4.0, L.z);
@@ -184,7 +212,7 @@ const FC_SUMERU_DRAW = (function () {
     }
 
     /* -------------------------------------------------------------------
-       A4. 4 Colossal Radial Boulevard-Dykes (+22 m Boulevard + 156 m-wide +6.2 m Quays + 9-Span NNE Sea-Viaduct)
+       A4. 4 Colossal Radial Boulevard-Dykes (+22 m Boulevard + 156 m-wide +6.2 m Quays + Sloped NNE Sea-Viaduct)
        ------------------------------------------------------------------- */
     const SM = M.sumeru;
     const dykeGroup = new THREE.Group();
@@ -195,57 +223,106 @@ const FC_SUMERU_DRAW = (function () {
       const D = M.dykes[i];
       const a = D.angDeg * Math.PI / 180;
       const ux = Math.cos(a), uz = Math.sin(a), nx = -uz, nz = ux;
-      const len = D.r1 - D.r0;
-      const midR = 0.5 * (D.r0 + D.r1);
-      const dx = SM.cx + midR * ux, dz = SM.cz + midR * uz;
 
-      /* 1. Central +22.0 m Boulevard Spine */
-      addBox(dykeGroup, len, D.crownY - (-30.0), D.widthM, dx, -30.0, dz, -a, MATS.travertineStone, 8.0);
-      addBox(dykeGroup, len - 4.0, 0.35, 12.0, dx, D.crownY - 0.1, dz, -a, MATS.cobaltGlaze, 5.0);
-      addBox(dykeGroup, len - 2.0, 1.35, 1.5, dx + (D.widthM * 0.5 - 0.9) * nx, D.crownY, dz + (D.widthM * 0.5 - 0.9) * nz, -a, MATS.celadonRoof, 4.0);
-      addBox(dykeGroup, len - 2.0, 1.35, 1.5, dx - (D.widthM * 0.5 - 0.9) * nx, D.crownY, dz - (D.widthM * 0.5 - 0.9) * nz, -a, MATS.celadonRoof, 4.0);
+      /* 1. Central +22.0 m Boulevard Spine butted cleanly at r=226.0 against Sumeru Gopura Bastion (0 hub overlap!) */
+      const rSpine0 = 226.0, rSpine1 = D.r1;
+      const spineLen = rSpine1 - rSpine0;
+      const spineMidR = 0.5 * (rSpine0 + rSpine1);
+      const dx = SM.cx + spineMidR * ux, dz = SM.cz + spineMidR * uz;
 
-      for (let rp = D.r0 + 36.0; rp < D.r1 - 18.0; rp += 44.0) {
-        lanternRecs.push({ x: SM.cx + rp * ux + 5.6 * nx, y: D.crownY, z: SM.cz + rp * uz + 5.6 * nz });
-        lanternRecs.push({ x: SM.cx + rp * ux - 5.6 * nx, y: D.crownY, z: SM.cz + rp * uz - 5.6 * nz });
-        for (let sgn = -1; sgn <= 1; sgn += 2) {
-          const px = SM.cx + rp * ux + sgn * (D.widthM * 0.5 + 1.8) * nx;
-          const pz = SM.cz + rp * uz + sgn * (D.widthM * 0.5 + 1.8) * nz;
-          addBox(dykeGroup, 6.4, D.crownY - (-28.0), 4.6, px, -28.0, pz, -a, MATS.ancientCeramic, 5.0);
+      addBox(dykeGroup, spineLen, D.crownY - (-30.0), D.widthM, dx, -30.0, dz, -a, MATS.travertineStone, 8.0);
+
+      /* Central cobalt carriageway (d = 9.0 m, clear of crown shops & split around gatehouses) */
+      const roadStops = [rSpine0 + 2.0];
+      for (let g = 0; g < D.gates.length; g++) {
+        roadStops.push(D.gates[g] - 15.0, D.gates[g] + 15.0);
+      }
+      roadStops.push(rSpine1 - 2.0);
+      for (let rs = 0; rs < roadStops.length; rs += 2) {
+        const ra = roadStops[rs], rb = roadStops[rs + 1];
+        if (rb - ra > 4.0) {
+          const rm = 0.5 * (ra + rb);
+          addBox(dykeGroup, rb - ra, 0.26, 9.0, SM.cx + rm * ux, D.crownY, SM.cz + rm * uz, -a, roadCobaltMat, 5.0);
         }
       }
 
-      /* 2. Paired Solid Masonry Lower Quay Terraces (+6.2 m, total width 156 m!) */
+      /* Crown parapets split cleanly around lateral grand stair landings (rg + 15.5 +- 5.5 m) */
+      const paraStops = [rSpine0 + 1.0];
+      for (let g = 0; g < D.gates.length; g++) {
+        paraStops.push(D.gates[g] + 9.8, D.gates[g] + 21.2);
+      }
+      paraStops.push(rSpine1 - 1.0);
+      for (let ps = 0; ps < paraStops.length; ps += 2) {
+        const pa0 = paraStops[ps], pa1 = paraStops[ps + 1];
+        if (pa1 - pa0 > 3.0) {
+          const pm = 0.5 * (pa0 + pa1);
+          for (let sgn = -1; sgn <= 1; sgn += 2) {
+            addBox(dykeGroup, pa1 - pa0, 1.35, 1.4, SM.cx + pm * ux + sgn * (D.widthM * 0.5 - 0.8) * nx, D.crownY, SM.cz + pm * uz + sgn * (D.widthM * 0.5 - 0.8) * nz, -a, MATS.celadonRoof, 4.0);
+          }
+        }
+      }
+
+      for (let rp = rSpine0 + 20.0; rp < rSpine1 - 18.0; rp += 44.0) {
+        let nearGatePil = false;
+        for (let g = 0; g < D.gates.length; g++) {
+          if (Math.abs(rp - D.gates[g]) < 24.0) { nearGatePil = true; break; }
+        }
+        if (nearGatePil) continue;
+        lanternRecs.push({ x: SM.cx + rp * ux + 4.8 * nx, y: D.crownY, z: SM.cz + rp * uz + 4.8 * nz });
+        lanternRecs.push({ x: SM.cx + rp * ux - 4.8 * nx, y: D.crownY, z: SM.cz + rp * uz - 4.8 * nz });
+        for (let sgn = -1; sgn <= 1; sgn += 2) {
+          const px = SM.cx + rp * ux + sgn * (D.widthM * 0.5 + 1.8) * nx;
+          const pz = SM.cz + rp * uz + sgn * (D.widthM * 0.5 + 1.8) * nz;
+          const pilBaseY = (rp >= D.quayR0 && rp <= D.quayR1) ? D.quayY : -28.0;
+          addBox(dykeGroup, 6.4, (D.crownY - 0.45) - pilBaseY, 3.6, px, pilBaseY, pz, -a, MATS.ancientCeramic, 5.0);
+        }
+      }
+
+      /* 2. Paired Left & Right Lower Masonry Quay Terraces (+6.2 m, butted outside D.widthM*0.5 -> 0 spine overlap!) */
       const qLen = D.quayR1 - D.quayR0;
       const qMidR = 0.5 * (D.quayR0 + D.quayR1);
       const qx = SM.cx + qMidR * ux, qz = SM.cz + qMidR * uz;
-      addBox(dykeGroup, qLen, D.quayY - (-30.0), D.quayHalfW * 2.0, qx, -30.0, qz, -a, MATS.travertineStone, 7.5);
+      const qSideW = D.quayHalfW - D.widthM * 0.5;
+      const qSideLat = D.widthM * 0.5 + qSideW * 0.5;
+
       for (let sgn = -1; sgn <= 1; sgn += 2) {
-        const ex = qx + sgn * (D.quayHalfW - 1.3) * nx, ez = qz + sgn * (D.quayHalfW - 1.3) * nz;
-        addBox(dykeGroup, qLen, 0.8, 2.6, ex, D.quayY - 0.25, ez, -a, D.tag === 'nne' ? MATS.cobaltGlaze : MATS.giltChofa, 4.0);
-        /* Paved Mid-Quay Market Street at lat = +-51.2 m between Inner and Outer Quay Rows! */
-        const mx2 = qx + sgn * 51.2 * nx, mz2 = qz + sgn * 51.2 * nz;
-        addBox(dykeGroup, qLen - 8.0, 0.25, 9.0, mx2, D.quayY - 0.05, mz2, -a, MATS.cobaltGlaze, 4.5);
-        /* Waterfront Boat-Step Apron at +2.6 m */
+        addBox(dykeGroup, qLen, D.quayY - (-30.0), qSideW, qx + sgn * qSideLat * nx, -30.0, qz + sgn * qSideLat * nz, -a, MATS.travertineStone, 7.5);
+        const ex = qx + sgn * (D.quayHalfW - 1.2) * nx, ez = qz + sgn * (D.quayHalfW - 1.2) * nz;
+        addBox(dykeGroup, qLen, 0.65, 2.4, ex, D.quayY, ez, -a, D.tag === 'nne' ? MATS.cobaltGlaze : MATS.giltChofa, 4.0);
+        /* Paved Mid-Quay Market Street at lat = +-51.6 m (d = 5.2 m, strictly between Inner & Outer Quay Rows!) */
+        const mx2 = qx + sgn * 51.6 * nx, mz2 = qz + sgn * 51.6 * nz;
+        addBox(dykeGroup, qLen - 8.0, 0.26, 5.2, mx2, D.quayY, mz2, -a, roadCobaltMat, 4.5);
+        /* Waterfront Boat-Step Apron at +2.6 m butted outside D.quayHalfW */
         const sx2 = qx + sgn * (D.quayHalfW + 2.4) * nx, sz2 = qz + sgn * (D.quayHalfW + 2.4) * nz;
         addBox(dykeGroup, qLen * 0.94, 2.6 - (-26.0), 4.8, sx2, -26.0, sz2, -a, MATS.ancientConcrete, 6.0);
 
         for (let rs = D.quayR0 + 28.0; rs < D.quayR1 - 24.0; rs += 34.0) {
           lanternRecs.push({ x: SM.cx + rs * ux + sgn * (D.quayHalfW - 2.2) * nx, y: D.quayY, z: SM.cz + rs * uz + sgn * (D.quayHalfW - 2.2) * nz });
-          stallRecs.push({ x: SM.cx + rs * ux + sgn * 51.2 * nx, y: D.quayY, z: SM.cz + rs * uz + sgn * 51.2 * nz, ry: -a, col: (i + Math.round(rs)) % 2 === 0 ? 0xb83c30 : 0xdba23a });
+          stallRecs.push({ x: SM.cx + rs * ux + sgn * 51.6 * nx, y: D.quayY + 0.26, z: SM.cz + rs * uz + sgn * 51.6 * nz, ry: -a, col: (i + Math.round(rs)) % 2 === 0 ? 0xb83c30 : 0xdba23a });
         }
       }
 
-      /* 3. Vaulted Barge-Gate Portals, Lateral Stair-Towers & Reversible Tide-Wheels */
+      /* 3. Twin Barge-Gate Portal Bastions, Paired Non-Overlapping Grand Quay-to-Crown Stairs & Reversible Tide-Wheels */
       for (let g = 0; g < D.gates.length; g++) {
         const rg = D.gates[g];
         const gx = SM.cx + rg * ux, gz = SM.cz + rg * uz;
-        addBox(dykeGroup, 26.0, 9.4, D.widthM + 4.0, gx, D.crownY - 0.3, gz, -a, MATS.cobaltGlaze, 4.0);
-        addBox(dykeGroup, 28.0, 2.2, D.widthM + 6.0, gx, D.crownY + 8.8, gz, -a, MATS.celadonRoof, 4.0);
 
-        for (let st = 0; st < 6; st++) {
-          const ySt = D.quayY + (st + 1) * ((D.crownY - D.quayY) / 6);
-          addBox(dykeGroup, 8.2, ySt - D.quayY + 0.5, D.widthM + 18.0 - st * 2.2, gx + (st - 2.5) * 4.2 * ux, D.quayY - 0.3, gz + (st - 2.5) * 4.2 * uz, -a, MATS.travertineStone, 4.0);
+        /* Twin lateral portal towers flanking the central kit watergate (never burying the kit gatehouse!) */
+        for (let sgn = -1; sgn <= 1; sgn += 2) {
+          const ptx = gx + sgn * (D.widthM * 0.5 - 3.8) * nx;
+          const ptz = gz + sgn * (D.widthM * 0.5 - 3.8) * nz;
+          addBox(dykeGroup, 9.6, 10.4, 7.2, ptx, D.crownY, ptz, -a, MATS.cobaltGlaze, 4.0);
+          addBox(dykeGroup, 10.6, 1.6, 8.2, ptx, D.crownY + 10.4, ptz, -a, MATS.celadonRoof, 4.0);
+
+          /* Clean 8-step grand stone staircase in the open gate plaza (rg + 15.5) climbing inward from +6.2 m quay to +22.0 m crown! */
+          const stAlong = rg + 15.5;
+          const stBaseX = SM.cx + stAlong * ux, stBaseZ = SM.cz + stAlong * uz;
+          const nSteps = 8, treadD = 2.0;
+          for (let st = 0; st < nSteps; st++) {
+            const latCenter = D.widthM * 0.5 + (nSteps - st - 0.5) * treadD;
+            const yTopSt = D.quayY + (st + 1) * ((D.crownY - 0.40 - D.quayY) / nSteps);
+            addBox(dykeGroup, 9.8, yTopSt - D.quayY, treadD, stBaseX + sgn * latCenter * nx, D.quayY, stBaseZ + sgn * latCenter * nz, -a, MATS.travertineStone, 3.5);
+          }
         }
 
         const wheel = new THREE.Mesh(FC_SUMERU_CORE.uvScaleCyl(6.4, 6.4, 4.4, 12, 3.0), MATS.cypressHull);
@@ -257,64 +334,130 @@ const FC_SUMERU_DRAW = (function () {
         dynamicMeshes.add(wheel);
       }
 
-      /* 4. 9-Span NNE Arched Ocean Viaduct (r = 1,012 .. 1,245 m) Ramping onto West Harbour Mole (+7.8 m)! */
+      /* 4. Smooth Sloped NNE Ocean Viaduct (r = 1,016 .. 1,245 m, +22.0 m -> +7.8 m onto West Stone Harbour Mole!) */
       if (D.seaViaductR1 > D.r1) {
-        const nSpans = 9;
-        const rStart = D.r1 - 4.0, rEnd = D.seaViaductR1;
-        const stepR = (rEnd - rStart) / nSpans;
-        for (let sp = 0; sp < nSpans; sp++) {
-          const rA = rStart + sp * stepR, rB = rA + stepR;
-          const rM = 0.5 * (rA + rB);
-          const uSpan = (sp + 0.5) / nSpans;
-          const deckY = sp === 0 ? 22.0 : (22.0 * (1 - uSpan) + D.seaViaductEndY * uSpan);
-          const vx = SM.cx + rM * ux, vz = SM.cz + rM * uz;
-          const pierX = SM.cx + rB * ux, pierZ = SM.cz + rB * uz;
-          addBox(dykeGroup, 10.0, deckY - (-34.0), 32.0, pierX, -34.0, pierZ, -a, MATS.ancientConcrete, 6.5);
-          addBox(dykeGroup, stepR + 3.5, 4.4, 28.0, vx, deckY - 4.0, vz, -a, MATS.travertineStone, 5.5);
-          addBox(dykeGroup, stepR + 3.5, 0.3, 15.0, vx, deckY + 0.25, vz, -a, MATS.cobaltGlaze, 4.5);
-          addBox(dykeGroup, stepR + 3.5, 1.3, 1.5, vx + 13.0 * nx, deckY + 0.2, vz + 13.0 * nz, -a, MATS.celadonRoof, 4.0);
-          addBox(dykeGroup, stepR + 3.5, 1.3, 1.5, vx - 13.0 * nx, deckY + 0.2, vz - 13.0 * nz, -a, MATS.celadonRoof, 4.0);
+        const rStart = D.r1, rEnd = D.seaViaductR1;
+        const horiz = rEnd - rStart;
+        const dyV = D.seaViaductEndY - D.crownY;
+        const len3 = Math.hypot(horiz, dyV);
+        const slopeZ = Math.atan2(dyV, horiz);
+        const rMidV = 0.5 * (rStart + rEnd);
+        const yMidV = 0.5 * (D.crownY + D.seaViaductEndY);
+
+        const nPiers = 8;
+        for (let sp = 1; sp < nPiers; sp++) {
+          const uP = sp / nPiers;
+          const rP = rStart + horiz * uP;
+          const deckYP = D.crownY + dyV * uP;
+          addBox(dykeGroup, 9.0, (deckYP - 2.6) - (-34.0), 30.0, SM.cx + rP * ux, -34.0, SM.cz + rP * uz, -a, MATS.ancientConcrete, 6.5);
+        }
+
+        const vHolder = new THREE.Group();
+        vHolder.position.set(SM.cx + rMidV * ux, yMidV, SM.cz + rMidV * uz);
+        vHolder.rotation.order = 'YZX';
+        vHolder.rotation.y = -a;
+        vHolder.rotation.z = slopeZ;
+
+        const vBeam = new THREE.Mesh(FC_SUMERU_CORE.uvScaleBox(len3, 3.8, 28.0, 5.5), MATS.travertineStone);
+        vBeam.position.y = -1.9;
+        vHolder.add(vBeam);
+
+        const vRoad = new THREE.Mesh(FC_SUMERU_CORE.uvScaleBox(len3 - 1.0, 0.26, 14.0, 4.5), roadCobaltMat);
+        vRoad.position.y = 0.13;
+        vHolder.add(vRoad);
+
+        for (let sgn = -1; sgn <= 1; sgn += 2) {
+          const vPar = new THREE.Mesh(FC_SUMERU_CORE.uvScaleBox(len3 - 0.5, 1.3, 1.4, 4.0), MATS.celadonRoof);
+          vPar.position.set(0, 0.65, sgn * 13.1);
+          vHolder.add(vPar);
+        }
+
+        vHolder.updateMatrix();
+        while (vHolder.children.length) {
+          const ch = vHolder.children[0];
+          ch.updateMatrix();
+          ch.applyMatrix4(vHolder.matrix);
+          dykeGroup.add(ch);
         }
       }
 
       if (tagReg) {
         tagReg.add({
           'class': 'infrastructure', kind: 'boulevard_dyke', key: D.id, name: D.name,
-          at: [dx, D.crownY, dz], ry: -a, size: [len, D.quayHalfW * 2, 44]
+          at: [dx, D.crownY, dz], ry: -a, size: [D.r1 - D.r0, D.quayHalfW * 2, 44]
         });
       }
     }
 
-    /* 5. 10 Sinuous Naga Walkways & 16 8-Column Sala-Nam Water Pavilions */
+    /* 5. 10 Sinuous Naga Walkways (strictly monotonic non-duplicated polylines!) & 16 8-Column Sala-Nam Water Pavilions */
+    function isInsideDykeQuay(wx, wz, padM) {
+      const dx = wx - SM.cx, dz = wz - SM.cz;
+      for (let d = 0; d < M.dykes.length; d++) {
+        const D = M.dykes[d], a = D.angDeg * Math.PI / 180;
+        const ux = Math.cos(a), uz = Math.sin(a);
+        const along = dx * ux + dz * uz;
+        const perp = Math.abs(-dx * uz + dz * ux);
+        if (along >= D.quayR0 - padM && along <= D.quayR1 + padM && perp <= D.quayHalfW + padM) return true;
+      }
+      return false;
+    }
+
     for (let i = 0; i < M.nagaWalks.length; i++) {
       const NW = M.nagaWalks[i];
-      for (let s = 0; s < NW.pts.length - 1; s++) {
-        const A = NW.pts[s], B = NW.pts[s + 1];
-        const mx = (A[0] + B[0]) * 0.5, mz = (A[2] + B[2]) * 0.5;
-        const segL = Math.hypot(B[0] - A[0], B[2] - A[2]) + 0.6;
-        const yaw = Math.atan2(B[0] - A[0], B[2] - A[2]);
-        addBox(dykeGroup, NW.widthM, 1.35, segL, mx, A[1] - 1.1, mz, yaw, MATS.travertineStone, 4.0);
-        addBox(dykeGroup, NW.widthM + 0.6, 0.9, segL, mx, A[1] + 0.15, mz, yaw, MATS.giltChofa, 3.0);
-        if (s % 2 === 1) {
-          addCyl(dykeGroup, 1.5, 2.0, A[1] - (-30.0), 8, A[0], -30.0, A[2], 0, MATS.ancientConcrete, 4.0);
+      if (NW.id.indexOf('spoke_') >= 0) {
+        const trimmed = [];
+        for (let s = 0; s < NW.pts.length; s++) {
+          const P = NW.pts[s];
+          const dx = P[0] - SM.cx, dz = P[2] - SM.cz;
+          const r = Math.hypot(dx, dz) || 1;
+          if (r < 219.8 || r > 245.2) continue;
+          if (isInsideDykeQuay(P[0], P[2], 4.5)) continue;
+          if (trimmed.length) {
+            const prev = trimmed[trimmed.length - 1];
+            if (Math.hypot(P[0] - prev[0], P[2] - prev[2]) < 2.2) continue;
+          }
+          trimmed.push([P[0], P[1], P[2]]);
         }
+        if (trimmed.length >= 2) {
+          addRibbonWalk(dykeGroup, trimmed, NW.widthM, 1.35, 0.32, 0.55, 0.72, MATS.travertineStone, MATS.giltChofa);
+          const midP = trimmed[Math.floor(trimmed.length * 0.5)];
+          addCyl(dykeGroup, 1.5, 2.0, (midP[1] - 1.1) - (-30.0), 8, midP[0], -30.0, midP[2], 0, MATS.ancientConcrete, 4.0);
+        }
+      } else {
+        const segA = [], segB = [];
+        for (let s = 0; s < NW.pts.length; s++) {
+          const P = NW.pts[s];
+          const z = P[2];
+          if (z >= SM.cz + 220.0 && z <= SM.cz + 238.5) {
+            if (!segA.length || Math.hypot(P[0] - segA[segA.length - 1][0], z - segA[segA.length - 1][2]) >= 2.2) {
+              segA.push([P[0], P[1], z]);
+            }
+          } else if (z >= SM.cz + 261.5 && z <= SM.cz + 280.5) {
+            if (!segB.length || Math.hypot(P[0] - segB[segB.length - 1][0], z - segB[segB.length - 1][2]) >= 2.2) {
+              segB.push([P[0], P[1], z]);
+            }
+          }
+        }
+        if (segA.length >= 2) addRibbonWalk(dykeGroup, segA, NW.widthM, 1.35, 0.32, 0.55, 0.72, MATS.travertineStone, MATS.giltChofa);
+        if (segB.length >= 2) addRibbonWalk(dykeGroup, segB, NW.widthM, 1.35, 0.32, 0.55, 0.72, MATS.travertineStone, MATS.giltChofa);
       }
     }
 
     for (let i = 0; i < M.salaPavilions.length; i++) {
       const SP = M.salaPavilions[i];
-      addCyl(dykeGroup, SP.r, SP.r * 1.10, SP.y - (-30.0), 8, SP.x, -30.0, SP.z, Math.PI / 8, MATS.travertineStone, 5.0);
-      addCyl(dykeGroup, SP.r * 1.02, SP.r * 1.03, 0.75, 8, SP.x, SP.y - 0.5, SP.z, Math.PI / 8, MATS.cobaltGlaze, 3.5);
+      const yDeck = SP.y + 0.55;
+      addCyl(dykeGroup, SP.r, SP.r * 1.10, yDeck - (-30.0), 8, SP.x, -30.0, SP.z, Math.PI / 8, MATS.travertineStone, 5.0);
+      addCyl(dykeGroup, SP.r * 1.02, SP.r * 1.03, 0.75, 8, SP.x, yDeck - 1.10, SP.z, Math.PI / 8, MATS.cobaltGlaze, 3.5);
       const rCol = SP.r * 0.78;
       for (let c = 0; c < SP.cols; c++) {
         const ca = (c / SP.cols) * Math.PI * 2 + Math.PI / 8;
-        addCyl(dykeGroup, 0.70, 0.85, SP.colH, 8, SP.x + rCol * Math.cos(ca), SP.y - 0.1, SP.z + rCol * Math.sin(ca), 0, MATS.travertineStone, 2.5);
+        addCyl(dykeGroup, 0.70, 0.85, SP.colH, 8, SP.x + rCol * Math.cos(ca), yDeck, SP.z + rCol * Math.sin(ca), 0, MATS.travertineStone, 2.5);
       }
-      const yEnt = SP.y + SP.colH - 0.25;
-      addCyl(dykeGroup, SP.r * 0.96, SP.r * 0.98, 1.15, 8, SP.x, yEnt, SP.z, Math.PI / 8, MATS.giltChofa, 3.0);
-      addCone(dykeGroup, SP.r * 1.16, 4.9, 8, SP.x, yEnt + 0.85, SP.z, Math.PI / 8, MATS.celadonRoof);
-      addCone(dykeGroup, SP.r * 0.68, 4.3, 8, SP.x, yEnt + 4.5, SP.z, Math.PI / 8, MATS.celadonRoof);
-      addCone(dykeGroup, 1.7, 4.3, 8, SP.x, yEnt + 8.1, SP.z, 0, MATS.giltChofa);
+      const yEnt = yDeck + SP.colH;
+      addCyl(dykeGroup, SP.r * 0.96, SP.r * 0.98, 1.10, 8, SP.x, yEnt, SP.z, Math.PI / 8, MATS.giltChofa, 3.0);
+      addCone(dykeGroup, SP.r * 1.16, 4.9, 8, SP.x, yEnt + 1.10, SP.z, Math.PI / 8, MATS.celadonRoof);
+      addCone(dykeGroup, SP.r * 0.68, 4.3, 8, SP.x, yEnt + 4.8, SP.z, Math.PI / 8, MATS.celadonRoof);
+      addCone(dykeGroup, 1.7, 4.3, 8, SP.x, yEnt + 8.4, SP.z, 0, MATS.giltChofa);
     }
 
     /* 6. Instanced Waterfront Street-Lanterns & Silk Market Stalls (3 draw calls total across the entire megastructure!) */

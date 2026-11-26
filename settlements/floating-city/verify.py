@@ -109,6 +109,26 @@ async def run(a):
             except Exception as e:
                 print('view failed:', v, e, flush=True)
                 fails.append('view ' + v)
+        if a.proof_shots:
+            import shutil
+            os.makedirs(a.proof_shots, exist_ok=True)
+            ov_src = os.path.join(a.out, 'view_overview.png')
+            pt_src = os.path.join(a.out, 'view_suudme-tooka-pontoons.png')
+            if os.path.isfile(ov_src):
+                shutil.copyfile(ov_src, os.path.join(a.proof_shots, 'fc_v3_overview.png'))
+                print('proof shot: %s' % os.path.join(a.proof_shots, 'fc_v3_overview.png'), flush=True)
+            if os.path.isfile(pt_src):
+                shutil.copyfile(pt_src, os.path.join(a.proof_shots, 'fc_v3_neighborhood_pontoons.png'))
+                print('proof shot: %s' % os.path.join(a.proof_shots, 'fc_v3_neighborhood_pontoons.png'), flush=True)
+            await pg.evaluate("()=>{if(typeof FC_WORLD!=='undefined'&&FC_WORLD.setSubmarineCut)FC_WORLD.setSubmarineCut(false);"
+                              "if(window._api&&window._api.setView)window._api.setView(370,740,-201,370,4,-200);}")
+            if sw:
+                await pg.evaluate("()=>window.__drawNow()")
+            else:
+                await pg.wait_for_timeout(450)
+            td_dst = os.path.join(a.proof_shots, 'fc_v3_topdown_audit.png')
+            await pg.screenshot(path=td_dst)
+            print('proof shot: %s' % td_dst, flush=True)
         await pg.evaluate("()=>{if(typeof FC_WORLD!=='undefined'&&FC_WORLD.setSubmarineCut)FC_WORLD.setSubmarineCut(false);}")
     return V.exit()
 
@@ -121,5 +141,6 @@ if __name__ == '__main__':
     ap.add_argument('--assert', dest='assert_', action='store_true')
     ap.add_argument('--strict-budget', dest='strict_budget', action='store_true')
     ap.add_argument('--out', default=os.path.join(HERE, 'shots'))
+    ap.add_argument('--proof-shots', dest='proof_shots', default='')
     ap.add_argument('--size', default='1280x800')
     sys.exit(asyncio.run(run(ap.parse_args())))

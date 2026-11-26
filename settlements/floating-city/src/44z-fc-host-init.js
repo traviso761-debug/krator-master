@@ -42,7 +42,7 @@ renderer.localClippingEnabled = true;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 32000);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1.6, 28000);
 window.addEventListener('resize', function () {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();

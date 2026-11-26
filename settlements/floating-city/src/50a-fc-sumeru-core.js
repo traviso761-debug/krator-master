@@ -61,6 +61,132 @@ const FC_SUMERU_CORE = (function () {
     return m;
   }
 
+  /* Non-overlapping cruciform box pair: full X-arm (armL x armW) + left/right Z-wings outside armW*0.5 (zero coplanar center overlap!) */
+  function addCrossBoxes(grp, armL, armW, h, cx, yBot, cz, ry, mat, tileM) {
+    const rot = ry == null ? 0 : ry;
+    const tM = tileM == null ? 5.0 : tileM;
+    addBox(grp, armL, h, armW, cx, yBot, cz, rot, mat, tM);
+    const wingL = (armL - armW) * 0.5;
+    if (wingL > 0.05) {
+      const off = armW * 0.5 + wingL * 0.5;
+      const c = Math.cos(rot), s = Math.sin(rot);
+      addBox(grp, armW, h, wingL, cx + off * s, yBot, cz + off * c, rot, mat, tM);
+      addBox(grp, armW, h, wingL, cx - off * s, yBot, cz - off * c, rot, mat, tM);
+    }
+  }
+
+  /* Seamless mitered annular arc prism [rIn..rOut, yBot..yTop, deg0..deg1] with crisp per-face normals and zero chord overlaps */
+  function addArcBand(grp, cx, cz, rIn, rOut, yBot, yTop, deg0, deg1, nSteps, mat, tileM) {
+    const steps = Math.max(1, nSteps | 0);
+    const spanDeg = deg1 - deg0;
+    const fullLoop = Math.abs(Math.abs(spanDeg) - 360.0) < 1e-3;
+    const sc = 1.0 / (tileM == null ? 6.0 : tileM);
+    const pos = [], nor = [], uv = [], idx = [];
+
+    function pushQuad(ax, ay, az, bx, by, bz, cx2, cy2, cz2, dx, dy, dz, nx, ny, nz, u0, v0, u1, v1) {
+      const b = pos.length / 3;
+      pos.push(ax, ay, az, bx, by, bz, cx2, cy2, cz2, dx, dy, dz);
+      nor.push(nx, ny, nz, nx, ny, nz, nx, ny, nz, nx, ny, nz);
+      uv.push(u0, v0, u1, v0, u1, v1, u0, v1);
+      idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+    }
+
+    const rMid = 0.5 * (rIn + rOut);
+    const h = yTop - yBot;
+    const wRad = rOut - rIn;
+    for (let k = 0; k < steps; k++) {
+      const a0 = (deg0 + spanDeg * (k / steps)) * Math.PI / 180;
+      const a1 = (deg0 + spanDeg * ((k + 1) / steps)) * Math.PI / 180;
+      const c0 = Math.cos(a0), s0 = Math.sin(a0);
+      const c1 = Math.cos(a1), s1 = Math.sin(a1);
+      const cm = Math.cos(0.5 * (a0 + a1)), sm = Math.sin(0.5 * (a0 + a1));
+
+      const ix0 = cx + rIn * c0,  iz0 = cz + rIn * s0;
+      const ox0 = cx + rOut * c0, oz0 = cz + rOut * s0;
+      const ix1 = cx + rIn * c1,  iz1 = cz + rIn * s1;
+      const ox1 = cx + rOut * c1, oz1 = cz + rOut * s1;
+
+      const sArc0 = (k / steps) * Math.abs(spanDeg * Math.PI / 180) * rMid * sc;
+      const sArc1 = ((k + 1) / steps) * Math.abs(spanDeg * Math.PI / 180) * rMid * sc;
+
+      /* Top (+Y) & Bottom (-Y) */
+      pushQuad(ix0, yTop, iz0, ix1, yTop, iz1, ox1, yTop, oz1, ox0, yTop, oz0, 0, 1, 0, sArc0, 0, sArc1, wRad * sc);
+      pushQuad(ix0, yBot, iz0, ox0, yBot, oz0, ox1, yBot, oz1, ix1, yBot, iz1, 0, -1, 0, sArc0, 0, sArc1, wRad * sc);
+      /* Outer (+R) & Inner (-R) */
+      pushQuad(ox0, yBot, oz0, ox0, yTop, oz0, ox1, yTop, oz1, ox1, yBot, oz1, cm, 0, sm, 0, sArc0, h * sc, sArc1);
+      pushQuad(ix0, yBot, iz0, ix1, yBot, iz1, ix1, yTop, iz1, ix0, yTop, iz0, -cm, 0, -sm, 0, sArc0, sArc1, h * sc);
+
+      if (!fullLoop && k === 0) {
+        pushQuad(ix0, yBot, iz0, ix0, yTop, iz0, ox0, yTop, oz0, ox0, yBot, oz0, s0, 0, -c0, 0, 0, h * sc, wRad * sc);
+      }
+      if (!fullLoop && k === steps - 1) {
+        pushQuad(ix1, yBot, iz1, ox1, yBot, oz1, ox1, yTop, oz1, ix1, yTop, iz1, -s1, 0, c1, 0, 0, wRad * sc, h * sc);
+      }
+    }
+
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx);
+    g.computeBoundingSphere();
+    const m = new THREE.Mesh(g, mat);
+    grp.add(m);
+    return m;
+  }
+
+  /* Seamless mitered polyline walkway + side balustrade curbs with zero bend-to-bend coplanar overlap */
+  function addRibbonWalk(grp, pts, widthM, deckH, yLift, curbW, curbH, deckMat, curbMat) {
+    if (!pts || pts.length < 2) return;
+    function buildStrip(lat0, lat1, dyBot, dyTop, mat, tileM) {
+      const sc = 1.0 / tileM;
+      const pos = [], nor = [], uv = [], idx = [];
+      function pq(ax, ay, az, bx, by, bz, cx2, cy2, cz2, dx, dy, dz, nx, ny, nz, u0, v0, u1, v1) {
+        const b = pos.length / 3;
+        pos.push(ax, ay, az, bx, by, bz, cx2, cy2, cz2, dx, dy, dz);
+        nor.push(nx, ny, nz, nx, ny, nz, nx, ny, nz, nx, ny, nz);
+        uv.push(u0, v0, u1, v0, u1, v1, u0, v1);
+        idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+      }
+      const n = pts.length;
+      const Lx = [], Lz = [], Rx = [], Rz = [], Y0 = [], Y1 = [], Sx = [], Sz = [], sDist = [0];
+      for (let i = 0; i < n; i++) {
+        if (i > 0) sDist.push(sDist[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][2] - pts[i - 1][2]));
+        const pA = pts[Math.max(0, i - 1)], pB = pts[Math.min(n - 1, i + 1)];
+        let tx = pB[0] - pA[0], tz = pB[2] - pA[2];
+        const tl = Math.hypot(tx, tz) || 1.0;
+        tx /= tl; tz /= tl;
+        /* Side vector S = (tz, 0, -tx) so T x S = +Y */
+        const sx = tz, sz = -tx;
+        Sx.push(sx); Sz.push(sz);
+        Lx.push(pts[i][0] + sx * lat0); Lz.push(pts[i][2] + sz * lat0);
+        Rx.push(pts[i][0] + sx * lat1); Rz.push(pts[i][2] + sz * lat1);
+        Y0.push(pts[i][1] + dyBot); Y1.push(pts[i][1] + dyTop);
+      }
+      const wStrip = lat1 - lat0, hStrip = dyTop - dyBot;
+      for (let i = 0; i < n - 1; i++) {
+        const u0 = sDist[i] * sc, u1 = sDist[i + 1] * sc;
+        pq(Lx[i], Y1[i], Lz[i], Lx[i + 1], Y1[i + 1], Lz[i + 1], Rx[i + 1], Y1[i + 1], Rz[i + 1], Rx[i], Y1[i], Rz[i], 0, 1, 0, u0, 0, u1, wStrip * sc);
+        pq(Lx[i], Y0[i], Lz[i], Rx[i], Y0[i], Rz[i], Rx[i + 1], Y0[i + 1], Rz[i + 1], Lx[i + 1], Y0[i + 1], Lz[i + 1], 0, -1, 0, u0, 0, u1, wStrip * sc);
+        pq(Rx[i], Y0[i], Rz[i], Rx[i], Y1[i], Rz[i], Rx[i + 1], Y1[i + 1], Rz[i + 1], Rx[i + 1], Y0[i + 1], Rz[i + 1], Sx[i], 0, Sz[i], 0, u0, hStrip * sc, u1);
+        pq(Lx[i], Y0[i], Lz[i], Lx[i + 1], Y0[i + 1], Lz[i + 1], Lx[i + 1], Y1[i + 1], Lz[i + 1], Lx[i], Y1[i], Lz[i], -Sx[i], 0, -Sz[i], 0, u0, u1, hStrip * sc);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+      g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+      g.setIndex(idx);
+      g.computeBoundingSphere();
+      grp.add(new THREE.Mesh(g, mat));
+    }
+    const hw = widthM * 0.5;
+    buildStrip(-hw, hw, yLift - deckH, yLift, deckMat, 4.0);
+    if (curbW > 0 && curbH > 0 && curbMat) {
+      buildStrip(-hw - 0.15, -hw - 0.15 + curbW, yLift, yLift + curbH, curbMat, 3.0);
+      buildStrip(hw + 0.15 - curbW, hw + 0.15, yLift, yLift + curbH, curbMat, 3.0);
+    }
+  }
+
   function mergeStaticGroup(grp, keepSet) {
     grp.updateMatrixWorld(true);
     const invRoot = new THREE.Matrix4().copy(grp.matrixWorld).invert();
@@ -261,57 +387,60 @@ const FC_SUMERU_CORE = (function () {
 
     /* 1. Four-Tier Octagonal Mandala Plinth (-26 m -> +6.2 m -> +14.0 m -> +22.0 m -> +30.0 m) */
     const plinthTiers = [
-      { r: SM.plinthR,      y0: -26.0, y1:  6.2, mat: MATS.travertineStone, cloisterH: 5.8, garden: true },
+      { r: SM.plinthR,      y0: -26.0, y1:  6.2, mat: MATS.travertineStone, cloisterH: 5.0, garden: true },
       { r: SM.midCourtR,    y0:   5.8, y1: 14.0, mat: MATS.ancientCeramic,  cloisterH: 0.0, garden: true },
-      { r: SM.upperCourtR,  y0:  13.6, y1: 22.0, mat: MATS.travertineStone, cloisterH: 5.6, garden: true },
+      { r: SM.upperCourtR,  y0:  13.6, y1: 22.0, mat: MATS.travertineStone, cloisterH: 5.0, garden: true },
       { r: SM.innerPodiumR, y0:  21.6, y1: 30.0, mat: MATS.ancientCeramic,  cloisterH: 0.0, garden: true }
     ];
     for (let i = 0; i < plinthTiers.length; i++) {
       const pt = plinthTiers[i];
       addCyl(sumeruGroup, pt.r * 0.975, pt.r, pt.y1 - pt.y0, 16, SM.cx, pt.y0, SM.cz, 0, pt.mat, 7.5);
-      addCyl(sumeruGroup, pt.r * 0.985, pt.r * 0.992, 1.2, 16, SM.cx, pt.y1 - 1.0, SM.cz, 0, i % 2 === 1 ? MATS.giltChofa : MATS.cobaltGlaze, 4.0);
+      addCyl(sumeruGroup, pt.r * 0.985, pt.r * 0.992, 1.15, 16, SM.cx, pt.y1 - 1.45, SM.cz, 0, i % 2 === 1 ? MATS.giltChofa : MATS.cobaltGlaze, 4.0);
 
-      /* Hanging Lotus & Orchid Terrace Planters around every Mandala Rim */
+      /* Hanging Lotus & Orchid Terrace Planters around every Mandala Rim (skip Gopura bastion openings!) */
       if (pt.garden) {
         const nPlanter = 16;
         const rPl = pt.r - 2.6;
         for (let p = 0; p < nPlanter; p++) {
-          const pa = (p + 0.5) * (Math.PI * 2 / nPlanter);
+          const degP = (p + 0.5) * (360 / nPlanter);
+          let hitBast = false;
+          for (let b = 0; b < SM.bastions.length; b++) {
+            let df = Math.abs(degP - (((SM.bastions[b].angDeg % 360) + 360) % 360));
+            if (df > 180) df = 360 - df;
+            if (df < 11.0 && pt.y1 <= SM.bastions[b].deckY + 0.5) { hitBast = true; break; }
+          }
+          if (hitBast) continue;
+          const pa = degP * Math.PI / 180;
           const chord = 2 * rPl * Math.sin(Math.PI / nPlanter) * 0.68;
           const px = SM.cx + rPl * Math.cos(pa), pz = SM.cz + rPl * Math.sin(pa);
-          addBox(sumeruGroup, 2.8, 1.1, chord, px, pt.y1 - 0.1, pz, -pa, MATS.travertineStone, 3.0);
-          addBox(sumeruGroup, 2.4, 0.9, chord - 0.4, px, pt.y1 + 0.85, pz, -pa, hangingGardenMat, 2.0);
+          addBox(sumeruGroup, 2.8, 0.95, chord, px, pt.y1, pz, -pa, MATS.travertineStone, 3.0);
+          addBox(sumeruGroup, 2.4, 0.35, chord - 0.4, px, pt.y1 + 0.95, pz, -pa, hangingGardenMat, 2.0);
           if (p % 2 === 0) {
-            addBox(sumeruGroup, 1.2, 0.45, chord * 0.45, px, pt.y1 + 1.65, pz, -pa, lotusBloomMat, 1.5);
+            addBox(sumeruGroup, 1.2, 0.36, chord * 0.45, px, pt.y1 + 1.30, pz, -pa, lotusBloomMat, 1.5);
           }
         }
       }
 
-      /* Phra Rabieng Peristyle Cloister Galleries on Tiers 0 & 2 */
+      /* Phra Rabieng Peristyle Cloister Galleries on Tiers 0 & 2 via seamless 16-gon addArcBand (0 corner overlaps!) */
       if (pt.cloisterH > 0) {
         const rCol = pt.r - 6.2;
         const nCol = i === 0 ? 56 : 40;
         for (let c = 0; c < nCol; c++) {
           const ca = (c / nCol) * Math.PI * 2;
-          addCyl(sumeruGroup, 0.95, 1.18, pt.cloisterH, 8, SM.cx + rCol * Math.cos(ca), pt.y1 - 0.1, SM.cz + rCol * Math.sin(ca), 0, MATS.travertineStone, 3.0);
+          addCyl(sumeruGroup, 0.95, 1.18, pt.cloisterH, 8, SM.cx + rCol * Math.cos(ca), pt.y1, SM.cz + rCol * Math.sin(ca), 0, MATS.travertineStone, 3.0);
         }
-        for (let s = 0; s < 16; s++) {
-          const sa = (s + 0.5) * (Math.PI * 2 / 16);
-          const chord = 2 * rCol * Math.sin(Math.PI / 16) * 1.05;
-          const gx = SM.cx + (rCol - 3.6) * Math.cos(sa), gz = SM.cz + (rCol - 3.6) * Math.sin(sa);
-          addBox(sumeruGroup, 9.2, 1.25, chord, gx, pt.y1 + pt.cloisterH - 0.3, gz, -sa, MATS.travertineStone, 4.0);
-          addBox(sumeruGroup, 10.2, 1.6, chord + 0.5, gx, pt.y1 + pt.cloisterH + 0.85, gz, -sa, MATS.celadonRoof, 4.0);
-        }
+        addArcBand(sumeruGroup, SM.cx, SM.cz, rCol - 8.2, rCol + 1.0, pt.y1 + pt.cloisterH, pt.y1 + pt.cloisterH + 0.95, 0, 360, 16, MATS.travertineStone, 4.0);
+        addArcBand(sumeruGroup, SM.cx, SM.cz, rCol - 8.7, rCol + 1.5, pt.y1 + pt.cloisterH + 0.95, pt.y1 + pt.cloisterH + 2.15, 0, 360, 16, MATS.celadonRoof, 4.0);
       }
     }
 
-    /* 8 Ceremonial Palace-Barge Docks & Grand Stepped Ghats around the Base of Sumeru */
+    /* 8 Ceremonial Palace-Barge Docks & Grand Stepped Ghats around the Base of Sumeru (butting steps, 0 overlap) */
     for (let k = 0; k < 8; k++) {
       const a = (k * 45 + 12.0) * Math.PI / 180;
       const ux = Math.cos(a), uz = Math.sin(a);
       for (let st = 0; st < 4; st++) {
-        const rSt = SM.plinthR + 3.0 + st * 3.4;
-        const ySt = 5.4 - st * 1.1;
+        const rSt = SM.plinthR + 1.9 + st * 3.8;
+        const ySt = 5.2 - st * 1.1;
         addBox(sumeruGroup, 3.8, ySt - (-18.0), 18.0, SM.cx + rSt * ux, -18.0, SM.cz + rSt * uz, -a, MATS.travertineStone, 4.5);
       }
     }
@@ -319,40 +448,42 @@ const FC_SUMERU_CORE = (function () {
     /* 8 Gilded Bussabok Corner Spires on the Ministerial Ring (+14 m -> +48 m) */
     for (let k = 0; k < SM.cornerBussaboks.length; k++) {
       const CB = SM.cornerBussaboks[k];
-      addCyl(sumeruGroup, CB.r * 0.72, CB.r, 18.0, 8, CB.x, CB.y0 - 0.2, CB.z, Math.PI / 8, MATS.ancientCeramic, 4.0);
-      addBox(sumeruGroup, CB.r * 1.6, 1.3, CB.r * 1.6, CB.x, CB.y0 + 17.5, CB.z, -CB.ang, MATS.giltChofa, 3.0);
-      addCone(sumeruGroup, CB.r * 0.96, 7.2, 8, CB.x, CB.y0 + 18.6, CB.z, Math.PI / 8, MATS.celadonRoof);
-      addCone(sumeruGroup, CB.r * 0.34, CB.tipY - (CB.y0 + 25.0), 8, CB.x, CB.y0 + 25.0, CB.z, 0, MATS.giltChofa);
+      addCyl(sumeruGroup, CB.r * 0.72, CB.r, 17.8, 8, CB.x, CB.y0, CB.z, Math.PI / 8, MATS.ancientCeramic, 4.0);
+      addBox(sumeruGroup, CB.r * 1.6, 1.2, CB.r * 1.6, CB.x, CB.y0 + 17.8, CB.z, -CB.ang, MATS.giltChofa, 3.0);
+      addCone(sumeruGroup, CB.r * 0.96, 7.0, 8, CB.x, CB.y0 + 19.0, CB.z, Math.PI / 8, MATS.celadonRoof);
+      addCone(sumeruGroup, CB.r * 0.34, CB.tipY - (CB.y0 + 25.4), 8, CB.x, CB.y0 + 25.4, CB.z, 0, MATS.giltChofa);
     }
 
     if (typeof KWALK !== 'undefined' && KWALK.floor) {
       KWALK.floor({ rect: [SM.cx - 128, SM.cx + 128, SM.cz - 128, SM.cz + 128], y: 22.0 });
     }
 
-    /* 2. Six Vaulted Gopura Bridge-Bastions locking the 4 Boulevard-Dykes & 2 Causeways directly into Sumeru Hub! */
+    /* 2. Six Vaulted Gopura Bridge-Bastions butted outside Sumeru tiers (zero radial overlap!) */
     for (let b = 0; b < SM.bastions.length; b++) {
       const BS = SM.bastions[b];
       const a = BS.angDeg * Math.PI / 180;
       const ux = Math.cos(a), uz = Math.sin(a), nx = -uz, nz = ux;
-      const len = BS.r1 - BS.r0;
-      const midR = 0.5 * (BS.r0 + BS.r1);
+      const rStart = BS.deckY > 18.0 ? SM.upperCourtR : SM.midCourtR;
+      const len = BS.r1 - rStart;
+      const midR = 0.5 * (rStart + BS.r1);
       const bx = SM.cx + midR * ux, bz = SM.cz + midR * uz;
 
       addBox(sumeruGroup, len, BS.deckY - (-24.0), BS.widthM, bx, -24.0, bz, -a, MATS.travertineStone, 7.0);
-      addBox(sumeruGroup, len + 1.2, 1.4, BS.widthM + 1.8, bx, BS.deckY - 1.2, bz, -a, MATS.cobaltGlaze, 4.0);
+      addBox(sumeruGroup, len + 0.8, 1.15, BS.widthM + 1.6, bx, BS.deckY - 1.45, bz, -a, MATS.cobaltGlaze, 4.0);
 
-      const rg = 186.0;
+      const rg = Math.max(rStart + 10.0, 192.0);
       const gx = SM.cx + rg * ux, gz = SM.cz + rg * uz;
       for (let sgn = -1; sgn <= 1; sgn += 2) {
         const px = gx + sgn * (BS.widthM * 0.36) * nx;
         const pz = gz + sgn * (BS.widthM * 0.36) * nz;
-        addBox(sumeruGroup, 14.0, 20.0, 12.5, px, BS.deckY - 0.2, pz, -a, MATS.ancientCeramic, 4.5);
-        addBox(sumeruGroup, 15.4, 1.6, 13.8, px, BS.deckY + 19.5, pz, -a, MATS.giltChofa, 3.0);
-        addCone(sumeruGroup, 9.6, 10.5, 4, px, BS.deckY + 20.8, pz, -a + Math.PI * 0.25, MATS.celadonRoof);
+        addBox(sumeruGroup, 14.0, 19.8, 12.5, px, BS.deckY, pz, -a, MATS.ancientCeramic, 4.5);
+        addBox(sumeruGroup, 15.4, 1.4, 13.8, px, BS.deckY + 19.8, pz, -a, MATS.giltChofa, 3.0);
+        addCone(sumeruGroup, 9.6, 10.2, 4, px, BS.deckY + 21.2, pz, -a + Math.PI * 0.25, MATS.celadonRoof);
         addCone(sumeruGroup, 2.6, 8.0, 8, px, BS.deckY + 30.8, pz, 0, MATS.giltChofa);
       }
-      addBox(sumeruGroup, 12.5, 6.8, BS.widthM * 0.88, gx, BS.deckY + 13.2, gz, -a, MATS.cobaltGlaze, 4.0);
-      addBox(sumeruGroup, 13.8, 2.4, BS.widthM * 0.92, gx, BS.deckY + 19.8, gz, -a, MATS.celadonRoof, 4.0);
+      const archSpanD = Math.max(3.6, BS.widthM * 0.72 - 12.6);
+      addBox(sumeruGroup, 12.2, 6.0, archSpanD, gx, BS.deckY + 13.4, gz, -a, MATS.cobaltGlaze, 4.0);
+      addBox(sumeruGroup, 13.4, 2.0, archSpanD, gx, BS.deckY + 19.4, gz, -a, MATS.celadonRoof, 4.0);
     }
 
     /* 3. Nine-Tiered Redented Ratha Maha-Meru Arcology Tower (+30.0 m -> +156.0 m -> +176.0 m Chatra Tip!) */
@@ -360,122 +491,118 @@ const FC_SUMERU_CORE = (function () {
     for (let t = 0; t < nTiers; t++) {
       const u = t / nTiers;
       const y0 = 30.0 + t * 13.8;
-      const hT = 14.2;
+      const hT = 13.8;
       const rB = 58.0 * (1 - u * 0.72);
       const rT = rB * 0.91;
 
-      addCyl(sumeruGroup, rT, rB, hT, 8, SM.cx, y0 - 0.2, SM.cz, Math.PI / 8, MATS.ancientCeramic, 5.5);
+      addCyl(sumeruGroup, rT, rB, hT, 8, SM.cx, y0, SM.cz, Math.PI / 8, MATS.ancientCeramic, 5.5);
 
       const rathaW = rB * 0.56, rathaL = rB * 2.04;
-      addBox(sumeruGroup, rathaL, hT - 2.2, rathaW, SM.cx, y0 - 0.2, SM.cz, 0, MATS.ancientCeramic, 5.0);
-      addBox(sumeruGroup, rathaW, hT - 2.2, rathaL, SM.cx, y0 - 0.2, SM.cz, 0, MATS.ancientCeramic, 5.0);
+      addCrossBoxes(sumeruGroup, rathaL, rathaW, hT - 2.9, SM.cx, y0, SM.cz, 0, MATS.ancientCeramic, 5.0);
 
       addCyl(sumeruGroup, rB * 0.955, rB * 0.96, 1.35, 8, SM.cx, y0 + 3.2, SM.cz, Math.PI / 8, warmLoggiaMat, 3.0);
       addCyl(sumeruGroup, rT * 0.985, rT * 0.99, 1.35, 8, SM.cx, y0 + 8.0, SM.cz, Math.PI / 8, warmLoggiaMat, 3.0);
-      addBox(sumeruGroup, rathaL + 0.5, 1.25, rathaW * 0.78, SM.cx, y0 + 5.6, SM.cz, 0, MATS.cobaltGlaze, 3.5);
-      addBox(sumeruGroup, rathaW * 0.78, 1.25, rathaL + 0.5, SM.cx, y0 + 5.6, SM.cz, 0, MATS.cobaltGlaze, 3.5);
+      addCrossBoxes(sumeruGroup, rathaL + 0.5, rathaW * 0.78, 1.25, SM.cx, y0 + 5.6, SM.cz, 0, MATS.cobaltGlaze, 3.5);
 
-      addBox(sumeruGroup, rT * 2.02, 1.2, rT * 2.02, SM.cx, y0 + hT - 2.4, SM.cz, 0, MATS.travertineStone, 4.0);
-      addBox(sumeruGroup, rT * 2.02, 1.2, rT * 2.02, SM.cx, y0 + hT - 2.4, SM.cz, Math.PI / 4, MATS.travertineStone, 4.0);
-      addBox(sumeruGroup, rT * 2.16, 1.1, rT * 2.16, SM.cx, y0 + hT - 1.3, SM.cz, 0, MATS.giltChofa, 3.5);
-      addBox(sumeruGroup, rT * 2.16, 1.1, rT * 2.16, SM.cx, y0 + hT - 1.3, SM.cz, Math.PI / 4, MATS.giltChofa, 3.5);
+      /* Stepped 8-point redented star cornices (>= 0.40 m vertical step, top -0.45 m below y0 + hT -> 0 coplanarity!) */
+      addBox(sumeruGroup, rT * 2.02, 0.65, rT * 2.02, SM.cx, y0 + hT - 2.85, SM.cz, Math.PI / 4, MATS.travertineStone, 4.0);
+      addBox(sumeruGroup, rT * 2.02, 0.65, rT * 2.02, SM.cx, y0 + hT - 2.45, SM.cz, 0, MATS.travertineStone, 4.0);
+      addBox(sumeruGroup, rT * 2.14, 0.65, rT * 2.14, SM.cx, y0 + hT - 1.50, SM.cz, Math.PI / 4, MATS.giltChofa, 3.5);
+      addBox(sumeruGroup, rT * 2.14, 0.65, rT * 2.14, SM.cx, y0 + hT - 1.10, SM.cz, 0, MATS.giltChofa, 3.5);
 
-      addCyl(sumeruGroup, rT * 0.84, rT * 1.18, 3.2, 8, SM.cx, y0 + hT - 0.35, SM.cz, Math.PI / 8, MATS.celadonRoof, 4.0);
+      addCyl(sumeruGroup, rT * 0.84, rT * 1.18, 2.8, 8, SM.cx, y0 + hT, SM.cz, Math.PI / 8, MATS.celadonRoof, 4.0);
 
       for (let c = 0; c < 8; c++) {
         const ca = (c * 45 + 22.5) * Math.PI / 180;
         const cr = rT * 0.96;
         const sx = SM.cx + cr * Math.cos(ca), sz = SM.cz + cr * Math.sin(ca);
         const sW = Math.max(2.0, rT * 0.16);
-        addBox(sumeruGroup, sW, 2.8, sW, sx, y0 + hT - 0.3, sz, -ca, MATS.ancientCeramic, 2.5);
-        addCone(sumeruGroup, sW * 0.72, 3.6, 4, sx, y0 + hT + 2.3, sz, -ca + Math.PI * 0.25, MATS.giltChofa);
+        addBox(sumeruGroup, sW, 2.4, sW, sx, y0 + hT + 2.8, sz, -ca, MATS.ancientCeramic, 2.5);
+        addCone(sumeruGroup, sW * 0.72, 3.4, 4, sx, y0 + hT + 5.2, sz, -ca + Math.PI * 0.25, MATS.giltChofa);
       }
     }
 
-    /* 4. Crowning Geodetic Tide-Lantern & Continuous-Mast 7-Umbrella Chatra Finial (+153.5 m -> +176.0 m) */
-    addCyl(sumeruGroup, 11.5, 14.8, 6.5, 8, SM.cx, 153.5, SM.cz, Math.PI / 8, MATS.travertineStone, 4.0);
-    const lantern = new THREE.Mesh(new THREE.CylinderGeometry(8.2, 8.4, 6.8, 12), cyanCoilMat);
-    lantern.position.set(SM.cx, 162.8, SM.cz);
+    /* 4. Crowning Geodetic Tide-Lantern & Continuous-Mast 7-Umbrella Chatra Finial (+157.0 m -> +176.0 m) */
+    addCyl(sumeruGroup, 11.5, 14.8, 4.4, 8, SM.cx, 157.0, SM.cz, Math.PI / 8, MATS.travertineStone, 4.0);
+    const lantern = new THREE.Mesh(new THREE.CylinderGeometry(8.2, 8.4, 6.4, 12), cyanCoilMat);
+    lantern.position.set(SM.cx, 164.6, SM.cz);
     sumeruGroup.add(lantern);
     for (let r = 0; r < 8; r++) {
       const ra = (r * 45) * Math.PI / 180;
-      addBox(sumeruGroup, 0.95, 7.4, 0.95, SM.cx + 8.6 * Math.cos(ra), 159.4, SM.cz + 8.6 * Math.sin(ra), -ra, MATS.paktongMetal, 2.0);
+      addBox(sumeruGroup, 0.95, 6.4, 0.95, SM.cx + 8.6 * Math.cos(ra), 161.4, SM.cz + 8.6 * Math.sin(ra), -ra, MATS.paktongMetal, 2.0);
     }
-    addCyl(sumeruGroup, 0.65, 3.8, 17.5, 10, SM.cx, 158.5, SM.cz, 0, MATS.giltChofa, 3.0);
+    addCyl(sumeruGroup, 0.65, 3.8, 16.5, 10, SM.cx, 160.5, SM.cz, 0, MATS.giltChofa, 3.0);
     for (let u = 0; u < 5; u++) {
       const rUm = 9.0 * (1 - u * 0.16);
-      addCyl(sumeruGroup, rUm * 0.35, rUm, 1.3, 12, SM.cx, 166.0 + u * 2.1, SM.cz, 0, MATS.giltChofa, 2.5);
+      addCyl(sumeruGroup, rUm * 0.35, rUm, 1.3, 12, SM.cx, 168.4 + u * 1.9, SM.cz, 0, MATS.giltChofa, 2.5);
     }
 
     /* 5. Four Diagonal +112 m Fluted Khmer-Soleri Prangs */
     for (let k = 0; k < SM.prangs.length; k++) {
       const P = SM.prangs[k];
-      addBox(sumeruGroup, P.rBase * 2.1, 9.5, P.rBase * 1.4, P.x, P.y0 - 0.3, P.z, 0, MATS.travertineStone, 4.5);
-      addBox(sumeruGroup, P.rBase * 1.4, 9.5, P.rBase * 2.1, P.x, P.y0 - 0.3, P.z, 0, MATS.travertineStone, 4.5);
-      addBox(sumeruGroup, P.rBase * 2.2, 2.4, P.rBase * 1.5, P.x, P.y0 + 8.9, P.z, 0, MATS.celadonRoof, 4.0);
-      addBox(sumeruGroup, P.rBase * 1.5, 2.4, P.rBase * 2.2, P.x, P.y0 + 8.9, P.z, 0, MATS.celadonRoof, 4.0);
+      addCrossBoxes(sumeruGroup, P.rBase * 1.68, P.rBase * 1.24, 9.2, P.x, P.y0, P.z, 0, MATS.travertineStone, 4.5);
+      addCrossBoxes(sumeruGroup, P.rBase * 1.76, P.rBase * 1.32, 2.0, P.x, P.y0 + 9.2, P.z, 0, MATS.celadonRoof, 4.0);
 
-      let py = P.y0 + 10.8;
+      let py = P.y0 + 11.2;
       for (let b = 0; b < 5; b++) {
         const sc = 1 - b * 0.14;
         const rB = P.rBase * 0.88 * sc;
-        const hB = 11.4;
-        addCyl(sumeruGroup, rB * 0.88, rB, hB, 8, P.x, py - 0.3, P.z, Math.PI / 8, MATS.ancientCeramic, 4.5);
-        addBox(sumeruGroup, rB * 1.95, hB - 1.5, rB * 0.82, P.x, py - 0.3, P.z, 0, MATS.ancientCeramic, 4.0);
-        addBox(sumeruGroup, rB * 0.82, hB - 1.5, rB * 1.95, P.x, py - 0.3, P.z, 0, MATS.ancientCeramic, 4.0);
+        const hB = 11.0;
+        addCyl(sumeruGroup, rB * 0.88, rB, hB, 8, P.x, py, P.z, Math.PI / 8, MATS.ancientCeramic, 4.5);
+        addCrossBoxes(sumeruGroup, rB * 1.95, rB * 0.82, hB - 2.4, P.x, py, P.z, 0, MATS.ancientCeramic, 4.0);
         addCyl(sumeruGroup, rB * 0.92, rB * 0.94, 0.95, 8, P.x, py + 4.8, P.z, Math.PI / 8, warmLoggiaMat, 3.0);
-        addCyl(sumeruGroup, rB * 0.82, rB * 1.06, 1.9, 8, P.x, py + hB - 1.7, P.z, Math.PI / 8, MATS.giltChofa, 3.0);
-        py += hB - 0.4;
+        addCyl(sumeruGroup, rB * 0.82, rB * 1.06, 1.55, 8, P.x, py + hB - 1.95, P.z, Math.PI / 8, MATS.giltChofa, 3.0);
+        py += hB;
       }
-      addCyl(sumeruGroup, P.rBase * 0.22, P.rBase * 0.38, 4.8, 12, P.x, py - 0.4, P.z, 0, MATS.celadonRoof, 3.0);
-      addCone(sumeruGroup, P.rBase * 0.26, P.tipY - (py + 3.8), 10, P.x, py + 3.8, P.z, 0, MATS.giltChofa);
+      addCyl(sumeruGroup, P.rBase * 0.22, P.rBase * 0.38, 4.4, 12, P.x, py, P.z, 0, MATS.celadonRoof, 3.0);
+      addCone(sumeruGroup, P.rBase * 0.26, Math.max(4.0, P.tipY - (py + 4.4)), 10, P.x, py + 4.4, P.z, 0, MATS.giltChofa);
     }
 
     /* 6. Four Intercardinal +66 m 16-Column Peristyle Mondop Halls */
     for (let k = 0; k < SM.mondops.length; k++) {
       const MD = SM.mondops[k];
       const ry = -MD.ang;
-      addBox(sumeruGroup, MD.w + 3.2, 3.4, MD.w + 3.2, MD.x, MD.y0 - 0.3, MD.z, ry, MATS.travertineStone, 4.5);
-      addBox(sumeruGroup, MD.w * 0.66, 14.0, MD.w * 0.66, MD.x, MD.y0 + 2.9, MD.z, ry, MATS.cobaltGlaze, 4.0);
+      addBox(sumeruGroup, MD.w + 3.2, 3.1, MD.w + 3.2, MD.x, MD.y0, MD.z, ry, MATS.travertineStone, 4.5);
+      addBox(sumeruGroup, MD.w * 0.66, 13.8, MD.w * 0.66, MD.x, MD.y0 + 3.1, MD.z, ry, MATS.cobaltGlaze, 4.0);
       const cs = Math.cos(ry), sn = Math.sin(ry), halfP = MD.w * 0.45;
       for (let ix = -1; ix <= 1; ix++) {
         for (let iz = -1; iz <= 1; iz++) {
           if (ix === 0 && iz === 0) continue;
           const lx = ix * halfP, lz = iz * halfP;
           const cx = MD.x + lx * cs + lz * sn, cz = MD.z - lx * sn + lz * cs;
-          addCyl(sumeruGroup, 0.95, 1.15, 13.8, 8, cx, MD.y0 + 3.0, cz, 0, MATS.travertineStone, 3.0);
+          addCyl(sumeruGroup, 0.95, 1.15, 13.8, 8, cx, MD.y0 + 3.1, cz, 0, MATS.travertineStone, 3.0);
         }
       }
-      addBox(sumeruGroup, MD.w + 1.4, 2.2, MD.w + 1.4, MD.x, MD.y0 + 16.6, MD.z, ry, MATS.travertineStone, 4.0);
-      let my = MD.y0 + 18.5;
+      addBox(sumeruGroup, MD.w + 1.4, 2.0, MD.w + 1.4, MD.x, MD.y0 + 16.9, MD.z, ry, MATS.travertineStone, 4.0);
+      let my = MD.y0 + 18.9;
       for (let rt = 0; rt < 3; rt++) {
         const wR = (MD.w + 2.6) * (1 - rt * 0.24);
-        addBox(sumeruGroup, wR, 1.2, wR, MD.x, my - 0.2, MD.z, ry, MATS.giltChofa, 3.0);
-        addCone(sumeruGroup, wR * 0.74, 5.2, 4, MD.x, my + 0.8, MD.z, ry + Math.PI * 0.25, MATS.celadonRoof);
+        addBox(sumeruGroup, wR, 1.0, wR, MD.x, my, MD.z, ry, MATS.giltChofa, 3.0);
+        addCone(sumeruGroup, wR * 0.74, 4.8, 4, MD.x, my + 1.0, MD.z, ry + Math.PI * 0.25, MATS.celadonRoof);
         my += 4.8;
       }
-      addCone(sumeruGroup, 3.0, MD.tipY - (my - 0.3), 8, MD.x, my - 0.3, MD.z, 0, MATS.giltChofa);
+      addCone(sumeruGroup, 3.0, Math.max(4.0, MD.tipY - my), 8, MD.x, my, MD.z, 0, MATS.giltChofa);
     }
 
     /* 7. Expanded Southern 5-Spire Bussabok Royal Audience Island + Twin Palace-Barge Docks */
     {
       const B = SM.bussabok;
-      addBox(sumeruGroup, B.w + 10.0, 32.0, B.d + 10.0, B.cx, -28.5, B.cz, 0, MATS.ancientConcrete, 7.0);
-      addBox(sumeruGroup, B.w, 5.6, B.d, B.cx, 3.1, B.cz, 0, MATS.travertineStone, 5.5);
-      addBox(sumeruGroup, B.w + 1.4, 1.2, B.d + 1.4, B.cx, B.plinthY - 1.1, B.cz, 0, MATS.giltChofa, 3.5);
+      addBox(sumeruGroup, B.w + 10.0, 31.6, B.d + 10.0, B.cx, -28.5, B.cz, 0, MATS.ancientConcrete, 7.0);
+      addBox(sumeruGroup, B.w, 5.4, B.d, B.cx, 3.1, B.cz, 0, MATS.travertineStone, 5.5);
+      addBox(sumeruGroup, B.w + 1.4, 1.0, B.d + 1.4, B.cx, B.plinthY - 1.3, B.cz, 0, MATS.giltChofa, 3.5);
       /* Hanging orchid garden curb along southern royal barge quay */
-      addBox(sumeruGroup, B.w - 16.0, 1.1, 2.6, B.cx, B.plinthY, B.cz + B.d * 0.5 - 2.0, 0, hangingGardenMat, 2.5);
+      addBox(sumeruGroup, B.w - 16.0, 1.05, 2.6, B.cx, B.plinthY, B.cz + B.d * 0.5 - 2.0, 0, hangingGardenMat, 2.5);
       addBox(sumeruGroup, B.w * 0.55, 2.6 - (-24.0), 8.0, B.cx, -24.0, B.cz + B.d * 0.5 + 4.0, 0, MATS.travertineStone, 5.0);
 
       for (let i = 0; i < B.spires.length; i++) {
         const sp = B.spires[i];
         const sx = B.cx + sp.dx;
         const sz = B.cz + sp.dz;
-        const hB = sp.tipY - B.plinthY - 11.0;
-        addCyl(sumeruGroup, sp.r * 0.62, sp.r, hB, 8, sx, B.plinthY - 0.2, sz, Math.PI / 8, MATS.ancientCeramic, 4.5);
-        addBox(sumeruGroup, sp.r * 1.45, 1.4, sp.r * 1.45, sx, B.plinthY + hB - 1.2, sz, 0, MATS.giltChofa, 3.0);
-        addCone(sumeruGroup, sp.r * 0.88, 6.2, 8, sx, B.plinthY + hB - 0.1, sz, 0, MATS.celadonRoof);
-        addCone(sumeruGroup, sp.r * 0.35, 6.5, 8, sx, B.plinthY + hB + 5.4, sz, 0, MATS.giltChofa);
+        const hB = sp.tipY - B.plinthY - 11.2;
+        addCyl(sumeruGroup, sp.r * 0.62, sp.r, hB, 8, sx, B.plinthY, sz, Math.PI / 8, MATS.ancientCeramic, 4.5);
+        addBox(sumeruGroup, sp.r * 1.45, 1.2, sp.r * 1.45, sx, B.plinthY + hB, sz, 0, MATS.giltChofa, 3.0);
+        addCone(sumeruGroup, sp.r * 0.88, 6.0, 8, sx, B.plinthY + hB + 1.2, sz, 0, MATS.celadonRoof);
+        addCone(sumeruGroup, sp.r * 0.35, 6.2, 8, sx, B.plinthY + hB + 6.6, sz, 0, MATS.giltChofa);
       }
     }
 
@@ -505,15 +632,14 @@ const FC_SUMERU_CORE = (function () {
         const wT = ZP.w * (1 - t * 0.18);
         const hT = (ZP.h + Math.abs(g0)) / tiers;
         addBox(targetGrp, wT, hT, wT, ZP.x, curY, ZP.z, 0, t % 2 === 0 ? MATS.ancientCeramic : MATS.cobaltGlaze, 5.5);
-        addBox(targetGrp, wT + 2.4, hT * 0.85, wT * 0.36, ZP.x, curY, ZP.z, 0, MATS.travertineStone, 5.0);
-        addBox(targetGrp, wT * 0.36, hT * 0.85, wT + 2.4, ZP.x, curY, ZP.z, 0, MATS.travertineStone, 5.0);
-        curY += hT - 0.30;
+        addCrossBoxes(targetGrp, wT + 2.4, wT * 0.36, hT * 0.84, ZP.x, curY, ZP.z, 0, MATS.travertineStone, 5.0);
+        curY += hT;
       }
 
       if (ZP.intact) {
-        addBox(targetGrp, 16.5, 5.8, 16.5, ZP.x, curY - 0.2, ZP.z, 0, MATS.travertineStone, 4.0);
-        addCone(targetGrp, 12.6, 7.8, 4, ZP.x, curY + 5.2, ZP.z, Math.PI * 0.25, MATS.celadonRoof);
-        addCone(targetGrp, 2.5, 5.5, 8, ZP.x, curY + 12.5, ZP.z, 0, MATS.giltChofa);
+        addBox(targetGrp, 16.5, 5.6, 16.5, ZP.x, curY, ZP.z, 0, MATS.travertineStone, 4.0);
+        addCone(targetGrp, 12.6, 7.8, 4, ZP.x, curY + 5.6, ZP.z, Math.PI * 0.25, MATS.celadonRoof);
+        addCone(targetGrp, 2.5, 5.5, 8, ZP.x, curY + 12.8, ZP.z, 0, MATS.giltChofa);
       } else {
         const wx = ZP.x + 32.0, wz = ZP.z + 10.0;
         const gw = lowGroundUnderBox(wx, wz, 5.2, 4.2);
@@ -548,6 +674,9 @@ const FC_SUMERU_CORE = (function () {
     addBox: addBox,
     addCyl: addCyl,
     addCone: addCone,
+    addCrossBoxes: addCrossBoxes,
+    addArcBand: addArcBand,
+    addRibbonWalk: addRibbonWalk,
     mergeStaticGroup: mergeStaticGroup,
     lowGroundUnderBox: lowGroundUnderBox,
     buildCore: buildCore

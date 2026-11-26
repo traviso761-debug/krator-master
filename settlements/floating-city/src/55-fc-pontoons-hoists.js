@@ -78,6 +78,80 @@ const FC_PONTOONS_HOISTS = (function () {
     return out;
   }
 
+  /* Unit [-0.5..+0.5]^3 extruded triangular Sia-Ria gable roof prism along Z (prevents non-uniform ConeGeometry diamond spear!) */
+  function makeGablePrismGeo() {
+    const pos = [], nor = [], uv = [], idx = [];
+    const nxS = 0.89442719, nyS = 0.44721360;
+    function quad(ax, ay, az, bx, by, bz, cx, cy, cz, dx, dy, dz, nx, ny, nz) {
+      const b = pos.length / 3;
+      pos.push(ax, ay, az, bx, by, bz, cx, cy, cz, dx, dy, dz);
+      nor.push(nx, ny, nz, nx, ny, nz, nx, ny, nz, nx, ny, nz);
+      uv.push(0, 0, 1, 0, 1, 1, 0, 1);
+      idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+    }
+    function tri(ax, ay, az, bx, by, bz, cx, cy, cz, nx, ny, nz) {
+      const b = pos.length / 3;
+      pos.push(ax, ay, az, bx, by, bz, cx, cy, cz);
+      nor.push(nx, ny, nz, nx, ny, nz, nx, ny, nz);
+      uv.push(0, 0, 1, 0, 0.5, 1);
+      idx.push(b, b + 1, b + 2);
+    }
+    /* Left slope (-nxS, +nyS, 0), Right slope (+nxS, +nyS, 0), Bottom soffit (0, -1, 0), +Z & -Z gable triangles */
+    quad(-0.5, -0.5, -0.5, -0.5, -0.5,  0.5,  0.0,  0.5,  0.5,  0.0,  0.5, -0.5, -nxS,  nyS, 0);
+    quad( 0.0,  0.5, -0.5,  0.0,  0.5,  0.5,  0.5, -0.5,  0.5,  0.5, -0.5, -0.5,  nxS,  nyS, 0);
+    quad(-0.5, -0.5, -0.5,  0.5, -0.5, -0.5,  0.5, -0.5,  0.5, -0.5, -0.5,  0.5,  0,   -1,   0);
+    tri(-0.5, -0.5,  0.5,  0.5, -0.5,  0.5,  0.0,  0.5,  0.5,  0, 0,  1);
+    tri( 0.5, -0.5, -0.5, -0.5, -0.5, -0.5,  0.0,  0.5, -0.5,  0, 0, -1);
+
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx);
+    g.computeBoundingSphere();
+    return g;
+  }
+
+  /* Seamless unit hollow polygonal prism (y in [-0.5..+0.5], outer circumradius rOutFrac, inner moon radius rInFrac)
+     aligned identically with FC_CITY.isPointOnPlatform for both oct-moon (sides=8) and hex-moon (sides=6) -> 0 sector wedge overlaps! */
+  function makeHollowPolyGeo(sides, rInFrac, rOutFrac) {
+    const pos = [], nor = [], uv = [], idx = [];
+    function pq(ax, ay, az, bx, by, bz, cx, cy, cz, dx, dy, dz, nx, ny, nz, u0, v0, u1, v1) {
+      const b = pos.length / 3;
+      pos.push(ax, ay, az, bx, by, bz, cx, cy, cz, dx, dy, dz);
+      nor.push(nx, ny, nz, nx, ny, nz, nx, ny, nz, nx, ny, nz);
+      uv.push(u0, v0, u1, v0, u1, v1, u0, v1);
+      idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+    }
+    const phase = (sides === 8) ? (Math.PI / 8) : 0.0;
+    for (let k = 0; k < sides; k++) {
+      const a0 = (k / sides) * Math.PI * 2 + phase;
+      const a1 = ((k + 1) / sides) * Math.PI * 2 + phase;
+      const am = 0.5 * (a0 + a1);
+      const s0 = Math.sin(a0), c0 = Math.cos(a0);
+      const s1 = Math.sin(a1), c1 = Math.cos(a1);
+      const sm = Math.sin(am), cm = Math.cos(am);
+
+      const ix0 = rInFrac * s0,  iz0 = rInFrac * c0;
+      const ox0 = rOutFrac * s0, oz0 = rOutFrac * c0;
+      const ix1 = rInFrac * s1,  iz1 = rInFrac * c1;
+      const ox1 = rOutFrac * s1, oz1 = rOutFrac * c1;
+
+      /* Note: with (x = r*sin(a), z = r*cos(a)), R x T = +Y so top winding is (I0, O0, O1, I1) */
+      pq(ix0,  0.5, iz0, ox0,  0.5, oz0, ox1,  0.5, oz1, ix1,  0.5, iz1, 0,  1, 0, 0, 0, 8, 8);
+      pq(ix0, -0.5, iz0, ix1, -0.5, iz1, ox1, -0.5, oz1, ox0, -0.5, oz0, 0, -1, 0, 0, 0, 8, 8);
+      pq(ox0, -0.5, oz0, ox1, -0.5, oz1, ox1,  0.5, oz1, ox0,  0.5, oz0,  sm, 0,  cm, 0, 0, 8, 1);
+      pq(ix0, -0.5, iz0, ix0,  0.5, iz0, ix1,  0.5, iz1, ix1, -0.5, iz1, -sm, 0, -cm, 0, 0, 1, 8);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    g.setIndex(idx);
+    g.computeBoundingSphere();
+    return g;
+  }
+
   function buildAll(scene, MATS, cityPlan, tagReg) {
     const root = new THREE.Group();
     root.name = 'fc_pontoons_gardens_fleet';
@@ -87,7 +161,17 @@ const FC_PONTOONS_HOISTS = (function () {
     const floatSlots = [];
     const initLagoonY = FC_TIDE.tideY('lagoon', 0);
     const _m4 = new THREE.Matrix4(), _p3 = new THREE.Vector3(), _q4 = new THREE.Quaternion(), _s3 = new THREE.Vector3(1, 1, 1);
-    const _y = new THREE.Vector3(0, 1, 0), _eul = new THREE.Euler(0, 0, 0, 'YXZ');
+    const _off = new THREE.Vector3(), _y = new THREE.Vector3(0, 1, 0), _eul = new THREE.Euler(0, 0, 0, 'YXZ');
+
+    const laneCobaltMat = MATS.cobaltGlaze.clone();
+    laneCobaltMat.polygonOffset = true;
+    laneCobaltMat.polygonOffsetFactor = -2;
+    laneCobaltMat.polygonOffsetUnits = -8;
+
+    const bascDeckMat = MATS.cypressHull.clone();
+    bascDeckMat.polygonOffset = true;
+    bascDeckMat.polygonOffsetFactor = -1;
+    bascDeckMat.polygonOffsetUnits = -4;
 
     const hullRecs = [];
     const deckRecs = [];
@@ -97,6 +181,9 @@ const FC_PONTOONS_HOISTS = (function () {
     const towerRoofRecs = [];
     const pileRecs = [];
     const collarRecs = [];
+
+    const octHullRecs = [], octDeckRecs = [], octCurbRecs = [], octLaneRecs = [];
+    const hexHullRecs = [], hexDeckRecs = [], hexCurbRecs = [], hexLaneRecs = [];
 
     function pushLocalBox(arr, W, lx, localY, lz, sx, sy, sz, lry) {
       const wpt = FC_CITY.localToWorld(W.x, W.z, W.yaw == null ? 0 : W.yaw, lx, lz);
@@ -111,7 +198,7 @@ const FC_PONTOONS_HOISTS = (function () {
     }
 
     /* -------------------------------------------------------------------
-       1. Collect Multi-Shape Neighborhood Floating Platforms (30 Major Wards)
+       1. Collect Multi-Shape Neighborhood Floating Platforms (Major Wards)
        ------------------------------------------------------------------- */
     for (let i = 0; i < cityPlan.pontoons.length; i++) {
       const W = cityPlan.pontoons[i];
@@ -126,34 +213,31 @@ const FC_PONTOONS_HOISTS = (function () {
       const hullH = W.draftM + W.freeboardM;
 
       if (W.shape === 'oct-moon' || W.shape === 'hex-moon') {
-        const sides = W.shape === 'hex-moon' ? 6 : 8;
-        const rInner = W.rMoon;
+        const isHex = (W.shape === 'hex-moon');
+        const sides = isHex ? 6 : 8;
         const rOuter = W.rOut;
-        const rMid = 0.5 * (rInner + rOuter);
-        const chord = 2 * rMid * Math.sin(Math.PI / sides) * 1.09;
-        const segDepth = rOuter - rInner;
-        const innerChord = 2 * rInner * Math.sin(Math.PI / sides) * 1.12;
-        const rLane = rInner + segDepth * 0.52;
-        const laneChord = 2 * rLane * Math.sin(Math.PI / sides) * 1.05;
+        const apothem = rOuter * (isHex ? 0.866025 : 0.92388);
+        const hArr = isHex ? hexHullRecs : octHullRecs;
+        const dArr = isHex ? hexDeckRecs : octDeckRecs;
+        const cArr = isHex ? hexCurbRecs : octCurbRecs;
+        const lArr = isHex ? hexLaneRecs : octLaneRecs;
 
-        for (let s = 0; s < sides; s++) {
-          const ang = (s + 0.5) * (2 * Math.PI / sides);
-          const lx = rMid * Math.sin(ang), lz = rMid * Math.cos(ang);
-          const ix = (rInner + 0.9) * Math.sin(ang), iz = (rInner + 0.9) * Math.cos(ang);
-          const nx = rLane * Math.sin(ang), nz = rLane * Math.cos(ang);
+        /* Single seamless hollow polygonal ring per layer -> zero radial wedge overlaps and crisp oct/hex perimeter! */
+        pushLocalBox(hArr, W, 0, -hullH * 0.5 - 0.36, 0, rOuter, hullH, rOuter, 0);
+        pushLocalBox(dArr, W, 0, -0.36, 0, rOuter, 0.72, rOuter, 0);
+        pushLocalBox(cArr, W, 0, 0.36, 0, rOuter, 0.72, rOuter, 0);
+        pushLocalBox(lArr, W, 0, 0.04, 0, rOuter, 0.36, rOuter, 0);
 
-          pushLocalBox(hullRecs, W, lx, -hullH * 0.5 - 0.35, lz, chord, hullH, segDepth, ang);
-          pushLocalBox(deckRecs, W, lx, -0.36, lz, chord + 0.8, 0.72, segDepth + 1.2, ang);
-          pushLocalBox(curbRecs, W, ix, 0.42, iz, innerChord, 0.88, 1.4, ang);
-          pushLocalBox(laneRecs, W, nx, 0.04, nz, laneChord, 0.14, 5.2, ang);
-
-          /* Canal boat-landing steps on alternating faces */
-          if (s % 2 === 0) {
-            const bx = (rOuter + 1.4) * Math.sin(ang), bz = (rOuter + 1.4) * Math.cos(ang);
-            pushLocalBox(deckRecs, W, bx, -1.1, bz, chord * 0.42, 1.4, 2.8, ang);
-          }
+        /* Canal boat-landing steps butted cleanly outside outer deck rim on alternating faces */
+        const faceOffset = isHex ? (Math.PI / 6) : 0.0;
+        for (let s = 0; s < sides; s += 2) {
+          const ang = (s / sides) * Math.PI * 2 + faceOffset;
+          const bDist = apothem * 1.012 + 1.3;
+          const bx = bDist * Math.sin(ang), bz = bDist * Math.cos(ang);
+          pushLocalBox(deckRecs, W, bx, -1.15, bz, rOuter * 0.30, 1.4, 2.4, ang);
         }
-        const nPiles = W.shape === 'hex-moon' ? 6 : 6;
+
+        const nPiles = 6;
         for (let p = 0; p < nPiles; p++) {
           const pa = (p / nPiles) * Math.PI * 2 + 0.25;
           const px = (rOuter + 1.1) * Math.sin(pa), pz = (rOuter + 1.1) * Math.cos(pa);
@@ -161,9 +245,9 @@ const FC_PONTOONS_HOISTS = (function () {
           pileRecs.push({ x: wp[0], z: wp[1] });
           pushLocalBox(collarRecs, W, px, 0.9, pz, 1, 1, 1, 0);
           if (p % 2 === 0) {
-            const tx = (rOuter - 4.2) * Math.sin(pa), tz = (rOuter - 4.2) * Math.cos(pa);
+            const tx = (apothem - 4.2) * Math.sin(pa), tz = (apothem - 4.2) * Math.cos(pa);
             pushLocalBox(towerRecs, W, tx, 2.6, tz, 4.2, 5.2, 4.2, pa);
-            pushLocalBox(towerRoofRecs, W, tx, 6.4, tz, 3.6, 2.8, 3.6, pa + Math.PI * 0.25);
+            pushLocalBox(towerRoofRecs, W, tx, 6.6, tz, 3.6, 2.8, 3.6, pa + Math.PI * 0.25);
           }
         }
       } else if (W.shape === 'u-harbour') {
@@ -174,21 +258,25 @@ const FC_PONTOONS_HOISTS = (function () {
         const wingZ = hd - W.notchD * 0.5;
         const wingX = hw - wingW * 0.5;
 
-        /* Head block + Left & Right U-wings */
-        pushLocalBox(hullRecs, W, 0, -hullH * 0.5 - 0.35, headZ, W.w, hullH, headD, 0);
-        pushLocalBox(deckRecs, W, 0, -0.36, headZ, W.w + 1.2, 0.72, headD + 1.2, 0);
-        pushLocalBox(laneRecs, W, 0, 0.04, headZ + 4.0, W.w - 10.0, 0.14, 6.0, 0);
+        /* Non-overlapping butt-jointed Head block + Left & Right U-wings (0 XZ overlap at y=0.00!) */
+        pushLocalBox(hullRecs, W, 0, -hullH * 0.5 - 0.36, headZ, W.w, hullH, headD, 0);
+        const dHeadD = headD + 0.6;
+        pushLocalBox(deckRecs, W, 0, -0.36, (hd - W.notchD) - dHeadD * 0.5, W.w + 1.2, 0.72, dHeadD, 0);
+        pushLocalBox(laneRecs, W, 0, 0.04, -(hd - 18.85), W.w - 10.0, 0.36, 3.8, 0);
 
+        const dWingW = wingW + 0.6;
+        const dWingD = W.notchD + 0.6;
+        const wingLaneX = 0.5 * ((W.notchW * 0.5 + 9.2) + (hw - 10.2));
         for (let sgn = -1; sgn <= 1; sgn += 2) {
-          pushLocalBox(hullRecs, W, sgn * wingX, -hullH * 0.5 - 0.35, wingZ, wingW, hullH, W.notchD, 0);
-          pushLocalBox(deckRecs, W, sgn * wingX, -0.36, wingZ, wingW + 1.0, 0.72, W.notchD + 1.0, 0);
-          pushLocalBox(laneRecs, W, sgn * wingX, 0.04, wingZ, 5.4, 0.14, W.notchD - 8.0, 0);
-          /* Inner harbour-court coping + twin harbour-head beacon towers */
-          pushLocalBox(curbRecs, W, sgn * (W.notchW * 0.5 + 0.9), 0.42, wingZ, 1.6, 0.88, W.notchD, 0);
+          pushLocalBox(hullRecs, W, sgn * wingX, -hullH * 0.5 - 0.36, wingZ, wingW, hullH, W.notchD, 0);
+          pushLocalBox(deckRecs, W, sgn * (W.notchW * 0.5 + dWingW * 0.5), -0.36, (hd - W.notchD) + dWingD * 0.5, dWingW, 0.72, dWingD, 0);
+          pushLocalBox(laneRecs, W, sgn * wingLaneX, 0.04, wingZ, 3.8, 0.36, W.notchD - 8.0, 0);
+          /* Inner harbour-court coping + twin harbour-head beacon towers (butt-jointed at z = hd - notchD!) */
+          pushLocalBox(curbRecs, W, sgn * (W.notchW * 0.5 + 0.7), 0.36, wingZ, 1.4, 0.72, W.notchD, 0);
           pushLocalBox(towerRecs, W, sgn * (W.notchW * 0.5 + 3.5), 3.0, hd - 4.0, 4.6, 6.0, 4.6, 0);
-          pushLocalBox(towerRoofRecs, W, sgn * (W.notchW * 0.5 + 3.5), 7.2, hd - 4.0, 3.9, 3.0, 3.9, Math.PI * 0.25);
+          pushLocalBox(towerRoofRecs, W, sgn * (W.notchW * 0.5 + 3.5), 7.5, hd - 4.0, 3.9, 3.0, 3.9, Math.PI * 0.25);
         }
-        pushLocalBox(curbRecs, W, 0, 0.42, hd - W.notchD - 0.8, W.notchW + 2.0, 0.88, 1.6, 0);
+        pushLocalBox(curbRecs, W, 0, 0.36, hd - W.notchD - 0.7, W.notchW + 2.8, 0.72, 1.4, 0);
 
         const pLocs = [[-hw - 1, -hd], [hw + 1, -hd], [-hw - 1, hd], [hw + 1, hd], [-hw - 1, 0], [hw + 1, 0]];
         for (let p = 0; p < pLocs.length; p++) {
@@ -198,21 +286,30 @@ const FC_PONTOONS_HOISTS = (function () {
         }
       } else if (W.shape === 'stepped-bazaar') {
         const hw = W.w * 0.5, hd = W.d * 0.5;
-        /* Full base barge + raised +2.4 m central market terrace */
-        pushLocalBox(hullRecs, W, 0, -hullH * 0.5 - 0.35, 0, W.w, hullH, W.d, 0);
+        const shw = W.stepW * 0.5, shd = W.stepD * 0.5;
+        /* Full base barge + raised +2.4 m central market terrace + 4 perimeter terrace curbs (never covering terrace floor!) */
+        pushLocalBox(hullRecs, W, 0, -hullH * 0.5 - 0.36, 0, W.w, hullH, W.d, 0);
         pushLocalBox(deckRecs, W, 0, -0.36, 0, W.w + 1.2, 0.72, W.d + 1.2, 0);
-        pushLocalBox(deckRecs, W, 0, 1.2, 0, W.stepW, 2.4, W.stepD, 0);
-        pushLocalBox(curbRecs, W, 0, 2.42, 0, W.stepW + 1.2, 0.55, W.stepD + 1.2, 0);
-        pushLocalBox(laneRecs, W, 0, 0.04, -(W.stepD * 0.5 + 7.0), W.w - 12.0, 0.14, 5.5, 0);
-        pushLocalBox(laneRecs, W, 0, 0.04,  (W.stepD * 0.5 + 7.0), W.w - 12.0, 0.14, 5.5, 0);
-        /* 4 Axial Bazaar Terrace Stair Flights */
-        pushLocalBox(deckRecs, W, 0, 0.9, -(W.stepD * 0.5 + 2.4), 9.0, 1.8, 4.8, 0);
-        pushLocalBox(deckRecs, W, 0, 0.9,  (W.stepD * 0.5 + 2.4), 9.0, 1.8, 4.8, 0);
+        pushLocalBox(deckRecs, W, 0, 1.20, 0, W.stepW, 2.40, W.stepD, 0);
+        pushLocalBox(curbRecs, W, -(shw - 0.5), 2.66, 0, 1.0, 0.52, W.stepD, 0);
+        pushLocalBox(curbRecs, W,  (shw - 0.5), 2.66, 0, 1.0, 0.52, W.stepD, 0);
+        pushLocalBox(curbRecs, W, -((shw - 1.0 + 4.8) * 0.5), 2.66, -(shd - 0.5), shw - 5.8, 0.52, 1.0, 0);
+        pushLocalBox(curbRecs, W,  ((shw - 1.0 + 4.8) * 0.5), 2.66, -(shd - 0.5), shw - 5.8, 0.52, 1.0, 0);
+        pushLocalBox(curbRecs, W, -((shw - 1.0 + 4.8) * 0.5), 2.66,  (shd - 0.5), shw - 5.8, 0.52, 1.0, 0);
+        pushLocalBox(curbRecs, W,  ((shw - 1.0 + 4.8) * 0.5), 2.66,  (shd - 0.5), shw - 5.8, 0.52, 1.0, 0);
+
+        pushLocalBox(laneRecs, W, 0, 0.04, -(shd + 7.2), W.w - 12.0, 0.36, 4.2, 0);
+        pushLocalBox(laneRecs, W, 0, 0.04,  (shd + 7.2), W.w - 12.0, 0.36, 4.2, 0);
+        /* Stepped Bazaar Terrace Stair Flights (2 non-overlapping steps each on -Z and +Z) */
+        for (let sgn = -1; sgn <= 1; sgn += 2) {
+          pushLocalBox(deckRecs, W, 0, 0.90, sgn * (shd + 1.0), 9.0, 1.80, 2.0, 0);
+          pushLocalBox(deckRecs, W, 0, 0.45, sgn * (shd + 3.0), 9.0, 0.90, 2.0, 0);
+        }
 
         const cLocs = [[-hw + 4.5, -hd + 4.5], [hw - 4.5, -hd + 4.5], [-hw + 4.5, hd - 4.5], [hw - 4.5, hd - 4.5]];
         for (let c = 0; c < cLocs.length; c++) {
           pushLocalBox(towerRecs, W, cLocs[c][0], 2.6, cLocs[c][1], 4.2, 5.2, 4.2, 0);
-          pushLocalBox(towerRoofRecs, W, cLocs[c][0], 6.4, cLocs[c][1], 3.6, 2.8, 3.6, Math.PI * 0.25);
+          pushLocalBox(towerRoofRecs, W, cLocs[c][0], 6.6, cLocs[c][1], 3.6, 2.8, 3.6, Math.PI * 0.25);
         }
         const pLocs = [[-hw - 1, -hd * 0.7], [hw + 1, -hd * 0.7], [-hw - 1, hd * 0.7], [hw + 1, hd * 0.7], [0, -hd - 1], [0, hd + 1]];
         for (let p = 0; p < pLocs.length; p++) {
@@ -221,29 +318,46 @@ const FC_PONTOONS_HOISTS = (function () {
           pushLocalBox(collarRecs, W, pLocs[p][0], 0.9, pLocs[p][1], 1, 1, 1, 0);
         }
       } else {
-        /* 'rect-canal': 4 sub-slabs framing the open central Moon-Court (moonW x moonD) */
+        /* 'rect-canal': 4 exact butt-jointed sub-slabs framing the open central Moon-Court (0 corner overlap at y=0.00!) */
         const hw = W.w * 0.5, hd = W.d * 0.5;
-        const sideW = (W.w - W.moonW) * 0.5;
-        const sideX = hw - sideW * 0.5;
-        const fbD = (W.d - W.moonD) * 0.5;
-        const fbZ = hd - fbD * 0.5;
+        const mhw = W.moonW * 0.5, mhd = W.moonD * 0.5;
+        const sideW = hw - mhw;
+        const fbD = hd - mhd;
+        const dSideW = sideW + 0.6;
+        const dFbD = fbD + 0.6;
+
+        const ewLaneZ = 26.5, ewLaneD = 4.2;
+        const zInEnd = ewLaneZ - ewLaneD * 0.5;
+        const zOutStart = ewLaneZ + ewLaneD * 0.5;
+        const zOuterLim = hd - 3.0;
 
         for (let sgn = -1; sgn <= 1; sgn += 2) {
-          pushLocalBox(hullRecs, W, sgn * sideX, -hullH * 0.5 - 0.35, 0, sideW, hullH, W.d, 0);
-          pushLocalBox(deckRecs, W, sgn * sideX, -0.36, 0, sideW + 1.0, 0.72, W.d + 1.2, 0);
-          pushLocalBox(hullRecs, W, 0, -hullH * 0.5 - 0.35, sgn * fbZ, W.moonW, hullH, fbD, 0);
-          pushLocalBox(deckRecs, W, 0, -0.36, sgn * fbZ, W.moonW + 0.6, 0.72, fbD + 1.2, 0);
-          pushLocalBox(curbRecs, W, 0, 0.42, sgn * (W.moonD * 0.5 + 0.7), W.moonW + 2.4, 0.88, 1.4, 0);
-          pushLocalBox(curbRecs, W, sgn * (W.moonW * 0.5 + 0.7), 0.42, 0, 1.4, 0.88, W.moonD + 1.0, 0);
-          /* Internal paved lanes & canal boat-landing steps */
-          pushLocalBox(laneRecs, W, sgn * 28.0, 0.04, 0, 5.8, 0.14, W.d - 6.0, 0);
-          pushLocalBox(laneRecs, W, 0, 0.04, sgn * 28.5, W.w - 8.0, 0.14, 5.4, 0);
-          pushLocalBox(deckRecs, W, 0, -1.1, sgn * (hd + 1.4), 18.0, 1.4, 2.8, 0);
+          pushLocalBox(hullRecs, W, sgn * (mhw + sideW * 0.5), -hullH * 0.5 - 0.36, 0, sideW, hullH, W.d, 0);
+          pushLocalBox(deckRecs, W, sgn * (mhw + dSideW * 0.5), -0.36, 0, dSideW, 0.72, W.d + 1.2, 0);
+          pushLocalBox(hullRecs, W, 0, -hullH * 0.5 - 0.36, sgn * (mhd + fbD * 0.5), W.moonW, hullH, fbD, 0);
+          pushLocalBox(deckRecs, W, 0, -0.36, sgn * (mhd + dFbD * 0.5), W.moonW, 0.72, dFbD, 0);
+
+          /* Non-overlapping moon-pool curbs */
+          pushLocalBox(curbRecs, W, 0, 0.36, sgn * (mhd + 0.7), W.moonW + 2.8, 0.72, 1.4, 0);
+          pushLocalBox(curbRecs, W, sgn * (mhw + 0.7), 0.36, 0, 1.4, 0.72, W.moonD, 0);
+
+          /* Non-overlapping internal paved lanes (NS lanes split into 3 segments at EW lane intersections -> 0 overlap!) */
+          pushLocalBox(laneRecs, W, 0, 0.04, sgn * ewLaneZ, W.w - 8.0, 0.36, ewLaneD, 0);
+          pushLocalBox(laneRecs, W, sgn * 28.0, 0.04, 0, 3.8, 0.36, zInEnd * 2.0, 0);
+          if (zOuterLim - zOutStart > 1.0) {
+            const segLen = zOuterLim - zOutStart;
+            const segMid = zOutStart + segLen * 0.5;
+            pushLocalBox(laneRecs, W, sgn * 28.0, 0.04, -segMid, 3.8, 0.36, segLen, 0);
+            pushLocalBox(laneRecs, W, sgn * 28.0, 0.04,  segMid, 3.8, 0.36, segLen, 0);
+          }
+
+          /* Canal boat-landing steps butted cleanly outside hd + 0.6 */
+          pushLocalBox(deckRecs, W, 0, -1.15, sgn * (hd + 1.8), 18.0, 1.4, 2.4, 0);
         }
         const cLocs = [[-hw + 4.5, -hd + 4.5], [hw - 4.5, -hd + 4.5], [-hw + 4.5, hd - 4.5], [hw - 4.5, hd - 4.5]];
         for (let c = 0; c < cLocs.length; c++) {
           pushLocalBox(towerRecs, W, cLocs[c][0], 2.6, cLocs[c][1], 4.2, 5.2, 4.2, 0);
-          pushLocalBox(towerRoofRecs, W, cLocs[c][0], 6.4, cLocs[c][1], 3.6, 2.8, 3.6, Math.PI * 0.25);
+          pushLocalBox(towerRoofRecs, W, cLocs[c][0], 6.6, cLocs[c][1], 3.6, 2.8, 3.6, Math.PI * 0.25);
         }
         const pLocs = [[-hw - 1, -hd * 0.7], [hw + 1, -hd * 0.7], [-hw - 1, hd * 0.7], [hw + 1, hd * 0.7], [0, -hd - 1], [0, hd + 1]];
         for (let p = 0; p < pLocs.length; p++) {
@@ -301,13 +415,13 @@ const FC_PONTOONS_HOISTS = (function () {
       const gHullH = G.draftM + G.freeboardM;
       const hw = G.w * 0.5, hd = G.d * 0.5;
 
-      /* Buoyant cypress-beam & travertine-tuff curbed raft frame */
-      pushLocalBox(hullRecs, G, 0, -gHullH * 0.5 - 0.15, 0, G.w, gHullH, G.d, 0);
+      /* Buoyant cypress-beam & travertine-tuff curbed raft frame (butt-jointed corner curbs -> 0 corner overlap!) */
+      pushLocalBox(hullRecs, G, 0, -gHullH * 0.5 - 0.42, 0, G.w, gHullH, G.d, 0);
       pushLocalBox(deckRecs, G, 0, -0.22, 0, G.w + 0.8, 0.40, G.d + 0.8, 0);
-      pushLocalBox(curbRecs, G, 0, 0.32, -hd + 0.8, G.w, 0.64, 1.5, 0);
-      pushLocalBox(curbRecs, G, 0, 0.32,  hd - 0.8, G.w, 0.64, 1.5, 0);
-      pushLocalBox(curbRecs, G, -hw + 0.8, 0.32, 0, 1.5, 0.64, G.d - 2.0, 0);
-      pushLocalBox(curbRecs, G,  hw - 0.8, 0.32, 0, 1.5, 0.64, G.d - 2.0, 0);
+      pushLocalBox(curbRecs, G, 0, 0.32, -hd + 0.75, G.w, 0.64, 1.5, 0);
+      pushLocalBox(curbRecs, G, 0, 0.32,  hd - 0.75, G.w, 0.64, 1.5, 0);
+      pushLocalBox(curbRecs, G, -hw + 0.75, 0.32, 0, 1.5, 0.64, G.d - 3.0, 0);
+      pushLocalBox(curbRecs, G,  hw - 0.75, 0.32, 0, 1.5, 0.64, G.d - 3.0, 0);
 
       /* 4 Irrigated Dark-Loam Chinampa Beds separated by turquoise irrigation trenches + 16 Sculpted Crop Hedgerows! */
       const nBeds = 4;
@@ -319,11 +433,11 @@ const FC_PONTOONS_HOISTS = (function () {
       for (let b = 0; b < nBeds; b++) {
         const bz = -bedSpanZ * 0.5 + (b + 0.5) * (bedSpanZ / nBeds);
         const wptS = FC_CITY.localToWorld(G.x, G.z, G.yaw, -2.0, bz);
-        soilRecs.push({ wardId: G.id, x: wptS[0], z: wptS[1], localY: 0.24, ry: G.yaw, sx: bedW, sy: 0.48, sz: bedD });
+        soilRecs.push({ wardId: G.id, x: wptS[0], z: wptS[1], localY: 0.26, ry: G.yaw, sx: bedW, sy: 0.52, sz: bedD });
 
         if (b < nBeds - 1) {
           const cz = bz + (bedSpanZ / nBeds) * 0.5;
-          pushLocalBox(laneRecs, G, -2.0, 0.12, cz, bedW, 0.24, 1.15, 0);
+          pushLocalBox(laneRecs, G, -2.0, 0.11, cz, bedW, 0.26, 1.15, 0);
         }
 
         for (let r = 0; r < 4; r++) {
@@ -333,7 +447,7 @@ const FC_PONTOONS_HOISTS = (function () {
           cropRecs.push({
             wardId: G.id,
             x: wptC[0], z: wptC[1],
-            localY: 0.48 + cropH * 0.5,
+            localY: 0.52 + cropH * 0.5,
             ry: G.yaw,
             sx: bedW - 1.4, sy: cropH, sz: bedD * 0.15,
             col: cols[(b + r) % 2]
@@ -342,7 +456,7 @@ const FC_PONTOONS_HOISTS = (function () {
             bloomRecs.push({
               wardId: G.id,
               x: wptC[0], z: wptC[1],
-              localY: 0.52 + cropH,
+              localY: 0.72 + cropH,
               ry: G.yaw,
               sx: (bedW - 3.2) * 0.72, sy: 0.36, sz: 0.62
             });
@@ -350,23 +464,23 @@ const FC_PONTOONS_HOISTS = (function () {
         }
       }
 
-      /* Woven Bamboo/Willow Windbreak Trellises + Twin Compost/Tool Huts & Irrigation Sweep */
-      const fWpt = FC_CITY.localToWorld(G.x, G.z, G.yaw, 0, -hd + 1.5);
-      fenceRecs.push({ wardId: G.id, x: fWpt[0], z: fWpt[1], localY: 1.35, ry: G.yaw, sx: G.w - 4.0, sy: 1.9, sz: 0.32 });
-      const fWpt2 = FC_CITY.localToWorld(G.x, G.z, G.yaw, -hw + 1.5, 0);
-      fenceRecs.push({ wardId: G.id, x: fWpt2[0], z: fWpt2[1], localY: 1.25, ry: G.yaw, sx: 0.32, sy: 1.7, sz: G.d - 5.0 });
+      /* Woven Bamboo/Willow Windbreak Trellises + Twin Compost/Tool Huts (butt-jointed, 0 overlap) */
+      const fWpt = FC_CITY.localToWorld(G.x, G.z, G.yaw, 0.8, -hd + 1.85);
+      fenceRecs.push({ wardId: G.id, x: fWpt[0], z: fWpt[1], localY: 1.55, ry: G.yaw, sx: G.w - 5.6, sy: 1.8, sz: 0.32 });
+      const fWpt2 = FC_CITY.localToWorld(G.x, G.z, G.yaw, -hw + 1.85, 0.8);
+      fenceRecs.push({ wardId: G.id, x: fWpt2[0], z: fWpt2[1], localY: 1.45, ry: G.yaw, sx: 0.32, sy: 1.6, sz: G.d - 6.6 });
 
       pushLocalBox(towerRecs, G, hw - 4.2, 1.85, -hd + 4.8, 5.2, 3.4, 4.8, 0);
-      pushLocalBox(towerRoofRecs, G, hw - 4.2, 4.15, -hd + 4.8, 4.2, 2.2, 4.2, Math.PI * 0.25);
+      pushLocalBox(towerRoofRecs, G, hw - 4.2, 4.45, -hd + 4.8, 4.2, 2.2, 4.2, Math.PI * 0.25);
       pushLocalBox(towerRecs, G, hw - 4.2, 1.55,  hd - 4.8, 4.2, 2.8, 4.0, 0);
-      pushLocalBox(towerRoofRecs, G, hw - 4.2, 3.55,  hd - 4.8, 3.4, 1.9, 3.4, Math.PI * 0.25);
+      pushLocalBox(towerRoofRecs, G, hw - 4.2, 3.80,  hd - 4.8, 3.4, 1.9, 3.4, Math.PI * 0.25);
 
       /* 4 Corner Seafloor Guide-Piles & Paktong Collars */
       const gpLocs = [[-hw - 0.8, -hd + 2], [hw + 0.8, -hd + 2], [-hw - 0.8, hd - 2], [hw + 0.8, hd - 2]];
       for (let p = 0; p < gpLocs.length; p++) {
         const wp = FC_CITY.localToWorld(G.x, G.z, G.yaw, gpLocs[p][0], gpLocs[p][1]);
         pileRecs.push({ x: wp[0], z: wp[1] });
-        pushLocalBox(collarRecs, G, gpLocs[p][0], 0.6, gpLocs[p][1], 1, 1, 1, 0);
+        pushLocalBox(collarRecs, G, gpLocs[p][0], 0.95, gpLocs[p][1], 1, 1, 1, 0);
       }
 
       if (typeof KWALK !== 'undefined' && KWALK.floor) {
@@ -405,12 +519,14 @@ const FC_PONTOONS_HOISTS = (function () {
     /* Build Shared InstancedMeshes for all 30 Platforms + 20 Chinampas */
     const boxGeo = new THREE.BoxGeometry(1, 1, 1);
     const coneGeo = new THREE.ConeGeometry(0.75, 1, 4);
+    const gableRoofGeo = makeGablePrismGeo();
     const pileGeo = new THREE.CylinderGeometry(0.95, 1.18, 44.0, 8);
-    const collarGeo = new THREE.CylinderGeometry(1.58, 1.58, 2.2, 10);
+    const collarGeo = new THREE.CylinderGeometry(1.58, 1.58, 1.8, 10);
 
-    function makeDynamicIm(geo, mat, recs, colored) {
+    function makeDynamicIm(geo, mat, recs, colored, meshName) {
       if (!recs.length) return null;
       const im = new THREE.InstancedMesh(geo, mat, recs.length);
+      if (meshName) im.name = meshName;
       im.frustumCulled = false;
       const cTmp = colored ? new THREE.Color() : null;
       for (let i = 0; i < recs.length; i++) {
@@ -434,26 +550,38 @@ const FC_PONTOONS_HOISTS = (function () {
       return im;
     }
 
-    const hullIm = makeDynamicIm(boxGeo, MATS.cypressHull, hullRecs, false);
-    const deckIm = makeDynamicIm(boxGeo, MATS.travertineStone, deckRecs, false);
-    const laneIm = makeDynamicIm(boxGeo, MATS.cobaltGlaze, laneRecs, false);
-    const curbIm = makeDynamicIm(boxGeo, MATS.giltChofa, curbRecs, false);
-    const towerIm = makeDynamicIm(boxGeo, MATS.ancientCeramic, towerRecs, false);
-    const towerRoofIm = makeDynamicIm(coneGeo, MATS.celadonRoof, towerRoofRecs, false);
-    const collarIm = makeDynamicIm(collarGeo, MATS.paktongMetal, collarRecs, false);
+    const hullIm = makeDynamicIm(boxGeo, MATS.cypressHull, hullRecs, false, 'fc_pontoon_hull');
+    const deckIm = makeDynamicIm(boxGeo, MATS.travertineStone, deckRecs, false, 'fc_pontoon_deck');
+    const laneIm = makeDynamicIm(boxGeo, laneCobaltMat, laneRecs, false, 'fc_pontoon_lane');
+    const curbIm = makeDynamicIm(boxGeo, MATS.giltChofa, curbRecs, false, 'fc_pontoon_curb');
+    const towerIm = makeDynamicIm(boxGeo, MATS.ancientCeramic, towerRecs, false, 'fc_pontoon_tower');
+    const towerRoofIm = makeDynamicIm(coneGeo, MATS.celadonRoof, towerRoofRecs, false, 'fc_pontoon_tower_roof');
+    const collarIm = makeDynamicIm(collarGeo, MATS.paktongMetal, collarRecs, false, 'fc_pontoon_collar');
+
+    /* Seamless hollow octagonal & hexagonal ring InstancedMeshes */
+    makeDynamicIm(makeHollowPolyGeo(8, 0.185, 1.000), MATS.cypressHull,     octHullRecs, false, 'fc_oct_hull');
+    makeDynamicIm(makeHollowPolyGeo(8, 0.180, 1.012), MATS.travertineStone, octDeckRecs, false, 'fc_oct_deck');
+    makeDynamicIm(makeHollowPolyGeo(8, 0.176, 0.204), MATS.giltChofa,       octCurbRecs, false, 'fc_oct_curb');
+    makeDynamicIm(makeHollowPolyGeo(8, 0.560, 0.620), laneCobaltMat,        octLaneRecs, false, 'fc_oct_lane');
+
+    makeDynamicIm(makeHollowPolyGeo(6, 0.175, 1.000), MATS.cypressHull,     hexHullRecs, false, 'fc_hex_hull');
+    makeDynamicIm(makeHollowPolyGeo(6, 0.170, 1.012), MATS.travertineStone, hexDeckRecs, false, 'fc_hex_deck');
+    makeDynamicIm(makeHollowPolyGeo(6, 0.166, 0.194), MATS.giltChofa,       hexCurbRecs, false, 'fc_hex_curb');
+    makeDynamicIm(makeHollowPolyGeo(6, 0.530, 0.590), laneCobaltMat,        hexLaneRecs, false, 'fc_hex_lane');
 
     const soilMat = new THREE.MeshStandardMaterial({ color: 0x241910, roughness: 0.96, metalness: 0.0 });
     const cropMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.92, metalness: 0.0 });
     const bloomMat = new THREE.MeshStandardMaterial({ color: 0xd85c88, roughness: 0.78, metalness: 0.0 });
     const fenceMat = new THREE.MeshStandardMaterial({ color: 0x826c38, roughness: 0.90, metalness: 0.0 });
 
-    const soilIm = makeDynamicIm(boxGeo, soilMat, soilRecs, false);
-    const cropIm = makeDynamicIm(boxGeo, cropMat, cropRecs, true);
-    const bloomIm = makeDynamicIm(boxGeo, bloomMat, bloomRecs, false);
-    const fenceIm = makeDynamicIm(boxGeo, fenceMat, fenceRecs, false);
+    const soilIm = makeDynamicIm(boxGeo, soilMat, soilRecs, false, 'fc_chinampa_soil');
+    const cropIm = makeDynamicIm(boxGeo, cropMat, cropRecs, true, 'fc_chinampa_crop');
+    const bloomIm = makeDynamicIm(boxGeo, bloomMat, bloomRecs, false, 'fc_chinampa_bloom');
+    const fenceIm = makeDynamicIm(boxGeo, fenceMat, fenceRecs, false, 'fc_chinampa_fence');
 
     if (pileRecs.length) {
       const pileIm = new THREE.InstancedMesh(pileGeo, MATS.ancientConcrete, pileRecs.length);
+      pileIm.name = 'fc_pontoon_piles';
       _q4.set(0, 0, 0, 1);
       _s3.set(1, 1, 1);
       for (let i = 0; i < pileRecs.length; i++) {
@@ -467,13 +595,14 @@ const FC_PONTOONS_HOISTS = (function () {
     }
 
     /* -------------------------------------------------------------------
-       3. 65+ Hinged Bascule Canal Bridges via 3 InstancedMeshes!
+       3. Rim-Clipped Hinged Bascule Canal Bridges via 3 InstancedMeshes!
        ------------------------------------------------------------------- */
     const fixedY = {
       dyke_nne: 6.2,
       dyke_ese: 6.2,
       dyke_ssw: 6.2,
       dyke_wnw: 6.2,
+      sea_ring_quay: 6.2,
       sumeru_plinth: 6.2,
       sala_ne: 6.2,
       sala_se: 6.2,
@@ -491,19 +620,31 @@ const FC_PONTOONS_HOISTS = (function () {
       for (let j = 0; j < bascules.length; j++) {
         const BL = bascules[j];
         const mx = (BL.x0 + BL.x1) * 0.5, mz = (BL.z0 + BL.z1) * 0.5;
-        const deckLen = BL.deckLen == null ? Math.max(16.0, BL.spanM) : BL.deckLen;
+        const clearSpan = BL.clearSpan == null ? Math.hypot(BL.x1 - BL.x0, BL.z1 - BL.z0) : BL.clearSpan;
+        const deckLen = BL.deckLen == null ? (clearSpan + 2.4) : BL.deckLen;
         const yaw = Math.atan2(BL.x1 - BL.x0, BL.z1 - BL.z0);
-        const hasRoof = (j % 3 === 0);
-        bascMeta.push({ link: BL, mx: mx, mz: mz, deckLen: deckLen, yaw: yaw, roofIdx: hasRoof ? (roofCount++) : -1 });
+        const hasRoof = (j % 3 === 0 && clearSpan >= 14.0);
+        bascMeta.push({
+          link: BL,
+          mx: mx,
+          mz: mz,
+          clearSpan: clearSpan,
+          deckLen: deckLen,
+          yaw: yaw,
+          roofIdx: hasRoof ? (roofCount++) : -1
+        });
       }
-      bascDeckIm = new THREE.InstancedMesh(boxGeo, MATS.cypressHull, bascMeta.length);
+      bascDeckIm = new THREE.InstancedMesh(boxGeo, bascDeckMat, bascMeta.length);
+      bascDeckIm.name = 'fc_bascule_deck';
       bascTrussIm = new THREE.InstancedMesh(boxGeo, MATS.paktongMetal, bascMeta.length * 2);
+      bascTrussIm.name = 'fc_bascule_truss';
       bascDeckIm.frustumCulled = false;
       bascTrussIm.frustumCulled = false;
       root.add(bascDeckIm);
       root.add(bascTrussIm);
       if (roofCount > 0) {
-        bascRoofIm = new THREE.InstancedMesh(coneGeo, MATS.celadonRoof, roofCount);
+        bascRoofIm = new THREE.InstancedMesh(gableRoofGeo, MATS.celadonRoof, roofCount);
+        bascRoofIm.name = 'fc_bascule_gable_roof';
         bascRoofIm.frustumCulled = false;
         root.add(bascRoofIm);
       }
@@ -515,31 +656,40 @@ const FC_PONTOONS_HOISTS = (function () {
       for (let i = 0; i < bascMeta.length; i++) {
         const bm = bascMeta[i];
         const bp = A.bascules[i];
-        const midY = bp ? bp.midY : (lagoonY + 2.2);
-        const pitch = bp ? bp.pitchRad : 0.0;
+        /* Lift hinge axis +0.34 m so bridge deck sits cleanly proud of both rims with zero coplanar lip fight */
+        const midY = (bp ? bp.midY : (lagoonY + 2.2)) + 0.34;
+        const dy = bp ? bp.dyM : 0.0;
+        const horizLen = bm.deckLen;
+        const len3 = Math.hypot(horizLen, dy);
+        /* In 'YXZ' Euler, local +Z points from (x0,z0) toward (x1,z1), so -atan2(dy, horizLen) pitches +Z up by +dy/2! */
+        const rx = -Math.atan2(dy, Math.max(1.0, horizLen));
 
-        _eul.set(pitch, bm.yaw, 0, 'YXZ');
+        _eul.set(rx, bm.yaw, 0, 'YXZ');
         _q4.setFromEuler(_eul);
 
         _p3.set(bm.mx, midY, bm.mz);
-        _s3.set(5.8, 0.68, bm.deckLen);
+        _s3.set(5.8, 0.62, len3);
         _m4.compose(_p3, _q4, _s3);
         bascDeckIm.setMatrixAt(i, _m4);
 
-        const cs = Math.cos(bm.yaw), sn = Math.sin(bm.yaw);
+        const hasRoof = bm.roofIdx >= 0 && bascRoofIm != null;
+        const trussH = hasRoof ? 2.45 : 1.75;
+        const trussLen = Math.max(6.0, bm.clearSpan - 0.8);
         for (let sgn = -1; sgn <= 1; sgn += 2) {
           const tIdx = i * 2 + (sgn < 0 ? 0 : 1);
-          _p3.set(bm.mx + sgn * 2.65 * cs, midY + 1.05, bm.mz - sgn * 2.65 * sn);
-          _s3.set(0.45, 2.1, bm.deckLen);
+          _off.set(sgn * 2.62, 0.31 + trussH * 0.5, 0.0).applyQuaternion(_q4);
+          _p3.set(bm.mx + _off.x, midY + _off.y, bm.mz + _off.z);
+          _s3.set(0.42, trussH, trussLen);
           _m4.compose(_p3, _q4, _s3);
           bascTrussIm.setMatrixAt(tIdx, _m4);
         }
 
-        if (bm.roofIdx >= 0 && bascRoofIm) {
-          _eul.set(pitch, bm.yaw, 0, 'YXZ');
-          _q4.setFromEuler(_eul);
-          _p3.set(bm.mx, midY + 3.6, bm.mz);
-          _s3.set(6.2, 2.2, bm.deckLen * 0.85);
+        if (hasRoof) {
+          const roofH = 1.72;
+          const roofLen = Math.min(bm.clearSpan * 0.72, 28.0);
+          _off.set(0.0, 0.31 + trussH + roofH * 0.5 - 0.05, 0.0).applyQuaternion(_q4);
+          _p3.set(bm.mx + _off.x, midY + _off.y, bm.mz + _off.z);
+          _s3.set(6.4, roofH, roofLen);
           _m4.compose(_p3, _q4, _s3);
           bascRoofIm.setMatrixAt(bm.roofIdx, _m4);
         }
@@ -566,13 +716,15 @@ const FC_PONTOONS_HOISTS = (function () {
       root.add(cableGroup);
       const nodeXZ = {
         dyke_nne: [195, -245], dyke_ese: [380, 334], dyke_ssw: [-335, 406], dyke_wnw: [-335, -46],
-        sumeru_plinth: [0, 180], sala_ne: [245, -35], sala_se: [248, 395], sala_sw: [-238, 395], sala_w: [-235, -45]
+        sea_ring_quay: [896, 180], sumeru_plinth: [0, 180],
+        sala_ne: [245, -35], sala_se: [248, 395], sala_sw: [-238, 395], sala_w: [-235, -45]
       };
       allFloatWards.forEach(function (pw) { nodeXZ[pw.id] = [pw.x, pw.z]; });
       const cables = cityPlan.cables || [];
       for (let c = 0; c < cables.length; c++) {
         const ch = cables[c];
-        const A = nodeXZ[ch.from] || [0, 180], B = nodeXZ[ch.to] || [220, -120];
+        const A = ch.x0 != null ? [ch.x0, ch.z0] : (nodeXZ[ch.from] || [0, 180]);
+        const B = ch.x1 != null ? [ch.x1, ch.z1] : (nodeXZ[ch.to] || [220, -120]);
         const pts = [];
         for (let s = 0; s <= 8; s++) {
           const t = s / 8;
@@ -651,6 +803,7 @@ const FC_PONTOONS_HOISTS = (function () {
         const ims = parts.map(function (pt) {
           const im = new THREE.InstancedMesh(pt.geo, pt.mat, list.length);
           im.frustumCulled = false;
+          im.userData.isVessel = true;
           root.add(im);
           return im;
         });
@@ -701,6 +854,8 @@ const FC_PONTOONS_HOISTS = (function () {
         sampanCanopyIm = new THREE.InstancedMesh(new THREE.ConeGeometry(2.1, 1.4, 4), canopyMat, sampanRecs.length);
         sampanHullIm.frustumCulled = false;
         sampanCanopyIm.frustumCulled = false;
+        sampanHullIm.userData.isVessel = true;
+        sampanCanopyIm.userData.isVessel = true;
         const cTmp = new THREE.Color();
         for (let i = 0; i < sampanRecs.length; i++) {
           cTmp.setHex(sampanRecs[i].col);

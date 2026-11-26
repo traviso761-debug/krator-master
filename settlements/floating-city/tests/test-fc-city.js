@@ -121,9 +121,21 @@ const cityPlan2 = X.FC_CITY.buildPlans({ tags: X.KTAGS.create({ build: 'fc-city-
 T.ok('FC_CITY.buildPlans() is 100% deterministic across repeated calls',
   JSON.stringify(cityPlan.lots) === JSON.stringify(cityPlan2.lots));
 
+T.ok('every bascule bridge is rim-clipped to exact outer hull/quay boundaries, spans ONLY open canal water (10..90 m), and never clips platforms, moon-pools, dykes or building lots',
+  layoutAudit.basculeAudit && layoutAudit.basculeAudit.ok &&
+  layoutAudit.basculeAudit.clippedHull === 0 && layoutAudit.basculeAudit.crossedBridges === 0 &&
+  layoutAudit.basculeAudit.hitLot === 0 && layoutAudit.basculeAudit.maxDeckLen <= 90.0,
+  JSON.stringify(layoutAudit.basculeAudit));
+
+T.ok('zero coplanar deck/curb/lane slab overlaps on pontoons & Chinampas (lanes >= 0.22 m proud) AND zero Bluff cross-street vs avenue/plaza overlaps',
+  layoutAudit.slabAudit && layoutAudit.slabAudit.ok &&
+  layoutAudit.slabAudit.slabOverlaps === 0 && layoutAudit.slabAudit.lowLaneSteps === 0 &&
+  layoutAudit.slabAudit.wayOverlaps === 0,
+  JSON.stringify(layoutAudit.slabAudit));
+
 /* 4. Two-Basin Tidal Weir, Pontoon + Chinampa Kinematics & KHAZ.TIDE Gate */
 const fixedY = {
-  dyke_nne: 6.2, dyke_ese: 6.2, dyke_ssw: 6.2, dyke_wnw: 6.2,
+  dyke_nne: 6.2, dyke_ese: 6.2, dyke_ssw: 6.2, dyke_wnw: 6.2, sea_ring_quay: 6.2,
   sumeru_plinth: 6.2, sala_ne: 6.2, sala_se: 6.2, sala_sw: 6.2, sala_w: 6.2
 };
 const allFloating = cityPlan.pontoons.concat(cityPlan.gardens);
@@ -225,6 +237,27 @@ T.neg('negative: sabotaged negative stock is caught by 30-day economy solver',
 
 T.neg('negative: disabling Floating Chinampa Gardens starves 44,000-citizen indigo & food stocks within 30 days',
   disable => X.FC_SIM.createEconomy({ plan: cityPlan, disableGardens: disable }).runDays(30).ok,
+  true,
+  false
+);
+
+const pA0 = cityPlan.pontoons[0], pB0 = cityPlan.pontoons[1];
+const badCenterBridge = [{
+  id: 'bad_center_span',
+  from: pA0.id,
+  to: pB0.id,
+  x0: pA0.x, z0: pA0.z,
+  x1: pB0.x, z1: pB0.z,
+  deckLen: Math.hypot(pB0.x - pA0.x, pB0.z - pA0.z)
+}];
+T.neg('negative: auditBascules rejects an unclipped center-to-center bridge cutting across platform decks and moon-pools',
+  links => X.FC_CITY.auditBascules(cityPlan, links).ok,
+  badCenterBridge,
+  cityPlan.bascules
+);
+
+T.neg('negative: auditSlabsAndWays catches coplanar pontoon corner-slab & crossing-lane overlaps and shallow (<0.20 m) lane steps',
+  bad => X.FC_CITY.auditSlabsAndWays(cityPlan, { injectOverlap: bad }).ok,
   true,
   false
 );

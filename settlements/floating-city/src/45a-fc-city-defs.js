@@ -180,6 +180,23 @@ const FC_BLUFF_PLAN = (function () {
     return Math.hypot((x - 636.0) / rx, (z + 1358.0) / rz) < 1.0;
   }
 
+  function plazaBounds(P) {
+    /* Snap each plaza's N-S span cleanly to the block interior between flanking avenues so plazas never overlap avenues! */
+    let dMin = P.d0, dMax = P.d1;
+    for (let a = 0; a < AVE_OFFSETS.length - 1; a++) {
+      const avS = AVE_OFFSETS[a], avN = AVE_OFFSETS[a + 1];
+      const nEdge = avS.dInland + avS.widthM * 0.5 + 1.25;
+      const sEdge = avN.dInland - avN.widthM * 0.5 - 1.25;
+      const midP = 0.5 * (P.d0 + P.d1);
+      if (midP > avS.dInland && midP < avN.dInland) {
+        dMin = nEdge;
+        dMax = sEdge;
+        break;
+      }
+    }
+    return { x0: P.x0, x1: P.x1, d0: +dMin.toFixed(2), d1: +dMax.toFixed(2) };
+  }
+
   function buildWays() {
     const ways = [];
     for (let a = 0; a < AVE_OFFSETS.length; a++) {
@@ -205,17 +222,39 @@ const FC_BLUFF_PLAN = (function () {
       }
     }
 
+    const trimmedPlazas = PLAZAS.map(plazaBounds);
     for (let c = 0; c < CROSS_X.length; c++) {
       const x = CROSS_X[c];
-      const pts = [];
-      for (let s = 0; s <= 16; s++) {
-        const d = 160.0 + (700.0 - 160.0) * (s / 16);
-        const z = FC_SITE.bluffShoreZ(x) - d;
-        if (inReservoirBasin(x, z, 8.0)) continue;
-        pts.push([+x.toFixed(2), +z.toFixed(2)]);
-      }
-      if (pts.length >= 2) {
-        ways.push({ id: 'cross_' + c, cls: 'cross', widthM: 11.0, isBridge: false, pts: pts });
+      for (let a = 0; a < AVE_OFFSETS.length - 1; a++) {
+        const dStart = AVE_OFFSETS[a].dInland + AVE_OFFSETS[a].widthM * 0.5 + 1.25;
+        const dEnd = AVE_OFFSETS[a + 1].dInland - AVE_OFFSETS[a + 1].widthM * 0.5 - 1.25;
+        if (dEnd - dStart < 4.0) continue;
+
+        /* Skip block segment if this cross-street runs inside a paved Civic Plaza in this avenue block */
+        let insidePlaza = false;
+        const dMid = 0.5 * (dStart + dEnd);
+        for (let p = 0; p < trimmedPlazas.length; p++) {
+          const TP = trimmedPlazas[p];
+          if (x + 5.7 > TP.x0 && x - 5.7 < TP.x1 && dMid > TP.d0 - 1.0 && dMid < TP.d1 + 1.0) {
+            insidePlaza = true;
+            break;
+          }
+        }
+        if (insidePlaza) continue;
+
+        const zStart = FC_SITE.bluffShoreZ(x) - dStart;
+        const zEnd = FC_SITE.bluffShoreZ(x) - dEnd;
+        const zMid = 0.5 * (zStart + zEnd);
+        if (inReservoirBasin(x, zStart, 8.0) || inReservoirBasin(x, zEnd, 8.0) || inReservoirBasin(x, zMid, 8.0)) continue;
+
+        const pts = [];
+        const nSub = 3;
+        for (let s = 0; s <= nSub; s++) {
+          const d = dStart + (dEnd - dStart) * (s / nSub);
+          const z = FC_SITE.bluffShoreZ(x) - d;
+          pts.push([+x.toFixed(2), +z.toFixed(2)]);
+        }
+        ways.push({ id: 'cross_' + c + '_' + a, cls: 'cross', widthM: 11.0, isBridge: false, pts: pts });
       }
     }
     return ways;
@@ -226,6 +265,7 @@ const FC_BLUFF_PLAN = (function () {
     CROSS_X: CROSS_X,
     PLAZAS: PLAZAS,
     UPLAND_FARMS: UPLAND_FARMS,
+    plazaBounds: plazaBounds,
     inReservoirBasin: inReservoirBasin,
     buildWays: buildWays
   };

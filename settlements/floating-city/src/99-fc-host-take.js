@@ -129,6 +129,17 @@ const FC_HOST_CHECKS = {
       ok: ia.ok && active === 41 && na === 3 && !!(econ && econ.ok && econ.simUrbanPop >= 36000 && econ.farmYield.chinampaCount >= 12),
       detail: 'pop=' + (econ ? econ.simUrbanPop : 0) + ', chinampas=' + (econ ? econ.farmYield.chinampaCount : 0) + ', vaultLeaks=' + ia.vaultLeaks + ', trades=' + active + '/44, 30d minStock=' + (econ ? econ.minKey + ':' + econ.minVal : 'n/a')
     };
+  },
+  'upper-surface-zfight-and-bridge-audit': function () {
+    const Z = FC_WORLD.auditSceneZFights();
+    const B = FC_CITY.auditBascules(FC_WORLD.PLANS);
+    const S = FC_CITY.auditSlabsAndWays(FC_WORLD.PLANS);
+    const ok = !!(Z && Z.ok && B && B.ok && S && S.ok);
+    const detail = 'scannedTris=' + Z.scannedTris + ', zFightConflicts=' + Z.conflicts +
+      (Z.conflicts > 0 ? (' sample=' + JSON.stringify(Z.sample)) : '') +
+      ', bascules=' + B.count + ' (clippedHull=' + B.clippedHull + ', hitLot=' + B.hitLot + ', maxSpan=' + B.maxDeckLen + 'm)' +
+      ', slabOverlaps=' + S.slabOverlaps + ', wayOverlaps=' + S.wayOverlaps;
+    return { ok: ok, detail: detail };
   }
 };
 
@@ -165,6 +176,25 @@ function fcHostNegativesList() {
   {
     const noChinampa = FC_SIM.createEconomy({ disableGardens: true }).runDays(30);
     R.push({ name: 'disabling Chinampa floating gardens starves 44k capital stocks', failed: !noChinampa.ok, detail: 'min=' + noChinampa.minKey + ':' + noChinampa.minVal });
+  }
+  /* 6. Coplanar upper-surface horizontal z-fight caught by world-space triangle scanner */
+  {
+    const badZ = FC_WORLD.auditSceneZFights({ injectFault: true });
+    R.push({ name: 'coplanar upper-surface z-fight triangle pair caught', failed: !badZ.ok && badZ.conflicts > 0, detail: 'conflicts=' + badZ.conflicts });
+  }
+  /* 7. Unclipped center-to-center bascule bridge caught */
+  {
+    const pA = FC_WORLD.PLANS.pontoons[0], pB = FC_WORLD.PLANS.pontoons[1];
+    const badB = FC_CITY.auditBascules(FC_WORLD.PLANS, [{
+      id: 'bad_center', from: pA.id, to: pB.id, x0: pA.x, z0: pA.z, x1: pB.x, z1: pB.z,
+      deckLen: Math.hypot(pB.x - pA.x, pB.z - pA.z)
+    }]);
+    R.push({ name: 'unclipped center-to-center bascule bridge rejected', failed: !badB.ok && badB.clippedHull > 0, detail: 'clippedHull=' + badB.clippedHull });
+  }
+  /* 8. Coplanar pontoon corner-slab & crossing-lane overlap caught */
+  {
+    const badS = FC_CITY.auditSlabsAndWays(FC_WORLD.PLANS, { injectOverlap: true });
+    R.push({ name: 'coplanar pontoon slab and crossing-lane overlap rejected', failed: !badS.ok && badS.slabOverlaps > 0, detail: 'slabOverlaps=' + badS.slabOverlaps + ', lowLaneSteps=' + badS.lowLaneSteps });
   }
   return R;
 }
@@ -216,6 +246,7 @@ KHOST.take({
   api: {
     hostChecks: fcHostChecksList,
     hostNegatives: fcHostNegativesList,
+    auditSceneZFights: FC_WORLD.auditSceneZFights,
     setTideState: setTideState,
     setSubmarineCut: FC_WORLD.setSubmarineCut
   }

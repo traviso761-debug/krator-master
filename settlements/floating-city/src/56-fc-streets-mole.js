@@ -17,6 +17,11 @@ const FC_STREETS_MOLE = (function () {
     const addCone = FC_SUMERU_CORE.addCone;
     const mergeStaticGroup = FC_SUMERU_CORE.mergeStaticGroup;
 
+    const roadCobaltMat = MATS.cobaltGlaze.clone();
+    roadCobaltMat.polygonOffset = true;
+    roadCobaltMat.polygonOffsetFactor = -2;
+    roadCobaltMat.polygonOffsetUnits = -8;
+
     const moleFunGroup = new THREE.Group();
     moleFunGroup.name = 'fc_stone_moles_and_funiculars';
     root.add(moleFunGroup);
@@ -32,22 +37,30 @@ const FC_STREETS_MOLE = (function () {
       const cx = (M.x0 + M.x1) * 0.5, cz = (M.zNorth + M.zSouth) * 0.5;
       const hMole = M.deckY - M.baseY;
 
-      addBox(moleFunGroup, w + 8.0, hMole - 1.6, d + 8.0, cx, M.baseY, cz, 0, MATS.ancientConcrete, 8.0);
+      addBox(moleFunGroup, w + 8.0, hMole - 1.8, d + 8.0, cx, M.baseY, cz, 0, MATS.ancientConcrete, 8.0);
       addBox(moleFunGroup, w, 1.8, d, cx, M.deckY - 1.8, cz, 0, MATS.travertineStone, 5.5);
 
-      /* Twin paved harbour roads & seawall coping */
-      addBox(moleFunGroup, w - 16.0, 0.25, 14.0, cx, M.deckY - 0.05, M.zSouth - 48.0, 0, MATS.cobaltGlaze, 4.5);
-      addBox(moleFunGroup, w - 16.0, 0.25, 14.0, cx, M.deckY - 0.05, M.zSouth - 108.0, 0, MATS.cobaltGlaze, 4.5);
-      addBox(moleFunGroup, w, 0.95, 2.4, cx, M.deckY - 0.2, M.zSouth - 1.2, 0, MATS.cobaltGlaze, 4.0);
+      /* Twin paved harbour roads (+0.26 m proud on roadCobaltMat) & seawall coping */
+      addBox(moleFunGroup, w - 16.0, 0.26, 14.0, cx, M.deckY, M.zSouth - 49.0, 0, roadCobaltMat, 4.5);
+      addBox(moleFunGroup, w - 16.0, 0.26, 14.0, cx, M.deckY, M.zSouth - 108.0, 0, roadCobaltMat, 4.5);
+      if (m === 0) {
+        /* Leave clean opening at x = 486..526 on West Mole south seawall for the NNE Boulevard Sea-Viaduct touchdown */
+        const leftW = 486.0 - M.x0, rightW = M.x1 - 526.0;
+        if (leftW > 2.0) addBox(moleFunGroup, leftW, 0.75, 2.4, M.x0 + leftW * 0.5, M.deckY, M.zSouth - 1.2, 0, MATS.cobaltGlaze, 4.0);
+        if (rightW > 2.0) addBox(moleFunGroup, rightW, 0.75, 2.4, 526.0 + rightW * 0.5, M.deckY, M.zSouth - 1.2, 0, MATS.cobaltGlaze, 4.0);
+      } else {
+        addBox(moleFunGroup, w, 0.75, 2.4, cx, M.deckY, M.zSouth - 1.2, 0, MATS.cobaltGlaze, 4.0);
+      }
 
+      /* Non-overlapping waterfront harbour steps outside M.zSouth */
       for (let st = 0; st < 4; st++) {
-        const yStep = 2.2 + st * 1.4;
-        addBox(moleFunGroup, w * 0.82, yStep - (-22.0), 3.6, cx, -22.0, M.zSouth + (4 - st) * 3.2, 0, MATS.travertineStone, 5.0);
+        const yStep = 6.4 - st * 1.4;
+        addBox(moleFunGroup, w * 0.82, yStep - (-22.0), 3.4, cx, -22.0, M.zSouth + 1.8 + st * 3.5, 0, MATS.travertineStone, 5.0);
       }
 
       const lx = m === 0 ? M.x1 - 14.0 : M.x0 + 14.0, lz = M.zSouth - 10.0;
-      addCyl(moleFunGroup, 4.5, 5.8, 19.5, 10, lx, M.deckY - 0.3, lz, 0, MATS.ancientCeramic, 4.0);
-      addCone(moleFunGroup, 5.5, 5.4, 10, lx, M.deckY + 18.8, lz, 0, MATS.giltChofa);
+      addCyl(moleFunGroup, 4.5, 5.8, 19.2, 10, lx, M.deckY, lz, 0, MATS.ancientCeramic, 4.0);
+      addCone(moleFunGroup, 5.5, 5.4, 10, lx, M.deckY + 19.2, lz, 0, MATS.giltChofa);
 
       if (typeof KWALK !== 'undefined' && KWALK.floor) {
         KWALK.floor({ rect: [M.x0 + 4, M.x1 - 4, M.zNorth + 4, M.zSouth - 4], y: M.deckY });
@@ -63,10 +76,10 @@ const FC_STREETS_MOLE = (function () {
     /* Santa Cristina Nephrite Tsunami-Drawdown Chime-Well Pavilion on West Stone Harbour Mole */
     {
       const CW = FC_SITE.CHIME_WELL;
-      addCyl(moleFunGroup, 9.2, 10.2, 8.5, 12, CW.x, CW.rimY - 7.8, CW.z, 0, MATS.cobaltGlaze, 4.0);
+      addCyl(moleFunGroup, 9.2, 10.2, CW.rimY - 7.8, 12, CW.x, 7.8, CW.z, 0, MATS.cobaltGlaze, 4.0);
       for (let c = 0; c < 8; c++) {
         const ca = (c * 45) * Math.PI / 180;
-        addCyl(moleFunGroup, 0.55, 0.65, 5.8, 8, CW.x + 6.8 * Math.cos(ca), CW.rimY + 0.4, CW.z + 6.8 * Math.sin(ca), 0, MATS.paktongMetal, 2.0);
+        addCyl(moleFunGroup, 0.55, 0.65, 5.8, 8, CW.x + 6.8 * Math.cos(ca), CW.rimY, CW.z + 6.8 * Math.sin(ca), 0, MATS.paktongMetal, 2.0);
       }
       addCone(moleFunGroup, 8.4, 4.8, 8, CW.x, CW.rimY + 5.8, CW.z, 0, MATS.celadonRoof);
       if (tagReg) {
@@ -89,16 +102,16 @@ const FC_STREETS_MOLE = (function () {
       const yaw = Math.atan2(dx, dz);
       const pitch = -Math.atan2(dy, horiz);
 
-      addBox(moleFunGroup, 22.0, 2.2, 20.0, H.x0, H.y0 - 0.8, H.z0 + 4.0, yaw, MATS.travertineStone, 4.5);
-      addBox(moleFunGroup, 18.0, 10.5, 16.0, H.x0, H.y0 + 1.2, H.z0 + 4.0, yaw, MATS.ancientCeramic, 4.0);
-      addBox(moleFunGroup, 20.0, 1.4, 18.0, H.x0, H.y0 + 11.4, H.z0 + 4.0, yaw, MATS.giltChofa, 3.5);
-      addCone(moleFunGroup, 14.8, 6.8, 4, H.x0, H.y0 + 12.5, H.z0 + 4.0, yaw + Math.PI * 0.25, MATS.celadonRoof);
+      addBox(moleFunGroup, 22.0, 1.4, 20.0, H.x0, H.y0, H.z0 + 4.0, yaw, MATS.travertineStone, 4.5);
+      addBox(moleFunGroup, 18.0, 11.8, 16.0, H.x0, H.y0 + 1.4, H.z0 + 4.0, yaw, MATS.ancientCeramic, 4.0);
+      addBox(moleFunGroup, 20.0, 1.3, 18.0, H.x0, H.y0 + 13.2, H.z0 + 4.0, yaw, MATS.giltChofa, 3.5);
+      addCone(moleFunGroup, 14.8, 6.8, 4, H.x0, H.y0 + 14.5, H.z0 + 4.0, yaw + Math.PI * 0.25, MATS.celadonRoof);
 
       const ug0 = Math.min(H.y1, terrainH(H.x1, H.z1 - 8.0)) - 3.0;
       addBox(moleFunGroup, 24.0, (H.y1 + 1.4) - ug0, 22.0, H.x1, ug0, H.z1 - 4.0, yaw, MATS.travertineStone, 5.0);
-      addBox(moleFunGroup, 19.0, 11.5, 17.0, H.x1, H.y1 + 1.2, H.z1 - 4.0, yaw, MATS.ancientCeramic, 4.0);
-      addBox(moleFunGroup, 21.0, 1.4, 19.0, H.x1, H.y1 + 12.4, H.z1 - 4.0, yaw, MATS.cobaltGlaze, 3.5);
-      addCone(moleFunGroup, 15.6, 7.4, 4, H.x1, H.y1 + 13.5, H.z1 - 4.0, yaw + Math.PI * 0.25, MATS.celadonRoof);
+      addBox(moleFunGroup, 19.0, 12.2, 17.0, H.x1, H.y1 + 1.4, H.z1 - 4.0, yaw, MATS.ancientCeramic, 4.0);
+      addBox(moleFunGroup, 21.0, 1.3, 19.0, H.x1, H.y1 + 13.6, H.z1 - 4.0, yaw, MATS.cobaltGlaze, 3.5);
+      addCone(moleFunGroup, 15.6, 7.4, 4, H.x1, H.y1 + 14.9, H.z1 - 4.0, yaw + Math.PI * 0.25, MATS.celadonRoof);
 
       const nPiers = 6;
       for (let p = 1; p < nPiers; p++) {
@@ -106,9 +119,9 @@ const FC_STREETS_MOLE = (function () {
         const px = H.x0 + dx * u, pz = H.z0 + dz * u;
         const trackY = (H.y0 + 4.5) + dy * u;
         const gY = Math.min(H.y0 - 2.0, terrainH(px, pz) - 4.0);
-        const pierH = Math.max(4.0, trackY - 1.0 - gY);
-        addBox(moleFunGroup, 11.6, pierH, 5.2, px, gY, pz, yaw, MATS.ancientConcrete, 5.0);
-        addBox(moleFunGroup, 12.8, 1.4, 6.2, px, gY + pierH - 1.2, pz, yaw, MATS.travertineStone, 3.5);
+        const pierH = Math.max(4.0, (trackY - 2.2) - gY);
+        addBox(moleFunGroup, 11.6, pierH - 1.2, 5.2, px, gY, pz, yaw, MATS.ancientConcrete, 5.0);
+        addBox(moleFunGroup, 12.8, 1.2, 6.2, px, gY + pierH - 1.2, pz, yaw, MATS.travertineStone, 3.5);
       }
 
       const railHolder = new THREE.Group();
@@ -121,8 +134,8 @@ const FC_STREETS_MOLE = (function () {
       railHolder.add(deckBeam);
 
       for (let sgn = -1; sgn <= 1; sgn += 2) {
-        const rM = new THREE.Mesh(FC_SUMERU_CORE.uvScaleBox(1.4, 2.2, len3, 4.0), MATS.paktongMetal);
-        rM.position.x = sgn * 3.2;
+        const rM = new THREE.Mesh(FC_SUMERU_CORE.uvScaleBox(1.4, 1.6, len3, 4.0), MATS.paktongMetal);
+        rM.position.set(sgn * 3.2, 1.1, 0);
         rM.rotation.x = pitch;
         railHolder.add(rM);
       }
@@ -144,6 +157,8 @@ const FC_STREETS_MOLE = (function () {
     /* Instanced Funicular Cars (2 draw calls total instead of 8!) */
     const carCabIm = new THREE.InstancedMesh(new THREE.BoxGeometry(4.2, 4.6, 11.5), MATS.cypressHull, hoistCars.length);
     const carRoofIm = new THREE.InstancedMesh(new THREE.BoxGeometry(4.6, 0.9, 12.0), MATS.giltChofa, hoistCars.length);
+    carCabIm.userData.isVessel = true;
+    carRoofIm.userData.isVessel = true;
     carCabIm.frustumCulled = false;
     carRoofIm.frustumCulled = false;
     root.add(carCabIm);
@@ -187,12 +202,12 @@ const FC_STREETS_MOLE = (function () {
       side:      [0.67, 0.62, 0.54],
       cross:     [0.74, 0.69, 0.61]
     };
+    const BLUFF_STREET_LIFT = 0.28;
 
     for (let w = 0; w < ways.length; w++) {
       const W = ways[w], P = W.pts, hw = W.widthM * 0.5;
       if (P.length < 2) continue;
       const baseC = cRoad[W.cls] || cRoad.main;
-      const lift = W.cls === 'esplanade' ? 0.32 : (W.cls === 'avenue' ? 0.28 : 0.24);
       const v0 = pos.length / 3;
       let sAlong = 0;
 
@@ -209,9 +224,9 @@ const FC_STREETS_MOLE = (function () {
           const f = fracs[fi];
           const vx = P[i][0] + nx * hw * f;
           const vz = P[i][1] + nz * hw * f;
-          let vy = terrainH(vx, vz) + lift;
+          let vy = terrainH(vx, vz) + BLUFF_STREET_LIFT;
           if (W.isBridge && vx >= 496 && vx <= 776) {
-            vy = Math.max(vy, 108.5);
+            vy = Math.max(vy, 108.50);
           }
           pos.push(vx, vy, vz);
           nor.push(0, 1, 0);
@@ -228,9 +243,9 @@ const FC_STREETS_MOLE = (function () {
       }
     }
 
-    /* Append 6 Paved Flagstone Civic Squares into the same vertex-coloured street mesh (1 draw call total!) */
+    /* Append 6 Block-Trimmed Paved Flagstone Civic Squares (0 overlap with avenues or cross-streets!) */
     for (let p = 0; p < FC_BLUFF_PLAN.PLAZAS.length; p++) {
-      const PZ = FC_BLUFF_PLAN.PLAZAS[p];
+      const PZ = FC_BLUFF_PLAN.plazaBounds ? FC_BLUFF_PLAN.plazaBounds(FC_BLUFF_PLAN.PLAZAS[p]) : FC_BLUFF_PLAN.PLAZAS[p];
       const nx = 8, nz = 6;
       const v0 = pos.length / 3;
       for (let ix = 0; ix <= nx; ix++) {
@@ -239,7 +254,7 @@ const FC_STREETS_MOLE = (function () {
         for (let iz = 0; iz <= nz; iz++) {
           const d = PZ.d0 + (PZ.d1 - PZ.d0) * (iz / nz);
           const z = sz - d;
-          const y = terrainH(x, z) + 0.30;
+          const y = terrainH(x, z) + BLUFF_STREET_LIFT;
           pos.push(x, y, z);
           nor.push(0, 1, 0);
           const check = ((ix + iz) % 2 === 0) ? 0.88 : 0.78;
@@ -270,7 +285,7 @@ const FC_STREETS_MOLE = (function () {
         vertexColors: true,
         polygonOffset: true,
         polygonOffsetFactor: -3,
-        polygonOffsetUnits: -6
+        polygonOffsetUnits: -8
       });
       const sMesh = new THREE.Mesh(sg, sm);
       sMesh.renderOrder = 3;
@@ -280,34 +295,34 @@ const FC_STREETS_MOLE = (function () {
       if (typeof KDRAWN !== 'undefined' && KDRAWN.fromObject) KDRAWN.add(KDRAWN.fromObject(sMesh));
     }
 
-    /* Reservoir 6-Pier Aqueduct Bridge Masonry + 12 Cliff-Rim Belvedere Overlook Turrets + 6 Plaza Obelisks */
+    /* Reservoir 6-Pier Aqueduct Bridge Masonry (deck girder top 108.10 m cleanly below 108.50 m road!) + Belvederes + Obelisks */
     {
       for (let bx = 505; bx <= 765; bx += 44) {
         const bz = FC_SITE.bluffShoreZ(bx) - 168.0;
         const g0 = terrainH(bx, bz) - 3.0;
-        addBox(streetGroup, 11.0, 108.5 - g0, 23.0, bx, g0, bz, 0.14, MATS.ancientConcrete, 5.5);
+        addBox(streetGroup, 11.0, 104.1 - g0, 23.0, bx, g0, bz, 0.14, MATS.ancientConcrete, 5.5);
       }
       const resMidZ = FC_SITE.bluffShoreZ(636) - 168.0;
-      addBox(streetGroup, 282.0, 4.4, 22.5, 636, 104.1, resMidZ, 0.14, MATS.travertineStone, 6.0);
-      addBox(streetGroup, 282.0, 1.4, 1.5, 636, 108.5, resMidZ + 10.2, 0.14, MATS.cobaltGlaze, 4.0);
-      addBox(streetGroup, 282.0, 1.4, 1.5, 636, 108.5, resMidZ - 10.2, 0.14, MATS.cobaltGlaze, 4.0);
+      addBox(streetGroup, 282.0, 4.0, 22.5, 636, 104.1, resMidZ, 0.14, MATS.travertineStone, 6.0);
+      addBox(streetGroup, 282.0, 1.35, 1.5, 636, 108.52, resMidZ + 11.2, 0.14, MATS.cobaltGlaze, 4.0);
+      addBox(streetGroup, 282.0, 1.35, 1.5, 636, 108.52, resMidZ - 11.2, 0.14, MATS.cobaltGlaze, 4.0);
 
       const belvX = [-780, -560, -340, -120, 95, 240, 390, 785, 945, 1140, 1360, 1560];
       for (let i = 0; i < belvX.length; i++) {
-        const x = belvX[i], z = FC_SITE.bluffShoreZ(x) - 155.0;
+        const x = belvX[i], z = FC_SITE.bluffShoreZ(x) - 151.0;
         const gy = terrainH(x, z);
-        addCyl(streetGroup, 5.8, 6.6, 9.2, 8, x, gy - 4.5, z, 0, MATS.travertineStone, 4.0);
+        addCyl(streetGroup, 5.8, 6.6, 8.9, 8, x, gy - 4.5, z, 0, MATS.travertineStone, 4.0);
         addCyl(streetGroup, 6.0, 6.1, 1.1, 8, x, gy + 4.4, z, 0, MATS.cobaltGlaze, 3.0);
       }
 
       for (let p = 0; p < FC_BLUFF_PLAN.PLAZAS.length; p++) {
-        const PZ = FC_BLUFF_PLAN.PLAZAS[p];
+        const PZ = FC_BLUFF_PLAN.plazaBounds ? FC_BLUFF_PLAN.plazaBounds(FC_BLUFF_PLAN.PLAZAS[p]) : FC_BLUFF_PLAN.PLAZAS[p];
         const px = 0.5 * (PZ.x0 + PZ.x1);
         const pz = FC_SITE.bluffShoreZ(px) - 0.5 * (PZ.d0 + PZ.d1);
-        const py = terrainH(px, pz);
-        addCyl(streetGroup, 5.4, 6.0, 2.2, 8, px, py - 1.0, pz, 0, MATS.cobaltGlaze, 3.5);
-        addBox(streetGroup, 3.0, 12.0, 3.0, px, py + 1.0, pz, 0, MATS.travertineStone, 3.0);
-        addCone(streetGroup, 2.2, 4.8, 4, px, py + 12.6, pz, Math.PI * 0.25, MATS.giltChofa);
+        const py = terrainH(px, pz) + BLUFF_STREET_LIFT;
+        addCyl(streetGroup, 5.4, 6.0, 1.2, 8, px, py, pz, 0, MATS.cobaltGlaze, 3.5);
+        addBox(streetGroup, 3.0, 11.8, 3.0, px, py + 1.2, pz, 0, MATS.travertineStone, 3.0);
+        addCone(streetGroup, 2.2, 4.8, 4, px, py + 13.0, pz, Math.PI * 0.25, MATS.giltChofa);
       }
       mergeStaticGroup(streetGroup, null);
     }
@@ -324,14 +339,14 @@ const FC_STREETS_MOLE = (function () {
         const sl = (FC_SITE.bluffShoreZ(UF.x + 12) - FC_SITE.bluffShoreZ(UF.x - 12)) / 24.0;
         const ry = Math.atan2(sl, 1.0);
         for (let t = 0; t < 3; t++) {
-          const dStep = UF.dInland - 16.0 + t * 16.0;
+          const dStep = UF.dInland - 16.5 + t * 16.5;
           const tz = FC_SITE.bluffShoreZ(UF.x) - dStep;
           const ty = terrainH(UF.x, tz);
-          wallRecs.push({ x: UF.x, y: ty - 1.2, z: tz, ry: ry, sx: UF.w, sy: 3.2, sz: 15.2 });
-          bedRecs.push({ x: UF.x, y: ty + 0.52, z: tz, ry: ry, sx: UF.w - 1.6, sy: 0.35, sz: 13.8 });
+          wallRecs.push({ x: UF.x, y: ty - 1.15, z: tz, ry: ry, sx: UF.w, sy: 3.1, sz: 14.8 });
+          bedRecs.push({ x: UF.x, y: ty + 0.58, z: tz, ry: ry, sx: UF.w - 1.6, sy: 0.36, sz: 13.6 });
           for (let r = -1; r <= 1; r++) {
             const rz = tz - r * 4.0;
-            rowRecs.push({ x: UF.x, y: ty + 1.15, z: rz, ry: ry, sx: UF.w - 3.6, sy: 1.05, sz: 2.1, col: uCropCols[UF.crop] || 0x3b843e });
+            rowRecs.push({ x: UF.x, y: ty + 1.28, z: rz, ry: ry, sx: UF.w - 3.6, sy: 1.04, sz: 2.1, col: uCropCols[UF.crop] || 0x3b843e });
           }
         }
         if (tagReg) {
@@ -402,14 +417,15 @@ const FC_STREETS_MOLE = (function () {
       for (let i = 0; i < hoistCars.length; i++) {
         const hc = hoistCars[i], H = hc.spec;
         const u = 0.5 - 0.5 * Math.cos((2 * Math.PI * tSec / H.liftSec) + hc.phase * Math.PI * 2);
-        const cx = H.x0 + (H.x1 - H.x0) * u + hc.latX;
-        const cy = (H.y0 + 6.8) + (H.y1 - H.y0) * u;
-        const cz = H.z0 + (H.z1 - H.z0) * u;
+        const cs = Math.cos(hc.yaw), sn = Math.sin(hc.yaw);
+        const cx = H.x0 + (H.x1 - H.x0) * u + hc.latX * cs;
+        const cy = (H.y0 + 7.2) + (H.y1 - H.y0) * u;
+        const cz = H.z0 + (H.z1 - H.z0) * u - hc.latX * sn;
         _qCar.setFromAxisAngle(_yCar, hc.yaw);
         _pCar.set(cx, cy, cz);
         _mCar.compose(_pCar, _qCar, _sCar);
         carCabIm.setMatrixAt(i, _mCar);
-        _pCar.set(cx, cy + 2.6, cz);
+        _pCar.set(cx, cy + 2.75, cz);
         _mCar.compose(_pCar, _qCar, _sCar);
         carRoofIm.setMatrixAt(i, _mCar);
       }

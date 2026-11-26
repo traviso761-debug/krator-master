@@ -220,6 +220,31 @@ const FC_WORLD = (function () {
   const fixtureDoors = [];
   const fixtureWindows = [];
 
+  /* Strip RIK/KLK below-grade skirt boxes (-1.20..+0.02 m) and y=0 bottom caps so building bases never z-fight with decks or plinths */
+  function stripBelowGradeFaces(parts) {
+    const keptParts = [];
+    for (let pi = 0; pi < parts.length; pi++) {
+      const g = parts[pi].geo;
+      const pos = g && g.attributes && g.attributes.position;
+      if (!pos) continue;
+      const srcIdx = g.index ? g.index.array : null;
+      const nTri = srcIdx ? (srcIdx.length / 3) : (pos.count / 3);
+      const outIdx = [];
+      for (let t = 0; t < nTri; t++) {
+        const i0 = srcIdx ? srcIdx[t * 3]     : (t * 3);
+        const i1 = srcIdx ? srcIdx[t * 3 + 1] : (t * 3 + 1);
+        const i2 = srcIdx ? srcIdx[t * 3 + 2] : (t * 3 + 2);
+        const yMax = Math.max(pos.getY(i0), pos.getY(i1), pos.getY(i2));
+        if (yMax <= 0.045) continue;
+        outIdx.push(i0, i1, i2);
+      }
+      if (!outIdx.length) continue;
+      g.setIndex(outIdx);
+      keptParts.push(parts[pi]);
+    }
+    return keptParts;
+  }
+
   function applyPlotAO(parts) {
     for (let pi = 0; pi < parts.length; pi++) {
       const g = parts[pi].geo;
@@ -244,6 +269,7 @@ const FC_WORLD = (function () {
     if (!G) return (protoCache[pk] = null);
     const flat = KCITY.flattenProto(G, { pack: packName });
     if (!flat) return (protoCache[pk] = null);
+    flat.parts = stripBelowGradeFaces(flat.parts);
     applyPlotAO(flat.parts);
     protoCache[pk] = {
       key: key,
@@ -282,17 +308,17 @@ const FC_WORLD = (function () {
     });
 
     if (L.instance === 'bluff') {
-      const cs4 = FC_CITY.obbCorners(L, 0.5);
+      const cs4 = FC_CITY.obbCorners(L, 0.25);
       let minG = L.y, maxG = L.y;
       for (let ci = 0; ci < 4; ci++) {
         const gy = terrainH(cs4[ci][0], cs4[ci][1]);
         if (gy < minG) minG = gy;
         if (gy > maxG) maxG = gy;
       }
-      const yTop = maxG + 0.18;
+      const yTop = maxG + 0.30;
       const yBot = minG - 3.2;
-      L.y = +(yTop - 0.06).toFixed(2);
-      plinthList.push({ x: L.x, y: 0.5 * (yTop + yBot), z: L.z, ry: L.ry, w: L.w + 1.4, h: yTop - yBot, d: L.d + 1.4 });
+      L.y = +yTop.toFixed(2);
+      plinthList.push({ x: L.x, y: 0.5 * (yTop + yBot), z: L.z, ry: L.ry, w: L.w + 0.32, h: yTop - yBot, d: L.d + 0.32 });
     }
 
     const P = getMultiKitProto(L.key, 0);
@@ -433,6 +459,7 @@ const FC_WORLD = (function () {
   }
 
   /* Travertine Bluff Terrace Plinths */
+  let bluffPlinthIm = null;
   if (plinthList.length) {
     const pGeo = new THREE.BoxGeometry(1, 1, 1);
     const pIm = new THREE.InstancedMesh(pGeo, MATS.travertineStone, plinthList.length);
@@ -448,7 +475,9 @@ const FC_WORLD = (function () {
     _s3.set(1, 1, 1);
     if (typeof KCITY !== 'undefined' && KCITY.boundedInstanced) KCITY.boundedInstanced(pIm);
     else pIm.frustumCulled = false;
+    pIm.name = 'fc_bluff_plinths';
     cityGroup.add(pIm);
+    bluffPlinthIm = pIm;
   }
 
   /* Bind KCITY.hostFloat so all 30 Neighborhood Pontoons, 20 Chinampa Gardens & 737 Floating Buildings ride the tide! */
@@ -642,6 +671,214 @@ const FC_WORLD = (function () {
     SUB_CUT_PLANE.constant = FC_STATE.cutSubmarine ? (FC_SITE.WEIR_CZ + 2.0) : 1e6;
   }
 
+  /* Automated world-space upward-facing (ny > 0.75) triangle z-fight audit across all static & instanced infrastructure,
+     street, plaza, pontoon, chinampa, bascule, dyke, sea-ring, arcology, mole & bluff plinth meshes */
+  function auditSceneZFights(opts) {
+    opts = opts || {};
+    scene.updateMatrixWorld(true);
+    const tris = [];
+    const va = new THREE.Vector3(), vb = new THREE.Vector3(), vc = new THREE.Vector3();
+    const e1 = new THREE.Vector3(), e2 = new THREE.Vector3(), vn = new THREE.Vector3();
+    const mInst = new THREE.Matrix4(), mWorld = new THREE.Matrix4();
+
+    function polyOffsetBias(mat) {
+      if (!mat || !mat.polygonOffset) return 0;
+      const f = mat.polygonOffsetFactor == null ? 0 : mat.polygonOffsetFactor;
+      const u = mat.polygonOffsetUnits == null ? 0 : mat.polygonOffsetUnits;
+      return f + u;
+    }
+
+    function pushWorldTri(ax, ay, az, bx, by, bz, cx, cy, cz, bias, tag) {
+      const yMax = Math.max(ay, by, cy);
+      if (yMax < -4.0) return;
+      e1.set(bx - ax, by - ay, bz - az);
+      e2.set(cx - ax, cy - ay, cz - az);
+      vn.crossVectors(e1, e2);
+      const len = vn.length();
+      if (len < 1e-5) return;
+      const ny = vn.y / len;
+      if (ny <= 0.75) return;
+      const areaXZ = 0.5 * Math.abs((bx - ax) * (cz - az) - (bz - az) * (cx - ax));
+      if (areaXZ < 0.25) return;
+      const nx = vn.x / len, nz = vn.z / len;
+      /* Ensure CCW orientation in (x, z) where signedArea2D > 0 */
+      const s2 = (bx - ax) * (cz - az) - (bz - az) * (cx - ax);
+      const p2d = s2 > 0
+        ? [[ax, az], [bx, bz], [cx, cz]]
+        : [[ax, az], [cx, cz], [bx, bz]];
+      tris.push({
+        pts: p2d,
+        x0: Math.min(ax, bx, cx), x1: Math.max(ax, bx, cx),
+        z0: Math.min(az, bz, cz), z1: Math.max(az, bz, cz),
+        yMin: Math.min(ay, by, cy), yMax: yMax,
+        ox: ax, oy: ay, oz: az,
+        nx: nx, ny: ny, nz: nz,
+        bias: bias,
+        tag: tag
+      });
+    }
+
+    function collectFromMesh(o, groupTag) {
+      if (!o || !o.visible || !o.geometry || !o.geometry.attributes || !o.geometry.attributes.position) return;
+      if (o.userData && o.userData.isVessel) return;
+      const g = o.geometry;
+      const pA = g.attributes.position;
+      const idx = g.index ? g.index.array : null;
+      const nTri = idx ? (idx.length / 3) : (pA.count / 3);
+      const bias = polyOffsetBias(o.material);
+      const label = groupTag + ':' + (o.name || o.type);
+
+      if (o.isInstancedMesh) {
+        const cnt = o.count;
+        for (let inst = 0; inst < cnt; inst++) {
+          o.getMatrixAt(inst, mInst);
+          mWorld.multiplyMatrices(o.matrixWorld, mInst);
+          for (let t = 0; t < nTri; t++) {
+            const i0 = idx ? idx[t * 3] : (t * 3);
+            const i1 = idx ? idx[t * 3 + 1] : (t * 3 + 1);
+            const i2 = idx ? idx[t * 3 + 2] : (t * 3 + 2);
+            va.fromBufferAttribute(pA, i0).applyMatrix4(mWorld);
+            vb.fromBufferAttribute(pA, i1).applyMatrix4(mWorld);
+            vc.fromBufferAttribute(pA, i2).applyMatrix4(mWorld);
+            pushWorldTri(va.x, va.y, va.z, vb.x, vb.y, vb.z, vc.x, vc.y, vc.z, bias, label + '#' + inst);
+          }
+        }
+      } else if (o.isMesh) {
+        mWorld.copy(o.matrixWorld);
+        for (let t = 0; t < nTri; t++) {
+          const i0 = idx ? idx[t * 3] : (t * 3);
+          const i1 = idx ? idx[t * 3 + 1] : (t * 3 + 1);
+          const i2 = idx ? idx[t * 3 + 2] : (t * 3 + 2);
+          va.fromBufferAttribute(pA, i0).applyMatrix4(mWorld);
+          vb.fromBufferAttribute(pA, i1).applyMatrix4(mWorld);
+          vc.fromBufferAttribute(pA, i2).applyMatrix4(mWorld);
+          pushWorldTri(va.x, va.y, va.z, vb.x, vb.y, vb.z, vc.x, vc.y, vc.z, bias, label);
+        }
+      }
+    }
+
+    if (MEGA_SCENE && MEGA_SCENE.root) {
+      MEGA_SCENE.root.traverse(function (o) { collectFromMesh(o, 'mega'); });
+    }
+    if (PONTOON_SCENE && PONTOON_SCENE.root) {
+      PONTOON_SCENE.root.traverse(function (o) { collectFromMesh(o, 'pontoon'); });
+    }
+    if (STREETS_MOLE_SCENE && STREETS_MOLE_SCENE.root) {
+      STREETS_MOLE_SCENE.root.traverse(function (o) { collectFromMesh(o, 'streets'); });
+    }
+    if (bluffPlinthIm) {
+      collectFromMesh(bluffPlinthIm, 'plinth');
+    }
+
+    if (opts.injectFault) {
+      pushWorldTri(10, 22.00, 170, 20, 22.00, 180, 20, 22.00, 170, 0, 'faultA');
+      pushWorldTri(12, 22.05, 172, 22, 22.05, 182, 22, 22.05, 172, 0, 'faultB');
+    }
+
+    function clipPolyOverlap(P1, P2) {
+      let poly = P1.slice();
+      for (let e = 0; e < P2.length; e++) {
+        const A = P2[e], B = P2[(e + 1) % P2.length];
+        const ex = B[0] - A[0], ez = B[1] - A[1];
+        const inp = poly;
+        poly = [];
+        if (!inp.length) return null;
+        for (let i = 0; i < inp.length; i++) {
+          const S = inp[i], E = inp[(i + 1) % inp.length];
+          const sCross = ex * (S[1] - A[1]) - ez * (S[0] - A[0]);
+          const eCross = ex * (E[1] - A[1]) - ez * (E[0] - A[0]);
+          const sIn = sCross >= -1e-6, eIn = eCross >= -1e-6;
+          if (eIn) {
+            if (!sIn) {
+              const denom = sCross - eCross;
+              const t = Math.abs(denom) > 1e-9 ? sCross / denom : 0.5;
+              poly.push([S[0] + (E[0] - S[0]) * t, S[1] + (E[1] - S[1]) * t]);
+            }
+            poly.push(E);
+          } else if (sIn) {
+            const denom = sCross - eCross;
+            const t = Math.abs(denom) > 1e-9 ? sCross / denom : 0.5;
+            poly.push([S[0] + (E[0] - S[0]) * t, S[1] + (E[1] - S[1]) * t]);
+          }
+        }
+      }
+      if (poly.length < 3) return null;
+      let area2 = 0, cx = 0, cz = 0;
+      for (let i = 0; i < poly.length; i++) {
+        const p = poly[i], q = poly[(i + 1) % poly.length];
+        const cr = p[0] * q[1] - q[0] * p[1];
+        area2 += cr;
+        cx += (p[0] + q[0]) * cr;
+        cz += (p[1] + q[1]) * cr;
+      }
+      const area = 0.5 * Math.abs(area2);
+      if (area < 0.35) return null;
+      return { area: area, cx: cx / (3 * area2), cz: cz / (3 * area2) };
+    }
+
+    const cell = 16.0;
+    const grid = new Map();
+    for (let i = 0; i < tris.length; i++) {
+      const T = tris[i];
+      const gx0 = Math.floor(T.x0 / cell), gx1 = Math.floor(T.x1 / cell);
+      const gz0 = Math.floor(T.z0 / cell), gz1 = Math.floor(T.z1 / cell);
+      for (let gx = gx0; gx <= gx1; gx++) {
+        for (let gz = gz0; gz <= gz1; gz++) {
+          const key = gx + ',' + gz;
+          let arr = grid.get(key);
+          if (!arr) { arr = []; grid.set(key, arr); }
+          arr.push(i);
+        }
+      }
+    }
+
+    const pairSeen = new Set();
+    const conflicts = [];
+    grid.forEach(function (arr) {
+      const n = arr.length;
+      for (let a = 0; a < n; a++) {
+        const i = arr[a], A = tris[i];
+        for (let b = a + 1; b < n; b++) {
+          const j = arr[b];
+          const pk = i < j ? (i * 131072 + j) : (j * 131072 + i);
+          if (pairSeen.has(pk)) continue;
+          pairSeen.add(pk);
+          const B = tris[j];
+          if (A.x1 - B.x0 < 0.15 || B.x1 - A.x0 < 0.15 || A.z1 - B.z0 < 0.15 || B.z1 - A.z0 < 0.15) continue;
+          if (A.yMin - B.yMax > 0.18 || B.yMin - A.yMax > 0.18) continue;
+          if (Math.abs(A.bias - B.bias) >= 2.0) continue;
+          const dotN = A.nx * B.nx + A.ny * B.ny + A.nz * B.nz;
+          if (dotN < 0.96) continue;
+          const ov = clipPolyOverlap(A.pts, B.pts);
+          if (!ov) continue;
+          const yA = A.oy - (A.nx * (ov.cx - A.ox) + A.nz * (ov.cz - A.oz)) / A.ny;
+          const yB = B.oy - (B.nx * (ov.cx - B.ox) + B.nz * (ov.cz - B.oz)) / B.ny;
+          const dy = Math.abs(yA - yB);
+          if (dy < 0.15) {
+            conflicts.push({
+              a: A.tag,
+              b: B.tag,
+              x: +ov.cx.toFixed(1),
+              z: +ov.cz.toFixed(1),
+              yA: +yA.toFixed(3),
+              yB: +yB.toFixed(3),
+              dy: +dy.toFixed(3),
+              area: +ov.area.toFixed(2)
+            });
+            if (conflicts.length >= 25) return;
+          }
+        }
+      }
+    });
+
+    return {
+      ok: conflicts.length === 0 && tris.length >= 1000,
+      scannedTris: tris.length,
+      conflicts: conflicts.length,
+      sample: conflicts.slice(0, 6)
+    };
+  }
+
   window._buildMs = Math.round(performance.now() - t0);
 
   return {
@@ -661,6 +898,7 @@ const FC_WORLD = (function () {
     biomeOut: biomeOut,
     attachShadow: attachShadow,
     setSubmarineCut: setSubmarineCut,
-    ensureAtlasBuilt: ensureAtlasBuilt
+    ensureAtlasBuilt: ensureAtlasBuilt,
+    auditSceneZFights: auditSceneZFights
   };
 })();

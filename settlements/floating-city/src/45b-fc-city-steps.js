@@ -310,94 +310,350 @@ const FC_CITY = (function () {
     return { pontoons: pontoons, gardens: gardens };
   }
 
-  /* Compute rim point of a platform or anchor facing toward target (tx, tz) so bascules span canal water cleanly! */
-  function rimTowards(node, tx, tz) {
-    const vx = tx - node.x, vz = tz - node.z;
-    const dist = Math.hypot(vx, vz) || 1;
-    const rEdge = node.w ? Math.min(node.w, node.d) * 0.48 : (node.rOut ? node.rOut * 0.88 : 10.0);
-    return [+(node.x + (vx / dist) * rEdge).toFixed(2), +(node.z + (vz / dist) * rEdge).toFixed(2)];
+  /* Test whether world point (wx, wz) lies inside the outer hull envelope (including moon-pool / U-notch) of a platform or raft */
+  function isPointInsideOuterHull(W, wx, wz, pad) {
+    const p = pad == null ? 0.0 : pad;
+    const loc = worldToLocal(W.x, W.z, W.yaw == null ? 0 : W.yaw, wx, wz);
+    const ax = Math.abs(loc[0]), az = Math.abs(loc[1]);
+    if (W.shape === 'oct-moon') {
+      const a = W.rOut * 0.92388 + p;
+      return ax <= a && az <= a && (ax + az) * 0.707107 <= a;
+    }
+    if (W.shape === 'hex-moon') {
+      const a = W.rOut * 0.866025 + p;
+      return ax <= a && (0.5 * ax + 0.866025 * az) <= a;
+    }
+    if (W.w != null && W.d != null) {
+      return ax <= W.w * 0.5 + p && az <= W.d * 0.5 + p;
+    }
+    const r = (W.rOut == null ? 11.0 : W.rOut) + p;
+    return Math.hypot(loc[0], loc[1]) <= r;
   }
 
-  function generateBascules(pontoons, gardens) {
+  /* Exact outer boundary point on a floating platform, Chinampa raft, or Sala pavilion facing toward world target (tx, tz) */
+  function rimTowardsShape(node, tx, tz) {
+    if (node.shape === 'oct-moon' || node.shape === 'hex-moon') {
+      const loc = worldToLocal(node.x, node.z, node.yaw == null ? 0 : node.yaw, tx, tz);
+      const len = Math.hypot(loc[0], loc[1]);
+      const dx = len > 1e-6 ? loc[0] / len : 0.0;
+      const dz = len > 1e-6 ? loc[1] / len : 1.0;
+      const ax = Math.abs(dx), az = Math.abs(dz);
+      let tRim = node.rOut * 0.90;
+      if (node.shape === 'oct-moon') {
+        const a = node.rOut * 0.92388;
+        tRim = a / Math.max(ax, az, (ax + az) * 0.707107, 1e-6);
+      } else {
+        const a = node.rOut * 0.866025;
+        tRim = a / Math.max(ax, 0.5 * ax + 0.866025 * az, 1e-6);
+      }
+      const wpt = localToWorld(node.x, node.z, node.yaw == null ? 0 : node.yaw, dx * tRim, dz * tRim);
+      return [+wpt[0].toFixed(2), +wpt[1].toFixed(2)];
+    }
+
+    if (node.w != null && node.d != null) {
+      const loc = worldToLocal(node.x, node.z, node.yaw == null ? 0 : node.yaw, tx, tz);
+      const len = Math.hypot(loc[0], loc[1]);
+      const dx = len > 1e-6 ? loc[0] / len : 0.0;
+      const dz = len > 1e-6 ? loc[1] / len : 1.0;
+      const hw = node.w * 0.5, hd = node.d * 0.5;
+      const txMax = Math.abs(dx) > 1e-6 ? hw / Math.abs(dx) : Infinity;
+      const tzMax = Math.abs(dz) > 1e-6 ? hd / Math.abs(dz) : Infinity;
+      const tRim = Math.min(txMax, tzMax);
+      let ex = dx * tRim, ez = dz * tRim;
+      /* Never land a bridge inside the open sheltered U-harbour boat court on the +lz face! */
+      if (node.shape === 'u-harbour' && ez >= hd - 0.25 && Math.abs(ex) < node.notchW * 0.5 + 4.0) {
+        const sgnX = ex >= 0 ? 1 : -1;
+        ex = sgnX * Math.min(hw - 3.5, node.notchW * 0.5 + 6.5);
+        ez = hd;
+      }
+      const wpt = localToWorld(node.x, node.z, node.yaw == null ? 0 : node.yaw, ex, ez);
+      return [+wpt[0].toFixed(2), +wpt[1].toFixed(2)];
+    }
+
+    const vx = tx - node.x, vz = tz - node.z;
+    const dist = Math.hypot(vx, vz);
+    const ux = dist > 1e-6 ? vx / dist : 0.0;
+    const uz = dist > 1e-6 ? vz / dist : 1.0;
+    const rEdge = (node.rOut == null ? 11.0 : node.rOut) * 0.94;
+    return [+(node.x + ux * rEdge).toFixed(2), +(node.z + uz * rEdge).toFixed(2)];
+  }
+
+  /* Compute exact facing outer-rim pair [p0, p1] between A and B (including Boulevard-Dyke ±78 m & Sea-Ring r=896 m inner quay walls!) */
+  function computeBridgeRimPair(A, B, mega) {
+    const CX = FC_SITE.WEIR_CX, CZ = FC_SITE.WEIR_CZ;
+    function dykeRimPoint(dykeAnchor, targetX, targetZ) {
+      const D = dykeAnchor.dyke;
+      const a = D.angDeg * Math.PI / 180;
+      const ux = Math.cos(a), uz = Math.sin(a), nx = -uz, nz = ux;
+      const dx = targetX - CX, dz = targetZ - CZ;
+      let along = dx * ux + dz * uz;
+      const perp = dx * nx + dz * nz;
+      const sgn = perp >= 0 ? 1 : -1;
+      along = Math.max(D.quayR0 + 18.0, Math.min(D.quayR1 - 18.0, along));
+      /* Keep clear of reversible tide-wheels & barge-gate mouths */
+      for (let g = 0; g < D.gates.length; g++) {
+        const df = along - D.gates[g];
+        if (Math.abs(df) < 15.0) {
+          along = D.gates[g] + (df >= 0 ? 15.0 : -15.0);
+        }
+      }
+      along = Math.max(D.quayR0 + 18.0, Math.min(D.quayR1 - 18.0, along));
+      return [
+        +(CX + along * ux + sgn * D.quayHalfW * nx).toFixed(2),
+        +(CZ + along * uz + sgn * D.quayHalfW * nz).toFixed(2)
+      ];
+    }
+
+    function seaQuayRimPoint(sqAnchor, targetX, targetZ) {
+      const Q = sqAnchor.seaQuay;
+      let deg = normDeg(Math.atan2(targetZ - CZ, targetX - CX) * 180 / Math.PI);
+      const a0 = Q.ang0 + 1.8, a1 = Q.ang1 - 1.8;
+      if (deg < a0) deg = a0;
+      if (deg > a1) deg = a1;
+      const rad = deg * Math.PI / 180;
+      return [
+        +(CX + Q.rIn * Math.cos(rad)).toFixed(2),
+        +(CZ + Q.rIn * Math.sin(rad)).toFixed(2)
+      ];
+    }
+
+    if (A.dyke && !B.dyke) {
+      let p0 = dykeRimPoint(A, B.x, B.z);
+      const p1 = rimTowardsShape(B, p0[0], p0[1]);
+      p0 = dykeRimPoint(A, p1[0], p1[1]);
+      return [p0, p1];
+    }
+    if (B.dyke && !A.dyke) {
+      let p1 = dykeRimPoint(B, A.x, A.z);
+      const p0 = rimTowardsShape(A, p1[0], p1[1]);
+      p1 = dykeRimPoint(B, p0[0], p0[1]);
+      return [p0, p1];
+    }
+    if (A.seaQuay && !B.seaQuay) {
+      let p0 = seaQuayRimPoint(A, B.x, B.z);
+      const p1 = rimTowardsShape(B, p0[0], p0[1]);
+      p0 = seaQuayRimPoint(A, p1[0], p1[1]);
+      return [p0, p1];
+    }
+    if (B.seaQuay && !A.seaQuay) {
+      let p1 = seaQuayRimPoint(B, A.x, A.z);
+      const p0 = rimTowardsShape(A, p1[0], p1[1]);
+      p1 = seaQuayRimPoint(B, p0[0], p0[1]);
+      return [p0, p1];
+    }
+    let p0 = rimTowardsShape(A, B.x, B.z);
+    let p1 = rimTowardsShape(B, p0[0], p0[1]);
+    p0 = rimTowardsShape(A, p1[0], p1[1]);
+    p1 = rimTowardsShape(B, p0[0], p0[1]);
+    return [p0, p1];
+  }
+
+  function segmentsCross2D(a0x, a0z, a1x, a1z, b0x, b0z, b1x, b1z) {
+    function ccw(ax, az, bx, bz, cx, cz) {
+      return (cx - ax) * (bz - az) - (cz - az) * (bx - ax);
+    }
+    const d1 = ccw(a0x, a0z, a1x, a1z, b0x, b0z);
+    const d2 = ccw(a0x, a0z, a1x, a1z, b1x, b1z);
+    const d3 = ccw(b0x, b0z, b1x, b1z, a0x, a0z);
+    const d4 = ccw(b0x, b0z, b1x, b1z, a1x, a1z);
+    return ((d1 > 1e-4 && d2 < -1e-4) || (d1 < -1e-4 && d2 > 1e-4)) &&
+           ((d3 > 1e-4 && d4 < -1e-4) || (d3 < -1e-4 && d4 > 1e-4));
+  }
+
+  /* Verify that open-water bridge span (p0 -> p1) crosses ONLY open canal water and never clips any platform, dyke, pod, or bridge! */
+  function isBridgeSpanClean(p0, p1, idA, idB, pontoons, gardens, mega, existingLinks, maxSpan) {
+    const CX = FC_SITE.WEIR_CX, CZ = FC_SITE.WEIR_CZ;
+    const dxS = p1[0] - p0[0], dzS = p1[1] - p0[1];
+    const span = Math.hypot(dxS, dzS);
+    const cap = maxSpan == null ? 84.0 : maxSpan;
+    if (span < 7.5 || span > cap) return false;
+
+    const endInset = Math.min(1.6, span * 0.18);
+    const steps = Math.max(6, Math.ceil(span / 2.2));
+    for (let s = 1; s < steps; s++) {
+      const distAlong = (s / steps) * span;
+      if (distAlong < endInset || distAlong > span - endInset) continue;
+      const t = s / steps;
+      const sx = p0[0] + dxS * t, sz = p0[1] + dzS * t;
+
+      for (let i = 0; i < pontoons.length; i++) {
+        const P = pontoons[i];
+        const isEnd = (P.id === idA || P.id === idB);
+        if (isPointInsideOuterHull(P, sx, sz, isEnd ? -0.45 : 1.2)) return false;
+      }
+      if (gardens) {
+        for (let g = 0; g < gardens.length; g++) {
+          const G = gardens[g];
+          const isEnd = (G.id === idA || G.id === idB);
+          if (isPointInsideOuterHull(G, sx, sz, isEnd ? -0.45 : 1.2)) return false;
+        }
+      }
+
+      const dcx = sx - CX, dcz = sz - CZ;
+      const rC = Math.hypot(dcx, dcz);
+      const isSeaEnd = (idA === 'sea_ring_quay' || idB === 'sea_ring_quay');
+      if (rC < mega.sumeru.plinthR + 1.5 || rC > (isSeaEnd ? 896.4 : 895.5)) return false;
+
+      const B = mega.sumeru.bussabok;
+      if (Math.abs(sx - B.cx) < B.w * 0.5 + 2.0 && Math.abs(sz - B.cz) < B.d * 0.5 + 2.0) return false;
+
+      for (let d = 0; d < mega.dykes.length; d++) {
+        const D = mega.dykes[d];
+        const a = D.angDeg * Math.PI / 180;
+        const along = dcx * Math.cos(a) + dcz * Math.sin(a);
+        const perp = Math.abs(-dcx * Math.sin(a) + dcz * Math.cos(a));
+        const isEnd = (('dyke_' + D.tag) === idA || ('dyke_' + D.tag) === idB);
+        const allowEdge = isEnd ? (D.quayHalfW - 0.45) : (D.quayHalfW + 1.2);
+        if (along > 95.0 && along < 1016.0 && perp < allowEdge) return false;
+      }
+
+      for (let k = 0; k < mega.zigguratPods.length; k++) {
+        const Z = mega.zigguratPods[k];
+        if (Math.hypot(sx - Z.x, sz - Z.z) < 29.0) return false;
+      }
+      for (let k = 0; k < mega.salaPavilions.length; k++) {
+        const S = mega.salaPavilions[k];
+        if (Math.hypot(sx - S.x, sz - S.z) < S.r - 0.6) return false;
+      }
+    }
+
+    if (existingLinks) {
+      for (let i = 0; i < existingLinks.length; i++) {
+        const E = existingLinks[i];
+        if (E.from === idA || E.from === idB || E.to === idA || E.to === idB) continue;
+        if (segmentsCross2D(p0[0], p0[1], p1[0], p1[1], E.x0, E.z0, E.x1, E.z1)) return false;
+      }
+    }
+    return true;
+  }
+
+  function generateBascules(pontoons, gardens, mega) {
     const links = [];
     const adj = {};
+    const edgeSeen = new Set();
+    const dykeMap = {};
+    for (let d = 0; d < mega.dykes.length; d++) dykeMap[mega.dykes[d].tag] = mega.dykes[d];
+
     const fixedAnchors = [
-      { id: 'sala_ne',  x:  245, z: -35,  rOut: 11 },
-      { id: 'sala_se',  x:  248, z:  395, rOut: 11 },
-      { id: 'sala_sw',  x: -238, z:  395, rOut: 11 },
-      { id: 'sala_w',   x: -235, z: -45,  rOut: 11 },
-      { id: 'dyke_nne', x:  195, z: -245, rOut: 14 },
-      { id: 'dyke_ese', x:  380, z:  334, rOut: 14 },
-      { id: 'dyke_ssw', x: -335, z:  406, rOut: 14 },
-      { id: 'dyke_wnw', x: -335, z: -46,  rOut: 14 }
+      { id: 'sala_ne',  x:  245, z: -35,  rOut: 11.0 },
+      { id: 'sala_se',  x:  248, z:  395, rOut: 11.0 },
+      { id: 'sala_sw',  x: -238, z:  395, rOut: 11.0 },
+      { id: 'sala_w',   x: -235, z: -45,  rOut: 11.0 },
+      { id: 'dyke_nne', x:  195, z: -245, dyke: dykeMap.nne },
+      { id: 'dyke_ese', x:  380, z:  334, dyke: dykeMap.ese },
+      { id: 'dyke_ssw', x: -335, z:  406, dyke: dykeMap.ssw },
+      { id: 'dyke_wnw', x: -335, z: -46,  dyke: dykeMap.wnw }
     ];
+    for (let q = 0; q < mega.seaRing.quays.length; q++) {
+      const Q = mega.seaRing.quays[q];
+      const midRad = (0.5 * (Q.ang0 + Q.ang1)) * Math.PI / 180;
+      fixedAnchors.push({
+        id: 'sea_ring_quay',
+        subKey: Q.id,
+        x: +(FC_SITE.WEIR_CX + Q.rIn * Math.cos(midRad)).toFixed(1),
+        z: +(FC_SITE.WEIR_CZ + Q.rIn * Math.sin(midRad)).toFixed(1),
+        seaQuay: Q
+      });
+    }
 
     const allFloat = pontoons.concat(gardens || []);
-    const byId = {};
-    allFloat.forEach(function (p) { adj[p.id] = []; byId[p.id] = p; });
-    fixedAnchors.forEach(function (a) { adj[a.id] = []; byId[a.id] = a; });
+    allFloat.forEach(function (p) { adj[p.id] = []; });
+    fixedAnchors.forEach(function (a) { adj[a.id] = []; });
 
-    function addBridge(id, A, B) {
-      const p0 = rimTowards(A, B.x, B.z);
-      const p1 = rimTowards(B, A.x, A.z);
+    function tryAddBridge(id, A, B, maxSpan) {
+      const keyA = A.subKey || A.id, keyB = B.subKey || B.id;
+      const ek = keyA < keyB ? (keyA + '|' + keyB) : (keyB + '|' + keyA);
+      if (edgeSeen.has(ek)) return false;
+      const pair = computeBridgeRimPair(A, B, mega);
+      const p0 = pair[0], p1 = pair[1];
+      if (!isBridgeSpanClean(p0, p1, A.id, B.id, pontoons, gardens, mega, links, maxSpan)) return false;
       const clearSpan = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]);
+      edgeSeen.add(ek);
       links.push({
         id: id,
         from: A.id,
         to: B.id,
         x0: p0[0], z0: p0[1],
         x1: p1[0], z1: p1[1],
+        clearSpan: +clearSpan.toFixed(2),
         spanM: +Math.max(36.0, clearSpan).toFixed(2),
-        deckLen: +Math.max(14.0, clearSpan + 3.0).toFixed(2),
+        deckLen: +(clearSpan + 2.4).toFixed(2),
         maxPitchDeg: 12.0
       });
       adj[A.id].push(B.id);
       adj[B.id].push(A.id);
+      return true;
     }
 
-    /* 1. Connect each fixed Sala-Nam / Dyke anchor to its 2 nearest neighborhood pontoons */
+    /* 1. Connect each Boulevard-Dyke, Sea-Ring Quay & Sala-Nam anchor to nearby canal-frontage pontoons across clean open water */
     for (let a = 0; a < fixedAnchors.length; a++) {
       const FA = fixedAnchors[a];
-      const sorted = pontoons.slice().sort(function (p, q) {
-        return Math.hypot(p.x - FA.x, p.z - FA.z) - Math.hypot(q.x - FA.x, q.z - FA.z);
-      });
-      for (let k = 0; k < Math.min(2, sorted.length); k++) {
-        const P = sorted[k];
-        if (Math.hypot(P.x - FA.x, P.z - FA.z) < 285.0) {
-          addBridge('basc_anchor_' + FA.id + '_' + k, FA, P);
+      const maxLinks = FA.dyke ? 4 : (FA.seaQuay ? 1 : 2);
+      const cands = [];
+      for (let i = 0; i < pontoons.length; i++) {
+        const P = pontoons[i];
+        const pair = computeBridgeRimPair(FA, P, mega);
+        const span = Math.hypot(pair[1][0] - pair[0][0], pair[1][1] - pair[0][1]);
+        if (span <= 74.0) cands.push({ P: P, span: span });
+      }
+      cands.sort(function (u, v) { return u.span - v.span; });
+      let added = 0;
+      for (let k = 0; k < cands.length && added < maxLinks; k++) {
+        if (tryAddBridge('basc_anchor_' + (FA.subKey || FA.id) + '_' + added, FA, cands[k].P, 74.0)) {
+          added++;
         }
       }
     }
 
-    /* 2. Connect neighboring major platforms across Venetian canals (dist <= 245 m, up to 3 bridges per platform) */
+    /* 2. Connect neighboring major platforms across Venetian canals sorted by shortest open-water span (up to 3 per platform) */
     const degCount = {};
-    let bIdx = 0;
+    links.forEach(function (l) {
+      degCount[l.from] = (degCount[l.from] == null ? 0 : degCount[l.from]) + 1;
+      degCount[l.to] = (degCount[l.to] == null ? 0 : degCount[l.to]) + 1;
+    });
+    const pPairs = [];
     for (let i = 0; i < pontoons.length; i++) {
       for (let j = i + 1; j < pontoons.length; j++) {
         const A = pontoons[i], B = pontoons[j];
-        const d = Math.hypot(B.x - A.x, B.z - A.z);
-        if (d <= 245.0 && (degCount[A.id] == null ? 0 : degCount[A.id]) < 3 && (degCount[B.id] == null ? 0 : degCount[B.id]) < 3) {
-          degCount[A.id] = (degCount[A.id] == null ? 0 : degCount[A.id]) + 1;
-          degCount[B.id] = (degCount[B.id] == null ? 0 : degCount[B.id]) + 1;
-          addBridge('basc_p_' + (++bIdx), A, B);
-        }
+        if (Math.hypot(B.x - A.x, B.z - A.z) > 235.0) continue;
+        const pair = computeBridgeRimPair(A, B, mega);
+        const span = Math.hypot(pair[1][0] - pair[0][0], pair[1][1] - pair[0][1]);
+        if (span <= 74.0) pPairs.push({ A: A, B: B, span: span });
+      }
+    }
+    pPairs.sort(function (u, v) { return u.span - v.span; });
+    let bIdx = 0;
+    for (let k = 0; k < pPairs.length; k++) {
+      const A = pPairs[k].A, B = pPairs[k].B;
+      if ((degCount[A.id] == null ? 0 : degCount[A.id]) >= 3 || (degCount[B.id] == null ? 0 : degCount[B.id]) >= 3) continue;
+      if (tryAddBridge('basc_p_' + (bIdx + 1), A, B, 74.0)) {
+        bIdx++;
+        degCount[A.id] = (degCount[A.id] == null ? 0 : degCount[A.id]) + 1;
+        degCount[B.id] = (degCount[B.id] == null ? 0 : degCount[B.id]) + 1;
       }
     }
 
-    /* 3. Connect every Chinampa Garden Raft to its nearest neighborhood platform */
+    /* 3. Connect every Chinampa Garden Raft to its nearest clean-water pontoon, Sea-Ring quay, dyke quay, or neighboring raft */
     if (gardens && gardens.length) {
+      const gardenTargets = pontoons.concat(fixedAnchors).concat(gardens);
       for (let g = 0; g < gardens.length; g++) {
         const G = gardens[g];
-        let bestP = null, bestD = Infinity;
-        for (let i = 0; i < pontoons.length; i++) {
-          const d = Math.hypot(pontoons[i].x - G.x, pontoons[i].z - G.z);
-          if (d < bestD) { bestD = d; bestP = pontoons[i]; }
+        const gCands = [];
+        for (let i = 0; i < gardenTargets.length; i++) {
+          const Tgt = gardenTargets[i];
+          if (Tgt.id === G.id) continue;
+          const pair = computeBridgeRimPair(Tgt, G, mega);
+          const span = Math.hypot(pair[1][0] - pair[0][0], pair[1][1] - pair[0][1]);
+          if (span <= 84.0) gCands.push({ T: Tgt, span: span });
         }
-        if (bestP) addBridge('basc_g_' + (g + 1), bestP, G);
+        gCands.sort(function (u, v) { return u.span - v.span; });
+        for (let k = 0; k < gCands.length; k++) {
+          if (tryAddBridge('basc_g_' + (g + 1), gCands[k].T, G, 84.0)) break;
+        }
       }
     }
 
-    /* 4. Guarantee 100% connected archipelago via shortest spanning bridges */
+    /* 4. Guarantee 100% connected archipelago via shortest clean-water spanning bridges */
     function getReachable() {
       const seen = new Set(fixedAnchors.map(function (f) { return f.id; }));
       const q = Array.from(seen);
@@ -416,16 +672,24 @@ const FC_CITY = (function () {
       const seen = getReachable();
       const un = allFloat.filter(function (p) { return !seen.has(p.id); });
       if (!un.length) break;
-      let bestU = null, bestR = null, bestD = Infinity;
       const reachedList = allFloat.filter(function (p) { return seen.has(p.id); }).concat(fixedAnchors);
+      const spanCands = [];
       for (let i = 0; i < un.length; i++) {
         for (let j = 0; j < reachedList.length; j++) {
-          const d = Math.hypot(un[i].x - reachedList[j].x, un[i].z - reachedList[j].z);
-          if (d < bestD) { bestD = d; bestU = un[i]; bestR = reachedList[j]; }
+          const pair = computeBridgeRimPair(reachedList[j], un[i], mega);
+          const span = Math.hypot(pair[1][0] - pair[0][0], pair[1][1] - pair[0][1]);
+          if (span <= 88.0) spanCands.push({ R: reachedList[j], U: un[i], span: span });
         }
       }
-      if (!bestU || !bestR) break;
-      addBridge('basc_span_' + guard, bestR, bestU);
+      spanCands.sort(function (a, b) { return a.span - b.span; });
+      let linked = false;
+      for (let k = 0; k < spanCands.length; k++) {
+        if (tryAddBridge('basc_span_' + guard, spanCands[k].R, spanCands[k].U, 88.0)) {
+          linked = true;
+          break;
+        }
+      }
+      if (!linked) break;
     }
 
     return links;
@@ -519,8 +783,15 @@ const FC_CITY = (function () {
     const gardens = arch.gardens;
     const pontoonsById = {};
     pontoons.forEach(function (p) { pontoonsById[p.id] = p; });
-    const bascules = generateBascules(pontoons, gardens);
+    const bascules = generateBascules(pontoons, gardens, mega);
     const bluffWays = FC_BLUFF_PLAN.buildWays();
+
+    /* Precompute bascule bridge landing clearance boxes so waterfront houses never block a bridge landing! */
+    const bridgeClearBoxes = bascules.map(function (b) {
+      const mx = (b.x0 + b.x1) * 0.5, mz = (b.z0 + b.z1) * 0.5;
+      const yaw = Math.atan2(b.x1 - b.x0, b.z1 - b.z0);
+      return { x: mx, z: mz, w: 6.8, d: (b.deckLen == null ? 20 : b.deckLen) + 5.0, ry: yaw };
+    });
 
     const lots = [];
     const byDistrict = { D1: 0, D2: 0, D3: 0, D4: 0, D5: 0, D6: 0, D7: 0 };
@@ -554,6 +825,11 @@ const FC_CITY = (function () {
       if (!isLotSupported(cand, mega, pontoonsById)) {
         if (spec.required) throw new Error('FC_CITY: required lot ' + cand.id + ' is unsupported at (' + cand.x + ',' + cand.y + ',' + cand.z + ')');
         return null;
+      }
+      if (!spec.required && (cand.instance === 'pontoons' || (cand.instance === 'dykes' && Math.abs(cand.y - 6.2) < 1.0))) {
+        for (let bi = 0; bi < bridgeClearBoxes.length; bi++) {
+          if (obbOverlap(cand, bridgeClearBoxes[bi], 0.35)) return null;
+        }
       }
       const pad = spec.pad == null ? 0.30 : spec.pad;
       for (let i = 0; i < lots.length; i++) {
@@ -590,14 +866,16 @@ const FC_CITY = (function () {
        ----------------------------------------------------------------------- */
     function nearCrossStreet(x, halfW) {
       for (let i = 0; i < FC_BLUFF_PLAN.CROSS_X.length; i++) {
-        if (Math.abs(x - FC_BLUFF_PLAN.CROSS_X[i]) < 5.8 + halfW) return true;
+        if (Math.abs(x - FC_BLUFF_PLAN.CROSS_X[i]) < 6.4 + halfW) return true;
       }
       return false;
     }
-    function inCivicPlaza(x, dInland) {
+    function inCivicPlaza(x, dInland, halfW, halfD) {
+      const hw = halfW == null ? 0 : halfW;
+      const hd = halfD == null ? 0 : halfD;
       for (let i = 0; i < FC_BLUFF_PLAN.PLAZAS.length; i++) {
         const P = FC_BLUFF_PLAN.PLAZAS[i];
-        if (x > P.x0 + 3 && x < P.x1 - 3 && dInland > P.d0 + 3 && dInland < P.d1 - 3) return true;
+        if (x + hw + 1.2 > P.x0 && x - hw - 1.2 < P.x1 && dInland + hd + 1.2 > P.d0 && dInland - hd - 1.2 < P.d1) return true;
       }
       return false;
     }
@@ -671,7 +949,7 @@ const FC_CITY = (function () {
           const dIn = av.dInland + sgn * setback;
           const z = FC_SITE.bluffShoreZ(x) - dIn;
 
-          if (!nearCrossStreet(x, dim.w * 0.5) && !inCivicPlaza(x, dIn) && !nearHoistHead(x, z) && !FC_BLUFF_PLAN.inReservoirBasin(x, z, 16.0)) {
+          if (!nearCrossStreet(x, dim.w * 0.5) && !inCivicPlaza(x, dIn, dim.w * 0.5, dim.d * 0.5) && !nearHoistHead(x, z) && !FC_BLUFF_PLAN.inReservoirBasin(x, z, 16.0)) {
             const sl = (FC_SITE.bluffShoreZ(x + 8) - FC_SITE.bluffShoreZ(x - 8)) / 16.0;
             const baseYaw = Math.atan2(sl, 1.0);
             const ry = sgn > 0 ? baseYaw : baseYaw + Math.PI;
@@ -1237,7 +1515,7 @@ const FC_CITY = (function () {
 
     /* Continuous Pedestrian, Bascule, Cliff-Funicular & Submarine Lift Walk Graph */
     const walkNodes = [
-      'bluff_as01', 'd5_ghat', 'dyke_nne', 'dyke_ese', 'dyke_ssw', 'dyke_wnw',
+      'bluff_as01', 'd5_ghat', 'dyke_nne', 'dyke_ese', 'dyke_ssw', 'dyke_wnw', 'sea_ring_quay',
       'sumeru_plinth', 'dynamo_minus90', 'sala_ne', 'sala_se', 'sala_sw', 'sala_w'
     ];
     pontoons.forEach(function (w) { walkNodes.push(w.id); });
@@ -1249,6 +1527,10 @@ const FC_CITY = (function () {
       ['dyke_ese', 'sumeru_plinth'],
       ['dyke_ssw', 'sumeru_plinth'],
       ['dyke_wnw', 'sumeru_plinth'],
+      ['sea_ring_quay', 'dyke_nne'],
+      ['sea_ring_quay', 'dyke_ese'],
+      ['sea_ring_quay', 'dyke_ssw'],
+      ['sea_ring_quay', 'dyke_wnw'],
       ['sumeru_plinth', 'dynamo_minus90'],
       ['sumeru_plinth', 'sala_ne'],
       ['sumeru_plinth', 'sala_se'],
@@ -1257,7 +1539,9 @@ const FC_CITY = (function () {
     ];
     bascules.forEach(function (b) { walkEdges.push([b.from, b.to]); });
 
-    const cableChains = bascules.slice(0, 44).map(function (b) { return { from: b.from, to: b.to }; });
+    const cableChains = bascules.slice(0, 44).map(function (b) {
+      return { from: b.from, to: b.to, x0: b.x0, z0: b.z0, x1: b.x1, z1: b.z1 };
+    });
 
     return {
       lots: lots,
@@ -1269,6 +1553,194 @@ const FC_CITY = (function () {
       cables: cableChains,
       bluffWays: bluffWays,
       walkGraph: { nodes: walkNodes, edges: walkEdges }
+    };
+  }
+
+  function auditBascules(planOut, customLinks) {
+    const mega = FC_MEGA.plan();
+    const links = customLinks || planOut.bascules || [];
+    const pontoons = planOut.pontoons || [];
+    const gardens = planOut.gardens || [];
+    const lots = planOut.lots || [];
+    let badSpan = 0, clippedHull = 0, crossedBridges = 0, hitLot = 0, maxDeckLen = 0, minDeckLen = Infinity;
+
+    for (let i = 0; i < links.length; i++) {
+      const b = links[i];
+      const p0 = [b.x0, b.z0], p1 = [b.x1, b.z1];
+      const dLen = b.deckLen == null ? Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) : b.deckLen;
+      if (dLen > maxDeckLen) maxDeckLen = dLen;
+      if (dLen < minDeckLen) minDeckLen = dLen;
+      if (dLen < 9.5 || dLen > 92.0) badSpan++;
+
+      if (!isBridgeSpanClean(p0, p1, b.from, b.to, pontoons, gardens, mega, null, 90.0)) {
+        clippedHull++;
+      }
+      for (let j = i + 1; j < links.length; j++) {
+        const e = links[j];
+        if (e.from === b.from || e.from === b.to || e.to === b.from || e.to === b.to) continue;
+        if (segmentsCross2D(b.x0, b.z0, b.x1, b.z1, e.x0, e.z0, e.x1, e.z1)) crossedBridges++;
+      }
+      const mx = (b.x0 + b.x1) * 0.5, mz = (b.z0 + b.z1) * 0.5;
+      const yaw = Math.atan2(b.x1 - b.x0, b.z1 - b.z0);
+      const bBox = { x: mx, z: mz, w: 5.8, d: dLen, ry: yaw };
+      for (let k = 0; k < lots.length; k++) {
+        const L = lots[k];
+        if (L.instance !== 'pontoons' && !(L.instance === 'dykes' && Math.abs(L.y - 6.2) < 1.0)) continue;
+        if (obbOverlap(L, bBox, 0.05)) { hitLot++; break; }
+      }
+    }
+
+    return {
+      ok: links.length > 0 && badSpan === 0 && clippedHull === 0 && crossedBridges === 0 && hitLot === 0,
+      count: links.length,
+      badSpan: badSpan,
+      clippedHull: clippedHull,
+      crossedBridges: crossedBridges,
+      hitLot: hitLot,
+      minDeckLen: links.length ? +minDeckLen.toFixed(2) : 0,
+      maxDeckLen: +maxDeckLen.toFixed(2)
+    };
+  }
+
+  function auditSlabsAndWays(planOut, opts) {
+    opts = opts || {};
+    const pontoons = planOut.pontoons || [];
+    const gardens = planOut.gardens || [];
+    const ways = planOut.bluffWays || [];
+    let slabOverlaps = 0, lowLaneSteps = 0, wayOverlaps = 0;
+
+    function rectOverlap2D(a, b) {
+      return (Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0) > 1e-4) &&
+             (Math.min(a.z1, b.z1) - Math.max(a.z0, b.z0) > 1e-4);
+    }
+    function box2D(cx, cz, w, d) {
+      return { x0: cx - w * 0.5, x1: cx + w * 0.5, z0: cz - d * 0.5, z1: cz + d * 0.5 };
+    }
+    function countPairOverlaps(arr) {
+      let c = 0;
+      for (let i = 0; i < arr.length; i++) {
+        for (let j = i + 1; j < arr.length; j++) {
+          if (rectOverlap2D(arr[i], arr[j])) c++;
+        }
+      }
+      return c;
+    }
+
+    for (let p = 0; p < pontoons.length; p++) {
+      const W = pontoons[p];
+      const deckBoxes = [], curbBoxes = [], laneBoxes = [];
+      let deckTopY = 0.00, laneTopY = 0.22;
+
+      if (W.shape === 'rect-canal') {
+        const hw = W.w * 0.5, hd = W.d * 0.5;
+        const mhw = W.moonW * 0.5, mhd = W.moonD * 0.5;
+        const sideW = hw - mhw, fbD = hd - mhd;
+        const dSideW = sideW + 0.6, dFbD = fbD + 0.6;
+        const ewLaneZ = 26.5, ewLaneD = 4.2;
+        const zInEnd = ewLaneZ - ewLaneD * 0.5;
+        const zOutStart = ewLaneZ + ewLaneD * 0.5;
+        const zOuterLim = hd - 3.0;
+
+        if (opts.injectOverlap && p === 0) {
+          deckBoxes.push(box2D(-(mhw + sideW * 0.5), 0, sideW + 1.0, W.d + 1.2));
+          deckBoxes.push(box2D(0, -(mhd + fbD * 0.5), W.moonW + 0.6, fbD + 1.2));
+          laneBoxes.push(box2D(0, ewLaneZ, W.w - 8.0, ewLaneD));
+          laneBoxes.push(box2D(28.0, 0, 3.8, W.d - 6.0));
+          laneTopY = 0.11;
+        } else {
+          for (let sgn = -1; sgn <= 1; sgn += 2) {
+            deckBoxes.push(box2D(sgn * (mhw + dSideW * 0.5), 0, dSideW, W.d + 1.2));
+            deckBoxes.push(box2D(0, sgn * (mhd + dFbD * 0.5), W.moonW, dFbD));
+            curbBoxes.push(box2D(0, sgn * (mhd + 0.7), W.moonW + 2.8, 1.4));
+            curbBoxes.push(box2D(sgn * (mhw + 0.7), 0, 1.4, W.moonD));
+            laneBoxes.push(box2D(0, sgn * ewLaneZ, W.w - 8.0, ewLaneD));
+            laneBoxes.push(box2D(sgn * 28.0, 0, 3.8, zInEnd * 2.0));
+            if (zOuterLim - zOutStart > 1.0) {
+              const segLen = zOuterLim - zOutStart;
+              const segMid = zOutStart + segLen * 0.5;
+              laneBoxes.push(box2D(sgn * 28.0, -segMid, 3.8, segLen));
+              laneBoxes.push(box2D(sgn * 28.0,  segMid, 3.8, segLen));
+            }
+          }
+        }
+      } else if (W.shape === 'u-harbour') {
+        const hw = W.w * 0.5, hd = W.d * 0.5;
+        const headD = W.d - W.notchD;
+        const wingW = (W.w - W.notchW) * 0.5;
+        const wingZ = hd - W.notchD * 0.5;
+        const dHeadD = headD + 0.6, dWingW = wingW + 0.6, dWingD = W.notchD + 0.6;
+        const wingLaneX = 0.5 * ((W.notchW * 0.5 + 9.2) + (hw - 10.2));
+        deckBoxes.push(box2D(0, (hd - W.notchD) - dHeadD * 0.5, W.w + 1.2, dHeadD));
+        laneBoxes.push(box2D(0, -(hd - 18.85), W.w - 10.0, 3.8));
+        for (let sgn = -1; sgn <= 1; sgn += 2) {
+          deckBoxes.push(box2D(sgn * (W.notchW * 0.5 + dWingW * 0.5), (hd - W.notchD) + dWingD * 0.5, dWingW, dWingD));
+          laneBoxes.push(box2D(sgn * wingLaneX, wingZ, 3.8, W.notchD - 8.0));
+          curbBoxes.push(box2D(sgn * (W.notchW * 0.5 + 0.7), wingZ, 1.4, W.notchD));
+        }
+        curbBoxes.push(box2D(0, hd - W.notchD - 0.7, W.notchW + 2.8, 1.4));
+      } else if (W.shape === 'stepped-bazaar') {
+        const shw = W.stepW * 0.5, shd = W.stepD * 0.5;
+        curbBoxes.push(box2D(-(shw - 0.5), 0, 1.0, W.stepD));
+        curbBoxes.push(box2D( (shw - 0.5), 0, 1.0, W.stepD));
+        curbBoxes.push(box2D(-((shw - 1.0 + 4.8) * 0.5), -(shd - 0.5), shw - 5.8, 1.0));
+        curbBoxes.push(box2D( ((shw - 1.0 + 4.8) * 0.5), -(shd - 0.5), shw - 5.8, 1.0));
+        curbBoxes.push(box2D(-((shw - 1.0 + 4.8) * 0.5),  (shd - 0.5), shw - 5.8, 1.0));
+        curbBoxes.push(box2D( ((shw - 1.0 + 4.8) * 0.5),  (shd - 0.5), shw - 5.8, 1.0));
+        laneBoxes.push(box2D(0, -(shd + 7.2), W.w - 12.0, 4.2));
+        laneBoxes.push(box2D(0,  (shd + 7.2), W.w - 12.0, 4.2));
+      }
+
+      slabOverlaps += countPairOverlaps(deckBoxes) + countPairOverlaps(curbBoxes) + countPairOverlaps(laneBoxes);
+      if (laneTopY - deckTopY < 0.20) lowLaneSteps++;
+    }
+
+    for (let g = 0; g < gardens.length; g++) {
+      const G = gardens[g];
+      const hw = G.w * 0.5, hd = G.d * 0.5;
+      const gCurbs = [
+        box2D(0, -hd + 0.75, G.w, 1.5),
+        box2D(0,  hd - 0.75, G.w, 1.5),
+        box2D(-hw + 0.75, 0, 1.5, G.d - 3.0),
+        box2D( hw - 0.75, 0, 1.5, G.d - 3.0)
+      ];
+      slabOverlaps += countPairOverlaps(gCurbs);
+    }
+
+    const plazas = FC_BLUFF_PLAN.PLAZAS.map(FC_BLUFF_PLAN.plazaBounds);
+    for (let p = 0; p < plazas.length; p++) {
+      const PB = plazas[p];
+      for (let a = 0; a < FC_BLUFF_PLAN.AVE_OFFSETS.length; a++) {
+        const av = FC_BLUFF_PLAN.AVE_OFFSETS[a];
+        const avD0 = av.dInland - av.widthM * 0.5, avD1 = av.dInland + av.widthM * 0.5;
+        if (Math.min(PB.d1, avD1) - Math.max(PB.d0, avD0) > 1e-3) wayOverlaps++;
+      }
+    }
+
+    for (let w = 0; w < ways.length; w++) {
+      const way = ways[w];
+      if (way.cls !== 'cross' || !way.pts || way.pts.length < 2) continue;
+      const x = way.pts[0][0];
+      const d0 = FC_SITE.bluffShoreZ(x) - way.pts[0][1];
+      const d1 = FC_SITE.bluffShoreZ(x) - way.pts[way.pts.length - 1][1];
+      const cBox = { x0: x - way.widthM * 0.5, x1: x + way.widthM * 0.5, z0: Math.min(d0, d1), z1: Math.max(d0, d1) };
+
+      for (let a = 0; a < FC_BLUFF_PLAN.AVE_OFFSETS.length; a++) {
+        const av = FC_BLUFF_PLAN.AVE_OFFSETS[a];
+        const aBox = { x0: -860, x1: 1660, z0: av.dInland - av.widthM * 0.5, z1: av.dInland + av.widthM * 0.5 };
+        if (rectOverlap2D(cBox, aBox)) wayOverlaps++;
+      }
+      for (let p = 0; p < plazas.length; p++) {
+        const PB = plazas[p];
+        const pBox = { x0: PB.x0, x1: PB.x1, z0: PB.d0, z1: PB.d1 };
+        if (rectOverlap2D(cBox, pBox)) wayOverlaps++;
+      }
+    }
+
+    return {
+      ok: slabOverlaps === 0 && lowLaneSteps === 0 && wayOverlaps === 0,
+      slabOverlaps: slabOverlaps,
+      lowLaneSteps: lowLaneSteps,
+      wayOverlaps: wayOverlaps
     };
   }
 
@@ -1332,10 +1804,12 @@ const FC_CITY = (function () {
     }
     const unreached = planOut.walkGraph.nodes.filter(function (n) { return !seen.has(n); });
     const avgPontoonLots = planOut.pontoons.length ? +(pontoonLots / planOut.pontoons.length).toFixed(2) : 0;
+    const bascAudit = auditBascules(planOut);
+    const slabAudit = auditSlabsAndWays(planOut);
 
     return {
       ok: overlaps === 0 && unsupportedLots === 0 && badMainlandDwell === 0 && unreached.length === 0 &&
-          L.length >= 2200 && suudmeCount >= 550 && lowerRiaCount >= 1200 && upperRiaCount >= 120 &&
+          bascAudit.ok && slabAudit.ok && L.length >= 2200 && suudmeCount >= 550 && lowerRiaCount >= 1200 && upperRiaCount >= 120 &&
           avgPontoonLots >= 20.0 && (planOut.gardens ? planOut.gardens.length : 0) >= 12,
       totalLots: L.length,
       totalHouseholds: totalHouseholds,
@@ -1347,6 +1821,8 @@ const FC_CITY = (function () {
       gardens: planOut.gardens ? planOut.gardens.length : 0,
       uplandFarms: planOut.uplandFarms ? planOut.uplandFarms.length : 0,
       bascules: planOut.bascules.length,
+      basculeAudit: bascAudit,
+      slabAudit: slabAudit,
       overlaps: overlaps,
       unsupportedLots: unsupportedLots,
       badMainlandDwell: badMainlandDwell,
@@ -1364,8 +1840,12 @@ const FC_CITY = (function () {
     obbCorners: obbCorners,
     obbOverlap: obbOverlap,
     isPointOnPlatform: isPointOnPlatform,
+    isPointInsideOuterHull: isPointInsideOuterHull,
+    rimTowardsShape: rimTowardsShape,
     isLotSupported: isLotSupported,
     buildPlans: buildPlans,
+    auditBascules: auditBascules,
+    auditSlabsAndWays: auditSlabsAndWays,
     auditLayout: auditLayout
   };
 })();
