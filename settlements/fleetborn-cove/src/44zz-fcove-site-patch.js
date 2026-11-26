@@ -20,6 +20,6 @@
   {key:'w1',s:-515,side:-1,du:86,r:10,flow:11.0,w:23},
   {key:'w2',s:-165,side:-1,du:92,r:11,flow:13.5,w:26},
   {key:'w3',s:225,side:-1,du:88,r:10,flow:10.0,w:22},
-  {key:'w4',s:635,side:1,du:88,r:8,flow:7.0,w:18}
+  {key:'w4',s:635,side:-1,du:88,r:8,flow:7.0,w:18}
  ];
 }

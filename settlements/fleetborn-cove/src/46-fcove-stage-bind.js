@@ -68,4 +68,16 @@ const FCOVE_RULES=FCOVE_TIDE.create(KTIDE_DATA,{ktide:KTIDE});
   const pq=FCOVE_LAYOUT.XZ(s,FCOVE_LAYOUT.quayA(s)+55);
   OBSTACLES.push({x:pq[0],z:pq[1],r:115});
  }
+ for(let i=0;i<FCOVE_LAYOUT.villages.length;i++){
+  const v=FCOVE_LAYOUT.villages[i];
+  OBSTACLES.push({x:v.x,z:v.z,r:v.rFlat+8});
+  if(v.landing)OBSTACLES.push({x:v.landing.x,z:v.landing.z,r:34});
+ }
+ {
+  const sc=FCOVE_LAYOUT.sparChute;
+  for(let k=0;k<=12;k++){
+   const t=k/12;
+   OBSTACLES.push({x:lerp(sc.headXZ[0],sc.footXZ[0],t),z:lerp(sc.headXZ[1],sc.footXZ[1],t),r:18});
+  }
+ }
 })();

@@ -55,13 +55,14 @@ def rd(p):
 
 PATH = {}
 
-# 1. Settlement own fragments (00-head.html, 40, 42, 44zz, 46, 86, 89x, 99, 99-tail.html)
+# 1. Settlement own fragments (00-head.html, 40, 42, 44zz, 46, 60, 86, 89x, 99, 99-tail.html)
 OWN_MAP = {
     '00-head.html': '00-head.html',
     '40b-fcove-tide-rules.js': '40-fcove-tide-rules.js',
     '42b-fcove-layout.js': '42-fcove-layout.js',
     '44zz-fcove-site-patch.js': '44zz-fcove-site-patch.js',
     '46-fcove-stage-bind.js': '46-fcove-stage-bind.js',
+    '60-fcove-sim.js': '60-fcove-sim.js',
     '86-fcove-works-and-fleet.js': '86-fcove-works-and-fleet.js',
     '89x-fcove-arcoforte-water.js': '89x-fcove-arcoforte-water.js',
     '99-host-take.js': '99-fcove-host-take.js',
@@ -72,7 +73,7 @@ for k, v in OWN_MAP.items():
 
 # 2. Core modules (core/rand, core/tags, core/space, core/drawn, core/clock, core/water + tide, core/atmos,
 #    core/terrain, core/biome, core/ruins, core/hazard, core/door, core/walk, core/furnish, core/shadow, core/lod,
-#    core/materials/record, core/host, core/export)
+#    core/city, core/hamlet + shorekin, core/camp + fleet, core/simulation, core/materials/record, core/host, core/export)
 PATH['06-core-khook.js'] = J('core', 'shader', '06-core-khook.js')
 PATH['06b-core-kcolor.js'] = J('core', 'shader', '06b-core-kcolor.js')
 PATH['07-core-export.js'] = J('core', 'export', '07-core-export.js')
@@ -92,6 +93,39 @@ PATH['21-core-ruins-host.js'] = J('core', 'ruins', '21-core-ruins-host.js')
 PATH['20-core-hazard.js'] = J('core', 'hazard', '20-core-hazard.js')
 PATH['21-core-hazard-flow.js'] = J('core', 'hazard', '21-core-hazard-flow.js')
 PATH['72-core-door-host.js'] = J('core', 'door', '90-core-door-host.js')
+
+# Core city primitives + Shore-kin hamlets + Sea-nomad fleets + Coupled simulation/stocks/ledger
+PATH['28a-city-strategies.js'] = J('core', 'city', '33-city-strategies.js')
+CORE_HAMLET = [
+    ('28b-hamlet-10-wood.js', ('10-hamlet-wood.js',)),
+    ('28c-hamlet-12-gather.js', ('12-hamlet-gather.js',)),
+    ('28d-hamlet-14-farmland.js', ('14-hamlet-farmland.js',)),
+    ('28e-hamlet-16-names.js', ('16-hamlet-names.js',)),
+    ('28f-hamlet-18-names.js', ('18-hamlet-names.js',)),
+    ('28g-hamlet-20-cultures.js', ('20-hamlet-cultures.js',)),
+    ('28h-hamlet-26-shorekin.js', ('shorekin', '26-hamlet-shorekin.js')),
+    ('28i-hamlet-30-village.js', ('30-hamlet-village.js',)),
+]
+for k, relp in CORE_HAMLET:
+    PATH[k] = J('core', 'hamlet', *relp)
+
+CORE_CAMP = [
+    ('29a-camp-10-cultures.js', ('10-camp-cultures.js',)),
+    ('29b-camp-20-census.js', ('20-camp-census.js',)),
+    ('29c-camp-30-pitch.js', ('30-camp-pitch.js',)),
+    ('29d-camp-58-fleet.js', ('fleet', '58-camp-fleet.js')),
+]
+for k, relp in CORE_CAMP:
+    PATH[k] = J('core', 'camp', *relp)
+
+CORE_SIMULATION = [
+    '77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js',
+    '77-sim-4-nav.js', '77-sim-5-motion.js', '77-sim-5r-routes.js', '77-sim-6-economy.js',
+    '77-sim-6-govern.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-6-trade.js',
+    '77-sim-7-stocks.js', '77-sim-7-ledger.js', '77-sim-7-lod.js', '77-sim-8-export.js'
+]
+for f in CORE_SIMULATION:
+    PATH[f] = J('core', 'simulation', f)
 
 CORE_BIOME = list(dict.fromkeys([os.path.basename(x) for x in buildlib.CORE_BIOME_MIN] + [
     '10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '31b-core-leafset.js', '31j-core-joint.js',
@@ -177,11 +211,21 @@ _ALL_ARCH_FAMS = sorted(ARCH_MAT_JSON['families'])
 _COVE_FAMS = ['ground.travertine.white', 'rock.basalt.vesicular', 'ground.redsoil', 'ground.lichen.crust',
               'araucariaBark', 'paperbark', 'mangroveBark', 'pandanStrap']
 
+SK_DIR = J('kits', 'shore-kin')
+SK_MAT_JSON = json.loads(rd(os.path.join(SK_DIR, 'materials.json')))
+EXTRA_READS.append(os.path.join(SK_DIR, 'tex', 'pack.json'))
+_SK_UNUSED = {'ground', 'stone', 'earth', 'sand', 'bone', 'brass', 'bronze', 'coconut', 'plain'}
+_SK_EXCLUDE = [f for f in sorted(SK_MAT_JSON['families']) if f.startswith('f_') or f in _SK_UNUSED]
+
 SIDE = None if '--inline-packs' in sys.argv else {}
 VIRTUAL = {
     '44-host-matlib-pack.js': matlib_pack.fragment(
         ARCH_DIR, 'arch', own=True, side=SIDE,
         exclude=[f for f in _ALL_ARCH_FAMS if f not in _COVE_FAMS]
+    ),
+    '44s-host-matlib-pack-shore-kin.js': matlib_pack.fragment(
+        SK_DIR, 'shore-kin', side=SIDE,
+        exclude=_SK_EXCLUDE
     ),
     khost.EDITS_JS: khost.edits_js(HERE, 'fleetborn-cove')
 }
@@ -544,9 +588,32 @@ def build_ringsea_bundle():
     )
 
 
+def build_shorekin_bundle():
+    sk_bundle_path = os.path.join(SK_DIR, 'kit_bundle.py')
+    EXTRA_READS.append(sk_bundle_path)
+    _sk_spec = importlib.util.spec_from_file_location('sk_kit_bundle', sk_bundle_path)
+    sk_bundle = importlib.util.module_from_spec(_sk_spec)
+    _sk_spec.loader.exec_module(sk_bundle)
+    sk_js, sk_files = sk_bundle.bundle('SKK')
+    sk_js = sk_js.replace('window.onerror=', 'var _skIgnoreOnerror=')
+    for rf in sk_files:
+        EXTRA_READS.append(J(*rf.split('/')))
+    return (
+        '/* Preserve host KMAT.libKey / KMAT.libHooks across SKK vertical-stack material init */\n'
+        'var __skSavedLibKey = typeof KMAT !== "undefined" ? KMAT.libKey : null;\n'
+        'var __skSavedLibHooks = typeof KMAT !== "undefined" ? KMAT.libHooks : null;\n'
+        + sk_js +
+        'if (typeof KMAT !== "undefined") {\n'
+        '  if (__skSavedLibKey) KMAT.libKey = __skSavedLibKey;\n'
+        '  if (__skSavedLibHooks) KMAT.libHooks = __skSavedLibHooks;\n'
+        '}\n'
+    )
+
+
 VIRTUAL['75a-arcoforte-bundle.js'] = build_arcoforte_bundle()
 VIRTUAL['75b-port-bundle.js'] = build_port_bundle()
 VIRTUAL['75c-ringsea-bundle.js'] = build_ringsea_bundle()
+VIRTUAL['75d-shorekin-bundle.js'] = build_shorekin_bundle()
 
 for f in VIRTUAL:
     PATH[f] = None

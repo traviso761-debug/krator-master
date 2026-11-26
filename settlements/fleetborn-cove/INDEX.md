@@ -27,10 +27,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `40-fcove-tide-rules.js` | 18 |  |
-| `42-fcove-layout.js` | 16 |  |
+| `42-fcove-layout.js` | 27 |  |
 | `44zz-fcove-site-patch.js` | 1 |  |
 | `46-fcove-stage-bind.js` | 3 |  |
-| `86-fcove-works-and-fleet.js` | 24 |  |
+| `60-fcove-sim.js` | 30 **big** |  |
+| `86-fcove-works-and-fleet.js` | 44 **big** |  |
 | `89x-fcove-arcoforte-water.js` | 2 |  |
-| `99-fcove-host-take.js` | 20 |  |
+| `99-fcove-host-take.js` | 26 |  |
 | `99-tail.html` | <1 |  |

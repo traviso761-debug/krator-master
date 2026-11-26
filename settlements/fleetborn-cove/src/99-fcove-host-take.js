@@ -1,9 +1,11 @@
-// ================================================================= HOST TAKE — Views, Interactive Tide & Drydock Panel, Cutaway, Checks & Export
+// ================================================================= HOST TAKE — Views, Interactive Tide/Fleet/Stocks Panel, Cutaway, Checks & Export
 // Hands Fleetborn Cove (`settlements/fleetborn-cove`) to `core/host` (`KHOST.take` + `KHOST.standard`):
-// - 7 preset views (`overview`, `arcoforte-prow`, `spring-graving-cradles`, `ark-ward-sanctuary`, `sill-tidal-rotors`,
-//   `white-stacks-causeway`, `bastion-fleetborn-hall`), all analytically held clear of KDRAWN.h and +7.2 m spring flood.
-// - Interactive Tide & Drydock Panel (`#fcove-tide-panel`): Live / Run / Hold, Spring, Neap, Great Ebb, Great Flood, Double Dark Moot,
-//   displaying live FCOVE_TIDE sea level, sill race & slack gate, cradle gates & careened Ark pose, rotor MW & smelt-hearth, mill head, and causeway.
+// - 11 preset views (`overview`, `arcoforte-prow`, `spring-graving-cradles`, `ark-ward-sanctuary`, `sill-tidal-rotors`,
+//   `white-stacks-causeway`, `bastion-fleetborn-hall`, `ash-burners-village`, `spar-chute-gjar-villages`, `outer-sill-saltery`,
+//   `double-dark-moot-fleets`), all analytically held clear of KDRAWN.h and +7.2 m spring flood.
+// - Interactive Tide, Drydock & Fleet Panel (`#fcove-tide-panel`) + `KHOST.simHolds(SIM)` Stocks (`O`) panel:
+//   Live / Run / Hold, Spring, Neap, Great Ebb, Great Flood, Double Dark Moot, syncing dynamic 5-fleet moorings,
+//   Moot Pop, Paktong Stock, and 5 Shore-kin client villages live.
 // - Full hostChecks & hostNegatives for verify.py --assert (harness.SURVEY).
 
 const VIEWS=(function buildFcoveViews(){
@@ -12,7 +14,7 @@ const VIEWS=(function buildFcoveViews(){
   const th=terrainH(cx,cz);
   const dh=(typeof KDRAWN!=='undefined'&&KDRAWN.h)?KDRAWN.h(cx,cz):null;
   const base=Math.max(th,dh==null?th:dh,8.2);
-  return Math.max(wantY,base+6.0);
+  return Math.max(wantY,base+6.5);
  }
  function cam(cx,cz,wantY,tx,ty,tz){
   return[+cx.toFixed(1),+safeEye(cx,cz,wantY).toFixed(1),+cz.toFixed(1),+tx.toFixed(1),+ty.toFixed(1),+tz.toFixed(1)];
@@ -48,6 +50,24 @@ const VIEWS=(function buildFcoveViews(){
  const pBsEye=AF.toWorld(-282,148,182);
  const pBsTgt=AF.toWorld(-208,104,136);
 
+ /* 8. ash-burners-village: Pycnandra-Clamps (village_ash) on the +148 m red-laterite plateau with Arcoforte rising behind */
+ const vAsh=LY.villages[0];
+ const pAshEye=X(vAsh.s+138,vAsh.a-105);
+ const pAshTgt=[vAsh.x,vAsh.benchY+6,vAsh.z];
+
+ /* 9. spar-chute-gjar-villages: across the southern cove onto Kauri-Chute (village_spars), 540 m 3D Timber Spar Log-Chute & Dyke-Roast */
+ const pChEye=X(735,LY.centerA(735)-158);
+ const pChTgt=X(745,LY.eastShoreA(745)+135);
+
+ /* 10. outer-sill-saltery: Sill-Pans (village_saltery) & coastal boat-grid slipway on the NW outer pillow-basalt headland */
+ const vSalt=LY.villages[4];
+ const pSlEye=X(vSalt.s-155,vSalt.a+92);
+ const pSlTgt=[vSalt.x,vSalt.benchY+4,vSalt.z];
+
+ /* 11. double-dark-moot-fleets: elevated sanctuary anchorage view over all 5 converged nomad fleets (34 moored hulls), Harbour Client Hall & Arcoforte */
+ const pMtEye=X(455,LY.centerA(455)-136);
+ const pMtTgt=X(-65,LY.centerA(-65)+8);
+
  return{
   'overview':cam(pOvEye[0],pOvEye[1],215,pOvTgt[0],pOvTgt[1],pOvTgt[2]),
   'arcoforte-prow':cam(pAfEye[0],pAfEye[1],56,pAfTgt[0],pAfTgt[1],pAfTgt[2]),
@@ -55,7 +75,11 @@ const VIEWS=(function buildFcoveViews(){
   'ark-ward-sanctuary':cam(pSnEye[0],pSnEye[1],34,pSnTgt[0],8,pSnTgt[1]),
   'sill-tidal-rotors':cam(pSrEye[0],pSrEye[1],28,pSrTgt[0],2,pSrTgt[1]),
   'white-stacks-causeway':cam(pCwEye[0],pCwEye[1],18,pCwTgt[0],-3,pCwTgt[1]),
-  'bastion-fleetborn-hall':cam(pBsEye[0],pBsEye[2],pBsEye[1],pBsTgt[0],pBsTgt[1],pBsTgt[2])
+  'bastion-fleetborn-hall':cam(pBsEye[0],pBsEye[2],pBsEye[1],pBsTgt[0],pBsTgt[1],pBsTgt[2]),
+  'ash-burners-village':cam(pAshEye[0],pAshEye[1],vAsh.benchY+44,pAshTgt[0],pAshTgt[1],pAshTgt[2]),
+  'spar-chute-gjar-villages':cam(pChEye[0],pChEye[1],132,pChTgt[0],66,pChTgt[1]),
+  'outer-sill-saltery':cam(pSlEye[0],pSlEye[1],48,pSlTgt[0],pSlTgt[1],pSlTgt[2]),
+  'double-dark-moot-fleets':cam(pMtEye[0],pMtEye[1],68,pMtTgt[0],14,pMtTgt[1])
  };
 })();
 
@@ -63,13 +87,20 @@ const FCOVE_CUTAWAY_VIEWS={
  'bastion-fleetborn-hall':['bastion_west',2]
 };
 
-/* ---------------- INTERACTIVE TIDE & DRYDOCK PANEL (#fcove-tide-panel) ---------------- */
+/* ---------------- INTERACTIVE TIDE, DRYDOCK & FLEET PANEL (#fcove-tide-panel) ---------------- */
 const FCOVE_PANEL=(function initFcovePanel(){
  let ui=null;
  const DAY=86400;
  function hm(sec){
   const h=((sec%DAY)+DAY)%DAY/3600,H=Math.floor(h),M=Math.floor((h-H)*60);
   return(H<10?'0':'')+H+':'+(M<10?'0':'')+M;
+ }
+
+ function simAtDay(dayIdx){
+  if(typeof FCOVE_WORLD!=='undefined'&&FCOVE_WORLD&&typeof FCOVE_WORLD.dayState==='function'){
+   return FCOVE_WORLD.dayState(dayIdx);
+  }
+  return null;
  }
 
  function status(){
@@ -81,9 +112,11 @@ const FCOVE_PANEL=(function initFcovePanel(){
    const snap=FCOVE_RULES.snapshot(t);
    snap.mode=T.mode;
    snap.level=+lv.toFixed(2);
+   snap.sim=simAtDay(snap.day);
    return snap;
   }
   /* Hold mode: evaluate instantaneous hydraulic rules directly at held sea level `lv` */
+  const curDay=clk?clk.day:44;
   const curMps=lv<-0.5?-3.8:lv>0.5?3.8:0;
   const slack=Math.abs(curMps)<=FCOVE_RULES.sill.slackMaxMps;
   const pMW=Math.min(FCOVE_RULES.rotors.pCapMW,FCOVE_RULES.rotors.kMW*Math.pow(Math.abs(curMps),3));
@@ -91,7 +124,7 @@ const FCOVE_PANEL=(function initFcovePanel(){
   const arkY=FCOVE_RULES.hullWaterlineY(lv,'cradle_deep');
   return{
    t:null,
-   day:clk?clk.day:0,
+   day:curDay,
    mode:'hold',
    level:+lv.toFixed(2),
    spring:null,
@@ -110,23 +143,28 @@ const FCOVE_PANEL=(function initFcovePanel(){
    rotors:{powerMW:+pMW.toFixed(2),dayMWh:+(pMW*12).toFixed(1),smeltActive:Math.abs(curMps)>3.0,hearthState:Math.abs(curMps)>3.0?'campaign':'banked'},
    mill:{dayHeadM:+Math.max(7.5,Math.abs(lv)*2).toFixed(1),heavyStampsActive:Math.abs(lv)>=5.4,ropeWalkActive:true,state:lv<2.8?'milling':'holding'},
    causeway:{exposed:cwyExp,byssusGatherable:cwyExp},
-   careenedHullY:+arkY.toFixed(2)
+   careenedHullY:+arkY.toFixed(2),
+   sim:simAtDay(curDay)
   };
  }
 
  function formatReadout(S){
   const sgn=S.level>=0?'+':'';
   const hdr=S.mode==='hold'
-   ?('Sea '+sgn+S.level.toFixed(2)+' m · HELD (manual slider)')
+   ?('Sea '+sgn+S.level.toFixed(2)+' m · HELD (manual slider) · Day '+(S.day+1))
    :('Sea '+sgn+S.level.toFixed(2)+' m · Day '+(S.day+1)+' '+hm(S.t)+' · Spring x'+S.spring.toFixed(2)+' (range '+S.dayRange.toFixed(1)+' m'+(S.mode==='run'?', RUN':'')+')');
   const sv=S.sill.v>=0?'+'+S.sill.v.toFixed(2):S.sill.v.toFixed(2);
   const lnSill='Sill Race: '+sv+' m/s ('+S.sill.state.toUpperCase()+') · Deep Gate: '+(S.sill.deepTransit?'OPEN (slack)':'WAIT SLACK');
-  const cd=S.cradles.cradle_deep,cg=S.cradles.cradle_great,cdd=S.cradleDays.cradle_deep,cgd=S.cradleDays.cradle_great;
+  const cd=S.cradles.cradle_deep,cdd=S.cradleDays.cradle_deep,cgd=S.cradleDays.cradle_great;
   const arkTag=cd.afloatInPit?('AFLOAT '+sgn+S.careenedHullY.toFixed(1)+'m'):'ON -3.0m BLOCKS';
   const lnCradles='Cradles: Deep(+5.6m) '+(cdd.open?'OPEN '+cdd.hours.toFixed(1)+'h':'SHUT (neap)')+' ['+arkTag+'] · Great(+6.6m) '+(cgd.open?'MOOT OPEN':'SHUT')+' · Shallow OPEN';
   const lnRot='Rotors: '+S.rotors.powerMW.toFixed(2)+' MW ('+S.rotors.dayMWh.toFixed(1)+' MWh/d) · Smelt Hearth: '+S.rotors.hearthState.toUpperCase();
   const lnMill='Tide Mill: head '+S.mill.dayHeadM.toFixed(1)+' m ('+(S.mill.heavyStampsActive?'Full Ore-Stamps':'Rope-Walk Only')+') · White Stacks(-6m): '+(S.causeway.exposed?'EXPOSED DRY':'SUBMERGED');
-  return[hdr,lnSill,lnCradles,lnRot,lnMill].join('\n');
+  const lines=[hdr,lnSill,lnCradles,lnRot,lnMill];
+  if(S.sim){
+   lines.push('Fleets in Cove: '+S.sim.fleetCount+'/5 ('+S.sim.totalHullsInCove+' hulls) · Moot Pop: '+S.sim.mootPop+' · Paktong Stock: '+S.sim.stocks.paktong+' ingots · Shore-kin Villages: '+S.sim.shorekinVillages+' ('+S.sim.shorekinPop+' clients)');
+  }
+  return lines.join('\n');
  }
 
  function paint(){
@@ -140,9 +178,34 @@ const FCOVE_PANEL=(function initFcovePanel(){
  }
 
  function setTide(arg,opt){
-  const res=COVE_TIDE.setTide(arg,opt);
+  const clk=(typeof KHOST!=='undefined'&&KHOST.host)?KHOST.host.clock:null;
+  let cmd=arg;
+  if(clk&&!(opt&&opt.keepDay)){
+   if(arg==='neap'){
+    /* Jump straight to true lunar neap day 67 (~7.5 m range, 1/5 visiting fleets, banked hearth, shut deep cradle) */
+    clk.day=67;
+    if(clk.set)clk.set(12.0);else clk.hour=12.0;
+    cmd='greatEbb';
+   }else if(arg==='spring'){
+    const mod=((clk.day%91)+91)%91;
+    const inMoot=(mod>=0&&mod<=2)||(mod>=43&&mod<=46)||(mod>=89&&mod<=90);
+    if(inMoot){
+     clk.day=24;
+     if(clk.set)clk.set(8.0);else clk.hour=8.0;
+    }
+   }else if(arg==='doubleDark'){
+    clk.day=89;
+    if(clk.set)clk.set(12.0);else clk.hour=12.0;
+   }
+  }
+  const res=COVE_TIDE.setTide(cmd,opt);
+  const S=status();
+  if(typeof FCOVE_SCENE!=='undefined'&&FCOVE_SCENE&&FCOVE_SCENE.syncFleetsForDay){
+   FCOVE_SCENE.syncFleetsForDay(S.day);
+   S.sim=simAtDay(S.day);
+  }
   paint();
-  return Object.assign({},res,{fcove:status()});
+  return Object.assign({},res,{fcove:S});
  }
 
  function mount(){
@@ -171,11 +234,11 @@ const FCOVE_PANEL=(function initFcovePanel(){
   const bLive=mk(r1,'button','Live','Follow world clock on KTIDE',()=>setTide('live'));
   const bRun=mk(r1,'button','Run','Cycle 1 tidal day in 48 s',()=>setTide('run'));
   const bHold=mk(r1,'button','Hold','Hold sea level at slider',()=>setTide(COVE_TIDE.T.level,{instant:true}));
-  mk(r1,'button','Spring','Jump to next lunar spring high flood',()=>setTide('spring'));
-  mk(r1,'button','Neap','Jump to next lunar neap low water',()=>setTide('neap'));
+  mk(r1,'button','Spring','Jump to mid-cycle lunar spring high flood',()=>setTide('spring'));
+  mk(r1,'button','Neap','Jump to lunar neap low water (day 68, 1/5 visiting fleets)',()=>setTide('neap'));
   mk(r1,'button','Great Ebb','Jump to today\'s lowest ebb',()=>setTide('greatEbb'));
   mk(r1,'button','Great Flood','Jump to today\'s highest flood',()=>setTide('greatFlood'));
-  mk(r1,'button','Double Dark Moot','Jump to 91-day Double Dark greatest springs',()=>setTide('doubleDark'));
+  mk(r1,'button','Double Dark Moot','Jump to 91-day Double Dark greatest springs (5/5 fleets)',()=>setTide('doubleDark'));
 
   const r2=document.createElement('div');
   r2.style.cssText='display:flex;align-items:center;gap:8px';
@@ -227,13 +290,17 @@ function describeHit(hit){
  const PLT=item&&typeof ARCHB!=='undefined'&&ARCHB.plantOfItem?ARCHB.plantOfItem(item):null;
  const title=PLT?(PLT.name+' · '+lab):(best?(best.name+' · '+lab):lab);
  const S=FCOVE_PANEL.status();
+ const flTxt=S.sim?(' · fleets '+S.sim.fleetCount+'/5'):'';
  return title+'\n'+(isBio?'flora · '+SITE.name:'settlement / terrain / water')+
-  '\ntide '+(S.level>=0?'+':'')+S.level.toFixed(2)+' m · sill '+S.sill.v.toFixed(2)+' m/s · hearth '+S.rotors.hearthState+
+  '\ntide '+(S.level>=0?'+':'')+S.level.toFixed(2)+' m · sill '+S.sill.v.toFixed(2)+' m/s · hearth '+S.rotors.hearthState+flTxt+
   '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';
 }
 
 /* ---------------- HOST CHECKS & NEGATIVES ---------------- */
-const TALL_TRUNKS=['biome:artrunk','biome:arpycntrunk','biome:arcastrunk','biome:arpalmtrunk','biome:arohiatrunk'];
+const TALL_TRUNKS=[
+ 'biome:artrunk','biome:arkauri_trunk','biome:arpycntrunk','biome:artreefern_trunk',
+ 'biome:arpaperbark_trunk','biome:arrata_trunk','biome:arcastrunk','biome:arpalmtrunk','biome:arohiatrunk'
+];
 
 function fcoveChecks(){
  const R=[];
@@ -257,7 +324,7 @@ function fcoveChecks(){
   detail:afBuilt?('state '+afBuilt.state+', tris '+Math.round(afBuilt.archTris)+', socket '+JSON.stringify(afBuilt.socketInfo)):'missing FCOVE_SCENE.arcoforte'
  });
 
- /* 3. Zero wild biome tall trunks inside Arcoforte 576 m reserve or shipyard */
+ /* 3. Zero wild biome tall trunks inside Arcoforte 576 m reserve, shipyard, log-chute or any of the 5 Shore-kin villages */
  const m4=new THREE.Matrix4(),pv=new THREE.Vector3(),qv=new THREE.Quaternion(),sv=new THREE.Vector3();
  let intrudingTrees=0,totalTrees=0;
  scene.traverse(M=>{
@@ -270,9 +337,9 @@ function fcoveChecks(){
  });
  const siteRecs=KTAGS.page.query({key:'site:fleetborn-arcoforte'});
  R.push({
-  name:'arcoforte-reserve-zero-trees',
+  name:'reserves-zero-tall-trees',
   ok:siteRecs.length>=1&&totalTrees>20&&intrudingTrees===0,
-  detail:'site recs '+siteRecs.length+', tall trunks '+totalTrees+', inside 576 m reserve '+intrudingTrees
+  detail:'site recs '+siteRecs.length+', tall trunks '+totalTrees+', inside Arcoforte/yard/chute/5-villages '+intrudingTrees
  });
 
  /* 4. Zero cliff rock clipping into Arcoforte park, ring, sub-cliff bench or Linear City */
@@ -302,19 +369,64 @@ function fcoveChecks(){
   detail:rBad.length?rBad.map(x=>x.name+': '+x.detail).join('; '):rr.map(x=>x.name+': '+x.detail).join(' | ')
  });
 
- /* 6. KTAGS vocabulary, salvaged port segments, cradles, rotors, tide-mill, causeway & moored fleet */
+ /* 6. P4: All 5 Shore-kin client hinterland villages + Harbour Client Hall + 3D Timber Spar Log-Chute */
+ const W=FCOVE_SCENE.world;
+ const vData=W?W.villagesData:null;
+ const skErrs=(typeof SKK!=='undefined'&&SKK&&SKK.errors)?SKK.errors:[];
+ const minVilY=vData?Math.min.apply(null,vData.villages.map(v=>v.minY)):0;
+ const clientHallRecs=KTAGS.page.query({key:'shore-kin:sk_client_hall'});
+ const chuteRecs=KTAGS.page.query({key:'fcove:spar_log_chute'});
+ const p4Ok=!!(
+  vData&&vData.errors.length===0&&vData.villages.length===5&&
+  vData.totalShorekinPop>=950&&vData.totalShorekinPop<=1350&&
+  minVilY>=8.5&&skErrs.length===0&&
+  FCOVE_SCENE.villagePlacedCount>=180&&FCOVE_SCENE.villageMeshes>0&&FCOVE_SCENE.villageMeshes<=42&&
+  clientHallRecs.length>=1&&chuteRecs.length===1&&
+  FCOVE_SCENE.sparChute.bents>=28&&FCOVE_SCENE.sparChute.logs>=12
+ );
+ R.push({
+  name:'shorekin-villages-and-chute',
+  ok:p4Ok,
+  detail:vData
+   ?('villages='+vData.villages.length+' (pop '+vData.totalShorekinPop+', minY '+minVilY.toFixed(1)+' m, placed '+FCOVE_SCENE.villagePlacedCount+' in '+FCOVE_SCENE.villageMeshes+' batches, skErrs '+skErrs.length+'), chute bents='+FCOVE_SCENE.sparChute.bents+' logs='+FCOVE_SCENE.sparChute.logs)
+   :'missing villagesData'
+ });
+
+ /* 7. P4+P5: 92-day coupled SIM + FCOVE_TIDE + KHAMLET + KCAMP.fleetWorld audit */
+ const simAud=W?W.audit():null;
+ R.push({
+  name:'fcove-sim-92d-solvency',
+  ok:!!(simAud&&simAud.ok&&simAud.paktongSmeltedBanked===0&&simAud.paktongSmeltedSpring>=80&&simAud.neapDeepCareens===0&&simAud.deepWardCareens===0),
+  detail:simAud
+   ?('ok='+simAud.ok+', ledgerOk='+simAud.ledgerOk+', springPaktong='+simAud.paktongSmeltedSpring+', bankedPaktong='+simAud.paktongSmeltedBanked+', neapDeepCareens='+simAud.neapDeepCareens+', deepWardCareens='+simAud.deepWardCareens)
+   :'missing FCOVE_WORLD.audit()'
+ });
+
+ /* 8. P5: Dynamic Nomad Fleet convergence (5/5 at Double Dark & Double Full vs < 5 on mid-cycle neap) */
+ const dMoot=W?W.dayState(90):null;
+ const dFull=W?W.dayState(44):null;
+ const dNeap=W?W.dayState(67):null;
+ R.push({
+  name:'nomad-fleets-dynamic',
+  ok:!!(dMoot&&dFull&&dNeap&&dMoot.fleetCount===5&&dFull.fleetCount===5&&dMoot.mootPop===2480&&dNeap.fleetCount>=1&&dNeap.fleetCount<5),
+  detail:dMoot&&dNeap
+   ?('d90 DoubleDark fleets='+dMoot.fleetCount+'/5 (pop '+dMoot.mootPop+', hulls '+dMoot.totalHullsInCove+'), d44 DoubleFull='+dFull.fleetCount+'/5, d67 Neap='+dNeap.fleetCount+'/5 (hulls '+dNeap.totalHullsInCove+')')
+   :'missing dayState'
+ });
+
+ /* 9. KTAGS vocabulary, salvaged port segments, cradles, rotors, tide-mill, causeway & 34 moored fleet berths */
  const TA=KTAGS.page.audit();
  const settRecs=KTAGS.page.query({}).filter(r=>r['class']!=='flora'&&r['class']!=='life');
  let settUnknown=0;
  for(let i=0;i<settRecs.length;i++)settUnknown+=KTAGS.norm(settRecs[i].tags).problems.length;
- const worksOk=FCOVE_SCENE.portGroups.length===3&&FCOVE_SCENE.careened.length===2&&FCOVE_SCENE.rotorHubs.length===4&&FCOVE_SCENE.moored.length===14&&!!FCOVE_SCENE.millWheel;
+ const worksOk=FCOVE_SCENE.portGroups.length===3&&FCOVE_SCENE.careened.length===2&&FCOVE_SCENE.rotorHubs.length===4&&FCOVE_SCENE.moored.length===34&&!!FCOVE_SCENE.millWheel;
  R.push({
   name:'tags-and-works-complete',
-  ok:settRecs.length>=7500&&settUnknown===0&&TA.missingCulture===0&&TA.missingTypes===0&&worksOk,
-  detail:settRecs.length+' settlement/arcology records (unknown '+settUnknown+', missCul '+TA.missingCulture+', missTypes '+TA.missingTypes+'); portSegs='+FCOVE_SCENE.portGroups.length+', careened='+FCOVE_SCENE.careened.length+', rotors='+FCOVE_SCENE.rotorHubs.length+', moored='+FCOVE_SCENE.moored.length
+  ok:settRecs.length>=7700&&settUnknown===0&&TA.missingCulture===0&&TA.missingTypes===0&&worksOk,
+  detail:settRecs.length+' settlement/arcology/village records (unknown '+settUnknown+', missCul '+TA.missingCulture+', missTypes '+TA.missingTypes+'); portSegs='+FCOVE_SCENE.portGroups.length+', careened='+FCOVE_SCENE.careened.length+', rotors='+FCOVE_SCENE.rotorHubs.length+', moored='+FCOVE_SCENE.moored.length
  });
 
- /* 7. Careened 89c Ark-Catamaran rests on -3.0 m blocks (+2.6 m waterline) at low tide and floats at spring flood */
+ /* 10. Careened 89c Ark-Catamaran rests on -3.0 m blocks (+2.6 m waterline) at low tide and floats at spring flood */
  const yLow=FCOVE_RULES.hullWaterlineY(-6.8,'cradle_deep');
  const yHigh=FCOVE_RULES.hullWaterlineY(6.9,'cradle_deep');
  R.push({
@@ -323,7 +435,7 @@ function fcoveChecks(){
   detail:'careened 89c waterline '+yLow.toFixed(2)+' m at -6.8 m ebb (-3.0 m keel blocks) -> '+yHigh.toFixed(2)+' m at +6.9 m spring flood'
  });
 
- /* 8. Preset cameras clear of KDRAWN.h and +7.2 m spring flood */
+ /* 11. Preset cameras clear of KDRAWN.h and +7.2 m spring flood */
  const badCams=[];
  Object.keys(VIEWS).forEach(vk=>{
   const v=VIEWS[vk],cx=v[0],cy=v[1],cz=v[2];
@@ -333,11 +445,11 @@ function fcoveChecks(){
  });
  R.push({
   name:'preset-cameras-clear',
-  ok:Object.keys(VIEWS).length>=7&&badCams.length===0,
+  ok:Object.keys(VIEWS).length>=11&&badCams.length===0,
   detail:Object.keys(VIEWS).length+' preset views, clipped/submerged '+badCams.length+(badCams.length?': '+badCams.join(', '):'')
  });
 
- /* 9. Cove landform, 5 Type II travertine curtains (0 rock clips) & water shader programs */
+ /* 12. Cove landform, 5 Type II travertine curtains (0 rock clips) & water shader programs */
  const wp=WATER.checkPrograms?WATER.checkPrograms(renderer,scene):[];
  const ca=COVE_TIDE.T.curtainAudit;
  R.push({
@@ -358,6 +470,9 @@ function fcoveNegatives(){
  const d44=FCOVE_RULES.daySummary(44);
  add('race-blocks-sill-transit',FCOVE_RULES.sillAt(d44.greatFloodT-3*3600,'ark_catamaran').deepTransit===false,'peak flood blocks sill transit');
  add('neap-submerges-causeway',FCOVE_RULES.causewayDay(67).exposed===false,'day 67 causeway submerged');
+ const W=FCOVE_SCENE.world;
+ add('banked-neap-zero-paktong',!!(W&&W.dailyLog[67]&&W.dailyLog[67].paktongSmelted===0),'neap day 67 smelts 0 paktong');
+ add('deep-ward-zero-deep-careen',!!(typeof KCAMP!=='undefined'&&KCAMP.PORTS&&KCAMP.PORTS.deep_ward.tideRange_m<2.2&&W&&W.audit().deepWardCareens===0),'Deep-Ward 1.9 m diurnal tide performs 0 deep careenings');
  return R;
 }
 
@@ -381,6 +496,11 @@ window._build={
  cradles:FCOVE_LAYOUT.cradles.length,
  portSegments:FCOVE_SCENE.portGroups.length,
  sillRotors:FCOVE_SCENE.rotorHubs.length,
+ shorekinVillages:FCOVE_SCENE.world?FCOVE_SCENE.world.villagesData.villages.length:0,
+ shorekinPop:FCOVE_SCENE.world?FCOVE_SCENE.world.villagesData.totalShorekinPop:0,
+ shorekinBuildings:FCOVE_SCENE.villagePlacedCount,
+ sparChuteLengthM:FCOVE_SCENE.sparChute.lengthM,
+ visitingFleets:5,
  mooredVessels:FCOVE_SCENE.moored.length,
  careenedVessels:FCOVE_SCENE.careened.length
 };
@@ -390,7 +510,7 @@ const afInt=FCOVE_SCENE.arcoforte&&FCOVE_SCENE.arcoforte.intHost?FCOVE_SCENE.arc
 KHOST.take(KHOST.standard({
  build:'fleetborn-cove',
  title:'Fleetborn Cove — Arcoforte Sanctuary & Macrotidal Drydock',
- hint:'Soleri\'s Arcoforte seated in marginal caretaker state on the +76..+84 m eastern ophiolite cliff-prow of Fleetborn Cove (px 236, 242; 7.5–14.3 m KTIDE lunar tide): zero-pump spring graving cradles (-3 m blocks), salvaged Ancient submarine pens (kits/port d=3), reversible |v|^3 paktong sill rotors, impounding tide-mill, -6 m White Stacks sea-byssus causeway, and moored cFlīt-qBōn & Hueru-Kuran fleets (89c–89h). Press X for cutaway ([ / ]), E for doors, F to walk.',
+ hint:'Soleri\'s Arcoforte seated in marginal caretaker state on the +76..+84 m eastern ophiolite cliff-prow of Fleetborn Cove (px 236, 242; 7.5–14.3 m KTIDE lunar tide): zero-pump spring graving cradles (-3 m blocks), salvaged Ancient submarine pens (kits/port d=3), reversible |v|^3 paktong sill rotors, impounding tide-mill, -6 m White Stacks sea-byssus causeway, 5 Shore-kin client villages (kits/shore-kin) + 540 m spar log-chute, and 5 dynamic cFlīt-qBōn & Hueru-Kuran nomad fleets (Deep-Ward <-> Arcoforte). Press O for Stocks, X for cutaway ([ / ]), E for doors, F to walk.',
  scene:scene,
  camera:camera,
  renderer:renderer,
@@ -419,6 +539,7 @@ KHOST.take(KHOST.standard({
  std:{
   door:typeof KDOORHOST!=='undefined'?()=>KDOORHOST.toggleNear(camera.position,!!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk)):undefined
  },
+ holds:(typeof KHOST.simHolds==='function'&&typeof SIM!=='undefined')?KHOST.simHolds(SIM):undefined,
  cutaway:afInt?{
   units:afInt.cutawayUnits,
   cutAt:2.3,
@@ -430,19 +551,21 @@ KHOST.take(KHOST.standard({
  records:()=>KTAGS.page.query({}),
  stats:()=>{
   const S=FCOVE_PANEL.status();
+  const fl=S.sim?(S.sim.fleetCount+'/5 fleets ('+S.sim.totalHullsInCove+' hulls)'):((FCOVE_SCENE.moored.length+FCOVE_SCENE.careened.length)+' hulls');
   return'tide '+(S.level>=0?'+':'')+S.level.toFixed(1)+' m · sill '+S.sill.v.toFixed(1)+' m/s\n'+
-   'hearth '+S.rotors.hearthState+' · fleet '+(FCOVE_SCENE.moored.length+FCOVE_SCENE.careened.length)+' hulls';
+   'hearth '+S.rotors.hearthState+' · '+fl;
  },
  minimap:{title:'Fleetborn Cove'},
  exporters:{
   biome:()=>BIO.export(),
   tags:()=>KTAGS.page.export(),
-  water:()=>WATER.export()
+  water:()=>WATER.export(),
+  sim:()=>SIM.export()
  },
  types:()=>BIO.stats,
  budget:{
-  showcase:{tris:10000000,calls:460},
-  cls:{life:5000000,host:4500000},
+  showcase:{tris:13500000,calls:480},
+  cls:{life:5500000,host:8000000},
   type:{'arch/life':'life','arch/combs':'life','host':'host'}
  },
  api:{

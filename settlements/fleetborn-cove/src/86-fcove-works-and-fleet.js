@@ -1,12 +1,14 @@
-// ================================================================= HOST — Arcoforte seating, salvaged port, graving cradles, rotors, causeway & fleet
+// ================================================================= HOST — Arcoforte, port, cradles, rotors, Shore-kin villages, log-chute & dynamic fleets
 // Runs at 86 (after 84-host-ground.js builds GROUND & KDRAWN.grid, before 88-host-place.js places flora and 89v builds cove water):
-// 1. Registers all settlement sites, structures, cradles, port segments, rotors, mill, causeway, and 16 vessels in KTAGS.page BEFORE drawing.
+// 1. Instantiates FCOVE_WORLD (FCOVE_SIM.create + 92-day run) and pre-registers all settlement sites, 5 Shore-kin villages,
+//    219 SKK buildings, spar log-chute, harbour works, cradles, port segments, rotors, mill, causeway, and 36 vessels in KTAGS.page BEFORE drawing.
 // 2. Seats Arcoforte (FCOVE_ARCOFORTE) on the +76..+84 m eastern cliff-prow, watching its ruined zones on KRUINS.
 // 3. Seats salvaged Ancient port segments (slPen, ddShed, ddYard at d = 3) along the sheltered +6 m shipyard quay.
-// 4. Builds the three stepped graving cradles (with careened 89c Ark-Catamaran on -3 m blocks & 89f Trimaran on -1 m blocks),
-//    the Paktong Reverberatory Smelt-Hearth, the Impounding Basin & Tide-Mill, the 4-rotor Sill-Race Turbine Array, and the
-//    -6.0 m White Stacks Sea-Byssus Causeway.
-// 5. Moors 14 Fleet-born & Hueru-Kuran vessels (89c..89h) in the -45..-59 m inner sanctuary cove riding KTIDE water height live.
+// 4. Builds the three stepped graving cradles, Paktong Reverberatory Smelt-Hearth, Impounding Basin & Tide-Mill,
+//    4-rotor Sill-Race Turbine Array, -6.0 m White Stacks Causeway, and the 540 m 3D Timber Spar Log-Chute.
+// 5. Seats all 5 Shore-kin client hinterland villages + Harbour Client Work-Bench (SKK.proto merged by material into ~28 draw calls).
+// 6. Moors the 4 Caretaker guard-hulls + 5 dynamic visiting Sea-Nomad fleets (30 berths across ward_ring, smelt_fleet,
+//    trench_fleet, outer_whalers, island_traders) synced live to KCAMP.fleetsAt(W, 'arcoforte', day).
 const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
  const LY=FCOVE_LAYOUT,AF=LY.arcoforte,TG=KTAGS.page;
  if(typeof KTAGS!=='undefined'&&KTAGS.VOCAB&&KTAGS.VOCAB.cultureAlias){
@@ -16,11 +18,25 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   if(!V.cultureAlias.shorekin)V.cultureAlias.shorekin={culture:'islander',style:'shorekin'};
   if(!V.cultureAlias['shore-kin'])V.cultureAlias['shore-kin']={culture:'islander',style:'shorekin'};
  }
+
  const out={
   arcoforte:null,
+  world:null,
+  villagesGroup:null,
+  villageMeshes:0,
+  villagePlacedCount:0,
+  sparChute:{bents:0,logs:0,lengthM:LY.sparChute.lengthM},
   portGroups:[],
   careened:[],
   moored:[],
+  caretakerGroup:null,
+  fleetGroups:{},
+  activeFleetIds:[],
+  activeFleetCount:0,
+  activeMooredCount:0,
+  mootPop:0,
+  syncedDay:-1,
+  syncFleetsForDay:null,
   rotorHubs:[],
   millWheel:null,
   hearthGlowMat:null,
@@ -28,7 +44,23 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   tagIds:[]
  };
 
- /* ---------------- 1. PRE-REGISTER EVERYTHING IN KTAGS.PAGE BEFORE DRAWING ---------------- */
+ /* ---------------- 1. INSTANTIATE FCOVE_SIM & PRE-REGISTER EVERYTHING IN KTAGS.PAGE BEFORE DRAWING ---------------- */
+ const FCOVE_WORLD=FCOVE_SIM.create({
+  layout:LY,
+  khamlet:KHAMLET,
+  kcamp:KCAMP,
+  sim:SIM,
+  tideRules:FCOVE_RULES,
+  terrainH:terrainH,
+  waterH:waterH,
+  skDims:(typeof SKK!=='undefined'&&SKK&&SKK.dims)?SKK.dims():null,
+  tags:TG
+ });
+ FCOVE_WORLD.runDays(0,92);
+ out.world=FCOVE_WORLD;
+ window.FCOVE_WORLD=FCOVE_WORLD;
+ for(let i=0;i<FCOVE_WORLD.tagIds.length;i++)out.tagIds.push(FCOVE_WORLD.tagIds[i]);
+
  /* Update or add site:fleetborn-arcoforte with full 576 m horseshoe polygon */
  {
   const existing=TG.query({key:'site:fleetborn-arcoforte'});
@@ -145,11 +177,11 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   out.tagIds.push(rec.id);
  }
 
- /* Register careened + moored Fleet-born & Hueru-Kuran vessels */
+ /* Pre-register careened hulls, 4 Caretaker House guard-hulls, and all 30 visiting Nomad Fleet berths */
  LY.cradles.forEach(c=>{
   if(!c.vesselKey)return;
   const p=LY.XZ(c.s,c.a0+c.len*0.48);
-  const dim=(typeof FCOVE_RINGSEA!=='undefined'&&FCOVE_RINGSEA.dims[c.vesselKey])||{L:36,B:14,H:20};
+  const dim=(typeof FCOVE_RINGSEA!=='undefined'&&FCOVE_RINGSEA.dims[c.vesselKey])?FCOVE_RINGSEA.dims[c.vesselKey]:{L:36,B:14,H:20,name:c.vesselKey};
   const rec=TG.add({
    id:'fcove.careened.'+c.id,
    'class':'prop',
@@ -163,8 +195,37 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   out.tagIds.push(rec.id);
  });
 
- LY.fleet.forEach(v=>{
-  const dim=(typeof FCOVE_RINGSEA!=='undefined'&&FCOVE_RINGSEA.dims[v.rsKey])||{L:28,B:12,H:16};
+ const caretakerSpecs=FCOVE_SIM.CARETAKER_HULLS.map((ch,ci)=>{
+  const ca=LY.centerA(ch.s)+ch.da,p=LY.XZ(ch.s,ca);
+  const yaw=Math.atan2(-LY.axis[1]*ch.bowS,LY.axis[0]*ch.bowS)+(ci-1.5)*0.04;
+  const dim=(typeof FCOVE_RINGSEA!=='undefined'&&FCOVE_RINGSEA.dims[ch.rsKey])?FCOVE_RINGSEA.dims[ch.rsKey]:{L:28,B:12,H:16,name:ch.rsKey};
+  const rec=TG.add({
+   id:ch.id,
+   'class':'prop',
+   kind:'vessel',
+   key:'ringsea:'+ch.rsKey,
+   name:ch.name,
+   at:[+p[0].toFixed(2),0,+p[1].toFixed(2)],
+   size:[dim.B,dim.L,dim.H],
+   tags:{culture:'cflit-qbon',types:['dwelling-multi','infrastructure']}
+  });
+  out.tagIds.push(rec.id);
+  return{
+   id:ch.id,
+   fleetId:'caretaker_house',
+   rsKey:ch.rsKey,
+   ruleKey:ch.ruleKey,
+   name:ch.name,
+   culture:ch.culture,
+   x:+p[0].toFixed(2),
+   z:+p[1].toFixed(2),
+   yaw:+yaw.toFixed(4),
+   r:ch.r
+  };
+ });
+
+ LY.fleetSlots.forEach(v=>{
+  const dim=(typeof FCOVE_RINGSEA!=='undefined'&&FCOVE_RINGSEA.dims[v.rsKey])?FCOVE_RINGSEA.dims[v.rsKey]:{L:28,B:12,H:16,name:v.rsKey};
   const cul=v.culture==='hueru-kuran'?'hueru-kuran':'cflit-qbon';
   const rec=TG.add({
    id:v.id,
@@ -205,11 +266,14 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   });
  }
 
- /* ---------------- 4. DRAW CRADLES, SMELT-HEARTH, TIDE-MILL, ROTORS & CAUSEWAY ---------------- */
+ /* ---------------- 4. DRAW CRADLES, HEARTH, TIDE-MILL, ROTORS, CAUSEWAY, LOG-CHUTE & VILLAGE PLINTHS ---------------- */
  const M_CONC=new THREE.MeshStandardMaterial({color:0x8a8377,roughness:0.9,metalness:0.03});
  const M_STONE=new THREE.MeshStandardMaterial({color:0x4b524c,roughness:0.92,metalness:0.02});
+ const M_SERP=new THREE.MeshStandardMaterial({color:0x3f5448,roughness:0.88,metalness:0.03});
+ const M_LATERITE=new THREE.MeshStandardMaterial({color:0x8c4732,roughness:0.90,metalness:0.02});
  const M_TUFA=new THREE.MeshStandardMaterial({color:0xd8d2c4,roughness:0.82,metalness:0.02});
  const M_TIMB=new THREE.MeshStandardMaterial({color:0x5e3824,roughness:0.84,metalness:0.02});
+ const M_SPAR=new THREE.MeshStandardMaterial({color:0xb5884e,roughness:0.74,metalness:0.02});
  const M_PAK=new THREE.MeshStandardMaterial({color:0xd8d4c8,roughness:0.28,metalness:0.84});
  const M_BRZ=new THREE.MeshStandardMaterial({color:0x9e7638,roughness:0.38,metalness:0.72});
  const M_JADE=new THREE.MeshStandardMaterial({color:0x237a52,roughness:0.26,metalness:0.08,emissive:0x0c3422,emissiveIntensity:0.45});
@@ -217,7 +281,7 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
  const M_HEARTH=new THREE.MeshStandardMaterial({color:0xff7824,emissive:0xe85814,emissiveIntensity:1.4,roughness:0.6});
  out.hearthGlowMat=M_HEARTH;
 
- /* Merged geometry accumulator for static cove works (1 mesh per material -> 8 draw calls total!) */
+ /* Merged geometry accumulator for static cove works, spar chute & village plinths */
  const BK=new Map();
  const worksProbe=[];
  function addGeo(mat,geo){
@@ -252,17 +316,29 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
 
  const shoreYaw=Math.atan2(LY.across[0],LY.across[1]);
 
- /* 4A. Quay apron wall & Three Stepped Macrotidal Graving Cradles */
+ /* 4A. Quay apron wall, Harbour Client Work-Bench retaining terrace (+9.2 m) & Three Stepped Graving Cradles */
  {
   for(let s=6;s<=102;s+=12){
    const qA=LY.quayA(s),p=LY.XZ(s,qA+52);
    putBox(M_CONC,p[0],LY.yardDeckY-0.35,p[1],12.4,0.7,104,shoreYaw);
   }
+  /* Retaining wall & stone steps for the +9.2 m Shore-kin Harbour Client Work-Bench */
+  for(let s=26;s<=154;s+=16){
+   const qA=LY.quayA(s),pW=LY.XZ(s,qA+88),pDeck=LY.XZ(s,qA+116);
+   putBox(M_SERP,pW[0],(LY.yardDeckY+LY.harbourBenchY)*0.5-0.4,pW[1],16.4,LY.harbourBenchY-LY.yardDeckY+1.2,2.6,shoreYaw);
+   putBox(M_CONC,pDeck[0],LY.harbourBenchY-0.25,pDeck[1],16.4,0.6,54,shoreYaw);
+  }
+  {
+   const qSt=LY.quayA(96);
+   for(let st=0;st<8;st++){
+    const f=(st+0.5)/8,ps=LY.XZ(96,qSt+84+st*0.85);
+    putBox(M_TUFA,ps[0],LY.yardDeckY+f*(LY.harbourBenchY-LY.yardDeckY)*0.5,ps[1],6.4,f*(LY.harbourBenchY-LY.yardDeckY),1.1,shoreYaw);
+   }
+  }
+
   LY.cradles.forEach((c,ci)=>{
    const midA=c.a0+c.len*0.5,pMid=LY.XZ(c.s,midA);
-   /* Pit floor slab */
    putBox(M_CONC,pMid[0],c.pitFloor-0.4,pMid[1],c.w+4,0.8,c.len+4,shoreYaw);
-   /* 4 stepped cyclopean altar walls on NNW & SSE sides + head wall */
    const nSteps=4,totH=c.deckY-c.pitFloor;
    for(let st=0;st<nSteps;st++){
     const f=(st+1)/nSteps,yTop=c.pitFloor+totH*f,hSt=yTop-(c.pitFloor-0.5);
@@ -274,7 +350,6 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
     const pHead=LY.XZ(c.s,c.a0+c.len+1.2+st*0.8);
     putBox(M_CONC,pHead[0],(c.pitFloor-0.5)+hSt*0.5,pHead[1],c.w+3,hSt,2.6,shoreYaw);
    }
-   /* Jammed-open Ancient caisson sill lip & wedged paktong/steel gate leaves at c.a0 */
    const pSill=LY.XZ(c.s,c.a0+1.1);
    const sillH=Math.max(0.8,c.sill-(c.pitFloor-0.6));
    putBox(M_CONC,pSill[0],(c.pitFloor-0.6)+sillH*0.5,pSill[1],c.w,sillH,2.4,shoreYaw);
@@ -284,7 +359,6 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
     const pBoll=LY.XZ(c.s+side*(c.w*0.5+2.2),c.a0+2.0);
     putCyl(M_PAK,pBoll[0],c.deckY+0.55,pBoll[1],0.38,0.46,1.1,10,0,0);
    }
-   /* Red-cypress & granite keel blocks along twin catamaran / central keel lines */
    const keelOffsets=c.id==='cradle_shallow'?[0]:[-4.7,4.7];
    const blockH=Math.max(0.35,c.blocks-c.pitFloor);
    for(let dA=6;dA<=c.len-6;dA+=3.4){
@@ -293,7 +367,6 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
      putBox(M_CONC,pk[0],c.pitFloor+blockH*0.35,pk[1],1.8,blockH*0.7,1.3,shoreYaw);
      putBox(M_TIMB,pk[0],c.pitFloor+blockH*0.85,pk[1],1.9,blockH*0.3,1.4,shoreYaw);
     }
-    /* Angled timber breast-shores bracing from the lower altar steps */
     if(dA>10&&dA<c.len-10&&Math.round(dA)%6===0){
      for(const side of[-1,1]){
       const pAlt=LY.XZ(c.s+side*(c.w*0.5-1.5),c.a0+dA);
@@ -302,7 +375,6 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
      }
     }
    }
-   /* Heavy cypress & paktong sheerlegs A-frame crane straddling the Deep Cradle head */
    if(ci===0){
     const pL=LY.XZ(c.s-c.w*0.55,c.a0+c.len-4),pR=LY.XZ(c.s+c.w*0.55,c.a0+c.len-4),pBack=LY.XZ(c.s,c.a0+c.len+14);
     const pTop=LY.XZ(c.s,c.a0+c.len-9);
@@ -320,7 +392,6 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
     }
    }
 
-   /* Place careened Ringsea vessel inside cradle (rests on blocks at low tide, floats with KTIDE above floatLevel!) */
    if(c.vesselKey&&typeof FCOVE_RINGSEA!=='undefined'){
     const made=FCOVE_RINGSEA.make(c.vesselKey);
     if(made&&made.group){
@@ -342,7 +413,7 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   });
  }
 
- /* 4B. Paktong Reverberatory Smelt-Hearth Cupola (inshore of cradle_great) */
+ /* 4B. Paktong Reverberatory Smelt-Hearth Cupola */
  {
   const sh=LY.smeltHearth;
   putCyl(M_STONE,sh.x,sh.y+2.2,sh.z,9.6,10.8,4.4,16,0,0);
@@ -353,10 +424,8 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
    putCyl(M_CONC,pf[0],sh.y+15.6,pf[1],0.95,1.35,7.6,12,0,0);
    putCyl(M_PAK,pf[0],sh.y+19.6,pf[1],1.15,0.95,0.6,12,0,0);
   }
-  /* Glowing reverberatory hearth arch facing the cradles */
   const pMouth=LY.XZ(sh.s,sh.a-9.4);
   putBox(M_HEARTH,pMouth[0],sh.y+2.4,pMouth[1],3.4,2.8,1.2,shoreYaw);
-  /* Nickel-ash bales & stacked paktong ingots */
   for(let i=0;i<4;i++){
    const pi=LY.XZ(sh.s-8+i*5.2,sh.a-13.5);
    putBox(M_PAK,pi[0],sh.y+0.6,pi[1],2.4,1.2,1.4,shoreYaw);
@@ -367,25 +436,21 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
  /* 4C. Impounding Basin Weir Wall, Flap-Gates, 9.6 m Paktong Tide-Wheel, Stamping Mill & Rope-Walk */
  {
   const tm=LY.tideMill;
-  /* Battered basalt & concrete impounding weir across the basin mouth */
   putBox(M_STONE,tm.x,(tm.weirTop-8)*0.5,tm.z,tm.w,tm.weirTop+8,4.2,shoreYaw);
   for(const side of[-1,1]){
    const pSide=LY.XZ(tm.s+side*(tm.w*0.5),tm.aWeir+tm.basinLen*0.5);
    putBox(M_STONE,pSide[0],(tm.weirTop-6)*0.5,pSide[1],3.6,tm.weirTop+6,tm.basinLen,shoreYaw);
   }
-  /* Three bronze flood flap-gates set in the weir wall */
   for(const ds of[-16,0,16]){
    const pg=LY.XZ(tm.s+ds,tm.aWeir-2.2);
    putBox(M_BRZ,pg[0],2.6,pg[1],3.6,3.8,0.45,shoreYaw);
   }
-  /* Wheelhouse & Stamping Mill astride the sluice race + 64 m covered Rope-Walk */
   const pHouse=LY.XZ(tm.s-12,tm.aWeir+4);
   putBox(M_CONC,pHouse[0],tm.weirTop+3.4,pHouse[1],14,6.8,12,shoreYaw);
   putBox(M_TIMB,pHouse[0],tm.weirTop+7.6,pHouse[1],15.2,1.8,13.2,shoreYaw);
   const pWalk=LY.XZ(tm.s+22,tm.aWeir+26);
   putBox(M_TIMB,pWalk[0],LY.yardDeckY+2.2,pWalk[1],7.5,4.4,54,shoreYaw);
 
-  /* Animated 9.6 m Paktong Tide-Wheel */
   const wheelGrp=new THREE.Group();
   const pWh=LY.XZ(tm.s-12,tm.aWeir-3.2);
   wheelGrp.position.set(pWh[0],1.6,pWh[1]);
@@ -407,7 +472,6 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   scene.add(wheelGrp);
   out.millWheel=wheelGrp;
 
-  /* Impounded basin water surface (tracks impounded high-water head on the ebb!) */
   const bGeo=new THREE.PlaneGeometry(tm.w-6,tm.basinLen-4);
   bGeo.rotateX(-Math.PI/2);
   const bMat=new THREE.MeshStandardMaterial({color:0x1e606e,roughness:0.14,metalness:0.08,transparent:true,opacity:0.86});
@@ -421,21 +485,18 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   REGISTER({name:tm.name,x:tm.x,y:-2,z:tm.z,r:34,h:18});
  }
 
- /* 4D. NNW Sill-Throat Reversible Paktong Rotor Array (4 submerged axial turbines + piers & beacons) */
+ /* 4D. NNW Sill-Throat Reversible Paktong Rotor Array */
  {
   const sr=LY.sillRotors;
   const sillYaw=Math.atan2(LY.axis[0],LY.axis[1]);
   sr.units.forEach((u,ui)=>{
-   /* Cyclopean concrete sill pier & ice/driftwood fender nose */
    putBox(M_CONC,u.x,(u.pierTopY+u.bedY)*0.5,u.z,6.4,u.pierTopY-u.bedY,11.5,sillYaw);
    putCyl(M_PAK,u.x,0.5*(u.hubY+u.pierTopY+2.4),u.z,0.34,0.34,u.pierTopY+2.4-u.hubY,10,0,0);
    putCyl(M_BRZ,u.x,u.pierTopY+2.6,u.z,1.35,1.55,1.4,12,0,0);
-   /* Fairway leading-beacon on the inner two piers */
    if(ui===1||ui===2){
     putCyl(M_CONC,u.x,u.pierTopY+5.2,u.z,0.7,1.0,4.2,10,0,0);
     putCyl(M_JADE,u.x,u.pierTopY+8.0,u.z,0.85,0.85,1.5,10,0,0);
    }
-   /* Submerged reversible 5-bladed paktong rotor hub spinning about the cove channel axis */
    const hub=new THREE.Group();
    hub.position.set(u.x,u.hubY,u.z);
    hub.rotation.y=sillYaw;
@@ -461,7 +522,6 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
    scene.add(hub);
    out.rotorHubs.push({unit:u,group:hub,spinner:spinner});
   });
-  /* Overhead maintenance catwalk linking same-side rotor piers */
   putBeam(M_PAK,[sr.units[0].x,sr.units[0].pierTopY+0.8,sr.units[0].z],[sr.units[1].x,sr.units[1].pierTopY+0.8,sr.units[1].z],0.35);
   putBeam(M_PAK,[sr.units[2].x,sr.units[2].pierTopY+0.8,sr.units[2].z],[sr.units[3].x,sr.units[3].pierTopY+0.8,sr.units[3].z],0.35);
   REGISTER({name:sr.name,x:sr.x,y:-11,z:sr.z,r:96,h:24});
@@ -481,7 +541,6 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
     }
    }
   }
-  /* Terminal White Stack cluster & Tide-Mark Shrine Post at the seaward end of the causeway */
   for(let k=0;k<4;k++){
    const pSt=LY.XZ(cw.s+(k-1.5)*4.2,cw.aEnd+3.5+(k%2)*2.8);
    const hSt=5.8+k*1.3;
@@ -495,10 +554,189 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   REGISTER({name:cw.name,x:cw.x,y:cw.crestY-2,z:cw.z,r:52,h:16});
  }
 
- /* Flush merged cove works into one BufferGeometry per material */
+ /* 4F. 540 m 3D Timber Spar Log-Chute from Kauri-Chute (village_spars) down to the Southern Cove Boatyard */
+ {
+  const sc=LY.sparChute;
+  const hx=sc.headXZ[0],hz=sc.headXZ[1],fx=sc.footXZ[0],fz=sc.footXZ[1];
+  const dx=fx-hx,dz=fz-hz,L=Math.hypot(dx,dz);
+  const ux=dx/L,uz=dz/L,nx=-uz,nz=ux;
+  const chuteYaw=Math.atan2(ux,uz);
+  const nB=sc.nBents;
+  const hStart=terrainH(hx,hz)+2.4;
+  const hEnd=Math.max(terrainH(fx,fz),LY.yardDeckY)+2.2;
+  const nodes=[];
+  for(let i=0;i<=nB;i++){
+   const t=i/nB,px=hx+dx*t,pz=hz+dz*t;
+   const gh=terrainH(px,pz);
+   const yIdeal=lerp(hStart,hEnd,Math.pow(t,0.92));
+   const cy=Math.max(gh+2.2,yIdeal);
+   nodes.push({t:t,x:px,z:pz,gh:gh,y:cy});
+  }
+  /* Smooth one pass upward so trough never kinks over an intermediate rock rib */
+  for(let pass=0;pass<3;pass++){
+   for(let i=1;i<nB;i++){
+    const avg=0.5*(nodes[i-1].y+nodes[i+1].y);
+    nodes[i].y=Math.max(nodes[i].gh+2.1,Math.max(nodes[i].y,avg));
+   }
+  }
+  /* Bents: battered mangrove/Araucaria trestle legs anchored 1.5 m into rock + cross-caps + sway X-braces */
+  for(let i=0;i<=nB;i++){
+   const nd=nodes[i],legH=nd.y-nd.gh;
+   const spreadTop=1.75,spreadBot=1.75+Math.min(5.5,legH*0.20);
+   const yFoot=nd.gh-1.5;
+   const pLT=[nd.x-nx*spreadTop,nd.y-0.35,nd.z-nz*spreadTop];
+   const pRT=[nd.x+nx*spreadTop,nd.y-0.35,nd.z+nz*spreadTop];
+   const pLB=[nd.x-nx*spreadBot,yFoot,nd.z-nz*spreadBot];
+   const pRB=[nd.x+nx*spreadBot,yFoot,nd.z+nz*spreadBot];
+   putBeam(M_TIMB,pLB,pLT,0.28);
+   putBeam(M_TIMB,pRB,pRT,0.28);
+   putBeam(M_TIMB,[nd.x-nx*(spreadTop+0.45),nd.y-0.32,nd.z-nz*(spreadTop+0.45)],[nd.x+nx*(spreadTop+0.45),nd.y-0.32,nd.z+nz*(spreadTop+0.45)],0.24);
+   putBox(M_SERP,pLB[0],nd.gh-0.25,pLB[2],1.4,1.3,1.4,chuteYaw);
+   putBox(M_SERP,pRB[0],nd.gh-0.25,pRB[2],1.4,1.3,1.4,chuteYaw);
+   if(legH>4.5){
+    const yMid=0.5*(nd.gh+nd.y-0.35);
+    const spM=0.5*(spreadTop+spreadBot);
+    putBeam(M_TIMB,[nd.x-nx*spM,yMid,nd.z-nz*spM],[nd.x+nx*spM,nd.y-0.45,nd.z+nz*spM],0.14);
+    putBeam(M_TIMB,[nd.x+nx*spM,yMid,nd.z+nz*spM],[nd.x-nx*spM,nd.y-0.45,nd.z-nz*spM],0.14);
+   }
+   if(i%2===0){
+    putBox(M_PAK,nd.x,nd.y+0.12,nd.z,3.6,0.34,0.42,chuteYaw);
+   }
+   worksProbe.push(nd.x,nd.y,nd.z);
+  }
+  /* Continuous V-trough flume cheeks, bottom keel runner, catwalk & peeled Araucaria spar logs sliding down */
+  let logCount=0;
+  for(let i=0;i<nB;i++){
+   const A=nodes[i],B=nodes[i+1];
+   putBeam(M_TIMB,[A.x,A.y-0.18,A.z],[B.x,B.y-0.18,B.z],0.26);
+   for(const side of[-1,1]){
+    putBeam(M_TIMB,[A.x+nx*side*1.28,A.y+0.42,A.z+nz*side*1.28],[B.x+nx*side*1.28,B.y+0.42,B.z+nz*side*1.28],0.24);
+    putBeam(M_TIMB,[A.x+nx*side*0.72,A.y+0.02,A.z+nz*side*0.72],[B.x+nx*side*0.72,B.y+0.02,B.z+nz*side*0.72],0.22);
+   }
+   /* Side inspection boardwalk */
+   putBeam(M_TIMB,[A.x+nx*2.05,A.y-0.12,A.z+nz*2.05],[B.x+nx*2.05,B.y-0.12,B.z+nz*2.05],0.22);
+   if(i%2===0){
+    const la=lerp(A.x,B.x,0.12),lza=lerp(A.z,B.z,0.12),lya=lerp(A.y,B.y,0.12)+0.42;
+    const lb=lerp(A.x,B.x,0.86),lzb=lerp(A.z,B.z,0.86),lyb=lerp(A.y,B.y,0.86)+0.42;
+    putBeam(M_SPAR,[la,lya,lza],[lb,lyb,lzb],0.34);
+    logCount++;
+   }
+  }
+  /* Head rollway deck & loading sheerlegs at Kauri-Chute + boatyard catch-crib & spar rack at foot */
+  {
+   const H0=nodes[0],F0=nodes[nB];
+   putBox(M_SERP,H0.x-ux*6,H0.gh+0.7,H0.z-uz*6,11.5,2.6,10.5,chuteYaw);
+   putBeam(M_TIMB,[H0.x-nx*4.2,H0.gh,H0.z-nz*4.2],[H0.x,H0.y+7.2,H0.z],0.28);
+   putBeam(M_TIMB,[H0.x+nx*4.2,H0.gh,H0.z+nz*4.2],[H0.x,H0.y+7.2,H0.z],0.28);
+   for(let k=0;k<4;k++){
+    const sx0=H0.x-ux*(4.5+k*0.95)-nx*3.8,sz0=H0.z-uz*(4.5+k*0.95)-nz*3.8;
+    const sx1=H0.x-ux*(4.5+k*0.95)+nx*3.8,sz1=H0.z-uz*(4.5+k*0.95)+nz*3.8;
+    putBeam(M_SPAR,[sx0,H0.gh+2.35,sz0],[sx1,H0.gh+2.35,sz1],0.32);
+   }
+   putBox(M_SERP,F0.x+ux*5.5,F0.gh+0.9,F0.z+uz*5.5,12.5,3.2,13.5,chuteYaw);
+   for(let k=0;k<5;k++){
+    const bx0=F0.x+ux*(2.2+k*1.35)-nx*4.6,bz0=F0.z+uz*(2.2+k*1.35)-nz*4.6;
+    const bx1=F0.x+ux*(2.2+k*1.35)+nx*4.6,bz1=F0.z+uz*(2.2+k*1.35)+nz*4.6;
+    putBeam(M_SPAR,[bx0,F0.gh+2.85,bz0],[bx1,F0.gh+2.85,bz1],0.34);
+   }
+  }
+  out.sparChute={bents:nB+1,logs:logCount,lengthM:sc.lengthM};
+  REGISTER({name:sc.name,x:sc.x,y:(hStart+hEnd)*0.5,z:sc.z,r:Math.max(48,sc.lengthM*0.48),h:hStart-hEnd+18});
+ }
+
+ /* ---------------- 5. SEAT ALL 5 SHORE-KIN CLIENT HINTERLAND VILLAGES + HARBOUR CLIENT WORK-BENCH ---------------- */
+ const skPlacements=[];
+ {
+  const plinthMatOf=pm=>pm==='laterite'?M_LATERITE:pm==='serpentinite'?M_SERP:M_STONE;
+  function queueSkBuilding(rec,plinthMat,labelPrefix){
+   const hw=rec.w*0.48,hd=rec.d*0.48;
+   const c=Math.cos(rec.ry),s=Math.sin(rec.ry);
+   let yTop=-1e9,yLow=1e9;
+   const pts=[[0,0],[-hw,-hd],[hw,-hd],[-hw,hd],[hw,hd]];
+   for(let i=0;i<pts.length;i++){
+    const lx=pts[i][0],lz=pts[i][1];
+    const wx=rec.x+lx*c+lz*s,wz=rec.z-lx*s+lz*c;
+    const gh=terrainH(wx,wz);
+    if(gh>yTop)yTop=gh;
+    if(gh<yLow)yLow=gh;
+   }
+   yTop=Math.max(yTop,8.5);
+   const pBot=yLow-1.4,pTop=yTop+0.02,pH=Math.max(1.2,pTop-pBot);
+   putBox(plinthMat,rec.x,pBot+pH*0.5,rec.z,rec.w+1.4,pH,rec.d+1.4,rec.ry);
+   /* Stepped stone threshold on front (+z in SKK local frame -> (+sin(ry), +cos(ry)) in world) */
+   const fx=rec.x+s*(hd+0.95),fz=rec.z+c*(hd+0.95);
+   putBox(M_TUFA,fx,yTop-0.35,fz,Math.min(4.2,rec.w*0.38),0.9,1.8,rec.ry);
+   skPlacements.push({
+    key:rec.key,
+    v:0,
+    x:rec.x,
+    y:yTop,
+    z:rec.z,
+    ry:rec.ry,
+    w:rec.w,
+    d:rec.d,
+    h:rec.h,
+    label:labelPrefix
+   });
+   const rFoot=Math.hypot(rec.w,rec.d)*0.54;
+   OBSTACLES.push({x:rec.x,z:rec.z,r:rFoot+2.5});
+   REGISTER({name:labelPrefix,x:rec.x,y:yTop,z:rec.z,r:Math.max(6,rFoot),h:rec.h+2.5});
+   if(typeof KWALK!=='undefined'){
+    const half=Math.max(rec.w,rec.d)*0.44;
+    KWALK.block([rec.x-half,rec.x+half,rec.z-half,rec.z+half,yTop,yTop+rec.h],rec.id);
+   }
+  }
+
+  /* 5A. Harbour Shore-kin Client Hall, Foundry & Boat-Grid Shed on the +9.2 m Work-Bench */
+  FCOVE_WORLD.villagesData.harbourBuildings.forEach(hb=>{
+   queueSkBuilding(hb,M_SERP,hb.name+' ('+hb.key+')');
+  });
+
+  /* 5B. All 5 Hinterland Client Villages */
+  FCOVE_WORLD.villagesData.villages.forEach(vd=>{
+   const vs=vd.spec,vl=vd.village,pMat=plinthMatOf(vs.plinthMat);
+   /* Village central shell-lime / stone green court pad */
+   const gy=terrainH(vl.site.x,vl.site.z);
+   putCyl(M_TUFA,vl.site.x,gy-0.25,vl.site.z,13.5,14.8,0.75,16,0,0);
+   putCyl(pMat,vl.site.x,gy+0.18,vl.site.z,2.4,2.8,0.45,12,0,0);
+   /* Stepped stone lane markers along KHAMLET lanes */
+   const lanes=vl.lanes||[];
+   for(let li=0;li<lanes.length;li++){
+    const pts=lanes[li].points||[];
+    for(let pi=0;pi<pts.length-1;pi++){
+     const A=pts[pi],B=pts[pi+1],segL=Math.hypot(B.x-A.x,B.z-A.z);
+     const nSt=Math.max(1,Math.round(segL/9));
+     const lyaw=Math.atan2(B.x-A.x,B.z-A.z);
+     for(let k=0;k<nSt;k++){
+      const u=(k+0.5)/nSt,lx=lerp(A.x,B.x,u),lz=lerp(A.z,B.z,u);
+      const lh=terrainH(lx,lz);
+      putBox(pMat,lx,lh-0.12,lz,lanes[li].w*0.78,0.42,Math.min(8.5,segL/nSt*0.88),lyaw);
+     }
+    }
+   }
+   /* Coastal basalt slipway ramp for Sill-Pans (village_saltery) */
+   if(vs.landing){
+    const ld=vs.landing,lyaw=Math.atan2(ld.ux,ld.uz);
+    for(let k=-2;k<=6;k++){
+     const dS=k*4.2,px=ld.x+ld.ux*dS,pz=ld.z+ld.uz*dS;
+     const py=Math.max(-3.5,terrainH(px,pz));
+     putBox(M_STONE,px,py-0.45,pz,9.5,1.2,4.4,lyaw);
+    }
+   }
+   REGISTER({name:vs.name,x:vl.site.x,y:gy,z:vl.site.z,r:vs.rFlat*0.75,h:18});
+   const recs=vl.records||[];
+   for(let r=0;r<recs.length;r++){
+    const b=recs[r];
+    if(!b)continue;
+    queueSkBuilding(b,pMat,vs.epithet+' — '+b.key+' ('+vs.focus+' client village)');
+   }
+  });
+ }
+
+ /* Flush merged cove works, spar chute & village plinths into one BufferGeometry per material */
  {
   const worksGrp=new THREE.Group();
-  worksGrp.name='fcove:tidal-works';
+  worksGrp.name='fcove:tidal-works-and-chute';
   worksGrp.userData.probePoints=worksProbe;
   BK.forEach((geos,mat)=>{
    let nv=0,ni=0;
@@ -532,42 +770,352 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
    const m=new THREE.Mesh(mg,mat);
    m.castShadow=true;
    m.receiveShadow=true;
-   m.userData.inspectLabel='Fleetborn Cove Tidal Drydock, Rotors and Causeway';
+   m.userData.inspectLabel='Fleetborn Cove Tidal Drydock, Spar Log-Chute and Village Plinths';
    worksGrp.add(m);
   });
   scene.add(worksGrp);
   if(typeof KDRAWN!=='undefined')KDRAWN.add(KDRAWN.fromObject(worksGrp));
  }
 
- /* ---------------- 5. MOOR THE PELAGIC SANCTUARY FLEET (89c..89h) IN THE -45..-59 M COVE ---------------- */
+ /* Merge all ~219 Shore-kin SKK.proto buildings into world-space batches by material (~28 draw calls total!) */
+ if(typeof SKK!=='undefined'&&SKK&&typeof SKK.proto==='function'&&skPlacements.length){
+  const protoCache={};
+  function getProtoParts(key,v){
+   const ck=key+'|'+(v|0);
+   if(protoCache[ck])return protoCache[ck];
+   const grp=SKK.proto(key,v|0);
+   const parts=[];
+   if(grp){
+    grp.updateMatrixWorld(true);
+    grp.traverse(m=>{
+     if(!m.isMesh||!m.geometry||!m.geometry.attributes||!m.geometry.attributes.position)return;
+     parts.push({
+      geo:m.geometry,
+      mat:m.material,
+      mk:(m.userData&&m.userData.mk)?m.userData.mk:'',
+      ro:m.renderOrder==null?0:m.renderOrder
+     });
+    });
+   }
+   protoCache[ck]=parts;
+   return parts;
+  }
+
+  const buckets=new Map();
+  const skProbe=[];
+  const m4=new THREE.Matrix4(),n3=new THREE.Matrix3(),v3=new THREE.Vector3(),eu=new THREE.Euler();
+
+  for(let pi=0;pi<skPlacements.length;pi++){
+   const pl=skPlacements[pi];
+   const parts=getProtoParts(pl.key,pl.v);
+   if(!parts.length)continue;
+   out.villagePlacedCount++;
+   skProbe.push(pl.x,pl.y+1.5,pl.z);
+   eu.set(0,pl.ry,0,'YXZ');
+   m4.compose(new THREE.Vector3(pl.x,pl.y,pl.z),new THREE.Quaternion().setFromEuler(eu),new THREE.Vector3(1,1,1));
+   n3.getNormalMatrix(m4);
+
+   for(let mi=0;mi<parts.length;mi++){
+    const pt=parts[mi],g=pt.geo,at=g.attributes;
+    const hasFlut=!!at.aFlut,hasCut=!!at.aCut,hasFlk=!!at.aFlk,hasForm=!!at.aForm;
+    const bKey=pt.mat.uuid+'|'+(hasFlut?1:0)+(hasCut?1:0)+(hasFlk?1:0)+(hasForm?1:0)+'|'+pt.ro;
+    let B=buckets.get(bKey);
+    if(!B){
+     B={mat:pt.mat,mk:pt.mk,ro:pt.ro,hasFlut:hasFlut,hasCut:hasCut,hasFlk:hasFlk,hasForm:hasForm,items:[],nv:0,ni:0};
+     buckets.set(bKey,B);
+    }
+    const vc=at.position.count;
+    const ic=g.index?g.index.count:vc;
+    B.items.push({geo:g,m4:m4.clone(),n3:n3.clone(),cx:pl.x,cy:pl.y,cz:pl.z});
+    B.nv+=vc;
+    B.ni+=ic;
+   }
+  }
+
+  const skGrp=new THREE.Group();
+  skGrp.name='fcove:shorekin-villages';
+  skGrp.userData.probePoints=skProbe;
+
+  buckets.forEach(B=>{
+   const P=new Float32Array(B.nv*3);
+   const N=new Float32Array(B.nv*3);
+   const U=new Float32Array(B.nv*2);
+   const C=new Float32Array(B.nv*3);
+   const FL=B.hasFlut?new Float32Array(B.nv*3):null;
+   const CT=B.hasCut?new Float32Array(B.nv*4):null;
+   const FK=B.hasFlk?new Float32Array(B.nv):null;
+   const FM=B.hasForm?new Float32Array(B.nv*3):null;
+   const I=B.nv>65535?new Uint32Array(B.ni):new Uint16Array(B.ni);
+
+   let vo=0,io=0;
+   for(let ii=0;ii<B.items.length;ii++){
+    const it=B.items[ii],g=it.geo,at=g.attributes,vc=at.position.count;
+    const pa=at.position.array,na=at.normal?at.normal.array:null,ua=at.uv?at.uv.array:null,ca=at.color?at.color.array:null;
+    const fa=FL&&at.aFlut?at.aFlut.array:null;
+    const ka=CT&&at.aCut?at.aCut.array:null;
+    const wa=FK&&at.aFlk?at.aFlk.array:null;
+    const xa=FM&&at.aForm?at.aForm.array:null;
+
+    for(let v=0;v<vc;v++){
+     const o3=(vo+v)*3,s3=v*3;
+     v3.set(pa[s3],pa[s3+1],pa[s3+2]).applyMatrix4(it.m4);
+     P[o3]=v3.x;P[o3+1]=v3.y;P[o3+2]=v3.z;
+     if(na){
+      v3.set(na[s3],na[s3+1],na[s3+2]).applyMatrix3(it.n3).normalize();
+      N[o3]=v3.x;N[o3+1]=v3.y;N[o3+2]=v3.z;
+     }else{
+      N[o3]=0;N[o3+1]=1;N[o3+2]=0;
+     }
+     if(ua){
+      U[(vo+v)*2]=ua[v*2];U[(vo+v)*2+1]=ua[v*2+1];
+     }
+     if(ca){
+      C[o3]=ca[s3];C[o3+1]=ca[s3+1];C[o3+2]=ca[s3+2];
+     }else{
+      C[o3]=1;C[o3+1]=1;C[o3+2]=1;
+     }
+     if(FL){
+      if(fa){
+       v3.set(fa[s3],fa[s3+1],fa[s3+2]).applyMatrix3(it.n3);
+       FL[o3]=v3.x;FL[o3+1]=v3.y;FL[o3+2]=v3.z;
+      }
+     }
+     if(CT){
+      const o4=(vo+v)*4;
+      CT[o4]=it.cx;CT[o4+1]=it.cz;CT[o4+2]=it.cy;CT[o4+3]=ka?0:0;
+     }
+     if(FK&&wa)FK[vo+v]=wa[v];
+     if(FM&&xa){
+      FM[o3]=xa[s3];FM[o3+1]=xa[s3+1];FM[o3+2]=xa[s3+2];
+     }
+    }
+
+    if(g.index){
+     const ix=g.index.array;
+     for(let k=0;k<ix.length;k++)I[io+k]=ix[k]+vo;
+     io+=ix.length;
+    }else{
+     for(let k=0;k<vc;k++)I[io+k]=vo+k;
+     io+=vc;
+    }
+    vo+=vc;
+   }
+
+   const mg=new THREE.BufferGeometry();
+   mg.setAttribute('position',new THREE.BufferAttribute(P,3));
+   mg.setAttribute('normal',new THREE.BufferAttribute(N,3));
+   mg.setAttribute('uv',new THREE.BufferAttribute(U,2));
+   mg.setAttribute('color',new THREE.BufferAttribute(C,3));
+   if(FL)mg.setAttribute('aFlut',new THREE.BufferAttribute(FL,3));
+   if(CT)mg.setAttribute('aCut',new THREE.BufferAttribute(CT,4));
+   if(FK)mg.setAttribute('aFlk',new THREE.BufferAttribute(FK,1));
+   if(FM)mg.setAttribute('aForm',new THREE.BufferAttribute(FM,3));
+   mg.setIndex(new THREE.BufferAttribute(I,1));
+   mg.computeBoundingSphere();
+   mg.computeBoundingBox();
+
+   let matUse=B.mat;
+   if(matUse&&matUse.side===THREE.FrontSide&&!matUse.transparent){
+    let totA=0,downA=0;
+    const nt=Math.floor(I.length/3);
+    for(let ti=0;ti<nt;ti++){
+     const a0=I[ti*3]*3,b0=I[ti*3+1]*3,c0=I[ti*3+2]*3;
+     const ex=P[b0]-P[a0],ey=P[b0+1]-P[a0+1],ez=P[b0+2]-P[a0+2];
+     const fx=P[c0]-P[a0],fy=P[c0+1]-P[a0+1],fz=P[c0+2]-P[a0+2];
+     const cx=ey*fz-ez*fy,cy=ez*fx-ex*fz,cz=ex*fy-ey*fx;
+     const len=Math.hypot(cx,cy,cz);
+     if(len>0){
+      totA+=len;
+      if(cy/len<-0.3)downA+=len;
+     }
+    }
+    if(totA>0&&downA/totA>0.48){
+     matUse=B.mat.clone();
+     matUse.side=THREE.DoubleSide;
+     if(B.mat.onBeforeCompile)matUse.onBeforeCompile=B.mat.onBeforeCompile;
+     if(B.mat.customProgramCacheKey)matUse.customProgramCacheKey=B.mat.customProgramCacheKey;
+     matUse.userData=Object.assign({},B.mat.userData);
+    }
+   }
+
+   const mesh=new THREE.Mesh(mg,matUse);
+   mesh.name='fcove:sk-'+(B.mk||'mesh');
+   mesh.userData.mk=B.mk;
+   mesh.userData.inspectLabel='Shore-Kin Client Villages and Harbour Works (kits/shore-kin)';
+   const isTrans=!!(B.ro>=2||B.mk==='glass'||B.mk==='water'||B.mk==='glow'||(matUse&&matUse.transparent));
+   if(B.ro)mesh.renderOrder=B.ro;
+   if(!isTrans){
+    mesh.castShadow=true;
+    mesh.receiveShadow=true;
+   }
+   skGrp.add(mesh);
+   out.villageMeshes++;
+  });
+
+  scene.add(skGrp);
+  out.villagesGroup=skGrp;
+  if(typeof KDRAWN!=='undefined')KDRAWN.add(KDRAWN.fromObject(skGrp));
+ }
+
+ /* ---------------- 6. MOOR CARETAKER GUARD-HULLS + 5 DYNAMIC PELAGIC SANCTUARY FLEETS (89c..89h, merged per fleet) ---------------- */
+ const fleetAnimList=[];
  if(typeof FCOVE_RINGSEA!=='undefined'){
   const buoyGeo=new THREE.TorusGeometry(0.95,0.28,8,16);
   buoyGeo.rotateX(Math.PI/2);
-  LY.fleet.forEach((v,vi)=>{
-   const made=FCOVE_RINGSEA.make(v.rsKey);
-   if(!made||!made.group)return;
-   const g=made.group;
-   g.position.set(v.x,0,v.z);
-   g.rotation.y=v.yaw;
-   g.userData.inspectLabel=v.name+' ('+v.rsKey+', riding KTIDE)';
-   scene.add(g);
-   const buoy=new THREE.Mesh(buoyGeo,M_JADE);
-   const bx=v.x+Math.cos(v.yaw)*(v.r*0.72),bz=v.z-Math.sin(v.yaw)*(v.r*0.72);
-   buoy.position.set(bx,0.12,bz);
-   buoy.userData.probeSkip=true;
-   buoy.userData.inspectLabel='Nephrite-and-Paktong Trench Mooring Ring';
-   scene.add(buoy);
-   REGISTER({name:v.name,x:v.x,y:-4,z:v.z,r:v.r,h:22});
-   out.moored.push({spec:v,group:g,buoy:buoy,phase:vi*0.83});
+  const rsProtoCache={};
+  function getRsParts(rsKey){
+   if(rsProtoCache[rsKey])return rsProtoCache[rsKey];
+   const made=FCOVE_RINGSEA.make(rsKey);
+   const parts=[];
+   if(made&&made.group){
+    made.group.updateMatrixWorld(true);
+    made.group.traverse(m=>{
+     if(!m.isMesh||!m.geometry||!m.geometry.attributes||!m.geometry.attributes.position)return;
+     parts.push({geo:m.geometry,mat:m.material});
+    });
+   }
+   rsProtoCache[rsKey]=parts;
+   return parts;
+  }
+
+  function buildMergedFleetGroup(fleetId,specs,phaseSeed){
+   const fg=new THREE.Group();
+   fg.name='fcove:fleet-'+fleetId;
+   const fb=new Map();
+   const buoyGeos=[];
+   const fleetProbe=[];
+   const fm4=new THREE.Matrix4(),fn3=new THREE.Matrix3(),fv3=new THREE.Vector3(),feu=new THREE.Euler();
+
+   for(let si=0;si<specs.length;si++){
+    const v=specs[si];
+    const parts=getRsParts(v.rsKey);
+    if(!parts.length)continue;
+    feu.set(0,v.yaw,0,'YXZ');
+    fm4.compose(new THREE.Vector3(v.x,0,v.z),new THREE.Quaternion().setFromEuler(feu),new THREE.Vector3(1,1,1));
+    fn3.getNormalMatrix(fm4);
+    for(let pi=0;pi<parts.length;pi++){
+     const pt=parts[pi],g=pt.geo,at=g.attributes;
+     const hasAux=!!(at.rsAux&&at.rsAux2);
+     const bk=pt.mat.uuid+'|'+(hasAux?1:0);
+     let B=fb.get(bk);
+     if(!B){B={mat:pt.mat,hasAux:hasAux,items:[],nv:0};fb.set(bk,B);}
+     B.items.push({geo:g,m4:fm4.clone(),n3:fn3.clone()});
+     B.nv+=at.position.count;
+    }
+    const bx=v.x+Math.cos(v.yaw)*(v.r*0.72),bz=v.z-Math.sin(v.yaw)*(v.r*0.72);
+    const bg=buoyGeo.clone();
+    bg.translate(bx,0.12,bz);
+    buoyGeos.push(bg);
+    fleetProbe.push(v.x,2.0,v.z);
+    REGISTER({name:v.name,x:v.x,y:-8,z:v.z,r:v.r,h:28});
+    out.moored.push({spec:v,fleetId:fleetId,group:fg,parent:fg,phase:phaseSeed+si*0.41});
+   }
+   fg.userData.probePoints=fleetProbe;
+
+   fb.forEach(B=>{
+    const P=new Float32Array(B.nv*3),N=new Float32Array(B.nv*3),U=new Float32Array(B.nv*2),C=new Float32Array(B.nv*3);
+    const X1=B.hasAux?new Float32Array(B.nv*4):null,X2=B.hasAux?new Float32Array(B.nv*4):null;
+    let vo=0;
+    for(let ii=0;ii<B.items.length;ii++){
+     const it=B.items[ii],g=it.geo,at=g.attributes,vc=at.position.count;
+     const pa=at.position.array,na=at.normal.array,ua=at.uv.array,ca=at.color.array;
+     const a1=X1?at.rsAux.array:null,a2=X2?at.rsAux2.array:null;
+     for(let k=0;k<vc;k++){
+      const o3=(vo+k)*3,s3=k*3;
+      fv3.set(pa[s3],pa[s3+1],pa[s3+2]).applyMatrix4(it.m4);
+      P[o3]=fv3.x;P[o3+1]=fv3.y;P[o3+2]=fv3.z;
+      fv3.set(na[s3],na[s3+1],na[s3+2]).applyMatrix3(it.n3).normalize();
+      N[o3]=fv3.x;N[o3+1]=fv3.y;N[o3+2]=fv3.z;
+      U[(vo+k)*2]=ua[k*2];U[(vo+k)*2+1]=ua[k*2+1];
+      C[o3]=ca[s3];C[o3+1]=ca[s3+1];C[o3+2]=ca[s3+2];
+      if(X1){
+       const o4=(vo+k)*4,s4=k*4;
+       fv3.set(a1[s4],a1[s4+1],a1[s4+2]).applyMatrix4(it.m4);
+       X1[o4]=fv3.x;X1[o4+1]=fv3.y;X1[o4+2]=fv3.z;X1[o4+3]=a1[s4+3];
+       X2[o4]=a2[s4];X2[o4+1]=a2[s4+1];X2[o4+2]=a2[s4+2];X2[o4+3]=a2[s4+3];
+      }
+     }
+     vo+=vc;
+    }
+    const mg=new THREE.BufferGeometry();
+    mg.setAttribute('position',new THREE.BufferAttribute(P,3));
+    mg.setAttribute('normal',new THREE.BufferAttribute(N,3));
+    mg.setAttribute('uv',new THREE.BufferAttribute(U,2));
+    mg.setAttribute('color',new THREE.BufferAttribute(C,3));
+    if(X1){
+     mg.setAttribute('rsAux',new THREE.BufferAttribute(X1,4));
+     mg.setAttribute('rsAux2',new THREE.BufferAttribute(X2,4));
+    }
+    mg.computeBoundingSphere();
+    const mesh=new THREE.Mesh(mg,B.mat);
+    mesh.userData.inspectLabel='Moored Sea-Nomad Sanctuary Fleet ('+fleetId+', riding KTIDE)';
+    fg.add(mesh);
+   });
+
+   if(buoyGeos.length){
+    let bnv=0,bni=0;
+    for(let i=0;i<buoyGeos.length;i++){
+     bnv+=buoyGeos[i].attributes.position.count;
+     bni+=buoyGeos[i].index.count;
+    }
+    const BP=new Float32Array(bnv*3),BN=new Float32Array(bnv*3),BI=new Uint16Array(bni);
+    let bvo=0,bio=0;
+    for(let i=0;i<buoyGeos.length;i++){
+     const bg=buoyGeos[i],vc=bg.attributes.position.count,ix=bg.index.array;
+     BP.set(bg.attributes.position.array,bvo*3);
+     BN.set(bg.attributes.normal.array,bvo*3);
+     for(let k=0;k<ix.length;k++)BI[bio+k]=ix[k]+bvo;
+     bvo+=vc;bio+=ix.length;
+     bg.dispose();
+    }
+    const bmg=new THREE.BufferGeometry();
+    bmg.setAttribute('position',new THREE.BufferAttribute(BP,3));
+    bmg.setAttribute('normal',new THREE.BufferAttribute(BN,3));
+    bmg.setIndex(new THREE.BufferAttribute(BI,1));
+    bmg.computeBoundingSphere();
+    const bMesh=new THREE.Mesh(bmg,M_JADE);
+    bMesh.userData.probeSkip=true;
+    bMesh.userData.inspectLabel='Nephrite-and-Paktong Trench Mooring Rings ('+fleetId+')';
+    fg.add(bMesh);
+   }
+
+   scene.add(fg);
+   fleetAnimList.push({id:fleetId,group:fg,phase:phaseSeed});
+   return fg;
+  }
+
+  out.caretakerGroup=buildMergedFleetGroup('caretaker_house',caretakerSpecs,0.0);
+
+  ['ward_ring','smelt_fleet','trench_fleet','outer_whalers','island_traders'].forEach((fid,fi)=>{
+   const fSpecs=LY.fleetSlots.filter(s=>s.fleetId===fid);
+   out.fleetGroups[fid]=buildMergedFleetGroup(fid,fSpecs,(fi+1)*1.17);
   });
  }
 
- /* ---------------- 6. LIVE FRAME TICK: TIDE-LOCKED VESSELS, CAREENED ARK, ROTORS, HEARTH & MILL ---------------- */
+ out.syncFleetsForDay=function syncFleetsForDay(dayIdx){
+  const st=FCOVE_WORLD.dayState(dayIdx==null?44:dayIdx);
+  Object.keys(out.fleetGroups).forEach(fid=>{
+   out.fleetGroups[fid].visible=st.fleetIds.indexOf(fid)>=0;
+  });
+  out.activeFleetIds=st.fleetIds.slice();
+  out.activeFleetCount=st.fleetCount;
+  out.activeMooredCount=st.visitingHulls+st.caretakerHulls;
+  out.mootPop=st.mootPop;
+  out.syncedDay=st.day;
+  return st;
+ };
+ out.syncFleetsForDay(44);
+
+ /* ---------------- 7. LIVE FRAME TICK: TIDE-LOCKED FLEETS, CAREENED ARK, ROTORS, HEARTH, MILL & SKK FLUTTER ---------------- */
  let wallClock=0;
  tick(function stepFcoveTideWorks(dt){
   const d=clamp(dt==null?0.016:dt,0,0.1);
   wallClock+=d;
   if(typeof FCOVE_RINGSEA!=='undefined'&&FCOVE_RINGSEA.tick)FCOVE_RINGSEA.tick(wallClock);
+  if(typeof SKK!=='undefined'&&SKK&&SKK.ANIMU){
+   SKK.ANIMU.uTime.value=wallClock;
+   if(SKK.ANIMU.uCam&&typeof camera!=='undefined')SKK.ANIMU.uCam.value.copy(camera.position);
+  }
 
   const T=(typeof COVE_TIDE!=='undefined'&&COVE_TIDE.T)?COVE_TIDE.T:null;
   const lv=T?T.level:0;
@@ -575,20 +1123,18 @@ const FCOVE_SCENE=(function buildFcoveWorksAndFleet(){
   const clk=(typeof KHOST!=='undefined'&&KHOST.host)?KHOST.host.clock:null;
   const wSec=live?(T.mode==='run'?T.tw:(clk?KTIDE.worldSeconds(clk):0)):0;
   const curMps=live?FCOVE_RULES.sillVelocity(wSec):(lv<-0.5?-3.8:lv>0.5?3.8:0);
-  const dayIdx=Math.floor(wSec/86400);
+  const dayIdx=live?Math.floor(wSec/86400):(clk?clk.day:out.syncedDay);
+  if(dayIdx!==out.syncedDay)out.syncFleetsForDay(dayIdx);
 
-  /* Moored vessels ride live tide + gentle sanctuary wave motion */
-  for(let i=0;i<out.moored.length;i++){
-   const m=out.moored[i];
-   const heave=0.055*Math.sin(wallClock*1.15+m.phase);
-   m.group.position.y=lv+heave;
-   m.group.rotation.z=0.014*Math.sin(wallClock*0.92+m.phase);
-   m.group.rotation.x=0.009*Math.cos(wallClock*0.78+m.phase);
-   m.buoy.position.y=lv+0.12+heave*0.8;
-   if(REG){
-    /* keep moored vessel above water in floor queries */
-    m.spec._lastY=lv;
-   }
+  /* Moored fleet groups ride live tide + gentle sanctuary wave motion */
+  for(let i=0;i<fleetAnimList.length;i++){
+   const fa=fleetAnimList[i];
+   if(!fa.group.visible)continue;
+   const heave=0.055*Math.sin(wallClock*1.12+fa.phase);
+   fa.group.position.y=lv+heave;
+  }
+  if(REG){
+   for(let i=0;i<out.moored.length;i++)out.moored[i].spec._lastY=lv;
   }
 
   /* Careened hulls rest firmly on keel blocks until tide exceeds floatLevel (+2.6 m for cradle_deep!) */
