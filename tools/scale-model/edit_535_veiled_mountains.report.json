@@ -5,8 +5,8 @@
   "Region 174": {
    "cells": 4515,
    "floor_m": [
-    3700,
-    4400
+    2100,
+    2750
    ],
    "mouth": [
     238.0,
@@ -16,8 +16,8 @@
   "Region 175": {
    "cells": 2030,
    "floor_m": [
-    3800,
-    4300
+    2150,
+    2700
    ],
    "mouth": [
     212.0,
@@ -26,19 +26,19 @@
   }
  },
  "weathering_m": {
-  "cut_p90": 465,
-  "cut_max": 2468
+  "cut_p90": 548,
+  "cut_max": 2452
  },
  "mountains": {
-  "p10": 5093,
-  "p50": 6553,
-  "p90": 7503,
-  "max": 9215
+  "p10": 3990,
+  "p50": 5688,
+  "p90": 7056,
+  "max": 9202
  },
  "valley_floor_m": [
-  3977,
-  4442,
-  4992
+  2509,
+  2995,
+  3862
  ],
  "islands": {
   "drowned_cells": 1505,
@@ -64,65 +64,69 @@
   9232,
   9113
  ],
- "land_moved_cells": 30421,
+ "land_moved_cells": 30423,
  "reclimate": {
-  "cells": 28536,
-  "class_changed": 19765,
-  "rain_mean_before_mm": 800.0,
-  "rain_mean_after_mm": 883.0,
+  "cells": 29571,
+  "class_changed": 23566,
+  "rain_mean_before_mm": 773.0,
+  "rain_mean_after_mm": 998.0,
   "classes_now": {
-   "Af": 68,
-   "Am": 3,
-   "BSk": 6,
-   "Csb": 344,
-   "Cfa": 331,
-   "Cfb": 589,
-   "Dsb": 2,
-   "Dsc": 93,
-   "Dwb": 198,
-   "Dwc": 42,
-   "Dfb": 1105,
-   "Dfc": 3924,
-   "ET": 9361,
-   "EF": 5509,
-   "HT": 4640,
-   "HF": 2315,
+   "Af": 61,
+   "Am": 9,
+   "BSk": 76,
+   "Csa": 365,
+   "Csb": 15,
+   "Cfa": 1396,
+   "Cfb": 892,
+   "Dsa": 14,
+   "Dsb": 517,
+   "Dsc": 197,
+   "Dfa": 65,
+   "Dfb": 4665,
+   "Dfc": 5825,
+   "ET": 8177,
+   "EF": 4071,
+   "HT": 2426,
+   "HF": 794,
    "WS": 6
   },
   "airless_cells_given_air": 6067,
-  "class_O_let_go": 6257
+  "class_O_let_go": 7279
  },
  "audit": {
   "matron_tc_C": [
    22.0,
-   5.2
+   19.7
   ],
-  "matron_tw_C": 17.2,
+  "matron_tw_C": 29.2,
   "seam_cells_smoothed": 3713,
-  "low_airless_given_air": 5168,
-  "rain_cells_fixed": 937,
-  "classes_relettered": 22031
+  "low_airless_given_air": 6756,
+  "rain_cells_fixed": 940,
+  "classes_relettered": 20125
  },
  "valley_classes": {
-  "BSk": 2,
-  "Csb": 211,
-  "Cfb": 86,
-  "Cfc": 84,
-  "Dsb": 133,
-  "Dsc": 69,
-  "Dwb": 198,
-  "Dwc": 35,
-  "Dfa": 3,
-  "Dfb": 339,
-  "Dfc": 4322,
-  "ET": 1233
+  "BSk": 67,
+  "Csa": 358,
+  "Csb": 15,
+  "Cfa": 660,
+  "Cfb": 394,
+  "Cfc": 4,
+  "Dsa": 18,
+  "Dsb": 357,
+  "Dsc": 52,
+  "Dfa": 81,
+  "Dfb": 3756,
+  "Dfc": 1965,
+  "ET": 77
  },
  "matron_classes": {
-  "Af": 61,
-  "Cfb": 9922
+  "Af": 84,
+  "Cwa": 42,
+  "Cfa": 473,
+  "Cfb": 9391
  },
  "valley_temps_C": {
-  "tw": 11.0,
-  "tc": -4.0
+  "tw": 19.0,
+  "tc": -2.0
  }
 }

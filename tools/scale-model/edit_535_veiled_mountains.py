@@ -14,23 +14,26 @@ megabreccia mountains that the valleys plausibly slope up to"; "do climate audit
 1. The valleys. Region 174 (a bar along the wall's north end with three fingers south) and Region 175 (a strip down
    the west flank) are cut as U-valleys that follow their polygons: a floor rising from the mouth that opens to the
    tsunami coast's drafts (174's at its north-west, 175's at its north end by the Veilpass's west entry) to the far
-   end, 3,700-4,400 m like the Veilpass's (edit 31), and walls rising ~1,400 m to the polygon's edge.
+   end, 2,600-3,050 m, and walls rising ~1,400 m to the polygon's edge. The Veilpass's floors (edit 31, 3,000-4,300 m)
+   are lowered alike (3,000 -> 2,600, 4,300 -> 3,050, its east col kept). That is the height band where the land's own
+   climate round the polygon is cool temperate (warm month under 22 C above ~2,400 m, cold month over -3 C below
+   ~3,150 m), so the valleys hold a cool temperate rainforest by their height alone.
 2. The megabreccia mountains: the rest of the Veiled Mountains polygon, the crater wall shattered into blocks kilometres
    across (an impact's megabreccia). The land rises from the valley floor nearest it, up to ~2.6 km above it away from
    the valleys, and each block (a Voronoi cell ~6 px across) is offset and tilted on its own. Faded into the land round
    the polygon over ~12 px along a ragged line; the Veilpass's own valleys (edit 31) kept. The valley floors are
    megabreccia too, worn down (a quarter of the blocks' relief, softened), and the whole highland is weathered (edit
    30's weather: stream power and creep, 20 rounds).
-3. The valleys' climate: maritime, the drafts from the tsunami coast. Every valley floor under 4,800 m (174, 175 and
-   the Veilpass) takes a panhandle's temperatures for its height (warm month 13 C, cold month -1.5 C at 3,900 m,
-   5 C and 4.5 C a km colder above), and ~3,200 mm of rain; the mountains round them ~2,200 mm (the drafts' orographic
-   rain), all smoothed into the country round the polygon. This fixes the audit's worst finding: edit 31's Cfc floors
-   had a continental -13 C cold month, and its 3,500 mm a hard edge.
+3. The valleys' climate is not forced: their temperatures come from their height (the lapse, and the nearby land's of
+   the same height for cells that were airless), and the rain and classes come from the winds in edit 36. This fixes
+   the audit's worst finding: edit 31's forced Cfc floors had a continental -13 C cold month, and its 3,500 mm a hard
+   edge.
 4. Matron's Coast's temperatures: the raised sea kept the sea's raster values (a -22 C cold month under a Cfb class).
    Its plain (under 1,800 m) takes the temperatures of the nearest coastal land of its height outside it (the 12
-   nearest in place, height and distance from the sea). That land is hot (a 29 C warm month), so for the owner's
-   temperate rainforest the plain has a cold current's maritime climate (18 C warm month, 6 C cold month at sea level,
-   4 C cooler a km), blended over 8 px; Cfb where it allows.
+   nearest in place, height and distance from the sea). That land is hot (a ~29 C warm month), so the coast is hot and
+   humid (Af where the cold month stays over 18 C, else Cfa), and the temperate rainforest (Cfb, >= 2,800 mm) stands
+   higher up the slopes, where the height brings the warm month under 22 C (the owner: "no cool current and the
+   rainforest is just higher up the slopes").
 5. Matron's Coast's fringe of islands: the coast within 7 px of the open sea, away from Arkerum and every pin, is
    drowned where a smooth noise falls under a threshold that rises toward the sea. It leaves a skerry coast of islands
    and drowned channels (sea level, 5-40 m deep). Rivers that reached the old coast end at the first water.
@@ -59,7 +62,13 @@ LIVE = json.load(open(os.path.join(HERE, 'edit_535_live.json'), encoding='utf-8'
 REG = {r['name']: r for r in LIVE['regions']}
 WIN = (0, 700, 0, 1000)              # the audit's window: x0, x1, y0, y1
 MOUTH = {'Region 174': (238.0, 652.0), 'Region 175': (212.0, 692.0)}
-FLOOR = {'Region 174': (3700.0, 4400.0), 'Region 175': (3800.0, 4300.0)}
+# the floors set where the land's own climate round the polygon is cool temperate (warm month under 22 C above ~2,400 m,
+# cold month over -3 C below ~3,150 m; scratchpad vm_lapse.py on fedfa743d), so the valleys hold a cool temperate
+# rainforest by their height alone, and their mouths still fall to the land outside (1.6-2.6 km)
+# (edit 36's first run put them at 2,600-3,050 m: Dfb, a -4 C cold month and ~700 mm. Lower, the air in them is warmer
+# and holds more water, and the floors' rise inland makes it rain: 2,100-2,750 m)
+FLOOR = {'Region 174': (2100.0, 2750.0), 'Region 175': (2150.0, 2700.0)}
+VP_MAP = ((3000.0, 2150.0), (4300.0, 2750.0), (5000.0, 5000.0))   # the Veilpass's floors (edit 31) lowered alike
 
 
 def geodesic(poly, src):
@@ -150,8 +159,9 @@ def main():
         rep.setdefault('valleys', {})[nm] = {'cells': int(pm.sum()), 'floor_m': [round(f0), round(f1)], 'mouth': list(MOUTH[nm])}
     # the Veilpass's own valleys (edit 31): its floors below 5,000 m, as they are
     vp_floor = VP & (E0 < 5000)
+    vpE = np.interp(E0, [a for a, _ in VP_MAP], [b for _, b in VP_MAP])     # the Veilpass's floors into the band
     valley = (np.isfinite(floor_t)) | vp_floor
-    vfloor = np.where(np.isfinite(floor_t), floor_t, np.where(vp_floor, E0, np.nan))
+    vfloor = np.where(np.isfinite(floor_t), floor_t, np.where(vp_floor, vpE, np.nan))
 
     # ---- 2. the megabreccia mountains: up from the nearest valley's floor, in blocks
     dv, (iy, ix) = nd.distance_transform_edt(~valley, return_indices=True)
@@ -172,7 +182,7 @@ def main():
     # the valley floors are megabreccia too, worn down by constant weathering (the owner, 2026-11-26): the same blocks,
     # their relief a quarter and softened, on the floors of 174, 175 and the Veilpass
     worn = 0.25 * nd.gaussian_filter(off + tilt, 1.6)
-    target = np.where(np.isfinite(floor_t), floor_t + worn, np.where(vp_floor, E0 + worn, mount))
+    target = np.where(np.isfinite(floor_t), floor_t + worn, np.where(vp_floor, vpE + worn, mount))
     dvm = nd.distance_transform_edt(VM)
     # faded into the land round the polygon over ~12 px, along a ragged line (the polygon's straight edges not drawn)
     edge_n = nd.gaussian_filter(rng.standard_normal(sh), 3.0); edge_n /= edge_n.std() + 1e-9
@@ -264,15 +274,8 @@ def main():
     audit = {}
 
     def temps_set(T5, En_):
-        # 3. the valleys' maritime temperatures for their height, blended in over their walls
-        wv = nd.gaussian_filter(vfl.astype(float), 1.2) * VM
-        dh = (En_ - 3900.0) / 1000.0
-        mar = {'tw': 13.0 - 5.0 * dh, 'tc': -1.5 - 4.5 * dh}
-        mar['tm'] = 0.5 * (mar['tw'] + mar['tc']) + 0.5
-        mar['th'] = mar['tw'] + 6.0
-        mar['tl'] = mar['tc'] - 5.0
-        for k in C.TEMPS:
-            T5[k] = np.where(wv > 0.01, T5[k] * (1 - wv) + mar[k] * wv, T5[k])
+        # 3. the valleys take their temperatures from their height alone (the lapse, and the nearby land's for the cells
+        # that were airless): no climate forced (the owner, 2026-11-26)
         # 4. Matron's Coast: the temperatures of the nearest coastal land of its height outside it
         air = T5['tm'] > -89.5
         pool = (~M) & ~whas & air & (nd.distance_transform_edt(~M) <= 60) & (dsea <= 12) & (En_ < 2500)
@@ -283,17 +286,8 @@ def main():
         before = float(np.median(T5['tc'][Mland]))
         for k in C.TEMPS:
             T5[k][Mland] = (T5[k][pool][ik] * wk).sum(1) / wk.sum(1)
-        # ... but the land round it is hot (a 29 C warm month), and the owner's Matron's Coast is a temperate rainforest:
-        # a cold current along the coast (as off the Pacific North-West or Valdivia) gives the plain a cool maritime
-        # climate, warm month 17 C and cold month 6 C at sea level, cooler with height, blended into the twins' over 8 px
-        hkm = En_ / 1000.0
-        cur = {'tw': 18.0 - 4.0 * hkm, 'tc': 6.0 - 4.0 * hkm}     # the rainforest up to ~1.8 km, its treeline
-        cur['tm'] = 0.5 * (cur['tw'] + cur['tc']) + 0.3
-        cur['th'] = cur['tw'] + 6.0
-        cur['tl'] = cur['tc'] - 4.0
-        wcur = np.clip(nd.distance_transform_edt(M) / 8.0, 0, 1) * Mland
-        for k in C.TEMPS:
-            T5[k] = np.where(Mland, T5[k] * (1 - wcur) + cur[k] * wcur, T5[k])
+        # (the land round it is hot, a ~29 C warm month: the coast is hot and the temperate rainforest stands higher up
+        # its slopes, where the height cools it; the owner, 2026-11-26)
         audit['matron_tc_C'] = [round(before, 1), round(float(np.median(T5['tc'][Mland])), 1)]
         audit['matron_tw_C'] = round(float(np.median(T5['tw'][Mland])), 1)
         # 6a. the seams: within 6 px of each straight jump, the local fit on height plus the smoothed residual
@@ -326,12 +320,7 @@ def main():
         return T5
 
     def rain_set(rain):
-        # 3. the drafts' rain over the Veiled Mountains: the valleys ~3,200 mm, the mountains ~2,200 mm, smoothed and
-        # faded into the country round them
-        tgt = np.where(vfl, 3200.0, 2200.0)
-        tgt = nd.gaussian_filter(tgt, 2.5)
-        wr = nd.gaussian_filter(VM.astype(float), 3.0)
-        rain = rain * (1 - wr) + tgt * wr
+        # (the rain itself is the winds' own, edit 36)
         # 6b. the rain seams and lone spikes: the 7 px median
         land = inwin & ~whas
         med = nd.median_filter(rain, 7)
@@ -375,9 +364,8 @@ def main():
             if c1 != c0:
                 cls[j, i] = codes.index(c1); n_ch += 1
         audit['classes_relettered'] = n_ch
-        # Matron's Coast's plain: Cfb where its cool maritime climate allows (the owner's temperate rainforest)
-        mc = Mland & (T5['tw'] >= 10) & (T5['tw'] < 22) & (T5['tc'] > -3)
-        cls[mc] = codes.index('Cfb')
+        # (Matron's Coast's classes, and every class of the north-west, the Ria and the Crook, follow from the winds' rain
+        # and the temperatures in edit 36: the hot coast below, the temperate rainforest up the slopes)
         # the low airless land: its class from its new climate
         lowO = inwin & ~whas & (cls == codes.index('O')) & (En < 6800)
         for j, i in zip(*np.nonzero(lowO)):
