@@ -3350,6 +3350,20 @@
    "group": "work",
    "seconds": 1.0,
    "loop": true
+  },
+  {
+   "name": "fish_rod",
+   "label": "Fish with a rod",
+   "group": "work",
+   "seconds": 4.0,
+   "loop": true
+  },
+  {
+   "name": "beat_rug",
+   "label": "Beat a rug",
+   "group": "work",
+   "seconds": 1.2,
+   "loop": true
   }
  ],
  "hands": {

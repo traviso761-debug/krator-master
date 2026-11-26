@@ -414,9 +414,48 @@ def milk(c, clip, cycle=1.0):
     return _done(p, times, out)
 
 
+def fish_rod(c, clip, cycle=4.0):
+    """fishing with a rod from the bank: the rod held out forward and up in the right hand, bobbing a little, flicked
+    up once a cycle to tease the line, the left hand at the hip, the eyes on the water"""
+    p = _Pose(c, clip)
+    sd, hy = p.sd, p.hy
+    flick = [(0.0, 0.0, ''), (cycle * 0.68, 0.0, ''), (cycle * 0.74, 1.0, 'out'), (cycle * 0.86, 0.0, 'io'), (cycle, 0.0, '')]
+    times, out = _loop(cycle), {nm: [] for nm in p.rig.names}
+    for t in times:
+        loc = list(p.rig.loc0)
+        f = float(_k(flick, t)[0])
+        a = 0.50 + 0.04 * math.sin(2 * math.pi * 2 * t / cycle) + 0.35 * f          # the rod's rise above level
+        p.turn(loc, 'Head', mp._Rx(0.18 - 0.08 * f))
+        R = np.array([sd * 0.16, hy + 0.12 + 0.05 * f, 0.30])
+        p.grip(loc, 'Right', R, [0.0, math.sin(a), math.cos(a)], [-sd * 1.0, 0.0, 0.0], p.poleR(0.9, -1.0, -0.2))
+        p.rig.quats(loc, out)
+    return _done(p, times, out)
+
+
+def beat_rug(c, clip, cycle=1.2):
+    """beating a rug hung on a line: the beater swung back over the right shoulder and brought down onto the rug at the
+    shoulders' height in front, the body turning into each blow"""
+    p = _Pose(c, clip)
+    sd = p.sd
+    sh = p.shR
+    keys = [(0.0, [0.26, 0.22, -0.06, -1.6], ''), (cycle * 0.40, [0.18, -0.02, 0.44, 0.1], 'in'), (cycle * 0.50, [0.18, -0.06, 0.42, 0.25], 'out'),
+            (cycle, [0.26, 0.22, -0.06, -1.6], 'io')]
+    times, out = _loop(cycle), {nm: [] for nm in p.rig.names}
+    for t in times:
+        loc = list(p.rig.loc0)
+        x, y, z, a = _k(keys, t)
+        k = (z + 0.06) / 0.50
+        p.turn(loc, 'Spine', mp._Ry(-sd * 0.20 * k) @ mp._Rx(0.06 * k))
+        p.turn(loc, 'Head', mp._Rx(0.10))
+        R = np.array([sd * x, sh[1] + y, z])
+        p.grip(loc, 'Right', R, [0.0, -math.sin(a), math.cos(a)], [0.0, -math.cos(a), -math.sin(a)], p.poleR(1.0, -0.5, -0.4))
+        p.rig.quats(loc, out)
+    return _done(p, times, out)
+
+
 KINDS = {'cook': cook, 'walk_sack': walk_sack, 'give': give, 'take': take, 'write': write, 'read': read,
          'kneel_pray': kneel_pray, 'row': row, 'paddle': paddle, 'sweep': sweep, 'saw': saw, 'weave': weave,
-         'cast_net': cast_net, 'feed': feed, 'walk_lead': walk_lead, 'milk': milk}
+         'cast_net': cast_net, 'feed': feed, 'walk_lead': walk_lead, 'milk': milk, 'fish_rod': fish_rod, 'beat_rug': beat_rug}
 
 
 def make(c, kind, clip):

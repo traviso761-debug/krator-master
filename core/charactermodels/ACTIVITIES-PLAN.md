@@ -190,8 +190,13 @@ suit a kung-fu set; the Iron Republic's drill wants a bayonet and rifle-butt set
 **Done for the trade clips (2026-11-26):** ladle, sack, quill, book, oar, paddle, broom, saw, cast net, feed bag, lead
 rope, shuttle, textured from the material library (`wood.beam`, `cloth.weave.burlap`, `leather.polished`,
 `paper.parchment`, `straw.bedding`, `fibre.net`, `fibre.rope`: the albedo at 192 px embedded, 324 KB for the twelve)
-and held by their clips (`hold`). Still owed: coin and goods for give and take, a pot and hearth, a desk, a loom, the
-beasts to feed and milk (scenery, not hand props), and the props of the other gaps (censer, rug beater, sickle).
+and held by their clips (`hold`). Then a coin purse (give, take), a sickle (harvest, reed cutting), a censer (PRIEST),
+a fishing rod and a rug beater (with clips of their own, fish_rod and beat_rug), a goad (a drover's HERD) and a scroll
+(read). **Furniture, a trial (2026-11-26):** a clip's `scene` places catalog furniture at it in the Animation Lab (the
+rustic common chair, stool, table, loom, workbench, bench, bed, the trade anvil, trough and altar, a straw pallet and a
+stew pot): the seated clips on their chairs and stools, write at a table, weave at a loom, saw and craft at a
+workbench, hammer at an anvil, cook at a pot, kneel at an altar, feed at a trough, sleep on a pallet, get into bed. A
+game can read the same records to stand the actor at the furniture. Still owed: coin and goods to hand, the beasts.
 
 ## 8. Order of work
 

@@ -294,9 +294,48 @@
   var held = { R:null, L:null };
   // play a clip on all six from its start, without a cross-fade (so a paused or scrubbed frame is this clip alone);
   // a one-shot repeats
+  /* ---- scenery: a clip's data/clips.json 'scene', the furniture it works at (catalog keys, each at [x, y, z] metres
+     in the figure's frame, +z its front, +x its left, turned ry degrees), built with the catalog's own code: the
+     KratorFurniture bundle in scenery.js beside the page (kits/catalog/furniture_bundle.py writes it; without it the
+     clips play with no scenery). Each figure's set goes into its group at its size, so a tall figure's chair is a tall
+     one and a giant's a giant's ---- */
+  var sceneryLoad = null;
+  function scenery(){
+    if(!sceneryLoad) sceneryLoad = new Promise(function(ok){
+      if(window.KratorFurniture) return ok(window.KratorFurniture);
+      var s = document.createElement('script');
+      s.src = 'scenery.js';
+      s.onload = function(){ ok(window.KratorFurniture || null); };
+      s.onerror = function(){ ok(null); };
+      document.head.appendChild(s);
+    });
+    return sceneryLoad;
+  }
+  function setScene(name){
+    figs.forEach(function(s){ if(s.set){ s.f.group.remove(s.set); s.set = null; } });
+    var sc = INFO[name] && INFO[name].scene;
+    if(!sc || !sc.length) return Promise.resolve();
+    return scenery().then(function(KF){
+      if(!KF || current !== name) return;
+      figs.forEach(function(s){
+        var B = KF.batch(), set = new THREE.Group();
+        sc.forEach(function(p){
+          if(KF.has(p.key)) B.place(p.key, p.at[0], p.at[1] || 0, p.at[2], (p.ry || 0) * Math.PI / 180, { seed:1, variant:p.variant || 0 });
+        });
+        B.flush(set);
+        set.traverse(function(m){ if(m.isMesh){ m.castShadow = m.receiveShadow = true; } });
+        set.scale.setScalar(s.f.inner ? s.f.inner.scale.x : s.f.scale);
+        set.userData.scenery = name;
+        s.set = set;
+        s.f.group.add(set);
+      });
+    });
+  }
+
   function play(name){
     flushNote();
     current = name;
+    setScene(name);
     return holdFor(name).then(function(){ return Promise.all(figs.map(function(s){ return s.f.play(name); })); }).then(function(){
       if(current !== name) return;
       figs.forEach(function(s){

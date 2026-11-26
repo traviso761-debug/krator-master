@@ -383,10 +383,11 @@
    "clips": [
     "sweep",
     "sweep",
+    "beat_rug",
     "pick_up_side",
     "ual_carry"
    ],
-   "gap": "scrubbing, beating a rug, hanging washing"
+   "gap": "scrubbing, hanging washing"
   },
   "FARM": {
    "clips": [
@@ -459,7 +460,9 @@
     "ual_harvest",
     "ual_chop"
    ],
-   "gap": "cutting reed with a sickle"
+   "prop": {
+    "R": "sickle"
+   }
   },
   "MINE": {
    "clips": [
@@ -752,7 +755,10 @@
     "idle_5"
    ],
    "enter": "bow_formal",
-   "gap": "leading a rite; a censer"
+   "gap": "leading a rite",
+   "prop": {
+    "L": "censer"
+   }
   },
   "RITUAL": {
    "alias": "PRIEST"
@@ -1022,10 +1028,21 @@
     "walk_lead",
     "walk"
    ],
-   "gap": "driving beasts with a goad",
    "prop": {
     "R": "lead"
-   }
+   },
+   "by_role": {
+    "drover": {
+     "clips": [
+      "walk_lead",
+      "walk"
+     ],
+     "prop": {
+      "R": "goad"
+     }
+    }
+   },
+   "gap": "driving beasts with a goad (a clip of its own)"
   },
   "WATER_CAMELS": {
    "clips": [
@@ -1045,11 +1062,11 @@
   },
   "FISH_SHORE": {
    "clips": [
-    "cast_net",
-    "idle_5",
-    "ual_crouch"
+    "fish_rod",
+    "fish_rod",
+    "cast_net"
    ],
-   "gap": "a rod"
+   "about": "fishing from the bank"
   },
   "MEND_NETS": {
    "clips": [

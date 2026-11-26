@@ -479,6 +479,70 @@
    "grip": "wide"
   },
   {
+   "id": "purse",
+   "label": "Coin purse",
+   "hand": "R",
+   "glb": "pieces/props/purse.glb",
+   "grip": "wide",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "sickle",
+   "label": "Sickle",
+   "hand": "R",
+   "glb": "pieces/props/sickle.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "censer",
+   "label": "Censer",
+   "hand": "L",
+   "glb": "pieces/props/censer.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "rod",
+   "label": "Fishing rod",
+   "hand": "R",
+   "glb": "pieces/props/rod.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "goad",
+   "label": "Goad",
+   "hand": "R",
+   "glb": "pieces/props/goad.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "beater",
+   "label": "Rug beater",
+   "hand": "R",
+   "glb": "pieces/props/beater.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "scroll",
+   "label": "Scroll",
+   "hand": "L",
+   "glb": "pieces/props/scroll.glb",
+   "grip": "flat",
+   "upright": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
    "id": "tz_scepter",
    "label": "Sunforged Scepter (Tzintzun's staff of power)",
    "hand": "R",

@@ -28,13 +28,14 @@ MAT = {'steel': ([0.70, 0.72, 0.75], 0.85, 0.32), 'iron': ([0.30, 0.30, 0.32], 0
        'twood': ([1.0, 1.0, 1.0], 0.0, 0.75), 'burlap': ([0.80, 0.66, 0.46], 0.0, 0.95),
        'tleather': ([0.46, 0.27, 0.16], 0.0, 0.6), 'parchment': ([1.0, 1.0, 1.0], 0.0, 0.85),
        'straw': ([1.0, 1.0, 1.0], 0.0, 0.95), 'net': ([1.0, 1.0, 1.0], 0.0, 0.9), 'rope': ([1.0, 1.0, 1.0], 0.0, 0.95),
-       'feather': ([0.92, 0.90, 0.85], 0.0, 0.8), 'ink': ([0.05, 0.05, 0.06], 0.0, 0.4), 'grain': ([0.80, 0.66, 0.32], 0.0, 0.9)}
+       'twicker': ([0.95, 0.85, 0.65], 0.0, 0.85), 'feather': ([0.92, 0.90, 0.85], 0.0, 0.8), 'ink': ([0.05, 0.05, 0.06], 0.0, 0.4), 'grain': ([0.80, 0.66, 0.32], 0.0, 0.9)}
 # a material drawn with a library texture (core/materials/library/<set>, its albedo downsampled to TEX_PX and embedded,
 # about 10-20 KB a prop): the set, how many metres one repeat of it covers (UVs projected per face onto its two widest
 # axes) and whether its alpha cuts out (the net: a card)
 TEX = {'twood': ('wood.beam', 0.6, False), 'burlap': ('cloth.weave.burlap', 0.25, False),
        'tleather': ('leather.polished', 0.3, False), 'parchment': ('paper.parchment', 0.3, False),
-       'straw': ('straw.bedding', 0.2, False), 'net': ('fibre.net', 0.35, True), 'rope': ('fibre.rope', 0.12, False)}
+       'straw': ('straw.bedding', 0.2, False), 'net': ('fibre.net', 0.35, True), 'rope': ('fibre.rope', 0.12, False),
+       'twicker': ('fibre.wicker', 0.15, False)}
 TEX_PX = 192
 LIBRARY = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'materials', 'library')
 
@@ -456,6 +457,65 @@ def shuttle(m):
     m.loft('twood', [ring((0, y, 0), 'y', r, 8, rx=r * 0.6) for y, r in ((-0.12, 0.003), (-0.08, 0.016), (0.08, 0.016), (0.12, 0.003))])
 
 
+def purse(m):
+    # a coin purse held by its drawstring neck (it hangs from the fingers: HANG), the pouch below, a coin at its mouth
+    rod(m, 'rope', 'z', (0, 0, -0.01), (0, 0, 0.03), 0.010, 0.012, 6)
+    m.loft('tleather', [ring((0, 0, z), 'z', r, 10) for z, r in ((0.025, 0.014), (0.05, 0.04), (0.09, 0.05), (0.12, 0.035), (0.13, 0.004))],
+           cap0=False)
+    m.loft('brass', [ring((0.0, 0.012, 0.022), 'x', 0.011, 8, rx=0.002), ring((0.003, 0.012, 0.022), 'x', 0.011, 8, rx=0.002)])
+
+
+def sickle(m):
+    # a reaping sickle: the wooden handle in the fist, the blade curving forward and round from its top (+Y, then +Z)
+    rod(m, 'twood', 'y', (0, -0.07, 0), (0, 0.06, 0), 0.016, 0.014)
+    pts = [(0.06 + 0.16 * math.sin(a), 0.16 - 0.16 * math.cos(a)) for a in np.linspace(0, math.pi * 1.15, 12)]
+    for (y0, z0), (y1, z1) in zip(pts, pts[1:]):
+        m.quad('steel', (0, y0, z0), (0, y1, z1), (0, y1 * 0.92 + 0.004, z1 * 0.92), (0, y0 * 0.92 + 0.004, z0 * 0.92))
+
+
+def censer(m):
+    # a censer swung on its chains (it hangs from the hand like a lantern: HANG): a brass bowl and pierced lid below
+    for a in (0, 2 * math.pi / 3, 4 * math.pi / 3):
+        arc(m, 'iron', [(0, 0, 0), (0.05 * math.cos(a), 0.05 * math.sin(a), 0.42)], 0.002, 3)
+    m.loft('brass', [ring((0, 0, z), 'z', r, 10) for z, r in ((0.42, 0.055), (0.47, 0.065), (0.52, 0.05), (0.54, 0.02))], cap0=True)
+    m.loft('brass', [ring((0, 0, z), 'z', r, 10) for z, r in ((0.42, 0.055), (0.39, 0.045), (0.37, 0.012))], cap0=False)
+
+
+def rod_fishing(m):
+    # a fishing rod held at its butt, out along +Y and bending a little toward the fingers' side, the line hanging
+    # from its tip
+    pts = [(0, y, 0.0004 * (y * 10) ** 2) for y in np.linspace(-0.25, 2.3, 9)]
+    rs = np.linspace(0.016, 0.004, 9)
+    for p0, p1, r0, r1 in zip(pts, pts[1:], rs, rs[1:]):
+        rod(m, 'twood', 'y', p0, p1, r0, r1, 6)
+    tip = np.array(pts[-1])
+    arc(m, 'string', [tip, tip + (0, -0.05, 0.5), tip + (0, -0.08, 1.1)], 0.0012, 3)
+
+
+def goad(m):
+    # a herder's goad: a long staff held a third of the way up, the iron point forward along +Y
+    rod(m, 'twood', 'y', (0, -0.55, 0), (0, 1.25, 0), 0.015, 0.011)
+    m.loft('iron', [ring((0, 1.25, 0), 'y', 0.011, 6), ring((0, 1.33, 0), 'y', 0.0008, 6)])
+
+
+def beater(m):
+    # a rug beater: loops of cane on a handle, the head out along +Y
+    rod(m, 'twood', 'y', (0, -0.08, 0), (0, 0.32, 0), 0.013)
+    for k in range(3):
+        r = 0.12 - 0.03 * k
+        arc(m, 'twicker', [(0, 0.32 + r * (1 - math.cos(a)), r * math.sin(a) * 0.9) for a in np.linspace(-math.pi * 0.85, math.pi * 0.85, 11)],
+            0.006, 5)
+
+
+def scroll(m):
+    # a scroll held open across the left palm (grip flat, upright like the book): the sheet across the palm (+Y), a
+    # rolled end either side on its wooden rod
+    box(m, 'parchment', (0.02, 0.0, 0.0), (0.002, 0.26, 0.20))
+    for s in (-1, 1):
+        rod(m, 'parchment', 'z', (0.03, s * 0.13, -0.11), (0.03, s * 0.13, 0.11), 0.016)
+        rod(m, 'twood', 'z', (0.03, s * 0.13, -0.13), (0.03, s * 0.13, 0.13), 0.006)
+
+
 # where the left hand may hold a two-handed prop, when the clip says two_hands: a segment of its handle ([x0, y0, z0,
 # x1, y1, z1] in the prop's frame). The figure slides the hand along it to the point nearest where the clip has the
 # hand, and turns it round the segment as little as it can; a gun's segment runs along the fore-stock; a pistol's is
@@ -468,7 +528,7 @@ SUPPORT = {'spear': [0, 0.3, 0, 0, 1.0, 0], 'hoe': [0, -0.4, 0, 0, 0.9, 0], 'pic
            'cart': [0, CART_WIDTH - 0.16, 0, 0, CART_WIDTH + 0.06, 0]}
 # how the hand closes on it (make_mpfb.py hands(): fist, trigger: the index finger along the barrel, wide: round a cup)
 GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide', 'bowl': 'flat', 'bread': 'wide',
-        'book': 'flat', 'quill': 'trigger', 'shuttle': 'wide'}
+        'book': 'flat', 'quill': 'trigger', 'shuttle': 'wide', 'scroll': 'flat', 'purse': 'wide'}
 STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
 # degrees a prop turns about its handle in a lower hand (the forearm held forward in its guard): the shield stands up
 # with its board out, not flat like a tray (mirrored on the right)
@@ -476,7 +536,7 @@ LOW_TURN = {'shield': 90}
 # the prop's axis that points down whatever the hand's turn: a bucket and a lantern hang from their bails, which lie
 # along the handle axis in the fist (the figure turns the forearm to lay the bail level and swings the load about it)
 HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1], 'basket': [0, 0, 1], 'sack': [0, 0, 1], 'net': [0, 0, 1], 'feedbag': [0, 0, 1],
-        'lead': [0, 0, 1]}
+        'lead': [0, 0, 1], 'censer': [0, 0, 1], 'purse': [0, 0, 1]}
 # a hanging prop's body, kept out of the legs (the arm swings out at the shoulder): its radius, and from where to where
 # along the hang axis (the short bodies carried the bucket in the thigh)
 HANG_CLEAR = {'bucket': [0.12, 0.13, 0.36], 'lantern': [0.07, 0.05, 0.21]}
@@ -487,7 +547,7 @@ HANG_CLEAR = {'bucket': [0.12, 0.13, 0.36], 'lantern': [0.07, 0.05, 0.21]}
 GROUND = {'cart': {'height': CART_HANDLE, 'y': [1, 0, 0], 'z': [0, -0.25, 1]}}
 # the grip-frame axis the figure turns the wrist to keep up (but while the hand is at the face): a cup's mouth, and a
 # bowl's opening, so the open hand under it turns palm up (grip 'flat': the fingers stay as the clip has them)
-UPRIGHT = {'cup': [0, 1, 0], 'bowl': [1, 0, 0], 'book': [1, 0, 0]}
+UPRIGHT = {'cup': [0, 1, 0], 'bowl': [1, 0, 0], 'book': [1, 0, 0], 'scroll': [1, 0, 0]}
 # the bow's arrow is this many times the bow arm's length (shoulder to wrist) on each body, so a long-armed draw
 # (about 1.5 arms) leaves the head in front of the bow; the arrow model's own length
 ARROW_ARM = {'bow': 1.65}
@@ -512,7 +572,9 @@ PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('ax
          ('ladle', 'Ladle', 'R', ladle), ('sack', 'Sack', 'R', sack), ('quill', 'Quill', 'R', quill), ('book', 'Book', 'L', book),
          ('oar', 'Oar', 'R', oar), ('paddle', 'Paddle', 'R', paddle), ('broom', 'Broom', 'R', broom), ('saw', 'Saw', 'R', saw),
          ('net', 'Cast net', 'R', net), ('feedbag', 'Feed bag', 'L', feedbag), ('lead', 'Lead rope', 'R', lead),
-         ('shuttle', 'Shuttle', 'R', shuttle)]
+         ('shuttle', 'Shuttle', 'R', shuttle), ('purse', 'Coin purse', 'R', purse), ('sickle', 'Sickle', 'R', sickle),
+         ('censer', 'Censer', 'L', censer), ('rod', 'Fishing rod', 'R', rod_fishing), ('goad', 'Goad', 'R', goad),
+         ('beater', 'Rug beater', 'R', beater), ('scroll', 'Scroll', 'L', scroll)]
 
 
 def _tex_bytes(name):

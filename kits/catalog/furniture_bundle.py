@@ -107,5 +107,17 @@ def bundle(cultures=None, harvested=False, tex=False, plants=False, side=None):
 
 
 if __name__ == '__main__':
+    # python3 furniture_bundle.py [cultures ...] [--out file.js]: the bundle for those files, written to a file (a page
+    # that loads it beside itself: core/charactermodels' Animation Lab takes its clips' scenery so, dist/scenery.js),
+    # or its first lines printed
     import sys
-    print(bundle(sys.argv[1:] or None)[:400])
+    a = sys.argv[1:]
+    out = a[a.index('--out') + 1] if '--out' in a else None
+    cs = [x for i, x in enumerate(a) if x != '--out' and not (i and a[i - 1] == '--out')] or None
+    js = bundle(cs)
+    if out:
+        with open(out, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(js)
+        print('%s: %d bytes (%s)' % (out, len(js), ', '.join(cs or ['every file'])))
+    else:
+        print(js[:400])

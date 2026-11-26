@@ -1016,28 +1016,68 @@
    "meshy": 57,
    "label": "Sit down",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "scene": [
+    {
+     "key": "rustic_common_chair",
+     "at": [
+      0,
+      0,
+      -0.12
+     ]
+    }
+   ]
   },
   {
    "key": "sit",
    "meshy": 33,
    "label": "Sit (chair)",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "rustic_common_chair",
+     "at": [
+      0,
+      0,
+      -0.12
+     ]
+    }
+   ]
   },
   {
    "key": "sit_f",
    "meshy": 32,
    "label": "Sit (chair, relaxed)",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "rustic_common_chair",
+     "at": [
+      0,
+      0,
+      -0.12
+     ]
+    }
+   ]
   },
   {
    "key": "stand_up",
    "meshy": 53,
    "label": "Stand up from chair",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "scene": [
+    {
+     "key": "rustic_common_chair",
+     "at": [
+      0,
+      0,
+      -0.12
+     ]
+    }
+   ]
   },
   {
    "key": "sit_floor",
@@ -1072,7 +1112,17 @@
      ]
     ],
     "ease": 0.4
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_common_chair",
+     "at": [
+      0,
+      0,
+      -0.12
+     ]
+    }
+   ]
   },
   {
    "key": "drink",
@@ -1107,7 +1157,17 @@
    "meshy": 371,
    "label": "Get into bed",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "scene": [
+    {
+     "key": "rustic_common_bed",
+     "at": [
+      0,
+      0,
+      0
+     ]
+    }
+   ]
   },
   {
    "key": "sleep",
@@ -1121,21 +1181,51 @@
    },
    "label": "Sleep",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "generic_poor_straw_bed",
+     "at": [
+      0,
+      -0.22,
+      0
+     ]
+    }
+   ]
   },
   {
    "key": "sleep_toss",
    "meshy": 270,
    "label": "Toss and turn",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "generic_poor_straw_bed",
+     "at": [
+      0,
+      -0.22,
+      0
+     ]
+    }
+   ]
   },
   {
    "key": "wake",
    "meshy": 271,
    "label": "Wake up",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "scene": [
+    {
+     "key": "generic_poor_straw_bed",
+     "at": [
+      0,
+      -0.22,
+      0
+     ]
+    }
+   ]
   },
   {
    "key": "open_door",
@@ -1186,7 +1276,12 @@
    "meshy": 283,
    "label": "Pull crop",
    "group": "work",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sickle"
+    ]
+   }
   },
   {
    "key": "pick_fruit",
@@ -1248,7 +1343,12 @@
    "ual": "UAL2_Standard.glb:Farm_Harvest",
    "label": "Harvest (bending)",
    "group": "work",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "sickle"
+    ]
+   }
   },
   {
    "key": "ual_plant",
@@ -1325,7 +1425,18 @@
      "hammer",
      "dagger"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_common_workbench",
+     "at": [
+      0,
+      0,
+      1.15
+     ],
+     "ry": 90
+    }
+   ]
   },
   {
    "key": "ual_pickup_table",
@@ -1757,28 +1868,68 @@
    "ual": "UAL1_Standard.glb:Sitting_Enter",
    "label": "Sit down (stool)",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "scene": [
+    {
+     "key": "rustic_common_stool",
+     "at": [
+      0,
+      0,
+      -0.08
+     ]
+    }
+   ]
   },
   {
    "key": "ual_sit",
    "ual": "UAL1_Standard.glb:Sitting_Idle_Loop",
    "label": "Sit (stool)",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "rustic_common_stool",
+     "at": [
+      0,
+      0,
+      -0.08
+     ]
+    }
+   ]
   },
   {
    "key": "ual_sit_talk",
    "ual": "UAL1_Standard.glb:Sitting_Talking_Loop",
    "label": "Sit and talk",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "rustic_common_stool",
+     "at": [
+      0,
+      0,
+      -0.08
+     ]
+    }
+   ]
   },
   {
    "key": "ual_sit_up",
    "ual": "UAL1_Standard.glb:Sitting_Exit",
    "label": "Stand up (stool)",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "scene": [
+    {
+     "key": "rustic_common_stool",
+     "at": [
+      0,
+      0,
+      -0.08
+     ]
+    }
+   ]
   },
   {
    "key": "ual_talk",
@@ -1847,7 +1998,18 @@
     "R": [
      "hammer"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_trade_anvil",
+     "at": [
+      0,
+      0,
+      0.55
+     ],
+     "ry": 180
+    }
+   ]
   },
   {
    "key": "confused",
@@ -2675,7 +2837,17 @@
    "meshy": 354,
    "label": "Clap, seated",
    "group": "social",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "rustic_common_bench",
+     "at": [
+      0,
+      0,
+      -0.1
+     ]
+    }
+   ]
   },
   {
    "key": "fist_pump",
@@ -2700,7 +2872,17 @@
    "meshy": 307,
    "label": "Answer questions, seated",
    "group": "social",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "rustic_common_chair",
+     "at": [
+      0,
+      0,
+      -0.12
+     ]
+    }
+   ]
   },
   {
    "key": "stomp",
@@ -2725,7 +2907,26 @@
     "R": [
      "ladle"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_common_low_table",
+     "at": [
+      0,
+      0,
+      0.62
+     ],
+     "ry": 90
+    },
+    {
+     "key": "generic_stew_pot",
+     "at": [
+      0,
+      0.42,
+      0.42
+     ]
+    }
+   ]
   },
   {
    "key": "walk_sack",
@@ -2753,7 +2954,12 @@
    },
    "label": "Give (hand over)",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "purse"
+    ]
+   }
   },
   {
    "key": "take",
@@ -2763,7 +2969,12 @@
    },
    "label": "Take (receive)",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "hold": {
+    "R": [
+     "purse"
+    ]
+   }
   },
   {
    "key": "write",
@@ -2781,7 +2992,26 @@
     "R": [
      "quill"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_common_chair",
+     "at": [
+      0,
+      0,
+      -0.12
+     ]
+    },
+    {
+     "key": "rustic_common_table",
+     "at": [
+      0,
+      0,
+      1.12
+     ],
+     "ry": 90
+    }
+   ]
   },
   {
    "key": "read",
@@ -2794,9 +3024,20 @@
    "loop": true,
    "hold": {
     "L": [
-     "book"
+     "book",
+     "scroll"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_common_chair",
+     "at": [
+      0,
+      0,
+      -0.12
+     ]
+    }
+   ]
   },
   {
    "key": "kneel_pray",
@@ -2806,7 +3047,18 @@
    },
    "label": "Kneel and pray",
    "group": "social",
-   "loop": true
+   "loop": true,
+   "scene": [
+    {
+     "key": "rustic_trade_altar",
+     "at": [
+      0,
+      0,
+      1.05
+     ],
+     "ry": 180
+    }
+   ]
   },
   {
    "key": "row",
@@ -2828,7 +3080,17 @@
     "L": [
      "oar"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_common_stool",
+     "at": [
+      0,
+      0,
+      -0.08
+     ]
+    }
+   ]
   },
   {
    "key": "paddle",
@@ -2850,6 +3112,16 @@
    },
    "two_hands": [
     "paddle"
+   ],
+   "scene": [
+    {
+     "key": "rustic_common_stool",
+     "at": [
+      0,
+      0,
+      -0.08
+     ]
+    }
    ]
   },
   {
@@ -2890,7 +3162,18 @@
     "R": [
      "saw"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_common_workbench",
+     "at": [
+      0,
+      0,
+      1.15
+     ],
+     "ry": 90
+    }
+   ]
   },
   {
    "key": "weave",
@@ -2909,7 +3192,26 @@
     "R": [
      "shuttle"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_common_stool",
+     "at": [
+      0,
+      0,
+      -0.08
+     ]
+    },
+    {
+     "key": "rustic_common_loom",
+     "at": [
+      0,
+      0,
+      0.8
+     ],
+     "ry": 180
+    }
+   ]
   },
   {
    "key": "cast_net",
@@ -2946,7 +3248,18 @@
     "L": [
      "feedbag"
     ]
-   }
+   },
+   "scene": [
+    {
+     "key": "rustic_trade_trough",
+     "at": [
+      0,
+      0,
+      1.1
+     ],
+     "ry": 180
+    }
+   ]
   },
   {
    "key": "walk_lead",
@@ -2962,7 +3275,8 @@
    ],
    "hold": {
     "R": [
-     "lead"
+     "lead",
+     "goad"
     ]
    }
   },
@@ -2978,6 +3292,52 @@
    "fist": [
     "R",
     "L"
+   ],
+   "scene": [
+    {
+     "key": "rustic_common_stool",
+     "at": [
+      0,
+      0,
+      -0.08
+     ]
+    }
+   ]
+  },
+  {
+   "key": "fish_rod",
+   "derive": {
+    "trade": "fish_rod",
+    "from": "idle"
+   },
+   "label": "Fish with a rod",
+   "group": "work",
+   "loop": true,
+   "hold": {
+    "R": [
+     "rod"
+    ]
+   },
+   "fist": [
+    "R"
+   ]
+  },
+  {
+   "key": "beat_rug",
+   "derive": {
+    "trade": "beat_rug",
+    "from": "idle"
+   },
+   "label": "Beat a rug",
+   "group": "work",
+   "loop": true,
+   "hold": {
+    "R": [
+     "beater"
+    ]
+   },
+   "fist": [
+    "R"
    ]
   }
  ],
