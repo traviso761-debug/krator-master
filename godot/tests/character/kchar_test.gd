@@ -225,6 +225,40 @@ func _init() -> void:
 			if fig.blade_need.size() > 0:
 				need = maxf(need, fig.blade_need[-1])
 		ok(need < 0.01, "block_2: the blade keeps out of the head and neck (%.3f m in)" % need)
+		# the owner's review of 2026-11-26: the new and renamed clips; the head and eyes toward the target ahead in
+		# Charged slash (its clip looked 115 degrees aside, the chest square on); the cart's wheels on the ground
+		for c in ["slash_up", "slash_left", "walk_shoot_high", "walk_shoot", "craft_bench"]:
+			ok(fig.player.has_animation(c), "the clip %s (data/clips.json)" % c)
+		var looks := {}
+		for on in [false, true]:
+			var keep: Dictionary = fig.look
+			if not on:
+				fig.look = {}
+			fig.play("slash_charged")
+			fig.player.seek(0.0, true)          # the same clip again does not restart on its own
+			var off2 := 0.0
+			var eyes2 := 0.0
+			for k in 60:
+				fig._process(1.0 / 30.0)
+				if k > 12:
+					off2 = maxf(off2, rad_to_deg(fig.face_forward().angle_to(fig.look_target() - (fig._look_from()[0] as Vector3))))
+					eyes2 = maxf(eyes2, absf(float(fig.look_state["eyes"][0])))
+			fig.look = keep
+			looks[on] = [off2, eyes2]
+		ok(looks[true][0] < 75.0 and looks[false][0] > 100.0 and looks[true][1] > 0.1,
+			"slash_charged: the face within 75 degrees of the target with the look pass (%.0f; %.0f without), the eyes turned (%.2f rad)" % [looks[true][0], looks[false][0], looks[true][1]])
+		fig.hold({"R": "cart", "L": null, "both": true})
+		fig.play("push")
+		var ground_err := 0.0
+		var short := 0.0
+		for k in 90:
+			fig._process(1.0 / 30.0)
+			var gy := (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).origin.y
+			# (the first frames after the change of clip ease the two-hand hold in from the clip before: 1.6 cm at frame 0)
+			if k >= 3:
+				ground_err = maxf(ground_err, absf(gy - (-fig.skeleton.position.y / fig.size + float(fig.props["cart"]["ground"]["height"]))))
+			short = maxf(short, fig.reach)
+		ok(ground_err < 0.01 and short < 0.03, "push: the cart's bar %.3f m off its height over the ground, the left hand %.3f m short of it" % [ground_err, short])
 		fig.hold({"R": "sword", "L": null, "both": true})
 		fig.play("parry_2h")
 		var fore := 9.0

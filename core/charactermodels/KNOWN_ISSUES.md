@@ -1,5 +1,12 @@
 # core/charactermodels: known issues
 
+- **Longsong's workers still play `ual_interact` for WORK** (`settlements/longsong/src/69-ls-figures.js`), which the owner
+  renamed "Push button" on 2026-11-26; `craft_bench` (Craft at a bench) is the work clip now. The key was kept so
+  Longsong did not break; point its WORK at `craft_bench` at its next rebuild.
+- **Craft at a bench holds the hammer** (or the dagger as a knife) until the tool props of the same round (a chisel, a
+  plane, a saw) land; add them to its `hold` then. The bench itself is not drawn: the hands work at a bench's height
+  in the air.
+
 - **The giant chief's four-armed coat (`giant_free_m_chief4`) has seven dead cloth chains.** Its lower sleeves are split
   off into `.sleeves2.glb` after the chains are bound (`make_mpfb.py main`: `split_lower` runs after `turn_glb`), so
   seven chains' anchor indices run past the coat's mesh and the page cannot drive them; `tests/check_kit.py` allows the

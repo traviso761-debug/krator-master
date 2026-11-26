@@ -445,6 +445,50 @@ LAB_CHECKS = r'''async () => {
   await L.play('ual_consume'); at('ual_consume', 0.7);
   six.forEach((x, i) => { const w = bone(x, 'RightHand').getWorldPosition(V()), sp = bone(x, 'Spine').getWorldPosition(V());
     if (upOf(x, 'R', [1, 0, 0]) < 0.95 || w.z - sp.z < 0.12) out.push('props: Eat at 0.7 s, figure ' + i + ': the bowl not level on the palm in front of the belly'); });
+  // the owner's review of 2026-11-26. The look pass: Charged slash's head (its clip looked 115 degrees aside, the chest
+  // square on) and eyes toward the target ahead
+  let lookOff = 0, eyeTurn = 0;
+  await run('slash_charged', (x, t) => { if (t < 0.4) return; const f = x.faceForward(V()), T = x.lookTarget(V());
+    lookOff = Math.max(lookOff, f.angleTo(T.sub(x.headBone.getWorldPosition(V()))) * 57.3); eyeTurn = Math.max(eyeTurn, Math.abs(x.lookState.eyes[0])); });
+  if (lookOff > 80 || eyeTurn < 0.1) out.push('look: Charged slash turns the face ' + lookOff.toFixed(0) + ' degrees from the target (want under 80), the eyes ' + eyeTurn.toFixed(2) + ' rad');
+  // Push: the cart's bar at its height over the floor, the left hand on it
+  let cartY = 0, cartReach = 0;
+  await run('push', x => { const g = bone(x, 'RightHand').children.find(c => !c.isBone);
+    cartY = Math.max(cartY, Math.abs(g.getWorldPosition(V()).y - x.group.position.y - KCharFigure.props.cart.ground.height * x.scale)); cartReach = Math.max(cartReach, x.reach); });
+  if (cartY > 0.02 || cartReach > 0.03) out.push('props: Push, the cart\'s bar ' + (cartY * 100).toFixed(1) + ' cm off its height, the left hand ' + (cartReach * 100).toFixed(1) + ' cm short of it');
+  // Pick into basket: the basket hangs plumb under the hand dropping the fruit
+  await L.play('pick_fruit'); at('pick_fruit', 2.4);
+  six.forEach((x, i) => { const g = bone(x, 'LeftHand').children.find(c => !c.isBone), pv = g && g.children[0];
+    if (x.held.L !== 'basket' || !pv) { out.push('props: Pick into basket, figure ' + i + ': no basket'); return; }
+    const mouth = V().set(0, 0, 0.2).applyMatrix4(pv.matrixWorld), r = bone(x, 'RightHand').getWorldPosition(V());
+    const ax = V().set(0, 0, 1).applyQuaternion(pv.getWorldQuaternion(Q()));
+    if (ax.y > -0.999 || Math.hypot(mouth.x - r.x, mouth.z - r.z) > 0.25 * x.scale) out.push('props: Pick into basket at 2.4 s, figure ' + i + ': the basket not plumb under the picking hand (' + Math.hypot(mouth.x - r.x, mouth.z - r.z).toFixed(2) + ' m off)'); });
+  // Block and Block 2: seen from the front the blade crosses the face (it pointed back past the head), in front of it
+  for (const [c, t] of [['block', 1.25], ['block_2', 0.55]]) {
+    await L.play(c); at(c, t);
+    six.forEach((x, i) => { const g = bone(x, 'RightHand').children.find(c => !c.isBone), m = g && g.children[0];
+      const eye = x.headBone.getWorldPosition(V()).add(V().set(0, 0.09 * x.scale, 0)); let best = 9, z = 0;
+      for (let s = 0.1; s <= 0.91; s += 0.03) { const p = V().set(0, s, 0).applyMatrix4(m.matrixWorld), d = Math.hypot(p.x - eye.x, p.y - eye.y); if (d < best) { best = d; z = p.z - eye.z; } }
+      if (best > 0.08 * x.scale || z < 0.05 * x.scale) out.push('props: ' + c + ' at ' + t + ' s, figure ' + i + ': the blade does not cross before the face (' + best.toFixed(2) + ' m off its line, ' + z.toFixed(2) + ' m ahead)'); });
+  }
+  // Walk while shooting: the low aim points the barrel at least 15 degrees lower than the high aim
+  const barrel = x => { const g = bone(x, 'RightHand').children.find(c => !c.isBone); return Math.asin(V().set(0, 0, 1).applyQuaternion(g.getWorldQuaternion(Q())).y) * 57.3; };
+  const aims = {};
+  for (const c of ['walk_shoot_high', 'walk_shoot']) { let s = 0, n = 0; await run(c, x => { s += barrel(x); n++; }); aims[c] = s / n; }
+  if (!(aims.walk_shoot < aims.walk_shoot_high - 15)) out.push('clips: Walk while shooting aims ' + aims.walk_shoot.toFixed(0) + ' degrees, the high aim ' + aims.walk_shoot_high.toFixed(0));
+  // Open door: the hand closes on the handle and pulls it toward the body
+  await L.play('open_door'); at('open_door', 0.1);
+  const open0 = six.map(x => bone(x, 'RightHandIndex2').quaternion.clone());
+  at('open_door', 1.2);
+  const door0 = six.map(x => bone(x, 'RightHand').getWorldPosition(V()));
+  const curl = six.map((x, i) => bone(x, 'RightHandIndex2').quaternion.angleTo(open0[i]));
+  at('open_door', 2.5);
+  six.forEach((x, i) => { const d = door0[i].z - bone(x, 'RightHand').getWorldPosition(V()).z;
+    if (curl[i] < 0.5 || d < 0.15 * x.scale) out.push('clips: Open door, figure ' + i + ': the hand ' + (curl[i] < 0.5 ? 'open on the handle' : 'pulls only ' + d.toFixed(2) + ' m')); });
+  // Slash left cuts level: its hand rises far less above the shoulder than the up swing's
+  const rise = {};
+  for (const c of ['slash_up', 'slash_left']) { let r = -9; await run(c, (x, t) => { if (t > 0.5 && t < 1.3) r = Math.max(r, bone(x, 'RightHand').getWorldPosition(V()).y - bone(x, 'RightArm').getWorldPosition(V()).y); }); rise[c] = r; }
+  if (!(rise.slash_left < rise.slash_up - 0.1)) out.push('clips: Slash left rises ' + rise.slash_left.toFixed(2) + ' m over the shoulder, the up swing ' + rise.slash_up.toFixed(2));
   return out;
 }'''
 
