@@ -113,5 +113,6 @@
 {"px": [1447.59, 1561.31], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
 {"px": [1444.27, 1557.09], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
 {"px": [1448.8, 1554.29], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
-{"px": [1453.36, 1554.3], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"}
+{"px": [1453.36, 1554.3], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
+{"px": [1520.0, 128.0], "floor": 6250.0, "scale": 0.6, "radius": 3.0, "name": "the half-dome (to be named)", "region": "the half-dome (to be named)"}
 ]

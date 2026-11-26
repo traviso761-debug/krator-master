@@ -251,7 +251,7 @@ def unair(D, E0, En, whas, lim=7200.0):
 
 
 def finish(D, E0, En, W1, whas0, wlev0, whas, wlev, lake, floor_mask, seed, paint_floor=None, heat=None, force=None,
-           rain_min=None, paint_extra=None):
+           rain_min=None, paint_extra=None, temps_set=None, rain_set=None, after_reclimate=None):
     """The rasters after a carve: levels, lapse, air, rain/class/zone, paint, relight; returns the reclimate report.
     heat: a grid of degrees C added to every temperature (geothermal ground), the order kept; force: [(mask, code)]
     classes set after the reclimate; rain_min: (mask, mm); paint_extra: [(mask weights, rgb)] painted over the floors."""
@@ -273,14 +273,26 @@ def finish(D, E0, En, W1, whas0, wlev0, whas, wlev, lake, floor_mask, seed, pain
         T5['tl'][hm] = np.minimum(T5['tl'][hm], T5['tc'][hm] - 1)
         for k in C.TEMPS:
             D[k] = P.b64(Image.fromarray(np.clip(np.round(T5[k] + 90), 0, 255).astype(np.uint8), 'L'), optimize=True)
+    if temps_set is not None:            # temps_set(T5, En) -> T5: the caller's own temperatures (a maritime valley's)
+        T5 = {k: P.raster(D, k, 'L').astype(float) - 90 for k in C.TEMPS}
+        T5 = temps_set(T5, En)
+        land_ = ~whas & (T5['tm'] > -89.5)
+        T5['th'][land_] = np.maximum(T5['th'][land_], T5['tw'][land_] + 1)
+        T5['tl'][land_] = np.minimum(T5['tl'][land_], T5['tc'][land_] - 1)
+        for k in C.TEMPS:
+            D[k] = P.b64(Image.fromarray(np.clip(np.round(T5[k] + 90), 0, 255).astype(np.uint8), 'L'), optimize=True)
     n_un = unair(D, E0, En, whas)
     rain2, cls2, zon2, _, crep = C.reclimate(D, E0, En, whas, whas.copy())
     crep['airless_cells_given_air'] = n_air
     crep['class_O_let_go'] = n_un
+    if rain_set is not None:             # rain_set(rain) -> rain
+        rain2 = rain_set(rain2)
     if rain_min is not None:
         rain2[rain_min[0]] = np.maximum(rain2[rain_min[0]], rain_min[1])
     for m_, code in (force or []):
         cls2[m_] = codes.index(code)
+    if after_reclimate is not None:      # after_reclimate(D, rain, cls, zon) -> (rain, cls, zon)
+        rain2, cls2, zon2 = after_reclimate(D, rain2, cls2, zon2)
     if lake.any():
         cls2[lake] = codes.index('WH')
         hl = whas0 & (wlev0 > 3000)
