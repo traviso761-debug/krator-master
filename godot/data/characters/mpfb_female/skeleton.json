@@ -1778,13 +1778,6 @@
    "loop": true
   },
   {
-   "name": "idle_2",
-   "label": "Idle 2",
-   "group": "idle",
-   "seconds": 4.27,
-   "loop": true
-  },
-  {
    "name": "idle_3",
    "label": "Idle 3",
    "group": "idle",
@@ -2705,18 +2698,18 @@
    "loop": false
   },
   {
-   "name": "lie_bed",
-   "label": "Get into bed",
-   "group": "life",
-   "seconds": 7.63,
-   "loop": false
-  },
-  {
    "name": "sleep",
    "label": "Sleep",
    "group": "life",
    "seconds": 1.67,
    "loop": true
+  },
+  {
+   "name": "lie_bed",
+   "label": "Get into bed",
+   "group": "life",
+   "seconds": 7.63,
+   "loop": false
   },
   {
    "name": "sleep_toss",

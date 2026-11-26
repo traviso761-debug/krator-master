@@ -179,6 +179,14 @@ area you are about to change.
   over trousers in motion.
 - **A rebuild in a fresh worktree loses the weave with no error** → the library's albedos are LFS pointers, and the textures came out a quarter smaller. Compare an untouched garment's GLB with its piece first (geometry
   and weights exact, image size close); `make_garments.py` now stops on a pointer. On Windows `make_mpfb.py` writes kit.json with CRLF.
+- **Toenails standing out below a shoe's toe** (the woman, the limp, "toe bone sticking out") → the toenails are a
+  primitive of their own (`Human.toenails`) like the nipples: `HIDE_PARTS` takes both, so a shoe that hides all the
+  toes' skin hides them. A tool that rewrites `hide_parts` keeps the entries it does not derive: `make_mpfb.py hides`
+  first wiped the animal heads' lips, brows and ears, and dropped three harnesses' nipples whose hide it had not
+  changed.
+- **A hide refresh needs the manifest's GLBs, not the newest ones** → hash every candidate piece against
+  build-manifest.json and assemble a matching set from every checkout (and the published `.txt` pieces) first; garments
+  rebuilt since the last committed manifest give hides for geometry that is not shipped.
 - **Skin that is bare by design is not a fault** → a flat-colour count flagged the Dalab peasant's midriff and arms in front
   of skirts. Colour the skin by where it is at rest, take what the A-pose shows bare as the cut, and leave out the arms,
   the hands, the head and the feet.
@@ -351,6 +359,24 @@ area you are about to change.
   other limbs: here they pushed legs aside, and only the JS-to-Godot joint comparison showed it.
 - Measure a pass's reach before calling it done: the joints of every clip at a few times on all six bodies, before and
   after (regressions showed in clips nobody flagged: idle 2, the pistol stances).
+- **Arms through arms** (Arms folded: each wrist 2.5 to 3 cm into the other arm) → test the forearm (elbow to wrist) only
+  against the other arm (a hand may grip the other biceps, so it never clears), at the narrow-end radii (one radius for
+  the limb overstated the wrist and the lower biceps by 2 cm), and move only the forearm in front, along the chest's
+  forward axis: the closest-point way lifted the top forearm and, about the elbow, the hand to the collarbone; forward
+  square to a folded upper arm (which points down and forward) also tilts up; and each arm pushed out of the other in
+  turn ratchets both forward frame by frame. Stand aside while both hands hold one prop (the two-hand solve owns the
+  left arm). Measure on the skinned meshes, not the capsules.
+- **A faster push for a fast clip makes other clips jump** → letting a deep push turn three times faster cleared the
+  climb's knee but jumped hands 2 to 9 cm a frame in dig, harvest and repair. Scan every clip's largest frame-to-frame
+  joint move (relative to the hips) on all six bodies, before and after; run the old page twice to see the noise.
+- **r128's `SkinnedMesh.boneTransform(i, target)` ignores the point passed in** (it reads vertex i): skin a normal by
+  the vertex's bone matrix (`boneMatrixWorld * boneInverse * bindMatrix`) yourself. A probe that offset the point along
+  the normal read zero depth everywhere.
+- **A hand baked onto the head floats after posture** → posture tips the head and keeps the upper arms' direction, so
+  the man's (larger) posture carried his head away from Confused Scratch's palm: give the clip a `face` entry (a point
+  in the head's frame) so toFace puts the palm back after posture, in both runtimes.
+- **A foot held toes-down through a swing** (Limp) → bake a floor on the foot's pitch (`derive: feet`); a walk's toe-off
+  passes it for a frame, so judge by how long a clip stays past it, not the extreme.
 - **Baking a crowd's still poses** (`src/60-crowd.js`, 2026-10-20). A figure's pieces are SkinnedMeshes on r128
   materials with `skinning: true`, so they cannot simply be drawn as InstancedMeshes: bake each vertex through its
   bones (`SkinnedMesh.boneTransform`, after `skeleton.update()`) into a plain geometry, and give it vertex colours (its

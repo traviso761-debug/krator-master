@@ -1024,7 +1024,10 @@ def parts_under(path, BP, BT):
     return out
 
 
-HIDE_PARTS = ('nipple',)     # the base's parts an item can hide (lips, ears and nails show at the edge of what covers them)
+# the base's parts an item can hide (lips, ears and fingernails show at the edge of what covers them). The toenails: a
+# shoe hides all the toes' skin, but in the limp, the foot pointed down, the woman's nails stood out below the shoe's
+# toe as slivers (the owner's review, 2026-10-25: "toe bone sticking out")
+HIDE_PARTS = ('nipple', 'toenails')
 
 
 def hide_parts(entry, under, ntris):
@@ -1050,6 +1053,7 @@ def refresh_hides(body, pieces):
     shoulder = abs(c.jpos[c.joints.index('LeftArm')][0])
     for e in kit['items']:
         g = os.path.join(pieces, e['id'] + '.glb')
+        hide0 = e.get('hide')
         if e.get('hide_by') == 'rays' and legged_trousers(e) and os.path.exists(g):
             tris = covered(BP, BT, g, **TROUSERS_COVER)
             print('%-8s %-34s hides %5d (was %d)' % (body, e['id'], len(tris), e.get('hides', 0)))
@@ -1061,7 +1065,12 @@ def refresh_hides(body, pieces):
             if len(tris) != len(was):
                 print('%-8s %-34s sleeves open: hides %5d (was %d)' % (body, e['id'], len(tris), len(was)))
                 e['hide'], e['hides'] = bits(len(BT), tris), int(len(tris))
-        hp = hide_parts(e, under, len(BT))
+        # only the parts this derives (HIDE_PARTS: the nipples); a head's lips, brows and ears (heads.py, mods.py) and a
+        # digitigrade foot's nails (digitigrade.py) are their tools' to set, and stay. An item whose hide this run left
+        # as it was keeps the parts the pack gave it (the harnesses' nipples: the pack set them by another path)
+        same = e.get('hide') == hide0
+        keep = [m for m in e.get('hide_parts', []) if same or m.split('.')[-1] not in HIDE_PARTS]
+        hp = keep + [m for m in hide_parts(e, under, len(BT)) if m not in keep]
         if hp:
             e['hide_parts'] = hp
         else:

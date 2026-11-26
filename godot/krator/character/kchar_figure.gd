@@ -2811,7 +2811,8 @@ func _foot_ends(sd: int, r: float, pa: Vector3, pb: Vector3) -> Array:
 # hip (LEGSWING at most; a knee before the belly is left be); two thighs that overlap each turn out by half; then each
 # upper arm turns at the shoulder (against the trunk its elbow's end only, UPLOW on, and not the top of the chest),
 # and the forearm and hand to the knuckles at the elbow, out of the trunk (above the pelvis the chain through
-# skel.trunk) and both legs (a giant's lower arm out of its side's upper arm too), twice over
+# skel.trunk), both legs (a giant's lower arm out of its side's upper arm too) and the other arm of its pair (its upper
+# arm and forearm), twice over
 const BF := 0.008
 const LEGSWING := 0.35
 const UPLOW := 0.7
@@ -3043,6 +3044,19 @@ func _body_fix() -> void:
 			for cp in _caps:
 				if cp.get("pa") == null and (int(cp["a"]) == skeleton.find_bone(arm[4] + "Arm") or int(cp["a"]) == skeleton.find_bone(arm[4] + "ForeArm")):
 					obs.append(_ends({"a": int(cp["a"]), "b": int(cp["b"]), "ra": float(cp["r"]), "rb": float(cp["r"]), "r": float(cp["r"]), "n": ""}))
+		# the other arm of the pair, as it stands, for the forearm only (Arms folded: each wrist sank 2.5 to 3 cm into
+		# the other arm), at its narrow end's radius (the elbow's, the wrist's: one radius overstated them by 2 cm)
+		var chj := skeleton.find_bone("Spine2") if skeleton.find_bone("Spine2") >= 0 else sp1
+		var ch_f := Vector3(0, 0, 1)
+		if chj >= 0:
+			ch_f = (_gp(chj).basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(chj).basis.get_rotation_quaternion().inverse()) * ch_f
+		# (not while both hands hold one prop: the two-hand solve places the left arm)
+		for ob in arms:
+			if ob == arm or (ob[4] == "") != (arm[4] == "") or not _support().is_empty():
+				continue
+			for cp in _caps:
+				if cp.get("pa") == null and (int(cp["a"]) == skeleton.find_bone(ob[0]) or int(cp["a"]) == skeleton.find_bone(ob[1])):
+					obs.append(_ends({"a": int(cp["a"]), "b": int(cp["b"]), "ra": float(cp["rb"]), "rb": float(cp["rb"]), "r": float(cp["rb"]), "n": "", "arm": true}))
 		for it in 2:
 			var sA := _gp(b0).origin
 			var sB := _gp(b1).origin
@@ -3053,7 +3067,7 @@ func _body_fix() -> void:
 			for o in obs:
 				# against the trunk only the elbow's end at its own (tapering) radius, and not the top of the chest
 				var on_trunk: bool = trunk.has(o) and not o.has("head")
-				if on_trunk and o.get("top", false):
+				if (on_trunk and o.get("top", false)) or o.has("arm"):
 					continue
 				var hit := _closest(low if on_trunk else (sA.lerp(sB, 0.4) if o.has("head") else sA), sB, o["A"], o["B"])
 				var r_up := float(cu["ra"]) + (float(cu["rb"]) - float(cu["ra"])) * (UPLOW + (1.0 - UPLOW) * float(hit["s"])) if on_trunk else float(cu["r"])
@@ -3071,10 +3085,28 @@ func _body_fix() -> void:
 				if o.has("head"):
 					continue
 				for k in 2:
-					if k == 1 and b3 < 0:
+					# the other arm: the forearm to the wrist only (a hand may hold the other arm, its fingers round it)
+					if k == 1 and (b3 < 0 or o.has("arm")):
 						continue
 					var hit := _closest(eB if k == 1 else eA, _gp(b3).origin if k == 1 else eB, o["A"], o["B"])
 					var dep := float(cf["rb"] if k == 1 else cf["r"]) + _rad(o, hit["t"]) + BF - float(hit["d"])
+					if o.has("arm"):
+						# folded forearms lie stacked: the forearm in front of the other arm comes forward out of it
+						# along the chest's forward axis, by the least that clears, and the one behind stays (each out
+						# of the other in turn ratcheted both forward; the gap's way lifted the hand to the collarbone)
+						var R := lerpf(float(cf["ra"]), float(cf["rb"]), float(hit["s"])) + _rad(o, hit["t"])
+						var ax := ((o["B"] as Vector3) - (o["A"] as Vector3)).normalized()
+						if R > float(hit["d"]) and float(hit["d"]) > 1e-6 and absf(ch_f.dot(ax)) < 0.9:
+							var g: Vector3 = (hit["c1"] as Vector3) - (hit["c2"] as Vector3)
+							var gf := g.dot(ch_f)
+							if gf >= 0.0:
+								var kk := -gf + sqrt(maxf(0.0, gf * gf - g.length_squared() + R * R))
+								if kk > worst:
+									worst = kk
+									p = hit["c1"]
+									way = ch_f
+							continue
+						dep = R - float(hit["d"])
 					if dep > worst and float(hit["d"]) > 1e-6:
 						worst = dep
 						p = hit["c1"]
