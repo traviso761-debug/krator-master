@@ -43,6 +43,61 @@ ARK = LIVE['settlements'][0]
 SRC = os.path.join(HERE, 'model', 'src')
 
 
+def weather(E, dom, outlet, iters=24, K=0.035, kd=0.12, cap=14.0):
+    """Weathering over `dom` (a bool grid), the land drained to `outlet` (the sea): per round, the depressions are
+    filled (priority flood), each cell drains to its steepest lower neighbour (D8), the drained area accumulates, and
+    each cell is cut by stream power, K x area^0.5 x slope (at most `cap` m a round, never under 1 m). Then the
+    slopes creep: a diffusion `kd`. The rain's own valleys branch down the slope; the ridges between them round off.
+    Returns the weathered grid (only `dom` changed)."""
+    import heapq
+    ys, xs = np.nonzero(nd.binary_dilation(dom, iterations=3))
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    H = E[y0:y1, x0:x1].astype(float).copy()
+    dm = dom[y0:y1, x0:x1]
+    out = outlet[y0:y1, x0:x1] | ~nd.binary_dilation(dm, iterations=2)
+    h, w = H.shape
+    nb = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    for _ in range(iters):
+        # priority flood from the outlets: Hf, each cell's spill level
+        Hf = H.copy()
+        seen = out.copy()
+        pq = [(Hf[j, i], j, i) for j, i in zip(*np.nonzero(out))]
+        heapq.heapify(pq)
+        order = []
+        while pq:
+            z, j, i = heapq.heappop(pq)
+            order.append((j, i))
+            for dj, di in nb:
+                jj, ii = j + dj, i + di
+                if 0 <= jj < h and 0 <= ii < w and not seen[jj, ii]:
+                    seen[jj, ii] = True
+                    Hf[jj, ii] = max(Hf[jj, ii], z + 1e-3)
+                    heapq.heappush(pq, (Hf[jj, ii], jj, ii))
+        # drainage: each cell to its steepest lower neighbour on the filled surface; area summed from the top down
+        A = np.ones((h, w)); S = np.zeros((h, w)); rec = {}
+        for j, i in order:
+            best, bj, bi = 0.0, -1, -1
+            for dj, di in nb:
+                jj, ii = j + dj, i + di
+                if 0 <= jj < h and 0 <= ii < w:
+                    s_ = (Hf[j, i] - Hf[jj, ii]) / (1.4142 if dj and di else 1.0)
+                    if s_ > best:
+                        best, bj, bi = s_, jj, ii
+            if bj >= 0:
+                rec[(j, i)] = (bj, bi); S[j, i] = best
+        for j, i in reversed(order):
+            r_ = rec.get((j, i))
+            if r_:
+                A[r_] += A[j, i]
+        cut = np.minimum(K * np.sqrt(A) * S, cap)
+        H = np.where(dm, np.maximum(H - cut, 1.0), H)
+        lap = nd.laplace(H)
+        H = np.where(dm, np.maximum(H + kd * lap, 1.0), H)
+    Eo = E.copy()
+    Eo[y0:y1, x0:x1] = np.where(dm, H, E[y0:y1, x0:x1])
+    return Eo
+
+
 def mask(pts, shape):
     return G.poly([tuple(p) for p in pts], 1.0, 1.0, shape)
 
@@ -105,6 +160,11 @@ def main():
     h_new = np.maximum(h_new, 2.0)
     En[newland] = h_new[newland]
     En[strip] = np.maximum(E0[strip], h_new[strip])
+    # weathered (the owner's third look: "apply realistic weathering to matron's coast"): the rain's valleys cut by
+    # stream power down the new slope, branching toward the sea, the ridges between them rounded by creep
+    Ew = weather(En, dom, still_sea)
+    rep['matron_weathering_m'] = {'cut_max': round(float((En - Ew)[dom].max())), 'cut_p90': round(float(np.percentile((En - Ew)[dom], 90)))}
+    En = Ew
     whas[newland] = False; wlev[newland] = np.nan; W1[newland] = False
     rep['matron_new_land_cells'] = int(newland.sum())
     rep['matron_new_land_km2'] = int(newland.sum() * 4)
@@ -169,27 +229,46 @@ def main():
     Lpts = REG['whitelake']['points']
     Lpoly = mask(Lpts, sh)
     c, a, t0, t1 = pca_axis(Lpts)
-    p0 = c + a * t0 * 0.75; p1 = c + a * t1 * 0.75
-    dxv, dyv = p1 - p0; L2 = dxv * dxv + dyv * dyv
-    tp = np.clip(((XX - p0[0]) * dxv + (YY - p0[1]) * dyv) / L2, 0, 1)
-    dperp = np.hypot(XX - (p0[0] + tp * dxv), YY - (p0[1] + tp * dyv))
-    hwv = 6.0 * (0.58 + 0.42 * G.sstep(0.0, 0.25, np.minimum(tp, 1 - tp)))
-    u = dperp / np.maximum(hwv, 1.5)
-    env = nd.gaussian_filter(Lpoly.astype(float), 3.0)
-    wv = ((1.0 - G.sstep(0.0, 2.15, u)) ** 1.35) * env
-    hprof = 5900.0 + 2150.0 * (G.sstep(0.0, 2.05, u) ** 1.45)
-    # the full trough at its middle (the Sasquatch troughs blended 0.88 into 7-8 km ridges; this shoulder stands ~9.5 km, and
-    # 0.88 left the floor ~400 m over the tarn)
-    En = En * (1 - wv) + np.minimum(En, hprof) * wv
-    # the tarn: an ellipse along the axis at the polygon's middle
-    ang = math.atan2(a[1], a[0])
-    xr = (XX - c[0]) * math.cos(ang) + (YY - c[1]) * math.sin(ang)
-    yr = -(XX - c[0]) * math.sin(ang) + (YY - c[1]) * math.cos(ang)
-    tarn = (np.hypot(xr / 3.6, yr / 2.0) <= 1.0) & Lpoly
-    TL = 5890.0
+    p0 = c + a * t0 * 0.8; p1 = c + a * t1 * 0.8
+    # a natural mountain lake (the owner's second look: "make white lake a more natural mountain lake landform"; the first
+    # cut was a ruled ellipse in a straight trough): the trough follows its own low ground across the polygon (edit 32's
+    # route), winding, its width breathing and its walls uneven (valley). Its floor is a glacier's: overdeepened in the
+    # middle, held at the outlet end (toward the pass) by a moraine lip, and lumpy with till. The lake is the water that
+    # basin holds up to its lip, so its shore follows the floor: bays, points, an islet where a knoll stands clear.
+    import edit_532_sw_wall_trigemini as T32
+    rng_l = np.random.default_rng(53004)
+    pcen = cl.mean(0)
+    if math.hypot(*(p0 - pcen)) < math.hypot(*(p1 - pcen)):
+        p0, p1 = p1, p0                                  # p1, the outlet end, toward the pass
+    lpts = T32.route(En, tuple(p0), tuple(p1), rng_l, keep=nd.binary_dilation(Lpoly, iterations=2), pad=10, wander=0.5)
+    nL = len(lpts)
+    tt = np.linspace(0, 1, nL)
+    FL0 = 5900.0
+    till = nd.gaussian_filter1d(rng_l.standard_normal(nL), 3.0); till /= np.abs(till).max() + 1e-9
+    lfloor = (FL0 + 140.0 * (1 - G.sstep(0.0, 0.18, tt))             # the head rising to the cirque
+              - 95.0 * np.sin(np.pi * np.clip((tt - 0.12) / 0.72, 0, 1)) ** 1.3   # the overdeepened basin
+              + 70.0 * np.exp(-((tt - 0.86) / 0.045) ** 2)            # the moraine lip
+              + 18.0 * till)
+    En_pre = En.copy()
+    lake_floor, _, _ = T32.valley(E0, En, lpts, None, None, None, 5.6, rng_l, rise=2150.0, floor_arr=lfloor, breathe=0.35)
+    # till hummocks over the trough's floor, and the shoulders kept no higher than they were
+    hum = nd.gaussian_filter(rng_l.standard_normal(sh), 1.2); hum /= hum.std() + 1e-9
+    trough = (En < En_pre - 1) & (En < FL0 + 260)
+    En[trough] += 14.0 * hum[trough]
+    En = np.minimum(En, En_pre)
+    # the lake: from the basin's deepest point, every connected trough cell under the lip's level
+    jl = int(np.argmin(lfloor[int(0.15 * nL):int(0.8 * nL)])) + int(0.15 * nL)
+    lip = float(lfloor[int(0.78 * nL):int(0.95 * nL)].max())
+    TL = round(min(lip - 4.0, float(lfloor.min()) + 105.0), 1)     # a lake in the basin's deep, not the whole trough
+    seed = (int(round(lpts[jl, 1])), int(round(lpts[jl, 0])))
+    lab_l, _ = nd.label((En < TL) & nd.binary_dilation(Lpoly, iterations=2))
+    if lab_l[seed] == 0:
+        En[seed] = TL - 10.0
+        lab_l, _ = nd.label((En < TL) & nd.binary_dilation(Lpoly, iterations=2))
+    tarn = lab_l == lab_l[seed]
     whas[tarn] = True; wlev[tarn] = TL; W1[tarn] = True
-    En[tarn] = np.minimum(En[tarn], TL - 12.0)
-    shore = nd.binary_dilation(tarn, iterations=2) & ~tarn & Lpoly
+    En[tarn] = np.minimum(En[tarn], TL - 6.0 - 30.0 * np.clip(nd.distance_transform_edt(tarn)[tarn] / 2.5, 0, 1))
+    shore = nd.binary_dilation(tarn, iterations=1) & ~tarn
     En[shore] = np.maximum(En[shore], TL + 2.0)
     # the town: on the shore, toward the pass (the trough's end nearest the pass's centre line)
     sy_, sx_ = np.nonzero(shore)
@@ -200,7 +279,8 @@ def main():
     sy_, sx_ = sy_[low], sx_[low]
     k = int(np.argmin(np.hypot(sx_ - pc[0], sy_ - pc[1])))
     wl_pin = (int(sx_[k]), int(sy_[k]))
-    rep['white_lake'] = {'tarn_cells': int(tarn.sum()), 'level_m': TL, 'floor_m': 5900, 'centre': [round(float(c[0]), 1), round(float(c[1]), 1)],
+    rep['white_lake'] = {'tarn_cells': int(tarn.sum()), 'level_m': TL, 'floor_m': FL0, 'lip_m': round(lip), 'deepest_floor_m': round(float(lfloor.min())),
+                         'islets': int(nd.label(nd.binary_fill_holes(tarn) & ~tarn)[1]), 'centre': [round(float(c[0]), 1), round(float(c[1]), 1)],
                          'town_px': list(wl_pin), 'town_m': round(float(En[wl_pin[1], wl_pin[0]]))}
 
     # (after the crater, the pass and the lake, on the finished land) the rivers that met the old shore run on across the new plain to the new coast (least cost to the sea), their

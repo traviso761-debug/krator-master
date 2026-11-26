@@ -81,15 +81,15 @@
  "raised_cells": 0,
  "reclimate": {
   "cells": 3526,
-  "class_changed": 2220,
+  "class_changed": 2218,
   "rain_mean_before_mm": 260.0,
   "rain_mean_after_mm": 495.0,
   "classes_now": {
    "BSk": 18,
    "Dsc": 1,
-   "Dfc": 138,
-   "ET": 827,
-   "EF": 1313,
+   "Dfc": 137,
+   "ET": 829,
+   "EF": 1312,
    "HT": 789,
    "HF": 440
   },
@@ -98,9 +98,9 @@
  },
  "floor_classes": {
   "BSk": 13,
-  "Dfc": 79,
-  "ET": 500,
-  "EF": 685,
+  "Dfc": 77,
+  "ET": 503,
+  "EF": 684,
   "HT": 241
  }
 }

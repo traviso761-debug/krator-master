@@ -56,35 +56,56 @@ def main():
     sh = E0.shape
     YY, XX = np.mgrid[0:sh[0], 0:sh[1]]
     poly = G.poly([tuple(p) for p in MIST['points']], 1.0, 1.0, sh)
-    # the centre lines resampled every 0.5 px, each point with its floor
-    pts, fl = [], []
-    for line, f0, f1 in LINES:
-        L = np.array(line, float)
-        seg = np.r_[0, np.cumsum(np.hypot(*np.diff(L, axis=0).T))]
-        t = np.linspace(0, seg[-1], max(2, int(seg[-1] / 0.5)))
-        x = np.interp(t, seg, L[:, 0]); y = np.interp(t, seg, L[:, 1])
-        a = E0[int(round(y[0])), int(round(x[0]))] if f0 is None else f0
-        b = E0[int(round(y[-1])), int(round(x[-1]))] if f1 is None else f1
-        f = a + (b - a) * t / seg[-1]
-        f = np.minimum(f, E0[np.round(y).astype(int), np.round(x).astype(int)])   # never above the land
-        pts += list(zip(x, y)); fl += list(f)
-    pts = np.array(pts); fl = np.array(fl)
-    region = nd.binary_dilation(poly, iterations=2)
-    dedge = nd.distance_transform_edt(poly)
-    cells = np.stack([XX[region], YY[region]], 1)
-    d, ix = cKDTree(pts).query(cells)
-    hw = np.maximum(3.0, nd.maximum_filter(dedge, size=9)[region])
-    rise = 1800.0 * np.clip(d / hw, 0, 1.6) ** 2
-    val = fl[ix] + rise
+    # the valleys (the owner's third look: "make mistheights more irregularly bordered, like neighboring silent vale"):
+    # each centre line is routed through its waypoints over the land's own low ground and cut as a winding valley
+    # (edit 32's route and valley: the width breathing, the walls uneven), its floor running f0 to f1 as before. Short
+    # side coves and hanging valleys branch off it, their floors rising into the walls, so its edge is ragged as the
+    # Silent Vale's is.
+    import edit_532_sw_wall_trigemini as T32
+    rng_m = np.random.default_rng(53105)
+    keep = nd.binary_dilation(poly, iterations=4)
     En = E0.copy()
-    En[region] = np.minimum(E0[region], val)
     floor_mask = np.zeros(sh, bool)
-    floor_mask[region] = (d <= np.maximum(1.2, 0.45 * hw)) & (En[region] < 4800)
+    courses = []
+    for line, f0, f1 in LINES:
+        legs = []
+        for a_, b_ in zip(line[:-1], line[1:]):
+            legs.append(T32.route(E0, a_, b_, rng_m, keep=keep, pad=10, wander=0.45))
+        pts = np.vstack([legs[0]] + [lg[1:] for lg in legs[1:]])
+        hw0 = max(3.0, float(np.median(nd.distance_transform_edt(poly)[np.clip(np.round(pts[:, 1]).astype(int), 0, sh[0] - 1),
+                                                                    np.clip(np.round(pts[:, 0]).astype(int), 0, sh[1] - 1)])) * 1.1)
+        f_, _, _ = T32.valley(E0, En, pts, f0, None, f1, hw0, rng_m, rise=1800.0, breathe=0.4)
+        floor_mask |= f_
+        courses.append((pts, hw0))
+    # the coves: every ~6 px along a course, on alternate sides with a jitter, a side valley 3-7 px long, half as wide,
+    # its floor rising from the main floor to 300-900 m over it at its head (some hanging valleys, some coves)
+    n_cove = 0
+    for pts, hw0 in courses:
+        seg = np.r_[0, np.cumsum(np.hypot(*np.diff(pts, axis=0).T))]
+        tg = np.gradient(pts, axis=0); tg /= np.hypot(tg[:, 0], tg[:, 1])[:, None] + 1e-9
+        side = 1
+        for s_ in np.arange(4.0, seg[-1] - 3.0, 6.0):
+            i = int(np.searchsorted(seg, s_ + rng_m.uniform(-1.5, 1.5)))
+            i = min(max(i, 1), len(pts) - 2)
+            side = -side if rng_m.random() < 0.8 else side
+            ang = math.atan2(tg[i, 1], tg[i, 0]) + side * (math.pi / 2 + rng_m.uniform(-0.6, 0.6))
+            L_ = rng_m.uniform(3.0, 7.0)
+            base_ = pts[i] + np.array([math.cos(ang), math.sin(ang)]) * hw0 * 0.4
+            head_ = pts[i] + np.array([math.cos(ang), math.sin(ang)]) * (hw0 * 0.4 + L_)
+            if not keep[int(round(head_[1])) % sh[0], int(round(head_[0])) % sh[1]]:
+                continue
+            fb = float(En[int(round(base_[1])), int(round(base_[0]))])
+            cp = T32.route(E0, tuple(base_), tuple(head_), rng_m, pad=6, wander=0.6)
+            ff = np.linspace(fb, fb + rng_m.uniform(300.0, 900.0), len(cp))
+            f_, _, _ = T32.valley(E0, En, cp, None, None, None, max(1.4, 0.5 * hw0), rng_m, rise=1600.0, floor_arr=ff, breathe=0.4)
+            floor_mask |= f_ & (ff.min() < 4800)
+            n_cove += 1
+    floor_mask &= (En < 4800) & (En < E0 - 1)
     rep = {'edit': '5.1 edit 31: Mistheights', 'date': '2026-11-25',
            'junction_m': round(float(En[int(J[1]), int(J[0])])), 'basin_m': round(float(En[int(BASIN[1]), int(BASIN[0])])),
            'east_col_m': round(float(En[852, 305])), 'west_tip_m': round(float(En[858, 222])),
            'land_moved_cells': int((np.abs(En - E0) > 1).sum()), 'lowered_m_max': round(float((E0 - En).max())),
-           'floor_cells': int(floor_mask.sum())}
+           'floor_cells': int(floor_mask.sum()), 'side_coves': n_cove}
     print(json.dumps(rep, ensure_ascii=False, indent=1))
     json.dump(rep, open(os.path.join(HERE, 'edit_531_mistheights.report.json'), 'w', encoding='utf-8', newline='\n'), ensure_ascii=False, indent=1)
     if dry:

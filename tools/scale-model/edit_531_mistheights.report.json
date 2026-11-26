@@ -5,33 +5,34 @@
  "basin_m": 4300,
  "east_col_m": 5118,
  "west_tip_m": 3000,
- "land_moved_cells": 5618,
- "lowered_m_max": 5565,
- "floor_cells": 2047,
- "airless_cells_given_air": 1840,
+ "land_moved_cells": 4962,
+ "lowered_m_max": 5594,
+ "floor_cells": 1320,
+ "side_coves": 53,
+ "airless_cells_given_air": 1385,
  "floor_temps_C": {
-  "tm": -0.9,
-  "th": 17.8,
-  "tl": -20.2,
-  "tw": 9.8,
-  "tc": -11.4
+  "tm": -1.1,
+  "th": 17.7,
+  "tl": -20.6,
+  "tw": 9.6,
+  "tc": -12.1
  },
- "class_O_let_go": 2609,
+ "class_O_let_go": 2000,
  "reclimate": {
-  "cells": 5584,
-  "class_changed": 3676,
-  "rain_mean_before_mm": 613.0,
-  "rain_mean_after_mm": 1156.0,
+  "cells": 5112,
+  "class_changed": 3593,
+  "rain_mean_before_mm": 696.0,
+  "rain_mean_after_mm": 1129.0,
   "classes_now": {
-   "BSk": 1,
-   "Cfa": 15,
-   "Dsc": 21,
-   "Dfb": 240,
-   "Dfc": 1635,
-   "ET": 2011,
-   "EF": 701,
-   "HT": 430,
-   "HF": 530
+   "BSk": 3,
+   "Cfa": 75,
+   "Dsc": 13,
+   "Dfb": 250,
+   "Dfc": 974,
+   "ET": 1755,
+   "EF": 945,
+   "HT": 710,
+   "HF": 387
   }
  }
 }
