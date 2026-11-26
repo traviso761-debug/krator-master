@@ -505,6 +505,13 @@ area you are about to change.
   along the grip's handle axis in the fist, so it may only swing about that axis. Turn the forearm about its own length
   until the bail lies level, bend the wrist (capped) for what the forearm cannot (the handle partly along it), then
   swing the load about the bail.
+- **Two solutions chosen afresh each frame flip the hand** (Water plants, the round after): two forearm turns lay the
+  bail level; "the smaller" swapped as the clip turned the forearm, as a mid-frame push turned the arm between two calls,
+  and, where none levels it, as the half-turn answer wrapped past 180 degrees and the cap sent it from +1.6 to -1.6.
+  Track the frame's whole turn against the last frame's, unwrap each candidate round that reference before comparing or
+  clamping, cap how fast the whole turn changes by the clip's dt, and keep a mid-frame push from the frame before (eased
+  back). Measure the hand's world turn per frame over the whole clip on all six; the first frames and the loop's seam
+  are where it shows.
 - **A bucket in the thigh** (the short bodies): keep its body (rings about the hang axis) out of the legs' capsules widened
   for trousers by turning the arm at the shoulder. Push along the depth-weighted sum of every point inside, off its leg
   (the deepest point alone, between the legs of a stride, sent it from one leg to the other), never in toward the other

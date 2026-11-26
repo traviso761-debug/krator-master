@@ -115,8 +115,10 @@
 - **The hand-prop fixes of the owner's review (2026-10-20) are passes over clips made for something else** (README,
   Props, To the face, The bow). What each leaves:
   - *Hanging props hang still.* The bucket and the lantern hang plumb from the bail in the fist every frame; they do
-    not swing with the walk. The forearm turns (and the wrist bends) to lay the bail level, so in Carry bucket's
-    forward swing (about 7 s) the men's hand turns well over to hold it. The bucket is kept out of the legs by turning
+    not swing with the walk. The forearm turns (and the wrist bends) to lay the bail level, held near the frame
+    before's turn and changing at most 6 rad/s, so where the clip needs the forearm turned the other way the hand turns
+    over in a few frames rather than snapping (it snapped half a turn in Water plants, 2026-11-27), and where no turn
+    lays it level (Carry bucket's forward swing, about 7 s) the turn stays at its cap and the wrist bends. The bucket is kept out of the legs by turning
     the arm at the shoulder, which can hold the arm a little out from the side. *Water plants* was made for a watering
     can: the bucket hangs from the reaching hand and nothing pours.
   - *Chop's left arm* (the third round, 2026-11-26) is kept out of the jaw by bringing both hands down at the top of the

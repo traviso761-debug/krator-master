@@ -1829,20 +1829,33 @@ function KCharFigure(body, sliders, load){
      turning the arm at the shoulder so its deepest point goes the way out (hangDepth; the short bodies carried the
      bucket in the thigh) */
   var hQ = Q(), hQ2 = Q(), hD = V(), hY = V(), hF = V(), hA = V(), hB = V(), hS = V(), hT = V(), hW = V(), hO = V(),
-      hOut = V(), hN = V(), hUp = V(), hSide = V(), HANG_TURN = 1.6, HANG_WRIST = 0.5, HANG_CLEAR = 0.045, HANG_OUT = 0.6;
+      hOut = V(), hN = V(), hUp = V(), hSide = V(), HANG_RATE = 6, HANG_RELAX = 0.3, HANG_TURN = 1.6, HANG_WRIST = 0.5, HANG_CLEAR = 0.045, HANG_OUT = 0.6;
   function wrapA(a){ return Math.atan2(Math.sin(a), Math.cos(a)); }
-  function hangTurn(side, h, g){
+  function hangTurn(side, h, g, first){
     var arm = skel.hands[side] && skel.hands[side].arm;
     if(arm){
       var fore = bones[arm[1]];
       fore.getWorldPosition(hA); bones[arm[2]].getWorldPosition(hB); hF.subVectors(hB, hA).normalize();
       hY.set(0, 1, 0).applyQuaternion(g.getWorldQuaternion(hQ));
-      // the bail turned about the forearm by phi has height a + b cos(phi) + c sin(phi): the nearer phi that zeroes it
+      // the bail turned about the forearm by phi has height a + b cos(phi) + c sin(phi): of the two phi that zero it,
+      // the one that brings the frame's whole turn (h.tot) nearer the last frame's (h.last; the nearer to none, chosen
+      // afresh each frame, swapped as the clip turned the forearm, or as the legs' push turned the arm between two calls,
+      // and the hand flipped half a turn in a frame: Water plants)
       var a = hY.dot(hF) * hF.y, yp = hT.copy(hY).addScaledVector(hF, -hY.dot(hF)), b = yp.y, c = hS.crossVectors(hF, yp).y,
           R = Math.hypot(b, c);
       if(R > 1e-6){
         var dl = Math.atan2(c, b), ac = Math.acos(THREE.MathUtils.clamp(-a / R, -1, 1)), p1 = wrapA(dl + ac), p2 = wrapA(dl - ac);
-        var phi = THREE.MathUtils.clamp(Math.abs(p1) < Math.abs(p2) ? p1 : p2, -HANG_TURN, HANG_TURN);
+        // each taken round from ref (where none levels it both lie near half a turn, and wrapped at +-180 degrees the cap
+        // sent the forearm from +HANG_TURN to -HANG_TURN in a frame: Carry bucket, 7.3 s)
+        if(first) h.tot = 0;
+        var ref = (h.last || 0) - h.tot, q1 = ref + wrapA(p1 - ref), q2 = ref + wrapA(p2 - ref);
+        // the frame's whole turn within the cap, and changing by no more than HANG_RATE a second from the last frame's (a
+        // real change of side is then a quick turn of the forearm, not a snap; a step of the clip's time by 0 is not
+        // limited)
+        var lo = -HANG_TURN, hi = HANG_TURN;
+        if(h.last != null && h.dt > 0){ lo = Math.max(lo, h.last - HANG_RATE * h.dt); hi = Math.min(hi, h.last + HANG_RATE * h.dt); }
+        var phi = THREE.MathUtils.clamp(Math.abs(q1 - ref) < Math.abs(q2 - ref) ? q1 : q2, lo - h.tot, hi - h.tot);
+        h.tot += phi;
         if(Math.abs(phi) > 1e-5) turnWorld(fore, hQ2.setFromAxisAngle(hF, phi));
       }
       // what the forearm cannot level (the handle partly along it) the wrist bends out, at most HANG_WRIST
@@ -1881,17 +1894,24 @@ function KCharFigure(body, sliders, load){
     return worst;
   }
   this.hangNeed = 0;                    // how deep a hanging prop's body is still in the legs (tools, verify.py)
-  function hang(){
+  function hang(dt){
     self.hangNeed = 0;
     var sides = Object.keys(hangs); if(!sides.length) return;
     self.group.updateMatrixWorld(true);
     var u = self.group.getWorldScale(cS).x * SCALE;
     sides.forEach(function(side){
       var h = hangs[side], g = holders[side]; if(!g) return;
-      hangTurn(side, h, g);
-      var arm = skel.hands[side] && skel.hands[side].arm;
-      if(!h.clear || !arm || !self.action || byName.LeftUpLeg === undefined) return;
-      var up = bones[arm[0]];
+      h.dt = dt || 0;
+      var arm = skel.hands[side] && skel.hands[side].arm, up = arm && bones[arm[0]];
+      var legs = !!(h.clear && arm && self.action && byName.LeftUpLeg !== undefined);
+      // the legs' push starts from the frame before's (h.push, on the clip's turn of the upper arm), easing back to none
+      // over HANG_RELAX of the clip's time, and pushes on from there: solved afresh each frame it lurched the arm
+      if(legs){
+        h.q0 = (h.q0 || Q()).copy(up.quaternion);
+        if(h.push){ if(h.dt > 0) h.push.slerp(bI, 1 - Math.exp(-h.dt / HANG_RELAX)); up.quaternion.multiply(h.push); up.updateMatrixWorld(true); }
+      }
+      hangTurn(side, h, g, true);
+      if(!legs){ h.last = h.tot; return; }
       bones[byName.LeftUpLeg].getWorldPosition(hOut).sub(bones[byName.RightUpLeg].getWorldPosition(hA));
       hUp.set(0, 1, 0).applyQuaternion(self.group.getWorldQuaternion(hQ));
       hSide.copy(hOut).addScaledVector(hUp, -hUp.dot(hOut)).normalize();
@@ -1918,6 +1938,8 @@ function KCharFigure(body, sliders, load){
         hangTurn(side, h, g);
       }
       self.hangNeed = Math.max(self.hangNeed, need);
+      h.last = h.tot;
+      h.push = (h.push || Q()).copy(h.q0).invert().multiply(up.quaternion);
     });
   }
 
@@ -3342,7 +3364,7 @@ function KCharFigure(body, sliders, load){
     });
   }
 
-  function afterClip(dt){ posture(); look(dt); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); onGround(); twoHands(dt); offHand(dt); toFace(); standUp(); nhT += dt || 0; digitigrade(dt); tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(); }
+  function afterClip(dt){ posture(); look(dt); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); onGround(); twoHands(dt); offHand(dt); toFace(); standUp(); nhT += dt || 0; digitigrade(dt); tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(dt); }
 
   /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
      joints hung lower on the ribs, on every skeleton). No clip
