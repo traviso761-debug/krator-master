@@ -48,6 +48,14 @@ node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after 
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 ```
 
+**Two animation labs (2026-11-26).** The Animation Lab outgrew one artifact (256 MiB), so it is published as two:
+the **Combat Lab** (`dist/combat-lab.html`: melee, hand to hand, ranged, blocks and dodges, hits and falls) and the
+**Animation Lab** (`dist/trade-lab.html`: work, daily life, social and ceremony, swimming and climbing), the idles and
+the moves in both (data/clips.json `labs`). Each is the Animation Lab page with `KCHAR_LAB` set: its groups, its title
+and its own anims piece, `pieces/<body>/anims_combat.txt` or `anims_trade.txt`, which `python3 tools/anims_subset.py`
+cuts from the published `anims.txt` after every anims rebuild. `dist/animation-lab.html` keeps every clip: it is the
+page `verify.py --assert` checks in full (the two labs get a lighter check). Reviews are kept per published lab.
+
 **Publishing the labs.** Each page fetches `pieces/<body>/<piece>.txt` beside it: the GLB, and on a second line the
 piece's morph deltas. A piece published before the two lines were one file still has its deltas in a
 `<piece>.morph.txt` of its own, and the pages fall back to it. Never remove a `.morph.txt` from a published lab

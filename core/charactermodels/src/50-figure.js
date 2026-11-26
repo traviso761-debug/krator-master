@@ -44,7 +44,8 @@ function KCharFigure(body, sliders, load){
   this.clips = {};
   this.action = null;
   this.pose = KCHAR.pose(skel, sliders, {});
-  var ready = load((kit.anims || kit.body) + '/anims').then(function(g){ g.animations.forEach(function(c){
+  // KCharFigure.animsPiece: a page loading only part of the clips (a lab: data/clips.json labs) names its own piece
+  var ready = load((kit.anims || kit.body) + '/' + (KCharFigure.animsPiece || 'anims')).then(function(g){ g.animations.forEach(function(c){
     // the hips' position track comes out of the clip and update() applies it (hipsTrack)
     var k = c.tracks.findIndex(function(t){ return t.name === 'Hips.position'; });
     if(k >= 0){ c.hipsTrack = c.tracks[k]; c.tracks.splice(k, 1); }

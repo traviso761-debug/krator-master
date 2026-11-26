@@ -3485,5 +3485,35 @@
   "not": [
    "slash_up"
   ]
+ },
+ "labs": {
+  "combat": {
+   "title": "Combat Lab",
+   "anims": "anims_combat",
+   "groups": [
+    "idle",
+    "move",
+    "melee",
+    "unarmed",
+    "ranged",
+    "defend",
+    "hurt"
+   ],
+   "about": "fighting: melee, hand to hand, ranged, blocks and dodges, hits and falls (with the idles and the moves)"
+  },
+  "trade": {
+   "title": "Animation Lab",
+   "anims": "anims_trade",
+   "groups": [
+    "idle",
+    "move",
+    "swim",
+    "climb",
+    "life",
+    "social",
+    "work"
+   ],
+   "about": "work, daily life, social and ceremony, swimming and climbing (with the idles and the moves)"
+  }
  }
 }

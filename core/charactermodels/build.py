@@ -54,6 +54,9 @@ BODIES = tuple(sorted(b for b in os.listdir(os.path.join(HERE, 'data')) if os.pa
 
 # page -> (its head fragment, its own script fragment); every page also takes the shared src/10-89*.js
 PAGES = {'cosmetic-lab': ('00-head.html', '90-editor.js'), 'animation-lab': ('01-animlab.html', '92-animlab.js')}
+# the published labs of part of the clips (data/clips.json labs): the Animation Lab page with KCHAR_LAB set, each loading
+# its own anims piece (tools/anims_subset.py cuts them); a published lab holds at most 256 MiB
+LAB_PAGES = {'combat-lab': 'combat', 'trade-lab': 'trade'}
 
 
 def main():
@@ -125,10 +128,21 @@ def main():
         if os.path.exists(os.path.join(DIST, old)):
             os.remove(os.path.join(DIST, old))
     wholes = {}
-    for page, (headf, own) in sorted(PAGES.items()):
+    labs = data['clips'].get('labs') or {}
+    pages = dict(PAGES)
+    for page, lab in LAB_PAGES.items():
+        if lab in labs:
+            pages[page] = PAGES['animation-lab'] + (lab,)
+    for page, spec in sorted(pages.items()):
+        headf, own = spec[0], spec[1]
         head, t = read(os.path.join(SRC, headf)), read(os.path.join(SRC, own))
         inputs['src/' + headf], inputs['src/' + own] = head.encode(), t.encode()
         pjs = js + ['/* src/%s */\n%s' % (own, t)]
+        if len(spec) > 2:
+            L = labs[spec[2]]
+            head = head.replace('<title>Animation Lab</title>', '<title>%s</title>' % L['title'])
+            pjs = js + ['var KCHAR_LAB = ' + json.dumps({'id': spec[2], 'title': L['title'], 'anims': L['anims'], 'groups': L['groups']}) + ';',
+                        '/* src/%s */\n%s' % (own, t)]
         body = head + '<script>\n' + '\n'.join(pjs) + '\n</script>\n'
         whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \
                 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \

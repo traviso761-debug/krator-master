@@ -120,7 +120,17 @@
   KCharFigure.look = (D.clips && D.clips.look) || null;
   // data/clips.json dropped: clips still in anims.glb that the lab leaves out
   var DROP = (D.clips && D.clips.dropped) || [];
-  var lead = D.bodies[CAST[0].body].skeleton.clips.filter(function(c){ return DROP.indexOf(c.name) < 0; });
+  // a lab of part of the clips (KCHAR_LAB: data/clips.json labs, set by build.py on that page): its groups only, its
+  // own anims piece, its own name; without it the page is the whole Animation Lab (the one verify.py checks)
+  var LAB = (typeof KCHAR_LAB !== 'undefined' && KCHAR_LAB) || null;
+  if(LAB){
+    KCharFigure.animsPiece = LAB.anims;
+    document.title = LAB.title;
+    var h1 = document.querySelector('#brand h1'); if(h1) h1.textContent = LAB.title;
+  }
+  var lead = D.bodies[CAST[0].body].skeleton.clips.filter(function(c){
+    return DROP.indexOf(c.name) < 0 && (!LAB || LAB.groups.indexOf(c.group) >= 0);
+  });
   lead.forEach(function(c){ META[c.name] = c; });
   var GROUPS = [{ id:'idle', label:'Idle' }].concat((D.clips && D.clips.groups) || []);
   GROUPS.forEach(function(g){ g.clips = lead.filter(function(c){ return c.group === g.id; }).map(function(c){ return c.name; }); });

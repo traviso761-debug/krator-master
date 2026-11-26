@@ -641,6 +641,26 @@ async def run(page_path, do_assert, out_dir):
     # the page fetches its pieces, so verify_page serves it
     async with verify_page(page_path, here=HERE, size='1400x860', routes=ROUTES, settle_ms=0, ready_js='window._kchar||window._lab') as V:
         pg, errs, fails = V.page, V.errs, V.fails
+        if os.path.basename(page_path).startswith(('combat-lab', 'trade-lab')):
+            # a published lab of part of the clips (build.py LAB_PAGES): it loads its own anims piece, plays one of its own
+            # clips on every figure, and holds none of the other lab's (the whole set is checked on animation-lab)
+            await pg.wait_for_function('window._lab', timeout=120000)
+            r = await pg.evaluate('''async () => {
+              const L = window._lab, out = [];
+              await Promise.resolve(typeof L.ready === 'function' ? L.ready() : L.ready);
+              const groups = new Set(KCHAR_LAB.groups), S = KCHAR_DATA.bodies.mpfb_male.skeleton.clips;
+              const own = S.find(c => groups.has(c.group) && c.group !== 'idle' && c.group !== 'move');
+              const other = S.find(c => !groups.has(c.group));
+              await L.play(own.name);
+              L.figs.forEach((f, i) => { if (f.group.visible && (!f.action || f.action.getClip().name !== own.name)) out.push('lab: figure ' + i + ' does not play ' + own.name); });
+              if (other && L.figs[0].clips[other.name]) out.push('lab: ' + other.name + ' (' + other.group + ') is in this lab\\'s anims');
+              return out; }''') if do_assert else []
+            fails += r
+            if out_dir:
+                os.makedirs(out_dir, exist_ok=True)
+                await pg.wait_for_timeout(1500)
+                await pg.screenshot(path=os.path.join(out_dir, os.path.basename(page_path)[:-5] + '.png'))
+            raise Abort(0)
         if 'animation-lab' in os.path.basename(page_path):
             await pg.wait_for_function('window._lab', timeout=120000)
             r = await pg.evaluate(LAB_CHECKS) if do_assert else []
