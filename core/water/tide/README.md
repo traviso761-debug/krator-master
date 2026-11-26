@@ -38,8 +38,9 @@ S.level(t); S.rate(t);  // metres, metres a second
 S.state(t, slack)       // 'flood' | 'ebb' | 'slack'
 S.range; S.high; S.low  // the day's range and the times (s in [0, Day)) of its highs and lows
 S.waterTide()           // the dominant constituent as {amp, period, phase} for WATER.tide
-const unbind = KTIDE.bindWater(WATER, S);   // WATER.seaLevel(t) = PRESETS.sea.level + S.level(t); unbind() restores it
-KTIDE.decode(b64); KTIDE.OMEGA; KTIDE.DAY
+const unbind = KTIDE.bindWater(WATER, S, {time});   // WATER.seaLevel(t) = PRESETS.sea.level + S.level(time(t)); unbind() restores it
+S.day(d); S.spring(t); S.nextSpring(t); S.nextNeap(t)   // springs and neaps (below)
+KTIDE.worldSeconds(KCLOCK); KTIDE.decode(b64); KTIDE.OMEGA; KTIDE.DAY
 ```
 
 - **Interpolation:** the phasors `(A cos p, A sin p)` bilinearly over the wet corners, so the phase never wraps wrong
@@ -47,6 +48,16 @@ KTIDE.decode(b64); KTIDE.OMEGA; KTIDE.DAY
   harbour inside a 6 km cell's coast); farther, null.
 - **A settlement's own tide:** a 6 km grid cannot see a harbour's own funnel. Keep the place's phase and shape and
   scale it: `T.site(p, {range: 14})` (the Arch's 14 m spring range) or `{gain: 1.5}`; `lag` (s) delays it up a ria.
+- **Springs and neaps:** the record's `inferred` list adds the Week's and the Thirteen's semidiurnal tides, inferred
+  from each cell's D2 (a constituent close to D2 in frequency answers the basin as D2 does). They beat against D2 every
+  3.5 and 6.5 days and are in phase with it at the **Double Dark** (both moons new, world day -0.5) and the **Double
+  Full** 45.5 days on: the greatest springs, D2 x 1.45; the deepest neaps fall between, D2 x 0.55. At the Fleetborn Cove
+  (mean range 14 m) a day's range runs 9.5 to 18.3 m. `level(t)` and `rate(t)` carry them; `range`, `high`, `low` are the
+  mean day's (so `{range}` sets the mean range); `site.day(d)` is world day d's own tide; `site.spring(t)`,
+  `nextSpring(t)`, `nextNeap(t)` read the cycle; `{springs: false}` gives the mean tide, the same every day.
+- **Time:** the tide's `t` is world seconds, `KTIDE.worldSeconds(KCLOCK)` = (day x 24 + hour) x 3600 (t = 0 is game
+  start's midnight). The water's draw calls `seaLevel` with motion time, so bind with
+  `KTIDE.bindWater(WATER, S, {time: () => KTIDE.worldSeconds(clock)})`.
 - **core/hazard:** where `KHAZ.bindTide` exists (the floating city's tide hazard), `KHAZ.bindTide('sea', S.level)`
   makes the walker's flats and the water one tide.
 
@@ -68,7 +79,8 @@ KTIDE.decode(b64); KTIDE.OMEGA; KTIDE.DAY
 
 ## Proof
 
-`node core/water/tide/test-tide.js [tides.json]` on the baked record: both basins decode; the tide repeats each Day; a
+`node core/water/tide/test-tide.js [tides.json]` on the baked record: both basins decode; the mean tide repeats each Day;
+springs at the Double Dark and the Double Full, the day's range swinging round the mean, next spring and neap found; a
 site's range is the spread of its own levels; a site scaled to 14 m has 14 m; a lag delays the curve; high water is
 slack; the interpolated amplitude stays within its corners; a coast point within reach finds the sea and an inland one
 does not; `waterTide()` is the dominant constituent in `WATER.tide`'s shape; `bindWater` drives and restores

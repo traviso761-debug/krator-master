@@ -28,6 +28,12 @@ randomness), so an unchanged model bakes the same bytes.
   `core/atmos/89-atmos-e-skymodel.js`).
 - **Analysis:** 2 Days of spin-up, then a least-squares fit of `A1 cos(w t - p1) + A2 cos(2 w t - p2)` over 2 whole
   Days per wet cell (`--quick`: 1 + 1). t = 0 is the forcing's epoch.
+- **Springs and neaps (`inferred`, not solved):** the Week's (6.87 d orbit, phases every 7.0 d) and the Thirteen's
+  (12.55 d, every 13.0 d) semidiurnal tides, at 0.28 and 0.17 of D2's forcing (`INFERRED` in `bake_tides.py`, owner's
+  numbers), inferred from each cell's D2 response. Springs every 3.5 and 6.5 days; the greatest at the Double Dark
+  and the Double Full (every 45.5 days); the semidiurnal tide runs from 0.55 to 1.45 of the mean. Change the ratios and
+  `bake_tides.py --inferred-only` rewrites only that list. The Four-Day moon (a 16 h tide) and the Two-Day (24 h) are
+  folded into D2 and D1 for now.
 - **Basins** (`BASINS` in `bake_tides.py`): a box in model pixels and the band of water levels that is that sea:
   `nwocean` (0, 0, 700 x 720; level 0; open) and `ringsea` (685, 695, 370 x 330; level -1,500; enclosed). A new sea is a
   new entry: its box, its level band, open or not.
