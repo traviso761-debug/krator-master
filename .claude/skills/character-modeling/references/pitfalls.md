@@ -360,6 +360,22 @@ area you are about to change.
   group visits nothing (keep the baking figure visible, just off the scene); and a figure's `update(dt)` advances the
   clip by `dt * cadence`, so a frame at clip time t is `update(t / cadence)`.
 
+- **A look-at that judges "off target" by the face gives up exactly where it is needed**: Charged slash's head looked
+  115 degrees aside with the chest square on, and a cut-off on the face's angle switched the pass off there. Judge by
+  the chest's forward (a spin turns the chest away; a head turned aside does not), clamp the head's turn, let the eyes
+  make up the rest.
+- **The baked head is not the drawn head**: the retargeted clips read 20 to 40 degrees head-down in the bake and the
+  posture pass lifts them at run time. Anything that aims the head (a look-at) runs after posture, in both runtimes.
+- **MakeHuman's eyes are weighted wholly to Head**: there are no eye joints, so a gaze is a vertex turn in the eye
+  shader about each eyeball's centre (from data, offset from the head joint). three.js turns in rest space before
+  skinning; Godot's VERTEX arrives skinned, so the turn and the centres go in carried by the head (R G R^-1).
+- **"Flatten the swing", not "lower the arm"**: a captured slash that rose from hip to over the shoulder, lowered by a
+  fixed angle, cut at the waist. Squash the hand's elevation from the shoulder toward a level plane instead.
+- **Godot's `play()` of the clip already playing does not restart it**: a test that plays a one-shot twice samples
+  the idle the second time. Seek to 0.
+- **Two `@src` clips side by side swapped places** when each was inserted by counting the clips built so far; give
+  every clip a place (its source's index in the build order) and sort once.
+
 ## 7. Posture
 
 - After retargeting, all figures leaned back at the mid-thoracic spine with their chests out, and the shoulders hunched.
@@ -440,6 +456,16 @@ area you are about to change.
   probe (grips and head relative to the hips, the pass weights) at the same clip times; they agreed to the millimetre.
 - **Shots are minutes, not seconds, under SwiftShader**: headless Chromium renders on the GPU with `--use-angle=d3d11
   --ignore-gpu-blocklist --enable-gpu` (`tools/lab_shots.py --gpu`).
+
+- **A prop that stands on the ground (a cart) cannot ride the hand as baked**: the same clip puts the hand 0.8 m up on a
+  short body and 1.2 on a tall one and bobs it with each step, and a few degrees of wrist tip wheels a metre away
+  through the floor. Turn the wrist so the prop stands as modelled in the figure's frame and solve the arm to a fixed
+  grip height, before the two-hand grip (which reads the bar from the hand's holder, so turn the wrist, not the mesh).
+  Where the clip stands up out of reach, bend the back in the bake.
+- **`Box3.setFromObject` over-reads a rotated prop** (r128 transforms the geometry's box, not the vertices): a level cart
+  read 7 cm under the floor. Measure vertices, or the grip's height.
+- **Rebuilding the props moves every old prop's bytes** (4 bytes of JSON and 1e-18 of float noise across machines):
+  keep the old GLBs and add only the new ones, or every prop needs republishing.
 
 - **Headgear gets the shoulders' weights.** MakeHuman weights a garment from the nearest skin, so a broad brim, a wing
   or an ear flap reaching down beside the neck bends with the arms (a third of one headdress's weight was on them).

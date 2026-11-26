@@ -96,6 +96,7 @@ func load_body(data_dir: String, body_id: String) -> void:
 			clip_data[c["key"]] = c
 		var fcs: Dictionary = cj.get("faces", {})
 		faces = fcs.get(kit.get("body", ""), fcs.get("mpfb_male", {}))
+		look = cj.get("look", {})
 	if FileAccess.file_exists(dir + "/fur.json"):
 		fur = JSON.parse_string(FileAccess.get_file_as_string(dir + "/fur.json"))
 	if FileAccess.file_exists(dir + "/posture.json"):
@@ -431,6 +432,8 @@ func _live_meshes(part: Dictionary) -> Array:
 func apply(rec: Dictionary) -> void:
 	record = rec
 	_push_mats.clear()
+	_eye_mats.clear()
+	_look_chest = null
 	var want := {}
 	for p in KChar.parts(rec, kit):
 		for mi in _live_meshes(p):
@@ -617,6 +620,7 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		var c := Color(rec.get("eye_color") if rec.get("eye_color") != null else "#5a3a22").srgb_to_linear()
 		var g := float(gain.get("eye", 1.0))
 		sm.set_shader_parameter("tint", Vector3(c.r * g, c.g * g, c.b * g))
+		_eye_mats.append(sm)                 # the gaze (_gaze) sets its turn every frame
 		return sm
 	if role == "pattern":                # a frog's skin (tools/amphibian.py): the record's colours by its pattern
 		var bm := mat as BaseMaterial3D
@@ -895,11 +899,13 @@ func _posture(force := false) -> void:
 
 func _after_clip(dt: float) -> void:
 	_posture()
+	_look(dt)
 	_arms2(dt)
 	_body_fix()
 	_toes_flat()
 	_grip()
 	_blade_clear(dt)
+	_on_ground()
 	_two_hands(dt)
 	_off_hand(dt)
 	_to_face()
@@ -913,6 +919,148 @@ func _after_clip(dt: float) -> void:
 	_leg_caps()
 	_bow_string(dt)
 	_hang()
+
+
+# twin of look in 50-figure.js: the head and the eyes turned toward a target ahead (clips.json look): look.ahead metres
+# in front of the hips at the chest's height at rest (the Spine2 joint, morphed), or look_at (a point in the skeleton's
+# space a game sets) whatever the clip. The head (Neck and Head, neck_share of it on the neck) turns head.share of the
+# way, within head yaw and pitch; the eyes make up the rest within theirs (kchar_eye.gdshader turns each eyeball about
+# its centre, faces eyes). A target further off the chest's forward than off[0] degrees is looked toward less, none
+# past off[1]; the weight eases over LOOK_EASE s as clips change. All in the skeleton's (unscaled) space
+const LOOK_EASE := 0.2
+var look := {}                           # data/clips.json look
+var look_at = null                       # a target point (skeleton space), or null for the data's
+var look_state := {"w": 0.0, "off": 0.0, "head": [0.0, 0.0], "eyes": [0.0, 0.0]}
+var _look_w := 0.0
+var _look_chest = null                   # the target's base (the chest at rest, over the hips), per morph
+var _eye_mats := []                      # the eyes' ShaderMaterials (kchar_eye.gdshader)
+
+
+func _rest_q(b: int) -> Quaternion:
+	return skeleton.get_bone_global_rest(b).basis.get_rotation_quaternion()
+
+
+func _look_on() -> float:
+	if look.is_empty() or _clip == "" or look.get("not", []).has(_clip):
+		return 0.0
+	return 1.0 if look.get("groups", []).has(_clip_info().get("group", "")) or look.get("clips", []).has(_clip) else 0.0
+
+
+# the target in the skeleton's space
+func look_target() -> Vector3:
+	if look_at != null:
+		return look_at
+	if _look_chest == null:
+		var J: Array = skel["joints"]
+		var P := []
+		for i in J.size():
+			var par := int(J[i]["parent"])
+			var t: Vector3 = morph["t"][i]
+			P.append(t if par < 0 else (P[par] as Vector3) + _rest_q(par) * t)
+		var sp := skeleton.find_bone("Spine2")
+		if sp < 0:
+			sp = skeleton.find_bone("Spine1")
+		_look_chest = Vector3((P[_hips] as Vector3).x, (P[sp] as Vector3).y, (P[_hips] as Vector3).z)
+	return (_look_chest as Vector3) + Vector3(0.0, 0.0, float(look.get("ahead", 2.5)))
+
+
+# the face's forward (the head's rest forward, as the clip and the passes turned it), skeleton space
+func face_forward() -> Vector3:
+	return _gp(_head).basis.get_rotation_quaternion() * (_rest_q(_head).inverse() * Vector3(0, 0, 1))
+
+
+# the eyes' midpoint, and the head's turn from its rest (skeleton space <- the head's own figure frame)
+func _look_from() -> Array:
+	var e: Array = faces.get("eyes", [])
+	var o := Vector3((float(e[0][0]) + float(e[1][0])) / 2.0, (float(e[0][1]) + float(e[1][1])) / 2.0, (float(e[0][2]) + float(e[1][2])) / 2.0)
+	var h := _gp(_head)
+	var r := h.basis.get_rotation_quaternion() * _rest_q(_head).inverse()
+	return [h.origin + r * o, r]
+
+
+func _look(dt: float) -> void:
+	look_state = {"w": 0.0, "off": 0.0, "head": [0.0, 0.0], "eyes": [0.0, 0.0]}
+	var want := 1.0 if look_at != null else _look_on()
+	_look_w = want if dt < 0.0 else _look_w + (want - _look_w) * (1.0 - exp(-dt / LOOK_EASE))
+	var nk := skeleton.find_bone("Neck")
+	if look.is_empty() or faces.get("eyes", []).size() < 2 or _head < 0 or nk < 0 or _look_w < 1e-3:
+		_gaze()
+		return
+	var T := look_target()
+	var fr := _look_from()
+	var C := skeleton.find_bone("Spine2")
+	if C < 0:
+		C = skeleton.find_bone("Spine1")
+	var cf := _gp(C).basis.get_rotation_quaternion() * (_rest_q(C).inverse() * Vector3(0, 0, 1))
+	var off := rad_to_deg(cf.angle_to(T - (fr[0] as Vector3)))
+	var dh := (fr[1] as Quaternion).inverse() * (T - (fr[0] as Vector3)).normalized()
+	var lo: Array = look["off"]
+	var w := _look_w * (1.0 - smoothstep(float(lo[0]), float(lo[1]), off))
+	look_state["w"] = w
+	look_state["off"] = off
+	if w < 1e-3:
+		_gaze()
+		return
+	var hd: Dictionary = look["head"]
+	var ey: Dictionary = look["eyes"]
+	var yaw := atan2(dh.x, dh.z)
+	var pitch := asin(clampf(dh.y, -1.0, 1.0))
+	var hy := clampf(float(hd["share"]) * yaw, -deg_to_rad(float(hd["yaw"])), deg_to_rad(float(hd["yaw"]))) * w
+	var hp := clampf(float(hd["share"]) * pitch, -deg_to_rad(float(hd["pitch"])), deg_to_rad(float(hd["pitch"]))) * w
+	look_state["head"] = [hy, hp]
+	var r: Quaternion = fr[1]
+	var q := Quaternion(r * Vector3(0, 0, 1), r * Vector3(sin(hy) * cos(hp), sin(hp), cos(hy) * cos(hp)))
+	var qn := Quaternion().slerp(q, float(hd["neck_share"]))
+	_turn(nk, qn)
+	_turn(_head, q * qn.inverse())
+	fr = _look_from()
+	dh = (fr[1] as Quaternion).inverse() * (T - (fr[0] as Vector3)).normalized()
+	look_state["eyes"] = [clampf(atan2(dh.x, dh.z), -deg_to_rad(float(ey["yaw"])), deg_to_rad(float(ey["yaw"]))) * w,
+			clampf(asin(clampf(dh.y, -1.0, 1.0)), -deg_to_rad(float(ey["pitch"])), deg_to_rad(float(ey["pitch"]))) * w]
+	_gaze()
+
+
+# the eye shader's uniforms: the gaze turn (given in the head's rest frame) as the head now carries it, and each eye's
+# centre where the head has carried it (faces eyes, from the head joint)
+func _gaze() -> void:
+	if _eye_mats.is_empty() or _head < 0:
+		return
+	var e: Array = faces.get("eyes", [])
+	var G := Basis(Vector3.UP, float(look_state["eyes"][0])) * Basis(Vector3.RIGHT, -float(look_state["eyes"][1]))
+	var h := _gp(_head)
+	var r := h.basis.get_rotation_quaternion() * _rest_q(_head).inverse()
+	var Rb := Basis(r)
+	var Gs := Rb * G * Rb.inverse()
+	var el := h.origin + r * Vector3(e[0][0], e[0][1], e[0][2]) if e.size() > 1 else Vector3.ZERO
+	var er := h.origin + r * Vector3(e[1][0], e[1][1], e[1][2]) if e.size() > 1 else Vector3.ZERO
+	for sm in _eye_mats:
+		(sm as ShaderMaterial).set_shader_parameter("gaze", Gs)
+		(sm as ShaderMaterial).set_shader_parameter("eye_l", el)
+		(sm as ShaderMaterial).set_shader_parameter("eye_r", er)
+		(sm as ShaderMaterial).set_shader_parameter("eye_ax", r * Vector3(1, 0, 0))
+
+
+# twin of onGround: a prop with props.json ground stands on the ground (a cart): the hand turned so the grip has the
+# prop's +Y and +Z along ground y and z in the skeleton's frame, and lifted or lowered (the arm's two-bone solve) so the
+# grip stands ground.height over the ground; the wrist turns rather than the prop, so _two_hands finds the bar
+func _on_ground() -> void:
+	if not skel.has("hands"):
+		return
+	for side in ["R", "L"]:
+		var id = held[side]
+		var gd = props.get(id, {}).get("ground") if id != null else null
+		if gd == null or not skel["hands"].has(side) or not skel["hands"][side].has("arm") or not _holders.has(side):
+			continue
+		var arm: Array = skel["hands"][side]["arm"]
+		var hand := int(arm[2])
+		var Y := Vector3(gd["y"][0], gd["y"][1], gd["y"][2]).normalized()
+		var Z := Vector3(gd["z"][0], gd["z"][1], gd["z"][2])
+		Z = (Z - Y * Z.dot(Y)).normalized()
+		var gt := _grip_t(side)
+		var qh := Basis(Y.cross(Z), Y, Z).get_rotation_quaternion() * gt.basis.get_rotation_quaternion().inverse()
+		var g := _gp(int(skel["hands"][side]["bone"])) * gt
+		var at := Vector3(g.origin.x, -skeleton.position.y / size + float(gd["height"]), g.origin.z)
+		_reach_arm(int(arm[0]), int(arm[1]), hand, at - qh * gt.origin, qh)
 
 
 func _grip() -> void:
@@ -1075,6 +1223,9 @@ func _two_hands(dt: float) -> void:
 	var dW := W.distance_to(S)
 	if dW > l1 + l2 - 0.01:
 		var d := (S - W).normalized() * minf(dW - (l1 + l2 - 0.01), MOVE)
+		# a prop standing on the ground (_on_ground: the cart) comes in level, its bar kept at its height
+		if held["R"] != null and props.get(held["R"], {}).get("ground") != null:
+			d.y = 0.0
 		var rh: int = int(r_arm[2])
 		var rt := _gp(rh)
 		_reach_arm(int(r_arm[0]), int(r_arm[1]), rh, rt.origin + d, rt.basis.get_rotation_quaternion())

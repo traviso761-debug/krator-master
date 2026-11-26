@@ -167,9 +167,29 @@ bend, so the clip's own elbow motion stays; a frame still under 3 after that (a 
 12 and the backward walk opened 13 to 17 degrees past straight; a floor at 3 alone held idle 12's arms straight and
 rigid; a reading past 45 degrees backwards is a deep bend with the upper arm turned on its axis, which the fixed hinge
 misreads, and is left alone).
-**Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 20 hand-held things built from
+*The owner's review of 2026-11-26* (`derive` kinds `level`, `bend`, `force`, `guard`, `door`, `bench`, `place`,
+`handles`; a clip made from `'<key>@src'` stands where its source stood, one made from another clip right after it).
+Captured and kept as they are: **Up swing (left)** (`slash_up`, Meshy's 'Slash left', which rose from below the right
+hip to over the left shoulder) and **Walk while shooting (high aim)** (`walk_shoot_high`, Meshy's, the barrel 13
+degrees up). Made from captured clips: **Slash left** (`slash_left`, from `slash_up`: the arm's swing flattened toward a
+level plane 12 degrees below the shoulder, a third of the clip's rise kept); **Walk while shooting (low aim)**
+(`walk_shoot`, from `walk_shoot_high`: the spine bent 26 degrees forward joint by joint, so the rifle stays at the cheek
+and aims at the ground a few paces ahead); **Spinning axe attack** (`axe_spin`, Meshy's re-timed: the wind-up held a
+little longer, the spin and the blow a third faster, a slower settle, the body leaning 12 degrees into the blow);
+**Block** and **Block 2** (Meshy's, with the right hand's grip put before the face in the block, the blade across it
+and its edge forward, the left hand kept beside the right: they held the blade pointing back past the head); **Open
+door** (Meshy's legs and body, the right arm made: it reaches a lever handle a metre up, closes on it, turns it down
+40 degrees and pulls the door 26 degrees open round its hinge while the body leans back and the head turns to the
+handle, then lets go: the clip held the hand still in front for three seconds); **Pick into basket** (Meshy's, the
+basket hand held under the falling fruit while crouched); **Push cart** (Meshy's legs and body, both hands on the
+cart's crossbar the whole loop, 1.05 m off the ground, following the hips' going; the back bends where the clip stood
+up out of reach). Made outright: **Craft at a bench** (`craft_bench`, on the standing idle: bent over a bench just above
+the hips, the left hand flat on the work, the right working a tool on it, three light taps, a pause turning the work
+over, two more). Renamed: **Harvest (bending)** (`ual_harvest`), **Push button** (`ual_interact`, holding nothing:
+Longsong's figures still play it for WORK, KNOWN_ISSUES.md).
+**Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 22 hand-held things built from
 primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
-bucket, cup, lantern, torch, bowl, bread) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
+bucket, cup, lantern, torch, bowl, bread, basket, handcart) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
 finger, +Z the way the fingers point, +X out of the palm. `make_mpfb.py hands()` measures that frame on each body's rest
 hand (skeleton.json `hands`: the grip in the hand bone's space, the arm's three bones, and per grip style, per finger
 joint, the rotation that closes the hand: `fist` round a handle, `trigger` with the index finger along a gun, `wide`
@@ -196,6 +216,24 @@ butt sits in the shoulder's pocket when it aims): Long gun shot at the hip ran t
 middle and index fingers are tested against the blade from 12 cm below it to its tip, and the wrist moves out by the
 two-bone solve, the move kept from frame to frame and easing back over 0.3 s (Parry's guard hand lay across the sword,
 and the dagger drawn back in Thrust / stab passed the forearm and fingers); `fig.offNeed` (`off_need`).
+The basket hangs from its handle like the bucket (`hang`). A prop with `ground` stands on the ground (the handcart, held
+by its crossbar in Push cart): the hand is turned so the prop stands upright facing the figure's forward (`ground.y`,
+`ground.z`: its axes in the figure's frame) and lifted or lowered so the grip stands `ground.height` over the floor
+(`onGround`, `_on_ground`, before the two-hand grip so the left hand follows): the clip's bar came 0.8 m up on the short
+bodies and 1.2 on the tall ones and bobbed with each step, and a few degrees of wrist tipped the wheels through the floor.
+
+*The look.* `data/clips.json look` turns the head and the eyes toward a target ahead in the melee clips and both
+blocks (not the up swing): 2.5 m in front of the figure at its own chest height at rest, or `fig.lookAt` (`look_at`),
+a point a game sets, whatever the clip (`look`, `_look`, right after the posture). The head (Neck and Head, 40% on the
+neck) turns 85% of the way within 70 degrees of yaw and 30 of pitch; the eyes make up the rest within 28 and 18. No
+clip moves the eyes and the MakeHuman eyes are weighted wholly to the head, so the eye shader turns each eyeball about
+its centre (`faces eyes`, from the head joint; three.js in the rest space before skinning, Godot on the skinned
+vertices with the turn carried by the head). The target is judged off the chest, not the face: a target more than 75
+degrees off the chest's forward is looked toward less, none past 115 (a spin turns its back on it), while a head the
+clip turned aside with the chest square on is brought round (Charged slash looked 115 degrees aside; with the pass
+under 52 on the men, 70 on the women, and 17 on average). `fig.lookState` (`look_state`): the weight, the chest's angle
+off the target and the turns given; `fig.faceForward`, `fig.lookTarget` (`face_forward`, `look_target`) for tests. The
+two runtimes agree frame by frame to 0.02 rad.
 
 *To the face.* A clip's `face` in `data/clips.json` brings a hand to the face (`toFace`, `_to_face`): the hand's point
 (`point`, in its grip frame: a cup's rim, a bite of bread, the bow string's place in the hand) goes onto one of the

@@ -1767,6 +1767,27 @@ def main():
     print(name, 'height %.2f m' % (c.jpos[c.J['HeadTop_End']][1] if 'HeadTop_End' in c.J else -1), len(items), 'items')
 
 
+def refresh_anims(bodies):
+    """python3 tools/make_mpfb.py anims [male female]: each body's anims.glb rewritten from its pieces' base.glb (the
+    canonical skeleton) by make_pieces.write_anims, and the clip list in its skeleton.json with it, with no Blender: a
+    change to data/clips.json or a made clip (make_pieces.derived_clips) is rebuilt in minutes. The giant plays the
+    man's clips, so its skeleton.json takes the man's list"""
+    import make_pieces as mp
+    for body in bodies:
+        name = 'mpfb_' + body
+        pieces = os.path.join(HERE, 'pieces', name)
+        c = mp.load(os.path.join(pieces, 'base.glb'))
+        clips = mp.write_anims(os.path.join(pieces, 'anims.glb'), c)
+        for b in ([name, 'mpfb_giant'] if body == 'male' else [name]):
+            sp = os.path.join(HERE, 'data', b, 'skeleton.json')
+            if not os.path.exists(sp):
+                continue
+            sk = json.load(open(sp, encoding='utf-8'))
+            sk['clips'] = clips
+            json.dump(sk, open(sp, 'w', encoding='utf-8', newline='\n'), indent=1)
+        print(name, len(clips), 'clips')
+
+
 def rebind_chains(body, ids=None, tol=0.0015):
     """python3 tools/make_mpfb.py anchors <body> [id,id]: every cloth chain bone's inverse bind put back on the vertex it
     anchors (cloth_bones: T(-p) at pts[k]). The settle pass moved the vertices of ten legacy garments after their
@@ -1835,5 +1856,7 @@ if __name__ == '__main__':
         refresh_hides(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == 'gshapes':
         refresh_gshapes(sys.argv[2])
+    elif sys.argv[1] == 'anims':
+        refresh_anims(sys.argv[2:] or ['male', 'female'])
     else:
         main()

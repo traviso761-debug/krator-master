@@ -22,7 +22,8 @@ MAT = {'steel': ([0.70, 0.72, 0.75], 0.85, 0.32), 'iron': ([0.30, 0.30, 0.32], 0
        'leather': ([0.22, 0.13, 0.08], 0.0, 0.8), 'brass': ([0.76, 0.58, 0.28], 0.9, 0.35),
        'string': ([0.85, 0.80, 0.68], 0.0, 0.9), 'paint': ([0.55, 0.12, 0.09], 0.0, 0.6),
        'flame': ([1.0, 0.55, 0.15], 0.0, 1.0), 'glass': ([0.95, 0.8, 0.45], 0.0, 0.2), 'clay': ([0.62, 0.38, 0.24], 0.0, 0.85),
-       'bread': ([0.72, 0.47, 0.22], 0.0, 0.9), 'stew': ([0.45, 0.24, 0.10], 0.0, 0.5)}
+       'bread': ([0.72, 0.47, 0.22], 0.0, 0.9), 'stew': ([0.45, 0.24, 0.10], 0.0, 0.5),
+       'wicker': ([0.66, 0.50, 0.28], 0.0, 0.85), 'fruit': ([0.62, 0.10, 0.08], 0.0, 0.55)}
 
 
 class Mesh:
@@ -259,6 +260,58 @@ def bread(m):
                      ((0.0, 0.025), (0.008, 0.045), (0.02, 0.05), (0.032, 0.045), (0.04, 0.025))])
 
 
+def basket(m):
+    # a picker's basket carried by its handle (the owner, 2026-11-26: Pick into basket demoed with one): the handle an
+    # arch along the grip's handle axis, the basket hanging below the fingers (+Z) like the bucket, a few fruit in it
+    arc(m, 'wicker', [(0, -0.15 * math.sin(a), 0.2 - 0.2 * math.cos(a) * 1.0) for a in np.linspace(-math.pi / 2, math.pi / 2, 9)],
+        0.008, 5)
+    m.loft('wicker', [ring((0, 0, 0.2), 'z', 0.16, 14), ring((0, 0, 0.3), 'z', 0.15, 14), ring((0, 0, 0.4), 'z', 0.12, 14)],
+           cap0=False)
+    m.loft('wicker', [ring((0, 0, 0.198), 'z', 0.166, 14), ring((0, 0, 0.214), 'z', 0.166, 14)], cap0=False, cap1=False)
+    for x, y, z in ((0.05, 0.04, 0.25), (-0.06, 0.03, 0.26), (0.01, -0.07, 0.25), (-0.02, 0.0, 0.27)):
+        ball(m, 'fruit', (x, y, z), 0.035, 6)
+
+
+# the push clip's hands (make_pieces.handles_clip) on the cart's crossbar: the bar along the figure's left (+x), the
+# fingers forward over it (+z, a little down), at HANDLE metres off the ground, the left hand WIDTH along the bar
+CART_HANDLE, CART_WIDTH = 1.05, 0.46
+
+
+def cart(m):
+    # a two-wheeled handcart pushed by its crossbar (the owner, 2026-11-26: Push demoed with one). Made in the figure's
+    # frame from the right hand's grip (x the figure's left, y up, z forward; the ground CART_HANDLE below) and turned
+    # into the grip frame the clip holds it in, so its wheels stand on the ground when the hands are on the bar
+    f = Mesh()
+    g = -CART_HANDLE
+    rod(f, 'wood', 'x', (-0.09, 0, 0), (CART_WIDTH + 0.09, 0, 0), 0.017)                 # the crossbar
+    for x in (-0.05, CART_WIDTH + 0.05):                                                 # two shafts to the bed
+        arc(f, 'wood', [(x, 0, 0.0), (x, g + 0.62, 0.5), (x, g + 0.6, 1.35)], 0.022, 6)
+    cx, w = CART_WIDTH / 2, 0.62
+    box(f, 'wood', (cx, g + 0.58, 0.92), (w, 0.04, 0.86))                               # the bed
+    for sx in (-1, 1):
+        box(f, 'darkwood', (cx + sx * w / 2, g + 0.71, 0.92), (0.03, 0.24, 0.86))       # its sides
+    box(f, 'darkwood', (cx, g + 0.71, 0.505), (w, 0.24, 0.03))
+    box(f, 'darkwood', (cx, g + 0.71, 1.335), (w, 0.24, 0.03))
+    rod(f, 'iron', 'x', (cx - w / 2 - 0.08, g + 0.34, 1.0), (cx + w / 2 + 0.08, g + 0.34, 1.0), 0.02)   # the axle
+    for sx in (-1, 1):
+        x = cx + sx * (w / 2 + 0.06)
+        rim = [(x, g + 0.34 + 0.32 * math.cos(a), 1.0 + 0.32 * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 19)]
+        arc(f, 'iron', rim, 0.022, 5)
+        for k in range(6):
+            a = math.pi * k / 6
+            arc(f, 'wood', [(x, g + 0.34 + 0.3 * math.cos(a), 1.0 + 0.3 * math.sin(a)),
+                            (x, g + 0.34 - 0.3 * math.cos(a), 1.0 - 0.3 * math.sin(a))], 0.012, 5)
+        rod(f, 'iron', 'x', (x - 0.05, g + 0.34, 1.0), (x + 0.05, g + 0.34, 1.0), 0.045)
+    box(f, 'darkwood', (cx, g + 0.29, 1.3), (0.05, 0.3, 0.05))                          # a leg to stand it on
+    Y = np.array(GROUND['cart']['y'], float)
+    Z = np.array(GROUND['cart']['z'], float)
+    Z /= np.linalg.norm(Z)
+    G = np.stack([np.cross(Y, Z), Y, Z], 1)                                             # grip -> figure
+    for mat, tris in f.parts.items():
+        for t in tris:
+            m.tri(mat, *[G.T @ p for p in t])
+
+
 def lantern(m):
     arc(m, 'iron', [(0, -0.05, 0.05), (0, 0, 0), (0, 0.05, 0.05)], 0.003, 4)
     m.loft('iron', [ring((0, 0, 0.05), 'z', 0.04, 6), ring((0, 0, 0.07), 'z', 0.07, 6)])
@@ -290,7 +343,8 @@ SUPPORT = {'spear': [0, 0.3, 0, 0, 1.0, 0], 'hoe': [0, -0.4, 0, 0, 0.9, 0], 'pic
            'axe': [0, -0.12, 0, 0, 0.45, 0], 'warhammer': [0, -0.1, 0, 0, 0.5, 0], 'mace': [0, -0.1, 0, 0, 0.38, 0],
            'sword': [0, -0.1, 0, 0, -0.1, 0],
            'rifle': [0, 0.06, 0.16, 0, 0.06, 0.42], 'crossbow': [0, 0.075, 0.1, 0, 0.075, 0.3],
-           'pistol': [0.04, -0.03, 0.02, 0.04, -0.03, 0.02]}
+           'pistol': [0.04, -0.03, 0.02, 0.04, -0.03, 0.02],
+           'cart': [0, CART_WIDTH - 0.16, 0, 0, CART_WIDTH + 0.06, 0]}
 # how the hand closes on it (make_mpfb.py hands(): fist, trigger: the index finger along the barrel, wide: round a cup)
 GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide', 'bowl': 'flat', 'bread': 'wide'}
 STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
@@ -299,7 +353,12 @@ STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
 LOW_TURN = {'shield': 90}
 # the prop's axis that points down whatever the hand's turn (the figure turns it about the grip): a bucket and a lantern
 # hang from their bails
-HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1]}
+HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1], 'basket': [0, 0, 1]}
+# a prop that stands on the ground (the cart's wheels): height, how far below the grip the ground is (the figure lifts or
+# lowers the hand so the prop meets the ground on every body: a short body's hands come lower in the same clip); y and
+# z, the prop's +Y and +Z in the figure's frame as it stands (the figure keeps it so whatever the hand's turn: a few
+# degrees of wrist tipped the wheels, a metre ahead, through the floor)
+GROUND = {'cart': {'height': CART_HANDLE, 'y': [1, 0, 0], 'z': [0, -0.25, 1]}}
 # the grip-frame axis the figure turns the wrist to keep up (but while the hand is at the face): a cup's mouth, and a
 # bowl's opening, so the open hand under it turns palm up (grip 'flat': the fingers stay as the clip has them)
 UPRIGHT = {'cup': [0, 1, 0], 'bowl': [1, 0, 0]}
@@ -322,7 +381,8 @@ PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('ax
          ('rifle', 'Rifle', 'R', rifle), ('pistol', 'Pistol', 'R', pistol), ('pickaxe', 'Pickaxe', 'R', pickaxe),
          ('hoe', 'Hoe', 'R', hoe), ('hammer', 'Hammer', 'R', hammer), ('bucket', 'Bucket', 'R', bucket),
          ('cup', 'Cup', 'R', cup), ('lantern', 'Lantern', 'L', lantern), ('torch', 'Torch', 'L', torch),
-         ('arrow', 'Arrow', 'R', arrow), ('bowl', 'Bowl', 'R', bowl), ('bread', 'Bread', 'L', bread)]
+         ('arrow', 'Arrow', 'R', arrow), ('bowl', 'Bowl', 'R', bowl), ('bread', 'Bread', 'L', bread),
+         ('basket', 'Basket', 'L', basket), ('cart', 'Handcart', 'R', cart)]
 
 
 def write(path, m):
@@ -376,6 +436,8 @@ def main():
             out[-1]['arrow_arm'] = ARROW_ARM[pid]
         if pid in LENGTH:
             out[-1]['length'] = LENGTH[pid]
+        if pid in GROUND:
+            out[-1]['ground'] = GROUND[pid]
         if pid in BLADE:
             out[-1]['blade'] = BLADE[pid]
         if pid in STOCK:
@@ -395,6 +457,7 @@ def main():
                'hang: the axis that points down whatever the hand\'s turn (a bail\'s load hangs). blade: '
                'the striking part along +Y (from, to), kept out of the head (and the other hand kept out of it). stock: a gun\'s butt (a segment and its half thickness), kept out of the upper arms. upright: the axis the wrist turns to keep up '
                '(grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow\'s length per bow-arm length; length: a prop\'s own. '
+               'ground: a prop that stands on the ground (a cart): height, metres from the grip down to the ground (the hand is lifted or lowered to it); y, z: the prop\'s +Y and +Z in the figure\'s frame (kept so whatever the hand\'s turn). '
                'data/clips.json hold says which clip holds what.',
                'props': out}, open(os.path.join(HERE, 'data', 'props.json'), 'w', encoding='utf-8', newline='\n'), indent=1)
 

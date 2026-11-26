@@ -1778,13 +1778,6 @@
    "loop": true
   },
   {
-   "name": "idle_2",
-   "label": "Idle 2",
-   "group": "idle",
-   "seconds": 4.27,
-   "loop": true
-  },
-  {
    "name": "idle_3",
    "label": "Idle 3",
    "group": "idle",
@@ -1903,7 +1896,7 @@
   },
   {
    "name": "ual_harvest",
-   "label": "Harvest (kneeling)",
+   "label": "Harvest (bending)",
    "group": "work",
    "seconds": 2.5,
    "loop": false
@@ -1938,7 +1931,7 @@
   },
   {
    "name": "ual_interact",
-   "label": "Work at bench / use",
+   "label": "Push button",
    "group": "work",
    "seconds": 2.0,
    "loop": false
@@ -2389,6 +2382,13 @@
    "loop": false
   },
   {
+   "name": "slash_up",
+   "label": "Up swing (left)",
+   "group": "melee",
+   "seconds": 3.17,
+   "loop": false
+  },
+  {
    "name": "slash_left",
    "label": "Slash left",
    "group": "melee",
@@ -2427,7 +2427,7 @@
    "name": "axe_spin",
    "label": "Spinning axe attack",
    "group": "melee",
-   "seconds": 2.5,
+   "seconds": 2.57,
    "loop": false
   },
   {
@@ -2508,8 +2508,15 @@
    "loop": false
   },
   {
+   "name": "walk_shoot_high",
+   "label": "Walk while shooting (high aim)",
+   "group": "ranged",
+   "seconds": 3.27,
+   "loop": true
+  },
+  {
    "name": "walk_shoot",
-   "label": "Walk while shooting",
+   "label": "Walk while shooting (low aim)",
    "group": "ranged",
    "seconds": 3.27,
    "loop": true
@@ -3069,6 +3076,13 @@
    "label": "Spear advance",
    "group": "melee",
    "seconds": 1.07,
+   "loop": true
+  },
+  {
+   "name": "craft_bench",
+   "label": "Craft at a bench",
+   "group": "work",
+   "seconds": 3.6,
    "loop": true
   },
   {

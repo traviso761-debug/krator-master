@@ -480,7 +480,7 @@
   },
   "CRAFT": {
    "clips": [
-    "ual_interact",
+    "craft_bench",
     "ual_repair"
    ],
    "prop": {
@@ -514,7 +514,7 @@
     "carpentry": {
      "clips": [
       "ual_repair",
-      "ual_interact"
+      "craft_bench"
      ],
      "prop": {
       "R": "hammer"
@@ -577,7 +577,7 @@
   },
   "WORK": {
    "clips": [
-    "ual_interact",
+    "craft_bench",
     "ual_repair",
     "ual_carry"
    ],
@@ -649,26 +649,26 @@
   },
   "WEAVE": {
    "clips": [
-    "ual_interact"
+    "craft_bench"
    ],
    "gap": "the loom (throwing the shuttle, beating the weft)"
   },
   "COOK": {
    "clips": [
-    "ual_interact",
+    "craft_bench",
     "ual_pickup_table"
    ],
    "gap": "stirring a pot at the hearth, kneading, the oven peel"
   },
   "BREW": {
    "clips": [
-    "ual_interact"
+    "craft_bench"
    ],
    "gap": "stirring a vat; pouring"
   },
   "ALCHEMY": {
    "clips": [
-    "ual_interact"
+    "craft_bench"
    ],
    "gap": "grinding, pouring, heating a flask"
   },

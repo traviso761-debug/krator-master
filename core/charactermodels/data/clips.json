@@ -1,5 +1,5 @@
 {
- "about": "Clips beyond walk, run and the idles. dropped: clips in anims.glb the labs leave out and the next anims build skips (idle_2 was the Stretch again: the owner, 2026-10-25). meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering, pickaxe or straight thrusting clip, so some are made (derive, make_pieces.derived_clips): loop_of a one-shot that eases back to its first frame after its last; dig, both hands on a pickaxe or hoe swung over the shoulder and down in front (dig_loop: the heavy swing looped had the left arm across the chest); hammer, a procedural loop on the standing idle (hammer_loop); thrust, a straight thrust from the combat stance, one-handed or a spear underhand (thrust_clip: Meshy's 'Thrust Slash' stabbed overhand, the point up); carry, an entry's own Meshy action ('<key>@src') with the arms holding a spear at the thrust's guard (spear_carry: 'Spear Walk' held it behind the back); hands, a clip (an idle's key, or '<key>@src') with a hand put where it only gestures, the head, the belly or the chest (hands_clip: the confused scratch scratched the air over the crown, the sleeper held both hands up), standing where its source stood. hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support). face: a hand brought to the face (KCharFigure toFace): hand R or L, at a point of data/clips.json faces (mouth, sip, anchor), point the hand's point (its grip frame) that goes there; when: spans of clip seconds it does so in (eased over ease; a span at a loop's start or end runs on round it), else only as near as the clip brings it (near: full within near[0] m, none beyond near[1]); level: the most degrees a bow's arrow may point up. nock: spans of clip seconds a bow's arrow is on the string (nocked to loosed). lead_left: a two-handed prop with a one-point support is held the other way round (the left hand above the right).",
+ "about": "Clips beyond walk, run and the idles. dropped: clips in anims.glb the labs leave out and the next anims build skips (idle_2 was the Stretch again: the owner, 2026-10-25). meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering, pickaxe or straight thrusting clip, so some are made (derive, make_pieces.derived_clips): loop_of a one-shot that eases back to its first frame after its last; dig, both hands on a pickaxe or hoe swung over the shoulder and down in front (dig_loop: the heavy swing looped had the left arm across the chest); hammer, a procedural loop on the standing idle (hammer_loop); thrust, a straight thrust from the combat stance, one-handed or a spear underhand (thrust_clip: Meshy's 'Thrust Slash' stabbed overhand, the point up); carry, an entry's own Meshy action ('<key>@src') with the arms holding a spear at the thrust's guard (spear_carry: 'Spear Walk' held it behind the back); hands, a clip (an idle's key, or '<key>@src') with a hand put where it only gestures, the head, the belly or the chest (hands_clip: the confused scratch scratched the air over the crown, the sleeper held both hands up), standing where its source stood. From the owner's review of 2026-11-26: level, an arm's swing flattened toward a level plane in spans (R: [its elevation from the shoulder, degrees; the share of the clip's offset kept]: slash_left from slash_up, which rose from below the right hip to over the left shoulder); bend, the spine bent forward joint by joint (walk_shoot from walk_shoot_high, which aims 13 degrees up); force, a clip re-timed by stretches (pace: [from second, factor]) and leant into its blow (axe_spin); guard, the right hand's grip put before the face with the blade across it in spans (block, block_2: the blade pointed back past the head); door, a door pulled open by its lever handle (open_door: the hand only held still in front); bench, crafting at a bench on the standing idle (craft_bench); place, a hand held at a point from the hips in spans (pick_fruit: the basket under the falling fruit); handles, both hands on a cart's crossbar at a fixed height (push). A clip made from '<key>@src' stands where its source stood, one made from another clip right after it. hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support). face: a hand brought to the face (KCharFigure toFace): hand R or L, at a point of data/clips.json faces (mouth, sip, anchor), point the hand's point (its grip frame) that goes there; when: spans of clip seconds it does so in (eased over ease; a span at a loop's start or end runs on round it), else only as near as the clip brings it (near: full within near[0] m, none beyond near[1]); level: the most degrees a bow's arrow may point up. nock: spans of clip seconds a bow's arrow is on the string (nocked to loosed). lead_left: a two-handed prop with a one-point support is held the other way round (the left hand above the right).",
  "dropped": [
   "idle_2"
  ],
@@ -141,8 +141,43 @@
    }
   },
   {
-   "key": "slash_left",
+   "key": "slash_up",
    "meshy": 97,
+   "label": "Up swing (left)",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "tz_sword",
+     "tz_scimitar",
+     "axe",
+     "tz_axe",
+     "mace",
+     "tz_scepter",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "slash_left",
+   "derive": {
+    "level": {
+     "R": [
+      -12,
+      0.35
+     ],
+     "when": [
+      [
+       0.5,
+       1.3
+      ]
+     ],
+     "ease": 0.2
+    },
+    "from": "slash_up"
+   },
    "label": "Slash left",
    "group": "melee",
    "loop": false,
@@ -312,6 +347,35 @@
      "tz_sword",
      "tz_scimitar"
     ]
+   },
+   "derive": {
+    "force": {
+     "pace": [
+      [
+       0,
+       1.15
+      ],
+      [
+       0.3,
+       0.68
+      ],
+      [
+       1.1,
+       1.2
+      ]
+     ],
+     "lean": {
+      "deg": 12,
+      "when": [
+       [
+        0.85,
+        1.15
+       ]
+      ],
+      "ease": 0.15
+     }
+    },
+    "from": "axe_spin@src"
    }
   },
   {
@@ -586,9 +650,33 @@
    }
   },
   {
-   "key": "walk_shoot",
+   "key": "walk_shoot_high",
    "meshy": 234,
-   "label": "Walk while shooting",
+   "label": "Walk while shooting (high aim)",
+   "group": "ranged",
+   "loop": true,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   },
+   "two_hands": [
+    "rifle",
+    "crossbow"
+   ]
+  },
+  {
+   "key": "walk_shoot",
+   "derive": {
+    "bend": {
+     "Spine": 8,
+     "Spine1": 9,
+     "Spine2": 9
+    },
+    "from": "walk_shoot_high"
+   },
+   "label": "Walk while shooting (low aim)",
    "group": "ranged",
    "loop": true,
    "hold": {
@@ -627,6 +715,33 @@
      "dagger",
      "warhammer"
     ]
+   },
+   "derive": {
+    "guard": {
+     "when": [
+      [
+       1.0,
+       1.45
+      ]
+     ],
+     "ease": 0.25,
+     "at": [
+      -0.17,
+      0.04,
+      0.3
+     ],
+     "blade": [
+      0.93,
+      0.36,
+      0.05
+     ],
+     "edge": [
+      0,
+      0.1,
+      1
+     ]
+    },
+    "from": "block@src"
    }
   },
   {
@@ -647,6 +762,33 @@
      "dagger",
      "warhammer"
     ]
+   },
+   "derive": {
+    "guard": {
+     "when": [
+      [
+       0.3,
+       0.75
+      ]
+     ],
+     "ease": 0.2,
+     "at": [
+      -0.17,
+      0.1,
+      0.3
+     ],
+     "blade": [
+      0.95,
+      0.25,
+      0.0
+     ],
+     "edge": [
+      0,
+      0.1,
+      1
+     ]
+    },
+    "from": "block_2@src"
    }
   },
   {
@@ -976,7 +1118,44 @@
    "meshy": 285,
    "label": "Open door",
    "group": "life",
-   "loop": false
+   "loop": false,
+   "derive": {
+    "door": {
+     "handle": [
+      -0.16,
+      1.0,
+      0.55
+     ],
+     "hinge": 0.72,
+     "open": 26,
+     "turn": 40,
+     "lean": 10,
+     "keys": {
+      "reach": [
+       0.2,
+       0.8
+      ],
+      "grip": [
+       0.65,
+       0.85
+      ],
+      "turn": [
+       0.85,
+       1.15
+      ],
+      "pull": [
+       1.2,
+       2.5
+      ],
+      "let": [
+       2.9,
+       3.4
+      ],
+      "end": 4.4
+     }
+    },
+    "from": "open_door@src"
+   }
   },
   {
    "key": "harvest",
@@ -990,19 +1169,60 @@
    "meshy": 277,
    "label": "Pick into basket",
    "group": "work",
-   "loop": false
+   "loop": false,
+   "derive": {
+    "place": {
+     "L": {
+      "at": [
+       0.28,
+       0.5,
+       0.42
+      ],
+      "when": [
+       [
+        1.4,
+        5.4
+       ]
+      ],
+      "ease": 0.5
+     }
+    },
+    "from": "pick_fruit@src"
+   },
+   "hold": {
+    "L": [
+     "basket"
+    ]
+   }
   },
   {
    "key": "push",
    "meshy": 261,
    "label": "Push cart",
    "group": "work",
-   "loop": true
+   "loop": true,
+   "derive": {
+    "handles": {
+     "height": 1.05,
+     "ahead": 0.45,
+     "width": 0.46,
+     "smooth": 0.6
+    },
+    "from": "push@src"
+   },
+   "hold": {
+    "R": [
+     "cart"
+    ]
+   },
+   "two_hands": [
+    "cart"
+   ]
   },
   {
    "key": "ual_harvest",
    "ual": "UAL2_Standard.glb:Farm_Harvest",
-   "label": "Harvest (kneeling)",
+   "label": "Harvest (bending)",
    "group": "work",
    "loop": false
   },
@@ -1062,12 +1282,23 @@
   {
    "key": "ual_interact",
    "ual": "UAL1_Standard.glb:Interact",
-   "label": "Work at bench / use",
+   "label": "Push button",
    "group": "work",
-   "loop": false,
+   "loop": false
+  },
+  {
+   "key": "craft_bench",
+   "derive": {
+    "bench": true,
+    "cycle": 3.6
+   },
+   "label": "Craft at a bench",
+   "group": "work",
+   "loop": true,
    "hold": {
     "R": [
-     "hammer"
+     "hammer",
+     "dagger"
     ]
    }
   },
@@ -2137,7 +2368,7 @@
   }
  ],
  "faces": {
-  "about": "the face's points, metres from the head joint in the figure's frame at rest (x the figure's left, y up, z forward), turned with the head; the man's for a body without its own (a giant's times its scale). mouth: the lips; sip: a cup's or a bite's middle at the lips; anchor: a drawn bow's string hand, below and in front of the chin, the hand 6-8 cm off the face (the owner, 2026-11-26: not on the chin); head: the skull's middle and its radius with the hair (weapons are kept out of it)",
+  "about": "the face's points, metres from the head joint in the figure's frame at rest (x the figure's left, y up, z forward), turned with the head; the man's for a body without its own (a giant's times its scale). mouth: the lips; sip: a cup's or a bite's middle at the lips; anchor: a drawn bow's string hand, below and in front of the chin, the hand 6-8 cm off the face (the owner, 2026-11-26: not on the chin); head: the skull's middle and its radius with the hair (weapons are kept out of it); eyes: each eyeball's centre, left then right, which the look pass turns the eyes about",
   "mpfb_male": {
    "mouth": [
     0,
@@ -2159,6 +2390,18 @@
     0.085,
     0.035,
     0.125
+   ],
+   "eyes": [
+    [
+     0.0276,
+     0.0982,
+     0.1146
+    ],
+    [
+     -0.0326,
+     0.0982,
+     0.1146
+    ]
    ]
   },
   "mpfb_female": {
@@ -2182,7 +2425,47 @@
     0.08,
     0.035,
     0.12
+   ],
+   "eyes": [
+    [
+     0.028,
+     0.082,
+     0.0903
+    ],
+    [
+     -0.0289,
+     0.082,
+     0.0903
+    ]
    ]
   }
+ },
+ "look": {
+  "about": "the head and the eyes turned toward a target ahead (KCharFigure look, Godot _look; the owner, 2026-11-26: Charged slash 'head should face more forward for the whole swing', Double combo 'eyes should track the target (in front)'). The target is 'ahead' metres in front of the figure at its own chest height (the Spine2 joint's at rest). The head (Neck and Head, neck_share of the turn on the neck) turns head.share of the way, within head yaw and pitch degrees; the eyes make up the rest, within eyes yaw and pitch (the eye shader turns each eyeball about its centre, faces eyes: no clip moves the eyes). A target further off the chest's forward than off[0] degrees is looked toward less, not at all past off[1] (a spin turns its back on it). On in the clips of groups and in clips, never in not; eased in and out over 0.2 s",
+  "ahead": 2.5,
+  "eyes": {
+   "yaw": 28,
+   "pitch": 18
+  },
+  "head": {
+   "yaw": 70,
+   "pitch": 30,
+   "share": 0.85,
+   "neck_share": 0.4
+  },
+  "off": [
+   75,
+   115
+  ],
+  "groups": [
+   "melee"
+  ],
+  "clips": [
+   "block",
+   "block_2"
+  ],
+  "not": [
+   "slash_up"
+  ]
  }
 }

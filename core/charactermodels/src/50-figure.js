@@ -356,8 +356,17 @@ function KCharFigure(body, sliders, load){
      by that mask, so the whites stay white */
   function irisTint(mat){
     var u = mat.userData.eyeTint = { value:new THREE.Color(1, 1, 1) };
+    // the gaze (look): each eye turned by eyeG about its own centre (eyeL, eyeR: the left one on +eyeAx's side), in
+    // the mesh's rest space before the skinning carries it with the head; identity leaves the eyes as the head has them
+    var g = mat.userData.eyeGaze = { eyeG:{ value:new THREE.Matrix3() }, eyeL:{ value:new THREE.Vector3() },
+      eyeR:{ value:new THREE.Vector3() }, eyeAx:{ value:new THREE.Vector3(1, 0, 0) } };
     mat.onBeforeCompile = function(sh){
       sh.uniforms.eyeTint = u;
+      Object.keys(g).forEach(function(k){ sh.uniforms[k] = g[k]; });
+      sh.vertexShader = 'uniform mat3 eyeG;\nuniform vec3 eyeL;\nuniform vec3 eyeR;\nuniform vec3 eyeAx;\n' + sh.vertexShader
+        .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\n\tobjectNormal = eyeG * objectNormal;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\n\tvec3 eyeC = dot( transformed - 0.5 * ( eyeL + eyeR ), eyeAx ) > 0.0 ? eyeL : eyeR;\n' +
+                 '\ttransformed = eyeG * ( transformed - eyeC ) + eyeC;');
       sh.fragmentShader = 'uniform vec3 eyeTint;\n' + sh.fragmentShader.replace('#include <map_fragment>',
         '#ifdef USE_MAP\n\tvec4 texelColor = mapTexelToLinear( texture2D( map, vUv ) );\n' +
         '\tdiffuseColor.rgb *= texelColor.rgb * mix( vec3( 1.0 ), eyeTint, texelColor.a );\n#endif');
@@ -1428,6 +1437,8 @@ function KCharFigure(body, sliders, load){
     if(rArm) for(k = 0; k < 3; k++) saved[3 + k].copy(bones[rArm[k]].quaternion);
     if(dW > lim && rArm){
       tD.subVectors(tS, tW).normalize().multiplyScalar(Math.min(dW - lim, MOVE * u));
+      // a prop standing on the ground (onGround: the cart) comes in level, its bar kept at its height
+      if(held.R && prop(held.R).ground) tD.y = 0;
       var rh = bones[rArm[2]];
       reachArm(bones[rArm[0]], bones[rArm[1]], rh, rh.getWorldPosition(tR).add(tD), rh.getWorldQuaternion(qR));
       tW.add(tD);
@@ -1676,6 +1687,30 @@ function KCharFigure(body, sliders, load){
       uF.set((side.charAt(0) === 'R' ? 1 : -1) * c[0], c[1], c[2]).multiplyScalar(u).applyQuaternion(self.group.getWorldQuaternion(uQ));
       bones[byName.Spine].getWorldPosition(uE).add(uF);
       reachArm(bones[h.arm[0]], bones[h.arm[1]], hand, uE, hand.getWorldQuaternion(uQ));
+    });
+  }
+
+  /* onGround: a prop with data/props.json ground stands on the ground (a cart): the hand is turned so the grip has the
+     prop's +Y and +Z along ground.y and ground.z in the figure's frame (upright, facing the figure's forward), and lifted
+     or lowered (the arm's two-bone solve) so the grip stands ground.height over the figure's ground. The push clip's bar
+     came 0.8 m off the floor on the short bodies and 1.2 on the tall ones and bobbed 8 cm with each step, and a few
+     degrees of the wrist tipped the wheels, a metre ahead, through the floor (a giant's height times its scale). The
+     wrist turns rather than the prop, so the two-hand grip finds the bar where it is drawn. Before twoHands */
+  var oE = V(), oF = V(), oW = V(), gQ = Q(), gQ2 = Q(), oM = new THREE.Matrix4(), oX = V(), oY = V(), oZ = V();
+  function onGround(){
+    ['R', 'L'].forEach(function(side){
+      var id = held[side], gd = id && prop(id).ground, h = skel.hands[side], g = holders[side];
+      if(!gd || !h || !h.arm || !g) return;
+      var u = self.group.getWorldScale(cS).x * SCALE, hand = bones[h.arm[2]];
+      self.group.updateMatrixWorld(true);
+      // the hand's turn that stands the grip as the prop stands: (figure * grip frame) * grip-in-hand^-1
+      oY.fromArray(gd.y).normalize(); oZ.fromArray(gd.z); oZ.addScaledVector(oY, -oZ.dot(oY)).normalize(); oX.crossVectors(oY, oZ);
+      gQ.setFromRotationMatrix(oM.makeBasis(oX, oY, oZ)).premultiply(self.group.getWorldQuaternion(gQ2));
+      gQ.multiply(gQ2.copy(g.quaternion).invert());
+      // the grip's offset from the wrist, turned with the hand; the grip's place, at its height over the ground
+      oW.subVectors(g.getWorldPosition(oF), hand.getWorldPosition(oE)).applyQuaternion(hand.getWorldQuaternion(gQ2).invert()).applyQuaternion(gQ);
+      oF.y = self.group.getWorldPosition(oE).y + gd.height * u;
+      reachArm(bones[h.arm[0]], bones[h.arm[1]], hand, oF.sub(oW), gQ);
     });
   }
 
@@ -2994,7 +3029,113 @@ function KCharFigure(body, sliders, load){
   this.posture = POSTURE;
   this.postureClips = CLIPP;
 
-  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); offHand(dt); toFace(); standUp(); nhT += dt || 0; digitigrade(dt); tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(); }
+  /* look: the head and the eyes turned toward a target ahead (data/clips.json look; the owner, 2026-11-26: Charged slash
+     "head should face more forward for the whole swing", Double combo "eyes should track the target"). The target is
+     look.ahead metres in front of the figure (its own forward, not the clip's) at its chest height at rest (the Spine2
+     joint), or self.lookAt (a world point, which a game sets) whatever the clip. The head (Neck and Head, neck_share
+     of it on the neck) turns head.share of the way there, within head.yaw and head.pitch degrees; the eyes make up the
+     rest, within eyes.yaw and eyes.pitch (no clip moves the eyes: the eye shader turns each about its centre, faces
+     eyes). A target further off the chest's forward than off[0] degrees is looked toward less, not at all past off[1]
+     (a spin turns its back on it), and the pass eases in and out over LOOK_EASE s as clips change. Nothing is kept from
+     frame to frame but that weight. self.lookState: the weight, the chest's angle off the target (degrees) and the
+     turns given (radians), for the tools and the twin test */
+  var LOOK_EASE = 0.2, lkW = 0, lkRest = null, lkChest = V(), lkQ = Q(), lkQn = Q(), lkR = Q(), lkF = V(), lkD = V(), lkE = V(),
+      lkT = V(), lkE2 = V(), lkM = new THREE.Matrix4(), lkG = new THREE.Matrix3(), lkI = Q();
+  this.lookAt = null;
+  this.lookState = { w:0, off:0, head:[0, 0], eyes:[0, 0] };
+  function lookOn(){
+    var L = KCharFigure.look, a = self.action; if(!L || !a) return 0;
+    var n = a.getClip().name, info = KCharFigure.clipData[n] || {};
+    if((L.not || []).indexOf(n) >= 0) return 0;
+    return (L.groups || []).indexOf(info.group) >= 0 || (L.clips || []).indexOf(n) >= 0 ? 1 : 0;
+  }
+  function eyeData(){ var F = KCharFigure.faces || {}; return (F[kit.body] || F.mpfb_male || {}).eyes; }
+  // the target in the world: self.lookAt, else look.ahead in front of the hips at the chest's height at rest (the
+  // morphed joints in the skeleton's own space)
+  this.lookTarget = function(out){
+    if(self.lookAt) return out.copy(self.lookAt);
+    var L = KCharFigure.look || { ahead:2.5 };
+    self.group.updateMatrixWorld(true);
+    if(lkRest !== self.pose){
+      lkRest = self.pose;
+      var P = J.map(function(){ return V(); });
+      J.forEach(function(j, i){ if(j.parent >= 0) P[i].fromArray(self.pose.t[i]).applyQuaternion(pRest[j.parent]).add(P[j.parent]); else P[i].fromArray(self.pose.t[i]); });
+      var sp = byName.Spine2 !== undefined ? byName.Spine2 : byName.Spine1;
+      lkChest.set(P[byName.Hips].x, P[sp].y, P[byName.Hips].z);
+    }
+    out.copy(lkChest);
+    out.z += L.ahead / ((self.pose && self.pose.root) || 1);
+    return self.inner.localToWorld(out);
+  };
+  // the face's forward in the world (the head's rest forward, as the clip and the passes have turned it)
+  this.faceForward = function(out){
+    return out.set(0, 0, 1).applyQuaternion(pRi[byName.Head]).applyQuaternion(self.headBone.getWorldQuaternion(lkQ2));
+  };
+  var lkQ2 = Q();
+  // the eyes' midpoint in the world, and the head's frame as the clip turned it from rest (figure axes, world)
+  function lookFrom(out){
+    var e = eyeData(), H = byName.Head;
+    self.headBone.getWorldQuaternion(lkR);
+    var u = self.group.getWorldScale(cS).x * SCALE;
+    out.set((e[0][0] + e[1][0]) / 2, (e[0][1] + e[1][1]) / 2, (e[0][2] + e[1][2]) / 2).applyQuaternion(pRi[H]).multiplyScalar(u)
+      .applyQuaternion(lkR).add(self.headBone.getWorldPosition(lkE2));
+    lkR.multiply(pRi[H]);                       // world <- the head's own figure frame
+    return out;
+  }
+  function look(dt){
+    var S = self.lookState, H = byName.Head, N = byName.Neck, L = KCharFigure.look, e = eyeData();
+    S.w = 0; S.head[0] = S.head[1] = S.eyes[0] = S.eyes[1] = 0;
+    var want = self.lookAt ? 1 : lookOn();
+    lkW = dt === undefined || dt < 0 ? want : lkW + (want - lkW) * (1 - Math.exp(-dt / LOOK_EASE));
+    if(!L || !e || H === undefined || N === undefined || lkW < 1e-3){ gaze(); return; }
+    self.lookTarget(lkT);
+    lookFrom(lkE);
+    // how far the chest has turned from the target (a spin turns its back on it; a head the clip turned away while the
+    // chest faces the target is what the pass is for: Charged slash looked 115 degrees aside, its chest square on)
+    var C = byName.Spine2 !== undefined ? byName.Spine2 : byName.Spine1;
+    lkF.set(0, 0, 1).applyQuaternion(pRi[C]).applyQuaternion(bones[C].getWorldQuaternion(lkQ));
+    var off = lkF.angleTo(lkD.subVectors(lkT, lkE)) * 180 / Math.PI;
+    lkD.normalize().applyQuaternion(lkQ.copy(lkR).invert());                    // the target, in the head's frame
+    var w = lkW * (1 - THREE.MathUtils.smoothstep(off, L.off[0], L.off[1]));
+    S.w = w; S.off = off;
+    if(w < 1e-3){ gaze(); return; }
+    var D = Math.PI / 180, yaw = Math.atan2(lkD.x, lkD.z), pitch = Math.asin(THREE.MathUtils.clamp(lkD.y, -1, 1));
+    var hy = THREE.MathUtils.clamp(L.head.share * yaw, -L.head.yaw * D, L.head.yaw * D) * w;
+    var hp = THREE.MathUtils.clamp(L.head.share * pitch, -L.head.pitch * D, L.head.pitch * D) * w;
+    S.head[0] = hy; S.head[1] = hp;
+    // the face's forward now, and where it should point: the least turn between them, a share on the neck
+    lkF.set(0, 0, 1).applyQuaternion(lkR);
+    lkD.set(Math.sin(hy) * Math.cos(hp), Math.sin(hp), Math.cos(hy) * Math.cos(hp)).applyQuaternion(lkR);
+    lkQ.setFromUnitVectors(lkF, lkD);
+    lkQn.copy(lkI).slerp(lkQ, L.head.neck_share);
+    turnWorld(bones[N], lkQn);
+    turnWorld(self.headBone, lkQ.multiply(lkQn.invert()));
+    // the eyes: what is left, from where the eyes are now
+    lookFrom(lkE);
+    lkD.subVectors(lkT, lkE).normalize().applyQuaternion(lkQ.copy(lkR).invert());
+    S.eyes[0] = THREE.MathUtils.clamp(Math.atan2(lkD.x, lkD.z), -L.eyes.yaw * D, L.eyes.yaw * D) * w;
+    S.eyes[1] = THREE.MathUtils.clamp(Math.asin(THREE.MathUtils.clamp(lkD.y, -1, 1)), -L.eyes.pitch * D, L.eyes.pitch * D) * w;
+    gaze();
+  }
+  // the eye shader's uniforms (irisTint): the turn in the rest frame, and each eye's centre in its mesh's rest space
+  // (the head joint's bind place, morphed, plus faces eyes)
+  var lkM2 = new THREE.Matrix4();
+  function gaze(){
+    var S = self.lookState, e = eyeData();
+    lkM.makeRotationY(S.eyes[0]).multiply(lkM2.makeRotationX(-S.eyes[1]));
+    lkG.setFromMatrix4(lkM);
+    Object.keys(live).forEach(function(id){
+      var m = live[id], g = m.material && m.material.userData && m.material.userData.eyeGaze;
+      if(!g || !e) return;
+      g.eyeG.value.copy(lkG);
+      lkM.copy(m.skeleton.boneInverses[byName.Head]).invert();
+      lkE2.setFromMatrixPosition(lkM);
+      g.eyeL.value.fromArray(e[0]).add(lkE2);
+      g.eyeR.value.fromArray(e[1]).add(lkE2);
+    });
+  }
+
+  function afterClip(dt){ posture(); look(dt); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); onGround(); twoHands(dt); offHand(dt); toFace(); standUp(); nhT += dt || 0; digitigrade(dt); tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(); }
 
   /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
      joints hung lower on the ribs, on every skeleton). No clip
@@ -3551,6 +3692,7 @@ function KCharFigure(body, sliders, load){
 KCharFigure.props = {};      // data/props.json by id (the page fills it)
 KCharFigure.clipData = {};   // data/clips.json clips by key: hold, two_hands, face, nock, lead_left, contact (the page fills it)
 KCharFigure.faces = {};      // data/clips.json faces: per body, the face's points (the page fills it)
+KCharFigure.look = null;     // data/clips.json look: the head and eyes toward a target ahead (the page fills it)
 KCharFigure.posture = {};    // data/posture.json bodies (the page fills it)
 KCharFigure.postureClips = {};   // data/posture.json clips: per clip, per body, degrees added (the page fills it)
 KCharFigure.postureFrame = 'figure';
