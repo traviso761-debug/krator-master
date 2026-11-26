@@ -187,10 +187,11 @@ suit a kung-fu set; the Iron Republic's drill wants a bayonet and rifle-butt set
 
 ## 7. Props to add (`tools/make_props.py`)
 
-From the trades' tools and the gaps: knife, cleaver, ladle, wooden spoon or stirring paddle, peel, shears, spade,
-shovel, rake, saw (one-man and two-man), adze, maul and chisel, scraper, shuttle, net, fishing rod, oar, pole, goad,
-halter rope, sack, crate, basket (round 4), cart (round 4), book, scroll, quill, coin purse, censer, staff, drum,
-lancet and mortar. Each in the grip frame (+Y along the handle, +Z the fingers, +X out of the palm), like the 27 now.
+**Done for the trade clips (2026-11-26):** ladle, sack, quill, book, oar, paddle, broom, saw, cast net, feed bag, lead
+rope, shuttle, textured from the material library (`wood.beam`, `cloth.weave.burlap`, `leather.polished`,
+`paper.parchment`, `straw.bedding`, `fibre.net`, `fibre.rope`: the albedo at 192 px embedded, 324 KB for the twelve)
+and held by their clips (`hold`). Still owed: coin and goods for give and take, a pot and hearth, a desk, a loom, the
+beasts to feed and milk (scenery, not hand props), and the props of the other gaps (censer, rug beater, sickle).
 
 ## 8. Order of work
 

@@ -23,7 +23,20 @@ MAT = {'steel': ([0.70, 0.72, 0.75], 0.85, 0.32), 'iron': ([0.30, 0.30, 0.32], 0
        'string': ([0.85, 0.80, 0.68], 0.0, 0.9), 'paint': ([0.55, 0.12, 0.09], 0.0, 0.6),
        'flame': ([1.0, 0.55, 0.15], 0.0, 1.0), 'glass': ([0.95, 0.8, 0.45], 0.0, 0.2), 'clay': ([0.62, 0.38, 0.24], 0.0, 0.85),
        'bread': ([0.72, 0.47, 0.22], 0.0, 0.9), 'stew': ([0.45, 0.24, 0.10], 0.0, 0.5),
-       'wicker': ([0.66, 0.50, 0.28], 0.0, 0.85), 'fruit': ([0.62, 0.10, 0.08], 0.0, 0.55)}
+       'wicker': ([0.66, 0.50, 0.28], 0.0, 0.85), 'fruit': ([0.62, 0.10, 0.08], 0.0, 0.55),
+       # the trades' props (2026-11-26): textured from the material library (TEX), the colour a tint on the texture
+       'twood': ([1.0, 1.0, 1.0], 0.0, 0.75), 'burlap': ([0.80, 0.66, 0.46], 0.0, 0.95),
+       'tleather': ([0.46, 0.27, 0.16], 0.0, 0.6), 'parchment': ([1.0, 1.0, 1.0], 0.0, 0.85),
+       'straw': ([1.0, 1.0, 1.0], 0.0, 0.95), 'net': ([1.0, 1.0, 1.0], 0.0, 0.9), 'rope': ([1.0, 1.0, 1.0], 0.0, 0.95),
+       'feather': ([0.92, 0.90, 0.85], 0.0, 0.8), 'ink': ([0.05, 0.05, 0.06], 0.0, 0.4), 'grain': ([0.80, 0.66, 0.32], 0.0, 0.9)}
+# a material drawn with a library texture (core/materials/library/<set>, its albedo downsampled to TEX_PX and embedded,
+# about 10-20 KB a prop): the set, how many metres one repeat of it covers (UVs projected per face onto its two widest
+# axes) and whether its alpha cuts out (the net: a card)
+TEX = {'twood': ('wood.beam', 0.6, False), 'burlap': ('cloth.weave.burlap', 0.25, False),
+       'tleather': ('leather.polished', 0.3, False), 'parchment': ('paper.parchment', 0.3, False),
+       'straw': ('straw.bedding', 0.2, False), 'net': ('fibre.net', 0.35, True), 'rope': ('fibre.rope', 0.12, False)}
+TEX_PX = 192
+LIBRARY = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'materials', 'library')
 
 
 class Mesh:
@@ -335,25 +348,135 @@ def arrow(m):
         m.quad('paint', *q)
 
 
+# ---- the trades' props (2026-11-26, for tools/trade_clips.py; textured from the library: TEX) ----
+def ladle(m):
+    # a wooden ladle held near the top of its shaft, the shaft down along +Y (the cook clip points it down) to the
+    # bowl, which opens back toward the hand (up, as it stirs)
+    rod(m, 'twood', 'y', (0, -0.07, 0), (0, 0.31, 0), 0.010, 0.012)
+    m.loft('twood', [ring((0, y, 0), 'y', r, 12) for y, r in ((0.305, 0.050), (0.335, 0.046), (0.36, 0.030), (0.372, 0.006))],
+           cap0=False, cap1=True)
+
+
+def sack(m):
+    # a grain sack carried by its tied neck (it hangs from the hand like the bucket: HANG), the body below the fingers
+    rod(m, 'rope', 'z', (0, 0, -0.02), (0, 0, 0.07), 0.022, 0.03, 8)
+    m.loft('burlap', [ring((0, 0, z), 'z', r, 12, rx=r * 0.8) for z, r in
+                      ((0.06, 0.03), (0.12, 0.13), (0.24, 0.19), (0.42, 0.205), (0.58, 0.17), (0.65, 0.06))], cap0=False)
+
+
+def quill(m):
+    # a quill pen, its nib forward of the fingers along +Y (the write clip points it down and forward at the page),
+    # the feather back past the hand
+    rod(m, 'feather', 'y', (0, -0.17, 0), (0, 0.06, 0), 0.0035, 0.0018, 5)
+    rod(m, 'ink', 'y', (0, 0.06, 0), (0, 0.085, 0), 0.0018, 0.0004, 5)
+    for s in (-1, 1):
+        m.quad('feather', (0, -0.03, 0), (0, -0.06, s * 0.012), (0, -0.15, s * 0.016), (0, -0.175, 0))
+
+
+def book(m):
+    # an open book lying on the left palm (grip flat: the hand open under it; upright turns the palm up): the spine
+    # along the fingers (+Z), the leaves rising a little either side, the pages out of the palm (+X)
+    for s in (-1, 1):
+        a = math.radians(12)
+        cy, cx = s * 0.075 * math.cos(a), 0.02 + 0.075 * math.sin(a)
+        for mat, h, w, t in (('tleather', 0.15, 0.225, 0.006), ('parchment', 0.142, 0.212, 0.016)):
+            off = 0.0 if mat == 'tleather' else 0.011
+            c = np.array([cx + off * math.cos(a), cy - s * off * math.sin(a), 0.0])
+            u = np.array([math.sin(a) * s, math.cos(a), 0.0]) * (h / 2)       # across the leaf
+            v = np.array([0.0, 0.0, w / 2])                                    # along the spine
+            nrm = np.array([math.cos(a), -s * math.sin(a), 0.0]) * (t / 2)
+            P = [c + i * u + j * v + k * nrm for k in (-1, 1) for i, j in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+            for q in ((0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
+                m.quad(mat, *[P[i] for i in q])
+
+
+def oar(m):
+    # an oar held at its handle, the loom running out along +Y to the blade (the row clip turns each hand so the oars
+    # run out over the sides); one prop for either hand
+    rod(m, 'twood', 'y', (0, -0.09, 0), (0, 0.14, 0), 0.017, 0.017)
+    rod(m, 'twood', 'y', (0, 0.14, 0), (0, 2.15, 0), 0.026, 0.022)
+    box(m, 'twood', (0, 2.42, 0), (0.014, 0.56, 0.15))
+
+
+def paddle(m):
+    # a canoe paddle held by the lower hand at the throat, the shaft up along +Y to the T-grip (the upper hand's:
+    # SUPPORT), the blade below the hand
+    rod(m, 'twood', 'y', (0, -0.30, 0), (0, 0.86, 0), 0.016)
+    box(m, 'twood', (0, 0.88, 0), (0.03, 0.035, 0.11))
+    m.loft('twood', [ring((0, y, 0), 'y', r, 8, rx=0.009) for y, r in ((-0.28, 0.02), (-0.40, 0.085), (-0.72, 0.09), (-0.82, 0.05))])
+
+
+def broom(m):
+    # a broom held by the lower hand on its handle, the handle up along +Y (the upper hand's: SUPPORT), the straw head
+    # below on the floor ahead, bound with rope
+    rod(m, 'twood', 'y', (0, -0.56, 0), (0, 0.60, 0), 0.014)
+    rod(m, 'rope', 'y', (0, -0.62, 0), (0, -0.56, 0), 0.026)
+    m.loft('straw', [ring((0, y, 0), 'y', r, 10, rx=r * 0.45) for y, r in ((-0.58, 0.025), (-0.66, 0.06), (-0.80, 0.10), (-0.96, 0.13))])
+
+
+def saw(m):
+    # a hand saw held by its handle, the blade forward along +Y (the saw clip points it forward and down at the board),
+    # the teeth on the fingers' side (+Z, down)
+    box(m, 'twood', (0, -0.005, 0.01), (0.03, 0.11, 0.10))
+    P = [(0, 0.05, -0.03), (0, 0.62, -0.01), (0, 0.62, 0.045), (0, 0.05, 0.085)]
+    m.quad('steel', *P)
+    for k in range(28):
+        y0 = 0.05 + 0.57 * k / 28
+        y1 = 0.05 + 0.57 * (k + 1) / 28
+        z0 = 0.085 - 0.04 * (k / 28)
+        z1 = 0.085 - 0.04 * ((k + 1) / 28)
+        m.tri('steel', (0, y0, z0), (0, y1, z1), (0, (y0 + y1) / 2, (z0 + z1) / 2 + 0.006))
+
+
+def net(m):
+    # a cast net gathered in the hand (it hangs like the bucket: HANG): a cone of netting, the lead weights round its
+    # mouth below
+    m.loft('net', [ring((0, 0, z), 'z', r, 14) for z, r in ((0.02, 0.025), (0.12, 0.06), (0.35, 0.12), (0.60, 0.17))],
+           cap0=False, cap1=False)
+    for k in range(10):
+        a = 2 * math.pi * k / 10
+        ball(m, 'iron', (0.17 * math.cos(a), 0.17 * math.sin(a), 0.61), 0.012, 5)
+
+
+def feedbag(m):
+    # a small feed bag hanging by its strap from the left hand (HANG), its mouth up toward the hand, grain in it
+    arc(m, 'rope', [(0, -0.08, 0.07), (0, -0.03, 0.01), (0, 0.03, 0.01), (0, 0.08, 0.07)], 0.005, 5)
+    m.loft('burlap', [ring((0, 0, z), 'z', r, 12) for z, r in ((0.07, 0.085), (0.16, 0.11), (0.28, 0.105), (0.31, 0.07))],
+           cap0=False, cap1=True)
+    m.loft('grain', [ring((0, 0, 0.09), 'z', 0.083, 12), ring((0, 0, 0.089), 'z', 0.001, 12)], cap0=False, cap1=False)
+
+
+def lead(m):
+    # a halter rope held in the hand, its end hanging (HANG) with a turn of slack
+    arc(m, 'rope', [(0, 0, -0.03), (0, 0.01, 0.15), (0.03, 0.04, 0.35), (0.0, 0.02, 0.55), (-0.02, -0.01, 0.62)], 0.009, 6)
+
+
+def shuttle(m):
+    # a weaver's boat shuttle held in the fingers, along the handle axis
+    m.loft('twood', [ring((0, y, 0), 'y', r, 8, rx=r * 0.6) for y, r in ((-0.12, 0.003), (-0.08, 0.016), (0.08, 0.016), (0.12, 0.003))])
+
+
 # where the left hand may hold a two-handed prop, when the clip says two_hands: a segment of its handle ([x0, y0, z0,
 # x1, y1, z1] in the prop's frame). The figure slides the hand along it to the point nearest where the clip has the
 # hand, and turns it round the segment as little as it can; a gun's segment runs along the fore-stock; a pistol's is
 # one point, the left hand cupped round the right's fingers
 SUPPORT = {'spear': [0, 0.3, 0, 0, 1.0, 0], 'hoe': [0, -0.4, 0, 0, 0.9, 0], 'pickaxe': [0, -0.12, 0, 0, 0.5, 0],
            'axe': [0, -0.12, 0, 0, 0.45, 0], 'warhammer': [0, -0.1, 0, 0, 0.5, 0], 'mace': [0, -0.1, 0, 0, 0.38, 0],
-           'sword': [0, -0.1, 0, 0, -0.1, 0],
+           'sword': [0, -0.1, 0, 0, -0.1, 0], 'paddle': [0, 0.45, 0, 0, 0.86, 0], 'broom': [0, 0.2, 0, 0, 0.58, 0],
            'rifle': [0, 0.06, 0.16, 0, 0.06, 0.42], 'crossbow': [0, 0.075, 0.1, 0, 0.075, 0.3],
            'pistol': [0.04, -0.03, 0.02, 0.04, -0.03, 0.02],
            'cart': [0, CART_WIDTH - 0.16, 0, 0, CART_WIDTH + 0.06, 0]}
 # how the hand closes on it (make_mpfb.py hands(): fist, trigger: the index finger along the barrel, wide: round a cup)
-GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide', 'bowl': 'flat', 'bread': 'wide'}
+GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide', 'bowl': 'flat', 'bread': 'wide',
+        'book': 'flat', 'quill': 'trigger', 'shuttle': 'wide'}
 STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
 # degrees a prop turns about its handle in a lower hand (the forearm held forward in its guard): the shield stands up
 # with its board out, not flat like a tray (mirrored on the right)
 LOW_TURN = {'shield': 90}
 # the prop's axis that points down whatever the hand's turn: a bucket and a lantern hang from their bails, which lie
 # along the handle axis in the fist (the figure turns the forearm to lay the bail level and swings the load about it)
-HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1], 'basket': [0, 0, 1]}
+HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1], 'basket': [0, 0, 1], 'sack': [0, 0, 1], 'net': [0, 0, 1], 'feedbag': [0, 0, 1],
+        'lead': [0, 0, 1]}
 # a hanging prop's body, kept out of the legs (the arm swings out at the shoulder): its radius, and from where to where
 # along the hang axis (the short bodies carried the bucket in the thigh)
 HANG_CLEAR = {'bucket': [0.12, 0.13, 0.36], 'lantern': [0.07, 0.05, 0.21]}
@@ -364,7 +487,7 @@ HANG_CLEAR = {'bucket': [0.12, 0.13, 0.36], 'lantern': [0.07, 0.05, 0.21]}
 GROUND = {'cart': {'height': CART_HANDLE, 'y': [1, 0, 0], 'z': [0, -0.25, 1]}}
 # the grip-frame axis the figure turns the wrist to keep up (but while the hand is at the face): a cup's mouth, and a
 # bowl's opening, so the open hand under it turns palm up (grip 'flat': the fingers stay as the clip has them)
-UPRIGHT = {'cup': [0, 1, 0], 'bowl': [1, 0, 0]}
+UPRIGHT = {'cup': [0, 1, 0], 'bowl': [1, 0, 0], 'book': [1, 0, 0]}
 # the bow's arrow is this many times the bow arm's length (shoulder to wrist) on each body, so a long-armed draw
 # (about 1.5 arms) leaves the head in front of the bow; the arrow model's own length
 ARROW_ARM = {'bow': 1.65}
@@ -385,13 +508,43 @@ PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('ax
          ('hoe', 'Hoe', 'R', hoe), ('hammer', 'Hammer', 'R', hammer), ('bucket', 'Bucket', 'R', bucket),
          ('cup', 'Cup', 'R', cup), ('lantern', 'Lantern', 'L', lantern), ('torch', 'Torch', 'L', torch),
          ('arrow', 'Arrow', 'R', arrow), ('bowl', 'Bowl', 'R', bowl), ('bread', 'Bread', 'L', bread),
-         ('basket', 'Basket', 'L', basket), ('cart', 'Handcart', 'R', cart)]
+         ('basket', 'Basket', 'L', basket), ('cart', 'Handcart', 'R', cart),
+         ('ladle', 'Ladle', 'R', ladle), ('sack', 'Sack', 'R', sack), ('quill', 'Quill', 'R', quill), ('book', 'Book', 'L', book),
+         ('oar', 'Oar', 'R', oar), ('paddle', 'Paddle', 'R', paddle), ('broom', 'Broom', 'R', broom), ('saw', 'Saw', 'R', saw),
+         ('net', 'Cast net', 'R', net), ('feedbag', 'Feed bag', 'L', feedbag), ('lead', 'Lead rope', 'R', lead),
+         ('shuttle', 'Shuttle', 'R', shuttle)]
+
+
+def _tex_bytes(name):
+    """the library set's albedo for material name, downsampled to TEX_PX: (bytes, mime)"""
+    import io
+    from PIL import Image
+    sset, _, cut = TEX[name]
+    d = os.path.join(LIBRARY, sset)
+    f = next(os.path.join(d, x) for x in ('albedo.jpg', 'albedo.png') if os.path.exists(os.path.join(d, x)))
+    if os.path.getsize(f) < 1000:
+        sys.exit('%s is a Git LFS pointer: git lfs pull --include="core/materials/library/%s/*"' % (f, sset))
+    im = Image.open(f).convert('RGBA' if cut else 'RGB').resize((TEX_PX, TEX_PX), Image.LANCZOS)
+    b = io.BytesIO()
+    if cut:
+        im.quantize(64, method=Image.Quantize.FASTOCTREE).save(b, 'PNG', optimize=True)
+        return b.getvalue(), 'image/png'
+    im.save(b, 'JPEG', quality=78, optimize=True)
+    return b.getvalue(), 'image/jpeg'
+
+
+def _uvs(T, n, tile):
+    """per-face planar UVs: each triangle projected onto the two axes its normal lies furthest from, one repeat a tile"""
+    ax = np.argmax(np.abs(n), 1)
+    keep = np.array([[1, 2], [0, 2], [0, 1]])[ax]                  # the two other axes, per triangle
+    uv = np.take_along_axis(T, np.repeat(keep[:, None, :], 3, 1), 2)  # (n, 3, 2)
+    return (uv / tile).reshape(-1, 2).astype(np.float32)
 
 
 def write(path, m):
     g = glbio.GlbWriter()
     g.j['asset']['generator'] = 'core/charactermodels/make_props.py'
-    mats, prims = [], []
+    mats, prims, images, textures = [], [], [], []
     for name, tris in m.parts.items():
         if not tris:
             continue
@@ -406,10 +559,20 @@ def write(path, m):
                                                                  'roughnessFactor': rough}}
         if name == 'flame':
             mat['emissiveFactor'] = col
+        attrs = {'POSITION': g.acc(P.astype(np.float32), 'VEC3', 34962, minmax=True), 'NORMAL': g.acc(N, 'VEC3', 34962)}
+        if name in TEX:
+            data, mime = _tex_bytes(name)
+            images.append({'bufferView': g.view(data), 'mimeType': mime})
+            textures.append({'source': len(images) - 1, 'sampler': 0})
+            mat['pbrMetallicRoughness']['baseColorTexture'] = {'index': len(textures) - 1}
+            if TEX[name][2]:
+                mat['alphaMode'], mat['alphaCutoff'] = 'MASK', 0.5
+            attrs['TEXCOORD_0'] = g.acc(_uvs(T, n, TEX[name][1]), 'VEC2', 34962)
         mats.append(mat)
-        prims.append({'attributes': {'POSITION': g.acc(P.astype(np.float32), 'VEC3', 34962, minmax=True),
-                                     'NORMAL': g.acc(N, 'VEC3', 34962)},
-                      'indices': g.acc(np.arange(len(P), dtype=np.uint32), 'SCALAR', 34963), 'material': len(mats) - 1})
+        prims.append({'attributes': attrs, 'indices': g.acc(np.arange(len(P), dtype=np.uint32), 'SCALAR', 34963), 'material': len(mats) - 1})
+    if images:
+        g.j['images'], g.j['textures'] = images, textures
+        g.j['samplers'] = [{'wrapS': 10497, 'wrapT': 10497, 'magFilter': 9729, 'minFilter': 9987}]
     g.j['materials'] = mats
     g.j['meshes'] = [{'name': os.path.basename(path)[:-4], 'primitives': prims}]
     g.j['nodes'] = [{'name': os.path.basename(path)[:-4], 'mesh': 0}]
@@ -418,12 +581,18 @@ def write(path, m):
 
 
 def main():
-    os.makedirs(OUT, exist_ok=True)
+    # --only a,b,c [--out dir]: write only these props (a rebuild moves every prop's bytes by float noise, so the
+    # published ones are kept), and in data/props.json replace or add just their entries
+    only = sys.argv[sys.argv.index('--only') + 1].split(',') if '--only' in sys.argv else None
+    out_dir = sys.argv[sys.argv.index('--out') + 1] if '--out' in sys.argv else OUT
+    os.makedirs(out_dir, exist_ok=True)
     out = []
     for pid, label, hand, build in PROPS:
+        if only and pid not in only:
+            continue
         m = Mesh()
         build(m)
-        write(os.path.join(OUT, pid + '.glb'), m)
+        write(os.path.join(out_dir, pid + '.glb'), m)
         out.append({'id': pid, 'label': label, 'hand': hand, 'glb': 'pieces/props/%s.glb' % pid, 'grip': GRIP.get(pid, 'fist')})
         if pid in SUPPORT:
             out[-1]['support'] = SUPPORT[pid]
@@ -452,7 +621,13 @@ def main():
         print('%-10s %s %6d tris' % (pid, hand, sum(len(t) for t in m.parts.values())))
     # the imported props (tools/import_props.py: Meshy models, kept by their 'src') stay after the made ones
     pj = os.path.join(HERE, 'data', 'props.json')
-    if os.path.exists(pj):
+    if only and os.path.exists(pj):
+        prev = json.load(open(pj, encoding='utf-8'))['props']
+        new = {p['id']: p for p in out}
+        out = [new.pop(p['id'], p) for p in prev]
+        made = [p for p in out if not p.get('src')]
+        out = made + list(new.values()) + [p for p in out if p.get('src')]
+    elif os.path.exists(pj):
         out += [p for p in json.load(open(pj, encoding='utf-8'))['props'] if p.get('src')]
     json.dump({'about': 'Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where '
                'the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). '

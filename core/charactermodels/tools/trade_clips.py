@@ -241,7 +241,9 @@ def row(c, clip, cycle=2.2):
         p.turn(loc, 'Head', mp._Rx(-lean * 0.5))
         for S in ('Right', 'Left'):
             s = sd if S == 'Right' else -sd
-            p.reach(loc, S, [s * 0.22, y, z], p.poleR(1.0, -0.6, -0.4) if S == 'Right' else p.poleL(1.0, -0.6, -0.4))
+            # each oar runs out over its side and down to the water, the fingers over the handle
+            p.grip(loc, S, [s * 0.22, y, z], [s * 1.0, -0.35, 0.12], [0.0, -0.6, 1.0],
+                   p.poleR(1.0, -0.6, -0.4) if S == 'Right' else p.poleL(1.0, -0.6, -0.4))
         p.rig.quats(loc, out)
     return _done(p, times, out)
 
@@ -259,8 +261,10 @@ def paddle(c, clip, cycle=1.8):
         z, up, rot = _k(keys, t)
         p.turn(loc, 'Spine', mp._Ry(sd * rot) @ mp._Rx(0.12))
         p.turn(loc, 'Head', mp._Ry(-sd * rot * 0.6))
-        p.reach(loc, 'Right', [sd * 0.32, y0 + up * 0.3, z], p.poleR(1.0, -0.8, -0.3))
-        p.reach(loc, 'Left', [sd * 0.10, p.shL[1] + 0.02, z + 0.12], p.poleL(0.6, -1.0, -0.3))
+        R = np.array([sd * 0.32, y0 + up * 0.3, z])
+        L = np.array([sd * 0.10, p.shL[1] + 0.02, z + 0.12])
+        p.grip(loc, 'Right', R, L - R, [-sd * 1.0, 0.0, 0.3], p.poleR(1.0, -0.8, -0.3))   # the shaft up to the top hand
+        p.reach(loc, 'Left', L, p.poleL(0.6, -1.0, -0.3))
         p.rig.quats(loc, out)
     return _done(p, times, out)
 
@@ -276,8 +280,10 @@ def sweep(c, clip, cycle=1.6):
         s = math.sin(2 * math.pi * t / cycle)
         p.turn(loc, 'Spine', mp._Rx(0.16) @ mp._Ry(-sd * 0.16 * s))
         p.turn(loc, 'Head', mp._Rx(0.35))
-        p.reach(loc, 'Right', [sd * 0.18 - sd * 0.20 * s, hy - 0.02, 0.30], p.poleR())
-        p.reach(loc, 'Left', [-sd * 0.02 - sd * 0.08 * s, p.shL[1] - 0.20, 0.18], p.poleL())
+        R = np.array([sd * 0.18 - sd * 0.20 * s, hy - 0.02, 0.30])
+        L = np.array([-sd * 0.02 - sd * 0.08 * s, p.shL[1] - 0.20, 0.18])
+        p.grip(loc, 'Right', R, L - R, [0.0, -0.3, 1.0], p.poleR())          # the broom's handle up to the left hand
+        p.reach(loc, 'Left', L, p.poleL())
         p.rig.quats(loc, out)
     return _done(p, times, out)
 

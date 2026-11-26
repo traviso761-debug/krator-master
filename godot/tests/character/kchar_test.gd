@@ -175,6 +175,15 @@ func _init() -> void:
 		fig.apply(rec)
 		var hips1 := glob(fig.skeleton, fig._hips).origin.y
 		ok(hips1 < hips0 - 0.03, "height -0.8 lowers the hips: %f -> %f" % [hips0, hips1])
+		# a prop textured from the material library (make_props.py TEX): its mesh carries the texture
+		if FileAccess.file_exists(DIR + "/pieces/props/ladle.glb"):
+			fig.hold({"R": "ladle", "L": null})
+			var tex_ok := false
+			for n in fig._holders["R"].find_children("*", "MeshInstance3D", true, false):
+				var mat = (n as MeshInstance3D).get_active_material(0)
+				if mat is BaseMaterial3D and mat.albedo_texture != null:
+					tex_ok = true
+			ok(tex_ok, "the ladle is drawn with its library texture")
 		# props: a sword in the right hand under its bone, and that hand's fingers closed
 		fig.hold({"R": "sword", "L": "shield"})
 		ok(fig._holders.has("R") and fig._holders["R"].get_child_count() == 1 and fig._holders["L"].get_child_count() == 1, "sword and shield held")

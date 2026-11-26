@@ -354,6 +354,131 @@
    }
   },
   {
+   "id": "ladle",
+   "label": "Ladle",
+   "hand": "R",
+   "glb": "pieces/props/ladle.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "sack",
+   "label": "Sack",
+   "hand": "R",
+   "glb": "pieces/props/sack.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "quill",
+   "label": "Quill",
+   "hand": "R",
+   "glb": "pieces/props/quill.glb",
+   "grip": "trigger"
+  },
+  {
+   "id": "book",
+   "label": "Book",
+   "hand": "L",
+   "glb": "pieces/props/book.glb",
+   "grip": "flat",
+   "upright": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "oar",
+   "label": "Oar",
+   "hand": "R",
+   "glb": "pieces/props/oar.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "paddle",
+   "label": "Paddle",
+   "hand": "R",
+   "glb": "pieces/props/paddle.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    0.45,
+    0,
+    0,
+    0.86,
+    0
+   ]
+  },
+  {
+   "id": "broom",
+   "label": "Broom",
+   "hand": "R",
+   "glb": "pieces/props/broom.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    0.2,
+    0,
+    0,
+    0.58,
+    0
+   ]
+  },
+  {
+   "id": "saw",
+   "label": "Saw",
+   "hand": "R",
+   "glb": "pieces/props/saw.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "net",
+   "label": "Cast net",
+   "hand": "R",
+   "glb": "pieces/props/net.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "feedbag",
+   "label": "Feed bag",
+   "hand": "L",
+   "glb": "pieces/props/feedbag.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "lead",
+   "label": "Lead rope",
+   "hand": "R",
+   "glb": "pieces/props/lead.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "shuttle",
+   "label": "Shuttle",
+   "hand": "R",
+   "glb": "pieces/props/shuttle.glb",
+   "grip": "wide"
+  },
+  {
    "id": "tz_scepter",
    "label": "Sunforged Scepter (Tzintzun's staff of power)",
    "hand": "R",

@@ -847,7 +847,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
 | `tools/trade_clips.py` | the trades' made clips (cook, sack, give, take, write, read, kneel and pray, row, paddle, sweep, saw, weave, cast net, feed, lead, milk), data/clips.json derive 'trade' | |
 | `data/activities.json`, `tests/check_activities.py` | what each sim activity plays: clips, props, enter and exit, overrides by furniture, trade and role, `gap` (hand-written); the check lists unmapped ids and gaps | [G data] |
-| `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them | [G data] |
+| `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them; `TEX` draws a material with a library texture (embedded, 192 px), `--only a,b --out dir` writes just those props (a rebuild moves every prop's bytes) | [G data] |
 | `data/fur.json`, `tools/fur.py` | the fur shells' look per kind and per item; the tool that derives a built garment's fur rows from its GLB (`make_garments.py` writes them for new ones) | [G data] |
 | `data/posture.json` | the posture pass's angles per body (spine, neck, head, shoulder drop and back); the Animation Lab's Posture panel writes its JSON | [G data] |
 | `donors/anims/` | the clip sources: Meshy batches (`idles*`, `actions*`, with their request records) and the UAL libraries (CC0, `UAL_License.txt`) | |

@@ -2720,7 +2720,12 @@
    "loop": true,
    "fist": [
     "R"
-   ]
+   ],
+   "hold": {
+    "R": [
+     "ladle"
+    ]
+   }
   },
   {
    "key": "walk_sack",
@@ -2733,7 +2738,12 @@
    "loop": true,
    "fist": [
     "R"
-   ]
+   ],
+   "hold": {
+    "R": [
+     "sack"
+    ]
+   }
   },
   {
    "key": "give",
@@ -2766,7 +2776,12 @@
    "loop": true,
    "fist": [
     "R"
-   ]
+   ],
+   "hold": {
+    "R": [
+     "quill"
+    ]
+   }
   },
   {
    "key": "read",
@@ -2776,7 +2791,12 @@
    },
    "label": "Read a book",
    "group": "life",
-   "loop": true
+   "loop": true,
+   "hold": {
+    "L": [
+     "book"
+    ]
+   }
   },
   {
    "key": "kneel_pray",
@@ -2800,7 +2820,15 @@
    "fist": [
     "R",
     "L"
-   ]
+   ],
+   "hold": {
+    "R": [
+     "oar"
+    ],
+    "L": [
+     "oar"
+    ]
+   }
   },
   {
    "key": "paddle",
@@ -2814,6 +2842,14 @@
    "fist": [
     "R",
     "L"
+   ],
+   "hold": {
+    "R": [
+     "paddle"
+    ]
+   },
+   "two_hands": [
+    "paddle"
    ]
   },
   {
@@ -2828,6 +2864,14 @@
    "fist": [
     "R",
     "L"
+   ],
+   "hold": {
+    "R": [
+     "broom"
+    ]
+   },
+   "two_hands": [
+    "broom"
    ]
   },
   {
@@ -2841,7 +2885,12 @@
    "loop": true,
    "fist": [
     "R"
-   ]
+   ],
+   "hold": {
+    "R": [
+     "saw"
+    ]
+   }
   },
   {
    "key": "weave",
@@ -2855,7 +2904,12 @@
    "fist": [
     "R",
     "L"
-   ]
+   ],
+   "hold": {
+    "R": [
+     "shuttle"
+    ]
+   }
   },
   {
    "key": "cast_net",
@@ -2869,7 +2923,12 @@
    "fist": [
     "R",
     "L"
-   ]
+   ],
+   "hold": {
+    "R": [
+     "net"
+    ]
+   }
   },
   {
    "key": "feed",
@@ -2882,7 +2941,12 @@
    "loop": true,
    "fist": [
     "L"
-   ]
+   ],
+   "hold": {
+    "L": [
+     "feedbag"
+    ]
+   }
   },
   {
    "key": "walk_lead",
@@ -2895,7 +2959,12 @@
    "loop": true,
    "fist": [
     "R"
-   ]
+   ],
+   "hold": {
+    "R": [
+     "lead"
+    ]
+   }
   },
   {
    "key": "milk",

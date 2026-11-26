@@ -336,7 +336,7 @@
     "push",
     "ual_push"
    ],
-   "gap": "pulling a handcart; a sack (prop)"
+   "gap": "pulling a handcart"
   },
   "LOAD": {
    "clips": [
@@ -386,7 +386,7 @@
     "pick_up_side",
     "ual_carry"
    ],
-   "gap": "scrubbing, beating a rug, hanging washing; a broom (prop)"
+   "gap": "scrubbing, beating a rug, hanging washing"
   },
   "FARM": {
    "clips": [
@@ -664,7 +664,10 @@
    "clips": [
     "weave"
    ],
-   "gap": "the loom itself (drawn), a shuttle"
+   "gap": "the loom itself (drawn)",
+   "prop": {
+    "R": "shuttle"
+   }
   },
   "COOK": {
    "clips": [
@@ -672,7 +675,10 @@
     "cook_stir",
     "ual_pickup_table"
    ],
-   "gap": "kneading, the oven peel; a ladle (prop)"
+   "gap": "kneading, the oven peel",
+   "prop": {
+    "R": "ladle"
+   }
   },
   "BREW": {
    "clips": [
@@ -706,8 +712,7 @@
      "enter": "sit_down",
      "exit": "stand_up"
     }
-   },
-   "gap": "a book and a quill (props)"
+   }
   },
   "STUDY_IN": {
    "alias": "STUDY"
@@ -1010,14 +1015,17 @@
     "feed",
     "ual_water"
    ],
-   "gap": "a trough; a feed bag (prop)"
+   "gap": "a trough"
   },
   "HERD": {
    "clips": [
     "walk_lead",
     "walk"
    ],
-   "gap": "driving beasts with a goad"
+   "gap": "driving beasts with a goad",
+   "prop": {
+    "R": "lead"
+   }
   },
   "WATER_CAMELS": {
    "clips": [
@@ -1033,7 +1041,7 @@
     "row",
     "idle_5"
    ],
-   "gap": "line fishing; a net (prop)"
+   "gap": "line fishing"
   },
   "FISH_SHORE": {
    "clips": [
@@ -1041,7 +1049,7 @@
     "idle_5",
     "ual_crouch"
    ],
-   "gap": "a rod; a net (prop)"
+   "gap": "a rod"
   },
   "MEND_NETS": {
    "clips": [
@@ -1149,8 +1157,15 @@
     "canoe": {
      "clips": [
       "paddle"
-     ]
+     ],
+     "prop": {
+      "R": "paddle"
+     }
     }
+   },
+   "prop": {
+    "R": "oar",
+    "L": "oar"
    }
   },
   "MILK": {
