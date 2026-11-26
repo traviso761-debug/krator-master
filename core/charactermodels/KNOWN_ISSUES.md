@@ -116,6 +116,25 @@
     the bow's turn and cant, the face weight, the blade's residue, at nineteen clip times), checked with a scratch data
     folder without clothes, where the prop checks added to `kchar_test.gd` pass too; the whole test was not run on this
     machine (no Godot pieces here).
+- **The weapon-hold fixes of the owner's review (2026-11-26)** (README, Props, Two hands, The bow). What each leaves:
+  - *The left hand's side of the haft comes from the prop*: its index side toward the head (or the blade, the muzzle),
+    in every two-handed clip. A clip that wants a reversed hold (an ice-pick grip, a spear turned butt-first) would need
+    a flag of its own. Round the haft the hand takes the roll that bends the wrist least and the forearm takes half of
+    the twist that leaves, so a wrist can still be turned up to about 90 degrees on its forearm (Spear advance, the top of
+    Overhead chop). At the top of Overhead chop the clip holds the hands about 50 cm apart, the left at the butt end.
+  - *The bow's cant* keeps to the side it is on and waits at a clear cant while the way to the one it wants is blocked;
+    when the leg comes to the bow it turns out at up to 8 radians a second (15 degrees a frame at 30 Hz, against the
+    clip's own 9 to 12). The keep-out is still capsules widened for loose trousers (now with 2 cm more preferred).
+  - *The draw stops short of the face*: the anchor is 6 to 8 cm off it as measured on the six bodies (6.2 to 8.6 cm: the
+    tall bodies nearer, the short ones farther; the points are per body, not per size), so the draw is about 14 cm
+    shorter than before and the arrow stands further in front of the bow.
+  - *The empty hand keeps off the blade* by moving the wrist (two-bone solve, its turn kept): the hand may rest against
+    the blade's edge, and only the forearm, the hand and two fingers are tested (not the upper arm or the thumb).
+  - *The rifle's stock* keeps out of the upper arms from 35% down by turning the wrist, which moves the muzzle a little at
+    the hip; the butt in the shoulder's pocket at the aim is allowed.
+  - *Pistol quick draw's two-hand span* (`two_when`, 2.3 to 4.3 s) is set by hand from the clip.
+  - Checked against a local piece set (`../krator-garments`, not the manifest's): the Godot figure test passed with the
+    man's pieces; the giant's checks were not run.
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
   script (`tools/make_garments.py`): no folds beyond the hang and flare, strips of texture with the library's fabric
   grain multiplied in (colour only: no normal or roughness map, so a weave does not catch the light), and the

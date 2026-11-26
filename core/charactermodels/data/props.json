@@ -1,5 +1,5 @@
 {
- "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. hang: the axis that points down whatever the hand's turn (a bail's load hangs). blade: the striking part along +Y (from, to), kept out of the head. upright: the axis the wrist turns to keep up (grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow's length per bow-arm length; length: a prop's own. data/clips.json hold says which clip holds what.",
+ "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. hang: the axis that points down whatever the hand's turn (a bail's load hangs). blade: the striking part along +Y (from, to), kept out of the head (and the other hand kept out of it). stock: a gun's butt (a segment and its half thickness), kept out of the upper arms. upright: the axis the wrist turns to keep up (grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow's length per bow-arm length; length: a prop's own. data/clips.json hold says which clip holds what.",
  "props": [
   {
    "id": "sword",
@@ -141,6 +141,15 @@
     0,
     0.075,
     0.3
+   ],
+   "stock": [
+    0,
+    0.04,
+    -0.13,
+    0,
+    0.04,
+    -0.27,
+    0.035
    ]
   },
   {
@@ -156,6 +165,15 @@
     0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0,
+    0,
+    -0.08,
+    0,
+    0,
+    -0.39,
+    0.045
    ]
   },
   {
