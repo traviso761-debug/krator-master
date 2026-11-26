@@ -26,10 +26,10 @@ function kindBase(n){
   return 'home';
 }
 // the sixteen farm floors and how each grows: 0 channels, 1 rafts, 2 racks, 3 grain, 4 animals, 5 no light
-export const FARMV={49:3,50:0,51:2,52:1,53:3,54:4,55:0,56:5,77:3,78:1,79:2,80:0,81:3,82:5,83:2,84:4};
+export const FARMV={49:3,50:0,51:2,52:1,53:3,54:4,55:6,56:5,77:3,78:1,79:2,80:0,81:3,82:5,83:6,84:4};
 // the water band's floors: 0 clean water, 1 the sewage cleaned, 2 the air plant
 export const WATERV={123:0,124:1,125:2,126:0,127:1,128:2};
-export const FARM_NAMES=['channels of greens','rafts on ponds','racks of greens five high','grain under sodium lamps','the animals','mushrooms, fish, seed and compost'];
+export const FARM_NAMES=['channels of greens','rafts on ponds','racks of greens five high','grain under sodium lamps','the animals','mushrooms, fish, seed and compost','the orchard'];
 export const zoneOf=n=>n<=48?'top':n<=96?'mid':'deep';
 export function placeName(n){
   if(n<1)return 'above the top level';
@@ -56,11 +56,45 @@ export function buildKits(K,R){
   let fk=null;
   function shell(k,o={}){fk=furn(k);if(o.open===undefined)o.open=i=>i%7===2;
     k.add('base',K.ring(RS,RO,0.5,64),'#7a766e',0,0,0);
+    k.add('base',K.ring(RS-0.04,RS+0.3,0.95,32),'#4e5052',0,0.02,0);fk.add('base',K.ring(RS,RS+0.28,0.03,48),'#a89040',0,0.04,0);   // the edge girder and its nosing
+    for(let i=0;i<36;i++){const a=i/36*TAU;fk.radial('base','#5e5a54',a,(RS+RW)/2,0.002,RW-RS-0.6,0.04,0.006);                  // the street's plate seams
+      if(i%2===0){fk.radial('base','#55575a',a,(RS+RO)/2+0.2,-0.82,RO-RS-0.6,0.12,0.32);fk.radial('base','#55575a',a,(RS+RO)/2+0.2,-0.86,RO-RS-0.6,0.3,0.05);}}   // a steel beam under the slab
+    fk.add('base',K.ring(RW-0.18,RW+0.18,0.36,64),'#55575a',0,-0.5,0);                                                         // the ring girder over the wall
     // the conduits along the ceiling, and the lamps over the street
     k.add('base',K.ring(RW-0.6,RW-0.35,0.25,48),'#55534e',0,LH-0.75,0);
     k.add('base',K.ring(RS+1.2,RS+1.45,0.18,48),'#6b5c48',0,LH-0.85,0);
-    const nl=o.lamps||20;for(let i=0;i<nl;i++){const a=(i+0.5)/nl*TAU;k.radial('lamp','#ffe2b0',a,16.5,LH-0.72,1.6,0.35,0.12);}
+    const nl=o.lamps||20;for(let i=0;i<nl;i++){const a=(i+0.5)/nl*TAU,x=Math.cos(a)*16.5,z=Math.sin(a)*16.5;
+      fk.radial('base','#3a3a38',a,16.5,LH-1.05,0.03,0.03,1.05);fk.add('base',K.G.cone,'#4a4c4a',x,LH-1.0,z,{sx:0.34,sy:0.22,sz:0.34});
+      k.add('lamp',K.G.sph4,'#ffe2b0',x,LH-1.2,z,{sx:0.13,sy:0.16,sz:0.13});fk.add('lamp',K.G.disc8,'#ffe8c0',x,LH-1.11,z,{sx:0.3,sy:0.01,sz:0.3});
+      for(let q=0;q<4;q++){const f=q/4*TAU+a;fk.add('base',K.G.box,'#2f3134',x+Math.cos(f)*0.19,LH-1.2,z+Math.sin(f)*0.19,{sx:0.015,sy:0.3,sz:0.015});}}
+    // ---- the services: what keeps a level alive, run where a fitter can reach it and added to for generations. A
+    //      bundle of mains round under the street's ceiling on hangers (water green, air blue, the return grey, fire
+    //      red, power in black conduit), banded, valved, a newer line strung below the old ones on its own brackets;
+    //      over the shaft's edge a tray of cables. On the wall below (where there is one): drops to junction boxes
+    //      with their pilot lamps, gauges, vent grilles, a hose reel every quarter ----
+    {const sv=mkR((o.v||0)*53+(o.wall===false?7:0)+11),rb=RW-1.7,yb=LH-0.5,G_=K.G,
+      MAINS=[[0,'#4e7a52',0.11],[0.3,'#4a6a8a',0.09],[0.56,'#6e6e6a',0.1],[0.82,'#8a2a22',0.08]];
+      for(const [dr,c,w] of MAINS)k.add('base',K.ring(rb+dr-w,rb+dr+w,2*w,24),c,0,yb+w,0);
+      fk.add('base',K.ring(rb+1.05,rb+1.13,0.08,48),'#1e1e1c',0,yb+0.08,0);
+      fk.add('base',K.ring(rb-0.45,rb-0.35,0.1,48,0.4,TAU*0.7),'#9a8a6a',0,yb-0.32,0);            // the newer line, part way round
+      fk.add('base',K.ring(RS+0.4,RS+1.0,0.04,48),'#3a3a38',0,LH-0.45,0);                          // the cable tray over the shaft's edge
+      for(let q=0;q<4;q++)fk.add('base',K.ring(RS+0.45+q*0.13,RS+0.53+q*0.13,0.06,48),['#2a2a28','#5a3a2a','#2a3a4a','#3a3a2a'][q],0,LH-0.39,0);
+      for(let i=0;i<36;i++){const a=(i+0.5)/36*TAU;
+        fk.radial('base','#3a3a38',a,rb+0.5,yb-0.07,1.5,0.06,0.05);fk.radial('base','#3a3a38',a,rb+0.5,yb-0.07,0.04,0.04,LH-yb+0.07);   // a hanger
+        if(i%3===1)for(const [dr,,w] of MAINS)fk.radial('base',(i%6===1)?'#c8a020':'#d8d4c8',a+0.012,rb+dr,yb-0.01,2*w+0.03,0.16,2*w+0.03);   // bands
+        if(i%6===4){fk.radial('base','#5a5c5e',a,rb,yb+0.1,0.3,0.3,0.3);fk.radial('base','#5a5c5e',a,rb,yb+0.4,0.04,0.04,0.2);
+          fk.add('base',G_.disc8,'#a8281c',Math.cos(a)*rb,yb+0.62,Math.sin(a)*rb,{sx:0.2,sy:0.03,sz:0.2});}               // a valve on the water main
+        if(i%9===5){fk.radial('base','#7a6a4a',a,rb-0.4,yb-0.6,0.3,0.4,0.25);fk.radial('base','#3a3a38',a,rb-0.4,yb-0.35,0.03,0.03,0.6);}   // a box hung off the newer line
+        if(sv()<0.25){const aa=a+0.04;fk.radial('base','#b8a060',aa,rb+0.3,yb-0.02,0.24,0.08,0.22);}}}                      // a taped repair
     if(o.wall===false)return;
+    {const G_=K.G,rw=RW-0.16;
+      for(let i=0;i<36;i++){const a=i/36*TAU;                     // on the piers between the rooms, never over a door
+        fk.radial('base','#3a3c3e',a,rw,0.25,0.07,0.07,LH-0.75);                                   // a conduit up the pier
+        fk.radial('base','#5a5e60',a,rw-0.06,1.45,0.16,0.32,0.42);k.radial(i%4?'glow':'blink',i%4?'#70ff90':'#ffb040',a,rw-0.15,1.75,0.02,0.05,0.05);
+        if(i%2===0){fk.radial('base','#4e7a52',a+0.012,rw,2.2,0.08,0.08,LH-0.5-2.2);fk.add('base',G_.disc8,'#e0dccc',Math.cos(a+0.012)*(rw-0.06),2.3,Math.sin(a+0.012)*(rw-0.06),{rz:Math.PI/2,ry:Math.PI-(a+0.012),sx:0.1,sy:0.02,sz:0.1});}
+        if(i%3===1){fk.radial('base','#2a2a28',a,RW-0.08,LH-1.45,0.04,0.7,0.42);for(let q=0;q<3;q++)fk.radial('base','#6a6a66',a,RW-0.1,LH-1.38+q*0.13,0.02,0.66,0.03);}
+        if(i%9===0){fk.add('base',G_.disc8,'#a8281c',Math.cos(a+0.03)*(rw-0.12),1.25,Math.sin(a+0.03)*(rw-0.12),{rz:Math.PI/2,ry:Math.PI-(a+0.03),sx:0.32,sy:0.16,sz:0.32});
+          fk.radial('base','#c8c0b0',a+0.03,rw-0.22,1.25,0.02,0.12,0.12);}}}
     // the ring wall: per room a door, a window, the piers between, and the lintels
     const nr=o.rooms||24,step=TAU/nr;
     for(let i=0;i<nr;i++){const a0=i*step;if(o.skip&&o.skip(a0+step/2))continue;
@@ -248,7 +282,16 @@ export function buildKits(K,R){
     const rings=(r0,r1,dr,seg,f)=>{for(let r=r0;r<=r1;r+=dr){const n=Math.floor(TAU*r/seg);for(let i=0;i<n;i++){const a=(i+(Math.round(r)%2)*0.5)/n*TAU;
       if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<(r<20?0.32:0.12))continue;f(a,r,i,TAU*r/n*0.9);}}};   // the way in from the landing kept clear
     const frame=(k,a,r,L,D,H)=>{for(const da of [-0.5,0.5])for(const dr of [-D/2,D/2])k.add('base',G.box,'#8a8c8e',Math.cos(a+da*L/r)*(r+dr),H/2,Math.sin(a+da*L/r)*(r+dr),{ry:-a,sx:0.06,sy:H,sz:0.06});};
-    const farmKit=(v,f)=>{const k=K.kit();shell(k,{wall:false,lamps:16});f(k);kits['farm'+v]=k.build();};
+    // a fruit tree kept small in a tub: the tub, the trunk, a crown of a few lumps, fruit on some; the commonest
+    // kinds lightly varied (apple-ish, citrus-ish, fig-ish) by the crown's colour and the fruit's
+    const tree=(k,x,z,R,s=1)=>{const kind=(R()*3)|0,cr=[['#4a7a36','#557f3a'],['#2e6a34','#3a7038'],['#5a8a3e','#4e7e3c']][kind],fr=['#c83a2a','#e8a020','#6a3a5a'][kind];
+      k.add('base',K.G.cyl6,'#6a6660',x,0.32*s,z,{sx:0.55*s,sy:0.64*s,sz:0.55*s});fk.add('base',K.G.disc8,'#3a2e22',x,0.63*s,z,{sx:0.5*s,sy:0.02,sz:0.5*s});
+      k.add('base',K.G.cyl6,'#5a4232',x,1.1*s,z,{sx:0.07*s,sy:1.0*s,sz:0.07*s});
+      for(let q=0;q<4;q++){const f=q/4*TAU+R(),d=q?0.45*s:0;(q?fk:k).add('base',K.G.sph4,cr[q%2],x+Math.cos(f)*d,(q?1.85:2.2)*s,z+Math.sin(f)*d,{sx:(q?0.55:0.85)*s+R()*0.25*s,sy:(q?0.45:0.6)*s+R()*0.2*s,sz:(q?0.55:0.85)*s+R()*0.25*s,ry:R()*3});}
+      if(R()<0.8)for(let q=0;q<5;q++){const f=R()*TAU,d=(0.5+R()*0.3)*s;fk.add('base',K.G.sph4,fr,x+Math.cos(f)*d,(1.6+R()*0.7)*s,z+Math.sin(f)*d,{sx:0.07*s,sy:0.07*s,sz:0.07*s});}};
+    const farmKit=(v,f)=>{const k=K.kit();shell(k,{wall:false,lamps:16});f(k);
+      if(v!==6&&v!==4){const R=mkR(600+v);for(let i=0;i<20;i++){const a=(i+0.5)/20*TAU;if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<0.35)continue;tree(k,Math.cos(a)*13.2,Math.sin(a)*13.2,R,0.8);}}
+      kits['farm'+v]=k.build();};
     // 0: channels: white gullies two tiers high on frames, a plant row in each, the light bar over each tier
     farmKit(0,k=>rings(15,46,2.6,6,(a,r,i,L)=>{frame(k,a,r,L,1.3,2.6);
       for(const h of [0.85,2.05]){for(let g=0;g<4;g++){const rr=r-0.48+g*0.32;k.tangent('base',WHITE,a,rr,h,L,0.12,0.08);
@@ -340,6 +383,19 @@ export function buildKits(K,R){
         for(let q=0;q<10;q++){const f=q/10*TAU;k.add('base',G.box,'#5a5a52',Math.cos(a)*r+Math.cos(f)*4.22,1.6,Math.sin(a)*r+Math.sin(f)*4.22,{sx:0.15,sy:3.2,sz:0.15});}
         k.pipe('base','#c8a020',Math.cos(a)*r,3.5,Math.sin(a)*r,Math.cos(a)*46,3.5,Math.sin(a)*46,0.08);
         const fa=a+8/r;k.add('base',G.cyl,'#5a5c5e',Math.cos(fa)*40,1.8,Math.sin(fa)*40,{sx:0.12,sy:3.6,sz:0.12});k.add('glow',G.cone,'#ff9a30',Math.cos(fa)*40,3.75,Math.sin(fa)*40,{sx:0.12,sy:0.3,sz:0.12});}});
+    // 6: the orchard: fruit trees in tubs in rings, a drip line to each, lit white from the ceiling; ladders and
+    //    crates of picked fruit, a bench of grafting tools, prunings in a heap, the odd tree dead and left standing
+    farmKit(6,k=>{const R=mkR(606),pick=L=>L[(R()*L.length)|0];
+      for(let r=16;r<=44;r+=4){const n=Math.floor(TAU*r/4.6);for(let i=0;i<n;i++){const a=(i+(r%8?0.5:0))/n*TAU;if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<(r<20?0.3:0.1))continue;
+          const x=Math.cos(a)*r,z=Math.sin(a)*r;if(R()<0.04){k.add('base',K.G.cyl6,'#6a6660',x,0.32,z,{sx:0.55,sy:0.64,sz:0.55});k.add('base',K.G.cyl6,'#4a3a2e',x,1.3,z,{sx:0.07,sy:1.4,sz:0.07});continue;}
+          tree(k,x,z,R,0.95+R()*0.15);}
+        k.add('base',K.ring(r-0.03,r+0.03,0.03,64),'#2a2a28',0,0.68,0);                                    // the drip line
+        k.add('lamp',K.ring(r-0.2,r+0.2,0.05,64),'#fff4e0',0,LH-0.35,0);}                                   // a ring of light over each row
+      for(let q=0;q<8;q++){const a=R()*TAU,r=18+R()*24,x=Math.cos(a)*r+2,z=Math.sin(a)*r;
+        fk.add('base',G.box,'#7a6248',x,1.1,z,{ry:R()*3,rz:0.25,sx:0.08,sy:2.4,sz:0.5});
+        for(let c=0;c<3;c++)fk.add('base',G.box,'#8a6a4a',x+0.8,0.2+c*0.38,z+0.6,{ry:R(),sx:0.6,sy:0.36,sz:0.4});
+        fk.add('base',G.box,pick(['#c83a2a','#e8a020','#7a9a3a']),x+0.8,1.32,z+0.6,{sx:0.5,sy:0.08,sz:0.32});}
+      fk.radial('base','#6a5238',200*D,30,0,1.0,2.6,0.85);fk.add('base',K.G.sph4,'#5a4a32',Math.cos(210*D)*34,0.3,Math.sin(210*D)*34,{sx:1.6,sy:0.5,sz:1.2});});
     kits.farm=kits.farm0;}
   // IT: racks of machines in rows, their lights
   {const k=K.kit();shell(k,{rooms:12,room:(k,a0,step,i)=>{for(let j=0;j<3;j++){const a=a0+step*(0.25+j*0.25);
@@ -544,29 +600,54 @@ export function buildKits(K,R){
 
 // ---- the stair: one turn a level, its landing at angle 0 where the floor's rail has its gap ----
 // an open well down the middle, so from the top you can look down the stair's eye
-export const STAIR={rin:2.4,rout:6.4,treads:32};
-export function buildStair(K){const k=K.kit(),{G}=K,{rin,rout,treads}=STAIR,rise=LH/treads,step=TAU/treads;
+// the stair turns two thirds of a circle a level, so each level's landing (and its catwalk) stands a third of a turn
+// round from the one above: landA(n), the angle of level n's landing; level 1's is 0
+export const STAIR={rin:1.35,rout:6.4,treads:32,col:1.2,span:TAU*2/3};
+export const landA=n=>((2*(n-1))%3+3)%3*TAU/3;
+export function buildStair(K){const k=K.kit(),{G}=K,{rin,rout,treads,col,span}=STAIR,rise=LH/treads,step=span/treads,P=LH*TAU/span;
+  // the column the stair winds round, top to bottom of the silo: concrete, a steel collar where each turn's treads are
+  // carried, the cables and pipes clipped to it, a painted band with the level's mark at eye height
+  k.add('col',G.cyl,'#8c8880',0,-LH/2,0,{sx:col,sy:LH,sz:col});
+  k.add('cdet',G.cyl,'#4a4c4e',0,-0.25,0,{sx:col+0.06,sy:0.5,sz:col+0.06});
+  k.add('cdet',G.cyl,'#b89a3a',0,1.55-LH,0,{sx:col+0.01,sy:0.25,sz:col+0.01});
+  for(let q=0;q<6;q++){const a=(q+0.3)/6*TAU;k.add('cdet',G.cyl6,['#2a2c2e','#7a5a38','#2a2c2e','#4e7a52','#2a2c2e','#4a6a8a'][q],Math.cos(a)*(col+0.08),-LH/2,Math.sin(a)*(col+0.08),{sx:0.05+(q%2)*0.03,sy:LH,sz:0.05+(q%2)*0.03});
+    k.add('cdet',G.box,'#3a3c3e',Math.cos(a)*(col+0.06),-LH*0.6,Math.sin(a)*(col+0.06),{ry:-a,sx:0.16,sy:0.06,sz:0.2});}
   for(let i=0;i<treads;i++){const a=i*step,y=-i*rise,rm=(rin+rout)/2;
+    // the riser down to the next tread, so the flight reads as steps, and the inner stringer against the column
+    k.radial('sdet','#4a4c4c',a+step*0.5,rm,y-rise,rout-rin,0.04,rise);
+    k.tangent('sdet','#3e4144',a,rin,y-0.4,step*rin*1.15,0.12,0.4);
     // each tread in three strips: polished where feet go (the up lane inside, the down lane outside), plain between
     {const bands=[[rin,rin+1.5,'#6c6e6c'],[rin+1.5,rout-1.4,'#55585a'],[rout-1.4,rout,'#717371']];
-      for(const [r0,r1,cc] of bands){const rr=(r0+r1)/2;k.radial('stair',cc,a,rr,y-0.08,r1-r0,TAU*rr/treads*1.05,0.08);}}
+      for(const [r0,r1,cc] of bands){const rr=(r0+r1)/2;k.radial('stair',cc,a,rr,y-0.08,r1-r0,step*rr*1.05,0.08);}}
     // the outer stringer, the rails and their posts
-    k.tangent('stair','#3e4144',a,rout,y-0.4,TAU*rout/treads*1.08,0.12,0.4);
+    k.tangent('stair','#3e4144',a,rout,y-0.4,step*rout*1.08,0.12,0.4);
     const a2=a+step,y2=y-rise;
     k.pipe('stair','#2f3134',Math.cos(a)*rout,y+1.0,Math.sin(a)*rout,Math.cos(a2)*rout,y2+1.0,Math.sin(a2)*rout,0.045);
     k.pipe('stair','#2f3134',Math.cos(a)*(rin+0.15),y+0.95,Math.sin(a)*(rin+0.15),Math.cos(a2)*(rin+0.15),y2+0.95,Math.sin(a2)*(rin+0.15),0.04);
     if(i%2===0)k.add('stair',G.box,'#2f3134',Math.cos(a)*rout,y+0.5,Math.sin(a)*rout,{sx:0.06,sy:1,sz:0.06});}
   // the cage: posts on the outer edge every quarter turn tie each turn to the one below, braced crosswise
-  for(let q=0;q<4;q++){const a=(q+0.25)/4*TAU,ya=-(a/TAU)*LH,b=a+TAU/4,yb=-(b/TAU)*LH,r=rout+0.12;
-    k.add('stair',G.box,'#34373a',Math.cos(a)*r,ya+LH/2,Math.sin(a)*r,{ry:-a,sx:0.12,sy:LH,sz:0.12});
-    k.pipe('stair','#34373a',Math.cos(a)*r,ya+LH-0.45,Math.sin(a)*r,Math.cos(b)*r,yb+0.1,Math.sin(b)*r,0.035);
-    k.pipe('stair','#34373a',Math.cos(a)*r,ya+0.1,Math.sin(a)*r,Math.cos(b)*r,yb+LH-0.45,Math.sin(b)*r,0.035);}
+  for(let q=0;q<2;q++){const a=(q+0.5)/2*span,ya=-(a/span)*LH,b=a+TAU/3,yb=ya-P/3,r=rout+0.12;
+    k.add('stair',G.box,'#34373a',Math.cos(a)*r,ya+P/2,Math.sin(a)*r,{ry:-a,sx:0.12,sy:P,sz:0.12});
+    k.pipe('stair','#34373a',Math.cos(a)*r,ya+P-0.45,Math.sin(a)*r,Math.cos(b)*r,yb+0.1,Math.sin(b)*r,0.035);
+    k.pipe('stair','#34373a',Math.cos(a)*r,ya+0.1,Math.sin(a)*r,Math.cos(b)*r,yb+P-0.45,Math.sin(b)*r,0.035);}
   // pipes and cable runs down the shaft, outside the stair, on a bracket each level
   for(const [a,rr,cc,w] of [[100*D,10.4,'#6a4a30',0.16],[103*D,10.4,'#4a5a50',0.12],[106*D,10.45,'#2a2a2c',0.07],[108*D,10.45,'#2a2a2c',0.07],[250*D,10.4,'#5a5e62',0.2],[254*D,10.45,'#8a3a28',0.1]]){
     k.add('pipes',G.cyl6,cc,Math.cos(a)*rr,-LH/2,Math.sin(a)*rr,{sx:w,sy:LH,sz:w});}
   for(const a of [104*D,252*D]){k.radial('pipes','#3a3c3e',a,10.6,-0.4,0.9,0.6,0.1);}
-  // lamps on the inner rail, four a turn: from the top they spiral away down the eye
-  for(let i=0;i<3;i++){const a=(i+0.12)/3*TAU,y=-(a/TAU)*LH;k.add('slamp',G.box,'#ffd8a0',Math.cos(a)*(rin+0.1),y+1.0,Math.sin(a)*(rin+0.1),{ry:-a,sx:0.3,sy:0.14,sz:0.45});}
+  // more risers, added over the years wherever there was room on the shaft's edge: water up, waste down, air, power,
+  // each flanged once a level, bracketed to the slab, a valve or a gauge on some, colour bands where they were painted
+  for(const [a0,list] of [[32,[['#4e7a52',0.11],['#6e6e6a',0.14],['#4a6a8a',0.09]]],[150,[['#2a2a28',0.06],['#2a2a28',0.06],['#5a3a2a',0.05]]],
+      [198,[['#4e7a52',0.13],['#7a6a4a',0.1]]],[296,[['#4a6a8a',0.16],['#8a2a22',0.08],['#6e6e6a',0.1]]],[330,[['#5a5e62',0.07],['#5a5e62',0.07]]]]){
+    list.forEach(([c,w],j)=>{const a=(a0+j*3.2)*D,rr=10.35+(j%2)*0.15,x=Math.cos(a)*rr,z=Math.sin(a)*rr;
+      k.add('pipes',G.cyl6,c,x,-LH/2,z,{sx:w,sy:LH,sz:w});k.add('pipes',G.cyl6,'#3a3c3e',x,-LH*0.35,z,{sx:w+0.04,sy:0.07,sz:w+0.04});
+      if((a0+j)%3===0)k.add('pipes',G.box,'#a8281c',x-Math.cos(a)*(w+0.08),-1.3,z-Math.sin(a)*(w+0.08),{ry:-a,sx:0.04,sy:0.22,sz:0.22});
+      if(j===0)k.radial('pipes','#c8a020',a+0.03,rr,-0.95,w*2+0.03,0.25,0.14);});
+    k.radial('pipes','#3a3c3e',(a0+list.length*1.6)*D,10.75,-0.35,0.8,list.length*0.65,0.08);}
+  // lamps on the column, three a turn above the treads: a bracket, a shade, a bulb in a wire cage
+  for(let i=0;i<2;i++){const a=(i+0.12)/2*span,y=-(a/span)*LH,x=Math.cos(a)*(col+0.45),z=Math.sin(a)*(col+0.45);
+    k.pipe('sdet','#2f3134',Math.cos(a)*col,y+2.35,Math.sin(a)*col,x,y+2.35,z,0.03);
+    k.add('sdet',G.cone,'#3a3c3a',x,y+2.25,z,{sx:0.2,sy:0.14,sz:0.2});k.add('slamp',G.sph4,'#ffd8a0',x,y+2.08,z,{sx:0.08,sy:0.1,sz:0.08});
+    for(let q=0;q<4;q++){const f=q/4*TAU;k.add('sdet',G.box,'#2f3134',x+Math.cos(f)*0.13,y+2.06,z+Math.sin(f)*0.13,{sx:0.015,sy:0.24,sz:0.015});}}
   // the landing, from the stair across to the floor, and the floor's rail round the shaft with its gap at the landing
   // (here, not in the level kits, since the levels are turned and the stair is not)
   k.add('rail',K.ring(RS,RS+0.1,0.08,48,6*D,TAU-12*D),'#3f4144',0,1.05,0);k.add('rail',K.ring(RS,RS+0.06,0.05,48,6*D,TAU-12*D),'#3f4144',0,0.55,0);
@@ -587,7 +668,9 @@ export function buildStair(K){const k=K.kit(),{G}=K,{rin,rout,treads}=STAIR,rise
       k.pipe('stair','#35383b',RS+0.1,-1.5,sz*0.9,rm,-0.5,sz*0.9,0.05);}      // the knee braces from the floor's edge
     // where it meets the floor: a threshold plate over the gap in the rail, and a lamp on a bracket above
     k.add('stair',G.box,'#6a6d6f',RS+0.35,-0.05,0,{sx:0.8,sy:0.1,sz:W+0.6});
-    k.add('slamp',G.box,'#ffd8a0',rm,2.6,0,{sx:0.5,sy:0.12,sz:0.3});
+    for(const sz of [-hw,hw])k.pipe('stair','#3a3d40',rm,1.05,sz,RS+0.2,LH-0.9,sz*0.6,0.025);           // the hangers up to the floor above
+    k.add('stair',G.cone,'#3a3c3a',rm,2.72,0,{sx:0.22,sy:0.14,sz:0.22});k.add('slamp',G.sph4,'#ffd8a0',rm,2.55,0,{sx:0.09,sy:0.11,sz:0.09});
+    for(let q=0;q<4;q++){const f=q/4*TAU;k.add('stair',G.box,'#2f3134',rm+Math.cos(f)*0.14,2.52,Math.sin(f)*0.14,{sx:0.015,sy:0.26,sz:0.015});}
     k.add('stair',G.box,'#2f3134',rm,2.75,0,{sx:0.08,sy:0.3,sz:0.08});}
   return k.build();}
 
@@ -674,6 +757,38 @@ export function buildTop(K){const k=K.kit(),{G}=K,y=yL(1);
     for(const sd of [-1,1])kk.add('base',G.box,'#64605a',c*rm-s*sd*2.4,ym+1.8,s*rm+c*sd*2.4,{ry:-a,rz:pitch,sx:L,sy:4,sz:0.3});
     for(let i=0;i<8;i++){const r=r0+(i+0.5)/8*(r1-r0),yy=y0+(i+0.5)/8*(y1-y0);kk.add('airlock',G.box,'#ffb040',c*r,yy+3.5,s*r,{ry:-a,sx:0.8,sy:0.12,sz:0.5});}
     for(let i=0;i<3;i++)kk.add('airlock',G.box,'#ffb040',c*(53+i*4.5),y+3.6,s*(53+i*4.5),{ry:-a,sx:0.8,sy:0.12,sz:0.6});}
+  // ---- the light well: the silo's sun, in the shaft's head between level 1's ceiling and the cap. The stair's column
+  //      carries on up as its mast; on the mast a ring truss carries two rings of big lamps aimed up into a shallow dish
+  //      of mirror facets on the cap's underside, which throws their light back down the shaft. A skirt of frosted
+  //      panels round the truss softens it, a walkway round the truss and a ladder up the mast are for the lamp crew.
+  //      Keys: 'mirror' (the facets, lit by the lamps) and 'beam' (the lamps' lenses and the frosted skirt) ----
+  {const yc=y+LH,yr=-0.15,yt=yc+1.7;
+    kk.add('base',K.ring(RS,RS+0.6,yr-yc+0.6,48),'#6e6a62',0,yr,0);                               // the shaft carried up through the cap
+    kk.add('base',K.ring(0.01,RS+0.6,0.4,48),'#5e5a54',0,yr+0.4,0);                                // the chamber's roof, the cap's underside
+    for(let i=0;i<16;i++){const a=(i+0.5)/16*TAU;kk.radial('base','#55575a',a,RS-0.15,yc,0.3,0.4,yr-yc);}   // its ribs
+    kk.add('base',G.cyl,'#8c8880',0,(y+yr)/2,0,{sx:1.2,sy:yr-y,sz:1.2});                          // the mast: the column, on up
+    kk.add('base',G.cyl,'#4a4c4e',0,yt-0.4,0,{sx:1.5,sy:1.2,sz:1.5});                              // the truss's hub
+    // the mirror: three rings of facets, each ring tilted a little more, the outer edge lowest, on a ring frame
+    kk.add('base',K.ring(0.01,RS-0.2,0.12,48),'#3e4042',0,yr-0.15,0);                              // the dish's backing
+    for(let ri=0;ri<3;ri++){const r=2.6+ri*2.7,n=16+ri*10,tilt=0.1+ri*0.13,yy=yr-0.35-ri*0.55;
+      for(let i=0;i<n;i++){const a=(i+0.5*(ri%2))/n*TAU;kk.add('mirror',G.box,(i+ri)%5?'#dfe6ea':'#c8d0d6',Math.cos(a)*r,yy,Math.sin(a)*r,{ry:-a,rz:-tilt,sx:2.9,sy:0.04,sz:TAU*r/n*1.04});}
+      kk.add('base',K.ring(r+1.25,r+1.4,0.25,48),'#3a3c3e',0,yy+0.3,0);}
+    for(let i=0;i<12;i++){const a=i/12*TAU;kk.radial('base','#3a3c3e',a,5.5,yr-0.35,9,0.2,0.35);   // the frame's spokes
+      kk.radial('base','#3a3c3e',a,5.4,yt,8,0.25,0.3);                                              // the truss's spokes
+      kk.pipe('base','#2f3134',Math.cos(a)*9,yt+0.3,Math.sin(a)*9,Math.cos(a)*9.3,yr-1.6,Math.sin(a)*9.3,0.04);}   // hung from the roof
+    kk.add('base',K.ring(3.6,4.0,0.35,40),'#3a3c3e',0,yt+0.3,0);kk.add('base',K.ring(8.6,9.0,0.35,48),'#3a3c3e',0,yt+0.3,0);
+    // the lamps: housings with their lenses up, sixteen on the outer ring and eight on the inner, cables to the hub
+    for(const [r,n] of [[8.8,16],[3.8,8]])for(let i=0;i<n;i++){const a=(i+0.5)/n*TAU,x=Math.cos(a)*r,z=Math.sin(a)*r;
+      kk.add('base',G.cyl,'#2e3032',x,yt+0.75,z,{sx:0.45,sy:0.8,sz:0.45});kk.add('base',G.cyl,'#55575a',x,yt+1.2,z,{sx:0.52,sy:0.1,sz:0.52});
+      kk.add('beam',G.disc,'#fffaf0',x,yt+1.26,z,{sx:0.42,sy:0.04,sz:0.42});
+      kk.add('base',G.box,'#3a3c3e',x+Math.cos(a)*0.5,yt+0.5,z+Math.sin(a)*0.5,{ry:-a,sx:0.3,sy:0.35,sz:0.25});}   // its ballast box
+    // the frosted skirt under the outer ring, panel by panel, and the crew's walkway outside it with a rail
+    for(let i=0;i<24;i++){const a=(i+0.5)/24*TAU;kk.tangent('beam','#fff2dc',a,9.15,yt-1.2,TAU*9.15/24*0.94,0.04,1.1);}
+    kk.add('base',K.ring(9.25,10.6,0.08,48),'#4a4c4e',0,yt+0.3,0);
+    kk.add('base',K.ring(10.5,10.58,0.06,48),'#3f4144',0,yt+1.35,0);
+    for(let i=0;i<24;i++){const a=i/24*TAU;kk.radial('base','#3f4144',a,10.54,yt+0.3,0.06,0.06,1.05);}
+    for(let h=y+0.4;h<yt;h+=0.35)kk.radial('base','#3a3c3e',0.3,1.32,h,0.12,0.6,0.04);              // the ladder's rungs up the mast
+    for(const sd of [-0.28,0.28])kk.radial('base','#3a3c3e',0.3+sd/1.4,1.38,y,0.06,0.06,yt-y);}
   return k.build();}
 
 // ---- the bottom: the generator hall (levels 142 to 144 open as one), the oil, and the mines out into the rock ----

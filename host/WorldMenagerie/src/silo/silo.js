@@ -7,10 +7,10 @@
 // near half of everything but the stair), 'inside' and 'outside' (nothing cut), 'field' (the ground made see-through
 // over the fifty silos). A view in the city file says which it wants.
 import {makeKits} from './kit.js';
-import {LH,Y1,RS,RW,RO,NL,yL,levelAt,kindOf,zoneOf,placeName,buildKits,buildStair,buildTop,buildHall,SCREEN,AIRLOCK,STAIR,FARMV,FARM_NAMES,WATERV} from './levels.js';
+import {LH,Y1,RS,RW,RO,NL,yL,levelAt,kindOf,zoneOf,placeName,buildKits,buildStair,buildTop,buildHall,SCREEN,AIRLOCK,STAIR,landA,FARMV,FARM_NAMES,WATERV} from './levels.js';
 import {buildPlant} from './plant.js';
 import {buildCrowd,activity} from './crowd.js';
-import {buildDigger,MINE_DEPTH,HUB_H} from './digger.js';
+import {buildDigger,MINE_DEPTH,HUB_H,GRAVE} from './digger.js';
 import {buildOutside,HILL,EXIT,SENSOR,RC} from './outside.js';
 import {buildLife} from './life.js';
 import {mkRng} from '../core/rng.js';
@@ -40,7 +40,9 @@ export function model(api){
   const BLINK=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip});
   const SPILL=new THREE.MeshBasicMaterial({vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,clippingPlanes:clip});
   const AIRM=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip});
-  const matFor=(key,z)=>key==='base'?BASE:key==='stair'?STAIRM:key==='lamp'?lampM[z]:key==='glow'?glowM[z]:key==='airlock'?AIRM:key==='blink'?BLINK:key==='spill'?SPILL:key==='pipes'?STAIRM:BASE;
+  // the light well's mirror and its lamps: self-lit, brightened and dimmed with the silo's day (see the tick)
+  const MIRM=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip}),BEAMM=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip});
+  const matFor=(key,z)=>key==='base'?BASE:key==='stair'?STAIRM:key==='lamp'?lampM[z]:key==='glow'?glowM[z]:key==='airlock'?AIRM:key==='mirror'?MIRM:key==='beam'?BEAMM:key==='blink'?BLINK:key==='spill'?SPILL:key==='pipes'?STAIRM:BASE;
 
   // ---- the levels: each kind built once, drawn as instances in chunks of eight levels, each chunk shown only
   //      when it is in view ----
@@ -52,7 +54,7 @@ export function model(api){
   const care=n=>{const h=(n*2654435761>>>0)%11;return h<2?0.8:h===10?1.1:1;};
   {const groups=new Map();
     // the homes come in three versions, chosen level by level, so neighbouring floors differ
-    for(let n=2;n<NL-2;n++){const k0=kindOf(n),kd=k0==='home'?'home'+((n*7+Math.floor(n/8))%3):k0==='farm'?'farm'+FARMV[n]:k0==='water'?'water'+(WATERV[n]?WATERV[n]:''):k0;if(!kits[kd])continue;const pz=k0==='it'?k0:k0==='water'?'farmplain':k0==='farm'?['farm','farm','farm','farmsod','farmplain','farmplain'][FARMV[n]]:zoneOf(n),key=kd+'|'+pz+'|'+Math.floor((n-1)/8);let g=groups.get(key);if(!g)groups.set(key,g={kd,z:pz,ns:[]});g.ns.push(n);}
+    for(let n=2;n<NL-2;n++){const k0=kindOf(n),kd=k0==='home'?'home'+((n*7+Math.floor(n/8))%3):k0==='farm'?'farm'+FARMV[n]:k0==='water'?'water'+(WATERV[n]?WATERV[n]:''):k0;if(!kits[kd])continue;const pz=k0==='it'?k0:k0==='water'?'farmplain':k0==='farm'?['farm','farm','farm','farmsod','farmplain','farmplain','farmplain'][FARMV[n]]:zoneOf(n),key=kd+'|'+pz+'|'+Math.floor((n-1)/8);let g=groups.get(key);if(!g)groups.set(key,g={kd,z:pz,ns:[]});g.ns.push(n);}
     for(const g of groups.values()){const geo=kits[g.kd],ys=g.ns.map(yL),lo=Math.min(...ys),hi=Math.max(...ys)+LH,list=[];
       for(const [key,G] of Object.entries(geo)){const im=new THREE.InstancedMesh(G,matFor(key,g.z),g.ns.length);
         g.ns.forEach((n,i)=>{o.position.set(0,yL(n),0);o.rotation.set(0,turn[n],0);o.updateMatrix();im.setMatrixAt(i,o.matrix);
@@ -62,12 +64,10 @@ export function model(api){
   // the stair, every level the same turn, and the column it winds round
   {const SG=buildStair(K);for(let c=0;c<NL-1;c+=12){const n=Math.min(12,NL-1-c),list=[];
       for(const [key,sg] of Object.entries(SG)){const im=new THREE.InstancedMesh(sg,key==='rail'?BASE:key==='slamp'?lampM[(m=>kindOf(m)==='farm'||kindOf(m)==='it'?kindOf(m):zoneOf(m))(c+1+(n>>1))]:STAIRM,n);
-      for(let i=0;i<n;i++){o.position.set(0,yL(c+i+1),0);o.rotation.set(0,0,0);o.updateMatrix();im.setMatrixAt(i,o.matrix);if(key==='rail')im.setColorAt(i,tint.setRGB(1,1,1));}im.frustumCulled=false;root.add(im);list.push(im);}
-      chunks.push({list,sph:new THREE.Sphere(new THREE.Vector3(0,yL(c+1)-n*LH/2,0),Math.hypot(10,n*LH/2+2))});}
-    // no column: the stair's eye is open from top to bottom, with the cables and pipes hung down it
-    // cables and pipes down the column
-    const k=K.kit();for(let i=0;i<4;i++){const a=(i+0.5)/4*TAU;k.add('p',K.G.cyl6,i%2?'#2a2c2e':'#7a5a38',Math.cos(a)*3.25,(yL(1)+yL(NL))/2,Math.sin(a)*3.25,{sx:0.07,sy:yL(1)-yL(NL),sz:0.12});}
-    root.add(new THREE.Mesh(k.build().p,new THREE.MeshLambertMaterial({vertexColors:true})));}
+      const still=key==='col'||key==='cdet'||key==='pipes';for(let i=0;i<n;i++){o.position.set(0,yL(c+i+1),0);o.rotation.set(0,still?0:-landA(c+i+1),0);o.updateMatrix();im.setMatrixAt(i,o.matrix);if(key==='rail')im.setColorAt(i,tint.setRGB(1,1,1));}im.frustumCulled=false;im.userData.detail=key==='sdet'||key==='cdet';root.add(im);list.push(im);}
+      chunks.push({list,half:n*LH/2,sph:new THREE.Sphere(new THREE.Vector3(0,yL(c+1)-n*LH/2,0),Math.hypot(10,n*LH/2+2))});}
+    // the stair winds round a column; its cables and pipes are clipped to the column (buildStair)
+    }
   // the silo's wall, its roof slab and its floor
   {const wm=new THREE.MeshLambertMaterial({color:'#6f6a62',side:THREE.DoubleSide,clippingPlanes:clip});
     // in three bands, so the airlock's corridor (level 1) and the mines (level 144) can pass through it
@@ -80,7 +80,8 @@ export function model(api){
         const g=new THREE.CylinderGeometry(r,r,y1-y0,Math.max(4,Math.ceil(len/TAU*96)),1,true,Math.PI/2-a0-len,len);const mm=new THREE.Mesh(g,m);mm.position.y=(y0+y1)/2;root.add(mm);}};
     const yb=yL(NL)-1,ym=yL(NL)+4.6,yt=yL(1)-0.6,ytop=yL(1)+LH+1.8;
     band(yb,ym,[40,130,220,310].map(d=>d*D));band(ym,yt,[]);band(yt,ytop,[AIRLOCK]);
-    const roof=new THREE.Mesh(new THREE.CylinderGeometry(RO+1.6,RO+1.6,1.8,96),wm);roof.position.y=yL(1)+LH+0.4;root.add(roof);
+    // the roof, with the shaft's head left open for the light well above it
+    const roof=new THREE.Mesh(new THREE.LatheGeometry([[RS,-0.9],[RO+1.6,-0.9],[RO+1.6,0.9],[RS,0.9],[RS,-0.9]].map(([x,y])=>new THREE.Vector2(x,y)),96),wm);roof.position.y=yL(1)+LH+0.4;root.add(roof);
     // the floors' edges against the wall, a band a level, so the section reads as storeys
     const bands=new THREE.InstancedMesh(new THREE.CylinderGeometry(RO+0.05,RO+0.05,0.5,96,1,true),new THREE.MeshLambertMaterial({color:'#5e5a52',side:THREE.DoubleSide,clippingPlanes:clip}),NL);
     for(let n=1;n<=NL;n++){o.position.set(0,yL(n)-0.25,0);o.rotation.set(0,0,0);o.updateMatrix();bands.setMatrixAt(n-1,o.matrix);}bands.frustumCulled=false;root.add(bands);}
@@ -109,7 +110,7 @@ export function model(api){
     const t=new THREE.CanvasTexture(c);t.anisotropy=4;
     const pos=[],uv=[],nor=[];
     for(let n=1;n<=NL;n++){const u0=((n-1)%N)/N,v1=1-Math.floor((n-1)/N)/N,v0=v1-1/N,y0=yL(n)+1.35,y1=y0+1.5;
-      for(const a of [9*D,-9*D]){const r=RW-0.16,w=0.75,c0=Math.cos(a),s0=Math.sin(a),tx=-s0,tz=c0,px=c0*r,pz=s0*r;
+      for(const a of [landA(n)+9*D,landA(n)-9*D]){const r=RW-0.16,w=0.75,c0=Math.cos(a),s0=Math.sin(a),tx=-s0,tz=c0,px=c0*r,pz=s0*r;
         // seen from the stair, looking out, the right-hand side is along the tangent (the larger angle)
         const L=[px-tx*w,pz-tz*w],Rr=[px+tx*w,pz+tz*w];
         pos.push(L[0],y0,L[1],Rr[0],y0,Rr[1],Rr[0],y1,Rr[1],L[0],y0,L[1],Rr[0],y1,Rr[1],L[0],y1,L[1]);
@@ -119,6 +120,14 @@ export function model(api){
 
   // level 1, and the generator hall
   const top=buildTop(K);for(const [key,G] of Object.entries(top))root.add(new THREE.Mesh(G,matFor(key,'top')));
+  // the light well's light: a spot from the mirror down the shaft (it lights the stair, the catwalks and the shaft's edge
+  // for the top dozen levels), and the light itself made visible as a faint shaft of brightness fading down the well
+  const well={spot:new THREE.SpotLight(0xfff2dc,0,60,0.36,0.7,0)};
+  well.spot.position.set(0,-2,0);well.spot.target.position.set(0,-60,0);root.add(well.spot,well.spot.target);
+  {const c=document.createElement('canvas');c.width=4;c.height=256;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,0,256);
+    g.addColorStop(0,'rgba(255,244,222,0.09)');g.addColorStop(0.25,'rgba(255,244,222,0.035)');g.addColorStop(1,'rgba(255,244,222,0)');x.fillStyle=g;x.fillRect(0,0,4,256);
+    const H=110,m=new THREE.Mesh(new THREE.CylinderGeometry(9.2,10.4,H,40,1,true),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,clippingPlanes:clip}));
+    m.position.set(0,yL(1)+LH-H/2,0);root.add(m);well.haze=m;}
   const hall=buildHall(K);for(const [key,G] of Object.entries(hall.geo))root.add(new THREE.Mesh(G,matFor(key,'deep')));
   // the plant at the bottom: the turbine set and everything round it (src/silo/plant.js)
   const plant=buildPlant(THREE,K,key=>matFor(key,'deep'),clip);root.add(plant.group);
@@ -169,7 +178,7 @@ export function model(api){
     // under the silo: the rock it stands on, from its floor down
     const bw=2*(RO+1.62),slab=(y0,y1)=>{const bh=y1-y0,bg=new THREE.PlaneGeometry(bw,bh,6,6),bu=bg.attributes.uv;
       for(let i=0;i<bu.count;i++){bu.setXY(i,(bu.getX(i)-0.5)*bw/90,V(y0+bu.getY(i)*bh));}const s=new THREE.Mesh(bg,m);s.frustumCulled=false;s.userData.y=(y0+y1)/2;root.add(s);return s;};
-    const below=slab(FY,WB),between=slab(WT,yL(NL)-1.2);
+    const below=slab(FY,WB),between=slab(WT,yL(NL)+GRAVE.bot-0.6),between2=slab(yL(NL)+GRAVE.top+0.6,yL(NL)-1.2);   // the old digger's void left open between them
     // the slot's back, floor and roof: plain dark rock, cut by the same plane as everything else
     const sm=new THREE.MeshLambertMaterial({color:'#3a332c',side:THREE.DoubleSide,clippingPlanes:clip});
     const slot=new THREE.Group();{const bk=new THREE.Mesh(new THREE.CylinderGeometry(UWIN,UWIN,WT-WB,96,1,true),sm);bk.position.y=(WB+WT)/2;slot.add(bk);}
@@ -180,8 +189,8 @@ export function model(api){
     for(let i=0;i<lu.count;i++){lu.setXY(i,(lu.getX(i)-0.5)*bw/90,V(lt-lu.getY(i)*lt));}
     const lid=new THREE.Mesh(lg,m);lid.frustumCulled=false;root.add(lid);
     let last=null;
-    return {mesh,update(){mesh.visible=below.visible=between.visible=slot.visible=lid.visible=mode==='cut';out.shell.visible=out.shellFloor.visible=mode==='inside';if(!mesh.visible)return;const nx=PL.normal.x,nz=PL.normal.z;if(last&&Math.abs(last[0]-nx)+Math.abs(last[1]-nz)<1e-4)return;last=[nx,nz];
-      const tx=-nz,tz=nx,ox=nx*0.05,oz=nz*0.05;let k=0;for(const b of [below,between]){b.position.set(ox,b.userData.y,oz);b.rotation.set(0,-Math.atan2(tz,tx),0);}lid.position.set(ox,lt/2-0.25,oz);lid.rotation.copy(below.rotation);
+    return {mesh,update(){mesh.visible=below.visible=between.visible=between2.visible=slot.visible=lid.visible=mode==='cut';out.shell.visible=out.shellFloor.visible=mode==='inside';if(!mesh.visible)return;const nx=PL.normal.x,nz=PL.normal.z;if(last&&Math.abs(last[0]-nx)+Math.abs(last[1]-nz)<1e-4)return;last=[nx,nz];
+      const tx=-nz,tz=nx,ox=nx*0.05,oz=nz*0.05;let k=0;for(const b of [below,between,between2]){b.position.set(ox,b.userData.y,oz);b.rotation.set(0,-Math.atan2(tz,tx),0);}lid.position.set(ox,lt/2-0.25,oz);lid.rotation.copy(below.rotation);
       for(let sd=0;sd<2;sd++)for(let i=0;i<=NU;i++){const f=i/NU,u=(sd?1:-1)*(RO+1.62+(UMAX-RO-1.62)*(0.15*f+0.85*f*f*f)),x=tx*u+ox,z=tz*u+oz,top=out.ground(tx*u,tz*u)-0.3;
         for(let j=0;j<W;j++){const y=j<=NA?FY+(WB-FY)*j/NA:WT+(top-WT)*(j-NA-1)/NB;pos.set([x,y,z],k*3);uv.set([u/90,V(y)],k*2);k++;}}
       g.attributes.position.needsUpdate=g.attributes.uv.needsUpdate=true;g.computeVertexNormals();g.computeBoundingSphere();}};})();
@@ -209,7 +218,9 @@ export function model(api){
     const pm=new THREE.MeshBasicMaterial({visible:false,side:THREE.DoubleSide,clippingPlanes:clip});
     for(const [a,b,name,info] of Z){const [y0,y1]=span(a,b),m=new THREE.Mesh(new THREE.CylinderGeometry(RO-0.5,RO-0.5,y0-y1,24,1,true),pm);m.position.y=(y0+y1)/2;m.userData.info={name,info};root.add(m);picks.push(m);}
     const st=new THREE.Mesh(new THREE.CylinderGeometry(9.6,9.6,yL(1)-yL(NL),16,1,true),new THREE.MeshBasicMaterial({visible:false,side:THREE.DoubleSide}));st.position.y=(yL(1)+yL(NL))/2;
-    st.userData.info={name:'Silo 18 — the stair','info':'One spiral stair, one turn a level, 144 levels from the top to the generator. There are no lifts: everything and everyone goes up and down it on foot, and porters carry loads for a living.'};root.add(st);picks.unshift(st);
+    st.userData.info={name:'Silo 18 — the stair','info':'One spiral stair, two thirds of a turn a level (each landing a third of a turn round from the one above), 144 levels from the top to the generator. There are no lifts: everything and everyone goes up and down it on foot, and porters carry loads for a living.'};root.add(st);picks.unshift(st);
+    {const gm=new THREE.Mesh(new THREE.CylinderGeometry(RO+1,RO+1,GRAVE.top-GRAVE.bot,24,1,true),pm);gm.position.y=yL(NL)+(GRAVE.top+GRAVE.bot)/2;
+      gm.userData.info={name:'Silo 18 — the old digger',info:'Under the plant, sealed in its own void, lies the machine that bored the silo\'s shaft: a cutter head as wide as the silo, its drive, the gripper ring braced on the rock and the stump of its hoist tower. It stopped here when the hole was deep enough, was stripped of what was useful, and the cap the generator stands on was poured over it. Nobody has been in since; the mine shaft passes through in a sealed tube.'};root.add(gm);picks.push(gm);}
     const mn=new THREE.Mesh(new THREE.CylinderGeometry(RO+1,RO+1,HUB_H,24,1,true),pm);mn.position.y=yL(NL)-MINE_DEPTH+HUB_H/2;mn.userData.info={name:'Silo 18 — the mines','info':'Forty metres under the plant, down a shaft with a cage: a hall cut in the rock under the silo\'s footing, pillars left to hold the roof, a loop of track round it. Four drifts go out from it, timbered, with rails and ore carts, for the ore the casting rooms melt down. Off one, behind a welded bulkhead, a lined tunnel runs toward Silo 17, and at its end an old boring machine stands where it stopped.'};root.add(mn);picks.push(mn);
     for(const p of [out.terrain,out.housing,out.city,out.hill])picks.push(p);}
 
@@ -282,14 +293,16 @@ export function model(api){
     for(const c of chunks){const dd=c.sph.center.distanceTo(camera.position)-c.sph.radius,v=fr.intersectsSphere(c.sph)&&dd<far;
       // the rooms' furniture only near to (it is most of the triangles, and from far off it is a few pixels)
       // (by height: a chunk's sphere is far wider than the chunk is tall, so it would count the floors above and below as near)
-      const half=Math.sqrt(Math.max(0,c.sph.radius*c.sph.radius-RO*RO)),dy=Math.abs(camera.position.y-c.sph.center.y)-half,near=mode==='inside'?dy<6&&Math.hypot(camera.position.x,camera.position.z)<RO+5:dd<50;
+      const half=c.half!=null?c.half:Math.sqrt(Math.max(0,c.sph.radius*c.sph.radius-RO*RO)),dy=Math.abs(camera.position.y-c.sph.center.y)-half,near=mode==='inside'?dy<6&&Math.hypot(camera.position.x,camera.position.z)<RO+5:dd<50;
       for(const m of c.list)m.visible=v&&(!m.userData.detail||near);}
     {const near=Math.hypot(camera.position.x,camera.position.z)<RO+260&&camera.position.y<60;for(const m of life.residents)m.visible=near&&mode!=='field';}
     // lights: the schedule, and a blackout down deep
     const lf=lightF(hour);let deepF=1;
     if(EV.dark){const e=EV.dark;e.t+=dt;deepF=e.t<1.5?(Math.sin(e.t*40)>0?0.8:0.1):e.t<26?0:e.t<29?(Math.sin(e.t*30)>0?1:0.2):1;if(e.t>29)EV.dark=null;}
     const hum=0.95+0.05*genRun*Math.sin(t*31)*Math.sin(t*7.3);for(const z in PAL){const f=z==='deep'?deepF*hum:1,L=PAL[z].lamp;lampM[z].color.setRGB(L[0]*lf*f,L[1]*lf*f,L[2]*lf*f);glowM[z].color.setScalar((0.6+0.4*(1-lf))*f);}
-    BLINK.color.setScalar(Math.sin(t*5.3)>0.2?1:0.15);SPILL.color.setScalar(0.5+0.5*(1-lf));
+    BLINK.color.setScalar(Math.sin(t*5.3)>0.2?1:0.15);
+    // the light well follows the silo's day: full by day, a low glow at night
+    MIRM.color.setScalar(0.3+0.62*lf);BEAMM.color.setScalar(0.45+0.65*lf);well.spot.intensity=0.9*lf;well.haze.material.opacity=0.25+0.75*lf;SPILL.color.setScalar(0.5+0.5*(1-lf));
     if(deepF===0)lampM.deep.color.setRGB(0.22,0.02,0.02);
     // the generator's speed: it winds down over a dozen seconds when it fails, and runs up again when it is restarted
     {const e=EV.dark;genRun=!e?Math.min(1,genRun+dt*0.5):e.t<1?1:e.t<26?Math.max(0,1-(e.t-1)/12):Math.min(1,(e.t-26)/3);
@@ -372,7 +385,7 @@ export function model(api){
   function look(dir){EV.porter=null;flight=null;if(mode!=='inside')setMode('inside');
     const p=camera.position,y=Math.max(yL(NL)+1.7,Math.min(yL(1)+1.7,p.y)),f=new THREE.Vector3();camera.getWorldDirection(f);
     if(Math.hypot(f.x,f.z)>1e-3)LK.yaw=Math.atan2(-f.x,-f.z);
-    LK.p0.copy(p);LK.q0.copy(camera.quaternion);LK.pos.set(0,y,0);LK.dir=dir;LK.pitch=dir*Math.PI/2;LK.t=0;LK.on=true;LK.back=false;
+    LK.p0.copy(p);LK.q0.copy(camera.quaternion);LK.pos.set(Math.cos(Math.PI)*(STAIR.rout+RS)/2,y,Math.sin(Math.PI)*(STAIR.rout+RS)/2);LK.dir=dir;LK.pitch=dir*Math.PI/2;LK.t=0;LK.on=true;LK.back=false;
     api.view({az:LK.yaw,el:0,d:2,tx:0,ty:y,tz:0});}
   function level(){if(!LK.on)return;LK.p0.copy(camera.position);LK.q0.copy(camera.quaternion);LK.pos.copy(camera.position);LK.pitch=0;LK.t=0;LK.back=true;}
   const lookFrame=now=>{if(!LK.on)return false;const dt=Math.min(0.1,(now-(LK.last||now))/1000);LK.last=now;

@@ -18,6 +18,9 @@ export const MINE_ANGLES=[40,130,220,310].map(a=>a*D);
 // the mines lie well under the plant: a cavern cut under the silo's footing MINE_DEPTH below the hall's floor, HUB_H
 // tall, the drifts going out from its edge, and a shaft with a cage up into the hall at SHAFT (angle, radius)
 export const MINE_DEPTH=40,HUB_H=11,SHAFT=[115*D,36];
+// the grave of the machine that bored the silo's shaft: a void sealed under the plant, GRAVE metres below the hall's floor
+// (its top is the underside of the concrete cap poured over it, its bottom the face where the machine stopped)
+export const GRAVE={top:-4.5,bot:-24};
 export function buildDigger(THREE,K,matFor,clip,out){
   const {G}=K,y0=yL(NL)-MINE_DEPTH,k=K.kit(),km=K.kit(),kh=K.kit();
   const R=(()=>{let s=1717;return()=>((s=(s*16807)%2147483647)/2147483647);})();
@@ -243,6 +246,72 @@ export function buildDigger(THREE,K,matFor,clip,out){
       kh.add('base',G.disc,'#5e5e58',0.4,Math.cos(f+0.13)*(RB-0.28),Math.sin(f+0.13)*(RB-0.28),{rx:f+0.13,rz:0.5,sx:0.2,sy:0.08,sz:0.2});}
     // dust caked in the hollows, rust in streaks
     for(let q=0;q<18;q++){const f=R()*TAU,r=0.6+R()*3.6;kh.add('base',G.box,pick(['#5e5446','#665a4a','#584e42']),0.2,Math.cos(f)*r,Math.sin(f)*r,{rx:f,sx:0.04,sy:0.2+R()*0.4,sz:0.2+R()*0.3});}}
+  // ======== the old digger: the shaft borer that cut the silo's hole, left where it stopped at the bottom ========
+  // An original design after real vertical shaft-boring machines, scaled to the silo: a cutter head as wide as the
+  // shaft (its rim ringed with gauge cutters and muck buckets) under the main drive and its motors; above, the gripper
+  // ring braced against the rock on pads, the thrust rams down to the head, two working decks, and the muck hoist's
+  // lattice tower up the middle. When it reached the bottom they stripped what they could use, cut the tower off,
+  // and poured the cap over it for the plant to stand on. Since then: rust, fallen motors, a sagging pad, a collapsed
+  // deck, cables hanging from the cap, water pooled round the rim, mineral drips. The mine shaft was later sunk
+  // straight through the void in a concrete tube. Built tilted a little as a whole (it settled).
+  {const yH=yL(NL),CT=yH+GRAVE.top,CB=yH+GRAVE.bot,CH=CT-CB,RR=RO+1,[SA,SR]=SHAFT,sx_=Math.cos(SA)*SR,sz_=Math.sin(SA)*SR;
+    const clear=(x,z,m=4)=>Math.hypot(x-sx_,z-sz_)>m;
+    const kw=K.kit(),OLD=['#4a382a','#4e4a46','#3e3228','#5a4634','#44423e'],DK='#2e2a26';
+    // -- the void: rough rock walls, the cap's underside with its formwork marks, the bottom, the shaft's tube --
+    for(let i=0;i<64;i++){const a=(i+0.5)/64*TAU;for(let r0=0;r0<CH;r0+=3.9)k.add('base',G.box,pick(ROCK),Math.cos(a)*(RR+0.3+R()*0.4),CB+r0+1.95,Math.sin(a)*(RR+0.3+R()*0.4),{ry:-a+Math.PI/2+(R()-0.5)*0.2,sx:TAU*RR/64*1.15,sy:Math.min(4,CH-r0+0.1),sz:0.9+R()*0.6});}
+    k.add('base',G.disc,'#5e5a52',0,CT+0.3,0,{sx:RR+0.8,sy:0.6,sz:RR+0.8});                     // the cap's underside
+    for(let i=0;i<24;i++){const a=i/24*TAU;k.radial('base','#56524a',a,RR/2,CT-0.12,RR-1,0.25,0.12);}   // the formwork's joints
+    k.add('base',K.ring(RR-1.5,RR+0.6,1.4,64),'#6a665c',0,CT+0.3,0);                              // the cap's bearing on the rock
+    k.add('base',G.disc,'#2a2622',0,CB-0.3,0,{sx:RR+0.8,sy:0.6,sz:RR+0.8});                     // the bottom of the bore
+    k.add('base',G.cyl,'#77736a',sx_,(CT+CB)/2,sz_,{sx:2.8,sy:CH+0.4,sz:2.8});                   // the mine shaft's tube, through
+    for(let q=0;q<5;q++)k.add('base',G.cyl,'#5e5a52',sx_,CB+2+q*CH/5,sz_,{sx:2.95,sy:0.25,sz:2.95});
+    k.add('base',K.ring(46.6,RR-0.2,0.05,64),'#1a2226',0,CB+0.45,0);                              // the water pooled round the rim
+    for(let q=0;q<70;q++){const a=R()*TAU,r=R()*RR,x=Math.cos(a)*r,z=Math.sin(a)*r;if(!clear(x,z))continue;   // the drips off the cap
+      k.add('base',G.cone,pick(['#8a8478','#7a7468','#948e80']),x,CT-0.3-R()*0.4,z,{rx:Math.PI,sx:0.08+R()*0.12,sy:0.4+R()*1.1,sz:0.08+R()*0.12});}
+    // -- the cutter head: as wide as the bore, thick, its rim ringed with cutters and buckets (some missing) --
+    const W_=(key,geo,c,x,y,z,o)=>{if(clear(x,z,4.5))kw.add(key,geo,c,x,y,z,o);};
+    kw.add('base',G.disc,'#3e3228',0,1.1,0,{sx:46,sy:2.2,sz:46});
+    kw.add('base',K.ring(44,46.2,0.3,64),'#5a4634',0,2.4,0);
+    for(let i=0;i<72;i++){const a=(i+0.5)/72*TAU;if(R()<0.15)continue;W_('base',G.cyl6,'#4a4440',Math.cos(a)*46.3,0.7,Math.sin(a)*46.3,{rz:Math.PI/2,ry:-a,sx:0.45,sy:0.35,sz:0.45});}
+    for(let i=0;i<24;i++){const a=(i+0.25)/24*TAU;if(R()<0.2)continue;const x=Math.cos(a)*45.6,z=Math.sin(a)*45.6;W_('base',G.box,pick(OLD),x,1.6,z,{ry:-a,sx:1.4,sy:1.6,sz:3.2});}
+    // the arms across the head's back, one broken off and lying askew
+    for(let i=0;i<10;i++){const a=i/10*TAU;if(i===7){W_('base',G.box,'#4a382a',Math.cos(a)*27,3.0,Math.sin(a)*27,{ry:-a+0.12,rz:0.06,sx:24,sy:1.4,sz:1.8});continue;}
+      for(let s=9;s<45;s+=6){const x=Math.cos(a)*(s+3),z=Math.sin(a)*(s+3);W_('base',G.box,pick(OLD),x,3.1,z,{ry:-a,sx:6.1,sy:1.8,sz:1.8});}}
+    // -- the main drive: the housing, sixteen motors round it (five gone, two fallen over on the head) --
+    kw.add('base',G.cyl,'#46443f',0,6.2,0,{sx:9,sy:8,sz:9});kw.add('base',G.cyl,'#5a4634',0,10.4,0,{sx:9.6,sy:0.5,sz:9.6});
+    for(let i=0;i<16;i++){const a=(i+0.5)/16*TAU,x=Math.cos(a)*10.6,z=Math.sin(a)*10.6;if([2,5,9,12,14].includes(i))continue;
+      if(i===4||i===11){const x2=Math.cos(a)*14,z2=Math.sin(a)*14;W_('base',G.cyl,'#5a4a3a',x2,3.4,z2,{rz:Math.PI/2,ry:-a+0.5,sx:1.1,sy:4,sz:1.1});continue;}
+      W_('base',G.cyl,pick(['#5a4a3a','#4a4844','#62503e','#3e3c3a']),x,4.4+2,z,{sx:1.1,sy:4,sz:1.1});W_('base',G.cyl,'#3a302a',x,8.6,z,{sx:0.7,sy:0.5,sz:0.7});}
+    // -- the gripper ring, its pads on the rock (one sagged down the wall), the thrust rams down to the head --
+    const yG=14;kw.add('base',K.ring(39.5,43,1.6,64),'#4e4034',0,yG+1.6,0);
+    for(let i=0;i<8;i++){const a=(i+0.5)/8*TAU,sag=i===3?3.2:0,x=Math.cos(a)*45,z=Math.sin(a)*45;
+      W_('base',G.box,pick(OLD),x,yG+0.8-sag,z,{ry:-a,rz:i===3?0.08:0,sx:1.6,sy:6,sz:9});
+      W_('base',G.box,'#3a302a',Math.cos(a)*43.6,yG+0.8,Math.sin(a)*43.6,{ry:-a,sx:1.4,sy:1.4,sz:2});}
+    for(let i=0;i<16;i++){const a=(i+0.5)/16*TAU;if(i===9)continue;const x0=Math.cos(a)*41,z0=Math.sin(a)*41,x1=Math.cos(a)*32,z1=Math.sin(a)*32;
+      if(clear(x0,z0,5)&&clear(x1,z1,5)){kw.pipe('base','#4a4440',x0,yG,z0,(x0+x1)/2,(yG+4.2)/2+0.5,(z0+z1)/2,0.55);kw.pipe('base','#6a6460',(x0+x1)/2,(yG+4.2)/2+0.5,(z0+z1)/2,x1,4.2,z1,0.35);}}
+    // -- the decks: radial girders from the drive out to the ring, gratings on some, the upper deck half fallen in --
+    for(let i=0;i<12;i++){const a=i/12*TAU;
+      for(let s=10;s<40;s+=6){const x=Math.cos(a)*(s+3),z=Math.sin(a)*(s+3);W_('base',G.box,'#4e4034',x,yG+0.9,z,{ry:-a,sx:6.1,sy:1.0,sz:0.6});}
+      if(i%2===0)for(let s=10;s<34;s+=6){if(R()<0.35)continue;const x=Math.cos(a+0.12)*(s+3),z=Math.sin(a+0.12)*(s+3);W_('base',G.box,'#3e3a36',x,yG+1.45,z,{ry:-a,sx:5.8,sy:0.08,sz:3.6});}
+      const up=yG+5.5;if(i<7){for(let s=10;s<34;s+=6){const x=Math.cos(a)*(s+3),z=Math.sin(a)*(s+3);W_('base',G.box,'#4a3a2e',x,up,z,{ry:-a,sx:6.1,sy:0.7,sz:0.5});}
+        const x=Math.cos(a)*36,z=Math.sin(a)*36;W_('base',G.box,'#3a302a',x,(up+yG+1.6)/2,z,{sx:0.5,sy:up-yG-1.6,sz:0.5});}
+      else{const x0=Math.cos(a)*10,z0=Math.sin(a)*10,x1=Math.cos(a)*30,z1=Math.sin(a)*30;if(clear(x1,z1,5))kw.pipe('base','#4a3a2e',x0,up,z0,x1,yG+1.8,z1,0.3);}}   // fallen in
+    // fallen gratings and rubbish on the head
+    for(let q=0;q<26;q++){const a=R()*TAU,r=12+R()*30,x=Math.cos(a)*r,z=Math.sin(a)*r;W_('base',G.box,pick(['#3e3a36','#4a382a','#2e2a26']),x,4.2+R()*0.3,z,{ry:R()*3,rx:(R()-0.5)*0.3,rz:(R()-0.5)*0.3,sx:1+R()*3,sy:0.1,sz:0.8+R()*2});}
+    for(let q=0;q<14;q++){const a=R()*TAU,r=10+R()*34,x=Math.cos(a)*r,z=Math.sin(a)*r;W_('base',G.sph4,pick(ROCK),x,4,z,{sx:1+R()*2,sy:0.4+R()*0.6,sz:1+R()*2});}
+    // -- the muck hoist's tower up the middle, cut off and capped where the cap was poured; its skip hung askew --
+    const yTop=CH-0.3;for(const [px,pz] of [[-2.6,-2.6],[2.6,-2.6],[2.6,2.6],[-2.6,2.6]])kw.add('base',G.box,'#4a3a2e',px,(10.6+yTop)/2,pz,{sx:0.45,sy:yTop-10.6,sz:0.45});
+    for(let h=12;h<yTop-0.5;h+=2.6){kw.add('base',K.ring(3.4,3.75,0.3,4,TAU/8),'#4a3a2e',0,h,0);
+      kw.pipe('base','#3a302a',-2.6,h-2.6,-2.6,2.6,h,-2.6,0.12);kw.pipe('base','#3a302a',2.6,h-2.6,2.6,-2.6,h,2.6,0.12);}
+    kw.add('base',G.box,'#5a4634',0.6,yTop-5,0.4,{rz:0.18,rx:0.1,sx:2.6,sy:3,sz:2.4});
+    kw.add('base',G.cyl,'#6a665c',0,yTop+0.1,0,{sx:4.6,sy:0.8,sz:4.6});                          // the plug poured over its stump
+    // cables hanging from the cap in slack loops, and two that fell
+    for(let q=0;q<12;q++){const a=R()*TAU,r=6+R()*34,x=Math.cos(a)*r,z=Math.sin(a)*r;if(!clear(x,z,5))continue;const lo=yG+3+R()*(yTop-yG-6);
+      kw.pipe('base',DK,x,yTop+0.2,z,x+1.2,lo,z+0.6,0.06);kw.pipe('base',DK,x+1.2,lo,z+0.6,x+2.8,yTop+0.2-R()*2,z+1.4,0.06);}
+    const wreck=new THREE.Group();wreck.position.set(0,CB+0.1,0);wreck.rotation.set(0.012,0,0.022);res.group.add(wreck);
+    {const wm=new THREE.MeshLambertMaterial({vertexColors:true,color:'#8c8a86',clippingPlanes:clip});for(const [key,g] of Object.entries(kw.build())){const m=new THREE.Mesh(g,key==='base'?wm:matFor(key));m.frustumCulled=false;wreck.add(m);}}
+    res.grave={CT,CB};}
+
   // ======== assemble ========
   const lampMat=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip}),glowMat=new THREE.MeshBasicMaterial({vertexColors:true,clippingPlanes:clip});
   const mf=key=>key==='dlamp'?lampMat:key==='dglow'?glowMat:matFor(key);
@@ -281,6 +350,6 @@ export function buildDigger(THREE,K,matFor,clip,out){
     for(const p of puffs){const u=p.userData;u.ph=(u.ph+dt*0.05*(0.5+cut))%1;const s=FACE-0.3-u.ph*14,[x,z]=F(s+adv*0,u.w*(0.4+u.ph));p.position.set(x,y0+AX+u.h*(0.3+u.ph*0.5),z);
       const sc=2+u.ph*7;p.scale.set(sc,sc,1);p.material.opacity=cut*0.5*Math.sin(u.ph*Math.PI);}
     return cut;};
-  res.where=p=>{const dx=p.x-P0[0],dz=p.z-P0[1],s=dx*ux+dz*uz,w=dx*vx+dz*vz;if(Math.hypot(s,w)<11)return "the digger's chamber";if(s>8&&s<FACE+1&&Math.abs(w)<5)return s>HEAD-16?'the digger':"the digger's tunnel";const [SA,SR]=SHAFT;if(Math.hypot(p.x-Math.cos(SA)*SR,p.z-Math.sin(SA)*SR)<3&&p.y>y0+HUB_H)return 'the mine shaft';if(Math.hypot(p.x,p.z)<RO+2)return "the mines' hall";return 'the mines';};
+  res.where=p=>{if(res.grave&&p.y<res.grave.CT&&p.y>res.grave.CB-1&&Math.hypot(p.x,p.z)<RO+2)return "the old digger's grave, under the cap";const dx=p.x-P0[0],dz=p.z-P0[1],s=dx*ux+dz*uz,w=dx*vx+dz*vz;if(Math.hypot(s,w)<11)return "the digger's chamber";if(s>8&&s<FACE+1&&Math.abs(w)<5)return s>HEAD-16?'the digger':"the digger's tunnel";const [SA,SR]=SHAFT;if(Math.hypot(p.x-Math.cos(SA)*SR,p.z-Math.sin(SA)*SR)<3&&p.y>y0+HUB_H)return 'the mine shaft';if(Math.hypot(p.x,p.z)<RO+2)return "the mines' hall";return 'the mines';};
   res.machine=machine;res.spin=spin;
   return res;}
