@@ -187,7 +187,10 @@ def main():
     # faded into the land round the polygon over ~12 px, along a ragged line (the polygon's straight edges not drawn)
     edge_n = nd.gaussian_filter(rng.standard_normal(sh), 3.0); edge_n /= edge_n.std() + 1e-9
     w = np.clip((dvm + 4.0 * edge_n) / 12.0, 0, 1) * ~whas0
-    w = np.where(np.isfinite(floor_t) | vp_floor, np.maximum(w, 1.0 * VM), w)   # the valleys cut to the polygon's edge
+    # the valleys fade at the polygon's edge too, over a ragged ~6 px (cut to the edge they left a straight wall where
+    # Region 174's arm runs along it)
+    wv_ = np.clip((dvm + 2.0 * edge_n) / 6.0, 0, 1) * ~whas0
+    w = np.where(np.isfinite(floor_t) | vp_floor, np.maximum(w, wv_), w)
     En = np.where(VM & ~whas0, E0 * (1 - w) + target * w, En)
     # ... and the whole highland weathered as Matron's Coast is (edit 30's weather: stream power cutting where the rain
     # gathers, creep rounding the blocks), draining out of the polygon
@@ -195,7 +198,7 @@ def main():
     Ew = T30.weather(En, VM & ~whas0, ~VM | whas0, iters=20, K=0.03, kd=0.10, cap=40.0)
     rep['weathering_m'] = {'cut_p90': round(float(np.percentile((En - Ew)[VM & ~whas0], 90))),
                            'cut_max': round(float((En - Ew)[VM & ~whas0].max()))}
-    En = Ew
+    En = En + (Ew - En) * w            # faded out toward the edge, as the reshaping is (no notches along it)
     rep['mountains'] = {k: round(float(v)) for k, v in zip(('p10', 'p50', 'p90', 'max'), np.percentile(En[VM & ~valley & ~whas0], [10, 50, 90, 100]))}
     rep['valley_floor_m'] = [round(float(v)) for v in np.percentile(En[valley & VM], [5, 50, 95])]
 

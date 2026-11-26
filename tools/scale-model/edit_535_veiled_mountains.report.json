@@ -26,19 +26,19 @@
   }
  },
  "weathering_m": {
-  "cut_p90": 548,
-  "cut_max": 2452
+  "cut_p90": 552,
+  "cut_max": 2211
  },
  "mountains": {
-  "p10": 3990,
-  "p50": 5688,
-  "p90": 7056,
-  "max": 9202
+  "p10": 4030,
+  "p50": 5723,
+  "p90": 7087,
+  "max": 9483
  },
  "valley_floor_m": [
-  2509,
-  2995,
-  3862
+  2538,
+  3040,
+  4265
  ],
  "islands": {
   "drowned_cells": 1505,
@@ -64,34 +64,34 @@
   9232,
   9113
  ],
- "land_moved_cells": 30423,
+ "land_moved_cells": 29707,
  "reclimate": {
-  "cells": 29571,
-  "class_changed": 23566,
-  "rain_mean_before_mm": 773.0,
-  "rain_mean_after_mm": 998.0,
+  "cells": 28927,
+  "class_changed": 23175,
+  "rain_mean_before_mm": 777.0,
+  "rain_mean_after_mm": 986.0,
   "classes_now": {
    "Af": 61,
-   "Am": 9,
-   "BSk": 76,
-   "Csa": 365,
-   "Csb": 15,
-   "Cfa": 1396,
-   "Cfb": 892,
-   "Dsa": 14,
-   "Dsb": 517,
-   "Dsc": 197,
-   "Dfa": 65,
-   "Dfb": 4665,
-   "Dfc": 5825,
-   "ET": 8177,
-   "EF": 4071,
-   "HT": 2426,
-   "HF": 794,
+   "Am": 10,
+   "BSk": 68,
+   "Csa": 310,
+   "Csb": 16,
+   "Cfa": 1288,
+   "Cfb": 828,
+   "Dsa": 16,
+   "Dsb": 480,
+   "Dsc": 180,
+   "Dfa": 48,
+   "Dfb": 4457,
+   "Dfc": 5621,
+   "ET": 8160,
+   "EF": 3946,
+   "HT": 2623,
+   "HF": 809,
    "WS": 6
   },
-  "airless_cells_given_air": 6067,
-  "class_O_let_go": 7279
+  "airless_cells_given_air": 5996,
+  "class_O_let_go": 7184
  },
  "audit": {
   "matron_tc_C": [
@@ -100,24 +100,24 @@
   ],
   "matron_tw_C": 29.2,
   "seam_cells_smoothed": 3713,
-  "low_airless_given_air": 6756,
+  "low_airless_given_air": 6701,
   "rain_cells_fixed": 940,
-  "classes_relettered": 20125
+  "classes_relettered": 20355
  },
  "valley_classes": {
-  "BSk": 67,
-  "Csa": 358,
+  "BSk": 62,
+  "Csa": 307,
   "Csb": 15,
-  "Cfa": 660,
-  "Cfb": 394,
+  "Cfa": 583,
+  "Cfb": 354,
   "Cfc": 4,
-  "Dsa": 18,
-  "Dsb": 357,
+  "Dsa": 16,
+  "Dsb": 321,
   "Dsc": 52,
-  "Dfa": 81,
-  "Dfb": 3756,
-  "Dfc": 1965,
-  "ET": 77
+  "Dfa": 65,
+  "Dfb": 3605,
+  "Dfc": 2118,
+  "ET": 156
  },
  "matron_classes": {
   "Af": 84,
@@ -127,6 +127,6 @@
  },
  "valley_temps_C": {
   "tw": 19.0,
-  "tc": -2.0
+  "tc": -3.0
  }
 }
