@@ -273,6 +273,37 @@ func _init() -> void:
 		var bq: Quaternion = (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).basis.get_rotation_quaternion()
 		var wz: float = fig._gp(fig.skeleton.find_bone("RightHand")).origin.z - fig._gp(fig.skeleton.find_bone("Spine")).origin.z
 		ok((bq * Vector3.RIGHT).y > 0.95 and wz > 0.12, "ual_consume: the bowl level on the palm in front of the belly")
+		# the third round (2026-11-26), as verify.py checks the page: the bowl's shoulder not hiked; the bucket's bail in
+		# the fist and its body out of the legs; Chop's left arm out of the jaw; Sit and drink's cup at the lips
+		var ia := fig.skeleton.find_bone("RightArm")
+		var ic := fig.skeleton.find_bone("RightShoulder")
+		var rp: Array = KChar.fk(fig.skel, fig.morph["t"])["P"]
+		var e0 := asin(((rp[ia] as Vector3) - (rp[ic] as Vector3)).normalized().y)
+		var e1 := asin((fig._gp(ia).origin - fig._gp(ic).origin).normalized().y)
+		ok(e1 - e0 < deg_to_rad(6.0), "ual_consume: the bowl's shoulder not hiked (%.0f degrees over its rest)" % rad_to_deg(e1 - e0))
+		for c in ["walk_bucket", "ual_water"]:
+			fig.hold({"R": "bucket", "L": null})
+			fig.play(c)
+			var legs2 := 0.0
+			var bail := 0.0
+			for k in int(fig.player.current_animation_length * 30.0) - 1:
+				fig._process(1.0 / 30.0)
+				legs2 = maxf(legs2, fig.hang_need)
+				bail = maxf(bail, ((fig._hangs["R"]["pivot"] as Node3D).quaternion * Vector3.UP).angle_to(Vector3.UP))
+			ok(legs2 < 0.015 and bail < 0.01, "%s: the bail in the fist (%.3f rad), the bucket out of the legs (%.3f m in)" % [c, bail, legs2])
+		fig.hold({"R": "axe", "L": null, "both": true})
+		fig.play("ual_chop")
+		var jaw2 := 0.0
+		for k in int(fig.player.current_animation_length * 30.0) - 1:
+			fig._process(1.0 / 30.0)
+			jaw2 = maxf(jaw2, fig.jaw_need)
+		ok(jaw2 < 0.015, "ual_chop: the left arm out of the jaw (%.3f m in)" % jaw2)
+		fig.hold({"R": "cup", "L": null})
+		fig.play("sit_drink")
+		fig.player.seek(4.5, true)
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		ok(fig.face_w > 0.99, "sit_drink at 5.5 s: the cup at the lips (%.2f)" % fig.face_w)
 		fig.hold({"R": null, "L": null})
 		# cloth: the court skirt's chains are bones of the skeleton, hang at rest, and swing in a walk
 		var rec2 := rec.duplicate(true)

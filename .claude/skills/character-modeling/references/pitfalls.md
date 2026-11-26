@@ -351,6 +351,15 @@ area you are about to change.
   other limbs: here they pushed legs aside, and only the JS-to-Godot joint comparison showed it.
 - Measure a pass's reach before calling it done: the joints of every clip at a few times on all six bodies, before and
   after (regressions showed in clips nobody flagged: idle 2, the pistol stances).
+- **A made clip's key poses checked on the canonical skeleton miss by 5 to 7 cm**: the posture pass bends the spine
+  forward on top of the clip, so the head is further forward on the page than in `_Rig`'s forward kinematics. Dig's lift
+  and the hammer's swing went through the bowed head although the clip's own numbers cleared it. Aim the clip for 8 cm
+  clear (a script over `_Rig` per frame: the tool's points and the hands against the skull ball and a face ball), then
+  measure on the page. Route a swing round the head: out to the side on the way up, down in front of the shoulder before
+  it swings in (a straight line between two key poses beside the head passes in front of the face).
+- **A keep-out added to a pass every clip runs reaches far past the clip it was for**: a jaw ball in bodyFix (for Chop)
+  moved the one-handed sword clips' hands 8 to 18 cm. Sweep every clip that holds a prop, page before and after (joints
+  per frame, six bodies), and switch such a pass on per clip in the data when it changes clips nobody flagged.
 - **Baking a crowd's still poses** (`src/60-crowd.js`, 2026-10-20). A figure's pieces are SkinnedMeshes on r128
   materials with `skinning: true`, so they cannot simply be drawn as InstancedMeshes: bake each vertex through its
   bones (`SkinnedMesh.boneTransform`, after `skeleton.update()`) into a plain geometry, and give it vertex colours (its
@@ -429,6 +438,26 @@ area you are about to change.
 - **Shots are minutes, not seconds, under SwiftShader**: headless Chromium renders on the GPU with `--use-angle=d3d11
   --ignore-gpu-blocklist --enable-gpu` (`tools/lab_shots.py --gpu`).
 
+- **A bail that turns freely about the grip comes out through the fingers** (Water plants): a hanging prop's bail lies
+  along the grip's handle axis in the fist, so it may only swing about that axis. Turn the forearm about its own length
+  until the bail lies level, bend the wrist (capped) for what the forearm cannot (the handle partly along it), then
+  swing the load about the bail.
+- **A bucket in the thigh** (the short bodies): keep its body (rings about the hang axis) out of the legs' capsules widened
+  for trousers by turning the arm at the shoulder. Push along the depth-weighted sum of every point inside, off its leg
+  (the deepest point alone, between the legs of a stride, sent it from one leg to the other), never in toward the other
+  leg, and never back the way the round before went (a leg through the middle of the pail flipped it front to back).
+  The twin's test figure (another build) found the oscillation the page's six did not: run the twin's checks too.
+- **A two-handed hold's support arm across the face** (Chop: the torso turned so the left shoulder sits under the chin,
+  both hands up behind the head): the arm's line from the shoulder to the handle passes the jaw, so no swing of the elbow
+  about that line clears it, and moving the hands away from the face overstretches the arm (it falls short and the
+  hold eases back to the clip). Bring both hands down (it shortens the reach), capped by what the arm reaches, then
+  swing the elbow away from what is left. Measure the right obstacle: the chin sits 13 cm in front of the head joint and 3
+  cm below it; the skull ball does not reach it (a `jaw` face point does).
+- **A clip that holds the other hand up hikes its shoulder** (Eat: the right hand reaches to the face; bring it down to
+  the bowl and the collarbone stays up by the ear): bring the collarbone down to its rest elevation (plus a few degrees)
+  before solving the arm to its new place.
+- **The owner's left and right may be the screen's**: "R bicep into the throat" in Chop was the figure's left arm
+  (measure which limb is there before fixing the named one).
 - **Headgear gets the shoulders' weights.** MakeHuman weights a garment from the nearest skin, so a broad brim, a wing
   or an ear flap reaching down beside the neck bends with the arms (a third of one headdress's weight was on them).
   Weight everything of a head item above the neck to the Head joint; leave a hood's cowl below it alone.

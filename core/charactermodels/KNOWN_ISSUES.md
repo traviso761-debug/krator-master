@@ -91,9 +91,17 @@
   shows from nocking to the loose with no nocking motion. The supporting hand always closes in a fist.
 - **The hand-prop fixes of the owner's review (2026-10-20) are passes over clips made for something else** (README,
   Props, To the face, The bow). What each leaves:
-  - *Hanging props hang still.* The bucket and the lantern point plumb from the grip every frame; they do not swing
-    with the walk, and nothing keeps a bucket out of the thigh. *Water plants* was made for a watering can: the bucket
-    hangs from the reaching hand and nothing pours.
+  - *Hanging props hang still.* The bucket and the lantern hang plumb from the bail in the fist every frame; they do
+    not swing with the walk. The forearm turns (and the wrist bends) to lay the bail level, so in Carry bucket's
+    forward swing (about 7 s) the men's hand turns well over to hold it. The bucket is kept out of the legs by turning
+    the arm at the shoulder, which can hold the arm a little out from the side. *Water plants* was made for a watering
+    can: the bucket hangs from the reaching hand and nothing pours.
+  - *Chop's left arm* (the third round, 2026-11-26) is kept out of the jaw by bringing both hands down at the top of the
+    swing (up to 40 cm) and swinging the elbow, so the backswing tops out by the right shoulder rather than behind the
+    head. It is switched on for Chop only (`clear_jaw`); Overhead chop and Heavy blunt swing put the left arm across the
+    face the same way, but the pass lowered their windups 40 cm, so they wait on the weapon clips' own review.
+  - *Sit and drink*'s face span (3.7 to 7.3 s) is read off the clip by eye; the arm comes up across the face to drink,
+    as the clip's own motion has it.
   - *The bow's spans are set by hand* (`nock` and the face spans in data/clips.json, read off the clips): a new bow clip
     needs its own, or it falls back on guessing from the hand's place. The string runs through the closed hand's middle,
     so at the anchor it passes a few centimetres beside the jaw rather than touching the chin. Bow shot's whole draw is

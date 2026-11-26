@@ -143,12 +143,15 @@ to the last loop. Loops play in place: their drift over a cycle is taken out and
 Neither library has hoeing, hammering, a pickaxe or a straight thrust, so some clips are made (`derive` in
 `data/clips.json`, `make_pieces.derived_clips`, posed with `_Rig`: forward kinematics on the canonical skeleton, a
 two-bone solve per arm, the hand turned to hold its prop a given way). **Hammer at anvil**, on the standing idle: the
-spine leans into each blow, the right hand lifts the hammer over the shoulder and brings it down onto an anvil just
-below the hips in front (the handle forward and the face down as it lands), and the left hand rests on the work.
-**Dig (hoe, pickaxe)**, on the standing idle: both hands on the handle, lifted before and above the right shoulder
-and brought down in front as the spine bends into it (it was the one-handed heavy swing looped, its left arm across
-the chest; then the lift's top sat over the shoulder, and the left hand reached behind the head for the handle, its
-arm round the neck). **Thrust / stab** (dagger, sword), from the combat stance: the hand drawn back to the ribs and
+spine leans into each blow, the right hand lifts the hammer out to the side and up beside the head, brings it down in
+front of the shoulder and in onto an anvil just below the hips in front (the handle forward and the face down as it
+lands), and the left hand rests on the work (lifted straight up from the anvil and back across the face, the hammer went
+through the bowed head: the owner, 2026-11-26).
+**Dig (hoe, pickaxe)**, on the standing idle: both hands on the handle, lifted out beside the right shoulder, above it
+and well in front, and brought down in front of the shoulder as the spine bends into it at the blow (it was the
+one-handed heavy swing looped, its left arm across the chest; then the lift's top sat over the shoulder, and the left
+hand reached behind the head for the handle, its arm round the neck; then the hands passed over the face and the
+handle through the man's head). **Thrust / stab** (dagger, sword), from the combat stance: the hand drawn back to the ribs and
 driven straight forward at chest height, the point leading, the right shoulder turned into it (Meshy's 'Thrust Slash'
 stabbed overhand, the point up). **Spear thrust**: the same underhand, the right hand at the hip on the butt end and the
 left forward on the shaft. **Spear advance** keeps Meshy's 'Spear Walk' legs and body (fetched as `spear_walk@src`, a
@@ -176,13 +179,21 @@ default first; `fig.hold({R, L, both})` hangs the GLBs under the hand bones and 
 of the clip; the Animation Lab's Holding picker swaps the right hand's prop among the clip's choices. The shield is
 held by its centre grip with the board out past the back of the hand (made the other way, every clip faced its boss
 into the body); in a lower hand a prop with `low_turn` turns about its handle so the shield stands up, board out.
-A prop with `hang` (its axis that points down) turns about the grip so that axis points down whatever the hand's turn:
-the bucket and the lantern hang plumb from their bails (they followed the forearm). A prop with `upright` (its axis
+A prop with `hang` (its axis that points down) hangs from its bail, which lies along the grip's handle axis in the
+fist: the forearm turns about its own length (at most 1.6 rad) until the bail lies level, the wrist bends (at most 0.5
+rad) for what that cannot do, and the prop swings about the bail only, so the bucket and the lantern hang plumb (they
+followed the forearm; turned freely about the grip, the bail then came out through the fingers in Water plants). A
+prop with `hang_clear` (its body's radius and span along the hang axis) is kept 4.5 cm out of the legs' capsules (the
+trousers): the arm turns at the shoulder so the body's deepest point goes the way out, the points inside each pushed off
+their leg and weighted by depth, never in toward the other leg and never back the way it went (the short bodies carried
+the bucket in the thigh; between the legs of a stride, the deepest point alone sent it from one leg to the other). A prop with `upright` (its axis
 that should point up) turns the wrist to keep it up, as far as the hand is not at the face (`standUp`, `_stand_up`): the
 cup stands upright in the hand and tips only to drink (the left hand held it upside down); the bowl, held in an open
 hand (`grip: 'flat'`: the clip's own fingers), turns the palm up under it. A prop with `carry` (the bowl) is first held
 in front of the belly: the wrist goes to that point (metres from the lower spine joint: out to the hand's side, up,
-forward) by the arm's two-bone solve (Eat swung the arm back and down, through the bowl).
+forward) by the arm's two-bone solve (Eat swung the arm back and down, through the bowl), the collarbone first brought
+down to at most 5 degrees above its rest elevation (Eat's clip holds that hand up at the face, the shoulder hiked 30 to
+40 degrees, which stayed by the ear with the hand at the bowl).
 A weapon's `blade` (its striking part along the handle) keeps out of the head, the neck and the trunk (`bladeClear`,
 `_blade_clear`): the wrist turns until the blade passes the skull's sphere (with the hair), a taper down to the neck
 joint and the trunk's capsules, each widened by half a blade's width; the turn carries over from frame to frame and
@@ -197,7 +208,9 @@ scale): `mouth`, `sip` (a cup's or a bite's middle at the lips), `anchor` (a dra
 the jaw) and `head` (the skull's middle and radius, for `blade`). With `when` (spans of clip seconds) it does so in
 those spans, easing in over `ease` and out over it after a span's end (a span at a loop's start or end runs on round
 the loop); without, as near as the clip brings the hand (full within `near[0]`, none beyond `near[1]`). Drink holds the
-cup in the left hand (the clip drinks with it) and brings its rim to the lips from 2.4 to 5.2 s; Eat (`ual_consume`:
+cup in the left hand (the clip drinks with it) and brings its rim to the lips from 2.4 to 5.2 s, Sit and drink the same
+in the right hand from 3.7 to 7.3 s (the clip lifts the cup and tips the head back there, and held it short of the
+mouth); Eat (`ual_consume`:
 the library's clip only reaches out at face height) holds bread in the left hand and a bowl in the right and puts the
 bread to the mouth from 0.3 to 1.1 s; the four bow clips draw to the anchor in their full-draw spans, with `level`:
 the arrow, string hand to bow hand, points up at most 6 degrees (the bow arm comes down to it). `fig.faceW`
@@ -216,7 +229,13 @@ Two-handed parry as the clip's hand passed square to it). The pistol's support i
 aim the left hand cups the right hand's fingers. A clip with `lead_left` (Two-handed parry: its left hand is above the
 right, toward the blade) takes a prop with a one-point support the other way round: the prop slides half the support's
 offset up through the right hand and the left holds above it, so the forearms do not cross (they went through each
-other).
+other). A clip with `clear_jaw` (Chop) keeps the left arm out of the jaw and the skull (`faces` `jaw`: the chin, the jaw
+and the front of the throat, measured off the base meshes): where the arm's line from the shoulder to the handle
+passes the face (Chop's top turns the left shoulder under the chin and holds both hands up behind the head), both
+hands come down together by twice the depth, five times over and 40 cm in all, no further than the left arm reaches,
+and then the elbow swings about the shoulder-to-wrist line, away from what is left, the way it first went while the need
+lasts (`elbowDown`, `fig.jawNeed`). It is switched on per clip: on the melee clips (Overhead chop, Heavy blunt swing,
+which have the same fault) it lowered the windup 40 cm.
 *The bow* has no modelled string: the figure draws it between the limb tips (`string`), through the right hand while
 that hand is behind the bow, turns the bow about its handle to face the drawing hand, and lays the arrow from the
 string hand to the bow hand (`fig.drawn`). The arrow is `arrow_arm` (1.65) times the bow arm's length, shoulder to
