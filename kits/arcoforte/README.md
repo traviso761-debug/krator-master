@@ -18,9 +18,10 @@ node kits/arcoforte/tests/test-arcoforte.js                   # layout, rules, l
 python3 kits/arcoforte/arcoforte_blueprint.py                 # writes floors/*.png, AREAS.md, and BLUEPRINT.md
 python3 tools/build.py kits/arcoforte                         # builds dist/arcoforte.html + dist/arcoforte.tex.ancients.js
 python3 kits/arcoforte/verify.py kits/arcoforte/dist/arcoforte.html --assert --all-views
+python3 kits/arcoforte/verify.py kits/arcoforte/dist/arcoforte.html --assert --state marginal --socket fleetborn
 ```
 
 ## Controls & URL parameters
 - **Cutaway (`X`, `[` `]`, or top Cutaway bar):** Opens any of the 12 multi-storey interior zones (`harbour_works`, `auto_vaults`, `linear_west`, `linear_east`, `city_west`, `city_east`, `bastion_west`, `bastion_east`, `promenade_rec`, `rotunda`, `tower_central`, `sky_crown`) storey by storey, building its rooms, door leaves (`E`), and catalog furniture on demand.
-- **State (`?state=refurbished|intact|ruined` or panel `State` selector):** Defaults to `refurbished` (kept & re-glazed living/work/rec zones, sealed/ruined deep automated vaults).
-- **Culture Socket (`?culture=refurbished|ancient|scrap|iziz|xanadu|highlands` or panel `Socket` selector):** Re-dresses all inhabited living, work, and recreation rooms live via `ARCOFORTE.socket(culture)`.
+- **State (`?state=refurbished|marginal|intact|ruined`, `ARCOFORTE.state(spec)`, or panel `State` selector):** Defaults to `refurbished` (kept & re-glazed living/work/rec zones, sealed/ruined deep automated vaults). `marginal` keeps the lower `'harbour'`, `'bastions'`, and `'ring'` refurbished and working while rendering `'towers_upper'`, `'vaults'`, and `'crown'` weathered/ruined; `ARCOFORTE.state({...})` accepts custom per-zone maps across `ARCOFORTE.ZONES`.
+- **Culture Socket (`?socket=refurbished|ancient|scrap|iziz|xanadu|republican|fleetborn|shorekin`, per-zone `?socket=bastions:fleetborn,ring:fleetborn,harbour:shorekin`, or panel `Culture` selector):** Re-dresses inhabited rooms live via `ARCOFORTE.socket(spec)` / `ARCOFORTE_HOST.socket(spec)`. `'fleetborn'` outfits habitable `'bastions'` and `'ring'` halls with Fleet-born caretaker fittings; `'shorekin'` outfits `'harbour'` works & boat-lift rooms with Arch local/sea timber, brucite-travertine, coir, and pandanus fittings.

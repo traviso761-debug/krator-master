@@ -24,16 +24,17 @@ ASSERT_JS = r"""() => {
   const negs = A.hostNegatives();
   negs.forEach(n => R.push({ name: 'negative - ' + n.name, ok: !!n.ok, detail: n.detail || 'caught broken input' }));
 
-  /* Exercise live cutaway opening & live culture socket swap (`iziz`), then restore initial socket & close cutaway */
+  /* Exercise live cutaway opening & live culture socket swap (`fleetborn` / `iziz`), then restore initial socket & close cutaway */
   const initSock = window.ARCOFORTE_HOST ? window.ARCOFORTE_HOST.getSocket() : 'refurbished';
+  const testSock = initSock === 'fleetborn' ? 'iziz' : 'fleetborn';
   if (typeof KHOST !== 'undefined' && KHOST.cut) {
     KHOST.cut.to('rotunda', 0);
     const cutOk = !!KHOST.cut.on && KHOST.cut.unit && KHOST.cut.unit.id === 'rotunda';
     let sockOk = true, sockDetail = 'skipped';
     if (window.ARCOFORTE_HOST) {
-      const sw = window.ARCOFORTE_HOST.socket('iziz');
-      sockOk = !!(sw && sw.socket === 'iziz' && sw.missing === 0);
-      sockDetail = sw ? ('socketed iziz (' + sw.placed + ' pcs, missing ' + sw.missing + ')') : 'socket failed';
+      const sw = window.ARCOFORTE_HOST.socket(testSock);
+      sockOk = !!(sw && sw.socket === testSock && sw.missing === 0);
+      sockDetail = sw ? ('socketed ' + testSock + ' (' + sw.placed + ' pcs, missing ' + sw.missing + ')') : 'socket failed';
       window.ARCOFORTE_HOST.socket(initSock);
     }
     KHOST.cut.off();
@@ -48,7 +49,9 @@ async def run(a):
     q = ['t=4']
     if a.state:
         q.append('state=' + a.state)
-    if a.culture:
+    if a.socket:
+        q.append('socket=' + a.socket)
+    elif a.culture:
         q.append('culture=' + a.culture)
     async with verify_page(a.html, here=HERE, size=a.size, query='?' + '&'.join(q), settle_ms=0,
                            checks=harness.SURVEY) as V:
@@ -121,6 +124,7 @@ if __name__ == '__main__':
     ap.add_argument('--views', default='')
     ap.add_argument('--all-views', action='store_true')
     ap.add_argument('--state', default='')
+    ap.add_argument('--socket', default='')
     ap.add_argument('--culture', default='')
     ap.add_argument('--cut', action='store_true')
     ap.add_argument('--night', action='store_true')
