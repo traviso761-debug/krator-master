@@ -1,0 +1,58 @@
+{
+ "edit": "5.1 edit 34: the half-dome shield",
+ "date": "2026-11-25",
+ "vent": [
+  1520.0,
+  128.0
+ ],
+ "summit_m": 6476,
+ "caldera_floor_m": 6250,
+ "foot_m": 2855,
+ "reach_km": 240,
+ "profile_west_m": [
+  6404,
+  6209,
+  5276,
+  4773,
+  4030,
+  3314,
+  2389
+ ],
+ "profile_east_m": [
+  6469,
+  6402,
+  6324,
+  6240
+ ],
+ "land_east_was_m": [
+  3227,
+  3802,
+  4252,
+  4646
+ ],
+ "scar_depth_m_max": 550,
+ "land_moved_cells": 29354,
+ "raised_km2": 94672,
+ "rivers_kept_downhill": [],
+ "region_points": 28,
+ "reclimate": {
+  "cells": 22931,
+  "class_changed": 17386,
+  "rain_mean_before_mm": 966.0,
+  "rain_mean_after_mm": 1079.0,
+  "classes_now": {
+   "BSk": 144,
+   "Csa": 2508,
+   "Csb": 133,
+   "Cfa": 2603,
+   "Cfb": 398,
+   "Dsc": 39,
+   "Dfc": 5079,
+   "ET": 6305,
+   "EF": 4932,
+   "HT": 790
+  },
+  "airless_cells_given_air": 5181,
+  "class_O_let_go": 0
+ }
+}

@@ -1395,7 +1395,7 @@ model data did not) replayed on this model by river id, its names only, none of 
 
 ## 5.1 edits 28 to 33 (2026-11-24 and 2026-11-25): the owner's map pass
 
-The edits run in this order on b6b57c130 (the page fix): 28a, 28, 28b, 29, 30, 31, 32, 33. Each refuses to run twice;
+The edits run in this order on b6b57c130 (the page fix): 28a, 28, 28b, 29, 30, 31, 32, 33, 34, 35. Each refuses to run twice;
 to change one, check `tools/scale-model/model` out at b6b57c130 and run the chain again. Each writes a
 `<script>.report.json` beside it.
 - **28a, `edit_528a_dome_shield.py`: the Dome as the shield volcano its record describes** (the owner: "im not sure the
@@ -1477,6 +1477,52 @@ to change one, check `tools/scale-model/model` out at b6b57c130 and run the chai
     - warm ground up to +13 C, the warm ring round the vents Dfc (moss, microbial mats, scrub), the rest ET, ~380 mm of
       fog-drip.
   - Ricochet Peaks becomes a default biome region, key 5.1e29.
+
+- **34, `edit_534_half_dome.py`: the half-dome shield** (the owner asked whether a shield forming at the edge of the
+  Tharn Uplands' continental rock would be a "half dome" since lava cannot run uphill, and chose site A, the west face).
+  It is the analogue of Kīlauea against Mauna Loa, or Etna against the Peloritani. The vent is at the scarp's foot
+  (1520,128):
+  - the shield falls from a ~6.4 km summit to its foot over a 240 km reach (twice the first cut's, "make the new
+    volcano twice as wide"), its west foot meeting the Dome's;
+  - the land takes the higher of the two, so the shield only adds; westward it spreads the full reach, and eastward it
+    buries the scarp's lower ramp and meets the rising upland ~50 km in;
+  - a rift zone runs along the scarp as a wandering, broken chain of cones, and a 12 km summit caldera holds a lava
+    vent (`vents.json`);
+  - on the free west flank, a landslide amphitheatre (~540 m deep, like Etna's Valle del Bove): rounded head upslope,
+    ragged sides widening downslope, open to the toe; and its hummocky debris apron;
+  - young lava is painted basalt-dark toward the summit;
+  - region "the half-dome (to be named)", biome, key 5.1e30.
+  It runs after 33 (no river crosses it).
+- **35, `edit_535_veiled_mountains.py`: the Veiled Mountains, Matron's Coast's islands, the north-west's climate audit**
+  (2026-11-26; polygons `edit_535_live.json`). It runs after 34.
+  - **The Veiled Mountains** become one highland biome, the homeland of another of the Hayrants' cousins. Regions 174
+    and 175 are cut as U-valleys that follow their polygons: each floor rises from its mouth toward the tsunami coast
+    (3,700-4,400 m) up its own fingers, walls rising ~1,400 m to the edge. The rest of the polygon is megabreccia
+    mountains: up to ~2.6 km above the nearest valley floor, in blocks (Voronoi cells ~6 px, 12 km across) each offset
+    and tilted, their edges softened as talus. They are faded into the land round the polygon over ~12 px along a
+    ragged line. The Veilpass (was Mistheights) keeps its valleys. The valley floors are megabreccia too, worn down
+    (the same blocks, a quarter of their relief, softened). The whole highland is then weathered with edit 30's
+    `weather`: 20 rounds of stream power and creep, draining out of the polygon.
+  - **The valleys' climate** is maritime, fed by the drafts from the tsunami coast: a panhandle's temperatures for their
+    height (warm month 13 C, cold month -1.5 C at 3,900 m), Cfc, ~3,200 mm; the mountains ~2,200 mm, smoothed into the
+    country round them.
+  - **Matron's Coast's temperatures** came from the old sea's raster values (a -22 C cold month under Cfb). Its plain
+    (under 1,800 m) now takes them from the nearest coastal land of the same height outside the polygon; the old
+    highlands inside it keep theirs. That land is hot (a 29 C warm month), so for the owner's temperate rainforest the
+    plain has a cold current's maritime climate, as off the Pacific North-West or Valdivia. Its warm month is 18 C and
+    its cold month 6 C at sea level, 4 C cooler a km, so the rainforest runs up to its ~1.8 km treeline. It is blended
+    into the land round it over 8 px; Cfb.
+  - **Matron's Coast's fringe of islands:** the coast within 8 px of the open sea (away from Arkerum and every pin) is
+    drowned where a two-scale noise falls under a threshold rising toward the sea. Rivers that crossed it end at the
+    first water.
+  - **The north-west's audit** (`x < 700, y < 1000`):
+    - the straight temperature seams of old stamps (the worst down column 271) are smoothed: the local fit on height
+      plus the smoothed residual, within 6 px;
+    - the rain seams and lone spikes take the 7 px median;
+    - land under 6,800 m still classed airless takes the air of the land round it;
+    - only the plain contradictions are re-lettered, the model's own subtype thresholds left alone. These are A where
+      the cold month is under 18 C; EF with a warm month over 0 C; ET whose warm month reaches 10 C; C with a cold
+      month under -3 C, or D with one over 0 C; and C or D with a warm month under 10 C.
 
 Cuts into an airless crest (30-33): a cut cell keeps its -90 C airless temperatures through a lapse and its class O
 through the reclimate. So the cells moved under 7.2 km take the temperatures of the nearby land of their new height.
