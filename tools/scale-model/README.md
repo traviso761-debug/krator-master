@@ -1395,7 +1395,7 @@ model data did not) replayed on this model by river id, its names only, none of 
 
 ## 5.1 edits 28 to 33 (2026-11-24 and 2026-11-25): the owner's map pass
 
-The edits run in this order on b6b57c130 (the page fix): 28a, 28, 28b, 29, 30, 31, 32, 33, 34, 35. Each refuses to run twice;
+The edits run in this order on b6b57c130 (the page fix): 28a, 28, 28b, 29, 30, 31, 32, 33, 34, 35, 36. Each refuses to run twice;
 to change one, check `tools/scale-model/model` out at b6b57c130 and run the chain again. Each writes a
 `<script>.report.json` beside it.
 - **28a, `edit_528a_dome_shield.py`: the Dome as the shield volcano its record describes** (the owner: "im not sure the
@@ -1496,22 +1496,21 @@ to change one, check `tools/scale-model/model` out at b6b57c130 and run the chai
 - **35, `edit_535_veiled_mountains.py`: the Veiled Mountains, Matron's Coast's islands, the north-west's climate audit**
   (2026-11-26; polygons `edit_535_live.json`). It runs after 34.
   - **The Veiled Mountains** become one highland biome, the homeland of another of the Hayrants' cousins. Regions 174
-    and 175 are cut as U-valleys that follow their polygons: each floor rises from its mouth toward the tsunami coast
-    (3,700-4,400 m) up its own fingers, walls rising ~1,400 m to the edge. The rest of the polygon is megabreccia
+    and 175 are cut as U-valleys that follow their polygons: each floor rises from its mouth toward the tsunami coast up
+    its own fingers, walls rising ~1,400 m to the edge. The floors (2,600-3,050 m, the Veilpass's lowered alike) are
+    set in the band where the land round them is cool temperate by height alone: warm month under 22 C above
+    ~2,400 m, cold month over -3 C below ~3,150 m. The rest of the polygon is megabreccia
     mountains: up to ~2.6 km above the nearest valley floor, in blocks (Voronoi cells ~6 px, 12 km across) each offset
     and tilted, their edges softened as talus. They are faded into the land round the polygon over ~12 px along a
     ragged line. The Veilpass (was Mistheights) keeps its valleys. The valley floors are megabreccia too, worn down
     (the same blocks, a quarter of their relief, softened). The whole highland is then weathered with edit 30's
     `weather`: 20 rounds of stream power and creep, draining out of the polygon.
-  - **The valleys' climate** is maritime, fed by the drafts from the tsunami coast: a panhandle's temperatures for their
-    height (warm month 13 C, cold month -1.5 C at 3,900 m), Cfc, ~3,200 mm; the mountains ~2,200 mm, smoothed into the
-    country round them.
+  - **The valleys' climate** is not forced: temperatures from their height, rain and classes from the winds (edit 36).
   - **Matron's Coast's temperatures** came from the old sea's raster values (a -22 C cold month under Cfb). Its plain
     (under 1,800 m) now takes them from the nearest coastal land of the same height outside the polygon; the old
-    highlands inside it keep theirs. That land is hot (a 29 C warm month), so for the owner's temperate rainforest the
-    plain has a cold current's maritime climate, as off the Pacific North-West or Valdivia. Its warm month is 18 C and
-    its cold month 6 C at sea level, 4 C cooler a km, so the rainforest runs up to its ~1.8 km treeline. It is blended
-    into the land round it over 8 px; Cfb.
+    highlands inside it keep theirs. That land is hot (a ~29 C warm month), so the coast is hot and humid, and the
+    temperate rainforest stands higher up the slopes where the height cools it ("no cool current and the rainforest is
+    just higher up the slopes"). The classes come from edit 36's winds.
   - **Matron's Coast's fringe of islands:** the coast within 8 px of the open sea (away from Arkerum and every pin) is
     drowned where a two-scale noise falls under a threshold rising toward the sea. Rivers that crossed it end at the
     first water.
@@ -1523,6 +1522,22 @@ to change one, check `tools/scale-model/model` out at b6b57c130 and run the chai
     - only the plain contradictions are re-lettered, the model's own subtype thresholds left alone. These are A where
       the cold month is under 18 C; EF with a warm month over 0 C; ET whose warm month reaches 10 C; C with a cold
       month under -3 C, or D with one over 0 C; and C or D with a warm month under 10 C.
+
+- **36, `edit_536_wind_climate.py`: the rain and climate of the north-west, the Ria and the Crook from the winds**
+  ("let the rain and climate in the northwestern lands fall out natural from prevailing winds, evaporation, and
+  elevation/rain shadow effect"; "do similarly for ria and crook"). A moisture budget is carried by five winds, each a
+  pass downwind cell by cell, their rain summed by weight: north-westerlies 0.40, westerlies 0.20 and northerlies 0.15
+  off the ocean; south-westerlies 0.15 and southerlies 0.10 off the interior seas.
+  - Water evaporates toward 85 % of saturation at its temperature.
+  - Over land the air holds 95 % of saturation at the cell's mean temperature (its height); half the excess rains out
+    (orographic rain), 0.8 % of the rest falls anyway, and the land gives 70 % back.
+  - The lee of a ridge stays dry while the air descends and warms: the rain shadow. The air mixes sideways (3 px), so it
+    works round the crater walls.
+  - The pattern is calibrated as a P^0.5 to the region's median rain, at most 4,000 mm.
+  - Then every A-E class in the region follows from its rain and temperatures (Köppen; the season letter kept, B at
+    20 tm + 140 mm); the hyperalpine, airless and water classes are left.
+  - The region is x < 700, y < 1000, plus the Ria (x 480-1460, y < 330) and the Crook (x < 280, y 540-1290), faded
+    over 30 px into the rest of the map. Tuning: `W36_*` environment variables.
 
 Cuts into an airless crest (30-33): a cut cell keeps its -90 C airless temperatures through a lapse and its class O
 through the reclimate. So the cells moved under 7.2 km take the temperatures of the nearby land of their new height.
