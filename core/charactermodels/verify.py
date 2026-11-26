@@ -575,6 +575,22 @@ LAB_CHECKS = r'''async () => {
   at('open_door', 2.5);
   six.forEach((x, i) => { const d = door0[i].z - bone(x, 'RightHand').getWorldPosition(V()).z;
     if (curl[i] < 0.5 || d < 0.15 * x.scale) out.push('clips: Open door, figure ' + i + ': the hand ' + (curl[i] < 0.5 ? 'open on the handle' : 'pulls only ' + d.toFixed(2) + ' m')); });
+  // the fifth round (2026-11-27): the figure steps back as it pulls, and the lab's door (drawn for the clip, placed by
+  // its frame loop) keeps the lever in the hand from the grip to the letting go: paused, stepped, a frame drawn each step
+  const pb = document.getElementById('play'), wasOn = pb.getAttribute('aria-pressed') === 'true';
+  if (wasOn) pb.click();
+  await L.play('open_door');
+  six.forEach(x => { x.action.time = 0; x.update(0); });
+  const hips0 = six.map(x => bone(x, 'Hips').getWorldPosition(V()).z), gap = six.map(() => 0), back = six.map(() => 0);
+  for (let t = 0; t < 3.0; t += 1 / 30) {
+    six.forEach(x => x.update(1 / 30));
+    await new Promise(r => requestAnimationFrame(() => r()));
+    six.forEach((x, i) => { back[i] = Math.max(back[i], hips0[i] - bone(x, 'Hips').getWorldPosition(V()).z);
+      if (t > 1.0 && t < 2.85) gap[i] = Math.max(gap[i], L.doorGap(i) == null ? 9 : L.doorGap(i)); });
+  }
+  if (wasOn) pb.click();
+  six.forEach((x, i) => { if (back[i] < 0.08 * x.scale || gap[i] > 0.08 * x.scale)
+    out.push('clips: Open door, figure ' + i + ': steps back ' + back[i].toFixed(2) + ' m, the hand ' + gap[i].toFixed(2) + ' m off the door\'s lever'); });
   // Slash left cuts level: its hand rises far less above the shoulder than the up swing's
   const rise = {};
   for (const c of ['slash_up', 'slash_left']) { let r = -9; await run(c, (x, t) => { if (t > 0.5 && t < 1.3) r = Math.max(r, bone(x, 'RightHand').getWorldPosition(V()).y - bone(x, 'RightArm').getWorldPosition(V()).y); }); rise[c] = r; }

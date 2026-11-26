@@ -1,5 +1,11 @@
 # core/charactermodels: known issues
 
+- **Open door's hand is held by its clip, not by a door.** The Animation Lab draws a door for it (`92-animlab.js sets`),
+  placed where each figure's hand first closes on the lever and swung where the hand pulls; the hand stays within 2 to
+  4 cm of the lever on the neutral and short bodies, 6 on the tall ones (the posture pass and the morphs bend the baked
+  arm). A game with real doors wants a runtime hand-to-handle pass (like toFace, to a point the door gives) in both
+  runtimes. The fist's thumb hangs down along the lever rather than wrapping it.
+
 - **Craft at a bench holds the hammer** (or the dagger as a knife) until the tool props of the same round (a chisel, a
   plane, a saw) land; add them to its `hold` then. The bench itself is not drawn: the hands work at a bench's height
   in the air.

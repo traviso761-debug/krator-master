@@ -1566,7 +1566,7 @@ function KCharFigure(body, sliders, load){
      man's for a body without its own, times a giant's scale): they turn with the head. mouth: the lips; sip: where a
      cup's or a bite's middle is when it is at the lips; anchor: where a drawn bow's string hand rests, under the jaw;
      head: the skull's middle and its radius */
-  var fOff = {}, fH = V(), fQ = Q(), fT = V(), fP = V(), fU = V(), fE = V(), fV = V();
+  var fOff = {}, fH = V(), fQ = Q(), fT = V(), fP = V(), fU = V(), fE = V(), fHv = V();
   this.facePoint = function(name, out){ return facePoint(name, out); };       // verify.py, tools
   function facePoint(name, out){
     var F = KCharFigure.faces || {}, o = (F[kit.body] || F.mpfb_male || {})[name];
@@ -1793,7 +1793,7 @@ function KCharFigure(body, sliders, load){
     // a bow's string hand: the elbow goes back along the arrow and out, level with the line, not up (the clips raised
     // it above the shoulder and forward of it: Bow aim and scan at 4.59 s, Bow shot), by the face's weight
     var bw = fc.hand === 'R' && held.L && prop(held.L).string && holders.L ? w : 0;
-    if(bw > 0){ fE.subVectors(hand.getWorldPosition(fE), holders.L.getWorldPosition(fV)); fE.y = 0; if(fE.lengthSq() < 1e-8) bw = 0; else fE.normalize(); }
+    if(bw > 0){ fE.subVectors(hand.getWorldPosition(fE), holders.L.getWorldPosition(fHv)); fE.y = 0; if(fE.lengthSq() < 1e-8) bw = 0; else fE.normalize(); }
     reachArm(bones[h.arm[0]], bones[h.arm[1]], hand, fH, hand.getWorldQuaternion(fQ), bw > 0 ? fE : null, bw);
     if(fc.level != null && fc.hand === 'R' && held.L && holders.L) level(fc.level + (1 - w) * 90, g);
   }
