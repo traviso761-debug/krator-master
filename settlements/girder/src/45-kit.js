@@ -190,14 +190,16 @@ var NLV_MAX = 3.0;                    /* byte 255 == this much summed intensity:
 var NLV_LAMP_GAIN = 0.55, NLV_WIN_GAIN = 0.30, NLV_COOL_GAIN = 0.50;
 var NLV_WIN_AMP = 0.5, NLV_WIN_RAD = 11;
 var NL_LAMPS = [];                    /* [x,y,z, amp, radius, cool(0|1)] — every static flame */
-var NL_WINDOWS = [];                  /* [x,y,z, nx,nz, w,h, hOn, hOff, allNight, cool] */
+var NL_WINDOWS = [];                  /* [x,y,z, nx,nz, w,h, hOn, hOff, allNight, cool, open] */
 function nlLampAdd(x,y,z,amp,rad,cool){ NL_LAMPS.push([x,y,z, amp==null?1:amp, rad==null?16:rad, cool?1:0]); }
 /* a lit window pane: centre, outward horizontal normal, size. Registered by
    WINPANE (below) — every window in the build goes through it. */
-function nlWinAdd(x,y,z,nx,nz,w,h,cool){
-  NL_WINDOWS.push([x,y,z,nx,nz,w,h, phash(x,y,z,1.7), phash(x,y,z,5.3), phash(x,y,z,11.9) < 0.05, cool?1:0]);
+/* open: the wall behind the pane is cut (a real window: 81-glow.js draws its glass in the opening); else the pane is on a
+   solid body and a room card stands behind the glass. (x,y,z) is the pane's centre on the face (the opening's outer plane) */
+function nlWinAdd(x,y,z,nx,nz,w,h,cool,open){
+  NL_WINDOWS.push([x,y,z,nx,nz,w,h, phash(x,y,z,1.7), phash(x,y,z,5.3), phash(x,y,z,11.9) < 0.05, cool?1:0, open?1:0]);
 }
-function WINPANE(x,y,z,nx,nz,w,h,cool){ nlWinAdd(x,y,z,nx,nz,w,h,cool); }
+function WINPANE(x,y,z,nx,nz,w,h,cool,open){ nlWinAdd(x,y,z,nx,nz,w,h,cool,open); }
 
 var nlvTex = new THREE.DataTexture(new Uint8Array(NLV_RES*NLV_COLS*NLV_RES*NLV_ROWS*4),
                                    NLV_RES*NLV_COLS, NLV_RES*NLV_ROWS, THREE.RGBAFormat);
@@ -319,6 +321,7 @@ function emitBuckets(){
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
+    B.mesh = im;   /* kept: a door leaf is an instance of its bucket, posed as it swings (54-openings.js goFlush) */
     im.castShadow = !FAST && !fm.basic; im.receiveShadow = !FAST && !fm.basic;
     for(var i=0;i<B.list.length;i++){
       var r = B.list[i], rot = r[6];

@@ -118,22 +118,28 @@ every species with an edible part either names a catalog fruit or is listed as n
 
 ```
 
-## File layout
+## File layout (the final rebuild, 2026-11-02)
 
 ```
 00-head.html                        page shell
-35-core-strata.js                   the bedded-rock shader (vendored from sedesert, unchanged)
-45-host-stage.js       (host)       the showcase transect: terrain, fields, the river, pools, tarn, painted ground, BIO.init
-50-biome-ebadlands-species.js       palettes, 17 species (tagged), textures, geometries, items
+44v-host-landlib.js    (host)       what the lands share: stationLand() (a station's land from its parts), the channel's wall, landBoulders
+44w-host-land.js       (host)       THE LAND: the transect (terrain, features, fields, strata, landforms, rock bodies, views); a station replaces it
+45-host-stage.js       (host)       the stage on the land: renderer, the field cache, BIO.init, the painted ground on KGROUND, rock bodies, water records
+50-biome-ebadlands-species.js       palettes, 17 species (tagged), textures, geometries, items (the crusts on BIO.fung where the page has it)
 55-biome-ebadlands-trees.js         zones; builders (open pine, spire, broadleaf, and one per alien); impostors; PASSES; make/grow
 60-biome-ebadlands-floor.js         the floor by zone; toadstool rocks, chimney fields, logs, reeds in the shallows
 65-biome-ebadlands-dress.js         growth on structures: hanging gardens, grape curtains, moss, ledge plants
 70-biome-ebadlands.js               build / dress / canopyH; BIO.kitEnd
-82-host-sky.js         (host)       sedesert's sky with the wall turned east: the outer rim, iced
-85-host-arcade.js      (host)       the hanging-garden arcade: a test structure for dress()
-86-host-variants.js    (host)       trees as variants: the nursery (grow, harvest) and instance pools by camera distance
-88-host-build.js       (host)       build order: arcade, records, floor, dress, bake, variants
-99-host-take.js        (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks;
-                                    the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
+83-host-far.js         (host)       the country past the map (KFAR) and the terrain's horizon (KHORIZON)
+85-host-arcade.js      (host)       the hanging-garden arcade: a test structure for dress() (the transect only)
+86-host-variants.js    (host)       trees as variants: the nursery (grow, harvest), instance pools by camera distance, the far level as impostors
+87-host-kin.js         (host)       the neighbours' species (EXCHANGES.md), on a station that reads them in place
+89-host-sky.js         (host)       the shared sky at the land's site
+89a-host-atmos.js      (host)       core/atmos bound; wind, fog, rain cover, wet ground, lying snow, dust and the air's load
+89w-host-water.js      (host)       the river, the pools and the tarn drawn on core/water; breakup
+89z-host-build.js      (host)       the water's fields, then build order: arcade, records, floor, kin, the station's own, dress, bake, variants, impostors
+99-host-take.js        (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks
+stations/<name>/       (host)       a station's land (44w-host-land.js) and station.json (the kits it reads in place): build.py --station <name>
 ```
-The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`.
+The fields a host gives beyond the kit's own (the painter's and the ground's, never read by the kit): `strata`, `crack`, `snow`, `pave`,
+`polyg`, `talus`, `wash`, `char`. The core (`core/biome/`) is read through `CORE_BIOME` in `build.py`.

@@ -1,5 +1,5 @@
 {
- "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. hang: the axis that points down whatever the hand's turn (a bail's load hangs). blade: the striking part along +Y (from, to), kept out of the head. upright: the axis the wrist turns to keep up (grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow's length per bow-arm length; length: a prop's own. data/clips.json hold says which clip holds what.",
+ "about": "Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). support: the segment of the handle the left hand may hold when a clip's two_hands names the prop. string: a bow string's ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. hang: the axis that points down, the load swinging about its bail (+Y) once the forearm has turned the bail level; hang_clear: the hanging body's radius and its span along the hang axis, kept out of the legs. blade: the striking part along +Y (from, to), kept out of the head (and the other hand kept out of it). stock: a gun's butt (a segment along z, its half thickness, half width and half height), kept out of the upper arms and the forearm beside it. upright: the axis the wrist turns to keep up (grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow's length per bow-arm length; length: a prop's own. ground: a prop that stands on the ground (a cart): height, metres from the grip down to the ground (the hand is lifted or lowered to it); y, z: the prop's +Y and +Z in the figure's frame (kept so whatever the hand's turn). data/clips.json hold says which clip holds what.",
  "props": [
   {
    "id": "sword",
@@ -141,6 +141,17 @@
     0,
     0.075,
     0.3
+   ],
+   "stock": [
+    0,
+    0.04,
+    -0.13,
+    0,
+    0.04,
+    -0.27,
+    0.035,
+    0.0175,
+    0.045
    ]
   },
   {
@@ -156,6 +167,17 @@
     0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0,
+    0,
+    -0.08,
+    0,
+    0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -220,6 +242,11 @@
     0,
     0,
     1
+   ],
+   "hang_clear": [
+    0.12,
+    0.13,
+    0.36
    ]
   },
   {
@@ -244,6 +271,11 @@
     0,
     0,
     1
+   ],
+   "hang_clear": [
+    0.07,
+    0.05,
+    0.21
    ]
   },
   {
@@ -284,6 +316,340 @@
    "hand": "L",
    "glb": "pieces/props/bread.glb",
    "grip": "wide"
+  },
+  {
+   "id": "basket",
+   "label": "Basket",
+   "hand": "L",
+   "glb": "pieces/props/basket.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "cart",
+   "label": "Handcart",
+   "hand": "R",
+   "glb": "pieces/props/cart.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    0.30000000000000004,
+    0,
+    0,
+    0.52,
+    0
+   ],
+   "ground": {
+    "height": 1.05,
+    "y": [
+     1,
+     0,
+     0
+    ],
+    "z": [
+     0,
+     -0.25,
+     1
+    ]
+   }
+  },
+  {
+   "id": "ladle",
+   "label": "Ladle",
+   "hand": "R",
+   "glb": "pieces/props/ladle.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "sack",
+   "label": "Sack",
+   "hand": "R",
+   "glb": "pieces/props/sack.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "quill",
+   "label": "Quill",
+   "hand": "R",
+   "glb": "pieces/props/quill.glb",
+   "grip": "trigger"
+  },
+  {
+   "id": "book",
+   "label": "Book",
+   "hand": "L",
+   "glb": "pieces/props/book.glb",
+   "grip": "flat",
+   "upright": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "oar",
+   "label": "Oar",
+   "hand": "R",
+   "glb": "pieces/props/oar.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "paddle",
+   "label": "Paddle",
+   "hand": "R",
+   "glb": "pieces/props/paddle.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    0.45,
+    0,
+    0,
+    0.86,
+    0
+   ]
+  },
+  {
+   "id": "broom",
+   "label": "Broom",
+   "hand": "R",
+   "glb": "pieces/props/broom.glb",
+   "grip": "fist",
+   "support": [
+    0,
+    0.2,
+    0,
+    0,
+    0.58,
+    0
+   ]
+  },
+  {
+   "id": "saw",
+   "label": "Saw",
+   "hand": "R",
+   "glb": "pieces/props/saw.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "net",
+   "label": "Cast net",
+   "hand": "R",
+   "glb": "pieces/props/net.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "feedbag",
+   "label": "Feed bag",
+   "hand": "L",
+   "glb": "pieces/props/feedbag.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "lead",
+   "label": "Lead rope",
+   "hand": "R",
+   "glb": "pieces/props/lead.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "shuttle",
+   "label": "Shuttle",
+   "hand": "R",
+   "glb": "pieces/props/shuttle.glb",
+   "grip": "wide"
+  },
+  {
+   "id": "purse",
+   "label": "Coin purse",
+   "hand": "R",
+   "glb": "pieces/props/purse.glb",
+   "grip": "wide",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "sickle",
+   "label": "Sickle",
+   "hand": "R",
+   "glb": "pieces/props/sickle.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "censer",
+   "label": "Censer",
+   "hand": "L",
+   "glb": "pieces/props/censer.glb",
+   "grip": "fist",
+   "hang": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "rod",
+   "label": "Fishing rod",
+   "hand": "R",
+   "glb": "pieces/props/rod.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "goad",
+   "label": "Goad",
+   "hand": "R",
+   "glb": "pieces/props/goad.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "beater",
+   "label": "Rug beater",
+   "hand": "R",
+   "glb": "pieces/props/beater.glb",
+   "grip": "fist"
+  },
+  {
+   "id": "scroll",
+   "label": "Scroll",
+   "hand": "L",
+   "glb": "pieces/props/scroll.glb",
+   "grip": "flat",
+   "upright": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "tz_scepter",
+   "label": "Sunforged Scepter (Tzintzun's staff of power)",
+   "hand": "R",
+   "glb": "pieces/props/tz_scepter.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Sunforged_Scepter_1106025115_texture.glb",
+   "support": [
+    0.0,
+    0.2,
+    0.0,
+    0.0,
+    0.5,
+    0.0
+   ],
+   "blade": [
+    0.632,
+    0.952
+   ]
+  },
+  {
+   "id": "tz_scimitar",
+   "label": "Tzintzun's scimitar",
+   "hand": "R",
+   "glb": "pieces/props/tz_scimitar.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Curved_Scimitar_Low_P_1106030831_texture.glb",
+   "blade": [
+    0.158,
+    0.86
+   ]
+  },
+  {
+   "id": "tz_sword",
+   "label": "Tzintzun's straight sword",
+   "hand": "R",
+   "glb": "pieces/props/tz_sword.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Straight_Sword_Low_Po_1106030741_texture.glb",
+   "blade": [
+    0.202,
+    0.885
+   ]
+  },
+  {
+   "id": "tz_axe",
+   "label": "Tzintzun's battle axe",
+   "hand": "R",
+   "glb": "pieces/props/tz_axe.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Battle_Axe_Low_Poly_1106030750_texture.glb",
+   "support": [
+    0.0,
+    -0.12,
+    0.0,
+    0.0,
+    0.386,
+    0.0
+   ],
+   "blade": [
+    0.49,
+    0.76
+   ]
+  },
+  {
+   "id": "tz_spear",
+   "label": "Tzintzun's spear",
+   "hand": "R",
+   "glb": "pieces/props/tz_spear.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Spear_Low_Poly_1106030733_texture.glb",
+   "support": [
+    0.0,
+    0.3,
+    0.0,
+    0.0,
+    0.606,
+    0.0
+   ],
+   "blade": [
+    0.72,
+    1.365
+   ]
+  },
+  {
+   "id": "tz_shield",
+   "label": "Tzintzun's shield",
+   "hand": "L",
+   "glb": "pieces/props/tz_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "owner": "tzintzun",
+   "src": "Meshy_AI_Shield_Low_Poly_1106030822_texture.glb",
+   "low_turn": 90
   }
  ]
 }

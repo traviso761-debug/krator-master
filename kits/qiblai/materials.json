@@ -1,0 +1,137 @@
+{
+ "build": "qiblai",
+ "note": "Qiblai's own library families, bound onto its MAT keys by src/89q0z-qb-matlib.js (KMAT.bindMat('qiblai')); the kit also draws in the Xanadu kit's sets, which Xanadu's own pack binds (settlements/xanadu/materials.json). qAshlar: the dressed ashlar of the plinths, the terrace platforms and the ring walls' base courses, half-metre courses on a 3 m tile, tinted by QSTONE (reused from Ys's arcades, stone.sandstone.ashlar; the owner, 2026-11-11: new textures for Qiblai). Owed (core/materials/PROMPTS-NEEDED.md section 43): the beaten-gold roof sheet and the prayer-wheel copper with mantra relief. The city's ground (2026-11-11, the owner: 'the ground is blindingly textureless'): qGrass (ground.grass.lush, the Af country), qDirt (ground.dirt, the blocks' made ground), qCobble (paving.cobblestone_01, the lay streets), qFlag (paving.flagstone, the avenues and the kora); keep 1: the sets' own colours, the city's ground shader blends them by a zone mask (settlements/qiblai/targets/city/90q-qc-world.js). The rooms (2026-11-15, the owner: 'make sure textures are wired appropriately to all furniture and floor, ceiling and walls of rooms'): qGilt (metal.gold, the gilt inside, tinted by each piece's gold), qLacq (wood.lacquer: columns and painted ceilings, tinted by each piece's colour), qMarble (paving.marble_mosaic_tiles: the sanctum's floor), qPlank (wood.old_wooden_floor_02: the halls' floors), qRug (cloth.rug.wool: the council's runner, tinted red).",
+ "size": 512,
+ "families": {
+  "qAshlar": {
+   "lib": "stone.sandstone.ashlar",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0,
+   "roughLift": 0.15
+  },
+  "qGrass": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qDirt": {
+   "lib": "ground.dirt",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qCobble": {
+   "lib": "paving.cobblestone_01",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qFlag": {
+   "lib": "paving.flagstone",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qGilt": {
+   "lib": "metal.gold",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78
+   },
+   "metal": 0.0,
+   "roughLift": 0.1
+  },
+  "qLacq": {
+   "lib": "wood.lacquer",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.62
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qMarble": {
+   "lib": "paving.marble_mosaic_tiles",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qPlank": {
+   "lib": "wood.old_wooden_floor_02",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qRug": {
+   "lib": "cloth.rug.wool",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  }
+ }
+}

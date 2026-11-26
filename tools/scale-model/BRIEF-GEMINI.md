@@ -31,10 +31,12 @@ to check your checkout builds and the library passes.
 
 ## The grids and the rasters
 
-Two grids cover the same 3,098 × 2,786 km:
+> **5.1 Unified Grid Note:** As of Scale Model `5.1`, the canvas was expanded northwest by **`(+272, +330)` px** (`smodel.page.LEGACY_SHIFT`) from `1549 × 1393` to **`1821 × 1723` (`3,642 × 3,446 km`)**, and the height grid was promoted to full `2 km/cell` resolution (`D['w'] × D['hh'] = 1821 × 1723`, `su = sv = 1.0`). Use `smodel.page.legacy_px(px, py)` when converting legacy `4.23/4.24` (`1549 × 1393`) coordinates.
 
-- **Height grid**: `D['w']` × `D['hh']` = 774 × 696, about 4 km a cell.
-- **Full grid**: `D['fullW']` × `D['fullH']` = 1549 × 1393, 2 km a pixel. **Region points, settlement `px/py`, river
+In `4.23/4.24`, two grids covered the 3,098 × 2,786 km interior (in `5.1`, both are `1821 × 1723` at 2 km/cell):
+
+- **Height grid**: `D['w']` × `D['hh']` = 1821 × 1723 (2 km a cell in `5.1`; 774 × 696, ~4 km a cell in `4.23`).
+- **Full grid**: `D['fullW']` × `D['fullH']` = 1821 × 1723, 2 km a pixel (1549 × 1393 in `4.23`). **Region points, settlement `px/py`, river
   courses and vents are all in full-grid px.** `su, sv = smodel.page.grid(D)` turns a map px into a height cell.
 
 `D` is the `DATA` object the page holds, with each raster as a base64 string. `smodel.page.raster(D, key, mode)`

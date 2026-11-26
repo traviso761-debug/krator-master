@@ -33,12 +33,12 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (116); kit items (141) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
-| `71-hl-mat.js` | 8 | world UV with separate u/v tile sizes (26); materials (32); geometry (51); kit items (71) |
-| `71b-hl-motif.js` | 33 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
+| `71-hl-mat.js` | 9 | world UV with separate u/v tile sizes (26); materials (32); geometry (54); kit items (74) |
+| `71b-hl-motif.js` | 34 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
 | `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
 | `73-hl-carve.js` | 30 | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (30); dougong (painted bracket sets under eaves) (74); bargeboards, gable finials, horns (94); windows, porches, balconies (119); towers (Peles, clocktowers, wall towers) (152); bamboo (tribal and the poorest Republican/Rustic (181); cliff walkways (tribal cliff settlements) (194); yard furniture of the highlands (218); round 4: fitting murals and bracket rows (hlFlus (228) |
 | `74-rl-mat.js` | 19 | textures (22); the painted vocabulary: ANDEAN textile geometry (85); materials (130); geometry (148); kit items (166) |

@@ -1,0 +1,12 @@
+{
+ "prompt": "Giant rhinoceros scarab, six stout legs, broad domed wing cases, one big curved horn, pale ivory-grey casting",
+ "task_ids": [
+  "01a19b93-2e70-7221-ab92-556d4844fe24",
+  "01a19b94-7c47-776b-a3a9-a30af46a136d"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, the image step chained",
+ "rights": "generated on the owner's Meshy account"
+}

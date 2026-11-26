@@ -51,19 +51,25 @@ const SITEKEY=k=>typeof k==='string'?{key:k,o:{v:0}}:{key:k.key,o:Object.assign(
 let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
  WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;ZJ_LIFE.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!ZJTAGS)zjTagsReset();   /* 91f-furnish.js wraps this and starts the registry */
- KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;   /* the walk registry and the cavern start empty: the carved defs' plans fill them as they are placed */
+ KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;svOpenReset();   /* the walk registry and the cavern start empty: the carved defs' plans fill them as they are placed */
  const t0=performance.now();
  for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
- flushBuckets(GB,WORLD,true);
+ flushBuckets(GB,WORLD,true);svOpenFlush(WORLD,{walk:false});   /* the door leaves (core/door); their walk blocks after the interiors (91f-furnish.js) */
  cvFinish(WORLD);cvGroundWalk(-GROUND_SIZE/2,GROUND_SIZE/2,-GROUND_SIZE/2,GROUND_SIZE/2);
  window._build={ms:Math.round(performance.now()-t0),tris:Math.round(GSTAT.tris),sites:SITES.length,records:REG.length,halos:HALOS.length,life:ZJ_LIFE.length,cavern:CV_STATS,walk:{floors:KWALK.floors.length,blocks:KWALK.blocks.length}};return WORLD;}
 // views: an opening, an overview, a shot per row, an eye-level shot per site, and for each tent a look inside (cut-away)
+/* is (x, z) within m metres of a site's footprint (its def's w x d about its centre, turned by its ry in quarter turns) */
+function inSite(T,x,z,m){const E=DEFS[T.key];if(!E)return false;const q=Math.abs(Math.sin(T.ry||0))>.7,hw=(q?E.d:E.w)/2+m,hd=(q?E.w:E.d)/2+m,cz=E.originFront?T.z-E.d/2:T.z;
+ return Math.abs(x-T.x)<=hw&&Math.abs(z-cz)<=hd;}
 function autoViews(){const V={};const R=ROWS;if(!R.length)return {Origin:[0,30,60,0,0,0]};const last=R[R.length-1];
  V['Opening']=[R[0].w*.18,14,R[0].z+R[0].d*.5+30,0,3,R[0].z];
  V['Overview']=[-140,120,R[0].z+120,0,0,(R[0].z+last.z)/2];
  for(const r of R){const dist=Math.max(36,Math.min(r.w*.55,170),(r.h||0)*1.8);V[r.family]=[r.w*.1,Math.max(14,dist*.42),r.z+r.d/2+dist,0,Math.min(2+(r.h||0)*.3,12),r.z];}
  for(const S of SITES){const D=DEFS[S.key];const nm=D.name+(S.o.v?' (variant '+S.o.v+')':'');const dist=Math.max(7,Math.max(D.w,D.h)*.8+D.d*.35);
-  const fz=S.z+(D.originFront?0:D.d/2);V[nm+' - eye level']=[S.x+D.w*.18,1.7,fz+dist*.6,S.x,Math.min(D.h,10)*.32,fz-(D.originFront?2:D.d/2)];
+  const fz=S.z+(D.originFront?0:D.d/2);let ez=fz+dist*.6;
+  /* the eye pulled in toward its own site while it stands in another's footprint (the council's, 87 m out, stood in the next row's hall: GPU --all-views, 2026-11-09) */
+  while(ez>fz+3&&SITES.some(T=>T!==S&&inSite(T,S.x+D.w*.18,ez,2)))ez-=1;
+  V[nm+' - eye level']=[S.x+D.w*.18,1.7,ez,S.x,Math.min(D.h,10)*.32,fz-(D.originFront?2:D.d/2)];
   if(D.cut)V[nm+' - inside (cut-away)']=[S.x+D.w*.12,Math.max(3.5,D.h*.75),S.z+D.d*.62+2,S.x,.6,S.z];}
  return V;}
 /* the sky's light on the library materials: core/atmos's skylight captures skyScene into scene.environment */

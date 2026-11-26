@@ -1,0 +1,10 @@
+{
+ "name": "The Ilmenite Pillar Vault (station 9, the tube): tube_god_n_12's sealed chamber 58 m under the Godthrone's north shield at 12.1 km, 290 by 175 m and 54 m high, its floor a forest of black hexagonal ilmenite columns 30 m tall; the North Shield tube through it and the West Godstep Rim Cross-Conduit leaving north-east toward Godstep's vent pit, 85 km off; the shield over it",
+ "out": "godthrone-tube.html",
+ "water": [],
+ "region": "region.json",
+ "tex": ["rockColumns"],
+ "reads": {
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js"
+ }
+}

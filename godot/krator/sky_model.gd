@@ -101,6 +101,21 @@ func _station(t: float, lst: float, phi: float, Wx: Vector3, Wy: Vector3, Wz: Ve
 	return {"dir": dir, "dist": dist, "axis": w.call(axis), "vel": w.call(vel), "radiusDeg": atan(float(O["radiusKm"]) / dist) / D,
 		"lit": lit, "up": 1 if dir.y > 0.0 else 0, "periodH": per * 24.0}
 
+# the giant's libration at clock t (days from game start): ATMOS.libration's numbers; sky_state draws the giant from it
+func libration(t: float) -> Dictionary:
+	var G: Dictionary = S["giant"]
+	var LB: Dictionary = G["libration"]
+	var ph := TAU * t * 1.0027379
+	var nod := sin(ph + LB["phase"])
+	var swing := sin(ph)
+	return {"phase": fposmod(ph / TAU, 1.0), "nod": nod, "swing": swing, "nodDeg": LB["incDeg"] * nod, "swingDeg": 2.0 * LB["ecc"] * swing / D,
+		"ringOpen": G["ringOpenDeg"] * nod, "dN": LB["incDeg"] * D * nod, "dE": 2.0 * LB["ecc"] * swing}
+
+# how much of the sun's disc is behind the giant at clock t at a site: sky_state's eclipse, ATMOS.sunHidden's number
+func sun_hidden(t: float, site: Dictionary) -> float:
+	var day := floorf(t)
+	return float(sky_state(site, (t - day) * 24.0, day)["eclipse"])
+
 func sky_state(site: Dictionary, hour: float, day: float) -> Dictionary:
 	var t := day + hour / 24.0
 	var yd: float = S["startDay"] + t
@@ -125,15 +140,14 @@ func sky_state(site: Dictionary, hour: float, day: float) -> Dictionary:
 	var giant_dir := world_hd(Hg, float(G["decDeg"]) * D, phi).normalized()
 	var pole := c3.normalized()
 	# libration: a nod along Krator's meridian at the giant and a swing across it, once a sidereal orbit
-	var LB: Dictionary = G["libration"]
-	var ph := TAU * t * 1.0027379
-	var dN: float = LB["incDeg"] * D * sin(ph + LB["phase"])
-	var dE: float = 2.0 * LB["ecc"] * sin(ph)
+	var Lb := libration(t)
+	var dN: float = Lb["dN"]
+	var dE: float = Lb["dE"]
 	var g0 := giant_dir
 	var nd := (pole - g0 * pole.dot(g0)).normalized()
 	var ew := nd.cross(g0).normalized()
 	giant_dir = (g0 + nd * tan(dN) + ew * dE).normalized()
-	var ring_open: float = G["ringOpenDeg"] * sin(ph + LB["phase"])
+	var ring_open: float = Lb["ringOpen"]
 	var gE1 := Vector3(giant_dir.z, 0.0, -giant_dir.x).normalized()
 	var gUp := giant_dir.cross(gE1)
 	var ta: float = G["axisTiltDeg"] * D

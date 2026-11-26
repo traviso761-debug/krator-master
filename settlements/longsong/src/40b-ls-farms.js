@@ -18,12 +18,17 @@
 (function(P){'use strict';
 const F={};
 // ---------------------------------------------------------------- what the house needs (BLUEPRINT.md's numbers)
-// residents: 200 monks, 50 lay scholars, 80 operatives, 100 wardens, 120 lay servants; grain: roasted and ground (the
-// valley's tsampa), about 180 kg a head a year; the rain-fed yield an assumption (t/ha) per crop; fallow grazes
-F.HOUSE={residents:550,festival:50,grainKg:180,
+// residents (2026-11-11, core/simulation/PROPOSAL-LONGSONG-PINNACLE.md section 2): the Order's 1,000, the ward's town of
+// 270 and 74 visitors, so 1,344 (the old blueprint's 550 was "about 200 monks"); 150 more of the valley's folk on festival
+// days (40-ls-plan's festgoers). Grain: roasted and ground (the valley's tsampa), about 180 kg a head a year; the rain-fed
+// yield an assumption (t/ha) per crop; fallow grazes. The rest comes from the valley's ring (LS.RING, the region's plan:
+// openworld/oidong-highrift): each farming household's surplus (~0.55 t), two thirds of it tithed; the herds' dairy (dzo
+// and yak butter, cheese) a fifth of the house's food
+F.HOUSE={residents:1344,festival:150,grainKg:180,
  yieldTHa:{frostoat:1.4,emmer:1.3,'basin-amaranth':1.1,'wild-rice':1.6,'helix-bean':.9,frostroot:9,flax:.6,saffron:.008,tea:.5},
  grain:['frostoat','emmer','basin-amaranth','wild-rice'],
- tithe:'the valley\'s villages (the Order\'s estate): grain, butter, wool and labour at harvest; and the caravans'};
+ tithe:'the valley\'s villages (the Order\'s estate): grain, butter, wool and labour at harvest; and the caravans',
+ ring:{surplusT:.55,share:2/3,dairy:.2}};
 const G=[];const g=o=>{G.push(o);return o;};
 // ---------------------------------------------------------------- the fields outside the wall (ROOMS.md 5.1)
 // the apron east and west of the rock, south of the stream's gravel fans (45-host-stage FANS) and outside the kora
@@ -55,13 +60,17 @@ F.OTHER=[{id:'mirror',crops:['lotus-root','lotus-silk'],name:'The Mirror of Long
  {id:'mushroom-cellar',crops:['moon-cap'],works:['dark-beds'],name:'The mushroom cellar in the rock under the granaries (moon cap on cut bamboo)'}];
 
 // ---------------------------------------------------------------- the farm's works and marks
-// (the stream's south bank runs at z -260 to -272 along the front: the pools, beds and groves keep to dry ground north of it)
-// the leat: from the stream upstream of the bridge (the stream runs west), along the south bank, under the track (the
-// tsampa mill's wheel stands in it), into the ward under the north wall, along the paper mill's north side to its wheel;
-// the tail race on from the wheel, out under the wall west of the corner tower, to the Mirror. Its levels fall all the
-// way (the host's CANAL: from just under the stream's level at the intake to the pond's)
-// (2026-10-19: the intake moved from 300 m to 1.1 km upstream, for the head a mill needs: about 3 m to the paper mill)
-F.LEAT={pts:[[1100,-240],[960,-232],[760,-236],[560,-244],[400,-250],[300,-252],[220,-254],[40,-248],[-24,-240],[-100,-238],[-106,-226],[-108,-201],[-112,-194],[-150,-193.5]],w:2.2,name:'The leat (the paper mill\'s and the tsampa mill\'s water)'};
+// (the river's south bank runs at about z -300 along the front: the pools, beds and groves keep to dry ground south of it)
+// the leat (2026-11-11, the owner: the beck from the south): the Bīruk al-Ghaym runs in a trough ~16-20 m under the
+// ward and falls ~1 m a kilometre, so the mills and the Mirror take their water from uphill: a beck off the southern
+// apron (F.BECK, the spring line under the valley's southern wall), led by the leat down the east side of the ward,
+// then west along the front under the track (the tsampa mill's wheel stands in it), into the ward under the north
+// wall, along the paper mill's north side to its wheel; the tail race on from the wheel, out under the wall west of the
+// corner tower, to the Mirror, whose overflow drops to the river. Its levels fall all the way (the host's CANAL: from
+// just under the beck's level at the intake to the pond's). Until 2026-11-11 the leat left the Longsong stream 1.1 km
+// upstream, when the page stood on map 4.21 by a stream near the ward's own level
+F.BECK={x:262,z:760,name:'The beck of the southern apron (the intake of the leat: a stone weir on it)'};
+F.LEAT={pts:[[262,760],[255,560],[248,360],[242,180],[238,0],[236,-140],[232,-215],[220,-254],[40,-248],[-24,-240],[-100,-238],[-106,-226],[-108,-201],[-112,-194],[-150,-193.5]],w:2.2,name:'The leat (the paper mill\'s and the tsampa mill\'s water)'};
 F.TAIL={pts:[[-150,-193.5],[-186,-193.5],[-186,-206],[-214,-224],[-246,-233]],w:1.8,name:'The tail race to the Mirror'};
 F.WHEELS=[{id:'wheel-tsampa',at:'leat',x:-80,z:-238.6,r:2.4,name:'The tsampa mill\'s wheel (undershot, in the leat)'},
  {id:'wheel-paper',at:'leat',x:-150,z:-193.5,r:2.8,name:'The paper mill\'s wheel (undershot, in its race)'}];
@@ -122,7 +131,11 @@ F.provision=function(){const ha={};for(const o of G){if(o.kind==='orchard'||o.ki
   for(const s of F.strips(o)){if(s.crop==='fallow')continue;ha[s.crop]=(ha[s.crop]||0)+(s.x1-s.x0)*(s.z1-s.z0)/1e4;}}
  const H=F.HOUSE,need=(H.residents+H.festival*.2)*H.grainKg/1000;let own=0;
  for(const c of H.grain)own+=(ha[c]||0)*(H.yieldTHa[c]||0);
- return {ha,needT:need,ownT:own,share:own/need,tithe:H.tithe};};
+ /* the ring's tithe (LS.RING, the region's baked villages): each farming household's surplus, the tithe's share of it,
+    against the house's grain need less the dairy's share of its food */
+ const R=P.RING,hh=R?R.villages.filter(v=>v.focus==='farming').reduce((a,v)=>a+v.households,0):0,tT=hh*H.ring.surplusT*H.ring.share;
+ const grainNeed=need*(1-H.ring.dairy);
+ return {ha,needT:need,ownT:own,share:own/need,tithe:H.tithe,ringT:tT,ringHouseholds:hh,grainNeedT:grainNeed,suppliedT:own+tT};};
 // what the Oidong kit may plant: the wild edges of a garden a little, nothing on a field, pool or bed; the pasture is
 // the kit's ground, thinned (the herds graze it open); a grove's own trees are the farm's
 F.plant=function(x,z){const o=F.groupAt(x,z);if(!o)return null;if(o.kind==='pasture')return .3;if(o.kind==='orchard')return .12;return 0;};

@@ -79,11 +79,11 @@ function BLUNT_TOWER(x,y,z, R,h, opt){
   [0.50,0.74].forEach(function(t,k){ var r=bluntR(R,t)*(1+amp)+0.10; TUBE('mosaic', [{x:x,y:y+h*t-0.55,z:z,r:r},{x:x,y:y+h*t+0.55,z:z,r:r*(k?0.985:1.0)}], k?MOSBLUEC[3]:band, { seg:20 }); });
   var tc=0.93, rc=bluntR(R,tc)+0.12; DOME(x, y+h*tc, z, rc, h*(1-tc)+0.9, 0, band, 'mosaic');
   if(opt.finial!==false){ CYL(x, y+h+0.4, z, 0.16, 2.6, 0, BRASSC[0], 'metal'); BALL(x, y+h+3.3, z, 0.55, opt.glow?PAL.electricBlue:BRASSC[1], opt.glow?'glowmat':'metal'); }
-  /* parabolic lookout windows: dark sockets sunk into the skin */
+  /* parabolic lookout windows: unglazed sockets sunk into the skin, the room card's colour (53-assets.js ROOMC) */
   (opt.windows||[0.40,0.62]).forEach(function(t,k){ var nw = k? 6 : 8, r=bluntR(R,t)*(1-amp);
     for(var w=0;w<nw;w++){ var a=(w+0.5*k)/nw*TAU+ph, wx=x+Math.cos(a)*(r-0.55), wz=z+Math.sin(a)*(r-0.55);
-      BOX(wx, y+h*t-1.1, wz, 0.95, 2.1, 1.3, -a+Math.PI/2, VOIDC[0], 'dark');
-      CONE(wx, y+h*t+1.0, wz, 0.62, 0.9, 0, VOIDC[0], 'dark'); } });
+      BOX(wx, y+h*t-1.1, wz, 0.95, 2.1, 1.3, -a+Math.PI/2, ROOMC, 'dark');
+      CONE(wx, y+h*t+1.0, wz, 0.62, 0.9, 0, ROOMC, 'dark'); } });
 }
 
 /* ------------------------------------------------------------------ the butte */
@@ -148,11 +148,15 @@ var butteMesh = null;
   }
   REGISTER({ name:'City wall', kind:'wall', label:'whitewashed curtain wall, walk at +'+(WALL.h-1.4).toFixed(1)+' m', x:0, y:GROUND0-12, z:0, r:RW+3.5, ring:RW-3.5, h:40 });
 
-  WALL_TOWERS.forEach(function(T){
+  WALL_TOWERS.forEach(function(T, ti){
     var gy=terrainH(T.x,T.z)-1.2, big=T.kind==='gatetower';
     BLUNT_TOWER(T.x, gy, T.z, T.r, T.h+ (big?0:2*phash(T.x,2,T.z,9)), { flutes: big?10:8, band: big?MOSBLUEC[2]:MOSBLUEC[0], windows: big?[0.34,0.50,0.64]:[0.42,0.62], glow:false });
-    /* a doorway onto the wall-walk on both sides */
-    [-1,1].forEach(function(s){ var a=T.a + s*(T.r-0.6)/RW; BOX(Math.cos(a)*RW, wallWalkY(T.a), Math.sin(a)*RW, 1.2, 2.2, 1.6, -T.a, VOIDC[1], 'dark'); });
+    /* a door onto the wall-walk on both sides: a locked leaf (core/door; the tower is a solid body), ids walltower.<n>.d0 / d1 */
+    [-1,1].forEach(function(s){ var a=T.a + s*(T.r-0.6)/RW, wy=wallWalkY(T.a), cx=Math.cos(a)*RW, cz=Math.sin(a)*RW, ux=-Math.sin(a), uz=Math.cos(a);
+      BOX(cx, wy, cz, 1.2, 2.2, 1.6, -T.a, PLANKC[3], 'plank');
+      var at=[cx + s*ux*0.8, wy, cz + s*uz*0.8], yw=Math.atan2(s*ux, s*uz);
+      yopenDoor({ id:'walltower.'+ti+'.d'+(s>0?1:0), at:at, hinge:[at[0]-Math.cos(yw)*0.6, wy, at[2]+Math.sin(yw)*0.6], yaw:yw, w:1.2, h:2.2, t:0.1, locked:true, key:'walltower', style:'panel' });
+      YOPEN.leaves++; });
     REGISTER({ name:T.name, kind:'tower', label: big?'gate tower':'sentry tower', x:T.x, y:gy, z:T.z, r:T.r*1.25, h:T.h+5 });
   });
 

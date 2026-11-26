@@ -7209,7 +7209,8 @@
    "coat": "coyote",
    "mods": [
     "mod_head_coyote",
-    "mod_tail_coyote"
+    "mod_tail_coyote",
+    "mod_legs_coyote"
    ],
    "ancestry": {
     "african": [
@@ -11422,7 +11423,8 @@
    "scale": 1.25,
    "mods": [
     "mod_head_lizard",
-    "mod_tail"
+    "mod_tail",
+    "mod_legs_lizard"
    ],
    "ancestry": {
     "african": [
@@ -11625,7 +11627,8 @@
    "note": "Batrachian Confederacies of the SW Highlands (`Jrrmiah`, `Trrmb-Pillar`, `Krrmt`, `Rrrmk-Spring` \u2014 LORE.md \u00a76.22): compact 0.95x plantigrade amphibians (`mod_head_frog` with dorsal eye turrets, gular vocal pouch, and webbed hands) respiring partly through brush-oiled skin. Dressed in `bead-cone` cocoon silk, `opal-shell` ammolite mosaic, wet-sphagnum hydration cuffs, polypore bracket leather, flooded-bore `ancient-alloys`, and `Span` Thunderdome prize-bronze (14 M/F paired tiers; tools/garments/cultures/frogmen.py).",
    "scale": 0.95,
    "mods": [
-    "mod_head_frog"
+    "mod_head_frog",
+    "mod_legs_frog"
    ],
    "ancestry": {
     "african": [

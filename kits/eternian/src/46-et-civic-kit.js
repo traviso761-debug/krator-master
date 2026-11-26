@@ -11,11 +11,11 @@ const ET_HEX_AP=Math.cos(PI/6);
 /* run fn once per hexagon face, in a frame on the face's centre at apothem ap, its +z outward (face 1 is the front) */
 function etHexFaces(ap,fn){for(let k=0;k<6;k++){const ph=PI/6+k*PI/3;pushM(TF(ap*Math.cos(ph),0,ap*Math.sin(ph),PI/2-ph));fn(k,ph);popM();}}
 
-/* the civic door: bronze leaves w x h in a wall whose face is at z, a stone lintel over it held up by two ancestors with
+/* the civic door: bronze leaves w x h in a wall whose face is at z (o.hollow: a room behind it, the wall cut), a stone lintel over it held up by two ancestors with
    arms spread, standing on plinths either side (o.metal: their rank, gold by default) */
 function etCivicDoor(x,z,w,h,o){o=o||{};const m=o.metal||'gold',pl=.5,fh=(h-pl)/1.18,sd=P('stoneD');
- box('bronze',x,0,z+.04,w,h,.1,P('bronze'));box('bronze',x,0,z+.1,.06,h,.04,new THREE.Color(P('bronze')).multiplyScalar(.7));
- for(let i=1;i<4;i++)box('bronze',x,i*h/4,z+.1,w-.2,.05,.03,new THREE.Color(P('bronze')).multiplyScalar(.8));
+ /* the two bronze leaves (core/door): they open on E or an NPC where o.hollow (a room behind the face), else locked */
+ svDoorway(x,0,z+.04,0,w,h,{hollow:!!o.hollow,split:true,mk:'bronze',col:P('bronze'),t:.1,style:'panel',name:'civic door'});
  door(x,0,z+.1,0,w);
  for(const s of [-1,1]){const fx=x+s*(w/2+fh*.32);box('stone',fx,0,z+.45,fh*.55,pl,.9,sd);
   etFigure(fx,pl,z+.45,fh,{pose:'lintel',metal:m});}

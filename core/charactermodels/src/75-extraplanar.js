@@ -693,30 +693,9 @@
       }
     }
 
-    // Post-clip procedural stance overlays:
-    // 1. Digitigrade beast stance for Lizardmen & Coyote Men (raised hock, flexed knee, planted toes)
+    // Post-clip procedural stance overlay:
+    // Ethereal hover/float locomotion for legless Extraplanar entities (censer_revenant, accretion_djinn, singularity_archon)
     var rec = fig.record || {};
-    var mods = rec.mods || [];
-    var isDigitigrade = (rec.people === 'lizardmen' || rec.people === 'coyote_men'
-      || mods.indexOf('mod_head_lizard') >= 0 || mods.indexOf('mod_head_coyote') >= 0);
-    if(isDigitigrade && fig.bones){
-      var applyPitch = function(bname, rad){
-        var idx = state.byName[bname];
-        if(idx === undefined || !fig.bones[idx]) return;
-        tmpQ.setFromAxisAngle(new THREE.Vector3(1, 0, 0), rad);
-        fig.bones[idx].quaternion.multiply(tmpQ);
-      };
-      applyPitch('LeftUpLeg',   -0.26); applyPitch('RightUpLeg',   -0.26);
-      applyPitch('LeftLeg',      0.56); applyPitch('RightLeg',      0.56);
-      applyPitch('LeftFoot',    -0.58); applyPitch('RightFoot',    -0.58);
-      applyPitch('LeftToeBase',  0.30); applyPitch('RightToeBase',  0.30);
-      var hiD = state.byName['Hips'];
-      if(hiD !== undefined && fig.bones[hiD]){
-        fig.bones[hiD].position.y -= 0.042;
-      }
-    }
-
-    // 2. Ethereal hover/float locomotion for legless Extraplanar entities (censer_revenant, accretion_djinn, singularity_archon)
     var torsoId = (rec.armour && rec.armour.torso) || '';
     var isFloatEntity = (torsoId.indexOf('ext_') === 0 && (
       torsoId.indexOf('revenant') >= 0 || torsoId.indexOf('djinn') >= 0 || torsoId.indexOf('archon') >= 0

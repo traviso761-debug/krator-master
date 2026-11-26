@@ -13,20 +13,16 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`, `92k-host-keys.js`
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `10-core.js` | 3 | error panel (4); rng + noise (13) |
 | `26k-kit.js` | 7 |  |
-| `27-mat.js` | 6 |  |
 | `28-is-paint.js` | 9 |  |
-| `30-geo.js` | 23 |  |
-| `36-def.js` | 6 |  |
-| `37-wk-rec.js` | 2 |  |
+| `31-alt-takes.js` | <1 |  |
 | `40-is-kit.js` | 15 |  |
 | `41-is-roof.js` | 8 |  |
 | `42-is-dress.js` | 4 |  |
@@ -47,14 +43,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `66-ip-palace.js` | 36 **big** |  |
 | `67-ie-trades.js` | 21 |  |
 | `68-is-trades.js` | 6 |  |
-| `69-ie-hamlet.js` | 9 |  |
-| `81-sky.js` | 10 |  |
+| `69-ie-hamlet.js` | 12 |  |
+| `70-ie-camp.js` | 9 |  |
 | `89-rows.js` | 3 |  |
-| `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
 | `90h-is-shore.js` | 5 |  |
-| `91f-furnish.js` | 6 |  |
-| `91n-night.js` | 3 |  |
-| `92-world.js` | <1 |  |
-| `93-anim.js` | 3 |  |
-| `99-host-take.js` | 7 | the inspector's words: a click names what is und (11); the cut-away (C), night (N, in 91n-night.js), sh (28); the frame, around the host's: the sun and the sk (35); the probe's fields (verify.py --assert): what 91 (45); the page, handed to the host (62) |
-| `99-tail.html` | <1 |  |

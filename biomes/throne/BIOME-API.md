@@ -182,7 +182,7 @@ the others would reshuffle every other station's trees. Station 5, the cloud for
 70-biome-throne.js                 build / canopyH; BIO.kitEnd
 82-host-sky.js        (host)       the dome: the Throne's flank to the NNW, the plume over the east; the giant; day and night
 84-host-ground.js     (host)       the ground (painted, and the library's eleven layers); the acid lake and hot pools; the steam
-88-host-build.js      (host)       build order and bake
+89z-host-build.js     (host)       build order and bake (after the water, 89w, and its fields, 89x: 2026-11-02)
 99-host-take.js       (host)       the page handed to core/host (KHOST.take): presets, the inspector's words, budgets and checks;
                                    the camera, loop, panel, probe and polygon/path tool are core/host's (core/host/README.md)
 ```

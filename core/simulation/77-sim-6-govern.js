@@ -143,7 +143,7 @@
     each(function(E){ if(E.govern) govern(E, minute); });
     each(function(E){ if(E.spoil) spoil(E, minute); });
     each(function(E){ if(E.season) season(E, minute); });
-    if(minute%1440===0) each(function(E){ var R=E.resSites; if(R) Object.keys(R).forEach(function(id){ var S=R[id]; if(S.amount!=null && S.regen>0) S.amount=Math.min(S.start, S.amount+S.regen); }); });   /* a site's nightly regrowth */
+    if(minute%1440===0) each(function(E){ var R=E.resSites; if(R) Object.keys(R).forEach(function(id){ var S=R[id]; if(S.amount!=null && S.regen>0){ var a0=S.amount; S.amount=Math.min(S.start, S.amount+S.regen); S.regrown=(S.regrown||0)+S.amount-a0; } }); });   /* a site's nightly regrowth */
   };
   SIM.economyGoverned = function(s){ var E = s!=null ? SIM.econ(s) : SIM.ECON; return E && E.govern ? E.govern.view : null; };
 })(typeof window!=='undefined'?window:globalThis);

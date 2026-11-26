@@ -41,8 +41,13 @@ const VIEWS={
  'Sky poppies on the terraces':across(P.terrace[0],P.terrace[1],2.2,18,1.6,1.5),
  "Longsong's rock":look(KNOLL.x+KNOLL.r*2.6,KNOLL.z+KNOLL.r*1.6,18,KNOLL.x,KNOLL.z,KNOLL.h*.6),
  'The cataract':look(CATARACT.x-620,CATARACT.z+260,70,CATARACT.x,CATARACT.z,45),
+ 'The headwall from the plunge pool':look(PLUNGE.x-260,PLUNGE.z-150,14,CATARACT.x+40,CATARACT.z,190),
+ 'The four steps':look(-2450,axisZ(-2450)-420,120,STEPS[2]+300,axisZ(STEPS[2]),8),
+ 'A step between two pools':(function(){const x=STEPS[1],z=axisZ(x)+streamOff(x);return look(x-140,z+90,9,x+60,z,2);})(),
  'From afar':look(-2300,axisZ(-2300)+900,240,600,axisZ(600),40),
 };
+// a station names its own views (stations/<name>/): they replace the valley's
+if(typeof STATION_VIEWS==='function'){const SV=STATION_VIEWS();for(const k in VIEWS)delete VIEWS[k];Object.assign(VIEWS,SV);}
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
@@ -102,6 +107,12 @@ const HCHK={
  fruit(P){const keys=OIDONG.FRUIT_KEYS,items=Object.values(OIDONG.FRUIT_ITEM),missing=items.filter(it=>!P.some(p=>p[3]==='biome:'+it));
   return{ok:keys.length>=3&&!missing.length,detail:missing.length?'fruit never drawn: '+missing.join(', '):keys.length+' catalog fruit, each drawn'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
+// the flora and the ground's wet band read the water's own shore (the review's third line): the env fields in the contract, no tree standing in the water,
+// and the wet band wet at the water's edge (WATER.edgeAudit). EDGE_OWED: what this turn leaves (a ratchet)
+const EDGE_OWED={plant:0,wet:0};
+function edgeCheck(){const P=[];for(const T of OIDONG.TREES){if(T.sp===SPI('giantlotus'))continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:OIDONG.SPECIES[T.sp].key});if(P.length>8000)break;}
+ const bad=BIO.envCheck(ENV,[[0,0],[-1400,axisZ(-1400)],[800,axisZ(800)+200],[-2200,axisZ(-2200)-300]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
+ return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),Pp=instPoints();
  add('every species placed',HCHK.placed(OIDONG.COUNTS||[]));
  add('every plant tagged, in the region, with a harvest',HCHK.tagged(OIDONG.SPECIES,Object.values(OIDONG.PLANTS)));
@@ -113,6 +124,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing rooted under the water',HCHK.dry(Pp));
  add('no tree on a sheer rock face',HCHK.cliffs(OIDONG.TREES));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(Pp));
+ add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),Pp=instPoints();
@@ -132,10 +144,16 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45: merge, fade, cull): each chunk mesh by its range */
+/* the land in the Mirror (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on.
+   The Mirror is the largest still and the lowest step; the other pools stand 11-33 m above it on their steps, so their reflection is the Mirror's plane
+   (KNOWN_ISSUES.md: one plane per page) */
+const MIRROR=WATER.mirrorSwitch&&!(typeof STATION_NOWATER!=='undefined'&&STATION_NOWATER)?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[POOLS_DRAW.mesh.material,STREAM_DRAW.mesh.material],
+ level:POOLS[0].l,center:[POOLS[0].x,POOLS[0].z],radius:POOLS[0].r*2.2,far:2200,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
 KHOST.take({build:'oidong',title:'Krator biome — the Oidong Valley',
  hint:"The Oidong Valley east of Xanadu: the History Monks' country, the safest ground on Krator. Still pools with giant lotuses, moss woods, cherry and haze blossom, a marble grove, chalice trees in the mist at the head, pale flats the wind rakes round standing stones; the holy plants and the monks' physic grow wild (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

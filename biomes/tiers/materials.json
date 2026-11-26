@@ -1,0 +1,473 @@
+{
+ "build": "tiers",
+ "note": "The Tiers' adapter onto the material library (core/materials/PLAN.md; biomes/tiers/PLAN.md section 11). Card slots are 50-biome-tiers-species.js's materials (BIO.libSwap); cells and stems by tools/textures/check_cells.py --fix. THE OWED SETS (generated 2026-11-12, on an unpushed local branch; KNOWN_ISSUES.md): a slot with \"owed\" draws the library stand-in named in \"lib\" until that set lands, then its lib becomes the owed id (one change each, then check_cells.py --fix for the new sheet's cells and stems): oakplate card.broadleaf.dry for card.shelfoak (keep 0: tinted the oak's leathery green), bark.oak bark.smooth for bark.tiered, ground.lichen rock.lichen.circles for rock.lichen.ledges. ground.* are the host's ground layers on KGROUND (45-host-stage.js GLW: a station names the four it shows, LAND.groundLayers). Run python3 tools/textures/pack.py biomes/tiers after any change, then python3 tools/build.py biomes/tiers --stations.",
+ "size": 512,
+ "families": {
+  "oakplate": {
+   "lib": "card.broadleaf.dry",
+   "owed": "card.shelfoak",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.013,
+      0.005,
+      0.331,
+      0.327
+     ],
+     "stem": [
+      0.1768,
+      0.3213
+     ],
+     "tip": [
+      0.1697,
+      0.0102
+     ],
+     "w": [
+      -0.1356,
+      0.1349
+     ]
+    },
+    {
+     "cell": [
+      0.352,
+      0.333,
+      0.644,
+      0.655
+     ],
+     "stem": [
+      0.5146,
+      0.6514
+     ],
+     "tip": [
+      0.4736,
+      0.3364
+     ],
+     "w": [
+      -0.1131,
+      0.1284
+     ]
+    },
+    {
+     "cell": [
+      0.682,
+      0.677,
+      0.984,
+      0.991
+     ],
+     "stem": [
+      0.8525,
+      0.9854
+     ],
+     "tip": [
+      0.8046,
+      0.6745
+     ],
+     "w": [
+      -0.1168,
+      0.133
+     ]
+    }
+   ],
+   "rise": 0.12
+  },
+  "palmfan": {
+   "lib": "card.palm.fan",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.343,
+    0.339,
+    0.655,
+    0.663
+   ]
+  },
+  "reed": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.329,
+    0.329,
+    0.667,
+    0.671
+   ]
+  },
+  "heath": {
+   "lib": "card.heath",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512,
+   "cell": [
+    0.347,
+    0.35,
+    0.661,
+    0.648
+   ]
+  },
+  "tiergrass": {
+   "lib": "card.stipa",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "size": 512,
+   "cell": [
+    0.329,
+    0.329,
+    0.671,
+    0.64
+   ]
+  },
+  "pad": {
+   "lib": "card.giantpad",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "size": 512
+  },
+  "bark.oak": {
+   "lib": "bark.smooth",
+   "owed": "bark.tiered",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "bark.palm": {
+   "lib": "bark.palm",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.skirt": {
+   "lib": "bark.skirt",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "bark.cactus": {
+   "lib": "skin.cactus",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.reed": {
+   "lib": "ground.reedbed",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.steppe": {
+   "lib": "ground.withered_grass",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.terrace": {
+   "lib": "ground.terrace.field",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "rock.lichen.circles",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true,
+   "owed": "rock.lichen.ledges"
+  },
+  "ground.tufa": {
+   "lib": "ground.travertine.white",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.75,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel019",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "ground.meadow": {
+   "lib": "ground.leafy_grass",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.litter": {
+   "lib": "leaf.forest_leaves_02",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.3
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.pave": {
+   "lib": "ground.pavement.desert",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "mapOnly": true
+  },
+  "pagoda": {
+   "lib": "card.saltbush",
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "size": 512,
+   "scale": [
+    1,
+    1
+   ],
+   "cell": [
+    0.343,
+    0.368,
+    0.659,
+    0.64
+   ]
+  },
+  "cushion": {
+   "lib": "surface.cushion",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   }
+  },
+  "bark.pine": {
+   "lib": "bark.ponderosa",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "pinespray": {
+   "lib": "card.pine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.03,
+      0.329,
+      0.339
+     ],
+     "stem": [
+      0.04,
+      0.3213
+     ],
+     "tip": [
+      0.2898,
+      0.0752
+     ],
+     "w": [
+      -0.1083,
+      0.1176
+     ]
+    },
+    {
+     "cell": [
+      0.333,
+      0.349,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.585,
+      0.6709
+     ],
+     "tip": [
+      0.4554,
+      0.3648
+     ],
+     "w": [
+      -0.122,
+      0.13
+     ]
+    },
+    {
+     "cell": [
+      0.686,
+      0.661,
+      0.985,
+      0.97
+     ],
+     "stem": [
+      0.6924,
+      0.9424
+     ],
+     "tip": [
+      0.9657,
+      0.7026
+     ],
+     "w": [
+      -0.1129,
+      0.1189
+     ]
+    }
+   ],
+   "rise": 0.12
+  }
+ }
+}

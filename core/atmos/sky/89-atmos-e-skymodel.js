@@ -16,6 +16,12 @@
 //   ATMOS.siteAt(px, py)            a site from the scale model's pixel: {px, py, latitude, subGiantLon}
 //   ATMOS.skyState(site, hour, dayCount)   everything one frame needs (below); dayCount 0 is game start's date
 //   ATMOS.skyDate(dayCount, hour)  the date: day of year, month and day, Jimjam's counts
+//   ATMOS.libration(t)              the giant's daily nod and swing at clock t (days from game start, as skyState's t = dayCount + hour/24):
+//                                   {phase (0..1 of the orbit), nod (-1..1, the sine of the nod), swing (-1..1), nodDeg, swingDeg, ringOpen}
+//                                   skyState draws the giant from this same function: a picture and these numbers cannot part
+//   ATMOS.sunHidden(t, site)        how much of the sun's disc is behind the giant at clock t (0..1), skyState's `eclipse` by the same
+//                                   lines. The eclipse's hour depends on the site's longitude: site from siteAt; none, the sky bound on the
+//                                   page (ATMOS.skyBiome's), else the frame's reference, Voth
 //   ATMOS.ridgeProfile(layer, n)    a far ridge's elevation by azimuth (degrees), n samples round the compass
 // Godot: the same functions in krator/sky.gd (the sky's own twin of this file), test vectors from core/atmos/test-sky.js.
 (function(){const A=ATMOS,D=Math.PI/180;
@@ -122,21 +128,31 @@
    out.push([ra,Math.asin(z)/D,.45+.8*u01(i,4,13),k<.4?1:k<.7?.92:.78,k<.4?.82:k<.7?.92:.86,k<.4?.62:k<.7?.88:1]);}
   return out;})();
 
- // ---- the state at a site, a world hour and a day count. Returns plain numbers (the shader's uniforms come from it)
- A.skyState=function(site,hour,dayCount){
-  const t=(dayCount||0)+hour/24,yd=S.startDay+t,phi=site.latitude*D,Hg=-site.subGiantLon*D;
+ // ---- the giant's libration: one function, the sky's own and every kit's (the Gills' breath, the hazards, Godot)
+ A.libration=t=>{const LB=S.giant.libration,ph=2*Math.PI*t*1.0027379,nod=Math.sin(ph+LB.phase),swing=Math.sin(ph);
+  return{phase:((ph/(2*Math.PI))%1+1)%1,nod,swing,nodDeg:LB.incDeg*nod,swingDeg:2*LB.ecc*swing/D,ringOpen:S.giant.ringOpenDeg*nod,dN:LB.incDeg*D*nod,dE:2*LB.ecc*swing};};
+ // the sun and the giant at a site: where skyState and sunHidden both take them from
+ const sunGiant=(site,hour,t)=>{const yd=S.startDay+t,phi=site.latitude*D,Hg=-site.subGiantLon*D;
   const [ra,dec]=sunRaDec(yd),H=15*(hour-12)*D,lst=H+ra;
   const M=local(phi);
-  // W = M * Rz(-lst): world = W e for an inertial equatorial vector e. Rows of W^T take the world back to e (the shader's uEq)
-  const cl=Math.cos(lst),sl=Math.sin(lst),W=[0,1,2].map(r=>[M[0][r]*cl-M[1][r]*sl,M[0][r]*sl+M[1][r]*cl,M[2][r]]);   // W[row][col]
-  const toWorld=e=>[0,1,2].map(r=>W[r][0]*e[0]+W[r][1]*e[1]+W[r][2]*e[2]);
   const sunDir=norm(worldHD(H,dec,phi)),giantDir=norm(worldHD(Hg,S.giant.decDeg*D,phi)),pole=norm(M[2]);
   // libration: the giant's mean place nudged north-south (along Krator's meridian at the giant) and east-west, once a
   // sidereal orbit; the ring opening follows the nod
-  const LB=S.giant.libration,ph=2*Math.PI*t*1.0027379,dN=LB.incDeg*D*Math.sin(ph+LB.phase),dE=2*LB.ecc*Math.sin(ph);
+  const Lb=A.libration(t),dN=Lb.dN,dE=Lb.dE;
   {const g0=giantDir.slice(),pg=dot(pole,g0),nd=norm(pole.map((v,k)=>v-g0[k]*pg)),ew=norm([nd[1]*g0[2]-nd[2]*g0[1],nd[2]*g0[0]-nd[0]*g0[2],nd[0]*g0[1]-nd[1]*g0[0]]);
    const gl=norm([0,1,2].map(k=>g0[k]+nd[k]*Math.tan(dN)+ew[k]*dE));giantDir[0]=gl[0];giantDir[1]=gl[1];giantDir[2]=gl[2];}
-  const ringOpen=S.giant.ringOpenDeg*Math.sin(ph+LB.phase);
+  return{yd,phi,Hg,ra,dec,H,lst,M,sunDir,giantDir,pole,Lb};};
+ // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
+ const eclipseOf=(sunDir,giantDir)=>{const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
+  return sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);};
+ A.sunHidden=(t,site)=>{const s=site||A.skySite||A.siteAt(S.frame.refPx[0],S.frame.refPx[1]),day=Math.floor(t),G=sunGiant(s,(t-day)*24,t);return eclipseOf(G.sunDir,G.giantDir);};
+ // ---- the state at a site, a world hour and a day count. Returns plain numbers (the shader's uniforms come from it)
+ A.skyState=function(site,hour,dayCount){
+  const t=(dayCount||0)+hour/24,{yd,phi,Hg,ra,dec,H,lst,M,sunDir,giantDir,pole,Lb}=sunGiant(site,hour,t);
+  // W = M * Rz(-lst): world = W e for an inertial equatorial vector e. Rows of W^T take the world back to e (the shader's uEq)
+  const cl=Math.cos(lst),sl=Math.sin(lst),W=[0,1,2].map(r=>[M[0][r]*cl-M[1][r]*sl,M[0][r]*sl+M[1][r]*cl,M[2][r]]);   // W[row][col]
+  const toWorld=e=>[0,1,2].map(r=>W[r][0]*e[0]+W[r][1]*e[1]+W[r][2]*e[2]);
+  const ringOpen=Lb.ringOpen;
   const gE1=norm([giantDir[2],0,-giantDir[0]]),gUp=[giantDir[1]*gE1[2]-giantDir[2]*gE1[1],giantDir[2]*gE1[0]-giantDir[0]*gE1[2],giantDir[0]*gE1[1]-giantDir[1]*gE1[0]],ta=S.giant.axisTiltDeg*D;
   /* the giant's spin axis. 'equator' (the default since the owner's look pass, 2026-10-26): Krator orbits in the giant's equator and
      the giant hangs on Krator's celestial equator, so the ring plane is Krator's equatorial plane: the axis is Krator's pole, taken
@@ -163,9 +179,7 @@
    const Lm=spl>1e-6?norm([0,1,2].map(k=>-md[k]*cosPsi+sp[k]/spl*sn)):L;
    return{name:m.name,kind:m.kind,toGiant:gw,dir:norm([0,1,2].map(k=>Math.cos(b)*giantDir[k]+Math.sin(b)*rt[k])),along:b/D,light:Lm,lead:norm([0,1,2].map(k=>lx*giantDir[k]+ly*rt[k])),
     radiusDeg:Math.atan(m.radiusKm/dist)/D,lump:m.lump==null?0:m.lump,distKm:dist,front:dist<kr*0.98?1:0,lit:(1+cosPsi)/2,albedo:m.albedo};});   // front: nearer than the giant (Day in transit)
-  // the eclipse: the sun's disc behind the giant's (soft over the sun's own width)
-  const sep=Math.acos(Math.max(-1,Math.min(1,dot(sunDir,giantDir))))/D,rg=S.giant.diaDeg/2,rs=S.sunDiaDeg/2;
-  const eclipse=sep>=rg+rs?0:sep<=rg-rs?1:(rg+rs-sep)/(2*rs);
+  const eclipse=eclipseOf(sunDir,giantDir);
   const sunAlt=Math.asin(Math.max(-1,Math.min(1,sunDir[1])))/D,giantAlt=Math.asin(giantDir[1])/D;
   const station=A.skyStation(t,lst,phi,toWorld,sunE,eclipse);
   return{site,hour,dayCount:dayCount||0,t,yearDay:((yd%S.yearD)+S.yearD)%S.yearD,lst,sunDir,giantDir,giantAxis,ringOpen,ringLine:rt,pole,eq:W,toWorld,

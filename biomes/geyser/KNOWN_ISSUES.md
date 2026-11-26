@@ -91,3 +91,64 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
       (13:00 and 22:00: the old SW sun is out of reach at the equinox here). Draw calls at the default camera (verify.py
       --assert, GPU): 105 before, 103 after.
 
+
+## The final rebuild (pair 7, 2026-11-03; PLAN-STATIONS.md, "Core adoption")
+
+- [x] **The page died at render when rebuilt from the merged sources** (`W.wetChunk`: `WATER.PRESETS.shore` undefined): `build.py` lacked
+  `core/water/21-core-water-shore.js`. Listed.
+- [x] **A shade half that sorts before its data half** throws before the error panel is wired, and the page is blank with no message:
+  `core/terrain/host/35b-core-lamina-shade.js` sorts before `35b-core-lamina.js` (`-` before `.`), so the build keys it `35c-core-lamina-shade.js`.
+  Worth a check in `tools/check_assembly.py` for every page (not done: shared).
+- [ ] **KSHADOW's cost not measured** (no GPU in the cloud session). Software GL cannot time it. The coordinator's GPU run measures `?shadow=0`
+  against the default at "The geyser basin" and "From above"; if it is unaffordable, set it off by default here.
+- [ ] **The attach audit is close to its limit**: 0.98% (limit 1%) after the card fixes, 0.90% before. The heath (`small`) took stems from
+  `check_cells.py --fix` and 6 of its 533 cards now float (they were 0); the bloom (51 of 853) and the kettle lilies on the creek's mouth (6 of 7, on
+  the water: `free` wants setting on `lily`) are the rest. Not traced in this turn.
+- [ ] **No look judged on a GPU**: KGROUND's layers (hex-tiled and height-blended against the old two-read sampler), the curtains' lamina bands,
+  the plume, the far field's canopy colour and the Stills. Software GL shots only (the turn's notes say which).
+
+## Stations 2-5 (2026-11-09; PLAN-STATIONS.md, "Stations 2-5 as built")
+
+- [x] **A plume based under 0 did not compile** (core/water/geyser `52b`, `WATER.plumeGLSL` wrote `p.y--0.16`: a decrement). Fixed in core (the base in
+  brackets); the showcase's geysers all stand above 0, so only basin's showed it. The other pages that take 52b (ringisles, the Throne's three, xanadu's
+  two, the isle demo) move by that text at their turns (`check_stale` already held them stale).
+- [x] **A station's views never reached the page** when it left out the showcase's (`ownViews`): the station-views line sat inside the block it skipped
+  (`99-host-take.js`). Moved.
+- [ ] **puna and basin open at 13:00, not the owner's 11:00**: at their longitudes 11:00 falls in the giant's eclipse (09:30-11:30 and 09:30-11:00 on day 1;
+  `ATMOS.sunHidden`), and the page opened in the dark. A station names its hour (`STATION_TAKE.hour`). The owner's call whether to keep the eclipse instead.
+- [ ] **basin draws ~19,000 lodgepoles** (6.2M triangles at its default camera, 59 draw calls; budget 26M): the forest has no impostor or far tier yet (a
+  bole and needle clumps, a cheaper ring past 750 m). Measure on the GPU; give it `BIO.impostor` if it is heavy.
+- [ ] **`check_cells` does not read a station's fragments for a build with `src/`**, so the `st.*` card slots' geometry is unseen by it: `st.pine`'s
+  stems were written from the tool's own proposal by hand (the clump guard asked for them at load).
+- [ ] **The stations still load the hyperjungle's `41` globals** (TAU, clamp, smooth, fbm...) though only corona grows it (`"nojungle"` drops the rest
+  and its pack).
+- [ ] **No GPU look yet** at any of the four: the gravel's and ice's tints, the run-off ramps per station, the lodgepole's crown, the ice towers and caves.
+
+## Station 7, the Boiling Bay phreatic cove (2026-11-16; PLAN-STATIONS.md, "Station 7 as built")
+
+- [x] **The GPU verify is owed** (closed 2026-11-17): `KRATOR_GL=gpu` `verify.py dist/geyser-cove.html --assert --all-views` passes all 15 views (`OK`:
+  96-152 draw calls, 2.35M triangles drawn at the skiff / 21.84M scene triangles, attach audit 0.44%, export profile 9/9). Fixed on the way so the ground
+  stays at 15 samplers on 16-unit hardware and `KSHADOW` attaches cleanly (4 console messages, down from 2,453 WebGL sampler warnings): `88-host-build.js`
+  filters `KHORIZON.shadeScene` by `m.material !== MAT_GROUND` (was `m !== MAT_GROUND`), `85-host-far.js` counts weather's two samplers (`atmRainOcc`,
+  `atmSnowBare`), and `84-host-ground.js` reads `uMacro.b` in place of `uDetail` when `KG_ON` is on. Showcase `dist/geyser.html` (14 samplers, 118.9 degC)
+  and `dist/geyser-ice.html` (11 samplers, 88.0 degC) also pass `KRATOR_GL=gpu` `verify.py --assert`.
+- [x] **The look from the skiff** (closed 2026-11-17, owner: "raise the rim"): the rim crest stands at ~56 m (`45-host-stage.js` `COVE_CREST`), so the
+  cream carbonate-shelf bluffs and visors read clearly above the hyperjungle behind the scald line in the GPU skiff shot.
+- [x] **The other geyser pages were stale against `core/terrain/35-core-strata.js`** (closed 2026-11-17): all seven pages (`geyser`, `basin`, `corona`,
+  `cove`, `ice`, `puna`, `stills`) rebuilt through `tools/build.py` (`check_stale` clean on `biomes/geyser`); `build.py`'s `89v-host-ringsea.js` wrapper
+  rewrites `window.onerror=` to `window['onerror']=` so `check_assembly.py` sees no `CLASH onerror`.
+- [ ] **For the scale-model queue (never edited here):** the model has no vent and no cove at px 884,716 (the ground -1,494 m in a 2 km cell, the sea one
+  cell south-east). The station wants a geyser vent there (kind `geyser`, radius ~0.4 px) and, if the reshaping's Ring Sea pass reaches this shore, the cove
+  kept as a notch in the coast (its breach toward bearing ~158). Gemini's `edit_517` is not merged: the station stands on today's ground.
+- [x] **The spec's skiffs were not drawn** (closed 2026-11-17, owner: "hykkoussoi pirates primarily"): four moored pirate craft from `kits/ringsea`
+  (`COVE_SHIPS` in `45`, drawn in `89w`, sealed via `settlements/voth/ringsea.py`): two Hykkousoi Scroll-Sail Galleys, one Hykkousoi Amphora Corbita and one
+  Islander Lanong, moored 72-121 m clear of the boils.
+- [ ] **No tide**: the spec's 24 h libration tide flushes the littoral; the sea stands at one level (core/water's open surface has no tide yet).
+- [x] **The boiling point** (closed 2026-11-17, owner: kit-wide pressure-dependent boiling): `GEYSER.boilAt(atm)` (`46-biome-geyser-layout.js`) sets each
+  page's boiling water, vents, run-off, mud pots and fumaroles from `AIR_ATM` (~119.4 degC at the cove's 1.93 atm, 118.9 at 1.9, 88.0 at ice's 0.64), while
+  `heat` stays 0..1 to 100 degC for the thermophilic mat bands; checked on every page (`99-host-take.js`).
+- [ ] **Approximate, by design**: the cove is an ideal type (an explosion crater 720 m across in a plateau at 32-40 m; the model's cell says only -1,494 m);
+  the outer coast's line, the dike's bearing and the vents' places are the station's. The sulphur chimneys are the kit's geyserite bead drawn tall and
+  yellow (one item: no chimney geometry of their own); the breccia blocks the same bead in tibasalt's colours.
+- [ ] **84's beach paint reads `shoreZ` (one shore a column)**, which the crescent's horns cross: the station repaints the beach by height at the water
+  (`80`), so 84's own sand is overwritten there. A two-sided shore in 84 would let the station drop it.

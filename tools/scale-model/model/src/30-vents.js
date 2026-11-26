@@ -3,7 +3,7 @@
   const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function makeVent(v){
     const vx=v.px[0]/(OW-1)*Wkm-Wkm/2, vzz=v.px[1]/(OH-1)*Hkm-Hkm/2, vFloor=v.floor/1000;
-    const sc=v.scale||1.0, rad=v.radius||9.0, gey=v.kind==='geyser';
+    const sc=v.scale||1.0, rad=v.radius||9.0, gey=v.kind==='geyser'||v.kind==='fumarole'||v.kind==='spring';   /* steam, no lava (5.1 edit 2: Godshearth's springs and fumaroles) */
     const lc=document.createElement('canvas'); lc.width=lc.height=256; const lg=lc.getContext('2d');
     const grd=lg.createRadialGradient(128,128,0,128,128,128); if(gey){ grd.addColorStop(0,'#f4fbff'); grd.addColorStop(0.45,'#bfe6ea'); grd.addColorStop(0.8,'#d9c9a0'); grd.addColorStop(1,'rgba(220,210,180,0)'); } else { grd.addColorStop(0,'#fff1a0'); grd.addColorStop(0.35,'#ff7a1a'); grd.addColorStop(0.8,'#6b1a08'); grd.addColorStop(1,'rgba(40,10,5,0)'); }
     lg.fillStyle=grd; lg.fillRect(0,0,256,256);
@@ -43,7 +43,10 @@
   function applyVex(){
     for(let i=0;i<pos.count;i++) pos.setY(i, base[i]*vex);
     pos.needsUpdate=true; geo.computeVertexNormals();
-    for(let i=0;i<wpos.count;i++) wpos.setY(i, whas[i] ? wlev[i]/1000*vex+0.02*vex : base[i]*vex-0.4*vex);
+    for(let j=0;j<MH;j++) for(let i=0;i<MW;i++){
+      const sx=Math.min(VW-1,i*MSTRIDE), sy=Math.min(VH-1,j*MSTRIDE), sidx=sy*VW+sx, vidx=j*MW+i;
+      wpos.setY(vidx, whas[sidx] ? wlev[sidx]/1000*vex+0.02*vex : base[vidx]*vex-0.4*vex);
+    }
     wpos.needsUpdate=true; wgeo.computeVertexNormals();
     placeVolcano();
     if(handles.children.length) placeHandles();

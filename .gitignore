@@ -24,7 +24,7 @@ settlements/locus/yuni-*.html
 gallery/site/
 gallery/throne-site/
 gallery/ancients-site/
-settlements/girder/hero/dist/
+archive/girder-hero/hero/dist/
 
 # verify.py variant-shot folders (shots-var etc.)
 shots-*/
@@ -72,3 +72,5 @@ godot/data/spike/
 godot/data/world-nhighlands-wide/
 # the Rift jungle tile (biomes/rift/PERF.md: regenerate with tools/harness.py export)
 godot/data/world-rift-jungle/
+# scale-model built HTML snapshots (only model/dist/scale-model.html is built locally)
+tools/scale-model/scale-model-*.html

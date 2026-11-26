@@ -80,7 +80,7 @@ const ROCK=(function(){const K=KSTACKS,L=[];
    let B=null;for(let k=0;k<3&&!B;k++){try{B=K.make({kind:'arch',id:'bencharch',x:p[0],z:p[1],span:30+k*3,rise:20+k*3,H:34+k*4,t:7,leg:12,ry:.3,seed:KRAND.hash(2401,k),ground:(x,z)=>benchTop(x,z),inward:.12});}catch(e){}}
    if(B){add(B,'A free-standing arch on the long bench');break;}}}
  return L;})();
-const STATION_TAKE={title:'Krator biome — the north-eastern canyons: the high benches',maxShare:.035,
+const STATION_TAKE={title:'Krator biome — the north-eastern canyons: the high benches',
  hint:'Station 2 of the north-eastern canyons: the high benches, the first tepui tables (grey quartzite over red sandstone), flametip scrub. N for night',
  views:{'The high benches':[1700,640,1500,0,220,-100],'The great table':[-200,420,-80,-760,330,-520],
   'The canyon stream':[CREEK.x(700)+25,floorH(CREEK.x(700),700)+16,700,CREEK.x(200),25,200],'Krator rising':[-500,180,700,1900,900,-2100]},

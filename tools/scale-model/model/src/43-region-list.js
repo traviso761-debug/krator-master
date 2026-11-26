@@ -10,11 +10,99 @@
     const order={biome:0,geographic:1,political:2};
     const shown=[...regions.values()].filter(r=>r.points.length>=2&&(layerOn[kindOf(r)]||(sel&&sel.id===r.id))).sort((a,b)=>order[kindOf(a)]-order[kindOf(b)]);
     for(const r of shown){
-      const kind=kindOf(r), isSel=sel&&sel.id===r.id;
+      const kind=kindOf(r), isSel=sel&&sel.id===r.id, isHov=hoveredRegion&&hoveredRegion.id===r.id;
       og.beginPath(); r.points.forEach((p,i)=>i?og.lineTo(p[0],p[1]):og.moveTo(p[0],p[1])); og.closePath();
-      og.fillStyle=hexA(r.color,isSel?0.45:kind==='political'?0.28:0.18); og.fill();
+      og.fillStyle=hexA(r.color,isSel?0.45:isHov?0.38:kind==='political'?0.28:0.18); og.fill();
       og.setLineDash(kind==='geographic'?[10,6]:kind==='biome'?[2,6]:[]);
-      og.lineWidth=isSel?4:kind==='biome'?3:2.5; og.strokeStyle=r.color; og.stroke(); og.setLineDash([]);
+      og.lineWidth=isSel?4.5:isHov?4.0:kind==='biome'?3:2.5;
+      og.strokeStyle=isHov?'#ffffff':r.color;
+      og.stroke(); og.setLineDash([]);
+    }
+    // ---- Toggleable Rivers & River Names ----
+    if(layerOn.rivers && DATA.rivers){
+      // Pass 1: draw river and wadi courses
+      DATA.rivers.forEach(r=>{
+        if(!r.px||r.px.length<2) return;
+        const isRiver=r.kind==='river', q=r.q_mouth_m3s||0;
+        og.beginPath();
+        r.px.forEach((p,i)=>i?og.lineTo(p[0],p[1]):og.moveTo(p[0],p[1]));
+        og.lineCap='round'; og.lineJoin='round';
+        if(isRiver){
+          og.strokeStyle=q>=100?'rgba(56,189,248,0.88)':q>=30?'rgba(96,165,250,0.8)':'rgba(147,197,253,0.7)';
+          og.lineWidth=Math.max(1.2, Math.min(4.5, q>=1000?4.2:q>=100?2.8:q>=25?1.9:1.2));
+        } else {
+          og.strokeStyle='rgba(217,162,85,0.55)';
+          og.lineWidth=1.0;
+        }
+        og.stroke();
+      });
+      // Pass 2: draw river names sorted by discharge with bounding-box collision avoidance
+      const placedBoxes=[];
+      const sortedRivs=[...DATA.rivers].filter(r=>r.name&&r.px&&r.px.length>=3).sort((a,b)=>(b.q_mouth_m3s||0)-(a.q_mouth_m3s||0));
+      for(const r of sortedRivs){
+        const isRiver=r.kind==='river', q=r.q_mouth_m3s||0;
+        const idx=Math.floor(r.px.length*0.45);
+        const p1=r.px[idx], p2=r.px[Math.min(r.px.length-1,idx+2)];
+        const hw=r.name.length*3.6+8, hh=9;
+        const bx0=p1[0]-hw, bx1=p1[0]+hw, by0=p1[1]-hh, by1=p1[1]+hh;
+        let collides=false;
+        for(let k=0;k<placedBoxes.length;k++){
+          const b=placedBoxes[k];
+          if(bx0<b[1]&&bx1>b[0]&&by0<b[3]&&by1>b[2]){ collides=true; break; }
+        }
+        if(collides) continue;
+        placedBoxes.push([bx0,bx1,by0,by1]);
+        const dx=p2[0]-p1[0], dy=p2[1]-p1[1];
+        let ang=Math.atan2(dy,dx);
+        if(ang>Math.PI/2) ang-=Math.PI;
+        if(ang<-Math.PI/2) ang+=Math.PI;
+        og.save();
+        og.translate(p1[0],p1[1]);
+        og.rotate(ang);
+        og.font=isRiver?(q>=100?'italic 600 12px "Fraunces",Georgia,serif':'italic 600 10.5px "Fraunces",Georgia,serif'):'italic 500 9.5px "IBM Plex Sans",sans-serif';
+        og.textAlign='center'; og.textBaseline='bottom';
+        og.lineWidth=3.0; og.strokeStyle='rgba(13,18,16,0.92)';
+        og.strokeText(r.name, 0, -2);
+        og.fillStyle=isRiver?'#e0f2fe':'#fde68a';
+        og.fillText(r.name, 0, -2);
+        og.restore();
+      }
+    }
+    // ---- Toggleable Lava Tubes & Subterranean Cavern Networks ----
+    if(layerOn.tubes && DATA.tubes){
+      DATA.tubes.forEach(t=>{
+        if(!t.px||t.px.length<2) return;
+        const isLava=t.kind==='active_lava_tube'||t.kind==='pyroduct';
+        og.save();
+        og.beginPath();
+        t.px.forEach((p,i)=>i?og.lineTo(p[0],p[1]):og.moveTo(p[0],p[1]));
+        og.lineCap='round'; og.lineJoin='round';
+        og.strokeStyle=isLava?'rgba(251,146,60,0.45)':'rgba(168,85,247,0.42)';
+        og.lineWidth=isLava?6.0:5.0;
+        og.stroke();
+        og.setLineDash(isLava?[8,5]:[5,5]);
+        og.strokeStyle=isLava?'#fb923c':'#c084fc';
+        og.lineWidth=isLava?2.6:2.2;
+        og.stroke();
+        og.setLineDash([]);
+        // Draw skylights / collapse windows
+        (t.skylights||[]).forEach(sk=>{
+          og.beginPath(); og.arc(sk[0],sk[1],3.8,0,Math.PI*2);
+          og.fillStyle=isLava?'#fde047':'#e9d5ff'; og.fill();
+          og.lineWidth=1.5; og.strokeStyle='#18181b'; og.stroke();
+        });
+        // Label tube
+        if(t.name && t.px.length>=2){
+          const mid=t.px[Math.floor(t.px.length/2)];
+          og.font='italic 600 10px "IBM Plex Sans",sans-serif';
+          og.textAlign='center'; og.textBaseline='bottom';
+          og.lineWidth=3.0; og.strokeStyle='rgba(12,10,18,0.92)';
+          og.strokeText(t.name, mid[0], mid[1]-5);
+          og.fillStyle=isLava?'#fed7aa':'#e9d5ff';
+          og.fillText(t.name, mid[0], mid[1]-5);
+        }
+        og.restore();
+      });
     }
     for(const r of shown) drawLabel(r);
     if(drawing && draft.length){

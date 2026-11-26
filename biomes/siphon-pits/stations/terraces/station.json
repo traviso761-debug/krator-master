@@ -1,0 +1,55 @@
+{
+ "canvas": "5.1 (1821x1723)",
+ "name": "Ostrukh Terraces (station 1): the cold arable piedmont, glacial meltwater braided streams from the Stalker wall, loess crop terraces, domestic Ghaunt-Ox herds, turf-roofed stone farmsteads",
+ "out": "siphon-pits-terraces.html",
+ "site": {
+  "name": "terraces",
+  "title": "Ostrukh Terraces",
+  "px": 1519,
+  "py": 1453,
+  "base": 2157.0,
+  "atm": 1.22,
+  "mean": 15,
+  "rain": 439,
+  "cls": "Cwb",
+  "lat": -50.3,
+  "warm": 28,
+  "cold": 2,
+  "high": 36,
+  "low": -6,
+  "surveyed": "scale model 5.1, 2026-11-11 (PLAN.md section 0): atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl",
+  "lat_note": "the shared sky's site frame (ATMOS.siteAt on the old canvas px); the old plan gave -28.2"
+ },
+ "water": [
+  {
+   "kind": "flow",
+   "name": "Meltwater Run",
+   "width": 6.0,
+   "depth": 0.8
+  }
+ ],
+ "crops": {
+  "query": {
+   "warmth": "temperate",
+   "atm": "standard",
+   "arid": "semiarid"
+  },
+  "buckets": [
+   "grain",
+   "pulse",
+   "tuber"
+  ],
+  "note": "CROPS.forBiome('siphon-pits') on its terraces and braids zones (the query is the fallback, CROPS.at)"
+ },
+ "wind": {
+  "speed": 7.4,
+  "note": "mean from the model (wd)"
+ },
+ "core": {
+  "48a-crop-core.js": "kits/crops/src/10-crop-core.js",
+  "48b-crop-records.js": "kits/crops/src/20-crop-records.js",
+  "48c-crop-material.js": "kits/crops/src/22-crop-material.js",
+  "48d-crop-query.js": "kits/crops/src/40-crop-query.js"
+ },
+ "core_note": "kits/crops read in place (its API.md, \"Reading it from a build\"): the station's crops from CROPS.forBiome"
+}

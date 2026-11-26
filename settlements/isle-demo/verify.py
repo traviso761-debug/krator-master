@@ -22,6 +22,7 @@ import argparse, asyncio, hashlib, json, os, shutil, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
+from harness import verify_page, Abort
 try:
     sys.stdout.reconfigure(encoding='utf-8')
 except Exception:
@@ -66,7 +67,8 @@ CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.
  if(!neg){
   for(const t in C.checks)C.checks[t].forEach(c=>out.push(c));
   const bad=[],ik=ISK.dims(),iz=IZV.dims();
-  for(const k in ISLE_DIMS){const D=ISLE_DIMS[k],B=D.kit==='isk'?ik[k]:D.kit==='izv'?iz[k]:D.kit==='cat'?CAT.ASSET_BY_KEY[k]:null;
+  for(const k in ISLE_DIMS){const D=ISLE_DIMS[k];if(D.kit==='hyk'&&typeof HYKB==='undefined')continue;   /* Nephtos's Hykkousoi: the world page carries HYKB and checks them there */
+   const B=D.kit==='isk'?ik[k]:D.kit==='izv'?iz[k]:D.kit==='cat'?CAT.ASSET_BY_KEY[k]:D.kit==='hyk'?HYKB.dims()[k]:null;
    if(!B||Math.abs(B.w-D.w)>1e-6||Math.abs(B.d-D.d)>1e-6||Math.abs((B.h||8)-D.h)>1e-6)bad.push(k);}
   for(const k in ISLE_VDIMS){const B=RINGSEA.dims[k];if(B&&(B.L!==ISLE_VDIMS[k].L||B.B!==ISLE_VDIMS[k].B))bad.push(k);}
   const used=new Set(R.vessels.map(v=>v.key));const lack=[...used].filter(k=>!RINGSEA.dims[k]);
@@ -86,7 +88,7 @@ CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.
 
 """P7b: both towns on core/simulation (src/40-46), checked on the Valapo page under --assert (the page declares both,
 in one order, whichever town it draws). SIM_JS runs a world day minute by minute (ISLE.simDay, once) and returns for a
-town ({town, neg}) src/45-isle-sim-checks.js's checks: every lot of a census trade (kits/islanders IS_TRADES) a place,
+town ({town, neg}) core/region/45-region-sim-checks.js's checks: every lot of a census trade (kits/islanders IS_TRADES) a place,
 every resident a home and every worker a job in the town (its census's people, every post filled), the stocks map
 finding every place from its lot, the food made, hauled and eaten with nothing short for the day and the food made
 covering what was eaten. Each check has a negative (neg): a trade's lot taken from the places, a resident housed in the
@@ -111,7 +113,7 @@ TRADE_JS = r"""(neg)=>{const P={};Object.keys(_city.simPlans).forEach(t=>{P[t]={
  if(neg==='balance'){const b=C(),g=B.goods.find(g=>b.towns.kautoa.rows[g]&&b.towns.kautoa.rows[g].today);b.towns.kautoa.rows[g].today.change+=10;return pick(ISLE.tradeChecks(b,P),/balance/);}
  return [];}"""
 TRADE_NEGS = ('berth', 'ways', 'trace', 'imported', 'sea', 'balance')
-# P7d, the week test (src/48-isle-week.js; PLAN.md section 7): after the canoe line's checks, a week with Valapo watched
+# P7d, the week test (core/region/48-region-week.js; PLAN.md section 7): after the canoe line's checks, a week with Valapo watched
 # (Kautoa abstract), then a week with Kautoa watched (Valapo abstract), and ISLE.weekChecks on the two; each with its
 # negative on a changed copy. The page keeps the two weeks (window._week) and the wall time of each
 WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w2=ISLE.simWeek('Kautoa',7*1440);ISLE.simWatch(_city.town);window._week=[w1,w2];}
@@ -149,6 +151,16 @@ SIMX_JS = r"""(neg)=>{const doc=JSON.parse(JSON.stringify(ISLE.simExport())),pic
 SIMX_NEGS = ('home', 'stock', 'sea', 'count')
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'age', 'social', 'map', 'haul', 'short', 'made')
+# the thieves' guild on the map (47c, 60 DRAW.guild): one a town, registered under its tavern in that town's registry as
+# a landmark named "Thieves' guild", the drawn town's sign and pin over it; the negative moves the pin 50 m off
+GUILD_JS = r"""(neg)=>{const gm=_city.guilds||[],T=_city.town,cur=gm.find(m=>m.town===T),G=(DRAW.guildMarks||[]).find(g=>g.mark.town===T);
+ if(neg==='moved'&&G)G.pin.position.x+=50;
+ const reg=gm.every(m=>{const P=SIM.R.place[m.place];return P&&P.guild&&P.kind==='tavern'&&m.record;}),R=cur&&KTAGS.page.get(cur.record);
+ const named=!!R&&R.name==="Thieves' guild"&&R['class']==='landmark'&&R.parent===cur.tag;
+ const drawn=!!G&&Math.hypot(G.pin.position.x-cur.at[0],G.pin.position.z-cur.at[2])<1&&G.sign.visible!==false;
+ if(neg==='moved'&&G)G.pin.position.x-=50;
+ return{name:"the thieves' guild on the map: one a town, a landmark under its tavern, its sign and pin drawn over it",ok:gm.length===2&&reg&&named&&drawn,
+  detail:gm.map(m=>m.town+' '+m.place+' ('+(SIM.R.place[m.place]||{}).kind+', record '+m.record+')').join('; ')+(R?'; '+T+"'s record: "+R.name+' under '+R.parent:'')+(drawn?'; sign and pin drawn':'; NOT DRAWN OVER IT')};}"""
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];
  if(!ISLE.SIM.dayMs){const t0=performance.now(),c=ISLE.TUNE.sim.clock.start+630;ISLE.simRun(c-ISLE.SIM.clock.m);ISLE.SIM.soc={};ISLE.SIM.order.forEach(k=>{ISLE.SIM.soc[k]=ISLE.simSocial(k);});ISLE.simDay();ISLE.SIM.dayMs=Math.round(performance.now()-t0);}
  const books=ISLE.simBooks(s),res=()=>SIM.all('actor').filter(a=>!a.driven&&SIM.R.role[a.role].settlement===s).map(a=>Object.assign({},a)),cp=()=>JSON.parse(JSON.stringify(books));
@@ -186,120 +198,128 @@ EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'b
 
 
 async def run_city(a):
-    import harness
-    from playwright.async_api import async_playwright
+    import harness   # check_profile
     folder = os.path.dirname(os.path.dirname(os.path.abspath(a.html)))
-    page = os.path.relpath(os.path.abspath(a.html), folder).replace(os.sep, '/')
-    fails = []
+    fails, codes = [], []
     views = {'Kautoa': ('overview', 'ceremonial centre', 'palace', 'harbour', 'works quarter', 'izanitown', 'ridertown'),
              'Valapo': ('overview', 'village and harbour', 'south harbour', 'garrison')}
-    with harness.serve(folder) as port:
-        async with async_playwright() as p:
-            b = await harness.launch_chromium(p)
-            for town in ('Kautoa', 'Valapo'):
-                pg = await b.new_page(viewport={'width': 1280, 'height': 800})
-                errs = []
-                pg.on('pageerror', lambda e: errs.append(str(e)))
-                await pg.goto('http://127.0.0.1:%d/%s?town=%s' % (port, page, town), timeout=0)
-                await pg.wait_for_function('window._city && (_city.error || _city.both)', timeout=900000, polling=1000)
-                st = json.loads(await pg.evaluate('JSON.stringify({err:_city.error||_city.otherError||null,town:_city.town,ms:_city.ms,draw:_city.draw})'))
-                print('--- %s (%s) ---' % (town, st.get('ms')))
-                if st['err'] or st['town'] != town:
-                    print('  FAIL  loads clean : ' + str(st['err'] or 'opened ' + st['town'])); fails.append(town + ' load'); await pg.close(); continue
-                if a.assert_:
-                    seen = set()
-                    for r in await pg.evaluate(CITY_JS, None):
-                        if r['name'] in seen: continue
-                        seen.add(r['name'])
-                        print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
-                        if not r['ok']: fails.append(r['name'])
-                    for neg in ('overlap', 'sea', 'landmark'):
-                        rs = await pg.evaluate(CITY_JS, neg)
-                        caught = bool(rs) and not any(r['ok'] for r in rs)
-                        print(('  PASS  ' if caught else '  MISSED') + ' negative (' + neg + ') : ' + '; '.join(r['detail'] for r in rs))
-                        if not caught: fails.append(town + ': negative ' + neg)
-                    if town == 'Valapo':
-                        se = await pg.evaluate('window._city.simError || (window._city.sim ? null : "not declared")')
-                        if se:
-                            print('  FAIL  the towns on core/simulation : ' + se[:400]); fails.append('sim')
-                        else:
-                            for st in SIM_TOWNS:
-                                r0 = await pg.evaluate(SIM_JS, {'town': st, 'neg': None})
-                                print('  INFO  %s on core/simulation : %s' % (st, json.dumps(r0['info'])))
-                                print('  INFO  the people of %s : %s' % (st, json.dumps(r0['people'])))
-                                for r in r0['checks']:
-                                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
-                                    if not r['ok']: fails.append(r['name'])
-                                if r0['level'] != 'presented':
-                                    print('  INFO  %s is abstract on this page: its free hours are not measured (its people do not decide)' % st)
-                                for neg in SIM_NEGS:
-                                    if neg == 'social' and r0['level'] != 'presented': continue
-                                    rs = await pg.evaluate(SIM_JS, {'town': st, 'neg': neg})
-                                    caught = bool(rs) and not any(r['ok'] for r in rs)
-                                    print(('  PASS  ' if caught else '  MISSED') + ' negative (%s sim %s) : ' % (st, neg) + '; '.join(r['detail'] for r in rs))
-                                    if not caught: fails.append('%s: negative sim %s' % (st, neg))
-                            r = await pg.evaluate(CANOE_JS, None)
-                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                            if not r['ok']: fails.append(r['name'])
-                            r = await pg.evaluate(CANOE_JS, 'flip')
-                            print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a vessel shown in the wrong state) : ' + r['detail'])
-                            if r['ok']: fails.append('negative canoes')
-                            r = await pg.evaluate(CIT_JS, None)
-                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                            if not r['ok']: fails.append(r['name'])
-                            r = await pg.evaluate(CIT_JS, 'shift')
-                            print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a figure 50 m off its pose) : ' + r['detail'])
-                            if r['ok']: fails.append('negative citizens')
-                            for r in await pg.evaluate(TRADE_JS, None):
+    for town in ('Kautoa', 'Valapo'):
+        async with verify_page(a.html, here=HERE, root=folder, size='1280x800', query='?town=' + town, settle_ms=0,
+                               ready_js='window._city && (_city.error || _city.both)') as V:
+            pg, errs, tf = V.page, V.errs, V.fails
+            await pg.wait_for_function('window._city && (_city.error || _city.both)', timeout=900000, polling=1000)
+            st = json.loads(await pg.evaluate('JSON.stringify({err:_city.error||_city.otherError||null,town:_city.town,ms:_city.ms,draw:_city.draw})'))
+            print('--- %s (%s) ---' % (town, st.get('ms')))
+            if st['err'] or st['town'] != town:
+                print('  FAIL  loads clean : ' + str(st['err'] or 'opened ' + st['town'])); tf.append(town + ' load'); raise Abort(1)
+            if a.assert_:
+                seen = set()
+                for r in await pg.evaluate(CITY_JS, None):
+                    if r['name'] in seen: continue
+                    seen.add(r['name'])
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                    if not r['ok']: tf.append(r['name'])
+                # core/door (src/63-isle-doors.js): the Vernacular's doors hosted, on their lots, posed; the negative: records left
+                # in the piece's frame (as every piece's were before 2026-11-09) are off their lots
+                r = await pg.evaluate('typeof IDOORS !== "undefined" ? IDOORS.check() : {ok:false, detail:"no IDOORS"}')
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + 'doors-hosted : ' + r['detail'])
+                if not r['ok']: tf.append('doors-hosted')
+                r = await pg.evaluate('typeof IDOORS !== "undefined" ? IDOORS.check("origin") : {ok:true, detail:"no IDOORS"}')
+                print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (doors in the piece\'s frame) : ' + r['detail'])
+                if r['ok']: tf.append(town + ': negative doors')
+                for neg in ('overlap', 'sea', 'landmark'):
+                    rs = await pg.evaluate(CITY_JS, neg)
+                    caught = bool(rs) and not any(r['ok'] for r in rs)
+                    print(('  PASS  ' if caught else '  MISSED') + ' negative (' + neg + ') : ' + '; '.join(r['detail'] for r in rs))
+                    if not caught: tf.append(town + ': negative ' + neg)
+                if town == 'Valapo':
+                    se = await pg.evaluate('window._city.simError || (window._city.sim ? null : "not declared")')
+                    if se:
+                        print('  FAIL  the towns on core/simulation : ' + se[:400]); tf.append('sim')
+                    else:
+                        for st in SIM_TOWNS:
+                            r0 = await pg.evaluate(SIM_JS, {'town': st, 'neg': None})
+                            print('  INFO  %s on core/simulation : %s' % (st, json.dumps(r0['info'])))
+                            print('  INFO  the people of %s : %s' % (st, json.dumps(r0['people'])))
+                            for r in r0['checks']:
                                 print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
-                                if not r['ok']: fails.append(r['name'])
-                            for neg in TRADE_NEGS:
-                                rs = await pg.evaluate(TRADE_JS, neg)
+                                if not r['ok']: tf.append(r['name'])
+                            if r0['level'] != 'presented':
+                                print('  INFO  %s is abstract on this page: its free hours are not measured (its people do not decide)' % st)
+                            for neg in SIM_NEGS:
+                                if neg == 'social' and r0['level'] != 'presented': continue
+                                rs = await pg.evaluate(SIM_JS, {'town': st, 'neg': neg})
                                 caught = bool(rs) and not any(r['ok'] for r in rs)
-                                print(('  PASS  ' if caught else '  MISSED') + ' negative (canoe line %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
-                                if not caught: fails.append('negative canoe line ' + neg)
-                            rw = await pg.evaluate(WEEK_JS, None)
-                            print('  INFO  the week test : a week with Valapo watched (Kautoa abstract) %d ms, with Kautoa watched (Valapo abstract) %d ms' % tuple(rw['ms']))
-                            for r in rw['checks']:
-                                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
-                                if not r['ok']: fails.append(r['name'])
-                            for neg in WEEK_NEGS:
-                                rs = await pg.evaluate(WEEK_JS, neg)
-                                caught = bool(rs) and not any(r['ok'] for r in rs)
-                                print(('  PASS  ' if caught else '  MISSED') + ' negative (week %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
-                                if not caught: fails.append('negative week ' + neg)
-                            for r in await pg.evaluate(SIMX_JS, None):
-                                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
-                                if not r['ok']: fails.append(r['name'])
-                            for neg in SIMX_NEGS:
-                                rs = await pg.evaluate(SIMX_JS, neg)
-                                caught = bool(rs) and not any(r['ok'] for r in rs)
-                                print(('  PASS  ' if caught else '  MISSED') + ' negative (sim export %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
-                                if not caught: fails.append('negative sim export ' + neg)
-                    if town == 'Kautoa':
-                        prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
-                        pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)
-                        print(('  PASS  ' if pok else ('  FAIL  ' if a.profile else '  INFO  ')) + 'export-profile : box %s, %s%s' % (EXPORT_BOX, ', '.join(prof), '' if a.profile else ' (reported: the open world keeps the profile, M7)'))
-                        for ln in lines: print('        ' + ln)
-                        if not pok and a.profile: fails.append('export-profile')
-                        if not a.profile:   # the rest of M6's target, reported (not failed) until each section lands
-                            tok, tl = await harness.check_profile(pg, EXPORT_BOX, EXPORT_TARGET)
-                            print('  INFO  export target (M6) : ' + next((ln for ln in tl if ln.startswith('profile ')), '').split(': ', 1)[-1].split(';')[0] + ' met')
-                            print('        ' + next((ln for ln in tl if ln.startswith('sections: ')), ''))
-                if a.shots:
-                    os.makedirs(a.shots, exist_ok=True)
-                    # software GL: the nearest 600 pieces in full (the rest as massing), and time for each frame
-                    await pg.evaluate('DRAW.nearMax=600;DRAW.at=null')
-                    for v in views[town]:
-                        await pg.evaluate('_city.view(%s)' % json.dumps(v))
-                        await pg.wait_for_timeout(1500)
-                        await pg.screenshot(path=os.path.join(a.shots, 'city-%s-%s.png' % (town.lower(), v.replace(' ', '-'))), timeout=300000)
-                if errs:
-                    print('  FAIL  page errors : ' + '; '.join(errs[:3])); fails.append(town + ' page errors')
-                await pg.close()
-            await b.close()
+                                print(('  PASS  ' if caught else '  MISSED') + ' negative (%s sim %s) : ' % (st, neg) + '; '.join(r['detail'] for r in rs))
+                                if not caught: tf.append('%s: negative sim %s' % (st, neg))
+                        r = await pg.evaluate(CANOE_JS, None)
+                        print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                        if not r['ok']: tf.append(r['name'])
+                        r = await pg.evaluate(CANOE_JS, 'flip')
+                        print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a vessel shown in the wrong state) : ' + r['detail'])
+                        if r['ok']: tf.append('negative canoes')
+                        r = await pg.evaluate(GUILD_JS, None)
+                        print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                        if not r['ok']: tf.append(r['name'])
+                        r = await pg.evaluate(GUILD_JS, 'moved')
+                        print(('  PASS  ' if not r['ok'] else '  MISSED') + " negative (the guild's pin 50 m off) : " + r['detail'])
+                        if r['ok']: tf.append('negative guild')
+                        r = await pg.evaluate(CIT_JS, None)
+                        print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                        if not r['ok']: tf.append(r['name'])
+                        r = await pg.evaluate(CIT_JS, 'shift')
+                        print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a figure 50 m off its pose) : ' + r['detail'])
+                        if r['ok']: tf.append('negative citizens')
+                        for r in await pg.evaluate(TRADE_JS, None):
+                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                            if not r['ok']: tf.append(r['name'])
+                        for neg in TRADE_NEGS:
+                            rs = await pg.evaluate(TRADE_JS, neg)
+                            caught = bool(rs) and not any(r['ok'] for r in rs)
+                            print(('  PASS  ' if caught else '  MISSED') + ' negative (canoe line %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
+                            if not caught: tf.append('negative canoe line ' + neg)
+                        rw = await pg.evaluate(WEEK_JS, None)
+                        print('  INFO  the week test : a week with Valapo watched (Kautoa abstract) %d ms, with Kautoa watched (Valapo abstract) %d ms' % tuple(rw['ms']))
+                        for r in rw['checks']:
+                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                            if not r['ok']: tf.append(r['name'])
+                        for neg in WEEK_NEGS:
+                            rs = await pg.evaluate(WEEK_JS, neg)
+                            caught = bool(rs) and not any(r['ok'] for r in rs)
+                            print(('  PASS  ' if caught else '  MISSED') + ' negative (week %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
+                            if not caught: tf.append('negative week ' + neg)
+                        for r in await pg.evaluate(SIMX_JS, None):
+                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                            if not r['ok']: tf.append(r['name'])
+                        for neg in SIMX_NEGS:
+                            rs = await pg.evaluate(SIMX_JS, neg)
+                            caught = bool(rs) and not any(r['ok'] for r in rs)
+                            print(('  PASS  ' if caught else '  MISSED') + ' negative (sim export %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
+                            if not caught: tf.append('negative sim export ' + neg)
+                if town == 'Kautoa':
+                    prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
+                    pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)
+                    print(('  PASS  ' if pok else ('  FAIL  ' if a.profile else '  INFO  ')) + 'export-profile : box %s, %s%s' % (EXPORT_BOX, ', '.join(prof), '' if a.profile else ' (reported: the open world keeps the profile, M7)'))
+                    for ln in lines: print('        ' + ln)
+                    if not pok and a.profile: tf.append('export-profile')
+                    if not a.profile:   # the rest of M6's target, reported (not failed) until each section lands
+                        tok, tl = await harness.check_profile(pg, EXPORT_BOX, EXPORT_TARGET)
+                        print('  INFO  export target (M6) : ' + next((ln for ln in tl if ln.startswith('profile ')), '').split(': ', 1)[-1].split(';')[0] + ' met')
+                        print('        ' + next((ln for ln in tl if ln.startswith('sections: ')), ''))
+            if a.shots:
+                os.makedirs(a.shots, exist_ok=True)
+                # software GL: the nearest 600 pieces in full (the rest as massing), and time for each frame
+                await pg.evaluate('DRAW.nearMax=600;DRAW.at=null')
+                for v in views[town]:
+                    await pg.evaluate('_city.view(%s)' % json.dumps(v))
+                    await pg.wait_for_timeout(1500)
+                    await V.shot(os.path.join(a.shots, 'city-%s-%s.png' % (town.lower(), v.replace(' ', '-'))), view=town + ': ' + v, timeout=300000)
+            if errs:
+                print('  FAIL  page errors : ' + '; '.join(errs[:3])); tf.append(town + ' page errors')
+        codes.append(V.exit())
+        fails += [f if f.startswith(town) else town + ': ' + f for f in V.fails]
     print('\nOK' if not fails else '\nFAILED: ' + ', '.join(fails))
-    return 1 if fails else 0
+    return max(codes + [1 if fails else 0])
 
 
 def hashes_ok():
@@ -335,52 +355,44 @@ def merge_ok():
 
 
 async def run(a):
-    import harness
-    from playwright.async_api import async_playwright
     folder = os.path.dirname(os.path.dirname(os.path.abspath(a.html)))   # the build folder: the page fetches ../site/
-    page = os.path.relpath(os.path.abspath(a.html), folder).replace(os.sep, '/')
-    fails = []
-    with harness.serve(folder) as port:
-        async with async_playwright() as p:
-            b = await harness.launch_chromium(p)
-            for town in ('Kautoa', 'Valapo'):
-                pg = await b.new_page(viewport={'width': 1280, 'height': 800})
-                errs = []
-                pg.on('pageerror', lambda e: errs.append(str(e)))
-                await pg.goto('http://127.0.0.1:%d/%s?town=%s' % (port, page, town), timeout=0)
-                await pg.wait_for_function('window._site && _site.ready', timeout=300000)
-                st = await pg.evaluate('JSON.stringify({err:_site.error||null,town:_site.town,from:_site.from,ms:_site.ms})')
-                st = json.loads(st)
-                print('--- %s (site from %s, ready in %s ms) ---' % (town, st['from'], (st['ms'] or {}).get('site')))
-                if st['err'] or st['town'] != town:
-                    print('  FAIL  loads clean : ' + str(st['err'] or 'opened ' + st['town']))
-                    fails.append(town + ' load'); await pg.close(); continue
-                print('  PASS  loads clean : no error, the town is ' + town)
-                if a.assert_:
-                    for r in await pg.evaluate(CHECKS, None):
-                        print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
-                        if not r['ok']: fails.append(town + ': ' + r['name'])
-                    for neg, nm in (('shore', 'the frame: on land, the settlement point and a shore in the square'), ('frame', "the ground is the open world's"), ('payload', 'the editor draws on it and saves the town with its frame')):
-                        r = [x for x in await pg.evaluate(CHECKS, neg) if x['name'] == nm][0]
-                        print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
-                        if r['ok']: fails.append(town + ': negative ' + neg)
-                if a.shots:
-                    os.makedirs(a.shots, exist_ok=True)
-                    for v in ('v-map', 'v-city'):
-                        await pg.evaluate("document.getElementById('%s').onclick()" % v)
-                        await pg.wait_for_timeout(800)
-                        await pg.screenshot(path=os.path.join(a.shots, '%s-%s.png' % (town.lower(), v[2:])))
-                if errs:
-                    print('  FAIL  page errors : ' + '; '.join(errs[:3])); fails.append(town + ' page errors')
-                await pg.close()
-            await b.close()
+    fails, codes = [], []
+    for town in ('Kautoa', 'Valapo'):
+        async with verify_page(a.html, here=HERE, root=folder, size='1280x800', query='?town=' + town, settle_ms=0) as V:
+            pg, errs, tf = V.page, V.errs, V.fails
+            await pg.wait_for_function('window._site && _site.ready', timeout=300000)
+            st = await pg.evaluate('JSON.stringify({err:_site.error||null,town:_site.town,from:_site.from,ms:_site.ms})')
+            st = json.loads(st)
+            print('--- %s (site from %s, ready in %s ms) ---' % (town, st['from'], (st['ms'] or {}).get('site')))
+            if st['err'] or st['town'] != town:
+                print('  FAIL  loads clean : ' + str(st['err'] or 'opened ' + st['town']))
+                tf.append(town + ' load'); raise Abort(1)
+            print('  PASS  loads clean : no error, the town is ' + town)
+            if a.assert_:
+                for r in await pg.evaluate(CHECKS, None):
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                    if not r['ok']: tf.append(town + ': ' + r['name'])
+                for neg, nm in (('shore', 'the frame: on land, the settlement point and a shore in the square'), ('frame', "the ground is the open world's"), ('payload', 'the editor draws on it and saves the town with its frame')):
+                    r = [x for x in await pg.evaluate(CHECKS, neg) if x['name'] == nm][0]
+                    print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
+                    if r['ok']: tf.append(town + ': negative ' + neg)
+            if a.shots:
+                os.makedirs(a.shots, exist_ok=True)
+                for v in ('v-map', 'v-city'):
+                    await pg.evaluate("document.getElementById('%s').onclick()" % v)
+                    await pg.wait_for_timeout(800)
+                    await V.shot(os.path.join(a.shots, '%s-%s.png' % (town.lower(), v[2:])), view=town + ': ' + v[2:])
+            if errs:
+                print('  FAIL  page errors : ' + '; '.join(errs[:3])); tf.append(town + ' page errors')
+        codes.append(V.exit())
+        fails += [f if f.startswith(town) else town + ': ' + f for f in V.fails]
     if a.assert_:
         print('--- without a browser ---')
         for name, (ok, detail) in (('serve.py merges one town at a time', merge_ok()), ("the Voth files read are the ones recorded", hashes_ok())):
             print(('  PASS  ' if ok else '  FAIL  ') + name + ' : ' + detail)
             if not ok: fails.append(name)
     print('\nOK' if not fails else '\nFAILED: ' + ', '.join(fails))
-    return 1 if fails else 0
+    return max(codes + [1 if fails else 0])
 
 
 if __name__ == '__main__':

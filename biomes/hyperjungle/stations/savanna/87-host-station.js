@@ -27,7 +27,7 @@ function stationBuild(){
  BIO.kitWrap('hyperjungle',{d(){if(BIO.defs.tallgrass)return;const LQ=new URLSearchParams(location.search),EM=EASTABYSS.MAT.grass;
   const m=BIO.leafMat(EM.map,'tallgrass',{swayW:'(position.y)',swayA:.13,alphaTest:.4,ground:LQ.get('groundtint')==='0'?null:{k:.3,gain:.36,fade:[1500,2100]},
    season:LQ.get('season')==='0'?null:{colour:0xc4a862,k:.75}});
-  BIO.def('tallgrass',EASTABYSS.G.tuft(),m,{label:'Tall grass (the savanna)'});}}).d();
+  BIO.def('tallgrass',EASTABYSS.G.tuft(),m,{label:'Tall grass (the savanna)',cap:650000,capWhy:'the savanna\'s tall grass is the station (the owner kept it, 2026-11-08): two tufts a 3 m cell near, two a 6 m cell mid, one a 13 m cell far, over the whole burn-aged savanna: 555,500 at 2026-11-04'});}}).d();
  const grass=BIO.kitWrap('hyperjungle',{g(){const bands=[[3,0,LD.floor||700],[6,LD.floor||700,LD.mid||1600],[13,LD.mid||1600,TERR.R]],o=BIO.center();
   bands.forEach((B,bi)=>{BIO.range=[LD.floor,LD.mid,LD.far][bi]||null;
    cells(B[0],0x5c10+bi,(x,z,h,u)=>{const d=Math.hypot(x-o[0],z-o[1]);if(d<B[1]||d>=B[2])return;const Wz=zoneW(x,z),sv=Wz.sav*(1-Wz.gallery);if(sv<.05||u(3)>sv*(bi===2?.75:.92))return;

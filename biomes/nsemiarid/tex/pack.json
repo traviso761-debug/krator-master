@@ -170,6 +170,7 @@
    }
   },
   "card.saltbush": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -184,6 +185,7 @@
    "lib": "card.saltbush",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -202,6 +204,7 @@
    }
   },
   "card.seabuckthorn": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -216,6 +219,7 @@
    "lib": "card.seabuckthorn",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -259,6 +263,34 @@
     "keep": 0.6,
     "mean": 0.38126152411367376,
     "sourceMean": 0.3813
+   }
+  },
+  "ground.chaparral": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.chaparral.albedo.webp"
+   },
+   "lib": "ground.redsoil",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "ce4539c8c3115ff1173a953474733f868bd1e67b",
+    "normal": "711aa0d549b4acd1571ab003600887bbfbb20fe5",
+    "roughness": "863a720b0727d366b01de3e39f399dba32a62352"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4164468683699065,
+    "sourceMean": 0.4164
    }
   },
   "ground.crust": {
@@ -317,6 +349,34 @@
     "sourceMean": 0.5196
    }
   },
+  "ground.needles": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.needles.albedo.webp"
+   },
+   "lib": "ground.needles",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "410639659188ac4fab5aa79bb5bfe12ddc443712",
+    "normal": "c5133bb47d5c969ab2ef2f16167cf8b36770999a",
+    "roughness": "7bcc13f13283b214baffae4d0f4d235a694da73b"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.37560365416283703,
+    "sourceMean": 0.3756
+   }
+  },
   "ground.sand": {
    "breakup": null,
    "card": false,
@@ -345,6 +405,34 @@
     "sourceMean": 0.4541
    }
   },
+  "ground.scree": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.scree.albedo.webp"
+   },
+   "lib": "ground.gravel042",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e824583b35f87b8bdc9f4c1c97e2746f854674dd",
+    "normal": "b91f847c4e18a518e6bcee31a16044573a8aa28d",
+    "roughness": "61e6857381ccfe61df9ee2f3134e391e109d7b0b"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4899725250932282,
+    "sourceMean": 0.49
+   }
+  },
   "ground.silt": {
    "breakup": null,
    "card": false,
@@ -371,6 +459,62 @@
     "keep": 0.5,
     "mean": 0.6195538662929161,
     "sourceMean": 0.6196
+   }
+  },
+  "ground.slab": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.slab.albedo.webp"
+   },
+   "lib": "ground.slickrock",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2e664badb3f9243e00e3672754ef7bc2e392809b",
+    "normal": "eddcc00327a4d764a6dd4e00c5b688c2b1d9c09d",
+    "roughness": "794808585241b8ad952290d0d6bb6a30a5e2a5b8"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5281770808350805,
+    "sourceMean": 0.5282
+   }
+  },
+  "ground.snowbed": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.snowbed.albedo.webp"
+   },
+   "lib": "ground.snow.drift",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d1822cb50c45c25d5e9f6f02e06f0564c80d9604",
+    "normal": "fc6a5969163d446cf07abb4ba15958ac024d90e4",
+    "roughness": "f55780e9e52946a5dc5394bf9169a5ed8f90b61c"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.8123081396095424,
+    "sourceMean": 0.8123
    }
   },
   "ground.soda": {
@@ -458,6 +602,7 @@
    }
   },
   "leaf.blossom": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -466,6 +611,7 @@
    "lib": "card.blossom",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 5,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -484,6 +630,7 @@
    }
   },
   "leaf.broom": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -492,6 +639,7 @@
    "lib": "card.broom",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -510,6 +658,7 @@
    }
   },
   "leaf.fin": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "files": {
@@ -518,6 +667,7 @@
    "lib": "card.fin.membrane",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1,
@@ -536,6 +686,7 @@
    }
   },
   "leaf.lobed": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -544,6 +695,7 @@
    "lib": "card.lobed",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -562,6 +714,7 @@
    }
   },
   "leaf.pappus": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -576,6 +729,7 @@
    "lib": "card.pappus.giant",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 10,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -594,6 +748,7 @@
    }
   },
   "leaf.poplar": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "files": {
@@ -602,6 +757,7 @@
    "lib": "card.poplar.euphrates",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -620,6 +776,7 @@
    }
   },
   "leaf.round": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -628,6 +785,7 @@
    "lib": "card.aspen",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -646,6 +804,7 @@
    }
   },
   "leaf.small": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -654,6 +813,7 @@
    "lib": "card.sage",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -672,6 +832,7 @@
    }
   },
   "leaf.stipa": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -686,6 +847,7 @@
    "lib": "card.stipa",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -704,6 +866,7 @@
    }
   },
   "leaf.tangle": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -718,6 +881,7 @@
    "lib": "card.tumble",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -736,6 +900,7 @@
    }
   },
   "litter": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -750,6 +915,7 @@
    "lib": "card.litter",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -824,6 +990,7 @@
    }
   },
   "seed.samara": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -838,6 +1005,7 @@
    "lib": "card.samara.maple",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,

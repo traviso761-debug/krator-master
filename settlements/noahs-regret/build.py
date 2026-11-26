@@ -21,6 +21,7 @@ The page is one <script> made of, in filename order:
                          noahs-regret interior set (kits/interiors/sets/noahs-regret.js); then kits/ancients-interiors'
                          core (its kit_bundle.py): KratorAncientsInteriors, the ship's room kinds and the cabin cultures
 A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). VENDORED below: --vendor-check reports drift.
+81-sky.js (KratorSky) is the placeholder sky, read in place from core/atmos/placeholder (its README); a src/ copy is a shadow.
 
 Checks (fragments share one JS scope):
   1. no column-0 const/let/var/function/class name is declared in two fragments, or is a generic short name;
@@ -68,18 +69,24 @@ try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 OUT = os.path.join(DIST, 'noahs-regret.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'water')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'water', 'door')]   # door: KDOOR, KGLASS, KDOORHOST (core/door/README.md)
 # core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
 # minimap and cutaway, with core/clock, core/space and core/minimap (host.FULL). Not core/edits: no editor world (the catalog
 # pieces are merged into the hull-frame batch). Each file is its own scope (an IIFE): left out of the name rules.
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
 # Vendored engine files: identical copies of an upstream (fix upstream, then re-copy)
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
-            '30-geo.js': os.path.join(ROOT, 'kits', 'scyvoi', 'src', '30-geo.js')}
+VENDORED = {}
+# the engine's geometry, read in place (core/engine; MODULARITY-PLAN.md step 2): the rest of src/'s engine is this build's
+# own fork of it (10-core, 27-mat, 36-def, 90-scene, 91f-furnish, 91n-night, 93-anim), to be ported onto core/engine
+sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+import engine as kengine
 # GENERATED fragments, never written to src/
 # The furniture cultures: the Ancients' own fittings (ancient), the pirates' salvage (ancients-salvage, post-apoc, scrap),
 # the shared poor set and goods (generic, generic-goods): kits/interiors IX.CULTURE_FAMILY chains end in them.
@@ -137,6 +144,8 @@ def sources():
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     khost.resolve(paths, CORE_HOST)
+    paths.update(psky.paths(psky.SKY))
+    paths.update(kengine.paths(['30-geo.js', '36o-open.js']))   # 36o: the engine's door leaves on core/door (svLeaf), read in place
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
@@ -148,6 +157,7 @@ def main():
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     bodies.update({f: open(paths[f], encoding='utf-8', newline='').read() for f in files if f not in vb})
+    BSRC.report(paths, vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
     is_core = lambda f: f in core and paths[f] == core[f]
     is_vendored = lambda f: f in VENDORED
     errs = []

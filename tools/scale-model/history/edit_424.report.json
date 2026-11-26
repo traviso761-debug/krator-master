@@ -1,0 +1,65 @@
+{
+  "version": "4.24",
+  "region_99": {
+    "id": "rmvraoas90co7",
+    "name": "Region 99",
+    "cells_height_grid": 24334,
+    "cells_moved": 23582,
+    "elev_m": {
+      "min": 217.7,
+      "max": 13462.2,
+      "median": 2483.0,
+      "mount_caelum_peak_m": 4596.7,
+      "lake_nim_level_m": 240.0,
+      "max_boundary_delta_m": 0.0
+    },
+    "lake_nim_cells": 33,
+    "lake_nim_area_km2": 528,
+    "climate_px": {
+      "BWh": 3859,
+      "BWk": 18462,
+      "BSk": 21747,
+      "Csa": 4396,
+      "Csb": 764,
+      "Cwb": 312,
+      "Dsb": 4186,
+      "Dsc": 3117,
+      "ET": 5219,
+      "EF": 8090,
+      "HF": 17954,
+      "O": 8696,
+      "WS": 132
+    }
+  },
+  "siphon_pits": {
+    "id": "rmvra9zogfm9t",
+    "name": "Siphon Pits",
+    "cells_height_grid": 11033,
+    "cells_moved": 10462,
+    "elev_m": {
+      "min": 1833.8,
+      "max": 7386.0,
+      "median": 4468.6,
+      "ostrukh_lake_level_m": 1850.0,
+      "max_boundary_delta_m": 0.0
+    },
+    "maar_pits_count": 36,
+    "ostrukh_lake_cells": 14,
+    "maar_lake_cells": 40,
+    "climate_px": {
+      "BSk": 3021,
+      "Cwb": 513,
+      "Cfa": 240,
+      "Cfb": 486,
+      "Dsb": 5406,
+      "Dsc": 2871,
+      "Dwc": 455,
+      "Dfc": 68,
+      "ET": 25604,
+      "EF": 4749,
+      "HF": 316,
+      "WH": 216
+    }
+  },
+  "rivers_updated_total": 63
+}

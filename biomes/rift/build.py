@@ -48,6 +48,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # THE STATIONS (PLAN-STATIONS.md, 2026-10-27): `python3 build.py --station <name>` builds dist/rift-<name>.html from src/ with the
 # station's own fragments (stations/<name>/*) in place of src/'s of the same name (its map 45m, water 89w, sky 89, views 99...)
 _args=[a for a in sys.argv[1:] if a!='--no-checks']
@@ -129,6 +130,7 @@ PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','cor
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+PATH.setdefault('56-core-water-breakup.js',os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','56-core-water-breakup.js')))   # the breakup (core/water ext/56), on by default since 2026-11-09
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
 # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
 for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
@@ -142,6 +144,28 @@ for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherho
 PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
 for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
+# a CAVE station (stations/<name>/station.json "page": "cave"; stations/maze, 2026-11-09): a whole underground page, as the Hearths' Cave of
+# Crystals is. None of the above: the station's numbered fragments, the core its station.json names ("core": {name: path from the repo root}),
+# core/host's shell ("host": a list name in core/host/host.py), and the material packs: this kit's own families named in "own", and other kits'
+# read in place ("packs", as read.json's). Every other page is assembled exactly as before.
+_cj=os.path.join(HERE,'stations',STATION,'station.json') if STATION else None
+if _cj and os.path.isfile(_cj):
+    import json as _json
+    with open(_cj,encoding='utf-8') as _fh: _cs=_json.load(_fh)
+    if _cs.get('page')=='cave':
+        _sd=os.path.join(HERE,'stations',STATION)
+        PATH={f:os.path.join(_sd,f) for f in os.listdir(_sd) if re.match(r'\d',f)}
+        for _k,_p in _cs.get('core',{}).items(): PATH.setdefault(_k,os.path.normpath(os.path.join(HERE,'..','..',_p)))
+        khost.resolve(PATH,getattr(khost,_cs.get('host','FULL')))
+        _pj=os.path.join(HERE,'tex','pack.json')
+        _all=sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []
+        VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'rift',exclude=[f for f in _all if f not in _cs.get('own',[])],own=True),
+                 khost.EDITS_JS:khost.edits_js(HERE,'rift-'+STATION)}
+        for _k,(_d,_key,_take) in _cs.get('packs',{}).items():
+            _dd=os.path.normpath(os.path.join(HERE,_d)); _pj=os.path.join(_dd,'tex','pack.json')
+            _all=sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []
+            VIRTUAL[_k]=matlib_pack.fragment(_dd,_key,exclude=[f for f in _all if f not in _take])
+        for f in VIRTUAL: PATH[f]=None
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -155,8 +179,9 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8', newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

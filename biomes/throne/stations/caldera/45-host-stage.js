@@ -61,3 +61,6 @@ const FUMS=(function(){reseed(5002);const o=[];
 // the plume's column: out of the lake, straight up, then leaning away south-east on the high wind
 const PLUME={x:LAKE.x,z:LAKE.z,base:LAKE.level,lean:[.55,.35],name:'The plume'};
 function plumeAt(x,z){return 0;}
+// THE AIR's height fog (89zz-host-core.js; the final rebuild): the thin air at 10.75 km, no valley mist (the caldera's floor is 450 m under the rim: a mist
+// pooled under the eye would fill it)
+const ATMOS_AIR={falloff:1/1400,sun:.4,sky:.45};

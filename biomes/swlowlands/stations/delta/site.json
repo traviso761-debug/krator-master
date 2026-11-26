@@ -1,0 +1,12 @@
+{
+ "name": "Wing",
+ "kind": "ruined arcology (Vothic, destroyed)",
+ "model": "5.1",
+ "px": [
+  699,
+  1042
+ ],
+ "page": "dist/swlowlands-delta.html",
+ "read": "window._wingSite (x, z, y, r, flood)",
+ "note": "the ground is carved flat at the bench; settlements' plan dresses it; footings drown each winter"
+}

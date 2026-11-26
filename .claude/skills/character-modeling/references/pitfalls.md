@@ -62,6 +62,11 @@ area you are about to change.
   Garments settled to the body are not exempt: the made cultures' trousers showed the same knees in a crouch, so every
   legged item takes the cover (`legged_trousers`). Diff the red shots before and after on a magenta background: red
   gone is the fix, new magenta would be a hole the wider cover opened.
+- **A hole beside the arm at a sleeve's edge with the arm overhead** (the stretch, a climb, a two-handed parry) → shot
+  on magenta, the hole shows the background, and with the hide off it fills with skin: the top's hide reached right up
+  to the sleeve's opening, which lifts off the arm. Hide no skin within 4 cm of the opening out on the arm (6 cm put the
+  deltoid through the tee's shoulder), and draw garments on both sides: library tops are one-sided in their glTFs, so
+  the sleeve's inside was missing too (Godot's push shader was already `cull_disabled`: check both twins draw alike).
 - **A nipple through a T-shirt** (the man's, in the idles) → the base's nipples are a primitive of their own
   (`Human.nipple`), drawn over the skin: no hide reaches them. Hide such a part when an item hides all the skin under it
   (`hide_parts`). Draw the garments hidden and the hide on (A-pose, front and back) to see every such leftover at once.
@@ -174,6 +179,14 @@ area you are about to change.
   over trousers in motion.
 - **A rebuild in a fresh worktree loses the weave with no error** → the library's albedos are LFS pointers, and the textures came out a quarter smaller. Compare an untouched garment's GLB with its piece first (geometry
   and weights exact, image size close); `make_garments.py` now stops on a pointer. On Windows `make_mpfb.py` writes kit.json with CRLF.
+- **Toenails standing out below a shoe's toe** (the woman, the limp, "toe bone sticking out") → the toenails are a
+  primitive of their own (`Human.toenails`) like the nipples: `HIDE_PARTS` takes both, so a shoe that hides all the
+  toes' skin hides them. A tool that rewrites `hide_parts` keeps the entries it does not derive: `make_mpfb.py hides`
+  first wiped the animal heads' lips, brows and ears, and dropped three harnesses' nipples whose hide it had not
+  changed.
+- **A hide refresh needs the manifest's GLBs, not the newest ones** → hash every candidate piece against
+  build-manifest.json and assemble a matching set from every checkout (and the published `.txt` pieces) first; garments
+  rebuilt since the last committed manifest give hides for geometry that is not shipped.
 - **Skin that is bare by design is not a fault** → a flat-colour count flagged the Dalab peasant's midriff and arms in front
   of skirts. Colour the skin by where it is at rest, take what the A-pose shows bare as the cut, and leave out the arms,
   the hands, the head and the feet.
@@ -346,6 +359,33 @@ area you are about to change.
   other limbs: here they pushed legs aside, and only the JS-to-Godot joint comparison showed it.
 - Measure a pass's reach before calling it done: the joints of every clip at a few times on all six bodies, before and
   after (regressions showed in clips nobody flagged: idle 2, the pistol stances).
+- **A made clip's key poses checked on the canonical skeleton miss by 5 to 7 cm**: the posture pass bends the spine
+  forward on top of the clip, so the head is further forward on the page than in `_Rig`'s forward kinematics. Dig's lift
+  and the hammer's swing went through the bowed head although the clip's own numbers cleared it. Aim the clip for 8 cm
+  clear (a script over `_Rig` per frame: the tool's points and the hands against the skull ball and a face ball), then
+  measure on the page. Route a swing round the head: out to the side on the way up, down in front of the shoulder before
+  it swings in (a straight line between two key poses beside the head passes in front of the face).
+- **A keep-out added to a pass every clip runs reaches far past the clip it was for**: a jaw ball in bodyFix (for Chop)
+  moved the one-handed sword clips' hands 8 to 18 cm. Sweep every clip that holds a prop, page before and after (joints
+  per frame, six bodies), and switch such a pass on per clip in the data when it changes clips nobody flagged.
+- **Arms through arms** (Arms folded: each wrist 2.5 to 3 cm into the other arm) → test the forearm (elbow to wrist) only
+  against the other arm (a hand may grip the other biceps, so it never clears), at the narrow-end radii (one radius for
+  the limb overstated the wrist and the lower biceps by 2 cm), and move only the forearm in front, along the chest's
+  forward axis: the closest-point way lifted the top forearm and, about the elbow, the hand to the collarbone; forward
+  square to a folded upper arm (which points down and forward) also tilts up; and each arm pushed out of the other in
+  turn ratchets both forward frame by frame. Stand aside while both hands hold one prop (the two-hand solve owns the
+  left arm). Measure on the skinned meshes, not the capsules.
+- **A faster push for a fast clip makes other clips jump** → letting a deep push turn three times faster cleared the
+  climb's knee but jumped hands 2 to 9 cm a frame in dig, harvest and repair. Scan every clip's largest frame-to-frame
+  joint move (relative to the hips) on all six bodies, before and after; run the old page twice to see the noise.
+- **r128's `SkinnedMesh.boneTransform(i, target)` ignores the point passed in** (it reads vertex i): skin a normal by
+  the vertex's bone matrix (`boneMatrixWorld * boneInverse * bindMatrix`) yourself. A probe that offset the point along
+  the normal read zero depth everywhere.
+- **A hand baked onto the head floats after posture** → posture tips the head and keeps the upper arms' direction, so
+  the man's (larger) posture carried his head away from Confused Scratch's palm: give the clip a `face` entry (a point
+  in the head's frame) so toFace puts the palm back after posture, in both runtimes.
+- **A foot held toes-down through a swing** (Limp) → bake a floor on the foot's pitch (`derive: feet`); a walk's toe-off
+  passes it for a frame, so judge by how long a clip stays past it, not the extreme.
 - **Baking a crowd's still poses** (`src/60-crowd.js`, 2026-10-20). A figure's pieces are SkinnedMeshes on r128
   materials with `skinning: true`, so they cannot simply be drawn as InstancedMeshes: bake each vertex through its
   bones (`SkinnedMesh.boneTransform`, after `skeleton.update()`) into a plain geometry, and give it vertex colours (its
@@ -354,6 +394,22 @@ area you are about to change.
   after a play is a blend of two clips (stop the mixer and clear `fig.action` first); `traverseVisible` from a hidden
   group visits nothing (keep the baking figure visible, just off the scene); and a figure's `update(dt)` advances the
   clip by `dt * cadence`, so a frame at clip time t is `update(t / cadence)`.
+
+- **A look-at that judges "off target" by the face gives up exactly where it is needed**: Charged slash's head looked
+  115 degrees aside with the chest square on, and a cut-off on the face's angle switched the pass off there. Judge by
+  the chest's forward (a spin turns the chest away; a head turned aside does not), clamp the head's turn, let the eyes
+  make up the rest.
+- **The baked head is not the drawn head**: the retargeted clips read 20 to 40 degrees head-down in the bake and the
+  posture pass lifts them at run time. Anything that aims the head (a look-at) runs after posture, in both runtimes.
+- **MakeHuman's eyes are weighted wholly to Head**: there are no eye joints, so a gaze is a vertex turn in the eye
+  shader about each eyeball's centre (from data, offset from the head joint). three.js turns in rest space before
+  skinning; Godot's VERTEX arrives skinned, so the turn and the centres go in carried by the head (R G R^-1).
+- **"Flatten the swing", not "lower the arm"**: a captured slash that rose from hip to over the shoulder, lowered by a
+  fixed angle, cut at the waist. Squash the hand's elevation from the shoulder toward a level plane instead.
+- **Godot's `play()` of the clip already playing does not restart it**: a test that plays a one-shot twice samples
+  the idle the second time. Seek to 0.
+- **Two `@src` clips side by side swapped places** when each was inserted by counting the clips built so far; give
+  every clip a place (its source's index in the build order) and sort once.
 
 ## 7. Posture
 
@@ -411,6 +467,25 @@ area you are about to change.
 - **A two-hand grip that re-chooses its thumb side every frame flips** half a turn round the handle when the clip's hand
   passes square to it (Two-handed parry, 0.47 to 0.83 s on the man only): choose it at the hold's first frame, keep it
   for the clip. Test a hand's turn per frame, not only whether it reaches.
+- **A left hand upside down round a haft** (Overhead chop, Heavy blunt swing, Two-handed parry, 2026-11-26): the left grip
+  frame is the right's mirrored, so its +Y is the little finger's side, and "the clip's thumb side at the first frame" came
+  out either way by body and by the clip played before (that frame still blends it). Take the side from the prop: the
+  left index side toward the head, i.e. the left +Y against the right's. Then roll the hand round the haft to bend the
+  wrist least (its axis nearest the forearm's line) and give the forearm half the twist that is left: "fingers away from
+  the shoulder" wrung the wrist 160-180 degrees where the haft ran along the arm (Spear advance). Measure the twist from
+  the hand's rest turn on the forearm, not from the identity.
+- **An eased keep-out sweeps through what it avoids** (Bow aim and scan, "not fixed!"): the least clear cant switched sides
+  between frames (+30 to -20) and the eased cant crossed upright through the thigh, while the check read the cant it was
+  heading for. Try the steps on the current side first, measure at the angle drawn, hold a clear angle while the step to
+  the wanted one is blocked, and rate-limit the escape when the leg comes to it.
+- **A max over frames starts at the least value**: a thumb check `max(thumb, dot)` started at 0 could never read -1 and
+  failed every clip; and a 40-frame loop over a 39-frame one-shot measured the idle after it.
+- **A keep-out that watches capsules misses the limb's own line** (Long gun shot, round 5): the rifle's butt runs straight
+  back from the pistol grip and the clip's forearm does too, so the forearm sat in the butt on every frame while the stock
+  keep-out, watching the upper arm, read 0. Test the skinned mesh against the prop's real box once; fix it by swinging the
+  elbow about the shoulder-to-wrist line (hand and prop stay put), the lower-elbow way first, never across the obstacle.
+- **A two-bone solve keeps the clip's elbow**: Bow shot's elbow stayed up by the head. Give the solve a pole when the pose
+  has a rule (a drawn bow: back along the arrow, level), blended by the same weight as the reach.
 - **A bowl on a hanging arm goes through the forearm**: turning the palm up is not enough when the clip holds the arm
   down or back; put the wrist in front of the belly with the two-bone solve first. A cup held by the left grip frame
   can come out upside down: keep its mouth up with the wrist, except while it is at the lips.
@@ -424,6 +499,42 @@ area you are about to change.
 - **Shots are minutes, not seconds, under SwiftShader**: headless Chromium renders on the GPU with `--use-angle=d3d11
   --ignore-gpu-blocklist --enable-gpu` (`tools/lab_shots.py --gpu`).
 
+- **A prop that stands on the ground (a cart) cannot ride the hand as baked**: the same clip puts the hand 0.8 m up on a
+  short body and 1.2 on a tall one and bobs it with each step, and a few degrees of wrist tip wheels a metre away
+  through the floor. Turn the wrist so the prop stands as modelled in the figure's frame and solve the arm to a fixed
+  grip height, before the two-hand grip (which reads the bar from the hand's holder, so turn the wrist, not the mesh).
+  Where the clip stands up out of reach, bend the back in the bake.
+- **`Box3.setFromObject` over-reads a rotated prop** (r128 transforms the geometry's box, not the vertices): a level cart
+  read 7 cm under the floor. Measure vertices, or the grip's height.
+- **Rebuilding the props moves every old prop's bytes** (4 bytes of JSON and 1e-18 of float noise across machines):
+  keep the old GLBs and add only the new ones, or every prop needs republishing.
+- **A bail that turns freely about the grip comes out through the fingers** (Water plants): a hanging prop's bail lies
+  along the grip's handle axis in the fist, so it may only swing about that axis. Turn the forearm about its own length
+  until the bail lies level, bend the wrist (capped) for what the forearm cannot (the handle partly along it), then
+  swing the load about the bail.
+- **Two solutions chosen afresh each frame flip the hand** (Water plants, the round after): two forearm turns lay the
+  bail level; "the smaller" swapped as the clip turned the forearm, as a mid-frame push turned the arm between two calls,
+  and, where none levels it, as the half-turn answer wrapped past 180 degrees and the cap sent it from +1.6 to -1.6.
+  Track the frame's whole turn against the last frame's, unwrap each candidate round that reference before comparing or
+  clamping, cap how fast the whole turn changes by the clip's dt, and keep a mid-frame push from the frame before (eased
+  back). Measure the hand's world turn per frame over the whole clip on all six; the first frames and the loop's seam
+  are where it shows.
+- **A bucket in the thigh** (the short bodies): keep its body (rings about the hang axis) out of the legs' capsules widened
+  for trousers by turning the arm at the shoulder. Push along the depth-weighted sum of every point inside, off its leg
+  (the deepest point alone, between the legs of a stride, sent it from one leg to the other), never in toward the other
+  leg, and never back the way the round before went (a leg through the middle of the pail flipped it front to back).
+  The twin's test figure (another build) found the oscillation the page's six did not: run the twin's checks too.
+- **A two-handed hold's support arm across the face** (Chop: the torso turned so the left shoulder sits under the chin,
+  both hands up behind the head): the arm's line from the shoulder to the handle passes the jaw, so no swing of the elbow
+  about that line clears it, and moving the hands away from the face overstretches the arm (it falls short and the
+  hold eases back to the clip). Bring both hands down (it shortens the reach), capped by what the arm reaches, then
+  swing the elbow away from what is left. Measure the right obstacle: the chin sits 13 cm in front of the head joint and 3
+  cm below it; the skull ball does not reach it (a `jaw` face point does).
+- **A clip that holds the other hand up hikes its shoulder** (Eat: the right hand reaches to the face; bring it down to
+  the bowl and the collarbone stays up by the ear): bring the collarbone down to its rest elevation (plus a few degrees)
+  before solving the arm to its new place.
+- **The owner's left and right may be the screen's**: "R bicep into the throat" in Chop was the figure's left arm
+  (measure which limb is there before fixing the named one).
 - **Headgear gets the shoulders' weights.** MakeHuman weights a garment from the nearest skin, so a broad brim, a wing
   or an ear flap reaching down beside the neck bends with the arms (a third of one headdress's weight was on them).
   Weight everything of a head item above the neck to the Head joint; leave a hood's cowl below it alone.

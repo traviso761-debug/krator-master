@@ -120,13 +120,22 @@ var KCHAR = (function(){
   function replacesHead(rec, kit){
     return modsOf(rec, kit).some(function(m){ return !!m.replaces_head; });
   }
+  function replacesFeet(rec, kit){
+    return modsOf(rec, kit).some(function(m){ return !!m.replaces_feet; });
+  }
   function arms(rec, kit){
     return modsOf(rec, kit).some(function(m){ return m.grants && m.grants.arms >= 4; }) ? 4 : 2;
   }
-  /* a torso item is made for two arms or four (kit item arms, 2 by default): a four-armed body wears only four-armed
-     tops, and the other way round */
+  /* a torso item is made for two arms or four (kit item arms, 2 by default); digitigrade and non-digitigrade characters
+     cannot equip each others' boots/footwear (slot 'feet', kit item digitigrade vs replacesFeet); a digitigrade leg mod
+     also leaves off fitted ankle-length human trousers while keeping kilts, skirts and loincloths */
   function fits(it, rec, kit){
-    return it.slot !== 'torso' || (it.arms == null ? 2 : it.arms) === arms(rec, kit);
+    if(it.slot === 'torso') return (it.arms == null ? 2 : it.arms) === arms(rec, kit);
+    if(it.slot === 'feet') return !!it.digitigrade === replacesFeet(rec, kit);
+    if(it.slot === 'legs' && replacesFeet(rec, kit)){
+      return !!(it.loose || it.digitigrade || (it.hides != null && it.hides < 900));
+    }
+    return true;
   }
   function takesHair(head){ return !!head && (head.style === 'bald' || head.style === 'base'); }
   function hairFor(kit, id, head, kind){
@@ -393,8 +402,33 @@ var KCHAR = (function(){
     return out;
   }
 
-  return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, replacesHead:replacesHead, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
+  /* activity(table, act, ctx): what a simulated person doing act looks like (data/activities.json; ACTIVITIES-PLAN.md).
+     ctx: { seed, furniture, trade, role }. The entry's override by the furniture the sim put them at wins, then by
+     trade, then by role; an override may be a clip key alone. One clip of the list per person: KRAND.hash(seed, salt
+     of the id), so a crowd is not in step and the same person always does it the same way. Returns { act (the entry's
+     own id, after aliases), clip, prop ({R, L} or null), enter, exit, gap, mapped (false: no entry, the fallback's) } */
+  function actSalt(id){
+    var h = 0;
+    for(var i = 0; i < id.length; i++) h = (Math.imul(h, 31) + id.charCodeAt(i)) & 0x7fffffff;
+    return h;
+  }
+  function activity(table, act, ctx){
+    ctx = ctx || {};
+    var A = (table && table.activities) || {}, id = act || '', e = A[id], n = 0;
+    while(e && e.alias && n++ < 8){ id = e.alias; e = A[id]; }
+    var mapped = !!e;
+    if(!e){ id = (table && table.fallback) || 'IDLE'; e = A[id] || { clips:['idle'] }; }
+    var pickO = function(m, k){ var o = k != null && m && m[k]; return typeof o === 'string' ? { clips:[o] } : o || null; };
+    var o = pickO(e.by_furniture, ctx.furniture) || pickO(e.by_trade, ctx.trade) || pickO(e.by_role, ctx.role) || {};
+    var clips = o.clips || e.clips || ['idle'];
+    var seed = ctx.seed == null ? 0 : ctx.seed;
+    var clip = clips.length > 1 ? clips[Math.floor(KRAND.unit(KRAND.hash(seed, actSalt(id))) * clips.length)] : clips[0];
+    var f = function(k){ return k in o ? o[k] : k in e ? e[k] : null; };
+    return { act:id, clip:clip, prop:f('prop'), enter:f('enter'), exit:f('exit'), gap:e.gap || null, mapped:mapped };
+  }
+
+  return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, replacesHead:replacesHead, replacesFeet:replacesFeet, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
-           along:along, crowd:crowd, colliders:colliders };
+           along:along, crowd:crowd, colliders:colliders, activity:activity };
 })();
 if(typeof module !== 'undefined') module.exports = KCHAR;

@@ -43,19 +43,29 @@
     'return normalize(vec3(-s.x,1.0,-s.y));}',
    'vec3 wtrBreakup(vec3 n,vec2 p){return wtrBreakupV(n,p,vec2('+f(B.drift[0])+','+f(B.drift[1])+'));}',
    'vec3 wtrBreakupF(vec3 n,vec2 p,vec2 v){return wtrBreakupV(n,p,v);}'].join('\n');};
- W.breakupOn=(mat,Bo)=>{if(!mat||mat.userData.wtrBreakup)return mat;const ch=W.breakupGLSL(Bo),ob=mat.onBeforeCompile,ok=mat.customProgramCacheKey;mat.userData.wtrBreakup=true;
+ W.breakupOn=(mat,Bo)=>{if(!mat||mat.userData.wtrBreakup)return mat;const ch=W.breakupGLSL(Bo);mat.userData.wtrBreakup=true;
   /* the world position varying: open water's vWtrP, still water's vWtrW; a ribbon (or a confluence) also carries its current vWtrF, and its
      chop drifts with it (wtrBreakupF) */
-  mat.onBeforeCompile=(sh,r)=>{ob.call(mat,sh,r);const fs=sh.fragmentShader,P=/varying vec2 vWtrP\b/.test(fs)?'vWtrP':/varying vec3 vWtrW\b/.test(fs)?'vWtrW.xz':null;if(!P)return;
+  return W.KH().add(mat,'wtr-breakup',sh=>{const fs=sh.fragmentShader,P=/varying vec2 vWtrP\b/.test(fs)?'vWtrP':/varying vec3 vWtrW\b/.test(fs)?'vWtrW.xz':null;if(!P)return;
    const call=/varying vec2 vWtrF\b/.test(fs)&&P==='vWtrW.xz'?'wtrBreakupF(wtrBn,vWtrW.xz,vWtrF)':'wtrBreakup(wtrBn,'+P+')';
    const at=fs.includes('#include <normal_fragment_maps>')?'#include <normal_fragment_maps>':'#include <emissivemap_fragment>';
    /* the chunk goes just before main, after every declaration the drawing added (its clock, atmWaveT, comes in with atmos_waves wherever the
       drawing put it; first after <common> it ran before that and failed to compile: silently, the mesh just stops drawing); declared here
       only if the fragment has no clock at all */
    const clk=/#include <atmos_waves>|uniform\s+float\s+atmWaveT\b/.test(fs)?'':'uniform float atmWaveT;\n';const A=typeof ATMOS!=='undefined'?ATMOS:null;if(clk&&A&&A.waveUniforms)A.waveUniforms(sh.uniforms);
-   sh.fragmentShader=fs.replace(/void\s+main\s*\(/,m=>clk+ch+'\n'+m).replace(at,'{vec3 wtrBn=(vec4(normal,0.0)*viewMatrix).xyz;normal=normalize((viewMatrix*vec4('+call+',0.0)).xyz);}\n'+at);};
-  mat.customProgramCacheKey=()=>ok.call(mat)+'|bk:'+W.hashStr(ch);mat.needsUpdate=true;return mat;};
+   W.fs(sh,'wtr-breakup',[/void\s+main\s*\(/,m=>clk+ch+'\n'+m],[at,'{vec3 wtrBn=(vec4(normal,0.0)*viewMatrix).xyz;normal=normalize((viewMatrix*vec4('+call+',0.0)).xyz);}\n'+at]);},{key:'bk:'+W.hashStr(ch)});};
  W.breakupAll=Bo=>{let n=0;for(const D of W.drawn||[]){const k=D.S&&D.S.kind;if((k==='open'||k==='still')&&D.material){W.breakupOn(D.material,Bo);n++;}}return n;};
+ // AUTO (2026-10-27, the core pass; ON BY DEFAULT since 2026-11-09, the owner's flip, with the all-builds rebuild): while WATER.BREAKUP_AUTO
+ // is true every drawing made takes the breakup as it is made: open and still water (draw, drawStill, stillMaterial, drawPools) with BREAKUP,
+ // ribbons and confluences (drawFlow, drawConfluence) with BREAKUP_FLOW; a drawing's own o.breakup (an object) is laid over those numbers,
+ // o.breakup: false keeps it out. A page that wants the old regular ripple sets WATER.BREAKUP_AUTO=false before it draws its water.
+ W.BREAKUP_AUTO=true;
+ W.breakupWrap=()=>{const one=(name,arg,flow)=>{const f0=W[name];if(typeof f0!=='function'||f0._bk)return;
+   const f1=function(){const D=f0.apply(this,arguments),o=arguments[arg]||{};if(W.BREAKUP_AUTO&&D&&o.breakup!==false){const m=D.material&&D.material.onBeforeCompile?D.material:D.onBeforeCompile?D:null;
+     if(m)W.breakupOn(m,Object.assign({},flow?W.BREAKUP_FLOW:{},o.breakup&&typeof o.breakup==='object'?o.breakup:{}));}return D;};
+   f1._bk=1;W[name]=f1;};
+  one('draw',1,false);one('drawStill',1,false);one('stillMaterial',0,false);one('drawPools',1,false);one('drawFlow',1,true);one('drawConfluence',1,true);};
+ W.breakupWrap();   /* (call again after loading a drawing fragment listed after this one: it wraps what is new, once) */
  // every river ribbon and confluence WATER.drawn holds, with BREAKUP_FLOW's numbers (B over them)
  W.breakupFlows=Bo=>{let n=0;const B=Object.assign({},W.BREAKUP_FLOW,Bo||{});for(const D of W.drawn||[]){if(((D.S&&D.S.kind==='flow')||D.C)&&D.material){W.breakupOn(D.material,B);n++;}}return n;};
 })();

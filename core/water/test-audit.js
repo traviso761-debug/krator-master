@@ -1,6 +1,7 @@
 // node core/water/test-audit.js — WATER.audit and the placement helpers (ext/57, 2026-10-27; PRACTICE.md section 2, items 1 and 3): a synthetic
 // case for every rule that must pass clean, and a broken input that must fail it; lipAt, toeAt and levelFromDownstream on a cliff, and
 // fallsOf({ground}) placing a fall there where the plain fallsOf leaves its lip 10 m back from the edge.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const files=['core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js','core/water/20-core-water.js','core/water/21-core-water-shore.js',
@@ -58,6 +59,14 @@ const good=()=>{reset();return W.flow({name:'river',pts:line([0,20,40,60,80]),wi
  ok('flow-slab without a pocket: a ribbon\'s edge .6 m over a bank that rises sheer just past it',only(W.audit({ground:step}),'flow-slab'),false);}
 {reset();const shelf=(x,z)=>bed(x)+(Math.abs(z)<18?.4:5);W.flow({name:'river',pts:W.levelFromDownstream([[0,0],[80,0]],(x,z)=>bed(x),{over:.6}),width:10});
  ok('flow-pocket without a slab: a shelf .2 m under the level out to 18 m',only(W.audit({ground:shelf}),'flow-pocket'),false);}
+
+// flow-graze (opt-in): a bank lying along the level, not crossing it (nwlowlands' hill river, 2026-11-03)
+{reset();const graze=(x,z)=>bed(x)+(Math.abs(z)<4?0:Math.abs(z)<9?.55:3);W.flow({name:'river',pts:W.levelFromDownstream([[0,0],[80,0]],(x,z)=>bed(x),{over:.6}),width:10});
+ const f=W.audit({ground:graze,graze:true}),g=f.filter(f=>f.rule==='flow-graze');
+ ok('flow-graze: a bank .05 m under the level across the ribbon edge ('+g.length+' findings, '+(g.length?Math.max(...g.map(f=>f.by)):0)+' m)',g.length>0&&g.every(f=>f.by>=2),false);
+ ok('flow-graze is opt-in: the same bank without graze has none',!has(W.audit({ground:graze}),'flow-graze'),false);
+ reset();const cross=(x,z)=>bed(x)+Math.max(0,(Math.abs(z)-3.5)*1.2);W.flow({name:'river',pts:W.levelFromDownstream([[0,0],[80,0]],(x,z)=>bed(x),{over:.6}),width:10});
+ ok('flow-graze: a bank that crosses the level at 1.2 m in 1 m has none',!has(W.audit({ground:cross,graze:true}),'flow-graze'),false);}
 
 // still water: a bowl round (0, 300)
 {const bowl=(x,z)=>5+.1*(x*x+(z-300)*(z-300)),pool=lv=>{reset();return W.still({name:'pool',level:lv,bounds:[-5,295,5,305]});};

@@ -64,3 +64,7 @@ Harvest keys from the catalog where it has one: `generic_fruit_coconut`, `generi
 catalog has no mango, coffee, clove, rice, taro, sweet potato, herb, greens or sugar piece yet. The showcase plants the
 lowland crops in the village gardens east of the bay and the coffee and cloves in a second garden up the windward slope.
 - **Fauna is the fauna kit's** (`kits/fauna`): the host places its presets (`src/89f-host-fauna.js`); the kit places none.
+
+## Scale-Model 5.1 Strata Binding (`2026-11-13`)
+- **Low Atolls & Raised *Makatea* Reef Benches (`Kautoa` `964, 725`, `Valapo` `942, 782`, Lagoon Bank `1002, 779`):** Bound to `KSTRATA` recipe **`carbonate-shelf`** (`core/terrain/35-core-strata.js`) — `2–5 m` warm cream/buff bioclastic limestone & pale marl beds notched at sea level (`-1,500 m`, `1.93 atm`) by the `24 h` libration tide, formed by Throne flexural-moat subsidence (strictly low *makatea* benches, zero continental tower karst).
+- **Inner-Wall Harbour Contacts (`Tethis` `733, 775`, `Ys` `789, 738`):** Bound to **`contact-marble`** where Ring Sea shelf limestones are thermally recrystallized against Inner Rim ring-fault intrusions.

@@ -17,6 +17,9 @@ function rows(P,du,dv,m,j,fn){const W=frame(P),nu=Math.max(1,Math.floor((P.w-2*m
 // a bund (a low earth wall) from (u0,v0) to (u1,v1) in the plot's frame
 function bund(P,u0,v0,u1,v1,h,w){const W=frame(P),a=W(u0,v0),b=W(u1,v1),L=Math.hypot(b[0]-a[0],b[1]-a[1]),y=P.level==null?Y((a[0]+b[0])/2,(a[1]+b[1])/2):P.level+(P.key==='crop-rice'?.35:0);
  BIO.put('bund',[(a[0]+b[0])/2,y-.15,(a[1]+b[1])/2],qEuler(0,-Math.atan2(b[1]-a[1],b[0]-a[0]),0),[L+w,h+.15,w],shade(C(pick(PAL.bund)),rr(-.1,.05)));}
+/* (2026-11-09) a plot's tree, but none where the zones call the ground a cliff (the terraced bank at a plot's edge on a steep slope, read through the
+   16 m fields: the high isle's lee coffee terraces); the same rule the rooted check reads */
+function gTree(k,x,z){if(RINGISLES.zones&&RINGISLES.zones(x,z).cliff>.7)return null;return RINGISLES.treeAt(k,x,Y(x,z),z);}
 const STANDS={
  // a flooded paddy behind its bunds: the water a hand deep over the mud, rice in rows (young green or ripening gold)
  'crop-rice':(P,st)=>{const lev=P.level==null?Y(P.x,P.z):P.level,ripe=h3(P.x,P.z,7701)<.35;
@@ -28,10 +31,10 @@ const STANDS={
   rows(P,.95,.95,.5,.12,(x,z)=>{const n=ri(3,5),h=rr(.7,1.15);for(let k=0;k<n;k++){const a=k/n*TAU+rr(-.3,.3),hh=h*rr(.75,1.05),tx=x+Math.cos(a)*.18,tz=z+Math.sin(a)*.18;
     BIO.beam('rod',[x,lev+.05,z],[tx,lev+hh,tz],.025,.018,C(pick(PAL.taroStalk)));BIO.put('heart',[tx,lev+hh-.1,tz],qEuler(-rr(.5,1.0),-a+Math.PI/2,0),[hh*.55,hh*.6,1],leafCol(PAL.taro,1.15,.02,.06,.05));}st.taro++;});},
  // a banana grove: clumps in a loose grid
- 'crop-banana':(P,st)=>{rows(P,3.6,3.6,1.6,.6,(x,z)=>{if(RINGISLES.treeAt('banana',x,Y(x,z),z))st.trees++;});},
- 'crop-breadfruit':(P,st)=>{rows(P,10,10,4,1.2,(x,z)=>{if(RINGISLES.treeAt('breadfruit',x,Y(x,z),z))st.trees++;});},
+ 'crop-banana':(P,st)=>{rows(P,3.6,3.6,1.6,.6,(x,z)=>{if(gTree('banana',x,z))st.trees++;});},
+ 'crop-breadfruit':(P,st)=>{rows(P,10,10,4,1.2,(x,z)=>{if(gTree('breadfruit',x,z))st.trees++;});},
  // a coconut plantation in rows, the grass under it grazed short
- 'crop-coconut':(P,st)=>{rows(P,8,8,3,.6,(x,z)=>{if(RINGISLES.treeAt('coconut',x,Y(x,z),z))st.trees++;});
+ 'crop-coconut':(P,st)=>{rows(P,8,8,3,.6,(x,z)=>{if(gTree('coconut',x,z))st.trees++;});
   rows(P,2.2,2.2,.5,.8,(x,z)=>{const h=rr(.12,.25);BIO.put('bunch',[x,Y(x,z)-.03,z],qEuler(0,rr(0,TAU),0),[h*1.4,h,h*1.4],leafCol(PAL.grassGreen,1.15,.02,.06,.05));st.grass++;});},
  // kava: knee-to-shoulder shrubs of jointed green stems, broad heart leaves, in rows
  'crop-kava':(P,st)=>{rows(P,1.5,1.4,.7,.15,(x,z)=>{const y=Y(x,z),h=rr(1.1,2.2);for(let k=0,n=ri(3,6);k<n;k++){const a=rr(0,TAU),tx=x+Math.cos(a)*.3,tz=z+Math.sin(a)*.3,th=h*rr(.7,1);
@@ -40,10 +43,10 @@ const STANDS={
  'crop-sugarcane':(P,st)=>{rows(P,.9,1.3,.4,.15,(x,z)=>{const y=Y(x,z),h=rr(2.4,3.8);BIO.put('cane',[x,y-.05,z],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[h*.45,h,h*.45],lc('cane',leafCol(PAL.cane,1.15,.02,.06,.05)));
   if(rng()<.12){const s=rr(.5,.8);BIO.put('plume',[x,y+h*.95,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*.4,s,s*.4],C(0xe8e0d0));}st.cane++;});},
  // the owner's other crops (2026-10-15)
- 'crop-mango':(P,st)=>{rows(P,9,9,4,1,(x,z)=>{if(RINGISLES.treeAt('mango',x,Y(x,z),z))st.trees++;});},
+ 'crop-mango':(P,st)=>{rows(P,9,9,4,1,(x,z)=>{if(gTree('mango',x,z))st.trees++;});},
  // coffee in rows on the upper slopes, a few shade trees (bananas) among them
- 'crop-coffee':(P,st)=>{rows(P,2.2,2.6,1,.25,(x,z,a,b)=>{const sh=(a+b)%5===2&&b%2===0;if(RINGISLES.treeAt(sh?'banana':'coffee',x,Y(x,z),z))st.trees++;});},
- 'crop-clove':(P,st)=>{rows(P,6.5,6.5,2.5,.6,(x,z)=>{if(RINGISLES.treeAt('clove',x,Y(x,z),z))st.trees++;});},
+ 'crop-coffee':(P,st)=>{rows(P,2.2,2.6,1,.25,(x,z,a,b)=>{const sh=(a+b)%5===2&&b%2===0;if(gTree(sh?'banana':'coffee',x,z))st.trees++;});},
+ 'crop-clove':(P,st)=>{rows(P,6.5,6.5,2.5,.6,(x,z)=>{if(gTree('clove',x,z))st.trees++;});},
  // sweet potato: ridges covered by its creeping heart-leaved vines
  'crop-sweetpotato':(P,st)=>{const W=frame(P);for(let v=-P.d/2+.6;v<=P.d/2-.6;v+=1.1){const a=W(-P.w/2+.5,v),b=W(P.w/2-.5,v),L=Math.hypot(b[0]-a[0],b[1]-a[1]),mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;
    BIO.put('bund',[mx,Y(mx,mz)-.12,mz],qEuler(0,-Math.atan2(b[1]-a[1],b[0]-a[0]),0),[L,.3,.55],C(pick(PAL.soil)));}

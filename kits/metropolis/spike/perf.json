@@ -1,0 +1,72 @@
+{
+ "kits/metropolis/dist/metropolis.html?pitch=140": {
+  "gpu": "ANGLE (Intel, Intel(R) Arc(TM) 140T GPU (8GB) (0x00007D51) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "held": {
+   "held": 2142,
+   "geometries": 116,
+   "textures": 24
+  },
+  "views": {
+   "Hero alone at 300 m": {
+    "calls": 7,
+    "tris": 74206,
+    "inst": 4858,
+    "imesh": 5,
+    "ms": 0.39651,
+    "n": 24,
+    "dis": 0,
+    "med": 0.415052
+   },
+   "Shell alone at 300 m": {
+    "calls": 2,
+    "tris": 58,
+    "inst": 1,
+    "imesh": 4,
+    "ms": 0.465572,
+    "n": 24,
+    "dis": 0,
+    "med": 0.478229
+   },
+   "Shell close, 130 m": {
+    "calls": 2,
+    "tris": 58,
+    "inst": 1,
+    "imesh": 4,
+    "ms": 0.912187,
+    "n": 24,
+    "dis": 0,
+    "med": 0.959427
+   },
+   "Tiers, the worst street": {
+    "calls": 89,
+    "tris": 394760,
+    "inst": 36128,
+    "imesh": 72,
+    "ms": 2.911927,
+    "n": 24,
+    "dis": 0,
+    "med": 2.934739
+   },
+   "Tiers, from a roof": {
+    "calls": 87,
+    "tris": 378350,
+    "inst": 36128,
+    "imesh": 72,
+    "ms": 3.660468,
+    "n": 24,
+    "dis": 0,
+    "med": 3.67625
+   },
+   "Tiers, from the air": {
+    "calls": 63,
+    "tris": 5990,
+    "inst": 1175,
+    "imesh": 62,
+    "ms": 1.960208,
+    "n": 24,
+    "dis": 0,
+    "med": 1.967812
+   }
+  }
+ }
+}

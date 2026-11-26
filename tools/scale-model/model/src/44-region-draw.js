@@ -13,5 +13,37 @@
   $('dUndo').onclick=()=>{ draft.pop(); paintOverlay(); drawMsg.textContent=draft.length+' points'; };
   $('dFinish').onclick=finishDraw; $('dCancel').onclick=cancelDraw;
   addEventListener('keydown',e=>{ if(!drawing) return; if(e.key==='Escape') cancelDraw(); else if(e.key==='Enter') finishDraw(); else if(e.key==='Backspace'){ draft.pop(); paintOverlay(); } });
-  $('bCopy').onclick=async()=>{ const j=JSON.stringify([...regions.values()].map(r=>({...r,kind:kindOf(r)})),null,1); try{ await navigator.clipboard.writeText(j); setStatus('copied '+regions.size+' regions as JSON'); }catch(e){ setStatus('clipboard blocked — regions are in the shared store'); } };
+  async function copyJSONWithFallback(j, filename, setMsg, label){
+    let copied = false;
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = j;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, j.length);
+      copied = document.execCommand('copy');
+      document.body.removeChild(ta);
+    }catch(e){}
+    if(!copied && navigator.clipboard && navigator.clipboard.writeText){
+      try{ await navigator.clipboard.writeText(j); copied = true; }catch(e){}
+    }
+    if(copied){
+      setMsg('copied '+label+' as JSON');
+      return;
+    }
+    try{
+      const blob = new Blob([j], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url), 4000);
+      setMsg('clipboard blocked — downloaded '+filename+' ('+label+')');
+    }catch(e){
+      setMsg('clipboard blocked — see JSON box');
+    }
+  }
+  $('bCopy').onclick=()=>copyJSONWithFallback(JSON.stringify([...regions.values()].map(r=>({...r,kind:kindOf(r)})),null,1), 'regions.json', setStatus, regions.size+' regions');
+
 

@@ -1,0 +1,17 @@
+{
+ "name": "The Red Gill (station 7; biomes/gills/PLAN.md section 11 item 1): the Reḍ Gīl on the Godthrone's south flank at 5.4 km, one great radial crack 1.6 km long, 60 m across and 300 m deep, its lips lined with tall red pipes, rust collars and dark fringes, the breath meadow downwind over red-stained ice, the ice belt's cliff and the bloodfalls on the skyline; set in spring at the out-breath",
+ "out": "godthrone-gills.html",
+ "water": [],
+ "region": "region.json",
+ "tex": ["iceGlacier", "iceRust", "ferroCrust", "palagonite", "lichenCrust"],
+ "packs": ["biomes/gills"],
+ "reads": {
+  "44-gills-life.js": "biomes/gills/src/44-gills-life.js",
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "35b-core-lamina.js": "core/terrain/35b-core-lamina.js",
+  "35c-core-lamina-shade.js": "core/terrain/host/35b-core-lamina-shade.js",
+  "37-core-stacks.js": "core/terrain/37-core-stacks.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js"
+ }
+}

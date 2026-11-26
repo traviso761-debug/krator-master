@@ -12,7 +12,7 @@ class_name KChar
 extends RefCounted
 
 const KRand := preload("res://tests/rand/krand.gd")
-const SLOTS := ["feet", "legs", "torso", "hair", "beard", "head"]
+const SLOTS := ["feet", "legs", "torso", "hair", "beard", "head", "back", "implant", "gloves"]
 const RACES := ["african", "asian", "caucasian"]
 const AGE := [-0.6, 0.9]
 
@@ -86,6 +86,14 @@ static func replaces_head(rec: Dictionary, kit: Dictionary) -> bool:
 	return false
 
 
+# a worn mod replaces the lower legs and feet with digitigrade paws (kit item replaces_feet: tools/digitigrade.py)
+static func replaces_feet(rec: Dictionary, kit: Dictionary) -> bool:
+	for m in mods(rec, kit):
+		if m.get("replaces_feet", false):
+			return true
+	return false
+
+
 static func arms(rec: Dictionary, kit: Dictionary) -> int:
 	for m in mods(rec, kit):
 		if int(m.get("grants", {}).get("arms", 2)) >= 4:
@@ -93,9 +101,18 @@ static func arms(rec: Dictionary, kit: Dictionary) -> int:
 	return 2
 
 
-# a torso item is made for two arms or four (kit item arms, 2 by default)
+# a torso item is made for two arms or four (kit item arms, 2 by default); digitigrade and non-digitigrade characters
+# cannot equip each others' boots/footwear (slot "feet", kit item digitigrade vs replaces_feet); digitigrade legs also
+# leave off fitted ankle-length trousers while keeping kilts, skirts and loincloths (KCHAR.fits)
 static func fits(it: Dictionary, rec: Dictionary, kit: Dictionary) -> bool:
-	return it["slot"] != "torso" or int(it.get("arms", 2)) == arms(rec, kit)
+	if it["slot"] == "torso":
+		return int(it.get("arms", 2)) == arms(rec, kit)
+	if it["slot"] == "feet":
+		return bool(it.get("digitigrade", false)) == replaces_feet(rec, kit)
+	if it["slot"] == "legs" and replaces_feet(rec, kit):
+		var h = it.get("hides")
+		return bool(it.get("loose", false)) or bool(it.get("digitigrade", false)) or (h != null and int(h) < 900)
+	return true
 
 
 static func parts(rec: Dictionary, kit: Dictionary) -> Array:
@@ -162,8 +179,10 @@ static func hidden_parts(rec: Dictionary, kit: Dictionary) -> Dictionary:
 
 
 static func blank(kit: Dictionary) -> Dictionary:
-	return {"body": kit["body"], "hair": null, "beard": null, "armour": {"torso": null, "legs": null, "feet": null, "head": null},
-		"sliders": {}, "morph": {}, "ancestry": null, "skin": null, "hair_color": null, "eye_color": null, "people": null, "dye": {}}
+	return {"body": kit["body"], "hair": null, "beard": null,
+		"armour": {"torso": null, "legs": null, "feet": null, "head": null, "back": null, "implant": null, "gloves": null},
+		"sliders": {}, "morph": {}, "ancestry": null, "skin": null, "hair_color": null, "eye_color": null, "people": null,
+		"dye": {}, "facepaint": null, "makeup": null}
 
 
 static func morph_weights(rec: Dictionary, kit: Dictionary) -> PackedFloat64Array:
@@ -296,12 +315,13 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 					ok = true
 			rec["armour"][slot] = want if ok else null
 			continue
-		if slot == "head":                 # headgear only comes with a people's outfit
-			rec["armour"]["head"] = null
+		if slot == "head" or slot == "back" or slot == "implant" or slot == "gloves":
+			rec["armour"][slot] = null
 			continue
+		var sex := String(kit["body"]).trim_prefix("mpfb_")
 		var have := []
 		for it in kit["items"]:            # a culture's own clothes go only to its people's strangers
-			if it["slot"] == slot and (it.get("culture") == null or it.get("culture") == P.get("id")) and fits(it, rec, kit):
+			if it["slot"] == slot and (it.get("culture") == null or it.get("culture") == P.get("id")) and (slot != "hair" or it.get("gender") == null or it.get("gender") == sex) and fits(it, rec, kit):
 				have.append(it)
 		if slot == "hair" and styles != null:
 			var pref := []
@@ -314,6 +334,13 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 		var id = null
 		if have.size() and r.next() < odds:
 			id = have[int(floor(r.next() * have.size()))]["id"]
+		if outfit != null and outfit.has(slot):
+			var ow = outfit.get(slot)
+			var ok2 := false
+			for it in kit["items"]:
+				if ow != null and it["id"] == ow and it["slot"] == slot and fits(it, rec, kit):
+					ok2 = true
+			id = ow if ok2 else null
 		if slot == "hair" or slot == "beard":
 			rec[slot] = id
 		else:
@@ -368,4 +395,52 @@ static func colliders(skel: Dictionary, w: PackedFloat64Array) -> Array:
 		out.append({"a": int(c["a"]), "b": int(c["b"]), "r": maxf(0.01, r),
 			"pa": _v(c["pa"]) if c.has("pa") else null, "pb": _v(c["pb"]) if c.has("pb") else null,
 			"ra": float(c.get("ra", c["r"])) * k, "rb": float(c.get("rb", c["r"])) * k})
+	return out
+
+
+# activity(table, act, ctx) (10-rig.js KCHAR.activity): what a simulated person doing act looks like, from
+# data/activities.json. ctx: { seed, furniture, trade, role }; the override by furniture wins, then trade, then role; one
+# clip of the list per person by KRand.hash(seed, the id's salt). Returns { act, clip, prop, enter, exit, gap, mapped }.
+static func act_salt(id: String) -> int:
+	var h := 0
+	for i in id.length():
+		h = (h * 31 + id.unicode_at(i)) & 0x7fffffff
+	return h
+
+
+static func _act_over(m, k) -> Variant:
+	if k == null or not (m is Dictionary) or not m.has(k):
+		return null
+	var o = m[k]
+	return {"clips": [o]} if o is String else o
+
+
+static func activity(table: Dictionary, act: String, ctx: Dictionary = {}) -> Dictionary:
+	var A: Dictionary = table.get("activities", {})
+	var id := act
+	var e = A.get(id)
+	var n := 0
+	while e != null and e.has("alias") and n < 8:
+		id = e["alias"]
+		e = A.get(id)
+		n += 1
+	var mapped: bool = e != null
+	if e == null:
+		id = table.get("fallback", "IDLE")
+		e = A.get(id, {"clips": ["idle"]})
+	var o = _act_over(e.get("by_furniture"), ctx.get("furniture"))
+	if o == null:
+		o = _act_over(e.get("by_trade"), ctx.get("trade"))
+	if o == null:
+		o = _act_over(e.get("by_role"), ctx.get("role"))
+	if o == null:
+		o = {}
+	var clips: Array = o.get("clips", e.get("clips", ["idle"]))
+	var seed := int(ctx.get("seed", 0)) if ctx.get("seed") != null else 0
+	var clip: String = clips[0]
+	if clips.size() > 1:
+		clip = clips[floori(KRand.unit(KRand.hash_ints(seed, [act_salt(id)])) * clips.size())]
+	var out := {"act": id, "clip": clip, "gap": e.get("gap"), "mapped": mapped}
+	for k in ["prop", "enter", "exit"]:
+		out[k] = o[k] if o.has(k) else e.get(k)
 	return out

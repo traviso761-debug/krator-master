@@ -1,0 +1,447 @@
+{
+ "format": "krator-landforms",
+ "version": 1,
+ "landforms": [
+  {
+   "id": "lf_pleasure_dome_isle",
+   "kind": "island",
+   "px": 840.886,
+   "py": 1516.799,
+   "r_m": 80.0,
+   "rx_m": 110.0,
+   "rz_m": 55.0,
+   "crest_m": -506.0,
+   "water_m": -520.0,
+   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay: the Erewhon page's island (settlements/xanadu, target erewhon, ISLAND_C at 70,-613 m from the page's centre, which stands on Erehwon's pin 805,1516 unturned), about 220 x 110 m and 14 m over the lake, some 150 m off the world's shore (the owner, 2026-11-11: keep the page, move the record; it stays off the quays, about 0.6 km). No shoal: its rounded cell is the shore bench. Stamped at 1:1 by openworld/xanadu-oidong-highrift/src/44-world-landforms.js. edit_517 (first run as edit_512 on claude/openworld-sites, 2026-11-11)."
+  },
+  {
+   "id": "lf_west_stack",
+   "kind": "island",
+   "px": 816.757,
+   "py": 1495.619,
+   "r_m": 160.0,
+   "crest_m": -478.0,
+   "water_m": -520.0,
+   "note": "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. edit_517, 2026-11-11."
+  },
+  {
+   "id": "lf_pher_headland",
+   "kind": "island",
+   "px": 840.65,
+   "py": 1491.2,
+   "r_m": 520.0,
+   "crest_m": -440.0,
+   "water_m": -520.0,
+   "note": "Phēr's headland (the owner, 2026-11-16: \"give it a headland and cove\"): the arm from the shore's bend west of the town, its rise joining the bench; the cove lies east of it. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
+  },
+  {
+   "id": "lf_pher_headland_tip",
+   "kind": "island",
+   "px": 841.05,
+   "py": 1491.65,
+   "r_m": 320.0,
+   "crest_m": -470.0,
+   "water_m": -520.0,
+   "note": "Phēr's headland (the owner, 2026-11-16: \"give it a headland and cove\"): the arm from the shore's bend west of the town, its rise joining the bench; the cove lies east of it. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
+  },
+  {
+   "id": "lf_pher_east_point",
+   "kind": "islet",
+   "px": 842.75,
+   "py": 1492.15,
+   "r_m": 240.0,
+   "crest_m": -495.0,
+   "water_m": -520.0,
+   "note": "The low point east of Phēr's cove, closing it to about 1 km across. settlements/pher/PLAN.md section 1.2, edit_517_pher.py."
+  },
+  {
+   "id": "lf_voth_water",
+   "kind": "water",
+   "form": "page",
+   "px": 742.0,
+   "py": 1018.0,
+   "water_m": -1500.0,
+   "origin_px": [
+    742,
+    1018
+   ],
+   "m_per_px": 2000.0,
+   "north": "-z",
+   "smin_m": 210.0,
+   "parts": [
+    {
+     "part": "bay, south lobe",
+     "shape": "circle",
+     "px": [
+      741.91,
+      1018.45
+     ],
+     "r_m": 980
+    },
+    {
+     "part": "bay, east side",
+     "shape": "circle",
+     "px": [
+      742.075,
+      1018.26
+     ],
+     "r_m": 680
+    },
+    {
+     "part": "bay, west arm",
+     "shape": "circle",
+     "px": [
+      741.65,
+      1018.215
+     ],
+     "r_m": 620
+    },
+    {
+     "part": "the narrows",
+     "shape": "capsule",
+     "px": [
+      741.955,
+      1018.12
+     ],
+     "px_to": [
+      742.075,
+      1017.68
+     ],
+     "r_m": 560
+    },
+    {
+     "part": "lake, south basin",
+     "shape": "circle",
+     "px": [
+      741.84,
+      1017.14
+     ],
+     "r_m": 1320
+    },
+    {
+     "part": "lake, main body",
+     "shape": "circle",
+     "px": [
+      742.13,
+      1016.55
+     ],
+     "r_m": 1880
+    },
+    {
+     "part": "lake, west reach",
+     "shape": "circle",
+     "px": [
+      741.41,
+      1016.74
+     ],
+     "r_m": 1460
+    },
+    {
+     "part": "lake, east reach",
+     "shape": "circle",
+     "px": [
+      742.71,
+      1016.97
+     ],
+     "r_m": 980
+    },
+    {
+     "part": "strait to the sea",
+     "shape": "capsule",
+     "px": [
+      742.28,
+      1016.1
+     ],
+     "px_to": [
+      742.51,
+      1015.0
+     ],
+     "r_m": 340
+    },
+    {
+     "part": "the river's estuary",
+     "shape": "capsule",
+     "px": [
+      742.2462,
+      1018.4991
+     ],
+     "px_to": [
+      742.5092,
+      1018.6089
+     ],
+     "r_m": 150
+    }
+   ],
+   "source": "settlements/voth/src/10-core.js:87-117",
+   "note": "Voth's page's water on the model: the union of these circles and capsules, blended by a smooth minimum of 210 m, with ~116 m of noise on the shore on the page (landDist). The page's x is east and z south, its origin Voth's pin; 22 km2 of water, the shore 20.4 km. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_narrows",
+   "kind": "water",
+   "form": "narrows",
+   "px": 742.015,
+   "py": 1017.9,
+   "path_px": [
+    [
+     741.955,
+     1018.12
+    ],
+    [
+     742.075,
+     1017.68
+    ]
+   ],
+   "width_m": 1120,
+   "water_m": -1500.0,
+   "bed_m": -1521.6,
+   "note": "The narrows between Voth's bay and its lake, 1.1 km wide (the Fortress canton stands in it). edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_strait",
+   "kind": "water",
+   "form": "strait",
+   "px": 742.28,
+   "py": 1016.1,
+   "path_px": [
+    [
+     742.28,
+     1016.1
+    ],
+    [
+     744.9145,
+     1003.5
+    ]
+   ],
+   "width_m": 680,
+   "water_m": -1500.0,
+   "bed_m": -1513.8,
+   "length_km": 25.7,
+   "cells_px": [
+    [
+     742,
+     1015
+    ],
+    [
+     743,
+     1015
+    ],
+    [
+     743,
+     1014
+    ],
+    [
+     743,
+     1013
+    ],
+    [
+     743,
+     1012
+    ],
+    [
+     743,
+     1011
+    ],
+    [
+     743,
+     1010
+    ],
+    [
+     744,
+     1010
+    ],
+    [
+     744,
+     1009
+    ],
+    [
+     744,
+     1008
+    ],
+    [
+     744,
+     1007
+    ],
+    [
+     744,
+     1006
+    ],
+    [
+     745,
+     1006
+    ],
+    [
+     745,
+     1005
+    ],
+    [
+     745,
+     1004
+    ]
+   ],
+   "note": "Voth's strait from the lake north-north-east to the Ring Sea, 680 m wide on the page; the model carries it as a chain of wet cells (2 km), so the stamp narrows it. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_shelf",
+   "kind": "shelf",
+   "px": 742.0,
+   "py": 1018.0,
+   "of": "lf_voth_water",
+   "width_m": 70.0,
+   "depth_m": [
+    1.2,
+    4.8
+   ],
+   "water_m": -1500.0,
+   "note": "A shelf 1.2-4.8 m deep for the first 70 m off every shore of Voth's water (the chinampas and the canton ring need it), then the page's bed: 13.8 m at 330 m, 36.8 m at 920 m, 51.8 m at 2.1 km off the shore. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_river",
+   "kind": "water",
+   "form": "river",
+   "river": "r029",
+   "px": 742.44,
+   "py": 1018.58,
+   "path_px": [
+    [
+     742.44,
+     1018.58
+    ],
+    [
+     742.5383,
+     1018.6327
+    ],
+    [
+     742.645,
+     1018.665
+    ],
+    [
+     742.7886,
+     1018.688
+    ],
+    [
+     742.915,
+     1018.76
+    ],
+    [
+     743.0763,
+     1018.8521
+    ],
+    [
+     743.26,
+     1018.88
+    ],
+    [
+     743.4894,
+     1018.9276
+    ],
+    [
+     743.7,
+     1019.03
+    ],
+    [
+     743.9641,
+     1019.1503
+    ],
+    [
+     744.25,
+     1019.2
+    ],
+    [
+     744.6067,
+     1019.2639
+    ],
+    [
+     744.95,
+     1019.38
+    ]
+   ],
+   "width_m": [
+    80,
+    170
+   ],
+   "floodplain_m": [
+    260,
+    1160
+   ],
+   "water_m": -1500.0,
+   "note": "The Turm's last 5.3 km on Voth's page, mouth first (the bay's south-east corner): at the lake's level the whole way, 80-170 m wide on a flat floodplain; the bridges, docks, the river port and the River Gate stand on it. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_isle_1",
+   "kind": "island",
+   "px": 741.785,
+   "py": 1018.44,
+   "r_m": 78.0,
+   "crest_m": -1484.0,
+   "water_m": -1500.0,
+   "role": "shrine",
+   "note": "An islet in Voth's water (shrine), 16 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_isle_2",
+   "kind": "island",
+   "px": 741.993,
+   "py": 1018.161,
+   "r_m": 58.0,
+   "crest_m": -1488.0,
+   "water_m": -1500.0,
+   "role": "rock",
+   "note": "An islet in Voth's water (rock), 12 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_isle_3",
+   "kind": "island",
+   "px": 741.73,
+   "py": 1018.03,
+   "r_m": 70.0,
+   "crest_m": -1485.0,
+   "water_m": -1500.0,
+   "role": "light",
+   "note": "An islet in Voth's water (light), 15 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_isle_4",
+   "kind": "island",
+   "px": 742.125,
+   "py": 1017.62,
+   "r_m": 84.0,
+   "crest_m": -1480.0,
+   "water_m": -1500.0,
+   "role": "light",
+   "note": "An islet in Voth's water (light), 20 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_isle_5",
+   "kind": "island",
+   "px": 741.62,
+   "py": 1017.51,
+   "r_m": 58.0,
+   "crest_m": -1488.0,
+   "water_m": -1500.0,
+   "role": "shrine",
+   "note": "An islet in Voth's water (shrine), 12 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_isle_6",
+   "kind": "island",
+   "px": 742.32,
+   "py": 1017.29,
+   "r_m": 52.0,
+   "crest_m": -1489.0,
+   "water_m": -1500.0,
+   "role": "rock",
+   "note": "An islet in Voth's water (rock), 11 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  },
+  {
+   "id": "lf_voth_isle_7",
+   "kind": "island",
+   "px": 741.92,
+   "py": 1017.075,
+   "r_m": 76.0,
+   "crest_m": -1483.0,
+   "water_m": -1500.0,
+   "role": "light",
+   "note": "An islet in Voth's water (light), 17 m over it. Sub-cell; its cell keeps the page's bed. edit_513, 2026-11-11 (openworld/PLAN-VOTH.md V1)."
+  }
+ ]
+}

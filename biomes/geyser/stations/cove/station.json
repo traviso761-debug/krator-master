@@ -1,0 +1,5 @@
+{
+ "note": "Gemini showcase station 4 (PLAN-STATIONS.md, \"Showcase Station #4\"): the Boiling Bay phreatic cove on the showcase's src/ with its own stage (45), ground paint (80), placement (87), sky (89), sea (89w) and take (98); ringsea: the Hykkousoi pirates' craft (kits/ringsea, sealed by settlements/voth/ringsea.py)",
+ "tex": [],
+ "ringsea": ["65-rs-hyk-galley.js", "78-rs-hyk-corbita.js", "89b-rs-islander-lanong.js"]
+}

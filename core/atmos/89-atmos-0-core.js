@@ -39,6 +39,13 @@ const ATMOS={};
   for(const fn of A.onInit)fn(h);};
  // later fragments that need the bound host (A.T, A.U, A.hook) push a setup function here; init runs them in file order
  A.onInit=[];
+ // core/shader (KHOOK: every shader hook goes through it; KCOLOR: colour space): khost.resolve puts it on the page, a build
+ // without core/host lists core/shader/06-core-khook.js and 06b-core-kcolor.js itself
+ const need=(v,n)=>{if(v)return v;throw new Error('atmos: core/shader is not on this page ('+n+'): list core/shader/06-core-khook.js and 06b-core-kcolor.js (khost.resolve adds them)');};
+ A.KH=()=>need(typeof KHOOK!=='undefined'&&KHOOK,'KHOOK');A.KC=()=>need(typeof KCOLOR!=='undefined'&&KCOLOR,'KCOLOR');
+ // a hook's replace for an anchor only a LIT material has (the light, roughness, emissive chunks): KHOOK.rep (throws) on a lit
+ // material; on an unlit one (Basic) the layer takes the parts it has, as before
+ A.repLit=m=>m&&(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial||m.isMeshToonMaterial)?A.KH().rep:(s,a,b)=>s.replace(a,b);
  A.glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';};   // a number as a GLSL float literal
  A.err=m=>{if(A.h&&A.h.err)A.h.err('atmos: '+m);else console.warn('atmos: '+m);};
  A.hook=fn=>A.hooks.push(fn);   // fn(t, hour, dt): t and dt are the module clock's seconds
@@ -68,7 +75,7 @@ const ATMOS={};
  // a separate stream (same generator) for things added late, so they never shift the placement stream
  A.stream=n=>{let s=(n>>>0)||1;return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};};
  A.rr=(a,b)=>a+(b-a)*A.rnd();A.pick=a=>a[Math.floor(A.rnd()*a.length)];
- A.col=hex=>new A.T.Color(hex).convertSRGBToLinear();
+ A.col=hex=>A.KC().lin(hex,new A.T.Color());   // a display hex, linear (core/shader's KCOLOR: three's own curve)
  // shared geometry (unit sizes; posts and cones stand on y=0) and cached materials
  const G={};A.geo=k=>{if(G[k])return G[k];const T=A.T;
   G[k]=k==='box'?new T.BoxGeometry(1,1,1):k==='post'?new T.CylinderGeometry(1,1,1,8).translate(0,.5,0):k==='post16'?new T.CylinderGeometry(1,1,1,16).translate(0,.5,0):

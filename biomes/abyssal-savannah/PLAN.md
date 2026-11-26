@@ -6,7 +6,7 @@ and the high country above its rim. The owner, 2026-10-26: "do e abyss savannah"
 smooth ramp under the shelf, the climb into the highlands not designed) and asked for it to be a kit of its own. This
 is that kit.
 
-**Status: plan written and station 1 built (2026-10-26).** Every choice the owner has not made is a default, marked
+**Status: plan written and station 1 built (2026-10-26); stations 2 and 3 built (2026-11-09: section 15).** Every choice the owner has not made is a default, marked
 **(default)** and listed in section 12.
 
 ## 0. What the kit is
@@ -14,7 +14,7 @@ is that kit.
 | | |
 |---|---|
 | Folder | `biomes/abyssal-savannah/` (`src/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `INDEX.md`) |
-| Pages | `dist/abyssal-savannah.html` (station 1, the rim slope); stations 2 and 3 (section 8) to follow as `python3 build.py --station <name>`, the Throne's way |
+| Pages | `dist/abyssal-savannah.html` (station 1, the rim slope, px 1026,350 on map 5.1); `dist/abyssal-savannah-belt.html` and `dist/abyssal-savannah-bench.html` (stations 2 and 3, `python3 build.py --station belt` / `bench`: section 15); the savannah rims (section 14) |
 | Object | `ABSAV` (`build`, `zones`, `burn`, `make`, `grow`, `SPECIES`, `HARVEST`, `PASSES`), on the biome contract (`biomes/eastabyss/BIOME-API.md`) |
 | Its own | the savannah's species (section 5), its zones and burn mosaic (sections 4 and 6), the rim slope's ground (section 7) |
 | Read in place | `biomes/eastabyss` (its jungle species at the slope's foot and in the gullies, by `EASTABYSS.make` / `grow`) |
@@ -168,13 +168,17 @@ the page's own detail on it, not survey:
 1. **The rim slope** (`dist/abyssal-savannah.html`, built): the climb at px ~1021,350 from the jungle's foot to the
    bench, the gully galleries, the parkland and its kopjes, the caprock rim, the bench's stub-lycopsid steppe and the pan,
    the burn mosaic over all of it; the floor and its lake below to the west.
-2. **The floor's belt** (`--station belt`, planned): the XV clump at px 1031,515 (-1,870 m, 2.0 atm, ~1,050 mm, +34 °C),
+2. **The floor's belt** (`--station belt`, built 2026-11-09: section 15): the XV clump at px 1031,515 (-1,870 m, 2.0 atm, ~1,050 mm, +34 °C),
    between the lake jungle (eastabyss, read in place) and the salt steppe: the parkland at its tallest (the umbrella trees
    to ~28 m, the grass over 3 m), rope araucarias, termite-like spire mounds of the floor's clay ants, the jungle's edge
    one side and the salt's the other.
-3. **The bench's edge** (`--station bench`, planned): the top of the climb on a steeper transect (row 414, px 1024-1041:
+3. **The bench's edge** (`--station bench`, built 2026-11-09: section 15): the top of the climb on a steeper transect (row 414, px 1024-1041:
    XV to Am to Af in 34 km), where the rim breaks as cliffs and the bench steppe meets the plateau's `e badlands` flora
    (`biomes/ebadlands` read in place: pinyon, juniper, chaparral yucca).
+
+The savannah rims are stations of this kit too (section 14; the owner, 2026-11-08, `biomes/hyperjungle/PLAN-LANDS.md` section 14,
+answer 1): `--station serim` (the se rim, the incense country), `--station erim` (the e rim near Fridon) and `--station north`
+(hyperjungle N's savannah). Section 8 reserved no names for them; `belt` and `bench` above were built on 2026-11-09 (section 15).
 
 ## 9. Crops (`kits/crops`)
 
@@ -212,21 +216,24 @@ grass: straw litter on red soil; `ground.redsoil` stands in) and `card.grass.tha
 
 ## 11. Core adoption
 
-| module | what it does here |
-|---|---|
-| `core/biome` (`CORE_BIOME`) | the kit contract: items, buckets, foliage materials, placement helpers, bake, export |
-| `core/rand` (`KRAND`) | every placement draw: each cell of each pass reseeds the stream from `KRAND.hash(world, salt, ix, iz)`, so a tile draws what it draws in a full build; the terrain's and the burn's noise is `KRAND.fbm` (portable, not the sin-based `BIO.fn.fbm`) |
-| `core/tags` (`KTAGS`) | every item set, instance and registered volume is a record (`BIO.init({tags})`) |
-| `core/space` (`KSPACE`) | the keep-clear between trees and kopjes (one grid, not a hash of the kit's own) |
-| `core/host` (`KHOST`) | camera, frame loop, clock, panel, inspector, probe (`99-host-take.js` hands it the page) |
-| `core/atmos` | the shared sky at the station's pixel (`ATMOS.sky`, `89s-host-sky.js`) with the air at 1.7 atm, the fog and lights from its colour script, the bind (`ATMOS.bindHost`), the skylight for the water |
-| `core/water` | the gully stream (`WATER.flow`), its foot pools and the pan (`WATER.still`) |
-| `core/materials` | the library through `materials.json` (`KMAT`, the generated pack) |
-| `core/export` | `BIO.export` (the export profile in `verify.py`) |
-| `core/clock` | through `core/host` (the host's clock) |
-| `core/terrain` | not taken: the rim slope is an analytic height function on `KRAND.fbm` with the survey's profile; KLAND (the scale model's ground, on another branch) is not in this checkout. The page moves onto it when it lands (S7) |
-| `core/mask` | not taken: no placement raster (nothing reads canvas pixels; the ground canvas is painted only) |
-| `core/lod`, `core/minimap` | not taken: a station page (the eastabyss kits take neither) |
+The final rebuild's turn (pair 8, 2026-11-03, `claude/rebuild-abyssal-cloud`) took `BACKPORT.md`'s universal set and its row on station 1. Each look
+change has a switch, so the owner can compare.
+
+| module | what it does here | switch |
+|---|---|---|
+| `core/biome` (`CORE_BIOME`) | the kit contract: items, buckets, foliage materials, placement helpers, bake, export; **new:** 31j `BIO.flareJoin` on every bough (umbrella, tongue tree, fig; its roots too), 34 octahedral impostors for the far trees (the umbrella and tongue trees: one atlas, one item `impTrees`), 41 the field contract (`BIO.env`); 33, 35, 39 listed for the readers' parts | `ABSAV.JOINTS=false`, `?diet=0` (the old blobs) |
+| the crowns held | the attach audit's 28.4% (leaflet 35,463 of 52,120): a hero's clump gets a twig rod from its plate's hub or the nearest bough end; a mid tree's clump is held toward it (`BIO.holdTo`); a bough's end runs into its plate's hub, and a plate no bough reached gets one. No random numbers: nothing placed moves | `ABSAV.HOLD=false` |
+| `core/rand` (`KRAND`) | every placement draw: each cell of each pass reseeds the stream from `KRAND.hash(world, salt, ix, iz)`; the terrain's and the burn's noise is `KRAND.fbm` | |
+| `core/tags`, `core/space`, `core/export`, `core/clock` | as before; `core/host` is now `khost.FULL` (the inspector, the edit marks) with the generated edits fragment | |
+| `core/terrain` | **new:** 43 `KGROUND` (four library layers on documented masks: red soil, this year's burn, the pan's salt, the bench's gravel; `45-host-stage.js`, "the ground"), 44 `KFAR` (the country past the map to 36 km on 5.1's grade: the floor falling west to the lake, the bench and plateau east; it replaces the page's own far mesh), 45 `KHORIZON` (the risers' and the rim's shadow on the treads at a low sun, the ground and the flora), 35 `KSTRATA` (the caprock's beds, the `canyon` column, coloured into the ground's paint on the rim's steep faces on the CPU: no texture unit). KLAND is still not here: the rim slope is the page's own function on 5.1's grade | `?kground=0`, `?far=0`, `?hz=0`, `?strata=0` |
+| `core/shadow` (`KSHADOW`) | the sun's shadows in one view-following box (oidong's lines); its cost on the GPU is the coordinator's to measure (this turn ran in the cloud, no GPU) | `?shadow=0` |
+| `core/atmos` | the shared sky at px 1026,350; **new:** height fog, the rain cover, lightning and the particles, the foliage in the atmosphere's wind (`BIO.bindAtmosWind`); the clouds' shadows now go on after the bake, so the flora takes them too | `?hfog=0` |
+| `core/water` | the gully stream (`WATER.flow`), its foot pools and the pan (`WATER.drawStill`: no shore grid, so no surf or breakers); **new:** breakup on the stream (ext/56), the audit (57), the reflections switch on the pan, off at load (58), the water as fields (60): the wet band on the ground (`aWet`), `FIELD.wet` and `FIELD.flow` near the water and `WATER.edgeAudit` in the host checks read the water the eye sees | `?fields=0`, `?mirror=probe|live` |
+| `core/materials` | the library through `materials.json` (`KMAT`); four new ground slots (`ground.soil`, `ground.burn`, `ground.salt`, `ground.gravel`); card cells by `check_cells.py --fix` (leaflet and saltbush stems, the plate's one cell, the cycad frond's cell and `base: bottom`) | `?mat=proc` |
+| not taken | `core/mask` (no placement raster), `core/lod` and `core/minimap` (a station page), `KFIRE` (the burn mosaic stays the kit's static `ABSAV.burn`: moving it onto `KFIRE.history` re-rolls every patch and so every plant that reads it; S6), mounds (station 2's clay ants), seasons, the river-mouth plume (no river meets a lake on the map) | |
+
+**The build order moved** (the final rebuild's rule): `80-host-ground.js` builds the ground, the far field and the horizon after the kits; the sky, the
+air and the water follow; `89z-host-build.js` (was 88) places the flora last, on the water's fields.
 
 ## 12. Open questions for the owner (each with the default the build uses)
 
@@ -234,6 +241,9 @@ grass: straw litter on red soil; `ground.redsoil` stands in) and `card.grass.tha
    savanna on Earth's classes. **(default)** the kit is both: station 1 the rim slope (what the eastabyss sketch drew),
    station 2 the floor's belt.
 2. **Station 1's site**: the gentle east rim at px ~1021,350 (the gentlest transect, a 46 km climb). **(default)**
+   **Map 5.1 (2026-11-03):** the climb moved ~5 px east, so the site is px 1026,350 (-638 m, Aw, ~1,240 mm, +30 degC). On 5.1 row 350 reads
+   XV at -1,256 to -1,007 m (old px 1019-1022), Aw at -879 to -493 m (1023-1028), BSh from -328 m (1029); the plan's rain figures above are 4.22's
+   (`KNOWN_ISSUES.md`: 5.1 is wetter).
 3. **The risers, gullies and kopjes are the page's, not the model's** (it cannot resolve them at 4 km a cell).
    **(default)** two risers and a caprock rim on the model's grade.
 4. **Fire as a static mosaic**, not a moving fire. **(default)** static; a fire model and the people who burn are S6.
@@ -260,5 +270,145 @@ grass: straw litter on red soil; `ground.redsoil` stands in) and `card.grass.tha
   `plantSav` call `ABSAV.grow`), with eastabyss's baseline rewritten on purpose; the crops entries (section 9).
 - **S6**: a fire model (fronts that move with the wind, smoke, people who set them), on `core/atmos` weather.
 - **S7**: the ground on KLAND (the scale model's own heights) when it reaches this checkout.
-- **S8**: stations 2 (the floor's belt) and 3 (the bench's edge, with ebadlands read in place); fauna from `kits/fauna`.
+- **S8** (done 2026-11-09, but the fauna): stations 2 (the floor's belt) and 3 (the bench's edge, with ebadlands read in place); fauna from `kits/fauna` still owed.
 - **S9**: the gallery (a new biome), `PORT.md` audited by `tools/audit_port.py`, the index.
+
+## 14. The savannah rims (from PLAN-LANDS J4-J6)
+
+The owner (2026-11-08, `biomes/hyperjungle/PLAN-LANDS.md` section 14, answer 1): no new kit; the savannah rims go to this kit (the scale
+model's `extract_region.py` already maps `e savannah rim` and `se savannah rim` to abyssal-savannah). A cloud session had built them as a
+kit of their own, `biomes/savannarim` (J4-J6, 2026-11-08); it was folded in here the same day, page for page (each station page differs
+from its savannarim page only in the edit layer's key). The plan for the rims is PLAN-LANDS.md (sections 1, 4, 5, 9 to 13): one base
+for the three monsoon savannahs, 0.6 to 1 km above the hyperjungle's floor at 1.7-1.9 atm, each land re-tinting and re-weighting it.
+
+| Station | Page | Where | What |
+|---|---|---|---|
+| 1 `serim` | `dist/abyssal-savannah-serim.html` | the se rim, between Talia (px 801,609) and the laterite, ~1,290 mm, Aw/Am/Cfa, 1.68 atm | the incense country: the Bowl's cousins (rain dragon, rain rose, rain bottle), incense, cloud avocado, the leaning tree fern (H4), the rust miombo and its copper flush (H7; read by Godstep's redlands) |
+| 2 `erim` | `dist/abyssal-savannah-erim.html` | the e rim near Fridon (px 755,601), ~1,490 mm, Am/Aw, 1.77 atm | the old lines: seven cousins by BIO.kin of eastabyss's and the e highlands' builders, the pull toward the giant fading west (H4), the savage land's comb tree and elephant ear by reach |
+| 3 `north` | `dist/abyssal-savannah-north.html` | hyperjungle N's XV/Aw/BSh part, east of the Hexahedron (px 555,338), ~1,035 mm, 1.88 atm | the blind grass under the bone giants, bloodwood at the jungle's edge |
+
+```
+python3 tools/build.py biomes/abyssal-savannah --station serim    # station 1
+python3 tools/build.py biomes/abyssal-savannah --station erim     # station 2
+python3 tools/build.py biomes/abyssal-savannah --station north    # station 3
+```
+
+**Layout.** `build.py` `build_station()`: `src/rim/` is the rims' shared base (the main page never reads it), `stations/<name>/` adds a
+station's own fragments (a name in both is the station's) and its `station.json` (`out`, `note`, `neigh`; `core`, `kits` and `paths` as
+the crater-drylands pattern has them). Every station has its own land, `44l-host-land.js` (the map and its weights, fires, views and
+checks as one record); `erim` has its own passes, `87e-host-own.js` (`src/rim/87e-host-own.js` is the se rim's and does nothing on
+another land).
+
+- **One stage for every land.** `src/rim/45-host-stage.js` draws the map from `LAND`: the rise, the river, the forest's edge, kopjes,
+  laterite, dambos, the fires. `src/rim/87-host-land.js` places the base on it, and a land's own species in its `landOwn` (87e).
+- **The rims' kit** (`src/rim/50`, `52`, `55`, `56`, `60`, `70`: `SAVRIM`, registry, tags and pack key `savannarim`): the species
+  records, the builders (`SAVRIM.<key>.make/grow`, `SAVRIM.builders`, `BIO.kitBuilder('savannarim', key)`) and the grass passes
+  (`SAVRIM.grass`, `SAVRIM.blindGrass`). The hyperjungle's station `north` reads `src/rim/50`, `55` and `60` and the `blind` and `grass`
+  families in place for its gaps (`biomes/hyperjungle/build.py` HOMES). The key was kept so that page, the records' kit ids and Godstep's
+  `kitBuilder` call did not move; renaming it is a later, deliberate change.
+- **The neighbours are read in place**, never copied (`build_station()` NEIGH): the hyperjungle on every page (its globals 41, its six
+  hypertrees for the gallery forest and the outliers, its lands' builders: the bone giants, the bloodwood, the comb tree, the elephant
+  ear), and per station the cousins' kits (`neigh`: serim sedesert and crater-drylands, erim eastabyss and ehighlands).
+- **Textures.** The rims' families are in this kit's `materials.json` and `tex/` (`build.py` `RIM_PACK`: grass, blind, fan, palmbark,
+  termite, incensebark), packed under the key `savannarim` on the station pages and left out of the main page; the rims take this kit's
+  `groundDetail` as it is (the same set, ground.savanna.litter, with the same settings).
+- Switches: `?land=0` (none of the land's passes), `?fire=0`, `?season=0`, `?kground=0`, `?far=0`, `?hz=0`, `?groundtint=0`;
+  `?shadow=1` turns the sun's shadows on.
+
+### Core adoption (PLAN-LANDS.md section 12)
+
+Started from the nearest finished kit, **crater-drylands** (its `build.py`: the core list, the station pattern with `station.json`, the
+full core/host interface), and for the host fragments from the **hyperjungle's savanna station** (the nearest finished savannah: its
+stage, river, burn mosaic and mounds).
+
+| Module | Taken | Where |
+|---|---|---|
+| core/biome | 10, 20, 30, 31b, 31j, 32 (kin), 33 (fung, for the hyperjungle read in place), 34, **38 KFIRE (H3)**, **39 the lean (H4)**, 40 (reach), 41, 42-44; **30s the copper flush (H7)** | `build_station()` CORE_BIOME |
+| core/rand | every placement a `KRAND.hash(world, i, j, salt)` lattice cell; the builders' numbers from `KRAND.hash(seed, k, salt)` | 55, 60, 87 |
+| core/mask | no canvas read for placement (the ground's paint is drawn, never read back) | 45 |
+| core/tags | `BIO.init({tags:'savannarim'})`; every tree, grove and landform `REGISTER`ed before the bake draws it | 87 |
+| core/space | the river's spans, the land's keep-clear (`KSPACE`) | 45, 87 |
+| core/terrain | 37 **KSTACKS.mounds (H10)**, 43 KGROUND, 44 KFAR, 45 KHORIZON | 45, 83, 87 |
+| core/water | the river (`WATER.flow`), wet ground and hollows | 89w, 89a |
+| core/atmos | the shared sky at the land's place, the wind, the weather, height fog, rain cover, the air's load | 89, 89a |
+| core/clock | **the season (H7)**: `BIO.bindSeason` (the grass bleaches, the monsoon kapoks drop); the flush (`21-core-clock-flush`) | 99 |
+| core/hazard | the air's dust reaches the walker (KHAZ) | 89a |
+| core/shadow | KSHADOW, off by default | 88 |
+| core/host | `khost.FULL` (the whole interface) | `build_station()` |
+| core/materials | `materials.json`, `tools/textures/pack.py` -> `tex/` | 50, 45, 87 |
+
+### Order (PLAN-LANDS.md section 13)
+
+| Step | What | Page |
+|---|---|---|
+| J4 (2026-11-08) | the base (red oat grass, blind grass, fan palm, umbrella thorn; gallery forest, kapok and baobab outliers read in place; KFIRE, mounds, seasons) and the north savannah | `north` (and the base on the se rim's map, `serim`) |
+| J5 (2026-11-08) | the e rim (H4 lands here) | `erim` |
+| J6 (2026-11-08) | the se rim (the rust miombo defined here, read by Godstep's redlands; the red guyed stalk Godstep's) | `serim` |
+| fold-in (2026-11-08) | `biomes/savannarim` folded into this kit as stations `serim`, `erim`, `north` | the three above |
+
+## 15. Stations 2 and 3: the floor's belt and the bench's edge (2026-11-09)
+
+Built in one session after the biome rebuild's audit found them planned and unbuilt (worktree `abyssal-savannah-rest-240d14`).
+
+```
+python3 tools/build.py biomes/abyssal-savannah --station belt     # station 2 -> dist/abyssal-savannah-belt.html
+python3 tools/build.py biomes/abyssal-savannah --station bench    # station 3 -> dist/abyssal-savannah-bench.html
+```
+
+**Layout.** Both are station 1's lineage, not the rims': a `station.json` with `"base": "main"` makes `build.py` (`build_main()`) take the main
+page's `src/` (its cores, the eastern abyss read in place, the kit `50`-`70`, the sky `89s`, the air `89a`) and add `stations/<name>/`, a
+name in both being the station's. Each station has its own stage (`45`), ground and far field (`80`), water (`89w`), build (`89z`) and
+take (`99`). `station.json` also names `terrain` (more core/terrain fragments), `pack` (rim families packed under this kit's key) and
+`neigh` (kits read in place: `BASE_NEIGH` in `build.py`). The main page is byte for byte as before (its hash unchanged).
+
+**The sites on map 5.1** (surveyed 2026-11-09 from `tools/scale-model/model/data`; old-canvas px). Each stage carries `GRID51`, the model's
+heights and classes on its 2 km cells, 41 x 41 round the site: the far field (KFAR) runs on them, the belt's ground too.
+
+| Station | px | Model | What the page makes of it |
+|---|---|---|---|
+| 2 `belt` | 1031,515 | -1,878 m, XV, ~800 mm, +35 degC, 2.0 atm | the ground is the model's grid (Catmull-Rom) with the page's detail: a seasonal stream south-west across the belt into a salt flat (the salt lake, WX at -2,474 m, lies in its pit 6 km south: a far still); a seep-fed hollow in the north-east corner as the jungle's edge (5.1's XA basins are 10-12 km north-east and south-east: the page brings the edge in, as the plan asks) |
+| 3 `bench` | 1038,414 | -282 m, BSh, ~1,240 mm, +28 degC, 1.66 atm | 5.1's climb breaks at px 1036-1038 (-1,015 to -282 m in 4 km); the page puts it in one cliff band (360 m) and puts the climb to the plateau (px 1040-1041, Cfa) in two en-echelon fault steps. The far field blends the page onto the grid over 4 km |
+
+**What each page has.**
+- **The belt:** the parkland at its tallest (the umbrella trees 12-28 m on this page, `BELT.umbrellaH`; the old thatch tufts drawn 1.3 x
+  taller, to ~4 m, by a page-local wrap of `BIO.put`), rope araucarias through it (eastabyss's, a pass added to `ABSAV.PASSES` here), the
+  clay ants' fluted spires (KSTACKS.mounds, 5-14 m, on `earth.termite`), the jungle's edge (eastabyss's bell-barks, crown ferns, palmettos)
+  in the hollow and along the stream, the salt steppe's stub lycopsids and the salt flat's pan-grass and saltbush toward the lake, the burn
+  mosaic over all of it. Water: the stream (`WATER.flow`), the salt flat's brine and the seep pool (`WATER.drawStill`), the model's salt
+  lakes in the far country (still boxes on their cells).
+- **The bench:** the lower slope (Aw) with the eastern abyss's jungle at its foot and up the ravines, the cliffs (KRELIEF.scarp: one
+  bench, three ravines, buttresses, talus, a lipped rim; KSTRATA's beds on the faces), the BSh steppe on the bench (stubs, bunchgrass,
+  low umbrella trees, granite kopjes with their figs), two en-echelon fault scarps with a relay ramp (KRELIEF.relay, 38c) and a sag pond at
+  the north fault's foot, and ebadlands' pinyon, juniper and chaparral yucca on the fault blocks, the ramp and the cliffs' rim (read in
+  place, `EBADLANDS.make` / `grow`, on `ABSAV.cells`). Every tree pass is gated off sheer faces. Water: the bench stream into the middle
+  ravine's head and the stream below its fan (two `WATER.flow`s; the ravine between is dry in the season shown), the sag pond.
+
+### Core adoption (stations 2 and 3)
+
+| Module | Taken | Where |
+|---|---|---|
+| core/biome | as station 1 (`CORE_BIOME`), the kit's builders and passes unchanged; BIO.env (41) on each page's fields | `build.py`, `89z` |
+| core/rand | every placement a `KRAND.hash` cell (`ABSAV.cells`); the ground's noise `KRAND.fbm`; KSTACKS' and KRELIEF's records hashed | `45`, `89z` |
+| core/tags | `BIO.init({tags:'abyssal-savannah'})`; every tree, mound, kopje and landform registered before the bake | `45`, `89z` |
+| core/space | the mounds' footprints (the mask, the trees' obstacles), the channels' beds, the ebadlands pass's keep-clear | `45`, `89z` |
+| core/terrain | 43 KGROUND (station 1's four layers on each page's masks), 44 KFAR (on GRID51), 45 KHORIZON, 35 KSTRATA (the bench's faces); **37 KSTACKS.mounds** (the belt); **38 KRELIEF.scarp** and **38c KRELIEF.relay** (the bench) | `45`, `80` |
+| core/water | flows, stills (no shore grid: no breakers), breakup, the audit (`WATER.edgeAudit` in the checks), the fields (60), the reflections switch off at load | `89w`, `89z`, `99` |
+| core/atmos | the shared sky at each site's px, height fog, the rain cover, lightning, the weather (station 1's `89a`, `89s`) | `src/` |
+| core/shadow | KSHADOW, **off at load** (`?shadow=1` on) | `89z` |
+| core/host | `khost.FULL`, each page its own edit layer (`abyssal-savannah-belt`, `-bench`) | `build.py`, `99` |
+| core/materials | the kit's pack; the belt adds `termite` (station.json `pack`); ebadlands' `bark.juniper`, `leaf.needle`, `leaf.scale` | `build.py` |
+| not taken | **core/mask**: no placement raster (no canvas is read; the ground's paint is drawn, never read back). **38c on the belt**: none of its kinds fits a savanna floor (no slump, runout, loess gully, terraces, maar, fault or cut). **KFIRE**: the burn mosaic stays `ABSAV.burn` (S6). **WATER.fall**: the bench stream's fall is dry in the season shown. **core/lod, core/minimap**: station pages, as station 1 | |
+
+**Checked (2026-11-09, `KRATOR_GL=gpu`, the Arc lane, `verify.py --assert --all-views --no-cache`):** both pages pass every view, every host
+check and its negative, the attach audit (0.00%), the card guard, the instance caps and the export profile (each page's own box in
+`verify.py` `EXPORT_BOXES`).
+
+| | belt | bench |
+|---|---|---|
+| scene triangles at the opening view (budget) | 9.6M (11M) | 12.7M (13.5M) |
+| draw calls (worst view) | 51 | 57 |
+| trees | 6,704 umbrella (1,412 over 24 m, to 28 m), 241 rope araucarias, 593 eastern abyss at the jungle's edge and the stream | 2,760 ebadlands (pinyon 698, juniper 896, yucca 1,166), 1,998 eastern abyss (31 just over the rim), none on a face over 48 degrees |
+| landforms | 815 clay ants' spires | cliffs 327-329 m, fault steps 187 and 197 m, the relay ramp at 1900,0 |
+| page size | 11.5 MB | 12.0 MB |
+
+Switches as station 1: `?kground=0`, `?far=0`, `?hz=0`, `?fields=0`, `?diet=0`, `?strata=0` (the bench), `?mirror=probe|live`; `?shadow=1`.

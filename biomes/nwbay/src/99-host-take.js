@@ -38,7 +38,7 @@ const VIEWS={
  'The mangrove lagoon':V(820,-110,6,960,-60,3),
  'Lotus trumpets':(function(){const u=1290;return V(u-50,vR(u-50)+42,8,u+40,vR(u+40)+16,6);})(),
  'Reed beds':(function(){const d=MOUTH_XZ;let best=null,bd=1e9;for(const B of (NWBAY.REEDBEDS||[])){if(B.n<100)continue;const dd=Math.hypot(B.x-d[0],B.z-d[1]);if(dd<bd){bd=dd;best=B;}}
-  if(!best)return V(840,300,8,900,340,2);return[best.x+best.r*2.2,7,best.z+best.r*1.4,best.x,1,best.z];})(),
+  if(!best)return V(840,300,8,900,340,2);return[best.x+best.r*2.2,13,best.z+best.r*1.4,best.x,1,best.z];})(),   /* 13 m: at 7 the eye stood in a glossy crown once the catch-up held the crowns (the GPU verify, 2026-11-04) */
  'Pandans on the shore':V(990,-40,4,950,-110,3),
  'Flame-crowns on the terraces':V(1480,520,10,1700,600,14),
  'Flame-crowns from above':V(1500,440,70,1750,560,10),
@@ -122,14 +122,20 @@ function extra(){const R=[];const T=NWBAY.TREES||[];
   R.push({name:'negative: a fruiting species with no catalog fruit',ok:!n1.ok,detail:n1.detail});
   const n2=fruitCheck(NWBAY.SPECIES,P.filter(p=>!/:fig$/.test(p[3])));
   R.push({name:'negative: no figs drawn',ok:!n2.ok,detail:n2.detail});}
+ if(typeof STATION_CHECKS==='function'){try{for(const r of STATION_CHECKS())R.push(r);}catch(e){R.push({name:'station-checks',ok:false,detail:String(e&&e.stack||e)});}}   /* a station's own (stations/<name>/) */
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
+/* THE REFLECTIONS (core/water ext/58, WATER.mirrorSwitch; BACKPORT.md's universal set; the catch-up pass, 2026-11-03): the bay is the page's
+   largest still, a calm swell at y 0; OFF at page load (nothing built or drawn until the panel's "reflections" button or ?mirror=probe|live) */
+const MIRROR=WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[BAY_DRAW.mesh.material],
+ level:0,center:[BAY.c[0],BAY.c[1]],radius:1300,far:4000,tree:o=>/^biome:impTrees/.test(o.name),hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
+if(typeof STATION_VIEWS==='object'&&STATION_VIEWS)Object.assign(VIEWS,STATION_VIEWS);   /* a station's views (stations/<name>/) */
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89s-host-sky.js) */
 KHOST.take({build:'nwbay',title:'Krator biome — the north-west bay',
  hint:'The north-west bay (the biome of Ys): karst stacks in a turquoise bay, travertine terraces, lava coves, mangrove lagoons, the volcano in the SE (ideal type)',
- scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),finTop(x,z)),walk:typeof KWALK!=='undefined'?KWALK:null,clear:1.8,   /* the eye's floor and the walker's blocks: the tsingy's fins are solid */
+ scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),finTop(x,z)),walk:typeof KWALK!=='undefined'?KWALK:null,clear:1.8,clampCam:typeof STATION_CLAMP==='function'?STATION_CLAMP:undefined,   /* the eye's floor and the walker's blocks: the tsingy's fins are solid */
 registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89s-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:()=>{if(MIRROR)MIRROR.update();SKY.draw();},   /* the reflections (off until asked), the shared sky's pass, then the world (89s-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
@@ -137,5 +143,9 @@ registry:REG,views:VIEWS,ticks:TICKS,
  api:{get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  extra,
  biome:()=>window._biome}});
+// THE SHADOWS' SWITCH (core/shadow; 88-host-build.js attached it and switched it off): one button on the panel, beside the reflections'
+{const S=window._shadow,ui=KHOST.ui||document.getElementById('ui');if(S&&S.off&&ui){const b=document.createElement('button');b.id='shadow-btn';
+ b.title='the sun\'s shadows in one box that follows the view (core/shadow): costs a shadow pass a frame when on';let on=new URLSearchParams(location.search).get('shadow')==='1';
+ const lab=()=>{b.textContent='shadows: '+(on?'on':'off');};b.onclick=()=>{on=!on;if(on)S.on();else S.off();lab();};lab();ui.appendChild(b);}}
 // THE DRY SEASON (core/biome H7, the final rebuild 2026-10-27; ?season=0 off): the monsoon's two seasons on the host's clock, once it has one
 if(NWBAY_LOOK.season&&BIO.bindSeason)BIO.bindSeason(null,{sharp:2});

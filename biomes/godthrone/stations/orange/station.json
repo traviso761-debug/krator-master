@@ -1,0 +1,12 @@
+{
+ "name": "The orange belt (station 3): the dry-cold line at ~8.3 km near Pluton, black flows going ochre downslope, palagonite cliffs with tafoni and knife-edged ridges, debris-covered ice below, the endoliths in split stones, the first crusts",
+ "out": "godthrone-orange.html",
+ "water": [],
+ "tex": [
+  "rockTafoni",
+  "palagonite",
+  "iceDebris",
+  "lichenCrust"
+ ],
+ "region": "region.json"
+}

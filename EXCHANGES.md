@@ -166,6 +166,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 ### crater drylands N ↔ swhighlands
 
 - **Existing exchanges: none.** `swhighlands/PLAN.md:98` only names the crater drylands as a neighbour.
+- **Taken (2026-11-09, `claude/swhighlands-rest-f8a7ee`):** swhighlands' station 5 (`-coast`) grows the crater drylands' `yucca` in place and its`n  `swordspire` as the glaucous cousin (`stations/coast/87-host-kin.js`: `CRATERDRY.make`/`grow`).
 - **Shared ground:** swhighlands' dry east scarp and its fan deltas are station 5, `-coast`, in the rain shadow
   (~400 mm). Its low Csa is at about 1.8 km (+15 °C).
 
@@ -220,6 +221,8 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 | nsemiarid → nhighlands | `samara` | Kite ash | wind (half-metre samaras) | read in place | `riparian` and `montane` on the dry-summer side | tagged with Dfb and Csb, riparian `'both'`; wind-carried uphill |
 
 ### nhighlands ↔ nwlowlands
+
+**Status (nwlowlands' side, 2026-11-02):** `greyalder` and `foglaurel` built as `bluealder` and `bluelaurel` (`biomes/nwlowlands/src/87k-host-kin.js`); `NHL.make` and `NHL.grow` added for them, additive. The two rows into nhighlands wait for its turn (pair 7).
 
 - **Existing exchanges: none.** nhighlands' `BRIEF.md` uses nwlowlands only as a style reference and for the far view.
   `nwlowlands/PLAN-STATIONS.md:42` gives its Dsb corner to nhighlands or nsemiarid. The Cut reads both kits, but not each
@@ -314,6 +317,8 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 
 ### nwlowlands ↔ swlowlands
 
+**Status (nwlowlands' side, 2026-11-02):** `sycamore` and `cypress` wired as `bluesycamore` and `pondcypress` (`biomes/nwlowlands/src/87k-host-kin.js`); they grow once swlowlands' `make` and `grow` are merged.
+
 - **Existing exchanges: none** (see the note at the top). It is one engine, cloned; no species pass between them.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
@@ -335,7 +340,9 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 ### swhighlands ↔ swlowlands
 
 - **swlowlands → swhighlands: exists (plan).** `swhighlands/PLAN.md` section 3: the sprawl oak (as the derived sprawl cap),
-  `cedar`, `madrone` and `manzanita`.
+  `cedar`, `madrone` and `manzanita`. **Built in part (2026-11-09):** the flayed madrone grows on swhighlands' station 3
+  (`-span`) in place (`stations/span/87-host-kin.js`); the tier cedar is held back (the core attach audit), the sprawl cap and the
+  manzanita are still owed.
 - **swhighlands → swlowlands: exists (plan).** `swlowlands/PLAN-FLORA.md`: `fishingbridge`, a red lattice sprawl derived
   from `latticeoak`, `coralmelon`, and bead coral.
 - No proposals needed.
@@ -435,7 +442,7 @@ on a floor at 400-1,000 m (BWk, 16 mm). **Neither side has a plant that lives on
 - **hyperjungle→crater-drylands: yes, a cousin.** The `prismmallee` is "a much smaller relative of the hyperjungle's
   prism gum" (`crater-drylands/NOTES.md:30,46`; `src/50-biome-craterdry-species.js:11`).
 - **crater-drylands→hyperjungle: none.** `hyperjungle/PLAN-LANDS.md` §5.3 sends the prism mallee and the frill-tree out
-  of the patch, but to the se savannah rim (`biomes/savannarim`), not to the hyperjungle kit.
+  of the patch, but to the se savannah rim (`biomes/abyssal-savannah` station `serim`; built as `biomes/savannarim`), not to the hyperjungle kit.
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|
@@ -464,6 +471,10 @@ ebadlands' `HV()` helper: code, not a species.
 | eastabyss→ebadlands | `araucaria` | Rope araucaria | animals (seed cones cached) | cousin: shorter, sparser ropes, no abyssal habit | ebadlands' low BSh/Csa canyons over the abyss rim (950-1,600 m) | the abyss's one temperate-semiarid species, so it can climb out into the badlands' lowest band |
 | ebadlands→eastabyss | `cottonwood` | Fremont cottonwood | water (seed fluff down the rivers into the abyss) | cousin: taller, a buttressed bole in the 1.9 atm air | the abyss's riverbanks in the BSh/Aw margin (-1,200 to -100 m) | a riparian tree whose seed travels on water; the badlands' rivers drain into the abyss |
 
+**Done (2026-11-02, ebadlands' turn, pair 5).** eastabyss→ebadlands `araucaria`: a cousin (`ropearaucaria`, x.7 tall, sparser), read in place on
+station 1, the hot waste (`biomes/ebadlands/src/87-host-kin.js`): the slot canyon cut into the first step and the gullies' floors near its foot.
+ebadlands→eastabyss `cottonwood` was taken at eastabyss's turn (`abysscottonwood`).
+
 ### eastabyss ↔ sedesert (main)
 
 **Existing exchanges: none either way.** sedesert's core is the eastern abyss kit's core (`sedesert/BIOME-API.md:11`),
@@ -487,6 +498,14 @@ gradual), and the gorge station draws hoodoo landforms only (`korona/stations/go
 | ebadlands→korona | `bristlecone` | Bristlecone pine | birds (nutcracker caches) | read in place | Korona's east plateau at 4.6 km, the hoar table country (Dsc/BWk, about 62 mm) | the same plateau and the same cold, dry, high ground where bristlecones live |
 | korona→ebadlands | `frosttank` | Frost tank | water (snowmelt) and birds | read in place | the melt pools of ebadlands' ET/Dfc high band (5.1-5.9 km) | Korona's ET/Dsc ice-table trap, already tagged for exactly this ground |
 
+**Waiting on Korona's turn (pair 9)** for both rows: Korona is the later vendor and reader (ebadlands' turn, 2026-11-02, left them).
+**Status (pair 9, 2026-11-03, Korona's side):** the vendor's half of `frosttank` is ready: `KORONA.plant('frosttank', x, y, z, {lv, seed, id})`
+(`biomes/korona/src/57-biome-korona-carnivores.js`) grows one with the kit's own builder and registers its trap; a reader takes Korona's `50` and
+`57` in place. The same call takes `butterwort`, `cobralily` and `greatsundew` (the nwouterwall, nhighlands and crater-drylands rows); `wallfern` and
+`bladderpool` are placed by the kit's passes against walls and pools and are owed. **Not taken (receiver):** the bristlecone on the hoar table (it
+wants ebadlands' 50 and 55 read in place on a station that already reads ehighlands: the hoar's next pass); the caribou moss, the ghost gum and the
+sea buckthorn wait on their vendors' turns (nwouterwall, crater-drylands; nsemiarid runs beside this turn). `biomes/korona/PLAN.md`, "Core adoption".
+
 ### ebadlands ↔ sedesert (the Bowl and main)
 
 **Existing exchanges: none either way.**
@@ -501,6 +520,13 @@ gradual), and the gorge station draws hoodoo landforms only (`korona/stations/go
 | ebadlands→Bowl | `cottonwood` | Fremont cottonwood | water | cousin: dense-air habit, a squat, broad crown | the Bowl's `delta` levees on its east side | gallery trees on the delta's distributaries, beside the Bowl's tamarisk |
 | main→ebadlands | `mesquite` | Mesquite | animals (pods eaten, seed dropped) | read in place | ebadlands' lowest BSh washes, the badlands' edge | a semiarid riparian shrub; the river lines run across the border |
 | ebadlands→main | `juniper` | Utah juniper | birds (berries) | cousin: lower and broader in the thicker air, with a redder bark | sedesert's mesa tops and the BSk uplands (1.4-2.9 km) | the desert's mesas are badlands ground; juniper is the mesa tree |
+
+**ebadlands' turn (2026-11-02, pair 5).** Wired but **not read** yet: main→ebadlands `mesquite` (`biomes/ebadlands/src/87-host-kin.js` grows it on station 1's wadis once `stations/waste/station.json`
+reads sedesert again: sedesert's builder jitters the mesquite's crowns up to ~2.8 m off their limbs, and the attach audit failed station 1 at 9.5%; sedesert's
+next turn holds them, BIO.holdTo). **Owed:** Bowl→ebadlands `tamarisk` (the Bowl's tamarisk builder is
+private to `biomes/sedesert/stations/bowl/66-biome-sedesert-halo.js`: the Bowl's next turn exports it, then ebadlands grows it on the wadis'
+bars); ebadlands→main `juniper` and ebadlands→Bowl `cottonwood` (sedesert's pages, its next turn: `build.py` NEIGH and `87-host-kin.js` read
+ebadlands' species and trees in place; neither ebadlands species key nor index changed). No ebadlands species key or index changed.
 
 ### ehighlands ↔ sedesert (the Bowl, main, steppe)
 
@@ -583,6 +609,13 @@ at about 6.1 km.
 | nsemiarid→korona | `buckthorn` | Sea buckthorn | birds (berries) | read in place | the east lobe's lake shore on Korona's side (about 830 m) | a temperate, semiarid, salt-tolerant shore shrub; the same shore runs on both sides |
 | korona→nsemiarid | `bladderpool` | Sucking pool | birds (fragments on their feet) | cousin: a small pond bladderwort bed, danger 0, with no sucking | fresh pools and reed margins on nsemiarid's lake shore | bladderworts grow in steppe pools on Earth; Korona's version is scaled down for richer ground |
 
+**Status (2026-11-09):** `bladderpool` **taken** (korona→nsemiarid): the cousin as the row says, the **pond bladderwort**
+(`biomes/nsemiarid/src/50`: item `bladder`, `NSEMIARID.PLANTS.bladderwort` with `tags.kin: 'korona.bladderpool'`, danger 0, no sucking; `60`'s last
+pass), mats on still, fresh, warm water: station 1's spring pool (not its salt lake, not the stream), and the overlays' fresh water (the coulee's plunge
+lake and potholes, the high line's rain pond); not the high country's cold tarns. `buckthorn` (nsemiarid→korona) **owed**: no Korona station stands on
+the east lobe's lake shore yet (the basin's lake is the Tiers' lake, the trenches' a salt lake); nsemiarid's `buckthorn` item and `60`'s `buckthorn()`
+are ready to read in place there. `biomes/nsemiarid/KNOWN_ISSUES.md`.
+
 ### korona ↔ nwouterwall
 
 **Existing exchanges: none either way.** nwouterwall names Korona only for method (stations, dithering, the mask form:
@@ -609,6 +642,16 @@ at about 6.1 km.
 |---|---|---|---|---|---|---|
 | oidong→xanadu | `cherry` | Cherry blossom | people (the History Monks and pilgrims, back over the pass) | cousin: a deeper colour (Oidong paled Xanadu's trees, so Xanadu deepens Oidong's) | Xanadu's Cfb/Csb gardens and terraces, 1.5-2.6 km | a cool-temperate garden tree; the mirror of the five trees that went the other way |
 | oidong→xanadu | `tea` | Mist tea | people | read in place | Xanadu's wet Cfb face | a humid cool-temperate shrub in cloud; tea is the kind of thing monks carry |
+
+**Status (pair 6, 2026-11-03, oidong's side):** the vendor's half is ready. `cherry` (species 2) is reachable by `OIDONG.make(2, x, y, z)` and
+`OIDONG.grow(T, lv)` (and `BIO.kitBuilder('oidong', 'cherry')`), its key and index unchanged; its limbs now take `BIO.flareJoin` and its blossom is unchanged.
+`tea` is a floor plant (`OIDONG.PLANTS.tea`, item `teabush`), drawn by the floor's `tea()` helper inside `60-biome-oidong-floor.js`: a reader takes the
+item (`BIO.def('teabush', ...)` in `50`) and places it itself; there is no one-plant API for floor plants. The receiver's half (xanadu's page) is the
+xanadu session's. **The five shared species** are separate copies in each kit; oidong's changed this turn (keys and indices kept): limb joints on all
+five, the wisteria's racemes held to their limbs (card cell kept), the far tier on octahedral impostors.
+
+**Taken (pair 6, 2026-11-03):** both rows, in xanadu's station `cloud` (`stations/cloud/station.json` reads oidong's 50 and 55): the tea in place,
+the cherry as `BIO.kin('oidong.cherry')` keyed `cloudcherry`, a deeper rose. The five shared species keep their keys and indices in both kits.
 
 ### rift ↔ xanadu
 
@@ -698,6 +741,10 @@ its pattern.
 |---|---|---|---|---|---|---|
 | xanadu→godthrone | `frostwillow` | Frost willow | wind (seed fluff up the valley) and water | cousin: a prostrate dwarf willow, ankle-high, with the iridescent leaf kept | the banks of the blood river below the bloodfalls, the head of Qol Ḍrāi in the Godthrone's ET band (5.3-5.7 km) | arctic willows are the last woody plants on Earth's tundra; it is Xanadu's coldest tree, and the blood river joins the two kits |
 | godthrone→xanadu (to complete the plan) | *no key yet* | red riverweed | water | for Xanadu to draw in its rapids, as PLAN.md says | the blood river's rapids and pools through the Vale's dry Csb/Csa country | already planned; it only needs the species written |
+
+**Pair 6 (2026-11-03):** xanadu→godthrone is written: the frost willow's prostrate cousin `dwarfwillow` grows in xanadu's station `ranges`
+(ET) and is exported as `XANADU.builders` for the Godthrone's next turn to read in place. The red riverweed stays owed: the blood river (Reḍ
+Riwā) is on no xanadu page yet; the station that draws it writes the species.
 
 ### swbay ↔ throne
 

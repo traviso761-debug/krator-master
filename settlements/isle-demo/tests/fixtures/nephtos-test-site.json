@@ -1,0 +1,13 @@
+{"town": "Nephtos", "site": "isle-demo", "version": 2,
+ "note": "a TEST drawing for tests/test-isle-nephtos-plan.js, not the owner's: a harbour across the beach of the placeholder's site, a market where two avenues cross, the programme's markers (PROG.Nephtos)",
+ "frame": {"town": "Nephtos", "x": -54204, "z": 15203, "sea": -1500.09},
+ "districts": [
+  {"id": "d1", "type": "misc", "name": "harbor", "poly": [[-290, -130], [-150, -200], [20, 240], [-120, 310]], "note": ""},
+  {"id": "d2", "type": "market", "name": "Market 1", "poly": [[110, 0], [200, 0], [200, 80], [110, 80]], "note": ""},
+  {"id": "d3", "type": "funerary", "name": "Funerary 1", "poly": [[350, -250], [420, -250], [420, -190], [350, -190]], "note": ""}],
+ "markers": [{"id": "AGORA", "x": 150, "z": 40, "note": ""}, {"id": "PALAZZO", "x": 240, "z": 130, "note": ""}, {"id": "TEMPLE", "x": 70, "z": -90, "note": ""},
+  {"id": "COUNCIL HALL", "x": 250, "z": -50, "note": ""}, {"id": "CUSTOMS HOUSE", "x": -30, "z": -10, "note": ""}, {"id": "SHIPYARD", "x": -40, "z": 190, "note": ""},
+  {"id": "BARRACKS", "x": 330, "z": 260, "note": ""}],
+ "avenues": [{"id": "a1", "name": "Avenue 1", "width": 12, "note": "", "pts": [[-60, 60], [150, 40], [460, 30]]},
+  {"id": "a2", "name": "Avenue 2", "width": 12, "note": "", "pts": [[150, -320], [150, 40], [170, 360]]}],
+ "causeways": [], "stations": [], "routes": [], "terrain": []}

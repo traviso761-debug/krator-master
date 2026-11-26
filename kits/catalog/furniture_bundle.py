@@ -16,11 +16,18 @@ A name in `cultures` is a FILE SUFFIX: 'eastabyss' picks krator-master-furniture
 files are picked the same way and only when named: 'generic-goods', 'generic-fruit' (not by 'generic'; asking for
 'generic-fruit' adds 'generic-goods', whose KGEN shapes and fruit* colours the fruit file uses) and
 'jobs' (krator-master-furniture-jobs.js, the work items by trade: each keeps its own culture and adds its colours
-to that culture's palette itself, so it needs no culture file beside it). Files load in filename order.
+to that culture's palette itself, so it needs no culture file beside it); 'arms' (krator-master-furniture-arms.js,
+every culture's weapon rack and armour stand, the same way; merged 2026-11-08 from claude/weapon-racks). cultures=None
+takes every file, these too. Files load in filename order.
+
+The Ancients' bath fixtures (seven `ancient` pieces for room kind `bath`) were an opt-in set from 2026-11-03; since
+2026-11-08 they are in krator-master-furniture.js (harvested=True) and the `bath` programme is kits/interiors'.
 """
-import base64, json, os
+import base64, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'catalog'))
+import catalog as kcat   # the engine's names resolve to core/catalog, the culture files' to this folder
 CORE = ['krator-furniture-core.js', 'krator-symbols.js', 'krator-furniture-kit.js']
 RUNTIME = 'krator-furniture-runtime.js'
 DETAIL = 'krator-furniture-detail.js'      # joins only with tex=True
@@ -32,7 +39,7 @@ def culture_files():
 
 
 def read(f):
-    with open(os.path.join(HERE, f), encoding='utf-8') as fh:
+    with open(kcat.path(f), encoding='utf-8') as fh:
         return fh.read()
 
 
@@ -56,7 +63,7 @@ def files(cultures=None, harvested=False):
     return out + [RUNTIME]
 
 
-def textures():
+def textures(side=None):
     """KF_TEX: per texture family the packed colour map (tex/, committed) as a data URL, its tile size in metres and the
     mean brightness the shader divides back out. Every family is inlined (about 1 MB): a piece's family is known only
     when it is built."""
@@ -67,6 +74,10 @@ def textures():
         if name:
             out[fam] = {'lib': e['lib'], 'scale': e['scale'][0], 'mean': e['tint']['mean'],
                         'map': 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX, name), 'rb').read()).decode()}
+    if side is not None:   # beside the page (tools/textures/matlib_pack.py write_sidecar): the page reads KMAT_SIDE['catalog-furniture']
+        side['catalog-furniture'] = json.dumps(out, sort_keys=True)
+        return ("const KF_TEX = (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE['catalog-furniture']) || "
+                "(console.warn('KF: the furniture detail maps are missing (the .tex.catalog-furniture.js beside the page did not load)'), null);\n")
     return 'const KF_TEX = %s;\n' % json.dumps(out, sort_keys=True)
 
 
@@ -77,22 +88,36 @@ PLANTS_ADAPTER = ('/* ---- the plants as pieces (furniture_bundle.py plants=True
                   'PLANTS.forEach(function (p) { if (!FURN_BY_KEY[p.key]) { if (!p.type) p.type = \'plant\'; FURN_BY_KEY[p.key] = p; } });\n')
 
 
-def bundle(cultures=None, harvested=False, tex=False, plants=False):
+def bundle(cultures=None, harvested=False, tex=False, plants=False, side=None):
     """tex=True adds the library detail maps (KF_TEX and krator-furniture-detail.js): a batch's flush then gives each
     family's mesh its set as a triplanar detail map. tex=False is the bundle as before, byte for byte. plants=True adds
-    the plant registry (krator-master-plants.js) as pieces a batch can place; plants=False changes nothing."""
+    the plant registry (krator-master-plants.js) as pieces a batch can place; plants=False changes nothing. side (a dict,
+    with tex=True): the maps go into side['catalog-furniture'] for a sidecar file beside the page (matlib_pack.write_sidecar)
+    and the bundle reads them from KMAT_SIDE; side=None is the bundle as before, byte for byte."""
     fs = files(cultures, harvested)
     if plants:
         fs = fs[:-1] + [PLANTS_FILE] + fs[-1:]
-    body = ''.join('/* ---- kits/catalog/%s ---- */\n%s\n' % (f, read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
+    body = ''.join('/* ---- %s ---- */\n%s\n' % (kcat.rel(f), read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
     if tex:
         fs = fs + [DETAIL]
-        body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures()
-        body += '/* ---- kits/catalog/%s ---- */\n%s\n' % (DETAIL, read(DETAIL))
+        body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures(side)
+        body += '/* ---- %s ---- */\n%s\n' % (kcat.rel(DETAIL), read(DETAIL))
     return safe('/* kits/catalog furniture bundle (furniture_bundle.py): %s. GENERATED; edit the catalog files. */\n'
             'var KratorFurniture = (function () {\n%s\nreturn KF_API;\n})();\n' % (', '.join(fs), body))
 
 
 if __name__ == '__main__':
+    # python3 furniture_bundle.py [cultures ...] [--out file.js]: the bundle for those files, written to a file (a page
+    # that loads it beside itself: core/charactermodels' Animation Lab takes its clips' scenery so, dist/scenery.js),
+    # or its first lines printed
     import sys
-    print(bundle(sys.argv[1:] or None)[:400])
+    a = sys.argv[1:]
+    out = a[a.index('--out') + 1] if '--out' in a else None
+    cs = [x for i, x in enumerate(a) if x != '--out' and not (i and a[i - 1] == '--out')] or None
+    js = bundle(cs)
+    if out:
+        with open(out, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(js)
+        print('%s: %d bytes (%s)' % (out, len(js), ', '.join(cs or ['every file'])))
+    else:
+        print(js[:400])

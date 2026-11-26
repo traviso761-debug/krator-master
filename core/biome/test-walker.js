@@ -2,6 +2,7 @@
 // with a negative. A walker's pose repeats every W.P seconds (so the export's motion bake keeps one period and a port
 // replays it for ever); its gait phase runs on without a jump inside the period and closes on a whole number of turns;
 // it stands still at its stops; BIO.walkLoop lays out a closed loop whose vertices and legs all pass the kit's test.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');

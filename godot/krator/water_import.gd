@@ -10,15 +10,26 @@
 #   "Water"       a Node3D; children "water_<n>" per surface (a fall's plunge pool "water_<n>_plunge"), meta "krator"
 #                 (id, name, kind, level, and per kind: waves and spacing; vertices)
 # Root meta "report": surfaces, drawn, not_drawn, gaps; "surfaces": {id: KWater}.
+# 2026-10-27 (core/water's core pass; godot/tests/water/core_pass_test.gd): CONFLUENCES (the section's group records, ext/55) as their grid on
+# shaders/water_confluence.gdshader, each member ribbon fading out inside its disc (cf_disc on water_flow.gdshader); PANS and ICE (ext/54) on
+# water_pan / water_ice.gdshader, the ice's drifts their own mesh; and build's `opts`, for what the page passed its drawings but the export
+# does not carry as data:
+#   keep      {surface id: Callable(x, z) -> 0..1, or a PackedFloat32Array a value per ribbon vertex}: drawFlow's keep. The record says only
+#             ribbon.keep (the function is the host's): a port samples its own (the ribbon fades out where other water lies)
+#   fall      {surface id: {footK, plungeR, lipK}}: drawFall's options (the curtain held to its foot, the plunge disc sized to its pool)
+#   wet       the pans' wetness (the weather's W.wet; set "wet" on their materials each frame to follow it), default the record's or 0
+#   breakup   true or a dict (WATER.BREAKUP's numbers over the defaults): every open, still, flow and confluence material takes the breakup
+#             (shaders/lib/water_breakup.gdshaderinc), the ribbons and confluences with WATER.BREAKUP_FLOW's numbers and their current
 class_name KratorWater
 extends RefCounted
 
 const SHADER := "res://shaders/water.gdshader"
 const SHADERS := {"flow": "res://shaders/water_flow.gdshader", "fall": "res://shaders/water_fall.gdshader",
-	"plunge": "res://shaders/water_plunge.gdshader", "still": "res://shaders/water_still.gdshader"}
+	"plunge": "res://shaders/water_plunge.gdshader", "still": "res://shaders/water_still.gdshader",
+	"confluence": "res://shaders/water_confluence.gdshader", "pan": "res://shaders/water_pan.gdshader", "ice": "res://shaders/water_ice.gdshader"}
 
 
-static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.0) -> Node3D:
+static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.0, opts := {}) -> Node3D:
 	var root := Node3D.new()
 	root.name = "Water"
 	var rep := {"surfaces": 0, "drawn": [], "not_drawn": [], "gaps": {}}
@@ -36,9 +47,14 @@ static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.
 		if r.get("kind") in ["flow", "fall", "still"]:
 			var k := KWater.from_record(r, sec, atm)
 			by_id[k.id] = k
-			for mi in _kind_nodes(k):
+			for mi in _kind_nodes(k, opts):
 				root.add_child(mi)
 			rep["drawn"].append(k.id)
+			continue
+		if r.get("kind") in ["pan", "ice"]:
+			for mi in _ext_nodes(r, opts):
+				root.add_child(mi)
+			rep["drawn"].append(str(r.get("id")))
 			continue
 		if r.get("kind") != "open":
 			rep["not_drawn"].append("%s (%s, %s): drawn by its open water" % [r.get("id"), r.get("name"), r.get("kind")])
@@ -56,6 +72,8 @@ static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.
 		var mat := ShaderMaterial.new()
 		mat.shader = load(SHADER)
 		apply(mat, w, spacing)
+		if opts.get("breakup"):
+			_breakup_on(mat, opts["breakup"], false, w.period)
 		mi.material_override = mat
 		mi.extra_cull_margin = w.amp + 1.0
 		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -63,14 +81,161 @@ static func build(sec: Dictionary, box = null, atm: Object = null, spacing := 2.
 			"rect": rect, "bed": w.bed != null})
 		root.add_child(mi)
 		rep["drawn"].append(w.id)
+	# the confluences (the section's group records): their grids, and each member ribbon faded out inside its disc
+	for g in sec.get("groups", []):
+		if not (g is Dictionary) or g.get("kind") != "confluence":
+			continue
+		root.add_child(_confluence_node(g, sec, opts))
+		rep["drawn"].append("confluence: " + str(g.get("name")))
+		for fid in g.get("flows", []):
+			var node := root.get_node_or_null(NodePath(("water:%s" % int(fid)).replace(":", "_")))
+			if node == null:
+				continue
+			var m := (node as MeshInstance3D).material_override as ShaderMaterial
+			var n: int = int(m.get_shader_parameter("cf_n")) if m.get_shader_parameter("cf_n") != null else 0
+			if n >= 4:
+				rep["gaps"]["confluences"] = "a ribbon in more than 4 confluences: the 5th and later do not fade it"
+				continue
+			var discs: Array = m.get_shader_parameter("cf_disc") if m.get_shader_parameter("cf_disc") is Array else [Vector4.ZERO, Vector4.ZERO, Vector4.ZERO, Vector4.ZERO]
+			discs[n] = Vector4(float(g["at"][0]), float(g["at"][1]), float(g["r"]), float(g["feather"]))
+			m.set_shader_parameter("cf_disc", discs)
+			m.set_shader_parameter("cf_n", n + 1)
 	root.set_meta("report", rep)
 	root.set_meta("surfaces", by_id)
 	return root
 
 
+# the breakup's uniforms on a material (KWater.breakup_uniforms): B true or a dict over WATER.BREAKUP (flow: BREAKUP_FLOW's numbers)
+static func _breakup_on(mat: ShaderMaterial, B, flow: bool, per: float) -> void:
+	var u := KWater.breakup_uniforms(KWater.breakup_opt(B if B is Dictionary else null, flow), per)
+	for key in u:
+		mat.set_shader_parameter(key, u[key])
+
+
+# a confluence's grid (KWater.confluence_mesh) on water_confluence.gdshader, shaded as its first flow (the river) is
+static func _confluence_node(g: Dictionary, sec: Dictionary, opts: Dictionary) -> MeshInstance3D:
+	var M := KWater.confluence_mesh(g)
+	var P: PackedFloat64Array = M["pos"]
+	var n: int = int(g["n"])
+	var v := PackedVector3Array()
+	var c0 := PackedFloat32Array()
+	var c1 := PackedFloat32Array()
+	for i in n * n:
+		v.append(Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]))
+		c0.append_array([float(g["vx"][i]), float(g["vz"][i]), float(g["slope"][i]), float(g["bank"][i])])
+		c1.append_array([float(g["fade"][i]), float(g["meetV"][i]), 0.0, 0.0])
+	var mi := MeshInstance3D.new()
+	mi.name = "confluence_" + str(g.get("name", "")).validate_node_name()
+	mi.mesh = _mesh(v, M["idx"], null, null, c0, true, false, c1)
+	var mat := ShaderMaterial.new()
+	mat.shader = load(SHADERS["confluence"])
+	# the flow uniforms (the ripple, rapids, the clock's phases) from the river's record: a disc is drawn in its river's water
+	var river = null
+	for r in sec.get("surfaces", []):
+		if r.get("kind") == "flow" and (g.get("flows", []) as Array).size() and str(r.get("id")) == "water:%s" % int(g["flows"][0]):
+			river = r
+	if river != null:
+		var k := KWater.from_record(river, sec, null)
+		var u := k.kind_uniforms()
+		for key in u:
+			mat.set_shader_parameter(key, u[key])
+		var L: Dictionary = k.look if k.look is Dictionary else {}
+		if L.has("shallow"):
+			mat.set_shader_parameter("shallow", _lin(L["shallow"]))
+		if L.has("deep"):
+			mat.set_shader_parameter("deep", _lin(L["deep"]))
+	mat.set_shader_parameter("margin", float(g.get("margin", 1.5)))
+	mat.set_shader_parameter("meet_k", float(g.get("meet", 0.12)))
+	if opts.get("breakup"):
+		_breakup_on(mat, opts["breakup"], true, float(sec.get("period", 600.0)))
+	mi.material_override = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.set_meta("krator", {"kind": "confluence", "name": g.get("name"), "vertices": n * n, "triangles": (M["idx"] as PackedInt32Array).size() / 3, "flows": g.get("flows"), "sum": _sum3(P)})
+	return mi
+
+
+static func _sum3(P: PackedFloat64Array) -> Array:
+	var c := [0.0, 0.0, 0.0]
+	for i in P.size():
+		c[i % 3] += P[i]
+	return c
+
+
+# a pan or an ice record (ext/54) as its flat mesh at its level (+ lift), the ice's drifts as a second mesh
+static func _ext_nodes(r: Dictionary, opts: Dictionary) -> Array:
+	var out := []
+	var kind := str(r["kind"])
+	var P: Array = r["poly"]
+	var lift := 0.02 if kind == "pan" else 0.01
+	var y := float(r["level"]) + lift
+	var v := PackedVector3Array()
+	var P2 := PackedVector2Array()
+	for p in P:
+		P2.append(Vector2(float(p[0]), float(p[1])))
+		v.append(Vector3(float(p[0]), y, float(p[1])))
+	var mi := MeshInstance3D.new()
+	mi.name = str(r["id"]).replace(":", "_")
+	mi.mesh = _mesh(v, Geometry2D.triangulate_polygon(P2), null, null, null, false, true)
+	var mat := ShaderMaterial.new()
+	mat.shader = load(SHADERS[kind])
+	var K: Dictionary = r["colours"]
+	if kind == "pan":
+		for key in ["cell", "jitter", "crack", "flood"]:
+			mat.set_shader_parameter(key, float(r[key]))
+		mat.set_shader_parameter("salt", _v3(KWater.rgb_of(K["salt"])))
+		mat.set_shader_parameter("crack_colour", _v3(KWater.rgb_of(K["crack"])))
+		mat.set_shader_parameter("damp_k", float(K["damp"]))
+		mat.set_shader_parameter("brine", Vector3(float(r["brine"][0]), float(r["brine"][1]), float(r["brine"][2])))
+		mat.set_shader_parameter("rough", Vector2(float(r["roughness"][0]), float(r["roughness"][1])))
+		var wet = opts.get("wet", r.get("wet"))
+		mat.set_shader_parameter("wet", float(wet) if wet != null else 0.0)
+	else:
+		var B := KWater.ice_bake(r, float(opts.get("ice_cell", 2.0)))
+		var img := Image.create_from_data(int(B["nx"]), int(B["nz"]), false, Image.FORMAT_RGBA8, B["data"])
+		mat.set_shader_parameter("ice_map", ImageTexture.create_from_image(img))
+		mat.set_shader_parameter("box", Vector4(float(B["x0"]), float(B["z0"]), float(B["cell"]) * int(B["nx"]), float(B["cell"]) * int(B["nz"])))
+		var Kc: Dictionary = r["cracks"]
+		mat.set_shader_parameter("crack_cell", float(Kc["cell"]))
+		mat.set_shader_parameter("crack_jitter", float(Kc["jitter"]))
+		mat.set_shader_parameter("crack_width", float(Kc["width"]))
+		mat.set_shader_parameter("salt_rim", bool(r["rim"]["salt"]))
+		for key in ["ice", "salt", "snow"]:
+			mat.set_shader_parameter(key, _v3(KWater.rgb_of(K[key])))
+		mat.set_shader_parameter("crack_colour", _v3(KWater.rgb_of(K["crack"])))
+		mi.set_meta("bake", B)
+	mi.material_override = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.set_meta("krator", {"id": r["id"], "name": r.get("name"), "kind": kind, "level": float(r["level"])})
+	out.append(mi)
+	if kind == "ice" and (r["drifts"] as Array).size():
+		var D := KWater.drift_mesh(r, int(opts.get("drift_res", 8)), 0.02)
+		var DP: PackedFloat64Array = D["pos"]
+		var DN: PackedFloat64Array = D["nrm"]
+		var dv := PackedVector3Array()
+		var dn := PackedVector3Array()
+		for i in int(D["count"]):
+			dv.append(Vector3(DP[i * 3], DP[i * 3 + 1], DP[i * 3 + 2]))
+			dn.append(Vector3(DN[i * 3], DN[i * 3 + 1], DN[i * 3 + 2]))
+		var dm := MeshInstance3D.new()
+		dm.name = mi.name + "_drifts"
+		dm.mesh = _mesh(dv, D["idx"], dn, null, null)
+		var sm := StandardMaterial3D.new()
+		var sc := KWater.rgb_of(K["snow"])
+		sm.albedo_color = Color(sc[0], sc[1], sc[2])
+		sm.roughness = 0.9
+		dm.material_override = sm
+		dm.set_meta("krator", {"id": r["id"], "kind": "drifts", "vertices": D["count"], "triangles": (D["idx"] as PackedInt32Array).size() / 3, "sum": _sum3(DP)})
+		out.append(dm)
+	return out
+
+
+static func _v3(c: PackedFloat64Array) -> Vector3:
+	return Vector3(c[0], c[1], c[2])
+
+
 # a flow, fall or still surface as MeshInstance3Ds on its shader, the uniforms from KWater.kind_uniforms. Godot's front
 # faces wind clockwise seen from the front: core/water's meshes wind counter-clockwise (three's), so each triangle turns
-static func _kind_nodes(k: KWater) -> Array:
+static func _kind_nodes(k: KWater, opts := {}) -> Array:
 	var out := []
 	var L: Dictionary = k.look if k.look is Dictionary else {}
 	var u := k.kind_uniforms()
@@ -94,14 +259,27 @@ static func _kind_nodes(k: KWater) -> Array:
 		for i in int(R["count"]):
 			v.append(Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]))
 			c.append_array([F[i * 2], F[i * 2 + 1], (R["slope"] as PackedFloat64Array)[i], (R["bank"] as PackedFloat64Array)[i]])
-		var mi: MeshInstance3D = mk.call(_mesh(v, R["idx"], null, null, c), SHADERS["flow"], "")
+		# drawFlow's keep: the host's function sampled at each vertex, or its values (opts.keep[id]); the record only says it had one
+		var kp = opts.get("keep", {}).get(k.id)
+		var c1 = null
+		if kp != null:
+			c1 = PackedFloat32Array()
+			for i in int(R["count"]):
+				var kv: float = float(kp.call(P[i * 3], P[i * 3 + 2])) if kp is Callable else float(kp[i])
+				c1.append_array([clampf(kv, 0.0, 1.0), 0.0, 0.0, 0.0])
+		var mi: MeshInstance3D = mk.call(_mesh(v, R["idx"], null, null, c, true, false, c1), SHADERS["flow"], "")
 		var m: ShaderMaterial = mi.material_override
+		if c1 != null:
+			m.set_shader_parameter("use_keep", true)
+		if opts.get("breakup"):
+			_breakup_on(m, opts["breakup"], true, k.period)
 		if L.has("shallow"):
 			m.set_shader_parameter("shallow", _lin(L["shallow"]))
 		if L.has("deep"):
 			m.set_shader_parameter("deep", _lin(L["deep"]))
 		m.set_shader_parameter("margin", float(k.ribbon_opt.get("margin", k.presets["flow"]["margin"])))
-		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "flow", "vertices": R["count"], "rows": R["rows"], "matches_page": _same_mesh(k.ribbon_opt, R["count"], P)})
+		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "flow", "vertices": R["count"], "rows": R["rows"], "matches_page": _same_mesh(k.ribbon_opt, R["count"], P),
+			"keep": c1 != null, "keep_noted": bool(k.ribbon_opt.get("keep", false))})
 		out.append(mi)
 	elif k.kind == "fall":
 		var M := k.curtain(k.curtain_opt)
@@ -124,19 +302,27 @@ static func _kind_nodes(k: KWater) -> Array:
 			fm.set_shader_parameter("side_margin", float(k.curtain_opt.get("margin", 0.0)))
 			fm.set_shader_parameter("side_edge", float(k.curtain_opt["edge"]) if k.curtain_opt.get("edge") != null else 0.08 * k.lip_w)
 			fm.set_shader_parameter("lip_w", k.lip_w)
+		var fo: Dictionary = opts.get("fall", {}).get(k.id, {})
+		if fo.get("lipK") != null:
+			(mi.material_override as ShaderMaterial).set_shader_parameter("lip_k", float(fo["lipK"]))
+		if fo.get("footK") != null:
+			(mi.material_override as ShaderMaterial).set_shader_parameter("foot_k", float(fo["footK"]))
 		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "fall", "vertices": M["count"], "drop": k.drop, "matches_page": _same_mesh(k.curtain_opt, M["count"], P)})
 		out.append(mi)
-		# the plunge pool: a disc 2.4 r across at the foot (WATER.drawFall's)
+		# the plunge pool: a disc 2.4 r across at the foot (WATER.drawFall's), or plungeR m with its outer quarter faded
 		var pl := k.plunge()
+		var pr: float = float(fo["plungeR"]) if fo.get("plungeR") != null else pl[3] * 2.4
 		var dv := PackedVector3Array([Vector3(pl[0], pl[1] + 0.06, pl[2])])
 		var di := PackedInt32Array()
 		for a in 48:
 			var th := TAU * a / 48.0
-			dv.append(Vector3(pl[0] + cos(th) * pl[3] * 2.4, pl[1] + 0.06, pl[2] + sin(th) * pl[3] * 2.4))
+			dv.append(Vector3(pl[0] + cos(th) * pr, pl[1] + 0.06, pl[2] + sin(th) * pr))
 		for a in 48:
 			di.append_array([0, 1 + (a + 1) % 48, 1 + a])
 		var pm: MeshInstance3D = mk.call(_mesh(dv, di, null, null, null), SHADERS["plunge"], "_plunge")
-		pm.set_meta("krator", {"id": k.id, "name": k.name, "kind": "plunge", "r": pl[3]})
+		if fo.get("plungeR") != null:
+			(pm.material_override as ShaderMaterial).set_shader_parameter("plunge_fade", Vector3(pl[0], pl[2], pr))
+		pm.set_meta("krator", {"id": k.id, "name": k.name, "kind": "plunge", "r": pl[3], "disc": pr})
 		out.append(pm)
 	elif k.kind == "still":
 		var v := PackedVector3Array()
@@ -155,6 +341,8 @@ static func _kind_nodes(k: KWater) -> Array:
 		var mi: MeshInstance3D = mk.call(_mesh(v, idx, null, null, null, false, true), SHADERS["still"], "")
 		if L.has("colour"):
 			(mi.material_override as ShaderMaterial).set_shader_parameter("colour", _lin(L["colour"]))
+		if opts.get("breakup"):
+			_breakup_on(mi.material_override as ShaderMaterial, opts["breakup"], false, k.period)
 		mi.set_meta("krator", {"id": k.id, "name": k.name, "kind": "still", "level": y})
 		out.append(mi)
 	return out
@@ -173,7 +361,7 @@ static func _same_mesh(rec: Dictionary, count: int, pos: PackedFloat64Array):
 
 # an ArrayMesh from vertices and core/water's indices (turned for Godot, unless turn is false), with normals, UVs and
 # CUSTOM0 (RGBA float) when given; face_up: wind every triangle to face +y (a polygon from Geometry2D comes either way)
-static func _mesh(v: PackedVector3Array, idx: PackedInt32Array, n, uv, c, turn := true, face_up := false) -> ArrayMesh:
+static func _mesh(v: PackedVector3Array, idx: PackedInt32Array, n, uv, c, turn := true, face_up := false, c1 = null) -> ArrayMesh:
 	var ix := PackedInt32Array()
 	for i in range(0, idx.size(), 3):
 		var a := idx[i]
@@ -207,6 +395,9 @@ static func _mesh(v: PackedVector3Array, idx: PackedInt32Array, n, uv, c, turn :
 	if c != null:
 		arr[Mesh.ARRAY_CUSTOM0] = c
 		fmt = Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT
+	if c1 != null:
+		arr[Mesh.ARRAY_CUSTOM1] = c1
+		fmt |= Mesh.ARRAY_CUSTOM_RGBA_FLOAT << Mesh.ARRAY_FORMAT_CUSTOM1_SHIFT
 	var m := ArrayMesh.new()
 	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr, [], {}, fmt)
 	return m

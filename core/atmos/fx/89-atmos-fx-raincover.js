@@ -41,7 +41,7 @@
  A.rainCoverUniforms=u=>{if(!A.U.rainOcc)return u;u.atmRainOcc=A.U.rainOcc;u.atmRainOccBox=A.U.rainOccBox;u.atmRainOccCam=A.U.rainOccCam;return u;};
  // the readers in 4-weather: the streaks and the flakes fade out under cover (their vertex shaders gain atmRainCover)
  const patch=m=>{if(!m||m.userData.atmRainCover)return;m.userData.atmRainCover=true;A.rainCoverUniforms(m.uniforms);
-  m.vertexShader=A.rainCoverGLSL()+'\n'+m.vertexShader.replace(/(gl_Position=(projectionMatrix\*mv|atmQuad\(mv,ps\));\s*\}\s*)$/,'vA*=1.0-atmRainCover(p);$1');m.needsUpdate=true;};
+  m.vertexShader=A.rainCoverGLSL()+'\n'+A.KH().rep(m.vertexShader,/(gl_Position=(projectionMatrix\*mv|atmQuad\(mv,ps\));\s*\}\s*)$/,'vA*=1.0-atmRainCover(p);$1','atmos-raincover');m.needsUpdate=true;};
  A.rainCover=function(o){o=o||{};const T=A.T,r=o.renderer||(A.h&&A.h.renderer),P=A.PRESETS.raincover;if(!r){A.err('rainCover needs o.renderer');return null;}
   const size=o.size||256,box=o.box||160,step=o.step||20,every=o.every==null?6:o.every,lift=o.lift==null?400:o.lift,depth=o.depth==null?1200:o.depth;
   const dt=new T.DepthTexture(size,size);dt.type=T.UnsignedIntType;dt.minFilter=dt.magFilter=T.NearestFilter;

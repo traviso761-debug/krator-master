@@ -19,7 +19,7 @@ OIDONG.TAGS={climate:'cool-temperate',aridity:'humid',abyssal:false,riparian:'bo
 // the classes of the region: an ESTIMATE (the scale model's climate rasters were not read for this kit: KNOWN_ISSUES)
 // the classes the scale model (4.21) gives the 'Oidong Valley' biome overlay (read 2026-10-19; KNOWN_ISSUES.md): the floor Cfb with
 // BSk and Csa toward the drier west, the slopes Dfb (and Dfc, Dsb, Dsc), the heights ET (and EF, bare). Shares by area, the bare ice left out
-OIDONG.KOPPEN={Cfb:.42,Dfb:.2,BSk:.12,Csa:.08,ET:.18};
+OIDONG.KOPPEN={Cfb:.42,Dfb:.2,BSk:.12,Csa:.08,ET:.18,Dsc:.06};   /* Dsc: the north rim's cold desert on scale model 5.1 (the Cold Hearths, 4.3 km; 2026-11-03) */
 
 // ---------------------------------------------------------------- palettes
 // THE PALETTE IS PASTEL. Every leaf, flower and bark set below sits low in saturation and high in lightness (the probe
@@ -176,13 +176,14 @@ OIDONG.PLANTS={
  reed:PK('Reeds and iris','cool-temperate','humid','yes',['Cfb'],['reed','blade'],HV('thatch, weaving',[],false,'')),
  box:PK('Box domes','cool-temperate','subhumid','no',['Cfb'],['boxdome'],HV('none',[],false,'Clipped-looking domes of small leaves on the meadows, nobody\'s clipping.')),
  tea:PK('Mist tea','cool-temperate','humid','no',['Cfb'],['teabush'],HV('none',['leaves (dried, steeped)'],true,'Xanadu\'s mist tea, wild on the terraces; the valley\'s drink.')),
- poppy:PK('Sky poppy','cool-temperate','humid','no',['Cfb','Dfb'],['poppy'],HV('dye (the leaves: the Order\'s blue)',[],true,'A powder-blue poppy on the slopes; its seed is a sleeping draught and a reagent of the stillness rites, and its leaves are the vat the Order\'s blue is dyed in.'),{holy:true}),
- snowlotus:PK('Snow lotus','cool-temperate','subhumid','no',['Cfb','ET'],['snowlotus'],HV('none',[],true,'A pale woolly rosette high on the cold slopes; the whole plant, dried, is the valley\'s strongest medicine, for the heart and the breath.'),{holy:true}),
+ poppy:PK('Sky poppy','cool-temperate','humid','no',['Cfb','Dfb','ET','Dsc'],['poppy'],HV('dye (the leaves: the Order\'s blue)',[],true,'A powder-blue poppy on the slopes; its seed is a sleeping draught and a reagent of the stillness rites, and its leaves are the vat the Order\'s blue is dyed in.'),{holy:true}),
+ snowlotus:PK('Snow lotus','cool-temperate','subhumid','no',['Cfb','ET','Dsc'],['snowlotus'],HV('none',[],true,'A pale woolly rosette high on the cold slopes; the whole plant, dried, is the valley\'s strongest medicine, for the heart and the breath.'),{holy:true}),
  ginseng:PK('Valley ginseng','cool-temperate','humid','no',['Cfb'],['ginseng'],HV('none',['root'],true,'A whorl of five leaflets and a cluster of coral berries over a man-shaped root: the monks\' tonic and reagent, dug after seven years.')),
+ cushionplant:PK('Cushion plants','polar','semiarid','no',['ET','Dsc'],['lobe'],HV('fuel (dried)',[],false,'Domes of tiny leaves packed hard against the wind on the gravel of the passes, silver-green, a century old at a metre across; the pilgrims burn the dead ones.')),
  sage:PK('Monk\'s sage','cool-temperate','subhumid','no',['Cfb','Dfb','BSk'],['sagebush'],HV('incense',[],true,'A silver wormwood on the flats, burned for incense and brewed bitter for the stomach.')),
  coin:PK('Coin vine','cool-temperate','humid','both',['Cfb'],['coin'],HV('none',[],false,'Strings of round leaves hung from the limbs like coins on a thread.'),{alien:true}),
  petals:PK('Fallen petals','cool-temperate','humid','both',['Cfb'],['petal'],HV('none',['petals (cakes)'],false,'')),
- stones:PK('Standing stones','cool-temperate','subhumid','no',['Cfb','Dfb'],['standing','boulder','stone'],HV('none',[],false,'The valley\'s stones stand in threes, fives and sevens, as if set; the monks say the valley set them.')),
+ stones:PK('Standing stones','cool-temperate','subhumid','no',['Cfb','Dfb','ET','Dsc'],['standing','boulder','stone'],HV('none',[],false,'The valley\'s stones stand in threes, fives and sevens, as if set; the monks say the valley set them.')),
 };
 OIDONG.plantOfItem=item=>{for(const k in OIDONG.PLANTS)if(OIDONG.PLANTS[k].items.indexOf(item)>=0)return OIDONG.PLANTS[k];return null;};
 OIDONG.FRUIT_KEYS=[...new Set(OIDONG.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(OIDONG.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];

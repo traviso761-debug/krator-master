@@ -11,6 +11,8 @@ window._biome=null;
  const qp=+(new URLSearchParams(location.search).get('q')||1);   // ?q=.4 for a quick look
  try{window._biome=GODT.build({R:TERR.R,quality:qp,box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],vent:[VENT.x,VENT.z]});}catch(e){reportErr('biome: '+e.stack);}
  lap('biome');
+ /* a station's own passes (its 87: the Red Gill's pipes and life), after the kit's and before the bake */
+ if(typeof stationBuild==='function'){try{window._station=stationBuild();}catch(e){reportErr('station: '+e.stack);}lap('station');}
  const b=BIO.bake();lap('bake');
  try{buildGround();}catch(e){reportErr('ground: '+e.stack);}
  lap('ground');

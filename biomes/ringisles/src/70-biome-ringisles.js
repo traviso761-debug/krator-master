@@ -2,7 +2,7 @@
 // The kit's public surface (BIOME-API.md). The zones and the trees are 55 (the borrowed ones grown by their own kits),
 // the floor 60, the gardens 62; this file only orders them and reports. No fauna here: the fauna kit places the animals
 // (kits/fauna; the showcase's host does, 89f-host-fauna.js).
-RINGISLES.build=function(opt){opt=opt||{};const R=opt.R||2000,q=opt.quality==null?1:opt.quality;
+RINGISLES.build=function(opt){opt=opt||{};const R=(opt.R==null?2000:opt.R),q=opt.quality==null?1:opt.quality;
  const out={R,quality:q};
  RINGISLES.clearTrees();
  // the gardens first: their trees claim their ground, and the wild keeps out of their plots (the 'garden' field)

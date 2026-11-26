@@ -14,7 +14,8 @@
 //   owner  owner-placed nodes ({id, kind, grade, x, z}) replace the field's node of the same id, or add one; a delta by id
 //          ({grade?, x?, z?, removed?}) edits or removes a field node (core/edits' ops map onto both)
 // World frame: metres from the scale model's top-left, x east, z south: x = map px x 2000, z = map py x 2000 (the full grid,
-// 2 km a px). A host in a local frame (an open world's region: x = (px - cx) x 2000) passes origin {x: cx*2000, z: cy*2000}
+// 2 km a px). The lattice: data.field.anchor [ax, az] (m; 0 when absent) is where cell 0 starts, so a rebake on a bigger
+// canvas keeps each cell's index, hash and id: cell ix spans [ax + ix x C, ax + (ix + 1) x C) (REBAKE-PLAN.md R1). A host in a local frame (an open world's region: x = (px - cx) x 2000) passes origin {x: cx*2000, z: cy*2000}
 // and gets local x, z (gx, gz stay global).
 //   RES_GEO.load(data)                 the baked data (RES_GEODATA on a page; the JSON in node or Godot); decodes lazily
 //   RES_GEO.cellOf(gx, gz)             {i, j} of the data cell, or null off the grid
@@ -50,6 +51,7 @@ const RES_GEO=(function(){
  G.at=function(gx,gz){const c=G.cellOf(gx,gz);if(!c)return null;const k=c.j*W+c.i,pr=layer('province')[k],p={};
   for(const f of D.families)p[f]=layer(f)[k];
   return {province:D.provinces[pr&127],ruin:(pr&D.ruinBit)>0,mask:layer('mask')[k],p:p};};
+ function anchor(){return D.field.anchor||[0,0];}
  function gradeOf(u,p){const g=D.field.grade,q=u*(1.15-g.tilt*p/255);return q<g.high?'high':q<g.medium?'medium':'low';}
  function dropOf(gx,gz,o){const X=gx-o.ox,Z=gz-o.oz;
   if(o.ground){const g=o.ground(X,Z);if(!g)return 'ground';if(g.water)return 'water';if(g.slope!=null&&g.slope>o.maxSlope)return 'cliff';return null;}
@@ -59,8 +61,8 @@ const RES_GEO=(function(){
  const seeds={};
  function base(world,f){const k=world+':'+f;return seeds[k]!=null?seeds[k]:(seeds[k]=KRAND.child(world,'res:'+f));}
  G.candidate=function(f,ix,iz,o0){const o=o0&&o0.ox!=null?o0:opts(o0),C=D.field.cells[f],ins=D.field.inset;if(!C)return null;
-  const s=KRAND.cell(base(o.world,f),ix,iz);
-  const gx=(ix+ins+(1-2*ins)*KRAND.unit(KRAND.hash(s,2)))*C,gz=(iz+ins+(1-2*ins)*KRAND.unit(KRAND.hash(s,3)))*C;
+  const s=KRAND.cell(base(o.world,f),ix,iz),A=anchor();
+  const gx=A[0]+(ix+ins+(1-2*ins)*KRAND.unit(KRAND.hash(s,2)))*C,gz=A[1]+(iz+ins+(1-2*ins)*KRAND.unit(KRAND.hash(s,3)))*C;
   const p=G.prospect(f,gx,gz),kept=Math.floor(KRAND.unit(KRAND.hash(s,1))*255)<p;
   const r={id:'res:'+f+':'+ix+':'+iz,kind:f,grade:gradeOf(KRAND.unit(KRAND.hash(s,4)),p),gx:gx,gz:gz,p:p,kept:kept,drop:null,src:'field'};
   if(kept)r.drop=dropOf(gx,gz,o);return r;};
@@ -70,8 +72,9 @@ const RES_GEO=(function(){
   (O.owner||[]).forEach(n=>{own[n.id]=n;});
   const put=(r)=>{const d=dl[r.id];if(d){if(d.removed)return;if(d.grade)r.grade=d.grade;if(d.x!=null){r.gx=d.x+o.ox;}if(d.z!=null){r.gz=d.z+o.oz;}r.edited=true;}
    if(own[r.id])return;r.x=r.gx-o.ox;r.z=r.gz-o.oz;out.push(r);};
+  const A=anchor();
   for(const f of fams){const C=D.field.cells[f];if(!C)continue;
-   const i0=Math.floor(gt.x0/C),i1=Math.floor(gt.x1/C),j0=Math.floor(gt.z0/C),j1=Math.floor(gt.z1/C);
+   const i0=Math.floor((gt.x0-A[0])/C),i1=Math.floor((gt.x1-A[0])/C),j0=Math.floor((gt.z0-A[1])/C),j1=Math.floor((gt.z1-A[1])/C);
    for(let iz=j0;iz<=j1;iz++)for(let ix=i0;ix<=i1;ix++){const c=G.candidate(f,ix,iz,o);
     if(!c.kept||!inTile(gt,c.gx,c.gz))continue;
     if(c.drop){if(st)st[c.drop]=(st[c.drop]||0)+1;continue;}

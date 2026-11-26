@@ -1,0 +1,23 @@
+{
+ "note": "Station 1, the Gate-Step (PLAN.md section 6; 5.1 px 638,1212, ~805-920 m, Cfa, +23 degC, 1,522 mm): Terrace I under riser 1 (the Outer Gate-Scarp), the Clodosriba's Gate Falls at the head of its gorge and the gorge breaching the scarp, the Gate Mere, the two watch-towers' sites (the settlement build's). kin: the SW lowlands' broadleaves and the S highlands' crozier tree fern in the spray, read in place and grown by their own kits' builders (BIO.kin; 87-host-kin.js grows the rows LAND.kin lists)",
+ "kin": {
+  "swlowlands": [
+   [
+    "src/50-biome-swlowlands-species.js",
+    "src/52-biome-swlowlands-library.js",
+    "src/55-biome-swlowlands-trees.js"
+   ],
+   "SWLOW",
+   "*"
+  ],
+  "shighlands": [
+   [
+    "src/50-biome-shigh-species.js",
+    "src/55-biome-shigh-trees.js"
+   ],
+   "SHIGH",
+   "*",
+   "shigh"
+  ]
+ }
+}

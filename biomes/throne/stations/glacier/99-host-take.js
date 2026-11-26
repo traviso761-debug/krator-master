@@ -70,7 +70,7 @@ const HCHK={
  placed(C){const here=['ashpine','gillcoral','glasswillow'].map(k=>THRONE.byKey[k]),zero=here.filter(S=>!(C[S.i]>0)).map(S=>S.key),other=THRONE.SPECIES.filter(S=>here.indexOf(S)<0&&C[S.i]>0).map(S=>S.key);
   return{ok:!zero.length&&!other.length,detail:(zero.length?'never placed: '+zero.join(', ')+'; ':'')+(other.length?'out of place: '+other.join(', ')+'; ':'')+here.map(S=>S.key+' '+C[S.i]).join(', ')};},
  // nothing roots on the ice (the host's seracs, towers and bergs are ice themselves)
- ice(T,P){const own=['biome:serac','biome:icetower'],bt=T.filter(t=>iceAt(t.x,t.z)>1).length,bp=P.filter(p=>iceAt(p[0],p[2])>1&&own.indexOf(p[3])<0).length;
+ ice(T,P){const own=['biome:serac','biome:icetower'],bt=T.filter(t=>iceAt(t.x,t.z)>1).length,bp=P.filter(p=>iceAt(p[0],p[2])>1&&own.indexOf(p[3])<0&&p[1]-terrainH(p[0],p[2])<2).length;   /* rooted: within 2 m of the ground (2026-11-02: a glass willow's strand hung out over the ice from its limb) */
   return{ok:!bt&&!bp,detail:bt+bp?(bt+' trees and '+bp+' plants on the ice'):'nothing grows on the glacier'};},
  // every ice cave warm and alive inside
  caves(L){const poor=L.filter(c=>c.life<20);return{ok:L.length>=3&&!poor.length,detail:L.length+' caves, life '+L.map(c=>c.life).join(', ')};},

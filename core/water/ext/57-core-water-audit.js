@@ -17,6 +17,9 @@
 //   flow-rise    a flow's level rises downstream (by: m)                     flow-under   its water under the ground at the centreline (m)
 //   flow-slab    its ribbon's outer edge (half width + margin) more than tol.slab (.3 m) over the ground (m over)
 //   flow-pocket  the ground under its level runs on past that edge, tol.pocket (1 m) or more, out to `scan` (m past the edge)
+//   flow-graze   (opt-in, o.graze: true or {tol: .12, w: 2}) the ground within tol m of the ribbon's level (over or under it) for w m or more across, from 2 m
+//                inside its edge out to the margin's end: the ribbon and the bank are near coplanar there and z-fight at range (m of it). A bank must cross the
+//                level, not lie along it (2026-11-03: nwlowlands' hill river, the owner's flickering ponds)
 //   still-rim    a still's level over its rim's ground (m)                   still-floor  its level not over its floor anywhere (m short)
 //   open-edge    an open surface's mask edge (or its bounds' edge inside o.extent) across ground under its level, no other surface owning it (m under)
 //   fall-lip     a fall's lip more than tol.lip (1 m) from where the ground first drops along its direction (m; 1e9: no drop found)
@@ -82,6 +85,7 @@
  const TOL={rise:.001,under:.05,slab:.3,pocket:1,rim:.05,floor:0,edge:.05,lip:1,lipY:.15,curtain:.5};
  const polyOf=S=>S.poly?S.poly.map(p=>[p[0],p[1]]):S.bounds?[[S.bounds[0],S.bounds[1]],[S.bounds[2],S.bounds[1]],[S.bounds[2],S.bounds[3]],[S.bounds[0],S.bounds[3]]]:null;
  W.audit=o=>{o=o||{};const ground=o.ground;if(typeof ground!=='function')throw new Error('WATER.audit: ground (x, z) -> y is required');
+  const GZ=o.graze?Object.assign({tol:.12,w:2},o.graze===true?{}:o.graze):null;
   const tol=Object.assign({},TOL,o.tol||{}),step=o.step==null?4:o.step,ALL=W.surfaces.filter(S=>S.kind!=='shore'),RUN=(o.surfaces||W.surfaces).filter(S=>S.kind!=='shore'),out=[];
   const named=v=>typeof v==='string'?ALL.find(S=>S.name===v):v;
   const JOIN=(o.joins||[]).map(g=>g.map(named).filter(Boolean)),CF=(W.groups||[]).filter(g=>g.kind==='confluence');
@@ -120,6 +124,9 @@
       for(const sd of[-1,1]){const e=w/2+mg,ex=x+nx*sd*e,ez=z+nz*sd*e,ge=ground(ex,ez),B0=owner(S,ex,ez,ge,false);
        /* a slab only where no other water lies at the edge; a pocket unless that water is allowed beside this one (a flood beside a ribbon is the fault) */
        if(!B0&&y-ge>tol.slab)add('flow-slab',S,ex,ez,y-ge);
+       if(GZ){let run=0,best=0,bx=ex,bz=ez;for(let d=w/2-2;d<=w/2+mg+1e-6;d+=.5){if(d<0)continue;const px=x+nx*sd*d,pz=z+nz*sd*d,gp=ground(px,pz);
+         if(Math.abs(gp-y)<GZ.tol&&!owner(S,px,pz,gp,false)){run+=.5;if(run>best){best=run;bx=px;bz=pz;}}else run=0;}
+        if(best>=GZ.w)add('flow-graze',S,bx,bz,best);}
        if(ge<y-tol.under&&!(B0&&allowed(S,B0,ex,ez))){let d=0;while(d<sc){const px=ex+nx*sd*(d+1),pz=ez+nz*sd*(d+1),gp=ground(px,pz);if(gp>=y-tol.under)break;const B=owner(S,px,pz,gp,false);if(B&&allowed(S,B,px,pz))break;d+=1;}
         if(d>=tol.pocket)add('flow-pocket',S,ex,ez,d);}}
       for(const q of[-.45,-.2,0,.2,.45])overlapAt(S,x+nx*q*w,z+nz*q*w,q?ground(x+nx*q*w,z+nz*q*w):g);}}}

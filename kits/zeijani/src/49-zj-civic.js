@@ -120,13 +120,13 @@ defBuilding({key:'zj_caravanserai',name:'The caravanserai: a tower over a half-r
   for(const [a0,a1] of [[PI,PI+3*step],[PI+4*step,2*PI]]){sector('plank',0,CZ,11.55,R1+.45,a0,a1,3.4,3.6,P('wood'),10);sector('ashlar',0,CZ,R1+.05,R1+.45,a0,a1,3.6,4.2,c,10);sector('tuffPol',0,CZ,11.55,11.8,a0,a1,3.25,3.6,wt,10);}
   /* the front wall and the gate */
   for(const s of [-1,1]){box('ashlar',s*7.05,0,CZ,10.7,3.2,.45,c);box('tuffPol',s*7.05,3.2,CZ,10.8,.12,.55,wt);box('tuffPol',s*1.66,0,CZ,.32,3.8,.6,wt);zcLantern(s*2.6,CZ+1.6,wt);}
-  zfStepLintel('tuffPol',0,3.8,CZ,3.0,wt,{n:3,h:.3,d:.6});zfLeaf(-.75,0,CZ-.1,1.45,3.0,P('wood'),1.4);box('plank',1.377,0,CZ-.814,1.45,3.0,.06,P('wood'),1.74);   /* the leaves stand open into the court */
+  zfStepLintel('tuffPol',0,3.8,CZ,3.0,wt,{n:3,h:.3,d:.6});svLeaf(0,0,CZ-.13,0,2.9,3.0,{split:true,ajar:1.4,mk:'gate',col:P('wood'),t:.06,style:'plank',name:'court gate'});   /* the leaves stand open into the court (core/door: E shuts them) */
   /* the tower over the taproom: its wall, a band of windows, a corbelled crown, a dome; the spout and the waterfall */
   zfDrum('ashlar',0,0,TZ,3.65,17,c,{a0:PI/2+.2,a1:PI/2+TAU-.2,seg:28});zfDrum('plaster',0,.25,TZ,3.3,3.15,P('plaster'),{a0:PI/2+.19,a1:PI/2+TAU-.19,seg:28,inward:true});
   cyl('ashlar',0,3.4,TZ,3.62,.3,c,28);box('tuffPol',0,3.0,TZ+3.6,1.5,.4,.4,wt);
   /* the drum's opening is the taproom's door only: closed over the lintel to the crown */
   sector('ashlar',0,TZ,3.3,3.65,PI/2-.21,PI/2+.21,3.0,16.7,c,3);
-  for(let i=0;i<8;i++){const a=i*TAU/8+.2;box('basaltPol',Math.cos(a)*3.67,8+(i%2)*3,TZ+Math.sin(a)*3.67,.7,1.2,.04,P('soot'),PI/2-a);}
+  for(let i=0;i<8;i++){const a=i*TAU/8+.2;svPane(Math.cos(a)*3.67,8+(i%2)*3,TZ+Math.sin(a)*3.67,PI/2-a,.7,1.2,{solid:true,depth:.02,t:.02});}   /* the drum's windows: glass over the room card (core/door), the drum solid above the taproom */
   lathe('tuffPol',0,TZ,[[3.6,16.6],[4.1,17],[4.1,17.6],[3.6,17.7]],28,wt);zfDome('plaster',0,17.6,TZ,3.3,2.6,P('plaster'),{seg:24,rows:8});cone('copper',0,20.1,TZ,.25,1.0,P('copper'),10);
   box('tuffPol',0,7.7,TZ+4.6,1.0,.3,2.2,wt);box('water',0,8.0,TZ+4.6,.7,.05,2.0,P('water'));
   box('water',0,.35,TZ+5.55,1.1,7.65,.05,P('water'));sph('plain',0,.45,TZ+5.55,.45,P('white'),.4,10);

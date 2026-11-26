@@ -15,7 +15,10 @@ const VIEWS={
  // inside the stone forest: a gap among the blades near the middle, looking along it
  {let best=null;for(let k=0;k<40&&!best;k++){const a=k*2.4,r=60+k*3,x=SF.c[0]+Math.cos(a)*r,z=SF.c[1]+Math.sin(a)*r,Z=KGUILIN.at(x,z);if(!Z.rock&&Z.footD>2&&Z.footD<6&&pondE(x,z)>1.6)best=[x,z,a];}
   if(best){const y=terrainH(best[0],best[1]);VIEWS['In the stone forest']=[best[0],y+1.7,best[1],best[0]+Math.cos(best[2]+1.6)*40,y+7,best[1]+Math.sin(best[2]+1.6)*40];}}
- VIEWS['The pond in the stone forest']=[POND.x+POND.rx*1.7,POND.level+4,POND.z+POND.rz*1.5,POND.x,POND.level,POND.z];
+ /* the pond from its shore: the first spot round the ring (from the north-east, as before) clear of the blades; the old fixed spot stood in one (GPU --all-views, 2026-11-09) */
+ {let ex=POND.x+POND.rx*1.7,ez=POND.z+POND.rz*1.5;for(let k=0;k<24;k++){const a=Math.atan2(1.5,1.7)+(k%2?1:-1)*Math.ceil(k/2)*.26,x=POND.x+Math.cos(a)*POND.rx*1.75,z=POND.z+Math.sin(a)*POND.rz*1.75,Z=KGUILIN.at(x,z);
+   if(!Z.rock&&Z.footD>3){ex=x;ez=z;break;}}
+  VIEWS['The pond in the stone forest']=[ex,Math.max(POND.level,terrainH(ex,ez))+4,ez,POND.x,POND.level,POND.z];}
  VIEWS['The lotus pond (close)']=[POND.x+POND.rx*.55,POND.level+2.2,POND.z+POND.rz*.5,POND.x,POND.level,POND.z];
  const fc=by('fcbase');if(fc)VIEWS['The fengcong']=[fc.x-950,160,fc.z+700,fc.x,90,fc.z];
  const bn=by('bendN');if(bn)VIEWS['A tower at the wadi\'s edge']=[RIVER.x(-260),RIVER.level(-260)+14,-260,bn.x,bn.top*.45,bn.z];
@@ -143,7 +146,7 @@ KHOST.on(skyView,'view');   /* the shared sky, its lights and fog at the hour (8
 KHOST.take({build:'kguilin',title:'Krator biome — the Hykkousoi hinterlands (k-guilin)',
  hint:'The Hykkousoi hinterlands: limestone towers on the lakeshore by Trigon, the wadi and its paddies, the fengcong, the stone forest',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:10},draw:()=>SKY.render(),   /* the shared sky's pass, then the world (89s-host-sky.js); the page opens at 10:00 */
+ clock:{hour:10},draw:HOST_DRAW,   /* the reflections switch (89w), the shared sky's pass, then the world (89s-host-sky.js); the page opens at 10:00 */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
   'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.still)},'sky':{objects:()=>[SKY.mesh]}},

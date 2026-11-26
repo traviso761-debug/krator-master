@@ -48,6 +48,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 # THE STATIONS (PLAN-STATIONS.md, 2026-10-27): `python3 build.py --station <name>` builds dist/eastabyss-<name>.html from src/ with the
 # station's own fragments (stations/<name>/*) in place of src/'s of the same name (its map 45, water 89w, sky 89, views 99, tower 85)
 _args=[a for a in sys.argv[1:] if a!='--no-checks']
@@ -134,7 +135,7 @@ for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # core/water/ext: the deltas' forks as one water (WATER.confluence: the side channels leave the main river without their ribbons' foam
 # and side fade overlapping inside each other's water; 2026-10-27)
-for f in ['55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','58-core-water-mirror.js']:
+for f in ['55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','58-core-water-mirror.js','59-core-water-network.js','59b-core-water-network-draw.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
 # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
@@ -161,8 +162,9 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8',newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

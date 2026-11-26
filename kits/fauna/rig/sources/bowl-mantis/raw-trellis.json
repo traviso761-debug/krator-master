@@ -1,0 +1,18 @@
+{
+ "generator": "fal-ai/trellis/multi",
+ "price_usd": 0.02,
+ "raw": "raw-trellis.glb",
+ "request_id": "01a19ab4-f74a-78d1-aade-f413c68908d0",
+ "seconds": 19,
+ "seed": 7,
+ "settings": {
+  "multiimage_algo": "multidiffusion",
+  "seed": 7,
+  "texture_size": 1024
+ },
+ "views": [
+  "front.png",
+  "left.png",
+  "back.png"
+ ]
+}

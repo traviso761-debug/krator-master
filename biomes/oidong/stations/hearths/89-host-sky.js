@@ -1,0 +1,12 @@
+// ================================================================= HOST — Krator's sky over the Cold Hearths (station 3): the valley's sky at the vent (old canvas
+// px 914,1261; 5.1 px 1186,1591), 0.93 atm and the clearest air on the model (110 mm), little cloud. The rest as src/89-host-sky.js says.
+// 2026-10-26: the painted dome and the giant mesh (the old 82-host-sky.js) are gone. ATMOS.skyBiome draws ATMOS.sky at this
+// biome's place on the scale model (the Oidong valley, px 894, 1286), on the host clock (the page opens at 06:00 on game
+// start's day; #hour=, #day=, #time=run), with the real sun, giant, ring, moons, station, stars and clouds, and drives the
+// sun, the hemisphere, the fills, the fog and the exposure from the colour script; the clouds shade the lit materials.
+// Clear cold air, about 1 atm at 1600 m. Kept from the dome: the snow ranges and near walls (the valley's head east, the pass
+// west) and the Throne far WNW over the pass (ridges); the Throne's plume and the cataract at the head are not drawn. The old
+// dome stays in src/ for settlements/longsong, which reads it in place with its own OIDONG_SKY; build.py leaves it out here.
+const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:914,py:1261},
+ preset:{"air":{"pressure":0.93,"humidity":0.15},"clouds":{"cover":0.05,"cumulus":0,"cirrus":0.5},"fogDensity":0.00012,"ridges":[{"base":3.7,"amp":3.0,"cycles":48,"octaves":3,"seed":61,"peaks":40,"peakAmp":0.8,"win":[90,180,2.3],"floor":1.2,"dist":25000,"haze":0.15,"snowH":1440,"forestH":0,"rock":[0.66,0.71,0.81],"snow":[0.93,0.95,0.97]},{"base":2.4,"amp":2.4,"cycles":48,"octaves":3,"seed":62,"peaks":40,"peakAmp":0.6,"win":[90,180,1.57],"floor":0.1,"dist":9000,"haze":0.27,"snowH":390,"forestH":0,"rock":[0.46,0.54,0.65],"snow":[0.93,0.94,0.96]},{"base":1.75,"amp":0.15,"cycles":60,"octaves":2,"seed":63,"win":[285,19.3,2.1],"floor":-0.2,"dist":120000,"haze":0.035,"forestH":0,"rock":[0.67,0.71,0.78]}],"landmarks":[{"kind":"plume","from":[285,1.8],"via":[279,5],"to":[262,7.8],"width":[0.6,3.5],"lit":[0.87,0.88,0.9],"belly":[0.42,0.39,0.36],"alpha":0.35,"haze":0.3,"drift":0.02},{"kind":"band","win":[90,0.6,1],"el":[0,3.1],"lit":[1.15,1.15,1.15],"alpha":0.85,"noise":0,"haze":0.25},{"kind":"plume","from":[90,0],"via":[90,2],"to":[90,4],"width":[1.5,6],"lit":[1,1,1],"belly":[0.8,0.82,0.85],"alpha":0.3,"haze":0.3,"drift":0.05}]}});
+const {sky,giant,giantRing}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */

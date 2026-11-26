@@ -24,6 +24,8 @@ except Exception:
     pass
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+from harness import verify_page, Abort
 
 STATS_JS = """()=>{const w={};for(const k of Object.keys(window)){if(!k.startsWith('_')||k==='__THREE__'||k==='_api')continue;
  const v=window[k];if(typeof v==='function')continue;let s=null;try{s=JSON.stringify(v);}catch(e){continue;}w[k]=(s&&s.length<900)?v:'(large)';}
@@ -31,39 +33,16 @@ return {errs:document.getElementById('errs')?document.getElementById('errs').tex
         calls:renderer.info.render.calls,tris:renderer.info.render.triangles,counters:w};}"""
 
 
-def three_js():
-    for p in [os.path.join(HERE, 'three.min.js')] + sorted(glob.glob(os.path.join(ROOT, 'settlements', '*', 'three.min.js'))):
-        if os.path.exists(p):
-            return p
-    return None
-
-
 async def run(a):
-    from playwright.async_api import async_playwright
-    folder, name = os.path.split(os.path.abspath(a.html))
     os.makedirs(a.out, exist_ok=True)
-    handler = lambda *x, **k: http.server.SimpleHTTPRequestHandler(*x, directory=folder, **k)
-    httpd = socketserver.TCPServer(("127.0.0.1", 0), handler)
-    port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    fails = []
-    async with async_playwright() as p:
-        exe = os.environ.get('PW_CHROME') or (glob.glob('/opt/pw-browsers/chromium-*/chrome-linux/chrome') or [None])[0]
-        b = await p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"], executable_path=exe)
-        W, H = [int(t) for t in a.size.split("x")]
-        pg = await b.new_page(viewport={"width": W, "height": H})
+    q = ('?' + a.query) if a.query else ''
+    async with verify_page(a.html, here=HERE, size=a.size, query=q, settle_ms=0) as V:
+        pg, errs, fails = V.page, V.errs, V.fails
         pg.set_default_timeout(900000)
-        errs = []
-        pg.on("pageerror", lambda e: errs.append(str(e)))
-        pg.on("console", lambda m: m.type == 'error' and errs.append('console: ' + m.text[:300]))
-        three = three_js()
-        if three:
-            await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(route.fulfill(path=three, content_type="application/javascript")))
-        q = ('?' + a.query) if a.query else ''
-        await pg.goto(f"http://127.0.0.1:{port}/{name}{q}", timeout=600000)
-        try:
-            await pg.wait_for_function("window._ready===true || (document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=880000)
-        except Exception:
+        # console errors fail the run: the harness has watched the console since before the load; take those, listen on
+        cerrs = ['console: ' + t[:300] for k, t in pg.krator_console if k == 'error']
+        pg.on("console", lambda m: m.type == 'error' and cerrs.append('console: ' + m.text[:300]))
+        if not V.ready:
             print("timed out waiting for the page to build"); fails.append("build timeout")
         if a.wait:
             try:
@@ -78,12 +57,12 @@ async def run(a):
         except Exception as e:
             print("PAGE DID NOT INITIALISE:", str(e).splitlines()[0])
             print("error panel:", await pg.evaluate("document.getElementById('errs')?document.getElementById('errs').textContent:'(none)'"))
-            await b.close(); return 2
+            raise Abort(2)
         print("ERROR PANEL:", repr(st["errs"][:3000]) if st["errs"] else "clean")
         if st["errs"]:
             fails.append("error panel not clean")
-        if errs:
-            print("PAGE ERRORS:", errs[:6]); fails.append("page errors")
+        if errs or cerrs:
+            print("PAGE ERRORS:", (errs + cerrs)[:6]); fails.append("page errors")
         print("draw calls:", st["calls"], "triangles:", st["tris"])
         print("counters:", json.dumps(st["counters"], sort_keys=True)[:6000])
         if a.eval:
@@ -117,7 +96,7 @@ async def run(a):
             files = {f: os.path.getsize(os.path.join(a.export, f)) for f in sorted(os.listdir(a.export)) if f.endswith('.json') and f != 'meta.json'}
             with open(os.path.join(a.export, 'meta.json'), 'w') as fh:
                 json.dump({"case": "verge", "page": "settlements/verge/dist/verge.html", "kind": "data", "query": a.query or "",
-                           "files": files, "page_errors": errs[:20], "exported": datetime.date.today().isoformat()}, fh)
+                           "files": files, "page_errors": (errs + cerrs)[:20], "exported": datetime.date.today().isoformat()}, fh)
         views = [v.strip() for v in a.views.split(",") if v.strip()]
         if a.all_views:
             views = await pg.evaluate("()=>Object.keys(VIEWS)")
@@ -133,14 +112,10 @@ async def run(a):
                     print("no such view:", v); fails.append("view " + v); continue
                 fn = os.path.join(a.out, v.replace(' ', '_').replace(',', '').replace(':', '') + '.png')
             await pg.wait_for_timeout(int(a.settle * 1000))
-            await pg.screenshot(path=fn)
+            await V.shot(fn, view=None if c else v)
             print("shot", fn)
-        await b.close()
-    httpd.shutdown()
-    print("\nRESULT:", "PASS" if not fails else "FAIL (%s)" % ", ".join(fails))
-    return 1 if fails else 0
-
-
+        print("\nBUILD CHECKS:", "PASS" if not fails else "FAIL (%s)" % ", ".join(fails))
+    return V.exit()
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('html')

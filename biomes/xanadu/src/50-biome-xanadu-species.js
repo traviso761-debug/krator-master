@@ -493,7 +493,8 @@ G.cushion=function(){const g=new T3.SphereGeometry(1,12,8).toNonIndexed(),p=g.at
 // a LILY PAD: a flat disc with a notch, vertex-coloured paler at the rim
 G.pad=function(){const pos=[],nor=[],uv=[],col=[];const n=12;
  for(let k=0;k<n;k++){const a0=(k/n)*TAU*.93+.22,a1=((k+1)/n)*TAU*.93+.22;
-  [[0,0,0,.8],[Math.cos(a1),0,Math.sin(a1),1.05],[Math.cos(a0),0,Math.sin(a0),1.05]].forEach(p=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);col.push(p[3],p[3],p[3]);});}
+  /* uv: the disc on its card cell (materials.json pad, card.lotus: v runs down the sheet, the notch at the bottom), the notch (+x) to v high */
+  [[0,0,0,.8],[Math.cos(a1),0,Math.sin(a1),1.05],[Math.cos(a0),0,Math.sin(a0),1.05]].forEach(p=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(.5+p[2]*.45,.5+p[0]*.45);col.push(p[3],p[3],p[3]);});}
  return BIO.geo._make(pos,nor,uv,col);};
 // a LOTUS in the round: two rings of cupped petals, vertex-coloured white at the base to full at the tip, unit radius, origin at the base
 G.cup=function(){const pos=[],nor=[],uv=[],col=[];
@@ -603,7 +604,8 @@ const M=XANADU.MAT={
  moss:BIO.leafMat(TX.moss,'x-moss',{swayW:'1.0',swayA:.012,alphaTest:.3}),
  vcol:BIO.leafMat(null,'x-vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  vsway:BIO.leafMat(null,'x-vsway',{swayW:'(position.y)',swayA:.03,alphaTest:0,vertexColors:true}),
- pad:BIO.leafMat(null,'x-pad',{swayW:'1.0',swayA:.015,alphaTest:0,vertexColors:true}),
+ /* the lily pads take card.lotus's plain pad where the pack has the slot (the final rebuild; materials.json pad): a card's placeholder the library fills */
+ pad:BIO.leafMat((typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed&&KMAT.packed('xanadu','pad'))?new T3.DataTexture(new Uint8Array([255,255,255,255]),1,1,T3.RGBAFormat):null,'x-pad',{swayW:'1.0',swayA:.015,alphaTest:0,vertexColors:true}),
  pod:BIO.leafMat(null,'x-pod',{swayW:'(-position.y)',swayA:.3,alphaTest:0,vertexColors:true}),
  cactus:BIO.solidMat(XANADU.BARKTEX[6]),
  solid:BIO.solidMat(null,0xffffff),
@@ -631,7 +633,9 @@ BIO.def('olive',BIO.geo.clump(),M.olive,{attrs:['aN','aC2'],label:'Olive leaves'
 BIO.def('blossom',BIO.geo.clump(),M.blossom,{attrs:['aN','aC2'],label:'Blossom'});
 BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Needle pads'});
 BIO.def('cushion',G.cushion(),M.cushion,{label:'Cushion domes'});
-BIO.def('raceme',BIO.geo.ribbon(3,.45,.08),M.raceme,{attrs:['aC2'],label:'Wisteria racemes'});
+/* the owner (2026-10-27, HANDOFF-REBUILD.md "its card cells"): xanadu's raceme keeps its old look, the sheet's middle cell once a segment, so its ribbon
+   declares no hung end: the card guard and BIO.def's turn leave it as it was drawn (check_cells still lists it; it stays by the owner's word) */
+{const g=BIO.geo.ribbon(3,.45,.08);if(g.userData&&g.userData.card){g.userData.card=Object.assign({},g.userData.card);delete g.userData.card.base;}BIO.def('raceme',g,M.raceme,{attrs:['aC2'],label:'Wisteria racemes'});}
 BIO.def('willow',BIO.geo.ribbon(4,.6,.12),M.willow,{attrs:['aC2'],label:'Willow curtains'});
 BIO.def('catkin',BIO.geo.ribbon(2,.6,.05),M.catkin,{label:'Wingnut catkins'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Aerial roots and strands'});
@@ -639,7 +643,7 @@ BIO.def('beard',BIO.geo.ribbon(4,.6,.12),M.beard,{label:'Beard moss'});
 BIO.def('banana',G.fan(),M.banana,{attrs:['aN'],label:'Paddle leaves'});
 BIO.def('hair',G.tuft(),M.hair,{label:"Bottle palm heads"});
 BIO.def('plume',G.tuft(),M.plume,{attrs:['aC2'],label:'Plumes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{attrs:['aC2'],label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{attrs:['aC2'],label:'Blooms',onLeaf:true});   /* a flower in its bush: held by the leaf card it sits in (core/biome "What held means"; nwlowlands' and ebadlands' lines) */
 BIO.def('orchid',BIO.geo.bloom(),M.orchid,{attrs:['aC2'],label:'Painted orchids'});
 BIO.def('swirl',BIO.geo.bloom(),M.swirl,{attrs:['aC2'],label:'Swirl lilies'});
 BIO.def('star',G.flat(),M.star,{attrs:['aC2'],label:'Star flowers'});
@@ -658,21 +662,21 @@ BIO.def('reed',G.tuft(),M.reed,{label:'Reeds'});
 BIO.def('clubmoss',G.tuft(),M.clubmoss,{label:'Heath and garrigue tufts'});
 BIO.def('candle',G.tuft(),M.candle,{label:'Bloom spikes'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
-BIO.def('cup',G.cup(),M.vcol,{label:'Lotus flowers'});
-BIO.def('lilypad',G.pad(),M.pad,{label:'Lotus pads'});
+BIO.def('cup',G.cup(),M.vcol,{label:'Lotus flowers',free:true});   /* on the water by design: not audited for a hold (core/biome, the attach audit's class 6) */
+BIO.def('lilypad',G.pad(),M.pad,{label:'Lotus pads',free:true});
 BIO.def('cobra',G.cobra(),M.vsway,{label:'Cobra lilies'});
 BIO.def('baneberry',G.baneberry(),M.vsway,{label:'Baneberry spikes'});
 BIO.def('mushroom',G.mushroom(),M.vcol,{label:'Ring mushrooms'});
 BIO.def('pitayafruit',G.pitayafruit(),M.vcol,{label:'Pitaya fruit'});
 BIO.def('whorlolive',G.whorlolive(),M.vcol,{label:'Whorl olives'});
-BIO.def('lotuspod',G.lotuspod(),M.vsway,{label:'Lotus seed heads'});
+BIO.def('lotuspod',G.lotuspod(),M.vsway,{label:'Lotus seed heads',free:true});
 BIO.def('opad',G.opad(),M.cactus,{label:'Prickly pear pads'});
 BIO.def('wing',G.wing(),M.cactus,{label:'Pitaya stems'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Pods (cacao, lanterns)'});
 BIO.def('ball',G.ball(),M.solid,{label:'Fruit and berries'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones and buds'});
-BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,6,1,true),M.solid,{label:'Stems'});
+BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,6,1,true),M.solid,{label:'Stems',cap:400000,capWhy:'the crowns\' twigs, midribs and mid-tier rods that hold every leaf card to wood (the attach audit, 2026-11-03): 270k on the Vale, 350k on the cloud slopes, 12 tris each, inside the trees\' detail range only'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(XANADU.BARKTEX[3]),{label:'Small trunks (fibrous)'});
 BIO.def('trunkw',BIO.geo.trunk(8),BIO.solidMat(XANADU.BARKTEX[0]),{label:'Small trunks (whorled)'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(XANADU.ROCKTEX),{label:'Boulders (small)'});

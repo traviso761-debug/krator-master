@@ -1,6 +1,6 @@
 {
  "build": "ehigh",
- "note": "The eastern highlands kit's adapter onto the material library (core/materials/PLAN.md, Eastern highlands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones): leaf.ichu is a grey detail map the instance colour turns gold (keep 0), one tussock cut from its sheet; leaf.rag (the ragbark's crowns, used whole as a clump) and leaf.broad (one glass-tower leaf cut from its sheet) keep their own colour. skin.cushion and skin.fleece replace the cushions' and the woolbacks' canvases (keep 0 under the instance colour; the shaders divide out the pack's mean). bark.ragbark is the ragbark bucket's map. stone.basalt is the boulders, the stones and the tors' ground grain (full colour). ground.puna, ground.turf and ground.sinter are the ground's library layers (84-host-ground.js): the turf where the sedge mat grows (its polygons are the set's own), the sinter on the geyser field. Run python3 tools/textures/pack.py biomes/ehighlands after any change, then python3 build.py. ground.puna is the open puna's layer (the grass weight), under the ichu tussocks.",
+ "note": "The eastern highlands kit's adapter onto the material library (core/materials/PLAN.md, Eastern highlands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones): leaf.ichu is a grey detail map the instance colour turns gold (keep 0), one tussock cut from its sheet; leaf.rag (the ragbark's crowns, used whole as a clump) and leaf.broad (one glass-tower leaf cut from its sheet) keep their own colour. skin.cushion and skin.fleece replace the cushions' and the woolbacks' canvases (keep 0 under the instance colour; the shaders divide out the pack's mean). bark.ragbark is the ragbark bucket's map. stone.basalt is the boulders, the stones and the tors' ground grain (full colour). ground.puna, ground.turf and ground.sinter are the ground's library layers (84-host-ground.js): the turf where the sedge mat grows (its polygons are the set's own), the sinter on the geyser field. Run python3 tools/textures/pack.py biomes/ehighlands after any change, then python3 build.py. ground.puna is the open puna's layer (the grass weight), under the ichu tussocks. Station 2 (the wet face, 2026-11-09): laurel (card.broadleaf.cloud, a sheet the clump geometry cuts), bigfrond (card.treefern), fern, beard, epi (card.epiphyte.garden), brom (card.bromeliad), moss (card.moss), bark4 (bark.mossy, the laurel and tree fern), ground.moss (the forest floor). Station 3 (the Lesser Throne): ground.ash, ground.scoria. Stations 4-6 (the treeline, the mixed and montane belts): needle (card.spruce, a sheet the clump cuts) and bark5 (bark.spruce) for the combed fir, beech (card.broadleaf) and bark6 (bark.birch.lichen) for the combed beech, ground.needles under the firs.",
  "size": 512,
  "families": {
   "leaf.ichu": {
@@ -167,6 +167,255 @@
    ],
    "tint": {
     "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "laurel": {
+   "lib": "card.broadleaf.cloud",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "sheet": "geometry"
+  },
+  "bigfrond": {
+   "lib": "card.treefern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.024,
+    0.112,
+    0.978,
+    0.993
+   ],
+   "base": "bottom"
+  },
+  "fern": {
+   "lib": "card.fern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
+  },
+  "beard": {
+   "lib": "card.beard",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "base": "top"
+  },
+  "epi": {
+   "lib": "card.epiphyte.garden",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "sheet": "geometry"
+  },
+  "brom": {
+   "lib": "card.bromeliad",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512
+  },
+  "moss": {
+   "lib": "card.moss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512
+  },
+  "bark4": {
+   "lib": "bark.mossy",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "ground.moss": {
+   "lib": "ground.moss001",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.ash": {
+   "lib": "ground.ash",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.scoria": {
+   "lib": "ground.scoria",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "needle": {
+   "lib": "card.spruce",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "sheet": "geometry"
+  },
+  "bark5": {
+   "lib": "bark.spruce",
+   "scale": [
+    1.0,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "beech": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512,
+   "sheet": "geometry"
+  },
+  "bark6": {
+   "lib": "bark.birch.lichen",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.7,
     "mean": null
    },
    "roughLift": 0.35,

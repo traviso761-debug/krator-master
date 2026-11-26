@@ -25,7 +25,12 @@ CATCH.place=function(cell,salt,accept,fn,opt){opt=opt||{};const R=opt.R==null?30
 const SPACE=KSPACE.create({cell:24});
 const blocked=(x,z,pad)=>SPACE.some(x,z,pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+pad)||!BIO.clearOf(x,z,pad);
 CATCH.blocked=blocked;CATCH.SPACE=SPACE;
-const regTree=(T,S,r,h,name)=>BIO.register({name:name||S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r,h});
+let BAKING=false;   /* an impostor's bake builds a tree again: it registers nothing */
+const regTree=(T,S,r,h,name)=>{if(!BAKING)BIO.register({name:name||S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r,h});};
+// A LIMB'S JOINT (core/biome 31j, BIO.flareJoin; the final rebuild, pair 11, 2026-11-09): a limb's root sunk into its parent and swollen to a
+// collar, not two pipes pushed together. Positions only, no draw from the stream: every tree keeps its form. ?flare=0 the old seams
+const FLARE=typeof BIO.flareJoin==='function'&&!(typeof location!=='undefined'&&/[?&]flare=0/.test(location.search));
+const J=(pts,parentR)=>FLARE&&pts.length>1?BIO.flareJoin(pts,{parentR}):pts;
 const leafCol=(set,k)=>bright(vary(pick(set),.04,.12,.07),k==null?1.2:k);
 function grow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,pts=[];
  for(let k=0;k<=n;k++){const t=k/n,w=(w1*Math.sin(t*Math.PI)+w2*Math.sin(t*TAU))*len;pts.push({x:o.x+d[0]*len*t+sx*w,y:o.y+d[1]*len*t+curve*len*t*t,z:o.z+d[2]*len*t+sz*w,r:mix(r0,r1,Math.pow(t,.8))});}return pts;}
@@ -43,9 +48,9 @@ B[0]=function(T,st,lv){const S=SP[0],dead=!!T.dead,bc=dead?C(pick(PAL.dead)):bri
  st.trunk+=BIO.tube('bark0',trunk,bc,{seg,rfn:knob});
  const tips=[],nl=ri(3,5),brk=dead?rr(.35,.7):1;
  for(let b=0;b<nl;b++){const a=la+b/nl*TAU+rr(-.5,.5),len=(T.H-hT)*rr(.65,1)*brk,p=grow(top,dirOf(a,rr(.4,1.0)),len,T.rb*.6,T.rb*.22,4,-.08,.14);
-  st.limb+=BIO.tube('bark0',p,bc,{seg:lv===2?5:3});
+  st.limb+=BIO.tube('bark0',J(p,trunk[4].r),bc,{seg:lv===2?5:3});
   const fork=p[2];for(let s=0,ns=dead?ri(0,1):ri(2,3);s<ns;s++){const q=grow(fork,dirOf(a+rr(-1.1,1.1),rr(.2,.8)),len*rr(.45,.7),T.rb*.25,T.rb*.08,3,-.06,.18);
-   st.limb+=BIO.tube('bark0',q,bc,{seg:3});tips.push(q[3],q[2]);}
+   st.limb+=BIO.tube('bark0',J(q,fork.r),bc,{seg:3});tips.push(q[3],q[2]);}
   tips.push(p[4],p[3]);}
  let reach=T.crownR;tips.forEach(p=>{reach=Math.max(reach,Math.hypot(p.x-T.x,p.z-T.z)+1);});
  if(!dead){const gold=!!T.gold,n0=lv===2?3:1;
@@ -97,7 +102,20 @@ CATCH.buildTrees=function(R,q){q=q==null?1:q;R=R==null?3000:R;
    const w=wet(x,z),T={x,z,y0:y-.3,sp:P.sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:KRAND.hash(SEED,P.salt,i,j)};
    if(P.sp===0){T.dead=w<.47;T.gold=!T.dead&&w<.6;if(T.dead){T.H*=rr(.6,.9);}}
    add(T,x,z);},{R});});
- TREES.forEach(T=>{reseed(T.seed);BIO.owner=[T.x,T.z];if(T.lv===0){buildFar(T,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // OCTAHEDRAL IMPOSTORS FOR THE FAR TIER (core/biome 34; the final rebuild, pair 11, 2026-11-09; korona's lines): a far living poplar is one quad
+ // baked from the hero poplar nearest the middle, built again where it stands at BIO.bakeImpostors (after every placement), so no draw before it
+ // moves. The dead and the gold keep their blobs (a quad baked from a green crown would show them leafed and green), and so does the salt
+ // cedar (3-6.5 m: under the 7 m the stand-ins start at, BACKPORT.md's graphics row). CATCH.IMPOSTORS=false (?diet=0) keeps the blobs for all
+ if(typeof location!=='undefined'&&/[?&]diet=0/.test(location.search))CATCH.IMPOSTORS=false;
+ const IMPON=CATCH.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('catch.trees',{label:'Far poplars'}),c=BIO.center?BIO.center():[0,0];
+  [0].forEach(sp=>{const S=SP[sp];let T0=null;for(const T of TREES)if(T.sp===sp&&T.lv>0&&!T.dead&&!T.gold&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+   const T1=Object.assign({},T0),st1=newStats();
+   const rec=BIO.impostor('catch.'+S.key,()=>{BAKING=true;try{reseed(T1.seed);B[sp](Object.assign({},T1),st1,2);}finally{BAKING=false;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far poplars'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I||T.dead||T.gold)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ TREES.forEach(T=>{reseed(T.seed);BIO.owner=[T.x,T.z];if(T.lv===0){if(!farImp(T))buildFar(T,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  BIO.owner=null;
  CATCH.COUNTS=SP.map((S,i)=>st.byS[i]);
  const dead=TREES.filter(T=>T.dead).length;

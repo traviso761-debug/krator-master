@@ -201,6 +201,8 @@
    }
   },
   "beadscard": {
+   "anchor": "tight",
+   "base": "top",
    "breakup": null,
    "card": true,
    "files": {
@@ -209,6 +211,7 @@
    "lib": "card.beads.bell",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -227,6 +230,7 @@
    }
   },
   "cherrybloom": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -235,6 +239,7 @@
    "lib": "card.blossom.cherry",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -337,6 +342,7 @@
    }
   },
   "heart": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -345,6 +351,7 @@
    "lib": "card.heartleaf",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -363,6 +370,7 @@
    }
   },
   "lace": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -371,6 +379,7 @@
    "lib": "card.lace.birch",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -389,6 +398,7 @@
    }
   },
   "leaf.moss": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -397,6 +407,7 @@
    "lib": "card.moss",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -415,14 +426,22 @@
    }
   },
   "leaf.small": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
+   "cell": [
+    0.333,
+    0.329,
+    0.644,
+    0.671
+   ],
    "files": {
     "map": "leaf.small.albedo.webp"
    },
    "lib": "card.sage",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -441,6 +460,7 @@
    }
   },
   "lily": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -449,6 +469,7 @@
    "lib": "card.lily.iridescent",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -467,6 +488,7 @@
    }
   },
   "mooncapcard": {
+   "anchor": "tight",
    "breakup": null,
    "card": true,
    "files": {
@@ -475,6 +497,7 @@
    "lib": "card.mooncap",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -549,6 +572,7 @@
    }
   },
   "padcard": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -557,6 +581,7 @@
    "lib": "card.giantpad",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,
@@ -575,6 +600,7 @@
    }
   },
   "peyotecard": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -583,6 +609,7 @@
    "lib": "card.peyote",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0,
    "scale": [
     1.0,

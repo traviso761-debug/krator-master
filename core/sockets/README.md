@@ -13,7 +13,7 @@ any future build (a Voth catalog, a Yuni district, a Beast Rider village, a High
 | `37-sockets.js` | `sock(type,x,y,z,ry,opts)`, `fillSockets()`, the `CULT` registry, `cultDef(pack)`, `PAINT()` (livery colour from the active culture) |
 | `38-symbols.js` | **the culture symbols**, pure 2D canvas: `SYMBOLS[name](g, cx, cy, R, ink, ink2)`, `drawTriskele`, and `SYMBOL_OF` (pack or culture key -> symbol). Shared with the furniture kit (vendored as `kits/catalog/krator-symbols.js`, `build.py --vendor-check` there), so a dressed building and the tapestries inside it carry one emblem |
 | `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu order ringsea-islander screamer zeijani` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
-| `example/` | a runnable sheet: the same demo wall in every pack. `python3 example/build.py` writes `example/sockets-example.html` |
+| `kits/post-apoc/sockets-example/` | a runnable sheet: the same demo wall in every pack, on the Post-Apoc kit's engine (moved there 2026-11-03: core reads no kit). `python3 kits/post-apoc/sockets-example/build.py` writes `sockets-example.html` beside it |
 
 ## The five-minute version
 

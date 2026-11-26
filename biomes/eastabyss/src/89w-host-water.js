@@ -60,7 +60,7 @@ const eastW=x=>BASIN_W+(2*(13-4*smooth(2000,3400,x))-BASIN_W)*smooth(2000,2400,x
 // rapids (2026-10-26): the east river's own white-water band on its slope, [.05, .3] in place of core/water's preset [.015, .12], so the
 // lower climb (a 5 to 12 % grade) runs streaked and green and only the steep reaches under the shelf (16 to 27 %) break white: the
 // cataracts read where the ground is steepest. The ground has no step, so there is no WATER.fall (fallsOf finds none at .35).
-const riverFlow=(name,L,speed,rapids)=>WATER.flow(Object.assign({name,pts:L.P,width:L.W,speed,densify:6},rapids?{rapids}:{}));   /* densify: a row every 6 m, so the fade into the lake (RIVER_KEEP) resolves */
+const riverFlow=(name,L,speed,rapids)=>WATER.flow(Object.assign({name,pts:L.P,width:L.W,speed},rapids?{rapids}:{}));   /* no densify: the network's mouth fades refine their own rows (drawFlow refine) */
 const fanE=s=>x=>s*Math.max(0,(1250-x)/430)*(s>0?150:130);
 const fanW=s=>x=>s*Math.max(0,(x+1250)/430)*(s>0?140:120);
 const RIVERS=[
@@ -71,16 +71,14 @@ const RIVERS=[
  riverFlow('The west river, north channel',riverLine(-1250,-800,30,zW,fanW(1),x=>BASIN_W),.6),
  riverFlow('The west river, south channel',riverLine(-1250,-800,30,zW,fanW(-1),x=>BASIN_W),.6)];
 // each channel fades out over 45 m as it reaches the lake (drawFlow keep, core/water 2026-10-27): it never rides over the lake's water; LAKE_TINT carries its colour on
-const RIVER_KEEP=(x,z)=>smooth(-30,15,lakeIn(x,z));
-const RIVER_OPT={keep:RIVER_KEEP,shallow:lin(RIVER_COL.clone().lerp(RIVER_GREY,.5)).multiplyScalar(.7),deep:lin(RIVER_COL.clone().lerp(RIVER_GREY,.35)).multiplyScalar(.6),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:30,across:6,margin:3};
-const RIVER_DRAW=RIVERS.map(S=>{const D=WATER.drawFlow(S,RIVER_OPT);
- D.mesh.userData.inspectLabel=S.name;return D;});
-// THE FORKS (core/water/ext WATER.confluence, 2026-10-27; the owner: foam and side fades inside the channels where they leave the river): over the
-// ~110 m where each delta's side channels still overlap the main ribbon, one surface instead of three: its shore the carved ground's (riverD's
-// union of the channels), one current blended from the three, foam only at real banks; the three ribbons fade out inside its disc
-const FORKS=[{name:'The east delta\'s fork',at:[1205,zE(1205)],flows:[0,1,2]},{name:'The west delta\'s fork',at:[-1205,zW(-1205)],flows:[3,4,5]}];
-const FORK_DRAW=FORKS.map(Fk=>{const CF=WATER.confluence({name:Fk.name,flows:Fk.flows.map(i=>RIVERS[i]),at:Fk.at,r:100,cell:2,ground:terrainH});
- const D=WATER.drawConfluence(CF,RIVER_OPT);WATER.fadeRibbons(CF,Fk.flows.map(i=>RIVER_DRAW[i]));D.mesh.userData.inspectLabel=Fk.name;return D;});
+// THE RIVERS AS ONE NETWORK (core/water/ext WATER.network, 2026-10-27, the core pass): each side channel names the river it leaves; the network finds
+// the forks (one disc each, river + both channels, placed and sized from the channels' overlap), the mouths (every channel fading into the lake over
+// 45 m, its rows following the fade) and the draw order. It replaces the hand-placed fork discs (r 100) and the shore fade (smooth(-30, 15, lakeIn))
+const RIVER_OPT={shallow:lin(RIVER_COL.clone().lerp(RIVER_GREY,.5)).multiplyScalar(.7),deep:lin(RIVER_COL.clone().lerp(RIVER_GREY,.35)).multiplyScalar(.6),color:0xffffff,roughness:.2,metalness:.05,envMapIntensity:.3,step:30,across:6,margin:3};
+const RIVER_NET=WATER.network({name:'The rivers',ground:terrainH,open:[LAKE_WATER],confluence:{cell:2},
+ flows:[{flow:RIVERS[0]},{flow:RIVERS[1],parent:0},{flow:RIVERS[2],parent:0},{flow:RIVERS[3]},{flow:RIVERS[4],parent:3},{flow:RIVERS[5],parent:3}]});
+const RIVER_NET_DRAW=WATER.drawNetwork(RIVER_NET,{flow:RIVER_OPT}),RIVER_DRAW=RIVER_NET_DRAW.flows,FORK_DRAW=RIVER_NET_DRAW.confluences;
+RIVER_DRAW.forEach((D,i)=>{D.mesh.userData.inspectLabel=RIVERS[i].name;});FORK_DRAW.forEach(D=>{D.mesh.userData.inspectLabel=D.C.name;});
 // the lily pads and the leaf rafts ride the swell (2026-10-26): their material lifts each instance by the water's own height at its centre
 // (WATER.rideOn, core/water W5: the vertex chunk WATER.rideGLSL, the same swell as WATER.heightAt: the trochoids through the Newton inverse and
 // the lake bed's damping, on the water's one clock), times aBob: 1 on the lake (its bed's damping is in the chunk), the marsh's own damping in

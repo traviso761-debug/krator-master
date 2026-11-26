@@ -87,5 +87,7 @@
     ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
   m.uniforms.uLavaT=A.U.time;m.uniforms.uNight=o.night||A.U.night;m.uniforms.uErupt=o.erupt||{value:0};m.uniforms.uVents={value:vents};
   m.uniforms.fogColor.value=A.h.scene&&A.h.scene.fog?A.h.scene.fog.color:new T.Color(0xffffff);m.uniforms.fogDensity.value=A.h.scene&&A.h.scene.fog?A.h.scene.fog.density||0:0;
-  const rec=A.rec('lava',{name:o.name||'lava',centre:c,flow,vents:live?vents.map(v=>[v.x,v.y,v.z]):(o.vents||[]).slice(0,4),swell,channel:ch,preset:o.preset||'lava'});m.userData.lava=rec;return m;};
+  const rec=A.rec('lava',{name:o.name||'lava',centre:c,flow,vents:live?vents.map(v=>[v.x,v.y,v.z]):(o.vents||[]).slice(0,4),swell,channel:ch,preset:o.preset||'lava'});m.userData.lava=rec;
+   if(o.crust)m.uniforms.uCrust.value=o.crust;   /* merge() cloned the map before the library's image decoded, and a clone keeps no image: the original (2026-11-02, the Throne caldera's textures-decoded) */
+   return m;};
 })();

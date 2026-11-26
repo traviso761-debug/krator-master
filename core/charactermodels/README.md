@@ -42,10 +42,19 @@ python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups
 python3 tools/lab_shots.py <dir> <spec.json> --page <lab copy> --gpu   # Animation Lab clips per body, side by side (pieces beside the page)
 python3 tools/ease.py /path/to/export male                           # under-items outside the item over them, per outfit
 python3 tools/nonhuman.py [male female giant]                        # the tail and the lizard head on the bodies as they stand (NONHUMAN.md)
+python3 tools/digitigrade.py [mpfb_male mpfb_female]                 # Coyote Men digitigrade legs, paws & Digi* rig joints (NONHUMAN.md)
 python3 tools/make_mpfb.py gshapes male                              # the Godot twin's shapes from the pieces alone (no Blender)
 node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after a change to 10-rig.js, data/ or the pieces
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 ```
+
+**Two animation labs (2026-11-26).** The Animation Lab outgrew one artifact (256 MiB), so it is published as two:
+the **Combat Lab** (`dist/combat-lab.html`: melee, hand to hand, ranged, blocks and dodges, hits and falls) and the
+**Animation Lab** (`dist/trade-lab.html`: work, daily life, social and ceremony, swimming and climbing), the idles and
+the moves in both (data/clips.json `labs`). Each is the Animation Lab page with `KCHAR_LAB` set: its groups, its title
+and its own anims piece, `pieces/<body>/anims_combat.txt` or `anims_trade.txt`, which `python3 tools/anims_subset.py`
+cuts from the published `anims.txt` after every anims rebuild. `dist/animation-lab.html` keeps every clip: it is the
+page `verify.py --assert` checks in full (the two labs get a lighter check). Reviews are kept per published lab.
 
 **Publishing the labs.** Each page fetches `pieces/<body>/<piece>.txt` beside it: the GLB, and on a second line the
 piece's morph deltas. A piece published before the two lines were one file still has its deltas in a
@@ -106,11 +115,12 @@ nearest people as figures in their own records).
    the nearest few dozen as figures and a crowd past them in a handful of looks and poses, one draw each (Longsong's
    `69-ls-figures.js`: 16 looks, standing, two strides, sitting). Not yet: faces of their own at that range, the cloth
    chains' sway, a Godot twin.
-2. **Line up the work tasks with clips.** Map each activity (`core/simulation/ROADMAP.md` §26, the portable
-   primitives, plus a build's own: FETCH_WATER, HERD, SMITH, TRADE, SLEEP...) to a clip, a prop and a loop or one-shot
-   in a table beside `data/clips.json`, and list the activities with no clip. Fill the gaps from the libraries
-   already used (Meshy's animation library, Quaternius UAL), Mixamo clips the owner supplies, or made clips
-   (`derive`, as the hammer, dig and thrusts are).
+2. **Line up the work tasks with clips.** Begun (2026-11-25, `ACTIVITIES-PLAN.md`): `data/activities.json` maps
+   every activity the sims use to clips, props, enter and exit one-shots, with overrides by furniture, trade and role;
+   `KCHAR.activity(table, act, {seed, furniture, trade, role})` and `KChar.activity` read it (golden cases in
+   `tests/golden-mpfb.json`), and Longsong's figures play from it. `tests/check_activities.py` lists the ids the sims
+   use with no entry and the entries marked `gap` (a stand-in clip until the real one is made or fetched). Next: the
+   gaps (the plan's sections 3 and 4), props for them, and Voth's citizens on the table.
 3. **A quality pass, before citizens use it at scale:** clothing (skin and under-layers through garments at the
    slider ends, sleeves, hems in motion, the generated garments' tailoring), posture (the retarget's straightened
    spine is offset after the clip, not fixed in the retarget: `KNOWN_ISSUES.md`; the Animation Lab's Posture panel
@@ -122,7 +132,7 @@ nearest people as figures in their own records).
 | Step | Where | What |
 |---|---|---|
 | 1. Blender | `tools/mpfb_build.py` | Builds an MPFB human (Mixamo rig, `detailed_helpers` so the rig lands right), loads the brows, lashes, eyes and every library item in `ITEMS` (clothes per slot, hair, beards: MakeHuman fits each to the body and interpolates its weights from it), exports the base and each item as a GLB on the same rig, with a `_VIDX` attribute (each vertex's Blender index) and each item's delete group. Then, per slider end (macros: age, muscle, weight, height, proportions, and bust and firmness on the woman; the three ancestry shares; 35 face targets), it sets the target, lets MPFB refit the rig and every item, and records how far each vertex of every mesh and each joint moved: `morphs.npz`. |
-| 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images; the few items far denser than they look (`DECIMATE`: the flats and the pirate boots, twice the body's triangles a pair) keep a tenth of their triangles (`tools/decimate.py`: quadric collapse onto their own vertices, so UVs, weights and the morph deltas still match; borders and seams held). Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`), and a top with one gets those rays' triangles too (its delete group stops short of the shoulders and chest in places, where the skin came through). Trousers (`legged_trousers`: the library's with no delete group, the cargo trousers, and the cultures' made trousers, breeches and braccae) take longer rays and a front-and-back closure (`TROUSERS_COVER`: out 5 cm, in 3 cm, closed within 35 cm along the body's front-back axis): at the default reach the knees, the crotch and the cleft of the buttocks were left drawn and came through in a crouch, a lunge or a roll. The base's small parts drawn over the skin (the nipples, `Human.nipple`) are never in a hide; an item that hides all the skin under one names it in `hide_parts` (`parts_under()`), and both runtimes leave it out (`KCHAR.hiddenParts`). `python3 tools/make_mpfb.py hides <body> <dir of GLBs>` rederives those two from the pieces alone, with no Blender (`refresh_hides`; the Godot twin's skin regions follow at the next whole build). Hair and beard textures are made neutral with their clear texels filled at the mean grey (left black, they darkened the mips and the thin beards drew darker than the hair). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the shape whole as float32, its positions and its normals turned as the target turns the faces, which Godot blends NORMALIZED, the linear blend the page gets by re-summing normals; the skin's cover regions, by the items that cover each, which Godot joins into one surface and hides by region; the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
+| 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images; the few items far denser than they look (`DECIMATE`: the flats and the pirate boots, twice the body's triangles a pair) keep a tenth of their triangles (`tools/decimate.py`: quadric collapse onto their own vertices, so UVs, weights and the morph deltas still match; borders and seams held). Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`), and a top with one gets those rays' triangles too (its delete group stops short of the shoulders and chest in places, where the skin came through). Trousers (`legged_trousers`: the library's with no delete group, the cargo trousers, and the cultures' made trousers, breeches and braccae) take longer rays and a front-and-back closure (`TROUSERS_COVER`: out 5 cm, in 3 cm, closed within 35 cm along the body's front-back axis): at the default reach the knees, the crotch and the cleft of the buttocks were left drawn and came through in a crouch, a lunge or a roll. The base's small parts drawn over the skin (the nipples, `Human.nipple`, and the toenails, `Human.toenails`) are never in a hide; an item that hides all the skin under one names it in `hide_parts` (`parts_under()`), and both runtimes leave it out (`KCHAR.hiddenParts`): the woman's toenails stood out below a shoe's toe in the limp. `make_mpfb.py hides` manages only these parts and leaves a head's or a foot mod's own `hide_parts` (lips, brows, ears, nails) as their tools set them. A top hides no skin within 4 cm of a sleeve's opening out on the arm (`open_sleeves`, `SLEEVE_OPEN`): with the arm overhead (the stretch, a climb, a two-handed parry) the opening lifted off the arm and the skin hidden up to it showed as a hole beside the arm; at 6 cm the man's deltoid came through the tee's shoulder in a block. `python3 tools/make_mpfb.py hides <body> <dir of GLBs>` rederives those three from the pieces alone, with no Blender (`refresh_hides`; the Godot twin's skin regions follow at the next whole build). Hair and beard textures are made neutral with their clear texels filled at the mean grey (left black, they darkened the mips and the thin beards drew darker than the hair). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the shape whole as float32, its positions and its normals turned as the target turns the faces, which Godot blends NORMALIZED, the linear blend the page gets by re-summing normals; the skin's cover regions, by the items that cover each, which Godot joins into one surface and hides by region; the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
 | 3. Record | `src/10-rig.js` | `KCHAR.morphWeights(record)`: one weight per target (a slider at v < 0 weighs its minus end by -v, at v > 0 its plus end by v, times its reach; ancestry weighs each race by its share minus the base's). `KCHAR.morphJoints`: each joint's rest moves by the weighted sum of its deltas. `KCHAR.stranger(seed, kit, people)`: a record drawn from a people's ranges with `KRAND`. |
 | 4. Figure | `src/50-figure.js` | Blends each live mesh's deltas on the CPU (`_vidx` maps a glTF vertex to its Blender vertex; a seam's halves move together), re-sums normals over source vertices, moves each bone's rest and its inverse bind by the joint delta (`IBM * T(-d)`, so the skinned rest is exactly the morphed mesh), keeps the feet on the ground, hides the skin under worn items, and tints skin, brows, hair and beard. |
 | 4b. Crowd | `src/60-crowd.js` | `KCharCrowd.bake(fig, clip, t)`: a dressed figure at a clip's frame baked into one still mesh (every visible piece through its bones, vertex colours from its map at each uv times its material colour); `KCharCrowd.set(geo, n)`: an InstancedMesh of it to place a crowd with, one draw per look and pose |
@@ -131,8 +141,11 @@ nearest people as figures in their own records).
 **The record**: `{ body:'mpfb_male', armour:{head, torso, legs, feet}, hair, beard, skin:'#rrggbb', hair_color:'#rrggbb', eye_color:'#rrggbb',
 morph:{ <slider>: -1..1 }, ancestry:{african, asian, caucasian}, people, dye:{slot: '#rrggbb'} }`. Colours are albedo.
 
-**Clips** (`data/clips.json`, about 140 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
-as move, melee, ranged, block and dodge, hit and fall, swim, ladder, daily life and work. Two sources, both retargeted
+**Clips** (`data/clips.json`, about 200 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
+as move, melee, hand to hand (fists, kicks, elbows and knees, throws, fist guards: 2026-11-25; a clip's `fist` closes
+the empty hands, `toes` derive keeps the toes from flapping), ranged, block and dodge, hit and fall, swim, ladder, daily
+life, social and ceremony (bows, kneeling, waves, oratory, cheers: 2026-11-26) and work (the trades' made clips, tools/trade_clips.py:
+2026-11-26). Two sources, both retargeted
 onto the rig by `make_pieces.write_anims` (bone directions matched, hips motion scaled by height):
 Meshy's animation library (`meshy` ids, fetched on the scout donor's rig with `tools/meshy.py anims`, 3 credits each:
 `donors/anims/actions*.glb`) and Quaternius's Universal Animation Library 1 and 2 (`ual`, CC0:
@@ -142,21 +155,29 @@ to the last loop. Loops play in place: their drift over a cycle is taken out and
 Neither library has hoeing, hammering, a pickaxe or a straight thrust, so some clips are made (`derive` in
 `data/clips.json`, `make_pieces.derived_clips`, posed with `_Rig`: forward kinematics on the canonical skeleton, a
 two-bone solve per arm, the hand turned to hold its prop a given way). **Hammer at anvil**, on the standing idle: the
-spine leans into each blow, the right hand lifts the hammer over the shoulder and brings it down onto an anvil just
-below the hips in front (the handle forward and the face down as it lands), and the left hand rests on the work.
-**Dig (hoe, pickaxe)**, on the standing idle: both hands on the handle, lifted before and above the right shoulder
-and brought down in front as the spine bends into it (it was the one-handed heavy swing looped, its left arm across
-the chest; then the lift's top sat over the shoulder, and the left hand reached behind the head for the handle, its
-arm round the neck). **Thrust / stab** (dagger, sword), from the combat stance: the hand drawn back to the ribs and
+spine leans into each blow, the right hand lifts the hammer out to the side and up beside the head, brings it down in
+front of the shoulder and in onto an anvil just below the hips in front (the handle forward and the face down as it
+lands), and the left hand rests on the work (lifted straight up from the anvil and back across the face, the hammer went
+through the bowed head: the owner, 2026-11-26).
+**Dig (hoe, pickaxe)**, on the standing idle: both hands on the handle, lifted out beside the right shoulder, above it
+and well in front, and brought down in front of the shoulder as the spine bends into it at the blow (it was the
+one-handed heavy swing looped, its left arm across the chest; then the lift's top sat over the shoulder, and the left
+hand reached behind the head for the handle, its arm round the neck; then the hands passed over the face and the
+handle through the man's head). **Thrust / stab** (dagger, sword), from the combat stance: the hand drawn back to the ribs and
 driven straight forward at chest height, the point leading, the right shoulder turned into it (Meshy's 'Thrust Slash'
 stabbed overhand, the point up). **Spear thrust**: the same underhand, the right hand at the hip on the butt end and the
 left forward on the shaft. **Spear advance** keeps Meshy's 'Spear Walk' legs and body (fetched as `spear_walk@src`, a
 source only) with the arms at the spear thrust's guard (it held the spear with the right hand behind the back).
 A clip whose hands only gesture at a place has them put there (`derive: {hands: {R|L: head | belly | chest}, from}`,
 `make_pieces.hands_clip`; the made clip takes its source's place in the list): **Confused Scratch** lays the right palm
-on the crown, fingers back along the scalp and the forearm up over the head from in front, wherever the clip lifts that
-hand near it (it scratched the air 10 cm over the crown, then held the hand up like a claw, the wrist bent back), and **Sleep** lays the right palm on the belly and the left on the lower chest (both hands were held up
-in the air). The skull ball and the body's front come from the base mesh. Every retargeted clip also has its elbows
+on the upper side of the head behind the ear, fingers back along the scalp and the forearm up beside the head from in
+front, the elbow low, wherever the clip lifts that hand near it (it scratched the air 10 cm over the crown, then held
+the hand up like a claw, the wrist bent back; on the crown the shoulder and elbow came up high, the owner's review
+2026-10-25), and its `face` entry (`scratch`, toFace) keeps the palm there after the posture pass, which tipped the
+man's head forward away from the baked hand; **Sleep** lays the right palm on the belly and the left on the lower
+chest (both hands were held up in the air). `derive: {feet: deg, from: '<key>@src'}` (`make_pieces.feet_clip`) turns a
+foot up at the ankle wherever it points down further than that from level: **Limp** (`-55`) held each swinging foot
+toes-down, 40 to 60 degrees past flat for a third of its stride (the owner's review, 2026-10-25). The skull ball and the body's front come from the base mesh. Every retargeted clip also has its elbows
 kept from bending backwards (`elbow_limit`): the hinge is fixed in the upper arm, across it and the figure's forward
 at rest. An arm whose least bend in the clip is under 3 degrees has its forearm turned forward about the hinge by
 enough to bring that least bend to 12 (a relaxed arm), at most 25, the turn fading out over 80 degrees of further
@@ -164,9 +185,33 @@ bend, so the clip's own elbow motion stays; a frame still under 3 after that (a 
 12 and the backward walk opened 13 to 17 degrees past straight; a floor at 3 alone held idle 12's arms straight and
 rigid; a reading past 45 degrees backwards is a deep bend with the upper arm turned on its axis, which the fixed hinge
 misreads, and is left alone).
-**Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 20 hand-held things built from
+*The owner's review of 2026-11-26* (`derive` kinds `level`, `bend`, `force`, `guard`, `door`, `bench`, `place`,
+`handles`; a clip made from `'<key>@src'` stands where its source stood, one made from another clip right after it).
+Captured and kept as they are: **Up swing (left)** (`slash_up`, Meshy's 'Slash left', which rose from below the right
+hip to over the left shoulder) and **Walk while shooting (high aim)** (`walk_shoot_high`, Meshy's, the barrel 13
+degrees up). Made from captured clips: **Slash left** (`slash_left`, from `slash_up`: the arm's swing flattened toward a
+level plane 12 degrees below the shoulder, a third of the clip's rise kept); **Walk while shooting (low aim)**
+(`walk_shoot`, from `walk_shoot_high`: the spine bent 26 degrees forward joint by joint, so the rifle stays at the cheek
+and aims at the ground a few paces ahead); **Spinning axe attack** (`axe_spin`, Meshy's re-timed: the wind-up held a
+little longer, the spin and the blow a third faster, a slower settle, the body leaning 12 degrees into the blow);
+**Block** and **Block 2** (Meshy's, with the right hand's grip put before the face in the block, the blade across it
+and its edge forward, the left hand kept beside the right: they held the blade pointing back past the head); **Open
+door** (Meshy's body, the right arm and the legs made: it reaches a lever handle in front of the right shoulder,
+1.05 m up, closes on it, turns it down 45 degrees and pulls the door 38 degrees open round a hinge to its right, the
+right foot stepping 28 cm back and the hips following as the door comes, the head on the handle; it lets go and steps
+forward again. The clip held the hand still in front for three seconds; standing still, the pull was 25 cm at the hip,
+and the owner (2026-11-27) still could not read it as a door. The Animation Lab draws the door for it: a frame, a
+half-seen-through panel and the lever, where each figure's hand first closes on it, swinging where the hand pulls it,
+`92-animlab.js sets`); **Pick into basket** (Meshy's, the
+basket hand held under the falling fruit while crouched); **Push cart** (Meshy's legs and body, both hands on the
+cart's crossbar the whole loop, 1.05 m off the ground, following the hips' going; the back bends where the clip stood
+up out of reach). Made outright: **Craft at a bench** (`craft_bench`, on the standing idle: bent over a bench just above
+the hips, the left hand flat on the work, the right working a tool on it, three light taps, a pause turning the work
+over, two more). Renamed: **Harvest (bending)** (`ual_harvest`), **Push button** (`ual_interact`, holding nothing:
+Longsong's figures still play it for WORK, KNOWN_ISSUES.md).
+**Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 22 hand-held things built from
 primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
-bucket, cup, lantern, torch, bowl, bread) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
+bucket, cup, lantern, torch, bowl, bread, basket, handcart) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
 finger, +Z the way the fingers point, +X out of the palm. `make_mpfb.py hands()` measures that frame on each body's rest
 hand (skeleton.json `hands`: the grip in the hand bone's space, the arm's three bones, and per grip style, per finger
 joint, the rotation that closes the hand: `fist` round a handle, `trigger` with the index finger along a gun, `wide`
@@ -175,28 +220,74 @@ default first; `fig.hold({R, L, both})` hangs the GLBs under the hand bones and 
 of the clip; the Animation Lab's Holding picker swaps the right hand's prop among the clip's choices. The shield is
 held by its centre grip with the board out past the back of the hand (made the other way, every clip faced its boss
 into the body); in a lower hand a prop with `low_turn` turns about its handle so the shield stands up, board out.
-A prop with `hang` (its axis that points down) turns about the grip so that axis points down whatever the hand's turn:
-the bucket and the lantern hang plumb from their bails (they followed the forearm). A prop with `upright` (its axis
+A prop with `hang` (its axis that points down) hangs from its bail, which lies along the grip's handle axis in the
+fist: the forearm turns about its own length (at most 1.6 rad) until the bail lies level, the wrist bends (at most 0.5
+rad) for what that cannot do, and the prop swings about the bail only, so the bucket and the lantern hang plumb (they
+followed the forearm; turned freely about the grip, the bail then came out through the fingers in Water plants). Of
+the two forearm turns that lay the bail level, the one that keeps the frame's whole turn nearest the last frame's is
+taken, and that whole turn changes by at most 6 rad/s of the clip's time (the nearer to none, chosen afresh, swapped as
+the clip turned the forearm, or as the legs' push turned the arm between two calls, and the hand snapped half a turn in a
+frame: the owner, 2026-11-27, Water plants). A
+prop with `hang_clear` (its body's radius and span along the hang axis) is kept 4.5 cm out of the legs' capsules (the
+trousers): the arm turns at the shoulder so the body's deepest point goes the way out, the points inside each pushed off
+their leg and weighted by depth, never in toward the other leg and never back the way it went, starting from the frame before's push, eased back to none over 0.3 s of the clip's time (solved afresh each frame it
+lurched the arm) (the short bodies carried
+the bucket in the thigh; between the legs of a stride, the deepest point alone sent it from one leg to the other). A prop with `upright` (its axis
 that should point up) turns the wrist to keep it up, as far as the hand is not at the face (`standUp`, `_stand_up`): the
 cup stands upright in the hand and tips only to drink (the left hand held it upside down); the bowl, held in an open
 hand (`grip: 'flat'`: the clip's own fingers), turns the palm up under it. A prop with `carry` (the bowl) is first held
 in front of the belly: the wrist goes to that point (metres from the lower spine joint: out to the hand's side, up,
-forward) by the arm's two-bone solve (Eat swung the arm back and down, through the bowl).
+forward) by the arm's two-bone solve (Eat swung the arm back and down, through the bowl), the collarbone first brought
+down to at most 5 degrees above its rest elevation (Eat's clip holds that hand up at the face, the shoulder hiked 30 to
+40 degrees, which stayed by the ear with the hand at the bowl).
 A weapon's `blade` (its striking part along the handle) keeps out of the head, the neck and the trunk (`bladeClear`,
 `_blade_clear`): the wrist turns until the blade passes the skull's sphere (with the hair), a taper down to the neck
 joint and the trunk's capsules, each widened by half a blade's width; the turn carries over from frame to frame and
 eases back to the clip's over 0.3 s, so the blade stays on the side it went round (starting afresh each frame flipped
-it across the head in Block 2). `fig.bladeNeed` (`blade_need`) says how deep it still was.
+it across the head in Block 2). `fig.bladeNeed` (`blade_need`) says how deep it still was. A gun's `stock` (a segment of
+the butt and its half thickness) keeps out of the upper arms the same way, from 35% of the way down from the shoulder (the
+butt sits in the shoulder's pocket when it aims): Long gun shot at the hip ran the rifle's butt through the right upper arm
+(`fig.stockNeed`, `stock_need`). The right forearm lies beside the butt, not in it (`stockArm`, `_stock_arm`): the clips hold
+it straight back from the pistol grip, along the butt (the skinned forearm was 2 cm inside the rifle's butt on every
+frame of Long gun shot, which the capsule keep-out never saw), so the elbow swings about the shoulder-to-wrist line (the
+hand and the gun stay put) by the least 10-degree step that keeps the forearm's first 60% from the elbow out of the butt's
+box (`stock`'s last two numbers, its half width and height): of the two ways the one that lowers the elbow, then the way
+it went (never across, which swept the forearm back through the butt), and straight at up to 10 radians a second while
+the eased swing is still in (`fig.stockArmNeed`, `stock_arm_need`). By the wrist the hand wraps the grip, where the butt
+begins. The empty hand keeps off the other hand's blade (`offHand`, `_off_hand`): its forearm, hand,
+middle and index fingers are tested against the blade from 12 cm below it to its tip, and the wrist moves out by the
+two-bone solve, the move kept from frame to frame and easing back over 0.3 s (Parry's guard hand lay across the sword,
+and the dagger drawn back in Thrust / stab passed the forearm and fingers); `fig.offNeed` (`off_need`).
+The basket hangs from its handle like the bucket (`hang`). A prop with `ground` stands on the ground (the handcart, held
+by its crossbar in Push cart): the hand is turned so the prop stands upright facing the figure's forward (`ground.y`,
+`ground.z`: its axes in the figure's frame) and lifted or lowered so the grip stands `ground.height` over the floor
+(`onGround`, `_on_ground`, before the two-hand grip so the left hand follows): the clip's bar came 0.8 m up on the short
+bodies and 1.2 on the tall ones and bobbed with each step, and a few degrees of wrist tipped the wheels through the floor.
+
+*The look.* `data/clips.json look` turns the head and the eyes toward a target ahead in the melee clips and both
+blocks (not the up swing): 2.5 m in front of the figure at its own chest height at rest, or `fig.lookAt` (`look_at`),
+a point a game sets, whatever the clip (`look`, `_look`, right after the posture). The head (Neck and Head, 40% on the
+neck) turns 85% of the way within 70 degrees of yaw and 30 of pitch; the eyes make up the rest within 28 and 18. No
+clip moves the eyes and the MakeHuman eyes are weighted wholly to the head, so the eye shader turns each eyeball about
+its centre (`faces eyes`, from the head joint; three.js in the rest space before skinning, Godot on the skinned
+vertices with the turn carried by the head). The target is judged off the chest, not the face: a target more than 75
+degrees off the chest's forward is looked toward less, none past 115 (a spin turns its back on it), while a head the
+clip turned aside with the chest square on is brought round (Charged slash looked 115 degrees aside; with the pass
+under 52 on the men, 70 on the women, and 17 on average). `fig.lookState` (`look_state`): the weight, the chest's angle
+off the target and the turns given; `fig.faceForward`, `fig.lookTarget` (`face_forward`, `look_target`) for tests. The
+two runtimes agree frame by frame to 0.02 rad.
 
 *To the face.* A clip's `face` in `data/clips.json` brings a hand to the face (`toFace`, `_to_face`): the hand's point
 (`point`, in its grip frame: a cup's rim, a bite of bread, the bow string's place in the hand) goes onto one of the
 face's points by the arm's two-bone solve, the hand keeping its turn. The points (`data/clips.json faces`, per body,
 metres from the head joint in the figure's frame at rest, turned with the head; a giant's are the man's times its
-scale): `mouth`, `sip` (a cup's or a bite's middle at the lips), `anchor` (a drawn bow's string hand, under the side of
-the jaw) and `head` (the skull's middle and radius, for `blade`). With `when` (spans of clip seconds) it does so in
+scale): `mouth`, `sip` (a cup's or a bite's middle at the lips), `anchor` (a drawn bow's string hand, below and in front
+of the chin, the hand 6 to 8 cm off the face: the owner, 2026-11-26, not on the chin) and `head` (the skull's middle and radius, for `blade`). With `when` (spans of clip seconds) it does so in
 those spans, easing in over `ease` and out over it after a span's end (a span at a loop's start or end runs on round
 the loop); without, as near as the clip brings the hand (full within `near[0]`, none beyond `near[1]`). Drink holds the
-cup in the left hand (the clip drinks with it) and brings its rim to the lips from 2.4 to 5.2 s; Eat (`ual_consume`:
+cup in the left hand (the clip drinks with it) and brings its rim to the lips from 2.4 to 5.2 s, Sit and drink the same
+in the right hand from 3.7 to 7.3 s (the clip lifts the cup and tips the head back there, and held it short of the
+mouth); Eat (`ual_consume`:
 the library's clip only reaches out at face height) holds bread in the left hand and a bowl in the right and puts the
 bread to the mouth from 0.3 to 1.1 s; the four bow clips draw to the anchor in their full-draw spans, with `level`:
 the arrow, string hand to bow hand, points up at most 6 degrees (the bow arm comes down to it). `fig.faceW`
@@ -205,17 +296,29 @@ the arrow, string hand to bow hand, points up at most 6 degrees (the bow arm com
 *Two hands.* A clip's `two_hands` names the props the left hand also holds in it (the spear, the rifle and crossbow,
 the hoe, the axe, the war hammer and the mace in the clips made for them, and the two-handed parry). A prop's
 `support` is a segment of its handle; each frame the left hand goes to the point of it nearest where the clip has the
-hand (within the arm's reach, a hand's width from the right hand), turned round the handle so its fingers point away
-from the shoulder, and a two-bone solve (upper arm, forearm; the elbow kept on the side the clip bends it) brings the
+hand (within the arm's reach, a hand's width from the right hand), and a two-bone solve (upper arm, forearm; the elbow kept on the side the clip bends it) brings the
 arm there. When the left arm cannot reach, the right brings the prop toward the left shoulder by the shortfall (up to
 45 cm) and both reach; if the hands are still too far apart the arms ease back to the clip's own pose
-(`fig.reach` says how far short the hand fell). The hand's thumb side along the handle is the clip's at the hold's
-first frame and kept while the clip plays (chosen every frame, the left hand flipped half a turn round the hilt in
-Two-handed parry as the clip's hand passed square to it). The pistol's support is one point, so in Pistol stance and Pistol
+(`fig.reach` says how far short the hand fell). The left grip frame is the right's mirrored, so its +Y is the little
+finger's side: the left hand's index side faces the head of the prop as the right's does (both thumbs up the haft, a
+bat's grip), from the prop, not the clip (taken from the clip's left hand at the hold's first frame, which still blends
+the clip before, it came out either way by body and by what played before: the hand upside down round the haft in
+Overhead chop, Heavy blunt swing, Two-handed parry, the men's Pistol stance). Round the handle it turns to the roll that
+lays its own axis (wrist to knuckles) nearest the forearm's line, so the wrist bends least, and the forearm then takes
+half of the hand's twist about its line (`untwist`, `_untwist`: pronation is the forearm's; Spear advance wrung the
+wrist 160 to 180 degrees, now at most 90). A clip with `two_when` (spans of clip seconds) holds with both hands only
+there, easing in and out over 0.25 s: Pistol quick draw brings the left hand to the gun only while it aims, 2.3 to 4.3 s
+(it lay on the right forearm); Pistol shot holds the pistol with both, as the other pistol clips. The pistol's support is one point, so in Pistol stance and Pistol
 aim the left hand cups the right hand's fingers. A clip with `lead_left` (Two-handed parry: its left hand is above the
 right, toward the blade) takes a prop with a one-point support the other way round: the prop slides half the support's
 offset up through the right hand and the left holds above it, so the forearms do not cross (they went through each
-other).
+other). A clip with `clear_jaw` (Chop) keeps the left arm out of the jaw and the skull (`faces` `jaw`: the chin, the jaw
+and the front of the throat, measured off the base meshes): where the arm's line from the shoulder to the handle
+passes the face (Chop's top turns the left shoulder under the chin and holds both hands up behind the head), both
+hands come down together by twice the depth, five times over and 40 cm in all, no further than the left arm reaches,
+and then the elbow swings about the shoulder-to-wrist line, away from what is left, the way it first went while the need
+lasts (`elbowDown`, `fig.jawNeed`). It is switched on per clip: on the melee clips (Overhead chop, Heavy blunt swing,
+which have the same fault) it lowered the windup 40 cm.
 *The bow* has no modelled string: the figure draws it between the limb tips (`string`), through the right hand while
 that hand is behind the bow, turns the bow about its handle to face the drawing hand, and lays the arrow from the
 string hand to the bow hand (`fig.drawn`). The arrow is `arrow_arm` (1.65) times the bow arm's length, shoulder to
@@ -229,9 +332,17 @@ near its middle; the arrow once the string is pulled 20 cm). The bow is canted a
 stays in the hand): at full draw (`faceW`) toward upright but for 15 degrees of the clip's lean (Draw from quiver held it
 40 degrees over, a limb at the hip), and then by the least of 10-degree steps that keeps its limbs (sampled every 12 cm) out of
 the legs' capsules widened by 4.5 cm for the trousers and the limb (Bow aim and scan put the lower limb through the left
-leg; the bare capsules let it through the cargo trousers by up to 5 cm); `fig.bowState()` (`bow_state()`) gives the
-turn, the cant, how deep the limbs still are in the legs, whether the arrow shows and how far its head is in front of
-the bow (`ahead`).
+leg; the bare capsules let it through the cargo trousers by up to 5 cm), preferring one clear by 2 cm more. The steps
+are tried on the side the bow is canted to first (tried +10 before -10 every frame, the clear one switched sides as the
+leg moved, +30 to -20 at 2.6 s, and the eased cant swept back through the thigh: the 2026-11-26 note, measured only at the
+cant it was heading for); a step that would put a limb in a leg waits at the clear cant it has until the way is open,
+and a leg that comes to the bow turns it out at up to 8 radians a second. At full draw the string arm's elbow goes back
+along the arrow and out, level with the line, by the face's weight (`reachArm`'s pole: the clips raised it above the
+shoulder and in front of it, Bow aim and scan at 4.59 s and Bow shot). A clip's `arrow_hand` (spans of clip seconds) puts
+an arrow in the drawing hand before it is on the string: up out of the quiver, then the way the figure faces, at the bow
+only in the span's last quarter (Draw from quiver, 1.3 to 1.87 s: it showed no arrow until the hand neared the bow); `fig.bowState()` (`bow_state()`) gives the
+turn, the cant, how deep the limbs are in the legs at the cant drawn, whether the arrow shows (and one in the hand, `inHand`,
+`in_hand`) and how far its head is in front of the bow (`ahead`).
 
 **Voth clothing** (`tools/make_garments.py`, Blender + MPFB): the Chichani's own clothes in three classes per body,
 made here as MakeHuman clothes (so MPFB fits, weights and morphs them like the library's): peasants in undyed maguey
@@ -633,7 +744,9 @@ breeches and the giants' braccae were pushed off the thighs and swung as one she
 **A garment's back faces** are drawn 1 cm further from the eye than they are (`BACK_DEPTH`, the fragment's depth; the
 twin's shader too): where the push or a chain folds the cloth over itself its inside lay at the outside's depth and
 showed through it in blue-grey patches (a shirt over the hips in a walk, the court robe's back); an inside nothing
-covers (in a sleeve, under a hem) still shows. **Belts round the hips** and what hangs from them (`make_garments.py`
+covers (in a sleeve, under a hem) still shows. Every top, legwear and boot is drawn on both sides (`pushOut`, as the
+twin's `cull_disabled`): the library's tops are one-sided in their glTFs, and a sleeve lifted off a raised arm showed the
+background through its open inside (a kimono's wide sleeve most). **Belts round the hips** and what hangs from them (`make_garments.py`
 parts named `_belt`, `_trophy`; the `.cloth.json`'s `hips`) are weighted to the hips alone (`mods.pin_hips`): from
 the body they took the thighs' weights, and the chief's stack of four sheared into fins in a stride.
 **Headgear** moves with the head: `make_mpfb.py head_weights` gives every vertex of a head item above the neck the
@@ -660,7 +773,14 @@ top of the chest: the shoulder and deltoid sit against it, and an arm raised bef
 in front of the belly is left be (a sprint's raised knee and a crouch's thighs meet the trunk's capsule without
 going through the body). The upper arm from 0.4 of its length also keeps out of the skull (`data/clips.json` faces
 head; idle 14 swung it through the head); the forearm and hand may come to it (a scratch, a palm on the brow, a
-guard at the chin). The unused lower-arm joints of a two-armed body take no part. The pushes are continuous in time:
+guard at the chin). Each forearm (elbow to wrist, not the hand: a hand may hold the other arm, its fingers round the
+biceps) also keeps out of the other arm of its pair, at that arm's narrow-end radius (the elbow's, the wrist's) and its
+own taper, with no margin (Arms folded: each wrist sank 2.5 to 3 cm into the other arm on every body, 2026-11-26).
+Only the forearm in front of the other arm moves, forward along the chest's axis by the least that clears; the one
+behind stays (the gap's own way lifted the upper forearm and, about the elbow, the hand to the collarbone, and each
+arm out of the other in turn ratcheted both forward). Not while both hands hold one prop (the two-hand solve places
+the left arm; a dig's swing passing one forearm over the other jumped the hands). The unused lower-arm joints of a
+two-armed body take no part. The pushes are continuous in time:
 each bone's turn is kept from the frame before and eases back to the clip's as the clip moves on (over 0.25 s of
 clip time, by the clip's own time, so the lab's frame steps behave as playing does), and a push turns a bone at most
 2.5 radians a clip second; pushing on from the kept turn keeps a limb on the side it went round, where solving
@@ -677,14 +797,33 @@ upper arms keep the way the clip points them, so a thrust or a held spear still 
 numbers are in `data/posture.json`, which both runtimes read:
 - `bodies`: degrees per joint for `mpfb_male` and `mpfb_female` (the giant takes the man's); each figure's live copy is
   `fig.posture`.
+- `lean` (in `bodies` or a clip's change): everything above the legs tipped about the hip joints, first (negative
+  forward). The hips turn about the midpoint of the two hip joints and move with it, the thighs keep the way the clip
+  points them, so the legs and feet stay where the clip has them.
+- `pelvis` (in `bodies` or a clip's change): the pelvis tilted alone, before the spine angles (negative forward: the
+  top of the pelvis to the front, the seat back; positive tucks it under). The thighs keep the way the clip points them
+  and the lumbar the way it faced, so the legs and the torso's direction stay; the waist and seat turn between them.
+- `nTurn`, `nSide` (in `bodies` or a clip's change): the neck turned (positive to the figure's left) and tilted to the
+  side (positive, the left ear toward the left shoulder), after the pitches, about the up and forward axes in the
+  posture's frame (`joint`: as the clip has turned the chest).
+- `fSpine`, `fSpine1`, `fSpine2`, `fNeck` (in `bodies` or a clip's change): that joint moved forward (positive) or back
+  in centimetres of the body's own size, after the angles, the joints above it held where they were: the lumbar
+  pushed forward bends the small of the back without carrying the chest along. The clips never place bones, so the
+  shifted joints go back each frame before the pass (`unshift`; Godot `_unshift`). `fHead` and `uHead` move the
+  whole head (its face joints with it) forward or up, the neck stretching to it: the neck's length after the neck and
+  shoulders have been turned.
 - `clips`: per clip key and body, degrees **added** to the body's values while that clip plays (walk and run lift the
   man's chin, sprint and crouch hunch him, so they take less neck or less chest); blended by the playing clips' weights
   through a cross-fade on the page, eased over the same 0.25 s in Godot. Kept under the body whose values a body takes
   (the giant's under `mpfb_male`). Live copy: `fig.postureClips`.
-- `frame`: `joint` pitches each spine joint about its parent's side axis as the clip has turned that parent from rest,
-  so a twisted or side-leaning torso (idles 5, 13, 14) bends forward along its own facing; about the figure's axis
-  (`figure`, before 2026-10-20) the man's large angles kinked his ribs sideways. On an upright torso the two agree. The
-  shoulders' drop and draw-back stay in the figure's frame.
+- `frame` (the default) and `clipFrames` (per clip): `self` pitches each spine joint about its own side axis as the clip has turned it from
+  rest, so a joint the clip twists about its length bends along its own facing. `joint` took the parent's axis: it
+  fixed the man's ribs kinking sideways in twisted idles (5, 13, 14) under `figure`, the figure's own axis, but in a
+  sword's wind-up a mid-back twist of 15 degrees turned part of the man's 40 degree bend into a sideways roll and the
+  spine went crooked (Sword combo at 1.39 s, Sword heavy). `self` keeps the idles' fix and leaves the neck and head on the parent's axis. The owner tuned every clip on
+  `joint` (2026-10-26), so it is the default and only the two crooked sword clips take `self` (`clipFrames`); in a
+  twisted torso the two give a different chest, so a clip moved from one to the other wants retuning. On an
+  upright torso all three agree. The Posture panel's Copy JSON carries `clipFrames` through. The shoulders' drop and draw-back stay in the figure's frame.
 
 **The Animation Lab's Posture panel** (under the review marks) sets them by hand: a slider per joint for the body
 chosen, every figure of that body changing at once. **Every clip** edits `bodies`; **This clip** edits the clip playing:
@@ -728,8 +867,10 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `src/90-editor.js` | the Cosmetic Lab: stage, camera, panel, strangers in bulk; `window._kchar` for `verify.py` and `tools/shots.py` (`_kchar.still` holds the figure) | [web] |
 | `src/92-animlab.js` | the Animation Lab: the cast of six, the clip ledger, playback, review marks; `window._lab` for `verify.py` | [web] |
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
-| `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
-| `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them | [G data] |
+| `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands, fist, contact, and `scene`: the furniture a clip works at (catalog keys, each `at` [x, y, z] metres in the figure's frame and turned `ry` degrees), which the Animation Lab builds with the catalog's code from `dist/scenery.js` (written by `python3 kits/catalog/furniture_bundle.py rustic generic generic-goods --out core/charactermodels/dist/scenery.js`; the kit's build never reads kits/, the page loads it beside itself) (hand-written) | [G data] |
+| `tools/trade_clips.py` | the trades' made clips (cook, sack, give, take, write, read, kneel and pray, row, paddle, sweep, saw, weave, cast net, feed, lead, milk), data/clips.json derive 'trade' | |
+| `data/activities.json`, `tests/check_activities.py` | what each sim activity plays: clips, props, enter and exit, overrides by furniture, trade and role, `gap` (hand-written); the check lists unmapped ids and gaps | [G data] |
+| `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them; `TEX` draws a material with a library texture (embedded, 192 px), `--only a,b --out dir` writes just those props (a rebuild moves every prop's bytes) | [G data] |
 | `data/fur.json`, `tools/fur.py` | the fur shells' look per kind and per item; the tool that derives a built garment's fur rows from its GLB (`make_garments.py` writes them for new ones) | [G data] |
 | `data/posture.json` | the posture pass's angles per body (spine, neck, head, shoulder drop and back); the Animation Lab's Posture panel writes its JSON | [G data] |
 | `donors/anims/` | the clip sources: Meshy batches (`idles*`, `actions*`, with their request records) and the UAL libraries (CC0, `UAL_License.txt`) | |
@@ -741,6 +882,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/tails.py` | the therian tails: a chain, a tube (or a fan of feathers) and a kit item per species, on the tail joints, with the species' own rest chain | |
 | `tools/heads.py`, `tools/therian.py` | the therian heads: the coyote's field, paint, eyes, lids and nose, taking a species dict; the cat, lion, rat, monkey and bird as species dicts with their own extras (a mane, a beak, a bare face, whiskers) | |
 | `tools/tail.py`, `tools/nonhuman.py`, `tools/reptile.py`, `tools/amphibian.py`, `NONHUMAN.md` | the tail's joints (on every skeleton); the lizard head's fields, paint, lids and crest; the frog head's; the non-human pieces put on the bodies as they stand, from the published pieces; the spike's write-up and the estimate for full non-human peoples | |
+| `tools/digitigrade.py` | the digitigrade leg and foot pieces (`mod_legs_coyote` on male/female, `mod_legs_lizard` and `mod_legs_frog` on male/female/giant), the eight `Digi*` joints appended after `Tail8`, and bidirectional footwear filtering (`KCHAR.fits`) | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
 | `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |

@@ -33,9 +33,37 @@ dd .u { color: var(--muted); }
 .chart .scroll { overflow-x: auto; }
 .chart svg { display: block; min-width: 760px; width: 100%; height: auto; }
 .chart .note { color: var(--muted); font-size: 13px; max-width: 70ch; }
-.krator { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 18px 28px; align-items: start; border: 1px solid var(--line); border-radius: 4px; padding: 18px 20px; background: var(--panel); }
-.krator dl { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px 24px; }
-.krator dl div { display: grid; gap: 2px; }
+.krator { display: grid; gap: 16px; border: 1px solid var(--line); border-radius: 4px; padding: 18px 20px; background: var(--panel); }
+.kg-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.kg-bars { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.kg-sep { width: 1px; height: 18px; background: var(--line); margin: 0 3px; }
+.krator button.kg-pill { font: 500 11px/1 var(--mono); letter-spacing: .04em; padding: 6px 9px; border-radius: 3px; border: 1px solid var(--line); background: #080e1b; color: var(--muted); cursor: pointer; }
+.krator button.kg-pill:hover { color: var(--ink); border-color: #2f4264; }
+.krator button.kg-pill.on { background: rgba(142, 197, 255, 0.15); color: var(--blue); border-color: var(--blue); }
+.krator button.kg-chip { font: 400 11px/1 var(--mono); padding: 5px 8px; border-radius: 3px; border: 1px solid var(--line); background: #080e1b; color: #b9c5dc; cursor: pointer; }
+.krator button.kg-chip:hover { color: var(--warm); border-color: var(--warm); }
+.kg-grid { display: grid; grid-template-columns: minmax(0, 1.36fr) minmax(300px, 1fr); gap: 22px; align-items: start; }
+#kg-stage { position: relative; aspect-ratio: 4 / 3; min-height: 350px; border: 1px solid var(--line); border-radius: 4px; background: #040710; overflow: hidden; }
+#kg-gl, #kg-hud { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#kg-hud { cursor: grab; touch-action: none; }
+#kg-hud:active { cursor: grabbing; }
+.kg-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.kg-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; margin-top: 8px; font: 11px/1.3 var(--mono); color: var(--muted); }
+#kg-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.kg-sw { display: inline-flex; align-items: center; gap: 5px; }
+.kg-sw i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; border: 1px solid rgba(255,255,255,0.18); }
+.kg-right { display: grid; gap: 15px; min-width: 0; }
+.krator dl.kg-astro { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; }
+.krator dl.kg-astro div { display: grid; gap: 2px; min-width: 0; }
+.kg-inspector { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 10px; }
+.kg-ro-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.kg-ro-head strong { font: 400 24px/1.05 var(--display); color: var(--ink); }
+.kg-ro-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+.kg-ro-grid .k { font: 500 10px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.kg-ro-grid .v { font: 400 12.5px/1.35 var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; min-width: 0; overflow-wrap: break-word; }
+.kg-clim-line { display: inline-flex; align-items: baseline; gap: 6px; max-width: 100%; }
+.kg-clim-line i { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; position: relative; top: 1px; border: 1px solid rgba(255,255,255,0.2); }
+.kg-notes { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.48; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
 .card { border: 1px solid var(--line); border-radius: 4px; background: var(--panel); padding: 18px; display: grid; gap: 14px; align-content: start; min-width: 0; }
 .card header { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 16px; align-items: center; }
@@ -45,7 +73,8 @@ dd .u { color: var(--muted); }
 .card p { margin: 0; color: var(--muted); font-size: 14px; }
 .card dl { gap: 6px 14px; font-size: 14px; }
 .foot { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; max-width: 80ch; }
-@media (max-width: 760px) { .giant { grid-template-columns: minmax(0, 1fr); } .krator { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 840px) { .giant { grid-template-columns: minmax(0, 1fr); } .kg-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 480px) { .krator dl.kg-astro, .kg-ro-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 380px) { .card header { grid-template-columns: 84px minmax(0, 1fr); } .card img { width: 84px; height: 84px; } }
 </style>
 
@@ -106,15 +135,68 @@ dd .u { color: var(--muted); }
   </section>
 
   <section class="krator" aria-labelledby="k-h">
-    <div><div class="eyebrow">You are here</div><h2 id="k-h">Krator</h2></div>
-    <dl>
-      <div><dt>Radius</dt><dd>≈ 4,800 <span class="u">km</span></dd></div>
-      <div><dt>Gravity</dt><dd>7.4 <span class="u">m/s²</span> · 0.75 g</dd></div>
-      <div><dt>Mass</dt><dd>≈ 2.6 × 10<sup>24</sup> <span class="u">kg</span> · 0.43 Earths</dd></div>
-      <div><dt>Orbit</dt><dd>194,000 <span class="u">km</span> · 1 day, tidally locked</dd></div>
-      <div><dt>Orbit shape</dt><dd>Tilted 1.6° to the rings · eccentricity 0.01</dd></div>
-      <div><dt>Seasons</dt><dd>23° tilt · 365-day year</dd></div>
-    </dl>
+    <div class="kg-top">
+      <div>
+        <div class="eyebrow">You are here · canonical 5.1 crater &amp; global model</div>
+        <h2 id="k-h">Krator</h2>
+      </div>
+      <div class="kg-bars" role="toolbar" aria-label="Krator globe layers and display options">
+        <button type="button" class="kg-pill on" data-kg-layer="sat">Satellite</button>
+        <button type="button" class="kg-pill" data-kg-layer="rel">Relief</button>
+        <button type="button" class="kg-pill" data-kg-layer="clim">Climate</button>
+        <button type="button" class="kg-pill" data-kg-layer="rain">Rain</button>
+        <button type="button" class="kg-pill" data-kg-layer="temp">Temp</button>
+        <span class="kg-sep" aria-hidden="true"></span>
+        <button type="button" id="kg-btn-2d" class="kg-pill">2D map</button>
+        <button type="button" id="kg-btn-51" class="kg-pill on">5.1 frame</button>
+        <button type="button" id="kg-btn-labels" class="kg-pill on">Labels</button>
+        <button type="button" id="kg-btn-sun" class="kg-pill">Sun &amp; giant</button>
+      </div>
+    </div>
+    <div class="kg-grid">
+      <div>
+        <div id="kg-stage">
+          <canvas id="kg-gl" width="600" height="450" aria-hidden="true"></canvas>
+          <canvas id="kg-hud" width="600" height="450" aria-label="Interactive 3D globe and 2D equirectangular atlas of Krator; drag to turn, scroll to zoom, hover or click to inspect"></canvas>
+          <img class="globe" data-body="krator" src="{{krator}}" alt="Krator, its crater and the Throne, the Ring Sea round it, and the Great NW Ocean" width="150" height="150" hidden>
+        </div>
+        <div class="kg-presets" aria-label="Camera presets">
+          <button type="button" class="kg-chip" data-kg-preset="crater">5.1 Crater</button>
+          <button type="button" class="kg-chip" data-kg-preset="nwsea">Great NW Sea</button>
+          <button type="button" class="kg-chip" data-kg-preset="subgiant">Sub-Giant (0°,0°)</button>
+          <button type="button" class="kg-chip" data-kg-preset="capsica">Lake Capsica</button>
+          <button type="button" class="kg-chip" data-kg-preset="rifts">East Salt Rifts</button>
+          <button type="button" class="kg-chip" data-kg-preset="antipode">Antipode Chaos</button>
+        </div>
+        <div class="kg-foot">
+          <div id="kg-legend"></div>
+          <span>Drag · scroll · click to inspect</span>
+        </div>
+      </div>
+      <div class="kg-right">
+        <dl class="kg-astro">
+          <div><dt>Radius</dt><dd>≈ 4,800 <span class="u">km</span></dd></div>
+          <div><dt>Gravity</dt><dd>7.4 <span class="u">m/s²</span> · 0.75 g</dd></div>
+          <div><dt>Mass</dt><dd>≈ 2.6 × 10<sup>24</sup> <span class="u">kg</span> · 0.43 Earths</dd></div>
+          <div><dt>Orbit</dt><dd>194,000 <span class="u">km</span> · 1 day, tidally locked</dd></div>
+          <div><dt>Orbit shape</dt><dd>Tilted 1.6° to the rings · eccentricity 0.01</dd></div>
+          <div><dt>Seasons</dt><dd>23° tilt · 365-day year</dd></div>
+        </dl>
+        <div class="kg-inspector" aria-live="polite">
+          <div class="kg-ro-head">
+            <strong id="kg-ro-title">Voth</strong>
+            <span id="kg-ro-badge" class="tag">5.1 · city</span>
+          </div>
+          <div class="kg-ro-grid">
+            <div><div class="k">Coordinates (0° = giant)</div><div id="kg-ro-ll" class="v">39.95°S, 56.25°W</div></div>
+            <div><div class="k">Elev · air pressure</div><div id="kg-ro-elev" class="v">+0.04 km · 1.59 atm</div></div>
+            <div><div class="k">Climate</div><div class="v"><span class="kg-clim-line"><i id="kg-ro-sw" style="background:#66bb6a"></i><span id="kg-ro-clim">Cfb · oceanic</span></span></div></div>
+            <div><div class="k">Rainfall · mean temp</div><div id="kg-ro-rt" class="v">1,420 mm/yr · +14°C</div></div>
+          </div>
+          <p id="kg-ro-notes" class="kg-notes"></p>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section aria-labelledby="m-h" style="display:grid;gap:16px">

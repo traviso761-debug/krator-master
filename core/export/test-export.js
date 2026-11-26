@@ -14,7 +14,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
 const CORE = ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js', 'core/terrain/30-core-field.js',
   'core/materials/record/23-mat-record.js'];
 const EXP = ['core/export/07-core-export.js', 'core/export/09-core-export-adapters.js'];
-const BIOF = ['core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/42-core-export.js'];
+const BIOF = ['core/shader/06-core-khook.js', 'core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/42-core-export.js'];
 // late: core/export loads after the biome core (its contributors wait in EXPORT_QUEUE)
 function page(late) {
   const ctx = { console, Math, THREE, Buffer, btoa: s => Buffer.from(s, 'binary').toString('base64'), atob: s => Buffer.from(s, 'base64').toString('binary') };
@@ -344,7 +344,7 @@ ok(E.check(G.json).ok, 'the JSON half still passes the joins (materials, sets, b
 
 // ---- a merged LOD page (BIO.LOD.merge, fade, cull) splits by range; per-instance labels travel as a table and an index ----
 { const lodPage = (LOD) => { const c = { console, Math, THREE, Buffer, btoa: s => Buffer.from(s, 'binary').toString('base64') }; c.globalThis = c; vm.createContext(c);
-    ['core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/30-core-foliage.js', 'core/biome/35-core-anim.js', 'core/biome/42-core-export.js'].concat(EXP)
+    ['core/shader/06-core-khook.js', 'core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/30-core-foliage.js', 'core/biome/35-core-anim.js', 'core/biome/42-core-export.js'].concat(EXP)
       .forEach(f => vm.runInContext(read(f) + (f.endsWith('10-core-head.js') ? '\nthis.BIO=BIO;' : '') + (f.endsWith('07-core-export.js') ? '\nthis.EXPORT=EXPORT;' : ''), c, { filename: f }));
     const B = c.BIO; B.init({ THREE, scene: new THREE.Scene(), seed: 3, err: () => {}, terrainH: () => 0, waterH: () => -1 }); Object.assign(B.LOD, LOD);
     const m = new THREE.MeshLambertMaterial();

@@ -18,6 +18,18 @@ checks: no foot slides more than 3% of a stride and no leg goes through the grou
 This is working code from one session, not a tool: paths are the session's, and the thresholds in `fcfg.py` were tuned by eye
 per model.
 
+**Families** (`family.py <family>`, `families/<family>.json`): rigged models merged into one file of swappable parts, a species a named pick; `PLAN-MESHY.md` section 11. Specs for these take `pedicel` and `jaw` (a spider) or `swap` (a beetle), and `defur` for hair modelled as spikes. `showcase.py` makes a viewer page.
+
+**Arthropods** (`arthro.py <key> <candidate>`; a raw GLB and `spec.json` in `rig/sources/<key>/`): one script, no per-animal table. A solid voxel model opened by a
+ball wider than a leg finds the trunk and the limbs, the trunk parts at its necks, and each leg is cut at its bends along the surface. Each part is decimated on its own
+budget and every cut capped, so a part is a closed shell in any pose. It writes `rig-<candidate>.glb` with a tripod walk. It needs `trimesh` and `fast-simplification`. A spec holds `legs`, `contacts` (feet on the ground), `segments`, and when a body needs them `raptorial` (limbs held up, a mantis's), `strip`, `open` and `budget`.
+`prep_refs.py` readies the reference views, `fal_gen.py` runs fal's generators, `intake.js` scores a raw GLB and `sheet.py` draws the comparison.
+
+**The steps for a new model** (`../PLAN-MESHY.md`): keep the source in `rig/sources/<key>/` (`source.json`: prompt, task_ids, ai_model,
+credits, raw; and the raw GLB), rig it, `models_pack.py`, `node rig/fit_anchors.js`, `python3 rig/patch_models.py`, then
+`node tests/test-models.js`, which a new model must clear with no waiver. `--png <dir>` draws where a body opens. The `verify_*.py`
+above need the rigged GLB and are not in CI; the test covers their foot slide and floor depth on the packed model.
+
 **Farm animals** (cow, ox, pig, sheep, goat, hen, dog, cat): `qmodel.py <animal> <meshy.glb> <out.glb>` is one script (Meshy
 text-to-3D standing pose, textured). It decimates in one pass, carries the UVs, splits the body into torso, head (with the neck),
 tail and per leg a thigh, shin and foot, overlaps every join with a band of the neighbour's faces so no seam opens, and rigs a

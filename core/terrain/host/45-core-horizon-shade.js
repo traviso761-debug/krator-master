@@ -12,7 +12,7 @@
 //   KHORIZON.glsl()              the GLSL: khzShadow(worldPos, sunDir) and khzSky(worldPos) (0..1), for a material that
 //                                writes its own shading (a foliage hook): declare it, bind KHORIZON.uniforms
 //   KHORIZON.shadeScene(scene, Hz, o)  the same on every lit material in the scene, once (o.filter(mesh)); the count
-//   KHORIZON.shade(mat, Hz, o)   the hook: wraps mat.onBeforeCompile (the page's own hook runs first) and keys the program;
+//   KHORIZON.shade(mat, Hz, o)   the hook: a KHOOK layer 'khorizon' (core/shader; the page's own hook runs first), keyed;
 //                                o.shade, o.sky (strengths; 0 leaves that term alone). Returns mat
 //
 // Godot: the two maps as ImageTextures (FORMAT_RGBA8), the same chunk as a .gdshaderinc called in light() on DIFFUSE_LIGHT
@@ -36,20 +36,20 @@
     ' float f=mod(atan(L.z,L.x)*1.2732395+8.0,8.0),q0=floor(f),t=f-q0;float h=mix(khzPick(a,b,q0),khzPick(a,b,mod(q0+1.0,8.0)),t);',
     ' float sy=L.y/max(length(L),1e-5);return mix(1.0,smoothstep(h-uKHzK.x,h+uKHzK.x,sy),uKHzK.y*smoothstep(-0.06,0.0,sy));}',
     'float khzSky(vec3 p){vec2 uv=khzUV(p);if(khzIn(uv)<0.5||uKHzK.z<=0.0)return 1.0;float v=1.0-dot(texture2D(uKHzA,uv)+texture2D(uKHzB,uv),vec4(0.125));return mix(1.0,v,uKHzK.z);}'].join('\n')+'\n';}
-  function shade(mat,Hz,o){if(!mat||!Hz)return mat;o=o||{};var hk=Hz._hooked||(Hz._hooked=new Set());if(hk.has(mat))return mat;hk.add(mat);var T=root.THREE,U=uniforms(Hz,o),prev=mat.onBeforeCompile,atm=function(){return root.ATMOS&&root.ATMOS.skyUniforms&&root.ATMOS.skyUniforms.uSunDir;};
-    {var dsc=Object.getOwnPropertyDescriptor(mat,'onBeforeCompile');if(dsc&&dsc.get)return mat;}   /* a snow-wearing material (fx snowcover) keeps its hook behind a setter: leave it, as ATMOS.cloudShade does */
+  function shade(mat,Hz,o){if(!mat||!Hz)return mat;o=o||{};var hk=Hz._hooked||(Hz._hooked=new Set());if(hk.has(mat))return mat;hk.add(mat);var T=root.THREE,U=uniforms(Hz,o),atm=function(){return root.ATMOS&&root.ATMOS.skyUniforms&&root.ATMOS.skyUniforms.uSunDir;};
+    var K=root.KHOOK;if(!K)throw new Error('core/terrain: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');
+    /* a KHOOK layer (core/shader): composes with the snow, cloudShade and the page's own hook in any order (it used to leave a
+       snow-wearing material alone, as the snow kept its hook behind a setter); a missing anchor throws */
     var sk=o.sky==null?null:o.sky,sh0=o.shade==null?null:o.shade;
-    mat.onBeforeCompile=function(sh,r){if(prev)prev.call(this,sh,r);if(/vKhzWP/.test(sh.vertexShader))return;   /* a clone that kept a hooked material's hook (sedesert's carve) is shaded already */
+    return K.add(mat,'khorizon',function(sh,r){if(/vKhzWP/.test(sh.vertexShader))return;   /* a clone that kept a hooked material's hook (sedesert's carve) is shaded already */
       for(var k in U)sh.uniforms[k]=U[k];var A=atm(),shared=!!A;if(A)sh.uniforms.uKHzSun=A;   /* the shared sky's sun, read when the program is made (the sky is bound after the ground) */
       if(sh0!=null||sk!=null)sh.uniforms.uKHzK={value:new T.Vector3(U.uKHzK.value.x,sh0==null?U.uKHzK.value.y:sh0,sk==null?U.uKHzK.value.z:sk)};
       var wp='vec4 khzW=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\nkhzW=instanceMatrix*khzW;\n#endif\nvKhzWP=(modelMatrix*khzW).xyz;\n';
-      sh.vertexShader='varying vec3 vKhzWP;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n'+wp);
+      sh.vertexShader='varying vec3 vKhzWP;\n'+K.inject(sh.vertexShader,{at:'project_vertex',after:wp,fallback:{at:'fog_vertex',before:wp}},'khorizon');
       var sun=shared?'uKHzSun':'khzSunDir()',fn=shared?'':'vec3 khzSunDir(){\n#if NUM_DIR_LIGHTS > 0\nreturn normalize((vec4(directionalLights[0].direction,0.0)*viewMatrix).xyz);\n#else\nreturn vec3(0.0,1.0,0.0);\n#endif\n}\n';
-      sh.fragmentShader='varying vec3 vKhzWP;\n'+glsl()+sh.fragmentShader.replace('#include <aomap_fragment>',
-        '{float khzS=khzShadow(vKhzWP,'+sun+');reflectedLight.directDiffuse*=khzS;reflectedLight.directSpecular*=khzS;reflectedLight.indirectDiffuse*=khzSky(vKhzWP);}\n#include <aomap_fragment>');
-      if(fn)sh.fragmentShader=sh.fragmentShader.replace('void main() {',fn+'void main() {');};
-    var own=mat.customProgramCacheKey!==T.Material.prototype.customProgramCacheKey?mat.customProgramCacheKey:null,src=prev?prev.toString():'';
-    mat.customProgramCacheKey=function(){return (own?own.call(this):src)+'|khorizon'+(atm()?'s':'l');};mat.needsUpdate=true;return mat;}
+      sh.fragmentShader='varying vec3 vKhzWP;\n'+glsl()+K.rep(sh.fragmentShader,'#include <aomap_fragment>',
+        '{float khzS=khzShadow(vKhzWP,'+sun+');reflectedLight.directDiffuse*=khzS;reflectedLight.directSpecular*=khzS;reflectedLight.indirectDiffuse*=khzSky(vKhzWP);}\n#include <aomap_fragment>','khorizon');
+      if(fn)sh.fragmentShader=K.rep(sh.fragmentShader,'void main() {',fn+'void main() {','khorizon');},{key:function(){return 'khorizon'+(atm()?'s':'l');}});}
   // every lit material in the scene, once (the flora, the rock, the dress), as ATMOS.cloudShadeScene does: the land's
   // shadow falls on what stands on it. o.filter(mesh) false skips a mesh; o as for shade. Returns the count hooked
   function shadeScene(scene,Hz,o){o=o||{};var hk=Hz._hooked||(Hz._hooked=new Set()),n=0;

@@ -13,8 +13,12 @@
 //   Forms: a record much smaller than its species (the treeline's krummholz spruce) takes a variant grown small, so it
 //   keeps the flag-tree habit instead of being a shrunken tall spruce.
 //   ?unique=1 builds every tree unique as before (88-host-build), for comparison.
+//   THE FAR LEVEL ON OCTAHEDRAL IMPOSTORS (the final rebuild, 2026-11-02; BACKPORT.md section 1, GRAPHIC-LOAD.md recommendations 1 and 2): with
+//   VARIANTS.IMP set (89z; ?diet=0 leaves it off) a tree at level 0 is one quad of its species baked from 8 x 8 directions (core/biome 34, one set,
+//   one atlas), drawn in this fragment's own pool so it changes level with the rest (the core's chunk ranges would not match the variants'). Each
+//   species is grown once more for the bake, after the variants (its own seed: no tree's form moves). Until the bake is in the old far prototype draws.
 var VARIANTS=(function(){
-const K=6,ST={protos:0,growMs:0,drawn:0,levels:[0,0,0],pools:0,tris:0,calls:0};
+const K=6,ST={protos:0,growMs:0,drawn:0,levels:[0,0,0],pools:0,tris:0,calls:0,itemTris:0,harvestTris:0};   /* itemTris: what the kit's items held; harvestTris: what the prototypes kept of them (99's check) */
 const LOD={hero:[14,60,220],mid:[50,300,1000],far:[200,900,3200]};   // [metres per metre of height, at least, at most]
 const lim=(a,H)=>Math.min(a[2],Math.max(a[1],a[0]*H));
 // ---------------------------------------------------------------- materials for instancing (the open world's)
@@ -45,8 +49,11 @@ function worldMat(m){if(WMAT.has(m))return WMAT.get(m);let w=null;const b=m.user
 const _m=new THREE.Matrix4(),_nm=new THREE.Matrix3(),_v=new THREE.Vector3(),_n=new THREE.Vector3();
 function harvest(){const R=BIO.kits.ebadlands,G=new Map();
  const grp=m=>{const w=worldMat(m);let g=G.get(w);if(!g){g={mat:w,P:[],N:[],U:[],C:[],AN:[]};G.set(w,g);}return g;};
- for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name],g=grp(def.mat),geo=def.geo;
+ // an item welded by BIO.INDEX_ITEMS (the final rebuild's universal set) is indexed: copied vertex by vertex it drew scrambled triangles (the stilt pod's
+ // head vanished and its tendrils hung as loose blades, the owner, 2026-11-03), so it is expanded to its triangles first, once per item
+ for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name],g=grp(def.mat),geo=def.geo.index?(def._soup||(def._soup=def.geo.toNonIndexed())):def.geo;
   const P=geo.attributes.position.array,N=geo.attributes.normal?geo.attributes.normal.array:null,U=geo.attributes.uv?geo.attributes.uv.array:null,VC=geo.attributes.color?geo.attributes.color.array:null,nv=geo.attributes.position.count;
+  ST.itemTris+=it.count*(def.geo.index?def.geo.index.count:def.geo.attributes.position.count)/3;ST.harvestTris+=it.count*geo.attributes.position.count/3;
   const hasN=def.attrs&&def.attrs.indexOf('aN')>=0,IM=it.m.a,IC=it.c.a,INN=it.n.a;
   for(let i=0;i<it.count;i++){_m.fromArray(IM,i*16);_nm.getNormalMatrix(_m);
    for(let k=0;k<nv;k++){_v.set(P[k*3],P[k*3+1],P[k*3+2]).applyMatrix4(_m);g.P.push(_v.x,_v.y,_v.z);
@@ -93,16 +100,35 @@ function ensure(p,n){if(n<=p.cap)return;let cap=Math.max(16,p.cap);while(cap<n)c
 function levelOf(r,d){if(d<lim(LOD.hero,r.H))return 2;if(d<lim(LOD.mid,r.H))return 1;if(d<lim(LOD.far,r.H))return 0;return -1;}
 let last=null;
 function update(P,force){if(!force&&last&&Math.hypot(P.x-last.x,P.y-last.y,P.z-last.z)<6)return;last=P.clone?P.clone():{x:P.x,y:P.y,z:P.z};
- for(const p of POOLS.values())p.n=0;const lv3=[0,0,0];let n=0;
+ for(const p of POOLS.values())p.n=0;if(IMPPOOL)IMPPOOL.n=0;const lv3=[0,0,0];let n=0;
  for(const r of EBADLANDS.TREES){const dx=r.x-P.x,dz=r.z-P.z,dy=r.y0-P.y,d=Math.sqrt(dx*dx+dz*dz+dy*dy*.25),lv=levelOf(r,d);if(lv<0)continue;
+  if(lv===0&&IMPPOOL){const I=IMPS.get(r.sp);if(I&&I.rec.ready){const P=IMPPOOL;impEnsure(P.n+1);const sc=r.H/I.H;_q.setFromAxisAngle(_Y,(r.seed%628)/100);_p.set(r.x,r.y0+.2,r.z);_s.set(sc,sc,sc);
+   M4.compose(_p,_q,_s);M4.toArray(P.arr,P.n*16);P.slot[P.n*4]=I.rec.slot;P.n++;n++;lv3[0]++;continue;}}
   const proto=PROTO.get(r.sp+'|'+formOf(r)+'|'+varOf(r)+'|'+lv);if(!proto||!proto.parts.length)continue;
   const p=pool(proto,r.sp);ensure(p,p.n+1);const sc=r.H/(proto.H||r.H);
   _q.setFromAxisAngle(_Y,(r.seed%628)/100);_p.set(r.x,r.y0+.4,r.z);_s.set(sc,sc,sc);M4.compose(_p,_q,_s);M4.toArray(p.arr,p.n*16);p.n++;n++;lv3[lv]++;}
  let pools=0,tris=0,calls=0;
  for(const p of POOLS.values()){for(const m of p.meshes){m.count=p.n;m.visible=p.n>0;if(p.n){tris+=p.n*m.userData.partTris;calls++;}}if(p.attr)p.attr.needsUpdate=true;if(p.n)pools++;}
+ if(IMPPOOL&&IMPPOOL.mesh){const P=IMPPOOL;P.mesh.count=P.n;P.mesh.visible=P.n>0;P.attr.needsUpdate=true;P.mesh.geometry.attributes.aImp.needsUpdate=true;if(P.n){tris+=P.n*2;calls++;pools++;}}
  ST.drawn=n;ST.levels=lv3;ST.pools=pools;ST.tris=Math.round(tris);ST.calls=calls;}
 // the record nearest a point (the inspector names a tree from it)
 function nearest(x,z,r){let b=null,bd=r||1e9;for(const T of EBADLANDS.TREES){const d=Math.hypot(T.x-x,T.z-z);if(d<bd){bd=d;b=T;}}return b;}
-const api={K,LOD,stats:ST,protos:PROTO,pools:POOLS,ready:false,nearest,
- init(){growAll();api.ready=true;update(camera.position,true);},update};
+// ---------------------------------------------------------------- the far level as octahedral impostors (VARIANTS.IMP)
+const IMPS=new Map();let IMPSET=null,IMPPOOL=null;
+function impostors(){if(!api.IMP||typeof BIO.impostorSet!=='function')return;const pv=BIO.kit('ebadlands');
+ try{IMPSET=BIO.impostorSet('ebadlands.trees',{label:'Far trees',cell:64});
+  for(const sp of new Set(EBADLANDS.TREES.map(r=>r.sp))){const S=SP()[sp],H=(S.H[0]+S.H[1])*.5;
+   const rec=BIO.impostor('ebadlands.'+S.key,()=>{const H0=BIO.host.terrainH,R0=BIO.host.register,M0=BIO.host.mask;BIO.host.terrainH=()=>0;BIO.host.register=()=>{};BIO.host.mask=()=>1;EBADLANDS.RICH_ALL=true;
+     try{BIO.fn.reseed(((sp+1)*7919+77)>>>0);const T=EBADLANDS.make(sp,0,0,0),k=H/T.H;T.H=H;T.rb*=Math.sqrt(k);EBADLANDS.grow(T,2);}
+     finally{BIO.host.terrainH=H0;BIO.host.register=R0;BIO.host.mask=M0;EBADLANDS.RICH_ALL=false;}},{set:IMPSET,label:S.name+' (far)'});
+   if(rec)IMPS.set(sp,{rec,H});}}
+ finally{BIO.kit(pv);}
+ if(!IMPS.size)return;const g=new THREE.PlaneGeometry(2,2);IMPPOOL={g,n:0,cap:0,arr:null,slot:null,mesh:null};}
+function impEnsure(n){const P=IMPPOOL;if(n<=P.cap)return;let cap=Math.max(64,P.cap);while(cap<n)cap*=2;if(P.mesh)scene.remove(P.mesh);
+ const old=P.arr,olds=P.slot;P.arr=new Float32Array(cap*16);P.slot=new Float32Array(cap*4);if(old){P.arr.set(old);P.slot.set(olds);}
+ const g=P.g.clone();g.setAttribute('aImp',new THREE.InstancedBufferAttribute(P.slot,4));P.attr=new THREE.InstancedBufferAttribute(P.arr,16);P.attr.setUsage(THREE.DynamicDrawUsage);
+ const m=new THREE.InstancedMesh(g,IMPSET.mat,cap);m.instanceMatrix=P.attr;m.frustumCulled=false;m.count=0;m.name='variant:impTrees';m.userData.biome=true;m.userData.inspectLabel='Far trees (impostors)';
+ scene.add(m);P.mesh=m;P.cap=cap;}
+const api={K,LOD,stats:ST,protos:PROTO,pools:POOLS,ready:false,nearest,IMP:false,imps:IMPS,
+ init(){growAll();impostors();api.ready=true;update(camera.position,true);},update,impPool:()=>IMPPOOL};
 return api;})();

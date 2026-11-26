@@ -52,4 +52,22 @@ console.log('INFO  the shared sky puts ehighlands\' giant at azimuth '+mean.toFi
 ok('the sky\'s giant is in the north-east at ehighlands, within 10 degrees of the canon',Math.abs(mean-66)<10&&alt>0,false);
 ok('giantFromSky on the sky\'s mean direction puts BIO.GIANT on it',Math.abs(BIO.giantFromSky(A.skyState(site,12,0).giantDir)-azs[12])<1e-9,false);
 BIO.setGiant(66);
+// ---- toward a bearing (2026-11-02: the Hearths' sun, Outland Gate's wind)
+{const sav=BIO.GIANT_AZ;BIO.setGiant(66);
+ const g0=BIO.leanTo(null,.3);
+ ok('no toward is the giant, as before',near(BIO.leanTo(null,.3,{}),g0),false);
+ ok('{az} leans down that bearing: az 90 is east, x+',near(BIO.leanTo(null,.3,{toward:{az:90}}),[Math.sin(.3),Math.cos(.3),0],1e-12),near(BIO.leanTo(null,.3,{toward:{az:0}}),[Math.sin(.3),Math.cos(.3),0],1e-12));
+ ok('az 0 is north, z-',near(BIO.leanTo(null,.3,{toward:{az:0}}),[0,Math.cos(.3),-Math.sin(.3)],1e-12),false);
+ ok('{az} and the same bearing as [x,z] are one',near(BIO.leanTo([.2,.9,.1],.4,{toward:{az:66}}),BIO.leanTo([.2,.9,.1],.4),1e-12),false);
+ const t={az:0,alt:40},v=BIO.leanTo(null,1.2,{toward:t}),A=Math.PI/180;
+ ok('alt stops a stem on that point of the sky, however far k asks',near(v,[0,Math.sin(40*A),-Math.cos(40*A)],1e-12),near(BIO.leanTo(null,1.2,{toward:{az:0}}),v,1e-6));
+ ok('short of it the turn is k, the same as without alt',near(BIO.leanTo(null,.3,{toward:t}),BIO.leanTo(null,.3,{toward:{az:0}}),1e-12),false);
+ ok('alt 90 keeps a stem up, and straightens a bent one',near(BIO.leanTo(null,.5,{toward:{az:0,alt:90}}),[0,1,0],1e-12)&&near(BIO.leanTo([Math.sin(.2),Math.cos(.2),0],.5,{toward:{az:0,alt:90}}),[0,1,0],1e-12),near(BIO.leanTo(null,.5,{toward:{az:0}}),[0,1,0],1e-12));
+ ok('away (k < 0) is not stopped',BIO.leanTo(null,-1.2,{toward:t})[2]>0,false);
+ const q=BIO.leanQ(1.2,{toward:t}),u=[2*(q[0]*q[1]-q[3]*q[2]),1-2*(q[0]*q[0]+q[2]*q[2]),2*(q[1]*q[2]+q[3]*q[0])];
+ ok('leanQ turns +y to the same stem',near(u,v,1e-9),near(BIO.leanQ(1.2,{toward:{az:0}}),q,1e-9));
+ ok('the scatter works on a {az} bearing',!near(BIO.leanTo(null,.4,{toward:{az:90},jit:.3,u:.9}),BIO.leanTo(null,.4,{toward:{az:90},jit:.3,u:.1}),1e-3),false);
+ ok('leanOf reads a {az}',Math.abs(BIO.leanOf(BIO.leanTo(null,.3,{toward:{az:200}}),{az:200})-.3)<1e-12,Math.abs(BIO.leanOf(BIO.leanTo(null,.3,{toward:{az:200}}),{az:20})-.3)<1e-12);
+ ok('bearingYaw turns +x to the bearing, by qEuler\'s sign, and none is the giant\'s',Math.abs(BIO.bearingYaw({az:90}))<1e-12&&Math.abs(BIO.bearingYaw()-BIO.GIANT_YAW)<1e-12,Math.abs(BIO.bearingYaw({az:0}))<1e-12);
+ ok('nothing asked moved the giant',BIO.GIANT_AZ===66,false);BIO.setGiant(sav);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

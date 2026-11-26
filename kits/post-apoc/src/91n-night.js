@@ -50,7 +50,7 @@ function nightSet(v,force,clk){v=clamp(v,0,1);NIGHT.clock=clk===undefined?clockO
 FRAME_HOOKS.push(()=>{moonDisc.position.copy(camera.position).addScaledVector(MOONDIR,4700);});   /* the moon rides the sky sphere like the sun disc */
 /* each frame (every few): give the six pool lights to the halos nearest the camera focus */
 FRAME_HOOKS.push((dt,now)=>{if(!NIGHT.active||!HALOS.length)return;if(now-NIGHT.lastPool<120)return;NIGHT.lastPool=now;
- const fx=WALK.on?WALK.x:ctl.target.x,fz=WALK.on?WALK.z:ctl.target.z;const c=HALOS.map((q,i)=>({i,d:(q.x-fx)*(q.x-fx)+(q.z-fz)*(q.z-fz)})).sort((a,b)=>a.d-b.d);
+ const C=KHOST.cam.ctl,F=C.walk?camera.position:C.target,fx=F.x,fz=F.z;const c=HALOS.map((q,i)=>({i,d:(q.x-fx)*(q.x-fx)+(q.z-fz)*(q.z-fz)})).sort((a,b)=>a.d-b.d);
  NIGHT.pool.forEach((L,k)=>{const q=c[k]&&HALOS[c[k].i];if(!q){L.intensity=L.userData.base=0;return;}L.position.set(q.x,q.y+.4,q.z);L.color.setRGB(Math.min(1,q.r*1.2),Math.min(1,q.g*1.05),Math.min(1,q.b*.9));L.distance=q.big?26:18;L.userData.base=(q.big?3.4:2.2)*NIGHT.k;L.userData.fk=q.big?.3:.1;L.userData.ph=h3(q.x,q.y,q.z)*TAU;L.intensity=L.userData.base;});});
 /* flicker: fires strongly, lamps a little; the same three-sine noise as the glow shader (GLSL_FLICK), a pure function of the animation clock */
 FRAME_HOOKS.push(()=>{if(!NIGHT.active)return;const t=ANIMU.uTime.value;for(const L of NIGHT.pool){const u=L.userData;if(!u.base)continue;

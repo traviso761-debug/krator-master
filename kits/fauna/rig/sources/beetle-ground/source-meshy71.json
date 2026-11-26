@@ -1,0 +1,12 @@
+{
+ "prompt": "Giant heavy ground beetle, six thick legs, long oval ridged wing cases, short curved jaws, no horn, pale ivory-grey casting",
+ "task_ids": [
+  "01a19b93-2f1d-7478-bd4a-b1f30c265cf1",
+  "01a19b94-7fd7-73ba-ac7d-768b229e8cb8"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, the image step chained",
+ "rights": "generated on the owner's Meshy account"
+}

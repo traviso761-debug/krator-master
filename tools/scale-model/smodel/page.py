@@ -22,6 +22,23 @@ sys.path.insert(0, MODEL)
 import build   # noqa: E402  (model/build.py: the data folder's format)
 
 DATA_DIR = build.DATA_DIR
+LEGACY_SHIFT = (272, 330)
+LEGACY_FULL_SIZE = (1549, 1393)
+INLINE_KEYS = {'legacy_shift', 'tsunami_farside'}
+
+
+def legacy_px(px, py=None, D=None):
+    """Shift 4.23/4.24 map-pixel coordinates (1549x1393) onto the 5.1 canvas (1821x1723) by (+272, +330)."""
+    shift = (D or {}).get('legacy_shift') if isinstance(D, dict) else None
+    if isinstance(shift, (list, tuple)) and len(shift) >= 2:
+        dx, dy = shift[0], shift[1]
+    elif isinstance(shift, dict) and 'dx' in shift:
+        dx, dy = shift['dx'], shift['dy']
+    else:
+        dx, dy = LEGACY_SHIFT
+    if py is None:
+        return [px[0] + dx, px[1] + dy]
+    return px + dx, py + dy
 
 
 def load(path=DATA_DIR):
@@ -34,10 +51,10 @@ def load(path=DATA_DIR):
 
 
 def version(path=DATA_DIR):
-    """the model's version ('4.23'), from the page's title block: the saved page's, or the build's src/ for a data folder"""
+    """the model's version ('5.1'), from the page's title block: the saved page's, or the build's src/ for a data folder"""
     import re
     src = os.path.join(build.SRC, '10-panel.html') if os.path.isdir(path) else path
-    m = re.search(r'scale model (4\.\d+) ', open(src, encoding='utf-8').read())
+    m = re.search(r'scale model (\d+\.\d+) ', open(src, encoding='utf-8').read())
     return m.group(1) if m else '?'
 
 
@@ -49,7 +66,10 @@ def save(D, folder=DATA_DIR):
     known = {o['key']: o for o in order}
     for k in D:
         if k not in known:
-            o = {'key': k, 'file': k + '.json'} if isinstance(D[k], (list, dict)) else {'key': k, 'value': D[k]}
+            if k in INLINE_KEYS or not isinstance(D[k], (list, dict)):
+                o = {'key': k, 'value': D[k]}
+            else:
+                o = {'key': k, 'file': k + '.json'}
             order.append(o)
             known[k] = o
     order = [o for o in order if o['key'] in D]
@@ -111,7 +131,13 @@ def water_levels(D):
 
 def encode_heights(D, E, water=None):
     """`h` for heights E (clamped to [lo, hi]: a carve below lo would wrap); the water flag kept unless given"""
-    h = raster(D, 'h').copy()
+    E = np.asarray(E, float)
+    VH, VW = E.shape
+    h_raw = raster(D, 'h')
+    if h_raw.shape[:2] == (VH, VW):
+        h = h_raw.copy()
+    else:
+        h = np.zeros((VH, VW, 3), dtype=np.uint8)
     h[..., 0], h[..., 1] = _enc(D, E)
     if water is not None:
         h[..., 2] = np.where(water, 255, 0)
@@ -125,7 +151,13 @@ def encode_levels(D, whas, wlev):
     """`wl` for water levels wlev where whas. A dry cell keeps whatever level `wl` held there (2,056 dry cells of 4.23
     still carry an old lake's; the page reads the level only where B says water), so writing back unchanged levels gives
     the same raster"""
-    wl = raster(D, 'wl').astype(np.int64)
+    whas = np.asarray(whas, bool)
+    VH, VW = whas.shape
+    wl_raw = raster(D, 'wl')
+    if wl_raw.shape[:2] == (VH, VW):
+        wl = wl_raw.astype(np.int64)
+    else:
+        wl = np.zeros((VH, VW, 3), dtype=np.int64)
     r, g = _enc(D, np.where(whas, wlev, D['lo']))
     wl[..., 0], wl[..., 1] = np.where(whas, r, wl[..., 0]), np.where(whas, g, wl[..., 1])
     wl[..., 2] = np.where(whas, 255, 0)
@@ -141,6 +173,21 @@ def up(a, OH, OW, order=0):
     """a height-grid field on the full-res map grid"""
     from scipy import ndimage as nd
     return nd.zoom(a.astype(float), (OH / a.shape[0], OW / a.shape[1]), order=order)[:OH, :OW]
+
+
+def regions():
+    """the page's own region defaults (model/src/51-region-store.js, `defRegs`): the model's regions on its own canvas.
+    openworld/little-demo/source/regions.json was their copy until it was retired to archive/ (5be246474)"""
+    import re
+    s = open(os.path.join(build.SRC, '51-region-store.js'), encoding='utf-8').read()
+    return json.loads(re.search(r'const defRegs = (\[.*?\]);\n', s).group(1))
+
+
+def settlements():
+    """the page's own settlement defaults (model/src/60-settlements.js, `defSetts`)"""
+    import re
+    s = open(os.path.join(build.SRC, '60-settlements.js'), encoding='utf-8').read()
+    return json.loads(re.search(r'const defSetts = (\[.*?\]);\n', s).group(1))
 
 
 def docs(folder):

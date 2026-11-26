@@ -11,18 +11,23 @@ Built output (never open it; edit `src/` and rebuild): `dist/post-apoc.html`
 Build: `cd kits/post-apoc && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `92k-host-keys.js`, `94-host-polytool.js`, `99-host-cutaway.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `10-core.js` | 2 | error panel (1); rng + noise (7) |
 | `20-tex.js` | 11 | procedural textures (1) |
 | `22-mat.js` | 8 | materials (1); the palette (culture-neutral) (43); animated materials (shader-side only: geometry a (59) |
 | `29y-pa-matlib.js` | <1 | the material library (core/materials/PLAN.md) (1) |
 | `30-geo.js` | 20 | geometry engine (1) |
-| `32-cores.js` | 11 | the reclaimed large objects (1) |
-| `34-adds.js` | 23 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (151); TYRE FURNITURE (stools, chairs, tables): stacked (179) |
+| `32-cores.js` | 12 | the reclaimed large objects (1) |
+| `34-adds.js` | 25 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (166); TYRE FURNITURE (stools, chairs, tables): stacked (194) |
+| `35-pa-open.js` | 9 | OPENINGS: real doors and real glass on core/door (1) |
 | `36-def.js` | 22 | registry, placement, cultural sockets (1); COLLISION: per-building colliders, walkable surf (40); NAV GRID: a coarse 2.5-D walk grid for the whole (112) |
 | `40-dw-small.js` | 32 **big** | small dwellings: 7 types (4x fragments: 40 dw-sm (2); shared helpers for the small dwellings (51); dw-tire: earthship-style round hut (96); dw-bus: a wrecked school bus as the home (148); dw-tank: a storage tank as a pod (lying, or stan (199); dw-bottle: the pretty one, a timber-framed cotta (267); dw-stilt: a plank-and-sheet box up on tall poles (313) |
 | `42-lg-dwell.js` | 32 **big** | large dwellings: container stack, twin silo hall (2) |
@@ -31,14 +36,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `48-industry.js` | 22 | industry and power: smithy, wind generator, fuel (2); 4810 scrap smithy (19); 4820 wind generator (58); 4830 fuel generator (100); 4840 warehouse (141) |
 | `50-farm.js` | 27 | farm: 3 buildings (50 farm) : farm plot, farmhou (2); farmhouse: silo stair-core fused to a long plank (129); granary: four silos on a shared apron, catwalk,  (203) |
 | `52-defence.js` | 22 | defence and justice: watchtower, prisoner cages (2); watchtower (7); prisoner cages (100) |
+| `53-barricade.js` | 4 | BARRICADE (infrastructure). A straight salvage l (2); PALISADE (infrastructure). A stockade round a ca (16) |
 | `54-compound.js` | 30 | WALLED COMPOUND (infrastructure + civic). Gate f (2); wall segments. Frame: x along the wall (centred) (72); the gate tower (container piers, hinged leaves,  (115); corner towers. Each returns nothing; all sockets (151); the ground plan (216); the builder (245) |
 | `56-arena.js` | 18 | THUNDERDOME ARENA (civic). Half scrap colosseum, (2) |
 | `58-dock.js` | 18 | DOCK (infrastructure). Land at the back (-z), ha (2) |
 | `89-rows.js` | 1 | the showcase table: rows of the kit, by family.  (1) |
 | `90-scene.js` | 9 | scene: renderer, sky, ground, lights, the showca (1); layout: rows by family, front (+z) toward the ca (33); (re)build the world for a culture (48) |
-| `91-probe.js` | 4 | probe (window._api): everything a headless check (1) |
+| `91-pa-api.js` | 4 | the set's probe fields: what a headless check ne (1) |
 | `91f-furnish.js` | 7 | furniture: PLACED from the catalog, not drawn (1) |
 | `91n-night.js` | 10 | NIGHT and dusk, and the invisible front-door mar (1) |
-| `92-camera.js` | 12 | camera, inspector, polygon tool, walk mode (1) |
 | `93-anim.js` | 9 | ANIMATION: the clock, smoke, light volumes (1) |
+| `99-host-take.js` | 6 | the inspector's words: name, classification and  (26); the cut-away: a building with an interior set, s (33); the frame, around the host's: the sky and the su (37); the page, handed to the host (42) |
 | `99-tail.html` | <1 |  |

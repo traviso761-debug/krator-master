@@ -173,7 +173,11 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
+const GL_ON=new URLSearchParams(location.search).get('kground')!=='0'&&typeof KGROUND!=='undefined',GL_STD=GL_ON&&new URLSearchParams(location.search).get('kgstd')!=='0',KG_RELIEF=GL_STD&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+/* MeshStandard under KGROUND (2026-11-04, the ground catch-up; core/terrain/GROUND.md: r128's Lambert lights per vertex on the 13.75 m cells, so no relief could show on
+   it): the light per pixel, roughness high as dry ground is; ?kground=0 keeps the Lambert floor. ?kgstd=0 the Lambert ground with its layers (and no relief),
+   ?kgrelief=0 the Standard ground without the relief: the two before states */
+const MAT_GROUND=GL_STD?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aGL;varying vec4 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGL=aGL;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vGL;')
@@ -183,7 +187,6 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
 // leaf mulch on the jungle's and the rainforest's floor (ground.ground072), beach sand on the shore and the river's banks (ground.coast_sand_01),
 // the savannah's bare earth between its grass (ground.dirt) and the volcano's ash toward the NE (ground.ash). The zone weights are a vertex
 // attribute of every ground mesh (aGL: litter, sand, savannah earth, ash), from the same field cache the paint reads
-const GL_ON=new URLSearchParams(location.search).get('kground')!=='0'&&typeof KGROUND!=='undefined';
 function glWeights(x,z){const up=FC.at(FC.a.up,x,z),lk=FC.at(FC.a.lk,x,z),rd=FC.at(FC.a.rd,x,z),uu=FC.at(FC.a.u,x,z);
  const sand=Math.max(smooth(90,6,lk)*smooth(-60,-10,lk),smooth(60,14,rd)*.6*(1-smooth(.2,.4,up))),ash=smooth(1800,4200,uu)*smooth(.5,.8,up)*.9;
  const sav=smooth(.40,.62,up)*(1-ash)*(1-sand),litter=(1-smooth(.4,.62,up))*(1-sand)*smooth(-4,8,lk);
@@ -192,7 +195,11 @@ function addGL(g){if(!GL_ON)return g;const p=g.attributes.position,a=new Float32
  for(let i=0;i<p.count;i++){const w=glWeights(p.getX(i),p.getZ(i));a.set(w,i*4);}g.setAttribute('aGL',new THREE.BufferAttribute(a,4));return g;}
 if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('swbay',slot,{w,amt,gain,tint:'diffuse'});
  const LY=[L('groundLitter','vGL.x',.6,1.2),L('groundSand','vGL.y',.7,1.15),L('groundSav','vGL.z',.55,1.1),L('groundAsh','vGL.w',.7,1.1)];
- KGROUND.hook(MAT_GROUND,{layers:LY.every(Boolean)?LY:[],key:'swbay-ground'});}
+ /* THE RELIEF (2026-11-04, the ground catch-up; HANDOFF-REBUILD's adoption list): the layers' height bumps the lit normal (no texture unit), its low and the
+    meshes' own hollows (KGROUND.cavityMesh on the floor and the river's strip, below) lose sky light. No side planes: no flank here is steep and near.
+    ?kgrelief=0 the ground before it, for judging */
+ KGROUND.hook(MAT_GROUND,{layers:LY.every(Boolean)?LY:[],key:'swbay-ground',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null});}
+const KG_CAV=m=>{if(KG_RELIEF)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});return m;};
 // THE RIVER STRIP (2026-10-26, the waterfall risers): the 13.75 m cells chord over a cataract's 1.5 m riser, so the channel is drawn again
 // as a fine strip along the river's line (u from the delta's head to the highlands, 36 m either side; rows every 8 m on the treads and
 // every 0.5 m where the bed steps, columns 4 m apart within 16 m of the line, 5 m beyond), 5 cm over terrainH. Under it the coarse mesh's vertices
@@ -205,7 +212,7 @@ const uvXZ=(u,v)=>[BAY.c[0]+(u+v)*SQ,BAY.c[1]+(v-u)*SQ];
   const P=uvOf(x,z);if(P[0]>STRIP.low[0]&&P[0]<STRIP.low[1]&&Math.abs(P[1]-vR(P[0]))<STRIP.lowR){
    for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)y=Math.min(y,terrainH(x+a*cell*.5,z+b*cell*.5));}
   p.setY(i,y);}
- g.computeVertexNormals();addGL(g);const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
+ g.computeVertexNormals();addGL(g);const m=KG_CAV(new THREE.Mesh(g,MAT_GROUND));m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
  // the strip
  const T=[];for(let t=-STRIP.W;t<-16;t+=5)T.push(t);for(let t=-16;t<=16;t+=4)T.push(t);for(let t=21;t<=STRIP.W;t+=5)T.push(t);
  const probe=[-16,-8,0,8,16],hAt=(u,t)=>{const q=uvXZ(u,vR(u)+t);return terrainH(q[0],q[1]);};
@@ -217,7 +224,7 @@ const uvXZ=(u,v)=>[BAY.c[0]+(u+v)*SQ,BAY.c[1]+(v-u)*SQ];
  const idx=[];for(let j=0;j+1<rows.length;j++)for(let k=0;k+1<nc;k++){const a=j*nc+k,b=a+1,c=a+nc,d=c+1;idx.push(a,b,c,b,d,c);}   /* counter-clockwise from above: the normals face up */
  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(pos,3));sg.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  sg.setIndex(idx);sg.computeVertexNormals();addGL(sg);
- const sm=new THREE.Mesh(sg,MAT_GROUND);sm.userData.probeSkip=true;sm.userData.inspectLabel='The river banks';scene.add(sm);STRIP.rows=rows.length;STRIP.tris=idx.length/3;})();
+ const sm=KG_CAV(new THREE.Mesh(sg,MAT_GROUND));sm.userData.probeSkip=true;sm.userData.inspectLabel='The river banks';scene.add(sm);STRIP.rows=rows.length;STRIP.tris=idx.length/3;})();
 
 // ---------------------------------------------------------------- the water
 // 2026-10-20 (migration phase 3): the bay, the river, the cataracts and the outer water are core/water's. The bay and the outer water are

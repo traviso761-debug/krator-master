@@ -1,6 +1,7 @@
 // node core/biome/test-tall.js: tall trees (H6, biomes/hyperjungle/PLAN-LANDS.md section 11; README.md "Tall trees"):
 // BIO.LOD.reach and an item's own reach (20-core-kit.js, bake), BIO.impostorItem's opt.reach and the impostor cell sizing
 // (34-core-impostor.js, BIO.IMP.texel, BIO.IMP.cellFor). Each check with a negative. Unset, a page bakes the boxes it baked.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');

@@ -143,11 +143,12 @@ function subTree(x,y,z,lv){const H=rr(15,40),r=.3+H*.03,la=rr(0,TAU),lk=rr(0,.07
  const cx=x+Math.cos(la)*lk*H*.86,cz=z+Math.sin(la)*lk*H*.86,cy=y+H*.78,cr=H*rr(.22,.32);
  const set=pick([PAL.fern,SHRUB,PALM,PAL.vine]),hc=vary(pick(set),.06,.12,.06);
  const n=near?ri(5,7):4;
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?cr*rr(.3,.75):0,s=cr*rr(.8,1.25);
-  BIO.put('ucard',[cx+Math.cos(a)*d,cy+rr(-.35,.3)*cr,cz+Math.sin(a)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[s,s*.75,s],bright(vary(hc,.04,.1,.07),1.35*rr(.85,1.1)));}
+ /* the crown's cards stem from the trunk, as near as far: rods are near-only, and no card follows them */
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d0=k?cr*rr(.3,.75):0,s=cr*rr(.8,1.25);
+  BIO.put('ucard',BIO.holdTo([cx,cy,cz],[cx+Math.cos(a)*d0,cy+rr(-.35,.3)*cr,cz+Math.sin(a)*d0],s*.2+.3),qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[s,s*.75,s],bright(vary(hc,.04,.1,.07),1.35*rr(.85,1.1)));}
  if(near){const rc=rodCol();
   if(vnear){const nb=ri(1,2);for(let b=0;b<nb;b++){const a=rr(0,TAU),d=cr*rr(.5,.9);BIO.beam('rod',[cx,cy-cr*.6,cz],[cx+Math.cos(a)*d,cy+rr(-.3,.3)*cr,cz+Math.sin(a)*d],r*.35,r*.15,rc);}}
-  const nm=ri(1,2);for(let m=0;m<nm;m++){const a=rr(0,TAU),d=cr*rr(.3,.8);BIO.put('ribbon',[cx+Math.cos(a)*d,cy-cr*.2,cz+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[rr(2.5,5),rr(4,9),1.5],leafCol(PAL.moss,1.5));}
+  const nm=ri(1,2);for(let m=0;m<nm;m++){const a=rr(0,TAU),d=(rr(.3,.8),r*.6);/* on the bark, the same draws: at d in the crown it hung from a card */BIO.put('ribbon',[cx+Math.cos(a)*d,cy-cr*.2,cz+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[rr(2.5,5),rr(4,9),1.5],leafCol(PAL.moss,1.5));}
   if(rng()<.35){const a=rr(0,TAU),d=cr*rr(.4,.8),lx=cx+Math.cos(a)*d,lz=cz+Math.sin(a)*d,gx=lx+rr(-2,2),gz=lz+rr(-2,2);
    BIO.beam('rod',[lx,cy-cr*.3,lz],[gx,Y(gx,gz)-.3,gz],rr(.05,.11),rr(.05,.11),rc);}}}
 function fungi(x,y,z,lv,st){const n=lv===2?ri(2,4):2,giant=rng()<.3;
@@ -352,7 +353,7 @@ HYPERJUNGLE.buildFloor=function(R,q){
   charge('moss',()=>{
    // moss beards hanging off the bark, and moss skirts plastered on it near the ground
    const nm=Math.round(ri(10,16)*q*lk);
-   for(let i=0;i<nm;i++){const a3=rr(0,TAU),y3=gy0+rr(4,26),h=rr(5,14),Rs=Math.max(prof.at(a3,y3-T.y0),prof.at(a3,y3-h-T.y0))+.3;
+   for(let i=0;i<nm;i++){const a3=rr(0,TAU),y3=gy0+rr(4,26),h=rr(5,14),Rs=prof.at(a3,y3-T.y0)+.3;   /* hung from the bark at its top: the wider buttress below held it 8-10 m off the bole there */
     BIO.put('ribbon',[T.x+Math.cos(a3)*Rs,y3,T.z+Math.sin(a3)*Rs],qFacing([Math.cos(a3),0,Math.sin(a3)]),[rr(4,10),h,2],leafCol(PAL.moss,1.5));st.moss++;}
    const ns=Math.round(ri(10,16)*q*lk);
    for(let i=0;i<ns;i++){const a4=rr(0,TAU),y4=gy0+rr(.5,12),Rs=prof.at(a4,y4-T.y0)+.12,r4=rr(1.5,3.5);

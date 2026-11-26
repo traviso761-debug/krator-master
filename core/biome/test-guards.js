@@ -1,6 +1,7 @@
 // node core/biome/test-guards.js: the biome core's guards (20-core-kit.js, 2026-10-27): the card guard (BIO.def refuses a
 // library card it cannot draw right), one box a chunk (a tree's parts switch at one distance) and the attachment audit
 // (cards held by their structure, in their structure's chunk and range). Each check with a negative.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');

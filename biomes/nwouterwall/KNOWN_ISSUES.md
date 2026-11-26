@@ -1,6 +1,6 @@
 # nwouterwall — known issues
 
-- [ ] **Station 3's capital needs `kits/yeti` in the tree.** The owner asked station 3 to read `kits/yeti` now (2026-10-26). The
+- [x] **Station 3's capital needs `kits/yeti` in the tree.** The owner asked station 3 to read `kits/yeti` now (2026-10-26). The
       kit is on its own branch (`claude/yeti-kit`) on its own vendored Scyvoi engine, so `yeti_bundle.py` wraps its engine and
       buildings in one closure (`KratorYeti`, the way `kits/post-apoc/apoc_bundle.py` does) and `stations/yeti/86y-host-yeti.js`
       lays out a piece of the capital: the High Chief's and the council's halls, the clan compound, family clusters, composite
@@ -10,7 +10,10 @@
       here must match): after the yeti branch merges, `python3 build.py --station yeti` draws the capital. Not taken from the kit:
       the catalog's furniture (FURNISH is a no-op: the interiors are not seen), the winter street and the samples; the sunk floors
       are not holed in the biome's ground.
-      Stays open (2026-10-26): merge order (kits/yeti's branch), then rebuild station 3.
+      Fixed 2026-11-09 (the final rebuild, pair 11): `kits/yeti` is merged and reads its engine from `core/engine` now, so `present()`
+      found no `27-mat.js` and the committed page was built without the capital. `yeti_bundle.py` takes each engine file from the kit's
+      `src/` or `core/engine` (as the kit's build does), with `36o-open.js` (door leaves, on core/door: 10, 20, 30, 90, the leaves left
+      shut, no key bound) and `36s-stair.js`; the shim's `buildWorld` calls `svOpenReset`/`svOpenFlush` as `core/engine/90-scene.js` does.
 - [ ] **Procedural plants** (no card in the library): the snow birch, the woolly willow, caribou moss tufts (the ground's
       `ground.cladonia` carries the carpet), the felt star (edelweiss), the cloudberry's leaves, the moss campion's flowers.
       Prompts: `core/materials/PROMPTS-NEEDED.md` section 8 (`card.birch.dwarf`, `card.willow.woolly`, `card.edelweiss`,
@@ -31,11 +34,11 @@
       each card slot with a cell its own clone, its image copied across when the sheet decodes (`50-biome-nwow-species.js`,
       after `libSwap`). The snow potato is also sunk to its rosette's foot (`G.tuft(.42)`), so its tuber stays underground.
       Fixed 2026-10-26.
-- [ ] **core/biome: `BIO.libSwap` shares one texture between the cells of one sheet** (above). Every kit with two slots on one
+- [x] **core/biome: `BIO.libSwap` shares one texture between the cells of one sheet** (above). Every kit with two slots on one
       sheet with different cells draws the last cell on both. The kit-side clone here is the workaround; the fix belongs in
       `core/biome/20-core-kit.js` (`one()`: clone `t` when `L.cell` is set, and copy the image on load), followed by a rebuild of
       every biome build.
-      Stays open (2026-10-26): a core change, reported to the starting session.
+      Fixed in core (`core/biome/20-core-kit.js` clones a card slot cut to a cell); the kit's clone in `50` is removed (pair 11, 2026-11-09).
 - [ ] **Leng is a placeholder massing** (the owner: "a far silhouette"): a stepped ruin of boxes at the model's bearing and distance
       from station 1, its size a guess, no snow on it (it read as a cake). Tagged `placeholder`.
       Stays open (2026-10-26): until Leng has its own plan and build.
@@ -57,12 +60,12 @@
 - [x] **The mid ground's woods were invisible** (the mid ground has no trees: a larch slope there showed only its litter). The
       shaded slopes past 2.5 km are now painted darker by their larch weight, so the forest-steppe's mosaic carries to 20 km.
       Fixed 2026-10-26 (known issues pass).
-- [ ] **core/atmos: `ATMOS.cloudShade` after `WATER.wetGround` recurses** (cloudShade chains a material's hook by reading and
+- [x] **core/atmos: `ATMOS.cloudShade` after `WATER.wetGround` recurses** (cloudShade chains a material's hook by reading and
       setting `onBeforeCompile`; wetGround's and snowOn's setters then call cloudShade's hook from inside themselves). The page
       binds the weather (and its wetGround) after the cloud shade and the snow last (`89s-host-sky.js`). A core fix: cloudShade
       should wrap through the same getter/setter as snowOn and wetGround.
-      Stays open (2026-10-26): core/atmos/host/89-atmos-h-skyhost.js is the sky session's; still unfixed on the rebuild (checked
-      2026-10-26 after the merge), noted in the side sessions' shared notes.
+      Fixed in core: cloudShade, wetGround, snowOn and heightFog all chain on KHOOK now ("any order"). The hooks run once in
+      `89z-host-build.js` after the bake (pair 11, 2026-11-09).
 - [x] **`core/atmos/host/89-atmos-e-weatherhost.js` (ATMOS.bindWeather)** was uncommitted in the biome rebuild when this kit was
       built. The rebuild committed it (7f174cae0, identical to the copy built against) and this branch merged the rebuild.
       Fixed 2026-10-26 (known issues pass).
@@ -72,3 +75,46 @@
 - [ ] **No fauna**: the caribou, the musk oxen and the root voles are `kits/fauna`'s (PLAN.md section 0); the voles' caches are
       drawn (the vole is not).
       Stays open (2026-10-26): kits/fauna.
+
+## The final rebuild (pair 11)
+
+Built 2026-11-09 in a cloud session on `claude/integration-b91c04` (no GPU: CPU checks and software GL only; the coordinator runs the GPU
+verify and merges). Branch `claude/rebuild-nwouterwall-cloud`. `PLAN.md`, "Core adoption", has the table of what was taken and what was not, and why.
+
+**What changed** (every change in `src/`, `build.py` and `yeti_bundle.py`):
+- `build.py` on the universal set: `build_sources` (`--list-sources`, the stations as variants), core/biome 31j, 34, 41; core/terrain 43
+  KGROUND, 45 KHORIZON and its shade; core/shadow; height fog, the rain cover, lightning; water ext 56, 57, 58, 60. `khost.FULL`, `--station`
+  and LF writes it had already. `88-host-build.js` is `89z-host-build.js` (after the water), and the clouds' shade, the weather, the snow on the
+  scene (from `89s`), the rain cover, height fog, KHORIZON and KSHADOW (off; `?shadow=1`) run there once after the bake.
+- The trees (`55`): `BIO.flareJoin` on the fur larch's and the stone pine's near limbs; a mid larch's branches drawn as one rod each (its sprays
+  hung from branches that were not drawn); **octahedral impostors** for the far trees of all four species (one set, item `impTrees`, gain 2.4;
+  `?diet=0` the old `far` blobs).
+- The ground (`47`): KGROUND for the six layers over the dithered steppe base (`?kground=0` the old mix), and the **`polygon` kind**: sorted
+  circles (3 m) on the frozen flats wherever 44s's KFROST polygons' `where` holds (`aW2.w`, which was 0). The eye is redirected to `kEye` on this
+  Lambert ground as Korona did. `?kgrelief=1` shows the relief (not on by default: untimed).
+- `99`: `WATER.mirrorSwitch` on the largest open still, off at load (stations 2 and 3; station 1 has none). `89a`: `BIO.bindAtmosWind`; A2C after the bake.
+- `50`: the kit's per-cell texture clone is gone (the core does it now).
+- Station 3: the Yeti capital is drawn (`yeti_bundle.py` reads the engine from `core/engine`, with core/door's four files: the leaves stay shut).
+
+**Checked here (software GL, SwiftShader; `harness.py smoke` and a probe):** all three pages load with an empty error panel, no page or GL
+errors. Station 1: 36 calls and 12.0 M triangles at the opening view (was 11.25 M: the rods and the joints). KGROUND on with its seven layers,
+KHORIZON (26 / 48 / 14 materials), rain cover and height fog on, 0 card faults. **The attach audit is 0.00% on all three** (station 1: 11,610
+cards; taiga 11,236; yeti 9,600), was 3.7% (`larchspray`). `check_core_use`, `check_assembly`, `check_port`, `check_source`: nothing new.
+`check_cells` 0 faults for this kit. **Not run:** `verify.py` (the coordinator's).
+
+**Species for readers** (the Yeti kit reads this biome through station 3; nothing else reads `NWOW`, `reach.py`): `NWOW.SPECIES` keys and
+indices unchanged; every placement draw unchanged (each tree reseeds from its own seed; the joints and rods take no random numbers). New: the
+item `impTrees` in the kit's registry; `NWOW.IMPOSTORS` (false: the blobs), `NWOW.JOINS` (false: plain tubes). `NWOW.pyc`, `canopyH`,
+`clearings`, `TREES` as they were.
+
+**For the GPU verify:** `verify.py --assert --all-views` on the three pages (`--station taiga`, `--station yeti`); the impostors' look and gain
+against the near larch (`?impgain=`), and that they bake (`window` has no flag: the impostor item draws its trees blank until the bake);
+KGROUND's floor (`?kground=0` for the old look), the sorted circles' size and contrast on the frozen flats (station 2 has the most); KHORIZON at a
+low sun (`?hz=0`); height fog's mist over the alases at dawn (`?hfog=0`); KSHADOW's cost (`?shadow=1`); the reflections on stations 2 and 3
+(the alases at another level than the chosen still share its plane); station 3's capital (first draw on the merged kit: its doors, stairs, and
+whether the sunk floors still want holing in the ground).
+
+- [ ] **The pair-11 turn's GPU verify** (above). Stays open (2026-11-09): the coordinator's run.
+- [x] **core/terrain/43-core-ground.js reads the eye uniform r128 leaves at 0 on Lambert** (Korona's finding): this page redirects it to `kEye`
+      as Korona does. Stays open (2026-11-09): a core fix (`kEye` in place of the uniform) for whoever owns core/terrain.
+      2026-11-08: closed by the core fix of 2026-11-08: `43-core-ground.js` and `30-core-foliage.js` take the eye from `viewMatrix`.

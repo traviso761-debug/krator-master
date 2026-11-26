@@ -626,8 +626,8 @@ BIO.bucket('far',RIFT.farMat(),{label:'Far trees (impostors)'});   // iridescent
 /* the crown sheets (3x3 sprigs: lobeleaf, spray, needle, leaflet) drawn a sprig a quad, three cells a card at .75 (core BIO.geo.cells; the owner,
    2026-10-26: whole sheets read as a grid; materials.json marks them "sheet": "geometry"); the procedural page keeps the whole card */
 const SHEET=(g,k)=>RIFT.LIB[k]&&BIO.geo.cells?BIO.geo.cells(g,{n:3,scale:.75}):g;
-BIO.def('frill',RIFT.LIB.frill?G.finquad():BIO.geo.frond(3),M.frill,{attrs:['aN','aC2'],label:'Frill tree fins'});
-BIO.def('pleat',G.fan(),M.pleat,{attrs:['aN','aC2'],label:'Bell palm fans'});
+BIO.def('frill',RIFT.LIB.frill?G.finquad():BIO.geo.frond(3),M.frill,{attrs:['aN','aC2'],label:'Frill tree fins',cap:600000,capWhy:'the frill trees, their crowns of fins, the canopy of the jungle and highland stations (the instance-cap rule, 2026-11-08): 521,848 on the jungle, 302,939 on the highland at 2026-11-09'});
+BIO.def('pleat',G.fan(),M.pleat,{attrs:['aN','aC2'],label:'Bell palm fans',cap:600000,capWhy:'the bell palms of the highland and the plateau, each crown a ring of pleated fans (the instance-cap rule): 366,969 on the highland and 505,369 on the plateau at 2026-11-09'});
 BIO.def('lobeleaf',SHEET(BIO.geo.clump(),'lobeleaf'),M.lobeleaf,{attrs:['aN','aC2'],label:'Lobe tree pads'});
 BIO.def('spray',SHEET(BIO.geo.clump(),'spray'),M.spray,{attrs:['aN','aC2'],label:'Prism bush sprays'});
 BIO.def('rope',BIO.geo.clump(),M.rope,{attrs:['aN','aC2'],label:'Rope foliage (monkey-puzzle, pagoda tree)'});
@@ -641,7 +641,7 @@ BIO.def('barrel',G.barrel(),M.barrel,{label:'Honeycomb barrels'});
 BIO.def('ball',G.ball(),M.solid,{label:'Ball vine fruit'});
 BIO.def('melonhalf',G.melonhalf(),M.solid,{label:'Split ballmelon (rind)'});
 BIO.def('melonflesh',G.melonflesh(),M.solid,{label:'Split ballmelon (flesh)'});
-BIO.def('bigfrond',BIO.geo.frond(4),M.bigfrond,{label:'Tree-fern fronds'});
+BIO.def('bigfrond',BIO.geo.frond(4),M.bigfrond,{label:'Tree-fern fronds',cap:400000,capWhy:'the tree ferns under the highland canopy (the instance-cap rule): 290,709 on the highland station at 2026-11-09'});
 BIO.def('cycfrond',BIO.geo.frond(2),M.cycfrond,{label:'Cycad fronds'});
 BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Fern fronds'});
 BIO.def('fan',G.fan(),M.fan,{label:'Fan fronds'});
@@ -676,7 +676,7 @@ BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
 BIO.def('urchin',BIO.geo.bloom(),M.urchin,{label:'Urchin blooms'});
 BIO.def('anemone',BIO.geo.bloom(),M.anemone,{label:'Anemone blooms'});
 BIO.def('rosette',G.rosette(),M.rosette,{label:'Rosette succulents'});
-BIO.def('pad',G.pad(),M.pad,{label:'Scum mats'});
+BIO.def('pad',G.pad(),M.pad,{label:'Scum mats',free:true});   /* free: it lies on the water (the attach audit's rule for a raft or a pad, 2026-11-09) */
 BIO.def('cone',G.cone(),M.solid,{label:'Buds, cones and spires'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Hanging pods'});
 BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,6,1,true),M.solid,{label:'Stems'});   // open-ended: a beam's ends are inside a bole or a clump (12 tris, not 28)
@@ -686,7 +686,7 @@ RIFT.FUNG=!!BIO.fung&&!(typeof location!=='undefined'&&new URLSearchParams(locat
 if(RIFT.FUNG)BIO.def('astalk',BIO.fung.stalk({r0:1,r1:.86,seg:5,rings:1}),BIO.solidMat(RIFT.BARKTEX[3]),{label:'Anemone stalks'});
 /* the feral species' parts: a hooked claw (a stalk tapering to a point and bowed: the thorns, rim teeth and spines, BIO.fung.stalk; a cone
    without it) and the blade pear's pad (a flattened ball in the cactus skin) */
-BIO.def('claw',BIO.fung?BIO.fung.stalk({r0:.5,r1:.03,bend:.45,seg:4,rings:3}):new T3.ConeGeometry(.5,1,4,1).translate(0,.5,0),BIO.solidMat(null),{label:'Hooked thorns'});
+BIO.def('claw',BIO.fung?BIO.fung.stalk({r0:.5,r1:.03,bend:.45,seg:4,rings:3}):new T3.ConeGeometry(.5,1,4,1).translate(0,.5,0),BIO.solidMat(null),{label:'Hooked thorns',cap:450000,capWhy:'the feral maw trumpets, thornwhips and blade pears, every rim, bole and stalk ringed with hooked thorns (the instance-cap rule): 353,886 on the savannah, 307,832 on the main page at 2026-11-09'});
 BIO.def('bpad',new T3.SphereGeometry(1,9,6),BIO.solidMat(RIFT.BARKTEX[4]),{label:'Blade pear pads'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(RIFT.BARKTEX[1]),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(RIFT.BARKTEX[2]),{label:'Small trunks (pale)'});

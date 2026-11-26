@@ -31,13 +31,23 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 YETI = os.path.join(ROOT, 'kits', 'yeti')
 SRC = os.path.join(YETI, 'src')
-ENGINE = ['10-core.js', '26k-kit.js', '27-mat.js', '28-yt-mat.js', '30-geo.js', '36-def.js', '37-wk-rec.js']
-CORE = [os.path.join(ROOT, 'core', 'walk', '20-core-walk.js'), os.path.join(ROOT, 'core', 'walk', 'box', '24-core-walk-box.js')]
+ENGINE_DIR = os.path.join(ROOT, 'core', 'engine')
+# the engine's pieces the buildings call, in filename order: the kit's own (src/) where it keeps one, else core/engine's, read in place (the kit has
+# read the engine from core/engine since 2026-11-02; 36o draws the door leaves on core/door, 36s the stairs: the final rebuild, pair 11)
+ENGINE = ['10-core.js', '26k-kit.js', '27-mat.js', '28-yt-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js', '37-wk-rec.js']
+CORE = [os.path.join(ROOT, 'core', 'walk', '20-core-walk.js'), os.path.join(ROOT, 'core', 'walk', 'box', '24-core-walk-box.js')] + \
+       [os.path.join(ROOT, 'core', 'door', f) for f in ('10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js')]   # KDOOR, KGLASS, KDOORLEAF, KDOORHOST: the leaves stay shut (no key bound)
+
+
+def engine_path(f):
+    """A src/ copy wins, as in kits/yeti/build.py."""
+    p = os.path.join(SRC, f)
+    return p if os.path.isfile(p) else os.path.join(ENGINE_DIR, f)
 SKIP = {'55-yt-samples.js', '56-yt-street.js'}   # the sheet's samples and its winter street (the covered-way network: core/city's 36-city-covered.js, on kits/yeti's branch)
 
 
 def present():
-    return os.path.isdir(SRC) and all(os.path.isfile(os.path.join(SRC, f)) for f in ENGINE)
+    return os.path.isdir(SRC) and all(os.path.isfile(engine_path(f)) for f in ENGINE)
 
 
 def read(p):
@@ -74,8 +84,10 @@ let WORLD=null;
 function buildWorld(sites){WORLD=new THREE.Group();WORLD.name='yeti';GB={};GTARGET=GB;REG.length=0;SV_LIFE.length=0;halosReset();SMOKES=[];
  GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
  SVTAGS=(typeof KTAGS!=='undefined'&&KTAGS.page)||null;   /* the page's own registry: the kit's records join the biome's */
+ svOpenReset();   /* the doors (core/door, 36o-open.js): a fresh registry per build */
  for(const S of sites)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,WORLD,true);
+ svOpenFlush(WORLD);   /* the door leaves' meshes (shut), and their walk blocks */
  return WORLD;}
 """
 
@@ -87,6 +99,13 @@ return {version:1,DEFS,MAT,ANIMU,KIT,SEASONS:typeof YT_SEASONS!=='undefined'?YT_
 """
 
 
+def sources():
+    """Every file the bundle reads (build.py's --list-sources)."""
+    if not present():
+        return []
+    return CORE + [engine_path(f) for f in ENGINE] + [os.path.join(SRC, f) for f in buildings()]
+
+
 def bundle():
     if not present():
         return None
@@ -94,7 +113,7 @@ def bundle():
     for p in CORE:
         parts.append('/* ---- %s ---- */\n%s\n' % (os.path.relpath(p, ROOT).replace(os.sep, '/'), read(p)))
     for f in ENGINE:
-        parts.append('/* ---- kits/yeti/src/%s ---- */\n%s\n' % (f, core_body() if f == '10-core.js' else read(os.path.join(SRC, f))))
+        parts.append('/* ---- %s ---- */\n%s\n' % (os.path.relpath(engine_path(f), ROOT).replace(os.sep, '/'), core_body() if f == '10-core.js' else read(engine_path(f))))
     for f in buildings():
         parts.append('/* ---- kits/yeti/src/%s ---- */\n%s\n' % (f, read(os.path.join(SRC, f))))
     parts.append(SHIM_SCENE)

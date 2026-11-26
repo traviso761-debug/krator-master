@@ -2,6 +2,7 @@
 // records"; 42-core-export.js, the export's ids), each check with a negative. One small kit is built twice, with
 // BIO.init({tags}) and without, from the same calls: the meshes must be identical, and with tags every instance a
 // mesh draws must name its item set's record and carry the uid KTAGS.uid(class, key, its matrix position).
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');

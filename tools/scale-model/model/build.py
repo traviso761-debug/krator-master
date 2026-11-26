@@ -66,7 +66,40 @@ def page(D):
     return ''.join(parts)
 
 
+def split(D, cap=12_000_000):
+    """the page with DATA in side files, for the artifact's 16 MB page cap (5.1's page is 20.8 MB). The page keeps
+    `const DATA = {}` where the DATA line was, closes its script, loads data-1.js, data-2.js... (each
+    `Object.assign(DATA, {...});`, at most `cap` bytes, in the page's key order) as classic scripts, and reopens
+    its script: the decode code after it reads DATA as before. Returns (page, [(name, text), ...])"""
+    files, cur, size = [], {}, 0
+    for k, v in D.items():
+        n = len(json.dumps(v))
+        if cur and size + n > cap:
+            files.append(cur); cur, size = {}, 0
+        cur[k] = v; size += n
+    if cur:
+        files.append(cur)
+    names = ['data-%d.js' % (i + 1) for i in range(len(files))]
+    tags = ''.join('<script src="%s"></script>\n' % nm for nm in names)
+    parts = []
+    for name in ORDER:
+        if name == 'DATA':
+            parts.append(DATA_PREFIX + '{};\n</script>\n' + tags + '<script>\n')
+        else:
+            parts.append(open(os.path.join(SRC, name), encoding='utf-8', newline='').read())
+    return ''.join(parts), [(nm, 'Object.assign(DATA, ' + json.dumps(f) + ');\n') for nm, f in zip(names, files)]
+
+
 def main():
+    if '--split' in sys.argv:
+        """python3 build.py --split: dist/split/index.html and its data-N.js, the copy to publish (files beside the page)"""
+        html, files = split(load_data())
+        out = os.path.join(os.path.dirname(OUT), 'split')
+        os.makedirs(out, exist_ok=True)
+        for nm, text in [('index.html', html)] + files:
+            open(os.path.join(out, nm), 'w', encoding='utf-8', newline='').write(text)
+            print('%s  %d bytes' % (os.path.relpath(os.path.join(out, nm)).replace(os.sep, '/'), len(text.encode('utf-8'))))
+        return
     html = page(load_data())
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     open(OUT, 'w', encoding='utf-8', newline='').write(html)

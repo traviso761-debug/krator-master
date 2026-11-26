@@ -3,6 +3,7 @@
 // A plain list of geometries draws exactly what the sampler drew before shells existed (the
 // pre-shell sampler is rebuilt below from the same core, so a change to it shows here); shells
 // split the samples by share; without shells a big roof takes nearly all of them.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path'),vm=require('vm');
 const D=__dirname,read=f=>fs.readFileSync(path.join(D,f),'utf8');
 function core(placeSrc,space){const ctx={console,Math};vm.createContext(ctx);

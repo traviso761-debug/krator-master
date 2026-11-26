@@ -24,6 +24,7 @@ import base64, gzip, hashlib, json, os, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 RAND = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
@@ -54,17 +55,20 @@ BODIES = tuple(sorted(b for b in os.listdir(os.path.join(HERE, 'data')) if os.pa
 # page -> (its head fragment, its own script fragment); every page also takes the shared src/10-89*.js
 PAGES = {'cosmetic-lab': ('00-head.html', '90-editor.js'), 'animation-lab': ('01-animlab.html', '92-animlab.js'),
          'arms-lab': ('02-armslab.html', '93-armslab.js')}
+# the published labs of part of the clips (data/clips.json labs): the Animation Lab page with KCHAR_LAB set, each loading
+# its own anims piece (tools/anims_subset.py cuts them); a published lab holds at most 256 MiB
+LAB_PAGES = {'combat-lab': 'combat', 'trade-lab': 'trade'}
 
 
 def main():
-    if CHECKS and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
+    if CHECKS and not BSRC.LISTING and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
     # the kits against their pieces (chains, anchors, files), recurring garment regressions, and the push shader against its Godot twin
-    if CHECKS and subprocess.call([sys.executable, os.path.join(HERE, 'tests', 'check_kit.py')]) != 0:
+    if CHECKS and not BSRC.LISTING and subprocess.call([sys.executable, os.path.join(HERE, 'tests', 'check_kit.py')]) != 0:
         sys.exit('build.py: tests/check_kit.py failed (a kit entry and its GLB disagree; tests/kit-known-bad.json lists what is allowed)')
-    if CHECKS and subprocess.call([sys.executable, os.path.join(HERE, 'tests', 'check_garment_regressions.py')]) != 0:
+    if CHECKS and not BSRC.LISTING and subprocess.call([sys.executable, os.path.join(HERE, 'tests', 'check_garment_regressions.py')]) != 0:
         sys.exit('build.py: tests/check_garment_regressions.py failed (floating geometry, motif leak, rigid skirt, or strap collision)')
-    if CHECKS and subprocess.call([sys.executable, os.path.join(HERE, 'tools', 'check_twin.py')]) != 0:
+    if CHECKS and not BSRC.LISTING and subprocess.call([sys.executable, os.path.join(HERE, 'tools', 'check_twin.py')]) != 0:
         sys.exit('build.py: tools/check_twin.py failed (the push shader and kchar_push.gdshaderinc have drifted apart)')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
     peoples_raw = J('peoples.json')
@@ -93,6 +97,7 @@ def main():
         t = read(os.path.join(SRC, f))
         inputs['src/' + f] = t.encode()
         js.append('/* src/%s */\n%s' % (f, t))
+    BSRC.report()   # --list-sources: every file read so far (the data, core/rand, src/) is what the page is made of; then exit
     # the pieces go beside the page as base64 text (the artifact host serves no binary type a GLB fits), fetched
     # when a record needs them: dist/pieces/<body>/<name>.txt
     if os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
@@ -165,7 +170,13 @@ def main():
             td['_url'] = 'data:image/png;base64,' + base64.b64encode(read(tp, 'rb')).decode()
             inline_thumbs[b] = td
     wholes = {}
-    for page, (headf, own) in sorted(PAGES.items()):
+    labs = data['clips'].get('labs') or {}
+    pages = dict(PAGES)
+    for page, lab in LAB_PAGES.items():
+        if lab in labs:
+            pages[page] = PAGES['animation-lab'] + (lab,)
+    for page, spec in sorted(pages.items()):
+        headf, own = spec[0], spec[1]
         head, t = read(os.path.join(SRC, headf)), read(os.path.join(SRC, own))
         inputs['src/' + headf], inputs['src/' + own] = head.encode(), t.encode()
         extra = list(vendor_js)
@@ -174,6 +185,10 @@ def main():
                 extra.append('var KCHAR_GLB = ' + json.dumps(startup_glb, separators=(',', ':')) + ';')
             if inline_thumbs:
                 extra.append('var KCHAR_THUMBS = ' + json.dumps(inline_thumbs, separators=(',', ':')) + ';')
+        if len(spec) > 2:
+            L = labs[spec[2]]
+            head = head.replace('<title>Animation Lab</title>', '<title>%s</title>' % L['title'])
+            extra.append('var KCHAR_LAB = ' + json.dumps({'id': spec[2], 'title': L['title'], 'anims': L['anims'], 'groups': L['groups']}) + ';')
         boot_own = (
             '(function(){\n'
             '  var _b = atob(KCHAR_DATA_GZ), _u = new Uint8Array(_b.length);\n'

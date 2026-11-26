@@ -4,6 +4,16 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The look pass of 2026-11-09** (every page's views on the GPU, before and after; shots in the session's notes). Fixed:
+  - **The far field round the stations** (`src/89f-host-far.js`, all four stations): the far bake marks the terminal sea's cells at the model's
+    floor (1 m over the sea's level) without a water flag, so they drew as flat land; a floor cell is now the sea. **The savannah** had no far
+    palette and took the default pale gold, which the ground never is: the map's square showed its edge on every high view; it takes the grass's
+    olive now (`stations/savannah/44s`). **The jungle**'s far canopy read as a lit lawn; darker and mottled (`stations/jungle/44s`).
+  - Left as they are, for the owner: **the algal lake reads pale cream from its shore** (its hue, `RIFT_LAKE.hue` .15, is the salt lake's
+    chosen colour; a weaker shoal tint was tried and changed nothing visible, so it was not kept); **the savannah's burn mosaic** reads as hard
+    dark stains from the air (fresh burns: `ABSAV.burn`, intended); **from afar every station's ground beyond the LOD spine is bare paint**
+    (the runtime LOD draws the flora near the spine only: the "From afar" views show a lawn with a forest in its middle).
+
 - [ ] **The Rift is to be rebuilt as four stations** (the owner, 2026-10-27): the savannah, the jungle, the cloud forest on its
       sky islands and Cube's plateau. `PLAN-STATIONS.md` is the plan, answered by the owner (the gallery question left); the single-page rebuild is parked on
       `claude/rift-single-page-experiment` (its parts now taken into the stations). Until the stations land, the items below are the old page's.
@@ -82,6 +92,34 @@ Read before changing anything here. `build.py` prints the open count.
       painted dark wet stone and moss; the
       ravine walls show the Rift floor's red beds (KSTRATA `rift`), where the island's own rock is still to be chosen; the west and
       east islands' records. GPU verify OK (Arc 140T): 32.1 M held, its export box in the cloud core.
+- [ ] **Station 5, the gypsum maze** (`python3 build.py --station maze`, `dist/rift-maze.html`; 2026-11-09, a first cut; PLAN-STATIONS.md section 11):
+      a cave page on KKARST (maze), KCAVERN and KSPELEO under Cube's plateau's west scarp (KARST-SITES-5.1.md site 3). What is open:
+      - **No gypsum rock texture.** KCAVERN has materials for basalt and tuff only and the library has no bedded gypsum, so the page draws its
+        own material on KGROUND with the Hearths' pack read in place as stand-ins: `crystal.selenite` (`stone.alabaster`, massive gypsum) for the
+        gypsum, `rock.limestone` (`rock.limestone.karst`) for the stromatolite beds, `ground.gypsum` for the crust. Up close the alabaster reads
+        as veined marble, not sugary bedded gypsum. Owed: `rock.gypsum.bedded` (PROMPTS-NEEDED.md section 43, the prompt and how to wire it).
+        If the Hearths' `materials.json` changes those slots, this page changes with it (it reads their pack, not a copy).
+      - **No gypsum-flower or crust kind in KSPELEO.** The dress is KSPELEO's kinds standing in: small chandeliers for the gypsum flowers,
+        druse (mineral gypsum) for the crusts, selenite blocks, a few stalactites. A `gypsum` kind set (flowers curling off the walls, crusts,
+        the wall's own big crystals) is a core addition, not made here.
+      - [x] **KSPELEO.mesh's winding** (core; fixed in core 2026-11-09): every triangle of its prisms (and both sides of a curtain) was wound
+        clockwise about the normal it gives, so three's front face was the inside and the outside drew black (found here: druse and blocks were
+        black shards). `39b` now winds every kind counter-clockwise (`test-speleo.js` checks each kind, with a negative; its mesh digests moved on
+        purpose), and `85-host-speleo.js`'s rewinding is gone. The Hearths' crystals and hold and nwbay's caverns took the fix with it.
+      - **The scarp is the page's step, not the whole scarp**: 36 m from the table's lip to a bench on the lake marl; the springs come out at
+        that step's foot, on a perched table. The plateau's scarp falls 1.2 km and more on to station 2, whose own scarp-foot springs (the doc's
+        `KKARST.water(N).spring` at station 2) are not made.
+      - **The Ancients' join under the hub** is not on this page: Cube stands 12-25 km east of this scarp. The page marks the line's join at the
+        scarp end (a cut gallery from the east, `site:ancients:join`); a crop under Cube is owed if the owner wants the join there.
+      - **The table is bare**: no flora (the plateau station's forest is not read in place); the table is soil and moss under the KGROUND
+        layers; from above the dolines stand in a bare green-brown plain.
+      - **Ground seams**: the page's own ground is three grids (2 m, a half metre over the face, 2 m), cut where a void meets the surface: a
+        mouth's hole is cut to the half metre, a doline's lip is KCAVERN's (its wells); the cavern's skirt (SINK) covers the seam.
+      - **The eye's floor is the lowest open point of the column** (KCAVERN.floorFn from under the bench): in the upper storeys the camera is
+        not clamped to their floors (as on the Hearths' pages).
+      - Numbers (this page): rock 512 k triangles (58 tiles), ground 437 k, dress 275 k (1.22 M held); 22-70 draw calls a view; the
+        records about 2 s and the rock's meshing 5.3 s in the browser (`_rock.ms`); 21 mouths, 650 passages, 38 chambers, 3 dolines, 2,366
+        dress records, 47 hazards. `verify.py --assert --all-views` passes on the GPU (13 views, every check and its negative).
 - [x] **The croton drew its whole sheet on every card** (the owner, 2026-10-27: "stuck as a group of 3"): `card.leaf.redvein` is three
       different leaves 3 across at uneven widths, which `tools/textures/check_cells.py` read as one plant (its grid test is for even
       grids). Now one leaf a quad, each quad its own leaf's box and proportions (core `BIO.geo.cells({rects})`, new, opt-in, tested in
@@ -188,6 +226,19 @@ Read before changing anything here. `build.py` prints the open count.
       starch and the cloud fern's fiddleheads.
 
 ## Done
+
+- [x] **2026-11-09: the attach audit's floating crowns and blooms, held** (`src/55`, `src/65`, `src/50`). The GPU verify failed the core
+      attach audit on four pages (jungle 3.43%, plateau 1.72%, savannah 15.55%, the main page 6.80%; highland passed at 0.47%). Causes:
+      the parasol and violet dome canopies jittered round their spots (the dome's lift took them up to 11 m off the boughs), the
+      dragon tree's and croton's urchins and the monkey-puzzle's blooms set above their tips, the trumpet's cup blooms drawn 1.5 m
+      over the cup's floor, the dress's curtain flowers hung far down the ribbons, the scum mats on the water not `free`. Fixed: each
+      hero is built in a span log (`logged()`: tubes, beams, every lathe's axis through `latheL`, the instanced trunks and lobes
+      through `putT`/`putL`), and `clumpAt` and the blooms (`holdP`) are brought to within reach of the nearest span (`BIO.snapSeg`,
+      `BIO.holdTo`; `.2*size+.3` a stem card, `.55*size` a centred one, plus the span's radius); the trumpet's blooms sit on the cup
+      floor (`cupY`); the curtain flowers are held to the curtain's head; `pad` is `{free:true}`. Positions only: no draw added or
+      moved, the same instance counts. After, `verify.py --assert` passes on the GPU (Intel Arc 140T) on all five pages: jungle
+      0.03% (4 of 14,576), plateau 0.06% (10 of 16,930), savannah 0.11% (6 of 5,600), the main page 0.14% (19 of 13,357), highland 0.02% (2 of 12,245). Caps with capWhy raised for the counts measured: pleat 600,000 (505,369 on the plateau), claw 450,000 (353,886 on the savannah).
+      The look moved: the violet dome's canopy sits lower and flatter, on its boughs. Readers rebuilt: riftrim (6), ringisles (3), xanadu floor.
 
 - [x] Runtime LOD (Oct 2026, xanadu's port): every hero tree drawn within `RIFT.LOD.tree` (1.2 km)
       of its chunk and as a stand-in impostor past it; the far trees per chunk against the view;

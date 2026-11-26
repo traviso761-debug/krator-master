@@ -1,0 +1,1195 @@
+{
+ "about": "What a simulated person's activity looks like (ACTIVITIES-PLAN.md): per activity id (core/simulation and the settlements' sims), the clips (data/clips.json keys; one picked per person by KRAND.hash(seed, the id's salt), so a crowd is not in step), the props in each hand (data/props.json), enter and exit (one-shots played when the activity starts and ends), and overrides by the furniture the sim put the person at (by_furniture: SIM.FURN_ACT roles), then by trade (by_trade: the census trades, tools/trades_census.json), then by role (by_role: a settlement's own roles); an override is an object with the same fields, or a clip key alone. alias: another activity's entry. gap: what the activity really wants that no clip gives yet (the clips are a stand-in until then; tests/check_activities.py lists them). KCHAR.activity(table, act, ctx) and KChar.activity read it; an id with no entry plays 'fallback'.",
+ "fallback": "IDLE",
+ "activities": {
+  "IDLE": {
+   "clips": [
+    "idle",
+    "idle_1",
+    "idle_3",
+    "idle_4",
+    "idle_5",
+    "idle_6",
+    "idle_7",
+    "idle_8",
+    "idle_9",
+    "idle_10",
+    "idle_11",
+    "idle_12",
+    "idle_13",
+    "idle_14",
+    "idle_15"
+   ]
+  },
+  "WAIT": {
+   "alias": "IDLE"
+  },
+  "CONTEMPLATE": {
+   "clips": [
+    "idle_5",
+    "idle_13",
+    "mirror",
+    "ual_arms_folded"
+   ]
+  },
+  "MOVE": {
+   "clips": [
+    "walk"
+   ]
+  },
+  "WALK": {
+   "alias": "MOVE"
+  },
+  "TRAVEL": {
+   "alias": "MOVE"
+  },
+  "KORA": {
+   "alias": "MOVE"
+  },
+  "PILGRIM": {
+   "clips": [
+    "walk",
+    "ual_talk"
+   ]
+  },
+  "DEPART": {
+   "alias": "MOVE"
+  },
+  "FLEE": {
+   "clips": [
+    "sprint",
+    "run"
+   ]
+  },
+  "SLEEP": {
+   "clips": [
+    "sleep",
+    "sleep",
+    "sleep_toss"
+   ],
+   "enter": "lie_bed",
+   "exit": "wake"
+  },
+  "REST": {
+   "clips": [
+    "ual_arms_folded",
+    "ual_talk",
+    "sit_floor"
+   ],
+   "by_furniture": {
+    "bed": {
+     "clips": [
+      "sleep"
+     ],
+     "enter": "lie_bed",
+     "exit": "wake"
+    },
+    "mat": {
+     "clips": [
+      "sleep"
+     ],
+     "enter": "lie_bed",
+     "exit": "wake"
+    },
+    "bunk": {
+     "clips": [
+      "sleep"
+     ],
+     "enter": "lie_bed",
+     "exit": "wake"
+    },
+    "chair": {
+     "clips": [
+      "sit",
+      "sit_f"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    },
+    "bench": {
+     "clips": [
+      "ual_sit",
+      "ual_sit_talk"
+     ],
+     "enter": "ual_sit_down",
+     "exit": "ual_sit_up"
+    }
+   }
+  },
+  "REST_C": {
+   "alias": "REST"
+  },
+  "REST_W": {
+   "alias": "REST"
+  },
+  "RELAX": {
+   "clips": [
+    "ual_arms_folded",
+    "stretch",
+    "idle_6",
+    "dozing"
+   ],
+   "by_furniture": {
+    "chair": {
+     "clips": [
+      "sit_f",
+      "sit"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    },
+    "bench": {
+     "clips": [
+      "ual_sit"
+     ],
+     "enter": "ual_sit_down",
+     "exit": "ual_sit_up"
+    }
+   }
+  },
+  "EAT": {
+   "clips": [
+    "ual_consume"
+   ],
+   "prop": {
+    "R": "bowl",
+    "L": "bread"
+   },
+   "by_furniture": {
+    "table": {
+     "clips": [
+      "sit",
+      "sit_f"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    },
+    "chair": {
+     "clips": [
+      "sit",
+      "sit_f"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    },
+    "seat": {
+     "clips": [
+      "ual_sit"
+     ],
+     "enter": "ual_sit_down",
+     "exit": "ual_sit_up"
+    }
+   },
+   "gap": "eating seated at a table (spoon or hands to the mouth while sitting)"
+  },
+  "DRINK": {
+   "clips": [
+    "drink"
+   ],
+   "prop": {
+    "L": "cup"
+   },
+   "by_furniture": {
+    "stool": {
+     "clips": [
+      "sit_drink"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    },
+    "chair": {
+     "clips": [
+      "sit_drink"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    },
+    "well": {
+     "clips": [
+      "drink"
+     ],
+     "prop": {
+      "L": "cup"
+     }
+    }
+   }
+  },
+  "TEA": {
+   "clips": [
+    "sit_drink"
+   ],
+   "prop": {
+    "L": "cup"
+   },
+   "enter": "sit_down",
+   "exit": "stand_up"
+  },
+  "SOCIALIZE": {
+   "clips": [
+    "ual_talk",
+    "ual_talk",
+    "talk_open",
+    "agree",
+    "shrug",
+    "nod",
+    "ual_arms_folded",
+    "idle_6",
+    "lean_rail"
+   ],
+   "by_furniture": {
+    "bench": {
+     "clips": [
+      "ual_sit_talk"
+     ],
+     "enter": "ual_sit_down",
+     "exit": "ual_sit_up"
+    },
+    "chair": {
+     "clips": [
+      "ual_sit_talk"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    }
+   },
+   "gap": "laughing, a handshake, an embrace",
+   "enter": "wave"
+  },
+  "VISIT": {
+   "alias": "SOCIALIZE"
+  },
+  "TALK": {
+   "alias": "SOCIALIZE"
+  },
+  "DEBATE": {
+   "clips": [
+    "ual_talk",
+    "sit_answer",
+    "argue",
+    "sit_floor"
+   ]
+  },
+  "PLAY": {
+   "clips": [
+    "ual_jump",
+    "run",
+    "ual_jog"
+   ],
+   "gap": "children's play (and child bodies)"
+  },
+  "BUY": {
+   "clips": [
+    "ual_talk",
+    "take",
+    "give",
+    "ual_pickup_table"
+   ],
+   "gap": "coin and goods to hand (props)"
+  },
+  "SELL": {
+   "clips": [
+    "talk_open",
+    "talk_open",
+    "give",
+    "take",
+    "ual_pickup_table"
+   ],
+   "gap": "coin and goods to hand (props)"
+  },
+  "TRADE": {
+   "clips": [
+    "ual_talk",
+    "talk_open",
+    "agree"
+   ]
+  },
+  "KEEP_SHOP": {
+   "clips": [
+    "ual_arms_folded",
+    "ual_talk",
+    "ual_pickup_table"
+   ]
+  },
+  "KEEP_INN": {
+   "clips": [
+    "ual_talk",
+    "ual_pickup_table",
+    "walk_carry"
+   ],
+   "gap": "serving: carrying a tray, pouring"
+  },
+  "LODGE": {
+   "clips": [
+    "sit_floor",
+    "ual_sit"
+   ]
+  },
+  "CAMP": {
+   "clips": [
+    "sit_floor"
+   ]
+  },
+  "HAUL": {
+   "clips": [
+    "walk_sack",
+    "walk_carry",
+    "push",
+    "ual_push"
+   ],
+   "gap": "pulling a handcart"
+  },
+  "LOAD": {
+   "clips": [
+    "pick_up",
+    "ual_carry",
+    "pick_up_side"
+   ]
+  },
+  "UNLOAD": {
+   "alias": "LOAD"
+  },
+  "STORE": {
+   "clips": [
+    "pick_up_side",
+    "ual_carry",
+    "pick_up"
+   ],
+   "gap": "stacking crates and sacks"
+  },
+  "STORE_FOOD": {
+   "alias": "STORE"
+  },
+  "DELIVER": {
+   "clips": [
+    "walk_carry",
+    "ual_carry"
+   ]
+  },
+  "FETCH_WATER": {
+   "clips": [
+    "walk_bucket"
+   ],
+   "prop": {
+    "R": "bucket"
+   }
+  },
+  "DRAW_TOOLS": {
+   "clips": [
+    "pick_up",
+    "ual_pickup_table"
+   ]
+  },
+  "HOUSEWORK": {
+   "clips": [
+    "sweep",
+    "sweep",
+    "beat_rug",
+    "pick_up_side",
+    "ual_carry"
+   ],
+   "gap": "scrubbing, hanging washing"
+  },
+  "FARM": {
+   "clips": [
+    "ual_harvest",
+    "ual_harvest",
+    "ual_water",
+    "ual_plant",
+    "dig"
+   ],
+   "prop": null,
+   "by_trade": {
+    "farmhands and ploughmen": {
+     "clips": [
+      "dig",
+      "dig",
+      "ual_plant",
+      "harvest"
+     ],
+     "prop": {
+      "R": "hoe"
+     }
+    },
+    "chinampa growers": {
+     "clips": [
+      "dig",
+      "ual_plant",
+      "ual_harvest"
+     ],
+     "prop": {
+      "R": "hoe"
+     }
+    },
+    "monks and lay brothers": {
+     "clips": [
+      "dig",
+      "ual_water",
+      "ual_harvest"
+     ],
+     "prop": {
+      "R": "hoe"
+     }
+    },
+    "orchardmen": {
+     "clips": [
+      "pick_fruit",
+      "collect"
+     ]
+    },
+    "mushroom growers": {
+     "clips": [
+      "ual_harvest",
+      "collect"
+     ]
+    }
+   },
+   "gap": "ploughing behind a beast; spade work; shears"
+  },
+  "GATHER": {
+   "clips": [
+    "pick_fruit",
+    "collect",
+    "pick_up"
+   ]
+  },
+  "FORAGE": {
+   "alias": "GATHER"
+  },
+  "CUT_REED": {
+   "clips": [
+    "ual_harvest",
+    "ual_chop"
+   ],
+   "prop": {
+    "R": "sickle"
+   }
+  },
+  "MINE": {
+   "clips": [
+    "dig"
+   ],
+   "prop": {
+    "R": "pickaxe"
+   }
+  },
+  "QUARRY": {
+   "clips": [
+    "dig",
+    "hammer_anvil"
+   ],
+   "prop": {
+    "R": "pickaxe"
+   },
+   "gap": "a maul or sledge swing; wedge and mallet"
+  },
+  "CUT_STONE": {
+   "alias": "QUARRY"
+  },
+  "LOG": {
+   "clips": [
+    "ual_chop",
+    "axe_chop",
+    "saw"
+   ],
+   "prop": {
+    "R": "axe"
+   },
+   "gap": "the two-man saw, the sawpit"
+  },
+  "CRAFT": {
+   "clips": [
+    "craft_bench",
+    "ual_repair"
+   ],
+   "prop": {
+    "R": "hammer"
+   },
+   "by_furniture": {
+    "anvil": {
+     "clips": [
+      "hammer_anvil"
+     ],
+     "prop": {
+      "R": "hammer"
+     }
+    },
+    "forge": {
+     "clips": [
+      "hammer_anvil"
+     ],
+     "prop": {
+      "R": "hammer"
+     }
+    },
+    "smithing": {
+     "clips": [
+      "hammer_anvil"
+     ],
+     "prop": {
+      "R": "hammer"
+     }
+    },
+    "carpentry": {
+     "clips": [
+      "saw",
+      "ual_repair",
+      "craft_bench"
+     ]
+    },
+    "milling": {
+     "clips": [
+      "ual_carry",
+      "pick_up_side"
+     ],
+     "prop": null
+    }
+   },
+   "by_trade": {
+    "smiths and craftsmen": {
+     "clips": [
+      "hammer_anvil"
+     ],
+     "prop": {
+      "R": "hammer"
+     }
+    },
+    "armourers and quartermasters": {
+     "clips": [
+      "hammer_anvil",
+      "ual_repair"
+     ],
+     "prop": {
+      "R": "hammer"
+     }
+    },
+    "shipwrights and boatbuilders": {
+     "clips": [
+      "ual_repair",
+      "hammer_anvil"
+     ],
+     "prop": {
+      "R": "hammer"
+     }
+    },
+    "butchers": {
+     "clips": [
+      "ual_chop"
+     ],
+     "prop": {
+      "R": "axe"
+     }
+    },
+    "tanners": {
+     "clips": [
+      "ual_repair"
+     ],
+     "prop": null
+    }
+   },
+   "gap": "most crafts beyond the anvil: pottery, carpentry (saw, plane), tanning (scraping), butchery (cleaver)"
+  },
+  "SMITH": {
+   "alias": "CRAFT"
+  },
+  "WORK": {
+   "clips": [
+    "craft_bench",
+    "ual_repair",
+    "ual_carry"
+   ],
+   "by_trade": {
+    "miners": {
+     "clips": [
+      "dig"
+     ],
+     "prop": {
+      "R": "pickaxe"
+     }
+    },
+    "quarrymen and masons": {
+     "clips": [
+      "dig"
+     ],
+     "prop": {
+      "R": "pickaxe"
+     }
+    },
+    "smiths and craftsmen": {
+     "clips": [
+      "hammer_anvil"
+     ],
+     "prop": {
+      "R": "hammer"
+     }
+    },
+    "dockers and stevedores": "walk_carry",
+    "porters and warehousemen": "walk_carry",
+    "industrial workers": {
+     "clips": [
+      "ual_repair",
+      "ual_push"
+     ],
+     "prop": {
+      "R": "hammer"
+     }
+    },
+    "farmhands and ploughmen": {
+     "clips": [
+      "dig",
+      "ual_plant"
+     ],
+     "prop": {
+      "R": "hoe"
+     }
+    },
+    "lighthouse keepers": {
+     "clips": [
+      "ual_lantern"
+     ],
+     "prop": {
+      "R": "torch"
+     }
+    }
+   }
+  },
+  "REPAIR": {
+   "clips": [
+    "ual_repair"
+   ],
+   "prop": {
+    "R": "hammer"
+   }
+  },
+  "MAINTAIN": {
+   "alias": "REPAIR"
+  },
+  "WEAVE": {
+   "clips": [
+    "weave"
+   ],
+   "gap": "the loom itself (drawn)",
+   "prop": {
+    "R": "shuttle"
+   }
+  },
+  "COOK": {
+   "clips": [
+    "cook_stir",
+    "cook_stir",
+    "ual_pickup_table"
+   ],
+   "gap": "kneading, the oven peel",
+   "prop": {
+    "R": "ladle"
+   }
+  },
+  "BREW": {
+   "clips": [
+    "craft_bench"
+   ],
+   "gap": "stirring a vat; pouring"
+  },
+  "ALCHEMY": {
+   "clips": [
+    "craft_bench"
+   ],
+   "gap": "grinding, pouring, heating a flask"
+  },
+  "TURN_WHEEL": {
+   "clips": [
+    "ual_push"
+   ]
+  },
+  "STUDY": {
+   "clips": [
+    "read",
+    "read",
+    "sit_floor"
+   ],
+   "by_furniture": {
+    "desk": {
+     "clips": [
+      "write",
+      "read"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    }
+   }
+  },
+  "STUDY_IN": {
+   "alias": "STUDY"
+  },
+  "RESEARCH": {
+   "alias": "STUDY"
+  },
+  "TEACH": {
+   "clips": [
+    "ual_talk"
+   ]
+  },
+  "HEAL": {
+   "clips": [
+    "ual_repair"
+   ],
+   "gap": "tending a patient at a sickbed; grinding herbs"
+  },
+  "WORSHIP": {
+   "clips": [
+    "kneel_pray",
+    "kneel_pray",
+    "sit_floor",
+    "idle_5"
+   ],
+   "enter": "bow_formal",
+   "gap": "prostration; raised arms"
+  },
+  "PRAY": {
+   "alias": "WORSHIP"
+  },
+  "PRIEST": {
+   "clips": [
+    "orate",
+    "orate",
+    "talk_open",
+    "idle_5"
+   ],
+   "enter": "bow_formal",
+   "gap": "leading a rite",
+   "prop": {
+    "L": "censer"
+   }
+  },
+  "RITUAL": {
+   "alias": "PRIEST"
+  },
+  "HONOUR": {
+   "clips": [
+    "kneel",
+    "idle_5",
+    "idle_13"
+   ],
+   "enter": "bow_formal",
+   "gap": "laying an offering"
+  },
+  "MOURN": {
+   "clips": [
+    "idle_13",
+    "sit_floor",
+    "kneel"
+   ],
+   "gap": "lament: head in hands"
+  },
+  "KEEP_DEAD": {
+   "alias": "HONOUR"
+  },
+  "SING": {
+   "clips": [
+    "ual_talk"
+   ],
+   "gap": "singing"
+  },
+  "CHAM": {
+   "clips": [
+    "dance"
+   ],
+   "gap": "a ritual dance of its own (Meshy has dances)"
+  },
+  "FESTIVAL": {
+   "clips": [
+    "dance",
+    "dance_joyful",
+    "dance_joyful",
+    "cheer",
+    "cheer_hands_up",
+    "fist_pump",
+    "ual_talk"
+   ],
+   "by_furniture": {
+    "bench": {
+     "clips": [
+      "clap_sit"
+     ],
+     "enter": "ual_sit_down",
+     "exit": "ual_sit_up"
+    },
+    "chair": {
+     "clips": [
+      "clap_sit"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    }
+   },
+   "gap": "standing applause; each culture's own folk dances"
+  },
+  "GUARD": {
+   "clips": [
+    "ual_arms_folded"
+   ],
+   "by_role": {
+    "operative": "combat_idle"
+   },
+   "gap": "standing to attention; leaning on a spear"
+  },
+  "KEEP": {
+   "clips": [
+    "ual_lantern"
+   ],
+   "prop": {
+    "R": "lantern"
+   }
+  },
+  "WATCH": {
+   "alias": "KEEP"
+  },
+  "PATROL": {
+   "clips": [
+    "walk"
+   ],
+   "by_trade": {
+    "soldiers": "spear_walk",
+    "Ordinator garrison": "spear_walk"
+   }
+  },
+  "SCOUT": {
+   "clips": [
+    "ual_crouch_walk",
+    "walk"
+   ],
+   "gap": "looking around; crouch and inspect"
+  },
+  "EXPLORE": {
+   "alias": "SCOUT"
+  },
+  "SEARCH": {
+   "clips": [
+    "pick_up",
+    "ual_crouch"
+   ]
+  },
+  "INVESTIGATE": {
+   "alias": "SEARCH"
+  },
+  "TRAIN": {
+   "clips": [
+    "ual_sword_a",
+    "ual_sword_b",
+    "ual_sword_c",
+    "combat_idle",
+    "ual_punch"
+   ],
+   "prop": {
+    "R": "sword"
+   },
+   "by_furniture": {
+    "archery_butt": {
+     "clips": [
+      "bow_shot"
+     ],
+     "prop": {
+      "L": "bow"
+     }
+    },
+    "training_dummy": {
+     "clips": [
+      "ual_sword_a",
+      "ual_sword_b",
+      "ual_sword_combo"
+     ],
+     "prop": {
+      "R": "sword"
+     }
+    }
+   },
+   "gap": "sparring in pairs; drill in ranks",
+   "by_role": {
+    "brawler": {
+     "clips": [
+      "unarmed_guard",
+      "shadow_box",
+      "jab_l",
+      "jab_r",
+      "punch_combo_1",
+      "kick_front"
+     ],
+     "prop": null
+    }
+   }
+  },
+  "DRILL": {
+   "clips": [
+    "ual_punch",
+    "jab_l",
+    "jab_r",
+    "kick_front",
+    "unarmed_guard",
+    "shadow_box"
+   ],
+   "by_role": {
+    "master": "combat_idle"
+   }
+  },
+  "FIGHT": {
+   "clips": [
+    "ual_sword_a",
+    "ual_sword_b",
+    "ual_sword_c",
+    "ual_sword_combo",
+    "ual_punch"
+   ],
+   "prop": {
+    "R": "sword"
+   },
+   "by_role": {
+    "brawler": {
+     "clips": [
+      "unarmed_guard",
+      "ual_jab",
+      "ual_cross",
+      "hook_l",
+      "punch_combo_1",
+      "kick_front"
+     ],
+     "prop": null
+    }
+   }
+  },
+  "ESCORT": {
+   "alias": "PATROL"
+  },
+  "FOLLOW": {
+   "alias": "MOVE"
+  },
+  "RULE": {
+   "clips": [
+    "sit",
+    "sit_answer"
+   ],
+   "enter": "sit_down",
+   "exit": "stand_up",
+   "gap": "a throne pose (proclaiming standing: orate serves)"
+  },
+  "GOVERN": {
+   "alias": "RULE"
+  },
+  "COLLECT_TOLL": {
+   "clips": [
+    "ual_talk",
+    "ual_arms_folded"
+   ]
+  },
+  "JAIL": {
+   "clips": [
+    "sit_floor",
+    "idle_13"
+   ]
+  },
+  "HIDE": {
+   "clips": [
+    "ual_crouch"
+   ]
+  },
+  "FENCE": {
+   "clips": [
+    "ual_talk"
+   ],
+   "gap": "a furtive hand-over"
+  },
+  "DRIVE": {
+   "clips": [
+    "ual_drive"
+   ]
+  },
+  "DRIVE_BACK": {
+   "alias": "DRIVE"
+  },
+  "STABLE": {
+   "clips": [
+    "feed",
+    "walk_lead",
+    "ual_water"
+   ],
+   "gap": "grooming"
+  },
+  "TEND_BEASTS": {
+   "alias": "STABLE"
+  },
+  "FEED": {
+   "clips": [
+    "feed",
+    "feed",
+    "ual_water"
+   ],
+   "gap": "a trough"
+  },
+  "HERD": {
+   "clips": [
+    "walk_lead",
+    "walk"
+   ],
+   "prop": {
+    "R": "lead"
+   },
+   "by_role": {
+    "drover": {
+     "clips": [
+      "walk_lead",
+      "walk"
+     ],
+     "prop": {
+      "R": "goad"
+     }
+    }
+   },
+   "gap": "driving beasts with a goad (a clip of its own)"
+  },
+  "WATER_CAMELS": {
+   "clips": [
+    "ual_water"
+   ],
+   "prop": {
+    "R": "bucket"
+   }
+  },
+  "FISH": {
+   "clips": [
+    "cast_net",
+    "row",
+    "idle_5"
+   ],
+   "gap": "line fishing"
+  },
+  "FISH_SHORE": {
+   "clips": [
+    "fish_rod",
+    "fish_rod",
+    "cast_net"
+   ],
+   "about": "fishing from the bank"
+  },
+  "MEND_NETS": {
+   "clips": [
+    "sit_floor",
+    "ual_repair"
+   ],
+   "gap": "mending a net seated"
+  },
+  "BOARD_FERRY": {
+   "clips": [
+    "idle",
+    "sit"
+   ],
+   "gap": "seated passenger aboard"
+  },
+  "BOARD_STRIDER": {
+   "alias": "BOARD_FERRY"
+  },
+  "BOARD": {
+   "alias": "BOARD_FERRY"
+  },
+  "DISEMBARK": {
+   "alias": "MOVE"
+  },
+  "BRAWL": {
+   "clips": [
+    "unarmed_guard",
+    "ual_jab",
+    "ual_cross",
+    "hook_l",
+    "uppercut_r",
+    "punch_combo_1",
+    "punch_combo_2",
+    "kick_front",
+    "throw_grip"
+   ],
+   "about": "a fist fight: a tavern brawl, a riot, a duel without blades"
+  },
+  "HURT": {
+   "clips": [
+    "hit_face",
+    "hit_face_2",
+    "hit_slap"
+   ],
+   "about": "struck; one-shot reactions"
+  },
+  "LOAF": {
+   "clips": [
+    "lean_rail",
+    "ual_arms_folded",
+    "idle_6"
+   ]
+  },
+  "PAY_TOLL": {
+   "alias": "BUY"
+  },
+  "FREE": {
+   "alias": "IDLE"
+  },
+  "GREET": {
+   "clips": [
+    "wave",
+    "wave_big",
+    "bow_court",
+    "nod"
+   ],
+   "about": "meeting someone: a one-shot, then back to what they were doing"
+  },
+  "ARGUE": {
+   "clips": [
+    "argue",
+    "argue",
+    "shout",
+    "stomp"
+   ],
+   "about": "a quarrel short of blows (BRAWL is the fight)"
+  },
+  "CHEER": {
+   "clips": [
+    "cheer",
+    "cheer_hands_up",
+    "cheer_rally",
+    "fist_pump"
+   ],
+   "by_furniture": {
+    "bench": {
+     "clips": [
+      "clap_sit"
+     ]
+    },
+    "chair": {
+     "clips": [
+      "clap_sit"
+     ]
+    }
+   },
+   "about": "a crowd at a race, a triumph, an arena"
+  },
+  "ROW": {
+   "clips": [
+    "row"
+   ],
+   "about": "rowing or paddling a boat: the ferrymen, the fishing boats",
+   "by_furniture": {
+    "canoe": {
+     "clips": [
+      "paddle"
+     ],
+     "prop": {
+      "R": "paddle"
+     }
+    }
+   },
+   "prop": {
+    "R": "oar",
+    "L": "oar"
+   }
+  },
+  "MILK": {
+   "clips": [
+    "milk"
+   ],
+   "about": "milking a beast, on a stool beside it"
+  }
+ }
+}

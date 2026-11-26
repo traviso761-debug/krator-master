@@ -20,7 +20,7 @@ need work, and four more need small checks. Godthrone is better off.
 | **Abyssal savannah 1, the rim slope** | built | At px 1021,350: -179 -> -1,063 m (Aw -> XV) | Small: the same climb is about 5 px east. Move the site to about 1026,350, then check the two risers against the rim's new benches (`e abyss`, -1,600 to -1,150 and -550 to -100 m) |
 | **Outlands 5, the Nursery Plateau** | planned | At px 1269,130: 3,783 -> 1,676 m, BWk -> Cfa, rain 31 -> 1,553 mm | The dry plateau is now a wet graben floor. Re-site it on remaining BWk ground in N Outlands; the other Outlands stations are within 320 m |
 | **Farside: kelp coast, front, strand** | built | +262, +247, -246 m. All stay inside their plan bands, but relief at the front rises from 6.9 to 8.2 km | Check the heights, and add the tsunami's ground and Farport's plateau (below) |
-| **The Rift: highland, plateau** | built | Highland -234 m, rain 2,384 -> 1,788 mm. Cube's Plateau now has 1,200-1,600 m fault cliffs (30 km relief 1,590 -> 2,090 m). River 3's mouth -1,436 -> -1,858 m | Check the far field and the horizon; the stations themselves hold (plateau -17 m). `rift/stations/bake_far.py` needs a fresh cut |
+| **The Rift: highland, plateau** | built | Highland -234 m, rain 2,384 -> 1,788 mm. The Pile's plateau (Cube's) now has 1,200-1,600 m fault cliffs (30 km relief 1,590 -> 2,090 m). River 3's mouth -1,436 -> -1,858 m | Check the far field and the horizon; the stations themselves hold (plateau -17 m). `rift/stations/bake_far.py` needs a fresh cut |
 
 ## Small checks
 
@@ -80,8 +80,13 @@ river also stands 29 m above the sea at its mouth, so ships could not reach it.
 and 11 km from the present pin, slope about 3.6%, all above the ceiling. **The old city and important buildings go there.** **The harbour
 stays at the water, in the wave's reach**: quays, dockyard and the traders' factory quarter (`kits/eternian`).
 
-**To do:** Gemini moves Farport's pin to the plateau and grades Līng-Mā's mouth to the sea (the handoff has it); the Farside page and the
-later settlement build follow. The elevations here are from the map at cc6dd36e0.
+**Done on the map (203d69d58):** Farport stands on the plateau at 5.1 px 294,588, 212 m and 4 km from the sea, Līng-Mā grades to 0 m at its mouth, and `DATA.tsunami_farside` gives a 50 m crest and a 100 m run-up ceiling. The Farside page and the later settlement build follow.
+
+**Rechecked on 3e35e605f (Round 2, merged):** Gemini restored the accidental moves: nwouterwall's yeti station is back at 5,647 m and Farside's front at 2,179 m. Farside's kelp coast is 725 m (548 m at review). Farport's river is now named Hōng-Mā (`r002`); this document's earlier name is Līng-Mā, because the names moved again in Round 2.
+
+## Rechecked on Round 3 (68b6aa22b, merged)
+
+River names are frozen (`smodel/frozen_river_names.json`), and Farport's river is Līng-Mā again. The seven valley basins read as basins, four of them dry, round a 17.4 m lake. **The southern Inner Wall scarp is on the model, and it moves shighlands:** its cloud forest page's site goes from -183 to 550 m, and ground near px 838,1036 moved up to 4.7 km. Re-survey shighlands' stations in its turn (pair 12). Up to 408 m moved near px 501,1064 in SW lowlands: unexplained in the README, and swlowlands' turn was built on Round 2.
 
 ## New kits and priorities (the owner, 2026-11-01)
 
@@ -91,10 +96,11 @@ later settlement build follow. The elevations here are from the map at cc6dd36e0
 |---|---|---|---|---|
 | Copper Glacier | `rmvcopperglacier` | 217,000 km² | 2.4-11.2 km, median 6.2 km | The one kit in the Crook that counts as near-term |
 | Siphon Pits | `rmvra9zogfm9t` | 176,000 km² | 2.0-5.3 km, median 4.4 km | `PLAN.md`, `PLAN-STATIONS.md` and 4 station records exist; no kit |
-| Loom-Chasms | `rmvraoas90co7` (Region 99) | 307,000 km² | 0.3-8.2 km, median 1.8 km | `PLAN.md` and 4 station records exist; the page is a showcase, not a kit |
-| Mid Basin | `rmvmidbasin101` | 169,000 km² | 1.5-4.4 km, median 2.2 km | The transition between Siphon Pits and Loom-Chasms: no plan yet |
+| Loom-Chasms | `rmvraoas90co7` (the Loom Chasms) | 307,000 km² | 0.3-8.2 km, median 1.8 km | `PLAN.md` and 4 station records exist; the page is a showcase, not a kit |
+| The Slabfields (was Mid Basin) | `rmvmidbasin101` | 169,000 km² | 1.5-4.4 km, median 2.2 km | The transition between Siphon Pits and Loom-Chasms: Io-style tilted slabs south of the stress hinge (`biomes/slabfields/PLAN.md`) |
 | High Rift | `rmvhighrift100` | 86,000 km² | 2.9-11.4 km, median 4.0 km | Five zones: no plan yet |
-| NE outer wall | coming | | | Gemini's polygon arrives with its current session; the plan is being written |
+| NE outer wall | `ne outer wall` | | | On the map, with `biomes/neouterwall/PLAN.md`. Overlaps `arachnoid canyons` |
+| Outland Gate | `outland gate` | | | Added by the owner, 2026-11-02; `biomes/outlandgate/PLAN.md` on Gemini's branch |
 
 Elevations are the 5th to 95th percentile. These kits start from the nearest finished kit, on core, each with a `Core adoption`
 section in its `PLAN.md`. Loom-Chasms' and Siphon Pits' plans use old-canvas px; Spider Lake's uses the new one.

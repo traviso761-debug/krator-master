@@ -9,6 +9,9 @@ module is plain functions on those records (`[G data]`: no THREE, no DOM), porte
 |---|---|
 | `20-core-hazard.js` | `KHAZ`: `make`, `of`, `shape`, `inside`, `beyond`, `state`, `dose`, `list`, `at`, `zones`, `export`, `STATES`, `speed`; `exposure`, `bindFire`, `fireHazard`, `GROUND`; `taboo`, `taboos`, `forbids`, `tabooOk`, `tabooAudit` |
 | `test-hazard.js` | `node core/hazard/test-hazard.js`: every function, each check with a negative |
+| `21-core-hazard-flow.js` | opt-in: `KHAZ.moveAt`, `drift`, `poolK`: a hazard's `move` read (`move.pull` toward the core) and gas pooled on a band's floor (`shape.pool`); `test-hazard-flow.js` |
+| `22-core-hazard-env.js` | opt-in: crusts that break underfoot (`KHAZ.crust`, `KHAZ.under`, `load`, `mend`, `saveCrusts`), air that pools at night and in still air (`KHAZ.night`, `bindClock`, `bindWind`), fronts that travel a path (`KHAZ.front`: the gorge flood and the charge; `frontAt`, `floodLevel`, `bindHerd`), `KHAZ.ENV` builders; `test-hazard-env.js` |
+| `22-core-hazard-tunnel.js` | opt-in: the tunnels' kinds `rockburst`, `inrush`, `seal` (their rows added to the vocabulary at first use), `KHAZ.TUNNEL`, `burstAt`, `spalls`, `flood`, `pressure`, `breach`, `reseal`, `bindDoor`, `sealStep`, `tunnelAudit`; `test-hazard-tunnel.js` |
 | `GODOT.md` | the Area3D, navigation and status mapping for the port |
 
 What else it touches (all in this workstream, 2026-10-26):
@@ -270,9 +273,144 @@ pressure by height, and a temperature field when one exists).
 - **Local cases stay records**: a CO2 hollow, a cold sink, a sealed airless chamber are `gas` or `cold` records with a
   shape.
 
+## Moving and pooling (`21-core-hazard-flow.js`, opt-in, 2026-11-03)
+
+The Gills' in-breath (`biomes/gills/PLAN.md` sections 9 and 14 item 5) is a `grab` that pulls a walker toward a throat, and
+their sumps' gas, like the Hearths' fissure lows, kills on the floor and is nothing two metres up. `20-core-hazard.js` kept
+`move {speed, sink, slip}` on the record and nothing read it; a band's dose was the same from its floor to its top. This
+fragment reads both, and adds two fields:
+
+- `move.pull` (m/s) toward `move.to` (`[dx, dy, dz]` from the record's `at`; default the core at the band's floor), easing out
+  within `move.still` (.5 m) of it; `speed`, `sink` and `slip` as before. Each is scaled by the falloff at the point and the
+  state's `k` now, so a throat whose cycle (or `stateFn`) is off pulls nothing.
+- `shape.pool` (m): the band's dose falls smoothly from its floor (`at` y + `shape.y0`) to nothing `pool` m up.
+
+`KHAZ.moveAt(rec, x, z, t, y)` (one record: `{speed, sink, slip, pull: [vx, vy, vz], k}`, null outside), `KHAZ.drift(x, z, t, y,
+T)` (every record at a point: paces multiplied, sinks summed, the worst slip, pulls summed, `by`), `KHAZ.poolK(rec, y)`. Once
+the file is loaded, `KHAZ.at`, `dose`, `doses`, `here` and `exposure().step` take the pooled share (`KHAZ.FLOW` is true); a
+record without `move.pull` or `shape.pool` answers exactly as before (`test-hazard-flow.js` reads one registry at 8 points
+and 5 times before and after loading it). With no `y` the pool is not applied (a plan view). Both fields ride in the export's
+filled `hazard`.
+
+### Adopting it
+
+1. `build.py`: list `core/hazard/21-core-hazard-flow.js` after `20-core-hazard.js`.
+2. The in-breath at a throat: `{kind: 'grab', danger: .7, falloff: 'linear', shape: {type: 'cyl', r, h, y0: -depth}, move:
+   {speed: .5, pull: 1.2, to: [0, -depth, 0]}, stateFn: 'GILLS.suck'}`, with `KHAZ.STATES['GILLS.suck'] = (rec, h, t) =>
+   ({state: k > 0 ? 'drawing' : 'still', k, on: k > 0})` and `k = 1 - GILLS.breath(t)` (the in-breath is the breath's low).
+3. A sump: `{kind: 'gas', danger: 1, falloff: 'none', shape: {type: 'poly', pts, h: 4, pool: 2}}` at the floor's height.
+4. The walker each step: `const D = KHAZ.drift(x, z, t, y)`; its pace times `D.speed`, plus `D.pull` times dt.
+
+## Crusts, night and fronts (`22-core-hazard-env.js`, opt-in, 2026-11-09)
+
+The biome plans of 2026-11-09 asked for three things 20 cannot write as a plain record. A crust is harmless until it
+breaks and then stays broken (a `trigger` is harmful until tripped, then resets). Gas and cold air pool at night and in
+still air (a `cycle` runs on a hashed or authored phase, not the world clock). A flood or a herd travels a path. Each is
+a state function in `KHAZ.STATES`, named by the record's `stateFn`, plus a field on `tags.hazard`. The fields are checked
+at first read: an unknown or bad field throws, naming the record, and a field without its `stateFn` (or the reverse)
+throws too. They ride in `KHAZ.of`, `KHAZ.make` and the export's filled `hazard`. A record without them answers bit for
+bit as before: `test-hazard-env.js` reads one registry at 10 points and 6 times before and after loading 22, with and
+without 21.
+
+- **A crust** (twins, opalvalley, firebliss, godshearth, neouterwall: sinter over boiling water, a pahoehoe blister over
+  a lava pond, opaline crust over mud pots). It is two records at one `at`:
+  - The crust: `stateFn: 'KHAZ.crust'`, `crust: {mass (kg, 60), heal (s; null = it stays broken)}`. It is `intact` (k 0,
+    `warn`: its tell, a hollow sound, still shows) until it breaks, then `broken` (k 1, with `left` while it heals).
+  - The harm below: `stateFn: 'KHAZ.under'`, `under: {crust: <the crust's id>}`. It is `held` (k 0) while the crust
+    holds, then its own state (steady, or its cycle) with `crust: 'broken'`.
+  - `KHAZ.load(rec, mass, t)` is true when this load broke it (mass >= `crust.mass`). `KHAZ.trip(rec, t, mass)` on a
+    crust does the same (its `trigger: {by: 'weight', mass}` must agree with `crust.mass`; a step or near trigger breaks
+    it with no mass); on any other record it is 20's trip.
+  - `KHAZ.mend(rec | id)` (and `KHAZ.rearm`) makes it whole. Which crusts broke and when is page state by id, as trips
+    are: `KHAZ.saveCrusts()` gives `{format: 'krator-hazard-crusts', version: 1, broken: {id: {t, heal}}}`, and
+    `KHAZ.loadCrusts(s)` takes it back (a saved game).
+- **Night air** (neouterwall, godshearth, midbasin, greatchasm, firebliss, twins): `stateFn: 'KHAZ.night'`, `night:
+  {from (19), to (6), ramp (2 h), still (1 m/s), calm (4 m/s), base (0)}`.
+  - It builds over `ramp` hours after `from` and drains over `ramp` hours after `to` (smoothsteps). The wind takes it
+    away: all of it at `still` or less, none at `calm` or more, a smoothstep between.
+  - `k = base + (1 - base) x night x wind`, times the record's cycle's k when it has a `cycle`.
+  - The hour comes from `KHAZ.bindClock(C)`: a KCLOCK clock (it reads `C.hour`) or `fn(t) -> hour`. With none bound, a
+    night record throws, naming the call.
+  - The wind comes from `KHAZ.bindWind(fn(x, z, t) -> [vx, vz] | m/s)` or a fixed speed. With none bound the air is
+    still. core/atmos's slope wind goes in as a function.
+  - **The cold-air pool** is a `cold` record on `KHAZ.night` with 21's `shape.pool`.
+- **A front** (`stateFn: 'KHAZ.front'`, `front: {path, w, speed, start, period, rise, hold, fall, depth, base, len,
+  edge}`): one law for the gorge flood (firebliss, midbasin, outlandgate, paintedhighlands, wouterwall) and the charge
+  (labyrinth). The law is written out in the fragment's header, and core/water's `62-core-water-flood.js` draws the
+  same water from it: change both or neither.
+  - The path is in world metres, with y the bed. `s` (the arc length to the nearest point), `q` (the distance off the
+    path) and `L` are all in plan. It is inside when `q <= w`; then the record's own shape and falloff apply as usual.
+  - **A flood** (no `len`): a pulse runs down the path at `speed`: `rise`, `hold`, `fall` s, with peak depth `depth`
+    over `base` standing water.
+    - Its k at a point is `fk`. Given a height y it is `smoothstep(0, .3, level - y)`: a walker in the water takes the
+      dose, one above its surface takes nothing.
+    - The height comes from `KHAZ.at`, `dose`, `doses`, `here`, `exposure().step`, `time`, `timeScale`, `state`'s sixth
+      argument, and 21's `moveAt` and `drift`. Without y it is the plan k.
+    - `KHAZ.floodLevel(rec, x, z, t)` is the surface's y (null off the path). The states are `dry` (or `standing`),
+      `rising`, `high` and `falling`.
+  - **A charge** (`len`): a band `len` m long runs down the path, its edges soft over `edge` m. The states are `coming`
+    (with `left`), `charging` and `passed`. `charge: {fauna: id | [ids]}` binds it to the herd's fauna, as `hunter.fauna`
+    does. `KHAZ.bindHerd(rec, fn(t) -> [{x, z, r}...])` hands it the live herd the host animates; bound, "inside any
+    disc" replaces the law.
+  - `KHAZ.frontAt(rec, x, z, t)` gives `{s, q, inside, k, level?, bed?, v?, head?, herd?}`.
+- **The builders**, `KHAZ.ENV` (`o` overrides any field):
+  - `crust(ptsOrR, {id, mass, heal, below, depth, crust, under})` returns `{crust, below}`.
+  - `nightGas(ptsOrR, o)` and `coldPool(ptsOrR, o)` return a body.
+  - `flood(path, o)` and `stampede(path, o)` return `{at, hazard}`, a box round the path grown by `w`; register it with
+    `ry` 0. A flood's nav is walkable at a cost (`travel` 2), not avoided, so paths still cross a dry gorge.
+  - `rockDrop(r, {fauna})` returns a crush on a `near` trigger with the dropper's fauna (a Two-Snout's rock): the host
+    trips it and applies its doses once.
+
+### Adopting it
+
+1. `build.py`: list `core/hazard/22-core-hazard-env.js` after `20-core-hazard.js` (and after `21-core-hazard-flow.js`
+   when the page takes both: 22 then carries the height into 21's `moveAt` and `drift`).
+2. A crust over a hot spring: `const B = KHAZ.ENV.crust(r, {mass: 60, below: 'heat', under: {danger: .9, dose: 3}})`.
+   Register the crust (`tags: {hazard: B.crust}`), set `B.below.under.crust` to its id, then register the below at the
+   same `at`. When a walker steps on it: `KHAZ.load(crustRec, walker.mass, t)`; draw it broken while
+   `KHAZ.state(crustRec, t).state === 'broken'`. A save keeps `KHAZ.saveCrusts()`.
+3. Night gas in a hollow: `tags: {hazard: KHAZ.ENV.nightGas(pts, {pool: 1.5})}`, and once on the page
+   `KHAZ.bindClock(clock)` (the host's KCLOCK) and `KHAZ.bindWind((x, z, t) => wind)` when the page has a wind field.
+   A cold-air pool on a valley floor: `KHAZ.ENV.coldPool(pts, {h: 8, pool: 6})` (take 21 for the pool).
+4. A gorge flood: `const F = KHAZ.ENV.flood(path, {w, speed, rise, hold, fall, depth, period})`; register a record at
+   `F.at` with `tags: {hazard: F.hazard}`. Pass the walker's height to the queries. The drawn water reads the same
+   `front` (core/water's flood).
+5. A stampede: `KHAZ.ENV.stampede(path, {fauna: 'twosnout', speed, len, period})`, registered the same way. When the
+   herd itself is animated: `KHAZ.bindHerd(rec, t => herd.discs(t))`. A Two-Snout's dropped rock is
+   `KHAZ.ENV.rockDrop(r, {fauna})` under its ledge.
+
 ## Tests
 
-`node core/hazard/test-hazard.js`, `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
+`node core/hazard/test-hazard.js`, `node core/hazard/test-hazard-flow.js` (the pull and the pool), `node core/hazard/test-hazard-env.js` (crusts, night, fronts: on 20 + 22 and on 20 + 21 + 22, with broken variants of the laws), `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
+## The tunnels' kinds (`22-core-hazard-tunnel.js`, opt-in, 2026-11-11)
+
+The Line (`biomes/line/PLAN.md` section 6, the owner's answer 13; `openworld/ANCIENT-TUNNELS.md` section 4). **Opt-in by
+file**: the three rows are not in core/tags' vocabulary (that would change every page); the file adds them to
+`KTAGS.VOCAB.hazardKinds` the first time any `KHAZ` function runs, so it may sort before core/tags. A page that does not list
+it is byte-identical; on a page that does, every older record answers as before (`test-hazard-tunnel.js` reads a registry
+before and after loading it).
+
+Each kind runs on a state function, so **write its record with the builder** (it names the function and fills the
+defaults; any field of `o` overrides). `KHAZ.tunnelAudit(T)` lists a record of these kinds written without its function, or
+with a bad field: make it a verify check.
+
+| Kind | Effect | Row | Builder | What it does |
+|---|---|---|---|---|
+| `rockburst` | damage | danger 1, dose 20, walkable (travel 2): the trains run through | `KHAZ.TUNNEL.rockburst({shape, cycle, burst: {cell 40, throw 6, spall [.05, .4]}})` | a crush on a cycle (default 30 min): rock talk 12 s (warn, k 0), the burst (.4 s rise, 1.6 s), falling slabs 40 s (k .25), quiet. Each period bursts in **one cell** along the shape's long axis (`KRAND` by the period's number) and harms only within `throw` m of it |
+| `inrush` | drown | danger .9, dose .5, travel 6 | `KHAZ.TUNNEL.inrush({shape, cycle \| inrush: {at}, inrush: {depth 3, deep 1.4}})` | karst water breaks in: the rock sweats (warn 90 s), the water rises over the ramp (240 s) to `depth` m over the shape's floor, stays (15 min), drains, leaves a pool (k .15), dry; or once at `inrush.at` and flooded for good. At a point, k is the water over the feet over `deep` |
+| `seal` | suffocate | danger 1, dose 1 | `KHAZ.TUNNEL.seal({shape (the section), seal: {door, inside 1, outside .05 \| fn(t), bleed 40, refill 900, fail, events}})` | the section behind a door: while the door is open its air relaxes toward the surface it reaches (e-folding `bleed` s), shut it refills (`refill` s); k is the `thin-air` ambient row's ramp of that pressure. The door's openness: a bound function (`KHAZ.bindDoor(rec, t => open)`, integrated live by `KHAZ.sealStep(t, dt, T)` each frame), else the page's `KHAZ.breach(rec, t, open)` / `KHAZ.reseal(rec, t)` and the record's `seal.events`, else `seal.fail` (a cycle whose k is how far it stands failed) |
+
+- `KHAZ.burstAt(rec, t)`: `{n, cell, cells, x, z, t0, state}`: where this period bursts and when.
+- `KHAZ.spalls(rec, t, n)`: the last n bursts begun by t, newest first, each `{n, t, cell, x, z, along, side, up, spall}`: where a
+  host draws fresh spalls on the lining (the same hashes every time: the Line's `hotdoor` station's scars).
+- `KHAZ.flood(rec, t)`: `{state, level, y, k, left}`: the water's height for a `WATER.open` plane.
+- `KHAZ.pressure(rec, t)`: the section's atm now.
+- Once loaded, `KHAZ.at`, `dose`, `doses`, `here` and `exposure().step` take an inrush's water over the point (as 21's pool share;
+  with no `y`, the level over the floor). The export adds each tunnel record's own fields as `hazard.raw`.
+
+## Tests
+
+`node core/hazard/test-hazard.js`, `node core/hazard/test-hazard-flow.js` (the pull and the pool), `node core/hazard/test-hazard-tunnel.js` (the tunnels' kinds), `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
 `node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then f8fc8840
 with lava, fire, luck, trap, time, the taboo key, the ambient rows, acid rain and the dust storms). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),

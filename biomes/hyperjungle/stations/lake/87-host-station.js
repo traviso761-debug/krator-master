@@ -30,10 +30,10 @@ function stationBuild(){
       const c=k<3?top:top.clone().lerp(rim,k===3?.6:1);[0,1,2,0,2,3].forEach(m=>{pos.push(...q[m]);nor.push(0,1,0);uv.push(q[m][0]*.5+.5,q[m][2]*.5+.5);col.push(c.r,c.g,c.b);});}}
     /* the notch: the pad's cleft (Victoria's) left open at a = 0 by dropping nothing; the kit's vertex-coloured material shades it */
     return BIO.geo._make(pos,nor,uv,col);})();
-   BIO.def('skylily',g,M.pod,{label:'Sky lily pads'});
-   BIO.def('skyflower',BIO.geo.bloom(),M.bloom,{label:'Sky lily flowers'});
+   BIO.def('skylily',g,M.pod,{label:'Sky lily pads',free:true});
+   BIO.def('skyflower',BIO.geo.bloom(),M.bloom,{label:'Sky lily flowers',free:true});
    BIO.def('floatgrass',BIO.geo.mat(),M.moss,{label:'Floating meadows'});
-   BIO.def('floattuft',BIO.geo.clump(),M.under,{label:'Floating meadow grass'});}}});
+   BIO.def('floattuft',BIO.geo.clump(),M.under,{label:'Floating meadow grass',free:true});}}});
  defs.d();
  const station=BIO.kitWrap('hyperjungle',{
   // ---- STILT KAPOKS: the várzea between 60 m and 1.5 km from the shore, off the channels and the back-swamps

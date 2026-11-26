@@ -24,7 +24,7 @@
       6a), and the lime kilns burn the spray coral to lime. They are crops in `kits/crops` (`kelp-ash`, `coral-lime`), not
       nodes; when the Catch adds its potash and alkali-salt nodes, a works rule that takes either a node or the crop would
       let Farside's glassmakers draw on both.
-- [ ] **The fairness audit's findings (2026-10-26, `data/ledger.json` `audit`):** 21. Most are inland towns with no salt
+- [ ] **The fairness audit's findings (2026-10-26, `data/ledger.json` `audit`):** 21; 25 since the 5.1 rebake and the ores on the new rocks (2026-11-03, `GEOLOGY.md`). "Yuni Emirate: Spindle Fan" shows twice: the map has two polities named Yuni Emirate (for the owner). The marble quarry's library set reads flat and pale at a distance (`rock.marble012`, full colour): a tint or a veinier set would help. Most are inland towns with no salt
       within a day's travel (30 km): the Lizardmen's five towns, four of Xanadu's, four of the Dalab's, Wildcat (Fellgangs);
       Jimjam's Serai has no stone in reach; the polities with no settlement (Coyote Kingdom, Painted Men, Tungang Union, Yeti
       Kingdom, Lesser Throne) are audited at their centroid and miss wood, water or salt there; Region 87's eleven towns reach
@@ -43,3 +43,23 @@
 - [ ] **Gypsum and rock salt draw on vertex colours** (2026-10-26): the efflorescence set reads as dark marble on their slabs.
       Owed: a pale bedded gypsum crust with selenite (`ground.gypsum.crust`) and a cut rock-salt face (`rock.halite.cut`);
       their prompts are in `core/materials/PROMPTS-NEEDED.md`, section 32 (2026-10-26).
+      2026-11-08: that section is pruned and its number reused; both sets are in `core/materials/library` now: what is owed is wiring them.
+- [x] **potash, soda and marble never drew their sets** (found 2026-11-16): they were packed (`materials.json`, `tex/`) but missing
+      from `SV_LIB` (`26k-kit.js`), and the engine makes a material only for an `SV_LIB` key, so their nodes drew the fallback
+      (vertex colours). Added to `SV_LIB` with the mined goods' sets; the resources page's look of those three changes.
+- [ ] **The mined goods' kinds have no geology layer** (2026-11-16, `42s-res-ore-mined.js`): the node field places none of the
+      eleven; they are owner nodes until a bake gives each a layer. `GEOLOGY.md`, "The mined goods' kinds", says which need a
+      layer of their own (zinc, peat, silica) and which a rule on existing layers; the bake is the scale-model session's.
+- [ ] **Five of the mined goods draw on vertex colours:** zinc (`rock.sphalerite`), lodestone (`rock.magnetite`), opal
+      (`rock.opal.matrix`), jade (`rock.serpentinite`, `stone.nephrite`) and amber (`rock.amber.blueearth`); prompts in
+      `core/materials/PROMPTS-NEEDED.md` sections 46, 51, 52 and 53.
+- [ ] **Building kits do not see the mined goods' kinds:** kits/islanders, kits/construction and the isle demo read `42r` and
+      `44r` in place, not `42s` and `44s`-`44u` (kept apart so their pages did not move). A works there that should take zinc or
+      peat needs those four fragments added to its build's list, and a rebuild.
+- [ ] **No trade link yet:** each kind names the Gemini good it feeds (`RES_ORE.kinds[k].good`), but `46r-res-ledger.js` and
+      core/simulation do not read it; Gemini's model is on its own branch and docs.
+- [ ] **`lode:thalaba-sulfur` is recorded, not stamped** (2026-11-16, for the Thalaba session; the owner settled Thalaba's own
+      small sulfur node, 30 t a year): it is in `data/lodes.json` but not on `data/geology.json`. Stamping
+      (`python3 tools/scale-model/geology.py --lodes kits/resources/data/geology.json kits/resources/data/lodes.json`) changes the
+      geology every open-world region, Copper Glacier and Firebliss read (13 build commands, 62 pages: `tools/reach.py`), so it
+      rides with the next bake or the next all-builds rebuild. Until then Thalaba places it as an owner node.

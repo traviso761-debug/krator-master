@@ -58,6 +58,8 @@ const VIEWS={};
  if(NHL.HUMMOCKS&&NHL.HUMMOCKS.length){const near=L=>L.slice().sort((a,b)=>BIO.lodD(a.x,a.z)-BIO.lodD(b.x,b.z))[0],view=(h,d,up)=>{const a=rr(0,TAU),cx=h.x+Math.cos(a)*(h.r+d),cz=h.z+Math.sin(a)*(h.r+d);return[cx,G(cx,cz)+up,cz,h.x,h.y,h.z];};
   add('Moss hummocks',view(near(NHL.HUMMOCKS.filter(h=>h.r>1.2)),9,2.4));const L=NHL.HUMMOCKS.filter(h=>h.lamp);if(L.length)add('Night: spore lamps',view(near(L),2.2,.9),'night');}
 })();
+// a station's own views in place of station 1's (stations/<name>/: STATION_VIEWS(add, G) adds them; add(name, [cx,cy,cz, tx,ty,tz], mode))
+if(typeof STATION_VIEWS==='function'){for(const k in VIEWS)delete VIEWS[k];STATION_VIEWS((k,v,mode)=>{if(v)VIEWS[k]={v,mode:mode||'day'};},(x,z)=>terrainH(x,z));}
 // ---------------------------------------------------------------- the inspector's words
 // THE INSPECTOR: the plant's name, its class and its tags (climate, aridity, abyssal, riparian, harvest);
 // a tree's bole names itself through its registered volume, a small plant through its item's label
@@ -93,8 +95,10 @@ const BUDGET={
 function itemPositions(name,every){const out=[],m=new THREE.Matrix4();every=every||1;const c=name.indexOf(':'),lab=c<0?null:name.slice(c+1);if(c>=0)name=name.slice(0,c);
  BIO.baked.forEach(o=>{if(!o.isInstancedMesh||o.name!=='biome:'+name)return;for(let i=0;i<o.count;i+=every){if(lab!=null&&BIO.instLabel(o,i)!==lab)continue;o.getMatrixAt(i,m);out.push([m.elements[12],m.elements[13],m.elements[14]]);}});return out;}
 function biomeChecks(){const R={};
+ // the invariants of station 1's own features a station does not have (no tower, no falls on a mire stream...): verify.py passes them as 'not on this station'
+ R.skip=typeof STATION_SKIP!=='undefined'?STATION_SKIP:[];
  // every species placed at least once
- R.missing=NHL.SPECIES.filter((S,i)=>!NHL.TREES.some(T=>T.sp===i)).map(S=>S.key);
+ R.missing=NHL.SPECIES.filter((S,i)=>!S.station&&!NHL.TREES.some(T=>T.sp===i)).map(S=>S.key);   /* a station's own species (S.station) are its own check's */
  R.bySpecies=NHL.SPECIES.map((S,i)=>S.key+':'+NHL.TREES.filter(T=>T.sp===i).length).join(' ');
  // the stream descends: its surface never climbs, its bed is always under its surface
  let mono=true,under=true;for(let i=1;i<STREAM.level.length;i++){if(STREAM.level[i]>STREAM.level[i-1]+1e-6)mono=false;if(STREAM.bed[i]>STREAM.level[i])under=false;}
@@ -120,23 +124,36 @@ function biomeChecks(){const R={};
 // THE HOST'S OWN CHECKS (verify.py runs them when present), each with a broken input that must fail
 // species and plants that yield something edible the kit does not draw as a catalog fruit (tips, sap, shoots...): named, not hidden
 const FRUIT_NOT_DRAWN=['greatspruce','shadowhemlock','mossmaple','greattrumpet','trumpet','normanspruce','mountainmaple','larch','birch','cragpine','frosttrumpet','forestlime',
- 'Sword ferns','Lady ferns','Disc stalks','Trumpet saplings','Wood sorrel','Spikes','Mountain cane','Reindeer lichen','Mushrooms','fanleaf','banyan'];
+ 'Sword ferns','Lady ferns','Disc stalks','Trumpet saplings','Wood sorrel','Spikes','Mountain cane','Reindeer lichen','Mushrooms','fanleaf','banyan','copperpine','whitebark'].concat(NHL.FRUIT_NOT_DRAWN_MORE||[]);   /* a station's own (stations/bogs: the cloudberry) */
 const HCHK={
  // fruit: every fruiting species and plant names a catalog piece, and each kind of fruit is drawn on the stage
  // (N: instances of 'berry' = arils, rowan, bilberries; 'lantern' = lantern pods; 'mast' = beechmast and acorns)
  fruit(SP,PL,N){const id=x=>x.key||x.label,miss=SP.concat(PL).filter(x=>x.tags.harvest&&x.tags.harvest.edible.length&&!x.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(id(x))<0).map(id);
-  const untagged=SP.concat(PL).filter(x=>!x.tags.harvest).map(id),thin=['berry','lantern','mast'].filter(k=>!(N[k]>=20));
+  const untagged=SP.concat(PL).filter(x=>!x.tags.harvest).map(id),thin=FRUIT_DRAWN.filter(k=>!(N[k]>=20));
   return{ok:!miss.length&&!untagged.length&&!thin.length,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+
    (thin.length?'too few drawn: '+thin.join(', ')+'; ':'')+N.berry+' berries and arils, '+N.lantern+' lantern pods, '+N.mast+' mast drawn; catalog keys: '+NHL.FRUIT_KEYS.length+' ('+NHL.FRUIT_KEYS.join(', ')+')'};}};
+const FRUIT_DRAWN=typeof STATION_FRUIT!=='undefined'?STATION_FRUIT:['berry','lantern','mast'];   /* the kinds of fruit the page must draw (a station: its own) */
 const fruitN=()=>({berry:itemPositions('berry').length,lantern:itemPositions('lantern').length,mast:itemPositions('mast').length});
+// the flora reads the shore of the water the eye sees (core/water ext/60, WATER.fields and edgeAudit; the review's third line, the final rebuild): no tree's
+// bole inside the stream's ribbon, its pools or the tarn, by the drawn water's own edge (not the stream's line or the tarn's radius). Baked on first call
+// (8 m nodes over the map). EDGE_OWED: what this turn leaves (a ratchet). The ground's wet band is the paint's banks and R9's rain, not a water field, so the
+// wet rules are not run here (KNOWN_ISSUES.md)
+const EDGE_OWED={plant:0};let WATER_F=typeof NHL_WATER_F!=='undefined'?NHL_WATER_F:null;   /* the build's bake (88), else baked here */
+function edgeCheck(trees){if(!WATER.fields||!WATER.edgeAudit)return{ok:true,detail:'not on this page (core/water ext/60)'};
+ if(!WATER_F)WATER_F=WATER.fields({box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],cell:8,ground:terrainH});
+ const P=trees.filter(T=>T.lv>0).map(T=>({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:NHL.SPECIES[T.sp]?NHL.SPECIES[T.sp].key:'tree'}));
+ const F=WATER.edgeAudit({field:WATER_F,plants:P,clear:0}),n=F.filter(f=>f.rule==='plant-in-water').length;
+ return{ok:n<=EDGE_OWED.plant,detail:P.length+' trees, '+n+' standing in the drawn water (owed '+EDGE_OWED.plant+')'+(n?': first '+F[0].surface+' at '+[F[0].x|0,F[0].z|0]:'')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,fruitN()));
+ add('the trees keep out of the water the eye sees (WATER.edgeAudit)',edgeCheck(NHL.TREES));
  /* the Cut's natives read in place with the warp off (87-host-cut.js): the lichen's thalli touch and merge, the reeds have no bands */
  if(typeof CUT!=='undefined'&&NHL.CUT_LICHEN){add('the circle lichen (the Cut): an ordinary map lichen here',CUT.checkLichenPlain(NHL.CUT_LICHEN));add('the ring reeds (the Cut): an ordinary bed here',CUT.checkReedBed(NHL.CUT_REEDS));}
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=fruitN();
+ if(WATER.edgeAudit)add('a tree in the middle of the tarn',edgeCheck([{x:TARN.x,z:TARN.z,sp:0,lv:2,rb:.5}]));
  add('a fruiting species with no catalog fruit',HCHK.fruit(NHL.SPECIES.map(S=>S.key==='rowan'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),NHL.PLANTS,N));
- add('no mast drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,Object.assign({},N,{mast:0})));
+ if(FRUIT_DRAWN.length)add('no '+FRUIT_DRAWN[FRUIT_DRAWN.length-1]+' drawn',HCHK.fruit(NHL.SPECIES,NHL.PLANTS,Object.assign({},N,{[FRUIT_DRAWN[FRUIT_DRAWN.length-1]]:0})));
  if(typeof CUT!=='undefined'&&NHL.CUT_LICHEN){add('the lichen as the bowl draws it (nested circles)',CUT.checkLichenPlain(NHL.CUT_LICHEN.map(q=>Object.assign({},q,{nest:{r:q.r*.4,c:0,dx:0,dz:0}}))));
   add('the reeds in the bands the bowl gives them (heights on a 0.3 m step)',CUT.checkReedBed(NHL.CUT_REEDS.map(r=>Object.assign({},r,{h:Math.round(r.h/.3)*.3}))));}
  return R;}
@@ -144,12 +161,18 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // the runtime LOD: which chunk meshes this camera draws (after the camera is placed, before the draw)
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
+/* the land in the tarn (core/water/ext/58, WATER.mirrorSwitch; the owner, 2026-11-01: every biome gets the switch, off at page load, for the tri counts): the
+   panel's "reflections" button or ?mirror=probe|live turns it on. The tarn is the page's one still; the stream and its pools take the tarn's plane only
+   where they are near its level (one plane a page). A station without the tarn (STATION_NOWATER) has none */
+const MIRROR_AT=typeof MIRROR_STILL!=='undefined'?MIRROR_STILL:(typeof TARN_DRAW!=='undefined'&&TARN_DRAW?{materials:[TARN_DRAW.mesh.material],level:TARN.level,center:[TARN.x,TARN.z],radius:TARN.r*2.5}:null);   /* a station names its own still */
+const MIRROR=WATER.mirrorSwitch&&MIRROR_AT&&!(typeof STATION_NOWATER!=='undefined'&&STATION_NOWATER)?WATER.mirrorSwitch(Object.assign({THREE,renderer,scene,camera,sky:SKY,
+ far:2200,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0},MIRROR_AT)):null;window.MIRROR=MIRROR;
 KHOST.take({build:'nhighlands',title:'Krator Northern Highlands',
  hint:'The Northern Highlands: old-growth temperate forest rising to boreal on the north-western flank of the Inner Wall; trumpet trees, glowing bell-bulbs, a stream from its tarn, a ruined Girder tower hung with growth (ideal type). N for night',
  scene,camera,renderer,ground:terrainH,clear:1.6,minR:2,maxR:9000,registry:REG,views:HOST_VIEWS,ticks:TICKS,
  onView:k=>lightMode(VIEWS[k].mode),controls:LCTL,
  keys:{n:()=>lightMode((typeof LIGHT_MODE!=='undefined'&&LIGHT_MODE==='night')?'day':'night')},
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,   /* the reflections' pass when on, the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
@@ -158,7 +181,7 @@ KHOST.take({build:'nhighlands',title:'Krator Northern Highlands',
  // the kit's own occupancy count, as its 91-host-probe.js had it: a tree's volume counts as filled, and an instanced mesh
  // gives at most ~4000 samples (the host's generic count samples every instance and every volume)
  probeSample:4000,
- api:{hostChecks,hostNegatives,
+ api:{hostChecks,hostNegatives,stationChecks:typeof STATION_CHECKS==="function"?STATION_CHECKS:null,exportBox:typeof STATION_EXPORT_BOX!=="undefined"?STATION_EXPORT_BOX:null,
   regOccupancy(){const n=new Array(REG.length).fill(0);const P=KHOST.probe.probePoints();
    REG.forEach((r,i)=>{if(r.kind==='tree'){n[i]=1;return;}for(const p of P){const dx=p[0]-r.x,dz=p[2]-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p[1]>=(r.y||0)-2&&p[1]<=(r.y||0)+r.h+5)n[i]++;}});
    return REG.map((r,i)=>({name:r.name,type:r.kind,n:n[i]}));},

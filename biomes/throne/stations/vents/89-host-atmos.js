@@ -21,5 +21,8 @@ ATMOS.weather({mode:'clear',ash:true,apply:W=>{const a=W.ash||0,fg=W.fog||0,f=W.
 // the fog banks: low in the graben, the marsh and the steam valley, near the cameras' spine
 (function(){reseed(8903);const pts=[],L=BIO.LOD();for(let k=0;k<5000&&pts.length<420;k++){const x=rr(-2400,2400),z=rr(-2400,2400);if(BIO.lodD(x,z)>L.mid)continue;
   if(FIELD.graben(x,z)<.5&&FIELD.valley(x,z)<.3&&FIELD.marsh(x,z)<.3)continue;pts.push([x,terrainH(x,z)+rr(1,6),z]);}ATMOS.fogBank(pts);})();
+// ACID RAIN (core/atmos/fx/89-atmos-fx-acid.js; the final rebuild, BACKPORT.md's row): the rift's gas in the rain, pH 3.2 in the graben and the marsh, 4.5 on
+// its rims (the vents' fields); the rain's tint, the etch, the fields for core/hazard; the marsh's water fizzes in it (89w). ?acid=0 none of it
+const ACID_RAIN=ATMOS.acidRain&&new URLSearchParams(location.search).get('acid')!=='0'?ATMOS.acidRain({ph:(x,z)=>4.5-1.3*Math.max(FIELD.graben(x,z),FIELD.marsh(x,z)),mmh:20}):null;
 ATMOS.finish();
 // the Weather select goes into the host's #ui: 99-host-take.js, after KHOST.take

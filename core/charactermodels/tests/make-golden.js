@@ -27,14 +27,26 @@ var golden = { bodies:{} };
     [1, 7919].forEach(function(seed){ g.strangers.push({ people:P.id, seed:seed + k, record:KCHAR.stranger(seed + k, kit, P) }); });
   });
   g.strangers.push({ people:null, seed:42, record:KCHAR.stranger(42, kit, null) });
-  g.strangers.slice(0, 6).forEach(function(s){
+  g.strangers.slice(0, 6).concat(g.strangers.filter(function(s){ return s.people === 'coyote_men'; }).slice(0, 1)).forEach(function(s){
     var hid = KCHAR.hidden(s.record, kit).base, n = 0;
     for(var i=0;i<hid.length;i++) n += hid[i];
     g.parts.push({ record:s.record, parts:KCHAR.parts(s.record, kit).map(function(p){ return p.key + ':' + p.role + ':' + p.slot; }), hidden:n,
                   hidden_parts:Object.keys(KCHAR.hiddenParts(s.record, kit)).sort() });
   });
 });
+// activities (data/activities.json): every id, an unknown one, under no context and under each override kind, two seeds
+var AT = J('activities.json'), ctxs = [{}, { furniture:'anvil' }, { furniture:'bed' }, { trade:'farmhands and ploughmen' }, { trade:'soldiers' },
+  { role:'operative' }, { furniture:'chair', trade:'smiths and craftsmen' }];
+golden.activities = [];
+Object.keys(AT.activities).concat(['NO_SUCH_ACT', '']).forEach(function(id, i){
+  ctxs.forEach(function(cx, k){
+    [3, 1000003].forEach(function(seed){
+      var ctx = Object.assign({ seed:seed + i * 7 + k }, cx);
+      golden.activities.push({ act:id, ctx:ctx, out:KCHAR.activity(AT, id, ctx) });
+    });
+  });
+});
 fs.writeFileSync(path.join(__dirname, 'golden-mpfb.json'), JSON.stringify(golden));
 console.log('golden-mpfb.json: %s', Object.keys(golden.bodies).map(function(b){
   var g = golden.bodies[b]; return b + ' ' + g.morphs.length + ' morphs, ' + g.strangers.length + ' strangers, ' + g.parts.length + ' part lists';
-}).join('; '));
+}).join('; ') + '; ' + golden.activities.length + ' activity cases');

@@ -150,7 +150,10 @@ var FAMMAT = {
   jbark  : { tex:null, scale:[3.0,4.0], proc:'bark0' },                 /* the sub-canopy trees' flaky bark */
   mat    : { tex:null, scale:[1.5,1.5], proc:'plank' },                 /* woven reed floor mats */
   lacquer: { tex:null, scale:[1.4,3.0], proc:'plank' },                 /* lacquered door leaves */
-  tarred : { tex:null, scale:[1.0,2.0], proc:'timber' }                 /* tar-sealed palisade stakes */
+  tarred : { tex:null, scale:[1.0,2.0], proc:'timber' },                /* tar-sealed palisade stakes */
+  /* door leaves (54-openings.js): their own buckets, so their instances can swing, wearing the map of the family they name */
+  doorleaf:{ tex:null, scale:[3.0,3.0], alias:'plank' },                /* plank doors */
+  doorlacq:{ tex:null, scale:[1.4,3.0], alias:'lacquer' }               /* the hall's lacquered double doors */
 };
 var FAM_SWAY = { cloth:1, flag:1, awning:1, banner:1, tapestry:1, blanket:1, hidep:1, pelt:1 };   /* families the cloth sway moves */
 

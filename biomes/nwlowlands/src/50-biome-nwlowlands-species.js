@@ -504,6 +504,8 @@ G.lantern=function(){const P=[];for(let i=0;i<=5;i++){const t=i/5;P.push(new T3.
 NWLOW.G=G;
 
 // ---------------------------------------------------------------- materials
+/* THE LOOK: what this kit's own host asks (45-host-stage.js, NWLOW_LOOK); a page that reads the kit in place sets none of it, and its materials are as they were */
+const LK=window.NWLOW_LOOK||{},BL=o=>LK.backlit?Object.assign(o,{backlit:.35}):o,GR=o=>LK.rootcol?Object.assign(o,{ground:{k:.6,gain:.42,fade:[550,750]}}):o,SE=(o,v)=>LK.season?Object.assign(o,{season:v}):o;
 const M=NWLOW.MAT={
  bk:{
   smooth:NWLOW.barkMat2(BK.smooth,'smooth',{c2:true,alt:0x6a8a70,gloss:.06}),
@@ -520,12 +522,12 @@ const M=NWLOW.MAT={
  wood:BIO.barkMat(NWLOW.WOODTEX),
  rock:BIO.barkMat(NWLOW.ROCKTEX),
  oakleaf:BIO.leafMat(TX.oakleaf,'nwl-oakleaf',{aN:true,swayW:'1.0',swayA:.10}),
- glossy:BIO.leafMat(TX.glossy,'nwl-glossy',{aN:true,swayW:'1.0',swayA:.12}),
- broad:BIO.leafMat(TX.broad,'nwl-broad',{aN:true,swayW:'1.0',swayA:.14}),
- lance:BIO.leafMat(TX.lance,'nwl-lance',{aN:true,swayW:'1.0',swayA:.16}),
+ glossy:BIO.leafMat(TX.glossy,'nwl-glossy',BL({aN:true,swayW:'1.0',swayA:.12})),
+ broad:BIO.leafMat(TX.broad,'nwl-broad',SE(BL({aN:true,swayW:'1.0',swayA:.14}),{drop:.7,colour:0xc8a040,k:.6})),
+ lance:BIO.leafMat(TX.lance,'nwl-lance',LK.monsoon?SE(BL({aN:true,swayW:'1.0',swayA:.16}),{drop:.6,colour:0xa88a40,k:.5}):BL({aN:true,swayW:'1.0',swayA:.16})),
  needle:BIO.leafMat(TX.needle,'nwl-needle',{aN:true,swayW:'1.0',swayA:.08}),
  feather:BIO.leafMat(TX.feather,'nwl-feather',{aN:true,swayW:'1.0',swayA:.12}),
- ginkgo:BIO.leafMat(TX.ginkgo,'nwl-ginkgo',{aN:true,swayW:'1.0',swayA:.12}),
+ ginkgo:BIO.leafMat(TX.ginkgo,'nwl-ginkgo',SE(BL({aN:true,swayW:'1.0',swayA:.12}),{drop:.85,colour:0xe0b830,k:.8})),
  bleaf:BIO.leafMat(TX.bleaf,'nwl-bleaf',{aN:true,swayW:'1.0',swayA:.18}),
  blossom:BIO.leafMat(TX.blossom,'nwl-blossom',{aN:true,swayW:'1.0',swayA:.10}),
  veil:BIO.leafMat(TX.willow,'nwl-veil',{swayW:'(-position.y)',swayA:.10,axis:1,alphaTest:.36}),
@@ -540,7 +542,7 @@ const M=NWLOW.MAT={
  pen:BIO.leafMat(TX.pen,'nwl-pen',{swayW:'(position.y)',swayA:.05,alphaTest:.42}),
  clubpen:BIO.leafMat(TX.clubpen,'nwl-clubpen',{swayW:'(position.y)',swayA:.03,alphaTest:.42}),
  reed:BIO.leafMat(TX.reed,'nwl-reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
- grass:BIO.leafMat(TX.grass,'nwl-grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
+ grass:BIO.leafMat(TX.grass,'nwl-grass',SE(GR({swayW:'(position.y)',swayA:.12,alphaTest:.4}),{colour:0xc8a860,k:.7})),
  under:BIO.leafMat(TX.under,'nwl-under',{swayW:'1.0',swayA:.06}),
  beard:BIO.leafMat(TX.beard,'nwl-beard',{swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.35}),
  hang:BIO.leafMat(TX.under,'nwl-hang',{swayW:'(-position.y)',swayA:.055,axis:1}),
@@ -596,20 +598,20 @@ BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Strands and bark ribbons'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss and litter'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub lobes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Flowers'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Flowers',onLeaf:true});
 BIO.def('staghorn',G.fan(),M.staghorn,{label:'Staghorn ferns'});
 BIO.def('rosette',G.rosette(),M.rosette,{label:'Rosettes'});
-BIO.def('pad',G.pad(),M.pad,{label:'Lotus and lily pads'});
+BIO.def('pad',G.pad(),M.pad,{label:'Lotus and lily pads',free:true});
 BIO.def('cone',G.cone(),M.solid,{label:'Shoots and cones'});
 BIO.def('rod',BIO.geo.rod(6),M.solid,{label:'Stems and stalks'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(NWLOW.FIBRETEX),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(NWLOW.SMOOTHTEX),{label:'Small trunks (smooth)'});
-BIO.def('culm',G.culm(6),M.culm,{label:'Sky bamboo'});
+BIO.def('culm',LK.culm&&BIO.bamboo?BIO.bamboo.culm({n:1,seg:6,fs:[0,1]}):G.culm(6),M.culm,{label:'Sky bamboo'});
 BIO.def('belly',G.belly(),M.culm,{label:'Buddha-belly bamboo'});
 BIO.def('coil',G.coil(),M.solid,{label:'Coil cane'});
 BIO.def('lantern',G.lantern(),M.lantern,{label:'Glow-willow lanterns'});
 BIO.def('halo',BIO.geo.bloom(),M.halo,{label:'Lantern glow'});
 BIO.def('pompom',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Flower heads'});
-BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+BIO.def('fungus',LK.fung&&BIO.fung?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.34,droop:.16,wav:5,wavA:.04,lump:.08}):new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(NWLOW.ROCKTEX),{label:'Boulders'});
 })();

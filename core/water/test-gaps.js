@@ -3,6 +3,7 @@
 // hashes of a snapshot taken from the code as it stood before the change (GOLDEN below; `--golden-from <dir>` prints a new one
 // from fragments copied into <dir>); (b) each option, with a negative control, in test-water.js and here (the new fragments in
 // core/water/ext/ run here, with a three.js stub: no GPU).
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const ROOT=path.join(__dirname,'..','..');
 const argv=process.argv.slice(2),gi=argv.indexOf('--golden-from'),FROM=gi>=0?argv[gi+1]:null;
@@ -10,10 +11,11 @@ const rd=f=>fs.readFileSync(f,'utf8');
 const W_DIR=FROM||path.join(ROOT,'core/water');
 const files=[path.join(ROOT,'core/atmos/89-atmos-0-core.js'),path.join(ROOT,'core/atmos/89-atmos-0p-presets.js'),path.join(ROOT,'core/atmos/89-atmos-a-waves.js'),
  ...['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js'].map(f=>path.join(W_DIR,f))];
-const EXT=FROM?[]:['53-core-water-terraces.js','53b-core-water-terraces-draw.js','54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','57-core-water-audit.js'].map(f=>path.join(ROOT,'core/water/ext',f)).filter(f=>fs.existsSync(f));
+const EXT=FROM?[]:['53-core-water-terraces.js','53b-core-water-terraces-draw.js','54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','57-core-water-audit.js','58-core-water-shore.js','59-core-water-network.js','59b-core-water-network-draw.js','60-core-water-fields.js'].map(f=>path.join(ROOT,'core/water/ext',f)).filter(f=>fs.existsSync(f));
 global.window=global;
 eval(files.concat(EXT).map(rd).join('\n')+';global.ATMOS=ATMOS;global.WATER=WATER;');
 const A=ATMOS,W=WATER;
+W.BREAKUP_AUTO=false;   // ext/56's breakup is on by default since 2026-11-09 (it moves every drawing on purpose; test-breakup.js checks it): the snapshot is of the gaps' defaults
 
 // ---------------------------------------------------------------- a three.js stub: what the drawings touch, and records what they set
 class Color{constructor(h){h=h==null?0:h;this.r=((h>>16)&255)/255;this.g=((h>>8)&255)/255;this.b=(h&255)/255;}getHexString(){return'000000';}}
@@ -44,7 +46,12 @@ const geo=g=>{const o={idx:g.index};for(const k of Object.keys(g.attributes).sor
 const meshInfo=m=>({name:m.name,ro:m.renderOrder,ud:Object.keys(m.userData).sort().filter(k=>k!=='water'),rc:String(m.raycast).slice(0,40),pos:[m.position.x,m.position.y,m.position.z],
  mat:{t:m.material.transparent,dw:m.material.depthWrite,po:m.material.polygonOffset,pf:m.material.polygonOffsetFactor,pu:m.material.polygonOffsetUnits,r:m.material.roughness,me:m.material.metalness,sd:m.material.side||0},
  c:compiled(m.material)});
-const H=x=>crypto.createHash('sha256').update(JSON.stringify(x,(k,v)=>typeof v==='number'&&!isFinite(v)?String(v):v)).digest('hex').slice(0,16);
+// every decimal (in the arrays and inside the shaders' text) to 12 significant digits before hashing: the golden is written on one machine and
+// read on others, and V8's Math (pow in KCOLOR's decode, sin, exp) differs in the last bit between Node versions (2026-11-09: Node 24 wrote
+// draw.shore, draw.flow2, Node 22, CI's, read them one ulp off); a change to a default still moves the 12 digits. A program cache key's own
+// hash (wtr-open:xxxxxxxx, of the full-precision text) is masked: the text it hashes is in the snapshot, rounded
+const R12=t=>t.replace(/("key":"[a-z0-9-]+:)[0-9a-f]{8}"/g,'$1#"').replace(/-?\d+\.\d{7,}(?:e[-+]?\d+)?/gi,m=>String(parseFloat((+m).toPrecision(12))));
+const H=x=>crypto.createHash('sha256').update(R12(JSON.stringify(x,(k,v)=>typeof v==='number'&&!isFinite(v)?String(v):v))).digest('hex').slice(0,16);
 
 // ---------------------------------------------------------------- the snapshot (every default the pages take)
 const SNAP=()=>{const out={},put=(k,v)=>{out[k]=H(v);};

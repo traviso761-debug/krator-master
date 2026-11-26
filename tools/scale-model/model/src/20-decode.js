@@ -2,7 +2,7 @@ const ZONES = ['basin','highland','outer rim','arctic','lake / sea','salt basin'
 const ZCOL = [[199,214,76],[63,125,66],[236,236,236],[185,191,196],[79,127,184],[122,74,36]];
 const PXKM = 2, VW = DATA.w, VH = DATA.hh;
 
-function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src;});}
+function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>{const c=document.createElement('canvas');c.width=VW;c.height=VH;r(c);};i.src=src;});}
 function pixels(img){const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const g=c.getContext('2d');g.drawImage(img,0,0);return g.getImageData(0,0,img.width,img.height).data;}
 
 (async function start(){

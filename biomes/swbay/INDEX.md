@@ -4,14 +4,14 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-FLORA.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/swbay.html`
+Built output (never open it; edit `src/` and rebuild): `dist/swbay-skarn.html`, `dist/swbay.html`
 
 Build: `cd biomes/swbay && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
 From `core/terrain/` (shared; see `core/README.md`): `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `35-core-anim.js`, `36-core-walker.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `35-core-anim.js`, `36-core-walker.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -22,10 +22,10 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 30 | the bay, the river, the rise (56); terrain (89); the host binding (116); the ground (140); the water (222); the far country (255) |
+| `45-host-stage.js` | 31 **big** | the bay, the river, the rise (56); terrain (89); the host binding (116); the ground (140); the water (229); the far country (262) |
 | `50-biome-swbay-species.js` | 41 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); harvest (biomes/FRUIT.md) (128); leaf textures (153); bark textures (252); geometries local to this biome (318); an iridescent foliage (370); materials (374); instanced items (423) |
 | `52-biome-swbay-library.js` | 2 |  |
-| `55-biome-swbay-trees.js` | 56 **big** | zones from the fields (25); colour (46); polyline helpers (Girder's) (60); keep-clear between trees (69); epiphytes (76); foliage helpers (91); the builders (103); impostors (the far canopy) (394); the pass (437); one tree where a world puts it (504) |
+| `55-biome-swbay-trees.js` | 58 **big** | zones from the fields (25); colour (46); polyline helpers (Girder's) (60); keep-clear between trees (69); epiphytes (76); foliage helpers (91); the builders (113); impostors (the far canopy) (409); the pass (452); one tree where a world puts it (519) |
 | `60-biome-swbay-floor.js` | 16 | fields local to the floor (28); small plants (33); the zone planters (98); the pass (127); one plant where a world puts it (149) |
 | `65-biome-swbay-dress.js` | 9 |  |
 | `70-biome-swbay.js` | <1 |  |
@@ -39,3 +39,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89w-host-water.js` | 7 |  |
 | `99-host-take.js` | 10 | the inspector's words (45); the probe's budgets and the kit's own checks (ve (55); the page, handed to the host (88) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| skarn | 45-host-stage.js, 45b-host-ground.js, 85-host-quarry.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 65 |

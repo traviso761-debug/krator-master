@@ -1,0 +1,802 @@
+{
+ "build": "riftrim",
+ "note": "The rift rim kit's adapter onto the material library (core/materials/PLAN.md: the 2026-10-26 drops delivered the rims' cards and surfaces, PROMPTS-NEEDED.md section 13). Card slots are 50-biome-riftrim-species.js's materials (BIO.libSwap): keep 0 a grey detail map the instance colour colours (the frost frill's glass fins in teal, the mist frill's in copper-teal, the sailwort's membranes rust, the prism heath by rim), keep 1 the card's own colour (the sun rosettes, the cushion anemones, the mist cups, the starberry, the reindeer lichen). Each card slot is one cell of its 3 x 3 sheet. bark.* the columns and boles; ground.* the host's ground layers on KGROUND (45-host-stage.js GLW: a station names the five it shows, LAND.groundLayers). Run python3 tools/textures/pack.py biomes/riftrim after any change, then python3 build.py --all.",
+ "size": 512,
+ "families": {
+  "fin": {
+   "lib": "card.fin.glass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "finM": {
+   "lib": "card.fin.glass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.004,
+    0.3373,
+    0.3293,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "drip": {
+   "lib": "card.fogcomber",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.37,
+    0.022,
+    0.63,
+    0.257
+   ],
+   "base": "top"
+  },
+  "veil": {
+   "lib": "card.beard",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "top"
+  },
+  "bell": {
+   "lib": "card.bellfir",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "top"
+  },
+  "bellC": {
+   "lib": "card.bellfir",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.6707,
+    0.6627,
+    0.996
+   ],
+   "base": "top"
+  },
+  "lobe": {
+   "lib": "card.lobelarch",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.66
+   },
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.034,
+      0.0,
+      0.292,
+      0.323
+     ],
+     "stem": [
+      0.2217,
+      0.3174
+     ],
+     "tip": [
+      0.1022,
+      0.0277
+     ],
+     "w": [
+      -0.1178,
+      0.1239
+     ]
+    },
+    {
+     "cell": [
+      0.367,
+      0.0,
+      0.625,
+      0.323
+     ],
+     "stem": [
+      0.555,
+      0.3174
+     ],
+     "tip": [
+      0.4355,
+      0.0277
+     ],
+     "w": [
+      -0.1178,
+      0.1239
+     ]
+    },
+    {
+     "cell": [
+      0.7,
+      0.0,
+      0.958,
+      0.323
+     ],
+     "stem": [
+      0.888,
+      0.3174
+     ],
+     "tip": [
+      0.769,
+      0.0277
+     ],
+     "w": [
+      -0.1178,
+      0.1239
+     ]
+    }
+   ]
+  },
+  "lobeA": {
+   "lib": "card.lobelarch",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.031,
+      0.661,
+      0.291,
+      0.982
+     ],
+     "stem": [
+      0.2015,
+      0.9756
+     ],
+     "tip": [
+      0.1247,
+      0.6736
+     ],
+     "w": [
+      -0.1163,
+      0.1178
+     ]
+    },
+    {
+     "cell": [
+      0.365,
+      0.661,
+      0.625,
+      0.982
+     ],
+     "stem": [
+      0.535,
+      0.9756
+     ],
+     "tip": [
+      0.458,
+      0.6736
+     ],
+     "w": [
+      -0.1163,
+      0.1178
+     ]
+    },
+    {
+     "cell": [
+      0.698,
+      0.661,
+      0.958,
+      0.982
+     ],
+     "stem": [
+      0.8682,
+      0.9756
+     ],
+     "tip": [
+      0.7914,
+      0.6736
+     ],
+     "w": [
+      -0.1163,
+      0.1178
+     ]
+    }
+   ]
+  },
+  "lantern": {
+   "lib": "card.lobelia.lantern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "membrane": {
+   "lib": "card.fin.membrane",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "rosette": {
+   "lib": "card.sunrosette",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ]
+  },
+  "rheum": {
+   "lib": "card.rheumleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ]
+  },
+  "anemone": {
+   "lib": "card.cushion.anemone",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.004,
+    0.004,
+    0.3293,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "cup": {
+   "lib": "card.mistcup",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "heath": {
+   "lib": "card.heath",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "berry": {
+   "lib": "card.starberry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "grass": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "tussock": {
+   "lib": "card.stipa",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "sedge": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "cotton": {
+   "lib": "card.cottongrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "clad": {
+   "lib": "card.cladonia",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "crop": {
+   "lib": "card.crop.grainhead",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "lichenP": {
+   "lib": "card.lichen",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.6707,
+    0.3373,
+    0.996,
+    0.6627
+   ]
+  },
+  "barkF": {
+   "lib": "bark.frill.ribbed",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "barkM": {
+   "lib": "bark.frill.ribbed",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "barkB": {
+   "lib": "bark.birch",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.66
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "barkL": {
+   "lib": "bark.ragbark",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.58
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "rock": {
+   "lib": "rock.granite.tor",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "ground.grass": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.field": {
+   "lib": "ground.terrace.field",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.sphagnum": {
+   "lib": "ground.sphagnum",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.tundra": {
+   "lib": "ground.tundra",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.clad": {
+   "lib": "ground.cladonia",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.lenswort": {
+   "lib": "ground.lenswort",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.algal": {
+   "lib": "ground.lakebed.algal",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.iris": {
+   "lib": "rock.lichen.iris",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.snowalgae": {
+   "lib": "ground.snow.algae",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.peat": {
+   "lib": "ground.peat.black",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.9
+   },
+   "mapOnly": true
+  },
+  "ground.black": {
+   "lib": "ground.quartzite.black",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  }
+ }
+}

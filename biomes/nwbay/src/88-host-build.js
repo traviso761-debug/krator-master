@@ -40,6 +40,13 @@ window._biome=null;
    far:FG&&FG.at?{h:(x,z)=>{const v=FG.at(x,z);return v===v?v:0;},box:[CENTER[0]-12600,CENTER[1]-12600,CENTER[0]+12600,CENTER[1]+12600],n:200}:undefined});
   window._horizon={ms:Math.round(performance.now()-t0),n:HZ.n};KHORIZON.shade(MAT_GROUND,HZ);
   window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!(m.userData&&m.userData.farField)});}catch(e){reportErr('horizon: '+e.stack);}}
+ /* THE SUN'S SHADOWS (core/shadow, KSHADOW; the catch-up pass, 2026-11-03). The owner: toggleable, OFF by default. Attached after every
+    placement, so the flora, the stacks, the tsingy and the ground cast and receive (the far field, the water and the impostors draw their own
+    light), then switched off at once: the sun casts nothing until ?shadow=1 or the panel's "shadows" button (99-host-take.js) turns it on.
+    Turning it on or off recompiles the lit programs once (three's shadow-light count changes): a hitch, not a cost a frame */
+ if(typeof KSHADOW!=='undefined'&&KSHADOW.attach){try{const S=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});S.cast(scene);
+  scene.traverse(o=>{if(o.isMesh&&o.material===MAT_GROUND){o.castShadow=false;o.receiveShadow=true;}if(o.isMesh&&o.userData&&o.userData.farField)o.castShadow=o.receiveShadow=false;});
+  if(new URLSearchParams(location.search).get('shadow')!=='1')S.off();window._shadow=S;}catch(e){reportErr('shadow: '+e.stack);}}
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
  REGISTER({name:'The north-west bay (ideal type)',x:CENTER[0],z:CENTER[1],r:TERR.R,h:420});
 })();

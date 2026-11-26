@@ -14,7 +14,7 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
 function page(opt) {
   opt = opt || {};
   const ctx = { console, Math, THREE }; ctx.globalThis = ctx; vm.createContext(ctx);
-  for (const f of (opt.tags ? ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js'] : []).concat(['core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/30-core-foliage.js', 'core/biome/35-core-anim.js']))
+  for (const f of (opt.tags ? ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js'] : []).concat(['core/shader/06-core-khook.js', 'core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/30-core-foliage.js', 'core/biome/35-core-anim.js']))
     vm.runInContext(read(f) + (f.endsWith('10-core-head.js') ? '\nthis.BIO=BIO;' : ''), ctx, { filename: f });
   const BIO = ctx.BIO, errs = [];
   BIO.init({ THREE, scene: new THREE.Scene(), seed: 3, err: m => errs.push(m), tags: opt.tags ? 'test' : undefined });

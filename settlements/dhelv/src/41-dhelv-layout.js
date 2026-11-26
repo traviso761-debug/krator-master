@@ -263,7 +263,7 @@ const DH=(function(){
  {for(const t of ['armour','leather','dyer'])FOOT['zj_shop_'+t+'_built']=[11,10,'centre'];
   const Q=(key,x,z,ry)=>{const [w,d,o]=FOOT[key];if(o==='round')return [0,1,2,3,4,5,6,7].map(k=>[x+Math.cos(k*PI/4)*w/2/Math.cos(PI/8),z+Math.sin(k*PI/4)*w/2/Math.cos(PI/8)]);const za=o==='front'?-d:-d/2,zb=o==='front'?.5:d/2,c=Math.cos(ry),sn=Math.sin(ry);
    return [[-w/2,za],[w/2,za],[w/2,zb],[-w/2,zb]].map(([lx,lz])=>[x+lx*c+lz*sn,z-lx*sn+lz*c]);};
-  const sd=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1]);};
+  const sd=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=Math.max(1e-12,dx*dx+dz*dz),t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1]);};
   const over=(A,B)=>{for(const P of [A,B])for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],n=[b[1]-a[1],a[0]-b[0]],pa=A.map(p=>p[0]*n[0]+p[1]*n[1]),pb=B.map(p=>p[0]*n[0]+p[1]*n[1]);
     if(Math.max(...pa)<Math.min(...pb)||Math.max(...pb)<Math.min(...pa))return false;}return true;};
   const gap=(A,B)=>{if(over(A,B))return 0;let g=1e9;for(const [P,R] of [[A,B],[B,A]])for(const p of P)for(let i=0;i<R.length;i++)g=Math.min(g,sd(p,R[i],R[(i+1)%R.length]));return g;};

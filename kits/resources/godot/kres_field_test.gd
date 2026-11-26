@@ -33,11 +33,14 @@ func _initialize() -> void:
 		fails += 1 if bad else 0
 	# the whole world's gold lodes, as the bake's digest (numpy) and the JS's
 	var C := float(F.D.field.cells.gold)
-	var nx := ceili(float(F.D.grid.fullW) * float(F.D.grid.px_m) / C)
-	var nz := ceili(float(F.D.grid.fullH) * float(F.D.grid.px_m) / C)
+	var A: Array = F._anchor()
+	var i0 := floori(-float(A[0]) / C)
+	var j0 := floori(-float(A[1]) / C)
+	var i1 := ceili((float(F.D.grid.fullW) * float(F.D.grid.px_m) - float(A[0])) / C)
+	var j1 := ceili((float(F.D.grid.fullH) * float(F.D.grid.px_m) - float(A[1])) / C)
 	var rows := PackedStringArray()
-	for iz in nz:
-		for ix in nx:
+	for iz in range(j0, j1):
+		for ix in range(i0, i1):
 			var c := F.candidate("gold", ix, iz)
 			if c.kept and c.drop == "":
 				rows.append("%d,%d,%s" % [ix, iz, "2" if c.grade == "high" else ("1" if c.grade == "medium" else "0.5")])

@@ -6,13 +6,27 @@
                                            # builds, the Godot headless tests, the shot compare on the must-pass
                                            # cases (each skipped, and said so, when its tool is missing: playwright,
                                            # godot, numpy and Pillow)
-    python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only)
+    python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only, on the committed pages)
     python3 tools/test_all.py --nightly --no-cache   # run every verify, even one that passed on the same page before
     python3 tools/test_all.py --list       # print the steps and exit
+    python3 tools/test_all.py --help       # this text
+
+A node test that requires a dist/ bundle still a Git LFS pointer is skipped, naming the pull (tools/lfs_needs.py --test).
 
 Exit code 1 if any step fails. Each step prints PASS, FAIL or SKIP with its time; failures print the tail of their
-output. Nothing here edits a tracked file except the rebuild, which writes the pages every build.py writes: a clean
-tree after a run is part of the proof (the push job checks it with `git status --porcelain`).
+output. Nothing here edits a tracked file except the rebuild, which writes the pages every build.py writes and each
+build's build-inputs.json (it runs through tools/build.py): a clean tree after a run is part of the proof (the push job
+checks it with `git status --porcelain`).
+
+The ratcheted steps (tools/ratchet.py) fail on what is new, never on the pile; each baseline is meant to shrink to {}:
+check_assembly, check_source, check_vendor, check_views, check_stale and check_cells (--strict replaces its ratchet at
+the rebuild's close-out). Known entries, on purpose:
+  - check_views: 40 view names hold a ':' (a name a screenshot cannot take on NTFS); tools/harness.py owns the fix, which
+    is to make the file name safe when it writes one (CORE-IMPROVEMENTS.md item 17);
+  - check_stale: the pages the biome rebuild's pairs and its close-out rebuild; it records them with --write-baseline, so a
+    page a change leaves behind is new and fails. A pair's rebuild removes its keys (rerun --write-baseline).
+Reports, in --no-build: the pages that differ from PORT-BASELINE.json are the same stale pages, so the hash compare runs
+with the rebuild, where it can hold.
 """
 import glob, importlib.util, os, shutil, subprocess, sys, time
 
@@ -32,13 +46,13 @@ NIGHTLY_VERIFY = [
     ('settlements/verge', 'dist/verge.html', ['--assert']),
     ('settlements/yuni', 'yuni.html', ['--assert']),   # its export profile (registry, fixtures, interiors) since 2026-10-18
 ]
-GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test.gd', 'res://tests/fire/kfire_test.gd', 'res://tests/tags/ktags_test.gd',
+GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test.gd', 'res://tests/clock/kseason_flush_test.gd', 'res://tests/fire/kfire_test.gd', 'res://tests/tags/ktags_test.gd', 'res://tests/tags/ksound_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/mask/kmask_distance_test.gd', 'res://tests/atmos/atmos_test.gd',
                'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd', 'res://tests/isle/isle_books_test.gd', 'res://tests/export/isle_test.gd', ('res://tests/export/isle_test.gd', '--case=world-isle-valapo', '--town=valapo'),
-               'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd', 'res://tests/terrain/kstrata_test.gd', 'res://tests/terrain/klava_test.gd', 'res://tests/resources/kres_field_test.gd',
+               'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd', 'res://tests/terrain/kstrata_test.gd', 'res://tests/terrain/kstrata_vary_test.gd', 'res://tests/terrain/klava_test.gd', 'res://tests/terrain/kslab_test.gd', 'res://tests/resources/kres_field_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/export/yuni_interiors_test.gd', 'res://tests/export/longsong_test.gd', 'res://tests/water/water_test.gd',
-               'res://tests/water/falls_case_test.gd', 'res://tests/water/gaps_test.gd',
+               'res://tests/water/falls_case_test.gd', 'res://tests/water/gaps_test.gd', 'res://tests/door/door_test.gd',
                'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd',
                # a test and its arguments (after Godot's --): Pylon's sheet on Iziz's page, through the city test (core/export/README.md)
                ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet'),
@@ -63,7 +77,11 @@ BUILD_FIRST = ['kits/interiors']
 # A node test that reads a build's output runs after the builds (in CI its input is an LFS pointer until the build
 # writes it); with --no-build it runs with the other node tests, on the committed output.
 NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js', 'settlements/isle-demo/tests/test-isle-sim.js',
-                    'settlements/isle-demo/tests/test-isle-week.js', 'settlements/isle-demo/tests/test-isle-export.js', 'settlements/isle-demo/tests/test-isle-hamlets.js']   # dist/isle-city.plan.js
+                    'settlements/isle-demo/tests/test-isle-week.js', 'settlements/isle-demo/tests/test-isle-export.js', 'settlements/isle-demo/tests/test-isle-hamlets.js',
+                    'settlements/isle-demo/tests/test-isle-crime.js', 'settlements/isle-demo/tests/test-isle-money.js',
+                    'settlements/isle-demo/tests/test-isle-unrest.js', 'settlements/isle-demo/tests/test-isle-build.js',
+                    'settlements/isle-demo/tests/test-isle-refugees.js',   # dist/isle-city.plan.js
+                    'kits/interiors/tests/test-walk.js']   # dist/interiors-core.js
 
 
 def builds():
@@ -75,16 +93,33 @@ def builds():
 
 
 def extra_builds():
-    """Pages a build writes only when asked: the Throne's stations (build.py --station <name>) and Girder's hero
-    page (build_hero.py). The baseline hashes them, so they are rebuilt too."""
+    """Pages a build writes only when asked: every station kit's stations (build.py --station <name>; the plain build.py
+    writes station 1 only, or none). The baseline hashes them, so they are rebuilt too. A station is a folder under
+    stations/ with a station.json or its own fragments; one marked "baseOnly" is a shared stage, never built alone; a kit with stations but no build.py is a plan (2026-11-10: the
+    second integration pass found --all had skipped about a hundred station pages; Girder's hero page is retired to
+    archive/girder-hero)."""
+    import json
     out = []
-    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'throne', 'stations', '*', 'station.json'))):
-        name = os.path.basename(os.path.dirname(st))
-        out.append(('build biomes/throne --station ' + name, [PY, 'build.py', '--station', name], 'biomes/throne'))
-    if os.path.isfile(os.path.join(ROOT, 'settlements', 'girder', 'build_hero.py')):
-        out.append(('build settlements/girder hero', [PY, 'build_hero.py'], 'settlements/girder'))
+    for sd in sorted(glob.glob(os.path.join(ROOT, 'biomes', '*', 'stations', '*', ''))):
+        sd = sd.rstrip('/' + os.sep)
+        kit = os.path.dirname(os.path.dirname(sd))
+        b = os.path.relpath(kit, ROOT).replace(os.sep, '/')
+        name = os.path.basename(sd)
+        sj = os.path.join(sd, 'station.json')
+        # a station is a folder with a station.json or its own fragments (several kits keep no station.json); a plan with
+        # no build.py yet, the shared fragments of a kit's stations (`common`) and a "baseOnly" stage are not
+        if not os.path.isfile(os.path.join(kit, 'build.py')) or name == 'common':
+            continue
+        if not os.path.isfile(sj) and not glob.glob(os.path.join(sd, '[0-9]*.js')):
+            continue
+        try:
+            with open(sj, encoding='utf-8') as fh:
+                if json.load(fh).get('baseOnly'):
+                    continue
+        except (OSError, ValueError):
+            pass
+        out.append(('build %s --station %s' % (b, name), [PY, 'build.py', '--station', name], b))
     return out
-
 
 def node():
     return shutil.which('node') or next(iter(sorted(glob.glob('/opt/node*/bin/node'), reverse=True)), None)
@@ -94,19 +129,41 @@ def node_tests():
     tests = sorted(glob.glob(os.path.join(ROOT, 'core', '**', 'test-*.js'), recursive=True))
     tests += sorted(glob.glob(os.path.join(ROOT, 'settlements', '*', 'tests', 'test-*.js')))
     tests += sorted(glob.glob(os.path.join(ROOT, 'kits', '*', 'tests', 'test-*.js')))
+    tests += sorted(glob.glob(os.path.join(ROOT, 'openworld', '*', 'tests', 'test-*.js')))   # the outpost registry (openworld/outposts/PLAN.md)
+    tests += sorted(glob.glob(os.path.join(ROOT, 'biomes', '*', 'tests', 'test-*.js')))   # the biome kits' data tests (gills, clivobredos, ...)
     tests += [os.path.join(ROOT, 'tools', 'walk_audit', 'test_audit.js')]   # the geometry walk audit (tools/walk_audit/README.md)
     return [os.path.relpath(t, ROOT) for t in tests]
 
 
+def node_pointers(test):
+    """The dist/ bundles a node test requires that are still LFS pointers (tools/lfs_needs.py; item 23)."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import lfs_needs
+    try:
+        return lfs_needs.pointers(lfs_needs.test_reads(test.replace(os.sep, '/')))
+    except OSError:
+        return []
+
+
 def steps(nightly, build):
     s = [('port lint (every build and core)', [PY, 'tools/check_port.py']),
+         ('port lint (openworld/outposts: shared data, not a build)', [PY, 'tools/check_port.py', 'openworld/outposts']),
          ('insulation (core never names host/)', [PY, 'tools/check_insulation.py']),
          ('dependencies run one way (MODULARITY-PLAN.md)', [PY, 'tools/dep_graph.py']),
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),
          ('builds take the core modules (README.md, "Core modules are not optional")', [PY, 'tools/check_core_use.py']),
          ('Voth census tables (every build with a *_TRADES)', [PY, 'tools/check_trades.py', '--all']),
+         ('botany census in step (tools/check_botany.py)', [PY, 'tools/check_botany.py', '--check']),
          ('godot vendored core in step', [PY, 'godot/tools/sync_core.py', '--check']),
-         ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py'])]
+         ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py']),
+         # tools/check_source.py: trailing // that swallow statements, `|| <number>` option reads, cameraPosition, bare GLSL splices
+         # and raw texture2D in hooks (CORE-IMPROVEMENTS.md 17, 14, 8b, 9b); a ratchet
+         ('source lints (comments, || numbers, shader text)', [PY, 'tools/check_source.py']),
+         ('vendored drift only shrinks (item 19)', [PY, 'tools/check_vendor.py', '--quiet']),
+         ('stations have views, view names are file-safe (item 10b)', [PY, 'tools/check_views.py']),
+         ('page cap and BUDGETS.json (items 3a, 3d)', [PY, 'tools/check_budgets.py']),
+         # passes, saying so, while the library cards are LFS pointers (CI pulls only tex/)
+         ('card cells (ratchet; tools/textures/check_cells.py)', [PY, 'tools/textures/check_cells.py', '--ratchet'])]
     for t in sorted(glob.glob(os.path.join(ROOT, 'tools', 'tests', 'test_*.py'))):
         s.append(('tools ' + os.path.relpath(t, ROOT).replace(os.sep, '/'), [PY, t]))
     n = node()
@@ -114,13 +171,23 @@ def steps(nightly, build):
     for t in node_tests():
         if t not in late:
             s.append(('node ' + t, [n, t] if n else None))
+    # read the pages and the manifests, so after the rebuild when there is one (with --no-build: the committed pages; an
+    # LFS pointer page counts as NOT BUILT in the first and as its oid in the second)
+    pages = [('page assembly: clash, order, missing, needs (tools/check_assembly.py)', [PY, 'tools/check_assembly.py']),
+             ('pages behind their sources (tools/check_stale.py)', [PY, 'tools/check_stale.py'])]
     if build:
+        # through tools/build.py: the same build, plus its LFS refusal, page cap, fragment needs and build-inputs.json
         for b in builds():
-            s.append(('build ' + b, [PY, 'build.py'], b))
-        s += extra_builds()
+            s.append(('build ' + b, [PY, 'tools/build.py', b]))
+        for name, cmd, cwd in extra_builds():
+            script = os.path.basename(cmd[1])
+            s.append((name, [PY, 'tools/build.py', cwd] + cmd[2:] + ([] if script == 'build.py' else ['--script', script])))
         for t in late:
             s.append(('node ' + t, [n, t] if n else None))
+        s += pages
         s.append(('hash baseline (PORT-BASELINE.json)', [PY, 'tools/port_baseline.py']))
+    else:
+        s += pages
     if nightly:
         pw = importlib.util.find_spec('playwright') is not None
         s.append(('furniture fingerprint', [PY, 'core/furnish/fingerprint.py'] if pw else None))
@@ -161,6 +228,9 @@ def steps(nightly, build):
 
 
 def main(argv):
+    if '--help' in argv or '-h' in argv:   # the survey: `--help` used to run the whole suite
+        print(__doc__)
+        return 0
     nightly, build = '--nightly' in argv, '--no-build' not in argv
     plan = steps(nightly, build)
     if '--list' in argv:
@@ -174,6 +244,11 @@ def main(argv):
         if cmd is None:
             print('SKIP  %s (tool missing)' % name, flush=True)
             continue
+        if name.startswith('node '):   # item 23: a bundle the test requires is still an LFS pointer: say the pull, do not run it
+            ptr = node_pointers(name[5:])
+            if ptr:
+                print('SKIP  %s (needs %s, an LFS pointer: python3 tools/lfs_needs.py --test %s --pull)' % (name, ', '.join(ptr), name[5:]), flush=True)
+                continue
         t = time.time()
         r = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                            encoding='utf-8', errors='replace', timeout=1800)

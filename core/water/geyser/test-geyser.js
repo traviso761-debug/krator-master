@@ -2,6 +2,7 @@
 // broken input that must fail. The shader chunks the drawing compiles (the colour ramp, the cycle) are read as TEXT and run
 // here as JavaScript (a small transliteration of the subset they use), against the CPU twins. --golden writes
 // godot/tests/water/geyser_golden.json: the Old Kettle's data and the states a port replays (GEYSER_STATE).
+require('../../shader/06-core-khook.js');require('../../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..','..');
 const src=['core/rand/08-core-rand.js','core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/water/20-core-water.js','core/water/geyser/52-core-water-geyser.js','core/water/geyser/52b-core-water-geyser-draw.js']
@@ -121,5 +122,11 @@ ok('a cone with no period throws; H must be positive',(()=>{try{W.geyser({x:0,z:
  const B=W.plumeBox(P),rec=W.geyserRecords().find(r=>r.key==='plumed');
  ok('W6: the box holds the leaning column ('+B.map(v=>v.toFixed(1))+'), the export\'s geyser record carries the plume and its box for a FogVolume; a geyser without one has none',
   B[1]===P.y0&&B[4]===P.y0+P.height&&B[3]>300+.15*P.height&&rec.plume&&rec.plume.box.length===6&&rec.plume.radius===P.radius&&!('plume' in W.geyserRecords().find(r=>r.key==='bare'))&&G0.plume==null,
-  'plume' in W.geyserRecords().find(r=>r.key==='bare'));}
+  'plume' in W.geyserRecords().find(r=>r.key==='bare'));
+ // a vent below zero (the isle demo's stand under its -1500 m datum): the shader's text must still parse ('p.y--1278.37' did not)
+ const Gd=W.geyser({key:'deep',name:'A geyser below zero',x:-800,z:60,top:-1278.37,H:40,period:120,pre:20,dur:30,steam:40,plume:{lean:[.12,-.06]}}),Pd=Gd.plume,
+  src=W.plumeGLSL(Pd);let ed=0,nd=0,perr=null;
+ try{const Prd=glslProgram(src,{});for(const dy of[.5,10,25,39])for(const s of[.35,1]){const x=-800+.12*dy,y=Pd.y0+dy,z=60-.06*dy,b=W.plumeDensity(Pd,x,y,z,s);ed=Math.max(ed,Math.abs(Prd.run('plmDensity',[x,y,z],s)-b));if(b>0)nd++;}}catch(e){perr=e.message;}
+ ok('W6: a plume over a vent below zero writes p.y+'+Math.abs(Pd.y0)+', never p.y--: its density equals W.plumeDensity ('+(perr||ed.toExponential(1)+', '+nd+' samples inside')+')',
+  !perr&&!/--/.test(src)&&ed<1e-12&&nd>4,false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

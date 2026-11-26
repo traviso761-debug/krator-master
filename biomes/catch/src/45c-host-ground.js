@@ -18,22 +18,35 @@ const GTEX=['uniform sampler2D uGNoise;',
  'vec3 gTex(sampler2D s,vec2 p){float n=gNoise(p*0.13)*0.65+gNoise(p*0.41+7.3)*0.35;vec2 q=vec2(p.x*0.7986-p.y*0.6018,p.x*0.6018+p.y*0.7986)*1.37+vec2(0.37,0.71);',
  ' return mix(texture2D(s,p).rgb,texture2D(s,q).rgb,smoothstep(0.3,0.7,n));}'].join('\n');
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff,vertexColors:true});
+// THE LAYERS ON core/terrain's GROUND SHADER (KGROUND, 43-core-ground.js; the final rebuild, pair 11, 2026-11-09): with the pack and without
+// ?kground=0, each layer is hex-tiled, read coarser with distance (its tile doubling from 30 m, up to 8x: the coarse read the owner asked for
+// on 2026-10-26, so a crust's polygons hold as large shapes) and blended by height (a pebble stands through the silt at an edge), at the
+// same weights (aGL*) and the same keep: its colour is t x mix(paint / mean, 1, keep), so a keep-0 layer is the paint times its relief and a
+// keep-1 layer its own colour, as before. Past 500 m the layers give way, a little, to the painted ground (_kfd), as before. three r128
+// uploads cameraPosition only to Phong and Standard: on this Lambert ground the eye is the view matrix's (KHOOK.EYE's kEye), and KGROUND's
+// own read of that name is pointed at it (korona's define, a core finding: core/terrain/43-core-ground.js should use kEye itself)
+const KG_ON=!!GL&&typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0';
+const KG_EYE='#define '+'camera'+'Position kEye()\n';
+const KG_LY=KG_ON?GL.map((l,i)=>({map:l.tex,k:1/l.scale,name:l.name,w:'vGL'+(i>>2)+'.'+'xyzw'[i&3]+'*_kfd',
+  tint:'mix(_kb*'+(1/Math.pow(l.mean==null?.78:l.mean,2.2)).toFixed(4)+',vec3(1.0),'+(+l.keep).toFixed(2)+')'})):null;
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uGNoise={value:GNOISE};
  let lay='';
- if(GL){GL.forEach((l,i)=>{sh.uniforms['uGL'+i]={value:l.tex};});
-  // a custom sampler is not decoded from sRGB for us: pow 2.2 by hand; a keep-0 layer is its relief over the pack's mean;
-  // with distance a layer is read from a second tap six times coarser (25 m to 220 m), so a crust's polygons and a gravel's
-  // mottle hold as large shapes instead of averaging to one flat colour (the owner, 2026-10-26: the soda bed read as a blank
-  // blob from far and middle distance); only past 500 m does it give way, a little, to the painted ground
-  lay='{vec3 _b=diffuseColor.rgb,_a=vec3(0.0);float _s=0.0;vec2 _p=vGWP.xz;float _dc=length(cameraPosition-vGWP),_fd=1.0-0.3*smoothstep(500.0,3000.0,_dc),_fm=smoothstep(25.0,220.0,_dc);'+GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2).toFixed(4),
+ if(GL&&KG_LY)lay='vec3 _kb=diffuseColor.rgb;float _kfd=1.0-0.3*smoothstep(500.0,3000.0,length(kEye()-vGWP));\n/*KGROUND*/';
+ else if(GL){GL.forEach((l,i)=>{sh.uniforms['uGL'+i]={value:l.tex};});
+  // the fallback (?kground=0): the page's own blend. A custom sampler is not decoded from sRGB for us: pow 2.2 by hand; a keep-0 layer is its
+  // relief over the pack's mean; with distance a layer is read from a second tap six times coarser (25 m to 220 m), so a crust's polygons and a
+  // gravel's mottle hold as large shapes instead of averaging to one flat colour (the owner, 2026-10-26: the soda bed read as a blank blob from far
+  // and middle distance); only past 500 m does it give way, a little, to the painted ground
+  lay='{vec3 _b=diffuseColor.rgb,_a=vec3(0.0);float _s=0.0;vec2 _p=vGWP.xz;float _dc=length(kEye()-vGWP),_fd=1.0-0.3*smoothstep(500.0,3000.0,_dc),_fm=smoothstep(25.0,220.0,_dc);'+GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2).toFixed(4),
     w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
    return 'if('+w+'>0.003){vec3 t=pow(mix(gTex(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+'),gTex(uGL'+i+',_p*'+(1/(l.scale*6)).toFixed(5)+'),_fm),vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
    'diffuseColor.rgb=mix(_b,_a/max(_s,0.001),clamp(_s*_fd,0.0,1.0));}';}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;'+(GL?'attribute vec4 aGL0,aGL1,aGL2;varying vec4 vGL0,vGL1,vGL2;':''))
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;'+(GL?'vGL0=aGL0;vGL1=aGL1;vGL2=aGL2;':''));
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;'+GTEX+(GL?'varying vec4 vGL0,vGL1,vGL2;'+GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join(''):''))
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;\n'+KHOOK.EYE+(KG_LY?KG_EYE:'')+(KG_LY?'':GTEX)+(GL?'varying vec4 vGL0,vGL1,vGL2;'+(KG_LY?'':GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join('')):''))
   .replace('#include <color_fragment>','#include <color_fragment>\n'+lay);};
-MAT_GROUND.customProgramCacheKey=()=>'catch-ground|'+(GL?GL.length:0);
+MAT_GROUND.customProgramCacheKey=()=>'catch-ground|'+(GL?GL.length:0)+(KG_LY?'|kg':'');
+if(KG_LY){KGROUND.hook(MAT_GROUND,{key:'catch-ground-'+GL.map(l=>l.name).join(','),layers:KG_LY,at:'/*KGROUND*/',far:{d:30,levels:3}});MAT_GROUND.userData.kgroundOn=true;}
 const GROUND=(function(){const N=GROUND_N,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),col=new Float32Array(nx*nx*3),g=GL?[0,1,2].map(()=>new Float32Array(nx*nx*4)):null,F={},c=new THREE.Color();
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;

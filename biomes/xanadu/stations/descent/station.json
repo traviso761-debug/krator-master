@@ -1,0 +1,4 @@
+{
+ "note": "Station 4, the descent (PLAN-STATIONS.md): the Vale's lake's outlet, the cataract and Ālph's run down to the floor. No neighbours read in place: the floor's competition (the Rift's natives against tall Xanadu forms) is the `floor` station's (the owner, 2026-11-03), which can read this station's ground (45a-host-descent-land.js) through its own 'reads'. drop: the Vale's fountain and the dome ruin are not on this ground.",
+ "drop": ["89x-host-fountain.js", "85-host-dome.js"]
+}

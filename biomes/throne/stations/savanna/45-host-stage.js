@@ -56,3 +56,5 @@ const burnAt=(x,z)=>{const d=Math.hypot((x-BURN.x)/BURN.rx,(z-BURN.z)/BURN.rz)+.
 function plumeAt(x,z){return 0;}
 // the weather's climate (src/89a-host-atmos.js, ATMOS.bindWeather, 2026-10-26): wet, no ash: the south flank's savanna, out of the plume, its rains and storms
 const WX_CLIMATE={wet:true};
+// THE AIR's height fog (89zz-host-core.js; the final rebuild): the dry season's lighter dawn mist in the channels
+const ATMOS_AIR={falloff:1/900,sun:.35,sky:.35,mist:{density:.0006,below:40,depth:30,noise:.7}};

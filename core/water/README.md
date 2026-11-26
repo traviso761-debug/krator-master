@@ -29,7 +29,7 @@ Voth branch).
 so the kit's baked canoes and islands keep their waterlines, the old lake map's ripple as the detail normal map;
 `src/90w-rl-lake.js`); `settlements/noahs-regret` (the Ring Sea off the south shore, the basin and the flooded holds: the
 whole field as before, no trochoids while the floats are baked, the bed from `terrainH` with the hull's ground;
-`src/82-nr-water.js`); `settlements/port`, the Ancient Port kit (the sea along the coast: a calm
+`src/82-nr-water.js`); `kits/port`, the Ancient Port kit (the sea along the coast: a calm
 share of the field while the vessels are baked, the bed from the stamped ground, the depth tint still painted on the
 seabed under the part-transparent water, dry pits cut out; `src/71w-port-sea.js`, which Ys vendors); `settlements/ys` (the port's sea, vendored, under the drowned city; its own
 sky copy in the water, a flat pick plane named `sea`); `settlements/locus` (the open salt lake; the river, the delta and the pools stay on the
@@ -54,6 +54,9 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 | `geyser/52-core-water-geyser.js` | [G data] | `WATER.spring`, `WATER.geyser`: hot pools with a temperature and mineral colour ramp and geyser columns on a period/duration cycle, their CPU twins (`S.colourAt`, `S.state(t)`), the ramp and the cycle as GLSL text, the particles as plain arrays, export records. Optional, and in the SUBFOLDER `core/water/geyser/` on purpose: many builds pool every numbered `*.js` of `core/water` with `os.listdir`, so a new top-level fragment would leak into all of them. A build opts in by path (`biomes/geyser/build.py`: `CORE_WATER_GEYSER`). Needs core/rand (`KRAND`) for particles and phase jitter |
 | `geyser/52b-core-water-geyser-draw.js` | [draw] + [G shader] | `WATER.drawSpring` (the banded disc), `WATER.drawGeyser` (one Points per column), `WATER.thermalUniforms` / `thermalStep` |
 | `geyser/test-geyser.js` | | `node core/water/geyser/test-geyser.js [--golden]`: the ramp and cycle GLSL run as text against the twins, the Old Kettle's schedule, determinism, export; `--golden` (`node core/water/geyser/test-geyser.js --golden`) writes `godot/tests/water/geyser_golden.json` |
+| `geyser/52c-core-water-thermal.js` | [G data] | `WATER.mudpot` (kind `mud`: a swelling surface, hashed bubbles, `S.bursts`, `S.burstEvents`), `WATER.fumarole` (its puffing, its run-off traced downhill as `WATER.flow` arguments and a stain), `WATER.downhill`, `WATER.thermalAprons` (sinter, travertine, sulfur, clay and mat aprons; `apronAt`, `bake`, `thermVents`), `WATER.matColour`; the GLSL `mudGLSL`, `fumGLSL`, `matGLSL`. Opt-in by path; needs 52 and core/rand. "Geothermal surfaces" below |
+| `geyser/52d-core-water-thermal-draw.js` | [draw] + [G shader] | `WATER.drawMudpot` (the swelling disc, a cone's flank), `WATER.drawFumarole` (the steam on the vent's breath). Needs 52b |
+| `geyser/test-thermal.js` | | `node core/water/geyser/test-thermal.js`: 52c and 52d, every chunk run as text against its twin, each check with a negative |
 | `ext/53-core-water-terraces.js` | [G data] | `WATER.terraces` (a stepped river: a still pool per tread, a fall per riser, linked: `T.heightAt`, `at`, `flowAt`, `export`) and `WATER.mergedFalls` (the arrays of many falls in one). Optional, in the SUBFOLDER `core/water/ext/` for the same reason as `geyser/` (a build opts in by path) |
 | `ext/53b-core-water-terraces-draw.js` | [draw] + [G shader] | `WATER.drawFalls` (two meshes for any number of falls), `WATER.drawPools` (one mesh for many pools), `WATER.drawTerraces`, `WATER.fallGLSLMerged` |
 | `ext/54-core-water-kinds-ext.js` | [G data] | the planned biomes' water (2026-10-26): the looks (`W.LOOKS`: brine, blood, bloodriver, clear, spring, proglacial; `rampAt`, `lookDraw`, `lookTint`, `lookGradient`, `withLook`), the **pan** and **ice** kinds, `underIceFall` (the bloodfalls), `weed`, `seepDam`, `karstSpring`. Opt-in by path; needs core/rand for placement. "Planned biomes' water" below |
@@ -63,7 +66,18 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 | `test-rebuild.js` | | `node core/water/test-rebuild.js`: the final rebuild's items (2026-10-26, "Final rebuild items" below), each against its twin with a negative |
 | `ext/57-core-water-audit.js` | [G data] | `WATER.audit` (the water-ground contract as one check: findings as records), `WATER.auditSummary`, and placement from the ground: `WATER.lipAt`, `toeAt`, `levelFromDownstream` (`fallsOf({ground})` uses them). Opt-in by path; "The water-ground audit" below |
 | `test-kinds-ext.js` | | `node core/water/test-kinds-ext.js`: ext/54 and 54b, each check with a negative, each chunk run as text against its twin; first, that loading them moves no export, preset or shader (`test-gaps.js` also loads them) |
+| `ext/62-core-water-flood.js` | [G data] | `WATER.flood` (kind `flood`: a gorge flood whose water rises and falls on the `KHAZ.front` law, shared with core/hazard), `WATER.frontK`, `frontLevel`, `frontProject`, `floodGLSL`; `S.hazard()`. Opt-in by path. "A gorge flood" below |
+| `ext/62b-core-water-flood-draw.js` | [draw] + [G shader] | `WATER.drawFlood`: a ribbon the vertex shader lifts to the flood's level, on drawFlow's look |
+| `ext/test-flood.js`, `ext/test-flood-front.js` | | `node core/water/ext/test-flood.js`: 62 and 62b against the law written again from its text, the GLSL as text, the hazard body and the export; `node core/water/ext/test-flood-front.js` holds core/hazard's KHAZ.front to the same records (level, s, k) |
 | `glsl-interp.js` | | the GLSL interpreter the tests share (`require('./glsl-interp.js').glslProgram`). Not numbered: no build takes it |
+
+## core/shader (2026-11-02)
+
+Every water hook goes through `KHOOK` (`core/shader/README.md`), so a page needs `core/shader` (`khost.resolve` adds it). What wraps a
+material is a layer (`wtr-ride`, `wtr-wet`, `wtr-keep`, `wtr-rust`, `wtr-cf:<hash>`, `wtr-breakup`, `wtr-mirror`); a page hook runs first
+whenever it is assigned. A kind's own hook edits through `W.vs` and `W.fs`, which throw on a missing anchor. `WATER.checkPrograms(renderer?,
+scene?)` is the water's slice of `KHOOK.checkPrograms`: `[]` when every water program linked. A colour hex is decoded (`WATER.colLin`, 2026-11-08: a display hex goes in
+linear, a `THREE.Color` as it is; `WATER.colAsWritten` is the old as-written reading). The mirror stays off at page load (`ext/58`, `WATER.mirrorSwitch`). Shader text did not move.
 
 ## Taking it into a build
 
@@ -162,7 +176,8 @@ tint and a sun glint, as before). One material per ramp (`o.mats`, a Map the pag
 extent and mesh sum), a geyser as kind `geyser` with its whole record (its extent is `null` in the adapter: listed whatever the box). Not yet
 drawn by Godot's `water_import.gd` (it draws `open` surfaces only and ignores the rest).
 
-**Not here (yet):** mud pots (a grey swelling mud, not water), the run-off sheet and the steam of fumaroles (kit-side); the other takers (below).
+**Now here (2026-11-09):** mud pots (a grey swelling mud, not water), the fumaroles' steam and run-off, and the sinter, travertine, sulfur, clay and
+microbial-mat aprons round every vent: `geyser/52c` and `52d`, "Geothermal surfaces" below. **Not here (yet):** the other takers (below).
 Takers still to opt in: Throne station 4 (`85-host-springs.js` has its own `GEY_MAT`/`SPRING_MAT`/mud pots) and station 8 (`86-host-vents.js`),
 station 1 (`84-host-ground.js`), `biomes/ringisles` (reads the kit's `GEYSER.build`: rebuilt with it), `openworld/isle-demo` (16 vents, built on
 demand: reads the kit; rebuild and verify after this change).
@@ -711,6 +726,7 @@ nothing it looks at.
 | `flow-under` | a flow's water is under the ground at its centreline (`tol.under`, 5 cm), sampled every `step` (4 m) | m under |
 | `flow-slab` | the ribbon's outer edge (half width + its drawn margin) stands over `tol.slab` (.3 m) above the ground, no other water there | m over |
 | `flow-pocket` | past that edge the ground stays under the level for `tol.pocket` (1 m) or more, out to `scan` (the width, at least 20 m) | m past the edge |
+| `flow-graze` | (opt-in: `graze: true` or `{tol, w}`) from 2 m inside the ribbon's edge out past its margin, the ground stays within `tol` (.12 m) of the level for `w` (2 m) or more, no other water there: ribbon and bank near coplanar, a z-fight at range. **Pass the ground as drawn** (a page's `drawnH`, `KSEAT`'s), not the field: a 16 m mesh bridging an 11 m channel is the fault the field can't see (nwlowlands' hill river, 2026-11-03) | m of it |
 | `still-rim` | a still's level is over its rim's ground (`tol.rim`, 5 cm), where no other water lies just outside | m over |
 | `still-floor` | its level is over none of its floor (16 x 16 samples) | m short |
 | `open-edge` | an open surface's mask edge crosses ground under its level (`tol.edge`), and no other surface's water lies there; its bounds' own edge only inside `o.extent` ([x0, z0, x1, z1], the ground the page has: a box ending at the map's edge is no cut) | m under |
@@ -752,3 +768,155 @@ or where `o.allow(A, B, x, z)` says so. Faded water (keep under .5) is not check
   as the first runs on eastabyss and the Rift jungle did (2026-10-27; their findings are in the session notes, not fixed here).
 - Costs: about `length / step` x 2 x (1 + scan) ground samples a flow, an open surface's box at half its mask cell, 9 x 16 x 16 for a still.
   Seconds for a biome page; run it in a check, not each frame.
+
+## The core pass (2026-10-27: PRACTICE.md section 2, items 2, 4, 5, 8; `test-network.js`, `test-shore.js`, `test-breakup.js`, `test-flow-keep.js`)
+
+All opt-in; `test-gaps.js` loads every new fragment and its default snapshot still passes.
+
+| Item | Call | What |
+|---|---|---|
+| 2, a flow network | `WATER.network({flows: [{flow, parent}], ground, open, reach, mouth: {len}, confluence})` (ext/59), `WATER.drawNetwork(N, {flow, flows, confluence})` (ext/59b) | each flow names the flow it leaves or joins; the network finds each join's kind (a tributary ends on its parent, a distributary starts from it) and its overlap, refuses a child that does not reach its parent, gives a fork's siblings one confluence placed and sized from their overlaps, fades every flow that ends in one of `open` over `len` m (45) round where it enters (its rows refined), and orders each child over its parent. `drawNetwork` draws the flows, the discs and the fades. `WATER.audit`'s overlap rule finds nothing left in the test's river system (295 findings drawn loose) |
+| 4, the shore from the ground | `WATER.maskFromGround({box, cell, level, ground, seed, limit, dilate})` (ext/58) | an open surface's mask flooded over the ground from its seeds (where the ground is under the level, and `limit` allows) and dilated a cell: every mask edge then lies over ground above the level, so the shore is the ground's contour (`WATER.audit`'s open-edge: 516 cut edges for a shape-drawn mask, 0 for this). A `limit` (a river's band left to its ribbon) is the only place a straight edge stays |
+| 5, breakup by default | `WATER.BREAKUP_AUTO = true` before the water is drawn (ext/56) | every open, still, pool, ribbon and confluence drawing made after it takes the breakup (`BREAKUP`, ribbons `BREAKUP_FLOW`; `o.breakup` an object laid over them, `false` to keep one out). On by default since 2026-11-09: every build that takes core/water lists ext/56; `WATER.BREAKUP_AUTO = false` before the first drawing keeps the old ripple |
+| 8, ribbon rows that follow their effects | `drawFlow({keep, refine: true})`, `W.ribbon(S, {refine: {f, tol, min}})` (22, 51) | rows where `keep` changes (no row's step over about `tol`, .08; never closer than `min`, 2 m), the rest of the line at `step`: a fade resolves without densifying the whole line. The record keeps `{tol, min}` |
+
+**Adopting it** (eastabyss station 1 is the worked page, `src/89w-host-water.js` and `build.py`):
+- `build.py`: list `core/water/ext/59-core-water-network.js` and `59b-core-water-network-draw.js` (with 55 and 55b, which they need; 56 for
+  breakup; 58 for the shore) by path, after the top-level core/water.
+- Replace hand-wired forks, joins and mouth fades with one network: `const NET = WATER.network({flows: [{flow: RIVER}, {flow: CHANNEL, parent: 0}, ...],
+  ground: terrainH, open: [LAKE], confluence: {cell: 2}}); const D = WATER.drawNetwork(NET, {flow: RIVER_DRAW_OPTIONS});` (`D.flows`, `D.confluences`).
+  A flow's `densify` kept only for its fade can go: the mouths refine their own rows.
+- A lake or sea whose mask is drawn from a shape: `mask: WATER.maskFromGround({box, cell, level, ground: terrainH, seed: (x, z) => inside(x, z),
+  limit: (x, z) => !inARiverBand(x, z)})`.
+- The breakup is on by default (2026-11-09): a page that takes ext/56 breaks up every drawing it makes; `WATER.BREAKUP_AUTO = false;` before
+  its first water drawing keeps the old regular ripple (`breakupAll()` and `breakupFlows()` still patch drawings made while it was off).
+
+## The water as fields, and the land side of its edge (2026-11-02: ext/60; `node core/water/test-edge.js`)
+
+`WATER.audit` checks the water against the ground. These read the other way, from the land: the ground's wet band and the plants take the water's own numbers.
+
+- `WATER.fields({box, cell, ground, surfaces})` bakes a raster of the water the eye sees (a surface holds the point and its level is over the ground); `WATER.fieldAt(F, x, z)` -> `{shore, depth, flow}`, `WATER.fieldFns(F)` -> one function each, for a host's field table.
+  `shore` is signed metres to the edge (over 0 on land), `depth` metres of water, `flow` metres to the nearest running water. These are the shore distance, depth and flow proximity entries of the environmental-field contract the core pass plans for `core/biome/README.md`.
+- `WATER.edgeAudit({field, plants, wet, band, wide, clear, allow})` -> findings in `WATER.audit`'s shape: `plant-in-water` (a plant nearer the water than its radius plus `clear`, unless `aquatic`), `wet-short` (land within `band` of the edge with no wet ground), `wet-wide` (with `wide`: wet ground past it, a band that follows a mask or an old line).
+  Give `wet` the water's share of the wetness, or `allow` where a seep or rain owns the ground. `test-edge.js` is the worked example: one shoreline and one junction, the wet band from the fields clean, one from the mask caught.
+- **Not done:** no biome reads them yet (each turn maps its fields), staged shore-grid bakes (measure a hitch first).
+
+## The reflections switch
+
+`WATER.mirrorSwitch` (`ext/58`, 2026-11-01) lets a page reflect the land in its largest still, and costs nothing until someone asks: the page
+loads with reflections off, and `WATER.mirror` isn't called, so no material is patched and no tri is drawn. A button in the host panel
+cycles off, probe, live; `?mirror=probe` or `?mirror=live` asks at load. The probe is the cheap tier, patchy near a shore (one capture point). The live mirror is the good picture, at about 2.4-3.4 ms every 2nd frame
+on the Arc 140T. A loop of GPU timer queries round `renderLive` crashed the tab on the Arc, cause unknown; about 1,900 queries on 2026-11-02, resolution switching included, did not repeat it, and the page's own loop never did it.
+
+**Adopting it** (the exact lines; each biome's own turn does it, where it has a large still; `biomes/eastabyss/src/99-host-take.js` is the example):
+
+1. `build.py`: add `58-core-water-mirror.js` to the kit's `core/water/ext` list.
+2. In the take fragment, before `KHOST.take`, with every surface at the still's level (rivers and forks too), its centre, its shoreline's distance as `radius`, and `far`:
+   `const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[...],level,center:[x,z],radius,far,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});`
+3. In `KHOST.take`: `draw:()=>{MIRROR.update();SKY.draw();}`.
+
+Never call `Sw.set` at load, and don't set a tier in a page's defaults. `node core/water/test-mirror-switch.js` holds the rule. Godot has no twin yet.
+
+## A plume that moves: `tintFlow` (2026-11-02: ext/61; `node core/water/test-plume.js`)
+
+The owner, on swlowlands' delta: the river's water met the clear sea at a hard edge, and should swirl and mix as a real delta's does. An open surface's
+tint field (`WATER.open({tint})`) was laid once; `WATER.open({tint, tintFlow})` carries it on a current. The field is read upstream along a velocity
+field plus a curl-noise swirl, in two phases half a cycle apart that cross-fade (the flow-map method: Vlachos, "Water Flow in Portal 2", 2010). A
+noise carried with the water breaks it into filaments, and the eddies wander round a loop once a wave period, so they turn over without a pop at
+the clock's wrap. A flow map keeps a steady current's mean picture still by design: what moves is the detail and the eddies, and the plume as a
+whole stands downstream of where it was laid.
+
+- `tintFlow: {v(x, z) -> [vx, vz] m/s | null, cell, period (60 s), swirl (.12 m/s), scale (140 m), evolve (.8), fil (.45), filScale (30 m)}`.
+- `WATER.tintFlowAt(S, x, z, t)` is the shader's twin. The test runs `wtrTintFlow`'s own text against it, to 1e-16.
+### Adopting it
+
+- List `ext/61-core-water-plume.js` in the build (`tools/fragment_needs.json`: after 20 and 50). Give the surface a tint (the
+  plume's colour, fading with distance) and a `tintFlow` whose `v` runs out from the mouths, spreads off each channel's line and drifts along the
+  shore. swlowlands' delta station is the worked example (`stations/delta/44z-host-delta.js`, `sea`; `?plume=0` without it).
+- **Nothing else moves:** 50's text changes only behind `S.tintFlow`, and the test proves a tint without it draws the same shader, key and
+  uniforms. `20` and `50` changed as source text, so every page that takes them moves by bytes at its next rebuild.
+
+**`breakers: false`** (`WATER.draw`, the same day): a shore grid's breakers draw no foam. Use it for a sheltered arm or a lake, where `surf: false`
+alone left the shore grid's white bands. Opt-in: no page moves without it.
+
+## Geothermal surfaces (2026-11-09: geyser/52c and 52d; `node core/water/geyser/test-thermal.js`)
+
+What "Hot springs and geysers" left owed, for godshearth, twins, greatchasm, seouterwall, firebliss, midbasin and neouterwall. Lifted from the
+Throne's stations (isle `85-host-springs.js`: the mud pots' bubbles and the steam; vents `86-host-vents.js`) onto the geyser's pattern: state a
+pure function of the clock, its GLSL written from the same constants and run as text against the twin, every random a `KRAND.hash` of (world, key,
+class, slot, index), so a tile built alone shows the same bubbles, puffs and aprons as the full build. The full API is the header of `52c`.
+
+| Call | Data | Twin | Drawn |
+|---|---|---|---|
+| `WATER.mudpot({key, name, x, z, r, level, temp, thick, kind, slots, swell, cone, colour, tint, world})`; kind `'pot'`, `'cone'` or `'field'` | kind `mud`: `WATER.at` answers it after a still pool and before a flow; `heightAt` is its swelling surface; up to 8 bubble slots, each with 8 hashed places | `S.surfaceAt(x, z, t)` (MUD_STATE: `mudH`), `S.bursts(t)`, `S.burstEvents(t0, t1)`, `S.state(t)` | `WATER.drawMudpot` |
+| `WATER.fumarole({key, name, x, z, y, r, rate, period, base, off, T, mineral, ground, runoff, world})` | kind `fumarole` (wets nothing); with ground, `S.runoff`: `{flow` (arguments for `WATER.flow`)`, stain, why, length}` | `S.state(t)` -> `{u, puff, steam}` (`fumSteam`); `WATER.fumaroleParticles(S)` | `WATER.drawFumarole` |
+| `WATER.thermalAprons({springs, geysers, fumaroles, mudpots, runoffs, ground, therm, soil, decay, world})` | a group (`WATER.groups`, exported): apron records with a hashed ring drawn out downhill; travertine's `terraces` | `A.apronAt(x, z)` -> `{sinter, travertine, mat, matT, sulfur, clay, wet, T}`; `WATER.matColour(T)` (`thmMat`) | the page's ground (KGROUND layers from `A.bake`) |
+
+**MUD_STATE.** Slot k: `T = t / per_k + ph_k`, cycle `c = floor(T)`, `f = T - c`; the bubble is place `c mod 8` of the slot's table `{dx, dz, size,
+amp}`; it swells while `f < .86` (`grow = sm(0, .82, f)`, radius `size (.35 + .65 grow)`, a Gaussian dome `amp grow`), pops at `.86` and rings out
+over the rest of the cycle; the sum fades to the rim (`sm(1, .75, R / r)`) and the pot heaves (`swell`). The places repeat every 8 bubbles of a
+slot (the shader reads them from a uniform table); the slots' periods differ, so the pot does not visibly repeat. The GLSL equals the twin to 1e-14.
+
+**The mats** grow only where water runs (a spring's or geyser's apron, a run-off line) and only in their band: `mat = wet sm(soil + 6, soil + 14,
+T) (1 - sm(73, 80, T))`; over ~75 C the wet ground is bare white sinter. `matT = T / 100` is the colour key: `WATER.matColour(T)` bands it on the
+geyser ramp's stops (`WATER.THERMAL.ramps`): white over 80 C, the ramp's yellow at 72 and orange at 60 (the 50 to 70 C cyanobacteria), its green
+at 48 (under ~50), brown (its rust darkened) at 36, near black at 26. With `therm` (a KTHERM field, or its bake) the temperature is the ground's;
+without, each source's T0 (a spring `30 + 63 temp`, a geyser 93, a fumarole its `T`, a mud pot `30 + 60 temp`) falls to the soil across its
+apron by KTHERM's own falloff. `A.thermVents()` hands KTHERM the same sources, so the field and the aprons agree.
+
+**Travertine hands to `WATER.terraces`:** with `ground`, a `{S, apron: 'travertine', step}` source's record carries `terraces: {name, line,
+levels, weights, width, riser}` traced down the ground from the rim (a tread per `step` m of drop, each as long as the ground stays above the next
+level); `WATER.terraces(rec.terraces)` (ext/53) builds the pools and falls. The test builds them.
+
+### Adopting it
+
+- List `geyser/52-core-water-geyser.js`, `geyser/52b-core-water-geyser-draw.js`, then `geyser/52c-core-water-thermal.js` and
+  `geyser/52d-core-water-thermal-draw.js` (by path, as `biomes/geyser/build.py` lists 52 and 52b), after core/rand, `20` and `50`; `ext/53` before
+  any `WATER.terraces` call, `core/terrain/47-core-therm.js` for a `therm`. Add their needs to `tools/fragment_needs.json` when the first page takes them.
+- `const P = WATER.mudpot({key, x, z, r, level: terrainH(x, z) + .04, kind: 'pot'}); WATER.drawMudpot(P, {THREE, scene, uniforms, fog: scene.fog})`;
+  `const F = WATER.fumarole({key, x, z, ground: terrainH}); WATER.drawFumarole(F, {...}); if(F.runoff) WATER.drawFlow(WATER.flow(F.runoff.flow), {...})`.
+- `const A = WATER.thermalAprons({springs, geysers, fumaroles: [F], mudpots: [P], ground: terrainH, therm})`; bake `A.bake({box, cell, channels})`
+  into a DataTexture and give KGROUND a layer per channel (`w` the channel; the mat layer tinted by `thmMat(matT * 100.0)`, `WATER.matGLSL()`).
+- Register each in core/tags before drawing it, as every placed thing is; a mud pot's or fumarole's hazard (heat, gas) is the page's record.
+- **Not judged by eye yet:** no page lists these files; the shaders are proven against their twins as text and the drawings built on a stub,
+  never compiled on a GPU. The first taker should screenshot a mud pot near and far and a fumarole at dawn.
+
+## A gorge flood (2026-11-09: ext/62 and 62b; `node core/water/ext/test-flood.js`)
+
+Firebliss, midbasin, outlandgate, paintedhighlands and wouterwall want a flood that runs a gorge on a cycle. `WATER.flood` is a surface of kind
+`flood` whose water actually rises: a front comes down the channel at `speed`, the water rises behind it over `rise` s, holds `hold` s and falls
+away over `fall` s, `depth` m over a standing `base`. The water and the hazard (`core/hazard/22-core-hazard-env.js`, `stateFn: 'KHAZ.front'`,
+the record's `front`) read one record and one law:
+
+```
+front: {path: [[x, y, z], ...] (the channel floor; y the bed), w (m: half-width), speed (m/s),
+        start (s, 0), period (s; null = once), rise, hold, fall (s), depth (m: the flood's peak rise), base (m: standing depth, 0)}
+s  = arc length along path of the point's nearest point on the path (segments projected; clamped to [0, L]); q = the lateral distance
+u  = period != null ? ((t - start) mod period, into [0, period)) : t - start
+sm(a, b, x) = smoothstep (t = clamp((x - a) / (b - a), 0, 1), t*t*(3 - 2t)); when b <= a it is x < a ? 0 : 1
+v  = u - s / speed;  fk = v < 0 ? 0 : v < rise ? sm(0, rise, v) : v < rise + hold ? 1 : v < rise + hold + fall ? 1 - sm(rise + hold, rise + hold + fall, v) : 0
+level(s, t) = bed(s) + base + depth * fk, bed(s) the path's y interpolated linearly by arc length
+```
+
+Read as: projection and arc length in plan (x, z), as `WATER.flow`'s line; the first of equally near segments; a point past an end is within its
+round cap; the path in world coordinates. `S.level(x, z, t)` (null where q > w), `S.levelAt(s, t)`, `S.wet`, `S.heightAt` (the level while wet),
+`S.flowAt`, `S.frontAt(t)` (the head, the crest, the tail), `S.outline()`, `S.hazard()` (`{kind: 'drown', effect: 'drown', stateFn: 'KHAZ.front',
+front, shape: {type: 'poly', pts, y0, y1}, ...}` from `S.hazardAt`, the path's first point) and `S.hazardRecord()`. `WATER.at(x, z, t)` answers a
+flood where it stands at or above what else is there (without `t`, as before); `WATER.heightAt` takes the higher; the export lists it whole.
+`WATER.frontK`, `frontLevel` and `frontProject` are the law on a bare front record. The test writes the law again from the text above and holds
+the record and the GLSL (`WATER.floodGLSL`, exact) to it.
+
+**Drawn** (`WATER.drawFlood(S, o)`): one ribbon along the path, 2 (w + margin) wide; each vertex carries its row's `s` and bed y, and the vertex
+shader lifts it to `wfLevel(s, bed, t)` while the water stands there and folds it `sink` m under the bed where it does not (the fragment discards
+it). The look is `drawFlow`'s, reused rather than a new water shader: the same MeshStandardMaterial with the sky in it, the ripple advected down the
+channel (`wtrFlowN`), white water on steep reaches and the banks (`wtrFlowFoam`), the breakup noise; added are a foam band on the front itself (the
+bore) and muddy flood colours. The clock is `wtrFloodT`: the page's `o.uniforms.uT`, else ATMOS.hook's `t` (the seconds `S.levelAt` takes).
+
+### Adopting it
+
+- List `ext/62-core-water-flood.js` (after `20`) and, to draw it, `ext/62b-core-water-flood-draw.js` (after `22`, `50`, `51`, with core/atmos bound
+  and core/shader) by path; add their needs to `tools/fragment_needs.json` when the first page takes them.
+- `const F = WATER.flood({key, name, path: [[x, bedY, z], ...], w, speed, period, rise, hold, fall, depth}); WATER.drawFlood(F, {})`;
+  register `F.hazardRecord()` in core/tags (with core/hazard's `KHAZ.front` loaded) so the walker's danger and the water are one record.
+- A gorge's own river stays a `WATER.flow`; the flood lies over it while it runs and `WATER.at(x, z, t)` / `heightAt` answer the higher water.
+- **Not judged by eye yet:** no page lists these files; the drawing is built on a three.js stub and its law checked as text, never compiled on a GPU.

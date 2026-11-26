@@ -236,6 +236,10 @@ const BL=off('backlit')?0:.35,GT=off('groundtint')?null:{k:.8,gain:.36,fade:[500
 // DECIDUOUS: the species whose crowns drop in the dry season where a station says the forest is monsoon forest (HYPERJUNGLE.LOOK =
 // {deciduous: [3, 5]}, the baobab and the kapok, which drop on Earth too); the closed jungle (station 1) is XA, no dry season: none
 const DEC=off('season')?[]:(LK.deciduous||[]);
+// A HABIT (PLAN-LANDS.md sections 2 and 3, H6; the savage and north lands, 2026-11-08): a station sets HYPERJUNGLE_LOOK = {habit: {H: [[lo, hi]
+// per species], rb, crownR, share, spacing, impCell}} and 55 grows every hypertree that much taller (the savage land's canopy to 300-480 m),
+// the stand shares and the heroes' spacing its own (the north's: ironbark and ghostwood leading, wider apart). Unset (station 1, the lake, the savanna) nothing in 55 changes: the same draws in the same order
+HYPERJUNGLE.HABIT=LK.habit||null;
 HYPERJUNGLE.FUNG=!off('fung')&&!!(BIO.fung&&BIO.fung.bracket);
 HYPERJUNGLE.LOOKS={backlit:BL,ground:GT};   /* 52's library cards take the same options */
 HYPERJUNGLE.MAT={
@@ -297,14 +301,14 @@ HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.def('clump'+i,BIO.geo.clump(),HYPERJUNGLE
 BIO.def('raceme',BIO.geo.hang(),HYPERJUNGLE.MAT.raceme,{attrs:['aN'],label:'Ghostwood racemes'});
 BIO.def('pod',BIO.geo.pod(),HYPERJUNGLE.MAT.pod,{label:'Baobab pods'});
 BIO.def('capsule',BIO.geo.pod(),HYPERJUNGLE.MAT.pod,{label:'Mahogany seed capsules'});
-BIO.def('bract',BIO.geo.hang(),HYPERJUNGLE.MAT.bract,{label:'Heliconia bracts'});
+BIO.def('bract',BIO.geo.hang(),HYPERJUNGLE.MAT.bract,{label:'Heliconia bracts',onLeaf:true});
 BIO.def('ucard',BIO.geo.clump(),HYPERJUNGLE.MAT.under,{label:'Understorey foliage'});
 BIO.def('frond',BIO.geo.frond(3),HYPERJUNGLE.MAT.frond,{label:'Fronds'});
 BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),HYPERJUNGLE.MAT.hang,{label:'Hanging growth'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),HYPERJUNGLE.MAT.hang,{label:'Lianas and strands'});
 BIO.def('mossmat',BIO.geo.mat(),HYPERJUNGLE.MAT.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),HYPERJUNGLE.MAT.solid,{label:'Bush lobes'});
-BIO.def('bloom',BIO.geo.bloom(),HYPERJUNGLE.MAT.bloom,{label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),HYPERJUNGLE.MAT.bloom,{label:'Blooms',onLeaf:true});
 BIO.def('rod',BIO.geo.rod(7),HYPERJUNGLE.MAT.solid,{label:'Stems'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.limb.map||HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});   /* the limbs' map (the library's when bound) */
 /* a young hypertree's trunk wears its species' bole bark (the library's when bound), as the heroes' limbs do: on the shared

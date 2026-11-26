@@ -107,7 +107,9 @@ BIO._fadeInject=function(sh,kind){const F=BIO.FADE;if(!F)return;if(typeof F==='f
 // draw(g,S) paints GREYSCALE leaves on a transparent canvas; the material's
 // per-instance colour tints them. fillRGB fills the transparent texels.
 BIO.alphaTex=function(S,draw,fillRGB){const T=BIO.host.THREE;
- const c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');g.clearRect(0,0,S,S);draw(g,S);
+ /* willReadFrequently: a canvas read back whole is kept in CPU memory, so getImageData copies instead of stalling on the GPU for every card (the
+    valley's 2026-11-10 profile: 52 cards, about 1 s each; the owner, "the station pages really seem to take forever to load") */
+ const c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d',{willReadFrequently:true});g.clearRect(0,0,S,S);draw(g,S);
  const d=g.getImageData(0,0,S,S).data,out=new Uint8Array(S*S*4);
  for(let o=0;o<out.length;o+=4){const a=d[o+3];
   if(a<48){out[o]=fillRGB[0];out[o+1]=fillRGB[1];out[o+2]=fillRGB[2];}else{out[o]=d[o];out[o+1]=d[o+1];out[o+2]=d[o+2];}
@@ -154,7 +156,7 @@ function clipRect(P,c){const edges=[[0,c[0],1],[0,c[2],-1],[1,c[1],1],[1,c[3],-1
  return P;}
 BIO.geo.stemClump=function(S,o){o=o||{};const pos=[],uv=[],nor=[],e=o.rise==null?.65:+o.rise,ce=Math.cos(e),se=Math.sin(e),LEN=o.len==null?.85:+o.len;
  for(let k=0;k<3;k++){const P=S[k%S.length],az=k/3*Math.PI*2+.3,ca=Math.cos(az),sa=Math.sin(az),d=[ce*ca,se,ce*sa],t=[-sa,0,ca],n=[-ca*se,ce,-sa*se];
-  const s=P.stem,ax=[P.tip[0]-s[0],P.tip[1]-s[1]],L=Math.hypot(ax[0],ax[1])||1,e1=[ax[0]/L,ax[1]/L],e2=[-e1[1],e1[0]],w=P.w||[-L*.3,L*.3];
+  const s=P.stem,ax=[P.tip[0]-s[0],P.tip[1]-s[1]],L=Math.hypot(ax[0],ax[1])||1,e1=[ax[0]/L,ax[1]/L],e2=[-e1[1],e1[0]],w=P.w||[-L*.3,L*.3],
   bk=-(P.back||0),box=[[bk,w[0]],[L,w[0]],[L,w[1]],[bk,w[1]]].map(q=>[s[0]+e1[0]*q[0]+e2[0]*q[1],s[1]+e1[1]*q[0]+e2[1]*q[1]]),poly=clipRect(box,P.cell||[0,0,1,1]),kk=LEN/(L-bk);
   const loc=poly.map(p=>{const dx=p[0]-s[0],dy=p[1]-s[1];return[(dx*e2[0]+dy*e2[1])*kk,(dx*e1[0]+dy*e1[1])*kk];});
   for(let i=1;i+1<poly.length;i++)[0,i,i+1].forEach(j=>{const x=loc[j][0],y=loc[j][1];
@@ -320,7 +322,7 @@ BIO.foliageHook=function(o){o=o||{};
   // it and at grazing view angles, shimmering slowly in the wind
   if(o.irid)sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>',[
    '#include <color_fragment>',
-   '{ vec3 _V = normalize(cameraPosition - vFlWP); vec3 _N = normalize('+(o.aN?'vFlN':'vec3(0.0,1.0,0.0)')+');',
+   '{ vec3 _V = normalize((-(viewMatrix[3].xyz*mat3(viewMatrix))) - vFlWP); vec3 _N = normalize('+(o.aN?'vFlN':'vec3(0.0,1.0,0.0)')+');',
    '  float _fr = 1.0 - abs(dot(_N,_V));',
    '  float _sf = dot(_N, uSunDir)*0.5 + 0.5;',
    '  float _sh = 0.16*sin(uWindT*0.8 + dot(vFlWP, vec3(0.045,0.083,0.037))) + 0.08*sin(uWindT*1.9 + dot(vFlWP, vec3(-0.21,0.13,0.17)));',
@@ -358,7 +360,7 @@ BIO.foliageHook=function(o){o=o||{};
    'diffuseColor.a = clamp((diffuseColor.a - uA2Cut) / max(fwidth(diffuseColor.a), 0.0001) + 0.5, 0.0, 1.0);\n#include <alphatest_fragment>');
   // THE BACK-LIGHT: the sun behind a leaf, seen through it (thin leaves glow), fading out by ~450 m
   if(bl)sh.fragmentShader=sh.fragmentShader.replace('#include <envmap_fragment>',['#ifdef DOUBLE_SIDED',
-   '{ vec3 _bV = normalize(vFlWP - cameraPosition); float _bk = pow(max(dot(_bV, uSunDir), 0.0), 6.0) * (1.0 - smoothstep(150.0, 450.0, vFlD));',
+   '{ vec3 _bV = normalize(vFlWP - (-(viewMatrix[3].xyz*mat3(viewMatrix)))); float _bk = pow(max(dot(_bV, uSunDir), 0.0), 6.0) * (1.0 - smoothstep(150.0, 450.0, vFlD));',
    '  outgoingLight += uBacklit * _bk * diffuseColor.rgb * (vLightFront + vLightBack); }','#endif','#include <envmap_fragment>'].join('\n'));
   BIO._fadeInject(sh,'leaf');
  };};
@@ -386,7 +388,7 @@ BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
+   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');BIO._fadeInject(sh,'irid');};
  m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
@@ -409,7 +411,7 @@ BIO.glossBarkMat=function(tex,key,o){o=o||{};const T=BIO.host.THREE;
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uAlt,uSunDir;uniform float uMean,uGain,uGloss;varying vec3 vBWP;varying vec3 vBWN;'+(c2?'varying vec3 vBC2;':''))
    .replace('#include <map_fragment>','vec4 _bt=texture2D(map,vUv);float _bl=_bt.r/uMean;float _bm=_bt.g;')
    .replace('#include <color_fragment>',c2?'vec3 _ba=dot(vBC2,vec3(1.0))>0.00001?vBC2:uAlt;diffuseColor.rgb*=mix(vColor,_ba,_bm)*_bl*uGain;':'diffuseColor.rgb*=mix(vColor,uAlt,_bm)*_bl*uGain;')
-   .replace('#include <envmap_fragment>','{vec3 _V=normalize(cameraPosition-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
+   .replace('#include <envmap_fragment>','{vec3 _V=normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');BIO._fadeInject(sh,'gloss');};
  m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:Object.assign({alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain,gloss:o.gloss||0},c2?{c2:'aC2'}:{})};   // as data (42-core-export)
  const ck='biogloss|'+BIO.kitKey(key)+(c2?'|c2':'');m.customProgramCacheKey=function(){return ck+BIO._fx();};
@@ -427,7 +429,7 @@ BIO.farMat=function(o){o=o||{};const irid=o.rule==='irid',m=BIO.barkMat(null);
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvFP=(modelMatrix*vec4(transformed,1.0)).xyz;vFN=normalize(mat3(modelMatrix)*objectNormal);vFM=uv.y;'+
     '{float p=uv.x;float r=floor(p*(1.0/65536.0));p-=r*65536.0;float g=floor(p*(1.0/256.0));float b=p-g*256.0;vFC2=vec3(r,g,b)*(1.0/255.0);vFC2*=vFC2;}');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;uniform vec3 uSunDir;varying vec3 vFP;varying vec3 vFN;varying vec3 vFC2;varying float vFM;')
-   .replace('#include <color_fragment>','#include <color_fragment>\nif(vFM>0.5){vec3 V=normalize(cameraPosition-vFP);vec3 N=normalize(vFN);float fr=1.0-abs(dot(N,V));'+
+   .replace('#include <color_fragment>','#include <color_fragment>\nif(vFM>0.5){vec3 V=normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-vFP);vec3 N=normalize(vFN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.12*sin(uWindT*0.5+dot(vFP,vec3(0.011,0.017,0.013)));float k;'+
     'if(vFM<1.5){float sf=dot(N,uSunDir)*0.5+0.5;k=1.0-smoothstep(0.22,0.78,sf*1.15-fr*0.80+0.30+sh);}'+
     'else k=smoothstep(0.12,0.82,fr*0.85+0.15+sh);'+
@@ -436,7 +438,7 @@ BIO.farMat=function(o){o=o||{};const irid=o.rule==='irid',m=BIO.barkMat(null);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvFWP=(modelMatrix*vec4(transformed,1.0)).xyz;vFWN=normalize(mat3(modelMatrix)*objectNormal);vFGl=uv.x;');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uSunDir;varying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
-   .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize(cameraPosition-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
+   .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize((-(viewMatrix[3].xyz*mat3(viewMatrix)))-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'outgoingLight+=vFGl*pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir))*vec3(1.0,0.93,0.8);}\n#include <envmap_fragment>');BIO._fadeInject(sh,'far');};
  const ck='biofar|'+(irid?'irid|':'gloss|')+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck+BIO._fx();};
  m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:irid?{pack:'c2-rule',uv:'u: the second colour, 8 bits a channel on sqrt(linear); v: 0 none, 1 the leaf rule, 2 the irid bark rule'}

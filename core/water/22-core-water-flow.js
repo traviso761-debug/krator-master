@@ -42,7 +42,14 @@
  W.ribbon=(S,o)=>{o=o||{};const Q=PF(),step=o.step==null?Q.step:o.step,NA=o.across==null?Q.across:o.across,mg=o.margin==null?Q.margin:o.margin,P=S.pts,n=P.length;
   const seg=[];let s=0;for(let i=0;i+1<n;i++){const ex=P[i+1].x-P[i].x,ez=P[i+1].z-P[i].z,L=Math.hypot(ex,ez)||1e-9;seg.push({ex:ex/L,ez:ez/L,L,s0:s});s+=L;}
   // the rows: every polyline vertex, and evenly between them at most `step` apart
-  const rows=[];for(let i=0;i+1<n;i++){const k=Math.max(1,Math.ceil(seg[i].L/step));for(let j=0;j<k;j++)rows.push([i,j/k]);}rows.push([n-2,1]);
+  // o.refine {f: (x, z) -> value, tol (.08), min (2 m)} (2026-10-27, opt-in): more rows where f changes along a segment (drawFlow's keep), so a
+  // per-vertex effect resolves: rows close enough that f steps at most about tol between them, never closer than min m
+  const RF=o.refine&&typeof o.refine.f==='function'?o.refine:null,rtol=RF&&RF.tol!=null?RF.tol:.08,rmin=RF&&RF.min!=null?RF.min:2;
+  const rows=[];for(let i=0;i+1<n;i++){let k=Math.max(1,Math.ceil(seg[i].L/step));
+   /* (the steepest change over 16 samples sets the rows: evenly spread rows need the steepest stretch's density, a fade being steepest in its middle) */
+   if(RF){let pv=null,md=0;for(let q=0;q<=16;q++){const u=q/16,v=+RF.f(P[i].x+(P[i+1].x-P[i].x)*u,P[i].z+(P[i+1].z-P[i].z)*u);if(pv!=null)md=Math.max(md,Math.abs(v-pv));pv=v;}
+    k=Math.max(k,Math.min(Math.ceil(md*16/rtol),Math.max(1,Math.floor(seg[i].L/rmin))));}
+   for(let j=0;j<k;j++)rows.push([i,j/k]);}rows.push([n-2,1]);
   const pos=[],flow=[],slope=[],bank=[],along=[],idx=[];
   for(const [i,u] of rows){const a=P[i],b=P[i+1],g=seg[i],x=a.x+(b.x-a.x)*u,z=a.z+(b.z-a.z)*u,y=a.y+(b.y-a.y)*u,w=a.w+(b.w-a.w)*u,v=a.v+(b.v-a.v)*u;
    // the row's direction: the segment's, or at a polyline vertex the bisector with its neighbour (the cross-section

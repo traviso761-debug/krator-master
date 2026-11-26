@@ -1,5 +1,6 @@
 # kits/resources' node field in GDScript: the twin of src/45r-res-field.js (GEOLOGY.md, "The node field"). Same integers and
 # the same doubles in the same order, on core/rand's krand.gd, so a tile gives the JS's nodes, ids and positions.
+# The lattice starts at D.field.anchor (m; [0, 0] when absent), as the JS's.
 # Copy beside krand.gd (godot/tools/sync_core.py's pattern); kres_field_test.gd checks it against the JS.
 #
 #   var F := KResField.new(); F.load_json(path_to_geology_json)
@@ -82,12 +83,17 @@ func _drop(gx: float, gz: float) -> String:
 	return "water" if m & 1 else ("cliff" if m & 2 else "")
 
 
+func _anchor() -> Array:
+	return D.field.anchor if D.field.has("anchor") else [0, 0]
+
+
 func candidate(f: String, ix: int, iz: int) -> Dictionary:
 	var C := float(D.field.cells[f])
+	var A := _anchor()
 	var ins := float(D.field.inset)
 	var s := KRand.cell(_base(f), ix, iz)
-	var gx := (float(ix) + ins + (1.0 - 2.0 * ins) * KRand.unit(KRand.hash_ints(s, [2]))) * C
-	var gz := (float(iz) + ins + (1.0 - 2.0 * ins) * KRand.unit(KRand.hash_ints(s, [3]))) * C
+	var gx := float(A[0]) + (float(ix) + ins + (1.0 - 2.0 * ins) * KRand.unit(KRand.hash_ints(s, [2]))) * C
+	var gz := float(A[1]) + (float(iz) + ins + (1.0 - 2.0 * ins) * KRand.unit(KRand.hash_ints(s, [3]))) * C
 	var p := prospect(f, gx, gz)
 	var kept := floori(KRand.unit(KRand.hash_ints(s, [1])) * 255.0) < p
 	return {"id": "res:%s:%d:%d" % [f, ix, iz], "kind": f, "grade": _grade(KRand.unit(KRand.hash_ints(s, [4])), p),
@@ -97,12 +103,13 @@ func candidate(f: String, ix: int, iz: int) -> Dictionary:
 func nodes_in(x0: float, z0: float, x1: float, z1: float, families: Array = []) -> Array:
 	var fams: Array = families if families.size() else D.field.families
 	var out := []
+	var A := _anchor()
 	for f in fams:
 		if not D.field.cells.has(f):
 			continue
 		var C := float(D.field.cells[f])
-		for iz in range(floori(z0 / C), floori(z1 / C) + 1):
-			for ix in range(floori(x0 / C), floori(x1 / C) + 1):
+		for iz in range(floori((z0 - float(A[1])) / C), floori((z1 - float(A[1])) / C) + 1):
+			for ix in range(floori((x0 - float(A[0])) / C), floori((x1 - float(A[0])) / C) + 1):
 				var c := candidate(f, ix, iz)
 				if c.kept and c.drop == "" and c.gx >= x0 and c.gx < x1 and c.gz >= z0 and c.gz < z1:
 					out.append(c)

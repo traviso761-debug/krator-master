@@ -13,6 +13,21 @@
 // written in turns (fract of each term), as the wave field's is, so atmWaveT's wrap is seamless and fp32 never steps.
 // Without core/atmos loaded the field is 0 and the period 600 s.
 const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
+ // core/shader: every water hook goes through KHOOK (a layer on a material, an anchor that throws). W.vs / W.fs are a hook's replaces, in order
+ W.KH=()=>{if(typeof KHOOK!=='undefined')return KHOOK;throw new Error('core/water: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');};
+ W.vs=(sh,who,...R)=>{const K=W.KH();for(const r of R)K.v(sh,r[0],r[1],who);return sh;};
+ W.fs=(sh,who,...R)=>{const K=W.KH();for(const r of R)K.f(sh,r[0],r[1],who);return sh;};
+ // a water colour is DECODED into the shader (the owner, 2026-11-08): a hex (number, '#rrggbb', [r, g, b]) is a display (sRGB) colour and
+ // goes in linear, as core/shader's KCOLOR convention says and as the Godot importer has always read it (water_import.gd _lin); a THREE.Color
+ // is linear already and goes in as it is; any other CSS string three parses is decoded. Until 2026-11-08 the hexes went in as written (read
+ // as linear), so every page's water was paler than its hex: decoding darkens it. W.colAsWritten keeps the old reading, for a page that asks
+ const KC=()=>{if(typeof KCOLOR!=='undefined')return KCOLOR;throw new Error('core/water: core/shader is not on this page (KCOLOR): list core/shader/06b-core-kcolor.js (khost.resolve adds it)');};
+ W.colLin=(T,c)=>{const K=KC();if(c&&c.isColor)return[c.r,c.g,c.b];
+  if(typeof c==='number'||Array.isArray(c)||(typeof c==='string'&&/^\s*(#|0x)?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.test(c)))return K.linArr(c);
+  const q=new T.Color(c);return K.linArr([q.r,q.g,q.b]);};
+ W.colAsWritten=(T,c)=>KC().linArr(new T.Color(c),{linear:true});
+ // the water's slice of KHOOK.checkPrograms: its programs that did not link and its anchors missed; [] when all is runnable
+ W.checkPrograms=(r,scene)=>W.KH().checkPrograms(r,scene,/wtr/);
  const fr=x=>x-Math.floor(x),cl=(x,a,b)=>x<a?a:x>b?b:x,ss=(a,b,x)=>{const t=cl((x-a)/(b-a),0,1);return t*t*(3-2*t);};
  // (a page that declares ATMOS later in the same script has it in its temporal dead zone until then: typeof throws)
  const AT=()=>{try{return typeof ATMOS!=='undefined'&&ATMOS.PRESETS&&ATMOS.PRESETS.waves?ATMOS:null;}catch(e){return null;}};
@@ -132,7 +147,7 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   // a TINT field: a colour laid over the depth ramp where a body differs (a bayou in a sea, a river's plume, shoals): a raster over a box,
   // {box [x0,z0,x1,z1], cell, at(x,z) -> null | colour | {c, a}} baked at cell centres, or {x0, z0, cell, nx, nz, data} of premultiplied RGBA bytes;
   // S.tintAt(x,z) -> [r, g, b, a] (0..1, premultiplied: the surface's colour becomes colour*(1-a) + rgb), 0 outside the box
-  if(o.tint){S.tint=W.bakeTint(o.tint);}
+  if(o.tint){S.tint=W.bakeTint(o.tint);if(o.tintFlow)S.tintFlow=o.tintFlow;}   /* tintFlow: the tint carried on a current (ext/61; ignored without it) */
   S.tintAt=(x,z)=>S.tint?W.tintSample(S.tint,x,z):[0,0,0,0];
   S.shore=!!(S.bed&&S.bed.shore);
   // depth below the surface at (x,z) and t; the damping it gives (1 where there is no bed); on a shore grid the waves

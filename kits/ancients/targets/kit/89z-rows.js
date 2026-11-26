@@ -2,8 +2,8 @@
 //
 // Theodiga (the dam arcology) is deliberately NOT here. It is the single
 // heaviest structure in the kit and is being taken up as its own piece of work,
-// so it has its own target: targets/theodiga/. buildDam still ships in this
-// file's <script> — only the site is gone — so the two targets cannot drift.
+// so it has its own target: targets/theodiga/, which also holds buildDam since
+// 2026-11-15 (77-dam.js): it no longer ships in this page.
 // THE REHABILITATED VARIANTS (decay 3) ARE FOLDED IN. Every row now carries
 // intact (x=-s), ruined (x=+s), toppled (x=t, towers only) AND rehabilitated at
 // x=0, the empty middle of every row view, which is why the row presets needed

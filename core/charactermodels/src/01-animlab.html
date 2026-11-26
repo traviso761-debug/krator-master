@@ -168,10 +168,13 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px;
           <option value="mod_arms_surgical_up">Replacement surgical arms</option>
           <option value="mod_arms_cyber_up,mod_arms_cyber">Four bronze arms</option>
           <option value="mod_arms_flesh,mod_gills">Arms and gills</option>
-          <option value="mod_tail,mod_head_lizard">Lizardman (test: tail, head)</option>
-          <option value="mod_head_frog">Frogman (test: head)</option>
+          <option value="mod_tail,mod_head_lizard,mod_legs_lizard">Lizardman (test: tail, head, digitigrade legs)</option>
+          <option value="mod_legs_lizard">Digitigrade legs (lizard)</option>
+          <option value="mod_head_frog,mod_legs_frog">Frogman (test: head, digitigrade legs)</option>
+          <option value="mod_legs_frog">Digitigrade legs (frog)</option>
           <option value="mod_tail">Tail (test)</option>
-          <option value="mod_head_coyote,mod_tail_coyote">Coyote (test: head, tail)</option>
+          <option value="mod_head_coyote,mod_tail_coyote,mod_legs_coyote">Coyote (head, tail, digitigrade legs)</option>
+          <option value="mod_legs_coyote">Digitigrade legs (coyote)</option>
           <option value="mod_head_cat,mod_tail_cat">Cat (test: head, tail)</option>
           <option value="mod_head_lion,mod_tail_lion">Lion (test: head, tail)</option>
           <option value="mod_head_rat,mod_tail_rat">Rat (test: head, tail)</option>
@@ -220,7 +223,7 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px;
     <details id="pose-box">
       <summary>Posture</summary>
       <div class="pose">
-        <p class="pose-note">Pitch per joint after every clip, in degrees: negative bends forward. Shoulders: drop lowers them, back draws them back (negative hunches). Live on every figure of the body chosen. <b>This clip</b> tunes the clip playing on top of the body's values (the sliders show the sum; the file keeps the difference).</p>
+        <p class="pose-note">Pitch per joint after every clip, in degrees: negative bends forward. Lean at hips tips the whole body above the legs about the hip joints (negative forward), the legs and feet staying put. Pelvis tilt turns the pelvis alone (negative: its top forward), the thighs and the spine above keeping their way. Neck turn (positive: to the figure's left) and side tilt (positive: the left ear down) turn the neck. The fwd rows move a joint forward (positive) or back in centimetres, the joints above it staying put, so only that stretch of the back moves. Head fwd and Head up move the whole head, the neck stretching to it, to set the neck's length after turning the neck and shoulders. Shoulders: drop lowers them, back draws them back (negative hunches). Live on every figure of the body chosen. <b>This clip</b> tunes the clip playing on top of the body's values (the sliders show the sum; the file keeps the difference).</p>
         <label class="pose-body">Body <select id="pose-body"><option value="mpfb_male">Man and giant</option><option value="mpfb_female">Woman</option></select></label>
         <div class="pose-scope" role="group" aria-label="What the sliders change"><button id="pose-all" aria-pressed="true">Every clip</button><button id="pose-clip" aria-pressed="false">This clip</button><span id="pose-which"></span></div>
         <div id="pose-rows"></div>

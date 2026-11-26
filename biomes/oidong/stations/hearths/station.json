@@ -1,0 +1,11 @@
+{
+ "base": "passes",
+ "core": {
+  "47-core-therm.js": "core/terrain/47-core-therm.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js"
+ },
+ "kin": {
+  "hearths": [["src/50-biome-hearths-species.js", "src/55-biome-hearths-place.js"], "HEARTH", []]
+ }
+}

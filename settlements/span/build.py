@@ -128,6 +128,7 @@ for f in ('89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.
 sys.path.insert(0, core('host'))
 import host as khost
 CORE_HOST = khost.FULL
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 own = khost.resolve(PATH, CORE_HOST)
 if own:
     print('NOTE: a local copy overrides core/host: ' + ', '.join(own))

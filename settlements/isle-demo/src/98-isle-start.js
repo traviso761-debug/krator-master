@@ -34,7 +34,7 @@ setTimeout(function () {
       .then(function (d) { return { file: d, from: 'server' }; }).catch(function () { return { file: inl, from: 'inline' }; });
   }).then(function (got) {
     var q = /[?&]town=([^&]+)/.exec(location.search), town = q ? decodeURIComponent(q[1]) : ISLE.TOWNS[0];
-    if (ISLE.TOWNS.indexOf(town) < 0) town = ISLE.TOWNS[0];
+    if (ISLE.PLAN_TOWNS.indexOf(town) < 0) town = ISLE.TOWNS[0];
     var site = ISLE.townSite(got.file, town), F = ISLE.frame(town, site && site.frame);
     lap('frame'); VIEW.stage(); VIEW.terrain(); lap('terrain'); VIEW.cantonLabels(); VIEW.minimap(); lap('minimap');
     var gy = Math.max(0, VOTH.terrainH(0, 0)), lab = VIEW.sprite(town, { size: 0.04 });

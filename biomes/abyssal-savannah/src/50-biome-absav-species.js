@@ -214,6 +214,9 @@ BIO.def('stubpole',BIO.geo.trunk(6),BIO.solidMat(ABSAV.BARKTEX[2]),{label:'Stub-
 BIO.def('cycadtrunk',BIO.geo.trunk(8),BIO.solidMat(ABSAV.BARKTEX[3]),{label:'Ember-cycad trunks'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Kopje boulders',kind:'mineral'});
 BIO.def('slab',G.slab(),M.cap,{label:'Caprock blocks',kind:'mineral'});
+// the twigs that carry the crown clumps (55, twigTo; the final rebuild 2026-11-03): three sides, open ends, 6 triangles (a bough's rod is 24); defined last,
+// so every item before it keeps its index
+BIO.def('twig',new T3.CylinderGeometry(.5,.5,1,3,1,true),M.solid,{label:'Twigs (to the crown clumps)'});
 // the library maps for the solid-textured items (stubpole, cycadtrunk take their bark slots by name)
 (function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed)return;
  const tbl={stubbark:BIO.defs.stubpole.mat,cycadbark:BIO.defs.cycadtrunk.mat};Object.assign(ABSAV.LIB,BIO.libSwap('abyssal-savannah',tbl));})();

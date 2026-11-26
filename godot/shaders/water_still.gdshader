@@ -6,6 +6,7 @@ render_mode blend_mix, cull_back, depth_draw_opaque;
 
 #include "res://shaders/kcolour.gdshaderinc"
 #include "res://shaders/lib/water_kinds.gdshaderinc"
+#include "res://shaders/lib/water_breakup.gdshaderinc"   // the breakup (core/water ext/56): off unless bk_on
 
 uniform vec3 colour = vec3(0.018, 0.058, 0.05);   // linear
 uniform float roughness = 0.06;
@@ -24,5 +25,7 @@ void fragment() {
 	ALPHA = opacity;
 	ROUGHNESS = roughness;
 	METALLIC = metal;
-	NORMAL = normalize((VIEW_MATRIX * vec4(wk_still_n(v_w), 0.0)).xyz);
+	vec3 n = wk_still_n(v_w);
+	if (bk_on) n = wb_breakup(n, v_w);
+	NORMAL = normalize((VIEW_MATRIX * vec4(n, 0.0)).xyz);
 }

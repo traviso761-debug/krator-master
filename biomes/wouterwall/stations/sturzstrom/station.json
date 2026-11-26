@@ -1,0 +1,7 @@
+{
+ "name": "sturzstrom",
+ "out": "wouterwall-sturzstrom.html",
+ "note": "Station 3 (PLAN.md section 7): the sturzstrom at px 320,871 on scale model 5.1 (region/station-sturzstrom.json), 20 km down the flagship lobe from its scar (px 310,872). Its 44s-host-site.js replaces src/'s: an old and a fresh KRELIEF.runout lobe side by side, megablocks (KSTACKS buttes of the patchwork rock) riding on them, a lake dammed behind the fresh lobe's flank; the patchwork rock and the rubble in the ground's station slots; solifluction lobes on the old lobe's frozen flanks (KFROST: \"frost\": true takes core/terrain/42-core-frost.js).",
+ "lowlands": [],
+ "frost": true
+}

@@ -3,6 +3,7 @@
 // rim that is the ribbons' own numbers (they cross-fade on the same water), the drawing in drawFlow's own text. Each check has a negative.
 // The case is the SW highlands' (biomes/swhighlands station 1: the cave stream into the fold river), made synthetic: a river running +z,
 // a stream entering from +x at a right angle, the ground carved by both channels and joined with a smooth minimum.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');
 const ROOT=path.join(__dirname,'..','..');
 const {glslProgram}=require('./glsl-interp.js');

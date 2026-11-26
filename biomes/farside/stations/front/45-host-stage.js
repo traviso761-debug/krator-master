@@ -22,7 +22,8 @@ function groundH(x,z){const p=UV(x,z),u=p[0],n=fbm(x*.0016+4,z*.0016-2,441,3)-.5
 const frontK=(x,z)=>{const u=UV(x,z)[0];return Math.exp(-Math.pow((u+40*(fbm(x*.002,z*.002,443,2)-.5)*8)/520,2));};
 const STAGE={
  key:'front',name:'Farside: the front',R:1600,seed:2647,
- site:{px:45,py:200},air:{pressure:1.15,humidity:.9},clouds:{cover:.6},fogDensity:.00024,weather:'clear',
+ site:{px:45,py:200},   /* 5.1 px 317,530: 2,179 m on map 5.1 (Round 2 restored it; the plan's band is ~800-1,800 m: KNOWN_ISSUES.md) */
+air:{pressure:1.15,humidity:.9},clouds:{cover:.6},fogDensity:.00024,weather:'clear',
  ground:groundH,coastD:null,UV,XZ,sea:null,
  fields:{
   spray:(x,z)=>clamp(.32-UV(x,z)[0]*.00012,.05,.5),

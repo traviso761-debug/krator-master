@@ -1,5 +1,15 @@
 # core/charactermodels: known issues
 
+- **Open door's hand is held by its clip, not by a door.** The Animation Lab draws a door for it (`92-animlab.js sets`),
+  placed where each figure's hand first closes on the lever and swung where the hand pulls; the hand stays within 2 to
+  4 cm of the lever on the neutral and short bodies, 6 on the tall ones (the posture pass and the morphs bend the baked
+  arm). A game with real doors wants a runtime hand-to-handle pass (like toFace, to a point the door gives) in both
+  runtimes. The fist's thumb hangs down along the lever rather than wrapping it.
+
+- **Craft at a bench holds the hammer** (or the dagger as a knife) until the tool props of the same round (a chisel, a
+  plane, a saw) land; add them to its `hold` then. The bench itself is not drawn: the hands work at a bench's height
+  in the air.
+
 - **The giant chief's four-armed coat (`giant_free_m_chief4`) has seven dead cloth chains.** Its lower sleeves are split
   off into `.sleeves2.glb` after the chains are bound (`make_mpfb.py main`: `split_lower` runs after `turn_glb`), so
   seven chains' anchor indices run past the coat's mesh and the page cannot drive them; `tests/check_kit.py` allows the
@@ -71,7 +81,26 @@
   clip second) and out (over 0.25 s), a limb that a clip drives quickly into a thigh shows inside it for a frame or
   two, and the result depends on the frames before: scrubbing backwards, or jumping to a time, can give a slightly
   different pose from playing to it. The skull is a ball: an arm lying under a lowered head (a sleeper's pillow arm,
-  a tucked roll) is nudged off it.
+  a tucked roll) is nudged off it. The climb up a ledge's right knee still goes up to 1.5 cm into the right upper arm
+  for a frame at 0.13 to 0.16 s on the tall bodies (3 cm over four frames before the arm-on-arm round, 2026-11-26,
+  measured on the skinned meshes): letting a deep push turn up to three times faster cleared it, but it made the
+  hands jump 2 to 9 cm more in a frame in dig, harvest, repair, the crouch walk and sleep toss, so it was not kept.
+  Folded arms: the hands still grip into the other arm's biceps by a centimetre or two at a few vertices (the hand
+  takes no part in the arm-on-arm test, on purpose).
+- **The man's chest folds under the pecs in the idles, and the torso creases in Sword stance** (owner's reviews,
+  2026-10-25: "lumpy like breasts", "torso has crease"). Both go with the posture pass off (shot, 2026-11-26), so they
+  are the man's large spine bend (`data/posture.json`, his Spine1 -38.5 and the clips' own changes) folding the shirt
+  and the skin under it, not the shirt's fit. Left for the owner's Posture panel; posture.json is unchanged.
+- **Sit (chair, relaxed): "male hand clips face at 8.95 s" was not reproduced** (2026-11-26). The published lab runs
+  the same bodyFix and posture as this branch, and on the skinned meshes the men's hand stays 1.5 cm off the face at
+  8.95 s and at least 0.3 cm off it over the whole clip (the women's palm presses 0.5 to 1 cm into the cheek, as a
+  hand on a cheek does). If it shows again, a shot of the body and frame would settle it.
+- **Push cart: a belt loop of the cargo trousers stands up through the tee's hem at the back** in the deep lean (all
+  three men, the tall woman). A deeper tuck (4 cm) does not move it: the loop stands above the band at the hem line.
+- **129 tops still hide the skin up to their sleeve openings** (`open_sleeves`): no checkout or published lab holds
+  their GLBs as build-manifest.json has them (the 2026-11-06 garment checkpoint), so `make_mpfb.py hides` refreshed the
+  other 52 man's and 45 woman's tops and the giant's harness (2026-11-26) and left these. The next whole build
+  (`tools/rebuild.sh`) or a `hides` run on those pieces takes them.
 - **The elbow limit is a fixed hinge.** `make_pieces.elbow_limit` reads the elbow's bend about an axis fixed in the
   upper arm at rest; an upper arm turned far on its own axis (an overhead wind-up) reads as a bend backwards, so
   readings past 45 degrees backwards are left alone, and the runtime passes (two-hand solve, `bodyFix`) can still
@@ -91,9 +120,19 @@
   shows from nocking to the loose with no nocking motion. The supporting hand always closes in a fist.
 - **The hand-prop fixes of the owner's review (2026-10-20) are passes over clips made for something else** (README,
   Props, To the face, The bow). What each leaves:
-  - *Hanging props hang still.* The bucket and the lantern point plumb from the grip every frame; they do not swing
-    with the walk, and nothing keeps a bucket out of the thigh. *Water plants* was made for a watering can: the bucket
-    hangs from the reaching hand and nothing pours.
+  - *Hanging props hang still.* The bucket and the lantern hang plumb from the bail in the fist every frame; they do
+    not swing with the walk. The forearm turns (and the wrist bends) to lay the bail level, held near the frame
+    before's turn and changing at most 6 rad/s, so where the clip needs the forearm turned the other way the hand turns
+    over in a few frames rather than snapping (it snapped half a turn in Water plants, 2026-11-27), and where no turn
+    lays it level (Carry bucket's forward swing, about 7 s) the turn stays at its cap and the wrist bends. The bucket is kept out of the legs by turning
+    the arm at the shoulder, which can hold the arm a little out from the side. *Water plants* was made for a watering
+    can: the bucket hangs from the reaching hand and nothing pours.
+  - *Chop's left arm* (the third round, 2026-11-26) is kept out of the jaw by bringing both hands down at the top of the
+    swing (up to 40 cm) and swinging the elbow, so the backswing tops out by the right shoulder rather than behind the
+    head. It is switched on for Chop only (`clear_jaw`); Overhead chop and Heavy blunt swing put the left arm across the
+    face the same way, but the pass lowered their windups 40 cm, so they wait on the weapon clips' own review.
+  - *Sit and drink*'s face span (3.7 to 7.3 s) is read off the clip by eye; the arm comes up across the face to drink,
+    as the clip's own motion has it.
   - *The bow's spans are set by hand* (`nock` and the face spans in data/clips.json, read off the clips): a new bow clip
     needs its own, or it falls back on guessing from the hand's place. The string runs through the closed hand's middle,
     so at the anchor it passes a few centimetres beside the jaw rather than touching the chin. Bow shot's whole draw is
@@ -116,6 +155,31 @@
     the bow's turn and cant, the face weight, the blade's residue, at nineteen clip times), checked with a scratch data
     folder without clothes, where the prop checks added to `kchar_test.gd` pass too; the whole test was not run on this
     machine (no Godot pieces here).
+- **The weapon-hold fixes of the owner's review (2026-11-26)** (README, Props, Two hands, The bow). What each leaves:
+  - *The left hand's side of the haft comes from the prop*: its index side toward the head (or the blade, the muzzle),
+    in every two-handed clip. A clip that wants a reversed hold (an ice-pick grip, a spear turned butt-first) would need
+    a flag of its own. Round the haft the hand takes the roll that bends the wrist least and the forearm takes half of
+    the twist that leaves, so a wrist can still be turned up to about 90 degrees on its forearm (Spear advance, the top of
+    Overhead chop). At the top of Overhead chop the clip holds the hands about 50 cm apart, the left at the butt end.
+  - *The bow's cant* keeps to the side it is on and waits at a clear cant while the way to the one it wants is blocked;
+    when the leg comes to the bow it turns out at up to 8 radians a second (15 degrees a frame at 30 Hz, against the
+    clip's own 9 to 12). The keep-out is still capsules widened for loose trousers (now with 2 cm more preferred).
+  - *The draw stops short of the face*: the anchor is 6 to 8 cm off it as measured on the six bodies (6.2 to 8.6 cm: the
+    tall bodies nearer, the short ones farther; the points are per body, not per size), so the draw is about 14 cm
+    shorter than before and the arrow stands further in front of the bow.
+  - *The empty hand keeps off the blade* by moving the wrist (two-bone solve, its turn kept): the hand may rest against
+    the blade's edge, and only the forearm, the hand and two fingers are tested (not the upper arm or the thumb).
+  - *The rifle's stock* keeps out of the upper arms from 35% down by turning the wrist, which moves the muzzle a little at
+    the hip; the butt in the shoulder's pocket at the aim is allowed.
+  - *Pistol quick draw's two-hand span* (`two_when`, 2.3 to 4.3 s) is set by hand from the clip.
+  - *The fifth round (2026-11-26, 07:16).* The string arm's elbow at full draw is put back and out by the face's weight; at
+    full draw the hand is in front of the chin (the anchor), so the elbow ends level with the arrow but still somewhat
+    forward of the shoulder. Draw from quiver's `arrow_hand` span is set by hand; the carried arrow is pinched with the
+    draw curl and has no nocking motion. The right forearm swings beside the rifle's butt by moving the elbow (up to 90
+    degrees on the short women at the hip), tested on its first 60% from the elbow against the butt's box; by the wrist the
+    hand still meets the butt, which begins right behind the grip in the model.
+  - Checked against a local piece set (`../krator-garments`, not the manifest's): the Godot figure test passed with the
+    man's pieces; the giant's checks were not run.
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
   script (`tools/make_garments.py`): no folds beyond the hang and flare, strips of texture with the library's fabric
   grain multiplied in (colour only: no normal or roughness map, so a weave does not catch the light), and the
@@ -245,7 +309,7 @@
   side, back) no gap showed through to the background, only the jagged crossing, which the trunk-frame tuck
   (README, Clipping) made smaller but did not remove. If the gap is still seen, note the body, view and zoom.
 - **Godot's skin regions are behind the page's hides** for the cargo trousers (widened 2026-10-20 by `make_mpfb.py
-  hides`, which rewrites kit.json only): the twin draws the skin by `base.gshapes.bin`'s cover regions, which the
+  hides`, which rewrites kit.json only) and the sleeved tops (their openings, 2026-10-23): the twin draws the skin by `base.gshapes.bin`'s cover regions, which the
   next whole build (`mpfb_build.py`, `make_mpfb.py`) remakes from the new hides. The nipples' `hide_parts` and the tuck's
   trunk frame are in the twin already.
 - **Download size.** Pieces are served gzipped as base64 text (the page unzips them with the browser's

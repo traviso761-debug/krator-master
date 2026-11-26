@@ -66,10 +66,12 @@ take no hand.
 
 ## The showcase
 
-One 5.2 km piece of the Wall (`45-host-stage.js`): the rim runs east-west across the north third; north of it the
-scarp falls through the cloud deck (`CLOUD_Y` 1120 m); three ravines cut back into the plateau, each with a stream;
-the paramo plateau (1400-1600 m) has five bogs, a tarn, six granite tors, and the **Whorl Stone**, a tor whose ledges
-join into one ledge spiralling to its top. The south-east dries toward the desert.
+One 5.2 km piece of the Wall (`45-host-stage.js`), re-staged on map 5.1 (2026-11-09; PLAN-STATIONS.md, the re-survey): the Inner
+Wall's ~3 km face from the cloud deck (`CLOUD_Y` 1250 m, across the north edge) to the rim (~3.5 km, round z +700), benched into
+shelves of forest between bands of bare rock, drawn ~1.4x steeper than the model's so the band fits the map; three ravines run
+down the face to the deck, each with a stream; behind the rim the paramo plateau (3.5-3.7 km, ET) has five bogs (their pools dug
+as dishes), a tarn (dug as a bowl), six granite tors, and the **Whorl Stone**, a tor whose ledges join into one ledge spiralling
+to its top. The plateau's south-east dries toward the desert.
 
 The host's `fog` field (how often the ground stands in cloud) zones the kit: high on the scarp at the deck, carried
 up the ravines, pooled a little in the bogs. Nothing roots under the deck (`rootMask`: that ground is the

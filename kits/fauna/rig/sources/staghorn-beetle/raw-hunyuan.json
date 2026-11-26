@@ -1,0 +1,17 @@
+{
+ "generator": "fal-ai/hunyuan3d/v2/multi-view",
+ "price_usd": 0.48,
+ "raw": "raw-hunyuan.glb",
+ "request_id": "01a19ab4-7aca-7332-9bc0-7a13e5dd7eb8",
+ "seconds": 31,
+ "seed": 7,
+ "settings": {
+  "seed": 7,
+  "textured_mesh": true
+ },
+ "views": [
+  "front.png",
+  "left.png",
+  "back.png"
+ ]
+}

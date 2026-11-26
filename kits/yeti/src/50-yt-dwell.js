@@ -72,8 +72,10 @@ function ytDwellDome(D,season,o){o=o||{};const stone=D.stone,AE={hw:D.hw+D.tv,hv
   prism('muskox',ytSegment(D.Rr-.25,D.zPlat-.12,24),D.yPlat,D.yPlat+.07,P('ice'));
   W(-.6,D.yPlat+.07,-1.1,.4,()=>box('caribou',0,0,0,1.5*D.S,.05,1.1*D.S,P('ice')));
   wkPad(0,(D.zPlat-D.Rr)/2+.1,D.Rr*1.5,D.Rr+D.zPlat-.2,D.yPlat+.07);   /* to the platform's front edge: the step meets it */
-  /* the step up onto the platform: a slab block at its front (the platform stands 0.9 m over the floor) */
-  WKOFF=1;box('slab',0,D.yFl,D.zPlat+.22,1.0,(D.yPlat-D.yFl)/2,.44,P('slab'));WKOFF=0;wkPad(0,D.zPlat+.22,1.0,.44,(D.yFl+D.yPlat)/2);
+  /* the steps up onto the platform: two slab blocks at its front (the platform stands about 1 m over the floor; one step of half that
+     was more than a walker's 0.45 m: the reachability audit, 2026-11-03), each a third of the rise */
+  {const rs=(D.yPlat+.07-D.yFl)/3;WKOFF=1;box('slab',0,D.yFl,D.zPlat+.22,1.0,2*rs,.44,P('slab'));box('slab',0,D.yFl,D.zPlat+.66,1.0,rs,.44,P('slab'));WKOFF=0;
+   wkPad(0,D.zPlat+.22,1.0,.44,D.yFl+2*rs);wkPad(0,D.zPlat+.66,1.0,.44,D.yFl+rs);}
   ytWalkTarget('platform',0,D.yPlat+.07,(D.zPlat-D.Rr)/2);
   wkPad(0,(D.zPlat+D.Rr)/2,D.Rr*1.2,D.Rr-D.zPlat-.2,D.yFl);
   /* the lamp at the platform's edge; the ice lens on the north side over the platform */
@@ -89,13 +91,8 @@ function ytDwellDome(D,season,o){o=o||{};const stone=D.stone,AE={hw:D.hw+D.tv,hv
   CURREC.heat=o.bare?Object.assign({stove:null,lamps:0,crownVent:+(D.rVent*2).toFixed(2),inlet:'passage',heated},inner||{}):heart?Object.assign({lamps:1,crownVent:+(D.rVent*2).toFixed(2),inlet:'passage',heated:true},heart,{chamber:undefined})
    :{stove:null,lamps:1,fuel:'fat',crownVent:+(D.rVent*2).toFixed(2),inlet:'passage',heated,floor:{sunk:-D.yFl,onPermafrost:'insulated'}};
   if(o.bare)return;
-  /* the household's goods (catalog pieces until the khaayken culture file, Y5) */
-  const yP=D.yPlat+.07,s=D.Rr/2.645;
-  FURNISH('generic_chest',-1.5*s,yP,-1.4*s,.7);
-  FURNISH('generic_tea_set',.2*s,yP,-.6*s,0);
-  FURNISH('generic_lamp_oil',1.3*s,yP,-.5*s,-.4);
-  FURNISH('generic_stew_pot',1.2*s,D.yFl,1.2*s,-1.2);
-  if(!o.small){FURNISH('generic_floor_basket',-1.4*s,D.yFl,1.1*s,1.1);FURNISH('generic_fuel',-.6*s,D.yFl,1.9*s,2.4);}});}
+  /* the household's goods by its tier, the khaayken catalog culture file's and the generic goods; the loot rule (45-yt-inside.js) */
+  ytGoods(D,o);});}
 /* each dome house has a covered variant (o.covered: its passage ends at the mouth on a covered way, no open trench) and
    says where that mouth is (mouth: its local z), so a town can join it to its tunnels (ytDoorNetPlan, 42-yt-tunnel.js) */
 const ytDwellPair=c=>[ytDomeDims(c),ytDomeDims(Object.assign({covered:true},c))];

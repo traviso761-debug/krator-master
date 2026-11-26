@@ -1,5 +1,5 @@
 // prefix: res
-// ================================================================= RESOURCE NODES: twelve kinds in three grades
+// ================================================================= RESOURCE NODES: twenty kinds in three grades
 // The nodes the works draw on (owner, 2026-10-15; the kinds, the rule and the numbers are 42r-res-ore.js). Larger and richer
 // with the grade; a richer node has loose stuff round its foot. Each is a def `node-<kind>-<grade>` (class prop, kind
 // res-node, culture generic: world content), placeable anywhere with place(); its tags carry the kind (rock), the grade
@@ -19,6 +19,10 @@
 //   alkali              a soda pan: pale peach plates of soda crust curling at their edges round a brine pit (pink-teal)
 //                       where the crust is cut, white trona nodules heaped; borates and lithium come out of the same brine
 //   oil                 a seep: a black pool of oil in a tar-crusted stain, bubbles on it, dead ground round it (a derrick's, not a mine's)
+//   gypsum, halite      the evaporite rings' rim and middle (below, resEvap)
+//   nickel, marble      the new rocks' (2026-11-03, below): a dark norite outcrop with brassy sulphide; a marble quarry
+//   emerald, turquoise  the gems (2026-11-16, below): dark schist with calcite veins and green crystals; pale altered rock
+//                       netted with blue-green veinlets and nodules
 //   RES_LOOK                    per kind: its colours
 //   resOutcrop(S, rich, fn)     the angular outcrop; fn(i, bw, bh, bd) draws a block's dressing in the block's frame
 //   resNode(kind, grade)        draw a node at the origin
@@ -193,3 +197,72 @@ defBuilding({key:'node-gypsum-high',seed:5922,...resNodeDef('gypsum','high')});
 defBuilding({key:'node-halite-low',seed:5930,...resNodeDef('halite','low')});
 defBuilding({key:'node-halite-medium',seed:5931,...resNodeDef('halite','medium')});
 defBuilding({key:'node-halite-high',seed:5932,...resNodeDef('halite','high')});
+/* the new rocks' two kinds (2026-11-03, REBAKE-PLAN.md R3). nickel: a low dark outcrop of norite (the melt sheet's base, green-black),
+   a rust gossan crust over it, brassy-bronze sulphide (pentlandite, pyrrhotite) in blebs and seams on its faces, more and bigger
+   with the grade. marble: a quarry: a stepped face of white and grey veined marble cut in blocks, the cut blocks stacked before
+   it, chips round its foot; the library's rock.marble012 where the page packs it (this kit's materials.json 'marble'), white
+   vertex colour where it does not */
+RES_LOOK.nickel={vein:[0xb08a3a,0xc49a48,0x8a6a2e],lump:0x23261f,pile:0x5a4a34,host:[0x2c3029,0x353a31]};
+RES_LOOK.marble={vein:[0xb8b8bc,0x9a9aa2,0xd8d6d0],lump:0xf2f0ea,pile:0xe0ded8};
+function resNickel(S,rich){const L=RES_LOOK.nickel;
+ resOutcrop(S*.9,rich,(i,bw,bh,bd)=>{{const gk=resK('gossan','plain');box(gk,0,bh,0,bw*.9,.012,bd*.9,resC(gk,0x8a3e1e));}
+  const nb=2+rich*2;for(let k=0;k<nb;k++){const side=k%2?1:-1,q=rr(.008,.018)*S*(1+rich*.25);box('brass',rr(-.38,.38)*bw,bh*rr(.15,.85),side*(bd/2+.008),q*1.4,q,.012,L.vein[k%3]);}
+  if(rich)box('brass',0,bh*rr(.3,.6),bd/2+.007,bw*rr(.4,.7),.008*S*(1+rich*.5),.012,L.vein[0]);},{col:i=>L.host[i%2]});
+ resLoose(S,rich*6,[L.pile,L.lump,L.vein[2]],'plain');}
+function resMarble(S,rich){const L=RES_LOOK.marble,mk=resK('marble','plain'),steps=2+rich,W0=S*1.1,D0=S*.35;
+ for(let s=0;s<steps;s++){const h=S*(.11+.02*rich),y=s*h,back=-s*D0*.55;
+  box(mk,0,y,back-D0*.5,W0*(1-s*.12),h,D0,resC(mk,s%2?L.vein[2]:L.lump));
+  const sw=W0*(1-s*.12);for(let v=0;v<2+rich;v++){const len=rr(.15,.35)*sw;box('plain',rr(-.5,.5)*(sw-len),y+h*rr(.25,.75),back-D0*.5+D0/2+.006,len,.006*S,.006,L.vein[v%2]);}}
+ const nb=2+rich*3;for(let i=0;i<nb;i++){const q=rr(.14,.22)*S,x=rr(-.45,.45)*W0,z=S*rr(.3,.55),y=(i%2)*q*.62;box(mk,x,y,z,q*1.5,q*.6,q,resC(mk,L.lump),rr(-.2,.2));}
+ resLoose(S,4+rich*5,[L.lump,L.pile,L.vein[2]],'plain');}
+{const node0=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='nickel')return resNickel(G.size,G.rank);if(kind==='marble')return resMarble(G.size,G.rank);return node0(kind,grade);};}
+Object.assign(RES_NAME,{nickel:'Nickel ore',marble:'Marble'});Object.assign(RES_H,{nickel:.62,marble:.7});
+defBuilding({key:'node-nickel-low',seed:5940,...resNodeDef('nickel','low')});
+defBuilding({key:'node-nickel-medium',seed:5941,...resNodeDef('nickel','medium')});
+defBuilding({key:'node-nickel-high',seed:5942,...resNodeDef('nickel','high')});
+defBuilding({key:'node-marble-low',seed:5950,...resNodeDef('marble','low')});
+defBuilding({key:'node-marble-medium',seed:5951,...resNodeDef('marble','medium')});
+defBuilding({key:'node-marble-high',seed:5952,...resNodeDef('marble','high')});
+/* zinc (2026-11-12, the owner; biomes/galvanic/PLAN.md section 9): a sphalerite outcrop. Resinous brown-black blocks (massive
+   sphalerite), honey-yellow translucent grains in seams on their faces (more and bigger with the grade), a rust gossan cap where the
+   iron in it has oxidised, and a white crust of zinc vitriol (goslarite) blooming at the foot. The library's gossan where the page
+   packs it; the owed rock.sphalerite (core/materials/PROMPTS-NEEDED.md section 43) would carry the faces */
+RES_LOOK.zinc={vein:[0xc8962e,0xd8aa44,0xa87a26],lump:0x3a2a1c,pile:0xe8e6de,host:[0x5a3e26,0x6a4a2c]};
+function resZinc(S,rich){const L=RES_LOOK.zinc;
+ resOutcrop(S*.9,rich,(i,bw,bh,bd)=>{{const gk=resK('gossan','plain');box(gk,0,bh,0,bw*.9,.012,bd*.9,resC(gk,0x8a4a26));}
+  const nb=2+rich*3;for(let k=0;k<nb;k++){const side=k%2?1:-1,q=rr(.008,.016)*S*(1+rich*.3);box('plain',rr(-.38,.38)*bw,bh*rr(.15,.85),side*(bd/2+.008),q*1.3,q,.012,L.vein[k%3]);}},{col:i=>L.host[i%2]});
+ for(let i=0;i<3+rich*2;i++){const a=rr(0,TAU),r=rr(.45,.7)*S;ellip('plain',Math.cos(a)*r,0,Math.sin(a)*r,rr(.05,.1)*S,.008*S,rr(.04,.08)*S,L.pile,rr(0,TAU),8);}
+ resLoose(S,rich*5,[L.lump,L.vein[0],L.lump],'plain');}
+{const node1=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='zinc')return resZinc(G.size,G.rank);return node1(kind,grade);};}
+Object.assign(RES_NAME,{zinc:'Zinc ore (sphalerite)'});Object.assign(RES_H,{zinc:.62});
+defBuilding({key:'node-zinc-low',seed:5960,...resNodeDef('zinc','low')});
+defBuilding({key:'node-zinc-medium',seed:5961,...resNodeDef('zinc','medium')});
+defBuilding({key:'node-zinc-high',seed:5962,...resNodeDef('zinc','high')});
+/* the gems (2026-11-16, the owner: the Coyote Men's exports; kits/coyote; seeds 6810-6822: 5960-5962 are zinc's on
+   claude/rift-battery-biome, 6710-6797 the mined goods' on claude/resource-nodes). emerald, Muzo's: a low outcrop of dark green-black
+   schist and shale (the library's rock.schist.emerald, family 'schistem'), white calcite veins across its faces, the six-sided
+   green crystals standing in them, more and larger with the grade; turquoise, Nishapur's: a pale bleached outcrop of altered
+   rock (cream, buff) netted with blue-green veinlets (rock.turquoise.vein, family 'turq'), nodules where the veins swell, a
+   chipped face and its chunks before the richer ones */
+RES_LOOK.emerald={vein:[0xece8de,0xf2f0ea],lump:0x1e8a52,pile:0x3a4a40,host:[0x2a3430,0x343e38],gem:[0x1e8a52,0x2aa064,0x14784a]};
+RES_LOOK.turquoise={vein:[0x5ab4a8,0x48a89a,0x7ac4b6],lump:0x6ab8ac,pile:0xb8a88c,host:[0xd8ccb4,0xcabca0]};
+function resEmerald(S,rich){const L=RES_LOOK.emerald,mk=resK('schistem','stone');
+ resOutcrop(S*.85,rich,(i,bw,bh,bd)=>{if(mk!=='stone')box(mk,0,bh-.002,0,bw*.98,.012,bd*.98,resC(mk,L.host[i%2]));
+  const nv=1+rich;for(let k=0;k<nv;k++){const side=k%2?1:-1,y=bh*rr(.25,.8),len=bw*rr(.5,.9);box('plain',0,y,side*(bd/2+.007),len,.012*S,.012,L.vein[k%2]);
+   const nc=2+rich*2;for(let c=0;c<nc;c++){const cx=rr(-.4,.4)*len,q=rr(.012,.022)*S*(1+rich*.3);cyl('plain',cx,y-q*.2,side*(bd/2+.012),q*.45,q*1.6,L.gem[c%3],6);}}},
+  {col:i=>L.host[i%2]});
+ resLoose(S,rich*5,[L.pile,L.host[0],L.lump],'plain');}
+function resTurquoise(S,rich){const L=RES_LOOK.turquoise,mk=resK('turq','plain');
+ resOutcrop(S*.85,rich,(i,bw,bh,bd)=>{const nv=2+rich*2;for(let k=0;k<nv;k++){const side=k%2?1:-1,y=bh*rr(.15,.9),len=bw*rr(.3,.85);
+   box(mk,rr(-.2,.2)*bw,y,side*(bd/2+.006),len,.016*S*(1+rich*.4),.014,resC(mk,L.vein[k%3]),0,0,rr(-.5,.5));}
+  for(let n=0;n<rich*2;n++)sph(mk,rr(-.35,.35)*bw,bh*rr(.3,.8),(n%2?1:-1)*(bd/2),.028*S*(1+rich*.3),resC(mk,L.lump),.7,7);},
+  {col:i=>L.host[i%2]});
+ resLoose(S,2+rich*5,[L.lump,L.pile,L.host[1]],rich?mk:'plain');}
+{const node2=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='emerald')return resEmerald(G.size,G.rank);if(kind==='turquoise')return resTurquoise(G.size,G.rank);return node2(kind,grade);};}
+Object.assign(RES_NAME,{emerald:'Emerald',turquoise:'Turquoise'});Object.assign(RES_H,{emerald:.55,turquoise:.55});
+defBuilding({key:'node-emerald-low',seed:6810,...resNodeDef('emerald','low')});
+defBuilding({key:'node-emerald-medium',seed:6811,...resNodeDef('emerald','medium')});
+defBuilding({key:'node-emerald-high',seed:6812,...resNodeDef('emerald','high')});
+defBuilding({key:'node-turquoise-low',seed:6820,...resNodeDef('turquoise','low')});
+defBuilding({key:'node-turquoise-medium',seed:6821,...resNodeDef('turquoise','medium')});
+defBuilding({key:'node-turquoise-high',seed:6822,...resNodeDef('turquoise','high')});

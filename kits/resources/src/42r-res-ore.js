@@ -43,6 +43,18 @@ const RES_ORE={
    rim, rock salt (halite) inside it; potash and alkali salts are the last-dry centre. Halite gives the same good as a salt
    pan (RES_FIELD salt): salt. */
 Object.assign(RES_ORE.kinds,{gypsum:{item:'gypsum',name:'gypsum',cls:'mineral',works:'mine'},halite:{item:'salt',name:'rock salt',cls:'mineral',works:'mine'}});
+/* the geology's new rocks (2026-11-03, kits/resources/REBAKE-PLAN.md R3): nickel at the crater's melt-sheet margin and on bare
+   mantle (Sudbury's nickel, copper and platinum come out together: one ore); marble where a pluton or a volcano cooked the
+   limestone, cut in a quarry (a mine works: the brick cities' white trim, LORE.md) */
+Object.assign(RES_ORE.kinds,{nickel:{item:'nickel_ore',name:'nickel',cls:'metal',works:'mine'},marble:{item:'marble',name:'marble',cls:'stone',works:'mine'}});
+/* zinc (2026-11-12, the owner; biomes/galvanic/PLAN.md section 9): sphalerite, the ore zinc comes from (zinc never occurs as metal in
+   nature); on the vent fields' and the rift floors' massive sulfide, in the carbonate platforms (lead-zinc), and wherever copper is rich
+   (the geology bake's zinc_byte). Brass is copper and zinc; galvanizing and white vitriol come from it */
+Object.assign(RES_ORE.kinds,{zinc:{item:'zinc_ore',name:'zinc',cls:'metal',works:'mine'}});
+/* the gems (the owner, 2026-11-16; biomes/outlands/PLAN.md sections 0 and 8, kits/coyote: the Coyote Men's exports): emerald where
+   a granite's pegmatites cut the gneiss and the walls' breccia, and Muzo's kind in folded sediments by the brines; turquoise where
+   copper ground weathers under a dry sky; both in the Outlands' gem hills (tools/scale-model/geology.py gems(), --gems) */
+Object.assign(RES_ORE.kinds,{emerald:{item:'emerald',name:'emerald',cls:'gem',works:'mine'},turquoise:{item:'turquoise',name:'turquoise',cls:'gem',works:'mine'}});
 function resNodeKey(kind,grade){return 'node-'+kind+'-'+grade;}
 function resWorksOf(rec){if(!rec)return null;if(rec.works&&RES_ORE.works[rec.works])return rec.works;const role=rec.tags&&rec.tags.role||rec.role;
  if(role&&RES_ORE.works[role])return role;for(const w in RES_ORE.works)if(RES_ORE.works[w].keys.includes(rec.key))return w;return null;}

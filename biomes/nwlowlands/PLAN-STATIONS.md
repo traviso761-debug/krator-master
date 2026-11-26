@@ -5,7 +5,7 @@ Mediterranean toward the hills. On the model the low ground round the lakes, und
 **tropical savanna** country of its own, larger than the strip the kit gives it. One station adds it. The page as built
 stays station 1. Stations follow the Throne's and Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
-**Status: plan, awaiting the owner.**
+**Status: station 2 built (the final rebuild, 2026-11-02; `dist/nwlowlands-margins.html`, on map 5.1, which moved this ground under 15 m).** It's an ideal type of the plan: see "As built".
 
 ## The ground (scale model 4.23, surveyed 2026-10-26: `tools/scale-model/survey_biomes.py`)
 
@@ -41,6 +41,13 @@ seasonal level), reach and kin (the flora exchanges). The universal set as in `B
 
 **Not a station:** the 2,068 km² of Dsb at (168,514) is the Inner Wall's foot. It belongs to nhighlands' or nsemiarid's
 high-country stations, read in place if a world needs it here.
+
+## As built (2026-11-02)
+
+`stations/margins/`: `44z` (the map and fields, read by `45` as `MG`), `85` (no tower), `87` (its life). The flood is `89w`'s, the burn `86`'s.
+Built: the floodplain, gallery, Af strip, a monsoon rise, 339-odd termite mounds, a `KFIRE` burn mosaic, the seasonal flood (-.35 to +.95 m, 60 days behind the rains), tall grass, floating meadows.
+The plan's two floodplain trees are cousins of this kit's own: the flood palm (`mistpalm`) and the flood fig (`kauri`). Weed in the shallows stayed out: `W.weed` lays along a flow line, and the flats are still water.
+The kit's sea pens and aroids stand in the grass by the floor pass's `med` and `shore` planters: the owner's call at the look pass.
 
 ## Order
 

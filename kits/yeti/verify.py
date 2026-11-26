@@ -17,7 +17,7 @@ import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, th
 # the UTF-8 console). A fix there reaches every verify.py that imports it.
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
 import harness as _harness
-from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
+from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views, verify_page
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
 try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
@@ -43,8 +43,8 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
   R.push({name:'mass-inside',ok:!naked.length,detail:naked.length?'heated stone with no insulation outside it: '+naked.map(r=>r.key).join(', '):st.length+' heated stone houses wrapped outside their mass'});}
  /* walk-reach (core/walk): from each building's first target, walk the registered floors (a step up of 0.6 m at most,
     the ground at y 0 only where no floor is registered: a dug room or trench has no ground over it; never into a block taller than a 0.45 m step-over) on a 0.25 m grid; every target it registered, and its
-    children's, must be reached */
- {const W=KWALK,st=.25,out=[],bad=[];const all=r=>(r.walkTargets||[]).map(t=>Object.assign({who:r.key},t)).concat(...r.children.map(all));
+    children's, must be reached. Every unlocked door (core/door) stands open while it walks: a walker opens it (E, an NPC) */
+ {const W=KWALK,st=.25,out=[],bad=[];const DOP=typeof KDOOR!=='undefined'?KDOOR.list.filter(d=>!d.locked).flatMap(d=>d.blocks).map(B=>[B,!B.off]):[];DOP.forEach(([B])=>W.setBlock(B,false));const all=r=>(r.walkTargets||[]).map(t=>Object.assign({who:r.key},t)).concat(...r.children.map(all));
   for(const r of A.REG.filter(q=>!q.parent)){const T=all(r);if(T.length<2)continue;const s0=T.find(t=>!t.opt)||T[0],b=r.bbox,m=4;
    const x0=b.mn[0]-m,x1=b.mx[0]+m,z0=b.mn[2]-m,z1=b.mx[2]+m,seen=new Map(),q=[[s0.x,s0.z,s0.y]],K=(x,z,y)=>Math.round(x/st)+','+Math.round(z/st)+','+Math.round(y*5);
    seen.set(K(s0.x,s0.z,s0.y),1);const V=[];let n=0;
@@ -54,29 +54,44 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
      if(W.blocked(nx,ny+.45,nz,.22,1.2))continue;const k=K(nx,nz,ny);if(seen.has(k))continue;seen.set(k,1);q.push([nx,nz,ny]);}}
    const miss=T.filter(t=>!t.opt&&!V.some(v=>Math.abs(v[0]-t.x)<.45&&Math.abs(v[1]-t.z)<.45&&Math.abs(v[2]-t.y)<.4));
    out.push(r.key+' '+(T.filter(t=>!t.opt).length-miss.length)+'/'+T.filter(t=>!t.opt).length);if(miss.length)bad.push(r.key+'(v'+r.v+'): '+miss.map(t=>t.who+':'+t.name).join(','));}
+  DOP.forEach(([B,on])=>W.setBlock(B,on));
   R.push({name:'walk-reach',ok:!bad.length&&out.length>0,detail:bad.length?'unreached: '+bad.join(' | '):out.length+' buildings walked: '+out.join(', ')});}
+ /* Y5, the inside (PLAN.md section 5): the khaayken culture file furnishes the rooms; every generic piece drawn at the Khaayken's 1.15x
+    through core/furnish's opt-in scale, the khaayken and Eternian pieces at their own; the war-loot rule (none in a poor house, the
+    first ytLootN(tier) of a building's offered places, a wall of it in the rich and the halls, every piece Eternian, the State's faces
+    from kits/eternian's head generator read in place); the carved figures each from their own seed */
+ {const recs=A.furniture(true).records||[],kh=recs.filter(r=>/^khaayken_/.test(r.key)).length,
+   sc=recs.filter(r=>(/^generic_/.test(r.key)&&r.scale!==1.15)||(/^(khaayken|eternian)_/.test(r.key)&&r.scale!=null));
+  R.push({name:'khaayken-furniture',ok:kh>=40&&!sc.length,detail:kh+' khaayken pieces of '+recs.length+(sc.length?'; wrong scale: '+sc.slice(0,8).map(r=>r.key+' '+r.scale).join(', '):'; every generic piece at 1.15x, the khaayken and Eternian at 1')});
+  const LR=A.REG.filter(r=>r.lootRule),bad=LR.filter(r=>r.lootRule.shown!==Math.min(r.lootRule.offered,r.lootRule.share)),
+   poor=A.REG.filter(r=>r.tags&&r.tags.wealth==='poor'&&(r.loot||[]).length),rich=LR.filter(r=>r.lootRule.tier==='rich'||r.lootRule.tier==='state'),
+   thin=rich.filter(r=>(r.loot||[]).length<6),all=[].concat(...A.REG.map(r=>r.loot||[])),foreign=all.filter(l=>l.from!=='eternian'),
+   faces=all.filter(l=>l.kind==='head'||l.kind==='mask').length;
+  R.push({name:'loot-rule',ok:!bad.length&&!poor.length&&rich.length>0&&!thin.length&&!foreign.length&&faces>0,
+   detail:(bad.length?'rule not kept: '+bad.map(r=>r.key).join(', ')+'; ':'')+(poor.length?'loot in a poor house: '+poor.map(r=>r.key).join(', ')+'; ':'')+(thin.length?'a rich house or hall under 6: '+thin.map(r=>r.key).join(', ')+'; ':'')+
+    all.length+' trophies in '+LR.length+' buildings ('+faces+' State faces and masks), '+rich.length+' rich houses and halls with 6 or more, none in the poor'});
+  const figs=[].concat(...A.REG.map(r=>r.figures||[])),seeds=new Set(figs.map(f=>f.seed)),forms=new Set(figs.map(f=>f.form));
+  R.push({name:'figures',ok:figs.length>=10&&seeds.size===figs.length&&forms.size>=4,detail:figs.length+' carved figures, '+seeds.size+' seeds, forms: '+[...forms].join(' ')});}
+ /* Y6: Leng's occupation (two bay houses and a plug inside the hall) and the forest-steppe row on the nwouterwall kit's flora */
+ {const L=A.REG.filter(r=>r.key==='yt_leng_hall');const okL=L.every(r=>r.children.filter(c=>c.key==='yt_leng_bay_house').length===2&&r.children.some(c=>c.key==='yt_leng_plug'));
+  R.push({name:'leng-occupation',ok:okL,detail:L.length?L.length+' hall(s), each with its two bay houses and its plugged breach':'not on the page (?only)'});
+  const F=window._flora,on=typeof YT_FLORA!=='undefined'&&!!YT_FLORA;
+  R.push({name:'flora-row',ok:!on||!!(F&&F.trees>10&&F.plants>10&&F.records>0),detail:!on?'the forest-steppe row is not on the page (?only)':F?'nwouterwall ('+F.season+'): '+F.trees+' trees ('+F.bySpecies+'), '+F.plants+' floor plants, '+F.records+' core/tags records, '+F.ms+' ms':'no flora built'});}
  const M=A.materials();R.push({name:'material-records',ok:!!(M&&M.records&&M.records.length>15),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'});
  return R;}"""
 async def run(a):
-    from playwright.async_api import async_playwright
-    folder, name = os.path.split(os.path.abspath(a.html)); os.makedirs(a.out, exist_ok=True)
-    httpd = socketserver.TCPServer(("127.0.0.1", 0), lambda *x, **k: http.server.SimpleHTTPRequestHandler(*x, directory=folder, **k)); port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start(); bad = False
-    async with async_playwright() as p:
-        b = await launch_chromium(p)
-        W, H = [int(t) for t in a.size.split("x")]; pg = await b.new_page(viewport={"width": W, "height": H}); pg.set_default_timeout(600000)
-        errs = []; pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: errs.append('console: ' + m.text) if m.type == 'error' else None)
-        three = local_three(folder)
-        await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(route.fulfill(path=three, content_type="application/javascript")))
-        q = ['t=4']
-        if a.only: q.append('only=' + a.only)
-        await pg.goto(f"http://127.0.0.1:{port}/{name}?" + '&'.join(q), timeout=LOAD_MS)
-        try: await pg.wait_for_function("window._ready===true||(document.getElementById('errs')&&document.getElementById('errs').style.display==='block')", timeout=LOAD_MS)
-        except Exception as e: print('never ready', e)
+    os.makedirs(a.out, exist_ok=True); bad = False
+    q = ['t=4']
+    if a.only: q.append('only=' + a.only)
+    async with verify_page(a.html, here=os.path.dirname(os.path.abspath(__file__)), size=a.size, query='?' + '&'.join(q), settle_ms=0) as V:
+        pg, fails = V.page, V.fails
+        if not V.ready: print('never ready'); fails.append('build timeout')
         try: await pg.wait_for_function("(window._texPending||0)===0", timeout=120000)
         except Exception: print('textures still decoding after 120 s')
         await pg.wait_for_timeout(800)
         e = await pg.evaluate("document.getElementById('errs').textContent")
+        # page errors, and the console errors the old listener collected (the harness has watched the console since before the load)
+        errs = list(V.errs) + ['console: ' + t for k, t in pg.krator_console if k == 'error']
         print('ERROR PANEL:', e.strip() or '(clean)'); print('build:', json.dumps(await pg.evaluate("window._build||null")))
         if e.strip() or errs: bad = True
         for x in errs[:8]: print('pageerror:', x)
@@ -91,17 +106,17 @@ async def run(a):
         if a.night: await pg.evaluate("nightSet(true)")
         if a.eval: print(json.dumps(await pg.evaluate(a.eval), indent=1)[:6000])
         if a.cam:
-            v = [float(t) for t in a.cam.split(',')]; await pg.evaluate("v=>setView(...v)", v); await pg.wait_for_timeout(900); await pg.screenshot(path=os.path.join(a.out, 'cam.png')); print('shot cam.png')
+            v = [float(t) for t in a.cam.split(',')]; await pg.evaluate("v=>setView(...v)", v); await pg.wait_for_timeout(900); await V.shot(os.path.join(a.out, 'cam.png'), view='cam'); print('shot cam.png')
         views = parse_views(a.views, await pg.evaluate("Object.keys(VIEWS)"))
         if a.all_views: views = await pg.evaluate("Object.keys(VIEWS)")
         for i, vn in enumerate(views):
             ok = await pg.evaluate("n=>{if(!VIEWS[n])return false;setView(...VIEWS[n]);return true;}", vn)
             if not ok: print('no view', vn); continue
-            await pg.wait_for_timeout(900); fn = os.path.join(a.out, ('%02d-' % i) + ''.join(c if c.isalnum() else '_' for c in vn)[:44] + '.png'); await pg.screenshot(path=fn); print('shot', fn)
+            await pg.wait_for_timeout(900); fn = os.path.join(a.out, ('%02d-' % i) + ''.join(c if c.isalnum() else '_' for c in vn)[:44] + '.png'); await V.shot(fn, view=vn); print('shot', fn)
         e2 = await pg.evaluate("document.getElementById('errs').textContent")
         if e2.strip() and e2 != e: print('ERROR PANEL after views:', e2); bad = True
-        await b.close()
-    sys.exit(1 if bad else 0)
+        if bad: fails.append('kit checks (error panel, page errors or an assert)')
+    sys.exit(V.exit())
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('html'); ap.add_argument('--views'); ap.add_argument('--all-views', action='store_true'); ap.add_argument('--only')
     ap.add_argument('--cut', action='store_true'); ap.add_argument('--night', action='store_true')

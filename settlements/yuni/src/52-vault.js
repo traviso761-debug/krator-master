@@ -127,10 +127,12 @@ var VAULT_LAMPS = [];                      /* [x,y,z] of every electric fitting 
     var SUR = archPts(DW*0.5 + 11.0, DH + 8.0, 3.2, NARCH);
     loft('metal', ARCS[LAST], lzLast, SUR, 0.9, NEW[2], Y1, Y1);
     bead('metal', SUR, 0.9, 0.7, NEW[0], Y1, 10);
-    /* the reveal and the leaves */
-    BOX(VAULT.x, Y1, vz(0.1), DW+1.6, DH+1.0, 0.9, 0, VOIDC[0], 'dark');
+    /* the reveal (the room's colour, not a void) and the leaves: one locked door in core/door, 'vault.d0' (no interior is built behind it) */
+    BOX(VAULT.x, Y1, vz(0.1), DW+1.6, DH+1.0, 0.9, 0, ROOMC, 'dark');
     [-1,1].forEach(function(sd){ BOX(vx(sd*(DW/4+0.1)), Y1, vz(-0.4), DW/2-0.25, DH*0.80, 0.36, 0, MET[sd>0?3:1], 'metal'); });
     for(var gk=0;gk<4;gk++) BOX(VAULT.x, Y1+3.6+gk*4.4, vz(-0.62), DW-1.0, 0.22, 0.14, 0, NEW[3], 'metal');
+    (function(){ var a=[VAULT.x, Y1, vz(-0.58)], b=[VAULT.x, Y1, vz(0.6)], yw=Math.atan2(a[0]-b[0], a[2]-b[2]);
+      yopenDoor({ id:'vault.d0', at:a, hinge:[a[0]-Math.cos(yw)*DW/2, Y1, a[2]+Math.sin(yw)*DW/2], yaw:yw, w:DW, h:DH*0.8, t:0.36, locked:true, key:'vault', style:'double' }); YOPEN.leaves+=2; })();
     /* a band of light round the surround, so the door is the brightest thing in the throat */
     var pts=[]; for(var s2=0;s2<SUR.length;s2++) pts.push({ x:vx(SUR[s2][0]*0.965), y:Y1+SUR[s2][1]*0.965, z:vz(0.55), r:0.26 });
     TUBE('glowmat', pts, PAL.electric, { seg:6 });

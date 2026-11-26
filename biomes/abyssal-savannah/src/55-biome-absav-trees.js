@@ -96,6 +96,19 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
  const ao=mix(.55,1,smooth(.3,.95,qq))*mix(.8,1,smooth(-.6,.35,dy))*rr(.88,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
+// A LIMB'S JOINT (core/biome 31j, BIO.flareJoin; BACKPORT.md's universal set "Limb joints", the owner 2026-11-03): a bough's root sunk into its parent
+// and swollen to a collar, drawn as the same instanced rods in spans. No random numbers: the stream is as before. ABSAV.JOINTS false for the old seams
+const FJ=(pts,pR)=>typeof BIO.flareJoin==='function'&&ABSAV.JOINTS!==false?BIO.flareJoin(pts,{parentR:pR}):pts;
+function limb(pts,col,pR,lv){const P=lv===1?pts:FJ(pts,pR);   /* the joint on heroes (and the impostor bakes): at a mid tree's range it does not show */
+ for(let i=0;i+1<P.length;i++)BIO.beam('rod',[P[i].x,P[i].y,P[i].z],[P[i+1].x,P[i+1].y,P[i+1].z],P[i].r,P[i+1].r,col);}
+const pt=(a,r)=>({x:a[0],y:a[1],z:a[2],r});
+// A CROWN HELD BY ITS WOOD (core/biome README, "What held means"; the attach audit, 28.4% of this page's cards floating, leaflet 35,463 of 52,120): a hero's
+// clump gets a twig from the nearest of its wood's points (a rod: no random numbers, so nothing placed moves); a mid tree's clump is held toward that point
+// (BIO.holdTo, size*.2+.3: a stem card's reach), no new triangles. hold(c, p, size, lv, col, r) -> the clump's centre to draw at
+function nearestOf(P,p){let b=P[0],bd=1e18;for(const q of P){const d=(q[0]-p[0])**2+(q[1]-p[1])**2+(q[2]-p[2])**2;if(d<bd){bd=d;b=q;}}return b;}
+function twigTo(W,p,size,lv,col,r){if(!W||!W.length||ABSAV.HOLD===false)return p;const c=nearestOf(W,p);
+ if(lv===2){BIO.beam('twig',c,[p[0],p[1]-size*.12,p[2]],r,r*.45,col);return p;}
+ return typeof BIO.holdTo==='function'?BIO.holdTo(c,p,size*.2+.3):p;}   /* a stem card's reach: the leaflet card has its stems (check_cells, 2026-11-03) */
 // a lathe bole: rings from the foot to h, tapering from rb, leaning by (lx,lz) per metre; a char band to charH at the foot
 function bole(fam,T,h,rb,lx,lz,seg,charH,col){const rings=[],vs=5;
  for(let yy=0;yy<=h+1e-6;yy+=Math.max(1,h/6)){const u=yy/h,c=C(col).lerp(CHAR,smooth(charH+.4,charH*.4,yy)*.92);
@@ -110,23 +123,30 @@ B[0]=function(T,st,lv){const S=SP[0],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.12),lx=
  // the plates: the top one high and widest over the lean, the lower ones out to the side and smaller
  const plates=[];for(let k=0;k<nT;k++){const u=nT===1?0:k/(nT-1),a=a0+k*GOLD,off=k===0?0:T.crownR*rr(.35,.65),R=T.crownR*(1-.3*u)*rr(.88,1.05);
   plates.push({x:fx+T.ox*(1-u)+Math.cos(a)*off,y:T.y0+H*(1-.16*u)-rr(0,.4),z:fz+T.oz*(1-u)+Math.sin(a)*off,R});}
- const nB=lv===2?ri(2,4):2;
- for(let k=0;k<nB;k++){const p=plates[k%plates.length],a=a0+k*2.1,mid=[mix(fx,p.x,.5)+Math.cos(a)*p.R*.2,mix(fy,p.y,.55),mix(fz,p.z,.5)+Math.sin(a)*p.R*.2];
-  BIO.beam('rod',[fx,fy-.3,fz],mid,rb*.55,rb*.38,rc);BIO.beam('rod',mid,[p.x+Math.cos(a)*p.R*.3,p.y-.4,p.z+Math.sin(a)*p.R*.3],rb*.38,rb*.15,rc);}
+ const nB=lv===2?ri(2,4):2,fed=new Set();
+ for(let k=0;k<nB;k++){const p=plates[k%plates.length],a=a0+k*2.1,mid=[mix(fx,p.x,.5)+Math.cos(a)*p.R*.2,mix(fy,p.y,.55),mix(fz,p.z,.5)+Math.sin(a)*p.R*.2],
+  e=[p.x+Math.cos(a)*p.R*.3,p.y-.4,p.z+Math.sin(a)*p.R*.3];
+  limb([pt([fx,fy-.3,fz],rb*.55),pt(mid,rb*.38),pt(e,rb*.15)],rc,rb*.6,lv);
+  if(ABSAV.HOLD!==false){BIO.beam('rod',e,[p.x,p.y-.4,p.z],rb*.15,rb*.11,rc);fed.add(p);}}   /* the bough's end into the plate's hub */
+ /* a plate no bough reaches (a mid tree has two boughs for up to three plates) gets one from the fork to its hub: no draws */
+ if(ABSAV.HOLD!==false)plates.forEach(p=>{if(fed.has(p))return;const h=[p.x,p.y-.4,p.z],m=[mix(fx,p.x,.5),mix(fy,p.y,.6),mix(fz,p.z,.5)];
+  if(lv===1)BIO.beam('rod',[fx,fy-.3,fz],h,rb*.4,rb*.12,rc);else limb([pt([fx,fy-.3,fz],rb*.45),pt(m,rb*.3),pt(h,rb*.12)],rc,rb*.6,lv);});
  const hc=C(pick(S.leaf));
  plates.forEach(p=>{BIO.put('plate',[p.x,p.y-.35,p.z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[p.R*.95,p.R*.18,p.R*.95],bright(hc,.85));
-  const n=lv===2?Math.round(4+p.R*.55):2;for(let c=0;c<n;c++){const a=c/n*TAU+rr(-.3,.3),d=p.R*Math.sqrt(rr(.05,.8));
-   clumpAt('leaflet',p.x+Math.cos(a)*d,p.y+rr(-.2,.25),p.z+Math.sin(a)*d,p.R*rr(.42,.6),.26,hc,p.x,p.y,p.z,p.R,1.2);st.clumps++;}});
+  const n=lv===2?Math.round(4+p.R*.55):2,W=[[p.x,p.y-.4,p.z]];for(let c=0;c<n;c++){const a=c/n*TAU+rr(-.3,.3),d=p.R*Math.sqrt(rr(.05,.8));
+   const cy=p.y+rr(-.2,.25),sz=p.R*rr(.42,.6),q=twigTo(W,[p.x+Math.cos(a)*d,cy,p.z+Math.sin(a)*d],sz,lv,rc,rb*.09);
+   clumpAt('leaflet',q[0],q[1],q[2],sz,.26,hc,p.x,p.y,p.z,p.R,1.2);st.clumps++;}});
  if(lv===2)BIO.register({name:S.name,key:S.key,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:T.crownR+2,h:H+1,tags:S.tags});};
 // 1 the tongue tree: a straight grey bole, rising boughs, a rounded crown of whorled tongue leaves; deciduous in part
 B[1]=function(T,st,lv){const S=SP[1],H=T.H,rb=T.rb,hb=H*rr(.35,.5),bc=pick(S.bark);
  st.trunk+=bole('barkT',T,hb,rb,rr(-.03,.03),rr(-.03,.03),lv===2?8:6,T.age<=1?rr(.4,1):0,bc);
  const cy=T.y0+H*.68,ex=T.crownR,ey=H*.32,nB=lv===2?ri(S.boughs[0],S.boughs[1]):3,a0=rr(0,TAU),rc=shade(C(bc),-.15),ends=[];
- for(let k=0;k<nB;k++){const a=a0+k*GOLD,R=ex*rr(.45,.85),e=[T.x+Math.cos(a)*R,T.y0+H*rr(.7,.92),T.z+Math.sin(a)*R];BIO.beam('rod',[T.x,T.y0+hb-.5,T.z],e,rb*.42,rb*.14,rc);ends.push(e);}
+ for(let k=0;k<nB;k++){const a=a0+k*GOLD,R=ex*rr(.45,.85),e=[T.x+Math.cos(a)*R,T.y0+H*rr(.7,.92),T.z+Math.sin(a)*R];limb([pt([T.x,T.y0+hb-.5,T.z],rb*.42),pt(e,rb*.14)],rc,rb*.6,lv);ends.push(e);}
  if(T.dec==='bare'){if(lv===2)ends.forEach(e=>{for(let k=0;k<3;k++){const a=rr(0,TAU);BIO.beam('rod',e,[e[0]+Math.cos(a)*ex*.3,e[1]+rr(.5,2),e[2]+Math.sin(a)*ex*.3],rb*.12,rb*.04,rc);}});}
  else{const hc=C(T.dec==='orange'?pick(PAL.tongueAutumn):pick(S.leaf)),n=lv===2?ri(10,15):5;
-  for(let c=0;c<n;c++){const a=rr(0,TAU),r=Math.sqrt(rng())*ex*.85,y=cy+rr(-.75,.85)*ey*(1-.4*r/ex);
-   clumpAt('tongue',T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,ex*rr(.42,.62),.75,hc,T.x,cy,T.z,ex,ey);st.clumps++;}}
+  const W=ends.concat([[T.x,T.y0+hb,T.z]]);
+  for(let c=0;c<n;c++){const a=rr(0,TAU),r=Math.sqrt(rng())*ex*.85,y=cy+rr(-.75,.85)*ey*(1-.4*r/ex),sz=ex*rr(.42,.62),q=twigTo(W,[T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r],sz,lv,rc,rb*.08);
+   clumpAt('tongue',q[0],q[1],q[2],sz,.75,hc,T.x,cy,T.z,ex,ey);st.clumps++;}}
  if(lv===2)BIO.register({name:S.name,key:S.key,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:T.crownR+1,h:H+1,tags:S.tags});};
 // 2 the stub lycopsid: one scaly pole, a tuft of grass-like leaves, one cone (a colony's members are cheap items)
 B[2]=function(T,st,lv){const S=SP[2],H=T.H,rb=T.rb,bc=bright(vary(C(pick(S.bark)),.02,.06,.05),1.1);
@@ -146,10 +166,12 @@ B[3]=function(T,st,lv){const S=SP[3],H=T.H,rb=T.rb;
 B[4]=function(T,st,lv){const S=SP[4],H=T.H,rb=T.rb,bc=pick(S.bark),hb=H*.4;
  st.trunk+=bole('barkT',T,hb,rb,rr(-.08,.08),rr(-.08,.08),lv===2?8:6,0,bc);
  const rc=shade(C(bc),-.08);if(lv===2){for(let k=0,n=ri(4,7);k<n;k++){const a=rr(0,TAU),L=rr(2.5,6),e=[T.x+Math.cos(a)*L,0,T.z+Math.sin(a)*L];e[1]=Y(e[0],e[2])-.2;
-   const m=[T.x+Math.cos(a)*L*.5,Math.max(e[1]+.6,T.y0+.6),T.z+Math.sin(a)*L*.5];BIO.beam('rod',[T.x,T.y0+1.2,T.z],m,rb*.35,rb*.25,rc);BIO.beam('rod',m,e,rb*.25,rb*.12,rc);}}
+   const m=[T.x+Math.cos(a)*L*.5,Math.max(e[1]+.6,T.y0+.6),T.z+Math.sin(a)*L*.5];limb([pt([T.x,T.y0+1.2,T.z],rb*.35),pt(m,rb*.25),pt(e,rb*.12)],rc,rb,lv);}}
  const cy=T.y0+H*.66,ex=T.crownR,ey=H*.3,hc=C(pick(S.leaf)),n=lv===2?ri(9,14):5;
- for(let k=0;k<4;k++){const a=k*1.6+rr(0,.5),e=[T.x+Math.cos(a)*ex*.6,cy+rr(-.5,1),T.z+Math.sin(a)*ex*.6];BIO.beam('rod',[T.x,T.y0+hb-.4,T.z],e,rb*.4,rb*.15,rc);}
- for(let c=0;c<n;c++){const a=rr(0,TAU),r=Math.sqrt(rng())*ex*.9,y=cy+rr(-.6,.8)*ey;clumpAt('fig',T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,ex*rr(.45,.65),.6,hc,T.x,cy,T.z,ex,ey);st.clumps++;}
+ const W=[[T.x,T.y0+hb,T.z]];
+ for(let k=0;k<4;k++){const a=k*1.6+rr(0,.5),e=[T.x+Math.cos(a)*ex*.6,cy+rr(-.5,1),T.z+Math.sin(a)*ex*.6];limb([pt([T.x,T.y0+hb-.4,T.z],rb*.4),pt(e,rb*.15)],rc,rb*.6,lv);W.push(e);}
+ for(let c=0;c<n;c++){const a=rr(0,TAU),r=Math.sqrt(rng())*ex*.9,y=cy+rr(-.6,.8)*ey,sz=ex*rr(.45,.65),q=twigTo(W,[T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r],sz,lv,rc,rb*.08);
+  clumpAt('fig',q[0],q[1],q[2],sz,.6,hc,T.x,cy,T.z,ex,ey);st.clumps++;}
  if(lv===2)BIO.register({name:S.name,key:S.key,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:T.crownR+1,h:H+1,tags:S.tags});};
 ABSAV.B=B;
 
@@ -191,16 +213,29 @@ ABSAV.buildTrees=function(opt){const box=opt.box,q=opt.quality==null?1:opt.quali
  // the kopjes and the rim's lip are ground the trees keep off (but the kopje fig, placed with its kopje in the floor pass)
  (opt.kopjes||[]).forEach(k=>hold(k.x,k.z,k.r*.8));
  const EA=typeof EASTABYSS!=='undefined'&&EASTABYSS.make&&EASTABYSS.grow;
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; oidong's lines; on when the page lists it, ABSAV.IMPOSTORS false or ?diet=0 for the blobs):
+ // a far tree is one quad showing its species baked from 8 x 8 directions, in place of the blobs; every species on one atlas, one item. Each species
+ // bakes one of its own heroes, built again in place after the bake with its registration muted (its own stream then, so no tree here moves)
+ const IMPON=(ABSAV.IMPOSTORS==null?typeof BIO.impostor==='function':!!ABSAV.IMPOSTORS)&&typeof BIO.impostor==='function',FARQ=[];
  ABSAV.PASSES.forEach(P=>{if(P.ea!=null&&!EA)return;
   const key=P.ea!=null?'ea:'+(EASTABYSS.SPECIES[P.ea]||{}).key:SP[P.k].key;st.byKey[key]=0;
   cells(P.salt,P.cell,box,(x,z)=>{if(P.near&&BIO.lodD(x,z)>P.near)return 0;const Z=zones(x,z);return P.accept(Z,x,z)*q;},(x,y,z)=>{
    if(BIO.depth(x,z)>-.3)return false;
+   if(ABSAV.SHORE){const sh=ABSAV.SHORE(x,z);if(sh===sh&&sh<.65)return false;}   /* off the water by its own shore (89z: WATER.fieldAt; the edge audit's clearance) */
    const d=BIO.lodD(x,z),lv=d<hero?2:d<mid?1:0;if(lv===0&&P.ea==null&&!P.lv)return false;
    if(blocked(x,z,P.pad))return false;if(!BIO.clearOf(x,z,P.pad+1))return false;
    let T;if(P.ea!=null){const Z=zones(x,z),k=P.scale(Z);T=EASTABYSS.make(P.ea,x,y,z);T.H*=k;T.crownR*=Math.sqrt(k);T.rb*=Math.sqrt(k);T.ea=true;
     EASTABYSS.grow(T,lv);st.ea++;}
-   else{T=ABSAV.make(P.k,x,y,z);ABSAV.grow(T,lv);}
+   else{T=ABSAV.make(P.k,x,y,z);if(lv===0&&IMPON){T.lv=0;FARQ.push(T);}else ABSAV.grow(T,lv);}   /* a far tree waits for its impostor (below): no draws, so the next cell is as it was */
    hold(x,z,T.rb*1.4+1+(P.k===0?T.crownR*.35:0));T.lv=lv;TREES.push(T);st.byKey[key]++;
    if(lv===2)st.heroes++;else if(lv===1)st.mids++;else st.fars++;},{patch:P.patch==null?.5:P.patch,patchScale:P.patchScale,pad:0});});
+ if(IMPON){const ISET=BIO.impostorSet('absav.trees',{label:'Far trees'}),IMPS=[];
+  SP.forEach((S,sp)=>{if(!FARQ.some(T=>T.sp===sp))return;const T0=TREES.find(T=>!T.ea&&T.sp===sp&&T.lv===2)||TREES.find(T=>!T.ea&&T.sp===sp&&T.lv===1);if(!T0)return;
+   const T1=Object.assign({},T0),st1={trunk:0,far:0,clumps:0};
+   const rec=BIO.impostor('absav.'+S.key,()=>{const R0=BIO.host.register;BIO.host.register=()=>{};try{reseed(KRAND.hash(550031,sp,T1.seed));B[sp](Object.assign({},T1),st1,2);}finally{BIO.host.register=R0;}},{set:ISET,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(ISET.recs.length)BIO.impostorItem('impTrees',ISET,{label:'Far trees'});
+  FARQ.forEach(T=>{const I=IMPS[T.sp];if(I){BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;}else{const g=ABSAV.grow(T,0);st.far+=g.far;}});
+  st.impostors=IMPS.filter(Boolean).length;}
  st.trees=TREES.length;return st;};
 })();

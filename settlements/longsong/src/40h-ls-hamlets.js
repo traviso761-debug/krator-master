@@ -12,7 +12,7 @@
  const SPECS=[
   {id:'longsong-east',name:'Shar, the east village (the east fields\' farmers)',focus:'farming',site:{x:760,z:60},link:{x:230,z:-120},res:mid(fld('fields-east')),pop:220},
   {id:'longsong-west',name:'Nub, the west village (the west fields\' farmers)',focus:'farming',site:{x:-880,z:60},link:{x:-230,z:-120},res:mid(fld('fields-west')),pop:220},
-  {id:'longsong-herders',name:'Dzo-ling, the herders\' village (the yak pastures)',focus:'ranch',site:{x:480,z:650},link:{x:230,z:260},res:{x:F.HERDS[2].x,z:F.HERDS[2].z},pop:160}];
+  {id:'longsong-herders',name:'Dzo-ling, the herders\' village (the yak pastures)',focus:'ranch',site:{x:480,z:650},link:{x:230,z:260},res:{x:F.HERDS[2].x,z:F.HERDS[2].z},pop:145}];
  // where a village may build: dry, gentle (the row's slope), outside the wall and the kora, off every field, terrace and
  // grove (the pastures are the herders' own), inside the page's ground
  const SKIP=F.GROUPS.filter(f=>f.kind!=='pasture'&&!f.inside),K=P.KORA;

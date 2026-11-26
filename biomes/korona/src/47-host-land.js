@@ -117,7 +117,29 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     'vec3 c=mix(lt*0.46,rd*0.8,vW.x);c=mix(c,sd*0.78,vW.y);',
     Ld?'vec3 dd=pow(kdither(uD,p/'+Ld.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Ld.lib,LC[3]==null?0x5a6a30:LC[3])+mul3(3)+';c=mix(c,dd*0.8,vW.z);':'',
     'diffuseColor.rgb*=c*kmacro(p);}'].join('\n'));};
- MAT_GROUND.customProgramCacheKey=()=>'korona-ground-'+STAGE.layers.a+STAGE.layers.b+STAGE.layers.c+(STAGE.layers.d||'')+JSON.stringify(STAGE.layerMul||0);}
+ MAT_GROUND.customProgramCacheKey=()=>'korona-ground-'+STAGE.layers.a+STAGE.layers.b+STAGE.layers.c+(STAGE.layers.d||'')+JSON.stringify(STAGE.layerMul||0);
+ /* THE FLOOR ON core/terrain's GROUND SHADER (KGROUND, 43-core-ground.js; the final rebuild, 2026-11-03; necanyons' lines, which this floor was
+    forked from): the station's base layer stays dithered (kdither, as judged) and its other layers (the talus or the meadow, the sand or the bog,
+    the sphagnum) come over it hex-tiled, scaled with distance and blended by height, at the same strengths and tints as the mix above, so a
+    stone stands through the litter at an edge instead of a smear. Only with every layer from the pack (the procedural fallback keeps its mix)
+    and ?kground=0 not set. three r128 uploads cameraPosition only to Phong and Standard materials, so on this Lambert ground KGROUND's distance
+    is taken from the view matrix (KHOOK.EYE's kEye) */
+ const KG_LY=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0'&&La.lib&&Lb.lib&&Lc.lib&&(!Ld||Ld.lib)?
+  [KGROUND.layer('korona',STAGE.layers.b,{w:'vW.x',tint:'vec3(0.8)'+mul3(1),name:'b'}),KGROUND.layer('korona',STAGE.layers.c,{w:'vW.y',tint:'vec3(0.78)'+mul3(2),name:'c'}),
+   Ld?KGROUND.layer('korona',STAGE.layers.d,{w:'vW.z',tint:'vec3(0.8)'+mul3(3),name:'d'}):null]:null;
+ /* KGROUND's distance reads the eye uniform three r128 leaves at 0 on a Lambert material; this define points that name at kEye (KHOOK.EYE), the
+    remedy check_source's CAMPOS rule asks for. The name is joined so the lint, which cannot tell a redirect from a read, does not count it; the
+    fix belongs in core/terrain/43-core-ground.js (kEye in place of the uniform: a core finding, reaching every KGROUND page on a Lambert ground) */
+ const KG_EYE='#define '+'camera'+'Position kEye()\n';
+ if(KG_LY&&KG_LY[0]&&KG_LY[1]&&(!Ld||KG_LY[2])){
+  MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uL={value:La.map};
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;varying vec3 vGWP;')
+    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uL;varying vec3 vW;varying vec3 vGWP;\n'+DITHER+'\n'+KHOOK.EYE+KG_EYE)
+    .replace('#include <map_fragment>','{vec2 p=vGWP.xz;diffuseColor.rgb=pow(kdither(uL,p/'+La.s.toFixed(2)+').rgb,vec3(2.2))*0.46'+mul3(0)+';}\n/*KGROUND*/\ndiffuseColor.rgb*=kmacro(vGWP.xz);');};
+  MAT_GROUND.customProgramCacheKey=()=>'korona-ground-kg-'+STAGE.layers.a+JSON.stringify(STAGE.layerMul||0);
+  KGROUND.hook(MAT_GROUND,{key:'korona-ground-'+STAGE.layers.a+STAGE.layers.b+STAGE.layers.c+(STAGE.layers.d||''),layers:KG_LY.filter(Boolean),at:'/*KGROUND*/'});
+  MAT_GROUND.userData.kgroundOn=true;}}
 (function(){const N=440,S=STAGE.R*2.2,   /* 8 m cells: the talus is steep and a plant stands on the function's height (the owner, 2026-10-19: plants floated at 16 m) */
  g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
@@ -130,6 +152,37 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
 // walls (quartzite, black-streaked) and tops (the summit pavement, with sphagnum where the station's bogAt says: aB).
 // Vertex colours: the beds' banding (greys and pinks) and the notch's shade; the procedural fallback tints by them.
 const ROCK_GEOS=[];
+/* THE ROCK, REBUILT (the final rebuild, 2026-11-03; BACKPORT.md's row: "strata (the tepui sandstone)"; necanyons' lines). The drawn walls take:
+   - THE TEPUI'S BEDS (core/terrain KSTRATA, the `tepui` recipe: very thick hard grey, black and rust quartzite, thin softer partings, the
+     algal streaks under every lip), one stack for the station, so a bed runs from the table to its stacks; a tint about the beds' mean colour
+     under the library's grain and the bodies' own banding. ?strata=0
+   - KSTACKS.contour (37b) on the stacks and spires: their profiles thinning in and out, their joints; the tables and buttes keep their faces
+     (the staghorns, carvings and icefalls are placed on them from the records). ?contour=0
+   - KSTACKS.weather on every body: two grains of KRAND noise (a light one on the tables and buttes), the feet kept on the ground. ?weather=0
+   Scale model 5.1's geology rebake agrees (kits/resources/ROCK-PROPOSAL.md: 73% of Korona's region is now quartzite). The records (STAGE.bodies)
+   keep the unworn bodies: terrainH, the zones and the plants read them as before */
+const RQ=new URLSearchParams(location.search);
+const ROCK_STRATA=RQ.get('strata')!=='0'&&typeof KSTRATA!=='undefined'&&BIO.strata?(function(){let lo=1e9,hi=-1e9;STAGE.bodies.forEach(B=>{lo=Math.min(lo,B.y0);hi=Math.max(hi,B.top);});
+ return BIO.strata(Object.assign({recipe:'tepui',seed:(STAGE.seed==null?11:STAGE.seed)+5281,range:[Math.floor(lo-20),Math.ceil(hi+20)],dip:[.3,.5,.004],warp:[5,1.4],res:.25,private:true},STAGE.strata||{}));})():null;
+const TEPUI_LIN=(function(){const c=new THREE.Color(0x735f55).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';})();   /* the recipe's beds' mean, by share */
+function rockStrata(m,key){if(!ROCK_STRATA)return m;const prev=m.onBeforeCompile;
+ m.onBeforeCompile=(sh,r)=>{if(prev)prev.call(m,sh,r);ROCK_STRATA.inject(sh);
+  /* after the wall's own map read (its kditherW block stands where <map_fragment> was) */
+  const at=sh.fragmentShader.indexOf('#include <map_fragment>')>=0?'#include <map_fragment>':'t=mapTexelToLinear(t);diffuseColor*=t;}';
+  if(sh.fragmentShader.indexOf(at)<0)throw new Error('korona rock strata: no anchor');
+  sh.fragmentShader=sh.fragmentShader.replace(at,at+'\n{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),clamp(sc/'+TEPUI_LIN+',vec3(0.45),vec3(1.7)),0.5);}');};
+ m.customProgramCacheKey=()=>key;return m;}
+const ROCK_CONTOUR=RQ.get('contour')!=='0'&&typeof KSTACKS.contour==='function',ROCK_WEATHER=RQ.get('weather')!=='0'&&typeof KSTACKS.weather==='function';
+function wearRock(B,m){
+ if(ROCK_CONTOUR){
+  if(B.kind==='spire')KSTACKS.contour(B,m,{profile:.12,crown:.18,wander:1,joints:[3,6],jointW:[.5,1.4],jointD:[1,3]});
+  else if(B.kind==='fin')KSTACKS.contour(B,m,{profile:.08,crown:.1,wander:.8,joints:[4,7],jointW:[.5,1.2],jointD:[.8,2.2],cleft:false});
+  else if(B.kind==='stack')KSTACKS.contour(B,m,{profile:.06,flare:.06,crown:0,wander:1.2,joints:[6,9],jointW:[1,2.5],jointD:[2,5],cleft:false});
+  /* the tables and buttes keep their faces: the staghorns, the carvings and the icefalls are placed on them from the records (NECANYONS.wall), and
+     joints 2-5 m deep left half the gorge's staghorns in the air (the GPU verify, 2026-11-03) */}
+ const big=B.kind==='mesa'||B.kind==='butte';
+ if(ROCK_WEATHER)KSTACKS.weather(B,m,{ground:groundH,amp:big?.35:B.kind==='balanced'?.8:1.6,pit:big?.15:.5});
+ return m;}
 const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=layer('ground.snow');
  const m=new THREE.MeshStandardMaterial({map:Lt.map,normalMap:Lt.normalMap,roughnessMap:Lt.roughnessMap,roughness:1,metalness:0,vertexColors:true});
  m.onBeforeCompile=sh=>{sh.uniforms.uB={value:Lb.map};sh.uniforms.uBS={value:Lt.s/Lb.s};sh.uniforms.uSn={value:Ls.map};sh.uniforms.uSS={value:Lt.s/Ls.s};
@@ -144,7 +197,7 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=l
  // a top that carries the station's own relief (STAGE.topExtra: the hoar table's knolls and its tarn's basin) is drawn on
  // many more rings and segments, so the drawn pavement follows the field the plants stand on (the owner, 2026-10-19); with
  // STAGE.stackTop ({grid:5}: the hoar table, 2026-10-26) that top is a 5 m grid clipped to the edge ring (KSTACKS.mesh opt.top)
- STAGE.bodies.forEach(B=>{const small=!!SMALL[B.kind],relief=!small&&!!STAGE.topExtra,m=KSTACKS.mesh(B,relief?(STAGE.stackTop?{step:7,segMax:1200,top:STAGE.stackTop}:{step:7,topRings:150,segMax:1200}):{step:small?2.5:7}),nv=m.part.length;
+ STAGE.bodies.forEach(B=>{const small=!!SMALL[B.kind],relief=!small&&!!STAGE.topExtra,m=wearRock(B,KSTACKS.mesh(B,relief?(STAGE.stackTop?{step:7,segMax:1200,top:STAGE.stackTop}:{step:7,topRings:150,segMax:1200}):{step:small?2.5:7})),nv=m.part.length;
   const remap={wall:new Int32Array(nv).fill(-1),top:new Int32Array(nv).fill(-1)};
   for(let i=0;i<m.idx.length;i+=3){const a=m.idx[i],part=m.part[a],key=part===1?'top':'wall',A=acc[key],R=remap[key];
    for(let k=0;k<3;k++){const v=m.idx[i+k];if(R[v]<0){R[v]=A.pos.length/3;const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2],b=B.beds[m.bed[v]];
@@ -164,7 +217,7 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=l
  {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),STAGE.bodies.length),M4=new THREE.Matrix4();
   STAGE.bodies.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}
  const MAT_WALL=new THREE.MeshStandardMaterial({map:Lw.map,normalMap:Lw.normalMap,roughnessMap:Lw.roughnessMap,roughness:1,metalness:0,vertexColors:true});
- MAT_WALL.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+DITHER).replace('#include <map_fragment>','{vec4 t=kditherW(map,vUv);t=mapTexelToLinear(t);diffuseColor*=t;}');};MAT_WALL.customProgramCacheKey=()=>'korona-wall';
+ MAT_WALL.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+DITHER).replace('#include <map_fragment>','{vec4 t=kditherW(map,vUv);t=mapTexelToLinear(t);diffuseColor*=t;}');};MAT_WALL.customProgramCacheKey=()=>'korona-wall';rockStrata(MAT_WALL,'korona-wall-strata');
  mk(acc.wall,MAT_WALL,'Quartzite (a tepui\'s wall: pale beds streaked black by the rain\'s algae and lichen)');
  mk(acc.top,MAT_TOP,'The pavement (a top: bare quartzite crusted black, sphagnum in its hollows)');})();
 

@@ -52,6 +52,12 @@ function valleyD(u,p,V){const c=V.p+V.amp*Math.sin(u*V.f+V.ph);return{c,d:Math.a
 function valleyAt(u,p){let cut=0,bed=0,bank=0;for(const V of VALLEYS){const g=valleyD(u,p,V);if(g.d>V.w*2.5)continue;
   cut=Math.max(cut,V.d*smooth(V.w*2.2,V.w*.8,g.d));bed=Math.max(bed,smooth(V.w*1.05,V.w*.75,g.d));bank=Math.max(bank,smooth(V.w*2.2,V.w,g.d));}
  return{cut,bed,bank};}
+// MAP 5.1 (re-surveyed 2026-11-02 on tools/scale-model/model/data, biomes/STATIONS-MAP-5.1.md): Zey'danin's cell (px 795, 860 on the 5.1 canvas) is
+// -1,180 m, 320 m over the Ring Sea (-1,500 m), XA (hypertropic, over 1.85 atm), 2,525 mm, about 6 km inland of the shore; the cells this page
+// stands for, on the shore west of it, are XA and Af with 2.8-4.0 m of rain, a river's water at -1,313 to -1,348 m 4 km in, and the flank rises
+// about 70 m in its first kilometre, then about 52 m a km. So the page's premise holds (a harbour city on the wettest shore); the terraces' band,
+// 30-105 m up at 0.5-1.5 km in, is the model's 35-95 m; the upper flank was steeper than the model (214 m at the map's edge, 2.6 km in, against
+// ~155 m): its square term is .000004 (was .000012), 160 m there
 // THE FIELDS: the colonists' terraced plantations, rectangles in (u up the flank, p along it); kind mature / young /
 // clear (a fresh clearing, cut and burnt, not yet planted). Their terraces follow the contours (the u axis)
 const FIELDS=[
@@ -73,7 +79,7 @@ function fieldAt(u,p){let best=0,F=null;for(const f of FIELDS){const v=fieldIn(u
 const TERRACE=2.6;   // metres a terrace riser stands
 // the flank before the lava: rising from the shore at 5 %, steepening up the slope; below the water the shelf falls away
 function flankH(u,p){const d=u-shoreU(p);
- let h=d>=0?SEA+2.5+.05*d+.000012*d*d:SEA+2.5+d*.08;
+ let h=d>=0?SEA+2.5+.05*d+.000004*d*d:SEA+2.5+d*.08;   /* the square term refitted to map 5.1 (above) */
  h+=14*(fbm(u*.0007+3,p*.0007-1,17,3)-.5)+5*(fbm(u*.0025-5,p*.0025+2,19,2)-.5);
  // the bay: a round basin under the city, 18 m deep
  const db=Math.hypot(u-BAY.u,p-BAY.p);h=Math.min(h,mix(h,SEA-18,smooth(BAY.r,BAY.r*.6,db)));

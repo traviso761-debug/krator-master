@@ -58,7 +58,7 @@ function golden(A) {
   for (const site of sites) for (const [h, d] of [[6, 0], [12, 0], [19.5, 3], [0, -88], [23.25, 91], [9.4, 140.6]]) {
     const s = A.skyState(site, h, d);
     state.push({ px: site.px, py: site.py, hour: h, day: d, latitude: site.latitude, subGiantLon: site.subGiantLon,
-      sunDir: s.sunDir, giantDir: s.giantDir, giantAxis: s.giantAxis, pole: s.pole, ringOpen: s.ringOpen, ringLine: s.ringLine,
+      lib: A.libration(s.t), sunHidden: A.sunHidden(s.t, site), sunDir: s.sunDir, giantDir: s.giantDir, giantAxis: s.giantAxis, pole: s.pole, ringOpen: s.ringOpen, ringLine: s.ringLine,
       ringNormal: A.skyRingNormal(s), eclipse: s.eclipse, giantLit: s.giantLit, spin: s.spin, lst: s.lst, clusterDir: s.clusterDir,
       eq: s.eq, moons: s.moons.map(m => ({ name: m.name, dir: m.dir, light: m.light, lead: m.lead, toGiant: m.toGiant,
         radiusDeg: m.radiusDeg, distKm: m.distKm, lit: m.lit, front: m.front })),

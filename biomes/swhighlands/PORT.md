@@ -6,31 +6,31 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 5 (5%) | 8 (8%) | 1 (1%) | 39 (38%) | 49 (48%) |
+| KB | 0 (0%) | 0 (0%) | 1 (1%) | 67 (33%) | 137 (67%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/45-host-stage.js` | 19.2 | [web] | 7 | 0 | 3 | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | the station's host: renderer and lights ([web]); the ground records (KRELIEF ranges, gaps, the gorge's steps, the cave patch), the water courses and the fields are data on core/terrain and core/water, baked into KFIELD for Godot. split: the records could move to a [G data] fragment |
-| `src/47-host-land.js` | 6.3 | [draw] | 6 | 1 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 | the rock bodies (KSTACKS records, drawn) and the strata shader on the rock; the records cross over through KSTACKS.export |
-| `src/50-biome-swhighlands-species.js` | 14.5 | [draw] | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: species and plant data (tags, palettes) beside the kit's items and materials |
-| `src/55-biome-swhighlands-trees.js` | 13.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | split: placement by KRAND cell (records: SWHI.TREES, SWHI.LOGS) then the builders draw them in the same pass |
-| `src/58-biome-swhighlands-rainwall.js` | 21.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | station 2's flora: placement by KRAND cell then the builders draw (split: records SWHI.TREES); the preview sheet |
+| `src/45-host-stage.js` | 24.6 | [web] | 7 | 0 | 3 | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | the station's host: renderer and lights ([web]); the ground records (KRELIEF ranges, gaps, the gorge's steps, the cave patch), the water courses and the fields are data on core/terrain and core/water, baked into KFIELD for Godot. split: the records could move to a [G data] fragment |
+| `src/47-host-land.js` | 6.4 | [draw] | 4 | 1 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 | the rock bodies (KSTACKS records, drawn) and the strata shader on the rock; the records cross over through KSTACKS.export |
+| `src/50-biome-swhighlands-species.js` | 28.7 | [draw] | 0 | 2 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: species and plant data (tags, palettes) beside the kit's items and materials |
+| `src/55-biome-swhighlands-trees.js` | 14.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: placement by KRAND cell (records: SWHI.TREES, SWHI.LOGS) then the builders draw them in the same pass |
+| `src/56-biome-swhighlands-treeline.js` | 11.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | station 6: placement by KRAND cell then the builders draw (split: records SWHI.TREES, SWHI.TREELINE.glass) |
+| `src/57-biome-swhighlands-pillars.js` | 15.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | station 4's flora: placement by KRAND cell then the builders draw (split: records SWHI.TREES); the preview sheet |
+| `src/58-biome-swhighlands-rainwall.js` | 21.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 | station 2's flora: placement by KRAND cell then the builders draw (split: records SWHI.TREES); the preview sheet |
 | `src/59-biome-swhighlands-tableland.js` | 9.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | station 3's flora: placement by KRAND cell then the builders draw; the preview sheet |
-| `src/59c-biome-swhighlands-coast.js` | 14.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | station 5's flora: placement by KRAND cell then the builders draw; the preview sheet |
-| `src/57-biome-swhighlands-pillars.js` | 13.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | station 4's flora: placement by KRAND cell then the builders draw (split: records SWHI.TREES); the preview sheet |
-| `src/56-biome-swhighlands-treeline.js` | 10.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | station 6: placement by KRAND cell then the builders draw (split: records SWHI.TREES, SWHI.TREELINE.glass) |
-| `src/60-biome-swhighlands-floor.js` | 2.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: places (KRAND cells) and draws (BIO.put) in one pass |
-| `src/70-biome-swhighlands.js` | 1.5 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the biome's public surface: orders the passes (timed with performance.now: split: data inside host code), tags of a hit |
+| `src/59c-biome-swhighlands-coast.js` | 14.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | station 5's flora: placement by KRAND cell then the builders draw; the preview sheet |
+| `src/60-biome-swhighlands-floor.js` | 3.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: places (KRAND cells) and draws (BIO.put) in one pass |
+| `src/70-biome-swhighlands.js` | 3.0 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the biome's public surface: orders the passes (timed with performance.now: split: data inside host code), tags of a hit |
 | `src/82-host-far.js` | 8.1 | [draw] | 9 | 1 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | the far country (KFAR lattice, plain data) drawn, and the farm's walls from KRELIEF.fields hedges |
-| `src/84-host-ground.js` | 15.1 | [web] | 14 | 5 | 0 | 0 | 2 | 3 | 4 | 0 | 0 | 0 | 0 | the ground's paint (canvas) and shader (KGROUND, KSTRATA, KHORIZON), the mist sprites |
-| `src/88-host-build.js` | 2.0 | [web] | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | the build order |
+| `src/84-host-ground.js` | 19.9 | [web] | 16 | 4 | 0 | 0 | 2 | 3 | 4 | 0 | 0 | 0 | 0 | the ground's paint (canvas) and shader (KGROUND, KSTRATA, KHORIZON), the mist sprites |
+| `src/88-host-build.js` | 2.2 | [web] | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | the build order |
 | `src/89a-host-atmos.js` | 2.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/atmos bound to the page (bindHost, weather, height fog, rain cover) |
 | `src/89s-host-sky.js` | 1.3 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shared sky (ATMOS.skyBiome): Godot has its own sky |
-| `src/89w-host-water.js` | 2.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/water's draws of the page's records |
-| `src/99-host-take.js` | 12.1 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the views, the inspector's words, the budgets and the kit's own checks |
+| `src/89w-host-water.js` | 3.3 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/water's draws of the page's records |
+| `src/99-host-take.js` | 14.2 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the views, the inspector's words, the budgets and the kit's own checks |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
@@ -38,5 +38,23 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 Station 6 (the treeline) overlays `stations/treeline/*.js` on `src/` (`build.py --station treeline`): its host fragments have the same roles and tags as `src/`'s of the same name (45 [web], 47 [draw], 82 [draw], 84 [web], 88/89a/99 [web], 89s [G native], 89w empty); `47c-host-ehigh-end.js` [web] closes the eastern highlands' kit read in place.
 
 Station 4 (the pillar rim) overlays `stations/pillars/*.js` the same way (`build.py --station pillars`): 45 [web], 47 [draw] (the towers' meshes; its `SWHI_PILLARS_SITE` record is plain data), 82 [draw], 84 [web], 88/89a/99 [web], 89s [G native], 89w [web].
+
+Station 2 (the rain wall, `--station rainwall`) overlays `stations/rainwall/*.js` the same way: 45 [web] (the valley, the runout, the lake
+and the seep are KRELIEF and core/water records baked into KFIELD), 47 [draw] (the pinnacles' KSTACKS meshes), 58b [draw] (the drowned
+trees: a kit pass, placement by KRAND cell then BIO.tube, split as 58), 82 [draw], 84 [web], 88/89a/99 [web], 89s [G native], 89w [draw].
+
+Station 3 (Span's tableland, `--station span`) lays station 4's fragments first (`stations/span/INHERIT`), then its own: 48 [web] (the
+tableland's fields on a lattice and the seep pools and twin falls as core/water records: split, the records could move to [G data]),
+88/99 [web], 89wb [draw].
+
+Station 7 (the ridge karst, `--station caverns`) is `src/` plus `stations/caverns/`: 44k [G data] in all but name (KKARST records only,
+no THREE; it reads `performance.now` for its timing), 89x [draw] (KCAVERN's chunks and KSPELEO's mesh drawn; the network, the
+chambers and the hazards are records: KKARST's and KCAVERN's exports cross over). `stations/shared/89zz-host-shadow.js` [web]
+(KSHADOW's switch) goes on stations 2, 3 and 7.
+
+Station 5 (the fan coast, `--station coast`) overlays `stations/coast/*.js`: 45 [web] (the scarp, the wadis and their fans: KRELIEF
+records baked into KFIELD), 47 [draw] (the arches' and stacks' KSTACKS meshes; the fields), 82 [draw], 84 [web], 87 [draw] (the crater
+drylands' plants grown by their own builders, placed by KRAND cell: split), 88/89a/99 [web], 89s [G native], 89w [draw] (the sea's open
+water). Stations 3 and 5 read a neighbour's 50/55 in place (`station.json` `kin`): those fragments keep their own kits' tags.
 
 (none yet: the split lists and the overrides go here)

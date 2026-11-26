@@ -7,7 +7,7 @@
   39-pr-world-data    GENERATED (tools/world_data.py): the scale model round the site (region/data, cut by
                       tools/scale-model/extract_region.py), decoded at build time
   40-pr-layout        THE PLAN as data (the settled layout, PLAN.md section 1)
-  41-world-fields     the open world's fields, read in place (openworld/little-demo/src): WORLD.H, the land at 1:1
+  41-world-fields     the open world's fields, read in place (core/world, moved from the deprecated little-demo): WORLD.H, the land at 1:1
   42-pr-world         HOST: WORLD.init, the knoll's height at the south foot
   45-host-stage       HOST: renderer, light, the floor (the model's), the rock (KSTACKS records from the plan), LAND
   46, 47, 50..70      the NECANYONS kit and its land fragment, read in place (biomes/necanyons/src)
@@ -61,6 +61,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "pinnacle-rock.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 CORE_TERRAIN=['37-core-stacks.js','38-core-relief.js','39-core-cavern.js']   # KSTACKS (the rock); KRELIEF (the noise the open world's fields take); KCAVERN (the Deep Root cavern, P3d)
@@ -88,8 +89,8 @@ NC=os.path.normpath(os.path.join(HERE,'..','..','biomes','necanyons'))
 for f in ('46-biome-necanyons-layout.js','47-host-land.js','50-biome-necanyons-species.js','55-biome-necanyons-trees.js',
           '57-biome-necanyons-carnivores.js','60-biome-necanyons-floor.js','70-biome-necanyons.js','89n-host-night.js'):
     PATH[f]=os.path.join(NC,'src',f)
-# the open world's fields (openworld/little-demo/src/41-world-fields.js), read in place: the land round the site at 1:1
-PATH['41-world-fields.js']=os.path.normpath(os.path.join(HERE,'..','..','openworld','little-demo','src','41-world-fields.js'))
+# the open world's fields (core/world/41-world-fields.js, moved there from the deprecated little-demo), read in place: the land round the site at 1:1
+PATH['41-world-fields.js']=os.path.normpath(os.path.join(HERE,'..','..','core','world','41-world-fields.js'))
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
@@ -112,7 +113,7 @@ import host as khost
 # viewer"): host.FULL, the shell and the record inspector, stocks, marks (they supersede the polytool), pictures, the
 # minimap, the editor and the cutaway, with core/edits, core/space and core/minimap; the page's edits log inlined
 # (host.edits_js: <build>/edits.json, or a newer browser draft)
-CORE_HOST=khost.FULL
+CORE_HOST=khost.FULL+khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 khost.resolve(PATH,CORE_HOST)
 # core/walk (KWALK): the floors a walker stands on that the ground does not carry (the decks, the climbs, the bridges, the
 # Stair, the lift road, the Deep Root: 89h-host-walk.js, and KCAVERN writes its own); core/lod (every build takes it:
@@ -124,6 +125,7 @@ CORE_X={'20-core-walk.js':('walk','20-core-walk.js'),'09-lod.js':('lod','09-lod.
         '44-core-stage.js':('biome','44-core-stage.js')}
 for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-2-lights.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): CORE_X[f]=('atmos',f)
 for f in ('20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js'): CORE_X[f]=('water',f)
+CORE_X['56-core-water-breakup.js']=('water','ext/56-core-water-breakup.js')   # the breakup (core/water ext/56), on by default since 2026-11-09
 for f,(d,n) in CORE_X.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,n))
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
@@ -158,6 +160,7 @@ BR_SKIP=tuple(f for f in _json.load(open(os.path.join(BRK,'materials.json'),enco
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','isle-demo')))
 import bundles as _isle
 CATD=os.path.normpath(os.path.join(HERE,'..','..','kits','catalog'))
+CATE=os.path.normpath(os.path.join(HERE,'..','..','core','catalog'))   # the catalog's engine (MODULARITY-PLAN.md step 3)
 CAT_OWN=['50-br-mounts.js','51-br-trades.js','52-br-trades-b.js','53-br-trades-c.js','54-br-houses.js','55-br-rockcut.js',
          '56-br-rockcut-b.js','70-br-tent-kit.js','71-br-tents-dwell.js','72-br-tents-trade.js','73-br-tents-pens.js',
          '74-br-tents-bands.js','75-br-tents-bounds.js','79-br-camp.js']
@@ -202,11 +205,11 @@ def cat_fragment(side):
         kft='var KF_TEX = %s;\n'%kf_tex_json()
     return _isle.safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/pinnacle-rock/build.py cat_fragment). GENERATED: edit '
                       'kits/catalog, kits/beast-riders and the towns (kits/beast-riders/towns.py). */\n'
-                      'var CAT = (function(){\nvar scene = new THREE.Group();\n'+_isle.body([os.path.join(CATD,'krator-furniture-core.js')])+
+                      'var CAT = (function(){\nvar scene = new THREE.Group();\n'+_isle.body([os.path.join(CATE,'krator-furniture-core.js')])+
                       _isle.body([os.path.join(BRK,'src',f) for f in CAT_OWN])+
                       '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */\n'+tjs+'\n'+
-                      _isle.body([os.path.join(BRK,'src','60-br-ports.js'),os.path.join(CATD,'krator-furniture-runtime.js')])+kft+
-                      _isle.body([os.path.join(CATD,'krator-furniture-detail.js')])+CAT_PROTO+'})();\n')
+                      _isle.body([os.path.join(BRK,'src','60-br-ports.js'),os.path.join(CATE,'krator-furniture-runtime.js')])+kft+
+                      _isle.body([os.path.join(CATE,'krator-furniture-detail.js')])+CAT_PROTO+'})();\n')
 # the isle demo's prototype flattener, read in place (its header: CAT.proto's group into one geometry per material)
 PATH['89a-host-isle-protos.js']=os.path.normpath(os.path.join(HERE,'..','isle-demo','src','58-isle-protos.js'))
 # THE FLYERS (PLAN.md P2; flyers/README.md): Girder's flyers READ IN PLACE (settlements/girder/src 84-flyers.js, 84b, the
@@ -252,6 +255,7 @@ VIRTUAL={'39-pr-world-data.js':_wd.fragment(os.path.join(HERE,'region')),
          '44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE),
          '44c-host-matlib-pack-beast-riders.js':_mp.fragment(BRK,'beast-riders',exclude=BR_SKIP,side=SIDE)}
 for f in VIRTUAL: PATH[f]=None
+BSRC.report(PATH)   # --list-sources: what the page is made of (every path it names), then exit
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:

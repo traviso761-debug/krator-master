@@ -2,6 +2,8 @@
 // curtain ARCS, a parabola from the lip speed, widening toward its foot), drawn as WATER.drawFall draws it
 // (core/water/51-core-water-kinds.js): streaks that fall with the water (wk_streak), whiter toward the foot, thinning at
 // its edges and toward the spray. UV = (u across the lip, f down the fall).
+// lip_k and foot_k (drawFall's lipK and footK, 2026-10-26/27; < 0: off, the old curtain): its alpha solid at the lip, and held toward its foot
+// (white water arriving at its pool) instead of thinning to 0.6 of itself.
 shader_type spatial;
 render_mode blend_mix, cull_disabled, depth_draw_never;
 
@@ -15,6 +17,8 @@ uniform float opacity = 0.92;
 uniform float side_margin = -1.0;
 uniform float side_edge = 0.0;
 uniform float lip_w = 1.0;
+uniform float lip_k = -1.0;
+uniform float foot_k = -1.0;
 
 float side(float u) {
 	if (side_margin < 0.0) {
@@ -27,7 +31,9 @@ void fragment() {
 	float st = wk_streak(UV.x, UV.y);
 	float fm = wk_fall_foam(UV.y, st);
 	ALBEDO = k_albedo(mix(colour, vec3(0.95, 0.97, 0.97), fm));
-	ALPHA = opacity * (0.45 + 0.55 * smoothstep(0.25, 0.8, st)) * side(UV.x) * mix(1.0, 0.6, smoothstep(0.55, 1.0, UV.y));
+	float base = lip_k < 0.0 ? 0.45 : min(1.0, mix(lip_k, 0.45, smoothstep(0.0, 0.35, UV.y)));
+	float a = opacity * (base + 0.55 * smoothstep(0.25, 0.8, st)) * side(UV.x);
+	ALPHA = foot_k < 0.0 ? a * mix(1.0, 0.6, smoothstep(0.55, 1.0, UV.y)) : max(a, opacity * foot_k * smoothstep(0.3, 1.0, UV.y) * side(UV.x));
 	ROUGHNESS = 0.42;
 	METALLIC = 0.0;
 }

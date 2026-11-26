@@ -1,5 +1,6 @@
 // node core/water/test-join.js: WATER.join (22-core-water-flow.js), a tributary meeting a main channel as one water
 // (biomes/swhighlands, the owner's note of 2026-10-26). Each check with a negative control: the naive line fails it.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 const fs=require('fs'),path=require('path');const ROOT=path.join(__dirname,'..','..');
 global.window=global;
 eval(['core/atmos/89-atmos-0-core.js','core/atmos/89-atmos-0p-presets.js','core/atmos/89-atmos-a-waves.js','core/water/20-core-water.js','core/water/21-core-water-shore.js','core/water/22-core-water-flow.js']

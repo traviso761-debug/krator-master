@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """Build dist/catalog.html: the master catalog's contact sheet.
 
-The registries stay where other builds load them from (settlements/voth/catalog
-loads the engine, the Voth buildings and the inspector by path), so they are
-NOT moved into src/. src/ holds only the page around them:
+The registries stay where other builds load them from (Voth's building sheet,
+its catalog/ folder, loads the engine, the Voth buildings and the inspector by
+path: Voth reads the kit, the kit reads no settlement), so they are NOT moved into src/. src/ holds only the page around them:
 
   src/00-head.html          page head, toolbar, error panel, three.js r128 loader
   <registries, in order>    SOURCES below (top-level .js files of this folder; a pattern
                             expands in filename order, so one file per culture just drops in)
-  src/80-sky-hash.js        h3(), which KratorSky reads
-  src/81-sky.js             KratorSky, VENDORED from settlements/iziz/src
+  80-sky-hash.js, 81-sky.js KratorSky (the placeholder sky) and its h3(), read in place from core/atmos/placeholder
   src/90-sheet.js           lays out every entry and variant in labelled rows
   src/92-hover.js           hover inspector (name, class, tags), toggled with T
   src/93-polygon.js         polygon tool (click the ground for world x,z), toggled with P
@@ -40,6 +39,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 OUT = 'catalog'
@@ -48,7 +48,7 @@ OUT = 'catalog'
 # interiors-phase culture file (krator-master-furniture-<culture>.js, in filename order).
 # Not built here any more: krator-master-plants.js (plants live in their biome kits and
 # in each build's own sheet), krator-master-buildings-voth.js (the Voth buildings have
-# their own sheet, settlements/voth/catalog, which loads that file by path) and
+# their own sheet, in Voth's catalog/ folder, which loads that file by path) and
 # krator-master-buildings-beast-rider.js (the Beast Rider buildings). The files stay.
 # The catalog is the furniture sheet.
 SOURCES = [
@@ -70,10 +70,22 @@ def sources():
         else:
             out.append(s)
     return out
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
-            # the culture symbols, shared with the socket packs; vendored here because other builds load the
-            # catalog's files by relative path from kits/ and cannot reach core/. Re-copy after editing upstream.
-            'krator-symbols.js': os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')}
+sys.path.insert(0, os.path.join(ROOT, 'core', 'catalog'))
+import catalog as kcat   # the catalog engine in core/catalog, the culture files in kits/catalog (MODULARITY-PLAN.md step 3)
+# the culture symbols are core/sockets/38-symbols.js, read in place under their old name krator-symbols.js (core/catalog/catalog.py;
+# MODULARITY-PLAN.md step 3): nothing here is vendored any more
+VENDORED = {}
+
+# the placeholder sky (KratorSky and its h3()), read in place from core/atmos/placeholder (MODULARITY-PLAN.md step 1); the
+# names keep their place in the fragment order. A src/ copy would be ignored: --vendor-check reports it.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky  # noqa: E402
+SKY = psky.paths(psky.SKY_H3)
+
+
+def src_path(f):
+    return SKY.get(f) or os.path.join(SRC, f)
+
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
 RE_DECL_MULTI = re.compile(r'^(?:const|let|var)\s+[^;\n]*?,\s*([A-Za-z_$][\w$]*)\s*=', re.M)
@@ -106,6 +118,10 @@ def check(parts):
 
 def vendor_check():
     drift = 0
+    for f in sorted(SKY):
+        if os.path.exists(os.path.join(SRC, f)):
+            print('vendor-check: src/%s shadows core/atmos/placeholder/%s (the build ignores it): delete it' % (f, f))
+            drift += 1
     for f, up in sorted(VENDORED.items()):
         if not os.path.exists(up):
             print('vendor-check: %s: upstream %s missing' % (f, os.path.relpath(up, ROOT)))
@@ -120,11 +136,12 @@ def vendor_check():
 def main():
     if '--vendor-check' in sys.argv:
         sys.exit(1 if vendor_check() else 0)
-    frags = sorted(f for f in os.listdir(SRC) if f[0].isdigit())
+    frags = sorted({f for f in os.listdir(SRC) if f[0].isdigit()} | set(SKY))
     head = [f for f in frags if f.endswith('.html') and f < '50']
     tail = [f for f in frags if f.endswith('.html') and f >= '50']
     js = [f for f in frags if f.endswith('.js')]
-    parts = [(f, read(os.path.join(HERE, f))) for f in sources()] + [(f, read(os.path.join(SRC, f))) for f in js]
+    out_name = OUT
+    parts = [(f, read(kcat.path(f))) for f in sources()] + [(f, read(src_path(f))) for f in js]
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:
@@ -133,18 +150,19 @@ def main():
                 print('  -', e)
             sys.exit(1)
     script = ''.join('/* ---------- %s ---------- */\n%s%s' % (n, b, '' if b.endswith('\n') else '\n') for n, b in parts)
-    html = (''.join(read(os.path.join(SRC, f)) for f in head) + '<script>\n' + script +
-            ''.join(read(os.path.join(SRC, f)) for f in tail))
+    html = (''.join(read(src_path(f)) for f in head) + '<script>\n' + script +
+            ''.join(read(src_path(f)) for f in tail))
+    BSRC.report(vendored=VENDORED.values())   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
-    out = os.path.join(DIST, OUT + '.html')
+    out = os.path.join(DIST, out_name + '.html')
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     manifest = {n: hashlib.sha1(b.encode()).hexdigest()[:12] for n, b in parts}
     for f in head + tail:
-        manifest[f] = hashlib.sha1(read(os.path.join(SRC, f)).encode()).hexdigest()[:12]
+        manifest[f] = hashlib.sha1(read(src_path(f)).encode()).hexdigest()[:12]
     with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8') as fh:
         json.dump(manifest, fh, indent=1, sort_keys=True)
-    chk = os.path.join(HERE, '.syntax-%s.js' % OUT)
+    chk = os.path.join(HERE, '.syntax-%s.js' % out_name)
     with open(chk, 'w', encoding='utf-8') as fh:
         fh.write(script)
     try:

@@ -11,7 +11,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `31-core-field-brush.js`, `36-core-carve.js`, `37-core-stacks.js`, `38-core-relief.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `34-core-impostor.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `32-core-variants.js`, `34-core-impostor.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -29,9 +29,9 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `35-core-strata.js` | 9 |  |
-| `45-host-stage.js` | 49 **big** | the river, the canyon, the butte, the mesas (48); terrain (87); the host binding (207); the ground (223); the water (403) |
+| `45-host-stage.js` | 50 **big** | the river, the canyon, the butte, the mesas (48); terrain (87); the host binding (207); the ground (223); the water (416) |
 | `50-biome-sedesert-species.js` | 36 **big** | THE WATER COLOUR (18); the tree species (71); harvest (biomes/FRUIT.md) (132); leaf textures (172); bark, rock, wood textures (248); geometries local to this biome (287); materials (352); instanced items (387) |
-| `55-biome-sedesert-trees.js` | 40 **big** | zones from the fields (19); colour (the maths is the core's, BIO.col) (40); polyline helpers (Girder's) (55); keep-clear between trees (63); foliage helpers (70); the builders (87); impostors (the far canopy) (267); the pass (319); the passes (data: species, cell, acceptance from (369); the builders' tools, for species a host or a sta (398) |
+| `55-biome-sedesert-trees.js` | 42 **big** | zones from the fields (19); colour (the maths is the core's, BIO.col) (40); polyline helpers (Girder's) (55); keep-clear between trees (63); foliage helpers (70); the builders (93); impostors (the far canopy) (285); the pass (337); the passes (data: species, cell, acceptance from (387); the builders' tools, for species a host or a sta (416) |
 | `60-biome-sedesert-floor.js` | 16 | fields local to the floor (29); small plants (39); the zone planters (101); the pass (148) |
 | `65-biome-sedesert-dress.js` | 9 |  |
 | `70-biome-sedesert.js` | 1 |  |
@@ -41,6 +41,16 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `88-host-build.js` | 2 |  |
 | `89-host-sky.js` | 2 |  |
 | `89w-host-water.js` | 4 |  |
-| `89x-host-air.js` | 4 |  |
-| `99-host-take.js` | 21 | the inspector's words (66); the probe's budgets and the kit's own checks (ve (79); the page, handed to the host (149); the editor's world (core/host 98; ROADMAP.md sec (150) |
+| `89x-host-air.js` | 5 |  |
+| `99-host-take.js` | 23 | the inspector's words (76); the probe's budgets and the kit's own checks (ve (89); the page, handed to the host (159); the editor's world (core/host 98; ROADMAP.md sec (160) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| bowl | 00-head.html, 45-host-shell.js, 45-host-stage.js, 46-host-land.js, 56-biome-sedesert-bowl.js, 65-biome-sedesert-brinelamp.js, 66-biome-sedesert-halo.js, 83-host-regions.js, 84-host-ground.js, 86-host-shimmer.js, 87-host-far.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 98-host-checks.js, 99-host-take.js | 101 |
+| mantis | 00-head.html, 45-host-stage.js, 57-biome-sedesert-forest.js, 58-biome-sedesert-pocketpasses.js, 67-biome-sedesert-pocket.js, 83-host-regions.js, 88-host-build.js, 99-host-take.js | 45 |
+| steppe | 00-head.html, 45-host-stage.js, 47-host-rock.js, 59-biome-sedesert-steppe.js, 67-biome-sedesert-steppefloor.js, 83-host-regions.js, 88-host-build.js, 99-host-take.js | 50 |

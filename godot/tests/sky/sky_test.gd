@@ -23,6 +23,11 @@ func _initialize() -> void:
 		for k in ["sunDir", "giantDir", "giantAxis", "pole", "ringLine", "clusterDir"]:
 			bad += _vec(tag + " " + k, s[k], g[k])
 		bad += _vec(tag + " ringNormal", M.ring_normal(s), g["ringNormal"])
+		var t: float = float(g["day"]) + float(g["hour"]) / 24.0
+		var lib: Dictionary = M.libration(t)
+		for k in ["phase", "nod", "swing", "nodDeg", "swingDeg", "ringOpen", "dN", "dE"]:
+			bad += _near(tag + " libration " + k, lib[k], g["lib"][k])
+		bad += _near(tag + " sunHidden", M.sun_hidden(t, site), g["sunHidden"])
 		for k in ["ringOpen", "eclipse", "giantLit", "spin", "lst"]:
 			bad += _near(tag + " " + k, s[k], g[k])
 		for c in 3:   # W's columns: the JavaScript's eq is rows of W

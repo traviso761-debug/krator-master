@@ -1,0 +1,22 @@
+{
+ "name": "Station 2, the rille (PLAN.md section 7): tube_god_07's collapsed stretch on the head step (the plain at ~2,990 m, the rille's floor ~2,870 m), its colonnaded walls stepping on the flows' tops, a spring at a palagonite parting feeding a stream and the Talovolci's red stalk fields on the floor; past the rille's end the tube roofed under the plain with its pit chain, hornitos and a fresh collapse, and one skylight walked down into the tube through the gathered caves; early summer",
+ "out": "godstep-rille.html",
+ "region": "region.json",
+ "water": [],
+ "tex": [
+  "groundDetail",
+  "rockFace",
+  "rock",
+  "tilled",
+  "moss",
+  "lichenCrust",
+  "cushion",
+  "crust"
+ ],
+ "reads": {
+  "25-core-mask.js": "core/mask/25-core-mask.js",
+  "37-core-stacks.js": "core/terrain/37-core-stacks.js",
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js",
+  "27-core-mask-distance.js": "core/mask/27-core-mask-distance.js"
+ }
+}

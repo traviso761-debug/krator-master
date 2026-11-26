@@ -92,8 +92,15 @@
     var pick = $('mods-pick') && $('mods-pick').value;
     r.mods = pick ? pick.split(',') : (c.mods || []).slice();
     // the Lizardman test (tools/nonhuman.py): olive skin and amber eyes with the reptile head; the head leaves out the hair
-    if(r.mods.indexOf('mod_head_lizard') >= 0){ r.skin = '#7d8a45'; r.eye_color = '#c89020'; }
-    if(r.mods.indexOf('mod_head_frog') >= 0){ r.skin = '#5f8a36'; r.eye_color = '#d6a22a'; }     // the Frogman test: a frog's green, gold eyes
+    if(r.mods.indexOf('mod_head_lizard') >= 0){ r.skin = '#7d8a45'; r.eye_color = '#c89020'; if(!dress) r.armour.torso = null; }
+    if(r.mods.indexOf('mod_head_frog') >= 0){ r.skin = '#5f8a36'; r.eye_color = '#d6a22a'; if(!dress) r.armour.torso = null; }     // the Frogman test: a frog's green, gold eyes
+    if(r.mods.indexOf('mod_head_coyote') >= 0){ r.coat = 'coyote'; r.skin = '#6e5a4c'; r.hair_color = '#9a7a52'; r.eye_color = '#c08a2a'; }
+    if(KCHAR.replacesFeet(r, kit) && !dress){
+      var kilt = (r.mods.indexOf('mod_legs_lizard') >= 0 || r.mods.indexOf('mod_legs_frog') >= 0) && c.sex !== 'f' ? 'voth_m_peasant_maxtlatl'
+               : c.sex === 'f' ? 'dalab_f_peasant_kilt' : 'dalab_m_peasant_kilt';
+      if(kit.items.some(function(it){ return it.id === kilt; })) r.armour.legs = kilt;
+      r.armour.feet = null;
+    }
     r.ancestry = null;
     return r;
   }
@@ -105,11 +112,25 @@
   KCharFigure.posture = (D.posture && D.posture.bodies) || {};
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
+  KCharFigure.postureClipFrames = (D.posture && D.posture.clipFrames) || {};
   KCharFigure.fur = D.fur || null;                                   // data/fur.json: garments' fur shells
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
   KCharFigure.clipData = INFO;
   KCharFigure.faces = (D.clips && D.clips.faces) || {};
-  var lead = D.bodies[CAST[0].body].skeleton.clips;
+  KCharFigure.look = (D.clips && D.clips.look) || null;
+  // data/clips.json dropped: clips still in anims.glb that the lab leaves out
+  var DROP = (D.clips && D.clips.dropped) || [];
+  // a lab of part of the clips (KCHAR_LAB: data/clips.json labs, set by build.py on that page): its groups only, its
+  // own anims piece, its own name; without it the page is the whole Animation Lab (the one verify.py checks)
+  var LAB = (typeof KCHAR_LAB !== 'undefined' && KCHAR_LAB) || null;
+  if(LAB){
+    KCharFigure.animsPiece = LAB.anims;
+    document.title = LAB.title;
+    var h1 = document.querySelector('#brand h1'); if(h1) h1.textContent = LAB.title;
+  }
+  var lead = D.bodies[CAST[0].body].skeleton.clips.filter(function(c){
+    return DROP.indexOf(c.name) < 0 && (!LAB || LAB.groups.indexOf(c.group) >= 0);
+  });
   lead.forEach(function(c){ META[c.name] = c; });
   var GROUPS = [{ id:'idle', label:'Idle' }].concat((D.clips && D.clips.groups) || []);
   GROUPS.forEach(function(g){ g.clips = lead.filter(function(c){ return c.group === g.id; }).map(function(c){ return c.name; }); });
@@ -161,7 +182,9 @@
     var ready = Promise.all(figs.map(function(x){ return x.f.apply(record(x.c)).then(function(){
       x.tag.querySelector('small').textContent = x.f.pose.stature ? Math.round(x.f.pose.stature * 100) + ' cm' : '';
     }); })).then(function(){ $('loading').hidden = true; poseApply(); return play(current); }, function(e){ $('loading').textContent = 'A piece failed to load: ' + e.message; });
-    window._lab = { figs:figs.map(function(x){ return x.f; }), ready:ready, play:play, reviews:function(){ return reviews; }, setTime:setTime, cam:cam };
+    window._lab = { figs:figs.map(function(x){ return x.f; }), ready:ready, play:play, reviews:function(){ return reviews; }, setTime:setTime, cam:cam,
+      // a door clip's set: how far figure i's grip is from its door's lever (null with no door shown)
+      doorGap:function(i){ var d = SETS[i]; return d && d.root.visible ? gripAt(figs[i], new THREE.Vector3()).distanceTo(d.mark.getWorldPosition(new THREE.Vector3())) : null; } };
   }
 
   // the row: each body's three side by side, a wider gap between the two bodies
@@ -203,10 +226,86 @@
     camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
   }
 
+  /* the set a clip is made against, drawn so it reads (the owner, 2026-11-27, on Open door: "not sure this reads as
+     pulling a door handle"): a clip whose derive has a door (make_pieces.door_clip) gets a door beside each figure, its
+     frame, its panel and its lever handle where the clip's hand takes hold, the panel swinging round its hinge and the
+     lever turning on the clip's own seconds, the same easing as the bake. Each body's door is the clip's times its
+     height over its build's neutral one, so the shorter and taller hands meet the handle too. The lab's alone: no
+     figure or game state */
+  var SETS = [], setMat = null;
+  function setSpec(){ var d = INFO[current] && INFO[current].derive; return d && d.door; }
+  function makeDoor(sp){
+    // the panel half seen through, so the figure behind it shows from the front (the lab's default view)
+    if(!setMat) setMat = { wood:new THREE.MeshStandardMaterial({ color:0x7a5a3c, roughness:0.8, transparent:true, opacity:0.45, depthWrite:false }), frame:new THREE.MeshStandardMaterial({ color:0x5a4330, roughness:0.85 }),
+                           iron:new THREE.MeshStandardMaterial({ color:0x3a3a3c, metalness:0.7, roughness:0.4 }) };
+    var s = sp.side == null ? 1 : sp.side, r = sp.hinge == null ? 0.72 : sp.hinge, H = sp.handle, W = r + 0.09;
+    var root = new THREE.Group(), pivot = new THREE.Group(), lever = new THREE.Group();
+    function box(mat, w, h, d, x, y, z, parent){ var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; }
+    var hx = H[0] + s * r;
+    pivot.position.set(hx, 0, H[2]); root.add(pivot);
+    // the panel, its face 9 cm behind the grip (the fingers wrap the lever 5 cm past it)
+    box(setMat.wood, W, 2.05, 0.04, -s * W / 2 + s * 0.02, 1.025, 0.11, pivot);
+    var lp = new THREE.Vector3(H[0] - 0.07 * s - hx, H[1], 0);
+    lever.position.copy(lp); pivot.add(lever);
+    box(setMat.iron, 0.06, 0.09, 0.012, 0, 0, 0.084, lever);                                          // the rose plate
+    box(setMat.iron, 0.016, 0.016, 0.08, 0, 0, 0.044, lever);                                         // the stem
+    box(setMat.iron, 0.13, 0.018, 0.02, s * 0.065, 0, 0, lever);                                      // the lever, toward the hinge
+    var mark = new THREE.Object3D(); mark.position.set(s * 0.07, 0, 0); lever.add(mark);              // where the grip holds it
+    box(setMat.frame, 0.07, 2.12, 0.12, hx + s * 0.055, 1.06, H[2] + 0.12, root);                     // the frame
+    box(setMat.frame, 0.07, 2.12, 0.12, hx - s * (W + 0.035), 1.06, H[2] + 0.12, root);
+    box(setMat.frame, W + 0.18, 0.07, 0.12, hx - s * W / 2 + s * 0.01, 2.115, H[2] + 0.12, root);
+    scene.add(root);
+    return { root:root, pivot:pivot, lever:lever, mark:mark, s:s, off:null };
+  }
+  // the right hand's grip point in the world (skeleton.json hands: the grip frame in the hand bone)
+  var gV = new THREE.Vector3();
+  function gripAt(x, out){
+    var h = D.bodies[x.c.body].skeleton.hands.R, b = x.f.bones[h.bone];
+    return out.fromArray(h.grip).applyMatrix4(b.matrixWorld);
+  }
+  function sets(){
+    var sp = setSpec();
+    if(SETS.spec !== sp){ SETS.forEach(function(d){ scene.remove(d.root); }); SETS = []; SETS.spec = sp; }
+    if(!sp) return;
+    var K = sp.keys, sm = function(a, b, t){ var x = Math.min(1, Math.max(0, (t - a) / (b - a))); return x * x * (3 - 2 * x); };
+    figs.forEach(function(x, i){
+      var d = SETS[i] || (SETS[i] = makeDoor(sp)), a = x.f.action;
+      d.root.visible = x.f.group.visible && !!a;
+      if(!d.root.visible) return;
+      var base = figs.filter(function(y){ return y.c.body === x.c.body && y.c.build === 'neutral'; })[0];
+      var k = base && base.f.pose.stature && x.f.pose.stature ? x.f.pose.stature / base.f.pose.stature : x.f.scale;
+      d.root.scale.setScalar(k);
+      var t = a.time % a.getClip().duration, th = (sp.open || 0) * Math.PI / 180 * sm(K.pull[0], K.pull[1], t);
+      var ph = (sp.turn || 0) * Math.PI / 180 * Math.min(sm(K.turn[0], K.turn[1], t), 1 - sm(K.pull[0] + 0.3, K.pull[0] + 0.9, t));
+      d.pivot.rotation.y = -d.s * th;
+      d.lever.rotation.z = -d.s * ph;
+      // the door stands where this figure's hand closes on its lever: the posture and the body's own passes move the
+      // arm off the bake's handle by up to 15 cm, so the first frame the hand holds it (the grip's end to the letting
+      // go) places the door, and it stays there while this clip plays
+      d.root.position.copy(x.f.group.position);
+      var held = t >= K.grip[1] && t <= K.let[0];
+      if(d.off) d.root.position.add(d.off);
+      else if(held){
+        d.root.updateMatrixWorld(true);
+        d.off = gripAt(x, new THREE.Vector3()).sub(d.mark.getWorldPosition(new THREE.Vector3()));
+        d.root.position.add(d.off);
+      }
+      // and the door swings where the hand pulls it: while held, the angle round the hinge that brings the lever to the
+      // grip (the hand's path is the bake's arc bent by those passes); after the letting go it stays where it was left
+      if(held && d.off){
+        d.root.updateMatrixWorld(true);
+        var v = d.root.worldToLocal(gripAt(x, gV)).sub(d.pivot.position);
+        d.th = Math.max(0, Math.atan2(-v.z, -d.s * v.x));
+      } else if(t < K.grip[1]) d.th = 0;
+      if(d.th != null && d.off) d.pivot.rotation.y = -d.s * d.th;
+    });
+  }
+
   var tv = new THREE.Vector3();
   function frame(){
     var dt = Math.min(0.05, clock.getDelta()), step = paused ? 0 : dt * speed;
     figs.forEach(function(s){ if(s.f.group.visible) s.f.update(step); });
+    sets();
     var k = 1 - Math.pow(0.002, dt);
     ['yaw', 'pitch', 'dist', 'x', 'ty'].forEach(function(n){ cam[n] += (cam.want[n] - cam[n]) * k; });
     var cp = Math.cos(cam.pitch);
@@ -283,9 +382,48 @@
   var held = { R:null, L:null };
   // play a clip on all six from its start, without a cross-fade (so a paused or scrubbed frame is this clip alone);
   // a one-shot repeats
+  /* ---- scenery: a clip's data/clips.json 'scene', the furniture it works at (catalog keys, each at [x, y, z] metres
+     in the figure's frame, +z its front, +x its left, turned ry degrees), built with the catalog's own code: the
+     KratorFurniture bundle in scenery.js beside the page (kits/catalog/furniture_bundle.py writes it; without it the
+     clips play with no scenery). Each figure's set goes into its group at its size, so a tall figure's chair is a tall
+     one and a giant's a giant's ---- */
+  var sceneryLoad = null;
+  function scenery(){
+    if(!sceneryLoad) sceneryLoad = new Promise(function(ok){
+      if(window.KratorFurniture) return ok(window.KratorFurniture);
+      var s = document.createElement('script');
+      s.src = 'scenery.js';
+      s.onload = function(){ ok(window.KratorFurniture || null); };
+      s.onerror = function(){ ok(null); };
+      document.head.appendChild(s);
+    });
+    return sceneryLoad;
+  }
+  function setScene(name){
+    figs.forEach(function(s){ if(s.set){ s.f.group.remove(s.set); s.set = null; } });
+    var sc = INFO[name] && INFO[name].scene;
+    if(!sc || !sc.length) return Promise.resolve();
+    return scenery().then(function(KF){
+      if(!KF || current !== name) return;
+      figs.forEach(function(s){
+        var B = KF.batch(), set = new THREE.Group();
+        sc.forEach(function(p){
+          if(KF.has(p.key)) B.place(p.key, p.at[0], p.at[1] || 0, p.at[2], (p.ry || 0) * Math.PI / 180, { seed:1, variant:p.variant || 0 });
+        });
+        B.flush(set);
+        set.traverse(function(m){ if(m.isMesh){ m.castShadow = m.receiveShadow = true; } });
+        set.scale.setScalar(s.f.inner ? s.f.inner.scale.x : s.f.scale);
+        set.userData.scenery = name;
+        s.set = set;
+        s.f.group.add(set);
+      });
+    });
+  }
+
   function play(name){
     flushNote();
     current = name;
+    setScene(name);
     return holdFor(name).then(function(){ return Promise.all(figs.map(function(s){ return s.f.play(name); })); }).then(function(){
       if(current !== name) return;
       figs.forEach(function(s){
@@ -304,9 +442,11 @@
      'clips', per clip and body the degrees added on top. In "This clip" the sliders show the sum for the clip playing
      and keep the difference. Kept in this browser until Reset, or until posture.json itself changes ---- */
   var POSE_KEY = 'kchar.animlab.posture', POSE_BODIES = ['mpfb_male', 'mpfb_female'];
-  var POSE_ROWS = [['Spine', 'Spine · lumbar', -60, 60], ['Spine1', 'Spine1 · low T', -60, 60],
-    ['Spine2', 'Spine2 · high T', -60, 60], ['Neck', 'Neck', -60, 60], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -20, 30],
-    ['back', 'Shoulder back', -30, 30]];
+  var POSE_ROWS = [['lean', 'Lean at hips', -45, 30], ['pelvis', 'Pelvis tilt', -60, 40], ['Spine', 'Spine · lumbar', -60, 60], ['Spine1', 'Spine1 · low T', -60, 60],
+    ['Spine2', 'Spine2 · high T', -60, 60], ['Neck', 'Neck', -60, 60], ['nTurn', 'Neck turn', -60, 60], ['nSide', 'Neck side tilt', -40, 40], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -30, 60],
+    ['back', 'Shoulder back', -45, 45], ['fSpine', 'Lumbar fwd cm', -8, 8],
+    ['fSpine1', 'Low T fwd cm', -8, 8], ['fSpine2', 'High T fwd cm', -8, 8], ['fNeck', 'Neck fwd cm', -8, 8],
+    ['fHead', 'Head fwd cm', -8, 8], ['uHead', 'Head up cm', -6, 6]];
   var POSE = { bodies:{}, clips:{} };
   function poseFile(){ return JSON.parse(JSON.stringify({ bodies:(D.posture && D.posture.bodies) || {}, clips:(D.posture && D.posture.clips) || {} })); }
   function half(v){ v = +v; return isFinite(v) ? Math.round(v * 2) / 2 : 0; }
@@ -317,7 +457,7 @@
     function status(t){ $('pose-status').textContent = t; }
     function clean(p){
       // the frame is posture.json's (the figures take it when they are made): carried through so a copy is whole
-      var out = { frame:(D.posture && D.posture.frame) || 'figure', bodies:{}, clips:{} };
+      var out = { frame:(D.posture && D.posture.frame) || 'figure', clipFrames:(D.posture && D.posture.clipFrames) || {}, bodies:{}, clips:{} };
       // a pasted 'bodies' object alone (the panel's old copy) keeps the clips as they are
       var bodies = p && p.bodies ? p.bodies : p, clips = p && p.bodies ? (p.clips || {}) : POSE.clips;
       POSE_BODIES.forEach(function(b){
